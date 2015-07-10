@@ -1,14 +1,13 @@
 
+#include "stdafx.h"
 #include <Windows.h>
-#include <SFML/Graphics.hpp>
-#include <SFML/OpenGL.hpp>
 
 int CALLBACK WinMain(_In_  HINSTANCE hInstance,
 					 _In_  HINSTANCE hPrevInstance,
 					 _In_  LPSTR lpCmdLine,
 					 _In_  int nCmdShow) {
 	// create the window
-	sf::Window window(sf::VideoMode(800, 600), "Simulation - Shlomi Steinberg", sf::Style::Default, sf::ContextSettings(32));
+	sf::Window window(sf::VideoMode(1920, 1080), "Simulation - Shlomi Steinberg", sf::Style::Default, sf::ContextSettings(32));
 	window.setVerticalSyncEnabled(true);
 
 	// load resources, initialize the OpenGL states, ...
@@ -24,7 +23,7 @@ int CALLBACK WinMain(_In_  HINSTANCE hInstance,
 				running = false;
 			}
 			else if (event.type == sf::Event::Resized) {
-				// adjust the viewport when the window is resized
+				// adjust the viewport when the window is resized 
 				glViewport(0, 0, event.size.width, event.size.height);
 			}
 		}
@@ -39,6 +38,7 @@ int CALLBACK WinMain(_In_  HINSTANCE hInstance,
 	}
 
 	// release resources...
-
+	 
 	return 0;
 }
+ 
