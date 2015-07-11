@@ -25,7 +25,7 @@ int CALLBACK WinMain(_In_  HINSTANCE hInstance,
 			else if (event.type == sf::Event::Resized) {
 				// adjust the viewport when the window is resized 
 				glViewport(0, 0, event.size.width, event.size.height);
-			}
+			} 
 		}
 
 		// clear the buffers
