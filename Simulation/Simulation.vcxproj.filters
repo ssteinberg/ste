@@ -1,32 +1,179 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Base">
+    <Filter Include="src">
+      <UniqueIdentifier>{1e9536d2-32d4-4bf2-a1a9-0e9ef67086e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Core">
       <UniqueIdentifier>{da161e4b-8172-48d5-913b-397b8d29b561}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Base\RenderControl">
+    <Filter Include="src\Resources">
+      <UniqueIdentifier>{6ef5c636-7c9c-44ae-a9b1-93f8b6b26b7a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Resources\AssImp">
+      <UniqueIdentifier>{b16e223c-9adb-46d1-8e8d-c13ef47ef545}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Core\LLR">
       <UniqueIdentifier>{3887d1c6-bf52-4cc9-bb3c-12ee08bbfb35}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Core\LLR\Shaders">
+      <UniqueIdentifier>{73aac61e-fd1f-453f-a208-0877dc0fb68c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Core\LLR\GPU Data">
+      <UniqueIdentifier>{a180a76c-4770-44df-b971-238d71273cfe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Core\LLR\GPU Data\Vertex Storage">
+      <UniqueIdentifier>{56db4d3c-4bf8-4ce3-9c5f-a7204c3b6af7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Core\LLR\RenderControl">
+      <UniqueIdentifier>{5464cf99-8840-48d6-b46c-1b00f5304d22}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Core\HID">
+      <UniqueIdentifier>{abef885f-0954-42ba-8184-6d49823b3623}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\STL Extensions">
+      <UniqueIdentifier>{510e7be2-9a52-4dac-a6e2-978c9d07d98a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Shaders">
+      <UniqueIdentifier>{7a22fd60-b5b1-4cee-a37f-108e499b7722}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Resources\Base">
+      <UniqueIdentifier>{173f2263-c695-4972-a569-461a0de536bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Core\Log">
+      <UniqueIdentifier>{97667693-d003-4c64-a83e-b0998f5f9db6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Core\LLR\GPU Data\Surfaces">
+      <UniqueIdentifier>{1e31341d-91f5-4aa4-8638-99873b819b78}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Core\LLR\GPU Data\Surfaces\Textures">
+      <UniqueIdentifier>{53bc72f0-715b-4826-b5f9-b9af1197fbd6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="RenderControl.cpp">
-      <Filter>Base\RenderControl</Filter>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>src\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AssImpModel.cpp">
+      <Filter>src\Resources\AssImp</Filter>
+    </ClCompile>
+    <ClCompile Include="GLSLProgram.cpp">
+      <Filter>src\Core\LLR\Shaders</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
-      <Filter>Base</Filter>
+      <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="stdafx.cpp">
-      <Filter>Base</Filter>
+    <ClCompile Include="RenderControl.cpp">
+      <Filter>src\Core\LLR\RenderControl</Filter>
+    </ClCompile>
+    <ClCompile Include="glutils.cpp">
+      <Filter>src\Core\LLR\RenderControl</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>src\Core\LLR</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderLoader.cpp">
+      <Filter>src\Resources\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Log.cpp">
+      <Filter>src\Core\Log</Filter>
+    </ClCompile>
+    <ClCompile Include="SurfaceIO.cpp">
+      <Filter>src\Resources\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderContext.cpp">
+      <Filter>src\Core\LLR\RenderControl</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture2D.cpp">
+      <Filter>src\Core\LLR\GPU Data\Surfaces\Textures</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AssImpModel.h">
+      <Filter>src\Resources\AssImp</Filter>
+    </ClInclude>
+    <ClInclude Include="GLSLProgram.h">
+      <Filter>src\Core\LLR\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexArrayObject.h">
+      <Filter>src\Core\LLR\GPU Data\Vertex Storage</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexBufferObject.h">
+      <Filter>src\Core\LLR\GPU Data\Vertex Storage</Filter>
+    </ClInclude>
     <ClInclude Include="RenderControl.h">
-      <Filter>Base\RenderControl</Filter>
+      <Filter>src\Core\LLR\RenderControl</Filter>
+    </ClInclude>
+    <ClInclude Include="glutils.h">
+      <Filter>src\Core\LLR\RenderControl</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>src\Core\LLR</Filter>
+    </ClInclude>
+    <ClInclude Include="Keyboard.h">
+      <Filter>src\Core\HID</Filter>
+    </ClInclude>
+    <ClInclude Include="Pointer.h">
+      <Filter>src\Core\HID</Filter>
+    </ClInclude>
+    <ClInclude Include="int_to_type.h">
+      <Filter>src\STL Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderLoader.h">
+      <Filter>src\Resources\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="GLSLShader.h">
+      <Filter>src\Core\LLR\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Log.h">
+      <Filter>src\Core\Log</Filter>
+    </ClInclude>
+    <ClInclude Include="SurfaceIO.h">
+      <Filter>src\Resources\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderContext.h">
+      <Filter>src\Core\LLR\RenderControl</Filter>
+    </ClInclude>
+    <ClInclude Include="FramebufferObject.h">
+      <Filter>src\Core\LLR\GPU Data\Surfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture2D.h">
+      <Filter>src\Core\LLR\GPU Data\Surfaces\Textures</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="stdafx.h">
-      <Filter>Base</Filter>
+      <Filter>src\Core</Filter>
+    </None>
+    <None Include="transform.vert">
+      <Filter>src\Shaders</Filter>
+    </None>
+    <None Include="frag.frag">
+      <Filter>src\Shaders</Filter>
+    </None>
+    <None Include="texture.frag">
+      <Filter>src\Shaders</Filter>
+    </None>
+    <None Include="ssao.frag">
+      <Filter>src\Shaders</Filter>
+    </None>
+    <None Include="blur.frag">
+      <Filter>src\Shaders</Filter>
+    </None>
+    <None Include="passthrough.vert">
+      <Filter>src\Shaders</Filter>
+    </None>
+    <None Include="passthrough_light.vert">
+      <Filter>src\Shaders</Filter>
+    </None>
+    <None Include="lighting.frag">
+      <Filter>src\Shaders</Filter>
+    </None>
+    <None Include="gen_depth_layers.frag">
+      <Filter>src\Shaders</Filter>
+    </None>
+    <None Include="gen_mipmaps.frag">
+      <Filter>src\Shaders</Filter>
     </None>
   </ItemGroup>
 </Project>
