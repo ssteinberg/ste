@@ -3,6 +3,7 @@
 
 #define WIN32_LEAN_AND_MEAN
 #define NOGDI
+#define NOMINMAX
 #include <Windows.h>
 
 #include <glm/glm.hpp>
@@ -11,13 +12,15 @@
 #include <random>
 #include <iostream>
 #include <chrono>
+#include <thread>
 
-#include "glutils.h"
+#include "opengl.h"
 #include "Log.h"
+#include "concurrent_queue.h"
 #include "Keyboard.h"
 #include "Pointer.h"
 #include "RenderControl.h"
-#include "AssImpModel.h"
+#include "Model.h"
 #include "Camera.h"
 #include "GLSLProgram.h"
 #include "ShaderLoader.h"
@@ -25,6 +28,13 @@
 #include "VertexBufferObject.h"
 #include "VertexArrayObject.h"
 #include "FramebufferObject.h"
+#include "RenderTarget.h"
+#include "Texture2DArray.h"
+
+struct Vertex {
+	glm::vec3 p;
+	glm::vec2 t;
+};
 
 StE::LLR::Camera camera;
 
@@ -32,21 +42,25 @@ int CALLBACK WinMain(_In_  HINSTANCE hInstance,
 					 _In_  HINSTANCE hPrevInstance,
 					 _In_  LPSTR lpCmdLine,
 					 _In_  int nCmdShow) {
+	StE::Log logger("Simulation");
+	logger.redirect_std_outputs();
+	ste_log_set_global_logger(&logger);
+
 	ste_log() << "Simulation running";
 
-	AllocConsole();
-	freopen("CONOUT$", "w", stdout);
-	freopen("CONOUT$", "w", stderr);
-
 	constexpr float w = 1400, h = 900;
-	constexpr int max_steps = 6;
+	constexpr int max_steps = 8;
 	constexpr int depth_layers_count = 3;
+	constexpr float clip_far = 1000.f;
+	constexpr float clip_near = 1.f;
 
-	auto &rc = StE::LLR::RenderControl::instance();
+	StE::LLR::RenderControl rc;
 	rc.init_render_context("Shlomi Steinberg - Simulation", w, h);
-	rc.set_clipping_planes(1, 1000);
+	rc.set_clipping_planes(clip_near, clip_far);
 	camera.set_position({ -91.0412979, 105.631607, -60.2330551 });
 	camera.lookat({ -91.9486542, 105.291336, -59.98624 });
+
+	StE::LLR::opengl::dump_gl_info(false);
 
 	// Prepare
 	StE::LLR::GLSLProgram transform;
@@ -64,25 +78,26 @@ int CALLBACK WinMain(_In_  HINSTANCE hInstance,
 	ssao.add_shader(StE::Resource::ShaderLoader::compile_from_path("ssao.frag"));
 	ssao.link();
 
-	StE::LLR::GLSLProgram blur;
-	blur.add_shader(StE::Resource::ShaderLoader::compile_from_path("passthrough.vert"));
-	blur.add_shader(StE::Resource::ShaderLoader::compile_from_path("blur.frag"));
-	blur.link();
+	StE::LLR::GLSLProgram blur_x;
+	blur_x.add_shader(StE::Resource::ShaderLoader::compile_from_path("passthrough.vert"));
+	blur_x.add_shader(StE::Resource::ShaderLoader::compile_from_path("blur_x.frag"));
+	blur_x.link();
+
+	StE::LLR::GLSLProgram blur_y;
+	blur_y.add_shader(StE::Resource::ShaderLoader::compile_from_path("passthrough.vert"));
+	blur_y.add_shader(StE::Resource::ShaderLoader::compile_from_path("blur_y.frag"));
+	blur_y.link();
 
 	StE::LLR::GLSLProgram deffered;
 	deffered.add_shader(StE::Resource::ShaderLoader::compile_from_path("passthrough_light.vert"));
 	deffered.add_shader(StE::Resource::ShaderLoader::compile_from_path("lighting.frag"));
 	deffered.link();
 
-	StE::Resource::AssImpModel hall_model, obj1_model;
-	hall_model.load_model(R"(models\sponza.obj)");
-	//obj1_model.load_model(R"(models\tess5.obj)");
-
 	constexpr int noise_size_w = 25;
 	constexpr int noise_size_h = 25;
 	gli::texture2D tex(1, gli::format::FORMAT_RG32_SFLOAT, { noise_size_w, noise_size_h });
 	std::random_device rd;
-	std::uniform_real_distribution<float> ud(-1,1);
+	std::uniform_real_distribution<float> ud(-1, 1);
 	glm::vec2 *vectors = reinterpret_cast<glm::vec2*>(tex.data());
 	for (int i = 0; i < noise_size_w * noise_size_h; ++i, ++vectors) {
 		auto r1 = ud(rd);
@@ -96,79 +111,70 @@ int CALLBACK WinMain(_In_  HINSTANCE hInstance,
 	noise.set_min_filter(GL_NEAREST);
 	noise.set_mag_filter(GL_NEAREST);
 
- 	StE::LLR::Texture2D depth_output(gli::format::FORMAT_D24_UNORM, w, h, 1);
-	StE::LLR::Texture2D normal_output(gli::format::FORMAT_RGB32_SFLOAT, w, h, 1);
+	StE::LLR::Texture2D depth_output(gli::format::FORMAT_D24_UNORM, { w, h }, 1);
+	StE::LLR::Texture2D normal_output(gli::format::FORMAT_RGB32_SFLOAT, { w, h }, 1);
+	StE::LLR::Texture2D t = std::move(normal_output);
 	normal_output.set_min_filter(GL_NEAREST);
 	normal_output.set_mag_filter(GL_NEAREST);
-	StE::LLR::Texture2D position_output(gli::format::FORMAT_RGB32_SFLOAT, w, h, 1);
-	StE::LLR::Texture2D color_output(gli::format::FORMAT_RGB8_UNORM, w, h, 1);
+	StE::LLR::Texture2D position_output(gli::format::FORMAT_RGB32_SFLOAT, { w, h }, 1);
+	StE::LLR::Texture2D color_output(gli::format::FORMAT_RGB8_UNORM, { w, h }, 1);
 	color_output.set_min_filter(GL_NEAREST);
 	color_output.set_mag_filter(GL_NEAREST);
- 	StE::LLR::FramebufferObject fbo;
+	StE::LLR::FramebufferObject fbo;
 	fbo.set_attachments({ depth_output }, { color_output, position_output, normal_output });
 
-	StE::LLR::Texture2D occlusion_final1_output(gli::format::FORMAT_R8_UNORM, w, h, 1);
+	StE::LLR::Texture2D occlusion_final1_output(gli::format::FORMAT_R8_UNORM, { w, h }, 1);
 	occlusion_final1_output.set_min_filter(GL_NEAREST);
 	occlusion_final1_output.set_mag_filter(GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	occlusion_final1_output.set_wrap_s(GL_CLAMP_TO_EDGE);
+	occlusion_final1_output.set_wrap_t(GL_CLAMP_TO_EDGE);
 	StE::LLR::FramebufferObject fbo_final1;
 	fbo_final1.set_attachments({ occlusion_final1_output });
 
-	StE::LLR::Texture2D occlusion_final2_output(gli::format::FORMAT_R8_UNORM, w, h, 1);
+	StE::LLR::Texture2D occlusion_final2_output(gli::format::FORMAT_R8_UNORM, { w, h }, 1);
 	occlusion_final2_output.set_min_filter(GL_NEAREST);
 	occlusion_final2_output.set_mag_filter(GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	occlusion_final2_output.set_wrap_s(GL_CLAMP_TO_EDGE);
+	occlusion_final2_output.set_wrap_t(GL_CLAMP_TO_EDGE);
 	StE::LLR::FramebufferObject fbo_final2;
 	fbo_final2.set_attachments({ occlusion_final2_output });
+	std::size_t ts = occlusion_final2_output.get_storage_size(0);
 
-	StE::LLR::VertexBufferObject vbo;
+	using vertex_descriptor = StE::LLR::VBODescriptorWithTypes<glm::vec3, glm::vec2>::descriptor;
+	std::shared_ptr<StE::LLR::VertexBufferObject<Vertex, vertex_descriptor>> vbo = std::make_shared<StE::LLR::VertexBufferObject<Vertex, vertex_descriptor>>(std::vector<Vertex>(
+		{ { { -1.f, -1.f, .0f }, { .0f, .0f } },
+		{ { 1.f, -1.f, .0f }, { 1.f, .0f } },
+		{ { -1.f, 1.f, .0f }, { .0f, 1.f } },
+		{ { 1.f, 1.f, .0f }, { 1.f, 1.f } } }
+	));
 	StE::LLR::VertexArrayObject vao;
-	{
-		std::vector<float> vbo_data({ -1.f, -1.f, .0f, .0f, .0f,
-									1.f, -1.f, .0f, 1.f, .0f,
-									-1.f, 1.f, .0f, .0f, 1.f,
-									1.f, 1.f, .0f, 1.f, 1.f });
-		vbo.append(&vbo_data[0], sizeof(float) * vbo_data.size());
-		vbo.upload(GL_ARRAY_BUFFER, GL_STATIC_DRAW);
+	vao[0] = (*vbo)[1];
+	vao[1] = (*vbo)[0];
 
-		vao.bind();
-		vbo.bind_vertex_buffer_to_array(0, 0, sizeof(float) * 5, 3, GL_FLOAT, false);
-		vbo.bind_vertex_buffer_to_array(1, sizeof(float)*3, sizeof(float) * 5, 2, GL_FLOAT, false);
-	}
-
-	GLuint depth_layers, f_depth_layers;
-	glGenTextures(1, &depth_layers);
-	glBindTexture(GL_TEXTURE_2D_ARRAY, depth_layers);
-	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_BASE_LEVEL, 0);
-	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAX_LEVEL, 0);
-	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexStorage3D(GL_TEXTURE_2D_ARRAY, 1, GL_R32I, w, h, depth_layers_count);
+	StE::LLR::Texture2DArray depth_layers(gli::format::FORMAT_R32_UINT, { w, h, depth_layers_count }, 1);
+	depth_layers.set_mag_filter(GL_NEAREST);
+	depth_layers.set_min_filter(GL_NEAREST);
+	depth_layers.set_wrap_s(GL_CLAMP_TO_EDGE);
+	depth_layers.set_wrap_t(GL_CLAMP_TO_EDGE);
 	StE::LLR::FramebufferObject fbo_depth_layers;
 	fbo_depth_layers.bind();
 	for (int i = 0; i < depth_layers_count; ++i)
-		glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, depth_layers, 0, i);
+		glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, depth_layers.get_resource_id(), 0, i);
 
-	glGenTextures(1, &f_depth_layers);
-	glBindTexture(GL_TEXTURE_2D_ARRAY, f_depth_layers);
-	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_BASE_LEVEL, 0);
-	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAX_LEVEL, max_steps-1);
-	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexStorage3D(GL_TEXTURE_2D_ARRAY, max_steps, GL_R32F, w, h, depth_layers_count);
+	StE::LLR::Texture2DArray f_depth_layers(gli::format::FORMAT_R32_SFLOAT, { w, h, depth_layers_count }, max_steps);
+	f_depth_layers.set_mag_filter(GL_LINEAR);
+	f_depth_layers.set_min_filter(GL_LINEAR_MIPMAP_NEAREST);
+	f_depth_layers.set_wrap_s(GL_CLAMP_TO_EDGE);
+	f_depth_layers.set_wrap_t(GL_CLAMP_TO_EDGE);
 	StE::LLR::FramebufferObject fbo_f_depth_layers;
 	fbo_f_depth_layers.bind();
 	for (int i = 0; i < depth_layers_count; ++i)
-		glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, f_depth_layers, 0, i);
-	fbo_f_depth_layers.is_fbo_complete();
+		glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, f_depth_layers.get_resource_id(), 0, i);
 
-	StE::LLR::GLUtils::query_gl_error(__FILE__, __LINE__);
+	StE::Resource::Model hall_model, obj1_model;
+	hall_model.load_model(R"(data\models\sponza.obj)");
+
+	StE::LLR::opengl::query_gl_error(__FILE__, __LINE__);
 
 	int steps = max_steps;
 	bool perform_ssao = true;
@@ -213,13 +219,13 @@ int CALLBACK WinMain(_In_  HINSTANCE hInstance,
 				return false;
 
 // 			// Handle mouse input
-// 			constexpr float rotation_factor = .05f;
-// 			using StE::HID::PointerInput;
-// 			auto pp = PointerInput::position();
-// 			auto center = static_cast<glm::vec2>(rc.viewport_size())*.5f;
-// 			PointerInput::set_position(center);
-// 			auto diff_v = (center - static_cast<decltype(center)>(pp)) * time_delta.count() * rotation_factor;
-// 			camera.pitch_and_yaw(diff_v.y, diff_v.x);
+			constexpr float rotation_factor = .05f;
+			using StE::HID::PointerInput;
+			auto pp = PointerInput::position();
+			auto center = static_cast<glm::vec2>(rc.viewport_size())*.5f;
+			PointerInput::set_position(static_cast<glm::ivec2>(center));
+			auto diff_v = (center - static_cast<decltype(center)>(pp)) * time_delta.count() * rotation_factor;
+			camera.pitch_and_yaw(diff_v.y, diff_v.x);
 		}
 
 		auto proj_mat = rc.projection_matrix();
@@ -234,7 +240,7 @@ int CALLBACK WinMain(_In_  HINSTANCE hInstance,
 		rc.render_context().clear_framebuffer(false, true);
 
 		for (int i = 0; i < depth_layers_count; ++i)
-			glBindImageTexture(i, depth_layers, 0, false, i, GL_READ_WRITE, GL_R32I);
+			glBindImageTexture(i, depth_layers.get_resource_id(), 0, false, i, GL_READ_WRITE, GL_R32I);
 		transform.bind();
 		auto mv = camera.view_matrix() * glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(-100, -35, 0)), glm::vec3(.25, .25, .25));
 		transform.set_uniform("view_model", mv);
@@ -242,19 +248,6 @@ int CALLBACK WinMain(_In_  HINSTANCE hInstance,
 		transform.set_uniform("projection", proj_mat);
 		hall_model.render(transform);
 
-// 		{
-// 			auto model_mat = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(-40, -35, -350)), glm::vec3(1.8,1.8,1.8));
-// 			transform.set_uniform("model", model_mat);
-// 			obj1_model.render();
-// 		}
-// 		 
-// 		{
-// 			auto model_mat = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(40, -35, -350)), glm::vec3(1.8, 1.8, 1.8));
-// 			transform.set_uniform("model", model_mat);
-// 			obj1_model.render();
-// 		}
-
-		//glMemoryBarrier(GL_ALL_BARRIER_BITS);
 		rc.render_context().disable_depth_test();
 
 		vao.bind();
@@ -267,12 +260,9 @@ int CALLBACK WinMain(_In_  HINSTANCE hInstance,
 			gen_depth_layers.bind();
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-			glActiveTexture(GL_TEXTURE0 + 0);
-			glBindTexture(GL_TEXTURE_2D_ARRAY, f_depth_layers);
-			glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
+			f_depth_layers.generate_mipmaps();
 
-			glActiveTexture(GL_TEXTURE0 + 3);
-			glBindTexture(GL_TEXTURE_2D_ARRAY, f_depth_layers);
+			f_depth_layers.bind(3);
 			fbo_final1.bind();
 			ssao.bind();
 			ssao.set_uniform("steps", steps);
@@ -283,21 +273,19 @@ int CALLBACK WinMain(_In_  HINSTANCE hInstance,
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 			fbo_final2.bind();
-			blur.bind();
-			blur.set_uniform("blur_direction", glm::i32vec2(1, 0));
+			blur_x.bind();
 			occlusion_final1_output.bind(0);
 			position_output.bind(1);
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 			fbo_final1.bind();
-			blur.bind();
-			blur.set_uniform("blur_direction", glm::i32vec2(0, 1));
+			blur_y.bind();
 			occlusion_final2_output.bind(0);
 			position_output.bind(1);
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 		}
 
-		StE::LLR::FramebufferObject::unbind();
+		fbo_final1.unbind();
 		deffered.bind();
 		deffered.set_uniform("ssao", perform_ssao);
 		deffered.set_uniform("view", camera.view_matrix());
@@ -307,7 +295,7 @@ int CALLBACK WinMain(_In_  HINSTANCE hInstance,
 		color_output.bind(3);
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-		StE::LLR::GLUtils::query_gl_error(__FILE__, __LINE__);
+		StE::LLR::opengl::query_gl_error(__FILE__, __LINE__);
 
 		return true;
 	});

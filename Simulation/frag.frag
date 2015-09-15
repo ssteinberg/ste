@@ -4,6 +4,7 @@
 in vec2 frag_texcoords;
 in vec3 frag_position;
 in vec3 frag_normal;
+in float frag_depth;
 
 layout(location = 0) out vec3 o_frag_color;
 layout(location = 1) out vec3 o_frag_position;
@@ -25,8 +26,6 @@ void main() {
 		discard;
 		return;
 	}
-	
-	//vec3 frag_normal = normalize(cross(dPdx,dPdy));
 	o_frag_normal = normalize(frag_normal);
 	
 	if (has_normal_map) {
@@ -50,7 +49,7 @@ void main() {
 	o_frag_color = texture(tex, frag_texcoords).rgb;
 	o_frag_position = frag_position;
 	
-	int int_from_float = floatBitsToInt(1.0f - gl_FragCoord.z);
+	int int_from_float = floatBitsToInt(1.0f - frag_depth);
 	int t;
 	if ((t=imageAtomicMax(depth_layer0, ivec2(gl_FragCoord.xy), int_from_float)) < int_from_float) int_from_float = t;
 	if ((t=imageAtomicMax(depth_layer1, ivec2(gl_FragCoord.xy), int_from_float)) < int_from_float) int_from_float = t;

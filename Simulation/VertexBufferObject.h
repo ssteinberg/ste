@@ -3,89 +3,69 @@
 
 #pragma once
 
-#include <vector>
+#include "buffer_object.h"
+#include "VertexBufferDescriptor.h"
 
-#include "VertexArrayObject.h"
+#include <type_traits>
+#include <vector>
 
 namespace StE {
 namespace LLR {
 
-class VertexBufferObject {
+class VertexBufferObjectGeneric : public bindable_generic_resource {
+public:
+	virtual VertexBufferDescriptor *data_descriptor() = 0;
+};
+
+class vertex_buffer_attrib_binder {
 private:
-	GLuint buffer_id;
-	mutable int buffer_type;
-	std::vector<unsigned char> data;
+	template <typename, class, BufferUsage::buffer_usage>
+	friend class VertexBufferObject;
+	friend class VertexArrayObject;
 
-	bool data_uploaded;
+	int binding_index;
+	std::size_t offset, size;
+	std::shared_ptr<VertexBufferObjectGeneric> vbo;
 
-	void delete_vbo() {
-		glDeleteBuffers(1, &buffer_id);
-	}
+	vertex_buffer_attrib_binder(int index, const std::shared_ptr<VertexBufferObjectGeneric> &vbo, std::size_t offset, std::size_t size) : 
+		binding_index(index), vbo(vbo), offset(offset), size(size) {}
+	vertex_buffer_attrib_binder(vertex_buffer_attrib_binder &&m) = default;
+	vertex_buffer_attrib_binder& operator=(vertex_buffer_attrib_binder &&m) = default;
+	vertex_buffer_attrib_binder(const vertex_buffer_attrib_binder &m) = delete;
+	vertex_buffer_attrib_binder& operator=(const vertex_buffer_attrib_binder &m) = delete;
+
+public:
+	~vertex_buffer_attrib_binder() {}
+};
+
+template <typename Type, class Descriptor, BufferUsage::buffer_usage U = BufferUsage::BufferUsageNone>
+class VertexBufferObject : public buffer_object<Type, U>, public VertexBufferObjectGeneric, protected std::enable_shared_from_this<VertexBufferObject<Type, Descriptor, U>> {
+private:
+	using buffer_object<Type, U>::bind;
+	using buffer_object<Type, U>::unbind;
+
+	static_assert(std::is_base_of<VertexBufferDescriptor, Descriptor>::value, "Descriptor must inherit from VertexBufferDescriptor");
+
+private:
+	Descriptor descriptor;
 
 public:
 	VertexBufferObject(VertexBufferObject &&m) = default;
-	VertexBufferObject(const VertexBufferObject &c) = delete;
 	VertexBufferObject& operator=(VertexBufferObject &&m) = default;
-	VertexBufferObject& operator=(const VertexBufferObject &c) = delete;
 
-	VertexBufferObject(int size = 0) {
-		data_uploaded = false;
-		glGenBuffers(1, &buffer_id);
-		data.reserve(size);
-	}
-	virtual ~VertexBufferObject() { delete_vbo(); }
+	VertexBufferObject(std::size_t size) : buffer_object(size) {}
+	VertexBufferObject(std::size_t size, const T *data) : buffer_object(size, data) {}
+	VertexBufferObject(const std::vector<T> &data) : buffer_object(data.size(), &data[0]) {}
 
-	void* map(int usage_hint) {
-		if (!data_uploaded) return nullptr;
-		void* p = glMapBuffer(buffer_type, usage_hint);
-		return p;
-	}
+	void bind() const override { Binder::bind(id, GL_ARRAY_BUFFER); }
+	void unbind() const override { Binder::unbind(GL_ARRAY_BUFFER); }
 
-	void* map(int usage_hint, unsigned int offset, unsigned int len) {
-		if (!data_uploaded) return nullptr;
-		void* p = glMapBufferRange(buffer_type, offset, len, usage_hint);
-		return p;
-	}
+	virtual VertexBufferDescriptor *data_descriptor() { return &descriptor; }
 
-	void unmap() { glUnmapBuffer(buffer_type); }
+	vertex_buffer_attrib_binder operator[](int index) { return vertex_buffer_attrib_binder(index, shared_from_this(), 0, sizeof(T)); }
+	vertex_buffer_attrib_binder binder(int index, std::size_t offset) { return vertex_buffer_attrib_binder(index, shared_from_this(), offset, sizeof(T)); }
 
-	void bind(int type) const {
-		buffer_type = type;
-		glBindBuffer(buffer_type, buffer_id);
-	}
-
-	void bind_vertex_buffer_to_array(int index, unsigned int offset, unsigned int stride, int format_elements_count, GLenum format_type, bool normalized) {
-		VertexArrayObject::enable_vertex_attrib_array(index);
-		glBindVertexBuffer(index, buffer_id, offset, stride);
-		glVertexAttribFormat(index, format_elements_count, format_type, normalized, 0);
-		glVertexAttribBinding(index, index);
-	}
-
-	void upload(int type, int usage_hint) {
-		bind(type);
-		glBufferData(buffer_type, data.size(), &data[0], usage_hint);
-		data_uploaded = true;
-		data.clear();
-	}
-
-	void append(void* p, unsigned int size) {
-		data.insert(data.end(), (unsigned char*)p, (unsigned char*)p + size);
-	}
-
-	std::size_t size() { return data.size(); }
-
-	operator void*() {
-		if (data_uploaded) return nullptr;
-		return (void*)data[0];
-	}
-
-	operator const void*() const {
-		if (data_uploaded) return nullptr;
-		return (void*)data[0];
-	}
-
-protected:
-	GLuint get_buffer_id() const { return buffer_id; }
+	llr_resource_type resource_type() const override { return llr_resource_type::LLRVertexBufferObject; }
 };
 
 }

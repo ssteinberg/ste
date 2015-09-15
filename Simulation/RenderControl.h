@@ -12,6 +12,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "RenderContext.h"
+#include "Pointer.h"
 
 namespace StE {
 namespace LLR {
@@ -28,8 +29,6 @@ private:
 	bool projection_dirty;
 	void set_projection_dirty() { projection_dirty = true; }
 
-	~RenderControl() {}
-
 public:
 	std::unique_ptr<sf::Window> window;
 	RenderControl(RenderControl &&m) = delete;
@@ -38,11 +37,7 @@ public:
 	RenderControl& operator=(const RenderControl &c) = delete;
 
 	RenderControl() : projection_dirty(true), field_of_view(M_PI_4), near_clip(.1), far_clip(1000) {}
-
-	static RenderControl &instance() {
-		static RenderControl inst;
-		return inst;
-	}
+	~RenderControl() {}
 
 	bool init_render_context(const char *title, int w, int h, bool fs);
 	bool init_render_context(const char *title, int w, int h) { return this->init_render_context(title, w, h, false); }
@@ -73,6 +68,19 @@ public:
 			projection = glm::perspective(field_of_view, aspect, near_clip, far_clip);
 		}
 		return projection;
+	}
+
+	// Pointer - get/set position relative to context window
+	glm::i32vec2 get_relative_pointer_position() {
+		auto v = window_position();
+		auto pp = HID::PointerInput::position();
+		pp -= decltype(pp)({ v.x, v.y });
+		return{ pp.x, pp.y };
+	}
+	void set_relative_pointer_position(const glm::i32vec2 &pos) {
+		auto v = window_position();
+		v += decltype(v)({ pos.x, pos.y });
+		HID::PointerInput::set_position({ v.x, v.y });
 	}
 };
 

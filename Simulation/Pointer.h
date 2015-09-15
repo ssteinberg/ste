@@ -6,8 +6,6 @@
 #include <SFML/Window/Mouse.hpp>
 #include <glm/glm.hpp>
 
-#include "RenderControl.h"
-
 namespace StE {
 namespace HID {
 
@@ -41,18 +39,12 @@ public:
 	}
 
 	static glm::i32vec2 position() {
-		// Relative to main window
-		auto v = LLR::RenderControl::instance().window_position();
 		auto pp = sf::Mouse::getPosition();
-		pp -= decltype(pp)({ v.x, v.y });
 		return{ pp.x, pp.y };
 	}
 
 	static void set_position(const glm::i32vec2 &pos) {
-		// Relative to main window
-		auto v = LLR::RenderControl::instance().window_position();
-		v += decltype(v)({ pos.x, pos.y });
-		sf::Mouse::setPosition({ v.x, v.y });
+		sf::Mouse::setPosition({ pos.x, pos.y });
 	}
 };
 

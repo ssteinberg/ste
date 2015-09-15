@@ -33,6 +33,8 @@ std::unique_ptr<GLSLShader> ShaderLoader::compile_from_path(const std::string &p
 	}
 	inFile.close();
 
+	ste_log() << "Compiling GLSL shader " << path;
+
 	return compile_source(code.str(), type);
 }
 
@@ -42,8 +44,6 @@ std::unique_ptr<GLSLShader> ShaderLoader::compile_source(const std::string &sour
 		ste_log_error() << "Unable to create GLSL shader program!";
 		return false;
 	}
-
-	ste_log() << "Compiling GLSL shader";
 
 	shader->set_shader_source(source);
 
@@ -56,6 +56,8 @@ std::unique_ptr<GLSLShader> ShaderLoader::compile_source(const std::string &sour
 
 		return nullptr;
 	}
+
+	ste_log() << "Successfully compiled GLSL shader";
 
 	return std::move(shader);
 }
