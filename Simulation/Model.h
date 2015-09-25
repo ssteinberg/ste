@@ -27,15 +27,16 @@ protected:
 	};
 
 	using vbo_type = StE::LLR::VertexBufferObject<VertexBufferModel, VertexBufferModel::descriptor>;
+	using texture_storage_type = std::map<int, std::shared_ptr<StE::LLR::Texture2D>>;
 
 private:
 	bool bLoaded;
 	std::shared_ptr<vbo_type> vbo;
 	std::unique_ptr<StE::LLR::VertexArrayObject> vao;
 	std::shared_ptr<StE::LLR::ElementBufferObject<>> indices;
-	std::map<int, std::unique_ptr<StE::LLR::TextureGeneric>> textures;
-	std::map<int, std::unique_ptr<StE::LLR::TextureGeneric>> normal_maps;
-	std::map<int, std::unique_ptr<StE::LLR::TextureGeneric>> masks;
+	texture_storage_type textures;
+	texture_storage_type normal_maps;
+	texture_storage_type masks;
 	std::vector<int> indices_offset;
 	std::vector<int> indices_sizes;
 	std::vector<int> material_indices;

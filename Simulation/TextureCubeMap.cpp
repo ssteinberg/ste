@@ -28,7 +28,6 @@ bool TextureCubeMap::upload_face(LLRCubeMapFace face, const gli::texture2D &text
 		return false;
 	}
 
-	bind();
 	for (std::size_t l = 0; l < levels; ++l) {
 		upload_level(texture[l].data(), l, 0, face, texture[l].size());
 	}

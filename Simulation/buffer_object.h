@@ -5,8 +5,12 @@
 
 #include "stdafx.h"
 #include "bindable_resource.h"
+
 #include "buffer_usage.h"
 #include "BufferMappedStorage.h"
+
+#include "shader_layout_bindable_resource.h"
+#include "layout_binding.h"
 
 #include <memory>
 #include <list>
@@ -19,12 +23,12 @@ namespace LLR {
 class BufferObjectAllocator : public llr_resource_stub_allocator {
 public:
 	static int allocate() { GLuint id;  glCreateBuffers(1, &id); return id; }
-	static void deallocate(unsigned int &id) { glDeleteBuffers(1, reinterpret_cast<GLuint*>(&id)); id = 0; }
+	static void deallocate(unsigned int &id) { if (id) glDeleteBuffers(1, reinterpret_cast<GLuint*>(&id)); id = 0; }
 };
 
 class BufferObjectBinder {
 public:
-	static void bind(unsigned int id, GLenum target = 0) {
+	static void bind(unsigned int id, GLenum target) {
 		glBindBuffer(target, id);
 	}
 	static void unbind(GLenum target = 0) {
@@ -48,6 +52,7 @@ protected:
 
 	buffer_object(std::size_t size) : buffer_object(size, nullptr) {};
 	buffer_object(std::size_t size, const T *data) : buffer_size(size) { glNamedBufferStorage(id, sizeof(T)*size, data, static_cast<GLenum>(access_usage)); }
+	buffer_object(const std::vector<T> &data) : buffer_object(data.size(), &data[0]) {};
 
 	using bindable_resource<BufferObjectAllocator, BufferObjectBinder, GLenum>::bind;
 	using bindable_resource<BufferObjectAllocator, BufferObjectBinder, GLenum>::unbind;
@@ -79,17 +84,54 @@ public:
 	template <typename S>
 	void operator>>(buffer_object<S> &bo) const { copy_to(bo); }
 
-	template <bool b = map_read_allowed> typename std::enable_if<b, BufferMappedStorage<T, U>>::type map_read(int offset, int length, BufferUsage::buffer_mapping flags = BufferUsage::BufferMapNone) {
-		return BufferMappedStorage<T, U>(reinterpret_cast<T*>(glMapNamedBufferRange(id, offset, length, GL_MAP_READ_BIT | flags)), id);
+	template <bool b = map_read_allowed> 
+	typename std::enable_if<b, BufferMappedStorage<const T>>::type 
+		map_read(std::size_t len, int offset = 0, BufferUsage::buffer_mapping flags = BufferUsage::BufferMapNone) {
+		return BufferMappedStorage<const T>(reinterpret_cast<const T*>(glMapNamedBufferRange(id, offset, len * sizeof(T), GL_MAP_READ_BIT | flags)), id);
 	}
-	template <bool b = map_write_allowed> typename std::enable_if<b, BufferMappedStorage<T, U>>::type map_write(int offset, int length, BufferUsage::buffer_mapping flags = BufferUsage::BufferMapNone) {
-		return BufferMappedStorage<T, U>(reinterpret_cast<T*>(glMapNamedBufferRange(id, offset, length, GL_MAP_WRITE_BIT | flags)), id);
+	template <bool b = map_write_allowed> 
+	typename std::enable_if<b, BufferMappedStorage<T>>::type 
+		map_write(std::size_t len, int offset = 0, BufferUsage::buffer_mapping flags = BufferUsage::BufferMapNone) {
+		return BufferMappedStorage<T>(reinterpret_cast<T*>(glMapNamedBufferRange(id, offset, len * sizeof(T), GL_MAP_WRITE_BIT | flags)), id);
 	}
-	template <bool b = map_rw_allowed> typename std::enable_if<b, BufferMappedStorage<T, U>>::type map_rw(int offset, int length, BufferUsage::buffer_mapping flags = BufferUsage::BufferMapNone) {
-		return BufferMappedStorage<T, U>(reinterpret_cast<T*>(glMapNamedBufferRange(id, offset, length, GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | flags)), id);
+	template <bool b = map_rw_allowed> 
+	typename std::enable_if<b, BufferMappedStorage<T>>::type 
+		map_rw(std::size_t len, int offset = 0, BufferUsage::buffer_mapping flags = BufferUsage::BufferMapNone) {
+		return BufferMappedStorage<T>(reinterpret_cast<T*>(glMapNamedBufferRange(id, offset, len * sizeof(T), GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | flags)), id);
 	}
 
 	int size() const { return buffer_size; }
+};
+
+template <typename BinderType>
+class BufferObjectLayoutBinder {
+private:
+	using LayoutLocationType = layout_binding<BinderType>;
+
+public:
+	static void bind(unsigned int id, const LayoutLocationType &index, GLenum target) {
+		if (index != layout_location_empty) glBindBufferBase(target, index, id);
+	}
+	static void unbind(const LayoutLocationType &index, GLenum target = 0) {
+		if (index != layout_location_empty) glBindBufferBase(target, index, 0);
+	}
+};
+
+template <typename Type, typename BinderType, BufferUsage::buffer_usage U = BufferUsage::BufferUsageNone, class LB = BufferObjectLayoutBinder<BinderType>>
+class buffer_object_layout_bindable : public buffer_object<Type, U>, virtual public shader_layout_bindable_resource<BinderType> {
+protected:
+	using LayoutBinder = LB;
+
+protected:
+	buffer_object_layout_bindable(buffer_object_layout_bindable &&m) = default;
+	buffer_object_layout_bindable& operator=(buffer_object_layout_bindable &&m) = default;
+
+	buffer_object_layout_bindable(std::size_t size) : buffer_object(size) {}
+	buffer_object_layout_bindable(std::size_t size, const T *data) : buffer_object(size, data) {}
+	buffer_object_layout_bindable(const std::vector<T> &data) : buffer_object(data.size(), &data[0]) {}
+
+	using buffer_object<T, U>::bind;
+	using buffer_object<T, U>::unbind;
 };
 
 }

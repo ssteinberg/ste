@@ -1,0 +1,38 @@
+// StE
+// © Shlomi Steinberg, 2015
+
+#pragma once
+
+#include "buffer_object.h"
+
+namespace StE {
+namespace LLR {
+
+class shader_storage_buffer_object_layout_binding_type {};
+using shader_storage_layout_binding = layout_binding<shader_storage_buffer_object_layout_binding_type>;
+shader_storage_layout_binding inline operator "" _storage_idx(unsigned long long int i) { return shader_storage_layout_binding(i); }
+
+class ShaderStorageBufferGeneric : virtual public shader_layout_bindable_resource<shader_storage_buffer_object_layout_binding_type> {
+};
+
+template <typename Type, BufferUsage::buffer_usage U = BufferUsage::BufferUsageNone>
+class ShaderStorageBuffer : public buffer_object_layout_bindable<Type, shader_storage_buffer_object_layout_binding_type, U>, virtual public ShaderStorageBufferGeneric {
+private:
+	using Base = buffer_object_layout_bindable<Type, U>;
+
+public:
+	ShaderStorageBuffer(ShaderStorageBuffer &&m) = default;
+	ShaderStorageBuffer& operator=(ShaderStorageBuffer &&m) = default;
+
+	ShaderStorageBuffer(std::size_t size) : Base(size) {}
+	ShaderStorageBuffer(std::size_t size, const T *data) : Base(size, data) {}
+	ShaderStorageBuffer(const std::vector<T> &data) : Base(data.size(), &data[0]) {}
+
+	void bind(const layout_binding &sampler) const final override { LayoutBinder::bind(id, sampler, GL_SHADER_STORAGE_BUFFER); };
+	void unbind(const layout_binding &sampler) const final override { LayoutBinder::unbind(sampler, GL_SHADER_STORAGE_BUFFER); };
+
+	llr_resource_type resource_type() const override { return llr_resource_type::LLRShaderStorageBufferObject; }
+};
+
+}
+}

@@ -3,49 +3,33 @@
 
 #pragma once
 
-#include <SFML/Window/Mouse.hpp>
-#include <glm/glm.hpp>
+#include <glfw/glfw3.h>
+
+#include "hid.h"
 
 namespace StE {
 namespace HID {
 
-class PointerInput {
+class pointer {
 public:
 	enum class B {
 		Unknown = -1,
-		Left = 0,
-		Right,
-		Middle,
-		A,
-		B,
-		ButtonCount
+		Left = GLFW_MOUSE_BUTTON_LEFT,
+		Right = GLFW_MOUSE_BUTTON_RIGHT,
+		Middle = GLFW_MOUSE_BUTTON_MIDDLE,
+		A = GLFW_MOUSE_BUTTON_1,
+		B = GLFW_MOUSE_BUTTON_2,
+		C = GLFW_MOUSE_BUTTON_3,
+		D = GLFW_MOUSE_BUTTON_4,
+		E = GLFW_MOUSE_BUTTON_5,
+		F = GLFW_MOUSE_BUTTON_6,
+		G = GLFW_MOUSE_BUTTON_7,
+		H = GLFW_MOUSE_BUTTON_8,
 	};
+	
+	static B convert_button(int button) { return static_cast<B>(button); }
 
-	static bool is_button_pressed(const B &b) {
-		switch (b) {
-		case B::Left:
-			return sf::Mouse::isButtonPressed(sf::Mouse::Left);
-		case B::Right:
-			return sf::Mouse::isButtonPressed(sf::Mouse::Right);
-		case B::Middle:
-			return sf::Mouse::isButtonPressed(sf::Mouse::Middle);
-		case B::A:
-			return sf::Mouse::isButtonPressed(sf::Mouse::XButton1);
-		case B::B:
-			return sf::Mouse::isButtonPressed(sf::Mouse::XButton2);
-		default: 
-			return false;
-		}
-	}
-
-	static glm::i32vec2 position() {
-		auto pp = sf::Mouse::getPosition();
-		return{ pp.x, pp.y };
-	}
-
-	static void set_position(const glm::i32vec2 &pos) {
-		sf::Mouse::setPosition({ pos.x, pos.y });
-	}
+	static HID::Status button_status(GLFWwindow *window, B b) { return HID::convert_status(glfwGetMouseButton(window, static_cast<int>(b))); }
 };
 
 }

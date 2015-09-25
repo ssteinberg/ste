@@ -5,7 +5,7 @@
 
 namespace StE {
 
-template <int N>
-class int_to_type {};
+template <typename T>
+class create_type {};
 
 }

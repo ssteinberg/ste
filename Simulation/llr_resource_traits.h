@@ -20,7 +20,7 @@ template <> struct resource_is_texture<llr_resource_type::LLRTextureCubeMap> { s
 template <> struct resource_is_texture<llr_resource_type::LLRTextureCubeMapArray> { static constexpr bool value = true; };
 
 template <llr_resource_type type> struct resource_is_render_target { static constexpr bool value = resource_is_texture<type>::value; };
-template <> struct resource_is_render_target<llr_resource_type::LLRRenderBufferObject> { static constexpr bool value = true; };
+template <> struct resource_is_render_target<llr_resource_type::LLRRenderbufferObject> { static constexpr bool value = true; };
 
 }
 }

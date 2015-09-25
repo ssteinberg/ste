@@ -14,7 +14,6 @@ bool Texture1D::upload(const gli::texture1D &texture, bool gm) {
 		return false;
 	}
 
-	bind();
 	for (std::size_t l = 0; l < levels; ++l) {
 		upload_level(texture[l].data(), l, 0, LLRCubeMapFace::LLRCubeMapFaceNone, texture[l].size());
 	}

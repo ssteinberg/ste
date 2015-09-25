@@ -66,7 +66,7 @@ bool Model::load_model(const std::string &file_path) {
 		}
 	}
 
-	auto texture_loader = [&](const std::string &texture_name, std::map<int, std::unique_ptr<StE::LLR::TextureGeneric>> &texture_storage, int tex_storage_map) {
+	auto texture_loader = [&](const std::string &texture_name, texture_storage_type &texture_storage, int tex_storage_map) {
 		std::string full_path = dir + texture_name;
 
 		auto tex = SurfaceIO::load_2d(full_path);
@@ -96,6 +96,8 @@ bool Model::load_model(const std::string &file_path) {
 	return (bLoaded = true);
 }
 
+using namespace StE::LLR;
+
 void Model::render(const LLR::GLSLProgram &program) {
 	if (!bLoaded)
 		return;
@@ -113,17 +115,16 @@ void Model::render(const LLR::GLSLProgram &program) {
 		auto& nm = normal_maps[mat_index];
 		auto& mask = masks[mat_index];
 
-		if (tex != nullptr && tex->is_valid()) tex->bind(0);
-		if (nm != nullptr && nm->is_valid()) nm->bind(1);
-		if (mask != nullptr && mask->is_valid()) mask->bind(2);
+		if (tex != nullptr && tex->is_valid()) 
+			0_sampler_idx = *tex;
+		if (nm != nullptr && nm->is_valid()) 
+			1_sampler_idx = *nm;
+		if (mask != nullptr && mask->is_valid()) 
+			2_sampler_idx = *mask;
 
 		program.set_uniform("has_mask", mask != nullptr);
 		program.set_uniform("has_normal_map", nm != nullptr);
 
 		glDrawElements(GL_TRIANGLES, indices_sizes[i], GL_UNSIGNED_INT, reinterpret_cast<void*>(indices_offset[i]));
-
-		if (tex != nullptr && tex->is_valid()) tex->unbind(0);
-		if (nm != nullptr && nm->is_valid()) nm->unbind(1);
-		if (mask != nullptr && mask->is_valid()) mask->unbind(2);
 	}
 }

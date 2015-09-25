@@ -55,11 +55,11 @@ private:
 		return 0;
 	}
 
-	std::streamsize xsputn(const char* s, std::streamsize n) {
-		auto ret = std::streambuf::xsputn(s, n);
-		if (force_flush) sync();
-		return ret;
-	}
+// 	std::streamsize xsputn(const char* s, std::streamsize n) {
+// 		auto ret = std::streambuf::xsputn(s, n);
+// 		if (force_flush) sync();
+// 		return ret;
+// 	}
 
 private:
 	std::shared_ptr<sink_type> sink;

@@ -9,4 +9,8 @@
 #define GLEW_STATIC
 #include <GL/glew.h>
 
+#define GLM_SWIZZLE
+#define GLM_FORCE_AVX
+#include <glm/glm.hpp>
+
 #include "opengl.h"

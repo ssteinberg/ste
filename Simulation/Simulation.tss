@@ -2,80 +2,13 @@
 <ArrayOfArrayOfArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <ArrayOfArrayOfString>
     <ArrayOfString>
-      <string>D:\OneDrive\Documents\Dev\git\simulation\Simulation\lighting.frag</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\OneDrive\Documents\Dev\git\simulation\Simulation\blur_y.frag</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\OneDrive\Documents\Dev\git\simulation\Simulation\blur_x.frag</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\OneDrive\Documents\Dev\git\simulation\Simulation\passthrough_light.vert</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\OneDrive\Documents\Dev\git\simulation\Simulation\passthrough.vert</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\OneDrive\Documents\Dev\git\simulation\Simulation\ssao.frag</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\OneDrive\Documents\Dev\git\simulation\Simulation\gen_depth_layers.frag</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\OneDrive\Documents\Dev\git\simulation\Simulation\frag.frag</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\OneDrive\Documents\Dev\git\simulation\Simulation\transform.vert</string>
-    </ArrayOfString>
-    <ArrayOfString>
       <string>D:\OneDrive\Documents\Dev\git\simulation\Simulation\main.cpp</string>
     </ArrayOfString>
     <ArrayOfString>
-      <string>D:\OneDrive\Documents\Dev\git\simulation\Simulation\FramebufferObject.h</string>
+      <string>D:\OneDrive\Documents\Dev\git\simulation\Simulation\concurrent_unordered_map.h</string>
     </ArrayOfString>
     <ArrayOfString>
-      <string>D:\OneDrive\Documents\Dev\git\simulation\Simulation\llr_resource.h</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\OneDrive\Documents\Dev\git\simulation\Simulation\llr_resource_type.h</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\OneDrive\Documents\Dev\git\simulation\Simulation\bindable_resource.h</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\OneDrive\Documents\Dev\git\simulation\Simulation\Texture.h</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\OneDrive\Documents\Dev\git\simulation\Simulation\RenderTarget.h</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\OneDrive\Documents\Dev\git\simulation\Simulation\llr_resource_traits.h</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\OneDrive\Documents\Dev\git\simulation\Simulation\VertexBufferObject.h</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\OneDrive\Documents\Dev\git\simulation\Simulation\buffer_object.h</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\OneDrive\Documents\Dev\git\simulation\Simulation\texture_traits.h</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\OneDrive\Documents\Dev\git\simulation\Simulation\BufferMappedStorage.h</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\OneDrive\Documents\Dev\git\simulation\Simulation\buffer_usage.h</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\OneDrive\Documents\Dev\git\simulation\Simulation\VertexArrayObject.h</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\OneDrive\Documents\Dev\git\simulation\Simulation\ElementBufferObject.h</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\OneDrive\Documents\Dev\git\simulation\Simulation\Model.cpp</string>
-      <string>D:\OneDrive\Documents\Dev\git\simulation\Simulation\Model.h</string>
+      <string>D:\OneDrive\Documents\Dev\git\simulation\Simulation\atomic_double_ref_guard.h</string>
     </ArrayOfString>
   </ArrayOfArrayOfString>
 </ArrayOfArrayOfArrayOfString>

@@ -4,12 +4,15 @@
 #pragma once
 
 #include "stdafx.h"
-#include "Texture.h"
+#include "texture.h"
 
 namespace StE {
 namespace LLR {
 
 class TextureCubeMap : public texture_mipmapped<llr_resource_type::LLRTextureCubeMap> {
+private:
+	using Base = texture_mipmapped<llr_resource_type::LLRTextureCubeMap>;
+
 public:
 	TextureCubeMap(TextureCubeMap &&m) = default;
 	TextureCubeMap& operator=(TextureCubeMap &&m) = default;
@@ -26,6 +29,8 @@ public:
 	void upload_level(const void *data, int level = 0, int layer = 0, LLRCubeMapFace face = LLRCubeMapFace::LLRCubeMapFaceNone, int data_size = 0) override {
 		assert(face != LLRCubeMapFace::LLRCubeMapFaceNone && "face must be specified");
 		auto &gl_format = opengl::gl_translate_format(format);
+
+		bind();
 		if (is_compressed()) {
 			assert(data_size && "size must be specified for compressed levels");
 			glCompressedTexSubImage2D(static_cast<GLenum>(face), static_cast<GLint>(level),

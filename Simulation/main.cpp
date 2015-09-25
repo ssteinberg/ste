@@ -16,10 +16,9 @@
 
 #include "opengl.h"
 #include "Log.h"
-#include "concurrent_queue.h"
 #include "Keyboard.h"
 #include "Pointer.h"
-#include "RenderControl.h"
+#include "StEngineControl.h"
 #include "Model.h"
 #include "Camera.h"
 #include "GLSLProgram.h"
@@ -30,6 +29,17 @@
 #include "FramebufferObject.h"
 #include "RenderTarget.h"
 #include "Texture2DArray.h"
+#include "PixelBufferObject.h"
+#include "AtomicCounterBuffer.h"
+#include "concurrent_unordered_map.h"
+
+#include "tbb/concurrent_hash_map.h"
+#include <chrono>
+#include <random>
+
+using namespace tbb;
+
+using namespace StE::LLR;
 
 struct Vertex {
 	glm::vec3 p;
@@ -38,13 +48,127 @@ struct Vertex {
 
 StE::LLR::Camera camera;
 
-int CALLBACK WinMain(_In_  HINSTANCE hInstance,
-					 _In_  HINSTANCE hPrevInstance,
-					 _In_  LPSTR lpCmdLine,
-					 _In_  int nCmdShow) {
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam, int iCmdShow) {
 	StE::Log logger("Simulation");
 	logger.redirect_std_outputs();
 	ste_log_set_global_logger(&logger);
+
+	static constexpr float read_ratio = .5f;
+	std::random_device rd;
+	std::mt19937 mt(rd());
+	std::uniform_real_distribution<double> dist(1, 10);
+
+	auto time = std::chrono::high_resolution_clock::now();
+ 	{
+ 		StE::concurrent_unordered_map<int, std::string> map;
+		std::string str;
+
+		std::thread t1([&]() {
+			for (int i = 0; i < 100000; ++i) {
+				for (int j = 0; j < 200 * (1 - read_ratio); ++j) {
+					map.insert( (j + 2) % 5 + static_cast<int>(dist(mt)) * 2423,"12" );
+				}
+				for (int j = 0; j < 200 * read_ratio; ++j) {
+					map.try_get((j + 2) % 5 + static_cast<int>(dist(mt)) * 457, str);
+				}
+			}
+		});
+		std::thread t2([&]() {
+			for (int i = 0; i < 100000; ++i) {
+				for (int j = 0; j < 200 * (1 - read_ratio); ++j) {
+					map.insert( (j + 2) % 5 + static_cast<int>(dist(mt)) * 34,"r4f4" );
+				}
+				for (int j = 0; j < 200 * read_ratio; ++j) {
+					map.try_get( (j + 2) % 5 + static_cast<int>(dist(mt)) * 653, str);
+				}
+			}
+		});
+		std::thread t3([&]() {
+			for (int i = 0; i < 100000; ++i) {
+				for (int j = 0; j < 200 * (1 - read_ratio); ++j) {
+					map.insert( (j + 2) % 5 + static_cast<int>(dist(mt)) * 1268,"nhy678");
+				}
+				for (int j = 0; j < 200 * read_ratio; ++j) {
+					map.try_get((j + 2) % 5 + static_cast<int>(dist(mt)) * 764, str);
+				}
+			}
+		});
+		std::thread t4([&]() {
+			for (int i = 0; i < 100000; ++i) {
+				for (int j = 0; j < 200 * (1 - read_ratio); ++j) {
+					map.insert( (j + 2) % 5 + static_cast<int>(dist(mt)) * 457,"asfw3er");
+				}
+				for (int j = 0; j < 200 * read_ratio; ++j) {
+					map.try_get((j + 2) % 5 + static_cast<int>(dist(mt)) * 972, str);
+				}
+			}
+		});
+ 
+ 		t1.join();
+ 		t2.join();
+ 		t3.join();
+ 		t4.join();
+ 	}
+ 	std::chrono::duration<float> ste_delta = std::chrono::high_resolution_clock::now() - time;
+ 	ste_log() << "StE time: " << ste_delta.count() << "sec" << std::endl;
+
+	time = std::chrono::high_resolution_clock::now();
+	{
+		concurrent_hash_map<int, std::string> tbb_map;
+		std::thread t1([&]() {
+			for (int i = 0; i < 100000; ++i) {
+				for (int j = 0; j < 200 * (1 - read_ratio); ++j) {
+					tbb_map.insert({ (j + 2) % 5 + static_cast<int>(dist(mt)) * 2423,"12" });
+				}
+				for (int j = 0; j < 200 * read_ratio; ++j) {
+					concurrent_hash_map<int, std::string>::accessor result;
+					tbb_map.find(result, (j + 2) % 5 + static_cast<int>(dist(mt)) * 457);
+				}
+			}
+		});
+		std::thread t2([&]() {
+			for (int i = 0; i < 100000; ++i) {
+				for (int j = 0; j < 200 * (1 - read_ratio); ++j) {
+					tbb_map.insert({ (j + 2) % 5 + static_cast<int>(dist(mt)) * 34,"r4f4" });
+				}
+				for (int j = 0; j < 200 * read_ratio; ++j) {
+					concurrent_hash_map<int, std::string>::accessor result;
+					tbb_map.find(result, (j + 2) % 5 + static_cast<int>(dist(mt)) * 653);
+				}
+			}
+		});
+		std::thread t3([&]() {
+			for (int i = 0; i < 100000; ++i) {
+				for (int j = 0; j < 200 * (1 - read_ratio); ++j) {
+					tbb_map.insert({ (j + 2) % 5 + static_cast<int>(dist(mt)) * 1268,"nhy678" });
+				}
+				for (int j = 0; j < 200 * read_ratio; ++j) {
+					concurrent_hash_map<int, std::string>::accessor result;
+					tbb_map.find(result, (j + 2) % 5 + static_cast<int>(dist(mt)) * 764);
+				}
+			}
+		});
+		std::thread t4([&]() {
+			for (int i = 0; i < 100000; ++i) {
+				for (int j = 0; j < 200 * (1 - read_ratio); ++j) {
+					tbb_map.insert({ (j + 2) % 5 + static_cast<int>(dist(mt)) * 457,"asfw3er" });
+				}
+				for (int j = 0; j < 200 * read_ratio; ++j) {
+					concurrent_hash_map<int, std::string>::accessor result;
+					tbb_map.find(result, (j + 2) % 5 + static_cast<int>(dist(mt)) * 972);
+				}
+			}
+		});
+
+		t1.join();
+		t2.join();
+		t3.join();
+		t4.join();
+	}
+	std::chrono::duration<float> tbb_delta = std::chrono::high_resolution_clock::now() - time;
+	ste_log() << "TBB time: " << tbb_delta.count() << "sec" << std::endl;
+
+	return true;
 
 	ste_log() << "Simulation running";
 
@@ -54,13 +178,11 @@ int CALLBACK WinMain(_In_  HINSTANCE hInstance,
 	constexpr float clip_far = 1000.f;
 	constexpr float clip_near = 1.f;
 
-	StE::LLR::RenderControl rc;
-	rc.init_render_context("Shlomi Steinberg - Simulation", w, h);
+	StE::StEngineControl rc;
+	rc.init_render_context("Shlomi Steinberg - Simulation", { w, h });
 	rc.set_clipping_planes(clip_near, clip_far);
 	camera.set_position({ -91.0412979, 105.631607, -60.2330551 });
 	camera.lookat({ -91.9486542, 105.291336, -59.98624 });
-
-	StE::LLR::opengl::dump_gl_info(false);
 
 	// Prepare
 	StE::LLR::GLSLProgram transform;
@@ -93,55 +215,62 @@ int CALLBACK WinMain(_In_  HINSTANCE hInstance,
 	deffered.add_shader(StE::Resource::ShaderLoader::compile_from_path("lighting.frag"));
 	deffered.link();
 
-	constexpr int noise_size_w = 25;
-	constexpr int noise_size_h = 25;
+	constexpr int noise_size_w = 28;
+	constexpr int noise_size_h = 28;
 	gli::texture2D tex(1, gli::format::FORMAT_RG32_SFLOAT, { noise_size_w, noise_size_h });
-	std::random_device rd;
-	std::uniform_real_distribution<float> ud(-1, 1);
-	glm::vec2 *vectors = reinterpret_cast<glm::vec2*>(tex.data());
-	for (int i = 0; i < noise_size_w * noise_size_h; ++i, ++vectors) {
-		auto r1 = ud(rd);
-		auto r2 = ud(rd);
-		if (!r1 && !r2) r1 = 1;
-		glm::vec2 v(static_cast<float>(r1), static_cast<float>(r2));
-		v = glm::normalize(v);
-		*vectors = v;
+	{
+		std::random_device rd;
+		std::uniform_real_distribution<float> ud(-1, 1);
+		glm::vec2 *vectors = reinterpret_cast<glm::vec2*>(tex.data());
+		for (int i = 0; i < noise_size_w * noise_size_h; ++i, ++vectors) {
+			auto r1 = ud(rd);
+			auto r2 = ud(rd);
+			if (!r1 && !r2) r1 = 1;
+			glm::vec2 v(static_cast<float>(r1), static_cast<float>(r2));
+			v = glm::normalize(v);
+			*vectors = v;
+		}
 	}
 	StE::LLR::Texture2D noise(tex);
-	noise.set_min_filter(GL_NEAREST);
-	noise.set_mag_filter(GL_NEAREST);
+	noise.set_min_filter(StE::LLR::TextureFiltering::Nearest);
+	noise.set_mag_filter(StE::LLR::TextureFiltering::Nearest);
 
-	StE::LLR::Texture2D depth_output(gli::format::FORMAT_D24_UNORM, { w, h }, 1);
-	StE::LLR::Texture2D normal_output(gli::format::FORMAT_RGB32_SFLOAT, { w, h }, 1);
-	StE::LLR::Texture2D t = std::move(normal_output);
-	normal_output.set_min_filter(GL_NEAREST);
-	normal_output.set_mag_filter(GL_NEAREST);
-	StE::LLR::Texture2D position_output(gli::format::FORMAT_RGB32_SFLOAT, { w, h }, 1);
-	StE::LLR::Texture2D color_output(gli::format::FORMAT_RGB8_UNORM, { w, h }, 1);
-	color_output.set_min_filter(GL_NEAREST);
-	color_output.set_mag_filter(GL_NEAREST);
+	StE::LLR::RenderTarget depth_output(gli::format::FORMAT_D24_UNORM, StE::LLR::Texture2D::size_type(w, h));
+	StE::LLR::Texture2D normal_output(gli::format::FORMAT_RGB32_SFLOAT, StE::LLR::Texture2D::size_type(w, h), 1);
+	normal_output.set_min_filter(StE::LLR::TextureFiltering::Nearest);
+	normal_output.set_mag_filter(StE::LLR::TextureFiltering::Nearest);
+	StE::LLR::Texture2D position_output(gli::format::FORMAT_RGB32_SFLOAT, StE::LLR::Texture2D::size_type(w, h), 1);
+	StE::LLR::Texture2D color_output(gli::format::FORMAT_RGB8_UNORM, StE::LLR::Texture2D::size_type(w, h), 1);
+	color_output.set_min_filter(StE::LLR::TextureFiltering::Nearest);
+	color_output.set_mag_filter(StE::LLR::TextureFiltering::Nearest);
 	StE::LLR::FramebufferObject fbo;
-	fbo.set_attachments({ depth_output }, { color_output, position_output, normal_output });
+	fbo.depth_binding_point() = depth_output;
+	fbo[0] = position_output[0];
+	fbo[1] = color_output[0];
+	fbo[2] = normal_output[0];
+	1_color_idx = fbo[0];
+	0_color_idx = fbo[1];
+	2_color_idx = fbo[2];
 
-	StE::LLR::Texture2D occlusion_final1_output(gli::format::FORMAT_R8_UNORM, { w, h }, 1);
-	occlusion_final1_output.set_min_filter(GL_NEAREST);
-	occlusion_final1_output.set_mag_filter(GL_NEAREST);
-	occlusion_final1_output.set_wrap_s(GL_CLAMP_TO_EDGE);
-	occlusion_final1_output.set_wrap_t(GL_CLAMP_TO_EDGE);
+	StE::LLR::Texture2D occlusion_final1_output(gli::format::FORMAT_R8_UNORM, StE::LLR::Texture2D::size_type(w, h), 1);
+	occlusion_final1_output.set_min_filter(StE::LLR::TextureFiltering::Nearest);
+	occlusion_final1_output.set_mag_filter(StE::LLR::TextureFiltering::Nearest);
+	occlusion_final1_output.set_wrap_s(StE::LLR::TextureWrapMode::ClampToEdge);
+	occlusion_final1_output.set_wrap_t(StE::LLR::TextureWrapMode::ClampToEdge);
 	StE::LLR::FramebufferObject fbo_final1;
-	fbo_final1.set_attachments({ occlusion_final1_output });
+	fbo_final1[0] = occlusion_final1_output[0];
 
-	StE::LLR::Texture2D occlusion_final2_output(gli::format::FORMAT_R8_UNORM, { w, h }, 1);
-	occlusion_final2_output.set_min_filter(GL_NEAREST);
-	occlusion_final2_output.set_mag_filter(GL_NEAREST);
-	occlusion_final2_output.set_wrap_s(GL_CLAMP_TO_EDGE);
-	occlusion_final2_output.set_wrap_t(GL_CLAMP_TO_EDGE);
+	StE::LLR::Texture2D occlusion_final2_output(gli::format::FORMAT_R8_UNORM, StE::LLR::Texture2D::size_type(w, h), 1);
+	occlusion_final2_output.set_min_filter(StE::LLR::TextureFiltering::Nearest);
+	occlusion_final2_output.set_mag_filter(StE::LLR::TextureFiltering::Nearest);
+	occlusion_final2_output.set_wrap_s(StE::LLR::TextureWrapMode::ClampToEdge);
+	occlusion_final2_output.set_wrap_t(StE::LLR::TextureWrapMode::ClampToEdge);
 	StE::LLR::FramebufferObject fbo_final2;
-	fbo_final2.set_attachments({ occlusion_final2_output });
-	std::size_t ts = occlusion_final2_output.get_storage_size(0);
+	fbo_final2[0] = occlusion_final2_output[0];
 
 	using vertex_descriptor = StE::LLR::VBODescriptorWithTypes<glm::vec3, glm::vec2>::descriptor;
-	std::shared_ptr<StE::LLR::VertexBufferObject<Vertex, vertex_descriptor>> vbo = std::make_shared<StE::LLR::VertexBufferObject<Vertex, vertex_descriptor>>(std::vector<Vertex>(
+	using vbo_type = StE::LLR::VertexBufferObject<Vertex, vertex_descriptor>;
+	std::shared_ptr<vbo_type> vbo = std::make_shared<vbo_type>(std::vector<Vertex>(
 		{ { { -1.f, -1.f, .0f }, { .0f, .0f } },
 		{ { 1.f, -1.f, .0f }, { 1.f, .0f } },
 		{ { -1.f, 1.f, .0f }, { .0f, 1.f } },
@@ -151,96 +280,106 @@ int CALLBACK WinMain(_In_  HINSTANCE hInstance,
 	vao[0] = (*vbo)[1];
 	vao[1] = (*vbo)[0];
 
-	StE::LLR::Texture2DArray depth_layers(gli::format::FORMAT_R32_UINT, { w, h, depth_layers_count }, 1);
-	depth_layers.set_mag_filter(GL_NEAREST);
-	depth_layers.set_min_filter(GL_NEAREST);
-	depth_layers.set_wrap_s(GL_CLAMP_TO_EDGE);
-	depth_layers.set_wrap_t(GL_CLAMP_TO_EDGE);
+	StE::LLR::Texture2DArray depth_layers(gli::format::FORMAT_R32_UINT, StE::LLR::Texture2DArray::size_type(w, h, depth_layers_count), 1);
+	depth_layers.set_mag_filter(StE::LLR::TextureFiltering::Nearest);
+	depth_layers.set_min_filter(StE::LLR::TextureFiltering::Nearest);
+	depth_layers.set_wrap_s(StE::LLR::TextureWrapMode::ClampToEdge);
+	depth_layers.set_wrap_t(StE::LLR::TextureWrapMode::ClampToEdge);
 	StE::LLR::FramebufferObject fbo_depth_layers;
-	fbo_depth_layers.bind();
 	for (int i = 0; i < depth_layers_count; ++i)
-		glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, depth_layers.get_resource_id(), 0, i);
+		fbo_depth_layers[i] = depth_layers[0][i].with_format(gli::format::FORMAT_R32_SINT);
 
-	StE::LLR::Texture2DArray f_depth_layers(gli::format::FORMAT_R32_SFLOAT, { w, h, depth_layers_count }, max_steps);
-	f_depth_layers.set_mag_filter(GL_LINEAR);
-	f_depth_layers.set_min_filter(GL_LINEAR_MIPMAP_NEAREST);
-	f_depth_layers.set_wrap_s(GL_CLAMP_TO_EDGE);
-	f_depth_layers.set_wrap_t(GL_CLAMP_TO_EDGE);
+	StE::LLR::Texture2DArray f_depth_layers(gli::format::FORMAT_R32_SFLOAT, StE::LLR::Texture2DArray::size_type(w, h, depth_layers_count), max_steps);
+	f_depth_layers.set_min_filter(StE::LLR::TextureFiltering::Linear);
+	f_depth_layers.set_mipmap_filter(StE::LLR::TextureFiltering::Nearest);
+	f_depth_layers.set_wrap_s(StE::LLR::TextureWrapMode::ClampToEdge);
+	f_depth_layers.set_wrap_t(StE::LLR::TextureWrapMode::ClampToEdge);
 	StE::LLR::FramebufferObject fbo_f_depth_layers;
-	fbo_f_depth_layers.bind();
 	for (int i = 0; i < depth_layers_count; ++i)
-		glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, f_depth_layers.get_resource_id(), 0, i);
+		fbo_f_depth_layers[i] = f_depth_layers[0][i];
 
-	StE::Resource::Model hall_model, obj1_model;
+ 	for (int i = 0; i < depth_layers_count; ++i)
+		depth_layers[0][i].with_format(gli::format::FORMAT_R32_SINT).bind(image_layout_binding(i));
+
+	ste_log_query_and_log_gl_errors();
+
+	StE::Resource::Model hall_model;
 	hall_model.load_model(R"(data\models\sponza.obj)");
-
-	StE::LLR::opengl::query_gl_error(__FILE__, __LINE__);
 
 	int steps = max_steps;
 	bool perform_ssao = true;
+	bool running = true;
+
+	// Bind input
+	auto keyboard_listner = std::make_shared<StE::connection<StE::HID::keyboard::K, int, StE::HID::Status, StE::HID::ModifierBits>>(
+		[&](StE::HID::keyboard::K key, int scanline, StE::HID::Status status, StE::HID::ModifierBits mods) {
+		using namespace StE::HID;
+		auto time_delta = rc.time_per_frame().count();
+
+		if (status != Status::KeyDown)
+			return;
+
+		if (key == keyboard::K::KeyKP_ADD)
+			steps = max_steps;
+		if (key == keyboard::K::KeyKP_SUBTRACT)
+			steps = 2;
+		if (key == keyboard::K::Key0)
+			perform_ssao = false;
+		if (key == keyboard::K::Key9)
+			perform_ssao = true;
+		if (key == keyboard::K::KeyESCAPE)
+			running = false;
+		if (key == keyboard::K::KeyPRINT_SCREEN) {
+			auto size = rc.render_context().framebuffer_size();
+			gli::texture2D tex(gli::FORMAT_RGB8_UNORM, size);
+
+			StE::LLR::FramebufferObject fbo;
+			StE::LLR::Texture2D fbo_tex(gli::format::FORMAT_RGB8_UNORM, size, 1);
+			fbo[0] = fbo_tex[0];
+
+			rc.render_context().default_framebuffer->blit_to(fbo,size,size);
+			fbo[0].read_pixels(tex.data(), 3 * size.x * size.y);
+
+			StE::Resource::SurfaceIO::write_surface_2d(tex, R"(D:\a.png)");
+		};
+	});
+	rc.hid_signal_keyboard().connect(keyboard_listner);
+
+	rc.set_pointer_hidden(true);
 
 	// Run main loop
-	auto time = std::chrono::high_resolution_clock::now();
-	float time_total = .0f;
-	int frames = 0;
 	rc.run_loop([&]() {
-		auto now = std::chrono::high_resolution_clock::now();
-		std::chrono::duration<float> time_delta = now - time;
-		time = now;
+		if (rc.window_active()) {
+			auto time_delta = rc.time_per_frame().count();
 
-		time_total += time_delta.count();
-		if (frames % 40 == 0) {
-			std::cout << "Time per frame: " << time_total / 40.0f << "sec" << std::endl;
-			time_total = 0;
-		}
-		++frames;
-
-		if (rc.window_active())	{	
-			// Handle keyboard input
+			using namespace StE::HID;
 			constexpr float movement_factor = 35.f;
-			using StE::HID::KeyboardInput;
-			if (KeyboardInput::is_key_pressed(KeyboardInput::K::W))
-				camera.step_forward(time_delta.count()*movement_factor);
-			if (KeyboardInput::is_key_pressed(KeyboardInput::K::S))
-				camera.step_backward(time_delta.count()*movement_factor);
-			if (KeyboardInput::is_key_pressed(KeyboardInput::K::A))
-				camera.step_left(time_delta.count()*movement_factor);
-			if (KeyboardInput::is_key_pressed(KeyboardInput::K::D))
-				camera.step_right(time_delta.count()*movement_factor);
-			if (KeyboardInput::is_key_pressed(KeyboardInput::K::Add))
-				steps = max_steps;
-			if (KeyboardInput::is_key_pressed(KeyboardInput::K::Subtract))
-				steps = 2;
-			if (KeyboardInput::is_key_pressed(KeyboardInput::K::Num0))
-				perform_ssao = false;
-			if (KeyboardInput::is_key_pressed(KeyboardInput::K::Num9))
-				perform_ssao = true;
-			if (KeyboardInput::is_key_pressed(KeyboardInput::K::Escape))
-				return false;
+			if (rc.get_key_status(keyboard::K::KeyW) == Status::KeyDown)
+				camera.step_forward(time_delta*movement_factor);
+			if (rc.get_key_status(keyboard::K::KeyS) == Status::KeyDown)
+				camera.step_backward(time_delta*movement_factor);
+			if (rc.get_key_status(keyboard::K::KeyA) == Status::KeyDown)
+				camera.step_left(time_delta*movement_factor);
+			if (rc.get_key_status(keyboard::K::KeyD) == Status::KeyDown)
+				camera.step_right(time_delta*movement_factor);
 
-// 			// Handle mouse input
 			constexpr float rotation_factor = .05f;
-			using StE::HID::PointerInput;
-			auto pp = PointerInput::position();
-			auto center = static_cast<glm::vec2>(rc.viewport_size())*.5f;
-			PointerInput::set_position(static_cast<glm::ivec2>(center));
-			auto diff_v = (center - static_cast<decltype(center)>(pp)) * time_delta.count() * rotation_factor;
-			camera.pitch_and_yaw(diff_v.y, diff_v.x);
+			auto pp = rc.get_pointer_position();
+			auto center = static_cast<glm::vec2>(rc.get_viewport_size())*.5f;
+			rc.set_pointer_position(static_cast<glm::ivec2>(center));
+			auto diff_v = (center - static_cast<decltype(center)>(pp)) * time_delta * rotation_factor;
+			camera.pitch_and_yaw(-diff_v.y, diff_v.x);
 		}
 
 		auto proj_mat = rc.projection_matrix();
 
 		fbo_depth_layers.bind();
-		fbo_depth_layers.set_rendering_targets({ { 0, 0 }, { 1, 1 }, { 2, 2 }, { 3, 3 } });
 		rc.render_context().clear_framebuffer(true, false);
 
 		rc.render_context().enable_depth_test();
 		fbo.bind();
-		fbo.set_rendering_targets({ { 0, 0 }, { 1, 1 }, { 2, 2 } });
 		rc.render_context().clear_framebuffer(false, true);
 
-		for (int i = 0; i < depth_layers_count; ++i)
-			glBindImageTexture(i, depth_layers.get_resource_id(), 0, false, i, GL_READ_WRITE, GL_R32I);
 		transform.bind();
 		auto mv = camera.view_matrix() * glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(-100, -35, 0)), glm::vec3(.25, .25, .25));
 		transform.set_uniform("view_model", mv);
@@ -256,48 +395,48 @@ int CALLBACK WinMain(_In_  HINSTANCE hInstance,
 
 		if (perform_ssao) {
 			fbo_f_depth_layers.bind();
-			fbo_f_depth_layers.set_rendering_targets({ { 0, 0 }, { 1, 1 }, { 2, 2 }, { 3, 3 } });
 			gen_depth_layers.bind();
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 			f_depth_layers.generate_mipmaps();
 
-			f_depth_layers.bind(3);
 			fbo_final1.bind();
 			ssao.bind();
 			ssao.set_uniform("steps", steps);
 			ssao.set_uniform("proj_inv", glm::inverse(proj_mat));
-			normal_output.bind(0);
-			position_output.bind(1);
-			noise.bind(2);
+			0_sampler_idx = normal_output;
+			1_sampler_idx = position_output;
+			2_sampler_idx = noise;
+			3_sampler_idx = f_depth_layers;
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 			fbo_final2.bind();
 			blur_x.bind();
-			occlusion_final1_output.bind(0);
-			position_output.bind(1);
+			0_sampler_idx = occlusion_final1_output;
+			1_sampler_idx = position_output;
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 			fbo_final1.bind();
 			blur_y.bind();
-			occlusion_final2_output.bind(0);
-			position_output.bind(1);
+			0_sampler_idx = occlusion_final2_output;
+			1_sampler_idx = position_output;
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 		}
 
+		rc.render_context().default_framebuffer->bind();
 		fbo_final1.unbind();
 		deffered.bind();
 		deffered.set_uniform("ssao", perform_ssao);
 		deffered.set_uniform("view", camera.view_matrix());
-		normal_output.bind(0);
-		position_output.bind(1);
-		occlusion_final1_output.bind(2);
-		color_output.bind(3);
+		0_sampler_idx = normal_output;
+		1_sampler_idx = position_output;
+		2_sampler_idx = occlusion_final1_output;
+		3_sampler_idx = color_output;
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-		StE::LLR::opengl::query_gl_error(__FILE__, __LINE__);
+		ste_log_query_and_log_gl_errors();
 
-		return true;
+		return running;
 	});
 	 
 	return 0;

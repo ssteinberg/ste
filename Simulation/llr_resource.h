@@ -10,9 +10,9 @@ namespace LLR {
 
 class llr_resource_stub_allocator {
 public:
-	static bool is_valid(int id) { return !!id; }
+	static bool is_valid(unsigned int id) { return !!id; }
 	static int allocate() { return 0; }
-	static void deallocate(int &id) { id = 0; }
+	static void deallocate(unsigned int &id) { id = 0; }
 };
 
 class GenericResource {
@@ -31,13 +31,14 @@ class llr_resource : virtual public GenericResource {
 protected:
 	using Allocator = A;
 
+	llr_resource() { this->id = Allocator::allocate(); }
+
 public:
 	llr_resource(llr_resource &&m) = default;
 	llr_resource(const llr_resource &c) = delete;
 	llr_resource& operator=(llr_resource &&m) = default;
 	llr_resource& operator=(const llr_resource &c) = delete;
 
-	llr_resource() { id = Allocator::allocate(); }
 	~llr_resource() { if (Allocator::is_valid(id)) Allocator::deallocate(id); }
 
 	bool is_valid() const { return Allocator::is_valid(id); }

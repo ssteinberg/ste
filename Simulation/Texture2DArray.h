@@ -4,19 +4,23 @@
 #pragma once
 
 #include "stdafx.h"
-#include "Texture.h"
+#include "texture.h"
+#include "image.h"
 
 namespace StE {
 namespace LLR {
 
 class Texture2DArray : public texture_mipmapped<llr_resource_type::LLRTexture2DArray> {
+private:
+	using Base = texture_mipmapped<llr_resource_type::LLRTexture2DArray>;
+
 public:
 	Texture2DArray(Texture2DArray &&m) = default;
 	Texture2DArray& operator=(Texture2DArray &&m) = default;
 
 	Texture2DArray(gli::format format, const size_type &size, int levels = 1) : texture_mipmapped(format, size, levels) {}
 	Texture2DArray(const gli::texture2DArray &t, bool generate_mipmaps = false) 
-		: texture_mipmapped(t.format(), size_type({ t.dimensions().x, t.dimensions().y, t.layers() }), generate_mipmaps ? calculate_mipmap_max_level({ t.dimensions().x, t.dimensions().y }) + 1 : t.levels()) {
+		: texture_mipmapped(t.format(), size_type({ t.dimensions().xy, t.layers() }), generate_mipmaps ? calculate_mipmap_max_level(t.dimensions().xy) + 1 : t.levels()) {
 		upload(t, generate_mipmaps);
 	}
 
@@ -26,6 +30,8 @@ public:
 
 	void upload_level(const void *data, int level = 0, int layer = 0, LLRCubeMapFace face = LLRCubeMapFace::LLRCubeMapFaceNone, int data_size = 0) override {
 		auto &gl_format = opengl::gl_translate_format(format);
+
+		bind();
 		if (is_compressed()) {
 			assert(data_size && "size must be specified for compressed levels");
 			glCompressedTexSubImage3D(gl_type(), static_cast<GLint>(level),
@@ -41,6 +47,10 @@ public:
 							gl_format.External, gl_format.Type,
 							data);
 		}
+	}
+
+	const image_container<T> operator[](int level) const {
+		return image_container<T>(id, get_image_container_size(), format, ImageAccessMode::ReadWrite, level, get_image_container_dimensions());
 	}
 };
 

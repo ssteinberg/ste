@@ -5,18 +5,23 @@
 
 #include <iostream>
 #include <fstream>
+#include <string>
+
 #include <chrono>
+#include <ctime>
+
 #include <memory>
 #include <thread>
 #include <condition_variable>
 #include <mutex>
-#include <time.h>
 
 #include "concurrent_queue.h"
 #include "log_ostream.h"
 #include "log_stream_formatter.h"
 #include "log_sink.h"
 #include "log_class.h"
+
+#include "opengl.h"
 
 namespace StE {
 
@@ -55,11 +60,7 @@ private:
 		char buffer[256];
 		time(&rawtime);
 		timeinfo = localtime(&rawtime);
-		strftime(buffer, 256, "%a %d %b %y %H.%M.%S", timeinfo);
-
-// 		auto now = std::chrono::system_clock::now();
-// 		auto today = date::floor<days>(now);
-//		return date::make_time(now - today) + "UTC";
+		strftime(buffer, 256, "%a %d%b%y %H.%M.%S", timeinfo);
 
 		return title + " " + buffer;
 	}
@@ -192,3 +193,6 @@ void inline ste_log_set_global_logger(StE::Log *ptr) {
 #define ste_log_every_warn(n)	___STE_LOG_EVERY((StE::ste_global_logger!=nullptr ? StE::ste_global_logger->log_warn(__FILE__,__func__,__LINE__).logger() : __ste_log_null),n)
 // Write to error log, limit log to one per n milliseconds
 #define ste_log_every_error(n)	___STE_LOG_EVERY((StE::ste_global_logger!=nullptr ? StE::ste_global_logger->log_err(__FILE__,__func__,__LINE__).logger() : __ste_log_null),n)
+
+// Query and log gl errors
+#define ste_log_query_and_log_gl_errors()	{std::string gl_err_desc; while (StE::LLR::opengl::query_gl_error(gl_err_desc)) ste_log_error() << "OpenGL Error: " << gl_err_desc << std::endl;}

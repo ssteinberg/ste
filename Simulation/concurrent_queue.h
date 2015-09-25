@@ -16,7 +16,7 @@ private:
 	struct node_counter;
 
 	struct counted_node_ptr {
-		int external_count;
+		int ref_count;
 		node *ptr;
 	};
 
@@ -39,7 +39,7 @@ private:
 
 			counted_node_ptr new_counted_node_ptr;
 			new_counted_node_ptr.ptr = nullptr;
-			new_counted_node_ptr.external_count = 0;
+			new_counted_node_ptr.ref_count = 0;
 			next.store(new_counted_node_ptr);
 		}
 
@@ -63,15 +63,15 @@ protected:
 		counted_node_ptr new_counter;
 		do {
 			new_counter = old_counter;
-			++new_counter.external_count;
+			++new_counter.ref_count;
 		} while (!counter.compare_exchange_strong(old_counter, new_counter, std::memory_order_acquire, std::memory_order_relaxed));
 
-		old_counter.external_count = new_counter.external_count;
+		old_counter.ref_count = new_counter.ref_count;
 	}
 
 	static void free_external_counter(counted_node_ptr &old_node_ptr) {
 		node * const ptr = old_node_ptr.ptr;
-		int count_increase = old_node_ptr.external_count - 2;
+		int count_increase = old_node_ptr.ref_count - 2;
 
 		node_counter old_counter = ptr->count.load(std::memory_order_relaxed);
 		node_counter new_counter;
@@ -97,7 +97,7 @@ protected:
 public:
 	concurrent_queue() {
 		counted_node_ptr new_counted_node;
-		new_counted_node.external_count = 1;
+		new_counted_node.ref_count = 1;
 		new_counted_node.ptr = new node;
 
 		head.store(new_counted_node);
@@ -129,11 +129,11 @@ public:
 		}
 	}
 
-	void push(T new_value) {
+	void push(T &&new_value) {
 		std::unique_ptr<T> new_data(new T(std::move(new_value)));
 		counted_node_ptr new_next;
 		new_next.ptr = new node;
-		new_next.external_count = 1;
+		new_next.ref_count = 1;
 		counted_node_ptr old_tail = tail.load();
 		for (;;) {
 			increase_external_count(tail, old_tail);
