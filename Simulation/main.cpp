@@ -53,120 +53,135 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 	logger.redirect_std_outputs();
 	ste_log_set_global_logger(&logger);
 
-	static constexpr float read_ratio = .5f;
-	std::random_device rd;
-	std::mt19937 mt(rd());
-	std::uniform_real_distribution<double> dist(1, 10);
+	static constexpr float read_ratio = .85f;
+
+	StE::concurrent_unordered_map<int, std::string> map;
+	concurrent_hash_map<int, std::string> tbb_map;
+	for (int j = 0; j < 100; ++j) {
+		tbb_map.insert({ j, std::string("temp") + std::to_string(j) });
+		map.emplace(j, std::string("temp") + std::to_string(j));
+	}
 
 	auto time = std::chrono::high_resolution_clock::now();
  	{
- 		StE::concurrent_unordered_map<int, std::string> map;
 		std::string str;
 
 		std::thread t1([&]() {
-			for (int i = 0; i < 100000; ++i) {
-				for (int j = 0; j < 200 * (1 - read_ratio); ++j) {
-					map.insert( (j + 2) % 5 + static_cast<int>(dist(mt)) * 2423,"12" );
+			for (int i = 0; i < 10000; ++i) {
+				for (int j = 0; j < 1500 * (1 - read_ratio); ++j) {
+					map.emplace(j%50, "12");
 				}
-				for (int j = 0; j < 200 * read_ratio; ++j) {
-					map.try_get((j + 2) % 5 + static_cast<int>(dist(mt)) * 457, str);
+				for (int j = 0; j < 1500 * read_ratio; ++j) {
+					map.try_get(j % 50, str);
 				}
 			}
 		});
 		std::thread t2([&]() {
-			for (int i = 0; i < 100000; ++i) {
-				for (int j = 0; j < 200 * (1 - read_ratio); ++j) {
-					map.insert( (j + 2) % 5 + static_cast<int>(dist(mt)) * 34,"r4f4" );
+			for (int i = 0; i < 10000; ++i) {
+				for (int j = 0; j < 1500 * (1 - read_ratio); ++j) {
+					map.emplace(j % 50, "15");
 				}
-				for (int j = 0; j < 200 * read_ratio; ++j) {
-					map.try_get( (j + 2) % 5 + static_cast<int>(dist(mt)) * 653, str);
+				for (int j = 0; j < 1500 * read_ratio; ++j) {
+					map.try_get(j % 50, str);
 				}
 			}
 		});
 		std::thread t3([&]() {
-			for (int i = 0; i < 100000; ++i) {
-				for (int j = 0; j < 200 * (1 - read_ratio); ++j) {
-					map.insert( (j + 2) % 5 + static_cast<int>(dist(mt)) * 1268,"nhy678");
+			for (int i = 0; i < 10000; ++i) {
+				for (int j = 0; j < 1500 * (1 - read_ratio); ++j) {
+					map.emplace(j % 50, "12");
 				}
-				for (int j = 0; j < 200 * read_ratio; ++j) {
-					map.try_get((j + 2) % 5 + static_cast<int>(dist(mt)) * 764, str);
+				for (int j = 0; j < 1500 * read_ratio; ++j) {
+					map.try_get(j % 50, str);
 				}
 			}
 		});
 		std::thread t4([&]() {
-			for (int i = 0; i < 100000; ++i) {
-				for (int j = 0; j < 200 * (1 - read_ratio); ++j) {
-					map.insert( (j + 2) % 5 + static_cast<int>(dist(mt)) * 457,"asfw3er");
+			for (int i = 0; i < 10000; ++i) {
+				for (int j = 0; j < 1500 * (1 - read_ratio); ++j) {
+					map.remove(j % 50);
 				}
-				for (int j = 0; j < 200 * read_ratio; ++j) {
-					map.try_get((j + 2) % 5 + static_cast<int>(dist(mt)) * 972, str);
+				for (int j = 0; j < 1500 * read_ratio; ++j) {
+					map.try_get(j % 50, str);
 				}
 			}
 		});
  
- 		t1.join();
- 		t2.join();
- 		t3.join();
- 		t4.join();
+		t1.join();
+		std::chrono::duration<float> ste_delta = std::chrono::high_resolution_clock::now() - time;
+		ste_log() << "StE time: " << ste_delta.count() << "sec" << std::endl;
+		t2.join();
+		ste_delta = std::chrono::high_resolution_clock::now() - time;
+		ste_log() << "StE time: " << ste_delta.count() << "sec" << std::endl;
+		t3.join();
+		ste_delta = std::chrono::high_resolution_clock::now() - time;
+		ste_log() << "StE time: " << ste_delta.count() << "sec" << std::endl;
+		t4.join();
+		ste_delta = std::chrono::high_resolution_clock::now() - time;
+		ste_log() << "StE time: " << ste_delta.count() << "sec" << std::endl;
  	}
- 	std::chrono::duration<float> ste_delta = std::chrono::high_resolution_clock::now() - time;
- 	ste_log() << "StE time: " << ste_delta.count() << "sec" << std::endl;
 
 	time = std::chrono::high_resolution_clock::now();
 	{
-		concurrent_hash_map<int, std::string> tbb_map;
 		std::thread t1([&]() {
-			for (int i = 0; i < 100000; ++i) {
-				for (int j = 0; j < 200 * (1 - read_ratio); ++j) {
-					tbb_map.insert({ (j + 2) % 5 + static_cast<int>(dist(mt)) * 2423,"12" });
+			for (int i = 0; i < 10000; ++i) {
+				for (int j = 0; j < 1500 * (1 - read_ratio); ++j) {
+					tbb_map.insert({ j % 50, "12" });
 				}
-				for (int j = 0; j < 200 * read_ratio; ++j) {
+				for (int j = 0; j < 1500 * read_ratio; ++j) {
 					concurrent_hash_map<int, std::string>::accessor result;
-					tbb_map.find(result, (j + 2) % 5 + static_cast<int>(dist(mt)) * 457);
+					tbb_map.find(result, j % 50);
 				}
 			}
 		});
 		std::thread t2([&]() {
-			for (int i = 0; i < 100000; ++i) {
-				for (int j = 0; j < 200 * (1 - read_ratio); ++j) {
-					tbb_map.insert({ (j + 2) % 5 + static_cast<int>(dist(mt)) * 34,"r4f4" });
+			for (int i = 0; i < 10000; ++i) {
+				for (int j = 0; j < 1500 * (1 - read_ratio); ++j) {
+					tbb_map.insert({ j % 50, "15" });
 				}
-				for (int j = 0; j < 200 * read_ratio; ++j) {
+				for (int j = 0; j < 1500 * read_ratio; ++j) {
 					concurrent_hash_map<int, std::string>::accessor result;
-					tbb_map.find(result, (j + 2) % 5 + static_cast<int>(dist(mt)) * 653);
+					tbb_map.find(result, j % 50);
 				}
 			}
 		});
 		std::thread t3([&]() {
-			for (int i = 0; i < 100000; ++i) {
-				for (int j = 0; j < 200 * (1 - read_ratio); ++j) {
-					tbb_map.insert({ (j + 2) % 5 + static_cast<int>(dist(mt)) * 1268,"nhy678" });
+			for (int i = 0; i < 10000; ++i) {
+				for (int j = 0; j < 1500 * (1 - read_ratio); ++j) {
+					tbb_map.insert({ j % 50, "12" });
 				}
-				for (int j = 0; j < 200 * read_ratio; ++j) {
+				for (int j = 0; j < 1500 * read_ratio; ++j) {
 					concurrent_hash_map<int, std::string>::accessor result;
-					tbb_map.find(result, (j + 2) % 5 + static_cast<int>(dist(mt)) * 764);
+					tbb_map.find(result, j % 50);
 				}
 			}
 		});
 		std::thread t4([&]() {
-			for (int i = 0; i < 100000; ++i) {
-				for (int j = 0; j < 200 * (1 - read_ratio); ++j) {
-					tbb_map.insert({ (j + 2) % 5 + static_cast<int>(dist(mt)) * 457,"asfw3er" });
+			for (int i = 0; i < 10000; ++i) {
+				for (int j = 0; j < 1500 * (1 - read_ratio); ++j) {
+					tbb_map.erase( j % 50);
 				}
-				for (int j = 0; j < 200 * read_ratio; ++j) {
+				for (int j = 0; j < 1500 * read_ratio; ++j) {
 					concurrent_hash_map<int, std::string>::accessor result;
-					tbb_map.find(result, (j + 2) % 5 + static_cast<int>(dist(mt)) * 972);
+					tbb_map.find(result, j % 50);
 				}
 			}
 		});
 
+
 		t1.join();
+		std::chrono::duration<float> ste_delta = std::chrono::high_resolution_clock::now() - time;
+		ste_log() << "TBB time: " << ste_delta.count() << "sec" << std::endl;
 		t2.join();
+		ste_delta = std::chrono::high_resolution_clock::now() - time;
+		ste_log() << "TBB time: " << ste_delta.count() << "sec" << std::endl;
 		t3.join();
+		ste_delta = std::chrono::high_resolution_clock::now() - time;
+		ste_log() << "TBB time: " << ste_delta.count() << "sec" << std::endl;
 		t4.join();
+		ste_delta = std::chrono::high_resolution_clock::now() - time;
+		ste_log() << "TBB time: " << ste_delta.count() << "sec" << std::endl;
 	}
-	std::chrono::duration<float> tbb_delta = std::chrono::high_resolution_clock::now() - time;
-	ste_log() << "TBB time: " << tbb_delta.count() << "sec" << std::endl;
 
 	return true;
 

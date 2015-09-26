@@ -43,16 +43,15 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\Program Files %28x86%29\Assimp\include;D:\OneDrive\Documents\Dev\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Program Files %28x86%29\Assimp\lib;D:\OneDrive\Documents\Dev\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Program Files %28x86%29\Assimp\include;D:\Dev\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files %28x86%29\Assimp\lib;D:\Dev\lib;$(LibraryPath)</LibraryPath>
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
-    <IntDir>D:\VCIntermediates\$(ProjectName)\$(Configuration)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>C:\Program Files %28x86%29\Assimp\include;D:\OneDrive\Documents\Dev\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Program Files %28x86%29\Assimp\lib;D:\OneDrive\Documents\Dev\lib;$(LibraryPath)</LibraryPath>
-    <IntDir>D:\VCIntermediates\$(ProjectName)\$(Configuration)\</IntDir>
+    <IncludePath>C:\Program Files %28x86%29\Assimp\include;D:\Dev\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files %28x86%29\Assimp\lib;D:\Dev\lib;$(LibraryPath)</LibraryPath>
+    <TargetName>$(ProjectName)</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -79,7 +78,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>Full</Optimization>
+      <Optimization>MaxSpeedHighLevel</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -91,6 +90,7 @@
       <AdditionalOptions>/Qstd=c++14 %(AdditionalOptions)</AdditionalOptions>
       <OptimizeForWindowsApplication>true</OptimizeForWindowsApplication>
       <UseProcessorExtensions>AVXI</UseProcessorExtensions>
+      <UseIntelOptimizedHeaders>true</UseIntelOptimizedHeaders>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -124,6 +124,7 @@
   <ItemGroup>
     <ClInclude Include="AtomicCounterBuffer.h" />
     <ClInclude Include="atomic_double_ref_guard.h" />
+    <ClInclude Include="concurrent_pointer_recycler.h" />
     <ClInclude Include="concurrent_unordered_map.h" />
     <ClInclude Include="connection.h" />
     <ClInclude Include="hid.h" />

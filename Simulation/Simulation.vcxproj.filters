@@ -305,6 +305,9 @@
     <ClInclude Include="atomic_double_ref_guard.h">
       <Filter>src\StE\STL Extensions</Filter>
     </ClInclude>
+    <ClInclude Include="concurrent_pointer_recycler.h">
+      <Filter>src\StE\STL Extensions</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="stdafx.h">

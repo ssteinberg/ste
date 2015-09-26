@@ -6,30 +6,50 @@
 #include <atomic>
 #include <iostream>
 
+#include "concurrent_pointer_recycler.h"
+
 namespace StE {
 
-template <typename DataType>
+template <typename DataType, bool recycle_pointers>
 class atomic_double_ref_guard {
 private:
-	struct data {
-		std::atomic<int> internal_counter;
+	class data {
+	public:
+		std::atomic<int> *internal_counter;
 		DataType object;
 
 		template <typename ... Ts>
-		data(Ts&&... args) : object(std::forward<Ts>(args)...), internal_counter(0) {}
-
-		data(data&& d) = delete;
-		data &operator=(data&& d) = delete;
+		data(Ts&&... args) : object(std::forward<Ts>(args)...), internal_counter(new std::atomic<int>(0)) {}
+		data& operator=(data &&d) {
+			internal_counter->store(0, std::memory_order_release);
+			object = std::move(d.object);
+			return *this;
+		}
+		~data() { delete internal_counter; }
 
 		void release_ref() {
-			if (internal_counter.fetch_add(1, std::memory_order_relaxed) == -1) {
-				internal_counter.load(std::memory_order_acquire);
+			if (internal_counter->fetch_add(1, std::memory_order_relaxed) == -1) {
+				internal_counter->load(std::memory_order_acquire);
 				destroy();
 			}
 		}
 
+	private:
+		template <bool b, typename Sfinae = void>
+		class data_factory {
+		public:
+			void __fastcall release(data *ptr) { delete ptr; }
+			template <typename ... Ts>
+			data* __fastcall claim(Ts&&... args) { return new data(std::forward<Ts>(args)...); }
+		};
+		template <bool b>
+		class data_factory<b, std::enable_if_t<b>> : public concurrent_pointer_recycler<data> {};
+
+	public:
+		static data_factory<recycle_pointers> recycler;
+
 		void destroy() {
-			delete this;
+			recycler.release(this);
 		}
 	};
 
@@ -38,11 +58,9 @@ private:
 		data *ptr;
 	};
 
-	std::atomic<data_ptr> guard;
-
 public:
 	class data_guard {
-		friend class atomic_double_ref_guard<DataType>;
+		friend class atomic_double_ref_guard<DataType, recycle_pointers>;
 
 	private:
 		data *ptr;
@@ -71,11 +89,13 @@ public:
 	};
 
 private:
-	void release(data_ptr &old_data_ptr) {
+	std::atomic<data_ptr> guard;
+
+	void __fastcall release(data_ptr &old_data_ptr) {
 		if (!old_data_ptr.ptr)
 			return;
 		auto external = old_data_ptr.external_counter;
-		if (old_data_ptr.ptr->internal_counter.fetch_sub(external, std::memory_order_release) == external - 1)
+		if (old_data_ptr.ptr->internal_counter->fetch_sub(external, std::memory_order_acquire) == external - 1)
 			old_data_ptr.ptr->destroy();
 		else
 			old_data_ptr.ptr->release_ref();
@@ -89,7 +109,7 @@ public:
 
 	template <typename ... Ts>
 	atomic_double_ref_guard(Ts&&... args) {
-		data *new_data = new data(std::forward<Ts>(args)...);
+		data *new_data = data::recycler.claim(std::forward<Ts>(args)...);
 		data_ptr new_data_ptr{ 1, new_data };
 		guard.store(new_data_ptr);
 
@@ -101,7 +121,7 @@ public:
 		release(old_data_ptr);
 	}
 
-	data_guard acquire(std::memory_order order = std::memory_order_acquire) {
+	data_guard __fastcall acquire(std::memory_order order = std::memory_order_acquire) {
 		data_ptr new_data_ptr;
 		data_ptr old_data_ptr = guard.load(std::memory_order_relaxed);
 		do {
@@ -113,8 +133,8 @@ public:
 	}
 
 	template <typename ... Ts>
-	data_guard emplace_and_acquire(std::memory_order order, Ts&&... args) {
-		data *new_data = new data(std::forward<Ts>(args)...);
+	data_guard __fastcall emplace_and_acquire(std::memory_order order, Ts&&... args) {
+		data *new_data = data::recycler.claim(std::forward<Ts>(args)...);
 		data_ptr new_data_ptr{ 2, new_data };
 		data_ptr old_data_ptr = guard.load(std::memory_order_relaxed);
 		while (!guard.compare_exchange_weak(old_data_ptr, new_data_ptr, order, std::memory_order_relaxed));
@@ -125,8 +145,8 @@ public:
 	}
 
 	template <typename ... Ts>
-	void emplace(std::memory_order order, Ts&&... args) {
-		data *new_data = new data(std::forward<Ts>(args)...);
+	void __fastcall emplace(std::memory_order order, Ts&&... args) {
+		data *new_data = data::recycler.claim(std::forward<Ts>(args)...);
 		data_ptr new_data_ptr{ 1, new_data };
 		data_ptr old_data_ptr = guard.load(std::memory_order_relaxed);
 		while (!guard.compare_exchange_weak(old_data_ptr, new_data_ptr, order, std::memory_order_relaxed));
@@ -135,8 +155,8 @@ public:
 	}
 
 	template <typename ... Ts>
-	bool try_emplace(std::memory_order order1, std::memory_order order2, Ts&&... args) {
-		data *new_data = new data(std::forward<Ts>(args)...);
+	bool __fastcall try_emplace(std::memory_order order1, std::memory_order order2, Ts&&... args) {
+		data *new_data = data::recycler.claim(std::forward<Ts>(args)...);
 		data_ptr new_data_ptr{ 1, new_data };
 		data_ptr old_data_ptr = guard.load(order2);
 		if (guard.compare_exchange_strong(old_data_ptr, new_data_ptr, order1, std::memory_order_relaxed)) {
@@ -148,8 +168,8 @@ public:
 	}
 
 	template <typename ... Ts>
-	bool try_compare_emplace(std::memory_order order, data_guard &old_data, Ts&&... args) {
-		data *new_data = new data(std::forward<Ts>(args)...);
+	bool __fastcall try_compare_emplace(std::memory_order order, data_guard &old_data, Ts&&... args) {
+		data *new_data = data::recycler.claim(std::forward<Ts>(args)...);
 		data_ptr new_data_ptr{ 1, new_data };
 		data_ptr old_data_ptr = guard.load(std::memory_order_relaxed);
 
@@ -163,27 +183,20 @@ public:
 		return success;
 	}
 
-	bool is_valid_hint(std::memory_order order = std::memory_order_relaxed) const {
+	bool __fastcall is_valid_hint(std::memory_order order = std::memory_order_relaxed) const {
 		return !!guard.load(order).ptr;
 	}
 
-	void drop() {
+	void __fastcall drop() {
 		data_ptr new_data_ptr{ 0, nullptr };
 		data_ptr old_data_ptr = guard.load(std::memory_order_relaxed);
 		while (!guard.compare_exchange_weak(old_data_ptr, new_data_ptr, std::memory_order_acq_rel, std::memory_order_relaxed));
 
 		release(old_data_ptr);
 	}
-
-// 	bool try_drop(std::memory_order order) {
-// 		data_ptr new_data_ptr{ 0, nullptr };
-// 		data_ptr old_data_ptr = guard.load(order);
-// 		if (guard.compare_exchange_strong(old_data_ptr, new_data_ptr, std::memory_order_acq_rel, std::memory_order_relaxed)) {
-// 			release(old_data_ptr);
-// 			return true;
-// 		}
-// 		return false;
-// 	}
 };
+
+template <typename DataType, bool recycle_pointers>
+atomic_double_ref_guard<DataType, recycle_pointers>::data::data_factory<recycle_pointers> atomic_double_ref_guard<DataType, recycle_pointers>::data::recycler;
 
 }
