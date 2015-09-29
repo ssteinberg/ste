@@ -5,7 +5,7 @@
       <string>D:\Dev\git\simulation\Simulation\concurrent_unordered_map.h</string>
     </ArrayOfString>
     <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\atomic_double_ref_guard.h</string>
+      <string>D:\Dev\git\simulation\Simulation\shared_double_reference_guard.h</string>
     </ArrayOfString>
     <ArrayOfString>
       <string>D:\Dev\git\simulation\Simulation\main.cpp</string>

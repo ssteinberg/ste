@@ -17,7 +17,6 @@ private:
 	static_assert(std::is_move_assignable<T>::value, "T must be move-assignable");
 
 public:
-	concurrent_pointer_recycler() {}
 	~concurrent_pointer_recycler() {
 		for (auto &slot : pointers) {
 			T* ptr = slot.load(std::memory_order_acquire);
@@ -29,8 +28,9 @@ public:
 	void __fastcall release(T *ptr) {
 		T* null = nullptr;
 		for (auto &slot : pointers)
-			if (slot.compare_exchange_weak(null, ptr, std::memory_order_relaxed))
+			if (slot.compare_exchange_strong(null, ptr, std::memory_order_relaxed)) {
 				return;
+			}
 		delete ptr;
 	}
 
@@ -39,7 +39,7 @@ public:
 		T* ptr;
 		for (auto &slot : pointers) {
 			ptr = slot.load(std::memory_order_relaxed);
-			if (ptr && slot.compare_exchange_weak(ptr, nullptr, std::memory_order_relaxed)) {
+			if (ptr && slot.compare_exchange_strong(ptr, nullptr, std::memory_order_relaxed)) {
 				*ptr = T(std::forward<Ts>(args)...);
 				return ptr;
 			}

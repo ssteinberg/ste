@@ -302,10 +302,10 @@
     <ClInclude Include="concurrent_unordered_map.h">
       <Filter>src\StE\STL Extensions</Filter>
     </ClInclude>
-    <ClInclude Include="atomic_double_ref_guard.h">
+    <ClInclude Include="concurrent_pointer_recycler.h">
       <Filter>src\StE\STL Extensions</Filter>
     </ClInclude>
-    <ClInclude Include="concurrent_pointer_recycler.h">
+    <ClInclude Include="shared_double_reference_guard.h">
       <Filter>src\StE\STL Extensions</Filter>
     </ClInclude>
   </ItemGroup>

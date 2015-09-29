@@ -105,6 +105,7 @@ public:
 	}
 	~concurrent_queue() {
 		while (pop() != nullptr);
+		delete head.load().ptr;
 	}
 
 	concurrent_queue(const concurrent_queue &q) = delete;

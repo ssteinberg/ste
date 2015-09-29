@@ -11,31 +11,29 @@
 namespace StE {
 
 template <typename DataType, bool recycle_pointers>
-class atomic_double_ref_guard {
+class shared_double_reference_guard {
 private:
 	class data {
 	public:
-		std::atomic<int> *internal_counter;
+		std::atomic<int> internal_counter;
 		DataType object;
 
 		template <typename ... Ts>
-		data(Ts&&... args) : object(std::forward<Ts>(args)...), internal_counter(new std::atomic<int>(0)) {}
+		data(Ts&&... args) : object(std::forward<Ts>(args)...), internal_counter(0) {}
 		data& operator=(data &&d) {
-			internal_counter->store(0, std::memory_order_release);
+			internal_counter.store(0);
 			object = std::move(d.object);
 			return *this;
 		}
-		~data() { delete internal_counter; }
 
-		void release_ref() {
-			if (internal_counter->fetch_add(1, std::memory_order_relaxed) == -1) {
-				internal_counter->load(std::memory_order_acquire);
+		void __fastcall release_ref() {
+			if (internal_counter.fetch_add(1, std::memory_order_acquire) == -1) {
 				destroy();
 			}
 		}
 
 	private:
-		template <bool b, typename Sfinae = void>
+		template <bool b, typename = void>
 		class data_factory {
 		public:
 			void __fastcall release(data *ptr) { delete ptr; }
@@ -46,9 +44,9 @@ private:
 		class data_factory<b, std::enable_if_t<b>> : public concurrent_pointer_recycler<data> {};
 
 	public:
-		static data_factory<recycle_pointers> recycler;
+		static data_factory<std::is_move_assignable<DataType>::value && recycle_pointers> recycler;
 
-		void destroy() {
+		void __fastcall destroy() {
 			recycler.release(this);
 		}
 	};
@@ -60,7 +58,7 @@ private:
 
 public:
 	class data_guard {
-		friend class atomic_double_ref_guard<DataType, recycle_pointers>;
+		friend class shared_double_reference_guard<DataType, recycle_pointers>;
 
 	private:
 		data *ptr;
@@ -82,10 +80,12 @@ public:
 
 		~data_guard() { if (ptr) ptr->release_ref(); }
 
-		bool is_valid() { return !!ptr; }
+		bool __fastcall is_valid() const { return !!ptr; }
 
-		DataType* operator->() { return &ptr->object; }
-		DataType& operator*() { return ptr->object; }
+		DataType* __fastcall operator->() { return &ptr->object; }
+		DataType& __fastcall operator*() { return ptr->object; }
+		const DataType* __fastcall operator->() const { return &ptr->object; }
+		const DataType& __fastcall operator*() const { return ptr->object; }
 	};
 
 private:
@@ -95,20 +95,20 @@ private:
 		if (!old_data_ptr.ptr)
 			return;
 		auto external = old_data_ptr.external_counter;
-		if (old_data_ptr.ptr->internal_counter->fetch_sub(external, std::memory_order_acquire) == external - 1)
+		if (old_data_ptr.ptr->internal_counter.fetch_sub(external, std::memory_order_release) == external - 1)
 			old_data_ptr.ptr->destroy();
 		else
 			old_data_ptr.ptr->release_ref();
 	}
 
 public:
-	atomic_double_ref_guard() {
+	shared_double_reference_guard() {
 		data_ptr new_data_ptr{ 0, nullptr };
 		guard.store(new_data_ptr);
 	}
 
 	template <typename ... Ts>
-	atomic_double_ref_guard(Ts&&... args) {
+	shared_double_reference_guard(Ts&&... args) {
 		data *new_data = data::recycler.claim(std::forward<Ts>(args)...);
 		data_ptr new_data_ptr{ 1, new_data };
 		guard.store(new_data_ptr);
@@ -116,7 +116,7 @@ public:
 		assert(guard.is_lock_free() && "guard not lock free");
 	}
 
-	~atomic_double_ref_guard() {
+	~shared_double_reference_guard() {
 		data_ptr old_data_ptr = guard.load();
 		release(old_data_ptr);
 	}
@@ -163,7 +163,7 @@ public:
 			release(old_data_ptr);
 			return true;
 		}
-		delete new_data;
+		data::recycler.release(new_data);
 		return false;
 	}
 
@@ -197,6 +197,6 @@ public:
 };
 
 template <typename DataType, bool recycle_pointers>
-atomic_double_ref_guard<DataType, recycle_pointers>::data::data_factory<recycle_pointers> atomic_double_ref_guard<DataType, recycle_pointers>::data::recycler;
+shared_double_reference_guard<DataType, recycle_pointers>::data::data_factory<std::is_move_assignable<DataType>::value && recycle_pointers> shared_double_reference_guard<DataType, recycle_pointers>::data::recycler;
 
 }

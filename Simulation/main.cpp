@@ -53,134 +53,234 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 	logger.redirect_std_outputs();
 	ste_log_set_global_logger(&logger);
 
-	static constexpr float read_ratio = .85f;
+	static constexpr float read_ratio = .9f;
 
 	StE::concurrent_unordered_map<int, std::string> map;
 	concurrent_hash_map<int, std::string> tbb_map;
-	for (int j = 0; j < 100; ++j) {
-		tbb_map.insert({ j, std::string("temp") + std::to_string(j) });
-		map.emplace(j, std::string("temp") + std::to_string(j));
-	}
 
 	auto time = std::chrono::high_resolution_clock::now();
- 	{
-		std::string str;
+	for (int j = 0; j < 100; ++j) {
+		tbb_map.insert({ j, std::string("temp") + std::to_string(j) });
+	}
+	std::chrono::duration<float> tbb_delta = std::chrono::high_resolution_clock::now() - time;
+	ste_log() << "TBB creation time: " << tbb_delta.count() << "sec" << std::endl;
 
+	time = std::chrono::high_resolution_clock::now();
+	for (int j = 0; j < 100; ++j) {
+		map.emplace(j, std::string("temp") + std::to_string(j));
+	}
+	std::chrono::duration<float> ste_delta = std::chrono::high_resolution_clock::now() - time;
+	ste_log() << "StE creation time: " << ste_delta.count() << "sec" << std::endl;
+ 
+ 	time = std::chrono::high_resolution_clock::now();
+ 	{
 		std::thread t1([&]() {
-			for (int i = 0; i < 10000; ++i) {
-				for (int j = 0; j < 1500 * (1 - read_ratio); ++j) {
-					map.emplace(j%50, "12");
+			for (int i = 0; i < 1000000; ++i) {
+				std::string str;
+				for (int j = 0; j < 100 * (1 - read_ratio); ++j) {
+					tbb_map.insert({ -1, "test1" });
+					tbb_map.insert({ ((j + i) * 101) % 98710, "fset4weeeeeeebyt54t 4w39r r93 30ur83429 r32r34r yor  r34rt42wrt42tr143896t4 481tr434r 4 4wr" });
+					tbb_map.insert({ ((j + i) * 1801) % 90, "fset4weeeeeeebryeyhregfdhg r32r34r yor  r34rt42wrtgfdfd42tr143896t4 481tr434r 4 4wr" });
+					tbb_map.insert({ ((j + i) * 10) % 910, "fset4weeeeeeebyt54t 4w39r r93 gd30ur83429  yor  r34rt42wrt42tr14389hgdf 5 566t4 481tr434r 4 4wr" });
+					tbb_map.insert({ ((j + i) * 31) % 865710, "fset4weeeeeeebyt54t  481tr434r 4 4wr" });
+					tbb_map.erase(((j + i) * 42) % 231320);
+					tbb_map.erase(((j + i) * 99) % 2310);
 				}
-				for (int j = 0; j < 1500 * read_ratio; ++j) {
-					map.try_get(j % 50, str);
+				for (int j = 0; j < 100 * read_ratio; ++j) {
+					concurrent_hash_map<int, std::string>::accessor result;
+					tbb_map.find(result,((j + i) * 48) % 342);
+					tbb_map.find(result,((j + i) * 54) % 63);
+					tbb_map.find(result,((j + i) * 12) % 654);
+					tbb_map.find(result,((j + i) * 87) % 1345340);
+					tbb_map.find(result,((j + i) * 54) % 63);
+					tbb_map.find(result,-1);
 				}
 			}
 		});
 		std::thread t2([&]() {
-			for (int i = 0; i < 10000; ++i) {
-				for (int j = 0; j < 1500 * (1 - read_ratio); ++j) {
-					map.emplace(j % 50, "15");
+			for (int i = 0; i < 1000000; ++i) {
+				std::string str;
+				for (int j = 0; j < 100 * (1 - read_ratio); ++j) {
+					tbb_map.insert({ ((j + i) * 546) % 54352, "fset4weeeeeeebyt54t 4w39r r93 30ur83429 r32r34r yor  r34rt42wrt42tr143fe896t4 481tr434r 4 4wr" });
+					tbb_map.insert({ ((j + i) * 43) % 43, "fset4weeeeeeebryeyhregfdhg r32rer34r yor  r34rt42wrtgfdfd42tr143896t4 481tr434r 4 4wr" });
+					tbb_map.erase(((j + i) * 124) % 2313320);
+					tbb_map.insert({ ((j + i) * 3) % 434, "fset4weeeeeeebyt54t 4w39r r93 gd30ur83429  yor  r34rt42wrt42tr1434389hgdf 5 566t4 481tr434r 4 4wr" });
+					tbb_map.insert({ ((j + i) * 564) % 12325, "fset4weeeeeeebyt54t  481trfd434r 4 4wr" });
+					tbb_map.insert({ -1, "test2" });
+					tbb_map.erase(((j + i) * 399) % 10);
 				}
-				for (int j = 0; j < 1500 * read_ratio; ++j) {
-					map.try_get(j % 50, str);
+				for (int j = 0; j < 100 * read_ratio; ++j) {
+					concurrent_hash_map<int, std::string>::accessor result;
+					tbb_map.find(result,((j + i) * 4) % 786);
+					tbb_map.find(result,((j + i) * 534) % 635);
+					tbb_map.find(result,((j + i) * 4312) % 65363);
+					tbb_map.find(result,((j + i) * 7) % 6);
+					tbb_map.find(result,((j + i) * 534) % 64343443);
+					tbb_map.find(result,-1);
 				}
 			}
 		});
 		std::thread t3([&]() {
-			for (int i = 0; i < 10000; ++i) {
-				for (int j = 0; j < 1500 * (1 - read_ratio); ++j) {
-					map.emplace(j % 50, "12");
+			for (int i = 0; i < 1000000; ++i) {
+				std::string str;
+				for (int j = 0; j < 100 * (1 - read_ratio); ++j) {
+					tbb_map.erase(((j + i) * 545) % 54);
+					tbb_map.insert({ ((j + i) * 324) % 76, "fset4weeeeeeebyt54t 4w39r r93 30ur83429 r32r34r yor  r34rt42wrt42tr143fe896t4 481tr434r 4 4wr" });
+					tbb_map.insert({ ((j + i) * 4) % 34, "fset4weeeeeeebryeyhregfdhg r32rer34r yor  r34rt42wrtgfdfd42tr143896t4 481tr434r 4 4wr" });
+					tbb_map.erase(((j + i) * 34) % 1234);
+					tbb_map.insert({ -1, "test3" });
+					tbb_map.insert({ ((j + i) * 3) % 434, "fset4weeeeeeebyt54t 4w39r r93 gd30ur83429  yor  r34rt42wrt42tr1434389hgdf 5 566t4 481tr434r 4 4wr" });
+					tbb_map.insert({ ((j + i) * 564) % 12325, "fset4weeeeeeebyt54t  481trfd434r 4 4wr" });
 				}
-				for (int j = 0; j < 1500 * read_ratio; ++j) {
-					map.try_get(j % 50, str);
+				for (int j = 0; j < 100 * read_ratio; ++j) {
+					concurrent_hash_map<int, std::string>::accessor result;
+					tbb_map.find(result,((j + i) * 4) % 435);
+					tbb_map.find(result,((j + i) * 54) % 43);
+					tbb_map.find(result,((j + i) * 43) % 12);
+					tbb_map.find(result,((j + i) * 54) % 6);
+					tbb_map.find(result,((j + i) * 8) % 4565);
+					tbb_map.find(result,-1);
 				}
 			}
 		});
 		std::thread t4([&]() {
-			for (int i = 0; i < 10000; ++i) {
-				for (int j = 0; j < 1500 * (1 - read_ratio); ++j) {
-					map.remove(j % 50);
+			for (int i = 0; i < 1000000; ++i) {
+				std::string str;
+				for (int j = 0; j < 100 * (1 - read_ratio); ++j) {
+					tbb_map.insert({ ((j + i) * 556) % 54352, "fset4weeeeeeebyt54t 4w39r r93 30ur83429 r32r34r yor  r34rt42wrt42tr143fe896t4 481tr434r 4 4wr" });
+					tbb_map.insert({ ((j + i) * 43) % 43, "fset4weeeeeeebryeyhre54gfdhg r32rer34r yor  r34rt42wrtgfdfd42tr143896t4 481tr434r 4 4wr" });
+					tbb_map.erase(((j + i) * 124) % 231320);
+					tbb_map.erase(((j + i) * 43) % 140);
+					tbb_map.erase(((j + i) * 3399) % 1234);
+					tbb_map.insert({ -1, "test4" });
+					tbb_map.erase(((j + i) * 1) % 43);
 				}
-				for (int j = 0; j < 1500 * read_ratio; ++j) {
-					map.try_get(j % 50, str);
+				for (int j = 0; j < 100 * read_ratio; ++j) {
+					concurrent_hash_map<int, std::string>::accessor result;
+					tbb_map.find(result,((j + i) * 14) % 78236);
+					tbb_map.find(result,((j + i) * 534) % 65);
+					tbb_map.find(result,((j + i) * 243) % 12);
+					tbb_map.find(result,((j + i) * 54) % 4);
+					tbb_map.find(result,((j + i) * 94) % 63);
+					tbb_map.find(result,-1);
 				}
 			}
 		});
  
-		t1.join();
-		std::chrono::duration<float> ste_delta = std::chrono::high_resolution_clock::now() - time;
-		ste_log() << "StE time: " << ste_delta.count() << "sec" << std::endl;
-		t2.join();
-		ste_delta = std::chrono::high_resolution_clock::now() - time;
-		ste_log() << "StE time: " << ste_delta.count() << "sec" << std::endl;
-		t3.join();
-		ste_delta = std::chrono::high_resolution_clock::now() - time;
-		ste_log() << "StE time: " << ste_delta.count() << "sec" << std::endl;
-		t4.join();
-		ste_delta = std::chrono::high_resolution_clock::now() - time;
-		ste_log() << "StE time: " << ste_delta.count() << "sec" << std::endl;
+ 
+ 		t1.join();
+ 		t2.join();
+ 		t3.join();
+ 		t4.join();
+ 		std::chrono::duration<float> tbb_delta = std::chrono::high_resolution_clock::now() - time;
+ 		ste_log() << "TBB time: " << tbb_delta.count() << "sec" << std::endl;
  	}
 
 	time = std::chrono::high_resolution_clock::now();
 	{
 		std::thread t1([&]() {
-			for (int i = 0; i < 10000; ++i) {
-				for (int j = 0; j < 1500 * (1 - read_ratio); ++j) {
-					tbb_map.insert({ j % 50, "12" });
+			for (int i = 0; i < 1000000; ++i) {
+				std::string str;
+				for (int j = 0; j < 100 * (1 - read_ratio); ++j) {
+					map.emplace(-1, "test1");
+					map.emplace(((j + i) * 101) % 98710, "fset4weeeeeeebyt54t 4w39r r93 30ur83429 r32r34r yor  r34rt42wrt42tr143896t4 481tr434r 4 4wr");
+					map.emplace(((j + i) * 1801) % 90, "fset4weeeeeeebryeyhregfdhg r32r34r yor  r34rt42wrtgfdfd42tr143896t4 481tr434r 4 4wr");
+					map.emplace(((j + i) * 10) % 910, "fset4weeeeeeebyt54t 4w39r r93 gd30ur83429  yor  r34rt42wrt42tr14389hgdf 5 566t4 481tr434r 4 4wr");
+					map.emplace(((j + i) * 31) % 865710, "fset4weeeeeeebyt54t  481tr434r 4 4wr");
+					map.remove(((j + i) * 42) % 231320);
+					map.remove(((j + i) * 99) % 2310);
 				}
-				for (int j = 0; j < 1500 * read_ratio; ++j) {
-					concurrent_hash_map<int, std::string>::accessor result;
-					tbb_map.find(result, j % 50);
+				for (int j = 0; j < 100 * read_ratio; ++j) {
+					auto ret1 = map.try_get(((j + i) * 48) % 342);
+					auto ret2 = map.try_get(((j + i) * 54) % 63);
+					auto ret3 = map.try_get(((j + i) * 12) % 654);
+					auto ret4 = map.try_get(((j + i) * 87) % 1345340);
+					auto ret5 = map.try_get(((j + i) * 54) % 63);
+					auto ret = map.try_get(-1);
+					if (ret.is_valid())
+						assert(ret->find("test") != std::string::npos);
 				}
 			}
 		});
 		std::thread t2([&]() {
-			for (int i = 0; i < 10000; ++i) {
-				for (int j = 0; j < 1500 * (1 - read_ratio); ++j) {
-					tbb_map.insert({ j % 50, "15" });
+			for (int i = 0; i < 1000000; ++i) {
+				std::string str;
+				for (int j = 0; j < 100 * (1 - read_ratio); ++j) {
+					map.emplace(((j + i) * 546) % 54352, "fset4weeeeeeebyt54t 4w39r r93 30ur83429 r32r34r yor  r34rt42wrt42tr143fe896t4 481tr434r 4 4wr");
+					map.emplace(((j + i) * 43) % 43, "fset4weeeeeeebryeyhregfdhg r32rer34r yor  r34rt42wrtgfdfd42tr143896t4 481tr434r 4 4wr");
+					map.remove(((j + i) * 124) % 2313320);
+					map.emplace(((j + i) * 3) % 434, "fset4weeeeeeebyt54t 4w39r r93 gd30ur83429  yor  r34rt42wrt42tr1434389hgdf 5 566t4 481tr434r 4 4wr");
+					map.emplace(((j + i) * 564) % 12325, "fset4weeeeeeebyt54t  481trfd434r 4 4wr");
+					map.emplace(-1, "test2");
+					map.remove(((j + i) * 399) % 10);
 				}
-				for (int j = 0; j < 1500 * read_ratio; ++j) {
-					concurrent_hash_map<int, std::string>::accessor result;
-					tbb_map.find(result, j % 50);
+				for (int j = 0; j < 100 * read_ratio; ++j) {
+					auto ret1 = map.try_get(((j + i) * 4) % 786);
+					auto ret2 = map.try_get(((j + i) * 534) % 635);
+					auto ret3 = map.try_get(((j + i) * 4312) % 65363);
+					auto ret4 = map.try_get(((j + i) * 7) % 6);
+					auto ret5 = map.try_get(((j + i) * 534) % 64343443);
+					auto ret = map.try_get(-1);
+					if (ret.is_valid())
+						assert(ret->find("test") != std::string::npos);
 				}
 			}
 		});
 		std::thread t3([&]() {
-			for (int i = 0; i < 10000; ++i) {
-				for (int j = 0; j < 1500 * (1 - read_ratio); ++j) {
-					tbb_map.insert({ j % 50, "12" });
+			for (int i = 0; i < 1000000; ++i) {
+				std::string str;
+				for (int j = 0; j < 100 * (1 - read_ratio); ++j) {
+					map.remove(((j + i) * 545) % 54);
+					map.emplace(((j + i) * 324) % 76, "fset4weeeeeeebyt54t 4w39r r93 30ur83429 r32r34r yor  r34rt42wrt42tr143fe896t4 481tr434r 4 4wr");
+					map.emplace(((j + i) * 4) % 34, "fset4weeeeeeebryeyhregfdhg r32rer34r yor  r34rt42wrtgfdfd42tr143896t4 481tr434r 4 4wr");
+					map.remove(((j + i) * 34) % 1234);
+					map.emplace(-1, "test3");
+					map.emplace(((j + i) * 3) % 434, "fset4weeeeeeebyt54t 4w39r r93 gd30ur83429  yor  r34rt42wrt42tr1434389hgdf 5 566t4 481tr434r 4 4wr");
+					map.emplace(((j + i) * 564) % 12325, "fset4weeeeeeebyt54t  481trfd434r 4 4wr");
 				}
-				for (int j = 0; j < 1500 * read_ratio; ++j) {
-					concurrent_hash_map<int, std::string>::accessor result;
-					tbb_map.find(result, j % 50);
+				for (int j = 0; j < 100 * read_ratio; ++j) {
+					auto ret1 = map.try_get(((j + i) * 4) % 435);
+					auto ret2 = map.try_get(((j + i) * 54) % 43);
+					auto ret3 = map.try_get(((j + i) * 43) % 12);
+					auto ret4 = map.try_get(((j + i) * 54) % 6);
+					auto ret5 = map.try_get(((j + i) * 8) % 4565);
+					auto ret = map.try_get(-1);
+					if (ret.is_valid())
+						assert(ret->find("test") != std::string::npos);
 				}
 			}
 		});
 		std::thread t4([&]() {
-			for (int i = 0; i < 10000; ++i) {
-				for (int j = 0; j < 1500 * (1 - read_ratio); ++j) {
-					tbb_map.erase( j % 50);
+			for (int i = 0; i < 1000000; ++i) {
+				std::string str;
+				for (int j = 0; j < 100 * (1 - read_ratio); ++j) {
+					map.emplace(((j + i) * 556) % 54352, "fset4weeeeeeebyt54t 4w39r r93 30ur83429 r32r34r yor  r34rt42wrt42tr143fe896t4 481tr434r 4 4wr");
+					map.emplace(((j + i) * 43) % 43, "fset4weeeeeeebryeyhre54gfdhg r32rer34r yor  r34rt42wrtgfdfd42tr143896t4 481tr434r 4 4wr");
+					map.remove(((j + i) * 124) % 231320);
+					map.remove(((j + i) * 43) % 140);
+					map.remove(((j + i) * 3399) % 1234);
+					map.emplace(-1, "test4");
+					map.remove(((j + i) * 1) % 43);
 				}
-				for (int j = 0; j < 1500 * read_ratio; ++j) {
-					concurrent_hash_map<int, std::string>::accessor result;
-					tbb_map.find(result, j % 50);
+				for (int j = 0; j < 100 * read_ratio; ++j) {
+					auto ret1 = map.try_get(((j + i) * 14) % 78236);
+					auto ret2 = map.try_get(((j + i) * 534) % 65);
+					auto ret3 = map.try_get(((j + i) * 243) % 12);
+					auto ret4 = map.try_get(((j + i) * 54) % 4);
+					auto ret5 = map.try_get(((j + i) * 94) % 63);
+					auto ret = map.try_get(-1);
+					if (ret.is_valid())
+						assert(ret->find("test") != std::string::npos);
 				}
 			}
 		});
 
-
 		t1.join();
-		std::chrono::duration<float> ste_delta = std::chrono::high_resolution_clock::now() - time;
-		ste_log() << "TBB time: " << ste_delta.count() << "sec" << std::endl;
 		t2.join();
-		ste_delta = std::chrono::high_resolution_clock::now() - time;
-		ste_log() << "TBB time: " << ste_delta.count() << "sec" << std::endl;
 		t3.join();
-		ste_delta = std::chrono::high_resolution_clock::now() - time;
-		ste_log() << "TBB time: " << ste_delta.count() << "sec" << std::endl;
 		t4.join();
-		ste_delta = std::chrono::high_resolution_clock::now() - time;
-		ste_log() << "TBB time: " << ste_delta.count() << "sec" << std::endl;
+		std::chrono::duration<float> ste_delta = std::chrono::high_resolution_clock::now() - time;
+		ste_log() << "StE time: " << ste_delta.count() << "sec" << std::endl;
 	}
 
 	return true;
