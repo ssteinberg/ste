@@ -46,7 +46,8 @@ private:
 public:
 	~vertex_array_attrib_binder() {}
 
-	vertex_array_attrib_binder &operator=(vertex_buffer_attrib_binder &&binder) {
+	template <typename T, class D, BufferUsage::buffer_usage U>
+	vertex_array_attrib_binder &operator=(vertex_buffer_attrib_binder<T, D, U> &&binder) {
 		attach(std::move(binder));
 		return *this;
 	}
@@ -56,7 +57,8 @@ public:
 			detach();
 		return *this;
 	}
-	void attach(vertex_buffer_attrib_binder &&binder);
+	template <typename T, class D, BufferUsage::buffer_usage U>
+	void attach(vertex_buffer_attrib_binder<T, D, U> &&binder);
 	void detach();
 };
 
@@ -64,7 +66,7 @@ class VertexArrayObject : public bindable_resource<VertexArrayObjectAllocator, V
 private:
 	friend class vertex_array_attrib_binder;
 
-	using attrib_binding_map_type = std::map<int, std::shared_ptr<VertexBufferObjectGeneric>>;
+	using attrib_binding_map_type = std::map<int, const VertexBufferObjectGeneric*>;
 
 private:
 	attrib_binding_map_type attrib_bindings;
@@ -76,7 +78,8 @@ private:
 		attrib_bindings.erase(attrib_index);
 	}
 
-	void attach(int attrib_index, vertex_buffer_attrib_binder &&binder) {
+	template <typename T, class D, BufferUsage::buffer_usage U>
+	void attach(int attrib_index, vertex_buffer_attrib_binder<T, D, U> &&binder) {
 		auto &ptr = binder.vbo;
 		auto descriptor = ptr->data_descriptor();
 
@@ -105,7 +108,8 @@ public:
 	llr_resource_type resource_type() const override { return llr_resource_type::LLRVertexArrayObject; }
 };
 
-void inline vertex_array_attrib_binder::attach(vertex_buffer_attrib_binder &&binder) { vao->attach(attrib_index, std::move(binder)); }
+template <typename T, class D, BufferUsage::buffer_usage U>
+void inline vertex_array_attrib_binder::attach(vertex_buffer_attrib_binder<T, D, U> &&binder) { vao->attach(attrib_index, std::move(binder)); }
 void inline vertex_array_attrib_binder::detach() { vao->detach(attrib_index); }
 
 }

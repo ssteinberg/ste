@@ -20,9 +20,10 @@ private:
 
 public:
 	using connection_type = connection<Ts...>;
-	using connection_map_type = std::unordered_map<int, std::weak_ptr<connection_type>>;
 
 private:
+	using connection_map_type = std::unordered_map<int, std::weak_ptr<connection_type>>;
+
 	static int pool;
 	mutable connection_map_type connections;
 

@@ -15,6 +15,12 @@ public:
 	static void unbind() {}
 };
 
+class bindable_generic_resource : virtual public GenericResource {
+public:
+	virtual void bind() const = 0;
+	virtual void unbind() const = 0;
+};
+
 template <class A, class B, typename... BindingArgs>
 class bindable_resource : public llr_resource<A> {
 protected:
@@ -30,18 +36,12 @@ public:
 	void unbind(const BindingArgs&... args) const { Binder::unbind(args...); };
 };
 
-class bindable_generic_resource : virtual public GenericResource {
-public:
-	virtual void bind() const = 0;
-	virtual void unbind() const = 0;
-};
-
 template <class A, class B>
-class bindable_resource<A, B> : public llr_resource<A>, public virtual bindable_generic_resource{
+class bindable_resource<A, B> : public llr_resource<A>, public bindable_generic_resource{
 protected:
 	using Binder = B;
 
-	bindable_resource() {}
+	bindable_resource() { }
 
 public:
 	bindable_resource(bindable_resource &&m) = default;

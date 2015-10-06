@@ -19,9 +19,6 @@
     <Filter Include="src\StE\Resources\Models">
       <UniqueIdentifier>{b16e223c-9adb-46d1-8e8d-c13ef47ef545}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\StE\STL Extensions">
-      <UniqueIdentifier>{510e7be2-9a52-4dac-a6e2-978c9d07d98a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\StE\Core">
       <UniqueIdentifier>{da161e4b-8172-48d5-913b-397b8d29b561}</UniqueIdentifier>
     </Filter>
@@ -52,12 +49,6 @@
     <Filter Include="src\StE\Core\LLR\GPU Resources\Buffers\Vertex Storage">
       <UniqueIdentifier>{56db4d3c-4bf8-4ce3-9c5f-a7204c3b6af7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\StE\Core\LLR\Utilities">
-      <UniqueIdentifier>{3f9385ca-95aa-45d2-9d11-47caf4f358b4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\StE\Core\LLR\Utilities\Camera">
-      <UniqueIdentifier>{33db10ab-f602-472d-b248-46e9fdfe9df6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\StE\Core\Log">
       <UniqueIdentifier>{97667693-d003-4c64-a83e-b0998f5f9db6}</UniqueIdentifier>
     </Filter>
@@ -70,8 +61,41 @@
     <Filter Include="src\StE\Core\EngineControl\HID">
       <UniqueIdentifier>{abef885f-0954-42ba-8184-6d49823b3623}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\StE\STL Extensions\signal">
+    <Filter Include="src\StE\Core\Graphics Framework">
+      <UniqueIdentifier>{a4aba748-4036-4a9b-b3b6-3cb23f083c1a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\StE\Core\Graphics Framework\Scene">
+      <UniqueIdentifier>{8a1ff3c6-30ba-4c2f-9cc9-79bebf31242a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\StE\Core\Graphics Framework\Material">
+      <UniqueIdentifier>{f8b33e2b-2bfb-431b-8e50-aa1614006924}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\StE\Core\Graphics Framework\Utilities">
+      <UniqueIdentifier>{3f9385ca-95aa-45d2-9d11-47caf4f358b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\StE\Core\Graphics Framework\Utilities\Camera">
+      <UniqueIdentifier>{33db10ab-f602-472d-b248-46e9fdfe9df6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\StE\Core\Graphics Framework\Utilities\Texture Pools">
+      <UniqueIdentifier>{35cbbf06-e073-415b-977d-13816ca55bd0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\StE\Core\LLR\GPU Resources\Buffers\Data Storage">
+      <UniqueIdentifier>{51811f4f-ecbc-4230-a4f5-c81610c6791d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\StE\STL Extensions">
+      <UniqueIdentifier>{510e7be2-9a52-4dac-a6e2-978c9d07d98a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\StE\STL Extensions\Signal">
       <UniqueIdentifier>{a30c021e-385a-4012-b1af-78fa6f615970}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\StE\STL Extensions\Threading">
+      <UniqueIdentifier>{c6a2d17d-1c3e-4d1a-8577-0f4e99074b26}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\StE\STL Extensions\Concurrency">
+      <UniqueIdentifier>{03b1e43a-2697-4208-a17c-4b6f85b6f967}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\StE\STL Extensions\Platform Dependant">
+      <UniqueIdentifier>{c9d73512-77d7-4a54-96af-b13ea09c1a8d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -106,10 +130,7 @@
       <Filter>src\StE\Core\LLR\GPU Resources\Surfaces\Textures\impl</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp">
-      <Filter>src\StE\Core\LLR\Utilities\Camera</Filter>
-    </ClCompile>
-    <ClCompile Include="Model.cpp">
-      <Filter>src\StE\Resources\Models</Filter>
+      <Filter>src\StE\Core\Graphics Framework\Utilities\Camera</Filter>
     </ClCompile>
     <ClCompile Include="Log.cpp">
       <Filter>src\StE\Core\Log</Filter>
@@ -125,6 +146,18 @@
     </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>src\StE\Core\Graphics Framework\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="interruptible_thread.cpp">
+      <Filter>src\StE\STL Extensions\Threading</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelLoader.cpp">
+      <Filter>src\StE\Resources\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="thread_constants.cpp">
+      <Filter>src\StE\STL Extensions\Threading</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -198,22 +231,13 @@
       <Filter>src\StE\Core\LLR\GPU Resources\Surfaces\Textures</Filter>
     </ClInclude>
     <ClInclude Include="Camera.h">
-      <Filter>src\StE\Core\LLR\Utilities\Camera</Filter>
-    </ClInclude>
-    <ClInclude Include="BufferMappedStorage.h">
-      <Filter>src\StE\Core\LLR\GPU Resources\Buffers</Filter>
+      <Filter>src\StE\Core\Graphics Framework\Utilities\Camera</Filter>
     </ClInclude>
     <ClInclude Include="buffer_usage.h">
       <Filter>src\StE\Core\LLR\GPU Resources\Buffers</Filter>
     </ClInclude>
     <ClInclude Include="ElementBufferObject.h">
       <Filter>src\StE\Core\LLR\GPU Resources\Buffers\Vertex Storage</Filter>
-    </ClInclude>
-    <ClInclude Include="Model.h">
-      <Filter>src\StE\Resources\Models</Filter>
-    </ClInclude>
-    <ClInclude Include="concurrent_queue.h">
-      <Filter>src\StE\STL Extensions</Filter>
     </ClInclude>
     <ClInclude Include="log_streambuf.h">
       <Filter>src\StE\Core\Log</Filter>
@@ -245,9 +269,6 @@
     <ClInclude Include="gl_type_traits.h">
       <Filter>src\StE\Core\LLR</Filter>
     </ClInclude>
-    <ClInclude Include="PixelBufferObject.h">
-      <Filter>src\StE\Core\LLR\GPU Resources\Buffers</Filter>
-    </ClInclude>
     <ClInclude Include="FramebufferObject.h">
       <Filter>src\StE\Core\LLR\GPU Resources\Surfaces\FBO</Filter>
     </ClInclude>
@@ -267,10 +288,10 @@
       <Filter>src\StE\Core\EngineControl</Filter>
     </ClInclude>
     <ClInclude Include="signal.h">
-      <Filter>src\StE\STL Extensions\signal</Filter>
+      <Filter>src\StE\STL Extensions\Signal</Filter>
     </ClInclude>
     <ClInclude Include="connection.h">
-      <Filter>src\StE\STL Extensions\signal</Filter>
+      <Filter>src\StE\STL Extensions\Signal</Filter>
     </ClInclude>
     <ClInclude Include="hid.h">
       <Filter>src\StE\Core\EngineControl\HID</Filter>
@@ -280,12 +301,6 @@
     </ClInclude>
     <ClInclude Include="pointer.h">
       <Filter>src\StE\Core\EngineControl\HID</Filter>
-    </ClInclude>
-    <ClInclude Include="AtomicCounterBuffer.h">
-      <Filter>src\StE\Core\LLR\GPU Resources\Buffers</Filter>
-    </ClInclude>
-    <ClInclude Include="ShaderStorageBuffer.h">
-      <Filter>src\StE\Core\LLR\GPU Resources\Buffers</Filter>
     </ClInclude>
     <ClInclude Include="texture_enums.h">
       <Filter>src\StE\Core\LLR\GPU Resources\Surfaces\Textures</Filter>
@@ -299,14 +314,101 @@
     <ClInclude Include="create_type.h">
       <Filter>src\StE\STL Extensions</Filter>
     </ClInclude>
-    <ClInclude Include="concurrent_unordered_map.h">
+    <ClInclude Include="texture_pool.h">
+      <Filter>src\StE\Core\Graphics Framework\Utilities\Texture Pools</Filter>
+    </ClInclude>
+    <ClInclude Include="texture_sparse.h">
+      <Filter>src\StE\Core\LLR\GPU Resources\Surfaces\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="Object.h">
+      <Filter>src\StE\Core\Graphics Framework\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>src\StE\Core\Graphics Framework\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectVertexData.h">
+      <Filter>src\StE\Core\Graphics Framework\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>src\StE\Core\Graphics Framework\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="buffer_lock.h">
+      <Filter>src\StE\Core\LLR\GPU Resources\Buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="range.h">
       <Filter>src\StE\STL Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="mapped_buffer_object_unique_ptr.h">
+      <Filter>src\StE\Core\LLR\GPU Resources\Buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="AtomicCounterBuffer.h">
+      <Filter>src\StE\Core\LLR\GPU Resources\Buffers\Data Storage</Filter>
+    </ClInclude>
+    <ClInclude Include="IndirectDrawBufferObject.h">
+      <Filter>src\StE\Core\LLR\GPU Resources\Buffers\Data Storage</Filter>
+    </ClInclude>
+    <ClInclude Include="PixelBufferObject.h">
+      <Filter>src\StE\Core\LLR\GPU Resources\Buffers\Data Storage</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderStorageBuffer.h">
+      <Filter>src\StE\Core\LLR\GPU Resources\Buffers\Data Storage</Filter>
+    </ClInclude>
+    <ClInclude Include="Sampler.h">
+      <Filter>src\StE\Core\LLR\GPU Resources\Surfaces\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="interruptible_thread.h">
+      <Filter>src\StE\STL Extensions\Threading</Filter>
+    </ClInclude>
+    <ClInclude Include="scoped_thread.h">
+      <Filter>src\StE\STL Extensions\Threading</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelLoader.h">
+      <Filter>src\StE\Resources\Models</Filter>
     </ClInclude>
     <ClInclude Include="concurrent_pointer_recycler.h">
-      <Filter>src\StE\STL Extensions</Filter>
+      <Filter>src\StE\STL Extensions\Concurrency</Filter>
+    </ClInclude>
+    <ClInclude Include="concurrent_queue.h">
+      <Filter>src\StE\STL Extensions\Concurrency</Filter>
+    </ClInclude>
+    <ClInclude Include="concurrent_unordered_map.h">
+      <Filter>src\StE\STL Extensions\Concurrency</Filter>
     </ClInclude>
     <ClInclude Include="shared_double_reference_guard.h">
+      <Filter>src\StE\STL Extensions\Concurrency</Filter>
+    </ClInclude>
+    <ClInclude Include="balancing_thread_pool.h">
+      <Filter>src\StE\STL Extensions\Concurrency</Filter>
+    </ClInclude>
+    <ClInclude Include="task_scheduler.h">
+      <Filter>src\StE\STL Extensions\Concurrency</Filter>
+    </ClInclude>
+    <ClInclude Include="windows.h">
+      <Filter>src\StE\STL Extensions\Platform Dependant</Filter>
+    </ClInclude>
+    <ClInclude Include="trace.h">
+      <Filter>src\StE\STL Extensions\Platform Dependant</Filter>
+    </ClInclude>
+    <ClInclude Include="system_times.h">
+      <Filter>src\StE\STL Extensions\Platform Dependant</Filter>
+    </ClInclude>
+    <ClInclude Include="optional.h">
       <Filter>src\StE\STL Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="types.h">
+      <Filter>src\StE\STL Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="thread_constants.h">
+      <Filter>src\StE\STL Extensions\Threading</Filter>
+    </ClInclude>
+    <ClInclude Include="function_wrapper.h">
+      <Filter>src\StE\STL Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="function_traits.h">
+      <Filter>src\StE\STL Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="task.h">
+      <Filter>src\StE\STL Extensions\Concurrency</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -337,13 +439,16 @@
     <None Include="gen_depth_layers.frag">
       <Filter>src\Shaders</Filter>
     </None>
-    <None Include="gen_mipmaps.frag">
-      <Filter>src\Shaders</Filter>
-    </None>
     <None Include="blur_x.frag">
       <Filter>src\Shaders</Filter>
     </None>
     <None Include="blur_y.frag">
+      <Filter>src\Shaders</Filter>
+    </None>
+    <None Include="hdr_lum_downsample.glsl">
+      <Filter>src\Shaders</Filter>
+    </None>
+    <None Include="hdr_create_luminance.frag">
       <Filter>src\Shaders</Filter>
     </None>
   </ItemGroup>

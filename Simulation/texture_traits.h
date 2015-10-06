@@ -40,5 +40,7 @@ template <llr_resource_type type> struct texture_has_mipmaps {
 
 template <llr_resource_type type> struct texture_has_samples_or_levels { static constexpr bool value = texture_is_multisampled<type>::value || texture_has_mipmaps<type>::value; };
 
+template <llr_resource_type type> struct texture_is_pixel_transferable { static constexpr bool value = !texture_is_multisampled<type>::value; };
+
 }
 }

@@ -174,6 +174,7 @@ gli::texture2D SurfaceIO::load_png(const std::string &file_name) {
 		break;
 	default:
 		ste_log_error() << file_name << " Unknown libpng color type " << color_type;
+		fclose(fp);
 		return gli::texture2D();
 	}
 
@@ -232,6 +233,7 @@ gli::texture2D SurfaceIO::load_png(const std::string &file_name) {
 		delete[] temp;
 	}
 
+	fclose(fp);
 	png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
 	free(row_pointers);
 

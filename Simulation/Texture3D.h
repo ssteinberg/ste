@@ -19,6 +19,7 @@ public:
 	Texture3D& operator=(Texture3D &&m) = default;
 
 	Texture3D(gli::format format, const size_type &size, int levels = 1) : texture_mipmapped(format, size, levels) {}
+	Texture3D(gli::format format, const size_type &size, int levels, sampler_descriptor descriptor) : texture_mipmapped(format, size, levels, descriptor) {}
 	Texture3D(const gli::texture3D &t, bool generate_mipmaps = false) : texture_mipmapped(t.format(), t.dimensions(), generate_mipmaps ? calculate_mipmap_max_level(t.dimensions()) + 1 : t.levels()) {
 		upload(t, generate_mipmaps);
 	}

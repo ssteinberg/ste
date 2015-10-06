@@ -8,6 +8,10 @@
 
 namespace StE {
 
+/*
+*	From Anthony William's "C++ Concurrency in Action"
+*/
+
 template <typename T>
 class concurrent_queue {
 private:

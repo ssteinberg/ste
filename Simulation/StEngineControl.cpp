@@ -4,6 +4,7 @@
 #include "Log.h"
 
 #include <chrono>
+#include <thread>
 
 using namespace StE;
 
@@ -75,6 +76,7 @@ void StEngineControl::run_loop(std::function<bool()> process) {
 			frames = 0;
 		}
 
+		global_scheduler.run_loop();
 		glfwPollEvents();
 
 		running &= process();

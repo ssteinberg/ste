@@ -19,11 +19,18 @@ class GenericResource {
 protected:
 	unsigned int id;
 
+	GenericResource() {}
+
 public:
 	virtual llr_resource_type resource_type() const = 0;
 
 	int get_resource_id() const { return id; }
 	virtual bool is_valid() const = 0;
+
+	GenericResource(GenericResource &&res) : id(res.id) { res.id = 0; }
+	GenericResource &operator=(GenericResource &&res) = delete;
+	GenericResource(const GenericResource &res) = delete;
+	GenericResource &operator=(const GenericResource &res) = delete;
 };
 
 template <class A>

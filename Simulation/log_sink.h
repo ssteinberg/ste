@@ -3,8 +3,14 @@
 
 #pragma once
 
+#include "stdafx.h"
+
+#include "trace.h"
+
 #include <string>
 #include <condition_variable>
+
+#include <iostream>
 
 #include "log_entry.h"
 
@@ -21,6 +27,9 @@ public:
 	virtual ~log_sink() {}
 
 	log_sink &operator<<(const std::string &str) {
+		if (data.c != log_class::info_class_log)
+			TRACE((str + "\n").data());
+
 		queue->push(log_entry(data, str));
 		notifier->notify_one();
 

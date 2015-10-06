@@ -44,7 +44,6 @@ public:
 
 class system_provided_framebuffer : protected frame_buffer_object<system_provided_framebuffer_dummy_allocator> {
 private:
-	friend class RenderContext;
 	template<typename A, GLenum color_attachment_point>
 	friend class fbo_system_provided_color_attachment_point;
 
@@ -58,11 +57,10 @@ private:
 	front_attachment_point front_color_attchment;
 	back_attachment_point back_color_attchment;
 
-protected:
+public:
 	system_provided_framebuffer(const glm::tvec2<std::size_t> &size, const gli::format &format) : 
 		Base(), front_color_attchment(this, size, format), back_color_attchment(this, size, format) {}
 
-public:
 	system_provided_framebuffer(system_provided_framebuffer &&t) = delete;
 	system_provided_framebuffer &operator=(system_provided_framebuffer &&t) = delete;
 	system_provided_framebuffer(const system_provided_framebuffer &t) = delete;

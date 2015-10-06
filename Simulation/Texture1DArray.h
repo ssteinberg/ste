@@ -16,6 +16,7 @@ public:
 	Texture1DArray& operator=(Texture1DArray &&m) = default;
 
 	Texture1DArray(gli::format format, const size_type &size, int levels = 1) : texture_mipmapped(format, size, levels) {}
+	Texture1DArray(gli::format format, const size_type &size, int levels, sampler_descriptor descriptor) : texture_mipmapped(format, size, levels, descriptor) {}
 	Texture1DArray(const gli::texture1DArray &t, bool generate_mipmaps = false)
 		: texture_mipmapped(t.format(), size_type({ t.dimensions().x, t.layers() }), generate_mipmaps ? calculate_mipmap_max_level(typename texture_size_type<1>::type{ t.dimensions().x }) + 1 : t.levels()) {
 		upload(t, generate_mipmaps);

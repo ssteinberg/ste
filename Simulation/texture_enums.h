@@ -15,12 +15,14 @@ enum class ImageAccessMode {
 };
 
 enum class TextureWrapMode {
+	None = 0,
 	ClampToEdge = GL_CLAMP_TO_EDGE,
 	Wrap = GL_REPEAT,
 	Mirrored = GL_MIRRORED_REPEAT,
 };
 
 enum class TextureFiltering {
+	None = 0,
 	Linear = GL_LINEAR,
 	Nearest = GL_NEAREST,
 };

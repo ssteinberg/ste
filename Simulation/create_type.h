@@ -5,7 +5,7 @@
 
 namespace StE {
 
-template <typename T>
-class create_type {};
+template <int N>
+struct create_type {};
 
 }

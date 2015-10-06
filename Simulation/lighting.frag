@@ -11,12 +11,12 @@ layout(binding = 2) uniform sampler2D occlusion_tex;
 layout(binding = 3) uniform sampler2D color_tex;
 
 const float l_intensity = .7;
-const vec3 Ka = vec3(.5,.5,.5);
-const vec3 Kd = vec3(.6,.6,.6);
+const float Ka = .5;
+const float Kd = .6;
 
 uniform bool ssao = true;
 
-vec3 l_calc(vec3 n, vec3 p, float occ) {
+float l_calc(vec3 n, vec3 p, float occ) {
 	vec3 s = normalize(vec3(l_pos) - p);
 
 	return l_intensity * ((1.0f - occ) * Ka +
@@ -29,5 +29,7 @@ void main() {
 	vec3 color = texelFetch(color_tex, ivec2(gl_FragCoord.xy), 0).rgb;
 	float occ = ssao ? texelFetch(occlusion_tex, ivec2(gl_FragCoord.xy), 0).x : 0.f;
 
-	gl_FragColor = vec4(color * l_calc(normal, position, occ), 1);
+	color.z *= l_calc(normal, position, occ);
+
+	gl_FragColor = vec4(color, 1);
 }

@@ -1,10 +1,6 @@
 
 #include "stdafx.h"
-
-#define WIN32_LEAN_AND_MEAN
-#define NOGDI
-#define NOMINMAX
-#include <Windows.h>
+#include "windows.h"
 
 #include <glm/glm.hpp>
 
@@ -19,7 +15,7 @@
 #include "Keyboard.h"
 #include "Pointer.h"
 #include "StEngineControl.h"
-#include "Model.h"
+#include "ModelLoader.h"
 #include "Camera.h"
 #include "GLSLProgram.h"
 #include "ShaderLoader.h"
@@ -31,13 +27,9 @@
 #include "Texture2DArray.h"
 #include "PixelBufferObject.h"
 #include "AtomicCounterBuffer.h"
-#include "concurrent_unordered_map.h"
-
-#include "tbb/concurrent_hash_map.h"
-#include <chrono>
-#include <random>
-
-using namespace tbb;
+#include "Scene.h"
+#include "task_scheduler.h"
+#include "task.h"
 
 using namespace StE::LLR;
 
@@ -52,239 +44,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 	StE::Log logger("Simulation");
 	logger.redirect_std_outputs();
 	ste_log_set_global_logger(&logger);
-
-	static constexpr float read_ratio = .9f;
-
-	StE::concurrent_unordered_map<int, std::string> map;
-	concurrent_hash_map<int, std::string> tbb_map;
-
-	auto time = std::chrono::high_resolution_clock::now();
-	for (int j = 0; j < 100; ++j) {
-		tbb_map.insert({ j, std::string("temp") + std::to_string(j) });
-	}
-	std::chrono::duration<float> tbb_delta = std::chrono::high_resolution_clock::now() - time;
-	ste_log() << "TBB creation time: " << tbb_delta.count() << "sec" << std::endl;
-
-	time = std::chrono::high_resolution_clock::now();
-	for (int j = 0; j < 100; ++j) {
-		map.emplace(j, std::string("temp") + std::to_string(j));
-	}
-	std::chrono::duration<float> ste_delta = std::chrono::high_resolution_clock::now() - time;
-	ste_log() << "StE creation time: " << ste_delta.count() << "sec" << std::endl;
- 
- 	time = std::chrono::high_resolution_clock::now();
- 	{
-		std::thread t1([&]() {
-			for (int i = 0; i < 1000000; ++i) {
-				std::string str;
-				for (int j = 0; j < 100 * (1 - read_ratio); ++j) {
-					tbb_map.insert({ -1, "test1" });
-					tbb_map.insert({ ((j + i) * 101) % 98710, "fset4weeeeeeebyt54t 4w39r r93 30ur83429 r32r34r yor  r34rt42wrt42tr143896t4 481tr434r 4 4wr" });
-					tbb_map.insert({ ((j + i) * 1801) % 90, "fset4weeeeeeebryeyhregfdhg r32r34r yor  r34rt42wrtgfdfd42tr143896t4 481tr434r 4 4wr" });
-					tbb_map.insert({ ((j + i) * 10) % 910, "fset4weeeeeeebyt54t 4w39r r93 gd30ur83429  yor  r34rt42wrt42tr14389hgdf 5 566t4 481tr434r 4 4wr" });
-					tbb_map.insert({ ((j + i) * 31) % 865710, "fset4weeeeeeebyt54t  481tr434r 4 4wr" });
-					tbb_map.erase(((j + i) * 42) % 231320);
-					tbb_map.erase(((j + i) * 99) % 2310);
-				}
-				for (int j = 0; j < 100 * read_ratio; ++j) {
-					concurrent_hash_map<int, std::string>::accessor result;
-					tbb_map.find(result,((j + i) * 48) % 342);
-					tbb_map.find(result,((j + i) * 54) % 63);
-					tbb_map.find(result,((j + i) * 12) % 654);
-					tbb_map.find(result,((j + i) * 87) % 1345340);
-					tbb_map.find(result,((j + i) * 54) % 63);
-					tbb_map.find(result,-1);
-				}
-			}
-		});
-		std::thread t2([&]() {
-			for (int i = 0; i < 1000000; ++i) {
-				std::string str;
-				for (int j = 0; j < 100 * (1 - read_ratio); ++j) {
-					tbb_map.insert({ ((j + i) * 546) % 54352, "fset4weeeeeeebyt54t 4w39r r93 30ur83429 r32r34r yor  r34rt42wrt42tr143fe896t4 481tr434r 4 4wr" });
-					tbb_map.insert({ ((j + i) * 43) % 43, "fset4weeeeeeebryeyhregfdhg r32rer34r yor  r34rt42wrtgfdfd42tr143896t4 481tr434r 4 4wr" });
-					tbb_map.erase(((j + i) * 124) % 2313320);
-					tbb_map.insert({ ((j + i) * 3) % 434, "fset4weeeeeeebyt54t 4w39r r93 gd30ur83429  yor  r34rt42wrt42tr1434389hgdf 5 566t4 481tr434r 4 4wr" });
-					tbb_map.insert({ ((j + i) * 564) % 12325, "fset4weeeeeeebyt54t  481trfd434r 4 4wr" });
-					tbb_map.insert({ -1, "test2" });
-					tbb_map.erase(((j + i) * 399) % 10);
-				}
-				for (int j = 0; j < 100 * read_ratio; ++j) {
-					concurrent_hash_map<int, std::string>::accessor result;
-					tbb_map.find(result,((j + i) * 4) % 786);
-					tbb_map.find(result,((j + i) * 534) % 635);
-					tbb_map.find(result,((j + i) * 4312) % 65363);
-					tbb_map.find(result,((j + i) * 7) % 6);
-					tbb_map.find(result,((j + i) * 534) % 64343443);
-					tbb_map.find(result,-1);
-				}
-			}
-		});
-		std::thread t3([&]() {
-			for (int i = 0; i < 1000000; ++i) {
-				std::string str;
-				for (int j = 0; j < 100 * (1 - read_ratio); ++j) {
-					tbb_map.erase(((j + i) * 545) % 54);
-					tbb_map.insert({ ((j + i) * 324) % 76, "fset4weeeeeeebyt54t 4w39r r93 30ur83429 r32r34r yor  r34rt42wrt42tr143fe896t4 481tr434r 4 4wr" });
-					tbb_map.insert({ ((j + i) * 4) % 34, "fset4weeeeeeebryeyhregfdhg r32rer34r yor  r34rt42wrtgfdfd42tr143896t4 481tr434r 4 4wr" });
-					tbb_map.erase(((j + i) * 34) % 1234);
-					tbb_map.insert({ -1, "test3" });
-					tbb_map.insert({ ((j + i) * 3) % 434, "fset4weeeeeeebyt54t 4w39r r93 gd30ur83429  yor  r34rt42wrt42tr1434389hgdf 5 566t4 481tr434r 4 4wr" });
-					tbb_map.insert({ ((j + i) * 564) % 12325, "fset4weeeeeeebyt54t  481trfd434r 4 4wr" });
-				}
-				for (int j = 0; j < 100 * read_ratio; ++j) {
-					concurrent_hash_map<int, std::string>::accessor result;
-					tbb_map.find(result,((j + i) * 4) % 435);
-					tbb_map.find(result,((j + i) * 54) % 43);
-					tbb_map.find(result,((j + i) * 43) % 12);
-					tbb_map.find(result,((j + i) * 54) % 6);
-					tbb_map.find(result,((j + i) * 8) % 4565);
-					tbb_map.find(result,-1);
-				}
-			}
-		});
-		std::thread t4([&]() {
-			for (int i = 0; i < 1000000; ++i) {
-				std::string str;
-				for (int j = 0; j < 100 * (1 - read_ratio); ++j) {
-					tbb_map.insert({ ((j + i) * 556) % 54352, "fset4weeeeeeebyt54t 4w39r r93 30ur83429 r32r34r yor  r34rt42wrt42tr143fe896t4 481tr434r 4 4wr" });
-					tbb_map.insert({ ((j + i) * 43) % 43, "fset4weeeeeeebryeyhre54gfdhg r32rer34r yor  r34rt42wrtgfdfd42tr143896t4 481tr434r 4 4wr" });
-					tbb_map.erase(((j + i) * 124) % 231320);
-					tbb_map.erase(((j + i) * 43) % 140);
-					tbb_map.erase(((j + i) * 3399) % 1234);
-					tbb_map.insert({ -1, "test4" });
-					tbb_map.erase(((j + i) * 1) % 43);
-				}
-				for (int j = 0; j < 100 * read_ratio; ++j) {
-					concurrent_hash_map<int, std::string>::accessor result;
-					tbb_map.find(result,((j + i) * 14) % 78236);
-					tbb_map.find(result,((j + i) * 534) % 65);
-					tbb_map.find(result,((j + i) * 243) % 12);
-					tbb_map.find(result,((j + i) * 54) % 4);
-					tbb_map.find(result,((j + i) * 94) % 63);
-					tbb_map.find(result,-1);
-				}
-			}
-		});
- 
- 
- 		t1.join();
- 		t2.join();
- 		t3.join();
- 		t4.join();
- 		std::chrono::duration<float> tbb_delta = std::chrono::high_resolution_clock::now() - time;
- 		ste_log() << "TBB time: " << tbb_delta.count() << "sec" << std::endl;
- 	}
-
-	time = std::chrono::high_resolution_clock::now();
-	{
-		std::thread t1([&]() {
-			for (int i = 0; i < 1000000; ++i) {
-				std::string str;
-				for (int j = 0; j < 100 * (1 - read_ratio); ++j) {
-					map.emplace(-1, "test1");
-					map.emplace(((j + i) * 101) % 98710, "fset4weeeeeeebyt54t 4w39r r93 30ur83429 r32r34r yor  r34rt42wrt42tr143896t4 481tr434r 4 4wr");
-					map.emplace(((j + i) * 1801) % 90, "fset4weeeeeeebryeyhregfdhg r32r34r yor  r34rt42wrtgfdfd42tr143896t4 481tr434r 4 4wr");
-					map.emplace(((j + i) * 10) % 910, "fset4weeeeeeebyt54t 4w39r r93 gd30ur83429  yor  r34rt42wrt42tr14389hgdf 5 566t4 481tr434r 4 4wr");
-					map.emplace(((j + i) * 31) % 865710, "fset4weeeeeeebyt54t  481tr434r 4 4wr");
-					map.remove(((j + i) * 42) % 231320);
-					map.remove(((j + i) * 99) % 2310);
-				}
-				for (int j = 0; j < 100 * read_ratio; ++j) {
-					auto ret1 = map.try_get(((j + i) * 48) % 342);
-					auto ret2 = map.try_get(((j + i) * 54) % 63);
-					auto ret3 = map.try_get(((j + i) * 12) % 654);
-					auto ret4 = map.try_get(((j + i) * 87) % 1345340);
-					auto ret5 = map.try_get(((j + i) * 54) % 63);
-					auto ret = map.try_get(-1);
-					if (ret.is_valid())
-						assert(ret->find("test") != std::string::npos);
-				}
-			}
-		});
-		std::thread t2([&]() {
-			for (int i = 0; i < 1000000; ++i) {
-				std::string str;
-				for (int j = 0; j < 100 * (1 - read_ratio); ++j) {
-					map.emplace(((j + i) * 546) % 54352, "fset4weeeeeeebyt54t 4w39r r93 30ur83429 r32r34r yor  r34rt42wrt42tr143fe896t4 481tr434r 4 4wr");
-					map.emplace(((j + i) * 43) % 43, "fset4weeeeeeebryeyhregfdhg r32rer34r yor  r34rt42wrtgfdfd42tr143896t4 481tr434r 4 4wr");
-					map.remove(((j + i) * 124) % 2313320);
-					map.emplace(((j + i) * 3) % 434, "fset4weeeeeeebyt54t 4w39r r93 gd30ur83429  yor  r34rt42wrt42tr1434389hgdf 5 566t4 481tr434r 4 4wr");
-					map.emplace(((j + i) * 564) % 12325, "fset4weeeeeeebyt54t  481trfd434r 4 4wr");
-					map.emplace(-1, "test2");
-					map.remove(((j + i) * 399) % 10);
-				}
-				for (int j = 0; j < 100 * read_ratio; ++j) {
-					auto ret1 = map.try_get(((j + i) * 4) % 786);
-					auto ret2 = map.try_get(((j + i) * 534) % 635);
-					auto ret3 = map.try_get(((j + i) * 4312) % 65363);
-					auto ret4 = map.try_get(((j + i) * 7) % 6);
-					auto ret5 = map.try_get(((j + i) * 534) % 64343443);
-					auto ret = map.try_get(-1);
-					if (ret.is_valid())
-						assert(ret->find("test") != std::string::npos);
-				}
-			}
-		});
-		std::thread t3([&]() {
-			for (int i = 0; i < 1000000; ++i) {
-				std::string str;
-				for (int j = 0; j < 100 * (1 - read_ratio); ++j) {
-					map.remove(((j + i) * 545) % 54);
-					map.emplace(((j + i) * 324) % 76, "fset4weeeeeeebyt54t 4w39r r93 30ur83429 r32r34r yor  r34rt42wrt42tr143fe896t4 481tr434r 4 4wr");
-					map.emplace(((j + i) * 4) % 34, "fset4weeeeeeebryeyhregfdhg r32rer34r yor  r34rt42wrtgfdfd42tr143896t4 481tr434r 4 4wr");
-					map.remove(((j + i) * 34) % 1234);
-					map.emplace(-1, "test3");
-					map.emplace(((j + i) * 3) % 434, "fset4weeeeeeebyt54t 4w39r r93 gd30ur83429  yor  r34rt42wrt42tr1434389hgdf 5 566t4 481tr434r 4 4wr");
-					map.emplace(((j + i) * 564) % 12325, "fset4weeeeeeebyt54t  481trfd434r 4 4wr");
-				}
-				for (int j = 0; j < 100 * read_ratio; ++j) {
-					auto ret1 = map.try_get(((j + i) * 4) % 435);
-					auto ret2 = map.try_get(((j + i) * 54) % 43);
-					auto ret3 = map.try_get(((j + i) * 43) % 12);
-					auto ret4 = map.try_get(((j + i) * 54) % 6);
-					auto ret5 = map.try_get(((j + i) * 8) % 4565);
-					auto ret = map.try_get(-1);
-					if (ret.is_valid())
-						assert(ret->find("test") != std::string::npos);
-				}
-			}
-		});
-		std::thread t4([&]() {
-			for (int i = 0; i < 1000000; ++i) {
-				std::string str;
-				for (int j = 0; j < 100 * (1 - read_ratio); ++j) {
-					map.emplace(((j + i) * 556) % 54352, "fset4weeeeeeebyt54t 4w39r r93 30ur83429 r32r34r yor  r34rt42wrt42tr143fe896t4 481tr434r 4 4wr");
-					map.emplace(((j + i) * 43) % 43, "fset4weeeeeeebryeyhre54gfdhg r32rer34r yor  r34rt42wrtgfdfd42tr143896t4 481tr434r 4 4wr");
-					map.remove(((j + i) * 124) % 231320);
-					map.remove(((j + i) * 43) % 140);
-					map.remove(((j + i) * 3399) % 1234);
-					map.emplace(-1, "test4");
-					map.remove(((j + i) * 1) % 43);
-				}
-				for (int j = 0; j < 100 * read_ratio; ++j) {
-					auto ret1 = map.try_get(((j + i) * 14) % 78236);
-					auto ret2 = map.try_get(((j + i) * 534) % 65);
-					auto ret3 = map.try_get(((j + i) * 243) % 12);
-					auto ret4 = map.try_get(((j + i) * 54) % 4);
-					auto ret5 = map.try_get(((j + i) * 94) % 63);
-					auto ret = map.try_get(-1);
-					if (ret.is_valid())
-						assert(ret->find("test") != std::string::npos);
-				}
-			}
-		});
-
-		t1.join();
-		t2.join();
-		t3.join();
-		t4.join();
-		std::chrono::duration<float> ste_delta = std::chrono::high_resolution_clock::now() - time;
-		ste_log() << "StE time: " << ste_delta.count() << "sec" << std::endl;
-	}
-
-	return true;
-
 	ste_log() << "Simulation running";
 
 	constexpr float w = 1400, h = 900;
@@ -294,12 +53,25 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 	constexpr float clip_near = 1.f;
 
 	StE::StEngineControl rc;
-	rc.init_render_context("Shlomi Steinberg - Simulation", { w, h });
+	rc.init_render_context("Shlomi Steinberg - Simulation", { w, h }, false, false);
+
+	std::string gl_err_desc;
+	while (StE::LLR::opengl::query_gl_error(gl_err_desc));
+// 	StE::Graphics::texture_pool tp;
+// 	StE::LLR::Texture2D tt(gli::format::FORMAT_RGBA8_UNORM, StE::LLR::Texture2D::size_type(256, 256), 5);
+// 	StE::LLR::opengl::query_gl_error(gl_err_desc);
+// 	auto itt = tp.commit(tt);
+// 	tp.commit(tt);
+// 	tp.uncommit(itt);
+ 	//while (StE::LLR::opengl::query_gl_error(gl_err_desc));
+
 	rc.set_clipping_planes(clip_near, clip_far);
 	camera.set_position({ -91.0412979, 105.631607, -60.2330551 });
 	camera.lookat({ -91.9486542, 105.291336, -59.98624 });
 
 	// Prepare
+	StE::Graphics::Scene scene;
+
 	StE::LLR::GLSLProgram transform;
 	transform.add_shader(StE::Resource::ShaderLoader::compile_from_path("transform.vert"));
 	transform.add_shader(StE::Resource::ShaderLoader::compile_from_path("frag.frag"));
@@ -330,6 +102,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 	deffered.add_shader(StE::Resource::ShaderLoader::compile_from_path("lighting.frag"));
 	deffered.link();
 
+	StE::LLR::GLSLProgram hdr_create_luminance;
+	hdr_create_luminance.add_shader(StE::Resource::ShaderLoader::compile_from_path("passthrough.vert"));
+	hdr_create_luminance.add_shader(StE::Resource::ShaderLoader::compile_from_path("hdr_create_luminance.frag"));
+	hdr_create_luminance.link();
+
+	StE::LLR::GLSLProgram hdr_luminance_downsample;
+	hdr_luminance_downsample.add_shader(StE::Resource::ShaderLoader::compile_from_path("hdr_lum_downsample.glsl"));
+	hdr_luminance_downsample.link();
+
 	constexpr int noise_size_w = 28;
 	constexpr int noise_size_h = 28;
 	gli::texture2D tex(1, gli::format::FORMAT_RG32_SFLOAT, { noise_size_w, noise_size_h });
@@ -346,18 +127,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 			*vectors = v;
 		}
 	}
-	StE::LLR::Texture2D noise(tex);
-	noise.set_min_filter(StE::LLR::TextureFiltering::Nearest);
-	noise.set_mag_filter(StE::LLR::TextureFiltering::Nearest);
+	StE::LLR::Texture2D noise(tex.format(), tex.dimensions(), 1, sampler_descriptor(TextureFiltering::Nearest, TextureFiltering::Nearest));
+	noise.upload(tex);
 
 	StE::LLR::RenderTarget depth_output(gli::format::FORMAT_D24_UNORM, StE::LLR::Texture2D::size_type(w, h));
-	StE::LLR::Texture2D normal_output(gli::format::FORMAT_RGB32_SFLOAT, StE::LLR::Texture2D::size_type(w, h), 1);
-	normal_output.set_min_filter(StE::LLR::TextureFiltering::Nearest);
-	normal_output.set_mag_filter(StE::LLR::TextureFiltering::Nearest);
+	StE::LLR::Texture2D normal_output(gli::format::FORMAT_RGB32_SFLOAT, StE::LLR::Texture2D::size_type(w, h), 1, 
+									  sampler_descriptor(TextureFiltering::Nearest, TextureFiltering::Nearest));
 	StE::LLR::Texture2D position_output(gli::format::FORMAT_RGB32_SFLOAT, StE::LLR::Texture2D::size_type(w, h), 1);
-	StE::LLR::Texture2D color_output(gli::format::FORMAT_RGB8_UNORM, StE::LLR::Texture2D::size_type(w, h), 1);
-	color_output.set_min_filter(StE::LLR::TextureFiltering::Nearest);
-	color_output.set_mag_filter(StE::LLR::TextureFiltering::Nearest);
+	StE::LLR::Texture2D color_output(gli::format::FORMAT_RGB32_SFLOAT, StE::LLR::Texture2D::size_type(w, h), 1, 
+									 sampler_descriptor(TextureFiltering::Nearest, TextureFiltering::Nearest));
 	StE::LLR::FramebufferObject fbo;
 	fbo.depth_binding_point() = depth_output;
 	fbo[0] = position_output[0];
@@ -367,19 +145,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 	0_color_idx = fbo[1];
 	2_color_idx = fbo[2];
 
-	StE::LLR::Texture2D occlusion_final1_output(gli::format::FORMAT_R8_UNORM, StE::LLR::Texture2D::size_type(w, h), 1);
-	occlusion_final1_output.set_min_filter(StE::LLR::TextureFiltering::Nearest);
-	occlusion_final1_output.set_mag_filter(StE::LLR::TextureFiltering::Nearest);
-	occlusion_final1_output.set_wrap_s(StE::LLR::TextureWrapMode::ClampToEdge);
-	occlusion_final1_output.set_wrap_t(StE::LLR::TextureWrapMode::ClampToEdge);
+	StE::LLR::Texture2D occlusion_final1_output(gli::format::FORMAT_R8_UNORM, StE::LLR::Texture2D::size_type(w, h), 1, 
+												sampler_descriptor(TextureFiltering::Nearest, TextureFiltering::Nearest, TextureWrapMode::ClampToEdge, TextureWrapMode::ClampToEdge));
 	StE::LLR::FramebufferObject fbo_final1;
 	fbo_final1[0] = occlusion_final1_output[0];
 
-	StE::LLR::Texture2D occlusion_final2_output(gli::format::FORMAT_R8_UNORM, StE::LLR::Texture2D::size_type(w, h), 1);
-	occlusion_final2_output.set_min_filter(StE::LLR::TextureFiltering::Nearest);
-	occlusion_final2_output.set_mag_filter(StE::LLR::TextureFiltering::Nearest);
-	occlusion_final2_output.set_wrap_s(StE::LLR::TextureWrapMode::ClampToEdge);
-	occlusion_final2_output.set_wrap_t(StE::LLR::TextureWrapMode::ClampToEdge);
+	StE::LLR::Texture2D occlusion_final2_output(gli::format::FORMAT_R8_UNORM, StE::LLR::Texture2D::size_type(w, h), 1,
+												sampler_descriptor(TextureFiltering::Nearest, TextureFiltering::Nearest, TextureWrapMode::ClampToEdge, TextureWrapMode::ClampToEdge));
 	StE::LLR::FramebufferObject fbo_final2;
 	fbo_final2[0] = occlusion_final2_output[0];
 
@@ -395,31 +167,39 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 	vao[0] = (*vbo)[1];
 	vao[1] = (*vbo)[0];
 
-	StE::LLR::Texture2DArray depth_layers(gli::format::FORMAT_R32_UINT, StE::LLR::Texture2DArray::size_type(w, h, depth_layers_count), 1);
-	depth_layers.set_mag_filter(StE::LLR::TextureFiltering::Nearest);
-	depth_layers.set_min_filter(StE::LLR::TextureFiltering::Nearest);
-	depth_layers.set_wrap_s(StE::LLR::TextureWrapMode::ClampToEdge);
-	depth_layers.set_wrap_t(StE::LLR::TextureWrapMode::ClampToEdge);
+	StE::LLR::Texture2DArray depth_layers(gli::format::FORMAT_R32_UINT, StE::LLR::Texture2DArray::size_type(w, h, depth_layers_count), 1,
+										  sampler_descriptor(TextureFiltering::Nearest, TextureFiltering::Nearest, TextureWrapMode::ClampToEdge, TextureWrapMode::ClampToEdge));
 	StE::LLR::FramebufferObject fbo_depth_layers;
 	for (int i = 0; i < depth_layers_count; ++i)
 		fbo_depth_layers[i] = depth_layers[0][i].with_format(gli::format::FORMAT_R32_SINT);
 
 	StE::LLR::Texture2DArray f_depth_layers(gli::format::FORMAT_R32_SFLOAT, StE::LLR::Texture2DArray::size_type(w, h, depth_layers_count), max_steps);
-	f_depth_layers.set_min_filter(StE::LLR::TextureFiltering::Linear);
-	f_depth_layers.set_mipmap_filter(StE::LLR::TextureFiltering::Nearest);
-	f_depth_layers.set_wrap_s(StE::LLR::TextureWrapMode::ClampToEdge);
-	f_depth_layers.set_wrap_t(StE::LLR::TextureWrapMode::ClampToEdge);
+	StE::LLR::SamplerMipmapped depth_sampling_descriptor(StE::LLR::TextureWrapMode::ClampToEdge, StE::LLR::TextureWrapMode::ClampToEdge);
 	StE::LLR::FramebufferObject fbo_f_depth_layers;
 	for (int i = 0; i < depth_layers_count; ++i)
 		fbo_f_depth_layers[i] = f_depth_layers[0][i];
 
- 	for (int i = 0; i < depth_layers_count; ++i)
-		depth_layers[0][i].with_format(gli::format::FORMAT_R32_SINT).bind(image_layout_binding(i));
 
-	ste_log_query_and_log_gl_errors();
+	int luminance_w = 1, luminance_h = 1;
+	while (luminance_w * 2 < w && luminance_h * 2 < h) {
+		luminance_w *= 2;
+		luminance_h *= 2;
+	}
+	int hdr_downsampling_levels = StE::LLR::Texture2D::calculate_mipmap_max_level({ luminance_w/2, luminance_h/2 }) + 1;
+	std::vector<std::unique_ptr<StE::LLR::Texture2D>> luminance_downsampled(hdr_downsampling_levels);
+	for (int i = 0; i < hdr_downsampling_levels; ++i) {
+		auto size = StE::LLR::Texture2D::size_type(std::max(1, luminance_w >> (i+1)), std::max(1, luminance_h >> (i+1)));
+		luminance_downsampled[i] = std::make_unique<StE::LLR::Texture2D>(gli::format::FORMAT_RGBA32_SFLOAT, size, 1);
+	}
 
-	StE::Resource::Model hall_model;
-	hall_model.load_model(R"(data\models\sponza.obj)");
+	StE::LLR::Texture2D hdr_image(gli::format::FORMAT_RGB32_SFLOAT, StE::LLR::Texture2D::size_type(w, h), 1);
+	StE::LLR::FramebufferObject fbo_hdr_image;
+	fbo_hdr_image[0] = hdr_image[0];
+	StE::LLR::Texture2D luminance_image(gli::format::FORMAT_RGBA32_SFLOAT, StE::LLR::Texture2D::size_type(luminance_w, luminance_h), 1);
+	StE::LLR::FramebufferObject fbo_luminance_image;
+	fbo_luminance_image[0] = luminance_image[0];
+
+	StE::LLR::AtomicCounterBuffer<StE::LLR::BufferUsage::BufferUsageMapRead> histogram(64);
 
 	int steps = max_steps;
 	bool perform_ssao = true;
@@ -452,18 +232,29 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 			StE::LLR::Texture2D fbo_tex(gli::format::FORMAT_RGB8_UNORM, size, 1);
 			fbo[0] = fbo_tex[0];
 
-			rc.render_context().default_framebuffer->blit_to(fbo,size,size);
+			rc.render_context().defaut_framebuffer().blit_to(fbo,size,size);
 			fbo[0].read_pixels(tex.data(), 3 * size.x * size.y);
 
-			StE::Resource::SurfaceIO::write_surface_2d(tex, R"(D:\a.png)");
+			rc.scheduler().schedule_now(StE::Resource::SurfaceIO::write_surface_2d_task(tex, R"(D:\a.png)"));
 		};
 	});
 	rc.hid_signal_keyboard().connect(keyboard_listner);
 
 	rc.set_pointer_hidden(true);
 
+	ste_log_query_and_log_gl_errors();
+
+	bool loaded = false;
+	auto model_future = rc.scheduler().schedule_now(StE::Resource::ModelLoader::load_model_task(R"(data\models\sponza.obj)", &scene));
+
 	// Run main loop
 	rc.run_loop([&]() {
+		if (!loaded) {
+			if (model_future.wait_for(std::chrono::seconds(0)) != std::future_status::ready)
+				return true;
+			loaded = true;
+		}
+
 		if (rc.window_active()) {
 			auto time_delta = rc.time_per_frame().count();
 
@@ -480,11 +271,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 
 			constexpr float rotation_factor = .05f;
 			auto pp = rc.get_pointer_position();
-			auto center = static_cast<glm::vec2>(rc.get_viewport_size())*.5f;
+			auto center = static_cast<glm::vec2>(rc.get_backbuffer_size())*.5f;
 			rc.set_pointer_position(static_cast<glm::ivec2>(center));
 			auto diff_v = (center - static_cast<decltype(center)>(pp)) * time_delta * rotation_factor;
 			camera.pitch_and_yaw(-diff_v.y, diff_v.x);
 		}
+
+		unsigned zero = 0;
+		histogram.clear(gli::FORMAT_R32_UINT, &zero);
+
+		for (int i = 0; i < depth_layers_count; ++i)
+			depth_layers[0][i].with_format(gli::format::FORMAT_R32_SINT).bind(image_layout_binding(i));
 
 		auto proj_mat = rc.projection_matrix();
 
@@ -500,7 +297,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 		transform.set_uniform("view_model", mv);
 		transform.set_uniform("trans_inverse_view_model", glm::transpose(glm::inverse(mv)));
 		transform.set_uniform("projection", proj_mat);
-		hall_model.render(transform);
+		scene.render();
 
 		rc.render_context().disable_depth_test();
 
@@ -538,8 +335,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 		}
 
-		rc.render_context().default_framebuffer->bind();
-		fbo_final1.unbind();
+		fbo_hdr_image.bind();
 		deffered.bind();
 		deffered.set_uniform("ssao", perform_ssao);
 		deffered.set_uniform("view", camera.view_matrix());
@@ -548,6 +344,34 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 		2_sampler_idx = occlusion_final1_output;
 		3_sampler_idx = color_output;
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+		glViewport(0, 0, luminance_w, luminance_h);
+		fbo_luminance_image.bind();
+		hdr_create_luminance.bind();
+		0_sampler_idx = hdr_image;
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+		hdr_luminance_downsample.bind();
+		for (int i = 0; i < hdr_downsampling_levels; ++i) {
+			if (i == 0)
+				0_image_idx = luminance_image[0].with_access(ImageAccessMode::Read);
+			else
+				0_image_idx = (*luminance_downsampled[i - 1])[0].with_access(ImageAccessMode::Read);
+			1_image_idx = (*luminance_downsampled[i])[0].with_access(ImageAccessMode::Write);
+			auto size = luminance_downsampled[i]->get_image_size();
+			glm::uvec2 group_size = { std::min<unsigned>(128, size.x), std::min<unsigned>(128, size.y) };
+			glDispatchComputeGroupSizeARB(size.x / group_size.x, size.y / group_size.y, 1,
+										  group_size.x, group_size.y, 1);
+		}
+
+		glViewport(0, 0, w, h);
+
+// 		0_atomic_idx = histogram;
+// 
+// 		auto map_ptr = histogram.map_read(64);
+// 		auto histogram_data = map_ptr.get();
+// 
+ 		//rc.render_context().defaut_framebuffer().bind();
 
 		ste_log_query_and_log_gl_errors();
 

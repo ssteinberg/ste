@@ -35,8 +35,9 @@ public:
 
 	connection(lambda &&l) : l(std::move(l)) {}
 	~connection() {
-		if (sig)
+		if (connected())
 			sig->disconnect(id);
+		break_connection();
 	}
 
 	void break_connection() { sig = nullptr; }

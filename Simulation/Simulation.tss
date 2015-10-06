@@ -2,16 +2,42 @@
 <ArrayOfArrayOfArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <ArrayOfArrayOfString>
     <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\concurrent_unordered_map.h</string>
+      <string>D:\Dev\git\simulation\Simulation\frag.frag</string>
     </ArrayOfString>
     <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\shared_double_reference_guard.h</string>
+      <string>D:\Dev\git\simulation\Simulation\transform.vert</string>
     </ArrayOfString>
     <ArrayOfString>
       <string>D:\Dev\git\simulation\Simulation\main.cpp</string>
     </ArrayOfString>
     <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\concurrent_pointer_recycler.h</string>
+      <string>D:\Dev\git\simulation\Simulation\texture.h</string>
+    </ArrayOfString>
+    <ArrayOfString>
+      <string>D:\Dev\git\simulation\Simulation\Scene.cpp</string>
+      <string>D:\Dev\git\simulation\Simulation\Scene.h</string>
+    </ArrayOfString>
+    <ArrayOfString>
+      <string>D:\Dev\git\simulation\Simulation\Model.cpp</string>
+    </ArrayOfString>
+    <ArrayOfString>
+      <string>D:\Dev\git\simulation\Simulation\hdr_lum_downsample.glsl</string>
+    </ArrayOfString>
+    <ArrayOfString>
+      <string>D:\Dev\git\simulation\Simulation\passthrough.vert</string>
+    </ArrayOfString>
+    <ArrayOfString>
+      <string>D:\Dev\git\simulation\Simulation\hdr_create_luminance.frag</string>
+    </ArrayOfString>
+    <ArrayOfString>
+      <string>D:\Dev\git\simulation\Simulation\StEngineControl.cpp</string>
+      <string>D:\Dev\git\simulation\Simulation\StEngineControl.h</string>
+    </ArrayOfString>
+    <ArrayOfString>
+      <string>D:\Dev\git\simulation\Simulation\RenderContext.h</string>
+    </ArrayOfString>
+    <ArrayOfString>
+      <string>D:\Dev\git\simulation\Simulation\task_dispatcher.h</string>
     </ArrayOfString>
   </ArrayOfArrayOfString>
 </ArrayOfArrayOfArrayOfString>

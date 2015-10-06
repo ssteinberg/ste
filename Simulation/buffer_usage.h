@@ -16,6 +16,7 @@ enum buffer_usage {
 	BufferUsageMapPersistent = GL_MAP_PERSISTENT_BIT,
 	BufferUsageMapCoherent = GL_MAP_COHERENT_BIT,
 	BufferUsageDynamic = GL_DYNAMIC_STORAGE_BIT,
+	BufferUsageSparse = GL_SPARSE_STORAGE_BIT_ARB,
 };
 
 enum buffer_mapping {

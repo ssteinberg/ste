@@ -18,6 +18,8 @@
 #include "hid.h"
 #include "signal.h"
 
+#include "task_scheduler.h"
+
 namespace StE {
 
 class StEngineControl {
@@ -34,6 +36,8 @@ private:
 
 	bool projection_dirty{ true };
 	void set_projection_dirty() { projection_dirty = true; }
+
+	StE::task_scheduler global_scheduler;
 
 public:
 	using framebuffer_resize_signal_type = signal<glm::i32vec2>;
@@ -61,8 +65,9 @@ public:
 
 	bool init_render_context(const char *title, const glm::i32vec2 &size, bool fs = false, bool vsync = true, gli::format format = gli::FORMAT_RGBA8_UNORM, int samples = 0, gli::format depth_format = gli::FORMAT_D24_UNORM);
 	const LLR::RenderContext &render_context() const { return *context; }
+	task_scheduler &scheduler() { return global_scheduler; }
 
-	void set_windows_title(const char * title) { glfwSetWindowTitle(context->window.get(), title); }
+	void set_window_title(const char * title) { glfwSetWindowTitle(context->window.get(), title); }
 	glm::i32vec2 get_window_position() const {
 		glm::i32vec2 ret;
 		glfwGetWindowPos(context->window.get(), &ret.x, &ret.y);
@@ -91,12 +96,12 @@ public:
 	const decltype(hid_keyboard_signal) &hid_signal_keyboard() const { return hid_keyboard_signal; }
 
 	bool window_active() const { return !!glfwGetWindowAttrib(context->window.get(), GLFW_FOCUSED); }
-	glm::i32vec2 get_viewport_size() const { return context->framebuffer_size(); }
+	glm::i32vec2 get_backbuffer_size() const { return context->framebuffer_size(); }
 	void set_fov(float rad) { field_of_view = rad; set_projection_dirty(); }
 	void set_clipping_planes(float near_clip_distance, float far_clip_distance) { near_clip = near_clip_distance; far_clip = far_clip_distance; set_projection_dirty(); }
 	glm::mat4 projection_matrix() const {
 		if (projection_dirty) {
-			auto vs = get_viewport_size();
+			auto vs = get_backbuffer_size();
 			float aspect = vs.x / vs.y;
 			projection = glm::perspective(field_of_view, aspect, near_clip, far_clip);
 		}

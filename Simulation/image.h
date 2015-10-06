@@ -37,6 +37,7 @@ private:
 	using Base = bindable_resource<llr_resource_stub_allocator, ImageBinder, image_layout_binding, int, bool, int, ImageAccessMode, gli::format>;
 
 protected:
+	mutable std::uint64_t image_handle{ 0 };
 	size_type size;
 	gli::format format;
 	ImageAccessMode access;
@@ -57,6 +58,13 @@ public:
 
 	void bind(const LayoutLocationType &binding) const override final { Binder::bind(id, binding, level, layers>1?true:false, layer, access, format); }
 	void unbind(const LayoutLocationType &binding) const override final { Binder::unbind(binding, 0, false, 0, access, format); }
+
+	auto get_image_handle() const {
+		return image_handle ? image_handle : (image_handle = glGetImageHandleARB(id, level, layers > 1 ? true : false, layer, format));
+	}
+	void make_resident() const { glMakeImageHandleResidentARB(get_image_handle()); }
+	void make_nonresident() const { glMakeImageHandleNonResidentARB(get_image_handle()); }
+	bool is_resident() const { return glIsImageHandleResidentARB(get_image_handle()); }
 
 	void set_access(ImageAccessMode access) { this->access = access; }
 	int get_layers() const { return layers; }

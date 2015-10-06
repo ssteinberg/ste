@@ -8,6 +8,7 @@
 
 #include <gli/gli.hpp>
 #include <string>
+#include <thread>
 
 namespace StE {
 namespace LLR {

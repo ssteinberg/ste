@@ -16,6 +16,8 @@ std::unique_ptr<GLSLShader> ShaderLoader::compile_from_path(const std::string & 
 		return compile_from_path(path, GLSLShader::VERTEX);
 	if (path.compare(path.length() - 4, 4, "frag") == 0)
 		return compile_from_path(path, GLSLShader::FRAGMENT);
+	if (path.compare(path.length() - 4, 4, "glsl") == 0)
+		return compile_from_path(path, GLSLShader::COMPUTE);
 	return nullptr;
 }
 
@@ -49,9 +51,6 @@ std::unique_ptr<GLSLShader> ShaderLoader::compile_source(const std::string &sour
 
 	if (!shader->compile()) {
 		// Compile failed, log and return false
-		std::ofstream o("C:\\t.txt");
-		o << shader->read_info_log();
-		o.flush();
 		ste_log_error() << "Compiling GLSL shader failed! Reason: " << shader->read_info_log();
 
 		return nullptr;

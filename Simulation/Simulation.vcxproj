@@ -145,13 +145,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="interruptible_thread.cpp" />
     <ClCompile Include="Log.cpp" />
-    <ClCompile Include="Model.cpp" />
+    <ClCompile Include="ModelLoader.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="GLSLProgram.cpp" />
     <ClCompile Include="opengl.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="RenderContext.cpp" />
+    <ClCompile Include="Scene.cpp" />
     <ClCompile Include="StEngineControl.cpp" />
     <ClCompile Include="ShaderLoader.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -166,9 +168,25 @@
     <ClCompile Include="Texture2DArray.cpp" />
     <ClCompile Include="Texture3D.cpp" />
     <ClCompile Include="TextureCubeMap.cpp" />
+    <ClCompile Include="thread_constants.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AtomicCounterBuffer.h" />
+    <ClInclude Include="buffer_lock.h" />
+    <ClInclude Include="function_traits.h" />
+    <ClInclude Include="function_wrapper.h" />
+    <ClInclude Include="IndirectDrawBufferObject.h" />
+    <ClInclude Include="interruptible_thread.h" />
+    <ClInclude Include="Material.h" />
+    <ClInclude Include="Object.h" />
+    <ClInclude Include="ObjectVertexData.h" />
+    <ClInclude Include="optional.h" />
+    <ClInclude Include="system_times.h" />
+    <ClInclude Include="task.h" />
+    <ClInclude Include="range.h" />
+    <ClInclude Include="Sampler.h" />
+    <ClInclude Include="Scene.h" />
+    <ClInclude Include="scoped_thread.h" />
     <ClInclude Include="shared_double_reference_guard.h" />
     <ClInclude Include="concurrent_pointer_recycler.h" />
     <ClInclude Include="concurrent_unordered_map.h" />
@@ -187,9 +205,9 @@
     <ClInclude Include="log_sink.h" />
     <ClInclude Include="log_streambuf.h" />
     <ClInclude Include="log_stream_formatter.h" />
-    <ClInclude Include="Model.h" />
+    <ClInclude Include="ModelLoader.h" />
     <ClInclude Include="bindable_resource.h" />
-    <ClInclude Include="BufferMappedStorage.h" />
+    <ClInclude Include="mapped_buffer_object_unique_ptr.h" />
     <ClInclude Include="buffer_object.h" />
     <ClInclude Include="buffer_usage.h" />
     <ClInclude Include="Camera.h" />
@@ -212,6 +230,8 @@
     <ClInclude Include="ShaderLoader.h" />
     <ClInclude Include="shader_layout_bindable_resource.h" />
     <ClInclude Include="system_provided_framebuffer.h" />
+    <ClInclude Include="balancing_thread_pool.h" />
+    <ClInclude Include="task_scheduler.h" />
     <ClInclude Include="texture.h" />
     <ClInclude Include="Texture1D.h" />
     <ClInclude Include="Texture1DArray.h" />
@@ -222,18 +242,25 @@
     <ClInclude Include="Texture2DMSArray.h" />
     <ClInclude Include="Texture3D.h" />
     <ClInclude Include="TextureCubeMap.h" />
+    <ClInclude Include="texture_pool.h" />
     <ClInclude Include="texture_enums.h" />
+    <ClInclude Include="texture_sparse.h" />
     <ClInclude Include="texture_traits.h" />
+    <ClInclude Include="thread_constants.h" />
+    <ClInclude Include="trace.h" />
     <ClInclude Include="typelist.h" />
+    <ClInclude Include="types.h" />
     <ClInclude Include="VertexArrayObject.h" />
     <ClInclude Include="VertexBufferDescriptor.h" />
     <ClInclude Include="VertexBufferObject.h" />
+    <ClInclude Include="windows.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="blur_x.frag" />
     <None Include="blur_y.frag" />
     <None Include="gen_depth_layers.frag" />
-    <None Include="gen_mipmaps.frag" />
+    <None Include="hdr_create_luminance.frag" />
+    <None Include="hdr_lum_downsample.glsl" />
     <None Include="lighting.frag" />
     <None Include="passthrough.vert" />
     <None Include="passthrough_light.vert" />

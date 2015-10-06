@@ -13,7 +13,7 @@ namespace LLR {
 class GLSLShader {
 public:
 	enum GLSLShaderType {
-		VERTEX, FRAGMENT, GEOMETRY,
+		VERTEX, FRAGMENT, GEOMETRY, COMPUTE,
 		TESS_CONTROL, TESS_EVALUATION
 	};
 	
@@ -32,6 +32,7 @@ public:
 		case GLSLShader::VERTEX:			id = glCreateShader(GL_VERTEX_SHADER); break;
 		case GLSLShader::FRAGMENT:			id = glCreateShader(GL_FRAGMENT_SHADER); break;
 		case GLSLShader::GEOMETRY:			id = glCreateShader(GL_GEOMETRY_SHADER); break;
+		case GLSLShader::COMPUTE:			id = glCreateShader(GL_COMPUTE_SHADER); break;
 		case GLSLShader::TESS_CONTROL:		id = glCreateShader(GL_TESS_CONTROL_SHADER); break;
 		case GLSLShader::TESS_EVALUATION:	id = glCreateShader(GL_TESS_EVALUATION_SHADER); break;
 		default:							id = 0; break;

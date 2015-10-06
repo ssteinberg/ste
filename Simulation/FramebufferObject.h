@@ -148,7 +148,9 @@ public:
 	}
 
 	template<typename T>
-	void operator=(const T &target) { *(static_cast<fbo_attachment_point<A>*>(this)) = target; }
+	void operator=(const T &target) {
+		*(static_cast<fbo_attachment_point<A>*>(this)) = target;
+	}
 };
 
 class FramebufferObjectAllocator : public llr_resource_stub_allocator {
@@ -193,7 +195,10 @@ protected:
 		}
 	}
 
-	void update_draw_buffers() { if (draw_buffers.size()) glNamedFramebufferDrawBuffers(id, draw_buffers.size(), &draw_buffers[0]); }
+	void update_draw_buffers() { 
+		if (draw_buffers.size()) 
+			glNamedFramebufferDrawBuffers(id, draw_buffers.size(), &draw_buffers[0]);
+	}
 
 	void bind_draw() const { glBindFramebuffer(GL_DRAW_FRAMEBUFFER, id); }
 	void unbind_draw() const { glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); }

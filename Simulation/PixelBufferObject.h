@@ -5,6 +5,7 @@
 
 #include "buffer_object.h"
 
+#include "image.h"
 #include "texture.h"
 #include "FramebufferObject.h"
 
@@ -49,7 +50,7 @@ public:
 
 	template <llr_resource_type type>
 	void unpack_to(texture_pixel_transferable<type> &texture, int level, int layer, int offset, std::size_t size) const {
-		unpacker([&]() { texture.upload_level(reinterpret_cast<void*>(offset), level, layer, size * sizeof(T)); });
+		unpacker([&]() { texture.upload_level(reinterpret_cast<void*>(offset), level, layer, LLRCubeMapFace::LLRCubeMapFaceNone, size * sizeof(T)); });
 	}
 	template <llr_resource_type type>
 	void unpack_to(texture_pixel_transferable<type> &texture, int level = 0, int layer = 0) const { 
@@ -58,11 +59,11 @@ public:
 
 	template <llr_resource_type type>
 	void pack_from(const texture_pixel_transferable<type> &texture, int level, int layer, int offset, std::size_t size, gli::format format, bool compressed = false) {
-		packer([&]() { texture.download_level(reinterpret_cast<void*>(offset), level, layer, format, compressed });
+		packer([&]() { texture.download_level(reinterpret_cast<void*>(offset), size, level, layer, format, compressed); });
 	}
 	template <llr_resource_type type>
 	void pack_from(const texture_pixel_transferable<type> &texture, int level, int layer, int offset, std::size_t size) {
-		packer([&]() { texture.download_level(reinterpret_cast<void*>(offset), level, layer });
+		packer([&]() { texture.download_level(reinterpret_cast<void*>(offset), size, level, layer); });
 	}
 	template <llr_resource_type type>
 	void pack_from(const texture_pixel_transferable<type> &texture, int level = 0, int layer = 0) { 
