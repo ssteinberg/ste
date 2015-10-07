@@ -1,0 +1,87 @@
+// StE
+// © Shlomi Steinberg, 2015
+
+#pragma once
+
+#include <boost/archive/binary_iarchive.hpp>
+#include <boost/archive/binary_oarchive.hpp>
+
+#define BOOST_FILESYSTEM_NO_DEPRECATED 
+#include <boost/filesystem.hpp>
+
+#include <string>
+#include <iostream>
+
+#include <memory>
+#include <atomic>
+
+namespace StE {
+
+template <typename K, typename lru_iterator_type>
+class lru_cache_cacheable {
+private:
+	struct data {
+		K k;
+		std::size_t size{ 0 };
+		lru_iterator_type lru_it;
+		std::atomic<bool> live{ false };
+
+		boost::filesystem::path f;
+	};
+
+	std::shared_ptr<data> pdata;
+
+	static constexpr auto archive_extension = ".stearchive";
+
+public:
+	lru_cache_cacheable() : pdata(std::make_shared<data>()) {}
+	lru_cache_cacheable(const K &k, const boost::filesystem::path &path) : lru_cache_cacheable() {
+		pdata->k = k;
+		pdata->f = path / (std::string(k) + archive_extension);
+	}
+	~lru_cache_cacheable() {
+		if (pdata!=nullptr && !pdata->live.load() && !pdata->f.empty()) {
+			boost::system::error_code err;
+			boost::filesystem::remove(pdata->f, err);
+		}
+	}
+
+	lru_cache_cacheable(lru_cache_cacheable &&c) = default;
+	lru_cache_cacheable(const lru_cache_cacheable &c) = default;
+
+	void mark_live(const lru_iterator_type &it) {
+		pdata->lru_it = it;
+		pdata->live = true;
+
+		boost::system::error_code err;
+		pdata->size = boost::filesystem::file_size(pdata->f, err);
+	}
+	void mark_for_deletion() { pdata->live = false; }
+	bool is_live() const { return pdata->live; }
+	const K &get_k() const { return pdata->k; }
+	std::size_t get_size() const { return pdata->size; }
+	lru_iterator_type& get_lru_it() { return pdata->lru_it; }
+
+	template <typename V>
+	void archive(V &&v) {
+		{
+			std::ofstream ofs(pdata->f.string(), std::ios::binary);
+			boost::archive::binary_oarchive oa(ofs);
+			oa << std::forward<V>(v);
+		}
+
+		boost::system::error_code err;
+		pdata->size = boost::filesystem::file_size(pdata->f, err);
+	}
+	template <typename V>
+	V unarchive() const {
+		std::ifstream ifs(pdata->f.string(), std::ios::binary);
+		boost::archive::binary_iarchive ia(ifs);
+		V v;
+		ia >> v;
+
+		return v;
+	}
+};
+
+}

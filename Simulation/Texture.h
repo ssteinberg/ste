@@ -149,6 +149,8 @@ public:
 	texture(const texture &m) = delete;
 	texture& operator=(const texture &m) = delete;
 
+	virtual ~texture() noexcept {}
+
 	void bind() const { bind(LayoutLocationType(0)); }
 	void unbind() const { unbind(LayoutLocationType(0)); }
 	void bind(const LayoutLocationType &sampler) const final override { Base::bind(sampler); };
@@ -209,6 +211,8 @@ public:
 	texture_multisampled(texture_multisampled &&m) = default;
 	texture_multisampled& operator=(texture_multisampled &&m) = default;
 
+	virtual ~texture_multisampled() noexcept {}
+
 	int get_samples() const { return samples; }
 };
 
@@ -225,6 +229,8 @@ protected:
 	texture_pixel_transferable& operator=(const texture_pixel_transferable &m) = delete;
 
 public:
+	virtual ~texture_pixel_transferable() noexcept {}
+
 	virtual void upload_level(const void *data, int level = 0, int layer = 0, LLRCubeMapFace face = LLRCubeMapFace::LLRCubeMapFaceNone, int data_size = 0) = 0;
 	virtual void download_level(void *data, std::size_t size, int level = 0, int layer = 0) const {
 		auto &gl_format = opengl::gl_translate_format(format);
@@ -260,6 +266,8 @@ protected:
 public:
 	texture_mipmapped(texture_mipmapped &&m) = default;
 	texture_mipmapped& operator=(texture_mipmapped &&m) = default;
+
+	virtual ~texture_mipmapped() noexcept {}
 
 	int get_levels() const { return levels; }
 

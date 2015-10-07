@@ -4,6 +4,7 @@
 #pragma once
 
 #include <functional>
+#include <memory>
 
 #include "types.h"
 
@@ -12,54 +13,56 @@ namespace StE {
 template <typename T>
 class optional {
 private:
-	T val;
+	std::unique_ptr<T> val{ nullptr };
 	bool has_val{ false };
 
 public:
 	optional() {}
 	optional(const none_t &) : optional() {}
 	template <typename S>
-	optional(optional<S> &&other) : has_val(other.has_val), val(std::move(has_val ? other.val : T())) {}
+	optional(optional<S> &&other) : has_val(other.has_val), val(std::move(other.val)) {}
 	template <typename S>
-	optional(const optional<S> &other) : has_val(other.has_val), val(has_val ? other.val : T()) {}
-	optional(const T &v) : has_val(true), val(v) {}
+	optional(const optional<S> &other) : has_val(other.has_val), val(other.has_val ? std::make_unique<T>(*other.val) : nullptr) {}
+	optional(optional<T> &&other) : has_val(other.has_val), val(std::move(other.val)) {}
+	optional(const optional<T> &other) : has_val(other.has_val), val(other.has_val ? std::make_unique<T>(*other.val) : nullptr) {}
+	optional(const T &v) : has_val(true), val(std::make_unique<T>(v)) {}
 
 	template <typename S>
 	optional &operator=(optional<S> &&other) {
 		has_val = other.has_val;
-		val = std::move(has_val ? other.val : T());
+		val = std::move(other.val);
 	}
 	template <typename S>
 	optional &operator=(const optional<S> &other) {
 		has_val = other.has_val;
-		val = has_val ? other.val : T();
+		val = has_val ? std::make_unique<T>(*other.val) : nullptr;
 	}
 
 	template <typename S>
 	optional &operator=(S &&v) {
 		has_val = true;
-		val = std::move(v);
+		val = std::make_unique<T>(std::forward(v));
 	}
 	template <typename S>
 	optional &operator=(const S &v) {
 		has_val = true;
-		val = v;
+		val = std::make_unique<T>(v);
 	}
 
 	template <typename ... Ts>
 	void emplace(Ts&&... args) {
 		has_val = true;
-		val = T(std::forward<Ts>(args)...);
+		val = std::make_unique<T>(std::forward<Ts>(args)...);
 	}
 
-	const T& get() const { return val; }
-	T& get() { return val; }
+	const T& get() const { return *val; }
+	T& get() { return *val; }
 
-	const T& operator*() const { return val; }
-	T& operator*() { return val; }
+	const T& operator*() const { return *val; }
+	T& operator*() { return *val; }
 
-	const T* operator->() const { return &val; }
-	T* operator->() { return &val; }
+	const T* operator->() const { return val.get(); }
+	T* operator->() { return val.get(); }
 
 	explicit operator bool() const { return has_val; }
 	bool operator!() const { return !has_val; }

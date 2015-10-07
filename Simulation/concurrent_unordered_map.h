@@ -5,7 +5,10 @@
 
 #include <atomic>
 #include <memory>
+
 #include <functional>
+#include <type_traits>
+
 #include <array>
 #include <vector>
 #include <bitset>
@@ -39,6 +42,8 @@ private:
 		concurrent_map_bucket_data(S&& k, Ts&&... args) : k(std::forward<S>(k)), v(new value_type(std::forward<Ts>(args)...)) {}
 		~concurrent_map_bucket_data() { delete v; }
 	};
+
+	static_assert(std::is_default_constructible<mapped_type>::value, "V must be default constructible.");
 
 	static constexpr int bucket_size = sizeof(unsigned) + sizeof(concurrent_map_bucket_data*);
 	static constexpr int N = cache_line / bucket_size - 1;
@@ -111,8 +116,11 @@ private:
 	using resize_data_guard_type = shared_double_reference_guard<resize_data, false>::data_guard;
 	using hash_table_guard_type = shared_double_reference_guard<buckets_ptr, false>::data_guard;
 
+public:
+	using value_data_guard_type = concurrent_map_bucket_data::value_data_guard_type;
+
 private:
-	shared_double_reference_guard<buckets_ptr, false> hash_table;
+	mutable shared_double_reference_guard<buckets_ptr, false> hash_table;
 	std::atomic<int> items{ 0 };
 
 	template <typename T>
@@ -201,7 +209,7 @@ private:
 		}
 	}
 
-	int __fastcall find_hash_in_virtual_bucket(virtual_bucket_type *virtual_bucket, unsigned hash) {
+	int __fastcall find_hash_in_virtual_bucket(virtual_bucket_type *virtual_bucket, unsigned hash) const {
 		static_assert(N == 7 && sizeof(unsigned) == 4 && cache_line == 64, "AVX2 optimization. Designed for a 32-bit compilation targeting any AVX2 capable architecture, like the 4th-generation Intel Core.");
 		auto ptr = reinterpret_cast<__m256i*>(&virtual_bucket->hash[0]);
 		__m256i m256_hash = _mm256_set1_epi32(*reinterpret_cast<int*>(&hash));
@@ -330,7 +338,7 @@ public:
 			resize_with_pending_insert(table_guard, resize_guard, hash, key, true, true);
 	}
 
-	const concurrent_map_bucket_data::value_data_guard_type __fastcall try_get(const key_type &key) {
+	const value_data_guard_type __fastcall try_get(const key_type &key) const {
 		unsigned hash = hash_function(key);
 
 		auto table_guard = hash_table.acquire();
@@ -350,6 +358,10 @@ public:
 			if (!virtual_bucket)
 				return concurrent_map_bucket_data::value_data_guard_type(nullptr);
 		}
+	}
+
+	auto operator[](const key_type &k) const {
+		return try_get(k);
 	}
 };
 

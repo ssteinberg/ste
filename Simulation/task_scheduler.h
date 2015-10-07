@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "balancing_thread_pool.h"
+#include "balanced_thread_pool.h"
 #include "concurrent_queue.h"
 #include "function_wrapper.h"
 #include "function_traits.h"
@@ -23,7 +23,7 @@ namespace StE {
 
 class task_scheduler {
 private:
-	using LoadBalancingPool = balancing_thread_pool;
+	using LoadBalancingPool = balanced_thread_pool;
 
 	struct delayed_task {
 		std::chrono::high_resolution_clock::time_point run_at;

@@ -34,7 +34,7 @@ public:
 	template <typename L>
 	task(L &&lambda,
 		 std::enable_if_t<function_traits<L>::arity == 0>* = 0) :
-		f([func = std::forward<L>(lambda)](SchedArg sched) { func(); }) {
+		f([func = std::forward<L>(lambda)](SchedArg sched) -> R { return func(); }) {
 	}
 
 	task(const task &) = default;

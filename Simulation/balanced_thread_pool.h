@@ -22,7 +22,7 @@
 
 namespace StE {
 
-class balancing_thread_pool {
+class balanced_thread_pool {
 private:
 	mutable std::mutex m;
 	std::condition_variable notifier;
@@ -84,13 +84,13 @@ private:
 	}
 
 public:
-	balancing_thread_pool() {
+	balanced_thread_pool() {
 		int threads = std::thread::hardware_concurrency();
 		for (int i = 0; i < threads; ++i)
 			spawn_worker();
 	}
 
-	~balancing_thread_pool() {
+	~balanced_thread_pool() {
 		for (auto &t : workers)
 			t.interrupt();
 		do { notifier.notify_all(); } while (!m.try_lock());
@@ -101,10 +101,10 @@ public:
 			t.first.wait();
 	}
 
-	balancing_thread_pool(balancing_thread_pool &&) = delete;
-	balancing_thread_pool(const balancing_thread_pool &) = delete;
-	balancing_thread_pool &operator=(balancing_thread_pool &&) = delete;
-	balancing_thread_pool &operator=(const balancing_thread_pool &) = delete;
+	balanced_thread_pool(balanced_thread_pool &&) = delete;
+	balanced_thread_pool(const balanced_thread_pool &) = delete;
+	balanced_thread_pool &operator=(balanced_thread_pool &&) = delete;
+	balanced_thread_pool &operator=(const balanced_thread_pool &) = delete;
 
  	template <typename F>
  	std::future<std::result_of_t<F()>> enqueue(F &&f) {

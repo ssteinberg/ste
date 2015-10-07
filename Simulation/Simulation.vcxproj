@@ -5,10 +5,6 @@
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Release_PG|Win32">
-      <Configuration>Release_PG</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
@@ -36,15 +32,6 @@
     <InterproceduralOptimization>true</InterproceduralOptimization>
     <UseIntelTBB>true</UseIntelTBB>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_PG|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>Intel C++ Compiler 16.0</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>MultiByte</CharacterSet>
-    <InterproceduralOptimization>true</InterproceduralOptimization>
-    <UseIntelTBB>true</UseIntelTBB>
-  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
@@ -54,24 +41,16 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_PG|Win32'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\Program Files %28x86%29\Assimp\include;D:\Dev\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Program Files %28x86%29\Assimp\lib;D:\Dev\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Program Files %28x86%29\Assimp\include;D:\Dev\include;C:\src\boost;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files %28x86%29\Assimp\lib;D:\Dev\lib;C:\src\boost\stage\lib;$(LibraryPath)</LibraryPath>
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>C:\Program Files %28x86%29\Assimp\include;D:\Dev\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Program Files %28x86%29\Assimp\lib;D:\Dev\lib;$(LibraryPath)</LibraryPath>
-    <TargetName>$(ProjectName)</TargetName>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_PG|Win32'">
-    <IncludePath>C:\Program Files %28x86%29\Assimp\include;D:\Dev\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Program Files %28x86%29\Assimp\lib;D:\Dev\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Program Files %28x86%29\Assimp\include;D:\Dev\include;C:\src\boost;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files %28x86%29\Assimp\lib;D:\Dev\lib;C:\src\boost\stage\lib;$(LibraryPath)</LibraryPath>
     <TargetName>$(ProjectName)</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -91,7 +70,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;glu32.lib;glew32sd.lib;tinyobjloaderd.lib;zlibd.lib;libpngd.lib;turbojpegd.lib;glfw3d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glu32.lib;glew32sd.lib;tinyobjloaderd.lib;zlibd.lib;libpngd.lib;turbojpegd.lib;glfw3d.lib;freetype261MTd.lib;libboost_serialization-vc140-mt-sgd-1_59.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <TargetMachine>MachineX86</TargetMachine>
       <AdditionalOptions>/NODEFAULTLIB:LIBCMT %(AdditionalOptions)</AdditionalOptions>
     </Link>
@@ -117,31 +96,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>opengl32.lib;glu32.lib;glew32s.lib;tinyobjloader.lib;zlib.lib;libpng.lib;turbojpeg.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_PG|Win32'">
-    <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <Optimization>MaxSpeedHighLevel</Optimization>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <SDLCheck>true</SDLCheck>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <Cpp0xSupport>false</Cpp0xSupport>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <PreprocessorDefinitions>PROJECT_NAME="$(ProjectName)";%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalOptions>/Qstd=c++14 %(AdditionalOptions)</AdditionalOptions>
-      <OptimizeForWindowsApplication>true</OptimizeForWindowsApplication>
-      <UseProcessorExtensions>AVXI</UseProcessorExtensions>
-      <UseIntelOptimizedHeaders>true</UseIntelOptimizedHeaders>
-    </ClCompile>
-    <Link>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>opengl32.lib;glu32.lib;glew32s.lib;tinyobjloader.lib;zlib.lib;libpng.lib;turbojpeg.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glu32.lib;glew32s.lib;tinyobjloader.lib;zlib.lib;libpng.lib;turbojpeg.lib;glfw3.lib;freetype261MT.lib;libboost_serialization-vc140-mt-s-1_59.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -159,7 +114,6 @@
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_PG|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Texture1D.cpp" />
     <ClCompile Include="Texture1DArray.cpp" />
@@ -177,6 +131,9 @@
     <ClInclude Include="function_wrapper.h" />
     <ClInclude Include="IndirectDrawBufferObject.h" />
     <ClInclude Include="interruptible_thread.h" />
+    <ClInclude Include="lru_cache.h" />
+    <ClInclude Include="lru_cache_cacheable.h" />
+    <ClInclude Include="lru_cache_index.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="ObjectVertexData.h" />
@@ -230,7 +187,7 @@
     <ClInclude Include="ShaderLoader.h" />
     <ClInclude Include="shader_layout_bindable_resource.h" />
     <ClInclude Include="system_provided_framebuffer.h" />
-    <ClInclude Include="balancing_thread_pool.h" />
+    <ClInclude Include="balanced_thread_pool.h" />
     <ClInclude Include="task_scheduler.h" />
     <ClInclude Include="texture.h" />
     <ClInclude Include="Texture1D.h" />

@@ -43,6 +43,8 @@ protected:
 	fbo_attachment_point(frame_buffer_object<A> *fbo, GLenum attachment_point) : fbo(fbo), attachment_point(attachment_point) {}
 
 public:
+	virtual ~fbo_attachment_point() noexcept {}
+
 	void detach() { 
 		glNamedFramebufferTexture(fbo->id, attachment_point, 0, 0); 
 		size = { 0,0 };
@@ -87,6 +89,8 @@ protected:
 	fbo_color_attachment_point(frame_buffer_object<A> *fbo, int index) : Base(fbo, color_attachment_point + index) {}
 
 public:
+	virtual ~fbo_color_attachment_point() noexcept {}
+
 	void read_pixels(void *data, int data_size, const glm::uvec2 &rect_size, const glm::uvec2 &origin = { 0, 0 }) const {
 		auto &gl_format = opengl::gl_translate_format(get_attachment_format());
 
@@ -140,6 +144,8 @@ protected:
 	fbo_layout_bindable_color_attachment_point(frame_buffer_object<A> *fbo, int index) : index(index), fbo_color_attachment_point(fbo, index) {}
 
 public:
+	virtual ~fbo_layout_bindable_color_attachment_point() noexcept {}
+
 	template <typename ... Ts>
 	fbo_layout_bindable_color_attachment_point(const emplace_helper &, Ts ... args) : fbo_layout_bindable_color_attachment_point(std::forward<Ts>(args)...) {}
 
@@ -206,6 +212,8 @@ protected:
 	void unbind_read() const { glBindFramebuffer(GL_READ_FRAMEBUFFER, 0); }
 
 public:
+	virtual ~frame_buffer_object() noexcept {}
+
 	frame_buffer_object() {}
 	template <typename ... Ts>
 	frame_buffer_object(Ts ... draw_buffer_args) : draw_buffers(std::forward<Ts>(draw_buffer_args)...) {}

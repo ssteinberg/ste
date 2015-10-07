@@ -27,6 +27,8 @@ public:
 	int get_resource_id() const { return id; }
 	virtual bool is_valid() const = 0;
 
+	virtual ~GenericResource() noexcept { }
+
 	GenericResource(GenericResource &&res) : id(res.id) { res.id = 0; }
 	GenericResource &operator=(GenericResource &&res) = delete;
 	GenericResource(const GenericResource &res) = delete;
@@ -46,7 +48,7 @@ public:
 	llr_resource& operator=(llr_resource &&m) = default;
 	llr_resource& operator=(const llr_resource &c) = delete;
 
-	~llr_resource() { if (Allocator::is_valid(id)) Allocator::deallocate(id); }
+	virtual ~llr_resource() noexcept { if (Allocator::is_valid(id)) Allocator::deallocate(id); }
 
 	bool is_valid() const { return Allocator::is_valid(id); }
 };

@@ -16,6 +16,8 @@ protected:
 	using EmptyLayoutLocationType = layout_binding_none<BinderType>;
 
 public:
+	virtual ~shader_layout_bindable_resource() noexcept {}
+
 	virtual void bind(const LayoutLocationType &) const = 0;
 	virtual void unbind(const LayoutLocationType &) const = 0;
 };

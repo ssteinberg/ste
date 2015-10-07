@@ -28,8 +28,6 @@
 #include "PixelBufferObject.h"
 #include "AtomicCounterBuffer.h"
 #include "Scene.h"
-#include "task_scheduler.h"
-#include "task.h"
 
 using namespace StE::LLR;
 

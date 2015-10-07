@@ -17,6 +17,8 @@ public:
 
 class bindable_generic_resource : virtual public GenericResource {
 public:
+	virtual ~bindable_generic_resource() noexcept {}
+
 	virtual void bind() const = 0;
 	virtual void unbind() const = 0;
 };
@@ -32,6 +34,8 @@ public:
 	bindable_resource(bindable_resource &&m) = default;
 	bindable_resource& operator=(bindable_resource &&m) = default;
 
+	virtual ~bindable_resource() noexcept {}
+
 	void bind(const BindingArgs&... args) const { Binder::bind(id, args...); }
 	void unbind(const BindingArgs&... args) const { Binder::unbind(args...); };
 };
@@ -46,6 +50,8 @@ protected:
 public:
 	bindable_resource(bindable_resource &&m) = default;
 	bindable_resource& operator=(bindable_resource &&m) = default;
+
+	virtual ~bindable_resource() noexcept {}
 
 	void bind() const override { Binder::bind(id); }
 	void unbind() const override { Binder::unbind(); };

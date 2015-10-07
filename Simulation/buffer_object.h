@@ -70,6 +70,8 @@ public:
 	buffer_object(buffer_object &&t) = default;
 	buffer_object &operator=(buffer_object &&t) = default;
 
+	virtual ~buffer_object() noexcept {}
+
 	void lock_range(const range<> &r) const {
 		buffer_lock l;
 		l.lock();
@@ -191,6 +193,8 @@ protected:
 protected:
 	buffer_object_layout_bindable(buffer_object_layout_bindable &&m) = default;
 	buffer_object_layout_bindable& operator=(buffer_object_layout_bindable &&m) = default;
+
+	virtual ~buffer_object_layout_bindable() noexcept {}
 
 	buffer_object_layout_bindable(std::size_t size) : buffer_object(size) {}
 	buffer_object_layout_bindable(std::size_t size, const T *data) : buffer_object(size, data) {}

@@ -54,6 +54,8 @@ public:
 	image_layout_bindable& operator=(image_layout_bindable &&m) = delete;
 	image_layout_bindable& operator=(const image_layout_bindable &c) = delete;
 
+	virtual ~image_layout_bindable() noexcept {}
+
 	using Base::get_resource_id;
 
 	void bind(const LayoutLocationType &binding) const override final { Binder::bind(id, binding, level, layers>1?true:false, layer, access, format); }

@@ -5,20 +5,7 @@
       <string>D:\Dev\git\simulation\Simulation\frag.frag</string>
     </ArrayOfString>
     <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\transform.vert</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\main.cpp</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\texture.h</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\Scene.cpp</string>
-      <string>D:\Dev\git\simulation\Simulation\Scene.h</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\Model.cpp</string>
+      <string>D:\Dev\git\simulation\Simulation\lighting.frag</string>
     </ArrayOfString>
     <ArrayOfString>
       <string>D:\Dev\git\simulation\Simulation\hdr_lum_downsample.glsl</string>
@@ -30,14 +17,13 @@
       <string>D:\Dev\git\simulation\Simulation\hdr_create_luminance.frag</string>
     </ArrayOfString>
     <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\StEngineControl.cpp</string>
-      <string>D:\Dev\git\simulation\Simulation\StEngineControl.h</string>
+      <string>D:\Dev\git\simulation\Simulation\main.cpp</string>
     </ArrayOfString>
     <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\RenderContext.h</string>
+      <string>D:\Dev\git\simulation\Simulation\lru_cache.h</string>
     </ArrayOfString>
     <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\task_dispatcher.h</string>
+      <string>D:\Dev\git\simulation\Simulation\balanced_thread_pool.h</string>
     </ArrayOfString>
   </ArrayOfArrayOfString>
 </ArrayOfArrayOfArrayOfString>
