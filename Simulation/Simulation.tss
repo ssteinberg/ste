@@ -20,10 +20,17 @@
       <string>D:\Dev\git\simulation\Simulation\main.cpp</string>
     </ArrayOfString>
     <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\lru_cache.h</string>
+      <string>d:\Dev\git\simulation\Simulation\attrib.cpp</string>
+      <string>D:\Dev\git\simulation\Simulation\attrib.h</string>
     </ArrayOfString>
     <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\balanced_thread_pool.h</string>
+      <string>D:\Dev\git\simulation\Simulation\attributed_string.h</string>
+    </ArrayOfString>
+    <ArrayOfString>
+      <string>D:\Dev\git\simulation\Simulation\remove_iterator_constness.h</string>
+    </ArrayOfString>
+    <ArrayOfString>
+      <string>D:\Dev\git\simulation\Simulation\TextRenderer.h</string>
     </ArrayOfString>
   </ArrayOfArrayOfString>
 </ArrayOfArrayOfArrayOfString>

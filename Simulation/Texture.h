@@ -31,6 +31,10 @@ enum class LLRCubeMapFace {
 	LLRCubeMapFaceFar = GL_TEXTURE_CUBE_MAP_NEGATIVE_Z,
 };
 
+class texture_layout_binding_type {};
+using texture_layout_binding = layout_binding<texture_layout_binding_type>;
+texture_layout_binding inline operator "" _tex_unit(unsigned long long int i) { return texture_layout_binding(i); }
+
 template <llr_resource_type type>
 class TextureAllocator : public llr_resource_stub_allocator {
 public:
@@ -48,11 +52,11 @@ private:
 	constexpr static GLenum gl_type() { return opengl::gl_translate_type(type); }
 
 public:
-	static void bind(unsigned int id, const sampler_layout_binding &sampler) {
+	static void bind(unsigned int id, const texture_layout_binding &sampler) {
 		glActiveTexture(GL_TEXTURE0 + sampler.binding_index());
 		glBindTexture(gl_type(), id);
 	}
-	static void unbind(const sampler_layout_binding &sampler) {
+	static void unbind(const texture_layout_binding &sampler) {
 		glActiveTexture(GL_TEXTURE0 + sampler.binding_index());
 		glBindTexture(gl_type(), 0);
 	}
@@ -64,10 +68,10 @@ template <> struct texture_size_type<2> { using type = gli::storage::dim2_type; 
 template <> struct texture_size_type<3> { using type = gli::storage::dim3_type; };
 
 template <llr_resource_type type>
-class texture : virtual public bindable_resource<TextureAllocator<type>, TextureBinder<type>, sampler_layout_binding>,
-				virtual public shader_layout_bindable_resource<sampler_layout_binding_type> {
+class texture : virtual public bindable_resource<TextureAllocator<type>, TextureBinder<type>, texture_layout_binding>,
+				virtual public shader_layout_bindable_resource<texture_layout_binding_type> {
 private:
-	using Base = bindable_resource<TextureAllocator<type>, TextureBinder<type>, sampler_layout_binding>;
+	using Base = bindable_resource<TextureAllocator<type>, TextureBinder<type>, texture_layout_binding>;
 
 	template <int dim, bool ms> static void create_gl_texture_storage(int id, int levels, int samples, const gli::gl::format &format, const typename texture_size_type<dim>::type &size) { static_assert(false); }
 	template <> static void create_gl_texture_storage<1, false>(int id, int levels, int samples, const gli::gl::format &format, const typename texture_size_type<1>::type &size) {

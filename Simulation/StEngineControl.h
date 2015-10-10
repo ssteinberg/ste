@@ -19,6 +19,7 @@
 #include "signal.h"
 
 #include "task_scheduler.h"
+#include "lru_cache.h"
 
 namespace StE {
 
@@ -37,7 +38,8 @@ private:
 	bool projection_dirty{ true };
 	void set_projection_dirty() { projection_dirty = true; }
 
-	StE::task_scheduler global_scheduler;
+	mutable task_scheduler global_scheduler;
+	mutable lru_cache<std::string> global_cache;
 
 public:
 	using framebuffer_resize_signal_type = signal<glm::i32vec2>;
@@ -60,12 +62,13 @@ public:
 	StEngineControl& operator=(StEngineControl &&m) = delete;
 	StEngineControl& operator=(const StEngineControl &c) = delete;
 
-	StEngineControl() : projection_dirty(true), field_of_view(M_PI_4), near_clip(.1), far_clip(1000) {}
+	StEngineControl() : projection_dirty(true), field_of_view(M_PI_4), near_clip(.1), far_clip(1000), global_cache("Cache", 1024*1024*256) {}
 	~StEngineControl() {}
 
 	bool init_render_context(const char *title, const glm::i32vec2 &size, bool fs = false, bool vsync = true, gli::format format = gli::FORMAT_RGBA8_UNORM, int samples = 0, gli::format depth_format = gli::FORMAT_D24_UNORM);
 	const LLR::RenderContext &render_context() const { return *context; }
-	task_scheduler &scheduler() { return global_scheduler; }
+	auto &scheduler() const { return global_scheduler; }
+	auto &cache() const { return global_cache; }
 
 	void set_window_title(const char * title) { glfwSetWindowTitle(context->window.get(), title); }
 	glm::i32vec2 get_window_position() const {
@@ -106,6 +109,11 @@ public:
 			projection = glm::perspective(field_of_view, aspect, near_clip, far_clip);
 		}
 		return projection;
+	}
+
+	glm::mat4 ortho_projection_matrix() const {
+		auto vs = get_backbuffer_size();
+		return glm::ortho<float>(0, vs.x, 0, vs.y, -1, 1);
 	}
 
 public:

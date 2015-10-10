@@ -9,6 +9,7 @@
 #include "interruptible_thread.h"
 #include "function_wrapper.h"
 #include "thread_constants.h"
+#include "thread_priority.h"
 
 #include "system_times.h"
 
@@ -61,6 +62,8 @@ private:
 				}
 			}
 		});
+
+		thread_set_priority_low(&workers.back().get_thread());
 	}
 
 	void despawn_worker() {

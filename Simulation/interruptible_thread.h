@@ -40,6 +40,8 @@ public:
 	bool joinable() const { return t.joinable(); }
 	void detach() { t.detach(); }
 	std::future<bool> get_future() { return promise->get_future(); }
+
+	std::thread &get_thread() { return t; }
 };
 
 }

@@ -50,7 +50,7 @@ private:
 	static_assert(std::is_base_of<VertexBufferDescriptor, Descriptor>::value, "Descriptor must inherit from VertexBufferDescriptor");
 
 private:
-	Descriptor descriptor;
+	Descriptor desc;
 
 public:
 	VertexBufferObject(VertexBufferObject &&m) = default;
@@ -60,7 +60,9 @@ public:
 	VertexBufferObject(std::size_t size, const T *data) : buffer_object(size, data) {}
 	VertexBufferObject(const std::vector<T> &data) : buffer_object(data.size(), &data[0]) {}
 
-	virtual const VertexBufferDescriptor *data_descriptor() const override { return &descriptor; }
+	~VertexBufferObject() {}
+
+	virtual const VertexBufferDescriptor *data_descriptor() const override { return &desc; }
 
 	vertex_buffer_attrib_binder<T, Descriptor, U> operator[](int index) { return vertex_buffer_attrib_binder<T, Descriptor, U>(index, this, 0, sizeof(T)); }
 	vertex_buffer_attrib_binder<T, Descriptor, U> binder(int index, std::size_t offset) { return vertex_buffer_attrib_binder<T, Descriptor, U>(index, this, offset, sizeof(T)); }

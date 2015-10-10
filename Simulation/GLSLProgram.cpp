@@ -45,6 +45,7 @@ bool GLSLProgram::link() {
 		}
 
 		ste_log_error() << "Linking GLSL program failed! Reason: " << reason;
+		assert(false);
 
 		return false;
 	}
@@ -52,6 +53,24 @@ bool GLSLProgram::link() {
 		linked = true;
 		return linked;
 	}
+}
+
+bool GLSLProgram::link_from_binary(unsigned format, const std::string &data) {
+	glProgramBinary(id, format, data.data(), data.length());
+	int success = 0;
+	glGetProgramiv(id, GL_LINK_STATUS, &success);
+	linked = success;
+	return success;
+}
+
+std::string GLSLProgram::get_binary_represantation(unsigned *format) {
+	int bin_len = 0;
+	glGetProgramiv(id, GL_PROGRAM_BINARY_LENGTH, &bin_len);
+	std::string data;
+	data.resize(bin_len);
+	glGetProgramBinary(id, bin_len, NULL, format, &data[0]);
+
+	return data;
 }
 
 void GLSLProgram::set_uniform(const char *name, float x, float y, float z) const {

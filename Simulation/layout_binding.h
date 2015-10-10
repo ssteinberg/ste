@@ -18,8 +18,6 @@ private:
 	int index;
 
 public:
-	virtual ~layout_binding() noexcept {}
-
 	explicit layout_binding(unsigned long long int i) : index(static_cast<int>(i)) {}
 
 	int binding_index() const { return index; }

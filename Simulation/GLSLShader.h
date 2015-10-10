@@ -12,13 +12,15 @@ namespace LLR {
 
 class GLSLShader {
 public:
-	enum GLSLShaderType {
-		VERTEX, FRAGMENT, GEOMETRY, COMPUTE,
+	enum class GLSLShaderType {
+		NONE = 0,
+		VERTEX, FRAGMENT, GEOMETRY, 
+		COMPUTE,
 		TESS_CONTROL, TESS_EVALUATION
 	};
 	
 private:
-	GLSLShaderType type;
+	GLSLShaderType type{ GLSLShaderType::NONE };
 	GLuint id;
 
 public:
@@ -29,13 +31,13 @@ public:
 
 	GLSLShader(GLSLShaderType type) : type(type) {
 		switch (type) {
-		case GLSLShader::VERTEX:			id = glCreateShader(GL_VERTEX_SHADER); break;
-		case GLSLShader::FRAGMENT:			id = glCreateShader(GL_FRAGMENT_SHADER); break;
-		case GLSLShader::GEOMETRY:			id = glCreateShader(GL_GEOMETRY_SHADER); break;
-		case GLSLShader::COMPUTE:			id = glCreateShader(GL_COMPUTE_SHADER); break;
-		case GLSLShader::TESS_CONTROL:		id = glCreateShader(GL_TESS_CONTROL_SHADER); break;
-		case GLSLShader::TESS_EVALUATION:	id = glCreateShader(GL_TESS_EVALUATION_SHADER); break;
-		default:							id = 0; break;
+		case GLSLShaderType::VERTEX:			id = glCreateShader(GL_VERTEX_SHADER); break;
+		case GLSLShaderType::FRAGMENT:			id = glCreateShader(GL_FRAGMENT_SHADER); break;
+		case GLSLShaderType::GEOMETRY:			id = glCreateShader(GL_GEOMETRY_SHADER); break;
+		case GLSLShaderType::COMPUTE:			id = glCreateShader(GL_COMPUTE_SHADER); break;
+		case GLSLShaderType::TESS_CONTROL:		id = glCreateShader(GL_TESS_CONTROL_SHADER); break;
+		case GLSLShaderType::TESS_EVALUATION:	id = glCreateShader(GL_TESS_EVALUATION_SHADER); break;
+		default:								assert(false); id = 0; break;
 		}
 	}
 	virtual ~GLSLShader() { if (this->is_valid()) glDeleteShader(id); }

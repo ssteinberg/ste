@@ -42,11 +42,10 @@ public:
 
 template <typename Type, BufferUsage::buffer_usage U = BufferUsage::BufferUsageNone>
 class buffer_object : public bindable_resource<BufferObjectAllocator, BufferObjectBinder, GLenum> {
-protected:
+public:
 	static constexpr BufferUsage::buffer_usage access_usage = U;
 	using T = std::remove_cv_t<Type>;
 
-public:
 	static constexpr bool dynamic_buffer = !!(access_usage & BufferUsage::BufferUsageDynamic);
 	static constexpr bool map_read_allowed = !!(access_usage & BufferUsage::BufferUsageMapRead);
 	static constexpr bool map_write_allowed = !!(access_usage & BufferUsage::BufferUsageMapWrite);
@@ -75,17 +74,18 @@ public:
 	void lock_range(const range<> &r) const {
 		buffer_lock l;
 		l.lock();
-		locks.insert(std::make_pair(r, l));
+		locks.insert(std::make_pair(r, std::move(l)));
 	}
 	void wait_for_range(const range<> &r) const {
-		for (auto it = locks.begin(); it != locks.end(); ++it) {
-			if (it.first.start > r.start + r.length)
+		for (auto it = locks.begin(); it != locks.end();) {
+			if (it->first.start > r.start + r.length)
 				break;
-			if (it.first.overlaps(r)) {
-				it.second.wait();
-				locks.erase(it);
-				--it;
+			if (it->first.overlaps(r)) {
+				it->second.wait();
+				it = locks.erase(it);
 			}
+			else
+				++it;
 		}
 	}
 

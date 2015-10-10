@@ -18,7 +18,7 @@
 #include "ModelLoader.h"
 #include "Camera.h"
 #include "GLSLProgram.h"
-#include "ShaderLoader.h"
+#include "GLSLProgramLoader.h"
 #include "SurfaceIO.h"
 #include "VertexBufferObject.h"
 #include "VertexArrayObject.h"
@@ -28,8 +28,11 @@
 #include "PixelBufferObject.h"
 #include "AtomicCounterBuffer.h"
 #include "Scene.h"
+#include "TextRenderer.h"
+#include "AttributedString.h"
 
 using namespace StE::LLR;
+using namespace StE::Text;
 
 struct Vertex {
 	glm::vec3 p;
@@ -42,7 +45,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 	StE::Log logger("Simulation");
 	logger.redirect_std_outputs();
 	ste_log_set_global_logger(&logger);
-	ste_log() << "Simulation running";
+	ste_log() << "Simulation is running";
 
 	constexpr float w = 1400, h = 900;
 	constexpr int max_steps = 8;
@@ -69,45 +72,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 
 	// Prepare
 	StE::Graphics::Scene scene;
+	StE::Text::TextRenderer text_renderer(rc, StE::Text::Font("Data/calligraph421-bt-roman.ttf"));
 
-	StE::LLR::GLSLProgram transform;
-	transform.add_shader(StE::Resource::ShaderLoader::compile_from_path("transform.vert"));
-	transform.add_shader(StE::Resource::ShaderLoader::compile_from_path("frag.frag"));
-	transform.link();
-
-	StE::LLR::GLSLProgram gen_depth_layers;
-	gen_depth_layers.add_shader(StE::Resource::ShaderLoader::compile_from_path("passthrough.vert"));
-	gen_depth_layers.add_shader(StE::Resource::ShaderLoader::compile_from_path("gen_depth_layers.frag"));
-	gen_depth_layers.link();
-
-	StE::LLR::GLSLProgram ssao;
-	ssao.add_shader(StE::Resource::ShaderLoader::compile_from_path("passthrough.vert"));
-	ssao.add_shader(StE::Resource::ShaderLoader::compile_from_path("ssao.frag"));
-	ssao.link();
-
-	StE::LLR::GLSLProgram blur_x;
-	blur_x.add_shader(StE::Resource::ShaderLoader::compile_from_path("passthrough.vert"));
-	blur_x.add_shader(StE::Resource::ShaderLoader::compile_from_path("blur_x.frag"));
-	blur_x.link();
-
-	StE::LLR::GLSLProgram blur_y;
-	blur_y.add_shader(StE::Resource::ShaderLoader::compile_from_path("passthrough.vert"));
-	blur_y.add_shader(StE::Resource::ShaderLoader::compile_from_path("blur_y.frag"));
-	blur_y.link();
-
-	StE::LLR::GLSLProgram deffered;
-	deffered.add_shader(StE::Resource::ShaderLoader::compile_from_path("passthrough_light.vert"));
-	deffered.add_shader(StE::Resource::ShaderLoader::compile_from_path("lighting.frag"));
-	deffered.link();
-
-	StE::LLR::GLSLProgram hdr_create_luminance;
-	hdr_create_luminance.add_shader(StE::Resource::ShaderLoader::compile_from_path("passthrough.vert"));
-	hdr_create_luminance.add_shader(StE::Resource::ShaderLoader::compile_from_path("hdr_create_luminance.frag"));
-	hdr_create_luminance.link();
-
-	StE::LLR::GLSLProgram hdr_luminance_downsample;
-	hdr_luminance_downsample.add_shader(StE::Resource::ShaderLoader::compile_from_path("hdr_lum_downsample.glsl"));
-	hdr_luminance_downsample.link();
+	std::unique_ptr<StE::LLR::GLSLProgram> transform = StE::Resource::GLSLProgramLoader::load_program_task(rc, { "transform.vert", "frag.frag" })();
+	std::unique_ptr<StE::LLR::GLSLProgram> gen_depth_layers = StE::Resource::GLSLProgramLoader::load_program_task(rc, { "passthrough.vert","gen_depth_layers.frag" })();
+	std::unique_ptr<StE::LLR::GLSLProgram> ssao = StE::Resource::GLSLProgramLoader::load_program_task(rc, { "passthrough.vert", "ssao.frag" })();
+	std::unique_ptr<StE::LLR::GLSLProgram> blur_x = StE::Resource::GLSLProgramLoader::load_program_task(rc, { "passthrough.vert","blur_x.frag" })();
+	std::unique_ptr<StE::LLR::GLSLProgram> blur_y = StE::Resource::GLSLProgramLoader::load_program_task(rc, { "passthrough.vert", "blur_y.frag" })();
+	std::unique_ptr<StE::LLR::GLSLProgram> deffered = StE::Resource::GLSLProgramLoader::load_program_task(rc, { "passthrough_light.vert", "lighting.frag" })();
+	std::unique_ptr<StE::LLR::GLSLProgram> hdr_create_luminance = StE::Resource::GLSLProgramLoader::load_program_task(rc, { "passthrough.vert","hdr_create_luminance.frag" })();
+	std::unique_ptr<StE::LLR::GLSLProgram> hdr_luminance_downsample = StE::Resource::GLSLProgramLoader::load_program_task(rc, { "hdr_lum_downsample.glsl" })();
 
 	constexpr int noise_size_w = 28;
 	constexpr int noise_size_h = 28;
@@ -248,6 +222,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 	// Run main loop
 	rc.run_loop([&]() {
 		if (!loaded) {
+			rc.render_context().clear_framebuffer(true, true);
+
+			{
+				using namespace StE::Text::Attributes;
+				AttributedWString str = center(purple(huge(b(L"Loading Simulation..."))) + 
+											   L"\n" + 
+											   orange(large(L"By Shlomi Steinberg")));
+				text_renderer.render({ w/2, h/2 - 20 }, str);
+			}
+
 			if (model_future.wait_for(std::chrono::seconds(0)) != std::future_status::ready)
 				return true;
 			loaded = true;
@@ -278,9 +262,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 		unsigned zero = 0;
 		histogram.clear(gli::FORMAT_R32_UINT, &zero);
 
-		for (int i = 0; i < depth_layers_count; ++i)
-			depth_layers[0][i].with_format(gli::format::FORMAT_R32_SINT).bind(image_layout_binding(i));
-
 		auto proj_mat = rc.projection_matrix();
 
 		fbo_depth_layers.bind();
@@ -288,90 +269,100 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 
 		rc.render_context().enable_depth_test();
 		fbo.bind();
-		rc.render_context().clear_framebuffer(false, true);
+		rc.render_context().clear_framebuffer(true, true);
 
-		transform.bind();
+		for (int i = 0; i < depth_layers_count; ++i)
+			depth_layers[0][i].with_format(gli::format::FORMAT_R32_SINT).bind(image_layout_binding(i));
+
+		transform->bind();
 		auto mv = camera.view_matrix() * glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(-100, -35, 0)), glm::vec3(.25, .25, .25));
-		transform.set_uniform("view_model", mv);
-		transform.set_uniform("trans_inverse_view_model", glm::transpose(glm::inverse(mv)));
-		transform.set_uniform("projection", proj_mat);
+		transform->set_uniform("view_model", mv);
+		transform->set_uniform("trans_inverse_view_model", glm::transpose(glm::inverse(mv)));
+		transform->set_uniform("projection", proj_mat);
 		scene.render();
 
 		rc.render_context().disable_depth_test();
 
 		vao.bind();
-		vao.enable_vertex_attrib_array(0);
-		vao.enable_vertex_attrib_array(1);
 
 		if (perform_ssao) {
 			fbo_f_depth_layers.bind();
-			gen_depth_layers.bind();
+			gen_depth_layers->bind();
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 			f_depth_layers.generate_mipmaps();
 
 			fbo_final1.bind();
-			ssao.bind();
-			ssao.set_uniform("steps", steps);
-			ssao.set_uniform("proj_inv", glm::inverse(proj_mat));
-			0_sampler_idx = normal_output;
-			1_sampler_idx = position_output;
-			2_sampler_idx = noise;
-			3_sampler_idx = f_depth_layers;
+			ssao->bind();
+			ssao->set_uniform("steps", steps);
+			ssao->set_uniform("proj_inv", glm::inverse(proj_mat));
+			0_tex_unit = normal_output;
+			1_tex_unit = position_output;
+			2_tex_unit = noise;
+			3_tex_unit = f_depth_layers;
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 			fbo_final2.bind();
-			blur_x.bind();
-			0_sampler_idx = occlusion_final1_output;
-			1_sampler_idx = position_output;
+			blur_x->bind();
+			0_tex_unit = occlusion_final1_output;
+			1_tex_unit = position_output;
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 			fbo_final1.bind();
-			blur_y.bind();
-			0_sampler_idx = occlusion_final2_output;
-			1_sampler_idx = position_output;
+			blur_y->bind();
+			0_tex_unit = occlusion_final2_output;
+			1_tex_unit = position_output;
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 		}
 
-		fbo_hdr_image.bind();
-		deffered.bind();
-		deffered.set_uniform("ssao", perform_ssao);
-		deffered.set_uniform("view", camera.view_matrix());
-		0_sampler_idx = normal_output;
-		1_sampler_idx = position_output;
-		2_sampler_idx = occlusion_final1_output;
-		3_sampler_idx = color_output;
+		//fbo_hdr_image.bind();
+		rc.render_context().defaut_framebuffer().bind();
+		deffered->bind();
+		deffered->set_uniform("ssao", perform_ssao);
+		deffered->set_uniform("view", camera.view_matrix());
+		0_tex_unit = normal_output;
+		1_tex_unit = position_output;
+		2_tex_unit = occlusion_final1_output;
+		3_tex_unit = color_output;
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-		glViewport(0, 0, luminance_w, luminance_h);
-		fbo_luminance_image.bind();
-		hdr_create_luminance.bind();
-		0_sampler_idx = hdr_image;
-		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-		hdr_luminance_downsample.bind();
-		for (int i = 0; i < hdr_downsampling_levels; ++i) {
-			if (i == 0)
-				0_image_idx = luminance_image[0].with_access(ImageAccessMode::Read);
-			else
-				0_image_idx = (*luminance_downsampled[i - 1])[0].with_access(ImageAccessMode::Read);
-			1_image_idx = (*luminance_downsampled[i])[0].with_access(ImageAccessMode::Write);
-			auto size = luminance_downsampled[i]->get_image_size();
-			glm::uvec2 group_size = { std::min<unsigned>(128, size.x), std::min<unsigned>(128, size.y) };
-			glDispatchComputeGroupSizeARB(size.x / group_size.x, size.y / group_size.y, 1,
-										  group_size.x, group_size.y, 1);
-		}
-
-		glViewport(0, 0, w, h);
+// 		glViewport(0, 0, luminance_w, luminance_h);
+// 		fbo_luminance_image.bind();
+// 		hdr_create_luminance->bind();
+// 		0_tex_unit = hdr_image;
+// 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+// 
+// 		hdr_luminance_downsample->bind();
+// 		for (int i = 0; i < hdr_downsampling_levels; ++i) {
+// 			if (i == 0)
+// 				0_image_idx = luminance_image[0].with_access(ImageAccessMode::Read);
+// 			else
+// 				0_image_idx = (*luminance_downsampled[i - 1])[0].with_access(ImageAccessMode::Read);
+// 			1_image_idx = (*luminance_downsampled[i])[0].with_access(ImageAccessMode::Write);
+// 			auto size = luminance_downsampled[i]->get_image_size();
+// 			glm::uvec2 group_size = { std::min<unsigned>(128, size.x), std::min<unsigned>(128, size.y) };
+// 			glDispatchComputeGroupSizeARB(size.x / group_size.x, size.y / group_size.y, 1,
+// 										  group_size.x, group_size.y, 1);
+// 		}
+// 
+// 		glViewport(0, 0, w, h);
 
 // 		0_atomic_idx = histogram;
 // 
 // 		auto map_ptr = histogram.map_read(64);
 // 		auto histogram_data = map_ptr.get();
 // 
- 		//rc.render_context().defaut_framebuffer().bind();
+		//rc.render_context().defaut_framebuffer().bind();
 
+		{
+			using namespace StE::Text::Attributes;
+			AttributedWString str = blue(AttributedWString(L"Frame time: ")) + b(red(std::to_wstring(rc.time_per_frame().count()))) + L" ms";
+			text_renderer.render({ 30, h - 50 }, str);
+		}
+
+#ifdef _DEBUG
 		ste_log_query_and_log_gl_errors();
+#endif
 
 		return running;
 	});

@@ -32,7 +32,7 @@ void ModelLoader::process_model_mesh(optional<task_scheduler*> sched, const tiny
 		if (!texture_name.length()) return nullptr;
 		std::string full_path = dir + texture_name;
 
-		auto tex_task = SurfaceIO::load_2d_task(full_path);
+		auto tex_task = SurfaceIO::load_texture_2d_task(full_path);
 		std::unique_ptr<LLR::Texture2D> tex = tex_task(sched);
 		if (tex == nullptr)
 			ste_log_warn() << "Couldn't load texture " << full_path;
@@ -55,7 +55,7 @@ void ModelLoader::process_model_mesh(optional<task_scheduler*> sched, const tiny
 	if (!sched)
 		f();
 	else
-		(*sched)->schedule_now_on_main_thread(f).wait();
+		sched->schedule_now_on_main_thread(f).wait();
 }
 
 StE::task<bool> ModelLoader::load_model_task(const std::string &file_path, Scene *scene) {
@@ -84,7 +84,7 @@ StE::task<bool> ModelLoader::load_model_task(const std::string &file_path, Scene
 			if (!sched)
 				shape_task();
 			else
-				futures.push_back((*sched)->schedule_now(shape_task));
+				futures.push_back(sched->schedule_now(shape_task));
 		}
 
 		for (auto &f : futures)

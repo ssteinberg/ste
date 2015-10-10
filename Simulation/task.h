@@ -12,14 +12,18 @@
 #include "optional.h"
 #include "function_traits.h"
 
+#include "thread_constants.h"
+
 namespace StE {
 
 class task_scheduler;
 
 template <typename R>
 class task {
-private:
+public:
 	using SchedArg = optional<task_scheduler*>;
+
+private:
 	using F = std::function<R(SchedArg)>;
 
 	F f;
@@ -47,9 +51,9 @@ public:
 											std::enable_if_t<function_traits<L>::arity == 1>* = 0) {
 		static_assert(std::is_constructible<function_traits<L>::arg<0>::t, R>::value, "Lambda argument must be constructible with R");
 
-		return [func = std::forward<L>(lambda), thisf = this->f](SchedArg sched) {
+		return[func = std::forward<L>(lambda), thisf = this->f](SchedArg sched) {
 			auto r = thisf(sched);
-			return (!sched) ? func(r) : (*sched).schedule_now([=]() { return func(r); }).get();
+			return (!sched) ? func(std::move(r)) : sched.schedule_now([&]() { return func(std::move(r)); }).get();
 		};
 	}
 	template <typename L>
@@ -58,9 +62,9 @@ public:
 		static_assert(std::is_constructible<function_traits<L>::arg<0>::t, SchedArg>::value, "Lambda argument 0 must be constructible with SchedArg");
 		static_assert(std::is_constructible<function_traits<L>::arg<1>::t, R>::value, "Lambda argument 1 must be constructible with R");
 
-		return [func = std::forward<L>(lambda), thisf = this->f](SchedArg sched) {
+		return[func = std::forward<L>(lambda), thisf = this->f](SchedArg sched) {
 			auto r = thisf(sched);
-			return (!sched) ? func(sched, r) : (*sched)->schedule_now([=]() { return func(sched, r); }).get();
+			return (!sched) ? func(sched, std::move(r)) : sched->schedule_now([&]() { return func(sched, std::move(r)); }).get();
 		};
 	}
 	template <typename L>
@@ -71,7 +75,8 @@ public:
 
 		return [func = std::forward<L>(lambda), thisf = this->f](SchedArg sched) {
 			auto r = thisf(sched);
-			return (!sched) ? func(sched, r) : (*sched)->schedule_now_on_main_thread([=]() { return func(sched, r); }).get();
+			if (!sched) assert(is_main_thread());
+			return (!sched) ? func(sched, std::move(r)) : sched->schedule_now_on_main_thread([&]() { return func(sched, std::move(r)); }).get();
 		};
 	}
 

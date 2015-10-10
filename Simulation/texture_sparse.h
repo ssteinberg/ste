@@ -104,6 +104,12 @@ public:
 
 	texture_sparse_2d_array(texture_sparse_2d_array &&m) = default;
 	texture_sparse_2d_array& operator=(texture_sparse_2d_array &&m) = default;
+
+	static int max_layers() {
+		int max_layers;
+		glGetIntegerv(GL_MAX_SPARSE_ARRAY_TEXTURE_LAYERS_ARB, &max_layers);
+		return max_layers;
+	}
 };
 
 }

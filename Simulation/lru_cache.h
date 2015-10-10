@@ -59,7 +59,7 @@ public:
 	lru_cache &operator=(lru_cache &&) = delete;
 	lru_cache &operator=(const lru_cache &) = delete;
 
-	lru_cache(const boost::filesystem::path &path, std::size_t quota) : path(path), quota(quota), index(path), t([this]() {
+	lru_cache(const boost::filesystem::path &path, std::size_t quota = 0) : path(path), quota(quota), index(path, total_size), t([this]() {
 		auto flag = interruptible_thread::interruption_flag;
 		for (;;) {
 			if (flag->is_set()) return;
@@ -75,7 +75,7 @@ public:
 			}
 
 			std::size_t ts = this->total_size.load(std::memory_order_relaxed);
-			while (ts > this->quota) {
+			while (ts > this->quota && this->quota) {
 				auto size = this->index.erase_back();
 				assert(size);
 				if (!size)
@@ -91,10 +91,13 @@ public:
 
 	template <typename V>
 	void insert(const key_type &k, V &&v) {
-		{
+		try {
 			cacheable item(k, path);
 			item.archive(std::forward<V>(v));
-			index.map.emplace(k, std::move(item));
+			index.insert(k, std::move(item));
+		}
+		catch (std::exception ex) {
+			return;
 		}
 
 		std::atomic_thread_fence(std::memory_order_acquire);
@@ -115,9 +118,14 @@ public:
 			if (!val_guard.is_valid())
 				return none;
 
-			auto v = val_guard->unarchive<V>();
-			this->item_accessed(std::move(val_guard));
-			return v;
+			try {
+				auto v = val_guard->unarchive<V>();
+				this->item_accessed(std::move(val_guard));
+				return v;
+			}
+			catch (std::exception ex) {
+				return none;
+			}
 		};
 	}
 };

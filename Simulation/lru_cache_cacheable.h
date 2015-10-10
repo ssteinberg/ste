@@ -11,7 +11,7 @@
 
 #include <string>
 #include <iostream>
-
+#include <chrono>
 #include <memory>
 #include <atomic>
 
@@ -36,8 +36,16 @@ private:
 public:
 	lru_cache_cacheable() : pdata(std::make_shared<data>()) {}
 	lru_cache_cacheable(const K &k, const boost::filesystem::path &path) : lru_cache_cacheable() {
+		using namespace std::chrono;
+		auto tp = duration_cast<nanoseconds>(high_resolution_clock::now().time_since_epoch());
+		auto name = std::to_string(tp.count()) + archive_extension;
+
+		pdata->f = path / name;
 		pdata->k = k;
-		pdata->f = path / (std::string(k) + archive_extension);
+	}
+	lru_cache_cacheable(const K &k, const boost::filesystem::path &path, const boost::filesystem::path &file_name) : lru_cache_cacheable() {
+		pdata->f = path / file_name;
+		pdata->k = k;
 	}
 	~lru_cache_cacheable() {
 		if (pdata!=nullptr && !pdata->live.load() && !pdata->f.empty()) {
@@ -61,6 +69,7 @@ public:
 	const K &get_k() const { return pdata->k; }
 	std::size_t get_size() const { return pdata->size; }
 	lru_iterator_type& get_lru_it() { return pdata->lru_it; }
+	boost::filesystem::path get_file_name() const { return pdata->f.filename(); }
 
 	template <typename V>
 	void archive(V &&v) {

@@ -72,11 +72,8 @@ private:
 		auto sizes = LLR::texture_sparse_2d_array::page_sizes(key.format);
 		auto tile_size = sizes[0];
 
-		int max_layers;
-		glGetIntegerv(GL_MAX_SPARSE_ARRAY_TEXTURE_LAYERS_ARB, &max_layers);
-
 		int levels = LLR::texture_sparse_2d_array::calculate_mipmap_max_level(key.size);
-		return sbta_value{ sizes, LLR::texture_sparse_2d_array(key.format, { key.size.xy, max_layers }, levels, tile_size, 0), { static_cast<int>(0) } };
+		return sbta_value{ sizes, LLR::texture_sparse_2d_array(key.format, { key.size.xy, LLR::texture_sparse_2d_array::max_layers() }, levels, tile_size, 0), { static_cast<int>(0) } };
 	}
 
 protected:

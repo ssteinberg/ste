@@ -43,6 +43,9 @@ public:
 	bool	link();
 	bool	is_linked() { return linked; }
 
+	bool	link_from_binary(unsigned format, const std::string &data);
+	std::string get_binary_represantation(unsigned *format);
+
 	void	bind() const {
 		if (id <= 0 || (!linked)) {
 			assert(false);
@@ -71,7 +74,6 @@ public:
 
 	bool	is_valid() const { return id != 0; }
 
-protected:
 	GLuint	get_program_id() { return id; }
 };
 

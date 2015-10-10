@@ -98,7 +98,7 @@ public:
 		};
 	}
 
-	static auto load_2d_task(const std::string &path) {
+	static auto load_texture_2d_task(const std::string &path) {
 		return task<gli::texture2D>([=](optional<task_scheduler*> sched) {
 			return load_surface_2d_task(path)(sched);
 		}).then_on_main_thread([](optional<task_scheduler*> sched, const gli::texture2D &surface) {

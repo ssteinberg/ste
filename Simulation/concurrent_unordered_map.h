@@ -356,7 +356,7 @@ public:
 
 			virtual_bucket = virtual_bucket->next.load(std::memory_order_relaxed);
 			if (!virtual_bucket)
-				return concurrent_map_bucket_data::value_data_guard_type(nullptr);
+				return value_data_guard_type(nullptr);
 		}
 	}
 
