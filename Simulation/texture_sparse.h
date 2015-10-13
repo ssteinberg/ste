@@ -25,7 +25,7 @@ protected:
 	texture_sparse_mipmapped(gli::format format, const size_type &size, int levels, const size_type &tile_size, int virtual_page_idx) : Base(), tile_size(tile_size) {
 		this->levels = levels;
 		allocate_tex_storage(size, format, levels, 1, true, virtual_page_idx);
-		glGetTextureParameteriv(id, GL_NUM_SPARSE_LEVELS_ARB, &max_sparse_level);
+		glGetTextureParameteriv(get_resource_id(), GL_NUM_SPARSE_LEVELS_ARB, &max_sparse_level);
 	}
 
 public:
@@ -43,7 +43,7 @@ public:
 			count3[i] = count_size[i];
 		}
 
-		glTexturePageCommitmentEXT(id, level, offset3.x, offset3.y, offset3.z, count3.x, count3.y, count3.z, true);
+		glTexturePageCommitmentEXT(get_resource_id(), level, offset3.x, offset3.y, offset3.z, count3.x, count3.y, count3.z, true);
 	}
 	void uncommit_tiles(const size_type &offset_size, const size_type &count_size, int level) {
 		glm::tvec3<std::size_t> offset3{ 0,0,0 };
@@ -53,7 +53,7 @@ public:
 			count3[i] = count_size[i];
 		}
 
-		glTexturePageCommitmentEXT(id, level, offset3.x, offset3.y, offset3.z, count3.x, count3.y, count3.z, false);
+		glTexturePageCommitmentEXT(get_resource_id(), level, offset3.x, offset3.y, offset3.z, count3.x, count3.y, count3.z, false);
 	}
 
 	static std::vector<glm::ivec3> page_sizes(gli::format gli_format) {

@@ -33,7 +33,7 @@ public:
 	RenderTarget& operator=(RenderTarget &&m) = default;
 
 	RenderTarget(gli::format format, const glm::tvec2<std::size_t> &size, int samples = 0) : size(size), format(format) {
-		glNamedRenderbufferStorageMultisample(id, samples, static_cast<GLenum>(opengl::gl_translate_format(format).Internal), size.x, size.y);
+		glNamedRenderbufferStorageMultisample(get_resource_id(), samples, static_cast<GLenum>(opengl::gl_translate_format(format).Internal), size.x, size.y);
 	}
 
 	glm::tvec2<std::size_t> get_image_size() const final override { return size; }

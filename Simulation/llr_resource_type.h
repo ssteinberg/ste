@@ -19,6 +19,8 @@ enum class llr_resource_type {
 	LLRTextureCubeMap = GL_TEXTURE_CUBE_MAP,
 	LLRTextureCubeMapArray = GL_TEXTURE_CUBE_MAP_ARRAY,
 	LLRSamplingDescriptor,
+	LLRGLSLProgram,
+	LLRGLSLShader,
 	LLRImageObject,
 	LLRRenderbufferObject = GL_RENDERBUFFER,
 	LLRFramebufferObject = GL_FRAMEBUFFER,
@@ -28,6 +30,7 @@ enum class llr_resource_type {
 	LLRPixelBufferObject,
 	LLRShaderStorageBufferObject,
 	LLRIndirectDrawBufferObject,
+	LLRIndirectDispatchBufferObject,
 	LLRAtomicCounterBufferObject,
 };
 

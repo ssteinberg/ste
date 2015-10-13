@@ -1,4 +1,5 @@
 
+#type frag
 #version 450
 #extension GL_ARB_shader_storage_buffer_object : require
 #extension GL_ARB_bindless_texture : require
@@ -34,11 +35,14 @@ void main( void ) {
 	buffer_glyph_descriptor glyph = glyphs[vin.drawId];
 
 	vec2 uv = vin.st;
+
 	float D = textureLod(sampler2D(glyph.tex_handler), uv, 0).x;
 
 	D -= vin.weight;
 
     float g = 1.0f - aastep(0.0, D);
+	if (g==0)
+		discard;
 
 	vec4 c = vin.color * vec4(1, 1, 1, g);
 	gl_FragColor = c;

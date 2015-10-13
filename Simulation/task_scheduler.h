@@ -143,6 +143,9 @@ public:
 
 		return schedule_now_on_main_thread([func = std::forward<F>(f), this]() { func(this); });
 	}
+
+	int get_workers_count() const { return pool.get_workers_count(); }
+	int get_sleeping_workers() const { return pool.get_sleeping_workers(); }
 };
 
 }

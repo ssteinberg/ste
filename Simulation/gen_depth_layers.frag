@@ -1,4 +1,5 @@
 
+#type frag
 #version 440
 
 layout(location = 0) out float o_d0;

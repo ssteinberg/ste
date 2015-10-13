@@ -29,7 +29,7 @@ class glyph_manager {
 private:
 	struct buffer_glyph_descriptor {
 		glyph::glyph_metrics metrics;
-		std::uint64_t tex_handle;
+		LLR::texture_handle handle;
 	};
 
 	using buffer_type = LLR::ShaderStorageBuffer<buffer_glyph_descriptor, static_cast<LLR::BufferUsage::buffer_usage>(LLR::BufferUsage::BufferUsageDynamic | LLR::BufferUsage::BufferUsageSparse)>;
@@ -52,6 +52,8 @@ private:
 	std::unordered_map<Font, font_storage> fonts;
 	std::unique_ptr<buffer_type> buffer;
 	int buffer_offset{ 0 };
+
+	LLR::Sampler text_glyph_sampler;
 
 private:
 	task<const glyph_descriptor*> glyph_loader_task(const Font &font, wchar_t codepoint) {
@@ -87,7 +89,8 @@ private:
 
 			buffer_glyph_descriptor bgd;
 			bgd.metrics = g.metrics;
-			bgd.tex_handle = gd.texture->get_texture_handle();
+			bgd.handle = gd.texture->get_texture_handle(this->text_glyph_sampler);
+			bgd.handle.make_resident();
 
 			buffer->commit_range(buffer_offset, 1);
 			buffer->upload(buffer_offset++, 1, &bgd);
@@ -102,6 +105,12 @@ public:
 	glyph_manager(const StEngineControl &context) : context(context) {
 		int page_size = std::max(65536, buffer_type::page_size());
 		buffer = std::make_unique<buffer_type>(8 * page_size);
+
+		text_glyph_sampler.set_min_filter(LLR::TextureFiltering::Linear);
+		text_glyph_sampler.set_mag_filter(LLR::TextureFiltering::Linear);
+		text_glyph_sampler.set_wrap_s(LLR::TextureWrapMode::ClampToBorder);
+		text_glyph_sampler.set_wrap_t(LLR::TextureWrapMode::ClampToBorder);
+		text_glyph_sampler.set_anisotropic_filter(16);
 	}
 
 	const glyph_descriptor* glyph_for_font(const Font &font, wchar_t codepoint) {
@@ -110,7 +119,6 @@ public:
 		auto glyphit = it->second.glyphs.find(codepoint);
 		if (glyphit == it->second.glyphs.end()) {
 			auto *gd = glyph_loader_task(font, codepoint)();
-			gd->texture->make_resident();
 			return gd;
 		}
 

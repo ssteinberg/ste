@@ -9,6 +9,7 @@
 #include <iostream>
 #include <chrono>
 #include <thread>
+#include <numeric>
 
 #include "opengl.h"
 #include "Log.h"
@@ -26,7 +27,7 @@
 #include "RenderTarget.h"
 #include "Texture2DArray.h"
 #include "PixelBufferObject.h"
-#include "AtomicCounterBuffer.h"
+#include "AtomicCounterBufferObject.h"
 #include "Scene.h"
 #include "TextRenderer.h"
 #include "AttributedString.h"
@@ -57,7 +58,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 	rc.init_render_context("Shlomi Steinberg - Simulation", { w, h }, false, false);
 
 	std::string gl_err_desc;
-	while (StE::LLR::opengl::query_gl_error(gl_err_desc));
+	//while (StE::LLR::opengl::query_gl_error(gl_err_desc));
 // 	StE::Graphics::texture_pool tp;
 // 	StE::LLR::Texture2D tt(gli::format::FORMAT_RGBA8_UNORM, StE::LLR::Texture2D::size_type(256, 256), 5);
 // 	StE::LLR::opengl::query_gl_error(gl_err_desc);
@@ -80,8 +81,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 	std::unique_ptr<StE::LLR::GLSLProgram> blur_x = StE::Resource::GLSLProgramLoader::load_program_task(rc, { "passthrough.vert","blur_x.frag" })();
 	std::unique_ptr<StE::LLR::GLSLProgram> blur_y = StE::Resource::GLSLProgramLoader::load_program_task(rc, { "passthrough.vert", "blur_y.frag" })();
 	std::unique_ptr<StE::LLR::GLSLProgram> deffered = StE::Resource::GLSLProgramLoader::load_program_task(rc, { "passthrough_light.vert", "lighting.frag" })();
-	std::unique_ptr<StE::LLR::GLSLProgram> hdr_create_luminance = StE::Resource::GLSLProgramLoader::load_program_task(rc, { "passthrough.vert","hdr_create_luminance.frag" })();
-	std::unique_ptr<StE::LLR::GLSLProgram> hdr_luminance_downsample = StE::Resource::GLSLProgramLoader::load_program_task(rc, { "hdr_lum_downsample.glsl" })();
+	std::unique_ptr<StE::LLR::GLSLProgram> hdr_create_histogram = StE::Resource::GLSLProgramLoader::load_program_task(rc, { "hdr_create_histogram.glsl" })();
+	std::unique_ptr<StE::LLR::GLSLProgram> hdr_compute_histogram_sums = StE::Resource::GLSLProgramLoader::load_program_task(rc, { "hdr_compute_histogram_sums.glsl" })();
+	std::unique_ptr<StE::LLR::GLSLProgram> hdr_compute_minmax = StE::Resource::GLSLProgramLoader::load_program_task(rc, { "passthrough.vert","hdr_compute_minmax.frag" })();
+	std::unique_ptr<StE::LLR::GLSLProgram> hdr_tonemap = StE::Resource::GLSLProgramLoader::load_program_task(rc, { "passthrough.vert","hdr_tonemap.frag" })();
 
 	constexpr int noise_size_w = 28;
 	constexpr int noise_size_h = 28;
@@ -151,27 +154,28 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 	for (int i = 0; i < depth_layers_count; ++i)
 		fbo_f_depth_layers[i] = f_depth_layers[0][i];
 
-
-	int luminance_w = 1, luminance_h = 1;
-	while (luminance_w * 2 < w && luminance_h * 2 < h) {
-		luminance_w *= 2;
-		luminance_h *= 2;
-	}
-	int hdr_downsampling_levels = StE::LLR::Texture2D::calculate_mipmap_max_level({ luminance_w/2, luminance_h/2 }) + 1;
-	std::vector<std::unique_ptr<StE::LLR::Texture2D>> luminance_downsampled(hdr_downsampling_levels);
-	for (int i = 0; i < hdr_downsampling_levels; ++i) {
-		auto size = StE::LLR::Texture2D::size_type(std::max(1, luminance_w >> (i+1)), std::max(1, luminance_h >> (i+1)));
-		luminance_downsampled[i] = std::make_unique<StE::LLR::Texture2D>(gli::format::FORMAT_RGBA32_SFLOAT, size, 1);
-	}
-
 	StE::LLR::Texture2D hdr_image(gli::format::FORMAT_RGB32_SFLOAT, StE::LLR::Texture2D::size_type(w, h), 1);
 	StE::LLR::FramebufferObject fbo_hdr_image;
 	fbo_hdr_image[0] = hdr_image[0];
-	StE::LLR::Texture2D luminance_image(gli::format::FORMAT_RGBA32_SFLOAT, StE::LLR::Texture2D::size_type(luminance_w, luminance_h), 1);
-	StE::LLR::FramebufferObject fbo_luminance_image;
-	fbo_luminance_image[0] = luminance_image[0];
 
-	StE::LLR::AtomicCounterBuffer<StE::LLR::BufferUsage::BufferUsageMapRead> histogram(64);
+	Sampler linear_sampler;
+	linear_sampler.set_min_filter(TextureFiltering::Linear);
+	linear_sampler.set_mag_filter(TextureFiltering::Linear);
+
+	int luminance_w = 1, luminance_h = 1;
+	while ((luminance_w << 1) < w)
+		luminance_w <<= 1;
+	while ((luminance_h << 1) < h)
+		luminance_h <<= 1;
+
+	StE::LLR::Texture2D histogram_minmax(gli::format::FORMAT_R32_SINT, StE::LLR::Texture2D::size_type(2, 1), 1);
+	StE::LLR::Texture2D hdr_lums(gli::format::FORMAT_R32_SFLOAT, StE::LLR::Texture2D::size_type(luminance_w, luminance_h), 1);
+	StE::LLR::FramebufferObject fbo_hdr_lums;
+	fbo_hdr_lums[0] = hdr_lums[0];
+	float big_float = 10000.f;
+	StE::LLR::PixelBufferObject<unsigned> histogram_minmax_eraser(std::vector<unsigned>{ *reinterpret_cast<unsigned*>(&big_float), 0 });
+	StE::LLR::AtomicCounterBufferObject<> histogram(64);
+	StE::LLR::ShaderStorageBuffer<unsigned> histogram_sums(64);
 
 	int steps = max_steps;
 	bool perform_ssao = true;
@@ -229,7 +233,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 				AttributedWString str = center(purple(huge(b(L"Loading Simulation..."))) + 
 											   L"\n" + 
 											   orange(large(L"By Shlomi Steinberg")));
-				text_renderer.render({ w/2, h/2 - 20 }, str);
+				text_renderer.render({ w / 2, h / 2 - 20 }, str);
+				text_renderer.render({ 10, 20 }, b(L"Thread pool workers: ") + 
+									 olive(std::to_wstring(rc.scheduler().get_sleeping_workers())) + 
+									 L"/" + 
+									 olive(std::to_wstring(rc.scheduler().get_workers_count())));
 			}
 
 			if (model_future.wait_for(std::chrono::seconds(0)) != std::future_status::ready)
@@ -256,11 +264,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 			auto center = static_cast<glm::vec2>(rc.get_backbuffer_size())*.5f;
 			rc.set_pointer_position(static_cast<glm::ivec2>(center));
 			auto diff_v = (center - static_cast<decltype(center)>(pp)) * time_delta * rotation_factor;
-			camera.pitch_and_yaw(-diff_v.y, diff_v.x);
+			camera.pitch_and_yaw(-diff_v.y, diff_v.x); 
 		}
-
-		unsigned zero = 0;
-		histogram.clear(gli::FORMAT_R32_UINT, &zero);
 
 		auto proj_mat = rc.projection_matrix();
 
@@ -315,8 +320,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 		}
 
-		//fbo_hdr_image.bind();
-		rc.render_context().defaut_framebuffer().bind();
+		fbo_hdr_image.bind();
 		deffered->bind();
 		deffered->set_uniform("ssao", perform_ssao);
 		deffered->set_uniform("view", camera.view_matrix());
@@ -326,38 +330,49 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 		3_tex_unit = color_output;
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-// 		glViewport(0, 0, luminance_w, luminance_h);
-// 		fbo_luminance_image.bind();
-// 		hdr_create_luminance->bind();
-// 		0_tex_unit = hdr_image;
-// 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-// 
-// 		hdr_luminance_downsample->bind();
-// 		for (int i = 0; i < hdr_downsampling_levels; ++i) {
-// 			if (i == 0)
-// 				0_image_idx = luminance_image[0].with_access(ImageAccessMode::Read);
-// 			else
-// 				0_image_idx = (*luminance_downsampled[i - 1])[0].with_access(ImageAccessMode::Read);
-// 			1_image_idx = (*luminance_downsampled[i])[0].with_access(ImageAccessMode::Write);
-// 			auto size = luminance_downsampled[i]->get_image_size();
-// 			glm::uvec2 group_size = { std::min<unsigned>(128, size.x), std::min<unsigned>(128, size.y) };
-// 			glDispatchComputeGroupSizeARB(size.x / group_size.x, size.y / group_size.y, 1,
-// 										  group_size.x, group_size.y, 1);
-// 		}
-// 
-// 		glViewport(0, 0, w, h);
 
-// 		0_atomic_idx = histogram;
-// 
-// 		auto map_ptr = histogram.map_read(64);
-// 		auto histogram_data = map_ptr.get();
-// 
-		//rc.render_context().defaut_framebuffer().bind();
+		0_sampler_idx = linear_sampler;
+		histogram_minmax_eraser >> histogram_minmax;
+		unsigned zero = 0;
+		histogram.clear(gli::FORMAT_R32_UINT, &zero);
+
+
+		0_tex_unit = hdr_image;
+		glViewport(0, 0, luminance_w, luminance_h);
+
+		hdr_compute_minmax->bind();
+		fbo_hdr_lums.bind();
+		0_image_idx = histogram_minmax[0];
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+
+		hdr_create_histogram->bind();
+		1_tex_unit = hdr_lums;
+		0_atomic_idx = histogram;
+		glDispatchCompute(luminance_w / 32, luminance_h / 32, 1);
+
+		glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+
+		hdr_compute_histogram_sums->bind();
+		hdr_compute_histogram_sums->set_uniform("hdr_lum_resolution", luminance_w * luminance_h);
+		0_storage_idx = histogram_sums;
+		1_storage_idx = buffer_object_cast<ShaderStorageBuffer<unsigned>>(histogram);
+		glDispatchCompute(1, 1, 1);
+
+		glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+
+		glViewport(0, 0, w, h);
+
+		hdr_tonemap->bind();
+		rc.render_context().defaut_framebuffer().bind();
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
 
 		{
 			using namespace StE::Text::Attributes;
-			AttributedWString str = blue(AttributedWString(L"Frame time: ")) + b(red(std::to_wstring(rc.time_per_frame().count()))) + L" ms";
-			text_renderer.render({ 30, h - 50 }, str);
+			text_renderer.render({ 30, h - 50 }, 
+								 blue(L"Frame time: ") + b(red(std::to_wstring(rc.time_per_frame().count()))) + L" ms");
 		}
 
 #ifdef _DEBUG

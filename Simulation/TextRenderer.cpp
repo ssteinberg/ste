@@ -4,24 +4,16 @@
 
 #include "GLSLProgramLoader.h"
 
-#include "SurfaceIO.h"
-
 #include <vector>
 
 using namespace StE::Text;
 using namespace StE::LLR;
 
 TextRenderer::TextRenderer(const StEngineControl &context, const Font &default_font, int default_size) : gm(context), context(context), default_font(default_font), default_size(default_size) {
-	text_glyph_sampler.set_min_filter(TextureFiltering::Linear);
-	text_glyph_sampler.set_mag_filter(TextureFiltering::Linear);
-	text_glyph_sampler.set_wrap_s(TextureWrapMode::ClampToEdge);
-	text_glyph_sampler.set_wrap_t(TextureWrapMode::ClampToEdge);
-	text_glyph_sampler.set_anisotropic_filter(16);
-
 	text_distance_mapping = Resource::GLSLProgramLoader::load_program_task(context, { "text_distance_map_contour.vert", "text_distance_map_contour.frag", "text_distance_map_contour.geom" })();
 
 	vbo = std::make_unique<vbo_type>(vbo_ring_size);
-	vbo_mapped_ptr = vbo->map_write(vbo_ring_size, 0, static_cast<BufferUsage::buffer_mapping>(LLR::BufferUsage::BufferUsageMapCoherent | LLR::BufferUsage::BufferUsageMapPersistent));
+	vbo_mapped_ptr = vbo->map_write(vbo_ring_size / sizeof(glyph_point), 0, static_cast<BufferUsage::buffer_mapping>(LLR::BufferUsage::BufferUsageMapCoherent | LLR::BufferUsage::BufferUsageMapPersistent));
 
 	vao[0] = (*vbo)[0];
 	vao[1] = (*vbo)[1];
@@ -123,7 +115,6 @@ void TextRenderer::render(glm::vec2 ortho_pos, const AttributedWString &wstr) {
 	text_distance_mapping->set_uniform("fb_size", static_cast<glm::vec2>(context.get_backbuffer_size()));
 
 	0_storage_idx = gm.ssbo();
-	0_sampler_idx = text_glyph_sampler;
 	vao.bind();
 
 	glEnable(GL_BLEND);
@@ -134,6 +125,5 @@ void TextRenderer::render(glm::vec2 ortho_pos, const AttributedWString &wstr) {
 
 	glDisable(GL_BLEND);
 
-	text_glyph_sampler.unbind(0_sampler_idx);
 	vbo_ring_current_offset += bytes;
 }

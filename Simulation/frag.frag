@@ -1,8 +1,11 @@
 
+#type frag
 #version 450
 #extension GL_ARB_shader_storage_buffer_object : require
 #extension GL_ARB_bindless_texture : require
 #extension GL_NV_gpu_shader5 : require
+
+#include "hdr_common.glsl"
 
 struct material_texture_descriptor {
 	uint64_t tex_handler;
@@ -17,11 +20,6 @@ struct material_descriptor {
 	material_texture_descriptor tex2;
 	material_texture_descriptor tex3;
 };
-
-mat3 RGBtoXYZ = mat3(0.5767309, 0.2973769, 0.0270343,
-					 0.1855540, 0.6273491, 0.0706872, 
-					 0.1881852, 0.0752741, 0.9911085);
-const int histogram_bins = 64;
 
 in vec2 frag_texcoords;
 in vec3 frag_position;

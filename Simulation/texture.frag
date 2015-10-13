@@ -1,4 +1,5 @@
 
+#type frag
 #version 440
 
 in vec2 frag_texcoords;

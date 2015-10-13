@@ -111,6 +111,8 @@ RenderContext::RenderContext(const char * title, const glm::i32vec2 &size, bool 
 	glfwGetFramebufferSize(window.get(), &ret.x, &ret.y);
 	glViewport(0, 0, ret.x, ret.y);
 	default_fb = std::make_unique<system_provided_framebuffer>(ret, format);
+	if (srgb)
+		glEnable(GL_FRAMEBUFFER_SRGB);
 
 	ste_log_query_and_log_gl_errors();
 }

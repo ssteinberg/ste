@@ -17,6 +17,7 @@ enum class ImageAccessMode {
 enum class TextureWrapMode {
 	None = 0,
 	ClampToEdge = GL_CLAMP_TO_EDGE,
+	ClampToBorder = GL_CLAMP_TO_BORDER,
 	Wrap = GL_REPEAT,
 	Mirrored = GL_MIRRORED_REPEAT,
 };

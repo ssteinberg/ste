@@ -8,29 +8,25 @@
       <string>D:\Dev\git\simulation\Simulation\lighting.frag</string>
     </ArrayOfString>
     <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\hdr_lum_downsample.glsl</string>
+      <string>D:\Dev\git\simulation\Simulation\hdr_common.glsl</string>
     </ArrayOfString>
     <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\passthrough.vert</string>
+      <string>D:\Dev\git\simulation\Simulation\hdr_create_histogram.glsl</string>
     </ArrayOfString>
     <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\hdr_create_luminance.frag</string>
+      <string>D:\Dev\git\simulation\Simulation\hdr_tonemap.frag</string>
+    </ArrayOfString>
+    <ArrayOfString>
+      <string>D:\Dev\git\simulation\Simulation\hdr_compute_histogram_sums.glsl</string>
+    </ArrayOfString>
+    <ArrayOfString>
+      <string>D:\Dev\git\simulation\Simulation\hdr_compute_minmax.frag</string>
     </ArrayOfString>
     <ArrayOfString>
       <string>D:\Dev\git\simulation\Simulation\main.cpp</string>
     </ArrayOfString>
     <ArrayOfString>
-      <string>d:\Dev\git\simulation\Simulation\attrib.cpp</string>
-      <string>D:\Dev\git\simulation\Simulation\attrib.h</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\attributed_string.h</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\remove_iterator_constness.h</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\TextRenderer.h</string>
+      <string>D:\Dev\git\simulation\Simulation\ssao.frag</string>
     </ArrayOfString>
   </ArrayOfArrayOfString>
 </ArrayOfArrayOfArrayOfString>

@@ -44,9 +44,8 @@ protected:
 	llr_resource_type texture_type;
 	int level, layers, layer;
 
-	image_layout_bindable(int tex_id, const size_type &size, gli::format format, ImageAccessMode access, int level, int layers, int layer) : size(size), format(format), access(access), level(level), layers(layers), layer(layer) {
-		id = tex_id;
-	}
+	template <class A2>
+	image_layout_bindable(const llr_resource<A2> &res, const size_type &size, gli::format format, ImageAccessMode access, int level, int layers, int layer) : Base(res), size(size), format(format), access(access), level(level), layers(layers), layer(layer) {}
 
 public:
 	image_layout_bindable(image_layout_bindable &&m) = default;
@@ -58,11 +57,11 @@ public:
 
 	using Base::get_resource_id;
 
-	void bind(const LayoutLocationType &binding) const override final { Binder::bind(id, binding, level, layers>1?true:false, layer, access, format); }
+	void bind(const LayoutLocationType &binding) const override final { Binder::bind(get_resource_id(), binding, level, layers>1?true:false, layer, access, format); }
 	void unbind(const LayoutLocationType &binding) const override final { Binder::unbind(binding, 0, false, 0, access, format); }
 
 	auto get_image_handle() const {
-		return image_handle ? image_handle : (image_handle = glGetImageHandleARB(id, level, layers > 1 ? true : false, layer, format));
+		return image_handle ? image_handle : (image_handle = glGetImageHandleARB(get_resource_id(), level, layers > 1 ? true : false, layer, format));
 	}
 	void make_resident() const { glMakeImageHandleResidentARB(get_image_handle()); }
 	void make_nonresident() const { glMakeImageHandleNonResidentARB(get_image_handle()); }
@@ -86,7 +85,8 @@ private:
 	using Base = image_layout_bindable;
 
 public:
-	image(int tex_id, const size_type &size, gli::format format, ImageAccessMode access, int level, int layer) : Base(tex_id, size, format, access, level, 1, layer) {}
+	template <class A2>
+	image(const llr_resource<A2> &res, const size_type &size, gli::format format, ImageAccessMode access, int level, int layer) : Base(res, size, format, access, level, 1, layer) {}
 
 	image(image &&m) = default;
 	image(const image &c) = delete;
@@ -98,8 +98,8 @@ public:
 	gli::format get_format() const override final { return format; }
 	size_type get_image_size() const final override { return size; }
 
-	image<type> with_format(gli::format format) const { return image(id, size, format, access, level, layer); }
-	image<type> with_access(ImageAccessMode access) const { return image(id, size, format, access, level, layer); }
+	image<type> with_format(gli::format format) const { return image(*this, size, format, access, level, layer); }
+	image<type> with_access(ImageAccessMode access) const { return image(*this, size, format, access, level, layer); }
 };
 
 template <llr_resource_type type>
@@ -108,17 +108,18 @@ private:
 	using Base = image_layout_bindable;
 
 public:
-	image_container(int tex_id, const size_type &size, gli::format format, ImageAccessMode access, int level, int layers) : Base(tex_id, size, format, access, level, layers, 0) {}
+	template <class A2>
+	image_container(const llr_resource<A2> &res, const size_type &size, gli::format format, ImageAccessMode access, int level, int layers) : Base(res, size, format, access, level, layers, 0) {}
 
 	image_container(image_container &&m) = default;
 	image_container(const image_container &c) = delete;
 	image_container& operator=(image_container &&m) = delete;
 	image_container& operator=(const image_container &c) = delete;
 
-	const image<type> operator[](int layer) const { return image<type>(id, size, format, access, level, layer); }
+	const image<type> operator[](int layer) const { return image<type>(*this, size, format, access, level, layer); }
 
-	image_container<type> with_format(gli::format format) const { return image_container(id, size, format, access, level, layers); }
-	image_container<type> with_access(ImageAccessMode access) const { return image_container(id, size, format, access, level, layers); }
+	image_container<type> with_format(gli::format format) const { return image_container(*this, size, format, access, level, layers); }
+	image_container<type> with_access(ImageAccessMode access) const { return image_container(*this, size, format, access, level, layers); }
 };
 
 }

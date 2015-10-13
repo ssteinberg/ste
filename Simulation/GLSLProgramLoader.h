@@ -9,6 +9,7 @@
 
 #include <string>
 #include <list>
+#include <map>
 
 #include "GLSLShader.h"
 #include "GLSLProgram.h"
@@ -16,36 +17,26 @@
 #include "task.h"
 #include "StEngineControl.h"
 
+#include "optional.h"
+
 namespace StE {
 namespace Resource {
 
 class GLSLProgramLoader {
 private:
-	~GLSLProgramLoader() {}
+	const static std::map<std::string, LLR::GLSLShaderType> type_map;
 
-	static LLR::GLSLShader::GLSLShaderType type_from_path(const std::string &path) {
-		if (path.length() < 4)
-			return LLR::GLSLShader::GLSLShaderType::NONE;
-		if (path.compare(path.length() - 4, 4, "vert") == 0)
-			return LLR::GLSLShader::GLSLShaderType::VERTEX;
-		if (path.compare(path.length() - 4, 4, "frag") == 0)
-			return LLR::GLSLShader::GLSLShaderType::FRAGMENT;
-		if (path.compare(path.length() - 4, 4, "glsl") == 0)
-			return LLR::GLSLShader::GLSLShaderType::COMPUTE;
-		if (path.compare(path.length() - 4, 4, "geom") == 0)
-			return LLR::GLSLShader::GLSLShaderType::GEOMETRY;
-		if (path.compare(path.length() - 4, 4, "tcs") == 0)
-			return LLR::GLSLShader::GLSLShaderType::TESS_CONTROL;
-		if (path.compare(path.length() - 4, 4, "tes") == 0)
-			return LLR::GLSLShader::GLSLShaderType::TESS_EVALUATION;
-		return LLR::GLSLShader::GLSLShaderType::NONE;
-	}
+private:
+	~GLSLProgramLoader() {}
 
 	static std::string load_source(const std::string &path);
 
-	static std::unique_ptr<LLR::GLSLShader> compile_from_path(const std::string & path);
-	static std::unique_ptr<LLR::GLSLShader> compile_from_path(const std::string & path, LLR::GLSLShader::GLSLShaderType type);
-	static std::unique_ptr<LLR::GLSLShader> compile_source(const std::string & source, LLR::GLSLShader::GLSLShaderType type);
+	static std::unique_ptr<LLR::GLSLShaderGeneric> compile_from_path(const std::string & path);
+	static std::unique_ptr<LLR::GLSLShaderGeneric> compile_from_source(std::string src);
+
+	static void parse_includes(std::string &);
+	static bool parse_parameters(std::string &, LLR::GLSLShaderProperties &, LLR::GLSLShaderType &);
+	static std::string parse_directive(const std::string &, const std::string &, std::string::size_type &, std::string::size_type &);
 
 public:
 	static task<std::unique_ptr<LLR::GLSLProgram>> load_program_task(const StEngineControl &context, std::vector<std::string> files);

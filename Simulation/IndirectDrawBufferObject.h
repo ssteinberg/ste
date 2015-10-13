@@ -26,17 +26,17 @@ public:
 template <BufferUsage::buffer_usage U = BufferUsage::BufferUsageNone>
 class IndirectDrawBuffer : public buffer_object<IndirectDrawCommand, U>, public IndirectDrawBufferGeneric {
 private:
-	using Base = buffer_object<T, U>;
+	using Base = buffer_object<IndirectDrawCommand, U>;
+
+	ALLOW_BUFFER_OBJECT_CASTS;
 
 public:
 	IndirectDrawBuffer(IndirectDrawBuffer &&m) = default;
 	IndirectDrawBuffer& operator=(IndirectDrawBuffer &&m) = default;
 
-	IndirectDrawBuffer(std::size_t size) : Base(size) {}
-	IndirectDrawBuffer(std::size_t size, const T *data) : Base(size, data) {}
-	IndirectDrawBuffer(const std::vector<T> &data) : Base(data.size(), &data[0]) {}
+	using Base::Base;
 
-	void bind() const final override { Binder::bind(id, GL_DRAW_INDIRECT_BUFFER); };
+	void bind() const final override { Binder::bind(get_resource_id(), GL_DRAW_INDIRECT_BUFFER); };
 	void unbind() const final override { Binder::unbind(GL_DRAW_INDIRECT_BUFFER); };
 
 	llr_resource_type resource_type() const override { return llr_resource_type::LLRIndirectDrawBufferObject; }

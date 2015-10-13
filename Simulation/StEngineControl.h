@@ -65,7 +65,7 @@ public:
 	StEngineControl() : projection_dirty(true), field_of_view(M_PI_4), near_clip(.1), far_clip(1000), global_cache("Cache", 1024*1024*256) {}
 	~StEngineControl() {}
 
-	bool init_render_context(const char *title, const glm::i32vec2 &size, bool fs = false, bool vsync = true, gli::format format = gli::FORMAT_RGBA8_UNORM, int samples = 0, gli::format depth_format = gli::FORMAT_D24_UNORM);
+	bool init_render_context(const char *title, const glm::i32vec2 &size, bool fs = false, bool vsync = true, gli::format format = gli::FORMAT_RGBA8_SRGB, int samples = 0, gli::format depth_format = gli::FORMAT_D24_UNORM);
 	const LLR::RenderContext &render_context() const { return *context; }
 	auto &scheduler() const { return global_scheduler; }
 	auto &cache() const { return global_cache; }

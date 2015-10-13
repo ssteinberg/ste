@@ -82,7 +82,7 @@ bool SurfaceIO::write_png(const std::string &file_name, const char *image_data, 
 	return true;
 }
 
-gli::texture2D SurfaceIO::load_png(const std::string &file_name) {
+gli::texture2D SurfaceIO::load_png(const std::string &file_name, bool srgb) {
 	png_byte header[8];
 
 	FILE *fp = fopen(file_name.data(), "rb");
@@ -161,15 +161,15 @@ gli::texture2D SurfaceIO::load_png(const std::string &file_name) {
 	int components;
 	switch (color_type) {
 	case PNG_COLOR_TYPE_GRAY:
-		format = gli::format::FORMAT_R8_UNORM;
+		format = srgb ? gli::format::FORMAT_R8_SRGB : gli::format::FORMAT_R8_UNORM;
 		components = 1;
 		break;
 	case PNG_COLOR_TYPE_RGB:
-		format = gli::format::FORMAT_RGB8_UNORM;
+		format = srgb ? gli::format::FORMAT_RGB8_SRGB : gli::format::FORMAT_RGB8_UNORM;
 		components = 3;
 		break;
 	case PNG_COLOR_TYPE_RGB_ALPHA:
-		format = gli::format::FORMAT_RGBA8_UNORM;
+		format = srgb ? gli::format::FORMAT_RGBA8_SRGB : gli::format::FORMAT_RGBA8_UNORM;
 		components = 4;
 		break;
 	default:
@@ -252,7 +252,7 @@ METHODDEF(void) jpeg_error_exit(j_common_ptr cinfo) {
 	longjmp(myerr->setjmp_buffer, 1);
 }
 
-gli::texture2D SurfaceIO::load_jpeg(const std::string &path) {
+gli::texture2D SurfaceIO::load_jpeg(const std::string &path, bool srgb) {
 	const char * filename = path.data();
 
 	struct jpeg_decompress_struct cinfo;
@@ -311,10 +311,10 @@ gli::texture2D SurfaceIO::load_jpeg(const std::string &path) {
 	gli::format gli_format;
 	bool sanity = true;
 	switch (cinfo.out_color_space) {
-	case JCS_GRAYSCALE:		gli_format = gli::format::FORMAT_R8_UNORM; sanity = cinfo.output_components == 1; break;
+	case JCS_GRAYSCALE:		gli_format = srgb ? gli::format::FORMAT_R8_SRGB : gli::format::FORMAT_R8_UNORM; sanity = cinfo.output_components == 1; break;
 	case JCS_EXT_RGB:
-	case JCS_RGB:			gli_format = gli::format::FORMAT_RGB8_UNORM; sanity = cinfo.output_components == 3; break;
-	case JCS_EXT_RGBA:		gli_format = gli::format::FORMAT_RGBA8_UNORM; sanity = cinfo.output_components == 4; break;
+	case JCS_RGB:			gli_format = srgb ? gli::format::FORMAT_RGB8_SRGB : gli::format::FORMAT_RGB8_UNORM; sanity = cinfo.output_components == 3; break;
+	case JCS_EXT_RGBA:		gli_format = srgb ? gli::format::FORMAT_RGBA8_SRGB : gli::format::FORMAT_RGBA8_UNORM; sanity = cinfo.output_components == 4; break;
 	default:				sanity = false;
 	}
 	if (!sanity) {

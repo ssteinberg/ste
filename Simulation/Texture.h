@@ -10,6 +10,7 @@
 #include "layout_binding.h"
 
 #include "RenderTarget.h"
+#include "texture_handle.h"
 
 #include "texture_enums.h"
 #include "texture_traits.h"
@@ -99,7 +100,6 @@ protected:
 	constexpr static GLenum gl_type() { return opengl::gl_translate_type(type); }
 
 protected:
-	mutable std::uint64_t tex_handle{ 0 };
 	size_type size;
 	gli::format format;
 
@@ -114,6 +114,7 @@ protected:
 	bool allocate_tex_storage(const size_type &size, gli::format gli_format, int levels, int samples, bool sparse, int page_size_idx = 0) {
 		gli::gl::format const format = opengl::gl_translate_format(gli_format);
 
+		auto id = get_resource_id();
 		if (sparse) {
 			glTextureParameteri(id, GL_TEXTURE_SPARSE_ARB, true);
 			glTextureParameteri(id, GL_VIRTUAL_PAGE_SIZE_INDEX_ARB, page_size_idx);
@@ -134,12 +135,12 @@ protected:
 	}
 	bool allocate_tex_storage(const size_type &size, gli::format gli_format, int levels, int samples, bool sparse, int page_size_idx, sampler_descriptor descriptor) {
 		if (allocate_tex_storage(size, gli_format, levels, samples, sparse, page_size_idx)) {
-			if (descriptor.wrap_s != TextureWrapMode::None) glTextureParameteri(id, GL_TEXTURE_WRAP_S, static_cast<GLenum>(descriptor.wrap_s));
-			if (descriptor.wrap_t != TextureWrapMode::None) glTextureParameteri(id, GL_TEXTURE_WRAP_T, static_cast<GLenum>(descriptor.wrap_t));
-			if (descriptor.wrap_r != TextureWrapMode::None) glTextureParameteri(id, GL_TEXTURE_WRAP_R, static_cast<GLenum>(descriptor.wrap_r));
-			if (descriptor.min_mipmapping_filter()) glTextureParameteri(id, GL_TEXTURE_MIN_FILTER, static_cast<GLenum>(descriptor.min_mipmapping_filter()));
-			if (descriptor.mag_filter != TextureFiltering::None) glTextureParameteri(id, GL_TEXTURE_MAG_FILTER, static_cast<GLenum>(descriptor.mag_filter));
-			if (descriptor.anisotropy > 1.f) glTextureParameterf(id, GL_TEXTURE_MAX_ANISOTROPY_EXT, descriptor.anisotropy);
+			if (descriptor.wrap_s != TextureWrapMode::None) glTextureParameteri(get_resource_id(), GL_TEXTURE_WRAP_S, static_cast<GLenum>(descriptor.wrap_s));
+			if (descriptor.wrap_t != TextureWrapMode::None) glTextureParameteri(get_resource_id(), GL_TEXTURE_WRAP_T, static_cast<GLenum>(descriptor.wrap_t));
+			if (descriptor.wrap_r != TextureWrapMode::None) glTextureParameteri(get_resource_id(), GL_TEXTURE_WRAP_R, static_cast<GLenum>(descriptor.wrap_r));
+			if (descriptor.min_mipmapping_filter()) glTextureParameteri(get_resource_id(), GL_TEXTURE_MIN_FILTER, static_cast<GLenum>(descriptor.min_mipmapping_filter()));
+			if (descriptor.mag_filter != TextureFiltering::None) glTextureParameteri(get_resource_id(), GL_TEXTURE_MAG_FILTER, static_cast<GLenum>(descriptor.mag_filter));
+			if (descriptor.anisotropy > 1.f) glTextureParameterf(get_resource_id(), GL_TEXTURE_MAX_ANISOTROPY_EXT, descriptor.anisotropy);
 			return true;
 		}
 		return false;
@@ -164,6 +165,11 @@ public:
 	bool is_array_texture() const { return texture_is_array<type>::value; }
 	bool is_multisampled() const { return texture_is_multisampled<type>::value; }
 
+	void clear(void *data, int level = 0) {
+		gli::gl::format const format = opengl::gl_translate_format(format);
+		glClearTexImage(get_resource_id(), level, format.External, format.Type, data);
+	}
+
 	auto get_size() const { return size; }
 	auto get_image_size(int level) const {
 		image_size_type ret;
@@ -185,11 +191,11 @@ public:
 	}
 
 	auto get_texture_handle() const {
-		return tex_handle ? tex_handle : (tex_handle = glGetTextureHandleARB(id));
+		return texture_handle(glGetTextureHandleARB(get_resource_id()));
 	}
-	void make_resident() const { glMakeTextureHandleResidentARB(get_texture_handle()); }
-	void make_nonresident() const { glMakeTextureHandleNonResidentARB(get_texture_handle()); }
-	bool is_resident() const { return glIsTextureHandleResidentARB(get_texture_handle()); }
+	auto get_texture_handle(const Sampler &sam) const {
+		return texture_handle(glGetTextureSamplerHandleARB(get_resource_id(), sam.get_resource_id()));
+	}
 
 	llr_resource_type resource_type() const override { return type; }
 };
@@ -238,14 +244,14 @@ public:
 	virtual void upload_level(const void *data, int level = 0, int layer = 0, LLRCubeMapFace face = LLRCubeMapFace::LLRCubeMapFaceNone, int data_size = 0) = 0;
 	virtual void download_level(void *data, std::size_t size, int level = 0, int layer = 0) const {
 		auto &gl_format = opengl::gl_translate_format(format);
-		glGetTextureImage(id, level, gl_format.External, gl_format.Type, size, data);
+		glGetTextureImage(get_resource_id(), level, gl_format.External, gl_format.Type, size, data);
 	}
 	virtual void download_level(void *data, std::size_t size, int level, int layer, gli::format format, bool compressed = false) const {
 		auto &gl_format = opengl::gl_translate_format(format);
 		if (compressed)
-			glGetCompressedTextureImage(id, level, size, data);
+			glGetCompressedTextureImage(get_resource_id(), level, size, data);
 		else
-			glGetTextureImage(id, level, gl_format.External, gl_format.Type, size, data);
+			glGetTextureImage(get_resource_id(), level, gl_format.External, gl_format.Type, size, data);
 	}
 };
 

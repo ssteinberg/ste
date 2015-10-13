@@ -24,15 +24,15 @@ private:
 
 	static_assert(std::is_arithmetic<T>::value, "T must be of scalar type.");
 
+	ALLOW_BUFFER_OBJECT_CASTS;
+
 public:
 	ElementBufferObject(ElementBufferObject &&m) = default;
 	ElementBufferObject& operator=(ElementBufferObject &&m) = default;
 
-	ElementBufferObject(std::size_t size) : buffer_object(size) {}
-	ElementBufferObject(std::size_t size, const T *data) : buffer_object(size, data) {}
-	ElementBufferObject(const std::vector<T> &data) : buffer_object(data.size(), &data[0]) {}
+	using Base::Base;
 
-	void bind() const final override { Binder::bind(id, GL_ELEMENT_ARRAY_BUFFER); };
+	void bind() const final override { Binder::bind(get_resource_id(), GL_ELEMENT_ARRAY_BUFFER); };
 	void unbind() const final override { Binder::unbind(GL_ELEMENT_ARRAY_BUFFER); };
 
 	llr_resource_type resource_type() const override { return llr_resource_type::LLRElementBufferObject; }

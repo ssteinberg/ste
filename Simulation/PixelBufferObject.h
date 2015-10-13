@@ -20,13 +20,15 @@ class PixelBufferObject : public buffer_object<Type, U> {
 private:
 	using Base = buffer_object<Type, U>;
 
+	ALLOW_BUFFER_OBJECT_CASTS;
+
 private:
 	using buffer_object<Type, U>::bind;
 	using buffer_object<Type, U>::unbind;
 
-	void bind_pack() const { Binder::bind(id, GL_PIXEL_PACK_BUFFER); }
+	void bind_pack() const { Binder::bind(get_resource_id(), GL_PIXEL_PACK_BUFFER); }
 	void unbind_pack() const { Binder::unbind(GL_PIXEL_PACK_BUFFER); }
-	void bind_unpack() const { Binder::bind(id, GL_PIXEL_UNPACK_BUFFER); }
+	void bind_unpack() const { Binder::bind(get_resource_id(), GL_PIXEL_UNPACK_BUFFER); }
 	void unbind_unpack() const { Binder::unbind(GL_PIXEL_UNPACK_BUFFER); }
 
 	void unpacker(const std::function<void(void)> &unpacker) const {
@@ -44,9 +46,7 @@ public:
 	PixelBufferObject(PixelBufferObject &&m) = default;
 	PixelBufferObject& operator=(PixelBufferObject &&m) = default;
 
-	PixelBufferObject(std::size_t size) : Base(size, nullptr) {}
-	PixelBufferObject(std::size_t size, const Type *data) : Base(size, data) {}
-	PixelBufferObject(const std::vector<Type> &data) : Base(data.size(), &data[0]) {}
+	using Base::Base;
 
 	template <llr_resource_type type>
 	void unpack_to(texture_pixel_transferable<type> &texture, int level, int layer, int offset, std::size_t size) const {
@@ -73,7 +73,7 @@ public:
 	template <llr_resource_type type>
 	void operator<<(const texture_pixel_transferable<type> &texture) { pack_from(texture); }
 	template <llr_resource_type type>
-	void operator>>(texture_pixel_transferable<type> &texture) const { pack_to(texture); }
+	void operator>>(texture_pixel_transferable<type> &texture) const { unpack_to(texture); }
 
 
 	template<typename A, GLenum t>

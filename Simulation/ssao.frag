@@ -1,4 +1,5 @@
 
+#type frag
 #version 440
 
 out float gl_FragColor;
@@ -35,7 +36,7 @@ void main() {
 	float depth = texelFetch(depth_layer, ivec3(gl_FragCoord.xy, 0), 0).x;
 	vec3 position = unproject(gl_FragCoord.xy, depth);
 
-	vec3 offset = position + normal * .5f;
+	vec3 offset = position + normal * .25f;
 
 	vec2 dir = textureLod(noise_tex, vec2(gl_FragCoord.xy / textureSize(noise_tex,0)), 0).xy;
 	float step_size = rand(gl_FragCoord.xy) * (max_step_size - min_step_size) + min_step_size;
@@ -73,7 +74,7 @@ void main() {
 			vec3 v = screen_p - offset;
 			float l = length(v);
 			v /= l;
-			float d = max(0, dot(v,normal)) / pow(l,1.8);
+			float d = max(0, (dot(v,normal) - .2f) / .8f) / pow(l,1.85f);
 
 			max_d = max(max_d, d);
 		}
@@ -83,7 +84,7 @@ void main() {
 	}
 	 
 	occ /= float(points);
-	occ = pow(occ,.5f);
+	occ = pow(occ,.4f);
 	
 	gl_FragColor = occ;
 }

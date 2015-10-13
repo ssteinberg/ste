@@ -29,26 +29,25 @@ public:
 	void upload_level(const void *data, int level = 0, int layer = 0, LLRCubeMapFace face = LLRCubeMapFace::LLRCubeMapFaceNone, int data_size = 0) override {
 		auto &gl_format = opengl::gl_translate_format(format);
 
-		bind();
 		if (is_compressed()) {
 			assert(data_size && "size must be specified for compressed levels");
-			glCompressedTexSubImage2D(gl_type(), static_cast<GLint>(level),
-									  0, layer, 
-									  std::max(1u, size[0] >> level), 1,
-									  gl_format.External,
-									  data_size, data);
+			glCompressedTextureSubImage2D(get_resource_id(), static_cast<GLint>(level),
+										  0, layer,
+										  std::max(1u, size[0] >> level), 1,
+										  gl_format.External,
+										  data_size, data);
 		}
 		else {
-			glTexSubImage2D(gl_type(), static_cast<GLint>(level),
-							0, layer, 
-							std::max(1u, size[0] >> level), 1,
-							gl_format.External, gl_format.Type,
-							data);
+			glTextureSubImage2D(get_resource_id(), static_cast<GLint>(level),
+								0, layer,
+								std::max(1u, size[0] >> level), 1,
+								gl_format.External, gl_format.Type,
+								data);
 		}
 	}
 
 	const image_container<T> operator[](int level) const {
-		return image_container<T>(id, get_image_container_size(), format, ImageAccessMode::ReadWrite, level, get_image_container_dimensions());
+		return image_container<T>(*this, get_image_container_size(), format, ImageAccessMode::ReadWrite, level, get_image_container_dimensions());
 	}
 };
 

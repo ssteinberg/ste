@@ -151,9 +151,9 @@ int glyph_factory::spacing(const Font &font, wchar_t left, wchar_t right, int pi
 		FT_Vector delta;
 		FT_Get_Kerning(face, left_index, right_index, FT_KERNING_DEFAULT, &delta);
 
-		return ((face->glyph->advance.x + delta.x) >> 6) - 2;
+		return (face->glyph->advance.x + delta.x) >> 6;
 	}
 	else {
-		return (face->glyph->advance.x >> 6) - 2;
+		return face->glyph->advance.x >> 6;
 	}
 }

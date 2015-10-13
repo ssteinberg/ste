@@ -16,8 +16,8 @@ namespace Resource {
 
 class SurfaceIO {
 private:
-	static gli::texture2D load_png(const std::string &file_name);
-	static gli::texture2D load_jpeg(const std::string &file_name);
+	static gli::texture2D load_png(const std::string &file_name, bool srgb);
+	static gli::texture2D load_jpeg(const std::string &file_name, bool srgb);
 	static bool write_png(const std::string &file_name, const char *image_data, int components, int width, int height);
 
 	~SurfaceIO() {}
@@ -37,7 +37,7 @@ public:
 		};
 	}
 
-	static task<gli::texture2D> load_surface_2d_task(const std::string &path) {
+	static task<gli::texture2D> load_surface_2d_task(const std::string &path, bool srgb) {
 		return [=](optional<task_scheduler*> sched) -> gli::texture2D {
 			unsigned char magic[4] = { 0, 0, 0, 0 };
 
@@ -78,7 +78,7 @@ public:
 			if (magic[0] == 0xff && magic[1] == 0xd8) {
 				// JPEG
 				ste_log() << "Loading JPEG surface " << path;
-				auto texture = load_jpeg(path);
+				auto texture = load_jpeg(path, srgb);
 				if (texture.empty())
 					ste_log_error() << "Can't parse JPEG surface: " << path;
 				return texture;
@@ -86,7 +86,7 @@ public:
 			else if (magic[0] == 0x89 && magic[1] == 0x50 && magic[2] == 0x4e && magic[3] == 0x47) {
 				// PNG
 				ste_log() << "Loading PNG surface " << path;
-				auto texture = load_png(path);
+				auto texture = load_png(path, srgb);
 				if (texture.empty())
 					ste_log_error() << "Can't parse PNG surface: " << path;
 				return texture;
@@ -98,9 +98,9 @@ public:
 		};
 	}
 
-	static auto load_texture_2d_task(const std::string &path) {
+	static auto load_texture_2d_task(const std::string &path, bool srgb) {
 		return task<gli::texture2D>([=](optional<task_scheduler*> sched) {
-			return load_surface_2d_task(path)(sched);
+			return load_surface_2d_task(path, srgb)(sched);
 		}).then_on_main_thread([](optional<task_scheduler*> sched, const gli::texture2D &surface) {
 			 return std::unique_ptr<LLR::Texture2D>(new LLR::Texture2D(surface, surface.levels() == 1));
 		});

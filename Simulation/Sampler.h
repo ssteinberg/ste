@@ -111,14 +111,14 @@ public:
 	virtual void set_mag_filter(TextureFiltering filter) { 
 		descriptor.mag_filter = filter; 
 		if (filter!= TextureFiltering::None) 
-			glSamplerParameteri(id, GL_TEXTURE_MAG_FILTER, static_cast<GLenum>(filter)); 
+			glSamplerParameteri(get_resource_id(), GL_TEXTURE_MAG_FILTER, static_cast<GLenum>(filter)); 
 	}
 	virtual void set_min_filter(TextureFiltering filter) {
 		descriptor.min_filter = filter;
 		if (filter != TextureFiltering::None)  
-			glSamplerParameteri(id, GL_TEXTURE_MIN_FILTER, static_cast<GLenum>(filter));
+			glSamplerParameteri(get_resource_id(), GL_TEXTURE_MIN_FILTER, static_cast<GLenum>(filter));
 	}
-	virtual void set_anisotropic_filter(float anis) { descriptor.anisotropy = std::max(1.0f,std::min(16.0f,anis)); glSamplerParameterf(id, GL_TEXTURE_MAX_ANISOTROPY_EXT, descriptor.anisotropy); }
+	virtual void set_anisotropic_filter(float anis) { descriptor.anisotropy = std::max(1.0f,std::min(16.0f,anis)); glSamplerParameterf(get_resource_id(), GL_TEXTURE_MAX_ANISOTROPY_EXT, descriptor.anisotropy); }
 	TextureFiltering get_mag_filter() const { return descriptor.mag_filter; }
 	TextureFiltering get_min_filter() const { return descriptor.min_filter; }
 	float get_anisotropic_filter_max() const { return descriptor.anisotropy; }
@@ -126,17 +126,17 @@ public:
 	void set_wrap_s(TextureWrapMode wrap_mode) {
 		descriptor.wrap_s = wrap_mode;
 		if (wrap_mode != TextureWrapMode::None) 
-			glSamplerParameteri(id, GL_TEXTURE_WRAP_S, static_cast<GLenum>(wrap_mode));
+			glSamplerParameteri(get_resource_id(), GL_TEXTURE_WRAP_S, static_cast<GLenum>(wrap_mode));
 	}
 	void set_wrap_t(TextureWrapMode wrap_mode) {
 		descriptor.wrap_t = wrap_mode;
 		if (wrap_mode != TextureWrapMode::None)
-			glSamplerParameteri(id, GL_TEXTURE_WRAP_T, static_cast<GLenum>(wrap_mode));
+			glSamplerParameteri(get_resource_id(), GL_TEXTURE_WRAP_T, static_cast<GLenum>(wrap_mode));
 	}
 	void set_wrap_r(TextureWrapMode wrap_mode) {
 		descriptor.wrap_r = wrap_mode;
 		if (wrap_mode != TextureWrapMode::None)
-			glSamplerParameteri(id, GL_TEXTURE_WRAP_R, static_cast<GLenum>(wrap_mode));
+			glSamplerParameteri(get_resource_id(), GL_TEXTURE_WRAP_R, static_cast<GLenum>(wrap_mode));
 	}
 	TextureWrapMode get_wrap_s() const { return descriptor.wrap_s; }
 	TextureWrapMode get_wrap_t() const { return descriptor.wrap_t; }
@@ -162,13 +162,13 @@ public:
 		descriptor.min_filter = filter;
 		auto f = descriptor.min_mipmapping_filter();
 		if (f)
-			glSamplerParameteri(id, GL_TEXTURE_MIN_FILTER, f);
+			glSamplerParameteri(get_resource_id(), GL_TEXTURE_MIN_FILTER, f);
 	}
 	void set_mipmap_filter(TextureFiltering filter) {
 		descriptor.mipmap_filter = filter;
 		auto f = descriptor.min_mipmapping_filter();
 		if (f)
-			glSamplerParameteri(id, GL_TEXTURE_MIN_FILTER, f);
+			glSamplerParameteri(get_resource_id(), GL_TEXTURE_MIN_FILTER, f);
 	}
 	TextureFiltering get_mipmap_filter() const { return descriptor.mipmap_filter; }
 };

@@ -1,4 +1,5 @@
 
+#type frag
 #version 440
 
 in vec3 l_pos;

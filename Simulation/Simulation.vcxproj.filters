@@ -341,9 +341,6 @@
     <ClInclude Include="texture_enums.h">
       <Filter>src\StE\Core\LLR\GPU Resources\Surfaces\Textures</Filter>
     </ClInclude>
-    <ClInclude Include="image.h">
-      <Filter>src\StE\Core\LLR\GPU Resources\Surfaces\Textures</Filter>
-    </ClInclude>
     <ClInclude Include="texture.h">
       <Filter>src\StE\Core\LLR\GPU Resources\Surfaces\Textures</Filter>
     </ClInclude>
@@ -377,9 +374,6 @@
     <ClInclude Include="mapped_buffer_object_unique_ptr.h">
       <Filter>src\StE\Core\LLR\GPU Resources\Buffers</Filter>
     </ClInclude>
-    <ClInclude Include="AtomicCounterBuffer.h">
-      <Filter>src\StE\Core\LLR\GPU Resources\Buffers\Data Storage</Filter>
-    </ClInclude>
     <ClInclude Include="IndirectDrawBufferObject.h">
       <Filter>src\StE\Core\LLR\GPU Resources\Buffers\Data Storage</Filter>
     </ClInclude>
@@ -388,9 +382,6 @@
     </ClInclude>
     <ClInclude Include="ShaderStorageBuffer.h">
       <Filter>src\StE\Core\LLR\GPU Resources\Buffers\Data Storage</Filter>
-    </ClInclude>
-    <ClInclude Include="Sampler.h">
-      <Filter>src\StE\Core\LLR\GPU Resources\Surfaces\Textures</Filter>
     </ClInclude>
     <ClInclude Include="interruptible_thread.h">
       <Filter>src\StE\STL Extensions\Threading</Filter>
@@ -503,6 +494,27 @@
     <ClInclude Include="attributed_string_htm_formatter.h">
       <Filter>src\StE\Framework Text\Attributed Strings\Markup Formatter</Filter>
     </ClInclude>
+    <ClInclude Include="getcwd.h">
+      <Filter>src\StE\STL Extensions\Platform Dependant</Filter>
+    </ClInclude>
+    <ClInclude Include="buffer_object_cast.h">
+      <Filter>src\StE\Core\LLR\GPU Resources\Buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="Sampler.h">
+      <Filter>src\StE\Core\LLR\GPU Resources\Surfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="image.h">
+      <Filter>src\StE\Core\LLR\GPU Resources\Surfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="texture_handle.h">
+      <Filter>src\StE\Core\LLR\GPU Resources\Surfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="AtomicCounterBufferObject.h">
+      <Filter>src\StE\Core\LLR\GPU Resources\Buffers\Data Storage</Filter>
+    </ClInclude>
+    <ClInclude Include="IndirectDispatchBufferObject.h">
+      <Filter>src\StE\Core\LLR\GPU Resources\Buffers\Data Storage</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="stdafx.h">
@@ -538,12 +550,6 @@
     <None Include="blur_y.frag">
       <Filter>src\Shaders</Filter>
     </None>
-    <None Include="hdr_lum_downsample.glsl">
-      <Filter>src\Shaders</Filter>
-    </None>
-    <None Include="hdr_create_luminance.frag">
-      <Filter>src\Shaders</Filter>
-    </None>
     <None Include="text_distance_map_contour.frag">
       <Filter>src\StE\Framework Text\Rendering\Shaders</Filter>
     </None>
@@ -552,6 +558,24 @@
     </None>
     <None Include="text_distance_map_contour.geom">
       <Filter>src\StE\Framework Text\Rendering\Shaders</Filter>
+    </None>
+    <None Include="hdr_create_histogram.glsl">
+      <Filter>src\Shaders</Filter>
+    </None>
+    <None Include="hdr_tonemap.frag">
+      <Filter>src\Shaders</Filter>
+    </None>
+    <None Include="hdr_compute_histogram_sums.glsl">
+      <Filter>src\Shaders</Filter>
+    </None>
+    <None Include="hdr_common.glsl">
+      <Filter>src\Shaders</Filter>
+    </None>
+    <None Include="hdr_compute_minmax.frag">
+      <Filter>src\Shaders</Filter>
+    </None>
+    <None Include="lanczos.frag">
+      <Filter>src\Shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

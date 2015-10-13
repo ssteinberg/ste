@@ -3,25 +3,62 @@
 
 #pragma once
 
-#include <string>
+#include "stdafx.h"
 
+#include <string>
 #include <glm/glm.hpp>
+
+#include "llr_resource.h"
 
 namespace StE {
 namespace LLR {
 
-class GLSLShader {
+enum class GLSLShaderType {
+	VERTEX, FRAGMENT, GEOMETRY,
+	COMPUTE,
+	TESS_CONTROL, TESS_EVALUATION
+};
+
+struct GLSLShaderProperties {
+	int version_major, version_minor;
+};
+
+template <GLSLShaderType ShaderType>
+class GLSLShaderAllocator : public llr_resource_stub_allocator {
 public:
-	enum class GLSLShaderType {
-		NONE = 0,
-		VERTEX, FRAGMENT, GEOMETRY, 
-		COMPUTE,
-		TESS_CONTROL, TESS_EVALUATION
-	};
-	
+	static int allocate() {
+		switch (ShaderType) {
+		case GLSLShaderType::VERTEX:			return glCreateShader(GL_VERTEX_SHADER);
+		case GLSLShaderType::FRAGMENT:			return glCreateShader(GL_FRAGMENT_SHADER);
+		case GLSLShaderType::GEOMETRY:			return glCreateShader(GL_GEOMETRY_SHADER);
+		case GLSLShaderType::COMPUTE:			return glCreateShader(GL_COMPUTE_SHADER);
+		case GLSLShaderType::TESS_CONTROL:		return glCreateShader(GL_TESS_CONTROL_SHADER);
+		case GLSLShaderType::TESS_EVALUATION:	return glCreateShader(GL_TESS_EVALUATION_SHADER);
+		default:								assert(false); return 0;
+		}
+	}
+	static void deallocate(unsigned int &id) { glDeleteShader(id); id = 0; }
+};
+
+class GLSLShaderGeneric : virtual public GenericResource {
+public:
+	virtual std::string read_info_log() const = 0;
+	virtual bool get_status() const = 0;
+};
+
+template <GLSLShaderType ShaderType>
+class GLSLShader : public llr_resource<GLSLShaderAllocator<ShaderType>>, public GLSLShaderGeneric {
 private:
-	GLSLShaderType type{ GLSLShaderType::NONE };
-	GLuint id;
+	int status;
+	GLSLShaderProperties properties;
+
+	void compile() {
+		glCompileShader(get_resource_id());
+		glGetShaderiv(get_resource_id(), GL_COMPILE_STATUS, &status);
+	}
+
+public:
+	static constexpr GLSLShaderType type = ShaderType;
 
 public:
 	GLSLShader(GLSLShader &&m) = default;
@@ -29,46 +66,29 @@ public:
 	GLSLShader& operator=(GLSLShader &&m) = default;
 	GLSLShader& operator=(const GLSLShader &c) = delete;
 
-	GLSLShader(GLSLShaderType type) : type(type) {
-		switch (type) {
-		case GLSLShaderType::VERTEX:			id = glCreateShader(GL_VERTEX_SHADER); break;
-		case GLSLShaderType::FRAGMENT:			id = glCreateShader(GL_FRAGMENT_SHADER); break;
-		case GLSLShaderType::GEOMETRY:			id = glCreateShader(GL_GEOMETRY_SHADER); break;
-		case GLSLShaderType::COMPUTE:			id = glCreateShader(GL_COMPUTE_SHADER); break;
-		case GLSLShaderType::TESS_CONTROL:		id = glCreateShader(GL_TESS_CONTROL_SHADER); break;
-		case GLSLShaderType::TESS_EVALUATION:	id = glCreateShader(GL_TESS_EVALUATION_SHADER); break;
-		default:								assert(false); id = 0; break;
-		}
-	}
-	virtual ~GLSLShader() { if (this->is_valid()) glDeleteShader(id); }
+	GLSLShader(const std::string &src, const GLSLShaderProperties &properties) : properties(properties) {
+		auto str = src.data();
+		glShaderSource(get_resource_id(), 1, &str, NULL);
 
-	void set_shader_source(const std::string &src) { assert(is_valid); auto str = src.data(); glShaderSource(id, 1, &str, NULL); }
-	void attach_to_program(GLuint program) const { assert(is_valid); glAttachShader(program, id); }
-
-	bool compile() { 
-		assert(is_valid);
-		glCompileShader(id);
-		GLint result;
-		glGetShaderiv(id, GL_COMPILE_STATUS, &result);
-		return result != false;
+		compile();
 	}
 
-	std::string read_info_log() {
+	std::string read_info_log() const override final {
 		GLint length;
-		glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
+		glGetShaderiv(get_resource_id(), GL_INFO_LOG_LENGTH, &length);
 		if (length > 0) {
 			std::unique_ptr<char> log(new char[length]);
 			int written = 0;
-			glGetShaderInfoLog(id, length, &written, &*log);
+			glGetShaderInfoLog(get_resource_id(), length, &written, &*log);
 			return &*log;
 		}
 		return std::string();
 	}
 
-	bool is_valid() const { return id != 0; }
+	bool get_status() const override final { return !!status; }
+	const GLSLShaderProperties &get_shader_properties() const { return properties; }
 
-protected:
-	GLuint get_shader_id() const { return id; }
+	llr_resource_type resource_type() const override { return llr_resource_type::LLRGLSLShader; }
 };
 
 }

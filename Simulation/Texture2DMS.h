@@ -22,7 +22,7 @@ public:
 	Texture2DMS(gli::format format, const size_type &size, int samples, sampler_descriptor descriptor) : texture_multisampled(format, size, samples, descriptor) {}
 
 	const image<T> operator[](int level) const {
-		return image<T>(id, get_image_container_size(), format, ImageAccessMode::ReadWrite, level, 0);
+		return image<T>(*this, get_image_container_size(), format, ImageAccessMode::ReadWrite, level, 0);
 	}
 };
 

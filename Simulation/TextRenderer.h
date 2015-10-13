@@ -50,7 +50,6 @@ private:
 	int vbo_ring_current_offset{ 0 };
 
 	LLR::VertexArrayObject vao;
-	LLR::Sampler text_glyph_sampler;
 
 	glyph_manager gm;
 	Font default_font;

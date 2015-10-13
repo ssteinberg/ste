@@ -1,4 +1,5 @@
 
+#type frag
 #version 440
 
 out float gl_FragColor;

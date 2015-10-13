@@ -14,6 +14,7 @@ private:
 
 public:
 	bool get_times_since_last_call(float &idle_frac, float &kernel_frac, float &user_frac) {
+#ifdef _MSC_VER
 		std::uint64_t idle, kernel, user;
 		if (GetSystemTimes(reinterpret_cast<PFILETIME>(&idle),
 						   reinterpret_cast<PFILETIME>(&kernel),
@@ -37,6 +38,9 @@ public:
 
 		return false;
 	}
+#else
+#error Unsupported
+#endif
 };
 
 }

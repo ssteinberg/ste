@@ -44,10 +44,13 @@ public:
 template <typename Type, class Descriptor, BufferUsage::buffer_usage U = BufferUsage::BufferUsageNone>
 class VertexBufferObject : public buffer_object<Type, U>, public VertexBufferObjectGeneric {
 private:
+	using Base = buffer_object<Type, U>;
 	using buffer_object<Type, U>::bind;
 	using buffer_object<Type, U>::unbind;
 
 	static_assert(std::is_base_of<VertexBufferDescriptor, Descriptor>::value, "Descriptor must inherit from VertexBufferDescriptor");
+
+	ALLOW_BUFFER_OBJECT_CASTS;
 
 private:
 	Descriptor desc;
@@ -56,9 +59,7 @@ public:
 	VertexBufferObject(VertexBufferObject &&m) = default;
 	VertexBufferObject& operator=(VertexBufferObject &&m) = default;
 
-	VertexBufferObject(std::size_t size) : buffer_object(size) {}
-	VertexBufferObject(std::size_t size, const T *data) : buffer_object(size, data) {}
-	VertexBufferObject(const std::vector<T> &data) : buffer_object(data.size(), &data[0]) {}
+	using Base::Base;
 
 	~VertexBufferObject() {}
 
@@ -67,7 +68,7 @@ public:
 	vertex_buffer_attrib_binder<T, Descriptor, U> operator[](int index) { return vertex_buffer_attrib_binder<T, Descriptor, U>(index, this, 0, sizeof(T)); }
 	vertex_buffer_attrib_binder<T, Descriptor, U> binder(int index, std::size_t offset) { return vertex_buffer_attrib_binder<T, Descriptor, U>(index, this, offset, sizeof(T)); }
 
-	void bind() const final override { Binder::bind(id, GL_ARRAY_BUFFER); };
+	void bind() const final override { Binder::bind(get_resource_id(), GL_ARRAY_BUFFER); };
 	void unbind() const final override { Binder::unbind(GL_ARRAY_BUFFER); };
 
 	llr_resource_type resource_type() const override { return llr_resource_type::LLRVertexBufferObject; }

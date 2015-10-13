@@ -7,7 +7,8 @@
 #include "ObjectVertexData.h"
 #include "Material.h"
 
-#include "texture_pool.h"
+#include "Sampler.h"
+#include "texture_handle.h"
 
 #include "ElementBufferObject.h"
 #include "VertexBufferObject.h"
@@ -26,7 +27,7 @@ namespace Graphics {
 class Scene {
 private:
 	struct material_texture_descriptor {
-		std::uint64_t tex_handler{ 0 };
+		LLR::texture_handle tex_handler;
 	};
 	struct material_descriptor {
 		material_texture_descriptor diffuse;
@@ -38,19 +39,21 @@ private:
 		material_texture_descriptor tex2;
 		material_texture_descriptor tex3;
 	};
+ 
+ 	static constexpr auto buffer_usage = static_cast<LLR::BufferUsage::buffer_usage>(LLR::BufferUsage::BufferUsageDynamic | LLR::BufferUsage::BufferUsageSparse);
+ 	using vbo_type = LLR::VertexBufferObject<ObjectVertexData, ObjectVertexData::descriptor, buffer_usage>;
+ 	using elements_type = LLR::ElementBufferObject<unsigned, buffer_usage>;
+ 	using indirect_draw_buffer_type = LLR::IndirectDrawBuffer<buffer_usage>;
+ 	using material_data_buffer_type = LLR::ShaderStorageBuffer<material_descriptor, buffer_usage>;
 
-	static constexpr auto buffer_usage = static_cast<LLR::BufferUsage::buffer_usage>(LLR::BufferUsage::BufferUsageDynamic | LLR::BufferUsage::BufferUsageSparse);
-	using vbo_type = LLR::VertexBufferObject<ObjectVertexData, ObjectVertexData::descriptor, buffer_usage>;
-	using elements_type = LLR::ElementBufferObject<unsigned, buffer_usage>;
-	using indirect_draw_buffer_type = LLR::IndirectDrawBuffer<buffer_usage>;
-	using material_data_buffer_type = LLR::ShaderStorageBuffer<material_descriptor, buffer_usage>;
-
-	std::unique_ptr<LLR::VertexArrayObject> vao;
-	std::unique_ptr<vbo_type> vbo;
-	std::unique_ptr<elements_type> indices;
-	std::unique_ptr<indirect_draw_buffer_type> idb;
-	std::unique_ptr<material_data_buffer_type> matbo;
-
+	LLR::SamplerMipmapped linear_sampler;
+ 
+ 	std::unique_ptr<LLR::VertexArrayObject> vao;
+ 	std::unique_ptr<vbo_type> vbo;
+ 	std::unique_ptr<elements_type> indices;
+ 	std::unique_ptr<indirect_draw_buffer_type> idb;
+ 	std::unique_ptr<material_data_buffer_type> matbo;
+ 
 	std::vector<std::unique_ptr<Object>> objects;
 
 	int total_vertices{ 0 };

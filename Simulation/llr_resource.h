@@ -5,6 +5,9 @@
 
 #include "llr_resource_type.h"
 
+#include <functional>
+#include <memory>
+
 namespace StE {
 namespace LLR {
 
@@ -17,7 +20,10 @@ public:
 
 class GenericResource {
 protected:
-	unsigned int id;
+	using generic_resource_type = unsigned;
+	using generic_resource_shared_type = std::shared_ptr<generic_resource_type>;
+
+	generic_resource_shared_type id;
 
 	GenericResource() {}
 	~GenericResource() noexcept {}
@@ -25,10 +31,10 @@ protected:
 public:
 	virtual llr_resource_type resource_type() const = 0;
 
-	int get_resource_id() const { return id; }
+	generic_resource_type get_resource_id() const { return *id; }
 	virtual bool is_valid() const = 0;
 
-	GenericResource(GenericResource &&res) : id(res.id) { res.id = 0; }
+	GenericResource(GenericResource &&res) : id(std::move(res.id)) {}
 	GenericResource &operator=(GenericResource &&res) = delete;
 	GenericResource(const GenericResource &res) = delete;
 	GenericResource &operator=(const GenericResource &res) = delete;
@@ -36,19 +42,33 @@ public:
 
 template <class A>
 class llr_resource : virtual public GenericResource {
+private:
+	template <class A2>
+	friend class llr_resource;
+
+	using GenericResource::id;
+
 protected:
 	using Allocator = A;
 
-	llr_resource() { this->id = Allocator::allocate(); }
-	~llr_resource() noexcept { if (Allocator::is_valid(id)) Allocator::deallocate(id); }
+	llr_resource() { 
+		generic_resource_type *res_id = new generic_resource_type(Allocator::allocate());
+		this->id = generic_resource_shared_type(res_id, [](generic_resource_type *ptr) {
+			if (Allocator::is_valid(*ptr)) 
+				Allocator::deallocate(*ptr);
+		});
+	}
+	template <class A2>
+	explicit llr_resource(const llr_resource<A2> &res) { id = res.id; }
+	explicit llr_resource(const llr_resource &res) { id = res.id; }
+	~llr_resource() noexcept {}
 
 public:
 	llr_resource(llr_resource &&m) = default;
-	llr_resource(const llr_resource &c) = delete;
 	llr_resource& operator=(llr_resource &&m) = default;
 	llr_resource& operator=(const llr_resource &c) = delete;
 
-	bool is_valid() const { return Allocator::is_valid(id); }
+	bool is_valid() const { return Allocator::is_valid(*id); }
 };
 
 }

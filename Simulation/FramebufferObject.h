@@ -46,24 +46,24 @@ public:
 	virtual ~fbo_attachment_point() noexcept {}
 
 	void detach() { 
-		glNamedFramebufferTexture(fbo->id, attachment_point, 0, 0); 
+		glNamedFramebufferTexture(fbo->get_resource_id(), attachment_point, 0, 0);
 		size = { 0,0 };
 	}
 
 	template <llr_resource_type TexType>
 	void attach(const image<TexType> &img, std::enable_if_t<texture_is_array<TexType>::value>* = 0) {
-		glNamedFramebufferTextureLayer(fbo->id, attachment_point, img.get_resource_id(), img.get_level(), img.get_layer());
+		glNamedFramebufferTextureLayer(fbo->get_resource_id(), attachment_point, img.get_resource_id(), img.get_level(), img.get_layer());
 		size = img.get_image_size();
 		format = img.get_format();
 	}
 	template <llr_resource_type TexType>
 	void attach(const image<TexType> &img, std::enable_if_t<!texture_is_array<TexType>::value>* = 0) {
-		glNamedFramebufferTexture(fbo->id, attachment_point, img.get_resource_id(), img.get_level());
+		glNamedFramebufferTexture(fbo->get_resource_id(), attachment_point, img.get_resource_id(), img.get_level());
 		size = img.get_image_size();
 		format = img.get_format();
 	}
  	void attach(const RenderTarget &rt) {
-		glNamedFramebufferRenderbuffer(fbo->id, attachment_point, GL_RENDERBUFFER, rt.get_resource_id());
+		glNamedFramebufferRenderbuffer(fbo->get_resource_id(), attachment_point, GL_RENDERBUFFER, rt.get_resource_id());
 		size = rt.get_image_size();
 		format = rt.get_format();
  	}
@@ -71,7 +71,7 @@ public:
 	template<typename T>
 	void operator=(const T &target) { attach(target); }
 
-	unsigned int fbo_id() const { return fbo->id; }
+	unsigned int fbo_id() const { return fbo->get_resource_id(); }
 	GLenum get_attachment_point() const { return attachment_point; }
 
 	virtual glm::tvec2<std::size_t> get_attachment_size() const { return size; }
@@ -203,12 +203,12 @@ protected:
 
 	void update_draw_buffers() { 
 		if (draw_buffers.size()) 
-			glNamedFramebufferDrawBuffers(id, draw_buffers.size(), &draw_buffers[0]);
+			glNamedFramebufferDrawBuffers(get_resource_id(), draw_buffers.size(), &draw_buffers[0]);
 	}
 
-	void bind_draw() const { glBindFramebuffer(GL_DRAW_FRAMEBUFFER, id); }
+	void bind_draw() const { glBindFramebuffer(GL_DRAW_FRAMEBUFFER, get_resource_id()); }
 	void unbind_draw() const { glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); }
-	void bind_read() const { glBindFramebuffer(GL_READ_FRAMEBUFFER, id); }
+	void bind_read() const { glBindFramebuffer(GL_READ_FRAMEBUFFER, get_resource_id()); }
 	void unbind_read() const { glBindFramebuffer(GL_READ_FRAMEBUFFER, 0); }
 
 public:
@@ -222,7 +222,7 @@ public:
 	frame_buffer_object &operator=(frame_buffer_object &&t) = default;
 
 	bool is_fbo_complete() const { bind(); return is_valid() && get_status_code() == GL_FRAMEBUFFER_COMPLETE; }
-	GLenum get_status_code() const { return glCheckNamedFramebufferStatus(id, GL_FRAMEBUFFER); }
+	GLenum get_status_code() const { return glCheckNamedFramebufferStatus(get_resource_id(), GL_FRAMEBUFFER); }
 
 	template <class A>
 	void blit_to(frame_buffer_object<A> &fbo, const glm::ivec2 &src_size, const glm::ivec2 dst_size, const glm::ivec2 &src_origin = { 0,0 }, const glm::ivec2 dst_origin = { 0,0 }, bool linear_filter = true, bool blit_color = true, bool blit_depth = false) const {
@@ -231,7 +231,7 @@ public:
 		int mask = 0;
 		if (blit_depth) mask |= GL_DEPTH_BUFFER_BIT;
 		if (blit_color) mask |= GL_COLOR_BUFFER_BIT;
-		glBlitNamedFramebuffer(id, fbo.get_resource_id(), src_origin.x, src_origin.y, src_xy1.x, src_xy1.y, dst_origin.x, dst_origin.y, dst_xy1.x, dst_xy1.y, mask, linear_filter ? GL_LINEAR : GL_NEAREST);
+		glBlitNamedFramebuffer(get_resource_id(), fbo.get_resource_id(), src_origin.x, src_origin.y, src_xy1.x, src_xy1.y, dst_origin.x, dst_origin.y, dst_xy1.x, dst_xy1.y, mask, linear_filter ? GL_LINEAR : GL_NEAREST);
 	}
 
 	static unsigned int max_framebuffer_bindings() {

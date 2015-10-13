@@ -132,19 +132,23 @@
     <ClCompile Include="thread_constants.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AtomicCounterBuffer.h" />
+    <ClInclude Include="AtomicCounterBufferObject.h" />
     <ClInclude Include="attrib.h" />
     <ClInclude Include="AttributedString.h" />
     <ClInclude Include="attributed_string.h" />
     <ClInclude Include="attributed_string_htm_formatter.h" />
     <ClInclude Include="buffer_lock.h" />
+    <ClInclude Include="buffer_object_cast.h" />
     <ClInclude Include="edtaa3func.h" />
     <ClInclude Include="Font.h" />
     <ClInclude Include="function_traits.h" />
     <ClInclude Include="function_wrapper.h" />
+    <ClInclude Include="getcwd.h" />
     <ClInclude Include="glyph.h" />
     <ClInclude Include="glyph_factory.h" />
     <ClInclude Include="glyph_manager.h" />
+    <ClInclude Include="IndirectDispatchBufferObject.h" />
+    <ClInclude Include="texture_handle.h" />
     <ClInclude Include="IndirectDrawBufferObject.h" />
     <ClInclude Include="interruptible_thread.h" />
     <ClInclude Include="lru_cache.h" />
@@ -237,8 +241,12 @@
     <None Include="blur_x.frag" />
     <None Include="blur_y.frag" />
     <None Include="gen_depth_layers.frag" />
-    <None Include="hdr_create_luminance.frag" />
-    <None Include="hdr_lum_downsample.glsl" />
+    <None Include="hdr_common.glsl" />
+    <None Include="hdr_compute_histogram_sums.glsl" />
+    <None Include="hdr_compute_minmax.frag" />
+    <None Include="hdr_create_histogram.glsl" />
+    <None Include="hdr_tonemap.frag" />
+    <None Include="lanczos.frag" />
     <None Include="lighting.frag" />
     <None Include="passthrough.vert" />
     <None Include="passthrough_light.vert" />

@@ -30,13 +30,16 @@ protected:
 	using Binder = B;
 
 	bindable_resource() {}
+	explicit bindable_resource(const bindable_resource &res) : llr_resource<A>(res) {}
 	~bindable_resource() noexcept {}
+
+	using llr_resource<A>::llr_resource;
 
 public:
 	bindable_resource(bindable_resource &&m) = default;
 	bindable_resource& operator=(bindable_resource &&m) = default;
 
-	void bind(const BindingArgs&... args) const { Binder::bind(id, args...); }
+	void bind(const BindingArgs&... args) const { Binder::bind(get_resource_id(), args...); }
 	void unbind(const BindingArgs&... args) const { Binder::unbind(args...); };
 };
 
@@ -46,13 +49,16 @@ protected:
 	using Binder = B;
 
 	bindable_resource() {}
+	explicit bindable_resource(const bindable_resource &res) : llr_resource<A>(res) {}
 	~bindable_resource() noexcept {}
+
+	using llr_resource<A>::llr_resource;
 
 public:
 	bindable_resource(bindable_resource &&m) = default;
 	bindable_resource& operator=(bindable_resource &&m) = default;
 
-	void bind() const override { Binder::bind(id); }
+	void bind() const override { Binder::bind(get_resource_id()); }
 	void unbind() const override { Binder::unbind(); };
 };
 

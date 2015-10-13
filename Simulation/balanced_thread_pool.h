@@ -147,12 +147,14 @@ public:
 			idle_frac > .15f) {
 			spawn_worker();
 		}
-		else if (req == 0 &&
-				 workers.size() > min_threads &&
-				 (kernel_frac > .15f || idle_frac > .3f)) {
+		else if (workers.size() > min_threads &&
+				 (kernel_frac > .15f || (req == 0 && idle_frac > .3f) || threads_sleeping > 1)) {
 			despawn_worker();
 		}
 	}
+
+	int get_workers_count() const { return workers.size(); }
+	int get_sleeping_workers() const { return threads_sleeping; }
 };
 
 }

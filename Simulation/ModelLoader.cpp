@@ -28,20 +28,20 @@ void ModelLoader::process_model_mesh(optional<task_scheduler*> sched, const tiny
 
 	int mat_idx = shape.mesh.material_ids[0];
 
-	auto texture_loader = [&](const std::string &texture_name) -> std::unique_ptr<LLR::Texture2D> {
+	auto texture_loader = [&](const std::string &texture_name, bool srgb) -> std::unique_ptr<LLR::Texture2D> {
 		if (!texture_name.length()) return nullptr;
 		std::string full_path = dir + texture_name;
 
-		auto tex_task = SurfaceIO::load_texture_2d_task(full_path);
+		auto tex_task = SurfaceIO::load_texture_2d_task(full_path, srgb);
 		std::unique_ptr<LLR::Texture2D> tex = tex_task(sched);
 		if (tex == nullptr)
 			ste_log_warn() << "Couldn't load texture " << full_path;
 		return tex;
 	};
 
-	auto diff = texture_loader(materials[mat_idx].diffuse_texname);
-	auto normal = texture_loader(materials[mat_idx].bump_texname);
-	auto opacity = texture_loader(materials[mat_idx].alpha_texname);
+	auto diff = texture_loader(materials[mat_idx].diffuse_texname, true);
+	auto normal = texture_loader(materials[mat_idx].bump_texname, false);
+	auto opacity = texture_loader(materials[mat_idx].alpha_texname, false);
 
 	StE::task<void> f = [&](optional<task_scheduler*> sched) {
 		Material mat;
