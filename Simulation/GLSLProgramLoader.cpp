@@ -93,7 +93,7 @@ std::string GLSLProgramLoader::parse_directive(const std::string &source, const 
 		return "";
 
 	it += name.length();
-	while (it < source.length() && std::isspace<char>(source[it], std::locale::classic()));
+	while (it < source.length() && std::isspace<char>(source[it], std::locale::classic())) ++it;
 	end = source.find('\n', it);
 	if (end == std::string::npos)
 		return "";
@@ -112,7 +112,7 @@ bool GLSLProgramLoader::parse_parameters(std::string & source, GLSLShaderPropert
 	}
 	long lver = std::strtol(version.c_str(), nullptr, 10);
 	prop.version_major = lver / 100;
-	prop.version_minor = (lver - prop.version_major) / 10;
+	prop.version_minor = (lver - prop.version_major * 100) / 10;
 
 	it = 0;
 	auto mapit = type_map.find(parse_directive(source, "#type", it, end));
@@ -121,6 +121,7 @@ bool GLSLProgramLoader::parse_parameters(std::string & source, GLSLShaderPropert
 		assert(false);
 		return false;
 	}
+	source.erase(it, end - it);
 	type = mapit->second;
 
 	return true;
@@ -132,12 +133,12 @@ void GLSLProgramLoader::parse_includes(std::string &source) {
 	while ((name = parse_directive(source, "#include", it, end)).length()) {
 		if (name[0] != '"')
 			break;
-		auto end = name.find('"', 1);
-		if (end == std::string::npos)
+		auto name_len = name.find('"', 1);
+		if (name_len == std::string::npos)
 			break;
 
-		std::string file_name = name.substr(1, end - 1);
-		++end;
+		std::string file_name = name.substr(1, name_len - 1);
+		++name_len;
 
 		auto include = load_source(file_name);
 		source.replace(it, end - it, include);

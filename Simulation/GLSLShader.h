@@ -77,10 +77,11 @@ public:
 		GLint length;
 		glGetShaderiv(get_resource_id(), GL_INFO_LOG_LENGTH, &length);
 		if (length > 0) {
-			std::unique_ptr<char> log(new char[length]);
+			std::string log;
+			log.resize(length);
 			int written = 0;
-			glGetShaderInfoLog(get_resource_id(), length, &written, &*log);
-			return &*log;
+			glGetShaderInfoLog(get_resource_id(), length, &written, &log[0]);
+			return log;
 		}
 		return std::string();
 	}

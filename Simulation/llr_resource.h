@@ -26,7 +26,7 @@ protected:
 	generic_resource_shared_type id;
 
 	GenericResource() {}
-	~GenericResource() noexcept {}
+	virtual ~GenericResource() noexcept {}
 
 public:
 	virtual llr_resource_type resource_type() const = 0;

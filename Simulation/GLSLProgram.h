@@ -39,10 +39,7 @@ private:
 		if (it != uniform_map.end())
 			return it->second;
 
-		int loc = glGetUniformLocation(get_resource_id(), name.c_str());
-		if (loc >= 0)
-			uniform_map[name] = loc;
-		return loc;
+		return (uniform_map[name] = glGetUniformLocation(get_resource_id(), name.c_str()));
 	}
 
 public:
@@ -52,7 +49,7 @@ public:
 	GLSLProgram& operator=(const GLSLProgram &c) = delete;
 
 	GLSLProgram() : linked(false) {}
-	virtual ~GLSLProgram() {}
+	~GLSLProgram() noexcept {}
 
 	void add_shader(std::unique_ptr<GLSLShaderGeneric> shader) {
 		if (shader == nullptr || !shader->is_valid()) {

@@ -16,11 +16,7 @@ float hdr_bin(float max_lum, float min_lum, float l) {
 	float range = max_lum - min_lum;
 	float bin_size = range / fbins;
 	float r = (l - min_lum) / bin_size;
-	return clamp(r, 0.f, fbins - .000001f);
-}
-
-float dL_range() {
-	return log(1.f + epsilon) - log(epsilon);
+	return clamp(r, 0.f, fbins - .00001f);
 }
 
 float hdr_lum(float l) {
