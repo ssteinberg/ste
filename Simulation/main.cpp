@@ -31,13 +31,6 @@
 #include "Texture2DArray.h"
 #include "PixelBufferObject.h"
 #include "AtomicCounterBuffer.h"
-#include "concurrent_unordered_map.h"
-
-#include "tbb/concurrent_hash_map.h"
-#include <chrono>
-#include <random>
-
-using namespace tbb;
 
 using namespace StE::LLR;
 
@@ -52,138 +45,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 	StE::Log logger("Simulation");
 	logger.redirect_std_outputs();
 	ste_log_set_global_logger(&logger);
-
-	static constexpr float read_ratio = .85f;
-
-	StE::concurrent_unordered_map<int, std::string> map;
-	concurrent_hash_map<int, std::string> tbb_map;
-	for (int j = 0; j < 100; ++j) {
-		tbb_map.insert({ j, std::string("temp") + std::to_string(j) });
-		map.emplace(j, std::string("temp") + std::to_string(j));
-	}
-
-	auto time = std::chrono::high_resolution_clock::now();
- 	{
-		std::string str;
-
-		std::thread t1([&]() {
-			for (int i = 0; i < 10000; ++i) {
-				for (int j = 0; j < 1500 * (1 - read_ratio); ++j) {
-					map.emplace(j%50, "12");
-				}
-				for (int j = 0; j < 1500 * read_ratio; ++j) {
-					map.try_get(j % 50, str);
-				}
-			}
-		});
-		std::thread t2([&]() {
-			for (int i = 0; i < 10000; ++i) {
-				for (int j = 0; j < 1500 * (1 - read_ratio); ++j) {
-					map.emplace(j % 50, "15");
-				}
-				for (int j = 0; j < 1500 * read_ratio; ++j) {
-					map.try_get(j % 50, str);
-				}
-			}
-		});
-		std::thread t3([&]() {
-			for (int i = 0; i < 10000; ++i) {
-				for (int j = 0; j < 1500 * (1 - read_ratio); ++j) {
-					map.emplace(j % 50, "12");
-				}
-				for (int j = 0; j < 1500 * read_ratio; ++j) {
-					map.try_get(j % 50, str);
-				}
-			}
-		});
-		std::thread t4([&]() {
-			for (int i = 0; i < 10000; ++i) {
-				for (int j = 0; j < 1500 * (1 - read_ratio); ++j) {
-					map.remove(j % 50);
-				}
-				for (int j = 0; j < 1500 * read_ratio; ++j) {
-					map.try_get(j % 50, str);
-				}
-			}
-		});
- 
-		t1.join();
-		std::chrono::duration<float> ste_delta = std::chrono::high_resolution_clock::now() - time;
-		ste_log() << "StE time: " << ste_delta.count() << "sec" << std::endl;
-		t2.join();
-		ste_delta = std::chrono::high_resolution_clock::now() - time;
-		ste_log() << "StE time: " << ste_delta.count() << "sec" << std::endl;
-		t3.join();
-		ste_delta = std::chrono::high_resolution_clock::now() - time;
-		ste_log() << "StE time: " << ste_delta.count() << "sec" << std::endl;
-		t4.join();
-		ste_delta = std::chrono::high_resolution_clock::now() - time;
-		ste_log() << "StE time: " << ste_delta.count() << "sec" << std::endl;
- 	}
-
-	time = std::chrono::high_resolution_clock::now();
-	{
-		std::thread t1([&]() {
-			for (int i = 0; i < 10000; ++i) {
-				for (int j = 0; j < 1500 * (1 - read_ratio); ++j) {
-					tbb_map.insert({ j % 50, "12" });
-				}
-				for (int j = 0; j < 1500 * read_ratio; ++j) {
-					concurrent_hash_map<int, std::string>::accessor result;
-					tbb_map.find(result, j % 50);
-				}
-			}
-		});
-		std::thread t2([&]() {
-			for (int i = 0; i < 10000; ++i) {
-				for (int j = 0; j < 1500 * (1 - read_ratio); ++j) {
-					tbb_map.insert({ j % 50, "15" });
-				}
-				for (int j = 0; j < 1500 * read_ratio; ++j) {
-					concurrent_hash_map<int, std::string>::accessor result;
-					tbb_map.find(result, j % 50);
-				}
-			}
-		});
-		std::thread t3([&]() {
-			for (int i = 0; i < 10000; ++i) {
-				for (int j = 0; j < 1500 * (1 - read_ratio); ++j) {
-					tbb_map.insert({ j % 50, "12" });
-				}
-				for (int j = 0; j < 1500 * read_ratio; ++j) {
-					concurrent_hash_map<int, std::string>::accessor result;
-					tbb_map.find(result, j % 50);
-				}
-			}
-		});
-		std::thread t4([&]() {
-			for (int i = 0; i < 10000; ++i) {
-				for (int j = 0; j < 1500 * (1 - read_ratio); ++j) {
-					tbb_map.erase( j % 50);
-				}
-				for (int j = 0; j < 1500 * read_ratio; ++j) {
-					concurrent_hash_map<int, std::string>::accessor result;
-					tbb_map.find(result, j % 50);
-				}
-			}
-		});
-
-
-		t1.join();
-		std::chrono::duration<float> ste_delta = std::chrono::high_resolution_clock::now() - time;
-		ste_log() << "TBB time: " << ste_delta.count() << "sec" << std::endl;
-		t2.join();
-		ste_delta = std::chrono::high_resolution_clock::now() - time;
-		ste_log() << "TBB time: " << ste_delta.count() << "sec" << std::endl;
-		t3.join();
-		ste_delta = std::chrono::high_resolution_clock::now() - time;
-		ste_log() << "TBB time: " << ste_delta.count() << "sec" << std::endl;
-		t4.join();
-		ste_delta = std::chrono::high_resolution_clock::now() - time;
-		ste_log() << "TBB time: " << ste_delta.count() << "sec" << std::endl;
-	}
-
-	return true;
 
 	ste_log() << "Simulation running";
 
@@ -334,9 +195,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 		if (status != Status::KeyDown)
 			return;
 
-		if (key == keyboard::K::KeyKP_ADD)
+		if (key == keyboard::K::KeyF9)
 			steps = max_steps;
-		if (key == keyboard::K::KeyKP_SUBTRACT)
+		if (key == keyboard::K::KeyF8)
 			steps = 2;
 		if (key == keyboard::K::Key0)
 			perform_ssao = false;
@@ -393,7 +254,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 
 		rc.render_context().enable_depth_test();
 		fbo.bind();
-		rc.render_context().clear_framebuffer(false, true);
+		rc.render_context().clear_framebuffer(true, true);
 
 		transform.bind();
 		auto mv = camera.view_matrix() * glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(-100, -35, 0)), glm::vec3(.25, .25, .25));
