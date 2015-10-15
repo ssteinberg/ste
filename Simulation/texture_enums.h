@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "llr_resource_type.h"
+#include "stdafx.h"
 
 namespace StE {
 namespace LLR {

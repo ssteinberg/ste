@@ -106,14 +106,15 @@
   <ItemGroup>
     <ClCompile Include="attrib.cpp" />
     <ClCompile Include="glyph_factory.cpp" />
+    <ClCompile Include="gl_current_context.cpp" />
     <ClCompile Include="interruptible_thread.cpp" />
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="ModelLoader.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="GLSLProgram.cpp" />
-    <ClCompile Include="opengl.cpp" />
+    <ClCompile Include="gl_utils.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="RenderContext.cpp" />
+    <ClCompile Include="gl_context.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="StEngineControl.cpp" />
     <ClCompile Include="GLSLProgramLoader.cpp" />
@@ -139,6 +140,7 @@
     <ClInclude Include="attributed_string_htm_formatter.h" />
     <ClInclude Include="buffer_lock.h" />
     <ClInclude Include="buffer_object_cast.h" />
+    <ClInclude Include="buffer_object_allocator.h" />
     <ClInclude Include="edtaa3func.h" />
     <ClInclude Include="Font.h" />
     <ClInclude Include="function_traits.h" />
@@ -147,7 +149,10 @@
     <ClInclude Include="glyph.h" />
     <ClInclude Include="glyph_factory.h" />
     <ClInclude Include="glyph_manager.h" />
+    <ClInclude Include="gl_current_context.h" />
     <ClInclude Include="IndirectDispatchBufferObject.h" />
+    <ClInclude Include="render_target_allocator.h" />
+    <ClInclude Include="resource_allocator.h" />
     <ClInclude Include="texture_handle.h" />
     <ClInclude Include="IndirectDrawBufferObject.h" />
     <ClInclude Include="interruptible_thread.h" />
@@ -194,16 +199,16 @@
     <ClInclude Include="FramebufferObject.h" />
     <ClInclude Include="GLSLProgram.h" />
     <ClInclude Include="GLSLShader.h" />
-    <ClInclude Include="llr_resource_traits.h" />
+    <ClInclude Include="resource_traits.h" />
     <ClInclude Include="llr_resource_type.h" />
-    <ClInclude Include="opengl.h" />
+    <ClInclude Include="gl_utils.h" />
     <ClInclude Include="create_type.h" />
-    <ClInclude Include="llr_resource.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="Log.h" />
     <ClInclude Include="PixelBufferObject.h" />
     <ClInclude Include="pointer.h" />
     <ClInclude Include="RenderTarget.h" />
-    <ClInclude Include="RenderContext.h" />
+    <ClInclude Include="gl_context.h" />
     <ClInclude Include="ShaderStorageBuffer.h" />
     <ClInclude Include="signal.h" />
     <ClInclude Include="StEngineControl.h" />
@@ -226,6 +231,7 @@
     <ClInclude Include="texture_pool.h" />
     <ClInclude Include="texture_enums.h" />
     <ClInclude Include="texture_sparse.h" />
+    <ClInclude Include="texture_allocator.h" />
     <ClInclude Include="texture_traits.h" />
     <ClInclude Include="thread_constants.h" />
     <ClInclude Include="thread_priority.h" />
@@ -238,8 +244,8 @@
     <ClInclude Include="windows.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="blur_x.frag" />
-    <None Include="blur_y.frag" />
+    <None Include="bilateral_blur_x.frag" />
+    <None Include="bilateral_blur_y.frag" />
     <None Include="gen_depth_layers.frag" />
     <None Include="hdr_common.glsl" />
     <None Include="hdr_compute_histogram_sums.glsl" />

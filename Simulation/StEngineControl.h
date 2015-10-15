@@ -14,7 +14,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "RenderContext.h"
+#include "gl_context.h"
 #include "hid.h"
 #include "signal.h"
 
@@ -23,21 +23,20 @@
 
 namespace StE {
 
+struct ste_engine_control_impl;
+
 class StEngineControl {
 private:
-	std::unique_ptr<LLR::RenderContext> context{ nullptr };
+	std::unique_ptr<ste_engine_control_impl> pimpl;
 
 	mutable glm::mat4 projection;
-	float field_of_view;
-	float near_clip;
-	float far_clip;
 
-	float fps{ 0 };
 	std::chrono::duration<float> tpf{ 0 };
 
 	bool projection_dirty{ true };
 	void set_projection_dirty() { projection_dirty = true; }
 
+	std::unique_ptr<LLR::gl_context> context;
 	mutable task_scheduler global_scheduler;
 	mutable lru_cache<std::string> global_cache;
 
@@ -56,19 +55,21 @@ private:
 	hid_scroll_signal_type hid_scroll_signal;
 	hid_keyboard_signal_type hid_keyboard_signal;
 
+	void update_tpf();
+	void setup_signals();
+
 public:
 	StEngineControl(StEngineControl &&m) = delete;
 	StEngineControl(const StEngineControl &c) = delete;
 	StEngineControl& operator=(StEngineControl &&m) = delete;
 	StEngineControl& operator=(const StEngineControl &c) = delete;
 
-	StEngineControl() : projection_dirty(true), field_of_view(M_PI_4), near_clip(.1), far_clip(1000), global_cache("Cache", 1024*1024*256) {}
-	~StEngineControl() {}
+	StEngineControl(std::unique_ptr<LLR::gl_context> &&context);
+	~StEngineControl() noexcept;
 
-	bool init_render_context(const char *title, const glm::i32vec2 &size, bool fs = false, bool vsync = true, gli::format format = gli::FORMAT_RGBA8_SRGB, int samples = 0, gli::format depth_format = gli::FORMAT_D24_UNORM);
-	const LLR::RenderContext &render_context() const { return *context; }
 	auto &scheduler() const { return global_scheduler; }
 	auto &cache() const { return global_cache; }
+	const LLR::gl_context* gl() const { return context.get(); }
 
 	void set_window_title(const char * title) { glfwSetWindowTitle(context->window.get(), title); }
 	glm::i32vec2 get_window_position() const {
@@ -88,9 +89,9 @@ public:
 		glfwSetWindowSize(context->window.get(), size.x, size.y);
 	}
 
-	void run_loop(std::function<bool()> process);
-	auto frames_per_second() const { return fps; }
 	auto time_per_frame() const { return tpf; }
+
+	bool run_loop();
 
 	const decltype(framebuffer_resize_signal) &signal_framebuffer_resize() const { return framebuffer_resize_signal; }
 	const decltype(hid_pointer_movement_signal) &hid_signal_pointer_movement() const { return hid_pointer_movement_signal; }
@@ -100,16 +101,9 @@ public:
 
 	bool window_active() const { return !!glfwGetWindowAttrib(context->window.get(), GLFW_FOCUSED); }
 	glm::i32vec2 get_backbuffer_size() const { return context->framebuffer_size(); }
-	void set_fov(float rad) { field_of_view = rad; set_projection_dirty(); }
-	void set_clipping_planes(float near_clip_distance, float far_clip_distance) { near_clip = near_clip_distance; far_clip = far_clip_distance; set_projection_dirty(); }
-	glm::mat4 projection_matrix() const {
-		if (projection_dirty) {
-			auto vs = get_backbuffer_size();
-			float aspect = vs.x / vs.y;
-			projection = glm::perspective(field_of_view, aspect, near_clip, far_clip);
-		}
-		return projection;
-	}
+	void set_fov(float rad);
+	void set_clipping_planes(float near_clip_distance, float far_clip_distance);
+	glm::mat4 projection_matrix() const;
 
 	glm::mat4 ortho_projection_matrix() const {
 		auto vs = get_backbuffer_size();

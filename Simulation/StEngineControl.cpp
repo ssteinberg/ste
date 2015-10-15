@@ -1,26 +1,45 @@
 
 #include "stdafx.h"
+#include "gl_utils.h"
+
 #include "StEngineControl.h"
 #include "Log.h"
 
 #include <chrono>
 #include <thread>
+#include <exception>
 
 using namespace StE;
 
-bool StEngineControl::init_render_context(const char *title, const glm::i32vec2 &size, bool fs, bool vsync, gli::format format, int samples, gli::format depth_format) {
-	ste_log() << "Creating window " << size.x << "px x " << size.y << "px";
+struct StE::ste_engine_control_impl {
+	float field_of_view{ M_PI_4 };
+	float near_clip{ 0.1 };
+	float far_clip{ 1000 };
+
+	float fps{ 0 };
+	int frames{ 0 };
+	float total_time{ 0 };
+	std::chrono::time_point<std::chrono::steady_clock> last_frame_time{ std::chrono::high_resolution_clock::now() };
+};
+
+StEngineControl::StEngineControl(std::unique_ptr<LLR::gl_context> &&ctx) : pimpl(std::make_unique<ste_engine_control_impl>()), global_cache("Cache", 1024 * 1024 * 256), context(std::move(ctx)) {
+	assert(context.get());
+	if (context == nullptr)
+		throw std::exception("context == nullptr");
 
 	glfwSetErrorCallback([](int err, const char* description) { ste_log_error() << "GLFW reported an error (" << err << "): " << description; });
 
-	context = std::unique_ptr<LLR::RenderContext>(new LLR::RenderContext(title, size, fs, vsync, format, samples, depth_format));
-	if (context->window == nullptr) {
-		return false;
-	}
-
-	LLR::opengl::dump_gl_info(false);
+	LLR::gl_utils::dump_gl_info(false);
 
 	glfwSetWindowUserPointer(context->window.get(), this);
+
+	setup_signals();
+}
+
+StEngineControl::~StEngineControl() noexcept {
+}
+
+void StEngineControl::setup_signals() {
 	glfwSetFramebufferSizeCallback(context->window.get(), [](GLFWwindow* winptr, int w, int h) {
 		StEngineControl *ec_this = reinterpret_cast<StEngineControl*>(glfwGetWindowUserPointer(winptr));
 		ec_this->context->resize({ w, h });
@@ -28,15 +47,6 @@ bool StEngineControl::init_render_context(const char *title, const glm::i32vec2 
 
 		ec_this->framebuffer_resize_signal.emit({ w, h });
 	});
-
-	return true;
-}
-
-void StEngineControl::run_loop(std::function<bool()> process) {
-	if (context == nullptr) {
-		ste_log_fatal() << "run_loop called without context." << std::endl;
-		throw std::exception("run_loop called without context.");
-	}
 
 	glfwSetCursorPosCallback(context->window.get(), [](GLFWwindow* winptr, double xpos, double ypos) {
 		StEngineControl *ec_this = reinterpret_cast<StEngineControl*>(glfwGetWindowUserPointer(winptr));
@@ -59,28 +69,47 @@ void StEngineControl::run_loop(std::function<bool()> process) {
 		auto k = HID::keyboard::convert_key(key);
 		ec_this->hid_keyboard_signal.emit(k, scancode, HID::convert_status(action), static_cast<HID::ModifierBits>(mods));
 	});
+}
 
-	auto time = std::chrono::high_resolution_clock::now();
-	float total_time = .0f;
-	int frames = 0;
-	bool running = true;
-	while (running && !glfwWindowShouldClose(context->window.get())) {
-		auto now = std::chrono::high_resolution_clock::now();
-		std::chrono::duration<float> delta = now - time;
-		tpf = delta;
-		time = now;
-		++frames;
-		if ((total_time += delta.count()) > .5f) {
-			fps = static_cast<float>(frames) / total_time;
-			total_time = .0f;
-			frames = 0;
-		}
-
-		global_scheduler.run_loop();
-		glfwPollEvents();
-
-		running &= process();
-
-		glfwSwapBuffers(context->window.get());
+void StEngineControl::update_tpf() {
+	auto now = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<float> delta = now - pimpl->last_frame_time;
+	tpf = delta;
+	pimpl->last_frame_time = now;
+	++pimpl->frames;
+	if ((pimpl->total_time += delta.count()) > .5f) {
+		pimpl->fps = static_cast<float>(pimpl->frames) / pimpl->total_time;
+		pimpl->total_time = .0f;
+		pimpl->frames = 0;
 	}
+}
+
+bool StEngineControl::run_loop() {
+	update_tpf();
+
+	global_scheduler.run_loop();
+	glfwPollEvents();
+
+	glfwSwapBuffers(context->window.get());
+
+	return !glfwWindowShouldClose(context->window.get());
+}
+
+void StEngineControl::set_fov(float rad) {
+	pimpl->field_of_view = rad; set_projection_dirty();
+}
+
+void StEngineControl::set_clipping_planes(float near_clip_distance, float far_clip_distance) {
+	pimpl->near_clip = near_clip_distance;
+	pimpl->far_clip = far_clip_distance;
+	set_projection_dirty();
+}
+
+glm::mat4 StEngineControl::projection_matrix() const {
+	if (projection_dirty) {
+		auto vs = get_backbuffer_size();
+		float aspect = vs.x / vs.y;
+		projection = glm::perspective(pimpl->field_of_view, aspect, pimpl->near_clip, pimpl->far_clip);
+	}
+	return projection;
 }

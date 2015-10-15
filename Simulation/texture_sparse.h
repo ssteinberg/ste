@@ -57,7 +57,7 @@ public:
 	}
 
 	static std::vector<glm::ivec3> page_sizes(gli::format gli_format) {
-		gli::gl::format const format = opengl::gl_translate_format(gli_format);
+		gli::gl::format const format = gl_utils::translate_format(gli_format);
 
 		int n;
 		glGetInternalformativ(gl_type(), format.External, GL_NUM_VIRTUAL_PAGE_SIZES_ARB, 1, &n);

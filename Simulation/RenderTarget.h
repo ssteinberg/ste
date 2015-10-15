@@ -4,7 +4,10 @@
 #pragma once
 
 #include "stdafx.h"
-#include "llr_resource.h"
+#include "gl_utils.h"
+
+#include "resource.h"
+#include "render_target_allocator.h"
 
 #include <gli/gli.hpp>
 
@@ -17,13 +20,7 @@ public:
 	virtual gli::format get_format() const = 0;
 };
 
-class RenderTargetAllocator : public llr_resource_stub_allocator {
-public:
-	static int allocate() { GLuint id;  glCreateRenderbuffers(1, &id); return id; }
-	static void deallocate(GLuint &id) { glDeleteRenderbuffers(1, &id); id = 0; }
-};
-
-class RenderTarget : public llr_resource<RenderTargetAllocator>, virtual public RenderTargetGeneric {
+class RenderTarget : public resource<RenderTargetAllocator>, virtual public RenderTargetGeneric {
 protected:
 	glm::tvec2<std::size_t> size;
 	gli::format format;
@@ -33,7 +30,8 @@ public:
 	RenderTarget& operator=(RenderTarget &&m) = default;
 
 	RenderTarget(gli::format format, const glm::tvec2<std::size_t> &size, int samples = 0) : size(size), format(format) {
-		glNamedRenderbufferStorageMultisample(get_resource_id(), samples, static_cast<GLenum>(opengl::gl_translate_format(format).Internal), size.x, size.y);
+		auto glformat = gl_utils::translate_format(format);
+		allocator.allocate_storage(get_resource_id(), samples, glformat, size);
 	}
 
 	glm::tvec2<std::size_t> get_image_size() const final override { return size; }

@@ -11,7 +11,7 @@
 #include <thread>
 #include <numeric>
 
-#include "opengl.h"
+#include "gl_utils.h"
 #include "Log.h"
 #include "Keyboard.h"
 #include "Pointer.h"
@@ -48,14 +48,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 	ste_log_set_global_logger(&logger);
 	ste_log() << "Simulation is running";
 
-	constexpr float w = 1400, h = 900;
-	constexpr int max_steps = 8;
-	constexpr int depth_layers_count = 3;
+	float w = 1400, h = 900;
 	constexpr float clip_far = 1000.f;
 	constexpr float clip_near = 1.f;
 
-	StE::StEngineControl rc;
-	rc.init_render_context("Shlomi Steinberg - Simulation", { w, h }, false, false);
+	gl_context::context_settings settings;
+	settings.vsync = false;
+	StE::StEngineControl rc(std::make_unique<gl_context>(settings, "Shlomi Steinberg - Simulation", glm::i32vec2{ w, h }));
 
 	std::string gl_err_desc;
 	//while (StE::LLR::opengl::query_gl_error(gl_err_desc));
@@ -76,41 +75,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 	StE::Text::TextRenderer text_renderer(rc, StE::Text::Font("Data/calligraph421-bt-roman.ttf"));
 
 	std::unique_ptr<StE::LLR::GLSLProgram> transform = StE::Resource::GLSLProgramLoader::load_program_task(rc, { "transform.vert", "frag.frag" })();
-	std::unique_ptr<StE::LLR::GLSLProgram> gen_depth_layers = StE::Resource::GLSLProgramLoader::load_program_task(rc, { "passthrough.vert","gen_depth_layers.frag" })();
-	std::unique_ptr<StE::LLR::GLSLProgram> ssao = StE::Resource::GLSLProgramLoader::load_program_task(rc, { "passthrough.vert", "ssao.frag" })();
-	std::unique_ptr<StE::LLR::GLSLProgram> blur_x = StE::Resource::GLSLProgramLoader::load_program_task(rc, { "passthrough.vert","blur_x.frag" })();
-	std::unique_ptr<StE::LLR::GLSLProgram> blur_y = StE::Resource::GLSLProgramLoader::load_program_task(rc, { "passthrough.vert", "blur_y.frag" })();
 	std::unique_ptr<StE::LLR::GLSLProgram> deffered = StE::Resource::GLSLProgramLoader::load_program_task(rc, { "passthrough_light.vert", "lighting.frag" })();
 	std::unique_ptr<StE::LLR::GLSLProgram> hdr_create_histogram = StE::Resource::GLSLProgramLoader::load_program_task(rc, { "hdr_create_histogram.glsl" })();
 	std::unique_ptr<StE::LLR::GLSLProgram> hdr_compute_histogram_sums = StE::Resource::GLSLProgramLoader::load_program_task(rc, { "hdr_compute_histogram_sums.glsl" })();
 	std::unique_ptr<StE::LLR::GLSLProgram> hdr_compute_minmax = StE::Resource::GLSLProgramLoader::load_program_task(rc, { "passthrough.vert","hdr_compute_minmax.frag" })();
 	std::unique_ptr<StE::LLR::GLSLProgram> hdr_tonemap = StE::Resource::GLSLProgramLoader::load_program_task(rc, { "passthrough.vert","hdr_tonemap.frag" })();
 
-	constexpr int noise_size_w = 28;
-	constexpr int noise_size_h = 28;
-	gli::texture2D tex(1, gli::format::FORMAT_RG32_SFLOAT, { noise_size_w, noise_size_h });
-	{
-		std::random_device rd;
-		std::uniform_real_distribution<float> ud(-1, 1);
-		glm::vec2 *vectors = reinterpret_cast<glm::vec2*>(tex.data());
-		for (int i = 0; i < noise_size_w * noise_size_h; ++i, ++vectors) {
-			auto r1 = ud(rd);
-			auto r2 = ud(rd);
-			if (!r1 && !r2) r1 = 1;
-			glm::vec2 v(static_cast<float>(r1), static_cast<float>(r2));
-			v = glm::normalize(v);
-			*vectors = v;
-		}
-	}
-	StE::LLR::Texture2D noise(tex.format(), tex.dimensions(), 1, sampler_descriptor(TextureFiltering::Nearest, TextureFiltering::Nearest));
-	noise.upload(tex);
-
 	StE::LLR::RenderTarget depth_output(gli::format::FORMAT_D24_UNORM, StE::LLR::Texture2D::size_type(w, h));
-	StE::LLR::Texture2D normal_output(gli::format::FORMAT_RGB32_SFLOAT, StE::LLR::Texture2D::size_type(w, h), 1, 
-									  sampler_descriptor(TextureFiltering::Nearest, TextureFiltering::Nearest));
+	StE::LLR::Texture2D normal_output(gli::format::FORMAT_RGB32_SFLOAT, StE::LLR::Texture2D::size_type(w, h), 1);
 	StE::LLR::Texture2D position_output(gli::format::FORMAT_RGB32_SFLOAT, StE::LLR::Texture2D::size_type(w, h), 1);
-	StE::LLR::Texture2D color_output(gli::format::FORMAT_RGB32_SFLOAT, StE::LLR::Texture2D::size_type(w, h), 1, 
-									 sampler_descriptor(TextureFiltering::Nearest, TextureFiltering::Nearest));
+	StE::LLR::Texture2D color_output(gli::format::FORMAT_RGB32_SFLOAT, StE::LLR::Texture2D::size_type(w, h), 1);
 	StE::LLR::FramebufferObject fbo;
 	fbo.depth_binding_point() = depth_output;
 	fbo[0] = position_output[0];
@@ -119,16 +93,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 	1_color_idx = fbo[0];
 	0_color_idx = fbo[1];
 	2_color_idx = fbo[2];
-
-	StE::LLR::Texture2D occlusion_final1_output(gli::format::FORMAT_R8_UNORM, StE::LLR::Texture2D::size_type(w, h), 1, 
-												sampler_descriptor(TextureFiltering::Nearest, TextureFiltering::Nearest, TextureWrapMode::ClampToEdge, TextureWrapMode::ClampToEdge));
-	StE::LLR::FramebufferObject fbo_final1;
-	fbo_final1[0] = occlusion_final1_output[0];
-
-	StE::LLR::Texture2D occlusion_final2_output(gli::format::FORMAT_R8_UNORM, StE::LLR::Texture2D::size_type(w, h), 1,
-												sampler_descriptor(TextureFiltering::Nearest, TextureFiltering::Nearest, TextureWrapMode::ClampToEdge, TextureWrapMode::ClampToEdge));
-	StE::LLR::FramebufferObject fbo_final2;
-	fbo_final2[0] = occlusion_final2_output[0];
 
 	using vertex_descriptor = StE::LLR::VBODescriptorWithTypes<glm::vec3, glm::vec2>::descriptor;
 	using vbo_type = StE::LLR::VertexBufferObject<Vertex, vertex_descriptor>;
@@ -142,21 +106,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 	vao[0] = (*vbo)[1];
 	vao[1] = (*vbo)[0];
 
-	StE::LLR::Texture2DArray depth_layers(gli::format::FORMAT_R32_UINT, StE::LLR::Texture2DArray::size_type(w, h, depth_layers_count), 1,
-										  sampler_descriptor(TextureFiltering::Nearest, TextureFiltering::Nearest, TextureWrapMode::ClampToEdge, TextureWrapMode::ClampToEdge));
-	StE::LLR::FramebufferObject fbo_depth_layers;
-	for (int i = 0; i < depth_layers_count; ++i)
-		fbo_depth_layers[i] = depth_layers[0][i].with_format(gli::format::FORMAT_R32_SINT);
-
-	StE::LLR::Texture2DArray f_depth_layers(gli::format::FORMAT_R32_SFLOAT, StE::LLR::Texture2DArray::size_type(w, h, depth_layers_count), max_steps);
-	StE::LLR::SamplerMipmapped depth_sampling_descriptor(StE::LLR::TextureWrapMode::ClampToEdge, StE::LLR::TextureWrapMode::ClampToEdge);
-	StE::LLR::FramebufferObject fbo_f_depth_layers;
-	for (int i = 0; i < depth_layers_count; ++i)
-		fbo_f_depth_layers[i] = f_depth_layers[0][i];
-
-	StE::LLR::Texture2D hdr_image(gli::format::FORMAT_RGB32_SFLOAT, StE::LLR::Texture2D::size_type(w, h), 1);
-	StE::LLR::FramebufferObject fbo_hdr_image;
-	fbo_hdr_image[0] = hdr_image[0];
+ 	StE::LLR::Texture2D hdr_image(gli::format::FORMAT_RGB32_SFLOAT, StE::LLR::Texture2D::size_type(w, h), 1);
+ 	StE::LLR::FramebufferObject fbo_hdr_image;
+ 	fbo_hdr_image[0] = hdr_image[0];
 
 	Sampler linear_sampler;
 	linear_sampler.set_min_filter(TextureFiltering::Linear);
@@ -168,21 +120,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 	while ((luminance_h << 1) < h)
 		luminance_h <<= 1;
 
-	StE::LLR::Texture2D histogram_minmax(gli::format::FORMAT_R32_SINT, StE::LLR::Texture2D::size_type(2, 1), 1);
-	StE::LLR::Texture2D hdr_lums(gli::format::FORMAT_R32_SFLOAT, StE::LLR::Texture2D::size_type(luminance_w, luminance_h), 1);
-	StE::LLR::FramebufferObject fbo_hdr_lums;
-	fbo_hdr_lums[0] = hdr_lums[0];
-	float big_float = 10000.f;
-	StE::LLR::PixelBufferObject<unsigned> histogram_minmax_eraser(std::vector<unsigned>{ *reinterpret_cast<unsigned*>(&big_float), 0 });
-	StE::LLR::AtomicCounterBufferObject<> histogram(64);
-	StE::LLR::ShaderStorageBuffer<unsigned> histogram_sums(64);
+ 	StE::LLR::Texture2D histogram_minmax(gli::format::FORMAT_R32_SINT, StE::LLR::Texture2D::size_type(2, 1), 1);
+ 	StE::LLR::Texture2D hdr_lums(gli::format::FORMAT_R32_SFLOAT, StE::LLR::Texture2D::size_type(luminance_w, luminance_h), 1);
+ 	StE::LLR::FramebufferObject fbo_hdr_lums;
+ 	fbo_hdr_lums[0] = hdr_lums[0];
+ 	float big_float = 10000.f;
+ 	StE::LLR::PixelBufferObject<unsigned> histogram_minmax_eraser(std::vector<unsigned>{ *reinterpret_cast<unsigned*>(&big_float), 0 });
+ 	StE::LLR::AtomicCounterBufferObject<> histogram(64);
+ 	StE::LLR::ShaderStorageBuffer<unsigned> histogram_sums(64);
 
-	int steps = max_steps;
-	bool perform_ssao = true;
 	bool running = true;
 
 	// Bind input
-	auto keyboard_listner = std::make_shared<StE::connection<StE::HID::keyboard::K, int, StE::HID::Status, StE::HID::ModifierBits>>(
+	auto keyboard_listner = std::make_shared<decltype(rc)::hid_keyboard_signal_type::connection_type>(
 		[&](StE::HID::keyboard::K key, int scanline, StE::HID::Status status, StE::HID::ModifierBits mods) {
 		using namespace StE::HID;
 		auto time_delta = rc.time_per_frame().count();
@@ -190,25 +140,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 		if (status != Status::KeyDown)
 			return;
 
-		if (key == keyboard::K::KeyKP_ADD)
-			steps = max_steps;
-		if (key == keyboard::K::KeyKP_SUBTRACT)
-			steps = 2;
-		if (key == keyboard::K::Key0)
-			perform_ssao = false;
-		if (key == keyboard::K::Key9)
-			perform_ssao = true;
 		if (key == keyboard::K::KeyESCAPE)
 			running = false;
 		if (key == keyboard::K::KeyPRINT_SCREEN) {
-			auto size = rc.render_context().framebuffer_size();
+			auto size = rc.gl()->framebuffer_size();
 			gli::texture2D tex(gli::FORMAT_RGB8_UNORM, size);
 
 			StE::LLR::FramebufferObject fbo;
 			StE::LLR::Texture2D fbo_tex(gli::format::FORMAT_RGB8_UNORM, size, 1);
 			fbo[0] = fbo_tex[0];
 
-			rc.render_context().defaut_framebuffer().blit_to(fbo,size,size);
+			rc.gl()->defaut_framebuffer().blit_to(fbo,size,size);
 			fbo[0].read_pixels(tex.data(), 3 * size.x * size.y);
 
 			rc.scheduler().schedule_now(StE::Resource::SurfaceIO::write_surface_2d_task(tex, R"(D:\a.png)"));
@@ -218,32 +160,34 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 
 	rc.set_pointer_hidden(true);
 
-	ste_log_query_and_log_gl_errors();
-
 	bool loaded = false;
 	auto model_future = rc.scheduler().schedule_now(StE::Resource::ModelLoader::load_model_task(R"(data\models\sponza.obj)", &scene));
 
 	// Run main loop
-	rc.run_loop([&]() {
-		if (!loaded) {
-			rc.render_context().clear_framebuffer(true, true);
+	while (!loaded && running) {
+		rc.run_loop();
+		rc.gl()->clear_framebuffer();
 
-			{
-				using namespace StE::Text::Attributes;
-				AttributedWString str = center(purple(huge(b(L"Loading Simulation..."))) + 
-											   L"\n" + 
-											   orange(large(L"By Shlomi Steinberg")));
-				text_renderer.render({ w / 2, h / 2 - 20 }, str);
-				text_renderer.render({ 10, 20 }, b(L"Thread pool workers: ") + 
-									 olive(std::to_wstring(rc.scheduler().get_sleeping_workers())) + 
-									 L"/" + 
-									 olive(std::to_wstring(rc.scheduler().get_workers_count())));
-			}
-
-			if (model_future.wait_for(std::chrono::seconds(0)) != std::future_status::ready)
-				return true;
-			loaded = true;
+		{
+			using namespace StE::Text::Attributes;
+			AttributedWString str = center(purple(huge(b(L"Loading Simulation..."))) + 
+											L"\n" + 
+											orange(large(L"By Shlomi Steinberg")));
+ 			text_renderer.render({ w / 2, h / 2 - 20 }, str);
+ 			text_renderer.render({ 10, 20 }, b(L"Thread pool workers: ") + 
+ 									olive(std::to_wstring(rc.scheduler().get_sleeping_workers())) + 
+ 									L"/" + 
+ 									olive(std::to_wstring(rc.scheduler().get_workers_count())));
 		}
+
+		if (model_future.wait_for(std::chrono::seconds(0)) != std::future_status::ready)
+			continue;
+
+		loaded = true;
+	}
+
+	while (running) {
+		if (!rc.run_loop()) break;
 
 		if (rc.window_active()) {
 			auto time_delta = rc.time_per_frame().count();
@@ -269,15 +213,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 
 		auto proj_mat = rc.projection_matrix();
 
-		fbo_depth_layers.bind();
-		rc.render_context().clear_framebuffer(true, false);
-
-		rc.render_context().enable_depth_test();
+		rc.gl()->enable_depth_test();
 		fbo.bind();
-		rc.render_context().clear_framebuffer(true, true);
-
-		for (int i = 0; i < depth_layers_count; ++i)
-			depth_layers[0][i].with_format(gli::format::FORMAT_R32_SINT).bind(image_layout_binding(i));
+		rc.gl()->clear_framebuffer(false);
 
 		transform->bind();
 		auto mv = camera.view_matrix() * glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(-100, -35, 0)), glm::vec3(.25, .25, .25));
@@ -286,47 +224,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 		transform->set_uniform("projection", proj_mat);
 		scene.render();
 
-		rc.render_context().disable_depth_test();
+		rc.gl()->disable_depth_test();
 
 		vao.bind();
 
-		if (perform_ssao) {
-			fbo_f_depth_layers.bind();
-			gen_depth_layers->bind();
-			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-			f_depth_layers.generate_mipmaps();
-
-			fbo_final1.bind();
-			ssao->bind();
-			ssao->set_uniform("steps", steps);
-			ssao->set_uniform("proj_inv", glm::inverse(proj_mat));
-			0_tex_unit = normal_output;
-			1_tex_unit = position_output;
-			2_tex_unit = noise;
-			3_tex_unit = f_depth_layers;
-			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-			fbo_final2.bind();
-			blur_x->bind();
-			0_tex_unit = occlusion_final1_output;
-			1_tex_unit = position_output;
-			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-			fbo_final1.bind();
-			blur_y->bind();
-			0_tex_unit = occlusion_final2_output;
-			1_tex_unit = position_output;
-			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-		}
-
 		fbo_hdr_image.bind();
 		deffered->bind();
-		deffered->set_uniform("ssao", perform_ssao);
 		deffered->set_uniform("view", camera.view_matrix());
 		0_tex_unit = normal_output;
 		1_tex_unit = position_output;
-		2_tex_unit = occlusion_final1_output;
 		3_tex_unit = color_output;
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
@@ -365,22 +271,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 		glViewport(0, 0, w, h);
 
 		hdr_tonemap->bind();
-		rc.render_context().defaut_framebuffer().bind();
+		rc.gl()->defaut_framebuffer().bind();
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 
 		{
 			using namespace StE::Text::Attributes;
-			text_renderer.render({ 30, h - 50 }, 
-								 blue(L"Frame time: ") + b(red(std::to_wstring(rc.time_per_frame().count()))) + L" ms");
+ 			text_renderer.render({ 30, h - 50 }, 
+ 								 blue(L"Frame time: ") + b(red(std::to_wstring(rc.time_per_frame().count()))) + L" ms");
 		}
-
-#ifdef _DEBUG
-		ste_log_query_and_log_gl_errors();
-#endif
-
-		return running;
-	});
+	}
 	 
 	return 0;
 }

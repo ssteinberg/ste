@@ -85,9 +85,9 @@ public:
 	}
 
 	template <typename S>
-	optional &operator=(S &&v) {
+	optional &operator=(S&& v) {
 		has_val = true;
-		val = T(std::forward(v));
+		val = T(std::forward<S>(v));
 		return *this;
 	}
 

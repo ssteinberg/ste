@@ -18,14 +18,14 @@ class sampler_layout_binding_type {};
 using sampler_layout_binding = layout_binding<sampler_layout_binding_type>;
 sampler_layout_binding inline operator "" _sampler_idx(unsigned long long int i) { return sampler_layout_binding(i); }
 
-class SamplerAllocator : public llr_resource_stub_allocator {
+class SamplerAllocator : public generic_resource_allocator {
 public:
-	static int allocate() {
+	unsigned allocate() override final {
 		GLuint id;
 		glCreateSamplers(1, &id);
 		return id;
 	}
-	static void deallocate(unsigned int &id) { if (id) glDeleteSamplers(1, reinterpret_cast<GLuint*>(&id)); id = 0; }
+	void deallocate(unsigned &id) override final { if (id) glDeleteSamplers(1, reinterpret_cast<GLuint*>(&id)); id = 0; }
 };
 
 class SamplerBinder {

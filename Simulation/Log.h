@@ -21,7 +21,7 @@
 #include "log_sink.h"
 #include "log_class.h"
 
-#include "opengl.h"
+#include "gl_utils.h"
 
 namespace StE {
 

@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "llr_resource.h"
+#include "resource.h"
 #include "layout_binding.h"
 
 namespace StE {

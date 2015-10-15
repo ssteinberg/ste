@@ -36,10 +36,10 @@ public:
 	virtual gli::format get_attachment_format() const override { return format; }
 };
 
-class system_provided_framebuffer_dummy_allocator : public llr_resource_stub_allocator {
+class system_provided_framebuffer_dummy_allocator : public generic_resource_allocator {
 public:
-	static int allocate() { return 0; }
-	static void deallocate(unsigned int &id) {}
+	unsigned allocate() override final { return 0; }
+	void deallocate(unsigned &id) override final {}
 };
 
 class system_provided_framebuffer : protected frame_buffer_object<system_provided_framebuffer_dummy_allocator> {

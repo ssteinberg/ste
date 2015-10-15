@@ -16,10 +16,10 @@
 namespace StE {
 namespace LLR {
 
-class GLSLProgramAllocator : public llr_resource_stub_allocator {
+class GLSLProgramAllocator : public generic_resource_allocator {
 public:
-	static int allocate() { return glCreateProgram(); }
-	static void deallocate(unsigned int &id) { glDeleteProgram(id); id = 0; }
+	unsigned allocate() override final { return glCreateProgram(); }
+	void deallocate(unsigned &id) override final { glDeleteProgram(id); id = 0; }
 };
 
 class GLSLProgramBinder {
@@ -69,16 +69,21 @@ public:
 	void bind_attrib_location(GLuint location, const std::string &name) const { glBindAttribLocation(get_resource_id(), location, name.c_str()); }
 	void bind_frag_data_location(GLuint location, const std::string &name) const { glBindFragDataLocation(get_resource_id(), location, name.c_str()); }
 
-	void set_uniform(const std::string &name, float x, float y, float z) const;
 	void set_uniform(const std::string &name, const glm::vec2 & v) const;
 	void set_uniform(const std::string &name, const glm::i32vec2 & v) const;
+	void set_uniform(const std::string &name, const glm::u32vec2 & v) const;
+	void set_uniform(const std::string &name, const glm::i64vec2 & v) const;
+	void set_uniform(const std::string &name, const glm::u64vec2 & v) const;
 	void set_uniform(const std::string &name, const glm::vec3 & v) const;
 	void set_uniform(const std::string &name, const glm::vec4 & v) const;
-	void set_uniform(const std::string &name, const glm::mat2 & m) const;
-	void set_uniform(const std::string &name, const glm::mat3 & m) const;
-	void set_uniform(const std::string &name, const glm::mat4 & m) const;
+	void set_uniform(const std::string &name, const glm::mat2 & m, bool transpose = false) const;
+	void set_uniform(const std::string &name, const glm::mat3 & m, bool transpose = false) const;
+	void set_uniform(const std::string &name, const glm::mat4 & m, bool transpose = false) const;
 	void set_uniform(const std::string &name, float val) const;
-	void set_uniform(const std::string &name, int val) const;
+	void set_uniform(const std::string &name, std::int32_t val) const;
+	void set_uniform(const std::string &name, std::int64_t val) const;
+	void set_uniform(const std::string &name, std::uint32_t val) const;
+	void set_uniform(const std::string &name, std::uint64_t val) const;
 	void set_uniform(const std::string &name, bool val) const;
 
 	llr_resource_type resource_type() const override { return llr_resource_type::LLRGLSLProgram; }

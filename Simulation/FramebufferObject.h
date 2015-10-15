@@ -3,8 +3,11 @@
 
 #pragma once
 
-#include "llr_resource.h"
-#include "llr_resource_traits.h"
+#include "stdafx.h"
+#include "gl_utils.h"
+
+#include "resource.h"
+#include "resource_traits.h"
 #include "bindable_resource.h"
 #include "layout_binding.h"
 
@@ -76,6 +79,8 @@ public:
 
 	virtual glm::tvec2<std::size_t> get_attachment_size() const { return size; }
 	virtual gli::format get_attachment_format() const { return format; }
+
+	bool is_attached() const { return size.x > 0; }
 };
 
 template<typename A, GLenum color_attachment_point = GL_COLOR_ATTACHMENT0>
@@ -92,7 +97,7 @@ public:
 	virtual ~fbo_color_attachment_point() noexcept {}
 
 	void read_pixels(void *data, int data_size, const glm::uvec2 &rect_size, const glm::uvec2 &origin = { 0, 0 }) const {
-		auto &gl_format = opengl::gl_translate_format(get_attachment_format());
+		auto &gl_format = gl_utils::translate_format(get_attachment_format());
 
 		fbo->bind_read();
 		glReadBuffer(get_attachment_point());
@@ -105,7 +110,7 @@ public:
 	void read_pixels(void *data, int data_size) const { read_pixels(data, data_size, get_attachment_size()); }
 
 	void write_pixels(void *data, const glm::uvec2 &rect_size, const glm::uvec2 &origin = { 0, 0 }) {
-		auto &gl_format = opengl::gl_translate_format(get_attachment_format());
+		auto &gl_format = gl_utils::translate_format(get_attachment_format());
 
 		fbo->bind_write();
 		glWriteBuffer(get_attachment_point());
@@ -159,10 +164,10 @@ public:
 	}
 };
 
-class FramebufferObjectAllocator : public llr_resource_stub_allocator {
+class FramebufferObjectAllocator : public generic_resource_allocator {
 public:
-	static int allocate() { GLuint id;  glCreateFramebuffers(1, &id); return id; }
-	static void deallocate(unsigned int &id) { glDeleteFramebuffers(1, reinterpret_cast<GLuint*>(&id)); id = 0; }
+	unsigned allocate() override final { GLuint id;  glCreateFramebuffers(1, &id); return id; }
+	void deallocate(unsigned &id) override final { glDeleteFramebuffers(1, reinterpret_cast<GLuint*>(&id)); id = 0; }
 };
 
 class FramebufferObjectBinder {
@@ -245,6 +250,8 @@ public:
 
 class FramebufferObject : public frame_buffer_object<FramebufferObjectAllocator> {
 private:
+	using Allocator = FramebufferObjectAllocator;
+
 	template<class A>
 	friend class fbo_layout_bindable_color_attachment_point;
 

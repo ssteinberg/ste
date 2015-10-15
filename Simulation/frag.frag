@@ -31,10 +31,6 @@ layout(location = 0) out vec3 o_frag_color;
 layout(location = 1) out vec3 o_frag_position;
 layout(location = 2) out vec3 o_frag_normal;
 
-layout(binding = 0, r32i) uniform iimage2D depth_layer0;
-layout(binding = 1, r32i) uniform iimage2D depth_layer1;
-layout(binding = 2, r32i) uniform iimage2D depth_layer2;
-
 layout(std430, binding = 0) buffer material_data {
 	material_descriptor mat_descriptor[];
 };
@@ -73,10 +69,4 @@ void main() {
 	o_frag_color = vec3(XYZ.xy / XYZtotal, XYZ.y);
 
 	o_frag_position = frag_position;
-	
-	int int_from_float = floatBitsToInt(1.0f - frag_depth);
-	int t;
-	if ((t=imageAtomicMax(depth_layer0, ivec2(gl_FragCoord.xy), int_from_float)) < int_from_float) int_from_float = t;
-	if ((t=imageAtomicMax(depth_layer1, ivec2(gl_FragCoord.xy), int_from_float)) < int_from_float) int_from_float = t;
-	imageAtomicMax(depth_layer2, ivec2(gl_FragCoord.xy), int_from_float);
 }

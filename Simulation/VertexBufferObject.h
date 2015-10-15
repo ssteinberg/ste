@@ -61,7 +61,7 @@ public:
 
 	using Base::Base;
 
-	~VertexBufferObject() {}
+	~VertexBufferObject() noexcept {}
 
 	virtual const VertexBufferDescriptor *data_descriptor() const override { return &desc; }
 

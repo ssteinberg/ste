@@ -14,10 +14,10 @@
 namespace StE {
 namespace LLR {
 
-class VertexArrayObjectAllocator : public llr_resource_stub_allocator {
+class VertexArrayObjectAllocator : public generic_resource_allocator {
 public:
-	static int allocate() { GLuint id;  glCreateVertexArrays(1, &id); return id; }
-	static void deallocate(unsigned int &id) { glDeleteVertexArrays(1, reinterpret_cast<GLuint*>(&id)); id = 0; }
+	unsigned allocate() override final { GLuint id;  glCreateVertexArrays(1, &id); return id; }
+	void deallocate(unsigned &id) override final { glDeleteVertexArrays(1, reinterpret_cast<GLuint*>(&id)); id = 0; }
 };
 
 class VertexArrayObjectBinder {

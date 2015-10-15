@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "llr_resource.h"
+#include "resource.h"
 #include "shader_layout_bindable_resource.h"
 
 namespace StE {
@@ -25,15 +25,15 @@ public:
 };
 
 template <class A, class B, typename... BindingArgs>
-class bindable_resource : public llr_resource<A> {
+class bindable_resource : public resource<A> {
 protected:
 	using Binder = B;
 
 	bindable_resource() {}
-	explicit bindable_resource(const bindable_resource &res) : llr_resource<A>(res) {}
+	explicit bindable_resource(const bindable_resource &res) : resource<A>(res) {}
 	~bindable_resource() noexcept {}
 
-	using llr_resource<A>::llr_resource;
+	using resource<A>::resource;
 
 public:
 	bindable_resource(bindable_resource &&m) = default;
@@ -44,15 +44,15 @@ public:
 };
 
 template <class A, class B>
-class bindable_resource<A, B> : public llr_resource<A>, public bindable_generic_resource{
+class bindable_resource<A, B> : public resource<A>, public bindable_generic_resource{
 protected:
 	using Binder = B;
 
 	bindable_resource() {}
-	explicit bindable_resource(const bindable_resource &res) : llr_resource<A>(res) {}
+	explicit bindable_resource(const bindable_resource &res) : resource<A>(res) {}
 	~bindable_resource() noexcept {}
 
-	using llr_resource<A>::llr_resource;
+	using resource<A>::resource;
 
 public:
 	bindable_resource(bindable_resource &&m) = default;

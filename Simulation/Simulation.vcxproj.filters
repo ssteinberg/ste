@@ -43,9 +43,6 @@
     <Filter Include="src\StE\Core\Log">
       <UniqueIdentifier>{97667693-d003-4c64-a83e-b0998f5f9db6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\StE\Core\LLR\RenderContext">
-      <UniqueIdentifier>{5464cf99-8840-48d6-b46c-1b00f5304d22}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\StE\Core\EngineControl">
       <UniqueIdentifier>{5aa9ea02-6ed7-4cd9-935a-09a5f10de3e3}</UniqueIdentifier>
     </Filter>
@@ -130,6 +127,18 @@
     <Filter Include="src\StE\Framework Text\Attributed Strings\Markup Formatter">
       <UniqueIdentifier>{0b94ecb0-5824-4dd5-9b61-74669a2d6866}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\StE\Core\LLR\GPU Resources\Resource Binding">
+      <UniqueIdentifier>{9700f770-bb59-4de7-94e7-af4c49cd9fbb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\StE\Core\LLR\GPU Resources\Surfaces\RenderTarget">
+      <UniqueIdentifier>{cebbb6d1-89c9-4b6f-9d83-c6773d97050d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\StE\Core\LLR\GL">
+      <UniqueIdentifier>{5464cf99-8840-48d6-b46c-1b00f5304d22}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\StE\Core\LLR\GL\Context">
+      <UniqueIdentifier>{189db96c-a55e-41f3-b4b5-85e341d59952}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -161,12 +170,6 @@
     </ClCompile>
     <ClCompile Include="Log.cpp">
       <Filter>src\StE\Core\Log</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderContext.cpp">
-      <Filter>src\StE\Core\LLR\RenderContext</Filter>
-    </ClCompile>
-    <ClCompile Include="opengl.cpp">
-      <Filter>src\StE\Core\LLR\RenderContext</Filter>
     </ClCompile>
     <ClCompile Include="StEngineControl.cpp">
       <Filter>src\StE\Core\EngineControl</Filter>
@@ -201,6 +204,15 @@
     <ClCompile Include="attrib.cpp">
       <Filter>src\StE\Framework Text\Attributed Strings</Filter>
     </ClCompile>
+    <ClCompile Include="gl_utils.cpp">
+      <Filter>src\StE\Core\LLR\GL</Filter>
+    </ClCompile>
+    <ClCompile Include="gl_context.cpp">
+      <Filter>src\StE\Core\LLR\GL\Context</Filter>
+    </ClCompile>
+    <ClCompile Include="gl_current_context.cpp">
+      <Filter>src\StE\Core\LLR\GL\Context</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLSLProgram.h">
@@ -218,29 +230,11 @@
     <ClInclude Include="Log.h">
       <Filter>src\StE\Core\Log</Filter>
     </ClInclude>
-    <ClInclude Include="RenderContext.h">
-      <Filter>src\StE\Core\LLR\RenderContext</Filter>
-    </ClInclude>
     <ClInclude Include="Texture2D.h">
       <Filter>src\StE\Core\LLR\GPU Resources\Surfaces\Textures</Filter>
     </ClInclude>
-    <ClInclude Include="opengl.h">
-      <Filter>src\StE\Core\LLR\RenderContext</Filter>
-    </ClInclude>
-    <ClInclude Include="llr_resource_type.h">
-      <Filter>src\StE\Core\LLR\GPU Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="llr_resource.h">
-      <Filter>src\StE\Core\LLR\GPU Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="bindable_resource.h">
-      <Filter>src\StE\Core\LLR\GPU Resources</Filter>
-    </ClInclude>
     <ClInclude Include="texture_traits.h">
       <Filter>src\StE\Core\LLR\GPU Resources\Surfaces\Textures</Filter>
-    </ClInclude>
-    <ClInclude Include="llr_resource_traits.h">
-      <Filter>src\StE\Core\LLR\GPU Resources</Filter>
     </ClInclude>
     <ClInclude Include="Texture3D.h">
       <Filter>src\StE\Core\LLR\GPU Resources\Surfaces\Textures</Filter>
@@ -308,17 +302,8 @@
     <ClInclude Include="FramebufferObject.h">
       <Filter>src\StE\Core\LLR\GPU Resources\Surfaces\FBO</Filter>
     </ClInclude>
-    <ClInclude Include="RenderTarget.h">
-      <Filter>src\StE\Core\LLR\GPU Resources\Surfaces\FBO</Filter>
-    </ClInclude>
     <ClInclude Include="system_provided_framebuffer.h">
       <Filter>src\StE\Core\LLR\GPU Resources\Surfaces\FBO</Filter>
-    </ClInclude>
-    <ClInclude Include="layout_binding.h">
-      <Filter>src\StE\Core\LLR\GPU Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="shader_layout_bindable_resource.h">
-      <Filter>src\StE\Core\LLR\GPU Resources</Filter>
     </ClInclude>
     <ClInclude Include="StEngineControl.h">
       <Filter>src\StE\Core\EngineControl</Filter>
@@ -515,6 +500,48 @@
     <ClInclude Include="IndirectDispatchBufferObject.h">
       <Filter>src\StE\Core\LLR\GPU Resources\Buffers\Data Storage</Filter>
     </ClInclude>
+    <ClInclude Include="gl_utils.h">
+      <Filter>src\StE\Core\LLR\GL</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>src\StE\Core\LLR\GPU Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="resource_traits.h">
+      <Filter>src\StE\Core\LLR\GPU Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="llr_resource_type.h">
+      <Filter>src\StE\Core\LLR\GPU Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="resource_allocator.h">
+      <Filter>src\StE\Core\LLR\GPU Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="bindable_resource.h">
+      <Filter>src\StE\Core\LLR\GPU Resources\Resource Binding</Filter>
+    </ClInclude>
+    <ClInclude Include="layout_binding.h">
+      <Filter>src\StE\Core\LLR\GPU Resources\Resource Binding</Filter>
+    </ClInclude>
+    <ClInclude Include="shader_layout_bindable_resource.h">
+      <Filter>src\StE\Core\LLR\GPU Resources\Resource Binding</Filter>
+    </ClInclude>
+    <ClInclude Include="texture_allocator.h">
+      <Filter>src\StE\Core\LLR\GPU Resources\Surfaces\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="buffer_object_allocator.h">
+      <Filter>src\StE\Core\LLR\GPU Resources\Buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderTarget.h">
+      <Filter>src\StE\Core\LLR\GPU Resources\Surfaces\RenderTarget</Filter>
+    </ClInclude>
+    <ClInclude Include="render_target_allocator.h">
+      <Filter>src\StE\Core\LLR\GPU Resources\Surfaces\RenderTarget</Filter>
+    </ClInclude>
+    <ClInclude Include="gl_context.h">
+      <Filter>src\StE\Core\LLR\GL\Context</Filter>
+    </ClInclude>
+    <ClInclude Include="gl_current_context.h">
+      <Filter>src\StE\Core\LLR\GL\Context</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="stdafx.h">
@@ -544,12 +571,6 @@
     <None Include="gen_depth_layers.frag">
       <Filter>src\Shaders</Filter>
     </None>
-    <None Include="blur_x.frag">
-      <Filter>src\Shaders</Filter>
-    </None>
-    <None Include="blur_y.frag">
-      <Filter>src\Shaders</Filter>
-    </None>
     <None Include="text_distance_map_contour.frag">
       <Filter>src\StE\Framework Text\Rendering\Shaders</Filter>
     </None>
@@ -575,6 +596,12 @@
       <Filter>src\Shaders</Filter>
     </None>
     <None Include="lanczos.frag">
+      <Filter>src\Shaders</Filter>
+    </None>
+    <None Include="bilateral_blur_x.frag">
+      <Filter>src\Shaders</Filter>
+    </None>
+    <None Include="bilateral_blur_y.frag">
       <Filter>src\Shaders</Filter>
     </None>
   </ItemGroup>

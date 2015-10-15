@@ -4,6 +4,8 @@
 #pragma once
 
 #include "stdafx.h"
+#include "gl_utils.h"
+
 #include "bindable_resource.h"
 #include "layout_binding.h"
 #include "llr_resource_type.h"
@@ -18,10 +20,17 @@ class image_layout_binding_type {};
 using image_layout_binding = layout_binding<image_layout_binding_type>;
 image_layout_binding inline operator "" _image_idx(unsigned long long int i) { return image_layout_binding(i); }
 
+class image_dummy_resource_allocator : public generic_resource_allocator {
+public:
+	bool is_valid(unsigned int id) const override final { return false; }
+	unsigned allocate() override final { return 0; };
+	void deallocate(unsigned &id) override final { id = 0; }
+};
+
 class ImageBinder {
 public:
 	static void bind(unsigned int id, const image_layout_binding &unit, int level, bool layered, int layer, ImageAccessMode access, gli::format format) {
-		glBindImageTexture(unit, id, level, layered, layer, static_cast<GLenum>(access), opengl::gl_translate_format(format).Internal);
+		glBindImageTexture(unit, id, level, layered, layer, static_cast<GLenum>(access), gl_utils::translate_format(format).Internal);
 	}
 	static void unbind(const image_layout_binding &unit, int level, bool layered, int layer, ImageAccessMode access, gli::format format) {
 		glBindImageTexture(unit, 0, 0, 0, 0, 0, 0);
@@ -29,12 +38,12 @@ public:
 };
 
 template <llr_resource_type type>
-class image_layout_bindable : protected bindable_resource<llr_resource_stub_allocator, ImageBinder, image_layout_binding, int, bool, int, ImageAccessMode, gli::format>, virtual public shader_layout_bindable_resource<image_layout_binding_type> {
+class image_layout_bindable : protected bindable_resource<image_dummy_resource_allocator, ImageBinder, image_layout_binding, int, bool, int, ImageAccessMode, gli::format>, virtual public shader_layout_bindable_resource<image_layout_binding_type> {
 public:
 	using size_type = glm::tvec2<std::size_t>;
 
 private:
-	using Base = bindable_resource<llr_resource_stub_allocator, ImageBinder, image_layout_binding, int, bool, int, ImageAccessMode, gli::format>;
+	using Base = bindable_resource<image_dummy_resource_allocator, ImageBinder, image_layout_binding, int, bool, int, ImageAccessMode, gli::format>;
 
 protected:
 	mutable std::uint64_t image_handle{ 0 };
@@ -45,7 +54,7 @@ protected:
 	int level, layers, layer;
 
 	template <class A2>
-	image_layout_bindable(const llr_resource<A2> &res, const size_type &size, gli::format format, ImageAccessMode access, int level, int layers, int layer) : Base(res), size(size), format(format), access(access), level(level), layers(layers), layer(layer) {}
+	image_layout_bindable(const resource<A2> &res, const size_type &size, gli::format format, ImageAccessMode access, int level, int layers, int layer) : Base(res), size(size), format(format), access(access), level(level), layers(layers), layer(layer) {}
 
 public:
 	image_layout_bindable(image_layout_bindable &&m) = default;
@@ -86,7 +95,7 @@ private:
 
 public:
 	template <class A2>
-	image(const llr_resource<A2> &res, const size_type &size, gli::format format, ImageAccessMode access, int level, int layer) : Base(res, size, format, access, level, 1, layer) {}
+	image(const resource<A2> &res, const size_type &size, gli::format format, ImageAccessMode access, int level, int layer) : Base(res, size, format, access, level, 1, layer) {}
 
 	image(image &&m) = default;
 	image(const image &c) = delete;
@@ -109,7 +118,7 @@ private:
 
 public:
 	template <class A2>
-	image_container(const llr_resource<A2> &res, const size_type &size, gli::format format, ImageAccessMode access, int level, int layers) : Base(res, size, format, access, level, layers, 0) {}
+	image_container(const resource<A2> &res, const size_type &size, gli::format format, ImageAccessMode access, int level, int layers) : Base(res, size, format, access, level, layers, 0) {}
 
 	image_container(image_container &&m) = default;
 	image_container(const image_container &c) = delete;

@@ -4,18 +4,20 @@
 #pragma once
 
 #include "stdafx.h"
+#include "gl_utils.h"
+
 #include "Log.h"
 
 #include "bindable_resource.h"
 #include "layout_binding.h"
 
 #include "RenderTarget.h"
-#include "texture_handle.h"
+#include "Sampler.h"
 
+#include "texture_handle.h"
 #include "texture_enums.h"
 #include "texture_traits.h"
-
-#include "Sampler.h"
+#include "texture_allocator.h"
 
 #include <type_traits>
 
@@ -37,20 +39,9 @@ using texture_layout_binding = layout_binding<texture_layout_binding_type>;
 texture_layout_binding inline operator "" _tex_unit(unsigned long long int i) { return texture_layout_binding(i); }
 
 template <llr_resource_type type>
-class TextureAllocator : public llr_resource_stub_allocator {
-public:
-	static int allocate() { 
-		GLuint id;
-		glCreateTextures(opengl::gl_translate_type(type), 1, &id);
-		return id;
-	}
-	static void deallocate(unsigned int &id) { if (id) glDeleteTextures(1, reinterpret_cast<GLuint*>(&id)); id = 0; }
-};
-
-template <llr_resource_type type>
 class TextureBinder {
 private:
-	constexpr static GLenum gl_type() { return opengl::gl_translate_type(type); }
+	constexpr static GLenum gl_type() { return gl_utils::translate_type(type); }
 
 public:
 	static void bind(unsigned int id, const texture_layout_binding &sampler) {
@@ -63,44 +54,22 @@ public:
 	}
 };
 
-template <int dim> struct texture_size_type {};
-template <> struct texture_size_type<1> { using type = gli::storage::dim1_type; };
-template <> struct texture_size_type<2> { using type = gli::storage::dim2_type; };
-template <> struct texture_size_type<3> { using type = gli::storage::dim3_type; };
-
 template <llr_resource_type type>
-class texture : virtual public bindable_resource<TextureAllocator<type>, TextureBinder<type>, texture_layout_binding>,
+class texture : virtual public bindable_resource<texture_immutable_storage_allocator<type>, TextureBinder<type>, texture_layout_binding>,
 				virtual public shader_layout_bindable_resource<texture_layout_binding_type> {
 private:
-	using Base = bindable_resource<TextureAllocator<type>, TextureBinder<type>, texture_layout_binding>;
-
-	template <int dim, bool ms> static void create_gl_texture_storage(int id, int levels, int samples, const gli::gl::format &format, const typename texture_size_type<dim>::type &size) { static_assert(false); }
-	template <> static void create_gl_texture_storage<1, false>(int id, int levels, int samples, const gli::gl::format &format, const typename texture_size_type<1>::type &size) {
-		glTextureStorage1D(id, levels, format.Internal, size[0]);
-	}
-	template <> static void create_gl_texture_storage<2, false>(int id, int levels, int samples, const gli::gl::format &format, const typename texture_size_type<2>::type &size) {
-		glTextureStorage2D(id, levels, format.Internal, size[0], size[1]);
-	}
-	template <> static void create_gl_texture_storage<3, false>(int id, int levels, int samples, const gli::gl::format &format, const typename texture_size_type<3>::type &size) {
-		glTextureStorage3D(id, levels, format.Internal, size[0], size[1], size[2]);
-	}
-	template <> static void create_gl_texture_storage<2, true>(int id, int levels, int samples, const gli::gl::format &format, const typename texture_size_type<2>::type &size) {
-		glTextureStorage2DMultisample(id, samples, format.Internal, size[0], size[1], false);
-	}
-	template <> static void create_gl_texture_storage<3, true>(int id, int levels, int samples, const gli::gl::format &format, const typename texture_size_type<3>::type &size) {
-		glTextureStorage3DMultisample(id, samples, format.Internal, size[0], size[1], size[2], false);
-	}
-
+	using Base = bindable_resource<texture_immutable_storage_allocator<type>, TextureBinder<type>, texture_layout_binding>;
+	
 public:
 	using size_type = texture_size_type<texture_dimensions<type>::dimensions>::type;
-	using image_size_type = texture_size_type<texture_layer_dimensions<type>::dimensions>::type;
+	using image_size_type = texture_size_type<texture_dimensions<type>::dimensions>::type;
 	static constexpr llr_resource_type T = type;
 
 protected:
-	constexpr static GLenum gl_type() { return opengl::gl_translate_type(type); }
+	constexpr static GLenum gl_type() { return gl_utils::translate_type(type); }
 
-protected:
-	size_type size;
+	int levels, samples;
+	texture_size_type<texture_dimensions<type>::dimensions>::type size;
 	gli::format format;
 
 protected:
@@ -112,7 +81,7 @@ protected:
 	int get_image_container_dimensions() const { return dimensions() > 2 ? size[2] : get_layers(); }
 
 	bool allocate_tex_storage(const size_type &size, gli::format gli_format, int levels, int samples, bool sparse, int page_size_idx = 0) {
-		gli::gl::format const format = opengl::gl_translate_format(gli_format);
+		gli::gl::format const glformat = gl_utils::translate_format(gli_format);
 
 		auto id = get_resource_id();
 		if (sparse) {
@@ -121,29 +90,19 @@ protected:
 		}
 		glTextureParameteri(id, GL_TEXTURE_BASE_LEVEL, 0);
 		glTextureParameteri(id, GL_TEXTURE_MAX_LEVEL, levels - 1);
-		glTextureParameteri(id, GL_TEXTURE_SWIZZLE_R, format.Swizzle[0]);
-		glTextureParameteri(id, GL_TEXTURE_SWIZZLE_G, format.Swizzle[1]);
-		glTextureParameteri(id, GL_TEXTURE_SWIZZLE_B, format.Swizzle[2]);
-		glTextureParameteri(id, GL_TEXTURE_SWIZZLE_A, format.Swizzle[3]);
+		glTextureParameteri(id, GL_TEXTURE_SWIZZLE_R, glformat.Swizzle[0]);
+		glTextureParameteri(id, GL_TEXTURE_SWIZZLE_G, glformat.Swizzle[1]);
+		glTextureParameteri(id, GL_TEXTURE_SWIZZLE_B, glformat.Swizzle[2]);
+		glTextureParameteri(id, GL_TEXTURE_SWIZZLE_A, glformat.Swizzle[3]);
 
-		create_gl_texture_storage<texture_dimensions<type>::dimensions, texture_is_multisampled<type>::value>(id, levels, samples, format, size);
-
-		this->size = size;
 		this->format = gli_format;
+		this->size = size;
+		this->levels = levels;
+		this->size = size;
+
+		allocator.allocate_storage(get_resource_id(), levels, samples, glformat, size);
 
 		return true;
-	}
-	bool allocate_tex_storage(const size_type &size, gli::format gli_format, int levels, int samples, bool sparse, int page_size_idx, sampler_descriptor descriptor) {
-		if (allocate_tex_storage(size, gli_format, levels, samples, sparse, page_size_idx)) {
-			if (descriptor.wrap_s != TextureWrapMode::None) glTextureParameteri(get_resource_id(), GL_TEXTURE_WRAP_S, static_cast<GLenum>(descriptor.wrap_s));
-			if (descriptor.wrap_t != TextureWrapMode::None) glTextureParameteri(get_resource_id(), GL_TEXTURE_WRAP_T, static_cast<GLenum>(descriptor.wrap_t));
-			if (descriptor.wrap_r != TextureWrapMode::None) glTextureParameteri(get_resource_id(), GL_TEXTURE_WRAP_R, static_cast<GLenum>(descriptor.wrap_r));
-			if (descriptor.min_mipmapping_filter()) glTextureParameteri(get_resource_id(), GL_TEXTURE_MIN_FILTER, static_cast<GLenum>(descriptor.min_mipmapping_filter()));
-			if (descriptor.mag_filter != TextureFiltering::None) glTextureParameteri(get_resource_id(), GL_TEXTURE_MAG_FILTER, static_cast<GLenum>(descriptor.mag_filter));
-			if (descriptor.anisotropy > 1.f) glTextureParameterf(get_resource_id(), GL_TEXTURE_MAX_ANISOTROPY_EXT, descriptor.anisotropy);
-			return true;
-		}
-		return false;
 	}
 
 	texture() {}
@@ -161,12 +120,12 @@ public:
 	void bind(const LayoutLocationType &sampler) const final override { Base::bind(sampler); };
 	void unbind(const LayoutLocationType &sampler) const final override { Base::unbind(sampler); };
 
-	int dimensions() const { return texture_dimensions<type>::dimensions; }
-	bool is_array_texture() const { return texture_is_array<type>::value; }
-	bool is_multisampled() const { return texture_is_multisampled<type>::value; }
+	constexpr int dimensions() const { return texture_dimensions<type>::dimensions; }
+	constexpr bool is_array_texture() const { return texture_is_array<type>::value; }
+	constexpr bool is_multisampled() const { return texture_is_multisampled<type>::value; }
 
 	void clear(void *data, int level = 0) {
-		gli::gl::format const format = opengl::gl_translate_format(format);
+		gli::gl::format format = gl_utils::translate_format(format);
 		glClearTexImage(get_resource_id(), level, format.External, format.Type, data);
 	}
 
@@ -206,15 +165,8 @@ private:
 	using Base = texture<type>;
 
 protected:
-	std::uint8_t samples;
-
 	texture_multisampled(gli::format format, const size_type &size, int samples) {
-		this->samples = samples;
 		allocate_tex_storage(size, format, 1, samples, false);
-	}
-	texture_multisampled(gli::format format, const size_type &size, int samples, sampler_descriptor descriptor) {
-		this->samples = samples;
-		allocate_tex_storage(size, format, 1, samples, false, 0, descriptor);
 	}
 
 public:
@@ -243,11 +195,11 @@ public:
 
 	virtual void upload_level(const void *data, int level = 0, int layer = 0, LLRCubeMapFace face = LLRCubeMapFace::LLRCubeMapFaceNone, int data_size = 0) = 0;
 	virtual void download_level(void *data, std::size_t size, int level = 0, int layer = 0) const {
-		auto &gl_format = opengl::gl_translate_format(format);
+		auto &gl_format = gl_utils::translate_format(format);
 		glGetTextureImage(get_resource_id(), level, gl_format.External, gl_format.Type, size, data);
 	}
 	virtual void download_level(void *data, std::size_t size, int level, int layer, gli::format format, bool compressed = false) const {
-		auto &gl_format = opengl::gl_translate_format(format);
+		auto &gl_format = gl_utils::translate_format(format);
 		if (compressed)
 			glGetCompressedTextureImage(get_resource_id(), level, size, data);
 		else
@@ -261,16 +213,9 @@ private:
 	using Base = texture_pixel_transferable<type>;
 
 protected:
-	std::uint8_t levels;
-
 	texture_mipmapped() {}
 	texture_mipmapped(gli::format format, const size_type &size, int levels) : Base() {
-		this->levels = levels;
 		allocate_tex_storage(size, format, levels, 1, false);
-	}
-	texture_mipmapped(gli::format format, const size_type &size, int levels, sampler_descriptor descriptor) : Base() {
-		this->levels = levels;
-		allocate_tex_storage(size, format, levels, 1, false, 0, descriptor);
 	}
 
 public:

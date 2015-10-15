@@ -75,12 +75,6 @@ std::string GLSLProgram::get_binary_represantation(unsigned *format) {
 	return data;
 }
 
-void GLSLProgram::set_uniform(const std::string &name, float x, float y, float z) const {
-	int loc = get_uniform_location(name);
-	if (loc >= 0)
-		glUniform3f(loc, x, y, z);
-}
-
 void GLSLProgram::set_uniform(const std::string &name, const glm::vec2 & v) const {
 	int loc = get_uniform_location(name);
 	if (loc >= 0)
@@ -93,8 +87,28 @@ void GLSLProgram::set_uniform(const std::string &name, const glm::i32vec2 & v) c
 		glUniform2i(loc, v.x, v.y);
 }
 
+void GLSLProgram::set_uniform(const std::string &name, const glm::u32vec2 & v) const {
+	int loc = get_uniform_location(name);
+	if (loc >= 0)
+		glUniform2ui(loc, v.x, v.y);
+}
+
+void GLSLProgram::set_uniform(const std::string &name, const glm::i64vec2 & v) const {
+	int loc = get_uniform_location(name);
+	if (loc >= 0)
+		glUniform2i64ARB(loc, v.x, v.y);
+}
+
+void GLSLProgram::set_uniform(const std::string &name, const glm::u64vec2 & v) const {
+	int loc = get_uniform_location(name);
+	if (loc >= 0)
+		glUniform2ui64ARB(loc, v.x, v.y);
+}
+
 void GLSLProgram::set_uniform(const std::string &name, const glm::vec3 & v) const {
-	this->set_uniform(name, v.x, v.y, v.z);
+	int loc = get_uniform_location(name);
+	if (loc >= 0)
+		glUniform3f(loc, v.x, v.y, v.z);
 }
 
 void GLSLProgram::set_uniform(const std::string &name, const glm::vec4 & v) const {
@@ -103,22 +117,22 @@ void GLSLProgram::set_uniform(const std::string &name, const glm::vec4 & v) cons
 		glUniform4f(loc, v.x, v.y, v.z, v.w);
 }
 
-void GLSLProgram::set_uniform(const std::string &name, const glm::mat2 & m) const {
+void GLSLProgram::set_uniform(const std::string &name, const glm::mat2 & m, bool transpose) const {
 	int loc = get_uniform_location(name);
 	if (loc >= 0)
-		glUniformMatrix2fv(loc, 1, GL_FALSE, &m[0][0]);
+		glUniformMatrix2fv(loc, 1, transpose, &m[0][0]);
 }
 
-void GLSLProgram::set_uniform(const std::string &name, const glm::mat3 & m) const {
+void GLSLProgram::set_uniform(const std::string &name, const glm::mat3 & m, bool transpose) const {
 	int loc = get_uniform_location(name);
 	if (loc >= 0)
-		glUniformMatrix3fv(loc, 1, GL_FALSE, &m[0][0]);
+		glUniformMatrix3fv(loc, 1, transpose, &m[0][0]);
 }
 
-void GLSLProgram::set_uniform(const std::string &name, const glm::mat4 & m) const {
+void GLSLProgram::set_uniform(const std::string &name, const glm::mat4 & m, bool transpose) const {
 	int loc = get_uniform_location(name);
 	if (loc >= 0) 
-		glUniformMatrix4fv(loc, 1, GL_FALSE, &m[0][0]);
+		glUniformMatrix4fv(loc, 1, transpose, &m[0][0]);
 }
 
 void GLSLProgram::set_uniform(const std::string &name, float val) const {
@@ -127,10 +141,28 @@ void GLSLProgram::set_uniform(const std::string &name, float val) const {
 		glUniform1f(loc, val);
 }
 
-void GLSLProgram::set_uniform(const std::string &name, int val) const {
+void GLSLProgram::set_uniform(const std::string &name, std::int32_t val) const {
 	int loc = get_uniform_location(name);
-	if (loc >= 0) 
+	if (loc >= 0)
 		glUniform1i(loc, val);
+}
+
+void GLSLProgram::set_uniform(const std::string &name, std::int64_t val) const {
+	int loc = get_uniform_location(name);
+	if (loc >= 0)
+		glUniform1i64ARB(loc, val);
+}
+
+void GLSLProgram::set_uniform(const std::string &name, std::uint32_t val) const {
+	int loc = get_uniform_location(name);
+	if (loc >= 0)
+		glUniform1ui(loc, val);
+}
+
+void GLSLProgram::set_uniform(const std::string &name, std::uint64_t val) const {
+	int loc = get_uniform_location(name);
+	if (loc >= 0)
+		glUniform1ui64ARB(loc, val);
 }
 
 void GLSLProgram::set_uniform(const std::string &name, bool val) const {

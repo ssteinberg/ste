@@ -8,7 +8,7 @@
 #include <string>
 #include <glm/glm.hpp>
 
-#include "llr_resource.h"
+#include "resource.h"
 
 namespace StE {
 namespace LLR {
@@ -24,9 +24,9 @@ struct GLSLShaderProperties {
 };
 
 template <GLSLShaderType ShaderType>
-class GLSLShaderAllocator : public llr_resource_stub_allocator {
+class GLSLShaderAllocator : public generic_resource_allocator {
 public:
-	static int allocate() {
+	unsigned allocate() override final {
 		switch (ShaderType) {
 		case GLSLShaderType::VERTEX:			return glCreateShader(GL_VERTEX_SHADER);
 		case GLSLShaderType::FRAGMENT:			return glCreateShader(GL_FRAGMENT_SHADER);
@@ -37,7 +37,7 @@ public:
 		default:								assert(false); return 0;
 		}
 	}
-	static void deallocate(unsigned int &id) { glDeleteShader(id); id = 0; }
+	void deallocate(unsigned &id) override final { glDeleteShader(id); id = 0; }
 };
 
 class GLSLShaderGeneric : virtual public GenericResource {
@@ -47,7 +47,7 @@ public:
 };
 
 template <GLSLShaderType ShaderType>
-class GLSLShader : public llr_resource<GLSLShaderAllocator<ShaderType>>, public GLSLShaderGeneric {
+class GLSLShader : public resource<GLSLShaderAllocator<ShaderType>>, public GLSLShaderGeneric {
 private:
 	int status;
 	GLSLShaderProperties properties;

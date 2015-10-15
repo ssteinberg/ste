@@ -18,7 +18,6 @@ public:
 	TextureCubeMap& operator=(TextureCubeMap &&m) = default;
 
 	TextureCubeMap(gli::format format, const size_type &size, int levels = 1) : texture_mipmapped(format, size, levels) {}
-	TextureCubeMap(gli::format format, const size_type &size, int levels, sampler_descriptor descriptor) : texture_mipmapped(format, size, levels, descriptor) {}
 	TextureCubeMap(const gli::textureCube &t, bool generate_mipmaps = false) : texture_mipmapped(t.format(), t.dimensions(), generate_mipmaps ? calculate_mipmap_max_level(t[0].dimensions()) + 1 : t.levels()) {
 		upload(t, generate_mipmaps);
 	}
@@ -29,7 +28,7 @@ public:
 
 	void upload_level(const void *data, int level = 0, int layer = 0, LLRCubeMapFace face = LLRCubeMapFace::LLRCubeMapFaceNone, int data_size = 0) override {
 		assert(face != LLRCubeMapFace::LLRCubeMapFaceNone && "face must be specified");
-		auto &gl_format = opengl::gl_translate_format(format);
+		auto &gl_format = gl_utils::translate_format(format);
 
 		bind();
 		if (is_compressed()) {

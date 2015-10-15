@@ -2,6 +2,8 @@
 #include "stdafx.h"
 #include "TextRenderer.h"
 
+#include "gl_current_context.h"
+
 #include "GLSLProgramLoader.h"
 
 #include <vector>
@@ -117,13 +119,12 @@ void TextRenderer::render(glm::vec2 ortho_pos, const AttributedWString &wstr) {
 	0_storage_idx = gm.ssbo();
 	vao.bind();
 
-	glEnable(GL_BLEND);
+	gl_current_context::get()->enable_state(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glBlendEquation(GL_FUNC_ADD);
 
 	glDrawArrays(GL_POINTS, offset, elements_count);
 
-	glDisable(GL_BLEND);
+	gl_current_context::get()->disable_state(GL_BLEND);
 
 	vbo_ring_current_offset += bytes;
 }

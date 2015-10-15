@@ -5,10 +5,12 @@
 
 #include "stdafx.h"
 #include "bindable_resource.h"
+#include "gl_utils.h"
 
 #include "buffer_usage.h"
 #include "mapped_buffer_object_unique_ptr.h"
 #include "buffer_lock.h"
+#include "buffer_object_allocator.h"
 
 #include "shader_layout_bindable_resource.h"
 #include "layout_binding.h"
@@ -24,12 +26,6 @@
 namespace StE {
 namespace LLR {
 
-class BufferObjectAllocator : public llr_resource_stub_allocator {
-public:
-	static int allocate() { GLuint id;  glCreateBuffers(1, &id); return id; }
-	static void deallocate(unsigned int &id) { if (id) glDeleteBuffers(1, reinterpret_cast<GLuint*>(&id)); id = 0; }
-};
-
 class BufferObjectBinder {
 public:
 	static void bind(unsigned int id, GLenum target) {
@@ -43,11 +39,13 @@ public:
 #define ALLOW_BUFFER_OBJECT_CASTS	template <typename BufferTypeTo, typename BufferTypeFrom> friend BufferTypeTo buffer_object_cast(BufferTypeFrom &&s)
 
 template <typename Type, BufferUsage::buffer_usage U = BufferUsage::BufferUsageNone>
-class buffer_object : public bindable_resource<BufferObjectAllocator, BufferObjectBinder, GLenum> {
+class buffer_object : public bindable_resource<buffer_object_immutable_storage_allocator<Type, U>, BufferObjectBinder, GLenum> {
+private:
+	using Base = bindable_resource<buffer_object_immutable_storage_allocator<Type, U>, BufferObjectBinder, GLenum>;
+
 public:
 	static constexpr BufferUsage::buffer_usage access_usage = U;
-	using data_type = Type;
-	using T = std::remove_cv_t<Type>;
+	using T = Type;
 
 	static constexpr bool dynamic_buffer = !!(access_usage & BufferUsage::BufferUsageDynamic);
 	static constexpr bool map_read_allowed = !!(access_usage & BufferUsage::BufferUsageMapRead);
@@ -66,14 +64,14 @@ protected:
 	std::size_t buffer_size;
 	mutable std::shared_ptr<lock_map_type> locks{ new lock_map_type };
 
-	using bindable_resource<BufferObjectAllocator, BufferObjectBinder, GLenum>::bind;
-	using bindable_resource<BufferObjectAllocator, BufferObjectBinder, GLenum>::unbind;
+	using Base::bind;
+	using Base::unbind;
 
 	template <typename T2>
-	buffer_object(const buffer_object<T2, U> &t) : bindable_resource(t), locks(t.locks) {
+	buffer_object(const buffer_object<T2, U> &t) : Base(t), locks(t.locks) {
 		buffer_size = sizeof(T2) * t.buffer_size / sizeof(T);
 	}
-	buffer_object(const buffer_object<Type, U> &t) : bindable_resource(t), locks(t.locks), buffer_size(t.buffer_size) {}
+	buffer_object(const buffer_object<Type, U> &t) : Base(t), locks(t.locks), buffer_size(t.buffer_size) {}
 
 public:
 	buffer_object(buffer_object &&t) = default;
@@ -82,8 +80,7 @@ public:
 	buffer_object(std::size_t size) : buffer_object(size, nullptr) {};
 	buffer_object(const std::vector<T> &data) : buffer_object(data.size(), &data[0]) {};
 	buffer_object(std::size_t size, const T *data) : buffer_size(size) {
-		GLenum flags = static_cast<GLenum>(access_usage);
-		glNamedBufferStorage(get_resource_id(), sizeof(T)*size, data, flags);
+		allocator.allocate_storage(get_resource_id(), buffer_size, data);
 	}
 
 	virtual ~buffer_object() noexcept {}
@@ -107,11 +104,11 @@ public:
 	}
 
 	void clear(const gli::format format, const void *data) {
-		auto glf = opengl::gl_translate_format(format);
+		auto glf = gl_utils::translate_format(format);
 		glClearNamedBufferData(get_resource_id(), glf.Internal, glf.External, glf.Type, data);
 	}
 	void clear(const gli::format format, const void *data, int offset, std::size_t size) {
-		auto glf = opengl::gl_translate_format(format);
+		auto glf = gl_utils::translate_format(format);
 		glClearNamedBufferSubData(get_resource_id(), glf.Internal, offset * sizeof(T), size * sizeof(T), glf.External, glf.Type, data);
 	}
 	void invalidate_data() { glInvalidateBufferData(get_resource_id()); }
