@@ -16,6 +16,8 @@ class AtomicCounterBufferObjectGeneric {
 public:
 	virtual void bind(const layout_binding<atomic_buffer_object_layout_binding_type> &) const = 0;
 	virtual void unbind(const layout_binding<atomic_buffer_object_layout_binding_type> &) const = 0;
+
+	virtual ~AtomicCounterBufferObjectGeneric() noexcept {}
 };
 
 template <BufferUsage::buffer_usage U = BufferUsage::BufferUsageNone>

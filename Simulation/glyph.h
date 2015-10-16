@@ -37,18 +37,20 @@ public:
 		}
 	};
 
-	static constexpr int padding = 8;
+	static constexpr int padding = 16;
 	static constexpr int ttf_pixel_size = 64;
 
 private:
 	gli::texture2D glyph_distance_field;
 	glyph_metrics metrics;
+	int advance_x;
 
 private:
 	friend class boost::serialization::access;
 	template<class Archive>
 	void save(Archive & ar, const unsigned int version) const {
 		ar << metrics;
+		ar << advance_x;
 
 		ar << static_cast<std::size_t>(glyph_distance_field.dimensions().x);
 		ar << static_cast<std::size_t>(glyph_distance_field.dimensions().y);
@@ -64,6 +66,7 @@ private:
 	template<class Archive>
 	void load(Archive & ar, const unsigned int version) {
 		ar >> metrics;
+		ar >> advance_x;
 
 		std::size_t w, h, l;
 		gli::format format;

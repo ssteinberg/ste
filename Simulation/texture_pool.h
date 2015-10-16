@@ -98,7 +98,7 @@ public:
 		else
 			v.unclaimed_layers.erase_after(v.unclaimed_layers.before_begin());
 
-		v.pool.make_resident();
+		//v.pool.make_resident();
 		for (int l = 0; l < tex.get_levels(); ++l) {
 			v.pool.commit_tiles({ 0, 0, layer }, { key.size.x >> l, key.size.y >> l, 1 }, l);
 

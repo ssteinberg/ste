@@ -37,13 +37,15 @@ public:
 		default:								assert(false); return 0;
 		}
 	}
-	void deallocate(unsigned &id) override final { glDeleteShader(id); id = 0; }
+	static void deallocate(unsigned &id) { glDeleteShader(id); id = 0; }
 };
 
 class GLSLShaderGeneric : virtual public GenericResource {
 public:
 	virtual std::string read_info_log() const = 0;
 	virtual bool get_status() const = 0;
+
+	virtual ~GLSLShaderGeneric() noexcept {}
 };
 
 template <GLSLShaderType ShaderType>

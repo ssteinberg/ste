@@ -25,7 +25,7 @@ public:
 		glCreateSamplers(1, &id);
 		return id;
 	}
-	void deallocate(unsigned &id) override final { if (id) glDeleteSamplers(1, reinterpret_cast<GLuint*>(&id)); id = 0; }
+	static void deallocate(unsigned &id) { if (id) glDeleteSamplers(1, &id); id = 0; }
 };
 
 class SamplerBinder {

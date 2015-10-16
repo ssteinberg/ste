@@ -17,7 +17,7 @@ public:
 
 class bindable_generic_resource : virtual public GenericResource {
 protected:
-	~bindable_generic_resource() noexcept {}
+	virtual ~bindable_generic_resource() noexcept {}
 
 public:
 	virtual void bind() const = 0;

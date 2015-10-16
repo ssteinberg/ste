@@ -46,9 +46,9 @@ public:
 		return id;
 	}
 
-	void deallocate(unsigned &id) override final {
+	static void deallocate(unsigned &id) {
 		if (id)
-			glDeleteTextures(1, reinterpret_cast<GLuint*>(&id));
+			glDeleteTextures(1, &id);
 		id = 0;
 	}
 

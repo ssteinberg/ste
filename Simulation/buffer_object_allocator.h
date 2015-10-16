@@ -15,9 +15,9 @@ public:
 		return id;
 	}
 
-	void deallocate(unsigned &id) override final {
+	static void deallocate(unsigned &id) {
 		if (id)
-			glDeleteBuffers(1, reinterpret_cast<GLuint*>(&id));
+			glDeleteBuffers(1, &id);
 		id = 0;
 	}
 

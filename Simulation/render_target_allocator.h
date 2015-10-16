@@ -18,7 +18,7 @@ public:
 		glCreateRenderbuffers(1, &id);
 		return id;
 	}
-	void deallocate(unsigned &id) override final {
+	static void deallocate(unsigned &id) {
 		if (is_valid(id))
 			glDeleteRenderbuffers(1, &id);
 		id = 0;

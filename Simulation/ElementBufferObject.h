@@ -15,6 +15,8 @@ class ElementBufferObjectGeneric {
 public:
 	virtual void bind() const = 0;
 	virtual void unbind() const = 0;
+
+	virtual ~ElementBufferObjectGeneric() noexcept {}
 };
 
 template <typename T = unsigned int, BufferUsage::buffer_usage U = BufferUsage::BufferUsageNone>

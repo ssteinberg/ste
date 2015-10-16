@@ -48,8 +48,8 @@ protected:
 	void make_current();
 
 public:
-	gl_context(const context_settings &settings, const char *title, const glm::i32vec2 &size, gli::format format = gli::FORMAT_RGBA8_UNORM, gli::format depth_format = gli::FORMAT_D24_UNORM);
-	gl_context(const char * title, const glm::i32vec2 &size, gli::format format = gli::FORMAT_RGBA8_UNORM, gli::format depth_format = gli::FORMAT_D24_UNORM) : gl_context(context_settings(), title, size, format, depth_format) {}
+	gl_context(const context_settings &settings, const char *title, const glm::i32vec2 &size, gli::format format = gli::FORMAT_RGBA8_SRGB, gli::format depth_format = gli::FORMAT_D24_UNORM);
+	gl_context(const char * title, const glm::i32vec2 &size, gli::format format = gli::FORMAT_RGBA8_SRGB, gli::format depth_format = gli::FORMAT_D24_UNORM) : gl_context(context_settings(), title, size, format, depth_format) {}
 	~gl_context() {}
 
 	gl_context(gl_context &&m) = delete;
@@ -59,9 +59,10 @@ public:
 
 	void clear_framebuffer(bool color = true, bool depth = true) const { glClear((color ? GL_COLOR_BUFFER_BIT : 0) | (depth ? GL_DEPTH_BUFFER_BIT : 0)); }
 	void color_mask(bool r, bool b, bool g, bool a) const { glColorMask(r, g, b, a); }
-	void enable_depth_test() const { glEnable(GL_DEPTH_TEST); }
-	void disable_depth_test() const { glDisable(GL_DEPTH_TEST); }
+	void enable_depth_test() const { enable_state(GL_DEPTH_TEST); }
+	void disable_depth_test() const { disable_state(GL_DEPTH_TEST); }
 	void depth_mask(bool mask) const { glDepthMask(mask); }
+	void memory_barrier(GLbitfield bits) const { glMemoryBarrier(bits); }
 
 	void enable_state(GLenum state) const {
 		auto emplace_result = states.try_emplace(state, false);

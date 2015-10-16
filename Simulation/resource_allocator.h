@@ -8,10 +8,10 @@ namespace LLR {
 
 class generic_resource_allocator {
 public:
-	virtual bool is_valid(unsigned id) const { return !!id; }
+	static bool is_valid(unsigned id) { return !!id; }
 
 	virtual unsigned allocate() = 0;
-	virtual void deallocate(unsigned &id) { id = 0; }
+	static void deallocate(unsigned &id) { id = 0; }
 };
 
 template <typename ... Ts>

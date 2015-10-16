@@ -17,9 +17,11 @@ out vec4 gl_FragColor;
 
 in geo_out {
 	vec4 color;
+	vec4 stroke_color;
+	float weight;
+	float stroke_width;
 	vec2 st;
 	flat int drawId;
-	float weight;
 } vin;
 
 layout(std430, binding = 0) buffer glyph_data {
@@ -40,11 +42,17 @@ void main( void ) {
 
 	D -= vin.weight;
 
+	if (vin.stroke_width > 0)
+		D -= vin.stroke_width*.5f;
+
     float g = 1.0f - aastep(0.0, D);
 	if (g==0)
 		discard;
+		
+	vec4 c = vin.color;
+	if (vin.stroke_width > 0)
+		c = mix(vin.stroke_color, vin.color, clamp((- D - vin.stroke_width * .9f) / (vin.stroke_width * .2f), 0, 1));
 
-	vec4 c = vin.color * vec4(1, 1, 1, g);
-	gl_FragColor = c;
+	gl_FragColor = c * vec4(1, 1, 1, g);
 }
 

@@ -3,9 +3,7 @@
 
 #include "Camera.h"
 
-#include <glm/gtx/transform.hpp>
 #include <glm/gtc/quaternion.hpp>
-#include <glm/gtx/quaternion.hpp>
 
 using namespace StE::LLR;
 

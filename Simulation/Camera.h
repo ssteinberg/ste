@@ -17,7 +17,6 @@ private:
 	glm::vec3 camera_up;
 
 	float camera_speed;
-	float camera_heading;
 	float camera_pitch;
 
 	float camera_pitch_limit;

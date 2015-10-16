@@ -21,8 +21,8 @@ protected:
 
 	generic_resource_shared_type id;
 
-	GenericResource() {}
-	virtual ~GenericResource() noexcept {}
+	GenericResource() = default;
+	virtual ~GenericResource() {}
 
 public:
 	virtual llr_resource_type resource_type() const = 0;
@@ -53,21 +53,21 @@ protected:
 	resource() { 
 		generic_resource_type *res_id = new generic_resource_type(allocator.allocate());
 		this->id = generic_resource_shared_type(res_id, [=](generic_resource_type *ptr) {
-			allocator.deallocate(*ptr);
+			Allocator::deallocate(*ptr);
 			delete ptr;
 		});
 	}
 	template <class A2>
 	explicit resource(const resource<A2> &res) { id = res.id; }
 	explicit resource(const resource &res) { id = res.id; }
-	~resource() noexcept {}
+	~resource() {}
 
 public:
 	resource(resource &&m) = default;
 	resource& operator=(resource &&m) = default;
 	resource& operator=(const resource &c) = delete;
 
-	bool is_valid() const { return allocator.is_valid(*id); }
+	bool is_valid() const { return Allocator::is_valid(*id); }
 };
 
 }

@@ -22,9 +22,9 @@ image_layout_binding inline operator "" _image_idx(unsigned long long int i) { r
 
 class image_dummy_resource_allocator : public generic_resource_allocator {
 public:
-	bool is_valid(unsigned int id) const override final { return false; }
+	static bool is_valid(unsigned id) { return false; }
 	unsigned allocate() override final { return 0; };
-	void deallocate(unsigned &id) override final { id = 0; }
+	static void deallocate(unsigned &id) { id = 0; }
 };
 
 class ImageBinder {

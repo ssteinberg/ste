@@ -17,6 +17,8 @@ public:
 	virtual void bind() const = 0;
 	virtual void unbind() const = 0;
 	virtual const VertexBufferDescriptor *data_descriptor() const = 0;
+
+	virtual ~VertexBufferObjectGeneric() noexcept {}
 };
 
 template <typename T, class D, BufferUsage::buffer_usage U>

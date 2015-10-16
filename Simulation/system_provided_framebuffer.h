@@ -39,10 +39,10 @@ public:
 class system_provided_framebuffer_dummy_allocator : public generic_resource_allocator {
 public:
 	unsigned allocate() override final { return 0; }
-	void deallocate(unsigned &id) override final {}
+	static void deallocate(unsigned &id) {}
 };
 
-class system_provided_framebuffer : protected frame_buffer_object<system_provided_framebuffer_dummy_allocator> {
+class system_provided_framebuffer : public frame_buffer_object<system_provided_framebuffer_dummy_allocator> {
 private:
 	template<typename A, GLenum color_attachment_point>
 	friend class fbo_system_provided_color_attachment_point;

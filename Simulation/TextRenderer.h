@@ -32,9 +32,11 @@ private:
 			float glyph, size;
 		};
 		glm::vec4 color;
+		glm::vec4 stroke_color;
+		float stroke_width;
 		float weight;
 
-		using descriptor = LLR::VBODescriptorWithTypes<glm::vec4, glm::vec4, float>::descriptor;
+		using descriptor = LLR::VBODescriptorWithTypes<glm::vec4, glm::vec4, glm::vec4, float, float>::descriptor;
 	};
 
 private:
@@ -60,7 +62,7 @@ private:
 	std::vector<glyph_point> create_points(glm::vec2 , const AttributedWString &);
 
 public:
-	TextRenderer(const StEngineControl &context, const Font &default_font, int default_size = 32);
+	TextRenderer(const StEngineControl &context, const Font &default_font, int default_size = 28);
 
 	void render(glm::vec2 ortho_pos, const AttributedWString &wstr);
 };

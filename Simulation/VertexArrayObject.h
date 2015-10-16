@@ -17,7 +17,7 @@ namespace LLR {
 class VertexArrayObjectAllocator : public generic_resource_allocator {
 public:
 	unsigned allocate() override final { GLuint id;  glCreateVertexArrays(1, &id); return id; }
-	void deallocate(unsigned &id) override final { glDeleteVertexArrays(1, reinterpret_cast<GLuint*>(&id)); id = 0; }
+	static void deallocate(unsigned &id) { glDeleteVertexArrays(1, &id); id = 0; }
 };
 
 class VertexArrayObjectBinder {

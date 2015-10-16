@@ -4,9 +4,6 @@
     <Filter Include="src">
       <UniqueIdentifier>{1e9536d2-32d4-4bf2-a1a9-0e9ef67086e1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Shaders">
-      <UniqueIdentifier>{7a22fd60-b5b1-4cee-a37f-108e499b7722}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\StE">
       <UniqueIdentifier>{29c1b2b6-3151-4750-b62a-088c2417b3de}</UniqueIdentifier>
     </Filter>
@@ -138,6 +135,9 @@
     </Filter>
     <Filter Include="src\StE\Core\LLR\GL\Context">
       <UniqueIdentifier>{189db96c-a55e-41f3-b4b5-85e341d59952}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Global Shaders">
+      <UniqueIdentifier>{7a22fd60-b5b1-4cee-a37f-108e499b7722}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -548,28 +548,28 @@
       <Filter>src\StE\Core</Filter>
     </None>
     <None Include="transform.vert">
-      <Filter>src\Shaders</Filter>
+      <Filter>src\Global Shaders</Filter>
     </None>
     <None Include="frag.frag">
-      <Filter>src\Shaders</Filter>
+      <Filter>src\Global Shaders</Filter>
     </None>
     <None Include="texture.frag">
-      <Filter>src\Shaders</Filter>
+      <Filter>src\Global Shaders</Filter>
     </None>
     <None Include="ssao.frag">
-      <Filter>src\Shaders</Filter>
+      <Filter>src\Global Shaders</Filter>
     </None>
     <None Include="passthrough.vert">
-      <Filter>src\Shaders</Filter>
+      <Filter>src\Global Shaders</Filter>
     </None>
     <None Include="passthrough_light.vert">
-      <Filter>src\Shaders</Filter>
+      <Filter>src\Global Shaders</Filter>
     </None>
     <None Include="lighting.frag">
-      <Filter>src\Shaders</Filter>
+      <Filter>src\Global Shaders</Filter>
     </None>
     <None Include="gen_depth_layers.frag">
-      <Filter>src\Shaders</Filter>
+      <Filter>src\Global Shaders</Filter>
     </None>
     <None Include="text_distance_map_contour.frag">
       <Filter>src\StE\Framework Text\Rendering\Shaders</Filter>
@@ -580,29 +580,29 @@
     <None Include="text_distance_map_contour.geom">
       <Filter>src\StE\Framework Text\Rendering\Shaders</Filter>
     </None>
-    <None Include="hdr_create_histogram.glsl">
-      <Filter>src\Shaders</Filter>
-    </None>
-    <None Include="hdr_tonemap.frag">
-      <Filter>src\Shaders</Filter>
-    </None>
-    <None Include="hdr_compute_histogram_sums.glsl">
-      <Filter>src\Shaders</Filter>
-    </None>
-    <None Include="hdr_common.glsl">
-      <Filter>src\Shaders</Filter>
-    </None>
-    <None Include="hdr_compute_minmax.frag">
-      <Filter>src\Shaders</Filter>
-    </None>
     <None Include="lanczos.frag">
-      <Filter>src\Shaders</Filter>
+      <Filter>src\Global Shaders</Filter>
     </None>
     <None Include="bilateral_blur_x.frag">
-      <Filter>src\Shaders</Filter>
+      <Filter>src\Global Shaders</Filter>
     </None>
     <None Include="bilateral_blur_y.frag">
-      <Filter>src\Shaders</Filter>
+      <Filter>src\Global Shaders</Filter>
+    </None>
+    <None Include="hdr_tonemap.frag">
+      <Filter>src\Global Shaders</Filter>
+    </None>
+    <None Include="hdr_common.glsl">
+      <Filter>src\Global Shaders</Filter>
+    </None>
+    <None Include="hdr_compute_histogram_sums.glsl">
+      <Filter>src\Global Shaders</Filter>
+    </None>
+    <None Include="hdr_compute_minmax.frag">
+      <Filter>src\Global Shaders</Filter>
+    </None>
+    <None Include="hdr_create_histogram.glsl">
+      <Filter>src\Global Shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

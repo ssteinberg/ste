@@ -21,6 +21,8 @@ class IndirectDrawBufferGeneric {
 public:
 	virtual void bind() const = 0;
 	virtual void unbind() const = 0;
+
+	virtual ~IndirectDrawBufferGeneric() noexcept {}
 };
 
 template <BufferUsage::buffer_usage U = BufferUsage::BufferUsageNone>

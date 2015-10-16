@@ -16,6 +16,7 @@
 #include "Keyboard.h"
 #include "Pointer.h"
 #include "StEngineControl.h"
+#include "gl_current_context.h"
 #include "ModelLoader.h"
 #include "Camera.h"
 #include "GLSLProgram.h"
@@ -48,7 +49,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 	ste_log_set_global_logger(&logger);
 	ste_log() << "Simulation is running";
 
-	float w = 1400, h = 900;
+	int w = 1920, h = 1080;
 	constexpr float clip_far = 1000.f;
 	constexpr float clip_near = 1.f;
 
@@ -72,7 +73,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 
 	// Prepare
 	StE::Graphics::Scene scene;
-	StE::Text::TextRenderer text_renderer(rc, StE::Text::Font("Data/calligraph421-bt-roman.ttf"));
+	StE::Text::TextRenderer text_renderer(rc, StE::Text::Font("Data/ArchitectsDaughter.ttf"));
 
 	std::unique_ptr<StE::LLR::GLSLProgram> transform = StE::Resource::GLSLProgramLoader::load_program_task(rc, { "transform.vert", "frag.frag" })();
 	std::unique_ptr<StE::LLR::GLSLProgram> deffered = StE::Resource::GLSLProgramLoader::load_program_task(rc, { "passthrough_light.vert", "lighting.frag" })();
@@ -170,14 +171,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 
 		{
 			using namespace StE::Text::Attributes;
-			AttributedWString str = center(purple(huge(b(L"Loading Simulation..."))) + 
+			AttributedWString str = center(stroke(blue_violet, 2)(purple(vlarge(b(L"Loading Simulation...")))) +
 											L"\n" + 
-											orange(large(L"By Shlomi Steinberg")));
+											orange(regular(L"By Shlomi Steinberg")));
  			text_renderer.render({ w / 2, h / 2 - 20 }, str);
- 			text_renderer.render({ 10, 20 }, b(L"Thread pool workers: ") + 
+ 			text_renderer.render({ 10, 20 }, vsmall(b(L"Thread pool workers: ") +
  									olive(std::to_wstring(rc.scheduler().get_sleeping_workers())) + 
  									L"/" + 
- 									olive(std::to_wstring(rc.scheduler().get_workers_count())));
+ 									olive(std::to_wstring(rc.scheduler().get_workers_count()))));
 		}
 
 		if (model_future.wait_for(std::chrono::seconds(0)) != std::future_status::ready)
@@ -251,14 +252,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 		0_image_idx = histogram_minmax[0];
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+		gl_current_context::get()->memory_barrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
 		hdr_create_histogram->bind();
 		1_tex_unit = hdr_lums;
 		0_atomic_idx = histogram;
 		glDispatchCompute(luminance_w / 32, luminance_h / 32, 1);
 
-		glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+		gl_current_context::get()->memory_barrier((GL_SHADER_STORAGE_BARRIER_BIT);
 
 		hdr_compute_histogram_sums->bind();
 		hdr_compute_histogram_sums->set_uniform("hdr_lum_resolution", luminance_w * luminance_h);
@@ -266,7 +267,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 		1_storage_idx = buffer_object_cast<ShaderStorageBuffer<unsigned>>(histogram);
 		glDispatchCompute(1, 1, 1);
 
-		glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+		gl_current_context::get()->memory_barrier((GL_SHADER_STORAGE_BARRIER_BIT);
 
 		glViewport(0, 0, w, h);
 
@@ -277,8 +278,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 
 		{
 			using namespace StE::Text::Attributes;
+			auto tpf = std::to_wstring(rc.time_per_frame().count());
  			text_renderer.render({ 30, h - 50 }, 
- 								 blue(L"Frame time: ") + b(red(std::to_wstring(rc.time_per_frame().count()))) + L" ms");
+ 								 vsmall(b(stroke(purple, 3)((red(tpf)))) + L" ms"));
 		}
 	}
 	 

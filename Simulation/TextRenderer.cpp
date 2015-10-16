@@ -20,6 +20,8 @@ TextRenderer::TextRenderer(const StEngineControl &context, const Font &default_f
 	vao[0] = (*vbo)[0];
 	vao[1] = (*vbo)[1];
 	vao[2] = (*vbo)[2];
+	vao[3] = (*vbo)[3];
+	vao[4] = (*vbo)[4];
 }
 
 void TextRenderer::adjust_line(std::vector<glyph_point> &points, const AttributedWString &wstr, int line_start_index, float line_start, float line_height, const glm::vec2 &ortho_pos) {
@@ -62,9 +64,8 @@ std::vector<TextRenderer::glyph_point> TextRenderer::create_points(glm::vec2 ort
 		optional<const Attributes::font*> font_attrib = wstr.attrib_of_type(Attributes::font::attrib_type_s(), { i,1 });
 		optional<const Attributes::rgb*> color_attrib = wstr.attrib_of_type(Attributes::rgb::attrib_type_s(), { i,1 });
 		optional<const Attributes::size*> size_attrib = wstr.attrib_of_type(Attributes::size::attrib_type_s(), { i,1 });
+		optional<const Attributes::stroke*> stroke_attrib = wstr.attrib_of_type(Attributes::stroke::attrib_type_s(), { i,1 });
 		optional<const Attributes::weight*> weight_attrib = wstr.attrib_of_type(Attributes::weight::attrib_type_s(), { i,1 });
-		optional<const Attributes::kern*> kern_attrib = wstr.attrib_of_type(Attributes::kern::attrib_type_s(), { i,1 });
-		optional<const Attributes::line_height*> line_height_attrib = wstr.attrib_of_type(Attributes::line_height::attrib_type_s(), { i,1 });
 
 		Font &font = font_attrib ? font_attrib->get() : default_font;
 		int size = size_attrib ? size_attrib->get() : default_size;
@@ -74,17 +75,24 @@ std::vector<TextRenderer::glyph_point> TextRenderer::create_points(glm::vec2 ort
 
 		float f = static_cast<float>(size) / static_cast<float>(glyph::ttf_pixel_size);
 		float w = weight_attrib ? weight_attrib->get() : 400.f;
-		float lh = line_height_attrib ? line_height_attrib->get() : (g->metrics.height + g->metrics.start_y) * f + 1;
+		float lh = (g->metrics.height + g->metrics.start_y) * f * 2 + 1;
 
-		float advance = i + 1 < wstr.length() ? gm.spacing(font, wstr[i], wstr[i+1], size) : 0;
-		if (kern_attrib) advance += kern_attrib->get();
+		float advance = g->advance_x * f;
 
 		glyph_point p;
 		p.pos = ortho_pos.xy;
 		p.glyph = g->buffer_index;
-		p.size = f;
-		p.color = static_cast<glm::vec4>(color) / 255.0f;
+		p.size = f * 2;
+		p.color = glm::vec4(color) / 255.0f;
 		p.weight = glm::clamp<float>(w - 400, -300, 500) * f * .003f;
+
+		if (stroke_attrib) {
+			p.stroke_color = glm::vec4(stroke_attrib->get_color().get()) / 255.0f;
+			p.stroke_width = stroke_attrib->get_width();
+		}
+		else
+			p.stroke_width = .0f;
+
 		points.push_back(p);
 
 		line_height = std::max(lh, line_height);
@@ -114,7 +122,7 @@ void TextRenderer::render(glm::vec2 ortho_pos, const AttributedWString &wstr) {
 
 	text_distance_mapping->bind();
 	text_distance_mapping->set_uniform("proj", context.ortho_projection_matrix());
-	text_distance_mapping->set_uniform("fb_size", static_cast<glm::vec2>(context.get_backbuffer_size()));
+	text_distance_mapping->set_uniform("fb_size", glm::vec2(context.get_backbuffer_size()));
 
 	0_storage_idx = gm.ssbo();
 	vao.bind();

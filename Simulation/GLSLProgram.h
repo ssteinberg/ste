@@ -19,7 +19,7 @@ namespace LLR {
 class GLSLProgramAllocator : public generic_resource_allocator {
 public:
 	unsigned allocate() override final { return glCreateProgram(); }
-	void deallocate(unsigned &id) override final { glDeleteProgram(id); id = 0; }
+	static void deallocate(unsigned &id) { glDeleteProgram(id); id = 0; }
 };
 
 class GLSLProgramBinder {

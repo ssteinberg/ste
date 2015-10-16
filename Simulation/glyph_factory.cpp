@@ -77,10 +77,10 @@ struct StE::Text::glyph_factory_impl {
 		return it->second.get_face();
 	}
 
-	unsigned char *render_glyph_with(const Font&, wchar_t, int, int&, int&, int&, int&);
+	unsigned char *render_glyph_with(const Font&, wchar_t, int, int&, int&, int&, int&, int&);
 };
 
-unsigned char* glyph_factory_impl::render_glyph_with(const Font &font, wchar_t codepoint, int px_size, int &w, int &h, int &start_y, int &start_x) {
+unsigned char* glyph_factory_impl::render_glyph_with(const Font &font, wchar_t codepoint, int px_size, int &w, int &h, int &start_y, int &start_x, int &advance_x) {
 	std::unique_lock<std::mutex> l(m);
 
 	auto face = get_face(font);
@@ -95,6 +95,7 @@ unsigned char* glyph_factory_impl::render_glyph_with(const Font &font, wchar_t c
 
 	start_x = (metrics.horiBearingX >> 6) - glyph::padding;
 	start_y = (metrics.horiBearingY - metrics.height >> 6) - glyph::padding;
+	advance_x = face->glyph->advance.x >> 6;
 	w = bm.width + 2 * glyph::padding;
 	h = bm.rows + 2 * glyph::padding;
 
@@ -119,7 +120,7 @@ StE::task<glyph> glyph_factory::create_glyph_task(const Font &font, wchar_t code
 		int start_x, start_y, w, h;
 		int px_size = glyph::ttf_pixel_size;
 
-		unsigned char *glyph_buf = pimpl->render_glyph_with(font, codepoint, px_size, w, h, start_y, start_x);
+		unsigned char *glyph_buf = pimpl->render_glyph_with(font, codepoint, px_size, w, h, start_y, start_x, g.advance_x);
 		g.metrics.start_x = start_x;
 		g.metrics.start_y = start_y;
 		g.metrics.width = w;
@@ -133,27 +134,4 @@ StE::task<glyph> glyph_factory::create_glyph_task(const Font &font, wchar_t code
 
 		return std::move(g);
 	});
-}
-
-int glyph_factory::spacing(const Font &font, wchar_t left, wchar_t right, int pixel_size) {
-	std::unique_lock<std::mutex> l(pimpl->m);
-
-	auto face = pimpl->get_face(font);
-
-	FT_UInt left_index = FT_Get_Char_Index(face, left);
-	FT_UInt right_index = FT_Get_Char_Index(face, right);
-	FT_Set_Pixel_Sizes(face, 0, pixel_size);
-	FT_Load_Glyph(face, left_index, FT_LOAD_DEFAULT);
-
-	bool has_kern = FT_HAS_KERNING(face);
-
-	if (has_kern) {
-		FT_Vector delta;
-		FT_Get_Kerning(face, left_index, right_index, FT_KERNING_DEFAULT, &delta);
-
-		return (face->glyph->advance.x + delta.x) >> 6;
-	}
-	else {
-		return face->glyph->advance.x >> 6;
-	}
 }

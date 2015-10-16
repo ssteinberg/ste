@@ -33,7 +33,7 @@ public:
 	virtual attrib* clone() const = 0;
 
 	virtual attrib_id_t attrib_type() const noexcept = 0;
-	bool is_same_attrib(const attrib &rhs) { return attrib_type() == rhs.attrib_type(); }
+	bool is_same_attrib(const attrib &rhs) const { return attrib_type() == rhs.attrib_type(); }
 
 	template<typename T>
 	attributed_string<T> operator()(const attributed_string<T> &str) const {
@@ -215,6 +215,29 @@ static const rgb gainsboro = rgb({ 220, 220, 220 });
 static const rgb white_smoke = rgb({ 245, 245, 245 });
 static const rgb white = rgb({ 255, 255, 255 });
 
+class stroke : public attrib {
+private:
+	rgb color;
+	float width;
+
+#ifdef _DEBUG
+	const char *name{ typeid(*this).name() };
+#endif
+
+public:
+	stroke(const rgb &color, float w) : color(color), width(w) {}
+
+	static attrib_id_t attrib_type_s() noexcept {
+		static char const type_id{};
+		return &type_id;
+	}
+	attrib_id_t attrib_type() const noexcept override { return attrib_type_s(); }
+	virtual stroke* clone() const override { return new stroke(*this); };
+
+	float get_width() const { return width; }
+	rgb get_color() const { return color; }
+};
+
 class font : public attrib {
 private:
 	Font f;
@@ -261,12 +284,13 @@ public:
 	T get() const { return s; }
 	operator T() const { return s; }
 };
-static const size huge = size(128);
-static const size vlarge = size(96);
-static const size large = size(64);
-static const size regular = size(42);
-static const size small = size(32);
-static const size tiny = size(24);
+static const size huge = size(96);
+static const size vlarge = size(64);
+static const size large = size(48);
+static const size regular = size(36);
+static const size small = size(28);
+static const size vsmall = size(20);
+static const size tiny = size(12);
 
 class line_height : public attrib {
 private:

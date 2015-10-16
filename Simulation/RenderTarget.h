@@ -18,6 +18,8 @@ class RenderTargetGeneric {
 public:
 	virtual glm::tvec2<std::size_t> get_image_size() const = 0;
 	virtual gli::format get_format() const = 0;
+
+	virtual ~RenderTargetGeneric() noexcept {}
 };
 
 class RenderTarget : public resource<RenderTargetAllocator>, virtual public RenderTargetGeneric {

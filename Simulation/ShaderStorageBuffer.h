@@ -16,6 +16,8 @@ class ShaderStorageBufferGeneric {
 public:
 	virtual void bind(const layout_binding<shader_storage_buffer_object_layout_binding_type> &) const = 0;
 	virtual void unbind(const layout_binding<shader_storage_buffer_object_layout_binding_type> &) const = 0;
+
+	virtual ~ShaderStorageBufferGeneric() noexcept {}
 };
 
 template <typename Type, BufferUsage::buffer_usage U = BufferUsage::BufferUsageNone>
