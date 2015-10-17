@@ -542,9 +542,6 @@
     <ClInclude Include="gl_current_context.h">
       <Filter>src\StE\Core\LLR\GL\Context</Filter>
     </ClInclude>
-    <ClInclude Include="bokeh_bokeh.geom">
-      <Filter>src\Global Shaders</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="stdafx.h">
@@ -601,19 +598,13 @@
     <None Include="hdr_create_histogram.glsl">
       <Filter>src\Global Shaders</Filter>
     </None>
-    <None Include="bokeh_compute_coc.glsl">
-      <Filter>src\Global Shaders</Filter>
-    </None>
     <None Include="bokeh_bilateral_blur_x.frag">
       <Filter>src\Global Shaders</Filter>
     </None>
     <None Include="bokeh_bilateral_blur_y.frag">
       <Filter>src\Global Shaders</Filter>
     </None>
-    <None Include="bokeh_bokeh.vert">
-      <Filter>src\Global Shaders</Filter>
-    </None>
-    <None Include="bokeh_bokeh.frag">
+    <None Include="bokeh_coc.frag">
       <Filter>src\Global Shaders</Filter>
     </None>
   </ItemGroup>

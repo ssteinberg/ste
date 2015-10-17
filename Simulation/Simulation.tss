@@ -4,30 +4,5 @@
     <ArrayOfString>
       <string>D:\Dev\git\simulation\Simulation\main.cpp</string>
     </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\transform.vert</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\frag.frag</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\brokeh_compute_coc.frag</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\passthrough.vert</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\glyph_factory.cpp</string>
-      <string>D:\Dev\git\simulation\Simulation\glyph_factory.h</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\TextRenderer.cpp</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\glyph.h</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\glyph_manager.h</string>
-    </ArrayOfString>
   </ArrayOfArrayOfString>
 </ArrayOfArrayOfArrayOfString>
