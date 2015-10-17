@@ -40,5 +40,5 @@ void main() {
 
 	vec3 RGB = XYZtoRGB * XYZ;
 
-	gl_FragColor = vec4(RGB, 1);
+	gl_FragColor = vec4(RGB, XYZ.y);
 }

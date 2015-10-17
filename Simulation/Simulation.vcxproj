@@ -138,6 +138,7 @@
     <ClInclude Include="AttributedString.h" />
     <ClInclude Include="attributed_string.h" />
     <ClInclude Include="attributed_string_htm_formatter.h" />
+    <ClInclude Include="bokeh_bokeh.geom" />
     <ClInclude Include="buffer_lock.h" />
     <ClInclude Include="buffer_object_cast.h" />
     <ClInclude Include="buffer_object_allocator.h" />
@@ -244,8 +245,11 @@
     <ClInclude Include="windows.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="bilateral_blur_x.frag" />
-    <None Include="bilateral_blur_y.frag" />
+    <None Include="bokeh_bilateral_blur_x.frag" />
+    <None Include="bokeh_bilateral_blur_y.frag" />
+    <None Include="bokeh_bokeh.frag" />
+    <None Include="bokeh_bokeh.vert" />
+    <None Include="bokeh_compute_coc.glsl" />
     <None Include="gen_depth_layers.frag" />
     <None Include="hdr_common.glsl" />
     <None Include="hdr_compute_histogram_sums.glsl" />

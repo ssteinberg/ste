@@ -9,11 +9,18 @@
 namespace StE {
 namespace LLR {
 
-struct IndirectDrawCommand {
+struct IndirectMultiDrawElementsCommand {
 	unsigned int count;
 	unsigned int instance_count;
 	unsigned int first_index;
 	unsigned int base_vertex;
+	unsigned int base_instance;
+};
+
+struct IndirectDrawArraysCommand {
+	unsigned int count;
+	unsigned int prim_count;
+	unsigned int first_index;
 	unsigned int base_instance;
 };
 
@@ -25,10 +32,10 @@ public:
 	virtual ~IndirectDrawBufferGeneric() noexcept {}
 };
 
-template <BufferUsage::buffer_usage U = BufferUsage::BufferUsageNone>
-class IndirectDrawBuffer : public buffer_object<IndirectDrawCommand, U>, public IndirectDrawBufferGeneric {
+template <typename Type, BufferUsage::buffer_usage U = BufferUsage::BufferUsageNone>
+class IndirectDrawBuffer : public buffer_object<Type, U>, public IndirectDrawBufferGeneric {
 private:
-	using Base = buffer_object<IndirectDrawCommand, U>;
+	using Base = buffer_object<Type, U>;
 
 	ALLOW_BUFFER_OBJECT_CASTS;
 

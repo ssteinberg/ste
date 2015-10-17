@@ -81,19 +81,26 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 	std::unique_ptr<StE::LLR::GLSLProgram> hdr_compute_histogram_sums = StE::Resource::GLSLProgramLoader::load_program_task(rc, { "hdr_compute_histogram_sums.glsl" })();
 	std::unique_ptr<StE::LLR::GLSLProgram> hdr_compute_minmax = StE::Resource::GLSLProgramLoader::load_program_task(rc, { "passthrough.vert","hdr_compute_minmax.frag" })();
 	std::unique_ptr<StE::LLR::GLSLProgram> hdr_tonemap = StE::Resource::GLSLProgramLoader::load_program_task(rc, { "passthrough.vert","hdr_tonemap.frag" })();
+	std::unique_ptr<StE::LLR::GLSLProgram> bokeh_compute_coc = StE::Resource::GLSLProgramLoader::load_program_task(rc, { "bokeh_compute_coc.glsl" })();
+	std::unique_ptr<StE::LLR::GLSLProgram> bokeh_blurx = StE::Resource::GLSLProgramLoader::load_program_task(rc, { "passthrough.vert","bokeh_bilateral_blur_x.frag" })();
+	std::unique_ptr<StE::LLR::GLSLProgram> bokeh_blury = StE::Resource::GLSLProgramLoader::load_program_task(rc, { "passthrough.vert","bokeh_bilateral_blur_y.frag" })();
+	std::unique_ptr<StE::LLR::GLSLProgram> bokeh_bokeh = StE::Resource::GLSLProgramLoader::load_program_task(rc, { "bokeh_bokeh.vert","bokeh_bokeh.geom","bokeh_bokeh.frag" })();
 
 	StE::LLR::RenderTarget depth_output(gli::format::FORMAT_D24_UNORM, StE::LLR::Texture2D::size_type(w, h));
 	StE::LLR::Texture2D normal_output(gli::format::FORMAT_RGB32_SFLOAT, StE::LLR::Texture2D::size_type(w, h), 1);
 	StE::LLR::Texture2D position_output(gli::format::FORMAT_RGB32_SFLOAT, StE::LLR::Texture2D::size_type(w, h), 1);
 	StE::LLR::Texture2D color_output(gli::format::FORMAT_RGB32_SFLOAT, StE::LLR::Texture2D::size_type(w, h), 1);
+	StE::LLR::Texture2D z_output(gli::format::FORMAT_R32_SFLOAT, StE::LLR::Texture2D::size_type(w, h), 1);
 	StE::LLR::FramebufferObject fbo;
 	fbo.depth_binding_point() = depth_output;
 	fbo[0] = position_output[0];
 	fbo[1] = color_output[0];
 	fbo[2] = normal_output[0];
+	fbo[3] = z_output[0];
 	1_color_idx = fbo[0];
 	0_color_idx = fbo[1];
 	2_color_idx = fbo[2];
+	3_color_idx = fbo[3];
 
 	using vertex_descriptor = StE::LLR::VBODescriptorWithTypes<glm::vec3, glm::vec2>::descriptor;
 	using vbo_type = StE::LLR::VertexBufferObject<Vertex, vertex_descriptor>;
@@ -107,9 +114,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 	vao[0] = (*vbo)[1];
 	vao[1] = (*vbo)[0];
 
- 	StE::LLR::Texture2D hdr_image(gli::format::FORMAT_RGB32_SFLOAT, StE::LLR::Texture2D::size_type(w, h), 1);
- 	StE::LLR::FramebufferObject fbo_hdr_image;
- 	fbo_hdr_image[0] = hdr_image[0];
+	StE::LLR::Texture2D hdr_image(gli::format::FORMAT_RGBA32_SFLOAT, StE::LLR::Texture2D::size_type(w, h), 1);
+	StE::LLR::FramebufferObject fbo_hdr_image;
+	fbo_hdr_image[0] = hdr_image[0];
 
 	Sampler linear_sampler;
 	linear_sampler.set_min_filter(TextureFiltering::Linear);
@@ -129,6 +136,24 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
  	StE::LLR::PixelBufferObject<unsigned> histogram_minmax_eraser(std::vector<unsigned>{ *reinterpret_cast<unsigned*>(&big_float), 0 });
  	StE::LLR::AtomicCounterBufferObject<> histogram(64);
  	StE::LLR::ShaderStorageBuffer<unsigned> histogram_sums(64);
+
+	struct bokeh_descriptor {
+		glm::vec2 pos;
+		float coc;
+		glm::vec4 color;
+
+		using descriptor = VBODescriptorWithTypes<glm::vec2, float, glm::vec4>::descriptor;
+	};
+	StE::LLR::Texture2D bokeh_coc(gli::format::FORMAT_R16_UNORM, StE::LLR::Texture2D::size_type(w, h), 1);
+	StE::LLR::Texture2D bokeh_blur_image(gli::format::FORMAT_RGBA8_UNORM, StE::LLR::Texture2D::size_type(w, h), 1);
+	StE::LLR::FramebufferObject fbo_bokeh_blur_image;
+	fbo_bokeh_blur_image[0] = bokeh_blur_image[0];
+	StE::LLR::IndirectDrawBuffer<IndirectDrawArraysCommand> bokeh_counter({ IndirectDrawArraysCommand{0,0,0,0} });
+	StE::LLR::VertexBufferObject<bokeh_descriptor, bokeh_descriptor::descriptor> bokeh_buffer(4096);
+	StE::LLR::VertexArrayObject bokeh_vao;
+	bokeh_vao[0] = bokeh_buffer[0];
+	bokeh_vao[1] = bokeh_buffer[1];
+	bokeh_vao[2] = bokeh_buffer[2];
 
 	bool running = true;
 
@@ -215,14 +240,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 		auto proj_mat = rc.projection_matrix();
 
 		rc.gl()->enable_depth_test();
+
 		fbo.bind();
 		rc.gl()->clear_framebuffer(false);
-
 		transform->bind();
 		auto mv = camera.view_matrix() * glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(-100, -35, 0)), glm::vec3(.25, .25, .25));
 		transform->set_uniform("view_model", mv);
 		transform->set_uniform("trans_inverse_view_model", glm::transpose(glm::inverse(mv)));
 		transform->set_uniform("projection", proj_mat);
+		transform->set_uniform("near", clip_near);
+		transform->set_uniform("far", clip_far);
 		scene.render();
 
 		rc.gl()->disable_depth_test();
@@ -242,6 +269,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 		histogram_minmax_eraser >> histogram_minmax;
 		unsigned zero = 0;
 		histogram.clear(gli::FORMAT_R32_UINT, &zero);
+		bokeh_counter.clear(gli::FORMAT_R32_UINT, &zero);
 
 
 		0_tex_unit = hdr_image;
@@ -252,14 +280,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 		0_image_idx = histogram_minmax[0];
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-		gl_current_context::get()->memory_barrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+		rc.gl()->memory_barrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
 		hdr_create_histogram->bind();
 		1_tex_unit = hdr_lums;
 		0_atomic_idx = histogram;
 		glDispatchCompute(luminance_w / 32, luminance_h / 32, 1);
 
-		gl_current_context::get()->memory_barrier((GL_SHADER_STORAGE_BARRIER_BIT);
+		rc.gl()->memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
 		hdr_compute_histogram_sums->bind();
 		hdr_compute_histogram_sums->set_uniform("hdr_lum_resolution", luminance_w * luminance_h);
@@ -267,13 +295,43 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 		1_storage_idx = buffer_object_cast<ShaderStorageBuffer<unsigned>>(histogram);
 		glDispatchCompute(1, 1, 1);
 
-		gl_current_context::get()->memory_barrier((GL_SHADER_STORAGE_BARRIER_BIT);
+		rc.gl()->memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
 		glViewport(0, 0, w, h);
 
-		hdr_tonemap->bind();
 		rc.gl()->defaut_framebuffer().bind();
+		hdr_tonemap->bind();
+		fbo_hdr_image.bind();
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+
+		bokeh_compute_coc->bind();
+		2_image_idx = z_output[0].with_access(ImageAccessMode::Read);
+		3_image_idx = bokeh_coc[0].with_access(ImageAccessMode::Write);
+		1_atomic_idx = buffer_object_cast<AtomicCounterBufferObject<>>(bokeh_counter);
+		2_storage_idx = buffer_object_cast<ShaderStorageBuffer<bokeh_descriptor>>(bokeh_buffer);
+		glDispatchCompute(glm::ceil(w / 4), glm::ceil(h / 4), 1);
+
+		rc.gl()->memory_barrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+
+		fbo_bokeh_blur_image.bind();
+		bokeh_blurx->bind();
+		1_tex_unit = bokeh_coc;
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+		rc.gl()->defaut_framebuffer().bind();
+		bokeh_blury->bind();
+		0_tex_unit = bokeh_blur_image;
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+		rc.gl()->memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT);
+
+		bokeh_vao.bind();
+		bokeh_counter.bind();
+		bokeh_bokeh->bind();
+		bokeh_bokeh->set_uniform("proj", rc.ortho_projection_matrix());
+		bokeh_bokeh->set_uniform("fb_size", glm::vec2(rc.get_backbuffer_size()) * .5f);
+		glDrawArraysIndirect(GL_POINTS, nullptr);
 
 
 		{

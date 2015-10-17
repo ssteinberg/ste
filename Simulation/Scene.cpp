@@ -28,7 +28,7 @@ Scene::Scene() {
 }
 
 Object *Scene::create_object(const std::vector<ObjectVertexData> &vertices, const std::vector<unsigned> &ind, Material &&mat) {
- 	LLR::IndirectDrawCommand idc;
+ 	LLR::IndirectMultiDrawElementsCommand idc;
  	idc.count = ind.size();
  	idc.instance_count = 1;
  	idc.first_index = total_indices;

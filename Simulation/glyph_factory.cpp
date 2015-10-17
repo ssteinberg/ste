@@ -18,6 +18,37 @@
 
 using namespace StE::Text;
 
+namespace StE {
+namespace Text {
+
+struct glyph_spacing_key {
+	wchar_t left;
+	wchar_t right;
+	int pixel_size;
+
+	bool operator==(const glyph_spacing_key &rhs) const {
+		return left == rhs.left && right == rhs.right && pixel_size == rhs.pixel_size;
+	}
+};
+
+}
+}
+
+
+namespace std {
+
+template <> struct hash<StE::Text::glyph_spacing_key> {
+	size_t inline operator()(const StE::Text::glyph_spacing_key &x) const {
+		return ((std::hash<decltype(x.left)>()(x.left) ^ std::hash<decltype(x.right)>()(x.right)) << 7) + std::hash<decltype(x.pixel_size)>()(x.pixel_size);
+	}
+};
+
+}
+
+
+namespace StE {
+namespace Text {
+
 class glyph_factory_ft_lib {
 private:
 	FT_Library library;
@@ -41,6 +72,7 @@ public:
 class glyph_factory_font {
 private:
 	FT_Face face;
+	std::unordered_map<glyph_spacing_key, int> spacing_cache;
 
 public:
 	glyph_factory_font(const Font &font, FT_Library ft_lib) {
@@ -61,29 +93,45 @@ public:
 	glyph_factory_font &operator=(glyph_factory_font &&) = default;
 
 	FT_Face get_face() { return face; }
+
+	bool get_spacing(wchar_t left, wchar_t right, int pixel_size, int *spacing) const {
+		auto it = spacing_cache.find(glyph_spacing_key{ left, right, pixel_size });
+		if (it != spacing_cache.end()) {
+			*spacing = it->second;
+			return true;
+		}
+		return false;
+	}
+	void insert_into_spacing_cache(wchar_t left, wchar_t right, int pixel_size, int spacing) {
+		spacing_cache[glyph_spacing_key{ left, right, pixel_size }] = spacing;
+	}
 };
 
-struct StE::Text::glyph_factory_impl {
+struct glyph_factory_impl {
 	std::mutex m;
 	glyph_factory_ft_lib lib;
 	std::unordered_map<Font, glyph_factory_font> fonts;
 
-	auto get_face(const Font &font) {
+	auto& get_factory_font(const Font &font) {
 		auto it = fonts.find(font);
 		if (it == fonts.end())
 			it = fonts.emplace(std::piecewise_construct,
 							   std::forward_as_tuple(font),
 							   std::forward_as_tuple(font, lib.get_lib())).first;
-		return it->second.get_face();
+		return it->second;
 	}
 
-	unsigned char *render_glyph_with(const Font&, wchar_t, int, int&, int&, int&, int&, int&);
+	unsigned char *render_glyph_with(const Font&, wchar_t, int, int&, int&, int&, int&);
 };
 
-unsigned char* glyph_factory_impl::render_glyph_with(const Font &font, wchar_t codepoint, int px_size, int &w, int &h, int &start_y, int &start_x, int &advance_x) {
+}
+}
+
+
+unsigned char* glyph_factory_impl::render_glyph_with(const Font &font, wchar_t codepoint, int px_size, int &w, int &h, int &start_y, int &start_x) {
 	std::unique_lock<std::mutex> l(m);
 
-	auto face = get_face(font);
+	auto face = get_factory_font(font).get_face();
 
 	FT_UInt glyph_index = FT_Get_Char_Index(face, codepoint);
 	FT_Set_Pixel_Sizes(face, 0, px_size);
@@ -95,7 +143,6 @@ unsigned char* glyph_factory_impl::render_glyph_with(const Font &font, wchar_t c
 
 	start_x = (metrics.horiBearingX >> 6) - glyph::padding;
 	start_y = (metrics.horiBearingY - metrics.height >> 6) - glyph::padding;
-	advance_x = face->glyph->advance.x >> 6;
 	w = bm.width + 2 * glyph::padding;
 	h = bm.rows + 2 * glyph::padding;
 
@@ -120,7 +167,7 @@ StE::task<glyph> glyph_factory::create_glyph_task(const Font &font, wchar_t code
 		int start_x, start_y, w, h;
 		int px_size = glyph::ttf_pixel_size;
 
-		unsigned char *glyph_buf = pimpl->render_glyph_with(font, codepoint, px_size, w, h, start_y, start_x, g.advance_x);
+		unsigned char *glyph_buf = pimpl->render_glyph_with(font, codepoint, px_size, w, h, start_y, start_x);
 		g.metrics.start_x = start_x;
 		g.metrics.start_y = start_y;
 		g.metrics.width = w;
@@ -134,4 +181,36 @@ StE::task<glyph> glyph_factory::create_glyph_task(const Font &font, wchar_t code
 
 		return std::move(g);
 	});
+}
+
+int glyph_factory::spacing(const Font &font, wchar_t left, wchar_t right, int pixel_size) {
+	glyph_factory_font &fac_font = pimpl->get_factory_font(font);
+	int spacing;
+	if (fac_font.get_spacing(left, right, pixel_size, &spacing))
+		return spacing;
+
+	std::unique_lock<std::mutex> l(pimpl->m);
+
+	auto face = fac_font.get_face();
+
+	FT_UInt left_index = FT_Get_Char_Index(face, left);
+	FT_UInt right_index = FT_Get_Char_Index(face, right);
+	FT_Set_Pixel_Sizes(face, 0, pixel_size);
+	FT_Load_Glyph(face, left_index, FT_LOAD_DEFAULT);
+
+	bool has_kern = FT_HAS_KERNING(face);
+
+	if (has_kern) {
+		FT_Vector delta;
+		FT_Get_Kerning(face, left_index, right_index, FT_KERNING_DEFAULT, &delta);
+
+		spacing = (face->glyph->advance.x + delta.x) >> 6;
+	}
+	else {
+		spacing = face->glyph->advance.x >> 6;
+	}
+
+	fac_font.insert_into_spacing_cache(left, right, pixel_size, spacing);
+
+	return spacing;
 }

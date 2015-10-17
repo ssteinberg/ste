@@ -86,7 +86,6 @@ private:
 			glyph_descriptor gd;
 			gd.texture = std::make_unique<LLR::Texture2D>(g.glyph_distance_field);
 			gd.metrics = g.metrics;
-			gd.advance_x = g.advance_x;
 			gd.buffer_index = buffer_offset;
 
 			buffer_glyph_descriptor bgd;
@@ -125,6 +124,10 @@ public:
 		}
 
 		return &glyphit->second;
+	}
+
+	int spacing(const Font &font, wchar_t left, wchar_t right, int pixel_size) {
+		return factory.spacing(font, left, right, pixel_size);
 	}
 
 	task<void> preload_glyphs_task(const Font &font, std::vector<wchar_t> codepoints) {

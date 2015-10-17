@@ -1,13 +1,16 @@
 
 #type frag
-#version 440
-
-in vec2 tex_coords;
+#version 450
 
 out vec4 gl_FragColor;
+
+in geo_out {
+	vec4 color;
+	vec2 st;
+} vin;
 
 layout(binding = 0) uniform sampler2D tex;
 
 void main() {
-    gl_FragColor = vec4(texture(tex, tex_coords).rgb, 1);
+    gl_FragColor = vec4(1, 0, 0, 1);
 }

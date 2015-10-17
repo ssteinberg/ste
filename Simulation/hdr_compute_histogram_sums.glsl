@@ -20,7 +20,7 @@ layout(location = 0) uniform int hdr_lum_resolution;
 void main() {
 	uint id = gl_LocalInvocationID.x;
 
-	float N = fbins;
+/*	float N = fbins;
 	float t = 1.25f / (N);
 	int bin_ceil = int(hdr_lum_resolution * t);
 
@@ -28,7 +28,10 @@ void main() {
 		int h = int(histogram[id * 2 + j]);
 		int trim = max(0, h - bin_ceil);
 		shared_data[id * 2 + j] = uint(h - trim);
-	}
+	}*/
+	
+	shared_data[id * 2] = histogram[id * 2];
+	shared_data[id * 2 + 1] = histogram[id * 2 + 1];
 
 	barrier();
 	memoryBarrierShared();

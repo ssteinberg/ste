@@ -30,6 +30,7 @@ flat in int drawId;
 layout(location = 0) out vec3 o_frag_color;
 layout(location = 1) out vec3 o_frag_position;
 layout(location = 2) out vec3 o_frag_normal;
+layout(location = 3) out float o_frag_z;
 
 layout(std430, binding = 0) buffer material_data {
 	material_descriptor mat_descriptor[];
@@ -69,4 +70,5 @@ void main() {
 	o_frag_color = vec3(XYZ.xy / XYZtotal, XYZ.y);
 
 	o_frag_position = frag_position;
+	o_frag_z = frag_depth;
 }

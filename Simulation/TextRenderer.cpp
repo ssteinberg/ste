@@ -8,6 +8,8 @@
 
 #include <vector>
 
+#include <glm/glm.hpp>
+
 using namespace StE::Text;
 using namespace StE::LLR;
 
@@ -77,7 +79,7 @@ std::vector<TextRenderer::glyph_point> TextRenderer::create_points(glm::vec2 ort
 		float w = weight_attrib ? weight_attrib->get() : 400.f;
 		float lh = (g->metrics.height + g->metrics.start_y) * f * 2 + 1;
 
-		float advance = g->advance_x * f;
+		float advance = i + 1 < wstr.length() ? gm.spacing(font, wstr[i], wstr[i + 1], size) : 0;
 
 		glyph_point p;
 		p.pos = ortho_pos.xy;
@@ -89,6 +91,7 @@ std::vector<TextRenderer::glyph_point> TextRenderer::create_points(glm::vec2 ort
 		if (stroke_attrib) {
 			p.stroke_color = glm::vec4(stroke_attrib->get_color().get()) / 255.0f;
 			p.stroke_width = stroke_attrib->get_width();
+			advance += glm::floor(p.stroke_width * .5f);
 		}
 		else
 			p.stroke_width = .0f;

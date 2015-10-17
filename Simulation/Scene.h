@@ -43,7 +43,7 @@ private:
  	static constexpr auto buffer_usage = static_cast<LLR::BufferUsage::buffer_usage>(LLR::BufferUsage::BufferUsageDynamic | LLR::BufferUsage::BufferUsageSparse);
  	using vbo_type = LLR::VertexBufferObject<ObjectVertexData, ObjectVertexData::descriptor, buffer_usage>;
  	using elements_type = LLR::ElementBufferObject<unsigned, buffer_usage>;
- 	using indirect_draw_buffer_type = LLR::IndirectDrawBuffer<buffer_usage>;
+ 	using indirect_draw_buffer_type = LLR::IndirectDrawBuffer<LLR::IndirectMultiDrawElementsCommand, buffer_usage>;
  	using material_data_buffer_type = LLR::ShaderStorageBuffer<material_descriptor, buffer_usage>;
 
 	LLR::SamplerMipmapped linear_sampler;
