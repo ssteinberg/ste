@@ -6,8 +6,6 @@
 #include "system_provided_framebuffer.h"
 #include "optional.h"
 
-#include "gl_state.h"
-
 #include <memory>
 #include <functional>
 #include <unordered_map>

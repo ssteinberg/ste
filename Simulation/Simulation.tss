@@ -4,5 +4,31 @@
     <ArrayOfString>
       <string>D:\Dev\git\simulation\Simulation\main.cpp</string>
     </ArrayOfString>
+    <ArrayOfString>
+      <string>D:\Dev\git\simulation\Simulation\bokeh_bilateral_blur_y.frag</string>
+    </ArrayOfString>
+    <ArrayOfString>
+      <string>D:\Dev\git\simulation\Simulation\bokeh_bilateral_blur_x.frag</string>
+    </ArrayOfString>
+    <ArrayOfString>
+      <string>D:\Dev\git\simulation\Simulation\bokeh_coc.frag</string>
+    </ArrayOfString>
+    <ArrayOfString>
+      <string>D:\Dev\git\simulation\Simulation\bokeh_draw_bokeh_effects.frag</string>
+      <string>D:\Dev\git\simulation\Simulation\bokeh_draw_bokeh_effects.geom</string>
+      <string>D:\Dev\git\simulation\Simulation\bokeh_draw_bokeh_effects.vert</string>
+    </ArrayOfString>
+    <ArrayOfString>
+      <string>D:\Dev\git\simulation\Simulation\bokeh_combine.frag</string>
+    </ArrayOfString>
+    <ArrayOfString>
+      <string>D:\Dev\git\simulation\Simulation\hdr_tonemap.frag</string>
+    </ArrayOfString>
+    <ArrayOfString>
+      <string>D:\Dev\git\simulation\Simulation\hdr_bloom_blur_x.frag</string>
+    </ArrayOfString>
+    <ArrayOfString>
+      <string>D:\Dev\git\simulation\Simulation\hdr_bloom_blur_y.frag</string>
+    </ArrayOfString>
   </ArrayOfArrayOfString>
 </ArrayOfArrayOfArrayOfString>

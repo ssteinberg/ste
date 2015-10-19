@@ -247,7 +247,22 @@
     <None Include="bokeh_bilateral_blur_x.frag" />
     <None Include="bokeh_bilateral_blur_y.frag" />
     <None Include="bokeh_coc.frag" />
+    <None Include="bokeh_combine.frag">
+      <SubType>
+      </SubType>
+    </None>
+    <None Include="bokeh_draw_bokeh_effects.frag">
+      <SubType>
+      </SubType>
+    </None>
+    <None Include="bokeh_draw_bokeh_effects.geom" />
+    <None Include="bokeh_draw_bokeh_effects.vert">
+      <SubType>
+      </SubType>
+    </None>
     <None Include="gen_depth_layers.frag" />
+    <None Include="hdr_bloom_blur_x.frag" />
+    <None Include="hdr_bloom_blur_y.frag" />
     <None Include="hdr_common.glsl" />
     <None Include="hdr_compute_histogram_sums.glsl" />
     <None Include="hdr_compute_minmax.frag" />

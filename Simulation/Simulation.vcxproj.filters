@@ -607,5 +607,23 @@
     <None Include="bokeh_coc.frag">
       <Filter>src\Global Shaders</Filter>
     </None>
+    <None Include="bokeh_draw_bokeh_effects.frag">
+      <Filter>src\Global Shaders</Filter>
+    </None>
+    <None Include="bokeh_combine.frag">
+      <Filter>src\Global Shaders</Filter>
+    </None>
+    <None Include="bokeh_draw_bokeh_effects.vert">
+      <Filter>src\Global Shaders</Filter>
+    </None>
+    <None Include="bokeh_draw_bokeh_effects.geom">
+      <Filter>src\Global Shaders</Filter>
+    </None>
+    <None Include="hdr_bloom_blur_x.frag">
+      <Filter>src\Global Shaders</Filter>
+    </None>
+    <None Include="hdr_bloom_blur_y.frag">
+      <Filter>src\Global Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

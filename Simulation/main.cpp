@@ -81,7 +81,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 	std::unique_ptr<StE::LLR::GLSLProgram> hdr_compute_histogram_sums = StE::Resource::GLSLProgramLoader::load_program_task(rc, { "hdr_compute_histogram_sums.glsl" })();
 	std::unique_ptr<StE::LLR::GLSLProgram> hdr_compute_minmax = StE::Resource::GLSLProgramLoader::load_program_task(rc, { "passthrough.vert","hdr_compute_minmax.frag" })();
 	std::unique_ptr<StE::LLR::GLSLProgram> hdr_tonemap = StE::Resource::GLSLProgramLoader::load_program_task(rc, { "passthrough.vert","hdr_tonemap.frag" })();
+	std::unique_ptr<StE::LLR::GLSLProgram> hdr_bloom_blurx = StE::Resource::GLSLProgramLoader::load_program_task(rc, { "passthrough.vert","hdr_bloom_blur_x.frag" })();
+	std::unique_ptr<StE::LLR::GLSLProgram> hdr_bloom_blury = StE::Resource::GLSLProgramLoader::load_program_task(rc, { "passthrough.vert","hdr_bloom_blur_y.frag" })();
 	std::unique_ptr<StE::LLR::GLSLProgram> bokeh_compute_coc = StE::Resource::GLSLProgramLoader::load_program_task(rc, { "passthrough.vert","bokeh_coc.frag" })();
+	std::unique_ptr<StE::LLR::GLSLProgram> bokeh_draw_bokeh_effects = StE::Resource::GLSLProgramLoader::load_program_task(rc, { "bokeh_draw_bokeh_effects.vert","bokeh_draw_bokeh_effects.geom","bokeh_draw_bokeh_effects.frag" })();
+	std::unique_ptr<StE::LLR::GLSLProgram> bokeh_combine = StE::Resource::GLSLProgramLoader::load_program_task(rc, { "passthrough.vert","bokeh_combine.frag" })();
 	std::unique_ptr<StE::LLR::GLSLProgram> bokeh_blurx = StE::Resource::GLSLProgramLoader::load_program_task(rc, { "passthrough.vert","bokeh_bilateral_blur_x.frag" })();
 	std::unique_ptr<StE::LLR::GLSLProgram> bokeh_blury = StE::Resource::GLSLProgramLoader::load_program_task(rc, { "passthrough.vert","bokeh_bilateral_blur_y.frag" })();
 
@@ -114,12 +118,22 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 	vao[1] = (*vbo)[0];
 
 	StE::LLR::Texture2D hdr_image(gli::format::FORMAT_RGBA32_SFLOAT, StE::LLR::Texture2D::size_type(w, h), 1);
+	StE::LLR::Texture2D hdr_bloom_image(gli::format::FORMAT_RGBA8_UNORM, StE::LLR::Texture2D::size_type(w, h), 1);
 	StE::LLR::FramebufferObject fbo_hdr_image;
 	fbo_hdr_image[0] = hdr_image[0];
+	fbo_hdr_image[1] = hdr_bloom_image[0];
+
+	StE::LLR::Texture2D hdr_bloom_blurx_image(gli::format::FORMAT_RGBA8_UNORM, StE::LLR::Texture2D::size_type(w, h), 1);
+	StE::LLR::FramebufferObject fbo_hdr_bloom_blurx_image;
+	fbo_hdr_bloom_blurx_image[0] = hdr_bloom_blurx_image[0];
 
 	Sampler linear_sampler;
 	linear_sampler.set_min_filter(TextureFiltering::Linear);
 	linear_sampler.set_mag_filter(TextureFiltering::Linear);
+	SamplerMipmapped linear_mipmaps_sampler;
+	linear_mipmaps_sampler.set_min_filter(TextureFiltering::Linear);
+	linear_mipmaps_sampler.set_mag_filter(TextureFiltering::Linear);
+	linear_mipmaps_sampler.set_mipmap_filter(TextureFiltering::Linear);
 
 	int luminance_w = 1, luminance_h = 1;
 	while ((luminance_w << 1) < w)
@@ -136,19 +150,25 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
  	StE::LLR::AtomicCounterBufferObject<> histogram(64);
  	StE::LLR::ShaderStorageBuffer<unsigned> histogram_sums(64);
 
-	struct bokeh_descriptor {
-		glm::vec2 pos;
-		float coc;
-		glm::vec4 color;
-
-		using descriptor = VBODescriptorWithTypes<glm::vec2, float, glm::vec4>::descriptor;
-	};
-	StE::LLR::Texture2D bokeh_coc(gli::format::FORMAT_RG16_UNORM, StE::LLR::Texture2D::size_type(w, h), 1);
+	StE::LLR::Texture2D bokeh_coc(gli::format::FORMAT_RG32_SFLOAT, StE::LLR::Texture2D::size_type(w, h), 1);
 	StE::LLR::FramebufferObject fbo_bokeh_coc;
 	fbo_bokeh_coc[0] = bokeh_coc[0];
-	StE::LLR::Texture2D bokeh_blur_image(gli::format::FORMAT_RGBA8_UNORM, StE::LLR::Texture2D::size_type(w, h), 1);
+	StE::LLR::Texture2D bokeh_blur_image_x(gli::format::FORMAT_RGBA8_UNORM, StE::LLR::Texture2D::size_type(w, h), 1);
 	StE::LLR::FramebufferObject fbo_bokeh_blur_image;
-	fbo_bokeh_blur_image[0] = bokeh_blur_image[0];
+	fbo_bokeh_blur_image[0] = bokeh_blur_image_x[0];
+
+	struct bokeh_point_descriptor {
+		glm::vec4 pos_size;
+		glm::vec4 color;
+		using descriptor = VBODescriptorWithTypes<glm::vec4, glm::vec4>::descriptor;
+	};
+	StE::LLR::IndirectDrawBuffer<IndirectDrawArraysCommand> bokeh_indirect_draw({ IndirectDrawArraysCommand{ 0, 1, 0, 0 } });
+	StE::LLR::VertexBufferObject<bokeh_point_descriptor, bokeh_point_descriptor::descriptor> bokeh_vbo(100000);
+	StE::LLR::VertexArrayObject bokeh_vao;
+	bokeh_vao[0] = bokeh_vbo[0];
+	bokeh_vao[1] = bokeh_vbo[1];
+
+	std::unique_ptr<StE::LLR::Texture2D> bokeh_bokeh_alpha_map = StE::Resource::SurfaceIO::load_texture_2d_task("Data/textures/bokeh.png", false)();
 
 	bool running = true;
 
@@ -261,9 +281,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 
 
 		0_sampler_idx = linear_sampler;
+		1_sampler_idx = linear_mipmaps_sampler;
 		histogram_minmax_eraser >> histogram_minmax;
 		unsigned zero = 0;
 		histogram.clear(gli::FORMAT_R32_UINT, &zero);
+		buffer_object_cast<AtomicCounterBufferObject<>>(bokeh_indirect_draw).clear(gli::FORMAT_R32_UINT, &zero, 0, 1);
 
 
 		0_tex_unit = hdr_image;
@@ -284,35 +306,65 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 		rc.gl()->memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
 		hdr_compute_histogram_sums->bind();
-		hdr_compute_histogram_sums->set_uniform("hdr_lum_resolution", luminance_w * luminance_h);
 		0_storage_idx = histogram_sums;
 		1_storage_idx = buffer_object_cast<ShaderStorageBuffer<unsigned>>(histogram);
 		glDispatchCompute(1, 1, 1);
 
-		rc.gl()->memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT);
-
 		glViewport(0, 0, w, h);
 
-		rc.gl()->defaut_framebuffer().bind();
-		hdr_tonemap->bind();
-		fbo_hdr_image.bind();
-		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+		rc.gl()->memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
+		fbo_hdr_image.bind();
+		hdr_tonemap->bind();
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 		bokeh_compute_coc->bind();
 		fbo_bokeh_coc.bind();
+		0_tex_unit = hdr_image;
 		2_tex_unit = z_output;
+		0_atomic_idx = buffer_object_cast<AtomicCounterBufferObject<>>(bokeh_indirect_draw);
+		0_storage_idx = buffer_object_cast<ShaderStorageBuffer<decltype(bokeh_vbo)::T>>(bokeh_vbo);
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
+		fbo_hdr_bloom_blurx_image.bind();
+		hdr_bloom_blurx->bind();
+		1_tex_unit = hdr_bloom_image;
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+		fbo_hdr_image.bind();
+		hdr_bloom_blury->bind();
+		1_tex_unit = hdr_bloom_blurx_image;
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+		1_tex_unit = bokeh_coc;
 		fbo_bokeh_blur_image.bind();
 		bokeh_blurx->bind();
-		1_tex_unit = bokeh_coc;
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-		rc.gl()->defaut_framebuffer().bind();
 		bokeh_blury->bind();
-		0_tex_unit = bokeh_blur_image;
+		rc.gl()->defaut_framebuffer().bind();
+		2_tex_unit = bokeh_blur_image_x;
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+		rc.gl()->enable_state(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		rc.gl()->memory_barrier(GL_ATOMIC_COUNTER_BARRIER_BIT | GL_SHADER_STORAGE_BARRIER_BIT);
+
+		fbo_hdr_image.bind();
+		rc.gl()->clear_framebuffer(true, false);
+		3_tex_unit = *bokeh_bokeh_alpha_map;
+		bokeh_draw_bokeh_effects->bind();
+		bokeh_draw_bokeh_effects->set_uniform("fb_size", glm::vec2(rc.get_backbuffer_size()));
+		bokeh_indirect_draw.bind();
+		bokeh_vao.bind();
+		glDrawArraysIndirect(GL_POINTS, nullptr);
+
+		vao.bind();
+		rc.gl()->defaut_framebuffer().bind();
+		bokeh_combine->bind();
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+		rc.gl()->disable_state(GL_BLEND);
 
 
 		{

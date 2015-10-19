@@ -2,9 +2,10 @@
 #type frag
 #version 440
 
-out vec4 gl_FragColor;
-
 #include "hdr_common.glsl"
+
+layout(location = 0) out vec4 rgbout;
+layout(location = 1) out vec4 bloomout;
 
 layout(binding = 0) uniform sampler2D hdr;
 layout(binding = 0, r32i) uniform readonly iimage2D histogram_minmax;
@@ -12,6 +13,8 @@ layout(binding = 0, r32i) uniform readonly iimage2D histogram_minmax;
 layout(std430, binding = 0) coherent buffer histogram_sums {
 	uint histogram[bins];
 };
+
+const float bloom_cutoff = .85f;
 
 void main() {
 	vec3 hdr_texel = texelFetch(hdr, ivec2(gl_FragCoord.xy), 0).rgb;
@@ -38,7 +41,14 @@ void main() {
 	XYZ.z = Y_y * (1 - hdr_texel.x - hdr_texel.y);
 	XYZ.y = hdr_texel.z;
 
-	vec3 RGB = XYZtoRGB * XYZ;
+	vec3 RGB = clamp(XYZtoRGB * XYZ, vec3(0,0,0), vec3(1,1,1));
 
-	gl_FragColor = vec4(RGB, XYZ.y);
+	rgbout = vec4(RGB, XYZ.y);
+	
+	if (XYZ.y > bloom_cutoff) {
+		float x = pow((XYZ.y - bloom_cutoff) / (1 - bloom_cutoff), 6);
+		bloomout = vec4(RGB, x);
+	}
+	else
+		bloomout = vec4(0);
 }

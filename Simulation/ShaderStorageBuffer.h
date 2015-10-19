@@ -25,6 +25,8 @@ class ShaderStorageBuffer : public buffer_object_layout_bindable<Type, shader_st
 private:
 	using Base = buffer_object_layout_bindable<Type, shader_storage_buffer_object_layout_binding_type, U>;
 
+	ALLOW_BUFFER_OBJECT_CASTS;
+
 public:
 	ShaderStorageBuffer(ShaderStorageBuffer &&m) = default;
 	ShaderStorageBuffer& operator=(ShaderStorageBuffer &&m) = default;
