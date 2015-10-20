@@ -14,20 +14,20 @@ namespace LLR {
 
 namespace texture_storage {
 
-template <int dim, bool ms> static void create_gl_texture_storage(unsigned id, int levels, int samples, const gli::gl::format &format, const typename texture_size_type<dim>::type &size) { static_assert(false); }
-template <> static void create_gl_texture_storage<1, false>(unsigned id, int levels, int samples, const gli::gl::format &format, const typename texture_size_type<1>::type &size) {
+template <int dim, bool ms> void create_gl_texture_storage(unsigned id, int levels, int samples, const gli::gl::format &format, const typename texture_size_type<dim>::type &size) { static_assert(false); }
+template <> void create_gl_texture_storage<1, false>(unsigned id, int levels, int samples, const gli::gl::format &format, const typename texture_size_type<1>::type &size) {
 	glTextureStorage1D(id, levels, format.Internal, size[0]);
 }
-template <> static void create_gl_texture_storage<2, false>(unsigned id, int levels, int samples, const gli::gl::format &format, const typename texture_size_type<2>::type &size) {
+template <> void create_gl_texture_storage<2, false>(unsigned id, int levels, int samples, const gli::gl::format &format, const typename texture_size_type<2>::type &size) {
 	glTextureStorage2D(id, levels, format.Internal, size[0], size[1]);
 }
-template <> static void create_gl_texture_storage<3, false>(unsigned id, int levels, int samples, const gli::gl::format &format, const typename texture_size_type<3>::type &size) {
+template <> void create_gl_texture_storage<3, false>(unsigned id, int levels, int samples, const gli::gl::format &format, const typename texture_size_type<3>::type &size) {
 	glTextureStorage3D(id, levels, format.Internal, size[0], size[1], size[2]);
 }
-template <> static void create_gl_texture_storage<2, true>(unsigned id, int levels, int samples, const gli::gl::format &format, const typename texture_size_type<2>::type &size) {
+template <> void create_gl_texture_storage<2, true>(unsigned id, int levels, int samples, const gli::gl::format &format, const typename texture_size_type<2>::type &size) {
 	glTextureStorage2DMultisample(id, samples, format.Internal, size[0], size[1], false);
 }
-template <> static void create_gl_texture_storage<3, true>(unsigned id, int levels, int samples, const gli::gl::format &format, const typename texture_size_type<3>::type &size) {
+template <> void create_gl_texture_storage<3, true>(unsigned id, int levels, int samples, const gli::gl::format &format, const typename texture_size_type<3>::type &size) {
 	glTextureStorage3DMultisample(id, samples, format.Internal, size[0], size[1], size[2], false);
 }
 

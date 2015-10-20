@@ -96,11 +96,11 @@ private:
 	std::unique_ptr<Logger> cerr_logger;
 
 public:
-	Log(const std::string &title, const std::string path_prefix = R"(Log\)", const std::string path_extension = ".html") : 
+	Log(const std::string &title, const std::string path_prefix = R"(Log\)", const std::string path_extension = ".html") :
+			formatter(title),
 			notifier(std::make_shared<std::condition_variable>()),
 			queue(std::make_shared<queue_type>()),
 			finish(false),
-			formatter(title),
 			cout_strm_buffer(nullptr),
 			cerr_strm_buffer(nullptr) {
 		file_path = path_prefix + file_name(title) + path_extension;

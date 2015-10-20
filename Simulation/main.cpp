@@ -214,11 +214,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 			AttributedWString str = center(stroke(blue_violet, 2)(purple(vlarge(b(L"Loading Simulation...")))) +
 											L"\n" + 
 											orange(regular(L"By Shlomi Steinberg")));
+			auto total_vram = std::to_wstring(rc.gl()->meminfo_total_available_vram() / 1024);
+			auto free_vram = std::to_wstring(rc.gl()->meminfo_free_vram() / 1024);
+
  			text_renderer.render({ w / 2, h / 2 - 20 }, str);
  			text_renderer.render({ 10, 20 }, vsmall(b(L"Thread pool workers: ") +
  									olive(std::to_wstring(rc.scheduler().get_sleeping_workers())) + 
  									L"/" + 
  									olive(std::to_wstring(rc.scheduler().get_workers_count()))));
+			text_renderer.render({ 10, 50 },
+								 vsmall(b(stroke(blue, 1)(light_steel_blue(free_vram)) + L" / " + stroke(red, 1)(dark_red(total_vram)) + L" MB")));
 		}
 
 		if (model_future.wait_for(std::chrono::seconds(0)) != std::future_status::ready)
@@ -320,7 +325,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 
 		bokeh_compute_coc->bind();
 		fbo_bokeh_coc.bind();
-		0_tex_unit = hdr_image;
 		2_tex_unit = z_output;
 		0_atomic_idx = buffer_object_cast<AtomicCounterBufferObject<>>(bokeh_indirect_draw);
 		0_storage_idx = buffer_object_cast<ShaderStorageBuffer<decltype(bokeh_vbo)::T>>(bokeh_vbo);
@@ -364,14 +368,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 		rc.gl()->defaut_framebuffer().bind();
 		bokeh_combine->bind();
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-		rc.gl()->disable_state(GL_BLEND);
 
 
 		{
 			using namespace StE::Text::Attributes;
 			auto tpf = std::to_wstring(rc.time_per_frame().count());
- 			text_renderer.render({ 30, h - 50 }, 
- 								 vsmall(b(stroke(purple, 3)((red(tpf)))) + L" ms"));
+			auto total_vram = std::to_wstring(rc.gl()->meminfo_total_available_vram() / 1024);
+			auto free_vram = std::to_wstring(rc.gl()->meminfo_free_vram() / 1024);
+
+			text_renderer.render({ 30, h - 50 },
+								 vsmall(b(stroke(purple, 3)((red(tpf)))) + L" ms"));
+			text_renderer.render({ 30, 20 },
+								 vsmall(b(stroke(blue,1)(light_steel_blue(free_vram)) + L" / " + stroke(red, 1)(dark_red(total_vram)) + L" MB")));
 		}
 	}
 	 

@@ -34,10 +34,6 @@ private:
 		material_texture_descriptor specular;
 		material_texture_descriptor heightmap;
 		material_texture_descriptor alphamap;
-		material_texture_descriptor tex0;
-		material_texture_descriptor tex1;
-		material_texture_descriptor tex2;
-		material_texture_descriptor tex3;
 	};
  
  	static constexpr auto buffer_usage = static_cast<LLR::BufferUsage::buffer_usage>(LLR::BufferUsage::BufferUsageDynamic | LLR::BufferUsage::BufferUsageSparse);

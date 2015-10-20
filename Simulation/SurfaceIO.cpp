@@ -49,7 +49,7 @@ bool SurfaceIO::write_png(const std::string &file_name, const char *image_data, 
 
 	// set the individual row_pointers to point at the correct offsets of image_data
 	// To maintain compatability png_write_image requests a non-const double pointer, hack the const away...
-	for (unsigned int i = 0; i < height; i++)
+	for (int i = 0; i < height; i++)
 		row_pointers[height - 1 - i] = (png_byte*)reinterpret_cast<const png_byte*>(image_data + i * width * components);
 
 	png_init_io(png, fp);
@@ -192,7 +192,7 @@ gli::texture2D SurfaceIO::load_png(const std::string &file_name, bool srgb) {
 
 	// Allocate the image_data as a big block, to be given to opengl
 	/*char * image_data = new char[rowbytes * temp_height * sizeof(png_byte) + 15];*/
-	int w = rowbytes / components + !!(rowbytes%components);
+	unsigned w = rowbytes / components + !!(rowbytes%components);
 	gli::texture2D tex(1, format, { w, temp_height });
 	char *image_data = reinterpret_cast<char*>(tex.data());
 	auto level0_size = tex[0].size();
@@ -223,7 +223,7 @@ gli::texture2D SurfaceIO::load_png(const std::string &file_name, bool srgb) {
 		// read the png into image_data through row_pointers
 		png_read_image(png_ptr, row_pointers);
 
-		for (int i = 0; i < w * temp_height; ++i) {
+		for (unsigned i = 0; i < w * temp_height; ++i) {
 			int j = i / 8;
 			int bit = i % 8;
 			char byte = static_cast<char>(temp[j]);
@@ -363,7 +363,7 @@ gli::texture2D SurfaceIO::load_jpeg(const std::string &path, bool srgb) {
 		row_pointers[cinfo.output_height - 1 - i] = reinterpret_cast<unsigned char*>(image_data + i * w * cinfo.output_components);
 
 	// Read as many lines per call as possible
-	int lines_read = 0;
+	unsigned lines_read = 0;
 	while (cinfo.output_scanline < cinfo.output_height) {
 		lines_read += jpeg_read_scanlines(&cinfo, row_pointers + cinfo.output_scanline, cinfo.output_height - cinfo.output_scanline);
 	}

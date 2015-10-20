@@ -32,13 +32,14 @@ private:
 
 	mutable std::mutex m;
 	mutable std::condition_variable cv;
-	interruptible_thread t;
 
 	mutable concurrent_queue<index_type::val_data_guard> accessed_queue;
 
 	std::atomic<std::size_t> total_size{ 0 };
-	std::size_t quota;
 	boost::filesystem::path path;
+	std::size_t quota;
+
+	interruptible_thread t;
 
 private:
 	void shutdown() {
@@ -59,7 +60,7 @@ public:
 	lru_cache &operator=(lru_cache &&) = delete;
 	lru_cache &operator=(const lru_cache &) = delete;
 
-	lru_cache(const boost::filesystem::path &path, std::size_t quota = 0) : path(path), quota(quota), index(path, total_size), t([this]() {
+	lru_cache(const boost::filesystem::path &path, std::size_t quota = 0) : index(path, total_size), path(path), quota(quota), t([this]() {
 		auto flag = interruptible_thread::interruption_flag;
 		for (;;) {
 			if (flag->is_set()) return;

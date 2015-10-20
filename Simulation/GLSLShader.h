@@ -25,18 +25,18 @@ struct GLSLShaderProperties {
 
 template <GLSLShaderType ShaderType>
 class GLSLShaderAllocator : public generic_resource_allocator {
+private:
+	template <GLSLShaderType T>
+	unsigned creator() { assert(false); return 0; }
+	template <> unsigned creator<GLSLShaderType::VERTEX>() { return glCreateShader(GL_VERTEX_SHADER); }
+	template <> unsigned creator<GLSLShaderType::FRAGMENT>() { return glCreateShader(GL_FRAGMENT_SHADER); }
+	template <> unsigned creator<GLSLShaderType::GEOMETRY>() { return glCreateShader(GL_GEOMETRY_SHADER); }
+	template <> unsigned creator<GLSLShaderType::COMPUTE>() { return glCreateShader(GL_COMPUTE_SHADER); }
+	template <> unsigned creator<GLSLShaderType::TESS_CONTROL>() { return glCreateShader(GL_TESS_CONTROL_SHADER); }
+	template <> unsigned creator<GLSLShaderType::TESS_EVALUATION>() { return glCreateShader(GL_TESS_EVALUATION_SHADER); }
+
 public:
-	unsigned allocate() override final {
-		switch (ShaderType) {
-		case GLSLShaderType::VERTEX:			return glCreateShader(GL_VERTEX_SHADER);
-		case GLSLShaderType::FRAGMENT:			return glCreateShader(GL_FRAGMENT_SHADER);
-		case GLSLShaderType::GEOMETRY:			return glCreateShader(GL_GEOMETRY_SHADER);
-		case GLSLShaderType::COMPUTE:			return glCreateShader(GL_COMPUTE_SHADER);
-		case GLSLShaderType::TESS_CONTROL:		return glCreateShader(GL_TESS_CONTROL_SHADER);
-		case GLSLShaderType::TESS_EVALUATION:	return glCreateShader(GL_TESS_EVALUATION_SHADER);
-		default:								assert(false); return 0;
-		}
-	}
+	unsigned allocate() override final { return creator<ShaderType>(); }
 	static void deallocate(unsigned &id) { glDeleteShader(id); id = 0; }
 };
 

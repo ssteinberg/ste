@@ -31,7 +31,7 @@ bool Texture2DArray::upload_layer(int layer, const gli::texture2D &texture) {
 		return false;
 	}
 
-	for (std::size_t l = 0; l < levels; ++l) {
+	for (int l = 0; l < levels; ++l) {
 		upload_level(texture[l].data(), l, layer, LLRCubeMapFace::LLRCubeMapFaceNone, texture[l].size());
 	}
 

@@ -66,7 +66,7 @@ private:
 	std::array<char, buff_sz + 1> buffer;
 
 public:
-	log_streambuf(std::shared_ptr<sink_type> sink, bool force_flush) : sink(sink), force_flush(force_flush) {
+	log_streambuf(std::shared_ptr<sink_type> sink, bool force_flush) : force_flush(force_flush), sink(sink) {
 		char *base = &buffer.front();
 		setp(base, base + buffer.size());
 	}

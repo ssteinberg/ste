@@ -15,10 +15,6 @@ struct material_descriptor {
 	material_texture_descriptor specular;
 	material_texture_descriptor heightmap;
 	material_texture_descriptor alphamap;
-	material_texture_descriptor tex0;
-	material_texture_descriptor tex1;
-	material_texture_descriptor tex2;
-	material_texture_descriptor tex3;
 };
 
 in vec2 frag_texcoords;
@@ -64,7 +60,7 @@ void main() {
 		o_frag_normal = normalize(frag_normal);
 	}
 
-	vec3 color = md.diffuse.tex_handler>0 ? texture(sampler2D(md.diffuse.tex_handler), frag_texcoords).rgb : vec3(1,1,1);
+	vec3 color = vec3(1);//md.diffuse.tex_handler>0 ? texture(sampler2D(md.diffuse.tex_handler), frag_texcoords).rgb : vec3(1,1,1);
 	vec3 XYZ = RGBtoXYZ * color;
 	float XYZtotal = XYZ.x + XYZ.y + XYZ.z;
 	o_frag_color = vec3(XYZ.xy / XYZtotal, XYZ.y);

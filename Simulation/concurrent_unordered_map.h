@@ -78,7 +78,7 @@ private:
 
 	template <class table_ptr>
 	struct resize_data_struct {
-		static constexpr int chunk_size = 8;
+		static constexpr unsigned chunk_size = 8;
 
 		unsigned size;
 		hash_table_type buckets;
@@ -137,9 +137,9 @@ private:
 	void __fastcall copy_virtual_bucket(hash_table_guard_type &old_table_guard,
 										resize_data_guard_type &resize_guard,
 										int i, int chunks) {
-		int chunk_size = resize_data::chunk_size;
-		int j = i * chunk_size;
-		for (int k = 0; k < chunk_size && j < old_table_guard->size; ++k, ++j) {
+		unsigned chunk_size = resize_data::chunk_size;
+		unsigned j = static_cast<unsigned>(i) * chunk_size;
+		for (unsigned k = 0; k < chunk_size && j < old_table_guard->size; ++k, ++j) {
 			auto *virtual_bucket = &old_table_guard->buckets[j];
 			for (;;) {
 				for (int b = 0; b < N; ++b) {
@@ -202,7 +202,7 @@ private:
 		if (old_table_moved) {
 			if (hash_table.try_compare_emplace(std::memory_order_acq_rel, old_table_guard, resize_guard->size, resize_guard->buckets)) {
 				auto ptr = old_table_guard->buckets;
-				for (int i = 0; i < old_table_guard->size; ++i)
+				for (unsigned i = 0; i < old_table_guard->size; ++i)
 					(&ptr[i])->~virtual_bucket_type();
 				_aligned_free(ptr);
 			}
@@ -295,7 +295,7 @@ public:
 		auto data_guard = hash_table.acquire();
 		auto ptr = data_guard->buckets;
 		if (ptr) {
-			for (int i = 0; i < data_guard->size; ++i)
+			for (unsigned i = 0; i < data_guard->size; ++i)
 				(&ptr[i])->~virtual_bucket_type();
 			_aligned_free(ptr);
 		}

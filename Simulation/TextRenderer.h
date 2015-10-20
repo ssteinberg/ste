@@ -42,7 +42,7 @@ private:
 private:
 	std::unique_ptr<LLR::GLSLProgram> text_distance_mapping;
 
-	static constexpr int vbo_ring_size = 4096;
+	static constexpr int vbo_ring_size = 8192;
 	static constexpr LLR::BufferUsage::buffer_usage buffer_usage = static_cast<LLR::BufferUsage::buffer_usage>(LLR::BufferUsage::BufferUsageMapCoherent | LLR::BufferUsage::BufferUsageMapWrite | LLR::BufferUsage::BufferUsageMapPersistent);
 	using vbo_type = LLR::VertexBufferObject<glyph_point, glyph_point::descriptor, buffer_usage>;
 	using vbo_mapped_ptr_type = LLR::mapped_buffer_object_unique_ptr<vbo_type::T, vbo_type::access_usage>;
@@ -58,11 +58,12 @@ private:
 	int default_size;
 	const StEngineControl &context;
 
-	void adjust_line(std::vector<glyph_point> &, const AttributedWString &, int , float , float , const glm::vec2 &);
+	void adjust_line(std::vector<glyph_point> &, const AttributedWString &, unsigned, float , float , const glm::vec2 &);
 	std::vector<glyph_point> create_points(glm::vec2 , const AttributedWString &);
 
 public:
 	TextRenderer(const StEngineControl &context, const Font &default_font, int default_size = 28);
+	~TextRenderer() { vbo_mapped_ptr.invalidate(); }
 
 	void render(glm::vec2 ortho_pos, const AttributedWString &wstr);
 };

@@ -41,7 +41,7 @@ texture_layout_binding inline operator "" _tex_unit(unsigned long long int i) { 
 template <llr_resource_type type>
 class TextureBinder {
 private:
-	constexpr static GLenum gl_type() { return gl_utils::translate_type(type); }
+	static constexpr GLenum gl_type() { return gl_utils::translate_type(type); }
 
 public:
 	static void bind(unsigned int id, const texture_layout_binding &sampler) {
@@ -66,7 +66,7 @@ public:
 	static constexpr llr_resource_type T = type;
 
 protected:
-	constexpr static GLenum gl_type() { return gl_utils::translate_type(type); }
+	static constexpr GLenum gl_type() { return gl_utils::translate_type(type); }
 
 	int levels, samples;
 	texture_size_type<texture_dimensions<type>::dimensions>::type size;
@@ -195,11 +195,11 @@ public:
 
 	virtual void upload_level(const void *data, int level = 0, int layer = 0, LLRCubeMapFace face = LLRCubeMapFace::LLRCubeMapFaceNone, int data_size = 0) = 0;
 	virtual void download_level(void *data, std::size_t size, int level = 0, int layer = 0) const {
-		auto &gl_format = gl_utils::translate_format(format);
+		auto gl_format = gl_utils::translate_format(format);
 		glGetTextureImage(get_resource_id(), level, gl_format.External, gl_format.Type, size, data);
 	}
 	virtual void download_level(void *data, std::size_t size, int level, int layer, gli::format format, bool compressed = false) const {
-		auto &gl_format = gl_utils::translate_format(format);
+		auto gl_format = gl_utils::translate_format(format);
 		if (compressed)
 			glGetCompressedTextureImage(get_resource_id(), level, size, data);
 		else

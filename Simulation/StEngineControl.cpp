@@ -22,7 +22,7 @@ struct StE::ste_engine_control_impl {
 	std::chrono::time_point<std::chrono::steady_clock> last_frame_time{ std::chrono::high_resolution_clock::now() };
 };
 
-StEngineControl::StEngineControl(std::unique_ptr<LLR::gl_context> &&ctx) : pimpl(std::make_unique<ste_engine_control_impl>()), global_cache("Cache", 1024 * 1024 * 256), context(std::move(ctx)) {
+StEngineControl::StEngineControl(std::unique_ptr<LLR::gl_context> &&ctx) : pimpl(std::make_unique<ste_engine_control_impl>()), context(std::move(ctx)), global_cache("Cache", 1024 * 1024 * 256) {
 	assert(context.get());
 	if (context == nullptr)
 		throw std::exception("context == nullptr");

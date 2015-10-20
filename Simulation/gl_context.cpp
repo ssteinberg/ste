@@ -167,7 +167,7 @@ void gl_context::setup_debug_context() {
 							  const void* userParam) {
 		using namespace StE::Text::Attributes;
 
-		Text::AttributedString attr_str = b("OpenGL Debug Output: ") + std::string(message, length);
+		Text::AttributedString attr_str = b("OpenGL Debug Output: ") + "Object - " + std::to_string(id) + " " + std::string(message, length);
 		switch (severity) {
 		case GL_DEBUG_SEVERITY_NOTIFICATION:
 			ste_log() << attr_str << std::endl;

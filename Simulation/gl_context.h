@@ -55,6 +55,10 @@ public:
 	gl_context& operator=(gl_context &&m) = delete;
 	gl_context& operator=(const gl_context &c) = delete;
 
+	int meminfo_total_dedicated_vram() const { int ret; glGetIntegerv(GL_GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX, &ret); return ret; }
+	int meminfo_total_available_vram() const { int ret; glGetIntegerv(GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX, &ret); return ret; }
+	int meminfo_free_vram() const { int ret; glGetIntegerv(GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX, &ret); return ret; }
+
 	void clear_framebuffer(bool color = true, bool depth = true) const { glClear((color ? GL_COLOR_BUFFER_BIT : 0) | (depth ? GL_DEPTH_BUFFER_BIT : 0)); }
 	void color_mask(bool r, bool b, bool g, bool a) const { glColorMask(r, g, b, a); }
 	void enable_depth_test() const { enable_state(GL_DEPTH_TEST); }

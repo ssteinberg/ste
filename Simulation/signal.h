@@ -34,7 +34,7 @@ private:
 public:
 	signal() {}
 	~signal() {
-		for (auto &it = connections.begin(); it != connections.end(); ++it)
+		for (auto it = connections.begin(); it != connections.end(); ++it)
 			if (auto sptr = it->second.lock())
 				sptr->break_connection();
 	}
@@ -45,7 +45,7 @@ public:
 	signal& operator=(signal &&s) = default;
 
 	void emit(const Ts&...args) {
-		for (auto &it = connections.begin(); it != connections.end(); ++it)
+		for (auto it = connections.begin(); it != connections.end(); ++it)
 			if (auto sptr = it->second.lock()) 
 				(*sptr)(args...);
 	}

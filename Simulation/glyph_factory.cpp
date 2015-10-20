@@ -151,7 +151,7 @@ unsigned char* glyph_factory_impl::render_glyph_with(const Font &font, wchar_t c
 
 	unsigned char *glyph_buf = new unsigned char[w*h];
 	memset(glyph_buf, 0, w * h);
-	for (int y = 0; y < bm.rows; ++y)
+	for (unsigned y = 0; y < bm.rows; ++y)
 		memcpy(&glyph_buf[padding_w + (y + padding_h) * w], &reinterpret_cast<char*>(bm.buffer)[(bm.rows - y - 1) * bm.width], std::min<int>(w, bm.width));
 
 	return glyph_buf;

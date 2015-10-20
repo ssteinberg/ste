@@ -24,7 +24,7 @@ namespace Resource {
 
 class GLSLProgramLoader {
 private:
-	const static std::map<std::string, LLR::GLSLShaderType> type_map;
+	static const std::map<std::string, LLR::GLSLShaderType> type_map;
 
 private:
 	~GLSLProgramLoader() {}

@@ -26,7 +26,7 @@ public:
 	bool upload_layer(int layer, const gli::texture1D &t);
 
 	void upload_level(const void *data, int level = 0, int layer = 0, LLRCubeMapFace face = LLRCubeMapFace::LLRCubeMapFaceNone, int data_size = 0) override {
-		auto &gl_format = gl_utils::translate_format(format);
+		auto gl_format = gl_utils::translate_format(format);
 
 		if (is_compressed()) {
 			assert(data_size && "size must be specified for compressed levels");

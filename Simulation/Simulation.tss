@@ -5,30 +5,26 @@
       <string>D:\Dev\git\simulation\Simulation\main.cpp</string>
     </ArrayOfString>
     <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\bokeh_bilateral_blur_y.frag</string>
+      <string>D:\Dev\git\simulation\Simulation\gl_context.cpp</string>
+      <string>D:\Dev\git\simulation\Simulation\gl_context.h</string>
     </ArrayOfString>
     <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\bokeh_bilateral_blur_x.frag</string>
+      <string>D:\Dev\git\simulation\Simulation\buffer_object.h</string>
     </ArrayOfString>
     <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\bokeh_coc.frag</string>
+      <string>D:\Dev\git\simulation\Simulation\ModelLoader.cpp</string>
     </ArrayOfString>
     <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\bokeh_draw_bokeh_effects.frag</string>
-      <string>D:\Dev\git\simulation\Simulation\bokeh_draw_bokeh_effects.geom</string>
-      <string>D:\Dev\git\simulation\Simulation\bokeh_draw_bokeh_effects.vert</string>
+      <string>D:\Dev\git\simulation\Simulation\Scene.cpp</string>
     </ArrayOfString>
     <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\bokeh_combine.frag</string>
+      <string>D:\Dev\git\simulation\Simulation\Scene.h</string>
     </ArrayOfString>
     <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\hdr_tonemap.frag</string>
+      <string>D:\Dev\git\simulation\Simulation\task.h</string>
     </ArrayOfString>
     <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\hdr_bloom_blur_x.frag</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\hdr_bloom_blur_y.frag</string>
+      <string>D:\Dev\git\simulation\Simulation\task_scheduler.h</string>
     </ArrayOfString>
   </ArrayOfArrayOfString>
 </ArrayOfArrayOfArrayOfString>

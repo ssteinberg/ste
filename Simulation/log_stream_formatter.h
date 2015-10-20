@@ -106,7 +106,7 @@ private:
 	}
 
 public:
-	log_stream_formatter(const std::string &name) : name(name), t_warn(0), t_err(0), t_fatal(0) {
+	log_stream_formatter(const std::string &name) : t_warn(0), t_err(0), t_fatal(0), name(name) {
 		std::ifstream fs(log_template_path, std::ios::in);
 		if (fs.bad()) {
 			assert(false);
@@ -136,7 +136,7 @@ public:
 	}
 
 	std::string format_line(const log_entry &e) {
-		auto &data = e.data();
+		const auto &data = e.data();
 
 		if (data.c == log_class::err_class_log) ++t_err;
 		else if (data.c == log_class::warn_class_log) ++t_warn;

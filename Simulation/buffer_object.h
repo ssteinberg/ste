@@ -71,7 +71,7 @@ protected:
 	buffer_object(const buffer_object<T2, U> &t) : Base(t), locks(t.locks) {
 		buffer_size = sizeof(T2) * t.buffer_size / sizeof(T);
 	}
-	buffer_object(const buffer_object<Type, U> &t) : Base(t), locks(t.locks), buffer_size(t.buffer_size) {}
+	buffer_object(const buffer_object<Type, U> &t) : Base(t), buffer_size(t.buffer_size), locks(t.locks) {}
 
 public:
 	buffer_object(buffer_object &&t) = default;

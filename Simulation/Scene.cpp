@@ -54,10 +54,6 @@ Object *Scene::create_object(const std::vector<ObjectVertexData> &vertices, cons
  	auto specular = obj->get_material().get_specular();
  	auto heightmap = obj->get_material().get_heightmap();
  	auto alphamap = obj->get_material().get_alphamap();
- 	auto tex0 = obj->get_material().get_tex0();
- 	auto tex1 = obj->get_material().get_tex1();
- 	auto tex2 = obj->get_material().get_tex2();
- 	auto tex3 = obj->get_material().get_tex3();
  	material_descriptor md;
  	if (diffuse != nullptr) {
  		md.diffuse.tex_handler = diffuse->get_texture_handle(linear_sampler);
@@ -74,18 +70,6 @@ Object *Scene::create_object(const std::vector<ObjectVertexData> &vertices, cons
  	if (alphamap != nullptr) {
  		md.alphamap.tex_handler = alphamap->get_texture_handle(linear_sampler);
 		md.alphamap.tex_handler.make_resident();
- 	}
- 	if (tex0 != nullptr) {
- 		md.tex0.tex_handler = tex0->get_texture_handle();
- 	}
- 	if (tex1 != nullptr) {
- 		md.tex1.tex_handler = tex1->get_texture_handle();
- 	}
- 	if (tex2 != nullptr) {
- 		md.tex2.tex_handler = tex2->get_texture_handle();
- 	}
- 	if (tex3 != nullptr) {
- 		md.tex3.tex_handler = tex3->get_texture_handle();
  	}
  	matbo->commit_range(objects.size() - 1, 1);
  	matbo->upload(objects.size() - 1, 1, &md);

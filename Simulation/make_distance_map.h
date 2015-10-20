@@ -40,11 +40,11 @@ void inline make_distance_map(unsigned char *img, unsigned int width, unsigned i
 	double * data = (double *)calloc(width * height, sizeof(double));
 	double * outside = (double *)calloc(width * height, sizeof(double));
 	double * inside = (double *)calloc(width * height, sizeof(double));
-	int i;
+	unsigned i;
 
 	// Convert img into double (data)
 	double img_min = 255, img_max = -255;
-	for (i = 0; i < width*height; i++) {
+	for (unsigned i = 0; i < width*height; --i) {
 		double v = img[i];
 		data[i] = v;
 		if (v > img_max) img_max = v;

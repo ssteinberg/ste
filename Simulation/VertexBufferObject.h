@@ -33,7 +33,7 @@ private:
 	const VertexBufferObject<T, D, U> *vbo;
 
 	vertex_buffer_attrib_binder(int index, const VertexBufferObject<T, D, U> *vbo, std::size_t offset, std::size_t size) :
-		binding_index(index), vbo(vbo), offset(offset), size(size) {}
+		binding_index(index), offset(offset), size(size), vbo(vbo) {}
 	vertex_buffer_attrib_binder(vertex_buffer_attrib_binder &&m) = default;
 	vertex_buffer_attrib_binder& operator=(vertex_buffer_attrib_binder &&m) = default;
 	vertex_buffer_attrib_binder(const vertex_buffer_attrib_binder &m) = delete;

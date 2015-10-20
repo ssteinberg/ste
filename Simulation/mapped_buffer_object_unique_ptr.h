@@ -38,6 +38,11 @@ public:
 	}
 
 	bool is_valid() const { return !!buffer_id; }
+	void invalidate() {
+		if (buffer_id)
+			glUnmapNamedBuffer(buffer_id);
+		buffer_id = 0;
+	}
 
 	void lock() const { buffer_object_ptr->lock_range(mapped_range); }
 	void lock(const range<> &sub_range) const {
@@ -56,10 +61,10 @@ public:
 
 protected:
 	mapped_buffer_object_unique_ptr(Type *map, unsigned int id, buffer_object<T, U> *bo, const range<> &r) :
-		Base(map, [this](Type* ptr) { if (buffer_id) glUnmapNamedBuffer(buffer_id); }),
+		Base(map, [this](Type* ptr) { invalidate(); }),
 		buffer_id(id),
-		buffer_object_ptr(bo),
-		mapped_range(r) {}
+		mapped_range(r),
+		buffer_object_ptr(bo) {}
 
 	unsigned int get_buffer_id() const { return buffer_id; }
 };

@@ -13,7 +13,7 @@
 using namespace StE::Text;
 using namespace StE::LLR;
 
-TextRenderer::TextRenderer(const StEngineControl &context, const Font &default_font, int default_size) : gm(context), context(context), default_font(default_font), default_size(default_size) {
+TextRenderer::TextRenderer(const StEngineControl &context, const Font &default_font, int default_size) : gm(context), default_font(default_font), default_size(default_size), context(context) {
 	text_distance_mapping = Resource::GLSLProgramLoader::load_program_task(context, { "text_distance_map_contour.vert", "text_distance_map_contour.frag", "text_distance_map_contour.geom" })();
 
 	vbo = std::make_unique<vbo_type>(vbo_ring_size);
@@ -26,17 +26,17 @@ TextRenderer::TextRenderer(const StEngineControl &context, const Font &default_f
 	vao[4] = (*vbo)[4];
 }
 
-void TextRenderer::adjust_line(std::vector<glyph_point> &points, const AttributedWString &wstr, int line_start_index, float line_start, float line_height, const glm::vec2 &ortho_pos) {
+void TextRenderer::adjust_line(std::vector<glyph_point> &points, const AttributedWString &wstr, unsigned line_start_index, float line_start, float line_height, const glm::vec2 &ortho_pos) {
 	if (points.size() - line_start_index) {
 		optional<const Attributes::align*> alignment_attrib = wstr.attrib_of_type(Attributes::align::attrib_type_s(), { line_start_index,points.size() - line_start_index });
 		if (alignment_attrib && alignment_attrib->get() != Attributes::align::alignment::Left) {
 			float line_len = ortho_pos.x - line_start;
 			float offset = alignment_attrib->get() == Attributes::align::alignment::Center ? -line_len*.5f : -line_len;
-			for (int i = line_start_index; i < points.size(); ++i)
+			for (unsigned i = line_start_index; i < points.size(); ++i)
 				points[i].pos.x += offset;
 		}
 	}
-	for (int i = line_start_index; i < points.size(); ++i)
+	for (unsigned i = line_start_index; i < points.size(); ++i)
 		points[i].pos.y -= line_height;
 }
 
@@ -48,7 +48,7 @@ std::vector<TextRenderer::glyph_point> TextRenderer::create_points(glm::vec2 ort
 	int num_lines = 1;
 
 	std::vector<glyph_point> points;
-	for (int i = 0; i < wstr.length(); ++i) {
+	for (unsigned i = 0; i < wstr.length(); ++i) {
 		if (wstr[i] == '\n') {
 			adjust_line(points, wstr, line_start_index, line_start, prev_line_height, ortho_pos);
 
@@ -69,7 +69,7 @@ std::vector<TextRenderer::glyph_point> TextRenderer::create_points(glm::vec2 ort
 		optional<const Attributes::stroke*> stroke_attrib = wstr.attrib_of_type(Attributes::stroke::attrib_type_s(), { i,1 });
 		optional<const Attributes::weight*> weight_attrib = wstr.attrib_of_type(Attributes::weight::attrib_type_s(), { i,1 });
 
-		Font &font = font_attrib ? font_attrib->get() : default_font;
+		const Font &font = font_attrib ? font_attrib->get() : default_font;
 		int size = size_attrib ? size_attrib->get() : default_size;
 		glm::u8vec4 color = color_attrib ? color_attrib->get() : glm::u8vec4{255, 255, 255, 255};
 
@@ -121,7 +121,6 @@ void TextRenderer::render(glm::vec2 ortho_pos, const AttributedWString &wstr) {
 	range<> range_in_use(vbo_ring_current_offset, bytes);
 	vbo_mapped_ptr.wait(range_in_use);
 	memcpy(vbo_mapped_ptr.get() + offset, &points[0], bytes);
-	vbo_mapped_ptr.lock(range_in_use);
 
 	text_distance_mapping->bind();
 	text_distance_mapping->set_uniform("proj", context.ortho_projection_matrix());
@@ -137,5 +136,6 @@ void TextRenderer::render(glm::vec2 ortho_pos, const AttributedWString &wstr) {
 
 	gl_current_context::get()->disable_state(GL_BLEND);
 
+	vbo_mapped_ptr.lock(range_in_use);
 	vbo_ring_current_offset += bytes;
 }

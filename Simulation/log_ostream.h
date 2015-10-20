@@ -20,7 +20,7 @@ private:
 	streambuf_type lsb;
 
 public:
-	log_ostream(std::shared_ptr<sink_type> sink, bool force_flush) : lsb(sink, force_flush), std::ostream(&lsb) {}
+	log_ostream(std::shared_ptr<sink_type> sink, bool force_flush) : std::ostream(&lsb), lsb(sink, force_flush) {}
 	~log_ostream() noexcept { flush(); }
 };
 

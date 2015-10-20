@@ -97,7 +97,7 @@ public:
 	virtual ~fbo_color_attachment_point() noexcept {}
 
 	void read_pixels(void *data, int data_size, const glm::uvec2 &rect_size, const glm::uvec2 &origin = { 0, 0 }) const {
-		auto &gl_format = gl_utils::translate_format(get_attachment_format());
+		auto gl_format = gl_utils::translate_format(get_attachment_format());
 
 		fbo->bind_read();
 		glReadBuffer(get_attachment_point());
@@ -110,7 +110,7 @@ public:
 	void read_pixels(void *data, int data_size) const { read_pixels(data, data_size, get_attachment_size()); }
 
 	void write_pixels(void *data, const glm::uvec2 &rect_size, const glm::uvec2 &origin = { 0, 0 }) {
-		auto &gl_format = gl_utils::translate_format(get_attachment_format());
+		auto gl_format = gl_utils::translate_format(get_attachment_format());
 
 		fbo->bind_write();
 		glWriteBuffer(get_attachment_point());
@@ -146,7 +146,7 @@ private:
 
 protected:
 	using fbo_color_attachment_point<A>::fbo_color_attachment_point;
-	fbo_layout_bindable_color_attachment_point(frame_buffer_object<A> *fbo, int index) : index(index), fbo_color_attachment_point(fbo, index) {}
+	fbo_layout_bindable_color_attachment_point(frame_buffer_object<A> *fbo, int index) : fbo_color_attachment_point(fbo, index), index(index) {}
 
 public:
 	virtual ~fbo_layout_bindable_color_attachment_point() noexcept {}
@@ -193,12 +193,12 @@ protected:
 			GL_NONE : 
 			GL_COLOR_ATTACHMENT0 + binding.binding_index();
 
-		if (draw_buffers.size() < attachment_index + 1) draw_buffers.resize(attachment_index + 1, GL_NONE);
+		if (draw_buffers.size() < static_cast<unsigned>(attachment_index + 1)) draw_buffers.resize(attachment_index + 1, GL_NONE);
 		bool changed = draw_buffers[attachment_index] != color_output;
 		draw_buffers[attachment_index] = color_output;
 
 		if (changed) {
-			for (int i = 0; i < draw_buffers.size(); ++i) {
+			for (unsigned i = 0; i < draw_buffers.size(); ++i) {
 				if (i == attachment_index) continue;
 				if (draw_buffers[i] == color_output) draw_buffers[i] = GL_NONE;
 			}

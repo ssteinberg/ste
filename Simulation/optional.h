@@ -24,8 +24,8 @@ private:
 	using pointer = type*;
 
 private:
-	T val;
 	bool has_val{ false };
+	T val;
 
 	template <typename S = T>
 	std::enable_if_t<!std::is_pointer<S>::value, const std::remove_reference_t<S>&>
@@ -61,7 +61,7 @@ public:
 		typename std::enable_if_t<std::is_pointer<T>::value && std::is_pointer<S>::value && std::is_base_of<std::remove_pointer_t<S>, std::remove_pointer_t<T>>::value>>
 	optional(optional<S> &&other) : has_val(other.has_val), val(other.has_val ? dynamic_cast<T>(other.val) : T()) {}
 	template <typename S, typename =
-		typename std::enable_if_t < std::is_pointer<T>::value && std::is_pointer<S>::value && std::is_base_of<std::remove_pointer_t<S>, std::remove_pointer_t<T>>::value >>
+		typename std::enable_if_t<std::is_pointer<T>::value && std::is_pointer<S>::value && std::is_base_of<std::remove_pointer_t<S>, std::remove_pointer_t<T>>::value>>
 	optional(const optional<S> &other) : has_val(other.has_val), val(other.has_val ? dynamic_cast<T>(other.val) : T()) {}
 
 	optional(optional<T> &&other) : has_val(other.has_val), val(std::move(other.val)) {}

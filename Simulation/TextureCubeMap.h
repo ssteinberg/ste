@@ -28,7 +28,7 @@ public:
 
 	void upload_level(const void *data, int level = 0, int layer = 0, LLRCubeMapFace face = LLRCubeMapFace::LLRCubeMapFaceNone, int data_size = 0) override {
 		assert(face != LLRCubeMapFace::LLRCubeMapFaceNone && "face must be specified");
-		auto &gl_format = gl_utils::translate_format(format);
+		auto gl_format = gl_utils::translate_format(format);
 
 		bind();
 		if (is_compressed()) {

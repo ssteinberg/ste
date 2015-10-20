@@ -19,7 +19,7 @@ private:
 		DataType object;
 
 		template <typename ... Ts>
-		data(Ts&&... args) : object(std::forward<Ts>(args)...), internal_counter(0) {}
+		data(Ts&&... args) : internal_counter(0), object(std::forward<Ts>(args)...) {}
 		data& operator=(data &&d) {
 			internal_counter.store(0);
 			object = std::move(d.object);

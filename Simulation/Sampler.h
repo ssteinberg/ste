@@ -60,7 +60,7 @@ struct sampler_descriptor {
 	sampler_descriptor(TextureFiltering mag_filter, TextureFiltering min_filter, float anisotropic_filtering_max) : mag_filter(mag_filter), min_filter(min_filter), anisotropy(anisotropic_filtering_max) {}
 	sampler_descriptor(TextureWrapMode wrap_s, TextureWrapMode wrap_t) : wrap_s(wrap_s), wrap_t(wrap_t) {}
 	sampler_descriptor(TextureWrapMode wrap_s, TextureWrapMode wrap_t, TextureWrapMode wrap_r) : wrap_s(wrap_s), wrap_t(wrap_r), wrap_r(wrap_r) {}
-	sampler_descriptor(TextureFiltering mag_filter, TextureFiltering min_filter, TextureWrapMode wrap_s, TextureWrapMode wrap_t) : wrap_s(wrap_s), wrap_t(wrap_r), mag_filter(mag_filter), min_filter(min_filter) {}
+	sampler_descriptor(TextureFiltering mag_filter, TextureFiltering min_filter, TextureWrapMode wrap_s, TextureWrapMode wrap_t) : mag_filter(mag_filter), min_filter(min_filter), wrap_s(wrap_s), wrap_t(wrap_r) {}
 };
 
 class Sampler : virtual public bindable_resource<SamplerAllocator, SamplerBinder, sampler_layout_binding>,

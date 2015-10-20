@@ -141,7 +141,7 @@ public:
 				++it;
 		}
 
-		int min_threads = std::thread::hardware_concurrency();
+		unsigned min_threads = std::thread::hardware_concurrency();
 		int req = requests_pending.load();
 		if (threads_sleeping == 0 &&
 			idle_frac > .15f) {

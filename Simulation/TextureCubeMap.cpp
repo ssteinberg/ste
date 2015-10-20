@@ -7,7 +7,7 @@ using namespace StE::LLR;
 
 bool TextureCubeMap::upload(const gli::textureCube &texture, bool gm) {
 	bool ret = true;
-	for (int i = 0; i < texture.faces(); ++i)
+	for (std::size_t i = 0; i < texture.faces(); ++i)
 		ret &= this->upload_face(static_cast<LLRCubeMapFace>(i), texture[i]);
 
 	// Generate mipmaps
@@ -28,7 +28,7 @@ bool TextureCubeMap::upload_face(LLRCubeMapFace face, const gli::texture2D &text
 		return false;
 	}
 
-	for (std::size_t l = 0; l < levels; ++l) {
+	for (int l = 0; l < levels; ++l) {
 		upload_level(texture[l].data(), l, 0, face, texture[l].size());
 	}
 

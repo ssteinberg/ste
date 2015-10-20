@@ -11,12 +11,15 @@ using namespace StE::Resource;
 using namespace StE::Graphics;
 using StE::LLR::Texture2D;
 
-void ModelLoader::process_model_mesh(optional<task_scheduler*> sched, const tinyobj::shape_t &shape, const std::vector<tinyobj::material_t> &materials, const std::string &dir, Graphics::Scene *scene) {
+void ModelLoader::process_model_mesh(const tinyobj::shape_t &shape,
+									 Graphics::Scene *scene,
+									 std::vector<tinyobj::material_t> &materials,
+									 texture_map_type &textures) {
 	std::vector<ObjectVertexData> vbo_data;
 
-	int vertices = shape.mesh.positions.size() / 3;
-	int tc_stride = shape.mesh.texcoords.size() / vertices;
-	int normals_stride = shape.mesh.normals.size() / vertices;
+	unsigned vertices = shape.mesh.positions.size() / 3;
+	unsigned tc_stride = shape.mesh.texcoords.size() / vertices;
+	unsigned normals_stride = shape.mesh.normals.size() / vertices;
 	for (size_t i = 0; i < vertices; ++i) {
 		ObjectVertexData v;
 		v.p = { shape.mesh.positions[3 * i + 0], shape.mesh.positions[3 * i + 1], shape.mesh.positions[3 * i + 2] };
@@ -27,39 +30,40 @@ void ModelLoader::process_model_mesh(optional<task_scheduler*> sched, const tiny
 	}
 
 	int mat_idx = shape.mesh.material_ids[0];
+	std::unique_ptr<gli::texture2D> &diff = textures[materials[mat_idx].diffuse_texname];
+	std::unique_ptr<gli::texture2D> &normal = textures[materials[mat_idx].bump_texname];
+	std::unique_ptr<gli::texture2D> &opacity = textures[materials[mat_idx].alpha_texname];
 
-	auto texture_loader = [&](const std::string &texture_name, bool srgb) -> std::unique_ptr<LLR::Texture2D> {
-		if (!texture_name.length()) return nullptr;
-		std::string full_path = dir + texture_name;
+	Material mat;
+	if (diff != nullptr)
+		mat.make_diffuse(*diff, true);
+	if (normal != nullptr)
+		mat.make_heightmap(*normal, true);
+	if (opacity != nullptr)
+		mat.make_alphamap(*opacity, true);
 
-		auto tex_task = SurfaceIO::load_texture_2d_task(full_path, srgb);
-		std::unique_ptr<LLR::Texture2D> tex = tex_task(sched);
-		if (tex == nullptr)
+	scene->create_object(vbo_data, shape.mesh.indices, std::move(mat));
+}
+
+StE::task<void> ModelLoader::load_texture(const std::string &name, bool srgb, texture_map_type *texmap, const std::string &dir) {
+	return StE::task<std::unique_ptr<gli::texture2D>>([=](optional<task_scheduler*> sched) {
+		std::string full_path = dir + name;
+
+		auto tex_task = SurfaceIO::load_surface_2d_task(full_path, srgb);
+		gli::texture2D tex = tex_task(sched);
+		if (tex.empty())
 			ste_log_warn() << "Couldn't load texture " << full_path;
-		return tex;
-	};
-
-	auto diff = texture_loader(materials[mat_idx].diffuse_texname, true);
-	auto normal = texture_loader(materials[mat_idx].bump_texname, false);
-	auto opacity = texture_loader(materials[mat_idx].alpha_texname, false);
-
-	StE::task<void> f = [&](optional<task_scheduler*> sched) {
-		Material mat;
-		if (diff != nullptr) mat.make_diffuse(std::move(*diff));
-		if (normal != nullptr) mat.make_heightmap(std::move(*normal));
-		if (opacity != nullptr) mat.make_alphamap(std::move(*opacity));
-
-		auto obj = scene->create_object(vbo_data, shape.mesh.indices, std::move(mat));
-	};
-
-	if (!sched)
-		f();
-	else
-		sched->schedule_now_on_main_thread(f).wait();
+		return std::make_unique<gli::texture2D>(std::move(tex));
+	}).then_on_main_thread([=](optional<task_scheduler*> sched, std::unique_ptr<gli::texture2D> &&tex) {
+		texture_map_type &tex_storage = *texmap;
+		const std::string &tex_name = name;
+		tex_storage[tex_name] = std::move(tex);
+	});
 }
 
 StE::task<bool> ModelLoader::load_model_task(const std::string &file_path, Scene *scene) {
 	return [=](optional<task_scheduler*> sched) -> bool {
+		assert(sched);
 		ste_log() << "Loading OBJ model " << file_path;
 
 		std::string dir = { file_path.begin(), std::find_if(file_path.rbegin(), file_path.rend(), [](char c) { return c == '/' || c == '\\'; }).base() };
@@ -74,21 +78,30 @@ StE::task<bool> ModelLoader::load_model_task(const std::string &file_path, Scene
 			return false;
 		}
 
+		texture_map_type textures;
+		textures.emplace(std::make_pair(std::string(""), std::unique_ptr<gli::texture2D>(nullptr)));
+
 		std::vector<std::future<void>> futures;
-
 		for (auto &shape : shapes) {
-			StE::task<void> shape_task = [&](optional<task_scheduler*> sched) {
-				process_model_mesh(sched, shape, materials, dir, scene);
-			};
+			int mat_idx = shape.mesh.material_ids[0];
 
-			if (!sched)
-				shape_task();
-			else
-				futures.push_back(sched->schedule_now(shape_task));
+			for (auto &str : { materials[mat_idx].diffuse_texname })
+				if (str.length() && textures.find(str) == textures.end()) {
+					textures.emplace(std::make_pair(str, std::unique_ptr<gli::texture2D>(nullptr)));
+					futures.push_back(sched->schedule_now(load_texture(str, true, &textures, dir)));
+				}
+			for (auto &str : { materials[mat_idx].bump_texname, materials[mat_idx].alpha_texname })
+				if (str.length() && textures.find(str) == textures.end()) {
+					textures.emplace(std::make_pair(str, std::unique_ptr<gli::texture2D>(nullptr)));
+					futures.push_back(sched->schedule_now(load_texture(str, false, &textures, dir)));
+				}
 		}
 
 		for (auto &f : futures)
 			f.wait();
+
+		for (auto &shape : shapes)
+			process_model_mesh(shape, scene, materials, textures);
 
 		return true;
 	};
