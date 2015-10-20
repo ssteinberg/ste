@@ -12,20 +12,16 @@ namespace Graphics {
 
 class Material {
 protected:
-	std::unique_ptr<LLR::Texture2D> diffuse;
-	std::unique_ptr<LLR::Texture2D> specular;
-	std::unique_ptr<LLR::Texture2D> heightmap;
-	std::unique_ptr<LLR::Texture2D> alphamap;
+	std::shared_ptr<LLR::Texture2D> diffuse;
+	std::shared_ptr<LLR::Texture2D> specular;
+	std::shared_ptr<LLR::Texture2D> heightmap;
+	std::shared_ptr<LLR::Texture2D> alphamap;
 
 public:
-	template <typename ... Ts>
-	void make_diffuse(Ts&&... args) { diffuse = std::make_unique<LLR::Texture2D>(std::forward<Ts>(args)...); }
-	template <typename ... Ts>
-	void make_specular(Ts&&... args) { specular = std::make_unique<LLR::Texture2D>(std::forward<Ts>(args)...); }
-	template <typename ... Ts>
-	void make_heightmap(Ts&&... args) { heightmap = std::make_unique<LLR::Texture2D>(std::forward<Ts>(args)...); }
-	template <typename ... Ts>
-	void make_alphamap(Ts&&... args) { alphamap = std::make_unique<LLR::Texture2D>(std::forward<Ts>(args)...); }
+	void set_diffuse(const std::shared_ptr<LLR::Texture2D> &tex) { diffuse = tex; }
+	void set_specular(const std::shared_ptr<LLR::Texture2D> &tex) { specular = tex; }
+	void set_heightmap(const std::shared_ptr<LLR::Texture2D> &tex) { heightmap = tex; }
+	void set_alphamap(const std::shared_ptr<LLR::Texture2D> &tex) { alphamap = tex; }
 
 	const LLR::Texture2D *get_diffuse() const { return diffuse.get(); }
 	const LLR::Texture2D *get_specular() const { return specular.get(); }
