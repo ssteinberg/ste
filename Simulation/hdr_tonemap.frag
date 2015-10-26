@@ -8,18 +8,20 @@ layout(location = 0) out vec4 rgbout;
 layout(location = 1) out vec4 bloomout;
 
 layout(binding = 0) uniform sampler2D hdr;
-layout(binding = 0, r32i) uniform readonly iimage2D histogram_minmax;
 
 layout(std430, binding = 0) coherent buffer histogram_sums {
 	uint histogram[bins];
 };
+layout(std430, binding = 2) coherent readonly buffer hdr_bokeh_parameters_buffer {
+	hdr_bokeh_parameters params;
+};
 
-const float bloom_cutoff = .85f;
+const float bloom_cutoff = .9f;
 
 void main() {
 	vec3 hdr_texel = texelFetch(hdr, ivec2(gl_FragCoord.xy), 0).rgb;
-	float min_lum = intBitsToFloat(imageLoad(histogram_minmax, ivec2(0, 0)).x);
-	float max_lum = intBitsToFloat(imageLoad(histogram_minmax, ivec2(1, 0)).x);
+	float min_lum = intBitsToFloat(params.lum_min);
+	float max_lum = intBitsToFloat(params.lum_max);
 
 	float l = hdr_lum(hdr_texel.z);
 	float fbin = hdr_bin(max_lum, min_lum, l);
@@ -35,19 +37,15 @@ void main() {
 
 	hdr_texel.z = tonemap(toned_l);
 
-	vec3 XYZ;
-	float Y_y = hdr_texel.z / hdr_texel.y;
-	XYZ.x = Y_y * hdr_texel.x;
-	XYZ.z = Y_y * (1 - hdr_texel.x - hdr_texel.y);
-	XYZ.y = hdr_texel.z;
+	vec3 XYZ = xyYtoXYZ(hdr_texel);
 
-	vec3 RGB = clamp(XYZtoRGB * XYZ, vec3(0,0,0), vec3(1,1,1));
+	vec4 RGBL = clamp(vec4(XYZtoRGB(XYZ), XYZ.y), vec4(0), vec4(1));
 
-	rgbout = vec4(RGB, XYZ.y);
+	rgbout = RGBL;
 	
 	if (XYZ.y > bloom_cutoff) {
-		float x = pow((XYZ.y - bloom_cutoff) / (1 - bloom_cutoff), 6);
-		bloomout = vec4(RGB, x);
+		float x = pow((XYZ.y - bloom_cutoff) / (1 - bloom_cutoff), 8);
+		bloomout = vec4(RGBL.rgb, x);
 	}
 	else
 		bloomout = vec4(0);

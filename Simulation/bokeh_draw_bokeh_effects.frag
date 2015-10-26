@@ -15,5 +15,5 @@ void main() {
 	float alpha_mask = texture(tex, vin.uv).x;
 	if (alpha_mask < .01f)
 		discard;
-	gl_FragColor = vec4(vin.color.rgb, alpha_mask * vin.color.a);
+	gl_FragColor = vec4(vin.color.rgb, alpha_mask);
 }

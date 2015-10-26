@@ -29,10 +29,10 @@ public:
 			optional<const Attributes::size*>	size_attrib = str.attrib_of_type(size::attrib_type_s(), &cs);
 			optional<const Attributes::italic*>	italic_attrib = str.attrib_of_type(italic::attrib_type_s(), &ci);
 
-			if (color_attrib && cr.start > r.start)		{ r.length = std::min(r.length, cr.start); color_attrib = none; }
-			if (weight_attrib && cw.start > r.start)	{ r.length = std::min(r.length, cw.start); weight_attrib = none; }
-			if (size_attrib && cs.start > r.start)		{ r.length = std::min(r.length, cs.start); size_attrib = none; }
-			if (italic_attrib && ci.start > r.start)	{ r.length = std::min(r.length, ci.start); italic_attrib = none; }
+			if (color_attrib && cr.start > r.start)		{ r.length = std::min(r.length, cr.start - r.start); color_attrib = none; }
+			if (weight_attrib && cw.start > r.start)	{ r.length = std::min(r.length, cw.start - r.start); weight_attrib = none; }
+			if (size_attrib && cs.start > r.start)		{ r.length = std::min(r.length, cs.start - r.start); size_attrib = none; }
+			if (italic_attrib && ci.start > r.start)	{ r.length = std::min(r.length, ci.start - r.start); italic_attrib = none; }
 
 			if (color_attrib)	r.length = std::min(r.length, cr.start - r.start + cr.length);
 			if (weight_attrib)	r.length = std::min(r.length, cw.start - r.start + cw.length);

@@ -16,7 +16,7 @@ out fp_in {
 } vout;
 
 uniform vec2 fb_size;
-const float size = 28;
+const float size = 40;
 
 void main() {
 	float coc = vin[0].coc;

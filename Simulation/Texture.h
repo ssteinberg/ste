@@ -153,7 +153,8 @@ public:
 		return texture_handle(glGetTextureHandleARB(get_resource_id()));
 	}
 	auto get_texture_handle(const Sampler &sam) const {
-		return texture_handle(glGetTextureSamplerHandleARB(get_resource_id(), sam.get_resource_id()));
+		unsigned sam_id = sam.get_resource_id();
+		return texture_handle(glGetTextureSamplerHandleARB(get_resource_id(), sam_id));
 	}
 
 	llr_resource_type resource_type() const override { return type; }

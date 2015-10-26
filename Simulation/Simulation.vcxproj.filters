@@ -139,6 +139,21 @@
     <Filter Include="src\Global Shaders">
       <UniqueIdentifier>{7a22fd60-b5b1-4cee-a37f-108e499b7722}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\StE\Framework Graphics\Radiometry">
+      <UniqueIdentifier>{410df2d8-c424-43c2-a38d-8fc3d4473f09}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\StE\Framework Graphics\Radiometry\Spectral">
+      <UniqueIdentifier>{a5917336-7ffd-4fa8-99af-e1759d7936fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\StE\Framework Graphics\Radiometry\Radiance Distribution Functions">
+      <UniqueIdentifier>{a090a5f2-12fd-4f0d-808e-481285a40fe9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\StE\Framework Graphics\Radiometry\Radiance Distribution Functions\Representations">
+      <UniqueIdentifier>{567efc1d-1650-498b-bd3d-b0fd60e511e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\StE\Framework Graphics\Procedural Images">
+      <UniqueIdentifier>{15ac2aeb-a2bf-454b-a6f4-a7e211109f83}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -541,6 +556,33 @@
     </ClInclude>
     <ClInclude Include="gl_current_context.h">
       <Filter>src\StE\Core\LLR\GL\Context</Filter>
+    </ClInclude>
+    <ClInclude Include="spectrum.h">
+      <Filter>src\StE\Framework Graphics\Radiometry\Spectral</Filter>
+    </ClInclude>
+    <ClInclude Include="XYZ.h">
+      <Filter>src\StE\Framework Graphics\Radiometry\Spectral</Filter>
+    </ClInclude>
+    <ClInclude Include="RGB.h">
+      <Filter>src\StE\Framework Graphics\Radiometry\Spectral</Filter>
+    </ClInclude>
+    <ClInclude Include="xyY.h">
+      <Filter>src\StE\Framework Graphics\Radiometry\Spectral</Filter>
+    </ClInclude>
+    <ClInclude Include="BRDF.h">
+      <Filter>src\StE\Framework Graphics\Radiometry\Radiance Distribution Functions</Filter>
+    </ClInclude>
+    <ClInclude Include="BxDF.h">
+      <Filter>src\StE\Framework Graphics\Radiometry\Radiance Distribution Functions</Filter>
+    </ClInclude>
+    <ClInclude Include="bme_brdf_representation.h">
+      <Filter>src\StE\Framework Graphics\Radiometry\Radiance Distribution Functions\Representations</Filter>
+    </ClInclude>
+    <ClInclude Include="normal_map_from_height_map.h">
+      <Filter>src\StE\Framework Graphics\Procedural Images</Filter>
+    </ClInclude>
+    <ClInclude Include="surface_traits.h">
+      <Filter>src\StE\Core\LLR\GPU Resources\Surfaces</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

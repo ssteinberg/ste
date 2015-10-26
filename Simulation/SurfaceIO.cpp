@@ -5,6 +5,7 @@
 
 #include <png/png.h>
 #include <libjpeg/jpeglib.h>
+#include <libtga/tga.h>
 
 using namespace StE::Resource;
 
@@ -80,6 +81,71 @@ bool SurfaceIO::write_png(const std::string &file_name, const char *image_data, 
 	fclose(fp);
 	
 	return true;
+}
+
+gli::texture2D SurfaceIO::load_tga(const std::string &file_name, bool srgb) {
+	TGA *tga;
+
+	tga = TGAOpen(const_cast<char*>(file_name.c_str()), "rb");
+
+	TGAReadHeader(tga);
+	if (tga->last != TGA_OK) {
+		TGAClose(tga);
+		ste_log_error() << file_name << " is not a valid 24-bit TGA" << std::endl;
+		return gli::texture2D();
+	}
+
+	unsigned w = tga->hdr.width;
+	unsigned h = tga->hdr.height;
+	gli::format format;
+	int components;
+	switch (tga->hdr.img_t) {
+	case 2:
+	case 3:
+	case 10:
+	case 11:
+		if (tga->hdr.depth == 8) {
+			format = srgb ? gli::format::FORMAT_R8_SRGB : gli::format::FORMAT_R8_UNORM;
+			components = 1;
+			break;
+		}
+		else if (tga->hdr.depth == 24) {
+			format = srgb ? gli::format::FORMAT_BGR8_SRGB : gli::format::FORMAT_BGR8_UNORM;
+			components = 3;
+			break;
+		}
+		else if (tga->hdr.depth == 32) {
+			format = srgb ? gli::format::FORMAT_BGRA8_SRGB : gli::format::FORMAT_BGRA8_UNORM;
+			components = 4;
+			break;
+		}
+	default:
+		TGAClose(tga);
+		ste_log_error() << file_name << " Unsupported libtga depth (" << tga->hdr.depth << ") and image type (" << tga->hdr.img_t << ") combination" << std::endl;
+		return gli::texture2D();
+	}
+
+	unsigned rowbytes = w * components;
+	int rowsize = rowbytes;
+	if (3 - ((rowbytes - 1) % 4))
+		ste_log_warn() << file_name << " image row not 4byte aligned!";
+	rowbytes += 3 - ((rowbytes - 1) % 4);
+
+	w = rowbytes / components + !!(rowbytes%components);
+	gli::texture2D tex(1, format, { w, h });
+	tbyte *image_data = reinterpret_cast<tbyte*>(tex.data());
+	auto level0_size = tex[0].size();
+	if (image_data == nullptr || level0_size < rowbytes*h) {
+		TGAClose(tga);
+		ste_log_error() << file_name << " could not allocate memory for TGA image data or format mismatch";
+		return gli::texture2D();
+	}
+
+	TGAReadScanlines(tga, image_data, 0, h, TGA_BGR);
+
+	TGAClose(tga);
+
+	return tex;
 }
 
 gli::texture2D SurfaceIO::load_png(const std::string &file_name, bool srgb) {

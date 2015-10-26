@@ -17,6 +17,7 @@ namespace Resource {
 class SurfaceIO {
 private:
 	static gli::texture2D load_png(const std::string &file_name, bool srgb);
+	static gli::texture2D load_tga(const std::string &file_name, bool srgb);
 	static gli::texture2D load_jpeg(const std::string &file_name, bool srgb);
 	static bool write_png(const std::string &file_name, const char *image_data, int components, int width, int height);
 
@@ -89,6 +90,14 @@ public:
 				auto texture = load_png(path, srgb);
 				if (texture.empty())
 					ste_log_error() << "Can't parse PNG surface: " << path;
+				return texture;
+			}
+			else if (magic[0] == 0 && magic[1] == 0 && magic[3] == 0) {
+				// TGA?
+				ste_log() << "Loading TGA surface " << path;
+				auto texture = load_tga(path, srgb);
+				if (texture.empty())
+					ste_log_error() << "Can't parse TGA surface: " << path;
 				return texture;
 			}
 			else {

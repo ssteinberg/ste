@@ -23,7 +23,7 @@ private:
 private:
 	~ModelLoader() {}
 
-	static StE::task<void> load_texture(const std::string &name, bool srgb, texture_map_type *texmap, const std::string &dir);
+	static StE::task<void> load_texture(const std::string &name, bool srgb, texture_map_type *texmap, bool bumpmap, const std::string &dir);
 	static std::future<void> process_model_mesh(optional<task_scheduler*> sched,
 												const tinyobj::shape_t &shape,
 												Graphics::Scene *scene,

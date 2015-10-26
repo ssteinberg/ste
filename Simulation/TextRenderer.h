@@ -47,8 +47,8 @@ private:
 	using vbo_type = LLR::VertexBufferObject<glyph_point, glyph_point::descriptor, buffer_usage>;
 	using vbo_mapped_ptr_type = LLR::mapped_buffer_object_unique_ptr<vbo_type::T, vbo_type::access_usage>;
 
-	std::unique_ptr<vbo_type> vbo;
 	vbo_mapped_ptr_type vbo_mapped_ptr;
+	std::unique_ptr<vbo_type> vbo;
 	int vbo_ring_current_offset{ 0 };
 
 	LLR::VertexArrayObject vao;
@@ -63,7 +63,6 @@ private:
 
 public:
 	TextRenderer(const StEngineControl &context, const Font &default_font, int default_size = 28);
-	~TextRenderer() { vbo_mapped_ptr.invalidate(); }
 
 	void render(glm::vec2 ortho_pos, const AttributedWString &wstr);
 };

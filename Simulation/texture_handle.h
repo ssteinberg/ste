@@ -16,8 +16,8 @@ public:
 	texture_handle() : handle(0) {}
 	texture_handle(std::uint64_t handle) : handle(handle) {}
 
-	void make_resident() const { glMakeTextureHandleResidentARB(handle); }
-	void make_nonresident() const { glMakeTextureHandleNonResidentARB(handle); }
+	void make_resident() const { if (!is_resident()) glMakeTextureHandleResidentARB(handle); }
+	void make_nonresident() const { if (is_resident()) glMakeTextureHandleNonResidentARB(handle); }
 	bool is_resident() const { return glIsTextureHandleResidentARB(handle); }
 
 	operator std::uint64_t() const { return handle; }

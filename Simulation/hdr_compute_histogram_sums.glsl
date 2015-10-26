@@ -6,16 +6,23 @@
 
 layout(local_size_x = bins / 2, local_size_y = 1) in;
 
+layout(binding = 2) uniform sampler2D z_buffer;
+
 layout(std430, binding = 0) coherent buffer histogram_sums {
 	uint sums[bins];
 };
 layout(std430, binding = 1) coherent buffer histogram_bins {
 	uint histogram[bins];
 };
+layout(std430, binding = 2) coherent buffer hdr_bokeh_parameters_buffer {
+	hdr_bokeh_parameters params;
+};
 
 shared uint shared_data[bins];
+shared float focal;
 
-layout(location = 0) uniform int hdr_lum_resolution;
+uniform float time;
+//uniform int hdr_lum_resolution;
 
 void main() {
 	uint id = gl_LocalInvocationID.x;
@@ -29,6 +36,12 @@ void main() {
 		int trim = max(0, h - bin_ceil);
 		shared_data[id * 2 + j] = uint(h - trim);
 	}*/
+
+	float t;
+	if (id == 0)
+		focal = texelFetch(z_buffer, textureSize(z_buffer, 0) / 2, 0).x;
+	if (id == 1)
+		t = min((pi * .035f) / 2.f / time, 10);
 	
 	shared_data[id * 2] = histogram[id * 2];
 	shared_data[id * 2 + 1] = histogram[id * 2 + 1];
@@ -50,4 +63,7 @@ void main() {
 	
 	sums[id * 2] = shared_data[id * 2];
 	sums[id * 2 + 1] = shared_data[id * 2 + 1];
+
+	if (id == 1)
+		params.focus = (focal + t * params.focus) / (1.f + t);
 }

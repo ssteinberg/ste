@@ -26,7 +26,7 @@ public:
 	buffer_lock &operator=(const buffer_lock &bl) = delete;
 
 	void wait() const {
-		glWaitSync(sync, 0, GL_TIMEOUT_IGNORED);
+		glClientWaitSync(sync, GL_SYNC_FLUSH_COMMANDS_BIT, GL_TIMEOUT_IGNORED);
 	}
 	void lock() {
 		destroy();

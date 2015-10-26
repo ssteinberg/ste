@@ -33,6 +33,7 @@ private:
 		material_texture_descriptor diffuse;
 		material_texture_descriptor specular;
 		material_texture_descriptor heightmap;
+		material_texture_descriptor normalmap;
 		material_texture_descriptor alphamap;
 	};
  

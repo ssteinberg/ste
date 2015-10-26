@@ -62,7 +62,7 @@
       <Cpp0xSupport>false</Cpp0xSupport>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <DisableSpecificWarnings>3280;869;177</DisableSpecificWarnings>
+      <DisableSpecificWarnings>3280;869;177;3457</DisableSpecificWarnings>
       <PreprocessorDefinitions>PROJECT_NAME="$(ProjectName)";%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/Qstd=c++14 %(AdditionalOptions)</AdditionalOptions>
       <UseProcessorExtensions>AVX2</UseProcessorExtensions>
@@ -71,7 +71,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>Debug</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;glu32.lib;glew32sd.lib;tinyobjloaderd.lib;zlibd.lib;libpngd.lib;turbojpegd.lib;glfw3d.lib;freetype261MTd.lib;libboost_serialization-vc140-mt-sgd-1_59.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glu32.lib;glew32sd.lib;tinyobjloaderd.lib;zlibd.lib;libpngd.lib;libtgad.lib;turbojpegd.lib;glfw3d.lib;freetype261MTd.lib;libboost_serialization-vc140-mt-sgd-1_59.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/NODEFAULTLIB:LIBCMT %(AdditionalOptions)</AdditionalOptions>
       <SubSystem>Windows</SubSystem>
       <InterproceduralOptimization>false</InterproceduralOptimization>
@@ -93,13 +93,13 @@
       <OptimizeForWindowsApplication>true</OptimizeForWindowsApplication>
       <UseProcessorExtensions>AVXI</UseProcessorExtensions>
       <UseIntelOptimizedHeaders>true</UseIntelOptimizedHeaders>
-      <DisableSpecificWarnings>3280;869;177</DisableSpecificWarnings>
+      <DisableSpecificWarnings>3280;869;177;3457</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>No</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>opengl32.lib;glu32.lib;glew32s.lib;tinyobjloader.lib;zlib.lib;libpng.lib;turbojpeg.lib;glfw3.lib;freetype261MT.lib;libboost_serialization-vc140-mt-s-1_59.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glu32.lib;glew32s.lib;tinyobjloader.lib;zlib.lib;libpng.lib;libtga.lib;turbojpeg.lib;glfw3.lib;freetype261MT.lib;libboost_serialization-vc140-mt-s-1_59.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Windows</SubSystem>
     </Link>
   </ItemDefinitionGroup>
@@ -138,9 +138,15 @@
     <ClInclude Include="AttributedString.h" />
     <ClInclude Include="attributed_string.h" />
     <ClInclude Include="attributed_string_htm_formatter.h" />
+    <ClInclude Include="bme_brdf_representation.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="BRDF.h" />
     <ClInclude Include="buffer_lock.h" />
     <ClInclude Include="buffer_object_cast.h" />
     <ClInclude Include="buffer_object_allocator.h" />
+    <ClInclude Include="BxDF.h" />
     <ClInclude Include="edtaa3func.h" />
     <ClInclude Include="Font.h" />
     <ClInclude Include="function_traits.h" />
@@ -151,8 +157,24 @@
     <ClInclude Include="glyph_manager.h" />
     <ClInclude Include="gl_current_context.h" />
     <ClInclude Include="IndirectDispatchBufferObject.h" />
+    <ClInclude Include="normal_map_from_height_map.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="render_target_allocator.h" />
     <ClInclude Include="resource_allocator.h" />
+    <ClInclude Include="RGB.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="spectrum.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="surface_traits.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="texture_handle.h" />
     <ClInclude Include="IndirectDrawBufferObject.h" />
     <ClInclude Include="interruptible_thread.h" />
@@ -242,6 +264,14 @@
     <ClInclude Include="VertexBufferDescriptor.h" />
     <ClInclude Include="VertexBufferObject.h" />
     <ClInclude Include="windows.h" />
+    <ClInclude Include="xyY.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="XYZ.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="bokeh_bilateral_blur_x.frag" />

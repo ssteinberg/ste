@@ -24,7 +24,9 @@ Scene::Scene() {
   	vao = std::make_unique<LLR::VertexArrayObject>();
   	(*vao)[0] = (*vbo)[0];
   	(*vao)[1] = (*vbo)[1];
-  	(*vao)[2] = (*vbo)[2];
+	(*vao)[2] = (*vbo)[2];
+	(*vao)[3] = (*vbo)[3];
+	(*vao)[4] = (*vbo)[4];
 }
 
 Object *Scene::create_object(const std::vector<ObjectVertexData> &vertices, const std::vector<unsigned> &ind, Material &&mat) {
@@ -52,7 +54,8 @@ Object *Scene::create_object(const std::vector<ObjectVertexData> &vertices, cons
  
  	auto diffuse = obj->get_material().get_diffuse();
  	auto specular = obj->get_material().get_specular();
- 	auto heightmap = obj->get_material().get_heightmap();
+	auto heightmap = obj->get_material().get_heightmap();
+	auto normalmap = obj->get_material().get_normalmap();
  	auto alphamap = obj->get_material().get_alphamap();
  	material_descriptor md;
  	if (diffuse != nullptr) {
@@ -63,10 +66,14 @@ Object *Scene::create_object(const std::vector<ObjectVertexData> &vertices, cons
  		md.specular.tex_handler = specular->get_texture_handle(linear_sampler);
 		md.specular.tex_handler.make_resident();
  	}
- 	if (heightmap != nullptr) {
- 		md.heightmap.tex_handler = heightmap->get_texture_handle(linear_sampler);
+	if (heightmap != nullptr) {
+		md.heightmap.tex_handler = heightmap->get_texture_handle(linear_sampler);
 		md.heightmap.tex_handler.make_resident();
- 	}
+	}
+	if (normalmap != nullptr) {
+		md.normalmap.tex_handler = normalmap->get_texture_handle(linear_sampler);
+		md.normalmap.tex_handler.make_resident();
+	}
  	if (alphamap != nullptr) {
  		md.alphamap.tex_handler = alphamap->get_texture_handle(linear_sampler);
 		md.alphamap.tex_handler.make_resident();

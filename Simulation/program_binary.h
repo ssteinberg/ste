@@ -11,13 +11,15 @@
 #include <memory>
 #include <string>
 
+#include <chrono>
+
 namespace StE {
 namespace Resource {
 namespace glsl_loader {
 
 struct program_binary {
 	GLenum format;
-	std::uint64_t crc;
+	std::uint64_t time;
 	std::string blob;
 
 private:
@@ -25,8 +27,17 @@ private:
 	template<class Archive>
 	void serialize(Archive & ar, const unsigned int version) {
 		ar & format;
-		ar & crc;
+		ar & time;
 		ar & blob;
+	}
+
+public:
+	std::chrono::system_clock::time_point get_time_point() const {
+		return std::chrono::system_clock::time_point(std::chrono::seconds(time));
+	}
+
+	void set_time_point(const std::chrono::system_clock::time_point &tp) {
+		time = std::chrono::duration_cast<std::chrono::seconds>(tp.time_since_epoch()).count();
 	}
 };
 

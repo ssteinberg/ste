@@ -63,8 +63,8 @@ struct sampler_descriptor {
 	sampler_descriptor(TextureFiltering mag_filter, TextureFiltering min_filter, TextureWrapMode wrap_s, TextureWrapMode wrap_t) : mag_filter(mag_filter), min_filter(min_filter), wrap_s(wrap_s), wrap_t(wrap_r) {}
 };
 
-class Sampler : virtual public bindable_resource<SamplerAllocator, SamplerBinder, sampler_layout_binding>,
-				virtual public shader_layout_bindable_resource<sampler_layout_binding_type> {
+class Sampler : public bindable_resource<SamplerAllocator, SamplerBinder, sampler_layout_binding>,
+				public shader_layout_bindable_resource<sampler_layout_binding_type> {
 private:
 	using Base = bindable_resource<SamplerAllocator, SamplerBinder, sampler_layout_binding>;
 
