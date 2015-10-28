@@ -8,6 +8,7 @@
 #include "SurfaceIO.h"
 
 #include "normal_map_from_height_map.h"
+#include "bme_brdf_representation.h"
 
 #include <gli/gli.hpp>
 
@@ -18,8 +19,9 @@ using StE::LLR::Texture2D;
 std::future<void> ModelLoader::process_model_mesh(optional<task_scheduler*> sched,
 												  const tinyobj::shape_t &shape,
 												  Graphics::Scene *scene,
-												  std::vector<tinyobj::material_t> &materials,
-												  texture_map_type &textures) {
+												  materials_type &materials,
+												  texture_map_type &textures,
+												  brdf_map_type &brdfs) {
 	std::vector<ObjectVertexData> vbo_data;
 
 	unsigned vertices = shape.mesh.positions.size() / 3;
@@ -90,6 +92,7 @@ std::future<void> ModelLoader::process_model_mesh(optional<task_scheduler*> sche
 	std::shared_ptr<LLR::Texture2D> &opacity = textures[materials[mat_idx].alpha_texname];
 	std::shared_ptr<LLR::Texture2D> &specular = textures[materials[mat_idx].specular_texname];
 	std::shared_ptr<LLR::Texture2D> normalmap = materials[mat_idx].bump_texname.length() ? textures[materials[mat_idx].bump_texname + "nm"] : nullptr;
+	std::shared_ptr<BRDF> brdf = brdfs["def"];
 
 	return sched->schedule_now_on_main_thread([=](optional<task_scheduler*> sched) {
 		Material mat;
@@ -98,6 +101,7 @@ std::future<void> ModelLoader::process_model_mesh(optional<task_scheduler*> sche
 		if (heightmap != nullptr) mat.set_heightmap(heightmap);
 		if (normalmap != nullptr) mat.set_normalmap(normalmap);
 		if (opacity != nullptr) mat.set_alphamap(opacity);
+		mat.set_brdf(brdf);
 
 		scene->create_object(vbo_data, shape.mesh.indices, std::move(mat));
 	});
@@ -124,15 +128,57 @@ StE::task<void> ModelLoader::load_texture(const std::string &name, bool srgb, te
 	});
 }
 
-StE::task<bool> ModelLoader::load_model_task(const std::string &file_path, Scene *scene) {
+std::vector<std::future<void>> ModelLoader::load_textures(task_scheduler* sched, shapes_type &shapes, materials_type &materials, texture_map_type &tex_map, const std::string &dir) {
+	tex_map.emplace(std::make_pair(std::string(""), std::shared_ptr<LLR::Texture2D>(nullptr)));
+
+	std::vector<std::future<void>> futures;
+	for (auto &shape : shapes) {
+		int mat_idx = shape.mesh.material_ids[0];
+
+		for (auto &str : { materials[mat_idx].diffuse_texname })
+			if (str.length() && tex_map.find(str) == tex_map.end()) {
+				tex_map.emplace(std::make_pair(str, std::shared_ptr<LLR::Texture2D>(nullptr)));
+				futures.push_back(sched->schedule_now(load_texture(str, 
+																   true, 
+																   &tex_map, 
+																   false, 
+																   dir)));
+			}
+
+		for (auto &str : { materials[mat_idx].bump_texname, materials[mat_idx].alpha_texname, materials[mat_idx].specular_texname })
+			if (str.length() && tex_map.find(str) == tex_map.end()) {
+				tex_map.emplace(std::make_pair(str, std::shared_ptr<LLR::Texture2D>(nullptr)));
+				futures.push_back(sched->schedule_now(load_texture(str, 
+																   false, 
+																   &tex_map, 
+																   str == materials[mat_idx].bump_texname, 
+																   dir)));
+			}
+	}
+
+	return futures;
+}
+
+std::vector<std::future<void>> ModelLoader::load_brdfs(const StEngineControl *ctx, shapes_type &shapes, materials_type &materials, brdf_map_type &brdf_map, const std::string &dir) {
+	std::vector<std::future<void>> futures;
+	
+	std::unique_ptr<BRDF> ptr = Graphics::bme_brdf_representation::BRDF_from_bme_representation_task(*ctx, "Data/bxdf/ward_plastic/aluminium_anodised")(&ctx->scheduler());
+	std::shared_ptr<Graphics::BRDF> brdf = std::make_shared<Graphics::BRDF>(std::move(*ptr));
+	brdf_map["def"] = brdf;
+
+	return futures;
+}
+
+StE::task<bool> ModelLoader::load_model_task(const StEngineControl &context, const std::string &file_path, Scene *scene) {
+	const StEngineControl *ctx = &context;
 	return [=](optional<task_scheduler*> sched) -> bool {
 		assert(sched);
 		ste_log() << "Loading OBJ model " << file_path;
 
 		std::string dir = { file_path.begin(), std::find_if(file_path.rbegin(), file_path.rend(), [](char c) { return c == '/' || c == '\\'; }).base() };
 
-		std::vector<tinyobj::shape_t> shapes;
-		std::vector<tinyobj::material_t> materials;
+		shapes_type shapes;
+		materials_type materials;
 
 		std::string err = tinyobj::LoadObj(shapes, materials, file_path.c_str(), dir.c_str());
 
@@ -142,33 +188,19 @@ StE::task<bool> ModelLoader::load_model_task(const std::string &file_path, Scene
 		}
 
 		texture_map_type textures;
-		textures.emplace(std::make_pair(std::string(""), std::shared_ptr<LLR::Texture2D>(nullptr)));
+		brdf_map_type brdfs;
 
 		{
-			std::vector<std::future<void>> futures;
-			for (auto &shape : shapes) {
-				int mat_idx = shape.mesh.material_ids[0];
-
-				for (auto &str : { materials[mat_idx].diffuse_texname })
-					if (str.length() && textures.find(str) == textures.end()) {
-						textures.emplace(std::make_pair(str, std::shared_ptr<LLR::Texture2D>(nullptr)));
-						futures.push_back(sched->schedule_now(load_texture(str, true, &textures, false, dir)));
-					}
-				for (auto &str : { materials[mat_idx].bump_texname, materials[mat_idx].alpha_texname, materials[mat_idx].specular_texname })
-					if (str.length() && textures.find(str) == textures.end()) {
-						textures.emplace(std::make_pair(str, std::shared_ptr<LLR::Texture2D>(nullptr)));
-						futures.push_back(sched->schedule_now(load_texture(str, false, &textures, str == materials[mat_idx].bump_texname, dir)));
-					}
-			}
-
-			for (auto &f : futures)
+			for (auto &f : load_textures(&*sched, shapes, materials, textures, dir))
+				f.wait();
+			for (auto &f : load_brdfs(ctx, shapes, materials, brdfs, dir))
 				f.wait();
 		}
 
 		{
 			std::vector<std::future<void>> futures;
 			for (auto &shape : shapes)
-				futures.push_back(process_model_mesh(sched, shape, scene, materials, textures));
+				futures.push_back(process_model_mesh(sched, shape, scene, materials, textures, brdfs));
 
 			for (auto &f : futures)
 				f.wait();

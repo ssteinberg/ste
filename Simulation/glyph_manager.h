@@ -115,7 +115,9 @@ public:
 	}
 
 	const glyph_descriptor* glyph_for_font(const Font &font, wchar_t codepoint) {
-		auto it = this->fonts.emplace(std::make_pair(font, font_storage())).first;
+		auto it = this->fonts.find(font);
+		if (it == this->fonts.end())
+			it = this->fonts.emplace(std::make_pair(font, font_storage())).first;
 
 		auto glyphit = it->second.glyphs.find(codepoint);
 		if (glyphit == it->second.glyphs.end()) {

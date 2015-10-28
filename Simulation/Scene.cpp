@@ -7,6 +7,9 @@
 using namespace StE::Graphics;
 
 Scene::Scene() {
+	linear_sampler.set_wrap_s(LLR::TextureWrapMode::Wrap);
+	linear_sampler.set_wrap_t(LLR::TextureWrapMode::Wrap);
+	linear_sampler.set_wrap_r(LLR::TextureWrapMode::Wrap);
 	linear_sampler.set_min_filter(LLR::TextureFiltering::Linear);
 	linear_sampler.set_mag_filter(LLR::TextureFiltering::Linear);
 	linear_sampler.set_mipmap_filter(LLR::TextureFiltering::Linear);
@@ -56,7 +59,8 @@ Object *Scene::create_object(const std::vector<ObjectVertexData> &vertices, cons
  	auto specular = obj->get_material().get_specular();
 	auto heightmap = obj->get_material().get_heightmap();
 	auto normalmap = obj->get_material().get_normalmap();
- 	auto alphamap = obj->get_material().get_alphamap();
+	auto alphamap = obj->get_material().get_alphamap();
+	auto brdf = obj->get_material().get_brdf();
  	material_descriptor md;
  	if (diffuse != nullptr) {
  		md.diffuse.tex_handler = diffuse->get_texture_handle(linear_sampler);
@@ -74,10 +78,14 @@ Object *Scene::create_object(const std::vector<ObjectVertexData> &vertices, cons
 		md.normalmap.tex_handler = normalmap->get_texture_handle(linear_sampler);
 		md.normalmap.tex_handler.make_resident();
 	}
- 	if (alphamap != nullptr) {
- 		md.alphamap.tex_handler = alphamap->get_texture_handle(linear_sampler);
+	if (alphamap != nullptr) {
+		md.alphamap.tex_handler = alphamap->get_texture_handle(linear_sampler);
 		md.alphamap.tex_handler.make_resident();
- 	}
+	}
+	if (brdf != nullptr) {
+		md.brdf = brdf->descriptor();
+		md.brdf.tex_handler.make_resident();
+	}
  	matbo->commit_range(objects.size() - 1, 1);
  	matbo->upload(objects.size() - 1, 1, &md);
  

@@ -58,14 +58,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 	settings.vsync = false;
 	StE::StEngineControl ctx(std::make_unique<gl_context>(settings, "Shlomi Steinberg - Simulation", glm::i32vec2{ w, h }));
 
-	std::unique_ptr<StE::Graphics::BRDF> brdf = StE::Graphics::bme_brdf_representation::BRDF_from_bme_representation_task(ctx, "Data/bxdf/ward_plastic/aluminium_bead_blasted")();
-	8_tex_unit = *brdf->brdf_texture();
-	SamplerMipmapped sam(TextureFiltering::Linear, TextureFiltering::Linear, TextureFiltering::Linear);
-	sam.set_wrap_s(TextureWrapMode::Mirrored);
-	sam.set_wrap_t(TextureWrapMode::ClampToEdge);
-	sam.set_wrap_r(TextureWrapMode::ClampToEdge);
-	8_sampler_idx = sam;
-
 	std::string gl_err_desc;
 	//while (StE::LLR::opengl::query_gl_error(gl_err_desc));
 // 	StE::Graphics::texture_pool tp;
@@ -104,6 +96,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 	StE::LLR::Texture2D specular_output(gli::format::FORMAT_R8_UNORM, StE::LLR::Texture2D::size_type(w, h), 1);
 	StE::LLR::Texture2D position_output(gli::format::FORMAT_RGB32_SFLOAT, StE::LLR::Texture2D::size_type(w, h), 1);
 	StE::LLR::Texture2D color_output(gli::format::FORMAT_RGB32_SFLOAT, StE::LLR::Texture2D::size_type(w, h), 1);
+	StE::LLR::Texture2D material_idx_output(gli::format::FORMAT_R16_UINT, StE::LLR::Texture2D::size_type(w, h), 1);
 	StE::LLR::Texture2D z_output(gli::format::FORMAT_R32_SFLOAT, StE::LLR::Texture2D::size_type(w, h), 1);
 	StE::LLR::FramebufferObject fbo;
 	fbo.depth_binding_point() = depth_output;
@@ -113,12 +106,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 	fbo[3] = z_output[0];
 	fbo[4] = tangent_output[0];
 	fbo[5] = specular_output[0];
+	fbo[6] = material_idx_output[0];
 	1_color_idx = fbo[0];
 	0_color_idx = fbo[1];
 	2_color_idx = fbo[2];
 	3_color_idx = fbo[3];
 	4_color_idx = fbo[4];
 	5_color_idx = fbo[5];
+	6_color_idx = fbo[6];
 
 	using vertex_descriptor = StE::LLR::VBODescriptorWithTypes<glm::vec3, glm::vec2>::descriptor;
 	using vbo_type = StE::LLR::VertexBufferObject<Vertex, vertex_descriptor>;
@@ -164,8 +159,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
  	StE::LLR::Texture2D hdr_lums(gli::format::FORMAT_R32_SFLOAT, StE::LLR::Texture2D::size_type(luminance_w, luminance_h), 1);
  	StE::LLR::FramebufferObject fbo_hdr_lums;
  	fbo_hdr_lums[0] = hdr_lums[0];
- 	float big_float = 10000.f;
- 	StE::LLR::PixelBufferObject<std::int32_t> hdr_bokeh_param_buffer_eraser(std::vector<std::int32_t>{ *reinterpret_cast<std::int32_t*>(&big_float), 0 });
  	StE::LLR::AtomicCounterBufferObject<> histogram(64);
  	StE::LLR::ShaderStorageBuffer<unsigned> histogram_sums(64);
 
@@ -175,19 +168,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 	StE::LLR::Texture2D bokeh_blur_image_x(gli::format::FORMAT_RGBA8_UNORM, StE::LLR::Texture2D::size_type(w, h), 1);
 	StE::LLR::FramebufferObject fbo_bokeh_blur_image;
 	fbo_bokeh_blur_image[0] = bokeh_blur_image_x[0];
-
-	struct bokeh_point_descriptor {
-		glm::vec4 pos_size;
-		glm::vec4 color;
-		using descriptor = VBODescriptorWithTypes<glm::vec4, glm::vec4>::descriptor;
-	};
-	StE::LLR::IndirectDrawBuffer<IndirectDrawArraysCommand> bokeh_indirect_draw({ IndirectDrawArraysCommand{ 0, 1, 0, 0 } });
-	StE::LLR::VertexBufferObject<bokeh_point_descriptor, bokeh_point_descriptor::descriptor> bokeh_vbo(100000);
-	StE::LLR::VertexArrayObject bokeh_vao;
-	bokeh_vao[0] = bokeh_vbo[0];
-	bokeh_vao[1] = bokeh_vbo[1];
-
-	std::unique_ptr<StE::LLR::Texture2D> bokeh_bokeh_alpha_map = StE::Resource::SurfaceIO::load_texture_2d_task("Data/textures/bokeh.png", false)();
 
 	bool running = true;
 
@@ -221,7 +201,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 	ctx.set_pointer_hidden(true);
 
 	bool loaded = false;
-	auto model_future = ctx.scheduler().schedule_now(StE::Resource::ModelLoader::load_model_task(R"(data\models\crytek-sponza\sponza.obj)", &scene));
+	auto model_future = ctx.scheduler().schedule_now(StE::Resource::ModelLoader::load_model_task(ctx, R"(data\models\crytek-sponza\sponza.obj)", &scene));
 
 	// Run main loop
 	while (!loaded && running) {
@@ -268,7 +248,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 			if (ctx.get_key_status(keyboard::K::KeyD) == Status::KeyDown)
 				camera.step_right(time_delta*movement_factor);
 
-			constexpr float rotation_factor = .05f;
+			constexpr float rotation_factor = .08f;
 			auto pp = ctx.get_pointer_position();
 			auto center = static_cast<glm::vec2>(ctx.get_backbuffer_size())*.5f;
 			ctx.set_pointer_position(static_cast<glm::ivec2>(center));
@@ -296,6 +276,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 		vao.bind();
 
 		fbo_hdr_image.bind();
+		//ctx.gl()->defaut_framebuffer().bind();
 		deffered->bind();
 		deffered->set_uniform("view", mv);
 		0_tex_unit = normal_output;
@@ -303,15 +284,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 		3_tex_unit = color_output;
 		4_tex_unit = tangent_output;
 		5_tex_unit = specular_output;
+		6_tex_unit = material_idx_output;
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
+		
 		
 		0_sampler_idx = linear_sampler;
 		1_sampler_idx = linear_mipmaps_sampler;
-		hdr_bokeh_param_buffer << hdr_bokeh_param_buffer_eraser;
 		unsigned zero = 0;
 		histogram.clear(gli::FORMAT_R32_UINT, &zero);
-		buffer_object_cast<AtomicCounterBufferObject<>>(bokeh_indirect_draw).clear(gli::FORMAT_R32_UINT, &zero, 0, 1);
 
 
 		0_tex_unit = hdr_image;
@@ -348,8 +328,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 
 		bokeh_compute_coc->bind();
 		fbo_bokeh_coc.bind();
-		0_atomic_idx = buffer_object_cast<AtomicCounterBufferObject<>>(bokeh_indirect_draw);
-		0_storage_idx = buffer_object_cast<ShaderStorageBuffer<decltype(bokeh_vbo)::T>>(bokeh_vbo);
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 		fbo_hdr_bloom_blurx_image.bind();
@@ -371,25 +349,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 		ctx.gl()->defaut_framebuffer().bind();
 		2_tex_unit = bokeh_blur_image_x;
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-//		ctx.gl()->enable_state(GL_BLEND);
-//		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-//
-//		ctx.gl()->memory_barrier(GL_ATOMIC_COUNTER_BARRIER_BIT | GL_SHADER_STORAGE_BARRIER_BIT);
-//
-//		fbo_hdr_image.bind();
-//		ctx.gl()->clear_framebuffer(true, false);
-//		3_tex_unit = *bokeh_bokeh_alpha_map;
-//		bokeh_draw_bokeh_effects->bind();
-//		bokeh_draw_bokeh_effects->set_uniform("fb_size", glm::vec2(ctx.get_backbuffer_size()));
-//		bokeh_indirect_draw.bind();
-//		bokeh_vao.bind();
-//		glDrawArraysIndirect(GL_POINTS, nullptr);
-//
-//		vao.bind();
-//		ctx.gl()->defaut_framebuffer().bind();
-//		bokeh_combine->bind();
-//		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 
 		{

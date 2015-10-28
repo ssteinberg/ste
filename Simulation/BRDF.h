@@ -6,7 +6,9 @@
 #include "stdafx.h"
 #include "BxDF.h"
 
-#include "Texture3D.h"
+#include "common_brdf_representation.h"
+
+#include "Texture2DArray.h"
 #include "Sampler.h"
 
 #include <memory>
@@ -29,30 +31,25 @@ public:
 
 private:
 	int min_theta, max_theta;
-	std::unique_ptr<LLR::Texture3D> texture;
+	std::unique_ptr<LLR::Texture2DArray> texture;
 
 public:
-	BRDF(int min_theta_in, int max_theta_in, const gli::texture3D &data_tex) : min_theta(min_theta_in), max_theta(max_theta_in) {
-		texture = std::make_unique<LLR::Texture3D>(data_tex, true);
+	BRDF(const common_brdf_representation &brdf) : min_theta(brdf.get_min_incident() * M_PI / 180.f), max_theta(brdf.get_max_incident() * M_PI / 180.f) {
+		texture = std::make_unique<LLR::Texture2DArray>(brdf.get_data(), true);
 	}
 
 	brdf_descriptor descriptor() const {
-		LLR::SamplerMipmapped sam(LLR::TextureFiltering::Linear, LLR::TextureFiltering::Linear, LLR::TextureFiltering::Linear);
-		sam.set_wrap_s(LLR::TextureWrapMode::Wrap);
-		sam.set_wrap_t(LLR::TextureWrapMode::ClampToEdge);
-		sam.set_wrap_r(LLR::TextureWrapMode::ClampToEdge);
-
 		brdf_descriptor desc;
 		desc.max_theta_in = max_theta;
 		desc.min_theta_in = min_theta;
-		desc.tex_handler = texture->get_texture_handle(sam);
+		desc.tex_handler = texture->get_texture_handle();
 
 		return desc;
 	}
 
 	int min_incident_theta() const { return min_theta; }
 	int max_incident_theta() const { return max_theta; }
-	const LLR::Texture3D *brdf_texture() const { return texture.get(); }
+	const auto *brdf_texture() const { return texture.get(); }
 };
 
 }

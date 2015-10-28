@@ -584,6 +584,9 @@
     <ClInclude Include="surface_traits.h">
       <Filter>src\StE\Core\LLR\GPU Resources\Surfaces</Filter>
     </ClInclude>
+    <ClInclude Include="common_brdf_representation.h">
+      <Filter>src\StE\Framework Graphics\Radiometry\Radiance Distribution Functions\Representations</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="stdafx.h">
@@ -665,6 +668,9 @@
       <Filter>src\Global Shaders</Filter>
     </None>
     <None Include="hdr_bloom_blur_y.frag">
+      <Filter>src\Global Shaders</Filter>
+    </None>
+    <None Include="material.glsl">
       <Filter>src\Global Shaders</Filter>
     </None>
   </ItemGroup>

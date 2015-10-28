@@ -6,17 +6,7 @@
 #extension GL_NV_gpu_shader5 : require
 
 #include "hdr_common.glsl"
-
-struct material_texture_descriptor {
-	uint64_t tex_handler;
-};
-struct material_descriptor {
-	material_texture_descriptor diffuse;
-	material_texture_descriptor specular;
-	material_texture_descriptor heightmap;
-	material_texture_descriptor normalmap;
-	material_texture_descriptor alphamap;
-};
+#include "material.glsl"
 
 in vec2 frag_texcoords;
 in vec3 frag_position;
@@ -32,8 +22,9 @@ layout(location = 2) out vec3 o_frag_normal;
 layout(location = 3) out float o_frag_z;
 layout(location = 4) out vec3 o_frag_tangent;
 layout(location = 5) out float o_frag_specular;
+layout(location = 6) out uint o_frag_mat_idx;
 
-uniform float height_map_scale = 100.0f;
+uniform float height_map_scale = 1.0f;
 
 layout(std430, binding = 0) buffer material_data {
 	material_descriptor mat_descriptor[];
@@ -52,7 +43,9 @@ void main() {
 	vec3 n = normalize(frag_normal);
 	vec3 t = normalize(frag_tangent);
 	vec3 b = normalize(frag_bitangent);
-	//float h = (textureGrad(sampler2D(md.heightmap.tex_handler), uv, dUVdx, dUVdy).r - 1.0f) * height_map_scale;
+	
+	float h = md.heightmap.tex_handler>0 ? (texture(sampler2D(md.heightmap.tex_handler), uv).r - .5f) * height_map_scale : .0f;
+	P += h * n;
 
 	if (md.normalmap.tex_handler>0) {
 		vec3 nm = texture(sampler2D(md.normalmap.tex_handler), uv).xyz;
@@ -69,4 +62,5 @@ void main() {
 
 	o_frag_position = P;
 	o_frag_z = frag_depth;
+	o_frag_mat_idx = drawId;
 }

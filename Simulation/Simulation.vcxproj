@@ -147,6 +147,10 @@
     <ClInclude Include="buffer_object_cast.h" />
     <ClInclude Include="buffer_object_allocator.h" />
     <ClInclude Include="BxDF.h" />
+    <ClInclude Include="common_brdf_representation.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="edtaa3func.h" />
     <ClInclude Include="Font.h" />
     <ClInclude Include="function_traits.h" />
@@ -300,6 +304,10 @@
     <None Include="hdr_tonemap.frag" />
     <None Include="lanczos.frag" />
     <None Include="lighting.frag" />
+    <None Include="material.glsl">
+      <SubType>
+      </SubType>
+    </None>
     <None Include="passthrough.vert" />
     <None Include="passthrough_light.vert" />
     <None Include="ssao.frag" />

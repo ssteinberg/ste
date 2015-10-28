@@ -35,6 +35,7 @@ private:
 		material_texture_descriptor heightmap;
 		material_texture_descriptor normalmap;
 		material_texture_descriptor alphamap;
+		BRDF::brdf_descriptor brdf;
 	};
  
  	static constexpr auto buffer_usage = static_cast<LLR::BufferUsage::buffer_usage>(LLR::BufferUsage::BufferUsageDynamic | LLR::BufferUsage::BufferUsageSparse);

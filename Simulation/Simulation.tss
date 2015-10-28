@@ -5,22 +5,7 @@
       <string>D:\Dev\git\simulation\Simulation\main.cpp</string>
     </ArrayOfString>
     <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\spectrum.h</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\XYZ.h</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\RGB.h</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\xyY.h</string>
-    </ArrayOfString>
-    <ArrayOfString>
       <string>D:\Dev\git\simulation\Simulation\BRDF.h</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\BxDF.h</string>
     </ArrayOfString>
     <ArrayOfString>
       <string>D:\Dev\git\simulation\Simulation\bme_brdf_representation.h</string>
@@ -35,17 +20,19 @@
       <string>D:\Dev\git\simulation\Simulation\transform.vert</string>
     </ArrayOfString>
     <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\passthrough_light.vert</string>
-    </ArrayOfString>
-    <ArrayOfString>
       <string>D:\Dev\git\simulation\Simulation\hdr_tonemap.frag</string>
     </ArrayOfString>
     <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\normal_map_from_height_map.h</string>
+      <string>D:\Dev\git\simulation\Simulation\passthrough_light.vert</string>
     </ArrayOfString>
     <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\ModelLoader.cpp</string>
-      <string>D:\Dev\git\simulation\Simulation\ModelLoader.h</string>
+      <string>D:\Dev\git\simulation\Simulation\material.glsl</string>
+    </ArrayOfString>
+    <ArrayOfString>
+      <string>D:\Dev\git\simulation\Simulation\balanced_thread_pool.h</string>
+    </ArrayOfString>
+    <ArrayOfString>
+      <string>D:\Dev\git\simulation\Simulation\interruptible_thread.h</string>
     </ArrayOfString>
   </ArrayOfArrayOfString>
 </ArrayOfArrayOfArrayOfString>

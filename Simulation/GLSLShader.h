@@ -80,9 +80,9 @@ public:
 		glGetShaderiv(get_resource_id(), GL_INFO_LOG_LENGTH, &length);
 		if (length > 0) {
 			std::string log;
-			log.resize(length);
+			log.resize(length-1);		// Ignore the '\n' at the end...
 			int written = 0;
-			glGetShaderInfoLog(get_resource_id(), length, &written, &log[0]);
+			glGetShaderInfoLog(get_resource_id(), length-1, &written, &log[0]);
 			return log;
 		}
 		return std::string();
