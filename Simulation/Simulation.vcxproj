@@ -175,6 +175,10 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="surface_element_cast.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="surface_traits.h">
       <SubType>
       </SubType>
@@ -294,12 +298,16 @@
       <SubType>
       </SubType>
     </None>
+    <None Include="common.glsl">
+      <SubType>
+      </SubType>
+    </None>
     <None Include="gen_depth_layers.frag" />
     <None Include="hdr_bloom_blur_x.frag" />
     <None Include="hdr_bloom_blur_y.frag" />
     <None Include="hdr_common.glsl" />
     <None Include="hdr_compute_histogram_sums.glsl" />
-    <None Include="hdr_compute_minmax.frag" />
+    <None Include="hdr_compute_minmax.glsl" />
     <None Include="hdr_create_histogram.glsl" />
     <None Include="hdr_tonemap.frag" />
     <None Include="lanczos.frag" />
@@ -309,7 +317,6 @@
       </SubType>
     </None>
     <None Include="passthrough.vert" />
-    <None Include="passthrough_light.vert" />
     <None Include="ssao.frag" />
     <None Include="stdafx.h" />
     <None Include="texture.frag" />

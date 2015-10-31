@@ -189,7 +189,7 @@ public:
 							int theta_bucket = static_cast<int>(theta / bucket_size);
 							int phi_bucket = static_cast<int>(phi / bucket_size);
 
-							constexpr int samples = 10;
+							constexpr int samples = 15;
 							int bias = 1;
 							while (entries.size() < samples) {
 								for (int x = -bias; x <= bias; ++x) {
@@ -234,7 +234,7 @@ public:
 							float tweight = .0f;
 							float brdf = .0f;
 							for (auto &e : closest) {
-								float weight = max_w - min_w > 0 ? glm::pow((e.first - min_w) / (max_w - min_w), 1.f) : 1.f;
+								float weight = max_w - min_w > 0 ? glm::pow((e.first - min_w) / (max_w - min_w), 2.f) : 1.f;
 								brdf += e.second->brdf * weight;
 								tweight += weight;
 							}
@@ -249,10 +249,10 @@ public:
 			for (auto &f : futures)
 				f.wait();
 
+			ctx->cache().insert(cache_key, brdfdata);
 			return std::move(brdfdata);
 		}).then_on_main_thread([=](optional<task_scheduler*> sched, common_brdf_representation &&data) {
 			auto ptr = std::make_unique<BRDF>(std::move(data));
-			ctx->cache().insert(cache_key, std::move(data));
 			return ptr;
 		});
 	}

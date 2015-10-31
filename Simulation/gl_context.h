@@ -40,6 +40,7 @@ protected:
 	std::unique_ptr<system_provided_framebuffer> default_fb;
 	context_settings ctx_settings;
 	mutable std::unordered_map<GLenum, bool> states;
+	mutable GLenum cull_face_state{0};
 
 	window_type create_window(const char *title, const glm::i32vec2 &size, gli::format format, gli::format depth_format);
 	void create_default_framebuffer(gli::format format, gli::format depth_format);
@@ -65,6 +66,9 @@ public:
 	void disable_depth_test() const { disable_state(GL_DEPTH_TEST); }
 	void depth_mask(bool mask) const { glDepthMask(mask); }
 	void memory_barrier(GLbitfield bits) const { glMemoryBarrier(bits); }
+	void cull_face(GLenum face) const {
+		if (cull_face_state != face) { glCullFace(face); cull_face_state = face; }
+	}
 
 	void enable_state(GLenum state) const {
 		auto emplace_result = states.try_emplace(state, false);

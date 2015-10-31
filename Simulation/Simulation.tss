@@ -5,12 +5,6 @@
       <string>D:\Dev\git\simulation\Simulation\main.cpp</string>
     </ArrayOfString>
     <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\BRDF.h</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\bme_brdf_representation.h</string>
-    </ArrayOfString>
-    <ArrayOfString>
       <string>D:\Dev\git\simulation\Simulation\frag.frag</string>
     </ArrayOfString>
     <ArrayOfString>
@@ -20,19 +14,19 @@
       <string>D:\Dev\git\simulation\Simulation\transform.vert</string>
     </ArrayOfString>
     <ArrayOfString>
+      <string>D:\Dev\git\simulation\Simulation\hdr_common.glsl</string>
+    </ArrayOfString>
+    <ArrayOfString>
+      <string>D:\Dev\git\simulation\Simulation\common.glsl</string>
+    </ArrayOfString>
+    <ArrayOfString>
       <string>D:\Dev\git\simulation\Simulation\hdr_tonemap.frag</string>
     </ArrayOfString>
     <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\passthrough_light.vert</string>
+      <string>D:\Dev\git\simulation\Simulation\hdr_compute_histogram_sums.glsl</string>
     </ArrayOfString>
     <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\material.glsl</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\balanced_thread_pool.h</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\interruptible_thread.h</string>
+      <string>D:\Dev\git\simulation\Simulation\hdr_compute_minmax.frag</string>
     </ArrayOfString>
   </ArrayOfArrayOfString>
 </ArrayOfArrayOfArrayOfString>

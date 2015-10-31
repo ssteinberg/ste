@@ -30,7 +30,8 @@ template <llr_resource_type type> struct texture_is_array : std::false_type {};
 template <> struct texture_is_array<llr_resource_type::LLRTexture1DArray> : std::true_type{};
 template <> struct texture_is_array<llr_resource_type::LLRTexture2DArray> : std::true_type{};
 template <> struct texture_is_array<llr_resource_type::LLRTexture2DMSArray> : std::true_type{};
-template <> struct texture_is_array<llr_resource_type::LLRTextureCubeMapArray> : std::true_type{};
+template <> struct texture_is_array<llr_resource_type::LLRTextureCubeMap> : std::true_type {};
+template <> struct texture_is_array<llr_resource_type::LLRTextureCubeMapArray> : std::true_type {};
 
 template <llr_resource_type type> struct texture_is_multisampled : std::false_type {};
 template <> struct texture_is_multisampled<llr_resource_type::LLRTexture2DMS> : std::true_type{};

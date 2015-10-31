@@ -5,9 +5,20 @@
 #include "StEngineControl.h"
 #include "Log.h"
 
+#include "Texture2D.h"
+#include "SurfaceIO.h"
+
 #include <chrono>
 #include <thread>
 #include <exception>
+
+#include <chrono>
+#include <ctime>
+
+#include <gli/gli.hpp>
+
+#define BOOST_FILESYSTEM_NO_DEPRECATED 
+#include <boost/filesystem.hpp>
 
 using namespace StE;
 
@@ -93,6 +104,29 @@ bool StEngineControl::run_loop() {
 	glfwSwapBuffers(context->window.get());
 
 	return !glfwWindowShouldClose(context->window.get());
+}
+
+void StEngineControl::capture_screenshot() const {
+	auto size = gl()->framebuffer_size();
+	gli::texture2D tex(gli::FORMAT_RGB8_UNORM, size);
+
+	StE::LLR::FramebufferObject fbo;
+	StE::LLR::Texture2D fbo_tex(gli::format::FORMAT_RGB8_UNORM, size, 1);
+	fbo[0] = fbo_tex[0];
+
+	gl()->defaut_framebuffer().blit_to(fbo, size, size);
+	fbo[0].read_pixels(tex.data(), 3 * size.x * size.y);
+
+	boost::filesystem::create_directory("Screenshots");
+
+	time_t rawtime;
+	struct tm * timeinfo;
+	char buffer[256];
+	time(&rawtime);
+	timeinfo = localtime(&rawtime);
+	strftime(buffer, 256, "%a %d%b%y %H.%M.%S", timeinfo);
+
+	scheduler().schedule_now(StE::Resource::SurfaceIO::write_surface_2d_task(tex, std::string("Screenshots/") + buffer + ".png"));
 }
 
 void StEngineControl::set_fov(float rad) {

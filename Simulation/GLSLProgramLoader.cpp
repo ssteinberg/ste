@@ -220,7 +220,6 @@ StE::task<std::unique_ptr<GLSLProgram>> GLSLProgramLoader::load_program_task(con
 		catch (std::exception *ex) {
 			data.bin = program_binary();
 		}
-		data.bin = program_binary();
 
 		data.files = std::move(files);
 
@@ -240,10 +239,10 @@ StE::task<std::unique_ptr<GLSLProgram>> GLSLProgramLoader::load_program_task(con
 		if (!program->link())
 			return nullptr;
 
-//		data.bin.blob = program->get_binary_represantation(&data.bin.format);
-//		data.bin.set_time_point(std::chrono::system_clock::now());
-//
-//		context.cache().insert(data.cache_key, std::move(data.bin));
+		data.bin.blob = program->get_binary_represantation(&data.bin.format);
+		data.bin.set_time_point(std::chrono::system_clock::now());
+
+		context.cache().insert(data.cache_key, std::move(data.bin));
 
 		return program;
 	});

@@ -587,6 +587,9 @@
     <ClInclude Include="common_brdf_representation.h">
       <Filter>src\StE\Framework Graphics\Radiometry\Radiance Distribution Functions\Representations</Filter>
     </ClInclude>
+    <ClInclude Include="surface_element_cast.h">
+      <Filter>src\StE\Core\LLR\GPU Resources\Surfaces</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="stdafx.h">
@@ -605,9 +608,6 @@
       <Filter>src\Global Shaders</Filter>
     </None>
     <None Include="passthrough.vert">
-      <Filter>src\Global Shaders</Filter>
-    </None>
-    <None Include="passthrough_light.vert">
       <Filter>src\Global Shaders</Filter>
     </None>
     <None Include="lighting.frag">
@@ -635,9 +635,6 @@
       <Filter>src\Global Shaders</Filter>
     </None>
     <None Include="hdr_compute_histogram_sums.glsl">
-      <Filter>src\Global Shaders</Filter>
-    </None>
-    <None Include="hdr_compute_minmax.frag">
       <Filter>src\Global Shaders</Filter>
     </None>
     <None Include="hdr_create_histogram.glsl">
@@ -671,6 +668,12 @@
       <Filter>src\Global Shaders</Filter>
     </None>
     <None Include="material.glsl">
+      <Filter>src\Global Shaders</Filter>
+    </None>
+    <None Include="common.glsl">
+      <Filter>src\Global Shaders</Filter>
+    </None>
+    <None Include="hdr_compute_minmax.glsl">
       <Filter>src\Global Shaders</Filter>
     </None>
   </ItemGroup>

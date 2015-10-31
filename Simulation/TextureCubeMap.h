@@ -5,6 +5,7 @@
 
 #include "stdafx.h"
 #include "texture.h"
+#include "image.h"
 
 namespace StE {
 namespace LLR {
@@ -44,6 +45,10 @@ public:
 							gl_format.External, gl_format.Type,
 							data);
 		}
+	}
+
+	const image<T> operator[](LLRCubeMapFace face) const {
+		return image<T>(*this, get_image_container_size(), format, ImageAccessMode::ReadWrite, 0, static_cast<int>(face) - static_cast<int>(LLRCubeMapFace::LLRCubeMapFaceRight));
 	}
 };
 

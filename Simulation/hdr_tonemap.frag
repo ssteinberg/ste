@@ -20,6 +20,7 @@ const float bloom_cutoff = .9f;
 
 void main() {
 	vec3 hdr_texel = texelFetch(hdr, ivec2(gl_FragCoord.xy), 0).rgb;
+
 	float min_lum = intBitsToFloat(params.lum_min);
 	float max_lum = intBitsToFloat(params.lum_max);
 
@@ -38,7 +39,6 @@ void main() {
 	hdr_texel.z = tonemap(toned_l);
 
 	vec3 XYZ = xyYtoXYZ(hdr_texel);
-
 	vec4 RGBL = clamp(vec4(XYZtoRGB(XYZ), XYZ.y), vec4(0), vec4(1));
 
 	rgbout = RGBL;

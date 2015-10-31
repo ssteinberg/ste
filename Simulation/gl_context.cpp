@@ -157,7 +157,7 @@ bool gl_context::is_debug_context() const {
 }
 
 void gl_context::setup_debug_context() {
-	glDisable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 	glDebugMessageCallback([](GLenum source,
 							  GLenum type,
 							  GLuint id,

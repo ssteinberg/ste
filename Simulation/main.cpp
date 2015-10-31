@@ -12,6 +12,8 @@
 #include <numeric>
 
 #include "gl_utils.h"
+#include "Texture2D.h"
+#include "TextureCubeMap.h"
 #include "Log.h"
 #include "Keyboard.h"
 #include "Pointer.h"
@@ -51,8 +53,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 	ste_log() << "Simulation is running";
 
 	int w = 1688, h = 950;
-	constexpr float clip_far = 1000.f;
-	constexpr float clip_near = 1.f;
+	constexpr float clip_far = 10000.f;
+	constexpr float clip_near = 5.f;
+	const glm::vec3 light_pos(-850.6, 138, -180);
 
 	gl_context::context_settings settings;
 	settings.vsync = false;
@@ -69,16 +72,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
  	//while (StE::LLR::opengl::query_gl_error(gl_err_desc));
 
 	ctx.set_clipping_planes(clip_near, clip_far);
-	camera.set_position({ -91.0412979, 105.631607, -60.2330551 });
-	camera.lookat({ -91.9486542, 105.291336, -59.98624 });
+	camera.set_position({ 25.8, 549.07, -249.2 });
+	camera.lookat({ 26.4, 548.5, 248.71 });
 
 	// Prepare
 	StE::Graphics::Scene scene;
 	StE::Text::TextRenderer text_renderer(ctx, StE::Text::Font("Data/ArchitectsDaughter.ttf"));
 
-	std::unique_ptr<GLSLProgram> hdr_compute_minmax = StE::Resource::GLSLProgramLoader::load_program_task(ctx, { "passthrough.vert","hdr_compute_minmax.frag" })();
+	std::unique_ptr<GLSLProgram> hdr_compute_minmax = StE::Resource::GLSLProgramLoader::load_program_task(ctx, { "hdr_compute_minmax.glsl" })();
 	std::unique_ptr<GLSLProgram> transform = StE::Resource::GLSLProgramLoader::load_program_task(ctx, { "transform.vert", "frag.frag" })();
-	std::unique_ptr<GLSLProgram> deffered = StE::Resource::GLSLProgramLoader::load_program_task(ctx, { "passthrough_light.vert", "lighting.frag" })();
+	std::unique_ptr<GLSLProgram> deffered = StE::Resource::GLSLProgramLoader::load_program_task(ctx, { "passthrough.vert", "lighting.frag" })();
 	std::unique_ptr<GLSLProgram> hdr_create_histogram = StE::Resource::GLSLProgramLoader::load_program_task(ctx, { "hdr_create_histogram.glsl" })();
 	std::unique_ptr<GLSLProgram> hdr_compute_histogram_sums = StE::Resource::GLSLProgramLoader::load_program_task(ctx, { "hdr_compute_histogram_sums.glsl" })();
 	std::unique_ptr<GLSLProgram> hdr_tonemap = StE::Resource::GLSLProgramLoader::load_program_task(ctx, { "passthrough.vert","hdr_tonemap.frag" })();
@@ -90,14 +93,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 	std::unique_ptr<GLSLProgram> bokeh_blurx = StE::Resource::GLSLProgramLoader::load_program_task(ctx, { "passthrough.vert","bokeh_bilateral_blur_x.frag" })();
 	std::unique_ptr<GLSLProgram> bokeh_blury = StE::Resource::GLSLProgramLoader::load_program_task(ctx, { "passthrough.vert","bokeh_bilateral_blur_y.frag" })();
 
-	StE::LLR::RenderTarget depth_output(gli::format::FORMAT_D24_UNORM, StE::LLR::Texture2D::size_type(w, h));
-	StE::LLR::Texture2D normal_output(gli::format::FORMAT_RGB32_SFLOAT, StE::LLR::Texture2D::size_type(w, h), 1);
-	StE::LLR::Texture2D tangent_output(gli::format::FORMAT_RGB32_SFLOAT, StE::LLR::Texture2D::size_type(w, h), 1);
-	StE::LLR::Texture2D specular_output(gli::format::FORMAT_R8_UNORM, StE::LLR::Texture2D::size_type(w, h), 1);
-	StE::LLR::Texture2D position_output(gli::format::FORMAT_RGB32_SFLOAT, StE::LLR::Texture2D::size_type(w, h), 1);
-	StE::LLR::Texture2D color_output(gli::format::FORMAT_RGB32_SFLOAT, StE::LLR::Texture2D::size_type(w, h), 1);
-	StE::LLR::Texture2D material_idx_output(gli::format::FORMAT_R16_UINT, StE::LLR::Texture2D::size_type(w, h), 1);
-	StE::LLR::Texture2D z_output(gli::format::FORMAT_R32_SFLOAT, StE::LLR::Texture2D::size_type(w, h), 1);
+	StE::LLR::RenderTarget depth_output(gli::format::FORMAT_D24_UNORM, { w, h });
+	StE::LLR::Texture2D normal_output(gli::format::FORMAT_RGB32_SFLOAT, { w, h }, 1);
+	StE::LLR::Texture2D tangent_output(gli::format::FORMAT_RGB32_SFLOAT, { w, h }, 1);
+	StE::LLR::Texture2D position_output(gli::format::FORMAT_RGB32_SFLOAT, { w, h }, 1);
+	StE::LLR::Texture2D color_output(gli::format::FORMAT_RGBA32_SFLOAT, { w, h }, 1);
+	StE::LLR::Texture2D material_idx_output(gli::format::FORMAT_R16_UINT, { w, h }, 1);
+	StE::LLR::Texture2D z_output(gli::format::FORMAT_R32_SFLOAT, { w, h }, 1);
 	StE::LLR::FramebufferObject fbo;
 	fbo.depth_binding_point() = depth_output;
 	fbo[0] = position_output[0];
@@ -105,15 +107,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 	fbo[2] = normal_output[0];
 	fbo[3] = z_output[0];
 	fbo[4] = tangent_output[0];
-	fbo[5] = specular_output[0];
-	fbo[6] = material_idx_output[0];
+	fbo[5] = material_idx_output[0];
 	1_color_idx = fbo[0];
 	0_color_idx = fbo[1];
 	2_color_idx = fbo[2];
 	3_color_idx = fbo[3];
 	4_color_idx = fbo[4];
 	5_color_idx = fbo[5];
-	6_color_idx = fbo[6];
 
 	using vertex_descriptor = StE::LLR::VBODescriptorWithTypes<glm::vec3, glm::vec2>::descriptor;
 	using vbo_type = StE::LLR::VertexBufferObject<Vertex, vertex_descriptor>;
@@ -145,22 +145,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 	linear_mipmaps_sampler.set_mag_filter(TextureFiltering::Linear);
 	linear_mipmaps_sampler.set_mipmap_filter(TextureFiltering::Linear);
 
-	int luminance_w = 1, luminance_h = 1;
-	while ((luminance_w << 1) < w)
-		luminance_w <<= 1;
-	while ((luminance_h << 1) < h)
-		luminance_h <<= 1;
-
+	int luminance_w = w / 4, luminance_h = h / 4;
 	struct hdr_bokeh_parameters {
 		std::int32_t lum_min, lum_max;
 		float focus;
 	};
 	StE::LLR::ShaderStorageBuffer<hdr_bokeh_parameters> hdr_bokeh_param_buffer(1);
+	StE::LLR::ShaderStorageBuffer<hdr_bokeh_parameters> hdr_bokeh_param_buffer_prev(1);
  	StE::LLR::Texture2D hdr_lums(gli::format::FORMAT_R32_SFLOAT, StE::LLR::Texture2D::size_type(luminance_w, luminance_h), 1);
- 	StE::LLR::FramebufferObject fbo_hdr_lums;
- 	fbo_hdr_lums[0] = hdr_lums[0];
- 	StE::LLR::AtomicCounterBufferObject<> histogram(64);
- 	StE::LLR::ShaderStorageBuffer<unsigned> histogram_sums(64);
+	float big_float = 10000.f;
+ 	StE::LLR::PixelBufferObject<std::int32_t> hdr_bokeh_param_buffer_eraser(std::vector<std::int32_t>{ *reinterpret_cast<std::int32_t*>(&big_float), 0 });
+	StE::LLR::AtomicCounterBufferObject<> prev_histogram(128);
+	StE::LLR::AtomicCounterBufferObject<> histogram(128);
+ 	StE::LLR::ShaderStorageBuffer<unsigned> histogram_sums(128);
 
 	StE::LLR::Texture2D bokeh_coc(gli::format::FORMAT_RG32_SFLOAT, StE::LLR::Texture2D::size_type(w, h), 1);
 	StE::LLR::FramebufferObject fbo_bokeh_coc;
@@ -170,6 +167,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 	fbo_bokeh_blur_image[0] = bokeh_blur_image_x[0];
 
 	bool running = true;
+
+	ctx.gl()->enable_state(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+	ctx.gl()->enable_state(GL_CULL_FACE);
+	ctx.gl()->cull_face(GL_BACK);
+	glFrontFace(GL_CCW);
 
 	// Bind input
 	auto keyboard_listner = std::make_shared<decltype(ctx)::hid_keyboard_signal_type::connection_type>(
@@ -182,19 +184,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 
 		if (key == keyboard::K::KeyESCAPE)
 			running = false;
-		if (key == keyboard::K::KeyPRINT_SCREEN) {
-			auto size = ctx.gl()->framebuffer_size();
-			gli::texture2D tex(gli::FORMAT_RGB8_UNORM, size);
-
-			StE::LLR::FramebufferObject fbo;
-			StE::LLR::Texture2D fbo_tex(gli::format::FORMAT_RGB8_UNORM, size, 1);
-			fbo[0] = fbo_tex[0];
-
-			ctx.gl()->defaut_framebuffer().blit_to(fbo,size,size);
-			fbo[0].read_pixels(tex.data(), 3 * size.x * size.y);
-
-			ctx.scheduler().schedule_now(StE::Resource::SurfaceIO::write_surface_2d_task(tex, R"(D:\a.png)"));
-		};
+		if (key == keyboard::K::KeyPRINT_SCREEN)
+			ctx.capture_screenshot();
 	});
 	ctx.hid_signal_keyboard().connect(keyboard_listner);
 
@@ -222,7 +213,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
  									L"/" + 
  									olive(std::to_wstring(ctx.scheduler().get_workers_count()))));
 			text_renderer.render({ 10, 50 },
-								 vsmall(b(stroke(blue, 1)(light_steel_blue(free_vram)) + L" / " + stroke(red, 1)(dark_red(total_vram)) + L" MB")));
+								 vsmall(b(blue_violet(free_vram) + L" / " + stroke(red, 1)(dark_red(total_vram)) + L" MB")));
 		}
 
 		if (model_future.wait_for(std::chrono::seconds(0)) != std::future_status::ready)
@@ -238,7 +229,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 			auto time_delta = ctx.time_per_frame().count();
 
 			using namespace StE::HID;
-			constexpr float movement_factor = 35.f;
+			constexpr float movement_factor = 155.f;
 			if (ctx.get_key_status(keyboard::K::KeyW) == Status::KeyDown)
 				camera.step_forward(time_delta*movement_factor);
 			if (ctx.get_key_status(keyboard::K::KeyS) == Status::KeyDown)
@@ -248,7 +239,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 			if (ctx.get_key_status(keyboard::K::KeyD) == Status::KeyDown)
 				camera.step_right(time_delta*movement_factor);
 
-			constexpr float rotation_factor = .08f;
+			constexpr float rotation_factor = .09f;
 			auto pp = ctx.get_pointer_position();
 			auto center = static_cast<glm::vec2>(ctx.get_backbuffer_size())*.5f;
 			ctx.set_pointer_position(static_cast<glm::ivec2>(center));
@@ -256,69 +247,77 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 			camera.pitch_and_yaw(-diff_v.y, diff_v.x); 
 		}
 
-		auto proj_mat = ctx.projection_matrix();
-
 		ctx.gl()->enable_depth_test();
 
-		fbo.bind();
-		ctx.gl()->clear_framebuffer(false);
-		transform->bind();
-		auto mv = camera.view_matrix() * glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(-100, -35, 0)), glm::vec3(.25, .25, .25));
-		transform->set_uniform("view_model", mv);
-		transform->set_uniform("trans_inverse_view_model", glm::transpose(glm::inverse(mv)));
-		transform->set_uniform("projection", proj_mat);
-		transform->set_uniform("near", clip_near);
-		transform->set_uniform("far", clip_far);
-		scene.render();
+		auto proj_mat = ctx.projection_matrix();
+		auto mv = camera.view_matrix();
+		auto inverse_mv = glm::inverse(mv);
+		auto transpose_inverse_mv = glm::transpose(inverse_mv);
+
+		{
+			fbo.bind();
+			ctx.gl()->clear_framebuffer(false);
+			transform->bind();
+			transform->set_uniform("view_model", mv);
+			transform->set_uniform("trans_inverse_view_model", transpose_inverse_mv);
+			transform->set_uniform("projection", proj_mat);
+			transform->set_uniform("near", clip_near);
+			transform->set_uniform("far", clip_far);
+			scene.render();
+		}
 
 		ctx.gl()->disable_depth_test();
 
 		vao.bind();
 
-		fbo_hdr_image.bind();
-		//ctx.gl()->defaut_framebuffer().bind();
-		deffered->bind();
-		deffered->set_uniform("view", mv);
-		0_tex_unit = normal_output;
-		1_tex_unit = position_output;
-		3_tex_unit = color_output;
-		4_tex_unit = tangent_output;
-		5_tex_unit = specular_output;
-		6_tex_unit = material_idx_output;
-		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+		{
+			fbo_hdr_image.bind();
+			//ctx.gl()->defaut_framebuffer().bind();
+			deffered->bind();
+			deffered->set_uniform("light_pos", (mv * glm::vec4(light_pos, 1)).xyz);
+			0_tex_unit = normal_output;
+			1_tex_unit = position_output;
+			3_tex_unit = color_output;
+			4_tex_unit = tangent_output;
+			5_tex_unit = material_idx_output;
+			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+		}
 		
 		
 		0_sampler_idx = linear_sampler;
 		1_sampler_idx = linear_mipmaps_sampler;
 		unsigned zero = 0;
+		prev_histogram << histogram;
 		histogram.clear(gli::FORMAT_R32_UINT, &zero);
+		hdr_bokeh_param_buffer_prev << hdr_bokeh_param_buffer;
+		hdr_bokeh_param_buffer << hdr_bokeh_param_buffer_eraser;
 
 
 		0_tex_unit = hdr_image;
-		glViewport(0, 0, luminance_w, luminance_h);
 
 		hdr_compute_minmax->bind();
-		fbo_hdr_lums.bind();
+		hdr_compute_minmax->set_uniform("time", ctx.time_per_frame().count());
+		0_image_idx = hdr_lums[0];
 		2_storage_idx = hdr_bokeh_param_buffer;
-		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+		3_storage_idx = hdr_bokeh_param_buffer_prev;
+		glDispatchCompute(luminance_w / 32, luminance_h / 32, 1);
 
-		ctx.gl()->memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT);
+		ctx.gl()->memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
 		hdr_create_histogram->bind();
-		1_tex_unit = hdr_lums;
 		0_atomic_idx = histogram;
 		glDispatchCompute(luminance_w / 32, luminance_h / 32, 1);
 
-		ctx.gl()->memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT);
+		ctx.gl()->memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_ATOMIC_COUNTER_BARRIER_BIT);
 
 		hdr_compute_histogram_sums->bind();
 		hdr_compute_histogram_sums->set_uniform("time", ctx.time_per_frame().count());
+		hdr_compute_histogram_sums->set_uniform("hdr_lum_resolution", static_cast<int>(luminance_w * luminance_h));
 		0_storage_idx = histogram_sums;
 		1_storage_idx = buffer_object_cast<ShaderStorageBuffer<unsigned>>(histogram);
+		4_storage_idx = buffer_object_cast<ShaderStorageBuffer<unsigned>>(prev_histogram);
 		2_tex_unit = z_output;
 		glDispatchCompute(1, 1, 1);
-
-		glViewport(0, 0, w, h);
 
 		ctx.gl()->memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
@@ -358,9 +357,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 			auto free_vram = std::to_wstring(ctx.gl()->meminfo_free_vram() / 1024);
 
 			text_renderer.render({ 30, h - 50 },
-								 vsmall(b(stroke(purple, 3)((red(tpf)))) + L" ms"));
+								 vsmall(b(stroke(dark_magenta, 1)(red(tpf)))) + L" ms");
 			text_renderer.render({ 30, 20 },
-								 vsmall(b(stroke(blue,1)(light_steel_blue(free_vram)) + L" / " + stroke(red, 1)(dark_red(total_vram)) + L" MB")));
+								 vsmall(b((blue_violet(free_vram) + L" / " + stroke(red, 1)(dark_red(total_vram)) + L" MB"))));
 		}
 	}
 	 

@@ -29,7 +29,6 @@ Scene::Scene() {
   	(*vao)[1] = (*vbo)[1];
 	(*vao)[2] = (*vbo)[2];
 	(*vao)[3] = (*vbo)[3];
-	(*vao)[4] = (*vbo)[4];
 }
 
 Object *Scene::create_object(const std::vector<ObjectVertexData> &vertices, const std::vector<unsigned> &ind, Material &&mat) {
@@ -54,25 +53,20 @@ Object *Scene::create_object(const std::vector<ObjectVertexData> &vertices, cons
  	Object *obj = new Object(vertices.size(), ind.size());
  	obj->set_material(std::move(mat));
  	objects.push_back(std::unique_ptr<Object>(obj));
- 
- 	auto diffuse = obj->get_material().get_diffuse();
- 	auto specular = obj->get_material().get_specular();
-	auto heightmap = obj->get_material().get_heightmap();
+
+	auto diffuse = obj->get_material().get_diffuse();
+	auto specular = obj->get_material().get_specular();
 	auto normalmap = obj->get_material().get_normalmap();
 	auto alphamap = obj->get_material().get_alphamap();
 	auto brdf = obj->get_material().get_brdf();
  	material_descriptor md;
- 	if (diffuse != nullptr) {
- 		md.diffuse.tex_handler = diffuse->get_texture_handle(linear_sampler);
+	if (diffuse != nullptr) {
+		md.diffuse.tex_handler = diffuse->get_texture_handle(linear_sampler);
 		md.diffuse.tex_handler.make_resident();
- 	}
- 	if (specular != nullptr) {
- 		md.specular.tex_handler = specular->get_texture_handle(linear_sampler);
+	}
+	if (specular != nullptr) {
+		md.specular.tex_handler = specular->get_texture_handle(linear_sampler);
 		md.specular.tex_handler.make_resident();
- 	}
-	if (heightmap != nullptr) {
-		md.heightmap.tex_handler = heightmap->get_texture_handle(linear_sampler);
-		md.heightmap.tex_handler.make_resident();
 	}
 	if (normalmap != nullptr) {
 		md.normalmap.tex_handler = normalmap->get_texture_handle(linear_sampler);

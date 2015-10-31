@@ -93,6 +93,8 @@ public:
 
 	bool run_loop();
 
+	void capture_screenshot() const;
+
 	const decltype(framebuffer_resize_signal) &signal_framebuffer_resize() const { return framebuffer_resize_signal; }
 	const decltype(hid_pointer_movement_signal) &hid_signal_pointer_movement() const { return hid_pointer_movement_signal; }
 	const decltype(hid_pointer_button_signal) &hid_signal_pointer_button() const { return hid_pointer_button_signal; }
