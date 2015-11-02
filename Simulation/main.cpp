@@ -12,8 +12,8 @@
 #include <numeric>
 
 #include "gl_utils.h"
+#include "Texture1D.h"
 #include "Texture2D.h"
-#include "TextureCubeMap.h"
 #include "Log.h"
 #include "Keyboard.h"
 #include "Pointer.h"
@@ -34,6 +34,8 @@
 #include "Scene.h"
 #include "TextRenderer.h"
 #include "AttributedString.h"
+#include "human_vision_properties.h"
+#include "RGB.h"
 #include "bme_brdf_representation.h"
 
 using namespace StE::LLR;
@@ -52,6 +54,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 	ste_log_set_global_logger(&logger);
 	ste_log() << "Simulation is running";
 
+//	int w = 2560, h = 1440;
 	int w = 1688, h = 950;
 	constexpr float clip_far = 10000.f;
 	constexpr float clip_near = 5.f;
@@ -59,6 +62,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 
 	gl_context::context_settings settings;
 	settings.vsync = false;
+//	settings.fs = true;
 	StE::StEngineControl ctx(std::make_unique<gl_context>(settings, "Shlomi Steinberg - Simulation", glm::i32vec2{ w, h }));
 
 	std::string gl_err_desc;
@@ -84,10 +88,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 	std::unique_ptr<GLSLProgram> deffered = StE::Resource::GLSLProgramLoader::load_program_task(ctx, { "passthrough.vert", "lighting.frag" })();
 	std::unique_ptr<GLSLProgram> hdr_create_histogram = StE::Resource::GLSLProgramLoader::load_program_task(ctx, { "hdr_create_histogram.glsl" })();
 	std::unique_ptr<GLSLProgram> hdr_compute_histogram_sums = StE::Resource::GLSLProgramLoader::load_program_task(ctx, { "hdr_compute_histogram_sums.glsl" })();
-	std::unique_ptr<GLSLProgram> hdr_tonemap = StE::Resource::GLSLProgramLoader::load_program_task(ctx, { "passthrough.vert","hdr_tonemap.frag" })();
+	std::unique_ptr<GLSLProgram> hdr_tonemap_coc = StE::Resource::GLSLProgramLoader::load_program_task(ctx, { "passthrough.vert","hdr_tonemap_coc.frag" })();
 	std::unique_ptr<GLSLProgram> hdr_bloom_blurx = StE::Resource::GLSLProgramLoader::load_program_task(ctx, { "passthrough.vert","hdr_bloom_blur_x.frag" })();
 	std::unique_ptr<GLSLProgram> hdr_bloom_blury = StE::Resource::GLSLProgramLoader::load_program_task(ctx, { "passthrough.vert","hdr_bloom_blur_y.frag" })();
-	std::unique_ptr<GLSLProgram> bokeh_compute_coc = StE::Resource::GLSLProgramLoader::load_program_task(ctx, { "passthrough.vert","bokeh_coc.frag" })();
 	std::unique_ptr<GLSLProgram> bokeh_draw_bokeh_effects = StE::Resource::GLSLProgramLoader::load_program_task(ctx, { "bokeh_draw_bokeh_effects.vert","bokeh_draw_bokeh_effects.geom","bokeh_draw_bokeh_effects.frag" })();
 	std::unique_ptr<GLSLProgram> bokeh_combine = StE::Resource::GLSLProgramLoader::load_program_task(ctx, { "passthrough.vert","bokeh_combine.frag" })();
 	std::unique_ptr<GLSLProgram> bokeh_blurx = StE::Resource::GLSLProgramLoader::load_program_task(ctx, { "passthrough.vert","bokeh_bilateral_blur_x.frag" })();
@@ -127,15 +130,38 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 	vao[0] = (*vbo)[1];
 	vao[1] = (*vbo)[0];
 
+
+	StE::LLR::Texture2D bokeh_coc(gli::format::FORMAT_RG32_SFLOAT, StE::LLR::Texture2D::size_type(w, h), 1);
+
 	StE::LLR::Texture2D hdr_image(gli::format::FORMAT_RGBA32_SFLOAT, StE::LLR::Texture2D::size_type(w, h), 1);
+	StE::LLR::Texture2D hdr_final_image(gli::format::FORMAT_RGBA32_SFLOAT, StE::LLR::Texture2D::size_type(w, h), 1);
 	StE::LLR::Texture2D hdr_bloom_image(gli::format::FORMAT_RGBA8_UNORM, StE::LLR::Texture2D::size_type(w, h), 1);
-	StE::LLR::FramebufferObject fbo_hdr_image;
-	fbo_hdr_image[0] = hdr_image[0];
-	fbo_hdr_image[1] = hdr_bloom_image[0];
+	StE::LLR::FramebufferObject fbo_hdr_final;
+	fbo_hdr_final[0] = hdr_final_image[0];
+	StE::LLR::FramebufferObject fbo_hdr;
+	fbo_hdr[0] = hdr_image[0];
+	fbo_hdr[1] = hdr_bloom_image[0];
+	fbo_hdr[2] = bokeh_coc[0];
 
 	StE::LLR::Texture2D hdr_bloom_blurx_image(gli::format::FORMAT_RGBA8_UNORM, StE::LLR::Texture2D::size_type(w, h), 1);
 	StE::LLR::FramebufferObject fbo_hdr_bloom_blurx_image;
 	fbo_hdr_bloom_blurx_image[0] = hdr_bloom_blurx_image[0];
+
+	gli::texture1D hdr_human_vision_properties_data(1, gli::format::FORMAT_RGBA32_SFLOAT, glm::tvec1<std::size_t>{ 4096 });
+	{
+		glm::vec4 *d = reinterpret_cast<glm::vec4*>(hdr_human_vision_properties_data.data());
+		for (unsigned i = 0; i < hdr_human_vision_properties_data.dimensions().x; ++i, ++d) {
+			float f = glm::mix(StE::Graphics::human_vision_properties::min_luminance, 10.f, static_cast<float>(i) / static_cast<float>(hdr_human_vision_properties_data.dimensions().x));
+			*d = { StE::Graphics::human_vision_properties::scotopic_vision(f),
+				StE::Graphics::human_vision_properties::red_response(f),
+				StE::Graphics::human_vision_properties::monochromaticity(f),
+				StE::Graphics::human_vision_properties::visual_acuity(f) };
+		}
+	}
+	Sampler hdr_vision_properties_sampler(TextureFiltering::Linear, TextureFiltering::Linear, 16);
+	hdr_vision_properties_sampler.set_wrap_s(TextureWrapMode::ClampToEdge);
+	StE::LLR::Texture1D hdr_vision_properties_texture(hdr_human_vision_properties_data, false);
+	auto hdr_vision_properties_texture_handle = hdr_vision_properties_texture.get_texture_handle(hdr_vision_properties_sampler);
 
 	Sampler linear_sampler;
 	linear_sampler.set_min_filter(TextureFiltering::Linear);
@@ -145,30 +171,26 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 	linear_mipmaps_sampler.set_mag_filter(TextureFiltering::Linear);
 	linear_mipmaps_sampler.set_mipmap_filter(TextureFiltering::Linear);
 
+	bool first_frame = true;
 	int luminance_w = w / 4, luminance_h = h / 4;
 	struct hdr_bokeh_parameters {
 		std::int32_t lum_min, lum_max;
 		float focus;
 	};
+	float big_float = 10000.f;
 	StE::LLR::ShaderStorageBuffer<hdr_bokeh_parameters> hdr_bokeh_param_buffer(1);
 	StE::LLR::ShaderStorageBuffer<hdr_bokeh_parameters> hdr_bokeh_param_buffer_prev(1);
  	StE::LLR::Texture2D hdr_lums(gli::format::FORMAT_R32_SFLOAT, StE::LLR::Texture2D::size_type(luminance_w, luminance_h), 1);
-	float big_float = 10000.f;
  	StE::LLR::PixelBufferObject<std::int32_t> hdr_bokeh_param_buffer_eraser(std::vector<std::int32_t>{ *reinterpret_cast<std::int32_t*>(&big_float), 0 });
-	StE::LLR::AtomicCounterBufferObject<> prev_histogram(128);
 	StE::LLR::AtomicCounterBufferObject<> histogram(128);
  	StE::LLR::ShaderStorageBuffer<unsigned> histogram_sums(128);
 
-	StE::LLR::Texture2D bokeh_coc(gli::format::FORMAT_RG32_SFLOAT, StE::LLR::Texture2D::size_type(w, h), 1);
-	StE::LLR::FramebufferObject fbo_bokeh_coc;
-	fbo_bokeh_coc[0] = bokeh_coc[0];
 	StE::LLR::Texture2D bokeh_blur_image_x(gli::format::FORMAT_RGBA8_UNORM, StE::LLR::Texture2D::size_type(w, h), 1);
 	StE::LLR::FramebufferObject fbo_bokeh_blur_image;
 	fbo_bokeh_blur_image[0] = bokeh_blur_image_x[0];
 
 	bool running = true;
 
-	ctx.gl()->enable_state(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 	ctx.gl()->enable_state(GL_CULL_FACE);
 	ctx.gl()->cull_face(GL_BACK);
 	glFrontFace(GL_CCW);
@@ -271,9 +293,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 		vao.bind();
 
 		{
-			fbo_hdr_image.bind();
+			fbo_hdr_final.bind();
 			//ctx.gl()->defaut_framebuffer().bind();
 			deffered->bind();
+			deffered->set_uniform("light_diffuse", StE::Graphics::RGB({ 1.f, .57f, .16f }));
+			deffered->set_uniform("light_luminance", 1700.f);
 			deffered->set_uniform("light_pos", (mv * glm::vec4(light_pos, 1)).xyz);
 			0_tex_unit = normal_output;
 			1_tex_unit = position_output;
@@ -287,19 +311,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 		0_sampler_idx = linear_sampler;
 		1_sampler_idx = linear_mipmaps_sampler;
 		unsigned zero = 0;
-		prev_histogram << histogram;
 		histogram.clear(gli::FORMAT_R32_UINT, &zero);
 		hdr_bokeh_param_buffer_prev << hdr_bokeh_param_buffer;
 		hdr_bokeh_param_buffer << hdr_bokeh_param_buffer_eraser;
 
 
-		0_tex_unit = hdr_image;
+		0_tex_unit = hdr_final_image;
+
+		ctx.gl()->memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
 		hdr_compute_minmax->bind();
 		hdr_compute_minmax->set_uniform("time", ctx.time_per_frame().count());
 		0_image_idx = hdr_lums[0];
 		2_storage_idx = hdr_bokeh_param_buffer;
-		3_storage_idx = hdr_bokeh_param_buffer_prev;
+		3_storage_idx = first_frame ? hdr_bokeh_param_buffer : hdr_bokeh_param_buffer_prev;
 		glDispatchCompute(luminance_w / 32, luminance_h / 32, 1);
 
 		ctx.gl()->memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
@@ -315,18 +340,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 		hdr_compute_histogram_sums->set_uniform("hdr_lum_resolution", static_cast<int>(luminance_w * luminance_h));
 		0_storage_idx = histogram_sums;
 		1_storage_idx = buffer_object_cast<ShaderStorageBuffer<unsigned>>(histogram);
-		4_storage_idx = buffer_object_cast<ShaderStorageBuffer<unsigned>>(prev_histogram);
 		2_tex_unit = z_output;
 		glDispatchCompute(1, 1, 1);
 
 		ctx.gl()->memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
-		fbo_hdr_image.bind();
-		hdr_tonemap->bind();
-		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-		bokeh_compute_coc->bind();
-		fbo_bokeh_coc.bind();
+		fbo_hdr.bind();
+		hdr_tonemap_coc->bind();
+		3_sampler_idx = hdr_vision_properties_sampler;
+		3_tex_unit = hdr_vision_properties_texture;
+		hdr_tonemap_coc->set_uniform("aperature_radius", .0225f);
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 		fbo_hdr_bloom_blurx_image.bind();
@@ -334,11 +357,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 		1_tex_unit = hdr_bloom_image;
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-		fbo_hdr_image.bind();
+		fbo_hdr_final.bind();
 		hdr_bloom_blury->bind();
+		0_tex_unit = hdr_image;
 		1_tex_unit = hdr_bloom_blurx_image;
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
+		0_tex_unit = hdr_final_image;
 		1_tex_unit = bokeh_coc;
 		fbo_bokeh_blur_image.bind();
 		bokeh_blurx->bind();
@@ -348,7 +373,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 		ctx.gl()->defaut_framebuffer().bind();
 		2_tex_unit = bokeh_blur_image_x;
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
+		
 
 		{
 			using namespace StE::Text::Attributes;
@@ -361,6 +386,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 			text_renderer.render({ 30, 20 },
 								 vsmall(b((blue_violet(free_vram) + L" / " + stroke(red, 1)(dark_red(total_vram)) + L" MB"))));
 		}
+
+		first_frame = false;
 	}
 	 
 	return 0;

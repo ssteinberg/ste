@@ -15,8 +15,9 @@ layout(binding = 3) uniform sampler2D color_tex;
 layout(binding = 4) uniform sampler2D tangent_tex;
 layout(binding = 5) uniform usampler2D mat_idx_tex;
 
-uniform float l_intensity = 100000;
-uniform float light_radius = 10;
+uniform vec3 light_diffuse;
+uniform float light_luminance;
+uniform float light_radius = 5;
 uniform vec3 light_pos;
 
 layout(std430, binding = 0) buffer material_data {
@@ -28,6 +29,7 @@ void main() {
 	vec3 normal = texelFetch(normal_tex, ivec2(gl_FragCoord.xy), 0).xyz;
 	vec3 tangent = texelFetch(tangent_tex, ivec2(gl_FragCoord.xy), 0).xyz;
 	vec3 bitangent = cross(tangent, normal);
+	tangent = cross(normal, bitangent);
 	vec3 position = texelFetch(position_tex, ivec2(gl_FragCoord.xy), 0).xyz;
 	vec4 color_spec = texelFetch(color_tex, ivec2(gl_FragCoord.xy), 0);
 	float specular = color_spec.a;
@@ -36,11 +38,15 @@ void main() {
 
 	vec3 v = light_pos - position;
 	float dist = length(v);
-	
+
 	float brdf = calc_brdf(md, position, normal, tangent, bitangent, v);
-	float st_in = abs(2 * pi * (1.0f - cos(atan(light_radius / dist) * .5f)));
+	float attenuation_factor = max(.01f, dist / (light_radius * 100));
+	float incident_radiance = light_luminance / pow(attenuation_factor, 2);
+	
+	color *= light_diffuse;
+	vec3 xyY = XYZtoxyY(RGBtoXYZ(color));
+	xyY.z += min_luminance;
+	xyY.z *= max(0, mix(0.5f, 1.f, specular) * brdf * incident_radiance);
 
-	color.z *= max(0, mix(0.25f, 1.f, specular) * brdf * st_in * l_intensity) + .000001f;
-
-	gl_FragColor = vec4(color, 1);
+	gl_FragColor = vec4(xyY, 1);
 }

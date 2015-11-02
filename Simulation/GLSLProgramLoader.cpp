@@ -38,7 +38,7 @@ std::string GLSLProgramLoader::load_source(const boost::filesystem::path &path) 
 	std::ifstream ifs(path.string(), std::ios::in);
 	if (!ifs) {
 		using namespace Attributes;
-		ste_log_error() << AttributedString("GLSL Shader ") + i(path.string()) + ": Unable to read GLSL shader program: " << path;
+		ste_log_error() << AttributedString("GLSL Shader ") + i(path.string()) + ": Unable to read GLSL shader program";
 		return std::string();
 	}
 
@@ -49,21 +49,37 @@ std::string GLSLProgramLoader::load_source(const boost::filesystem::path &path) 
 }
 
 std::unique_ptr<GLSLShaderGeneric> GLSLProgramLoader::compile_from_path(const boost::filesystem::path &path) {
-	auto code = load_source(path);
-	if (!code.length())
+	std::ifstream ifs(path.string(), std::ios::in);
+	if (!ifs) {
+		using namespace Attributes;
+		ste_log_error() << AttributedString("GLSL Shader ") + i(path.string()) + ": Unable to read GLSL shader program.";
 		return nullptr;
-	return compile_from_source(path, code);
-}
-
-std::unique_ptr<GLSLShaderGeneric> GLSLProgramLoader::compile_from_source(const boost::filesystem::path &path, std::string code) {
-	parse_includes(path, code);
-
-	GLSLShaderProperties prop;
-	GLSLShaderType type;
-	if (!parse_parameters(path, code, prop, type)) {
-		return false;
 	}
 
+	std::string line;
+	std::string src;
+	GLSLShaderProperties prop{ 0,0 };
+	GLSLShaderType type = GLSLShaderType::NONE;
+
+	int i = 1;
+	while (std::getline(ifs, line)) {
+		if (line[0] == '#')
+			parse_parameters(line, prop, type) || parse_include(path, i, line);
+
+		src += line + "\n";
+		++i;
+	}
+
+	if (type == GLSLShaderType::NONE || prop.version_major == 0) {
+		ste_log_error() << AttributedString("GLSL Shader ") + Attributes::i(path.string()) + ": No shader #type or #version specified.";
+		return nullptr;
+	}
+
+	return compile_from_source(path, src, prop, type);
+}
+
+std::unique_ptr<GLSLShaderGeneric> GLSLProgramLoader::compile_from_source(const boost::filesystem::path &path, std::string code,
+																		  GLSLShaderProperties prop, GLSLShaderType type) {
 	std::unique_ptr<GLSLShaderGeneric> shader;
 	switch (type) {
 	case GLSLShaderType::VERTEX:	shader = std::make_unique<GLSLShader<GLSLShaderType::VERTEX>>(code, prop); break;
@@ -102,37 +118,34 @@ std::string GLSLProgramLoader::parse_directive(const std::string &source, const 
 	while (it < source.length() && std::isspace<char>(source[it], std::locale::classic())) ++it;
 	end = source.find('\n', it);
 	if (end == std::string::npos)
-		return "";
+		end = source.length();
 
 	return source.substr(it, end - it);
 }
 
-bool GLSLProgramLoader::parse_parameters(const boost::filesystem::path &path, std::string & source, GLSLShaderProperties &prop, GLSLShaderType &type) {
+bool GLSLProgramLoader::parse_parameters(std::string &line, GLSLShaderProperties &prop, GLSLShaderType &type) {
 	std::string::size_type it = 0, end;
 
-	std::string version = parse_directive(source, "#version", it, end);
-	if (version.length() < 3) {
-		using namespace Attributes;
-		ste_log_error() << AttributedString("GLSL Shader ") + i(path.string()) + ": malformed #version directive";
-		assert(false);
-		return false;
+	std::string version = parse_directive(line, "#version", it, end);
+	if (version.length() >= 3) {
+		long lver = std::strtol(version.c_str(), nullptr, 10);
+		prop.version_major = lver / 100;
+		prop.version_minor = (lver - prop.version_major * 100) / 10;
+
+		return true;
 	}
-	long lver = std::strtol(version.c_str(), nullptr, 10);
-	prop.version_major = lver / 100;
-	prop.version_minor = (lver - prop.version_major * 100) / 10;
 
 	it = 0;
-	auto mapit = type_map.find(parse_directive(source, "#type", it, end));
-	if (mapit == type_map.end()) {
-		using namespace Attributes;
-		ste_log_error() << AttributedString("GLSL Shader ") + i(path.string()) + ": malformed #type directive or unknown type";
-		assert(false);
-		return false;
-	}
-	source.erase(it, end - it);
-	type = mapit->second;
+	auto mapit = type_map.find(parse_directive(line, "#type", it, end));
+	if (mapit != type_map.end()) {
+		type = mapit->second;
 
-	return true;
+		line = "";
+
+		return true;
+	}
+
+	return false;
 }
 
 std::vector<boost::filesystem::path> GLSLProgramLoader::find_includes(const boost::filesystem::path &path) {
@@ -158,9 +171,14 @@ std::vector<boost::filesystem::path> GLSLProgramLoader::find_includes(const boos
 	return ret;
 }
 
-void GLSLProgramLoader::parse_includes(const boost::filesystem::path &path, std::string &source) {
+bool GLSLProgramLoader::parse_include(const boost::filesystem::path &path, int line, std::string &source) {
 	std::string::size_type it = 0, end;
 	std::string name;
+	std::string path_string = path.string();
+	std::vector<std::string> paths{ path_string };
+
+	bool matched = false;
+
 	while ((name = parse_directive(source, "#include", it, end)).length()) {
 		if (name[0] != '"')
 			break;
@@ -170,15 +188,28 @@ void GLSLProgramLoader::parse_includes(const boost::filesystem::path &path, std:
 
 		std::string file_name = name.substr(1, name_len - 1);
 
+		for (auto &p : paths)
+			if (p == file_name) {
+				source.replace(it, end - it, "");
+				continue;
+			}
+
+		if (matched) {
+			line = 0;
+			for (unsigned i = 0; i < it; ++i) if (source[i] == '\n') ++line;
+		}
+
 		auto include = load_source(file_name);
+		source.insert(end, std::string("\n#line ") + std::to_string(line) + " \"" + path_string + "\"\n");
 		source.replace(it, end - it, include);
+		source.insert(it, std::string("#line 1 \"") + file_name + "\"\n");
+
+		path_string = file_name;
+		matched = true;
+		paths.push_back(file_name);
 	}
 
-	if (it != std::string::npos) {
-		using namespace Attributes;
-		ste_log_error() << AttributedString("GLSL Shader ") + i(path.string()) + ": GLSL Shader: malformed #include directive";
-		assert(false);
-	}
+	return matched;
 }
 
 StE::task<std::unique_ptr<GLSLProgram>> GLSLProgramLoader::load_program_task(const StEngineControl &context, std::vector<boost::filesystem::path> files) {
@@ -199,8 +230,10 @@ StE::task<std::unique_ptr<GLSLProgram>> GLSLProgramLoader::load_program_task(con
 
 			for (unsigned i = 0; i < paths.size(); ++i) {
 				auto includes = find_includes(paths[i]);
-				for (auto &p : includes)
+				for (auto &p : includes) {
+					for (auto &s : paths) if (s == p) continue;
 					paths.push_back(p);
+				}
 			}
 
 			for (auto &path : paths) {

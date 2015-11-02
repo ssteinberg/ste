@@ -14,9 +14,6 @@ layout(std430, binding = 0) coherent buffer histogram_sums {
 layout(std430, binding = 1) coherent buffer histogram_bins {
 	uint histogram[bins];
 };
-layout(std430, binding = 4) coherent buffer histogram_prev_bins {
-	uint histogram_prev[bins];
-};
 layout(std430, binding = 2) coherent buffer hdr_bokeh_parameters_buffer {
 	hdr_bokeh_parameters params;
 };

@@ -57,9 +57,7 @@ void main() {
 	
 	float specular = md.specular.tex_handler>0 ? texture(sampler2D(md.specular.tex_handler), uv).x : 1.f;
 	vec3 color = md.diffuse.tex_handler>0 ? texture(sampler2D(md.diffuse.tex_handler), uv).rgb : vec3(1.f);
-	vec3 xyY = XYZtoxyY(RGBtoXYZ(color));
-	xyY.z += min_luminance;
-	o_frag_color = vec4(xyY, specular);
+	o_frag_color = vec4(color, specular);
 
 	o_frag_position = P;
 	o_frag_z = frag_depth;

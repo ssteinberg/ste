@@ -14,19 +14,22 @@
       <string>D:\Dev\git\simulation\Simulation\transform.vert</string>
     </ArrayOfString>
     <ArrayOfString>
+      <string>D:\Dev\git\simulation\Simulation\bme_brdf_representation.h</string>
+    </ArrayOfString>
+    <ArrayOfString>
       <string>D:\Dev\git\simulation\Simulation\hdr_common.glsl</string>
     </ArrayOfString>
     <ArrayOfString>
       <string>D:\Dev\git\simulation\Simulation\common.glsl</string>
     </ArrayOfString>
     <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\hdr_tonemap.frag</string>
+      <string>D:\Dev\git\simulation\Simulation\hdr_tonemap_coc.frag</string>
     </ArrayOfString>
     <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\hdr_compute_histogram_sums.glsl</string>
+      <string>D:\Dev\git\simulation\Simulation\human_vision_properties.h</string>
     </ArrayOfString>
     <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\hdr_compute_minmax.frag</string>
+      <string>D:\Dev\git\simulation\Simulation\resource.h</string>
     </ArrayOfString>
   </ArrayOfArrayOfString>
 </ArrayOfArrayOfArrayOfString>

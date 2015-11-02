@@ -62,5 +62,5 @@ float calc_brdf(material_descriptor md, vec3 position, vec3 normal, vec3 tangent
 	float l0 = texture(brdf_sampler, tp).x;
 	float l1 = texture(brdf_sampler, tp + offset).x;
 
-	return mix(l0, l1, fract(lf));
+	return mix(l0, l1, fract(lf)) * cos_in_theta;
 }

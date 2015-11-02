@@ -70,7 +70,7 @@ newmtl Material__298
 	map_Kd textures\background.tga
 	map_bump textures\background_bump.png
 	bump textures\background_bump.png
-	brdf ward_metal\ceramic_tile_white
+	brdf ward_metal\aluminium_anodised
 
 newmtl 16___Default
 	Ns 10.0000
@@ -412,7 +412,7 @@ newmtl Material__25
 	map_Kd textures\lion.tga
 	map_bump textures\lion_bump.png
 	bump textures\lion_bump.png
-	brdf ward_metal\ceramic_tile_white
+	brdf ward_metal\aluminium_anodised
 
 newmtl roof
 	Ns 10.0000

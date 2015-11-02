@@ -154,6 +154,9 @@
     <Filter Include="src\StE\Framework Graphics\Procedural Images">
       <UniqueIdentifier>{15ac2aeb-a2bf-454b-a6f4-a7e211109f83}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\StE\Framework Graphics\Radiometry\Human Vision Model">
+      <UniqueIdentifier>{703d47f0-8286-483d-99d0-ddcca36a74fc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -590,6 +593,9 @@
     <ClInclude Include="surface_element_cast.h">
       <Filter>src\StE\Core\LLR\GPU Resources\Surfaces</Filter>
     </ClInclude>
+    <ClInclude Include="human_vision_properties.h">
+      <Filter>src\StE\Framework Graphics\Radiometry\Human Vision Model</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="stdafx.h">
@@ -625,12 +631,6 @@
     <None Include="text_distance_map_contour.geom">
       <Filter>src\StE\Framework Text\Rendering\Shaders</Filter>
     </None>
-    <None Include="lanczos.frag">
-      <Filter>src\Global Shaders</Filter>
-    </None>
-    <None Include="hdr_tonemap.frag">
-      <Filter>src\Global Shaders</Filter>
-    </None>
     <None Include="hdr_common.glsl">
       <Filter>src\Global Shaders</Filter>
     </None>
@@ -644,9 +644,6 @@
       <Filter>src\Global Shaders</Filter>
     </None>
     <None Include="bokeh_bilateral_blur_y.frag">
-      <Filter>src\Global Shaders</Filter>
-    </None>
-    <None Include="bokeh_coc.frag">
       <Filter>src\Global Shaders</Filter>
     </None>
     <None Include="bokeh_draw_bokeh_effects.frag">
@@ -674,6 +671,9 @@
       <Filter>src\Global Shaders</Filter>
     </None>
     <None Include="hdr_compute_minmax.glsl">
+      <Filter>src\Global Shaders</Filter>
+    </None>
+    <None Include="hdr_tonemap_coc.frag">
       <Filter>src\Global Shaders</Filter>
     </None>
   </ItemGroup>

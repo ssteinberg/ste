@@ -14,6 +14,7 @@ namespace StE {
 namespace LLR {
 
 enum class GLSLShaderType {
+	NONE,
 	VERTEX, FRAGMENT, GEOMETRY,
 	COMPUTE,
 	TESS_CONTROL, TESS_EVALUATION
@@ -28,6 +29,7 @@ class GLSLShaderAllocator : public generic_resource_allocator {
 private:
 	template <GLSLShaderType T>
 	unsigned creator() { assert(false); return 0; }
+	template <> unsigned creator<GLSLShaderType::NONE>() { static_assert(false); }
 	template <> unsigned creator<GLSLShaderType::VERTEX>() { return glCreateShader(GL_VERTEX_SHADER); }
 	template <> unsigned creator<GLSLShaderType::FRAGMENT>() { return glCreateShader(GL_FRAGMENT_SHADER); }
 	template <> unsigned creator<GLSLShaderType::GEOMETRY>() { return glCreateShader(GL_GEOMETRY_SHADER); }
