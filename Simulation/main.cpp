@@ -37,6 +37,7 @@
 #include "human_vision_properties.h"
 #include "RGB.h"
 #include "bme_brdf_representation.h"
+#include "Sphere.h"
 
 using namespace StE::LLR;
 using namespace StE::Text;
@@ -54,15 +55,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 	ste_log_set_global_logger(&logger);
 	ste_log() << "Simulation is running";
 
-//	int w = 2560, h = 1440;
+	//	int w = 2560, h = 1440;
 	int w = 1688, h = 950;
 	constexpr float clip_far = 10000.f;
 	constexpr float clip_near = 5.f;
-	const glm::vec3 light_pos(-850.6, 138, -180);
 
 	gl_context::context_settings settings;
 	settings.vsync = false;
-//	settings.fs = true;
+	//	settings.fs = true;
 	StE::StEngineControl ctx(std::make_unique<gl_context>(settings, "Shlomi Steinberg - Simulation", glm::i32vec2{ w, h }));
 
 	std::string gl_err_desc;
@@ -73,7 +73,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 // 	auto itt = tp.commit(tt);
 // 	tp.commit(tt);
 // 	tp.uncommit(itt);
- 	//while (StE::LLR::opengl::query_gl_error(gl_err_desc));
+	//while (StE::LLR::opengl::query_gl_error(gl_err_desc));
 
 	ctx.set_clipping_planes(clip_near, clip_far);
 	camera.set_position({ 25.8, 549.07, -249.2 });
@@ -85,6 +85,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 
 	std::unique_ptr<GLSLProgram> hdr_compute_minmax = StE::Resource::GLSLProgramLoader::load_program_task(ctx, { "hdr_compute_minmax.glsl" })();
 	std::unique_ptr<GLSLProgram> transform = StE::Resource::GLSLProgramLoader::load_program_task(ctx, { "transform.vert", "frag.frag" })();
+	std::unique_ptr<GLSLProgram> transform2 = StE::Resource::GLSLProgramLoader::load_program_task(ctx, { "transform2.vert", "frag2.frag" })();
+	std::unique_ptr<GLSLProgram> transform_sky = StE::Resource::GLSLProgramLoader::load_program_task(ctx, { "transform_sky.vert", "frag_sky.frag" })();
 	std::unique_ptr<GLSLProgram> deffered = StE::Resource::GLSLProgramLoader::load_program_task(ctx, { "passthrough.vert", "lighting.frag" })();
 	std::unique_ptr<GLSLProgram> hdr_create_histogram = StE::Resource::GLSLProgramLoader::load_program_task(ctx, { "hdr_create_histogram.glsl" })();
 	std::unique_ptr<GLSLProgram> hdr_compute_histogram_sums = StE::Resource::GLSLProgramLoader::load_program_task(ctx, { "hdr_compute_histogram_sums.glsl" })();
@@ -101,7 +103,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 	StE::LLR::Texture2D tangent_output(gli::format::FORMAT_RGB32_SFLOAT, { w, h }, 1);
 	StE::LLR::Texture2D position_output(gli::format::FORMAT_RGB32_SFLOAT, { w, h }, 1);
 	StE::LLR::Texture2D color_output(gli::format::FORMAT_RGBA32_SFLOAT, { w, h }, 1);
-	StE::LLR::Texture2D material_idx_output(gli::format::FORMAT_R16_UINT, { w, h }, 1);
+	StE::LLR::Texture2D material_idx_output(gli::format::FORMAT_R16_SINT, { w, h }, 1);
 	StE::LLR::Texture2D z_output(gli::format::FORMAT_R32_SFLOAT, { w, h }, 1);
 	StE::LLR::FramebufferObject fbo;
 	fbo.depth_binding_point() = depth_output;
@@ -121,14 +123,34 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 	using vertex_descriptor = StE::LLR::VBODescriptorWithTypes<glm::vec3, glm::vec2>::descriptor;
 	using vbo_type = StE::LLR::VertexBufferObject<Vertex, vertex_descriptor>;
 	std::shared_ptr<vbo_type> vbo = std::make_shared<vbo_type>(std::vector<Vertex>(
-		{ { { -1.f, -1.f, .0f }, { .0f, .0f } },
-		{ { 1.f, -1.f, .0f }, { 1.f, .0f } },
-		{ { -1.f, 1.f, .0f }, { .0f, 1.f } },
-		{ { 1.f, 1.f, .0f }, { 1.f, 1.f } } }
+	{ { { -1.f, -1.f, .0f }, { .0f, .0f } },
+	{ { 1.f, -1.f, .0f }, { 1.f, .0f } },
+	{ { -1.f, 1.f, .0f }, { .0f, 1.f } },
+	{ { 1.f, 1.f, .0f }, { 1.f, 1.f } } }
 	));
 	StE::LLR::VertexArrayObject vao;
 	vao[0] = (*vbo)[1];
 	vao[1] = (*vbo)[0];
+
+
+	StE::Graphics::Sphere sphere(10, 10);
+	StE::LLR::VertexBufferObject<StE::Graphics::ObjectVertexData, StE::Graphics::ObjectVertexData::descriptor> sphere_vbo{ sphere.get_vertices() };
+	StE::LLR::ElementBufferObject<> sphere_ebo{ sphere.get_indices() };
+	StE::LLR::VertexArrayObject sphere_vao;
+	sphere_vao[0] = sphere_vbo[0];
+	sphere_vao[1] = sphere_vbo[1];
+	sphere_vao[2] = sphere_vbo[2];
+	sphere_vao[3] = sphere_vbo[3];
+
+	auto stars_tex = StE::Resource::SurfaceIO::load_texture_2d_task("Data/textures/stars.jpg", true)();
+	StE::Graphics::Sphere sky_dome(10, 10, .0f);
+	StE::LLR::VertexBufferObject<StE::Graphics::ObjectVertexData, StE::Graphics::ObjectVertexData::descriptor> sky_dome_vbo{ sky_dome.get_vertices() };
+	StE::LLR::ElementBufferObject<> sky_dome_ebo{ sky_dome.get_indices() };
+	StE::LLR::VertexArrayObject sky_dome_vao;
+	sky_dome_vao[0] = sky_dome_vbo[0];
+	sky_dome_vao[1] = sky_dome_vbo[1];
+	sky_dome_vao[2] = sky_dome_vbo[2];
+	sky_dome_vao[3] = sky_dome_vbo[3];
 
 
 	StE::LLR::Texture2D bokeh_coc(gli::format::FORMAT_RG32_SFLOAT, StE::LLR::Texture2D::size_type(w, h), 1);
@@ -192,7 +214,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 	bool running = true;
 
 	ctx.gl()->enable_state(GL_CULL_FACE);
-	ctx.gl()->cull_face(GL_BACK);
 	glFrontFace(GL_CCW);
 
 	// Bind input
@@ -215,6 +236,29 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 
 	bool loaded = false;
 	auto model_future = ctx.scheduler().schedule_now(StE::Resource::ModelLoader::load_model_task(ctx, R"(data\models\crytek-sponza\sponza.obj)", &scene));
+
+	const glm::vec3 light_pos(-850.6, 138, -180);
+	auto light_diffuse = StE::Graphics::RGB({ 1.f, .57f, .16f });
+	auto light_intensity = 1700.f;
+
+	transform->bind();
+	transform->set_uniform("near", clip_near);
+	transform->set_uniform("far", clip_far);
+
+	transform2->bind();
+	transform2->set_uniform("near", clip_near);
+	transform2->set_uniform("far", clip_far);
+	transform2->set_uniform("light_diffuse", light_diffuse);
+	transform2->set_uniform("light_luminance", light_intensity);
+	transform2->set_uniform("light_pos", light_pos);
+
+	transform_sky->bind();
+	transform_sky->set_uniform("far", clip_far);
+	transform_sky->set_uniform("sky_luminance", 1.f);
+
+	deffered->bind();
+	deffered->set_uniform("light_diffuse", light_diffuse);
+	deffered->set_uniform("light_luminance", light_intensity);
 
 	// Run main loop
 	while (!loaded && running) {
@@ -273,19 +317,37 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 
 		auto proj_mat = ctx.projection_matrix();
 		auto mv = camera.view_matrix();
+		auto mvnt = camera.view_matrix_no_translation();
 		auto inverse_mv = glm::inverse(mv);
 		auto transpose_inverse_mv = glm::transpose(inverse_mv);
 
 		{
 			fbo.bind();
 			ctx.gl()->clear_framebuffer(false);
+
 			transform->bind();
 			transform->set_uniform("view_model", mv);
 			transform->set_uniform("trans_inverse_view_model", transpose_inverse_mv);
 			transform->set_uniform("projection", proj_mat);
-			transform->set_uniform("near", clip_near);
-			transform->set_uniform("far", clip_far);
 			scene.render();
+
+			transform2->bind();
+			transform2->set_uniform("view_model", mv);
+			transform2->set_uniform("trans_inverse_view_model", transpose_inverse_mv);
+			transform2->set_uniform("projection", proj_mat);
+			sphere_vao.bind();
+			sphere_ebo.bind();
+			glDrawElements(GL_TRIANGLES, sphere_ebo.size(), GL_UNSIGNED_INT, nullptr);
+
+			ctx.gl()->cull_face(GL_FRONT);
+			transform_sky->bind();
+			transform_sky->set_uniform("view_model", mvnt);
+			transform_sky->set_uniform("projection", proj_mat);
+			sky_dome_vao.bind();
+			sky_dome_ebo.bind();
+			0_tex_unit = *stars_tex;
+			glDrawElements(GL_TRIANGLES, sky_dome_ebo.size(), GL_UNSIGNED_INT, nullptr);
+			ctx.gl()->cull_face(GL_BACK);
 		}
 
 		ctx.gl()->disable_depth_test();
@@ -296,8 +358,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 			fbo_hdr_final.bind();
 			//ctx.gl()->defaut_framebuffer().bind();
 			deffered->bind();
-			deffered->set_uniform("light_diffuse", StE::Graphics::RGB({ 1.f, .57f, .16f }));
-			deffered->set_uniform("light_luminance", 1700.f);
 			deffered->set_uniform("light_pos", (mv * glm::vec4(light_pos, 1)).xyz);
 			0_tex_unit = normal_output;
 			1_tex_unit = position_output;

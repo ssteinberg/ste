@@ -19,7 +19,7 @@ layout(location = 1) out vec3 o_frag_position;
 layout(location = 2) out vec3 o_frag_normal;
 layout(location = 3) out float o_frag_z;
 layout(location = 4) out vec3 o_frag_tangent;
-layout(location = 5) out uint o_frag_mat_idx;
+layout(location = 5) out int o_frag_mat_idx;
 
 uniform float height_map_scale = .2f;
 

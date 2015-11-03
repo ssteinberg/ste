@@ -86,9 +86,15 @@ bool SurfaceIO::write_png(const std::string &file_name, const char *image_data, 
 gli::texture2D SurfaceIO::load_tga(const std::string &file_name, bool srgb) {
 	TGA *tga;
 
-	tga = TGAOpen(const_cast<char*>(file_name.c_str()), "rb");
+	try {
+		tga = TGAOpen(const_cast<char*>(file_name.c_str()), "rb");
+		TGAReadHeader(tga);
+	}
+	catch (std::exception ex) {
+		ste_log_error() << file_name << " is not a valid 24-bit TGA" << std::endl;
+		return gli::texture2D();
+	}
 
-	TGAReadHeader(tga);
 	if (tga->last != TGA_OK) {
 		TGAClose(tga);
 		ste_log_error() << file_name << " is not a valid 24-bit TGA" << std::endl;
@@ -141,7 +147,13 @@ gli::texture2D SurfaceIO::load_tga(const std::string &file_name, bool srgb) {
 		return gli::texture2D();
 	}
 
-	TGAReadScanlines(tga, image_data, 0, h, TGA_BGR);
+	try {
+		TGAReadScanlines(tga, image_data, 0, h, TGA_BGR);
+	}
+	catch (std::exception ex) {
+		ste_log_error() << file_name << " is not a valid 24-bit TGA" << std::endl;
+		return gli::texture2D();
+	}
 
 	TGAClose(tga);
 

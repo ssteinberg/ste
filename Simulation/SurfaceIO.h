@@ -60,6 +60,7 @@ public:
 						ste_log_error() << "Stream error reading surface file: " << path << " - " << e.what() << std::endl;
 					else
 						ste_log_error() << "Unknown failure opening file: " << path << " - " << e.what() << std::endl;
+					return gli::texture2D();
 				}
 			}
 

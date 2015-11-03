@@ -157,6 +157,9 @@
     <Filter Include="src\StE\Framework Graphics\Radiometry\Human Vision Model">
       <UniqueIdentifier>{703d47f0-8286-483d-99d0-ddcca36a74fc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\StE\Framework Graphics\Mesh">
+      <UniqueIdentifier>{7806e3d2-6f13-4591-8042-3d0df31f6156}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -596,31 +599,16 @@
     <ClInclude Include="human_vision_properties.h">
       <Filter>src\StE\Framework Graphics\Radiometry\Human Vision Model</Filter>
     </ClInclude>
+    <ClInclude Include="mesh.h">
+      <Filter>src\StE\Framework Graphics\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Sphere.h">
+      <Filter>src\StE\Framework Graphics\Mesh</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="stdafx.h">
       <Filter>src\StE\Core</Filter>
-    </None>
-    <None Include="transform.vert">
-      <Filter>src\Global Shaders</Filter>
-    </None>
-    <None Include="frag.frag">
-      <Filter>src\Global Shaders</Filter>
-    </None>
-    <None Include="texture.frag">
-      <Filter>src\Global Shaders</Filter>
-    </None>
-    <None Include="ssao.frag">
-      <Filter>src\Global Shaders</Filter>
-    </None>
-    <None Include="passthrough.vert">
-      <Filter>src\Global Shaders</Filter>
-    </None>
-    <None Include="lighting.frag">
-      <Filter>src\Global Shaders</Filter>
-    </None>
-    <None Include="gen_depth_layers.frag">
-      <Filter>src\Global Shaders</Filter>
     </None>
     <None Include="text_distance_map_contour.frag">
       <Filter>src\StE\Framework Text\Rendering\Shaders</Filter>
@@ -634,47 +622,82 @@
     <None Include="hdr_common.glsl">
       <Filter>src\Global Shaders</Filter>
     </None>
-    <None Include="hdr_compute_histogram_sums.glsl">
-      <Filter>src\Global Shaders</Filter>
-    </None>
-    <None Include="hdr_create_histogram.glsl">
-      <Filter>src\Global Shaders</Filter>
-    </None>
-    <None Include="bokeh_bilateral_blur_x.frag">
-      <Filter>src\Global Shaders</Filter>
-    </None>
-    <None Include="bokeh_bilateral_blur_y.frag">
-      <Filter>src\Global Shaders</Filter>
-    </None>
-    <None Include="bokeh_draw_bokeh_effects.frag">
-      <Filter>src\Global Shaders</Filter>
-    </None>
-    <None Include="bokeh_combine.frag">
-      <Filter>src\Global Shaders</Filter>
-    </None>
-    <None Include="bokeh_draw_bokeh_effects.vert">
-      <Filter>src\Global Shaders</Filter>
-    </None>
-    <None Include="bokeh_draw_bokeh_effects.geom">
-      <Filter>src\Global Shaders</Filter>
-    </None>
-    <None Include="hdr_bloom_blur_x.frag">
-      <Filter>src\Global Shaders</Filter>
-    </None>
-    <None Include="hdr_bloom_blur_y.frag">
-      <Filter>src\Global Shaders</Filter>
-    </None>
     <None Include="material.glsl">
       <Filter>src\Global Shaders</Filter>
     </None>
     <None Include="common.glsl">
       <Filter>src\Global Shaders</Filter>
     </None>
-    <None Include="hdr_compute_minmax.glsl">
+    <None Include="frag_sky.frag">
       <Filter>src\Global Shaders</Filter>
     </None>
-    <None Include="hdr_tonemap_coc.frag">
+    <None Include="transform_sky.vert">
       <Filter>src\Global Shaders</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="transform.vert">
+      <Filter>src\Global Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="bokeh_bilateral_blur_x.frag">
+      <Filter>src\Global Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="bokeh_bilateral_blur_y.frag">
+      <Filter>src\Global Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="bokeh_combine.frag">
+      <Filter>src\Global Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="bokeh_draw_bokeh_effects.frag">
+      <Filter>src\Global Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="bokeh_draw_bokeh_effects.geom">
+      <Filter>src\Global Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="bokeh_draw_bokeh_effects.vert">
+      <Filter>src\Global Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="frag.frag">
+      <Filter>src\Global Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="gen_depth_layers.frag">
+      <Filter>src\Global Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="hdr_bloom_blur_x.frag">
+      <Filter>src\Global Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="hdr_bloom_blur_y.frag">
+      <Filter>src\Global Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="hdr_compute_histogram_sums.glsl">
+      <Filter>src\Global Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="hdr_compute_minmax.glsl">
+      <Filter>src\Global Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="hdr_create_histogram.glsl">
+      <Filter>src\Global Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="hdr_tonemap_coc.frag">
+      <Filter>src\Global Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="lighting.frag">
+      <Filter>src\Global Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="passthrough.vert">
+      <Filter>src\Global Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ssao.frag">
+      <Filter>src\Global Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="texture.frag">
+      <Filter>src\Global Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="transform2.vert">
+      <Filter>src\Global Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="frag2.frag">
+      <Filter>src\Global Shaders</Filter>
+    </CustomBuild>
   </ItemGroup>
 </Project>

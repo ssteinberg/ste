@@ -57,5 +57,5 @@ void main() {
 
 	vec4 hdr_texel = texelFetch(unblured_hdr, ivec2(gl_FragCoord.xy), 0);
 	vec3 blend = blur.rgb * blur.a + hdr_texel.rgb;
-	gl_FragColor = vec4(blend, hdr_texel.a);
+	gl_FragColor = vec4(blend, hdr_texel.w + .1f);
 }

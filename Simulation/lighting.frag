@@ -13,7 +13,7 @@ layout(binding = 0) uniform sampler2D normal_tex;
 layout(binding = 1) uniform sampler2D position_tex;
 layout(binding = 3) uniform sampler2D color_tex;
 layout(binding = 4) uniform sampler2D tangent_tex;
-layout(binding = 5) uniform usampler2D mat_idx_tex;
+layout(binding = 5) uniform isampler2D mat_idx_tex;
 
 uniform vec3 light_diffuse;
 uniform float light_luminance;
@@ -25,7 +25,7 @@ layout(std430, binding = 0) buffer material_data {
 };
 
 void main() {
-	uint draw_idx = texelFetch(mat_idx_tex, ivec2(gl_FragCoord.xy), 0).x;
+	int draw_idx = texelFetch(mat_idx_tex, ivec2(gl_FragCoord.xy), 0).x;
 	vec3 normal = texelFetch(normal_tex, ivec2(gl_FragCoord.xy), 0).xyz;
 	vec3 tangent = texelFetch(tangent_tex, ivec2(gl_FragCoord.xy), 0).xyz;
 	vec3 bitangent = cross(tangent, normal);
@@ -34,19 +34,27 @@ void main() {
 	vec4 color_spec = texelFetch(color_tex, ivec2(gl_FragCoord.xy), 0);
 	float specular = color_spec.a;
 	vec3 color = color_spec.rgb;
-	material_descriptor md = mat_descriptor[draw_idx];
 
-	vec3 v = light_pos - position;
-	float dist = length(v);
+	vec3 xyY;
 
-	float brdf = calc_brdf(md, position, normal, tangent, bitangent, v);
-	float attenuation_factor = max(.01f, dist / (light_radius * 100));
-	float incident_radiance = light_luminance / pow(attenuation_factor, 2);
+	if (draw_idx != -1) {
+		material_descriptor md = mat_descriptor[draw_idx];
+
+		vec3 v = light_pos - position;
+		float dist = length(v);
+
+		float brdf = calc_brdf(md, position, normal, tangent, bitangent, v);
+		float attenuation_factor = max(.01f, dist / (light_radius * 100));
+		float incident_radiance = light_luminance / pow(attenuation_factor, 2);
 	
-	color *= light_diffuse;
-	vec3 xyY = XYZtoxyY(RGBtoXYZ(color));
-	xyY.z += min_luminance;
-	xyY.z *= max(0, mix(0.5f, 1.f, specular) * brdf * incident_radiance);
+		color *= light_diffuse;
+		xyY = XYZtoxyY(RGBtoXYZ(color));
+		xyY.z += min_luminance;
+		xyY.z *= max(0, mix(0.5f, 1.f, specular) * brdf * incident_radiance);
+	}
+	else {
+		xyY = XYZtoxyY(RGBtoXYZ(color));
+	}
 
 	gl_FragColor = vec4(xyY, 1);
 }

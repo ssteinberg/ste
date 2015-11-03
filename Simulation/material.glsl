@@ -47,9 +47,9 @@ float calc_brdf(material_descriptor md, vec3 position, vec3 normal, vec3 tangent
 	float out_theta = acos(cos_out_theta) / pi_2;
 
 	if (out_theta < .1f)
-		out_phi = mix(.0f, out_phi, clamp(out_theta / .05f, 0, 1));
+		out_phi = mix(.0f, out_phi, clamp(out_theta / .05f, 0.f, 1.));
 	if (in_theta < .1f)
-		out_phi = mix(.0f, out_phi, clamp(in_theta / .05f, 0, 1));
+		out_phi = mix(.0f, out_phi, clamp(in_theta / .05f, 0.f, 1.f));
 
 	sampler2DArray brdf_sampler = sampler2DArray(md.brdf.tex_handler);
 	uint layers = textureSize(brdf_sampler, 0).z;
