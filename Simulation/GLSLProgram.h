@@ -10,6 +10,8 @@
 
 #include <glm/glm.hpp>
 
+#include "gl_current_context.h"
+
 #include "bindable_resource.h"
 #include "GLSLShader.h"
 
@@ -24,8 +26,8 @@ public:
 
 class GLSLProgramBinder {
 public:
-	static void bind(unsigned int id) { glUseProgram(id); }
-	static void unbind() { glUseProgram(0); }
+	static void bind(unsigned int id) { gl_current_context::get()->bind_shader_program(id); }
+	static void unbind() { gl_current_context::get()->bind_shader_program(0); }
 };
 
 class GLSLProgram : public bindable_resource<GLSLProgramAllocator, GLSLProgramBinder> {

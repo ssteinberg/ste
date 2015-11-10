@@ -136,9 +136,6 @@
     <Filter Include="src\StE\Core\LLR\GL\Context">
       <UniqueIdentifier>{189db96c-a55e-41f3-b4b5-85e341d59952}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Global Shaders">
-      <UniqueIdentifier>{7a22fd60-b5b1-4cee-a37f-108e499b7722}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\StE\Framework Graphics\Radiometry">
       <UniqueIdentifier>{410df2d8-c424-43c2-a38d-8fc3d4473f09}</UniqueIdentifier>
     </Filter>
@@ -159,6 +156,45 @@
     </Filter>
     <Filter Include="src\StE\Framework Graphics\Mesh">
       <UniqueIdentifier>{7806e3d2-6f13-4591-8042-3d0df31f6156}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\StE\Core\LLR\GPU Resources\Queries">
+      <UniqueIdentifier>{7b56f932-5f24-403f-8358-7678d26e2f4b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\StE\Core\LLR\GPU Resources\Queries\Occlusion Queries">
+      <UniqueIdentifier>{e9292d68-9cc7-49e2-bacc-42a5712db533}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\StE\Core\LLR\GPU Resources\Locks">
+      <UniqueIdentifier>{1d19b817-2300-4238-9cd9-a1a209683550}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\StE\Framework Graphics\Render">
+      <UniqueIdentifier>{b9bfa207-4230-4ef7-b177-b407efd2ebd8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\StE\Framework Graphics\Material\Shaders">
+      <UniqueIdentifier>{a19d8921-ecf4-4fb1-982f-7afcf96ef30c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\StE\Framework Graphics\Scene\Shaders">
+      <UniqueIdentifier>{a458dcc2-6d13-4805-95b1-50d9678afdde}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\StE\Framework Graphics\Render\HDR">
+      <UniqueIdentifier>{03dd707e-67e2-4acc-a149-9a8a3be10800}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\StE\Framework Graphics\Common Shaders">
+      <UniqueIdentifier>{96a5c4cd-bc93-40cb-8662-6cbb455d4f70}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\StE\Framework Graphics\Render\HDR\Shaders">
+      <UniqueIdentifier>{4cf7e13f-5007-4529-9e04-78732b67812c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Shaders">
+      <UniqueIdentifier>{7a22fd60-b5b1-4cee-a37f-108e499b7722}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\StE\Framework Graphics\Render\Renderers">
+      <UniqueIdentifier>{4fb843e4-4296-4835-bda0-66d49b9c9b5d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\StE\Framework Graphics\Render\Renderers\Deferred">
+      <UniqueIdentifier>{f0eba694-a066-4a9e-9d77-8efbad5c4e04}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\StE\Framework Graphics\Render\Renderers\Deferred\Shaders">
+      <UniqueIdentifier>{20942e32-05e6-415d-8c2d-d77c634bbafe}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -233,6 +269,12 @@
     </ClCompile>
     <ClCompile Include="gl_current_context.cpp">
       <Filter>src\StE\Core\LLR\GL\Context</Filter>
+    </ClCompile>
+    <ClCompile Include="Quad.cpp">
+      <Filter>src\StE\Framework Graphics\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="hdr_dof_postprocess.cpp">
+      <Filter>src\StE\Framework Graphics\Render\HDR</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -370,9 +412,6 @@
     </ClInclude>
     <ClInclude Include="Scene.h">
       <Filter>src\StE\Framework Graphics\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="buffer_lock.h">
-      <Filter>src\StE\Core\LLR\GPU Resources\Buffers</Filter>
     </ClInclude>
     <ClInclude Include="range.h">
       <Filter>src\StE\STL Extensions</Filter>
@@ -605,6 +644,51 @@
     <ClInclude Include="Sphere.h">
       <Filter>src\StE\Framework Graphics\Mesh</Filter>
     </ClInclude>
+    <ClInclude Include="mesh_aabb.h">
+      <Filter>src\StE\Framework Graphics\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="query_object.h">
+      <Filter>src\StE\Core\LLR\GPU Resources\Queries</Filter>
+    </ClInclude>
+    <ClInclude Include="QueryBufferObject.h">
+      <Filter>src\StE\Core\LLR\GPU Resources\Buffers\Data Storage</Filter>
+    </ClInclude>
+    <ClInclude Include="occlusion_query_any_samples.h">
+      <Filter>src\StE\Core\LLR\GPU Resources\Queries\Occlusion Queries</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu_sync.h">
+      <Filter>src\StE\Core\LLR\GPU Resources\Locks</Filter>
+    </ClInclude>
+    <ClInclude Include="Quad.h">
+      <Filter>src\StE\Framework Graphics\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="renderable.h">
+      <Filter>src\StE\Framework Graphics\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="rendering_queue.h">
+      <Filter>src\StE\Framework Graphics\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshRenderable.h">
+      <Filter>src\StE\Framework Graphics\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="CustomRenderable.h">
+      <Filter>src\StE\Framework Graphics\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="deferred_fbo.h">
+      <Filter>src\StE\Framework Graphics\Render\Renderers\Deferred</Filter>
+    </ClInclude>
+    <ClInclude Include="hdr_dof_postprocess.h">
+      <Filter>src\StE\Framework Graphics\Render\HDR</Filter>
+    </ClInclude>
+    <ClInclude Include="rendering_system.h">
+      <Filter>src\StE\Framework Graphics\Render\Renderers</Filter>
+    </ClInclude>
+    <ClInclude Include="DeferredRenderer.h">
+      <Filter>src\StE\Framework Graphics\Render\Renderers\Deferred</Filter>
+    </ClInclude>
+    <ClInclude Include="BasicRenderer.h">
+      <Filter>src\StE\Framework Graphics\Render\Renderers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="stdafx.h">
@@ -619,85 +703,58 @@
     <None Include="text_distance_map_contour.geom">
       <Filter>src\StE\Framework Text\Rendering\Shaders</Filter>
     </None>
-    <None Include="hdr_common.glsl">
-      <Filter>src\Global Shaders</Filter>
-    </None>
     <None Include="material.glsl">
-      <Filter>src\Global Shaders</Filter>
+      <Filter>src\StE\Framework Graphics\Material\Shaders</Filter>
     </None>
     <None Include="common.glsl">
-      <Filter>src\Global Shaders</Filter>
+      <Filter>src\StE\Framework Graphics\Common Shaders</Filter>
     </None>
-    <None Include="frag_sky.frag">
-      <Filter>src\Global Shaders</Filter>
-    </None>
-    <None Include="transform_sky.vert">
-      <Filter>src\Global Shaders</Filter>
+    <None Include="hdr_common.glsl">
+      <Filter>src\StE\Framework Graphics\Render\HDR\Shaders</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="transform.vert">
-      <Filter>src\Global Shaders</Filter>
+    <CustomBuild Include="transform_sky.vert">
+      <Filter>src\Shaders</Filter>
     </CustomBuild>
-    <CustomBuild Include="bokeh_bilateral_blur_x.frag">
-      <Filter>src\Global Shaders</Filter>
+    <CustomBuild Include="frag_sky.frag">
+      <Filter>src\Shaders</Filter>
     </CustomBuild>
-    <CustomBuild Include="bokeh_bilateral_blur_y.frag">
-      <Filter>src\Global Shaders</Filter>
-    </CustomBuild>
-    <CustomBuild Include="bokeh_combine.frag">
-      <Filter>src\Global Shaders</Filter>
-    </CustomBuild>
-    <CustomBuild Include="bokeh_draw_bokeh_effects.frag">
-      <Filter>src\Global Shaders</Filter>
-    </CustomBuild>
-    <CustomBuild Include="bokeh_draw_bokeh_effects.geom">
-      <Filter>src\Global Shaders</Filter>
-    </CustomBuild>
-    <CustomBuild Include="bokeh_draw_bokeh_effects.vert">
-      <Filter>src\Global Shaders</Filter>
-    </CustomBuild>
-    <CustomBuild Include="frag.frag">
-      <Filter>src\Global Shaders</Filter>
-    </CustomBuild>
-    <CustomBuild Include="gen_depth_layers.frag">
-      <Filter>src\Global Shaders</Filter>
-    </CustomBuild>
-    <CustomBuild Include="hdr_bloom_blur_x.frag">
-      <Filter>src\Global Shaders</Filter>
-    </CustomBuild>
-    <CustomBuild Include="hdr_bloom_blur_y.frag">
-      <Filter>src\Global Shaders</Filter>
-    </CustomBuild>
-    <CustomBuild Include="hdr_compute_histogram_sums.glsl">
-      <Filter>src\Global Shaders</Filter>
-    </CustomBuild>
-    <CustomBuild Include="hdr_compute_minmax.glsl">
-      <Filter>src\Global Shaders</Filter>
-    </CustomBuild>
-    <CustomBuild Include="hdr_create_histogram.glsl">
-      <Filter>src\Global Shaders</Filter>
-    </CustomBuild>
-    <CustomBuild Include="hdr_tonemap_coc.frag">
-      <Filter>src\Global Shaders</Filter>
-    </CustomBuild>
-    <CustomBuild Include="lighting.frag">
-      <Filter>src\Global Shaders</Filter>
+    <CustomBuild Include="deferred.frag">
+      <Filter>src\StE\Framework Graphics\Render\Renderers\Deferred\Shaders</Filter>
     </CustomBuild>
     <CustomBuild Include="passthrough.vert">
-      <Filter>src\Global Shaders</Filter>
+      <Filter>src\StE\Framework Graphics\Common Shaders</Filter>
     </CustomBuild>
-    <CustomBuild Include="ssao.frag">
-      <Filter>src\Global Shaders</Filter>
+    <CustomBuild Include="scene.frag">
+      <Filter>src\StE\Framework Graphics\Scene\Shaders</Filter>
     </CustomBuild>
-    <CustomBuild Include="texture.frag">
-      <Filter>src\Global Shaders</Filter>
+    <CustomBuild Include="scene.vert">
+      <Filter>src\StE\Framework Graphics\Scene\Shaders</Filter>
     </CustomBuild>
-    <CustomBuild Include="transform2.vert">
-      <Filter>src\Global Shaders</Filter>
+    <CustomBuild Include="bokeh_bilateral_blur_x.frag">
+      <Filter>src\StE\Framework Graphics\Render\HDR\Shaders</Filter>
     </CustomBuild>
-    <CustomBuild Include="frag2.frag">
-      <Filter>src\Global Shaders</Filter>
+    <CustomBuild Include="bokeh_bilateral_blur_y.frag">
+      <Filter>src\StE\Framework Graphics\Render\HDR\Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="hdr_bloom_blur_x.frag">
+      <Filter>src\StE\Framework Graphics\Render\HDR\Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="hdr_bloom_blur_y.frag">
+      <Filter>src\StE\Framework Graphics\Render\HDR\Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="hdr_compute_histogram_sums.glsl">
+      <Filter>src\StE\Framework Graphics\Render\HDR\Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="hdr_compute_minmax.glsl">
+      <Filter>src\StE\Framework Graphics\Render\HDR\Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="hdr_create_histogram.glsl">
+      <Filter>src\StE\Framework Graphics\Render\HDR\Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="hdr_tonemap_coc.frag">
+      <Filter>src\StE\Framework Graphics\Render\HDR\Shaders</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>

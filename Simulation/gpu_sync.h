@@ -8,26 +8,32 @@
 namespace StE {
 namespace LLR {
 
-class buffer_lock {
+class gpu_sync {
 	GLsync sync;
 
 public:
-	buffer_lock() : sync(nullptr) {}
-	~buffer_lock() { destroy(); }
+	gpu_sync() : sync(nullptr) {}
+	~gpu_sync() { destroy(); }
 
-	buffer_lock(buffer_lock &&bl) : sync(bl.sync) { bl.sync = nullptr; }
-	buffer_lock &operator=(buffer_lock &&bl) {
+	gpu_sync(gpu_sync &&bl) : sync(bl.sync) { bl.sync = nullptr; }
+	gpu_sync &operator=(gpu_sync &&bl) {
 		destroy();
 		sync = bl.sync;
 		bl.sync = nullptr;
 		return *this;
 	}
-	buffer_lock(const buffer_lock &bl) = delete;
-	buffer_lock &operator=(const buffer_lock &bl) = delete;
+	gpu_sync(const gpu_sync &bl) = delete;
+	gpu_sync &operator=(const gpu_sync &bl) = delete;
 
 	void wait() const {
+		glFlush();
+		glWaitSync(sync, 0, GL_TIMEOUT_IGNORED);
+	}
+
+	void client_wait() const {
 		glClientWaitSync(sync, GL_SYNC_FLUSH_COMMANDS_BIT, GL_TIMEOUT_IGNORED);
 	}
+
 	void lock() {
 		destroy();
 		sync = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);

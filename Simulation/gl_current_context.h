@@ -4,11 +4,11 @@
 #pragma once
 
 #include "stdafx.h"
-#include "gl_context.h"
-#include "StEngineControl.h"
 
 namespace StE {
 namespace LLR {
+
+class gl_context;
 
 class gl_current_context {
 private:
@@ -23,3 +23,5 @@ public:
 
 }
 }
+
+#include "gl_context.h"

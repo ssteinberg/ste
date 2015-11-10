@@ -20,6 +20,8 @@
 #define BOOST_FILESYSTEM_NO_DEPRECATED 
 #include <boost/filesystem.hpp>
 
+#include "hdr_dof_postprocess.h"
+
 using namespace StE;
 
 struct StE::ste_engine_control_impl {
@@ -45,6 +47,7 @@ StEngineControl::StEngineControl(std::unique_ptr<LLR::gl_context> &&ctx) : pimpl
 	glfwSetWindowUserPointer(context->window.get(), this);
 
 	setup_signals();
+	set_projection_dirty();
 }
 
 StEngineControl::~StEngineControl() noexcept {
@@ -101,7 +104,9 @@ bool StEngineControl::run_loop() {
 	global_scheduler.run_loop();
 	glfwPollEvents();
 
+	global_renderer->finalize_queue(*this);
 	glfwSwapBuffers(context->window.get());
+	global_renderer->render_queue(*this);
 
 	return !glfwWindowShouldClose(context->window.get());
 }
@@ -130,7 +135,8 @@ void StEngineControl::capture_screenshot() const {
 }
 
 void StEngineControl::set_fov(float rad) {
-	pimpl->field_of_view = rad; set_projection_dirty();
+	pimpl->field_of_view = rad; 
+	set_projection_dirty();
 }
 
 void StEngineControl::set_clipping_planes(float near_clip_distance, float far_clip_distance) {
@@ -139,11 +145,26 @@ void StEngineControl::set_clipping_planes(float near_clip_distance, float far_cl
 	set_projection_dirty();
 }
 
+void StEngineControl::set_projection_dirty() {
+	auto vs = get_backbuffer_size();
+	float aspect = vs.y ? vs.x / vs.y : 1;
+	projection = glm::perspective(pimpl->field_of_view, aspect, pimpl->near_clip, pimpl->far_clip);
+
+	projection_change_signal.emit(projection, pimpl->field_of_view, pimpl->near_clip, pimpl->far_clip);
+}
+
 glm::mat4 StEngineControl::projection_matrix() const {
-	if (projection_dirty) {
-		auto vs = get_backbuffer_size();
-		float aspect = vs.x / vs.y;
-		projection = glm::perspective(pimpl->field_of_view, aspect, pimpl->near_clip, pimpl->far_clip);
-	}
 	return projection;
+}
+
+float StEngineControl::get_fov() const {
+	return pimpl->field_of_view;
+}
+
+float StEngineControl::get_near_clip() const {
+	return pimpl->near_clip;
+}
+
+float StEngineControl::get_far_clip() const {
+	return pimpl->far_clip;
 }

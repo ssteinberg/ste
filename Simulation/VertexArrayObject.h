@@ -8,6 +8,8 @@
 #include "VertexBufferObject.h"
 #include "VertexBufferDescriptor.h"
 
+#include "gl_current_context.h"
+
 #include <map>
 #include <memory>
 
@@ -23,10 +25,10 @@ public:
 class VertexArrayObjectBinder {
 public:
 	static void bind(unsigned int id) {
-		glBindVertexArray(id);
+		gl_current_context::get()->bind_vertex_array(id);
 	}
 	static void unbind() {
-		glBindVertexArray(0);
+		gl_current_context::get()->bind_vertex_array(0);
 	}
 };
 
@@ -100,8 +102,8 @@ public:
 	VertexArrayObject(VertexArrayObject &&m) = default;
 	VertexArrayObject& operator=(VertexArrayObject &&m) = default;
 
-	static void enable_vertex_attrib_array(int index) { glEnableVertexAttribArray(index); }
-	static void disable_vertex_attrib_array(int index) { glDisableVertexAttribArray(index); }
+	static void enable_vertex_attrib_array(unsigned index) { gl_current_context::get()->enable_vertex_attrib_array(index); }
+	static void disable_vertex_attrib_array(unsigned index) { gl_current_context::get()->enable_vertex_attrib_array(index); }
 
 	vertex_array_attrib_binder operator[](int index) { return vertex_array_attrib_binder(index, this); }
 

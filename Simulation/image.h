@@ -5,6 +5,7 @@
 
 #include "stdafx.h"
 #include "gl_utils.h"
+#include "gl_current_context.h"
 
 #include "bindable_resource.h"
 #include "layout_binding.h"
@@ -30,10 +31,10 @@ public:
 class ImageBinder {
 public:
 	static void bind(unsigned int id, const image_layout_binding &unit, int level, bool layered, int layer, ImageAccessMode access, gli::format format) {
-		glBindImageTexture(unit, id, level, layered, layer, static_cast<GLenum>(access), gl_utils::translate_format(format).Internal);
+		gl_current_context::get()->bind_image_texture(unit, id, level, layered, layer, static_cast<GLenum>(access), gl_utils::translate_format(format).Internal);
 	}
 	static void unbind(const image_layout_binding &unit, int level, bool layered, int layer, ImageAccessMode access, gli::format format) {
-		glBindImageTexture(unit, 0, 0, 0, 0, 0, 0);
+		gl_current_context::get()->bind_image_texture(unit, 0, 0, 0, 0, 0, 0);
 	}
 };
 

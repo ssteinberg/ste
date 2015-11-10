@@ -13,7 +13,7 @@
 using namespace StE::Text;
 using namespace StE::LLR;
 
-TextRenderer::TextRenderer(const StEngineControl &context, const Font &default_font, int default_size) : gm(context), default_font(default_font), default_size(default_size), context(context) {
+TextRenderer::TextRenderer(const StEngineControl &context, const Font &default_font, int default_size) : gm(context), default_font(default_font), default_size(default_size) {
 	text_distance_mapping = Resource::GLSLProgramLoader::load_program_task(context, { "text_distance_map_contour.vert", "text_distance_map_contour.frag", "text_distance_map_contour.geom" })();
 
 	vbo = std::make_unique<vbo_type>(vbo_ring_size);
@@ -24,6 +24,15 @@ TextRenderer::TextRenderer(const StEngineControl &context, const Font &default_f
 	vao[2] = (*vbo)[2];
 	vao[3] = (*vbo)[3];
 	vao[4] = (*vbo)[4];
+
+	auto *ctx = &context;
+	text_distance_mapping->set_uniform("proj", context.ortho_projection_matrix());
+	text_distance_mapping->set_uniform("fb_size", glm::vec2(context.get_backbuffer_size()));
+	resize_connection = std::make_shared<ResizeSignalConnectionType>([=](const glm::i32vec2 &size) {
+		text_distance_mapping->set_uniform("proj", ctx->ortho_projection_matrix());
+		text_distance_mapping->set_uniform("fb_size", glm::vec2(ctx->get_backbuffer_size()));
+	});
+	context.signal_framebuffer_resize().connect(resize_connection);
 }
 
 void TextRenderer::adjust_line(std::vector<glyph_point> &points, const AttributedWString &wstr, unsigned line_start_index, float line_start, float line_height, const glm::vec2 &ortho_pos) {
@@ -107,35 +116,10 @@ std::vector<TextRenderer::glyph_point> TextRenderer::create_points(glm::vec2 ort
 	return points;
 }
 
-void TextRenderer::render(glm::vec2 ortho_pos, const AttributedWString &wstr) {
-	if (!wstr.length()) return;
+std::unique_ptr<TextRenderer::text_renderable> TextRenderer::render(glm::vec2 ortho_pos, const AttributedWString &wstr) {
+	if (!wstr.length()) return nullptr;
 	std::vector<glyph_point> points = create_points(ortho_pos, wstr);
-	if (!points.size()) return;
+	if (!points.size()) return nullptr;
 
-	std::size_t elements_count= std::min<std::size_t>(points.size(), vbo_ring_size / sizeof(glyph_point));
-	std::size_t bytes = elements_count * sizeof(glyph_point);
-	if (vbo_ring_current_offset + bytes > vbo_ring_size)
-		vbo_ring_current_offset = 0;
-
-	int offset = vbo_ring_current_offset / sizeof(glyph_point);
-	range<> range_in_use(vbo_ring_current_offset, bytes);
-	vbo_mapped_ptr.wait(range_in_use);
-	memcpy(vbo_mapped_ptr.get() + offset, &points[0], bytes);
-
-	text_distance_mapping->bind();
-	text_distance_mapping->set_uniform("proj", context.ortho_projection_matrix());
-	text_distance_mapping->set_uniform("fb_size", glm::vec2(context.get_backbuffer_size()));
-
-	0_storage_idx = gm.ssbo();
-	vao.bind();
-
-	gl_current_context::get()->enable_state(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	glDrawArrays(GL_POINTS, offset, elements_count);
-
-	gl_current_context::get()->disable_state(GL_BLEND);
-
-	vbo_mapped_ptr.lock(range_in_use);
-	vbo_ring_current_offset += bytes;
+	return std::make_unique<text_renderable>(this, std::move(points));
 }

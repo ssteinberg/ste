@@ -32,6 +32,9 @@ enum class llr_resource_type {
 	LLRIndirectDrawBufferObject,
 	LLRIndirectDispatchBufferObject,
 	LLRAtomicCounterBufferObject,
+	LLRQueryBufferObject,
+	LLRQueryObjectAnySamples = GL_ANY_SAMPLES_PASSED,
+	LLRQueryObjectAnySamplesConservative = GL_ANY_SAMPLES_PASSED_CONSERVATIVE,
 };
 
 }

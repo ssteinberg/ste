@@ -4,6 +4,7 @@
 
 #include "Material.h"
 #include "Object.h"
+#include "mesh.h"
 
 #include "SurfaceIO.h"
 
@@ -89,7 +90,7 @@ std::future<void> ModelLoader::process_model_mesh(optional<task_scheduler*> sche
 	std::string brdf_name = materials[mat_idx].unknown_parameter["brdf"];
 	std::shared_ptr<BRDF> brdf = brdf_name.length() ? brdfs[brdf_name] : nullptr;
 
-	return sched->schedule_now_on_main_thread([=](optional<task_scheduler*> sched) {
+	return sched->schedule_now_on_main_thread([=, vbo_data = std::move(vbo_data)](optional<task_scheduler*> sched) {
 		Material mat;
 		if (diff != nullptr) mat.set_diffuse(diff);
 		if (specular != nullptr) mat.set_specular(specular);
@@ -97,7 +98,14 @@ std::future<void> ModelLoader::process_model_mesh(optional<task_scheduler*> sche
 		if (opacity != nullptr) mat.set_alphamap(opacity);
 		mat.set_brdf(brdf);
 
-		scene->create_object(vbo_data, shape.mesh.indices, std::move(mat));
+		std::unique_ptr<StE::Graphics::mesh<StE::Graphics::mesh_subdivion_mode::Triangles>> m = std::make_unique<StE::Graphics::mesh<StE::Graphics::mesh_subdivion_mode::Triangles>>();
+		m->set_indices(std::move(shape.mesh.indices));
+		m->set_vertices(std::move(vbo_data));
+
+		std::shared_ptr<StE::Graphics::Object> obj = std::make_shared<StE::Graphics::Object>(std::move(m));
+		obj->set_material(std::move(mat));
+
+		scene->add_object(obj);
 	});
 }
 

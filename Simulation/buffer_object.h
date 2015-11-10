@@ -6,10 +6,11 @@
 #include "stdafx.h"
 #include "bindable_resource.h"
 #include "gl_utils.h"
+#include "gl_current_context.h"
 
 #include "buffer_usage.h"
 #include "mapped_buffer_object_unique_ptr.h"
-#include "buffer_lock.h"
+#include "gpu_sync.h"
 #include "buffer_object_allocator.h"
 
 #include "shader_layout_bindable_resource.h"
@@ -29,10 +30,10 @@ namespace LLR {
 class BufferObjectBinder {
 public:
 	static void bind(unsigned int id, GLenum target) {
-		glBindBuffer(target, id);
+		gl_current_context::get()->bind_buffer(target, id);
 	}
 	static void unbind(GLenum target = 0) {
-		glBindBuffer(target, 0);
+		gl_current_context::get()->bind_buffer(target, 0);
 	}
 };
 
@@ -58,9 +59,10 @@ private:
 
 	ALLOW_BUFFER_OBJECT_CASTS;
 
-	using lock_map_type = std::multimap<range<>, buffer_lock>;
+	using lock_map_type = std::multimap<range<>, gpu_sync>;
 
 protected:
+	std::shared_ptr<mapped_buffer_object_unique_ptr<T, U>::mapped_buffer_data> mapped_ptr_data;
 	std::size_t buffer_size;
 	mutable std::shared_ptr<lock_map_type> locks{ new lock_map_type };
 
@@ -83,10 +85,10 @@ public:
 		allocator.allocate_storage(get_resource_id(), buffer_size, data);
 	}
 
-	virtual ~buffer_object() noexcept {}
+	virtual ~buffer_object() noexcept { unmap(); }
 
 	void lock_range(const range<> &r) const {
-		buffer_lock l;
+		gpu_sync l;
 		l.lock();
 		locks->insert(std::make_pair(r, std::move(l)));
 	}
@@ -131,28 +133,38 @@ public:
 	}
 
 	template <bool b = map_read_allowed> 
-	typename std::enable_if<b, mapped_buffer_object_unique_ptr<const T, U>>::type 
+	typename std::enable_if<b, const mapped_buffer_object_unique_ptr<T, U>>::type 
 		map_read(std::size_t len, int offset = 0, BufferUsage::buffer_mapping flags = BufferUsage::BufferMapNone) {
-		return mapped_buffer_object_unique_ptr<const T, U>(reinterpret_cast<const T*>(glMapNamedBufferRange(get_resource_id(), offset * sizeof(T), len * sizeof(T), GL_MAP_READ_BIT | flags)),
-														   get_resource_id(),
-														   this, 
-														   { static_cast<std::size_t>(offset), len });
+		auto p = mapped_buffer_object_unique_ptr<T, U>(reinterpret_cast<const T*>(glMapNamedBufferRange(get_resource_id(), offset * sizeof(T), len * sizeof(T), GL_MAP_READ_BIT | flags)),
+													   this, 
+													   { static_cast<std::size_t>(offset), len });
+		mapped_ptr_data = p.data;
+		return std::move(p);
 	}
 	template <bool b = map_write_allowed> 
 	typename std::enable_if<b, mapped_buffer_object_unique_ptr<T, U>>::type
 		map_write(std::size_t len, int offset = 0, BufferUsage::buffer_mapping flags = BufferUsage::BufferMapNone) {
-		return mapped_buffer_object_unique_ptr<T, U>(reinterpret_cast<T*>(glMapNamedBufferRange(get_resource_id(), offset * sizeof(T), len * sizeof(T), GL_MAP_WRITE_BIT | flags)),
-													 get_resource_id(),
-													 this,
-													 { static_cast<std::size_t>(offset), len });
+		auto p = mapped_buffer_object_unique_ptr<T, U>(reinterpret_cast<T*>(glMapNamedBufferRange(get_resource_id(), offset * sizeof(T), len * sizeof(T), GL_MAP_WRITE_BIT | flags)),
+													   this,
+													   { static_cast<std::size_t>(offset), len });
+		mapped_ptr_data = p.data;
+		return std::move(p);
 	}
 	template <bool b = map_rw_allowed> 
 	typename std::enable_if<b, mapped_buffer_object_unique_ptr<T, U>>::type
 		map_rw(std::size_t len, int offset = 0, BufferUsage::buffer_mapping flags = BufferUsage::BufferMapNone) {
-		return mapped_buffer_object_unique_ptr<T, U>(reinterpret_cast<T*>(glMapNamedBufferRange(get_resource_id(), offset * sizeof(T), len * sizeof(T), GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | flags)),
-													 get_resource_id(),
-													 this,
-													 { static_cast<std::size_t>(offset), len });
+		auto p = mapped_buffer_object_unique_ptr<T, U>(reinterpret_cast<T*>(glMapNamedBufferRange(get_resource_id(), offset * sizeof(T), len * sizeof(T), GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | flags)),
+													   this,
+													   { static_cast<std::size_t>(offset), len });
+		mapped_ptr_data = p.data;
+		return std::move(p);
+	}
+	void unmap() {
+		if (mapped_ptr_data != nullptr && mapped_ptr_data->ptr) {
+			glUnmapNamedBuffer(get_resource_id());
+			mapped_ptr_data->ptr = nullptr;
+		}
+		mapped_ptr_data = nullptr;
 	}
 
 	int size() const { return buffer_size; }
@@ -192,10 +204,10 @@ private:
 
 public:
 	static void bind(unsigned int id, const LayoutLocationType &index, GLenum target) {
-		if (index != EmptyLayoutLocationType()) glBindBufferBase(target, index, id);
+		if (index != EmptyLayoutLocationType()) gl_current_context::get()->bind_buffer_base(target, index, id);
 	}
 	static void unbind(const LayoutLocationType &index, GLenum target = 0) {
-		if (index != EmptyLayoutLocationType()) glBindBufferBase(target, index, 0);
+		if (index != EmptyLayoutLocationType()) gl_current_context::get()->bind_buffer_base(target, index, 0);
 	}
 };
 

@@ -4,6 +4,7 @@
 #pragma once
 
 #include "stdafx.h"
+#include "gl_current_context.h"
 
 #include "bindable_resource.h"
 #include "layout_binding.h"
@@ -31,10 +32,10 @@ public:
 class SamplerBinder {
 public:
 	static void bind(unsigned int id, const sampler_layout_binding &sampler) {
-		glBindSampler(sampler.binding_index(), id);
+		gl_current_context::get()->bind_sampler(sampler.binding_index(), id);
 	}
 	static void unbind(const sampler_layout_binding &sampler) {
-		glBindSampler(sampler.binding_index(), 0);
+		gl_current_context::get()->bind_sampler(sampler.binding_index(), 0);
 	}
 };
 

@@ -14,9 +14,13 @@ struct material_descriptor {
 	material_texture_descriptor normalmap;
 	material_texture_descriptor alphamap;
 	brdf_descriptor brdf;
+	float emission;
 };
 
 float calc_brdf(material_descriptor md, vec3 position, vec3 normal, vec3 tangent, vec3 bitangent, vec3 incident) {
+	if (md.brdf.tex_handler == 0)
+		return .0f;
+
 	float theta_min = md.brdf.min_theta_in;
 	float theta_max = md.brdf.max_theta_in;
 	
@@ -62,5 +66,5 @@ float calc_brdf(material_descriptor md, vec3 position, vec3 normal, vec3 tangent
 	float l0 = texture(brdf_sampler, tp).x;
 	float l1 = texture(brdf_sampler, tp + offset).x;
 
-	return mix(l0, l1, fract(lf)) * cos_in_theta;
+	return mix(l0, l1, fract(lf)) * max(0, cos_in_theta);
 }

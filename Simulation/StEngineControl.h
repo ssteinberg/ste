@@ -20,6 +20,7 @@
 
 #include "task_scheduler.h"
 #include "lru_cache.h"
+#include "rendering_system.h"
 
 namespace StE {
 
@@ -33,15 +34,16 @@ private:
 
 	std::chrono::duration<float> tpf{ 0 };
 
-	bool projection_dirty{ true };
-	void set_projection_dirty() { projection_dirty = true; }
+	void set_projection_dirty();
 
 	std::unique_ptr<LLR::gl_context> context;
 	mutable task_scheduler global_scheduler;
 	mutable lru_cache<std::string> global_cache;
+	mutable Graphics::rendering_system* global_renderer{ nullptr };
 
 public:
 	using framebuffer_resize_signal_type = signal<glm::i32vec2>;
+	using projection_change_signal_type = signal<glm::mat4, float, float, float>;
 	using hid_pointer_button_signal_type = signal<HID::pointer::B, HID::Status, HID::ModifierBits>;
 	using hid_pointer_movement_signal_type = signal<glm::dvec2>;
 	using hid_scroll_signal_type = signal<glm::dvec2>;
@@ -49,6 +51,7 @@ public:
 
 private:
 	framebuffer_resize_signal_type framebuffer_resize_signal;
+	projection_change_signal_type projection_change_signal;
 
 	hid_pointer_movement_signal_type hid_pointer_movement_signal;
 	hid_pointer_button_signal_type hid_pointer_button_signal;
@@ -67,8 +70,11 @@ public:
 	StEngineControl(std::unique_ptr<LLR::gl_context> &&context);
 	~StEngineControl() noexcept;
 
+	void set_renderer(Graphics::rendering_system *r) { global_renderer = r; }
+
 	auto &scheduler() const { return global_scheduler; }
 	auto &cache() const { return global_cache; }
+	Graphics::rendering_system *renderer() const { return global_renderer; }
 	const LLR::gl_context* gl() const { return context.get(); }
 
 	void set_window_title(const char * title) { glfwSetWindowTitle(context->window.get(), title); }
@@ -96,6 +102,7 @@ public:
 	void capture_screenshot() const;
 
 	const decltype(framebuffer_resize_signal) &signal_framebuffer_resize() const { return framebuffer_resize_signal; }
+	const decltype(projection_change_signal) &signal_projection_change() const { return projection_change_signal; }
 	const decltype(hid_pointer_movement_signal) &hid_signal_pointer_movement() const { return hid_pointer_movement_signal; }
 	const decltype(hid_pointer_button_signal) &hid_signal_pointer_button() const { return hid_pointer_button_signal; }
 	const decltype(hid_scroll_signal) &hid_signal_scroll() const { return hid_scroll_signal; }
@@ -105,6 +112,10 @@ public:
 	glm::i32vec2 get_backbuffer_size() const { return context->framebuffer_size(); }
 	void set_fov(float rad);
 	void set_clipping_planes(float near_clip_distance, float far_clip_distance);
+
+	float get_fov() const;
+	float get_near_clip() const;
+	float get_far_clip() const;
 	glm::mat4 projection_matrix() const;
 
 	glm::mat4 ortho_projection_matrix() const {

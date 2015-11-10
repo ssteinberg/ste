@@ -5,6 +5,7 @@
 
 #include "stdafx.h"
 #include "gl_utils.h"
+#include "gl_current_context.h"
 
 #include "resource.h"
 #include "resource_traits.h"
@@ -172,17 +173,27 @@ public:
 
 class FramebufferObjectBinder {
 public:
-	static void bind(unsigned int id) { glBindFramebuffer(GL_FRAMEBUFFER, id); }
-	static void unbind() { glBindFramebuffer(GL_FRAMEBUFFER, 0); }
+	static void bind(unsigned int id) { gl_current_context::get()->bind_framebuffer(GL_FRAMEBUFFER, id); }
+	static void unbind() { gl_current_context::get()->bind_framebuffer(GL_FRAMEBUFFER, 0); }
+};
+
+class GenericFramebufferObject {
+public:
+	virtual void bind() const = 0;
+	virtual void unbind() const = 0;
+
+	virtual ~GenericFramebufferObject() noexcept {}
 };
 
 template <class Allocator>
-class frame_buffer_object : public bindable_resource<Allocator, FramebufferObjectBinder> {
+class frame_buffer_object : public bindable_resource<Allocator, FramebufferObjectBinder>, virtual public GenericFramebufferObject {
 private:
 	friend class fbo_attachment_point<Allocator>;
 	template<class A, GLenum t>
 	friend class fbo_color_attachment_point;
 	friend class fbo_layout_bindable_color_attachment_point<Allocator>;
+
+	using Base = bindable_resource<Allocator, FramebufferObjectBinder>;
 
 private:
 	std::vector<GLenum> draw_buffers;
@@ -211,13 +222,16 @@ protected:
 			glNamedFramebufferDrawBuffers(get_resource_id(), draw_buffers.size(), &draw_buffers[0]);
 	}
 
-	void bind_draw() const { glBindFramebuffer(GL_DRAW_FRAMEBUFFER, get_resource_id()); }
-	void unbind_draw() const { glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); }
-	void bind_read() const { glBindFramebuffer(GL_READ_FRAMEBUFFER, get_resource_id()); }
-	void unbind_read() const { glBindFramebuffer(GL_READ_FRAMEBUFFER, 0); }
+	void bind_draw() const { gl_current_context::get()->bind_framebuffer(GL_DRAW_FRAMEBUFFER, get_resource_id()); }
+	void unbind_draw() const { gl_current_context::get()->bind_framebuffer(GL_DRAW_FRAMEBUFFER, 0); }
+	void bind_read() const { gl_current_context::get()->bind_framebuffer(GL_READ_FRAMEBUFFER, get_resource_id()); }
+	void unbind_read() const { gl_current_context::get()->bind_framebuffer(GL_READ_FRAMEBUFFER, 0); }
 
 public:
 	virtual ~frame_buffer_object() noexcept {}
+
+	void bind() const override final { Base::bind(); }
+	void unbind() const override final { Base::unbind(); }
 
 	frame_buffer_object() {}
 	template <typename ... Ts>

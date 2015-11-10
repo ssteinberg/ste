@@ -7,6 +7,7 @@
 #include "gl_utils.h"
 
 #include "Log.h"
+#include "gl_current_context.h"
 
 #include "bindable_resource.h"
 #include "layout_binding.h"
@@ -45,12 +46,10 @@ private:
 
 public:
 	static void bind(unsigned int id, const texture_layout_binding &sampler) {
-		glActiveTexture(GL_TEXTURE0 + sampler.binding_index());
-		glBindTexture(gl_type(), id);
+		gl_current_context::get()->bind_texture_unit(sampler.binding_index(), id);
 	}
 	static void unbind(const texture_layout_binding &sampler) {
-		glActiveTexture(GL_TEXTURE0 + sampler.binding_index());
-		glBindTexture(gl_type(), 0);
+		gl_current_context::get()->bind_texture_unit(sampler.binding_index(), 0);
 	}
 };
 
