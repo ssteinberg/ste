@@ -41,11 +41,13 @@ public:
 															  std::make_shared<StE::Graphics::Sphere>(10, 10, .0f)) {
 		stars_tex = StE::Resource::SurfaceIO::load_texture_2d_task("Data/textures/stars.jpg", true)();
 
-		get_program()->set_uniform("sky_luminance", 1.f);
+		get_program()->set_uniform("sky_luminance", 5.f);
 		get_program()->set_uniform("projection", ctx.projection_matrix());
+		get_program()->set_uniform("near", ctx.get_near_clip());
 		get_program()->set_uniform("far", ctx.get_far_clip());
-		projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([=](const glm::mat4 &proj, float, float, float clip_far) {
+		projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([=](const glm::mat4 &proj, float, float clip_near, float clip_far) {
 			this->get_program()->set_uniform("projection", proj);
+			this->get_program()->set_uniform("near", clip_near);
 			this->get_program()->set_uniform("far", clip_far);
 		});
 		ctx.signal_projection_change().connect(projection_change_connection);
@@ -167,8 +169,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 	ctx.set_renderer(&basic_renderer);
 
 	while (!loaded && running) {
-		ctx.run_loop();
-
 		ctx.renderer()->queue().push_back(&fb_clearer);
 
 		{
@@ -188,10 +188,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 																   vsmall(b(blue_violet(free_vram) + L" / " + stroke(red, 1)(dark_red(total_vram)) + L" MB"))));
 		}
 
-		if (model_future.wait_for(std::chrono::seconds(0)) != std::future_status::ready)
-			continue;
+		if (model_future.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
+			loaded = true;
 
-		loaded = true;
+		ctx.run_loop();
 	}
 
 
@@ -199,8 +199,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 
 	float time = 0;
 	while (running) {
-		if (!ctx.run_loop()) break;
-
 		if (ctx.window_active()) {
 			auto time_delta = ctx.time_per_frame().count();
 
@@ -228,7 +226,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 		auto mvnt = camera.view_matrix_no_translation();
 
 		time += ctx.time_per_frame().count();
-		float angle = time * M_PI / 2.5f;
+		float angle = time * glm::pi<float>() / 2.5f;
 		glm::vec3 lp = light_pos + glm::vec3(glm::sin(angle) * 3, 0, glm::cos(angle)) * 135.f;
 		light_obj->set_model_transform(glm::scale(glm::translate(glm::mat4(), lp), glm::vec3(10, 10, 10)));
 
@@ -253,6 +251,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 			deferred.postprocess_queue().push_back(text_renderer.render({ 30, 20 },
 																		vsmall(b((blue_violet(free_vram) + L" / " + stroke(red, 1)(dark_red(total_vram)) + L" MB")))));
 		}
+
+		if (!ctx.run_loop()) break;
 	}
 	 
 	return 0;

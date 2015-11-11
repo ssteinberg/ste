@@ -13,7 +13,7 @@ Camera::Camera() {
 	camera_direction = { 0, 0, -1 };
 	camera_look_at = { 0, 0, -1 };
 	camera_speed = 1;
-	camera_pitch_limit = M_PI_2 - 0.05f;
+	camera_pitch_limit = glm::half_pi<float>() - 0.05f;
 }
 
 void Camera::step_forward(float scale) {

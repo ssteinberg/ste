@@ -25,12 +25,12 @@ public:
 	gpu_sync(const gpu_sync &bl) = delete;
 	gpu_sync &operator=(const gpu_sync &bl) = delete;
 
-	void wait() const {
+	void server_wait() const {
 		glFlush();
 		glWaitSync(sync, 0, GL_TIMEOUT_IGNORED);
 	}
 
-	void client_wait() const {
+	void wait() const {
 		glClientWaitSync(sync, GL_SYNC_FLUSH_COMMANDS_BIT, GL_TIMEOUT_IGNORED);
 	}
 

@@ -6,8 +6,12 @@
 #include "optional.h"
 #include "function_traits.h"
 
+#include "optional.h"
+
 #include <memory>
 #include <functional>
+
+#include <array>
 #include <map>
 #include <unordered_map>
 
@@ -46,48 +50,64 @@ protected:
 
 	mutable std::unordered_map<GLenum, bool> states;
 	mutable std::unordered_map<GLenum, bool> default_states;
-	mutable std::map<std::tuple<GLenum, unsigned>, std::tuple<unsigned, int, std::size_t>> bind_buffer_map;
 
 	window_type create_window(const char *title, const glm::i32vec2 &size, gli::format format, gli::format depth_format);
 	void create_default_framebuffer(gli::format format, gli::format depth_format);
 	void make_current();
 
 private:
-	template <typename T, typename... Args>
-	void set_context_server_state(T *func, Args... args) const {
+	template <typename dummy, typename FuncT, typename... Args>
+	void set_context_server_state(FuncT *func, Args... args) const {
 		using T = std::tuple<decltype(Args{})...>;
-
-		static thread_local bool first_call{ true };
-		static thread_local T val;
-
+		static thread_local optional<T> state = none;
 		T new_args = T(args...);
 
-		if (first_call || val != new_args) {
+		if (!state || *state != new_args) {
 			func(args...);
-			val = new_args;
-			first_call = false;
+			state = std::move(new_args);
 		}
 	}
 
-	template <typename T, typename K, typename V, typename... Args>
-	void bind_context_resource(T *func, K &&index, V &&spec, Args... args) const {
-		static thread_local std::map<std::remove_cv_t<std::remove_reference_t<K>>, std::remove_cv_t<std::remove_reference_t<V>>> val;
-
-		auto it = val.find(index);
-		if (it == val.end() || it->second != spec) {
-			func(args...);
-			val[std::move(index)] = std::move(spec);
-		}
-	}
-
-	template <typename T, typename K, typename V, typename... Args>
-	void bind_context_resource_with_map(T *func, K &&index, V &&spec, std::map<K,V> &m, Args... args) const {
+	template <typename T, typename K, typename V, typename M, typename... Args>
+	void bind_context_resource(T *func, const K &index, const V &spec, M &m, Args... args) const {
 		auto it = m.find(index);
 		if (it == m.end() || it->second != spec) {
 			func(args...);
-			m[std::move(index)] = std::move(spec);
+			m[index] = spec;
 		}
 	}
+
+	template <typename T, typename V, typename... Args>
+	void bind_context_resource_val(T *func, const V &spec, optional<V> &o, Args... args) const {
+		if (!o || *o != spec) {
+			func(args...);
+			o = spec;
+		}
+	}
+
+	template <typename T, typename K, typename V, typename M, int N, typename... Args>
+	void bind_context_resource_multiple(T *func, const std::array<std::pair<K, V>, N> &vals, M &m, Args... args) const {
+		bool exec = false;
+		for (auto &p : vals) {
+			auto &index = p.first;
+			auto &spec = p.second;
+
+			auto it = m.find(index);
+			if (it == m.end() || it->second != spec) {
+				exec = true;
+				m[index] = spec;
+			}
+		}
+
+		if (exec)
+			func(args...);
+	}
+
+	mutable std::map<std::tuple<GLenum, unsigned>, std::tuple<unsigned, int, std::size_t>> bind_buffers_map;
+	mutable std::unordered_map<unsigned, unsigned> bind_textures_map, bind_framebuffer_map, bind_renderbuffer_map, bind_sampler_map, bind_transfrom_feedback_map;
+	mutable std::unordered_map<unsigned, std::tuple<unsigned, int, int, bool, GLenum, GLenum>> bind_images_map;
+	mutable std::unordered_map<unsigned, std::tuple<unsigned, int, int>> bind_vertex_buffer_map;
+	mutable optional<unsigned> bind_program_val, bind_vertex_array_val;
 
 public:
 	gl_context(const context_settings &settings, const char *title, const glm::i32vec2 &size, gli::format format = gli::FORMAT_RGBA8_SRGB, gli::format depth_format = gli::FORMAT_D24_UNORM);
@@ -107,79 +127,138 @@ public:
 
 	void clear_framebuffer(bool color = true, bool depth = true) const { glClear((color ? GL_COLOR_BUFFER_BIT : 0) | (depth ? GL_DEPTH_BUFFER_BIT : 0)); }
 
-	void color_mask(bool r, bool b, bool g, bool a) const { set_context_server_state(glColorMask, r, g, b, a); }
-	void depth_mask(bool mask) const { set_context_server_state(glDepthMask, mask); }
+	void color_mask(bool r, bool b, bool g, bool a) const {
+		struct dummy {};
+		set_context_server_state<dummy>(glColorMask, r, g, b, a);
+	}
+	void depth_mask(bool mask) const {
+		struct dummy {};
+		set_context_server_state<dummy>(glDepthMask, mask);
+	}
 
-	void cull_face(GLenum face) const { set_context_server_state(glCullFace, face); }
-	void front_face(GLenum face) const { set_context_server_state(glFrontFace, face); }
+	void cull_face(GLenum face) const {
+		struct dummy {};
+		set_context_server_state<dummy>(glCullFace, face);
+	}
+	void front_face(GLenum face) const {
+		struct dummy {};
+		set_context_server_state<dummy>(glFrontFace, face);
+	}
 
-	void blend_func(GLenum src, GLenum dst) const { set_context_server_state(glBlendFunc, src, dst); }
-	void blend_func_separate(GLenum src_rgb, GLenum dst_rgb, GLenum src_a, GLenum dst_a) const { set_context_server_state(glBlendFuncSeparate, src_rgb, dst_rgb, src_a, dst_a); }
-	void blend_color(float r, float g, float b, float a) const { set_context_server_state(glBlendColor, r, g, b, a); }
-	void blend_equation(GLenum mode) const { set_context_server_state(glBlendEquation, mode); }
+	void blend_func(GLenum src, GLenum dst) const {
+		struct dummy {};
+		set_context_server_state<dummy>(glBlendFunc, src, dst);
+	}
+	void blend_func_separate(GLenum src_rgb, GLenum dst_rgb, GLenum src_a, GLenum dst_a) const {
+		struct dummy {};
+		set_context_server_state<dummy>(glBlendFuncSeparate, src_rgb, dst_rgb, src_a, dst_a);
+	}
+	void blend_color(float r, float g, float b, float a) const {
+		struct dummy {};
+		set_context_server_state<dummy>(glBlendColor, r, g, b, a);
+	}
+	void blend_equation(GLenum mode) const {
+		struct dummy {};
+		set_context_server_state<dummy>(glBlendEquation, mode);
+	}
+
+	void enable_vertex_attrib_array(unsigned index) const {
+		struct dummy {};
+		set_context_server_state<dummy>(glEnableVertexAttribArray, index);
+	}
 
 	void bind_buffer(GLenum target, unsigned id) const {
-		bind_context_resource_with_map(glBindBuffer,
-									   std::make_tuple(target, static_cast<unsigned>(0)), std::make_tuple(id, -1, static_cast<std::size_t>(-1)),
-									   bind_buffer_map,
-									   target, id);
+		bind_context_resource(glBindBuffer,
+							  std::make_tuple(target, static_cast<unsigned>(0)), std::make_tuple(id, -1, static_cast<std::size_t>(-1)),
+							  bind_buffers_map,
+							  target, id);
 	}
 	void bind_buffer_base(GLenum target, unsigned index, unsigned id) const {
-		bind_context_resource_with_map(glBindBufferBase,
-									   std::make_tuple(target, index), std::make_tuple(id, -1, static_cast<std::size_t>(-1)),
-									   bind_buffer_map,
-									   target, index, id);
+		bind_context_resource(glBindBufferBase,
+							  std::make_tuple(target, index), std::make_tuple(id, -1, static_cast<std::size_t>(-1)),
+							  bind_buffers_map,
+							  target, index, id);
+	}
+	template <int first, int N>
+	void bind_buffers_base(GLenum target, const std::array<unsigned, N> &ids) const {
+		std::array<std::pair<std::tuple<GLenum, unsigned>, std::tuple<unsigned, int, std::size_t>>>, N> vals;
+		for (int i = 0; i < N; ++i) vals[i] = std::make_pair(std::make_tuple(target, static_cast<unsigned>(i + first)),
+															 std::make_tuple(units[i], -1, static_cast<std::size_t>(-1)));
+
+		bind_context_resource_multiple(glBindBuffersBase,
+									   vals,
+									   bind_buffers_map,
+									   target, first, N, &ids[0]);
 	}
 	void bind_buffer_range(GLenum target, unsigned index, unsigned id, int offset, std::size_t size) const {
-		bind_context_resource_with_map(glBindBufferRange,
-									   std::make_tuple(target, index), std::make_tuple(id, offset, size),
-									   bind_buffer_map,
-									   target, index, id, offset, size);
+		bind_context_resource(glBindBufferRange,
+							  std::make_tuple(target, index), std::make_tuple(id, offset, size),
+							  bind_buffers_map,
+							  target, index, id, offset, size);
 	}
 	void bind_texture_unit(unsigned unit, unsigned id) const {
-		bind_context_resource(glBindTextureUnit, 
+		bind_context_resource(glBindTextureUnit,
 							  unit, id,
+							  bind_textures_map,
 							  unit, id);
 	}
+	template <int first, int N>
+	void bind_texture_units(const std::array<unsigned, N> &units) const {
+		std::array<std::pair<unsigned, unsigned>, N> vals;
+		for (int i = 0; i < N; ++i) vals[i] = std::make_pair(static_cast<unsigned>(i + first), units[i]);
+
+		bind_context_resource_multiple(glBindTextures, 
+									   vals, 
+									   bind_textures_map, 
+									   first, N, &units[0]);
+	}
 	void bind_framebuffer(GLenum target, unsigned id) const {
-		bind_context_resource(glBindFramebuffer, 
+		bind_context_resource(glBindFramebuffer,
 							  target, id,
+							  bind_framebuffer_map,
 							  target, id);
 	}
 	void bind_image_texture(unsigned unit, unsigned texture, int level, bool layered, int layer, GLenum access, GLenum format) const {
-		bind_context_resource(glBindImageTexture, 
+		bind_context_resource(glBindImageTexture,
 							  unit, std::make_tuple(texture, level, layer, layered, access, format),
+							  bind_images_map,
 							  unit, texture, level, layered, layer, access, format);
 	}
 	void bind_renderbuffer(GLenum target, unsigned id) const {
-		bind_context_resource(glBindRenderbuffer, 
+		bind_context_resource(glBindRenderbuffer,
 							  target, id,
+							  bind_renderbuffer_map,
 							  target, id);
 	}
 	void bind_sampler(unsigned unit, unsigned id) const {
-		bind_context_resource(glBindSampler, 
+		bind_context_resource(glBindSampler,
 							  unit, id,
+							  bind_sampler_map,
 							  unit, id);
 	}
 	void bind_transform_feedback(GLenum target, unsigned id) const {
 		bind_context_resource(glBindTransformFeedback,
 							  target, id,
+							  bind_transfrom_feedback_map,
 							  target, id);
 	}
 	void bind_vertex_array(unsigned id) const {
-		bind_context_resource(glBindVertexArray, 
-							  0, id,
-							  id);
+		bind_context_resource_val(glBindVertexArray,
+								  id,
+								  bind_vertex_array_val,
+								  id);
 	}
 	void bind_vertex_buffer(unsigned bindingindex, unsigned buffer, int offset, int stride) const {
-		bind_context_resource(glBindVertexBuffer, 
+		bind_context_resource(glBindVertexBuffer,
 							  bindingindex, std::make_tuple(buffer, offset, stride),
+							  bind_vertex_buffer_map,
 							  bindingindex, buffer, offset, stride);
 	}
 	void bind_shader_program(unsigned id) const {
-		bind_context_resource(glUseProgram, 
-							  0, id,
-							  id);
+		bind_context_resource_val(glUseProgram,
+								  id,
+								  bind_program_val,
+								  id);
 	}
 
 	void enable_state(GLenum state) const {
@@ -216,8 +295,6 @@ public:
 	void enable_depth_test() const { enable_state(GL_DEPTH_TEST); }
 	void disable_depth_test() const { disable_state(GL_DEPTH_TEST); }
 
-	void enable_vertex_attrib_array(unsigned index) const { set_context_server_state(glEnableVertexAttribArray, index); }
-
 	gli::format framebuffer_format() const;
 	glm::tvec2<std::size_t> framebuffer_size() const;
 	system_provided_framebuffer &defaut_framebuffer() const;
@@ -238,5 +315,5 @@ gli::format inline gl_context::framebuffer_format() const { return default_fb->f
 glm::tvec2<std::size_t> inline gl_context::framebuffer_size() const { return default_fb->front_buffer().get_attachment_size(); }
 system_provided_framebuffer inline &gl_context::defaut_framebuffer() const { return *default_fb; }
 
-} 
+}
 }

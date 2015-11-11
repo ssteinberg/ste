@@ -87,7 +87,7 @@ private:
 
 		bind();
 		enable_vertex_attrib_array(attrib_index);
- 		glBindVertexBuffer(binder.binding_index, ptr->get_resource_id(), descriptor->offset_to_attrib(binder.binding_index), binder.size);
+		gl_current_context::get()->bind_vertex_buffer(binder.binding_index, ptr->get_resource_id(), descriptor->offset_to_attrib(binder.binding_index), binder.size);
 		glVertexAttribFormat(attrib_index, 
 							 descriptor->attrib_element_count(binder.binding_index), 
 							 descriptor->attrib_element_type(binder.binding_index), 

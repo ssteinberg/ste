@@ -34,7 +34,7 @@ private:
 	std::unique_ptr<LLR::Texture2DArray> texture;
 
 public:
-	BRDF(const common_brdf_representation &brdf) : min_theta(brdf.get_min_incident() * M_PI / 180.f), max_theta(brdf.get_max_incident() * M_PI / 180.f) {
+	BRDF(const common_brdf_representation &brdf) : min_theta(glm::radians(brdf.get_min_incident())), max_theta(glm::radians(brdf.get_max_incident())) {
 		texture = std::make_unique<LLR::Texture2DArray>(brdf.get_data(), true);
 	}
 

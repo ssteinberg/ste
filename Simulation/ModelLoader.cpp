@@ -121,7 +121,7 @@ StE::task<void> ModelLoader::load_texture(const std::string &name, bool srgb, te
 		return std::make_unique<gli::texture2D>(std::move(tex));
 	}).then_on_main_thread([=](optional<task_scheduler*> sched, std::unique_ptr<gli::texture2D> &&tex) {
 		if (!tex->empty() && bumpmap) {
-			auto nm = normal_map_from_height_map<gli::FORMAT_R8_UNORM>()(*tex, 3.f);
+			auto nm = normal_map_from_height_map<gli::FORMAT_R8_UNORM>()(*tex, 1.f);
 			auto nm_tex = std::make_shared<LLR::Texture2D>(std::move(nm), true);
 			(*texmap)[name + "nm"] = std::move(nm_tex);
 		}

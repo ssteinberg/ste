@@ -25,7 +25,7 @@
 using namespace StE;
 
 struct StE::ste_engine_control_impl {
-	float field_of_view{ M_PI_4 };
+	float field_of_view{ glm::quarter_pi<float>() };
 	float near_clip{ 0.1 };
 	float far_clip{ 1000 };
 

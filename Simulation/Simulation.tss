@@ -8,69 +8,30 @@
       <string>D:\Dev\git\simulation\Simulation\deferred.frag</string>
     </ArrayOfString>
     <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\Object.h</string>
+      <string>D:\Dev\git\simulation\Simulation\material.glsl</string>
     </ArrayOfString>
     <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\TextRenderer.cpp</string>
-      <string>D:\Dev\git\simulation\Simulation\TextRenderer.h</string>
+      <string>D:\Dev\git\simulation\Simulation\scene.frag</string>
+      <string>D:\Dev\git\simulation\Simulation\scene.vert</string>
     </ArrayOfString>
     <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\rendering_queue.h</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\renderable.h</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\StEngineControl.cpp</string>
-      <string>D:\Dev\git\simulation\Simulation\StEngineControl.h</string>
+      <string>D:\Dev\git\simulation\Simulation\DeferredRenderer.h</string>
     </ArrayOfString>
     <ArrayOfString>
       <string>D:\Dev\git\simulation\Simulation\deferred_fbo.h</string>
+    </ArrayOfString>
+    <ArrayOfString>
+      <string>D:\Dev\git\simulation\Simulation\MeshRenderable.h</string>
+    </ArrayOfString>
+    <ArrayOfString>
+      <string>D:\Dev\git\simulation\Simulation\rendering_queue.h</string>
     </ArrayOfString>
     <ArrayOfString>
       <string>D:\Dev\git\simulation\Simulation\hdr_dof_postprocess.cpp</string>
       <string>D:\Dev\git\simulation\Simulation\hdr_dof_postprocess.h</string>
     </ArrayOfString>
     <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\Scene.cpp</string>
-      <string>D:\Dev\git\simulation\Simulation\Scene.h</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\rendering_system.h</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\DeferredRenderer.h</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\gl_context.cpp</string>
-      <string>D:\Dev\git\simulation\Simulation\gl_context.h</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\bindable_resource.h</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\ElementBufferObject.h</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\buffer_object.h</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\MeshRenderable.h</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\mesh.h</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\gl_type_traits.h</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\Quad.h</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\ModelLoader.cpp</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\mapped_buffer_object_unique_ptr.h</string>
+      <string>D:\Dev\git\simulation\Simulation\renderable.h</string>
     </ArrayOfString>
   </ArrayOfArrayOfString>
 </ArrayOfArrayOfArrayOfString>

@@ -24,9 +24,9 @@ public:
 		return glm::clamp(v.y / s, -1.f, 1.f);
 	}
 	static glm::vec3 omega(float theta, float phi) {
-		auto z = glm::cos(theta * M_PI / 180.0f);
-		auto x = glm::cos(phi * M_PI / 180.0f);
-		auto y = glm::sin(phi * M_PI / 180.0f);
+		auto z = glm::cos(glm::radians(theta));
+		auto x = glm::cos(glm::radians(phi));
+		auto y = glm::sin(glm::radians(phi));
 
 		glm::vec2 xy(x, y);
 		xy *= glm::sqrt(1.f - z*z);

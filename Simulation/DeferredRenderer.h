@@ -28,10 +28,7 @@ private:
 		deferred_fbo *fbo;
 
 	public:
-		deferred_composition(const StEngineControl &ctx, deferred_fbo *fbo) : renderable(StE::Resource::GLSLProgramLoader::load_program_task(ctx, { "passthrough.vert", "deferred.frag" })()), fbo(fbo) {
-			request_state({ GL_DEPTH_TEST, false });
-			request_state({ GL_CULL_FACE, false });
-		}
+		deferred_composition(const StEngineControl &ctx, deferred_fbo *fbo) : renderable(StE::Resource::GLSLProgramLoader::load_program_task(ctx, { "passthrough.vert", "deferred.frag" })()), fbo(fbo) {}
 
 		virtual void prepare() const override {
 			renderable::prepare();

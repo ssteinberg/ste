@@ -16,9 +16,6 @@ hdr_dof_postprocess::hdr_dof_postprocess(const StEngineControl &context, const L
 	linear_mipmaps_sampler.set_mag_filter(LLR::TextureFiltering::Linear);
 	linear_mipmaps_sampler.set_mipmap_filter(LLR::TextureFiltering::Linear);
 
-	request_state({ GL_DEPTH_TEST, false });
-	request_state({ GL_CULL_FACE, false });
-
 	resize_connection = std::make_shared<ResizeSignalConnectionType>([=](const glm::i32vec2 &size) {
 		this->resize(size);
 	});
@@ -38,10 +35,10 @@ hdr_dof_postprocess::hdr_dof_postprocess(const StEngineControl &context, const L
 		glm::vec4 *d = reinterpret_cast<glm::vec4*>(hdr_human_vision_properties_data.data());
 		for (unsigned i = 0; i < hdr_human_vision_properties_data.dimensions().x; ++i, ++d) {
 			float f = glm::mix(StE::Graphics::human_vision_properties::min_luminance, 10.f, static_cast<float>(i) / static_cast<float>(hdr_human_vision_properties_data.dimensions().x));
-			*d = { StE::Graphics::human_vision_properties::scotopic_vision(f),
-				StE::Graphics::human_vision_properties::red_response(f),
-				StE::Graphics::human_vision_properties::monochromaticity(f),
-				StE::Graphics::human_vision_properties::visual_acuity(f) };
+			*d = {	StE::Graphics::human_vision_properties::scotopic_vision(f),
+					StE::Graphics::human_vision_properties::red_response(f),
+					StE::Graphics::human_vision_properties::monochromaticity(f),
+					StE::Graphics::human_vision_properties::visual_acuity(f) };
 		}
 	}
 	hdr_vision_properties_texture = std::make_unique<StE::LLR::Texture1D>(hdr_human_vision_properties_data, false);

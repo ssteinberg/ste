@@ -10,9 +10,11 @@ layout(location = 3) in vec2 tex_coords;
 out vec4 gl_Position;
 out vec3 frag_position;
 out vec2 frag_texcoords;
+out float frag_depth;
 
 uniform mat4 projection;
 uniform mat4 view_model;
+uniform float near = 5.0f;
 uniform float far = 10000.0f;
 
 void main() {
@@ -22,4 +24,6 @@ void main() {
 	frag_texcoords = tex_coords;
 
 	gl_Position = projection * eye_v;
+	
+	frag_depth = (-eye_v.z - near) / (far - near);
 }
