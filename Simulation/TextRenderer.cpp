@@ -16,14 +16,13 @@ using namespace StE::LLR;
 TextRenderer::TextRenderer(const StEngineControl &context, const Font &default_font, int default_size) : gm(context), default_font(default_font), default_size(default_size) {
 	text_distance_mapping = Resource::GLSLProgramLoader::load_program_task(context, { "text_distance_map_contour.vert", "text_distance_map_contour.frag", "text_distance_map_contour.geom" })();
 
-	vbo = std::make_unique<vbo_type>(vbo_ring_size);
-	vbo_mapped_ptr = vbo->map_write(vbo_ring_size / sizeof(glyph_point), 0, static_cast<BufferUsage::buffer_mapping>(LLR::BufferUsage::BufferUsageMapCoherent | LLR::BufferUsage::BufferUsageMapPersistent));
-
-	vao[0] = (*vbo)[0];
-	vao[1] = (*vbo)[1];
-	vao[2] = (*vbo)[2];
-	vao[3] = (*vbo)[3];
-	vao[4] = (*vbo)[4];
+	vbo.reserve(vbo_ring_size);
+	auto vbo_buffer = LLR::buffer_object_cast<vbo_type>(vbo.get_buffer());
+	vao[0] = vbo_buffer[0];
+	vao[1] = vbo_buffer[1];
+	vao[2] = vbo_buffer[2];
+	vao[3] = vbo_buffer[3];
+	vao[4] = vbo_buffer[4];
 
 	auto *ctx = &context;
 	text_distance_mapping->set_uniform("proj", context.ortho_projection_matrix());

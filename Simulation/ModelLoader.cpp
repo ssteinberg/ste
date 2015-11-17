@@ -18,6 +18,7 @@ using namespace StE::Graphics;
 using StE::LLR::Texture2D;
 
 std::future<void> ModelLoader::process_model_mesh(optional<task_scheduler*> sched,
+												  Graphics::material_storage *matstorage,
 												  const tinyobj::shape_t &shape,
 												  Graphics::Scene *scene,
 												  materials_type &materials,
@@ -91,25 +92,26 @@ std::future<void> ModelLoader::process_model_mesh(optional<task_scheduler*> sche
 	std::shared_ptr<BRDF> brdf = brdf_name.length() ? brdfs[brdf_name] : nullptr;
 
 	return sched->schedule_now_on_main_thread([=, vbo_data = std::move(vbo_data)](optional<task_scheduler*> sched) {
-		Material mat;
-		if (diff != nullptr) mat.set_diffuse(diff);
-		if (specular != nullptr) mat.set_specular(specular);
-		if (normalmap != nullptr) mat.set_normalmap(normalmap);
-		if (opacity != nullptr) mat.set_alphamap(opacity);
-		mat.set_brdf(brdf);
+		auto mat = std::make_shared<Material>();
+		if (diff != nullptr) mat->set_diffuse(diff);
+		if (specular != nullptr) mat->set_specular(specular);
+		if (normalmap != nullptr) mat->set_normalmap(normalmap);
+		if (opacity != nullptr) mat->set_alphamap(opacity);
+		mat->set_brdf(brdf);
+		auto matid = matstorage->add_material(mat);
 
 		std::unique_ptr<StE::Graphics::mesh<StE::Graphics::mesh_subdivion_mode::Triangles>> m = std::make_unique<StE::Graphics::mesh<StE::Graphics::mesh_subdivion_mode::Triangles>>();
 		m->set_indices(std::move(shape.mesh.indices));
 		m->set_vertices(std::move(vbo_data));
 
 		std::shared_ptr<StE::Graphics::Object> obj = std::make_shared<StE::Graphics::Object>(std::move(m));
-		obj->set_material(std::move(mat));
+		obj->set_material_id(matid);
 
 		scene->add_object(obj);
 	});
 }
 
-StE::task<void> ModelLoader::load_texture(const std::string &name, bool srgb, texture_map_type *texmap, bool bumpmap, const std::string &dir) {
+StE::task<void> ModelLoader::load_texture(const std::string &name, bool srgb, texture_map_type *texmap, bool bumpmap, const std::string &dir, float normal_map_bias) {
 	return StE::task<std::unique_ptr<gli::texture2D>>([=](optional<task_scheduler*> sched) {
 		std::string full_path = dir + name;
 
@@ -121,7 +123,7 @@ StE::task<void> ModelLoader::load_texture(const std::string &name, bool srgb, te
 		return std::make_unique<gli::texture2D>(std::move(tex));
 	}).then_on_main_thread([=](optional<task_scheduler*> sched, std::unique_ptr<gli::texture2D> &&tex) {
 		if (!tex->empty() && bumpmap) {
-			auto nm = normal_map_from_height_map<gli::FORMAT_R8_UNORM>()(*tex, 1.f);
+			auto nm = normal_map_from_height_map<gli::FORMAT_R8_UNORM>()(*tex, normal_map_bias);
 			auto nm_tex = std::make_shared<LLR::Texture2D>(std::move(nm), true);
 			(*texmap)[name + "nm"] = std::move(nm_tex);
 		}
@@ -130,7 +132,7 @@ StE::task<void> ModelLoader::load_texture(const std::string &name, bool srgb, te
 	});
 }
 
-std::vector<std::future<void>> ModelLoader::load_textures(task_scheduler* sched, shapes_type &shapes, materials_type &materials, texture_map_type &tex_map, const std::string &dir) {
+std::vector<std::future<void>> ModelLoader::load_textures(task_scheduler* sched, shapes_type &shapes, materials_type &materials, texture_map_type &tex_map, const std::string &dir, float normal_map_bias) {
 	tex_map.emplace(std::make_pair(std::string(""), std::shared_ptr<LLR::Texture2D>(nullptr)));
 
 	std::vector<std::future<void>> futures;
@@ -144,7 +146,8 @@ std::vector<std::future<void>> ModelLoader::load_textures(task_scheduler* sched,
 																   true, 
 																   &tex_map, 
 																   false, 
-																   dir)));
+																   dir,
+																   normal_map_bias)));
 			}
 
 		for (auto &str : { materials[mat_idx].bump_texname, materials[mat_idx].alpha_texname, materials[mat_idx].specular_texname })
@@ -154,7 +157,8 @@ std::vector<std::future<void>> ModelLoader::load_textures(task_scheduler* sched,
 																   false, 
 																   &tex_map, 
 																   str == materials[mat_idx].bump_texname, 
-																   dir)));
+																   dir,
+																   normal_map_bias)));
 			}
 	}
 
@@ -181,7 +185,7 @@ std::vector<std::future<void>> ModelLoader::load_brdfs(const StEngineControl *ct
 	return futures;
 }
 
-StE::task<bool> ModelLoader::load_model_task(const StEngineControl &context, const std::string &file_path, Scene *scene) {
+StE::task<bool> ModelLoader::load_model_task(const StEngineControl &context, const std::string &file_path, Scene *scene, float normal_map_bias) {
 	const StEngineControl *ctx = &context;
 	return [=](optional<task_scheduler*> sched) -> bool {
 		assert(sched);
@@ -203,7 +207,7 @@ StE::task<bool> ModelLoader::load_model_task(const StEngineControl &context, con
 		brdf_map_type brdfs;
 
 		{
-			for (auto &f : load_textures(&*sched, shapes, materials, textures, dir))
+			for (auto &f : load_textures(&*sched, shapes, materials, textures, dir, normal_map_bias))
 				f.wait();
 			for (auto &f : load_brdfs(ctx, shapes, materials, brdfs, dir))
 				f.wait();
@@ -212,7 +216,7 @@ StE::task<bool> ModelLoader::load_model_task(const StEngineControl &context, con
 		{
 			std::vector<std::future<void>> futures;
 			for (auto &shape : shapes)
-				futures.push_back(process_model_mesh(sched, shape, scene, materials, textures, brdfs));
+				futures.push_back(process_model_mesh(sched, &scene->scene_properties()->material_storage(), shape, scene, materials, textures, brdfs));
 
 			for (auto &f : futures)
 				f.wait();

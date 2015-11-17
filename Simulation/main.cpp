@@ -9,7 +9,9 @@
 #include "Keyboard.h"
 #include "Pointer.h"
 #include "StEngineControl.h"
-#include "DeferredRenderer.h"
+#include "GIRenderer.h"
+#include "SphericalLight.h"
+#include "DirectionalLight.h"
 #include "BasicRenderer.h"
 #include "hdr_dof_postprocess.h"
 #include "MeshRenderable.h"
@@ -25,6 +27,9 @@
 #include "AttributedString.h"
 #include "RGB.h"
 #include "Sphere.h"
+
+#include "pinned_gvector.h"
+#include "gstack.h"
 
 using namespace StE::LLR;
 using namespace StE::Text;
@@ -96,27 +101,27 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 	ctx.gl()->cull_face(GL_BACK);
 	ctx.gl()->front_face(GL_CCW);
 
-	StE::Graphics::DeferredRenderer deferred(ctx);
+	StE::Graphics::SceneProperties scene_properties;
+	StE::Graphics::GIRenderer renderer(ctx, &scene_properties);
 	StE::Graphics::BasicRenderer basic_renderer;
 
 	StE::LLR::Camera camera;
 	camera.set_position({ 25.8, 549.07, -249.2 });
 	camera.lookat({ 26.4, 548.5, 248.71 });
 
-	const glm::vec3 light_pos(-700.6, 138, -70);
-	auto light_diffuse = StE::Graphics::RGB({ 1.f, .57f, .16f });
-	auto light_intensity = 1700.f;
+	const glm::vec3 light_pos({ -700.6, 138, -70 });
+	auto light0 = std::make_shared<StE::Graphics::SphericalLight>(1500.f, StE::Graphics::RGB({ 1.f, .57f, .16f }), light_pos, 200.f);
+	auto light1 = std::make_shared<StE::Graphics::DirectionalLight>(5.f, StE::Graphics::RGB({ 1.f, 1.f, 1.f }), glm::normalize(glm::vec3(0.1f, -1.f, 0.1f)));
+	scene_properties.lights_storage().add_light(light0);
+	scene_properties.lights_storage().add_light(light1);
 
 	SkyDome skydome(ctx);
-	StE::Graphics::Scene scene(ctx);
+	StE::Graphics::Scene scene(ctx, &scene_properties);
 	StE::Text::TextRenderer text_renderer(ctx, StE::Text::Font("Data/ArchitectsDaughter.ttf"));
 
-	StE::Graphics::hdr_dof_postprocess hdr{ ctx, deferred.z_buffer() };
+	StE::Graphics::hdr_dof_postprocess hdr{ ctx, renderer.z_buffer() };
 
-	deferred.set_light_diffuse(light_diffuse);
-	deferred.set_light_luminance(light_intensity);
-
-	deferred.set_output_fbo(hdr.get_fbo());
+	renderer.set_output_fbo(hdr.get_fbo());
 
 	StE::Graphics::CustomRenderable fb_clearer{ [&]() { ctx.gl()->clear_framebuffer(); } };
 	StE::Graphics::CustomRenderable fb_depth_clearer{ [&]() { ctx.gl()->clear_framebuffer(false); } };
@@ -143,7 +148,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 
 
 	bool loaded = false;
-	auto model_future = ctx.scheduler().schedule_now(StE::Resource::ModelLoader::load_model_task(ctx, R"(data\models\crytek-sponza\sponza.obj)", &scene));
+	auto model_future = ctx.scheduler().schedule_now(StE::Resource::ModelLoader::load_model_task(ctx, R"(data\models\crytek-sponza\sponza.obj)", &scene, 2.5f));
 
 	std::shared_ptr<StE::Graphics::Object> light_obj;
 	{
@@ -153,14 +158,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 		light_obj->set_model_transform(glm::scale(glm::translate(glm::mat4(), light_pos), glm::vec3(10, 10, 10)));
 
 		gli::texture2D light_color_tex{ 1, gli::format::FORMAT_RGB8_UNORM, {1,1} };
-		glm::vec3 c = light_diffuse;
+		glm::vec3 c = light0->get_diffuse();
 		*reinterpret_cast<glm::u8vec3*>(light_color_tex.data()) = glm::u8vec3(c.r * 255.5f, c.g * 255.5f, c.b * 255.5f);
 
-		StE::Graphics::Material light_mat;
-		light_mat.set_diffuse(std::make_shared<StE::LLR::Texture2D>(light_color_tex, false));
-		light_mat.set_emission(light_intensity);
+		auto light_mat = std::make_shared<StE::Graphics::Material>();
+		light_mat->set_diffuse(std::make_shared<StE::LLR::Texture2D>(light_color_tex, false));
+		light_mat->set_emission(c * light0->get_luminance());
 
-		light_obj->set_material(std::move(light_mat));
+		light_obj->set_material_id(scene_properties.material_storage().add_material(light_mat));
 
 		scene.add_object(light_obj);
 	}
@@ -195,7 +200,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 	}
 
 
-	ctx.set_renderer(&deferred);
+	ctx.set_renderer(&renderer);
 
 	float time = 0;
 	while (running) {
@@ -230,15 +235,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 		glm::vec3 lp = light_pos + glm::vec3(glm::sin(angle) * 3, 0, glm::cos(angle)) * 135.f;
 		light_obj->set_model_transform(glm::scale(glm::translate(glm::mat4(), lp), glm::vec3(10, 10, 10)));
 
-		deferred.set_light_pos((mv * glm::vec4(lp, 1)).xyz);
+		light0->set_position(lp);
 
+		renderer.set_model_matrix(mv);
 		scene.set_model_matrix(mv);
 		skydome.set_model_matrix(mvnt);
 
-		deferred.queue().push_back(&fb_depth_clearer);
-		deferred.queue().push_back(&scene);
-		deferred.queue().push_back(&skydome);
-		deferred.postprocess_queue().push_back(&hdr);
+		renderer.queue().push_back(&fb_depth_clearer);
+		renderer.queue().push_back(&scene);
+		renderer.queue().push_back(&skydome);
+		renderer.postprocess_queue().push_back(&hdr);
 
 		{
 			using namespace StE::Text::Attributes;
@@ -246,9 +252,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 			auto total_vram = std::to_wstring(ctx.gl()->meminfo_total_available_vram() / 1024);
 			auto free_vram = std::to_wstring(ctx.gl()->meminfo_free_vram() / 1024);
 
-			deferred.postprocess_queue().push_back(text_renderer.render({ 30, h - 50 },
+			renderer.postprocess_queue().push_back(text_renderer.render({ 30, h - 50 },
 																		vsmall(b(stroke(dark_magenta, 1)(red(tpf)))) + L" ms"));
-			deferred.postprocess_queue().push_back(text_renderer.render({ 30, 20 },
+			renderer.postprocess_queue().push_back(text_renderer.render({ 30, 20 },
 																		vsmall(b((blue_violet(free_vram) + L" / " + stroke(red, 1)(dark_red(total_vram)) + L" MB")))));
 		}
 

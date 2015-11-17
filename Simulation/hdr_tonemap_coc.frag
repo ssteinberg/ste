@@ -1,16 +1,13 @@
 
 #type frag
 #version 450
+#extension GL_ARB_bindless_texture : require
 
 #include "hdr_common.glsl"
 
 layout(location = 0) out vec4 rgbout;
 layout(location = 1) out vec4 bloomout;
 layout(location = 2) out vec2 coc_out;
-
-layout(binding = 0) uniform sampler2D hdr;
-layout(binding = 2) uniform sampler2D z_buffer;
-layout(binding = 3) uniform sampler1D hdr_vision_properties_texture;
 
 layout(std430, binding = 0) coherent buffer histogram_sums {
 	uint histogram[bins];
@@ -20,6 +17,10 @@ layout(std430, binding = 2) coherent readonly buffer hdr_bokeh_parameters_buffer
 };
 
 const float bloom_cutoff = .9f;
+
+layout(bindless_sampler) uniform sampler2D hdr;
+layout(bindless_sampler) uniform sampler2D z_buffer;
+layout(bindless_sampler) uniform sampler1D hdr_vision_properties_texture;
 
 uniform float aperature_radius = .025f;
 uniform float f1 = .1f;
@@ -44,9 +45,10 @@ void main() {
 	
 	vec4 vision_properties = texture(hdr_vision_properties_texture, clamp((l - min_luminance) / (10.f - min_luminance), 0, 1));
 	float scotopic = vision_properties.x;
-	float red_coef = vision_properties.y;
+	float mesopic = vision_properties.y;
 	float monochr = vision_properties.z;
 	float acuity = vision_properties.w;
+	float red_coef = red_response(mesopic);
 
 	hdr_texel.z = tonemap(toned_l) * mix(1.f, .33f, scotopic);
 
@@ -59,7 +61,7 @@ void main() {
 	rgbout = RGBL;
 	
 	if (XYZ.y > bloom_cutoff) {
-		float x = pow((XYZ.y - bloom_cutoff) / (1 - bloom_cutoff), 8);
+		float x = pow((XYZ.y - bloom_cutoff) / (1 - bloom_cutoff), 8) * (1.f - mesopic);
 		bloomout = vec4(RGBL.rgb, x);
 	}
 	else

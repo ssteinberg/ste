@@ -50,7 +50,7 @@ public:
 namespace StE {
 namespace Graphics {
 
-RGB XYZ::toRGB() const {
+inline RGB XYZ::toRGB() const {
 	RGB ret;
 	ret.R() = 3.240479*X() - 1.537150*Y() - 0.498535*Z();
 	ret.G() =-0.969256*X() + 1.875991*Y() + 0.041556*Z();
@@ -58,7 +58,7 @@ RGB XYZ::toRGB() const {
 	return ret;
 }
 
-xyY XYZ::to_xyY() const {
+inline xyY XYZ::to_xyY() const {
 	XYZ::T t = c[0] + c[1] + c[2];
 	glm::tvec3<xyY::T> v;
 	v.xy = glm::tvec2<xyY::T>{ X(), Y() } / t;

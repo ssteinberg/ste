@@ -12,7 +12,7 @@ in vec3 frag_position;
 in vec3 frag_normal;
 in vec3 frag_tangent;
 in float frag_depth;
-flat in int drawId;
+flat in int matIdx;
 
 layout(location = 0) out vec3 o_frag_position;
 layout(location = 1) out vec4 o_frag_color;
@@ -21,27 +21,26 @@ layout(location = 3) out float o_frag_z;
 layout(location = 4) out vec3 o_frag_tangent;
 layout(location = 5) out int o_frag_mat_idx;
 
-layout(std430, binding = 0) buffer material_data {
-	material_descriptor mat_descriptor[];
-};
-
 uniform float height_map_scale = 1.f;
 
 void main() {
-	material_descriptor md = mat_descriptor[drawId];
+	vec2 uv = frag_texcoords;
+	material_descriptor md = mat_descriptor[matIdx];
+	
+	vec2 dUVdx = dFdx(uv);
+	vec2 dUVdy = dFdy(uv);
 
-	if (md.alphamap.tex_handler>0 && texture(sampler2D(md.alphamap.tex_handler), frag_texcoords).x<.5f) {
+	if (md.alphamap.tex_handler>0 && textureGrad(sampler2D(md.alphamap.tex_handler), uv, dUVdx, dUVdy).x<.5f) {
 		discard;
 		return;
 	}
 	
-	vec2 uv = frag_texcoords;
 	vec3 P = frag_position;
 	vec3 n = normalize(frag_normal);
 	vec3 t = normalize(frag_tangent);
 	
 	if (md.normalmap.tex_handler>0) {
-		vec4 normal_height = texture(sampler2D(md.normalmap.tex_handler), uv);
+		vec4 normal_height = textureGrad(sampler2D(md.normalmap.tex_handler), uv, dUVdx, dUVdy);
 		vec3 b = cross(t, n);
 		mat3 tbn = mat3(t, b, n);
 
@@ -53,8 +52,8 @@ void main() {
 
 		t = cross(n, b);
 	}
-	float specular = md.specular.tex_handler>0 ? texture(sampler2D(md.specular.tex_handler), uv).x : 1.f;
-	vec3 diffuse = md.diffuse.tex_handler>0 ? texture(sampler2D(md.diffuse.tex_handler), uv).rgb : vec3(1.f);
+	float specular = md.specular.tex_handler>0 ? textureGrad(sampler2D(md.specular.tex_handler), uv, dUVdx, dUVdy).x : 1.f;
+	vec3 diffuse = md.diffuse.tex_handler>0 ? textureGrad(sampler2D(md.diffuse.tex_handler), uv, dUVdx, dUVdy).rgb : vec3(1.f);
 	
 	o_frag_tangent = t;
 	o_frag_normal = n;
@@ -62,5 +61,5 @@ void main() {
 
 	o_frag_position = P;
 	o_frag_z = frag_depth;
-	o_frag_mat_idx = drawId;
+	o_frag_mat_idx = matIdx;
 }

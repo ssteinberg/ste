@@ -3,7 +3,7 @@
 
 const int bins = 128;
 const float fbins = float(bins);
-const float min_luminance = .00001f;
+const float min_luminance = .000001f;
 
 struct hdr_bokeh_parameters {
 	int lum_min, lum_max;
@@ -28,8 +28,8 @@ float hdr_acuity(float lum) {
 	return pow(a, 4);
 }
 
-float red_response(float lum) {
-	return mix(1.f, .35f, hdr_mesopic(lum));
+float red_response(float mesopic) {
+	return mix(1.f, .35f, mesopic);
 }
 
 float monochromaticity(float lum) {

@@ -1,12 +1,13 @@
 
 #type compute
 #version 450
+#extension GL_ARB_bindless_texture : require
 
 #include "hdr_common.glsl"
 
 layout(local_size_x = 32, local_size_y = 32) in;
 
-layout(binding = 0) uniform sampler2D hdr;
+layout(bindless_sampler) uniform sampler2D hdr;
 
 layout(r32f, binding = 0) uniform image2D hdr_lums;
 layout(std430, binding = 2) coherent buffer hdr_bokeh_parameters_buffer {
@@ -20,10 +21,10 @@ uniform float time;
 
 void main() {
 	vec2 ts = textureSize(hdr, 0);
-	vec4 lums0 = textureGather(hdr, vec2(gl_GlobalInvocationID.xy) * 4 / ts , 2);
-	vec4 lums1 = textureGather(hdr, (vec2(gl_GlobalInvocationID.xy) * 4 + vec2(2,0)) / ts, 2);
-	vec4 lums2 = textureGather(hdr, (vec2(gl_GlobalInvocationID.xy) * 4 + vec2(2,2)) / ts, 2);
-	vec4 lums3 = textureGather(hdr, (vec2(gl_GlobalInvocationID.xy) * 4 + vec2(0,2)) / ts, 2);
+	vec4 lums0 = textureGather(hdr, vec2(gl_GlobalInvocationID.xy) * 4 / ts + vec2(.5, .5), 2);
+	vec4 lums1 = textureGather(hdr, (vec2(gl_GlobalInvocationID.xy) * 4 + vec2(2,0)) / ts + vec2(.5, .5), 2);
+	vec4 lums2 = textureGather(hdr, (vec2(gl_GlobalInvocationID.xy) * 4 + vec2(2,2)) / ts + vec2(.5, .5), 2);
+	vec4 lums3 = textureGather(hdr, (vec2(gl_GlobalInvocationID.xy) * 4 + vec2(0,2)) / ts + vec2(.5, .5), 2);
 	vec4 ls = vec4(dot(lums0, vec4(.25f)),
 				   dot(lums1, vec4(.25f)),
 				   dot(lums2, vec4(.25f)),

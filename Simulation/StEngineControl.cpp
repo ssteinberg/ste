@@ -20,8 +20,6 @@
 #define BOOST_FILESYSTEM_NO_DEPRECATED 
 #include <boost/filesystem.hpp>
 
-#include "hdr_dof_postprocess.h"
-
 using namespace StE;
 
 struct StE::ste_engine_control_impl {

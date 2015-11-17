@@ -46,7 +46,7 @@ public:
 namespace StE {
 namespace Graphics {
 
-XYZ xyY::toXYZ() const {
+inline XYZ xyY::toXYZ() const {
 	XYZ ret;
 	float Y_y = Y() / y();
 	ret.X() = Y_y * x();

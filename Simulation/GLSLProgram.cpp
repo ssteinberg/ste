@@ -170,3 +170,9 @@ void GLSLProgram::set_uniform(const std::string &name, bool val) const {
 	if (loc >= 0) 
 		glProgramUniform1i(get_resource_id(), loc, val);
 }
+
+void GLSLProgram::set_uniform(const std::string &name, const texture_handle &handle) const {
+	int loc = get_uniform_location(name);
+	if (loc >= 0)
+		glProgramUniformHandleui64ARB(get_resource_id(), loc, handle);
+}

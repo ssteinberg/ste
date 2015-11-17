@@ -15,6 +15,8 @@
 #include "bindable_resource.h"
 #include "GLSLShader.h"
 
+#include "texture_handle.h"
+
 namespace StE {
 namespace LLR {
 
@@ -87,6 +89,7 @@ public:
 	void set_uniform(const std::string &name, std::uint32_t val) const;
 	void set_uniform(const std::string &name, std::uint64_t val) const;
 	void set_uniform(const std::string &name, bool val) const;
+	void set_uniform(const std::string &name, const texture_handle &handle) const;
 
 	llr_resource_type resource_type() const override { return llr_resource_type::LLRGLSLProgram; }
 };

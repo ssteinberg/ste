@@ -14,6 +14,8 @@
 #include "StEngineControl.h"
 #include "task.h"
 
+#include "gstack.h"
+
 #include "renderable.h"
 
 #include "VertexArrayObject.h"
@@ -70,8 +72,7 @@ private:
 
 			offset = tr->vbo_ring_current_offset / sizeof(glyph_point);
 			range_in_use = range<>(tr->vbo_ring_current_offset, bytes);
-			tr->vbo_mapped_ptr.wait(range_in_use);
-			memcpy(tr->vbo_mapped_ptr.get() + offset, &points[0], bytes);
+			tr->vbo.overwrite(offset, points);
 
 			tr->text_distance_mapping->bind();
 
@@ -84,7 +85,7 @@ private:
 		}
 
 		virtual void finalize() const override {
-			tr->vbo_mapped_ptr.lock(range_in_use);
+			tr->vbo.lock_range(range_in_use);
 			tr->vbo_ring_current_offset += bytes;
 		}
 	};
@@ -97,13 +98,11 @@ private:
 private:
 	std::shared_ptr<LLR::GLSLProgram> text_distance_mapping;
 
-	static constexpr int vbo_ring_size = 8192;
-	static constexpr LLR::BufferUsage::buffer_usage buffer_usage = static_cast<LLR::BufferUsage::buffer_usage>(LLR::BufferUsage::BufferUsageMapCoherent | LLR::BufferUsage::BufferUsageMapWrite | LLR::BufferUsage::BufferUsageMapPersistent);
-	using vbo_type = LLR::VertexBufferObject<glyph_point, glyph_point::descriptor, buffer_usage>;
-	using vbo_mapped_ptr_type = LLR::mapped_buffer_object_unique_ptr<vbo_type::T, vbo_type::access_usage>;
+	static constexpr int vbo_ring_size = 16384;
 
-	vbo_mapped_ptr_type vbo_mapped_ptr;
-	std::unique_ptr<vbo_type> vbo;
+	LLR::gstack<glyph_point> vbo;
+	using vbo_type = LLR::VertexBufferObject<glyph_point, glyph_point::descriptor, decltype(vbo)::usage>;
+
 	int vbo_ring_current_offset{ 0 };
 
 	LLR::VertexArrayObject vao;

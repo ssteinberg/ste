@@ -4,7 +4,9 @@
 #pragma once
 
 #include "Texture2D.h"
+
 #include "BRDF.h"
+#include "RGB.h"
 
 #include <memory>
 
@@ -20,7 +22,7 @@ protected:
 
 	std::shared_ptr<BRDF> brdf;
 
-	float emission{ 0 };
+	RGB emission{ glm::vec3(.0f, .0f, .0f) };
 
 public:
 	void set_diffuse(const std::shared_ptr<LLR::Texture2D> &tex) { diffuse = tex; }
@@ -28,7 +30,7 @@ public:
 	void set_normalmap(const std::shared_ptr<LLR::Texture2D> &tex) { normalmap = tex; }
 	void set_alphamap(const std::shared_ptr<LLR::Texture2D> &tex) { alphamap = tex; }
 
-	void set_emission(float t) { emission = t; }
+	void set_emission(const RGB &t) { emission = t; }
 
 	void set_brdf(const std::shared_ptr<BRDF> &b) { brdf = b; }
 
@@ -37,7 +39,7 @@ public:
 	const LLR::Texture2D *get_normalmap() const { return normalmap.get(); }
 	const LLR::Texture2D *get_alphamap() const { return alphamap.get(); }
 
-	float get_emission() const { return emission; }
+	RGB get_emission() const { return emission; }
 
 	const BRDF *get_brdf() const { return brdf.get(); }
 };

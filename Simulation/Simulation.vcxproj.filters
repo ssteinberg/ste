@@ -190,11 +190,20 @@
     <Filter Include="src\StE\Framework Graphics\Render\Renderers">
       <UniqueIdentifier>{4fb843e4-4296-4835-bda0-66d49b9c9b5d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\StE\Framework Graphics\Render\Renderers\Deferred">
+    <Filter Include="src\StE\Core\LLR\GPU Resources\GPU Data Structures">
+      <UniqueIdentifier>{3a2d4708-5738-43d0-8030-305fe24af029}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\StE\Framework Graphics\Render\Renderers\GI">
       <UniqueIdentifier>{f0eba694-a066-4a9e-9d77-8efbad5c4e04}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\StE\Framework Graphics\Render\Renderers\Deferred\Shaders">
+    <Filter Include="src\StE\Framework Graphics\Render\Renderers\GI\Shaders">
       <UniqueIdentifier>{20942e32-05e6-415d-8c2d-d77c634bbafe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\StE\Framework Graphics\Light">
+      <UniqueIdentifier>{16283b2b-ad7a-47cb-b90f-fe75eeb20eb8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\StE\Framework Graphics\Light\Shaders">
+      <UniqueIdentifier>{5299210f-5cc7-4d5b-a090-14b74e25a095}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -675,7 +684,7 @@
       <Filter>src\StE\Framework Graphics\Render</Filter>
     </ClInclude>
     <ClInclude Include="deferred_fbo.h">
-      <Filter>src\StE\Framework Graphics\Render\Renderers\Deferred</Filter>
+      <Filter>src\StE\Framework Graphics\Render\Renderers\GI</Filter>
     </ClInclude>
     <ClInclude Include="hdr_dof_postprocess.h">
       <Filter>src\StE\Framework Graphics\Render\HDR</Filter>
@@ -683,11 +692,38 @@
     <ClInclude Include="rendering_system.h">
       <Filter>src\StE\Framework Graphics\Render\Renderers</Filter>
     </ClInclude>
-    <ClInclude Include="DeferredRenderer.h">
-      <Filter>src\StE\Framework Graphics\Render\Renderers\Deferred</Filter>
-    </ClInclude>
     <ClInclude Include="BasicRenderer.h">
       <Filter>src\StE\Framework Graphics\Render\Renderers</Filter>
+    </ClInclude>
+    <ClInclude Include="range_lockable.h">
+      <Filter>src\StE\Core\LLR\GPU Resources\Locks</Filter>
+    </ClInclude>
+    <ClInclude Include="pinned_gvector.h">
+      <Filter>src\StE\Core\LLR\GPU Resources\GPU Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="gstack.h">
+      <Filter>src\StE\Core\LLR\GPU Resources\GPU Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="material_storage.h">
+      <Filter>src\StE\Framework Graphics\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneProperties.h">
+      <Filter>src\StE\Framework Graphics\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="GIRenderer.h">
+      <Filter>src\StE\Framework Graphics\Render\Renderers\GI</Filter>
+    </ClInclude>
+    <ClInclude Include="light.h">
+      <Filter>src\StE\Framework Graphics\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="SphericalLight.h">
+      <Filter>src\StE\Framework Graphics\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectionalLight.h">
+      <Filter>src\StE\Framework Graphics\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="light_storage.h">
+      <Filter>src\StE\Framework Graphics\Light</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -712,6 +748,12 @@
     <None Include="hdr_common.glsl">
       <Filter>src\StE\Framework Graphics\Render\HDR\Shaders</Filter>
     </None>
+    <None Include="light.glsl">
+      <Filter>src\StE\Framework Graphics\Light\Shaders</Filter>
+    </None>
+    <None Include="deferred.vert">
+      <Filter>src\StE\Framework Graphics\Render\Renderers\GI\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="transform_sky.vert">
@@ -721,7 +763,7 @@
       <Filter>src\Shaders</Filter>
     </CustomBuild>
     <CustomBuild Include="deferred.frag">
-      <Filter>src\StE\Framework Graphics\Render\Renderers\Deferred\Shaders</Filter>
+      <Filter>src\StE\Framework Graphics\Render\Renderers\GI\Shaders</Filter>
     </CustomBuild>
     <CustomBuild Include="passthrough.vert">
       <Filter>src\StE\Framework Graphics\Common Shaders</Filter>

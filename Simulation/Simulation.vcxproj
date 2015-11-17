@@ -169,7 +169,11 @@
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="DeferredRenderer.h">
+    <ClInclude Include="DirectionalLight.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GIRenderer.h">
       <SubType>
       </SubType>
     </ClInclude>
@@ -190,6 +194,26 @@
     <ClInclude Include="glyph_factory.h" />
     <ClInclude Include="glyph_manager.h" />
     <ClInclude Include="gl_current_context.h" />
+    <ClInclude Include="gstack.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="light.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="light_storage.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="material_storage.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="pinned_gvector.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="hdr_dof_postprocess.h" />
     <ClInclude Include="human_vision_properties.h">
       <SubType>
@@ -228,6 +252,10 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="range_lockable.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="renderable.h">
       <SubType>
       </SubType>
@@ -250,11 +278,19 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="SceneProperties.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="spectrum.h">
       <SubType>
       </SubType>
     </ClInclude>
     <ClInclude Include="Sphere.h" />
+    <ClInclude Include="SphericalLight.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="surface_element_cast.h">
       <SubType>
       </SubType>
@@ -414,6 +450,11 @@
     <CustomBuild Include="frag_sky.frag">
       <FileType>Document</FileType>
     </CustomBuild>
+    <CustomBuild Include="deferred.vert">
+      <SubType>
+      </SubType>
+      <FileType>Document</FileType>
+    </CustomBuild>
     <None Include="hdr_common.glsl">
       <FileType>Document</FileType>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
@@ -468,6 +509,10 @@
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">main.cpp;%(AdditionalInputs)</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">main.cpp;%(AdditionalInputs)</AdditionalInputs>
     </CustomBuild>
+    <None Include="light.glsl">
+      <SubType>
+      </SubType>
+    </None>
     <None Include="material.glsl">
       <SubType>
       </SubType>

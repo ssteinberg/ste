@@ -46,7 +46,7 @@ public:
 namespace StE {
 namespace Graphics {
 
-XYZ RGB::toXYZ() const {
+inline XYZ RGB::toXYZ() const {
 	XYZ ret;
 	ret.X() = 0.412453*R() + 0.357580*G() + 0.180423*B();
 	ret.Y() = 0.212671*R() + 0.715160*G() + 0.072169*B();
@@ -54,7 +54,7 @@ XYZ RGB::toXYZ() const {
 	return ret;
 }
 
-RGB::T RGB::luminance() const { 
+inline RGB::T RGB::luminance() const {
 	return toXYZ().Y();
 }
 

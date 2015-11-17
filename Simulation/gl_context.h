@@ -181,9 +181,9 @@ public:
 	}
 	template <int first, int N>
 	void bind_buffers_base(GLenum target, const std::array<unsigned, N> &ids) const {
-		std::array<std::pair<std::tuple<GLenum, unsigned>, std::tuple<unsigned, int, std::size_t>>>, N> vals;
+		std::array<std::pair<std::tuple<GLenum, unsigned>, std::tuple<unsigned, int, std::size_t>>, N> vals;
 		for (int i = 0; i < N; ++i) vals[i] = std::make_pair(std::make_tuple(target, static_cast<unsigned>(i + first)),
-															 std::make_tuple(units[i], -1, static_cast<std::size_t>(-1)));
+															 std::make_tuple(ids[i], -1, static_cast<std::size_t>(-1)));
 
 		bind_context_resource_multiple(glBindBuffersBase,
 									   vals,

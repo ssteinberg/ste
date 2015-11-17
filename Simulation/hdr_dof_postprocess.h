@@ -19,6 +19,7 @@
 #include "GLSLProgramLoader.h"
 
 #include <memory>
+#include <array>
 
 namespace StE {
 namespace Graphics {
@@ -46,7 +47,6 @@ private:
 
 	LLR::Sampler hdr_vision_properties_sampler;
 	LLR::Sampler linear_sampler;
-	LLR::SamplerMipmapped linear_mipmaps_sampler;
 
 	std::unique_ptr<LLR::Texture1D> hdr_vision_properties_texture;
 	LLR::texture_handle hdr_vision_properties_texture_handle;
@@ -76,14 +76,13 @@ private:
 	const LLR::Texture2D *z_buffer;
 	const StEngineControl &ctx;
 
+	std::array<unsigned, 4> storage_buffers;
+
 public:
 	hdr_dof_postprocess(const StEngineControl &ctx, const LLR::Texture2D *z_buffer);
 	~hdr_dof_postprocess() noexcept {}
 
-	virtual void prepare() const override {
-		ScreenFillingQuad.vao()->bind();
-	}
-
+	virtual void prepare() const override;
 	virtual void render() const override;
 
 	auto get_fbo() const { return &fbo_hdr_final; }

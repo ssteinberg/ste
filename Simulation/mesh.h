@@ -105,7 +105,7 @@ public:
 		for (auto &v : vertices) {
 			v.p = (m * glm::vec4(v.p, 1)).xyz;
 			v.n = glm::normalize((tim * glm::vec4(v.n, 1)).xyz);
-			v.t = glm::normalize((m * glm::vec4(v.t, 1)).xyz);
+			v.t = glm::normalize((tim * glm::vec4(v.t, 1)).xyz);
 		}
 	}
 

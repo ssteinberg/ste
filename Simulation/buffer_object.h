@@ -10,8 +10,9 @@
 
 #include "buffer_usage.h"
 #include "mapped_buffer_object_unique_ptr.h"
-#include "gpu_sync.h"
 #include "buffer_object_allocator.h"
+
+#include "range_lockable.h"
 
 #include "shader_layout_bindable_resource.h"
 #include "layout_binding.h"
@@ -20,7 +21,6 @@
 
 #include <memory>
 #include <list>
-#include <map>
 
 #include <type_traits>
 
@@ -40,7 +40,8 @@ public:
 #define ALLOW_BUFFER_OBJECT_CASTS	template <typename BufferTypeTo, typename BufferTypeFrom> friend BufferTypeTo buffer_object_cast(BufferTypeFrom &&s)
 
 template <typename Type, BufferUsage::buffer_usage U = BufferUsage::BufferUsageNone>
-class buffer_object : public bindable_resource<buffer_object_immutable_storage_allocator<Type, U>, BufferObjectBinder, GLenum> {
+class buffer_object : public bindable_resource<buffer_object_immutable_storage_allocator<Type, U>, BufferObjectBinder, GLenum>,
+					  public range_lockable {
 private:
 	using Base = bindable_resource<buffer_object_immutable_storage_allocator<Type, U>, BufferObjectBinder, GLenum>;
 
@@ -59,21 +60,18 @@ private:
 
 	ALLOW_BUFFER_OBJECT_CASTS;
 
-	using lock_map_type = std::multimap<range<>, gpu_sync>;
-
 protected:
 	std::shared_ptr<mapped_buffer_object_unique_ptr<T, U>::mapped_buffer_data> mapped_ptr_data;
 	std::size_t buffer_size;
-	mutable std::shared_ptr<lock_map_type> locks{ new lock_map_type };
 
 	using Base::bind;
 	using Base::unbind;
 
 	template <typename T2>
-	buffer_object(const buffer_object<T2, U> &t) : Base(t), locks(t.locks) {
+	buffer_object(const buffer_object<T2, U> &t) : Base(t) {
 		buffer_size = sizeof(T2) * t.buffer_size / sizeof(T);
 	}
-	buffer_object(const buffer_object<Type, U> &t) : Base(t), buffer_size(t.buffer_size), locks(t.locks) {}
+	buffer_object(const buffer_object<Type, U> &t) : Base(t), buffer_size(t.buffer_size) {}
 
 public:
 	buffer_object(buffer_object &&t) = default;
@@ -86,24 +84,6 @@ public:
 	}
 
 	virtual ~buffer_object() noexcept { unmap(); }
-
-	void lock_range(const range<> &r) const {
-		gpu_sync l;
-		l.lock();
-		locks->insert(std::make_pair(r, std::move(l)));
-	}
-	void wait_for_range(const range<> &r) const {
-		for (auto it = locks->begin(); it != locks->end();) {
-			if (it->first.start > r.start + r.length)
-				break;
-			if (it->first.overlaps(r)) {
-				it->second.wait();
-				it = locks->erase(it);
-			}
-			else
-				++it;
-		}
-	}
 
 	void clear(const gli::format format, const void *data) {
 		auto glf = gl_utils::translate_format(format);
@@ -167,7 +147,7 @@ public:
 		mapped_ptr_data = nullptr;
 	}
 
-	int size() const { return buffer_size; }
+	auto size() const { return buffer_size; }
 
 	void commit_range(int offset, std::size_t size) {
 		int ps = page_size();
@@ -209,6 +189,9 @@ public:
 	static void unbind(const LayoutLocationType &index, GLenum target = 0) {
 		if (index != EmptyLayoutLocationType()) gl_current_context::get()->bind_buffer_base(target, index, 0);
 	}
+	static void bind_range(unsigned int id, const LayoutLocationType &index, GLenum target, int offset, std::size_t size) {
+		if (index != EmptyLayoutLocationType()) gl_current_context::get()->bind_buffer_range(target, index, id, offset, size);
+	}
 };
 
 template <typename Type, typename BinderType, BufferUsage::buffer_usage U = BufferUsage::BufferUsageNone, class LB = BufferObjectLayoutBinder<BinderType>>
@@ -227,6 +210,9 @@ protected:
 
 	using buffer_object<T, U>::bind;
 	using buffer_object<T, U>::unbind;
+	void bind_range(const LayoutLocationType &location, GLenum target, int offset, std::size_t size) const {
+		LayoutBinder::bind_range(get_resource_id(), location, target, offset * sizeof(Type), size * sizeof(Type));
+	}
 };
 
 }

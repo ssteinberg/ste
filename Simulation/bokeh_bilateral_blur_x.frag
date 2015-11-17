@@ -1,11 +1,12 @@
 
 #type frag
-#version 440
+#version 450
+#extension GL_ARB_bindless_texture : require
 
 out vec4 gl_FragColor;
 
-layout(binding = 0) uniform sampler2D hdr;
-layout(binding = 1) uniform sampler2D zcoc_buffer;
+layout(bindless_sampler) uniform sampler2D hdr;
+layout(bindless_sampler) uniform sampler2D zcoc_buffer;
 
 const float center_weight = 0.088959;
 const vec4 weights2 = vec4(0.060023, 0.071298, 0.080625, 0.086798);

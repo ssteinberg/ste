@@ -14,7 +14,11 @@ struct material_descriptor {
 	material_texture_descriptor normalmap;
 	material_texture_descriptor alphamap;
 	brdf_descriptor brdf;
-	float emission;
+	vec4 emission;
+};
+
+layout(std430, binding = 0) buffer material_data {
+	material_descriptor mat_descriptor[];
 };
 
 float calc_brdf(material_descriptor md, vec3 position, vec3 normal, vec3 tangent, vec3 bitangent, vec3 incident) {
@@ -49,11 +53,6 @@ float calc_brdf(material_descriptor md, vec3 position, vec3 normal, vec3 tangent
 	
 	float cos_out_theta = max(.0f, dot(wout, normal));
 	float out_theta = acos(cos_out_theta) / pi_2;
-
-	if (out_theta < .1f)
-		out_phi = mix(.0f, out_phi, clamp(out_theta / .05f, 0.f, 1.));
-	if (in_theta < .1f)
-		out_phi = mix(.0f, out_phi, clamp(in_theta / .05f, 0.f, 1.f));
 
 	sampler2DArray brdf_sampler = sampler2DArray(md.brdf.tex_handler);
 	uint layers = textureSize(brdf_sampler, 0).z;

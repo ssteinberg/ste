@@ -62,6 +62,13 @@ public:
 		r.length = std::min(sub_range.length, data->mapped_range.length);
 		data->buffer_object_ptr->wait_for_range(r);
 	}
+	void client_wait() const { data->buffer_object_ptr->client_wait_for_range(data->mapped_range); }
+	void client_wait(const range<> &sub_range) const {
+		range<> r;
+		r.start = sub_range.start + data->mapped_range.start;
+		r.length = std::min(sub_range.length, data->mapped_range.length);
+		data->buffer_object_ptr->client_wait_for_range(r);
+	}
 
 	void invalidate() {
 		if (is_valid())

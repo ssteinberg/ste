@@ -1,12 +1,13 @@
 
 #type compute
 #version 450
+#extension GL_ARB_bindless_texture : require
 
 #include "hdr_common.glsl"
 
 layout(local_size_x = bins / 2, local_size_y = 1) in;
 
-layout(binding = 2) uniform sampler2D z_buffer;
+layout(bindless_sampler) uniform sampler2D z_buffer;
 
 layout(std430, binding = 0) coherent buffer histogram_sums {
 	uint sums[bins];

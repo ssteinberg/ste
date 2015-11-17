@@ -170,7 +170,12 @@ void gl_context::setup_debug_context() {
 		Text::AttributedString attr_str = b("OpenGL Debug Output: ") + "Object - " + std::to_string(id) + " " + std::string(message, length);
 		switch (severity) {
 		case GL_DEBUG_SEVERITY_NOTIFICATION:
-			ste_log() << attr_str << std::endl;
+			if (type == GL_DEBUG_TYPE_OTHER) {
+				ste_log_every(1000) << attr_str << std::endl;
+			}
+			else {
+				ste_log() << attr_str << std::endl;
+			}
 			break;
 		case GL_DEBUG_SEVERITY_LOW:
 		case GL_DEBUG_SEVERITY_MEDIUM:
