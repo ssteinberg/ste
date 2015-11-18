@@ -21,6 +21,22 @@ layout(std430, binding = 0) buffer material_data {
 	material_descriptor mat_descriptor[];
 };
 
+void normal_map(material_descriptor md, float height_map_scale, vec2 uv, inout vec3 n, inout vec3 t, inout vec3 P) {
+	if (md.normalmap.tex_handler>0) {
+		vec4 normal_height = texture(sampler2D(md.normalmap.tex_handler), uv);
+		vec3 b = cross(t, n);
+		mat3 tbn = mat3(t, b, n);
+
+		float h = normal_height.w * height_map_scale;
+		P += h * n;
+
+		vec3 nm = normal_height.xyz;
+		n = tbn * nm;
+
+		t = cross(n, b);
+	}
+}
+
 float calc_brdf(material_descriptor md, vec3 position, vec3 normal, vec3 tangent, vec3 bitangent, vec3 incident) {
 	if (md.brdf.tex_handler == 0)
 		return .0f;

@@ -89,6 +89,8 @@ public:
 	}
 
 	rendering_queue& postprocess_queue() { return ppq; };
+
+	virtual std::string rendering_system_name() const override { return "GIRenderer"; };
 };
 
 }

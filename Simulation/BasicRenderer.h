@@ -17,6 +17,8 @@ public:
 	virtual void render_queue(const StEngineControl &ctx) override {
 		queue().render(&ctx.gl()->defaut_framebuffer());
 	}
+
+	virtual std::string rendering_system_name() const override { return "BasicRenderer"; };
 };
 
 }

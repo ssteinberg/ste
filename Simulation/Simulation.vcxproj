@@ -455,6 +455,14 @@
       </SubType>
       <FileType>Document</FileType>
     </CustomBuild>
+    <None Include="deferred.glsl">
+      <SubType>
+      </SubType>
+    </None>
+    <None Include="hdr_blur.glsl">
+      <SubType>
+      </SubType>
+    </None>
     <None Include="hdr_common.glsl">
       <FileType>Document</FileType>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
@@ -491,7 +499,7 @@
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">main.cpp;%(AdditionalInputs)</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">main.cpp;%(AdditionalInputs)</AdditionalInputs>
     </CustomBuild>
-    <CustomBuild Include="hdr_tonemap_coc.frag">
+    <None Include="hdr_tonemap_coc.frag">
       <FileType>Document</FileType>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
@@ -499,7 +507,7 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(FullPath).verf</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">main.cpp;%(AdditionalInputs)</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">main.cpp;%(AdditionalInputs)</AdditionalInputs>
-    </CustomBuild>
+    </None>
     <CustomBuild Include="deferred.frag">
       <FileType>Document</FileType>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>

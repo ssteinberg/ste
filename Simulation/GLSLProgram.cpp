@@ -176,3 +176,7 @@ void GLSLProgram::set_uniform(const std::string &name, const texture_handle &han
 	if (loc >= 0)
 		glProgramUniformHandleui64ARB(get_resource_id(), loc, handle);
 }
+
+void GLSLProgram::set_uniform_subroutine(GLenum shader_type, const std::vector<unsigned> &ids) const {
+	glUniformSubroutinesuiv(shader_type, ids.size(), &ids[0]);
+}

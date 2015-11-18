@@ -751,8 +751,11 @@
     <None Include="light.glsl">
       <Filter>src\StE\Framework Graphics\Light\Shaders</Filter>
     </None>
-    <None Include="deferred.vert">
+    <None Include="deferred.glsl">
       <Filter>src\StE\Framework Graphics\Render\Renderers\GI\Shaders</Filter>
+    </None>
+    <None Include="hdr_blur.glsl">
+      <Filter>src\StE\Framework Graphics\Render\HDR\Shaders</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -774,18 +777,6 @@
     <CustomBuild Include="scene.vert">
       <Filter>src\StE\Framework Graphics\Scene\Shaders</Filter>
     </CustomBuild>
-    <CustomBuild Include="bokeh_bilateral_blur_x.frag">
-      <Filter>src\StE\Framework Graphics\Render\HDR\Shaders</Filter>
-    </CustomBuild>
-    <CustomBuild Include="bokeh_bilateral_blur_y.frag">
-      <Filter>src\StE\Framework Graphics\Render\HDR\Shaders</Filter>
-    </CustomBuild>
-    <CustomBuild Include="hdr_bloom_blur_x.frag">
-      <Filter>src\StE\Framework Graphics\Render\HDR\Shaders</Filter>
-    </CustomBuild>
-    <CustomBuild Include="hdr_bloom_blur_y.frag">
-      <Filter>src\StE\Framework Graphics\Render\HDR\Shaders</Filter>
-    </CustomBuild>
     <CustomBuild Include="hdr_compute_histogram_sums.glsl">
       <Filter>src\StE\Framework Graphics\Render\HDR\Shaders</Filter>
     </CustomBuild>
@@ -796,6 +787,19 @@
       <Filter>src\StE\Framework Graphics\Render\HDR\Shaders</Filter>
     </CustomBuild>
     <CustomBuild Include="hdr_tonemap_coc.frag">
+      <Filter>src\StE\Framework Graphics\Render\HDR\Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="deferred.vert" />
+    <CustomBuild Include="hdr_bloom_blur_x.glsl">
+      <Filter>src\StE\Framework Graphics\Render\HDR\Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="hdr_bloom_blur_y.glsl">
+      <Filter>src\StE\Framework Graphics\Render\HDR\Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="bokeh_bilateral_blur_x.glsl">
+      <Filter>src\StE\Framework Graphics\Render\HDR\Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="bokeh_bilateral_blur_y.glsl">
       <Filter>src\StE\Framework Graphics\Render\HDR\Shaders</Filter>
     </CustomBuild>
   </ItemGroup>

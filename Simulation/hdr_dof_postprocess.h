@@ -85,7 +85,7 @@ public:
 	virtual void prepare() const override;
 	virtual void render() const override;
 
-	auto get_fbo() const { return &fbo_hdr_final; }
+	auto get_input_fbo() const { return &fbo_hdr_final; }
 
 	void resize(glm::ivec2 size);
 };

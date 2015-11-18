@@ -64,7 +64,7 @@ public:
 			}
 
 			bool reset_fbo = false;
-			if (!(*p)->get_fbo()) {
+			if (!(*p)->get_output_fbo()) {
 				(*p)->set_output_fbo(default_fbo);
 				reset_fbo = true;
 			}

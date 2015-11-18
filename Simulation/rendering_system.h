@@ -6,6 +6,8 @@
 #include "stdafx.h"
 #include "rendering_queue.h"
 
+#include <string>
+
 namespace StE {
 
 class StEngineControl;
@@ -23,6 +25,8 @@ public:
 	virtual void render_queue(const StEngineControl &ctx) = 0;
 
 	rendering_queue& queue() { return q; };
+
+	virtual std::string rendering_system_name() const = 0;
 };
 
 }

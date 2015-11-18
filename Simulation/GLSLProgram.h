@@ -90,6 +90,7 @@ public:
 	void set_uniform(const std::string &name, std::uint64_t val) const;
 	void set_uniform(const std::string &name, bool val) const;
 	void set_uniform(const std::string &name, const texture_handle &handle) const;
+	void set_uniform_subroutine(GLenum shader_type, const std::vector<unsigned> &ids) const;
 
 	llr_resource_type resource_type() const override { return llr_resource_type::LLRGLSLProgram; }
 };

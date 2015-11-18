@@ -50,7 +50,7 @@ public:
 	}
 
 	const auto get_program() const { return program.get(); }
-	const auto get_fbo() const { return fbo; }
+	const auto get_output_fbo() const { return fbo; }
 	const std::unordered_map<GLenum, bool>& get_requested_states() const { return requested_states; }
 };
 
