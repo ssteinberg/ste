@@ -165,7 +165,7 @@ public:
 			dims.y = glm::ceil((BRDF::theta_max - BRDF::theta_min) / resolution + 1);
 			dims.z = bme.database.size();
 
-			brdfdata.get_data() = gli::texture2DArray(dims.z, 1, gli::format::FORMAT_R32_SFLOAT, dims.xy);
+			brdfdata.get_data() = gli::texture3D(1, gli::format::FORMAT_R32_SFLOAT, dims);
 			brdfdata.set_min_incident(bme.database.begin()->first);
 			brdfdata.set_max_incident((--bme.database.end())->first);
 
@@ -174,7 +174,7 @@ public:
 			auto it = bme.database.begin();
 			for (unsigned i = 0; i < dims.z; ++i, ++it) {
 				futures.push_back(ctx->scheduler().schedule_now([&, i=i, it=it](optional<task_scheduler*> sched) {
-					float *data = reinterpret_cast<float*>(brdfdata.get_data()[i].data());
+					float *data = reinterpret_cast<float*>(brdfdata.get_data().data()) + dims.x * dims.y * i;
 					exitant_db &db = it->second;
 
 					for (unsigned j = 0; j < dims.y; ++j) {
@@ -190,20 +190,29 @@ public:
 							int phi_bucket = static_cast<int>(phi / bucket_size);
 
 							constexpr int samples = 15;
+							constexpr auto p_range = BRDF::phi_max - BRDF::phi_min + 1;
 							int bias = 1;
 							while (entries.size() < samples) {
 								for (int x = -bias; x <= bias; ++x) {
-									for (auto &e : db[theta_bucket + x][phi_bucket + bias])
+									int tm = glm::clamp(theta_bucket + x, BRDF::theta_min, BRDF::theta_max);
+									int pm = phi_bucket + bias <= BRDF::phi_max ? phi_bucket + bias : phi_bucket + bias - p_range;
+									int pn = phi_bucket - bias >= BRDF::phi_min ? phi_bucket - bias : phi_bucket - bias + p_range;
+									for (auto &e : db[tm][pm])
 										entries.push_back(&e);
 									if (bias)
-										for (auto &e : db[theta_bucket + x][phi_bucket - bias])
+										for (auto &e : db[tm][pn])
 											entries.push_back(&e);
 								}
 								for (int x = -bias + 1; x < bias; ++x) {
-									for (auto &e : db[theta_bucket + bias][phi_bucket + x])
+									int tm = glm::clamp(theta_bucket + bias, BRDF::theta_min, BRDF::theta_max);
+									int tn = glm::clamp(theta_bucket - bias, BRDF::theta_min, BRDF::theta_max);
+									int pm = phi_bucket + x;
+									if (pm > BRDF::phi_max) pm -= p_range;
+									if (pm < BRDF::phi_min) pm += p_range;
+									for (auto &e : db[tm][pm])
 										entries.push_back(&e);
 									if (bias)
-										for (auto &e : db[theta_bucket - bias][phi_bucket + x])
+										for (auto &e : db[tn][pm])
 											entries.push_back(&e);
 								}
 

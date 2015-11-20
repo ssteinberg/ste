@@ -8,7 +8,7 @@
 
 #include "common_brdf_representation.h"
 
-#include "Texture2DArray.h"
+#include "Texture3D.h"
 #include "Sampler.h"
 
 #include <memory>
@@ -26,23 +26,27 @@ public:
 
 	static constexpr int theta_min = 0;
 	static constexpr int theta_max = 90;
-	static constexpr int phi_min = -180;
+	static constexpr int phi_min = -179;
 	static constexpr int phi_max = 180;
 
 private:
 	int min_theta, max_theta;
-	std::unique_ptr<LLR::Texture2DArray> texture;
+	std::unique_ptr<LLR::Texture3D> texture;
+	LLR::SamplerMipmapped sampler;
 
 public:
-	BRDF(const common_brdf_representation &brdf) : min_theta(glm::radians(brdf.get_min_incident())), max_theta(glm::radians(brdf.get_max_incident())) {
-		texture = std::make_unique<LLR::Texture2DArray>(brdf.get_data(), true);
+	BRDF(const common_brdf_representation &brdf) : min_theta(glm::radians(brdf.get_min_incident())), max_theta(glm::radians(brdf.get_max_incident())), sampler(LLR::TextureFiltering::Linear, LLR::TextureFiltering::Linear, LLR::TextureFiltering::Linear) {
+		texture = std::make_unique<LLR::Texture3D>(brdf.get_data(), true);
+		sampler.set_wrap_r(LLR::TextureWrapMode::Wrap);
+		sampler.set_wrap_s(LLR::TextureWrapMode::ClampToEdge);
+		sampler.set_wrap_t(LLR::TextureWrapMode::ClampToEdge);
 	}
 
 	brdf_descriptor descriptor() const {
 		brdf_descriptor desc;
 		desc.max_theta_in = max_theta;
 		desc.min_theta_in = min_theta;
-		desc.tex_handler = texture->get_texture_handle();
+		desc.tex_handler = texture->get_texture_handle(sampler);
 
 		return desc;
 	}

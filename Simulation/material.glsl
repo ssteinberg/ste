@@ -70,16 +70,8 @@ float calc_brdf(material_descriptor md, vec3 position, vec3 normal, vec3 tangent
 	float cos_out_theta = max(.0f, dot(wout, normal));
 	float out_theta = acos(cos_out_theta) / pi_2;
 
-	sampler2DArray brdf_sampler = sampler2DArray(md.brdf.tex_handler);
-	uint layers = textureSize(brdf_sampler, 0).z;
+	vec3 tp = vec3(out_phi, out_theta, in_theta);
+	float l = texture(sampler3D(md.brdf.tex_handler), tp).x;
 
-	float lf = in_theta * layers;
-	float layer = floor(lf);
-	vec3 tp = vec3(out_phi, out_theta, layer);
-	
-	vec3 offset = layer < layers - 1 ? vec3(0, 0, 1.f) : vec3(0);
-	float l0 = texture(brdf_sampler, tp).x;
-	float l1 = texture(brdf_sampler, tp + offset).x;
-
-	return mix(l0, l1, fract(lf)) * max(0, cos_in_theta);
+	return l * max(0, cos_in_theta);
 }

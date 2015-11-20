@@ -17,7 +17,7 @@ namespace Graphics {
 class common_brdf_representation {
 private:
 	int in_min, in_max;
-	gli::texture2DArray tex;
+	gli::texture3D tex;
 
 private:
 	friend class boost::serialization::access;
@@ -28,15 +28,13 @@ private:
 
 		ar << tex.dimensions().x;
 		ar << tex.dimensions().y;
-		ar << tex.layers();
+		ar << tex.dimensions().z;
 
-		auto size = tex.dimensions().x * tex.dimensions().y * sizeof(float);
-		for (unsigned l = 0; l < tex.layers(); ++l) {
-			std::string data;
-			data.resize(size);
-			memcpy(&data[0], tex[l].data(), size);
-			ar << data;
-		}
+		auto size = tex.dimensions().x * tex.dimensions().y * tex.dimensions().z * sizeof(float);
+		std::string data;
+		data.resize(size);
+		memcpy(&data[0], tex.data(), size);
+		ar << data;
 	}
 	template<class Archive>
 	void load(Archive & ar, const unsigned int version) {
@@ -47,16 +45,14 @@ private:
 		ar >> x;
 		ar >> y;
 		ar >> z;
-		tex = gli::texture2DArray(z, 1, gli::format::FORMAT_R32_SFLOAT, { x,y });
-		auto size = x*y*sizeof(float);
+		tex = gli::texture3D(1, gli::format::FORMAT_R32_SFLOAT, { x,y,z });
+		auto size = x*y*z*sizeof(float);
 
-		for (unsigned l = 0; l < z; ++l) {
-			std::string data;
-			ar >> data;
-			if (data.size() != size)
-				throw new std::exception("Failed to deserialize brdf_data");
-			memcpy(tex[l].data(), &data[0], size);
-		}
+		std::string data;
+		ar >> data;
+		if (data.size() != size)
+			throw new std::exception("Failed to deserialize brdf_data");
+		memcpy(tex.data(), &data[0], size);
 	}
 	BOOST_SERIALIZATION_SPLIT_MEMBER();
 
