@@ -2,39 +2,33 @@
 <ArrayOfArrayOfArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <ArrayOfArrayOfString>
     <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\Scene.cpp</string>
-      <string>D:\Dev\git\simulation\Simulation\Scene.h</string>
+      <string>D:\Dev\git\simulation\Simulation\main.cpp</string>
+    </ArrayOfString>
+    <ArrayOfString>
+      <string>D:\Dev\git\simulation\Simulation\material.glsl</string>
+    </ArrayOfString>
+    <ArrayOfString>
+      <string>D:\Dev\git\simulation\Simulation\deferred.frag</string>
+      <string>D:\Dev\git\simulation\Simulation\deferred.glsl</string>
+      <string>D:\Dev\git\simulation\Simulation\deferred.vert</string>
+    </ArrayOfString>
+    <ArrayOfString>
+      <string>D:\Dev\git\simulation\Simulation\light.glsl</string>
+      <string>D:\Dev\git\simulation\Simulation\light.h</string>
     </ArrayOfString>
     <ArrayOfString>
       <string>D:\Dev\git\simulation\Simulation\scene.frag</string>
       <string>D:\Dev\git\simulation\Simulation\scene.vert</string>
     </ArrayOfString>
     <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\main.cpp</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\deferred.frag</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\SceneProperties.h</string>
+      <string>D:\Dev\git\simulation\Simulation\Scene.cpp</string>
+      <string>D:\Dev\git\simulation\Simulation\Scene.h</string>
     </ArrayOfString>
     <ArrayOfString>
       <string>D:\Dev\git\simulation\Simulation\GIRenderer.h</string>
     </ArrayOfString>
     <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\light.h</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\SphericalLight.h</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\DirectionalLight.h</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\light_storage.h</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\material_storage.h</string>
+      <string>D:\Dev\git\simulation\Simulation\Sphere.h</string>
     </ArrayOfString>
   </ArrayOfArrayOfString>
 </ArrayOfArrayOfArrayOfString>

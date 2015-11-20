@@ -35,6 +35,9 @@ private:
 
 		virtual void prepare() const override {
 			renderable::prepare();
+
+			dr->scene_props->pre_draw();
+
 			dr->fbo.bind_output_textures();
 			dr->scene_props->material_storage().buffer().bind(LLR::shader_storage_layout_binding(0));
 			dr->scene_props->lights_storage().bind_buffers(1);
@@ -43,6 +46,10 @@ private:
 
 		virtual void render() const override {
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+		}
+
+		virtual void finalize() const override {
+			dr->scene_props->post_draw();
 		}
 	};
 
@@ -77,15 +84,11 @@ public:
 
 	virtual void finalize_queue(const StEngineControl &ctx) override {
 		queue().push_back(&composer);
-
-		scene_props->pre_draw();
 	}
 
 	virtual void render_queue(const StEngineControl &ctx) override {
 		queue().render(get_fbo());
 		ppq.render(&ctx.gl()->defaut_framebuffer());
-
-		scene_props->post_draw();
 	}
 
 	rendering_queue& postprocess_queue() { return ppq; };

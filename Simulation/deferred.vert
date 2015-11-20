@@ -13,10 +13,9 @@ layout(location = 0) in vec3 vert;
 out vec4 gl_Position;
 
 uniform mat4 view_matrix;
-uniform mat4 trans_inverse_view_matrix;
 
 void main() {
 	gl_Position = vec4(vert, 1);
 	
-	light_transform(view_matrix, mat3(view_matrix));//trans_inverse_view_matrix);
+	light_transform(view_matrix, mat3(view_matrix));
 }

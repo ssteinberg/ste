@@ -205,6 +205,9 @@
     <Filter Include="src\StE\Framework Graphics\Light\Shaders">
       <UniqueIdentifier>{5299210f-5cc7-4d5b-a090-14b74e25a095}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\StE\Framework Graphics\Render\Renderers\GI\Voxels">
+      <UniqueIdentifier>{029546b6-fc7d-4375-90c4-e8ff10ef5dd2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

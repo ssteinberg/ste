@@ -92,15 +92,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 	});
 	ctx.signal_framebuffer_resize().connect(resize_connection);
 
-// 	StE::Graphics::texture_pool tp;
-// 	StE::LLR::Texture2D tt(gli::format::FORMAT_RGBA8_UNORM, StE::LLR::Texture2D::size_type(256, 256), 5);
-// 	auto itt = tp.commit(tt);
-// 	tp.commit(tt);
-// 	tp.uncommit(itt);
-
-	ctx.gl()->cull_face(GL_BACK);
-	ctx.gl()->front_face(GL_CCW);
-
 	StE::Graphics::SceneProperties scene_properties;
 	StE::Graphics::GIRenderer renderer(ctx, &scene_properties);
 	StE::Graphics::BasicRenderer basic_renderer;
@@ -110,7 +101,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 	camera.lookat({ 26.4, 548.5, 248.71 });
 
 	const glm::vec3 light_pos({ -700.6, 138, -70 });
-	auto light0 = std::make_shared<StE::Graphics::SphericalLight>(1500.f, StE::Graphics::RGB({ 1.f, .57f, .16f }), light_pos, 200.f);
+	auto light0 = std::make_shared<StE::Graphics::SphericalLight>(2000.f, StE::Graphics::RGB({ 1.f, .57f, .16f }), light_pos, 10.f);
 	auto light1 = std::make_shared<StE::Graphics::DirectionalLight>(5.f, StE::Graphics::RGB({ 1.f, 1.f, 1.f }), glm::normalize(glm::vec3(0.1f, -2.5f, 0.1f)));
 	scene_properties.lights_storage().add_light(light0);
 	scene_properties.lights_storage().add_light(light1);
@@ -230,13 +221,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 		auto mv = camera.view_matrix();
 		auto mvnt = camera.view_matrix_no_translation();
 
-		time += ctx.time_per_frame().count();
 		float angle = time * glm::pi<float>() / 2.5f;
 		glm::vec3 lp = light_pos + glm::vec3(glm::sin(angle) * 3, 0, glm::cos(angle)) * 135.f;
-		light_obj->set_model_transform(glm::scale(glm::translate(glm::mat4(), lp), glm::vec3(10, 10, 10)));
 
 		light0->set_position(lp);
 
+		light_obj->set_model_transform(glm::scale(glm::translate(glm::mat4(), lp), glm::vec3(light0->get_radius() / 2.f)));
 		renderer.set_model_matrix(mv);
 		scene.set_model_matrix(mv);
 		skydome.set_model_matrix(mvnt);
@@ -258,6 +248,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 																		vsmall(b((blue_violet(free_vram) + L" / " + stroke(red, 1)(dark_red(total_vram)) + L" MB")))));
 		}
 
+		time += ctx.time_per_frame().count();
 		if (!ctx.run_loop()) break;
 	}
 	 

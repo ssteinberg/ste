@@ -126,6 +126,9 @@ gl_context::window_type gl_context::create_window(const char * title, const glm:
 		return nullptr;
 	}
 
+	cull_face(GL_BACK);
+	front_face(GL_CCW);
+
 	return win;
 }
 
@@ -138,7 +141,7 @@ void gl_context::create_default_framebuffer(gli::format format, gli::format dept
 	glViewport(0, 0, ret.x, ret.y);
 	default_fb = std::make_unique<system_provided_framebuffer>(ret, format);
 	if (srgb)
-		glEnable(GL_FRAMEBUFFER_SRGB);
+		enable_state(GL_FRAMEBUFFER_SRGB);
 }
 
 void gl_context::make_current() {
