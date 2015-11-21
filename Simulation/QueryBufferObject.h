@@ -32,7 +32,7 @@ public:
 
 	void bind() const final override { Binder::bind(get_resource_id(), GL_QUERY_BUFFER); };
 	void unbind() const final override { Binder::unbind(GL_QUERY_BUFFER); };
-	void bind_range(const LayoutLocationType &sampler, int offset, std::size_t size) const { Base::bind_range(sampler, GL_QUERY_BUFFER, offset * sizeof(T), size * sizeof(T)); }
+	void bind_range(const LayoutLocationType &sampler, int offset, std::size_t size) const { Base::bind_range(sampler, GL_QUERY_BUFFER, offset, size); }
 
 	llr_resource_type resource_type() const override { return llr_resource_type::LLRQueryBufferObject; }
 };
