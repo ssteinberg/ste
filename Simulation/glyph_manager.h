@@ -12,6 +12,7 @@
 #include "optional.h"
 
 #include "ShaderStorageBuffer.h"
+#include "gstack.h"
 
 #include "Texture2D.h"
 
@@ -32,8 +33,6 @@ private:
 		LLR::texture_handle handle;
 	};
 
-	using buffer_type = LLR::ShaderStorageBuffer<buffer_glyph_descriptor, static_cast<LLR::BufferUsage::buffer_usage>(LLR::BufferUsage::BufferUsageDynamic | LLR::BufferUsage::BufferUsageSparse)>;
-
 public:
 	struct glyph_descriptor {
 		std::unique_ptr<LLR::Texture2D> texture;
@@ -51,8 +50,7 @@ private:
 	glyph_factory factory;
 
 	std::unordered_map<Font, font_storage> fonts;
-	std::unique_ptr<buffer_type> buffer;
-	int buffer_offset{ 0 };
+	LLR::gstack<buffer_glyph_descriptor> buffer;
 
 	LLR::Sampler text_glyph_sampler;
 
@@ -86,15 +84,14 @@ private:
 			glyph_descriptor gd;
 			gd.texture = std::make_unique<LLR::Texture2D>(g.glyph_distance_field);
 			gd.metrics = g.metrics;
-			gd.buffer_index = buffer_offset;
+			gd.buffer_index = buffer.size();
 
 			buffer_glyph_descriptor bgd;
 			bgd.metrics = g.metrics;
 			bgd.handle = gd.texture->get_texture_handle(this->text_glyph_sampler);
 			bgd.handle.make_resident();
 
-			buffer->commit_range(buffer_offset, 1);
-			buffer->upload(buffer_offset++, 1, &bgd);
+			buffer.push_back(bgd);
 
 			auto &gd_ref = this->fonts[font].glyphs[codepoint];
 			gd_ref = std::move(gd);
@@ -104,9 +101,6 @@ private:
 
 public:
 	glyph_manager(const StEngineControl &context) : context(context) {
-		int page_size = std::max(65536, buffer_type::page_size());
-		buffer = std::make_unique<buffer_type>(8 * page_size);
-
 		text_glyph_sampler.set_min_filter(LLR::TextureFiltering::Linear);
 		text_glyph_sampler.set_mag_filter(LLR::TextureFiltering::Linear);
 		text_glyph_sampler.set_wrap_s(LLR::TextureWrapMode::ClampToBorder);
@@ -128,8 +122,8 @@ public:
 		return &glyphit->second;
 	}
 
-	int spacing(const Font &font, wchar_t left, wchar_t right, int pixel_size) {
-		return factory.spacing(font, left, right, pixel_size);
+	int spacing(const Font &font, const std::pair<wchar_t, wchar_t> &chars, int pixel_size) {
+		return factory.read_kerning(font, chars, pixel_size);
 	}
 
 	task<void> preload_glyphs_task(const Font &font, std::vector<wchar_t> codepoints) {
@@ -147,7 +141,7 @@ public:
 		};
 	}
 
-	buffer_type &ssbo() { return *buffer; }
+	auto &ssbo() { return buffer.get_buffer(); }
 };
 
 }

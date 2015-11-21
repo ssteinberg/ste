@@ -23,7 +23,7 @@
 #include "SurfaceIO.h"
 #include "Texture2D.h"
 #include "Scene.h"
-#include "TextRenderer.h"
+#include "TextManager.h"
 #include "AttributedString.h"
 #include "RGB.h"
 #include "Sphere.h"
@@ -108,7 +108,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 
 	SkyDome skydome(ctx);
 	StE::Graphics::Scene scene(ctx, &scene_properties);
-	StE::Text::TextRenderer text_renderer(ctx, StE::Text::Font("Data/ArchitectsDaughter.ttf"));
+	StE::Text::TextManager text_renderer(ctx, StE::Text::Font("Data/ArchitectsDaughter.ttf"));
 
 	StE::Graphics::hdr_dof_postprocess hdr{ ctx, renderer.z_buffer() };
 

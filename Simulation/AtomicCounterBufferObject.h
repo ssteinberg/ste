@@ -35,7 +35,7 @@ public:
 
 	void bind(const LayoutLocationType &sampler) const final override { LayoutBinder::bind(get_resource_id(), sampler, GL_ATOMIC_COUNTER_BUFFER); };
 	void unbind(const LayoutLocationType &sampler) const final override { LayoutBinder::unbind(sampler, GL_ATOMIC_COUNTER_BUFFER); };
-	void bind_range(const LayoutLocationType &sampler, int offset, std::size_t size) const { Base::bind_range(sampler, GL_ATOMIC_COUNTER_BUFFER, offset, size); }
+	void bind_range(const LayoutLocationType &sampler, int offset, std::size_t size) const { Base::bind_range(sampler, GL_ATOMIC_COUNTER_BUFFER, offset * sizeof(T), size * sizeof(T)); }
 
 	llr_resource_type resource_type() const override { return llr_resource_type::LLRAtomicCounterBufferObject; }
 };

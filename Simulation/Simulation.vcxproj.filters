@@ -267,9 +267,6 @@
     <ClCompile Include="glyph_factory.cpp">
       <Filter>src\StE\Framework Text\Glyphs</Filter>
     </ClCompile>
-    <ClCompile Include="TextRenderer.cpp">
-      <Filter>src\StE\Framework Text\Rendering</Filter>
-    </ClCompile>
     <ClCompile Include="attrib.cpp">
       <Filter>src\StE\Framework Text\Attributed Strings</Filter>
     </ClCompile>
@@ -287,6 +284,12 @@
     </ClCompile>
     <ClCompile Include="hdr_dof_postprocess.cpp">
       <Filter>src\StE\Framework Graphics\Render\HDR</Filter>
+    </ClCompile>
+    <ClCompile Include="Font.cpp">
+      <Filter>src\StE\Framework Text\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="TextManager.cpp">
+      <Filter>src\StE\Framework Text\Rendering</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -530,9 +533,6 @@
     <ClInclude Include="glyph_manager.h">
       <Filter>src\StE\Framework Text\Glyphs</Filter>
     </ClInclude>
-    <ClInclude Include="TextRenderer.h">
-      <Filter>src\StE\Framework Text\Rendering</Filter>
-    </ClInclude>
     <ClInclude Include="thread_priority.h">
       <Filter>src\StE\STL Extensions\Platform Dependant</Filter>
     </ClInclude>
@@ -727,6 +727,15 @@
     </ClInclude>
     <ClInclude Include="light_storage.h">
       <Filter>src\StE\Framework Graphics\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="TextManager.h">
+      <Filter>src\StE\Framework Text\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="hash_combine.h">
+      <Filter>src\StE\STL Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="ring_buffer.h">
+      <Filter>src\StE\Core\LLR\GPU Resources\GPU Data Structures</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

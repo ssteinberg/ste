@@ -34,6 +34,13 @@ public:
 		glClientWaitSync(sync, GL_SYNC_FLUSH_COMMANDS_BIT, GL_TIMEOUT_IGNORED);
 	}
 
+	bool check() const {
+		if (!sync)
+			return true;
+		auto result = glClientWaitSync(sync, GL_SYNC_FLUSH_COMMANDS_BIT, 0);
+		return result == GL_ALREADY_SIGNALED || result == GL_CONDITION_SATISFIED;
+	}
+
 	void lock() {
 		destroy();
 		sync = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);

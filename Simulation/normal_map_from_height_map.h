@@ -19,7 +19,8 @@ private:
 	using T = LLR::surface_element_type<Fin>::type;
 
 public:
-	gli::texture2D operator()(const gli::texture2D &height_map, float height_scale, bool height_in_alpha = true) {
+	template <bool height_in_alpha = true>
+	gli::texture2D operator()(const gli::texture2D &height_map, float height_scale) {
 		assert(Fin == height_map.format());
 
 		unsigned components_in = gli::component_count(Fin);
@@ -32,6 +33,7 @@ public:
 		float *data = reinterpret_cast<float*>(nm.data());
 		const T *heights = reinterpret_cast<const T*>(height_map.data());
 		for (unsigned y = 0; y < dim.y; ++y) {
+#pragma ivdep
 			for (unsigned x = 0; x < dim.x; ++x) {
 				glm::vec3 n;
 
@@ -52,12 +54,10 @@ public:
 				n.x = ((c - r) * .5f + (l - c) * .5f) * height_scale;
 
 				if (!height_in_alpha) {
-					*reinterpret_cast<glm::vec3*>(data) = glm::normalize(n);
-					data += 3;
+					reinterpret_cast<glm::vec3*>(data)[x + y * dim.x] = glm::normalize(n);
 				}
 				else {
-					*reinterpret_cast<glm::vec4*>(data) = glm::vec4(glm::normalize(n), c);
-					data += 4;
+					reinterpret_cast<glm::vec4*>(data)[x + y * dim.x] = glm::vec4(glm::normalize(n), c);
 				}
 			}
 		}

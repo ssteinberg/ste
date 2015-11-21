@@ -40,7 +40,7 @@ public:
 
 	void bind() const final override { Binder::bind(get_resource_id(), GL_DRAW_INDIRECT_BUFFER); };
 	void unbind() const final override { Binder::unbind(GL_DRAW_INDIRECT_BUFFER); };
-	void bind_range(const LayoutLocationType &sampler, int offset, std::size_t size) const { Base::bind_range(sampler, GL_DRAW_INDIRECT_BUFFER, offset, size); }
+	void bind_range(const LayoutLocationType &sampler, int offset, std::size_t size) const { Base::bind_range(sampler, GL_DRAW_INDIRECT_BUFFER, offset * sizeof(T), size * sizeof(T)); }
 
 	llr_resource_type resource_type() const override { return llr_resource_type::LLRIndirectDispatchBufferObject; }
 };

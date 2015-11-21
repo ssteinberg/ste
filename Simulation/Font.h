@@ -14,14 +14,15 @@ namespace Text {
 class Font {
 private:
 	boost::filesystem::path path;
+	std::string name;
 
 public:
-	Font() = default;
-	Font(boost::filesystem::path path) : path(path) {}
+	Font(const boost::filesystem::path &path);
+
+	bool operator==(const Font& lhs) const { return name == lhs.name; }
 
 	const boost::filesystem::path &get_path() const { return path; }
-
-	bool operator==(const Font& lhs) const { return path == lhs.get_path(); }
+	const std::string &get_name() const { return name; }
 };
 
 }
@@ -33,7 +34,7 @@ template<>
 struct hash<StE::Text::Font> {
 	using K = StE::Text::Font;
 	std::size_t operator()(const K& k) const {
-		return hash<std::string>()(k.get_path().string());
+		return hash<std::string>()(k.get_name());
 	}
 };
 

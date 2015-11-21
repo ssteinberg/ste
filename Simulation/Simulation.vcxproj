@@ -5,8 +5,8 @@
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|Win32">
-      <Configuration>Release</Configuration>
+    <ProjectConfiguration Include="Full Optimization|Win32">
+      <Configuration>Full Optimization</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
@@ -23,7 +23,7 @@
     <InterproceduralOptimization>false</InterproceduralOptimization>
     <UseIntelTBB>true</UseIntelTBB>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Full Optimization|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>Intel C++ Compiler 16.0</PlatformToolset>
@@ -38,7 +38,7 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Full Optimization|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
@@ -48,7 +48,7 @@
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Full Optimization|Win32'">
     <IncludePath>D:\Dev\include;C:\src\boost;$(IncludePath)</IncludePath>
     <LibraryPath>D:\Dev\lib;C:\src\boost\stage\lib;$(LibraryPath)</LibraryPath>
     <TargetName>$(ProjectName)</TargetName>
@@ -59,7 +59,6 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <Cpp0xSupport>false</Cpp0xSupport>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <DisableSpecificWarnings>3280;869;177;3457</DisableSpecificWarnings>
@@ -85,14 +84,13 @@
       <Outputs>%(FullPath).verf</Outputs>
     </CustomBuild>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Full Optimization|Win32'">
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>MaxSpeedHighLevel</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <Cpp0xSupport>false</Cpp0xSupport>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
@@ -102,9 +100,11 @@
       <UseProcessorExtensions>AVXI</UseProcessorExtensions>
       <UseIntelOptimizedHeaders>true</UseIntelOptimizedHeaders>
       <DisableSpecificWarnings>3280;869;177;3457</DisableSpecificWarnings>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <Parallelization>true</Parallelization>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <GenerateDebugInformation>No</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>opengl32.lib;glu32.lib;glew32s.lib;tinyobjloader.lib;zlib.lib;libpng.lib;libtga.lib;turbojpeg.lib;glfw3.lib;freetype261MT.lib;libboost_serialization-vc140-mt-s-1_59.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -121,6 +121,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="attrib.cpp" />
+    <ClCompile Include="Font.cpp" />
     <ClCompile Include="glyph_factory.cpp" />
     <ClCompile Include="gl_current_context.cpp" />
     <ClCompile Include="hdr_dof_postprocess.cpp" />
@@ -138,9 +139,9 @@
     <ClCompile Include="GLSLProgramLoader.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Full Optimization|Win32'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="TextRenderer.cpp" />
+    <ClCompile Include="TextManager.cpp" />
     <ClCompile Include="Texture1D.cpp" />
     <ClCompile Include="Texture1DArray.cpp" />
     <ClCompile Include="Texture2D.cpp" />
@@ -195,6 +196,10 @@
     <ClInclude Include="glyph_manager.h" />
     <ClInclude Include="gl_current_context.h" />
     <ClInclude Include="gstack.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="hash_combine.h">
       <SubType>
       </SubType>
     </ClInclude>
@@ -275,6 +280,10 @@
     <ClInclude Include="render_target_allocator.h" />
     <ClInclude Include="resource_allocator.h" />
     <ClInclude Include="RGB.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="ring_buffer.h">
       <SubType>
       </SubType>
     </ClInclude>
@@ -363,7 +372,7 @@
     <ClInclude Include="system_provided_framebuffer.h" />
     <ClInclude Include="balanced_thread_pool.h" />
     <ClInclude Include="task_scheduler.h" />
-    <ClInclude Include="TextRenderer.h" />
+    <ClInclude Include="TextManager.h" />
     <ClInclude Include="texture.h" />
     <ClInclude Include="Texture1D.h" />
     <ClInclude Include="Texture1DArray.h" />
@@ -401,51 +410,51 @@
     <CustomBuild Include="bokeh_bilateral_blur_x.frag">
       <FileType>Document</FileType>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
-      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Full Optimization|Win32'">false</LinkObjects>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(FullPath).verf</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(FullPath).verf</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Full Optimization|Win32'">%(FullPath).verf</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">main.cpp;%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">main.cpp;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Full Optimization|Win32'">main.cpp;%(AdditionalInputs)</AdditionalInputs>
     </CustomBuild>
     <CustomBuild Include="bokeh_bilateral_blur_y.frag">
       <FileType>Document</FileType>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
-      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Full Optimization|Win32'">false</LinkObjects>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(FullPath).verf</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(FullPath).verf</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Full Optimization|Win32'">%(FullPath).verf</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">main.cpp;%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">main.cpp;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Full Optimization|Win32'">main.cpp;%(AdditionalInputs)</AdditionalInputs>
     </CustomBuild>
     <None Include="common.glsl">
       <SubType>
       </SubType>
       <FileType>Document</FileType>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
-      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Full Optimization|Win32'">false</LinkObjects>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(FullPath).verf</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(FullPath).verf</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Full Optimization|Win32'">%(FullPath).verf</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">ste_glsl_verifier.exe %(FullPath)</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">ste_glsl_verifier.exe %(FullPath)</Command>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</DeploymentContent>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Full Optimization|Win32'">ste_glsl_verifier.exe %(FullPath)</Command>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Full Optimization|Win32'">false</ExcludedFromBuild>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Full Optimization|Win32'">false</DeploymentContent>
     </None>
     <CustomBuild Include="hdr_bloom_blur_x.frag">
       <FileType>Document</FileType>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
-      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Full Optimization|Win32'">false</LinkObjects>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(FullPath).verf</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(FullPath).verf</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Full Optimization|Win32'">%(FullPath).verf</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">main.cpp;%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">main.cpp;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Full Optimization|Win32'">main.cpp;%(AdditionalInputs)</AdditionalInputs>
     </CustomBuild>
     <CustomBuild Include="hdr_bloom_blur_y.frag">
       <FileType>Document</FileType>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
-      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Full Optimization|Win32'">false</LinkObjects>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(FullPath).verf</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(FullPath).verf</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Full Optimization|Win32'">%(FullPath).verf</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">main.cpp;%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">main.cpp;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Full Optimization|Win32'">main.cpp;%(AdditionalInputs)</AdditionalInputs>
     </CustomBuild>
     <CustomBuild Include="frag_sky.frag">
       <FileType>Document</FileType>
@@ -466,56 +475,56 @@
     <None Include="hdr_common.glsl">
       <FileType>Document</FileType>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
-      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Full Optimization|Win32'">false</LinkObjects>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(FullPath).verf</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(FullPath).verf</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Full Optimization|Win32'">%(FullPath).verf</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">ste_glsl_verifier.exe %(FullPath)</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">ste_glsl_verifier.exe %(FullPath)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Full Optimization|Win32'">ste_glsl_verifier.exe %(FullPath)</Command>
     </None>
     <CustomBuild Include="hdr_compute_histogram_sums.glsl">
       <FileType>Document</FileType>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
-      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Full Optimization|Win32'">false</LinkObjects>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(FullPath).verf</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(FullPath).verf</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Full Optimization|Win32'">%(FullPath).verf</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">main.cpp;%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">main.cpp;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Full Optimization|Win32'">main.cpp;%(AdditionalInputs)</AdditionalInputs>
     </CustomBuild>
     <CustomBuild Include="hdr_compute_minmax.glsl">
       <FileType>Document</FileType>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
-      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Full Optimization|Win32'">false</LinkObjects>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(FullPath).verf</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(FullPath).verf</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Full Optimization|Win32'">%(FullPath).verf</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">main.cpp;%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">main.cpp;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Full Optimization|Win32'">main.cpp;%(AdditionalInputs)</AdditionalInputs>
     </CustomBuild>
     <CustomBuild Include="hdr_create_histogram.glsl">
       <FileType>Document</FileType>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
-      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Full Optimization|Win32'">false</LinkObjects>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(FullPath).verf</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(FullPath).verf</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Full Optimization|Win32'">%(FullPath).verf</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">main.cpp;%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">main.cpp;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Full Optimization|Win32'">main.cpp;%(AdditionalInputs)</AdditionalInputs>
     </CustomBuild>
     <None Include="hdr_tonemap_coc.frag">
       <FileType>Document</FileType>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
-      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Full Optimization|Win32'">false</LinkObjects>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(FullPath).verf</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(FullPath).verf</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Full Optimization|Win32'">%(FullPath).verf</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">main.cpp;%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">main.cpp;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Full Optimization|Win32'">main.cpp;%(AdditionalInputs)</AdditionalInputs>
     </None>
     <CustomBuild Include="deferred.frag">
       <FileType>Document</FileType>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
-      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Full Optimization|Win32'">false</LinkObjects>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(FullPath).verf</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(FullPath).verf</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Full Optimization|Win32'">%(FullPath).verf</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">main.cpp;%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">main.cpp;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Full Optimization|Win32'">main.cpp;%(AdditionalInputs)</AdditionalInputs>
     </CustomBuild>
     <None Include="light.glsl">
       <SubType>
@@ -526,20 +535,20 @@
       </SubType>
       <FileType>Document</FileType>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
-      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Full Optimization|Win32'">false</LinkObjects>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(FullPath).verf</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(FullPath).verf</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Full Optimization|Win32'">%(FullPath).verf</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">ste_glsl_verifier.exe %(FullPath)</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">ste_glsl_verifier.exe %(FullPath)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Full Optimization|Win32'">ste_glsl_verifier.exe %(FullPath)</Command>
     </None>
     <CustomBuild Include="passthrough.vert">
       <FileType>Document</FileType>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
-      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Full Optimization|Win32'">false</LinkObjects>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(FullPath).verf</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(FullPath).verf</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Full Optimization|Win32'">%(FullPath).verf</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">main.cpp;%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">main.cpp;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Full Optimization|Win32'">main.cpp;%(AdditionalInputs)</AdditionalInputs>
     </CustomBuild>
     <None Include="stdafx.h" />
     <None Include="text_distance_map_contour.frag" />
@@ -548,20 +557,20 @@
     <CustomBuild Include="scene.vert">
       <FileType>Document</FileType>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
-      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Full Optimization|Win32'">false</LinkObjects>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(FullPath).verf</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(FullPath).verf</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Full Optimization|Win32'">%(FullPath).verf</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">main.cpp;%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">main.cpp;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Full Optimization|Win32'">main.cpp;%(AdditionalInputs)</AdditionalInputs>
     </CustomBuild>
     <CustomBuild Include="scene.frag">
       <FileType>Document</FileType>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
-      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Full Optimization|Win32'">false</LinkObjects>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(FullPath).verf</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(FullPath).verf</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Full Optimization|Win32'">%(FullPath).verf</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">main.cpp;%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">main.cpp;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Full Optimization|Win32'">main.cpp;%(AdditionalInputs)</AdditionalInputs>
     </CustomBuild>
     <CustomBuild Include="transform_sky.vert">
       <FileType>Document</FileType>

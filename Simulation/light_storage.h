@@ -30,7 +30,7 @@ public:
 			if (lights[i]->is_dirty()) {
 				lights[i]->clear_dirty();
 				stack.overwrite(i, lights[i]->get_descriptor());
-				ranges_to_lock.push_back({ sizeof(light::light_descriptor) * i, sizeof(light::light_descriptor) });
+				ranges_to_lock.push_back({ sizeof(decltype(stack)::value_type) * i, sizeof(decltype(stack)::value_type) });
 			}
 		}
 	}

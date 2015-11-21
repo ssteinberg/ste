@@ -21,10 +21,11 @@
 namespace StE {
 namespace LLR {
 
-template <typename T>
+template <typename T, bool lockless = false>
 class pinned_gvector {
 public:
 	static constexpr BufferUsage::buffer_usage usage = static_cast<BufferUsage::buffer_usage>(BufferUsage::BufferUsageMapCoherent | BufferUsage::BufferUsageMapRead | BufferUsage::BufferUsageMapWrite | BufferUsage::BufferUsageMapPersistent);
+	using value_type = T;
 
 private:
 	using buffer_type = ShaderStorageBuffer<T, usage>;
@@ -50,8 +51,10 @@ public:
 		auto new_buffer = std::make_unique<buffer_type>(s);
 		auto new_ptr = new_buffer->map_rw(s);
 
-		range<> lock_range{ 0, len * sizeof(T) };
-		ptr.client_wait(lock_range);
+		if (!lockless) {
+			range<> lock_range{ 0, len * sizeof(T) };
+			ptr.client_wait(lock_range);
+		}
 
 		memcpy(new_ptr.get(), ptr.get(), sizeof(T) * len);
 		
@@ -75,8 +78,10 @@ public:
 	void pop_back() {
 		assert(len);
 
-		range<> lock_range{ (len - 1) * sizeof(T), sizeof(T) };
-		ptr.client_wait(lock_range);
+		if (!lockless) {
+			range<> lock_range{ (len - 1) * sizeof(T), sizeof(T) };
+			ptr.client_wait(lock_range);
+		}
 
 		--len;
 	}
@@ -95,8 +100,10 @@ public:
 			auto new_buffer = std::make_unique<buffer_type>(s);
 			auto new_ptr = new_buffer->map_rw(s);
 
-			range<> lock_range{ 0, len * sizeof(T) };
-			ptr.client_wait(lock_range);
+			if (!lockless) {
+				range<> lock_range{ 0, len * sizeof(T) };
+				ptr.client_wait(lock_range);
+			}
 
 			memcpy(new_ptr.get(), ptr.get(), n * sizeof(T));
 			new_ptr.get()[n] = t;
@@ -110,8 +117,10 @@ public:
 			return;
 		}
 
-		range<> lock_range{ n * sizeof(T), (len - n) * sizeof(T) };
-		ptr.client_wait(lock_range);
+		if (!lockless) {
+			range<> lock_range{ n * sizeof(T), (len - n) * sizeof(T) };
+			ptr.client_wait(lock_range);
+		}
 		
 		memmove(&ptr.get()[n + 1], &ptr.get()[n], (len - n) * sizeof(T));
 		ptr.get()[n] = t;
@@ -127,8 +136,10 @@ public:
 			return;
 		}
 
-		range<> lock_range{ n * sizeof(T), (len - n) * sizeof(T) };
-		ptr.client_wait(lock_range);
+		if (!lockless) {
+			range<> lock_range{ n * sizeof(T), (len - n) * sizeof(T) };
+			ptr.client_wait(lock_range);
+		}
 
 		--len;
 
@@ -144,13 +155,16 @@ public:
 			return;
 		}
 
-		range<> lock_range{ n * sizeof(T), sizeof(T) };
-		ptr.client_wait(lock_range);
+		if (!lockless) {
+			range<> lock_range{ n * sizeof(T), sizeof(T) };
+			ptr.client_wait(lock_range);
+		}
 
 		ptr.get()[n] = T(std::forward<Args>(args)...);
 	}
 
-	void lock_range(const range<> &r) const { ptr.lock(r); }
+	template <bool b = !lockless>
+	void lock_range(const range<> &r, std::enable_if_t<b>* = 0) const { ptr.lock(r); }
 
 	const T &operator[](std::size_t n) const {
 		assert(n < len && "Subscript out of range."); 

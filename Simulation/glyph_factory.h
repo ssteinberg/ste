@@ -25,7 +25,8 @@ public:
 	~glyph_factory();
 
 	task<glyph> create_glyph_task(const Font &font, wchar_t codepoint);
-	int spacing(const Font &font, wchar_t left, wchar_t right, int pixel_size);
+
+	int read_kerning(const Font &font, const std::pair<wchar_t, wchar_t> &p, int pixel_size);
 };
 
 }

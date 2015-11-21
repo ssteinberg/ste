@@ -5,6 +5,7 @@
 #include "make_distance_map.h"
 
 #include "thread_constants.h"
+#include "hash_combine.h"
 
 #include <unordered_map>
 #include <functional>
@@ -21,12 +22,12 @@ using namespace StE::Text;
 namespace StE {
 namespace Text {
 
-struct glyph_spacing_key {
+struct text_glyph_pair_key {
 	wchar_t left;
 	wchar_t right;
 	int pixel_size;
 
-	bool operator==(const glyph_spacing_key &rhs) const {
+	bool operator==(const text_glyph_pair_key &rhs) const {
 		return left == rhs.left && right == rhs.right && pixel_size == rhs.pixel_size;
 	}
 };
@@ -37,9 +38,12 @@ struct glyph_spacing_key {
 
 namespace std {
 
-template <> struct hash<StE::Text::glyph_spacing_key> {
-	size_t inline operator()(const StE::Text::glyph_spacing_key &x) const {
-		return ((std::hash<decltype(x.left)>()(x.left) ^ std::hash<decltype(x.right)>()(x.right)) << 7) + std::hash<decltype(x.pixel_size)>()(x.pixel_size);
+template <> struct hash<StE::Text::text_glyph_pair_key> {
+	size_t inline operator()(const StE::Text::text_glyph_pair_key &x) const {
+		auto h1 = std::hash<decltype(x.right)>()(x.right);
+		auto h2 = std::hash<decltype(x.left)>()(x.left);
+		auto h3 = std::hash<decltype(x.pixel_size)>()(x.pixel_size);
+		return StE::hash_combine(h1, StE::hash_combine(h2, h3));
 	}
 };
 
@@ -72,7 +76,7 @@ public:
 class glyph_factory_font {
 private:
 	FT_Face face;
-	std::unordered_map<glyph_spacing_key, int> spacing_cache;
+	std::unordered_map<text_glyph_pair_key, int> spacing_cache;
 
 public:
 	glyph_factory_font(const Font &font, FT_Library ft_lib) {
@@ -95,7 +99,7 @@ public:
 	FT_Face get_face() { return face; }
 
 	bool get_spacing(wchar_t left, wchar_t right, int pixel_size, int *spacing) const {
-		auto it = spacing_cache.find(glyph_spacing_key{ left, right, pixel_size });
+		auto it = spacing_cache.find(text_glyph_pair_key{ left, right, pixel_size });
 		if (it != spacing_cache.end()) {
 			*spacing = it->second;
 			return true;
@@ -103,7 +107,7 @@ public:
 		return false;
 	}
 	void insert_into_spacing_cache(wchar_t left, wchar_t right, int pixel_size, int spacing) {
-		spacing_cache[glyph_spacing_key{ left, right, pixel_size }] = spacing;
+		spacing_cache[text_glyph_pair_key{ left, right, pixel_size }] = spacing;
 	}
 };
 
@@ -183,18 +187,18 @@ StE::task<glyph> glyph_factory::create_glyph_task(const Font &font, wchar_t code
 	});
 }
 
-int glyph_factory::spacing(const Font &font, wchar_t left, wchar_t right, int pixel_size) {
+int glyph_factory::read_kerning(const Font &font, const std::pair<wchar_t, wchar_t> &p, int pixel_size) {
 	glyph_factory_font &fac_font = pimpl->get_factory_font(font);
 	int spacing;
-	if (fac_font.get_spacing(left, right, pixel_size, &spacing))
+	if (fac_font.get_spacing(p.first, p.second, pixel_size, &spacing))
 		return spacing;
 
 	std::unique_lock<std::mutex> l(pimpl->m);
 
 	auto face = fac_font.get_face();
 
-	FT_UInt left_index = FT_Get_Char_Index(face, left);
-	FT_UInt right_index = FT_Get_Char_Index(face, right);
+	FT_UInt left_index = FT_Get_Char_Index(face, p.first);
+	FT_UInt right_index = FT_Get_Char_Index(face, p.second);
 	FT_Set_Pixel_Sizes(face, 0, pixel_size);
 	FT_Load_Glyph(face, left_index, FT_LOAD_DEFAULT);
 
@@ -210,7 +214,7 @@ int glyph_factory::spacing(const Font &font, wchar_t left, wchar_t right, int pi
 		spacing = face->glyph->advance.x >> 6;
 	}
 
-	fac_font.insert_into_spacing_cache(left, right, pixel_size, spacing);
+	fac_font.insert_into_spacing_cache(p.first, p.second, pixel_size, spacing);
 
 	return spacing;
 }

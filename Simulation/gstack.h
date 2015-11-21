@@ -14,10 +14,11 @@
 namespace StE {
 namespace LLR {
 
-template <typename T>
+template <typename T, bool lockless = false>
 class gstack {
 public:
 	static constexpr BufferUsage::buffer_usage usage = static_cast<BufferUsage::buffer_usage>(LLR::BufferUsage::BufferUsageDynamic | LLR::BufferUsage::BufferUsageSparse);
+	using value_type = T;
 
 private:
 	static constexpr int pages = 8192;
@@ -31,8 +32,8 @@ private:
 	buffer_type buffer;
 
 public:
-	gstack(std::size_t size = 10) : gstack(size, nullptr) {};
-	gstack(const std::vector<T> &data) : gstack(data.size(), &data[0]) {};
+	gstack(std::size_t size = 10) : gstack(size, nullptr) {}
+	gstack(const std::vector<T> &data) : gstack(data.size(), &data[0]) {}
 	gstack(std::size_t size, const T *data) : len(data ? size : 0), buffer(pages * std::max(65536, buffer_type::page_size()) / sizeof(T)) {		
 		if (data)
 			for (std::size_t i = 0; i < size; ++i)
@@ -62,8 +63,10 @@ public:
 	void pop_back(std::size_t n = 1) {
 		assert(len - n >= 0 && n > 0 && "Subscript out of range.");
 
-		range<> lock_range{ (len - n) * sizeof(T), n * sizeof(T) };
-		buffer.client_wait_for_range(lock_range);
+		if (!lockless) {
+			range<> lock_range{ (len - n) * sizeof(T), n * sizeof(T) };
+			buffer.client_wait_for_range(lock_range);
+		}
 
 		len -= n;
 	}
@@ -71,8 +74,10 @@ public:
 	void overwrite(std::size_t n, const T &t) {
 		assert(n < len && "Subscript out of range.");
 
-		range<> lock_range{ (len - n) * sizeof(T), sizeof(T) };
-		buffer.client_wait_for_range(lock_range);
+		if (!lockless) {
+			range<> lock_range{ (len - n) * sizeof(T), sizeof(T) };
+			buffer.client_wait_for_range(lock_range);
+		}
 
 		buffer.upload(n, 1, &t);
 	}
@@ -80,8 +85,10 @@ public:
 	void overwrite(std::size_t n, const std::vector<T> &t) {
 		assert(n < len && "Subscript out of range.");
 
-		range<> lock_range{ (len - n) * sizeof(T), t.size() * sizeof(T) };
-		buffer.client_wait_for_range(lock_range);
+		if (!lockless) {
+			range<> lock_range{ (len - n) * sizeof(T), t.size() * sizeof(T) };
+			buffer.client_wait_for_range(lock_range);
+		}
 
 		if (n + t.size() > len) {
 			buffer.commit_range(len, n + t.size() - len);
@@ -90,7 +97,8 @@ public:
 		buffer.upload(n, t.size(), &t[0]);
 	}
 
-	void lock_range(const range<> &r) const { buffer.lock_range(r); }
+	template <bool b = !lockless>
+	void lock_range(const range<> &r, std::enable_if_t<b>* = 0) const { buffer.lock_range(r); }
 
 	const auto &get_buffer() const { return buffer; }
 	const auto size() const { return len; }

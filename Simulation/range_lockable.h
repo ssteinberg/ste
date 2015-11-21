@@ -52,6 +52,22 @@ public:
 				++it;
 		}
 	}
+
+	bool client_check_range(const range<> &r) const {
+		for (auto it = locks->begin(); it != locks->end();) {
+			if (it->first.start > r.start + r.length)
+				break;
+			if (it->first.overlaps(r)) {
+				if (!it->second.check())
+					return false;
+				it = locks->erase(it);
+			}
+			else
+				++it;
+		}
+
+		return true;
+	}
 };
 
 }

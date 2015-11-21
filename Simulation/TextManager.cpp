@@ -1,6 +1,6 @@
 
 #include "stdafx.h"
-#include "TextRenderer.h"
+#include "TextManager.h"
 
 #include "gl_current_context.h"
 
@@ -13,10 +13,9 @@
 using namespace StE::Text;
 using namespace StE::LLR;
 
-TextRenderer::TextRenderer(const StEngineControl &context, const Font &default_font, int default_size) : gm(context), default_font(default_font), default_size(default_size) {
+TextManager::TextManager(const StEngineControl &context, const Font &default_font, int default_size) : gm(context), default_font(default_font), default_size(default_size) {
 	text_distance_mapping = Resource::GLSLProgramLoader::load_program_task(context, { "text_distance_map_contour.vert", "text_distance_map_contour.frag", "text_distance_map_contour.geom" })();
 
-	vbo.reserve(vbo_ring_size);
 	auto vbo_buffer = LLR::buffer_object_cast<vbo_type>(vbo.get_buffer());
 	vao[0] = vbo_buffer[0];
 	vao[1] = vbo_buffer[1];
@@ -34,7 +33,7 @@ TextRenderer::TextRenderer(const StEngineControl &context, const Font &default_f
 	context.signal_framebuffer_resize().connect(resize_connection);
 }
 
-void TextRenderer::adjust_line(std::vector<glyph_point> &points, const AttributedWString &wstr, unsigned line_start_index, float line_start, float line_height, const glm::vec2 &ortho_pos) {
+void TextManager::adjust_line(std::vector<glyph_point> &points, const AttributedWString &wstr, unsigned line_start_index, float line_start, float line_height, const glm::vec2 &ortho_pos) {
 	if (points.size() - line_start_index) {
 		optional<const Attributes::align*> alignment_attrib = wstr.attrib_of_type(Attributes::align::attrib_type_s(), { line_start_index,points.size() - line_start_index });
 		if (alignment_attrib && alignment_attrib->get() != Attributes::align::alignment::Left) {
@@ -48,7 +47,7 @@ void TextRenderer::adjust_line(std::vector<glyph_point> &points, const Attribute
 		points[i].pos.y -= line_height;
 }
 
-std::vector<TextRenderer::glyph_point> TextRenderer::create_points(glm::vec2 ortho_pos, const AttributedWString &wstr) {
+std::vector<TextManager::glyph_point> TextManager::create_points(glm::vec2 ortho_pos, const AttributedWString &wstr) {
 	float line_start = ortho_pos.x;
 	int line_start_index = 0;
 	float prev_line_height = 0;
@@ -87,7 +86,7 @@ std::vector<TextRenderer::glyph_point> TextRenderer::create_points(glm::vec2 ort
 		float w = weight_attrib ? weight_attrib->get() : 400.f;
 		float lh = (g->metrics.height + g->metrics.start_y) * f * 2 + 1;
 
-		float advance = i + 1 < wstr.length() ? gm.spacing(font, wstr[i], wstr[i + 1], size) : 0;
+		float advance = i + 1 < wstr.length() ? gm.spacing(font, { wstr[i], wstr[i + 1] }, size) : 0;
 
 		glyph_point p;
 		p.pos = ortho_pos.xy;
@@ -115,7 +114,7 @@ std::vector<TextRenderer::glyph_point> TextRenderer::create_points(glm::vec2 ort
 	return points;
 }
 
-std::unique_ptr<TextRenderer::text_renderable> TextRenderer::render(glm::vec2 ortho_pos, const AttributedWString &wstr) {
+std::unique_ptr<TextManager::text_renderable> TextManager::render(glm::vec2 ortho_pos, const AttributedWString &wstr) {
 	if (!wstr.length()) return nullptr;
 	std::vector<glyph_point> points = create_points(ortho_pos, wstr);
 	if (!points.size()) return nullptr;

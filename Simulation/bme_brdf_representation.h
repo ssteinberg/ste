@@ -180,7 +180,8 @@ public:
 					for (unsigned j = 0; j < dims.y; ++j) {
 						float theta = glm::mix<float>(BRDF::theta_min, BRDF::theta_max, static_cast<float>(j) / static_cast<float>(dims.y - 1));
 
-						for (unsigned k = 0; k < dims.x; ++k, ++data) {
+#pragma ivdep
+						for (unsigned k = 0; k < dims.x; ++k) {
 							float phi = glm::mix<float>(BRDF::phi_min, BRDF::phi_max, static_cast<float>(k) / static_cast<float>(dims.x - 1));
 
 							glm::vec3 w = BxDF::omega(theta, phi);
@@ -249,7 +250,7 @@ public:
 							}
 							brdf /= tweight;
 
-							*data = closest[0].second->brdf;
+							data[j * dims.x + k] = closest[0].second->brdf;
 						}
 					}
 				}));

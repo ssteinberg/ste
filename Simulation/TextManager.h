@@ -14,7 +14,7 @@
 #include "StEngineControl.h"
 #include "task.h"
 
-#include "gstack.h"
+#include "ring_buffer.h"
 
 #include "renderable.h"
 
@@ -31,7 +31,7 @@
 namespace StE {
 namespace Text {
 
-class TextRenderer {
+class TextManager {
 private:
 	struct glyph_point {
 		struct {
@@ -48,15 +48,13 @@ private:
 
 	class text_renderable : public Graphics::renderable {
 	private:
-		TextRenderer *tr;
+		TextManager *tr;
 		std::vector<glyph_point> points;
 
 		mutable range<> range_in_use;
-		mutable int offset;
-		mutable std::size_t elements_count, bytes;
 
 	public:
-		text_renderable(TextRenderer *tr, std::vector<glyph_point> &&points) : renderable(tr->text_distance_mapping), tr(tr), points(std::move(points)) {
+		text_renderable(TextManager *tr, std::vector<glyph_point> &&points) : renderable(tr->text_distance_mapping), tr(tr), points(std::move(points)) {
 			request_state({ GL_BLEND, true });
 		}
 
@@ -65,28 +63,19 @@ private:
 
 			LLR::gl_current_context::get()->blend_func(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-			elements_count = std::min<std::size_t>(points.size(), vbo_ring_size / sizeof(glyph_point));
-			bytes = elements_count * sizeof(glyph_point);
-			if (tr->vbo_ring_current_offset + bytes > vbo_ring_size)
-				tr->vbo_ring_current_offset = 0;
-
-			offset = tr->vbo_ring_current_offset / sizeof(glyph_point);
-			range_in_use = range<>(tr->vbo_ring_current_offset, bytes);
-			tr->vbo.overwrite(offset, points);
-
 			tr->text_distance_mapping->bind();
-
 			tr->gm.ssbo().bind(LLR::shader_storage_layout_binding(0));
 			tr->vao.bind();
+
+			range_in_use = tr->vbo.commit(points);
 		}
 
 		virtual void render() const override {
-			glDrawArrays(GL_POINTS, offset, elements_count);
+			glDrawArrays(GL_POINTS, range_in_use.start / sizeof(glyph_point), points.size());
 		}
 
 		virtual void finalize() const override {
 			tr->vbo.lock_range(range_in_use);
-			tr->vbo_ring_current_offset += bytes;
 		}
 	};
 
@@ -97,27 +86,25 @@ private:
 
 private:
 	std::shared_ptr<LLR::GLSLProgram> text_distance_mapping;
+	std::shared_ptr<ResizeSignalConnectionType> resize_connection;
 
-	static constexpr int vbo_ring_size = 16384;
+	static constexpr int vbo_ring_max_size = 4096;
 
-	LLR::gstack<glyph_point> vbo;
-	using vbo_type = LLR::VertexBufferObject<glyph_point, glyph_point::descriptor, decltype(vbo)::usage>;
-
-	int vbo_ring_current_offset{ 0 };
-
+	LLR::ring_buffer<glyph_point, vbo_ring_max_size> vbo;
 	LLR::VertexArrayObject vao;
+
+	using vbo_type = LLR::VertexBufferObject<glyph_point, glyph_point::descriptor, decltype(vbo)::usage>;
 
 	glyph_manager gm;
 	Font default_font;
 	int default_size;
 
+private:
 	void adjust_line(std::vector<glyph_point> &, const AttributedWString &, unsigned, float , float , const glm::vec2 &);
 	std::vector<glyph_point> create_points(glm::vec2 , const AttributedWString &);
 
-	std::shared_ptr<ResizeSignalConnectionType> resize_connection;
-
 public:
-	TextRenderer(const StEngineControl &context, const Font &default_font, int default_size = 28);
+	TextManager(const StEngineControl &context, const Font &default_font, int default_size = 28);
 
 	std::unique_ptr<text_renderable> render(glm::vec2 ortho_pos, const AttributedWString &wstr);
 };

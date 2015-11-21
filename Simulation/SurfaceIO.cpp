@@ -459,6 +459,8 @@ gli::texture2D SurfaceIO::load_jpeg(const std::string &path, bool srgb) {
 	jpeg_destroy_decompress(&cinfo);
 	fclose(infile);
 
+	free(row_pointers);
+
 	/* At this point you may want to check to see whether any corrupt-data
 	* warnings occurred (test whether jerr.pub.num_warnings is nonzero).
 	*/

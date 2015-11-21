@@ -228,6 +228,8 @@ public:
 
 	void generate_mipmaps() {
 		bind();
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(gl_type(), get_resource_id());
 		glGenerateMipmap(gl_type());
 	}
 
