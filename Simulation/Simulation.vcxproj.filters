@@ -291,6 +291,9 @@
     <ClCompile Include="TextManager.cpp">
       <Filter>src\StE\Framework Text\Rendering</Filter>
     </ClCompile>
+    <ClCompile Include="dense_voxel_space.cpp">
+      <Filter>src\StE\Framework Graphics\Render\Renderers\GI\Voxels</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLSLProgram.h">
@@ -378,9 +381,6 @@
       <Filter>src\StE\Core\LLR</Filter>
     </ClInclude>
     <ClInclude Include="FramebufferObject.h">
-      <Filter>src\StE\Core\LLR\GPU Resources\Surfaces\FBO</Filter>
-    </ClInclude>
-    <ClInclude Include="system_provided_framebuffer.h">
       <Filter>src\StE\Core\LLR\GPU Resources\Surfaces\FBO</Filter>
     </ClInclude>
     <ClInclude Include="StEngineControl.h">
@@ -736,6 +736,12 @@
     </ClInclude>
     <ClInclude Include="ring_buffer.h">
       <Filter>src\StE\Core\LLR\GPU Resources\GPU Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="dense_voxel_space.h">
+      <Filter>src\StE\Framework Graphics\Render\Renderers\GI\Voxels</Filter>
+    </ClInclude>
+    <ClInclude Include="context_framebuffer.h">
+      <Filter>src\StE\Core\LLR\GPU Resources\Surfaces\FBO</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

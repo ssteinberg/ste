@@ -121,6 +121,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="attrib.cpp" />
+    <ClCompile Include="dense_voxel_space.cpp" />
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="glyph_factory.cpp" />
     <ClCompile Include="gl_current_context.cpp" />
@@ -167,6 +168,10 @@
       </SubType>
     </ClInclude>
     <ClInclude Include="deferred_fbo.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="dense_voxel_space.h">
       <SubType>
       </SubType>
     </ClInclude>
@@ -369,7 +374,7 @@
     <ClInclude Include="StEngineControl.h" />
     <ClInclude Include="GLSLProgramLoader.h" />
     <ClInclude Include="shader_layout_bindable_resource.h" />
-    <ClInclude Include="system_provided_framebuffer.h" />
+    <ClInclude Include="context_framebuffer.h" />
     <ClInclude Include="balanced_thread_pool.h" />
     <ClInclude Include="task_scheduler.h" />
     <ClInclude Include="TextManager.h" />

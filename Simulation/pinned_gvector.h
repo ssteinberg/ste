@@ -128,10 +128,10 @@ public:
 		++len;
 	}
 
-	void erase(std::size_t n) {
-		assert(n < len && "Subscript out of range.");
+	void erase(std::size_t n, std::size_t count = 1) {
+		assert(n + count <= len && "Subscript out of range.");
 
-		if (n == len - 1) {
+		if (n == len - 1 && count == 1) {
 			pop_back();
 			return;
 		}
@@ -141,26 +141,47 @@ public:
 			ptr.client_wait(lock_range);
 		}
 
-		--len;
+		len -= count;
 
-		memmove(&ptr.get()[n], &ptr.get()[n + 1], (len - n) * sizeof(T));
+		memmove(&ptr.get()[n], &ptr.get()[n + count], (len - n) * sizeof(T));
 	}
 
-	template <typename ... Args>
-	void emplace(std::size_t n, Args&&... args) {
+	void overwrite(std::size_t n, const T &t) {
 		assert(n <= len && "Subscript out of range.");
 
 		if (n == len) {
-			push_back(T(std::forward<Args>(args)...));
+			push_back(t);
 			return;
 		}
 
 		if (!lockless) {
-			range<> lock_range{ n * sizeof(T), sizeof(T) };
+			range<> lock_range{ (len - n) * sizeof(T), sizeof(T) };
 			ptr.client_wait(lock_range);
 		}
 
-		ptr.get()[n] = T(std::forward<Args>(args)...);
+		memcpy(&ptr.get()[n], &t, sizeof(T));
+	}
+
+	void overwrite(std::size_t n, const std::vector<T> &t) {
+		assert(n <= len && "Subscript out of range.");
+
+		if (n == len) {
+			push_back(t);
+			return;
+		}
+
+		if (n + t.size() > len) {
+			erase(n, len - n);
+			push_back(t);
+			return;
+		}
+
+		if (!lockless) {
+			range<> lock_range{ (len - n) * sizeof(T), t.size() * sizeof(T) };
+			ptr.client_wait(lock_range);
+		}
+
+		memcpy(&ptr.get()[n], &t[0], t.size() * sizeof(T));
 	}
 
 	template <bool b = !lockless>

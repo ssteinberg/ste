@@ -111,25 +111,27 @@ bool StEngineControl::run_loop() {
 
 void StEngineControl::capture_screenshot() const {
 	auto size = gl()->framebuffer_size();
-	gli::texture2D tex(gli::FORMAT_RGB8_UNORM, size);
 
-	StE::LLR::FramebufferObject fbo;
+	auto fbo = std::make_shared<StE::LLR::FramebufferObject>();
 	StE::LLR::Texture2D fbo_tex(gli::format::FORMAT_RGB8_UNORM, size, 1);
-	fbo[0] = fbo_tex[0];
+	(*fbo)[0] = fbo_tex[0];
 
-	gl()->defaut_framebuffer().blit_to(fbo, size, size);
-	fbo[0].read_pixels(tex.data(), 3 * size.x * size.y);
+	gl()->defaut_framebuffer().blit_to(*fbo, size, size);
+	gli::texture2D tex(gli::FORMAT_RGB8_UNORM, size);
+	(*fbo)[0].read_pixels(tex.data(), 3 * size.x * size.y);
 
-	boost::filesystem::create_directory("Screenshots");
+	scheduler().schedule_now([=](optional<task_scheduler*> sched) {
+		boost::filesystem::create_directory("Screenshots");
 
-	time_t rawtime;
-	struct tm * timeinfo;
-	char buffer[256];
-	time(&rawtime);
-	timeinfo = localtime(&rawtime);
-	strftime(buffer, 256, "%a %d%b%y %H.%M.%S", timeinfo);
+		time_t rawtime;
+		struct tm * timeinfo;
+		char buffer[256];
+		time(&rawtime);
+		timeinfo = localtime(&rawtime);
+		strftime(buffer, 256, "%a %d%b%y %H.%M.%S", timeinfo);
 
-	scheduler().schedule_now(StE::Resource::SurfaceIO::write_surface_2d_task(tex, std::string("Screenshots/") + buffer + ".png"));
+		StE::Resource::SurfaceIO::write_surface_2d_task(tex, std::string("Screenshots/") + buffer + ".png")(sched);
+	});
 }
 
 void StEngineControl::set_fov(float rad) {

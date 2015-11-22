@@ -52,7 +52,7 @@ void main() {
 	}
 
 	vec3 xyY = XYZtoxyY(RGBtoXYZ(rgb));
-	xyY.z = max(min_luminance, xyY.z);
+	//xyY.z = max(min_luminance, xyY.z);
 
 	gl_FragColor = vec4(xyY, 1);
 }

@@ -41,7 +41,7 @@ private:
 	using ProjectionSignalConnectionType = StEngineControl::projection_change_signal_type::connection_type;
  
 private:
- 	std::unique_ptr<LLR::VertexArrayObject> vao;
+ 	LLR::VertexArrayObject vao;
 
 	mutable LLR::gstack<mesh_descriptor> mesh_data_bo;
  	LLR::gstack<ObjectVertexData> vbo;

@@ -82,6 +82,12 @@ public:
 
 	texture_sparse_2d(texture_sparse_2d &&m) = default;
 	texture_sparse_2d& operator=(texture_sparse_2d &&m) = default;
+
+	static int max_size() {
+		int s;
+		glGetIntegerv(GL_MAX_SPARSE_TEXTURE_SIZE_ARB, &s);
+		return s;
+	}
 };
 
 class texture_sparse_3d : public texture_sparse_mipmapped<llr_resource_type::LLRTexture3D> {
@@ -93,6 +99,12 @@ public:
 
 	texture_sparse_3d(texture_sparse_3d &&m) = default;
 	texture_sparse_3d& operator=(texture_sparse_3d &&m) = default;
+
+	static int max_size() {
+		int s;
+		glGetIntegerv(GL_MAX_SPARSE_3D_TEXTURE_SIZE_ARB, &s);
+		return s;
+	}
 };
 
 class texture_sparse_2d_array : public texture_sparse_mipmapped<llr_resource_type::LLRTexture2DArray> {

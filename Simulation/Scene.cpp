@@ -15,12 +15,11 @@ Scene::Scene(const StEngineControl &ctx, SceneProperties *props) : renderable(St
 	request_state({ GL_CULL_FACE, true });
 	request_state({ GL_DEPTH_TEST, true });
   
-  	vao = std::make_unique<LLR::VertexArrayObject>();
 	auto vbo_buffer = LLR::buffer_object_cast<vbo_type>(vbo.get_buffer());
-	(*vao)[0] = vbo_buffer[0];
-	(*vao)[1] = vbo_buffer[1];
-	(*vao)[2] = vbo_buffer[2];
-	(*vao)[3] = vbo_buffer[3];
+	vao[0] = vbo_buffer[0];
+	vao[1] = vbo_buffer[1];
+	vao[2] = vbo_buffer[2];
+	vao[3] = vbo_buffer[3];
 
 	get_program()->set_uniform("projection", ctx.projection_matrix());
 	get_program()->set_uniform("far", ctx.get_far_clip());
@@ -81,7 +80,7 @@ void Scene::prepare() const {
 	}
  
 	renderable::prepare();
- 	vao->bind();
+ 	vao.bind();
 	LLR::buffer_object_cast<elements_type>(indices.get_buffer()).bind();
 	LLR::buffer_object_cast<indirect_draw_buffer_type>(idb.get_buffer()).bind();
 	0_storage_idx = scene_props->material_storage().buffer();

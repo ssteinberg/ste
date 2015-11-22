@@ -230,15 +230,15 @@ protected:
 public:
 	virtual ~frame_buffer_object() noexcept {}
 
+	frame_buffer_object(frame_buffer_object &&t) = default;
+	frame_buffer_object &operator=(frame_buffer_object &&t) = default;
+
 	void bind() const override final { Base::bind(); }
 	void unbind() const override final { Base::unbind(); }
 
 	frame_buffer_object() {}
 	template <typename ... Ts>
 	frame_buffer_object(Ts ... draw_buffer_args) : draw_buffers(std::forward<Ts>(draw_buffer_args)...) {}
-
-	frame_buffer_object(frame_buffer_object &&t) = default;
-	frame_buffer_object &operator=(frame_buffer_object &&t) = default;
 
 	bool is_fbo_complete() const { bind(); return is_valid() && get_status_code() == GL_FRAMEBUFFER_COMPLETE; }
 	GLenum get_status_code() const { return glCheckNamedFramebufferStatus(get_resource_id(), GL_FRAMEBUFFER); }

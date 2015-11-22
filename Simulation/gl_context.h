@@ -6,8 +6,6 @@
 #include "optional.h"
 #include "function_traits.h"
 
-#include "optional.h"
-
 #include <memory>
 #include <functional>
 
@@ -24,7 +22,7 @@ class StEngineControl;
 
 namespace LLR {
 
-class system_provided_framebuffer;
+class context_framebuffer;
 
 class gl_context {
 private:
@@ -45,7 +43,7 @@ protected:
 	void setup_debug_context();
 
 	window_type window;
-	std::unique_ptr<system_provided_framebuffer> default_fb;
+	std::unique_ptr<context_framebuffer> default_fb;
 	context_settings ctx_settings;
 
 	mutable std::unordered_map<GLenum, bool> states;
@@ -297,7 +295,7 @@ public:
 
 	gli::format framebuffer_format() const;
 	glm::tvec2<std::size_t> framebuffer_size() const;
-	system_provided_framebuffer &defaut_framebuffer() const;
+	context_framebuffer &defaut_framebuffer() const;
 
 	bool is_debug_context() const;
 	const context_settings &get_contex_settings() const { return ctx_settings; }
@@ -306,14 +304,14 @@ public:
 }
 }
 
-#include "system_provided_framebuffer.h"
+#include "context_framebuffer.h"
 
 namespace StE {
 namespace LLR {
 
 gli::format inline gl_context::framebuffer_format() const { return default_fb->front_buffer().get_attachment_format(); }
 glm::tvec2<std::size_t> inline gl_context::framebuffer_size() const { return default_fb->front_buffer().get_attachment_size(); }
-system_provided_framebuffer inline &gl_context::defaut_framebuffer() const { return *default_fb; }
+context_framebuffer inline &gl_context::defaut_framebuffer() const { return *default_fb; }
 
 }
 }

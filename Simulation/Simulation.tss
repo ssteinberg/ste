@@ -27,5 +27,11 @@
     <ArrayOfString>
       <string>D:\Dev\git\simulation\Simulation\GIRenderer.h</string>
     </ArrayOfString>
+    <ArrayOfString>
+      <string>D:\Dev\git\simulation\Simulation\texture_sparse.h</string>
+    </ArrayOfString>
+    <ArrayOfString>
+      <string>D:\Dev\git\simulation\Simulation\dense_voxel_space.h</string>
+    </ArrayOfString>
   </ArrayOfArrayOfString>
 </ArrayOfArrayOfArrayOfString>

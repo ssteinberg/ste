@@ -139,7 +139,7 @@ void gl_context::create_default_framebuffer(gli::format format, gli::format dept
 	glm::i32vec2 ret;
 	glfwGetFramebufferSize(window.get(), &ret.x, &ret.y);
 	glViewport(0, 0, ret.x, ret.y);
-	default_fb = std::make_unique<system_provided_framebuffer>(ret, format);
+	default_fb = std::make_unique<context_framebuffer>(ret, format);
 	if (srgb)
 		enable_state(GL_FRAMEBUFFER_SRGB);
 }
@@ -195,5 +195,5 @@ void gl_context::setup_debug_context() {
 
 void gl_context::resize(const glm::i32vec2 &size) {
 	glViewport(0, 0, size.x, size.y);
-	default_fb = std::unique_ptr<system_provided_framebuffer>(new system_provided_framebuffer(size, framebuffer_format()));
+	default_fb = std::unique_ptr<context_framebuffer>(new context_framebuffer(size, framebuffer_format()));
 }
