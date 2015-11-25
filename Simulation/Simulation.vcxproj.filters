@@ -205,8 +205,11 @@
     <Filter Include="src\StE\Framework Graphics\Light\Shaders">
       <UniqueIdentifier>{5299210f-5cc7-4d5b-a090-14b74e25a095}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\StE\Framework Graphics\Render\Renderers\GI\Voxels">
+    <Filter Include="src\StE\Framework Graphics\Voxels">
       <UniqueIdentifier>{029546b6-fc7d-4375-90c4-e8ff10ef5dd2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\StE\Framework Graphics\Voxels\Shaders">
+      <UniqueIdentifier>{0a666e43-b817-43a1-a3d8-ee48ead053b6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -292,7 +295,10 @@
       <Filter>src\StE\Framework Text\Rendering</Filter>
     </ClCompile>
     <ClCompile Include="dense_voxel_space.cpp">
-      <Filter>src\StE\Framework Graphics\Render\Renderers\GI\Voxels</Filter>
+      <Filter>src\StE\Framework Graphics\Voxels</Filter>
+    </ClCompile>
+    <ClCompile Include="dense_voxelizer.cpp">
+      <Filter>src\StE\Framework Graphics\Voxels</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -738,10 +744,13 @@
       <Filter>src\StE\Core\LLR\GPU Resources\GPU Data Structures</Filter>
     </ClInclude>
     <ClInclude Include="dense_voxel_space.h">
-      <Filter>src\StE\Framework Graphics\Render\Renderers\GI\Voxels</Filter>
+      <Filter>src\StE\Framework Graphics\Voxels</Filter>
     </ClInclude>
     <ClInclude Include="context_framebuffer.h">
       <Filter>src\StE\Core\LLR\GPU Resources\Surfaces\FBO</Filter>
+    </ClInclude>
+    <ClInclude Include="dense_voxelizer.h">
+      <Filter>src\StE\Framework Graphics\Voxels</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -777,6 +786,9 @@
     </None>
     <None Include="hdr_tonemap_coc.frag">
       <Filter>src\StE\Framework Graphics\Render\HDR\Shaders</Filter>
+    </None>
+    <None Include="voxels.glsl">
+      <Filter>src\StE\Framework Graphics\Voxels\Shaders</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -821,6 +833,15 @@
     </CustomBuild>
     <CustomBuild Include="deferred.vert">
       <Filter>src\StE\Framework Graphics\Render\Renderers\GI\Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="voxelizer.vert">
+      <Filter>src\StE\Framework Graphics\Voxels\Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="voxelizer.frag">
+      <Filter>src\StE\Framework Graphics\Voxels\Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="voxelizer.geom">
+      <Filter>src\StE\Framework Graphics\Voxels\Shaders</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>

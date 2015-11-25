@@ -285,6 +285,7 @@ public:
 	operator T() const { return s; }
 };
 static const size huge = size(96);
+static const size vvlarge = size(78);
 static const size vlarge = size(64);
 static const size large = size(48);
 static const size regular = size(36);

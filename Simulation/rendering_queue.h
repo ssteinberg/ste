@@ -69,9 +69,7 @@ public:
 				reset_fbo = true;
 			}
 
-			(*p)->prepare();
-			(*p)->render();
-			(*p)->finalize();
+			(**p)();
 
 			if (reset_fbo)
 				(*p)->set_output_fbo(nullptr);

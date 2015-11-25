@@ -65,6 +65,9 @@ private:
 
 	SceneProperties *scene_props;
 
+protected:
+	void bind_buffers() const;
+
 public:
 	Scene(const StEngineControl &ctx, SceneProperties *props);
 

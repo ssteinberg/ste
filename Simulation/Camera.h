@@ -39,6 +39,8 @@ public:
 	void pitch_and_yaw(float pitch, float yaw);
 	void lookat(const glm::vec3 &pos);
 
+	const glm::vec3 &get_position() const { return camera_position; }
+
 	glm::mat4 view_matrix() const { return glm::lookAt(camera_position, camera_look_at, camera_up); }
 	glm::mat4 view_matrix_no_translation() const { return glm::lookAt(glm::vec3(0), camera_look_at - camera_position, camera_up); }
 };

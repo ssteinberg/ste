@@ -125,6 +125,11 @@ public:
 
 	void clear_framebuffer(bool color = true, bool depth = true) const { glClear((color ? GL_COLOR_BUFFER_BIT : 0) | (depth ? GL_DEPTH_BUFFER_BIT : 0)); }
 
+	void viewport(int x, int y, unsigned w, unsigned h) const {
+		struct dummy {};
+		set_context_server_state<dummy>(glViewport, x, y, w, h);
+	}
+
 	void color_mask(bool r, bool b, bool g, bool a) const {
 		struct dummy {};
 		set_context_server_state<dummy>(glColorMask, r, g, b, a);

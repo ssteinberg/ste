@@ -121,6 +121,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="attrib.cpp" />
+    <ClCompile Include="dense_voxelizer.cpp" />
     <ClCompile Include="dense_voxel_space.cpp" />
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="glyph_factory.cpp" />
@@ -168,6 +169,10 @@
       </SubType>
     </ClInclude>
     <ClInclude Include="deferred_fbo.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="dense_voxelizer.h">
       <SubType>
       </SubType>
     </ClInclude>
@@ -580,6 +585,25 @@
     <CustomBuild Include="transform_sky.vert">
       <FileType>Document</FileType>
     </CustomBuild>
+    <CustomBuild Include="voxelizer.frag">
+      <SubType>
+      </SubType>
+      <FileType>Document</FileType>
+    </CustomBuild>
+    <CustomBuild Include="voxelizer.geom">
+      <SubType>
+      </SubType>
+      <FileType>Document</FileType>
+    </CustomBuild>
+    <CustomBuild Include="voxelizer.vert">
+      <SubType>
+      </SubType>
+      <FileType>Document</FileType>
+    </CustomBuild>
+    <None Include="voxels.glsl">
+      <SubType>
+      </SubType>
+    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

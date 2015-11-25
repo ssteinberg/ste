@@ -28,6 +28,8 @@
 #include "RGB.h"
 #include "Sphere.h"
 
+#include "dense_voxel_space.h"
+
 #include "pinned_gvector.h"
 #include "gstack.h"
 
@@ -76,7 +78,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 	ste_log() << "Simulation is running";
 
 	int w = 1688, h = 950;
-	constexpr float clip_far = 10000.f;
+	constexpr float clip_far = 10240.f;
 	constexpr float clip_near = 5.f;
 
 	gl_context::context_settings settings;
@@ -131,7 +133,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 
 		if (key == keyboard::K::KeyESCAPE)
 			running = false;
-		if (key == keyboard::K::KeyPRINT_SCREEN)
+		if (key == keyboard::K::KeyPRINT_SCREEN || key == keyboard::K::KeyF12)
 			ctx.capture_screenshot();
 	});
 	ctx.hid_signal_keyboard().connect(keyboard_listner);
@@ -161,6 +163,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 		scene.add_object(light_obj);
 	}
 
+	StE::Graphics::dense_voxel_space voxel_space(ctx);
+
 
 	ctx.set_renderer(&basic_renderer);
 
@@ -169,13 +173,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 
 		{
 			using namespace StE::Text::Attributes;
-			AttributedWString str = center(stroke(blue_violet, 2)(purple(vlarge(b(L"Loading Simulation...")))) +
-											L"\n" + 
-											orange(regular(L"By Shlomi Steinberg")));
+			AttributedWString str = center(stroke(blue_violet, 2)(purple(vvlarge(b(L"Global Illumination\n")))) +
+										   azure(large(L"Loading...\n")) +
+										   orange(regular(L"By Shlomi Steinberg")));
 			auto total_vram = std::to_wstring(ctx.gl()->meminfo_total_available_vram() / 1024);
 			auto free_vram = std::to_wstring(ctx.gl()->meminfo_free_vram() / 1024);
 
-			ctx.renderer()->queue().push_back(text_renderer.render({ w / 2, h / 2 - 20 }, str));
+			ctx.renderer()->queue().push_back(text_renderer.render({ w / 2, h / 2 + 100 }, str));
 			ctx.renderer()->queue().push_back(text_renderer.render({ 10, 20 }, vsmall(b(L"Thread pool workers: ") +
 																					  olive(std::to_wstring(ctx.scheduler().get_sleeping_workers())) + 
 																			 		  L"/" + 
@@ -191,7 +195,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 	}
 
 
-	ctx.set_renderer(&renderer);
+	//ctx.set_renderer(&renderer);
 
 	float time = 0;
 	while (running) {
@@ -214,7 +218,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 			auto center = static_cast<glm::vec2>(ctx.get_backbuffer_size())*.5f;
 			ctx.set_pointer_position(static_cast<glm::ivec2>(center));
 			auto diff_v = (center - static_cast<decltype(center)>(pp)) * time_delta * rotation_factor;
-			camera.pitch_and_yaw(-diff_v.y, diff_v.x); 
+//			camera.pitch_and_yaw(-diff_v.y, diff_v.x); 
 		}
 
 
@@ -231,10 +235,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 		scene.set_model_matrix(mv);
 		skydome.set_model_matrix(mvnt);
 
-		renderer.queue().push_back(&fb_depth_clearer);
-		renderer.queue().push_back(&scene);
-		renderer.queue().push_back(&skydome);
-		renderer.postprocess_queue().push_back(&hdr);
+		(*voxel_space.voxelizer(scene))();
+
+//		renderer.queue().push_back(&fb_depth_clearer);
+//		renderer.queue().push_back(&scene);
+//		renderer.queue().push_back(&skydome);
+//		renderer.postprocess_queue().push_back(&hdr);
+//		ctx.gl()->clear_framebuffer();
+		ctx.renderer()->queue().push_back(&fb_clearer);
 
 		{
 			using namespace StE::Text::Attributes;
@@ -242,9 +250,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 			auto total_vram = std::to_wstring(ctx.gl()->meminfo_total_available_vram() / 1024);
 			auto free_vram = std::to_wstring(ctx.gl()->meminfo_free_vram() / 1024);
 
-			renderer.postprocess_queue().push_back(text_renderer.render({ 30, h - 50 },
+			ctx.renderer()->queue().push_back(text_renderer.render({ 30, h - 50 },
 																		vsmall(b(stroke(dark_magenta, 1)(red(tpf)))) + L" ms"));
-			renderer.postprocess_queue().push_back(text_renderer.render({ 30, 20 },
+			/*renderer.postprocess_queue()*/ctx.renderer()->queue().push_back(text_renderer.render({ 30, 20 },
 																		vsmall(b((blue_violet(free_vram) + L" / " + stroke(red, 1)(dark_red(total_vram)) + L" MB")))));
 		}
 

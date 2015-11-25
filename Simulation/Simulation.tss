@@ -28,10 +28,20 @@
       <string>D:\Dev\git\simulation\Simulation\GIRenderer.h</string>
     </ArrayOfString>
     <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\texture_sparse.h</string>
+      <string>D:\Dev\git\simulation\Simulation\dense_voxel_space.cpp</string>
+      <string>D:\Dev\git\simulation\Simulation\dense_voxel_space.h</string>
     </ArrayOfString>
     <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\dense_voxel_space.h</string>
+      <string>D:\Dev\git\simulation\Simulation\dense_voxelizer.cpp</string>
+      <string>D:\Dev\git\simulation\Simulation\dense_voxelizer.h</string>
+    </ArrayOfString>
+    <ArrayOfString>
+      <string>D:\Dev\git\simulation\Simulation\voxelizer.frag</string>
+      <string>D:\Dev\git\simulation\Simulation\voxelizer.geom</string>
+      <string>D:\Dev\git\simulation\Simulation\voxelizer.vert</string>
+    </ArrayOfString>
+    <ArrayOfString>
+      <string>D:\Dev\git\simulation\Simulation\voxels.glsl</string>
     </ArrayOfString>
   </ArrayOfArrayOfString>
 </ArrayOfArrayOfArrayOfString>

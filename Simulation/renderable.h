@@ -49,6 +49,29 @@ public:
 			requested_states.insert(s);
 	}
 
+	void operator()() const {
+		this->prepare();
+		this->render();
+		this->finalize();
+	}
+
+	void operator()(std::shared_ptr<LLR::GLSLProgram> override_program, const LLR::GenericFramebufferObject *override_fbo = nullptr) {
+		const LLR::GenericFramebufferObject *renderable_fbo = fbo;
+		std::shared_ptr<LLR::GLSLProgram> renderable_program = program;
+
+		if (override_program != nullptr)
+			program = override_program;
+		if (override_fbo != nullptr)
+			fbo = override_fbo;
+
+		(*this)();
+
+		if (override_program != nullptr)
+			program = renderable_program;
+		if (override_fbo != nullptr)
+			fbo = renderable_fbo;
+	}
+
 	const auto get_program() const { return program.get(); }
 	const auto get_output_fbo() const { return fbo; }
 	const std::unordered_map<GLenum, bool>& get_requested_states() const { return requested_states; }

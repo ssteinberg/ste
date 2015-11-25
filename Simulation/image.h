@@ -71,9 +71,9 @@ public:
 	void unbind(const LayoutLocationType &binding) const override final { Binder::unbind(binding, 0, false, 0, access, format); }
 
 	auto get_image_handle() const {
-		return image_handle ? image_handle : (image_handle = glGetImageHandleARB(get_resource_id(), level, layers > 1 ? true : false, layer, format));
+		return image_handle ? image_handle : (image_handle = glGetImageHandleARB(get_resource_id(), level, layers > 1 ? true : false, layer, gl_utils::translate_format(format).Internal));
 	}
-	void make_resident() const { glMakeImageHandleResidentARB(get_image_handle()); }
+	void make_resident() const { glMakeImageHandleResidentARB(get_image_handle(), static_cast<GLenum>(access)); }
 	void make_nonresident() const { glMakeImageHandleNonResidentARB(get_image_handle()); }
 	bool is_resident() const { return glIsImageHandleResidentARB(get_image_handle()); }
 

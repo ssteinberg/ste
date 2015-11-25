@@ -3,8 +3,11 @@
 
 #pragma once
 
+#include "stdafx.h"
+
 #include "texture.h"
 #include "llr_resource_type.h"
+#include "image.h"
 
 #include <vector>
 
@@ -88,6 +91,10 @@ public:
 		glGetIntegerv(GL_MAX_SPARSE_TEXTURE_SIZE_ARB, &s);
 		return s;
 	}
+
+	const image<T> operator[](int level) const {
+		return image<T>(*this, get_image_container_size(), format, ImageAccessMode::ReadWrite, level, 0);
+	}
 };
 
 class texture_sparse_3d : public texture_sparse_mipmapped<llr_resource_type::LLRTexture3D> {
@@ -105,6 +112,10 @@ public:
 		glGetIntegerv(GL_MAX_SPARSE_3D_TEXTURE_SIZE_ARB, &s);
 		return s;
 	}
+
+	const image_container<T> operator[](int level) const {
+		return image_container<T>(*this, get_image_container_size(), format, ImageAccessMode::ReadWrite, level, get_image_container_dimensions());
+	}
 };
 
 class texture_sparse_2d_array : public texture_sparse_mipmapped<llr_resource_type::LLRTexture2DArray> {
@@ -121,6 +132,10 @@ public:
 		int max_layers;
 		glGetIntegerv(GL_MAX_SPARSE_ARRAY_TEXTURE_LAYERS_ARB, &max_layers);
 		return max_layers;
+	}
+
+	const image_container<T> operator[](int level) const {
+		return image_container<T>(*this, get_image_container_size(), format, ImageAccessMode::ReadWrite, level, get_image_container_dimensions());
 	}
 };
 

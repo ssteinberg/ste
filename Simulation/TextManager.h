@@ -63,7 +63,6 @@ private:
 
 			LLR::gl_current_context::get()->blend_func(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-			tr->text_distance_mapping->bind();
 			tr->gm.ssbo().bind(LLR::shader_storage_layout_binding(0));
 			tr->vao.bind();
 

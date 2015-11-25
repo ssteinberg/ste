@@ -180,3 +180,103 @@ void GLSLProgram::set_uniform(const std::string &name, const texture_handle &han
 void GLSLProgram::set_uniform_subroutine(GLenum shader_type, const std::vector<unsigned> &ids) const {
 	glUniformSubroutinesuiv(shader_type, ids.size(), &ids[0]);
 }
+
+void GLSLProgram::set_uniform(const std::string &name, const std::vector<glm::vec2> & v) const {
+	int loc = get_uniform_location(name);
+	if (loc >= 0)
+		glProgramUniform2fv(get_resource_id(), loc, v.size(), reinterpret_cast<const std::remove_reference_t<decltype(v)>::value_type::value_type*>(&v[0]));
+}
+
+void GLSLProgram::set_uniform(const std::string &name, const std::vector<glm::i32vec2> & v) const {
+	int loc = get_uniform_location(name);
+	if (loc >= 0)
+		glProgramUniform2iv(get_resource_id(), loc, v.size(), reinterpret_cast<const std::remove_reference_t<decltype(v)>::value_type::value_type*>(&v[0]));
+}
+
+void GLSLProgram::set_uniform(const std::string &name, const std::vector<glm::u32vec2> & v) const {
+	int loc = get_uniform_location(name);
+	if (loc >= 0)
+		glProgramUniform2uiv(get_resource_id(), loc, v.size(), reinterpret_cast<const std::remove_reference_t<decltype(v)>::value_type::value_type*>(&v[0]));
+}
+
+void GLSLProgram::set_uniform(const std::string &name, const std::vector<glm::i64vec2> & v) const {
+	int loc = get_uniform_location(name);
+	if (loc >= 0)
+		glProgramUniform2i64vARB(get_resource_id(), loc, v.size(), reinterpret_cast<const std::remove_reference_t<decltype(v)>::value_type::value_type*>(&v[0]));
+}
+
+void GLSLProgram::set_uniform(const std::string &name, const std::vector<glm::u64vec2> & v) const {
+	int loc = get_uniform_location(name);
+	if (loc >= 0)
+		glProgramUniform2ui64vARB(get_resource_id(), loc, v.size(), reinterpret_cast<const std::remove_reference_t<decltype(v)>::value_type::value_type*>(&v[0]));
+}
+
+void GLSLProgram::set_uniform(const std::string &name, const std::vector<glm::vec3> & v) const {
+	int loc = get_uniform_location(name);
+	if (loc >= 0)
+		glProgramUniform3fv(get_resource_id(), loc, v.size(), reinterpret_cast<const std::remove_reference_t<decltype(v)>::value_type::value_type*>(&v[0]));
+}
+
+void GLSLProgram::set_uniform(const std::string &name, const std::vector<glm::vec4> & v) const {
+	int loc = get_uniform_location(name);
+	if (loc >= 0)
+		glProgramUniform4fv(get_resource_id(), loc, v.size(), reinterpret_cast<const std::remove_reference_t<decltype(v)>::value_type::value_type*>(&v[0]));
+}
+
+void GLSLProgram::set_uniform(const std::string &name, const std::vector<glm::mat2> & m, bool transpose) const {
+	int loc = get_uniform_location(name);
+	if (loc >= 0)
+		glProgramUniformMatrix2fv(get_resource_id(), loc, m.size(), transpose, reinterpret_cast<const float*>(&m[0][0]));
+}
+
+void GLSLProgram::set_uniform(const std::string &name, const std::vector<glm::mat3> & m, bool transpose) const {
+	int loc = get_uniform_location(name);
+	if (loc >= 0)
+		glProgramUniformMatrix3fv(get_resource_id(), loc, m.size(), transpose, reinterpret_cast<const float*>(&m[0][0]));
+}
+
+void GLSLProgram::set_uniform(const std::string &name, const std::vector<glm::mat4> & m, bool transpose) const {
+	int loc = get_uniform_location(name);
+	if (loc >= 0)
+		glProgramUniformMatrix4fv(get_resource_id(), loc, m.size(), transpose, reinterpret_cast<const float*>(&m[0][0]));
+}
+
+void GLSLProgram::set_uniform(const std::string &name, const std::vector<float> & val) const {
+	int loc = get_uniform_location(name);
+	if (loc >= 0)
+		glProgramUniform1fv(get_resource_id(), loc, val.size(), reinterpret_cast<const std::remove_reference_t<decltype(val)>::value_type*>(&val[0]));
+}
+
+void GLSLProgram::set_uniform(const std::string &name, const std::vector<std::int32_t> &val) const {
+	int loc = get_uniform_location(name);
+	if (loc >= 0)
+		glProgramUniform1iv(get_resource_id(), loc, val.size(), reinterpret_cast<const std::remove_reference_t<decltype(val)>::value_type*>(&val[0]));
+}
+
+void GLSLProgram::set_uniform(const std::string &name, const std::vector<std::int64_t> &val) const {
+	int loc = get_uniform_location(name);
+	if (loc >= 0)
+		glProgramUniform1i64vARB(get_resource_id(), loc, val.size(), reinterpret_cast<const std::remove_reference_t<decltype(val)>::value_type*>(&val[0]));
+}
+
+void GLSLProgram::set_uniform(const std::string &name, const std::vector<std::uint32_t> &val) const {
+	int loc = get_uniform_location(name);
+	if (loc >= 0)
+		glProgramUniform1uiv(get_resource_id(), loc, val.size(), reinterpret_cast<const std::remove_reference_t<decltype(val)>::value_type*>(&val[0]));
+}
+
+void GLSLProgram::set_uniform(const std::string &name, const std::vector<std::uint64_t> &val) const {
+	int loc = get_uniform_location(name);
+	if (loc >= 0)
+		glProgramUniform1ui64vARB(get_resource_id(), loc, val.size(), reinterpret_cast<const std::remove_reference_t<decltype(val)>::value_type*>(&val[0]));
+}
+
+void GLSLProgram::set_uniform(const std::string &name, const std::vector<std::reference_wrapper<const texture_handle>> &handles) const {
+	std::vector<decltype(texture_handle().get_handle())> v;
+	for (auto &ref : handles)
+		v.push_back(ref.get().get_handle());
+
+	int loc = get_uniform_location(name);
+	if (loc >= 0)
+		glProgramUniformHandleui64vARB(get_resource_id(), loc, v.size(), &v[0]);
+}

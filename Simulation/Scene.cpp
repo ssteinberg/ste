@@ -60,9 +60,16 @@ void Scene::add_object(const std::shared_ptr<Object> &obj) {
 	mesh_data_bo.push_back(md);
 }
 
-void Scene::prepare() const {
- 	using namespace LLR;
+void Scene::bind_buffers() const {
+	using namespace LLR;
+	vao.bind();
+	LLR::buffer_object_cast<elements_type>(indices.get_buffer()).bind();
+	LLR::buffer_object_cast<indirect_draw_buffer_type>(idb.get_buffer()).bind();
+	0_storage_idx = scene_props->material_storage().buffer();
+	1_storage_idx = mesh_data_bo.get_buffer();
+}
 
+void Scene::prepare() const {
 	for (auto &p : objects) {
 		if (p.second->is_dirty()) {
 			p.second->clear_dirty();
@@ -78,13 +85,9 @@ void Scene::prepare() const {
 			ranges_to_lock.push_back(lock_range);
 		}
 	}
- 
+
 	renderable::prepare();
- 	vao.bind();
-	LLR::buffer_object_cast<elements_type>(indices.get_buffer()).bind();
-	LLR::buffer_object_cast<indirect_draw_buffer_type>(idb.get_buffer()).bind();
-	0_storage_idx = scene_props->material_storage().buffer();
-	1_storage_idx = mesh_data_bo.get_buffer();
+	bind_buffers();
 }
 
 void Scene::render() const {

@@ -5,8 +5,10 @@
 
 #include <string>
 #include <vector>
-#include <memory>
 #include <unordered_map>
+
+#include <memory>
+#include <functional>
 
 #include <glm/glm.hpp>
 
@@ -90,6 +92,22 @@ public:
 	void set_uniform(const std::string &name, std::uint64_t val) const;
 	void set_uniform(const std::string &name, bool val) const;
 	void set_uniform(const std::string &name, const texture_handle &handle) const;
+	void set_uniform(const std::string &name, const std::vector<glm::vec2> & v) const;
+	void set_uniform(const std::string &name, const std::vector<glm::i32vec2> & v) const;
+	void set_uniform(const std::string &name, const std::vector<glm::u32vec2> & v) const;
+	void set_uniform(const std::string &name, const std::vector<glm::i64vec2> & v) const;
+	void set_uniform(const std::string &name, const std::vector<glm::u64vec2> & v) const;
+	void set_uniform(const std::string &name, const std::vector<glm::vec3> & v) const;
+	void set_uniform(const std::string &name, const std::vector<glm::vec4> & v) const;
+	void set_uniform(const std::string &name, const std::vector<glm::mat2> & m, bool transpose = false) const;
+	void set_uniform(const std::string &name, const std::vector<glm::mat3> & m, bool transpose = false) const;
+	void set_uniform(const std::string &name, const std::vector<glm::mat4> & m, bool transpose = false) const;
+	void set_uniform(const std::string &name, const std::vector<float> & val) const;
+	void set_uniform(const std::string &name, const std::vector<std::int32_t> &val) const;
+	void set_uniform(const std::string &name, const std::vector<std::int64_t> &val) const;
+	void set_uniform(const std::string &name, const std::vector<std::uint32_t> &val) const;
+	void set_uniform(const std::string &name, const std::vector<std::uint64_t> &val) const;
+	void set_uniform(const std::string &name, const std::vector<std::reference_wrapper<const texture_handle>> &handles) const;
 	void set_uniform_subroutine(GLenum shader_type, const std::vector<unsigned> &ids) const;
 
 	llr_resource_type resource_type() const override { return llr_resource_type::LLRGLSLProgram; }
