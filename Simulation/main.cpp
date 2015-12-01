@@ -29,9 +29,7 @@
 #include "Sphere.h"
 
 #include "dense_voxel_space.h"
-
-#include "pinned_gvector.h"
-#include "gstack.h"
+#include "renderable.h"
 
 using namespace StE::LLR;
 using namespace StE::Text;
@@ -44,7 +42,7 @@ private:
 	std::shared_ptr<ProjectionSignalConnectionType> projection_change_connection;
 
 public:
-	SkyDome(const StE::StEngineControl &ctx) : MeshRenderable(StE::Resource::GLSLProgramLoader::load_program_task(ctx, { "transform_sky.vert", "frag_sky.frag" })(), 
+	SkyDome(const StE::StEngineControl &ctx) : MeshRenderable(StE::Resource::GLSLProgramLoader::load_program_task(ctx, { "transform_sky.vert", "frag_sky.frag" })(),
 															  std::make_shared<StE::Graphics::Sphere>(10, 10, .0f)) {
 		stars_tex = StE::Resource::SurfaceIO::load_texture_2d_task("Data/textures/stars.jpg", true)();
 
@@ -71,19 +69,122 @@ public:
 	}
 };
 
+class RayTracer : public StE::Graphics::renderable {
+private:
+	using ProjectionSignalConnectionType = StE::StEngineControl::projection_change_signal_type::connection_type;
+	std::shared_ptr<ProjectionSignalConnectionType> projection_change_connection;
+
+public:
+	RayTracer(const StE::StEngineControl &ctx) : StE::Graphics::renderable(StE::Resource::GLSLProgramLoader::load_program_task(ctx, { "passthrough.vert", "ray.frag" })()) {
+		get_program()->set_uniform("inv_projection", glm::inverse(ctx.projection_matrix()));
+		projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([=](const glm::mat4 &proj, float, float clip_near, float clip_far) {
+			get_program()->set_uniform("inv_projection", glm::inverse(proj));
+		});
+		ctx.signal_projection_change().connect(projection_change_connection);
+	}
+
+	void set_model_matrix(const glm::mat4 &m) {
+		get_program()->set_uniform("inv_view_model", glm::inverse(m));
+	}
+
+	void set_world_center(const glm::vec3 &c, float voxel_size) const {
+		auto vs = voxel_size * 4;
+		glm::vec3 translation = glm::round(c / vs) * vs;
+		get_program()->set_uniform("translation", c - translation);
+	}
+
+	virtual void prepare() const override {
+		renderable::prepare();
+
+		StE::Graphics::ScreenFillingQuad.vao()->bind();
+	}
+
+	virtual void render() const override {
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	}
+};
+
+glm::vec2 bounding_triangle_vertex(glm::vec3 U, glm::vec3 V, glm::vec3 W) {
+	using namespace glm;
+
+	vec4 prev = vec4(U, 1);
+	vec4 v = vec4(V, 1);
+	vec4 next = vec4(W, 1);
+
+	vec3 a = v.xyw - prev.xyw;
+	vec3 b = next.xyw - v.xyw;
+
+	vec3 p0 = cross(a, vec3(prev.xyw));
+	vec3 p1 = cross(b, vec3(v.xyw));
+
+	p0.z -= dot(vec2(1), abs(vec2(p0.xy)));
+	p1.z -= dot(vec2(1), abs(vec2(p1.xy)));
+
+	vec3 t = cross(p0, p1);
+	return vec2(t.xy) / t.z;
+}
+
+void do_stuff() {
+	using namespace glm;
+
+	vec3 U = { -100, -10, 0 };
+	vec3 V =  { 100,-10,-1 };
+	vec3 W = { -50,100,10 };
+
+	vec3 T = V - U;
+	vec3 N = normalize(cross(T, W - U));
+
+	float d = dot(-U, N);
+	float voxel = 4;// voxel_size(0);//voxel_level(d));
+
+	vec3 pos0 = U / voxel;
+	vec3 pos1 = V / voxel;
+	vec3 pos2 = W / voxel;
+
+	T = normalize(T);
+	vec3 B = cross(N, T);
+
+	mat3 TBN = mat3(T, B, N);
+	mat3 invTBN = transpose(TBN);
+
+	float voxels_texture_size = 1.f * 1024.f;
+	vec3 p0 = invTBN * pos0;
+	vec3 p1 = invTBN * pos1;
+	vec3 p2 = invTBN * pos2;
+	vec2 minv = min(min(vec2(p0.xy), vec2(p1.xy)), vec2(p2.xy));
+
+	p0.xy = bounding_triangle_vertex(p2, p0, p1);
+	p1.xy = bounding_triangle_vertex(p0, p1, p2);
+	p2.xy = bounding_triangle_vertex(p1, p2, p0);
+
+	U = TBN * (p0 * voxel);
+	V = TBN * (p1 * voxel);
+	W = TBN * (p2 * voxel);
+
+	vec2 v0 = p0.xy - minv;
+	vec2 v1 = p1.xy - minv;
+	vec2 v2 = p2.xy - minv;
+
+	v0 /= voxels_texture_size;
+	v1 /= voxels_texture_size;
+	v2 /= voxels_texture_size;
+}
+
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam, int iCmdShow) {
 	StE::Log logger("Simulation");
 	logger.redirect_std_outputs();
 	ste_log_set_global_logger(&logger);
 	ste_log() << "Simulation is running";
 
+	do_stuff();
+
 	int w = 1688, h = 950;
-	constexpr float clip_far = 10240.f;
+	constexpr float clip_far = 4096.f;
 	constexpr float clip_near = 5.f;
 
 	gl_context::context_settings settings;
 	settings.vsync = false;
-	StE::StEngineControl ctx(std::make_unique<gl_context>(settings, "Shlomi Steinberg - Simulation", glm::i32vec2{ w, h }));
+	StE::StEngineControl ctx(std::make_unique<gl_context>(settings, "Shlomi Steinberg - Simulation", glm::i32vec2{ w, h }));// , gli::FORMAT_RGBA8_UNORM));
 	ctx.set_clipping_planes(clip_near, clip_far);
 
 	using ResizeSignalConnectionType = StE::StEngineControl::framebuffer_resize_signal_type::connection_type;
@@ -145,6 +246,22 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 
 	std::shared_ptr<StE::Graphics::Object> light_obj;
 	{
+		std::unique_ptr<StE::Graphics::mesh<StE::Graphics::mesh_subdivion_mode::Triangles>> m = std::make_unique<StE::Graphics::mesh<StE::Graphics::mesh_subdivion_mode::Triangles>>();
+		std::vector<StE::Graphics::ObjectVertexData> vertices;
+		StE::Graphics::ObjectVertexData v;
+		v.p = { -100,-10,0 };
+		v.uv = { 0,0 };
+		vertices.push_back(v);
+		v.p = { 100,-10,0 };
+		v.uv = { 1,0 };
+		vertices.push_back(v);
+		v.p = { -50,100,0 };
+		v.uv = { 0,1 };
+		vertices.push_back(v);
+		m->set_vertices(vertices);
+		m->set_indices(std::vector<unsigned>{0,1,2});
+		light_obj = std::make_shared<StE::Graphics::Object>(std::move(m));
+
 		std::unique_ptr<StE::Graphics::Sphere> sphere = std::make_unique<StE::Graphics::Sphere>(10, 10);
 		light_obj = std::make_shared<StE::Graphics::Object>(std::move(sphere));
 
@@ -163,7 +280,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 		scene.add_object(light_obj);
 	}
 
-	StE::Graphics::dense_voxel_space voxel_space(ctx);
+	StE::Graphics::dense_voxel_space voxel_space(ctx, 1024, 1.f);
+	RayTracer ray_tracer(ctx);
+	voxel_space.update_shader_voxel_uniforms(*ray_tracer.get_program());
 
 
 	ctx.set_renderer(&basic_renderer);
@@ -218,7 +337,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 			auto center = static_cast<glm::vec2>(ctx.get_backbuffer_size())*.5f;
 			ctx.set_pointer_position(static_cast<glm::ivec2>(center));
 			auto diff_v = (center - static_cast<decltype(center)>(pp)) * time_delta * rotation_factor;
-//			camera.pitch_and_yaw(-diff_v.y, diff_v.x); 
+			camera.pitch_and_yaw(-diff_v.y, diff_v.x); 
 		}
 
 
@@ -234,15 +353,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 		renderer.set_model_matrix(mv);
 		scene.set_model_matrix(mv);
 		skydome.set_model_matrix(mvnt);
-
-		(*voxel_space.voxelizer(scene))();
+		ray_tracer.set_model_matrix(mvnt);
+		voxel_space.set_model_matrix(mv, camera.get_position());
+		ray_tracer.set_world_center(camera.get_position(), voxel_space.get_voxel_texel_size());
 
 //		renderer.queue().push_back(&fb_depth_clearer);
 //		renderer.queue().push_back(&scene);
 //		renderer.queue().push_back(&skydome);
 //		renderer.postprocess_queue().push_back(&hdr);
-//		ctx.gl()->clear_framebuffer();
+
 		ctx.renderer()->queue().push_back(&fb_clearer);
+		ctx.renderer()->queue().push_back(voxel_space.voxelizer(scene));
+		ctx.renderer()->queue().push_back(&ray_tracer);
 
 		{
 			using namespace StE::Text::Attributes;

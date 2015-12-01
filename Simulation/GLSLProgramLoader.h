@@ -38,7 +38,7 @@ private:
 	static std::unique_ptr<LLR::GLSLShaderGeneric> compile_from_source(const boost::filesystem::path &path, std::string src, LLR::GLSLShaderProperties prop, LLR::GLSLShaderType);
 
 	static std::vector<boost::filesystem::path> find_includes(const boost::filesystem::path &path);
-	static bool parse_include(const boost::filesystem::path &, int, std::string &);
+	static bool parse_include(const boost::filesystem::path &, int, std::string &, std::vector<std::string> &);
 	static bool parse_parameters(std::string &, LLR::GLSLShaderProperties &, LLR::GLSLShaderType &);
 	static std::string parse_directive(const std::string &, const std::string &, std::string::size_type &, std::string::size_type &);
 

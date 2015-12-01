@@ -61,10 +61,12 @@ std::unique_ptr<GLSLShaderGeneric> GLSLProgramLoader::compile_from_path(const bo
 	GLSLShaderProperties prop{ 0,0 };
 	GLSLShaderType type = GLSLShaderType::NONE;
 
+	std::vector<std::string> paths{ path.filename().string() };
+
 	int i = 1;
 	while (std::getline(ifs, line)) {
 		if (line[0] == '#')
-			parse_parameters(line, prop, type) || parse_include(path, i, line);
+			parse_parameters(line, prop, type) || parse_include(path, i, line, paths);
 
 		src += line + "\n";
 		++i;
@@ -171,11 +173,10 @@ std::vector<boost::filesystem::path> GLSLProgramLoader::find_includes(const boos
 	return ret;
 }
 
-bool GLSLProgramLoader::parse_include(const boost::filesystem::path &path, int line, std::string &source) {
+bool GLSLProgramLoader::parse_include(const boost::filesystem::path &path, int line, std::string &source, std::vector<std::string> &paths) {
 	std::string::size_type it = 0, end;
 	std::string name;
-	std::string path_string = path.string();
-	std::vector<std::string> paths{ path_string };
+	std::string path_string = path.filename().string();
 
 	bool matched = false;
 
@@ -188,11 +189,15 @@ bool GLSLProgramLoader::parse_include(const boost::filesystem::path &path, int l
 
 		std::string file_name = name.substr(1, name_len - 1);
 
+		bool duplicate = false;
 		for (auto &p : paths)
 			if (p == file_name) {
 				source.replace(it, end - it, "");
-				continue;
+				duplicate = true;
+				break;
 			}
+		if (duplicate)
+			continue;
 
 		if (matched) {
 			line = 0;

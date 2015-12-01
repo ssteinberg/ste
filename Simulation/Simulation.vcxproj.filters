@@ -790,6 +790,9 @@
     <None Include="voxels.glsl">
       <Filter>src\StE\Framework Graphics\Voxels\Shaders</Filter>
     </None>
+    <None Include="utils.glsl">
+      <Filter>src\StE\Framework Graphics\Common Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="transform_sky.vert">
@@ -842,6 +845,9 @@
     </CustomBuild>
     <CustomBuild Include="voxelizer.geom">
       <Filter>src\StE\Framework Graphics\Voxels\Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ray.frag">
+      <Filter>src\Shaders</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>

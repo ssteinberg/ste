@@ -560,6 +560,11 @@
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">main.cpp;%(AdditionalInputs)</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Full Optimization|Win32'">main.cpp;%(AdditionalInputs)</AdditionalInputs>
     </CustomBuild>
+    <CustomBuild Include="ray.frag">
+      <SubType>
+      </SubType>
+      <FileType>Document</FileType>
+    </CustomBuild>
     <None Include="stdafx.h" />
     <None Include="text_distance_map_contour.frag" />
     <None Include="text_distance_map_contour.vert" />
@@ -600,6 +605,10 @@
       </SubType>
       <FileType>Document</FileType>
     </CustomBuild>
+    <None Include="utils.glsl">
+      <SubType>
+      </SubType>
+    </None>
     <None Include="voxels.glsl">
       <SubType>
       </SubType>

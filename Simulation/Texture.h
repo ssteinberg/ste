@@ -124,8 +124,12 @@ public:
 	constexpr bool is_multisampled() const { return texture_is_multisampled<type>::value; }
 
 	void clear(void *data, int level = 0) {
-		gli::gl::format format = gl_utils::translate_format(format);
-		glClearTexImage(get_resource_id(), level, format.External, format.Type, data);
+		gli::gl::format glformat = gl_utils::translate_format(format);
+		glClearTexImage(get_resource_id(), level, glformat.External, glformat.Type, data);
+	}
+	void clear(void *data, glm::i32vec3 offset, glm::u32vec3 size, int level = 0) {
+		gli::gl::format glformat = gl_utils::translate_format(format);
+		glClearTexSubImage(get_resource_id(), level, offset.x, offset.y, offset.z, size.x, size.y, size.z, glformat.External, glformat.Type, data);
 	}
 
 	auto get_size() const { return size; }

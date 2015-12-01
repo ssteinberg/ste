@@ -17,7 +17,10 @@ void dense_voxelizer::prepare() const {
 void dense_voxelizer::render() const {
 	using namespace LLR;
 
-	scene(dvs->voxelizer_program, &LLR::gl_current_context::get()->defaut_framebuffer());
+	dvs->clear_space();
+	scene(dvs->voxelizer_program, &dvs->voxelizer_fbo);
+
+	LLR::gl_current_context::get()->memory_barrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 }
 
 void dense_voxelizer::finalize() const {
