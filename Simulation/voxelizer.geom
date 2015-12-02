@@ -108,18 +108,6 @@ void main() {
 	vec2 v0 = p0.xy - minv;
 	vec2 v1 = p1.xy - minv;
 	vec2 v2 = p2.xy - minv;
-	
-	/*v0 = sign(v0) * ceil(sign(v0) * v0);
-	v1 = sign(v1) * ceil(sign(v1) * v1);
-	v2 = sign(v2) * ceil(sign(v2) * v2);*/
-
-	/*vec3 wcenter = (U + V + W) / 3.f;
-	vec3 UC = (U - wcenter) * (length(v0) / length(p0.xy));
-	vec3 VC = (V - wcenter) * (length(v1) / length(p1.xy));
-	vec3 WC = (W - wcenter) * (length(v2) / length(p2.xy));
-	U = wcenter + UC;
-	V = wcenter + VC;
-	W = wcenter + WC;*/
 
 	v0 /= voxels_texture_size;
 	v1 /= voxels_texture_size;

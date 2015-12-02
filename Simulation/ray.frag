@@ -17,5 +17,5 @@ void main() {
 	p = p * 2 - vec2(1);
 	vec3 P = normalize((inv_view_model * inv_projection * vec4(p, 0, 1)).xyz);
 
-    gl_FragColor.rgb = voxel_raymarch(vec3(translation), P / 2);
+    gl_FragColor = voxel_raymarch(vec3(translation), P);
 }

@@ -33,7 +33,6 @@ void main() {
 	mat4 trans_inverse_model = trans_inverse_view_matrix * md.transpose_inverse_model;
 	
 	vec4 P = model * vec4(vert, 1);
-	//vec4 P  = vec4(vert,1);
 	P.xyz += translation;
 
 	vout.N = (trans_inverse_model * vec4(normal, 1)).xyz;

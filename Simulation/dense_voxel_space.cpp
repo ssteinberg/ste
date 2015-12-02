@@ -27,14 +27,26 @@ void dense_voxel_space::create_dense_voxel_space(float voxel_size_factor) {
 
 		space_radiance->commit_tiles(min, max - min, i);
 		space_data->commit_tiles(min, max - min, i);
+
+		if (i>0) {
+			auto delta = (center - min) / 2u;
+			delta = decltype(size)(glm::ceil(glm::vec3(delta) / static_cast<float>(tile_size.x))) * tile_size.x;
+			min = min + delta;
+			max = max - delta;
+
+			if (max.x > min.x) {
+				space_radiance->uncommit_tiles(min, max - min, i);
+				space_data->uncommit_tiles(min, max - min, i);
+			}
+		}
 	}
 
 	for (unsigned i = 0; i < mipmaps; ++i) {
 		(*space_radiance)[i].make_resident();
 		(*space_data)[i].make_resident();
 	}
-	space_data->get_texture_handle().make_resident();
 	space_radiance->get_texture_handle().make_resident();
+	space_data->get_texture_handle().make_resident();
 
 	update_shader_voxel_uniforms(*voxelizer_program);
 }

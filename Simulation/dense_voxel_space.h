@@ -24,7 +24,7 @@ namespace Graphics {
 class dense_voxel_space {
 private:
 	static constexpr gli::format space_format_radiance = gli::format::FORMAT_RGBA16_SFLOAT;
-	static constexpr gli::format space_format_data = gli::format::FORMAT_R32_UINT;
+	static constexpr gli::format space_format_data = gli::format::FORMAT_RGBA16_SFLOAT;
 	using ProjectionSignalConnectionType = StEngineControl::projection_change_signal_type::connection_type;
 
 	friend class dense_voxelizer;
@@ -87,7 +87,7 @@ public:
 			handles_data.push_back((*space_data)[i].get_image_handle());
 		}
 		prg.set_uniform("voxel_radiance_levels_handles", handles_radiance);
-		prg.set_uniform("voxel_data_levels_handles", handles_radiance);
+		prg.set_uniform("voxel_data_levels_handles", handles_data);
 		prg.set_uniform("voxel_space_radiance", space_radiance->get_texture_handle());
 		prg.set_uniform("voxel_space_data", space_data->get_texture_handle());
 	}

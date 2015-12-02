@@ -23,7 +23,6 @@ void main() {
 		return;
 	}
 
-
 	int matIdx = fragment.matIdx;
 	vec2 uv = fragment.st;
 	material_descriptor md = mat_descriptor[matIdx];

@@ -104,79 +104,11 @@ public:
 	}
 };
 
-glm::vec2 bounding_triangle_vertex(glm::vec3 U, glm::vec3 V, glm::vec3 W) {
-	using namespace glm;
-
-	vec4 prev = vec4(U, 1);
-	vec4 v = vec4(V, 1);
-	vec4 next = vec4(W, 1);
-
-	vec3 a = v.xyw - prev.xyw;
-	vec3 b = next.xyw - v.xyw;
-
-	vec3 p0 = cross(a, vec3(prev.xyw));
-	vec3 p1 = cross(b, vec3(v.xyw));
-
-	p0.z -= dot(vec2(1), abs(vec2(p0.xy)));
-	p1.z -= dot(vec2(1), abs(vec2(p1.xy)));
-
-	vec3 t = cross(p0, p1);
-	return vec2(t.xy) / t.z;
-}
-
-void do_stuff() {
-	using namespace glm;
-
-	vec3 U = { -100, -10, 0 };
-	vec3 V =  { 100,-10,-1 };
-	vec3 W = { -50,100,10 };
-
-	vec3 T = V - U;
-	vec3 N = normalize(cross(T, W - U));
-
-	float d = dot(-U, N);
-	float voxel = 4;// voxel_size(0);//voxel_level(d));
-
-	vec3 pos0 = U / voxel;
-	vec3 pos1 = V / voxel;
-	vec3 pos2 = W / voxel;
-
-	T = normalize(T);
-	vec3 B = cross(N, T);
-
-	mat3 TBN = mat3(T, B, N);
-	mat3 invTBN = transpose(TBN);
-
-	float voxels_texture_size = 1.f * 1024.f;
-	vec3 p0 = invTBN * pos0;
-	vec3 p1 = invTBN * pos1;
-	vec3 p2 = invTBN * pos2;
-	vec2 minv = min(min(vec2(p0.xy), vec2(p1.xy)), vec2(p2.xy));
-
-	p0.xy = bounding_triangle_vertex(p2, p0, p1);
-	p1.xy = bounding_triangle_vertex(p0, p1, p2);
-	p2.xy = bounding_triangle_vertex(p1, p2, p0);
-
-	U = TBN * (p0 * voxel);
-	V = TBN * (p1 * voxel);
-	W = TBN * (p2 * voxel);
-
-	vec2 v0 = p0.xy - minv;
-	vec2 v1 = p1.xy - minv;
-	vec2 v2 = p2.xy - minv;
-
-	v0 /= voxels_texture_size;
-	v1 /= voxels_texture_size;
-	v2 /= voxels_texture_size;
-}
-
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam, int iCmdShow) {
 	StE::Log logger("Simulation");
 	logger.redirect_std_outputs();
 	ste_log_set_global_logger(&logger);
 	ste_log() << "Simulation is running";
-
-	do_stuff();
 
 	int w = 1688, h = 950;
 	constexpr float clip_far = 4096.f;
