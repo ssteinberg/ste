@@ -177,6 +177,12 @@ void GLSLProgram::set_uniform(const std::string &name, const texture_handle &han
 		glProgramUniformHandleui64ARB(get_resource_id(), loc, handle);
 }
 
+void GLSLProgram::set_uniform(const std::string &name, const image_handle &handle) const {
+	int loc = get_uniform_location(name);
+	if (loc >= 0)
+		glProgramUniform1ui64ARB(get_resource_id(), loc, handle);
+}
+
 void GLSLProgram::set_uniform_subroutine(GLenum shader_type, const std::vector<unsigned> &ids) const {
 	glUniformSubroutinesuiv(shader_type, ids.size(), &ids[0]);
 }
@@ -271,12 +277,22 @@ void GLSLProgram::set_uniform(const std::string &name, const std::vector<std::ui
 		glProgramUniform1ui64vARB(get_resource_id(), loc, val.size(), reinterpret_cast<const std::remove_reference_t<decltype(val)>::value_type*>(&val[0]));
 }
 
-void GLSLProgram::set_uniform(const std::string &name, const std::vector<std::reference_wrapper<const texture_handle>> &handles) const {
+void GLSLProgram::set_uniform(const std::string &name, const std::vector<texture_handle> &handles) const {
 	std::vector<decltype(texture_handle().get_handle())> v;
 	for (auto &ref : handles)
-		v.push_back(ref.get().get_handle());
+		v.push_back(ref.get_handle());
 
 	int loc = get_uniform_location(name);
 	if (loc >= 0)
 		glProgramUniformHandleui64vARB(get_resource_id(), loc, v.size(), &v[0]);
+}
+
+void GLSLProgram::set_uniform(const std::string &name, const std::vector<image_handle> &handles) const {
+	std::vector<decltype(texture_handle().get_handle())> v;
+	for (auto &ref : handles)
+		v.push_back(ref.get_handle());
+
+	int loc = get_uniform_location(name);
+	if (loc >= 0)
+		glProgramUniform1ui64vARB(get_resource_id(), loc, v.size(), &v[0]);
 }

@@ -31,6 +31,8 @@
 #include "dense_voxel_space.h"
 #include "renderable.h"
 
+#include "RSH.h"
+
 using namespace StE::LLR;
 using namespace StE::Text;
 
@@ -105,7 +107,10 @@ public:
 };
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam, int iCmdShow) {
-	StE::Log logger("Simulation");
+	StE::RSH<2, 5> rsh;
+	auto v = rsh(1.2f, .5f);
+
+	StE::Log logger("Global Illumination");
 	logger.redirect_std_outputs();
 	ste_log_set_global_logger(&logger);
 	ste_log() << "Simulation is running";
@@ -116,7 +121,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 
 	gl_context::context_settings settings;
 	settings.vsync = false;
-	StE::StEngineControl ctx(std::make_unique<gl_context>(settings, "Shlomi Steinberg - Simulation", glm::i32vec2{ w, h }));// , gli::FORMAT_RGBA8_UNORM));
+	StE::StEngineControl ctx(std::make_unique<gl_context>(settings, "Shlomi Steinberg - Global Illumination", glm::i32vec2{ w, h }));// , gli::FORMAT_RGBA8_UNORM));
 	ctx.set_clipping_planes(clip_near, clip_far);
 
 	using ResizeSignalConnectionType = StE::StEngineControl::framebuffer_resize_signal_type::connection_type;
@@ -289,13 +294,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 		voxel_space.set_model_matrix(mv, camera.get_position());
 		ray_tracer.set_world_center(camera.get_position(), voxel_space.get_voxel_texel_size());
 
+//		renderer.queue().push_back(voxel_space.voxelizer(scene));
 //		renderer.queue().push_back(&fb_depth_clearer);
 //		renderer.queue().push_back(&scene);
 //		renderer.queue().push_back(&skydome);
 //		renderer.postprocess_queue().push_back(&hdr);
 
-		ctx.renderer()->queue().push_back(&fb_clearer);
 		ctx.renderer()->queue().push_back(voxel_space.voxelizer(scene));
+		ctx.renderer()->queue().push_back(&fb_clearer);
 		ctx.renderer()->queue().push_back(&ray_tracer);
 
 		{
@@ -304,9 +310,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 			auto total_vram = std::to_wstring(ctx.gl()->meminfo_total_available_vram() / 1024);
 			auto free_vram = std::to_wstring(ctx.gl()->meminfo_free_vram() / 1024);
 
+//			renderer.postprocess_queue().push_back(text_renderer.render({ 30, h - 50 },
+//																		vsmall(b(stroke(dark_magenta, 1)(red(tpf)))) + L" ms"));
+//			renderer.postprocess_queue().push_back(text_renderer.render({ 30, 20 },
+//																		vsmall(b((blue_violet(free_vram) + L" / " + stroke(red, 1)(dark_red(total_vram)) + L" MB")))));
 			ctx.renderer()->queue().push_back(text_renderer.render({ 30, h - 50 },
 																		vsmall(b(stroke(dark_magenta, 1)(red(tpf)))) + L" ms"));
-			/*renderer.postprocess_queue()*/ctx.renderer()->queue().push_back(text_renderer.render({ 30, 20 },
+			ctx.renderer()->queue().push_back(text_renderer.render({ 30, 20 },
 																		vsmall(b((blue_violet(free_vram) + L" / " + stroke(red, 1)(dark_red(total_vram)) + L" MB")))));
 		}
 

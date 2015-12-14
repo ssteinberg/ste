@@ -242,6 +242,11 @@ StE::task<std::unique_ptr<GLSLProgram>> GLSLProgramLoader::load_program_task(con
 			}
 
 			for (auto &path : paths) {
+				if (!boost::filesystem::exists(path)) {
+					ste_log_error() << "GLSL program " + path.string() + " couldn't be found!";
+					assert(false);
+					continue;
+				}
 				auto timet = boost::filesystem::last_write_time(path);
 				std::chrono::system_clock::time_point sys_time_point = std::chrono::system_clock::from_time_t(timet);
 				if (sys_time_point > modification_time) modification_time = sys_time_point;

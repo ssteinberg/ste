@@ -42,22 +42,13 @@ void voxelize(vec3 P, vec4 color, vec3 normal, float coverage) {
 	float size = voxel_size(level);
 	ivec3 vtc = ivec3(round(P / size)) + ivec3(imageSize(voxel_radiance_levels(level)).x >> 1);
 	
-	imageAtomicAdd(voxel_radiance_levels(level), vtc, f16vec4(color * coverage));
 	imageAtomicAdd(voxel_data_levels(level), vtc, f16vec4(normal * coverage, coverage));
-
-	/*uint un = vec3ToUint(normal) << 8U;
-	uint prev_val = 0, cur_val;
-	uint new_val = un + 1;
-	while ((cur_val = imageAtomicCompSwap(voxel_data_levels(level), vtc, prev_val, new_val)) != prev_val && cur_val != 0) {
-		prev_val = cur_val;
-		uint count = ((cur_val & 0xFF) + 1) & 0xFF;
-		new_val = count + un;
-	}*/
+	imageAtomicAdd(voxel_radiance_levels(level), vtc, f16vec4(color * coverage));
 }
 
 void voxelize(material_descriptor md, vec3 P, vec2 uv, vec3 normal, float coverage, vec2 dx, vec2 dy) {
-	vec3 diffuse = md.diffuse.tex_handler>0 ? textureGrad(sampler2D(md.diffuse.tex_handler), uv, dx, dy).rgb : vec3(1.f);
-	voxelize(P, vec4(diffuse, 1), normal, coverage);
+	vec4 diffuse = md.diffuse.tex_handler > 0 ? textureGrad(sampler2D(md.diffuse.tex_handler), uv, dx, dy) : vec4(1.f);
+	voxelize(P, diffuse, normal, coverage);
 }
 
 vec4 voxel_raymarch(vec3 P, vec3 dir) {
@@ -67,22 +58,19 @@ vec4 voxel_raymarch(vec3 P, vec3 dir) {
 		int tex_size = textureSize(voxel_space_radiance, int(level)).x;
 		ivec3 center = ivec3(tex_size >> 1);
 		
-		ivec3 coordinates = ivec3(round(P / size));
+		vec3 coordinates = P / size;
+		vec3 rcoords = round(coordinates);
 
-		ivec3 vtc = coordinates + center;
-		vec4 color = textureLod(voxel_space_radiance, vec3(vtc) / vec3(tex_size), int(level));
-		if (color.a > .0f) {
-			//uint d = texelFetch(voxel_space_data, vtc, int(level)).x;
-			//float count = float(d & 0xFF);
-
-			vec4 data = textureLod(voxel_space_data, vec3(vtc) / vec3(tex_size), int(level));
+		vec4 data = texelFetch(voxel_space_data, ivec3(rcoords + center), int(level));
+		if (data.w > .0f) {
+			vec4 color = texelFetch(voxel_space_radiance, ivec3(rcoords + center), int(level)) / data.w;
 			vec3 normal = data.xyz / data.w;
 
-			return color / data.w;
+			return color;
 		}
 
-		P += dir * size;
-
+		P += dir * size / 5;
+		
 		const float far = 4096.f;
 		if (abs(P.x) >= far || abs(P.y) >= far || abs(P.z) >= far) 
 			return vec4(0);

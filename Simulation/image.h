@@ -12,6 +12,8 @@
 #include "llr_resource_type.h"
 #include "texture_enums.h"
 
+#include "image_handle.h"
+
 #include "RenderTarget.h"
 
 namespace StE {
@@ -47,7 +49,6 @@ private:
 	using Base = bindable_resource<image_dummy_resource_allocator, ImageBinder, image_layout_binding, int, bool, int, ImageAccessMode, gli::format>;
 
 protected:
-	mutable std::uint64_t image_handle{ 0 };
 	size_type size;
 	gli::format format;
 	ImageAccessMode access;
@@ -71,11 +72,8 @@ public:
 	void unbind(const LayoutLocationType &binding) const override final { Binder::unbind(binding, 0, false, 0, access, format); }
 
 	auto get_image_handle() const {
-		return image_handle ? image_handle : (image_handle = glGetImageHandleARB(get_resource_id(), level, layers > 1 ? true : false, layer, gl_utils::translate_format(format).Internal));
+		return image_handle(glGetImageHandleARB(get_resource_id(), level, layers > 1 ? true : false, layer, gl_utils::translate_format(format).Internal), access);
 	}
-	void make_resident() const { glMakeImageHandleResidentARB(get_image_handle(), static_cast<GLenum>(access)); }
-	void make_nonresident() const { glMakeImageHandleNonResidentARB(get_image_handle()); }
-	bool is_resident() const { return glIsImageHandleResidentARB(get_image_handle()); }
 
 	void set_access(ImageAccessMode access) { this->access = access; }
 	int get_layers() const { return layers; }

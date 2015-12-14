@@ -4,7 +4,36 @@
 
 using namespace StE::Graphics;
 
+dense_voxel_space::dense_voxel_space(const StEngineControl &ctx, std::size_t max_size, float voxel_size_factor) : ctx(ctx) {
+	auto ts = LLR::texture_sparse_3d::page_sizes(space_format_radiance)[0];
+
+	size = static_cast<decltype(size)>(glm::min<int>(LLR::texture_sparse_3d::max_size(), max_size));
+	tile_size = static_cast<decltype(tile_size)>(glm::max(ts.x, glm::max(ts.y, ts.z)));
+
+	voxelizer_program = Resource::GLSLProgramLoader::load_program_task(ctx, { "voxelizer.vert", "voxelizer.frag", "voxelizer.geom" })();
+	voxelizer_upsampler_program = Resource::GLSLProgramLoader::load_program_task(ctx, { "voxelizer_upsampler.glsl" })();
+
+	voxelizer_output = std::make_unique<LLR::RenderTarget>(gli::format::FORMAT_R8_UNORM, size.xy);
+	voxelizer_fbo[0] = *voxelizer_output;
+
+	sampler.set_min_filter(LLR::TextureFiltering::Nearest);
+	sampler.set_mag_filter(LLR::TextureFiltering::Nearest);
+	sampler.set_mipmap_filter(LLR::TextureFiltering::Nearest);
+	sampler.set_wrap_s(LLR::TextureWrapMode::ClampToBorder);
+	sampler.set_wrap_t(LLR::TextureWrapMode::ClampToBorder);
+	sampler.set_wrap_r(LLR::TextureWrapMode::ClampToBorder);
+
+	create_dense_voxel_space(voxel_size_factor);
+	projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([=](const glm::mat4 &, float, float, float) {
+		create_dense_voxel_space(voxel_size_factor);
+	});
+	ctx.signal_projection_change().connect(projection_change_connection);
+}
+
 void dense_voxel_space::create_dense_voxel_space(float voxel_size_factor) {
+	handles_radiance.clear();
+	handles_data.clear();
+
 	float fb_pixel_size = 2.f * glm::tan(.5f * ctx.get_fov()) * ctx.get_near_clip() / ctx.get_backbuffer_size().x;
 	float space_size = ctx.get_far_clip();
 
@@ -28,27 +57,44 @@ void dense_voxel_space::create_dense_voxel_space(float voxel_size_factor) {
 		space_radiance->commit_tiles(min, max - min, i);
 		space_data->commit_tiles(min, max - min, i);
 
-		if (i>0) {
-			auto delta = (center - min) / 2u;
-			delta = decltype(size)(glm::ceil(glm::vec3(delta) / static_cast<float>(tile_size.x))) * tile_size.x;
-			min = min + delta;
-			max = max - delta;
+//		if (i>0) {
+//			auto delta = (center - min) / 2u;
+//			delta = decltype(size)(glm::ceil(glm::vec3(delta) / static_cast<float>(tile_size.x) + glm::vec3(1))) * tile_size.x;
+//			min = min + delta;
+//			max = max - delta;
+//
+//			if (max.x > min.x) {
+//				space_radiance->uncommit_tiles(min, max - min, i);
+//				space_data->uncommit_tiles(min, max - min, i);
+//			}
+//		}
 
-			if (max.x > min.x) {
-				space_radiance->uncommit_tiles(min, max - min, i);
-				space_data->uncommit_tiles(min, max - min, i);
-			}
-		}
-	}
+		auto ih = (*space_radiance)[i].get_image_handle();
+		auto dh = (*space_data)[i].get_image_handle();
 
-	for (unsigned i = 0; i < mipmaps; ++i) {
-		(*space_radiance)[i].make_resident();
-		(*space_data)[i].make_resident();
+		ih.make_resident();
+		dh.make_resident();
+
+		handles_radiance.push_back(ih);
+		handles_data.push_back(dh);
 	}
-	space_radiance->get_texture_handle().make_resident();
-	space_data->get_texture_handle().make_resident();
+	radiance_texture_handle = space_radiance->get_texture_handle(sampler);
+	data_texture_handle = space_data->get_texture_handle(sampler);
+	radiance_texture_handle.make_resident();
+	data_texture_handle.make_resident();
 
 	update_shader_voxel_uniforms(*voxelizer_program);
+	update_shader_voxel_uniforms(*voxelizer_upsampler_program);
+}
+
+void dense_voxel_space::update_shader_voxel_uniforms(LLR::GLSLProgram &prg) const {
+	prg.set_uniform("voxels_step_texels", step_size);
+	prg.set_uniform("voxels_voxel_texel_size", voxel_size);
+	prg.set_uniform("voxels_texture_levels", mipmaps);
+	prg.set_uniform("voxel_radiance_levels_handles", handles_radiance);
+	prg.set_uniform("voxel_data_levels_handles", handles_data);
+	prg.set_uniform("voxel_space_radiance", radiance_texture_handle);
+	prg.set_uniform("voxel_space_data", data_texture_handle);
 }
 
 void dense_voxel_space::clear_space() const {

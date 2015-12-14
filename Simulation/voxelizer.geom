@@ -22,6 +22,7 @@ out geo_out {
 	vec2 st;
 	flat int matIdx;
 	flat vec2 max_aabb;
+	flat float raster_size;
 } vout;
 
 vec2 bounding_triangle_vertex(vec3 U, vec3 V, vec3 W) {
@@ -56,19 +57,26 @@ void main() {
 	
 	vec3 min_world_aabb = min(U, min(V, W));
 	vec3 max_world_aabb = max(U, max(V, W));
-	vec3 aabb_signs = sign(min_world_aabb) * sign(max_world_aabb) * 2 - vec3(1);
-	vec3 aabb_distances = min(abs(min_world_aabb), abs(max_world_aabb));
-	vec3 ds = abs(aabb_signs) * aabb_distances;
+	vec3 aabb_signs = sign(min_world_aabb) * sign(max_world_aabb);
+	float voxel = voxel_size(N * dot(-U, N));
 
-	float d = max(min(min(ds.x, ds.y), ds.z), dot(-U, N));
-	float voxel = voxel_size(voxel_level(d));
+	/*if (dot(aabb_signs, vec3(1)) > -2.5f) {
+		vec3 aabb_distances = min(abs(min_world_aabb), abs(max_world_aabb));
+		float d_aabb = 4096.f;
+		if (aabb_signs.x > 0) d_aabb = min(d_aabb, aabb_distances.x);
+		if (aabb_signs.z > 0) d_aabb = min(d_aabb, aabb_distances.y);
+		if (aabb_signs.y > 0) d_aabb = min(d_aabb, aabb_distances.z);
+
+		voxel = max(voxel, voxel_size(voxel_level(d_aabb)));
+	}*/
+
 	
 	vec3 pos0 = U / voxel;
 	vec3 pos1 = V / voxel;
 	vec3 pos2 = W / voxel;
 	
 	float area = .5f * len_N / (voxel * voxel);
-	if (area < .66f) {
+	if (area < .5f) {
 		// Voxelize in geometry shader. Fast path.
 		material_descriptor md = mat_descriptor[matIdx];
 		vec2 uv = vec2(.5f);
@@ -89,13 +97,17 @@ void main() {
 	mat3 TBN = mat3(T, B, N);
 	mat3 invTBN = transpose(TBN);
 	
-	float voxels_texture_size = .4f * float(textureSize(voxel_space_radiance, 0).x);
+	// Increase a bit the raster size for large triangles
+	float raster_size_alpha = mix(1.f, .75f, clamp(area / 2000.f, .0f, 1.f));
+	float voxels_texture_size = raster_size_alpha * .5f * float(textureSize(voxel_space_radiance, 0).x);
+
 	vec3 p0 = invTBN * pos0;
 	vec3 p1 = invTBN * pos1;
 	vec3 p2 = invTBN * pos2;
 	vec2 minv = min(min(p0.xy, p1.xy), p2.xy);
 
 	vout.max_aabb = max(max(p0.xy, p1.xy), p2.xy) - minv;
+	vout.raster_size = voxels_texture_size;
 
 	p0.xy = bounding_triangle_vertex(p2, p0, p1);
 	p1.xy = bounding_triangle_vertex(p0, p1, p2);

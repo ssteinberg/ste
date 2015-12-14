@@ -13,10 +13,11 @@ in geo_out {
 	vec2 st;
 	flat int matIdx;
 	flat vec2 max_aabb;
+	flat float raster_size;
 } fragment;
 
 void main() {
-	float voxels_texture_size = .4f * float(textureSize(voxel_space_radiance, 0).x);
+	float voxels_texture_size = fragment.raster_size;
 	vec2 p = 2.f * gl_FragCoord.xy / voxels_texture_size;
 	if (p.x > fragment.max_aabb.x || p.y > fragment.max_aabb.y) {
 		discard;

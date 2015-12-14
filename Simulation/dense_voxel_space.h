@@ -15,6 +15,7 @@
 #include "FramebufferObject.h"
 #include "RenderTarget.h"
 #include "texture_sparse.h"
+#include "Sampler.h"
 
 #include <memory>
 
@@ -40,6 +41,8 @@ private:
 	std::unique_ptr<LLR::texture_sparse_3d> space_radiance;
 	std::unique_ptr<LLR::texture_sparse_3d> space_data;
 
+	LLR::SamplerMipmapped sampler;
+
 	std::shared_ptr<ProjectionSignalConnectionType> projection_change_connection;
 
 	LLR::FramebufferObject voxelizer_fbo;
@@ -47,50 +50,25 @@ private:
 
 protected:
 	std::shared_ptr<LLR::GLSLProgram> voxelizer_program;
+	std::shared_ptr<LLR::GLSLProgram> voxelizer_upsampler_program;
+
+	std::vector<LLR::image_handle> handles_radiance;
+	std::vector<LLR::image_handle> handles_data;
+	LLR::texture_handle radiance_texture_handle;
+	LLR::texture_handle data_texture_handle;
 
 protected:
 	void create_dense_voxel_space(float voxel_size_factor);
 	void clear_space() const;
 
 public:
-	dense_voxel_space(const StEngineControl &ctx, std::size_t max_size = 1024, float voxel_size_factor = 1.f) : ctx(ctx) {
-		auto ts = LLR::texture_sparse_3d::page_sizes(space_format_radiance)[0];
-
-		size = static_cast<decltype(size)>(glm::min<int>(LLR::texture_sparse_3d::max_size(), max_size));
-		tile_size = static_cast<decltype(tile_size)>(glm::max(ts.x, glm::max(ts.y, ts.z)));
-
-		voxelizer_program = Resource::GLSLProgramLoader::load_program_task(ctx, { "voxelizer.vert", "voxelizer.frag", "voxelizer.geom" })();
-
-		voxelizer_output = std::make_unique<LLR::RenderTarget>(gli::format::FORMAT_R8_UNORM, size.xy);
-		voxelizer_fbo[0] = *voxelizer_output;
-
-		create_dense_voxel_space(voxel_size_factor);
-		projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([=](const glm::mat4 &, float, float, float) {
-			create_dense_voxel_space(voxel_size_factor);
-		});
-		ctx.signal_projection_change().connect(projection_change_connection);
-	}
+	dense_voxel_space(const StEngineControl &ctx, std::size_t max_size = 1024, float voxel_size_factor = 1.f);
 
 	std::unique_ptr<dense_voxelizer> voxelizer(Scene &scene) const {
 		return std::make_unique<dense_voxelizer>(ctx, this, scene);
 	}
 
-	void update_shader_voxel_uniforms(LLR::GLSLProgram &prg) const {
-		prg.set_uniform("voxels_step_texels", step_size);
-		prg.set_uniform("voxels_voxel_texel_size", voxel_size);
-		prg.set_uniform("voxels_texture_levels", mipmaps);
-
-		std::vector<std::uint64_t> handles_radiance;
-		std::vector<std::uint64_t> handles_data;
-		for (unsigned i = 0; i < mipmaps; ++i) {
-			handles_radiance.push_back((*space_radiance)[i].get_image_handle());
-			handles_data.push_back((*space_data)[i].get_image_handle());
-		}
-		prg.set_uniform("voxel_radiance_levels_handles", handles_radiance);
-		prg.set_uniform("voxel_data_levels_handles", handles_data);
-		prg.set_uniform("voxel_space_radiance", space_radiance->get_texture_handle());
-		prg.set_uniform("voxel_space_data", space_data->get_texture_handle());
-	}
+	void update_shader_voxel_uniforms(LLR::GLSLProgram &prg) const;
 
 	void set_model_matrix(const glm::mat4 &m, const glm::vec3 &translate) const {
 		auto vs = voxel_size * 4;

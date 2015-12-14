@@ -18,6 +18,9 @@
 #include "GLSLShader.h"
 
 #include "texture_handle.h"
+#include "image_handle.h"
+
+#include "trace.h"
 
 namespace StE {
 namespace LLR {
@@ -45,7 +48,14 @@ private:
 		if (it != uniform_map.end())
 			return it->second;
 
-		return (uniform_map[name] = glGetUniformLocation(get_resource_id(), name.c_str()));
+		auto ret = (uniform_map[name] = glGetUniformLocation(get_resource_id(), name.c_str()));
+#ifdef _DEBUG
+		if (ret == -1) {
+			TRACE("Uniform \"" + name + "\" not found\n");
+		}
+#endif
+
+		return ret;
 	}
 
 public:
@@ -92,6 +102,7 @@ public:
 	void set_uniform(const std::string &name, std::uint64_t val) const;
 	void set_uniform(const std::string &name, bool val) const;
 	void set_uniform(const std::string &name, const texture_handle &handle) const;
+	void set_uniform(const std::string &name, const image_handle &handle) const;
 	void set_uniform(const std::string &name, const std::vector<glm::vec2> & v) const;
 	void set_uniform(const std::string &name, const std::vector<glm::i32vec2> & v) const;
 	void set_uniform(const std::string &name, const std::vector<glm::u32vec2> & v) const;
@@ -107,7 +118,8 @@ public:
 	void set_uniform(const std::string &name, const std::vector<std::int64_t> &val) const;
 	void set_uniform(const std::string &name, const std::vector<std::uint32_t> &val) const;
 	void set_uniform(const std::string &name, const std::vector<std::uint64_t> &val) const;
-	void set_uniform(const std::string &name, const std::vector<std::reference_wrapper<const texture_handle>> &handles) const;
+	void set_uniform(const std::string &name, const std::vector<texture_handle> &handles) const;
+	void set_uniform(const std::string &name, const std::vector<image_handle> &handles) const;
 	void set_uniform_subroutine(GLenum shader_type, const std::vector<unsigned> &ids) const;
 
 	llr_resource_type resource_type() const override { return llr_resource_type::LLRGLSLProgram; }

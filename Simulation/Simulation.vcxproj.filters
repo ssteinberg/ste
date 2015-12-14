@@ -211,6 +211,12 @@
     <Filter Include="src\StE\Framework Graphics\Voxels\Shaders">
       <UniqueIdentifier>{0a666e43-b817-43a1-a3d8-ee48ead053b6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\StE\Mathematical Additions">
+      <UniqueIdentifier>{8342d735-a547-4122-968c-3f6d1c7b4516}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\StE\Mathematical Additions\Real Spherical Harmonics">
+      <UniqueIdentifier>{0ef4bffc-bea7-42f4-8edb-245d3207cc3c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -752,6 +758,15 @@
     <ClInclude Include="dense_voxelizer.h">
       <Filter>src\StE\Framework Graphics\Voxels</Filter>
     </ClInclude>
+    <ClInclude Include="RSH.h">
+      <Filter>src\StE\Mathematical Additions\Real Spherical Harmonics</Filter>
+    </ClInclude>
+    <ClInclude Include="legendre_polynomial.h">
+      <Filter>src\StE\Mathematical Additions\Real Spherical Harmonics</Filter>
+    </ClInclude>
+    <ClInclude Include="image_handle.h">
+      <Filter>src\StE\Core\LLR\GPU Resources\Surfaces</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="stdafx.h">
@@ -848,6 +863,9 @@
     </CustomBuild>
     <CustomBuild Include="ray.frag">
       <Filter>src\Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="voxelizer_upsampler.glsl">
+      <Filter>src\StE\Framework Graphics\Voxels\Shaders</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>

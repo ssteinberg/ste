@@ -10,10 +10,10 @@ namespace LLR {
 
 class texture_handle {
 private:
-	std::uint64_t handle;
+	std::uint64_t handle{ 0 };
 
 public:
-	texture_handle() : handle(0) {}
+	texture_handle() = default;
 	texture_handle(std::uint64_t handle) : handle(handle) {}
 
 	void make_resident() const { if (!is_resident()) glMakeTextureHandleResidentARB(handle); }
