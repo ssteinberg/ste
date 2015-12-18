@@ -2,8 +2,6 @@
 #include "stdafx.h"
 #include "windows.h"
 
-#include <glm/glm.hpp>
-
 #include "gl_utils.h"
 #include "Log.h"
 #include "Keyboard.h"

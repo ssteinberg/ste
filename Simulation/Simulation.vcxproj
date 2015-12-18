@@ -63,7 +63,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <DisableSpecificWarnings>3280;869;177;3457</DisableSpecificWarnings>
-      <PreprocessorDefinitions>PROJECT_NAME="$(ProjectName)";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>PROJECT_NAME="$(ProjectName)";__builtin_huge_val()=HUGE_VAL;__builtin_huge_valf()=HUGE_VALF;__builtin_nan=nan;__builtin_nanf=nanf;__builtin_nans=nan;__builtin_nansf=nanf;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/Qstd=c++14 %(AdditionalOptions)</AdditionalOptions>
       <UseProcessorExtensions>AVX2</UseProcessorExtensions>
       <EnableExpandedLineNumberInfo>true</EnableExpandedLineNumberInfo>
@@ -95,7 +95,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <PreprocessorDefinitions>PROJECT_NAME="$(ProjectName)";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>PROJECT_NAME="$(ProjectName)";__builtin_huge_val()=HUGE_VAL;__builtin_huge_valf()=HUGE_VALF;__builtin_nan=nan;__builtin_nanf=nanf;__builtin_nans=nan;__builtin_nansf=nanf;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/Qstd=c++14 %(AdditionalOptions)</AdditionalOptions>
       <OptimizeForWindowsApplication>true</OptimizeForWindowsApplication>
       <UseProcessorExtensions>AVXI</UseProcessorExtensions>

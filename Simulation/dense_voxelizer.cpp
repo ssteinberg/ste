@@ -19,7 +19,7 @@ void dense_voxelizer::render() const {
 	scene(dvs->voxelizer_program, &dvs->voxelizer_fbo);
 
 	LLR::gl_current_context::get()->memory_barrier(GL_TEXTURE_FETCH_BARRIER_BIT);
-
+	
 	dvs->voxelizer_upsampler_program->bind();
 	auto tiles_per_step = dvs->step_size / dvs->tile_size.x;
 	auto center = dvs->size / 2u;

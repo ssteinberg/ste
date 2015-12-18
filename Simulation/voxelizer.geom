@@ -22,19 +22,19 @@ out geo_out {
 	vec2 st;
 	flat int matIdx;
 	flat vec2 max_aabb;
-	flat float raster_size;
+	flat vec3 ortho_projection_mask;
 } vout;
 
-vec2 bounding_triangle_vertex(vec3 U, vec3 V, vec3 W) {
-	vec3 prev = vec3(U.xy, 1);
-	vec3 v = vec3(V.xy, 1);
-	vec3 next = vec3(W.xy, 1);
+vec2 bounding_triangle_vertex(vec2 prev, vec2 v, vec2 next) {
+	vec3 U = vec3(prev, 1);
+	vec3 V = vec3(v, 1);
+	vec3 W = vec3(next, 1);
 
-	vec3 a = v - prev;
-	vec3 b = next - v;
+	vec3 a = V - U;
+	vec3 b = W - V;
 
-	vec3 p0 = cross(a, prev);
-	vec3 p1 = cross(b, v);
+	vec3 p0 = cross(a, U);
+	vec3 p1 = cross(b, V);
 
 	p0.z -= dot(vec2(.5f), abs(p0.xy));
 	p1.z -= dot(vec2(.5f), abs(p1.xy));
@@ -50,17 +50,16 @@ void main() {
 	vec3 V = gl_in[1].gl_Position.xyz;
 	vec3 W = gl_in[2].gl_Position.xyz;
 	
-	vec3 T = V - U;
-	vec3 unnormedN = cross(T, W - U);
+	vec3 unnormedN = cross(V - U, W - U);
 	float len_N = length(unnormedN);
 	vec3 N = unnormedN / len_N;
 	
+	float voxel = voxel_size(N * dot(-U, N));
+
 	vec3 min_world_aabb = min(U, min(V, W));
 	vec3 max_world_aabb = max(U, max(V, W));
 	vec3 aabb_signs = sign(min_world_aabb) * sign(max_world_aabb);
-	float voxel = voxel_size(N * dot(-U, N));
-
-	/*if (dot(aabb_signs, vec3(1)) > -2.5f) {
+	if (dot(aabb_signs, vec3(1)) > -2.5f) {
 		vec3 aabb_distances = min(abs(min_world_aabb), abs(max_world_aabb));
 		float d_aabb = 4096.f;
 		if (aabb_signs.x > 0) d_aabb = min(d_aabb, aabb_distances.x);
@@ -68,16 +67,18 @@ void main() {
 		if (aabb_signs.y > 0) d_aabb = min(d_aabb, aabb_distances.z);
 
 		voxel = max(voxel, voxel_size(voxel_level(d_aabb)));
-	}*/
+	}
 
 	
 	vec3 pos0 = U / voxel;
 	vec3 pos1 = V / voxel;
 	vec3 pos2 = W / voxel;
 	
-	float area = .5f * len_N / (voxel * voxel);
-	if (area < .5f) {
+	vec3 rp0 = round(pos0);
+	if (rp0 == round(pos1) && rp0 == round(pos2)) {
 		// Voxelize in geometry shader. Fast path.
+		float area = .5f * len_N / (voxel * voxel);
+
 		material_descriptor md = mat_descriptor[matIdx];
 		vec2 uv = vec2(.5f);
 		voxelize(md, 
@@ -90,59 +91,75 @@ void main() {
 
 		return;
 	}
-
-	T = normalize(T);
-	vec3 B = cross(N, T);
-
-	mat3 TBN = mat3(T, B, N);
-	mat3 invTBN = transpose(TBN);
 	
-	// Increase a bit the raster size for large triangles
-	float raster_size_alpha = mix(1.f, .75f, clamp(area / 2000.f, .0f, 1.f));
-	float voxels_texture_size = raster_size_alpha * .5f * float(textureSize(voxel_space_radiance, 0).x);
+	float voxels_texture_size = float(textureSize(voxel_space_radiance, 0).x >> 1);
 
-	vec3 p0 = invTBN * pos0;
-	vec3 p1 = invTBN * pos1;
-	vec3 p2 = invTBN * pos2;
+	mat3 T;
+	vec3 absN = abs(N);
+	vec3 signN = sign(N);
+	if (absN.x >= absN.y && absN.x >= absN.z) {
+		T = mat3(0,0,-signN.x,
+				 0,1,0,
+				 signN.x,0,0);
+		vout.ortho_projection_mask = vec3(1,0,0);
+	}
+	else if (absN.y >= absN.x && absN.y >= absN.z) {
+		T = mat3(1,0,0,
+				 0,0,-signN.y,
+				 0,signN.y,0);
+		vout.ortho_projection_mask = vec3(0,1,0);
+	}
+	else {
+		T = mat3(signN.z,0,0,
+				 0,1,0,
+				 0,0,signN.z);
+		vout.ortho_projection_mask = vec3(0,0,1);
+	}
+	mat3 invT = transpose(T);
+
+	vec3 p0 = invT * pos0;
+	vec3 p1 = invT * pos1;
+	vec3 p2 = invT * pos2;
+
 	vec2 minv = min(min(p0.xy, p1.xy), p2.xy);
-
-	vout.max_aabb = max(max(p0.xy, p1.xy), p2.xy) - minv;
-	vout.raster_size = voxels_texture_size;
-
-	p0.xy = bounding_triangle_vertex(p2, p0, p1);
-	p1.xy = bounding_triangle_vertex(p0, p1, p2);
-	p2.xy = bounding_triangle_vertex(p1, p2, p0);
+	vout.max_aabb = max(max(p0.xy, p1.xy), p2.xy) - minv + vec2(1);
 	
-	U = TBN * (p0 * voxel);
-	V = TBN * (p1 * voxel);
-	W = TBN * (p2 * voxel);
+	N = invT * N;
+	float d = dot(p0, N);
 
-	vec2 v0 = p0.xy - minv;
-	vec2 v1 = p1.xy - minv;
-	vec2 v2 = p2.xy - minv;
+	p0.xy = bounding_triangle_vertex(p2.xy, p0.xy, p1.xy);
+	p1.xy = bounding_triangle_vertex(p0.xy, p1.xy, p2.xy);
+	p2.xy = bounding_triangle_vertex(p1.xy, p2.xy, p0.xy);
+	p0.z = (d - dot(p0.xy, N.xy)) / N.z;
+	p1.z = (d - dot(p1.xy, N.xy)) / N.z;
+	p2.z = (d - dot(p2.xy, N.xy)) / N.z;
+	
+	U = T * (p0 * voxel);
+	V = T * (p1 * voxel);
+	W = T * (p2 * voxel);
 
-	v0 /= voxels_texture_size;
-	v1 /= voxels_texture_size;
-	v2 /= voxels_texture_size;
+	vec2 v0 = (p0.xy - minv) / voxels_texture_size - vec2(1, 1);
+	vec2 v1 = (p1.xy - minv) / voxels_texture_size - vec2(1, 1);
+	vec2 v2 = (p2.xy - minv) / voxels_texture_size - vec2(1, 1);
 	
 	vout.matIdx = matIdx;
 	
 	vout.st = vin[0].st;
 	vout.P = U;
 	vout.N = vin[0].N;
-    gl_Position = vec4(v0 - vec2(1, 1), 0, 1);
+    gl_Position = vec4(v0, 0, 1);
     EmitVertex();
 	
 	vout.st = vin[1].st;
 	vout.P = V;
 	vout.N = vin[1].N;
-    gl_Position = vec4(v1 - vec2(1, 1), 0, 1);
+    gl_Position = vec4(v1, 0, 1);
     EmitVertex();
 	
 	vout.st = vin[2].st;
 	vout.P = W;
 	vout.N = vin[2].N;
-    gl_Position = vec4(v2 - vec2(1, 1), 0, 1);
+    gl_Position = vec4(v2, 0, 1);
     EmitVertex();
 
     EndPrimitive();
