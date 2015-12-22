@@ -37,7 +37,7 @@ void main() {
 	P /= size;
 	vec3 C = round(P);
 	
-	voxelize(md, ivec3(C), uv, N, level, size, 1.f, dUVdx, dUVdy);
+	voxelize(md, ivec3(C), uv, N, level, 1.f, dUVdx, dUVdy);
 
 	
 	vec3 dPdx = dFdx(P) * .5f;
@@ -52,8 +52,8 @@ void main() {
 	vec3 Cminus1 = C * fragment.ortho_projection_mask - fragment.ortho_projection_mask;
 
 	if (P00 == Cplus1 || P10 == Cplus1 || P01 == Cplus1 || P11 == Cplus1)
-		voxelize(md, ivec3(C + fragment.ortho_projection_mask), uv, N, level, size, 1.f, dUVdx, dUVdy);
+		voxelize(md, ivec3(C + fragment.ortho_projection_mask), uv, N, level, 1.f, dUVdx, dUVdy);
 
 	if (P00 == Cminus1 || P10 == Cminus1 || P01 == Cminus1 || P11 == Cminus1)
-		voxelize(md, ivec3(C - fragment.ortho_projection_mask), uv, N, level, size, 1.f, dUVdx, dUVdy);
+		voxelize(md, ivec3(C - fragment.ortho_projection_mask), uv, N, level, 1.f, dUVdx, dUVdy);
 }

@@ -217,6 +217,12 @@
     <Filter Include="src\StE\Mathematical Additions\Real Spherical Harmonics">
       <UniqueIdentifier>{0ef4bffc-bea7-42f4-8edb-245d3207cc3c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\StE\Core\LLR\GPU Resources\GPU Data Structures\Queue">
+      <UniqueIdentifier>{31769f93-35f4-48f8-b0b7-190f8bca0b7f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\StE\Core\LLR\GPU Resources\GPU Data Structures\Queue\Shaders">
+      <UniqueIdentifier>{5e5b7696-3f4a-4b58-a7c7-492cf733fa46}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -767,6 +773,9 @@
     <ClInclude Include="image_handle.h">
       <Filter>src\StE\Core\LLR\GPU Resources\Surfaces</Filter>
     </ClInclude>
+    <ClInclude Include="gqueue.h">
+      <Filter>src\StE\Core\LLR\GPU Resources\GPU Data Structures\Queue</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="stdafx.h">
@@ -807,6 +816,12 @@
     </None>
     <None Include="utils.glsl">
       <Filter>src\StE\Framework Graphics\Common Shaders</Filter>
+    </None>
+    <None Include="gqueue.glsl">
+      <Filter>src\StE\Core\LLR\GPU Resources\GPU Data Structures\Queue\Shaders</Filter>
+    </None>
+    <None Include="queue_test.glsl">
+      <Filter>src\Shaders</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

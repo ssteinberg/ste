@@ -11,10 +11,11 @@ namespace LLR {
 
 template <typename BinderType>
 class shader_layout_bindable_resource {
-protected:
+public:
 	using LayoutLocationType = layout_binding<BinderType>;
 	using EmptyLayoutLocationType = layout_binding_none<BinderType>;
 
+protected:
 	~shader_layout_bindable_resource() noexcept {}
 
 public:

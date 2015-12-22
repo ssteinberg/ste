@@ -49,10 +49,11 @@
       <string>D:\Dev\git\simulation\Simulation\dense_voxelizer.h</string>
     </ArrayOfString>
     <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\RSH.h</string>
+      <string>D:\Dev\git\simulation\Simulation\gqueue.glsl</string>
+      <string>D:\Dev\git\simulation\Simulation\gqueue.h</string>
     </ArrayOfString>
     <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\legendre_polynomial.h</string>
+      <string>D:\Dev\git\simulation\Simulation\queue_test.glsl</string>
     </ArrayOfString>
   </ArrayOfArrayOfString>
 </ArrayOfArrayOfArrayOfString>

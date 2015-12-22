@@ -103,6 +103,17 @@ public:
 		glCopyNamedBufferSubData(get_resource_id(), bo.get_resource_id(), read_offset * sizeof(T), write_offset * sizeof(S), size * sizeof(T));
 	}
 
+	std::vector<T> copy_data_to_client() const {
+		return copy_data_to_client(0, buffer_size);
+	}
+	std::vector<T> copy_data_to_client(int offset, std::size_t size) const {
+		std::vector<T> data;
+		data.resize(size);
+		glGetNamedBufferSubData(get_resource_id(), offset * sizeof(T), size * sizeof(T), &data[0]);
+
+		return std::move(data);
+	}
+
 	template <bool b = dynamic_buffer>
 	void upload(const T *data, std::enable_if_t<b>* = 0) {
 		glNamedBufferSubData(get_resource_id(), 0, buffer_size * sizeof(T), data);

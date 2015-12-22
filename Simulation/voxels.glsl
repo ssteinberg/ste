@@ -37,22 +37,22 @@ float voxel_size(vec3 P) {
 	return voxel_size(voxel_level(P));
 }
 
-void voxelize(ivec3 C, vec4 color, vec3 normal, uint level, float size, float coverage) {
+void voxelize(ivec3 C, vec4 color, vec3 normal, uint level, float coverage) {
 	ivec3 vtc = C + ivec3(imageSize(voxel_radiance_levels(level)).x >> 1);
 	
 	imageAtomicAdd(voxel_data_levels(level), vtc, f16vec4(normal * coverage, coverage));
 	imageAtomicAdd(voxel_radiance_levels(level), vtc, f16vec4(color * coverage));
 }
 
-void voxelize(material_descriptor md, ivec3 C, vec2 uv, vec3 normal, uint level, float size, float coverage, vec2 dx, vec2 dy) {
+void voxelize(material_descriptor md, ivec3 C, vec2 uv, vec3 normal, uint level, float coverage, vec2 dx, vec2 dy) {
 	vec4 diffuse = md.diffuse.tex_handler > 0 ? textureGrad(sampler2D(md.diffuse.tex_handler), uv, dx, dy) : vec4(1.f);
-	voxelize(C, diffuse, normal, level, size, coverage);
+	voxelize(C, diffuse, normal, level, coverage);
 }
 
 void voxelize(material_descriptor md, vec3 P, vec2 uv, vec3 normal, float coverage, vec2 dx, vec2 dy) {
 	uint level = voxel_level(P);
 	float size = voxel_size(level);
-	voxelize(md, ivec3(round(P / size)), uv, normal, level, size, coverage, dx, dy);
+	voxelize(md, ivec3(round(P / size)), uv, normal, level, coverage, dx, dy);
 }
 
 vec4 voxel_raymarch(vec3 P, vec3 dir) {

@@ -206,6 +206,10 @@
     <ClInclude Include="glyph_factory.h" />
     <ClInclude Include="glyph_manager.h" />
     <ClInclude Include="gl_current_context.h" />
+    <ClInclude Include="gqueue.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="gstack.h">
       <SubType>
       </SubType>
@@ -485,6 +489,10 @@
       <SubType>
       </SubType>
     </None>
+    <None Include="gqueue.glsl">
+      <SubType>
+      </SubType>
+    </None>
     <None Include="hdr_blur.glsl">
       <SubType>
       </SubType>
@@ -572,6 +580,10 @@
       </SubType>
       <FileType>Document</FileType>
     </CustomBuild>
+    <None Include="queue_test.glsl">
+      <SubType>
+      </SubType>
+    </None>
     <None Include="stdafx.h" />
     <None Include="text_distance_map_contour.frag" />
     <None Include="text_distance_map_contour.vert" />

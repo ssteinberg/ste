@@ -30,6 +30,7 @@
 #include "renderable.h"
 
 #include "RSH.h"
+#include "gqueue.h"
 
 using namespace StE::LLR;
 using namespace StE::Text;
@@ -121,6 +122,24 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 	settings.vsync = false;
 	StE::StEngineControl ctx(std::make_unique<gl_context>(settings, "Shlomi Steinberg - Global Illumination", glm::i32vec2{ w, h }));// , gli::FORMAT_RGBA8_UNORM));
 	ctx.set_clipping_planes(clip_near, clip_far);
+
+	{
+		gqueue<unsigned, 1024> q;
+		ShaderStorageBuffer<unsigned> output(10240);
+		int clear = 0;
+		output.clear(gli::format::FORMAT_R8_SINT, &clear);
+		
+		auto p = StE::Resource::GLSLProgramLoader::load_program_task(ctx, { "queue_test.glsl" })();
+		p->bind();
+		q.bind_buffer(1);
+		0_storage_idx = output;
+
+		glDispatchCompute(1, 1, 1);
+
+		gl_current_context::get()->memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT);
+
+		auto v = output.copy_data_to_client();
+	}
 
 	using ResizeSignalConnectionType = StE::StEngineControl::framebuffer_resize_signal_type::connection_type;
 	std::shared_ptr<ResizeSignalConnectionType> resize_connection;
@@ -215,7 +234,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 		scene.add_object(light_obj);
 	}
 
-	StE::Graphics::dense_voxel_space voxel_space(ctx, 1024, 1.f);
+	StE::Graphics::dense_voxel_space voxel_space(ctx, 512, .1f);
 	RayTracer ray_tracer(ctx);
 	voxel_space.update_shader_voxel_uniforms(*ray_tracer.get_program());
 
