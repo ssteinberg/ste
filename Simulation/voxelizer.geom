@@ -61,7 +61,7 @@ void main() {
 	vec3 aabb_signs = sign(min_world_aabb) * sign(max_world_aabb);
 	if (dot(aabb_signs, vec3(1)) > -2.5f) {
 		vec3 aabb_distances = min(abs(min_world_aabb), abs(max_world_aabb));
-		float d_aabb = 4096.f;
+		float d_aabb = voxels_world_size;
 		if (aabb_signs.x > 0) d_aabb = min(d_aabb, aabb_distances.x);
 		if (aabb_signs.z > 0) d_aabb = min(d_aabb, aabb_distances.y);
 		if (aabb_signs.y > 0) d_aabb = min(d_aabb, aabb_distances.z);
@@ -92,7 +92,7 @@ void main() {
 		return;
 	}
 	
-	float voxels_texture_size = float(textureSize(voxel_space_radiance, 0).x >> 1);
+	float voxels_texture_size = float(textureSize(voxel_space_radiance, 0).x);
 
 	mat3 T;
 	vec3 absN = abs(N);

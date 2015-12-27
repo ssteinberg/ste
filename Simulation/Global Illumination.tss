@@ -5,26 +5,11 @@
       <string>D:\Dev\git\simulation\Simulation\main.cpp</string>
     </ArrayOfString>
     <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\Scene.cpp</string>
-      <string>D:\Dev\git\simulation\Simulation\Scene.h</string>
+      <string>D:\Dev\git\simulation\Simulation\gqueue.glsl</string>
+      <string>D:\Dev\git\simulation\Simulation\gqueue.h</string>
     </ArrayOfString>
     <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\scene.frag</string>
-      <string>D:\Dev\git\simulation\Simulation\scene.vert</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\deferred.frag</string>
-      <string>D:\Dev\git\simulation\Simulation\deferred.glsl</string>
-      <string>D:\Dev\git\simulation\Simulation\deferred.vert</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\material.glsl</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\light.glsl</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\utils.glsl</string>
+      <string>D:\Dev\git\simulation\Simulation\ray.frag</string>
     </ArrayOfString>
     <ArrayOfString>
       <string>D:\Dev\git\simulation\Simulation\voxelizer.frag</string>
@@ -32,13 +17,10 @@
       <string>D:\Dev\git\simulation\Simulation\voxelizer.vert</string>
     </ArrayOfString>
     <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\voxelizer_upsampler.glsl</string>
-    </ArrayOfString>
-    <ArrayOfString>
       <string>D:\Dev\git\simulation\Simulation\voxels.glsl</string>
     </ArrayOfString>
     <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\ray.frag</string>
+      <string>D:\Dev\git\simulation\Simulation\voxelizer_upsampler.glsl</string>
     </ArrayOfString>
     <ArrayOfString>
       <string>D:\Dev\git\simulation\Simulation\dense_voxel_space.cpp</string>
@@ -47,13 +29,6 @@
     <ArrayOfString>
       <string>D:\Dev\git\simulation\Simulation\dense_voxelizer.cpp</string>
       <string>D:\Dev\git\simulation\Simulation\dense_voxelizer.h</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\gqueue.glsl</string>
-      <string>D:\Dev\git\simulation\Simulation\gqueue.h</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>D:\Dev\git\simulation\Simulation\queue_test.glsl</string>
     </ArrayOfString>
   </ArrayOfArrayOfString>
 </ArrayOfArrayOfArrayOfString>

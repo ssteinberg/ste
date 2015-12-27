@@ -10,12 +10,12 @@
 out vec4 gl_FragColor;
 
 uniform mat4 inv_projection, inv_view_model;
-uniform vec3 translation;
 
-void main() {
+void main() { 
 	vec2 p = gl_FragCoord.xy / vec2(1688, 950);
 	p = p * 2 - vec2(1);
 	vec3 P = normalize((inv_view_model * inv_projection * vec4(p, 0, 1)).xyz);
 
-    gl_FragColor = voxel_raymarch(vec3(translation), P);
+    gl_FragColor = voxel_cone_march(vec3(0), P, 0, 0.045, 50);
+	//gl_FragColor = voxel_ray_march(vec3(0), P, 50);
 }

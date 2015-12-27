@@ -16,8 +16,8 @@ dense_voxel_space::dense_voxel_space(const StEngineControl &ctx, std::size_t max
 	voxelizer_output = std::make_unique<LLR::RenderTarget>(gli::format::FORMAT_R8_UNORM, size.xy);
 	voxelizer_fbo[0] = *voxelizer_output;
 
-	sampler.set_min_filter(LLR::TextureFiltering::Nearest);
-	sampler.set_mag_filter(LLR::TextureFiltering::Nearest);
+	sampler.set_min_filter(LLR::TextureFiltering::Linear);
+	sampler.set_mag_filter(LLR::TextureFiltering::Linear);
 	sampler.set_mipmap_filter(LLR::TextureFiltering::Nearest);
 	sampler.set_wrap_s(LLR::TextureWrapMode::ClampToBorder);
 	sampler.set_wrap_t(LLR::TextureWrapMode::ClampToBorder);
@@ -35,24 +35,26 @@ void dense_voxel_space::create_dense_voxel_space(float voxel_size_factor) {
 	handles_data.clear();
 
 	float fb_pixel_size = 2.f * glm::tan(.5f * ctx.get_fov()) * ctx.get_near_clip() / ctx.get_backbuffer_size().x;
-	float space_size = ctx.get_far_clip();
+	space_size = ctx.get_far_clip();
 
 	float fb_pixel_theta = glm::atan(fb_pixel_size / ctx.get_near_clip());
 	float l = fb_pixel_size / voxel_size_factor / glm::tan(fb_pixel_theta);
 
-	steps = glm::floorPowerOfTwo(static_cast<unsigned>(glm::log2(space_size / l)));
-	mipmaps = glm::min<std::size_t>(steps, glm::ceil(glm::log2(size.x / tile_size.x) - 1));
-	step_size = size.x / steps;
-	voxel_size = space_size / size.x;
+	auto min_steps = static_cast<unsigned>(glm::floorPowerOfTwo(glm::log2(size.x / 2 / tile_size.x)));
+	auto desired_steps = static_cast<unsigned>(glm::floorPowerOfTwo(static_cast<unsigned>(glm::log2(space_size / l))));
+	steps = glm::min(min_steps, desired_steps);
+	mipmaps = glm::min(steps + 3, static_cast<unsigned>(glm::log2(size.x)));
+	voxel_size = space_size / size.x * 2;
+	tiles_per_step = static_cast<unsigned>(size.x / (2 * tile_size.x * glm::pow(2.f, steps - 1)));
+	step_size = tiles_per_step * tile_size;
 
 	space_radiance = std::make_unique<LLR::texture_sparse_3d>(space_format_radiance, size, mipmaps, tile_size, 0);
 	space_data = std::make_unique<LLR::texture_sparse_3d>(space_format_data, size, mipmaps, tile_size, 0);
 
-	auto tiles_per_step = step_size / tile_size.x;
 	auto center = size / 2u;
 	for (std::size_t i = 0; i < mipmaps; ++i, center /= 2u) {
-		auto min = decltype(size)(glm::max(glm::ivec3(center - tiles_per_step * tile_size), { 0,0,0 }));
-		auto max = glm::min(center + tiles_per_step * tile_size, center * 2u);
+		auto min = decltype(size)(glm::max(glm::ivec3(center - step_size), { 0,0,0 }));
+		auto max = glm::min(center + step_size, center * 2u);
 
 		space_radiance->commit_tiles(min, max - min, i);
 		space_data->commit_tiles(min, max - min, i);
@@ -87,10 +89,12 @@ void dense_voxel_space::create_dense_voxel_space(float voxel_size_factor) {
 	update_shader_voxel_uniforms(*voxelizer_upsampler_program);
 }
 
-void dense_voxel_space::update_shader_voxel_uniforms(LLR::GLSLProgram &prg) const {
-	prg.set_uniform("voxels_step_texels", step_size);
+void dense_voxel_space::update_shader_voxel_uniforms(const LLR::GLSLProgram &prg) const {
+	prg.set_uniform("voxels_step_texels", step_size.x);
 	prg.set_uniform("voxels_voxel_texel_size", voxel_size);
 	prg.set_uniform("voxels_texture_levels", mipmaps);
+	prg.set_uniform("voxels_texture_size", size.x);
+	prg.set_uniform("voxels_world_size", space_size);
 	prg.set_uniform("voxel_radiance_levels_handles", handles_radiance);
 	prg.set_uniform("voxel_data_levels_handles", handles_data);
 	prg.set_uniform("voxel_space_radiance", radiance_texture_handle);
@@ -100,11 +104,10 @@ void dense_voxel_space::update_shader_voxel_uniforms(LLR::GLSLProgram &prg) cons
 void dense_voxel_space::clear_space() const {
 	glm::vec4 clear_data(.0f);
 
-	auto tiles_per_step = step_size / tile_size.x;
 	auto center = size / 2u;
 	for (std::size_t i = 0; i < mipmaps; ++i, center /= 2u) {
-		auto min = decltype(size)(glm::max(glm::ivec3(center - tiles_per_step * tile_size), { 0,0,0 }));
-		auto max = glm::min(center + tiles_per_step * tile_size, center * 2u);
+		auto min = decltype(size)(glm::max(glm::ivec3(center - step_size), { 0,0,0 }));
+		auto max = glm::min(center + step_size, center * 2u);
 
 		space_radiance->clear(&clear_data, min, max - min, i);
 		space_data->clear(&clear_data, min, max - min, i);

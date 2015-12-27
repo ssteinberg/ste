@@ -29,9 +29,6 @@
 #include "dense_voxel_space.h"
 #include "renderable.h"
 
-#include "RSH.h"
-#include "gqueue.h"
-
 using namespace StE::LLR;
 using namespace StE::Text;
 
@@ -88,12 +85,6 @@ public:
 		get_program()->set_uniform("inv_view_model", glm::inverse(m));
 	}
 
-	void set_world_center(const glm::vec3 &c, float voxel_size) const {
-		auto vs = voxel_size * 4;
-		glm::vec3 translation = glm::round(c / vs) * vs;
-		get_program()->set_uniform("translation", c - translation);
-	}
-
 	virtual void prepare() const override {
 		renderable::prepare();
 
@@ -106,40 +97,19 @@ public:
 };
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam, int iCmdShow) {
-	StE::RSH<2, 5> rsh;
-	auto v = rsh(1.2f, .5f);
-
 	StE::Log logger("Global Illumination");
 	logger.redirect_std_outputs();
 	ste_log_set_global_logger(&logger);
 	ste_log() << "Simulation is running";
 
 	int w = 1688, h = 950;
-	constexpr float clip_far = 4096.f;
+	constexpr float clip_far = 3000.f;
 	constexpr float clip_near = 5.f;
 
 	gl_context::context_settings settings;
 	settings.vsync = false;
 	StE::StEngineControl ctx(std::make_unique<gl_context>(settings, "Shlomi Steinberg - Global Illumination", glm::i32vec2{ w, h }));// , gli::FORMAT_RGBA8_UNORM));
 	ctx.set_clipping_planes(clip_near, clip_far);
-
-	{
-		gqueue<unsigned, 1024> q;
-		ShaderStorageBuffer<unsigned> output(10240);
-		int clear = 0;
-		output.clear(gli::format::FORMAT_R8_SINT, &clear);
-		
-		auto p = StE::Resource::GLSLProgramLoader::load_program_task(ctx, { "queue_test.glsl" })();
-		p->bind();
-		q.bind_buffer(1);
-		0_storage_idx = output;
-
-		glDispatchCompute(1, 1, 1);
-
-		gl_current_context::get()->memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT);
-
-		auto v = output.copy_data_to_client();
-	}
 
 	using ResizeSignalConnectionType = StE::StEngineControl::framebuffer_resize_signal_type::connection_type;
 	std::shared_ptr<ResizeSignalConnectionType> resize_connection;
@@ -234,9 +204,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 		scene.add_object(light_obj);
 	}
 
-	StE::Graphics::dense_voxel_space voxel_space(ctx, 512, .1f);
+	StE::Graphics::dense_voxel_space voxel_space(ctx, 512, .01f);
 	RayTracer ray_tracer(ctx);
-	voxel_space.update_shader_voxel_uniforms(*ray_tracer.get_program());
+	voxel_space.add_consumer_program(ray_tracer.get_program());
 
 
 	ctx.set_renderer(&basic_renderer);
@@ -309,7 +279,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 		skydome.set_model_matrix(mvnt);
 		ray_tracer.set_model_matrix(mvnt);
 		voxel_space.set_model_matrix(mv, camera.get_position());
-		ray_tracer.set_world_center(camera.get_position(), voxel_space.get_voxel_texel_size());
 
 //		renderer.queue().push_back(voxel_space.voxelizer(scene));
 //		renderer.queue().push_back(&fb_depth_clearer);
@@ -323,7 +292,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 
 		{
 			using namespace StE::Text::Attributes;
-			auto tpf = std::to_wstring(ctx.time_per_frame().count());
+
+			static float tpf = .0f;
+			static unsigned tpf_count = 0;
+			static float total_tpf = .0f;
+			total_tpf += ctx.time_per_frame().count();
+			++tpf_count;
+			if (tpf_count % 10 == 0) {
+				tpf = total_tpf / 10.f;
+				total_tpf = .0f;
+			}
+			auto tpf_str = std::to_wstring(tpf);
+
 			auto total_vram = std::to_wstring(ctx.gl()->meminfo_total_available_vram() / 1024);
 			auto free_vram = std::to_wstring(ctx.gl()->meminfo_free_vram() / 1024);
 
@@ -332,7 +312,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 //			renderer.postprocess_queue().push_back(text_renderer.render({ 30, 20 },
 //																		vsmall(b((blue_violet(free_vram) + L" / " + stroke(red, 1)(dark_red(total_vram)) + L" MB")))));
 			ctx.renderer()->queue().push_back(text_renderer.render({ 30, h - 50 },
-																		vsmall(b(stroke(dark_magenta, 1)(red(tpf)))) + L" ms"));
+																		vsmall(b(stroke(dark_magenta, 1)(red(tpf_str)))) + L" ms"));
 			ctx.renderer()->queue().push_back(text_renderer.render({ 30, 20 },
 																		vsmall(b((blue_violet(free_vram) + L" / " + stroke(red, 1)(dark_red(total_vram)) + L" MB")))));
 		}
