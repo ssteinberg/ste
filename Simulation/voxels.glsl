@@ -75,25 +75,101 @@ void __voxel_trace_step(inout vec3 P, vec3 dir, vec3 inv_dir, float size, out fl
 	P += (step_length + 0.001f) * dir;
 }
 
-void voxel_ray_trace_step(inout vec3 P, vec3 dir, vec3 inv_dir, float size) {
+void __voxel_ray_trace_step(inout vec3 P, vec3 dir, vec3 inv_dir, float size) {
 	float step_length;
 	__voxel_trace_step(P, dir, inv_dir, size, step_length);
 }
 
-void voxel_cone_trace_step(inout vec3 P, inout float radius, float tan_theta, vec3 dir, vec3 inv_dir, float size) {
+void __voxel_cone_trace_step(inout vec3 P, inout float radius, float tan_theta, vec3 dir, vec3 inv_dir, float size) {
 	float step_length;
 	__voxel_trace_step(P, dir, inv_dir, size, step_length);
 	radius += step_length * tan_theta;
 }
 
-vec4 voxel_ray_march(vec3 P, vec3 dir, int max_steps = 0) {
+void __voxel_filter(vec3 P, uint level, out vec4 color, out vec3 normal) {
+	float size = voxel_size(level);
+
+	vec3 P_over_size = P / size;
+	vec3 frac = fract(P_over_size);
+
+	ivec3 center = ivec3(textureSize(voxel_space_radiance, int(level)).x >> 1);
+	ivec3 coordinates = center + ivec3(floor(P_over_size));
+	
+	vec4 data000 = texelFetch(voxel_space_data, coordinates + ivec3(0, 0, 0), int(level));
+	vec4 data100 = texelFetch(voxel_space_data, coordinates + ivec3(1, 0, 0), int(level));
+	vec4 data010 = texelFetch(voxel_space_data, coordinates + ivec3(0, 1, 0), int(level));
+	vec4 data110 = texelFetch(voxel_space_data, coordinates + ivec3(1, 1, 0), int(level));
+	vec4 data001 = texelFetch(voxel_space_data, coordinates + ivec3(0, 0, 1), int(level));
+	vec4 data101 = texelFetch(voxel_space_data, coordinates + ivec3(1, 0, 1), int(level));
+	vec4 data011 = texelFetch(voxel_space_data, coordinates + ivec3(0, 1, 1), int(level));
+	vec4 data111 = texelFetch(voxel_space_data, coordinates + ivec3(1, 1, 1), int(level));
+
+	vec4 color000 = texelFetch(voxel_space_radiance, coordinates + ivec3(0, 0, 0), int(level));
+	vec4 color100 = texelFetch(voxel_space_radiance, coordinates + ivec3(1, 0, 0), int(level));
+	vec4 color010 = texelFetch(voxel_space_radiance, coordinates + ivec3(0, 1, 0), int(level));
+	vec4 color110 = texelFetch(voxel_space_radiance, coordinates + ivec3(1, 1, 0), int(level));
+	vec4 color001 = texelFetch(voxel_space_radiance, coordinates + ivec3(0, 0, 1), int(level));
+	vec4 color101 = texelFetch(voxel_space_radiance, coordinates + ivec3(1, 0, 1), int(level));
+	vec4 color011 = texelFetch(voxel_space_radiance, coordinates + ivec3(0, 1, 1), int(level));
+	vec4 color111 = texelFetch(voxel_space_radiance, coordinates + ivec3(1, 1, 1), int(level));
+
+	vec4 dataX00 = mix(data000, data100, frac.x);
+	vec4 dataX10 = mix(data010, data110, frac.x);
+	vec4 dataX01 = mix(data001, data101, frac.x);
+	vec4 dataX11 = mix(data011, data111, frac.x);
+	vec4 dataXY0 = mix(dataX00, dataX10, frac.y);
+	vec4 dataXY1 = mix(dataX01, dataX11, frac.y);
+
+	vec4 colorX00 = mix(color000, color100, frac.x);
+	vec4 colorX10 = mix(color010, color110, frac.x);
+	vec4 colorX01 = mix(color001, color101, frac.x);
+	vec4 colorX11 = mix(color011, color111, frac.x);
+	vec4 colorXY0 = mix(colorX00, colorX10, frac.y);
+	vec4 colorXY1 = mix(colorX01, colorX11, frac.y);
+
+	vec4 data = mix(dataXY0, dataXY1, frac.z);
+	color = mix(colorXY0, colorXY1, frac.z) / data.w;
+	normal = data.xyz / data.w;
+}
+
+void voxel_filter(vec3 P, out vec4 color, out vec3 normal) {
+	P += voxels_world_translation;
+
+	uint level = voxel_level(P);
+	__voxel_filter(P, level, color, normal);
+}
+
+void voxel_filter(vec3 P, float radius, out vec4 color, out vec3 normal) {
+	P += voxels_world_translation;
+
+	uint level = voxel_level(P);
+	float cone_level = voxel_f_level_from_size(radius);
+	uint icl = uint(floor(cone_level));
+	level = max(level, icl);
+
+	__voxel_filter(P, level, color, normal);
+
+	if (level < voxels_texture_levels - 1 && level == icl) {
+		float frac = fract(cone_level);
+		if (frac > .0f) {
+			vec4 color1;
+			vec3 normal1;
+			__voxel_filter(P, level + 1, color1, normal1);
+			
+			color = mix(color, color1, frac);
+			normal = mix(normal, normal1, frac);
+		}
+	}
+}
+
+vec3 voxel_ray_march(vec3 P, vec3 dir, int max_steps = 0) {
 	P += voxels_world_translation;
 	vec3 inv_dir = 1.f / dir;
 
 	uint level = voxel_level(P);
 	float size = voxel_size(level);
 	
-	voxel_ray_trace_step(P, dir, inv_dir, size);
+	__voxel_ray_trace_step(P, dir, inv_dir, size);
 	
 	uint min_level = voxel_level(P);
 	level = max(min_level, level);
@@ -106,14 +182,10 @@ vec4 voxel_ray_march(vec3 P, vec3 dir, int max_steps = 0) {
 	int total_steps = 0;
 
 	while (true) {
-		vec4 data = texelFetch(voxel_space_data, rcoords + center, int(level));
-		if (data.w > .0f) {
-			if (level == min_level) {
-				vec4 color = texelFetch(voxel_space_radiance, rcoords + center, int(level)) / data.w;
-				vec3 normal = data.xyz / data.w;
-
-				return color;
-			}
+		float texel_counter = texelFetch(voxel_space_data, rcoords + center, int(level)).w;
+		if (texel_counter > .0f) {
+			if (level == min_level)
+				break;
 
 			--level;
 			size *= .5f;
@@ -125,12 +197,12 @@ vec4 voxel_ray_march(vec3 P, vec3 dir, int max_steps = 0) {
 			continue;
 		}
 		
-		voxel_ray_trace_step(P, dir, inv_dir, size);
+		__voxel_ray_trace_step(P, dir, inv_dir, size);
 		++counter;
 		++total_steps;
 		
 		if (max_steps > 0 && total_steps >= max_steps)
-			return vec4(0);
+			break;
 
 		if ((counter % 2) == 0 && level < voxels_texture_levels - 1) {
 			++level;
@@ -149,58 +221,27 @@ vec4 voxel_ray_march(vec3 P, vec3 dir, int max_steps = 0) {
 		
 		const float far = voxels_world_size;
 		if (abs(P.x) >= far || abs(P.y) >= far || abs(P.z) >= far) 
-			return vec4(0);
+			break;
 	}
+
+	return P - voxels_world_translation;
 }
 
-void __voxel_filter_cone_final_level(vec3 c, uint level, vec3 frac, out vec4 color, out vec3 normal) {
-	c /= float(textureSize(voxel_space_data, int(level)));
-	vec4 data = textureLod(voxel_space_data, c, int(level));
-	color = textureLod(voxel_space_radiance, c, int(level)) / data.w;
-	normal = data.xyz / data.w;
-}
-
-void __voxel_filter_cone_final(ivec3 center, uint level, float level_frac, vec3 P, float size, out vec4 color, out vec3 normal) {
-	vec3 top_coords = P / size;
-	vec3 frac_top = fract(top_coords);
-	vec3 itop_coords = vec3(center) + top_coords;
-	
-	__voxel_filter_cone_final_level(itop_coords, level, frac_top, color, normal);
-
-	uint min_level = voxel_level(P);
-	if (level_frac == .0f)
-		return;
-	
-	size *= 2.f;
-	center = center >> 1;
-	++level;
-	vec3 bottom_coords = P / size;
-	vec3 frac_bottom = fract(bottom_coords);
-	vec3 ibottom_coords = vec3(center) + bottom_coords;
-	vec4 bcolor;
-	vec3 bnormal;
-	
-	__voxel_filter_cone_final_level(ibottom_coords, level, frac_bottom, bcolor, bnormal);
-	
-	color = mix(color, bcolor, level_frac);
-	normal = mix(normal, bnormal, level_frac);
-}
-
-vec4 voxel_cone_march(vec3 P, vec3 dir, float start_radius, float tan_theta, int max_steps = 0) {
+vec3 voxel_cone_march(vec3 P, vec3 dir, float start_radius, float tan_theta, out float radius, int max_steps = 0) {
 	P += voxels_world_translation;
 	vec3 inv_dir = 1.f / dir;
 	
-	float r = start_radius;
-	float cone_level = voxel_f_level_from_size(r);
-	uint cone_level_floor = uint(floor(cone_level));
+	radius = start_radius;
+	float cone_level = voxel_f_level_from_size(radius);
+	uint icone_level = uint(floor(cone_level));
 	uint min_level = voxel_level(P);
-	uint level = max(cone_level_floor, min_level);
+	uint level = max(icone_level, min_level);
 	float size = voxel_size(level);
 	
-	voxel_cone_trace_step(P, r, tan_theta, dir, inv_dir, size);
-	cone_level = voxel_f_level_from_size(r);
-	cone_level_floor = uint(floor(cone_level));
-	min_level = max(voxel_level(P), cone_level_floor);
+	__voxel_cone_trace_step(P, radius, tan_theta, dir, inv_dir, size);
+	cone_level = voxel_f_level_from_size(radius);
+	icone_level = uint(floor(cone_level));
+	min_level = max(voxel_level(P), icone_level);
 
 	level = min_level;
 	size = voxel_size(level);
@@ -214,17 +255,8 @@ vec4 voxel_cone_march(vec3 P, vec3 dir, float start_radius, float tan_theta, int
 	while (true) {
 		float texel_counter = texelFetch(voxel_space_data, rcoords + center, int(level)).w;
 		if (texel_counter > .0f) {
-			if (level == min_level) {
-				vec4 color;
-				vec3 normal;
-				
-				float level_frac = .0f;
-				if (level < voxels_texture_levels - 1 && cone_level_floor == level)
-					level_frac = fract(cone_level);
-				__voxel_filter_cone_final(center, level, level_frac, P, size, color, normal);
-
-				return color;
-			}
+			if (level == min_level)
+				break;
 
 			--level;
 			size *= .5f;
@@ -236,12 +268,12 @@ vec4 voxel_cone_march(vec3 P, vec3 dir, float start_radius, float tan_theta, int
 			continue;
 		}
 		
-		voxel_cone_trace_step(P, r, tan_theta, dir, inv_dir, size);
+		__voxel_cone_trace_step(P, radius, tan_theta, dir, inv_dir, size);
 		++counter;
 		++total_steps;
 
 		if (max_steps > 0 && total_steps >= max_steps)
-			return vec4(0);
+			break;
 
 		if ((counter % 2) == 0 && level < voxels_texture_levels - 1) {
 			++level;
@@ -249,9 +281,9 @@ vec4 voxel_cone_march(vec3 P, vec3 dir, float start_radius, float tan_theta, int
 			center = center >> 1;
 		}
 		
-		cone_level = voxel_f_level_from_size(r);
-		cone_level_floor = uint(floor(cone_level));
-		min_level = max(voxel_level(P), cone_level_floor);
+		cone_level = voxel_f_level_from_size(radius);
+		icone_level = uint(floor(cone_level));
+		min_level = max(voxel_level(P), icone_level);
 		if (level < min_level) {
 			++level;
 			size = voxel_size(level);
@@ -262,6 +294,8 @@ vec4 voxel_cone_march(vec3 P, vec3 dir, float start_radius, float tan_theta, int
 		
 		const float far = voxels_world_size;
 		if (abs(P.x) >= far || abs(P.y) >= far || abs(P.z) >= far) 
-			return vec4(0);
+			break;
 	}
+
+	return P - voxels_world_translation;
 }

@@ -27,6 +27,8 @@ class dense_voxel_space {
 private:
 	static constexpr gli::format space_format_radiance = gli::format::FORMAT_RGBA16_SFLOAT;
 	static constexpr gli::format space_format_data = gli::format::FORMAT_RGBA16_SFLOAT;
+	static constexpr int voxel_steps_multiplier = 8;
+
 	using ProjectionSignalConnectionType = StEngineControl::projection_change_signal_type::connection_type;
 
 	friend class dense_voxelizer;
@@ -67,7 +69,7 @@ protected:
 
 	void update_shader_voxel_uniforms(const LLR::GLSLProgram &prg) const;
 	void update_shader_voxel_world_translation(const glm::vec3 &c, const LLR::GLSLProgram &prg) const {
-		auto vs = voxel_size * 4;
+		auto vs = voxel_size * voxel_steps_multiplier;
 		glm::vec3 translation = glm::round(c / vs) * vs;
 		prg.set_uniform("voxels_world_translation", c - translation);
 	}
@@ -88,7 +90,7 @@ public:
 	}
 
 	void set_model_matrix(const glm::mat4 &m, const glm::vec3 &translate) const {
-		auto vs = voxel_size * 4;
+		auto vs = voxel_size * voxel_steps_multiplier;
 		glm::vec3 translation = -glm::round(translate / vs) * vs;
 		voxelizer_program->set_uniform("translation", translation);
 		voxelizer_program->set_uniform("trans_inverse_view_matrix", glm::transpose(glm::inverse(m)));

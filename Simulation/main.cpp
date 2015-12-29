@@ -207,7 +207,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 	StE::Graphics::dense_voxel_space voxel_space(ctx, 512, .01f);
 	RayTracer ray_tracer(ctx);
 	voxel_space.add_consumer_program(ray_tracer.get_program());
-
+	
 
 	ctx.set_renderer(&basic_renderer);
 
@@ -279,13 +279,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 		skydome.set_model_matrix(mvnt);
 		ray_tracer.set_model_matrix(mvnt);
 		voxel_space.set_model_matrix(mv, camera.get_position());
-
+/*
 //		renderer.queue().push_back(voxel_space.voxelizer(scene));
-//		renderer.queue().push_back(&fb_depth_clearer);
-//		renderer.queue().push_back(&scene);
-//		renderer.queue().push_back(&skydome);
-//		renderer.postprocess_queue().push_back(&hdr);
-
+		renderer.queue().push_back(&fb_depth_clearer);
+		renderer.queue().push_back(&scene);
+		renderer.queue().push_back(&skydome);
+		renderer.postprocess_queue().push_back(&hdr);
+*/
 		ctx.renderer()->queue().push_back(voxel_space.voxelizer(scene));
 		ctx.renderer()->queue().push_back(&fb_clearer);
 		ctx.renderer()->queue().push_back(&ray_tracer);
@@ -307,11 +307,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 			auto total_vram = std::to_wstring(ctx.gl()->meminfo_total_available_vram() / 1024);
 			auto free_vram = std::to_wstring(ctx.gl()->meminfo_free_vram() / 1024);
 
-//			renderer.postprocess_queue().push_back(text_renderer.render({ 30, h - 50 },
-//																		vsmall(b(stroke(dark_magenta, 1)(red(tpf)))) + L" ms"));
-//			renderer.postprocess_queue().push_back(text_renderer.render({ 30, 20 },
-//																		vsmall(b((blue_violet(free_vram) + L" / " + stroke(red, 1)(dark_red(total_vram)) + L" MB")))));
-			ctx.renderer()->queue().push_back(text_renderer.render({ 30, h - 50 },
+/*			renderer.postprocess_queue().push_back(text_renderer.render({ 30, h - 50 },
+																		vsmall(b(stroke(dark_magenta, 1)(red(tpf_str)))) + L" ms"));
+			renderer.postprocess_queue().push_back(text_renderer.render({ 30, 20 },
+																		vsmall(b((blue_violet(free_vram) + L" / " + stroke(red, 1)(dark_red(total_vram)) + L" MB")))));
+*/			ctx.renderer()->queue().push_back(text_renderer.render({ 30, h - 50 },
 																		vsmall(b(stroke(dark_magenta, 1)(red(tpf_str)))) + L" ms"));
 			ctx.renderer()->queue().push_back(text_renderer.render({ 30, 20 },
 																		vsmall(b((blue_violet(free_vram) + L" / " + stroke(red, 1)(dark_red(total_vram)) + L" MB")))));
