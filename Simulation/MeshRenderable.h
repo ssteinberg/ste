@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -32,7 +32,7 @@ public:
 	}
 
 	virtual void render() const override {
-		glDrawElements(static_cast<GLenum>(mode), meshptr->ebo()->size(), LLR::gl_type_name_enum<mesh<mode>::ebo_type::T>::gl_enum, nullptr);
+		glDrawElements(static_cast<GLenum>(mode), meshptr->ebo()->size(), LLR::gl_type_name_enum<typename mesh<mode>::ebo_type::T>::gl_enum, nullptr);
 	}
 };
 

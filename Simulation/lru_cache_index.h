@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -43,11 +43,11 @@ private:
 
 private:
 	using lru_list_type = std::list<lru_node>;
-	using lru_list_iterator_type = lru_list_type::const_iterator;
+	using lru_list_iterator_type = typename lru_list_type::const_iterator;
 	using val_type = lru_cache_cacheable<key_type, lru_list_iterator_type>;
 
 	using res_kv_map = concurrent_unordered_map<key_type, val_type>;
-	using val_data_guard = res_kv_map::value_data_guard_type;
+	using val_data_guard = typename res_kv_map::value_data_guard_type;
 
 	lru_list_type lru_list;
 	res_kv_map map;

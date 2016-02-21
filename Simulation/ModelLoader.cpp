@@ -112,18 +112,18 @@ std::future<void> ModelLoader::process_model_mesh(optional<task_scheduler*> sche
 }
 
 StE::task<void> ModelLoader::load_texture(const std::string &name, bool srgb, texture_map_type *texmap, bool bumpmap, const std::string &dir, float normal_map_bias) {
-	return StE::task<std::unique_ptr<gli::texture2D>>([=](optional<task_scheduler*> sched) {
+	return StE::task<std::unique_ptr<gli::texture2d>>([=](optional<task_scheduler*> sched) {
 		std::string full_path = dir + name;
 
 		auto tex_task = SurfaceIO::load_surface_2d_task(full_path, srgb);
-		gli::texture2D tex = tex_task(sched);
+		gli::texture2d tex = tex_task(sched);
 		if (tex.empty())
 			ste_log_warn() << "Couldn't load texture " << full_path;
 
-		return std::make_unique<gli::texture2D>(std::move(tex));
-	}).then_on_main_thread([=](optional<task_scheduler*> sched, std::unique_ptr<gli::texture2D> &&tex) {
+		return std::make_unique<gli::texture2d>(std::move(tex));
+	}).then_on_main_thread([=](optional<task_scheduler*> sched, std::unique_ptr<gli::texture2d> &&tex) {
 		if (!tex->empty() && bumpmap) {
-			auto nm = normal_map_from_height_map<gli::FORMAT_R8_UNORM>()(*tex, normal_map_bias);
+			auto nm = normal_map_from_height_map<gli::FORMAT_R8_UNORM_PACK8>()(*tex, normal_map_bias);
 			auto nm_tex = std::make_shared<LLR::Texture2D>(std::move(nm), true);
 			(*texmap)[name + "nm"] = std::move(nm_tex);
 		}
@@ -196,9 +196,8 @@ StE::task<bool> ModelLoader::load_model_task(const StEngineControl &context, con
 		shapes_type shapes;
 		materials_type materials;
 
-		std::string err = tinyobj::LoadObj(shapes, materials, file_path.c_str(), dir.c_str());
-
-		if (!err.empty()) {
+		std::string err;
+		if (!tinyobj::LoadObj(shapes, materials, err, file_path.c_str(), dir.c_str())) {
 			ste_log_error() << "Couldn't load model " << file_path << ": " << err;
 			return false;
 		}

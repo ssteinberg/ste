@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -23,7 +23,7 @@ public:
 	static int query_gl_error(std::string &out);
 	static void dump_gl_info(bool dump_extensions = false);
 
-	static gli::gl::format translate_format(const gli::format &format) { return GL.translate(format); }
+	static gli::gl::format translate_format(const gli::format &format) { return GL.translate(format, gli::swizzles(gli::SWIZZLE_ZERO)); }
 	static constexpr GLenum translate_type(const llr_resource_type &type) { return static_cast<GLenum>(type); }
 };
 

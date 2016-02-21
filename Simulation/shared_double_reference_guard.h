@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -26,7 +26,7 @@ private:
 			return *this;
 		}
 
-		void __fastcall release_ref() {
+		void release_ref() {
 			if (internal_counter.fetch_add(1, std::memory_order_acquire) == -1) {
 				destroy();
 			}
@@ -36,9 +36,9 @@ private:
 		template <bool b, typename = void>
 		class data_factory {
 		public:
-			void __fastcall release(data *ptr) { delete ptr; }
+			void release(data *ptr) { delete ptr; }
 			template <typename ... Ts>
-			data* __fastcall claim(Ts&&... args) { return new data(std::forward<Ts>(args)...); }
+			data* claim(Ts&&... args) { return new data(std::forward<Ts>(args)...); }
 		};
 		template <bool b>
 		class data_factory<b, std::enable_if_t<b>> : public concurrent_pointer_recycler<data> {};
@@ -46,7 +46,7 @@ private:
 	public:
 		static data_factory<std::is_move_assignable<DataType>::value && recycle_pointers> recycler;
 
-		void __fastcall destroy() {
+		void destroy() {
 			recycler.release(this);
 		}
 	};
@@ -80,18 +80,18 @@ public:
 
 		~data_guard() { if (ptr) ptr->release_ref(); }
 
-		bool __fastcall is_valid() const { return !!ptr; }
+		bool is_valid() const { return !!ptr; }
 
-		DataType* __fastcall operator->() { return &ptr->object; }
-		DataType& __fastcall operator*() { return ptr->object; }
-		const DataType* __fastcall operator->() const { return &ptr->object; }
-		const DataType& __fastcall operator*() const { return ptr->object; }
+		DataType* operator->() { return &ptr->object; }
+		DataType& operator*() { return ptr->object; }
+		const DataType* operator->() const { return &ptr->object; }
+		const DataType& operator*() const { return ptr->object; }
 	};
 
 private:
 	std::atomic<data_ptr> guard;
 
-	void __fastcall release(data_ptr &old_data_ptr) {
+	void release(data_ptr &old_data_ptr) {
 		if (!old_data_ptr.ptr)
 			return;
 		auto external = old_data_ptr.external_counter;
@@ -121,7 +121,7 @@ public:
 		release(old_data_ptr);
 	}
 
-	data_guard __fastcall acquire(std::memory_order order = std::memory_order_acquire) {
+	data_guard acquire(std::memory_order order = std::memory_order_acquire) {
 		data_ptr new_data_ptr;
 		data_ptr old_data_ptr = guard.load(std::memory_order_relaxed);
 		do {
@@ -133,7 +133,7 @@ public:
 	}
 
 	template <typename ... Ts>
-	data_guard __fastcall emplace_and_acquire(std::memory_order order, Ts&&... args) {
+	data_guard emplace_and_acquire(std::memory_order order, Ts&&... args) {
 		data *new_data = data::recycler.claim(std::forward<Ts>(args)...);
 		data_ptr new_data_ptr{ 2, new_data };
 		data_ptr old_data_ptr = guard.load(std::memory_order_relaxed);
@@ -145,7 +145,7 @@ public:
 	}
 
 	template <typename ... Ts>
-	void __fastcall emplace(std::memory_order order, Ts&&... args) {
+	void emplace(std::memory_order order, Ts&&... args) {
 		data *new_data = data::recycler.claim(std::forward<Ts>(args)...);
 		data_ptr new_data_ptr{ 1, new_data };
 		data_ptr old_data_ptr = guard.load(std::memory_order_relaxed);
@@ -155,7 +155,7 @@ public:
 	}
 
 	template <typename ... Ts>
-	bool __fastcall try_emplace(std::memory_order order1, std::memory_order order2, Ts&&... args) {
+	bool try_emplace(std::memory_order order1, std::memory_order order2, Ts&&... args) {
 		data *new_data = data::recycler.claim(std::forward<Ts>(args)...);
 		data_ptr new_data_ptr{ 1, new_data };
 		data_ptr old_data_ptr = guard.load(order2);
@@ -168,7 +168,7 @@ public:
 	}
 
 	template <typename ... Ts>
-	bool __fastcall try_compare_emplace(std::memory_order order, data_guard &old_data, Ts&&... args) {
+	bool try_compare_emplace(std::memory_order order, data_guard &old_data, Ts&&... args) {
 		data *new_data = data::recycler.claim(std::forward<Ts>(args)...);
 		data_ptr new_data_ptr{ 1, new_data };
 		data_ptr old_data_ptr = guard.load(std::memory_order_relaxed);
@@ -183,11 +183,11 @@ public:
 		return success;
 	}
 
-	bool __fastcall is_valid_hint(std::memory_order order = std::memory_order_relaxed) const {
+	bool is_valid_hint(std::memory_order order = std::memory_order_relaxed) const {
 		return !!guard.load(order).ptr;
 	}
 
-	void __fastcall drop() {
+	void drop() {
 		data_ptr new_data_ptr{ 0, nullptr };
 		data_ptr old_data_ptr = guard.load(std::memory_order_relaxed);
 		while (!guard.compare_exchange_weak(old_data_ptr, new_data_ptr, std::memory_order_acq_rel, std::memory_order_relaxed));

@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -82,7 +82,7 @@ private:
 				return nullptr;
 
 			glyph_descriptor gd;
-			gd.texture = std::make_unique<LLR::Texture2D>(g.glyph_distance_field);
+			gd.texture = std::make_unique<LLR::Texture2D>(*g.glyph_distance_field);
 			gd.metrics = g.metrics;
 			gd.buffer_index = buffer.size();
 
@@ -131,8 +131,9 @@ public:
 			std::vector<std::future<const glyph_descriptor*>> futures;
 			for (wchar_t codepoint : codepoints) {
 				auto codepoint_task = this->glyph_loader_task(font, codepoint);
-				sched ? 
-					futures.push_back(sched->schedule_now(std::move(codepoint_task))) : 
+				if (sched) 
+					futures.push_back(sched->schedule_now(std::move(codepoint_task)));
+				else 
 					codepoint_task();
 			}
 

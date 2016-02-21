@@ -5,7 +5,7 @@
 
 #include <glm/gtc/quaternion.hpp>
 
-using namespace StE::LLR;
+using namespace StE::Graphics;
 
 Camera::Camera() {
 	camera_position = { 0, 0, 0 };

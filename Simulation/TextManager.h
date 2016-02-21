@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -44,6 +44,8 @@ private:
 		float weight;
 
 		using descriptor = LLR::VBODescriptorWithTypes<glm::vec4, glm::vec4, glm::vec4, float, float>::descriptor;
+		
+		glyph_point() {}
 	};
 
 	class text_renderable : public Graphics::renderable {

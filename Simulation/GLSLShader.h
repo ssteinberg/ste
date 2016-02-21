@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -24,21 +24,22 @@ struct GLSLShaderProperties {
 	int version_major, version_minor;
 };
 
-template <GLSLShaderType ShaderType>
-class GLSLShaderAllocator : public generic_resource_allocator {
-private:
+namespace _ste_glslshader_creator {
 	template <GLSLShaderType T>
 	unsigned creator() { assert(false); return 0; }
-	template <> unsigned creator<GLSLShaderType::NONE>() { static_assert(false); }
+	template <> unsigned creator<GLSLShaderType::NONE>() { assert(false && "ShaderType cannot be none."); return 0; }
 	template <> unsigned creator<GLSLShaderType::VERTEX>() { return glCreateShader(GL_VERTEX_SHADER); }
 	template <> unsigned creator<GLSLShaderType::FRAGMENT>() { return glCreateShader(GL_FRAGMENT_SHADER); }
 	template <> unsigned creator<GLSLShaderType::GEOMETRY>() { return glCreateShader(GL_GEOMETRY_SHADER); }
 	template <> unsigned creator<GLSLShaderType::COMPUTE>() { return glCreateShader(GL_COMPUTE_SHADER); }
 	template <> unsigned creator<GLSLShaderType::TESS_CONTROL>() { return glCreateShader(GL_TESS_CONTROL_SHADER); }
 	template <> unsigned creator<GLSLShaderType::TESS_EVALUATION>() { return glCreateShader(GL_TESS_EVALUATION_SHADER); }
+};
 
+template <GLSLShaderType ShaderType>
+class GLSLShaderAllocator : public generic_resource_allocator {
 public:
-	unsigned allocate() override final { return creator<ShaderType>(); }
+	unsigned allocate() override final { return _ste_glslshader_creator::creator<ShaderType>(); }
 	static void deallocate(unsigned &id) { glDeleteShader(id); id = 0; }
 };
 

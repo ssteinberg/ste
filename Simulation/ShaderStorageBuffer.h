@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -31,20 +31,11 @@ public:
 	ShaderStorageBuffer(ShaderStorageBuffer &&m) = default;
 	ShaderStorageBuffer& operator=(ShaderStorageBuffer &&m) = default;
 
-	// This causes:
-	//	Internal error loop: assertion failed: find_seq_in_lookup_table: seq_number not found (shared/cfe/edgcpfe/il.c, line 3997)
-	//	With ICC 16.0
-	//using Base::Base;
-	template <typename T2>
-	ShaderStorageBuffer(const buffer_object<T2, U> &t) : Base(t) {}
-	ShaderStorageBuffer(const ShaderStorageBuffer &t) : Base(t) {}
-	ShaderStorageBuffer(std::size_t size) : Base(size) {}
-	ShaderStorageBuffer(std::size_t size, const T *data) : Base(size, data) {}
-	ShaderStorageBuffer(const std::vector<T> &data) : Base(data.size(), &data[0]) {}
+	using Base::Base;
 
-	void bind(const LayoutLocationType &sampler) const final override { LayoutBinder::bind(get_resource_id(), sampler, GL_SHADER_STORAGE_BUFFER); };
-	void unbind(const LayoutLocationType &sampler) const final override { LayoutBinder::unbind(sampler, GL_SHADER_STORAGE_BUFFER); };
-	void bind_range(const LayoutLocationType &sampler, int offset, std::size_t size) const { Base::bind_range(sampler, GL_SHADER_STORAGE_BUFFER, offset, size); }
+	void bind(const typename Base::LayoutLocationType &sampler) const final override { Base::LayoutBinder::bind(Base::get_resource_id(), sampler, GL_SHADER_STORAGE_BUFFER); };
+	void unbind(const typename Base::LayoutLocationType &sampler) const final override { Base::LayoutBinder::unbind(sampler, GL_SHADER_STORAGE_BUFFER); };
+	void bind_range(const typename Base::LayoutLocationType &sampler, int offset, std::size_t size) const { Base::bind_range(sampler, GL_SHADER_STORAGE_BUFFER, offset, size); }
 
 	llr_resource_type resource_type() const override { return llr_resource_type::LLRShaderStorageBufferObject; }
 };

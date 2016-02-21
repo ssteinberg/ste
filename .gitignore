@@ -5,6 +5,13 @@
 *.suo
 *.user
 *.sln.docstates
+*.o
+.depend
+GTAGS
+GRTAGS
+GPATH
+*.vscode
+*.elf
 
 # Build results
 [Dd]ebug/

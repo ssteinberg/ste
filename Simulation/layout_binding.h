@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -29,7 +29,7 @@ public:
 template <typename BindingType>
 class layout_binding_none : public layout_binding<BindingType> {
 public:
-	layout_binding_none() : layout_binding(-1) {}
+	layout_binding_none() : layout_binding<BindingType>(static_cast<unsigned>(-1)) {}
 };
 
 template <typename BindingType>

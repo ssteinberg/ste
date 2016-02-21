@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -25,8 +25,8 @@ namespace Graphics {
 
 class dense_voxel_space {
 private:
-	static constexpr gli::format space_format_radiance = gli::format::FORMAT_RGBA16_SFLOAT;
-	static constexpr gli::format space_format_data = gli::format::FORMAT_RGBA16_SFLOAT;
+	static constexpr gli::format space_format_radiance = gli::format::FORMAT_RGBA16_SFLOAT_PACK16;
+	static constexpr gli::format space_format_data = gli::format::FORMAT_RGBA16_SFLOAT_PACK16;
 	static constexpr int voxel_steps_multiplier = 8;
 
 	using ProjectionSignalConnectionType = StEngineControl::projection_change_signal_type::connection_type;
@@ -36,10 +36,10 @@ private:
 private:
 	const StEngineControl &ctx;
 	LLR::texture_sparse_3d::size_type size, tile_size;
-	std::uint32_t mipmaps{ 0 };
-	glm::u32vec3 step_size{ 0 };
-	std::uint32_t steps{ 0 };
-	std::uint32_t tiles_per_step{ 0 };
+	int mipmaps{ 0 };
+	glm::ivec3 step_size{ 0 };
+	int steps{ 0 };
+	int tiles_per_step{ 0 };
 	float voxel_size, space_size;
 
 	std::unique_ptr<LLR::texture_sparse_3d> space_radiance;

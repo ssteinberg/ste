@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -33,7 +33,7 @@ public:
 private:
 	struct concurrent_map_bucket_data {
 		using value_type = shared_double_reference_guard<mapped_type, true>;
-		using value_data_guard_type = value_type::data_guard;
+		using value_data_guard_type = typename value_type::data_guard;
 
 		key_type k;
 		value_type *v;
@@ -45,16 +45,16 @@ private:
 
 	static_assert(std::is_default_constructible<mapped_type>::value, "V must be default constructible.");
 
-	static constexpr int bucket_size = sizeof(unsigned) + sizeof(concurrent_map_bucket_data*);
+	static constexpr int bucket_size = sizeof(unsigned long) + sizeof(concurrent_map_bucket_data*);
 	static constexpr int N = cache_line / bucket_size - 1;
 	static constexpr int depth_threshold = 1;
 	static constexpr float min_load_factor_for_resize = .5f;
 
-	static_assert((cache_line % bucket_size) == 0, "cache_line is indivisible by sizeof(bucket_type)");
+	static_assert((cache_line % bucket_size) == 0, "cache_line is indivisible by bucket size");
 	static_assert(N > 2, "cache_line can't hold enough buckets");
 
 	struct concurrent_map_virtual_bucket {
-		std::array<std::atomic<unsigned>, N> hash{ std::atomic<unsigned>(0) };
+		std::array<std::atomic<unsigned long>, N> hash{ std::atomic<unsigned long>(0) };
 		std::array<std::atomic<concurrent_map_bucket_data*>, N> buckets{ std::atomic<concurrent_map_bucket_data*>(nullptr) };
 
 		std::atomic<concurrent_map_virtual_bucket*> next{ nullptr };
@@ -82,7 +82,7 @@ private:
 
 		unsigned size;
 		hash_table_type buckets;
-		shared_double_reference_guard<table_ptr, false>::data_guard new_table_guard{ nullptr };
+		typename shared_double_reference_guard<table_ptr, false>::data_guard new_table_guard{ nullptr };
 		std::vector<std::atomic<int>> markers;
 
 		resize_data_struct(unsigned size, unsigned old_size) : size(size), buckets(table_ptr::alloc(size)), markers((old_size + chunk_size - 1) / chunk_size) {
@@ -96,7 +96,16 @@ private:
 		shared_double_reference_guard<resize_data_struct<buckets_ptr>, false> resize_ptr;
 
 		static hash_table_type alloc(unsigned size) {
+#ifdef _MSC_VER
 			auto b = reinterpret_cast<virtual_bucket_type*>(_aligned_malloc(sizeof(virtual_bucket_type) * size, cache_line));
+#elif defined _linux
+			void *ptr;
+			posix_memalign(&ptr, cache_line, sizeof(virtual_bucket_type) * size);
+			auto b = reinterpret_cast<virtual_bucket_type*>(ptr);
+#else
+#error Unsupported OS
+#endif
+
 			new (b) virtual_bucket_type[size];
 			assert(b[0].buckets[0].is_lock_free() && "bucket_type not lock free");
 			return b;
@@ -113,30 +122,30 @@ private:
 	};
 
 	using resize_data = resize_data_struct<buckets_ptr>;
-	using resize_data_guard_type = shared_double_reference_guard<resize_data, false>::data_guard;
-	using hash_table_guard_type = shared_double_reference_guard<buckets_ptr, false>::data_guard;
+	using resize_data_guard_type = typename shared_double_reference_guard<resize_data, false>::data_guard;
+	using hash_table_guard_type = typename shared_double_reference_guard<buckets_ptr, false>::data_guard;
 
 public:
-	using value_data_guard_type = concurrent_map_bucket_data::value_data_guard_type;
+	using value_data_guard_type = typename concurrent_map_bucket_data::value_data_guard_type;
 
 private:
 	mutable shared_double_reference_guard<buckets_ptr, false> hash_table;
 	std::atomic<int> items{ 0 };
 
 	template <typename T>
-	unsigned __fastcall hash_function(T&& t) const { auto h = Hasher()(std::forward<T>(t)); return h ? h : 1; }
+	unsigned long hash_function(T&& t) const { auto h = Hasher()(std::forward<T>(t)); return h ? h : 1; }
 
-	void __fastcall copy_to_new_table(resize_data_guard_type &resize_guard, unsigned hash, const key_type &key, const mapped_type &val) {
-		unsigned mask = resize_guard->size - 1;
-		unsigned i = hash & mask;
+	void copy_to_new_table(resize_data_guard_type &resize_guard, unsigned long hash, const key_type &key, const mapped_type &val) {
+		unsigned long mask = resize_guard->size - 1;
+		unsigned long i = hash & mask;
 		auto &virtual_bucket = resize_guard->buckets[i];
 
 		insert_update_into_virtual_bucket(virtual_bucket, hash, key, .0f, false, 1, val);
 	}
 
-	void __fastcall copy_virtual_bucket(hash_table_guard_type &old_table_guard,
-										resize_data_guard_type &resize_guard,
-										int i, int chunks) {
+	void copy_virtual_bucket(hash_table_guard_type &old_table_guard,
+							 resize_data_guard_type &resize_guard,
+							 int i, int chunks) {
 		unsigned chunk_size = resize_data::chunk_size;
 		unsigned j = static_cast<unsigned>(i) * chunk_size;
 		for (unsigned k = 0; k < chunk_size && j < old_table_guard->size; ++k, ++j) {
@@ -146,8 +155,9 @@ private:
 					auto bucket = virtual_bucket->buckets[b].load();
 					if (bucket) {
 						auto val_guard = bucket->v->acquire();
-						val_guard.is_valid() ?
-							copy_to_new_table(resize_guard, virtual_bucket->hash[b].load(), bucket->k, *val_guard) :
+						if (val_guard.is_valid())
+							copy_to_new_table(resize_guard, virtual_bucket->hash[b].load(), bucket->k, *val_guard);
+						else
 							items.fetch_sub(1, std::memory_order_relaxed);
 					}
 				}
@@ -160,9 +170,9 @@ private:
 	}
 
 	template <typename ... Ts>
-	void __fastcall resize_with_pending_insert(hash_table_guard_type &old_table_guard,
+	void resize_with_pending_insert(hash_table_guard_type &old_table_guard,
 											   resize_data_guard_type &resize_guard,
-											   unsigned hash, 
+											   unsigned long hash, 
 											   const key_type &key, 
 											   bool helper_only,
 											   bool delete_item,
@@ -180,8 +190,8 @@ private:
 			}
 		}
 
-		unsigned mask = resize_guard->size - 1;
-		unsigned i = hash & mask;
+		unsigned long mask = resize_guard->size - 1;
+		unsigned long i = hash & mask;
 		auto &virtual_bucket = resize_guard->buckets[i];
 		!delete_item ?
 			insert_update_into_virtual_bucket(virtual_bucket, hash, key, .0f, true, 1, std::forward<Ts>(val_args)...) :
@@ -204,29 +214,26 @@ private:
 				auto ptr = old_table_guard->buckets;
 				for (unsigned i = 0; i < old_table_guard->size; ++i)
 					(&ptr[i])->~virtual_bucket_type();
+					
+#ifdef _MSC_VER
 				_aligned_free(ptr);
+#elif defined _linux
+				free(ptr);
+#endif
 			}
 		}
 	}
 
-	int __fastcall find_hash_in_virtual_bucket(virtual_bucket_type *virtual_bucket, unsigned hash) const {
-		static_assert(N == 7 && sizeof(unsigned) == 4 && cache_line == 64, "AVX2 optimization. Designed for a 32-bit compilation targeting any AVX2 capable architecture, like the 4th-generation Intel Core.");
-		auto ptr = reinterpret_cast<__m256i*>(&virtual_bucket->hash[0]);
-		__m256i m256_hash = _mm256_set1_epi32(*reinterpret_cast<int*>(&hash));
-		__m256i m256_comparison = _mm256_cmpeq_epi32(m256_hash, *ptr);
-		int bitmask = _mm256_movemask_ps(*reinterpret_cast<__m256*>(&m256_comparison));
-		int bsf = _bit_scan_forward(bitmask);
-		return !bitmask ? -1 : std::min(6, bsf);
-
-		// Boring girly version
-		// 		for (int j = 0; j < N; ++j) {
-		// 			auto bucket = virtual_bucket->buckets[pos].load(std::memory_order_acquire);
-		// 			if (bucket.hash == hash)
-		// 				return j;
-		// 		}
+	int find_hash_in_virtual_bucket(virtual_bucket_type *virtual_bucket, unsigned long hash) const {
+		for (int j = 0; j < N; ++j) {
+			auto h = virtual_bucket->hash[j].load(std::memory_order_relaxed);
+			if (h == hash)
+				return j;
+		}
+		return -1;
 	}
 
-	bool __fastcall remove_from_virtual_bucket(concurrent_map_virtual_bucket &virtual_bucket, unsigned hash, const key_type &key) {
+	bool remove_from_virtual_bucket(concurrent_map_virtual_bucket &virtual_bucket, unsigned long hash, const key_type &key) {
 		int pos = find_hash_in_virtual_bucket(&virtual_bucket, hash);
 		if (pos >= 0) {
 			auto bucket = virtual_bucket.buckets[pos].load();
@@ -243,8 +250,8 @@ private:
 	}
 
 	template <typename ... Ts>
-	bool __fastcall insert_update_into_virtual_bucket(concurrent_map_virtual_bucket &virtual_bucket,
-													  unsigned hash, 
+	bool insert_update_into_virtual_bucket(concurrent_map_virtual_bucket &virtual_bucket,
+													  unsigned long hash, 
 													  const key_type &key, 
 													  float load_factor,
 													  bool is_new_item_insert,
@@ -254,7 +261,7 @@ private:
 		for (int j = 0; j < N;) {
 			auto bucket_data = virtual_bucket.buckets[j].load();
 			if (!bucket_data) {
-				unsigned old_hash = virtual_bucket.hash[j].load(std::memory_order_relaxed);
+				unsigned long old_hash = virtual_bucket.hash[j].load(std::memory_order_relaxed);
 				if (virtual_bucket.hash[j].compare_exchange_strong(old_hash, hash, std::memory_order_acq_rel, std::memory_order_relaxed)) {
 					virtual_bucket.buckets[j].store(new concurrent_map_bucket_data(key, std::forward<Ts>(val_args)...), std::memory_order_release);
 					if (is_new_item_insert)
@@ -265,7 +272,7 @@ private:
 				continue;
 			}
 
-			unsigned old_hash = virtual_bucket.hash[j].load();
+			unsigned long old_hash = virtual_bucket.hash[j].load();
 			if (old_hash != hash || bucket_data->k != key) {
 				++j; continue;
 			}
@@ -297,17 +304,22 @@ public:
 		if (ptr) {
 			for (unsigned i = 0; i < data_guard->size; ++i)
 				(&ptr[i])->~virtual_bucket_type();
+				
+#ifdef _MSC_VER
 			_aligned_free(ptr);
+#elif defined _linux
+			free(ptr);
+#endif
 		}
 	}
 
 	template <typename ... Ts>
-	void __fastcall emplace(const key_type &key, Ts&&... val_args) {
-		unsigned hash = hash_function(key);
+	void emplace(const key_type &key, Ts&&... val_args) {
+		unsigned long hash = hash_function(key);
 
 		auto table_guard = hash_table.acquire();
-		unsigned mask = table_guard->size - 1;
-		unsigned i = hash & mask;
+		unsigned long mask = table_guard->size - 1;
+		unsigned long i = hash & mask;
 		auto &virtual_bucket = table_guard->buckets[i];
 
 		resize_data_guard_type resize_guard{ nullptr };
@@ -325,12 +337,12 @@ public:
 			resize_with_pending_insert(table_guard, resize_guard, hash, key, true, false, std::forward<Ts>(val_args)...);
 	}
 
-	void __fastcall remove(const key_type &key) {
-		unsigned hash = hash_function(key);
+	void remove(const key_type &key) {
+		unsigned long hash = hash_function(key);
 
 		auto table_guard = hash_table.acquire();
-		unsigned mask = table_guard->size - 1;
-		unsigned i = hash & mask;
+		unsigned long mask = table_guard->size - 1;
+		unsigned long i = hash & mask;
 		remove_from_virtual_bucket(table_guard->buckets[i], hash, key);
 
 		auto resize_guard = table_guard->resize_ptr.acquire();
@@ -338,12 +350,12 @@ public:
 			resize_with_pending_insert(table_guard, resize_guard, hash, key, true, true);
 	}
 
-	const value_data_guard_type __fastcall try_get(const key_type &key) const {
-		unsigned hash = hash_function(key);
+	value_data_guard_type const try_get(const key_type &key) const {
+		unsigned long hash = hash_function(key);
 
 		auto table_guard = hash_table.acquire();
-		unsigned mask = table_guard->size - 1;
-		unsigned i = hash & mask;
+		unsigned long mask = table_guard->size - 1;
+		unsigned long i = hash & mask;
 
 		auto *virtual_bucket = &table_guard->buckets[i];
 		for (;;) {

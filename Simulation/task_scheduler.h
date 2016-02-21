@@ -1,15 +1,7 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
-
-#include "balanced_thread_pool.h"
-#include "concurrent_queue.h"
-#include "function_wrapper.h"
-#include "function_traits.h"
-#include "thread_constants.h"
-
-#include "task.h"
 
 #include <memory>
 #include <chrono>
@@ -18,6 +10,14 @@
 #include <list>
 
 #include <type_traits>
+
+#include "balanced_thread_pool.h"
+#include "concurrent_queue.h"
+#include "function_wrapper.h"
+#include "function_traits.h"
+#include "thread_constants.h"
+
+#include "task.h"
 
 namespace StE {
 
@@ -75,20 +75,20 @@ public:
 	}
 
 	template <typename F>
-	std::future<function_traits<F>::result_t> schedule_now(F &&f,
+	std::future<typename function_traits<F>::result_t> schedule_now(F &&f,
 													std::enable_if_t<function_traits<F>::arity == 0>* = 0) {
 		return pool.enqueue(std::forward<F>(f));
 	}
 	template <typename F>
-	std::future<function_traits<F>::result_t> schedule_now(F &&f,
+	std::future<typename function_traits<F>::result_t> schedule_now(F &&f,
 													std::enable_if_t<function_traits<F>::arity == 1>* = 0) {
-		static_assert(std::is_constructible<function_traits<F>::arg<0>::t, task_scheduler*>::value, "Lambda argument must be constructible with task_scheduler*");
+		static_assert(std::is_constructible<typename function_traits<F>::template arg<0>::t, task_scheduler*>::value, "Lambda argument must be constructible with task_scheduler*");
 
 		return schedule_now([func = std::forward<F>(f), this]() { return func(this); });
 	}
 
 	template<typename F>
-	std::future<function_traits<F>::result_t> schedule_at(const std::chrono::high_resolution_clock::time_point &at,
+	std::future<typename function_traits<F>::result_t> schedule_at(const std::chrono::high_resolution_clock::time_point &at,
 												   F &&f,
 												   std::enable_if_t<function_traits<F>::arity == 0>* = 0) {
 		std::packaged_task<std::result_of_t<F()>()> pt(std::forward<F>(f));
@@ -97,16 +97,16 @@ public:
 		return future;
 	}
 	template <typename F>
-	std::future<function_traits<F>::result_t> schedule_at(const std::chrono::high_resolution_clock::time_point &at,
+	std::future<typename function_traits<F>::result_t> schedule_at(const std::chrono::high_resolution_clock::time_point &at,
 												   F &&f,
 												   std::enable_if_t<function_traits<F>::arity == 1>* = 0) {
-		static_assert(std::is_constructible<function_traits<F>::arg<0>::t, task_scheduler*>::value, "Lambda argument must be constructible with task_scheduler*");
+		static_assert(std::is_constructible<typename function_traits<F>::template arg<0>::t, task_scheduler*>::value, "Lambda argument must be constructible with task_scheduler*");
 
 		return schedule_at(at, [func = std::forward<F>(f), this]() { return func(this); });
 	}
 
 	template<typename F, class Rep, class Period>
-	std::future<function_traits<F>::result_t> schedule_after(const std::chrono::duration<Rep, Period> &after,
+	std::future<typename function_traits<F>::result_t> schedule_after(const std::chrono::duration<Rep, Period> &after,
 													  F &&f,
 													  std::enable_if_t<function_traits<F>::arity == 0>* = 0) {
 		std::packaged_task<std::result_of_t<F()>()> pt(std::forward<F>(f));
@@ -115,16 +115,16 @@ public:
 		return future;
 	}
 	template <typename F, class Rep, class Period>
-	std::future<function_traits<F>::result_t> schedule_after(const std::chrono::duration<Rep, Period> &after,
+	std::future<typename function_traits<F>::result_t> schedule_after(const std::chrono::duration<Rep, Period> &after,
 													  F &&f,
 													  std::enable_if_t<function_traits<F>::arity == 1>* = 0) {
-		static_assert(std::is_constructible<function_traits<F>::arg<0>::t, task_scheduler*>::value, "Lambda argument must be constructible with task_scheduler*");
+		static_assert(std::is_constructible<typename function_traits<F>::template arg<0>::t, task_scheduler*>::value, "Lambda argument must be constructible with task_scheduler*");
 
 		return schedule_after(after, [func = std::forward<F>(f), this]() { return func(this); });
 	}
 
 	template <typename F>
-	std::future<function_traits<F>::result_t> schedule_now_on_main_thread(F &&f,
+	std::future<typename function_traits<F>::result_t> schedule_now_on_main_thread(F &&f,
 																   std::enable_if_t<function_traits<F>::arity == 0>* = 0) {
 		std::packaged_task<std::result_of_t<F()>()> pt(std::forward<F>(f));
 		auto future = pt.get_future();
@@ -137,9 +137,9 @@ public:
 		return future;
 	}
 	template <typename F>
-	std::future<function_traits<F>::result_t> schedule_now_on_main_thread(F &&f,
+	std::future<typename function_traits<F>::result_t> schedule_now_on_main_thread(F &&f,
 																   std::enable_if_t<function_traits<F>::arity == 1>* = 0) {
-		static_assert(std::is_constructible<function_traits<F>::arg<0>::t, task_scheduler*>::value, "Lambda argument must be constructible with task_scheduler*");
+		static_assert(std::is_constructible<typename function_traits<F>::template arg<0>::t, task_scheduler*>::value, "Lambda argument must be constructible with task_scheduler*");
 
 		return schedule_now_on_main_thread([func = std::forward<F>(f), this]() { func(this); });
 	}

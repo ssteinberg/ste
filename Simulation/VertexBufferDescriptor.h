@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -35,13 +35,13 @@ private:
 	template<int index> struct sizes_populator { using T = std::size_t; static constexpr T value = sizeof(typelist_type_at<index, Ts...>::type); };
 	template<int index> struct elements_count_populator {
 		using T = std::size_t;
-		using ValT = typelist_type_at<index, Ts...>::type;
+		using ValT = typename typelist_type_at<index, Ts...>::type;
 		static constexpr T value = gl_elements_count<ValT>::elements;
 		static_assert(value > 0, "ValT is NOT a scalar or vector type");
 	};
 	template<int index> struct elements_type_name_populator {
 		using T = GLenum;
-		using ValT = typelist_type_at<index, Ts...>::type;
+		using ValT = typename typelist_type_at<index, Ts...>::type;
 		static constexpr T value = gl_type_name_enum<ValT>::gl_enum;
 		static_assert(value != 0, "ValT is NOT a valid OpenGL type");
 	};

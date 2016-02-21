@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -40,13 +40,13 @@ public:
 
 		this->size = size;
 
-		depth_output = std::make_unique<LLR::RenderTarget>(gli::format::FORMAT_D24_UNORM, glm::tvec2<std::size_t>{ size });
-		normal_output = std::make_unique<LLR::Texture2D>(gli::format::FORMAT_RGB32_SFLOAT, glm::tvec2<std::size_t>{ size }, 1);
-		tangent_output = std::make_unique<LLR::Texture2D>(gli::format::FORMAT_RGB32_SFLOAT, glm::tvec2<std::size_t>{ size }, 1);
-		position_output = std::make_unique<LLR::Texture2D>(gli::format::FORMAT_RGB32_SFLOAT, glm::tvec2<std::size_t>{ size }, 1);
-		color_output = std::make_unique<LLR::Texture2D>(gli::format::FORMAT_RGBA32_SFLOAT, glm::tvec2<std::size_t>{ size }, 1);
-		material_idx_output = std::make_unique<LLR::Texture2D>(gli::format::FORMAT_R16_SINT, glm::tvec2<std::size_t>{ size }, 1);
-		z_output = std::make_unique<LLR::Texture2D>(gli::format::FORMAT_R32_SFLOAT, glm::tvec2<std::size_t>{ size }, 1);
+		depth_output = std::make_unique<LLR::RenderTarget>(gli::format::FORMAT_D24_UNORM_PACK32, glm::ivec2{ size });
+		normal_output = std::make_unique<LLR::Texture2D>(gli::format::FORMAT_RGB32_SFLOAT_PACK32, glm::ivec2{ size }, 1);
+		tangent_output = std::make_unique<LLR::Texture2D>(gli::format::FORMAT_RGB32_SFLOAT_PACK32, glm::ivec2{ size }, 1);
+		position_output = std::make_unique<LLR::Texture2D>(gli::format::FORMAT_RGB32_SFLOAT_PACK32, glm::ivec2{ size }, 1);
+		color_output = std::make_unique<LLR::Texture2D>(gli::format::FORMAT_RGBA32_SFLOAT_PACK32, glm::ivec2{ size }, 1);
+		material_idx_output = std::make_unique<LLR::Texture2D>(gli::format::FORMAT_R16_SINT_PACK16, glm::ivec2{ size }, 1);
+		z_output = std::make_unique<LLR::Texture2D>(gli::format::FORMAT_R32_SFLOAT_PACK32, glm::ivec2{ size }, 1);
 
 		textures[0] = normal_output->get_resource_id();
 		textures[1] = position_output->get_resource_id();
@@ -64,7 +64,7 @@ public:
 	}
 
 	void bind_output_textures() const {
-		LLR::gl_current_context::get()->bind_texture_units<0>(textures);
+		LLR::gl_current_context::get()->bind_texture_units<0, 5>(textures);
 	}
 
 	auto get_size() const { return size; }

@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -34,8 +34,8 @@ public:
 
 	using Base::Base;
 
-	void bind() const final override { Binder::bind(get_resource_id(), GL_ELEMENT_ARRAY_BUFFER); };
-	void unbind() const final override { Binder::unbind(GL_ELEMENT_ARRAY_BUFFER); };
+	void bind() const final override { Base::Binder::bind(Base::get_resource_id(), GL_ELEMENT_ARRAY_BUFFER); };
+	void unbind() const final override { Base::Binder::unbind(GL_ELEMENT_ARRAY_BUFFER); };
 
 	llr_resource_type resource_type() const override { return llr_resource_type::LLRElementBufferObject; }
 };

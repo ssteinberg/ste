@@ -1,21 +1,25 @@
 
 #include "stdafx.h"
 #include "SurfaceIO.h"
+
 #include "Log.h"
+#include "AttributedString.h"
+#include "attrib.h"
 
-#include <png/png.h>
-#include <libjpeg/jpeglib.h>
-#include <libtga/tga.h>
+#include <libpng16/png.h>
+#include <turbojpeg.h>
+#include <tga.h>
 
+using namespace StE::Text;
 using namespace StE::Resource;
 
-bool SurfaceIO::write_png(const std::string &file_name, const char *image_data, int components, int width, int height) {
+bool SurfaceIO::write_png(const boost::filesystem::path &file_name, const char *image_data, int components, int width, int height) {
 	if (components != 1 && components != 3 && components != 4) {
 		ste_log_error() << file_name << " can't write " << components << " channel PNG.";
 		return false;
 	}
 
-	FILE *fp = fopen(file_name.data(), "wb");
+	FILE *fp = fopen(file_name.string().data(), "wb");
 	if (!fp) {
 		ste_log_error() << file_name << " can't be opened for writing";
 		return false;
@@ -83,22 +87,22 @@ bool SurfaceIO::write_png(const std::string &file_name, const char *image_data, 
 	return true;
 }
 
-gli::texture2D SurfaceIO::load_tga(const std::string &file_name, bool srgb) {
+gli::texture2d SurfaceIO::load_tga(const boost::filesystem::path &file_name, bool srgb) {
 	TGA *tga;
 
 	try {
-		tga = TGAOpen(const_cast<char*>(file_name.c_str()), "rb");
+		tga = TGAOpen(const_cast<char*>(file_name.string().data()), "rb");
 		TGAReadHeader(tga);
 	}
 	catch (std::exception ex) {
 		ste_log_error() << file_name << " is not a valid 24-bit TGA" << std::endl;
-		return gli::texture2D();
+		return gli::texture2d();
 	}
 
 	if (tga->last != TGA_OK) {
 		TGAClose(tga);
 		ste_log_error() << file_name << " is not a valid 24-bit TGA" << std::endl;
-		return gli::texture2D();
+		return gli::texture2d();
 	}
 
 	unsigned w = tga->hdr.width;
@@ -111,24 +115,24 @@ gli::texture2D SurfaceIO::load_tga(const std::string &file_name, bool srgb) {
 	case 10:
 	case 11:
 		if (tga->hdr.depth == 8) {
-			format = srgb ? gli::format::FORMAT_R8_SRGB : gli::format::FORMAT_R8_UNORM;
+			format = srgb ? gli::format::FORMAT_R8_SRGB_PACK8 : gli::format::FORMAT_R8_UNORM_PACK8;
 			components = 1;
 			break;
 		}
 		else if (tga->hdr.depth == 24) {
-			format = srgb ? gli::format::FORMAT_BGR8_SRGB : gli::format::FORMAT_BGR8_UNORM;
+			format = srgb ? gli::format::FORMAT_BGR8_SRGB_PACK8 : gli::format::FORMAT_BGR8_UNORM_PACK8;
 			components = 3;
 			break;
 		}
 		else if (tga->hdr.depth == 32) {
-			format = srgb ? gli::format::FORMAT_BGRA8_SRGB : gli::format::FORMAT_BGRA8_UNORM;
+			format = srgb ? gli::format::FORMAT_BGRA8_SRGB_PACK8 : gli::format::FORMAT_BGRA8_UNORM_PACK8;
 			components = 4;
 			break;
 		}
 	default:
 		TGAClose(tga);
 		ste_log_error() << file_name << " Unsupported libtga depth (" << tga->hdr.depth << ") and image type (" << tga->hdr.img_t << ") combination" << std::endl;
-		return gli::texture2D();
+		return gli::texture2d();
 	}
 
 	unsigned rowbytes = w * components;
@@ -138,13 +142,13 @@ gli::texture2D SurfaceIO::load_tga(const std::string &file_name, bool srgb) {
 	rowbytes += 3 - ((rowbytes - 1) % 4);
 
 	w = rowbytes / components + !!(rowbytes%components);
-	gli::texture2D tex(1, format, { w, h });
+	gli::texture2d tex(format, { w, h }, 1);
 	tbyte *image_data = reinterpret_cast<tbyte*>(tex.data());
 	auto level0_size = tex[0].size();
 	if (image_data == nullptr || level0_size < rowbytes*h) {
 		TGAClose(tga);
 		ste_log_error() << file_name << " could not allocate memory for TGA image data or format mismatch";
-		return gli::texture2D();
+		return gli::texture2d();
 	}
 
 	try {
@@ -152,7 +156,7 @@ gli::texture2D SurfaceIO::load_tga(const std::string &file_name, bool srgb) {
 	}
 	catch (std::exception ex) {
 		ste_log_error() << file_name << " is not a valid 24-bit TGA" << std::endl;
-		return gli::texture2D();
+		return gli::texture2d();
 	}
 
 	TGAClose(tga);
@@ -160,13 +164,13 @@ gli::texture2D SurfaceIO::load_tga(const std::string &file_name, bool srgb) {
 	return tex;
 }
 
-gli::texture2D SurfaceIO::load_png(const std::string &file_name, bool srgb) {
+gli::texture2d SurfaceIO::load_png(const boost::filesystem::path &file_name, bool srgb) {
 	png_byte header[8];
 
-	FILE *fp = fopen(file_name.data(), "rb");
+	FILE *fp = fopen(file_name.string().data(), "rb");
 	if (fp == 0) {
-		perror(file_name.data());
-		return gli::texture2D();
+		perror(file_name.string().data());
+		return gli::texture2d();
 	}
 
 	// read the header
@@ -175,14 +179,14 @@ gli::texture2D SurfaceIO::load_png(const std::string &file_name, bool srgb) {
 	if (png_sig_cmp(header, 0, 8)) {
 		ste_log_error() << file_name << " is not a PNG";
 		fclose(fp);
-		return gli::texture2D();
+		return gli::texture2d();
 	}
 
 	png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 	if (!png_ptr) {
 		ste_log_error() << file_name << " png_create_read_struct returned 0";
 		fclose(fp);
-		return gli::texture2D();
+		return gli::texture2d();
 	}
 
 	// create png info struct
@@ -191,7 +195,7 @@ gli::texture2D SurfaceIO::load_png(const std::string &file_name, bool srgb) {
 		ste_log_error() << file_name << " png_create_info_struct returned 0";
 		png_destroy_read_struct(&png_ptr, (png_infopp)NULL, (png_infopp)NULL);
 		fclose(fp);
-		return gli::texture2D();
+		return gli::texture2d();
 	}
 
 	// create png info struct
@@ -200,7 +204,7 @@ gli::texture2D SurfaceIO::load_png(const std::string &file_name, bool srgb) {
 		ste_log_error() << file_name << " png_create_info_struct returned 0";
 		png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
 		fclose(fp);
-		return gli::texture2D();
+		return gli::texture2d();
 	}
 
 	// the code in this if statement gets called if libpng encounters an error
@@ -208,7 +212,7 @@ gli::texture2D SurfaceIO::load_png(const std::string &file_name, bool srgb) {
 		ste_log_error() << file_name << " error from libpng";
 		png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
 		fclose(fp);
-		return gli::texture2D();
+		return gli::texture2d();
 	}
 
 	// init png reading
@@ -232,28 +236,28 @@ gli::texture2D SurfaceIO::load_png(const std::string &file_name, bool srgb) {
 
 	if (bit_depth != 8 && (bit_depth != 1 || color_type != PNG_COLOR_TYPE_GRAY)) {
 		ste_log_error() << file_name << " Unsupported bit depth " << bit_depth << ".  Must be 8";
-		return gli::texture2D();
+		return gli::texture2d();
 	}
 
 	gli::format format;
 	int components;
 	switch (color_type) {
 	case PNG_COLOR_TYPE_GRAY:
-		format = srgb ? gli::format::FORMAT_R8_SRGB : gli::format::FORMAT_R8_UNORM;
+		format = srgb ? gli::format::FORMAT_R8_SRGB_PACK8 : gli::format::FORMAT_R8_UNORM_PACK8;
 		components = 1;
 		break;
 	case PNG_COLOR_TYPE_RGB:
-		format = srgb ? gli::format::FORMAT_RGB8_SRGB : gli::format::FORMAT_RGB8_UNORM;
+		format = srgb ? gli::format::FORMAT_RGB8_SRGB_PACK8 : gli::format::FORMAT_RGB8_UNORM_PACK8;
 		components = 3;
 		break;
 	case PNG_COLOR_TYPE_RGB_ALPHA:
-		format = srgb ? gli::format::FORMAT_RGBA8_SRGB : gli::format::FORMAT_RGBA8_UNORM;
+		format = srgb ? gli::format::FORMAT_RGBA8_SRGB_PACK8 : gli::format::FORMAT_RGBA8_UNORM_PACK8;
 		components = 4;
 		break;
 	default:
 		ste_log_error() << file_name << " Unknown libpng color type " << color_type;
 		fclose(fp);
-		return gli::texture2D();
+		return gli::texture2d();
 	}
 
 	// Update the png info struct.
@@ -271,14 +275,14 @@ gli::texture2D SurfaceIO::load_png(const std::string &file_name, bool srgb) {
 	// Allocate the image_data as a big block, to be given to opengl
 	/*char * image_data = new char[rowbytes * temp_height * sizeof(png_byte) + 15];*/
 	unsigned w = rowbytes / components + !!(rowbytes%components);
-	gli::texture2D tex(1, format, { w, temp_height });
+	gli::texture2d tex(format, { w, temp_height }, 1);
 	char *image_data = reinterpret_cast<char*>(tex.data());
 	auto level0_size = tex[0].size();
 	if (image_data == nullptr || level0_size < rowbytes*temp_height) {
 		ste_log_error() << file_name << " could not allocate memory for PNG image data or format mismatch";
 		png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
 		fclose(fp);
-		return gli::texture2D();
+		return gli::texture2d();
 	}
 
 	// row_pointers is for pointing to image_data for reading the png with libpng
@@ -318,152 +322,78 @@ gli::texture2D SurfaceIO::load_png(const std::string &file_name, bool srgb) {
 	return tex;
 }
 
-struct libjpeg_error_mgr {
-	struct jpeg_error_mgr pub;
-	jmp_buf setjmp_buffer;
-};
-typedef struct libjpeg_error_mgr * my_error_ptr;
-
-METHODDEF(void) jpeg_error_exit(j_common_ptr cinfo) {
-	my_error_ptr myerr = (my_error_ptr)cinfo->err;
-	(*cinfo->err->output_message) (cinfo);
-	longjmp(myerr->setjmp_buffer, 1);
-}
-
-gli::texture2D SurfaceIO::load_jpeg(const std::string &path, bool srgb) {
-	const char * filename = path.data();
-
-	struct jpeg_decompress_struct cinfo;
-	struct libjpeg_error_mgr jerr;
-
-	FILE * infile;
+gli::texture2d SurfaceIO::load_jpeg(const boost::filesystem::path &path, bool srgb) {
 	int row_stride;
-
-	if ((infile = fopen(filename, "rb")) == NULL) {
+	std::string content;
+	
+	std::ifstream fs;
+	fs.exceptions(fs.exceptions() | std::ifstream::failbit | std::ifstream::badbit);
+	
+	try {
+		fs.open(path.string(), std::ios::in);
+		content = std::string((std::istreambuf_iterator<char>(fs)), std::istreambuf_iterator<char>());
+		fs.close();
+	} catch (std::fstream::failure e) {
+		using namespace Attributes;
+		ste_log_error() << Text::AttributedString("Can't open JPEG ") + i(path.string()) + ": " + e.what() + " - " + std::strerror(errno);
+		return gli::texture2d();
+	}
+	unsigned char *data = reinterpret_cast<unsigned char*>(&content[0]); 
+	
+	if (content.size() == 0) {
 		ste_log_error() << "Can't open JPEG: " << path;
-		return gli::texture2D();
+		return gli::texture2d();
 	}
-
-	/* Step 1: allocate and initialize JPEG decompression object */
-
-	/* We set up the normal JPEG error routines, then override error_exit. */
-	cinfo.err = jpeg_std_error(&jerr.pub);
-	jerr.pub.error_exit = jpeg_error_exit;
-	/* Establish the setjmp return context for my_error_exit to use. */
-	if (setjmp(jerr.setjmp_buffer)) {
-		ste_log_error() << path << ": libjpeg signaled error.";
-		jpeg_destroy_decompress(&cinfo);
-		fclose(infile);
-		return gli::texture2D();
+	
+	auto tj = tjInitDecompress();
+	if (tj == nullptr) {
+		ste_log_error() << path << ": libturbojpeg signaled error.";
+		return gli::texture2d();
 	}
-	/* Now we can initialize the JPEG decompression object. */
-	jpeg_create_decompress(&cinfo);
-
-	/* Step 2: specify data source (eg, a file) */
-
-	jpeg_stdio_src(&cinfo, infile);
-
-	/* Step 3: read file parameters with jpeg_read_header() */
-
-	(void)jpeg_read_header(&cinfo, TRUE);
-	/* We can ignore the return value from jpeg_read_header since
-	*   (a) suspension is not possible with the stdio data source, and
-	*   (b) we passed TRUE to reject a tables-only JPEG file as an error.
-	* See libjpeg.txt for more info.
-	*/
-
-	/* Step 4: set parameters for decompression */
-
-	/* In this example, we don't need to change any of the defaults set by
-	* jpeg_read_header(), so we do nothing here.
-	*/
-
-	/* Step 5: Start decompressor */
-
-	(void)jpeg_start_decompress(&cinfo);
-	/* We can ignore the return value since suspension is not possible
-	* with the stdio data source.
-	*/
+	
+	int w, h, chro_sub_smpl, color_space;
+	tjDecompressHeader3(tj, data, content.size(), &w, &h, &chro_sub_smpl, &color_space);
 
 	// Read colorspace and components
 	gli::format gli_format;
-	bool sanity = true;
-	switch (cinfo.out_color_space) {
-	case JCS_GRAYSCALE:		gli_format = srgb ? gli::format::FORMAT_R8_SRGB : gli::format::FORMAT_R8_UNORM; sanity = cinfo.output_components == 1; break;
-	case JCS_EXT_RGB:
-	case JCS_RGB:			gli_format = srgb ? gli::format::FORMAT_RGB8_SRGB : gli::format::FORMAT_RGB8_UNORM; sanity = cinfo.output_components == 3; break;
-	case JCS_EXT_RGBA:		gli_format = srgb ? gli::format::FORMAT_RGBA8_SRGB : gli::format::FORMAT_RGBA8_UNORM; sanity = cinfo.output_components == 4; break;
-	default:				sanity = false;
-	}
-	if (!sanity) {
-		ste_log_error() << path << " Unsupported JPEG components count (" << cinfo.output_components << ") and colorspace (" << cinfo.out_color_space << ") combination";
-		(void)jpeg_finish_decompress(&cinfo);
-		jpeg_destroy_decompress(&cinfo);
-		fclose(infile);
-		return gli::texture2D();
+	int comp = 0;
+	switch (color_space) {
+	case TJCS_GRAY:			gli_format = srgb ? gli::format::FORMAT_R8_SRGB_PACK8 : gli::format::FORMAT_R8_UNORM_PACK8; comp = 1; break;
+	default:				gli_format = srgb ? gli::format::FORMAT_RGB8_SRGB_PACK8 : gli::format::FORMAT_RGB8_UNORM_PACK8; comp = 3; break;
 	}
 
 	// Create surface
-	row_stride = cinfo.output_width * cinfo.output_components;
+	row_stride = w * comp;
 
 	if (3 - ((row_stride - 1) % 4))
 		ste_log_warn() << path << " image not 4byte aligned!";
 	auto corrected_stride = row_stride + 3 - ((row_stride - 1) % 4);
-	auto w = corrected_stride / cinfo.output_components + !!(corrected_stride%cinfo.output_components);
-	gli::texture2D tex(1, gli_format, { w, cinfo.output_height });
-	char *image_data = reinterpret_cast<char*>(tex.data());
+	auto w0 = corrected_stride / comp + !!(corrected_stride%comp);
+	gli::texture2d tex(gli_format, { w0, h }, 1);
+	unsigned char *image_data = reinterpret_cast<unsigned char*>(tex.data());
 	auto level0_size = tex[0].size();
-	if (image_data == nullptr || level0_size < cinfo.output_height * row_stride) {
-		ste_log_error() << path << " could not allocate memory for JPEG image data or format mismatch";
-		(void)jpeg_finish_decompress(&cinfo);
-		jpeg_destroy_decompress(&cinfo);
-		fclose(infile);
-		return gli::texture2D();
+	if (image_data == nullptr || level0_size < h * row_stride) {
+		ste_log_error() << path << " could not allocate memory for JPEG image data or format mismatch" << std::endl;
+		tjDestroy(tj);
+		return gli::texture2d();
+	}
+	
+	if (tjDecompress2(tj, 
+					  data,
+					  content.size(), 
+					  image_data, 
+					  w, 
+					  w0 * comp, 
+					  h, 
+					  TJPF_RGB, 
+					  TJFLAG_BOTTOMUP) != 0) {
+		const char *err = tjGetErrorStr();
+		ste_log_error() << path << " libturbojpeg could not decompress JPEG image: " << (err ? err : "") << std::endl;
+		tjDestroy(tj);
+		return gli::texture2d();
 	}
 
-	/* Step 6: while (scan lines remain to be read) */
-	/*           jpeg_read_scanlines(...); */
-	/* Create row_pointers to invert the image */
-	/* Here we use the library's state variable cinfo.output_scanline as the
-	* loop counter, so that we don't have to keep track ourselves.
-	*/
-
-	unsigned char ** row_pointers = (unsigned char **)malloc(cinfo.output_height * sizeof(unsigned char *));
-	if (row_pointers == NULL) {
-		ste_log_error() << path << " could not allocate memory for JPEG row pointers";
-		(void)jpeg_finish_decompress(&cinfo);
-		jpeg_destroy_decompress(&cinfo);
-		fclose(infile);
-		return gli::texture2D();
-	}
-	// set the individual row_pointers to point at the correct offsets of image_data
-	for (unsigned int i = 0; i < cinfo.output_height; i++)
-		row_pointers[cinfo.output_height - 1 - i] = reinterpret_cast<unsigned char*>(image_data + i * w * cinfo.output_components);
-
-	// Read as many lines per call as possible
-	unsigned lines_read = 0;
-	while (cinfo.output_scanline < cinfo.output_height) {
-		lines_read += jpeg_read_scanlines(&cinfo, row_pointers + cinfo.output_scanline, cinfo.output_height - cinfo.output_scanline);
-	}
-	if (lines_read < cinfo.output_height)
-		ste_log_warn() << path << " JPEG decoding ended prematurely. Read " << lines_read << "/" << cinfo.output_height << " scan lines";
-
-	/* Step 7: Finish decompression */
-
-	(void)jpeg_finish_decompress(&cinfo);
-	/* We can ignore the return value since suspension is not possible
-	* with the stdio data source.
-	*/
-
-	/* Step 8: Release JPEG decompression object */
-	jpeg_destroy_decompress(&cinfo);
-	fclose(infile);
-
-	free(row_pointers);
-
-	/* At this point you may want to check to see whether any corrupt-data
-	* warnings occurred (test whether jerr.pub.num_warnings is nonzero).
-	*/
+	tjDestroy(tj);
 
 	return tex;
 }

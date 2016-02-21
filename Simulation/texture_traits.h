@@ -1,8 +1,10 @@
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
 #include "llr_resource_type.h"
+
+#include "texture1D_size_type.h"
 
 #include <gli/gli.hpp>
 
@@ -46,9 +48,9 @@ template <llr_resource_type type> struct texture_has_samples_or_levels { static 
 template <llr_resource_type type> struct texture_is_pixel_transferable { static constexpr bool value = !texture_is_multisampled<type>::value; };
 
 template <int dim> struct texture_size_type {};
-template <> struct texture_size_type<1> { using type = gli::storage::dim1_type; };
-template <> struct texture_size_type<2> { using type = gli::storage::dim2_type; };
-template <> struct texture_size_type<3> { using type = gli::storage::dim3_type; };
+template <> struct texture_size_type<1> { using type = texture1D_size_type<int>; };
+template <> struct texture_size_type<2> { using type = glm::tvec2<int>; };
+template <> struct texture_size_type<3> { using type = glm::tvec3<int>; };
 
 }
 }

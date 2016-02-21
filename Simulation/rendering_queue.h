@@ -12,13 +12,14 @@
 
 #include <memory>
 #include <vector>
+#include <list>
 
 namespace StE {
 namespace Graphics {
 
 class rendering_queue {
 private:
-	std::vector<renderable*> q;
+	std::list<renderable*> q;
 	std::vector<std::unique_ptr<renderable>> ptrs;
 
 public:
@@ -30,6 +31,18 @@ public:
 	void push_back(std::unique_ptr<renderable> &&p) {
 		if (p != nullptr) {
 			q.push_back(p.get());
+			ptrs.push_back(std::move(p));
+		}
+	}
+
+	void push_front(renderable* p) {
+		if (p)
+			q.push_front(p);
+	}
+
+	void push_front(std::unique_ptr<renderable> &&p) {
+		if (p != nullptr) {
+			q.push_front(p.get());
 			ptrs.push_back(std::move(p));
 		}
 	}

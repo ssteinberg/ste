@@ -1,12 +1,13 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
+#include <thread>
+#include <functional>
 #include <memory>
 #include <atomic>
 #include <future>
-#include <functional>
 #include <type_traits>
 
 #include "optional.h"
@@ -33,7 +34,7 @@ public:
 	task(const L &lambda,
 		 std::enable_if_t<function_traits<L>::arity == 1>* = 0) :
 		f(lambda) {
-		static_assert(std::is_constructible<function_traits<L>::arg<0>::t, SchedArg>::value, "Lambda argument must be constructible with SchedArg");
+		static_assert(std::is_constructible<typename function_traits<L>::template arg<0>::t, SchedArg>::value, "Lambda argument must be constructible with SchedArg");
 	}
 	template <typename L>
 	task(L &&lambda,
@@ -47,9 +48,9 @@ public:
 	task &operator=(task &&) = default;
 
 	template <typename L>
-	task<function_traits<L>::result_t> then(L &&lambda,
+	task<typename function_traits<L>::result_t> then(L &&lambda,
 											std::enable_if_t<function_traits<L>::arity == 1>* = 0) {
-		static_assert(std::is_constructible<function_traits<L>::arg<0>::t, R>::value, "Lambda argument must be constructible with R");
+		static_assert(std::is_constructible<typename function_traits<L>::template arg<0>::t, R>::value, "Lambda argument must be constructible with R");
 
 		return[func = std::forward<L>(lambda), thisf = this->f](SchedArg sched) {
 			auto r = thisf(sched);
@@ -57,10 +58,10 @@ public:
 		};
 	}
 	template <typename L>
-	task<function_traits<L>::result_t> then(L &&lambda,
+	task<typename function_traits<L>::result_t> then(L &&lambda,
 											std::enable_if_t<function_traits<L>::arity == 2> * = 0) {
-		static_assert(std::is_constructible<function_traits<L>::arg<0>::t, SchedArg>::value, "Lambda argument 0 must be constructible with SchedArg");
-		static_assert(std::is_constructible<function_traits<L>::arg<1>::t, R>::value, "Lambda argument 1 must be constructible with R");
+		static_assert(std::is_constructible<typename function_traits<L>::template arg<0>::t, SchedArg>::value, "Lambda argument 0 must be constructible with SchedArg");
+		static_assert(std::is_constructible<typename function_traits<L>::template arg<1>::t, R>::value, "Lambda argument 1 must be constructible with R");
 
 		return[func = std::forward<L>(lambda), thisf = this->f](SchedArg sched) {
 			auto r = thisf(sched);
@@ -68,10 +69,10 @@ public:
 		};
 	}
 	template <typename L>
-	task<function_traits<L>::result_t> then_on_main_thread(L &&lambda,
+	task<typename function_traits<L>::result_t> then_on_main_thread(L &&lambda,
 														   std::enable_if_t<function_traits<L>::arity == 2>* = 0) {
-		static_assert(std::is_constructible<function_traits<L>::arg<0>::t, SchedArg>::value, "Lambda argument 0 must be constructible with SchedArg");
-		static_assert(std::is_constructible<function_traits<L>::arg<1>::t, R>::value, "Lambda argument 1 must be constructible with R");
+		static_assert(std::is_constructible<typename function_traits<L>::template arg<0>::t, SchedArg>::value, "Lambda argument 0 must be constructible with SchedArg");
+		static_assert(std::is_constructible<typename function_traits<L>::template arg<1>::t, R>::value, "Lambda argument 1 must be constructible with R");
 
 		return [func = std::forward<L>(lambda), thisf = this->f](SchedArg sched) {
 			auto r = thisf(sched);

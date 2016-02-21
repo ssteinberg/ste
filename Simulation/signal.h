@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -53,10 +53,9 @@ public:
 	void connect(std::shared_ptr<connection_type> &con) const {
 		con->id = pool++;
 		con->sig = this;
-		connections.emplace(std::piecewise_construct,
-							std::forward_as_tuple(con->id),
-							std::forward_as_tuple(con));
+		connections.emplace(std::make_pair(con->id, con));
 	}
+	
 	void disconnect(std::shared_ptr<connection_type> &con) const {
 		disconnect(con->id);
 		con->sig = nullptr;

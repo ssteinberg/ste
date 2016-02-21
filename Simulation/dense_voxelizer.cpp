@@ -21,14 +21,14 @@ void dense_voxelizer::render() const {
 	LLR::gl_current_context::get()->memory_barrier(GL_TEXTURE_FETCH_BARRIER_BIT);
 	
 	dvs->voxelizer_upsampler_program->bind();
-	auto center = dvs->size / 2u;
+	auto center = dvs->size / 2;
 
-	for (std::size_t i = 0; i < dvs->mipmaps - 1; ++i, center /= 2u) {
+	for (std::size_t i = 0; i < dvs->mipmaps - 1; ++i, center /= 2) {
 		auto f = glm::min(center, dvs->step_size);
 		auto min = center - f;
 		auto max = center + f;
 		auto count3 = max - min;
-		auto count = count3 / 16u;
+		auto count = count3 / 16;
 
 		dvs->voxelizer_upsampler_program->set_uniform("tiles", int(f.x));
 		dvs->voxelizer_upsampler_program->set_uniform("level", int(i));

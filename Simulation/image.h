@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -18,6 +18,9 @@
 
 namespace StE {
 namespace LLR {
+    
+template <llr_resource_type type>
+class image_container;
 
 class image_layout_binding_type {};
 using image_layout_binding = layout_binding<image_layout_binding_type>;
@@ -43,7 +46,7 @@ public:
 template <llr_resource_type type>
 class image_layout_bindable : protected bindable_resource<image_dummy_resource_allocator, ImageBinder, image_layout_binding, int, bool, int, ImageAccessMode, gli::format>, virtual public shader_layout_bindable_resource<image_layout_binding_type> {
 public:
-	using size_type = glm::tvec2<std::size_t>;
+	using size_type = glm::ivec2;
 
 private:
 	using Base = bindable_resource<image_dummy_resource_allocator, ImageBinder, image_layout_binding, int, bool, int, ImageAccessMode, gli::format>;
@@ -87,10 +90,13 @@ public:
 
 template <llr_resource_type type>
 class image : public image_layout_bindable<type>, virtual public RenderTargetGeneric {
+public:
+	using size_type = glm::ivec2;
+    
 private:
 	friend class image_container<type>;
 
-	using Base = image_layout_bindable;
+	using Base = image_layout_bindable<type>;
 
 public:
 	template <class A2>
@@ -101,19 +107,22 @@ public:
 	image& operator=(image &&m) = delete;
 	image& operator=(const image &c) = delete;
 
-	int get_layer() const { return layer; }
+	int get_layer() const { return Base::layer; }
 
-	gli::format get_format() const override final { return format; }
-	size_type get_image_size() const final override { return size; }
+	gli::format get_format() const override final { return Base::format; }
+	size_type get_image_size() const final override { return Base::size; }
 
-	image<type> with_format(gli::format format) const { return image(*this, size, format, access, level, layer); }
-	image<type> with_access(ImageAccessMode access) const { return image(*this, size, format, access, level, layer); }
+	image<type> with_format(gli::format format) const { return image(*this, size, format, Base::access, Base::level, Base::layer); }
+	image<type> with_access(ImageAccessMode access) const { return image(*this, size, Base::format, access, Base::level, Base::layer); }
 };
 
 template <llr_resource_type type>
 class image_container : public image_layout_bindable<type> {
+public:
+	using size_type = glm::ivec2;
+    
 private:
-	using Base = image_layout_bindable;
+	using Base = image_layout_bindable<type>;
 
 public:
 	template <class A2>
@@ -124,10 +133,10 @@ public:
 	image_container& operator=(image_container &&m) = delete;
 	image_container& operator=(const image_container &c) = delete;
 
-	const image<type> operator[](int layer) const { return image<type>(*this, size, format, access, level, layer); }
+	const image<type> operator[](int layer) const { return image<type>(*this, Base::size, Base::format, Base::access, Base::level, layer); }
 
-	image_container<type> with_format(gli::format format) const { return image_container(*this, size, format, access, level, layers); }
-	image_container<type> with_access(ImageAccessMode access) const { return image_container(*this, size, format, access, level, layers); }
+	image_container<type> with_format(gli::format format) const { return image_container(*this, Base::size, format, Base::access, Base::level, Base::layers); }
+	image_container<type> with_access(ImageAccessMode access) const { return image_container(*this, Base::size, Base::format, access, Base::level, Base::layers); }
 };
 
 }

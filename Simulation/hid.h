@@ -1,9 +1,9 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
-#include <glfw/glfw3.h>
+#include <GLFW/glfw3.h>
 
 namespace StE {
 namespace HID {
@@ -26,5 +26,5 @@ static Status convert_status(int status) { return static_cast<Status>(status); }
 }
 }
 
-#include "keyboard.h"
-#include "pointer.h"
+#include "Keyboard.h"
+#include "Pointer.h"

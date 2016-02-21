@@ -3,6 +3,7 @@
 #include "Font.h"
 
 #include <iostream>
+#include <stdexcept>
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
@@ -13,7 +14,7 @@ Font::Font(const boost::filesystem::path &path) : path(path) {
 	FT_Library library;
 	auto error = FT_Init_FreeType(&library);
 	if (error) {
-		throw std::exception("Couldn't init FreeType");
+		throw std::runtime_error("Couldn't init libfreetype");
 	}
 
 	FT_Face face;
@@ -22,7 +23,7 @@ Font::Font(const boost::filesystem::path &path) : path(path) {
 						0,
 						&face);
 	if (error) {
-		throw std::exception("Failed loading font");
+		throw std::runtime_error("Failed loading font");
 	}
 
 	if (face->family_name && face->style_name)

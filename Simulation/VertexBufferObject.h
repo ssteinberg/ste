@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -11,6 +11,9 @@
 
 namespace StE {
 namespace LLR {
+	
+template <typename, class, BufferUsage::buffer_usage>
+class VertexBufferObject;
 
 class VertexBufferObjectGeneric {
 public:
@@ -67,11 +70,11 @@ public:
 
 	virtual const VertexBufferDescriptor *data_descriptor() const override { return &desc; }
 
-	vertex_buffer_attrib_binder<T, Descriptor, U> operator[](int index) { return vertex_buffer_attrib_binder<T, Descriptor, U>(index, this, 0, sizeof(T)); }
-	vertex_buffer_attrib_binder<T, Descriptor, U> binder(int index, std::size_t offset) { return vertex_buffer_attrib_binder<T, Descriptor, U>(index, this, offset, sizeof(T)); }
+	vertex_buffer_attrib_binder<Type, Descriptor, U> operator[](int index) { return vertex_buffer_attrib_binder<Type, Descriptor, U>(index, this, 0, sizeof(Type)); }
+	vertex_buffer_attrib_binder<Type, Descriptor, U> binder(int index, std::size_t offset) { return vertex_buffer_attrib_binder<Type, Descriptor, U>(index, this, offset, sizeof(Type)); }
 
-	void bind() const final override { Binder::bind(get_resource_id(), GL_ARRAY_BUFFER); };
-	void unbind() const final override { Binder::unbind(GL_ARRAY_BUFFER); };
+	void bind() const final override { Base::Binder::bind(Base::get_resource_id(), GL_ARRAY_BUFFER); };
+	void unbind() const final override { Base::Binder::unbind(GL_ARRAY_BUFFER); };
 
 	llr_resource_type resource_type() const override { return llr_resource_type::LLRVertexBufferObject; }
 };

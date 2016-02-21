@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -11,7 +11,7 @@
 namespace StE {
 namespace LLR {
 
-class RenderTargetAllocator : public generic_resource_immutable_storage_allocator<int, const gli::gl::format &, const glm::tvec2<std::size_t> &> {
+class RenderTargetAllocator : public generic_resource_immutable_storage_allocator<int, const gli::gl::format &, const glm::ivec2 &> {
 public:
 	unsigned allocate() override final {
 		GLuint id;
@@ -24,7 +24,7 @@ public:
 		id = 0;
 	}
 
-	void allocate_storage(unsigned id, int samples, const gli::gl::format &format, const glm::tvec2<std::size_t> &size) {
+	void allocate_storage(unsigned id, int samples, const gli::gl::format &format, const glm::ivec2 &size) {
 		glNamedRenderbufferStorageMultisample(id, samples, format.Internal, size.x, size.y);
 	}
 };

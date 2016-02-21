@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -139,7 +139,8 @@ public:
 	template <class Formatter = attributed_string_htm_formatter<CharT>>
 	std::string markup() const {
 		auto str = Formatter()(*this);
-		return std::wstring_convert<std::codecvt_utf8<CharT>, CharT>().to_bytes(str);
+		// Undefined reference error to 'std::codecvt_utf8' on ICC
+		return std::string(str.begin(), str.end());//std::wstring_convert<std::codecvt_utf8<CharT>, CharT>().to_bytes(str);
 	}
 
 	char_type &operator[](std::size_t index) { return string[index]; }
@@ -179,14 +180,14 @@ attributed_string<CharT> operator+(const attributed_string<CharT> &lhs, const at
 }
 
 template <typename CharT>
-attributed_string<CharT> operator+(const attributed_string<CharT> &lhs, const attributed_string<CharT>::string_type &rhs) {
+attributed_string<CharT> operator+(const attributed_string<CharT> &lhs, const typename attributed_string<CharT>::string_type &rhs) {
 	attributed_string<CharT> str = lhs;
 	str += rhs;
 	return str;
 }
 
 template <typename CharT>
-attributed_string<CharT> operator+(const attributed_string<CharT> &lhs, const attributed_string<CharT>::char_type &rhs) {
+attributed_string<CharT> operator+(const attributed_string<CharT> &lhs, const typename attributed_string<CharT>::char_type &rhs) {
 	attributed_string<CharT> str = lhs;
 	str += rhs;
 	return str;
@@ -199,7 +200,7 @@ namespace std {
 
 template <typename CharT>
 ostream& operator<<(ostream& os, const StE::Text::attributed_string<CharT>& str) {
-	os << str.markup<>();
+	os << str.template markup<>();
 	return os;
 }
 

@@ -5,13 +5,8 @@
 #include "Log.h"
 
 #include <fstream>
-using std::ifstream;
-using std::ios;
-using std::string;
-
 #include <iostream>
 #include <sstream>
-using std::ostringstream;
 
 #include <sys/stat.h>
 

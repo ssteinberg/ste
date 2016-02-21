@@ -85,6 +85,8 @@ public:
 	virtual void prepare() const override;
 	virtual void render() const override;
 
+	void set_z_buffer(const LLR::Texture2D *z_buffer);
+
 	auto get_input_fbo() const { return &fbo_hdr_final; }
 
 	void resize(glm::ivec2 size);

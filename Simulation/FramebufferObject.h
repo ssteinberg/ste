@@ -32,7 +32,7 @@ class fbo_attachment_point {
 private:
 	friend class FramebufferObject;
 
-	glm::tvec2<std::size_t> size;
+	glm::ivec2 size;
 	gli::format format;
 
 protected:
@@ -78,7 +78,7 @@ public:
 	unsigned int fbo_id() const { return fbo->get_resource_id(); }
 	GLenum get_attachment_point() const { return attachment_point; }
 
-	virtual glm::tvec2<std::size_t> get_attachment_size() const { return size; }
+	virtual glm::ivec2 get_attachment_size() const { return size; }
 	virtual gli::format get_attachment_format() const { return format; }
 
 	bool is_attached() const { return size.x > 0; }
@@ -92,29 +92,30 @@ private:
 protected:
 	using Base = fbo_attachment_point<A>;
 	using Base::fbo_attachment_point;
+	using Base::fbo;
 	fbo_color_attachment_point(frame_buffer_object<A> *fbo, int index) : Base(fbo, color_attachment_point + index) {}
 
 public:
 	virtual ~fbo_color_attachment_point() noexcept {}
 
 	void read_pixels(void *data, int data_size, const glm::uvec2 &rect_size, const glm::uvec2 &origin = { 0, 0 }) const {
-		auto gl_format = gl_utils::translate_format(get_attachment_format());
+		auto gl_format = gl_utils::translate_format(Base::get_attachment_format());
 
 		fbo->bind_read();
-		glReadBuffer(get_attachment_point());
+		glReadBuffer(Base::get_attachment_point());
 
 		glReadnPixels(origin.x, origin.y, rect_size.x, rect_size.y, gl_format.External, gl_format.Type, data_size, data);
 
 		fbo->unbind_read();
 		fbo->update_draw_buffers();
 	}
-	void read_pixels(void *data, int data_size) const { read_pixels(data, data_size, get_attachment_size()); }
+	void read_pixels(void *data, int data_size) const { read_pixels(data, data_size, Base::get_attachment_size()); }
 
 	void write_pixels(void *data, const glm::uvec2 &rect_size, const glm::uvec2 &origin = { 0, 0 }) {
-		auto gl_format = gl_utils::translate_format(get_attachment_format());
+		auto gl_format = gl_utils::translate_format(Base::get_attachment_format());
 
 		fbo->bind_write();
-		glWriteBuffer(get_attachment_point());
+		glWriteBuffer(Base::get_attachment_point());
 
 		if (origin.x || origin.y) glRasterPos2f(origin.x, origin.y);
 		glDrawPixels(rect_size.x, rect_size.y, gl_format.External, gl_format.Type, data);
@@ -123,7 +124,7 @@ public:
 		fbo->unbind_write();
 		fbo->update_draw_buffers();
 	}
-	void write_pixels(void *data) { write_pixels(data, get_attachment_size()); }
+	void write_pixels(void *data) { write_pixels(data, Base::get_attachment_size()); }
 
 	template <typename ... Ts>
 	void attach(Ts&&...args) { Base::attach(std::forward<Ts>(args)...); }
@@ -140,23 +141,25 @@ class fbo_layout_bindable_color_attachment_point : public fbo_color_attachment_p
 private:
 	friend class FramebufferObject;
 	struct emplace_helper {};
-
+	
+	using Base = fbo_color_attachment_point<A>;
+	
+private:
 	int index;
 
 	void unbind(const LayoutLocationType &) const final override {};
 
 protected:
 	using fbo_color_attachment_point<A>::fbo_color_attachment_point;
-	fbo_layout_bindable_color_attachment_point(frame_buffer_object<A> *fbo, int index) : fbo_color_attachment_point(fbo, index), index(index) {}
+	fbo_layout_bindable_color_attachment_point(frame_buffer_object<A> *fbo, int index) : fbo_color_attachment_point<A>(fbo, index), index(index) {}
 
 public:
-	virtual ~fbo_layout_bindable_color_attachment_point() noexcept {}
-
 	template <typename ... Ts>
 	fbo_layout_bindable_color_attachment_point(const emplace_helper &, Ts ... args) : fbo_layout_bindable_color_attachment_point(std::forward<Ts>(args)...) {}
+	virtual ~fbo_layout_bindable_color_attachment_point() noexcept {}
 
 	void bind(const LayoutLocationType &binding) const final override {
-		fbo->set_color_output_binding_index(index, binding);
+		Base::fbo->set_color_output_binding_index(index, binding);
 	}
 
 	template<typename T>
@@ -219,12 +222,12 @@ protected:
 
 	void update_draw_buffers() { 
 		if (draw_buffers.size()) 
-			glNamedFramebufferDrawBuffers(get_resource_id(), draw_buffers.size(), &draw_buffers[0]);
+			glNamedFramebufferDrawBuffers(Base::get_resource_id(), draw_buffers.size(), &draw_buffers[0]);
 	}
 
-	void bind_draw() const { gl_current_context::get()->bind_framebuffer(GL_DRAW_FRAMEBUFFER, get_resource_id()); }
+	void bind_draw() const { gl_current_context::get()->bind_framebuffer(GL_DRAW_FRAMEBUFFER, Base::get_resource_id()); }
 	void unbind_draw() const { gl_current_context::get()->bind_framebuffer(GL_DRAW_FRAMEBUFFER, 0); }
-	void bind_read() const { gl_current_context::get()->bind_framebuffer(GL_READ_FRAMEBUFFER, get_resource_id()); }
+	void bind_read() const { gl_current_context::get()->bind_framebuffer(GL_READ_FRAMEBUFFER, Base::get_resource_id()); }
 	void unbind_read() const { gl_current_context::get()->bind_framebuffer(GL_READ_FRAMEBUFFER, 0); }
 
 public:
@@ -241,7 +244,7 @@ public:
 	frame_buffer_object(Ts ... draw_buffer_args) : draw_buffers(std::forward<Ts>(draw_buffer_args)...) {}
 
 	bool is_fbo_complete() const { bind(); return is_valid() && get_status_code() == GL_FRAMEBUFFER_COMPLETE; }
-	GLenum get_status_code() const { return glCheckNamedFramebufferStatus(get_resource_id(), GL_FRAMEBUFFER); }
+	GLenum get_status_code() const { return glCheckNamedFramebufferStatus(Base::get_resource_id(), GL_FRAMEBUFFER); }
 
 	template <class A>
 	void blit_to(frame_buffer_object<A> &fbo, const glm::ivec2 &src_size, const glm::ivec2 dst_size, const glm::ivec2 &src_origin = { 0,0 }, const glm::ivec2 dst_origin = { 0,0 }, bool linear_filter = true, bool blit_color = true, bool blit_depth = false) const {
@@ -250,7 +253,7 @@ public:
 		int mask = 0;
 		if (blit_depth) mask |= GL_DEPTH_BUFFER_BIT;
 		if (blit_color) mask |= GL_COLOR_BUFFER_BIT;
-		glBlitNamedFramebuffer(get_resource_id(), fbo.get_resource_id(), src_origin.x, src_origin.y, src_xy1.x, src_xy1.y, dst_origin.x, dst_origin.y, dst_xy1.x, dst_xy1.y, mask, linear_filter ? GL_LINEAR : GL_NEAREST);
+		glBlitNamedFramebuffer(Base::get_resource_id(), fbo.get_resource_id(), src_origin.x, src_origin.y, src_xy1.x, src_xy1.y, dst_origin.x, dst_origin.y, dst_xy1.x, dst_xy1.y, mask, linear_filter ? GL_LINEAR : GL_NEAREST);
 	}
 
 	static unsigned int max_framebuffer_bindings() {
@@ -272,19 +275,17 @@ private:
 	using Base = frame_buffer_object<FramebufferObjectAllocator>;
 	using depth_attachment_binding_type = fbo_attachment_point<Allocator>;
 	using color_attachment_binding_type = fbo_layout_bindable_color_attachment_point<Allocator>;
-	using color_attachments_binding_map_type = std::unordered_map<int, color_attachment_binding_type>;
+	using color_attachments_binding_map_type = std::unordered_map<int, std::unique_ptr<color_attachment_binding_type>>;
 
 private:
 	depth_attachment_binding_type depth_attachment_binding_point{ this, GL_DEPTH_ATTACHMENT };
 	color_attachments_binding_map_type color_attachments_binding_points;
 
 	color_attachment_binding_type &color_binding_point(int index, bool * created = nullptr) {
-		auto emplace_result = color_attachments_binding_points.emplace(std::piecewise_construct,
-																	   std::forward_as_tuple(index),
-																	   std::forward_as_tuple(color_attachment_binding_type::emplace_helper(), this, index));
+		auto emplace_result = color_attachments_binding_points.emplace(std::make_pair(index,std::make_unique<color_attachment_binding_type>(color_attachment_binding_type::emplace_helper(), this, index)));
 		auto &it = emplace_result.first;
 		if (created) *created = emplace_result.second;
-		return it->second;
+		return *it->second;
 	}
 
 public:

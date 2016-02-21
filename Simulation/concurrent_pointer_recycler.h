@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -25,7 +25,7 @@ public:
 		}
 	}
 
-	void __fastcall release(T *ptr) {
+	void release(T *ptr) {
 		T* null = nullptr;
 		for (auto &slot : pointers)
 			if (slot.compare_exchange_strong(null, ptr, std::memory_order_relaxed)) {
@@ -35,7 +35,7 @@ public:
 	}
 
 	template <typename ... Ts>
-	T* __fastcall claim(Ts&&... args) {
+	T* claim(Ts&&... args) {
 		T* ptr;
 		for (auto &slot : pointers) {
 			ptr = slot.load(std::memory_order_relaxed);

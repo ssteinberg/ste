@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -22,6 +22,7 @@ private:
 	using type = std::remove_reference_t<std::remove_pointer_t<T>>;
 	using reference = type&;
 	using pointer = type*;
+	using const_pointer = type const*;
 
 private:
 	bool has_val{ false };
@@ -68,6 +69,8 @@ public:
 	optional(const optional<T> &other) : has_val(other.has_val), val(other.val) {}
 
 	optional(const T &v) : has_val(true), val(v) {}
+	template <typename S = T, typename = typename std::enable_if_t<std::is_move_constructible<S>::value>>
+	optional(T &&v) : has_val(true), val(std::forward<T>(v)) {}
 
 	template <typename S, typename =
 		typename std::enable_if_t < std::is_pointer<T>::value && std::is_pointer<S>::value && std::is_base_of<std::remove_pointer_t<S>, std::remove_pointer_t<T>>::value >>
@@ -120,7 +123,7 @@ public:
 	const reference operator*() const { return get_val(); }
 	reference operator*() { return get_val(); }
 
-	const pointer operator->() const { return get_ref(); }
+	const_pointer operator->() const { return get_ref(); }
 	pointer operator->() { return get_ref(); }
 
 	explicit operator bool() const { return has_val; }

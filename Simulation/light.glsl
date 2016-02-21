@@ -26,8 +26,12 @@ vec3 light_incidant_ray(light_descriptor ld, int i, vec3 position) {
 }
 
 float light_attenuation_factor(light_descriptor ld, float dist) {
-	if (ld.type == LightTypeDirectional) return 1;
-	else return pow(max(.001f, dist / ld.radius / 5.f), 2);
+	if (ld.type == LightTypeDirectional) 
+		return 1;
+	else {
+		float a = max(.001f, dist / ld.radius / 5.f);
+		return a*a;
+	}
 }
 
 void light_transform(mat4 mv, mat3 rmv) {

@@ -21,10 +21,13 @@ void main() {
 	vec3 normal;
 	vec4 color;
 
-	P = voxel_cone_march(P, D, radius, 0.06, radius);
-	//P = voxel_ray_march(P, D);
+	bool hit;
+	float ray_length;
+
+	P = voxel_cone_march(P, D, vec3(0), radius, 0.06, radius, hit, ray_length);
+	//P = voxel_ray_march(P, D, vec3(0), hit, ray_length);
 
 	voxel_filter(P, radius, color, normal);
 
-	gl_FragColor = color * color.a;
+	gl_FragColor = color;
 }

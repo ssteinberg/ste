@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -96,7 +96,7 @@ private:
 	std::unique_ptr<Logger> cerr_logger;
 
 public:
-	Log(const std::string &title, const std::string path_prefix = R"(Log\)", const std::string path_extension = ".html") :
+	Log(const std::string &title, const std::string path_prefix = R"(Log/)", const std::string path_extension = ".html") :
 			formatter(title),
 			notifier(std::make_shared<std::condition_variable>()),
 			queue(std::make_shared<queue_type>()),

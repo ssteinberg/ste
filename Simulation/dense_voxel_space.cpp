@@ -13,7 +13,7 @@ dense_voxel_space::dense_voxel_space(const StEngineControl &ctx, std::size_t max
 	voxelizer_program = Resource::GLSLProgramLoader::load_program_task(ctx, { "voxelizer.vert", "voxelizer.frag", "voxelizer.geom" })();
 	voxelizer_upsampler_program = Resource::GLSLProgramLoader::load_program_task(ctx, { "voxelizer_upsampler.glsl" })();
 
-	voxelizer_output = std::make_unique<LLR::RenderTarget>(gli::format::FORMAT_R8_UNORM, size.xy);
+	voxelizer_output = std::make_unique<LLR::RenderTarget>(gli::format::FORMAT_R8_UNORM_PACK8, size.xy);
 	voxelizer_fbo[0] = *voxelizer_output;
 
 	sampler.set_min_filter(LLR::TextureFiltering::Linear);
@@ -40,21 +40,21 @@ void dense_voxel_space::create_dense_voxel_space(float voxel_size_factor) {
 	float fb_pixel_theta = glm::atan(fb_pixel_size / ctx.get_near_clip());
 	float l = fb_pixel_size / voxel_size_factor / glm::tan(fb_pixel_theta);
 
-	auto min_steps = static_cast<unsigned>(glm::floorPowerOfTwo(glm::log2(size.x / 2 / tile_size.x)));
-	auto desired_steps = static_cast<unsigned>(glm::floorPowerOfTwo(static_cast<unsigned>(glm::log2(space_size / l))));
-	steps = glm::min(min_steps, desired_steps);
-	mipmaps = glm::min(steps + 3, static_cast<unsigned>(glm::log2(size.x)));
+	auto min_steps = static_cast<int>(glm::floorPowerOfTwo(glm::log2(size.x / 2 / tile_size.x)));
+	auto desired_steps = static_cast<int>(glm::floorPowerOfTwo(static_cast<unsigned>(glm::log2(space_size / l))));
+	steps = glm::min<int>(min_steps, desired_steps);
+	mipmaps = glm::min<int>(steps + 3, static_cast<int>(glm::log2(size.x)));
 	voxel_size = space_size / size.x * 2;
-	tiles_per_step = static_cast<unsigned>(size.x / (2 * tile_size.x * glm::pow(2.f, steps - 1)));
+	tiles_per_step = static_cast<int>(size.x / (2 * tile_size.x * glm::pow(2.f, steps - 1)));
 	step_size = tiles_per_step * tile_size;
 
 	space_radiance = std::make_unique<LLR::texture_sparse_3d>(space_format_radiance, size, mipmaps, tile_size, 0);
 	space_data = std::make_unique<LLR::texture_sparse_3d>(space_format_data, size, mipmaps, tile_size, 0);
 
-	auto center = size / 2u;
-	for (std::size_t i = 0; i < mipmaps; ++i, center /= 2u) {
-		auto min = decltype(size)(glm::max(glm::ivec3(center - step_size), { 0,0,0 }));
-		auto max = glm::min(center + step_size, center * 2u);
+	auto center = size / 2;
+	for (std::size_t i = 0; i < mipmaps; ++i, center /= 2) {
+		auto min = glm::max(glm::ivec3(center - step_size), { 0,0,0 });
+		auto max = glm::min(center + step_size, center * 2);
 
 		space_radiance->commit_tiles(min, max - min, i);
 		space_data->commit_tiles(min, max - min, i);
@@ -104,10 +104,10 @@ void dense_voxel_space::update_shader_voxel_uniforms(const LLR::GLSLProgram &prg
 void dense_voxel_space::clear_space() const {
 	glm::vec4 clear_data(.0f);
 
-	auto center = size / 2u;
-	for (std::size_t i = 0; i < mipmaps; ++i, center /= 2u) {
-		auto min = decltype(size)(glm::max(glm::ivec3(center - step_size), { 0,0,0 }));
-		auto max = glm::min(center + step_size, center * 2u);
+	auto center = size / 2;
+	for (std::size_t i = 0; i < mipmaps; ++i, center /= 2) {
+		auto min = glm::max(glm::ivec3(center - step_size), { 0,0,0 });
+		auto max = glm::min(center + step_size, center * 2);
 
 		space_radiance->clear(&clear_data, min, max - min, i);
 		space_data->clear(&clear_data, min, max - min, i);

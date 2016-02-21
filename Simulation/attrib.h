@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -25,10 +25,10 @@ public:
 	virtual ~attrib() noexcept {}
 
 	attrib() = default;
-	attrib(attrib &&) = default;
-	attrib(const attrib &) = default;
-	virtual attrib &operator=(attrib &&) = default;
-	virtual attrib &operator=(const attrib &) = default;
+	attrib(attrib &&) {};
+	attrib(const attrib &) {}
+	virtual attrib &operator=(attrib &&) { return *this; };
+	virtual attrib &operator=(const attrib &) { return *this; };
 
 	virtual attrib* clone() const = 0;
 

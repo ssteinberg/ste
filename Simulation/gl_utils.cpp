@@ -13,7 +13,7 @@
 
 using namespace StE::LLR;
 
-gli::gl gl_utils::GL;
+gli::gl gl_utils::GL(gli::gl::profile::PROFILE_GL33);
 
 gl_utils::gl_utils() {}
 
@@ -21,7 +21,7 @@ int gl_utils::query_gl_error(std::string &out) {
 	GLenum glErr = glGetError();
 	if (glErr != GL_NO_ERROR) {
 		char buffer[256];
-		_snprintf(buffer, 256, "%#08X", glErr);
+		snprintf(buffer, 256, "%#08X", glErr);
 		auto *str = gluErrorString(glErr);
 		out = std::string(buffer) + ": \"" + (str ? reinterpret_cast<const char*>(str) : "Unknown GL Error") + "\"";
 		return glErr;

@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -35,8 +35,10 @@ private:
 	LLR::SamplerMipmapped sampler;
 
 public:
-	BRDF(const common_brdf_representation &brdf) : min_theta(glm::radians(brdf.get_min_incident())), max_theta(glm::radians(brdf.get_max_incident())), sampler(LLR::TextureFiltering::Linear, LLR::TextureFiltering::Linear, LLR::TextureFiltering::Linear) {
-		texture = std::make_unique<LLR::Texture3D>(brdf.get_data(), true);
+	BRDF(const common_brdf_representation &brdf) : 	min_theta(glm::radians(static_cast<float>(brdf.get_min_incident()))), 
+													max_theta(glm::radians(static_cast<float>(brdf.get_max_incident()))), 
+													sampler(LLR::TextureFiltering::Linear, LLR::TextureFiltering::Linear, LLR::TextureFiltering::Linear) {
+		texture = std::make_unique<LLR::Texture3D>(*brdf.get_data(), true);
 		sampler.set_wrap_r(LLR::TextureWrapMode::Wrap);
 		sampler.set_wrap_s(LLR::TextureWrapMode::ClampToEdge);
 		sampler.set_wrap_t(LLR::TextureWrapMode::ClampToEdge);

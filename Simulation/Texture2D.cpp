@@ -5,10 +5,10 @@
 
 using namespace StE::LLR;
 
-bool Texture2D::upload(const gli::texture2D &texture, bool gm) {
+bool Texture2D::upload(const gli::texture2d &texture, bool gm) {
 	int levels = gm ? 1 : std::min(this->levels, static_cast<decltype(this->levels)>(texture.levels()));
 
-	if (texture.format() != this->format || texture.dimensions() != this->size) {
+	if (texture.format() != this->format || decltype(this->size){ texture.extent().xy } != this->size) {
 		ste_log_error() << "Texture format and size can not be changed!";
 		assert(false);
 		return false;

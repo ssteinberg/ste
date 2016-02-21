@@ -6,13 +6,19 @@
 #include "stdafx.h"
 #include "StEngineControl.h"
 
+#include "Camera.h"
+
 #include "deferred_fbo.h"
 #include "Quad.h"
 #include "renderable.h"
 #include "rendering_system.h"
 
+#include "Scene.h"
 #include "SceneProperties.h"
 #include "light.h"
+#include "hdr_dof_postprocess.h"
+
+#include "dense_voxel_space.h"
 
 #include "GLSLProgram.h"
 #include "GLSLProgramLoader.h"
@@ -31,7 +37,12 @@ private:
 		GIRenderer *dr;
 
 	public:
-		deferred_composition(const StEngineControl &ctx, GIRenderer *dr) : renderable(StE::Resource::GLSLProgramLoader::load_program_task(ctx, { "deferred.vert", "deferred.frag" })()), dr(dr) {}
+		deferred_composition(const StEngineControl &ctx, GIRenderer *dr) : renderable(StE::Resource::GLSLProgramLoader::load_program_task(ctx, { "deferred.vert", "deferred.frag" })()), dr(dr) {
+			dr->voxel_space.add_consumer_program(this->get_program());
+		}
+		~deferred_composition() {
+			dr->voxel_space.remove_consumer_program(this->get_program());
+		}
 
 		virtual void prepare() const override {
 			renderable::prepare();
@@ -56,34 +67,53 @@ private:
 private:
 	deferred_fbo fbo;
 	std::shared_ptr<ResizeSignalConnectionType> resize_connection;
-	
-	deferred_composition composer;
 	rendering_queue ppq;
 
+	Scene *scene;
 	SceneProperties *scene_props;
+	hdr_dof_postprocess hdr;
+	dense_voxel_space voxel_space;
+	
+	deferred_composition composer;
+
+protected:
+	void set_output_fbo(const LLR::GenericFramebufferObject *ofbo) {
+		//composer.set_output_fbo(ofbo);
+	}
+	auto get_fbo() const { return fbo.get_fbo(); }
 
 public:
-	GIRenderer(const StEngineControl &ctx, SceneProperties *props) : fbo(ctx.get_backbuffer_size()), composer(ctx, this), scene_props(props) {
+	GIRenderer(const StEngineControl &ctx, 
+			   Scene *scene,
+			   SceneProperties *props,
+			   std::size_t voxel_grid_size = 512, 
+			   float voxel_grid_ratio = .01f) : fbo(ctx.get_backbuffer_size()), scene(scene), scene_props(props), hdr(ctx, fbo.z_buffer()), voxel_space(ctx, voxel_grid_size, voxel_grid_ratio), composer(ctx, this) {
 		resize_connection = std::make_shared<ResizeSignalConnectionType>([=](const glm::i32vec2 &size) {
 			this->fbo.resize(size);
+			hdr.set_z_buffer(fbo.z_buffer());
 		});
 		ctx.signal_framebuffer_resize().connect(resize_connection);
+
+		this->set_output_fbo(hdr.get_input_fbo());
+
+		composer.get_program()->set_uniform("inv_projection", glm::inverse(ctx.projection_matrix()));
 	}
 	virtual ~GIRenderer() noexcept {}
 
-	auto get_fbo() const { return fbo.get_fbo(); }
-	auto z_buffer() const { return fbo.z_buffer(); }
+	void update_model_matrix_from_camera(const Camera &camera) {
+		glm::mat4 m = camera.view_matrix();
 
-	void set_model_matrix(const glm::mat4 &m) {
+		composer.get_program()->set_uniform("inv_view_model", glm::inverse(m));
 		composer.get_program()->set_uniform("view_matrix", m);
-	}
 
-	void set_output_fbo(const LLR::GenericFramebufferObject *ofbo) {
-		composer.set_output_fbo(ofbo);
+		voxel_space.set_model_matrix(m, camera.get_position());
+		scene->set_model_matrix(m);
 	}
 
 	virtual void finalize_queue(const StEngineControl &ctx) override {
-		queue().push_back(&composer);
+		queue().push_back(voxel_space.voxelizer(*scene));
+		postprocess_queue().push_front(&composer);
+		//postprocess_queue().push_front(&hdr);
 	}
 
 	virtual void render_queue(const StEngineControl &ctx) override {
@@ -91,7 +121,8 @@ public:
 		ppq.render(&ctx.gl()->defaut_framebuffer());
 	}
 
-	rendering_queue& postprocess_queue() { return ppq; };
+	rendering_queue& postprocess_queue() { return ppq; }
+	const dense_voxel_space& voxel_grid() const { return voxel_space; }
 
 	virtual std::string rendering_system_name() const override { return "GIRenderer"; };
 };

@@ -1,4 +1,4 @@
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -26,7 +26,7 @@ template<typename matT> struct _gl_elements_count_impl<glm::tmat4x2<matT>> { sta
 template<typename matT> struct _gl_elements_count_impl<glm::tmat4x3<matT>> { static constexpr std::size_t elements = 12; };
 template<typename matT> struct _gl_elements_count_impl<glm::tmat4x4<matT>> { static constexpr std::size_t elements = 16; };
 template<typename T> struct gl_elements_count{
-	using CounterT = std::remove_const<std::remove_reference<T>::type>::type;
+	using CounterT = std::remove_const_t<std::remove_reference_t<T>>;
 	static constexpr std::size_t elements = _gl_elements_count_impl<CounterT>::elements;
 };
 
@@ -54,7 +54,7 @@ template<typename matT> struct _gl_type_name_enum_impl<glm::tmat4x2<matT>> : pub
 template<typename matT> struct _gl_type_name_enum_impl<glm::tmat4x3<matT>> : public _gl_type_name_enum_impl<matT>{};
 template<typename matT> struct _gl_type_name_enum_impl<glm::tmat4x4<matT>> : public _gl_type_name_enum_impl<matT>{};
 template<typename T> struct gl_type_name_enum {
-	using TypeT = std::remove_const<std::remove_reference<T>::type>::type;
+	using TypeT = std::remove_const_t<std::remove_reference_t<T>>;
 	static constexpr GLenum gl_enum = _gl_type_name_enum_impl<TypeT>::gl_enum;
 };
 

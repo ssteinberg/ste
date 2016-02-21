@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -11,7 +11,7 @@ template<typename T, T... args> struct _generate_array_holder { static constexpr
 
 template<std::size_t N, template<int> class Populator, decltype(Populator<0>::value)... args>
 struct _generate_array_impl {
-	using result = _generate_array_impl<N - 1, Populator, Populator<N>::value, args...>::result;
+	using result = typename _generate_array_impl<N - 1, Populator, Populator<N>::value, args...>::result;
 };
 template<template<int> class Populator, decltype(Populator<0>::value)... args>
 struct _generate_array_impl<0, Populator, args...> {
@@ -20,7 +20,7 @@ struct _generate_array_impl<0, Populator, args...> {
 
 template<std::size_t N, template<int> class Populator>
 struct generate_array {
-	using result = _generate_array_impl<N - 1, Populator>::result;
+	using result = typename _generate_array_impl<N - 1, Populator>::result;
 };
 
 }

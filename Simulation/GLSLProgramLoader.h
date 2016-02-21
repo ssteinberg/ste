@@ -1,18 +1,18 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
 #include "stdafx.h"
+
+#include "GLSLShader.h"
+#include "GLSLProgram.h"
 
 #include <memory>
 
 #include <string>
 #include <list>
 #include <map>
-
-#include "GLSLShader.h"
-#include "GLSLProgram.h"
 
 #include "task.h"
 #include "StEngineControl.h"

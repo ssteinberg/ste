@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -14,7 +14,7 @@
 #include <unordered_map>
 
 #include <gli/gli.hpp>
-#include <glfw/glfw3.h>
+#include <GLFW/glfw3.h>
 
 namespace StE {
 
@@ -83,7 +83,7 @@ private:
 		}
 	}
 
-	template <typename T, typename K, typename V, typename M, int N, typename... Args>
+	template <int N, typename T, typename K, typename V, typename M, typename... Args>
 	void bind_context_resource_multiple(T *func, const std::array<std::pair<K, V>, N> &vals, M &m, Args... args) const {
 		bool exec = false;
 		for (auto &p : vals) {
@@ -108,8 +108,8 @@ private:
 	mutable optional<unsigned> bind_program_val, bind_vertex_array_val;
 
 public:
-	gl_context(const context_settings &settings, const char *title, const glm::i32vec2 &size, gli::format format = gli::FORMAT_RGBA8_SRGB, gli::format depth_format = gli::FORMAT_D24_UNORM);
-	gl_context(const char * title, const glm::i32vec2 &size, gli::format format = gli::FORMAT_RGBA8_SRGB, gli::format depth_format = gli::FORMAT_D24_UNORM) : gl_context(context_settings(), title, size, format, depth_format) {}
+	gl_context(const context_settings &settings, const char *title, const glm::i32vec2 &size, gli::format format = gli::FORMAT_RGBA8_SRGB_PACK32, gli::format depth_format = gli::FORMAT_D24_UNORM_PACK32);
+	gl_context(const char * title, const glm::i32vec2 &size, gli::format format = gli::FORMAT_RGBA8_SRGB_PACK32, gli::format depth_format = gli::FORMAT_D24_UNORM_PACK32) : gl_context(context_settings(), title, size, format, depth_format) {}
 	~gl_context() {}
 
 	gl_context(gl_context &&m) = delete;
@@ -188,10 +188,10 @@ public:
 		for (int i = 0; i < N; ++i) vals[i] = std::make_pair(std::make_tuple(target, static_cast<unsigned>(i + first)),
 															 std::make_tuple(ids[i], -1, static_cast<std::size_t>(-1)));
 
-		bind_context_resource_multiple(glBindBuffersBase,
-									   vals,
-									   bind_buffers_map,
-									   target, first, N, &ids[0]);
+		bind_context_resource_multiple<N>(glBindBuffersBase,
+										  vals,
+									   	  bind_buffers_map,
+									   	  target, first, N, &ids[0]);
 	}
 	void bind_buffer_range(GLenum target, unsigned index, unsigned id, int offset, std::size_t size) const {
 		bind_context_resource(glBindBufferRange,
@@ -210,10 +210,10 @@ public:
 		std::array<std::pair<unsigned, unsigned>, N> vals;
 		for (int i = 0; i < N; ++i) vals[i] = std::make_pair(static_cast<unsigned>(i + first), units[i]);
 
-		bind_context_resource_multiple(glBindTextures, 
-									   vals, 
-									   bind_textures_map, 
-									   first, N, &units[0]);
+		bind_context_resource_multiple<N>(glBindTextures, 
+										  vals, 
+										  bind_textures_map, 
+										  first, N, &units[0]);
 	}
 	void bind_framebuffer(GLenum target, unsigned id) const {
 		bind_context_resource(glBindFramebuffer,
@@ -265,7 +265,7 @@ public:
 	}
 
 	void enable_state(GLenum state) const {
-		auto emplace_result = states.try_emplace(state, false);
+		auto emplace_result = states.emplace(std::make_pair(state, false));
 		if (emplace_result.second)
 			default_states[state] = glIsEnabled(state);
 		if (!emplace_result.first->second) {
@@ -274,7 +274,7 @@ public:
 		}
 	}
 	void disable_state(GLenum state) const {
-		auto emplace_result = states.try_emplace(state, false);
+		auto emplace_result = states.emplace(std::make_pair(state, false));
 		if (emplace_result.second)
 			default_states[state] = glIsEnabled(state);
 		if (emplace_result.first->second) {
@@ -299,7 +299,7 @@ public:
 	void disable_depth_test() const { disable_state(GL_DEPTH_TEST); }
 
 	gli::format framebuffer_format() const;
-	glm::tvec2<std::size_t> framebuffer_size() const;
+	glm::ivec2 framebuffer_size() const;
 	context_framebuffer &defaut_framebuffer() const;
 
 	bool is_debug_context() const;
@@ -315,7 +315,7 @@ namespace StE {
 namespace LLR {
 
 gli::format inline gl_context::framebuffer_format() const { return default_fb->front_buffer().get_attachment_format(); }
-glm::tvec2<std::size_t> inline gl_context::framebuffer_size() const { return default_fb->front_buffer().get_attachment_size(); }
+glm::ivec2 inline gl_context::framebuffer_size() const { return default_fb->front_buffer().get_attachment_size(); }
 context_framebuffer inline &gl_context::defaut_framebuffer() const { return *default_fb; }
 
 }

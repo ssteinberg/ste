@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -39,7 +39,7 @@ public:
 	bindable_resource(bindable_resource &&m) = default;
 	bindable_resource& operator=(bindable_resource &&m) = default;
 
-	void bind(const BindingArgs&... args) const { Binder::bind(get_resource_id(), args...); }
+	void bind(const BindingArgs&... args) const { Binder::bind(resource<A>::get_resource_id(), args...); }
 	void unbind(const BindingArgs&... args) const { Binder::unbind(args...); };
 };
 
@@ -58,7 +58,7 @@ public:
 	bindable_resource(bindable_resource &&m) = default;
 	bindable_resource& operator=(bindable_resource &&m) = default;
 
-	void bind() const override { Binder::bind(get_resource_id()); }
+	void bind() const override { Binder::bind(resource<A>::get_resource_id()); }
 	void unbind() const override { Binder::unbind(); };
 };
 

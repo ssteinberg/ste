@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -19,20 +19,20 @@ private:
 
 	using Base = fbo_color_attachment_point<A, color_attachment_point>;
 
-	glm::tvec2<std::size_t> size;
+	glm::ivec2 size;
 	gli::format format;
 
 	using Base::attach;
 	using Base::detach;
 
 protected:
-	context_fbo_color_attachment_point(context_framebuffer *fbo, const glm::tvec2<std::size_t> &size, const gli::format &format);
+	context_fbo_color_attachment_point(context_framebuffer *fbo, const glm::ivec2 &size, const gli::format &format);
 
 public:
 	using Base::fbo_id;
 	using Base::attachment_point;
 
-	virtual glm::tvec2<std::size_t> get_attachment_size() const override { return size; }
+	virtual glm::ivec2 get_attachment_size() const override { return size; }
 	virtual gli::format get_attachment_format() const override { return format; }
 };
 
@@ -58,7 +58,7 @@ private:
 	back_attachment_point back_color_attchment;
 
 public:
-	context_framebuffer(const glm::tvec2<std::size_t> &size, const gli::format &format) : 
+	context_framebuffer(const glm::ivec2 &size, const gli::format &format) : 
 		Base(), front_color_attchment(this, size, format), back_color_attchment(this, size, format) {}
 
 	context_framebuffer(context_framebuffer &&t) = delete;
@@ -76,8 +76,8 @@ public:
 };
 
 template<typename A, GLenum color_attachment_point>
-context_fbo_color_attachment_point<A, color_attachment_point>::context_fbo_color_attachment_point(context_framebuffer *fbo, const glm::tvec2<std::size_t> &size, const gli::format &format) : 
-	fbo_color_attachment_point(fbo, 0), size(size), format(format) {}
+context_fbo_color_attachment_point<A, color_attachment_point>::context_fbo_color_attachment_point(context_framebuffer *fbo, const glm::ivec2 &size, const gli::format &format) : 
+	fbo_color_attachment_point<A, color_attachment_point>(fbo, 0), size(size), format(format) {}
 
 }
 }

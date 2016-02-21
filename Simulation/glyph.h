@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -9,6 +9,7 @@
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/serialization/split_member.hpp>
 
+#include <memory>
 #include <gli/gli.hpp>
 
 namespace StE {
@@ -41,7 +42,7 @@ public:
 	static constexpr int ttf_pixel_size = 64;
 
 private:
-	gli::texture2D glyph_distance_field;
+	std::unique_ptr<gli::texture2d> glyph_distance_field;
 	glyph_metrics metrics;
 
 private:
@@ -50,15 +51,15 @@ private:
 	void save(Archive & ar, const unsigned int version) const {
 		ar << metrics;
 
-		ar << static_cast<std::size_t>(glyph_distance_field.dimensions().x);
-		ar << static_cast<std::size_t>(glyph_distance_field.dimensions().y);
-		ar << static_cast<int>(glyph_distance_field.levels());
-		ar << static_cast<int>(glyph_distance_field.format());
+		ar << static_cast<std::size_t>(glyph_distance_field->extent().x);
+		ar << static_cast<std::size_t>(glyph_distance_field->extent().y);
+		ar << static_cast<int>(glyph_distance_field->levels());
+		ar << static_cast<int>(glyph_distance_field->format());
 
-		std::size_t size = glyph_distance_field[0].dimensions().x * glyph_distance_field[0].dimensions().y * 4;
+		std::size_t size = (*glyph_distance_field)[0].extent().x * (*glyph_distance_field)[0].extent().y * 4;
 		std::string data;
 		data.resize(size);
-		memcpy(&data[0], glyph_distance_field[0].data(), size);
+		memcpy(&data[0], (*glyph_distance_field)[0].data(), size);
 		ar << data;
 	}
 	template<class Archive>
@@ -71,11 +72,11 @@ private:
 		ar >> h;
 		ar >> l;
 		ar >> format;
-		glyph_distance_field = gli::texture2D(l, format, { w,h });
+		glyph_distance_field = std::make_unique<gli::texture2d>(format, glm::ivec2{ w,h }, l);
 
 		std::string data;
 		ar >> data;
-		memcpy(glyph_distance_field[0].data(), &data[0], data.size());
+		memcpy((*glyph_distance_field)[0].data(), &data[0], data.size());
 	}
 	BOOST_SERIALIZATION_SPLIT_MEMBER();
 
@@ -84,10 +85,15 @@ public:
 
 	glyph(glyph &&) = default;
 	glyph &operator=(glyph &&) = default;
-	glyph(const glyph &) = default;
-	glyph &operator=(const glyph &) = default;
+	
+	glyph(const glyph &g) : metrics(g.metrics), glyph_distance_field(std::make_unique<gli::texture2d>(*g.glyph_distance_field)) {}
+	glyph &operator=(const glyph &g) {
+		metrics = g.metrics;
+		glyph_distance_field = std::make_unique<gli::texture2d>(*g.glyph_distance_field);
+		return *this;
+	}
 
-	bool empty() const { return glyph_distance_field.empty(); }
+	bool empty() const { return glyph_distance_field->empty(); }
 };
 
 }

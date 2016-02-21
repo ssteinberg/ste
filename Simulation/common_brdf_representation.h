@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -9,6 +9,9 @@
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/serialization/split_member.hpp>
 
+#include <stdexcept>
+#include <memory>
+
 #include <gli/gli.hpp>
 
 namespace StE {
@@ -17,7 +20,7 @@ namespace Graphics {
 class common_brdf_representation {
 private:
 	int in_min, in_max;
-	gli::texture3D tex;
+	std::unique_ptr<gli::texture3d> tex;
 
 private:
 	friend class boost::serialization::access;
@@ -26,14 +29,15 @@ private:
 		ar << in_min;
 		ar << in_max;
 
-		ar << tex.dimensions().x;
-		ar << tex.dimensions().y;
-		ar << tex.dimensions().z;
+		auto dim = tex->extent();
+		ar << static_cast<int>(dim.x);
+		ar << static_cast<int>(dim.y);
+		ar << static_cast<int>(dim.z);
 
-		auto size = tex.dimensions().x * tex.dimensions().y * tex.dimensions().z * sizeof(float);
+		auto size = dim.x * dim.y * dim.z * sizeof(float);
 		std::string data;
 		data.resize(size);
-		memcpy(&data[0], tex.data(), size);
+		memcpy(&data[0], tex->data(), size);
 		ar << data;
 	}
 	template<class Archive>
@@ -41,18 +45,18 @@ private:
 		ar >> in_min;
 		ar >> in_max;
 
-		unsigned x, y, z;
+		int x, y, z;
 		ar >> x;
 		ar >> y;
 		ar >> z;
-		tex = gli::texture3D(1, gli::format::FORMAT_R32_SFLOAT, { x,y,z });
+		tex = std::make_unique<gli::texture3d>(gli::format::FORMAT_R32_SFLOAT_PACK32, glm::ivec3{ x,y,z }, 1);
 		auto size = x*y*z*sizeof(float);
 
 		std::string data;
 		ar >> data;
 		if (data.size() != size)
-			throw new std::exception("Failed to deserialize brdf_data");
-		memcpy(tex.data(), &data[0], size);
+			throw new std::runtime_error("Failed to deserialize brdf_data");
+		memcpy(tex->data(), &data[0], size);
 	}
 	BOOST_SERIALIZATION_SPLIT_MEMBER();
 

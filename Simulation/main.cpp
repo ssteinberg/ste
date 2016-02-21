@@ -1,6 +1,5 @@
 
 #include "stdafx.h"
-#include "windows.h"
 
 #include "gl_utils.h"
 #include "Log.h"
@@ -11,7 +10,6 @@
 #include "SphericalLight.h"
 #include "DirectionalLight.h"
 #include "BasicRenderer.h"
-#include "hdr_dof_postprocess.h"
 #include "MeshRenderable.h"
 #include "CustomRenderable.h"
 #include "ModelLoader.h"
@@ -25,8 +23,6 @@
 #include "AttributedString.h"
 #include "RGB.h"
 #include "Sphere.h"
-
-#include "dense_voxel_space.h"
 #include "renderable.h"
 
 using namespace StE::LLR;
@@ -96,7 +92,7 @@ public:
 	}
 };
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam, int iCmdShow) {
+int main() {
 	StE::Log logger("Global Illumination");
 	logger.redirect_std_outputs();
 	ste_log_set_global_logger(&logger);
@@ -120,10 +116,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 	ctx.signal_framebuffer_resize().connect(resize_connection);
 
 	StE::Graphics::SceneProperties scene_properties;
-	StE::Graphics::GIRenderer renderer(ctx, &scene_properties);
+	SkyDome skydome(ctx);
+	StE::Graphics::Scene scene(ctx, &scene_properties);
+	StE::Graphics::GIRenderer renderer(ctx, &scene, &scene_properties);
 	StE::Graphics::BasicRenderer basic_renderer;
 
-	StE::LLR::Camera camera;
+	StE::Graphics::Camera camera;
 	camera.set_position({ 25.8, 549.07, -249.2 });
 	camera.lookat({ 26.4, 548.5, 248.71 });
 
@@ -132,14 +130,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 	auto light1 = std::make_shared<StE::Graphics::DirectionalLight>(1.f, StE::Graphics::RGB({ 1.f, 1.f, 1.f }), glm::normalize(glm::vec3(0.1f, -2.5f, 0.1f)));
 	scene_properties.lights_storage().add_light(light0);
 	scene_properties.lights_storage().add_light(light1);
-
-	SkyDome skydome(ctx);
-	StE::Graphics::Scene scene(ctx, &scene_properties);
 	StE::Text::TextManager text_renderer(ctx, StE::Text::Font("Data/ArchitectsDaughter.ttf"));
-
-	StE::Graphics::hdr_dof_postprocess hdr{ ctx, renderer.z_buffer() };
-
-	renderer.set_output_fbo(hdr.get_input_fbo());
 
 	StE::Graphics::CustomRenderable fb_clearer{ [&]() { ctx.gl()->clear_framebuffer(); } };
 	StE::Graphics::CustomRenderable fb_depth_clearer{ [&]() { ctx.gl()->clear_framebuffer(false); } };
@@ -166,7 +157,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 
 
 	bool loaded = false;
-	auto model_future = ctx.scheduler().schedule_now(StE::Resource::ModelLoader::load_model_task(ctx, R"(data\models\crytek-sponza\sponza.obj)", &scene, 2.5f));
+	auto model_future = ctx.scheduler().schedule_now(StE::Resource::ModelLoader::load_model_task(ctx, R"(data/models/crytek-sponza/sponza.obj)", &scene, 2.5f));
 
 	std::shared_ptr<StE::Graphics::Object> light_obj;
 	{
@@ -191,7 +182,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 
 		light_obj->set_model_transform(glm::scale(glm::translate(glm::mat4(), light_pos), glm::vec3(10, 10, 10)));
 
-		gli::texture2D light_color_tex{ 1, gli::format::FORMAT_RGB8_UNORM, {1,1} };
+		gli::texture2d light_color_tex{ gli::format::FORMAT_RGB8_UNORM_PACK8, {1,1}, 1 };
 		glm::vec3 c = light0->get_diffuse();
 		*reinterpret_cast<glm::u8vec3*>(light_color_tex.data()) = glm::u8vec3(c.r * 255.5f, c.g * 255.5f, c.b * 255.5f);
 
@@ -204,9 +195,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 		scene.add_object(light_obj);
 	}
 
-	StE::Graphics::dense_voxel_space voxel_space(ctx, 512, .01f);
-	RayTracer ray_tracer(ctx);
-	voxel_space.add_consumer_program(ray_tracer.get_program());
+	//RayTracer ray_tracer(ctx);
+	//voxel_space.add_consumer_program(ray_tracer.get_program());
 	
 
 	ctx.set_renderer(&basic_renderer);
@@ -238,7 +228,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 	}
 
 
-	//ctx.set_renderer(&renderer);
+	ctx.set_renderer(&renderer);
 
 	float time = 0;
 	while (running) {
@@ -274,21 +264,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 		light0->set_position(lp);
 
 		light_obj->set_model_transform(glm::scale(glm::translate(glm::mat4(), lp), glm::vec3(light0->get_radius() / 2.f)));
-		renderer.set_model_matrix(mv);
-		scene.set_model_matrix(mv);
+		renderer.update_model_matrix_from_camera(camera);
 		skydome.set_model_matrix(mvnt);
-		ray_tracer.set_model_matrix(mvnt);
-		voxel_space.set_model_matrix(mv, camera.get_position());
-/*
-//		renderer.queue().push_back(voxel_space.voxelizer(scene));
+//		ray_tracer.set_model_matrix(mvnt);
+//		voxel_space.set_model_matrix(mv, camera.get_position());
+
 		renderer.queue().push_back(&fb_depth_clearer);
 		renderer.queue().push_back(&scene);
 		renderer.queue().push_back(&skydome);
-		renderer.postprocess_queue().push_back(&hdr);
-*/
-		ctx.renderer()->queue().push_back(voxel_space.voxelizer(scene));
+
+/*		ctx.renderer()->queue().push_back(voxel_space.voxelizer(scene));
 		ctx.renderer()->queue().push_back(&fb_clearer);
-		ctx.renderer()->queue().push_back(&ray_tracer);
+		ctx.renderer()->queue().push_back(&ray_tracer);*/
 
 		{
 			using namespace StE::Text::Attributes;
@@ -307,14 +294,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdParam
 			auto total_vram = std::to_wstring(ctx.gl()->meminfo_total_available_vram() / 1024);
 			auto free_vram = std::to_wstring(ctx.gl()->meminfo_free_vram() / 1024);
 
-/*			renderer.postprocess_queue().push_back(text_renderer.render({ 30, h - 50 },
+			renderer.postprocess_queue().push_back(text_renderer.render({ 30, h - 50 },
 																		vsmall(b(stroke(dark_magenta, 1)(red(tpf_str)))) + L" ms"));
 			renderer.postprocess_queue().push_back(text_renderer.render({ 30, 20 },
 																		vsmall(b((blue_violet(free_vram) + L" / " + stroke(red, 1)(dark_red(total_vram)) + L" MB")))));
-*/			ctx.renderer()->queue().push_back(text_renderer.render({ 30, h - 50 },
+/*			ctx.renderer()->queue().push_back(text_renderer.render({ 30, h - 50 },
 																		vsmall(b(stroke(dark_magenta, 1)(red(tpf_str)))) + L" ms"));
 			ctx.renderer()->queue().push_back(text_renderer.render({ 30, 20 },
-																		vsmall(b((blue_violet(free_vram) + L" / " + stroke(red, 1)(dark_red(total_vram)) + L" MB")))));
+																		vsmall(b((blue_violet(free_vram) + L" / " + stroke(red, 1)(dark_red(total_vram)) + L" MB")))));*/
 		}
 
 		time += ctx.time_per_frame().count();

@@ -12,6 +12,9 @@
 
 #include <exception>
 
+#include <type_traits>
+#include <memory>
+
 #include <fstream>
 #include <sstream>
 #include <locale>
@@ -35,44 +38,55 @@ using StE::LLR::GLSLProgram;
 const std::map<std::string, GLSLShaderType> GLSLProgramLoader::type_map = { { "compute", GLSLShaderType::COMPUTE },{ "frag", GLSLShaderType::FRAGMENT },{ "vert", GLSLShaderType::VERTEX },{ "geometry", GLSLShaderType::GEOMETRY },{ "tes", GLSLShaderType::TESS_EVALUATION },{ "tcs", GLSLShaderType::TESS_CONTROL } };
 
 std::string GLSLProgramLoader::load_source(const boost::filesystem::path &path) {
-	std::ifstream ifs(path.string(), std::ios::in);
-	if (!ifs) {
+	std::string code;
+	std::ifstream fs;
+	fs.exceptions(fs.exceptions() | std::ifstream::failbit | std::ifstream::badbit);
+	
+	try {
+		fs.open(path.string(), std::ios::in);
+		std::string code = std::string((std::istreambuf_iterator<char>(fs)), (std::istreambuf_iterator<char>()));
+		fs.close();
+	} catch (std::fstream::failure e) {
 		using namespace Attributes;
-		ste_log_error() << AttributedString("GLSL Shader ") + i(path.string()) + ": Unable to read GLSL shader program";
+		ste_log_error() << AttributedString("GLSL Shader ") + i(path.string()) + ": Unable to read GLSL shader program, " + e.what() + " - " + std::strerror(errno);
 		return std::string();
 	}
-
-	std::string code((std::istreambuf_iterator<char>(ifs)),
-					 (std::istreambuf_iterator<char>()));
 
 	return code;
 }
 
 std::unique_ptr<GLSLShaderGeneric> GLSLProgramLoader::compile_from_path(const boost::filesystem::path &path) {
-	std::ifstream ifs(path.string(), std::ios::in);
-	if (!ifs) {
-		using namespace Attributes;
-		ste_log_error() << AttributedString("GLSL Shader ") + i(path.string()) + ": Unable to read GLSL shader program.";
-		return nullptr;
-	}
-
 	std::string line;
 	std::string src;
 	GLSLShaderProperties prop{ 0,0 };
 	GLSLShaderType type = GLSLShaderType::NONE;
 
 	std::vector<std::string> paths{ path.filename().string() };
+	
+	std::ifstream fs;
+	fs.exceptions(fs.exceptions() | std::ifstream::failbit | std::ifstream::badbit);
+	
+	try {
+		fs.open(path.string(), std::ios::in);
 
-	int i = 1;
-	while (std::getline(ifs, line)) {
-		if (line[0] == '#')
-			parse_parameters(line, prop, type) || parse_include(path, i, line, paths);
+		int i = 1;
+		while (std::getline(fs, line)) {
+			if (line[0] == '#')
+				parse_parameters(line, prop, type) || parse_include(path, i, line, paths);
 
-		src += line + "\n";
-		++i;
+			src += line + "\n";
+			++i;
+		}
+		
+		fs.close();
+	} catch (std::fstream::failure e) {
+		using namespace Attributes;
+		ste_log_error() << AttributedString("GLSL Shader ") + i(path.string()) + ": Unable to read GLSL shader program, " + e.what() + " - " + std::strerror(errno);
+		return nullptr;
 	}
 
 	if (type == GLSLShaderType::NONE || prop.version_major == 0) {
+		using namespace StE::Text::Attributes;
 		ste_log_error() << AttributedString("GLSL Shader ") + Attributes::i(path.string()) + ": No shader #type or #version specified.";
 		return nullptr;
 	}
@@ -244,6 +258,7 @@ StE::task<std::unique_ptr<GLSLProgram>> GLSLProgramLoader::load_program_task(con
 			for (auto &path : paths) {
 				if (!boost::filesystem::exists(path)) {
 					ste_log_error() << "GLSL program " + path.string() + " couldn't be found!";
+					std::cerr << "Error: GLSL program " + path.string() + " couldn't be found";
 					assert(false);
 					continue;
 				}

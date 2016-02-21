@@ -1,12 +1,17 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
+#include <cstring>
+#include <cerrno>
+
 #include <string>
 #include <fstream>
+#include <iostream>
 #include <functional>
 #include <map>
+
 #include <time.h>
 
 #include "log_class.h"
@@ -16,7 +21,7 @@ namespace StE {
 
 class log_stream_formatter {
 private:
-	static constexpr const char * log_template_path = R"(data\log_template\index.html)";
+	static constexpr const char * log_template_path = R"(Data/log_template/index.html)";
 	static constexpr const char * entry_boundary_start = "%%entry_begin%%";
 	static constexpr const char * entry_boundary_end = "%%entry_end%%";
 
@@ -107,19 +112,27 @@ private:
 
 public:
 	log_stream_formatter(const std::string &name) : t_warn(0), t_err(0), t_fatal(0), name(name) {
-		std::ifstream fs(log_template_path, std::ios::in);
-		if (fs.bad()) {
+		std::string template_data;
+		std::ifstream fs;
+		
+		fs.exceptions(fs.exceptions() | std::ifstream::failbit | std::ifstream::badbit);
+		
+		try {
+			fs.open(log_template_path, std::ios::in);
+			template_data = std::string((std::istreambuf_iterator<char>(fs)), (std::istreambuf_iterator<char>()));
+			fs.close();
+		} catch (std::fstream::failure e) {
+			std::cerr << "Error while reading log template file \"" << log_template_path << "\": " << e.what() << " - " << std::strerror(errno) << std::endl;
 			assert(false);
 			return;
 		}
-		std::string template_data((std::istreambuf_iterator<char>(fs)), (std::istreambuf_iterator<char>()));
-		fs.close();
 
 		auto entry_begin_len = std::string(entry_boundary_start).length();
 		auto entry_end_len = std::string(entry_boundary_end).length();
 		auto entry_begin = template_data.find(entry_boundary_start);
 		auto entry_end = template_data.find(entry_boundary_end);
 		if (entry_begin == std::string::npos || entry_end == std::string::npos || entry_end < entry_begin || entry_end + entry_end_len >= template_data.length()) {
+			std::cerr << "Error: Bad data in log template file.";
 			assert(false);
 			return;
 		}

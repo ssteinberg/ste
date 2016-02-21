@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -25,7 +25,7 @@ class lru_cache {
 private:
 	using key_type = K;
 	using index_type = lru_cache_index<key_type>;
-	using cacheable = index_type::val_type;
+	using cacheable = typename index_type::val_type;
 
 private:
 	index_type index;
@@ -33,7 +33,7 @@ private:
 	mutable std::mutex m;
 	mutable std::condition_variable cv;
 
-	mutable concurrent_queue<index_type::val_data_guard> accessed_queue;
+	mutable concurrent_queue<typename index_type::val_data_guard> accessed_queue;
 
 	std::atomic<std::size_t> total_size{ 0 };
 	boost::filesystem::path path;
@@ -49,7 +49,7 @@ private:
 		t.join();
 	}
 
-	void item_accessed(index_type::val_data_guard &&val_guard) const {
+	void item_accessed(typename index_type::val_data_guard &&val_guard) const {
 		accessed_queue.push(std::move(val_guard));
 		cv.notify_one();
 	}
@@ -120,9 +120,9 @@ public:
 				return none;
 
 			try {
-				auto v = val_guard->unarchive<V>();
+				auto v = val_guard->template unarchive<V>();
 				this->item_accessed(std::move(val_guard));
-				return v;
+				return optional<V>(std::move(v));
 			}
 			catch (std::exception ex) {
 				return none;

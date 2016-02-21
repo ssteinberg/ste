@@ -11,6 +11,7 @@
 #include <chrono>
 #include <thread>
 #include <exception>
+#include <stdexcept>
 
 #include <chrono>
 #include <ctime>
@@ -30,13 +31,13 @@ struct StE::ste_engine_control_impl {
 	float fps{ 0 };
 	int frames{ 0 };
 	float total_time{ 0 };
-	std::chrono::time_point<std::chrono::steady_clock> last_frame_time{ std::chrono::high_resolution_clock::now() };
+	std::chrono::time_point<std::chrono::steady_clock> last_frame_time{ std::chrono::steady_clock::now() };
 };
 
 StEngineControl::StEngineControl(std::unique_ptr<LLR::gl_context> &&ctx) : pimpl(std::make_unique<ste_engine_control_impl>()), context(std::move(ctx)), global_cache("Cache", 1024 * 1024 * 256) {
 	assert(context.get());
 	if (context == nullptr)
-		throw std::exception("context == nullptr");
+		throw std::runtime_error("context == nullptr");
 
 	glfwSetErrorCallback([](int err, const char* description) { ste_log_error() << "GLFW reported an error (" << err << "): " << description; });
 
@@ -84,7 +85,7 @@ void StEngineControl::setup_signals() {
 }
 
 void StEngineControl::update_tpf() {
-	auto now = std::chrono::high_resolution_clock::now();
+	auto now = std::chrono::steady_clock::now();
 	std::chrono::duration<float> delta = now - pimpl->last_frame_time;
 	tpf = delta;
 	pimpl->last_frame_time = now;
@@ -113,11 +114,11 @@ void StEngineControl::capture_screenshot() const {
 	auto size = gl()->framebuffer_size();
 
 	auto fbo = std::make_shared<StE::LLR::FramebufferObject>();
-	StE::LLR::Texture2D fbo_tex(gli::format::FORMAT_RGB8_UNORM, size, 1);
+	StE::LLR::Texture2D fbo_tex(gli::format::FORMAT_RGB8_UNORM_PACK8, size, 1);
 	(*fbo)[0] = fbo_tex[0];
 
 	gl()->defaut_framebuffer().blit_to(*fbo, size, size);
-	gli::texture2D tex(gli::FORMAT_RGB8_UNORM, size);
+	gli::texture2d tex(gli::FORMAT_RGB8_UNORM_PACK8, size);
 	(*fbo)[0].read_pixels(tex.data(), 3 * size.x * size.y);
 
 	scheduler().schedule_now([=](optional<task_scheduler*> sched) {

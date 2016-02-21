@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -80,32 +80,45 @@ private:
 
 	task<exitant_db_descriptor> load_bme_brdf_task(const boost::filesystem::path &bme_data) const {
 		return [=](optional<task_scheduler*> sched) {
-			std::ifstream f(bme_data.string(), std::ifstream::in);
-
 			exitant_db db;
-
-			std::string l;
 			float in_theta = -1;
 			int in_phi = -1;
-			while (std::getline(f, l)) {
-				if (l[0] == '#') {
-					if (l.find("intheta") == 1) in_theta = std::stof(l.substr(1 + sizeof("intheta")), nullptr);
-					if (l.find("inphi") == 1) in_phi = std::stol(l.substr(1 + sizeof("inphi")), nullptr);
-					continue;
+			std::ifstream fs;
+			
+			fs.exceptions(fs.exceptions() | std::ifstream::failbit | std::ifstream::badbit);
+			
+			try {
+				fs.open(bme_data.string(), std::ios::in);
+				
+				std::string l;
+				while (std::getline(fs, l)) {
+					if (l[0] == '#') {
+						if (l.find("intheta") == 1) in_theta = std::stof(l.substr(1 + sizeof("intheta")), nullptr);
+						if (l.find("inphi") == 1) in_phi = std::stol(l.substr(1 + sizeof("inphi")), nullptr);
+						continue;
+					}
+
+					assert(in_theta >= 0 && in_phi >= 0);
+
+					std::stringstream ss(l);
+					bme_brdf_descriptor_entry entry;
+					ss >> entry;
+
+					if (entry.brdf > .0f) {
+						entry.phi -= in_phi;
+						while (entry.phi > BRDF::phi_max) entry.phi -= 360.f;
+						while (entry.phi < BRDF::phi_min) entry.phi += 360.f;
+						append_entry(std::move(entry), db);
+					}
 				}
-
-				assert(in_theta >= 0 && in_phi >= 0);
-
-				std::stringstream ss(l);
-				bme_brdf_descriptor_entry entry;
-				ss >> entry;
-
-				if (entry.brdf > .0f) {
-					entry.phi -= in_phi;
-					while (entry.phi > BRDF::phi_max) entry.phi -= 360.f;
-					while (entry.phi < BRDF::phi_min) entry.phi += 360.f;
-					append_entry(std::move(entry), db);
-				}
+				
+				fs.close();
+			} catch (std::fstream::failure e) {
+				using namespace StE::Text::Attributes;
+				ste_log_error() << Text::AttributedString("Error while reading BME database \"") + i(bme_data.string()) + "\": " + e.what() + " - " + std::strerror(errno);
+				assert(false);
+				
+				return exitant_db_descriptor();
 			}
 
 			exitant_db_descriptor desc;
@@ -160,12 +173,12 @@ public:
 			bme_brdf_representation bme;
 			bme.load(*ctx, bme_data_dir);
 
-			glm::tvec3<std::size_t> dims;
+			glm::ivec3 dims;
 			dims.x = glm::ceil((BRDF::phi_max - BRDF::phi_min) / resolution + 1);
 			dims.y = glm::ceil((BRDF::theta_max - BRDF::theta_min) / resolution + 1);
 			dims.z = bme.database.size();
 
-			brdfdata.get_data() = gli::texture3D(1, gli::format::FORMAT_R32_SFLOAT, dims);
+			brdfdata.get_data() = std::make_unique<gli::texture3d>(gli::format::FORMAT_R32_SFLOAT_PACK32, dims, 1);
 			brdfdata.set_min_incident(bme.database.begin()->first);
 			brdfdata.set_max_incident((--bme.database.end())->first);
 
@@ -174,7 +187,7 @@ public:
 			auto it = bme.database.begin();
 			for (unsigned i = 0; i < dims.z; ++i, ++it) {
 				futures.push_back(ctx->scheduler().schedule_now([&, i=i, it=it](optional<task_scheduler*> sched) {
-					float *data = reinterpret_cast<float*>(brdfdata.get_data().data()) + dims.x * dims.y * i;
+					float *data = reinterpret_cast<float*>(brdfdata.get_data()->data()) + dims.x * dims.y * i;
 					exitant_db &db = it->second;
 
 					for (unsigned j = 0; j < dims.y; ++j) {

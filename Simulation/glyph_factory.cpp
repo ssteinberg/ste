@@ -15,7 +15,7 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-#include <exception>
+#include <stdexcept>
 
 using namespace StE::Text;
 
@@ -61,7 +61,7 @@ public:
 	glyph_factory_ft_lib() {
 		auto error = FT_Init_FreeType(&library);
 		if (error) {
-			throw std::exception("Couldn't init FreeType");
+			throw std::runtime_error("Couldn't init FreeType");
 		}
 	}
 	~glyph_factory_ft_lib() {
@@ -85,7 +85,7 @@ public:
 								 0,
 								 &face);
 		if (error) {
-			throw std::exception("Failed loading FreeType font");
+			throw std::runtime_error("Failed loading FreeType font");
 		}
 
 		FT_Select_Charmap(face, ft_encoding_unicode);
@@ -119,9 +119,7 @@ struct glyph_factory_impl {
 	auto& get_factory_font(const Font &font) {
 		auto it = fonts.find(font);
 		if (it == fonts.end())
-			it = fonts.emplace(std::piecewise_construct,
-							   std::forward_as_tuple(font),
-							   std::forward_as_tuple(font, lib.get_lib())).first;
+			it = fonts.emplace(std::make_pair(font, glyph_factory_font(font, lib.get_lib()))).first;
 		return it->second;
 	}
 
@@ -177,11 +175,11 @@ StE::task<glyph> glyph_factory::create_glyph_task(const Font &font, wchar_t code
 		g.metrics.width = w;
 		g.metrics.height = h;
 
-		gli::texture2D text_glyph_distance_field_image(1, gli::format::FORMAT_R32_SFLOAT, { w,h });
+		gli::texture2d text_glyph_distance_field_image(gli::format::FORMAT_R32_SFLOAT_PACK32, { w,h }, 1);
 		make_distance_map(glyph_buf, w, h, reinterpret_cast<float*>(text_glyph_distance_field_image[0].data()));
 		delete[] glyph_buf;
 
-		g.glyph_distance_field = std::move(text_glyph_distance_field_image);
+		g.glyph_distance_field = std::make_unique<gli::texture2d>(text_glyph_distance_field_image);
 
 		return std::move(g);
 	});

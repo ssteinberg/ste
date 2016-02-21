@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -41,9 +41,7 @@ private:
 			new_counter.external_counters = 2;
 			count.store(new_counter);
 
-			counted_node_ptr new_counted_node_ptr;
-			new_counted_node_ptr.ptr = nullptr;
-			new_counted_node_ptr.ref_count = 0;
+			counted_node_ptr new_counted_node_ptr{ 0 };
 			next.store(new_counted_node_ptr);
 		}
 
@@ -105,7 +103,11 @@ public:
 		new_counted_node.ptr = new node;
 
 		head.store(new_counted_node);
-		tail.store(new_counted_node); 
+		tail.store(new_counted_node);
+		
+		assert(head.is_lock_free() && "head/tail not lock free!");
+		assert(new_counted_node.ptr->count.is_lock_free() && "count not lock free!");
+		assert(new_counted_node.ptr->next.is_lock_free() && "next not lock free!");
 	}
 	~concurrent_queue() {
 		while (pop() != nullptr);
@@ -145,6 +147,8 @@ public:
 			T* old_data = nullptr;
 			if (old_tail.ptr->data.compare_exchange_strong(old_data, new_data.get())) {
 				counted_node_ptr old_next = { 0 };
+				auto oldnexta = old_tail.ptr->next.load();
+				auto ret = memcmp(&oldnexta, &old_next, sizeof(oldnexta));
 				if (!old_tail.ptr->next.compare_exchange_strong(old_next, new_next)) {
 					delete new_next.ptr;
 					new_next = old_next;

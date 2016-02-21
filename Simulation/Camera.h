@@ -7,7 +7,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 namespace StE {
-namespace LLR {
+namespace Graphics {
 
 class Camera {
 private:

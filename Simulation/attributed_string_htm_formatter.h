@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -14,16 +14,16 @@ namespace Text {
 template <typename CharT>
 class attributed_string_htm_formatter {
 public:
-	attributed_string<CharT>::string_type operator()(const attributed_string<CharT> &str) {
+	typename attributed_string<CharT>::string_type operator()(const attributed_string<CharT> &str) {
 		if (!str.length()) return attributed_string<CharT>::string_type();
 
 		using namespace Attributes;
 
-		attributed_string<CharT>::string_type pstr;
-		attributed_string<CharT>::range_type r{ 0, str.length() };
+		typename attributed_string<CharT>::string_type pstr;
+		typename attributed_string<CharT>::range_type r{ 0, str.length() };
 		
 		while (r.start < str.length()) {
-			attributed_string<CharT>::range_type cr = r, cw = r, cs = r, ci = r;
+			typename attributed_string<CharT>::range_type cr = r, cw = r, cs = r, ci = r;
 			optional<const Attributes::rgb*>	color_attrib = str.attrib_of_type(rgb::attrib_type_s(), &cr);
 			optional<const Attributes::weight*>	weight_attrib = str.attrib_of_type(weight::attrib_type_s(), &cw);
 			optional<const Attributes::size*>	size_attrib = str.attrib_of_type(size::attrib_type_s(), &cs);
@@ -47,9 +47,9 @@ public:
 
 			if (style.length()) {
 				std::string str_open_tag = "<span style=\"" + style + "\">";
-				attributed_string<CharT>::string_type open_tag(str_open_tag.begin(), str_open_tag.end());
+				typename attributed_string<CharT>::string_type open_tag(str_open_tag.begin(), str_open_tag.end());
 				std::string str_end_tag = "</span>";
-				attributed_string<CharT>::string_type end_tag(str_end_tag.begin(), str_end_tag.end());
+				typename attributed_string<CharT>::string_type end_tag(str_end_tag.begin(), str_end_tag.end());
 				pstr += open_tag + str.plain_string().substr(r.start, r.length) + end_tag;
 			}
 			else

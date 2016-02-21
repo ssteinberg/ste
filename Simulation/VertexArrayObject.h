@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -15,6 +15,8 @@
 
 namespace StE {
 namespace LLR {
+	
+class VertexArrayObject;
 
 class VertexArrayObjectAllocator : public generic_resource_allocator {
 public:

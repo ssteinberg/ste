@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -19,7 +19,7 @@ namespace StE {
 namespace Graphics {
 
 struct sbta_key {
-	glm::tvec2<std::size_t> size;
+	glm::ivec2 size;
 	gli::format format;
 };
 

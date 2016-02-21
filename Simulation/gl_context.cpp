@@ -1,6 +1,6 @@
 
 #include "stdafx.h"
-#include <gl/glew.h>
+#include <GL/glew.h>
 
 #include "gl_context.h"
 #include "gl_current_context.h"
@@ -9,6 +9,7 @@
 #include "AttributedString.h"
 
 #include <functional>
+#include <stdexcept>
 
 using namespace StE::LLR;
 
@@ -46,11 +47,11 @@ gl_context::gl_context(const context_settings &settings, const char *title, cons
 
  	if (!ste_global_context_initializer.init_glew()) {
  		ste_log_fatal() << "Couldn't init GLEW." << std::endl;
- 		throw std::exception("Couldn't init GLEW.");
+ 		throw std::runtime_error("Couldn't init GLEW.");
  	}
 	if (!glCreateTextures || !glNamedFramebufferDrawBuffers) {
 		ste_log_fatal() << "Not a valid 4.5 OpenGL context." << std::endl;
-		throw std::exception("Not a valid 4.5 OpenGL context.");
+		throw std::runtime_error("Not a valid 4.5 OpenGL context.");
 	}
 
 	if (is_debug_context())
@@ -60,13 +61,12 @@ gl_context::gl_context(const context_settings &settings, const char *title, cons
 }
 
 gl_context::window_type gl_context::create_window(const char * title, const glm::i32vec2 &size, gli::format format, gli::format depth_format) {
-	auto format_flags = gli::detail::getFormatInfo(format).Flags;
-	auto depth_format_flags = gli::detail::getFormatInfo(depth_format).Flags;
+	auto format_flags = gli::detail::get_format_info(format).Flags;
+	auto depth_format_flags = gli::detail::get_format_info(depth_format).Flags;
 
 	bool is_depth = depth_format_flags & gli::detail::CAP_DEPTH_BIT;
 
 	bool compressed = format_flags & gli::detail::CAP_COMPRESSED_BIT;
-	bool packed = format_flags & gli::detail::CAP_PACKED_BIT;
 	bool srgb = format_flags & gli::detail::CAP_COLORSPACE_SRGB_BIT;
 	bool integer = format_flags & gli::detail::CAP_UNSIGNED_BIT;
 	bool normalized = format_flags & gli::detail::CAP_NORMALIZED_BIT;
@@ -74,17 +74,17 @@ gl_context::window_type gl_context::create_window(const char * title, const glm:
 	auto bpp = gli::detail::bits_per_pixel(format);
 	auto components = gli::component_count(format);
 
-	if (packed || compressed) {
-		ste_log_fatal() << "Creating context failed: Packed or compressed formats are unsupported." << std::endl;
-		throw std::exception("Couldn't create context.");
+	if (compressed) {
+		ste_log_fatal() << "Creating context failed: Compressed formats are unsupported." << std::endl;
+		throw std::runtime_error("Couldn't create context.");
 	}
 	if (!integer || !normalized) {
 		ste_log_fatal() << "Creating context failed: Format must be an integer normalized format." << std::endl;
-		throw std::exception("Couldn't create context.");
+		throw std::runtime_error("Couldn't create context.");
 	}
 	if (!is_depth) {
 		ste_log_fatal() << "Creating context failed: Invalid depth format." << std::endl;
-		throw std::exception("Couldn't create context.");
+		throw std::runtime_error("Couldn't create context.");
 	}
 
 	auto bpc = bpp / components;
@@ -92,7 +92,7 @@ gl_context::window_type gl_context::create_window(const char * title, const glm:
 	auto green_bits = components > 1 ? bpc : 0;
 	auto blue_bits = components > 2 ? bpc : 0;
 	auto alpha_bits = components > 3 ? bpc : 0;
-	auto depth_bits = depth_format == gli::format::FORMAT_D24_UNORM ? 24 : gli::detail::bits_per_pixel(depth_format);
+	auto depth_bits = depth_format == gli::format::FORMAT_D24_UNORM_PACK32 ? 24 : gli::detail::bits_per_pixel(depth_format);
 	bool debug = is_debug_context();
 
 	ste_log() << "Creating OpenGL" << (debug ? " DEBUG " : " ") << "rendering context (" << size.x << "px x " << size.y << "px - " << bpp << " bits/pixel (" << red_bits << "," << green_bits << "," << blue_bits << "," << alpha_bits << ") - " << depth_bits << " depth bits - " << ")" << std::endl;
@@ -122,7 +122,7 @@ gl_context::window_type gl_context::create_window(const char * title, const glm:
 	window_type win = window_type(glfwCreateWindow(size.x, size.y, title, ctx_settings.fs && ctx_settings.fs.get() ? glfwGetPrimaryMonitor() : nullptr, nullptr), [](GLFWwindow *win) { glfwDestroyWindow(win); });
 	if (win == nullptr) {
 		ste_log_fatal() << "Window creation failed!" << std::endl;
-		throw std::exception("Couldn't create window.");
+		throw std::runtime_error("Couldn't create window.");
 		return nullptr;
 	}
 
@@ -133,7 +133,7 @@ gl_context::window_type gl_context::create_window(const char * title, const glm:
 }
 
 void gl_context::create_default_framebuffer(gli::format format, gli::format depth_format) {
-	auto format_flags = gli::detail::getFormatInfo(format).Flags;
+	auto format_flags = gli::detail::get_format_info(format).Flags;
 	bool srgb = format_flags & gli::detail::CAP_COLORSPACE_SRGB_BIT;
 
 	glm::i32vec2 ret;
