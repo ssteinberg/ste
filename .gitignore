@@ -7,6 +7,7 @@
 *.sln.docstates
 *.o
 .depend
+*.d
 GTAGS
 GRTAGS
 GPATH
