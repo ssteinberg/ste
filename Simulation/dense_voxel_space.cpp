@@ -13,7 +13,7 @@ dense_voxel_space::dense_voxel_space(const StEngineControl &ctx, std::size_t max
 	voxelizer_program = Resource::GLSLProgramLoader::load_program_task(ctx, { "voxelizer.vert", "voxelizer.frag", "voxelizer.geom" })();
 	voxelizer_upsampler_program = Resource::GLSLProgramLoader::load_program_task(ctx, { "voxelizer_upsampler.glsl" })();
 
-	voxelizer_output = std::make_unique<LLR::RenderTarget>(gli::format::FORMAT_R8_UNORM_PACK8, size.xy);
+	voxelizer_output = std::make_unique<LLR::RenderTarget>(gli::format::FORMAT_R8_UNORM_PACK8, glm::ivec2{ size.x, size.y });
 	voxelizer_fbo[0] = *voxelizer_output;
 
 	sampler.set_min_filter(LLR::TextureFiltering::Linear);

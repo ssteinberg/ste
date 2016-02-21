@@ -3,13 +3,13 @@
 #version 450
 #extension GL_ARB_bindless_texture : require
 #extension GL_NV_gpu_shader5 : require
-#extension GL_NV_shader_atomic_fp16_vector : require
+// #extension GL_NV_shader_atomic_fp16_vector : require
 
 const int light_buffers_first = 1;
 
 #include "material.glsl"
 #include "light.glsl"
-#include "voxels.glsl"
+//#include "voxels.glsl"
 
 out vec4 gl_FragColor;
 
@@ -47,45 +47,44 @@ void main() {
 		vec3 v = light_incidant_ray(ld, i, position);
 		float dist = length(v);
 	
-		float shadow_dist;
-		bool hit;
-		voxel_ray_march(position, vec3(0), light_transform_buffer[i].xyz, hit, shadow_dist, true);
+		// float shadow_dist;
+		// bool hit;
+		// voxel_ray_march(position, vec3(0), light_transform_buffer[i].xyz, hit, shadow_dist, true);
 
 		float brdf = calc_brdf(md, position, n, t, b, v);
 		float attenuation_factor = light_attenuation_factor(ld, dist);
 		float incident_radiance = ld.luminance / attenuation_factor;
 
 		vec3 l = diffuse * ld.diffuse.xyz;
-		if (hit)
-			l *= pow(1.f / max(500 - shadow_dist, 1.f), 5.f);
+		// if (hit)Z.f / max(500 - shadow_dist, 1.f), 5.f);
 
 		rgb += l * max(0, mix(.3f, 1.f, specular) * brdf * incident_radiance);
 	}
 
 	vec3 xyY = XYZtoxyY(RGBtoXYZ(rgb));
-	//xyY.z = max(min_luminance, xyY.z);
+	xyY.z = max(min_luminance, xyY.z);
 
-	//gl_FragColor = vec4(xyY, 1);
+	gl_FragColor = vec4(xyY, 1);
 
 	
-	vec2 p = gl_FragCoord.xy / vec2(1688, 950);
-	p = p * 2 - vec2(1);
-	vec3 D = normalize((inv_view_model * inv_projection * vec4(p, 0, 1)).xyz);
-	vec3 P = vec3(0);
-	float radius = 0;
+	// vec2 p = gl_FragCoord.xy / vec2(1688, 950);
+	// p = p * 2 - vec2(1);
+	// vec3 D = normalize((inv_view_model * inv_projection * vec4(p, 0, 1)).xyz);
+	// vec3 P = vec3(0);
+	// float radius = 0;
 
-	vec3 normal;
-	vec4 color;
+	// vec3 normal;
+	// vec4 color;
 
-	bool hit;
-	float ray_length;
+	// bool hit;
+	// float ray_length;
 
-	P = voxel_cone_march(P, D, vec3(0), radius, 0.06, radius, hit, ray_length);
-	//P = voxel_ray_march(P, D, vec3(0), hit, ray_length);
+	// P = voxel_cone_march(P, D, vec3(0), radius, 0.06, radius, hit, ray_length);
+	// //P = voxel_ray_march(P, D, vec3(0), hit, ray_length);
 
-	voxel_filter(P, radius, color, normal);
+	// voxel_filter(P, radius, color, normal);
 
-	xyY = XYZtoxyY(RGBtoXYZ(vec3(ray_length / 100.f)));
-	xyY.z *= 1000;
-	gl_FragColor = color;
+	// xyY = XYZtoxyY(RGBtoXYZ(vec3(ray_length / 100.f)));
+	// xyY.z *= 1000;
+	// gl_FragColor = color;
 }

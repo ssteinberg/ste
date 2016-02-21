@@ -18,7 +18,7 @@ public:
 	TextureCubeMap(TextureCubeMap &&m) = default;
 	TextureCubeMap& operator=(TextureCubeMap &&m) = default;
 
-	TextureCubeMap(gli::format format, const size_type &size, int levels = 1) : texture_mipmapped(format, size, levels) {}
+	TextureCubeMap(gli::format format, const typename Base::size_type &size, int levels = 1) : texture_mipmapped(format, size, levels) {}
 	TextureCubeMap(const gli::texture_cube &t, bool generate_mipmaps = false) : 
 						texture_mipmapped(t.format(), t.extent(), generate_mipmaps ? calculate_mipmap_max_level(t[0].extent()) + 1 : t.levels()) {
 		upload(t, generate_mipmaps);

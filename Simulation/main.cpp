@@ -94,7 +94,7 @@ public:
 
 int main() {
 	StE::Log logger("Global Illumination");
-	logger.redirect_std_outputs();
+//	logger.redirect_std_outputs();
 	ste_log_set_global_logger(&logger);
 	ste_log() << "Simulation is running";
 
@@ -157,7 +157,7 @@ int main() {
 
 
 	bool loaded = false;
-	auto model_future = ctx.scheduler().schedule_now(StE::Resource::ModelLoader::load_model_task(ctx, R"(data/models/crytek-sponza/sponza.obj)", &scene, 2.5f));
+	auto model_future = ctx.scheduler().schedule_now(StE::Resource::ModelLoader::load_model_task(ctx, R"(Data/models/crytek-sponza/sponza.obj)", &scene, 2.5f));
 
 	std::shared_ptr<StE::Graphics::Object> light_obj;
 	{
@@ -195,9 +195,6 @@ int main() {
 		scene.add_object(light_obj);
 	}
 
-	//RayTracer ray_tracer(ctx);
-	//voxel_space.add_consumer_program(ray_tracer.get_program());
-	
 
 	ctx.set_renderer(&basic_renderer);
 
@@ -266,16 +263,10 @@ int main() {
 		light_obj->set_model_transform(glm::scale(glm::translate(glm::mat4(), lp), glm::vec3(light0->get_radius() / 2.f)));
 		renderer.update_model_matrix_from_camera(camera);
 		skydome.set_model_matrix(mvnt);
-//		ray_tracer.set_model_matrix(mvnt);
-//		voxel_space.set_model_matrix(mv, camera.get_position());
 
 		renderer.queue().push_back(&fb_depth_clearer);
 		renderer.queue().push_back(&scene);
 		renderer.queue().push_back(&skydome);
-
-/*		ctx.renderer()->queue().push_back(voxel_space.voxelizer(scene));
-		ctx.renderer()->queue().push_back(&fb_clearer);
-		ctx.renderer()->queue().push_back(&ray_tracer);*/
 
 		{
 			using namespace StE::Text::Attributes;
@@ -298,10 +289,6 @@ int main() {
 																		vsmall(b(stroke(dark_magenta, 1)(red(tpf_str)))) + L" ms"));
 			renderer.postprocess_queue().push_back(text_renderer.render({ 30, 20 },
 																		vsmall(b((blue_violet(free_vram) + L" / " + stroke(red, 1)(dark_red(total_vram)) + L" MB")))));
-/*			ctx.renderer()->queue().push_back(text_renderer.render({ 30, h - 50 },
-																		vsmall(b(stroke(dark_magenta, 1)(red(tpf_str)))) + L" ms"));
-			ctx.renderer()->queue().push_back(text_renderer.render({ 30, 20 },
-																		vsmall(b((blue_violet(free_vram) + L" / " + stroke(red, 1)(dark_red(total_vram)) + L" MB")))));*/
 		}
 
 		time += ctx.time_per_frame().count();

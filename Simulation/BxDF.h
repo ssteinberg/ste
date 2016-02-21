@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -31,7 +31,7 @@ public:
 		glm::vec2 xy(x, y);
 		xy *= glm::sqrt(1.f - z*z);
 
-		return{ xy.xy, z };
+		return{ xy.x, xy.y, z };
 	}
 };
 

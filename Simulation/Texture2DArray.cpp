@@ -6,7 +6,7 @@
 using namespace StE::LLR;
 
 bool Texture2DArray::upload(const gli::texture2d_array &texture, bool gm) {
-	if (size_type({ texture.extent().xy, texture.layers() }) != this->size) {
+	if (size_type({ texture.extent().x, texture.extent().y, texture.layers() }) != this->size) {
 		ste_log_error() << "Texture format and size can not be changed!";
 		assert(false);
 		return false;
@@ -25,7 +25,7 @@ bool Texture2DArray::upload(const gli::texture2d_array &texture, bool gm) {
 bool Texture2DArray::upload_layer(int layer, const gli::texture2d &texture) {
 	int levels = std::min(this->levels, static_cast<decltype(this->levels)>(texture.levels()));
 
-	if (texture.format() != this->format || glm::ivec2(texture.extent().xy) != glm::ivec2(this->size.xy)) {
+	if (texture.format() != this->format || glm::ivec2(texture.extent().x, texture.extent().y) != glm::ivec2(this->size.x, this->size.y)) {
 		ste_log_error() << "Texture format and size can not be changed!";
 		assert(false);
 		return false;

@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -76,7 +76,8 @@ public:
 			md.brdf = brdf->descriptor();
 			md.brdf.tex_handler.make_resident();
 		}
-		md.emission.xyz = material->get_emission();
+		auto memss = material->get_emission();
+		md.emission = decltype(md.emission){ memss.R(), memss.G(), memss.B(), md.emission.w };
 
 		materials.push_back(material);
 		stack.push_back(md);

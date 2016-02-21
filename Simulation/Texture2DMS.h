@@ -18,7 +18,7 @@ public:
 	Texture2DMS(Texture2DMS &&m) = default;
 	Texture2DMS& operator=(Texture2DMS &&m) = default;
 
-	Texture2DMS(gli::format format, const size_type &size, int samples) : texture_multisampled(format, size, samples) {}
+	Texture2DMS(gli::format format, const typename Base::size_type &size, int samples) : texture_multisampled(format, size, samples) {}
 
 	const image<T> operator[](int level) const {
 		return image<T>(*this, get_image_container_size(), format, ImageAccessMode::ReadWrite, level, 0);

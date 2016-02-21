@@ -27,7 +27,7 @@ public:
 
 		assert(components_in == 1);
 
-		glm::ivec2 dim = height_map.extent().xy;
+		glm::ivec2 dim{ height_map.extent().x, height_map.extent().y };
 		gli::texture2d nm(height_in_alpha ? gli::format::FORMAT_RGBA32_SFLOAT_PACK32 : gli::format::FORMAT_RGB32_SFLOAT_PACK32, dim, 1);
 
 		float *data = reinterpret_cast<float*>(nm.data());

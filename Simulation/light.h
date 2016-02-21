@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -33,7 +33,7 @@ protected:
 public:
 	light(float luminance, const RGB &diffuse) {
 		descriptor.luminance = luminance;
-		descriptor.diffuse.xyz = diffuse;
+		descriptor.diffuse = decltype(descriptor.diffuse){ diffuse.R(), diffuse.G(), diffuse.B(), descriptor.diffuse.w };
 	}
 	virtual ~light() noexcept {};
 
@@ -45,12 +45,12 @@ public:
 		dirty = true;
 	}
 	void set_diffuse(const RGB &d) {
-		descriptor.diffuse.xyz = d;
+		descriptor.diffuse = decltype(descriptor.diffuse){ d.R(), d.G(), d.B(), descriptor.diffuse.w };
 		dirty = true;
 	}
 
 	float get_luminance() const { return descriptor.luminance; }
-	glm::vec3 get_diffuse() const { return descriptor.diffuse.xyz; }
+	glm::vec3 get_diffuse() const { return { descriptor.diffuse.x, descriptor.diffuse.y, descriptor.diffuse.z }; }
 
 	auto get_descriptor() const { return descriptor; }
 };

@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -61,7 +61,8 @@ inline RGB XYZ::toRGB() const {
 inline xyY XYZ::to_xyY() const {
 	XYZ::T t = c[0] + c[1] + c[2];
 	glm::tvec3<xyY::T> v;
-	v.xy = glm::tvec2<xyY::T>{ X(), Y() } / t;
+	v.x = X() / t;
+	v.y = Y() / t;
 	v.z = Y();
 	return v;
 }

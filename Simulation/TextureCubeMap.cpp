@@ -22,7 +22,7 @@ bool TextureCubeMap::upload_face(LLRCubeMapFace face, const gli::texture2d &text
 	// Index of max level
 	int levels = std::min(this->levels, static_cast<decltype(this->levels)>(texture.levels()));
 
-	if (texture.format() != this->format || decltype(this->size){ texture.extent().xy } != this->size) {
+	if (texture.format() != this->format || decltype(this->size){ texture.extent().x, texture.extent().y } != this->size) {
 		ste_log_error() << "Texture format and size can not be changed!";
 		assert(false);
 		return false;

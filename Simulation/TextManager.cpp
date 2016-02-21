@@ -89,7 +89,7 @@ std::vector<TextManager::glyph_point> TextManager::create_points(glm::vec2 ortho
 		float advance = i + 1 < wstr.length() ? gm.spacing(font, { wstr[i], wstr[i + 1] }, size) : 0;
 
 		glyph_point p;
-		p.pos = ortho_pos.xy;
+		p.pos = decltype(p.pos){ ortho_pos.x, ortho_pos.y };
 		p.glyph = g->buffer_index;
 		p.size = f * 2;
 		p.color = glm::vec4(color) / 255.0f;

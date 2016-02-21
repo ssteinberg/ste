@@ -12,7 +12,9 @@
 
 #include "task.h"
 #include "Texture2D.h"
+
 #include "Log.h"
+#include "AttributedString.h"
 
 namespace StE {
 namespace Resource {
@@ -67,44 +69,51 @@ public:
 			}
 
 			bool generate_mipmaps = true;
+			
+			using namespace StE::Text;
+			using namespace Attributes;
 
 			// Load image
 			if (magic[0] == 'D' && magic[1] == 'D' && magic[2] == 'S' && magic[3] == ' ') {
 				// DDS
 				// Directly construct GLI surface
-				ste_log() << "Loading DDS surface " << path.string() << std::endl;
 				auto texture = gli::texture2d(gli::load_dds(path.string()));
 				if (texture.empty())
 					ste_log_error() << "Can't parse DDS surface: " << path;
+				else
+					ste_log() << AttributedString("Loaded DDS surface \"") + i(path.string()) + "\" (" + std::to_string(texture.extent().x) + " X " + std::to_string(texture.extent().y) + ") successfully." << std::endl;
 				return texture;
 			}
 
 			if (magic[0] == 0xff && magic[1] == 0xd8) {
 				// JPEG
-				ste_log() << "Loading JPEG surface " << path.string() << std::endl;
 				auto texture = load_jpeg(path, srgb);
 				if (texture.empty())
 					ste_log_error() << "Can't parse JPEG surface: " << path;
+				else
+					ste_log() << AttributedString("Loaded JPEG surface \"") + i(path.string()) + "\" (" + std::to_string(texture.extent().x) + " X " + std::to_string(texture.extent().y) + ") successfully." << std::endl;
 				return texture;
 			}
 			else if (magic[0] == 0x89 && magic[1] == 0x50 && magic[2] == 0x4e && magic[3] == 0x47) {
 				// PNG
-				ste_log() << "Loading PNG surface " << path.string() << std::endl;
 				auto texture = load_png(path, srgb);
 				if (texture.empty())
 					ste_log_error() << "Can't parse PNG surface: " << path;
+				else
+					ste_log() << AttributedString("Loaded PNG surface \"") + i(path.string()) + "\" (" + std::to_string(texture.extent().x) + " X " + std::to_string(texture.extent().y) + ") successfully." << std::endl;
 				return texture;
 			}
 			else if (magic[0] == 0 && magic[1] == 0 && magic[3] == 0) {
 				// TGA?
-				ste_log() << "Loading TGA surface " << path.string() << std::endl;
 				auto texture = load_tga(path, srgb);
 				if (texture.empty())
 					ste_log_error() << "Can't parse TGA surface: " << path.string() << std::endl;
+				else
+					ste_log() << AttributedString("Loaded TGA surface \"") + i(path.string()) + "\" (" + std::to_string(texture.extent().x) + " X " + std::to_string(texture.extent().y) + ") successfully." << std::endl;
 				return texture;
 			}
 			else {
-				ste_log_error() << "Incompatible surface format: " << path.string() << std::endl;
+				ste_log_error() << red(AttributedString("Incompatible surface format: \"")) + i(path.string()) + "\"." << std::endl;
 				return gli::texture2d();
 			}
 		};
@@ -114,7 +123,7 @@ public:
 		return task<gli::texture2d>([=](optional<task_scheduler*> sched) {
 			return load_surface_2d_task(path, srgb)(sched);
 		}).then_on_main_thread([](optional<task_scheduler*> sched, const gli::texture2d &surface) {
-			 return std::make_unique<LLR::Texture2D>(surface, surface.levels() == 1);
+			return std::make_unique<LLR::Texture2D>(surface, surface.levels() == 1);
 		});
 	}
 };

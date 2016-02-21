@@ -20,8 +20,11 @@ public:
 	Texture2D(Texture2D &&m) = default;
 	Texture2D& operator=(Texture2D &&m) = default;
 
-	Texture2D(gli::format format, const size_type &size, int levels = 1) : texture_mipmapped(format, size, levels) {}
-	Texture2D(const gli::texture2d &t, bool generate_mipmaps = false) : texture_mipmapped(t.format(), t.extent().xy, generate_mipmaps ? calculate_mipmap_max_level(t.extent().xy) + 1 : t.levels()) {
+	Texture2D(gli::format format, const typename Base::size_type &size, int levels = 1) : texture_mipmapped(format, size, levels) {}
+	Texture2D(const gli::texture2d &t, bool generate_mipmaps = false) : 
+				texture_mipmapped(t.format(), 
+								  typename Base::size_type{ t.extent().x, t.extent().y }, 
+								  generate_mipmaps ? calculate_mipmap_max_level(typename Base::size_type{ t.extent().x, t.extent().y }) + 1 : t.levels()) {
 		upload(t, generate_mipmaps);
 	}
 

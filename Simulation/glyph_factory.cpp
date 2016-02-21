@@ -75,7 +75,7 @@ public:
 
 class glyph_factory_font {
 private:
-	FT_Face face;
+	FT_Face face{ nullptr };
 	std::unordered_map<text_glyph_pair_key, int> spacing_cache;
 
 public:
@@ -85,16 +85,26 @@ public:
 								 0,
 								 &face);
 		if (error) {
+			face = nullptr;
 			throw std::runtime_error("Failed loading FreeType font");
 		}
 
 		FT_Select_Charmap(face, ft_encoding_unicode);
 	}
 	~glyph_factory_font() {
-		FT_Done_Face(face);
+		if (face)
+			FT_Done_Face(face);
 	}
-	glyph_factory_font(glyph_factory_font &&) = default;
-	glyph_factory_font &operator=(glyph_factory_font &&) = default;
+	glyph_factory_font(glyph_factory_font &&f) : face(f.face), spacing_cache(std::move(f.spacing_cache)) {
+		f.face = nullptr;
+	}
+	glyph_factory_font &operator=(glyph_factory_font &&f) {
+		face = f.face;
+		spacing_cache = std::move(f.spacing_cache);
+		f.face = nullptr;
+		
+		return *this;
+	}
 
 	FT_Face get_face() { return face; }
 

@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -38,10 +38,10 @@ private:
 
 	public:
 		deferred_composition(const StEngineControl &ctx, GIRenderer *dr) : renderable(StE::Resource::GLSLProgramLoader::load_program_task(ctx, { "deferred.vert", "deferred.frag" })()), dr(dr) {
-			dr->voxel_space.add_consumer_program(this->get_program());
+			// dr->voxel_space.add_consumer_program(this->get_program());
 		}
 		~deferred_composition() {
-			dr->voxel_space.remove_consumer_program(this->get_program());
+			// dr->voxel_space.remove_consumer_program(this->get_program());
 		}
 
 		virtual void prepare() const override {
@@ -72,7 +72,7 @@ private:
 	Scene *scene;
 	SceneProperties *scene_props;
 	hdr_dof_postprocess hdr;
-	dense_voxel_space voxel_space;
+	// dense_voxel_space voxel_space;
 	
 	deferred_composition composer;
 
@@ -87,7 +87,11 @@ public:
 			   Scene *scene,
 			   SceneProperties *props,
 			   std::size_t voxel_grid_size = 512, 
-			   float voxel_grid_ratio = .01f) : fbo(ctx.get_backbuffer_size()), scene(scene), scene_props(props), hdr(ctx, fbo.z_buffer()), voxel_space(ctx, voxel_grid_size, voxel_grid_ratio), composer(ctx, this) {
+			   float voxel_grid_ratio = .01f) 
+			   	: fbo(ctx.get_backbuffer_size()), scene(scene), scene_props(props), 
+				  hdr(ctx, fbo.z_buffer()), 
+				//   voxel_space(ctx, voxel_grid_size, voxel_grid_ratio), 
+				composer(ctx, this) {
 		resize_connection = std::make_shared<ResizeSignalConnectionType>([=](const glm::i32vec2 &size) {
 			this->fbo.resize(size);
 			hdr.set_z_buffer(fbo.z_buffer());
@@ -106,14 +110,14 @@ public:
 		composer.get_program()->set_uniform("inv_view_model", glm::inverse(m));
 		composer.get_program()->set_uniform("view_matrix", m);
 
-		voxel_space.set_model_matrix(m, camera.get_position());
+		// voxel_space.set_model_matrix(m, camera.get_position());
 		scene->set_model_matrix(m);
 	}
 
 	virtual void finalize_queue(const StEngineControl &ctx) override {
-		queue().push_back(voxel_space.voxelizer(*scene));
+		// queue().push_back(voxel_space.voxelizer(*scene));
 		postprocess_queue().push_front(&composer);
-		//postprocess_queue().push_front(&hdr);
+		postprocess_queue().push_front(&hdr);
 	}
 
 	virtual void render_queue(const StEngineControl &ctx) override {
@@ -122,7 +126,7 @@ public:
 	}
 
 	rendering_queue& postprocess_queue() { return ppq; }
-	const dense_voxel_space& voxel_grid() const { return voxel_space; }
+	// const dense_voxel_space& voxel_grid() const { return voxel_space; }
 
 	virtual std::string rendering_system_name() const override { return "GIRenderer"; };
 };
