@@ -1,4 +1,4 @@
-﻿// StE
+// StE
 // © Shlomi Steinberg, 2015
 
 #pragma once
