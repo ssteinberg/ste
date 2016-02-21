@@ -5,7 +5,7 @@
 
 #include "stdafx.h"
 
-#include "texture.h"
+#include "texture_base.h"
 #include "llr_resource_type.h"
 #include "image.h"
 

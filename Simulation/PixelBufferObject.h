@@ -1,12 +1,12 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
 #include "buffer_object.h"
 
 #include "image.h"
-#include "texture.h"
+#include "texture_base.h"
 #include "FramebufferObject.h"
 
 #include <vector>

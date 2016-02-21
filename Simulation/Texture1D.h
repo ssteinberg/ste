@@ -4,7 +4,7 @@
 #pragma once
 
 #include "stdafx.h"
-#include "texture.h"
+#include "texture_base.h"
 #include "image.h"
 
 namespace StE {
