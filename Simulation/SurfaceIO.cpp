@@ -94,7 +94,7 @@ gli::texture2d SurfaceIO::load_tga(const boost::filesystem::path &file_name, boo
 		tga = TGAOpen(const_cast<char*>(file_name.string().data()), "rb");
 		TGAReadHeader(tga);
 	}
-	catch (std::exception ex) {
+	catch (const std::exception &ex) {
 		ste_log_error() << file_name << " is not a valid 24-bit TGA" << std::endl;
 		return gli::texture2d();
 	}
@@ -154,7 +154,7 @@ gli::texture2d SurfaceIO::load_tga(const boost::filesystem::path &file_name, boo
 	try {
 		TGAReadScanlines(tga, image_data, 0, h, TGA_BGR);
 	}
-	catch (std::exception ex) {
+	catch (const std::exception &ex) {
 		ste_log_error() << file_name << " is not a valid 24-bit TGA" << std::endl;
 		return gli::texture2d();
 	}
@@ -326,18 +326,16 @@ gli::texture2d SurfaceIO::load_jpeg(const boost::filesystem::path &path, bool sr
 	int row_stride;
 	std::string content;
 	
-	std::ifstream fs;
-	fs.exceptions(fs.exceptions() | std::ifstream::failbit | std::ifstream::badbit);
-	
-	try {
-		fs.open(path.string(), std::ios::in);
-		content = std::string((std::istreambuf_iterator<char>(fs)), std::istreambuf_iterator<char>());
-		fs.close();
-	} catch (std::fstream::failure e) {
+	std::ifstream fs(path.string(), std::ios::in);
+	if (!fs.good()) {
 		using namespace Attributes;
-		ste_log_error() << Text::AttributedString("Can't open JPEG ") + i(path.string()) + ": " + e.what() + " - " + std::strerror(errno);
+		ste_log_error() << Text::AttributedString("Can't open JPEG ") + i(path.string()) + ": " + std::strerror(errno) << std::endl;
 		return gli::texture2d();
 	}
+	
+	content = std::string((std::istreambuf_iterator<char>(fs)), std::istreambuf_iterator<char>());
+	fs.close();
+		
 	unsigned char *data = reinterpret_cast<unsigned char*>(&content[0]); 
 	
 	if (content.size() == 0) {

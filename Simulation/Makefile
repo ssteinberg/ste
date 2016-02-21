@@ -28,4 +28,4 @@ depend: .depend
 include .depend
 
 clean:
-	rm -f *~ *.o *.depend *.pch $(TARGET)
+	rm -f ./.depend *~ *.o *.pch $(TARGET)

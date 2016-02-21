@@ -57,7 +57,7 @@ public:
 						return gli::texture2d();
 					}
 				}
-				catch (std::ios_base::failure& e) {
+				catch (const std::ios_base::failure& e) {
 					if (e.code() == std::make_error_condition(std::io_errc::stream))
 						ste_log_error() << "Stream error reading surface file: " << path.string() << " - " << e.what() << " " << std::strerror(errno) << std::endl;
 					else

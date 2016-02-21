@@ -17,7 +17,7 @@ CXXRELEASEFLAGS += \
 	-O3 -ipo -xHOST -no-prec-div -D NDEBUG
 
 CXXDEBUGFLAGS += \
-	-g -D DEBUG
+	-g -gdwarf-4 -D DEBUG
 
 SYSTEM_LIBRARIES += \
 	GL \

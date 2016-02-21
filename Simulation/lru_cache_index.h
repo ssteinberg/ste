@@ -5,6 +5,9 @@
 
 #include "lru_cache_cacheable.h"
 
+#include "Log.h"
+#include "AttributedString.h"
+
 #include "concurrent_unordered_map.h"
 
 #include <boost/archive/binary_iarchive.hpp>
@@ -14,6 +17,8 @@
 #include <list>
 #include <string>
 #include <iostream>
+
+#include <exception>
 
 namespace StE {
 
@@ -76,10 +81,18 @@ private:
 
 	lru_cache_index(const boost::filesystem::path &path, std::atomic<std::size_t> &total_size) : index_path(path / index_file) {
 		if (boost::filesystem::exists(index_path)) {
-			std::ifstream ifs(index_path.string(), std::ios::binary);
-			boost::archive::binary_iarchive ia(ifs);
-			ia >> *this;
-			total_size = populate_map(path);
+			try {
+				std::ifstream ifs(index_path.string(), std::ios::binary);
+				boost::archive::binary_iarchive ia(ifs);
+				ia >> *this;
+				total_size = populate_map(path);
+			} catch (const std::exception &e) {
+				using namespace StE::Text::Attributes;
+				ste_log_warn() << b("LRU Cache: ") + "Failed reading index. Clearing " + i(path.string()) + "." << std::endl;
+				
+				for (boost::filesystem::directory_iterator end_dir_it, it(path); it!=end_dir_it; ++it)
+					boost::filesystem::remove(it->path());
+			}
 		}
 	}
 	~lru_cache_index() {

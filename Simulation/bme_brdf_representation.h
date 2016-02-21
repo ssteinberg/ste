@@ -83,43 +83,39 @@ private:
 			exitant_db db;
 			float in_theta = -1;
 			int in_phi = -1;
-			std::ifstream fs;
 			
-			fs.exceptions(fs.exceptions() | std::ifstream::failbit | std::ifstream::badbit);
-			
-			try {
-				fs.open(bme_data.string(), std::ios::in);
-				
-				std::string l;
-				while (std::getline(fs, l)) {
-					if (l[0] == '#') {
-						if (l.find("intheta") == 1) in_theta = std::stof(l.substr(1 + sizeof("intheta")), nullptr);
-						if (l.find("inphi") == 1) in_phi = std::stol(l.substr(1 + sizeof("inphi")), nullptr);
-						continue;
-					}
-
-					assert(in_theta >= 0 && in_phi >= 0);
-
-					std::stringstream ss(l);
-					bme_brdf_descriptor_entry entry;
-					ss >> entry;
-
-					if (entry.brdf > .0f) {
-						entry.phi -= in_phi;
-						while (entry.phi > BRDF::phi_max) entry.phi -= 360.f;
-						while (entry.phi < BRDF::phi_min) entry.phi += 360.f;
-						append_entry(std::move(entry), db);
-					}
-				}
-				
-				fs.close();
-			} catch (std::fstream::failure e) {
+			std::ifstream fs(bme_data.string(), std::ios::in);
+			if (!fs.good()) {
 				using namespace StE::Text::Attributes;
-				ste_log_error() << Text::AttributedString("Error while reading BME database \"") + i(bme_data.string()) + "\": " + e.what() + " - " + std::strerror(errno);
+				ste_log_error() << Text::AttributedString("Error while reading BME database \"") + i(bme_data.string()) + "\": " + std::strerror(errno) << std::endl;
 				assert(false);
 				
 				return exitant_db_descriptor();
 			}
+				
+			std::string l;
+			while (std::getline(fs, l)) {
+				if (l[0] == '#') {
+					if (l.find("intheta") == 1) in_theta = std::stof(l.substr(1 + sizeof("intheta")), nullptr);
+					if (l.find("inphi") == 1) in_phi = std::stol(l.substr(1 + sizeof("inphi")), nullptr);
+					continue;
+				}
+
+				assert(in_theta >= 0 && in_phi >= 0);
+
+				std::stringstream ss(l);
+				bme_brdf_descriptor_entry entry;
+				ss >> entry;
+
+				if (entry.brdf > .0f) {
+					entry.phi -= in_phi;
+					while (entry.phi > BRDF::phi_max) entry.phi -= 360.f;
+					while (entry.phi < BRDF::phi_min) entry.phi += 360.f;
+					append_entry(std::move(entry), db);
+				}
+			}
+			
+			fs.close();
 
 			exitant_db_descriptor desc;
 			desc.db = std::move(db);
@@ -163,7 +159,7 @@ public:
 					return std::move(opt.get());
 				}
 			}
-			catch (std::exception *ex) {}
+			catch (const std::exception &ex) {}
 
 			{
 				using namespace StE::Text::Attributes;

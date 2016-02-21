@@ -38,21 +38,14 @@ using StE::LLR::GLSLProgram;
 const std::map<std::string, GLSLShaderType> GLSLProgramLoader::type_map = { { "compute", GLSLShaderType::COMPUTE },{ "frag", GLSLShaderType::FRAGMENT },{ "vert", GLSLShaderType::VERTEX },{ "geometry", GLSLShaderType::GEOMETRY },{ "tes", GLSLShaderType::TESS_EVALUATION },{ "tcs", GLSLShaderType::TESS_CONTROL } };
 
 std::string GLSLProgramLoader::load_source(const boost::filesystem::path &path) {
-	std::string code;
-	std::ifstream fs;
-	fs.exceptions(fs.exceptions() | std::ifstream::failbit | std::ifstream::badbit);
-	
-	try {
-		fs.open(path.string(), std::ios::in);
-		std::string code = std::string((std::istreambuf_iterator<char>(fs)), (std::istreambuf_iterator<char>()));
-		fs.close();
-	} catch (std::fstream::failure e) {
+	std::ifstream fs(path.string(), std::ios::in);
+	if (!fs.good()) {
 		using namespace Attributes;
-		ste_log_error() << AttributedString("GLSL Shader ") + i(path.string()) + ": Unable to read GLSL shader program, " + e.what() + " - " + std::strerror(errno);
+		ste_log_error() << AttributedString("GLSL Shader ") + i(path.string()) + ": Unable to read GLSL shader program - " + std::strerror(errno) << std::endl;
 		return std::string();
 	}
-
-	return code;
+	
+	return std::string((std::istreambuf_iterator<char>(fs)), (std::istreambuf_iterator<char>()));
 }
 
 std::unique_ptr<GLSLShaderGeneric> GLSLProgramLoader::compile_from_path(const boost::filesystem::path &path) {
@@ -63,27 +56,19 @@ std::unique_ptr<GLSLShaderGeneric> GLSLProgramLoader::compile_from_path(const bo
 
 	std::vector<std::string> paths{ path.filename().string() };
 	
-	std::ifstream fs;
-	fs.exceptions(fs.exceptions() | std::ifstream::failbit | std::ifstream::badbit);
-	
-	try {
-		fs.open(path.string(), std::ios::in);
-
-		int i = 1;
-		while (std::getline(fs, line)) {
-			if (line[0] == '#')
-				parse_parameters(line, prop, type) || parse_include(path, i, line, paths);
-
-			src += line + "\n";
-			++i;
-		}
-		
-		fs.close();
-	} catch (std::fstream::failure e) {
+	std::ifstream fs(path.string(), std::ios::in);
+	if (!fs.good()) {
 		using namespace Attributes;
-		ste_log_error() << AttributedString("GLSL Shader ") + i(path.string()) + ": Unable to read GLSL shader program, " + e.what() + " - " + std::strerror(errno);
+		ste_log_error() << AttributedString("GLSL Shader ") + i(path.string()) + ": Unable to read GLSL shader program - " + std::strerror(errno) << std::endl;
 		return nullptr;
 	}
+
+	for (int i = 1; std::getline(fs, line); ++i, src += line + "\n") {
+		if (line[0] == '#')
+			parse_parameters(line, prop, type) || parse_include(path, i, line, paths);
+	}
+	
+	fs.close();
 
 	if (type == GLSLShaderType::NONE || prop.version_major == 0) {
 		using namespace StE::Text::Attributes;
@@ -275,7 +260,7 @@ StE::task<std::unique_ptr<GLSLProgram>> GLSLProgramLoader::load_program_task(con
 			if (opt && opt->get_time_point() > modification_time)
 				data.bin = opt.get();
 		}
-		catch (std::exception *ex) {
+		catch (const std::exception &ex) {
 			data.bin = program_binary();
 		}
 

@@ -113,19 +113,16 @@ private:
 public:
 	log_stream_formatter(const std::string &name) : t_warn(0), t_err(0), t_fatal(0), name(name) {
 		std::string template_data;
-		std::ifstream fs;
 		
-		fs.exceptions(fs.exceptions() | std::ifstream::failbit | std::ifstream::badbit);
-		
-		try {
-			fs.open(log_template_path, std::ios::in);
-			template_data = std::string((std::istreambuf_iterator<char>(fs)), (std::istreambuf_iterator<char>()));
-			fs.close();
-		} catch (std::fstream::failure e) {
-			std::cerr << "Error while reading log template file \"" << log_template_path << "\": " << e.what() << " - " << std::strerror(errno) << std::endl;
+		std::ifstream fs(log_template_path, std::ios::in);
+		if (!fs.good()) {
+			std::cerr << "Error while reading log template file \"" << log_template_path << "\": " << std::strerror(errno) << std::endl;
 			assert(false);
 			return;
 		}
+		
+		template_data = std::string((std::istreambuf_iterator<char>(fs)), (std::istreambuf_iterator<char>()));
+		fs.close();
 
 		auto entry_begin_len = std::string(entry_boundary_start).length();
 		auto entry_end_len = std::string(entry_boundary_end).length();

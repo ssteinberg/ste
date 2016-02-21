@@ -70,7 +70,7 @@ public:
 
 	void add_shader(std::unique_ptr<GLSLShaderGeneric> shader) {
 		if (shader == nullptr || !shader->is_valid()) {
-			std::cerr << "Error: invalid shader.";
+			std::cerr << "Error: invalid shader." << std::endl;
 			assert(false);
 			return;
 		}

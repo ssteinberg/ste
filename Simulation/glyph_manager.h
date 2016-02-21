@@ -63,7 +63,7 @@ private:
 			try {
 				og = context.cache().get<glyph>(cache_key)();
 			}
-			catch (std::exception ex) {
+			catch (const std::exception &ex) {
 				og = none;
 			}
 			if (og)

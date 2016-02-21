@@ -97,7 +97,7 @@ public:
 			item.archive(std::forward<V>(v));
 			index.insert(k, std::move(item));
 		}
-		catch (std::exception ex) {
+		catch (const std::exception &ex) {
 			return;
 		}
 
@@ -124,7 +124,7 @@ public:
 				this->item_accessed(std::move(val_guard));
 				return optional<V>(std::move(v));
 			}
-			catch (std::exception ex) {
+			catch (const std::exception &ex) {
 				return none;
 			}
 		};
