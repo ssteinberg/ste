@@ -165,14 +165,14 @@ public:
 		int start_page = ps * (offset * sizeof(T) / ps);
 		int pages = ps * (((offset + size) * sizeof(T) + ps - 1) / ps) - start_page;
 
-		glBufferPageCommitmentARB(Base::get_resource_id(), start_page, pages, true);
+		glNamedBufferPageCommitmentEXT(Base::get_resource_id(), start_page, pages, true);
 	}
 	void uncommit_range(int offset, std::size_t size) {
 		int ps = page_size();
 		int start_page = ps * (offset * sizeof(T) / ps);
 		int pages = ps * (((offset + size) * sizeof(T) + ps - 1) / ps) - start_page;
 
-		glBufferPageCommitmentARB(Base::get_resource_id(), start_page, pages, false);
+		glNamedBufferPageCommitmentEXT(Base::get_resource_id(), start_page, pages, false);
 	}
 
 	static int page_size() {

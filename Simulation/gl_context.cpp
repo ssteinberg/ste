@@ -2,6 +2,8 @@
 #include "stdafx.h"
 #include <GL/glew.h>
 
+#include "gl_extensions.h"
+
 #include "gl_context.h"
 #include "gl_current_context.h"
 #include "Log.h"
@@ -19,12 +21,12 @@ private:
 
 	ste_context_intializer() { glfwInit(); }
 
-	std::atomic<bool> glew_initialized{ false };
-	bool init_glew() { 
+	std::atomic<bool> initialized{ false };
+	bool init_extensions() { 
 		bool f = false; 
-		if (glew_initialized.compare_exchange_strong(f, true)) {
+		if (initialized.compare_exchange_strong(f, true)) {
 			glewExperimental = true; 
-			return glewInit() == GLEW_OK;
+			return glewInit() == GLEW_OK && init_glext();
 		}
 		return true;
 	}
@@ -45,13 +47,35 @@ gl_context::gl_context(const context_settings &settings, const char *title, cons
 	if (settings.vsync)
 		 glfwSwapInterval(settings.vsync.get() ? 1 : 0);
 
- 	if (!ste_global_context_initializer.init_glew()) {
- 		ste_log_fatal() << "Couldn't init GLEW." << std::endl;
- 		throw std::runtime_error("Couldn't init GLEW.");
+ 	if (!ste_global_context_initializer.init_extensions()) {
+ 		ste_log_fatal() << "Couldn't fetch OpenGL function pointers." << std::endl;
+ 		throw std::runtime_error("Couldn't fetch OpenGL function pointers.");
  	}
 	if (!glCreateTextures || !glNamedFramebufferDrawBuffers) {
 		ste_log_fatal() << "Not a valid 4.5 OpenGL context." << std::endl;
 		throw std::runtime_error("Not a valid 4.5 OpenGL context.");
+	}
+	
+	// Mandatory extensions
+	if (!this->is_extension_supported("GL_ARB_sparse_buffer")) {
+		ste_log_fatal() << "Mandatory extension \"GL_ARB_sparse_buffer\" missing." << std::endl;
+		throw std::runtime_error("Mandatory extension \"GL_ARB_sparse_buffer\" missing.");
+	}
+	if (!this->is_extension_supported("GL_ARB_bindless_texture")) {
+		ste_log_fatal() << "Mandatory extension \"GL_ARB_bindless_texture\" missing." << std::endl;
+		throw std::runtime_error("Mandatory extension \"GL_ARB_bindless_texture\" missing.");
+	}
+	if (!this->is_extension_supported("GL_ARB_shader_storage_buffer_object")) {
+		ste_log_fatal() << "Mandatory extension \"GL_ARB_shader_storage_buffer_object\" missing." << std::endl;
+		throw std::runtime_error("Mandatory extension \"GL_ARB_shader_storage_buffer_object\" missing.");
+	}
+	if (!this->is_extension_supported("GL_NV_gpu_shader5")) {
+		ste_log_fatal() << "Mandatory extension \"GL_NV_gpu_shader5\" missing." << std::endl;
+		throw std::runtime_error("Mandatory extension \"GL_NV_gpu_shader5\" missing.");
+	}
+	if (!this->is_extension_supported("GL_EXT_texture_filter_anisotropic")) {
+		ste_log_fatal() << "Mandatory extension \"GL_EXT_texture_filter_anisotropic\" missing." << std::endl;
+		throw std::runtime_error("Mandatory extension \"GL_EXT_texture_filter_anisotropic\" missing.");
 	}
 
 	if (is_debug_context())

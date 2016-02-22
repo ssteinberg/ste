@@ -53,8 +53,8 @@ private:
 
 		ar << static_cast<std::size_t>(glyph_distance_field->extent().x);
 		ar << static_cast<std::size_t>(glyph_distance_field->extent().y);
-		ar << static_cast<int>(glyph_distance_field->levels());
-		ar << static_cast<int>(glyph_distance_field->format());
+		ar << static_cast<std::int64_t>(glyph_distance_field->levels());
+		ar << static_cast<std::int64_t>(glyph_distance_field->format());
 
 		std::size_t size = (*glyph_distance_field)[0].extent().x * (*glyph_distance_field)[0].extent().y * 4;
 		std::string data;
@@ -66,13 +66,14 @@ private:
 	void load(Archive & ar, const unsigned int version) {
 		ar >> metrics;
 
-		std::size_t w, h, l;
-		gli::format format;
+		std::size_t w, h;
+		std::int64_t l;
+		std::int64_t format;
 		ar >> w;
 		ar >> h;
 		ar >> l;
 		ar >> format;
-		glyph_distance_field = std::make_unique<gli::texture2d>(format, glm::ivec2{ w,h }, l);
+		glyph_distance_field = std::make_unique<gli::texture2d>(static_cast<gli::format>(format), glm::ivec2{ w, h }, static_cast<int>(l));
 
 		std::string data;
 		ar >> data;

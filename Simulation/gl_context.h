@@ -116,6 +116,8 @@ public:
 	gl_context(const gl_context &c) = delete;
 	gl_context& operator=(gl_context &&m) = delete;
 	gl_context& operator=(const gl_context &c) = delete;
+	
+	bool is_extension_supported(const char *ext) const { return glfwExtensionSupported(ext); }
 
 	int meminfo_total_dedicated_vram() const { int ret; glGetIntegerv(GL_GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX, &ret); return ret; }
 	int meminfo_total_available_vram() const { int ret; glGetIntegerv(GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX, &ret); return ret; }

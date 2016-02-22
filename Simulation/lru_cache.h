@@ -108,7 +108,10 @@ public:
 			item.archive(std::forward<V>(v));
 			index.insert(k, std::move(item));
 		}
-		catch (const std::exception &ex) {
+		catch (const std::exception &e) {
+#ifdef DEBUG
+			std::cerr << "lru_cache: Failed archiving: " << e.what() << std::endl;
+#endif
 			return;
 		}
 
@@ -137,7 +140,10 @@ public:
 				this->item_accessed(std::move(val_guard));
 				return optional<V>(std::move(v));
 			}
-			catch (const std::exception &ex) {
+			catch (const std::exception &e) {
+#ifdef DEBUG
+				std::cerr << "lru_cache: Failed unarchiving: " << e.what() << std::endl;
+#endif
 				return none;
 			}
 		};
