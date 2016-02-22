@@ -152,7 +152,7 @@ void gl_context::make_current() {
 bool gl_context::is_debug_context() const {
 	if (ctx_settings.debug_context)
 		return ctx_settings.debug_context.get();
-#ifdef _DEBUG
+#ifdef DEBUG
 	return true;
 #else
 	return false;

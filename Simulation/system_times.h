@@ -6,7 +6,7 @@
 #ifdef _MSC_VER
 #include "windows.h"
 #elif defined _linux
-#include <sys/times.h>
+#include <cstdio>
 #else
 #error Unsupported OS
 #endif
@@ -27,14 +27,24 @@ public:
 						   reinterpret_cast<PFILETIME>(&user)))
 			return false;
 #elif defined _linux
-		tms t;
-		std::uint64_t clock;
-		if (static_cast<std::int64_t>(clock = times(&t)) == -1)
-			return false;
-			
-		idle = clock;
-		user = t.tms_utime;
-		kernel = t.tms_stime;
+		FILE *fstat = fopen("/proc/stat", "r");
+		if (fstat == NULL) {
+			perror("fopen(\"/proc/stat\") failed");
+			return 0;
+		}
+		
+		long unsigned int cpu_time[7];
+		if (std::fscanf(fstat, "%*s %lu %lu %lu %lu %lu %lu %lu",
+						&cpu_time[0], &cpu_time[1], &cpu_time[2], &cpu_time[3],
+						&cpu_time[4], &cpu_time[5], &cpu_time[6]) == EOF) {
+			fclose(fstat);
+			return 0;
+		}
+		fclose(fstat);
+		
+		user 	= cpu_time[0] + cpu_time[1];
+		kernel 	= cpu_time[2] + cpu_time[5] + cpu_time[6];
+		idle 	= cpu_time[3] + cpu_time[4];
 #endif
 
 		auto d_user = user - old_user;

@@ -55,9 +55,9 @@ private:
 
 	struct concurrent_map_virtual_bucket {
 		std::array<std::atomic<unsigned long>, N> hash{ std::atomic<unsigned long>(0) };
-		std::array<std::atomic<concurrent_map_bucket_data*>, N> buckets{ std::atomic<concurrent_map_bucket_data*>(nullptr) };
+		std::array<std::atomic<concurrent_map_bucket_data*>, N> buckets{ std::atomic<concurrent_map_bucket_data*>(0) };
 
-		std::atomic<concurrent_map_virtual_bucket*> next{ nullptr };
+		std::atomic<concurrent_map_virtual_bucket*> next{ 0 };
 		void *_unused;
 
 		~concurrent_map_virtual_bucket() {
@@ -82,7 +82,7 @@ private:
 
 		unsigned size;
 		hash_table_type buckets;
-		typename shared_double_reference_guard<table_ptr, false>::data_guard new_table_guard{ nullptr };
+		typename shared_double_reference_guard<table_ptr, false>::data_guard new_table_guard{ 0 };
 		std::vector<std::atomic<int>> markers;
 
 		resize_data_struct(unsigned size, unsigned old_size) : size(size), buckets(table_ptr::alloc(size)), markers((old_size + chunk_size - 1) / chunk_size) {
@@ -92,7 +92,7 @@ private:
 
 	struct buckets_ptr {
 		unsigned size;
-		hash_table_type buckets{ nullptr };
+		hash_table_type buckets{ 0 };
 		shared_double_reference_guard<resize_data_struct<buckets_ptr>, false> resize_ptr;
 
 		static hash_table_type alloc(unsigned size) {
@@ -322,7 +322,7 @@ public:
 		unsigned long i = hash & mask;
 		auto &virtual_bucket = table_guard->buckets[i];
 
-		resize_data_guard_type resize_guard{ nullptr };
+		resize_data_guard_type resize_guard{ 0 };
 		if (!insert_update_into_virtual_bucket(virtual_bucket,
 											   hash, key,
 											   static_cast<float>(items.load(std::memory_order_relaxed)) / static_cast<float>(table_guard->size * N),
@@ -368,7 +368,7 @@ public:
 
 			virtual_bucket = virtual_bucket->next.load(std::memory_order_relaxed);
 			if (!virtual_bucket)
-				return value_data_guard_type(nullptr);
+				return value_data_guard_type(0);
 		}
 	}
 

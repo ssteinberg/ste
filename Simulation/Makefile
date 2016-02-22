@@ -5,25 +5,37 @@ OBJECTS = $(SOURCES:%.cpp=%.o)
 CXXFLAGS += $(addprefix -I, $(LOCAL_INCLUDES)) $(addprefix -L, $(LOCAL_LIBS))
 
 .PRECIOUS: %.d
-.SECONDARY: $(OBJECTS)
+.SECONDARY: $(OBJECTS) $(PCHCPP).pch
 
-%.elf: $(PCHCPP).o $(OBJECTS)
-	$(LINK) $(CXXFLAGS) -o $@ $^ $(addprefix -l, $(SYSTEM_LIBRARIES)) `pkg-config --static --libs glfw3`
+%.elf: $(OBJECTS)
+	@/bin/echo -e "\e[1;37m[LINK] \e[1;92m$@ \e[0m$^ $(CXXFLAGS) $(addprefix -l, $(SYSTEM_LIBRARIES)) `pkg-config --static --libs glfw3`\e[0m"
+	@$(LINK) $(CXXFLAGS) -o $@ $^ $(addprefix -l, $(SYSTEM_LIBRARIES)) `pkg-config --static --libs glfw3`
+	
+TAGS:
+	@/bin/echo -e "\e[1;94mCreating GTAGs...\e[0m"
+	@gtags ./
 
-%.o: %.cpp
-	$(COMPILE) -c $*.cpp -o $*.o $(CXXFLAGS) $(shell if [ "$*.cpp" = "$(PCHCPP).cpp" ]; then echo "-pch-create"; else echo "-pch-use"; fi) $(PCHCPP).pch |& icc_colorize
+$(PCHCPP).pch: $(PCHCPP).cpp
+	@/bin/echo -e "\e[1;94mCreating precompiled-header...\e[0m"
+	@rm -f $(PCHCPP).pch
+	@$(COMPILE) -c $(PCHCPP).cpp -o $(PCHCPP).o $(CXXFLAGS) -pch-create $(PCHCPP).pch |& icc_colorize
+	
+%.o: $(PCHCPP).pch %.cpp
+	@/bin/echo -e "\e[1;37m[CXX] \e[1;92m$*.cpp\e[0m -o $*.o $(CXXFLAGS)\e[0m"
+	@$(COMPILE) -c $*.cpp -o $*.o $(CXXFLAGS) -pch-use $(PCHCPP).pch  |& icc_colorize
 
 all:	CXXFLAGS += $(CXXRELEASEFLAGS)
-all:	$(TARGET)
+all:	TAGS $(TARGET)
 
 debug:	CXXFLAGS += $(CXXDEBUGFLAGS)
-debug:	$(TARGET)
+debug:	TAGS $(TARGET)
 
 depend: .depend
 
 .depend: $(SOURCES)
-	rm -f ./.depend
-	$(COMPILE) $(CXXFLAGS) -MM $^ > ./.depend;
+	@/bin/echo -e "\e[1;94mCalculating dependencies...\e[0m"
+	@rm -f ./.depend
+	@$(COMPILE) $(CXXFLAGS) -MM $^ > ./.depend;
 
 include .depend
 

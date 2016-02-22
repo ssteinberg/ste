@@ -36,6 +36,10 @@ private:
 	std::chrono::high_resolution_clock::time_point last_pool_balance;
 	std::atomic<int> requests_pending{ 0 };
 	int threads_sleeping{ 0 };
+	
+	float idle_time_threshold_for_new_worker;
+	float kernel_time_thershold_for_despawn_extra_worker;
+	float idle_time_threshold_for_despawn_surplus_worker;
 
 private:
 	void spawn_worker() {
@@ -85,10 +89,19 @@ private:
 		requests_pending--;
 		(*task)();
 	}
+	
+	unsigned min_worker_threads() const {
+		assert(std::thread::hardware_concurrency());
+
+		return std::max<unsigned>(std::thread::hardware_concurrency() - 1, 1u);
+	}
 
 public:
-	balanced_thread_pool() {
-		int threads = std::thread::hardware_concurrency();
+	balanced_thread_pool(float idle_time_threshold_for_new_worker = .1f, float kernel_time_thershold_for_despawn_extra_worker = .1f, float idle_time_threshold_for_despawn_surplus_worker = .2f)
+		: idle_time_threshold_for_new_worker(idle_time_threshold_for_new_worker),
+		  kernel_time_thershold_for_despawn_extra_worker(kernel_time_thershold_for_despawn_extra_worker),
+		  idle_time_threshold_for_despawn_surplus_worker(idle_time_threshold_for_despawn_surplus_worker) {
+		int threads = min_worker_threads();
 		for (int i = 0; i < threads; ++i)
 			spawn_worker();
 	}
@@ -141,14 +154,16 @@ public:
 				++it;
 		}
 
-		unsigned min_threads = std::thread::hardware_concurrency();
+		unsigned min_threads = min_worker_threads();
 		int req = requests_pending.load();
 		if (threads_sleeping == 0 &&
-			idle_frac > .15f) {
+			idle_frac > idle_time_threshold_for_new_worker) {
 			spawn_worker();
 		}
 		else if (workers.size() > min_threads &&
-				 (kernel_frac > .15f || (req == 0 && idle_frac > .3f) || threads_sleeping > 1)) {
+					(kernel_frac > kernel_time_thershold_for_despawn_extra_worker || 
+				  	 (req == 0 && idle_frac > idle_time_threshold_for_despawn_surplus_worker) || 
+				  	 threads_sleeping > 1)) {
 			despawn_worker();
 		}
 	}

@@ -65,6 +65,12 @@ private:
 	void serialize(Archive & ar, const unsigned int version) {
 		ar & lru_list;
 	}
+	
+	void write_index() const {
+		std::ofstream ofs(index_path.string(), std::ios::binary);
+		boost::archive::binary_oarchive oa(ofs);
+		oa << *this;
+	}
 
 	std::size_t populate_map(const boost::filesystem::path &path) {
 		std::size_t size = 0;
@@ -95,10 +101,9 @@ private:
 			}
 		}
 	}
+	
 	~lru_cache_index() {
-		std::ofstream ofs(index_path.string(), std::ios::binary);
-		boost::archive::binary_oarchive oa(ofs);
-		oa << *this;
+		write_index();
 	}
 
 	void move_to_lru_front(val_type &v) {

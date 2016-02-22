@@ -26,7 +26,7 @@ public:
 	}
 
 	void release(T *ptr) {
-		T* null = nullptr;
+		T* null = 0;
 		for (auto &slot : pointers)
 			if (slot.compare_exchange_strong(null, ptr, std::memory_order_relaxed)) {
 				return;
@@ -39,7 +39,7 @@ public:
 		T* ptr;
 		for (auto &slot : pointers) {
 			ptr = slot.load(std::memory_order_relaxed);
-			if (ptr && slot.compare_exchange_strong(ptr, nullptr, std::memory_order_relaxed)) {
+			if (ptr && slot.compare_exchange_strong(ptr, 0, std::memory_order_relaxed)) {
 				*ptr = T(std::forward<Ts>(args)...);
 				return ptr;
 			}

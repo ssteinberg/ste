@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -27,7 +27,7 @@ public:
 	virtual ~log_sink() {}
 
 	log_sink &operator<<(const std::string &str) {
-#ifdef _DEBUG
+#ifdef DEBUG
 		if (data.c != log_class::info_class_log)
 			TRACE((str + "\n").data());
 #endif

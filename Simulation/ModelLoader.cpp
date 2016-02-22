@@ -11,6 +11,8 @@
 #include "normal_map_from_height_map.h"
 #include "bme_brdf_representation.h"
 
+#include <algorithm>
+
 #include <gli/gli.hpp>
 
 using namespace StE::Resource;
@@ -111,14 +113,21 @@ std::future<void> ModelLoader::process_model_mesh(optional<task_scheduler*> sche
 	});
 }
 
-StE::task<void> ModelLoader::load_texture(const std::string &name, bool srgb, texture_map_type *texmap, bool bumpmap, const std::string &dir, float normal_map_bias) {
+StE::task<void> ModelLoader::load_texture(const std::string &name, 
+										  bool srgb, 
+										  texture_map_type *texmap, 
+										  bool bumpmap, 
+										  const boost::filesystem::path &dir, 
+										  float normal_map_bias) {
 	return StE::task<std::unique_ptr<gli::texture2d>>([=](optional<task_scheduler*> sched) {
-		std::string full_path = dir + name;
+		std::string normalized_name = name;
+		std::replace(normalized_name.begin(), normalized_name.end(), '\\', boost::filesystem::path::preferred_separator);
+		boost::filesystem::path full_path = dir / normalized_name;
 
 		auto tex_task = SurfaceIO::load_surface_2d_task(full_path, srgb);
 		gli::texture2d tex = tex_task(sched);
 		if (tex.empty())
-			ste_log_warn() << "Couldn't load texture " << full_path;
+			ste_log_warn() << "Couldn't load texture " << full_path.string() << std::endl;
 
 		return std::make_unique<gli::texture2d>(std::move(tex));
 	}).then_on_main_thread([=](optional<task_scheduler*> sched, std::unique_ptr<gli::texture2d> &&tex) {
@@ -132,7 +141,12 @@ StE::task<void> ModelLoader::load_texture(const std::string &name, bool srgb, te
 	});
 }
 
-std::vector<std::future<void>> ModelLoader::load_textures(task_scheduler* sched, shapes_type &shapes, materials_type &materials, texture_map_type &tex_map, const std::string &dir, float normal_map_bias) {
+std::vector<std::future<void>> ModelLoader::load_textures(task_scheduler* sched, 
+														  shapes_type &shapes, 
+														  materials_type &materials, 
+														  texture_map_type &tex_map, 
+														  const boost::filesystem::path &dir, 
+														  float normal_map_bias) {
 	tex_map.emplace(std::make_pair(std::string(""), std::shared_ptr<LLR::Texture2D>(nullptr)));
 
 	std::vector<std::future<void>> futures;
@@ -165,7 +179,11 @@ std::vector<std::future<void>> ModelLoader::load_textures(task_scheduler* sched,
 	return futures;
 }
 
-std::vector<std::future<void>> ModelLoader::load_brdfs(const StEngineControl *ctx, shapes_type &shapes, materials_type &materials, brdf_map_type &brdf_map, const std::string &dir) {
+std::vector<std::future<void>> ModelLoader::load_brdfs(const StEngineControl *ctx,
+													   shapes_type &shapes, 
+													   materials_type &materials, 
+													   brdf_map_type &brdf_map, 
+													   const boost::filesystem::path &dir) {
 	std::vector<std::future<void>> futures;
 
 	for (auto &shape : shapes) {
@@ -173,9 +191,13 @@ std::vector<std::future<void>> ModelLoader::load_brdfs(const StEngineControl *ct
 
 		std::string brdf_name = materials[mat_idx].unknown_parameter["brdf"];
 		if (brdf_name.length() && brdf_map.find(brdf_name) == brdf_map.end()) {
+			std::string normalized_name = brdf_name;
+			std::replace(normalized_name.begin(), normalized_name.end(), '\\', boost::filesystem::path::preferred_separator);
+			
 			brdf_map.emplace(std::make_pair(brdf_name, std::shared_ptr<Graphics::BRDF>(nullptr)));
-			futures.push_back(ctx->scheduler().schedule_now([brdfs = &brdf_map, brdf_name = brdf_name, ctx = ctx](optional<task_scheduler*> sched) {
-				std::unique_ptr<BRDF> ptr = Graphics::bme_brdf_representation::BRDF_from_bme_representation_task(*ctx, boost::filesystem::path("Data/bxdf/") / brdf_name)(&*sched);
+			
+			futures.push_back(ctx->scheduler().schedule_now([brdfs = &brdf_map, normalized_name = normalized_name, brdf_name = brdf_name, ctx = ctx, dir = dir](optional<task_scheduler*> sched) {
+				std::unique_ptr<BRDF> ptr = Graphics::bme_brdf_representation::BRDF_from_bme_representation_task(*ctx, dir / normalized_name)(&*sched);
 				std::shared_ptr<Graphics::BRDF> brdf = std::make_shared<Graphics::BRDF>(std::move(*ptr));
 				(*brdfs)[brdf_name] = brdf;
 			}));
@@ -185,20 +207,22 @@ std::vector<std::future<void>> ModelLoader::load_brdfs(const StEngineControl *ct
 	return futures;
 }
 
-StE::task<bool> ModelLoader::load_model_task(const StEngineControl &context, const std::string &file_path, Scene *scene, float normal_map_bias) {
+StE::task<bool> ModelLoader::load_model_task(const StEngineControl &context, const boost::filesystem::path &file_path, Scene *scene, float normal_map_bias) {
 	const StEngineControl *ctx = &context;
 	return [=](optional<task_scheduler*> sched) -> bool {
 		assert(sched);
-		ste_log() << "Loading OBJ model " << file_path;
+		auto path_string = file_path.string();
+		
+		ste_log() << "Loading OBJ model " << path_string << std::endl;
 
-		std::string dir = { file_path.begin(), std::find_if(file_path.rbegin(), file_path.rend(), [](char c) { return c == '/' || c == '\\'; }).base() };
+		std::string dir = { path_string.begin(), std::find_if(path_string.rbegin(), path_string.rend(), [](char c) { return c == '/' || c == '\\'; }).base() };
 
 		shapes_type shapes;
 		materials_type materials;
 
 		std::string err;
-		if (!tinyobj::LoadObj(shapes, materials, err, file_path.c_str(), dir.c_str())) {
-			ste_log_error() << "Couldn't load model " << file_path << ": " << err;
+		if (!tinyobj::LoadObj(shapes, materials, err, path_string.c_str(), dir.c_str())) {
+			ste_log_error() << "Couldn't load model " << path_string << ": " << err;
 			return false;
 		}
 
@@ -208,7 +232,7 @@ StE::task<bool> ModelLoader::load_model_task(const StEngineControl &context, con
 		{
 			for (auto &f : load_textures(&*sched, shapes, materials, textures, dir, normal_map_bias))
 				f.wait();
-			for (auto &f : load_brdfs(ctx, shapes, materials, brdfs, dir))
+			for (auto &f : load_brdfs(ctx, shapes, materials, brdfs, boost::filesystem::path("Data/bxdf/")))
 				f.wait();
 		}
 

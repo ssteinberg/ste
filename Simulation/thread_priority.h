@@ -20,7 +20,7 @@ bool inline thread_set_priority_low(std::thread *thread) {
 #ifdef _MSC_VER
 	return SetThreadPriority(handle, THREAD_PRIORITY_BELOW_NORMAL);
 #elif defined _linux
-	return pthread_setschedprio(handle, -10) == 0; 
+	return pthread_setschedprio(handle, 1) == 0; 
 #endif
 }
 
@@ -29,7 +29,7 @@ bool inline thread_set_priority_high(std::thread *thread) {
 #ifdef _MSC_VER
 	return SetThreadPriority(handle, THREAD_PRIORITY_ABOVE_NORMAL);
 #elif defined _linux
-	return pthread_setschedprio(handle, -10) == 0;
+	return pthread_setschedprio(handle, 1) == 0;
 #endif
 }
 

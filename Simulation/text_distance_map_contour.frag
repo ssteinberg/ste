@@ -53,6 +53,6 @@ void main( void ) {
 	if (vin.stroke_width > 0)
 		c = mix(vin.stroke_color, vin.color, clamp((- D - vin.stroke_width * .9f) / (vin.stroke_width * .2f), 0, 1));
 
-	gl_FragColor = c * vec4(1, 1, 1, g);
+	gl_FragColor = vec4(D.xxx, 1);//c * vec4(1, 1, 1, g);
 }
 

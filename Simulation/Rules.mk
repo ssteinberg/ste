@@ -1,10 +1,8 @@
 LOCAL_INCLUDES += \
 	./ \
-	./include \
 	/usr/include/freetype2 \
 
 LOCAL_LIBS += \
-	./lib \
 
 CXXFLAGS += \
 	-Wextra \

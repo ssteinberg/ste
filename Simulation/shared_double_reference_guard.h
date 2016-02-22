@@ -69,12 +69,12 @@ public:
 		data_guard &operator=(const data_guard &d) = delete;
 		data_guard(data_guard &&d) {
 			ptr = d.ptr;
-			d.ptr = nullptr; 
+			d.ptr = 0; 
 		}
 		data_guard &operator=(data_guard &&d) {
 			if (ptr) ptr->release_ref();
 			ptr = d.ptr;
-			d.ptr = nullptr; 
+			d.ptr = 0; 
 			return *this;
 		}
 
@@ -103,7 +103,7 @@ private:
 
 public:
 	shared_double_reference_guard() {
-		data_ptr new_data_ptr{ 0, nullptr };
+		data_ptr new_data_ptr{ 0 };
 		guard.store(new_data_ptr);
 	}
 
@@ -188,7 +188,7 @@ public:
 	}
 
 	void drop() {
-		data_ptr new_data_ptr{ 0, nullptr };
+		data_ptr new_data_ptr{ 0 };
 		data_ptr old_data_ptr = guard.load(std::memory_order_relaxed);
 		while (!guard.compare_exchange_weak(old_data_ptr, new_data_ptr, std::memory_order_acq_rel, std::memory_order_relaxed));
 

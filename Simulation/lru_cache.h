@@ -26,9 +26,13 @@ private:
 	using key_type = K;
 	using index_type = lru_cache_index<key_type>;
 	using cacheable = typename index_type::val_type;
+	
+	static constexpr std::uint64_t write_index_every_ops = 10;
 
 private:
 	index_type index;
+	
+	std::atomic<std::uint64_t> ops{ 0 };
 
 	mutable std::mutex m;
 	mutable std::condition_variable cv;
@@ -60,10 +64,11 @@ public:
 	lru_cache &operator=(lru_cache &&) = delete;
 	lru_cache &operator=(const lru_cache &) = delete;
 
-	lru_cache(const boost::filesystem::path &path, std::size_t quota = 0) : index(path, total_size), path(path), quota(quota), t([this]() {
+	lru_cache(const boost::filesystem::path &path, std::size_t quota = 0) : index(path, total_size), path(path), quota(quota), t([this] (){
 		auto flag = interruptible_thread::interruption_flag;
 		for (;;) {
 			if (flag->is_set()) return;
+			
 			{
 				std::unique_lock<std::mutex> l(this->m);
 				this->cv.wait(l);
@@ -83,6 +88,12 @@ public:
 					break;
 
 				ts = this->total_size.fetch_sub(size, std::memory_order_relaxed);
+			}
+			
+			if (this->ops.load(std::memory_order_relaxed) > write_index_every_ops) {
+				this->ops.store(0, std::memory_order_release);
+				
+				this->index.write_index();
 			}
 		}
 	}) {
@@ -110,6 +121,8 @@ public:
 		assert(item_size);
 		total_size.fetch_add(item_size, std::memory_order_relaxed);
 		item_accessed(std::move(val_guard));
+		
+		ops++;
 	}
 
 	template <typename V>

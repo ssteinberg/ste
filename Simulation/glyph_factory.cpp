@@ -17,6 +17,8 @@
 
 #include <stdexcept>
 
+#include "SurfaceIO.h"
+
 using namespace StE::Text;
 
 namespace StE {
@@ -164,7 +166,7 @@ unsigned char* glyph_factory_impl::render_glyph_with(const Font &font, wchar_t c
 	unsigned char *glyph_buf = new unsigned char[w*h];
 	memset(glyph_buf, 0, w * h);
 	for (unsigned y = 0; y < bm.rows; ++y)
-		memcpy(&glyph_buf[padding_w + (y + padding_h) * w], &reinterpret_cast<char*>(bm.buffer)[(bm.rows - y - 1) * bm.width], std::min<int>(w, bm.width));
+		memcpy(&glyph_buf[padding_w + (y + padding_h) * w], &reinterpret_cast<char*>(bm.buffer)[(bm.rows - y - 1) * bm.pitch], std::min<int>(w, bm.pitch));
 
 	return glyph_buf;
 }
@@ -185,11 +187,9 @@ StE::task<glyph> glyph_factory::create_glyph_task(const Font &font, wchar_t code
 		g.metrics.width = w;
 		g.metrics.height = h;
 
-		gli::texture2d text_glyph_distance_field_image(gli::format::FORMAT_R32_SFLOAT_PACK32, { w,h }, 1);
-		make_distance_map(glyph_buf, w, h, reinterpret_cast<float*>(text_glyph_distance_field_image[0].data()));
+		g.glyph_distance_field = std::make_unique<gli::texture2d>(gli::format::FORMAT_R32_SFLOAT_PACK32, glm::ivec2{ w, h }, 1);
+		make_distance_map(glyph_buf, w, h, reinterpret_cast<float*>(g.glyph_distance_field->data()));
 		delete[] glyph_buf;
-
-		g.glyph_distance_field = std::make_unique<gli::texture2d>(text_glyph_distance_field_image);
 
 		return std::move(g);
 	});
