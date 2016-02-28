@@ -19,7 +19,7 @@ out vs_out {
 	float size;
 } vout;
 
-void main( void ) {	
+void main() {	
 	vout.drawId = int(vert_glyph_size.z);
 	vout.size = vert_glyph_size.w;
 	vout.weight = weight;

@@ -55,4 +55,3 @@ void main( void ) {
 
 	gl_FragColor = c * vec4(1, 1, 1, g);
 }
-
