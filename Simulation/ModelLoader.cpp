@@ -209,10 +209,21 @@ std::vector<std::future<void>> ModelLoader::load_brdfs(const StEngineControl *ct
 
 StE::task<bool> ModelLoader::load_model_task(const StEngineControl &context, const boost::filesystem::path &file_path, Scene *scene, float normal_map_bias) {
 	const StEngineControl *ctx = &context;
-	return [=](optional<task_scheduler*> sched) -> bool {
+	
+	struct _model_loader_task_block {
+		bool ret;
+		std::unique_ptr<texture_map_type> textures;
+		std::unique_ptr<brdf_map_type> brdfs;
+	};
+
+	return task<_model_loader_task_block>([=](optional<task_scheduler*> sched) {
 		assert(sched);
+
+		_model_loader_task_block block;
+		block.textures = std::make_unique<texture_map_type>();
+		block.brdfs = std::make_unique<brdf_map_type>();
+
 		auto path_string = file_path.string();
-		
 		ste_log() << "Loading OBJ model " << path_string << std::endl;
 
 		std::string dir = { path_string.begin(), std::find_if(path_string.rbegin(), path_string.rend(), [](char c) { return c == '/' || c == '\\'; }).base() };
@@ -223,28 +234,32 @@ StE::task<bool> ModelLoader::load_model_task(const StEngineControl &context, con
 		std::string err;
 		if (!tinyobj::LoadObj(shapes, materials, err, path_string.c_str(), dir.c_str())) {
 			ste_log_error() << "Couldn't load model " << path_string << ": " << err;
-			return false;
+			block.ret = false;
+			return block;
 		}
 
-		texture_map_type textures;
-		brdf_map_type brdfs;
-
 		{
-			for (auto &f : load_textures(&*sched, shapes, materials, textures, dir, normal_map_bias))
+			for (auto &f : load_textures(&*sched, shapes, materials, *block.textures, dir, normal_map_bias))
 				f.wait();
-			for (auto &f : load_brdfs(ctx, shapes, materials, brdfs, boost::filesystem::path("Data/bxdf/")))
+			for (auto &f : load_brdfs(ctx, shapes, materials, *block.brdfs, boost::filesystem::path("Data/bxdf/")))
 				f.wait();
 		}
 
 		{
 			std::vector<std::future<void>> futures;
 			for (auto &shape : shapes)
-				futures.push_back(process_model_mesh(sched, &scene->scene_properties()->material_storage(), shape, scene, materials, textures, brdfs));
+				futures.push_back(process_model_mesh(sched, &scene->scene_properties()->material_storage(), shape, scene, materials, *block.textures, *block.brdfs));
 
 			for (auto &f : futures)
 				f.wait();
 		}
 
-		return true;
-	};
+		block.ret = true;
+		return block;
+	}).then_on_main_thread([](optional<task_scheduler*> sched, _model_loader_task_block &&block) -> bool {
+		block.textures = nullptr;
+		block.brdfs = nullptr;
+
+		return block.ret;
+	});
 }

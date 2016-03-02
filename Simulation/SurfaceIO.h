@@ -6,6 +6,7 @@
 #include <string>
 #include <fstream>
 #include <memory>
+#include <ios>
 
 #define BOOST_FILESYSTEM_NO_DEPRECATED 
 #include <boost/filesystem.hpp>
@@ -60,10 +61,7 @@ public:
 					}
 				}
 				catch (const std::ios_base::failure& e) {
-					if (e.code() == std::make_error_condition(std::io_errc::stream))
-						ste_log_error() << "Stream error reading surface file: " << path.string() << " - " << e.what() << " " << std::strerror(errno) << std::endl;
-					else
-						ste_log_error() << "Unknown failure opening file: " << path.string() << " - " << e.what() << " " << std::strerror(errno) << std::endl;
+					ste_log_error() << "Unknown failure opening file: " << path.string() << " - " << e.what() << " " << std::strerror(errno) << std::endl;
 					return gli::texture2d();
 				}
 			}

@@ -94,7 +94,7 @@ private:
 				total_size = populate_map(path);
 			} catch (const std::exception &e) {
 				using namespace StE::Text::Attributes;
-				ste_log_warn() << b("LRU Cache: ") + "Failed reading index. Clearing " + i(path.string()) + "." << std::endl;
+				ste_log_warn() << b("LRU Cache: ") + "Failed reading index (Reason: " + e.what() + "). Clearing " + i(path.string()) + "." << std::endl;
 				
 				for (boost::filesystem::directory_iterator end_dir_it, it(path); it!=end_dir_it; ++it)
 					boost::filesystem::remove(it->path());
