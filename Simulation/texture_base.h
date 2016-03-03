@@ -100,7 +100,7 @@ protected:
 		this->levels = levels;
 		this->size = size;
 
-		Base::allocator.allocate_storage(Base::get_resource_id(), levels, samples, glformat, size);
+		Base::allocator.allocate_storage(Base::get_resource_id(), levels, samples, glformat, size, get_storage_size());
 
 		return true;
 	}
@@ -143,14 +143,20 @@ public:
 	auto get_image_size() const { return get_image_size(0); }
 	gli::format get_format() const { return format; }
 	int get_layers() const { return texture_is_array<type>::value ? this->size[texture_dimensions<type>::dimensions - 1] : 1; }
-
 	bool is_compressed() const { return gli::is_compressed(format); }
+	
 	std::size_t get_storage_size(int level) const {
 		std::size_t b = gli::block_size(format);
+		auto block_extend = gli::block_extent(format);
 		int i;
-		for (i = 0; i < texture_layer_dimensions<type>::dimensions; ++i) b *= std::max(1u, size[i] >> level);
-		for (; i < dimensions(); ++i) b *= size[i];
-		return b / (gli::block_dimensions_x(format) * gli::block_dimensions_y(format));
+		for (i = 0; i < texture_layer_dimensions<type>::dimensions; ++i) b *= std::max<decltype(size.x)>(1u, size[i] >> static_cast<decltype(size.x)>(level));
+		for (; i < dimensions(); ++i) b *= size[i] / block_extend[i];
+		return b;
+	}
+	std::size_t get_storage_size() const {
+		int t = 0;
+		for (int l = 0; l < levels; ++l) t += get_storage_size(l);
+		return t;
 	}
 
 	auto get_texture_handle() const {
@@ -239,12 +245,6 @@ public:
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(Base::gl_type(), Base::get_resource_id());
 		glGenerateMipmap(Base::gl_type());
-	}
-
-	std::size_t get_full_chain_storage_size() const {
-		int t = 0;
-		for (int l = 0; l < levels; ++l) t += Base::get_storage_size(l);
-		return t;
 	}
 
 	static int calculate_mipmap_max_level(const typename texture_size_type<texture_layer_dimensions<type>::dimensions>::type &size) {

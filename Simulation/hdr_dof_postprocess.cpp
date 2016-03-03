@@ -62,8 +62,7 @@ void hdr_dof_postprocess::set_z_buffer(const LLR::Texture2D *z_buffer) {
 	this->z_buffer = z_buffer;
 
 	auto z_handle = z_buffer->get_texture_handle();
-	if (!z_handle.is_resident())
-		z_handle.make_resident();
+	z_handle.make_resident();
 
 	hdr_tonemap_coc->set_uniform("z_buffer", z_handle);
 	hdr_compute_histogram_sums->set_uniform("z_buffer", z_handle);

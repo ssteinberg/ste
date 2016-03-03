@@ -86,7 +86,7 @@ private:
 			
 			std::ifstream fs(bme_data.string(), std::ios::in);
 			if (!fs.good()) {
-				using namespace StE::Text::Attributes;
+				using namespace Text::Attributes;
 				ste_log_error() << Text::AttributedString("Error while reading BME database \"") + i(bme_data.string()) + "\": " + std::strerror(errno) << std::endl;
 				assert(false);
 				
@@ -154,7 +154,7 @@ public:
 				auto cache_get_task = ctx->cache().get<common_brdf_representation>(cache_key);
 				optional<common_brdf_representation> opt = cache_get_task();
 				if (opt) {
-					using namespace StE::Text::Attributes;
+					using namespace Text::Attributes;
 					ste_log() << b("bme_brdf_representation") + " - BRDF loaded from cache: " + i(bme_data_dir.string()) << std::endl;
 					return std::move(opt.get());
 				}
@@ -162,7 +162,7 @@ public:
 			catch (const std::exception &ex) {}
 
 			{
-				using namespace StE::Text::Attributes;
+				using namespace Text::Attributes;
 				ste_log() << b("bme_brdf_representation") + " - Loading BRDF: " + i(bme_data_dir.string()) << std::endl;
 			}
 

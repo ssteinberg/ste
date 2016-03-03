@@ -12,11 +12,11 @@
 #include "BasicRenderer.h"
 #include "MeshRenderable.h"
 #include "CustomRenderable.h"
-#include "ModelLoader.h"
+#include "ModelFactory.h"
 #include "Camera.h"
 #include "GLSLProgram.h"
 #include "GLSLProgramLoader.h"
-#include "SurfaceIO.h"
+#include "SurfaceFactory.h"
 #include "Texture2D.h"
 #include "Scene.h"
 #include "TextManager.h"
@@ -38,7 +38,7 @@ private:
 public:
 	SkyDome(const StE::StEngineControl &ctx) : MeshRenderable(StE::Resource::GLSLProgramLoader::load_program_task(ctx, { "transform_sky.vert", "frag_sky.frag" })(),
 															  std::make_shared<StE::Graphics::Sphere>(10, 10, .0f)) {
-		stars_tex = StE::Resource::SurfaceIO::load_texture_2d_task("Data/textures/stars.jpg", true)();
+		stars_tex = StE::Resource::SurfaceFactory::load_texture_2d_task("Data/textures/stars.jpg", true)();
 
 		get_program()->set_uniform("sky_luminance", 5.f);
 		get_program()->set_uniform("projection", ctx.projection_matrix());
@@ -157,7 +157,7 @@ int main() {
 
 
 	bool loaded = false;
-	auto model_future = ctx.scheduler().schedule_now(StE::Resource::ModelLoader::load_model_task(ctx, R"(Data/models/crytek-sponza/sponza.obj)", &scene, 2.5f));
+	auto model_future = ctx.scheduler().schedule_now(StE::Resource::ModelFactory::load_model_task(ctx, R"(Data/models/crytek-sponza/sponza.obj)", &scene, 2.5f));
 
 	std::shared_ptr<StE::Graphics::Object> light_obj;
 	{

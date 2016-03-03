@@ -32,8 +32,12 @@ public:
 	RenderTarget& operator=(RenderTarget &&m) = default;
 
 	RenderTarget(gli::format format, const glm::ivec2 &size, int samples = 0) : size(size), format(format) {
+		std::size_t block = gli::block_size(format);
+		auto block_extend = gli::block_extent(format);
+		std::size_t bytes = (samples == 0 ? 1 : samples) * size.x * size.y * block / (block_extend.x * block_extend.y);
+		
 		auto glformat = gl_utils::translate_format(format);
-		allocator.allocate_storage(get_resource_id(), samples, glformat, size);
+		allocator.allocate_storage(get_resource_id(), samples, glformat, size, bytes);
 	}
 
 	glm::ivec2 get_image_size() const final override { return size; }

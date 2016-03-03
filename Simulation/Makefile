@@ -1,6 +1,8 @@
 
 include Rules.mk
 
+.DEFAULT_GOAL := all
+
 OBJECTS = $(SOURCES:%.cpp=%.o)
 CXXFLAGS += $(addprefix -I, $(LOCAL_INCLUDES)) $(addprefix -L, $(LOCAL_LIBS))
 
@@ -24,8 +26,10 @@ $(PCHCPP).pch: $(PCHCPP).cpp
 	@/bin/echo -e "\e[1;37m[CXX] \e[1;92m$*.cpp\e[0m -o $*.o $(CXXFLAGS)\e[0m"
 	@$(COMPILE) -c $*.cpp -o $*.o $(CXXFLAGS) -pch-use $(PCHCPP).pch  |& icc_colorize
 
-all:	CXXFLAGS += $(CXXRELEASEFLAGS)
-all:	TAGS $(TARGET)
+release:	CXXFLAGS += $(CXXRELEASEFLAGS)
+release:	TAGS $(TARGET)
+
+all:	debug
 
 debug:	CXXFLAGS += $(CXXDEBUGFLAGS)
 debug:	TAGS $(TARGET)

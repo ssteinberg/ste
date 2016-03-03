@@ -71,8 +71,8 @@ std::unique_ptr<GLSLShaderGeneric> GLSLProgramLoader::compile_from_path(const bo
 	fs.close();
 
 	if (type == GLSLShaderType::NONE || prop.version_major == 0) {
-		using namespace StE::Text::Attributes;
-		ste_log_error() << AttributedString("GLSL Shader ") + Attributes::i(path.string()) + ": No shader #type or #version specified.";
+		using namespace Attributes;
+		ste_log_error() << AttributedString("GLSL Shader ") + i(path.string()) + ": No shader #type or #version specified.";
 		return nullptr;
 	}
 

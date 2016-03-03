@@ -169,9 +169,16 @@ public:
 };
 
 class FramebufferObjectAllocator : public generic_resource_allocator {
-public:
-	unsigned allocate() override final { GLuint id;  glCreateFramebuffers(1, &id); return id; }
-	static void deallocate(unsigned &id) { glDeleteFramebuffers(1, &id); id = 0; }
+protected:
+	unsigned allocate() override final {
+		GLuint id;
+		glCreateFramebuffers(1, &id);
+		return id;
+	}
+	static void deallocate(unsigned &id) {
+		glDeleteFramebuffers(1, &id);
+		id = 0;
+	}
 };
 
 class FramebufferObjectBinder {

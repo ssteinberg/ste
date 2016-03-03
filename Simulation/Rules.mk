@@ -10,6 +10,7 @@ CXXFLAGS += \
 	-D _linux \
 	-pthread \
 	-static-intel \
+	-wd10237,11012,11021 \
 
 CXXRELEASEFLAGS += \
 	-O3 -ipo -xHOST -no-prec-div -D NDEBUG

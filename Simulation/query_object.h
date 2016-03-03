@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -18,9 +18,16 @@ enum class QueryResultType {
 
 template <llr_resource_type type>
 class QueryObjectAllocator : public generic_resource_allocator {
-public:
-	unsigned allocate() override final { unsigned o; glCreateQueries(static_cast<GLenum>(type), 1, &o); return o; }
-	static void deallocate(unsigned &id) { glDeleteQueries(1, &id); id = 0; }
+protected:
+	unsigned allocate() override final { 
+		unsigned o;
+		glCreateQueries(static_cast<GLenum>(type), 1, &o);
+		return o;
+	}
+	static void deallocate(unsigned &id) {
+		glDeleteQueries(1, &id);
+		id = 0;
+	}
 };
 
 template <llr_resource_type type>

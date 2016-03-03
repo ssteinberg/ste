@@ -194,6 +194,8 @@ void gl_context::setup_debug_context() {
 							  const void* userParam) {
 		using namespace StE::Text::Attributes;
 
+		const gl_context *this_context = reinterpret_cast<const gl_context*>(userParam);
+
 		Text::AttributedString attr_str = b("OpenGL Debug Output: ") + "Object - " + std::to_string(id) + " " + std::string(message, length);
 		switch (severity) {
 		case GL_DEBUG_SEVERITY_NOTIFICATION:
@@ -214,7 +216,7 @@ void gl_context::setup_debug_context() {
 		default:
 			break;
 		}
-	}, nullptr);
+	}, this);
 }
 
 void gl_context::resize(const glm::i32vec2 &size) {

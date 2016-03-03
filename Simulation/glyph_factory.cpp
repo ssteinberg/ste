@@ -17,7 +17,7 @@
 
 #include <stdexcept>
 
-#include "SurfaceIO.h"
+#include "SurfaceFactory.h"
 
 using namespace StE::Text;
 

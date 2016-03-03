@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -51,9 +51,9 @@ protected:
 	Allocator allocator;
 
 	resource() { 
-		generic_resource_type *res_id = new generic_resource_type(allocator.allocate());
+		generic_resource_type *res_id = new generic_resource_type(allocator.do_allocation());
 		this->id = generic_resource_shared_type(res_id, [=](generic_resource_type *ptr) {
-			Allocator::deallocate(*ptr);
+			Allocator::do_deallocation(*ptr);
 			delete ptr;
 		});
 	}

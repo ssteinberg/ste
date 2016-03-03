@@ -6,7 +6,7 @@
 #include "Log.h"
 
 #include "Texture2D.h"
-#include "SurfaceIO.h"
+#include "SurfaceFactory.h"
 
 #include <chrono>
 #include <thread>
@@ -131,7 +131,7 @@ void StEngineControl::capture_screenshot() const {
 		timeinfo = localtime(&rawtime);
 		strftime(buffer, 256, "%a %d%b%y %H.%M.%S", timeinfo);
 
-		StE::Resource::SurfaceIO::write_surface_2d_task(tex, std::string("Screenshots/") + buffer + ".png")(sched);
+		StE::Resource::SurfaceFactory::write_surface_2d_task(tex, std::string("Screenshots/") + buffer + ".png")(sched);
 	});
 }
 

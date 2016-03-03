@@ -27,9 +27,15 @@ namespace StE {
 namespace LLR {
 
 class GLSLProgramAllocator : public generic_resource_allocator {
-public:
-	unsigned allocate() override final { return glCreateProgram(); }
-	static void deallocate(unsigned &id) { glDeleteProgram(id); id = 0; }
+protected:
+	unsigned allocate() override final {
+		unsigned res = glCreateProgram();
+		return res;
+	}
+	static void deallocate(unsigned &id) {
+		glDeleteProgram(id); 
+		id = 0;
+	}
 };
 
 class GLSLProgramBinder {
