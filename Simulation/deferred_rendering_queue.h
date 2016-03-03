@@ -20,7 +20,7 @@ private:
 	std::shared_ptr<GLSLProgram> scene_program;
 
 public:
-	deferred_rendering_queue() : scene_program(StE::Resource::GLSLProgramLoader::load_program_task(ctx, { "scene.vert", "scene.frag" })()) {}
+	deferred_rendering_queue() : scene_program(StE::Resource::GLSLProgramFactory::load_program_task(ctx, { "scene.vert", "scene.frag" })()) {}
 
 	virtual void push_back(Scene* p) {
 		p->set_program(scene_program);

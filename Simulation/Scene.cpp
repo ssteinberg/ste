@@ -5,13 +5,13 @@
 
 #include "gl_type_traits.h"
 
-#include "GLSLProgramLoader.h"
+#include "GLSLProgramFactory.h"
 
 #include <vector>
 
 using namespace StE::Graphics;
 
-Scene::Scene(const StEngineControl &ctx, SceneProperties *props) : renderable(StE::Resource::GLSLProgramLoader::load_program_task(ctx, { "scene.vert", "scene.frag" })()), scene_props(props) {
+Scene::Scene(const StEngineControl &ctx, SceneProperties *props) : renderable(StE::Resource::GLSLProgramFactory::load_program_task(ctx, { "scene.vert", "scene.frag" })()), scene_props(props) {
 	request_state({ GL_CULL_FACE, true });
 	request_state({ GL_DEPTH_TEST, true });
   

@@ -15,7 +15,7 @@
 #include "ModelFactory.h"
 #include "Camera.h"
 #include "GLSLProgram.h"
-#include "GLSLProgramLoader.h"
+#include "GLSLProgramFactory.h"
 #include "SurfaceFactory.h"
 #include "Texture2D.h"
 #include "Scene.h"
@@ -36,7 +36,7 @@ private:
 	std::shared_ptr<ProjectionSignalConnectionType> projection_change_connection;
 
 public:
-	SkyDome(const StE::StEngineControl &ctx) : MeshRenderable(StE::Resource::GLSLProgramLoader::load_program_task(ctx, { "transform_sky.vert", "frag_sky.frag" })(),
+	SkyDome(const StE::StEngineControl &ctx) : MeshRenderable(StE::Resource::GLSLProgramFactory::load_program_task(ctx, { "transform_sky.vert", "frag_sky.frag" })(),
 															  std::make_shared<StE::Graphics::Sphere>(10, 10, .0f)) {
 		stars_tex = StE::Resource::SurfaceFactory::load_texture_2d_task("Data/textures/stars.jpg", true)();
 
@@ -69,7 +69,7 @@ private:
 	std::shared_ptr<ProjectionSignalConnectionType> projection_change_connection;
 
 public:
-	RayTracer(const StE::StEngineControl &ctx) : StE::Graphics::renderable(StE::Resource::GLSLProgramLoader::load_program_task(ctx, { "passthrough.vert", "ray.frag" })()) {
+	RayTracer(const StE::StEngineControl &ctx) : StE::Graphics::renderable(StE::Resource::GLSLProgramFactory::load_program_task(ctx, { "passthrough.vert", "ray.frag" })()) {
 		get_program()->set_uniform("inv_projection", glm::inverse(ctx.projection_matrix()));
 		projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([=](const glm::mat4 &proj, float, float clip_near, float clip_far) {
 			get_program()->set_uniform("inv_projection", glm::inverse(proj));

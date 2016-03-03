@@ -21,7 +21,7 @@
 #include "dense_voxel_space.h"
 
 #include "GLSLProgram.h"
-#include "GLSLProgramLoader.h"
+#include "GLSLProgramFactory.h"
 
 #include <memory>
 
@@ -37,7 +37,7 @@ private:
 		GIRenderer *dr;
 
 	public:
-		deferred_composition(const StEngineControl &ctx, GIRenderer *dr) : renderable(StE::Resource::GLSLProgramLoader::load_program_task(ctx, { "deferred.vert", "deferred.frag" })()), dr(dr) {
+		deferred_composition(const StEngineControl &ctx, GIRenderer *dr) : renderable(StE::Resource::GLSLProgramFactory::load_program_task(ctx, { "deferred.vert", "deferred.frag" })()), dr(dr) {
 			// dr->voxel_space.add_consumer_program(this->get_program());
 		}
 		~deferred_composition() {

@@ -25,12 +25,12 @@
 namespace StE {
 namespace Resource {
 
-class GLSLProgramLoader {
+class GLSLProgramFactory {
 private:
 	static const std::map<std::string, LLR::GLSLShaderType> type_map;
 
 private:
-	~GLSLProgramLoader() {}
+	~GLSLProgramFactory() {}
 
 	static std::string load_source(const boost::filesystem::path &path);
 

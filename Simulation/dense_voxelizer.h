@@ -10,7 +10,7 @@
 #include "Scene.h"
 
 #include "GLSLProgram.h"
-#include "GLSLProgramLoader.h"
+#include "GLSLProgramFactory.h"
 
 namespace StE {
 namespace Graphics {

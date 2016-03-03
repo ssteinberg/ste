@@ -21,14 +21,14 @@ hdr_dof_postprocess::hdr_dof_postprocess(const StEngineControl &context, const L
 	});
 	ctx.signal_framebuffer_resize().connect(resize_connection);
 
-	hdr_compute_minmax = Resource::GLSLProgramLoader::load_program_task(ctx, { "hdr_compute_minmax.glsl" })();
-	hdr_create_histogram = Resource::GLSLProgramLoader::load_program_task(ctx, { "hdr_create_histogram.glsl" })();
-	hdr_compute_histogram_sums = Resource::GLSLProgramLoader::load_program_task(ctx, { "hdr_compute_histogram_sums.glsl" })();
-	hdr_tonemap_coc = Resource::GLSLProgramLoader::load_program_task(ctx, { "passthrough.vert","hdr_tonemap_coc.frag" })();
-	hdr_bloom_blurx = Resource::GLSLProgramLoader::load_program_task(ctx, { "passthrough.vert","hdr_bloom_blur_x.frag" })();
-	hdr_bloom_blury = Resource::GLSLProgramLoader::load_program_task(ctx, { "passthrough.vert","hdr_bloom_blur_y.frag" })();
-	bokeh_blurx = Resource::GLSLProgramLoader::load_program_task(ctx, { "passthrough.vert","bokeh_bilateral_blur_x.frag" })();
-	bokeh_blury = Resource::GLSLProgramLoader::load_program_task(ctx, { "passthrough.vert","bokeh_bilateral_blur_y.frag" })();
+	hdr_compute_minmax = Resource::GLSLProgramFactory::load_program_task(ctx, { "hdr_compute_minmax.glsl" })();
+	hdr_create_histogram = Resource::GLSLProgramFactory::load_program_task(ctx, { "hdr_create_histogram.glsl" })();
+	hdr_compute_histogram_sums = Resource::GLSLProgramFactory::load_program_task(ctx, { "hdr_compute_histogram_sums.glsl" })();
+	hdr_tonemap_coc = Resource::GLSLProgramFactory::load_program_task(ctx, { "passthrough.vert","hdr_tonemap_coc.frag" })();
+	hdr_bloom_blurx = Resource::GLSLProgramFactory::load_program_task(ctx, { "passthrough.vert","hdr_bloom_blur_x.frag" })();
+	hdr_bloom_blury = Resource::GLSLProgramFactory::load_program_task(ctx, { "passthrough.vert","hdr_bloom_blur_y.frag" })();
+	bokeh_blurx = Resource::GLSLProgramFactory::load_program_task(ctx, { "passthrough.vert","bokeh_bilateral_blur_x.frag" })();
+	bokeh_blury = Resource::GLSLProgramFactory::load_program_task(ctx, { "passthrough.vert","bokeh_bilateral_blur_y.frag" })();
 
 	this->set_z_buffer(z_buffer);
 

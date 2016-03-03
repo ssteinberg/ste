@@ -16,7 +16,7 @@
 #include "AtomicCounterBufferObject.h"
 #include "FramebufferObject.h"
 #include "GLSLProgram.h"
-#include "GLSLProgramLoader.h"
+#include "GLSLProgramFactory.h"
 
 #include <memory>
 #include <array>

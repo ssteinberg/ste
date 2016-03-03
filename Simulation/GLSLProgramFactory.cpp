@@ -1,7 +1,7 @@
 
 #include "stdafx.h"
 
-#include "GLSLProgramLoader.h"
+#include "GLSLProgramFactory.h"
 #include "program_binary.h"
 
 #include "lru_cache.h"
@@ -35,9 +35,9 @@ using StE::LLR::GLSLShaderProperties;
 using StE::LLR::GLSLProgram;
 
 
-const std::map<std::string, GLSLShaderType> GLSLProgramLoader::type_map = { { "compute", GLSLShaderType::COMPUTE },{ "frag", GLSLShaderType::FRAGMENT },{ "vert", GLSLShaderType::VERTEX },{ "geometry", GLSLShaderType::GEOMETRY },{ "tes", GLSLShaderType::TESS_EVALUATION },{ "tcs", GLSLShaderType::TESS_CONTROL } };
+const std::map<std::string, GLSLShaderType> GLSLProgramFactory::type_map = { { "compute", GLSLShaderType::COMPUTE },{ "frag", GLSLShaderType::FRAGMENT },{ "vert", GLSLShaderType::VERTEX },{ "geometry", GLSLShaderType::GEOMETRY },{ "tes", GLSLShaderType::TESS_EVALUATION },{ "tcs", GLSLShaderType::TESS_CONTROL } };
 
-std::string GLSLProgramLoader::load_source(const boost::filesystem::path &path) {
+std::string GLSLProgramFactory::load_source(const boost::filesystem::path &path) {
 	std::ifstream fs(path.string(), std::ios::in);
 	if (!fs.good()) {
 		using namespace Attributes;
@@ -48,7 +48,7 @@ std::string GLSLProgramLoader::load_source(const boost::filesystem::path &path) 
 	return std::string((std::istreambuf_iterator<char>(fs)), (std::istreambuf_iterator<char>()));
 }
 
-std::unique_ptr<GLSLShaderGeneric> GLSLProgramLoader::compile_from_path(const boost::filesystem::path &path) {
+std::unique_ptr<GLSLShaderGeneric> GLSLProgramFactory::compile_from_path(const boost::filesystem::path &path) {
 	std::string line;
 	std::string src;
 	GLSLShaderProperties prop{ 0,0 };
@@ -79,7 +79,7 @@ std::unique_ptr<GLSLShaderGeneric> GLSLProgramLoader::compile_from_path(const bo
 	return compile_from_source(path, src, prop, type);
 }
 
-std::unique_ptr<GLSLShaderGeneric> GLSLProgramLoader::compile_from_source(const boost::filesystem::path &path, std::string code,
+std::unique_ptr<GLSLShaderGeneric> GLSLProgramFactory::compile_from_source(const boost::filesystem::path &path, std::string code,
 																		  GLSLShaderProperties prop, GLSLShaderType type) {
 	std::unique_ptr<GLSLShaderGeneric> shader;
 	switch (type) {
@@ -109,7 +109,7 @@ std::unique_ptr<GLSLShaderGeneric> GLSLProgramLoader::compile_from_source(const 
 	return std::move(shader);
 }
 
-std::string GLSLProgramLoader::parse_directive(const std::string &source, const std::string &name, std::string::size_type &pos, std::string::size_type &end) {
+std::string GLSLProgramFactory::parse_directive(const std::string &source, const std::string &name, std::string::size_type &pos, std::string::size_type &end) {
 	auto it = source.find(name, pos);
 	pos = it;
 	if (it == std::string::npos)
@@ -124,7 +124,7 @@ std::string GLSLProgramLoader::parse_directive(const std::string &source, const 
 	return source.substr(it, end - it);
 }
 
-bool GLSLProgramLoader::parse_parameters(std::string &line, GLSLShaderProperties &prop, GLSLShaderType &type) {
+bool GLSLProgramFactory::parse_parameters(std::string &line, GLSLShaderProperties &prop, GLSLShaderType &type) {
 	std::string::size_type it = 0, end;
 
 	std::string version = parse_directive(line, "#version", it, end);
@@ -149,7 +149,7 @@ bool GLSLProgramLoader::parse_parameters(std::string &line, GLSLShaderProperties
 	return false;
 }
 
-std::vector<boost::filesystem::path> GLSLProgramLoader::find_includes(const boost::filesystem::path &path) {
+std::vector<boost::filesystem::path> GLSLProgramFactory::find_includes(const boost::filesystem::path &path) {
 	std::vector<boost::filesystem::path> ret;
 	std::string src = load_source(path);
 
@@ -172,7 +172,7 @@ std::vector<boost::filesystem::path> GLSLProgramLoader::find_includes(const boos
 	return ret;
 }
 
-bool GLSLProgramLoader::parse_include(const boost::filesystem::path &path, int line, std::string &source, std::vector<std::string> &paths) {
+bool GLSLProgramFactory::parse_include(const boost::filesystem::path &path, int line, std::string &source, std::vector<std::string> &paths) {
 	std::string::size_type it = 0, end;
 	std::string name;
 	std::string path_string = path.filename().string();
@@ -216,7 +216,7 @@ bool GLSLProgramLoader::parse_include(const boost::filesystem::path &path, int l
 	return matched;
 }
 
-StE::task<std::unique_ptr<GLSLProgram>> GLSLProgramLoader::load_program_task(const StEngineControl &context, std::vector<boost::filesystem::path> files) {
+StE::task<std::unique_ptr<GLSLProgram>> GLSLProgramFactory::load_program_task(const StEngineControl &context, std::vector<boost::filesystem::path> files) {
 	struct loader_data {
 		program_binary bin;
 		std::string cache_key;
