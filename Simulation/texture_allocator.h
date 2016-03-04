@@ -12,7 +12,7 @@
 namespace StE {
 namespace LLR {
 
-namespace texture_storage {
+namespace _texture_storage {
 
 template <int dim, bool ms> void create_gl_texture_storage(unsigned id, int levels, int samples, const gli::gl::format &format, const typename texture_size_type<dim>::type &size) { static_assert(false); }
 template <> void create_gl_texture_storage<1, false>(unsigned id, int levels, int samples, const gli::gl::format &format, const typename texture_size_type<1>::type &size) {
@@ -41,7 +41,7 @@ private:
 	static constexpr int dimensions = texture_dimensions<tex_type>::dimensions;
 	static constexpr bool multisampled = texture_is_multisampled<tex_type>::value;
 
-protected:
+public:
 	unsigned allocate() override final {
 		GLuint id;
 		glCreateTextures(gl_utils::translate_type(tex_type), 1, &id);
@@ -49,14 +49,14 @@ protected:
 	}
 
 	static void deallocate(unsigned &id) {
-		if (id)
+		if (id) {
 			glDeleteTextures(1, &id);
-		id = 0;
+			id = 0;
+		}
 	}
 
-public:
 	void allocate_storage(unsigned id, int levels, int samples, const gli::gl::format &format, const typename texture_size_type<dimensions>::type &size, std::size_t bytes) override final {
-		texture_storage::create_gl_texture_storage<dimensions, multisampled>(id, levels, samples, format, size);
+		_texture_storage::create_gl_texture_storage<dimensions, multisampled>(id, levels, samples, format, size);
 	}
 };
 

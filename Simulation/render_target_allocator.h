@@ -14,19 +14,19 @@ namespace LLR {
 class RenderTargetAllocator : public generic_resource_immutable_storage_allocator<int, const gli::gl::format &, const glm::ivec2 &, std::size_t> {
 	using Base = generic_resource_immutable_storage_allocator<int, const gli::gl::format &, const glm::ivec2 &, std::size_t>;
 	
-protected:
+public:
 	unsigned allocate() override final {
 		GLuint id;
 		glCreateRenderbuffers(1, &id);
 		return id;
 	}
 	static void deallocate(unsigned &id) {
-		if (is_valid(id))
+		if (id) {
 			glDeleteRenderbuffers(1, &id);
-		id = 0;
+			id = 0;
+		}
 	}
 
-public:
 	void allocate_storage(unsigned id, int samples, const gli::gl::format &format, const glm::ivec2 &size, std::size_t bytes) {
 		glNamedRenderbufferStorageMultisample(id, samples, format.Internal, size.x, size.y);
 	}

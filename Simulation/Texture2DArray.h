@@ -22,7 +22,8 @@ public:
 	Texture2DArray(const gli::texture2d_array &t, bool generate_mipmaps = false)
 		: texture_mipmapped(t.format(), 
 							typename Base::size_type({ t.extent().x, t.extent().y, t.layers() }), 
-							generate_mipmaps ? calculate_mipmap_max_level(glm::ivec2{ t.extent().x, t.extent().y }) + 1 : t.levels()) {
+							generate_mipmaps ? calculate_mipmap_max_level(glm::ivec2{ t.extent().x, t.extent().y }) + 1 : t.levels(),
+							t.swizzles()) {
 		upload(t, generate_mipmaps);
 	}
 
@@ -31,7 +32,7 @@ public:
 	bool upload_layer(int layer, const gli::texture2d &t);
 
 	void upload_level(const void *data, int level = 0, int layer = 0, LLRCubeMapFace face = LLRCubeMapFace::LLRCubeMapFaceNone, int data_size = 0) override {
-		auto gl_format = gl_utils::translate_format(format);
+		auto gl_format = gl_utils::translate_format(format, swizzle);
 
 		if (is_compressed()) {
 			assert(data_size && "size must be specified for compressed levels");

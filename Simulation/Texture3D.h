@@ -22,7 +22,8 @@ public:
 	Texture3D(const gli::texture3d &t, bool generate_mipmaps = false) 
 			: texture_mipmapped(t.format(), 
 								t.extent(), 
-								generate_mipmaps ? calculate_mipmap_max_level(t.extent()) + 1 : t.levels()) {
+								generate_mipmaps ? calculate_mipmap_max_level(t.extent()) + 1 : t.levels(),
+								t.swizzles()) {
 		upload(t, generate_mipmaps);
 	}
 
@@ -30,7 +31,7 @@ public:
 	bool upload(const gli::texture3d &t, bool generate_mipmaps = false);
 
 	void upload_level(const void *data, int level = 0, int layer = 0, LLRCubeMapFace face = LLRCubeMapFace::LLRCubeMapFaceNone, int data_size = 0) override {
-		auto gl_format = gl_utils::translate_format(format);
+		auto gl_format = gl_utils::translate_format(format, swizzle);
 
 		if (is_compressed()) {
 			assert(data_size && "size must be specified for compressed levels");

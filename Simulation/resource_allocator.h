@@ -13,20 +13,10 @@ namespace StE {
 namespace LLR {
 
 class generic_resource_allocator {
-protected:
+public:
 	virtual unsigned allocate() = 0;
 	static void deallocate(unsigned &id) { id = 0; }
-	
-public:
 	static bool is_valid(unsigned id) { return !!id; }
-
-	unsigned do_allocation() {
-		auto id = allocate();
-		return id;
-	}
-	static void do_deallocation(unsigned id) {
-		deallocate(id);
-	}
 };
 
 template <typename ... Ts>

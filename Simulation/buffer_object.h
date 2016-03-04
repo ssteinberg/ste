@@ -85,12 +85,12 @@ public:
 
 	virtual ~buffer_object() noexcept { unmap(); }
 
-	void clear(const gli::format format, const void *data) {
-		auto glf = gl_utils::translate_format(format);
+	void clear(const gli::format format, const void *data, const gli::swizzles swizzle = gli::swizzles(gli::SWIZZLE_ONE)) {
+		auto glf = gl_utils::translate_format(format, swizzle);
 		glClearNamedBufferData(Base::get_resource_id(), glf.Internal, glf.External, glf.Type, data);
 	}
-	void clear(const gli::format format, const void *data, int offset, std::size_t size) {
-		auto glf = gl_utils::translate_format(format);
+	void clear(const gli::format format, const void *data, int offset, std::size_t size, const gli::swizzles swizzle = gli::swizzles(gli::SWIZZLE_ONE)) {
+		auto glf = gl_utils::translate_format(format, swizzle);
 		glClearNamedBufferSubData(Base::get_resource_id(), glf.Internal, offset * sizeof(T), size * sizeof(T), glf.External, glf.Type, data);
 	}
 	void invalidate_data() { glInvalidateBufferData(Base::get_resource_id()); }

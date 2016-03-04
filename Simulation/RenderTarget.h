@@ -36,7 +36,8 @@ public:
 		auto block_extend = gli::block_extent(format);
 		std::size_t bytes = (samples == 0 ? 1 : samples) * size.x * size.y * block / (block_extend.x * block_extend.y);
 		
-		auto glformat = gl_utils::translate_format(format);
+		auto swizzle = gli::swizzles(gli::SWIZZLE_ONE);
+		auto glformat = gl_utils::translate_format(format, swizzle);
 		allocator.allocate_storage(get_resource_id(), samples, glformat, size, bytes);
 	}
 

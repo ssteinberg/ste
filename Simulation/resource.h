@@ -51,9 +51,9 @@ protected:
 	Allocator allocator;
 
 	resource() { 
-		generic_resource_type *res_id = new generic_resource_type(allocator.do_allocation());
+		generic_resource_type *res_id = new generic_resource_type(allocator.allocate());
 		this->id = generic_resource_shared_type(res_id, [=](generic_resource_type *ptr) {
-			Allocator::do_deallocation(*ptr);
+			Allocator::deallocate(*ptr);
 			delete ptr;
 		});
 	}

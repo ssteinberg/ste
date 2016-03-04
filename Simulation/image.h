@@ -36,7 +36,8 @@ public:
 class ImageBinder {
 public:
 	static void bind(unsigned int id, const image_layout_binding &unit, int level, bool layered, int layer, ImageAccessMode access, gli::format format) {
-		gl_current_context::get()->bind_image_texture(unit, id, level, layered, layer, static_cast<GLenum>(access), gl_utils::translate_format(format).Internal);
+		auto swizzle = gli::swizzles(gli::SWIZZLE_ONE);
+		gl_current_context::get()->bind_image_texture(unit, id, level, layered, layer, static_cast<GLenum>(access), gl_utils::translate_format(format, swizzle).Internal);
 	}
 	static void unbind(const image_layout_binding &unit, int level, bool layered, int layer, ImageAccessMode access, gli::format format) {
 		gl_current_context::get()->bind_image_texture(unit, 0, 0, 0, 0, 0, 0);
@@ -75,7 +76,8 @@ public:
 	void unbind(const LayoutLocationType &binding) const override final { Binder::unbind(binding, 0, false, 0, access, format); }
 
 	auto get_image_handle() const {
-		return image_handle(glGetImageHandleARB(get_resource_id(), level, layers > 1 ? true : false, layer, gl_utils::translate_format(format).Internal), access);
+		auto swizzle = gli::swizzles(gli::SWIZZLE_ONE);
+		return image_handle(glGetImageHandleARB(get_resource_id(), level, layers > 1 ? true : false, layer, gl_utils::translate_format(format, swizzle).Internal), access);
 	}
 
 	void set_access(ImageAccessMode access) { this->access = access; }

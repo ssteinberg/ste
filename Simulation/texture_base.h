@@ -71,6 +71,7 @@ protected:
 	int levels, samples;
 	typename texture_size_type<texture_dimensions<type>::dimensions>::type size;
 	gli::format format;
+	gli::swizzles swizzle{ gli::SWIZZLE_ONE };
 
 protected:
 	auto get_image_container_size() const {
@@ -80,8 +81,8 @@ protected:
 	}
 	int get_image_container_dimensions() const { return dimensions() > 2 ? size[2] : get_layers(); }
 
-	bool allocate_tex_storage(const size_type &size, gli::format gli_format, int levels, int samples, bool sparse, int page_size_idx = 0) {
-		gli::gl::format const glformat = gl_utils::translate_format(gli_format);
+	bool allocate_tex_storage(const size_type &size, const gli::format &gli_format, const gli::swizzles &swizzle, int levels, int samples, bool sparse, int page_size_idx = 0) {
+		gli::gl::format const glformat = gl_utils::translate_format(gli_format, swizzle);
 
 		auto id = Base::get_resource_id();
 		if (sparse) {
@@ -90,12 +91,13 @@ protected:
 		}
 		glTextureParameteri(id, GL_TEXTURE_BASE_LEVEL, 0);
 		glTextureParameteri(id, GL_TEXTURE_MAX_LEVEL, levels - 1);
-		glTextureParameteri(id, GL_TEXTURE_SWIZZLE_G, glformat.Swizzles[1]);
 		glTextureParameteri(id, GL_TEXTURE_SWIZZLE_R, glformat.Swizzles[0]);
+		glTextureParameteri(id, GL_TEXTURE_SWIZZLE_G, glformat.Swizzles[1]);
 		glTextureParameteri(id, GL_TEXTURE_SWIZZLE_B, glformat.Swizzles[2]);
 		glTextureParameteri(id, GL_TEXTURE_SWIZZLE_A, glformat.Swizzles[3]);
 
 		this->format = gli_format;
+		this->swizzle = swizzle;
 		this->size = size;
 		this->levels = levels;
 		this->size = size;
@@ -125,11 +127,11 @@ public:
 	constexpr bool is_multisampled() const { return texture_is_multisampled<type>::value; }
 
 	void clear(void *data, int level = 0) {
-		gli::gl::format glformat = gl_utils::translate_format(format);
+		gli::gl::format glformat = gl_utils::translate_format(format, swizzle);
 		glClearTexImage(Base::get_resource_id(), level, glformat.External, glformat.Type, data);
 	}
 	void clear(void *data, glm::i32vec3 offset, glm::u32vec3 size, int level = 0) {
-		gli::gl::format glformat = gl_utils::translate_format(format);
+		gli::gl::format glformat = gl_utils::translate_format(format, swizzle);
 		glClearTexSubImage(Base::get_resource_id(), level, offset.x, offset.y, offset.z, size.x, size.y, size.z, glformat.External, glformat.Type, data);
 	}
 
@@ -176,8 +178,8 @@ private:
 	using Base = texture<type>;
 
 protected:
-	texture_multisampled(gli::format format, const typename Base::size_type &size, int samples) {
-		allocate_tex_storage(size, format, 1, samples, false);
+	texture_multisampled(gli::format format, const typename Base::size_type &size, int samples, const gli::swizzles swizzle = gli::swizzles(gli::SWIZZLE_ONE)) {
+		allocate_tex_storage(size, format, swizzle, 1, samples, false);
 	}
 
 public:
@@ -209,11 +211,11 @@ public:
 
 	virtual void upload_level(const void *data, int level = 0, int layer = 0, LLRCubeMapFace face = LLRCubeMapFace::LLRCubeMapFaceNone, int data_size = 0) = 0;
 	virtual void download_level(void *data, std::size_t size, int level = 0, int layer = 0) const {
-		auto gl_format = gl_utils::translate_format(Base::format);
+		auto gl_format = gl_utils::translate_format(Base::format, Base::swizzle);
 		glGetTextureImage(Base::get_resource_id(), level, gl_format.External, gl_format.Type, size, data);
 	}
-	virtual void download_level(void *data, std::size_t size, int level, int layer, gli::format format, bool compressed = false) const {
-		auto gl_format = gl_utils::translate_format(format);
+	virtual void download_level(void *data, std::size_t size, int level, int layer, const gli::format &format, const gli::swizzles &swizzle = gli::swizzles(gli::SWIZZLE_ONE), bool compressed = false) const {
+		auto gl_format = gl_utils::translate_format(format, swizzle);
 		if (compressed)
 			glGetCompressedTextureImage(Base::get_resource_id(), level, size, data);
 		else
@@ -228,8 +230,8 @@ private:
 
 protected:
 	texture_mipmapped() {}
-	texture_mipmapped(gli::format format, const typename Base::size_type &size, int levels) : Base() {
-		allocate_tex_storage(size, format, levels, 1, false);
+	texture_mipmapped(gli::format format, const typename Base::size_type &size, int levels, const gli::swizzles swizzle = gli::swizzles(gli::SWIZZLE_ONE)) : Base() {
+		allocate_tex_storage(size, format, swizzle, levels, 1, false);
 	}
 
 public:

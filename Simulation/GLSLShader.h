@@ -38,14 +38,16 @@ namespace _ste_glslshader_creator {
 
 template <GLSLShaderType ShaderType>
 class GLSLShaderAllocator : public generic_resource_allocator {
-protected:
+public:
 	unsigned allocate() override final {
 		unsigned res = _ste_glslshader_creator::creator<ShaderType>();
 		return res;
 	}
 	static void deallocate(unsigned &id) {
-		glDeleteShader(id);
-		id = 0;
+		if (id) {
+			glDeleteShader(id);
+			id = 0;
+		}
 	}
 };
 

@@ -99,7 +99,7 @@ public:
 	virtual ~fbo_color_attachment_point() noexcept {}
 
 	void read_pixels(void *data, int data_size, const glm::uvec2 &rect_size, const glm::uvec2 &origin = { 0, 0 }) const {
-		auto gl_format = gl_utils::translate_format(Base::get_attachment_format());
+		auto gl_format = gl_utils::translate_format(Base::get_attachment_format(), gli::swizzles(gli::SWIZZLE_ONE));
 
 		fbo->bind_read();
 		glReadBuffer(Base::get_attachment_point());
@@ -112,7 +112,7 @@ public:
 	void read_pixels(void *data, int data_size) const { read_pixels(data, data_size, Base::get_attachment_size()); }
 
 	void write_pixels(void *data, const glm::uvec2 &rect_size, const glm::uvec2 &origin = { 0, 0 }) {
-		auto gl_format = gl_utils::translate_format(Base::get_attachment_format());
+		auto gl_format = gl_utils::translate_format(Base::get_attachment_format(), gli::swizzles(gli::SWIZZLE_ONE));
 
 		fbo->bind_write();
 		glWriteBuffer(Base::get_attachment_point());
@@ -169,15 +169,17 @@ public:
 };
 
 class FramebufferObjectAllocator : public generic_resource_allocator {
-protected:
+public:
 	unsigned allocate() override final {
 		GLuint id;
 		glCreateFramebuffers(1, &id);
 		return id;
 	}
 	static void deallocate(unsigned &id) {
-		glDeleteFramebuffers(1, &id);
-		id = 0;
+		if (id) {
+			glDeleteFramebuffers(1, &id);
+			id = 0;
+		}
 	}
 };
 

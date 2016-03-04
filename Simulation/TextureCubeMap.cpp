@@ -17,7 +17,7 @@ bool TextureCubeMap::upload(const gli::texture_cube &texture, bool gm) {
 }
 
 bool TextureCubeMap::upload_face(LLRCubeMapFace face, const gli::texture2d &texture) {
-	gli::gl::format const format = gl_utils::translate_format(texture.format());
+	gli::gl::format const format = gl_utils::translate_format(texture.format(), texture.swizzles());
 
 	// Index of max level
 	int levels = std::min(this->levels, static_cast<decltype(this->levels)>(texture.levels()));
