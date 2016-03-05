@@ -91,7 +91,7 @@ void Scene::prepare() const {
 }
 
 void Scene::render() const {
-	glMultiDrawElementsIndirect(GL_TRIANGLES, LLR::gl_type_name_enum<elements_type::T>::gl_enum, nullptr, idb.size(), 0);
+	glMultiDrawElementsIndirect(GL_TRIANGLES, LLR::gl_type_name_enum<elements_type::T>::gl_enum, 0, idb.size(), 0);
 }
 
 void Scene::finalize() const {

@@ -3,19 +3,12 @@
 #version 450
 #extension GL_ARB_shader_draw_parameters : require
 
+#include "mesh.glsl"
+
 layout(location = 0) in vec3 vert;
 layout(location = 1) in vec3 normal;
 layout(location = 2) in vec3 tangent;
 layout(location = 3) in vec2 tex_coords;
-
-struct mesh_descriptor {
-	mat4 model, transpose_inverse_model;
-	int matIdx;
-};
-
-layout(std430, binding = 1) buffer mesh_data {
-	mesh_descriptor mesh_descriptor_buffer[];
-};
 
 out vec4 gl_Position;
 out vec3 frag_position;

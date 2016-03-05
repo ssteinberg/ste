@@ -35,7 +35,8 @@ class Scene : public renderable {
 private:
 	struct mesh_descriptor {
 		glm::mat4 model, transpose_inverse_model;
-		int mat_idx;
+		std::int32_t mat_idx;
+		std::int32_t _unused[3]; 
 	};
 
 	using ProjectionSignalConnectionType = StEngineControl::projection_change_signal_type::connection_type;

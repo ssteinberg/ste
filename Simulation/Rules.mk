@@ -41,7 +41,7 @@ SYSTEM_LIBRARIES += \
 
 PCHCPP = stdafx
 
-SOURCE_DIR = ./
+SOURCE_DIR = 
 SOURCES := $(shell find $(SOURCE_DIR) -iname "*.c")
 SOURCES += $(shell find $(SOURCE_DIR) -iname "*.cpp")
 HEADERS := $(shell find $(SOURCE_DIR) -iname "*.h")

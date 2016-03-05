@@ -30,14 +30,14 @@ $(WORK_DIR)/%.pch: %.cpp
 	@/bin/echo -e "\e[1;94mCreating precompiled-header $@...\e[0m"
 	@/usr/bin/rm -f $@
 	@/usr/bin/mkdir -p $(dir $@)
-	@$(COMPILE) -c $^ -o $(WORK_DIR)/$*.o -MMD $(CXXFLAGS) -pch-create $@ |& icc_colorize
+	@$(COMPILE) -c $^ -o $(WORK_DIR)/$*.o -MMD -MP $(CXXFLAGS) -pch-create $@ |& icc_colorize
 	@/usr/bin/mkdir -p $(BUILD_DIR)/.depend/
 	@/usr/bin/mv $(WORK_DIR)/$*.d $(BUILD_DIR)/.depend/$*.d
 	
 $(WORK_DIR)/%.o: $(PCH) %.cpp
 	@/bin/echo -e "\e[1;37m[CXX] \e[1;92m$*.cpp\e[0m $(CXXFLAGS)\e[0m"
 	@/usr/bin/mkdir -p $(dir $@)
-	@$(COMPILE) -c $*.cpp -o $@ $(CXXFLAGS) -MMD -pch-use $(PCH)  |& icc_colorize
+	@$(COMPILE) -c $*.cpp -o $@ $(CXXFLAGS) -MMD -MP -pch-use $(PCH)  |& icc_colorize
 	@/usr/bin/mkdir -p $(BUILD_DIR)/.depend/
 	@/usr/bin/mv $(WORK_DIR)/$*.d $(BUILD_DIR)/.depend/$*.d
 

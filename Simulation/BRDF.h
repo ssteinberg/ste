@@ -21,7 +21,7 @@ class BRDF : public BxDF {
 public:
 	struct brdf_descriptor {
 		LLR::texture_handle tex_handler;
-		int min_theta_in, max_theta_in;
+		std::int32_t min_theta_in, max_theta_in;
 	};
 
 	static constexpr int theta_min = 0;

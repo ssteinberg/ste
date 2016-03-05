@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -21,7 +21,7 @@ public:
 
 protected:
 	struct node {
-		int valid;
+		std::int32_t valid;
 		value_type data;
 	};
 

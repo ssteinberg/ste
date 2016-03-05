@@ -11,7 +11,7 @@ namespace Graphics {
 
 class light {
 public:
-	enum class LightType : std::uint32_t {
+	enum class LightType : std::int32_t {
 		Sphere = 0,
 		Directional = 1
 	};
