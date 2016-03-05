@@ -17,7 +17,7 @@ CXXFLAGS += \
 	-pthread \
 	-w2 \
 	-static-intel \
-	-wd10237,11012,11021 \
+	-wd10237,11012,11021,10382 \
 
 CXXFLAGS_release += \
 	-O3 -ipo -xHOST -no-prec-div -D NDEBUG
