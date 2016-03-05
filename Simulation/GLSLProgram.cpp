@@ -14,7 +14,7 @@ using namespace StE::LLR;
 
 bool GLSLProgram::link() {
 	if (linked) return true;
-	if (!is_valid()) return false;
+	if (!Base::is_valid()) return false;
 	
 	for (auto &shader : shaders)
 		glAttachShader(get_resource_id(), shader->get_resource_id());

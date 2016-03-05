@@ -245,15 +245,22 @@ public:
 	frame_buffer_object(frame_buffer_object &&t) = default;
 	frame_buffer_object &operator=(frame_buffer_object &&t) = default;
 
-	void bind() const override final { Base::bind(); }
+	void bind() const override final {
+		Base::bind();
+	}
 	void unbind() const override final { Base::unbind(); }
 
 	frame_buffer_object() {}
 	template <typename ... Ts>
 	frame_buffer_object(Ts ... draw_buffer_args) : draw_buffers(std::forward<Ts>(draw_buffer_args)...) {}
 
-	bool is_fbo_complete() const { bind(); return is_valid() && get_status_code() == GL_FRAMEBUFFER_COMPLETE; }
-	GLenum get_status_code() const { return glCheckNamedFramebufferStatus(Base::get_resource_id(), GL_FRAMEBUFFER); }
+	bool is_fbo_complete() const {
+		auto status = get_status_code();
+		return Base::is_valid() && status == GL_FRAMEBUFFER_COMPLETE;
+	}
+	GLenum get_status_code() const { 
+		return glCheckNamedFramebufferStatus(Base::get_resource_id(), GL_FRAMEBUFFER);
+	}
 
 	template <class A>
 	void blit_to(frame_buffer_object<A> &fbo, const glm::ivec2 &src_size, const glm::ivec2 dst_size, const glm::ivec2 &src_origin = { 0,0 }, const glm::ivec2 dst_origin = { 0,0 }, bool linear_filter = true, bool blit_color = true, bool blit_depth = false) const {

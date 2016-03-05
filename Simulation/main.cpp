@@ -174,7 +174,7 @@ int main() {
 		v.uv = { 0,1 };
 		vertices.push_back(v);
 		m->set_vertices(vertices);
-		m->set_indices(std::vector<unsigned>{0,1,2});
+		m->set_indices(std::vector<std::uint32_t>{0,1,2});
 		light_obj = std::make_shared<StE::Graphics::Object>(std::move(m));
 
 		std::unique_ptr<StE::Graphics::Sphere> sphere = std::make_unique<StE::Graphics::Sphere>(10, 10);

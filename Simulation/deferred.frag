@@ -56,7 +56,6 @@ void main() {
 		float incident_radiance = ld.luminance / attenuation_factor;
 
 		vec3 l = diffuse * ld.diffuse.xyz;
-		// if (hit)Z.f / max(500 - shadow_dist, 1.f), 5.f);
 
 		rgb += l * max(0, mix(.3f, 1.f, specular) * brdf * incident_radiance);
 	}

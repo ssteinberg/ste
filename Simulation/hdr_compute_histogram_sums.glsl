@@ -22,7 +22,7 @@ layout(std430, binding = 2) coherent buffer hdr_bokeh_parameters_buffer {
 shared uint shared_data[bins];
 
 uniform float time;
-uniform int hdr_lum_resolution;
+uniform uint hdr_lum_resolution;
 
 void main() {
 	uint id = gl_LocalInvocationID.x;

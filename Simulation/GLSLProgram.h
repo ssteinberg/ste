@@ -47,6 +47,8 @@ public:
 };
 
 class GLSLProgram : public bindable_resource<GLSLProgramAllocator, GLSLProgramBinder> {
+	using Base = bindable_resource<GLSLProgramAllocator, GLSLProgramBinder>;
+	
 private:
 	bool linked;
 	std::vector<std::unique_ptr<GLSLShaderGeneric>> shaders;
