@@ -1,1 +1,1 @@
-primusrun ./simulation.elf
+primusrun ./build/simulation.elf

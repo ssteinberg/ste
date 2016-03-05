@@ -1,21 +1,29 @@
+
+BUILD_CONFIGURATIONS = debug release
+DEFAULT_CONFIGURATION = debug
+
 LOCAL_INCLUDES += \
 	./ \
 	/usr/include/freetype2 \
 
 LOCAL_LIBS += \
 
+BUILD_DIR = ./build
+
 CXXFLAGS += \
-	-Wextra \
+	-Wall \
 	-std=c++14 \
 	-D _linux \
 	-pthread \
+	-w2 \
+	-diag-enable=all \
 	-static-intel \
 	-wd10237,11012,11021 \
 
-CXXRELEASEFLAGS += \
+CXXFLAGS_release += \
 	-O3 -ipo -xHOST -no-prec-div -D NDEBUG
 
-CXXDEBUGFLAGS += \
+CXXFLAGS_debug += \
 	-g -gdwarf-4 -D DEBUG
 
 SYSTEM_LIBRARIES += \
@@ -35,10 +43,13 @@ SYSTEM_LIBRARIES += \
 PCHCPP = stdafx
 
 SOURCE_DIR = ./
+SOURCES := $(shell find $(SOURCE_DIR) -iname "*.c")
 SOURCES += $(shell find $(SOURCE_DIR) -iname "*.cpp")
+HEADERS := $(shell find $(SOURCE_DIR) -iname "*.h")
+HEADERS += $(shell find $(SOURCE_DIR) -iname "*.hpp")
 
 COMPILE = icpc
 LINK 	= icpc
 
-TARGET = simulation.elf
+TARGET = simulation
 
