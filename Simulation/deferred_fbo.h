@@ -5,6 +5,8 @@
 
 #include "stdafx.h"
 
+#include "resource.h"
+
 #include "Texture2D.h"
 #include "FramebufferObject.h"
 
@@ -27,7 +29,7 @@ private:
 	std::unique_ptr<LLR::Texture2D> z_output;
 	LLR::FramebufferObject fbo;
 
-	std::array<unsigned, 5> textures;
+	std::array<LLR::GenericResource::type, 5> textures;
 
 	glm::ivec2 size;
 

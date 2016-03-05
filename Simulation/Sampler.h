@@ -21,12 +21,12 @@ sampler_layout_binding inline operator "" _sampler_idx(unsigned long long int i)
 
 class SamplerAllocator : public generic_resource_allocator {
 public:
-	unsigned allocate() override final {
+	GenericResource::type allocate() override final {
 		GLuint id;
 		glCreateSamplers(1, &id);
 		return id;
 	}
-	static void deallocate(unsigned &id) {
+	static void deallocate(GenericResource::type &id) {
 		if (id) {
 			glDeleteSamplers(1, &id);
 			id = 0;
@@ -36,7 +36,7 @@ public:
 
 class SamplerBinder {
 public:
-	static void bind(unsigned int id, const sampler_layout_binding &sampler) {
+	static void bind(GenericResource::type id, const sampler_layout_binding &sampler) {
 		gl_current_context::get()->bind_sampler(sampler.binding_index(), id);
 	}
 	static void unbind(const sampler_layout_binding &sampler) {

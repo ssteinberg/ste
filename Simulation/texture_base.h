@@ -46,7 +46,7 @@ private:
 	static constexpr GLenum gl_type() { return gl_utils::translate_type(type); }
 
 public:
-	static void bind(unsigned int id, const texture_layout_binding &sampler) {
+	static void bind(GenericResource::type id, const texture_layout_binding &sampler) {
 		gl_current_context::get()->bind_texture_unit(sampler.binding_index(), id);
 	}
 	static void unbind(const texture_layout_binding &sampler) {
@@ -165,7 +165,7 @@ public:
 		return texture_handle(glGetTextureHandleARB(Base::get_resource_id()));
 	}
 	auto get_texture_handle(const Sampler &sam) const {
-		unsigned sam_id = sam.get_resource_id();
+		GenericResource::type sam_id = sam.get_resource_id();
 		return texture_handle(glGetTextureSamplerHandleARB(Base::get_resource_id(), sam_id));
 	}
 

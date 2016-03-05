@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -35,7 +35,7 @@ public:
 		vert.push_back(vd);
 
 		set_vertices(vert);
-		set_indices(std::vector<unsigned>{ 0,1,2,3 });
+		set_indices(std::vector<std::uint32_t>{ 0,1,2,3 });
 	}
 };
 

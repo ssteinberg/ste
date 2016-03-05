@@ -38,8 +38,8 @@ public:
 
 class context_framebuffer_dummy_allocator : public generic_resource_allocator {
 public:
-	unsigned allocate() override final { return 0; }
-	static void deallocate(unsigned &id) {}
+	GenericResource::type allocate() override final { return 0; }
+	static void deallocate(GenericResource::type &id) {}
 };
 
 class context_framebuffer : public frame_buffer_object<context_framebuffer_dummy_allocator> {

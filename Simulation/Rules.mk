@@ -16,7 +16,6 @@ CXXFLAGS += \
 	-D _linux \
 	-pthread \
 	-w2 \
-	-diag-enable=all \
 	-static-intel \
 	-wd10237,11012,11021 \
 

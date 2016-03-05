@@ -5,8 +5,6 @@
 
 #include "llr_resource_type.h"
 
-#include "resource_allocator.h"
-
 #include <functional>
 #include <memory>
 #include <type_traits>
@@ -15,9 +13,11 @@ namespace StE {
 namespace LLR {
 
 class GenericResource {
+public:
+	using type = std::uint32_t;
+	
 protected:
-	using generic_resource_type = unsigned;
-	using generic_resource_shared_type = std::shared_ptr<generic_resource_type>;
+	using generic_resource_shared_type = std::shared_ptr<type>;
 
 	generic_resource_shared_type id;
 
@@ -27,7 +27,7 @@ protected:
 public:
 	virtual llr_resource_type resource_type() const = 0;
 
-	generic_resource_type get_resource_id() const { return *id; }
+	type get_resource_id() const { return *id; }
 	virtual bool is_valid() const = 0;
 
 	GenericResource(GenericResource &&res) : id(std::move(res.id)) {}
@@ -35,6 +35,14 @@ public:
 	GenericResource(const GenericResource &res) = delete;
 	GenericResource &operator=(const GenericResource &res) = delete;
 };
+
+}
+}
+
+#include "resource_allocator.h"
+
+namespace StE {
+namespace LLR {
 
 template <class Allocator>
 class resource : virtual public GenericResource {
@@ -51,8 +59,8 @@ protected:
 	Allocator allocator;
 
 	resource() { 
-		generic_resource_type *res_id = new generic_resource_type(allocator.allocate());
-		this->id = generic_resource_shared_type(res_id, [=](generic_resource_type *ptr) {
+		type *res_id = new type(allocator.allocate());
+		this->id = generic_resource_shared_type(res_id, [=](type *ptr) {
 			Allocator::deallocate(*ptr);
 			delete ptr;
 		});

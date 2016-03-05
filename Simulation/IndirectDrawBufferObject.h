@@ -10,18 +10,18 @@ namespace StE {
 namespace LLR {
 
 struct IndirectMultiDrawElementsCommand {
-	unsigned int count;
-	unsigned int instance_count;
-	unsigned int first_index;
-	unsigned int base_vertex;
-	unsigned int base_instance;
+	std::uint32_t count;
+	std::uint32_t instance_count;
+	std::uint32_t first_index;
+	std::uint32_t base_vertex;
+	std::uint32_t base_instance;
 };
 
 struct IndirectDrawArraysCommand {
-	unsigned int count;
-	unsigned int prim_count;
-	unsigned int first_index;
-	unsigned int base_instance;
+	std::uint32_t count;
+	std::uint32_t prim_count;
+	std::uint32_t first_index;
+	std::uint32_t base_instance;
 };
 
 class IndirectDrawBufferGeneric {

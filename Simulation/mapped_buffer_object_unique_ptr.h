@@ -90,8 +90,6 @@ public:
 protected:
 	mapped_buffer_object_unique_ptr(Type *map, buffer_object<T, U> *bo, const range<> &r) :
 		data(new mapped_buffer_data{map, r, bo}) {}
-
-	unsigned int get_buffer_id() const { return buffer_id; }
 };
 
 }

@@ -27,6 +27,7 @@ std::future<void> ModelFactory::process_model_mesh(optional<task_scheduler*> sch
 												  texture_map_type &textures,
 												  brdf_map_type &brdfs) {
 	std::vector<ObjectVertexData> vbo_data;
+	std::vector<std::uint32_t> vbo_indices;
 
 	unsigned vertices = shape.mesh.positions.size() / 3;
 	unsigned tc_stride = shape.mesh.texcoords.size() / vertices;
@@ -46,12 +47,20 @@ std::future<void> ModelFactory::process_model_mesh(optional<task_scheduler*> sch
 
 		vbo_data.push_back(v);
 	}
+	
+	if (std::is_same<std::uint32_t, decltype(shape.mesh.indices[0])>::value) {
+		vbo_indices = shape.mesh.indices;
+	}
+	else {
+		for (auto ind : shape.mesh.indices)
+			vbo_indices.push_back(static_cast<std::uint32_t>(ind));
+	}
 
 	if (tc_stride && normals_stride) {
-		for (unsigned i = 0; i < shape.mesh.indices.size(); i += 3) {
-			unsigned i0 = shape.mesh.indices[i];
-			unsigned i1 = shape.mesh.indices[i + 1];
-			unsigned i2 = shape.mesh.indices[i + 2];
+		for (unsigned i = 0; i < shape.mesh.indices.size() - 2; i += 3) {
+			auto i0 = shape.mesh.indices[i];
+			auto i1 = shape.mesh.indices[i + 1];
+			auto i2 = shape.mesh.indices[i + 2];
 
 			ObjectVertexData &v0 = vbo_data[i0];
 			ObjectVertexData &v1 = vbo_data[i1];
@@ -93,7 +102,7 @@ std::future<void> ModelFactory::process_model_mesh(optional<task_scheduler*> sch
 	std::string brdf_name = materials[mat_idx].unknown_parameter["brdf"];
 	std::shared_ptr<BRDF> brdf = brdf_name.length() ? brdfs[brdf_name] : nullptr;
 
-	return sched->schedule_now_on_main_thread([=, vbo_data = std::move(vbo_data)](optional<task_scheduler*> sched) {
+	return sched->schedule_now_on_main_thread([=, vbo_data = std::move(vbo_data), vbo_indices = std::move(vbo_indices)](optional<task_scheduler*> sched) {
 		auto mat = std::make_shared<Material>();
 		if (diff != nullptr) mat->set_diffuse(diff);
 		if (specular != nullptr) mat->set_specular(specular);
@@ -103,7 +112,7 @@ std::future<void> ModelFactory::process_model_mesh(optional<task_scheduler*> sch
 		auto matid = matstorage->add_material(mat);
 
 		std::unique_ptr<StE::Graphics::mesh<StE::Graphics::mesh_subdivion_mode::Triangles>> m = std::make_unique<StE::Graphics::mesh<StE::Graphics::mesh_subdivion_mode::Triangles>>();
-		m->set_indices(std::move(shape.mesh.indices));
+		m->set_indices(std::move(vbo_indices));
 		m->set_vertices(std::move(vbo_data));
 
 		std::shared_ptr<StE::Graphics::Object> obj = std::make_shared<StE::Graphics::Object>(std::move(m));
@@ -232,7 +241,7 @@ StE::task<bool> ModelFactory::load_model_task(const StEngineControl &context, co
 		materials_type materials;
 
 		std::string err;
-		if (!tinyobj::LoadObj(shapes, materials, err, path_string.c_str(), dir.c_str())) {
+		if (!tinyobj::LoadObj(shapes, materials, err, path_string.c_str(), dir.c_str(), true)) {
 			ste_log_error() << "Couldn't load model " << path_string << ": " << err;
 			block.ret = false;
 			return block;

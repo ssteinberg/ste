@@ -19,7 +19,7 @@ public:
 	virtual ~ElementBufferObjectGeneric() noexcept {}
 };
 
-template <typename T = unsigned, BufferUsage::buffer_usage U = BufferUsage::BufferUsageNone>
+template <typename T = std::uint32_t, BufferUsage::buffer_usage U = BufferUsage::BufferUsageNone>
 class ElementBufferObject : public buffer_object<T, U>, public ElementBufferObjectGeneric {
 private:
 	using Base = buffer_object<T, U>;

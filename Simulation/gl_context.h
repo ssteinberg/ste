@@ -101,11 +101,11 @@ private:
 			func(args...);
 	}
 
-	mutable std::map<std::tuple<GLenum, unsigned>, std::tuple<unsigned, int, std::size_t>> bind_buffers_map;
-	mutable std::unordered_map<unsigned, unsigned> bind_textures_map, bind_framebuffer_map, bind_renderbuffer_map, bind_sampler_map, bind_transfrom_feedback_map;
-	mutable std::unordered_map<unsigned, std::tuple<unsigned, int, int, bool, GLenum, GLenum>> bind_images_map;
-	mutable std::unordered_map<unsigned, std::tuple<unsigned, int, int>> bind_vertex_buffer_map;
-	mutable optional<unsigned> bind_program_val, bind_vertex_array_val;
+	mutable std::map<std::tuple<GLenum, std::uint32_t>, std::tuple<std::uint32_t, int, std::size_t>> bind_buffers_map;
+	mutable std::unordered_map<std::uint32_t, std::uint32_t> bind_textures_map, bind_framebuffer_map, bind_renderbuffer_map, bind_sampler_map, bind_transfrom_feedback_map;
+	mutable std::unordered_map<std::uint32_t, std::tuple<std::uint32_t, int, int, bool, GLenum, GLenum>> bind_images_map;
+	mutable std::unordered_map<std::uint32_t, std::tuple<std::uint32_t, int, int>> bind_vertex_buffer_map;
+	mutable optional<std::uint32_t> bind_program_val, bind_vertex_array_val;
 
 public:
 	gl_context(const context_settings &settings, const char *title, const glm::i32vec2 &size, gli::format format = gli::FORMAT_RGBA8_SRGB_PACK32, gli::format depth_format = gli::FORMAT_D24_UNORM_PACK32);
@@ -127,7 +127,7 @@ public:
 
 	void clear_framebuffer(bool color = true, bool depth = true) const { glClear((color ? GL_COLOR_BUFFER_BIT : 0) | (depth ? GL_DEPTH_BUFFER_BIT : 0)); }
 
-	void viewport(int x, int y, unsigned w, unsigned h) const {
+	void viewport(int x, int y, std::uint32_t w, std::uint32_t h) const {
 		struct dummy {};
 		set_context_server_state<dummy>(glViewport, x, y, w, h);
 	}
@@ -167,27 +167,27 @@ public:
 		set_context_server_state<dummy>(glBlendEquation, mode);
 	}
 
-	void enable_vertex_attrib_array(unsigned index) const {
+	void enable_vertex_attrib_array(std::uint32_t index) const {
 		struct dummy {};
 		set_context_server_state<dummy>(glEnableVertexAttribArray, index);
 	}
 
-	void bind_buffer(GLenum target, unsigned id) const {
+	void bind_buffer(GLenum target, std::uint32_t id) const {
 		bind_context_resource(glBindBuffer,
-							  std::make_tuple(target, static_cast<unsigned>(0)), std::make_tuple(id, -1, static_cast<std::size_t>(-1)),
+							  std::make_tuple(target, static_cast<std::uint32_t>(0)), std::make_tuple(id, -1, static_cast<std::size_t>(-1)),
 							  bind_buffers_map,
 							  target, id);
 	}
-	void bind_buffer_base(GLenum target, unsigned index, unsigned id) const {
+	void bind_buffer_base(GLenum target, std::uint32_t index, std::uint32_t id) const {
 		bind_context_resource(glBindBufferBase,
 							  std::make_tuple(target, index), std::make_tuple(id, -1, static_cast<std::size_t>(-1)),
 							  bind_buffers_map,
 							  target, index, id);
 	}
 	template <int first, int N>
-	void bind_buffers_base(GLenum target, const std::array<unsigned, N> &ids) const {
-		std::array<std::pair<std::tuple<GLenum, unsigned>, std::tuple<unsigned, int, std::size_t>>, N> vals;
-		for (int i = 0; i < N; ++i) vals[i] = std::make_pair(std::make_tuple(target, static_cast<unsigned>(i + first)),
+	void bind_buffers_base(GLenum target, const std::array<std::uint32_t, N> &ids) const {
+		std::array<std::pair<std::tuple<GLenum, std::uint32_t>, std::tuple<std::uint32_t, int, std::size_t>>, N> vals;
+		for (int i = 0; i < N; ++i) vals[i] = std::make_pair(std::make_tuple(target, static_cast<std::uint32_t>(i + first)),
 															 std::make_tuple(ids[i], -1, static_cast<std::size_t>(-1)));
 
 		bind_context_resource_multiple<N>(glBindBuffersBase,
@@ -195,71 +195,71 @@ public:
 									   	  bind_buffers_map,
 									   	  target, first, N, &ids[0]);
 	}
-	void bind_buffer_range(GLenum target, unsigned index, unsigned id, int offset, std::size_t size) const {
+	void bind_buffer_range(GLenum target, std::uint32_t index, std::uint32_t id, int offset, std::size_t size) const {
 		bind_context_resource(glBindBufferRange,
 							  std::make_tuple(target, index), std::make_tuple(id, offset, size),
 							  bind_buffers_map,
 							  target, index, id, offset, size);
 	}
-	void bind_texture_unit(unsigned unit, unsigned id) const {
+	void bind_texture_unit(std::uint32_t unit, std::uint32_t id) const {
 		bind_context_resource(glBindTextureUnit,
 							  unit, id,
 							  bind_textures_map,
 							  unit, id);
 	}
 	template <int first, int N>
-	void bind_texture_units(const std::array<unsigned, N> &units) const {
-		std::array<std::pair<unsigned, unsigned>, N> vals;
-		for (int i = 0; i < N; ++i) vals[i] = std::make_pair(static_cast<unsigned>(i + first), units[i]);
+	void bind_texture_units(const std::array<std::uint32_t, N> &units) const {
+		std::array<std::pair<std::uint32_t, std::uint32_t>, N> vals;
+		for (int i = 0; i < N; ++i) vals[i] = std::make_pair(static_cast<std::uint32_t>(i + first), units[i]);
 
 		bind_context_resource_multiple<N>(glBindTextures, 
 										  vals, 
 										  bind_textures_map, 
 										  first, N, &units[0]);
 	}
-	void bind_framebuffer(GLenum target, unsigned id) const {
+	void bind_framebuffer(GLenum target, std::uint32_t id) const {
 		bind_context_resource(glBindFramebuffer,
 							  target, id,
 							  bind_framebuffer_map,
 							  target, id);
 	}
-	void bind_image_texture(unsigned unit, unsigned texture, int level, bool layered, int layer, GLenum access, GLenum format) const {
+	void bind_image_texture(std::uint32_t unit, std::uint32_t texture, int level, bool layered, int layer, GLenum access, GLenum format) const {
 		bind_context_resource(glBindImageTexture,
 							  unit, std::make_tuple(texture, level, layer, layered, access, format),
 							  bind_images_map,
 							  unit, texture, level, layered, layer, access, format);
 	}
-	void bind_renderbuffer(GLenum target, unsigned id) const {
+	void bind_renderbuffer(GLenum target, std::uint32_t id) const {
 		bind_context_resource(glBindRenderbuffer,
 							  target, id,
 							  bind_renderbuffer_map,
 							  target, id);
 	}
-	void bind_sampler(unsigned unit, unsigned id) const {
+	void bind_sampler(std::uint32_t unit, std::uint32_t id) const {
 		bind_context_resource(glBindSampler,
 							  unit, id,
 							  bind_sampler_map,
 							  unit, id);
 	}
-	void bind_transform_feedback(GLenum target, unsigned id) const {
+	void bind_transform_feedback(GLenum target, std::uint32_t id) const {
 		bind_context_resource(glBindTransformFeedback,
 							  target, id,
 							  bind_transfrom_feedback_map,
 							  target, id);
 	}
-	void bind_vertex_array(unsigned id) const {
+	void bind_vertex_array(std::uint32_t id) const {
 		bind_context_resource_val(glBindVertexArray,
 								  id,
 								  bind_vertex_array_val,
 								  id);
 	}
-	void bind_vertex_buffer(unsigned bindingindex, unsigned buffer, int offset, int stride) const {
+	void bind_vertex_buffer(std::uint32_t bindingindex, std::uint32_t buffer, int offset, int stride) const {
 		bind_context_resource(glBindVertexBuffer,
 							  bindingindex, std::make_tuple(buffer, offset, stride),
 							  bind_vertex_buffer_map,
 							  bindingindex, buffer, offset, stride);
 	}
-	void bind_shader_program(unsigned id) const {
+	void bind_shader_program(std::uint32_t id) const {
 		bind_context_resource_val(glUseProgram,
 								  id,
 								  bind_program_val,

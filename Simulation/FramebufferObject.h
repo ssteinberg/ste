@@ -75,7 +75,7 @@ public:
 	template<typename T>
 	void operator=(const T &target) { attach(target); }
 
-	unsigned int fbo_id() const { return fbo->get_resource_id(); }
+	GenericResource::type fbo_id() const { return fbo->get_resource_id(); }
 	GLenum get_attachment_point() const { return attachment_point; }
 
 	virtual glm::ivec2 get_attachment_size() const { return size; }
@@ -170,12 +170,12 @@ public:
 
 class FramebufferObjectAllocator : public generic_resource_allocator {
 public:
-	unsigned allocate() override final {
+	GenericResource::type allocate() override final {
 		GLuint id;
 		glCreateFramebuffers(1, &id);
 		return id;
 	}
-	static void deallocate(unsigned &id) {
+	static void deallocate(GenericResource::type &id) {
 		if (id) {
 			glDeleteFramebuffers(1, &id);
 			id = 0;
@@ -185,7 +185,7 @@ public:
 
 class FramebufferObjectBinder {
 public:
-	static void bind(unsigned int id) { gl_current_context::get()->bind_framebuffer(GL_FRAMEBUFFER, id); }
+	static void bind(GenericResource::type id) { gl_current_context::get()->bind_framebuffer(GL_FRAMEBUFFER, id); }
 	static void unbind() { gl_current_context::get()->bind_framebuffer(GL_FRAMEBUFFER, 0); }
 };
 
@@ -265,7 +265,7 @@ public:
 		glBlitNamedFramebuffer(Base::get_resource_id(), fbo.get_resource_id(), src_origin.x, src_origin.y, src_xy1.x, src_xy1.y, dst_origin.x, dst_origin.y, dst_xy1.x, dst_xy1.y, mask, linear_filter ? GL_LINEAR : GL_NEAREST);
 	}
 
-	static unsigned int max_framebuffer_bindings() {
+	static auto max_framebuffer_bindings() {
 		GLuint maxbuffers;
 		glGetIntergeri(GL_MAX_DRAW_BUFFERS, &maxbuffers);
 		return maxbuffers;

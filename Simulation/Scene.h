@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -45,11 +45,11 @@ private:
 
 	mutable LLR::gstack<mesh_descriptor> mesh_data_bo;
  	LLR::gstack<ObjectVertexData> vbo;
-	LLR::gstack<unsigned> indices;
+	LLR::gstack<std::uint32_t> indices;
 	LLR::gstack<LLR::IndirectMultiDrawElementsCommand> idb;
 
  	using vbo_type = LLR::VertexBufferObject<ObjectVertexData, ObjectVertexData::descriptor, decltype(vbo)::usage>;
- 	using elements_type = LLR::ElementBufferObject<unsigned, decltype(indices)::usage>;
+ 	using elements_type = LLR::ElementBufferObject<std::uint32_t, decltype(indices)::usage>;
  	using indirect_draw_buffer_type = LLR::IndirectDrawBuffer<LLR::IndirectMultiDrawElementsCommand, decltype(idb)::usage>;
 	using mesh_data_buffer_type = LLR::ShaderStorageBuffer<mesh_descriptor, decltype(mesh_data_bo)::usage>;
 

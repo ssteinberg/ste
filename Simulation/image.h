@@ -28,14 +28,14 @@ image_layout_binding inline operator "" _image_idx(unsigned long long int i) { r
 
 class image_dummy_resource_allocator : public generic_resource_allocator {
 public:
-	static bool is_valid(unsigned id) { return false; }
-	unsigned allocate() override final { return 0; };
-	static void deallocate(unsigned &id) { id = 0; }
+	static bool is_valid(GenericResource::type id) { return false; }
+	GenericResource::type allocate() override final { return 0; };
+	static void deallocate(GenericResource::type &id) { id = 0; }
 };
 
 class ImageBinder {
 public:
-	static void bind(unsigned int id, const image_layout_binding &unit, int level, bool layered, int layer, ImageAccessMode access, gli::format format) {
+	static void bind(GenericResource::type id, const image_layout_binding &unit, int level, bool layered, int layer, ImageAccessMode access, gli::format format) {
 		auto swizzle = gli::swizzles(gli::SWIZZLE_ONE);
 		gl_current_context::get()->bind_image_texture(unit, id, level, layered, layer, static_cast<GLenum>(access), gl_utils::translate_format(format, swizzle).Internal);
 	}

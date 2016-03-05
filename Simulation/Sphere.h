@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -15,7 +15,7 @@ public:
 
 	Sphere(unsigned vert_slices, unsigned horz_slices, float theta_min = -glm::half_pi<float>(), float theta_max = glm::half_pi<float>()) {
 		std::vector<ObjectVertexData> vert;
-		std::vector<unsigned> ind;
+		std::vector<std::uint32_t> ind;
 
 		for (unsigned x = 0; x <= horz_slices; ++x) {
 			float phi = x == horz_slices ? -glm::pi<float>() : glm::mix(-glm::pi<float>(), glm::pi<float>(), static_cast<float>(x) / static_cast<float>(horz_slices - 1));
@@ -40,10 +40,10 @@ public:
 
 		for (unsigned x = 0; x < horz_slices; ++x) {
 			for (unsigned y = 0; y < vert_slices - 1; ++y) {
-				unsigned i0 = x * vert_slices + y;
-				unsigned i1 = (x + 1) * vert_slices + y;
-				unsigned i2 = x * vert_slices + y + 1;
-				unsigned i3 = (x + 1) * vert_slices + y + 1;
+				std::uint32_t i0 = x * vert_slices + y;
+				std::uint32_t i1 = (x + 1) * vert_slices + y;
+				std::uint32_t i2 = x * vert_slices + y + 1;
+				std::uint32_t i3 = (x + 1) * vert_slices + y + 1;
 
 				ind.push_back(i0);
 				ind.push_back(i2);

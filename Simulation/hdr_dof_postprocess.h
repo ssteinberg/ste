@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -67,7 +67,7 @@ private:
 	mutable LLR::ShaderStorageBuffer<hdr_bokeh_parameters> hdr_bokeh_param_buffer{ 1 };
 	mutable LLR::ShaderStorageBuffer<hdr_bokeh_parameters> hdr_bokeh_param_buffer_prev{ 1 };
 	mutable LLR::AtomicCounterBufferObject<> histogram{ 128 };
-	mutable LLR::ShaderStorageBuffer<unsigned> histogram_sums{ 128 };
+	mutable LLR::ShaderStorageBuffer<std::uint32_t> histogram_sums{ 128 };
 	mutable std::unique_ptr<LLR::PixelBufferObject<std::int32_t>> hdr_bokeh_param_buffer_eraser;
 
 	mutable bool first_frame{ true };
@@ -76,7 +76,7 @@ private:
 	const LLR::Texture2D *z_buffer;
 	const StEngineControl &ctx;
 
-	std::array<unsigned, 4> storage_buffers;
+	std::array<std::uint32_t, 4> storage_buffers;
 
 public:
 	hdr_dof_postprocess(const StEngineControl &ctx, const LLR::Texture2D *z_buffer);

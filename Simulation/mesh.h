@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -26,7 +26,7 @@ public:
 	virtual ~mesh_generic() noexcept {};
 
 	virtual const std::vector<ObjectVertexData> &get_vertices() const = 0;
-	virtual const std::vector<unsigned> &get_indices() const = 0;
+	virtual const std::vector<std::uint32_t> &get_indices() const = 0;
 	virtual const mesh_aabb &aabb() const = 0;
 };
 
@@ -40,7 +40,7 @@ template<mesh_subdivion_mode Mode>
 class mesh : public mesh_generic {
 public:
 	using vbo_type = StE::LLR::VertexBufferObject<StE::Graphics::ObjectVertexData, StE::Graphics::ObjectVertexData::descriptor>;
-	using ebo_type = StE::LLR::ElementBufferObject<unsigned>;
+	using ebo_type = StE::LLR::ElementBufferObject<std::uint32_t>;
 
 private:
 	std::vector<ObjectVertexData> vertices;

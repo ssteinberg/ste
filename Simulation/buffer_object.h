@@ -31,7 +31,7 @@ namespace LLR {
 
 class BufferObjectBinder {
 public:
-	static void bind(unsigned int id, GLenum target) {
+	static void bind(GenericResource::type id, GLenum target) {
 		gl_current_context::get()->bind_buffer(target, id);
 	}
 	static void unbind(GLenum target = 0) {
@@ -194,13 +194,13 @@ private:
 	using EmptyLayoutLocationType = layout_binding_none<BinderType>;
 
 public:
-	static void bind(unsigned int id, const LayoutLocationType &index, GLenum target) {
+	static void bind(GenericResource::type id, const LayoutLocationType &index, GLenum target) {
 		if (index != EmptyLayoutLocationType()) gl_current_context::get()->bind_buffer_base(target, index, id);
 	}
 	static void unbind(const LayoutLocationType &index, GLenum target = 0) {
 		if (index != EmptyLayoutLocationType()) gl_current_context::get()->bind_buffer_base(target, index, 0);
 	}
-	static void bind_range(unsigned int id, const LayoutLocationType &index, GLenum target, int offset, std::size_t size) {
+	static void bind_range(GenericResource::type id, const LayoutLocationType &index, GLenum target, int offset, std::size_t size) {
 		if (index != EmptyLayoutLocationType()) gl_current_context::get()->bind_buffer_range(target, index, id, offset, size);
 	}
 };

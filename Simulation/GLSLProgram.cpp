@@ -52,7 +52,7 @@ bool GLSLProgram::link() {
 	}
 }
 
-bool GLSLProgram::link_from_binary(unsigned format, const std::string &data) {
+bool GLSLProgram::link_from_binary(std::uint32_t format, const std::string &data) {
 	glProgramBinary(get_resource_id(), format, data.data(), data.length());
 	int success = 0;
 	glGetProgramiv(get_resource_id(), GL_LINK_STATUS, &success);
@@ -60,7 +60,7 @@ bool GLSLProgram::link_from_binary(unsigned format, const std::string &data) {
 	return success;
 }
 
-std::string GLSLProgram::get_binary_represantation(unsigned *format) {
+std::string GLSLProgram::get_binary_represantation(std::uint32_t *format) {
 	int bin_len = 0;
 	glGetProgramiv(get_resource_id(), GL_PROGRAM_BINARY_LENGTH, &bin_len);
 	std::string data;
@@ -178,7 +178,7 @@ void GLSLProgram::set_uniform(const std::string &name, const image_handle &handl
 		glProgramUniform1ui64ARB(get_resource_id(), loc, handle);
 }
 
-void GLSLProgram::set_uniform_subroutine(GLenum shader_type, const std::vector<unsigned> &ids) const {
+void GLSLProgram::set_uniform_subroutine(GLenum shader_type, const std::vector<std::uint32_t> &ids) const {
 	glUniformSubroutinesuiv(shader_type, ids.size(), &ids[0]);
 }
 

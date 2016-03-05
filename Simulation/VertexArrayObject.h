@@ -20,12 +20,12 @@ class VertexArrayObject;
 
 class VertexArrayObjectAllocator : public generic_resource_allocator {
 public:
-	unsigned allocate() override final {
+	GenericResource::type allocate() override final {
 		GLuint id;
 		glCreateVertexArrays(1, &id);
 		return id;
 	}
-	static void deallocate(unsigned &id) {
+	static void deallocate(GenericResource::type &id) {
 		if (id) {
 			glDeleteVertexArrays(1, &id);
 			id = 0;
@@ -35,7 +35,7 @@ public:
 
 class VertexArrayObjectBinder {
 public:
-	static void bind(unsigned int id) {
+	static void bind(GenericResource::type id) {
 		gl_current_context::get()->bind_vertex_array(id);
 	}
 	static void unbind() {
@@ -113,8 +113,8 @@ public:
 	VertexArrayObject(VertexArrayObject &&m) = default;
 	VertexArrayObject& operator=(VertexArrayObject &&m) = default;
 
-	static void enable_vertex_attrib_array(unsigned index) { gl_current_context::get()->enable_vertex_attrib_array(index); }
-	static void disable_vertex_attrib_array(unsigned index) { gl_current_context::get()->enable_vertex_attrib_array(index); }
+	static void enable_vertex_attrib_array(std::uint32_t index) { gl_current_context::get()->enable_vertex_attrib_array(index); }
+	static void disable_vertex_attrib_array(std::uint32_t index) { gl_current_context::get()->enable_vertex_attrib_array(index); }
 
 	vertex_array_attrib_binder operator[](int index) { return vertex_array_attrib_binder(index, this); }
 

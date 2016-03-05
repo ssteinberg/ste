@@ -28,11 +28,11 @@ namespace LLR {
 
 class GLSLProgramAllocator : public generic_resource_allocator {
 public:
-	unsigned allocate() override final {
-		unsigned res = glCreateProgram();
+	GenericResource::type allocate() override final {
+		GenericResource::type res = glCreateProgram();
 		return res;
 	}
-	static void deallocate(unsigned &id) {
+	static void deallocate(GenericResource::type &id) {
 		if (id) {
 			glDeleteProgram(id); 
 			id = 0;
@@ -42,7 +42,7 @@ public:
 
 class GLSLProgramBinder {
 public:
-	static void bind(unsigned int id) { gl_current_context::get()->bind_shader_program(id); }
+	static void bind(GenericResource::type id) { gl_current_context::get()->bind_shader_program(id); }
 	static void unbind() { gl_current_context::get()->bind_shader_program(0); }
 };
 
@@ -89,8 +89,8 @@ public:
 	bool link();
 	bool is_linked() const { return linked; }
 
-	bool link_from_binary(unsigned format, const std::string &data);
-	std::string get_binary_represantation(unsigned *format);
+	bool link_from_binary(GenericResource::type format, const std::string &data);
+	std::string get_binary_represantation(GenericResource::type *format);
 
 	void bind_attrib_location(GLuint location, const std::string &name) const { glBindAttribLocation(get_resource_id(), location, name.c_str()); }
 	void bind_frag_data_location(GLuint location, const std::string &name) const { glBindFragDataLocation(get_resource_id(), location, name.c_str()); }
@@ -130,7 +130,7 @@ public:
 	void set_uniform(const std::string &name, const std::vector<std::uint64_t> &val) const;
 	void set_uniform(const std::string &name, const std::vector<texture_handle> &handles) const;
 	void set_uniform(const std::string &name, const std::vector<image_handle> &handles) const;
-	void set_uniform_subroutine(GLenum shader_type, const std::vector<unsigned> &ids) const;
+	void set_uniform_subroutine(GLenum shader_type, const std::vector<std::uint32_t> &ids) const;
 
 	llr_resource_type resource_type() const override { return llr_resource_type::LLRGLSLProgram; }
 };

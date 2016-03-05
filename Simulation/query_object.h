@@ -19,12 +19,12 @@ enum class QueryResultType {
 template <llr_resource_type type>
 class QueryObjectAllocator : public generic_resource_allocator {
 public:
-	unsigned allocate() override final { 
-		unsigned o;
+	GenericResource::type allocate() override final { 
+		GenericResource::type o;
 		glCreateQueries(static_cast<GLenum>(type), 1, &o);
 		return o;
 	}
-	static void deallocate(unsigned &id) {
+	static void deallocate(GenericResource::type &id) {
 		if (id) {
 			glDeleteQueries(1, &id);
 			id = 0;

@@ -11,20 +11,20 @@ class buffer_object_immutable_storage_allocator : public generic_resource_immuta
 	using Base = generic_resource_immutable_storage_allocator<std::size_t, const T*>;
 	
 public:
-	unsigned allocate() override final {
+	GenericResource::type allocate() override final {
 		GLuint id;
 		glCreateBuffers(1, &id);
 		return id;
 	}
 
-	static void deallocate(unsigned &id) {
+	static void deallocate(GenericResource::type &id) {
 		if (id) {
 			glDeleteBuffers(1, &id);
 			id = 0;
 		}
 	}
 
-	void allocate_storage(unsigned id, std::size_t buffer_size, const T *data) override final {
+	void allocate_storage(GenericResource::type id, std::size_t buffer_size, const T *data) override final {
 		GLenum flags = static_cast<GLenum>(U);
 		glNamedBufferStorage(id, sizeof(T)*buffer_size, data, flags);
 	}
