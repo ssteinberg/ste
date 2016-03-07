@@ -3,7 +3,9 @@ include Rules.mk
 
 .DEFAULT_GOAL := $(DEFAULT_CONFIGURATION)
 
-BUILD_CONFIG = $(firstword $(filter $(BUILD_CONFIGURATIONS),$(MAKECMDGOALS)) $(DEFAULT_CONFIGURATION))
+ifeq ($(strip $(BUILD_CONFIG)),)
+	BUILD_CONFIG = $(firstword $(filter $(BUILD_CONFIGURATIONS),$(MAKECMDGOALS)) $(DEFAULT_CONFIGURATION))
+endif
 
 WORK_DIR = $(BUILD_DIR)/$(BUILD_CONFIG)
 OBJECTS = $(SOURCES:%.cpp=$(WORK_DIR)/%.o)
@@ -66,4 +68,9 @@ vars:
 -include $(DEPS)
 
 clean:
+	@/usr/bin/echo 'Cleaning all...'
 	/usr/bin/rm -rf $(BUILD_DIR)
+
+clean_config:
+	@/usr/bin/echo 'Cleaning $(WORK_DIR)...'
+	/usr/bin/rm -rf $(WORK_DIR)

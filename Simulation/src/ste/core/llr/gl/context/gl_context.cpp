@@ -196,7 +196,7 @@ void gl_context::setup_debug_context() {
 
 		const gl_context *this_context = reinterpret_cast<const gl_context*>(userParam);
 
-		Text::AttributedString attr_str = b("OpenGL Debug Output: ") + "Object - " + std::to_string(id) + " " + std::string(message, length);
+		Text::AttributedString attr_str = b("OpenGL Debug Output: ") + "OpenGL object - " + i(std::to_string(id)) + " " + std::string(message, length);
 		switch (severity) {
 		case GL_DEBUG_SEVERITY_NOTIFICATION:
 			if (type == GL_DEBUG_TYPE_OTHER) {
