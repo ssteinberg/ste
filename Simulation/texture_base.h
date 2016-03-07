@@ -20,6 +20,8 @@
 #include "texture_traits.h"
 #include "texture_allocator.h"
 
+#include "surface_constants.h"
+
 #include <type_traits>
 #include <gli/gli.hpp>
 
@@ -71,7 +73,7 @@ protected:
 	int levels, samples;
 	typename texture_size_type<texture_dimensions<type>::dimensions>::type size;
 	gli::format format;
-	gli::swizzles swizzle{ gli::SWIZZLE_ONE };
+	gli::swizzles swizzle{ swizzles_rgba };
 
 protected:
 	auto get_image_container_size() const {
@@ -178,7 +180,7 @@ private:
 	using Base = texture<type>;
 
 protected:
-	texture_multisampled(gli::format format, const typename Base::size_type &size, int samples, const gli::swizzles swizzle = gli::swizzles(gli::SWIZZLE_ONE)) {
+	texture_multisampled(gli::format format, const typename Base::size_type &size, int samples, const gli::swizzles &swizzle = swizzles_rgba) {
 		allocate_tex_storage(size, format, swizzle, 1, samples, false);
 	}
 
@@ -214,7 +216,7 @@ public:
 		auto gl_format = gl_utils::translate_format(Base::format, Base::swizzle);
 		glGetTextureImage(Base::get_resource_id(), level, gl_format.External, gl_format.Type, size, data);
 	}
-	virtual void download_level(void *data, std::size_t size, int level, int layer, const gli::format &format, const gli::swizzles &swizzle = gli::swizzles(gli::SWIZZLE_ONE), bool compressed = false) const {
+	virtual void download_level(void *data, std::size_t size, int level, int layer, const gli::format &format, const gli::swizzles &swizzle = swizzles_rgba, bool compressed = false) const {
 		auto gl_format = gl_utils::translate_format(format, swizzle);
 		if (compressed)
 			glGetCompressedTextureImage(Base::get_resource_id(), level, size, data);
@@ -230,7 +232,7 @@ private:
 
 protected:
 	texture_mipmapped() {}
-	texture_mipmapped(gli::format format, const typename Base::size_type &size, int levels, const gli::swizzles swizzle = gli::swizzles(gli::SWIZZLE_ONE)) : Base() {
+	texture_mipmapped(gli::format format, const typename Base::size_type &size, int levels, const gli::swizzles &swizzle = swizzles_rgba) : Base() {
 		allocate_tex_storage(size, format, swizzle, levels, 1, false);
 	}
 

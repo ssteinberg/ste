@@ -5,6 +5,7 @@
 
 #include "stdafx.h"
 #include "gl_utils.h"
+#include "surface_constants.h"
 
 #include "resource.h"
 #include "render_target_allocator.h"
@@ -36,7 +37,7 @@ public:
 		auto block_extend = gli::block_extent(format);
 		std::size_t bytes = (samples == 0 ? 1 : samples) * size.x * size.y * block / (block_extend.x * block_extend.y);
 		
-		auto swizzle = gli::swizzles(gli::SWIZZLE_ONE);
+		auto swizzle = swizzles_rgba;
 		auto glformat = gl_utils::translate_format(format, swizzle);
 		allocator.allocate_storage(get_resource_id(), samples, glformat, size, bytes);
 	}

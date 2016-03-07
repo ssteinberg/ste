@@ -19,6 +19,8 @@
 
 #include "range.h"
 
+#include "surface_constants.h"
+
 #include <memory>
 #include <list>
 
@@ -85,11 +87,11 @@ public:
 
 	virtual ~buffer_object() noexcept { unmap(); }
 
-	void clear(const gli::format format, const void *data, const gli::swizzles swizzle = gli::swizzles(gli::SWIZZLE_ONE)) {
+	void clear(const gli::format format, const void *data, const gli::swizzles &swizzle = swizzles_rgba) {
 		auto glf = gl_utils::translate_format(format, swizzle);
 		glClearNamedBufferData(Base::get_resource_id(), glf.Internal, glf.External, glf.Type, data);
 	}
-	void clear(const gli::format format, const void *data, int offset, std::size_t size, const gli::swizzles swizzle = gli::swizzles(gli::SWIZZLE_ONE)) {
+	void clear(const gli::format format, const void *data, int offset, std::size_t size, const gli::swizzles &swizzle = swizzles_rgba) {
 		auto glf = gl_utils::translate_format(format, swizzle);
 		glClearNamedBufferSubData(Base::get_resource_id(), glf.Internal, offset * sizeof(T), size * sizeof(T), glf.External, glf.Type, data);
 	}

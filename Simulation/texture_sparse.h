@@ -7,6 +7,8 @@
 
 #include "texture_base.h"
 #include "llr_resource_type.h"
+#include "surface_constants.h"
+
 #include "image.h"
 
 #include <vector>
@@ -30,7 +32,7 @@ protected:
 							 int levels, 
 							 const typename Base::size_type &tile_size, 
 							 int virtual_page_idx, 
-							 const gli::swizzles swizzle = gli::swizzles(gli::SWIZZLE_ONE)) : Base(), tile_size(tile_size) {
+							 const gli::swizzles &swizzle = swizzles_rgba) : Base(), tile_size(tile_size) {
 		this->levels = levels;
 		allocate_tex_storage(size, format, swizzle, levels, 1, true, virtual_page_idx);
 		glGetTextureParameteriv(Base::get_resource_id(), GL_NUM_SPARSE_LEVELS_ARB, &max_sparse_level);
@@ -64,7 +66,7 @@ public:
 		glTexturePageCommitmentEXT(Base::get_resource_id(), level, offset3.x, offset3.y, offset3.z, count3.x, count3.y, count3.z, false);
 	}
 
-	static std::vector<glm::ivec3> page_sizes(gli::format gli_format, const gli::swizzles &swizzle = gli::swizzles(gli::SWIZZLE_ONE)) {
+	static std::vector<glm::ivec3> page_sizes(gli::format gli_format, const gli::swizzles &swizzle = swizzles_rgba) {
 		gli::gl::format const format = gl_utils::translate_format(gli_format, swizzle);
 
 		int n;

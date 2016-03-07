@@ -33,11 +33,13 @@ private:
 	using ResizeSignalConnectionType = StEngineControl::framebuffer_resize_signal_type::connection_type;
 
 	class deferred_composition : public renderable {
+		using Base = renderable;
+		
 	private:
 		GIRenderer *dr;
 
 	public:
-		deferred_composition(const StEngineControl &ctx, GIRenderer *dr) : renderable(StE::Resource::GLSLProgramFactory::load_program_task(ctx, { "deferred.vert", "deferred.frag" })()), dr(dr) {
+		deferred_composition(const StEngineControl &ctx, GIRenderer *dr) : Base(StE::Resource::GLSLProgramFactory::load_program_task(ctx, { "deferred.vert", "deferred.frag" })()), dr(dr) {
 			// dr->voxel_space.add_consumer_program(this->get_program());
 		}
 		~deferred_composition() {
@@ -45,7 +47,7 @@ private:
 		}
 
 		virtual void prepare() const override {
-			renderable::prepare();
+			Base::prepare();
 
 			dr->scene_props->pre_draw();
 
@@ -60,6 +62,8 @@ private:
 		}
 
 		virtual void finalize() const override {
+			Base::finalize();
+			
 			dr->scene_props->post_draw();
 		}
 	};
@@ -78,16 +82,16 @@ private:
 
 protected:
 	void set_output_fbo(const LLR::GenericFramebufferObject *ofbo) {
-		//composer.set_output_fbo(ofbo);
+		composer.set_output_fbo(ofbo);
 	}
 	auto get_fbo() const { return fbo.get_fbo(); }
 
 public:
 	GIRenderer(const StEngineControl &ctx, 
 			   Scene *scene,
-			   SceneProperties *props,
+			   SceneProperties *props/*,
 			   std::size_t voxel_grid_size = 512, 
-			   float voxel_grid_ratio = .01f) 
+			   float voxel_grid_ratio = .01f*/) 
 			   	: fbo(ctx.get_backbuffer_size()), scene(scene), scene_props(props), 
 				  hdr(ctx, fbo.z_buffer()), 
 				//   voxel_space(ctx, voxel_grid_size, voxel_grid_ratio), 
@@ -116,8 +120,8 @@ public:
 
 	virtual void finalize_queue(const StEngineControl &ctx) override {
 		// queue().push_back(voxel_space.voxelizer(*scene));
-		postprocess_queue().push_front(&composer);
 		postprocess_queue().push_front(&hdr);
+		postprocess_queue().push_front(&composer);
 	}
 
 	virtual void render_queue(const StEngineControl &ctx) override {

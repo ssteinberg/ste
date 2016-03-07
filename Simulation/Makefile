@@ -7,7 +7,7 @@ BUILD_CONFIG = $(firstword $(filter $(BUILD_CONFIGURATIONS),$(MAKECMDGOALS)) $(D
 
 WORK_DIR = $(BUILD_DIR)/$(BUILD_CONFIG)
 OBJECTS = $(SOURCES:%.cpp=$(WORK_DIR)/%.o)
-DEPS = $(SOURCES:%.cpp=$(BUILD_DIR)/.depend/%.d)
+DEPS = $(SOURCES:%.cpp=$(BUILD_DIR)/.depend/%_$(BUILD_CONFIG).d)
 PCH = $(WORK_DIR)/$(PCHCPP).pch
 
 CXXFLAGS += $(CXXFLAGS_$(BUILD_CONFIG))
@@ -30,22 +30,33 @@ $(WORK_DIR)/%.pch: %.cpp
 	@/bin/echo -e "\e[1;94mCreating precompiled-header $@...\e[0m"
 	@/usr/bin/rm -f $@
 	@/usr/bin/mkdir -p $(dir $@)
-	@$(COMPILE) -c $^ -o $(WORK_DIR)/$*.o -MMD -MP $(CXXFLAGS) -pch-create $@ |& icc_colorize
+	@$(COMPILE) -c $^ -o $(WORK_DIR)/$*.o -MMD $(CXXFLAGS) -pch-create $@ |& icc_colorize
 	@/usr/bin/mkdir -p $(BUILD_DIR)/.depend/
-	@/usr/bin/mv $(WORK_DIR)/$*.d $(BUILD_DIR)/.depend/$*.d
+	@/usr/bin/mv $(WORK_DIR)/$*.d $(BUILD_DIR)/.depend/$*_$(BUILD_CONFIG).d
 	
 $(WORK_DIR)/%.o: $(PCH) %.cpp
 	@/bin/echo -e "\e[1;37m[CXX] \e[1;92m$*.cpp\e[0m $(CXXFLAGS)\e[0m"
 	@/usr/bin/mkdir -p $(dir $@)
-	@$(COMPILE) -c $*.cpp -o $@ $(CXXFLAGS) -MMD -MP -pch-use $(PCH)  |& icc_colorize
+	@$(COMPILE) -c $*.cpp -o $@ $(CXXFLAGS) -MMD -pch-use $(PCH)  |& icc_colorize
 	@/usr/bin/mkdir -p $(BUILD_DIR)/.depend/
-	@/usr/bin/mv $(WORK_DIR)/$*.d $(BUILD_DIR)/.depend/$*.d
+	@/usr/bin/mv $(WORK_DIR)/$*.d $(BUILD_DIR)/.depend/$*_$(BUILD_CONFIG).d
 
 $(BUILD_CONFIGURATIONS):	TAGS $(BUILD_DIR)/$(TARGET)_$(BUILD_CONFIG).elf
 
 help:
 	@/usr/bin/echo '"$(TARGET)" makefile'
 	@/usr/bin/echo "Possible build configurations: $(BUILD_CONFIGURATIONS)"
+	
+vars:
+	@/usr/bin/echo '"TARGET": $(TARGET)'
+	@/usr/bin/echo '"BUILD_CONFIG": $(BUILD_CONFIG)'
+	@/usr/bin/echo '"BUILD_DIR": $(BUILD_DIR)'
+	@/usr/bin/echo '"WORK_DIR": $(WORK_DIR)'
+	@/usr/bin/echo '"PCH": $(PCH)'
+	@/usr/bin/echo '"CXXFLAGS": $(CXXFLAGS)'
+	@/usr/bin/echo '"SOURCES": $(SOURCES)'
+	@/usr/bin/echo '"OBJECTS": $(OBJECTS)'
+	@/usr/bin/echo '"DEPS": $(DEPS)'
 
 -include $(DEPS)
 

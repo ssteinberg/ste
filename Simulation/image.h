@@ -11,6 +11,7 @@
 #include "layout_binding.h"
 #include "llr_resource_type.h"
 #include "texture_enums.h"
+#include "surface_constants.h"
 
 #include "image_handle.h"
 
@@ -36,7 +37,7 @@ public:
 class ImageBinder {
 public:
 	static void bind(GenericResource::type id, const image_layout_binding &unit, int level, bool layered, int layer, ImageAccessMode access, gli::format format) {
-		auto swizzle = gli::swizzles(gli::SWIZZLE_ONE);
+		auto swizzle = swizzles_rgba;
 		gl_current_context::get()->bind_image_texture(unit, id, level, layered, layer, static_cast<GLenum>(access), gl_utils::translate_format(format, swizzle).Internal);
 	}
 	static void unbind(const image_layout_binding &unit, int level, bool layered, int layer, ImageAccessMode access, gli::format format) {
@@ -76,7 +77,7 @@ public:
 	void unbind(const LayoutLocationType &binding) const override final { Binder::unbind(binding, 0, false, 0, access, format); }
 
 	auto get_image_handle() const {
-		auto swizzle = gli::swizzles(gli::SWIZZLE_ONE);
+		auto swizzle = swizzles_rgba;
 		return image_handle(glGetImageHandleARB(get_resource_id(), level, layers > 1 ? true : false, layer, gl_utils::translate_format(format, swizzle).Internal), access);
 	}
 
