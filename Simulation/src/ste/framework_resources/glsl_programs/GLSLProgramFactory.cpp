@@ -149,8 +149,8 @@ bool GLSLProgramFactory::parse_parameters(std::string &line, GLSLShaderPropertie
 	return false;
 }
 
-std::vector<boost::filesystem::path> GLSLProgramFactory::find_includes(const boost::filesystem::path &path) {
-	std::vector<boost::filesystem::path> ret;
+std::vector<std::string> GLSLProgramFactory::find_includes(const boost::filesystem::path &path) {
+	std::vector<std::string> ret;
 	std::string src = load_source(path);
 
 	std::string::size_type it = 0, end;
@@ -175,7 +175,7 @@ std::vector<boost::filesystem::path> GLSLProgramFactory::find_includes(const boo
 bool GLSLProgramFactory::parse_include(const boost::filesystem::path &path, int line, std::string &source, std::vector<std::string> &paths) {
 	std::string::size_type it = 0, end;
 	std::string name;
-	std::string path_string = path.filename().string();
+	std::string path_string = path.string();
 
 	bool matched = false;
 
@@ -202,13 +202,21 @@ bool GLSLProgramFactory::parse_include(const boost::filesystem::path &path, int 
 			line = 0;
 			for (unsigned i = 0; i < it; ++i) if (source[i] == '\n') ++line;
 		}
+		
+		auto include_path = resolve_program(file_name);
+		if (!include_path) {
+			ste_log_error() << "GLSL program " + file_name + " couldn't be found!";
+			std::cerr << "Error: GLSL program " + file_name + " couldn't be found";
+			assert(false);
+			return false;
+		}
 
-		auto include = load_source(file_name);
+		auto include = load_source(*include_path);
 		source.insert(end, std::string("\n#line ") + std::to_string(line) + " \"" + path_string + "\"\n");
 		source.replace(it, end - it, include);
-		source.insert(it, std::string("#line 1 \"") + file_name + "\"\n");
+		source.insert(it, std::string("#line 1 \"") + include_path->string() + "\"\n");
 
-		path_string = file_name;
+		path_string = include_path->string();
 		matched = true;
 		paths.push_back(file_name);
 	}
@@ -216,37 +224,66 @@ bool GLSLProgramFactory::parse_include(const boost::filesystem::path &path, int 
 	return matched;
 }
 
-StE::task<std::unique_ptr<GLSLProgram>> GLSLProgramFactory::load_program_task(const StEngineControl &context, std::vector<boost::filesystem::path> files) {
+StE::optional<boost::filesystem::path> GLSLProgramFactory::resolve_program(const std::string &program_name) {
+	boost::filesystem::recursive_directory_iterator end;
+	
+	const auto it = std::find_if(boost::filesystem::recursive_directory_iterator("."),
+								 end,
+								 [&program_name](const boost::filesystem::directory_entry& e) {
+									 return e.path().filename() == program_name;
+								 });
+	if (it == end)
+		return none;
+	return it->path();
+}
+
+StE::task<std::unique_ptr<GLSLProgram>> GLSLProgramFactory::load_program_task(const StEngineControl &context, const std::vector<std::string> &names) {
 	struct loader_data {
 		program_binary bin;
 		std::string cache_key;
 		std::vector<boost::filesystem::path> files;
 	};
 
-	return StE::task<loader_data>([files = std::move(files), &context](optional<task_scheduler*> sched) -> loader_data {
+	return StE::task<loader_data>([names = std::move(names), &context](optional<task_scheduler*> sched) -> loader_data {
 		loader_data data;
 		std::chrono::system_clock::time_point modification_time;
 
 		{
-			std::vector<boost::filesystem::path> paths = files;
+			std::vector<boost::filesystem::path> paths;
+			for (auto &program_name : names) {
+				auto path = resolve_program(program_name);
+				if (!path) {
+					ste_log_error() << "GLSL program " + program_name + " couldn't be found!";
+					std::cerr << "Error: GLSL program " + program_name + " couldn't be found";
+					assert(false);
+					continue;
+				}
+				
+				paths.push_back(*path);
+			}
+			
 			std::sort(paths.begin(), paths.end());
+			
+			data.files = paths;
 			data.cache_key = "glsl_program_binary_";
 
 			for (unsigned i = 0; i < paths.size(); ++i) {
 				auto includes = find_includes(paths[i]);
 				for (auto &p : includes) {
-					for (auto &s : paths) if (s == p) continue;
-					paths.push_back(p);
+					auto path = resolve_program(p);
+					if (!path) {
+						ste_log_error() << "GLSL program " + p + " couldn't be found!";
+						std::cerr << "Error: GLSL program " + p + " couldn't be found";
+						assert(false);
+						continue;
+					}
+				
+					for (auto &s : paths) if (s == *path) continue;
+					paths.push_back(*path);
 				}
 			}
 
 			for (auto &path : paths) {
-				if (!boost::filesystem::exists(path)) {
-					ste_log_error() << "GLSL program " + path.string() + " couldn't be found!";
-					std::cerr << "Error: GLSL program " + path.string() + " couldn't be found";
-					assert(false);
-					continue;
-				}
 				auto timet = boost::filesystem::last_write_time(path);
 				std::chrono::system_clock::time_point sys_time_point = std::chrono::system_clock::from_time_t(timet);
 				if (sys_time_point > modification_time) modification_time = sys_time_point;
@@ -263,8 +300,6 @@ StE::task<std::unique_ptr<GLSLProgram>> GLSLProgramFactory::load_program_task(co
 		catch (const std::exception &ex) {
 			data.bin = program_binary();
 		}
-
-		data.files = std::move(files);
 
 		return data;
 	}).then_on_main_thread([=, &context](optional<task_scheduler*> sched, loader_data data) -> std::unique_ptr<LLR::GLSLProgram> {

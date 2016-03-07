@@ -8,17 +8,18 @@ BUILD_CONFIG = $(firstword $(filter $(BUILD_CONFIGURATIONS),$(MAKECMDGOALS)) $(D
 WORK_DIR = $(BUILD_DIR)/$(BUILD_CONFIG)
 OBJECTS = $(SOURCES:%.cpp=$(WORK_DIR)/%.o)
 DEPS = $(SOURCES:%.cpp=$(BUILD_DIR)/.depend/%_$(BUILD_CONFIG).d)
-PCH = $(WORK_DIR)/$(PCHCPP).pch
+PCH = $(WORK_DIR)/$(SOURCE_DIR)/$(PCHCPP).pch
 
 CXXFLAGS += $(CXXFLAGS_$(BUILD_CONFIG))
-CXXFLAGS += $(addprefix -I, $(LOCAL_INCLUDES)) $(addprefix -L, $(LOCAL_LIBS))
+CXXFLAGS += $(addprefix -L, $(LOCAL_LIBS))
+INCLUDE_FLAGS = $(addprefix -I, $(LOCAL_INCLUDES))
 
 .SECONDARY: $(OBJECTS) $(PCH)
 
 $(BUILD_DIR)/%.elf: $(OBJECTS)
-	@/bin/echo -e "\e[1;37m[LINK] \e[1;92m$@ \e[0m$(CXXFLAGS) $(addprefix -l, $(SYSTEM_LIBRARIES)) `pkg-config --static --libs glfw3`\e[0m"
+	@/bin/echo -e "\e[1;37m[LINK] \e[1;92m$@ \e[0m$(CXXFLAGS) $(addprefix -l, $(SYSTEM_LIBRARIES)) $(LINKFLAGS)\e[0m"
 	@/usr/bin/mkdir -p $(dir $@)
-	@$(LINK) $(CXXFLAGS) -o $@ $^ $(addprefix -l, $(SYSTEM_LIBRARIES)) `pkg-config --static --libs glfw3`
+	@$(LINK) $(CXXFLAGS) -o $@ $^ $(addprefix -l, $(SYSTEM_LIBRARIES)) $(LINKFLAGS)
 
 $(BUILD_DIR)/$(TARGET)_release.elf:	$(BUILD_DIR)/$(TARGET).elf
 	
@@ -30,16 +31,18 @@ $(WORK_DIR)/%.pch: %.cpp
 	@/bin/echo -e "\e[1;94mCreating precompiled-header $@...\e[0m"
 	@/usr/bin/rm -f $@
 	@/usr/bin/mkdir -p $(dir $@)
-	@$(COMPILE) -c $^ -o $(WORK_DIR)/$*.o -MMD $(CXXFLAGS) -pch-create $@ |& icc_colorize
-	@/usr/bin/mkdir -p $(BUILD_DIR)/.depend/
+	@$(COMPILE) -c $^ -o $(WORK_DIR)/$*.o -MMD $(CXXFLAGS) $(INCLUDE_FLAGS) -pch-create $@ |& icc_colorize
+	@/usr/bin/mkdir -p $(dir $(BUILD_DIR)/.depend/$*)
 	@/usr/bin/mv $(WORK_DIR)/$*.d $(BUILD_DIR)/.depend/$*_$(BUILD_CONFIG).d
 	
 $(WORK_DIR)/%.o: $(PCH) %.cpp
 	@/bin/echo -e "\e[1;37m[CXX] \e[1;92m$*.cpp\e[0m $(CXXFLAGS)\e[0m"
 	@/usr/bin/mkdir -p $(dir $@)
-	@$(COMPILE) -c $*.cpp -o $@ $(CXXFLAGS) -MMD -pch-use $(PCH)  |& icc_colorize
-	@/usr/bin/mkdir -p $(BUILD_DIR)/.depend/
+	@$(COMPILE) -c $*.cpp -o $@ -MMD $(CXXFLAGS) $(INCLUDE_FLAGS) -pch-use $(PCH)  |& icc_colorize
+	@/usr/bin/mkdir -p $(dir $(BUILD_DIR)/.depend/$*)
 	@/usr/bin/mv $(WORK_DIR)/$*.d $(BUILD_DIR)/.depend/$*_$(BUILD_CONFIG).d
+	
+$(WORK_DIR)/$(SOURCE_DIR)/$(PCHCPP).o:
 
 $(BUILD_CONFIGURATIONS):	TAGS $(BUILD_DIR)/$(TARGET)_$(BUILD_CONFIG).elf
 
@@ -53,6 +56,8 @@ vars:
 	@/usr/bin/echo '"BUILD_DIR": $(BUILD_DIR)'
 	@/usr/bin/echo '"WORK_DIR": $(WORK_DIR)'
 	@/usr/bin/echo '"PCH": $(PCH)'
+	@/usr/bin/echo '"LOCAL_INCLUDES": $(LOCAL_INCLUDES)'
+	@/usr/bin/echo '"LOCAL_LIBS": $(LOCAL_LIBS)'
 	@/usr/bin/echo '"CXXFLAGS": $(CXXFLAGS)'
 	@/usr/bin/echo '"SOURCES": $(SOURCES)'
 	@/usr/bin/echo '"OBJECTS": $(OBJECTS)'

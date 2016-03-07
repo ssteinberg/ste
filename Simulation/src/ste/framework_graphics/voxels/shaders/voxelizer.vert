@@ -19,6 +19,10 @@ out vs_out {
 uniform vec3 translation;
 uniform mat4 trans_inverse_view_matrix;
 
+layout(std430, binding = 1) buffer mesh_data {
+	mesh_descriptor mesh_descriptor_buffer[];
+};
+
 void main() {
 	mesh_descriptor md = mesh_descriptor_buffer[gl_DrawIDARB];
 

@@ -104,6 +104,7 @@ int main() {
 
 	gl_context::context_settings settings;
 	settings.vsync = false;
+	// settings.fs = true;
 	StE::StEngineControl ctx(std::make_unique<gl_context>(settings, "Shlomi Steinberg - Global Illumination", glm::i32vec2{ w, h }));// , gli::FORMAT_RGBA8_UNORM));
 	ctx.set_clipping_planes(clip_near, clip_far);
 

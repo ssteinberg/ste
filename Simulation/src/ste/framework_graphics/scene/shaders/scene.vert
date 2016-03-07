@@ -24,6 +24,10 @@ uniform mat4 trans_inverse_view_matrix;
 uniform float near = 5.0f;
 uniform float far = 10000.0f;
 
+layout(std430, binding = 1) buffer mesh_data {
+	mesh_descriptor mesh_descriptor_buffer[];
+};
+
 void main() {
 	mesh_descriptor md = mesh_descriptor_buffer[gl_DrawIDARB];
 

@@ -2,8 +2,10 @@
 BUILD_CONFIGURATIONS = debug release
 DEFAULT_CONFIGURATION = debug
 
+SOURCE_DIR = ./src
+
 LOCAL_INCLUDES += \
-	./ \
+	$(shell find $(SOURCE_DIR) -type d) \
 	/usr/include/freetype2 \
 
 LOCAL_LIBS += \
@@ -38,10 +40,11 @@ SYSTEM_LIBRARIES += \
 	boost_system \
 	boost_filesystem \
 	boost_serialization
+	
+LINKFLAGS += $(shell pkg-config --static --libs glfw3)
 
-PCHCPP = stdafx
+PCHCPP = ste/core/stdafx
 
-SOURCE_DIR = 
 SOURCES := $(shell find $(SOURCE_DIR) -iname "*.c")
 SOURCES += $(shell find $(SOURCE_DIR) -iname "*.cpp")
 HEADERS := $(shell find $(SOURCE_DIR) -iname "*.h")
