@@ -49,11 +49,11 @@ private:
 		virtual void prepare() const override {
 			Base::prepare();
 
-			dr->scene_props->pre_draw();
+			dr->scene->scene_properties().pre_draw();
 
 			dr->fbo.bind_output_textures();
-			dr->scene_props->material_storage().buffer().bind(LLR::shader_storage_layout_binding(0));
-			dr->scene_props->lights_storage().bind_buffers(1);
+			dr->scene->scene_properties().material_storage().buffer().bind(LLR::shader_storage_layout_binding(0));
+			dr->scene->scene_properties().lights_storage().bind_buffers(1);
 			ScreenFillingQuad.vao()->bind();
 		}
 
@@ -64,7 +64,7 @@ private:
 		virtual void finalize() const override {
 			Base::finalize();
 			
-			dr->scene_props->post_draw();
+			dr->scene->scene_properties().post_draw();
 		}
 	};
 
@@ -74,7 +74,6 @@ private:
 	rendering_queue ppq;
 
 	Scene *scene;
-	SceneProperties *scene_props;
 	hdr_dof_postprocess hdr;
 	// dense_voxel_space voxel_space;
 	
@@ -88,11 +87,10 @@ protected:
 
 public:
 	GIRenderer(const StEngineControl &ctx, 
-			   Scene *scene,
-			   SceneProperties *props/*,
+			   Scene *scene/*,
 			   std::size_t voxel_grid_size = 512, 
 			   float voxel_grid_ratio = .01f*/) 
-			   	: fbo(ctx.get_backbuffer_size()), scene(scene), scene_props(props), 
+			   	: fbo(ctx.get_backbuffer_size()), scene(scene), 
 				  hdr(ctx, fbo.z_buffer()), 
 				//   voxel_space(ctx, voxel_grid_size, voxel_grid_ratio), 
 				composer(ctx, this) {

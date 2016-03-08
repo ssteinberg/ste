@@ -19,6 +19,8 @@
 #include "SurfaceFactory.h"
 #include "Texture2D.h"
 #include "Scene.h"
+#include "Object.h"
+#include "ObjectGroup.h"
 #include "TextManager.h"
 #include "AttributedString.h"
 #include "RGB.h"
@@ -116,11 +118,13 @@ int main() {
 	});
 	ctx.signal_framebuffer_resize().connect(resize_connection);
 
-	StE::Graphics::SceneProperties scene_properties;
 	SkyDome skydome(ctx);
-	StE::Graphics::Scene scene(ctx, &scene_properties);
-	StE::Graphics::GIRenderer renderer(ctx, &scene, &scene_properties);
+	StE::Graphics::Scene scene(ctx);
+	std::shared_ptr<StE::Graphics::ObjectGroup> object_group = std::make_shared<StE::Graphics::ObjectGroup>(&scene.scene_properties());
+	StE::Graphics::GIRenderer renderer(ctx, &scene);
 	StE::Graphics::BasicRenderer basic_renderer;
+	
+	scene.add_object(object_group);
 
 	StE::Graphics::Camera camera;
 	camera.set_position({ 25.8, 549.07, -249.2 });
@@ -129,8 +133,8 @@ int main() {
 	const glm::vec3 light_pos({ -700.6, 138, -70 });
 	auto light0 = std::make_shared<StE::Graphics::SphericalLight>(2000.f, StE::Graphics::RGB({ 1.f, .57f, .16f }), light_pos, 10.f);
 	auto light1 = std::make_shared<StE::Graphics::DirectionalLight>(1.f, StE::Graphics::RGB({ 1.f, 1.f, 1.f }), glm::normalize(glm::vec3(0.1f, -2.5f, 0.1f)));
-	scene_properties.lights_storage().add_light(light0);
-	scene_properties.lights_storage().add_light(light1);
+	scene.scene_properties().lights_storage().add_light(light0);
+	scene.scene_properties().lights_storage().add_light(light1);
 	StE::Text::TextManager text_renderer(ctx, StE::Text::Font("Data/ArchitectsDaughter.ttf"));
 
 	StE::Graphics::CustomRenderable fb_clearer{ [&]() { ctx.gl()->clear_framebuffer(); } };
@@ -158,7 +162,11 @@ int main() {
 
 
 	bool loaded = false;
-	auto model_future = ctx.scheduler().schedule_now(StE::Resource::ModelFactory::load_model_task(ctx, R"(Data/models/crytek-sponza/sponza.obj)", &scene, 2.5f));
+	auto model_future = ctx.scheduler().schedule_now(StE::Resource::ModelFactory::load_model_task(ctx, 
+																								  R"(Data/models/crytek-sponza/sponza.obj)",  
+																								  &*object_group, 
+																								  &scene.scene_properties(),
+																								  2.5f));
 
 	std::shared_ptr<StE::Graphics::Object> light_obj;
 	{
@@ -181,7 +189,7 @@ int main() {
 		std::unique_ptr<StE::Graphics::Sphere> sphere = std::make_unique<StE::Graphics::Sphere>(10, 10);
 		light_obj = std::make_shared<StE::Graphics::Object>(std::move(sphere));
 
-		light_obj->set_model_transform(glm::scale(glm::translate(glm::mat4(), light_pos), glm::vec3(10, 10, 10)));
+		light_obj->set_model_matrix(glm::scale(glm::translate(glm::mat4(), light_pos), glm::vec3(10, 10, 10)));
 
 		gli::texture2d light_color_tex{ gli::format::FORMAT_RGB8_UNORM_PACK8, {1,1}, 1 };
 		glm::vec3 c = light0->get_diffuse();
@@ -191,9 +199,9 @@ int main() {
 		light_mat->set_diffuse(std::make_shared<StE::LLR::Texture2D>(light_color_tex, false));
 		light_mat->set_emission(c * light0->get_luminance());
 
-		light_obj->set_material_id(scene_properties.material_storage().add_material(light_mat));
+		light_obj->set_material_id(scene.scene_properties().material_storage().add_material(light_mat));
 
-		scene.add_object(light_obj);
+		object_group->add_entity(light_obj);
 	}
 
 
@@ -261,7 +269,7 @@ int main() {
 
 		light0->set_position(lp);
 
-		light_obj->set_model_transform(glm::scale(glm::translate(glm::mat4(), lp), glm::vec3(light0->get_radius() / 2.f)));
+		light_obj->set_model_matrix(glm::scale(glm::translate(glm::mat4(), lp), glm::vec3(light0->get_radius() / 2.f)));
 		renderer.update_model_matrix_from_camera(camera);
 		skydome.set_model_matrix(mvnt);
 

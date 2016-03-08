@@ -4,7 +4,8 @@
 #pragma once
 
 #include "task.h"
-#include "Scene.h"
+#include "ObjectGroup.h"
+#include "SceneProperties.h"
 #include "Texture2D.h"
 
 #include "StEngineControl.h"
@@ -55,13 +56,17 @@ private:
 	static std::future<void> process_model_mesh(optional<task_scheduler*> sched,
 												Graphics::material_storage *,
 												const tinyobj::shape_t &,
-												Graphics::Scene *,
+												Graphics::ObjectGroup *,
 												materials_type &,
 												texture_map_type &,
 												brdf_map_type &);
 
 public:
-	static task<bool> load_model_task(const StEngineControl &context, const boost::filesystem::path &file_path, Graphics::Scene *scene, float normal_map_bias);
+	static task<bool> load_model_task(const StEngineControl &context, 
+									  const boost::filesystem::path &file_path, 
+									  Graphics::ObjectGroup *object_group, 
+									  Graphics::SceneProperties *scene_properties, 
+									  float normal_map_bias);
 };
 
 }

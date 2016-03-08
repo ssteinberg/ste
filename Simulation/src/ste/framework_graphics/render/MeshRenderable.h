@@ -16,17 +16,19 @@ namespace Graphics {
 
 template <mesh_subdivion_mode mode>
 class MeshRenderable : public renderable {
+	using Base = renderable;
+	
 private:
 	std::shared_ptr<mesh<mode>> meshptr;
 
 public:
-	MeshRenderable(const std::shared_ptr<LLR::GLSLProgram> &p, const std::shared_ptr<mesh<mode>> &m) : renderable(p), meshptr(m) {
-		request_state({ GL_DEPTH_TEST, true });
+	MeshRenderable(const std::shared_ptr<LLR::GLSLProgram> &p, const std::shared_ptr<mesh<mode>> &m) : Base(p), meshptr(m) {
+		Base::request_state({ GL_DEPTH_TEST, true });
 	}
 	virtual ~MeshRenderable() noexcept {}
 
 	virtual void prepare() const override {
-		renderable::prepare();
+		Base::prepare();
 		meshptr->vao()->bind();
 		meshptr->ebo()->bind();
 	}

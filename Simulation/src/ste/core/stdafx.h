@@ -9,3 +9,13 @@
 
 #define GLM_FORCE_AVX
 #include <glm/glm.hpp>
+
+#include <memory>
+#include <vector>
+#include <map>
+#include <unordered_map>
+#include <functional>
+#include <type_traits>
+#include <utility>
+#include <string>
+#include <iostream>
