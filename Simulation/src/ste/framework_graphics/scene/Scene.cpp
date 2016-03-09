@@ -8,7 +8,7 @@
 
 using namespace StE::Graphics;
 
-Scene::Scene(const StEngineControl &ctx) : object_program(StE::Resource::GLSLProgramFactory::load_program_task(ctx, { "scene.vert", "scene.frag" })()) {
+Scene::Scene(const StEngineControl &ctx) : object_program(ctx.glslprograms_pool().fetch_program_task({ "scene.vert", "scene.frag" })()) {
 	request_state({ GL_CULL_FACE, true });
 	request_state({ GL_DEPTH_TEST, true });
 	

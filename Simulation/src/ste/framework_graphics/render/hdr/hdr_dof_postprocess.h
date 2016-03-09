@@ -36,14 +36,14 @@ private:
 private:
 	std::shared_ptr<ResizeSignalConnectionType> resize_connection;
 
-	std::unique_ptr<LLR::GLSLProgram> hdr_compute_minmax;
-	std::unique_ptr<LLR::GLSLProgram> hdr_create_histogram;
-	std::unique_ptr<LLR::GLSLProgram> hdr_compute_histogram_sums;
-	std::unique_ptr<LLR::GLSLProgram> hdr_tonemap_coc;
-	std::unique_ptr<LLR::GLSLProgram> hdr_bloom_blurx;
-	std::unique_ptr<LLR::GLSLProgram> hdr_bloom_blury;
-	std::unique_ptr<LLR::GLSLProgram> bokeh_blurx;
-	std::unique_ptr<LLR::GLSLProgram> bokeh_blury;
+	std::shared_ptr<LLR::GLSLProgram> hdr_compute_minmax;
+	std::shared_ptr<LLR::GLSLProgram> hdr_create_histogram;
+	std::shared_ptr<LLR::GLSLProgram> hdr_compute_histogram_sums;
+	std::shared_ptr<LLR::GLSLProgram> hdr_tonemap_coc;
+	std::shared_ptr<LLR::GLSLProgram> hdr_bloom_blurx;
+	std::shared_ptr<LLR::GLSLProgram> hdr_bloom_blury;
+	std::shared_ptr<LLR::GLSLProgram> bokeh_blurx;
+	std::shared_ptr<LLR::GLSLProgram> bokeh_blury;
 
 	LLR::Sampler hdr_vision_properties_sampler;
 	LLR::Sampler linear_sampler;

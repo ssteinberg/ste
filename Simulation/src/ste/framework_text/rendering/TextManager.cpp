@@ -14,7 +14,7 @@ using namespace StE::Text;
 using namespace StE::LLR;
 
 TextManager::TextManager(const StEngineControl &context, const Font &default_font, int default_size) : gm(context), default_font(default_font), default_size(default_size) {
-	text_distance_mapping = Resource::GLSLProgramFactory::load_program_task(context, { "text_distance_map_contour.vert", "text_distance_map_contour.frag", "text_distance_map_contour.geom" })();
+	text_distance_mapping = context.glslprograms_pool().fetch_program_task({ "text_distance_map_contour.vert", "text_distance_map_contour.frag", "text_distance_map_contour.geom" })();
 
 	auto vbo_buffer = LLR::buffer_object_cast<vbo_type>(vbo.get_buffer());
 	vao[0] = vbo_buffer[0];

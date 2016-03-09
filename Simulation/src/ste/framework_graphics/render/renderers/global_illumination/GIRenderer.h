@@ -39,7 +39,7 @@ private:
 		GIRenderer *dr;
 
 	public:
-		deferred_composition(const StEngineControl &ctx, GIRenderer *dr) : Base(StE::Resource::GLSLProgramFactory::load_program_task(ctx, { "deferred.vert", "deferred.frag" })()), dr(dr) {
+		deferred_composition(const StEngineControl &ctx, GIRenderer *dr) : Base(ctx.glslprograms_pool().fetch_program_task({ "deferred.vert", "deferred.frag" })()), dr(dr) {
 			// dr->voxel_space.add_consumer_program(this->get_program());
 		}
 		~deferred_composition() {
