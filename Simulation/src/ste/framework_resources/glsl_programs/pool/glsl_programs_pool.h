@@ -15,6 +15,7 @@
 #include <memory>
 #include <string>
 #include <functional>
+#include <algorithm>
 
 namespace StE {
 	
@@ -34,6 +35,8 @@ public:
 		std::size_t compute_hash(const std::vector<std::string> &names) {
 			if (!names.size())
 				return 0;
+				
+			std::sort(names.begin(), names.end());
 				
 			auto it = names.begin();
 			auto h = std::hash<std::string>()(*it);
