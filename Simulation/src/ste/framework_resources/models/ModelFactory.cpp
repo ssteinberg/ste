@@ -22,7 +22,7 @@ using StE::LLR::Texture2D;
 std::future<void> ModelFactory::process_model_mesh(optional<task_scheduler*> sched,
 												  Graphics::material_storage *matstorage,
 												  const tinyobj::shape_t &shape,
-												  Graphics::Scene *scene,
+												  Graphics::ObjectGroup *object_group,
 												  materials_type &materials,
 												  texture_map_type &textures,
 												  brdf_map_type &brdfs) {
@@ -118,7 +118,7 @@ std::future<void> ModelFactory::process_model_mesh(optional<task_scheduler*> sch
 		std::shared_ptr<StE::Graphics::Object> obj = std::make_shared<StE::Graphics::Object>(std::move(m));
 		obj->set_material_id(matid);
 
-		scene->add_object(obj);
+		object_group->add_entity(obj);
 	});
 }
 
@@ -216,7 +216,11 @@ std::vector<std::future<void>> ModelFactory::load_brdfs(const StEngineControl *c
 	return futures;
 }
 
-StE::task<bool> ModelFactory::load_model_task(const StEngineControl &context, const boost::filesystem::path &file_path, Scene *scene, float normal_map_bias) {
+StE::task<bool> ModelFactory::load_model_task(const StEngineControl &context, 
+											  const boost::filesystem::path &file_path, 
+											  ObjectGroup *object_group, 
+											  Graphics::SceneProperties *scene_properties,
+											  float normal_map_bias) {
 	const StEngineControl *ctx = &context;
 	
 	struct _model_loader_task_block {
@@ -257,7 +261,7 @@ StE::task<bool> ModelFactory::load_model_task(const StEngineControl &context, co
 		{
 			std::vector<std::future<void>> futures;
 			for (auto &shape : shapes)
-				futures.push_back(process_model_mesh(sched, &scene->scene_properties()->material_storage(), shape, scene, materials, *block.textures, *block.brdfs));
+				futures.push_back(process_model_mesh(sched, &scene_properties->material_storage(), shape, object_group, materials, *block.textures, *block.brdfs));
 
 			for (auto &f : futures)
 				f.wait();

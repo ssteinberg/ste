@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -21,6 +21,7 @@
 #include "task_scheduler.h"
 #include "lru_cache.h"
 #include "rendering_system.h"
+#include "glsl_programs_pool.h"
 
 namespace StE {
 
@@ -39,6 +40,7 @@ private:
 	std::unique_ptr<LLR::gl_context> context;
 	mutable task_scheduler global_scheduler;
 	mutable lru_cache<std::string> global_cache;
+	mutable Resource::glsl_programs_pool glslprogramspool{ *this };
 	mutable Graphics::rendering_system* global_renderer{ nullptr };
 
 public:
@@ -74,6 +76,7 @@ public:
 
 	auto &scheduler() const { return global_scheduler; }
 	auto &cache() const { return global_cache; }
+	auto &glslprograms_pool() const { return glslprogramspool; }
 	Graphics::rendering_system *renderer() const { return global_renderer; }
 	const LLR::gl_context* gl() const { return context.get(); }
 

@@ -24,7 +24,7 @@ void main() {
 		discard;
 		return;
 	}
-	
+
 	vec3 P = frag_position;
 	vec3 n = normalize(frag_normal);
 	vec3 t = normalize(frag_tangent);
