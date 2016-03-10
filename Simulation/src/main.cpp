@@ -201,7 +201,7 @@ int main() {
 
 		light_obj->set_material_id(scene.scene_properties().material_storage().add_material(light_mat));
 
-		object_group->add_entity(light_obj);
+		object_group->add_object(light_obj);
 	}
 
 

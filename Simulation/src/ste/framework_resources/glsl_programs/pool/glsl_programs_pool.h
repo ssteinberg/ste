@@ -34,15 +34,13 @@ public:
 		
 		std::size_t compute_hash(const std::vector<std::string> &n) {
 			std::vector<std::string> names = n;
-			compute_hash(std::move(names));
+			return compute_hash(std::move(names));
 		}
 		
 		std::size_t compute_hash(std::vector<std::string> &&names) {
 			if (!names.size())
 				return 0;
 			
-			std::sort(names.begin(), names.end());
-				
 			std::sort(names.begin(), names.end());
 				
 			auto it = names.begin();

@@ -118,7 +118,7 @@ std::future<void> ModelFactory::process_model_mesh(optional<task_scheduler*> sch
 		std::shared_ptr<StE::Graphics::Object> obj = std::make_shared<StE::Graphics::Object>(std::move(m));
 		obj->set_material_id(matid);
 
-		object_group->add_entity(obj);
+		object_group->add_object(obj);
 	});
 }
 

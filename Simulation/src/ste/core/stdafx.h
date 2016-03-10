@@ -8,6 +8,7 @@
 #include "gl_extensions.h"
 
 #define GLM_FORCE_AVX
+#define GLM_EXT_INCLUDED
 #include <glm/glm.hpp>
 
 #include <memory>
