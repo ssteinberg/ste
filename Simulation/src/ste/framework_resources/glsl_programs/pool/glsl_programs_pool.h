@@ -43,6 +43,8 @@ public:
 			
 			std::sort(names.begin(), names.end());
 				
+			std::sort(names.begin(), names.end());
+				
 			auto it = names.begin();
 			auto h = std::hash<std::string>()(*it);
 			while ((++it) != names.end())
