@@ -6,10 +6,12 @@
 #include "stdafx.h"
 #include "RGB.h"
 
+#include "entity.h"
+
 namespace StE {
 namespace Graphics {
 
-class light {
+class light : public entity {
 public:
 	enum class LightType : std::int32_t {
 		Sphere = 0,

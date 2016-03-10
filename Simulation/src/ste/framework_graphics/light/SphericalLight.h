@@ -27,7 +27,7 @@ public:
 		dirty = true;
 	}
 
-	glm::vec3 get_position() const { return { descriptor.position_direction.x, descriptor.position_direction.y, descriptor.position_direction.z }; }
+	glm::vec3 get_position() const override { return { descriptor.position_direction.x, descriptor.position_direction.y, descriptor.position_direction.z }; }
 	float get_radius() const { return descriptor.radius; };
 };
 

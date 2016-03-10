@@ -4,37 +4,38 @@
 #pragma once
 
 #include "stdafx.h"
+#include <glm/gtx/matrix_decompose.hpp>
 
 namespace StE {
 namespace Graphics {
 	
-class generic_entity {
+class entity {
 public:
-	virtual void set_model_matrix(const glm::mat4 &m) = 0;
-	virtual const glm::mat4 &get_model_transform() const = 0;
+	virtual glm::vec3 get_position() const = 0;
 };
 
-class entity : public generic_entity {
+class entity_affine : public entity {
 protected:
 	glm::mat4 model_mat{ 1.f };
 	
 public:
-	virtual void set_model_matrix(const glm::mat4 &m) override { model_mat = m; }
-	virtual const glm::mat4 &get_model_transform() const override { return model_mat; }
-};
+	virtual void set_model_matrix(const glm::mat4 &m) { model_mat = m; }
+	const glm::mat4 &get_model_transform() const { return model_mat; }
+	
+	glm::vec3 get_position() const override {
+		glm::vec3 scale, translation, skew;
+		glm::vec4 perspective;
+		glm::quat orientation;
 
-class entity_flagged : public entity {
-private:
-	bool dirty{ false };
-	
-public:
-	virtual void set_model_matrix(const glm::mat4 &m) override {
-		entity::set_model_matrix(m);
-		dirty = true;
+		glm::decompose(model_mat,
+					   scale,
+					   orientation,
+					   translation,
+					   skew,
+					   perspective);
+
+		return translation;
 	}
-	
-	bool is_dirty() const { return dirty; }
-	void clear_dirty_flag() { dirty = false; }
 };
 	
 }

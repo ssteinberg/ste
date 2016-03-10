@@ -32,10 +32,15 @@ public:
 	private:
 		std::size_t hash;
 		
-		std::size_t compute_hash(const std::vector<std::string> &names) {
+		std::size_t compute_hash(const std::vector<std::string> &n) {
+			std::vector<std::string> names = n;
+			return compute_hash(std::move(names));
+		}
+		
+		std::size_t compute_hash(std::vector<std::string> &&names) {
 			if (!names.size())
 				return 0;
-				
+			
 			std::sort(names.begin(), names.end());
 				
 			auto it = names.begin();
@@ -47,9 +52,8 @@ public:
 		}
 		
 	public:
-		glsl_programs_pool_key(const std::vector<std::string> &names) {
-			hash = compute_hash(names);
-		}
+		glsl_programs_pool_key(const std::vector<std::string> &names) : hash(compute_hash(names)) {}
+		glsl_programs_pool_key(std::vector<std::string> &&names) : hash(compute_hash(std::move(names))) {}
 		
 		glsl_programs_pool_key(const glsl_programs_pool_key &) = default;
 		glsl_programs_pool_key(glsl_programs_pool_key &&) = default;

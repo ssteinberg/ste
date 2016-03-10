@@ -24,7 +24,7 @@ Scene::Scene(const StEngineControl &ctx) : object_program(ctx.glslprograms_pool(
 }
 
 void Scene::render() const {
-	auto model = entity::get_model_transform();
+	auto model = entity_affine::get_model_transform();
 	
 	for (auto &obj : objects) {
 		auto obj_model = obj->get_model_transform();

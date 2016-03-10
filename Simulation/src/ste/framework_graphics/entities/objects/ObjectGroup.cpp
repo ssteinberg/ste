@@ -3,6 +3,7 @@
 #include "ObjectGroup.h"
 
 #include <vector>
+#include <algorithm>
 
 using namespace StE::Graphics;
 
@@ -17,11 +18,23 @@ ObjectGroup::ObjectGroup(SceneProperties *props) : scene_props(props) {
 	vao[3] = vbo_buffer[3];
 }
 
-void ObjectGroup::add_entity(const std::shared_ptr<Object> &entity) {
-	auto &ind = entity->get_mesh().get_indices();
-	auto &vertices = entity->get_mesh().get_vertices();
+ObjectGroup::~ObjectGroup() {
+	remove_all();
+}
 
-	entities.insert(std::make_pair(static_cast<int>(idb.size()), entity));
+void ObjectGroup::add_object(const std::shared_ptr<Object> &obj) {
+	auto connection = std::make_shared<signal_connection_type>(
+		[this](Object* obj) {
+			this->signalled_objects.push_back(obj);
+		}
+	);
+	obj->signal_model_change().connect(connection);
+	
+	auto &ind = obj->get_mesh().get_indices();
+	auto &vertices = obj->get_mesh().get_vertices();
+
+	objects.insert(std::make_pair(obj, 
+								  object_information{ idb.size(), connection }));
 
  	LLR::IndirectMultiDrawElementsCommand idc;
  	idc.count = ind.size();
@@ -37,13 +50,18 @@ void ObjectGroup::add_entity(const std::shared_ptr<Object> &entity) {
  	total_vertices += vertices.size();
  	total_indices += ind.size();
 
-	entity->clear_model_mat_dirty_flag();
-	entity->clear_material_id_dirty_flag();
 	mesh_descriptor md;
-	md.model = entity->get_model_transform();
+	md.model = obj->get_model_transform();
 	md.transpose_inverse_model = glm::transpose(glm::inverse(md.model));
-	md.mat_idx = entity->get_material_id();
+	md.mat_idx = obj->get_material_id();
 	mesh_data_bo.push_back(md);
+}
+
+void ObjectGroup::remove_all() {
+	for (auto &o : objects)
+		o.first->signal_model_change().disconnect(o.second.connection);
+	objects.clear();
+	signalled_objects.clear();
 }
 
 void ObjectGroup::bind_buffers() const {
@@ -56,22 +74,28 @@ void ObjectGroup::bind_buffers() const {
 }
 
 void ObjectGroup::update_dirty_buffers() const {
-	for (auto &p : entities) {
-		if (p.second->is_model_mat_dirty() || p.second->is_material_id_dirty()) {
-			range<> lock_range{ p.first * sizeof(mesh_data_buffer_type::T), sizeof(mesh_data_buffer_type::T) };
-
-			mesh_descriptor md;
-			md.model = p.second->get_model_transform();
-			md.transpose_inverse_model = glm::transpose(glm::inverse(md.model));
-			md.mat_idx = p.second->get_material_id();
-			mesh_data_bo.overwrite(p.first, md);
-
-			ranges_to_lock.push_back(lock_range);
-			
-			p.second->clear_model_mat_dirty_flag();
-			p.second->clear_material_id_dirty_flag();
+	for (auto obj_ptr : signalled_objects) {
+		auto it = std::find_if(objects.begin(), objects.end(), [&](const objects_map_type::value_type &v) -> bool {
+			return v.first.get() == obj_ptr;
+		});
+		if (it == objects.end()) {
+			assert(false);
+			continue;
 		}
+		object_information info = it->second;
+		
+		range<> lock_range{ info.index * sizeof(mesh_data_buffer_type::T), sizeof(mesh_data_buffer_type::T) };
+
+		mesh_descriptor md;
+		md.model = obj_ptr->get_model_transform();
+		md.transpose_inverse_model = glm::transpose(glm::inverse(md.model));
+		md.mat_idx = obj_ptr->get_material_id();
+		mesh_data_bo.overwrite(info.index, md);
+
+		ranges_to_lock.push_back(lock_range);
 	}
+	
+	signalled_objects.clear();
 }
 
 void ObjectGroup::prepare() const {

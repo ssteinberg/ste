@@ -20,7 +20,7 @@
 namespace StE {
 namespace Graphics {
 
-class Scene : public renderable, public entity {
+class Scene : public renderable, public entity_affine {
 	using Base = renderable;
 	
 private:

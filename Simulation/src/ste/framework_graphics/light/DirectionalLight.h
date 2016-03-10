@@ -22,6 +22,10 @@ public:
 		dirty = true;
 	}
 
+	glm::vec3 get_position() const override {
+		auto inf = std::numeric_limits<glm::vec3::value_type>::infinity();
+		return { inf, inf, inf };
+	}
 	glm::vec3 get_direction() const { return { descriptor.position_direction.x, descriptor.position_direction.y, descriptor.position_direction.z }; }
 };
 
