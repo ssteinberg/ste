@@ -24,6 +24,7 @@ public:
 	
 public:
 	entity_signalling(O obj) : obj(obj) {}
+	~entity_signalling() noexcept {}
 	
 	const signal_type &signal_model_change() const { return model_change_signal; }
 	

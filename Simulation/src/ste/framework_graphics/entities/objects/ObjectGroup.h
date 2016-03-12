@@ -7,7 +7,6 @@
 
 #include "entity.h"
 #include "Object.h"
-#include "renderable.h"
 
 #include "ElementBufferObject.h"
 #include "VertexBufferObject.h"
@@ -29,7 +28,7 @@
 namespace StE {
 namespace Graphics {
 
-class ObjectGroup : public renderable, public entity_affine {
+class ObjectGroup : public entity_affine {
 private:
 	struct mesh_descriptor {
 		glm::mat4 model, transpose_inverse_model;

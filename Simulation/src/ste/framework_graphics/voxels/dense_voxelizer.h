@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -17,7 +17,7 @@ namespace Graphics {
 
 class dense_voxel_space;
 
-class dense_voxelizer : public Graphics::renderable {
+class dense_voxelizer {
 private:
 	const dense_voxel_space *dvs;
 	Scene &scene;

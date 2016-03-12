@@ -78,7 +78,6 @@ public:
 	auto &cache() const { return global_cache; }
 	auto &glslprograms_pool() const { return glslprogramspool; }
 	Graphics::rendering_system *renderer() const { return global_renderer; }
-	const LLR::gl_context* gl() const { return context.get(); }
 
 	void set_window_title(const char * title) { glfwSetWindowTitle(context->window.get(), title); }
 	glm::i32vec2 get_window_position() const {

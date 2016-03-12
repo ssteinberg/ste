@@ -99,7 +99,6 @@ void ObjectGroup::update_dirty_buffers() const {
 }
 
 void ObjectGroup::prepare() const {
-	renderable::prepare();
 	bind_buffers();
 	
 	update_dirty_buffers();

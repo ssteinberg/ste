@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -15,10 +15,10 @@ private:
 	friend class gl_context;
 
 private:
-	static thread_local gl_context *current;
+	static thread_local gl_generic_context *current;
 
 public:
-	static gl_context *get() { return current; }
+	static gl_generic_context *get() { return current; }
 };
 
 }

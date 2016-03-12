@@ -23,7 +23,7 @@ Scene::Scene(const StEngineControl &ctx) : object_program(ctx.glslprograms_pool(
 	ctx.signal_projection_change().connect(projection_change_connection);
 }
 
-void Scene::render() const {
+void Scene::dispatch() const {
 	auto model = entity_affine::get_model_transform();
 	
 	for (auto &obj : objects) {

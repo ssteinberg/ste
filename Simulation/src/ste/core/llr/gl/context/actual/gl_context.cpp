@@ -169,8 +169,9 @@ void gl_context::create_default_framebuffer(gli::format format, gli::format dept
 }
 
 void gl_context::make_current() {
+	Base::make_current;
+	
 	glfwMakeContextCurrent(window.get());
-	gl_current_context::current = this;
 }
 
 bool gl_context::is_debug_context() const {

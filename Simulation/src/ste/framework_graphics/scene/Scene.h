@@ -6,6 +6,7 @@
 #include "stdafx.h"
 
 #include "StEngineControl.h"
+#include "gpu_task.h"
 
 #include "SceneProperties.h"
 #include "ObjectGroup.h"
@@ -20,8 +21,8 @@
 namespace StE {
 namespace Graphics {
 
-class Scene : public renderable, public entity_affine {
-	using Base = renderable;
+class Scene : public gpu_task, public entity_affine {
+	using Base = gpu_task;
 	
 private:
 	using ProjectionSignalConnectionType = StEngineControl::projection_change_signal_type::connection_type; 
@@ -40,7 +41,9 @@ public:
 	virtual void add_object(const std::shared_ptr<ObjectGroup> &obj) { objects.emplace_back(obj); }
 	virtual void remove_object(const std::shared_ptr<ObjectGroup> &obj) { objects.erase(std::remove(objects.begin(), objects.end(), obj), objects.end()); }
 
-	void render() const override final;
+	gpu_state dispatch_state() const override final { return gpu_state(); }
+	void update() const override final;
+	void dispatch() const override final;
 
 	SceneProperties &scene_properties() { return scene_props; }
 	const SceneProperties &scene_properties() const { return scene_props; }

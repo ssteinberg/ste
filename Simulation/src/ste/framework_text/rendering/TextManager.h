@@ -16,8 +16,6 @@
 
 #include "ring_buffer.h"
 
-#include "renderable.h"
-
 #include "VertexArrayObject.h"
 #include "VertexBufferObject.h"
 #include "ShaderStorageBuffer.h"
@@ -48,7 +46,7 @@ private:
 		glyph_point() {}
 	};
 
-	class text_renderable : public Graphics::renderable {
+	class text_renderable {
 	private:
 		TextManager *tr;
 		std::vector<glyph_point> points;
@@ -61,8 +59,6 @@ private:
 		}
 
 		virtual void prepare() const override {
-			renderable::prepare();
-
 			LLR::gl_current_context::get()->blend_func(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 			tr->gm.ssbo().bind(LLR::shader_storage_layout_binding(0));

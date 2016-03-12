@@ -19,6 +19,7 @@ protected:
 
 public:
 	Object(std::unique_ptr<mesh_generic> &&m) : entity_signalling(this), object_mesh(std::move(m)) {}
+	~Object() noexcept {}
 
 	mesh_generic &get_mesh() { return *object_mesh; }
 	const mesh_generic &get_mesh() const { return *object_mesh; }

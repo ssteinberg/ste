@@ -7,10 +7,9 @@
 
 using namespace StE::Resource;
 
-StE::task<std::shared_ptr<StE::LLR::GLSLProgram>> glsl_programs_pool::fetch_program_task(const std::vector<std::string> &names) {
-	return StE::task<std::shared_ptr<LLR::GLSLProgram>>([names = std::move(names), this](optional<task_scheduler*> sched) -> std::shared_ptr<LLR::GLSLProgram> {
-		glsl_programs_pool_key k{ names };
-		
+
+StE::task<std::shared_ptr<StE::LLR::GLSLProgram>> glsl_programs_pool::fetch_program_task(const glsl_programs_pool_key &k) {
+	return StE::task<std::shared_ptr<LLR::GLSLProgram>>([k = std::move(k), this](optional<task_scheduler*> sched) -> std::shared_ptr<LLR::GLSLProgram> {		
 		{
 			auto val_guard = programs[k];
 			if (val_guard.is_valid()) {
@@ -20,7 +19,7 @@ StE::task<std::shared_ptr<StE::LLR::GLSLProgram>> glsl_programs_pool::fetch_prog
 			}
 		}
 		
-		auto uptr_prog = GLSLProgramFactory::load_program_task(this->context, names)();
+		auto uptr_prog = GLSLProgramFactory::load_program_task(this->context, k.names)();
 		if (uptr_prog) {
 			std::shared_ptr<LLR::GLSLProgram> prog = std::move(uptr_prog);
 			programs.emplace(k, prog);
@@ -29,4 +28,9 @@ StE::task<std::shared_ptr<StE::LLR::GLSLProgram>> glsl_programs_pool::fetch_prog
 		
 		return nullptr;
 	});
+}
+
+StE::task<std::shared_ptr<StE::LLR::GLSLProgram>> glsl_programs_pool::fetch_program_task(const std::vector<std::string> &names) {
+	glsl_programs_pool_key k{ names };
+	return fetch_program_task(k);
 }

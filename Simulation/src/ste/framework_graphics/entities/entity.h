@@ -11,6 +11,8 @@ namespace Graphics {
 	
 class entity {
 public:
+	virtual ~entity() noexcept {}
+	
 	virtual glm::vec3 get_position() const = 0;
 };
 
@@ -19,6 +21,8 @@ protected:
 	glm::mat4 model_mat{ 1.f };
 	
 public:
+	virtual ~entity_affine() noexcept {}
+	
 	virtual void set_model_matrix(const glm::mat4 &m) { model_mat = m; }
 	const glm::mat4 &get_model_transform() const { return model_mat; }
 	

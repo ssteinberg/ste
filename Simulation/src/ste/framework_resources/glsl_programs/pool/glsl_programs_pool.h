@@ -30,30 +30,26 @@ public:
 		friend class std::hash<glsl_programs_pool_key>;
 	
 	private:
+		std::vector<std::string> names;
 		std::size_t hash;
 		
-		std::size_t compute_hash(const std::vector<std::string> &n) {
-			std::vector<std::string> names = n;
-			return compute_hash(std::move(names));
-		}
-		
-		std::size_t compute_hash(std::vector<std::string> &&names) {
+		std::size_t compute_hash() {
 			if (!names.size())
 				return 0;
 			
 			std::sort(names.begin(), names.end());
-				
+
 			auto it = names.begin();
 			auto h = std::hash<std::string>()(*it);
 			while ((++it) != names.end())
-				h = StE::hash_combine(h, std::hash<std::string>()(*it));
+				h = hash_combine(h, std::hash<std::string>()(*it));
 				
 			return h;
 		}
 		
 	public:
-		glsl_programs_pool_key(const std::vector<std::string> &names) : hash(compute_hash(names)) {}
-		glsl_programs_pool_key(std::vector<std::string> &&names) : hash(compute_hash(std::move(names))) {}
+		glsl_programs_pool_key(const std::vector<std::string> &names) : names(names), hash(compute_hash()) {}
+		glsl_programs_pool_key(std::vector<std::string> &&names) : names(std::move(names)), hash(compute_hash()) {}
 		
 		glsl_programs_pool_key(const glsl_programs_pool_key &) = default;
 		glsl_programs_pool_key(glsl_programs_pool_key &&) = default;
@@ -77,7 +73,10 @@ public:
 	glsl_programs_pool(const StEngineControl &context) : context(context) {}
 	
 	task<std::shared_ptr<LLR::GLSLProgram>> fetch_program_task(const std::vector<std::string> &names);
+	task<std::shared_ptr<LLR::GLSLProgram>> fetch_program_task(const glsl_programs_pool_key &k);
 };
+
+using glsl_program_identifier = glsl_programs_pool::glsl_programs_pool_key;
 
 }
 }
