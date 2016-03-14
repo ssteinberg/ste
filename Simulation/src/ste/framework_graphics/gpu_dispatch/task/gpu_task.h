@@ -5,14 +5,13 @@
 
 #include "stdafx.h"
 #include "gpu_dispatch.h"
-#include "gpu_state.h"
 
-#include <set>
+#include <unordered_set>
 #include <memory>
 
 namespace StE {
 namespace Graphics {
-	
+
 class gpu_task_dispatch_queue;
 
 class gpu_task {
@@ -20,9 +19,12 @@ private:
 	friend class gpu_task_dispatch_queue;
 
 private:
-	std::set<std::shared_ptr<gpu_task>> dependencies;
-	std::set<std::shared_ptr<gpu_task>> requisite_for;
+	std::unordered_set<std::shared_ptr<gpu_task>> dependencies;
+	std::unordered_set<std::shared_ptr<gpu_task>> requisite_for;
 	bool inserted_into_queue{ false };
+	
+protected:
+	const auto &get_dependencies() const { return dependencies; }
 
 protected:
 	void add_dependency(const std::shared_ptr<gpu_task> &task) {
@@ -31,25 +33,19 @@ protected:
 	void remove_dependency(const std::shared_ptr<gpu_task> &task) {
 		dependencies.erase(task);
 	}
+	
+	void operator()() const {
+		set_context_state();
+		dispatch();
+	}
 
 public:
 	virtual ~gpu_task() noexcept {}
 	
-	void operator()() const {
-		for (auto &d : dependencies)
-			d();
-		dispatch_state()();
-		dispatcher->dispatch();
-	}
-	
-public:
-	// Defines dispatch state
-	virtual gpu_state dispatch_state() const = 0;
-	
 protected:
-	// Should update buffers, uniforms, etc.. Called before dispatching any dependencies.
-	virtual void update() const = 0;
-	// Should set locks/sync objects, etc. and call a glDraw*/glDispatch* method only.
+	// Should set up gl resources, states, etc..
+	virtual void set_context_state() const {};
+	// Should update buffers, locks, etc. and call a single render/compute method.
 	virtual void dispatch() const = 0;
 };
 

@@ -9,110 +9,78 @@
 #include "optional.h"
 
 #include <functional>
+#include <list>
 
 namespace StE {
 namespace LLR {
 
 class context_state {
 private:
-	optional<tuple_type_erasure> state, old_state;
-	std::function<void(void)> state_setter, old_state_setter;
+	using StateSetterFunc = std::function<void(const tuple_type_erause&)>;
+	using StateT = std::pair<tuple_type_erasure, StateSetterFunc>;
+
+private:
+	optional<StateT> state;
+	std::list<StateT> stack;
 
 public:
+	context_state(StateSetterFunc &&f) : setter(std::move(f)) {}
+	
+	context_state(context_state &&) = default;
+	context_state &operator=(context_state &&) = default;
+
 	bool exists() const {
 		return !!state;
 	}
 	
 	template <typename... Args>
-	bool compare(Args... args) const {
-		if (!state)
+	bool compare(Args... &&args) const {
+		if (!exists())
 			return false;
-		return state.get().compare_weak(args...);
+		return state.get().first.compare_weak(std::forward<Args>(args)...);
 	}
 	template <typename... Ts>
 	bool compare(std::tuple<Ts...> &&t) const {
-		if (!state)
+		if (!exists())
 			return false;
-		return state.get().compare_weak(std::move(t));
+		return state.get().first.compare_weak(std::move(t));
 	}
 	
 	template <typename... Args>
-	void push(std::function<void(void)> &&setter, Args... args) {
-		old_state = std::move(state);
-		state = tuple_type_erasure{ args... };
-		old_state_setter = std::move(state_setter); 
-		state_setter = std::move(setter);
+	void set(StateSetterFunc &&f, Args... &&args) {
+		state = std::make_pair(std::move(f), tuple_type_erasure{ std::forward<Args>(args)... });
 	}
 	template <typename... Ts>
-	void push(std::function<void(void)> &&setter, std::tuple<Ts...> &&t) {
-		old_state = std::move(state);
-		states = tuple_type_erasure{ std::move(t) };
-		old_state_setter = std::move(state_setter); 
-		state_setter = std::move(setter);
+	void set(StateSetterFunc &&f, std::tuple<Ts...> &&t) {
+		states = std::make_pair(std::move(f), tuple_type_erasure{ std::move(t) });
+	}
+	
+	void push() {
+		exists() ?
+			stack.push_front(state.get()) :
+			stack.push_front(StateT());
+	}
+	
+	optional<StateT> pop() {
+		if (stack.size() > 0) {
+			state = stack.begin();
+			stack.pop_front();
+			return state;
+		}
+		return none;
 	}
 	
 	template <typename... Ts>
 	auto get() const {
 		if (exists())
-			return state.get().get_weak<Ts...>();
+			return state.get().first.get_weak<Ts...>();
 		return std::tuple<Ts...>();
 	}
 	
-	auto pop() {
-		if (old_state) {
-			auto ret = old_state_setter;
-			
-			state = std::move(old_state);
-			state_setter = std::move(old_state_setter);
-			
-			return ret;
-		}
-	}
-	
-	auto get_state_setter() const { return state_setter; }
-	auto get_old_state_setter() const { return old_state_setter; }
-};
-	
-class context_basic_state {
-private:
-	optional<bool> state, old_state;
-
-public:
-	bool exists() const {
-		return !!state;
-	}
-	
-	bool old_exists() const {
-		return !!old_state;
-	}
-	
-	bool compare(bool b) const {
-		if (!state)
-			return false;
-		return state.get() == b;
-	}
-	
-	void push(bool b) {
-		old_state = std::move(state);
-		state = b;
-	}
-	
-	bool pop() {
-		if (old_state) {
-			auto ret = old_state.get();
-			state = std::move(old_state);
-			return ret;
-		}
-	}
-	
-	bool get() const {
-		assert(exists());
-		return state.get();
-	}
-	
-	bool get_old() const {
-		assert(old_exists());
-		return old_state.get();
+	tuple_type_erasure get_state() const {
+		if (exists())
+			return state;
+		return StateT();
 	}
 };
 	

@@ -33,7 +33,7 @@ void dense_voxelizer::render() const {
 		dvs->voxelizer_upsampler_program->set_uniform("tiles", int(f.x));
 		dvs->voxelizer_upsampler_program->set_uniform("level", int(i));
 
-		glDispatchCompute(count.x, count.y, count.z);
+		LLR::gl_current_context::get()->dispatch_compute(count.x, count.y, count.z);
 
 		LLR::gl_current_context::get()->memory_barrier(GL_TEXTURE_FETCH_BARRIER_BIT);
 	}

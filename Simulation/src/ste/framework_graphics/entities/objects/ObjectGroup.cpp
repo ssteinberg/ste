@@ -2,20 +2,30 @@
 #include "stdafx.h"
 #include "ObjectGroup.h"
 
-#include <vector>
+#include "glsl_programs_pool.h"
+#include "gl_current_context.h"
+
 #include <algorithm>
 
 using namespace StE::Graphics;
-
-ObjectGroup::ObjectGroup(SceneProperties *props) : scene_props(props) {
-	request_state({ GL_CULL_FACE, true });
-	request_state({ GL_DEPTH_TEST, true });
-  
+	
+ObjectGroup::ObjectGroup(SceneProperties *props) : scene_props(props),
+												   object_program(ctx.glslprograms_pool().fetch_program_task({ "object.vert", "object.frag" })()) {
 	auto vbo_buffer = LLR::buffer_object_cast<vbo_type>(vbo.get_buffer());
 	vao[0] = vbo_buffer[0];
 	vao[1] = vbo_buffer[1];
 	vao[2] = vbo_buffer[2];
 	vao[3] = vbo_buffer[3];
+	
+	object_program->set_uniform("projection", ctx.projection_matrix());
+	object_program->set_uniform("far", ctx.get_far_clip());
+	object_program->set_uniform("near", ctx.get_near_clip());
+	projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([=](const glm::mat4 &proj, float, float fnear, float ffar) {
+		this->object_program->set_uniform("projection", proj);
+		this->object_program->set_uniform("far", ffar);
+		this->object_program->set_uniform("near", fnear);
+	});
+	ctx.signal_projection_change().connect(projection_change_connection);
 }
 
 ObjectGroup::~ObjectGroup() {
@@ -96,20 +106,4 @@ void ObjectGroup::update_dirty_buffers() const {
 	}
 	
 	signalled_objects.clear();
-}
-
-void ObjectGroup::prepare() const {
-	bind_buffers();
-	
-	update_dirty_buffers();
-}
-
-void ObjectGroup::render() const {
-	glMultiDrawElementsIndirect(GL_TRIANGLES, LLR::gl_type_name_enum<elements_type::T>::gl_enum, 0, idb.size(), 0);
-}
-
-void ObjectGroup::finalize() const {
-	for (auto &r : ranges_to_lock)
-		mesh_data_bo.lock_range(r);
-	ranges_to_lock.clear();
 }

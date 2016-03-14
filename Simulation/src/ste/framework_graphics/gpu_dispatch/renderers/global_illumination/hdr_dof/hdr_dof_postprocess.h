@@ -6,7 +6,7 @@
 #include "stdafx.h"
 #include "StEngineControl.h"
 
-#include "renderable.h"
+#include "gpu_task.h"
 #include "Quad.h"
 
 #include "Texture1D.h"
@@ -23,8 +23,26 @@
 
 namespace StE {
 namespace Graphics {
+	
+class hdr_compute_minmax_task;
+class hdr_create_histogram_task;
+class hdr_compute_histogram_sums_task;
+class hdr_tonemap_coc_task;
+class hdr_bloom_blurx_task;
+class hdr_bloom_blury_task;
+class bokeh_blurx_task;
 
-class hdr_dof_postprocess : public renderable {
+class hdr_dof_postprocess : public gpu_task {
+	using Base = gpu_task;
+	
+	friend class hdr_compute_minmax_task;
+	friend class hdr_create_histogram_task;
+	friend class hdr_compute_histogram_sums_task;
+	friend class hdr_tonemap_coc_task;
+	friend class hdr_bloom_blurx_task;
+	friend class hdr_bloom_blury_task;
+	friend class bokeh_blurx_task;
+	
 private:
 	using ResizeSignalConnectionType = StEngineControl::framebuffer_resize_signal_type::connection_type;
 
@@ -70,7 +88,6 @@ private:
 	mutable LLR::ShaderStorageBuffer<std::uint32_t> histogram_sums{ 128 };
 	mutable std::unique_ptr<LLR::PixelBufferObject<std::int32_t>> hdr_bokeh_param_buffer_eraser;
 
-	mutable bool first_frame{ true };
 	glm::i32vec2 luminance_size;
 
 	const LLR::Texture2D *z_buffer;
@@ -82,14 +99,14 @@ public:
 	hdr_dof_postprocess(const StEngineControl &ctx, const LLR::Texture2D *z_buffer);
 	~hdr_dof_postprocess() noexcept {}
 
-	virtual void prepare() const override;
-	virtual void render() const override;
-
 	void set_z_buffer(const LLR::Texture2D *z_buffer);
 
 	auto get_input_fbo() const { return &fbo_hdr_final; }
 
 	void resize(glm::ivec2 size);
+	
+	void set_context_state() const override final;
+	void dispatch() const override final;
 };
 
 }

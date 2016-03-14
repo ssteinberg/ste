@@ -7,14 +7,25 @@
 #include "gpu_task.h"
 
 #include <memory>
-#include <vector>
+#include <unordered_set>
 
 namespace StE {
 namespace Graphics {
 
 class gpu_task_dispatch_queue {
 private:
-	std::set<std::shared_ptr<gpu_task>> tasks;
+	std::unordered_set<std::shared_ptr<gpu_task>> tasks;
+	
+	void dispatch(const std::shared_ptr<gpu_task> &task, std::unordered_set<std::shared_ptr<gpu_task>> &tasks_to_dispatch) const {
+		task->update();
+		
+		for (auto &d : task->dependencies)
+			dispatch(d, tasks_to_dispatch);
+			
+		(*task)();
+		
+		tasks_to_dispatch.erase(task);
+	}
 
 public:
 	void add_task(const std::shared_ptr<gpu_task> &task) {
@@ -41,16 +52,10 @@ public:
 		}
 	}
 
-	void dispatch() {
+	void dispatch() const {
 		auto tasks_to_dispatch = tasks;
-		while ((auto it = tasks_to_dispatch.begin()) != tasks_to_dispatch.end()) {
-			for (auto &d : it->dependencies) {
-				d();
-				tasks_to_dispatch.erase(d);
-			}
-			(*it)();
-			tasks_to_dispatch.erase(it);
-		}
+		while ((auto it = tasks_to_dispatch.begin()) != tasks_to_dispatch.end()) 
+			dispatch(*it, tasks_to_dispatch);
 	}
 };
 

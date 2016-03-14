@@ -25,21 +25,24 @@
 #include "AttributedString.h"
 #include "RGB.h"
 #include "Sphere.h"
-#include "renderable.h"
+#include "gpu_task.h"
 
 using namespace StE::LLR;
 using namespace StE::Text;
 
-class SkyDome : public StE::Graphics::MeshRenderable<StE::Graphics::mesh_subdivion_mode::Triangles> {
+class SkyDome : public StE::Graphics::gpu_task {
 private:
 	using ProjectionSignalConnectionType = StE::StEngineControl::projection_change_signal_type::connection_type;
 
 	std::unique_ptr<Texture2D> stars_tex;
+	std::unique_ptr<GLSLProgram> program;
 	std::shared_ptr<ProjectionSignalConnectionType> projection_change_connection;
+	
+	std::unique_ptr<StE::Graphics::mesh<StE::Graphics::mesh_subdivion_mode::Triangles>> meshptr;
 
 public:
-	SkyDome(const StE::StEngineControl &ctx) : MeshRenderable(ctx.glslprograms_pool().fetch_program_task({ "transform_sky.vert", "frag_sky.frag" })(),
-															  std::make_shared<StE::Graphics::Sphere>(10, 10, .0f)) {
+	SkyDome(const StE::StEngineControl &ctx) : program(ctx.glslprograms_pool().fetch_program_task({ "transform_sky.vert", "frag_sky.frag" })()),
+											   meshptr(std::make_unique<StE::Graphics::Sphere>(10, 10, .0f)) {
 		stars_tex = StE::Resource::SurfaceFactory::load_texture_2d_task("Data/textures/stars.jpg", true)();
 
 		get_program()->set_uniform("sky_luminance", 5.f);
@@ -57,40 +60,18 @@ public:
 	void set_model_matrix(const glm::mat4 &m) {
 		get_program()->set_uniform("view_model", m);
 	}
-
-	virtual void prepare() const override {
-		MeshRenderable::prepare();
-
+	
+	void set_context_state() const override final {
+		gl_current_context::get()->enable_depth_test();
+		
 		0_tex_unit = *stars_tex;
-	}
-};
-
-class RayTracer : public StE::Graphics::renderable {
-private:
-	using ProjectionSignalConnectionType = StE::StEngineControl::projection_change_signal_type::connection_type;
-	std::shared_ptr<ProjectionSignalConnectionType> projection_change_connection;
-
-public:
-	RayTracer(const StE::StEngineControl &ctx) : StE::Graphics::renderable(ctx.glslprograms_pool().fetch_program_task({ "passthrough.vert", "ray.frag" })()) {
-		get_program()->set_uniform("inv_projection", glm::inverse(ctx.projection_matrix()));
-		projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([=](const glm::mat4 &proj, float, float clip_near, float clip_far) {
-			get_program()->set_uniform("inv_projection", glm::inverse(proj));
-		});
-		ctx.signal_projection_change().connect(projection_change_connection);
+		meshptr->vao()->bind();
+		meshptr->ebo()->bind();
+		program->bind();
 	}
 
-	void set_model_matrix(const glm::mat4 &m) {
-		get_program()->set_uniform("inv_view_model", glm::inverse(m));
-	}
-
-	virtual void prepare() const override {
-		renderable::prepare();
-
-		StE::Graphics::ScreenFillingQuad.vao()->bind();
-	}
-
-	virtual void render() const override {
-		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	void dispatch() const override final {
+		gl_current_context::get()->draw_elements<typename mesh<mode>::ebo_type::T>(static_cast<GLenum>(mode), meshptr->ebo()->size(), nullptr);
 	}
 };
 
@@ -137,8 +118,8 @@ int main() {
 	scene.scene_properties().lights_storage().add_light(light1);
 	StE::Text::TextManager text_renderer(ctx, StE::Text::Font("Data/ArchitectsDaughter.ttf"));
 
-	StE::Graphics::CustomRenderable fb_clearer{ [&]() { ctx.gl()->clear_framebuffer(); } };
-	StE::Graphics::CustomRenderable fb_depth_clearer{ [&]() { ctx.gl()->clear_framebuffer(false); } };
+	StE::Graphics::CustomRenderable fb_clearer{ [&]() { gl_current_context::get()->clear_framebuffer(); } };
+	StE::Graphics::CustomRenderable fb_depth_clearer{ [&]() { gl_current_context::get()->clear_framebuffer(false); } };
 
 
 	bool running = true;
@@ -215,8 +196,8 @@ int main() {
 			AttributedWString str = center(stroke(blue_violet, 2)(purple(vvlarge(b(L"Global Illumination\n")))) +
 										   azure(large(L"Loading...\n")) +
 										   orange(regular(L"By Shlomi Steinberg")));
-			auto total_vram = std::to_wstring(ctx.gl()->meminfo_total_available_vram() / 1024);
-			auto free_vram = std::to_wstring(ctx.gl()->meminfo_free_vram() / 1024);
+			auto total_vram = std::to_wstring(gl_current_context::get()->meminfo_total_available_vram() / 1024);
+			auto free_vram = std::to_wstring(gl_current_context::get()->meminfo_free_vram() / 1024);
 
 			ctx.renderer()->queue().push_back(text_renderer.render({ w / 2, h / 2 + 100 }, str));
 			ctx.renderer()->queue().push_back(text_renderer.render({ 10, 20 }, vsmall(b(L"Thread pool workers: ") +
@@ -291,8 +272,8 @@ int main() {
 			}
 			auto tpf_str = std::to_wstring(tpf);
 
-			auto total_vram = std::to_wstring(ctx.gl()->meminfo_total_available_vram() / 1024);
-			auto free_vram = std::to_wstring(ctx.gl()->meminfo_free_vram() / 1024);
+			auto total_vram = std::to_wstring(gl_current_context::get()->meminfo_total_available_vram() / 1024);
+			auto free_vram = std::to_wstring(gl_current_context::get()->meminfo_free_vram() / 1024);
 
 			renderer.postprocess_queue().push_back(text_renderer.render({ 30, h - 50 },
 																		vsmall(b(stroke(dark_magenta, 1)(red(tpf_str)))) + L" ms"));

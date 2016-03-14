@@ -10,6 +10,7 @@
 
 #include "AttributedString.h"
 
+#include "gpu_task.h"
 #include "gl_current_context.h"
 #include "StEngineControl.h"
 #include "task.h"
@@ -46,32 +47,36 @@ private:
 		glyph_point() {}
 	};
 
-	class text_renderable {
+	class text_renderable : public gpu_task {
 	private:
-		TextManager *tr;
+		mutable TextManager *tr;
 		std::vector<glyph_point> points;
 
 		mutable range<> range_in_use;
 
 	public:
-		text_renderable(TextManager *tr, std::vector<glyph_point> &&points) : renderable(tr->text_distance_mapping), tr(tr), points(std::move(points)) {
-			request_state({ GL_BLEND, true });
+		text_renderable(TextManager *tr) : tr(tr) {}
+		
+		void set_text(const glm::vec2 &ortho_pos, const AttributedWString &wstr) {
+			points = tr->create_points(ortho_pos, wstr);
 		}
-
-		virtual void prepare() const override {
+		
+		void set_context_state() const override final {
+			using namespace LLR;
+			
+			LLR::gl_current_context::get()->enable_state(BLEND);
 			LLR::gl_current_context::get()->blend_func(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-			tr->gm.ssbo().bind(LLR::shader_storage_layout_binding(0));
+			
+			tr->text_distance_mapping->bind();
+			0_storage_idx = tr->gm.ssbo();
 			tr->vao.bind();
+		}
 
+		void dispatch() const override final {	
 			range_in_use = tr->vbo.commit(points);
-		}
-
-		virtual void render() const override {
-			glDrawArrays(GL_POINTS, range_in_use.start / sizeof(glyph_point), points.size());
-		}
-
-		virtual void finalize() const override {
+					
+			LLR::gl_current_context::get()->draw_arrays(GL_POINTS, range_in_use.start / sizeof(glyph_point), points.size());
+			
 			tr->vbo.lock_range(range_in_use);
 		}
 	};
@@ -98,12 +103,14 @@ private:
 
 private:
 	void adjust_line(std::vector<glyph_point> &, const AttributedWString &, unsigned, float , float , const glm::vec2 &);
-	std::vector<glyph_point> create_points(glm::vec2 , const AttributedWString &);
+	std::vector<glyph_point> create_points(const glm::vec2 &, const AttributedWString &);
 
 public:
 	TextManager(const StEngineControl &context, const Font &default_font, int default_size = 28);
 
-	std::unique_ptr<text_renderable> render(glm::vec2 ortho_pos, const AttributedWString &wstr);
+	std::unique_ptr<text_renderable> create_render() {
+		return std::make_unique<text_renderable>(this);
+	}
 };
 
 }

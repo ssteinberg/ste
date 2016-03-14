@@ -6,7 +6,7 @@
 #include "stdafx.h"
 #include <cstring>
 #include <functional>
-#include <memory>
+#include <vector>
 
 namespace StE {
 	
@@ -24,22 +24,24 @@ namespace _tuple_type_erasure {
 class tuple_type_erasure {	
 private:
 	std::size_t size;
-	std::unique_ptr<char[]> data;
+	std::vector<char> data;
 
 public:
 	tuple_type_erasure() = default;
 	
 	template <typename... Args>
-	tuple_type_erasure(std::tuple<Args...> &&tuple_args) : size(sizeof(tuple_args)), data(new char[size]) {
+	tuple_type_erasure(std::tuple<Args...> &&tuple_args) : size(sizeof(tuple_args)), data(size) {
 		_tuple_type_erasure::_type_checker<Args...>;
 
-		std::memcpy(data.get(), &tuple_args, size);
+		std::memcpy(data.data(), &tuple_args, size);
 	}
 	template <typename... Args>
 	tuple_type_erasure(Args... args) : tuple_type_erasure(std::make_tuple{ args... }) {}
 	
 	tuple_type_erasure(tuple_type_erasure &&) = default;
+	tuple_type_erasure(const tuple_type_erasure &) = default;
 	tuple_type_erasure &operator=(tuple_type_erasure &&) = default;
+	tuple_type_erasure &operator=(const tuple_type_erasure &) = default;
 
 	template <typename... Args>
 	bool compare_weak(std::tuple<Args...> &&tuple_args) const {
@@ -48,7 +50,7 @@ public:
 		std::size_t s = sizeof(tuple_args);
 		
 		if (s == size)
-			return std::memcmp(&tuple_args, data.get(), s);
+			return std::memcmp(&tuple_args, data.data(), s);
 		return false;
 	}
 	template <typename... Args>
@@ -66,7 +68,7 @@ public:
 		assert(sizeof(t) == size);
 		size = std::min(sizeof(t), size);
 		
-		std::memcpy(&t, data.get(), size);
+		std::memcpy(&t, data.data(), size);
 		
 		return t;
 	}

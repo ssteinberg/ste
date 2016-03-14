@@ -4,6 +4,8 @@
 
 #include "human_vision_properties.h"
 
+#include "bokeh_blurx_task.h"
+
 #include <gli/gli.hpp>
 
 using namespace StE::Graphics;
@@ -49,13 +51,12 @@ hdr_dof_postprocess::hdr_dof_postprocess(const StEngineControl &context, const L
 	vision_handle.make_resident();
 
 	hdr_tonemap_coc->set_uniform("hdr_vision_properties_texture", vision_handle);
-
-	storage_buffers[0] = histogram_sums.get_resource_id();
-	storage_buffers[1] = histogram.get_resource_id();
-	storage_buffers[2] = hdr_bokeh_param_buffer.get_resource_id();
-	storage_buffers[3] = hdr_bokeh_param_buffer_prev.get_resource_id();
+	
+	hdr_bokeh_param_buffer_prev << *hdr_bokeh_param_buffer_eraser;
 
 	resize(ctx.get_backbuffer_size());
+	
+	Base::add_dependency(std::make_shared<bokeh_blurx_task>(this));
 }
 
 void hdr_dof_postprocess::set_z_buffer(const LLR::Texture2D *z_buffer) {
@@ -124,63 +125,11 @@ void hdr_dof_postprocess::resize(glm::ivec2 size) {
 	hdr_compute_histogram_sums->set_uniform("hdr_lum_resolution", static_cast<std::uint32_t>(luminance_size.x * luminance_size.y));
 }
 
-void hdr_dof_postprocess::prepare() const {
-	using namespace LLR;
-
-	std::uint32_t zero = 0;
-	histogram.clear(gli::FORMAT_R32_UINT_PACK32, &zero);
-	hdr_bokeh_param_buffer_prev << hdr_bokeh_param_buffer;
-	hdr_bokeh_param_buffer << *hdr_bokeh_param_buffer_eraser;
-
-	hdr_compute_minmax->set_uniform("time", ctx.time_per_frame().count());
-	hdr_compute_histogram_sums->set_uniform("time", ctx.time_per_frame().count());
-
-	0_atomic_idx = histogram;
-	0_image_idx = (*hdr_lums)[0];
-	ctx.gl()->bind_buffers_base<0, 4>(GL_SHADER_STORAGE_BUFFER, storage_buffers);
-	if (first_frame) {
-		3_storage_idx = hdr_bokeh_param_buffer;
-		first_frame = false;
-	}
-
+void hdr_dof_postprocess::set_context_state() const override final {
 	ScreenFillingQuad.vao()->bind();
+	bokeh_blury->bind();
 }
 
-void hdr_dof_postprocess::render() const {
-	ctx.gl()->memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT);
-
-	hdr_compute_minmax->bind();
-	glDispatchCompute(luminance_size.x / 32, luminance_size .y / 32, 1);
-
-	ctx.gl()->memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
-
-	hdr_create_histogram->bind();
-	glDispatchCompute(luminance_size.x / 32, luminance_size .y / 32, 1);
-
-	ctx.gl()->memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_ATOMIC_COUNTER_BARRIER_BIT);
-
-	hdr_compute_histogram_sums->bind();
-	glDispatchCompute(1, 1, 1);
-
-	ctx.gl()->memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT);
-
-	fbo_hdr.bind();
-	hdr_tonemap_coc->bind();
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-	fbo_hdr_bloom_blurx_image.bind();
-	hdr_bloom_blurx->bind();
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-	fbo_hdr_final.bind();
-	hdr_bloom_blury->bind();
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-	fbo_bokeh_blur_image.bind();
-	bokeh_blurx->bind();
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-	bokeh_blury->bind();
-	fbo->bind();
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+void hdr_dof_postprocess::dispatch() const {
+	gl_current_context::get()->draw_arrays(GL_TRIANGLE_STRIP, 0, 4);
 }

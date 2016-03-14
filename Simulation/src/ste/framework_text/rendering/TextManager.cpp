@@ -113,11 +113,3 @@ std::vector<TextManager::glyph_point> TextManager::create_points(glm::vec2 ortho
 
 	return points;
 }
-
-std::unique_ptr<TextManager::text_renderable> TextManager::render(glm::vec2 ortho_pos, const AttributedWString &wstr) {
-	if (!wstr.length()) return nullptr;
-	std::vector<glyph_point> points = create_points(ortho_pos, wstr);
-	if (!points.size()) return nullptr;
-
-	return std::make_unique<text_renderable>(this, std::move(points));
-}

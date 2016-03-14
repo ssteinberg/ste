@@ -22,7 +22,6 @@ public:
 	std::size_t get_total_fbo_changes() const { return total_fbo_changes; };
 	std::size_t get_total_va_changes() const { return total_va_changes; };
 	
-	const auto &get_basic_states() const { return Base::basic_states; }
 	const auto &get_states() const { return Base::states; }
 	const auto &get_resources() const { return Base::resources; }
 };

@@ -6,7 +6,7 @@
 #include "stdafx.h"
 #include "StEngineControl.h"
 
-#include "renderable.h"
+#include "gpu_task.h"
 #include "Scene.h"
 
 #include "GLSLProgram.h"
