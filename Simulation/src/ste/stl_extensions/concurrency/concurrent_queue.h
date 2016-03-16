@@ -148,7 +148,6 @@ public:
 			if (old_tail.ptr->data.compare_exchange_strong(old_data, new_data.get())) {
 				counted_node_ptr old_next = { 0 };
 				auto oldnexta = old_tail.ptr->next.load();
-				auto ret = memcmp(&oldnexta, &old_next, sizeof(oldnexta));
 				if (!old_tail.ptr->next.compare_exchange_strong(old_next, new_next)) {
 					delete new_next.ptr;
 					new_next = old_next;

@@ -4,6 +4,7 @@
 #pragma once
 
 #include "stdafx.h"
+#include "StEngineControl.h"
 
 #include "entity.h"
 #include "Object.h"
@@ -33,6 +34,8 @@ namespace StE {
 namespace Graphics {
 
 class ObjectGroup : public gpu_task, public entity_affine {	
+	using Base = gpu_task;
+	
 private:
 	struct mesh_descriptor {
 		glm::mat4 model, transpose_inverse_model;
@@ -84,7 +87,7 @@ protected:
 	void update_dirty_buffers() const;
 
 public:
-	ObjectGroup(SceneProperties *props);
+	ObjectGroup(StEngineControl &ctx, SceneProperties *props);
 	~ObjectGroup();
 
 	void add_object(const std::shared_ptr<Object> &);
@@ -97,9 +100,12 @@ public:
 		object_program->set_uniform("trans_inverse_view_matrix", glm::transpose(glm::inverse(m)));
 	}
 	
+protected:
 	void set_context_state() const override final {
-		gl_current_context::get()->enable_depth_test();
-		gl_current_context::get()->enable_state(CULL_FACE);
+		Base::set_context_state();
+		
+		LLR::gl_current_context::get()->enable_depth_test();
+		LLR::gl_current_context::get()->enable_state(LLR::context_state_name::CULL_FACE);
 		
 		bind_buffers();
 		object_program->bind();
@@ -108,7 +114,7 @@ public:
 	void dispatch() const override final {
 		update_dirty_buffers();
 		
-		gl_current_context::get()->draw_multi_elements_indirect<elements_type::T>(GL_TRIANGLES, 0, idb.size(), 0);
+		LLR::gl_current_context::get()->draw_multi_elements_indirect<elements_type::T>(GL_TRIANGLES, 0, idb.size(), 0);
 		
 		for (auto &r : ranges_to_lock)
 			mesh_data_bo.lock_range(r);

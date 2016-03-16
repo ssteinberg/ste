@@ -56,7 +56,7 @@ hdr_dof_postprocess::hdr_dof_postprocess(const StEngineControl &context, const L
 
 	resize(ctx.get_backbuffer_size());
 	
-	Base::add_dependency(std::make_shared<bokeh_blurx_task>(this));
+	Base::sub_tasks.insert(std::make_shared<bokeh_blurx_task>(this));
 }
 
 void hdr_dof_postprocess::set_z_buffer(const LLR::Texture2D *z_buffer) {
@@ -125,11 +125,13 @@ void hdr_dof_postprocess::resize(glm::ivec2 size) {
 	hdr_compute_histogram_sums->set_uniform("hdr_lum_resolution", static_cast<std::uint32_t>(luminance_size.x * luminance_size.y));
 }
 
-void hdr_dof_postprocess::set_context_state() const override final {
+void hdr_dof_postprocess::set_context_state() const {
+	Base::set_context_state();
+		
 	ScreenFillingQuad.vao()->bind();
 	bokeh_blury->bind();
 }
 
 void hdr_dof_postprocess::dispatch() const {
-	gl_current_context::get()->draw_arrays(GL_TRIANGLE_STRIP, 0, 4);
+	LLR::gl_current_context::get()->draw_arrays(GL_TRIANGLE_STRIP, 0, 4);
 }

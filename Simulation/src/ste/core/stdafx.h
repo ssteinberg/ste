@@ -3,9 +3,7 @@
 
 #include <cstdint>
 
-#define GLEW_STATIC
-#include <GL/glew.h>
-#include "gl_extensions.h"
+#include "gl.h"
 
 #define GLM_FORCE_AVX
 #define GLM_EXT_INCLUDED

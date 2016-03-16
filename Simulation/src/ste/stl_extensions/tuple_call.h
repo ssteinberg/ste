@@ -5,6 +5,7 @@
 
 #include "stdafx.h"
 #include <functional>
+#include <utility>
 
 namespace StE {
 	
@@ -27,7 +28,7 @@ namespace _tuple_call_detail {
 template <typename F, typename Tuple>
 void tuple_call(F f, Tuple &&t) {
 	using T = typename std::decay<Tuple>::type;
-	detail::call_impl<F, Tuple, 0 == std::tuple_size<T>::value, std::tuple_size<T>::value>::call(f, std::forward<Tuple>(t));
+	_tuple_call_detail::call_impl<F, Tuple, 0 == std::tuple_size<T>::value, std::tuple_size<T>::value>::call(f, std::forward<Tuple>(t));
 }
 
 }

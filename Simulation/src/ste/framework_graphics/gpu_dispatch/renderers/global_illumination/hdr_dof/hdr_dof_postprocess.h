@@ -9,6 +9,7 @@
 #include "gpu_task.h"
 #include "Quad.h"
 
+#include "image.h"
 #include "Texture1D.h"
 #include "Texture2D.h"
 #include "ShaderStorageBuffer.h"
@@ -105,6 +106,7 @@ public:
 
 	void resize(glm::ivec2 size);
 	
+protected:
 	void set_context_state() const override final;
 	void dispatch() const override final;
 };

@@ -19,6 +19,7 @@ CXXFLAGS += \
 	-pthread \
 	-w2 \
 	-static-intel \
+	-diag-error-limit=5 \
 	-wd10237,11012,11021,10382 \
 
 CXXFLAGS_release += \

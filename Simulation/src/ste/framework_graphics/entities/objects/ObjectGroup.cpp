@@ -9,8 +9,8 @@
 
 using namespace StE::Graphics;
 	
-ObjectGroup::ObjectGroup(SceneProperties *props) : scene_props(props),
-												   object_program(ctx.glslprograms_pool().fetch_program_task({ "object.vert", "object.frag" })()) {
+ObjectGroup::ObjectGroup(StEngineControl &ctx, SceneProperties *props) : scene_props(props),
+																		 object_program(ctx.glslprograms_pool().fetch_program_task({ "object.vert", "object.frag" })()) {
 	auto vbo_buffer = LLR::buffer_object_cast<vbo_type>(vbo.get_buffer());
 	vao[0] = vbo_buffer[0];
 	vao[1] = vbo_buffer[1];

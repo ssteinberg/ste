@@ -17,7 +17,9 @@ namespace Graphics {
 
 class dense_voxel_space;
 
-class dense_voxelizer {
+class dense_voxelizer : public gpu_task {
+	using Base = gpu_task;
+	
 private:
 	const dense_voxel_space *dvs;
 	Scene &scene;
@@ -25,9 +27,9 @@ private:
 public:
 	dense_voxelizer(const StEngineControl &ctx, const dense_voxel_space *dvs, Scene &scene) : dvs(dvs), scene(scene) {}
 
-	virtual void prepare() const override;
-	virtual void render() const override;
-	virtual void finalize() const override;
+protected:
+	void set_context_state() const override final;
+	void dispatch() const override final;
 };
 
 }

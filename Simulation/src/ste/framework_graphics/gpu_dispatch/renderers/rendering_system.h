@@ -1,10 +1,10 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
 #include "stdafx.h"
-#include "rendering_queue.h"
+#include "gpu_task_dispatch_queue.h"
 
 #include <string>
 
@@ -15,16 +15,13 @@ class StEngineControl;
 namespace Graphics {
 
 class rendering_system {
-private:
-	rendering_queue q;
+protected:
+	gpu_task_dispatch_queue q;
 
 public:
 	virtual ~rendering_system() noexcept {}
 
-	virtual void finalize_queue(const StEngineControl &ctx) = 0;
 	virtual void render_queue(const StEngineControl &ctx) = 0;
-
-	rendering_queue& queue() { return q; };
 
 	virtual std::string rendering_system_name() const = 0;
 };

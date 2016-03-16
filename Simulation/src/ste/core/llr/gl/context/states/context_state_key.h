@@ -39,7 +39,7 @@ namespace std {
 
 template <> struct hash<StE::LLR::context_state_key> {
 	size_t inline operator()(const StE::LLR::context_state_key &x) const {
-		std::int64_t h1 = x.index0 + (x.index1 << 32);
+		std::int64_t h1 = static_cast<std::int64_t>(x.index0) + (static_cast<std::int64_t>(x.index1) << 32);
 		
 		using T = typename std::underlying_type<decltype(x.name)>::type;
 		

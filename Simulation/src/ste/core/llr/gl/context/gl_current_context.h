@@ -8,11 +8,11 @@
 namespace StE {
 namespace LLR {
 
-class gl_context;
+class gl_generic_context;
 
 class gl_current_context {
 private:
-	friend class gl_context;
+	friend class gl_generic_context;
 
 private:
 	static thread_local gl_generic_context *current;
@@ -24,4 +24,4 @@ public:
 }
 }
 
-#include "gl_context.h"
+#include "gl_generic_context.h"

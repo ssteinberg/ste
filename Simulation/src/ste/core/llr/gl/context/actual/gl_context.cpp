@@ -155,87 +155,31 @@ gl_context::window_type gl_context::create_window(const char * title, const glm:
 }
 
 void gl_context::set_defaults() {	
-	disable_state(ALPHA_TEST);
-	disable_state(AUTO_NORMAL);
-	disable_state(BLEND);
-	disable_state(CLIP_PLANE0);
-	disable_state(CLIP_PLANE1);
-	disable_state(CLIP_PLANE2);
-	disable_state(CLIP_PLANE3);
-	disable_state(CLIP_PLANE4);
-	disable_state(CLIP_PLANE5);
-	disable_state(COLOR_LOGIC_OP);
-	disable_state(COLOR_MATERIAL);
-	disable_state(COLOR_SUM);
-	disable_state(COLOR_TABLE);
-	disable_state(CONVOLUTION_1D);
-	disable_state(CONVOLUTION_2D);
-	disable_state(CULL_FACE);
-	disable_state(DEPTH_TEST);
-	disable_state(FRAMEBUFFER_SRGB);
-	disable_state(FOG);
-	disable_state(HISTOGRAM);
-	disable_state(INDEX_LOGIC_OP);
-	disable_state(LIGHT0);
-	disable_state(LIGHT1);
-	disable_state(LIGHT2);
-	disable_state(LIGHT3);
-	disable_state(LIGHT4);
-	disable_state(LIGHT5);
-	disable_state(LIGHT6);
-	disable_state(LIGHT7);
-	disable_state(LIGHTING);
-	disable_state(LINE_SMOOTH);
-	disable_state(LINE_STIPPLE);
-	disable_state(MAP1_COLOR_4);
-	disable_state(MAP1_INDEX);
-	disable_state(MAP1_NORMAL);
-	disable_state(MAP1_TEXTURE_COORD_1);
-	disable_state(MAP1_TEXTURE_COORD_2);
-	disable_state(MAP1_TEXTURE_COORD_3);
-	disable_state(MAP1_TEXTURE_COORD_4);
-	disable_state(MAP1_VERTEX_3);
-	disable_state(MAP1_VERTEX_4);
-	disable_state(MAP2_COLOR_4);
-	disable_state(MAP2_INDEX);
-	disable_state(MAP2_NORMAL);
-	disable_state(MAP2_TEXTURE_COORD_1);
-	disable_state(MAP2_TEXTURE_COORD_2);
-	disable_state(MAP2_TEXTURE_COORD_3);
-	disable_state(MAP2_TEXTURE_COORD_4);
-	disable_state(MAP2_VERTEX_3);
-	disable_state(MAP2_VERTEX_4);
-	disable_state(MINMAX);
-	disable_state(NORMALIZE);
-	disable_state(POINT_SMOOTH);
-	disable_state(POINT_SPRITE);
-	disable_state(POLYGON_OFFSET_FILL);
-	disable_state(POLYGON_OFFSET_LINE);
-	disable_state(POLYGON_OFFSET_POINT);
-	disable_state(POLYGON_SMOOTH);
-	disable_state(POLYGON_STIPPLE);
-	disable_state(POST_COLOR_MATRIX_COLOR_TABLE);
-	disable_state(POST_CONVOLUTION_COLOR_TABLE);
-	disable_state(RESCALE_NORMAL);
-	disable_state(SAMPLE_ALPHA_TO_COVERAGE);
-	disable_state(SAMPLE_ALPHA_TO_ONE);
-	disable_state(SAMPLE_COVERAGE);
-	disable_state(SEPARABLE_2D);
-	disable_state(SCISSOR_TEST);
-	disable_state(STENCIL_TEST);
-	disable_state(TEXTURE_1D);
-	disable_state(TEXTURE_2D);
-	disable_state(TEXTURE_3D);
-	disable_state(TEXTURE_CUBE_MAP);
-	disable_state(TEXTURE_GEN_Q);
-	disable_state(TEXTURE_GEN_R);
-	disable_state(TEXTURE_GEN_S);
-	disable_state(TEXTURE_GEN_T);
-	disable_state(VERTEX_PROGRAM_POINT_SIZE);
-	disable_state(VERTEX_PROGRAM_TWO_SIDE);
+	disable_state(context_state_name::BLEND);
+	disable_state(context_state_name::CLIP_PLANE0);
+	disable_state(context_state_name::CLIP_PLANE1);
+	disable_state(context_state_name::CLIP_PLANE2);
+	disable_state(context_state_name::CLIP_PLANE3);
+	disable_state(context_state_name::CLIP_PLANE4);
+	disable_state(context_state_name::CLIP_PLANE5);
+	disable_state(context_state_name::COLOR_LOGIC_OP);
+	disable_state(context_state_name::CULL_FACE);
+	disable_state(context_state_name::DEPTH_TEST);
+	disable_state(context_state_name::FRAMEBUFFER_SRGB);
+	disable_state(context_state_name::LINE_SMOOTH);
+	disable_state(context_state_name::POLYGON_OFFSET_FILL);
+	disable_state(context_state_name::POLYGON_OFFSET_LINE);
+	disable_state(context_state_name::POLYGON_OFFSET_POINT);
+	disable_state(context_state_name::POLYGON_SMOOTH);
+	disable_state(context_state_name::SAMPLE_ALPHA_TO_COVERAGE);
+	disable_state(context_state_name::SAMPLE_ALPHA_TO_ONE);
+	disable_state(context_state_name::SAMPLE_COVERAGE);
+	disable_state(context_state_name::SCISSOR_TEST);
+	disable_state(context_state_name::STENCIL_TEST);
+	disable_state(context_state_name::VERTEX_PROGRAM_POINT_SIZE);
 	
-	enable_state(DITHER);
-	enable_state(MULTISAMPLE);
+	enable_state(context_state_name::DITHER);
+	enable_state(context_state_name::MULTISAMPLE);
 	
 	color_mask(true, true, true, true);
 	depth_mask(true);
@@ -252,11 +196,11 @@ void gl_context::create_default_framebuffer(gli::format format, gli::format dept
 	viewport(0, 0, ret.x, ret.y);
 	default_fb = std::make_unique<context_framebuffer>(ret, format);
 	if (srgb)
-		enable_state(FRAMEBUFFER_SRGB);
+		enable_state(context_state_name::FRAMEBUFFER_SRGB);
 }
 
 void gl_context::make_current() {
-	Base::make_current;
+	Base::make_current();
 	
 	glfwMakeContextCurrent(window.get());
 }

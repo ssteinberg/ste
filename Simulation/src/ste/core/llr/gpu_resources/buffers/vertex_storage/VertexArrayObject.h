@@ -76,6 +76,8 @@ public:
 };
 
 class VertexArrayObject : public bindable_resource<VertexArrayObjectAllocator, VertexArrayObjectBinder> {
+	using Base = bindable_resource<VertexArrayObjectAllocator, VertexArrayObjectBinder>;
+	
 private:
 	friend class vertex_array_attrib_binder;
 
@@ -97,18 +99,18 @@ private:
 		auto descriptor = ptr->data_descriptor();
 
 		enable_vertex_attrib_array(attrib_index);
-		glVertexArrayVertexBuffer(get_resource_id(), 
+		glVertexArrayVertexBuffer(Base::get_resource_id(), 
 								  binder.binding_index, 
 								  ptr->get_resource_id(), 
 								  descriptor->offset_to_attrib(binder.binding_index), 
 								  binder.size);
-		glVertexArrayAttribFormat(get_resource_id(), 
+		glVertexArrayAttribFormat(Base::get_resource_id(), 
 								  attrib_index, 
 								  descriptor->attrib_element_count(binder.binding_index), 
 								  descriptor->attrib_element_type(binder.binding_index), 
 								  descriptor->attrib_element_normalized(binder.binding_index), 
 								  binder.offset);
-		glVertexArrayAttribBinding(get_resource_id(), 
+		glVertexArrayAttribBinding(Base::get_resource_id(), 
 								   attrib_index, 
 								   binder.binding_index);
 								   
@@ -120,8 +122,8 @@ public:
 	VertexArrayObject(VertexArrayObject &&m) = default;
 	VertexArrayObject& operator=(VertexArrayObject &&m) = default;
 
-	static void enable_vertex_attrib_array(std::uint32_t index) { glEnableVertexAttribArray(get_resource_id(), index); }
-	static void disable_vertex_attrib_array(std::uint32_t index) { glDisableVertexAttribArray(get_resource_id(), index); }
+	void enable_vertex_attrib_array(std::uint32_t index) { glEnableVertexArrayAttrib(Base::get_resource_id(), index); }
+	void disable_vertex_attrib_array(std::uint32_t index) { glDisableVertexArrayAttrib(Base::get_resource_id(), index); }
 
 	vertex_array_attrib_binder operator[](int index) { return vertex_array_attrib_binder(index, this); }
 

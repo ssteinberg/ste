@@ -28,6 +28,7 @@ public:
 	class glsl_programs_pool_key {
 	private:
 		friend class std::hash<glsl_programs_pool_key>;
+		friend class glsl_programs_pool;
 	
 	private:
 		std::vector<std::string> names;

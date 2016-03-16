@@ -16,7 +16,7 @@ namespace LLR {
 
 class context_state {
 private:
-	using StateSetterFunc = std::function<void(const tuple_type_erause&)>;
+	using StateSetterFunc = std::function<void(const tuple_type_erasure&)>;
 	using StateT = std::pair<tuple_type_erasure, StateSetterFunc>;
 
 private:
@@ -24,8 +24,7 @@ private:
 	std::list<StateT> stack;
 
 public:
-	context_state(StateSetterFunc &&f) : setter(std::move(f)) {}
-	
+	context_state() = default;
 	context_state(context_state &&) = default;
 	context_state &operator=(context_state &&) = default;
 
@@ -33,29 +32,20 @@ public:
 		return !!state;
 	}
 	
-	template <typename... Args>
-	bool compare(Args... &&args) const {
-		if (!exists())
-			return false;
-		return state.get().first.compare_weak(std::forward<Args>(args)...);
-	}
 	template <typename... Ts>
-	bool compare(std::tuple<Ts...> &&t) const {
+	bool compare(const std::tuple<Ts...> &t) const {
 		if (!exists())
 			return false;
-		return state.get().first.compare_weak(std::move(t));
+		return state.get().first.compare_weak(t);
 	}
 	
-	template <typename... Args>
-	void set(StateSetterFunc &&f, Args... &&args) {
-		state = std::make_pair(std::move(f), tuple_type_erasure{ std::forward<Args>(args)... });
-	}
 	template <typename... Ts>
-	void set(StateSetterFunc &&f, std::tuple<Ts...> &&t) {
-		states = std::make_pair(std::move(f), tuple_type_erasure{ std::move(t) });
+	void set(StateSetterFunc &&f, const std::tuple<Ts...> &t) {
+		state = StateT{ tuple_type_erasure{ t }, std::move(f) };
 	}
 	
 	void push() {
+		assert(exists() && "State must be set before pushing.");
 		exists() ?
 			stack.push_front(state.get()) :
 			stack.push_front(StateT());
@@ -63,7 +53,7 @@ public:
 	
 	optional<StateT> pop() {
 		if (stack.size() > 0) {
-			state = stack.begin();
+			state = *stack.begin();
 			stack.pop_front();
 			return state;
 		}
@@ -72,15 +62,14 @@ public:
 	
 	template <typename... Ts>
 	auto get() const {
+		assert(exists() && "State must be set before calling get<>.");
 		if (exists())
 			return state.get().first.get_weak<Ts...>();
 		return std::tuple<Ts...>();
 	}
 	
-	tuple_type_erasure get_state() const {
-		if (exists())
-			return state;
-		return StateT();
+	auto get_state() const {
+		return state;
 	}
 };
 	

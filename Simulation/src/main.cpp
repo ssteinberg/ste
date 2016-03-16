@@ -9,13 +9,9 @@
 #include "GIRenderer.h"
 #include "SphericalLight.h"
 #include "DirectionalLight.h"
-#include "BasicRenderer.h"
-#include "MeshRenderable.h"
-#include "CustomRenderable.h"
 #include "ModelFactory.h"
 #include "Camera.h"
 #include "GLSLProgram.h"
-#include "GLSLProgramFactory.h"
 #include "SurfaceFactory.h"
 #include "Texture2D.h"
 #include "Scene.h"
@@ -31,11 +27,13 @@ using namespace StE::LLR;
 using namespace StE::Text;
 
 class SkyDome : public StE::Graphics::gpu_task {
+	using Base = StE::Graphics::gpu_task;
+	
 private:
 	using ProjectionSignalConnectionType = StE::StEngineControl::projection_change_signal_type::connection_type;
 
 	std::unique_ptr<Texture2D> stars_tex;
-	std::unique_ptr<GLSLProgram> program;
+	std::shared_ptr<GLSLProgram> program;
 	std::shared_ptr<ProjectionSignalConnectionType> projection_change_connection;
 	
 	std::unique_ptr<StE::Graphics::mesh<StE::Graphics::mesh_subdivion_mode::Triangles>> meshptr;
@@ -45,23 +43,26 @@ public:
 											   meshptr(std::make_unique<StE::Graphics::Sphere>(10, 10, .0f)) {
 		stars_tex = StE::Resource::SurfaceFactory::load_texture_2d_task("Data/textures/stars.jpg", true)();
 
-		get_program()->set_uniform("sky_luminance", 5.f);
-		get_program()->set_uniform("projection", ctx.projection_matrix());
-		get_program()->set_uniform("near", ctx.get_near_clip());
-		get_program()->set_uniform("far", ctx.get_far_clip());
+		program->set_uniform("sky_luminance", 5.f);
+		program->set_uniform("projection", ctx.projection_matrix());
+		program->set_uniform("near", ctx.get_near_clip());
+		program->set_uniform("far", ctx.get_far_clip());
 		projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([=](const glm::mat4 &proj, float, float clip_near, float clip_far) {
-			this->get_program()->set_uniform("projection", proj);
-			this->get_program()->set_uniform("near", clip_near);
-			this->get_program()->set_uniform("far", clip_far);
+			this->program->set_uniform("projection", proj);
+			this->program->set_uniform("near", clip_near);
+			this->program->set_uniform("far", clip_far);
 		});
 		ctx.signal_projection_change().connect(projection_change_connection);
 	}
 
 	void set_model_matrix(const glm::mat4 &m) {
-		get_program()->set_uniform("view_model", m);
+		program->set_uniform("view_model", m);
 	}
 	
+protected:
 	void set_context_state() const override final {
+		Base::set_context_state();
+		
 		gl_current_context::get()->enable_depth_test();
 		
 		0_tex_unit = *stars_tex;
@@ -71,7 +72,7 @@ public:
 	}
 
 	void dispatch() const override final {
-		gl_current_context::get()->draw_elements<typename mesh<mode>::ebo_type::T>(static_cast<GLenum>(mode), meshptr->ebo()->size(), nullptr);
+		gl_current_context::get()->draw_elements(GL_TRIANGLES, meshptr->ebo()->size(), GL_UNSIGNED_INT, nullptr);
 	}
 };
 
@@ -99,13 +100,15 @@ int main() {
 	});
 	ctx.signal_framebuffer_resize().connect(resize_connection);
 
-	SkyDome skydome(ctx);
-	StE::Graphics::Scene scene(ctx);
-	std::shared_ptr<StE::Graphics::ObjectGroup> object_group = std::make_shared<StE::Graphics::ObjectGroup>(&scene.scene_properties());
+	StE::Graphics::Scene scene;
 	StE::Graphics::GIRenderer renderer(ctx, &scene);
-	StE::Graphics::BasicRenderer basic_renderer;
 	
-	scene.add_object(object_group);
+	std::shared_ptr<SkyDome> skydome = std::make_shared<SkyDome>(ctx);
+	std::shared_ptr<StE::Graphics::ObjectGroup> object_group = std::make_shared<StE::Graphics::ObjectGroup>(ctx, &scene.scene_properties());
+	
+	ctx.set_renderer(&renderer);
+	
+	// scene.add_object(object_group);
 
 	StE::Graphics::Camera camera;
 	camera.set_position({ 25.8, 549.07, -249.2 });
@@ -116,10 +119,7 @@ int main() {
 	auto light1 = std::make_shared<StE::Graphics::DirectionalLight>(1.f, StE::Graphics::RGB({ 1.f, 1.f, 1.f }), glm::normalize(glm::vec3(0.1f, -2.5f, 0.1f)));
 	scene.scene_properties().lights_storage().add_light(light0);
 	scene.scene_properties().lights_storage().add_light(light1);
-	StE::Text::TextManager text_renderer(ctx, StE::Text::Font("Data/ArchitectsDaughter.ttf"));
-
-	StE::Graphics::CustomRenderable fb_clearer{ [&]() { gl_current_context::get()->clear_framebuffer(); } };
-	StE::Graphics::CustomRenderable fb_depth_clearer{ [&]() { gl_current_context::get()->clear_framebuffer(false); } };
+	StE::Text::TextManager text_manager(ctx, StE::Text::Font("Data/ArchitectsDaughter.ttf"));
 
 
 	bool running = true;
@@ -154,14 +154,14 @@ int main() {
 		std::unique_ptr<StE::Graphics::mesh<StE::Graphics::mesh_subdivion_mode::Triangles>> m = std::make_unique<StE::Graphics::mesh<StE::Graphics::mesh_subdivion_mode::Triangles>>();
 		std::vector<StE::Graphics::ObjectVertexData> vertices;
 		StE::Graphics::ObjectVertexData v;
-		v.p = { -100,-10,0 };
-		v.uv = { 0,0 };
+		v.p = { -100, -10, 0 };
+		v.uv = { 0, 0 };
 		vertices.push_back(v);
-		v.p = { 100,-10,0 };
-		v.uv = { 1,0 };
+		v.p = { 100, -10, 0 };
+		v.uv = { 1, 0 };
 		vertices.push_back(v);
-		v.p = { -50,100,0 };
-		v.uv = { 0,1 };
+		v.p = { -50, 100, 0 };
+		v.uv = { 0, 1 };
 		vertices.push_back(v);
 		m->set_vertices(vertices);
 		m->set_indices(std::vector<std::uint32_t>{0,1,2});
@@ -172,7 +172,7 @@ int main() {
 
 		light_obj->set_model_matrix(glm::scale(glm::translate(glm::mat4(), light_pos), glm::vec3(10, 10, 10)));
 
-		gli::texture2d light_color_tex{ gli::format::FORMAT_RGB8_UNORM_PACK8, {1,1}, 1 };
+		gli::texture2d light_color_tex{ gli::format::FORMAT_RGB8_UNORM_PACK8, { 1, 1 }, 1 };
 		glm::vec3 c = light0->get_diffuse();
 		*reinterpret_cast<glm::u8vec3*>(light_color_tex.data()) = glm::u8vec3(c.r * 255.5f, c.g * 255.5f, c.b * 255.5f);
 
@@ -186,26 +186,28 @@ int main() {
 	}
 
 
-	ctx.set_renderer(&basic_renderer);
+	auto title_text = text_manager.create_renderer();
+	auto footer_text = text_manager.create_renderer();
+	auto header_text = text_manager.create_renderer();
+	renderer.add_gui_task(title_text);
+	renderer.add_gui_task(footer_text);
 
 	while (!loaded && running) {
-		ctx.renderer()->queue().push_back(&fb_clearer);
-
 		{
 			using namespace StE::Text::Attributes;
 			AttributedWString str = center(stroke(blue_violet, 2)(purple(vvlarge(b(L"Global Illumination\n")))) +
 										   azure(large(L"Loading...\n")) +
 										   orange(regular(L"By Shlomi Steinberg")));
-			auto total_vram = std::to_wstring(gl_current_context::get()->meminfo_total_available_vram() / 1024);
-			auto free_vram = std::to_wstring(gl_current_context::get()->meminfo_free_vram() / 1024);
+			auto total_vram = std::to_wstring(ctx.gl()->meminfo_total_available_vram() / 1024);
+			auto free_vram = std::to_wstring(ctx.gl()->meminfo_free_vram() / 1024);
 
-			ctx.renderer()->queue().push_back(text_renderer.render({ w / 2, h / 2 + 100 }, str));
-			ctx.renderer()->queue().push_back(text_renderer.render({ 10, 20 }, vsmall(b(L"Thread pool workers: ") +
-																					  olive(std::to_wstring(ctx.scheduler().get_sleeping_workers())) + 
-																			 		  L"/" + 
-																					  olive(std::to_wstring(ctx.scheduler().get_workers_count())))));
-			ctx.renderer()->queue().push_back(text_renderer.render({ 10, 50 },
-																   vsmall(b(blue_violet(free_vram) + L" / " + stroke(red, 1)(dark_red(total_vram)) + L" MB"))));
+			title_text->set_text({ w / 2, h / 2 + 100 }, str);
+			footer_text->set_text({ 10, 50 },
+								  vsmall(b(blue_violet(free_vram) + L" / " + stroke(red, 1)(dark_red(total_vram)) + L" MB")) + L"\n" +
+								  vsmall(b(L"Thread pool workers: ") +
+										 olive(std::to_wstring(ctx.scheduler().get_sleeping_workers())) + 
+										 L"/" + 
+										 olive(std::to_wstring(ctx.scheduler().get_workers_count()))));
 		}
 
 		if (model_future.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
@@ -213,9 +215,14 @@ int main() {
 
 		ctx.run_loop();
 	}
+	
+	renderer.remove_gui_task(title_text);
+	
 
+	renderer.add_gui_task(header_text);
+	renderer.add_task(object_group);
+	renderer.add_task(skydome);
 
-	ctx.set_renderer(&renderer);
 
 	float time = 0;
 	while (running) {
@@ -251,12 +258,9 @@ int main() {
 		light0->set_position(lp);
 
 		light_obj->set_model_matrix(glm::scale(glm::translate(glm::mat4(), lp), glm::vec3(light0->get_radius() / 2.f)));
+		object_group->set_model_matrix(mv);
 		renderer.update_model_matrix_from_camera(camera);
-		skydome.set_model_matrix(mvnt);
-
-		renderer.queue().push_back(&fb_depth_clearer);
-		renderer.queue().push_back(&scene);
-		renderer.queue().push_back(&skydome);
+		skydome->set_model_matrix(mvnt);
 
 		{
 			using namespace StE::Text::Attributes;
@@ -272,13 +276,11 @@ int main() {
 			}
 			auto tpf_str = std::to_wstring(tpf);
 
-			auto total_vram = std::to_wstring(gl_current_context::get()->meminfo_total_available_vram() / 1024);
-			auto free_vram = std::to_wstring(gl_current_context::get()->meminfo_free_vram() / 1024);
+			auto total_vram = std::to_wstring(ctx.gl()->meminfo_total_available_vram() / 1024);
+			auto free_vram = std::to_wstring(ctx.gl()->meminfo_free_vram() / 1024);
 
-			renderer.postprocess_queue().push_back(text_renderer.render({ 30, h - 50 },
-																		vsmall(b(stroke(dark_magenta, 1)(red(tpf_str)))) + L" ms"));
-			renderer.postprocess_queue().push_back(text_renderer.render({ 30, 20 },
-																		vsmall(b((blue_violet(free_vram) + L" / " + stroke(red, 1)(dark_red(total_vram)) + L" MB")))));
+			header_text->set_text({ 30, h - 50 }, vsmall(b(stroke(dark_magenta, 1)(red(tpf_str)))) + L" ms");
+			footer_text->set_text({ 30, 20 }, vsmall(b((blue_violet(free_vram) + L" / " + stroke(red, 1)(dark_red(total_vram)) + L" MB"))));
 		}
 
 		time += ctx.time_per_frame().count();

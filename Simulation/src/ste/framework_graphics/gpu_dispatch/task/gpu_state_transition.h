@@ -112,11 +112,11 @@ public:
 				
 			// Set new states
 			for (auto &p : states_final) {
-				auto t = p->second.get_state();
+				auto t = p->second.get_state().get();
 				t.second()(t.first);
 			}
 			for (auto &p : resources_final) {
-				auto t = p->second.get_state();
+				auto t = p->second.get_state().get();
 				t.second()(t.first);
 			}
 		};

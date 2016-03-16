@@ -103,7 +103,6 @@ bool StEngineControl::run_loop() {
 	global_scheduler.run_loop();
 	glfwPollEvents();
 
-	global_renderer->finalize_queue(*this);
 	glfwSwapBuffers(context->window.get());
 	global_renderer->render_queue(*this);
 

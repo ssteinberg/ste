@@ -1,5 +1,5 @@
 
-// #include "stdafx.h"
-// #include "Scene.h"
+#include "stdafx.h"
+#include "Scene.h"
 
-// using namespace StE::Graphics;
+using namespace StE::Graphics;

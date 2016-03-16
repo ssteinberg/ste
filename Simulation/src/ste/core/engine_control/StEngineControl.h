@@ -74,6 +74,7 @@ public:
 
 	void set_renderer(Graphics::rendering_system *r) { global_renderer = r; }
 
+	auto &gl() const { return context; }
 	auto &scheduler() const { return global_scheduler; }
 	auto &cache() const { return global_cache; }
 	auto &glslprograms_pool() const { return glslprogramspool; }
