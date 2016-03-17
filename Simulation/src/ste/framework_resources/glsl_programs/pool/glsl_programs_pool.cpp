@@ -1,9 +1,9 @@
 
-#include "stdafx.h"
-#include "glsl_programs_pool.h"
+#include "stdafx.hpp"
+#include "glsl_programs_pool.hpp"
 
-#include "StEngineControl.h"
-#include "GLSLProgramFactory.h"
+#include "StEngineControl.hpp"
+#include "GLSLProgramFactory.hpp"
 
 using namespace StE::Resource;
 

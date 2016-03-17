@@ -1,10 +1,10 @@
 
-#include "stdafx.h"
-#include "SurfaceFactory.h"
+#include "stdafx.hpp"
+#include "SurfaceFactory.hpp"
 
-#include "Log.h"
-#include "AttributedString.h"
-#include "attrib.h"
+#include "Log.hpp"
+#include "AttributedString.hpp"
+#include "attrib.hpp"
 
 #include <libpng16/png.h>
 #include <turbojpeg.h>

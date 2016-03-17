@@ -1,7 +1,7 @@
 
-#include "stdafx.h"
-#include "TextureCubeMap.h"
-#include "Log.h"
+#include "stdafx.hpp"
+#include "TextureCubeMap.hpp"
+#include "Log.hpp"
 
 using namespace StE::LLR;
 

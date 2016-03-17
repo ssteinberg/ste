@@ -1,6 +1,6 @@
 
-#include "stdafx.h"
-#include "deferred_fbo.h"
+#include "stdafx.hpp"
+#include "deferred_fbo.hpp"
 
 using namespace StE::Graphics;
 using namespace StE::LLR;

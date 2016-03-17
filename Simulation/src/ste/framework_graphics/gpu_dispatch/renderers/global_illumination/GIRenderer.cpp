@@ -1,10 +1,10 @@
 
-#include "stdafx.h"
-#include "GIRenderer.h"
+#include "stdafx.hpp"
+#include "GIRenderer.hpp"
 
-#include "Quad.h"
+#include "Quad.hpp"
 
-#include "gl_current_context.h"
+#include "gl_current_context.hpp"
 
 using namespace StE::Graphics;
 

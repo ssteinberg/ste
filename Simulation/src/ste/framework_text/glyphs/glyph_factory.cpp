@@ -1,11 +1,11 @@
 
-#include "stdafx.h"
-#include "glyph_factory.h"
+#include "stdafx.hpp"
+#include "glyph_factory.hpp"
 
-#include "make_distance_map.h"
+#include "make_distance_map.hpp"
 
-#include "thread_constants.h"
-#include "hash_combine.h"
+#include "thread_constants.hpp"
+#include "hash_combine.hpp"
 
 #include <unordered_map>
 #include <functional>
@@ -17,7 +17,7 @@
 
 #include <stdexcept>
 
-#include "SurfaceFactory.h"
+#include "SurfaceFactory.hpp"
 
 using namespace StE::Text;
 

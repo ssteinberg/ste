@@ -1,15 +1,15 @@
 
-#include "stdafx.h"
-#include "ModelFactory.h"
+#include "stdafx.hpp"
+#include "ModelFactory.hpp"
 
-#include "Material.h"
-#include "Object.h"
-#include "mesh.h"
+#include "Material.hpp"
+#include "Object.hpp"
+#include "mesh.hpp"
 
-#include "SurfaceFactory.h"
+#include "SurfaceFactory.hpp"
 
-#include "normal_map_from_height_map.h"
-#include "bme_brdf_representation.h"
+#include "normal_map_from_height_map.hpp"
+#include "bme_brdf_representation.hpp"
 
 #include <algorithm>
 

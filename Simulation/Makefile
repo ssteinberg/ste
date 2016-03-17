@@ -27,7 +27,7 @@ $(BUILD_DIR)/$(TARGET)_release.elf:	$(BUILD_DIR)/$(TARGET).elf
 	
 TAGS: $(SOURCES) $(HEADERS)
 	@/bin/echo -e "\e[1;94mCreating GTAGs...\e[0m"
-	@/usr/bin/gtags ./
+	@/usr/bin/gtags ./ 2> /dev/null; true
 
 $(WORK_DIR)/%.pch: %.cpp
 	@/bin/echo -e "\e[1;94mCreating precompiled-header $@...\e[0m"

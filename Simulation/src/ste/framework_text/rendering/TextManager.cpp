@@ -1,10 +1,10 @@
 
-#include "stdafx.h"
-#include "TextManager.h"
+#include "stdafx.hpp"
+#include "TextManager.hpp"
 
-#include "gl_current_context.h"
+#include "gl_current_context.hpp"
 
-#include "GLSLProgramFactory.h"
+#include "GLSLProgramFactory.hpp"
 
 #include <vector>
 

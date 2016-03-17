@@ -1,12 +1,12 @@
 
-#include "stdafx.h"
-#include "gl_utils.h"
+#include "stdafx.hpp"
+#include "gl_utils.hpp"
 
-#include "StEngineControl.h"
-#include "Log.h"
+#include "StEngineControl.hpp"
+#include "Log.hpp"
 
-#include "Texture2D.h"
-#include "SurfaceFactory.h"
+#include "Texture2D.hpp"
+#include "SurfaceFactory.hpp"
 
 #include <chrono>
 #include <thread>

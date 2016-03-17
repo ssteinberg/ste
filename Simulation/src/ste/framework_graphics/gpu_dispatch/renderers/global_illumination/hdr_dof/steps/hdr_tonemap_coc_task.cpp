@@ -1,6 +1,6 @@
 
-#include "stdafx.h"
-#include "hdr_tonemap_coc_task.h"
+#include "stdafx.hpp"
+#include "hdr_tonemap_coc_task.hpp"
 
 using namespace StE::Graphics;
 using namespace StE::LLR;

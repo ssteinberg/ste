@@ -1,8 +1,8 @@
 
-#include "stdafx.h"
-#include "GLSLProgram.h"
+#include "stdafx.hpp"
+#include "GLSLProgram.hpp"
 
-#include "Log.h"
+#include "Log.hpp"
 
 #include <fstream>
 #include <iostream>

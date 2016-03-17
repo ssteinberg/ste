@@ -1,14 +1,14 @@
 
-#include "stdafx.h"
+#include "stdafx.hpp"
 #include <GL/glew.h>
 
 #include "gl_extensions.h"
 
-#include "gl_context.h"
-#include "gl_current_context.h"
-#include "Log.h"
+#include "gl_context.hpp"
+#include "gl_current_context.hpp"
+#include "Log.hpp"
 
-#include "AttributedString.h"
+#include "AttributedString.hpp"
 
 #include <functional>
 #include <stdexcept>

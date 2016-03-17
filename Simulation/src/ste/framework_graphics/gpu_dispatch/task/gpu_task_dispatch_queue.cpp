@@ -1,9 +1,9 @@
 
-#include "stdafx.h"
-#include "gpu_task_dispatch_queue.h"
+#include "stdafx.hpp"
+#include "gpu_task_dispatch_queue.hpp"
 
-#include "AttributedString.h"
-#include "Log.h"
+#include "AttributedString.hpp"
+#include "Log.hpp"
 
 #include <iostream>
 

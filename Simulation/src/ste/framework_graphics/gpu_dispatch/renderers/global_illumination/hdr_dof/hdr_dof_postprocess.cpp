@@ -1,10 +1,10 @@
 
-#include "stdafx.h"
-#include "hdr_dof_postprocess.h"
+#include "stdafx.hpp"
+#include "hdr_dof_postprocess.hpp"
 
-#include "human_vision_properties.h"
+#include "human_vision_properties.hpp"
 
-#include "bokeh_blurx_task.h"
+#include "bokeh_blurx_task.hpp"
 
 #include <gli/gli.hpp>
 

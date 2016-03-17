@@ -1,5 +1,5 @@
 
-#include "stdafx.h"
+#include "stdafx.hpp"
 #include "gl_extensions.h"
 
 #include <GLFW/glfw3.h>

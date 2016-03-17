@@ -1,7 +1,7 @@
 
-#include "stdafx.h"
+#include "stdafx.hpp"
 
-#include "Camera.h"
+#include "Camera.hpp"
 
 #include <glm/gtc/quaternion.hpp>
 

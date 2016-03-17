@@ -1,27 +1,27 @@
 
-#include "stdafx.h"
+#include "stdafx.hpp"
 
-#include "gl_utils.h"
-#include "Log.h"
-#include "Keyboard.h"
-#include "Pointer.h"
-#include "StEngineControl.h"
-#include "GIRenderer.h"
-#include "SphericalLight.h"
-#include "DirectionalLight.h"
-#include "ModelFactory.h"
-#include "Camera.h"
-#include "GLSLProgram.h"
-#include "SurfaceFactory.h"
-#include "Texture2D.h"
-#include "Scene.h"
-#include "Object.h"
-#include "ObjectGroup.h"
-#include "TextManager.h"
-#include "AttributedString.h"
-#include "RGB.h"
-#include "Sphere.h"
-#include "gpu_task.h"
+#include "gl_utils.hpp"
+#include "Log.hpp"
+#include "Keyboard.hpp"
+#include "Pointer.hpp"
+#include "StEngineControl.hpp"
+#include "GIRenderer.hpp"
+#include "SphericalLight.hpp"
+#include "DirectionalLight.hpp"
+#include "ModelFactory.hpp"
+#include "Camera.hpp"
+#include "GLSLProgram.hpp"
+#include "SurfaceFactory.hpp"
+#include "Texture2D.hpp"
+#include "Scene.hpp"
+#include "Object.hpp"
+#include "ObjectGroup.hpp"
+#include "TextManager.hpp"
+#include "AttributedString.hpp"
+#include "RGB.hpp"
+#include "Sphere.hpp"
+#include "gpu_task.hpp"
 
 using namespace StE::LLR;
 using namespace StE::Text;
@@ -83,7 +83,7 @@ int main() {
 //	logger.redirect_std_outputs();
 	ste_log_set_global_logger(&logger);
 	ste_log() << "Simulation is running";
-
+	
 	int w = 1688, h = 950;
 	constexpr float clip_far = 3000.f;
 	constexpr float clip_near = 5.f;

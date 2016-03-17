@@ -1,7 +1,7 @@
 
-#include "stdafx.h"
-#include "Texture2D.h"
-#include "Log.h"
+#include "stdafx.hpp"
+#include "Texture2D.hpp"
+#include "Log.hpp"
 
 using namespace StE::LLR;
 

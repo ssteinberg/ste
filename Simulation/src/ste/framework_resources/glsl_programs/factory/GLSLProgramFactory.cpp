@@ -1,14 +1,14 @@
 
-#include "stdafx.h"
+#include "stdafx.hpp"
 
-#include "GLSLProgramFactory.h"
-#include "program_binary.h"
+#include "GLSLProgramFactory.hpp"
+#include "program_binary.hpp"
 
-#include "lru_cache.h"
-#include "Log.h"
+#include "lru_cache.hpp"
+#include "Log.hpp"
 
-#include "AttributedString.h"
-#include "attrib.h"
+#include "AttributedString.hpp"
+#include "attrib.hpp"
 
 #include <exception>
 

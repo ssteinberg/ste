@@ -1,8 +1,8 @@
 
-#include "stdafx.h"
-#include "gpu_task.h"
+#include "stdafx.hpp"
+#include "gpu_task.hpp"
 
-#include "gpu_task_dispatch_queue.h"
+#include "gpu_task_dispatch_queue.hpp"
 
 using namespace StE::Graphics;
 

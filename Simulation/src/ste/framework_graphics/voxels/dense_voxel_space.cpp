@@ -1,6 +1,6 @@
 
-#include "stdafx.h"
-#include "dense_voxel_space.h"
+#include "stdafx.hpp"
+#include "dense_voxel_space.hpp"
 
 using namespace StE::Graphics;
 

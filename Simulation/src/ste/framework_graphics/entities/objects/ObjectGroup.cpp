@@ -1,9 +1,9 @@
 
-#include "stdafx.h"
-#include "ObjectGroup.h"
+#include "stdafx.hpp"
+#include "ObjectGroup.hpp"
 
-#include "glsl_programs_pool.h"
-#include "gl_current_context.h"
+#include "glsl_programs_pool.hpp"
+#include "gl_current_context.hpp"
 
 #include <algorithm>
 

@@ -1,8 +1,8 @@
 
-#include "stdafx.h"
-#include "gl_utils.h"
+#include "stdafx.hpp"
+#include "gl_utils.hpp"
 
-#include "Log.h"
+#include "Log.hpp"
 
 #include <GL/glew.h>
 #include <GL/gl.h>

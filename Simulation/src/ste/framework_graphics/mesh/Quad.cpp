@@ -1,5 +1,5 @@
 
-#include "stdafx.h"
-#include "Quad.h"
+#include "stdafx.hpp"
+#include "Quad.hpp"
 
 StE::Graphics::Quad StE::Graphics::ScreenFillingQuad;

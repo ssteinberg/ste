@@ -1,6 +1,6 @@
 
-#include "stdafx.h"
-#include "Font.h"
+#include "stdafx.hpp"
+#include "Font.hpp"
 
 #include <iostream>
 #include <stdexcept>
