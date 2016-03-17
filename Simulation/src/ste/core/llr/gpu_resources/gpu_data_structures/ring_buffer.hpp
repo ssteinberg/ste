@@ -11,7 +11,7 @@
 #include <vector>
 
 namespace StE {
-namespace LLR {
+namespace Core {
 
 template <typename T, int max_size = 4096, class Storage = gstack<T, true>>
 class ring_buffer {

@@ -6,7 +6,7 @@
 #include "stdafx.hpp"
 
 namespace StE {
-namespace LLR {
+namespace Core {
 
 class gpu_sync {
 	GLsync sync;

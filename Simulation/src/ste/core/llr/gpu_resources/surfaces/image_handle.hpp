@@ -7,7 +7,7 @@
 #include "texture_enums.hpp"
 
 namespace StE {
-namespace LLR {
+namespace Core {
 
 class image_handle {
 private:

@@ -19,14 +19,14 @@ namespace Graphics {
 
 class deferred_fbo {
 private:
-	std::unique_ptr<LLR::RenderTarget> depth_output;
-	std::unique_ptr<LLR::Texture2D> normal_output;
-	std::unique_ptr<LLR::Texture2D> tangent_output;
-	std::unique_ptr<LLR::Texture2D> position_output;
-	std::unique_ptr<LLR::Texture2D> color_output;
-	std::unique_ptr<LLR::Texture2D> material_idx_output;
-	std::unique_ptr<LLR::Texture2D> z_output;
-	LLR::FramebufferObject fbo;
+	std::unique_ptr<Core::RenderTarget> depth_output;
+	std::unique_ptr<Core::Texture2D> normal_output;
+	std::unique_ptr<Core::Texture2D> tangent_output;
+	std::unique_ptr<Core::Texture2D> position_output;
+	std::unique_ptr<Core::Texture2D> color_output;
+	std::unique_ptr<Core::Texture2D> material_idx_output;
+	std::unique_ptr<Core::Texture2D> z_output;
+	Core::FramebufferObject fbo;
 
 	glm::ivec2 size;
 
@@ -38,8 +38,8 @@ public:
 	void bind_output_textures() const;
 
 	auto get_size() const { return size; }
-	const LLR::Texture2D *z_buffer() const { return z_output.get(); }
-	const LLR::FramebufferObject *get_fbo() const { return &fbo; }
+	const Core::Texture2D *z_buffer() const { return z_output.get(); }
+	const Core::FramebufferObject *get_fbo() const { return &fbo; }
 };
 
 }

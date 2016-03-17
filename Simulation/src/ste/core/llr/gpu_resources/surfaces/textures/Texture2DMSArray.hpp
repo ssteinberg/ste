@@ -8,11 +8,11 @@
 #include "image.hpp"
 
 namespace StE {
-namespace LLR {
+namespace Core {
 
-class Texture2DMSArray : public texture_multisampled<llr_resource_type::LLRTexture2DMSArray> {
+class Texture2DMSArray : public texture_multisampled<core_resource_type::Texture2DMSArray> {
 private:
-	using Base = texture_multisampled<llr_resource_type::LLRTexture2DMSArray>;
+	using Base = texture_multisampled<core_resource_type::Texture2DMSArray>;
 
 public:
 	Texture2DMSArray(Texture2DMSArray &&m) = default;

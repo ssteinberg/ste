@@ -10,7 +10,7 @@
 
 #include <sys/stat.h>
 
-using namespace StE::LLR;
+using namespace StE::Core;
 
 bool GLSLProgram::link() {
 	if (linked) return true;

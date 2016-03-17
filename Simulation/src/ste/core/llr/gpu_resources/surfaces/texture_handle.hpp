@@ -6,7 +6,7 @@
 #include "stdafx.hpp"
 
 namespace StE {
-namespace LLR {
+namespace Core {
 
 class texture_handle {
 private:

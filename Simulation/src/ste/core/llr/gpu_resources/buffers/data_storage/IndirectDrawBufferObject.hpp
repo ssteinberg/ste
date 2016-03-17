@@ -7,7 +7,7 @@
 #include "buffer_usage.hpp"
 
 namespace StE {
-namespace LLR {
+namespace Core {
 
 struct IndirectMultiDrawElementsCommand {
 	std::uint32_t count;
@@ -48,7 +48,7 @@ public:
 	void bind() const final override { Base::Binder::bind(Base::get_resource_id(), GL_DRAW_INDIRECT_BUFFER); };
 	void unbind() const final override { Base::Binder::unbind(GL_DRAW_INDIRECT_BUFFER); };
 
-	llr_resource_type resource_type() const override { return llr_resource_type::LLRIndirectDrawBufferObject; }
+	core_resource_type resource_type() const override { return core_resource_type::IndirectDrawBufferObject; }
 };
 
 }

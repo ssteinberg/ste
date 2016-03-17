@@ -3,12 +3,12 @@
 #include "TextureCubeMap.hpp"
 #include "Log.hpp"
 
-using namespace StE::LLR;
+using namespace StE::Core;
 
 bool TextureCubeMap::upload(const gli::texture_cube &texture, bool gm) {
 	bool ret = true;
 	for (std::size_t i = 0; i < texture.faces(); ++i)
-		ret &= this->upload_face(static_cast<LLRCubeMapFace>(i), texture[i]);
+		ret &= this->upload_face(static_cast<CubeMapFace>(i), texture[i]);
 
 	// Generate mipmaps
 	if (gm) generate_mipmaps();
@@ -16,7 +16,7 @@ bool TextureCubeMap::upload(const gli::texture_cube &texture, bool gm) {
 	return ret;
 }
 
-bool TextureCubeMap::upload_face(LLRCubeMapFace face, const gli::texture2d &texture) {
+bool TextureCubeMap::upload_face(CubeMapFace face, const gli::texture2d &texture) {
 	gli::gl::format const format = gl_utils::translate_format(texture.format(), texture.swizzles());
 
 	// Index of max level

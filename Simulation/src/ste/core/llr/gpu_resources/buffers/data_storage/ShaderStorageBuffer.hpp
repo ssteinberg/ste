@@ -6,7 +6,7 @@
 #include "buffer_object.hpp"
 
 namespace StE {
-namespace LLR {
+namespace Core {
 
 class shader_storage_buffer_object_layout_binding_type {};
 using shader_storage_layout_binding = layout_binding<shader_storage_buffer_object_layout_binding_type>;
@@ -37,7 +37,7 @@ public:
 	void unbind(const typename Base::LayoutLocationType &sampler) const final override { Base::LayoutBinder::unbind(sampler, GL_SHADER_STORAGE_BUFFER); };
 	void bind_range(const typename Base::LayoutLocationType &sampler, int offset, std::size_t size) const { Base::bind_range(sampler, GL_SHADER_STORAGE_BUFFER, offset, size); }
 
-	llr_resource_type resource_type() const override { return llr_resource_type::LLRShaderStorageBufferObject; }
+	core_resource_type resource_type() const override { return core_resource_type::ShaderStorageBufferObject; }
 };
 
 }

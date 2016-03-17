@@ -9,7 +9,7 @@
 
 #include "bindable_resource.hpp"
 #include "layout_binding.hpp"
-#include "llr_resource_type.hpp"
+#include "core_resource_type.hpp"
 #include "texture_enums.hpp"
 #include "surface_constants.hpp"
 
@@ -18,9 +18,9 @@
 #include "RenderTarget.hpp"
 
 namespace StE {
-namespace LLR {
+namespace Core {
     
-template <llr_resource_type type>
+template <core_resource_type type>
 class image_container;
 
 class image_layout_binding_type {};
@@ -45,7 +45,7 @@ public:
 	}
 };
 
-template <llr_resource_type type>
+template <core_resource_type type>
 class image_layout_bindable : protected bindable_resource<image_dummy_resource_allocator, ImageBinder, image_layout_binding, int, bool, int, ImageAccessMode, gli::format>, virtual public shader_layout_bindable_resource<image_layout_binding_type> {
 public:
 	using size_type = glm::ivec2;
@@ -57,7 +57,7 @@ protected:
 	size_type size;
 	gli::format format;
 	ImageAccessMode access;
-	llr_resource_type texture_type;
+	core_resource_type texture_type;
 	int level, layers, layer;
 
 	template <class A2>
@@ -86,12 +86,12 @@ public:
 	int get_level() const { return level; }
 	virtual gli::format get_format() const { return format; }
 	virtual size_type get_image_size() const { return size; }
-	llr_resource_type get_texture_type() const { return texture_type; }
+	core_resource_type get_texture_type() const { return texture_type; }
 
-	llr_resource_type resource_type() const override { return llr_resource_type::LLRImageObject; }
+	core_resource_type resource_type() const override { return core_resource_type::ImageObject; }
 };
 
-template <llr_resource_type type>
+template <core_resource_type type>
 class image : public image_layout_bindable<type>, virtual public RenderTargetGeneric {
 public:
 	using size_type = glm::ivec2;
@@ -119,7 +119,7 @@ public:
 	image<type> with_access(ImageAccessMode access) const { return image(*this, size, Base::format, access, Base::level, Base::layer); }
 };
 
-template <llr_resource_type type>
+template <core_resource_type type>
 class image_container : public image_layout_bindable<type> {
 public:
 	using size_type = glm::ivec2;

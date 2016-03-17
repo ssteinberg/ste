@@ -27,7 +27,7 @@ namespace Resource {
 
 class GLSLProgramFactory {
 private:
-	static const std::map<std::string, LLR::GLSLShaderType> type_map;
+	static const std::map<std::string, Core::GLSLShaderType> type_map;
 
 private:
 	~GLSLProgramFactory() {}
@@ -36,16 +36,16 @@ private:
 
 	static std::string load_source(const boost::filesystem::path &path);
 
-	static std::unique_ptr<LLR::GLSLShaderGeneric> compile_from_path(const boost::filesystem::path &path);
-	static std::unique_ptr<LLR::GLSLShaderGeneric> compile_from_source(const boost::filesystem::path &path, std::string src, LLR::GLSLShaderProperties prop, LLR::GLSLShaderType);
+	static std::unique_ptr<Core::GLSLShaderGeneric> compile_from_path(const boost::filesystem::path &path);
+	static std::unique_ptr<Core::GLSLShaderGeneric> compile_from_source(const boost::filesystem::path &path, std::string src, Core::GLSLShaderProperties prop, Core::GLSLShaderType);
 
 	static std::vector<std::string> find_includes(const boost::filesystem::path &path);
 	static bool parse_include(const boost::filesystem::path &, int, std::string &, std::vector<std::string> &);
-	static bool parse_parameters(std::string &, LLR::GLSLShaderProperties &, LLR::GLSLShaderType &);
+	static bool parse_parameters(std::string &, Core::GLSLShaderProperties &, Core::GLSLShaderType &);
 	static std::string parse_directive(const std::string &, const std::string &, std::string::size_type &, std::string::size_type &);
 
 public:
-	static task<std::unique_ptr<LLR::GLSLProgram>> load_program_task(const StEngineControl &context, const std::vector<std::string> &names);
+	static task<std::unique_ptr<Core::GLSLProgram>> load_program_task(const StEngineControl &context, const std::vector<std::string> &names);
 };
 
 }

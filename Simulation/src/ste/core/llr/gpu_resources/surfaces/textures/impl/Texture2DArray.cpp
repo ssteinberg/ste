@@ -3,7 +3,7 @@
 #include "Texture2DArray.hpp"
 #include "Log.hpp"
 
-using namespace StE::LLR;
+using namespace StE::Core;
 
 bool Texture2DArray::upload(const gli::texture2d_array &texture, bool gm) {
 	if (size_type({ texture.extent().x, texture.extent().y, texture.layers() }) != this->size) {
@@ -32,7 +32,7 @@ bool Texture2DArray::upload_layer(int layer, const gli::texture2d &texture) {
 	}
 
 	for (int l = 0; l < levels; ++l) {
-		upload_level(texture[l].data(), l, layer, LLRCubeMapFace::LLRCubeMapFaceNone, texture[l].size());
+		upload_level(texture[l].data(), l, layer, CubeMapFace::CubeMapFaceNone, texture[l].size());
 	}
 
 	return true;

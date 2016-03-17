@@ -7,7 +7,7 @@
 #include <gli/gli.hpp>
 
 namespace StE {
-namespace LLR {
+namespace Core {
 
 template <gli::format type> struct surface_element_type {};
 template <gli::format type> struct surface_is_signed : public std::false_type {};

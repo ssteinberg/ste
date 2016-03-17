@@ -4,7 +4,7 @@
 #pragma once
 
 namespace StE {
-namespace LLR {
+namespace Core {
 	
 template <typename T>
 class texture1D_size_type {

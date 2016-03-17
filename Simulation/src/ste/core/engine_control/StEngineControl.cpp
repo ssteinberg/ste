@@ -34,14 +34,14 @@ struct StE::ste_engine_control_impl {
 	std::chrono::time_point<std::chrono::steady_clock> last_frame_time{ std::chrono::steady_clock::now() };
 };
 
-StEngineControl::StEngineControl(std::unique_ptr<LLR::gl_context> &&ctx) : pimpl(std::make_unique<ste_engine_control_impl>()), context(std::move(ctx)), global_cache("Cache", 1024 * 1024 * 256) {
+StEngineControl::StEngineControl(std::unique_ptr<Core::gl_context> &&ctx) : pimpl(std::make_unique<ste_engine_control_impl>()), context(std::move(ctx)), global_cache("Cache", 1024 * 1024 * 256) {
 	assert(context.get());
 	if (context == nullptr)
 		throw std::runtime_error("context == nullptr");
 
 	glfwSetErrorCallback([](int err, const char* description) { ste_log_error() << "GLFW reported an error (" << err << "): " << description; });
 
-	LLR::gl_utils::dump_gl_info(false);
+	Core::gl_utils::dump_gl_info(false);
 
 	glfwSetWindowUserPointer(context->window.get(), this);
 
@@ -112,8 +112,8 @@ bool StEngineControl::run_loop() {
 void StEngineControl::capture_screenshot() const {
 	auto size = gl()->framebuffer_size();
 
-	auto fbo = std::make_shared<StE::LLR::FramebufferObject>();
-	StE::LLR::Texture2D fbo_tex(gli::format::FORMAT_RGB8_UNORM_PACK8, size, 1);
+	auto fbo = std::make_shared<StE::Core::FramebufferObject>();
+	StE::Core::Texture2D fbo_tex(gli::format::FORMAT_RGB8_UNORM_PACK8, size, 1);
 	(*fbo)[0] = fbo_tex[0];
 
 	gl()->defaut_framebuffer().blit_to(*fbo, size, size);

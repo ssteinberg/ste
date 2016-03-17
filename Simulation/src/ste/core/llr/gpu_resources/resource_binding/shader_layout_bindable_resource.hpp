@@ -7,7 +7,7 @@
 #include "layout_binding.hpp"
 
 namespace StE {
-namespace LLR {
+namespace Core {
 
 template <typename BinderType>
 class shader_layout_bindable_resource {

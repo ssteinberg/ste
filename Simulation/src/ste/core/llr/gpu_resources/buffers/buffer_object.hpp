@@ -27,7 +27,7 @@
 #include <type_traits>
 
 namespace StE {
-namespace LLR {
+namespace Core {
 
 #define ALLOW_BUFFER_OBJECT_CASTS	template <typename BufferTypeTo, typename BufferTypeFrom> friend BufferTypeTo buffer_object_cast(BufferTypeFrom &&s)
 

@@ -8,11 +8,11 @@
 #include "image.hpp"
 
 namespace StE {
-namespace LLR {
+namespace Core {
 
-class TextureCubeMap : public texture_mipmapped<llr_resource_type::LLRTextureCubeMap> {
+class TextureCubeMap : public texture_mipmapped<core_resource_type::TextureCubeMap> {
 private:
-	using Base = texture_mipmapped<llr_resource_type::LLRTextureCubeMap>;
+	using Base = texture_mipmapped<core_resource_type::TextureCubeMap>;
 
 public:
 	TextureCubeMap(TextureCubeMap &&m) = default;
@@ -29,10 +29,10 @@ public:
 
 	// Re upload texture data. Surface must match texture's format.
 	bool upload(const gli::texture_cube &t, bool generate_mipmaps = false);
-	bool upload_face(LLRCubeMapFace face, const gli::texture2d &t);
+	bool upload_face(CubeMapFace face, const gli::texture2d &t);
 
-	void upload_level(const void *data, int level = 0, int layer = 0, LLRCubeMapFace face = LLRCubeMapFace::LLRCubeMapFaceNone, int data_size = 0) override {
-		assert(face != LLRCubeMapFace::LLRCubeMapFaceNone && "face must be specified");
+	void upload_level(const void *data, int level = 0, int layer = 0, CubeMapFace face = CubeMapFace::CubeMapFaceNone, int data_size = 0) override {
+		assert(face != CubeMapFace::CubeMapFaceNone && "face must be specified");
 		auto gl_format = gl_utils::translate_format(format, swizzle);
 
 		bind();
@@ -51,8 +51,8 @@ public:
 		}
 	}
 
-	const image<T> operator[](LLRCubeMapFace face) const {
-		return image<T>(*this, get_image_container_size(), format, ImageAccessMode::ReadWrite, 0, static_cast<int>(face) - static_cast<int>(LLRCubeMapFace::LLRCubeMapFaceRight));
+	const image<T> operator[](CubeMapFace face) const {
+		return image<T>(*this, get_image_container_size(), format, ImageAccessMode::ReadWrite, 0, static_cast<int>(face) - static_cast<int>(CubeMapFace::CubeMapFaceRight));
 	}
 };
 

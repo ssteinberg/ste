@@ -28,11 +28,11 @@
 using namespace StE::Resource;
 using namespace StE::Resource::glsl_loader;
 using namespace StE::Text;
-using StE::LLR::GLSLShaderGeneric;
-using StE::LLR::GLSLShader;
-using StE::LLR::GLSLShaderType;
-using StE::LLR::GLSLShaderProperties;
-using StE::LLR::GLSLProgram;
+using StE::Core::GLSLShaderGeneric;
+using StE::Core::GLSLShader;
+using StE::Core::GLSLShaderType;
+using StE::Core::GLSLShaderProperties;
+using StE::Core::GLSLProgram;
 
 
 const std::map<std::string, GLSLShaderType> GLSLProgramFactory::type_map = { { "compute", GLSLShaderType::COMPUTE },{ "frag", GLSLShaderType::FRAGMENT },{ "vert", GLSLShaderType::VERTEX },{ "geometry", GLSLShaderType::GEOMETRY },{ "tes", GLSLShaderType::TESS_EVALUATION },{ "tcs", GLSLShaderType::TESS_CONTROL } };
@@ -302,7 +302,7 @@ StE::task<std::unique_ptr<GLSLProgram>> GLSLProgramFactory::load_program_task(co
 		}
 
 		return data;
-	}).then_on_main_thread([=, &context](optional<task_scheduler*> sched, loader_data data) -> std::unique_ptr<LLR::GLSLProgram> {
+	}).then_on_main_thread([=, &context](optional<task_scheduler*> sched, loader_data data) -> std::unique_ptr<Core::GLSLProgram> {
 		if (data.bin.blob.length()) {
 			std::unique_ptr<GLSLProgram> program = std::make_unique<GLSLProgram>();
 			if (program->link_from_binary(data.bin.format, data.bin.blob)) {

@@ -11,7 +11,7 @@
 #include <functional>
 
 namespace StE {
-namespace LLR {
+namespace Core {
 
 template <typename BufferTypeTo, typename BufferTypeFrom>
 BufferTypeTo buffer_object_cast(BufferTypeFrom &&s) {

@@ -19,8 +19,8 @@ namespace Graphics {
 class light_storage {
 private:
 	std::vector<std::shared_ptr<light>> lights;
-	LLR::gstack<light::light_descriptor> stack;
-	LLR::gstack<glm::vec4> transformed_buffer_stack;
+	Core::gstack<light::light_descriptor> stack;
+	Core::gstack<glm::vec4> transformed_buffer_stack;
 
 	std::vector<range<>> ranges_to_lock;
 
@@ -54,8 +54,8 @@ public:
 	}
 
 	void bind_buffers(int first) const {
-		stack.get_buffer().bind_range(LLR::shader_storage_layout_binding(first), 0, lights.size());
-		transformed_buffer_stack.get_buffer().bind_range(LLR::shader_storage_layout_binding(first + 1), 0, lights.size());
+		stack.get_buffer().bind_range(Core::shader_storage_layout_binding(first), 0, lights.size());
+		transformed_buffer_stack.get_buffer().bind_range(Core::shader_storage_layout_binding(first + 1), 0, lights.size());
 	}
 };
 

@@ -196,4 +196,4 @@ void inline ste_log_set_global_logger(StE::Log *ptr) {
 #include "gl_utils.hpp"
 
 // Query and log gl errors
-#define ste_log_query_and_log_gl_errors()	{std::string gl_err_desc; while (StE::LLR::opengl::query_gl_error(gl_err_desc)) ste_log_error() << "OpenGL Error: " << gl_err_desc << std::endl;}
+#define ste_log_query_and_log_gl_errors()	{std::string gl_err_desc; while (StE::Core::opengl::query_gl_error(gl_err_desc)) ste_log_error() << "OpenGL Error: " << gl_err_desc << std::endl;}

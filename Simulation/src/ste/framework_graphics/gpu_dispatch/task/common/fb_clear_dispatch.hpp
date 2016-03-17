@@ -21,7 +21,7 @@ protected:
 	}
 	
 	virtual void dispatch() const override {
-		LLR::gl_current_context::get()->clear_framebuffer(color, depth);
+		Core::gl_current_context::get()->clear_framebuffer(color, depth);
 	}
 };
 	

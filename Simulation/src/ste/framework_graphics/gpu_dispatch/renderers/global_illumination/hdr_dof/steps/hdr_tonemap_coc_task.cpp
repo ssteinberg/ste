@@ -3,7 +3,7 @@
 #include "hdr_tonemap_coc_task.hpp"
 
 using namespace StE::Graphics;
-using namespace StE::LLR;
+using namespace StE::Core;
 
 void hdr_tonemap_coc_task::set_context_state() const {
 	Base::set_context_state();

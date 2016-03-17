@@ -8,7 +8,7 @@
 #include <gli/gli.hpp>
 
 namespace StE {
-namespace LLR {
+namespace Core {
 
 class context_framebuffer;
 

@@ -19,7 +19,7 @@
 #include <memory>
 
 namespace StE {
-namespace LLR {
+namespace Core {
 
 template <typename T, bool lockless = false>
 class pinned_gvector {

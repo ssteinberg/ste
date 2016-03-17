@@ -6,7 +6,7 @@
 #include "stdafx.hpp"
 
 namespace StE {
-namespace LLR {
+namespace Core {
 
 class gl_generic_context;
 

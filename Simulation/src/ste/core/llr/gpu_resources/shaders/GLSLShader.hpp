@@ -11,7 +11,7 @@
 #include "resource.hpp"
 
 namespace StE {
-namespace LLR {
+namespace Core {
 
 enum class GLSLShaderType {
 	NONE,
@@ -102,7 +102,7 @@ public:
 	bool get_status() const override final { return !!status; }
 	const GLSLShaderProperties &get_shader_properties() const { return properties; }
 
-	llr_resource_type resource_type() const override { return llr_resource_type::LLRGLSLShader; }
+	core_resource_type resource_type() const override { return core_resource_type::GLSLShader; }
 };
 
 }

@@ -30,12 +30,12 @@ class glyph_manager {
 private:
 	struct buffer_glyph_descriptor {
 		glyph::glyph_metrics metrics;
-		LLR::texture_handle handle;
+		Core::texture_handle handle;
 	};
 
 public:
 	struct glyph_descriptor {
-		std::unique_ptr<LLR::Texture2D> texture;
+		std::unique_ptr<Core::Texture2D> texture;
 		glyph::glyph_metrics metrics;
 		int advance_x;
 		int buffer_index;
@@ -50,9 +50,9 @@ private:
 	glyph_factory factory;
 
 	std::unordered_map<Font, font_storage> fonts;
-	LLR::gstack<buffer_glyph_descriptor> buffer;
+	Core::gstack<buffer_glyph_descriptor> buffer;
 
-	LLR::Sampler text_glyph_sampler;
+	Core::Sampler text_glyph_sampler;
 
 private:
 	task<const glyph_descriptor*> glyph_loader_task(const Font &font, wchar_t codepoint) {
@@ -82,7 +82,7 @@ private:
 				return nullptr;
 
 			glyph_descriptor gd;
-			gd.texture = std::make_unique<LLR::Texture2D>(*g.glyph_distance_field);
+			gd.texture = std::make_unique<Core::Texture2D>(*g.glyph_distance_field);
 			gd.metrics = g.metrics;
 			gd.buffer_index = buffer.size();
 
@@ -101,10 +101,10 @@ private:
 
 public:
 	glyph_manager(const StEngineControl &context) : context(context) {
-		text_glyph_sampler.set_min_filter(LLR::TextureFiltering::Linear);
-		text_glyph_sampler.set_mag_filter(LLR::TextureFiltering::Linear);
-		text_glyph_sampler.set_wrap_s(LLR::TextureWrapMode::ClampToBorder);
-		text_glyph_sampler.set_wrap_t(LLR::TextureWrapMode::ClampToBorder);
+		text_glyph_sampler.set_min_filter(Core::TextureFiltering::Linear);
+		text_glyph_sampler.set_mag_filter(Core::TextureFiltering::Linear);
+		text_glyph_sampler.set_wrap_s(Core::TextureWrapMode::ClampToBorder);
+		text_glyph_sampler.set_wrap_t(Core::TextureWrapMode::ClampToBorder);
 		text_glyph_sampler.set_anisotropic_filter(16);
 	}
 

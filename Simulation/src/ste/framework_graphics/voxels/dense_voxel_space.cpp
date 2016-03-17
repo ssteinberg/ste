@@ -5,23 +5,23 @@
 using namespace StE::Graphics;
 
 dense_voxel_space::dense_voxel_space(const StEngineControl &ctx, std::size_t max_size, float voxel_size_factor) : ctx(ctx) {
-	auto ts = LLR::texture_sparse_3d::page_sizes(space_format_radiance)[0];
+	auto ts = Core::texture_sparse_3d::page_sizes(space_format_radiance)[0];
 
-	size = static_cast<decltype(size)>(glm::min<int>(LLR::texture_sparse_3d::max_size(), max_size));
+	size = static_cast<decltype(size)>(glm::min<int>(Core::texture_sparse_3d::max_size(), max_size));
 	tile_size = static_cast<decltype(tile_size)>(glm::max(ts.x, glm::max(ts.y, ts.z)));
 
 	voxelizer_program = ctx.glslprograms_pool().fetch_program_task({ "voxelizer.vert", "voxelizer.frag", "voxelizer.geom" })();
 	voxelizer_upsampler_program = ctx.glslprograms_pool().fetch_program_task({ "voxelizer_upsampler.glsl" })();
 
-	voxelizer_output = std::make_unique<LLR::RenderTarget>(gli::format::FORMAT_R8_UNORM_PACK8, glm::ivec2{ size.x, size.y });
+	voxelizer_output = std::make_unique<Core::RenderTarget>(gli::format::FORMAT_R8_UNORM_PACK8, glm::ivec2{ size.x, size.y });
 	voxelizer_fbo[0] = *voxelizer_output;
 
-	sampler.set_min_filter(LLR::TextureFiltering::Linear);
-	sampler.set_mag_filter(LLR::TextureFiltering::Linear);
-	sampler.set_mipmap_filter(LLR::TextureFiltering::Nearest);
-	sampler.set_wrap_s(LLR::TextureWrapMode::ClampToBorder);
-	sampler.set_wrap_t(LLR::TextureWrapMode::ClampToBorder);
-	sampler.set_wrap_r(LLR::TextureWrapMode::ClampToBorder);
+	sampler.set_min_filter(Core::TextureFiltering::Linear);
+	sampler.set_mag_filter(Core::TextureFiltering::Linear);
+	sampler.set_mipmap_filter(Core::TextureFiltering::Nearest);
+	sampler.set_wrap_s(Core::TextureWrapMode::ClampToBorder);
+	sampler.set_wrap_t(Core::TextureWrapMode::ClampToBorder);
+	sampler.set_wrap_r(Core::TextureWrapMode::ClampToBorder);
 
 	create_dense_voxel_space(voxel_size_factor);
 	projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([=](const glm::mat4 &, float, float, float) {
@@ -48,8 +48,8 @@ void dense_voxel_space::create_dense_voxel_space(float voxel_size_factor) {
 	tiles_per_step = static_cast<int>(size.x / (2 * tile_size.x * glm::pow(2.f, steps - 1)));
 	step_size = tiles_per_step * tile_size;
 
-	space_radiance = std::make_unique<LLR::texture_sparse_3d>(space_format_radiance, size, mipmaps, tile_size, 0);
-	space_data = std::make_unique<LLR::texture_sparse_3d>(space_format_data, size, mipmaps, tile_size, 0);
+	space_radiance = std::make_unique<Core::texture_sparse_3d>(space_format_radiance, size, mipmaps, tile_size, 0);
+	space_data = std::make_unique<Core::texture_sparse_3d>(space_format_data, size, mipmaps, tile_size, 0);
 
 	auto center = size / 2;
 	for (std::size_t i = 0; i < mipmaps; ++i, center /= 2) {
@@ -89,7 +89,7 @@ void dense_voxel_space::create_dense_voxel_space(float voxel_size_factor) {
 	update_shader_voxel_uniforms(*voxelizer_upsampler_program);
 }
 
-void dense_voxel_space::update_shader_voxel_uniforms(const LLR::GLSLProgram &prg) const {
+void dense_voxel_space::update_shader_voxel_uniforms(const Core::GLSLProgram &prg) const {
 	prg.set_uniform("voxels_step_texels", step_size.x);
 	prg.set_uniform("voxels_voxel_texel_size", voxel_size);
 	prg.set_uniform("voxels_texture_levels", mipmaps);

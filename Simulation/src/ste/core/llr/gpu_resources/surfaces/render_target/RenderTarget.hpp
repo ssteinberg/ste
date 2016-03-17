@@ -13,7 +13,7 @@
 #include <gli/gli.hpp>
 
 namespace StE {
-namespace LLR {
+namespace Core {
 
 class RenderTargetGeneric {
 public:
@@ -45,7 +45,7 @@ public:
 	glm::ivec2 get_image_size() const final override { return size; }
 	gli::format get_format() const final override { return format; }
 
-	llr_resource_type resource_type() const override { return llr_resource_type::LLRRenderbufferObject; }
+	core_resource_type resource_type() const override { return core_resource_type::RenderbufferObject; }
 };
 
 }

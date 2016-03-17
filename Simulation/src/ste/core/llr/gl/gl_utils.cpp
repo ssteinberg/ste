@@ -11,7 +11,7 @@
 #include <cstdio>
 #include <iostream>
 
-using namespace StE::LLR;
+using namespace StE::Core;
 
 gli::gl gl_utils::GL(gli::gl::profile::PROFILE_GL33);
 

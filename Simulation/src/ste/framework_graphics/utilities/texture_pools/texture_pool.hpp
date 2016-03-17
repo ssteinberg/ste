@@ -52,7 +52,7 @@ class texture_pool {
 private:
 	struct sbta_value {
 		std::vector<glm::ivec3> virtual_page_sizes;
-		LLR::texture_sparse_2d_array pool;
+		Core::texture_sparse_2d_array pool;
 
 		std::forward_list<int> unclaimed_layers;
 	};
@@ -69,11 +69,11 @@ private:
 	friend class std::hash<sbta_key>;
 
 	sbta_value create_new_pool(const sbta_key &key) {
-		auto sizes = LLR::texture_sparse_2d_array::page_sizes(key.format);
+		auto sizes = Core::texture_sparse_2d_array::page_sizes(key.format);
 		auto tile_size = sizes[0];
 
-		int levels = LLR::texture_sparse_2d_array::calculate_mipmap_max_level(key.size);
-		return sbta_value{ sizes, LLR::texture_sparse_2d_array(key.format, { key.size.xy, LLR::texture_sparse_2d_array::max_layers() }, levels, tile_size, 0), { static_cast<int>(0) } };
+		int levels = Core::texture_sparse_2d_array::calculate_mipmap_max_level(key.size);
+		return sbta_value{ sizes, Core::texture_sparse_2d_array(key.format, { key.size.xy, Core::texture_sparse_2d_array::max_layers() }, levels, tile_size, 0), { static_cast<int>(0) } };
 	}
 
 protected:
@@ -83,7 +83,7 @@ public:
 	texture_pool() {}
 	~texture_pool() {}
 
-	sbta_handle commit(const LLR::Texture2D &tex) {
+	sbta_handle commit(const Core::Texture2D &tex) {
 		sbta_key key = { tex.get_image_size(), tex.get_format() };
 		decltype(sbta)::iterator it = sbta.find(key);
 		if (it == sbta.end()) {
@@ -102,7 +102,7 @@ public:
 		for (int l = 0; l < tex.get_levels(); ++l) {
 			v.pool.commit_tiles({ 0, 0, layer }, { key.size.x >> l, key.size.y >> l, 1 }, l);
 
-			LLR::PixelBufferObject<char> pbo(tex.get_storage_size(l));
+			Core::PixelBufferObject<char> pbo(tex.get_storage_size(l));
 			pbo.pack_from(tex, l, 0);
 			pbo.unpack_to(v.pool, l, layer);
 		}

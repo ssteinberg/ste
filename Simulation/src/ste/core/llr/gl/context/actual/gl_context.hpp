@@ -23,7 +23,7 @@ namespace StE {
 
 class StEngineControl;
 
-namespace LLR {
+namespace Core {
 
 class context_framebuffer;
 
@@ -86,7 +86,7 @@ public:
 #include "context_framebuffer.hpp"
 
 namespace StE {
-namespace LLR {
+namespace Core {
 
 gli::format inline gl_context::framebuffer_format() const { return default_fb->front_buffer().get_attachment_format(); }
 glm::ivec2 inline gl_context::framebuffer_size() const { return default_fb->front_buffer().get_attachment_size(); }

@@ -13,7 +13,7 @@
 #include <memory>
 
 namespace StE {
-namespace LLR {
+namespace Core {
 
 class range_lockable {
 private:

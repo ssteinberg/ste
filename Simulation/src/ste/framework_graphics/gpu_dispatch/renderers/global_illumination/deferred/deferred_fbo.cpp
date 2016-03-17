@@ -3,7 +3,7 @@
 #include "deferred_fbo.hpp"
 
 using namespace StE::Graphics;
-using namespace StE::LLR;
+using namespace StE::Core;
 
 void deferred_fbo::resize(glm::ivec2 size) {
 	if (size.x <= 0 || size.y <= 0)
@@ -11,13 +11,13 @@ void deferred_fbo::resize(glm::ivec2 size) {
 
 	this->size = size;
 
-	depth_output = std::make_unique<LLR::RenderTarget>(gli::format::FORMAT_D24_UNORM_PACK32, glm::ivec2{ size });
-	normal_output = std::make_unique<LLR::Texture2D>(gli::format::FORMAT_RGB32_SFLOAT_PACK32, glm::ivec2{ size }, 1);
-	tangent_output = std::make_unique<LLR::Texture2D>(gli::format::FORMAT_RGB32_SFLOAT_PACK32, glm::ivec2{ size }, 1);
-	position_output = std::make_unique<LLR::Texture2D>(gli::format::FORMAT_RGB32_SFLOAT_PACK32, glm::ivec2{ size }, 1);
-	color_output = std::make_unique<LLR::Texture2D>(gli::format::FORMAT_RGBA32_SFLOAT_PACK32, glm::ivec2{ size }, 1);
-	material_idx_output = std::make_unique<LLR::Texture2D>(gli::format::FORMAT_R16_SINT_PACK16, glm::ivec2{ size }, 1);
-	z_output = std::make_unique<LLR::Texture2D>(gli::format::FORMAT_R32_SFLOAT_PACK32, glm::ivec2{ size }, 1);
+	depth_output = std::make_unique<Core::RenderTarget>(gli::format::FORMAT_D24_UNORM_PACK32, glm::ivec2{ size });
+	normal_output = std::make_unique<Core::Texture2D>(gli::format::FORMAT_RGB32_SFLOAT_PACK32, glm::ivec2{ size }, 1);
+	tangent_output = std::make_unique<Core::Texture2D>(gli::format::FORMAT_RGB32_SFLOAT_PACK32, glm::ivec2{ size }, 1);
+	position_output = std::make_unique<Core::Texture2D>(gli::format::FORMAT_RGB32_SFLOAT_PACK32, glm::ivec2{ size }, 1);
+	color_output = std::make_unique<Core::Texture2D>(gli::format::FORMAT_RGBA32_SFLOAT_PACK32, glm::ivec2{ size }, 1);
+	material_idx_output = std::make_unique<Core::Texture2D>(gli::format::FORMAT_R16_SINT_PACK16, glm::ivec2{ size }, 1);
+	z_output = std::make_unique<Core::Texture2D>(gli::format::FORMAT_R32_SFLOAT_PACK32, glm::ivec2{ size }, 1);
 
 	fbo.depth_binding_point() = *depth_output;
 	fbo[0] = (*position_output)[0];

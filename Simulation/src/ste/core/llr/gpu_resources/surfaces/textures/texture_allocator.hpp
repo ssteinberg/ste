@@ -10,7 +10,7 @@
 #include <gli/gli.hpp>
 
 namespace StE {
-namespace LLR {
+namespace Core {
 
 namespace _texture_storage {
 
@@ -33,7 +33,7 @@ template <> void create_gl_texture_storage<3, true>(GenericResource::type id, in
 
 }
 
-template <llr_resource_type tex_type>
+template <core_resource_type tex_type>
 class texture_immutable_storage_allocator : public generic_resource_immutable_storage_allocator<int, int, const gli::gl::format &, const typename texture_size_type<texture_dimensions<tex_type>::dimensions>::type &, std::size_t> {
 	using Base = generic_resource_immutable_storage_allocator<int, int, const gli::gl::format &, const typename texture_size_type<texture_dimensions<tex_type>::dimensions>::type &, std::size_t>;
 	

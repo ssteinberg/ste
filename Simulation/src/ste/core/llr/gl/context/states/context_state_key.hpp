@@ -8,7 +8,7 @@
 #include "hash_combine.hpp"
 
 namespace StE {
-namespace LLR {
+namespace Core {
 	
 class context_state_key {
 private:
@@ -37,8 +37,8 @@ public:
 
 namespace std {
 
-template <> struct hash<StE::LLR::context_state_key> {
-	size_t inline operator()(const StE::LLR::context_state_key &x) const {
+template <> struct hash<StE::Core::context_state_key> {
+	size_t inline operator()(const StE::Core::context_state_key &x) const {
 		std::int64_t h1 = static_cast<std::int64_t>(x.index0) + (static_cast<std::int64_t>(x.index1) << 32);
 		
 		using T = typename std::underlying_type<decltype(x.name)>::type;

@@ -4,11 +4,11 @@
 #pragma once
 
 #include "stdafx.hpp"
-#include "llr_resource_type.hpp"
+#include "core_resource_type.hpp"
 #include "QueryBufferObject.hpp"
 
 namespace StE {
-namespace LLR {
+namespace Core {
 
 enum class QueryResultType {
 	QueryResultAvailable = GL_QUERY_RESULT_AVAILABLE,
@@ -16,7 +16,7 @@ enum class QueryResultType {
 	QueryResultNoWait = GL_QUERY_RESULT_NO_WAIT,
 };
 
-template <llr_resource_type type>
+template <core_resource_type type>
 class QueryObjectAllocator : public generic_resource_allocator {
 public:
 	GenericResource::type allocate() override final { 
@@ -32,7 +32,7 @@ public:
 	}
 };
 
-template <llr_resource_type type>
+template <core_resource_type type>
 class query_object : public resource<QueryObjectAllocator<type>> {
 public:
 	void begin_query() const { glBeginQuery(type, get_resource_id()); }
@@ -72,7 +72,7 @@ public:
 		glGetQueryObjectui64v(get_resource_id(), static_cast<GLenum>(qt), reinterpret_cast<void*>(offset));
 	}
 
-	llr_resource_type resource_type() const override { return type; }
+	core_resource_type resource_type() const override { return type; }
 };
 
 }

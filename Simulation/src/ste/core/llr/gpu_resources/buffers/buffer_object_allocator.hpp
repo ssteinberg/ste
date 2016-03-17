@@ -4,7 +4,7 @@
 #include "resource_allocator.hpp"
 
 namespace StE {
-namespace LLR {
+namespace Core {
 
 template <typename T, BufferUsage::buffer_usage U>
 class buffer_object_immutable_storage_allocator : public generic_resource_immutable_storage_allocator<std::size_t, const T*> {

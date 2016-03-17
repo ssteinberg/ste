@@ -14,7 +14,7 @@
 #include <memory>
 
 namespace StE {
-namespace LLR {
+namespace Core {
 	
 class VertexArrayObject;
 
@@ -127,7 +127,7 @@ public:
 
 	vertex_array_attrib_binder operator[](int index) { return vertex_array_attrib_binder(index, this); }
 
-	llr_resource_type resource_type() const override { return llr_resource_type::LLRVertexArrayObject; }
+	core_resource_type resource_type() const override { return core_resource_type::VertexArrayObject; }
 };
 
 template <typename T, class D, BufferUsage::buffer_usage U>

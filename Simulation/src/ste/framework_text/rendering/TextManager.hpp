@@ -42,7 +42,7 @@ private:
 		float stroke_width;
 		float weight;
 
-		using descriptor = LLR::VBODescriptorWithTypes<glm::vec4, glm::vec4, glm::vec4, float, float>::descriptor;
+		using descriptor = Core::VBODescriptorWithTypes<glm::vec4, glm::vec4, glm::vec4, float, float>::descriptor;
 		
 		glyph_point() {}
 	};
@@ -75,15 +75,15 @@ private:
 	friend class text_renderable;
 
 private:
-	std::shared_ptr<LLR::GLSLProgram> text_distance_mapping;
+	std::shared_ptr<Core::GLSLProgram> text_distance_mapping;
 	std::shared_ptr<ResizeSignalConnectionType> resize_connection;
 
 	static constexpr int vbo_ring_max_size = 4096;
 
-	LLR::ring_buffer<glyph_point, vbo_ring_max_size> vbo;
-	LLR::VertexArrayObject vao;
+	Core::ring_buffer<glyph_point, vbo_ring_max_size> vbo;
+	Core::VertexArrayObject vao;
 
-	using vbo_type = LLR::VertexBufferObject<glyph_point, glyph_point::descriptor, decltype(vbo)::usage>;
+	using vbo_type = Core::VertexBufferObject<glyph_point, glyph_point::descriptor, decltype(vbo)::usage>;
 
 	glyph_manager gm;
 	Font default_font;

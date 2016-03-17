@@ -10,7 +10,7 @@
 #include <vector>
 
 namespace StE {
-namespace LLR {
+namespace Core {
 	
 template <typename, class, BufferUsage::buffer_usage>
 class VertexBufferObject;
@@ -76,7 +76,7 @@ public:
 	void bind() const final override { Base::Binder::bind(Base::get_resource_id(), GL_ARRAY_BUFFER); };
 	void unbind() const final override { Base::Binder::unbind(GL_ARRAY_BUFFER); };
 
-	llr_resource_type resource_type() const override { return llr_resource_type::LLRVertexBufferObject; }
+	core_resource_type resource_type() const override { return core_resource_type::VertexBufferObject; }
 };
 
 }

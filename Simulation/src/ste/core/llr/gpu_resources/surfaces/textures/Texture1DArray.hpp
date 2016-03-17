@@ -8,11 +8,11 @@
 #include "image.hpp"
 
 namespace StE {
-namespace LLR {
+namespace Core {
 
-class Texture1DArray : public texture_mipmapped<llr_resource_type::LLRTexture1DArray> {
+class Texture1DArray : public texture_mipmapped<core_resource_type::Texture1DArray> {
 private:
-	using Base = texture_mipmapped<llr_resource_type::LLRTexture1DArray>;
+	using Base = texture_mipmapped<core_resource_type::Texture1DArray>;
 	
 public:
 	Texture1DArray(Texture1DArray &&m) = default;
@@ -30,7 +30,7 @@ public:
 	bool upload(const gli::texture1d_array &t, bool generate_mipmaps = false);
 	bool upload_layer(int layer, const gli::texture1d &t);
 
-	void upload_level(const void *data, int level = 0, int layer = 0, LLRCubeMapFace face = LLRCubeMapFace::LLRCubeMapFaceNone, int data_size = 0) override {
+	void upload_level(const void *data, int level = 0, int layer = 0, CubeMapFace face = CubeMapFace::CubeMapFaceNone, int data_size = 0) override {
 		auto gl_format = gl_utils::translate_format(format, swizzle);
 
 		if (is_compressed()) {

@@ -68,13 +68,13 @@ public:
 	
 private:
 	const StEngineControl &context;
-	concurrent_unordered_map<glsl_programs_pool_key, std::weak_ptr<LLR::GLSLProgram>> programs; 
+	concurrent_unordered_map<glsl_programs_pool_key, std::weak_ptr<Core::GLSLProgram>> programs; 
 	
 public:
 	glsl_programs_pool(const StEngineControl &context) : context(context) {}
 	
-	task<std::shared_ptr<LLR::GLSLProgram>> fetch_program_task(const std::vector<std::string> &names);
-	task<std::shared_ptr<LLR::GLSLProgram>> fetch_program_task(const glsl_programs_pool_key &k);
+	task<std::shared_ptr<Core::GLSLProgram>> fetch_program_task(const std::vector<std::string> &names);
+	task<std::shared_ptr<Core::GLSLProgram>> fetch_program_task(const glsl_programs_pool_key &k);
 };
 
 using glsl_program_identifier = glsl_programs_pool::glsl_programs_pool_key;

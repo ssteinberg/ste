@@ -28,7 +28,7 @@ namespace Resource {
 
 class ModelFactory {
 private:
-	using texture_map_type = std::unordered_map<std::string, std::shared_ptr<LLR::Texture2D>>;
+	using texture_map_type = std::unordered_map<std::string, std::shared_ptr<Core::Texture2D>>;
 	using brdf_map_type = std::unordered_map<std::string, std::shared_ptr<Graphics::BRDF>>;
 	using shapes_type = std::vector<tinyobj::shape_t>;
 	using materials_type = std::vector<tinyobj::material_t>;

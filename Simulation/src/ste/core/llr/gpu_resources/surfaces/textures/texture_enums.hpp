@@ -6,7 +6,7 @@
 #include "stdafx.hpp"
 
 namespace StE {
-namespace LLR {
+namespace Core {
 
 enum class ImageAccessMode {
 	Read = GL_READ_ONLY,

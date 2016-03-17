@@ -13,7 +13,7 @@
 #include <functional>
 
 namespace StE {
-namespace LLR {
+namespace Core {
 
 template <typename Type, BufferUsage::buffer_usage U = BufferUsage::BufferUsageNone>
 class PixelBufferObject : public buffer_object<Type, U> {
@@ -48,31 +48,31 @@ public:
 
 	using Base::Base;
 
-	template <llr_resource_type type>
+	template <core_resource_type type>
 	void unpack_to(texture_pixel_transferable<type> &texture, int level, int layer, int offset, std::size_t size) const {
-		unpacker([&]() { texture.upload_level(reinterpret_cast<void*>(offset), level, layer, LLRCubeMapFace::LLRCubeMapFaceNone, size * sizeof(T)); });
+		unpacker([&]() { texture.upload_level(reinterpret_cast<void*>(offset), level, layer, CubeMapFace::CubeMapFaceNone, size * sizeof(T)); });
 	}
-	template <llr_resource_type type>
+	template <core_resource_type type>
 	void unpack_to(texture_pixel_transferable<type> &texture, int level = 0, int layer = 0) const { 
 		unpack_to(texture, level, layer, 0, buffer_size); 
 	}
 
-	template <llr_resource_type type>
+	template <core_resource_type type>
 	void pack_from(const texture_pixel_transferable<type> &texture, int level, int layer, int offset, std::size_t size, gli::format format, bool compressed = false) {
 		packer([&]() { texture.download_level(reinterpret_cast<void*>(offset), size, level, layer, format, compressed); });
 	}
-	template <llr_resource_type type>
+	template <core_resource_type type>
 	void pack_from(const texture_pixel_transferable<type> &texture, int level, int layer, int offset, std::size_t size) {
 		packer([&]() { texture.download_level(reinterpret_cast<void*>(offset), size, level, layer); });
 	}
-	template <llr_resource_type type>
+	template <core_resource_type type>
 	void pack_from(const texture_pixel_transferable<type> &texture, int level = 0, int layer = 0) { 
 		pack_from(texture, level, layer, 0, buffer_size); 
 	}
 
-	template <llr_resource_type type>
+	template <core_resource_type type>
 	void operator<<(const texture_pixel_transferable<type> &texture) { pack_from(texture); }
-	template <llr_resource_type type>
+	template <core_resource_type type>
 	void operator>>(texture_pixel_transferable<type> &texture) const { unpack_to(texture); }
 
 
@@ -107,7 +107,7 @@ public:
 	template<typename A, GLenum t>
 	void operator>>(fbo_color_attachment_point<A, t > &fbo_attachment) const { pack_to(fbo_attachment); }
 
-	llr_resource_type resource_type() const override { return llr_resource_type::LLRPixelBufferObject; }
+	core_resource_type resource_type() const override { return core_resource_type::PixelBufferObject; }
 };
 
 }

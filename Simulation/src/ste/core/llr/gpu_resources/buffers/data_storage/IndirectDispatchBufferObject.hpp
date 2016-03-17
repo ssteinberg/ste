@@ -7,7 +7,7 @@
 #include "buffer_usage.hpp"
 
 namespace StE {
-namespace LLR {
+namespace Core {
 
 struct IndirectDispatchCommand {
 	std::uint32_t count;
@@ -42,7 +42,7 @@ public:
 	void unbind() const final override { Binder::unbind(GL_DRAW_INDIRECT_BUFFER); };
 	void bind_range(const LayoutLocationType &sampler, int offset, std::size_t size) const { Base::bind_range(sampler, GL_DRAW_INDIRECT_BUFFER, offset, size); }
 
-	llr_resource_type resource_type() const override { return llr_resource_type::LLRIndirectDispatchBufferObject; }
+	core_resource_type resource_type() const override { return core_resource_type::IndirectDispatchBufferObject; }
 };
 
 }

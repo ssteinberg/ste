@@ -16,7 +16,7 @@ namespace Graphics {
 template <gli::format Fin>
 class normal_map_from_height_map {
 private:
-	using T = typename LLR::surface_element_type<Fin>::type;
+	using T = typename Core::surface_element_type<Fin>::type;
 
 public:
 	template <bool height_in_alpha = true>
@@ -43,11 +43,11 @@ public:
 				T ir = x + 1 < dim.x ? heights[dim.x * y + x + 1] : ic;
 				T il = x > 0 ? heights[dim.x * y + x - 1] : ic;
 
-				float c = LLR::surface_element_cast<Fin, gli::format::FORMAT_R32_SFLOAT_PACK32>(ic);
-				float u = LLR::surface_element_cast<Fin, gli::format::FORMAT_R32_SFLOAT_PACK32>(iu);
-				float d = LLR::surface_element_cast<Fin, gli::format::FORMAT_R32_SFLOAT_PACK32>(id);
-				float l = LLR::surface_element_cast<Fin, gli::format::FORMAT_R32_SFLOAT_PACK32>(il);
-				float r = LLR::surface_element_cast<Fin, gli::format::FORMAT_R32_SFLOAT_PACK32>(ir);
+				float c = Core::surface_element_cast<Fin, gli::format::FORMAT_R32_SFLOAT_PACK32>(ic);
+				float u = Core::surface_element_cast<Fin, gli::format::FORMAT_R32_SFLOAT_PACK32>(iu);
+				float d = Core::surface_element_cast<Fin, gli::format::FORMAT_R32_SFLOAT_PACK32>(id);
+				float l = Core::surface_element_cast<Fin, gli::format::FORMAT_R32_SFLOAT_PACK32>(il);
+				float r = Core::surface_element_cast<Fin, gli::format::FORMAT_R32_SFLOAT_PACK32>(ir);
 
 				n.z = 1.0f;
 				n.y = ((c - d) * .5f + (u - c) * .5f) * height_scale;

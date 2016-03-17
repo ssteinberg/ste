@@ -23,7 +23,7 @@
 #include <unordered_map>
 
 namespace StE {
-namespace LLR {
+namespace Core {
 
 template<typename A>
 class frame_buffer_object;
@@ -55,13 +55,13 @@ public:
 		size = { 0,0 };
 	}
 
-	template <llr_resource_type TexType>
+	template <core_resource_type TexType>
 	void attach(const image<TexType> &img, std::enable_if_t<texture_is_array<TexType>::value>* = 0) {
 		glNamedFramebufferTextureLayer(fbo->get_resource_id(), attachment_point, img.get_resource_id(), img.get_level(), img.get_layer());
 		size = img.get_image_size();
 		format = img.get_format();
 	}
-	template <llr_resource_type TexType>
+	template <core_resource_type TexType>
 	void attach(const image<TexType> &img, std::enable_if_t<!texture_is_array<TexType>::value>* = 0) {
 		glNamedFramebufferTexture(fbo->get_resource_id(), attachment_point, img.get_resource_id(), img.get_level());
 		size = img.get_image_size();
@@ -279,7 +279,7 @@ public:
 		return maxbuffers;
 	}
 
-	llr_resource_type resource_type() const override { return llr_resource_type::LLRFramebufferObject; }
+	core_resource_type resource_type() const override { return core_resource_type::FramebufferObject; }
 };
 
 class FramebufferObject : public frame_buffer_object<FramebufferObjectAllocator> {

@@ -21,7 +21,7 @@
 #include "tuple_call.hpp"
 
 namespace StE {
-namespace LLR {
+namespace Core {
 
 class gl_generic_context {
 private:

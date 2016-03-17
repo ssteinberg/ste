@@ -11,7 +11,7 @@
 #include <limits>
 
 namespace StE {
-namespace LLR {
+namespace Core {
 
 template <gli::format T>
 float surface_element_to_sfloat(const typename surface_element_type<T>::type &v, std::enable_if_t<!surface_is_normalized<T>::value>* = 0) {

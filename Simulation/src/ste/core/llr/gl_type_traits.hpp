@@ -9,7 +9,7 @@
 #include <glm/glm.hpp>
 
 namespace StE {
-namespace LLR {
+namespace Core {
 
 template<typename T> struct _gl_elements_count_impl { static constexpr std::size_t elements = std::is_arithmetic<T>::value ? 1 : 0; };
 template<typename vecT> struct _gl_elements_count_impl<glm::tvec1<vecT>> { static constexpr std::size_t elements = 1; };

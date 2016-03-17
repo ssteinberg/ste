@@ -7,7 +7,7 @@
 #include "shader_layout_bindable_resource.hpp"
 
 namespace StE {
-namespace LLR {
+namespace Core {
 
 class llr_resource_stub_binder {
 public:

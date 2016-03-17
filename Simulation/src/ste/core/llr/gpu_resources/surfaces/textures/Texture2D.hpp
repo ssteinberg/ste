@@ -10,11 +10,11 @@
 #include <algorithm>
 
 namespace StE {
-namespace LLR {
+namespace Core {
 
-class Texture2D : public texture_mipmapped<llr_resource_type::LLRTexture2D> {
+class Texture2D : public texture_mipmapped<core_resource_type::Texture2D> {
 private:
-	using Base = texture_mipmapped<llr_resource_type::LLRTexture2D>;
+	using Base = texture_mipmapped<core_resource_type::Texture2D>;
 
 public:
 	Texture2D(Texture2D &&m) = default;
@@ -32,7 +32,7 @@ public:
 	// Re upload texture data. Surface must match texture's format.
 	bool upload(const gli::texture2d &t, bool generate_mipmaps = false);
 
-	void upload_level(const void *data, int level = 0, int layer = 0, LLRCubeMapFace face = LLRCubeMapFace::LLRCubeMapFaceNone, int data_size = 0) override {
+	void upload_level(const void *data, int level = 0, int layer = 0, CubeMapFace face = CubeMapFace::CubeMapFaceNone, int data_size = 0) override {
 		auto gl_format = gl_utils::translate_format(format, Base::swizzle);
 
 		if (is_compressed()) {

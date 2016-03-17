@@ -7,10 +7,10 @@
 #include "query_object.hpp"
 
 namespace StE {
-namespace LLR {
+namespace Core {
 
-class OcclusionQueryAnySamples : public query_object<llr_resource_type::LLRQueryObjectAnySamples> {};
-class OcclusionQueryAnySamplesConservative : public query_object<llr_resource_type::LLRQueryObjectAnySamplesConservative> {};
+class OcclusionQueryAnySamples : public query_object<core_resource_type::QueryObjectAnySamples> {};
+class OcclusionQueryAnySamplesConservative : public query_object<core_resource_type::QueryObjectAnySamplesConservative> {};
 
 }
 }

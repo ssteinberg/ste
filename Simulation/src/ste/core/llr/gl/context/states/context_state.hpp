@@ -12,7 +12,7 @@
 #include <list>
 
 namespace StE {
-namespace LLR {
+namespace Core {
 
 class context_state {
 private:

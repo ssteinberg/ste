@@ -25,7 +25,7 @@ private:
 private:
 	TasksCollection tasks, modified_tasks;
 	
-	void add_task(const TaskPtr&, const LLR::GenericFramebufferObject*, bool);
+	void add_task(const TaskPtr&, const Core::GenericFramebufferObject*, bool);
 	
 	void dispatch(TaskPtr, TasksCollection&) const;
 	
@@ -33,9 +33,9 @@ protected:
 	void signal_task_modified(const TaskPtr &task) { modified_tasks.insert(task); }
 
 public:
-	void add_task(const TaskPtr &task, const LLR::GenericFramebufferObject *override_fbo = nullptr);
+	void add_task(const TaskPtr &task, const Core::GenericFramebufferObject *override_fbo = nullptr);
 	void remove_task(const TaskPtr &task, bool force= false);
-	void update_task_fbo(const TaskPtr &task, const LLR::GenericFramebufferObject *override_fbo) const;
+	void update_task_fbo(const TaskPtr &task, const Core::GenericFramebufferObject *override_fbo) const;
 	
 	void remove_all();
 

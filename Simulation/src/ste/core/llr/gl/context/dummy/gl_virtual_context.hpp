@@ -7,7 +7,7 @@
 #include "gl_generic_context.hpp"
 
 namespace StE {
-namespace LLR {
+namespace Core {
 
 class gl_virtual_context : public gl_generic_context {
 	using Base = gl_generic_context;

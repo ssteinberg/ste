@@ -11,7 +11,7 @@
 #include <glm/glm.hpp>
 
 using namespace StE::Text;
-using namespace StE::LLR;
+using namespace StE::Core;
 
 
 void TextManager::text_renderable::set_context_state() const {
@@ -29,7 +29,7 @@ void TextManager::text_renderable::set_context_state() const {
 void TextManager::text_renderable::dispatch() const {	
 	range_in_use = tr->vbo.commit(points);
 			
-	LLR::gl_current_context::get()->draw_arrays(GL_POINTS, range_in_use.start / sizeof(glyph_point), points.size());
+	Core::gl_current_context::get()->draw_arrays(GL_POINTS, range_in_use.start / sizeof(glyph_point), points.size());
 	
 	tr->vbo.lock_range(range_in_use);
 	
@@ -40,7 +40,7 @@ void TextManager::text_renderable::dispatch() const {
 TextManager::TextManager(const StEngineControl &context, const Font &default_font, int default_size) : gm(context), default_font(default_font), default_size(default_size) {
 	text_distance_mapping = context.glslprograms_pool().fetch_program_task({ "text_distance_map_contour.vert", "text_distance_map_contour.frag", "text_distance_map_contour.geom" })();
 
-	auto vbo_buffer = LLR::buffer_object_cast<vbo_type>(vbo.get_buffer());
+	auto vbo_buffer = Core::buffer_object_cast<vbo_type>(vbo.get_buffer());
 	vao[0] = vbo_buffer[0];
 	vao[1] = vbo_buffer[1];
 	vao[2] = vbo_buffer[2];

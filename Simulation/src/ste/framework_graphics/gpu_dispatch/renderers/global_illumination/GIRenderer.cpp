@@ -10,7 +10,7 @@ using namespace StE::Graphics;
 
 
 void GIRenderer::deferred_composition::set_context_state() const {
-	using namespace LLR;
+	using namespace Core;
 	
 	Base::set_context_state();
 
@@ -24,7 +24,7 @@ void GIRenderer::deferred_composition::set_context_state() const {
 
 void GIRenderer::deferred_composition::dispatch() const {
 	dr->scene->scene_properties().pre_draw();
-	LLR::gl_current_context::get()->draw_arrays(GL_TRIANGLE_STRIP, 0, 4);
+	Core::gl_current_context::get()->draw_arrays(GL_TRIANGLE_STRIP, 0, 4);
 	dr->scene->scene_properties().post_draw();
 }
 

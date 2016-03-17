@@ -35,40 +35,40 @@ private:
 
 private:
 	const StEngineControl &ctx;
-	LLR::texture_sparse_3d::size_type size, tile_size;
+	Core::texture_sparse_3d::size_type size, tile_size;
 	int mipmaps{ 0 };
 	glm::ivec3 step_size{ 0 };
 	int steps{ 0 };
 	int tiles_per_step{ 0 };
 	float voxel_size, space_size;
 
-	std::unique_ptr<LLR::texture_sparse_3d> space_radiance;
-	std::unique_ptr<LLR::texture_sparse_3d> space_data;
+	std::unique_ptr<Core::texture_sparse_3d> space_radiance;
+	std::unique_ptr<Core::texture_sparse_3d> space_data;
 
-	LLR::SamplerMipmapped sampler;
+	Core::SamplerMipmapped sampler;
 
 	std::shared_ptr<ProjectionSignalConnectionType> projection_change_connection;
 
-	LLR::FramebufferObject voxelizer_fbo;
-	std::unique_ptr<LLR::RenderTarget> voxelizer_output;
+	Core::FramebufferObject voxelizer_fbo;
+	std::unique_ptr<Core::RenderTarget> voxelizer_output;
 
 protected:
-	std::shared_ptr<LLR::GLSLProgram> voxelizer_program;
-	std::shared_ptr<LLR::GLSLProgram> voxelizer_upsampler_program;
+	std::shared_ptr<Core::GLSLProgram> voxelizer_program;
+	std::shared_ptr<Core::GLSLProgram> voxelizer_upsampler_program;
 
-	mutable std::unordered_set<const LLR::GLSLProgram*> consumers;
+	mutable std::unordered_set<const Core::GLSLProgram*> consumers;
 
-	std::vector<LLR::image_handle> handles_radiance;
-	std::vector<LLR::image_handle> handles_data;
-	LLR::texture_handle radiance_texture_handle;
-	LLR::texture_handle data_texture_handle;
+	std::vector<Core::image_handle> handles_radiance;
+	std::vector<Core::image_handle> handles_data;
+	Core::texture_handle radiance_texture_handle;
+	Core::texture_handle data_texture_handle;
 
 protected:
 	void create_dense_voxel_space(float voxel_size_factor);
 	void clear_space() const;
 
-	void update_shader_voxel_uniforms(const LLR::GLSLProgram &prg) const;
-	void update_shader_voxel_world_translation(const glm::vec3 &c, const LLR::GLSLProgram &prg) const {
+	void update_shader_voxel_uniforms(const Core::GLSLProgram &prg) const;
+	void update_shader_voxel_world_translation(const glm::vec3 &c, const Core::GLSLProgram &prg) const {
 		auto vs = voxel_size * voxel_steps_multiplier;
 		glm::vec3 translation = glm::round(c / vs) * vs;
 		prg.set_uniform("voxels_world_translation", c - translation);
@@ -77,11 +77,11 @@ protected:
 public:
 	dense_voxel_space(const StEngineControl &ctx, std::size_t max_size = 1024, float voxel_size_factor = 1.f);
 
-	void add_consumer_program(const LLR::GLSLProgram *prg) const {
+	void add_consumer_program(const Core::GLSLProgram *prg) const {
 		consumers.insert(prg);
 		update_shader_voxel_uniforms(*prg);
 	}
-	void remove_consumer_program(const LLR::GLSLProgram *prg) const {
+	void remove_consumer_program(const Core::GLSLProgram *prg) const {
 		consumers.erase(prg);
 	}
 

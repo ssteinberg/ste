@@ -2,25 +2,25 @@
 
 #pragma once
 
-#include "llr_resource_type.hpp"
+#include "core_resource_type.hpp"
 #include "texture_traits.hpp"
 
 namespace StE {
-namespace LLR {
+namespace Core {
 
-template <llr_resource_type type> struct resource_is_texture { static constexpr bool value = false; };
-template <> struct resource_is_texture<llr_resource_type::LLRTexture1D> { static constexpr bool value = true; };
-template <> struct resource_is_texture<llr_resource_type::LLRTexture2D> { static constexpr bool value = true; };
-template <> struct resource_is_texture<llr_resource_type::LLRTexture3D> { static constexpr bool value = true; };
-template <> struct resource_is_texture<llr_resource_type::LLRTexture1DArray> { static constexpr bool value = true; };
-template <> struct resource_is_texture<llr_resource_type::LLRTexture2DArray> { static constexpr bool value = true; };
-template <> struct resource_is_texture<llr_resource_type::LLRTexture2DMS> { static constexpr bool value = true; };
-template <> struct resource_is_texture<llr_resource_type::LLRTexture2DMSArray> { static constexpr bool value = true; };
-template <> struct resource_is_texture<llr_resource_type::LLRTextureCubeMap> { static constexpr bool value = true; };
-template <> struct resource_is_texture<llr_resource_type::LLRTextureCubeMapArray> { static constexpr bool value = true; };
+template <core_resource_type type> struct resource_is_texture { static constexpr bool value = false; };
+template <> struct resource_is_texture<core_resource_type::Texture1D> { static constexpr bool value = true; };
+template <> struct resource_is_texture<core_resource_type::Texture2D> { static constexpr bool value = true; };
+template <> struct resource_is_texture<core_resource_type::Texture3D> { static constexpr bool value = true; };
+template <> struct resource_is_texture<core_resource_type::Texture1DArray> { static constexpr bool value = true; };
+template <> struct resource_is_texture<core_resource_type::Texture2DArray> { static constexpr bool value = true; };
+template <> struct resource_is_texture<core_resource_type::Texture2DMS> { static constexpr bool value = true; };
+template <> struct resource_is_texture<core_resource_type::Texture2DMSArray> { static constexpr bool value = true; };
+template <> struct resource_is_texture<core_resource_type::TextureCubeMap> { static constexpr bool value = true; };
+template <> struct resource_is_texture<core_resource_type::TextureCubeMapArray> { static constexpr bool value = true; };
 
-template <llr_resource_type type> struct resource_is_render_target { static constexpr bool value = resource_is_texture<type>::value; };
-template <> struct resource_is_render_target<llr_resource_type::LLRRenderbufferObject> { static constexpr bool value = true; };
+template <core_resource_type type> struct resource_is_render_target { static constexpr bool value = resource_is_texture<type>::value; };
+template <> struct resource_is_render_target<core_resource_type::RenderbufferObject> { static constexpr bool value = true; };
 
 }
 }

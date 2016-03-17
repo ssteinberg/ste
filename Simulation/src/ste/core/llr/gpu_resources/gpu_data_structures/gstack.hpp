@@ -12,12 +12,12 @@
 #include <type_traits>
 
 namespace StE {
-namespace LLR {
+namespace Core {
 
 template <typename T, bool lockless = false>
 class gstack {
 public:
-	static constexpr BufferUsage::buffer_usage usage = static_cast<BufferUsage::buffer_usage>(LLR::BufferUsage::BufferUsageDynamic | LLR::BufferUsage::BufferUsageSparse);
+	static constexpr BufferUsage::buffer_usage usage = static_cast<BufferUsage::buffer_usage>(Core::BufferUsage::BufferUsageDynamic | Core::BufferUsage::BufferUsageSparse);
 	using value_type = T;
 
 private:

@@ -55,52 +55,52 @@ private:
 private:
 	std::shared_ptr<ResizeSignalConnectionType> resize_connection;
 
-	std::shared_ptr<LLR::GLSLProgram> hdr_compute_minmax;
-	std::shared_ptr<LLR::GLSLProgram> hdr_create_histogram;
-	std::shared_ptr<LLR::GLSLProgram> hdr_compute_histogram_sums;
-	std::shared_ptr<LLR::GLSLProgram> hdr_tonemap_coc;
-	std::shared_ptr<LLR::GLSLProgram> hdr_bloom_blurx;
-	std::shared_ptr<LLR::GLSLProgram> hdr_bloom_blury;
-	std::shared_ptr<LLR::GLSLProgram> bokeh_blurx;
-	std::shared_ptr<LLR::GLSLProgram> bokeh_blury;
+	std::shared_ptr<Core::GLSLProgram> hdr_compute_minmax;
+	std::shared_ptr<Core::GLSLProgram> hdr_create_histogram;
+	std::shared_ptr<Core::GLSLProgram> hdr_compute_histogram_sums;
+	std::shared_ptr<Core::GLSLProgram> hdr_tonemap_coc;
+	std::shared_ptr<Core::GLSLProgram> hdr_bloom_blurx;
+	std::shared_ptr<Core::GLSLProgram> hdr_bloom_blury;
+	std::shared_ptr<Core::GLSLProgram> bokeh_blurx;
+	std::shared_ptr<Core::GLSLProgram> bokeh_blury;
 
-	LLR::Sampler hdr_vision_properties_sampler;
-	LLR::Sampler linear_sampler;
+	Core::Sampler hdr_vision_properties_sampler;
+	Core::Sampler linear_sampler;
 
-	std::unique_ptr<LLR::Texture1D> hdr_vision_properties_texture;
-	LLR::texture_handle hdr_vision_properties_texture_handle;
+	std::unique_ptr<Core::Texture1D> hdr_vision_properties_texture;
+	Core::texture_handle hdr_vision_properties_texture_handle;
 
-	std::unique_ptr<LLR::Texture2D> bokeh_coc;
-	std::unique_ptr<LLR::Texture2D> hdr_image;
-	std::unique_ptr<LLR::Texture2D> hdr_final_image;
-	std::unique_ptr<LLR::Texture2D> hdr_bloom_image;
-	std::unique_ptr<LLR::Texture2D> hdr_bloom_blurx_image;
-	std::unique_ptr<LLR::Texture2D> hdr_lums;
-	std::unique_ptr<LLR::Texture2D> bokeh_blur_image_x;
+	std::unique_ptr<Core::Texture2D> bokeh_coc;
+	std::unique_ptr<Core::Texture2D> hdr_image;
+	std::unique_ptr<Core::Texture2D> hdr_final_image;
+	std::unique_ptr<Core::Texture2D> hdr_bloom_image;
+	std::unique_ptr<Core::Texture2D> hdr_bloom_blurx_image;
+	std::unique_ptr<Core::Texture2D> hdr_lums;
+	std::unique_ptr<Core::Texture2D> bokeh_blur_image_x;
 
-	LLR::FramebufferObject fbo_hdr_final;
-	LLR::FramebufferObject fbo_hdr;
-	LLR::FramebufferObject fbo_hdr_bloom_blurx_image;
-	LLR::FramebufferObject fbo_bokeh_blur_image;
+	Core::FramebufferObject fbo_hdr_final;
+	Core::FramebufferObject fbo_hdr;
+	Core::FramebufferObject fbo_hdr_bloom_blurx_image;
+	Core::FramebufferObject fbo_bokeh_blur_image;
 
-	mutable LLR::ShaderStorageBuffer<hdr_bokeh_parameters> hdr_bokeh_param_buffer{ 1 };
-	mutable LLR::ShaderStorageBuffer<hdr_bokeh_parameters> hdr_bokeh_param_buffer_prev{ 1 };
-	mutable LLR::AtomicCounterBufferObject<> histogram{ 128 };
-	mutable LLR::ShaderStorageBuffer<std::uint32_t> histogram_sums{ 128 };
-	mutable std::unique_ptr<LLR::PixelBufferObject<std::int32_t>> hdr_bokeh_param_buffer_eraser;
+	mutable Core::ShaderStorageBuffer<hdr_bokeh_parameters> hdr_bokeh_param_buffer{ 1 };
+	mutable Core::ShaderStorageBuffer<hdr_bokeh_parameters> hdr_bokeh_param_buffer_prev{ 1 };
+	mutable Core::AtomicCounterBufferObject<> histogram{ 128 };
+	mutable Core::ShaderStorageBuffer<std::uint32_t> histogram_sums{ 128 };
+	mutable std::unique_ptr<Core::PixelBufferObject<std::int32_t>> hdr_bokeh_param_buffer_eraser;
 
 	glm::i32vec2 luminance_size;
 
-	const LLR::Texture2D *z_buffer;
+	const Core::Texture2D *z_buffer;
 	const StEngineControl &ctx;
 
 	std::array<std::uint32_t, 4> storage_buffers;
 
 public:
-	hdr_dof_postprocess(const StEngineControl &ctx, const LLR::Texture2D *z_buffer);
+	hdr_dof_postprocess(const StEngineControl &ctx, const Core::Texture2D *z_buffer);
 	~hdr_dof_postprocess() noexcept {}
 
-	void set_z_buffer(const LLR::Texture2D *z_buffer);
+	void set_z_buffer(const Core::Texture2D *z_buffer);
 
 	auto get_input_fbo() const { return &fbo_hdr_final; }
 

@@ -121,7 +121,7 @@ public:
 		return task<gli::texture2d>([=](optional<task_scheduler*> sched) {
 			return load_surface_2d_task(path, srgb)(sched);
 		}).then_on_main_thread([](optional<task_scheduler*> sched, const gli::texture2d &surface) {
-			return std::make_unique<LLR::Texture2D>(surface, surface.levels() == 1);
+			return std::make_unique<Core::Texture2D>(surface, surface.levels() == 1);
 		});
 	}
 };

@@ -3,7 +3,7 @@
 #include "Texture2D.hpp"
 #include "Log.hpp"
 
-using namespace StE::LLR;
+using namespace StE::Core;
 
 bool Texture2D::upload(const gli::texture2d &texture, bool gm) {
 	int levels = gm ? 1 : std::min(this->levels, static_cast<decltype(this->levels)>(texture.levels()));
@@ -21,7 +21,7 @@ bool Texture2D::upload(const gli::texture2d &texture, bool gm) {
 	}
 
 	for (int l = 0; l < levels; ++l) {
-		upload_level(texture[l].data(), l, 0, LLRCubeMapFace::LLRCubeMapFaceNone, texture[l].size());
+		upload_level(texture[l].data(), l, 0, CubeMapFace::CubeMapFaceNone, texture[l].size());
 	}
 
 	// Generate mipmaps

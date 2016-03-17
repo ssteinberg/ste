@@ -9,7 +9,7 @@
 #include <gli/gli.hpp>
 
 namespace StE {
-namespace LLR {
+namespace Core {
 
 class RenderTargetAllocator : public generic_resource_immutable_storage_allocator<int, const gli::gl::format &, const glm::ivec2 &, std::size_t> {
 	using Base = generic_resource_immutable_storage_allocator<int, const gli::gl::format &, const glm::ivec2 &, std::size_t>;

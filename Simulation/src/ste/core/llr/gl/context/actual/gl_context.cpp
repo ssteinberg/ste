@@ -13,7 +13,7 @@
 #include <functional>
 #include <stdexcept>
 
-using namespace StE::LLR;
+using namespace StE::Core;
 
 class ste_context_intializer {
 private:

@@ -55,18 +55,18 @@ private:
 	using ProjectionSignalConnectionType = StEngineControl::projection_change_signal_type::connection_type;
  
 private:
- 	LLR::VertexArrayObject vao;
+ 	Core::VertexArrayObject vao;
 
-	mutable LLR::gstack<mesh_descriptor> mesh_data_bo;
- 	LLR::gstack<ObjectVertexData> vbo;
-	LLR::gstack<std::uint32_t> indices;
-	LLR::gstack<LLR::IndirectMultiDrawElementsCommand> idb;
+	mutable Core::gstack<mesh_descriptor> mesh_data_bo;
+ 	Core::gstack<ObjectVertexData> vbo;
+	Core::gstack<std::uint32_t> indices;
+	Core::gstack<Core::IndirectMultiDrawElementsCommand> idb;
 	
 private:
- 	using vbo_type = LLR::VertexBufferObject<ObjectVertexData, ObjectVertexData::descriptor, decltype(vbo)::usage>;
- 	using elements_type = LLR::ElementBufferObject<std::uint32_t, decltype(indices)::usage>;
- 	using indirect_draw_buffer_type = LLR::IndirectDrawBuffer<LLR::IndirectMultiDrawElementsCommand, decltype(idb)::usage>;
-	using mesh_data_buffer_type = LLR::ShaderStorageBuffer<mesh_descriptor, decltype(mesh_data_bo)::usage>;
+ 	using vbo_type = Core::VertexBufferObject<ObjectVertexData, ObjectVertexData::descriptor, decltype(vbo)::usage>;
+ 	using elements_type = Core::ElementBufferObject<std::uint32_t, decltype(indices)::usage>;
+ 	using indirect_draw_buffer_type = Core::IndirectDrawBuffer<Core::IndirectMultiDrawElementsCommand, decltype(idb)::usage>;
+	using mesh_data_buffer_type = Core::ShaderStorageBuffer<mesh_descriptor, decltype(mesh_data_bo)::usage>;
 
 private:
 	SceneProperties *scene_props;
@@ -78,7 +78,7 @@ private:
 	mutable std::vector<Object*> signalled_objects;
 	mutable std::vector<range<>> ranges_to_lock;
 	
-	std::shared_ptr<LLR::GLSLProgram> object_program;
+	std::shared_ptr<Core::GLSLProgram> object_program;
 	
 	std::shared_ptr<ProjectionSignalConnectionType> projection_change_connection;
 
@@ -104,8 +104,8 @@ protected:
 	void set_context_state() const override final {
 		Base::set_context_state();
 		
-		LLR::gl_current_context::get()->enable_depth_test();
-		LLR::gl_current_context::get()->enable_state(LLR::context_state_name::CULL_FACE);
+		Core::gl_current_context::get()->enable_depth_test();
+		Core::gl_current_context::get()->enable_state(Core::context_state_name::CULL_FACE);
 		
 		bind_buffers();
 		object_program->bind();
@@ -114,14 +114,14 @@ protected:
 	void dispatch() const override final {
 		update_dirty_buffers();
 		
-		LLR::gl_current_context::get()->draw_multi_elements_indirect<elements_type::T>(GL_TRIANGLES, 0, idb.size(), 0);
+		Core::gl_current_context::get()->draw_multi_elements_indirect<elements_type::T>(GL_TRIANGLES, 0, idb.size(), 0);
 		
 		for (auto &r : ranges_to_lock)
 			mesh_data_bo.lock_range(r);
 		ranges_to_lock.clear();
 		
-		LLR::gl_current_context::get()->disable_state(LLR::context_state_name::CULL_FACE);
-		LLR::gl_current_context::get()->disable_depth_test();
+		Core::gl_current_context::get()->disable_state(Core::context_state_name::CULL_FACE);
+		Core::gl_current_context::get()->disable_depth_test();
 	}
 };
 

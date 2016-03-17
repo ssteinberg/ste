@@ -12,7 +12,7 @@
 #include "attrib.hpp"
 
 namespace StE {
-namespace LLR {
+namespace Core {
 
 class generic_resource_allocator {
 public:

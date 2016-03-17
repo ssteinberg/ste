@@ -6,7 +6,7 @@
 #include "stdafx.hpp"
 
 #include "texture_base.hpp"
-#include "llr_resource_type.hpp"
+#include "core_resource_type.hpp"
 #include "surface_constants.hpp"
 
 #include "image.hpp"
@@ -14,14 +14,14 @@
 #include <vector>
 
 namespace StE {
-namespace LLR {
+namespace Core {
 
-template <llr_resource_type type>
+template <core_resource_type type>
 class texture_sparse_mipmapped : public texture_mipmapped<type> {
 private:
 	using Base = texture_mipmapped<type>;
 
-	void upload_level(const void *data, int level = 0, int layer = 0, LLRCubeMapFace face = LLRCubeMapFace::LLRCubeMapFaceNone, int data_size = 0) override {}
+	void upload_level(const void *data, int level = 0, int layer = 0, CubeMapFace face = CubeMapFace::CubeMapFaceNone, int data_size = 0) override {}
 
 protected:
 	typename Base::size_type tile_size;
@@ -83,9 +83,9 @@ public:
 	}
 };
 
-class texture_sparse_2d : public texture_sparse_mipmapped<llr_resource_type::LLRTexture2D> {
+class texture_sparse_2d : public texture_sparse_mipmapped<core_resource_type::Texture2D> {
 private:
-	using Base = texture_sparse_mipmapped<llr_resource_type::LLRTexture2D>;
+	using Base = texture_sparse_mipmapped<core_resource_type::Texture2D>;
 
 public:
 	texture_sparse_2d(gli::format format, const typename Base::size_type &size, int levels, const typename Base::size_type &tile_size, int virtual_page_idx) : Base(format, size, levels, tile_size, virtual_page_idx) {}
@@ -104,9 +104,9 @@ public:
 	}
 };
 
-class texture_sparse_3d : public texture_sparse_mipmapped<llr_resource_type::LLRTexture3D> {
+class texture_sparse_3d : public texture_sparse_mipmapped<core_resource_type::Texture3D> {
 private:
-	using Base = texture_sparse_mipmapped<llr_resource_type::LLRTexture3D>;
+	using Base = texture_sparse_mipmapped<core_resource_type::Texture3D>;
 
 public:
 	texture_sparse_3d(gli::format format, const typename Base::size_type &size, int levels, const typename Base::size_type &tile_size, int virtual_page_idx) : Base(format, size, levels, tile_size, virtual_page_idx) {}
@@ -125,9 +125,9 @@ public:
 	}
 };
 
-class texture_sparse_2d_array : public texture_sparse_mipmapped<llr_resource_type::LLRTexture2DArray> {
+class texture_sparse_2d_array : public texture_sparse_mipmapped<core_resource_type::Texture2DArray> {
 private:
-	using Base = texture_sparse_mipmapped<llr_resource_type::LLRTexture2DArray>;
+	using Base = texture_sparse_mipmapped<core_resource_type::Texture2DArray>;
 
 public:
 	texture_sparse_2d_array(gli::format format, const typename Base::size_type &size, int levels, const typename Base::size_type &tile_size, int virtual_page_idx) : Base(format, size, levels, tile_size, virtual_page_idx) {}

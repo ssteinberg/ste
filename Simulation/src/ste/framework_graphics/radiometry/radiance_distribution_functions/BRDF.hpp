@@ -20,7 +20,7 @@ namespace Graphics {
 class BRDF : public BxDF {
 public:
 	struct brdf_descriptor {
-		LLR::texture_handle tex_handler;
+		Core::texture_handle tex_handler;
 		std::int32_t min_theta_in, max_theta_in;
 	};
 
@@ -31,17 +31,17 @@ public:
 
 private:
 	int min_theta, max_theta;
-	std::unique_ptr<LLR::Texture3D> texture;
-	LLR::SamplerMipmapped sampler;
+	std::unique_ptr<Core::Texture3D> texture;
+	Core::SamplerMipmapped sampler;
 
 public:
 	BRDF(const common_brdf_representation &brdf) : 	min_theta(glm::radians(static_cast<float>(brdf.get_min_incident()))), 
 													max_theta(glm::radians(static_cast<float>(brdf.get_max_incident()))), 
-													sampler(LLR::TextureFiltering::Linear, LLR::TextureFiltering::Linear, LLR::TextureFiltering::Linear) {
-		texture = std::make_unique<LLR::Texture3D>(*brdf.get_data(), true);
-		sampler.set_wrap_r(LLR::TextureWrapMode::Wrap);
-		sampler.set_wrap_s(LLR::TextureWrapMode::ClampToEdge);
-		sampler.set_wrap_t(LLR::TextureWrapMode::ClampToEdge);
+													sampler(Core::TextureFiltering::Linear, Core::TextureFiltering::Linear, Core::TextureFiltering::Linear) {
+		texture = std::make_unique<Core::Texture3D>(*brdf.get_data(), true);
+		sampler.set_wrap_r(Core::TextureWrapMode::Wrap);
+		sampler.set_wrap_s(Core::TextureWrapMode::ClampToEdge);
+		sampler.set_wrap_t(Core::TextureWrapMode::ClampToEdge);
 	}
 
 	brdf_descriptor descriptor() const {

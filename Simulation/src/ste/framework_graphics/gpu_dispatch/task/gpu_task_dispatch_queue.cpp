@@ -25,7 +25,7 @@ void gpu_task_dispatch_queue::dispatch(TaskPtr task, TasksCollection &tasks_to_d
 	(*task)();
 }
 
-void gpu_task_dispatch_queue::add_task(const TaskPtr &task, const LLR::GenericFramebufferObject *override_fbo, bool mark_inserted) {
+void gpu_task_dispatch_queue::add_task(const TaskPtr &task, const Core::GenericFramebufferObject *override_fbo, bool mark_inserted) {
 	if (mark_inserted)
 		task->inserted_into_queue = true;
 	task->override_fbo = override_fbo;
@@ -46,7 +46,7 @@ void gpu_task_dispatch_queue::add_task(const TaskPtr &task, const LLR::GenericFr
 	}
 }
 
-void gpu_task_dispatch_queue::add_task(const TaskPtr &task, const LLR::GenericFramebufferObject *override_fbo) {
+void gpu_task_dispatch_queue::add_task(const TaskPtr &task, const Core::GenericFramebufferObject *override_fbo) {
 	add_task(task, override_fbo, true);
 }
 
@@ -75,7 +75,7 @@ void gpu_task_dispatch_queue::remove_task(const TaskPtr &task, bool force) {
 	modified_tasks.erase(task);
 }
 
-void gpu_task_dispatch_queue::update_task_fbo(const TaskPtr &task, const LLR::GenericFramebufferObject *override_fbo) const {
+void gpu_task_dispatch_queue::update_task_fbo(const TaskPtr &task, const Core::GenericFramebufferObject *override_fbo) const {
 	task->set_override_fbo(override_fbo);
 }
 

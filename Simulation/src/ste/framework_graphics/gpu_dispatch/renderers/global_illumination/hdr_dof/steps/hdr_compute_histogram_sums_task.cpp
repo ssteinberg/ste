@@ -4,7 +4,7 @@
 #include "ShaderStorageBuffer.hpp"
 
 using namespace StE::Graphics;
-using namespace StE::LLR;
+using namespace StE::Core;
 
 void hdr_compute_histogram_sums_task::set_context_state() const {
 	Base::set_context_state();

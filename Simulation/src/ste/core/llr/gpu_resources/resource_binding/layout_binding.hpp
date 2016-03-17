@@ -4,7 +4,7 @@
 #pragma once
 
 namespace StE {
-namespace LLR {
+namespace Core {
 
 template <typename BindingType>
 class shader_layout_bindable_resource;
@@ -43,7 +43,7 @@ bool inline operator!=(const layout_binding<BindingType>& lhs, const layout_bind
 #include "shader_layout_bindable_resource.hpp"
 
 namespace StE {
-namespace LLR {
+namespace Core {
 
 template <typename BindingType>
 void inline layout_binding<BindingType>::operator=(const shader_layout_bindable_resource<BindingType> &binable_shader_resource) const {

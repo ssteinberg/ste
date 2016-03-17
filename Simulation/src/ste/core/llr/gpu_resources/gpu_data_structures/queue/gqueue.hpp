@@ -12,7 +12,7 @@
 #include <vector>
 
 namespace StE {
-namespace LLR {
+namespace Core {
 
 template <typename T, int Size>
 class gqueue {

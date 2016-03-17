@@ -9,7 +9,7 @@
 #include <functional>
 
 namespace StE {
-namespace LLR {
+namespace Core {
 
 template <typename T, BufferUsage::buffer_usage U>
 class buffer_object;

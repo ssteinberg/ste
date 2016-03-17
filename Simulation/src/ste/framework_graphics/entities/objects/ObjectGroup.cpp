@@ -11,7 +11,7 @@ using namespace StE::Graphics;
 	
 ObjectGroup::ObjectGroup(StEngineControl &ctx, SceneProperties *props) : scene_props(props),
 																		 object_program(ctx.glslprograms_pool().fetch_program_task({ "object.vert", "object.frag" })()) {
-	auto vbo_buffer = LLR::buffer_object_cast<vbo_type>(vbo.get_buffer());
+	auto vbo_buffer = Core::buffer_object_cast<vbo_type>(vbo.get_buffer());
 	vao[0] = vbo_buffer[0];
 	vao[1] = vbo_buffer[1];
 	vao[2] = vbo_buffer[2];
@@ -46,7 +46,7 @@ void ObjectGroup::add_object(const std::shared_ptr<Object> &obj) {
 	objects.insert(std::make_pair(obj, 
 								  object_information{ idb.size(), connection }));
 
- 	LLR::IndirectMultiDrawElementsCommand idc;
+ 	Core::IndirectMultiDrawElementsCommand idc;
  	idc.count = ind.size();
  	idc.instance_count = 1;
  	idc.first_index = total_indices;
@@ -75,10 +75,10 @@ void ObjectGroup::remove_all() {
 }
 
 void ObjectGroup::bind_buffers() const {
-	using namespace LLR;
+	using namespace Core;
 	vao.bind();
-	LLR::buffer_object_cast<elements_type>(indices.get_buffer()).bind();
-	LLR::buffer_object_cast<indirect_draw_buffer_type>(idb.get_buffer()).bind();
+	Core::buffer_object_cast<elements_type>(indices.get_buffer()).bind();
+	Core::buffer_object_cast<indirect_draw_buffer_type>(idb.get_buffer()).bind();
 	0_storage_idx = scene_props->material_storage().buffer();
 	1_storage_idx = mesh_data_bo.get_buffer();
 }

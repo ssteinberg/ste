@@ -7,7 +7,7 @@
 #include <type_traits>
 
 namespace StE {
-namespace LLR {
+namespace Core {
 	
 enum class context_state_name : std::int32_t {
 	// Basic states (boolean glenable/gldisable states)
@@ -66,8 +66,8 @@ enum class context_state_name : std::int32_t {
 
 namespace std {
 
-template <> struct hash<StE::LLR::context_state_name> {
-	size_t inline operator()(const StE::LLR::context_state_name &x) const {
+template <> struct hash<StE::Core::context_state_name> {
+	size_t inline operator()(const StE::Core::context_state_name &x) const {
 		using T = typename std::underlying_type<typename std::decay<decltype(x)>::type>::type;
 		return std::hash<T>()(static_cast<T>(x));
 	}

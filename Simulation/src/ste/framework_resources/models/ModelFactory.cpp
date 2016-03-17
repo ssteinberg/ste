@@ -17,7 +17,7 @@
 
 using namespace StE::Resource;
 using namespace StE::Graphics;
-using StE::LLR::Texture2D;
+using StE::Core::Texture2D;
 
 std::future<void> ModelFactory::process_model_mesh(optional<task_scheduler*> sched,
 												  Graphics::material_storage *matstorage,
@@ -94,10 +94,10 @@ std::future<void> ModelFactory::process_model_mesh(optional<task_scheduler*> sch
 	}
 
 	int mat_idx = shape.mesh.material_ids[0];
-	std::shared_ptr<LLR::Texture2D> &diff = textures[materials[mat_idx].diffuse_texname];
-	std::shared_ptr<LLR::Texture2D> &opacity = textures[materials[mat_idx].alpha_texname];
-	std::shared_ptr<LLR::Texture2D> &specular = textures[materials[mat_idx].specular_texname];
-	std::shared_ptr<LLR::Texture2D> normalmap = materials[mat_idx].bump_texname.length() ? textures[materials[mat_idx].bump_texname + "nm"] : nullptr;
+	std::shared_ptr<Core::Texture2D> &diff = textures[materials[mat_idx].diffuse_texname];
+	std::shared_ptr<Core::Texture2D> &opacity = textures[materials[mat_idx].alpha_texname];
+	std::shared_ptr<Core::Texture2D> &specular = textures[materials[mat_idx].specular_texname];
+	std::shared_ptr<Core::Texture2D> normalmap = materials[mat_idx].bump_texname.length() ? textures[materials[mat_idx].bump_texname + "nm"] : nullptr;
 
 	std::string brdf_name = materials[mat_idx].unknown_parameter["brdf"];
 	std::shared_ptr<BRDF> brdf = brdf_name.length() ? brdfs[brdf_name] : nullptr;
@@ -142,11 +142,11 @@ StE::task<void> ModelFactory::load_texture(const std::string &name,
 	}).then_on_main_thread([=](optional<task_scheduler*> sched, std::unique_ptr<gli::texture2d> &&tex) {
 		if (!tex->empty() && bumpmap) {
 			auto nm = normal_map_from_height_map<gli::FORMAT_R8_UNORM_PACK8>()(*tex, normal_map_bias);
-			auto nm_tex = std::make_shared<LLR::Texture2D>(std::move(nm), true);
+			auto nm_tex = std::make_shared<Core::Texture2D>(std::move(nm), true);
 			(*texmap)[name + "nm"] = std::move(nm_tex);
 		}
 
-		(*texmap)[name] = std::make_shared<LLR::Texture2D>(*tex, true);
+		(*texmap)[name] = std::make_shared<Core::Texture2D>(*tex, true);
 	});
 }
 
@@ -156,7 +156,7 @@ std::vector<std::future<void>> ModelFactory::load_textures(task_scheduler* sched
 														  texture_map_type &tex_map, 
 														  const boost::filesystem::path &dir, 
 														  float normal_map_bias) {
-	tex_map.emplace(std::make_pair(std::string(""), std::shared_ptr<LLR::Texture2D>(nullptr)));
+	tex_map.emplace(std::make_pair(std::string(""), std::shared_ptr<Core::Texture2D>(nullptr)));
 
 	std::vector<std::future<void>> futures;
 	for (auto &shape : shapes) {
@@ -164,7 +164,7 @@ std::vector<std::future<void>> ModelFactory::load_textures(task_scheduler* sched
 
 		for (auto &str : { materials[mat_idx].diffuse_texname })
 			if (str.length() && tex_map.find(str) == tex_map.end()) {
-				tex_map.emplace(std::make_pair(str, std::shared_ptr<LLR::Texture2D>(nullptr)));
+				tex_map.emplace(std::make_pair(str, std::shared_ptr<Core::Texture2D>(nullptr)));
 				futures.push_back(sched->schedule_now(load_texture(str, 
 																   true, 
 																   &tex_map, 
@@ -175,7 +175,7 @@ std::vector<std::future<void>> ModelFactory::load_textures(task_scheduler* sched
 
 		for (auto &str : { materials[mat_idx].bump_texname, materials[mat_idx].alpha_texname, materials[mat_idx].specular_texname })
 			if (str.length() && tex_map.find(str) == tex_map.end()) {
-				tex_map.emplace(std::make_pair(str, std::shared_ptr<LLR::Texture2D>(nullptr)));
+				tex_map.emplace(std::make_pair(str, std::shared_ptr<Core::Texture2D>(nullptr)));
 				futures.push_back(sched->schedule_now(load_texture(str, 
 																   false, 
 																   &tex_map, 

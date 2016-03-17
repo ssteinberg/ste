@@ -36,7 +36,7 @@ private:
 		
 	private:
 		GIRenderer *dr;
-		std::shared_ptr<LLR::GLSLProgram> program;
+		std::shared_ptr<Core::GLSLProgram> program;
 
 	public:
 		deferred_composition(const StEngineControl &ctx, GIRenderer *dr) : program(ctx.glslprograms_pool().fetch_program_task({ "deferred.vert", "deferred.frag" })()), dr(dr) {
@@ -75,7 +75,7 @@ private:
 protected:
 	void rebuild_task_queue();
 	 
-	const LLR::GenericFramebufferObject *get_fbo() const {
+	const Core::GenericFramebufferObject *get_fbo() const {
 		if (use_deferred_rendering) 
 			return fbo.get_fbo();
 		return &ctx.gl()->defaut_framebuffer();

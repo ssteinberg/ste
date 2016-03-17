@@ -33,14 +33,14 @@ private:
 	
 	mutable TasksCollection requisite_for, task_dependencies;
 	mutable bool inserted_into_queue{ false };
-	mutable const LLR::GenericFramebufferObject *override_fbo{ nullptr };
+	mutable const Core::GenericFramebufferObject *override_fbo{ nullptr };
 	mutable gpu_task_dispatch_queue *parent_queue { nullptr };
 	
 protected:
 	TasksCollection sub_tasks;
 	
 private:
-	void set_override_fbo(const LLR::GenericFramebufferObject *fbo) const {
+	void set_override_fbo(const Core::GenericFramebufferObject *fbo) const {
 		override_fbo = fbo;
 		set_modified();
 	}

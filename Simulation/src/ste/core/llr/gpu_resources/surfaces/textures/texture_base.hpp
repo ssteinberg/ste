@@ -26,23 +26,23 @@
 #include <gli/gli.hpp>
 
 namespace StE {
-namespace LLR {
+namespace Core {
 
-enum class LLRCubeMapFace {
-	LLRCubeMapFaceNone = 0,
-	LLRCubeMapFaceRight = GL_TEXTURE_CUBE_MAP_POSITIVE_X,
-	LLRCubeMapFaceLeft = GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
-	LLRCubeMapFaceTop = GL_TEXTURE_CUBE_MAP_POSITIVE_Y,
-	LLRCubeMapFaceBottom = GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
-	LLRCubeMapFaceNear = GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
-	LLRCubeMapFaceFar = GL_TEXTURE_CUBE_MAP_NEGATIVE_Z,
+enum class CubeMapFace {
+	CubeMapFaceNone = 0,
+	CubeMapFaceRight = GL_TEXTURE_CUBE_MAP_POSITIVE_X,
+	CubeMapFaceLeft = GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
+	CubeMapFaceTop = GL_TEXTURE_CUBE_MAP_POSITIVE_Y,
+	CubeMapFaceBottom = GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
+	CubeMapFaceNear = GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
+	CubeMapFaceFar = GL_TEXTURE_CUBE_MAP_NEGATIVE_Z,
 };
 
 class texture_layout_binding_type {};
 using texture_layout_binding = layout_binding<texture_layout_binding_type>;
 texture_layout_binding inline operator "" _tex_unit(unsigned long long int i) { return texture_layout_binding(i); }
 
-template <llr_resource_type type>
+template <core_resource_type type>
 class TextureBinder {
 private:
 	static constexpr GLenum gl_type() { return gl_utils::translate_type(type); }
@@ -56,7 +56,7 @@ public:
 	}
 };
 
-template <llr_resource_type type>
+template <core_resource_type type>
 class texture : virtual public bindable_resource<texture_immutable_storage_allocator<type>, TextureBinder<type>, texture_layout_binding>,
 				virtual public shader_layout_bindable_resource<texture_layout_binding_type> {
 private:
@@ -65,7 +65,7 @@ private:
 public:
 	using size_type = typename texture_size_type<texture_dimensions<type>::dimensions>::type;
 	using image_size_type = typename texture_size_type<texture_dimensions<type>::dimensions>::type;
-	static constexpr llr_resource_type T = type;
+	static constexpr core_resource_type T = type;
 
 protected:
 	static constexpr GLenum gl_type() { return gl_utils::translate_type(type); }
@@ -171,10 +171,10 @@ public:
 		return texture_handle(glGetTextureSamplerHandleARB(Base::get_resource_id(), sam_id));
 	}
 
-	llr_resource_type resource_type() const override { return type; }
+	core_resource_type resource_type() const override { return type; }
 };
 
-template <llr_resource_type type>
+template <core_resource_type type>
 class texture_multisampled : public texture<type> {
 private:
 	using Base = texture<type>;
@@ -193,7 +193,7 @@ public:
 	int get_samples() const { return samples; }
 };
 
-template <llr_resource_type type>
+template <core_resource_type type>
 class texture_pixel_transferable : public texture<type> {
 private:
 	using Base = texture<type>;
@@ -211,7 +211,7 @@ protected:
 public:
 	virtual ~texture_pixel_transferable() noexcept {}
 
-	virtual void upload_level(const void *data, int level = 0, int layer = 0, LLRCubeMapFace face = LLRCubeMapFace::LLRCubeMapFaceNone, int data_size = 0) = 0;
+	virtual void upload_level(const void *data, int level = 0, int layer = 0, CubeMapFace face = CubeMapFace::CubeMapFaceNone, int data_size = 0) = 0;
 	virtual void download_level(void *data, std::size_t size, int level = 0, int layer = 0) const {
 		auto gl_format = gl_utils::translate_format(Base::format, Base::swizzle);
 		glGetTextureImage(Base::get_resource_id(), level, gl_format.External, gl_format.Type, size, data);
@@ -225,7 +225,7 @@ public:
 	}
 };
 
-template <llr_resource_type type>
+template <core_resource_type type>
 class texture_mipmapped : public texture_pixel_transferable<type> {
 private:
 	using Base = texture_pixel_transferable<type>;

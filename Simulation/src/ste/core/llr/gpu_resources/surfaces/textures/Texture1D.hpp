@@ -8,11 +8,11 @@
 #include "image.hpp"
 
 namespace StE {
-namespace LLR {
+namespace Core {
 
-class Texture1D : public texture_mipmapped<llr_resource_type::LLRTexture1D> {
+class Texture1D : public texture_mipmapped<core_resource_type::Texture1D> {
 private:
-	using Base = texture_mipmapped<llr_resource_type::LLRTexture1D>;
+	using Base = texture_mipmapped<core_resource_type::Texture1D>;
 
 public:
 	Texture1D(Texture1D &&m) = default;
@@ -30,7 +30,7 @@ public:
 	// Re upload texture data. Surface must match texture's format.
 	bool upload(const gli::texture1d &t, bool generate_mipmaps = false);
 
-	void upload_level(const void *data, int level = 0, int layer = 0, LLRCubeMapFace face = LLRCubeMapFace::LLRCubeMapFaceNone, int data_size = 0) override {
+	void upload_level(const void *data, int level = 0, int layer = 0, CubeMapFace face = CubeMapFace::CubeMapFaceNone, int data_size = 0) override {
 		auto gl_format = gl_utils::translate_format(format, swizzle);
 
 		if (is_compressed()) {

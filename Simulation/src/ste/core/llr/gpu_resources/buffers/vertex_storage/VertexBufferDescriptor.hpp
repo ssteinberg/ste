@@ -9,7 +9,7 @@
 #include "generate_array.hpp"
 
 namespace StE {
-namespace LLR {
+namespace Core {
 
 class VertexBufferDescriptor {
 public:

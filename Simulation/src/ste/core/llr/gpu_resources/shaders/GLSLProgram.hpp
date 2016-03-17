@@ -24,7 +24,7 @@
 #include "trace.hpp"
 
 namespace StE {
-namespace LLR {
+namespace Core {
 
 class GLSLProgramAllocator : public generic_resource_allocator {
 public:
@@ -134,7 +134,7 @@ public:
 	void set_uniform(const std::string &name, const std::vector<image_handle> &handles) const;
 	void set_uniform_subroutine(GLenum shader_type, const std::vector<std::uint32_t> &ids) const;
 
-	llr_resource_type resource_type() const override { return llr_resource_type::LLRGLSLProgram; }
+	core_resource_type resource_type() const override { return core_resource_type::GLSLProgram; }
 };
 
 }

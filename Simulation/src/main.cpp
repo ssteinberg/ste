@@ -23,7 +23,7 @@
 #include "Sphere.hpp"
 #include "gpu_task.hpp"
 
-using namespace StE::LLR;
+using namespace StE::Core;
 using namespace StE::Text;
 
 class SkyDome : public StE::Graphics::gpu_task {
@@ -179,7 +179,7 @@ int main() {
 		*reinterpret_cast<glm::u8vec3*>(light_color_tex.data()) = glm::u8vec3(c.r * 255.5f, c.g * 255.5f, c.b * 255.5f);
 
 		auto light_mat = std::make_shared<StE::Graphics::Material>();
-		light_mat->set_diffuse(std::make_shared<StE::LLR::Texture2D>(light_color_tex, false));
+		light_mat->set_diffuse(std::make_shared<StE::Core::Texture2D>(light_color_tex, false));
 		light_mat->set_emission(c * light0->get_luminance());
 
 		light_obj->set_material_id(scene.scene_properties().material_storage().add_material(light_mat));

@@ -39,8 +39,8 @@ enum class mesh_subdivion_mode {
 template<mesh_subdivion_mode Mode>
 class mesh : public mesh_generic {
 public:
-	using vbo_type = StE::LLR::VertexBufferObject<StE::Graphics::ObjectVertexData, StE::Graphics::ObjectVertexData::descriptor>;
-	using ebo_type = StE::LLR::ElementBufferObject<std::uint32_t>;
+	using vbo_type = StE::Core::VertexBufferObject<StE::Graphics::ObjectVertexData, StE::Graphics::ObjectVertexData::descriptor>;
+	using ebo_type = StE::Core::ElementBufferObject<std::uint32_t>;
 
 private:
 	std::vector<ObjectVertexData> vertices;
@@ -48,7 +48,7 @@ private:
 
 	std::unique_ptr<vbo_type> mesh_vbo;
 	std::unique_ptr<ebo_type> mesh_ebo;
-	std::unique_ptr<StE::LLR::VertexArrayObject> mesh_vao;
+	std::unique_ptr<StE::Core::VertexArrayObject> mesh_vao;
 
 protected:
 	mesh_aabb m_aabb;
@@ -116,20 +116,20 @@ public:
 		return (mesh_vbo = std::make_unique<vbo_type>(get_vertices())).get();
 	}
 
-	const StE::LLR::ElementBufferObject<> *ebo() {
+	const StE::Core::ElementBufferObject<> *ebo() {
 		if (mesh_ebo != nullptr)
 			return mesh_ebo.get();
 
-		return (mesh_ebo = std::make_unique<StE::LLR::ElementBufferObject<>>(get_indices())).get();
+		return (mesh_ebo = std::make_unique<StE::Core::ElementBufferObject<>>(get_indices())).get();
 	}
 
-	const StE::LLR::VertexArrayObject *vao() {
+	const StE::Core::VertexArrayObject *vao() {
 		if (mesh_vao != nullptr)
 			return mesh_vao.get();
 
 		vbo();
 
-		mesh_vao = std::make_unique<StE::LLR::VertexArrayObject>();
+		mesh_vao = std::make_unique<StE::Core::VertexArrayObject>();
 		(*mesh_vao)[0] = (*mesh_vbo)[0];
 		(*mesh_vao)[1] = (*mesh_vbo)[1];
 		(*mesh_vao)[2] = (*mesh_vbo)[2];

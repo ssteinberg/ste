@@ -7,7 +7,7 @@
 #include <gli/gli.hpp>
 
 namespace StE {
-namespace LLR {
+namespace Core {
 	
 extern gli::swizzles swizzles_rgba;
 

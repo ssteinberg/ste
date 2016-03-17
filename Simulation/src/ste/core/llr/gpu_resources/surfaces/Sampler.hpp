@@ -13,7 +13,7 @@
 #include "texture_traits.hpp"
 
 namespace StE {
-namespace LLR {
+namespace Core {
 
 class sampler_layout_binding_type {};
 using sampler_layout_binding = layout_binding<sampler_layout_binding_type>;
@@ -148,7 +148,7 @@ public:
 	TextureWrapMode get_wrap_t() const { return descriptor.wrap_t; }
 	TextureWrapMode get_wrap_r() const { return descriptor.wrap_r; }
 
-	llr_resource_type resource_type() const override { return llr_resource_type::LLRSamplingDescriptor; }
+	core_resource_type resource_type() const override { return core_resource_type::SamplingDescriptor; }
 };
 
 class SamplerMipmapped : public Sampler {

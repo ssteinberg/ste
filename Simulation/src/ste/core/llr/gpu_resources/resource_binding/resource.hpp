@@ -3,14 +3,14 @@
 
 #pragma once
 
-#include "llr_resource_type.hpp"
+#include "core_resource_type.hpp"
 
 #include <functional>
 #include <memory>
 #include <type_traits>
 
 namespace StE {
-namespace LLR {
+namespace Core {
 
 class GenericResource {
 public:
@@ -25,7 +25,7 @@ protected:
 	virtual ~GenericResource() {}
 
 public:
-	virtual llr_resource_type resource_type() const = 0;
+	virtual core_resource_type resource_type() const = 0;
 
 	type get_resource_id() const { return *id; }
 	virtual bool is_valid() const = 0;
@@ -42,7 +42,7 @@ public:
 #include "resource_allocator.hpp"
 
 namespace StE {
-namespace LLR {
+namespace Core {
 
 template <class Allocator>
 class resource : virtual public GenericResource {

@@ -22,7 +22,7 @@ namespace Graphics {
 class material_storage {
 private:
 	struct material_texture_descriptor {
-		LLR::texture_handle tex_handler;
+		Core::texture_handle tex_handler;
 	};
 	struct material_descriptor {
 		material_texture_descriptor diffuse;
@@ -34,17 +34,17 @@ private:
 	};
 
 	std::vector<std::shared_ptr<Material>> materials;
-	LLR::SamplerMipmapped linear_sampler;
-	LLR::gstack<material_descriptor> stack;
+	Core::SamplerMipmapped linear_sampler;
+	Core::gstack<material_descriptor> stack;
 
 public:
 	material_storage() {
-		linear_sampler.set_wrap_s(LLR::TextureWrapMode::Wrap);
-		linear_sampler.set_wrap_t(LLR::TextureWrapMode::Wrap);
-		linear_sampler.set_wrap_r(LLR::TextureWrapMode::Wrap);
-		linear_sampler.set_min_filter(LLR::TextureFiltering::Linear);
-		linear_sampler.set_mag_filter(LLR::TextureFiltering::Linear);
-		linear_sampler.set_mipmap_filter(LLR::TextureFiltering::Linear);
+		linear_sampler.set_wrap_s(Core::TextureWrapMode::Wrap);
+		linear_sampler.set_wrap_t(Core::TextureWrapMode::Wrap);
+		linear_sampler.set_wrap_r(Core::TextureWrapMode::Wrap);
+		linear_sampler.set_min_filter(Core::TextureFiltering::Linear);
+		linear_sampler.set_mag_filter(Core::TextureFiltering::Linear);
+		linear_sampler.set_mipmap_filter(Core::TextureFiltering::Linear);
 		linear_sampler.set_anisotropic_filter(16);
 	}
 
