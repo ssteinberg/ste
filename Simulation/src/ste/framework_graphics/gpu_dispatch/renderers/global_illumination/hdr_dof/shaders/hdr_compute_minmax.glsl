@@ -45,7 +45,12 @@ void main() {
 
 	if (gl_GlobalInvocationID.xy == ivec2(0,0)) {
 		float t = clamp(.25f * time, 0, 1);
-		params.lum_min = floatBitsToInt(t * intBitsToFloat(params.lum_min) + (1 - t) * intBitsToFloat(prev_params.lum_min));
-		params.lum_max = floatBitsToInt(t * intBitsToFloat(params.lum_max) + (1 - t) * intBitsToFloat(prev_params.lum_max));
+		
+		float min_lum = t * intBitsToFloat(params.lum_min) + (1 - t) * intBitsToFloat(prev_params.lum_min);
+		float max_lum = t * intBitsToFloat(params.lum_max) + (1 - t) * intBitsToFloat(prev_params.lum_max);
+		max_lum = max(max_lum, min_lum + .0001f);
+		
+		params.lum_min = floatBitsToInt(min_lum);
+		params.lum_max = floatBitsToInt(max_lum);
 	}
 }

@@ -18,7 +18,7 @@ namespace Graphics {
 
 class gpu_task_dispatch_queue;
 
-class gpu_task {
+class gpu_task : private std::enable_shared_from_this<gpu_task> {
 private:
 	friend class gpu_task_dispatch_queue;
 	
@@ -28,16 +28,28 @@ public:
 	using TasksCollection = std::unordered_set<TaskPtr>;
 
 private:
+	mutable TasksCollection after;
 	mutable TasksCollection dependencies;
-	mutable TasksCollection requisite_for;
+	
+	mutable TasksCollection requisite_for, task_dependencies;
 	mutable bool inserted_into_queue{ false };
 	mutable const LLR::GenericFramebufferObject *override_fbo{ nullptr };
+	mutable gpu_task_dispatch_queue *parent_queue { nullptr };
 	
 protected:
 	TasksCollection sub_tasks;
+	
+private:
+	void set_override_fbo(const LLR::GenericFramebufferObject *fbo) const {
+		override_fbo = fbo;
+		set_modified();
+	}
+	auto get_override_fbo() const { return override_fbo; }
 
 protected:
 	const auto &get_dependencies() const { return dependencies; }
+	
+	void set_modified() const;
 	
 	void operator()() const {
 		set_context_state();
@@ -46,10 +58,21 @@ protected:
 
 public:
 	void add_dependency(const TaskPtr &task) const {
-		dependencies.insert(task);
+		task_dependencies.insert(task);
+		set_modified();
 	}
 	void remove_dependency(const TaskPtr &task) const {
-		dependencies.erase(task);
+		task_dependencies.erase(task);
+		set_modified();
+	}
+	
+	void add_after(const TaskPtr &task) const {
+		after.insert(task);
+		set_modified();
+	}
+	void remove_after(const TaskPtr &task) const {
+		after.erase(task);
+		set_modified();
 	}
 
 public:

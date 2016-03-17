@@ -73,6 +73,8 @@ protected:
 
 	void dispatch() const override final {
 		gl_current_context::get()->draw_elements(GL_TRIANGLES, meshptr->ebo()->size(), GL_UNSIGNED_INT, nullptr);
+		
+		gl_current_context::get()->disable_depth_test();
 	}
 };
 
@@ -191,6 +193,7 @@ int main() {
 	auto header_text = text_manager.create_renderer();
 	renderer.add_gui_task(title_text);
 	renderer.add_gui_task(footer_text);
+	renderer.set_deferred_rendering_enabled(false);
 
 	while (!loaded && running) {
 		{
@@ -200,14 +203,16 @@ int main() {
 										   orange(regular(L"By Shlomi Steinberg")));
 			auto total_vram = std::to_wstring(ctx.gl()->meminfo_total_available_vram() / 1024);
 			auto free_vram = std::to_wstring(ctx.gl()->meminfo_free_vram() / 1024);
+			
+			auto workers_count = ctx.scheduler().get_workers_count();
+			auto workers_sleep = ctx.scheduler().get_sleeping_workers();
 
 			title_text->set_text({ w / 2, h / 2 + 100 }, str);
 			footer_text->set_text({ 10, 50 },
-								  vsmall(b(blue_violet(free_vram) + L" / " + stroke(red, 1)(dark_red(total_vram)) + L" MB")) + L"\n" +
-								  vsmall(b(L"Thread pool workers: ") +
-										 olive(std::to_wstring(ctx.scheduler().get_sleeping_workers())) + 
-										 L"/" + 
-										 olive(std::to_wstring(ctx.scheduler().get_workers_count()))));
+								  line_height(40)(vsmall(b(blue_violet(free_vram) + L" / " + stroke(red, 1)(dark_red(total_vram)) + L" MB")) + L"\n" +
+												  vsmall(b(L"Thread pool workers: ") +
+														 olive(std::to_wstring(workers_count - workers_sleep)) + L" busy / " + 
+														 olive(std::to_wstring(workers_count)) + L" total")));
 		}
 
 		if (model_future.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
@@ -218,7 +223,9 @@ int main() {
 	
 	renderer.remove_gui_task(title_text);
 	
-
+	skydome->add_dependency(object_group);	
+	
+	renderer.set_deferred_rendering_enabled(true);
 	renderer.add_gui_task(header_text);
 	renderer.add_task(object_group);
 	renderer.add_task(skydome);

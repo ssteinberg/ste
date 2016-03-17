@@ -46,6 +46,8 @@ enum class context_state_name : std::int32_t {
 	BLEND_FUNC_SEPARATE_STATE,
 	BLEND_COLOR_STATE,
 	BLEND_EQUATION_STATE,
+	CLEAR_COLOR_STATE,
+	CLEAR_DEPTH_STATE,
 	
 	// Resource states
 	BUFFER_OBJECT,

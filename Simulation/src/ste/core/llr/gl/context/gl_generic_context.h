@@ -189,6 +189,28 @@ public:
 	auto blend_equation() const {
 		return get_context_server_state(states, context_state_name::BLEND_EQUATION_STATE).get<GLenum>();
 	}
+	
+	void clear_color(float r, float g, float b, float a) const {
+		set_context_server_state(total_state_changes, 
+								 states, 
+								 context_state_name::CLEAR_COLOR_STATE,
+								 glClearColor, 
+								 r, g, b, a);
+	}
+	auto clear_color() const {
+		return get_context_server_state(states, context_state_name::CLEAR_COLOR_STATE).get<float, float, float, float>();
+	}
+	
+	void clear_depth(float d) const {
+		set_context_server_state(total_state_changes, 
+								 states, 
+								 context_state_name::CLEAR_DEPTH_STATE,
+								 glClearDepth, 
+								 d);
+	}
+	auto clear_depth() const {
+		return get_context_server_state(states, context_state_name::CLEAR_DEPTH_STATE).get<float>();
+	}
 
 public:
 	void bind_buffer(GLenum target, std::uint32_t id) const {

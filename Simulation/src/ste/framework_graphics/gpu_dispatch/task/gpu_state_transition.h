@@ -65,17 +65,12 @@ public:
 class gpu_state_transition {
 private:	
 	template <typename K, typename V>
-	static std::unordered_map<K,V> states_diff(const std::unordered_map<K,V> &intermediate, std::unordered_map<K,V> &final_states) {
+	static std::unordered_map<K,V> states_diff(const std::unordered_map<K,V> &intermediate, const std::unordered_map<K,V> &final_states) {
 		std::unordered_map<K,V> diff;
 		for (auto &p : intermediate) {
 			auto it = final_states.find(p.first);
-			if (it != final_states.end()) {
-				if (it->second == p.second))
-					final_states.erase(it);
-			}
-			else {
+			if (it == final_states.end()) 
 				diff.insert(*it);
-			}
 		}
 		
 		return diff;
@@ -95,35 +90,25 @@ public:
 		next->dispatch();
 		gpu_state_switches transition_switches = gpu_state_switches(&virt_ctx) - switches_intermediate;
 		auto states_final = virt_ctx.get_states();
-		auto resources_final = virt_ctx.get_resources();
 		
-		auto states_diff = states_diff(states_intermediate, states_final);
-		states_diff(resources_intermediate, resources_final);
+		ctx->make_current();
 		
-		std::function<void(void)> push = [=]() {
-			for (auto &p : states_diff)
+		auto diff = states_diff(states_intermediate, states_final);
+		transition_switches.total_state_changes += diff.size();
+		
+		std::function<void(void)> push = [diff]() {
+			for (auto &p : diff)
 				gl_current_context::get()->push(p->first);
 		};
 		
-		std::function<void(void)> transition = [=]() {
+		std::function<void(void)> transition = [diff = std::move(diff), next]() {
 			// Reset states
-			for (auto &p : states_diff)
+			for (auto &p : diff)
 				gl_current_context::get()->pop(p->first);
 				
 			// Set new states
-			for (auto &p : states_final) {
-				auto t = p->second.get_state().get();
-				t.second()(t.first);
-			}
-			for (auto &p : resources_final) {
-				auto t = p->second.get_state().get();
-				t.second()(t.first);
-			}
+			next->set_context_state();
 		};
-		
-		transition_switches.total_state_changes += states_diff.size();
-		
-		ctx->make_current();
 		
 		return gpu_state_transition(std::move(push), std::move(transition), transition_switches.cost());
 	} 

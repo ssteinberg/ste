@@ -20,9 +20,10 @@ void TextManager::text_renderable::set_context_state() const {
 	gl_current_context::get()->enable_state(context_state_name::BLEND);
 	gl_current_context::get()->blend_func(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	
-	tr->text_distance_mapping->bind();
 	0_storage_idx = tr->gm.ssbo();
 	tr->vao.bind();
+	
+	tr->text_distance_mapping->bind();
 }
 
 void TextManager::text_renderable::dispatch() const {	
@@ -31,6 +32,8 @@ void TextManager::text_renderable::dispatch() const {
 	LLR::gl_current_context::get()->draw_arrays(GL_POINTS, range_in_use.start / sizeof(glyph_point), points.size());
 	
 	tr->vbo.lock_range(range_in_use);
+	
+	gl_current_context::get()->disable_state(context_state_name::BLEND);
 }
 
 
@@ -57,12 +60,17 @@ TextManager::TextManager(const StEngineControl &context, const Font &default_fon
 void TextManager::adjust_line(std::vector<glyph_point> &points, const AttributedWString &wstr, unsigned line_start_index, float line_start, float line_height, const glm::vec2 &ortho_pos) {
 	if (points.size() - line_start_index) {
 		optional<const Attributes::align*> alignment_attrib = wstr.attrib_of_type(Attributes::align::attrib_type_s(), { line_start_index,points.size() - line_start_index });
+		optional<const Attributes::line_height*> line_height_attrib = wstr.attrib_of_type(Attributes::line_height::attrib_type_s(), { line_start_index,points.size() - line_start_index });
+		
 		if (alignment_attrib && alignment_attrib->get() != Attributes::align::alignment::Left) {
 			float line_len = ortho_pos.x - line_start;
 			float offset = alignment_attrib->get() == Attributes::align::alignment::Center ? -line_len*.5f : -line_len;
 			for (unsigned i = line_start_index; i < points.size(); ++i)
 				points[i].pos.x += offset;
 		}
+		
+		if (line_height_attrib && line_height>0)
+			line_height = line_height_attrib->get();
 	}
 	for (unsigned i = line_start_index; i < points.size(); ++i)
 		points[i].pos.y -= line_height;
