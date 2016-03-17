@@ -44,7 +44,7 @@ SYSTEM_LIBRARIES += \
 	
 LINKFLAGS += $(shell pkg-config --static --libs glfw3)
 
-PCHCPP = ste/core/stdafx
+PCHCPP = ste/engine/stdafx
 
 SOURCES := $(shell find $(SOURCE_DIR) -iname "*.c")
 SOURCES += $(shell find $(SOURCE_DIR) -iname "*.cpp")
