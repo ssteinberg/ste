@@ -36,6 +36,7 @@ void gpu_task_dispatch_queue::add_task(const TaskPtr &task, const Core::GenericF
 	
 	for (auto &sub_t : task->sub_tasks) {
 		add_task(sub_t, override_fbo, false);
+		
 		sub_t->dependencies.insert(task->task_dependencies.begin(), task->task_dependencies.end());
 		task->dependencies.insert(sub_t);
 	}

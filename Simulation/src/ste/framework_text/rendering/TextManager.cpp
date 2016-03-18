@@ -26,7 +26,7 @@ void TextManager::text_renderable::set_context_state() const {
 	tr->text_distance_mapping->bind();
 }
 
-void TextManager::text_renderable::dispatch() const {	
+void TextManager::text_renderable::dispatch() const {
 	range_in_use = tr->vbo.commit(points);
 			
 	Core::gl_current_context::get()->draw_arrays(GL_POINTS, range_in_use.start / sizeof(glyph_point), points.size());
