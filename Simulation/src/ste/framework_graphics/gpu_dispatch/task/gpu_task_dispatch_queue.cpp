@@ -6,6 +6,7 @@
 #include "Log.hpp"
 
 #include <iostream>
+#include <functional>
 
 using namespace StE::Graphics;
 
@@ -30,14 +31,17 @@ void gpu_task_dispatch_queue::add_task(const TaskPtr &task, const Core::GenericF
 		task->inserted_into_queue = true;
 	task->override_fbo = override_fbo;
 	task->parent_queue = this;
+	
 	task->dependencies = task->task_dependencies;
+	task->dependencies.insert(task->parent_deps.begin(), task->parent_deps.end());
 	
 	tasks.insert(task);
-	
+
 	for (auto &sub_t : task->sub_tasks) {
-		add_task(sub_t, override_fbo, false);
+		sub_t->parent_deps = task->parent_deps;
+		sub_t->parent_deps.insert(task->task_dependencies.begin(), task->task_dependencies.end());
 		
-		sub_t->dependencies.insert(task->task_dependencies.begin(), task->task_dependencies.end());
+		add_task(sub_t, override_fbo, false);
 		task->dependencies.insert(sub_t);
 	}
 	
@@ -73,6 +77,7 @@ void gpu_task_dispatch_queue::remove_task(const TaskPtr &task, bool force) {
 	}
 
 	task->dependencies.clear();
+	task->parent_deps = {};
 	modified_tasks.erase(task);
 }
 
@@ -98,4 +103,26 @@ void gpu_task_dispatch_queue::dispatch() {
 	decltype(tasks_to_dispatch.begin()) it;
 	while ((it = tasks_to_dispatch.begin()) != tasks_to_dispatch.end()) 
 		dispatch(*it, tasks_to_dispatch);
+}
+
+StE::Graph::graph<gpu_task, gpu_state_transition> gpu_task_dispatch_queue::create_transition_graph() const {
+	Graph::graph<gpu_task, gpu_state_transition> g;
+	
+	for (auto &task : tasks)
+		g.add_vertex(task);
+		
+	for (auto &task : tasks) {
+		auto all_tasks = tasks;
+		
+		for (auto &t : task->dependencies)
+			all_tasks.erase(t);
+		for (auto &t : task->after)
+			all_tasks.erase(t);
+		all_tasks.erase(task);
+		
+		for (auto &t : all_tasks)
+			g.add_edge(gpu_state_transition::transition_function(task, t));
+	}
+	
+	return g;
 }

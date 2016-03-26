@@ -209,7 +209,7 @@ int main() {
 
 			title_text->set_text({ w / 2, h / 2 + 100 }, str);
 			footer_text->set_text({ 10, 50 },
-								  line_height(40)(vsmall(b(blue_violet(free_vram) + L" / " + stroke(red, 1)(dark_red(total_vram)) + L" MB")) + L"\n" +
+								  line_height(32)(vsmall(b(blue_violet(free_vram) + L" / " + stroke(red, 1)(dark_red(total_vram)) + L" MB")) + L"\n" +
 												  vsmall(b(L"Thread pool workers: ") +
 														 olive(std::to_wstring(workers_count - workers_sleep)) + L" busy / " + 
 														 olive(std::to_wstring(workers_count)) + L" total")));
@@ -224,11 +224,11 @@ int main() {
 	renderer.remove_gui_task(title_text);
 	
 	skydome->add_dependency(object_group);	
-	
-	renderer.set_deferred_rendering_enabled(true);
+
 	renderer.add_gui_task(header_text);
 	renderer.add_task(object_group);
 	renderer.add_task(skydome);
+	renderer.set_deferred_rendering_enabled(true);
 
 
 	float time = 0;

@@ -7,6 +7,8 @@
 
 #include "FramebufferObject.hpp"
 
+#include "graph_vertex.hpp"
+
 #include <unordered_set>
 #include <memory>
 
@@ -17,27 +19,29 @@ namespace StE {
 namespace Graphics {
 
 class gpu_task_dispatch_queue;
+class gpu_state_transition;
 
-class gpu_task : private std::enable_shared_from_this<gpu_task> {
+class gpu_task : public Graph::vertex, private std::enable_shared_from_this<gpu_task> {
 private:
 	friend class gpu_task_dispatch_queue;
+	friend class gpu_state_transition;
 	
 public:
 	using TaskT = const gpu_task;
 	using TaskPtr = std::shared_ptr<TaskT>;
 	using TasksCollection = std::unordered_set<TaskPtr>;
 
-private:
+protected:
+	TasksCollection sub_tasks;
 	mutable TasksCollection after;
-	mutable TasksCollection dependencies;
+	mutable TasksCollection task_dependencies;
 	
-	mutable TasksCollection requisite_for, task_dependencies;
+private:
+	// For gpu_task_dispatch_queue
+	mutable TasksCollection requisite_for, dependencies, parent_deps;
 	mutable bool inserted_into_queue{ false };
 	mutable const Core::GenericFramebufferObject *override_fbo{ nullptr };
 	mutable gpu_task_dispatch_queue *parent_queue { nullptr };
-	
-protected:
-	TasksCollection sub_tasks;
 	
 private:
 	void set_override_fbo(const Core::GenericFramebufferObject *fbo) const {
@@ -47,7 +51,7 @@ private:
 	auto get_override_fbo() const { return override_fbo; }
 
 protected:
-	const auto &get_dependencies() const { return dependencies; }
+	const auto &get_dependencies() const { return task_dependencies; }
 	
 	void set_modified() const;
 	
@@ -88,6 +92,7 @@ protected:
 	virtual void dispatch() const = 0;
 	
 public:
+	std::string get_name() const override final { return this->task_name(); }
 	virtual std::string task_name() const { return typeid(*this).name(); }
 };
 

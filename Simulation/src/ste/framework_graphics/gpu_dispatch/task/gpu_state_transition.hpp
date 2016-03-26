@@ -10,8 +10,12 @@
 #include "gl_virtual_context.hpp"
 #include "gl_current_context.hpp"
 
+#include "graph_edge.hpp"
+
 #include <functional>
 #include <unordered_map>
+
+#include <memory>
 
 namespace StE {
 namespace Graphics {
@@ -33,12 +37,13 @@ public:
 	std::size_t total_fbo_changes;
 	std::size_t total_va_changes;
 	
-	gpu_state_switches(const gl_context_states* ctx) : total_state_changes(ctx->get_total_state_changes()),
-													total_buffer_changes(ctx->get_total_buffer_changes()),
-													total_texture_changes(ctx->get_total_texture_changes()),
-													total_shader_changes(ctx->get_total_shader_changes()),
-													total_fbo_changes(ctx->get_total_fbo_changes()),
-													total_va_changes(ctx->get_total_va_changes()) {}
+	gpu_state_switches() = default;
+	gpu_state_switches(const Core::gl_virtual_context* ctx) : total_state_changes(ctx->get_total_state_changes()),
+															  total_buffer_changes(ctx->get_total_buffer_changes()),
+															  total_texture_changes(ctx->get_total_texture_changes()),
+															  total_shader_changes(ctx->get_total_shader_changes()),
+															  total_fbo_changes(ctx->get_total_fbo_changes()),
+															  total_va_changes(ctx->get_total_va_changes()) {}
 													
 	std::size_t cost() const {
 		return total_state_changes * state_change_cost +
@@ -62,7 +67,7 @@ public:
 	}
 };
 	
-class gpu_state_transition {
+class gpu_state_transition : public Graph::edge {
 private:	
 	template <typename K, typename V>
 	static std::unordered_map<K,V> states_diff(const std::unordered_map<K,V> &intermediate, const std::unordered_map<K,V> &final_states) {
@@ -77,17 +82,17 @@ private:
 	}
 	
 public:
-	static auto transition_function(const gpu_task *task, const gpu_task *next) {
-		auto ctx = gl_current_context::get();
-		gl_virtual_context virt_ctx;
+	static auto transition_function(const std::shared_ptr<const gpu_task> &task, const std::shared_ptr<const gpu_task> &next) {
+		auto ctx = Core::gl_current_context::get();
+		Core::gl_virtual_context virt_ctx;
 		virt_ctx.make_current();
 		
-		task->dispatch();
+		task->set_context_state();
 		gpu_state_switches switches_intermediate(&virt_ctx);
 		auto states_intermediate = virt_ctx.get_states();
 		auto resources_intermediate = virt_ctx.get_resources();
 		
-		next->dispatch();
+		next->set_context_state();
 		gpu_state_switches transition_switches = gpu_state_switches(&virt_ctx) - switches_intermediate;
 		auto states_final = virt_ctx.get_states();
 		
@@ -98,32 +103,41 @@ public:
 		
 		std::function<void(void)> push = [diff]() {
 			for (auto &p : diff)
-				gl_current_context::get()->push(p->first);
+				Core::gl_current_context::get()->push_state(p.first);
 		};
 		
 		std::function<void(void)> transition = [diff = std::move(diff), next]() {
 			// Reset states
 			for (auto &p : diff)
-				gl_current_context::get()->pop(p->first);
+				Core::gl_current_context::get()->pop_state(p.first);
 				
 			// Set new states
 			next->set_context_state();
 		};
 		
-		return gpu_state_transition(std::move(push), std::move(transition), transition_switches.cost());
+		return std::make_shared<gpu_state_transition>(std::move(push), 
+													  std::move(transition), 
+													  transition_switches.cost(), 
+													  task, next);
 	} 
 	
 private:
 	std::function<void(void)> pre, post;
 	unsigned cost;
 	
-	gpu_state_transition(std::function<void(void)> &&pre, std::function<void(void)> &&post, unsigned cost) : pre(std::move(pre)),
-																											 post(std::move(post)), 
-																											 cost(cost) {}
+public:
+	gpu_state_transition(std::function<void(void)> &&pre, 
+						 std::function<void(void)> &&post, 
+						 unsigned cost,
+						 const std::shared_ptr<const gpu_task> &task, 
+						 const std::shared_ptr<const gpu_task> &next) : pre(std::move(pre)),
+																		post(std::move(post)), 
+																		cost(cost),
+																		edge(cost, task.get(), next.get()) {}
 	
 public:
-	void push_states()() const { pre(); }
-	void transition()() const { post(); }
+	void push_states() const { pre(); }
+	void transition() const { post(); }
 	
 	auto get_cost() const { return cost; }
 };

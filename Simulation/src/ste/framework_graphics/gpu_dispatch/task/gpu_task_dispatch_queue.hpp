@@ -5,11 +5,15 @@
 
 #include "stdafx.hpp"
 #include "gpu_task.hpp"
+#include "gpu_state_transition.hpp"
 
 #include "FramebufferObject.hpp"
 
 #include <memory>
 #include <unordered_set>
+#include <vector>
+
+#include "graph.hpp"
 
 namespace StE {
 namespace Graphics {
@@ -40,6 +44,8 @@ public:
 	void remove_all();
 
 	void dispatch();
+	
+	Graph::graph<gpu_task, gpu_state_transition> create_transition_graph() const;
 };
 
 }

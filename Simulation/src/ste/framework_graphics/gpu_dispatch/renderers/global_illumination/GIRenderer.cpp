@@ -80,6 +80,11 @@ void GIRenderer::rebuild_task_queue() {
 void GIRenderer::set_deferred_rendering_enabled(bool enabled) {
 	use_deferred_rendering = enabled;
 	rebuild_task_queue();
+	
+	// if (enabled) {
+	// 	q.dispatch();
+	// 	q.create_transition_graph().write_dot("ste_task_transitions.dot");
+	// }
 }
 
 void GIRenderer::render_queue(const StEngineControl &ctx) {	

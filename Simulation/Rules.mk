@@ -40,7 +40,9 @@ SYSTEM_LIBRARIES += \
 	tinyobjloader \
 	boost_system \
 	boost_filesystem \
-	boost_serialization
+	boost_serialization \
+	cgraph \
+	gvc
 	
 LINKFLAGS += $(shell pkg-config --static --libs glfw3)
 

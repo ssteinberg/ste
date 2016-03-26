@@ -23,6 +23,11 @@ public:
 	context_state_key(context_state_name name, std::uint32_t index): name(name), index0(index) {}
 	context_state_key(context_state_name name, std::uint32_t index0, std::uint32_t index1): name(name), index0(index0), index1(index1) {}
 	
+	context_state_key(const context_state_key &) = default;
+	context_state_key(context_state_key &&) = default;
+	context_state_key &operator=(const context_state_key &) = default;
+	context_state_key &operator=(context_state_key &&) = default;
+	
 	bool operator==(const context_state_key &k) const {
 		return name == k.name && index0 == k.index0 && index1 == k.index1;
 	}

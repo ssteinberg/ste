@@ -27,6 +27,8 @@ public:
 	context_state() = default;
 	context_state(context_state &&) = default;
 	context_state &operator=(context_state &&) = default;
+	context_state(const context_state &) = default;
+	context_state &operator=(const context_state &) = default;
 
 	bool exists() const {
 		return !!state;
