@@ -96,8 +96,8 @@ private:
 public:
 	TextManager(const StEngineControl &context, const Font &default_font, int default_size = 28);
 
-	std::shared_ptr<text_renderable> create_renderer() {
-		return std::make_shared<text_renderable>(this);
+	std::unique_ptr<text_renderable> create_renderer() {
+		return std::make_unique<text_renderable>(this);
 	}
 };
 

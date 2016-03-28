@@ -81,7 +81,7 @@ class VertexArrayObject : public bindable_resource<VertexArrayObjectAllocator, V
 private:
 	friend class vertex_array_attrib_binder;
 
-	using attrib_binding_map_type = std::map<int, const VertexBufferObjectGeneric*>;
+	using attrib_binding_map_type = std::unordered_map<int, const VertexBufferObjectGeneric*>;
 
 private:
 	attrib_binding_map_type attrib_bindings;

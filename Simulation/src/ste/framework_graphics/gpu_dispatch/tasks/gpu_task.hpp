@@ -7,10 +7,13 @@
 
 #include "FramebufferObject.hpp"
 
-#include "graph_vertex.hpp"
+#include "sop_vertex.hpp"
+
+#include <functional>
+#include <memory>
 
 #include <unordered_set>
-#include <memory>
+#include <algorithm>
 
 #include <string>
 #include <typeinfo>
@@ -21,38 +24,42 @@ namespace Graphics {
 class gpu_task_dispatch_queue;
 class gpu_state_transition;
 
-class gpu_task : public Graph::vertex, private std::enable_shared_from_this<gpu_task> {
+class gpu_task : public Algorithm::SOP::sop_vertex<std::unordered_set<const gpu_task*>> {
 private:
 	friend class gpu_task_dispatch_queue;
 	friend class gpu_state_transition;
 	
 public:
 	using TaskT = const gpu_task;
-	using TaskPtr = std::shared_ptr<TaskT>;
+	using TaskPtr = TaskT*;
 	using TasksCollection = std::unordered_set<TaskPtr>;
-
-protected:
-	TasksCollection sub_tasks;
-	mutable TasksCollection after;
-	mutable TasksCollection task_dependencies;
 	
+private:
+	std::vector<std::unique_ptr<gpu_task>> sub_tasks;
+	mutable TasksCollection dependencies, requisite_for;
+
 private:
 	// For gpu_task_dispatch_queue
-	mutable TasksCollection requisite_for, dependencies, parent_deps;
 	mutable bool inserted_into_queue{ false };
 	mutable const Core::GenericFramebufferObject *override_fbo{ nullptr };
-	mutable gpu_task_dispatch_queue *parent_queue { nullptr };
+	mutable gpu_task_dispatch_queue *parent_queue{ nullptr };
 	
-private:
 	void set_override_fbo(const Core::GenericFramebufferObject *fbo) const {
 		override_fbo = fbo;
+		for (auto &s : sub_tasks)
+			s->set_override_fbo(fbo);
 		set_modified();
 	}
 	auto get_override_fbo() const { return override_fbo; }
 
-protected:
-	const auto &get_dependencies() const { return task_dependencies; }
-	
+	void set_parent_queue(gpu_task_dispatch_queue *q) const {
+		parent_queue = q;
+		for (auto &s : sub_tasks)
+			s->set_parent_queue(q);
+	}
+	auto get_parent_queue() const { return parent_queue; }
+
+protected:	
 	void set_modified() const;
 	
 	void operator()() const {
@@ -61,26 +68,40 @@ protected:
 	}
 
 public:
+	const TasksCollection &get_dependencies() const override final { return dependencies; }
+	const TasksCollection &get_requisite_for() const override final { return requisite_for; }
+	
 	void add_dependency(const TaskPtr &task) const {
-		task_dependencies.insert(task);
-		set_modified();
+		if (task != this) {
+			dependencies.insert(task);
+			for (auto &s : sub_tasks)
+				s->add_dependency(task);
+			set_modified();
+		}
 	}
 	void remove_dependency(const TaskPtr &task) const {
-		task_dependencies.erase(task);
+		dependencies.erase(task);
+		for (auto &s : sub_tasks)
+			s->remove_dependency(task);
 		set_modified();
-	}
-	
-	void add_after(const TaskPtr &task) const {
-		after.insert(task);
-		set_modified();
-	}
-	void remove_after(const TaskPtr &task) const {
-		after.erase(task);
-		set_modified();
+		
+		task->requisite_for.erase(this);
 	}
 
 public:
+	gpu_task() = default;
+	gpu_task(std::vector<std::unique_ptr<gpu_task>> &&st) : sub_tasks(std::move(st)) {
+		for (auto &s : sub_tasks)
+			dependencies.insert(s.get());
+	}
+	gpu_task(std::unique_ptr<gpu_task> &&s) : sub_tasks(1) {
+		dependencies.insert(s.get());
+		sub_tasks[0] = std::move(s);
+	}
 	virtual ~gpu_task() noexcept {}
+	
+	gpu_task(gpu_task &&) = default;
+	gpu_task &operator=(gpu_task &&) = default;
 	
 protected:
 	// Should set up gl resources, states, etc..

@@ -27,7 +27,7 @@ namespace Resource {
 
 class GLSLProgramFactory {
 private:
-	static const std::map<std::string, Core::GLSLShaderType> type_map;
+	static const std::unordered_map<std::string, Core::GLSLShaderType> type_map;
 
 private:
 	~GLSLProgramFactory() {}

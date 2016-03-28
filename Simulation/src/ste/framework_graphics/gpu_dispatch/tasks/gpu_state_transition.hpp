@@ -10,7 +10,7 @@
 #include "gl_virtual_context.hpp"
 #include "gl_current_context.hpp"
 
-#include "graph_edge.hpp"
+#include "sop_edge.hpp"
 
 #include <functional>
 #include <unordered_map>
@@ -19,6 +19,10 @@
 
 namespace StE {
 namespace Graphics {
+	
+class gpu_state_transition;
+
+namespace _gpu_state_transition_impl {
 	
 class gpu_state_switches {
 private:
@@ -66,9 +70,16 @@ public:
 		return n;
 	}
 };
+
+}
 	
-class gpu_state_transition : public Graph::edge {
-private:	
+class gpu_state_transition : public Algorithm::SOP::sop_edge {
+	using Base = Algorithm::SOP::sop_edge;
+	
+private:
+	struct AccessToken {}; 
+	
+private:
 	template <typename K, typename V>
 	static std::unordered_map<K,V> states_diff(const std::unordered_map<K,V> &intermediate, const std::unordered_map<K,V> &final_states) {
 		std::unordered_map<K,V> diff;
@@ -82,18 +93,18 @@ private:
 	}
 	
 public:
-	static auto transition_function(const std::shared_ptr<const gpu_task> &task, const std::shared_ptr<const gpu_task> &next) {
+	static auto transition_function(const gpu_task *task, const gpu_task *next) {
 		auto ctx = Core::gl_current_context::get();
 		Core::gl_virtual_context virt_ctx;
 		virt_ctx.make_current();
 		
 		task->set_context_state();
-		gpu_state_switches switches_intermediate(&virt_ctx);
+		_gpu_state_transition_impl::gpu_state_switches switches_intermediate(&virt_ctx);
 		auto states_intermediate = virt_ctx.get_states();
 		auto resources_intermediate = virt_ctx.get_resources();
 		
 		next->set_context_state();
-		gpu_state_switches transition_switches = gpu_state_switches(&virt_ctx) - switches_intermediate;
+		_gpu_state_transition_impl::gpu_state_switches transition_switches = _gpu_state_transition_impl::gpu_state_switches(&virt_ctx) - switches_intermediate;
 		auto states_final = virt_ctx.get_states();
 		
 		ctx->make_current();
@@ -101,43 +112,41 @@ public:
 		auto diff = states_diff(states_intermediate, states_final);
 		transition_switches.total_state_changes += diff.size();
 		
-		std::function<void(void)> push = [diff]() {
+		std::function<void(void)> dispatch = [diff = std::move(diff), next]() {
 			for (auto &p : diff)
 				Core::gl_current_context::get()->push_state(p.first);
-		};
-		
-		std::function<void(void)> transition = [diff = std::move(diff), next]() {
+			// Set new states
+			next->set_context_state();
+			
+			// Dispatch
+			next->dispatch();
+			
 			// Reset states
 			for (auto &p : diff)
 				Core::gl_current_context::get()->pop_state(p.first);
-				
-			// Set new states
-			next->set_context_state();
 		};
 		
-		return std::make_shared<gpu_state_transition>(std::move(push), 
-													  std::move(transition), 
+		return std::make_unique<gpu_state_transition>(AccessToken(),
+													  std::move(dispatch),
 													  transition_switches.cost(), 
 													  task, next);
 	} 
 	
 private:
-	std::function<void(void)> pre, post;
+	std::function<void(void)> dispatch_func;
 	unsigned cost;
 	
 public:
-	gpu_state_transition(std::function<void(void)> &&pre, 
-						 std::function<void(void)> &&post, 
+	gpu_state_transition(const AccessToken&,
+						 std::function<void(void)> &&dispatch, 
 						 unsigned cost,
-						 const std::shared_ptr<const gpu_task> &task, 
-						 const std::shared_ptr<const gpu_task> &next) : pre(std::move(pre)),
-																		post(std::move(post)), 
-																		cost(cost),
-																		edge(cost, task.get(), next.get()) {}
+						 const gpu_task *task, 
+						 const gpu_task *next) : Base(cost, task, next),
+												 dispatch_func(std::move(dispatch)), 
+												 cost(cost) {}
 	
 public:
-	void push_states() const { pre(); }
-	void transition() const { post(); }
+	void dispatch() const { dispatch_func(); }
 	
 	auto get_cost() const { return cost; }
 };

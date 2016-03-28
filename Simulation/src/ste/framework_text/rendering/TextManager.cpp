@@ -32,8 +32,6 @@ void TextManager::text_renderable::dispatch() const {
 	Core::gl_current_context::get()->draw_arrays(GL_POINTS, range_in_use.start / sizeof(glyph_point), points.size());
 	
 	tr->vbo.lock_range(range_in_use);
-	
-	gl_current_context::get()->disable_state(context_state_name::BLEND);
 }
 
 

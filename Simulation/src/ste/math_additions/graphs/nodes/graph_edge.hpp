@@ -11,19 +11,26 @@
 namespace StE {
 namespace Graph {
 
+template <typename V, typename E>
+class graph;
+
 class edge {
+	template <typename V, typename E>
+	friend class graph;
+	
 private:
 	int weight;
 	
 	const vertex *from, *to;
 
 public:
+	edge(int w, const vertex *from, const vertex *to) : weight(w), from(from), to(to) {
+		assert(from && "from must be a non-null vertex");
+		assert(to && "to must be a non-null vertex");
+	}
+	virtual ~edge() noexcept {}
 	edge(const edge &) = default;									
 	edge(edge &&) = default;
-	edge(int w, const vertex *from, const vertex *to) : weight(w),
-														from(from),
-														to(to) {}
-
 	edge &operator=(const edge &) = default;									
 	edge &operator=(edge &&) = default;
 	

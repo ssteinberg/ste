@@ -4,13 +4,15 @@
 
 #include "human_vision_properties.hpp"
 
-#include "bokeh_blurx_task.hpp"
+#include "hdr_bokeh_blurx_task.hpp"
 
 #include <gli/gli.hpp>
 
 using namespace StE::Graphics;
 
-hdr_dof_postprocess::hdr_dof_postprocess(const StEngineControl &context, const Core::Texture2D *z_buffer) : hdr_vision_properties_sampler(Core::TextureFiltering::Linear, Core::TextureFiltering::Linear, 16), ctx(context) {
+hdr_dof_postprocess::hdr_dof_postprocess(const StEngineControl &context, const Core::Texture2D *z_buffer) : gpu_task(std::make_unique<hdr_bokeh_blurx_task>(this)),
+																											hdr_vision_properties_sampler(Core::TextureFiltering::Linear, Core::TextureFiltering::Linear, 16), 
+																											ctx(context) {
 	hdr_vision_properties_sampler.set_wrap_s(Core::TextureWrapMode::ClampToEdge);
 	linear_sampler.set_min_filter(Core::TextureFiltering::Linear);
 	linear_sampler.set_mag_filter(Core::TextureFiltering::Linear);
@@ -55,8 +57,9 @@ hdr_dof_postprocess::hdr_dof_postprocess(const StEngineControl &context, const C
 	hdr_bokeh_param_buffer_prev << *hdr_bokeh_param_buffer_eraser;
 
 	resize(ctx.get_backbuffer_size());
-	
-	Base::sub_tasks.insert(std::make_shared<bokeh_blurx_task>(this));
+}
+
+hdr_dof_postprocess::~hdr_dof_postprocess() noexcept {
 }
 
 void hdr_dof_postprocess::set_z_buffer(const Core::Texture2D *z_buffer) {

@@ -4,8 +4,7 @@
 #pragma once
 
 #include "stdafx.hpp"
-#include "graph_vertex.hpp"
-#include "graph_edge.hpp"
+#include "graph.hpp"
 
 #include <unordered_set>
 #include <memory>
@@ -17,8 +16,8 @@ namespace StE {
 namespace Graph {
 namespace detail {
 	
-extern Agraph_t* create_graphviz_graph(const std::unordered_set<std::shared_ptr<const vertex>> *vertices, 
-									   const std::unordered_set<std::shared_ptr<const edge>> *edges);
+extern Agraph_t* create_graphviz_graph(const GraphSet<const vertex*> *vertices, 
+									   const GraphSet<const edge*> *edges);
 	
 }
 }

@@ -119,9 +119,6 @@ protected:
 		for (auto &r : ranges_to_lock)
 			mesh_data_bo.lock_range(r);
 		ranges_to_lock.clear();
-		
-		Core::gl_current_context::get()->disable_state(Core::context_state_name::CULL_FACE);
-		Core::gl_current_context::get()->disable_depth_test();
 	}
 };
 

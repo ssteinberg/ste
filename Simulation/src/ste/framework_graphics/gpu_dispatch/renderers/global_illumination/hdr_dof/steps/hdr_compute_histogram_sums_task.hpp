@@ -9,6 +9,8 @@
 #include "gl_current_context.hpp"
 #include "hdr_create_histogram_task.hpp"
 
+#include <memory>
+
 namespace StE {
 namespace Graphics {
 
@@ -19,9 +21,7 @@ private:
 	hdr_dof_postprocess *p;
 
 public:
-	hdr_compute_histogram_sums_task(hdr_dof_postprocess *p) : p(p) {
-		gpu_task::sub_tasks.insert(std::make_shared<hdr_create_histogram_task>(p));
-	}
+	hdr_compute_histogram_sums_task(hdr_dof_postprocess *p) : p(p), gpu_task(std::make_unique<hdr_create_histogram_task>(p)) {}
 	~hdr_compute_histogram_sums_task() noexcept {}
 
 protected:
