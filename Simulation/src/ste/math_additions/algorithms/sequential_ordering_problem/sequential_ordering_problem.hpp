@@ -19,6 +19,23 @@ namespace SOP {
 namespace detail {
 
 class optimize_sequential_ordering_impl {
+private:
+	template <typename V, typename E>
+	class visited_nodes_guard {
+		const sop_graph<V, E> &g;
+		
+	public:
+		visited_nodes_guard(const sop_graph<V, E> &g) : g(g) {}
+		~visited_nodes_guard() {
+			for (auto &v : g.get_vertices()) {
+				v->visited = false;
+#ifdef DEBUG
+				assert(v->missing_deps == nullptr);
+#endif
+			}
+		}
+	};
+
 public:
 	template <typename V, typename E>
 	using sequential_ordering_problem_solution = std::vector<std::pair<const V*, const E*>>;
@@ -71,30 +88,35 @@ public:
 
 	template <typename V, typename E>
 	static inline sequential_ordering_problem_solution<V, E> optimize_sequential_ordering(const sop_graph<V, E> &g, const V *root) {
-		assert(g.get_vertices().size() && root);
+		assert(g.get_vertices().size() && root && "Invalid paramters");
+		assert(root->get_dependencies().size() == 0 && "root has dependencies");
+		
+		visited_nodes_guard<V, E> guard(g);
 		
 		sequential_ordering_problem_solution<V, E> order;
+		auto node = root;
 		
 		root->visited = true;
-		while (order.size() < g.get_vertices().size() - 1) {		
-			auto next_pair = next_pair_from_graph<E>(root);
+		while (order.size() < g.get_vertices().size() - 1) {
+			auto next_pair = next_pair_from_graph<E>(node);
 			if (!next_pair.first) {
 				assert(false && "Transition can't be made");
-				break;
+				return order;
 			}
 			
-			root = next_pair.first;
+			node = next_pair.first;
 			order.push_back(std::move(next_pair));
 			
-			update_nodes_deps(root);
+			update_nodes_deps(node);
 		}
 		
-		for (auto &v : g.get_vertices()) {
-			v->visited = false;
-#ifdef DEBUG
-			assert(v->missing_deps == nullptr);
-#endif
+		root->visited = false;
+		auto next_pair = next_pair_from_graph<E>(node);
+		if (!next_pair.first) {
+			assert(false && "Transition can't be made");
+			return order;
 		}
+		order.push_back(std::move(next_pair));
 		
 		return order;
 	}

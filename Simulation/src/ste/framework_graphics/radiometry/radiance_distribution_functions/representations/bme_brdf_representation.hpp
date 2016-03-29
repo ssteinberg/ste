@@ -143,6 +143,89 @@ private:
 
 	bme_brdf_representation() = default;
 	~bme_brdf_representation() = default;
+	
+protected:
+	static void create_layer(unsigned i, const database_type::iterator &it, common_brdf_representation &brdfdata, const glm::ivec3 &dims) {
+		float *data = reinterpret_cast<float*>(brdfdata.get_data()->data()) + dims.x * dims.y * i;
+		exitant_db &db = it->second;
+
+		for (unsigned j = 0; j < dims.y; ++j) {
+			float theta = glm::mix<float>(BRDF::theta_min, BRDF::theta_max, static_cast<float>(j) / static_cast<float>(dims.y - 1));
+
+#pragma ivdep
+			for (unsigned k = 0; k < dims.x; ++k) {
+				float phi = glm::mix<float>(BRDF::phi_min, BRDF::phi_max, static_cast<float>(k) / static_cast<float>(dims.x - 1));
+
+				glm::vec3 w = BxDF::omega(theta, phi);
+
+				std::vector<bme_brdf_descriptor_entry*> entries;
+				int theta_bucket = static_cast<int>(theta / bucket_size);
+				int phi_bucket = static_cast<int>(phi / bucket_size);
+
+				constexpr int samples = 15;
+				constexpr auto p_range = BRDF::phi_max - BRDF::phi_min + 1;
+				int bias = 1;
+				while (entries.size() < samples) {
+					for (int x = -bias; x <= bias; ++x) {
+						int tm = glm::clamp(theta_bucket + x, BRDF::theta_min, BRDF::theta_max);
+						int pm = phi_bucket + bias <= BRDF::phi_max ? phi_bucket + bias : phi_bucket + bias - p_range;
+						int pn = phi_bucket - bias >= BRDF::phi_min ? phi_bucket - bias : phi_bucket - bias + p_range;
+						for (auto &e : db[tm][pm])
+							entries.push_back(&e);
+						if (bias)
+							for (auto &e : db[tm][pn])
+								entries.push_back(&e);
+					}
+					for (int x = -bias + 1; x < bias; ++x) {
+						int tm = glm::clamp(theta_bucket + bias, BRDF::theta_min, BRDF::theta_max);
+						int tn = glm::clamp(theta_bucket - bias, BRDF::theta_min, BRDF::theta_max);
+						int pm = phi_bucket + x;
+						if (pm > BRDF::phi_max) pm -= p_range;
+						if (pm < BRDF::phi_min) pm += p_range;
+						for (auto &e : db[tm][pm])
+							entries.push_back(&e);
+						if (bias)
+							for (auto &e : db[tn][pm])
+								entries.push_back(&e);
+					}
+
+					++bias;
+				}
+				for (auto &e : db[theta_bucket][phi_bucket])
+					entries.push_back(&e);
+
+				assert(entries.size());
+
+				using closest_vector_type = std::vector<std::pair<float, bme_brdf_descriptor_entry*>>;
+				closest_vector_type closest;
+				float max_w = .0f, min_w = 1.f;
+				for (auto &entry : entries) {
+					float d = glm::dot(entry->v, w);
+					max_w = glm::max(d, max_w);
+					min_w = glm::min(d, min_w);
+
+					auto pair = std::make_pair(d, entry);
+					if (closest.size() > samples && closest[closest.size() - 1].first > d) continue;
+					closest.insert(std::lower_bound(closest.begin(), closest.end(), pair, [](const closest_vector_type::value_type &lhs, const closest_vector_type::value_type &rhs) {
+						return lhs.first > rhs.first;
+					}), pair);
+
+					if (closest.size() > samples) closest.pop_back();
+				}
+
+				float tweight = .0f;
+				float brdf = .0f;
+				for (auto &e : closest) {
+					float weight = max_w - min_w > 0 ? glm::pow((e.first - min_w) / (max_w - min_w), 2.f) : 1.f;
+					brdf += e.second->brdf * weight;
+					tweight += weight;
+				}
+				brdf /= tweight;
+
+				data[j * dims.x + k] = closest[0].second->brdf;
+			}
+		}
+	}
 
 public:
 	static task<std::unique_ptr<BRDF>> BRDF_from_bme_representation_task(const StEngineControl &context, const boost::filesystem::path &bme_data_dir) {
@@ -183,85 +266,7 @@ public:
 			auto it = bme.database.begin();
 			for (unsigned i = 0; i < dims.z; ++i, ++it) {
 				futures.push_back(ctx->scheduler().schedule_now([&, i=i, it=it](optional<task_scheduler*> sched) {
-					float *data = reinterpret_cast<float*>(brdfdata.get_data()->data()) + dims.x * dims.y * i;
-					exitant_db &db = it->second;
-
-					for (unsigned j = 0; j < dims.y; ++j) {
-						float theta = glm::mix<float>(BRDF::theta_min, BRDF::theta_max, static_cast<float>(j) / static_cast<float>(dims.y - 1));
-
-#pragma ivdep
-						for (unsigned k = 0; k < dims.x; ++k) {
-							float phi = glm::mix<float>(BRDF::phi_min, BRDF::phi_max, static_cast<float>(k) / static_cast<float>(dims.x - 1));
-
-							glm::vec3 w = BxDF::omega(theta, phi);
-
-							std::vector<bme_brdf_descriptor_entry*> entries;
-							int theta_bucket = static_cast<int>(theta / bucket_size);
-							int phi_bucket = static_cast<int>(phi / bucket_size);
-
-							constexpr int samples = 15;
-							constexpr auto p_range = BRDF::phi_max - BRDF::phi_min + 1;
-							int bias = 1;
-							while (entries.size() < samples) {
-								for (int x = -bias; x <= bias; ++x) {
-									int tm = glm::clamp(theta_bucket + x, BRDF::theta_min, BRDF::theta_max);
-									int pm = phi_bucket + bias <= BRDF::phi_max ? phi_bucket + bias : phi_bucket + bias - p_range;
-									int pn = phi_bucket - bias >= BRDF::phi_min ? phi_bucket - bias : phi_bucket - bias + p_range;
-									for (auto &e : db[tm][pm])
-										entries.push_back(&e);
-									if (bias)
-										for (auto &e : db[tm][pn])
-											entries.push_back(&e);
-								}
-								for (int x = -bias + 1; x < bias; ++x) {
-									int tm = glm::clamp(theta_bucket + bias, BRDF::theta_min, BRDF::theta_max);
-									int tn = glm::clamp(theta_bucket - bias, BRDF::theta_min, BRDF::theta_max);
-									int pm = phi_bucket + x;
-									if (pm > BRDF::phi_max) pm -= p_range;
-									if (pm < BRDF::phi_min) pm += p_range;
-									for (auto &e : db[tm][pm])
-										entries.push_back(&e);
-									if (bias)
-										for (auto &e : db[tn][pm])
-											entries.push_back(&e);
-								}
-
-								++bias;
-							}
-							for (auto &e : db[theta_bucket][phi_bucket])
-								entries.push_back(&e);
-
-							assert(entries.size());
-
-							using closest_vector_type = std::vector<std::pair<float, bme_brdf_descriptor_entry*>>;
-							closest_vector_type closest;
-							float max_w = .0f, min_w = 1.f;
-							for (auto &entry : entries) {
-								float d = glm::dot(entry->v, w);
-								max_w = glm::max(d, max_w);
-								min_w = glm::min(d, min_w);
-
-								auto pair = std::make_pair(d, entry);
-								if (closest.size() > samples && closest[closest.size() - 1].first > d) continue;
-								closest.insert(std::lower_bound(closest.begin(), closest.end(), pair, [](const closest_vector_type::value_type &lhs, const closest_vector_type::value_type &rhs) {
-									return lhs.first > rhs.first;
-								}), pair);
-
-								if (closest.size() > samples) closest.pop_back();
-							}
-
-							float tweight = .0f;
-							float brdf = .0f;
-							for (auto &e : closest) {
-								float weight = max_w - min_w > 0 ? glm::pow((e.first - min_w) / (max_w - min_w), 2.f) : 1.f;
-								brdf += e.second->brdf * weight;
-								tweight += weight;
-							}
-							brdf /= tweight;
-
-							data[j * dims.x + k] = closest[0].second->brdf;
-						}
-					}
+					create_layer(i, it, brdfdata, dims);
 				}));
 			}
 

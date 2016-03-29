@@ -45,8 +45,11 @@ private:
 			return;
 		
 		m[k].set([=](const tuple_type_erasure &t) {
-					tuple_call(func, t.get_weak<std::remove_reference_t<Args>...>());
-				 }, std::move(v));
+						 std::tuple<std::remove_reference_t<Args>...> params = t.get_weak<std::remove_reference_t<Args>...>();
+						 tuple_call(func, params);
+					 }, 
+					 std::move(v), 
+					 std::tuple<Args...>(args...));
 		++counter;
 		
 		if (!dummy)
@@ -83,10 +86,10 @@ private:
 		assert(!!opt && "State wasn't previously pushed.");
 		if (!opt)
 			return;
-		auto state = opt.get();
+		auto &state = opt.get();
 
 		if (!dummy) {
-			static_cast<std::function<void(const tuple_type_erasure&)>>(state.second)(state.first);
+			static_cast<std::function<void(const tuple_type_erasure&)>>(state.setter)(state.args);
 		}
 	}
 
@@ -99,7 +102,7 @@ public:
 								 x, y, w, h);
 	}
 	auto viewport() const {
-		return get_context_server_state(states, context_state_name::VIEWPORT_STATE).get<std::int32_t, std::int32_t, std::uint32_t, std::uint32_t>();
+		return get_context_server_state(states, context_state_name::VIEWPORT_STATE).get_value<std::int32_t, std::int32_t, std::uint32_t, std::uint32_t>();
 	}
 
 	void color_mask(bool r, bool b, bool g, bool a) const {
@@ -110,7 +113,7 @@ public:
 								 r, g, b, a);
 	}
 	auto color_mask() const {
-		return get_context_server_state(states, context_state_name::COLOR_MASK_STATE).get<bool, bool, bool, bool>();
+		return get_context_server_state(states, context_state_name::COLOR_MASK_STATE).get_value<bool, bool, bool, bool>();
 	}
 	
 	void depth_mask(bool mask) const {
@@ -121,7 +124,7 @@ public:
 								 mask);
 	}
 	auto depth_mask() const {
-		return get_context_server_state(states, context_state_name::DEPTH_MASK_STATE).get<bool>();
+		return get_context_server_state(states, context_state_name::DEPTH_MASK_STATE).get_value<bool>();
 	}
 
 	void cull_face(GLenum face) const {
@@ -132,7 +135,7 @@ public:
 								 face);
 	}
 	auto cull_face() const {
-		return get_context_server_state(states, context_state_name::CULL_FACE_STATE).get<GLenum>();
+		return get_context_server_state(states, context_state_name::CULL_FACE_STATE).get_value<GLenum>();
 	}
 	
 	void front_face(GLenum face) const {
@@ -143,7 +146,7 @@ public:
 								 face);
 	}
 	auto front_face() const {
-		return get_context_server_state(states, context_state_name::FRONT_FACE_STATE).get<GLenum>();
+		return get_context_server_state(states, context_state_name::FRONT_FACE_STATE).get_value<GLenum>();
 	}
 
 	void blend_func(GLenum src, GLenum dst) const {
@@ -154,7 +157,7 @@ public:
 								 src, dst);
 	}
 	auto blend_func() const {
-		return get_context_server_state(states, context_state_name::BLEND_FUNC_STATE).get<GLenum, GLenum>();
+		return get_context_server_state(states, context_state_name::BLEND_FUNC_STATE).get_value<GLenum, GLenum>();
 	}
 	
 	void blend_func_separate(GLenum src_rgb, GLenum dst_rgb, GLenum src_a, GLenum dst_a) const {
@@ -165,7 +168,7 @@ public:
 								 src_rgb, dst_rgb, src_a, dst_a);
 	}
 	auto blend_func_separate() const {
-		return get_context_server_state(states, context_state_name::BLEND_FUNC_SEPARATE_STATE).get<GLenum, GLenum, GLenum, GLenum>();
+		return get_context_server_state(states, context_state_name::BLEND_FUNC_SEPARATE_STATE).get_value<GLenum, GLenum, GLenum, GLenum>();
 	}
 	
 	void blend_color(float r, float g, float b, float a) const {
@@ -176,7 +179,7 @@ public:
 								 r, g, b, a);
 	}
 	auto blend_color() const {
-		return get_context_server_state(states, context_state_name::BLEND_COLOR_STATE).get<float, float, float, float>();
+		return get_context_server_state(states, context_state_name::BLEND_COLOR_STATE).get_value<float, float, float, float>();
 	}
 	
 	void blend_equation(GLenum mode) const {
@@ -187,7 +190,7 @@ public:
 								 mode);
 	}
 	auto blend_equation() const {
-		return get_context_server_state(states, context_state_name::BLEND_EQUATION_STATE).get<GLenum>();
+		return get_context_server_state(states, context_state_name::BLEND_EQUATION_STATE).get_value<GLenum>();
 	}
 	
 	void clear_color(float r, float g, float b, float a) const {
@@ -198,7 +201,7 @@ public:
 								 r, g, b, a);
 	}
 	auto clear_color() const {
-		return get_context_server_state(states, context_state_name::CLEAR_COLOR_STATE).get<float, float, float, float>();
+		return get_context_server_state(states, context_state_name::CLEAR_COLOR_STATE).get_value<float, float, float, float>();
 	}
 	
 	void clear_depth(float d) const {
@@ -209,7 +212,7 @@ public:
 								 d);
 	}
 	auto clear_depth() const {
-		return get_context_server_state(states, context_state_name::CLEAR_DEPTH_STATE).get<float>();
+		return get_context_server_state(states, context_state_name::CLEAR_DEPTH_STATE).get_value<float>();
 	}
 
 public:
@@ -388,7 +391,7 @@ public:
 		enable ? enable_state(state) : disable_state(state);
 	}
 	bool is_enabled(context_state_name state) const {
-		return std::get<0>(get_context_server_state(states, state).get<bool>());
+		return std::get<0>(get_context_server_state(states, state).get_value<bool>());
 	}
 	
 public:

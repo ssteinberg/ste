@@ -77,49 +77,57 @@ class gpu_state_transition : public Algorithm::SOP::sop_edge {
 	using Base = Algorithm::SOP::sop_edge;
 	
 private:
-	struct AccessToken {}; 
+	struct AccessToken {};
 	
 private:
 	template <typename K, typename V>
-	static std::unordered_map<K,V> states_diff(const std::unordered_map<K,V> &intermediate, const std::unordered_map<K,V> &final_states) {
-		std::unordered_map<K,V> diff;
+	static std::vector<std::pair<K,V>> states_diff(std::unordered_map<K,V> &&intermediate, const std::unordered_map<K,V> &final_states) {
+		std::vector<std::pair<K,V>> diff;
+
+		auto max_count = std::max(intermediate.size(), final_states.size());
+		if (max_count == 0)
+			return diff;
+
+		diff.reserve(max_count);
 		for (auto &p : intermediate) {
 			auto it = final_states.find(p.first);
 			if (it == final_states.end()) 
-				diff.insert(*it);
+				diff.push_back(std::move(p));
 		}
 		
 		return diff;
 	}
 	
+protected:
+	static Core::gl_virtual_context virt_ctx;
+	
 public:
 	static auto transition_function(const gpu_task *task, const gpu_task *next) {
 		auto ctx = Core::gl_current_context::get();
-		Core::gl_virtual_context virt_ctx;
 		virt_ctx.make_current();
 		
+		virt_ctx.clear();
 		task->set_context_state();
-		_gpu_state_transition_impl::gpu_state_switches switches_intermediate(&virt_ctx);
 		auto states_intermediate = virt_ctx.get_states();
-		auto resources_intermediate = virt_ctx.get_resources();
 		
+		virt_ctx.clear();
 		next->set_context_state();
-		_gpu_state_transition_impl::gpu_state_switches transition_switches = _gpu_state_transition_impl::gpu_state_switches(&virt_ctx) - switches_intermediate;
 		auto states_final = virt_ctx.get_states();
+		_gpu_state_transition_impl::gpu_state_switches transition_switches(&virt_ctx);
 		
 		ctx->make_current();
 		
-		auto diff = states_diff(states_intermediate, states_final);
+		auto diff = states_diff(std::move(states_intermediate), states_final);
 		transition_switches.total_state_changes += diff.size();
 		
-		std::function<void(void)> dispatch = [diff = std::move(diff), next]() {
+		std::function<void(void)> dispatch = [diff = std::move(diff), task]() {
 			for (auto &p : diff)
 				Core::gl_current_context::get()->push_state(p.first);
 			// Set new states
-			next->set_context_state();
+			task->set_context_state();
 			
 			// Dispatch
-			next->dispatch();
+			task->dispatch();
 			
 			// Reset states
 			for (auto &p : diff)

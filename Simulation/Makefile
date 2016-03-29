@@ -19,7 +19,7 @@ INCLUDE_FLAGS = $(addprefix -I, $(LOCAL_INCLUDES))
 .SECONDARY: $(OBJECTS) $(PCH)
 
 define make-cpp-target
-$1.o:	$(WORK_DIR)/$(basename $(shell find $(SOURCE_DIR) -name "$1.cpp" | head -n 1)).o
+$1:	$(WORK_DIR)/$(basename $(shell find $(SOURCE_DIR) -name "$1.cpp" | head -n 1)).o
 endef
 $(foreach d,$(SOURCES),$(eval $(call make-cpp-target,$(basename $(notdir $d)))))
 
@@ -63,6 +63,7 @@ vars:
 	@/usr/bin/echo '"config": $(config)'
 	@/usr/bin/echo '"BUILD_DIR": $(BUILD_DIR)'
 	@/usr/bin/echo '"WORK_DIR": $(WORK_DIR)'
+	@/usr/bin/echo '"DOCS_DIR": $(DOCS_DIR)'
 	@/usr/bin/echo '"PCH": $(PCH)'
 	@/usr/bin/echo '"LOCAL_INCLUDES": $(LOCAL_INCLUDES)'
 	@/usr/bin/echo '"LOCAL_LIBS": $(LOCAL_LIBS)'
@@ -74,17 +75,18 @@ vars:
 docs: $(SOURCES) $(HEADERS)
 	@/bin/echo -e "\e[1;94mBuilding docs...\e[0m"
 	@doxygen $(DOXYGEN_CONFIG)
+	cd $(DOCS_DIR)/latex && make;
 
 clean:
 	@/usr/bin/echo 'Cleaning all...'
 	/usr/bin/rm -rf $(BUILD_DIR)
-	/usr/bin/rm -rf ./docs/html/*
-	/usr/bin/rm -rf ./docs/latex/*
+	/usr/bin/rm -rf $(DOCS_DIR)/html
+	/usr/bin/rm -rf $(DOCS_DIR)/latex
 
 clean_config:
 	@/usr/bin/echo 'Cleaning $(WORK_DIR)...'
 	/usr/bin/rm -rf $(WORK_DIR)
-	/usr/bin/rm -rf ./docs/html/*
-	/usr/bin/rm -rf ./docs/latex/*
+	/usr/bin/rm -rf $(DOCS_DIR)/html
+	/usr/bin/rm -rf $(DOCS_DIR)/latex
 
 -include $(DEPS)

@@ -24,6 +24,17 @@ public:
 	
 	const auto &get_states() const { return Base::states; }
 	const auto &get_resources() const { return Base::resources; }
+	
+	void clear() {
+		Base::states.clear();
+		Base::resources.clear();
+		Base::total_state_changes = 0;
+		Base::total_buffer_changes = 0;
+		Base::total_texture_changes = 0;
+		Base::total_shader_changes = 0;
+		Base::total_fbo_changes = 0;
+		Base::total_va_changes = 0;
+	}
 };
 
 }

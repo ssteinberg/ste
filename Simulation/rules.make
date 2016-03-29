@@ -3,6 +3,7 @@ BUILD_CONFIGURATIONS = debug release
 DEFAULT_CONFIGURATION = debug
 
 SOURCE_DIR = ./src
+DOCS_DIR = ./docs
 
 LOCAL_INCLUDES += \
 	$(shell find $(SOURCE_DIR) -type d) \

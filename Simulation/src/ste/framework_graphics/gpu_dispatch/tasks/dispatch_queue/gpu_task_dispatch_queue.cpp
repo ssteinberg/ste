@@ -57,7 +57,7 @@ void gpu_task_dispatch_queue::remove_task(const TaskPtr &task, bool force) {
 	
 	if (!force && task->requisite_for.size()) {
 		using namespace StE::Text::Attributes;
-			
+
 		std::cout << Text::AttributedString("Attempting to remove task from GPU dispatch queue, however task ") + i(task->task_name()) + " is a requisite for " + i((*task->requisite_for.begin())->task_name()) + "." << std::endl;
 		ste_log_fatal() << "task " << task->task_name() << " is a requisite for " << (*task->requisite_for.begin())->task_name() << std::endl;
 		assert(false && "Task is a requisite!");
