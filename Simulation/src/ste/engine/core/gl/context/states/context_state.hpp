@@ -9,7 +9,7 @@
 #include "optional.hpp"
 
 #include <functional>
-#include <list>
+#include <vector>
 
 namespace StE {
 namespace Core {
@@ -25,7 +25,7 @@ private:
 
 private:
 	optional<state_type> state;
-	std::list<state_type> stack;
+	std::vector<state_type> stack;
 
 public:
 	context_state() = default;
@@ -53,14 +53,15 @@ public:
 	void push() {
 		assert(exists() && "State must be set before pushing.");
 		exists() ?
-			stack.push_front(state.get()) :
-			stack.push_front(state_type());
+			stack.push_back(state.get()) :
+			stack.push_back(state_type());
+		assert(stack.size() < 20);
 	}
 	
 	optional<state_type> pop() {
 		if (stack.size() > 0) {
-			state = *stack.begin();
-			stack.pop_front();
+			state = stack.back();
+			stack.pop_back();
 			return state;
 		}
 		return none;

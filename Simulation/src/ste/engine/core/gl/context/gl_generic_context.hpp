@@ -41,15 +41,19 @@ protected:
 private:
 	template <typename FuncT, typename K, typename V, typename... Ts, typename... Args>
 	void set_context_server_state(std::size_t &counter, std::unordered_map<K, V> &m, const K &k, std::tuple<Ts...> &&v, FuncT *func, Args&&... args) const {
-		if (m[k].compare(v))
+		auto it = m.find(k);
+		if (it != m.end() && it->second.compare(v))
 			return;
 		
-		m[k].set([=](const tuple_type_erasure &t) {
-						 std::tuple<std::remove_reference_t<Args>...> params = t.get_weak<std::remove_reference_t<Args>...>();
-						 tuple_call(func, params);
-					 }, 
-					 std::move(v), 
-					 std::tuple<Args...>(args...));
+		if (it == m.end())
+			it = m.insert(std::make_pair(k, context_state())).first;
+
+		it->second.set([=](const tuple_type_erasure &t) {
+						   std::tuple<std::remove_reference_t<Args>...> params = t.get_weak<std::remove_reference_t<Args>...>();
+						   tuple_call(func, params);
+					   },
+					   std::move(v),
+					   std::tuple<Args...>(args...));
 		++counter;
 		
 		if (!dummy)

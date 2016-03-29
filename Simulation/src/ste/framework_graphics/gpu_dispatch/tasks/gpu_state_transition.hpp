@@ -81,21 +81,26 @@ private:
 	
 private:
 	template <typename K, typename V>
-	static std::vector<std::pair<K,V>> states_diff(std::unordered_map<K,V> &&intermediate, const std::unordered_map<K,V> &final_states) {
-		std::vector<std::pair<K,V>> diff;
-
+	static bool states_diff(std::unordered_map<K,V> &&intermediate, const std::unordered_map<K,V> &final_states, std::vector<K> &states_to_push, std::vector<K> &states_to_pop) {
 		auto max_count = std::max(intermediate.size(), final_states.size());
 		if (max_count == 0)
-			return diff;
+			return false;
 
-		diff.reserve(max_count);
-		for (auto &p : intermediate) {
-			auto it = final_states.find(p.first);
-			if (it == final_states.end()) 
-				diff.push_back(std::move(p));
+		states_to_push.reserve(max_count);
+		states_to_pop.reserve(max_count);
+		
+		for (auto &p : final_states) {
+			auto it = intermediate.find(p.first);
+			if (it == intermediate.end()) 
+				states_to_push.push_back(p.first);
+			else
+				intermediate.erase(it);
 		}
 		
-		return diff;
+		for (auto &p : intermediate)
+			states_to_pop.push_back(p.first);
+		
+		return true;
 	}
 	
 protected:
@@ -112,26 +117,28 @@ public:
 		
 		virt_ctx.clear();
 		next->set_context_state();
-		auto states_final = virt_ctx.get_states();
+		
+		std::vector<Core::context_state_name> states_to_pop, states_to_push;
+		states_diff(std::move(states_intermediate), virt_ctx.get_states(), states_to_push, states_to_pop);
+		
 		_gpu_state_transition_impl::gpu_state_switches transition_switches(&virt_ctx);
+		transition_switches.total_state_changes += states_to_pop.size();
 		
 		ctx->make_current();
 		
-		auto diff = states_diff(std::move(states_intermediate), states_final);
-		transition_switches.total_state_changes += diff.size();
-		
-		std::function<void(void)> dispatch = [diff = std::move(diff), task]() {
-			for (auto &p : diff)
-				Core::gl_current_context::get()->push_state(p.first);
+		std::function<void(void)> dispatch = [states_to_push = std::move(states_to_push), states_to_pop = std::move(states_to_pop), task]() {				
+			// Push states used by task 
+			for (auto &k : states_to_push)
+				Core::gl_current_context::get()->push_state(k);
+				
 			// Set new states
 			task->set_context_state();
-			
 			// Dispatch
 			task->dispatch();
 			
 			// Reset states
-			for (auto &p : diff)
-				Core::gl_current_context::get()->pop_state(p.first);
+			for (auto &k : states_to_pop)
+				Core::gl_current_context::get()->pop_state(k);
 		};
 		
 		return std::make_unique<gpu_state_transition>(AccessToken(),
