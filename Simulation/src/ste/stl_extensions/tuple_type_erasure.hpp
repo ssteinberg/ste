@@ -64,6 +64,8 @@ public:
 	}
 	template <typename T>
 	bool compare_weak(const std::tuple<T> &tuple) const {
+		_tuple_type_erasure::_type_checker<T> check;
+		
 		using Type = typename std::remove_reference_t<T>;
 		
 		std::size_t s = sizeof(Type);
@@ -89,6 +91,8 @@ public:
 	}
 	template <typename T>
 	auto get_weak() const {
+		_tuple_type_erasure::_type_checker<T> check;
+		
 		using Type = typename std::remove_reference_t<T>;
 		
 		assert(sizeof(Type) == size);

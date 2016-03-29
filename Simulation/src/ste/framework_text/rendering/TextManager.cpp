@@ -14,6 +14,15 @@ using namespace StE::Text;
 using namespace StE::Core;
 
 
+TextManager::text_renderable::text_renderable(TextManager *tr) : tr(tr) {
+	auto vbo_buffer = Core::buffer_object_cast<vbo_type>(vbo.get_buffer());
+	vao[0] = vbo_buffer[0];
+	vao[1] = vbo_buffer[1];
+	vao[2] = vbo_buffer[2];
+	vao[3] = vbo_buffer[3];
+	vao[4] = vbo_buffer[4];
+}
+
 void TextManager::text_renderable::set_context_state() const {
 	Base::set_context_state();
 
@@ -21,29 +30,22 @@ void TextManager::text_renderable::set_context_state() const {
 	gl_current_context::get()->blend_func(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	
 	0_storage_idx = tr->gm.ssbo();
-	tr->vao.bind();
+	vao.bind();
 	
 	tr->text_distance_mapping->bind();
 }
 
 void TextManager::text_renderable::dispatch() const {
-	range_in_use = tr->vbo.commit(points);
-			
+	// range_in_use = tr->vbo.commit(points);
+
 	Core::gl_current_context::get()->draw_arrays(GL_POINTS, range_in_use.start / sizeof(glyph_point), points.size());
 	
-	tr->vbo.lock_range(range_in_use);
+	// tr->vbo.lock_range(range_in_use);
 }
 
 
 TextManager::TextManager(const StEngineControl &context, const Font &default_font, int default_size) : gm(context), default_font(default_font), default_size(default_size) {
 	text_distance_mapping = context.glslprograms_pool().fetch_program_task({ "text_distance_map_contour.vert", "text_distance_map_contour.frag", "text_distance_map_contour.geom" })();
-
-	auto vbo_buffer = Core::buffer_object_cast<vbo_type>(vbo.get_buffer());
-	vao[0] = vbo_buffer[0];
-	vao[1] = vbo_buffer[1];
-	vao[2] = vbo_buffer[2];
-	vao[3] = vbo_buffer[3];
-	vao[4] = vbo_buffer[4];
 
 	auto *ctx = &context;
 	text_distance_mapping->set_uniform("proj", context.ortho_projection_matrix());

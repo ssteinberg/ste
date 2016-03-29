@@ -16,11 +16,12 @@ void hdr_compute_minmax_task::set_context_state() const {
 }
 
 void hdr_compute_minmax_task::dispatch() const {
-	gl_current_context::get()->memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT);
 	p->hdr_compute_minmax->set_uniform("time", p->ctx.time_per_frame().count());
 	
 	p->hdr_bokeh_param_buffer_prev << p->hdr_bokeh_param_buffer;
 	p->hdr_bokeh_param_buffer << *p->hdr_bokeh_param_buffer_eraser;
+	
+	gl_current_context::get()->memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT);
 	
 	gl_current_context::get()->dispatch_compute(p->luminance_size.x / 32, 
 												p->luminance_size .y / 32, 

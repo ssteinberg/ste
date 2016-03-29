@@ -53,8 +53,6 @@ hdr_dof_postprocess::hdr_dof_postprocess(const StEngineControl &context, const C
 	vision_handle.make_resident();
 
 	hdr_tonemap_coc->set_uniform("hdr_vision_properties_texture", vision_handle);
-	
-	hdr_bokeh_param_buffer_prev << *hdr_bokeh_param_buffer_eraser;
 
 	resize(ctx.get_backbuffer_size());
 }
@@ -126,6 +124,8 @@ void hdr_dof_postprocess::resize(glm::ivec2 size) {
 	bokeh_blury->set_uniform("zcoc_buffer", bokeh_coc_handle);
 
 	hdr_compute_histogram_sums->set_uniform("hdr_lum_resolution", static_cast<std::uint32_t>(luminance_size.x * luminance_size.y));
+	
+	hdr_bokeh_param_buffer_prev << *hdr_bokeh_param_buffer_eraser;
 }
 
 void hdr_dof_postprocess::set_context_state() const {
