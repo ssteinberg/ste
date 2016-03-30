@@ -187,6 +187,7 @@ void gl_context::set_defaults() {
 	clear_depth(1.f);
 	cull_face(GL_BACK);
 	front_face(GL_CCW);
+	blend_func(GL_ONE, GL_ZERO);
 }
 
 void gl_context::create_default_framebuffer(gli::format format, gli::format depth_format) {

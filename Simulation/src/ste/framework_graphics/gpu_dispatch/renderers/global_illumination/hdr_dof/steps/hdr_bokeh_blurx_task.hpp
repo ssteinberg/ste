@@ -9,20 +9,20 @@
 #include "gl_current_context.hpp"
 #include "hdr_bloom_blury_task.hpp"
 
+#include <memory>
+
 namespace StE {
 namespace Graphics {
 
-class bokeh_blurx_task : public gpu_task {
+class hdr_bokeh_blurx_task : public gpu_task {
 	using Base = gpu_task;
 	
 private:
 	hdr_dof_postprocess *p;
 
 public:
-	bokeh_blurx_task(hdr_dof_postprocess *p) : p(p) {
-		gpu_task::sub_tasks.insert(std::make_shared<hdr_bloom_blury_task>(p));
-	}
-	~bokeh_blurx_task() noexcept {}
+	hdr_bokeh_blurx_task(hdr_dof_postprocess *p) : p(p), gpu_task(std::make_unique<hdr_bloom_blury_task>(p)) {}
+	~hdr_bokeh_blurx_task() noexcept {}
 
 protected:
 	void set_context_state() const override final {

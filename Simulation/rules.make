@@ -3,6 +3,7 @@ BUILD_CONFIGURATIONS = debug release
 DEFAULT_CONFIGURATION = debug
 
 SOURCE_DIR = ./src
+DOCS_DIR = ./docs
 
 LOCAL_INCLUDES += \
 	$(shell find $(SOURCE_DIR) -type d) \
@@ -20,7 +21,7 @@ CXXFLAGS += \
 	-w2 \
 	-static-intel \
 	-diag-error-limit=5 \
-	-wd10237,11012,11021,10382 \
+	-wd672,10237,11012,11021,10382 \
 
 CXXFLAGS_release += \
 	-O3 -ipo -xHOST -no-prec-div -D NDEBUG
@@ -40,7 +41,9 @@ SYSTEM_LIBRARIES += \
 	tinyobjloader \
 	boost_system \
 	boost_filesystem \
-	boost_serialization
+	boost_serialization \
+	cgraph \
+	gvc
 	
 LINKFLAGS += $(shell pkg-config --static --libs glfw3)
 
@@ -56,3 +59,4 @@ LINK 	= icpc
 
 TARGET = simulation
 
+DOXYGEN_CONFIG = docs/doxyconfig

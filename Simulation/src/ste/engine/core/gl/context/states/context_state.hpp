@@ -9,24 +9,30 @@
 #include "optional.hpp"
 
 #include <functional>
-#include <list>
+#include <vector>
 
 namespace StE {
 namespace Core {
 
 class context_state {
 private:
-	using StateSetterFunc = std::function<void(const tuple_type_erasure&)>;
-	using StateT = std::pair<tuple_type_erasure, StateSetterFunc>;
+	struct state_type {
+		using StateSetterFunc = std::function<void(const tuple_type_erasure&)>;
+		
+		tuple_type_erasure value, args;
+		StateSetterFunc setter;
+	};
 
 private:
-	optional<StateT> state;
-	std::list<StateT> stack;
+	optional<state_type> state;
+	std::vector<state_type> stack;
 
 public:
 	context_state() = default;
 	context_state(context_state &&) = default;
 	context_state &operator=(context_state &&) = default;
+	context_state(const context_state &) = default;
+	context_state &operator=(const context_state &) = default;
 
 	bool exists() const {
 		return !!state;
@@ -36,39 +42,48 @@ public:
 	bool compare(const std::tuple<Ts...> &t) const {
 		if (!exists())
 			return false;
-		return state.get().first.compare_weak(t);
+		return state.get().value.compare_weak(t);
 	}
 	
-	template <typename... Ts>
-	void set(StateSetterFunc &&f, const std::tuple<Ts...> &t) {
-		state = StateT{ tuple_type_erasure{ t }, std::move(f) };
+	template <typename... Ts, typename... Args>
+	void set(state_type::StateSetterFunc &&f, const std::tuple<Ts...> &v, const std::tuple<Args...> &args) {
+		state = state_type{ tuple_type_erasure{ v }, tuple_type_erasure{ args }, std::move(f) };
 	}
 	
 	void push() {
 		assert(exists() && "State must be set before pushing.");
 		exists() ?
-			stack.push_front(state.get()) :
-			stack.push_front(StateT());
+			stack.push_back(state.get()) :
+			stack.push_back(state_type());
+		assert(stack.size() < 20);
 	}
 	
-	optional<StateT> pop() {
+	optional<state_type> pop() {
 		if (stack.size() > 0) {
-			state = *stack.begin();
-			stack.pop_front();
+			state = stack.back();
+			stack.pop_back();
 			return state;
 		}
 		return none;
 	}
 	
 	template <typename... Ts>
-	auto get() const {
+	auto get_value() const {
 		assert(exists() && "State must be set before calling get<>.");
 		if (exists())
-			return state.get().first.get_weak<Ts...>();
+			return state.get().value.get_weak<Ts...>();
 		return std::tuple<Ts...>();
 	}
 	
-	auto get_state() const {
+	template <typename... Ts>
+	auto get_args() const {
+		assert(exists() && "State must be set before calling get<>.");
+		if (exists())
+			return state.get().args.get_weak<Ts...>();
+		return std::tuple<Ts...>();
+	}
+	
+	auto &get() const {
 		return state;
 	}
 };

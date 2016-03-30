@@ -9,6 +9,8 @@
 #include "gl_current_context.hpp"
 #include "hdr_bloom_blurx_task.hpp"
 
+#include <memory>
+
 namespace StE {
 namespace Graphics {
 
@@ -19,9 +21,7 @@ private:
 	hdr_dof_postprocess *p;
 
 public:
-	hdr_bloom_blury_task(hdr_dof_postprocess *p) : p(p) {
-		gpu_task::sub_tasks.insert(std::make_shared<hdr_bloom_blurx_task>(p));
-	}
+	hdr_bloom_blury_task(hdr_dof_postprocess *p) : p(p), gpu_task(std::make_unique<hdr_bloom_blurx_task>(p)) {}
 	~hdr_bloom_blury_task() noexcept {}
 
 protected:

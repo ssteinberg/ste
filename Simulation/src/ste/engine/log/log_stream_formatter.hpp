@@ -26,7 +26,7 @@ private:
 	static constexpr const char * entry_boundary_end = "%%entry_end%%";
 
 	using placeholder = std::string;
-	using injection_map_type = std::map <placeholder, std::function<std::string(const log_entry *entry)>>;
+	using injection_map_type = std::map<placeholder, std::function<std::string(const log_entry *entry)>>;
 
 private:
 	static const char *severity(log_class c) {

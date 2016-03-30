@@ -8,5 +8,5 @@ using namespace StE::Graphics;
 
 void gpu_task::set_modified() const {
 	if (parent_queue)
-		parent_queue->signal_task_modified(shared_from_this());
+		parent_queue->signal_task_modified(this);
 }

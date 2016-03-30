@@ -5,24 +5,28 @@
 #include "AttributedString.hpp"
 #include "Log.hpp"
 
+#include "sequential_ordering_problem.hpp"
+
 #include <iostream>
+#include <algorithm>
+#include <functional>
 
 using namespace StE::Graphics;
 
-void gpu_task_dispatch_queue::dispatch(TaskPtr task, TasksCollection &tasks_to_dispatch) const {
-	tasks_to_dispatch.erase(task);
+gpu_task_dispatch_queue::gpu_task_dispatch_queue() : root(std::make_unique<detail::gpu_task_root>()) {
+	Base::add_vertex(root.get());
+}
 	
-	for (auto &d : task->after) {
-		if (tasks_to_dispatch.find(d) != tasks_to_dispatch.end())
-			dispatch(d, tasks_to_dispatch);
+void gpu_task_dispatch_queue::build_task_transitions(const TaskPtr &task) {
+	for (auto &t : Base::get_vertices()) {
+		if (t==task)
+			continue;
+			
+		if (t->dependencies.find(task) == t->dependencies.end())
+			Base::add_edge(gpu_state_transition::transition_function(t, task));
+		if (task->dependencies.find(t) == task->dependencies.end())
+			Base::add_edge(gpu_state_transition::transition_function(task, t));
 	}
-	
-	for (auto &d : task->dependencies) {
-		if (tasks_to_dispatch.find(d) != tasks_to_dispatch.end())
-			dispatch(d, tasks_to_dispatch);
-	}
-
-	(*task)();
 }
 
 void gpu_task_dispatch_queue::add_task(const TaskPtr &task, const Core::GenericFramebufferObject *override_fbo, bool mark_inserted) {
@@ -30,31 +34,30 @@ void gpu_task_dispatch_queue::add_task(const TaskPtr &task, const Core::GenericF
 		task->inserted_into_queue = true;
 	task->override_fbo = override_fbo;
 	task->parent_queue = this;
-	task->dependencies = task->task_dependencies;
 	
-	tasks.insert(task);
-	
-	for (auto &sub_t : task->sub_tasks) {
-		add_task(sub_t, override_fbo, false);
-		
-		sub_t->dependencies.insert(task->task_dependencies.begin(), task->task_dependencies.end());
-		task->dependencies.insert(sub_t);
-	}
-	
-	for (auto &t : task->dependencies) {
-		tasks.insert(t);
+	Base::erase_all_vertex_edges(task);
+	Base::add_vertex(task);
+
+	for (auto &t : task->get_dependencies()) {
 		t->requisite_for.insert(task);
+		if (Base::get_vertices().find(t) == Base::get_vertices().end())
+			add_task(t, nullptr, false);
 	}
+	
+	build_task_transitions(task);
 }
 
 void gpu_task_dispatch_queue::add_task(const TaskPtr &task, const Core::GenericFramebufferObject *override_fbo) {
+	update_modified_tasks();
 	add_task(task, override_fbo, true);
 }
 
 void gpu_task_dispatch_queue::remove_task(const TaskPtr &task, bool force) {
+	update_modified_tasks();
+	
 	if (!force && task->requisite_for.size()) {
 		using namespace StE::Text::Attributes;
-			
+
 		std::cout << Text::AttributedString("Attempting to remove task from GPU dispatch queue, however task ") + i(task->task_name()) + " is a requisite for " + i((*task->requisite_for.begin())->task_name()) + "." << std::endl;
 		ste_log_fatal() << "task " << task->task_name() << " is a requisite for " << (*task->requisite_for.begin())->task_name() << std::endl;
 		assert(false && "Task is a requisite!");
@@ -63,17 +66,18 @@ void gpu_task_dispatch_queue::remove_task(const TaskPtr &task, bool force) {
 	
 	task->inserted_into_queue = false;
 	task->override_fbo = nullptr;
-	task->parent_queue = nullptr;
-	tasks.erase(task);
+	
+	Base::erase_vertex(task);
 	
 	for (auto &t : task->dependencies) {
 		t->requisite_for.erase(task);
 		if (!t->inserted_into_queue && !t->requisite_for.size())
 			remove_task(t);
 	}
-
-	task->dependencies.clear();
-	modified_tasks.erase(task);
+	
+	auto it = std::find(modified_tasks.begin(), modified_tasks.end(), task);
+	if (it != modified_tasks.end())
+		modified_tasks.erase(it);
 }
 
 void gpu_task_dispatch_queue::update_task_fbo(const TaskPtr &task, const Core::GenericFramebufferObject *override_fbo) const {
@@ -81,21 +85,25 @@ void gpu_task_dispatch_queue::update_task_fbo(const TaskPtr &task, const Core::G
 }
 
 void gpu_task_dispatch_queue::remove_all() {
-	decltype(tasks.begin()) it;
-	while ((it = tasks.begin()) != tasks.end())
+	decltype(Base::get_vertices().begin()) it;
+	while ((it = Base::get_vertices().begin()) != Base::get_vertices().end())
 		remove_task(*it, true);
 }
 
-void gpu_task_dispatch_queue::dispatch() {
+void gpu_task_dispatch_queue::update_modified_tasks() {
 	if (modified_tasks.size()) {
-		for (auto &ptr : modified_tasks) 
-			add_task(ptr, ptr->get_override_fbo());
+		for (auto &ptr : modified_tasks) {
+			auto fbo = ptr->get_override_fbo();
+			add_task(ptr, fbo, false);
+		}
 		modified_tasks.clear();
 	}
+}
+
+void gpu_task_dispatch_queue::dispatch() {
+	update_modified_tasks();
 	
-	auto tasks_to_dispatch = tasks;
-	
-	decltype(tasks_to_dispatch.begin()) it;
-	while ((it = tasks_to_dispatch.begin()) != tasks_to_dispatch.end()) 
-		dispatch(*it, tasks_to_dispatch);
+	auto order = Algorithm::SOP::optimize_sequential_ordering<gpu_task, gpu_state_transition>(*this, root.get());
+	for (auto &p : order)
+		p.second->dispatch();
 }

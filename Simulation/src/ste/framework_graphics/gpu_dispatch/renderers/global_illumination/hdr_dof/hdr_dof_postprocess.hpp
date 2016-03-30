@@ -31,7 +31,7 @@ class hdr_compute_histogram_sums_task;
 class hdr_tonemap_coc_task;
 class hdr_bloom_blurx_task;
 class hdr_bloom_blury_task;
-class bokeh_blurx_task;
+class hdr_bokeh_blurx_task;
 
 class hdr_dof_postprocess : public gpu_task {
 	using Base = gpu_task;
@@ -42,7 +42,7 @@ class hdr_dof_postprocess : public gpu_task {
 	friend class hdr_tonemap_coc_task;
 	friend class hdr_bloom_blurx_task;
 	friend class hdr_bloom_blury_task;
-	friend class bokeh_blurx_task;
+	friend class hdr_bokeh_blurx_task;
 	
 private:
 	using ResizeSignalConnectionType = StEngineControl::framebuffer_resize_signal_type::connection_type;
@@ -53,6 +53,8 @@ private:
 	};
 
 private:
+	std::unique_ptr<hdr_bokeh_blurx_task> bokeh_blurx_task;
+	
 	std::shared_ptr<ResizeSignalConnectionType> resize_connection;
 
 	std::shared_ptr<Core::GLSLProgram> hdr_compute_minmax;
@@ -98,7 +100,7 @@ private:
 
 public:
 	hdr_dof_postprocess(const StEngineControl &ctx, const Core::Texture2D *z_buffer);
-	~hdr_dof_postprocess() noexcept {}
+	~hdr_dof_postprocess() noexcept;
 
 	void set_z_buffer(const Core::Texture2D *z_buffer);
 

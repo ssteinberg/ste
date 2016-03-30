@@ -30,7 +30,7 @@
 namespace StE {
 namespace Text {
 
-class TextManager {
+class TextManager {	
 private:
 	struct glyph_point {
 		struct {
@@ -50,18 +50,29 @@ private:
 public:
 	class text_renderable : public Graphics::gpu_task {
 		using Base = Graphics::gpu_task;
+	
+		static constexpr bool using_lockless_ringbuffer = true;
+		static constexpr std::size_t ringbuffer_max_size = 4096;
+		
+		using ring_buffer_type = Core::ring_buffer<glyph_point, ringbuffer_max_size, using_lockless_ringbuffer>;
 		
 	private:
 		mutable TextManager *tr;
 		std::vector<glyph_point> points;
 
+		ring_buffer_type vbo;
+		Core::VertexArrayObject vao;
+
+		using vbo_type = Core::VertexBufferObject<glyph_point, glyph_point::descriptor, decltype(vbo)::usage>;
+
 		mutable range<> range_in_use;
 
 	public:
-		text_renderable(TextManager *tr) : tr(tr) {}
+		text_renderable(TextManager *tr);
 		
 		void set_text(const glm::vec2 &ortho_pos, const AttributedWString &wstr) {
 			points = tr->create_points(ortho_pos, wstr);
+			range_in_use = vbo.commit(points);
 		}
 		
 	protected:
@@ -78,13 +89,6 @@ private:
 	std::shared_ptr<Core::GLSLProgram> text_distance_mapping;
 	std::shared_ptr<ResizeSignalConnectionType> resize_connection;
 
-	static constexpr int vbo_ring_max_size = 4096;
-
-	Core::ring_buffer<glyph_point, vbo_ring_max_size> vbo;
-	Core::VertexArrayObject vao;
-
-	using vbo_type = Core::VertexBufferObject<glyph_point, glyph_point::descriptor, decltype(vbo)::usage>;
-
 	glyph_manager gm;
 	Font default_font;
 	int default_size;
@@ -96,8 +100,8 @@ private:
 public:
 	TextManager(const StEngineControl &context, const Font &default_font, int default_size = 28);
 
-	std::shared_ptr<text_renderable> create_renderer() {
-		return std::make_shared<text_renderable>(this);
+	std::unique_ptr<text_renderable> create_renderer() {
+		return std::make_unique<text_renderable>(this);
 	}
 };
 
