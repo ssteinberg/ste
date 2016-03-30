@@ -5,15 +5,13 @@
 #include "AttributedString.hpp"
 #include "Log.hpp"
 
-#include "sequential_ordering_problem.hpp"
-
 #include <iostream>
 #include <algorithm>
 #include <functional>
 
 using namespace StE::Graphics;
 
-gpu_task_dispatch_queue::gpu_task_dispatch_queue() : root(std::make_unique<detail::gpu_task_root>()) {
+gpu_task_dispatch_queue::gpu_task_dispatch_queue() : root(std::make_unique<detail::gpu_task_root>()), sop_optimizer(*this) {
 	Base::add_vertex(root.get());
 }
 	
@@ -103,7 +101,7 @@ void gpu_task_dispatch_queue::update_modified_tasks() {
 void gpu_task_dispatch_queue::dispatch() {
 	update_modified_tasks();
 	
-	auto order = Algorithm::SOP::optimize_sequential_ordering<gpu_task, gpu_state_transition>(*this, root.get());
-	for (auto &p : order)
+	auto solution = this->sop_optimizer(root.get());
+	for (auto &p : solution.route)
 		p.second->dispatch();
 }

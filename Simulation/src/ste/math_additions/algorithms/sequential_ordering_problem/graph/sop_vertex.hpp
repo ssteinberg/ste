@@ -9,16 +9,20 @@
 namespace StE {
 namespace Algorithm {
 namespace SOP {
-	
-namespace detail {
-class optimize_sequential_ordering_impl;
-}
+
+template <typename V, typename E>
+class sop_graph;
+template <typename GraphType>
+class sequential_ordering_optimization;
 
 template <typename DepsContainer>
 class sop_vertex : public Graph::vertex {
 	using Base = Graph::vertex;
 	
-	friend class detail::optimize_sequential_ordering_impl;
+	template <typename V, typename E>
+	friend class sop_graph;
+	template <typename GraphType>
+	friend class sequential_ordering_optimization;
 	
 private:
 	// For optimization

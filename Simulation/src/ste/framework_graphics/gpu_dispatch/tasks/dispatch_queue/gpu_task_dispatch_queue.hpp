@@ -11,6 +11,8 @@
 
 #include "FramebufferObject.hpp"
 
+#include "sequential_ordering_problem.hpp"
+
 #include <memory>
 #include <unordered_set>
 #include <vector>
@@ -31,6 +33,8 @@ private:
 private:
 	std::vector<TaskPtr> modified_tasks;
 	std::unique_ptr<detail::gpu_task_root> root;
+	
+	Algorithm::SOP::sequential_ordering_optimization<Base> sop_optimizer;
 
 private:
 	void add_task(const TaskPtr&, const Core::GenericFramebufferObject*, bool);

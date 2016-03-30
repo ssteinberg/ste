@@ -52,6 +52,10 @@ class graph {
 	static_assert(std::is_base_of<vertex, V>::value, "V must derive from Graph::vertex!");
 	static_assert(std::is_base_of<edge, E>::value, "E must derive from Graph::edge!");
 	
+public:
+	using vertex_type = V;
+	using edge_type = E;
+	
 private:
 	using VertexPtr = const V*;
 	using EdgePtr = const E*; 
