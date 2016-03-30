@@ -1,0 +1,22 @@
+<map id="src/ste/engine/core/gpu_resources/gpu_data_structures/gstack.hpp" name="src/ste/engine/core/gpu_resources/gpu_data_structures/gstack.hpp">
+<area shape="rect" id="node2" href="$ring__buffer_8hpp.html" title="src/ste/engine/core\l/gpu_resources/gpu_data\l_structures/ring_buffer.hpp" alt="" coords="319,109,493,165"/>
+<area shape="rect" id="node6" href="$ObjectGroup_8hpp.html" title="src/ste/framework_graphics\l/entities/objects/ObjectGroup.hpp" alt="" coords="418,303,637,344"/>
+<area shape="rect" id="node18" href="$light__storage_8hpp.html" title="src/ste/framework_graphics\l/light/light_storage.hpp" alt="" coords="795,117,982,158"/>
+<area shape="rect" id="node20" href="$material__storage_8hpp.html" title="src/ste/framework_graphics\l/material/material_storage.hpp" alt="" coords="569,117,771,158"/>
+<area shape="rect" id="node21" href="$glyph__manager_8hpp.html" title="src/ste/framework_text\l/glyphs/glyph_manager.hpp" alt="" coords="107,117,294,158"/>
+<area shape="rect" id="node3" href="$TextManager_8hpp.html" title="src/ste/framework_text\l/rendering/TextManager.hpp" alt="" coords="128,213,321,255"/>
+<area shape="rect" id="node4" href="$main_8cpp.html" title="src/main.cpp" alt="" coords="532,779,629,805"/>
+<area shape="rect" id="node5" href="$TextManager_8cpp.html" title="src/ste/framework_text\l/rendering/TextManager.cpp" alt="" coords="5,303,199,344"/>
+<area shape="rect" id="node7" href="$ObjectGroup_8cpp.html" title="src/ste/framework_graphics\l/entities/objects/ObjectGroup.cpp" alt="" coords="325,392,543,433"/>
+<area shape="rect" id="node8" href="$Scene_8hpp.html" title="src/ste/framework_graphics\l/scene_graph/Scene.hpp" alt="" coords="789,392,975,433"/>
+<area shape="rect" id="node16" href="$ModelFactory_8hpp.html" title="src/ste/framework_resources\l/models/ModelFactory.hpp" alt="" coords="568,392,764,433"/>
+<area shape="rect" id="node9" href="$GIRenderer_8hpp.html" title="src/ste/framework_graphics\l/gpu_dispatch/renderers\l/global_illumination/GIRenderer.hpp" alt="" coords="1127,660,1362,716"/>
+<area shape="rect" id="node11" href="$Scene_8cpp.html" title="src/ste/framework_graphics\l/scene_graph/Scene.cpp" alt="" coords="993,481,1179,523"/>
+<area shape="rect" id="node12" href="$dense__voxelizer_8hpp.html" title="src/ste/framework_graphics\l/voxels/dense_voxelizer.hpp" alt="" coords="774,481,969,523"/>
+<area shape="rect" id="node13" href="$dense__voxel__space_8hpp.html" title="src/ste/framework_graphics\l/voxels/dense_voxel_space.hpp" alt="" coords="753,571,969,612"/>
+<area shape="rect" id="node10" href="$GIRenderer_8cpp.html" title="src/ste/framework_graphics\l/gpu_dispatch/renderers\l/global_illumination/GIRenderer.cpp" alt="" coords="1127,764,1362,820"/>
+<area shape="rect" id="node15" href="$dense__voxelizer_8cpp.html" title="src/ste/framework_graphics\l/voxels/dense_voxelizer.cpp" alt="" coords="909,667,1103,709"/>
+<area shape="rect" id="node14" href="$dense__voxel__space_8cpp.html" title="src/ste/framework_graphics\l/voxels/dense_voxel_space.cpp" alt="" coords="669,667,885,709"/>
+<area shape="rect" id="node17" href="$ModelFactory_8cpp.html" title="src/ste/framework_resources\l/models/ModelFactory.cpp" alt="" coords="347,481,543,523"/>
+<area shape="rect" id="node19" href="$SceneProperties_8hpp.html" title="src/ste/framework_graphics\l/scene_graph/SceneProperties.hpp" alt="" coords="719,213,951,255"/>
+</map>

@@ -256,5 +256,5 @@ void gl_context::setup_debug_context() {
 
 void gl_context::resize(const glm::i32vec2 &size) {
 	viewport(0, 0, size.x, size.y);
-	default_fb = std::unique_ptr<context_framebuffer>(new context_framebuffer(size, framebuffer_format()));
+	default_fb->resize(size);
 }

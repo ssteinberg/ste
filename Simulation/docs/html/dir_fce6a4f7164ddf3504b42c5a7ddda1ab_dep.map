@@ -1,0 +1,17 @@
+<map id="src/ste/framework_graphics/light" name="src/ste/framework_graphics/light">
+<area shape="rect" id="node1" href="dir_fce6a4f7164ddf3504b42c5a7ddda1ab.html" title="light" alt="" coords="130,52,202,100"/>
+<area shape="rect" id="node2" href="dir_e43cc15e17dec2fdfa1291c2165559e3.html" title="radiometry" alt="" coords="5,148,92,196"/>
+<area shape="rect" id="edge5-headlabel" href="dir_000044_000048.html" title="1" alt="" coords="93,136,101,151"/>
+<area shape="rect" id="node3" href="dir_138832ae593ec300d07c0d676234634b.html" title="entities" alt="" coords="167,148,239,196"/>
+<area shape="rect" id="edge6-headlabel" href="dir_000044_000033.html" title="1" alt="" coords="191,121,199,135"/>
+<area shape="rect" id="node4" href="dir_0a02da5788466c7e84d515f2edb54de5.html" title="engine" alt="" coords="94,244,166,292"/>
+<area shape="rect" id="edge7-headlabel" href="dir_000044_000002.html" title="5" alt="" coords="142,220,150,235"/>
+<area shape="rect" id="node5" href="dir_f637600c2359dc7b8c2897fca92c6d18.html" title="stl_extensions" alt="" coords="113,340,219,388"/>
+<area shape="rect" id="edge8-headlabel" href="dir_000044_000078.html" title="1" alt="" coords="195,322,203,337"/>
+<area shape="rect" id="edge1-headlabel" href="dir_000048_000002.html" title="12" alt="" coords="97,217,112,232"/>
+<area shape="rect" id="edge2-headlabel" href="dir_000033_000002.html" title="14" alt="" coords="158,227,173,242"/>
+<area shape="rect" id="edge3-headlabel" href="dir_000033_000078.html" title="2" alt="" coords="178,316,186,331"/>
+<area shape="rect" id="edge4-headlabel" href="dir_000002_000078.html" title="33" alt="" coords="142,313,157,327"/>
+<area shape="rect" id="edge9-headlabel" href="dir_000078_000002.html" title="6" alt="" coords="143,305,151,320"/>
+<area shape="rect" id="clust1" href="dir_428fa47c5aa5b34ff3fe20ca049edbcd.html" title="framework_graphics" alt="" coords="95,16,238,111"/>
+</map>

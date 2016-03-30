@@ -1,0 +1,5 @@
+<map id="StE::Core::gl_generic_context" name="StE::Core::gl_generic_context">
+<area shape="rect" id="node3" href="$classStE_1_1Core_1_1context__state.html" title="{StE::Core::context\l_state\n||+ context_state()\l+ context_state()\l+ operator=()\l+ context_state()\l+ operator=()\l+ exists()\l+ compare()\l+ set()\l+ push()\l+ pop()\l+ get_value()\l+ get_args()\l+ get()\l}" alt="" coords="491,145,622,413"/>
+<area shape="rect" id="node4" title="STL class. " alt="" coords="212,233,355,325"/>
+<area shape="rect" id="node8" href="$classStE_1_1Core_1_1context__state__key.html" title="{StE::Core::context\l_state_key\n||+ context_state_key()\l+ context_state_key()\l+ context_state_key()\l+ context_state_key()\l+ context_state_key()\l+ operator=()\l+ operator=()\l+ operator==()\l+ operator!=()\l}" alt="" coords="5,175,156,384"/>
+</map>

@@ -1,0 +1,34 @@
+<map id="src/ste/framework_graphics/gpu_dispatch/renderers/global_illumination/GIRenderer.hpp" name="src/ste/framework_graphics/gpu_dispatch/renderers/global_illumination/GIRenderer.hpp">
+<area shape="rect" id="node2" href="$stdafx_8hpp.html" title="stdafx.hpp" alt="" coords="1481,781,1564,808"/>
+<area shape="rect" id="node15" href="$StEngineControl_8hpp.html" title="StEngineControl.hpp" alt="" coords="2043,333,2186,360"/>
+<area shape="rect" id="node24" href="$rendering__system_8hpp.html" title="rendering_system.hpp" alt="" coords="1584,408,1738,435"/>
+<area shape="rect" id="node26" href="$gpu__task_8hpp.html" title="gpu_task.hpp" alt="" coords="1848,557,1948,584"/>
+<area shape="rect" id="node35" href="$GLSLProgram_8hpp.html" title="GLSLProgram.hpp" alt="" coords="480,632,612,659"/>
+<area shape="rect" id="node36" href="$Camera_8hpp.html" title="Camera.hpp" alt="" coords="3476,333,3571,360"/>
+<area shape="rect" id="node37" href="$deferred__fbo_8hpp.html" title="deferred_fbo.hpp" alt="" coords="1434,557,1557,584"/>
+<area shape="rect" id="node39" href="$Scene_8hpp.html" title="Scene.hpp" alt="" coords="2718,184,2804,211"/>
+<area shape="rect" id="node40" href="$SceneProperties_8hpp.html" title="SceneProperties.hpp" alt="" coords="3002,333,3149,360"/>
+<area shape="rect" id="node43" href="$light_8hpp.html" title="light.hpp" alt="" coords="2683,632,2754,659"/>
+<area shape="rect" id="node47" href="$hdr__dof__postprocess_8hpp.html" title="hdr_dof_postprocess.hpp" alt="" coords="1085,259,1256,285"/>
+<area shape="rect" id="node49" href="$dense__voxel__space_8hpp.html" title="dense_voxel_space.hpp" alt="" coords="2136,109,2304,136"/>
+<area shape="rect" id="node50" href="$fb__clear__dispatch_8hpp.html" title="fb_clear_dispatch.hpp" alt="" coords="1003,483,1154,509"/>
+<area shape="rect" id="node4" href="$gl_8hpp.html" title="gl.hpp" alt="" coords="1535,856,1592,883"/>
+<area shape="rect" id="node19" href="$gl__context_8hpp.html" title="gl_context.hpp" alt="" coords="389,707,496,733"/>
+<area shape="rect" id="node20" href="$hid_8hpp.html" title="hid.hpp" alt="" coords="1864,408,1928,435"/>
+<area shape="rect" id="node21" href="$signal_8hpp.html" title="signal.hpp" alt="" coords="2146,781,2229,808"/>
+<area shape="rect" id="node22" href="$task__scheduler_8hpp.html" title="task_scheduler.hpp" alt="" coords="2435,408,2572,435"/>
+<area shape="rect" id="node23" href="$lru__cache_8hpp.html" title="lru_cache.hpp" alt="" coords="1952,408,2056,435"/>
+<area shape="rect" id="node34" href="$glsl__programs__pool_8hpp.html" title="glsl_programs_pool.hpp" alt="" coords="686,557,850,584"/>
+<area shape="rect" id="node25" href="$gpu__task__dispatch__queue_8hpp.html" title="gpu_task_dispatch_queue.hpp" alt="" coords="1596,483,1798,509"/>
+<area shape="rect" id="node27" href="$FramebufferObject_8hpp.html" title="FramebufferObject.hpp" alt="" coords="1229,632,1384,659"/>
+<area shape="rect" id="node30" href="$sop__vertex_8hpp.html" title="sop_vertex.hpp" alt="" coords="1914,707,2026,733"/>
+<area shape="rect" id="node28" href="$gl__current__context_8hpp.html" title="gl_current_context.hpp" alt="" coords="1026,707,1181,733"/>
+<area shape="rect" id="node29" href="$resource_8hpp.html" title="resource.hpp" alt="" coords="1358,781,1457,808"/>
+<area shape="rect" id="node38" href="$Texture2D_8hpp.html" title="Texture2D.hpp" alt="" coords="1510,632,1620,659"/>
+<area shape="rect" id="node45" href="$entity_8hpp.html" title="entity.hpp" alt="" coords="2405,707,2482,733"/>
+<area shape="rect" id="node46" href="$ObjectGroup_8hpp.html" title="ObjectGroup.hpp" alt="" coords="2466,259,2587,285"/>
+<area shape="rect" id="node41" href="$material__storage_8hpp.html" title="material_storage.hpp" alt="" coords="2909,707,3056,733"/>
+<area shape="rect" id="node42" href="$light__storage_8hpp.html" title="light_storage.hpp" alt="" coords="2781,557,2904,584"/>
+<area shape="rect" id="node44" href="$RGB_8hpp.html" title="RGB.hpp" alt="" coords="2608,707,2682,733"/>
+<area shape="rect" id="node48" href="$Quad_8hpp.html" title="Quad.hpp" alt="" coords="910,333,988,360"/>
+</map>

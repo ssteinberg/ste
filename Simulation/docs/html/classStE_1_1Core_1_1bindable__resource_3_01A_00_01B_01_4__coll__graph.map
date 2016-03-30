@@ -1,0 +1,6 @@
+<map id="StE::Core::bindable_resource&lt; A, B &gt;" name="StE::Core::bindable_resource&lt; A, B &gt;">
+<area shape="rect" id="node2" href="$classStE_1_1Core_1_1resource.html" title="{StE::Core::resource\&lt; A \&gt;\n|# allocator\l|+ resource()\l+ operator=()\l+ operator=()\l+ is_valid()\l# resource()\l# resource()\l# resource()\l# ~resource()\l}" alt="" coords="149,627,324,807"/>
+<area shape="rect" id="node3" href="$classStE_1_1Core_1_1GenericResource.html" title="{StE::Core::GenericResource\n|# id\l|+ resource_type()\l+ get_resource_id()\l+ is_valid()\l+ GenericResource()\l+ operator=()\l+ GenericResource()\l+ operator=()\l# GenericResource()\l# ~GenericResource()\l}" alt="" coords="89,5,283,200"/>
+<area shape="rect" id="node4" href="$classStE_1_1Core_1_1resource.html" title="{StE::Core::resource\l\&lt; Allocator \&gt;\n||+ resource()\l+ operator=()\l+ operator=()\l+ is_valid()\l# resource()\l# resource()\l# resource()\l# ~resource()\l}" alt="" coords="274,263,415,457"/>
+<area shape="rect" id="node6" href="$classStE_1_1Core_1_1bindable__generic__resource.html" title="{StE::Core::bindable\l_generic_resource\n||+ bind()\l+ unbind()\l# ~bindable_generic_resource()\l}" alt="" coords="5,481,217,603"/>
+</map>

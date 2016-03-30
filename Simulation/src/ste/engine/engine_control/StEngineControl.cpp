@@ -104,6 +104,7 @@ bool StEngineControl::run_loop() {
 	glfwPollEvents();
 
 	glfwSwapBuffers(context->window.get());
+	glFinish();
 	global_renderer->render_queue(*this);
 
 	return !glfwWindowShouldClose(context->window.get());

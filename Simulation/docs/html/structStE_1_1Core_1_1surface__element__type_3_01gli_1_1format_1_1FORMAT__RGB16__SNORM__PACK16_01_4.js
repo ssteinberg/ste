@@ -1,0 +1,4 @@
+var structStE_1_1Core_1_1surface__element__type_3_01gli_1_1format_1_1FORMAT__RGB16__SNORM__PACK16_01_4 =
+[
+    [ "type", "structStE_1_1Core_1_1surface__element__type_3_01gli_1_1format_1_1FORMAT__RGB16__SNORM__PACK16_01_4.html#a81c16978bf272c509c2bab418c6e1273", null ]
+];

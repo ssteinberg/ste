@@ -15,7 +15,6 @@ GPATH
 *.elf
 
 # docs
-Simulation/docs/html/
 Simulation/docs/latex/
 
 # Build results

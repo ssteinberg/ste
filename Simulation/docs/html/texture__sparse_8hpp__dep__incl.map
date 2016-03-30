@@ -1,0 +1,9 @@
+<map id="src/ste/engine/core/gpu_resources/surfaces/textures/texture_sparse.hpp" name="src/ste/engine/core/gpu_resources/surfaces/textures/texture_sparse.hpp">
+<area shape="rect" id="node2" href="$texture__pool_8hpp.html" title="src/ste/framework_graphics\l/utilities/texture_pools\l/texture_pool.hpp" alt="" coords="79,109,266,165"/>
+<area shape="rect" id="node3" href="$dense__voxel__space_8hpp.html" title="src/ste/framework_graphics\l/voxels/dense_voxel_space.hpp" alt="" coords="290,117,506,158"/>
+<area shape="rect" id="node4" href="$GIRenderer_8hpp.html" title="src/ste/framework_graphics\l/gpu_dispatch/renderers\l/global_illumination/GIRenderer.hpp" alt="" coords="31,213,266,269"/>
+<area shape="rect" id="node7" href="$dense__voxel__space_8cpp.html" title="src/ste/framework_graphics\l/voxels/dense_voxel_space.cpp" alt="" coords="290,221,506,262"/>
+<area shape="rect" id="node8" href="$dense__voxelizer_8cpp.html" title="src/ste/framework_graphics\l/voxels/dense_voxelizer.cpp" alt="" coords="530,221,725,262"/>
+<area shape="rect" id="node5" href="$main_8cpp.html" title="src/main.cpp" alt="" coords="5,332,103,359"/>
+<area shape="rect" id="node6" href="$GIRenderer_8cpp.html" title="src/ste/framework_graphics\l/gpu_dispatch/renderers\l/global_illumination/GIRenderer.cpp" alt="" coords="127,317,362,373"/>
+</map>

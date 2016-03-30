@@ -1,0 +1,34 @@
+<map id="src/ste/framework_graphics/voxels/dense_voxel_space.hpp" name="src/ste/framework_graphics/voxels/dense_voxel_space.hpp">
+<area shape="rect" id="node2" href="$stdafx_8hpp.html" title="stdafx.hpp" alt="" coords="2960,617,3043,644"/>
+<area shape="rect" id="node15" href="$StEngineControl_8hpp.html" title="StEngineControl.hpp" alt="" coords="758,319,901,345"/>
+<area shape="rect" id="node29" href="$GLSLProgram_8hpp.html" title="GLSLProgram.hpp" alt="" coords="2663,468,2795,495"/>
+<area shape="rect" id="node37" href="$dense__voxelizer_8hpp.html" title="dense_voxelizer.hpp" alt="" coords="3121,95,3268,121"/>
+<area shape="rect" id="node39" href="$FramebufferObject_8hpp.html" title="FramebufferObject.hpp" alt="" coords="2039,393,2193,420"/>
+<area shape="rect" id="node41" href="$RenderTarget_8hpp.html" title="RenderTarget.hpp" alt="" coords="1891,468,2021,495"/>
+<area shape="rect" id="node43" href="$Scene_8hpp.html" title="Scene.hpp" alt="" coords="3429,169,3515,196"/>
+<area shape="rect" id="node47" href="$GLSLProgramFactory_8hpp.html" title="GLSLProgramFactory.hpp" alt="" coords="1487,244,1665,271"/>
+<area shape="rect" id="node49" href="$texture__sparse_8hpp.html" title="texture_sparse.hpp" alt="" coords="4122,543,4257,569"/>
+<area shape="rect" id="node50" href="$Sampler_8hpp.html" title="Sampler.hpp" alt="" coords="3132,468,3228,495"/>
+<area shape="rect" id="node4" href="$gl_8hpp.html" title="gl.hpp" alt="" coords="2894,692,2951,719"/>
+<area shape="rect" id="node19" href="$gl__context_8hpp.html" title="gl_context.hpp" alt="" coords="1203,543,1309,569"/>
+<area shape="rect" id="node21" href="$hid_8hpp.html" title="hid.hpp" alt="" coords="512,393,576,420"/>
+<area shape="rect" id="node22" href="$signal_8hpp.html" title="signal.hpp" alt="" coords="1595,617,1677,644"/>
+<area shape="rect" id="node23" href="$task__scheduler_8hpp.html" title="task_scheduler.hpp" alt="" coords="577,468,714,495"/>
+<area shape="rect" id="node26" href="$lru__cache_8hpp.html" title="lru_cache.hpp" alt="" coords="347,468,451,495"/>
+<area shape="rect" id="node27" href="$rendering__system_8hpp.html" title="rendering_system.hpp" alt="" coords="2033,543,2186,569"/>
+<area shape="rect" id="node28" href="$glsl__programs__pool_8hpp.html" title="glsl_programs_pool.hpp" alt="" coords="1273,393,1437,420"/>
+<area shape="rect" id="node20" href="$optional_8hpp.html" title="optional.hpp" alt="" coords="1000,617,1093,644"/>
+<area shape="rect" id="node25" href="$task_8hpp.html" title="task.hpp" alt="" coords="651,543,722,569"/>
+<area shape="rect" id="node30" href="$gl__current__context_8hpp.html" title="gl_current_context.hpp" alt="" coords="3132,543,3287,569"/>
+<area shape="rect" id="node31" href="$bindable__resource_8hpp.html" title="bindable_resource.hpp" alt="" coords="1749,543,1907,569"/>
+<area shape="rect" id="node33" href="$GLSLShader_8hpp.html" title="GLSLShader.hpp" alt="" coords="2313,543,2437,569"/>
+<area shape="rect" id="node34" href="$texture__handle_8hpp.html" title="texture_handle.hpp" alt="" coords="2871,543,3006,569"/>
+<area shape="rect" id="node35" href="$image__handle_8hpp.html" title="image_handle.hpp" alt="" coords="2715,543,2847,569"/>
+<area shape="rect" id="node36" href="$trace_8hpp.html" title="trace.hpp" alt="" coords="2563,543,2639,569"/>
+<area shape="rect" id="node32" href="$resource_8hpp.html" title="resource.hpp" alt="" coords="1269,617,1368,644"/>
+<area shape="rect" id="node38" href="$gpu__task_8hpp.html" title="gpu_task.hpp" alt="" coords="3066,319,3166,345"/>
+<area shape="rect" id="node40" href="$gl__utils_8hpp.html" title="gl_utils.hpp" alt="" coords="1638,543,1725,569"/>
+<area shape="rect" id="node44" href="$SceneProperties_8hpp.html" title="SceneProperties.hpp" alt="" coords="3799,319,3945,345"/>
+<area shape="rect" id="node45" href="$ObjectGroup_8hpp.html" title="ObjectGroup.hpp" alt="" coords="3447,244,3569,271"/>
+<area shape="rect" id="node46" href="$entity_8hpp.html" title="entity.hpp" alt="" coords="3697,319,3775,345"/>
+</map>

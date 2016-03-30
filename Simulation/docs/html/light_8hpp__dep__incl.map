@@ -1,0 +1,19 @@
+<map id="src/ste/framework_graphics/light/light.hpp" name="src/ste/framework_graphics/light/light.hpp">
+<area shape="rect" id="node2" href="$GIRenderer_8hpp.html" title="src/ste/framework_graphics\l/gpu_dispatch/renderers\l/global_illumination/GIRenderer.hpp" alt="" coords="59,631,293,687"/>
+<area shape="rect" id="node5" href="$DirectionalLight_8hpp.html" title="src/ste/framework_graphics\l/light/DirectionalLight.hpp" alt="" coords="119,184,305,225"/>
+<area shape="rect" id="node6" href="$light__storage_8hpp.html" title="src/ste/framework_graphics\l/light/light_storage.hpp" alt="" coords="328,95,515,136"/>
+<area shape="rect" id="node18" href="$SphericalLight_8hpp.html" title="src/ste/framework_graphics\l/light/SphericalLight.hpp" alt="" coords="1017,273,1204,315"/>
+<area shape="rect" id="node3" href="$main_8cpp.html" title="src/main.cpp" alt="" coords="766,749,863,776"/>
+<area shape="rect" id="node4" href="$GIRenderer_8cpp.html" title="src/ste/framework_graphics\l/gpu_dispatch/renderers\l/global_illumination/GIRenderer.cpp" alt="" coords="59,735,293,791"/>
+<area shape="rect" id="node7" href="$SceneProperties_8hpp.html" title="src/ste/framework_graphics\l/scene_graph/SceneProperties.hpp" alt="" coords="333,184,565,225"/>
+<area shape="rect" id="node8" href="$ObjectGroup_8hpp.html" title="src/ste/framework_graphics\l/entities/objects/ObjectGroup.hpp" alt="" coords="577,273,796,315"/>
+<area shape="rect" id="node10" href="$Scene_8hpp.html" title="src/ste/framework_graphics\l/scene_graph/Scene.hpp" alt="" coords="356,363,543,404"/>
+<area shape="rect" id="node16" href="$ModelFactory_8hpp.html" title="src/ste/framework_resources\l/models/ModelFactory.hpp" alt="" coords="878,363,1074,404"/>
+<area shape="rect" id="node9" href="$ObjectGroup_8cpp.html" title="src/ste/framework_graphics\l/entities/objects/ObjectGroup.cpp" alt="" coords="577,363,796,404"/>
+<area shape="rect" id="node11" href="$Scene_8cpp.html" title="src/ste/framework_graphics\l/scene_graph/Scene.cpp" alt="" coords="565,452,752,493"/>
+<area shape="rect" id="node12" href="$dense__voxelizer_8hpp.html" title="src/ste/framework_graphics\l/voxels/dense_voxelizer.hpp" alt="" coords="347,452,541,493"/>
+<area shape="rect" id="node13" href="$dense__voxel__space_8hpp.html" title="src/ste/framework_graphics\l/voxels/dense_voxel_space.hpp" alt="" coords="317,541,533,583"/>
+<area shape="rect" id="node15" href="$dense__voxelizer_8cpp.html" title="src/ste/framework_graphics\l/voxels/dense_voxelizer.cpp" alt="" coords="557,638,752,679"/>
+<area shape="rect" id="node14" href="$dense__voxel__space_8cpp.html" title="src/ste/framework_graphics\l/voxels/dense_voxel_space.cpp" alt="" coords="317,638,533,679"/>
+<area shape="rect" id="node17" href="$ModelFactory_8cpp.html" title="src/ste/framework_resources\l/models/ModelFactory.cpp" alt="" coords="878,452,1074,493"/>
+</map>
