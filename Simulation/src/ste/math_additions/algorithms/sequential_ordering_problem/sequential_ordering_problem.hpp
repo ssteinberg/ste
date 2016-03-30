@@ -163,7 +163,7 @@ private:
 		
 		// Connect last node to root to complete Hamiltonian cycle
 		const E* last_edge = nullptr;
-		for (auto &e : root->get_outgoing_edges()) {
+		for (auto &e : node->get_outgoing_edges()) {
 			auto to = reinterpret_cast<const V*>(e->get_to());
 			if (to == root) {
 				last_edge = reinterpret_cast<const E*>(e.get());
