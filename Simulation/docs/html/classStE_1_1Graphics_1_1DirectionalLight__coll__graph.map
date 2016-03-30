@@ -1,0 +1,5 @@
+<map id="StE::Graphics::DirectionalLight" name="StE::Graphics::DirectionalLight">
+<area shape="rect" id="node2" href="$classStE_1_1Graphics_1_1light.html" title="{StE::Graphics::light\n|# dirty\l|+ light()\l+ ~light()\l+ is_dirty()\l+ clear_dirty()\l+ set_luminance()\l+ set_diffuse()\l+ get_luminance()\l+ get_diffuse()\l+ get_descriptor()\l}" alt="" coords="91,219,227,413"/>
+<area shape="rect" id="node3" href="$classStE_1_1Graphics_1_1entity.html" title="{StE::Graphics::entity\n||+ ~entity()\l+ get_position()\l}" alt="" coords="5,35,148,127"/>
+<area shape="rect" id="node4" href="$structStE_1_1Graphics_1_1light_1_1light__descriptor.html" title="{StE::Graphics::light\l::light_descriptor\n|+ position_direction\l+ diffuse\l+ luminance\l+ radius\l+ type\l|}" alt="" coords="173,5,311,156"/>
+</map>

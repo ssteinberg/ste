@@ -1,0 +1,9 @@
+<map id="src/ste/framework_graphics/gpu_dispatch/renderers/global_illumination/hdr_dof/steps/hdr_compute_histogram_sums_task.hpp" name="src/ste/framework_graphics/gpu_dispatch/renderers/global_illumination/hdr_dof/steps/hdr_compute_histogram_sums_task.hpp">
+<area shape="rect" id="node2" href="$hdr__tonemap__coc__task_8hpp.html" title="src/ste/framework_graphics\l/gpu_dispatch/renderers\l/global_illumination/hdr\l_dof/steps/hdr_tonemap_coc\l_task.hpp" alt="" coords="115,139,310,224"/>
+<area shape="rect" id="node8" href="$hdr__compute__histogram__sums__task_8cpp.html" title="src/ste/framework_graphics\l/gpu_dispatch/renderers\l/global_illumination/hdr\l_dof/steps/hdr_compute_histogram\l_sums_task.cpp" alt="" coords="335,139,565,224"/>
+<area shape="rect" id="node3" href="$hdr__bloom__blurx__task_8hpp.html" title="src/ste/framework_graphics\l/gpu_dispatch/renderers\l/global_illumination/hdr\l_dof/steps/hdr_bloom_blurx\l_task.hpp" alt="" coords="13,272,199,357"/>
+<area shape="rect" id="node7" href="$hdr__tonemap__coc__task_8cpp.html" title="src/ste/framework_graphics\l/gpu_dispatch/renderers\l/global_illumination/hdr\l_dof/steps/hdr_tonemap_coc\l_task.cpp" alt="" coords="223,272,418,357"/>
+<area shape="rect" id="node4" href="$hdr__bloom__blury__task_8hpp.html" title="src/ste/framework_graphics\l/gpu_dispatch/renderers\l/global_illumination/hdr\l_dof/steps/hdr_bloom_blury\l_task.hpp" alt="" coords="13,405,199,491"/>
+<area shape="rect" id="node5" href="$hdr__bokeh__blurx__task_8hpp.html" title="src/ste/framework_graphics\l/gpu_dispatch/renderers\l/global_illumination/hdr\l_dof/steps/hdr_bokeh_blurx\l_task.hpp" alt="" coords="13,539,199,624"/>
+<area shape="rect" id="node6" href="$hdr__dof__postprocess_8cpp.html" title="src/ste/framework_graphics\l/gpu_dispatch/renderers\l/global_illumination/hdr\l_dof/hdr_dof_postprocess.cpp" alt="" coords="5,672,207,743"/>
+</map>

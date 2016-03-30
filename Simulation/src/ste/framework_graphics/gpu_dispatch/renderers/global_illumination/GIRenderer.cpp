@@ -43,13 +43,6 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 	resize_connection = std::make_shared<ResizeSignalConnectionType>([=](const glm::i32vec2 &size) {
 		this->fbo.resize(size);
 		hdr->set_z_buffer(fbo.z_buffer());
-		
-		for (auto &task_ptr : gui_tasks)
-			q.update_task_fbo(task_ptr, &this->ctx.gl()->defaut_framebuffer());
-		for (auto &task_ptr : added_tasks)
-			q.update_task_fbo(task_ptr, get_fbo());
-			
-		q.update_task_fbo(hdr.get(), &this->ctx.gl()->defaut_framebuffer());
 	});
 	ctx.signal_framebuffer_resize().connect(resize_connection);
 

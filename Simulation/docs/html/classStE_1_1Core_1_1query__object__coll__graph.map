@@ -1,0 +1,5 @@
+<map id="StE::Core::query_object&lt; type &gt;" name="StE::Core::query_object&lt; type &gt;">
+<area shape="rect" id="node2" href="$classStE_1_1Core_1_1resource.html" title="{StE::Core::resource\l\&lt; QueryObjectAllocator\l\&lt; type \&gt; \&gt;\n|# allocator\l|+ resource()\l+ operator=()\l+ operator=()\l+ is_valid()\l# resource()\l# resource()\l# resource()\l# ~resource()\l}" alt="" coords="59,535,221,744"/>
+<area shape="rect" id="node3" href="$classStE_1_1Core_1_1GenericResource.html" title="{StE::Core::GenericResource\n|# id\l|+ resource_type()\l+ get_resource_id()\l+ is_valid()\l+ GenericResource()\l+ operator=()\l+ GenericResource()\l+ operator=()\l# GenericResource()\l# ~GenericResource()\l}" alt="" coords="5,5,200,200"/>
+<area shape="rect" id="node4" href="$classStE_1_1Core_1_1resource.html" title="{StE::Core::resource\l\&lt; Allocator \&gt;\n||+ resource()\l+ operator=()\l+ operator=()\l+ is_valid()\l# resource()\l# resource()\l# resource()\l# ~resource()\l}" alt="" coords="140,263,281,457"/>
+</map>

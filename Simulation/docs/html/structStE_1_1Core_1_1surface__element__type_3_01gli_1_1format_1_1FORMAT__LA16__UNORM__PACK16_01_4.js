@@ -1,0 +1,4 @@
+var structStE_1_1Core_1_1surface__element__type_3_01gli_1_1format_1_1FORMAT__LA16__UNORM__PACK16_01_4 =
+[
+    [ "type", "structStE_1_1Core_1_1surface__element__type_3_01gli_1_1format_1_1FORMAT__LA16__UNORM__PACK16_01_4.html#ab684c4290817b027a1cb75045940a164", null ]
+];

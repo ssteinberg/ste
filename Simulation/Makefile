@@ -28,8 +28,6 @@ $(BUILD_DIR)/%.elf: $(OBJECTS)
 	@/usr/bin/mkdir -p $(dir $@)
 	@$(LINK) $(CXXFLAGS) -o $@ $^ $(addprefix -l, $(SYSTEM_LIBRARIES)) $(LINKFLAGS)
 
-$(BUILD_DIR)/$(TARGET)_release.elf:	$(BUILD_DIR)/$(TARGET).elf
-
 TAGS: $(SOURCES) $(HEADERS)
 	@/bin/echo -e "\e[1;94mCreating GTAGs...\e[0m"
 	@/usr/bin/gtags ./ 2> /dev/null; true
@@ -76,6 +74,7 @@ docs: $(SOURCES) $(HEADERS)
 	@/bin/echo -e "\e[1;94mBuilding docs...\e[0m"
 	@doxygen $(DOXYGEN_CONFIG)
 	cd $(DOCS_DIR)/latex && make;
+	@mv $(DOCS_DIR)/latex/refman.pdf $(DOCS_DIR)/doc.pdf
 
 clean:
 	@/usr/bin/echo 'Cleaning all...'

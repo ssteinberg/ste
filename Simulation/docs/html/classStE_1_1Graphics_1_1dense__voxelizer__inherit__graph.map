@@ -1,0 +1,6 @@
+<map id="StE::Graphics::dense_voxelizer" name="StE::Graphics::dense_voxelizer">
+<area shape="rect" id="node2" href="$classStE_1_1Graphics_1_1gpu__task.html" title="{StE::Graphics::gpu_task\n||+ get_dependencies()\l+ get_requisite_for()\l+ add_dependency()\l+ remove_dependency()\l+ gpu_task()\l+ gpu_task()\l+ gpu_task()\l+ ~gpu_task()\l+ gpu_task()\l+ operator=()\l+ get_name()\l+ task_name()\l# set_modified()\l# operator()()\l# set_context_state()\l# dispatch()\l}" alt="" coords="18,560,189,857"/>
+<area shape="rect" id="node3" href="$classStE_1_1Algorithm_1_1SOP_1_1sop__vertex.html" title="{StE::Algorithm::SOP\l::sop_vertex\&lt; std::unordered\l_set\&lt; const gpu_task * \&gt; \&gt;\n||+ ~sop_vertex()\l+ get_dependencies()\l+ get_requisite_for()\l}" alt="" coords="5,375,201,511"/>
+<area shape="rect" id="node4" href="$classStE_1_1Graph_1_1vertex.html" title="{StE::Graph::vertex\n||+ ~vertex()\l+ get_outgoing_edges()\l+ get_incoming_edges()\l+ get_name()\l}" alt="" coords="42,5,210,127"/>
+<area shape="rect" id="node5" href="$classStE_1_1Algorithm_1_1SOP_1_1sop__vertex.html" title="{StE::Algorithm::SOP\l::sop_vertex\&lt; DepsContainer \&gt;\n||+ ~sop_vertex()\l+ get_dependencies()\l+ get_requisite_for()\l}" alt="" coords="119,176,330,297"/>
+</map>

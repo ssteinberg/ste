@@ -10,6 +10,7 @@
 namespace StE {
 namespace Core {
 
+class gl_context;
 class context_framebuffer;
 
 template<typename A, GLenum color_attachment_point>
@@ -46,6 +47,7 @@ class context_framebuffer : public frame_buffer_object<context_framebuffer_dummy
 private:
 	template<typename A, GLenum color_attachment_point>
 	friend class context_fbo_color_attachment_point;
+	friend class gl_context;
 
 	using Base = frame_buffer_object<context_framebuffer_dummy_allocator>;
 	using front_attachment_point = context_fbo_color_attachment_point<context_framebuffer_dummy_allocator, GL_FRONT>;
@@ -56,6 +58,11 @@ private:
 
 	front_attachment_point front_color_attchment;
 	back_attachment_point back_color_attchment;
+	
+	void resize(const glm::ivec2 &size) {
+		front_color_attchment.size = size;
+		back_color_attchment.size = size;
+	}
 
 public:
 	context_framebuffer(const glm::ivec2 &size, const gli::format &format) : 
