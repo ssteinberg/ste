@@ -6,6 +6,8 @@
 #include "stdafx.hpp"
 #include "graph_vertex.hpp"
 
+#include "optional.hpp"
+
 namespace StE {
 namespace Algorithm {
 namespace SOP {
@@ -28,7 +30,7 @@ private:
 	// For optimization
 	using DepsContainerT = DepsContainer;
 	
-	mutable std::unique_ptr<DepsContainer> missing_deps{ nullptr };
+	mutable optional<DepsContainer> missing_deps;
 	mutable bool visited{ false };
 	
 public:

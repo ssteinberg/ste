@@ -11,12 +11,12 @@
 
 #include <functional>
 #include <memory>
-
-#include <unordered_set>
 #include <algorithm>
 
 #include <string>
 #include <typeinfo>
+
+#include <boost/container/flat_set.hpp>
 
 namespace StE {
 namespace Graphics {
@@ -24,7 +24,7 @@ namespace Graphics {
 class gpu_task_dispatch_queue;
 class gpu_state_transition;
 
-class gpu_task : public Algorithm::SOP::sop_vertex<std::unordered_set<const gpu_task*>> {
+class gpu_task : public Algorithm::SOP::sop_vertex<boost::container::flat_set<const gpu_task*>> {
 private:
 	friend class gpu_task_dispatch_queue;
 	friend class gpu_state_transition;
@@ -32,7 +32,7 @@ private:
 public:
 	using TaskT = const gpu_task;
 	using TaskPtr = TaskT*;
-	using TasksCollection = std::unordered_set<TaskPtr>;
+	using TasksCollection = boost::container::flat_set<TaskPtr>;
 	
 private:
 	std::vector<std::unique_ptr<gpu_task>> sub_tasks;

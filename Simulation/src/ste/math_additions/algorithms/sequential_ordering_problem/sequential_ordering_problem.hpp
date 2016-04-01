@@ -11,7 +11,6 @@
 #include "is_base_of.hpp"
 
 #include <vector>
-#include <unordered_set>
 
 #include <algorithm>
 #include <functional>
@@ -40,7 +39,7 @@ private:
 			for (auto &v : g.get_vertices()) {
 				v->visited = false;
 #ifdef DEBUG
-				assert(v->missing_deps == nullptr);
+				assert(!!v->missing_deps);
 #endif
 			}
 		}
@@ -59,36 +58,36 @@ private:
 	static constexpr float trail_theta = .1f;
 	static constexpr float trail_epsilon = 1.f;
 	
-	void add_trail(const E* e, float t) {
+	inline void add_trail(const E* e, float t) {
 		e->trail = glm::mix(e->trail, t, trail_ro);
 	}
 	
-	void consume_trail(const E* e) {
+	inline void consume_trail(const E* e) {
 		e->trail = glm::mix(e->trail, E::t0, trail_theta);
 	}
 
 private:
-	void generate_missing_deps(const V* node) {
-		if (node->get_dependencies().size() > 0 && node->missing_deps == nullptr)
-			node->missing_deps = std::make_unique<V::DepsContainerT>(node->get_dependencies());
+	inline void generate_missing_deps(const V* node) {
+		if (node->get_dependencies().size() > 0 && !node->missing_deps)
+			node->missing_deps.emplace(node->get_dependencies());
 	}
 
 	void update_nodes_deps(const V* new_root) {
 		new_root->visited = true;
-		new_root->missing_deps = nullptr;
+		new_root->missing_deps = none;
 		
 		for (auto &v : new_root->get_requisite_for()) {
 			assert(v == new_root && "Node depends on itself!");
 			assert(!v->visited);
 			
 			generate_missing_deps(reinterpret_cast<const V*>(v));
-			assert(v->missing_deps != nullptr);
+			assert(!!v->missing_deps);
 
-			v->missing_deps->erase(new_root);
+			v->missing_deps.get().erase(new_root);
 		}
 	}
 	
-	float edge_transition_weight(const E* e) {
+	inline float edge_transition_weight(const E* e) {
 		return e->desirability() * (e->trail + trail_epsilon);
 	}
 	
@@ -103,7 +102,7 @@ private:
 			
 			generate_missing_deps(to);
 			
-			if (to->get_dependencies().size() == 0 || to->missing_deps->size() == 0) {
+			if (to->get_dependencies().size() == 0 || to->missing_deps.get().size() == 0) {
 				auto edge = reinterpret_cast<const E*>(e.get());
 				useable_edges.push_back(edge);
 			}
@@ -127,8 +126,7 @@ private:
 			total_weight += w;
 		}
 
-		std::uniform_real_distribution<> distribution(.0f, total_weight);
-		float r = distribution(rand_gen);
+		float r = distribution(rand_gen) * total_weight;
 		
 		float accum = .0f;
 		for (auto &e : useable_edges) {
@@ -201,12 +199,13 @@ private:
 
 	std::random_device rd;
 	std::mt19937 rand_gen;
+	std::uniform_real_distribution<> distribution;
 	
 	optional<sequential_ordering_problem_solution> best_solution;
 	int no_improvements_counter{ 0 };
 	
 public:
-	sequential_ordering_optimization(const GraphType &g) : g(g), rand_gen(rd()) {}
+	sequential_ordering_optimization(const GraphType &g) : g(g), rand_gen(rd()), distribution(.0f, 1.f) {}
 	
 	auto& operator()(const V *root, int iterations = 1) {
 		assert(iterations > 0);
@@ -215,22 +214,28 @@ public:
 		for (int i = 0; i < iterations; ++i) {
 			auto solution = sop_iterate(root);
 			if (!best_solution || solution.length < best_solution.get().length) {
-				best_solution = std::move(solution);
-				update_trail_for_choosen_solution(best_solution.get());
-				
+				best_solution = std::move(solution);				
 				has_improvement = true;
 			}
 		}
 		
-		has_improvement ?
-			no_improvements_counter = 0 :
+		if (has_improvement) {
+			update_trail_for_choosen_solution(best_solution.get());
+			no_improvements_counter = 0;
+		}
+		else {
 			++no_improvements_counter;
+		}
 		
 		return best_solution.get();
 	}
 	
 	auto get_no_improvements_counter() const {
 		return no_improvements_counter;
+	}
+	
+	void clear_best_solution() {
+		best_solution = none;
 	}
 };
 	

@@ -6,9 +6,6 @@
 #include "stdafx.hpp"
 #include "graph.hpp"
 
-#include <unordered_set>
-#include <memory>
-
 #include <graphviz/cgraph.h>
 #include <graphviz/gvc.h>
 

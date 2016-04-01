@@ -14,7 +14,6 @@
 #include "sequential_ordering_problem.hpp"
 
 #include <memory>
-#include <unordered_set>
 #include <vector>
 
 namespace StE {

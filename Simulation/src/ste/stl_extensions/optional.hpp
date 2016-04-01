@@ -117,6 +117,10 @@ public:
 		return *this;
 	}
 
+	bool operator==(none_t) const {
+		return !has_val;
+	}
+
 	template <typename ... Ts>
 	void emplace(Ts&&... args) {
 		has_val = true;

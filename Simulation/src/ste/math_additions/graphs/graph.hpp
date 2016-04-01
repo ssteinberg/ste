@@ -9,10 +9,10 @@
 
 #include <algorithm>
 #include <functional>
-#include <unordered_set>
 
 #define BOOST_FILESYSTEM_NO_DEPRECATED 
 #include <boost/filesystem.hpp>
+#include <boost/container/flat_set.hpp>
 
 namespace StE {
 namespace Graph {
@@ -23,7 +23,7 @@ class graph;
 namespace detail {
 
 template <typename T>
-using GraphSet = std::unordered_set<T>; 
+using GraphSet = boost::container::flat_set<T>; 
 	
 class graph_impl {
 	template <typename V, typename E>
