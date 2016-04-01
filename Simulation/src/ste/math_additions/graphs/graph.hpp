@@ -14,9 +14,6 @@
 #define BOOST_FILESYSTEM_NO_DEPRECATED 
 #include <boost/filesystem.hpp>
 
-#include <graphviz/cgraph.h>
-#include <graphviz/gvc.h>
-
 namespace StE {
 namespace Graph {
 	
@@ -109,6 +106,11 @@ public:
 		auto e_ptr = e.get();
 		
 		assert(e_ptr);
+		
+#ifdef DEBUG
+		for (auto &e : e_ptr->from->originating_edges)
+			assert(e->to != e_ptr->to && "Edge exists");
+#endif
 		
 		e_ptr->from->originating_edges.push_back(std::move(e));
 		

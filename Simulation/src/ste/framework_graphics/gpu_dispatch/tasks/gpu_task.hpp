@@ -36,7 +36,10 @@ public:
 	
 private:
 	std::vector<std::unique_ptr<gpu_task>> sub_tasks;
-	mutable TasksCollection dependencies, requisite_for;
+	mutable TasksCollection dependencies;
+	
+protected:
+	mutable TasksCollection requisite_for;
 
 private:
 	// For gpu_task_dispatch_queue

@@ -27,7 +27,7 @@ class sop_edge : public Graph::edge {
 
 private:
 	// For optimization
-	inline float desireability() const {
+	inline float desirability() const {
 		return 1.f / static_cast<float>(Base::get_weight());
 	}
 	mutable float trail{ t0 };

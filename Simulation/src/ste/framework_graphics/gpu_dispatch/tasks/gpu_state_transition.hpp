@@ -149,7 +149,6 @@ public:
 	
 private:
 	std::function<void(void)> dispatch_func;
-	unsigned cost;
 	
 public:
 	gpu_state_transition(const AccessToken&,
@@ -157,13 +156,12 @@ public:
 						 unsigned cost,
 						 const gpu_task *task, 
 						 const gpu_task *next) : Base(cost, task, next),
-												 dispatch_func(std::move(dispatch)), 
-												 cost(cost) {}
+												 dispatch_func(std::move(dispatch)) {}
 	
 public:
 	void dispatch() const { dispatch_func(); }
 	
-	auto get_cost() const { return cost; }
+	auto get_cost() const { return Base::get_weight(); }
 };
 
 }

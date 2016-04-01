@@ -6,6 +6,8 @@
 #include "stdafx.hpp"
 #include "sop_graph.hpp"
 
+#include "optional.hpp"
+
 #include "is_base_of.hpp"
 
 #include <vector>
@@ -67,7 +69,8 @@ private:
 
 private:
 	void generate_missing_deps(const V* node) {
-		node->missing_deps = std::make_unique<V::DepsContainerT>(node->get_dependencies());
+		if (node->get_dependencies().size() > 0 && node->missing_deps == nullptr)
+			node->missing_deps = std::make_unique<V::DepsContainerT>(node->get_dependencies());
 	}
 
 	void update_nodes_deps(const V* new_root) {
@@ -75,16 +78,18 @@ private:
 		new_root->missing_deps = nullptr;
 		
 		for (auto &v : new_root->get_requisite_for()) {
+			assert(v == new_root && "Node depends on itself!");
 			assert(!v->visited);
-			if (v->missing_deps == nullptr)
-				generate_missing_deps(v);
-				
+			
+			generate_missing_deps(reinterpret_cast<const V*>(v));
+			assert(v->missing_deps != nullptr);
+
 			v->missing_deps->erase(new_root);
 		}
 	}
 	
 	float edge_transition_weight(const E* e) {
-		return e->desireability() * (e->trail + trail_epsilon);
+		return e->desirability() * (e->trail + trail_epsilon);
 	}
 	
 	auto collect_feasible_transitions(const V* root) {
@@ -96,8 +101,7 @@ private:
 			if (to->visited)
 				continue;
 			
-			if (to->get_dependencies().size() > 0 && to->missing_deps == nullptr)
-				generate_missing_deps(to);
+			generate_missing_deps(to);
 			
 			if (to->get_dependencies().size() == 0 || to->missing_deps->size() == 0) {
 				auto edge = reinterpret_cast<const E*>(e.get());
@@ -110,13 +114,19 @@ private:
 
 	auto next_pair_from_graph(const V* root) {
 		std::vector<const E*> useable_edges = collect_feasible_transitions(root);
+		
+		if (useable_edges.size() == 1) {
+			const E* e = *useable_edges.begin();
+			return std::make_pair(reinterpret_cast<const V*>(e->get_to()), e);
+		}
+
 		float total_weight = .0f;
 		for (auto &e : useable_edges) {
 			auto w = edge_transition_weight(e);
 			assert(w >= .0f);
 			total_weight += w;
 		}
-			
+
 		std::uniform_real_distribution<> distribution(.0f, total_weight);
 		float r = distribution(rand_gen);
 		
@@ -149,7 +159,8 @@ private:
 		auto &order = solution.route;
 		auto node = root;
 		
-		root->visited = true;
+		update_nodes_deps(node);
+		
 		while (order.size() < g.get_vertices().size() - 1) {
 			auto next_pair = next_pair_from_graph(node);
 			if (!next_pair.first)
@@ -191,14 +202,35 @@ private:
 	std::random_device rd;
 	std::mt19937 rand_gen;
 	
+	optional<sequential_ordering_problem_solution> best_solution;
+	int no_improvements_counter{ 0 };
+	
 public:
 	sequential_ordering_optimization(const GraphType &g) : g(g), rand_gen(rd()) {}
 	
-	auto operator()(const V *root) {
-		auto solution = sop_iterate(root);
-		update_trail_for_choosen_solution(solution);
+	auto& operator()(const V *root, int iterations = 1) {
+		assert(iterations > 0);
 		
-		return solution;
+		bool has_improvement = false;
+		for (int i = 0; i < iterations; ++i) {
+			auto solution = sop_iterate(root);
+			if (!best_solution || solution.length < best_solution.get().length) {
+				best_solution = std::move(solution);
+				update_trail_for_choosen_solution(best_solution.get());
+				
+				has_improvement = true;
+			}
+		}
+		
+		has_improvement ?
+			no_improvements_counter = 0 :
+			++no_improvements_counter;
+		
+		return best_solution.get();
+	}
+	
+	auto get_no_improvements_counter() const {
+		return no_improvements_counter;
 	}
 };
 	
