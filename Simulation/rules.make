@@ -1,5 +1,5 @@
 
-BUILD_CONFIGURATIONS = debug release
+BUILD_CONFIGURATIONS = debug release profile
 DEFAULT_CONFIGURATION = debug
 
 SOURCE_DIR = ./src
@@ -25,6 +25,9 @@ CXXFLAGS += \
 
 CXXFLAGS_release += \
 	-O3 -ipo -xHOST -no-prec-div -D NDEBUG
+
+CXXFLAGS_profile += \
+	-O3 -ipo -xHOST -no-prec-div -g -gdwarf-4 -D NDEBUG
 
 CXXFLAGS_debug += \
 	-g -gdwarf-4 -D DEBUG

@@ -103,8 +103,8 @@ int main() {
 	StE::Graphics::Scene scene;
 	StE::Graphics::GIRenderer renderer(ctx, &scene);
 	
-	std::unique_ptr<SkyDome> skydome = std::make_unique<SkyDome>(ctx);
-	std::unique_ptr<StE::Graphics::ObjectGroup> object_group = std::make_unique<StE::Graphics::ObjectGroup>(ctx, &scene.scene_properties());
+	std::shared_ptr<SkyDome> skydome = std::make_shared<SkyDome>(ctx);
+	std::shared_ptr<StE::Graphics::ObjectGroup> object_group = std::make_shared<StE::Graphics::ObjectGroup>(ctx, &scene.scene_properties());
 	
 	ctx.set_renderer(&renderer);
 	
@@ -189,8 +189,8 @@ int main() {
 	auto title_text = text_manager.create_renderer();
 	auto footer_text = text_manager.create_renderer();
 	auto header_text = text_manager.create_renderer();
-	renderer.add_gui_task(title_text.get());
-	renderer.add_gui_task(footer_text.get());
+	renderer.add_gui_task(title_text);
+	renderer.add_gui_task(footer_text);
 	renderer.set_deferred_rendering_enabled(false);
 
 	while (!loaded && running) {
@@ -219,14 +219,14 @@ int main() {
 		ctx.run_loop();
 	}
 	
-	renderer.remove_gui_task(title_text.get());
+	renderer.remove_gui_task(title_text);
 	title_text = nullptr;
 	
-	skydome->add_dependency(object_group.get());	
+	skydome->add_dependency(object_group);	
 
-	renderer.add_gui_task(header_text.get());
-	renderer.add_task(object_group.get());
-	renderer.add_task(skydome.get());
+	renderer.add_gui_task(header_text);
+	renderer.add_task(object_group);
+	renderer.add_task(skydome);
 	renderer.set_deferred_rendering_enabled(true);
 
 

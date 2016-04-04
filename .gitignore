@@ -17,6 +17,8 @@ GPATH
 # docs
 Simulation/docs/latex/
 
+Simulation/browse.VC.db
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
