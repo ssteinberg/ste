@@ -28,10 +28,6 @@ $(BUILD_DIR)/%.elf: $(OBJECTS)
 	@/usr/bin/mkdir -p $(dir $@)
 	@$(LINK) $(CXXFLAGS) -o $@ $^ $(addprefix -l, $(SYSTEM_LIBRARIES)) $(LINKFLAGS)
 
-TAGS: $(SOURCES) $(HEADERS)
-	@/bin/echo -e "\e[1;94mCreating GTAGs...\e[0m"
-	@/usr/bin/gtags ./ 2> /dev/null; true
-
 $(WORK_DIR)/%.pch: %.cpp
 	@/bin/echo -e "\e[1;94mCreating precompiled-header $@...\e[0m"
 	@/usr/bin/rm -f $@
@@ -49,12 +45,12 @@ $(WORK_DIR)/%.o: $(PCH) %.cpp
 
 $(WORK_DIR)/$(SOURCE_DIR)/$(PCHCPP).o:
 
-$(BUILD_CONFIGURATIONS):	TAGS $(BUILD_DIR)/$(TARGET)_$(config).elf
+$(BUILD_CONFIGURATIONS):	$(BUILD_DIR)/$(TARGET)_$(config).elf
 
 help:
 	@/usr/bin/echo '"$(TARGET)" makefile'
 	@/usr/bin/echo "Possible build configurations: $(BUILD_CONFIGURATIONS)"
-	@/usr/bin/echo "Additional targets: TAGS docs vars help clean clean_config"
+	@/usr/bin/echo "Additional targets: docs vars help clean clean_config"
 
 vars:
 	@/usr/bin/echo '"TARGET": $(TARGET)'
