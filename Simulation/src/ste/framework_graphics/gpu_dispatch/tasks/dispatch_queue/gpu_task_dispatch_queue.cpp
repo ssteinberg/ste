@@ -37,6 +37,9 @@ gpu_task_dispatch_queue::gpu_task_dispatch_queue() : root(std::make_shared<detai
 															if (flag->is_set()) return;
 
 															std::unique_lock<std::mutex> l2(this->optimizer_mutex);
+
+															ste_log() << "Running SOP optimization pass of " << optimizer_iterations << " iterations." << std::endl;
+
 															auto optimizer_guard = current_optimizer.emplace_and_acquire(std::memory_order_release, this->sop, root.get(), optimizer_iterations);
 															(*optimizer_guard)();
 														}
