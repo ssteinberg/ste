@@ -120,6 +120,9 @@ public:
 	bool operator==(none_t) const {
 		return !has_val;
 	}
+	bool operator!=(none_t) const {
+		return has_val;
+	}
 
 	template <typename ... Ts>
 	void emplace(Ts&&... args) {

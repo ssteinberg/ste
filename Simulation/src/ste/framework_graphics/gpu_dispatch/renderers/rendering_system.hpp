@@ -4,6 +4,7 @@
 #pragma once
 
 #include "stdafx.hpp"
+
 #include "gpu_task_dispatch_queue.hpp"
 
 #include <string>

@@ -166,6 +166,12 @@ public:
 			}
 		}
 	}
+	
+	bool is_empty_hint() const {
+		counted_node_ptr h = head.load(std::memory_order_relaxed);
+		counted_node_ptr t = tail.load(std::memory_order_relaxed);
+		return h.ptr == t.ptr;
+	}
 };
 
 }

@@ -13,8 +13,8 @@ namespace StE {
 namespace Graph {
 namespace detail {
 	
-extern Agraph_t* create_graphviz_graph(const GraphSet<const vertex*> *vertices, 
-									   const GraphSet<const edge*> *edges);
+extern Agraph_t* create_graphviz_graph(const GraphSet<graph_impl::VertexPtr> *vertices, 
+									   const GraphSet<graph_impl::EdgePtr> *edges);
 	
 }
 }

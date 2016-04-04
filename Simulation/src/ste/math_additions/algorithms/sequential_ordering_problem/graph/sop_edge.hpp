@@ -13,7 +13,9 @@ namespace SOP {
 template <typename V, typename E>
 class sop_graph;
 template <typename GraphType>
-class sequential_ordering_optimization;
+class sequential_ordering_problem;
+template <typename G>
+class sop_optimizer;
 
 class sop_edge : public Graph::edge {
 	using Base = Graph::edge;
@@ -21,7 +23,9 @@ class sop_edge : public Graph::edge {
 	template <typename V, typename E>
 	friend class sop_graph;
 	template <typename GraphType>
-	friend class sequential_ordering_optimization;
+	friend class sequential_ordering_problem;
+	template <typename G>
+	friend class sop_optimizer;
 	
 	static constexpr float t0 = .0f;
 

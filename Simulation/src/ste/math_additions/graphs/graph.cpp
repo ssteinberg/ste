@@ -2,6 +2,8 @@
 #include "stdafx.hpp"
 #include "graph.hpp"
 
+#include "graph_detail.hpp"
+
 #include <graphviz/cgraph.h>
 #include <graphviz/gvc.h>
 
@@ -12,8 +14,8 @@
 using namespace StE::Graph;
 using namespace StE::Graph::detail;
 
-Agraph_t* create_graphviz_graph(const GraphSet<const vertex*> *vertices, 
-								const GraphSet<const edge*> *edges) {
+Agraph_t* StE::Graph::detail::create_graphviz_graph(const GraphSet<graph_impl::VertexPtr> *vertices, 
+													const GraphSet<graph_impl::EdgePtr> *edges) {
 	Agraph_t* g;
 	g = agopen("G", Agdirected, NULL);
 	
@@ -22,7 +24,7 @@ Agraph_t* create_graphviz_graph(const GraphSet<const vertex*> *vertices,
 	std::unordered_map<const vertex*, Agnode_t*> vm;
 	for (auto vert : *vertices) {
 		auto node = agnode(g, const_cast<char*>(vert->get_name().data()), true);
-		vm.insert(std::make_pair(vert, node));
+		vm.insert(std::make_pair(vert.get(), node));
 	}
 	for (auto e : *edges) {
 		Agnode_t* u = vm[e->get_from()];
