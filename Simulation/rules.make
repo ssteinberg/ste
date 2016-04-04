@@ -8,6 +8,7 @@ DOCS_DIR = ./docs
 LOCAL_INCLUDES += \
 	$(shell find $(SOURCE_DIR) -type d) \
 	/usr/include/freetype2 \
+	/usr/local/share/icc/compilers_and_libraries/linux/include/
 
 LOCAL_LIBS += \
 
@@ -47,7 +48,7 @@ SYSTEM_LIBRARIES += \
 	boost_serialization \
 	cgraph \
 	gvc
-	
+
 LINKFLAGS += $(shell pkg-config --static --libs glfw3)
 
 PCHCPP = ste/engine/stdafx

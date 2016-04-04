@@ -16,6 +16,8 @@
 #include <iostream>
 #include <thread>
 
+#include <immintrin.h>
+
 using namespace StE::Graphics;
 
 gpu_task_dispatch_queue::gpu_task_dispatch_queue() : root(std::make_shared<detail::gpu_task_root>()),
@@ -38,10 +40,12 @@ gpu_task_dispatch_queue::gpu_task_dispatch_queue() : root(std::make_shared<detai
 
 															std::unique_lock<std::mutex> l2(this->optimizer_mutex);
 
-															ste_log() << "Running SOP optimization pass of " << optimizer_iterations << " iterations." << std::endl;
-
+															auto rdts_stamp = _rdtsc();
 															auto optimizer_guard = current_optimizer.emplace_and_acquire(std::memory_order_release, this->sop, root.get(), optimizer_iterations);
 															(*optimizer_guard)();
+															auto cycles = _rdtsc() - rdts_stamp;
+
+															ste_log() << "Ran SOP optimization pass of " << optimizer_iterations << " iterations. (" << std::to_string(cycles) << " cycles)" << std::endl;
 														}
 													}) {
 	Base::add_vertex(root);
