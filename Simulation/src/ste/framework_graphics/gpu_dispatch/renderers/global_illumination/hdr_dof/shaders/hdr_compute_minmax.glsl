@@ -30,12 +30,12 @@ void main() {
 				   dot(lums2, vec4(.25f)),
 				   dot(lums3, vec4(.25f)));
 	float l = hdr_lum(dot(ls, vec4(.25f)));
-	
+
 	if (l >= min_luminance) {
 		int int_l = floatBitsToInt(l);
-	
+
 		imageStore(hdr_lums, ivec2(gl_GlobalInvocationID.xy), vec4(l,0,0,0));
-	
+
 		atomicMin(params.lum_min, int_l);
 		atomicMax(params.lum_max, int_l);
 	}
@@ -44,12 +44,12 @@ void main() {
 	memoryBarrierShared();
 
 	if (gl_GlobalInvocationID.xy == ivec2(0,0)) {
-		float t = clamp(.25f * time, 0, 1);
-		
+		float t = clamp(.25f * time, .0f, 1.f);
+
 		float min_lum = t * intBitsToFloat(params.lum_min) + (1 - t) * intBitsToFloat(prev_params.lum_min);
 		float max_lum = t * intBitsToFloat(params.lum_max) + (1 - t) * intBitsToFloat(prev_params.lum_max);
 		max_lum = max(max_lum, min_lum + .001f);
-		
+
 		params.lum_min = floatBitsToInt(min_lum);
 		params.lum_max = floatBitsToInt(max_lum);
 	}

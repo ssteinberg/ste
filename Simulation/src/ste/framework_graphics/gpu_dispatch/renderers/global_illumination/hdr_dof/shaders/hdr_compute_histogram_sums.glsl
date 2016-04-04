@@ -31,7 +31,7 @@ void main() {
 	float T = 1.25f / (N);
 	int bin_ceil = int(hdr_lum_resolution * T);
 
-	float time_coef = 1.f / time;
+	// float time_coef = 1.f / time;
 
 	for (int j=0; j<2; ++j) {
 		int h = int(histogram[id * 2 + j]);
@@ -41,7 +41,7 @@ void main() {
 	}
 
 	float focal;
-	if (id == 0) 
+	if (id == 0)
 		focal = texelFetch(z_buffer, textureSize(z_buffer, 0) / 2, 0).x;
 
 	barrier();
@@ -58,7 +58,7 @@ void main() {
 		barrier();
 		memoryBarrierShared();
 	}
-	
+
 	sums[id * 2] = shared_data[id * 2];
 	sums[id * 2 + 1] = shared_data[id * 2 + 1];
 
