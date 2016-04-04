@@ -37,9 +37,9 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 						 scene(scene), 
 						 ctx(ctx),
 						 //voxel_space(ctx, voxel_grid_size, voxel_grid_ratio), 
-						 hdr(std::make_unique<hdr_dof_postprocess>(ctx, fbo.z_buffer())), 
-						 composer(std::make_unique<deferred_composition>(ctx, this)),
-						 fb_clearer(std::make_unique<FbClearTask>()) {
+						 hdr(std::make_shared<hdr_dof_postprocess>(ctx, fbo.z_buffer())), 
+						 composer(std::make_shared<deferred_composition>(ctx, this)),
+						 fb_clearer(std::make_shared<FbClearTask>()) {
 	resize_connection = std::make_shared<ResizeSignalConnectionType>([=](const glm::i32vec2 &size) {
 		this->fbo.resize(size);
 		hdr->set_z_buffer(fbo.z_buffer());
@@ -48,25 +48,26 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 
 	composer->program->set_uniform("inv_projection", glm::inverse(ctx.projection_matrix()));
 	
-	composer->add_dependency(fb_clearer.get());
-	hdr->add_dependency(composer.get());
+	composer->add_dependency(fb_clearer);
+	hdr->add_dependency(composer);
 	
-	add_task(fb_clearer.get());
+	add_task(fb_clearer);
 	rebuild_task_queue();
 }
 
 void GIRenderer::rebuild_task_queue() {
-	if (!use_deferred_rendering)
+	if (!use_deferred_rendering) {
 		for (auto &task_ptr : gui_tasks)
-			task_ptr->remove_dependency(hdr.get());
+			q.remove_task_dependency(task_ptr, hdr);
 
-	// q.remove_task(voxel_space.voxelizer(*scene));
-	q.remove_task(hdr.get());
-	q.remove_task(composer.get());
-	if (use_deferred_rendering) {
+		// q.remove_task(voxel_space.voxelizer(*scene));			
+		q.remove_task(hdr);
+		q.remove_task(composer);
+	}
+	else {
 		// q.add_task(voxel_space.voxelizer(*scene), nullptr);
-		q.add_task(composer.get(), hdr->get_input_fbo());
-		q.add_task(hdr.get(), &ctx.gl()->defaut_framebuffer());
+		q.add_task(composer, hdr->get_input_fbo());
+		q.add_task(hdr, &ctx.gl()->defaut_framebuffer());
 	}
 	
 	for (auto &task_ptr : added_tasks)
@@ -74,7 +75,7 @@ void GIRenderer::rebuild_task_queue() {
 		
 	if (use_deferred_rendering)
 		for (auto &task_ptr : gui_tasks)
-			task_ptr->add_dependency(hdr.get());
+			q.add_task_dependency(task_ptr, hdr);
 }
 
 void GIRenderer::set_deferred_rendering_enabled(bool enabled) {
@@ -87,36 +88,39 @@ void GIRenderer::render_queue(const StEngineControl &ctx) {
 }
 
 void GIRenderer::add_task(const gpu_task::TaskPtr &t) {
-	composer->add_dependency(t);
-	t->add_dependency(fb_clearer.get());
-	
 	q.add_task(t, get_fbo());
+	
+	q.add_task_dependency(composer, t);
+	if (t != fb_clearer)
+		q.add_task_dependency(t, fb_clearer);
+	
 	added_tasks.insert(t);
 }
 
 void GIRenderer::remove_task(const gpu_task::TaskPtr &t) {
-	composer->remove_dependency(t);
-	t->remove_dependency(fb_clearer.get());
-	
 	q.remove_task(t);
+	
+	q.remove_task_dependency(composer, t);
+	q.remove_task_dependency(t, fb_clearer);
+	
 	added_tasks.erase(t);
 }
 
 void GIRenderer::add_gui_task(const gpu_task::TaskPtr &t) {
-	if (use_deferred_rendering)
-		t->add_dependency(hdr.get());
-	t->add_dependency(fb_clearer.get());
-	
 	q.add_task(t, &ctx.gl()->defaut_framebuffer());
+	
+	if (use_deferred_rendering)
+		q.add_task_dependency(t, hdr);
+	q.add_task_dependency(t, fb_clearer);
 	
 	gui_tasks.insert(t);
 }
 
 void GIRenderer::remove_gui_task(const gpu_task::TaskPtr &t) {
-	t->remove_dependency(hdr.get());
-	t->remove_dependency(fb_clearer.get());
-	
 	q.remove_task(t);
+	
+	q.remove_task_dependency(t, hdr);
+	q.remove_task_dependency(t, fb_clearer);
 	
 	gui_tasks.erase(t);
 }

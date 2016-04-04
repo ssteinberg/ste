@@ -28,6 +28,8 @@ namespace StE {
 namespace Graphics {
 
 class GIRenderer : public rendering_system {
+	using Base = rendering_system;
+	
 private:
 	class deferred_composition : public gpu_task {
 		using Base = gpu_task;
@@ -63,12 +65,12 @@ private:
 	Scene *scene;
 	// dense_voxel_space voxel_space;
 	
-	gpu_task::TasksCollection gui_tasks;
-	gpu_task::TasksCollection added_tasks;
+	gpu_task::TaskCollection gui_tasks;
+	gpu_task::TaskCollection added_tasks;
 	
-	std::unique_ptr<hdr_dof_postprocess> hdr;
-	std::unique_ptr<deferred_composition> composer;
-	std::unique_ptr<FbClearTask> fb_clearer;
+	std::shared_ptr<hdr_dof_postprocess> hdr;
+	std::shared_ptr<deferred_composition> composer;
+	std::shared_ptr<FbClearTask> fb_clearer;
 	
 	bool use_deferred_rendering{ true };
 

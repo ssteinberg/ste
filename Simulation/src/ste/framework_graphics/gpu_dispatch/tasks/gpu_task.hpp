@@ -11,12 +11,12 @@
 
 #include <functional>
 #include <memory>
-
-#include <unordered_set>
 #include <algorithm>
 
 #include <string>
 #include <typeinfo>
+
+#include <boost/container/flat_set.hpp>
 
 namespace StE {
 namespace Graphics {
@@ -24,19 +24,24 @@ namespace Graphics {
 class gpu_task_dispatch_queue;
 class gpu_state_transition;
 
-class gpu_task : public Algorithm::SOP::sop_vertex<std::unordered_set<const gpu_task*>> {
+class gpu_task : public Algorithm::SOP::sop_vertex<boost::container::flat_set<std::shared_ptr<const gpu_task>>,
+												   boost::container::flat_set<const gpu_task*>>, 
+				 private std::enable_shared_from_this<gpu_task> {
 private:
 	friend class gpu_task_dispatch_queue;
 	friend class gpu_state_transition;
 	
 public:
 	using TaskT = const gpu_task;
-	using TaskPtr = TaskT*;
-	using TasksCollection = std::unordered_set<TaskPtr>;
+	using TaskPtr = std::shared_ptr<TaskT>;
+	using TaskCollection = boost::container::flat_set<std::shared_ptr<TaskT>>;
 	
 private:
-	std::vector<std::unique_ptr<gpu_task>> sub_tasks;
-	mutable TasksCollection dependencies, requisite_for;
+	std::vector<TaskPtr> sub_tasks;
+	mutable TaskCollection dependencies;
+	
+protected:
+	mutable boost::container::flat_set<TaskT*> requisite_for;
 
 private:
 	// For gpu_task_dispatch_queue
@@ -48,55 +53,39 @@ private:
 		override_fbo = fbo;
 		for (auto &s : sub_tasks)
 			s->set_override_fbo(fbo);
-		set_modified();
 	}
-	auto get_override_fbo() const { return override_fbo; }
 
 	void set_parent_queue(gpu_task_dispatch_queue *q) const {
 		parent_queue = q;
 		for (auto &s : sub_tasks)
 			s->set_parent_queue(q);
 	}
-	auto get_parent_queue() const { return parent_queue; }
 
-protected:	
-	void set_modified() const;
-	
+protected:
 	void operator()() const {
 		set_context_state();
 		dispatch();
 	}
 
 public:
-	const TasksCollection &get_dependencies() const override final { return dependencies; }
-	const TasksCollection &get_requisite_for() const override final { return requisite_for; }
+	const TaskCollection &get_dependencies() const override final { return dependencies; }
+	const boost::container::flat_set<TaskT*> &get_requisite_for() const override final { return requisite_for; }
 	
-	void add_dependency(const TaskPtr &task) const {
-		if (task != this) {
-			dependencies.insert(task);
-			for (auto &s : sub_tasks)
-				s->add_dependency(task);
-			set_modified();
-		}
-	}
-	void remove_dependency(const TaskPtr &task) const {
-		dependencies.erase(task);
-		for (auto &s : sub_tasks)
-			s->remove_dependency(task);
-		set_modified();
-		
-		task->requisite_for.erase(this);
-	}
+	auto get_override_fbo() const { return override_fbo; }
+	auto get_parent_queue() const { return parent_queue; }
+	
+	void add_dependency(const TaskPtr &task) const;
+	void remove_dependency(const TaskPtr &task) const;
 
 public:
 	gpu_task() = default;
-	gpu_task(std::vector<std::unique_ptr<gpu_task>> &&st) : sub_tasks(std::move(st)) {
+	gpu_task(std::vector<TaskPtr> &&st) : sub_tasks(st) {
 		for (auto &s : sub_tasks)
-			dependencies.insert(s.get());
+			dependencies.insert(s);
 	}
-	gpu_task(std::unique_ptr<gpu_task> &&s) : sub_tasks(1) {
-		dependencies.insert(s.get());
-		sub_tasks[0] = std::move(s);
+	gpu_task(const TaskPtr &s) : sub_tasks(1) {
+		dependencies.insert(s);
+		sub_tasks[0] = s;
 	}
 	virtual ~gpu_task() noexcept {}
 	

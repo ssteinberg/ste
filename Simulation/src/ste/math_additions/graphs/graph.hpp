@@ -9,13 +9,10 @@
 
 #include <algorithm>
 #include <functional>
-#include <unordered_set>
 
 #define BOOST_FILESYSTEM_NO_DEPRECATED 
 #include <boost/filesystem.hpp>
-
-#include <graphviz/cgraph.h>
-#include <graphviz/gvc.h>
+#include <boost/container/flat_set.hpp>
 
 namespace StE {
 namespace Graph {
@@ -26,14 +23,14 @@ class graph;
 namespace detail {
 
 template <typename T>
-using GraphSet = std::unordered_set<T>; 
+using GraphSet = boost::container::flat_set<T>; 
 	
 class graph_impl {
 	template <typename V, typename E>
 	friend class StE::Graph::graph;
 	
-private:
-	using VertexPtr = const vertex*;
+public:
+	using VertexPtr = std::shared_ptr<const vertex>;
 	using EdgePtr = const edge*; 
 
 private:
@@ -52,8 +49,12 @@ class graph {
 	static_assert(std::is_base_of<vertex, V>::value, "V must derive from Graph::vertex!");
 	static_assert(std::is_base_of<edge, E>::value, "E must derive from Graph::edge!");
 	
+public:
+	using vertex_type = V;
+	using edge_type = E;
+	
 private:
-	using VertexPtr = const V*;
+	using VertexPtr = std::shared_ptr<const V>;
 	using EdgePtr = const E*; 
 	
 public:
@@ -65,15 +66,15 @@ private:
 	EdgesSet edges;
 	
 private:
-	template <typename T>
-	void erase_from(std::vector<std::unique_ptr<const T>> &vec, const T *what) const {
-		auto it = std::find_if(vec.begin(), vec.end(), [&](const std::unique_ptr<const T> &o) { return o.get() == what; });
+	template <typename T, typename P>
+	void erase_from(std::vector<T> &vec, const P *what) const {
+		auto it = std::lower_bound(vec.begin(), vec.end(), what, [](const T &o, const P *w) -> bool { return o.get() < w; });
 		if (it != vec.end())
 			vec.erase(it);
 	}
 	template <typename T>
 	void erase_from(std::vector<const T*> &vec, const T *what) const {
-		auto it = std::find(vec.begin(), vec.end(), what);
+		auto it = std::lower_bound(vec.begin(), vec.end(), what);
 		if (it != vec.end())
 			vec.erase(it);
 	}
@@ -83,7 +84,7 @@ public:
 	virtual ~graph() noexcept {}
 	
 	void add_vertex(const VertexPtr &v) {
-		assert(v);
+		assert(v.get());
 		vertices.insert(v);
 	}
 	void erase_vertex(const VertexPtr &v) {
@@ -96,9 +97,9 @@ public:
 			erase_from(e->from->originating_edges, e);
 		}
 		
-		vertices.erase(v);
 		v->terminating_edges.clear();
 		v->originating_edges.clear();
+		vertices.erase(v);
 	}
 	
 	const E* add_edge(std::unique_ptr<const E> &&e) {
@@ -106,12 +107,33 @@ public:
 		
 		assert(e_ptr);
 		
-		e_ptr->from->originating_edges.push_back(std::move(e));
+#ifdef DEBUG
+		for (auto &e : e_ptr->from->originating_edges)
+			assert(e->to != e_ptr->to && "Edge exists");
+#endif
+		
+		auto originating_it = std::lower_bound(e_ptr->from->originating_edges.begin(), 
+											   e_ptr->from->originating_edges.end(),
+											   e.get(),
+											   [](const std::unique_ptr<const edge> &o, const edge *w) -> bool { return o.get() < w; });
+		e_ptr->from->originating_edges.insert(originating_it, std::move(e));
 		
 		edges.insert(e_ptr);
-		e_ptr->to->terminating_edges.push_back(e_ptr);
+		
+		auto terminating_it = std::lower_bound(e_ptr->to->terminating_edges.begin(), 
+											   e_ptr->to->terminating_edges.end(),
+											   e_ptr);
+		e_ptr->to->terminating_edges.insert(terminating_it, e_ptr);
 		
 		return e_ptr;
+	}
+	void erase_edge(const V *from, const V *to) {
+		for (auto &e : from->originating_edges) {
+			if (e->to == to) {
+				erase_edge(static_cast<EdgePtr>(e.get()));
+				return;
+			}
+		}
 	}
 	void erase_edge(const EdgePtr &e) {
 		edges.erase(e);
@@ -119,7 +141,7 @@ public:
 		erase_from(e->from->originating_edges, static_cast<const edge*>(e));
 	}
 	
-	void erase_all_vertex_edges(const VertexPtr &v) {
+	void erase_all_vertex_edges(const V *v) {
 		{
 			for (auto &e : v->terminating_edges) {
 				edges.erase(static_cast<EdgePtr>(e));
@@ -145,8 +167,8 @@ public:
 			v->to.clear();
 		}
 		
-		vertices.clear();
 		edges.clear();
+		vertices.clear();
 	}
 	
 	const auto &get_vertices() const { return vertices; }

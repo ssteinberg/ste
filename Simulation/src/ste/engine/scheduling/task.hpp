@@ -46,6 +46,7 @@ public:
 	task &operator=(const task &) = default;
 	task(task &&) = default;
 	task &operator=(task &&) = default;
+	virtual ~task() noexcept {}
 
 	template <typename L>
 	task<typename function_traits<L>::result_t> then(L &&lambda,
