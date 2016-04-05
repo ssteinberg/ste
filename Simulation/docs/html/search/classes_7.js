@@ -43,7 +43,6 @@ var searchData=
   ['gpu_5ftask_5froot',['gpu_task_root',['../classStE_1_1Graphics_1_1detail_1_1gpu__task__root.html',1,'StE::Graphics::detail']]],
   ['gqueue',['gqueue',['../classStE_1_1Core_1_1gqueue.html',1,'StE::Core']]],
   ['graph',['graph',['../classStE_1_1Graph_1_1graph.html',1,'StE::Graph']]],
-  ['graph_3c_20gpu_5ftask_2c_20gpu_5fstate_5ftransition_20_3e',['graph&lt; gpu_task, gpu_state_transition &gt;',['../classStE_1_1Graph_1_1graph.html',1,'StE::Graph']]],
   ['graph_5fimpl',['graph_impl',['../classStE_1_1Graph_1_1detail_1_1graph__impl.html',1,'StE::Graph::detail']]],
   ['gstack',['gstack',['../classStE_1_1Core_1_1gstack.html',1,'StE::Core']]],
   ['gstack_3c_20buffer_5fglyph_5fdescriptor_20_3e',['gstack&lt; buffer_glyph_descriptor &gt;',['../classStE_1_1Core_1_1gstack.html',1,'StE::Core']]],

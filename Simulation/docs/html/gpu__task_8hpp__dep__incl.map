@@ -33,7 +33,7 @@
 <area shape="rect" id="node27" href="$hdr__compute__minmax__task_8cpp.html" title="src/ste/framework_graphics\l/gpu_dispatch/renderers\l/global_illumination/hdr\l_dof/steps/hdr_compute_minmax\l_task.cpp" alt="" coords="2376,896,2595,981"/>
 <area shape="rect" id="node30" href="$rendering__system_8hpp.html" title="src/ste/framework_graphics\l/gpu_dispatch/renderers\l/rendering_system.hpp" alt="" coords="947,317,1133,373"/>
 <area shape="rect" id="node40" href="$gpu__task__dispatch__queue_8cpp.html" title="src/ste/framework_graphics\l/gpu_dispatch/tasks/dispatch\l_queue/gpu_task_dispatch_queue.cpp" alt="" coords="1157,317,1408,373"/>
-<area shape="rect" id="node31" href="$StEngineControl_8hpp.html" title="src/ste/engine/engine\l_control/StEngineControl.hpp" alt="" coords="1003,429,1197,470"/>
+<area shape="rect" id="node31" href="$StEngineControl_8hpp.html" title="Engine Control class. " alt="" coords="1003,429,1197,470"/>
 <area shape="rect" id="node32" href="$StEngineControl_8cpp.html" title="src/ste/engine/engine\l_control/StEngineControl.cpp" alt="" coords="1697,540,1890,581"/>
 <area shape="rect" id="node33" href="$bme__brdf__representation_8hpp.html" title="src/ste/framework_graphics\l/radiometry/radiance_distribution\l_functions/representations/bme\l_brdf_representation.hpp" alt="" coords="718,525,935,596"/>
 <area shape="rect" id="node34" href="$GLSLProgramFactory_8hpp.html" title="src/ste/framework_resources\l/glsl_programs/factory/GLSLProgram\lFactory.hpp" alt="" coords="1376,533,1621,589"/>

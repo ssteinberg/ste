@@ -27,7 +27,10 @@ var searchData=
   ['then',['then',['../classStE_1_1task.html#a49d8f73996a468af1c9678dfad7d74fe',1,'StE::task::then(L &amp;&amp;lambda, std::enable_if_t&lt; function_traits&lt; L &gt;::arity==1 &gt; *=0)'],['../classStE_1_1task.html#a78c803f0c5c7ef2a009c240e984debf9',1,'StE::task::then(L &amp;&amp;lambda, std::enable_if_t&lt; function_traits&lt; L &gt;::arity==2 &gt; *=0)']]],
   ['then_5fon_5fmain_5fthread',['then_on_main_thread',['../classStE_1_1task.html#aa587fdc5456056a88f30b1a46d66b9f2',1,'StE::task']]],
   ['thread_5fset_5fpriority_5fhigh',['thread_set_priority_high',['../namespaceStE.html#a0d914c04bc62827af04d634e8e19dc86',1,'StE']]],
+  ['thread_5fset_5fpriority_5fidle',['thread_set_priority_idle',['../namespaceStE.html#a297bce2dd593c011dd93eba4e2152473',1,'StE']]],
   ['thread_5fset_5fpriority_5flow',['thread_set_priority_low',['../namespaceStE.html#a9e0eece773eecc792046ce671f5d8774',1,'StE']]],
+  ['thread_5fset_5fpriority_5fnormal',['thread_set_priority_normal',['../namespaceStE.html#aa3121b03e1920e47b34fcdafd507e8d6',1,'StE']]],
+  ['thread_5fset_5fpriority_5frtime',['thread_set_priority_rtime',['../namespaceStE.html#a7a54be01b8853c12d439fc3b2c564111',1,'StE']]],
   ['time_5fper_5fframe',['time_per_frame',['../classStE_1_1StEngineControl.html#a34341e04da2f983f0ad7e50ae618133f',1,'StE::StEngineControl']]],
   ['to_5fxyy',['to_xyY',['../classStE_1_1Graphics_1_1XYZ.html#a890482c1514db43f5cff1ca4a61206b9',1,'StE::Graphics::XYZ']]],
   ['torgb',['toRGB',['../classStE_1_1Graphics_1_1XYZ.html#abd5fd179a3215cfe826a1a205d73638e',1,'StE::Graphics::XYZ']]],
@@ -39,6 +42,6 @@ var searchData=
   ['try_5fcompare_5femplace',['try_compare_emplace',['../classStE_1_1shared__double__reference__guard.html#a3c349e484bf4cc2789d4dfabda55c65a',1,'StE::shared_double_reference_guard']]],
   ['try_5femplace',['try_emplace',['../classStE_1_1shared__double__reference__guard.html#a70782d3b2db27396099576222013535a',1,'StE::shared_double_reference_guard']]],
   ['try_5fget',['try_get',['../classStE_1_1concurrent__unordered__map.html#a2c3e2dc7f1995281f91f3446c4bf13d0',1,'StE::concurrent_unordered_map']]],
-  ['tuple_5fcall',['tuple_call',['../namespaceStE.html#a9bf42962c17024156eb396ec447e0def',1,'StE']]],
+  ['tuple_5fcall',['tuple_call',['../namespaceStE.html#a9bf42962c17024156eb396ec447e0def',1,'StE::tuple_call(F f, Tuple &amp;&amp;t)'],['../namespaceStE.html#a47020314bdf7074d175022a5b1652ab5',1,'StE::tuple_call(B &amp;&amp;b, F f, Tuple &amp;&amp;t)']]],
   ['tuple_5ftype_5ferasure',['tuple_type_erasure',['../classStE_1_1tuple__type__erasure.html#a6f9bb51d765c0b821d943be175dddbe2',1,'StE::tuple_type_erasure::tuple_type_erasure()=default'],['../classStE_1_1tuple__type__erasure.html#a0fc35bf15faf05b5019be00da4881005',1,'StE::tuple_type_erasure::tuple_type_erasure(const std::tuple&lt; Args...&gt; &amp;tuple_args, std::enable_if_t&lt; 1&lt; sizeof...(Args)&gt; *=nullptr)'],['../classStE_1_1tuple__type__erasure.html#a2980c50b93f4ad5d27a278fd36e6d695',1,'StE::tuple_type_erasure::tuple_type_erasure(const std::tuple&lt; T &gt; &amp;tuple)'],['../classStE_1_1tuple__type__erasure.html#ad5aa1e0085dbf3968b48e6cc9c2dbad8',1,'StE::tuple_type_erasure::tuple_type_erasure(tuple_type_erasure &amp;&amp;)=default'],['../classStE_1_1tuple__type__erasure.html#aa01dfbcc17263923e4425fa3dabc91c6',1,'StE::tuple_type_erasure::tuple_type_erasure(const tuple_type_erasure &amp;)=default']]]
 ];

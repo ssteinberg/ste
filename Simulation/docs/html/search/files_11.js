@@ -12,6 +12,7 @@ var searchData=
   ['signal_2ehpp',['signal.hpp',['../signal_8hpp.html',1,'']]],
   ['sop_5fedge_2ehpp',['sop_edge.hpp',['../sop__edge_8hpp.html',1,'']]],
   ['sop_5fgraph_2ehpp',['sop_graph.hpp',['../sop__graph_8hpp.html',1,'']]],
+  ['sop_5foptimizer_2ehpp',['sop_optimizer.hpp',['../sop__optimizer_8hpp.html',1,'']]],
   ['sop_5fvertex_2ehpp',['sop_vertex.hpp',['../sop__vertex_8hpp.html',1,'']]],
   ['spectrum_2ehpp',['spectrum.hpp',['../spectrum_8hpp.html',1,'']]],
   ['sphere_2ehpp',['Sphere.hpp',['../Sphere_8hpp.html',1,'']]],

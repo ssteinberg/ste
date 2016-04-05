@@ -1,7 +1,7 @@
 <map id="src/ste/engine/cache/lru_cache_cacheable.hpp" name="src/ste/engine/cache/lru_cache_cacheable.hpp">
 <area shape="rect" id="node2" href="$lru__cache_8hpp.html" title="src/ste/engine/cache\l/lru_cache.hpp" alt="" coords="1024,184,1172,225"/>
 <area shape="rect" id="node38" href="$lru__cache__index_8hpp.html" title="src/ste/engine/cache\l/lru_cache_index.hpp" alt="" coords="1080,95,1228,136"/>
-<area shape="rect" id="node3" href="$StEngineControl_8hpp.html" title="src/ste/engine/engine\l_control/StEngineControl.hpp" alt="" coords="1001,273,1195,315"/>
+<area shape="rect" id="node3" href="$StEngineControl_8hpp.html" title="Engine Control class. " alt="" coords="1001,273,1195,315"/>
 <area shape="rect" id="node31" href="$bme__brdf__representation_8hpp.html" title="src/ste/framework_graphics\l/radiometry/radiance_distribution\l_functions/representations/bme\l_brdf_representation.hpp" alt="" coords="5,363,223,433"/>
 <area shape="rect" id="node33" href="$GLSLProgramFactory_8cpp.html" title="src/ste/framework_resources\l/glsl_programs/factory/GLSLProgram\lFactory.cpp" alt="" coords="2015,489,2261,545"/>
 <area shape="rect" id="node4" href="$main_8cpp.html" title="src/main.cpp" alt="" coords="572,1029,669,1056"/>

@@ -33,7 +33,7 @@
 <area shape="rect" id="node31" href="$GLSLProgramFactory_8cpp.html" title="src/ste/framework_resources\l/glsl_programs/factory/GLSLProgram\lFactory.cpp" alt="" coords="2159,533,2404,589"/>
 <area shape="rect" id="node32" href="$glsl__programs__pool_8cpp.html" title="src/ste/framework_resources\l/glsl_programs/pool/glsl\l_programs_pool.cpp" alt="" coords="1735,533,1931,589"/>
 <area shape="rect" id="node33" href="$TextManager_8cpp.html" title="src/ste/framework_text\l/rendering/TextManager.cpp" alt="" coords="1789,666,1982,707"/>
-<area shape="rect" id="node35" href="$StEngineControl_8hpp.html" title="src/ste/engine/engine\l_control/StEngineControl.hpp" alt="" coords="1258,317,1451,359"/>
+<area shape="rect" id="node35" href="$StEngineControl_8hpp.html" title="Engine Control class. " alt="" coords="1258,317,1451,359"/>
 <area shape="rect" id="node36" href="$StEngineControl_8cpp.html" title="src/ste/engine/engine\l_control/StEngineControl.cpp" alt="" coords="977,421,1170,463"/>
 <area shape="rect" id="node37" href="$bme__brdf__representation_8hpp.html" title="src/ste/framework_graphics\l/radiometry/radiance_distribution\l_functions/representations/bme\l_brdf_representation.hpp" alt="" coords="1246,407,1463,477"/>
 <area shape="rect" id="node38" href="$glyph__manager_8hpp.html" title="src/ste/framework_text\l/glyphs/glyph_manager.hpp" alt="" coords="1539,421,1725,463"/>

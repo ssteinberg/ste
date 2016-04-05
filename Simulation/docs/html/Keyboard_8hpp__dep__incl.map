@@ -2,7 +2,7 @@
 <area shape="rect" id="node2" href="$main_8cpp.html" title="src/main.cpp" alt="" coords="509,911,607,937"/>
 <area shape="rect" id="node3" href="$hid_8hpp.html" title="src/ste/engine/engine\l_control/hid/hid.hpp" alt="" coords="982,95,1134,136"/>
 <area shape="rect" id="node4" href="$Pointer_8hpp.html" title="src/ste/engine/engine\l_control/hid/Pointer.hpp" alt="" coords="876,184,1037,225"/>
-<area shape="rect" id="node5" href="$StEngineControl_8hpp.html" title="src/ste/engine/engine\l_control/StEngineControl.hpp" alt="" coords="1061,184,1255,225"/>
+<area shape="rect" id="node5" href="$StEngineControl_8hpp.html" title="Engine Control class. " alt="" coords="1061,184,1255,225"/>
 <area shape="rect" id="node6" href="$StEngineControl_8cpp.html" title="src/ste/engine/engine\l_control/StEngineControl.cpp" alt="" coords="927,288,1120,329"/>
 <area shape="rect" id="node7" href="$ObjectGroup_8hpp.html" title="src/ste/framework_graphics\l/entities/objects/ObjectGroup.hpp" alt="" coords="518,288,737,329"/>
 <area shape="rect" id="node10" href="$GIRenderer_8hpp.html" title="src/ste/framework_graphics\l/gpu_dispatch/renderers\l/global_illumination/GIRenderer.hpp" alt="" coords="1217,763,1451,819"/>

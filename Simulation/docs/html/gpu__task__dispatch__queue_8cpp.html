@@ -101,6 +101,8 @@ $(document).ready(function(){initNavTree('gpu__task__dispatch__queue_8cpp.html',
 </div>
 
 <div class="header">
+  <div class="summary">
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">gpu_task_dispatch_queue.cpp File Reference</div>  </div>
 </div><!--header-->
@@ -109,19 +111,44 @@ $(document).ready(function(){initNavTree('gpu__task__dispatch__queue_8cpp.html',
 <code>#include &quot;<a class="el" href="gpu__task__dispatch__queue_8hpp_source.html">gpu_task_dispatch_queue.hpp</a>&quot;</code><br/>
 <code>#include &quot;<a class="el" href="AttributedString_8hpp_source.html">AttributedString.hpp</a>&quot;</code><br/>
 <code>#include &quot;<a class="el" href="Log_8hpp_source.html">Log.hpp</a>&quot;</code><br/>
-<code>#include &quot;<a class="el" href="sequential__ordering__problem_8hpp_source.html">sequential_ordering_problem.hpp</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="thread__priority_8hpp_source.html">thread_priority.hpp</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="tuple__call_8hpp_source.html">tuple_call.hpp</a>&quot;</code><br/>
 <code>#include &lt;iostream&gt;</code><br/>
 <code>#include &lt;algorithm&gt;</code><br/>
 <code>#include &lt;functional&gt;</code><br/>
+<code>#include &lt;thread&gt;</code><br/>
+<code>#include &lt;immintrin.h&gt;</code><br/>
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for gpu_task_dispatch_queue.cpp:</div>
 <div class="dyncontent">
 <div class="center"><img src="gpu__task__dispatch__queue_8cpp__incl.png" border="0" usemap="#src_2ste_2framework__graphics_2gpu__dispatch_2tasks_2dispatch__queue_2gpu__task__dispatch__queue_8cpp" alt=""/></div>
 <map name="src_2ste_2framework__graphics_2gpu__dispatch_2tasks_2dispatch__queue_2gpu__task__dispatch__queue_8cpp" id="src_2ste_2framework__graphics_2gpu__dispatch_2tasks_2dispatch__queue_2gpu__task__dispatch__queue_8cpp">
-<area shape="rect" id="node2" href="stdafx_8hpp.html" title="stdafx.hpp" alt="" coords="2239,497,2321,524"/><area shape="rect" id="node17" href="gpu__task__dispatch__queue_8hpp.html" title="gpu_task_dispatch_queue.hpp" alt="" coords="2016,109,2219,136"/><area shape="rect" id="node37" href="AttributedString_8hpp.html" title="AttributedString.hpp" alt="" coords="2911,109,3046,136"/><area shape="rect" id="node39" href="Log_8hpp.html" title="Log.hpp" alt="" coords="469,266,539,293"/><area shape="rect" id="node50" href="sequential__ordering__problem_8hpp.html" title="sequential_ordering\l_problem.hpp" alt="" coords="3209,259,3351,300"/><area shape="rect" id="node4" href="gl_8hpp.html" title="gl.hpp" alt="" coords="2407,572,2465,599"/><area shape="rect" id="node6" href="gl__extensions_8h.html" title="gl_extensions.h" alt="" coords="2440,647,2555,673"/><area shape="rect" id="node18" href="gpu__task_8hpp.html" title="gpu_task.hpp" alt="" coords="2066,266,2166,293"/><area shape="rect" id="node19" href="FramebufferObject_8hpp.html" title="FramebufferObject.hpp" alt="" coords="1681,348,1836,375"/><area shape="rect" id="node30" href="gpu__task__root_8hpp.html" title="gpu_task_root.hpp" alt="" coords="2103,184,2233,211"/><area shape="rect" id="node31" href="gpu__state__transition_8hpp.html" title="gpu_state_transition.hpp" alt="" coords="2258,184,2422,211"/><area shape="rect" id="node34" href="sop__graph_8hpp.html" title="sop_graph.hpp" alt="" coords="2920,348,3029,375"/><area shape="rect" id="node26" href="sop__vertex_8hpp.html" title="sop_vertex.hpp" alt="" coords="2393,423,2505,449"/><area shape="rect" id="node20" href="gl__utils_8hpp.html" title="gl_utils.hpp" alt="" coords="1154,423,1241,449"/><area shape="rect" id="node21" href="resource_8hpp.html" title="resource.hpp" alt="" coords="1596,497,1695,524"/><area shape="rect" id="node23" href="gl__current__context_8hpp.html" title="gl_current_context.hpp" alt="" coords="1961,423,2116,449"/><area shape="rect" id="node24" href="resource__traits_8hpp.html" title="resource_traits.hpp" alt="" coords="1367,423,1502,449"/><area shape="rect" id="node25" href="bindable__resource_8hpp.html" title="bindable_resource.hpp" alt="" coords="1527,423,1684,449"/><area shape="rect" id="node32" href="gl__virtual__context_8hpp.html" title="gl_virtual_context.hpp" alt="" coords="2343,266,2492,293"/><area shape="rect" id="node33" href="sop__edge_8hpp.html" title="sop_edge.hpp" alt="" coords="2580,423,2687,449"/><area shape="rect" id="node35" href="graph_8hpp.html" title="graph.hpp" alt="" coords="3313,423,3393,449"/><area shape="rect" id="node36" href="is__base__of_8hpp.html" title="is_base_of.hpp" alt="" coords="3077,423,3187,449"/><area shape="rect" id="node38" href="attributed__string_8hpp.html" title="attributed_string.hpp" alt="" coords="2761,423,2900,449"/><area shape="rect" id="node45" href="concurrent__queue_8hpp.html" title="concurrent_queue.hpp" alt="" coords="749,497,902,524"/><area shape="rect" id="node46" href="log__ostream_8hpp.html" title="log_ostream.hpp" alt="" coords="501,348,622,375"/><area shape="rect" id="node47" href="log__sink_8hpp.html" title="log_sink.hpp" alt="" coords="303,423,399,449"/><area shape="rect" id="node48" href="log__stream__formatter_8hpp.html" title="log_stream_formatter.hpp" alt="" coords="399,497,571,524"/><area shape="rect" id="node49" href="log__class_8hpp.html" title="log_class.hpp" alt="" coords="163,572,267,599"/></map>
+<area shape="rect" id="node2" href="stdafx_8hpp.html" title="stdafx.hpp" alt="" coords="1893,519,1976,546"/><area shape="rect" id="node17" href="gpu__task__dispatch__queue_8hpp.html" title="gpu_task_dispatch_queue.hpp" alt="" coords="1680,109,1883,136"/><area shape="rect" id="node38" href="AttributedString_8hpp.html" title="AttributedString.hpp" alt="" coords="871,184,1006,211"/><area shape="rect" id="node40" href="Log_8hpp.html" title="Log.hpp" alt="" coords="464,266,533,293"/><area shape="rect" id="node48" href="thread__priority_8hpp.html" title="thread_priority.hpp" alt="" coords="1132,109,1263,136"/><area shape="rect" id="node49" href="tuple__call_8hpp.html" title="tuple_call.hpp" alt="" coords="954,437,1057,464"/><area shape="rect" id="node4" href="gl_8hpp.html" title="gl.hpp" alt="" coords="2011,601,2069,628"/><area shape="rect" id="node6" href="gl__extensions_8h.html" title="gl_extensions.h" alt="" coords="2044,676,2159,703"/><area shape="rect" id="node18" href="gpu__task_8hpp.html" title="gpu_task.hpp" alt="" coords="2310,266,2410,293"/><area shape="rect" id="node19" href="FramebufferObject_8hpp.html" title="FramebufferObject.hpp" alt="" coords="2132,355,2287,382"/><area shape="rect" id="node27" href="gpu__task__root_8hpp.html" title="gpu_task_root.hpp" alt="" coords="1768,184,1899,211"/><area shape="rect" id="node28" href="gpu__state__transition_8hpp.html" title="gpu_state_transition.hpp" alt="" coords="2097,184,2261,211"/><area shape="rect" id="node30" href="sop__graph_8hpp.html" title="sop_graph.hpp" alt="" coords="2911,355,3020,382"/><area shape="rect" id="node31" href="sequential__ordering__problem_8hpp.html" title="sequential_ordering\l_problem.hpp" alt="" coords="2980,259,3121,300"/><area shape="rect" id="node32" href="concurrent__queue_8hpp.html" title="concurrent_queue.hpp" alt="" coords="1591,355,1745,382"/><area shape="rect" id="node34" href="shared__double__reference__guard_8hpp.html" title="shared_double_reference\l_guard.hpp" alt="" coords="1289,348,1465,389"/><area shape="rect" id="node35" href="interruptible__thread_8hpp.html" title="interruptible_thread.hpp" alt="" coords="1637,437,1795,464"/><area shape="rect" id="node23" href="sop__vertex_8hpp.html" title="sop_vertex.hpp" alt="" coords="2556,437,2668,464"/><area shape="rect" id="node20" href="gl__utils_8hpp.html" title="gl_utils.hpp" alt="" coords="1234,437,1321,464"/><area shape="rect" id="node22" href="gl__current__context_8hpp.html" title="gl_current_context.hpp" alt="" coords="2023,437,2177,464"/><area shape="rect" id="node29" href="gl__virtual__context_8hpp.html" title="gl_virtual_context.hpp" alt="" coords="1921,266,2071,293"/><area shape="rect" id="node39" href="attributed__string_8hpp.html" title="attributed_string.hpp" alt="" coords="791,437,929,464"/><area shape="rect" id="node44" href="log__ostream_8hpp.html" title="log_ostream.hpp" alt="" coords="494,355,615,382"/><area shape="rect" id="node45" href="log__sink_8hpp.html" title="log_sink.hpp" alt="" coords="409,437,505,464"/><area shape="rect" id="node46" href="log__stream__formatter_8hpp.html" title="log_stream_formatter.hpp" alt="" coords="186,519,358,546"/><area shape="rect" id="node47" href="log__class_8hpp.html" title="log_class.hpp" alt="" coords="179,601,283,628"/></map>
 </div>
 </div>
 <p><a href="gpu__task__dispatch__queue_8cpp_source.html">Go to the source code of this file.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:ac919f9780cc6eb2067d2a592ee6a0ff1"><td class="memItemLeft" align="right" valign="top">thread_set_priority_low &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="gpu__task__dispatch__queue_8cpp.html#ac919f9780cc6eb2067d2a592ee6a0ff1">optimizer_thread</a> ()</td></tr>
+<tr class="separator:ac919f9780cc6eb2067d2a592ee6a0ff1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">Function Documentation</h2>
+<a class="anchor" id="ac919f9780cc6eb2067d2a592ee6a0ff1"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">thread_set_priority_low&amp; optimizer_thread </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

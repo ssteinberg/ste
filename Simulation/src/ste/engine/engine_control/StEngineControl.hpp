@@ -1,7 +1,20 @@
-// StE
-// © Shlomi Steinberg, 2015-2016
+//	StE
+// © Shlomi Steinberg 2015-2016
 
-#pragma once
+/**	@file StEngineControl.hpp
+ *	@brief Engine Control class
+ *
+ *	StEngineControl is used as the engine context.
+ *	It holds a rendering context and helper class:
+ *	Global task scheduler, cache and GLSL programs pool.
+ *
+ *	StEngineControl should initialized with a GL context
+ *	Core::gl_context.
+ *
+ *	@author Shlomi Steinberg
+ */
+
+ #pragma once
 
 #include "stdafx.hpp"
 

@@ -79,12 +79,15 @@ var hierarchy =
     ] ],
     [ "StE::_tuple_call_detail::call_impl< F, Tuple, Done, Total, N >", "structStE_1_1__tuple__call__detail_1_1call__impl.html", null ],
     [ "StE::_tuple_call_detail::call_impl< F, Tuple, true, Total, N...>", "structStE_1_1__tuple__call__detail_1_1call__impl_3_01F_00_01Tuple_00_01true_00_01Total_00_01N_8_8_8_4.html", null ],
+    [ "StE::_tuple_call_detail::call_impl_ex< B, F, Tuple, Done, Total, N >", "structStE_1_1__tuple__call__detail_1_1call__impl__ex.html", null ],
+    [ "StE::_tuple_call_detail::call_impl_ex< B, F, Tuple, true, Total, N...>", "structStE_1_1__tuple__call__detail_1_1call__impl__ex_3_01B_00_01F_00_01Tuple_00_01true_00_01Total_00_01N_8_8_8_4.html", null ],
     [ "StE::Graphics::Camera", "classStE_1_1Graphics_1_1Camera.html", null ],
     [ "StE::Graphics::common_brdf_representation", "classStE_1_1Graphics_1_1common__brdf__representation.html", null ],
     [ "StE::concurrent_pointer_recycler< T, N >", "classStE_1_1concurrent__pointer__recycler.html", null ],
     [ "StE::concurrent_pointer_recycler< data >", "classStE_1_1concurrent__pointer__recycler.html", null ],
     [ "StE::concurrent_queue< T >", "classStE_1_1concurrent__queue.html", null ],
     [ "StE::concurrent_queue< delayed_task >", "classStE_1_1concurrent__queue.html", null ],
+    [ "StE::concurrent_queue< modify_task_log >", "classStE_1_1concurrent__queue.html", null ],
     [ "StE::concurrent_queue< StE::function_wrapper >", "classStE_1_1concurrent__queue.html", null ],
     [ "StE::concurrent_queue< typename lru_cache_index< key_type >::val_data_guard >", "classStE_1_1concurrent__queue.html", null ],
     [ "StE::concurrent_unordered_map< K, V, cache_line >", "classStE_1_1concurrent__unordered__map.html", null ],
@@ -108,6 +111,24 @@ var hierarchy =
     ] ],
     [ "StE::Core::ElementBufferObjectGeneric", "classStE_1_1Core_1_1ElementBufferObjectGeneric.html", [
       [ "StE::Core::ElementBufferObject< T, U >", "classStE_1_1Core_1_1ElementBufferObject.html", null ]
+    ] ],
+    [ "enable_shared_from_this", null, [
+      [ "StE::Graphics::gpu_task", "classStE_1_1Graphics_1_1gpu__task.html", [
+        [ "SkyDome", "classSkyDome.html", null ],
+        [ "StE::Graphics::dense_voxelizer", "classStE_1_1Graphics_1_1dense__voxelizer.html", null ],
+        [ "StE::Graphics::detail::gpu_task_root", "classStE_1_1Graphics_1_1detail_1_1gpu__task__root.html", null ],
+        [ "StE::Graphics::fb_clear_dispatch< color, depth >", "classStE_1_1Graphics_1_1fb__clear__dispatch.html", null ],
+        [ "StE::Graphics::hdr_bloom_blurx_task", "classStE_1_1Graphics_1_1hdr__bloom__blurx__task.html", null ],
+        [ "StE::Graphics::hdr_bloom_blury_task", "classStE_1_1Graphics_1_1hdr__bloom__blury__task.html", null ],
+        [ "StE::Graphics::hdr_bokeh_blurx_task", "classStE_1_1Graphics_1_1hdr__bokeh__blurx__task.html", null ],
+        [ "StE::Graphics::hdr_compute_histogram_sums_task", "classStE_1_1Graphics_1_1hdr__compute__histogram__sums__task.html", null ],
+        [ "StE::Graphics::hdr_compute_minmax_task", "classStE_1_1Graphics_1_1hdr__compute__minmax__task.html", null ],
+        [ "StE::Graphics::hdr_create_histogram_task", "classStE_1_1Graphics_1_1hdr__create__histogram__task.html", null ],
+        [ "StE::Graphics::hdr_dof_postprocess", "classStE_1_1Graphics_1_1hdr__dof__postprocess.html", null ],
+        [ "StE::Graphics::hdr_tonemap_coc_task", "classStE_1_1Graphics_1_1hdr__tonemap__coc__task.html", null ],
+        [ "StE::Graphics::ObjectGroup", "classStE_1_1Graphics_1_1ObjectGroup.html", null ],
+        [ "StE::Text::TextManager::text_renderable", "classStE_1_1Text_1_1TextManager_1_1text__renderable.html", null ]
+      ] ]
     ] ],
     [ "StE::Graphics::entity", "classStE_1_1Graphics_1_1entity.html", [
       [ "StE::Graphics::entity_affine", "classStE_1_1Graphics_1_1entity__affine.html", [
@@ -498,12 +519,10 @@ var hierarchy =
     [ "StE::Core::gpu_sync", "classStE_1_1Core_1_1gpu__sync.html", null ],
     [ "StE::Core::gqueue< T, Size >", "classStE_1_1Core_1_1gqueue.html", null ],
     [ "StE::Graph::graph< V, E >", "classStE_1_1Graph_1_1graph.html", [
-      [ "StE::Algorithm::SOP::sop_graph< V, E >", "classStE_1_1Algorithm_1_1SOP_1_1sop__graph.html", null ]
-    ] ],
-    [ "StE::Graph::graph< gpu_task, gpu_state_transition >", "classStE_1_1Graph_1_1graph.html", [
       [ "StE::Algorithm::SOP::sop_graph< gpu_task, gpu_state_transition >", "classStE_1_1Algorithm_1_1SOP_1_1sop__graph.html", [
         [ "StE::Graphics::gpu_task_dispatch_queue", "classStE_1_1Graphics_1_1gpu__task__dispatch__queue.html", null ]
-      ] ]
+      ] ],
+      [ "StE::Algorithm::SOP::sop_graph< V, E >", "classStE_1_1Algorithm_1_1SOP_1_1sop__graph.html", null ]
     ] ],
     [ "StE::Graph::detail::graph_impl", "classStE_1_1Graph_1_1detail_1_1graph__impl.html", null ],
     [ "StE::Core::gstack< T, lockless >", "classStE_1_1Core_1_1gstack.html", null ],
@@ -591,11 +610,12 @@ var hierarchy =
     [ "StE::none_t", "structStE_1_1none__t.html", null ],
     [ "StE::Graphics::normal_map_from_height_map< Fin >", "classStE_1_1Graphics_1_1normal__map__from__height__map.html", null ],
     [ "StE::Graphics::ObjectVertexData", "structStE_1_1Graphics_1_1ObjectVertexData.html", null ],
-    [ "StE::Algorithm::SOP::detail::optimize_sequential_ordering_impl", "classStE_1_1Algorithm_1_1SOP_1_1detail_1_1optimize__sequential__ordering__impl.html", null ],
     [ "StE::optional< T >", "classStE_1_1optional.html", null ],
     [ "StE::optional< bool >", "classStE_1_1optional.html", null ],
     [ "StE::optional< int >", "classStE_1_1optional.html", null ],
+    [ "StE::optional< MissingDepsContainerT >", "classStE_1_1optional.html", null ],
     [ "StE::optional< state_type >", "classStE_1_1optional.html", null ],
+    [ "StE::optional< StE::Algorithm::SOP::sequential_ordering_problem::sequential_ordering_problem_solution >", "classStE_1_1optional.html", null ],
     [ "StE::Core::pinned_gvector< T, lockless >", "classStE_1_1Core_1_1pinned__gvector.html", null ],
     [ "StE::HID::pointer", "classStE_1_1HID_1_1pointer.html", null ],
     [ "StE::Resource::glsl_loader::program_binary", "structStE_1_1Resource_1_1glsl__loader_1_1program__binary.html", null ],
@@ -652,6 +672,9 @@ var hierarchy =
     [ "StE::Graphics::Scene", "classStE_1_1Graphics_1_1Scene.html", null ],
     [ "StE::Graphics::SceneProperties", "classStE_1_1Graphics_1_1SceneProperties.html", null ],
     [ "StE::scoped_thread", "classStE_1_1scoped__thread.html", null ],
+    [ "StE::Algorithm::SOP::sequential_ordering_problem< GraphType >", "classStE_1_1Algorithm_1_1SOP_1_1sequential__ordering__problem.html", null ],
+    [ "StE::Algorithm::SOP::sequential_ordering_problem< Base >", "classStE_1_1Algorithm_1_1SOP_1_1sequential__ordering__problem.html", null ],
+    [ "StE::Algorithm::SOP::sequential_ordering_problem< GraphType >::sequential_ordering_problem_solution", "structStE_1_1Algorithm_1_1SOP_1_1sequential__ordering__problem_1_1sequential__ordering__problem__solution.html", null ],
     [ "StE::Core::shader_layout_bindable_resource< BindingType >", "classStE_1_1Core_1_1shader__layout__bindable__resource.html", null ],
     [ "StE::Core::shader_layout_bindable_resource< atomic_buffer_object_layout_binding_type >", "classStE_1_1Core_1_1shader__layout__bindable__resource.html", [
       [ "StE::Core::buffer_object_layout_bindable< GLuint, atomic_buffer_object_layout_binding_type, U >", "classStE_1_1Core_1_1buffer__object__layout__bindable.html", null ]
@@ -709,6 +732,7 @@ var hierarchy =
     [ "StE::shared_double_reference_guard< DataType, recycle_pointers >", "classStE_1_1shared__double__reference__guard.html", null ],
     [ "StE::shared_double_reference_guard< buckets_ptr, false >", "classStE_1_1shared__double__reference__guard.html", null ],
     [ "StE::shared_double_reference_guard< resize_data_struct< buckets_ptr >, false >", "classStE_1_1shared__double__reference__guard.html", null ],
+    [ "StE::shared_double_reference_guard< sop_optimizer_type, false >", "classStE_1_1shared__double__reference__guard.html", null ],
     [ "StE::shared_double_reference_guard< table_ptr, false >", "classStE_1_1shared__double__reference__guard.html", null ],
     [ "StE::signal< Ts >", "classStE_1_1signal.html", null ],
     [ "StE::signal< glm::dvec2 >", "classStE_1_1signal.html", null ],
@@ -719,6 +743,7 @@ var hierarchy =
     [ "StE::signal< O >", "classStE_1_1signal.html", null ],
     [ "StE::signal< Object * >", "classStE_1_1signal.html", null ],
     [ "StE::signal< Ts...>", "classStE_1_1signal.html", null ],
+    [ "StE::Algorithm::SOP::sop_optimizer< G >", "classStE_1_1Algorithm_1_1SOP_1_1sop__optimizer.html", null ],
     [ "StE::Graphics::spectrum< T, samples >", "classStE_1_1Graphics_1_1spectrum.html", null ],
     [ "StE::Graphics::spectrum< float, 3 >", "classStE_1_1Graphics_1_1spectrum.html", [
       [ "StE::Graphics::RGB", "classStE_1_1Graphics_1_1RGB.html", null ],
@@ -1034,25 +1059,10 @@ var hierarchy =
     [ "StE::typelist_type_at< 0, H, Tail...>", "structStE_1_1typelist__type__at_3_010_00_01H_00_01Tail_8_8_8_4.html", null ],
     [ "StE::Core::VBODescriptorWithTypes< Ts >", "classStE_1_1Core_1_1VBODescriptorWithTypes.html", null ],
     [ "StE::Graph::vertex", "classStE_1_1Graph_1_1vertex.html", [
-      [ "StE::Algorithm::SOP::sop_vertex< std::unordered_set< const gpu_task * > >", "classStE_1_1Algorithm_1_1SOP_1_1sop__vertex.html", [
-        [ "StE::Graphics::gpu_task", "classStE_1_1Graphics_1_1gpu__task.html", [
-          [ "SkyDome", "classSkyDome.html", null ],
-          [ "StE::Graphics::dense_voxelizer", "classStE_1_1Graphics_1_1dense__voxelizer.html", null ],
-          [ "StE::Graphics::detail::gpu_task_root", "classStE_1_1Graphics_1_1detail_1_1gpu__task__root.html", null ],
-          [ "StE::Graphics::fb_clear_dispatch< color, depth >", "classStE_1_1Graphics_1_1fb__clear__dispatch.html", null ],
-          [ "StE::Graphics::hdr_bloom_blurx_task", "classStE_1_1Graphics_1_1hdr__bloom__blurx__task.html", null ],
-          [ "StE::Graphics::hdr_bloom_blury_task", "classStE_1_1Graphics_1_1hdr__bloom__blury__task.html", null ],
-          [ "StE::Graphics::hdr_bokeh_blurx_task", "classStE_1_1Graphics_1_1hdr__bokeh__blurx__task.html", null ],
-          [ "StE::Graphics::hdr_compute_histogram_sums_task", "classStE_1_1Graphics_1_1hdr__compute__histogram__sums__task.html", null ],
-          [ "StE::Graphics::hdr_compute_minmax_task", "classStE_1_1Graphics_1_1hdr__compute__minmax__task.html", null ],
-          [ "StE::Graphics::hdr_create_histogram_task", "classStE_1_1Graphics_1_1hdr__create__histogram__task.html", null ],
-          [ "StE::Graphics::hdr_dof_postprocess", "classStE_1_1Graphics_1_1hdr__dof__postprocess.html", null ],
-          [ "StE::Graphics::hdr_tonemap_coc_task", "classStE_1_1Graphics_1_1hdr__tonemap__coc__task.html", null ],
-          [ "StE::Graphics::ObjectGroup", "classStE_1_1Graphics_1_1ObjectGroup.html", null ],
-          [ "StE::Text::TextManager::text_renderable", "classStE_1_1Text_1_1TextManager_1_1text__renderable.html", null ]
-        ] ]
+      [ "StE::Algorithm::SOP::sop_vertex< boost::container::flat_set< std::shared_ptr< const gpu_task > >, boost::container::flat_set< const gpu_task * > >", "classStE_1_1Algorithm_1_1SOP_1_1sop__vertex.html", [
+        [ "StE::Graphics::gpu_task", "classStE_1_1Graphics_1_1gpu__task.html", null ]
       ] ],
-      [ "StE::Algorithm::SOP::sop_vertex< DepsContainer >", "classStE_1_1Algorithm_1_1SOP_1_1sop__vertex.html", null ]
+      [ "StE::Algorithm::SOP::sop_vertex< DepsContainer, RequisiteContainer >", "classStE_1_1Algorithm_1_1SOP_1_1sop__vertex.html", null ]
     ] ],
     [ "StE::Core::vertex_array_attrib_binder", "classStE_1_1Core_1_1vertex__array__attrib__binder.html", null ],
     [ "StE::Core::vertex_buffer_attrib_binder< T, D, U >", "classStE_1_1Core_1_1vertex__buffer__attrib__binder.html", null ],

@@ -1,5 +1,5 @@
 <map id="src/ste/framework_graphics/gpu_dispatch/renderers/rendering_system.hpp" name="src/ste/framework_graphics/gpu_dispatch/renderers/rendering_system.hpp">
-<area shape="rect" id="node2" href="$StEngineControl_8hpp.html" title="src/ste/engine/engine\l_control/StEngineControl.hpp" alt="" coords="1090,109,1283,151"/>
+<area shape="rect" id="node2" href="$StEngineControl_8hpp.html" title="Engine Control class. " alt="" coords="1090,109,1283,151"/>
 <area shape="rect" id="node8" href="$GIRenderer_8hpp.html" title="src/ste/framework_graphics\l/gpu_dispatch/renderers\l/global_illumination/GIRenderer.hpp" alt="" coords="1132,688,1367,744"/>
 <area shape="rect" id="node3" href="$main_8cpp.html" title="src/main.cpp" alt="" coords="346,836,443,863"/>
 <area shape="rect" id="node4" href="$StEngineControl_8cpp.html" title="src/ste/engine/engine\l_control/StEngineControl.cpp" alt="" coords="1395,213,1589,255"/>

@@ -37,7 +37,7 @@
 <area shape="rect" id="node38" href="$gl__virtual__context_8hpp.html" title="src/ste/engine/core\l/gl/context/dummy/gl\l_virtual_context.hpp" alt="" coords="549,392,696,448"/>
 <area shape="rect" id="node40" href="$gl__current__context_8hpp.html" title="src/ste/engine/core\l/gl/context/gl_current\l_context.hpp" alt="" coords="1659,392,1805,448"/>
 <area shape="rect" id="node36" href="$gl__context_8cpp.html" title="src/ste/engine/core\l/gl/context/actual/gl\l_context.cpp" alt="" coords="295,503,433,559"/>
-<area shape="rect" id="node37" href="$StEngineControl_8hpp.html" title="src/ste/engine/engine\l_control/StEngineControl.hpp" alt="" coords="785,949,978,990"/>
+<area shape="rect" id="node37" href="$StEngineControl_8hpp.html" title="Engine Control class. " alt="" coords="785,949,978,990"/>
 <area shape="rect" id="node39" href="$gpu__state__transition_8hpp.html" title="src/ste/framework_graphics\l/gpu_dispatch/tasks/gpu\l_state_transition.hpp" alt="" coords="457,503,644,559"/>
 <area shape="rect" id="node41" href="$gl__current__context_8cpp.html" title="src/ste/engine/core\l/gl/context/gl_current\l_context.cpp" alt="" coords="2229,503,2376,559"/>
 <area shape="rect" id="node42" href="$buffer__object_8hpp.html" title="src/ste/engine/core\l/gpu_resources/buffers\l/buffer_object.hpp" alt="" coords="1057,503,1215,559"/>

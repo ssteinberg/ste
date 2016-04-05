@@ -1,3 +1,4 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structStE_1_1Core_1_1resource__is__render__target_3_01core__resource__type_1_1RenderbufferObject_01_4.html" title="StE::Core::resource\l_is_render_target\&lt; core\l_resource_type::RenderbufferObject \&gt;" alt="" coords="5,5,253,61"/>
+<area shape="rect" id="node1" href="$classStE_1_1Core_1_1layout__binding.html" title="StE::Core::layout_binding\l\&lt; BindingType \&gt;" alt="" coords="5,5,180,47"/>
+<area shape="rect" id="node2" href="$classStE_1_1Core_1_1layout__binding__none.html" title="StE::Core::layout_binding\l_none\&lt; BindingType \&gt;" alt="" coords="228,5,403,47"/>
 </map>

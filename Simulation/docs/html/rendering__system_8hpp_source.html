@@ -111,39 +111,40 @@ $(document).ready(function(){initNavTree('rendering__system_8hpp_source.html',''
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor"></span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="stdafx_8hpp.html">stdafx.hpp</a>&quot;</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="gpu__task__dispatch__queue_8hpp.html">gpu_task_dispatch_queue.hpp</a>&quot;</span></div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;</div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &lt;string&gt;</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="keyword">namespace </span>StE {</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keyword">class </span>StEngineControl;</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keyword">namespace </span>Graphics {</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
-<div class="line"><a name="l00017"></a><span class="lineno"><a class="line" href="classStE_1_1Graphics_1_1rendering__system.html">   17</a></span>&#160;<span class="keyword">class </span><a class="code" href="classStE_1_1Graphics_1_1rendering__system.html">rendering_system</a> {</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00019"></a><span class="lineno"><a class="line" href="classStE_1_1Graphics_1_1rendering__system.html#ada68634fb6c9d2cae16e08f1f17c118f">   19</a></span>&#160;    <a class="code" href="classStE_1_1Graphics_1_1gpu__task__dispatch__queue.html">gpu_task_dispatch_queue</a> <a class="code" href="classStE_1_1Graphics_1_1rendering__system.html#ada68634fb6c9d2cae16e08f1f17c118f">q</a>;</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00022"></a><span class="lineno"><a class="line" href="classStE_1_1Graphics_1_1rendering__system.html#a74aacbd2532252d6f427cbf5a646fee2">   22</a></span>&#160;    <span class="keyword">virtual</span> <a class="code" href="classStE_1_1Graphics_1_1rendering__system.html#a74aacbd2532252d6f427cbf5a646fee2">~rendering_system</a>() noexcept {}</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classStE_1_1Graphics_1_1rendering__system.html#a62ee2709eb2007cc2127d74cb8b710f0">render_queue</a>(<span class="keyword">const</span> <a class="code" href="classStE_1_1StEngineControl.html">StEngineControl</a> &amp;ctx) = 0;</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    <span class="keyword">virtual</span> std::string <a class="code" href="classStE_1_1Graphics_1_1rendering__system.html#a99b9a38a18ce6d1c44ed12914b4eb0e8">rendering_system_name</a>() <span class="keyword">const</span> = 0;</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;};</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;}</div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;</div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="gpu__task__dispatch__queue_8hpp.html">gpu_task_dispatch_queue.hpp</a>&quot;</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="keyword">namespace </span>StE {</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keyword">class </span>StEngineControl;</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">namespace </span>Graphics {</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;</div>
+<div class="line"><a name="l00018"></a><span class="lineno"><a class="line" href="classStE_1_1Graphics_1_1rendering__system.html">   18</a></span>&#160;<span class="keyword">class </span><a class="code" href="classStE_1_1Graphics_1_1rendering__system.html">rendering_system</a> {</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00020"></a><span class="lineno"><a class="line" href="classStE_1_1Graphics_1_1rendering__system.html#ada68634fb6c9d2cae16e08f1f17c118f">   20</a></span>&#160;    <a class="code" href="classStE_1_1Graphics_1_1gpu__task__dispatch__queue.html">gpu_task_dispatch_queue</a> <a class="code" href="classStE_1_1Graphics_1_1rendering__system.html#ada68634fb6c9d2cae16e08f1f17c118f">q</a>;</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00023"></a><span class="lineno"><a class="line" href="classStE_1_1Graphics_1_1rendering__system.html#a74aacbd2532252d6f427cbf5a646fee2">   23</a></span>&#160;    <span class="keyword">virtual</span> <a class="code" href="classStE_1_1Graphics_1_1rendering__system.html#a74aacbd2532252d6f427cbf5a646fee2">~rendering_system</a>() noexcept {}</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classStE_1_1Graphics_1_1rendering__system.html#a62ee2709eb2007cc2127d74cb8b710f0">render_queue</a>(<span class="keyword">const</span> <a class="code" href="classStE_1_1StEngineControl.html">StEngineControl</a> &amp;ctx) = 0;</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    <span class="keyword">virtual</span> std::string <a class="code" href="classStE_1_1Graphics_1_1rendering__system.html#a99b9a38a18ce6d1c44ed12914b4eb0e8">rendering_system_name</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;};</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;}</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;}</div>
 <div class="ttc" id="stdafx_8hpp_html"><div class="ttname"><a href="stdafx_8hpp.html">stdafx.hpp</a></div></div>
-<div class="ttc" id="classStE_1_1Graphics_1_1rendering__system_html_a74aacbd2532252d6f427cbf5a646fee2"><div class="ttname"><a href="classStE_1_1Graphics_1_1rendering__system.html#a74aacbd2532252d6f427cbf5a646fee2">StE::Graphics::rendering_system::~rendering_system</a></div><div class="ttdeci">virtual ~rendering_system() noexcept</div><div class="ttdef"><b>Definition:</b> <a href="rendering__system_8hpp_source.html#l00022">rendering_system.hpp:22</a></div></div>
+<div class="ttc" id="classStE_1_1Graphics_1_1rendering__system_html_a74aacbd2532252d6f427cbf5a646fee2"><div class="ttname"><a href="classStE_1_1Graphics_1_1rendering__system.html#a74aacbd2532252d6f427cbf5a646fee2">StE::Graphics::rendering_system::~rendering_system</a></div><div class="ttdeci">virtual ~rendering_system() noexcept</div><div class="ttdef"><b>Definition:</b> <a href="rendering__system_8hpp_source.html#l00023">rendering_system.hpp:23</a></div></div>
 <div class="ttc" id="classStE_1_1Graphics_1_1rendering__system_html_a99b9a38a18ce6d1c44ed12914b4eb0e8"><div class="ttname"><a href="classStE_1_1Graphics_1_1rendering__system.html#a99b9a38a18ce6d1c44ed12914b4eb0e8">StE::Graphics::rendering_system::rendering_system_name</a></div><div class="ttdeci">virtual std::string rendering_system_name() const =0</div></div>
-<div class="ttc" id="classStE_1_1Graphics_1_1gpu__task__dispatch__queue_html"><div class="ttname"><a href="classStE_1_1Graphics_1_1gpu__task__dispatch__queue.html">StE::Graphics::gpu_task_dispatch_queue</a></div><div class="ttdef"><b>Definition:</b> <a href="gpu__task__dispatch__queue_8hpp_source.html#l00021">gpu_task_dispatch_queue.hpp:21</a></div></div>
+<div class="ttc" id="classStE_1_1Graphics_1_1gpu__task__dispatch__queue_html"><div class="ttname"><a href="classStE_1_1Graphics_1_1gpu__task__dispatch__queue.html">StE::Graphics::gpu_task_dispatch_queue</a></div><div class="ttdef"><b>Definition:</b> <a href="gpu__task__dispatch__queue_8hpp_source.html#l00030">gpu_task_dispatch_queue.hpp:30</a></div></div>
 <div class="ttc" id="gpu__task__dispatch__queue_8hpp_html"><div class="ttname"><a href="gpu__task__dispatch__queue_8hpp.html">gpu_task_dispatch_queue.hpp</a></div></div>
 <div class="ttc" id="classStE_1_1Graphics_1_1rendering__system_html_a62ee2709eb2007cc2127d74cb8b710f0"><div class="ttname"><a href="classStE_1_1Graphics_1_1rendering__system.html#a62ee2709eb2007cc2127d74cb8b710f0">StE::Graphics::rendering_system::render_queue</a></div><div class="ttdeci">virtual void render_queue(const StEngineControl &amp;ctx)=0</div></div>
-<div class="ttc" id="classStE_1_1Graphics_1_1rendering__system_html_ada68634fb6c9d2cae16e08f1f17c118f"><div class="ttname"><a href="classStE_1_1Graphics_1_1rendering__system.html#ada68634fb6c9d2cae16e08f1f17c118f">StE::Graphics::rendering_system::q</a></div><div class="ttdeci">gpu_task_dispatch_queue q</div><div class="ttdef"><b>Definition:</b> <a href="rendering__system_8hpp_source.html#l00019">rendering_system.hpp:19</a></div></div>
-<div class="ttc" id="classStE_1_1StEngineControl_html"><div class="ttname"><a href="classStE_1_1StEngineControl.html">StE::StEngineControl</a></div><div class="ttdef"><b>Definition:</b> <a href="StEngineControl_8hpp_source.html#l00030">StEngineControl.hpp:30</a></div></div>
-<div class="ttc" id="classStE_1_1Graphics_1_1rendering__system_html"><div class="ttname"><a href="classStE_1_1Graphics_1_1rendering__system.html">StE::Graphics::rendering_system</a></div><div class="ttdef"><b>Definition:</b> <a href="rendering__system_8hpp_source.html#l00017">rendering_system.hpp:17</a></div></div>
+<div class="ttc" id="classStE_1_1Graphics_1_1rendering__system_html_ada68634fb6c9d2cae16e08f1f17c118f"><div class="ttname"><a href="classStE_1_1Graphics_1_1rendering__system.html#ada68634fb6c9d2cae16e08f1f17c118f">StE::Graphics::rendering_system::q</a></div><div class="ttdeci">gpu_task_dispatch_queue q</div><div class="ttdef"><b>Definition:</b> <a href="rendering__system_8hpp_source.html#l00020">rendering_system.hpp:20</a></div></div>
+<div class="ttc" id="classStE_1_1StEngineControl_html"><div class="ttname"><a href="classStE_1_1StEngineControl.html">StE::StEngineControl</a></div><div class="ttdef"><b>Definition:</b> <a href="StEngineControl_8hpp_source.html#l00043">StEngineControl.hpp:43</a></div></div>
+<div class="ttc" id="classStE_1_1Graphics_1_1rendering__system_html"><div class="ttname"><a href="classStE_1_1Graphics_1_1rendering__system.html">StE::Graphics::rendering_system</a></div><div class="ttdef"><b>Definition:</b> <a href="rendering__system_8hpp_source.html#l00018">rendering_system.hpp:18</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

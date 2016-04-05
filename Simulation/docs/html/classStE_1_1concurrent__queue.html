@@ -120,14 +120,12 @@ Inheritance diagram for StE::concurrent_queue&lt; T &gt;:</div>
 <div class="dyncontent">
 <div class="center"><img src="classStE_1_1concurrent__queue__inherit__graph.png" border="0" usemap="#StE_1_1concurrent__queue_3_01T_01_4_inherit__map" alt="Inheritance graph"/></div>
 <map name="StE_1_1concurrent__queue_3_01T_01_4_inherit__map" id="StE_1_1concurrent__queue_3_01T_01_4_inherit__map">
-<area shape="rect" id="node2" href="classStE_1_1concurrent__queue.html" title="{StE::concurrent_queue\l\&lt; delayed_task \&gt;\n|# head\l# tail\l|+ concurrent_queue()\l+ concurrent_queue()\l+ ~concurrent_queue()\l+ operator=()\l+ pop()\l+ push()\l# set_new_tail()\l# increase_external_count()\l# free_external_counter()\l}" alt="" coords="5,321,192,545"/><area shape="rect" id="node3" href="classStE_1_1concurrent__queue.html" title="{StE::concurrent_queue\l\&lt; typename lru_cache\l_index\&lt; key_type \&gt;::val\l_data_guard \&gt;\n|# head\l# tail\l|+ concurrent_queue()\l+ concurrent_queue()\l+ ~concurrent_queue()\l+ operator=()\l+ pop()\l+ push()\l# set_new_tail()\l# increase_external_count()\l# free_external_counter()\l}" alt="" coords="216,307,403,560"/><area shape="rect" id="node4" href="classStE_1_1concurrent__queue.html" title="{StE::concurrent_queue\l\&lt; StE::function_wrapper \&gt;\n|# head\l# tail\l|+ concurrent_queue()\l+ concurrent_queue()\l+ ~concurrent_queue()\l+ operator=()\l+ pop()\l+ push()\l# set_new_tail()\l# increase_external_count()\l# free_external_counter()\l}" alt="" coords="427,321,613,545"/></map>
+<area shape="rect" id="node2" href="classStE_1_1concurrent__queue.html" title="{StE::concurrent_queue\l\&lt; delayed_task \&gt;\n|# head\l# tail\l|+ concurrent_queue()\l+ concurrent_queue()\l+ ~concurrent_queue()\l+ operator=()\l+ pop()\l+ push()\l+ is_empty_hint()\l# set_new_tail()\l# increase_external_count()\l# free_external_counter()\l}" alt="" coords="5,336,192,575"/><area shape="rect" id="node3" href="classStE_1_1concurrent__queue.html" title="{StE::concurrent_queue\l\&lt; typename lru_cache\l_index\&lt; key_type \&gt;::val\l_data_guard \&gt;\n|# head\l# tail\l|+ concurrent_queue()\l+ concurrent_queue()\l+ ~concurrent_queue()\l+ operator=()\l+ pop()\l+ push()\l+ is_empty_hint()\l# set_new_tail()\l# increase_external_count()\l# free_external_counter()\l}" alt="" coords="216,321,403,589"/><area shape="rect" id="node4" href="classStE_1_1concurrent__queue.html" title="{StE::concurrent_queue\l\&lt; StE::function_wrapper \&gt;\n|# head\l# tail\l|+ concurrent_queue()\l+ concurrent_queue()\l+ ~concurrent_queue()\l+ operator=()\l+ pop()\l+ push()\l+ is_empty_hint()\l# set_new_tail()\l# increase_external_count()\l# free_external_counter()\l}" alt="" coords="427,336,613,575"/><area shape="rect" id="node5" href="classStE_1_1concurrent__queue.html" title="{StE::concurrent_queue\l\&lt; modify_task_log \&gt;\n|# head\l# tail\l|+ concurrent_queue()\l+ concurrent_queue()\l+ ~concurrent_queue()\l+ operator=()\l+ pop()\l+ push()\l+ is_empty_hint()\l# set_new_tail()\l# increase_external_count()\l# free_external_counter()\l}" alt="" coords="637,336,824,575"/></map>
 </div>
 <div class="dynheader">
 Collaboration diagram for StE::concurrent_queue&lt; T &gt;:</div>
 <div class="dyncontent">
 <div class="center"><img src="classStE_1_1concurrent__queue__coll__graph.png" border="0" usemap="#StE_1_1concurrent__queue_3_01T_01_4_coll__map" alt="Collaboration graph"/></div>
-<map name="StE_1_1concurrent__queue_3_01T_01_4_coll__map" id="StE_1_1concurrent__queue_3_01T_01_4_coll__map">
-</map>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
@@ -144,6 +142,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a87c9e36eaa2ac924700286a008b0464e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a93132a3a0170c7b2e79601ecc1ff6184"><td class="memItemLeft" align="right" valign="top"><a class="el" href="gl__extensions_8h.html#a814c8b5745ecf82afdd1da718fbdc47c">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1concurrent__queue.html#a93132a3a0170c7b2e79601ecc1ff6184">push</a> (T &amp;&amp;new_value)</td></tr>
 <tr class="separator:a93132a3a0170c7b2e79601ecc1ff6184"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad94453d955d5a1dfa74d4e72057e3084"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1concurrent__queue.html#ad94453d955d5a1dfa74d4e72057e3084">is_empty_hint</a> () const </td></tr>
+<tr class="separator:ad94453d955d5a1dfa74d4e72057e3084"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -315,6 +315,33 @@ template&lt;typename T&gt; </div>
 </div><div class="memdoc">
 
 <p>Definition at line <a class="el" href="concurrent__queue_8hpp_source.html#l00064">64</a> of file <a class="el" href="concurrent__queue_8hpp_source.html">concurrent_queue.hpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ad94453d955d5a1dfa74d4e72057e3084"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="classStE_1_1concurrent__queue.html">StE::concurrent_queue</a>&lt; T &gt;::is_empty_hint </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="concurrent__queue_8hpp_source.html#l00170">170</a> of file <a class="el" href="concurrent__queue_8hpp_source.html">concurrent_queue.hpp</a>.</p>
 
 </div>
 </div>

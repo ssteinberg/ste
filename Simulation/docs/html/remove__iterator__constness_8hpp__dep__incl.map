@@ -14,7 +14,7 @@
 <area shape="rect" id="node47" href="$SurfaceFactory_8hpp.html" title="src/ste/framework_resources\l/surfaces/SurfaceFactory.hpp" alt="" coords="4015,666,4211,707"/>
 <area shape="rect" id="node48" href="$SurfaceFactory_8cpp.html" title="src/ste/framework_resources\l/surfaces/SurfaceFactory.cpp" alt="" coords="4314,777,4510,819"/>
 <area shape="rect" id="node7" href="$lru__cache_8hpp.html" title="src/ste/engine/cache\l/lru_cache.hpp" alt="" coords="3257,555,3405,596"/>
-<area shape="rect" id="node8" href="$StEngineControl_8hpp.html" title="src/ste/engine/engine\l_control/StEngineControl.hpp" alt="" coords="3033,666,3226,707"/>
+<area shape="rect" id="node8" href="$StEngineControl_8hpp.html" title="Engine Control class. " alt="" coords="3033,666,3226,707"/>
 <area shape="rect" id="node9" href="$StEngineControl_8cpp.html" title="src/ste/engine/engine\l_control/StEngineControl.cpp" alt="" coords="3746,777,3939,819"/>
 <area shape="rect" id="node10" href="$ObjectGroup_8hpp.html" title="src/ste/framework_graphics\l/entities/objects/ObjectGroup.hpp" alt="" coords="3211,1015,3429,1056"/>
 <area shape="rect" id="node11" href="$ModelFactory_8hpp.html" title="src/ste/framework_resources\l/models/ModelFactory.hpp" alt="" coords="3339,1126,3535,1167"/>

@@ -1,7 +1,7 @@
 <map id="src/ste/framework_resources/models/ModelFactory.hpp" name="src/ste/framework_resources/models/ModelFactory.hpp">
 <area shape="rect" id="node2" href="$task_8hpp.html" title="task.hpp" alt="" coords="3497,393,3567,420"/>
 <area shape="rect" id="node19" href="$ObjectGroup_8hpp.html" title="ObjectGroup.hpp" alt="" coords="1214,95,1335,121"/>
-<area shape="rect" id="node20" href="$StEngineControl_8hpp.html" title="StEngineControl.hpp" alt="" coords="2905,244,3047,271"/>
+<area shape="rect" id="node20" href="$StEngineControl_8hpp.html" title="Engine Control class. " alt="" coords="2905,244,3047,271"/>
 <area shape="rect" id="node34" href="$Texture2D_8hpp.html" title="Texture2D.hpp" alt="" coords="1961,393,2071,420"/>
 <area shape="rect" id="node44" href="$SceneProperties_8hpp.html" title="SceneProperties.hpp" alt="" coords="569,169,716,196"/>
 <area shape="rect" id="node45" href="$material__storage_8hpp.html" title="material_storage.hpp" alt="" coords="563,244,709,271"/>

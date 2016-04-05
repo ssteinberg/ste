@@ -3,7 +3,7 @@
 <area shape="rect" id="node29" href="$gl__virtual__context_8hpp.html" title="src/ste/engine/core\l/gl/context/dummy/gl\l_virtual_context.hpp" alt="" coords="3855,109,4002,165"/>
 <area shape="rect" id="node33" href="$gl__current__context_8hpp.html" title="src/ste/engine/core\l/gl/context/gl_current\l_context.hpp" alt="" coords="2558,109,2705,165"/>
 <area shape="rect" id="node3" href="$gl__context_8cpp.html" title="src/ste/engine/core\l/gl/context/actual/gl\l_context.cpp" alt="" coords="778,213,917,269"/>
-<area shape="rect" id="node4" href="$StEngineControl_8hpp.html" title="src/ste/engine/engine\l_control/StEngineControl.hpp" alt="" coords="560,221,753,262"/>
+<area shape="rect" id="node4" href="$StEngineControl_8hpp.html" title="Engine Control class. " alt="" coords="560,221,753,262"/>
 <area shape="rect" id="node5" href="$main_8cpp.html" title="src/main.cpp" alt="" coords="1672,836,1769,863"/>
 <area shape="rect" id="node6" href="$StEngineControl_8cpp.html" title="src/ste/engine/engine\l_control/StEngineControl.cpp" alt="" coords="5,332,199,373"/>
 <area shape="rect" id="node7" href="$ObjectGroup_8hpp.html" title="src/ste/framework_graphics\l/entities/objects/ObjectGroup.hpp" alt="" coords="1923,451,2142,492"/>

@@ -1,12 +1,25 @@
 <map id="src/ste/math_additions/algorithms/sequential_ordering_problem/sequential_ordering_problem.hpp" name="src/ste/math_additions/algorithms/sequential_ordering_problem/sequential_ordering_problem.hpp">
-<area shape="rect" id="node2" href="$stdafx_8hpp.html" title="stdafx.hpp" alt="" coords="865,423,948,449"/>
-<area shape="rect" id="node17" href="$sop__graph_8hpp.html" title="sop_graph.hpp" alt="" coords="927,124,1036,151"/>
-<area shape="rect" id="node4" href="$gl_8hpp.html" title="gl.hpp" alt="" coords="1137,497,1194,524"/>
-<area shape="rect" id="node6" href="$gl__extensions_8h.html" title="gl_extensions.h" alt="" coords="1169,572,1284,599"/>
-<area shape="rect" id="node18" href="$graph_8hpp.html" title="graph.hpp" alt="" coords="541,199,621,225"/>
-<area shape="rect" id="node26" href="$sop__vertex_8hpp.html" title="sop_vertex.hpp" alt="" coords="944,273,1056,300"/>
-<area shape="rect" id="node27" href="$sop__edge_8hpp.html" title="sop_edge.hpp" alt="" coords="1061,199,1168,225"/>
-<area shape="rect" id="node28" href="$is__base__of_8hpp.html" title="is_base_of.hpp" alt="" coords="926,199,1037,225"/>
-<area shape="rect" id="node19" href="$graph__vertex_8hpp.html" title="graph_vertex.hpp" alt="" coords="402,348,526,375"/>
-<area shape="rect" id="node21" href="$graph__edge_8hpp.html" title="graph_edge.hpp" alt="" coords="750,273,869,300"/>
+<area shape="rect" id="node2" href="$stdafx_8hpp.html" title="stdafx.hpp" alt="" coords="688,437,771,464"/>
+<area shape="rect" id="node17" href="$sop__graph_8hpp.html" title="sop_graph.hpp" alt="" coords="529,124,639,151"/>
+<area shape="rect" id="node25" href="$optional_8hpp.html" title="optional.hpp" alt="" coords="1440,355,1533,382"/>
+<area shape="rect" id="node28" href="$is__base__of_8hpp.html" title="is_base_of.hpp" alt="" coords="662,199,773,225"/>
+<area shape="rect" id="node32" href="$sop__optimizer_8hpp.html" title="sop_optimizer.hpp" alt="" coords="1083,124,1213,151"/>
+<area shape="rect" id="node4" href="$gl_8hpp.html" title="gl.hpp" alt="" coords="863,512,921,539"/>
+<area shape="rect" id="node6" href="$gl__extensions_8h.html" title="gl_extensions.h" alt="" coords="896,587,1011,613"/>
+<area shape="rect" id="node18" href="$graph_8hpp.html" title="graph.hpp" alt="" coords="848,199,928,225"/>
+<area shape="rect" id="node24" href="$sop__vertex_8hpp.html" title="sop_vertex.hpp" alt="" coords="436,273,548,300"/>
+<area shape="rect" id="node27" href="$sop__edge_8hpp.html" title="sop_edge.hpp" alt="" coords="531,199,637,225"/>
+<area shape="rect" id="node19" href="$graph__vertex_8hpp.html" title="graph_vertex.hpp" alt="" coords="835,355,959,382"/>
+<area shape="rect" id="node20" href="$graph__edge_8hpp.html" title="graph_edge.hpp" alt="" coords="790,273,909,300"/>
+<area shape="rect" id="node26" href="$types_8hpp.html" title="types.hpp" alt="" coords="1491,437,1570,464"/>
+<area shape="rect" id="node33" href="$task_8hpp.html" title="task.hpp" alt="" coords="1609,199,1679,225"/>
+<area shape="rect" id="node42" href="$Log_8hpp.html" title="Log.hpp" alt="" coords="2545,199,2615,225"/>
+<area shape="rect" id="node37" href="$function__traits_8hpp.html" title="function_traits.hpp" alt="" coords="1187,355,1314,382"/>
+<area shape="rect" id="node38" href="$thread__constants_8hpp.html" title="thread_constants.hpp" alt="" coords="1790,355,1938,382"/>
+<area shape="rect" id="node39" href="$task__scheduler_8hpp.html" title="task_scheduler.hpp" alt="" coords="1630,273,1767,300"/>
+<area shape="rect" id="node41" href="$concurrent__queue_8hpp.html" title="concurrent_queue.hpp" alt="" coords="2202,355,2355,382"/>
+<area shape="rect" id="node47" href="$log__ostream_8hpp.html" title="log_ostream.hpp" alt="" coords="2618,273,2739,300"/>
+<area shape="rect" id="node48" href="$log__sink_8hpp.html" title="log_sink.hpp" alt="" coords="2644,355,2740,382"/>
+<area shape="rect" id="node49" href="$log__stream__formatter_8hpp.html" title="log_stream_formatter.hpp" alt="" coords="2797,437,2969,464"/>
+<area shape="rect" id="node50" href="$log__class_8hpp.html" title="log_class.hpp" alt="" coords="3097,512,3201,539"/>
 </map>

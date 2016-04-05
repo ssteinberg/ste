@@ -1,6 +1,6 @@
 <map id="src/ste/engine/cache/lru_cache_index.hpp" name="src/ste/engine/cache/lru_cache_index.hpp">
 <area shape="rect" id="node2" href="$lru__cache_8hpp.html" title="src/ste/engine/cache\l/lru_cache.hpp" alt="" coords="1024,95,1172,136"/>
-<area shape="rect" id="node3" href="$StEngineControl_8hpp.html" title="src/ste/engine/engine\l_control/StEngineControl.hpp" alt="" coords="1001,184,1195,225"/>
+<area shape="rect" id="node3" href="$StEngineControl_8hpp.html" title="Engine Control class. " alt="" coords="1001,184,1195,225"/>
 <area shape="rect" id="node31" href="$bme__brdf__representation_8hpp.html" title="src/ste/framework_graphics\l/radiometry/radiance_distribution\l_functions/representations/bme\l_brdf_representation.hpp" alt="" coords="5,273,223,344"/>
 <area shape="rect" id="node33" href="$GLSLProgramFactory_8cpp.html" title="src/ste/framework_resources\l/glsl_programs/factory/GLSLProgram\lFactory.cpp" alt="" coords="2015,399,2261,455"/>
 <area shape="rect" id="node4" href="$main_8cpp.html" title="src/main.cpp" alt="" coords="572,940,669,967"/>

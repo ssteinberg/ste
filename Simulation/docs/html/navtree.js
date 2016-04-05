@@ -41,20 +41,20 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 ".html",
-"classStE_1_1Algorithm_1_1SOP_1_1sop__graph.html",
-"classStE_1_1Core_1_1ShaderStorageBufferGeneric.html#a696ea775b82380f4001fae37124da7ff",
-"classStE_1_1Core_1_1frame__buffer__object.html#a1a59763320c1668adb23df7303ebd040",
-"classStE_1_1Core_1_1mapped__buffer__object__unique__ptr.html#a2befd29124e4c272264389ee9a2bab15",
-"classStE_1_1Graphics_1_1Camera.html#ac7aa50b6fd475dfa713bf412a877c5d6",
-"classStE_1_1Graphics_1_1hdr__create__histogram__task.html#a650e596b77c8634a76970b3478cbe161",
-"classStE_1_1HID_1_1keyboard.html#ae0241d0927b0477efa170fd82db21b03aeda4e1dd77603113615219f3e506cecb",
-"classStE_1_1Text_1_1glyph.html#a89c8a9ac070e924cecd9e68969c2e3db",
-"common__brdf__representation_8hpp_source.html",
-"functions_n.html",
-"namespaceStE_1_1Algorithm_1_1SOP_1_1detail.html",
-"structStE_1_1Core_1_1surface__element__type_3_01gli_1_1format_1_1FORMAT__L8__UNORM__PACK8_01_4.html#a1e8534c9afbb9d5b35463ddc969d0202",
-"structStE_1_1Core_1_1surface__is__signed_3_01gli_1_1format_1_1FORMAT__A16__UNORM__PACK16_01_4.html",
-"structStE_1_1function__traits_3_01ReturnType_07Args_8_8_8_08_4.html"
+"classStE_1_1Algorithm_1_1SOP_1_1sequential__ordering__problem.html#aa80dc1f0da0f00abf4da384f4cc5850f",
+"classStE_1_1Core_1_1Sampler.html#adf921bf60c5b390980ec8b9c0af3bea6",
+"classStE_1_1Core_1_1fbo__attachment__point.html#aff9247385000be0d7e2f0eadf27fe94e",
+"classStE_1_1Core_1_1image__layout__bindable.html#acc137c4297e8a2b9b2df4b130b109d5e",
+"classStE_1_1Graph_1_1graph.html#ac6e8b5d18e681a5ef7f8e75d4d75c24e",
+"classStE_1_1Graphics_1_1gpu__task__dispatch__queue.html#ab274be352d78b6ef118cb69f3cdb2cbd",
+"classStE_1_1HID_1_1keyboard.html#ae0241d0927b0477efa170fd82db21b03ab3d44f28289b621461d8cb5df876dcad",
+"classStE_1_1Text_1_1attributed__string.html#a57b82025d27ea7087ee976628f4eda77",
+"classStE_1_1task__scheduler.html",
+"functions_f.html",
+"log__streambuf_8hpp.html",
+"structStE_1_1Core_1_1resource__is__texture_3_01core__resource__type_1_1Texture2DMS_01_4.html",
+"structStE_1_1Core_1_1surface__is__normalized_3_01gli_1_1format_1_1FORMAT__RG64__SFLOAT__PACK64_01_4.html",
+"structStE_1_1Text_1_1glyph__manager_1_1font__storage.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

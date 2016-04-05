@@ -24,7 +24,7 @@
 <area shape="rect" id="node18" href="$hdr__compute__minmax__task_8cpp.html" title="src/ste/framework_graphics\l/gpu_dispatch/renderers\l/global_illumination/hdr\l_dof/steps/hdr_compute_minmax\l_task.cpp" alt="" coords="285,1029,504,1115"/>
 <area shape="rect" id="node21" href="$gl__context_8hpp.html" title="src/ste/engine/core\l/gl/context/actual/gl\l_context.hpp" alt="" coords="737,235,876,291"/>
 <area shape="rect" id="node22" href="$gl__context_8cpp.html" title="src/ste/engine/core\l/gl/context/actual/gl\l_context.cpp" alt="" coords="737,347,876,403"/>
-<area shape="rect" id="node23" href="$StEngineControl_8hpp.html" title="src/ste/engine/engine\l_control/StEngineControl.hpp" alt="" coords="1425,562,1618,603"/>
+<area shape="rect" id="node23" href="$StEngineControl_8hpp.html" title="Engine Control class. " alt="" coords="1425,562,1618,603"/>
 <area shape="rect" id="node24" href="$StEngineControl_8cpp.html" title="src/ste/engine/engine\l_control/StEngineControl.cpp" alt="" coords="1195,673,1389,715"/>
 <area shape="rect" id="node25" href="$ObjectGroup_8hpp.html" title="src/ste/framework_graphics\l/entities/objects/ObjectGroup.hpp" alt="" coords="2177,673,2396,715"/>
 <area shape="rect" id="node29" href="$dense__voxelizer_8hpp.html" title="src/ste/framework_graphics\l/voxels/dense_voxelizer.hpp" alt="" coords="2127,918,2321,959"/>

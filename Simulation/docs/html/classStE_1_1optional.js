@@ -13,6 +13,7 @@ var classStE_1_1optional =
     [ "get", "classStE_1_1optional.html#adf45ceb5e80cb2b1f0aaca4d039c6817", null ],
     [ "operator bool", "classStE_1_1optional.html#a1bff1480d2d309680e1eb57edd938a23", null ],
     [ "operator!", "classStE_1_1optional.html#a432d3ea42e36155ab0faaa9672a4a5db", null ],
+    [ "operator!=", "classStE_1_1optional.html#ab471dd7def55b429d0487bfd7f735eb6", null ],
     [ "operator*", "classStE_1_1optional.html#a6368c40a42f317c19a48e7a794b2845c", null ],
     [ "operator*", "classStE_1_1optional.html#a9d6aec691db224dd91d3ac76bc498056", null ],
     [ "operator->", "classStE_1_1optional.html#ae6049c4143e83d83ef4d01f5a6369dd3", null ],
@@ -23,5 +24,6 @@ var classStE_1_1optional =
     [ "operator=", "classStE_1_1optional.html#a2ae80cddb8e650f2f3cb115ffbdc17ae", null ],
     [ "operator=", "classStE_1_1optional.html#af49778f35409abeda313446807fd3af0", null ],
     [ "operator=", "classStE_1_1optional.html#a93067c913768be729be32b634482d0c7", null ],
+    [ "operator==", "classStE_1_1optional.html#a38949ae3aa9901621c74f3514397c624", null ],
     [ "optional", "classStE_1_1optional.html#aa756d67787488b1e2bba885ce4da6fe0", null ]
 ];

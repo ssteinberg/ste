@@ -28,7 +28,7 @@
 <area shape="rect" id="node25" href="$GLSLProgramFactory_8cpp.html" title="src/ste/framework_resources\l/glsl_programs/factory/GLSLProgram\lFactory.cpp" alt="" coords="584,533,829,589"/>
 <area shape="rect" id="node26" href="$glsl__programs__pool_8cpp.html" title="src/ste/framework_resources\l/glsl_programs/pool/glsl\l_programs_pool.cpp" alt="" coords="94,533,290,589"/>
 <area shape="rect" id="node27" href="$TextManager_8cpp.html" title="src/ste/framework_text\l/rendering/TextManager.cpp" alt="" coords="366,540,559,581"/>
-<area shape="rect" id="node29" href="$StEngineControl_8hpp.html" title="src/ste/engine/engine\l_control/StEngineControl.hpp" alt="" coords="1006,325,1199,366"/>
+<area shape="rect" id="node29" href="$StEngineControl_8hpp.html" title="Engine Control class. " alt="" coords="1006,325,1199,366"/>
 <area shape="rect" id="node32" href="$PixelBufferObject_8hpp.html" title="src/ste/engine/core\l/gpu_resources/buffers\l/data_storage/PixelBufferObject.hpp" alt="" coords="3039,317,3275,373"/>
 <area shape="rect" id="node34" href="$FramebufferObject_8hpp.html" title="src/ste/engine/core\l/gpu_resources/surfaces\l/fbo/FramebufferObject.hpp" alt="" coords="2991,213,3172,269"/>
 <area shape="rect" id="node39" href="$Texture1D_8hpp.html" title="src/ste/engine/core\l/gpu_resources/surfaces\l/textures/Texture1D.hpp" alt="" coords="3349,213,3520,269"/>

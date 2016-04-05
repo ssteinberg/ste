@@ -118,31 +118,76 @@ $(document).ready(function(){initNavTree('sop__graph_8hpp_source.html','');});
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="is__base__of_8hpp.html">is_base_of.hpp</a>&quot;</span></div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &lt;functional&gt;</span></div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keyword">namespace </span>StE {</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keyword">namespace </span>Algorithm {</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">namespace </span>SOP {</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> V, <span class="keyword">typename</span> E&gt;</div>
-<div class="line"><a name="l00019"></a><span class="lineno"><a class="line" href="classStE_1_1Algorithm_1_1SOP_1_1sop__graph.html">   19</a></span>&#160;<span class="keyword">class </span><a class="code" href="classStE_1_1Algorithm_1_1SOP_1_1sop__graph.html">sop_graph</a> : <span class="keyword">public</span> <a class="code" href="classStE_1_1Graph_1_1graph.html">Graph::graph</a>&lt;V, E&gt; {</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    static_assert(<a class="code" href="namespaceStE.html#a80222d5599aca48f003b88f40e3d2458">StE::is_base_of&lt;V, sop_vertex&gt;::value</a>, <span class="stringliteral">&quot;V must derive from Algorithm::SOP::sop_vertex!&quot;</span>);</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    static_assert(std::is_base_of&lt;sop_edge, E&gt;::value, <span class="stringliteral">&quot;E must derive from Algorithm::SOP::sop_edge!&quot;</span>);</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    </div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00024"></a><span class="lineno"><a class="line" href="classStE_1_1Algorithm_1_1SOP_1_1sop__graph.html#aa034747deb79fce6f3fca34429a3e001">   24</a></span>&#160;    <span class="keyword">virtual</span> <a class="code" href="classStE_1_1Algorithm_1_1SOP_1_1sop__graph.html#aa034747deb79fce6f3fca34429a3e001">~sop_graph</a>() noexcept {}</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;};</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;}</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;}</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;}</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &lt;graphviz/cgraph.h&gt;</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &lt;graphviz/gvc.h&gt;</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keyword">namespace </span>StE {</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">namespace </span>Algorithm {</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">namespace </span>SOP {</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> V, <span class="keyword">typename</span> E&gt;</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="keyword">class </span>sop_graph : <span class="keyword">public</span> Graph::graph&lt;V, E&gt; {</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    <span class="keyword">using</span> Base = Graph::graph&lt;V, E&gt;;</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    </div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    static_assert(<a class="code" href="namespaceStE.html#a80222d5599aca48f003b88f40e3d2458">StE::is_base_of&lt;V, sop_vertex&gt;::value</a>, <span class="stringliteral">&quot;V must derive from Algorithm::SOP::sop_vertex!&quot;</span>);</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    static_assert(std::is_base_of&lt;sop_edge, E&gt;::value, <span class="stringliteral">&quot;E must derive from Algorithm::SOP::sop_edge!&quot;</span>);</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    </div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00029"></a><span class="lineno"><a class="line" href="classStE_1_1Algorithm_1_1SOP_1_1sop__graph.html#aa034747deb79fce6f3fca34429a3e001">   29</a></span>&#160;    <span class="keyword">virtual</span> <a class="code" href="classStE_1_1Algorithm_1_1SOP_1_1sop__graph.html#aa034747deb79fce6f3fca34429a3e001">~sop_graph</a>() noexcept {}</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    </div>
+<div class="line"><a name="l00031"></a><span class="lineno"><a class="line" href="classStE_1_1Algorithm_1_1SOP_1_1sop__graph.html#aa2307d4a5a61e62978acc6b287809c7e">   31</a></span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classStE_1_1Algorithm_1_1SOP_1_1sop__graph.html#aa2307d4a5a61e62978acc6b287809c7e">write_trail_dot</a>(<span class="keyword">const</span> boost::filesystem::path &amp;p, <span class="keywordtype">bool</span> include_zero_trail_edges = <span class="keyword">false</span>)<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;        Agraph_t* g;</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;        g = agopen(<span class="stringliteral">&quot;G&quot;</span>, Agdirected, NULL);</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;        </div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;        agattr(g, AGEDGE, <span class="stringliteral">&quot;label&quot;</span>, <span class="stringliteral">&quot;&quot;</span>);</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;        </div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;        std::unordered_map&lt;const Graph::vertex*, Agnode_t*&gt; vm;</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;        <span class="keywordflow">for</span> (<span class="keyword">auto</span> vert : <a class="code" href="classStE_1_1Graph_1_1graph.html#a92768c040dbdbe801cc847e39f33211f">Base::get_vertices</a>()) {</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;            <span class="keyword">auto</span> node = agnode(g, const_cast&lt;char*&gt;(vert-&gt;get_name().data()), <span class="keyword">true</span>);</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;            vm.insert(std::make_pair(vert, node));</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;        }</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;        <span class="keywordflow">for</span> (<span class="keyword">auto</span> e : <a class="code" href="classStE_1_1Graph_1_1graph.html#ac77932b81e296f6fa790b5e32030ab90">Base::get_edges</a>()) {</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;            <span class="keywordflow">if</span> (!include_zero_trail_edges &amp;&amp; e-&gt;trail == E::t0)</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;                <span class="keywordflow">continue</span>;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;            </div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;            Agnode_t* u = vm[e-&gt;get_from()];</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;            Agnode_t* v = vm[e-&gt;get_to()];</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;            </div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;            <span class="keyword">auto</span> ag_e = agedge(g, u, v, <span class="stringliteral">&quot;&quot;</span>, <span class="keyword">true</span>);</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;            <span class="keyword">auto</span> label = std::to_string(e-&gt;trail) + <span class="stringliteral">&quot;/&quot;</span> + std::to_string(e-&gt;get_weight());</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;            agset(ag_e, <span class="stringliteral">&quot;label&quot;</span>, const_cast&lt;char*&gt;(label.data()));</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;        }</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;        </div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;        <span class="keywordtype">bool</span> ret = <span class="keyword">false</span>;   </div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;        FILE *f = fopen(p.string().data(), <span class="stringliteral">&quot;wb&quot;</span>);</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;        <span class="keywordflow">if</span> (f) {</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;            agwrite(g, f);</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;            fclose(f);</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;            </div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;            ret = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;        }</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;        <span class="keywordflow">else</span> </div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;            perror(<span class="stringliteral">&quot;graph_impl::write_dot - fopen() failed&quot;</span>);</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;        </div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;        agclose(g);</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;        </div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;        <span class="keywordflow">return</span> ret;</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    }</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;};</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;}</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;}</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;}</div>
 <div class="ttc" id="stdafx_8hpp_html"><div class="ttname"><a href="stdafx_8hpp.html">stdafx.hpp</a></div></div>
 <div class="ttc" id="is__base__of_8hpp_html"><div class="ttname"><a href="is__base__of_8hpp.html">is_base_of.hpp</a></div></div>
+<div class="ttc" id="classStE_1_1Graph_1_1graph_html_ac77932b81e296f6fa790b5e32030ab90"><div class="ttname"><a href="classStE_1_1Graph_1_1graph.html#ac77932b81e296f6fa790b5e32030ab90">StE::Graph::graph::get_edges</a></div><div class="ttdeci">const auto &amp; get_edges() const </div><div class="ttdef"><b>Definition:</b> <a href="graph_8hpp_source.html#l00175">graph.hpp:175</a></div></div>
 <div class="ttc" id="graph_8hpp_html"><div class="ttname"><a href="graph_8hpp.html">graph.hpp</a></div></div>
-<div class="ttc" id="classStE_1_1Graph_1_1graph_html"><div class="ttname"><a href="classStE_1_1Graph_1_1graph.html">StE::Graph::graph</a></div><div class="ttdef"><b>Definition:</b> <a href="graph_8hpp_source.html#l00024">graph.hpp:24</a></div></div>
 <div class="ttc" id="sop__edge_8hpp_html"><div class="ttname"><a href="sop__edge_8hpp.html">sop_edge.hpp</a></div></div>
 <div class="ttc" id="sop__vertex_8hpp_html"><div class="ttname"><a href="sop__vertex_8hpp.html">sop_vertex.hpp</a></div></div>
-<div class="ttc" id="classStE_1_1Algorithm_1_1SOP_1_1sop__graph_html"><div class="ttname"><a href="classStE_1_1Algorithm_1_1SOP_1_1sop__graph.html">StE::Algorithm::SOP::sop_graph</a></div><div class="ttdef"><b>Definition:</b> <a href="sop__graph_8hpp_source.html#l00019">sop_graph.hpp:19</a></div></div>
 <div class="ttc" id="namespaceStE_html_a80222d5599aca48f003b88f40e3d2458"><div class="ttname"><a href="namespaceStE.html#a80222d5599aca48f003b88f40e3d2458">StE::is_base_of</a></div><div class="ttdeci">decltype(detail::is_base_of_template_impl&lt; C &gt;(std::declval&lt; T * &gt;())) is_base_of</div><div class="ttdef"><b>Definition:</b> <a href="is__base__of_8hpp_source.html#l00019">is_base_of.hpp:19</a></div></div>
-<div class="ttc" id="classStE_1_1Algorithm_1_1SOP_1_1sop__graph_html_aa034747deb79fce6f3fca34429a3e001"><div class="ttname"><a href="classStE_1_1Algorithm_1_1SOP_1_1sop__graph.html#aa034747deb79fce6f3fca34429a3e001">StE::Algorithm::SOP::sop_graph::~sop_graph</a></div><div class="ttdeci">virtual ~sop_graph() noexcept</div><div class="ttdef"><b>Definition:</b> <a href="sop__graph_8hpp_source.html#l00024">sop_graph.hpp:24</a></div></div>
+<div class="ttc" id="classStE_1_1Algorithm_1_1SOP_1_1sop__graph_html_aa034747deb79fce6f3fca34429a3e001"><div class="ttname"><a href="classStE_1_1Algorithm_1_1SOP_1_1sop__graph.html#aa034747deb79fce6f3fca34429a3e001">StE::Algorithm::SOP::sop_graph::~sop_graph</a></div><div class="ttdeci">virtual ~sop_graph() noexcept</div><div class="ttdef"><b>Definition:</b> <a href="sop__graph_8hpp_source.html#l00029">sop_graph.hpp:29</a></div></div>
+<div class="ttc" id="classStE_1_1Algorithm_1_1SOP_1_1sop__graph_html_aa2307d4a5a61e62978acc6b287809c7e"><div class="ttname"><a href="classStE_1_1Algorithm_1_1SOP_1_1sop__graph.html#aa2307d4a5a61e62978acc6b287809c7e">StE::Algorithm::SOP::sop_graph::write_trail_dot</a></div><div class="ttdeci">bool write_trail_dot(const boost::filesystem::path &amp;p, bool include_zero_trail_edges=false) const </div><div class="ttdef"><b>Definition:</b> <a href="sop__graph_8hpp_source.html#l00031">sop_graph.hpp:31</a></div></div>
+<div class="ttc" id="classStE_1_1Graph_1_1graph_html_a92768c040dbdbe801cc847e39f33211f"><div class="ttname"><a href="classStE_1_1Graph_1_1graph.html#a92768c040dbdbe801cc847e39f33211f">StE::Graph::graph::get_vertices</a></div><div class="ttdeci">const auto &amp; get_vertices() const </div><div class="ttdef"><b>Definition:</b> <a href="graph_8hpp_source.html#l00174">graph.hpp:174</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

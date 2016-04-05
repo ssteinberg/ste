@@ -28,7 +28,7 @@
 <area shape="rect" id="node25" href="$GLSLProgramFactory_8cpp.html" title="src/ste/framework_resources\l/glsl_programs/factory/GLSLProgram\lFactory.cpp" alt="" coords="1730,503,1975,559"/>
 <area shape="rect" id="node26" href="$glsl__programs__pool_8cpp.html" title="src/ste/framework_resources\l/glsl_programs/pool/glsl\l_programs_pool.cpp" alt="" coords="1248,503,1444,559"/>
 <area shape="rect" id="node27" href="$TextManager_8cpp.html" title="src/ste/framework_text\l/rendering/TextManager.cpp" alt="" coords="1031,511,1224,552"/>
-<area shape="rect" id="node29" href="$StEngineControl_8hpp.html" title="src/ste/engine/engine\l_control/StEngineControl.hpp" alt="" coords="1435,303,1628,344"/>
+<area shape="rect" id="node29" href="$StEngineControl_8hpp.html" title="Engine Control class. " alt="" coords="1435,303,1628,344"/>
 <area shape="rect" id="node30" href="$StEngineControl_8cpp.html" title="src/ste/engine/engine\l_control/StEngineControl.cpp" alt="" coords="3203,637,3396,678"/>
 <area shape="rect" id="node31" href="$bme__brdf__representation_8hpp.html" title="src/ste/framework_graphics\l/radiometry/radiance_distribution\l_functions/representations/bme\l_brdf_representation.hpp" alt="" coords="2717,496,2935,567"/>
 <area shape="rect" id="node34" href="$log__streambuf_8hpp.html" title="src/ste/engine/log\l/log_streambuf.hpp" alt="" coords="4087,206,4221,247"/>

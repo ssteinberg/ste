@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['projection_5fchange_5fsignal_5ftype',['projection_change_signal_type',['../classStE_1_1StEngineControl.html#a8a22d29a24ab90467801f3c5ba31f0dd',1,'StE::StEngineControl']]]
+  ['optimizer_5ftype',['optimizer_type',['../classStE_1_1Algorithm_1_1SOP_1_1sequential__ordering__problem.html#aa80dc1f0da0f00abf4da384f4cc5850f',1,'StE::Algorithm::SOP::sequential_ordering_problem']]]
 ];

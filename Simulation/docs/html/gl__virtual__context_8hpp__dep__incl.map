@@ -5,7 +5,7 @@
 <area shape="rect" id="node4" href="$rendering__system_8hpp.html" title="src/ste/framework_graphics\l/gpu_dispatch/renderers\l/rendering_system.hpp" alt="" coords="1481,317,1668,373"/>
 <area shape="rect" id="node40" href="$gpu__task__dispatch__queue_8cpp.html" title="src/ste/framework_graphics\l/gpu_dispatch/tasks/dispatch\l_queue/gpu_task_dispatch_queue.cpp" alt="" coords="1692,317,1943,373"/>
 <area shape="rect" id="node41" href="$gpu__task_8cpp.html" title="src/ste/framework_graphics\l/gpu_dispatch/tasks/gpu\l_task.cpp" alt="" coords="1967,317,2153,373"/>
-<area shape="rect" id="node5" href="$StEngineControl_8hpp.html" title="src/ste/engine/engine\l_control/StEngineControl.hpp" alt="" coords="1090,421,1283,463"/>
+<area shape="rect" id="node5" href="$StEngineControl_8hpp.html" title="Engine Control class. " alt="" coords="1090,421,1283,463"/>
 <area shape="rect" id="node11" href="$GIRenderer_8hpp.html" title="src/ste/framework_graphics\l/gpu_dispatch/renderers\l/global_illumination/GIRenderer.hpp" alt="" coords="1132,1000,1367,1056"/>
 <area shape="rect" id="node6" href="$main_8cpp.html" title="src/main.cpp" alt="" coords="346,1148,443,1175"/>
 <area shape="rect" id="node7" href="$StEngineControl_8cpp.html" title="src/ste/engine/engine\l_control/StEngineControl.cpp" alt="" coords="1395,525,1589,567"/>

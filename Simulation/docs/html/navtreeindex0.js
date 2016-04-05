@@ -246,8 +246,8 @@ var NAVTREEINDEX0 =
 "classSkyDome.html#af1dc81db5191d198356fe5e937e02212":[1,0,2,0],
 "classSkyDome.html#af63b84bf1280d1132513ba0b42ac6ee3":[1,0,2,4],
 "classSkyDome.html#af814dbd9d6a739348c4404fa507d2c92":[1,0,2,1],
-"classStE_1_1Algorithm_1_1SOP_1_1detail_1_1optimize__sequential__ordering__impl.html":[1,0,1,4,0,0,0],
-"classStE_1_1Algorithm_1_1SOP_1_1detail_1_1optimize__sequential__ordering__impl.html#a8019a4721c2a0a0105b19f3b09155371":[1,0,1,4,0,0,0,0],
-"classStE_1_1Algorithm_1_1SOP_1_1sop__edge.html":[1,0,1,4,0,1],
-"classStE_1_1Algorithm_1_1SOP_1_1sop__edge.html#a07ba51776178365b23ad93f0d1d56e38":[1,0,1,4,0,1,0]
+"classStE_1_1Algorithm_1_1SOP_1_1sequential__ordering__problem.html":[1,0,1,4,0,1],
+"classStE_1_1Algorithm_1_1SOP_1_1sequential__ordering__problem.html#a1dc1e98c1d248a630fd80fef3a8c2ca3":[1,0,1,4,0,1,8],
+"classStE_1_1Algorithm_1_1SOP_1_1sequential__ordering__problem.html#a6892357308d099cec5c95364d1a30daa":[1,0,1,4,0,1,5],
+"classStE_1_1Algorithm_1_1SOP_1_1sequential__ordering__problem.html#a86b2a7b0eb132201ac2709e518974e02":[1,0,1,4,0,1,2]
 };

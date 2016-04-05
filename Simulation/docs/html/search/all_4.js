@@ -54,6 +54,5 @@ var searchData=
   ['draw_5fmulti_5felements_5findirect',['draw_multi_elements_indirect',['../classStE_1_1Core_1_1gl__generic__context.html#a3c0e31fa0bf9956049846d38f66ad554',1,'StE::Core::gl_generic_context::draw_multi_elements_indirect(GLenum mode, const void *ind, std::uint32_t drawcount, std::uint32_t stride) const '],['../classStE_1_1Core_1_1gl__generic__context.html#aaeafce249c1aa9f5a39396ca2d344dff',1,'StE::Core::gl_generic_context::draw_multi_elements_indirect(GLenum mode, GLenum type, const void *ind, std::uint32_t drawcount, std::uint32_t stride) const ']]],
   ['drop',['drop',['../classStE_1_1shared__double__reference__guard.html#a6f1888eb699b60010f479e68a03203cb',1,'StE::shared_double_reference_guard']]],
   ['dump_5fgl_5finfo',['dump_gl_info',['../classStE_1_1Core_1_1gl__utils.html#a153d96c8988f861f3f735c83b3ed3132',1,'StE::Core::gl_utils']]],
-  ['dynamic_5fbuffer',['dynamic_buffer',['../classStE_1_1Core_1_1buffer__object.html#aaeb770d4076bd60fb8804fdd092de04d',1,'StE::Core::buffer_object']]],
-  ['optimize_5fsequential_5fordering_5fimpl',['optimize_sequential_ordering_impl',['../classStE_1_1Algorithm_1_1SOP_1_1sop__vertex.html#a759c29839f5d9956e21d71223417a34b',1,'StE::Algorithm::SOP::sop_vertex']]]
+  ['dynamic_5fbuffer',['dynamic_buffer',['../classStE_1_1Core_1_1buffer__object.html#aaeb770d4076bd60fb8804fdd092de04d',1,'StE::Core::buffer_object']]]
 ];

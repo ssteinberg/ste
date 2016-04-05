@@ -117,47 +117,47 @@ Data Structures</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:ab0eb50c287f0c36f2d943162a4bdbf2a"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:ab0eb50c287f0c36f2d943162a4bdbf2a"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceStE_1_1Graph_1_1detail.html#ab0eb50c287f0c36f2d943162a4bdbf2a">GraphSet</a> = std::unordered_set&lt; T &gt;</td></tr>
-<tr class="separator:ab0eb50c287f0c36f2d943162a4bdbf2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5ab82674d6437103ebf397bab7415db"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:ab5ab82674d6437103ebf397bab7415db"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceStE_1_1Graph_1_1detail.html#ab5ab82674d6437103ebf397bab7415db">GraphSet</a> = boost::container::flat_set&lt; T &gt;</td></tr>
+<tr class="separator:ab5ab82674d6437103ebf397bab7415db"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a974def81ff23a0921d700af372381843"><td class="memItemLeft" align="right" valign="top">Agraph_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceStE_1_1Graph_1_1detail.html#a974def81ff23a0921d700af372381843">create_graphviz_graph</a> (const <a class="el" href="namespaceStE_1_1Graph_1_1detail.html#ab0eb50c287f0c36f2d943162a4bdbf2a">GraphSet</a>&lt; const <a class="el" href="classStE_1_1Graph_1_1vertex.html">vertex</a> * &gt; *vertices, const <a class="el" href="namespaceStE_1_1Graph_1_1detail.html#ab0eb50c287f0c36f2d943162a4bdbf2a">GraphSet</a>&lt; const <a class="el" href="classStE_1_1Graph_1_1edge.html">edge</a> * &gt; *edges)</td></tr>
-<tr class="separator:a974def81ff23a0921d700af372381843"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1d4e5bf85a2e0c627559a5b79aa0e20"><td class="memItemLeft" align="right" valign="top">Agraph_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceStE_1_1Graph_1_1detail.html#af1d4e5bf85a2e0c627559a5b79aa0e20">create_graphviz_graph</a> (const <a class="el" href="namespaceStE_1_1Graph_1_1detail.html#ab5ab82674d6437103ebf397bab7415db">GraphSet</a>&lt; <a class="el" href="classStE_1_1Graph_1_1detail_1_1graph__impl.html#aeb15bce23aee9804a0e589b5e730a6fa">graph_impl::VertexPtr</a> &gt; *vertices, const <a class="el" href="namespaceStE_1_1Graph_1_1detail.html#ab5ab82674d6437103ebf397bab7415db">GraphSet</a>&lt; <a class="el" href="classStE_1_1Graph_1_1detail_1_1graph__impl.html#a6bc77142544b2329c16f1189a8c25ba0">graph_impl::EdgePtr</a> &gt; *edges)</td></tr>
+<tr class="separator:af1d4e5bf85a2e0c627559a5b79aa0e20"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Typedef Documentation</h2>
-<a class="anchor" id="ab0eb50c287f0c36f2d943162a4bdbf2a"></a>
+<a class="anchor" id="ab5ab82674d6437103ebf397bab7415db"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
 template&lt;typename T &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="namespaceStE_1_1Graph_1_1detail.html#ab0eb50c287f0c36f2d943162a4bdbf2a">StE::Graph::detail::GraphSet</a> = typedef std::unordered_set&lt;T&gt;</td>
+          <td class="memname">using <a class="el" href="namespaceStE_1_1Graph_1_1detail.html#ab5ab82674d6437103ebf397bab7415db">StE::Graph::detail::GraphSet</a> = typedef boost::container::flat_set&lt;T&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="graph_8hpp_source.html#l00029">29</a> of file <a class="el" href="graph_8hpp_source.html">graph.hpp</a>.</p>
+<p>Definition at line <a class="el" href="graph_8hpp_source.html#l00026">26</a> of file <a class="el" href="graph_8hpp_source.html">graph.hpp</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
-<a class="anchor" id="a974def81ff23a0921d700af372381843"></a>
+<a class="anchor" id="af1d4e5bf85a2e0c627559a5b79aa0e20"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">Agraph_t* StE::Graph::detail::create_graphviz_graph </td>
+          <td class="memname">Agraph_t * StE::Graph::detail::create_graphviz_graph </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="namespaceStE_1_1Graph_1_1detail.html#ab0eb50c287f0c36f2d943162a4bdbf2a">GraphSet</a>&lt; const <a class="el" href="classStE_1_1Graph_1_1vertex.html">vertex</a> * &gt; *&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespaceStE_1_1Graph_1_1detail.html#ab5ab82674d6437103ebf397bab7415db">GraphSet</a>&lt; <a class="el" href="classStE_1_1Graph_1_1detail_1_1graph__impl.html#aeb15bce23aee9804a0e589b5e730a6fa">graph_impl::VertexPtr</a> &gt; *&#160;</td>
           <td class="paramname"><em>vertices</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="namespaceStE_1_1Graph_1_1detail.html#ab0eb50c287f0c36f2d943162a4bdbf2a">GraphSet</a>&lt; const <a class="el" href="classStE_1_1Graph_1_1edge.html">edge</a> * &gt; *&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespaceStE_1_1Graph_1_1detail.html#ab5ab82674d6437103ebf397bab7415db">GraphSet</a>&lt; <a class="el" href="classStE_1_1Graph_1_1detail_1_1graph__impl.html#a6bc77142544b2329c16f1189a8c25ba0">graph_impl::EdgePtr</a> &gt; *&#160;</td>
           <td class="paramname"><em>edges</em>&#160;</td>
         </tr>
         <tr>
@@ -168,7 +168,7 @@ template&lt;typename T &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="graph_8cpp_source.html#l00015">15</a> of file <a class="el" href="graph_8cpp_source.html">graph.cpp</a>.</p>
+<p>Definition at line <a class="el" href="graph_8cpp_source.html#l00017">17</a> of file <a class="el" href="graph_8cpp_source.html">graph.cpp</a>.</p>
 
 </div>
 </div>

@@ -270,10 +270,16 @@ Functions</h2></td></tr>
 <tr class="separator:a424d93cc027d01213fa8cf5a06a96e9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a71b6dc53f5fd5abd17e7648848c61576"><td class="memItemLeft" align="right" valign="top">boost::filesystem::path&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceStE.html#a71b6dc53f5fd5abd17e7648848c61576">getcwd</a> ()</td></tr>
 <tr class="separator:a71b6dc53f5fd5abd17e7648848c61576"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a297bce2dd593c011dd93eba4e2152473"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceStE.html#a297bce2dd593c011dd93eba4e2152473">thread_set_priority_idle</a> (std::thread *thread)</td></tr>
+<tr class="separator:a297bce2dd593c011dd93eba4e2152473"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9e0eece773eecc792046ce671f5d8774"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceStE.html#a9e0eece773eecc792046ce671f5d8774">thread_set_priority_low</a> (std::thread *thread)</td></tr>
 <tr class="separator:a9e0eece773eecc792046ce671f5d8774"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa3121b03e1920e47b34fcdafd507e8d6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceStE.html#aa3121b03e1920e47b34fcdafd507e8d6">thread_set_priority_normal</a> (std::thread *thread)</td></tr>
+<tr class="separator:aa3121b03e1920e47b34fcdafd507e8d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0d914c04bc62827af04d634e8e19dc86"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceStE.html#a0d914c04bc62827af04d634e8e19dc86">thread_set_priority_high</a> (std::thread *thread)</td></tr>
 <tr class="separator:a0d914c04bc62827af04d634e8e19dc86"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a54be01b8853c12d439fc3b2c564111"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceStE.html#a7a54be01b8853c12d439fc3b2c564111">thread_set_priority_rtime</a> (std::thread *thread)</td></tr>
+<tr class="separator:a7a54be01b8853c12d439fc3b2c564111"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3ccee19c712b6f06923f5fb9a17b7b0e"><td class="memTemplParams" colspan="2">template&lt;typename T , typename S &gt; </td></tr>
 <tr class="memitem:a3ccee19c712b6f06923f5fb9a17b7b0e"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceStE.html#a3ccee19c712b6f06923f5fb9a17b7b0e">operator==</a> (const <a class="el" href="structStE_1_1range.html">range</a>&lt; T &gt; &amp;lhs, const <a class="el" href="structStE_1_1range.html">range</a>&lt; S &gt; &amp;rhs)</td></tr>
 <tr class="separator:a3ccee19c712b6f06923f5fb9a17b7b0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -288,6 +294,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a9bf42962c17024156eb396ec447e0def"><td class="memTemplParams" colspan="2">template&lt;typename F , typename Tuple &gt; </td></tr>
 <tr class="memitem:a9bf42962c17024156eb396ec447e0def"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="gl__extensions_8h.html#a814c8b5745ecf82afdd1da718fbdc47c">void</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceStE.html#a9bf42962c17024156eb396ec447e0def">tuple_call</a> (F f, Tuple &amp;&amp;t)</td></tr>
 <tr class="separator:a9bf42962c17024156eb396ec447e0def"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47020314bdf7074d175022a5b1652ab5"><td class="memTemplParams" colspan="2">template&lt;typename B , typename F , typename Tuple &gt; </td></tr>
+<tr class="memitem:a47020314bdf7074d175022a5b1652ab5"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="gl__extensions_8h.html#a814c8b5745ecf82afdd1da718fbdc47c">void</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceStE.html#a47020314bdf7074d175022a5b1652ab5">tuple_call</a> (B &amp;&amp;b, F f, Tuple &amp;&amp;t)</td></tr>
+<tr class="separator:a47020314bdf7074d175022a5b1652ab5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
@@ -587,7 +596,33 @@ template&lt;typename Container , typename ConstIterator &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="thread__priority_8hpp_source.html#l00027">27</a> of file <a class="el" href="thread__priority_8hpp_source.html">thread_priority.hpp</a>.</p>
+<p>Definition at line <a class="el" href="thread__priority_8hpp_source.html#l00071">71</a> of file <a class="el" href="thread__priority_8hpp_source.html">thread_priority.hpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a297bce2dd593c011dd93eba4e2152473"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool StE::thread_set_priority_idle </td>
+          <td>(</td>
+          <td class="paramtype">std::thread *&#160;</td>
+          <td class="paramname"><em>thread</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="thread__priority_8hpp_source.html#l00044">44</a> of file <a class="el" href="thread__priority_8hpp_source.html">thread_priority.hpp</a>.</p>
 
 </div>
 </div>
@@ -613,7 +648,59 @@ template&lt;typename Container , typename ConstIterator &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="thread__priority_8hpp_source.html#l00018">18</a> of file <a class="el" href="thread__priority_8hpp_source.html">thread_priority.hpp</a>.</p>
+<p>Definition at line <a class="el" href="thread__priority_8hpp_source.html#l00053">53</a> of file <a class="el" href="thread__priority_8hpp_source.html">thread_priority.hpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aa3121b03e1920e47b34fcdafd507e8d6"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool StE::thread_set_priority_normal </td>
+          <td>(</td>
+          <td class="paramtype">std::thread *&#160;</td>
+          <td class="paramname"><em>thread</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="thread__priority_8hpp_source.html#l00062">62</a> of file <a class="el" href="thread__priority_8hpp_source.html">thread_priority.hpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a7a54be01b8853c12d439fc3b2c564111"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool StE::thread_set_priority_rtime </td>
+          <td>(</td>
+          <td class="paramtype">std::thread *&#160;</td>
+          <td class="paramname"><em>thread</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="thread__priority_8hpp_source.html#l00080">80</a> of file <a class="el" href="thread__priority_8hpp_source.html">thread_priority.hpp</a>.</p>
 
 </div>
 </div>
@@ -643,7 +730,43 @@ template&lt;typename F , typename Tuple &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="tuple__call_8hpp_source.html#l00029">29</a> of file <a class="el" href="tuple__call_8hpp_source.html">tuple_call.hpp</a>.</p>
+<p>Definition at line <a class="el" href="tuple__call_8hpp_source.html#l00043">43</a> of file <a class="el" href="tuple__call_8hpp_source.html">tuple_call.hpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a47020314bdf7074d175022a5b1652ab5"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename B , typename F , typename Tuple &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="gl__extensions_8h.html#a814c8b5745ecf82afdd1da718fbdc47c">void</a> StE::tuple_call </td>
+          <td>(</td>
+          <td class="paramtype">B &amp;&amp;&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">F&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Tuple &amp;&amp;&#160;</td>
+          <td class="paramname"><em>t</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="tuple__call_8hpp_source.html#l00049">49</a> of file <a class="el" href="tuple__call_8hpp_source.html">tuple_call.hpp</a>.</p>
 
 </div>
 </div>

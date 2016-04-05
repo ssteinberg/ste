@@ -1,6 +1,6 @@
 <map id="src/ste/engine/core/gl/context/actual/gl_context.hpp" name="src/ste/engine/core/gl/context/actual/gl_context.hpp">
 <area shape="rect" id="node2" href="$gl__context_8cpp.html" title="src/ste/engine/core\l/gl/context/actual/gl\l_context.cpp" alt="" coords="700,109,839,165"/>
-<area shape="rect" id="node3" href="$StEngineControl_8hpp.html" title="src/ste/engine/engine\l_control/StEngineControl.hpp" alt="" coords="863,117,1057,158"/>
+<area shape="rect" id="node3" href="$StEngineControl_8hpp.html" title="Engine Control class. " alt="" coords="863,117,1057,158"/>
 <area shape="rect" id="node4" href="$main_8cpp.html" title="src/main.cpp" alt="" coords="366,851,463,877"/>
 <area shape="rect" id="node5" href="$StEngineControl_8cpp.html" title="src/ste/engine/engine\l_control/StEngineControl.cpp" alt="" coords="94,228,287,269"/>
 <area shape="rect" id="node6" href="$ObjectGroup_8hpp.html" title="src/ste/framework_graphics\l/entities/objects/ObjectGroup.hpp" alt="" coords="604,228,823,269"/>

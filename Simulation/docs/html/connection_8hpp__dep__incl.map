@@ -1,6 +1,6 @@
 <map id="src/ste/stl_extensions/signal/connection.hpp" name="src/ste/stl_extensions/signal/connection.hpp">
 <area shape="rect" id="node2" href="$signal_8hpp.html" title="src/ste/stl_extensions\l/signal/signal.hpp" alt="" coords="1708,95,1859,136"/>
-<area shape="rect" id="node3" href="$StEngineControl_8hpp.html" title="src/ste/engine/engine\l_control/StEngineControl.hpp" alt="" coords="1205,273,1399,315"/>
+<area shape="rect" id="node3" href="$StEngineControl_8hpp.html" title="Engine Control class. " alt="" coords="1205,273,1399,315"/>
 <area shape="rect" id="node38" href="$entity__signalling_8hpp.html" title="src/ste/framework_graphics\l/entities/entity_signalling.hpp" alt="" coords="1839,184,2029,225"/>
 <area shape="rect" id="node4" href="$main_8cpp.html" title="src/main.cpp" alt="" coords="2459,1000,2556,1027"/>
 <area shape="rect" id="node5" href="$StEngineControl_8cpp.html" title="src/ste/engine/engine\l_control/StEngineControl.cpp" alt="" coords="1579,377,1772,419"/>

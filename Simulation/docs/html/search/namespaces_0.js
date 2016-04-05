@@ -12,7 +12,6 @@ var searchData=
   ['bufferusage',['BufferUsage',['../namespaceStE_1_1Core_1_1BufferUsage.html',1,'StE::Core']]],
   ['core',['Core',['../namespaceStE_1_1Core.html',1,'StE']]],
   ['detail',['detail',['../namespaceStE_1_1Graphics_1_1detail.html',1,'StE::Graphics']]],
-  ['detail',['detail',['../namespaceStE_1_1Algorithm_1_1SOP_1_1detail.html',1,'StE::Algorithm::SOP']]],
   ['detail',['detail',['../namespaceStE_1_1detail.html',1,'StE']]],
   ['detail',['detail',['../namespaceStE_1_1Graph_1_1detail.html',1,'StE::Graph']]],
   ['glsl_5floader',['glsl_loader',['../namespaceStE_1_1Resource_1_1glsl__loader.html',1,'StE::Resource']]],

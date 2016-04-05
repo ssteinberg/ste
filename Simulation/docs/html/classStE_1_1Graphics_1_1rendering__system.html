@@ -124,7 +124,7 @@ Collaboration diagram for StE::Graphics::rendering_system:</div>
 <div class="dyncontent">
 <div class="center"><img src="classStE_1_1Graphics_1_1rendering__system__coll__graph.png" border="0" usemap="#StE_1_1Graphics_1_1rendering__system_coll__map" alt="Collaboration graph"/></div>
 <map name="StE_1_1Graphics_1_1rendering__system_coll__map" id="StE_1_1Graphics_1_1rendering__system_coll__map">
-<area shape="rect" id="node2" href="classStE_1_1Graphics_1_1gpu__task__dispatch__queue.html" title="{StE::Graphics::gpu\l_task_dispatch_queue\n||+ gpu_task_dispatch_queue()\l+ ~gpu_task_dispatch\l_queue()\l+ add_task()\l+ remove_task()\l+ update_task_fbo()\l+ remove_all()\l+ dispatch()\l# update_modified_tasks()\l# signal_task_modified()\l}" alt="" coords="57,837,256,1061"/><area shape="rect" id="node3" href="classStE_1_1Algorithm_1_1SOP_1_1sop__graph.html" title="{StE::Algorithm::SOP\l::sop_graph\&lt; gpu_task,\l gpu_state_transition \&gt;\n||+ ~sop_graph()\l}" alt="" coords="75,681,238,788"/><area shape="rect" id="node4" href="classStE_1_1Graph_1_1graph.html" title="{StE::Graph::graph\&lt;\l gpu_task, gpu_state\l_transition \&gt;\n||+ graph()\l+ ~graph()\l+ add_vertex()\l+ erase_vertex()\l+ add_edge()\l+ erase_edge()\l+ erase_all_vertex_edges()\l+ clear()\l+ get_vertices()\l+ get_edges()\l+ write_dot()\l+ write_png()\l}" alt="" coords="5,336,193,604"/><area shape="rect" id="node5" href="classStE_1_1Graph_1_1graph.html" title="{StE::Graph::graph\&lt;\l V, E \&gt;\n||+ graph()\l+ ~graph()\l+ add_vertex()\l+ erase_vertex()\l+ add_edge()\l+ erase_edge()\l+ erase_all_vertex_edges()\l+ clear()\l+ get_vertices()\l+ get_edges()\l+ write_dot()\l+ write_png()\l}" alt="" coords="104,5,292,259"/><area shape="rect" id="node6" href="classStE_1_1Algorithm_1_1SOP_1_1sop__graph.html" title="{StE::Algorithm::SOP\l::sop_graph\&lt; V, E \&gt;\n||+ ~sop_graph()\l}" alt="" coords="217,424,360,516"/></map>
+<area shape="rect" id="node2" href="classStE_1_1Graphics_1_1gpu__task__dispatch__queue.html" title="{StE::Graphics::gpu\l_task_dispatch_queue\n||+ gpu_task_dispatch_queue()\l+ ~gpu_task_dispatch\l_queue()\l+ add_task()\l+ remove_task()\l+ add_task_dependency()\l+ remove_task_dependency()\l+ update_task_fbo()\l+ remove_all()\l+ dispatch()\l# update_modified_tasks()\l}" alt="" coords="55,853,258,1092"/><area shape="rect" id="node3" href="classStE_1_1Algorithm_1_1SOP_1_1sop__graph.html" title="{StE::Algorithm::SOP\l::sop_graph\&lt; gpu_task,\l gpu_state_transition \&gt;\n||+ ~sop_graph()\l+ write_trail_dot()\l}" alt="" coords="75,683,238,804"/><area shape="rect" id="node4" href="classStE_1_1Graph_1_1graph.html" title="{StE::Graph::graph\&lt;\l gpu_task, gpu_state\l_transition \&gt;\n||+ graph()\l+ ~graph()\l+ add_vertex()\l+ erase_vertex()\l+ add_edge()\l+ erase_edge()\l+ erase_edge()\l+ erase_all_vertex_edges()\l+ clear()\l+ get_vertices()\l+ get_edges()\l+ write_dot()\l+ write_png()\l}" alt="" coords="5,323,193,605"/><area shape="rect" id="node5" href="classStE_1_1Algorithm_1_1SOP_1_1sop__graph.html" title="{StE::Algorithm::SOP\l::sop_graph\&lt; V, E \&gt;\n||+ ~sop_graph()\l+ write_trail_dot()\l}" alt="" coords="217,411,360,517"/><area shape="rect" id="node6" href="classStE_1_1Graph_1_1graph.html" title="{StE::Graph::graph\&lt;\l V, E \&gt;\n||+ graph()\l+ ~graph()\l+ add_vertex()\l+ erase_vertex()\l+ add_edge()\l+ erase_edge()\l+ erase_edge()\l+ erase_all_vertex_edges()\l+ clear()\l+ get_vertices()\l+ get_edges()\l+ write_dot()\l+ write_png()\l}" alt="" coords="195,5,383,273"/></map>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
@@ -143,7 +143,7 @@ Protected Attributes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p>Definition at line <a class="el" href="rendering__system_8hpp_source.html#l00017">17</a> of file <a class="el" href="rendering__system_8hpp_source.html">rendering_system.hpp</a>.</p>
+<p>Definition at line <a class="el" href="rendering__system_8hpp_source.html#l00018">18</a> of file <a class="el" href="rendering__system_8hpp_source.html">rendering_system.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a74aacbd2532252d6f427cbf5a646fee2"></a>
 <div class="memitem">
@@ -166,7 +166,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="rendering__system_8hpp_source.html#l00022">22</a> of file <a class="el" href="rendering__system_8hpp_source.html">rendering_system.hpp</a>.</p>
+<p>Definition at line <a class="el" href="rendering__system_8hpp_source.html#l00023">23</a> of file <a class="el" href="rendering__system_8hpp_source.html">rendering_system.hpp</a>.</p>
 
 </div>
 </div>
@@ -241,7 +241,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="rendering__system_8hpp_source.html#l00019">19</a> of file <a class="el" href="rendering__system_8hpp_source.html">rendering_system.hpp</a>.</p>
+<p>Definition at line <a class="el" href="rendering__system_8hpp_source.html#l00020">20</a> of file <a class="el" href="rendering__system_8hpp_source.html">rendering_system.hpp</a>.</p>
 
 </div>
 </div>

@@ -1,7 +1,7 @@
 <map id="src/ste/engine/core/gpu_resources/surfaces/fbo/context_framebuffer.hpp" name="src/ste/engine/core/gpu_resources/surfaces/fbo/context_framebuffer.hpp">
 <area shape="rect" id="node2" href="$gl__context_8hpp.html" title="src/ste/engine/core\l/gl/context/actual/gl\l_context.hpp" alt="" coords="795,109,933,165"/>
 <area shape="rect" id="node3" href="$gl__context_8cpp.html" title="src/ste/engine/core\l/gl/context/actual/gl\l_context.cpp" alt="" coords="700,213,839,269"/>
-<area shape="rect" id="node4" href="$StEngineControl_8hpp.html" title="src/ste/engine/engine\l_control/StEngineControl.hpp" alt="" coords="863,221,1057,262"/>
+<area shape="rect" id="node4" href="$StEngineControl_8hpp.html" title="Engine Control class. " alt="" coords="863,221,1057,262"/>
 <area shape="rect" id="node5" href="$main_8cpp.html" title="src/main.cpp" alt="" coords="366,955,463,981"/>
 <area shape="rect" id="node6" href="$StEngineControl_8cpp.html" title="src/ste/engine/engine\l_control/StEngineControl.cpp" alt="" coords="94,332,287,373"/>
 <area shape="rect" id="node7" href="$ObjectGroup_8hpp.html" title="src/ste/framework_graphics\l/entities/objects/ObjectGroup.hpp" alt="" coords="604,332,823,373"/>

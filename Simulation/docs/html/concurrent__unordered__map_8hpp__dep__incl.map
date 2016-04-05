@@ -2,7 +2,7 @@
 <area shape="rect" id="node2" href="$lru__cache__index_8hpp.html" title="src/ste/engine/cache\l/lru_cache_index.hpp" alt="" coords="1638,109,1786,151"/>
 <area shape="rect" id="node39" href="$glsl__programs__pool_8hpp.html" title="src/ste/framework_resources\l/glsl_programs/pool/glsl\l_programs_pool.hpp" alt="" coords="1879,199,2075,255"/>
 <area shape="rect" id="node3" href="$lru__cache_8hpp.html" title="src/ste/engine/cache\l/lru_cache.hpp" alt="" coords="1485,206,1633,247"/>
-<area shape="rect" id="node4" href="$StEngineControl_8hpp.html" title="src/ste/engine/engine\l_control/StEngineControl.hpp" alt="" coords="1351,303,1545,344"/>
+<area shape="rect" id="node4" href="$StEngineControl_8hpp.html" title="Engine Control class. " alt="" coords="1351,303,1545,344"/>
 <area shape="rect" id="node32" href="$bme__brdf__representation_8hpp.html" title="src/ste/framework_graphics\l/radiometry/radiance_distribution\l_functions/representations/bme\l_brdf_representation.hpp" alt="" coords="1783,392,2001,463"/>
 <area shape="rect" id="node34" href="$GLSLProgramFactory_8cpp.html" title="src/ste/framework_resources\l/glsl_programs/factory/GLSLProgram\lFactory.cpp" alt="" coords="323,518,568,574"/>
 <area shape="rect" id="node5" href="$main_8cpp.html" title="src/main.cpp" alt="" coords="1859,1059,1957,1085"/>
