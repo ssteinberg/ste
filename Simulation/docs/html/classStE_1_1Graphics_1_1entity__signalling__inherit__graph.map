@@ -1,6 +1,0 @@
-<map id="StE::Graphics::entity_signalling&lt; O &gt;" name="StE::Graphics::entity_signalling&lt; O &gt;">
-<area shape="rect" id="node4" href="$classStE_1_1Graphics_1_1entity__signalling.html" title="{StE::Graphics::entity\l_signalling\&lt; Object * \&gt;\n||+ entity_signalling()\l+ ~entity_signalling()\l+ signal_model_change()\l+ set_model_matrix()\l}" alt="" coords="5,531,180,667"/>
-<area shape="rect" id="node2" href="$classStE_1_1Graphics_1_1entity__affine.html" title="{StE::Graphics::entity\l_affine\n|# model_mat\l|+ ~entity_affine()\l+ set_model_matrix()\l+ get_model_transform()\l+ get_position()\l}" alt="" coords="9,147,177,283"/>
-<area shape="rect" id="node3" href="$classStE_1_1Graphics_1_1entity.html" title="{StE::Graphics::entity\n||+ ~entity()\l+ get_position()\l}" alt="" coords="21,5,164,97"/>
-<area shape="rect" id="node5" href="$classStE_1_1Graphics_1_1Object.html" title="{StE::Graphics::Object\n|# material_id\l# object_mesh\l|+ Object()\l+ ~Object()\l+ get_mesh()\l+ get_mesh()\l+ set_material_id()\l+ get_material_id()\l}" alt="" coords="17,716,168,881"/>
-</map>

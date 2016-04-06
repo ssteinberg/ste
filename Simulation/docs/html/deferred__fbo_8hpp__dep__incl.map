@@ -1,6 +1,0 @@
-<map id="src/ste/framework_graphics/gpu_dispatch/renderers/global_illumination/deferred/deferred_fbo.hpp" name="src/ste/framework_graphics/gpu_dispatch/renderers/global_illumination/deferred/deferred_fbo.hpp">
-<area shape="rect" id="node2" href="$deferred__fbo_8cpp.html" title="src/ste/framework_graphics\l/gpu_dispatch/renderers\l/global_illumination/deferred\l/deferred_fbo.cpp" alt="" coords="5,124,196,195"/>
-<area shape="rect" id="node3" href="$GIRenderer_8hpp.html" title="src/ste/framework_graphics\l/gpu_dispatch/renderers\l/global_illumination/GIRenderer.hpp" alt="" coords="221,131,455,187"/>
-<area shape="rect" id="node4" href="$main_8cpp.html" title="src/main.cpp" alt="" coords="193,257,291,284"/>
-<area shape="rect" id="node5" href="$GIRenderer_8cpp.html" title="src/ste/framework_graphics\l/gpu_dispatch/renderers\l/global_illumination/GIRenderer.cpp" alt="" coords="315,243,550,299"/>
-</map>

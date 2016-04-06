@@ -1,4 +1,0 @@
-var structStE_1_1Core_1_1surface__element__type_3_01gli_1_1format_1_1FORMAT__RGBA64__SFLOAT__PACK64_01_4 =
-[
-    [ "type", "structStE_1_1Core_1_1surface__element__type_3_01gli_1_1format_1_1FORMAT__RGBA64__SFLOAT__PACK64_01_4.html#a86c94aff7dfe1d0b693e6410127db794", null ]
-];

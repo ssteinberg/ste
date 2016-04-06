@@ -1,6 +1,0 @@
-<map id="StE::Core::buffer_object_immutable_storage_allocator&lt; T, U &gt;" name="StE::Core::buffer_object_immutable_storage_allocator&lt; T, U &gt;">
-<area shape="rect" id="node5" href="$classStE_1_1Core_1_1buffer__object__immutable__storage__allocator.html" title="{StE::Core::buffer_object\l_immutable_storage_allocator\l\&lt; Type, U \&gt;\n||+ allocate()\l+ allocate_storage()\l+ deallocate()\l}" alt="" coords="5,729,208,865"/>
-<area shape="rect" id="node2" href="$classStE_1_1Core_1_1generic__resource__immutable__storage__allocator.html" title="{StE::Core::generic\l_resource_immutable\l_storage_allocator\&lt; std\l::size_t, const T * \&gt;\n||}" alt="" coords="25,360,189,481"/>
-<area shape="rect" id="node3" href="$classStE_1_1Core_1_1generic__resource__allocator.html" title="{StE::Core::generic\l_resource_allocator\n||+ allocate()\l+ deallocate()\l+ is_valid()\l}" alt="" coords="53,5,195,127"/>
-<area shape="rect" id="node4" href="$classStE_1_1Core_1_1generic__resource__immutable__storage__allocator.html" title="{StE::Core::generic\l_resource_immutable\l_storage_allocator\&lt; Ts \&gt;\n||}" alt="" coords="123,176,298,283"/>
-</map>

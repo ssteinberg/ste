@@ -1,4 +1,0 @@
-var structStE_1_1Core_1_1surface__element__type_3_01gli_1_1format_1_1FORMAT__RGBA16__UINT__PACK16_01_4 =
-[
-    [ "type", "structStE_1_1Core_1_1surface__element__type_3_01gli_1_1format_1_1FORMAT__RGBA16__UINT__PACK16_01_4.html#a761b1c3a9d365a89fc9b3a9108b01e0d", null ]
-];

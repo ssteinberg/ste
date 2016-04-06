@@ -1,6 +1,0 @@
-<map id="StE::Graph::graph&lt; V, E &gt;" name="StE::Graph::graph&lt; V, E &gt;">
-<area shape="rect" id="node2" href="$classStE_1_1Algorithm_1_1SOP_1_1sop__graph.html" title="{StE::Algorithm::SOP\l::sop_graph\&lt; V, E \&gt;\n||+ ~sop_graph()\l}" alt="" coords="5,424,148,516"/>
-<area shape="rect" id="node5" href="$classStE_1_1Graph_1_1graph.html" title="{StE::Graph::graph\&lt;\l gpu_task, gpu_state\l_transition \&gt;\n||+ graph()\l+ ~graph()\l+ add_vertex()\l+ erase_vertex()\l+ add_edge()\l+ erase_edge()\l+ erase_all_vertex_edges()\l+ clear()\l+ get_vertices()\l+ get_edges()\l+ write_dot()\l+ write_png()\l}" alt="" coords="172,336,360,604"/>
-<area shape="rect" id="node3" href="$classStE_1_1Algorithm_1_1SOP_1_1sop__graph.html" title="{StE::Algorithm::SOP\l::sop_graph\&lt; gpu_task,\l gpu_state_transition \&gt;\n||+ ~sop_graph()\l}" alt="" coords="94,681,257,788"/>
-<area shape="rect" id="node4" href="$classStE_1_1Graphics_1_1gpu__task__dispatch__queue.html" title="{StE::Graphics::gpu\l_task_dispatch_queue\n||+ gpu_task_dispatch_queue()\l+ ~gpu_task_dispatch\l_queue()\l+ add_task()\l+ remove_task()\l+ update_task_fbo()\l+ remove_all()\l+ dispatch()\l# update_modified_tasks()\l# signal_task_modified()\l}" alt="" coords="76,837,275,1061"/>
-</map>
