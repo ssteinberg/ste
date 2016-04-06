@@ -1,3 +1,0 @@
-<map id="StE::Graphics::rendering_system" name="StE::Graphics::rendering_system">
-<area shape="rect" id="node2" href="$classStE_1_1Graphics_1_1GIRenderer.html" title="{StE::Graphics::GIRenderer\n||+ GIRenderer()\l+ ~GIRenderer()\l+ update_model_matrix\l_from_camera()\l+ set_deferred_rendering\l_enabled()\l+ add_task()\l+ remove_task()\l+ add_gui_task()\l+ remove_gui_task()\l+ render_queue()\l+ rendering_system_name()\l# rebuild_task_queue()\l# get_fbo()\l}" alt="" coords="5,175,196,443"/>
-</map>

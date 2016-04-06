@@ -97,10 +97,9 @@ void gpu_task_dispatch_queue::build_task_transitions(const TaskPtr &task) {
 	}
 }
 
-void gpu_task_dispatch_queue::insert_task(const std::shared_ptr<TaskT> &task, const Core::GenericFramebufferObject *override_fbo, bool mark_inserted) {
+void gpu_task_dispatch_queue::insert_task(const std::shared_ptr<TaskT> &task, bool mark_inserted) {
 	if (mark_inserted)
 		task->inserted_into_queue = true;
-	task->override_fbo = override_fbo;
 	task->set_parent_queue(this);
 
 	Base::erase_all_vertex_edges(task.get());
@@ -130,7 +129,6 @@ void gpu_task_dispatch_queue::erase_task(const TaskPtr &task, bool force) {
 		task->requisite_for.clear();
 
 	task->inserted_into_queue = false;
-	task->override_fbo = nullptr;
 	task->set_parent_queue(nullptr);
 
 	Base::erase_vertex(task);

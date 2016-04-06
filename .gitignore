@@ -16,6 +16,7 @@ GPATH
 
 # docs
 Simulation/docs/latex/
+Simulation/docs/html/
 
 Simulation/browse.VC.db
 
@@ -203,3 +204,5 @@ Simulation/My Inspector XE Results - Simulation/
 Simulation/Cache/
 Simulation/Screenshots/
 Simulation/My Advisor XE Results - Simulation/
+
+!.vscode

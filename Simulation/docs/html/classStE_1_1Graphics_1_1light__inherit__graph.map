@@ -1,5 +1,0 @@
-<map id="StE::Graphics::light" name="StE::Graphics::light">
-<area shape="rect" id="node3" href="$classStE_1_1Graphics_1_1DirectionalLight.html" title="{StE::Graphics::Directional\lLight\n||+ DirectionalLight()\l+ ~DirectionalLight()\l+ set_direction()\l+ get_position()\l+ get_direction()\l}" alt="" coords="5,410,181,561"/>
-<area shape="rect" id="node4" href="$classStE_1_1Graphics_1_1SphericalLight.html" title="{StE::Graphics::Spherical\lLight\n||+ SphericalLight()\l+ ~SphericalLight()\l+ set_position()\l+ set_radius()\l+ get_position()\l+ get_radius()\l}" alt="" coords="205,403,373,568"/>
-<area shape="rect" id="node2" href="$classStE_1_1Graphics_1_1entity.html" title="{StE::Graphics::entity\n||+ ~entity()\l+ get_position()\l}" alt="" coords="119,5,262,97"/>
-</map>

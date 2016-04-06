@@ -1,6 +1,0 @@
-<map id="StE::Core::gl_virtual_context" name="StE::Core::gl_virtual_context">
-<area shape="rect" id="node2" href="$classStE_1_1Core_1_1gl__generic__context.html" title="{StE::Core::gl_generic\l_context\n|# total_state_changes\l# total_buffer_changes\l# total_texture_changes\l# total_shader_changes\l# total_fbo_changes\l# total_va_changes\l|+ viewport()\l+ viewport()\l+ color_mask()\l+ color_mask()\l+ depth_mask()\l+ depth_mask()\l+ cull_face()\l+ cull_face()\l+ front_face()\l+ front_face()\land 60 more...\l}" alt="" coords="176,689,343,1001"/>
-<area shape="rect" id="node4" href="$classStE_1_1Core_1_1context__state.html" title="{StE::Core::context\l_state\n||+ context_state()\l+ context_state()\l+ operator=()\l+ context_state()\l+ operator=()\l+ exists()\l+ compare()\l+ set()\l+ push()\l+ pop()\l+ get_value()\l+ get_args()\l+ get()\l}" alt="" coords="491,145,622,413"/>
-<area shape="rect" id="node5" title="STL class. " alt="" coords="212,233,355,325"/>
-<area shape="rect" id="node9" href="$classStE_1_1Core_1_1context__state__key.html" title="{StE::Core::context\l_state_key\n||+ context_state_key()\l+ context_state_key()\l+ context_state_key()\l+ context_state_key()\l+ context_state_key()\l+ operator=()\l+ operator=()\l+ operator==()\l+ operator!=()\l}" alt="" coords="5,175,156,384"/>
-</map>

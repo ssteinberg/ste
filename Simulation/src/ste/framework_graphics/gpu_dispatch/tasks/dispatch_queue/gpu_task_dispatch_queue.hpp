@@ -29,56 +29,54 @@ namespace Graphics {
 
 class gpu_task_dispatch_queue : private Algorithm::SOP::sop_graph<gpu_task, gpu_state_transition> {
 	using Base = Algorithm::SOP::sop_graph<gpu_task, gpu_state_transition>;
-	
+
 	static constexpr unsigned max_optimizer_runs_without_improvement = 50;
 	static constexpr unsigned optimizer_iterations = 5;
-	
+
 private:
 	using TaskT = typename gpu_task::TaskT;
 	using TaskPtr = typename gpu_task::TaskPtr;
 	using TaskCollection = typename gpu_task::TaskCollection;
-	
+
 	using sop_type = Algorithm::SOP::sequential_ordering_problem<Base>;
 	using sop_optimizer_type = sop_type::optimizer_type;
 	using sop_optimizer_double_ref_guard = shared_double_reference_guard<sop_optimizer_type, false>;
-	
-	using modify_task_log = std::function<void()>; 
+
+	using modify_task_log = std::function<void()>;
 
 private:
 	mutable concurrent_queue<modify_task_log> modify_queue;
-	
 	std::shared_ptr<detail::gpu_task_root> root;
-	
+
 	sop_type sop;
-	
+	sop_optimizer_double_ref_guard current_optimizer;
+	interruptible_thread optimizer_thread;
 	mutable std::mutex optimizer_notification_mutex, optimizer_mutex;
 	std::condition_variable optimizer_notifier;
-	interruptible_thread optimizer_thread;
-	sop_optimizer_double_ref_guard current_optimizer;
 	std::atomic<bool> stopping_optimizer{ false };
 
 private:
-	void insert_task(const TaskPtr &task, const Core::GenericFramebufferObject *override_fbo, bool);
+	void insert_task(const TaskPtr &task, bool);
 	void erase_task(const TaskPtr&, bool);
 	void erase_all();
 	void add_dep(const TaskPtr &task, const TaskPtr &dep);
 	void delete_dep(const TaskPtr &task, const TaskPtr &dep);
-	
+
 	void build_task_transitions(const TaskPtr&);
-	
+
 	std::unique_lock<std::mutex> interrupt_optimizer_and_acquire_mutex();
 	void clear_sop_solution_unlock_and_notify(std::unique_lock<std::mutex> &&);
-	
+
 protected:
 	bool update_modified_tasks();
 
 public:
 	gpu_task_dispatch_queue();
 	~gpu_task_dispatch_queue() noexcept;
-	
-	void add_task(const TaskPtr &task, const Core::GenericFramebufferObject *override_fbo = nullptr) {
-		modify_queue.push(modify_task_log([this, override_fbo, task = std::move(task)]() {
-			this->insert_task(std::move(task), override_fbo, true);
+
+	void add_task(const TaskPtr &task) {
+		modify_queue.push(modify_task_log([this, task = std::move(task)]() {
+			this->insert_task(std::move(task), true);
 		}));
 	}
 
@@ -102,12 +100,6 @@ public:
 		}));
 	}
 
-	void update_task_fbo(const TaskPtr &task, const Core::GenericFramebufferObject *override_fbo) const {
-		modify_queue.push(modify_task_log([=]() {
-			task->set_override_fbo(override_fbo);
-		}));
-	}
-	
 	void remove_all() {
 		modify_queue.push(modify_task_log([=]() {
 			this->erase_all();
@@ -115,7 +107,7 @@ public:
 	}
 
 	void dispatch();
-	
+
 	using Base::write_dot;
 	using Base::write_png;
 };
