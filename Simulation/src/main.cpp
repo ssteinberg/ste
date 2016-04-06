@@ -23,19 +23,21 @@
 #include "Sphere.hpp"
 #include "gpu_task.hpp"
 
+#include "TextureCubeMap.hpp"
+
 using namespace StE::Core;
 using namespace StE::Text;
 
 class SkyDome : public StE::Graphics::gpu_task {
 	using Base = StE::Graphics::gpu_task;
-	
+
 private:
 	using ProjectionSignalConnectionType = StE::StEngineControl::projection_change_signal_type::connection_type;
 
 	std::unique_ptr<Texture2D> stars_tex;
 	std::shared_ptr<GLSLProgram> program;
 	std::shared_ptr<ProjectionSignalConnectionType> projection_change_connection;
-	
+
 	std::unique_ptr<StE::Graphics::mesh<StE::Graphics::mesh_subdivion_mode::Triangles>> meshptr;
 
 public:
@@ -58,13 +60,13 @@ public:
 	void set_model_matrix(const glm::mat4 &m) {
 		program->set_uniform("view_model", m);
 	}
-	
+
 protected:
 	void set_context_state() const override final {
 		Base::set_context_state();
-		
+
 		gl_current_context::get()->enable_depth_test();
-		
+
 		0_tex_unit = *stars_tex;
 		meshptr->vao()->bind();
 		meshptr->ebo()->bind();
@@ -81,7 +83,7 @@ int main() {
 //	logger.redirect_std_outputs();
 	ste_log_set_global_logger(&logger);
 	ste_log() << "Simulation is running";
-	
+
 	int w = 1688, h = 950;
 	constexpr float clip_far = 3000.f;
 	constexpr float clip_near = 5.f;
@@ -102,12 +104,12 @@ int main() {
 
 	StE::Graphics::Scene scene;
 	StE::Graphics::GIRenderer renderer(ctx, &scene);
-	
+
 	std::shared_ptr<SkyDome> skydome = std::make_shared<SkyDome>(ctx);
 	std::shared_ptr<StE::Graphics::ObjectGroup> object_group = std::make_shared<StE::Graphics::ObjectGroup>(ctx, &scene.scene_properties());
-	
+
 	ctx.set_renderer(&renderer);
-	
+
 	// scene.add_object(object_group);
 
 	StE::Graphics::Camera camera;
@@ -143,9 +145,9 @@ int main() {
 
 
 	bool loaded = false;
-	auto model_future = ctx.scheduler().schedule_now(StE::Resource::ModelFactory::load_model_task(ctx, 
-																								  R"(Data/models/crytek-sponza/sponza.obj)",  
-																								  &*object_group, 
+	auto model_future = ctx.scheduler().schedule_now(StE::Resource::ModelFactory::load_model_task(ctx,
+																								  R"(Data/models/crytek-sponza/sponza.obj)",
+																								  &*object_group,
 																								  &scene.scene_properties(),
 																								  2.5f));
 
@@ -201,7 +203,7 @@ int main() {
 										   orange(regular(L"By Shlomi Steinberg")));
 			auto total_vram = std::to_wstring(ctx.gl()->meminfo_total_available_vram() / 1024);
 			auto free_vram = std::to_wstring(ctx.gl()->meminfo_free_vram() / 1024);
-			
+
 			auto workers_count = ctx.scheduler().get_workers_count();
 			auto workers_sleep = ctx.scheduler().get_sleeping_workers();
 
@@ -209,7 +211,7 @@ int main() {
 			footer_text->set_text({ 10, 50 },
 								  line_height(32)(vsmall(b(blue_violet(free_vram) + L" / " + stroke(red, 1)(dark_red(total_vram)) + L" MB")) + L"\n" +
 												  vsmall(b(L"Thread pool workers: ") +
-														 olive(std::to_wstring(workers_count - workers_sleep)) + L" busy / " + 
+														 olive(std::to_wstring(workers_count - workers_sleep)) + L" busy / " +
 														 olive(std::to_wstring(workers_count)) + L" total")));
 		}
 
@@ -218,16 +220,35 @@ int main() {
 
 		ctx.run_loop();
 	}
-	
+
 	renderer.remove_gui_task(title_text);
 	title_text = nullptr;
-	
-	skydome->add_dependency(object_group);	
+
+	skydome->add_dependency(object_group);
 
 	renderer.add_gui_task(header_text);
 	renderer.add_task(object_group);
 	renderer.add_task(skydome);
 	renderer.set_deferred_rendering_enabled(true);
+
+
+	StE::Core::TextureCubeMap shadow_depth_cube_map(gli::format::FORMAT_D32_SFLOAT_PACK32, { 1024, 1024 });
+	StE::Core::FramebufferObject shadow_depth_cube_map_fbo;
+	shadow_depth_cube_map_fbo.depth_binding_point() = shadow_depth_cube_map;
+
+	auto shadow_proj = glm::perspective(90.f, 1.f, 5.f, 1000.f);
+	std::array<glm::mat4, 6> shadow_transform = {
+		shadow_proj * glm::lookAt(light_pos, light_pos + glm::vec3( 1.f, 0.f, 0.f), glm::vec3(0.f,-1.f, 0.f)),
+		shadow_proj * glm::lookAt(light_pos, light_pos + glm::vec3(-1.f, 0.f, 0.f), glm::vec3(0.f,-1.f, 0.f)),
+		shadow_proj * glm::lookAt(light_pos, light_pos + glm::vec3( 0.f, 1.f, 0.f), glm::vec3(0.f, 0.f, 1.f)),
+		shadow_proj * glm::lookAt(light_pos, light_pos + glm::vec3( 0.f,-1.f, 0.f), glm::vec3(0.f, 0.f,-1.f)),
+		shadow_proj * glm::lookAt(light_pos, light_pos + glm::vec3( 0.f, 0.f, 1.f), glm::vec3(0.f,-1.f, 0.f)),
+		shadow_proj * glm::lookAt(light_pos, light_pos + glm::vec3( 0.f, 0.f,-1.f), glm::vec3(0.f,-1.f, 0.f))
+	};
+
+	std::shared_ptr<GLSLProgram> shadow_gen_program = ctx.glslprograms_pool().fetch_program_task({ "shadow.vert", "shadow.geom", "shadow.frag" })();
+
+
 
 
 	float time = 0;
@@ -251,7 +272,7 @@ int main() {
 			auto center = static_cast<glm::vec2>(ctx.get_backbuffer_size())*.5f;
 			ctx.set_pointer_position(static_cast<glm::ivec2>(center));
 			auto diff_v = (center - static_cast<decltype(center)>(pp)) * time_delta * rotation_factor;
-			camera.pitch_and_yaw(-diff_v.y, diff_v.x); 
+			camera.pitch_and_yaw(-diff_v.y, diff_v.x);
 		}
 
 
@@ -259,7 +280,7 @@ int main() {
 		auto mvnt = camera.view_matrix_no_translation();
 
 		float angle = time * glm::pi<float>() / 2.5f;
-		glm::vec3 lp = light_pos + glm::vec3(glm::sin(angle) * 3, 0, glm::cos(angle)) * 135.f;
+		glm::vec3 lp = light_pos;// + glm::vec3(glm::sin(angle) * 3, 0, glm::cos(angle)) * 135.f;
 
 		light0->set_position(lp);
 
@@ -292,6 +313,7 @@ int main() {
 		time += ctx.time_per_frame().count();
 		if (!ctx.run_loop()) break;
 	}
-	 
+
+
 	return 0;
 }
