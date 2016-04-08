@@ -8,8 +8,10 @@
 #include "concurrent_queue.hpp"
 #include "interruptible_thread.hpp"
 #include "function_wrapper.hpp"
+
 #include "thread_constants.hpp"
 #include "thread_priority.hpp"
+#include "thread_affinity.hpp"
 
 #include "system_times.hpp"
 
@@ -19,6 +21,8 @@
 #include <condition_variable>
 
 #include <vector>
+#include <bitset>
+
 #include <chrono>
 
 namespace StE {
@@ -36,13 +40,13 @@ private:
 	std::chrono::high_resolution_clock::time_point last_pool_balance;
 	std::atomic<int> requests_pending{ 0 };
 	int threads_sleeping{ 0 };
-	
+
 	float idle_time_threshold_for_new_worker;
 	float kernel_time_thershold_for_despawn_extra_worker;
 	float idle_time_threshold_for_despawn_surplus_worker;
 
 private:
-	void spawn_worker() {
+	void spawn_worker(int schedule_on_cpu = -1) {
 		workers.emplace_back([this]() {
 			std::unique_ptr<function_wrapper> task;
 			auto flag = interruptible_thread::interruption_flag;
@@ -67,7 +71,16 @@ private:
 			}
 		});
 
-		thread_set_priority_low(&workers.back().get_thread());
+		auto t = &workers.back().get_thread();
+
+		thread_set_priority_low(t);
+		if (schedule_on_cpu >= 0) {
+			constexpr auto bits = sizeof(std::size_t) * 8;
+
+			std::bitset<bits> mask(0);
+			mask[schedule_on_cpu] = 1;
+			thread_set_affinity<bits>(t, mask);
+		}
 	}
 
 	void despawn_worker() {
@@ -89,11 +102,11 @@ private:
 		requests_pending--;
 		(*task)();
 	}
-	
+
 	unsigned min_worker_threads() const {
 		assert(std::thread::hardware_concurrency());
 
-		return std::max<unsigned>(std::thread::hardware_concurrency() - 1, 1u);
+		return std::max<unsigned>(std::thread::hardware_concurrency(), 1u);
 	}
 
 public:
@@ -102,8 +115,9 @@ public:
 		  kernel_time_thershold_for_despawn_extra_worker(kernel_time_thershold_for_despawn_extra_worker),
 		  idle_time_threshold_for_despawn_surplus_worker(idle_time_threshold_for_despawn_surplus_worker) {
 		int threads = min_worker_threads();
+		int max_threads = std::thread::hardware_concurrency();
 		for (int i = 0; i < threads; ++i)
-			spawn_worker();
+			spawn_worker(max_threads - threads + i);
 	}
 
 	~balanced_thread_pool() {
@@ -161,8 +175,8 @@ public:
 			spawn_worker();
 		}
 		else if (workers.size() > min_threads &&
-					(kernel_frac > kernel_time_thershold_for_despawn_extra_worker || 
-				  	 (req == 0 && idle_frac > idle_time_threshold_for_despawn_surplus_worker) || 
+					(kernel_frac > kernel_time_thershold_for_despawn_extra_worker ||
+				  	 (req == 0 && idle_frac > idle_time_threshold_for_despawn_surplus_worker) ||
 				  	 threads_sleeping > 1)) {
 			despawn_worker();
 		}

@@ -8,6 +8,8 @@
 #include "Texture2D.hpp"
 #include "SurfaceFactory.hpp"
 
+#include "thread_affinity.hpp"
+
 #include <chrono>
 #include <thread>
 #include <exception>
@@ -18,7 +20,7 @@
 
 #include <gli/gli.hpp>
 
-#define BOOST_FILESYSTEM_NO_DEPRECATED 
+#define BOOST_FILESYSTEM_NO_DEPRECATED
 #include <boost/filesystem.hpp>
 
 using namespace StE;
@@ -47,6 +49,9 @@ StEngineControl::StEngineControl(std::unique_ptr<Core::gl_context> &&ctx) : pimp
 
 	setup_signals();
 	set_projection_dirty();
+
+	// Lock main thread affinity to 0
+	thread_set_affinity<1>(t, { 1 });
 }
 
 StEngineControl::~StEngineControl() noexcept {
