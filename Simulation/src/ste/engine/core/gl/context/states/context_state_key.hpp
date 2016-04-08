@@ -35,6 +35,14 @@ public:
 		return !((*this) == k);
 	}
 
+	bool operator<(const context_state_key &k) const {
+		if (name != k.name)
+			return name < k.name;
+		if (index0 != k.index0)
+			return index0 < k.index0;
+		return index1 < k.index1;
+	}
+
 	auto &get_name() const { return name; }
 };
 

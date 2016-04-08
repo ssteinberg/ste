@@ -4,15 +4,20 @@
 #pragma once
 
 #include "stdafx.hpp"
+#include "gpu_state_transition.hpp"
 
 #include "context_state_type.hpp"
 
 #include <vector>
 #include <unordered_map>
+#include <boost/container/flat_set.hpp>
 
 namespace StE {
 namespace Graphics {
 namespace _state_transition {
+
+using K = Core::context_state_name;
+using V = Core::context_state;
 
 static constexpr unsigned state_change_cost = 1;
 static constexpr unsigned buffer_change_cost = 3;
@@ -44,20 +49,18 @@ inline std::size_t cost_for_state_type(const Core::context_state_type &t) {
 	return 1;
 }
 
-template <typename K, typename V>
 inline void states_diff(std::unordered_map<K,V> &&intermediate,
 						const std::unordered_map<K,V> &final_states,
 						std::vector<K> &states_to_push,
 						std::vector<K> &states_to_pop,
-						std::vector<V> &states_to_set,
+						state_container<Core::context_state> &states_to_set,
 						std::size_t &cost) {
 	states_to_push.reserve(final_states.size());
 	states_to_pop.reserve(intermediate.size());
-	states_to_set.reserve(intermediate.size());
 
 	for (auto &p : intermediate) {
 		assert(p.second.exists());
-		states_to_set.push_back(p.second);
+		states_to_set.insert(p.second);
 		cost += cost_for_state_type(Core::context_state_type_from_name(p.first));
 	}
 

@@ -8,8 +8,6 @@
 #include "Texture2D.hpp"
 #include "SurfaceFactory.hpp"
 
-#include "thread_affinity.hpp"
-
 #include <chrono>
 #include <thread>
 #include <exception>
@@ -49,9 +47,6 @@ StEngineControl::StEngineControl(std::unique_ptr<Core::gl_context> &&ctx) : pimp
 
 	setup_signals();
 	set_projection_dirty();
-
-	// Lock main thread affinity to 0
-	thread_set_affinity<1>(t, { 1 });
 }
 
 StEngineControl::~StEngineControl() noexcept {
@@ -110,7 +105,7 @@ bool StEngineControl::run_loop() {
 
 	glfwSwapBuffers(context->window.get());
 	glFinish();
-	global_renderer->render_queue(*this);
+	global_renderer->render_queue();
 
 	return !glfwWindowShouldClose(context->window.get());
 }
@@ -118,7 +113,7 @@ bool StEngineControl::run_loop() {
 void StEngineControl::capture_screenshot() const {
 	auto size = gl()->framebuffer_size();
 
-	auto fbo = std::make_shared<StE::Core::FramebufferObject>();
+	auto fbo = std::make_unique<StE::Core::FramebufferObject>();
 	StE::Core::Texture2D fbo_tex(gli::format::FORMAT_RGB8_UNORM_PACK8, size, 1);
 	(*fbo)[0] = fbo_tex[0];
 
@@ -141,7 +136,7 @@ void StEngineControl::capture_screenshot() const {
 }
 
 void StEngineControl::set_fov(float rad) {
-	pimpl->field_of_view = rad; 
+	pimpl->field_of_view = rad;
 	set_projection_dirty();
 }
 

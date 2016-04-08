@@ -22,7 +22,7 @@ protected:
 public:
 	virtual ~rendering_system() noexcept {}
 
-	virtual void render_queue(const StEngineControl &ctx) = 0;
+	virtual void render_queue() = 0;
 
 	virtual std::string rendering_system_name() const = 0;
 };

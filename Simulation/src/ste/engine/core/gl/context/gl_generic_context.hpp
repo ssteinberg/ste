@@ -3,11 +3,8 @@
 
 #pragma once
 
-#include <array>
-#include <unordered_map>
-
+#include <string>
 #include <functional>
-#include <limits.h>
 
 #include <type_traits>
 #include "gl_type_traits.hpp"
@@ -20,6 +17,8 @@
 #include "tuple_type_erasure.hpp"
 #include "tuple_call.hpp"
 
+#include <map>
+
 namespace StE {
 namespace Core {
 
@@ -27,19 +26,23 @@ class gl_generic_context {
 private:
 	bool dummy;
 
+	template <typename K, typename V>
+	using container = std::unordered_map<K, V>;
+
 protected:
-	mutable std::unordered_map<context_state_name, context_state> states;
-	mutable std::unordered_map<context_state_key, context_state> resources;
+	mutable container<context_state_name, context_state> states;
+	mutable container<context_state_key, context_state> resources;
+	mutable std::size_t state_counter{ 0 };
 
 private:
 	template <typename FuncT, typename K, typename V, typename... Ts, typename... Args>
-	void set_context_server_state(std::unordered_map<K, V> &m, const K &k, std::tuple<Ts...> &&v, FuncT *func, Args&&... args) const {
+	void set_context_server_state(container<K, V> &m, const K &k, std::tuple<Ts...> &&v, FuncT *func, Args&&... args) const {
 		auto it = m.find(k);
 		if (it != m.end() && it->second.compare(v))
 			return;
 
 		if (it == m.end())
-			it = m.insert(std::make_pair(k, context_state())).first;
+			it = m.insert(std::make_pair(k, context_state(state_counter++))).first;
 
 		it->second.set([=](const tuple_type_erasure &t) {
 						   std::tuple<std::remove_reference_t<Args>...> params = t.get_weak<std::remove_reference_t<Args>...>();

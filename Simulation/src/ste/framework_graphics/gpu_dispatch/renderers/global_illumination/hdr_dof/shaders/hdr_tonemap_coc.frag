@@ -35,14 +35,14 @@ void main() {
 	float fbin = hdr_bin(max_lum, min_lum, l);
 	int bin = int(fbin);
 	float frac = fract(fbin);
-	
+
 	float T = float(histogram[bins - 1]);
 	float toned_bin_start = bin > 0 ? float(histogram[bin - 1]) / T : .0f;
 	float toned_bin_end = float(histogram[bin]) / T;
 	float toned_bin_size = toned_bin_end - toned_bin_start;
 
 	float toned_l = toned_bin_start + frac * toned_bin_size;
-	
+
 	vec4 vision_properties = texture(hdr_vision_properties_texture, clamp((l - min_luminance) / (10.f - min_luminance), 0, 1));
 	float scotopic = vision_properties.x;
 	float mesopic = vision_properties.y;
@@ -59,7 +59,7 @@ void main() {
 	vec4 RGBL = clamp(vec4(RGB, XYZ.y), vec4(0), vec4(1));
 
 	rgbout = RGBL;
-	
+
 	if (XYZ.y > bloom_cutoff) {
 		float x = pow((XYZ.y - bloom_cutoff) / (1 - bloom_cutoff), 8) * (1.f - mesopic);
 		bloomout = vec4(RGBL.rgb, x);
@@ -73,6 +73,6 @@ void main() {
 	float c = C * f1 / focal;
 	float coc = clamp(smoothstep(0, 1, c), 0, 1);
 	coc += acuity;
-	
+
 	coc_out = vec2(s, clamp(coc, 0, 1));
 }

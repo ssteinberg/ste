@@ -26,16 +26,16 @@
 using namespace StE::Core;
 using namespace StE::Text;
 
-class SkyDome : public StE::Graphics::gpu_task {
-	using Base = StE::Graphics::gpu_task;
-	
+class SkyDome : public StE::Graphics::gpu_dispatchable {
+	using Base = StE::Graphics::gpu_dispatchable;
+
 private:
 	using ProjectionSignalConnectionType = StE::StEngineControl::projection_change_signal_type::connection_type;
 
 	std::unique_ptr<Texture2D> stars_tex;
 	std::shared_ptr<GLSLProgram> program;
 	std::shared_ptr<ProjectionSignalConnectionType> projection_change_connection;
-	
+
 	std::unique_ptr<StE::Graphics::mesh<StE::Graphics::mesh_subdivion_mode::Triangles>> meshptr;
 
 public:
@@ -58,13 +58,11 @@ public:
 	void set_model_matrix(const glm::mat4 &m) {
 		program->set_uniform("view_model", m);
 	}
-	
+
 protected:
 	void set_context_state() const override final {
-		Base::set_context_state();
-		
 		gl_current_context::get()->enable_depth_test();
-		
+
 		0_tex_unit = *stars_tex;
 		meshptr->vao()->bind();
 		meshptr->ebo()->bind();
@@ -81,7 +79,7 @@ int main() {
 //	logger.redirect_std_outputs();
 	ste_log_set_global_logger(&logger);
 	ste_log() << "Simulation is running";
-	
+
 	int w = 1688, h = 950;
 	constexpr float clip_far = 3000.f;
 	constexpr float clip_near = 5.f;
@@ -102,12 +100,12 @@ int main() {
 
 	StE::Graphics::Scene scene;
 	StE::Graphics::GIRenderer renderer(ctx, &scene);
-	
-	std::shared_ptr<SkyDome> skydome = std::make_shared<SkyDome>(ctx);
-	std::shared_ptr<StE::Graphics::ObjectGroup> object_group = std::make_shared<StE::Graphics::ObjectGroup>(ctx, &scene.scene_properties());
-	
+
+	std::unique_ptr<SkyDome> skydome = std::make_unique<SkyDome>(ctx);
+	std::unique_ptr<StE::Graphics::ObjectGroup> object_group = std::make_unique<StE::Graphics::ObjectGroup>(ctx, &scene.scene_properties());
+
 	ctx.set_renderer(&renderer);
-	
+
 	// scene.add_object(object_group);
 
 	StE::Graphics::Camera camera;
@@ -143,9 +141,9 @@ int main() {
 
 
 	bool loaded = false;
-	auto model_future = ctx.scheduler().schedule_now(StE::Resource::ModelFactory::load_model_task(ctx, 
-																								  R"(Data/models/crytek-sponza/sponza.obj)",  
-																								  &*object_group, 
+	auto model_future = ctx.scheduler().schedule_now(StE::Resource::ModelFactory::load_model_task(ctx,
+																								  R"(Data/models/crytek-sponza/sponza.obj)",
+																								  &*object_group,
 																								  &scene.scene_properties(),
 																								  2.5f));
 
@@ -189,8 +187,11 @@ int main() {
 	auto title_text = text_manager.create_renderer();
 	auto footer_text = text_manager.create_renderer();
 	auto header_text = text_manager.create_renderer();
-	renderer.add_gui_task(title_text);
-	renderer.add_gui_task(footer_text);
+
+	auto title_text_task = make_gpu_task(title_text.get());
+
+	renderer.add_gui_task(title_text_task);
+	renderer.add_gui_task(make_gpu_task(footer_text.get()));
 	renderer.set_deferred_rendering_enabled(false);
 
 	while (!loaded && running) {
@@ -201,7 +202,7 @@ int main() {
 										   orange(regular(L"By Shlomi Steinberg")));
 			auto total_vram = std::to_wstring(ctx.gl()->meminfo_total_available_vram() / 1024);
 			auto free_vram = std::to_wstring(ctx.gl()->meminfo_free_vram() / 1024);
-			
+
 			auto workers_count = ctx.scheduler().get_workers_count();
 			auto workers_sleep = ctx.scheduler().get_sleeping_workers();
 
@@ -209,7 +210,7 @@ int main() {
 			footer_text->set_text({ 10, 50 },
 								  line_height(32)(vsmall(b(blue_violet(free_vram) + L" / " + stroke(red, 1)(dark_red(total_vram)) + L" MB")) + L"\n" +
 												  vsmall(b(L"Thread pool workers: ") +
-														 olive(std::to_wstring(workers_count - workers_sleep)) + L" busy / " + 
+														 olive(std::to_wstring(workers_count - workers_sleep)) + L" busy / " +
 														 olive(std::to_wstring(workers_count)) + L" total")));
 		}
 
@@ -218,15 +219,19 @@ int main() {
 
 		ctx.run_loop();
 	}
-	
-	renderer.remove_gui_task(title_text);
-	title_text = nullptr;
-	
-	skydome->add_dependency(object_group);	
 
-	renderer.add_gui_task(header_text);
-	renderer.add_task(object_group);
-	renderer.add_task(skydome);
+	renderer.remove_gui_task(title_text_task);
+	title_text = nullptr;
+	title_text_task = nullptr;
+
+	auto skydome_task = make_gpu_task(skydome.get());
+	auto object_group_task = make_gpu_task(object_group.get());
+
+	skydome_task->add_dependency(object_group_task);
+
+	renderer.add_gui_task(make_gpu_task(header_text.get()));
+	renderer.add_task(object_group_task);
+	renderer.add_task(skydome_task);
 	renderer.set_deferred_rendering_enabled(true);
 
 
@@ -251,7 +256,7 @@ int main() {
 			auto center = static_cast<glm::vec2>(ctx.get_backbuffer_size())*.5f;
 			ctx.set_pointer_position(static_cast<glm::ivec2>(center));
 			auto diff_v = (center - static_cast<decltype(center)>(pp)) * time_delta * rotation_factor;
-			camera.pitch_and_yaw(-diff_v.y, diff_v.x); 
+			camera.pitch_and_yaw(-diff_v.y, diff_v.x);
 		}
 
 
@@ -271,27 +276,27 @@ int main() {
 		{
 			using namespace StE::Text::Attributes;
 
-			static float tpf = .0f;
 			static unsigned tpf_count = 0;
 			static float total_tpf = .0f;
 			total_tpf += ctx.time_per_frame().count();
 			++tpf_count;
-			if (tpf_count % 10 == 0) {
-				tpf = total_tpf / 10.f;
+			if (tpf_count % 5 == 0) {
+				auto tpf = total_tpf / 5.f;
 				total_tpf = .0f;
+
+				auto tpf_str = std::to_wstring(tpf);
+				header_text->set_text({ 30, h - 50 }, vsmall(b(stroke(dark_magenta, 1)(red(tpf_str)))) + L" ms");
 			}
-			auto tpf_str = std::to_wstring(tpf);
 
 			auto total_vram = std::to_wstring(ctx.gl()->meminfo_total_available_vram() / 1024);
 			auto free_vram = std::to_wstring(ctx.gl()->meminfo_free_vram() / 1024);
 
-			header_text->set_text({ 30, h - 50 }, vsmall(b(stroke(dark_magenta, 1)(red(tpf_str)))) + L" ms");
 			footer_text->set_text({ 30, 20 }, vsmall(b((blue_violet(free_vram) + L" / " + stroke(red, 1)(dark_red(total_vram)) + L" MB"))));
 		}
 
 		time += ctx.time_per_frame().count();
 		if (!ctx.run_loop()) break;
 	}
-	 
+
 	return 0;
 }

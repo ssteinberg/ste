@@ -11,9 +11,9 @@
 namespace StE {
 namespace Graphics {
 
-class hdr_compute_minmax_task : public gpu_task {
-	using Base = gpu_task;
-	
+class hdr_compute_minmax_task : public gpu_dispatchable {
+	using Base = gpu_dispatchable;
+
 private:
 	hdr_dof_postprocess *p;
 

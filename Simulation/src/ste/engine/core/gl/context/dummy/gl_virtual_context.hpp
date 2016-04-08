@@ -21,6 +21,8 @@ public:
 	void clear() {
 		Base::states.clear();
 		Base::resources.clear();
+
+		Base::state_counter = 0;
 	}
 };
 

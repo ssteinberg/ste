@@ -5,16 +5,15 @@
 
 #include "stdafx.hpp"
 
-#include "FramebufferObject.hpp"
-
 #include "sop_vertex.hpp"
+
+#include "gpu_dispatchable.hpp"
+#include "FramebufferObject.hpp"
 
 #include <functional>
 #include <memory>
 #include <algorithm>
-
 #include <string>
-#include <typeinfo>
 
 #include <boost/container/flat_set.hpp>
 
@@ -23,12 +22,18 @@ namespace Graphics {
 
 class gpu_task_dispatch_queue;
 class gpu_state_transition;
+class gpu_task_factory;
 
 class gpu_task : public Algorithm::SOP::sop_vertex<boost::container::flat_set<std::shared_ptr<const gpu_task>>,
 												   boost::container::flat_set<const gpu_task*>>,
 				 private std::enable_shared_from_this<gpu_task> {
 private:
 	friend class gpu_task_dispatch_queue;
+	friend class gpu_state_transition;
+	friend class gpu_task_factory;
+
+protected:
+	struct AccessToken {};
 
 public:
 	using TaskT = const gpu_task;
@@ -36,10 +41,13 @@ public:
 	using TaskCollection = boost::container::flat_set<std::shared_ptr<TaskT>>;
 
 private:
+	std::string name;
+
+	const gpu_dispatchable *dispatchable;
+	mutable const Core::GenericFramebufferObject *fbo{ nullptr };
+
 	std::vector<TaskPtr> sub_tasks;
 	mutable TaskCollection dependencies;
-
-protected:
 	mutable boost::container::flat_set<TaskT*> requisite_for;
 
 private:
@@ -49,50 +57,59 @@ private:
 
 	void set_parent_queue(gpu_task_dispatch_queue *q) const {
 		parent_queue = q;
-		for (auto &s : sub_tasks)
-			s->set_parent_queue(q);
 	}
 
 protected:
-	void operator()() const {
-		set_context_state();
-		dispatch();
-	}
+	void set_fbo(const Core::GenericFramebufferObject *fbo) const;
 
 public:
+	gpu_task(AccessToken,
+			 const std::string &name,
+			 const gpu_dispatchable *dispatchable) : name(name), dispatchable(dispatchable) {}
+	gpu_task(AccessToken,
+			 const std::string &name,
+			 const gpu_dispatchable *dispatchable,
+			 const Core::GenericFramebufferObject *fbo) : gpu_task(AccessToken(), name, dispatchable) {
+		this->fbo = fbo;
+	}
+	gpu_task(AccessToken,
+			 const std::string &name,
+			 const gpu_dispatchable *dispatchable,
+			 const Core::GenericFramebufferObject *fbo,
+			 std::vector<TaskPtr> &&st) : gpu_task(AccessToken(), name, dispatchable, fbo) {
+		sub_tasks = std::move(st);
+		for (auto &s : sub_tasks)
+			dependencies.insert(s);
+	}
+
+	gpu_task(gpu_task &&) = default;
+	gpu_task &operator=(gpu_task &&) = default;
+	virtual ~gpu_task() noexcept {}
+
+	std::string get_name() const override final { return name; }
+
 	const TaskCollection &get_dependencies() const override final { return dependencies; }
 	const boost::container::flat_set<TaskT*> &get_requisite_for() const override final { return requisite_for; }
 
 	auto get_parent_queue() const { return parent_queue; }
+	auto get_fbo() const { return fbo; }
 
 	void add_dependency(const TaskPtr &task) const;
 	void remove_dependency(const TaskPtr &task) const;
 
-public:
-	gpu_task() = default;
-	gpu_task(std::vector<TaskPtr> &&st) : sub_tasks(st) {
-		for (auto &s : sub_tasks)
-			dependencies.insert(s);
+private:
+	void set_context_state() const {
+		dispatchable->set_context_state();
+		if (fbo)
+			fbo->bind();
 	}
-	gpu_task(const TaskPtr &s) : sub_tasks(1) {
-		dependencies.insert(s);
-		sub_tasks[0] = s;
+
+	inline void dispatch() const {
+		dispatchable->dispatch();
 	}
-	virtual ~gpu_task() noexcept {}
-
-	gpu_task(gpu_task &&) = default;
-	gpu_task &operator=(gpu_task &&) = default;
-
-protected:
-	// Should set up gl resources, states, etc..
-	virtual void set_context_state() const = 0;
-	// Should update buffers, locks, etc. and call a single render/compute method.
-	virtual void dispatch() const = 0;
-
-public:
-	std::string get_name() const override final { return this->task_name(); }
-	virtual std::string task_name() const { return typeid(*this).name(); }
 };
 
 }
 }
+
+#include "gpu_task_factory.hpp"

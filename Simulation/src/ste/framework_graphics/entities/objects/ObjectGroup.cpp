@@ -8,7 +8,7 @@
 #include <algorithm>
 
 using namespace StE::Graphics;
-	
+
 ObjectGroup::ObjectGroup(StEngineControl &ctx, SceneProperties *props) : scene_props(props),
 																		 object_program(ctx.glslprograms_pool().fetch_program_task({ "object.vert", "object.frag" })()) {
 	auto vbo_buffer = Core::buffer_object_cast<vbo_type>(vbo.get_buffer());
@@ -16,7 +16,7 @@ ObjectGroup::ObjectGroup(StEngineControl &ctx, SceneProperties *props) : scene_p
 	vao[1] = vbo_buffer[1];
 	vao[2] = vbo_buffer[2];
 	vao[3] = vbo_buffer[3];
-	
+
 	object_program->set_uniform("projection", ctx.projection_matrix());
 	object_program->set_uniform("far", ctx.get_far_clip());
 	object_program->set_uniform("near", ctx.get_near_clip());
@@ -39,11 +39,11 @@ void ObjectGroup::add_object(const std::shared_ptr<Object> &obj) {
 		}
 	);
 	obj->signal_model_change().connect(connection);
-	
+
 	auto &ind = obj->get_mesh().get_indices();
 	auto &vertices = obj->get_mesh().get_vertices();
 
-	objects.insert(std::make_pair(obj, 
+	objects.insert(std::make_pair(obj,
 								  object_information{ idb.size(), connection }));
 
  	Core::IndirectMultiDrawElementsCommand idc;
@@ -56,7 +56,7 @@ void ObjectGroup::add_object(const std::shared_ptr<Object> &obj) {
 	vbo.push_back(vertices);
 	indices.push_back(ind);
 	idb.push_back(idc);
- 
+
  	total_vertices += vertices.size();
  	total_indices += ind.size();
 
@@ -93,7 +93,7 @@ void ObjectGroup::update_dirty_buffers() const {
 			continue;
 		}
 		object_information info = it->second;
-		
+
 		range<> lock_range{ info.index * sizeof(mesh_data_buffer_type::T), sizeof(mesh_data_buffer_type::T) };
 
 		mesh_descriptor md;
@@ -104,6 +104,6 @@ void ObjectGroup::update_dirty_buffers() const {
 
 		ranges_to_lock.push_back(lock_range);
 	}
-	
+
 	signalled_objects.clear();
 }

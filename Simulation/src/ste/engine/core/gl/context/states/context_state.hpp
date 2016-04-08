@@ -24,11 +24,13 @@ public:
 	};
 
 private:
+	std::size_t counter{ 0 };
 	optional<state_type> state;
 	std::vector<state_type> stack;
 
 public:
 	context_state() = default;
+	context_state(std::size_t c) : counter(c) {}
 	context_state(context_state &&) = default;
 	context_state &operator=(context_state &&) = default;
 	context_state(const context_state &) = default;
@@ -95,6 +97,10 @@ public:
 	auto &get_state() const {
 		assert(exists() && "State must be set before calling get_state");
 		return state.get();
+	}
+
+	auto get_counter() const {
+		return counter;
 	}
 };
 

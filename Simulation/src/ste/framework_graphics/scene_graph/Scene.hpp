@@ -15,13 +15,13 @@
 namespace StE {
 namespace Graphics {
 
-class Scene {//: public gpu_task, public entity_affine {
-// 	using Base = gpu_task; 
-	
+class Scene {//: public gpu_dispatchable, public entity_affine {
+// 	using Base = gpu_dispatchable;
+
 private:
 	SceneProperties scene_props;
 
-public:	
+public:
 // 	virtual void add_object(const std::shared_ptr<ObjectGroup> &obj) { add_dependency(obj); }
 // 	virtual void remove_object(const std::shared_ptr<ObjectGroup> &obj) { remove_dependency(obj)); }
 

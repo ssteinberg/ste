@@ -13,20 +13,20 @@
 namespace StE {
 namespace Graphics {
 
-class hdr_bokeh_blurx_task : public gpu_dispatchable {
+class hdr_bokeh_blury_task : public gpu_dispatchable {
 	using Base = gpu_dispatchable;
 
 private:
 	hdr_dof_postprocess *p;
 
 public:
-	hdr_bokeh_blurx_task(hdr_dof_postprocess *p) : p(p) {}
-	~hdr_bokeh_blurx_task() noexcept {}
+	hdr_bokeh_blury_task(hdr_dof_postprocess *p) : p(p) {}
+	~hdr_bokeh_blury_task() noexcept {}
 
 protected:
 	void set_context_state() const override final {
 		ScreenFillingQuad.vao()->bind();
-		p->bokeh_blurx->bind();
+		p->bokeh_blury->bind();
 	}
 
 	void dispatch() const override final {

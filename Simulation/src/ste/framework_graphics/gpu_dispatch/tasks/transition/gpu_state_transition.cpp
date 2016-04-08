@@ -5,6 +5,8 @@
 
 #include "gl_current_context.hpp"
 
+#include <algorithm>
+
 using namespace StE::Graphics;
 
 StE::Core::gl_virtual_context gpu_state_transition::virt_ctx;
@@ -13,7 +15,7 @@ std::size_t gpu_state_transition::setup_virtual_context_and_calculate_transition
 																				 const gpu_task *next,
 																				 std::vector<Core::context_state_name> &states_to_push,
 																				 std::vector<Core::context_state_name> &states_to_pop,
-																				 std::vector<Core::context_state> &states_to_set) {
+																				 _state_transition::state_container<Core::context_state> &states_to_set) {
 	auto ctx = Core::gl_current_context::get();
 
 	virt_ctx.make_current();
@@ -34,7 +36,7 @@ std::size_t gpu_state_transition::setup_virtual_context_and_calculate_transition
 	_state_transition::states_diff(std::move(states_intermediate), final_states, states_to_push, states_to_pop, states_to_set, cost);
 	for (auto &p : states_resources) {
 		assert(p.second.exists());
-		states_to_set.push_back(std::move(p.second));
+		states_to_set.insert(std::move(p.second));
 		cost += _state_transition::cost_for_state_type(Core::context_state_type_from_name(p.first.get_name()));
 	}
 
@@ -43,7 +45,7 @@ std::size_t gpu_state_transition::setup_virtual_context_and_calculate_transition
 
 std::unique_ptr<gpu_state_transition> gpu_state_transition::transition_function(const gpu_task *task, const gpu_task *next) {
 	std::vector<Core::context_state_name> states_to_pop, states_to_push;
-	std::vector<Core::context_state> states_to_set;
+	_state_transition::state_container<Core::context_state> states_to_set;
 	auto cost = setup_virtual_context_and_calculate_transition(task, next, states_to_push, states_to_pop, states_to_set);
 
 	std::function<void(void)> dispatch = [states_to_push = std::move(states_to_push),
@@ -51,8 +53,10 @@ std::unique_ptr<gpu_state_transition> gpu_state_transition::transition_function(
 										  states_to_set  = std::move(states_to_set),
 										  task, next]() {
 		// Set new states
-		for (auto &state : states_to_set)
+		for (auto &state : states_to_set) {
+			assert(state.exists());
 			Core::gl_current_context::get()->set_context_server_state(state.get_state());
+		}
 
 		// Dispatch
 		task->dispatch();

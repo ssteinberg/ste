@@ -20,6 +20,20 @@
 namespace StE {
 namespace Graphics {
 
+namespace _state_transition {
+
+template <typename T>
+struct state_comparator {
+	constexpr bool operator()(const T &lhs, const T &rhs) const {
+		return lhs.get_counter() < rhs.get_counter();
+	}
+};
+
+template <typename T>
+using state_container = boost::container::flat_set<T, state_comparator<T>>;
+
+}
+
 class gpu_state_transition : public Algorithm::SOP::sop_edge {
 	using Base = Algorithm::SOP::sop_edge;
 
@@ -34,7 +48,7 @@ private:
 																	  const gpu_task *next,
 																	  std::vector<Core::context_state_name> &states_to_push,
 																	  std::vector<Core::context_state_name> &states_to_pop,
-																	  std::vector<Core::context_state> &states_to_set);
+																	  _state_transition::state_container<Core::context_state> &states_to_set);
 
 private:
 	std::function<void(void)> dispatch_func;

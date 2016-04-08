@@ -8,8 +8,6 @@
 using namespace StE::Graphics;
 
 void dense_voxelizer::set_context_state() const {
-	Base::set_context_state();
-		
 	Core::gl_current_context::get()->color_mask(false, false, false, false);
 	Core::gl_current_context::get()->depth_mask(false);
 
@@ -21,7 +19,7 @@ void dense_voxelizer::dispatch() const {
 	// scene(dvs->voxelizer_program, &dvs->voxelizer_fbo);
 
 	Core::gl_current_context::get()->memory_barrier(GL_TEXTURE_FETCH_BARRIER_BIT);
-	
+
 	dvs->voxelizer_upsampler_program->bind();
 	auto center = dvs->size / 2;
 

@@ -111,7 +111,7 @@ void gpu_task_dispatch_queue::insert_task(const std::shared_ptr<TaskT> &task, bo
 		assert(t != task);
 
 		if (Base::get_vertices().find(t) == Base::get_vertices().end())
-			insert_task(t, nullptr, false);
+			insert_task(t, false);
 		t->requisite_for.insert(task.get());
 	}
 }
@@ -120,8 +120,8 @@ void gpu_task_dispatch_queue::erase_task(const TaskPtr &task, bool force) {
 	if (!force && task->requisite_for.size()) {
 		using namespace StE::Text::Attributes;
 
-		std::cout << Text::AttributedString("Attempting to remove task from GPU dispatch queue, however task ") + i(task->task_name()) + " is a requisite for " + i((*task->requisite_for.begin())->task_name()) + "." << std::endl;
-		ste_log_fatal() << "task " << task->task_name() << " is a requisite for " << (*task->requisite_for.begin())->task_name() << std::endl;
+		std::cout << Text::AttributedString("Attempting to remove task from GPU dispatch queue, however task ") + i(task->get_name()) + " is a requisite for " + i((*task->requisite_for.begin())->get_name()) + "." << std::endl;
+		ste_log_fatal() << "task " << task->get_name() << " is a requisite for " << (*task->requisite_for.begin())->get_name() << std::endl;
 		assert(false && "Task is a requisite!");
 		return;
 	}
@@ -153,7 +153,7 @@ void gpu_task_dispatch_queue::add_dep(const TaskPtr &task, const TaskPtr &dep) {
 		add_dep(s, dep);
 
 	if (Base::get_vertices().find(dep) == Base::get_vertices().end())
-		insert_task(dep, nullptr, false);
+		insert_task(dep, false);
 	else
 		Base::erase_edge(task.get(), dep.get());
 
