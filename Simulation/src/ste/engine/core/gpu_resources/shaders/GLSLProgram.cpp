@@ -15,7 +15,7 @@ using namespace StE::Core;
 bool GLSLProgram::link() {
 	if (linked) return true;
 	if (!Base::is_valid()) return false;
-	
+
 	for (auto &shader : shaders)
 		glAttachShader(get_resource_id(), shader->get_resource_id());
 
@@ -108,7 +108,7 @@ void GLSLProgram::set_uniform(const std::string &name, const glm::vec3 & v) cons
 
 void GLSLProgram::set_uniform(const std::string &name, const glm::vec4 & v) const {
 	int loc = get_uniform_location(name);
-	if (loc >= 0) 
+	if (loc >= 0)
 		glProgramUniform4f(get_resource_id(), loc, v.x, v.y, v.z, v.w);
 }
 
@@ -126,13 +126,13 @@ void GLSLProgram::set_uniform(const std::string &name, const glm::mat3 & m, bool
 
 void GLSLProgram::set_uniform(const std::string &name, const glm::mat4 & m, bool transpose) const {
 	int loc = get_uniform_location(name);
-	if (loc >= 0) 
+	if (loc >= 0)
 		glProgramUniformMatrix4fv(get_resource_id(), loc, 1, transpose, &m[0][0]);
 }
 
 void GLSLProgram::set_uniform(const std::string &name, float val) const {
 	int loc = get_uniform_location(name);
-	if (loc >= 0) 
+	if (loc >= 0)
 		glProgramUniform1f(get_resource_id(), loc, val);
 }
 
@@ -162,7 +162,7 @@ void GLSLProgram::set_uniform(const std::string &name, std::uint64_t val) const 
 
 void GLSLProgram::set_uniform(const std::string &name, bool val) const {
 	int loc = get_uniform_location(name);
-	if (loc >= 0) 
+	if (loc >= 0)
 		glProgramUniform1i(get_resource_id(), loc, val);
 }
 

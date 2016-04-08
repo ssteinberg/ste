@@ -21,7 +21,7 @@
 #include "texture_handle.hpp"
 #include "image_handle.hpp"
 
-#include "trace.hpp"
+#include "Log.hpp"
 
 namespace StE {
 namespace Core {
@@ -34,7 +34,7 @@ public:
 	}
 	static void deallocate(GenericResource::type &id) {
 		if (id) {
-			glDeleteProgram(id); 
+			glDeleteProgram(id);
 			id = 0;
 		}
 	}
@@ -48,7 +48,7 @@ public:
 
 class GLSLProgram : public bindable_resource<GLSLProgramAllocator, GLSLProgramBinder> {
 	using Base = bindable_resource<GLSLProgramAllocator, GLSLProgramBinder>;
-	
+
 private:
 	bool linked;
 	std::vector<std::unique_ptr<GLSLShaderGeneric>> shaders;
@@ -62,7 +62,7 @@ private:
 		auto ret = (uniform_map[name] = glGetUniformLocation(get_resource_id(), name.c_str()));
 #ifdef DEBUG
 		if (ret == -1) {
-			TRACE("Uniform \"" + name + "\" not found\n");
+			ste_log_warn("Uniform \"" + name + "\" not found\n");
 		}
 #endif
 
@@ -80,7 +80,7 @@ public:
 
 	void add_shader(std::unique_ptr<GLSLShaderGeneric> shader) {
 		if (shader == nullptr || !shader->is_valid()) {
-			std::cerr << "Error: invalid shader." << std::endl;
+			ste_log_error() << "Error: invalid shader." << std::endl;
 			assert(false);
 			return;
 		}
