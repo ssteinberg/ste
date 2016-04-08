@@ -1,4 +1,0 @@
-<map id="StE::Core::RenderTargetGeneric" name="StE::Core::RenderTargetGeneric">
-<area shape="rect" id="node2" href="$classStE_1_1Core_1_1image.html" title="{StE::Core::image\&lt; type \&gt;\n||+ image()\l+ image()\l+ image()\l+ operator=()\l+ operator=()\l+ get_layer()\l+ get_format()\l+ get_image_size()\l+ with_format()\l+ with_access()\l}" alt="" coords="5,160,180,369"/>
-<area shape="rect" id="node3" href="$classStE_1_1Core_1_1RenderTarget.html" title="{StE::Core::RenderTarget\n|# size\l# format\l|+ RenderTarget()\l+ operator=()\l+ RenderTarget()\l+ get_image_size()\l+ get_format()\l+ resource_type()\l}" alt="" coords="205,182,378,347"/>
-</map>

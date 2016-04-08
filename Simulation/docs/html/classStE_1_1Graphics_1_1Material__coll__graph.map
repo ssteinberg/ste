@@ -1,6 +1,0 @@
-<map id="StE::Graphics::Material" name="StE::Graphics::Material">
-<area shape="rect" id="node2" href="$classStE_1_1Graphics_1_1RGB.html" title="{StE::Graphics::RGB\n||+ RGB()\l+ RGB()\l+ R()\l+ G()\l+ B()\l+ R()\l+ G()\l+ B()\l+ toXYZ()\l+ luminance()\l+ operator glm::tvec3\&lt; T \&gt;()\l+ operator XYZ()\l}" alt="" coords="15,1092,207,1331"/>
-<area shape="rect" id="node3" href="$classStE_1_1Graphics_1_1spectrum.html" title="{StE::Graphics::spectrum\l\&lt; float, 3 \&gt;\n||+ spectrum()\l+ spectrum()\l+ operator+=()\l+ operator+=()\l+ operator&#45;=()\l+ operator&#45;=()\l+ operator*=()\l+ operator*=()\l+ operator/=()\l+ operator/=()\land 10 more...\l}" alt="" coords="27,804,194,1043"/>
-<area shape="rect" id="node5" title="STL class. " alt="" coords="151,145,265,223"/>
-<area shape="rect" id="node7" href="$classStE_1_1Graphics_1_1spectrum.html" title="{StE::Graphics::spectrum\l\&lt; T, samples \&gt;\n||+ spectrum()\l+ spectrum()\l+ operator+=()\l+ operator&#45;=()\l+ operator*=()\l+ operator/=()\l+ operator+=()\l+ operator&#45;=()\l+ operator*=()\l+ operator/=()\land 10 more...\l}" alt="" coords="113,503,279,741"/>
-</map>

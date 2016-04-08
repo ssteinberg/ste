@@ -6,9 +6,10 @@
 #include "stdafx.hpp"
 #include <functional>
 #include <utility>
+#include <tuple>
 
 namespace StE {
-	
+
 namespace _tuple_call_detail {
 	template <typename F, typename Tuple, bool Done, int Total, int... N>
 	struct call_impl {
@@ -23,7 +24,7 @@ namespace _tuple_call_detail {
 			f(std::get<N>(std::forward<Tuple>(t))...);
 		}
 	};
-	
+
 	template <typename B, typename F, typename Tuple, bool Done, int Total, int... N>
 	struct call_impl_ex {
 		static void call(B b, F f, Tuple &&t) {

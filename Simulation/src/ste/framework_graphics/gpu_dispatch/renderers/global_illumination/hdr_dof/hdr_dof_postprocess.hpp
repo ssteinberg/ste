@@ -24,7 +24,7 @@
 
 namespace StE {
 namespace Graphics {
-	
+
 class hdr_compute_minmax_task;
 class hdr_create_histogram_task;
 class hdr_compute_histogram_sums_task;
@@ -32,10 +32,11 @@ class hdr_tonemap_coc_task;
 class hdr_bloom_blurx_task;
 class hdr_bloom_blury_task;
 class hdr_bokeh_blurx_task;
+class hdr_bokeh_blury_task;
 
 class hdr_dof_postprocess : public gpu_task {
 	using Base = gpu_task;
-	
+
 	friend class hdr_compute_minmax_task;
 	friend class hdr_create_histogram_task;
 	friend class hdr_compute_histogram_sums_task;
@@ -43,7 +44,8 @@ class hdr_dof_postprocess : public gpu_task {
 	friend class hdr_bloom_blurx_task;
 	friend class hdr_bloom_blury_task;
 	friend class hdr_bokeh_blurx_task;
-	
+	friend class hdr_bokeh_blury_task;
+
 private:
 	using ResizeSignalConnectionType = StEngineControl::framebuffer_resize_signal_type::connection_type;
 
@@ -53,8 +55,15 @@ private:
 	};
 
 private:
+	std::unique_ptr<hdr_compute_minmax_task> compute_minmax_task;
+	std::unique_ptr<hdr_create_histogram_task> create_histogram_task;
+	std::unique_ptr<hdr_compute_histogram_sums_task> compute_histogram_sums_task;
+	std::unique_ptr<hdr_tonemap_coc_task> tonemap_coc_task;
+	std::unique_ptr<hdr_bloom_blurx_task> bloom_blurx_task;
+	std::unique_ptr<hdr_bloom_blury_task> bloom_blury_task;
 	std::unique_ptr<hdr_bokeh_blurx_task> bokeh_blurx_task;
-	
+	std::unique_ptr<hdr_bokeh_blury_task> bokeh_blury_task;
+
 	std::shared_ptr<ResizeSignalConnectionType> resize_connection;
 
 	std::shared_ptr<Core::GLSLProgram> hdr_compute_minmax;
@@ -98,6 +107,10 @@ private:
 
 	std::array<std::uint32_t, 4> storage_buffers;
 
+private:
+	std::vector<std::shared_ptr<const gpu_task>> create_sub_tasks();
+	hdr_bokeh_blury_task* create_dispatchable();
+
 public:
 	hdr_dof_postprocess(const StEngineControl &ctx, const Core::Texture2D *z_buffer);
 	~hdr_dof_postprocess() noexcept;
@@ -107,10 +120,6 @@ public:
 	auto get_input_fbo() const { return &fbo_hdr_final; }
 
 	void resize(glm::ivec2 size);
-	
-protected:
-	void set_context_state() const override final;
-	void dispatch() const override final;
 };
 
 }

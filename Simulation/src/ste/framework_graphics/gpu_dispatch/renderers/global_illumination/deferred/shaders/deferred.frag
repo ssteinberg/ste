@@ -46,7 +46,7 @@ void main() {
 
 		vec3 v = light_incidant_ray(ld, i, position);
 		float dist = length(v);
-	
+
 		// float shadow_dist;
 		// bool hit;
 		// voxel_ray_march(position, vec3(0), light_transform_buffer[i].xyz, hit, shadow_dist, true);
@@ -65,7 +65,7 @@ void main() {
 
 	gl_FragColor = vec4(xyY, 1);
 
-	
+
 	// vec2 p = gl_FragCoord.xy / vec2(1688, 950);
 	// p = p * 2 - vec2(1);
 	// vec3 D = normalize((inv_view_model * inv_projection * vec4(p, 0, 1)).xyz);

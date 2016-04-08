@@ -17,9 +17,9 @@ namespace Graphics {
 
 class dense_voxel_space;
 
-class dense_voxelizer : public gpu_task {
-	using Base = gpu_task;
-	
+class dense_voxelizer : public gpu_dispatchable {
+	using Base = gpu_dispatchable;
+
 private:
 	const dense_voxel_space *dvs;
 	Scene &scene;

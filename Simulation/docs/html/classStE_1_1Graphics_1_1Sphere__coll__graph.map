@@ -1,6 +1,0 @@
-<map id="StE::Graphics::Sphere" name="StE::Graphics::Sphere">
-<area shape="rect" id="node2" href="$classStE_1_1Graphics_1_1mesh.html" title="{StE::Graphics::mesh\l\&lt; mesh_subdivion_mode\l::Triangles \&gt;\n|+ mode\l|+ ~mesh()\l+ get_vertices()\l+ get_indices()\l+ aabb()\l+ set_vertices()\l+ set_indices()\l+ operator+=()\l+ transform()\l+ vbo()\l+ ebo()\l+ vao()\l}" alt="" coords="26,535,199,788"/>
-<area shape="rect" id="node3" href="$classStE_1_1Graphics_1_1mesh__generic.html" title="{StE::Graphics::mesh\l_generic\n||+ ~mesh_generic()\l+ get_vertices()\l+ get_indices()\l+ aabb()\l}" alt="" coords="5,13,151,149"/>
-<area shape="rect" id="node5" href="$classStE_1_1Graphics_1_1mesh.html" title="{StE::Graphics::mesh\l\&lt; Mode \&gt;\n|+ mode\l|+ ~mesh()\l+ get_vertices()\l+ get_indices()\l+ aabb()\l+ set_vertices()\l+ set_indices()\l+ operator+=()\l+ transform()\l+ vbo()\l+ ebo()\l+ vao()\l}" alt="" coords="95,219,240,457"/>
-<area shape="rect" id="node4" href="$classStE_1_1Graphics_1_1mesh__aabb.html" title="{StE::Graphics::mesh_aabb\n||+ mesh_aabb()\l+ mesh_aabb()\l+ a()\l+ b()\l+ a()\l+ b()\l}" alt="" coords="185,5,368,156"/>
-</map>

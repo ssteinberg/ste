@@ -1,4 +1,0 @@
-var classStE_1_1legendre__polynomial_3_01m_00_01l_00_01typename_01std_1_1enable__if__t_3_01l_9_0Am_091_01_6_6m_9_0Al_01_4_01_4 =
-[
-    [ "operator()", "classStE_1_1legendre__polynomial_3_01m_00_01l_00_01typename_01std_1_1enable__if__t_3_01l_9_0Am_091_01_6_6m_9_0Al_01_4_01_4.html#a1772699a3c54f1837bf438c14c75428d", null ]
-];

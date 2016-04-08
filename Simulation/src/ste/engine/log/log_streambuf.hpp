@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -62,11 +62,11 @@ private:
 // 	}
 
 private:
-	std::shared_ptr<sink_type> sink;
+	std::unique_ptr<sink_type> sink;
 	std::array<char, buff_sz + 1> buffer;
 
 public:
-	log_streambuf(std::shared_ptr<sink_type> sink, bool force_flush) : force_flush(force_flush), sink(sink) {
+	log_streambuf(std::unique_ptr<sink_type> &&sink, bool force_flush) : force_flush(force_flush), sink(std::move(sink)) {
 		char *base = &buffer.front();
 		setp(base, base + buffer.size());
 	}

@@ -1,4 +1,0 @@
-<map id="StE::Graphics::SphericalLight" name="StE::Graphics::SphericalLight">
-<area shape="rect" id="node2" href="$classStE_1_1Graphics_1_1light.html" title="{StE::Graphics::light\n|# dirty\l# descriptor\l|+ light()\l+ ~light()\l+ is_dirty()\l+ clear_dirty()\l+ set_luminance()\l+ set_diffuse()\l+ get_luminance()\l+ get_diffuse()\l+ get_descriptor()\l}" alt="" coords="21,145,157,355"/>
-<area shape="rect" id="node3" href="$classStE_1_1Graphics_1_1entity.html" title="{StE::Graphics::entity\n||+ ~entity()\l+ get_position()\l}" alt="" coords="18,5,161,97"/>
-</map>

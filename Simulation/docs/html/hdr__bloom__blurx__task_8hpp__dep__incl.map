@@ -1,5 +1,0 @@
-<map id="src/ste/framework_graphics/gpu_dispatch/renderers/global_illumination/hdr_dof/steps/hdr_bloom_blurx_task.hpp" name="src/ste/framework_graphics/gpu_dispatch/renderers/global_illumination/hdr_dof/steps/hdr_bloom_blurx_task.hpp">
-<area shape="rect" id="node2" href="$hdr__bloom__blury__task_8hpp.html" title="src/ste/framework_graphics\l/gpu_dispatch/renderers\l/global_illumination/hdr\l_dof/steps/hdr_bloom_blury\l_task.hpp" alt="" coords="13,139,199,224"/>
-<area shape="rect" id="node3" href="$hdr__bokeh__blurx__task_8hpp.html" title="src/ste/framework_graphics\l/gpu_dispatch/renderers\l/global_illumination/hdr\l_dof/steps/hdr_bokeh_blurx\l_task.hpp" alt="" coords="13,272,199,357"/>
-<area shape="rect" id="node4" href="$hdr__dof__postprocess_8cpp.html" title="src/ste/framework_graphics\l/gpu_dispatch/renderers\l/global_illumination/hdr\l_dof/hdr_dof_postprocess.cpp" alt="" coords="5,405,207,476"/>
-</map>

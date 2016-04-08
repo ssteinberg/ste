@@ -10,7 +10,7 @@
 
 #include "AttributedString.hpp"
 
-#include "gpu_task.hpp"
+#include "gpu_dispatchable.hpp"
 #include "gl_current_context.hpp"
 #include "StEngineControl.hpp"
 #include "task.hpp"
@@ -30,7 +30,7 @@
 namespace StE {
 namespace Text {
 
-class TextManager {	
+class TextManager {
 private:
 	struct glyph_point {
 		struct {
@@ -43,19 +43,19 @@ private:
 		float weight;
 
 		using descriptor = Core::VBODescriptorWithTypes<glm::vec4, glm::vec4, glm::vec4, float, float>::descriptor;
-		
+
 		glyph_point() {}
 	};
 
 public:
-	class text_renderable : public Graphics::gpu_task {
+	class text_renderable : public Graphics::gpu_dispatchable {
 		using Base = Graphics::gpu_task;
-	
+
 		static constexpr bool using_lockless_ringbuffer = true;
 		static constexpr std::size_t ringbuffer_max_size = 4096;
-		
+
 		using ring_buffer_type = Core::ring_buffer<glyph_point, ringbuffer_max_size, using_lockless_ringbuffer>;
-		
+
 	private:
 		mutable TextManager *tr;
 		std::vector<glyph_point> points;
@@ -69,12 +69,12 @@ public:
 
 	public:
 		text_renderable(TextManager *tr);
-		
+
 		void set_text(const glm::vec2 &ortho_pos, const AttributedWString &wstr) {
 			points = tr->create_points(ortho_pos, wstr);
 			range_in_use = vbo.commit(points);
 		}
-		
+
 	protected:
 		void set_context_state() const override final;
 		void dispatch() const override final;
@@ -100,8 +100,8 @@ private:
 public:
 	TextManager(const StEngineControl &context, const Font &default_font, int default_size = 28);
 
-	std::shared_ptr<text_renderable> create_renderer() {
-		return std::make_shared<text_renderable>(this);
+	std::unique_ptr<text_renderable> create_renderer() {
+		return std::make_unique<text_renderable>(this);
 	}
 };
 

@@ -27,10 +27,8 @@ public:
 	virtual ~log_sink() {}
 
 	log_sink &operator<<(const std::string &str) {
-#ifdef DEBUG
 		if (data.c != log_class::info_class_log)
 			TRACE((str + "\n").data());
-#endif
 
 		queue->push(log_entry(data, str));
 		notifier->notify_one();

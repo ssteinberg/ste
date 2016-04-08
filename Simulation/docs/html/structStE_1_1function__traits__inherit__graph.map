@@ -1,9 +1,0 @@
-<map id="StE::function_traits&lt; T &gt;" name="StE::function_traits&lt; T &gt;">
-<area shape="rect" id="node2" href="$structStE_1_1function__traits_3_01T_01_6_01_4.html" title="{StE::function_traits\l\&lt; T &amp; \&gt;\n||}" alt="" coords="5,145,136,237"/>
-<area shape="rect" id="node3" href="$structStE_1_1function__traits_3_01T_01_6_6_01_4.html" title="{StE::function_traits\l\&lt; T &amp;&amp; \&gt;\n||}" alt="" coords="160,145,291,237"/>
-<area shape="rect" id="node4" href="$structStE_1_1function__traits.html" title="{StE::function_traits\l\&lt; R(C &amp;, Args...)\&gt;\n|+ arity\l|}" alt="" coords="315,145,445,237"/>
-<area shape="rect" id="node7" href="$structStE_1_1function__traits.html" title="{StE::function_traits\l\&lt; R(C &amp;)\&gt;\n|+ arity\l|}" alt="" coords="469,145,600,237"/>
-<area shape="rect" id="node5" href="$structStE_1_1function__traits_3_01R_07C_1_1_5_08_07Args_8_8_8_08_01const_01_01_4.html" title="{StE::function_traits\l\&lt; R(C::*)(Args...) const &#160;\&gt;\n||}" alt="" coords="123,287,290,379"/>
-<area shape="rect" id="node6" href="$structStE_1_1function__traits_3_01R_07C_1_1_5_08_07Args_8_8_8_08_4.html" title="{StE::function_traits\l\&lt; R(C::*)(Args...)\&gt;\n||}" alt="" coords="315,287,445,379"/>
-<area shape="rect" id="node8" href="$structStE_1_1function__traits_3_01R_07C_1_1_5_08_4.html" title="{StE::function_traits\l\&lt; R(C::*)\&gt;\n||}" alt="" coords="469,287,600,379"/>
-</map>

@@ -97,10 +97,9 @@ void gpu_task_dispatch_queue::build_task_transitions(const TaskPtr &task) {
 	}
 }
 
-void gpu_task_dispatch_queue::insert_task(const std::shared_ptr<TaskT> &task, const Core::GenericFramebufferObject *override_fbo, bool mark_inserted) {
+void gpu_task_dispatch_queue::insert_task(const std::shared_ptr<TaskT> &task, bool mark_inserted) {
 	if (mark_inserted)
 		task->inserted_into_queue = true;
-	task->override_fbo = override_fbo;
 	task->set_parent_queue(this);
 
 	Base::erase_all_vertex_edges(task.get());
@@ -112,7 +111,7 @@ void gpu_task_dispatch_queue::insert_task(const std::shared_ptr<TaskT> &task, co
 		assert(t != task);
 
 		if (Base::get_vertices().find(t) == Base::get_vertices().end())
-			insert_task(t, nullptr, false);
+			insert_task(t, false);
 		t->requisite_for.insert(task.get());
 	}
 }
@@ -121,8 +120,8 @@ void gpu_task_dispatch_queue::erase_task(const TaskPtr &task, bool force) {
 	if (!force && task->requisite_for.size()) {
 		using namespace StE::Text::Attributes;
 
-		std::cout << Text::AttributedString("Attempting to remove task from GPU dispatch queue, however task ") + i(task->task_name()) + " is a requisite for " + i((*task->requisite_for.begin())->task_name()) + "." << std::endl;
-		ste_log_fatal() << "task " << task->task_name() << " is a requisite for " << (*task->requisite_for.begin())->task_name() << std::endl;
+		std::cout << Text::AttributedString("Attempting to remove task from GPU dispatch queue, however task ") + i(task->get_name()) + " is a requisite for " + i((*task->requisite_for.begin())->get_name()) + "." << std::endl;
+		ste_log_fatal() << "task " << task->get_name() << " is a requisite for " << (*task->requisite_for.begin())->get_name() << std::endl;
 		assert(false && "Task is a requisite!");
 		return;
 	}
@@ -130,7 +129,6 @@ void gpu_task_dispatch_queue::erase_task(const TaskPtr &task, bool force) {
 		task->requisite_for.clear();
 
 	task->inserted_into_queue = false;
-	task->override_fbo = nullptr;
 	task->set_parent_queue(nullptr);
 
 	Base::erase_vertex(task);
@@ -155,7 +153,7 @@ void gpu_task_dispatch_queue::add_dep(const TaskPtr &task, const TaskPtr &dep) {
 		add_dep(s, dep);
 
 	if (Base::get_vertices().find(dep) == Base::get_vertices().end())
-		insert_task(dep, nullptr, false);
+		insert_task(dep, false);
 	else
 		Base::erase_edge(task.get(), dep.get());
 

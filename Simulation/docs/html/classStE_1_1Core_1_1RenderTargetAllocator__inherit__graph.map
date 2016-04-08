@@ -1,5 +1,0 @@
-<map id="StE::Core::RenderTargetAllocator" name="StE::Core::RenderTargetAllocator">
-<area shape="rect" id="node2" href="$classStE_1_1Core_1_1generic__resource__immutable__storage__allocator.html" title="{StE::Core::generic\l_resource_immutable\l_storage_allocator\&lt; int,\l const gli::gl::format\l &amp;, const glm::ivec2 &amp;,\l std::size_t \&gt;\n||}" alt="" coords="37,375,200,525"/>
-<area shape="rect" id="node3" href="$classStE_1_1Core_1_1generic__resource__allocator.html" title="{StE::Core::generic\l_resource_allocator\n||+ allocate()\l+ deallocate()\l+ is_valid()\l}" alt="" coords="65,5,207,127"/>
-<area shape="rect" id="node4" href="$classStE_1_1Core_1_1generic__resource__immutable__storage__allocator.html" title="{StE::Core::generic\l_resource_immutable\l_storage_allocator\&lt; Ts \&gt;\n||}" alt="" coords="135,176,310,283"/>
-</map>

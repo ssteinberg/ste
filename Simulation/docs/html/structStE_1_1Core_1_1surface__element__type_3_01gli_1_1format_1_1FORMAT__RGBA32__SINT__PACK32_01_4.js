@@ -1,4 +1,0 @@
-var structStE_1_1Core_1_1surface__element__type_3_01gli_1_1format_1_1FORMAT__RGBA32__SINT__PACK32_01_4 =
-[
-    [ "type", "structStE_1_1Core_1_1surface__element__type_3_01gli_1_1format_1_1FORMAT__RGBA32__SINT__PACK32_01_4.html#ad09201d7d0c6e43b973d8982e91e9f90", null ]
-];

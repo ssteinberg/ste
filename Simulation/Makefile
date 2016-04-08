@@ -17,6 +17,7 @@ CXXFLAGS += $(addprefix -L, $(LOCAL_LIBS))
 INCLUDE_FLAGS = $(addprefix -I, $(LOCAL_INCLUDES))
 
 .SECONDARY: $(OBJECTS) $(PCH)
+.PHONY: docs
 
 define make-cpp-target
 $1:	$(WORK_DIR)/$(basename $(shell find $(SOURCE_DIR) -name "$1.cpp" | head -n 1)).o

@@ -28,7 +28,7 @@ private:
 	friend class Log;
 
 private:
-	Logger(const std::shared_ptr<log_sink> &sink, bool force_flush = false) : stream(sink, force_flush) {}
+	Logger(std::unique_ptr<log_sink> &&sink, bool force_flush = false) : stream(std::move(sink), force_flush) {}
 
 	log_ostream stream;
 
@@ -146,24 +146,24 @@ public:
 	void redirect_std_outputs() {
 		cout_strm_buffer = std::cout.rdbuf();
 		cerr_strm_buffer = std::cerr.rdbuf();
-		cout_logger = std::unique_ptr<Logger>(new Logger(std::make_shared<log_sink>(log_entry_data("std", "std::cout", 0, log_class::info_class_log), notifier, queue)));
-		cerr_logger = std::unique_ptr<Logger>(new Logger(std::make_shared<log_sink>(log_entry_data("std", "std::cerr", 0, log_class::err_class_log), notifier, queue), true));
+		cout_logger = std::unique_ptr<Logger>(new Logger(std::make_unique<log_sink>(log_entry_data("std", "std::cout", 0, log_class::info_class_log), notifier, queue)));
+		cerr_logger = std::unique_ptr<Logger>(new Logger(std::make_unique<log_sink>(log_entry_data("std", "std::cerr", 0, log_class::err_class_log), notifier, queue), true));
 
 		std::cout.rdbuf(cout_logger->logger().rdbuf());
 		std::cerr.rdbuf(cerr_logger->logger().rdbuf());
 	}
 
 	Logger log_info(const char *file, const char *func, int line) {
-		return Logger(std::make_shared<log_sink>(log_entry_data(file, func, line, log_class::info_class_log), notifier, queue));
+		return Logger(std::make_unique<log_sink>(log_entry_data(file, func, line, log_class::info_class_log), notifier, queue));
 	}
 	Logger log_warn(const char *file, const char *func, int line) {
-		return Logger(std::make_shared<log_sink>(log_entry_data(file, func, line, log_class::warn_class_log), notifier, queue));
+		return Logger(std::make_unique<log_sink>(log_entry_data(file, func, line, log_class::warn_class_log), notifier, queue));
 	}
 	Logger log_err(const char *file, const char *func, int line) {
-		return Logger(std::make_shared<log_sink>(log_entry_data(file, func, line, log_class::err_class_log), notifier, queue), true);
+		return Logger(std::make_unique<log_sink>(log_entry_data(file, func, line, log_class::err_class_log), notifier, queue), true);
 	}
 	Logger log_fatal(const char *file, const char *func, int line) {
-		return Logger(std::make_shared<log_sink>(log_entry_data(file, func, line, log_class::fatal_class_log), notifier, queue), true);
+		return Logger(std::make_unique<log_sink>(log_entry_data(file, func, line, log_class::fatal_class_log), notifier, queue), true);
 	}
 };
 

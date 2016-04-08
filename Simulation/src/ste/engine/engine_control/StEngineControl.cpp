@@ -18,7 +18,7 @@
 
 #include <gli/gli.hpp>
 
-#define BOOST_FILESYSTEM_NO_DEPRECATED 
+#define BOOST_FILESYSTEM_NO_DEPRECATED
 #include <boost/filesystem.hpp>
 
 using namespace StE;
@@ -105,7 +105,7 @@ bool StEngineControl::run_loop() {
 
 	glfwSwapBuffers(context->window.get());
 	glFinish();
-	global_renderer->render_queue(*this);
+	global_renderer->render_queue();
 
 	return !glfwWindowShouldClose(context->window.get());
 }
@@ -113,7 +113,7 @@ bool StEngineControl::run_loop() {
 void StEngineControl::capture_screenshot() const {
 	auto size = gl()->framebuffer_size();
 
-	auto fbo = std::make_shared<StE::Core::FramebufferObject>();
+	auto fbo = std::make_unique<StE::Core::FramebufferObject>();
 	StE::Core::Texture2D fbo_tex(gli::format::FORMAT_RGB8_UNORM_PACK8, size, 1);
 	(*fbo)[0] = fbo_tex[0];
 
@@ -136,7 +136,7 @@ void StEngineControl::capture_screenshot() const {
 }
 
 void StEngineControl::set_fov(float rad) {
-	pimpl->field_of_view = rad; 
+	pimpl->field_of_view = rad;
 	set_projection_dirty();
 }
 

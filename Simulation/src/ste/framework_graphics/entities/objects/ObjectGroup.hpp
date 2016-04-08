@@ -8,7 +8,7 @@
 
 #include "entity.hpp"
 #include "Object.hpp"
-#include "gpu_task.hpp"
+#include "gpu_dispatchable.hpp"
 
 #include "gl_current_context.hpp"
 #include "GLSLProgram.hpp"
@@ -33,27 +33,27 @@
 namespace StE {
 namespace Graphics {
 
-class ObjectGroup : public gpu_task, public entity_affine {	
-	using Base = gpu_task;
-	
+class ObjectGroup : public gpu_dispatchable, public entity_affine {
+	using Base = gpu_dispatchable;
+
 private:
 	struct mesh_descriptor {
 		glm::mat4 model, transpose_inverse_model;
 		std::int32_t mat_idx;
-		std::int32_t _unused[3]; 
+		std::int32_t _unused[3];
 	};
-	
+
 	using signal_connection_type = Object::signal_type::connection_type;
-	
+
 	struct object_information {
 		std::size_t index;
 		std::shared_ptr<signal_connection_type> connection;
 	};
 
 	using objects_map_type = std::unordered_map<std::shared_ptr<Object>, object_information>;
-	
+
 	using ProjectionSignalConnectionType = StEngineControl::projection_change_signal_type::connection_type;
- 
+
 private:
  	Core::VertexArrayObject vao;
 
@@ -61,7 +61,7 @@ private:
  	Core::gstack<ObjectVertexData> vbo;
 	Core::gstack<std::uint32_t> indices;
 	Core::gstack<Core::IndirectMultiDrawElementsCommand> idb;
-	
+
 private:
  	using vbo_type = Core::VertexBufferObject<ObjectVertexData, ObjectVertexData::descriptor, decltype(vbo)::usage>;
  	using elements_type = Core::ElementBufferObject<std::uint32_t, decltype(indices)::usage>;
@@ -77,9 +77,9 @@ private:
 
 	mutable std::vector<Object*> signalled_objects;
 	mutable std::vector<range<>> ranges_to_lock;
-	
+
 	std::shared_ptr<Core::GLSLProgram> object_program;
-	
+
 	std::shared_ptr<ProjectionSignalConnectionType> projection_change_connection;
 
 protected:
@@ -92,30 +92,28 @@ public:
 
 	void add_object(const std::shared_ptr<Object> &);
 	void remove_all();
-	
+
 	void set_model_matrix(const glm::mat4 &m) override {
 		entity_affine::set_model_matrix(m);
-		
-		object_program->set_uniform("view_matrix", m); 
+
+		object_program->set_uniform("view_matrix", m);
 		object_program->set_uniform("trans_inverse_view_matrix", glm::transpose(glm::inverse(m)));
 	}
-	
+
 protected:
 	void set_context_state() const override final {
-		Base::set_context_state();
-		
 		Core::gl_current_context::get()->enable_depth_test();
 		Core::gl_current_context::get()->enable_state(Core::context_state_name::CULL_FACE);
-		
+
 		bind_buffers();
 		object_program->bind();
 	}
-	
+
 	void dispatch() const override final {
 		update_dirty_buffers();
-		
+
 		Core::gl_current_context::get()->draw_multi_elements_indirect<elements_type::T>(GL_TRIANGLES, 0, idb.size(), 0);
-		
+
 		for (auto &r : ranges_to_lock)
 			mesh_data_bo.lock_range(r);
 		ranges_to_lock.clear();
