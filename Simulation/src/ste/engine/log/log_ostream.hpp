@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -20,7 +20,7 @@ private:
 	streambuf_type lsb;
 
 public:
-	log_ostream(std::shared_ptr<sink_type> sink, bool force_flush) : std::ostream(&lsb), lsb(sink, force_flush) {}
+	log_ostream(std::unique_ptr<sink_type> &&sink, bool force_flush) : std::ostream(&lsb), lsb(std::move(sink), force_flush) {}
 	~log_ostream() noexcept { flush(); }
 };
 
