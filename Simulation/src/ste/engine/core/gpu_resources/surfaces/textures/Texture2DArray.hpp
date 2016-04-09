@@ -20,8 +20,8 @@ public:
 
 	Texture2DArray(gli::format format, const typename Base::size_type &size, int levels = 1) : texture_mipmapped(format, size, levels) {}
 	Texture2DArray(const gli::texture2d_array &t, bool generate_mipmaps = false)
-		: texture_mipmapped(t.format(), 
-							typename Base::size_type({ t.extent().x, t.extent().y, t.layers() }), 
+		: texture_mipmapped(t.format(),
+							typename Base::size_type({ t.extent().x, t.extent().y, t.layers() }),
 							generate_mipmaps ? calculate_mipmap_max_level(glm::ivec2{ t.extent().x, t.extent().y }) + 1 : t.levels(),
 							t.swizzles()) {
 		upload(t, generate_mipmaps);
@@ -49,6 +49,39 @@ public:
 								gl_format.External, gl_format.Type,
 								data);
 		}
+	}
+
+	using Base::download_level;
+	void download_level(void *data,
+						std::size_t size,
+						int level,
+						int layer) const {
+		auto gl_format = gl_utils::translate_format(Base::format, Base::swizzle);
+
+		glGetTextureSubImage(get_resource_id(), level,
+							 0, 0, layer,
+							 Base::get_size().x, Base::get_size().y, 1,
+							 gl_format.External, gl_format.Type, size, data);
+	}
+	void download_level(void *data,
+						std::size_t size,
+						int level,
+						int layer,
+						const gli::format &format,
+						const gli::swizzles &swizzle = swizzles_rgba,
+						bool compressed = false) const {
+		auto gl_format = gl_utils::translate_format(format, swizzle);
+
+		if (compressed)
+			glGetCompressedTextureSubImage(get_resource_id(), level,
+										   0, 0, layer,
+										   Base::get_size().x, Base::get_size().y, 1,
+										   size, data);
+		else
+			glGetTextureSubImage(get_resource_id(), level,
+								 0, 0, layer,
+								 Base::get_size().x, Base::get_size().y, 1,
+								 gl_format.External, gl_format.Type, size, data);
 	}
 
 	const image_container<T> operator[](int level) const {

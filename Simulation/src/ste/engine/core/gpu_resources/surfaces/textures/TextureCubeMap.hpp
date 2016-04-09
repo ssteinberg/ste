@@ -7,6 +7,8 @@
 #include "texture_base.hpp"
 #include "image.hpp"
 
+#include "texture_cubemap_face.hpp"
+
 namespace StE {
 namespace Core {
 
@@ -19,9 +21,9 @@ public:
 	TextureCubeMap& operator=(TextureCubeMap &&m) = default;
 
 	TextureCubeMap(gli::format format, const typename Base::size_type &size, int levels = 1) : texture_mipmapped(format, size, levels) {}
-	TextureCubeMap(const gli::texture_cube &t, bool generate_mipmaps = false) : 
-						texture_mipmapped(t.format(), 
-										  t.extent(), 
+	TextureCubeMap(const gli::texture_cube &t, bool generate_mipmaps = false) :
+						texture_mipmapped(t.format(),
+										  t.extent(),
 										  generate_mipmaps ? calculate_mipmap_max_level(t[0].extent()) + 1 : t.levels(),
 										  t.swizzles()) {
 		upload(t, generate_mipmaps);
@@ -35,20 +37,45 @@ public:
 		assert(face != CubeMapFace::CubeMapFaceNone && "face must be specified");
 		auto gl_format = gl_utils::translate_format(format, swizzle);
 
-		bind();
 		if (is_compressed()) {
 			assert(data_size && "size must be specified for compressed levels");
-			glCompressedTexSubImage2D(static_cast<GLenum>(face), static_cast<GLint>(level),
-									  0, 0, std::max(1, size[0] >> level), std::max(1, size[1] >> level),
-									  gl_format.External,
-									  data_size, data);
+			glCompressedTextureSubImage2D(static_cast<GLenum>(face), static_cast<GLint>(level),
+										  0, 0, std::max(1, size[0] >> level), std::max(1, size[1] >> level),
+										  gl_format.External,
+									  	data_size, data);
 		}
 		else {
-			glTexSubImage2D(static_cast<GLenum>(face), static_cast<GLint>(level),
-							0, 0, std::max(1, size[0] >> level), std::max(1, size[1] >> level),
-							gl_format.External, gl_format.Type,
-							data);
+			glTextureSubImage2D(static_cast<GLenum>(face), static_cast<GLint>(level),
+								0, 0, std::max(1, size[0] >> level), std::max(1, size[1] >> level),
+								gl_format.External, gl_format.Type,
+								data);
 		}
+	}
+
+	using Base::download_level;
+	void download_level(void *data,
+						std::size_t size,
+						int level,
+						CubeMapFace face) const {
+		auto gl_format = gl_utils::translate_format(Base::format, Base::swizzle);
+
+		bind();
+		glGetTexImage(static_cast<GLenum>(face), level, gl_format.External, gl_format.Type, data);
+	}
+	void download_level(void *data,
+						std::size_t size,
+						int level,
+						CubeMapFace face,
+						const gli::format &format,
+						const gli::swizzles &swizzle = swizzles_rgba,
+						bool compressed = false) const {
+		auto gl_format = gl_utils::translate_format(format, swizzle);
+
+		bind();
+		if (compressed)
+			glGetCompressedTexImage(static_cast<GLenum>(face), level, data);
+		else
+			glGetTexImage(static_cast<GLenum>(face), level, gl_format.External, gl_format.Type, data);
 	}
 
 	const image<T> operator[](CubeMapFace face) const {

@@ -19,6 +19,7 @@
 #include "texture_enums.hpp"
 #include "texture_traits.hpp"
 #include "texture_allocator.hpp"
+#include "texture_cubemap_face.hpp"
 
 #include "surface_constants.hpp"
 
@@ -27,16 +28,6 @@
 
 namespace StE {
 namespace Core {
-
-enum class CubeMapFace {
-	CubeMapFaceNone = 0,
-	CubeMapFaceRight = GL_TEXTURE_CUBE_MAP_POSITIVE_X,
-	CubeMapFaceLeft = GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
-	CubeMapFaceTop = GL_TEXTURE_CUBE_MAP_POSITIVE_Y,
-	CubeMapFaceBottom = GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
-	CubeMapFaceNear = GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
-	CubeMapFaceFar = GL_TEXTURE_CUBE_MAP_NEGATIVE_Z,
-};
 
 class texture_layout_binding_type {};
 using texture_layout_binding = layout_binding<texture_layout_binding_type>;
@@ -61,7 +52,7 @@ class texture : virtual public bindable_resource<texture_immutable_storage_alloc
 				virtual public shader_layout_bindable_resource<texture_layout_binding_type> {
 private:
 	using Base = bindable_resource<texture_immutable_storage_allocator<type>, TextureBinder<type>, texture_layout_binding>;
-	
+
 public:
 	using size_type = typename texture_size_type<texture_dimensions<type>::dimensions>::type;
 	using image_size_type = typename texture_size_type<texture_dimensions<type>::dimensions>::type;
@@ -102,7 +93,6 @@ protected:
 		this->swizzle = swizzle;
 		this->size = size;
 		this->levels = levels;
-		this->size = size;
 
 		Base::allocator.allocate_storage(Base::get_resource_id(), levels, samples, glformat, size, get_storage_size());
 
@@ -148,7 +138,7 @@ public:
 	gli::format get_format() const { return format; }
 	int get_layers() const { return texture_is_array<type>::value ? this->size[texture_dimensions<type>::dimensions - 1] : 1; }
 	bool is_compressed() const { return gli::is_compressed(format); }
-	
+
 	std::size_t get_storage_size(int level) const {
 		std::size_t b = gli::block_size(format);
 		auto block_extend = gli::block_extent(format);
@@ -197,7 +187,7 @@ template <core_resource_type type>
 class texture_pixel_transferable : public texture<type> {
 private:
 	using Base = texture<type>;
-	
+
 protected:
 	using Base::texture;
 
@@ -212,11 +202,19 @@ public:
 	virtual ~texture_pixel_transferable() noexcept {}
 
 	virtual void upload_level(const void *data, int level = 0, int layer = 0, CubeMapFace face = CubeMapFace::CubeMapFaceNone, int data_size = 0) = 0;
-	virtual void download_level(void *data, std::size_t size, int level = 0, int layer = 0) const {
+
+	virtual void download_level(void *data,
+								std::size_t size,
+								int level) const {
 		auto gl_format = gl_utils::translate_format(Base::format, Base::swizzle);
 		glGetTextureImage(Base::get_resource_id(), level, gl_format.External, gl_format.Type, size, data);
 	}
-	virtual void download_level(void *data, std::size_t size, int level, int layer, const gli::format &format, const gli::swizzles &swizzle = swizzles_rgba, bool compressed = false) const {
+	virtual void download_level(void *data,
+								std::size_t size,
+								int level,
+								const gli::format &format,
+								const gli::swizzles &swizzle = swizzles_rgba,
+								bool compressed = false) const {
 		auto gl_format = gl_utils::translate_format(format, swizzle);
 		if (compressed)
 			glGetCompressedTextureImage(Base::get_resource_id(), level, size, data);

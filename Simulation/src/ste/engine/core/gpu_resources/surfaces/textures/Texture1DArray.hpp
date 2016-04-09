@@ -13,14 +13,14 @@ namespace Core {
 class Texture1DArray : public texture_mipmapped<core_resource_type::Texture1DArray> {
 private:
 	using Base = texture_mipmapped<core_resource_type::Texture1DArray>;
-	
+
 public:
 	Texture1DArray(Texture1DArray &&m) = default;
 	Texture1DArray& operator=(Texture1DArray &&m) = default;
 
 	Texture1DArray(gli::format format, const typename Base::size_type &size, int levels = 1) : texture_mipmapped(format, size, levels) {}
 	Texture1DArray(const gli::texture1d_array &t, bool generate_mipmaps = false)
-		: texture_mipmapped(t.format(), typename Base::size_type({ t.extent().x, t.layers() }), 
+		: texture_mipmapped(t.format(), typename Base::size_type({ t.extent().x, t.layers() }),
 							generate_mipmaps ? calculate_mipmap_max_level(typename texture_size_type<1>::type{ t.extent().x }) + 1 : t.levels(),
 							t.swizzles()) {
 		upload(t, generate_mipmaps);
@@ -48,6 +48,39 @@ public:
 								gl_format.External, gl_format.Type,
 								data);
 		}
+	}
+
+	using Base::download_level;
+	void download_level(void *data,
+						std::size_t size,
+						int level,
+						int layer) const {
+		auto gl_format = gl_utils::translate_format(Base::format, Base::swizzle);
+
+		glGetTextureSubImage(get_resource_id(), level,
+							 0, layer, 0,
+							 Base::get_size(), 1, 0,
+							 gl_format.External, gl_format.Type, size, data);
+	}
+	void download_level(void *data,
+						std::size_t size,
+						int level,
+						int layer,
+						const gli::format &format,
+						const gli::swizzles &swizzle = swizzles_rgba,
+						bool compressed = false) const {
+		auto gl_format = gl_utils::translate_format(format, swizzle);
+
+		if (compressed)
+			glGetCompressedTextureSubImage(get_resource_id(), level,
+										   0, layer, 0,
+										   Base::get_size(), 1, 0,
+										   size, data);
+		else
+			glGetTextureSubImage(get_resource_id(), level,
+								 0, layer, 0,
+								 Base::get_size(), 1, 0,
+								 gl_format.External, gl_format.Type, size, data);
 	}
 
 	const image_container<T> operator[](int level) const {

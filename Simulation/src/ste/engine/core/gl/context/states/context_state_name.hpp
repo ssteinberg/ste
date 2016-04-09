@@ -8,7 +8,7 @@
 
 namespace StE {
 namespace Core {
-	
+
 enum class context_state_name : std::int32_t {
 	// Basic states (boolean glenable/gldisable states)
 	BLEND = GL_BLEND,
@@ -34,8 +34,9 @@ enum class context_state_name : std::int32_t {
 	SAMPLE_COVERAGE = GL_SAMPLE_COVERAGE,
 	SCISSOR_TEST = GL_SCISSOR_TEST,
 	STENCIL_TEST = GL_STENCIL_TEST,
+	TEXTURE_CUBE_MAP_SEAMLESS = GL_TEXTURE_CUBE_MAP_SEAMLESS,
 	VERTEX_PROGRAM_POINT_SIZE = GL_VERTEX_PROGRAM_POINT_SIZE,
-	
+
 	// States
 	VIEWPORT_STATE,
 	COLOR_MASK_STATE,
@@ -48,7 +49,7 @@ enum class context_state_name : std::int32_t {
 	BLEND_EQUATION_STATE,
 	CLEAR_COLOR_STATE,
 	CLEAR_DEPTH_STATE,
-	
+
 	// Resource states
 	BUFFER_OBJECT,
 	TEXTURE_OBJECT,
