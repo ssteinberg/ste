@@ -17,12 +17,13 @@
 
 using namespace StE::Graphics;
 
-hdr_dof_postprocess::hdr_dof_postprocess(const StEngineControl &context, const Core::Texture2D *z_buffer) : Base(Base::AccessToken(), "hdr", create_dispatchable(), &context.gl()->defaut_framebuffer(), create_sub_tasks()),
-																											hdr_vision_properties_sampler(Core::TextureFiltering::Linear, Core::TextureFiltering::Linear, 16),
+hdr_dof_postprocess::hdr_dof_postprocess(const StEngineControl &context, const Core::Texture2D *z_buffer) : hdr_vision_properties_sampler(Core::TextureFiltering::Linear, Core::TextureFiltering::Linear, 16),
 																											ctx(context) {
 	hdr_vision_properties_sampler.set_wrap_s(Core::TextureWrapMode::ClampToEdge);
 	linear_sampler.set_min_filter(Core::TextureFiltering::Linear);
 	linear_sampler.set_mag_filter(Core::TextureFiltering::Linear);
+
+	task = make_gpu_task("hdr", create_dispatchable(), &ctx.gl()->defaut_framebuffer(), create_sub_tasks());
 
 	float big_float = 10000.f;
 	hdr_bokeh_param_buffer_eraser = std::make_unique<StE::Core::PixelBufferObject<std::int32_t>>(std::vector<std::int32_t>{ *reinterpret_cast<std::int32_t*>(&big_float), 0 });
@@ -62,6 +63,10 @@ hdr_dof_postprocess::hdr_dof_postprocess(const StEngineControl &context, const C
 	hdr_tonemap_coc->set_uniform("hdr_vision_properties_texture", vision_handle);
 
 	resize(ctx.get_backbuffer_size());
+}
+
+std::shared_ptr<const gpu_task> hdr_dof_postprocess::get_task() const {
+	return task;
 }
 
 hdr_bokeh_blury_task* hdr_dof_postprocess::create_dispatchable() {

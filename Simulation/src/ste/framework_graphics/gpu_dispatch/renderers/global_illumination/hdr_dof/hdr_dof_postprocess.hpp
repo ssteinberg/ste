@@ -34,9 +34,7 @@ class hdr_bloom_blury_task;
 class hdr_bokeh_blurx_task;
 class hdr_bokeh_blury_task;
 
-class hdr_dof_postprocess : public gpu_task {
-	using Base = gpu_task;
-
+class hdr_dof_postprocess {
 	friend class hdr_compute_minmax_task;
 	friend class hdr_create_histogram_task;
 	friend class hdr_compute_histogram_sums_task;
@@ -55,6 +53,8 @@ private:
 	};
 
 private:
+	std::shared_ptr<const gpu_task> task;
+
 	std::unique_ptr<hdr_compute_minmax_task> compute_minmax_task;
 	std::unique_ptr<hdr_create_histogram_task> create_histogram_task;
 	std::unique_ptr<hdr_compute_histogram_sums_task> compute_histogram_sums_task;
@@ -120,6 +120,8 @@ public:
 	auto get_input_fbo() const { return &fbo_hdr_final; }
 
 	void resize(glm::ivec2 size);
+
+	std::shared_ptr<const gpu_task> get_task() const;
 };
 
 }

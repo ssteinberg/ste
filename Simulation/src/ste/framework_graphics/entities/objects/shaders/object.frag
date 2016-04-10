@@ -28,11 +28,11 @@ void main() {
 	vec3 P = frag_position;
 	vec3 n = normalize(frag_normal);
 	vec3 t = normalize(frag_tangent);
-	
+
 	normal_map(md, height_map_scale, uv, n, t, P);
 
 	float specular = md.specular.tex_handler>0 ? texture(sampler2D(md.specular.tex_handler), uv).x : 1.f;
 	vec3 diffuse = md.diffuse.tex_handler>0 ? texture(sampler2D(md.diffuse.tex_handler), uv).rgb : vec3(1.f);
-	
+
 	deferred_output(P, diffuse, specular, n, t, frag_depth, matIdx);
 }

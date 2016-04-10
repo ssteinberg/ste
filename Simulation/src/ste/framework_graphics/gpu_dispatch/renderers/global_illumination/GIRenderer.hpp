@@ -63,13 +63,13 @@ private:
 	std::shared_ptr<ResizeSignalConnectionType> resize_connection;
 
 	const StEngineControl &ctx;
-	Scene *scene;
+	std::shared_ptr<Scene> scene;
 	// dense_voxel_space voxel_space;
 
 	gpu_task::TaskCollection gui_tasks;
 	gpu_task::TaskCollection added_tasks;
 
-	std::shared_ptr<hdr_dof_postprocess> hdr;
+	hdr_dof_postprocess hdr;
 	std::shared_ptr<const gpu_task> composer_task, fb_clearer_task;
 
 	deferred_composition composer;
@@ -88,14 +88,12 @@ protected:
 
 public:
 	GIRenderer(const StEngineControl &ctx,
-			   Scene *scene/*,
+			   const std::shared_ptr<Scene> &scene/*,
 			   std::size_t voxel_grid_size = 512,
 			   float voxel_grid_ratio = .01f*/);
 	virtual ~GIRenderer() noexcept {}
 
-	void update_model_matrix_from_camera(const Camera &camera) {
-		glm::mat4 m = camera.view_matrix();
-
+	void set_model_matrix(const glm::mat4 &m) {
 		composer.program->set_uniform("inv_view_model", glm::inverse(m));
 		composer.program->set_uniform("view_matrix", m);
 

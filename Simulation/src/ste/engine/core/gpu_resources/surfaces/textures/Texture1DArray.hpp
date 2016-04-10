@@ -59,7 +59,7 @@ public:
 
 		glGetTextureSubImage(get_resource_id(), level,
 							 0, layer, 0,
-							 Base::get_size(), 1, 0,
+							 Base::get_size().x, 1, 0,
 							 gl_format.External, gl_format.Type, size, data);
 	}
 	void download_level(void *data,
@@ -74,12 +74,12 @@ public:
 		if (compressed)
 			glGetCompressedTextureSubImage(get_resource_id(), level,
 										   0, layer, 0,
-										   Base::get_size(), 1, 0,
+										   Base::get_size().x, 1, 0,
 										   size, data);
 		else
 			glGetTextureSubImage(get_resource_id(), level,
 								 0, layer, 0,
-								 Base::get_size(), 1, 0,
+								 Base::get_size().x, 1, 0,
 								 gl_format.External, gl_format.Type, size, data);
 	}
 

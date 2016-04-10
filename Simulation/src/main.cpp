@@ -23,7 +23,8 @@
 #include "Sphere.hpp"
 #include "gpu_task.hpp"
 
-#include "TextureCubeMap.hpp"
+#include "shadow_projector.hpp"
+#include "shadow_cubemap.hpp"
 
 using namespace StE::Core;
 using namespace StE::Text;
@@ -100,15 +101,12 @@ int main() {
 	});
 	ctx.signal_framebuffer_resize().connect(resize_connection);
 
-	StE::Graphics::Scene scene;
-	StE::Graphics::GIRenderer renderer(ctx, &scene);
+	auto scene = StE::Graphics::Scene::create(ctx);
+	StE::Graphics::GIRenderer renderer(ctx, scene);
 
 	std::unique_ptr<SkyDome> skydome = std::make_unique<SkyDome>(ctx);
-	std::unique_ptr<StE::Graphics::ObjectGroup> object_group = std::make_unique<StE::Graphics::ObjectGroup>(ctx, &scene.scene_properties());
 
 	ctx.set_renderer(&renderer);
-
-	// scene.add_object(object_group);
 
 	StE::Graphics::Camera camera;
 	camera.set_position({ 25.8, 549.07, -249.2 });
@@ -117,8 +115,8 @@ int main() {
 	const glm::vec3 light_pos({ -700.6, 138, -70 });
 	auto light0 = std::make_shared<StE::Graphics::SphericalLight>(2000.f, StE::Graphics::RGB({ 1.f, .57f, .16f }), light_pos, 10.f);
 	auto light1 = std::make_shared<StE::Graphics::DirectionalLight>(1.f, StE::Graphics::RGB({ 1.f, 1.f, 1.f }), glm::normalize(glm::vec3(0.1f, -2.5f, 0.1f)));
-	scene.scene_properties().lights_storage().add_light(light0);
-	scene.scene_properties().lights_storage().add_light(light1);
+	scene->scene_properties().lights_storage().add_light(light0);
+	scene->scene_properties().lights_storage().add_light(light1);
 	StE::Text::TextManager text_manager(ctx, StE::Text::Font("Data/ArchitectsDaughter.ttf"));
 
 
@@ -145,8 +143,8 @@ int main() {
 	bool loaded = false;
 	auto model_future = ctx.scheduler().schedule_now(StE::Resource::ModelFactory::load_model_task(ctx,
 																								  R"(Data/models/crytek-sponza/sponza.obj)",
-																								  &*object_group,
-																								  &scene.scene_properties(),
+																								  &scene->object_group(),
+																								  &scene->scene_properties(),
 																								  2.5f));
 
 	std::shared_ptr<StE::Graphics::Object> light_obj;
@@ -180,9 +178,9 @@ int main() {
 		light_mat->set_diffuse(std::make_shared<StE::Core::Texture2D>(light_color_tex, false));
 		light_mat->set_emission(c * light0->get_luminance());
 
-		light_obj->set_material_id(scene.scene_properties().material_storage().add_material(light_mat));
+		light_obj->set_material_id(scene->scene_properties().material_storage().add_material(light_mat));
 
-		object_group->add_object(light_obj);
+		scene->object_group().add_object(light_obj);
 	}
 
 
@@ -195,6 +193,7 @@ int main() {
 	renderer.add_gui_task(title_text_task);
 	renderer.add_gui_task(make_gpu_task(footer_text.get()));
 	renderer.set_deferred_rendering_enabled(false);
+
 
 	while (!loaded && running) {
 		{
@@ -227,33 +226,26 @@ int main() {
 	title_text_task = nullptr;
 
 	auto skydome_task = make_gpu_task(skydome.get());
-	auto object_group_task = make_gpu_task(object_group.get());
 
-	skydome_task->add_dependency(object_group_task);
+	skydome_task->add_dependency(scene);
 
 	renderer.add_gui_task(make_gpu_task(header_text.get()));
-	renderer.add_task(object_group_task);
 	renderer.add_task(skydome_task);
 	renderer.set_deferred_rendering_enabled(true);
 
 
-	StE::Core::TextureCubeMap shadow_depth_cube_map(gli::format::FORMAT_D32_SFLOAT_PACK32, { 1024, 1024 });
-	StE::Core::FramebufferObject shadow_depth_cube_map_fbo;
-	shadow_depth_cube_map_fbo.depth_binding_point() = shadow_depth_cube_map;
+	// StE::Graphics::shadow_cubemap scm;
+	// StE::Graphics::shadow_projector proj(ctx, object_group.get());
 
-	auto shadow_proj = glm::perspective(90.f, 1.f, 5.f, 1000.f);
-	std::array<glm::mat4, 6> shadow_transform = {
-		shadow_proj * glm::lookAt(light_pos, light_pos + glm::vec3( 1.f, 0.f, 0.f), glm::vec3(0.f,-1.f, 0.f)),
-		shadow_proj * glm::lookAt(light_pos, light_pos + glm::vec3(-1.f, 0.f, 0.f), glm::vec3(0.f,-1.f, 0.f)),
-		shadow_proj * glm::lookAt(light_pos, light_pos + glm::vec3( 0.f, 1.f, 0.f), glm::vec3(0.f, 0.f, 1.f)),
-		shadow_proj * glm::lookAt(light_pos, light_pos + glm::vec3( 0.f,-1.f, 0.f), glm::vec3(0.f, 0.f,-1.f)),
-		shadow_proj * glm::lookAt(light_pos, light_pos + glm::vec3( 0.f, 0.f, 1.f), glm::vec3(0.f,-1.f, 0.f)),
-		shadow_proj * glm::lookAt(light_pos, light_pos + glm::vec3( 0.f, 0.f,-1.f), glm::vec3(0.f,-1.f, 0.f))
-	};
+	// StE::Core::gl_current_context::get()->enable_state(StE::Core::context_state_name::TEXTURE_CUBE_MAP_SEAMLESS);
+	// scm.get_fbo()->bind();
+	// StE::Core::gl_current_context::get()->clear_framebuffer(true, true);
+	// proj.set_light_pos(light_pos);
+	// proj.set_context_state();
+	// proj.dispatch();
+	// scm.get_fbo()->unbind();
 
-	std::shared_ptr<GLSLProgram> shadow_gen_program = ctx.glslprograms_pool().fetch_program_task({ "shadow.vert", "shadow.geom", "shadow.frag" })();
-
-
+	// 8_tex_unit = *scm.get_cubemap();
 
 
 	float time = 0;
@@ -285,13 +277,13 @@ int main() {
 		auto mvnt = camera.view_matrix_no_translation();
 
 		float angle = time * glm::pi<float>() / 2.5f;
-		glm::vec3 lp = light_pos;// + glm::vec3(glm::sin(angle) * 3, 0, glm::cos(angle)) * 135.f;
+		glm::vec3 lp = light_pos + glm::vec3(glm::sin(angle) * 3, 0, glm::cos(angle)) * 135.f;
 
 		light0->set_position(lp);
 
 		light_obj->set_model_matrix(glm::scale(glm::translate(glm::mat4(), lp), glm::vec3(light0->get_radius() / 2.f)));
-		object_group->set_model_matrix(mv);
-		renderer.update_model_matrix_from_camera(camera);
+		scene->object_group().set_model_matrix(mv);
+		renderer.set_model_matrix(mv);
 		skydome->set_model_matrix(mvnt);
 
 		{

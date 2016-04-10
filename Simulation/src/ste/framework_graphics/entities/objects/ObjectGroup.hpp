@@ -33,8 +33,12 @@
 namespace StE {
 namespace Graphics {
 
+class shadow_projector;
+
 class ObjectGroup : public gpu_dispatchable, public entity_affine {
 	using Base = gpu_dispatchable;
+
+	friend class shadow_projector;
 
 private:
 	struct mesh_descriptor {
@@ -88,7 +92,7 @@ protected:
 
 public:
 	ObjectGroup(StEngineControl &ctx, SceneProperties *props);
-	~ObjectGroup();
+	~ObjectGroup() noexcept;
 
 	void add_object(const std::shared_ptr<Object> &);
 	void remove_all();

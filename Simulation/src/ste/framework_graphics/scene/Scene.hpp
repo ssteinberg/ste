@@ -15,21 +15,27 @@
 namespace StE {
 namespace Graphics {
 
-class Scene {//: public gpu_dispatchable, public entity_affine {
-// 	using Base = gpu_dispatchable;
+class Scene : public gpu_task {
+	using Base = gpu_task;
 
 private:
+	ObjectGroup objects;
 	SceneProperties scene_props;
 
 public:
-// 	virtual void add_object(const std::shared_ptr<ObjectGroup> &obj) { add_dependency(obj); }
-// 	virtual void remove_object(const std::shared_ptr<ObjectGroup> &obj) { remove_dependency(obj)); }
+	Scene(Base::AccessToken, StEngineControl &ctx);
+	~Scene() noexcept {}
 
 	SceneProperties &scene_properties() { return scene_props; }
 	const SceneProperties &scene_properties() const { return scene_props; }
 
-protected:
-// 	void dispatch() const override final {};
+	ObjectGroup &object_group() { return objects; }
+	const ObjectGroup &object_group() const { return objects; }
+
+public:
+	static std::shared_ptr<Scene> create(StEngineControl &ctx) {
+		return std::make_shared<Scene>(Base::AccessToken(), ctx);
+	}
 };
 
 }

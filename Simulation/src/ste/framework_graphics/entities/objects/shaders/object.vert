@@ -43,6 +43,6 @@ void main() {
 	matIdx = md.matIdx;
 
 	gl_Position = projection * eye_v;
-	
+
 	frag_depth = (-eye_v.z - near) / (far - near);
 }
