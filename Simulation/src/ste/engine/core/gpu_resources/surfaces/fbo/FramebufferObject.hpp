@@ -77,7 +77,7 @@ public:
 	template <core_resource_type TexType>
 	void attach(const texture_mipmapped<TexType> &tex, unsigned level = 0) {
 		glNamedFramebufferTexture(fbo->get_resource_id(), attachment_point, tex.get_resource_id(), level);
-		size = tex.get_image_size();
+		size = { tex.get_image_size().x, tex.get_image_size().y };
 		format = tex.get_format();
 	}
 

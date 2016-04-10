@@ -4,9 +4,10 @@
 #pragma once
 
 #include "stdafx.hpp"
-#include "RGB.hpp"
-
 #include "entity.hpp"
+
+#include "texture_handle.hpp"
+#include "RGB.hpp"
 
 namespace StE {
 namespace Graphics {
@@ -15,7 +16,7 @@ class light : public entity {
 public:
 	enum class LightType : std::int32_t {
 		Sphere = 0,
-		Directional = 1
+		Directional = 1,
 	};
 
 	struct light_descriptor {

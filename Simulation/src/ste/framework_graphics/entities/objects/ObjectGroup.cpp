@@ -79,7 +79,7 @@ void ObjectGroup::bind_buffers() const {
 	vao.bind();
 	Core::buffer_object_cast<elements_type>(indices.get_buffer()).bind();
 	Core::buffer_object_cast<indirect_draw_buffer_type>(idb.get_buffer()).bind();
-	0_storage_idx = scene_props->material_storage().buffer();
+	0_storage_idx = scene_props->materials_storage().buffer();
 	1_storage_idx = mesh_data_bo.get_buffer();
 }
 

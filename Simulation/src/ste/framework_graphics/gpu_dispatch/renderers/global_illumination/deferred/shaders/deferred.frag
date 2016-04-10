@@ -20,9 +20,10 @@ layout(binding = 2) uniform sampler2D color_tex;
 layout(binding = 3) uniform sampler2D tangent_tex;
 layout(binding = 4) uniform isampler2D mat_idx_tex;
 
-layout(binding = 8) uniform samplerCube shadow_depth_map;
+layout(binding = 8) uniform samplerCubeArray shadow_depth_maps;
 
 uniform mat4 inv_view_model;
+uniform float far = 3000.f;
 
 void main() {
 	int draw_idx = texelFetch(mat_idx_tex, ivec2(gl_FragCoord.xy), 0).x;
@@ -44,23 +45,22 @@ void main() {
 	material_descriptor md = mat_descriptor[draw_idx];
 
 	vec3 rgb = md.emission.rgb;
-	// for (int i = 0; i < light_buffer.length(); ++i) {
-		int i = 0;
+	for (int i = 0; i < light_buffer.length(); ++i) {
 		light_descriptor ld = light_buffer[i];
 
 		vec3 w_pos = (inv_view_model * vec4(position, 1)).xyz;
 		vec3 v = light_incidant_ray(ld, i, position);
 		float dist = length(v);
 
+		vec3 l = diffuse * ld.diffuse.xyz;
+		float obscurance = shadow_obscurance(shadow_depth_maps, i, w_pos, light_buffer[i].position_direction.xyz, dist, far);
+
 		float brdf = calc_brdf(md, position, n, t, b, v);
 		float attenuation_factor = light_attenuation_factor(ld, dist);
-		float incident_radiance = ld.luminance / attenuation_factor;
+		float incident_radiance = ld.luminance / attenuation_factor * obscurance;
 
-		vec3 l = diffuse * ld.diffuse.xyz;
-		float obscurance = 1.f;//shadow_obscurance(shadow_depth_map, w_pos, light_buffer[i].position_direction.xyz, dist);
-
-		rgb += obscurance * l * max(0, mix(.3f, 1.f, specular) * brdf * incident_radiance);
-	// }
+		rgb += l * max(0, mix(.3f, 1.f, specular) * brdf * incident_radiance);
+	}
 
 	vec3 xyY = XYZtoxyY(RGBtoXYZ(rgb));
 	xyY.z = max(min_luminance, xyY.z);

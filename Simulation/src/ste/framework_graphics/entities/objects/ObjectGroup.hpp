@@ -33,12 +33,12 @@
 namespace StE {
 namespace Graphics {
 
-class shadow_projector;
+class shadowmap_projector;
 
 class ObjectGroup : public gpu_dispatchable, public entity_affine {
 	using Base = gpu_dispatchable;
 
-	friend class shadow_projector;
+	friend class shadowmap_projector;
 
 private:
 	struct mesh_descriptor {
@@ -84,6 +84,7 @@ private:
 
 	std::shared_ptr<Core::GLSLProgram> object_program;
 
+private:
 	std::shared_ptr<ProjectionSignalConnectionType> projection_change_connection;
 
 protected:

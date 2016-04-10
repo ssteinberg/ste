@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -57,6 +57,8 @@ public:
 		stack.get_buffer().bind_range(Core::shader_storage_layout_binding(first), 0, lights.size());
 		transformed_buffer_stack.get_buffer().bind_range(Core::shader_storage_layout_binding(first + 1), 0, lights.size());
 	}
+
+	auto& get_lights() const { return lights; }
 };
 
 }

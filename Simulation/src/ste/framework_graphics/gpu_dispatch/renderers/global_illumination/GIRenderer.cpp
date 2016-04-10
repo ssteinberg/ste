@@ -12,10 +12,14 @@ using namespace StE::Graphics;
 void GIRenderer::deferred_composition::set_context_state() const {
 	using namespace Core;
 
+	Core::gl_current_context::get()->enable_state(StE::Core::context_state_name::TEXTURE_CUBE_MAP_SEAMLESS);
+
 	dr->fbo.bind_output_textures();
-	0_storage_idx = dr->scene->scene_properties().material_storage().buffer();
+	0_storage_idx = dr->scene->scene_properties().materials_storage().buffer();
 	dr->scene->scene_properties().lights_storage().bind_buffers(1);
 	ScreenFillingQuad.vao()->bind();
+
+	8_tex_unit = *dr->scene->shadows_storage_cubemaps();
 
 	program->bind();
 }

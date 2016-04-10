@@ -176,11 +176,11 @@ void gl_context::set_defaults() {
 	disable_state(context_state_name::SAMPLE_COVERAGE);
 	disable_state(context_state_name::SCISSOR_TEST);
 	disable_state(context_state_name::STENCIL_TEST);
-	disable_state(context_state_name::TEXTURE_CUBE_MAP_SEAMLESS);
 	disable_state(context_state_name::VERTEX_PROGRAM_POINT_SIZE);
 
 	enable_state(context_state_name::DITHER);
 	enable_state(context_state_name::MULTISAMPLE);
+	enable_state(context_state_name::TEXTURE_CUBE_MAP_SEAMLESS);
 
 	color_mask(true, true, true, true);
 	depth_mask(true);

@@ -4,9 +4,14 @@
 #pragma once
 
 #include "stdafx.hpp"
+#include "StEngineControl.hpp"
 #include "gpu_task.hpp"
 
 #include "SceneProperties.hpp"
+
+#include "shadowmap_storage.hpp"
+#include "shadowmap_projector.hpp"
+
 #include "ObjectGroup.hpp"
 #include "entity.hpp"
 
@@ -22,6 +27,9 @@ private:
 	ObjectGroup objects;
 	SceneProperties scene_props;
 
+	shadowmap_storage shadows_storage;
+	shadowmap_projector shadows_projector;
+
 public:
 	Scene(Base::AccessToken, StEngineControl &ctx);
 	~Scene() noexcept {}
@@ -31,6 +39,8 @@ public:
 
 	ObjectGroup &object_group() { return objects; }
 	const ObjectGroup &object_group() const { return objects; }
+
+	auto shadows_storage_cubemaps() const { return shadows_storage.get_cubemaps(); }
 
 public:
 	static std::shared_ptr<Scene> create(StEngineControl &ctx) {

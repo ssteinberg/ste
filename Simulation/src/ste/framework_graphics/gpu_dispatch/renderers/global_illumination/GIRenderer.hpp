@@ -66,6 +66,7 @@ private:
 	std::shared_ptr<Scene> scene;
 	// dense_voxel_space voxel_space;
 
+private:
 	gpu_task::TaskCollection gui_tasks;
 	gpu_task::TaskCollection added_tasks;
 

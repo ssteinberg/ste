@@ -47,7 +47,7 @@ std::future<void> ModelFactory::process_model_mesh(optional<task_scheduler*> sch
 
 		vbo_data.push_back(v);
 	}
-	
+
 	if (std::is_same<std::uint32_t, decltype(shape.mesh.indices[0])>::value) {
 		vbo_indices = shape.mesh.indices;
 	}
@@ -122,11 +122,11 @@ std::future<void> ModelFactory::process_model_mesh(optional<task_scheduler*> sch
 	});
 }
 
-StE::task<void> ModelFactory::load_texture(const std::string &name, 
-										  bool srgb, 
-										  texture_map_type *texmap, 
-										  bool bumpmap, 
-										  const boost::filesystem::path &dir, 
+StE::task<void> ModelFactory::load_texture(const std::string &name,
+										  bool srgb,
+										  texture_map_type *texmap,
+										  bool bumpmap,
+										  const boost::filesystem::path &dir,
 										  float normal_map_bias) {
 	return StE::task<std::unique_ptr<gli::texture2d>>([=](optional<task_scheduler*> sched) {
 		std::string normalized_name = name;
@@ -150,11 +150,11 @@ StE::task<void> ModelFactory::load_texture(const std::string &name,
 	});
 }
 
-std::vector<std::future<void>> ModelFactory::load_textures(task_scheduler* sched, 
-														  shapes_type &shapes, 
-														  materials_type &materials, 
-														  texture_map_type &tex_map, 
-														  const boost::filesystem::path &dir, 
+std::vector<std::future<void>> ModelFactory::load_textures(task_scheduler* sched,
+														  shapes_type &shapes,
+														  materials_type &materials,
+														  texture_map_type &tex_map,
+														  const boost::filesystem::path &dir,
 														  float normal_map_bias) {
 	tex_map.emplace(std::make_pair(std::string(""), std::shared_ptr<Core::Texture2D>(nullptr)));
 
@@ -165,10 +165,10 @@ std::vector<std::future<void>> ModelFactory::load_textures(task_scheduler* sched
 		for (auto &str : { materials[mat_idx].diffuse_texname })
 			if (str.length() && tex_map.find(str) == tex_map.end()) {
 				tex_map.emplace(std::make_pair(str, std::shared_ptr<Core::Texture2D>(nullptr)));
-				futures.push_back(sched->schedule_now(load_texture(str, 
-																   true, 
-																   &tex_map, 
-																   false, 
+				futures.push_back(sched->schedule_now(load_texture(str,
+																   true,
+																   &tex_map,
+																   false,
 																   dir,
 																   normal_map_bias)));
 			}
@@ -176,10 +176,10 @@ std::vector<std::future<void>> ModelFactory::load_textures(task_scheduler* sched
 		for (auto &str : { materials[mat_idx].bump_texname, materials[mat_idx].alpha_texname, materials[mat_idx].specular_texname })
 			if (str.length() && tex_map.find(str) == tex_map.end()) {
 				tex_map.emplace(std::make_pair(str, std::shared_ptr<Core::Texture2D>(nullptr)));
-				futures.push_back(sched->schedule_now(load_texture(str, 
-																   false, 
-																   &tex_map, 
-																   str == materials[mat_idx].bump_texname, 
+				futures.push_back(sched->schedule_now(load_texture(str,
+																   false,
+																   &tex_map,
+																   str == materials[mat_idx].bump_texname,
 																   dir,
 																   normal_map_bias)));
 			}
@@ -189,9 +189,9 @@ std::vector<std::future<void>> ModelFactory::load_textures(task_scheduler* sched
 }
 
 std::vector<std::future<void>> ModelFactory::load_brdfs(const StEngineControl *ctx,
-													   shapes_type &shapes, 
-													   materials_type &materials, 
-													   brdf_map_type &brdf_map, 
+													   shapes_type &shapes,
+													   materials_type &materials,
+													   brdf_map_type &brdf_map,
 													   const boost::filesystem::path &dir) {
 	std::vector<std::future<void>> futures;
 
@@ -202,9 +202,9 @@ std::vector<std::future<void>> ModelFactory::load_brdfs(const StEngineControl *c
 		if (brdf_name.length() && brdf_map.find(brdf_name) == brdf_map.end()) {
 			std::string normalized_name = brdf_name;
 			std::replace(normalized_name.begin(), normalized_name.end(), '\\', boost::filesystem::path::preferred_separator);
-			
+
 			brdf_map.emplace(std::make_pair(brdf_name, std::shared_ptr<Graphics::BRDF>(nullptr)));
-			
+
 			futures.push_back(ctx->scheduler().schedule_now([brdfs = &brdf_map, normalized_name = normalized_name, brdf_name = brdf_name, ctx = ctx, dir = dir](optional<task_scheduler*> sched) {
 				std::unique_ptr<BRDF> ptr = Graphics::bme_brdf_representation::BRDF_from_bme_representation_task(*ctx, dir / normalized_name)(&*sched);
 				std::shared_ptr<Graphics::BRDF> brdf = std::make_shared<Graphics::BRDF>(std::move(*ptr));
@@ -216,13 +216,13 @@ std::vector<std::future<void>> ModelFactory::load_brdfs(const StEngineControl *c
 	return futures;
 }
 
-StE::task<bool> ModelFactory::load_model_task(const StEngineControl &context, 
-											  const boost::filesystem::path &file_path, 
-											  ObjectGroup *object_group, 
+StE::task<bool> ModelFactory::load_model_task(const StEngineControl &context,
+											  const boost::filesystem::path &file_path,
+											  ObjectGroup *object_group,
 											  Graphics::SceneProperties *scene_properties,
 											  float normal_map_bias) {
 	const StEngineControl *ctx = &context;
-	
+
 	struct _model_loader_task_block {
 		bool ret;
 		std::unique_ptr<texture_map_type> textures;
@@ -261,7 +261,7 @@ StE::task<bool> ModelFactory::load_model_task(const StEngineControl &context,
 		{
 			std::vector<std::future<void>> futures;
 			for (auto &shape : shapes)
-				futures.push_back(process_model_mesh(sched, &scene_properties->material_storage(), shape, object_group, materials, *block.textures, *block.brdfs));
+				futures.push_back(process_model_mesh(sched, &scene_properties->materials_storage(), shape, object_group, materials, *block.textures, *block.brdfs));
 
 			for (auto &f : futures)
 				f.wait();

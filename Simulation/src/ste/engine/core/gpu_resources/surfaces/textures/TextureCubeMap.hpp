@@ -75,7 +75,6 @@ public:
 		auto gl_format = gl_utils::translate_format(format, swizzle);
 		auto gl_face = static_cast<GLenum>(face);
 
-		bind();
 		if (compressed)
 			glGetCompressedTextureSubImage(get_resource_id(), level,
 										   0, 0, gl_face - GL_TEXTURE_CUBE_MAP_POSITIVE_X,

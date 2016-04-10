@@ -6,6 +6,8 @@
 #include "stdafx.hpp"
 #include "StEngineControl.hpp"
 
+#include "signal.hpp"
+
 #include "gpu_task.hpp"
 #include "Quad.hpp"
 
@@ -64,8 +66,6 @@ private:
 	std::unique_ptr<hdr_bokeh_blurx_task> bokeh_blurx_task;
 	std::unique_ptr<hdr_bokeh_blury_task> bokeh_blury_task;
 
-	std::shared_ptr<ResizeSignalConnectionType> resize_connection;
-
 	std::shared_ptr<Core::GLSLProgram> hdr_compute_minmax;
 	std::shared_ptr<Core::GLSLProgram> hdr_create_histogram;
 	std::shared_ptr<Core::GLSLProgram> hdr_compute_histogram_sums;
@@ -106,6 +106,9 @@ private:
 	const StEngineControl &ctx;
 
 	std::array<std::uint32_t, 4> storage_buffers;
+
+private:
+	std::shared_ptr<ResizeSignalConnectionType> resize_connection;
 
 private:
 	std::vector<std::shared_ptr<const gpu_task>> create_sub_tasks();

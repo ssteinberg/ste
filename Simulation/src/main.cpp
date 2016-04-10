@@ -23,9 +23,6 @@
 #include "Sphere.hpp"
 #include "gpu_task.hpp"
 
-#include "shadow_projector.hpp"
-#include "shadow_cubemap.hpp"
-
 using namespace StE::Core;
 using namespace StE::Text;
 
@@ -116,7 +113,7 @@ int main() {
 	auto light0 = std::make_shared<StE::Graphics::SphericalLight>(2000.f, StE::Graphics::RGB({ 1.f, .57f, .16f }), light_pos, 10.f);
 	auto light1 = std::make_shared<StE::Graphics::DirectionalLight>(1.f, StE::Graphics::RGB({ 1.f, 1.f, 1.f }), glm::normalize(glm::vec3(0.1f, -2.5f, 0.1f)));
 	scene->scene_properties().lights_storage().add_light(light0);
-	scene->scene_properties().lights_storage().add_light(light1);
+	// scene->scene_properties().lights_storage().add_light(light1);
 	StE::Text::TextManager text_manager(ctx, StE::Text::Font("Data/ArchitectsDaughter.ttf"));
 
 
@@ -178,7 +175,7 @@ int main() {
 		light_mat->set_diffuse(std::make_shared<StE::Core::Texture2D>(light_color_tex, false));
 		light_mat->set_emission(c * light0->get_luminance());
 
-		light_obj->set_material_id(scene->scene_properties().material_storage().add_material(light_mat));
+		light_obj->set_material_id(scene->scene_properties().materials_storage().add_material(light_mat));
 
 		scene->object_group().add_object(light_obj);
 	}
@@ -233,21 +230,6 @@ int main() {
 	renderer.add_task(skydome_task);
 	renderer.set_deferred_rendering_enabled(true);
 
-
-	// StE::Graphics::shadow_cubemap scm;
-	// StE::Graphics::shadow_projector proj(ctx, object_group.get());
-
-	// StE::Core::gl_current_context::get()->enable_state(StE::Core::context_state_name::TEXTURE_CUBE_MAP_SEAMLESS);
-	// scm.get_fbo()->bind();
-	// StE::Core::gl_current_context::get()->clear_framebuffer(true, true);
-	// proj.set_light_pos(light_pos);
-	// proj.set_context_state();
-	// proj.dispatch();
-	// scm.get_fbo()->unbind();
-
-	// 8_tex_unit = *scm.get_cubemap();
-
-
 	float time = 0;
 	while (running) {
 		if (ctx.window_active()) {
@@ -271,7 +253,6 @@ int main() {
 			auto diff_v = (center - static_cast<decltype(center)>(pp)) * time_delta * rotation_factor;
 			camera.pitch_and_yaw(-diff_v.y, diff_v.x);
 		}
-
 
 		auto mv = camera.view_matrix();
 		auto mvnt = camera.view_matrix_no_translation();
