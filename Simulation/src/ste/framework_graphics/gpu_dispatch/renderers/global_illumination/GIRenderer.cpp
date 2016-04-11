@@ -16,7 +16,7 @@ void GIRenderer::deferred_composition::set_context_state() const {
 
 	dr->fbo.bind_output_textures();
 	0_storage_idx = dr->scene->scene_properties().materials_storage().buffer();
-	dr->scene->scene_properties().lights_storage().bind_buffers(1);
+	dr->scene->scene_properties().lights_storage().bind_buffers(2);
 	ScreenFillingQuad.vao()->bind();
 
 	8_tex_unit = *dr->scene->shadows_storage_cubemaps();
@@ -25,9 +25,11 @@ void GIRenderer::deferred_composition::set_context_state() const {
 }
 
 void GIRenderer::deferred_composition::dispatch() const {
-	dr->scene->scene_properties().pre_draw();
+	// dr->scene->scene_properties().lights_storage().update_storage();
+
 	Core::gl_current_context::get()->draw_arrays(GL_TRIANGLE_STRIP, 0, 4);
-	dr->scene->scene_properties().post_draw();
+
+	// dr->scene->scene_properties().lock_ranges();
 }
 
 
@@ -58,7 +60,6 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 	hdr.get_task()->add_dependency(composer_task);
 
 	add_task(fb_clearer_task);
-	add_task(scene);
 	rebuild_task_queue();
 }
 

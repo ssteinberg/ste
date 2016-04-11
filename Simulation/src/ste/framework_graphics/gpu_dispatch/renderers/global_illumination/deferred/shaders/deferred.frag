@@ -5,7 +5,7 @@
 #extension GL_NV_gpu_shader5 : require
 // #extension GL_NV_shader_atomic_fp16_vector : require
 
-const int light_buffers_first = 1;
+const int light_buffers_first = 2;
 
 #include "material.glsl"
 #include "light.glsl"

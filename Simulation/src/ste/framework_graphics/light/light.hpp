@@ -27,6 +27,7 @@ public:
 		float radius;
 
 		LightType type;
+		float _unused;
 	};
 
 protected:
@@ -53,6 +54,7 @@ public:
 	}
 
 	float get_luminance() const { return descriptor.luminance; }
+	float get_radius() const { return descriptor.radius; }
 	glm::vec3 get_diffuse() const { return { descriptor.diffuse.x, descriptor.diffuse.y, descriptor.diffuse.z }; }
 
 	auto get_descriptor() const { return descriptor; }

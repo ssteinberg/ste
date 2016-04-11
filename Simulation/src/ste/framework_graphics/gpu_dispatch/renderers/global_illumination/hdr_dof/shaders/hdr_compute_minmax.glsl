@@ -19,6 +19,9 @@ layout(std430, binding = 3) readonly buffer hdr_bokeh_parameters_prev_buffer {
 
 uniform float time;
 
+shared int lum_min = 2147483647;
+shared int lum_max = 0;
+
 void main() {
 	vec2 ts = textureSize(hdr, 0);
 	vec4 lums0 = textureGather(hdr, vec2(gl_GlobalInvocationID.xy) * 4 / ts + vec2(.5, .5), 2);
@@ -36,21 +39,24 @@ void main() {
 
 		imageStore(hdr_lums, ivec2(gl_GlobalInvocationID.xy), vec4(l,0,0,0));
 
-		atomicMin(params.lum_min, int_l);
-		atomicMax(params.lum_max, int_l);
+		atomicMin(lum_min, int_l);
+		atomicMax(lum_max, int_l);
 	}
 
 	barrier();
 	memoryBarrierShared();
 
-	if (gl_GlobalInvocationID.xy == ivec2(0,0)) {
-		float t = clamp(.05f * time, .0f, 1.f);
+	if (gl_LocalInvocationID.xy == ivec2(0,0)) {
+		float t = clamp(.1f * time, .0f, 1.f);
 
-		float min_lum = t * intBitsToFloat(params.lum_min) + (1 - t) * intBitsToFloat(prev_params.lum_min);
-		float max_lum = t * intBitsToFloat(params.lum_max) + (1 - t) * intBitsToFloat(prev_params.lum_max);
+		float min_lum = mix(intBitsToFloat(prev_params.lum_min), intBitsToFloat(lum_min), t);
+		float max_lum = mix(intBitsToFloat(prev_params.lum_max), intBitsToFloat(lum_max), t);
 		max_lum = max(max_lum, min_lum + .001f);
 
-		params.lum_min = floatBitsToInt(min_lum);
-		params.lum_max = floatBitsToInt(max_lum);
+		lum_min = floatBitsToInt(min_lum);
+		lum_max = floatBitsToInt(max_lum);
+
+		atomicMin(params.lum_min, lum_min);
+		atomicMax(params.lum_max, lum_max);
 	}
 }

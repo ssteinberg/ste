@@ -43,7 +43,7 @@ void main() {
 
 	float toned_l = toned_bin_start + frac * toned_bin_size;
 
-	vec4 vision_properties = texture(hdr_vision_properties_texture, clamp((l - min_luminance) / (10.f - min_luminance), 0, 1));
+	vec4 vision_properties = texture(hdr_vision_properties_texture, clamp((l - min_luminance) / (10.f - min_luminance), 0.f, 1.f));
 	float scotopic = vision_properties.x;
 	float mesopic = vision_properties.y;
 	float monochr = vision_properties.z;
@@ -56,12 +56,12 @@ void main() {
 	vec3 RGB = XYZtoRGB(XYZ);
 	RGB.r *= red_coef;
 	RGB = mix(RGB, XYZ.yyy, monochr);
-	vec4 RGBL = clamp(vec4(RGB, XYZ.y), vec4(0), vec4(1));
+	vec4 RGBL = clamp(vec4(RGB, XYZ.y), vec4(0.f), vec4(1.f));
 
 	rgbout = RGBL;
 
 	if (XYZ.y > bloom_cutoff) {
-		float x = pow((XYZ.y - bloom_cutoff) / (1 - bloom_cutoff), 8) * (1.f - mesopic);
+		float x = pow((XYZ.y - bloom_cutoff) / (1.f - bloom_cutoff), 8) * (1.f - mesopic);
 		bloomout = vec4(RGBL.rgb, x);
 	}
 	else
@@ -71,8 +71,8 @@ void main() {
 	float s = texelFetch(z_buffer, ivec2(gl_FragCoord.xy), 0).x;
 	float C = aperature_radius * abs(focal - s) / s;
 	float c = C * f1 / focal;
-	float coc = clamp(smoothstep(0, 1, c), 0, 1);
+	float coc = clamp(smoothstep(0.f, 1.f, c), 0.f, 1.f);
 	coc += acuity;
 
-	coc_out = vec2(s, clamp(coc, 0, 1));
+	coc_out = vec2(s, clamp(coc, 0.f, 1.f));
 }

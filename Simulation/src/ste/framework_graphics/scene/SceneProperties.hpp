@@ -20,13 +20,6 @@ public:
 	const material_storage& materials_storage() const { return materials; }
 	light_storage& lights_storage() { return lights; }
 	const light_storage& lights_storage() const { return lights; }
-
-	void pre_draw() {
-		lights.update_storage();
-	}
-	void post_draw() {
-		lights.lock_ranges();
-	}
 };
 
 }

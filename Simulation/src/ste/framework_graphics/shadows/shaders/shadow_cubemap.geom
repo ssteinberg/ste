@@ -1,12 +1,11 @@
 
 #type geometry
-#version 440
+#version 450
 
 layout(triangles) in;
-layout(triangle_strip, max_vertices=90) out;
+layout(triangle_strip, max_vertices=36) out;
 
 const int light_buffers_first = 2;
-
 #include "light.glsl"
 
 uniform mat4 shadow_transforms[6];

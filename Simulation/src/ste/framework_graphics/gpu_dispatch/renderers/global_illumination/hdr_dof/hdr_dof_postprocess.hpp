@@ -51,7 +51,7 @@ private:
 
 	struct hdr_bokeh_parameters {
 		std::int32_t lum_min, lum_max;
-		float focus;
+		float focus, _unused;
 	};
 
 private:

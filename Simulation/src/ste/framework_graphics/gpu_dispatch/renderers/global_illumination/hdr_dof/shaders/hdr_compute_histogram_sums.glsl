@@ -63,7 +63,7 @@ void main() {
 	sums[id * 2 + 1] = shared_data[id * 2 + 1];
 
 	if (id == 0) {
-		float t = clamp((focal > params.focus ? 3.5f : 15.f) * time, 0, 1);
-		params.focus = t * focal + (1 - t) * params.focus;
+		float t = clamp((focal > params.focus ? 3.5f : 15.f) * time, 0.f, 1.f);
+		params.focus = mix(params.focus, focal, t);
 	}
 }

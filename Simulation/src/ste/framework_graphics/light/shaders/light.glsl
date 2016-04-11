@@ -10,6 +10,7 @@ struct light_descriptor {
 	float radius;
 
 	int type;
+	float _unused;
 };
 
 layout(std430, binding = light_buffers_first) buffer light_data {
