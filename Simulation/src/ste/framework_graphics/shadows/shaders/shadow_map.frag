@@ -1,13 +1,29 @@
 
 #type frag
-#version 440
+#version 450
+#extension GL_ARB_bindless_texture : require
+#extension GL_NV_gpu_shader5 : require
 
-out vec3 gl_FragColor;
+#include "material.glsl"
 
+in geo_out {
+	vec2 uv;
+	flat int matIdx;
+} vin;
 in vec4 position;
 
 uniform float far;
 
 void main() {
+	material_descriptor md = mat_descriptor[vin.matIdx];
+
+	if (md.alphamap.tex_handler>0 && texture(sampler2D(md.alphamap.tex_handler), vin.uv).x<.5f) {
+		discard;
+		return;
+	}
+
+	// In case we want to consider semi-transparent objects
+	// vec3 diffuse = md.diffuse.tex_handler>0 ? texture(sampler2D(md.diffuse.tex_handler), uv).rgb : vec3(1.f);
+
 	gl_FragDepth = length(position.xyz) / far;
 }

@@ -158,7 +158,7 @@ int main() {
 																								  2.5f));
 
 	const glm::vec3 light0_pos{ -700.6, 138, -70 };
-	const glm::vec3 light1_pos{ 200.6, 550, 130 };
+	const glm::vec3 light1_pos{ 200.6, 550, 145 };
 	auto light0 = std::make_shared<StE::Graphics::SphericalLight>(2000.f, StE::Graphics::RGB({ 1.f, .57f, .16f }), light0_pos, 10.f);
 	auto light1 = std::make_shared<StE::Graphics::SphericalLight>(5000.f, StE::Graphics::RGB({ 0.5f, .8f, 1.f }), light1_pos, 20.f);
 	scene->scene_properties().lights_storage().add_light(light0);

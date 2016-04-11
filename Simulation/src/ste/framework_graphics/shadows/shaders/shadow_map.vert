@@ -12,6 +12,10 @@ layout(std430, binding = 1) buffer mesh_data {
 	mesh_descriptor mesh_descriptor_buffer[];
 };
 
+out vs_out {
+	vec2 uv;
+	flat int matIdx;
+} vout;
 out vec4 gl_Position;
 
 void main() {
@@ -19,4 +23,6 @@ void main() {
 	mat4 view_model = md.model;
 
 	gl_Position = view_model * vec4(vert, 1);
+	vout.uv = tex_coords;
+	vout.matIdx = md.matIdx;
 }
