@@ -92,7 +92,7 @@ protected:
 	void update_dirty_buffers() const;
 
 public:
-	ObjectGroup(StEngineControl &ctx, SceneProperties *props);
+	ObjectGroup(const StEngineControl &ctx, SceneProperties *props);
 	~ObjectGroup() noexcept;
 
 	void add_object(const std::shared_ptr<Object> &);

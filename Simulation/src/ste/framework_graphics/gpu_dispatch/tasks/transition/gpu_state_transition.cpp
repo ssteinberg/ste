@@ -52,6 +52,8 @@ std::unique_ptr<gpu_state_transition> gpu_state_transition::transition_function(
 										  states_to_pop  = std::move(states_to_pop),
 										  states_to_set  = std::move(states_to_set),
 										  task, next]() {
+		// std::cout << task->get_name() << std::endl;
+
 		// Set new states
 		for (auto &state : states_to_set) {
 			assert(state.exists());

@@ -88,7 +88,19 @@ public:
 	}
 
 	const image<T> operator[](CubeMapFace face) const {
-		return image<T>(*this, get_image_container_size(), format, ImageAccessMode::ReadWrite, 0, static_cast<int>(face) - static_cast<int>(CubeMapFace::CubeMapFaceRight));
+		return make_image(face, 0);
+	}
+	const image_container<T> make_image(int level = 0) const {
+		return image_container<T>(*this,
+								  get_image_container_size(),
+								  format, ImageAccessMode::ReadWrite,
+								  level, 6);
+	}
+	const image<T> make_image(CubeMapFace face, int level) const {
+		return image<T>(*this,
+						get_image_container_size(),
+						format, ImageAccessMode::ReadWrite,
+						level, static_cast<int>(face) - static_cast<int>(CubeMapFace::CubeMapFaceRight));
 	}
 };
 

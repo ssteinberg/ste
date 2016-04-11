@@ -92,11 +92,17 @@ public:
 								 gl_format.External, gl_format.Type, size, data);
 	}
 
-	const image<T> make_image(CubeMapFace face, int layer) const {
+	const image_container<T> make_image(int level = 0) const {
+		return image_container<T>(*this,
+								  get_image_container_size(),
+								  format, ImageAccessMode::ReadWrite,
+								  level, get_layers());
+	}
+	const image<T> make_image(CubeMapFace face, int layer, int level = 0) const {
 		return image<T>(*this,
 						get_image_container_size(),
 						format, ImageAccessMode::ReadWrite,
-						0, layer * 6 + static_cast<int>(face) - static_cast<int>(CubeMapFace::CubeMapFaceRight));
+						level, layer * 6 + static_cast<int>(face) - static_cast<int>(CubeMapFace::CubeMapFaceRight));
 	}
 };
 

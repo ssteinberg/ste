@@ -47,11 +47,10 @@ void main() {
 	memoryBarrierShared();
 
 	if (gl_LocalInvocationID.xy == ivec2(0,0)) {
-		float t = clamp(.1f * time, .0f, 1.f);
+		float t = clamp(.05f * time, .0f, 1.f);
 
 		float min_lum = mix(intBitsToFloat(prev_params.lum_min), intBitsToFloat(lum_min), t);
 		float max_lum = mix(intBitsToFloat(prev_params.lum_max), intBitsToFloat(lum_max), t);
-		max_lum = max(max_lum, min_lum + .001f);
 
 		lum_min = floatBitsToInt(min_lum);
 		lum_max = floatBitsToInt(max_lum);

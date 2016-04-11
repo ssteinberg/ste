@@ -9,7 +9,6 @@
 
 #include "signal.hpp"
 
-#include "pinned_gvector.hpp"
 #include "GLSLProgram.hpp"
 #include "gpu_dispatchable.hpp"
 
@@ -30,11 +29,11 @@ private:
 	using ProjectionSignalConnectionType = StEngineControl::projection_change_signal_type::connection_type;
 
 private:
-	StEngineControl &ctx;
+	const StEngineControl &ctx;
 
-	ObjectGroup *object;
+	const ObjectGroup *object;
 	light_storage *lights;
-	shadowmap_storage *shadow_map;
+	const shadowmap_storage *shadow_map;
 
 	std::shared_ptr<Core::GLSLProgram> shadow_gen_program;
 
@@ -57,11 +56,14 @@ private:
 	}
 
 public:
-	shadowmap_projector(StEngineControl &ctx, ObjectGroup *object, light_storage *lights, shadowmap_storage *shadow_map) : ctx(ctx),
-																							object(object),
-																							lights(lights),
-																							shadow_map(shadow_map),
-																							shadow_gen_program(ctx.glslprograms_pool().fetch_program_task({ "shadow_map.vert", "shadow_cubemap.geom", "shadow_map.frag" })()) {
+	shadowmap_projector(const StEngineControl &ctx,
+						const ObjectGroup *object,
+						light_storage *lights,
+						const shadowmap_storage *shadow_map) : ctx(ctx),
+															   object(object),
+															   lights(lights),
+															   shadow_map(shadow_map),
+															   shadow_gen_program(ctx.glslprograms_pool().fetch_program_task({ "shadow_map.vert", "shadow_cubemap.geom", "shadow_map.frag" })()) {
 		update_transforms();
 		projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([this](const glm::mat4&, float, float, float ffar) {
 			this->update_transforms();
@@ -69,25 +71,8 @@ public:
 		ctx.signal_projection_change().connect(projection_change_connection);
 	}
 
-	void set_context_state() const override final {
-		object->set_context_state();
-
-		auto size = shadow_map->get_cubemaps()->get_size();
-		Core::gl_current_context::get()->viewport(0, 0, size.x, size.y);
-
-		lights->bind_buffers(2);
-		shadow_gen_program->bind();
-	}
-
-	void dispatch() const override final {
-		Core::gl_current_context::get()->clear_framebuffer(false, true);
-
-		lights->update_storage();
-
-		object->dispatch();
-
-		lights->lock_ranges();
-	}
+	void set_context_state() const override final;
+	void dispatch() const override final;
 };
 
 }

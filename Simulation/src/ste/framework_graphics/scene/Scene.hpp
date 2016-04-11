@@ -31,7 +31,7 @@ private:
 	shadowmap_projector shadows_projector;
 
 public:
-	Scene(Base::AccessToken, StEngineControl &ctx);
+	Scene(Base::AccessToken, const StEngineControl &ctx);
 	~Scene() noexcept {}
 
 	SceneProperties &scene_properties() { return scene_props; }
@@ -40,10 +40,10 @@ public:
 	ObjectGroup &object_group() { return objects; }
 	const ObjectGroup &object_group() const { return objects; }
 
-	auto shadows_storage_cubemaps() const { return shadows_storage.get_cubemaps(); }
+	auto& shadow_storage() const { return shadows_storage; }
 
 public:
-	static std::shared_ptr<Scene> create(StEngineControl &ctx) {
+	static std::shared_ptr<Scene> create(const StEngineControl &ctx) {
 		return std::make_shared<Scene>(Base::AccessToken(), ctx);
 	}
 };

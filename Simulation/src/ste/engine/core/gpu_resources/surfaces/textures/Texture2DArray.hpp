@@ -84,8 +84,20 @@ public:
 								 gl_format.External, gl_format.Type, size, data);
 	}
 
-	const image_container<T> operator[](int level) const {
-		return image_container<T>(*this, get_image_container_size(), format, ImageAccessMode::ReadWrite, level, get_image_container_dimensions());
+	const image<T> operator[](int layer) const {
+		return make_image(layer, 0);
+	}
+	const image_container<T> make_image(int level = 0) const {
+		return image_container<T>(*this,
+								  get_image_container_size(),
+								  format, ImageAccessMode::ReadWrite,
+								  level, get_layers());
+	}
+	const image<T> make_image(int layer, int level) const {
+		return image<T>(*this,
+						get_image_container_size(),
+						format, ImageAccessMode::ReadWrite,
+						level, layer);
 	}
 };
 

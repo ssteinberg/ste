@@ -16,7 +16,11 @@
 #include "Scene.hpp"
 #include "SceneProperties.hpp"
 #include "light.hpp"
+
+#include "gpu_dummy_dispatchable.hpp"
 #include "hdr_dof_postprocess.hpp"
+#include "ssss_storage.hpp"
+#include "ssss_generator.hpp"
 
 #include "dense_voxel_space.hpp"
 #include "fb_clear_dispatch.hpp"
@@ -71,7 +75,11 @@ private:
 	gpu_task::TaskCollection added_tasks;
 
 	hdr_dof_postprocess hdr;
-	std::shared_ptr<const gpu_task> composer_task, fb_clearer_task;
+	ssss_storage ssss_layers;
+	ssss_generator ssss_dispatchable;
+	gpu_dummy_dispatchable precomposer_dummy_dispatchable;
+
+	std::shared_ptr<const gpu_task> precomposer_dummy_task, composer_task, fb_clearer_task, ssss_task;
 
 	deferred_composition composer;
 	FbClearTask fb_clearer;
@@ -95,10 +103,11 @@ public:
 	virtual ~GIRenderer() noexcept {}
 
 	void set_model_matrix(const glm::mat4 &m) {
-		composer.program->set_uniform("inv_view_model", glm::inverse(m));
 		composer.program->set_uniform("view_matrix", m);
 
 		// voxel_space.set_model_matrix(m, camera.get_position());
+
+		ssss_dispatchable.set_model_matrix(m);
 	}
 
 	void set_deferred_rendering_enabled(bool enabled);

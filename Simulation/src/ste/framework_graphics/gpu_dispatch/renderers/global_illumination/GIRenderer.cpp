@@ -19,17 +19,13 @@ void GIRenderer::deferred_composition::set_context_state() const {
 	dr->scene->scene_properties().lights_storage().bind_buffers(2);
 	ScreenFillingQuad.vao()->bind();
 
-	8_tex_unit = *dr->scene->shadows_storage_cubemaps();
+	8_tex_unit = *dr->ssss_layers.get_penumbra_layers();
 
 	program->bind();
 }
 
 void GIRenderer::deferred_composition::dispatch() const {
-	// dr->scene->scene_properties().lights_storage().update_storage();
-
 	Core::gl_current_context::get()->draw_arrays(GL_TRIANGLE_STRIP, 0, 4);
-
-	// dr->scene->scene_properties().lock_ranges();
 }
 
 
@@ -42,6 +38,8 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 						 ctx(ctx),
 						 //voxel_space(ctx, voxel_grid_size, voxel_grid_ratio),
 						 hdr(ctx, fbo.z_buffer()),
+						 ssss_layers(ctx),
+						 ssss_dispatchable(ctx, scene.get(), &ssss_layers, &fbo),
 						 composer(ctx, this) {
 	resize_connection = std::make_shared<ResizeSignalConnectionType>([=](const glm::i32vec2 &size) {
 		this->fbo.resize(size);
@@ -53,10 +51,15 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 
 	// composer.program->set_uniform("inv_projection", glm::inverse(ctx.projection_matrix()));
 
+	precomposer_dummy_task = make_gpu_task("precomposer_dummy_task", &precomposer_dummy_dispatchable, nullptr);
+	ssss_task = make_gpu_task("ssss", &ssss_dispatchable, nullptr);
 	composer_task = make_gpu_task("deferred_composition", &composer, hdr.get_input_fbo());
 	fb_clearer_task = make_gpu_task("fb_clearer", &fb_clearer, get_fbo());
 
 	composer_task->add_dependency(fb_clearer_task);
+	composer_task->add_dependency(precomposer_dummy_task);
+	composer_task->add_dependency(ssss_task);
+	ssss_task->add_dependency(precomposer_dummy_task);
 	hdr.get_task()->add_dependency(composer_task);
 
 	add_task(fb_clearer_task);
@@ -100,7 +103,7 @@ void GIRenderer::add_task(const gpu_task::TaskPtr &t) {
 	mutate_gpu_task(t, get_fbo());
 	q.add_task(t);
 
-	q.add_task_dependency(composer_task, t);
+	q.add_task_dependency(precomposer_dummy_task, t);
 	if (t != fb_clearer_task)
 		q.add_task_dependency(t, fb_clearer_task);
 
@@ -110,7 +113,7 @@ void GIRenderer::add_task(const gpu_task::TaskPtr &t) {
 void GIRenderer::remove_task(const gpu_task::TaskPtr &t) {
 	q.remove_task(t);
 
-	q.remove_task_dependency(composer_task, t);
+	q.remove_task_dependency(precomposer_dummy_task, t);
 	q.remove_task_dependency(t, fb_clearer_task);
 
 	added_tasks.erase(t);
