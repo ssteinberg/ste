@@ -10,7 +10,7 @@ const int light_buffers_first = 2;
 
 layout(binding = 5) uniform sampler2D wposition_tex;
 layout(binding = 7) uniform samplerCubeArray shadow_depth_maps;
-layout(r32f, binding = 0) uniform image2DArray penumbra_layers;
+layout(r16f, binding = 0) uniform image2DArray penumbra_layers;
 
 uniform float far;
 

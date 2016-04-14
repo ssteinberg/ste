@@ -34,7 +34,7 @@ public:
 	}
 
 	void resize(const glm::uvec2 &size, int layers) {
-		penumbra_layers = std::make_unique<Core::Texture2DArray>(gli::format::FORMAT_R32_SFLOAT_PACK32, glm::ivec3{ glm::floorPowerOfTwo(size.x), glm::floorPowerOfTwo(size.y), layers });
+		penumbra_layers = std::make_unique<Core::Texture2DArray>(gli::format::FORMAT_R16_SFLOAT_PACK16, glm::ivec3{ glm::floorPowerOfTwo(size.x), glm::floorPowerOfTwo(size.y), layers });
 	}
 	int layers_count() const { return penumbra_layers->get_layers(); }
 	glm::uvec2 layers_size() const { return { penumbra_layers->get_size().x, penumbra_layers->get_size().y }; }

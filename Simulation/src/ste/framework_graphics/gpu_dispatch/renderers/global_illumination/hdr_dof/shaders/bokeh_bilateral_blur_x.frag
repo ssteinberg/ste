@@ -5,7 +5,7 @@
 
 #include "hdr_blur.glsl"
 
-out vec4 gl_FragColor;
+out mediump vec4 gl_FragColor;
 
 layout(bindless_sampler) uniform sampler2D hdr;
 layout(bindless_sampler) uniform sampler2D zcoc_buffer;

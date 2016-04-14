@@ -118,25 +118,25 @@ void hdr_dof_postprocess::resize(glm::ivec2 size) {
 	if (size.x <= 0 || size.y <= 0)
 		return;
 
-	bokeh_coc = std::make_unique<Core::Texture2D>(gli::format::FORMAT_RG32_SFLOAT_PACK32, StE::Core::Texture2D::size_type(size), 1);
+	bokeh_coc = std::make_unique<Core::Texture2D>(gli::format::FORMAT_RGBA16_SFLOAT_PACK16, StE::Core::Texture2D::size_type(size), 1);
 
-	hdr_image = std::make_unique<Core::Texture2D>(gli::format::FORMAT_RGBA32_SFLOAT_PACK32, StE::Core::Texture2D::size_type(size), 1);
-	hdr_final_image = std::make_unique<Core::Texture2D>(gli::format::FORMAT_RGBA32_SFLOAT_PACK32, StE::Core::Texture2D::size_type(size), 1);
-	hdr_bloom_image = std::make_unique<Core::Texture2D>(gli::format::FORMAT_RGBA8_UNORM_PACK8, StE::Core::Texture2D::size_type(size), 1);
+	hdr_image = std::make_unique<Core::Texture2D>(gli::format::FORMAT_RGBA16_SFLOAT_PACK16, StE::Core::Texture2D::size_type(size), 1);
+	hdr_final_image = std::make_unique<Core::Texture2D>(gli::format::FORMAT_RGBA16_SFLOAT_PACK16, StE::Core::Texture2D::size_type(size), 1);
+	hdr_bloom_image = std::make_unique<Core::Texture2D>(gli::format::FORMAT_RGBA16_SFLOAT_PACK16, StE::Core::Texture2D::size_type(size), 1);
 
 	fbo_hdr_final[0] = (*hdr_final_image)[0];
 	fbo_hdr[0] = (*hdr_image)[0];
 	fbo_hdr[1] = (*hdr_bloom_image)[0];
 	fbo_hdr[2] = (*bokeh_coc)[0];
 
-	hdr_bloom_blurx_image = std::make_unique<Core::Texture2D>(gli::format::FORMAT_RGBA8_UNORM_PACK8, StE::Core::Texture2D::size_type(size), 1);
+	hdr_bloom_blurx_image = std::make_unique<Core::Texture2D>(gli::format::FORMAT_RGBA16_SFLOAT_PACK16, StE::Core::Texture2D::size_type(size), 1);
 
 	fbo_hdr_bloom_blurx_image[0] = (*hdr_bloom_blurx_image)[0];
 
 	luminance_size = size / 4;
 
 	hdr_lums = std::make_unique<Core::Texture2D>(gli::format::FORMAT_R32_SFLOAT_PACK32, StE::Core::Texture2D::size_type(luminance_size), 1);
-	bokeh_blur_image_x = std::make_unique<Core::Texture2D>(gli::format::FORMAT_RGBA8_UNORM_PACK8, StE::Core::Texture2D::size_type(size), 1);
+	bokeh_blur_image_x = std::make_unique<Core::Texture2D>(gli::format::FORMAT_RGBA16_SFLOAT_PACK16, StE::Core::Texture2D::size_type(size), 1);
 	fbo_bokeh_blur_image[0] = (*bokeh_blur_image_x)[0];
 
 	auto bokeh_coc_handle = bokeh_coc->get_texture_handle();
