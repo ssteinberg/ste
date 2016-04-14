@@ -21,6 +21,7 @@ layout(binding = 1) uniform sampler2D position_tex;
 layout(binding = 2) uniform sampler2D color_tex;
 layout(binding = 3) uniform sampler2D tangent_tex;
 layout(binding = 4) uniform isampler2D mat_idx_tex;
+layout(binding = 5) uniform sampler2D wposition_tex;
 
 layout(binding = 8) uniform sampler2DArray penumbra_layers;
 
@@ -51,14 +52,14 @@ void main() {
 		float dist = length(v);
 
 		vec3 l = diffuse * ld.diffuse.xyz;
-
 		float obscurance = texture(penumbra_layers, vec3(tex_coords, i)).x;
 
 		float brdf = calc_brdf(md, position, n, t, b, v);
 		float attenuation_factor = light_attenuation_factor(ld, dist);
 		float incident_radiance = ld.luminance / attenuation_factor * obscurance;
 
-		rgb += l * max(0.f, mix(.3f, 1.f, specular) * brdf * incident_radiance);
+		float irradiance = mix(.3f, 1.f, specular) * brdf * incident_radiance;
+		rgb += l * max(0.f, irradiance);
 	}
 
 	vec3 xyY = XYZtoxyY(RGBtoXYZ(rgb));

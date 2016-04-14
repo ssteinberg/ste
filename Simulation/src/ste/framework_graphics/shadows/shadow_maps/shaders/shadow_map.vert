@@ -16,7 +16,6 @@ out vs_out {
 	vec2 uv;
 	flat int matIdx;
 } vout;
-out vec4 gl_Position;
 
 void main() {
 	mesh_descriptor md = mesh_descriptor_buffer[gl_DrawIDARB];

@@ -104,10 +104,6 @@ public:
 
 	void set_model_matrix(const glm::mat4 &m) {
 		composer.program->set_uniform("view_matrix", m);
-
-		// voxel_space.set_model_matrix(m, camera.get_position());
-
-		ssss_dispatchable.set_model_matrix(m);
 	}
 
 	void set_deferred_rendering_enabled(bool enabled);

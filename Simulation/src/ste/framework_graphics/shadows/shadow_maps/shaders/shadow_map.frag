@@ -6,11 +6,11 @@
 
 #include "material.glsl"
 
-in geo_out {
+in frag_in {
+	vec4 position;
 	vec2 uv;
 	flat int matIdx;
 } vin;
-in vec4 position;
 
 uniform float far;
 
@@ -25,5 +25,5 @@ void main() {
 	// In case we want to consider semi-transparent objects
 	// vec3 diffuse = md.diffuse.tex_handler>0 ? texture(sampler2D(md.diffuse.tex_handler), uv).rgb : vec3(1.f);
 
-	gl_FragDepth = length(position.xyz) / far;
+	gl_FragDepth = length(vin.position.xyz) / far;
 }

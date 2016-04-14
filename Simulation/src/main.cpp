@@ -91,7 +91,7 @@ auto create_light_object(const std::shared_ptr<StE::Graphics::Scene> &scene, con
 	m->set_indices(std::vector<std::uint32_t>{0,1,2});
 	auto light_obj = std::make_shared<StE::Graphics::Object>(std::move(m));
 
-	std::unique_ptr<StE::Graphics::Sphere> sphere = std::make_unique<StE::Graphics::Sphere>(10, 10);
+	std::unique_ptr<StE::Graphics::Sphere> sphere = std::make_unique<StE::Graphics::Sphere>(20, 20);
 	light_obj = std::make_shared<StE::Graphics::Object>(std::move(sphere));
 
 	light_obj->set_model_matrix(glm::scale(glm::translate(glm::mat4(), light_pos), glm::vec3(light->get_radius())));
@@ -159,8 +159,8 @@ int main() {
 
 	const glm::vec3 light0_pos{ -700.6, 138, -70 };
 	const glm::vec3 light1_pos{ 200.6, 550, 145 };
-	auto light0 = std::make_shared<StE::Graphics::SphericalLight>(2000.f, StE::Graphics::RGB({ 1.f, .57f, .16f }), light0_pos, 10.f);
-	auto light1 = std::make_shared<StE::Graphics::SphericalLight>(5000.f, StE::Graphics::RGB({ 0.5f, .8f, 1.f }), light1_pos, 20.f);
+	auto light0 = std::make_shared<StE::Graphics::SphericalLight>(2000.f, StE::Graphics::RGB({ 1.f, .57f, .16f }), light0_pos, 7.f);
+	auto light1 = std::make_shared<StE::Graphics::SphericalLight>(5000.f, StE::Graphics::RGB({ 0.5f, .8f, 1.f }), light1_pos, 15.f);
 	scene->scene_properties().lights_storage().add_light(light0);
 	scene->scene_properties().lights_storage().add_light(light1);
 

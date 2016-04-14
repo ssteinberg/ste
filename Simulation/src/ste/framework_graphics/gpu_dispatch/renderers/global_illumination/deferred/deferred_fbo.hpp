@@ -26,6 +26,7 @@ private:
 	std::unique_ptr<Core::Texture2D> color_output;
 	std::unique_ptr<Core::Texture2D> material_idx_output;
 	std::unique_ptr<Core::Texture2D> z_output;
+	std::unique_ptr<Core::Texture2D> wposition_output;
 	Core::FramebufferObject fbo;
 
 	glm::ivec2 size;

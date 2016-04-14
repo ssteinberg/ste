@@ -18,6 +18,7 @@ void deferred_fbo::resize(glm::ivec2 size) {
 	color_output = std::make_unique<Core::Texture2D>(gli::format::FORMAT_RGBA32_SFLOAT_PACK32, glm::ivec2{ size }, 1);
 	material_idx_output = std::make_unique<Core::Texture2D>(gli::format::FORMAT_R16_SINT_PACK16, glm::ivec2{ size }, 1);
 	z_output = std::make_unique<Core::Texture2D>(gli::format::FORMAT_R32_SFLOAT_PACK32, glm::ivec2{ size }, 1);
+	wposition_output = std::make_unique<Core::Texture2D>(gli::format::FORMAT_RGB32_SFLOAT_PACK32, glm::ivec2{ size }, 1);
 
 	fbo.depth_binding_point() = *depth_output;
 	fbo[0] = (*position_output)[0];
@@ -26,6 +27,7 @@ void deferred_fbo::resize(glm::ivec2 size) {
 	fbo[3] = (*z_output)[0];
 	fbo[4] = (*tangent_output)[0];
 	fbo[5] = (*material_idx_output)[0];
+	fbo[6] = (*wposition_output)[0];
 }
 
 void deferred_fbo::bind_output_textures() const {
@@ -34,4 +36,5 @@ void deferred_fbo::bind_output_textures() const {
 	2_tex_unit = *color_output;
 	3_tex_unit = *tangent_output;
 	4_tex_unit = *material_idx_output;
+	5_tex_unit = *wposition_output;
 }

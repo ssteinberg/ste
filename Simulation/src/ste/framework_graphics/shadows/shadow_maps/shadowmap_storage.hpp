@@ -19,7 +19,7 @@ private:
 
 public:
 	shadowmap_storage(const glm::uvec2 &cube_size = { 1024, 1024 }) : cube_size(cube_size) {
-		set_count(5);
+		set_count(2);
 	}
 
 	void set_count(std::size_t size) {

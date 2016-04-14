@@ -52,10 +52,6 @@ public:
 		ctx.signal_projection_change().connect(projection_change_connection);
 	}
 
-	void set_model_matrix(const glm::mat4 &m) {
-		ssss_gen_program->set_uniform("inv_view_model", glm::inverse(m));
-	}
-
 	void set_context_state() const override final;
 	void dispatch() const override final;
 };
