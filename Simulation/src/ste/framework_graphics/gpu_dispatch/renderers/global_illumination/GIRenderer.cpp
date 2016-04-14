@@ -12,14 +12,13 @@ using namespace StE::Graphics;
 void GIRenderer::deferred_composition::set_context_state() const {
 	using namespace Core;
 
-	Core::gl_current_context::get()->enable_state(StE::Core::context_state_name::TEXTURE_CUBE_MAP_SEAMLESS);
-
 	dr->fbo.bind_output_textures();
 	0_storage_idx = dr->scene->scene_properties().materials_storage().buffer();
 	dr->scene->scene_properties().lights_storage().bind_buffers(2);
-	ScreenFillingQuad.vao()->bind();
 
-	8_tex_unit = *dr->ssss_layers.get_penumbra_layers();
+	7_tex_unit = *dr->ssss_layers.get_penumbra_layers();
+
+	ScreenFillingQuad.vao()->bind();
 
 	program->bind();
 }
@@ -61,6 +60,7 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 	composer_task->add_dependency(fb_clearer_task);
 	composer_task->add_dependency(precomposer_dummy_task);
 	composer_task->add_dependency(ssss_task);
+	precomposer_dummy_task->add_dependency(fb_clearer_task);
 	ssss_task->add_dependency(precomposer_dummy_task);
 	hdr.get_task()->add_dependency(composer_task);
 

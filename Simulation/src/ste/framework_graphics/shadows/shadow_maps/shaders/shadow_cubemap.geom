@@ -25,7 +25,7 @@ void main() {
 	for (int l = 0; l < light_buffer.length(); ++l) {
 		vec4 light_pos = vec4(light_buffer[l].position_direction.xyz, 0);
 
-		for(int i = 0; i < 6; ++i) {
+		for (int i = 0; i < 6; ++i) {
 			gl_Layer = i + l * 6;
 
 			for (int j = 0; j < 3; ++j) {

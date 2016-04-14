@@ -9,7 +9,6 @@ const int light_buffers_first = 2;
 
 #include "material.glsl"
 #include "light.glsl"
-#include "shadow.glsl"
 //#include "voxels.glsl"
 
 in vec2 tex_coords;
@@ -23,7 +22,7 @@ layout(binding = 3) uniform sampler2D tangent_tex;
 layout(binding = 4) uniform isampler2D mat_idx_tex;
 layout(binding = 5) uniform sampler2D wposition_tex;
 
-layout(binding = 8) uniform sampler2DArray penumbra_layers;
+layout(binding = 7) uniform sampler2DArray penumbra_layers;
 
 void main() {
 	int draw_idx = texelFetch(mat_idx_tex, ivec2(gl_FragCoord.xy), 0).x;
