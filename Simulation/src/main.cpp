@@ -102,9 +102,7 @@ auto create_light_object(const std::shared_ptr<StE::Graphics::Scene> &scene, con
 
 	auto light_mat = std::make_shared<StE::Graphics::Material>();
 	light_mat->set_diffuse(std::make_shared<StE::Core::Texture2D>(light_color_tex, false));
-
-	float a = 1.f / (2.f * light->get_radius());
-	light_mat->set_emission(c * light->get_luminance() * a * a * glm::one_over_pi<float>());
+	light_mat->set_emission(c * light->get_luminance());
 
 	light_obj->set_material_id(scene->scene_properties().materials_storage().add_material(light_mat));
 
@@ -163,7 +161,7 @@ int main() {
 	const glm::vec3 light0_pos{ -700.6, 138, -70 };
 	const glm::vec3 light1_pos{ 200.6, 550, 145 };
 	auto light0 = std::make_shared<StE::Graphics::SphericalLight>(4000.f, StE::Graphics::RGB({ 1.f, .57f, .16f }), light0_pos, 4.f);
-	auto light1 = std::make_shared<StE::Graphics::SphericalLight>(10000.f, StE::Graphics::RGB({ 0.5f, .8f, 1.f }), light1_pos, 9.f);
+	auto light1 = std::make_shared<StE::Graphics::SphericalLight>(12000.f, StE::Graphics::RGB({ 0.5f, .8f, 1.f }), light1_pos, 9.f);
 	scene->scene_properties().lights_storage().add_light(light0);
 	scene->scene_properties().lights_storage().add_light(light1);
 

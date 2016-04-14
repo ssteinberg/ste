@@ -6,6 +6,7 @@
 #include "mesh.glsl"
 
 layout(location = 0) in vec3 vert;
+layout(location = 1) in vec3 normal;
 layout(location = 3) in vec2 tex_coords;
 
 layout(std430, binding = 1) buffer mesh_data {
@@ -13,6 +14,7 @@ layout(std430, binding = 1) buffer mesh_data {
 };
 
 out vs_out {
+	vec3 normal;
 	vec2 uv;
 	flat int matIdx;
 } vout;
@@ -20,8 +22,10 @@ out vs_out {
 void main() {
 	mesh_descriptor md = mesh_descriptor_buffer[gl_DrawIDARB];
 	mat4 view_model = md.model;
+	mat4 trans_inverse_view_model = md.transpose_inverse_model;
 
 	gl_Position = view_model * vec4(vert, 1);
+	vout.normal = (trans_inverse_view_model * vec4(normal, 1)).xyz;
 	vout.uv = tex_coords;
 	vout.matIdx = md.matIdx;
 }

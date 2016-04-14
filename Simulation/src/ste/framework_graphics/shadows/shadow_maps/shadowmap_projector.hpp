@@ -16,7 +16,6 @@
 #include "ObjectGroup.hpp"
 #include "shadowmap_storage.hpp"
 
-#include <vector>
 #include <memory>
 
 namespace StE {
@@ -45,14 +44,16 @@ private:
 		auto shadow_proj = glm::perspective(glm::half_pi<float>(), 1.f, 20.f, ctx.get_far_clip());
 
 		shadow_gen_program->set_uniform("far", ctx.get_far_clip());
-		shadow_gen_program->set_uniform("shadow_transforms", std::vector<glm::mat4>{
+
+		glm::mat4 mats[6] = {
 			shadow_proj * glm::lookAt(glm::vec3(0), glm::vec3( 1.f, 0.f, 0.f), glm::vec3(0.f,-1.f, 0.f)),
 			shadow_proj * glm::lookAt(glm::vec3(0), glm::vec3(-1.f, 0.f, 0.f), glm::vec3(0.f,-1.f, 0.f)),
 			shadow_proj * glm::lookAt(glm::vec3(0), glm::vec3( 0.f, 1.f, 0.f), glm::vec3(0.f, 0.f, 1.f)),
 			shadow_proj * glm::lookAt(glm::vec3(0), glm::vec3( 0.f,-1.f, 0.f), glm::vec3(0.f, 0.f,-1.f)),
 			shadow_proj * glm::lookAt(glm::vec3(0), glm::vec3( 0.f, 0.f, 1.f), glm::vec3(0.f,-1.f, 0.f)),
 			shadow_proj * glm::lookAt(glm::vec3(0), glm::vec3( 0.f, 0.f,-1.f), glm::vec3(0.f,-1.f, 0.f))
-		});
+		};
+		shadow_gen_program->set_uniform("shadow_transforms", mats);
 	}
 
 public:
