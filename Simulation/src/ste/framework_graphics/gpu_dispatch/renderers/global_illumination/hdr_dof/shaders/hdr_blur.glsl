@@ -4,23 +4,23 @@ const mediump vec4 weights0 = vec4(0.055119, 0.081029, 0.106701, 0.125858);
 const mediump vec4 weights1 = vec4(0.003924, 0.008962, 0.018331, 0.033585);
 
 mediump vec4 hdr_blur(sampler2D hdr, ivec2 dir) {
-	mediump vec4 l7 = texelFetch(hdr, ivec2(gl_FragCoord.xy) - dir * 8, 0);
-	mediump vec4 l6 = texelFetch(hdr, ivec2(gl_FragCoord.xy) - dir * 7, 0);
-	mediump vec4 l5 = texelFetch(hdr, ivec2(gl_FragCoord.xy) - dir * 6, 0);
-	mediump vec4 l4 = texelFetch(hdr, ivec2(gl_FragCoord.xy) - dir * 5, 0);
-	mediump vec4 l3 = texelFetch(hdr, ivec2(gl_FragCoord.xy) - dir * 4, 0);
-	mediump vec4 l2 = texelFetch(hdr, ivec2(gl_FragCoord.xy) - dir * 3, 0);
-	mediump vec4 l1 = texelFetch(hdr, ivec2(gl_FragCoord.xy) - dir * 2, 0);
-	mediump vec4 l0 = texelFetch(hdr, ivec2(gl_FragCoord.xy) - dir * 1, 0);
+	mediump vec4 l7 = texelFetchOffset(hdr, ivec2(gl_FragCoord.xy), 0, -dir * 8);
+	mediump vec4 l6 = texelFetchOffset(hdr, ivec2(gl_FragCoord.xy), 0, -dir * 7);
+	mediump vec4 l5 = texelFetchOffset(hdr, ivec2(gl_FragCoord.xy), 0, -dir * 6);
+	mediump vec4 l4 = texelFetchOffset(hdr, ivec2(gl_FragCoord.xy), 0, -dir * 5);
+	mediump vec4 l3 = texelFetchOffset(hdr, ivec2(gl_FragCoord.xy), 0, -dir * 4);
+	mediump vec4 l2 = texelFetchOffset(hdr, ivec2(gl_FragCoord.xy), 0, -dir * 3);
+	mediump vec4 l1 = texelFetchOffset(hdr, ivec2(gl_FragCoord.xy), 0, -dir * 2);
+	mediump vec4 l0 = texelFetchOffset(hdr, ivec2(gl_FragCoord.xy), 0, -dir * 1);
 	mediump vec4 c  = texelFetch(hdr, ivec2(gl_FragCoord.xy), 0);
-	mediump vec4 r0 = texelFetch(hdr, ivec2(gl_FragCoord.xy) + dir * 1, 0);
-	mediump vec4 r1 = texelFetch(hdr, ivec2(gl_FragCoord.xy) + dir * 2, 0);
-	mediump vec4 r2 = texelFetch(hdr, ivec2(gl_FragCoord.xy) + dir * 3, 0);
-	mediump vec4 r3 = texelFetch(hdr, ivec2(gl_FragCoord.xy) + dir * 4, 0);
-	mediump vec4 r4 = texelFetch(hdr, ivec2(gl_FragCoord.xy) + dir * 5, 0);
-	mediump vec4 r5 = texelFetch(hdr, ivec2(gl_FragCoord.xy) + dir * 6, 0);
-	mediump vec4 r6 = texelFetch(hdr, ivec2(gl_FragCoord.xy) + dir * 7, 0);
-	mediump vec4 r7 = texelFetch(hdr, ivec2(gl_FragCoord.xy) + dir * 8, 0);
+	mediump vec4 r0 = texelFetchOffset(hdr, ivec2(gl_FragCoord.xy), 0, +dir * 1);
+	mediump vec4 r1 = texelFetchOffset(hdr, ivec2(gl_FragCoord.xy), 0, +dir * 2);
+	mediump vec4 r2 = texelFetchOffset(hdr, ivec2(gl_FragCoord.xy), 0, +dir * 3);
+	mediump vec4 r3 = texelFetchOffset(hdr, ivec2(gl_FragCoord.xy), 0, +dir * 4);
+	mediump vec4 r4 = texelFetchOffset(hdr, ivec2(gl_FragCoord.xy), 0, +dir * 5);
+	mediump vec4 r5 = texelFetchOffset(hdr, ivec2(gl_FragCoord.xy), 0, +dir * 6);
+	mediump vec4 r6 = texelFetchOffset(hdr, ivec2(gl_FragCoord.xy), 0, +dir * 7);
+	mediump vec4 r7 = texelFetchOffset(hdr, ivec2(gl_FragCoord.xy), 0, +dir * 8);
 
 	mediump vec4 lw0 = weights0;
 	mediump vec4 rw0 = weights0;
@@ -40,23 +40,26 @@ mediump vec4 hdr_blur(sampler2D hdr, ivec2 dir) {
 }
 
 mediump vec4 bokeh_blur(sampler2D hdr, sampler2D zcoc_buffer, ivec2 dir) {
-	mediump vec4 l7 = texelFetch(hdr, ivec2(gl_FragCoord.xy) - dir * 8, 0);
-	mediump vec4 l6 = texelFetch(hdr, ivec2(gl_FragCoord.xy) - dir * 7, 0);
-	mediump vec4 l5 = texelFetch(hdr, ivec2(gl_FragCoord.xy) - dir * 6, 0);
-	mediump vec4 l4 = texelFetch(hdr, ivec2(gl_FragCoord.xy) - dir * 5, 0);
-	mediump vec4 l3 = texelFetch(hdr, ivec2(gl_FragCoord.xy) - dir * 4, 0);
-	mediump vec4 l2 = texelFetch(hdr, ivec2(gl_FragCoord.xy) - dir * 3, 0);
-	mediump vec4 l1 = texelFetch(hdr, ivec2(gl_FragCoord.xy) - dir * 2, 0);
-	mediump vec4 l0 = texelFetch(hdr, ivec2(gl_FragCoord.xy) - dir * 1, 0);
+	vec4 one = vec4(1.f);
+	vec4 zero = vec4(.0f);
+
+	mediump vec4 l7 = texelFetchOffset(hdr, ivec2(gl_FragCoord.xy), 0, -dir * 8);
+	mediump vec4 l6 = texelFetchOffset(hdr, ivec2(gl_FragCoord.xy), 0, -dir * 7);
+	mediump vec4 l5 = texelFetchOffset(hdr, ivec2(gl_FragCoord.xy), 0, -dir * 6);
+	mediump vec4 l4 = texelFetchOffset(hdr, ivec2(gl_FragCoord.xy), 0, -dir * 5);
+	mediump vec4 l3 = texelFetchOffset(hdr, ivec2(gl_FragCoord.xy), 0, -dir * 4);
+	mediump vec4 l2 = texelFetchOffset(hdr, ivec2(gl_FragCoord.xy), 0, -dir * 3);
+	mediump vec4 l1 = texelFetchOffset(hdr, ivec2(gl_FragCoord.xy), 0, -dir * 2);
+	mediump vec4 l0 = texelFetchOffset(hdr, ivec2(gl_FragCoord.xy), 0, -dir * 1);
 	mediump vec4 c  = texelFetch(hdr, ivec2(gl_FragCoord.xy), 0);
-	mediump vec4 r0 = texelFetch(hdr, ivec2(gl_FragCoord.xy) + dir * 1, 0);
-	mediump vec4 r1 = texelFetch(hdr, ivec2(gl_FragCoord.xy) + dir * 2, 0);
-	mediump vec4 r2 = texelFetch(hdr, ivec2(gl_FragCoord.xy) + dir * 3, 0);
-	mediump vec4 r3 = texelFetch(hdr, ivec2(gl_FragCoord.xy) + dir * 4, 0);
-	mediump vec4 r4 = texelFetch(hdr, ivec2(gl_FragCoord.xy) + dir * 5, 0);
-	mediump vec4 r5 = texelFetch(hdr, ivec2(gl_FragCoord.xy) + dir * 6, 0);
-	mediump vec4 r6 = texelFetch(hdr, ivec2(gl_FragCoord.xy) + dir * 7, 0);
-	mediump vec4 r7 = texelFetch(hdr, ivec2(gl_FragCoord.xy) + dir * 8, 0);
+	mediump vec4 r0 = texelFetchOffset(hdr, ivec2(gl_FragCoord.xy), 0, +dir * 1);
+	mediump vec4 r1 = texelFetchOffset(hdr, ivec2(gl_FragCoord.xy), 0, +dir * 2);
+	mediump vec4 r2 = texelFetchOffset(hdr, ivec2(gl_FragCoord.xy), 0, +dir * 3);
+	mediump vec4 r3 = texelFetchOffset(hdr, ivec2(gl_FragCoord.xy), 0, +dir * 4);
+	mediump vec4 r4 = texelFetchOffset(hdr, ivec2(gl_FragCoord.xy), 0, +dir * 5);
+	mediump vec4 r5 = texelFetchOffset(hdr, ivec2(gl_FragCoord.xy), 0, +dir * 6);
+	mediump vec4 r6 = texelFetchOffset(hdr, ivec2(gl_FragCoord.xy), 0, +dir * 7);
+	mediump vec4 r7 = texelFetchOffset(hdr, ivec2(gl_FragCoord.xy), 0, +dir * 8);
 
 	mediump vec2 z_l7 = texelFetch(zcoc_buffer, ivec2(gl_FragCoord.xy) - dir * 8, 0).rg;
 	mediump vec2 z_l6 = texelFetch(zcoc_buffer, ivec2(gl_FragCoord.xy) - dir * 7, 0).rg;
@@ -76,30 +79,31 @@ mediump vec4 bokeh_blur(sampler2D hdr, sampler2D zcoc_buffer, ivec2 dir) {
 	mediump vec2 z_r6 = texelFetch(zcoc_buffer, ivec2(gl_FragCoord.xy) + dir * 7, 0).rg;
 	mediump vec2 z_r7 = texelFetch(zcoc_buffer, ivec2(gl_FragCoord.xy) + dir * 8, 0).rg;
 
-	mediump float l7w = clamp(mix(1, 0, (z_l7.x - z_c) / .04f), 0, 1) * l7.w * z_l7.y;
-	mediump float l6w = clamp(mix(1, 0, (z_l6.x - z_c) / .04f), 0, 1) * l6.w * z_l6.y;
-	mediump float l5w = clamp(mix(1, 0, (z_l5.x - z_c) / .04f), 0, 1) * l5.w * z_l5.y;
-	mediump float l4w = clamp(mix(1, 0, (z_l4.x - z_c) / .04f), 0, 1) * l4.w * z_l4.y;
-	mediump float l3w = clamp(mix(1, 0, (z_l3.x - z_c) / .04f), 0, 1) * l3.w * z_l3.y;
-	mediump float l2w = clamp(mix(1, 0, (z_l2.x - z_c) / .04f), 0, 1) * l2.w * z_l2.y;
-	mediump float l1w = clamp(mix(1, 0, (z_l1.x - z_c) / .04f), 0, 1) * l1.w * z_l1.y;
-	mediump float l0w = clamp(mix(1, 0, (z_l0.x - z_c) / .04f), 0, 1) * l0.w * z_l0.y;
-	mediump float r0w = clamp(mix(1, 0, (z_r0.x - z_c) / .04f), 0, 1) * r0.w * z_r0.y;
-	mediump float r1w = clamp(mix(1, 0, (z_r1.x - z_c) / .04f), 0, 1) * r1.w * z_r1.y;
-	mediump float r2w = clamp(mix(1, 0, (z_r2.x - z_c) / .04f), 0, 1) * r2.w * z_r2.y;
-	mediump float r3w = clamp(mix(1, 0, (z_r3.x - z_c) / .04f), 0, 1) * r3.w * z_r3.y;
-	mediump float r4w = clamp(mix(1, 0, (z_r4.x - z_c) / .04f), 0, 1) * r4.w * z_r4.y;
-	mediump float r5w = clamp(mix(1, 0, (z_r5.x - z_c) / .04f), 0, 1) * r5.w * z_r5.y;
-	mediump float r6w = clamp(mix(1, 0, (z_r6.x - z_c) / .04f), 0, 1) * r6.w * z_r6.y;
-	mediump float r7w = clamp(mix(1, 0, (z_r7.x - z_c) / .04f), 0, 1) * r7.w * z_r7.y;
+	mediump vec4 l_74 = vec4(l7.w, l6.w, l5.w, l4.w);
+	mediump vec4 l_30 = vec4(l3.w, l2.w, l1.w, l0.w);
+	mediump vec4 r_74 = vec4(r7.w, r6.w, r5.w, r4.w);
+	mediump vec4 r_30 = vec4(r3.w, r2.w, r1.w, r0.w);
 
-	mediump vec4 lw0 = vec4(l3w, l2w, l1w, l0w) * weights0;
-	mediump vec4 rw0 = vec4(r3w, r2w, r1w, r0w) * weights0;
-	mediump vec4 lw1 = vec4(l7w, l6w, l5w, l4w) * weights1;
-	mediump vec4 rw1 = vec4(r7w, r6w, r5w, r4w) * weights1;
+	mediump vec4 z_l_30_x = vec4(z_l3.x, z_l2.x, z_l1.x, z_l0.x);
+	mediump vec4 z_l_74_x = vec4(z_l7.x, z_l6.x, z_l5.x, z_l4.x);
+	mediump vec4 z_l_30_y = vec4(z_l3.y, z_l2.y, z_l1.y, z_l0.y);
+	mediump vec4 z_l_74_y = vec4(z_l7.y, z_l6.y, z_l5.y, z_l4.y);
+	mediump vec4 z_r_30_x = vec4(z_r3.x, z_r2.x, z_r1.x, z_r0.x);
+	mediump vec4 z_r_74_x = vec4(z_r7.x, z_r6.x, z_r5.x, z_r4.x);
+	mediump vec4 z_r_30_y = vec4(z_r3.y, z_r2.y, z_r1.y, z_r0.y);
+	mediump vec4 z_r_74_y = vec4(z_r7.y, z_r6.y, z_r5.y, z_r4.y);
+
+	mediump vec4 l_74_w = clamp(mix(one, zero, (z_l_74_x - z_c.xxxx) / .04f), 0, 1) * l_74 * z_l_74_y;
+	mediump vec4 l_30_w = clamp(mix(one, zero, (z_l_30_x - z_c.xxxx) / .04f), 0, 1) * l_30 * z_l_30_y;
+	mediump vec4 r_74_w = clamp(mix(one, zero, (z_r_74_x - z_c.xxxx) / .04f), 0, 1) * r_74 * z_r_74_y;
+	mediump vec4 r_30_w = clamp(mix(one, zero, (z_r_30_x - z_c.xxxx) / .04f), 0, 1) * r_30 * z_r_30_y;
+
+	mediump vec4 lw0 = l_30_w * weights0;
+	mediump vec4 rw0 = r_30_w * weights0;
+	mediump vec4 lw1 = l_74_w * weights1;
+	mediump vec4 rw1 = r_74_w * weights1;
 	mediump float cw = center_weight * mix(.1f, 1.f, c.w + .1f);
 
-	mediump vec4 one = vec4(1.f);
 	mediump float totalw = dot(lw0, one) + dot(rw0, one) + dot(lw1, one) + dot(rw1, one) + cw;
 	mediump vec4 blur = (l3 * lw0.x + l2 * lw0.y + l1 * lw0.z + l0 * lw0.w +
 						 r3 * rw0.x + r2 * rw0.y + r1 * rw0.z + r0 * rw0.w +

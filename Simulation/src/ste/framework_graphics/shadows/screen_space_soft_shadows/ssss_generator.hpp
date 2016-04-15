@@ -4,15 +4,13 @@
 #pragma once
 
 #include "stdafx.hpp"
-#include "gpu_dispatchable.hpp"
+#include "gpu_task.hpp"
 #include "StEngineControl.hpp"
 #include "gl_current_context.hpp"
 
 #include "ssss_storage.hpp"
 #include "Scene.hpp"
 #include "deferred_fbo.hpp"
-
-#include "GLSLProgram.hpp"
 
 #include "Quad.hpp"
 
@@ -21,39 +19,34 @@
 namespace StE {
 namespace Graphics {
 
-class ssss_generator : public gpu_dispatchable {
-	using Base = gpu_dispatchable;
+class ssss_bilateral_blur_x;
+class ssss_bilateral_blur_y;
+class ssss_write_penumbras;
 
-private:
-	using ProjectionSignalConnectionType = StEngineControl::projection_change_signal_type::connection_type;
+class ssss_generator {
+	friend class ssss_bilateral_blur_x;
+	friend class ssss_bilateral_blur_y;
+	friend class ssss_write_penumbras;
 
 private:
 	const ssss_storage *ssss;
 	const Scene *scene;
 	const deferred_fbo *deferred;
 
-	std::shared_ptr<Core::GLSLProgram> ssss_gen_program;
+	std::unique_ptr<ssss_bilateral_blur_x> bilateral_blur_x;
+	std::unique_ptr<ssss_bilateral_blur_y> bilateral_blur_y;
+	std::unique_ptr<ssss_write_penumbras> write_penumbras;
 
-private:
-	std::shared_ptr<ProjectionSignalConnectionType> projection_change_connection;
+	std::shared_ptr<const gpu_task> task;
 
 public:
 	ssss_generator(const StEngineControl &ctx,
 				   const Scene *scene,
 				   const ssss_storage *ssss,
-				   const deferred_fbo *deferred) : ssss(ssss),
-												   scene(scene),
-												   deferred(deferred),
-												   ssss_gen_program(ctx.glslprograms_pool().fetch_program_task({ "ssss.glsl" })()) {
-		ssss_gen_program->set_uniform("far", ctx.get_far_clip());
-		projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([this](const glm::mat4&, float, float, float ffar) {
-			ssss_gen_program->set_uniform("far", ffar);
-		});
-		ctx.signal_projection_change().connect(projection_change_connection);
-	}
+				   const deferred_fbo *deferred);
+	~ssss_generator() noexcept;
 
-	void set_context_state() const override final;
-	void dispatch() const override final;
+	auto get_task() const { return task; }
 };
 
 }

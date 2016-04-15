@@ -386,6 +386,10 @@ public:
 		glDrawArrays(mode, first, count);
 	}
 
+	void draw_arrays_instanced(GLenum mode, std::int32_t first, std::uint32_t count, std::uint32_t instances) const {
+		glDrawArraysInstanced(mode, first, count, instances);
+	}
+
 	template <typename T>
 	void draw_elements(GLenum mode, std::uint32_t count, const void* ind) const {
 		draw_elements(mode, count, gl_type_name_enum<T>::gl_enum, ind);

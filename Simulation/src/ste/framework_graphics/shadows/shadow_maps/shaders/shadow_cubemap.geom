@@ -3,7 +3,7 @@
 #version 450
 
 layout(triangles, invocations=2) in;
-layout(triangle_strip, max_vertices=18) out;
+layout(triangle_strip, max_vertices=15) out;
 
 const int light_buffers_first = 2;
 #include "light.glsl"

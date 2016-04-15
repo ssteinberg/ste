@@ -48,5 +48,5 @@ float hdr_lum(float l) {
 }
 
 float tonemap(float l) {
-	return log(l + 1.f) / log(10.f);
+	return l;
 }

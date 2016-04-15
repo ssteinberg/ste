@@ -24,8 +24,6 @@ void GIRenderer::deferred_composition::set_context_state() const {
 }
 
 void GIRenderer::deferred_composition::dispatch() const {
-	Core::gl_current_context::get()->memory_barrier(GL_TEXTURE_FETCH_BARRIER_BIT);
-
 	Core::gl_current_context::get()->draw_arrays(GL_TRIANGLE_STRIP, 0, 4);
 }
 
@@ -40,7 +38,7 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 						 //voxel_space(ctx, voxel_grid_size, voxel_grid_ratio),
 						 hdr(ctx, fbo.z_buffer()),
 						 ssss_layers(ctx),
-						 ssss_dispatchable(ctx, scene.get(), &ssss_layers, &fbo),
+						 ssss(ctx, scene.get(), &ssss_layers, &fbo),
 						 composer(ctx, this) {
 	resize_connection = std::make_shared<ResizeSignalConnectionType>([=](const glm::i32vec2 &size) {
 		this->fbo.resize(size);
@@ -53,7 +51,7 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 	// composer.program->set_uniform("inv_projection", glm::inverse(ctx.projection_matrix()));
 
 	precomposer_dummy_task = make_gpu_task("precomposer_dummy_task", &precomposer_dummy_dispatchable, nullptr);
-	ssss_task = make_gpu_task("ssss", &ssss_dispatchable, nullptr);
+	ssss_task = ssss.get_task();
 	composer_task = make_gpu_task("deferred_composition", &composer, hdr.get_input_fbo());
 	fb_clearer_task = make_gpu_task("fb_clearer", &fb_clearer, get_fbo());
 

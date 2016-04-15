@@ -76,7 +76,7 @@ private:
 
 	hdr_dof_postprocess hdr;
 	ssss_storage ssss_layers;
-	ssss_generator ssss_dispatchable;
+	ssss_generator ssss;
 	gpu_dummy_dispatchable precomposer_dummy_dispatchable;
 
 	std::shared_ptr<const gpu_task> precomposer_dummy_task, composer_task, fb_clearer_task, ssss_task;
