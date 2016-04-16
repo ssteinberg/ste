@@ -21,15 +21,18 @@ layout(binding = 2) uniform sampler2D color_tex;
 layout(binding = 3) uniform sampler2D tangent_tex;
 layout(binding = 4) uniform isampler2D mat_idx_tex;
 layout(binding = 5) uniform sampler2D wposition_tex;
+layout(binding = 6) uniform sampler2D wnormal_tex;
 
 layout(binding = 7) uniform sampler2DArray penumbra_layers;
+
+uniform float scattering_ro = 0.0003f;
 
 void main() {
 	int draw_idx = texelFetch(mat_idx_tex, ivec2(gl_FragCoord.xy), 0).x;
 	vec4 c = texelFetch(color_tex, ivec2(gl_FragCoord.xy), 0);
 
 	vec3 diffuse = c.rgb;
-	float specular = c.w;
+	float specular = mix(.3f, 1.f, c.w);
 
 	if (draw_idx < 0) {
 		gl_FragColor = vec4(XYZtoxyY(RGBtoXYZ(diffuse)), 1);
@@ -48,16 +51,22 @@ void main() {
 		light_descriptor ld = light_buffer[i];
 
 		vec3 v = light_incidant_ray(ld, i, position);
-		float dist = length(v);
+		if (dot(n, v) <= 0)
+			continue;
 
+		float dist = length(v);
 		vec3 l = diffuse * ld.diffuse.xyz;
-		float obscurance = texture(penumbra_layers, vec3(tex_coords, i)).x;
+
+		float dist_att = dist * scattering_ro;
+		float shadow_attenuation = 1.f - exp(-dist_att * dist_att);
+		float shadow = textureLod(penumbra_layers, vec3(tex_coords, i), 0).x;
+		float obscurance = mix(1.f, .3f * shadow_attenuation, shadow);
 
 		float brdf = calc_brdf(md, position, n, t, b, v);
 		float attenuation_factor = light_attenuation_factor(ld, dist);
-		float incident_radiance = ld.luminance / attenuation_factor * obscurance;
+		float incident_radiance = ld.luminance / attenuation_factor;
 
-		float irradiance = mix(.3f, 1.f, specular) * brdf * incident_radiance;
+		float irradiance = specular * brdf * incident_radiance * obscurance;
 		rgb += l * max(0.f, irradiance);
 	}
 

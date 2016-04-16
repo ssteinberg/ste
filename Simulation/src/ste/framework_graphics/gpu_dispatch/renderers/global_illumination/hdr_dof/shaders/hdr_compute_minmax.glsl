@@ -48,7 +48,7 @@ void main() {
 
 		float min_lum = mix(intBitsToFloat(prev_params.lum_min), intBitsToFloat(params.lum_min), t);
 		float max_lum = mix(intBitsToFloat(prev_params.lum_max), intBitsToFloat(params.lum_max), t);
-		max_lum = max(max_lum, min_lum + .001f);
+		// max_lum = max(max_lum, min_lum + .001f);
 
 		params.lum_min = floatBitsToInt(min_lum);
 		params.lum_max = floatBitsToInt(max_lum);

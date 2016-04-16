@@ -16,6 +16,7 @@ out vec3 frag_wposition;
 out float frag_depth;
 out vec2 frag_texcoords;
 out vec3 frag_normal;
+out vec3 frag_wnormal;
 out vec3 frag_tangent;
 flat out int matIdx;
 
@@ -41,6 +42,7 @@ void main() {
 	frag_wposition = vert;
 	frag_texcoords = tex_coords;
 	frag_normal = (trans_inverse_view_model * vec4(normal, 1)).xyz;
+	frag_wnormal = normal;
 	frag_tangent = (trans_inverse_view_model * vec4(tangent, 1)).xyz;
 	matIdx = md.matIdx;
 

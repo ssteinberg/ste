@@ -19,6 +19,9 @@ Simulation/docs/latex/
 Simulation/docs/html/
 
 Simulation/browse.VC.db
+Simulation/.vscode/.browse.VC.db
+Simulation/.vscode/.browse.VC.db-wal
+Simulation/.vscode/.browse.VC.db-shm
 
 # Build results
 [Dd]ebug/

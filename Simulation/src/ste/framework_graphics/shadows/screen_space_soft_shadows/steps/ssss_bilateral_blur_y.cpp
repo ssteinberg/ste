@@ -5,6 +5,8 @@
 #include "gl_current_context.hpp"
 #include "Quad.hpp"
 
+#include "Sampler.hpp"
+
 using namespace StE::Graphics;
 using namespace StE::Core;
 
@@ -13,10 +15,10 @@ void ssss_bilateral_blur_y::set_context_state() const {
 
 	Core::gl_current_context::get()->viewport(0, 0, size.x, size.y);
 
-	p->scene->scene_properties().lights_storage().bind_buffers(2);
-	p->deferred->bind_output_textures();
-
-	7_tex_unit = *p->ssss->get_blur_layers();
+	7_tex_unit = *p->ssss->get_z_buffer();
+	7_sampler_idx = *Sampler::SamplerNearestClamp();
+	8_tex_unit = *p->ssss->get_blur_layers();
+	8_sampler_idx = *Sampler::SamplerNearestClamp();
 
 	ssss_blur_program->bind();
 

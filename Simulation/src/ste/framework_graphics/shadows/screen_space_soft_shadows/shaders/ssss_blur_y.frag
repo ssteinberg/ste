@@ -4,10 +4,11 @@
 
 #include "ssss_blur.glsl"
 
-out mediump vec4 gl_FragColor;
+out mediump float gl_FragColor;
 
-layout(binding = 7) uniform sampler2DArray src;
+layout(binding = 7) uniform sampler2D z_buffer;
+layout(binding = 8) uniform sampler2DArray src;
 
 void main() {
-	gl_FragColor = ssss_blur(src, gl_Layer, ivec2(0,1));
+	gl_FragColor = ssss_blur(src, z_buffer, gl_Layer, ivec2(0,1));
 }

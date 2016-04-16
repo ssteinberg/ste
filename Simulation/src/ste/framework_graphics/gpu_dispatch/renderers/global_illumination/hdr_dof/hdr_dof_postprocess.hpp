@@ -76,7 +76,6 @@ private:
 	std::shared_ptr<Core::GLSLProgram> bokeh_blury;
 
 	Core::Sampler hdr_vision_properties_sampler;
-	Core::Sampler linear_sampler;
 
 	std::unique_ptr<Core::Texture1D> hdr_vision_properties_texture;
 	Core::texture_handle hdr_vision_properties_texture_handle;

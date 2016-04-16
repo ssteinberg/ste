@@ -1,10 +1,11 @@
 
-float shadow_obscurance(samplerCubeArray shadow_depth_maps, int light, vec3 w_pos, vec3 l_pos, float dist, float far) {
-	vec3 shadow_v = (w_pos - l_pos);
-	float l_shadow_v = dist;
-	float shadow_d = texture(shadow_depth_maps, vec4(shadow_v, light)).x * far;
-	if (shadow_d < l_shadow_v - far / 5000.f)
-		return .15f;
+float shadow_penumbra_width(samplerCubeArray shadow_depth_maps, int light, vec3 shadow_v, float l_radius, float dist, float far, out bool shadowed) {
+	float l_shadow_v = dist / far; // length(shadow_v) / far;
 
-	return 1.f;
+	float shadow_d = texture(shadow_depth_maps, vec4(shadow_v, light)).x;
+
+	float d = l_shadow_v - shadow_d;
+	shadowed = d > 1.f / 1000.f;
+
+	return (d / shadow_d) * l_radius;
 }

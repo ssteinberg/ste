@@ -5,7 +5,6 @@
 #extension GL_NV_gpu_shader5 : require
 
 const int light_buffers_first = 2;
-
 #include "light.glsl"
 
 layout(location = 0) in vec3 vert;

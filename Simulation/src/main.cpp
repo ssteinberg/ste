@@ -117,8 +117,8 @@ int main() {
 	ste_log_set_global_logger(&logger);
 	ste_log() << "Simulation is running";
 
-	int w = 1688, h = 950;
-	// int w = 1200, h = 700;
+	// int w = 1688, h = 950;
+	int w = 1400, h = 800;
 	constexpr float clip_far = 3000.f;
 	constexpr float clip_near = 5.f;
 

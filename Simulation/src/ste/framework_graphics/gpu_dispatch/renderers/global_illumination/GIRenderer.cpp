@@ -3,6 +3,7 @@
 #include "GIRenderer.hpp"
 
 #include "Quad.hpp"
+#include "Sampler.hpp"
 
 #include "gl_current_context.hpp"
 
@@ -17,6 +18,7 @@ void GIRenderer::deferred_composition::set_context_state() const {
 	dr->scene->scene_properties().lights_storage().bind_buffers(2);
 
 	7_tex_unit = *dr->ssss_layers.get_penumbra_layers();
+	7_sampler_idx = *Sampler::SamplerAnisotropicLinearClamp();
 
 	ScreenFillingQuad.vao()->bind();
 

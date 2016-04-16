@@ -32,8 +32,10 @@ public:
 	ssss_write_penumbras(const ssss_generator *p, const StEngineControl &ctx) : p(p),
 																				ssss_gen_program(ctx.glslprograms_pool().fetch_program_task({ "ssss.glsl" })()) {
 		ssss_gen_program->set_uniform("far", ctx.get_far_clip());
-		projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([this](const glm::mat4&, float, float, float ffar) {
+		ssss_gen_program->set_uniform("half_over_tan_fov_over_two", .5f / glm::tan(ctx.get_fov() * .5f));
+		projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([this](const glm::mat4&, float ffov, float, float ffar) {
 			ssss_gen_program->set_uniform("far", ffar);
+			ssss_gen_program->set_uniform("half_over_tan_fov_over_two", .5f / glm::tan(ffov * .5f));
 		});
 		ctx.signal_projection_change().connect(projection_change_connection);
 	}

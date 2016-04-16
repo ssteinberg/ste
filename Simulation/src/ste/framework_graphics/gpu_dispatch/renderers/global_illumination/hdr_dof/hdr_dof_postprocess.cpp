@@ -13,6 +13,8 @@
 #include "hdr_bokeh_blurx_task.hpp"
 #include "hdr_bokeh_blury_task.hpp"
 
+#include "Sampler.hpp"
+
 #include <gli/gli.hpp>
 
 using namespace StE::Graphics;
@@ -20,8 +22,6 @@ using namespace StE::Graphics;
 hdr_dof_postprocess::hdr_dof_postprocess(const StEngineControl &context, const Core::Texture2D *z_buffer) : hdr_vision_properties_sampler(Core::TextureFiltering::Linear, Core::TextureFiltering::Linear, 16),
 																											ctx(context) {
 	hdr_vision_properties_sampler.set_wrap_s(Core::TextureWrapMode::ClampToEdge);
-	linear_sampler.set_min_filter(Core::TextureFiltering::Linear);
-	linear_sampler.set_mag_filter(Core::TextureFiltering::Linear);
 
 	task = make_gpu_task("hdr", create_dispatchable(), &ctx.gl()->defaut_framebuffer(), create_sub_tasks());
 
@@ -142,7 +142,7 @@ void hdr_dof_postprocess::resize(glm::ivec2 size) {
 	auto bokeh_coc_handle = bokeh_coc->get_texture_handle();
 	auto hdr_handle = hdr_image->get_texture_handle();
 	auto hdr_final_handle = hdr_final_image->get_texture_handle();
-	auto hdr_final_handle_linear = hdr_final_image->get_texture_handle(linear_sampler);
+	auto hdr_final_handle_linear = hdr_final_image->get_texture_handle(*Core::Sampler::SamplerLinear());
 	auto hdr_bloom_handle = hdr_bloom_image->get_texture_handle();
 	auto hdr_bloom_blurx_handle = hdr_bloom_blurx_image->get_texture_handle();
 	auto hdr_lums_handle = hdr_lums->get_texture_handle();
