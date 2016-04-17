@@ -39,6 +39,7 @@ private:
 	system_times sys_times;
 	std::chrono::high_resolution_clock::time_point last_pool_balance;
 	std::atomic<int> requests_pending{ 0 };
+	std::atomic<int> active_workers{ 0 };
 	int threads_sleeping{ 0 };
 
 	float idle_time_threshold_for_new_worker;
@@ -56,18 +57,23 @@ private:
 
 				{
 					std::unique_lock<std::mutex> l(this->m);
-					threads_sleeping++;
+
+					++threads_sleeping;
 					this->notifier.wait(l, [&]() {
 						return flag->is_set() || (task = task_queue.pop()) != nullptr;
 					});
-					threads_sleeping--;
+					--threads_sleeping;
 				}
+
+				active_workers.fetch_add(1, std::memory_order_relaxed);
 
 				while (task != nullptr) {
 					run_task(task);
 					if (flag->is_set()) return;
 					task = task_queue.pop();
 				}
+
+				active_workers.fetch_add(-1, std::memory_order_relaxed);
 			}
 		});
 
@@ -94,12 +100,12 @@ private:
 	}
 
 	void on_enqueue() {
-		requests_pending++;
+		requests_pending.fetch_add(1, std::memory_order_release);
 		notifier.notify_one();
 	}
 
 	void run_task(const std::unique_ptr<function_wrapper> &task) {
-		requests_pending--;
+		requests_pending.fetch_add(-1, std::memory_order_relaxed);
 		(*task)();
 	}
 
@@ -169,7 +175,7 @@ public:
 		}
 
 		unsigned min_threads = min_worker_threads();
-		int req = requests_pending.load();
+		int req = requests_pending.load(std::memory_order_acquire);
 		if (threads_sleeping == 0 &&
 			idle_frac > idle_time_threshold_for_new_worker) {
 			spawn_worker();
@@ -183,7 +189,9 @@ public:
 	}
 
 	int get_workers_count() const { return workers.size(); }
-	int get_sleeping_workers() const { return threads_sleeping; }
+	int get_pending_requests_count() const { return requests_pending.load(std::memory_order_relaxed); }
+	int get_active_workers_count() const { return active_workers.load(std::memory_order_relaxed); }
+	int get_sleeping_workers_count() const { return threads_sleeping; }
 };
 
 }

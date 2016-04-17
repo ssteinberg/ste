@@ -117,8 +117,9 @@ int main() {
 	ste_log_set_global_logger(&logger);
 	ste_log() << "Simulation is running";
 
-	// int w = 1688, h = 950;
-	int w = 1400, h = 800;
+	// int w = 1688;
+	int w = 1500;
+	int h = w * 9 / 16;
 	constexpr float clip_far = 3000.f;
 	constexpr float clip_near = 5.f;
 
@@ -206,15 +207,17 @@ int main() {
 			auto total_vram = std::to_wstring(ctx.gl()->meminfo_total_available_vram() / 1024);
 			auto free_vram = std::to_wstring(ctx.gl()->meminfo_free_vram() / 1024);
 
-			auto workers_count = ctx.scheduler().get_workers_count();
-			auto workers_sleep = ctx.scheduler().get_sleeping_workers();
+			auto workers_active = ctx.scheduler().get_thread_pool()->get_active_workers_count();
+			auto workers_sleep = ctx.scheduler().get_thread_pool()->get_sleeping_workers_count();
+			auto pending_requests = ctx.scheduler().get_thread_pool()->get_pending_requests_count();
 
 			title_text->set_text({ w / 2, h / 2 + 100 }, str);
 			footer_text->set_text({ 10, 50 },
 								  line_height(32)(vsmall(b(blue_violet(free_vram) + L" / " + stroke(red, 1)(dark_red(total_vram)) + L" MB")) + L"\n" +
 												  vsmall(b(L"Thread pool workers: ") +
-														 olive(std::to_wstring(workers_count - workers_sleep)) + L" busy / " +
-														 olive(std::to_wstring(workers_count)) + L" total")));
+														 olive(std::to_wstring(workers_active)) + L" busy, " +
+														 olive(std::to_wstring(workers_sleep)) + L" sleeping | " +
+														 orange(std::to_wstring(pending_requests) + L" pending requests"))));
 		}
 
 		if (model_future.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
