@@ -1,5 +1,18 @@
-// StE
-// © Shlomi Steinberg, 2015-2016
+//	StE
+// © Shlomi Steinberg 2015-2016
+
+/**	@file	StEngineControl.hpp
+ *	@brief	Engine Control class
+ *
+ *	StEngineControl is used as the engine context.
+ *	It holds a rendering context and global helper objects:
+ *	Task scheduler, cache and GLSL programs pool.
+ *
+ *	StEngineControl should initialized with a GL context
+ *	Core::gl_context.
+ *
+ *	@author	Shlomi Steinberg
+ */
 
 #pragma once
 
@@ -27,6 +40,9 @@ namespace StE {
 
 struct ste_engine_control_impl;
 
+/**
+ *	@brief	StE Engine Control class
+ */
 class StEngineControl {
 private:
 	std::unique_ptr<ste_engine_control_impl> pimpl;
@@ -69,9 +85,20 @@ public:
 	StEngineControl& operator=(StEngineControl &&m) = delete;
 	StEngineControl& operator=(const StEngineControl &c) = delete;
 
+	/**
+	*	@brief	Create a control class with a given GL context
+	*
+	*  @param context	R-value reference to a unique_ptr to a GL context
+	*/
 	StEngineControl(std::unique_ptr<Core::gl_context> &&context);
 	~StEngineControl() noexcept;
 
+	/**
+	*	@brief	Sets the current system renderer.
+	*	e.g. the renderer will be used when calling run_loop().
+	*
+	*  @param r	Renderer to use
+	*/
 	void set_renderer(Graphics::rendering_system *r) { global_renderer = r; }
 
 	auto &gl() const { return context; }
@@ -100,6 +127,9 @@ public:
 
 	auto time_per_frame() const { return tpf; }
 
+	/**
+	*	@brief	Dispatch rendering tasks, swap buffers, handle input and window system events.
+	*/
 	bool run_loop();
 
 	void capture_screenshot() const;
