@@ -5,11 +5,13 @@
 #extension GL_NV_gpu_shader5 : require
 // #extension GL_NV_shader_atomic_fp16_vector : require
 
-const int light_buffers_first = 1;
+const int light_buffers_first = 2;
 
 #include "material.glsl"
 #include "light.glsl"
 //#include "voxels.glsl"
+
+in vec2 tex_coords;
 
 out vec4 gl_FragColor;
 
@@ -18,15 +20,19 @@ layout(binding = 1) uniform sampler2D position_tex;
 layout(binding = 2) uniform sampler2D color_tex;
 layout(binding = 3) uniform sampler2D tangent_tex;
 layout(binding = 4) uniform isampler2D mat_idx_tex;
+layout(binding = 5) uniform sampler2D wposition_tex;
+layout(binding = 6) uniform sampler2D wnormal_tex;
 
-uniform mat4 inv_projection, inv_view_model;
+layout(binding = 7) uniform sampler2DArray penumbra_layers;
+
+uniform float scattering_ro = 0.0003f;
 
 void main() {
 	int draw_idx = texelFetch(mat_idx_tex, ivec2(gl_FragCoord.xy), 0).x;
 	vec4 c = texelFetch(color_tex, ivec2(gl_FragCoord.xy), 0);
 
 	vec3 diffuse = c.rgb;
-	float specular = c.w;
+	float specular = mix(.3f, 1.f, c.w);
 
 	if (draw_idx < 0) {
 		gl_FragColor = vec4(XYZtoxyY(RGBtoXYZ(diffuse)), 1);
@@ -45,19 +51,23 @@ void main() {
 		light_descriptor ld = light_buffer[i];
 
 		vec3 v = light_incidant_ray(ld, i, position);
-		float dist = length(v);
+		if (dot(n, v) <= 0)
+			continue;
 
-		// float shadow_dist;
-		// bool hit;
-		// voxel_ray_march(position, vec3(0), light_transform_buffer[i].xyz, hit, shadow_dist, true);
+		float dist = length(v);
+		vec3 l = diffuse * ld.diffuse.xyz;
+
+		float dist_att = dist * scattering_ro;
+		float shadow_attenuation = 1.f - exp(-dist_att * dist_att);
+		float shadow = textureLod(penumbra_layers, vec3(tex_coords, i), 0).x;
+		float obscurance = mix(1.f, .3f * shadow_attenuation, shadow);
 
 		float brdf = calc_brdf(md, position, n, t, b, v);
 		float attenuation_factor = light_attenuation_factor(ld, dist);
 		float incident_radiance = ld.luminance / attenuation_factor;
 
-		vec3 l = diffuse * ld.diffuse.xyz;
-
-		rgb += l * max(0, mix(.3f, 1.f, specular) * brdf * incident_radiance);
+		float irradiance = specular * brdf * incident_radiance * obscurance;
+		rgb += l * max(0.f, irradiance);
 	}
 
 	vec3 xyY = XYZtoxyY(RGBtoXYZ(rgb));

@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -22,7 +22,7 @@ private:
 
 private:
 	int id;
-	const signal<Ts...>* sig;
+	const signal<Ts...>* sig{ nullptr };
 	lambda l;
 
 	void operator()(const Ts&...args) { l(args...); }

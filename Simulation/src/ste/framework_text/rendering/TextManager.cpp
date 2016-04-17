@@ -34,11 +34,9 @@ void TextManager::text_renderable::set_context_state() const {
 }
 
 void TextManager::text_renderable::dispatch() const {
-	// range_in_use = tr->vbo.commit(points);
-
-	Core::gl_current_context::get()->draw_arrays(GL_POINTS, range_in_use.start / sizeof(glyph_point), points.size());
-
-	// tr->vbo.lock_range(range_in_use);
+	int start = static_cast<int>(range_in_use.start / sizeof(glyph_point));
+	if (start >=0 && points.size() > 0)
+		Core::gl_current_context::get()->draw_arrays(GL_POINTS, start, points.size());
 }
 
 

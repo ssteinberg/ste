@@ -380,10 +380,20 @@ public:
 	void pop_state(context_state_name state) const {
 		pop_context_server_state(states, state);
 	}
+	void push_resource_state(const context_state_key &state) const {
+		push_context_server_state(resources, state);
+	}
+	void pop_resource_state(const context_state_key &state) const {
+		pop_context_server_state(resources, state);
+	}
 
 public:
 	void draw_arrays(GLenum mode, std::int32_t first, std::uint32_t count) const {
 		glDrawArrays(mode, first, count);
+	}
+
+	void draw_arrays_instanced(GLenum mode, std::int32_t first, std::uint32_t count, std::uint32_t instances) const {
+		glDrawArraysInstanced(mode, first, count, instances);
 	}
 
 	template <typename T>

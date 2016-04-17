@@ -21,9 +21,9 @@ public:
 	Texture2D& operator=(Texture2D &&m) = default;
 
 	Texture2D(gli::format format, const typename Base::size_type &size, int levels = 1) : texture_mipmapped(format, size, levels) {}
-	Texture2D(const gli::texture2d &t, bool generate_mipmaps = false) : 
-				texture_mipmapped(t.format(), 
-								  typename Base::size_type{ t.extent().x, t.extent().y }, 
+	Texture2D(const gli::texture2d &t, bool generate_mipmaps = false) :
+				texture_mipmapped(t.format(),
+								  typename Base::size_type{ t.extent().x, t.extent().y },
 								  generate_mipmaps ? calculate_mipmap_max_level(typename Base::size_type{ t.extent().x, t.extent().y }) + 1 : t.levels(),
 								  t.swizzles()) {
 		upload(t, generate_mipmaps);
@@ -51,7 +51,13 @@ public:
 	}
 
 	const image<T> operator[](int level) const {
-		return image<T>(*this, get_image_container_size(), format, ImageAccessMode::ReadWrite, level, 0);
+		return make_image(level);
+	}
+	const image<T> make_image(int level = 0) const {
+		return image<T>(*this,
+						get_image_container_size(),
+						format, ImageAccessMode::ReadWrite,
+						level, 0);
 	}
 };
 

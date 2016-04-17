@@ -4,9 +4,10 @@
 #pragma once
 
 #include "stdafx.hpp"
-#include "RGB.hpp"
-
 #include "entity.hpp"
+
+#include "texture_handle.hpp"
+#include "RGB.hpp"
 
 namespace StE {
 namespace Graphics {
@@ -15,7 +16,7 @@ class light : public entity {
 public:
 	enum class LightType : std::int32_t {
 		Sphere = 0,
-		Directional = 1
+		Directional = 1,
 	};
 
 	struct light_descriptor {
@@ -26,6 +27,7 @@ public:
 		float radius;
 
 		LightType type;
+		float _unused;
 	};
 
 protected:
@@ -52,6 +54,7 @@ public:
 	}
 
 	float get_luminance() const { return descriptor.luminance; }
+	float get_radius() const { return descriptor.radius; }
 	glm::vec3 get_diffuse() const { return { descriptor.diffuse.x, descriptor.diffuse.y, descriptor.diffuse.z }; }
 
 	auto get_descriptor() const { return descriptor; }

@@ -10,6 +10,7 @@ struct light_descriptor {
 	float radius;
 
 	int type;
+	float _unused;
 };
 
 layout(std430, binding = light_buffers_first) buffer light_data {
@@ -26,10 +27,10 @@ vec3 light_incidant_ray(light_descriptor ld, int i, vec3 position) {
 }
 
 float light_attenuation_factor(light_descriptor ld, float dist) {
-	if (ld.type == LightTypeDirectional) 
+	if (ld.type == LightTypeDirectional)
 		return 1;
 	else {
-		float a = max(.001f, dist / ld.radius / 5.f);
+		float a = max(.001f, dist / ld.radius / 10.f);
 		return a*a;
 	}
 }

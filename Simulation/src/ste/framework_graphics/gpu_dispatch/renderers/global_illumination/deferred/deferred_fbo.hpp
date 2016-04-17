@@ -25,7 +25,9 @@ private:
 	std::unique_ptr<Core::Texture2D> position_output;
 	std::unique_ptr<Core::Texture2D> color_output;
 	std::unique_ptr<Core::Texture2D> material_idx_output;
-	std::unique_ptr<Core::Texture2D> z_output;
+	std::unique_ptr<Core::Texture2D> lin_z_output;
+	std::unique_ptr<Core::Texture2D> wposition_output;
+	std::unique_ptr<Core::Texture2D> wnormal_output;
 	Core::FramebufferObject fbo;
 
 	glm::ivec2 size;
@@ -38,7 +40,7 @@ public:
 	void bind_output_textures() const;
 
 	auto get_size() const { return size; }
-	const Core::Texture2D *z_buffer() const { return z_output.get(); }
+	const Core::Texture2D *z_buffer() const { return lin_z_output.get(); }
 	const Core::FramebufferObject *get_fbo() const { return &fbo; }
 };
 

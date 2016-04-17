@@ -9,8 +9,8 @@
 
 using namespace StE::Graphics;
 
-ObjectGroup::ObjectGroup(StEngineControl &ctx, SceneProperties *props) : scene_props(props),
-																		 object_program(ctx.glslprograms_pool().fetch_program_task({ "object.vert", "object.frag" })()) {
+ObjectGroup::ObjectGroup(const StEngineControl &ctx, SceneProperties *props) : scene_props(props),
+																			   object_program(ctx.glslprograms_pool().fetch_program_task({ "object.vert", "object.frag" })()) {
 	auto vbo_buffer = Core::buffer_object_cast<vbo_type>(vbo.get_buffer());
 	vao[0] = vbo_buffer[0];
 	vao[1] = vbo_buffer[1];
@@ -79,7 +79,7 @@ void ObjectGroup::bind_buffers() const {
 	vao.bind();
 	Core::buffer_object_cast<elements_type>(indices.get_buffer()).bind();
 	Core::buffer_object_cast<indirect_draw_buffer_type>(idb.get_buffer()).bind();
-	0_storage_idx = scene_props->material_storage().buffer();
+	0_storage_idx = scene_props->materials_storage().buffer();
 	1_storage_idx = mesh_data_bo.get_buffer();
 }
 

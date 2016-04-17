@@ -13,16 +13,17 @@
 #include "hdr_bokeh_blurx_task.hpp"
 #include "hdr_bokeh_blury_task.hpp"
 
+#include "Sampler.hpp"
+
 #include <gli/gli.hpp>
 
 using namespace StE::Graphics;
 
-hdr_dof_postprocess::hdr_dof_postprocess(const StEngineControl &context, const Core::Texture2D *z_buffer) : Base(Base::AccessToken(), "hdr", create_dispatchable(), &context.gl()->defaut_framebuffer(), create_sub_tasks()),
-																											hdr_vision_properties_sampler(Core::TextureFiltering::Linear, Core::TextureFiltering::Linear, 16),
+hdr_dof_postprocess::hdr_dof_postprocess(const StEngineControl &context, const Core::Texture2D *z_buffer) : hdr_vision_properties_sampler(Core::TextureFiltering::Linear, Core::TextureFiltering::Linear, 16),
 																											ctx(context) {
 	hdr_vision_properties_sampler.set_wrap_s(Core::TextureWrapMode::ClampToEdge);
-	linear_sampler.set_min_filter(Core::TextureFiltering::Linear);
-	linear_sampler.set_mag_filter(Core::TextureFiltering::Linear);
+
+	task = make_gpu_task("hdr", create_dispatchable(), &ctx.gl()->defaut_framebuffer(), create_sub_tasks());
 
 	float big_float = 10000.f;
 	hdr_bokeh_param_buffer_eraser = std::make_unique<StE::Core::PixelBufferObject<std::int32_t>>(std::vector<std::int32_t>{ *reinterpret_cast<std::int32_t*>(&big_float), 0 });
@@ -62,6 +63,10 @@ hdr_dof_postprocess::hdr_dof_postprocess(const StEngineControl &context, const C
 	hdr_tonemap_coc->set_uniform("hdr_vision_properties_texture", vision_handle);
 
 	resize(ctx.get_backbuffer_size());
+}
+
+std::shared_ptr<const gpu_task> hdr_dof_postprocess::get_task() const {
+	return task;
 }
 
 hdr_bokeh_blury_task* hdr_dof_postprocess::create_dispatchable() {
@@ -113,31 +118,31 @@ void hdr_dof_postprocess::resize(glm::ivec2 size) {
 	if (size.x <= 0 || size.y <= 0)
 		return;
 
-	bokeh_coc = std::make_unique<Core::Texture2D>(gli::format::FORMAT_RG32_SFLOAT_PACK32, StE::Core::Texture2D::size_type(size), 1);
+	bokeh_coc = std::make_unique<Core::Texture2D>(gli::format::FORMAT_RGBA16_SFLOAT_PACK16, StE::Core::Texture2D::size_type(size), 1);
 
-	hdr_image = std::make_unique<Core::Texture2D>(gli::format::FORMAT_RGBA32_SFLOAT_PACK32, StE::Core::Texture2D::size_type(size), 1);
-	hdr_final_image = std::make_unique<Core::Texture2D>(gli::format::FORMAT_RGBA32_SFLOAT_PACK32, StE::Core::Texture2D::size_type(size), 1);
-	hdr_bloom_image = std::make_unique<Core::Texture2D>(gli::format::FORMAT_RGBA8_UNORM_PACK8, StE::Core::Texture2D::size_type(size), 1);
+	hdr_image = std::make_unique<Core::Texture2D>(gli::format::FORMAT_RGBA16_SFLOAT_PACK16, StE::Core::Texture2D::size_type(size), 1);
+	hdr_final_image = std::make_unique<Core::Texture2D>(gli::format::FORMAT_RGBA16_SFLOAT_PACK16, StE::Core::Texture2D::size_type(size), 1);
+	hdr_bloom_image = std::make_unique<Core::Texture2D>(gli::format::FORMAT_RGBA16_SFLOAT_PACK16, StE::Core::Texture2D::size_type(size), 1);
 
 	fbo_hdr_final[0] = (*hdr_final_image)[0];
 	fbo_hdr[0] = (*hdr_image)[0];
 	fbo_hdr[1] = (*hdr_bloom_image)[0];
 	fbo_hdr[2] = (*bokeh_coc)[0];
 
-	hdr_bloom_blurx_image = std::make_unique<Core::Texture2D>(gli::format::FORMAT_RGBA8_UNORM_PACK8, StE::Core::Texture2D::size_type(size), 1);
+	hdr_bloom_blurx_image = std::make_unique<Core::Texture2D>(gli::format::FORMAT_RGBA16_SFLOAT_PACK16, StE::Core::Texture2D::size_type(size), 1);
 
 	fbo_hdr_bloom_blurx_image[0] = (*hdr_bloom_blurx_image)[0];
 
 	luminance_size = size / 4;
 
 	hdr_lums = std::make_unique<Core::Texture2D>(gli::format::FORMAT_R32_SFLOAT_PACK32, StE::Core::Texture2D::size_type(luminance_size), 1);
-	bokeh_blur_image_x = std::make_unique<Core::Texture2D>(gli::format::FORMAT_RGBA8_UNORM_PACK8, StE::Core::Texture2D::size_type(size), 1);
+	bokeh_blur_image_x = std::make_unique<Core::Texture2D>(gli::format::FORMAT_RGBA16_SFLOAT_PACK16, StE::Core::Texture2D::size_type(size), 1);
 	fbo_bokeh_blur_image[0] = (*bokeh_blur_image_x)[0];
 
 	auto bokeh_coc_handle = bokeh_coc->get_texture_handle();
 	auto hdr_handle = hdr_image->get_texture_handle();
 	auto hdr_final_handle = hdr_final_image->get_texture_handle();
-	auto hdr_final_handle_linear = hdr_final_image->get_texture_handle(linear_sampler);
+	auto hdr_final_handle_linear = hdr_final_image->get_texture_handle(*Core::Sampler::SamplerLinear());
 	auto hdr_bloom_handle = hdr_bloom_image->get_texture_handle();
 	auto hdr_bloom_blurx_handle = hdr_bloom_blurx_image->get_texture_handle();
 	auto hdr_lums_handle = hdr_lums->get_texture_handle();

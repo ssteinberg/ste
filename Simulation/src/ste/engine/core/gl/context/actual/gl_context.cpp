@@ -22,10 +22,10 @@ private:
 	ste_context_intializer() { glfwInit(); }
 
 	std::atomic<bool> initialized{ false };
-	bool init_extensions() { 
-		bool f = false; 
+	bool init_extensions() {
+		bool f = false;
 		if (initialized.compare_exchange_strong(f, true)) {
-			glewExperimental = true; 
+			glewExperimental = true;
 			return glewInit() == GLEW_OK && init_glext();
 		}
 		return true;
@@ -55,7 +55,7 @@ gl_context::gl_context(const context_settings &settings, const char *title, cons
 		ste_log_fatal() << "Not a valid 4.5 OpenGL context." << std::endl;
 		throw std::runtime_error("Not a valid 4.5 OpenGL context.");
 	}
-	
+
 	// Mandatory extensions
 	if (!this->is_extension_supported("GL_ARB_sparse_buffer")) {
 		ste_log_fatal() << "Mandatory extension \"GL_ARB_sparse_buffer\" missing." << std::endl;
@@ -154,7 +154,7 @@ gl_context::window_type gl_context::create_window(const char * title, const glm:
 	return win;
 }
 
-void gl_context::set_defaults() {	
+void gl_context::set_defaults() {
 	disable_state(context_state_name::BLEND);
 	disable_state(context_state_name::CLIP_PLANE0);
 	disable_state(context_state_name::CLIP_PLANE1);
@@ -177,10 +177,11 @@ void gl_context::set_defaults() {
 	disable_state(context_state_name::SCISSOR_TEST);
 	disable_state(context_state_name::STENCIL_TEST);
 	disable_state(context_state_name::VERTEX_PROGRAM_POINT_SIZE);
-	
+
 	enable_state(context_state_name::DITHER);
 	enable_state(context_state_name::MULTISAMPLE);
-	
+	enable_state(context_state_name::TEXTURE_CUBE_MAP_SEAMLESS);
+
 	color_mask(true, true, true, true);
 	depth_mask(true);
 	clear_color(.0f, .0f, .0f, 1.f);
@@ -204,7 +205,7 @@ void gl_context::create_default_framebuffer(gli::format format, gli::format dept
 
 void gl_context::make_current() {
 	Base::make_current();
-	
+
 	glfwMakeContextCurrent(window.get());
 }
 

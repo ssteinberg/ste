@@ -44,6 +44,7 @@ inline context_state_type context_state_type_from_name(const context_state_name 
 	case context_state_name::SAMPLE_COVERAGE:
 	case context_state_name::SCISSOR_TEST:
 	case context_state_name::STENCIL_TEST:
+	case context_state_name::TEXTURE_CUBE_MAP_SEAMLESS:
 	case context_state_name::VERTEX_PROGRAM_POINT_SIZE:
 		return context_state_type::BasicState;
 

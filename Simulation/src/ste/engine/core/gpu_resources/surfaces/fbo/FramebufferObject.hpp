@@ -13,9 +13,11 @@
 #include "layout_binding.hpp"
 
 #include "image.hpp"
+#include "texture_base.hpp"
 #include "RenderTarget.hpp"
 #include "texture_traits.hpp"
 #include "surface_constants.hpp"
+
 
 #include <memory>
 #include <tuple>
@@ -50,7 +52,7 @@ protected:
 public:
 	virtual ~fbo_attachment_point() noexcept {}
 
-	void detach() { 
+	void detach() {
 		glNamedFramebufferTexture(fbo->get_resource_id(), attachment_point, 0, 0);
 		size = { 0,0 };
 	}
@@ -72,6 +74,12 @@ public:
 		size = rt.get_image_size();
 		format = rt.get_format();
  	}
+	template <core_resource_type TexType>
+	void attach(const texture_mipmapped<TexType> &tex, unsigned level = 0) {
+		glNamedFramebufferTexture(fbo->get_resource_id(), attachment_point, tex.get_resource_id(), level);
+		size = { tex.get_image_size().x, tex.get_image_size().y };
+		format = tex.get_format();
+	}
 
 	template<typename T>
 	void operator=(const T &target) { attach(target); }
@@ -142,9 +150,9 @@ class fbo_layout_bindable_color_attachment_point : public fbo_color_attachment_p
 private:
 	friend class FramebufferObject;
 	struct emplace_helper {};
-	
+
 	using Base = fbo_color_attachment_point<A>;
-	
+
 private:
 	int index;
 
@@ -213,8 +221,8 @@ private:
 
 protected:
 	void set_color_output_binding_index(int attachment_index, const color_layout_binding &binding) {
-		int color_output = binding == layout_binding_none<fbo_color_attachment_layout_binding_type>() ? 
-			GL_NONE : 
+		int color_output = binding == layout_binding_none<fbo_color_attachment_layout_binding_type>() ?
+			GL_NONE :
 			GL_COLOR_ATTACHMENT0 + binding.binding_index();
 
 		if (draw_buffers.size() < static_cast<unsigned>(attachment_index + 1)) draw_buffers.resize(attachment_index + 1, GL_NONE);
@@ -230,8 +238,8 @@ protected:
 		}
 	}
 
-	void update_draw_buffers() { 
-		if (draw_buffers.size()) 
+	void update_draw_buffers() {
+		if (draw_buffers.size())
 			glNamedFramebufferDrawBuffers(Base::get_resource_id(), draw_buffers.size(), &draw_buffers[0]);
 	}
 
@@ -259,7 +267,7 @@ public:
 		auto status = get_status_code();
 		return Base::is_valid() && status == GL_FRAMEBUFFER_COMPLETE;
 	}
-	GLenum get_status_code() const { 
+	GLenum get_status_code() const {
 		return glCheckNamedFramebufferStatus(Base::get_resource_id(), GL_FRAMEBUFFER);
 	}
 

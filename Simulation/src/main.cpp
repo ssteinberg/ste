@@ -74,13 +74,51 @@ protected:
 	}
 };
 
+auto create_light_object(const std::shared_ptr<StE::Graphics::Scene> &scene, const glm::vec3 light_pos, const std::shared_ptr<StE::Graphics::SphericalLight> &light) {
+	std::unique_ptr<StE::Graphics::mesh<StE::Graphics::mesh_subdivion_mode::Triangles>> m = std::make_unique<StE::Graphics::mesh<StE::Graphics::mesh_subdivion_mode::Triangles>>();
+	std::vector<StE::Graphics::ObjectVertexData> vertices;
+	StE::Graphics::ObjectVertexData v;
+	v.p = { -100, -10, 0 };
+	v.uv = { 0, 0 };
+	vertices.push_back(v);
+	v.p = { 100, -10, 0 };
+	v.uv = { 1, 0 };
+	vertices.push_back(v);
+	v.p = { -50, 100, 0 };
+	v.uv = { 0, 1 };
+	vertices.push_back(v);
+	m->set_vertices(vertices);
+	m->set_indices(std::vector<std::uint32_t>{0,1,2});
+	auto light_obj = std::make_shared<StE::Graphics::Object>(std::move(m));
+
+	std::unique_ptr<StE::Graphics::Sphere> sphere = std::make_unique<StE::Graphics::Sphere>(20, 20);
+	light_obj = std::make_shared<StE::Graphics::Object>(std::move(sphere));
+
+	light_obj->set_model_matrix(glm::scale(glm::translate(glm::mat4(), light_pos), glm::vec3(light->get_radius())));
+
+	gli::texture2d light_color_tex{ gli::format::FORMAT_RGB8_UNORM_PACK8, { 1, 1 }, 1 };
+	auto c = light->get_diffuse();
+	*reinterpret_cast<glm::u8vec3*>(light_color_tex.data()) = glm::u8vec3(c.r * 255.5f, c.g * 255.5f, c.b * 255.5f);
+
+	auto light_mat = std::make_shared<StE::Graphics::Material>();
+	light_mat->set_diffuse(std::make_shared<StE::Core::Texture2D>(light_color_tex, false));
+	light_mat->set_emission(c * light->get_luminance());
+
+	light_obj->set_material_id(scene->scene_properties().materials_storage().add_material(light_mat));
+
+	scene->object_group().add_object(light_obj);
+
+	return light_obj;
+}
+
 int main() {
 	StE::Log logger("Global Illumination");
 //	logger.redirect_std_outputs();
 	ste_log_set_global_logger(&logger);
 	ste_log() << "Simulation is running";
 
-	int w = 1688, h = 950;
+	// int w = 1688, h = 950;
+	int w = 1400, h = 800;
 	constexpr float clip_far = 3000.f;
 	constexpr float clip_near = 5.f;
 
@@ -90,6 +128,8 @@ int main() {
 	StE::StEngineControl ctx(std::make_unique<gl_context>(settings, "Shlomi Steinberg - Global Illumination", glm::i32vec2{ w, h }));// , gli::FORMAT_RGBA8_UNORM));
 	ctx.set_clipping_planes(clip_near, clip_far);
 
+	StE::Text::TextManager text_manager(ctx, StE::Text::Font("Data/ArchitectsDaughter.ttf"));
+
 	using ResizeSignalConnectionType = StE::StEngineControl::framebuffer_resize_signal_type::connection_type;
 	std::shared_ptr<ResizeSignalConnectionType> resize_connection;
 	resize_connection = std::make_shared<ResizeSignalConnectionType>([&](const glm::i32vec2 &size) {
@@ -98,29 +138,36 @@ int main() {
 	});
 	ctx.signal_framebuffer_resize().connect(resize_connection);
 
-	StE::Graphics::Scene scene;
-	StE::Graphics::GIRenderer renderer(ctx, &scene);
+	auto scene = StE::Graphics::Scene::create(ctx);
+	StE::Graphics::GIRenderer renderer(ctx, scene);
 
 	std::unique_ptr<SkyDome> skydome = std::make_unique<SkyDome>(ctx);
-	std::unique_ptr<StE::Graphics::ObjectGroup> object_group = std::make_unique<StE::Graphics::ObjectGroup>(ctx, &scene.scene_properties());
 
 	ctx.set_renderer(&renderer);
-
-	// scene.add_object(object_group);
 
 	StE::Graphics::Camera camera;
 	camera.set_position({ 25.8, 549.07, -249.2 });
 	camera.lookat({ 26.4, 548.5, 248.71 });
 
-	const glm::vec3 light_pos({ -700.6, 138, -70 });
-	auto light0 = std::make_shared<StE::Graphics::SphericalLight>(2000.f, StE::Graphics::RGB({ 1.f, .57f, .16f }), light_pos, 10.f);
-	auto light1 = std::make_shared<StE::Graphics::DirectionalLight>(1.f, StE::Graphics::RGB({ 1.f, 1.f, 1.f }), glm::normalize(glm::vec3(0.1f, -2.5f, 0.1f)));
-	scene.scene_properties().lights_storage().add_light(light0);
-	scene.scene_properties().lights_storage().add_light(light1);
-	StE::Text::TextManager text_manager(ctx, StE::Text::Font("Data/ArchitectsDaughter.ttf"));
-
 
 	bool running = true;
+	bool loaded = false;
+	auto model_future = ctx.scheduler().schedule_now(StE::Resource::ModelFactory::load_model_task(ctx,
+																								  R"(Data/models/crytek-sponza/sponza.obj)",
+																								  &scene->object_group(),
+																								  &scene->scene_properties(),
+																								  2.5f));
+
+	const glm::vec3 light0_pos{ -700.6, 138, -70 };
+	const glm::vec3 light1_pos{ 200.6, 550, 145 };
+	auto light0 = std::make_shared<StE::Graphics::SphericalLight>(4000.f, StE::Graphics::RGB({ 1.f, .57f, .16f }), light0_pos, 4.f);
+	auto light1 = std::make_shared<StE::Graphics::SphericalLight>(12000.f, StE::Graphics::RGB({ 0.5f, .8f, 1.f }), light1_pos, 9.f);
+	scene->scene_properties().lights_storage().add_light(light0);
+	scene->scene_properties().lights_storage().add_light(light1);
+
+	std::shared_ptr<StE::Graphics::Object> light0_obj, light1_obj;
+	light0_obj = create_light_object(scene, light0_pos, light0);
+	light1_obj = create_light_object(scene, light1_pos, light1);
 
 	// Bind input
 	auto keyboard_listner = std::make_shared<decltype(ctx)::hid_keyboard_signal_type::connection_type>(
@@ -139,51 +186,6 @@ int main() {
 	ctx.hid_signal_keyboard().connect(keyboard_listner);
 	ctx.set_pointer_hidden(true);
 
-
-	bool loaded = false;
-	auto model_future = ctx.scheduler().schedule_now(StE::Resource::ModelFactory::load_model_task(ctx,
-																								  R"(Data/models/crytek-sponza/sponza.obj)",
-																								  &*object_group,
-																								  &scene.scene_properties(),
-																								  2.5f));
-
-	std::shared_ptr<StE::Graphics::Object> light_obj;
-	{
-		std::unique_ptr<StE::Graphics::mesh<StE::Graphics::mesh_subdivion_mode::Triangles>> m = std::make_unique<StE::Graphics::mesh<StE::Graphics::mesh_subdivion_mode::Triangles>>();
-		std::vector<StE::Graphics::ObjectVertexData> vertices;
-		StE::Graphics::ObjectVertexData v;
-		v.p = { -100, -10, 0 };
-		v.uv = { 0, 0 };
-		vertices.push_back(v);
-		v.p = { 100, -10, 0 };
-		v.uv = { 1, 0 };
-		vertices.push_back(v);
-		v.p = { -50, 100, 0 };
-		v.uv = { 0, 1 };
-		vertices.push_back(v);
-		m->set_vertices(vertices);
-		m->set_indices(std::vector<std::uint32_t>{0,1,2});
-		light_obj = std::make_shared<StE::Graphics::Object>(std::move(m));
-
-		std::unique_ptr<StE::Graphics::Sphere> sphere = std::make_unique<StE::Graphics::Sphere>(10, 10);
-		light_obj = std::make_shared<StE::Graphics::Object>(std::move(sphere));
-
-		light_obj->set_model_matrix(glm::scale(glm::translate(glm::mat4(), light_pos), glm::vec3(10, 10, 10)));
-
-		gli::texture2d light_color_tex{ gli::format::FORMAT_RGB8_UNORM_PACK8, { 1, 1 }, 1 };
-		glm::vec3 c = light0->get_diffuse();
-		*reinterpret_cast<glm::u8vec3*>(light_color_tex.data()) = glm::u8vec3(c.r * 255.5f, c.g * 255.5f, c.b * 255.5f);
-
-		auto light_mat = std::make_shared<StE::Graphics::Material>();
-		light_mat->set_diffuse(std::make_shared<StE::Core::Texture2D>(light_color_tex, false));
-		light_mat->set_emission(c * light0->get_luminance());
-
-		light_obj->set_material_id(scene.scene_properties().material_storage().add_material(light_mat));
-
-		object_group->add_object(light_obj);
-	}
-
-
 	auto title_text = text_manager.create_renderer();
 	auto footer_text = text_manager.create_renderer();
 	auto header_text = text_manager.create_renderer();
@@ -193,6 +195,7 @@ int main() {
 	renderer.add_gui_task(title_text_task);
 	renderer.add_gui_task(make_gpu_task(footer_text.get()));
 	renderer.set_deferred_rendering_enabled(false);
+
 
 	while (!loaded && running) {
 		{
@@ -225,15 +228,13 @@ int main() {
 	title_text_task = nullptr;
 
 	auto skydome_task = make_gpu_task(skydome.get());
-	auto object_group_task = make_gpu_task(object_group.get());
 
-	skydome_task->add_dependency(object_group_task);
+	skydome_task->add_dependency(scene);
 
 	renderer.add_gui_task(make_gpu_task(header_text.get()));
-	renderer.add_task(object_group_task);
+	renderer.add_task(scene);
 	renderer.add_task(skydome_task);
 	renderer.set_deferred_rendering_enabled(true);
-
 
 	float time = 0;
 	while (running) {
@@ -259,18 +260,17 @@ int main() {
 			camera.pitch_and_yaw(-diff_v.y, diff_v.x);
 		}
 
-
 		auto mv = camera.view_matrix();
 		auto mvnt = camera.view_matrix_no_translation();
 
 		float angle = time * glm::pi<float>() / 2.5f;
-		glm::vec3 lp = light_pos + glm::vec3(glm::sin(angle) * 3, 0, glm::cos(angle)) * 135.f;
+		glm::vec3 lp = light0_pos + glm::vec3(glm::sin(angle) * 3, 0, glm::cos(angle)) * 115.f;
 
 		light0->set_position(lp);
 
-		light_obj->set_model_matrix(glm::scale(glm::translate(glm::mat4(), lp), glm::vec3(light0->get_radius() / 2.f)));
-		object_group->set_model_matrix(mv);
-		renderer.update_model_matrix_from_camera(camera);
+		light0_obj->set_model_matrix(glm::scale(glm::translate(glm::mat4(), lp), glm::vec3(light0->get_radius() / 2.f)));
+		scene->object_group().set_model_matrix(mv);
+		renderer.set_model_matrix(mv);
 		skydome->set_model_matrix(mvnt);
 
 		{

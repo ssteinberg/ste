@@ -226,7 +226,10 @@ public:
 
 		if (!sop.best_solution ||
 			(best_solution && best_solution.get().length < sop.best_solution.get().length)) {
-			ste_log() << "SOP - Found path of length " << std::to_string(best_solution.get().length) << std::endl;
+			std::string path_str;
+			for (auto &p : best_solution.get().route)
+				path_str += p.first->get_name() + " -> ";
+			ste_log() << "SOP - Found path of length " << std::to_string(best_solution.get().length) << ": " << path_str << std::endl;
 
 			sop.best_solution = std::move(best_solution);
 

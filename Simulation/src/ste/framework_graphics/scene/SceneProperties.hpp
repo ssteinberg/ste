@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -16,15 +16,10 @@ private:
 	light_storage lights;
 
 public:
-	material_storage& material_storage() { return materials; }
+	material_storage& materials_storage() { return materials; }
+	const material_storage& materials_storage() const { return materials; }
 	light_storage& lights_storage() { return lights; }
-
-	void pre_draw() {
-		lights.update_storage();
-	}
-	void post_draw() {
-		lights.lock_ranges();
-	}
+	const light_storage& lights_storage() const { return lights; }
 };
 
 }

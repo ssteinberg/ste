@@ -6,6 +6,8 @@
 #include "stdafx.hpp"
 #include "StEngineControl.hpp"
 
+#include "signal.hpp"
+
 #include "gpu_task.hpp"
 #include "Quad.hpp"
 
@@ -34,9 +36,7 @@ class hdr_bloom_blury_task;
 class hdr_bokeh_blurx_task;
 class hdr_bokeh_blury_task;
 
-class hdr_dof_postprocess : public gpu_task {
-	using Base = gpu_task;
-
+class hdr_dof_postprocess {
 	friend class hdr_compute_minmax_task;
 	friend class hdr_create_histogram_task;
 	friend class hdr_compute_histogram_sums_task;
@@ -51,10 +51,12 @@ private:
 
 	struct hdr_bokeh_parameters {
 		std::int32_t lum_min, lum_max;
-		float focus;
+		float focus, _unused;
 	};
 
 private:
+	std::shared_ptr<const gpu_task> task;
+
 	std::unique_ptr<hdr_compute_minmax_task> compute_minmax_task;
 	std::unique_ptr<hdr_create_histogram_task> create_histogram_task;
 	std::unique_ptr<hdr_compute_histogram_sums_task> compute_histogram_sums_task;
@@ -63,8 +65,6 @@ private:
 	std::unique_ptr<hdr_bloom_blury_task> bloom_blury_task;
 	std::unique_ptr<hdr_bokeh_blurx_task> bokeh_blurx_task;
 	std::unique_ptr<hdr_bokeh_blury_task> bokeh_blury_task;
-
-	std::shared_ptr<ResizeSignalConnectionType> resize_connection;
 
 	std::shared_ptr<Core::GLSLProgram> hdr_compute_minmax;
 	std::shared_ptr<Core::GLSLProgram> hdr_create_histogram;
@@ -76,7 +76,6 @@ private:
 	std::shared_ptr<Core::GLSLProgram> bokeh_blury;
 
 	Core::Sampler hdr_vision_properties_sampler;
-	Core::Sampler linear_sampler;
 
 	std::unique_ptr<Core::Texture1D> hdr_vision_properties_texture;
 	Core::texture_handle hdr_vision_properties_texture_handle;
@@ -108,6 +107,9 @@ private:
 	std::array<std::uint32_t, 4> storage_buffers;
 
 private:
+	std::shared_ptr<ResizeSignalConnectionType> resize_connection;
+
+private:
 	std::vector<std::shared_ptr<const gpu_task>> create_sub_tasks();
 	hdr_bokeh_blury_task* create_dispatchable();
 
@@ -120,6 +122,8 @@ public:
 	auto get_input_fbo() const { return &fbo_hdr_final; }
 
 	void resize(glm::ivec2 size);
+
+	std::shared_ptr<const gpu_task> get_task() const;
 };
 
 }

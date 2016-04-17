@@ -32,15 +32,15 @@ template <core_resource_type type> struct texture_is_array : std::false_type {};
 template <> struct texture_is_array<core_resource_type::Texture1DArray> : std::true_type{};
 template <> struct texture_is_array<core_resource_type::Texture2DArray> : std::true_type{};
 template <> struct texture_is_array<core_resource_type::Texture2DMSArray> : std::true_type{};
-template <> struct texture_is_array<core_resource_type::TextureCubeMap> : std::true_type {};
+template <> struct texture_is_array<core_resource_type::TextureCubeMap> : std::true_type{};
 template <> struct texture_is_array<core_resource_type::TextureCubeMapArray> : std::true_type {};
 
 template <core_resource_type type> struct texture_is_multisampled : std::false_type {};
 template <> struct texture_is_multisampled<core_resource_type::Texture2DMS> : std::true_type{};
 template <> struct texture_is_multisampled<core_resource_type::Texture2DMSArray> : std::true_type{};
 
-template <core_resource_type type> struct texture_has_mipmaps { 
-	static constexpr bool value = !texture_is_multisampled<type>::value; 
+template <core_resource_type type> struct texture_has_mipmaps {
+	static constexpr bool value = !texture_is_multisampled<type>::value;
 };
 
 template <core_resource_type type> struct texture_has_samples_or_levels { static constexpr bool value = texture_is_multisampled<type>::value || texture_has_mipmaps<type>::value; };

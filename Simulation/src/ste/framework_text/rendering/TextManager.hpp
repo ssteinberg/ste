@@ -65,7 +65,7 @@ public:
 
 		using vbo_type = Core::VertexBufferObject<glyph_point, glyph_point::descriptor, decltype(vbo)::usage>;
 
-		mutable range<> range_in_use;
+		mutable range<> range_in_use{ 0, 0 };
 
 	public:
 		text_renderable(TextManager *tr);

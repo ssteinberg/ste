@@ -12,6 +12,8 @@
 #include "texture_enums.hpp"
 #include "texture_traits.hpp"
 
+#include <memory>
+
 namespace StE {
 namespace Core {
 
@@ -108,20 +110,27 @@ public:
 		set_wrap_s(wrap_s);
 		set_wrap_t(wrap_t);
 	}
+	Sampler(TextureFiltering mag_filter, TextureFiltering min_filter, TextureWrapMode wrap_s, TextureWrapMode wrap_t, float anisotropic_filtering_max) {
+		set_mag_filter(mag_filter);
+		set_min_filter(min_filter);
+		set_wrap_s(wrap_s);
+		set_wrap_t(wrap_t);
+		set_anisotropic_filter(anisotropic_filtering_max);
+	}
 
 	void bind() const { bind(LayoutLocationType(0)); }
 	void unbind() const { unbind(LayoutLocationType(0)); }
 	void bind(const LayoutLocationType &sampler) const final override { Base::bind(sampler); };
 	void unbind(const LayoutLocationType &sampler) const final override { Base::unbind(sampler); };
 
-	virtual void set_mag_filter(TextureFiltering filter) { 
-		descriptor.mag_filter = filter; 
-		if (filter!= TextureFiltering::None) 
-			glSamplerParameteri(get_resource_id(), GL_TEXTURE_MAG_FILTER, static_cast<GLenum>(filter)); 
+	virtual void set_mag_filter(TextureFiltering filter) {
+		descriptor.mag_filter = filter;
+		if (filter!= TextureFiltering::None)
+			glSamplerParameteri(get_resource_id(), GL_TEXTURE_MAG_FILTER, static_cast<GLenum>(filter));
 	}
 	virtual void set_min_filter(TextureFiltering filter) {
 		descriptor.min_filter = filter;
-		if (filter != TextureFiltering::None)  
+		if (filter != TextureFiltering::None)
 			glSamplerParameteri(get_resource_id(), GL_TEXTURE_MIN_FILTER, static_cast<GLenum>(filter));
 	}
 	virtual void set_anisotropic_filter(float anis) { descriptor.anisotropy = std::max(1.0f,std::min(16.0f,anis)); glSamplerParameterf(get_resource_id(), GL_TEXTURE_MAX_ANISOTROPY_EXT, descriptor.anisotropy); }
@@ -131,7 +140,7 @@ public:
 
 	void set_wrap_s(TextureWrapMode wrap_mode) {
 		descriptor.wrap_s = wrap_mode;
-		if (wrap_mode != TextureWrapMode::None) 
+		if (wrap_mode != TextureWrapMode::None)
 			glSamplerParameteri(get_resource_id(), GL_TEXTURE_WRAP_S, static_cast<GLenum>(wrap_mode));
 	}
 	void set_wrap_t(TextureWrapMode wrap_mode) {
@@ -149,6 +158,23 @@ public:
 	TextureWrapMode get_wrap_r() const { return descriptor.wrap_r; }
 
 	core_resource_type resource_type() const override { return core_resource_type::SamplingDescriptor; }
+
+
+private:
+	static std::unique_ptr<Sampler> sampler_nearest;
+	static std::unique_ptr<Sampler> sampler_linear;
+	static std::unique_ptr<Sampler> sampler_anisotropic_linear;
+	static std::unique_ptr<Sampler> sampler_nearest_clamp;
+	static std::unique_ptr<Sampler> sampler_linear_clamp;
+	static std::unique_ptr<Sampler> sampler_anisotropic_linear_clamp;
+
+public:
+	static Sampler *SamplerNearest();
+	static Sampler *SamplerLinear();
+	static Sampler *SamplerAnisotropicLinear();
+	static Sampler *SamplerNearestClamp();
+	static Sampler *SamplerLinearClamp();
+	static Sampler *SamplerAnisotropicLinearClamp();
 };
 
 class SamplerMipmapped : public Sampler {
@@ -177,6 +203,23 @@ public:
 			glSamplerParameteri(get_resource_id(), GL_TEXTURE_MIN_FILTER, f);
 	}
 	TextureFiltering get_mipmap_filter() const { return descriptor.mipmap_filter; }
+
+
+private:
+	static std::unique_ptr<SamplerMipmapped> mipmapped_sampler_nearest;
+	static std::unique_ptr<SamplerMipmapped> mipmapped_sampler_linear;
+	static std::unique_ptr<SamplerMipmapped> mipmapped_sampler_anisotropic_linear;
+	static std::unique_ptr<SamplerMipmapped> mipmapped_sampler_nearest_clamp;
+	static std::unique_ptr<SamplerMipmapped> mipmapped_sampler_linear_clamp;
+	static std::unique_ptr<SamplerMipmapped> mipmapped_sampler_anisotropic_linear_clamp;
+
+public:
+	static SamplerMipmapped *MipmappedSamplerNearest();
+	static SamplerMipmapped *MipmappedSamplerLinear();
+	static SamplerMipmapped *MipmappedSamplerAnisotropicLinear();
+	static SamplerMipmapped *MipmappedSamplerNearestClamp();
+	static SamplerMipmapped *MipmappedSamplerLinearClamp();
+	static SamplerMipmapped *MipmappedSamplerAnisotropicLinearClamp();
 };
 
 }
