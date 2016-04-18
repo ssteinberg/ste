@@ -169,5 +169,6 @@ void hdr_dof_postprocess::resize(glm::ivec2 size) {
 
 	hdr_compute_histogram_sums->set_uniform("hdr_lum_resolution", static_cast<std::uint32_t>(luminance_size.x * luminance_size.y));
 
+	hdr_bokeh_param_buffer << *hdr_bokeh_param_buffer_eraser;
 	hdr_bokeh_param_buffer_prev << *hdr_bokeh_param_buffer_eraser;
 }
