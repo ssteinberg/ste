@@ -5,85 +5,24 @@
 #include "AttributedString.hpp"
 #include "Log.hpp"
 
-#include "thread_priority.hpp"
-
 #include "tuple_call.hpp"
 
 #include <iostream>
 #include <algorithm>
 #include <functional>
-
 #include <iostream>
-#include <thread>
 
+#include <chrono>
 #include <immintrin.h>
 
 using namespace StE::Graphics;
 
 gpu_task_dispatch_queue::gpu_task_dispatch_queue() : root(std::make_shared<detail::gpu_task_root>()),
-													 sop(*this),
-													 optimizer_thread([this]() {
-														auto flag = interruptible_thread::interruption_flag;
-
-														for (;;) {
-															if (flag->is_set()) return;
-
-															if (sop.get_no_improvements_counter() >= max_optimizer_runs_without_improvement)
-																ste_log() << "SOP optimization ran for " << max_optimizer_runs_without_improvement << " iterations without improvement. Stopping." << std::endl;
-
-															std::unique_lock<std::mutex> l(this->optimizer_notification_mutex);
-															this->optimizer_notifier.wait(l, [&]() {
-																return flag->is_set() || sop.get_no_improvements_counter() < max_optimizer_runs_without_improvement;
-															});
-
-															if (flag->is_set()) return;
-
-															std::unique_lock<std::mutex> l2(this->optimizer_mutex);
-
-															auto rdts_stamp = _rdtsc();
-															auto optimizer_guard = current_optimizer.emplace_and_acquire(std::memory_order_release, this->sop, root.get(), optimizer_iterations);
-															(*optimizer_guard)();
-															auto cycles = _rdtsc() - rdts_stamp;
-
-															ste_log() << "Ran SOP optimization pass of " << optimizer_iterations << " iterations. (" << std::to_string(cycles) << " cycles)" << std::endl;
-														}
-													}) {
+													 sop(*this) {
 	Base::add_vertex(root);
-
-	thread_set_priority_low(&optimizer_thread.get_thread());
 }
 
-gpu_task_dispatch_queue::~gpu_task_dispatch_queue() noexcept {
-	optimizer_thread.interrupt();
-	optimizer_notifier.notify_one();
-	auto mg = interrupt_optimizer_and_acquire_mutex();
-
-	mg.unlock();
-	if (optimizer_thread.joinable())
-		optimizer_thread.join();
-}
-
-std::unique_lock<std::mutex> gpu_task_dispatch_queue::interrupt_optimizer_and_acquire_mutex() {
-	std::unique_lock<std::mutex> ul(optimizer_mutex, std::defer_lock);
-
-	while (!ul.try_lock()) {
-		auto optimizer_guard = current_optimizer.acquire(std::memory_order_acquire);
-		if (optimizer_guard.is_valid())
-			optimizer_guard->notify_stop();
-		std::this_thread::yield();
-	}
-
-	return ul;
-}
-
-void gpu_task_dispatch_queue::clear_sop_solution_unlock_and_notify(std::unique_lock<std::mutex> &&ul) {
-	sop.clear_best_solution();
-	// Generate a new solution
-	sop.optimizer(root.get(), 1)();
-
-	ul.unlock();
-	optimizer_notifier.notify_one();
-}
+gpu_task_dispatch_queue::~gpu_task_dispatch_queue() noexcept {}
 
 void gpu_task_dispatch_queue::build_task_transitions(const TaskPtr &task) {
 	for (auto &t : Base::get_vertices()) {
@@ -104,16 +43,21 @@ void gpu_task_dispatch_queue::insert_task(const std::shared_ptr<TaskT> &task, bo
 
 	Base::erase_all_vertex_edges(task.get());
 	Base::add_vertex(task);
-
 	build_task_transitions(task);
 
+	bool dep_inserted = false;
 	for (auto &t : task->get_dependencies()) {
 		assert(t != task);
 
-		if (Base::get_vertices().find(t) == Base::get_vertices().end())
+		if (Base::get_vertices().find(t) == Base::get_vertices().end()) {
+			dep_inserted = true;
 			insert_task(t, false);
+		}
 		t->requisite_for.insert(task.get());
 	}
+
+	if (!dep_inserted)
+		sop.clear_best_solution();
 }
 
 void gpu_task_dispatch_queue::erase_task(const TaskPtr &task, bool force) {
@@ -133,11 +77,17 @@ void gpu_task_dispatch_queue::erase_task(const TaskPtr &task, bool force) {
 
 	Base::erase_vertex(task);
 
+	bool dep_erased = false;
 	for (auto &t : task->dependencies) {
 		t->requisite_for.erase(task.get());
-		if (!t->inserted_into_queue && !t->requisite_for.size())
+		if (!t->inserted_into_queue && !t->requisite_for.size()) {
+			dep_erased = true;
 			erase_task(t, false);
+		}
 	}
+
+	if (!dep_erased)
+		sop.clear_best_solution();
 }
 
 void gpu_task_dispatch_queue::erase_all() {
@@ -152,10 +102,13 @@ void gpu_task_dispatch_queue::add_dep(const TaskPtr &task, const TaskPtr &dep) {
 	for (auto &s : task->sub_tasks)
 		add_dep(s, dep);
 
-	if (Base::get_vertices().find(dep) == Base::get_vertices().end())
+	if (Base::get_vertices().find(dep) == Base::get_vertices().end()) {
 		insert_task(dep, false);
-	else
+	}
+	else {
 		Base::erase_edge(task.get(), dep.get());
+		sop.clear_best_solution();
+	}
 
 	dep->requisite_for.insert(task.get());
 }
@@ -172,33 +125,36 @@ void gpu_task_dispatch_queue::delete_dep(const TaskPtr &task, const TaskPtr &dep
 		Base::add_edge(gpu_state_transition::transition_function(task.get(), dep.get()));
 }
 
-bool gpu_task_dispatch_queue::update_modified_tasks() {
-	bool modified = false;
-	std::unique_ptr<modify_task_log> l;
-	while ((l = modify_queue.pop()) != nullptr) {
-		(*l)();
-		modified = true;
+void gpu_task_dispatch_queue::run_sop_iteration() {
+	auto start_time = std::chrono::high_resolution_clock::now();
+	auto rdts_stamp = _rdtsc();
+	sop.optimizer(root.get(), 1)();
+	auto cycles = _rdtsc() - rdts_stamp;
+	auto ms = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start_time).count();
+
+#ifdef DEBUG
+	static int i = 0;
+	if ((++i % 60) == 0)
+		ste_log() << "GPU dispatch: SOP optimization iteration completed in " << std::to_string(cycles) << " cycles (" << std::to_string(ms) << "ms)" << std::endl;
+#endif
+}
+
+void gpu_task_dispatch_queue::dispatch_sop_solution() {
+	if (!sop.run_solution()) {
+		assert(false);
+		ste_log_error() << "GPU dispatch: No SOP solution available during dispatch!" << std::endl;
+		return;
 	}
-	return modified;
+}
+
+void gpu_task_dispatch_queue::update_modified_tasks() {
+	std::unique_ptr<modify_task_log> l;
+	while ((l = modify_queue.pop()) != nullptr)
+		(*l)();
 }
 
 void gpu_task_dispatch_queue::dispatch() {
-	if (!modify_queue.is_empty_hint()) {
-		auto mg = interrupt_optimizer_and_acquire_mutex();
-		update_modified_tasks();
-		clear_sop_solution_unlock_and_notify(std::move(mg));
-	}
-	else if (!current_optimizer.is_valid_hint(std::memory_order_relaxed) &&
-			 sop.get_no_improvements_counter() < max_optimizer_runs_without_improvement)
-		optimizer_notifier.notify_one();
-
-	auto solution = sop.get_solution();
-	if (!solution) {
-		assert(false);
-		ste_log_error() << "No solution available during dispatch!" << std::endl;
-		return;
-	}
-
-	for (auto &p : solution.get().route)
-		p.second->dispatch();
+	update_modified_tasks();
+	run_sop_iteration();
+	dispatch_sop_solution();
 }

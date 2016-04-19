@@ -80,9 +80,6 @@ private:
 		useable_edges.reserve(root->get_outgoing_edges().size());
 
 		for (auto &e : root->get_outgoing_edges()) {
-			if (stop_flag.load(std::memory_order_acquire) == true)
-				return decltype(useable_edges)();
-
 			auto to = reinterpret_cast<const V*>(e->get_to());
 			if (to->visited)
 				continue;
@@ -113,9 +110,6 @@ private:
 			total_weight += w;
 		}
 
-		if (stop_flag.load(std::memory_order_acquire) == true)
-			return std::pair<const V*, const E*>(nullptr, nullptr);
-
 		float r = sop.distribution(sop.rand_gen) * total_weight;
 
 		float accum = .0f;
@@ -131,10 +125,10 @@ private:
 		return std::pair<const V*, const E*>(nullptr, nullptr);
 	}
 
-	void append_pair_to_solution(typename SOP::sequential_ordering_problem_solution &solution, typename SOP::sequential_ordering_problem_solution::route_type::value_type &&pair) {
-		solution.length += pair.second->get_weight();
-		SOP::consume_trail(pair.second);
-		solution.route.push_back(std::move(pair));
+	void add_edge_to_solution(typename SOP::sequential_ordering_problem_solution &solution, typename SOP::sequential_ordering_problem_solution::route_type::value_type &&edge) {
+		solution.length += edge->get_weight();
+		SOP::consume_trail(edge);
+		solution.route.push_back(std::move(edge));
 	}
 
 	optional<typename SOP::sequential_ordering_problem_solution> sop_iterate(const V *root) {
@@ -150,9 +144,6 @@ private:
 		update_nodes_deps(node);
 
 		while (order.size() < sop.g.get_vertices().size() - 1) {
-			if (stop_flag.load(std::memory_order_acquire) == true)
-				return none;
-
 			auto next_pair = next_pair_from_graph(node);
 			if (!next_pair.first)
 				return none;
@@ -160,16 +151,13 @@ private:
 			node = next_pair.first;
 			update_nodes_deps(node);
 
-			append_pair_to_solution(solution, std::move(next_pair));
+			add_edge_to_solution(solution, std::move(next_pair.second));
 		}
 
 		if (node != root) {
 			// Connect last node to root to complete Hamiltonian cycle
 			const E* last_edge = nullptr;
 			for (auto &e : node->get_outgoing_edges()) {
-				if (stop_flag.load(std::memory_order_acquire) == true)
-					return none;
-
 				auto to = reinterpret_cast<const V*>(e->get_to());
 				if (to == root) {
 					last_edge = reinterpret_cast<const E*>(e.get());
@@ -179,7 +167,7 @@ private:
 			assert(last_edge && "Can not complete cycle");
 			if (!last_edge)
 				return none;
-			append_pair_to_solution(solution, std::make_pair(root, last_edge));
+			add_edge_to_solution(solution, std::move(last_edge));
 		}
 
 		return solution;
@@ -187,8 +175,8 @@ private:
 
 	void update_trail_for_choosen_solution(const typename SOP::sequential_ordering_problem_solution &solution) {
 		float trail = 1.f / static_cast<float>(solution.length);
-		for (auto &p : solution.route) {
-			SOP::add_trail(p.second, trail);
+		for (auto p : solution.route) {
+			SOP::add_trail(p, trail);
 		}
 	}
 
@@ -196,8 +184,6 @@ private:
 	SOP &sop;
 	const V * const root;
 	const int iterations;
-
-	mutable std::atomic<bool> stop_flag{ false };
 
 public:
 	sop_optimizer() = delete;
@@ -215,9 +201,6 @@ public:
 		for (int i = 0; i < iterations; ++i) {
 			auto solution = sop_iterate(root);
 
-			if (stop_flag.load(std::memory_order_acquire) == true)
-				return;
-
 			if (!solution)
 				continue;
 			if (!best_solution || solution.get().length < best_solution.get().length)
@@ -226,23 +209,17 @@ public:
 
 		if (!sop.best_solution ||
 			(best_solution && best_solution.get().length < sop.best_solution.get().length)) {
+#ifdef DEBUG
 			std::string path_str;
-			for (auto &p : best_solution.get().route)
-				path_str += p.first->get_name() + " -> ";
+			for (auto p : best_solution.get().route)
+				path_str += p->get_from()->get_name() + " -> ";
 			ste_log() << "SOP - Found path of length " << std::to_string(best_solution.get().length) << ": " << path_str << std::endl;
+#endif
 
 			sop.best_solution = std::move(best_solution);
 
 			update_trail_for_choosen_solution(sop.best_solution.get());
-			sop.no_improvements_counter = 0;
 		}
-		else {
-			sop.no_improvements_counter += iterations;
-		}
-	}
-
-	void notify_stop() const {
-		stop_flag.store(true, std::memory_order_release);
 	}
 };
 
