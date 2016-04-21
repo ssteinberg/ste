@@ -13,6 +13,7 @@
 
 namespace StE {
 namespace Core {
+namespace GL {
 
 class context_state {
 public:
@@ -24,13 +25,11 @@ public:
 	};
 
 private:
-	std::size_t counter{ 0 };
 	optional<state_type> state;
 	std::vector<state_type> stack;
 
 public:
 	context_state() = default;
-	context_state(std::size_t c) : counter(c) {}
 	context_state(context_state &&) = default;
 	context_state &operator=(context_state &&) = default;
 	context_state(const context_state &) = default;
@@ -56,9 +55,19 @@ public:
 		return state.get().value.compare_weak(t);
 	}
 
+	bool compare(const state_type &s) const {
+		if (!exists())
+			return false;
+		return state.get().value == s.value;
+	}
+
 	template <typename... Ts, typename... Args>
 	void set(state_type::StateSetterFunc &&f, const std::tuple<Ts...> &v, const std::tuple<Args...> &args) {
 		state = state_type{ tuple_type_erasure{ v }, tuple_type_erasure{ args }, std::move(f) };
+	}
+
+	void set(const state_type &s) {
+		state = s;
 	}
 
 	void push() {
@@ -76,6 +85,10 @@ public:
 			return state;
 		}
 		return none;
+	}
+
+	auto stack_size() const {
+		return stack.size();
 	}
 
 	template <typename... Ts>
@@ -98,11 +111,8 @@ public:
 		assert(exists() && "State must be set before calling get_state");
 		return state.get();
 	}
-
-	auto get_counter() const {
-		return counter;
-	}
 };
 
+}
 }
 }

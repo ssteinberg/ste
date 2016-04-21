@@ -12,6 +12,7 @@
 
 namespace StE {
 namespace Core {
+namespace GL {
 
 class gl_utils {
 private:
@@ -27,5 +28,6 @@ public:
 	static constexpr GLenum translate_type(const core_resource_type &type) { return static_cast<GLenum>(type); }
 };
 
+}
 }
 }

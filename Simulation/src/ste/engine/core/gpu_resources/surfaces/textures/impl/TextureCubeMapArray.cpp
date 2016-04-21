@@ -25,7 +25,7 @@ bool TextureCubeMapArray::upload_layer(int layer, const gli::texture_cube &textu
 }
 
 bool TextureCubeMapArray::upload_face(CubeMapFace face, int layer, const gli::texture2d &texture) {
-	gli::gl::format const format = gl_utils::translate_format(texture.format(), texture.swizzles());
+	gli::gl::format const format = GL::gl_utils::translate_format(texture.format(), texture.swizzles());
 
 	// Index of max level
 	int levels = std::min(this->levels, static_cast<decltype(this->levels)>(texture.levels()));

@@ -4,6 +4,7 @@
 #pragma once
 
 #include "stdafx.hpp"
+#include "graph_vertex.hpp"
 #include "graph_edge.hpp"
 
 namespace StE {
@@ -26,7 +27,7 @@ class sop_edge : public Graph::edge {
 	friend class sequential_ordering_problem;
 	template <typename G>
 	friend class sop_optimizer;
-	
+
 	static constexpr float t0 = .0f;
 
 private:
@@ -36,11 +37,19 @@ private:
 	}
 	mutable float trail{ t0 };
 
+protected:
+	virtual void update_weight_and_transition() const = 0;
+	using Base::set_weight;
+
 public:
-	using Base::Base;
+	sop_edge(const Graph::vertex *from, const Graph::vertex *to) : Base(1, from, to) {}
 	virtual ~sop_edge() noexcept {}
+	sop_edge(const sop_edge &) = default;
+	sop_edge(sop_edge &&) = default;
+	sop_edge &operator=(const sop_edge &) = default;
+	sop_edge &operator=(sop_edge &&) = default;
 };
-	
+
 }
 }
 }

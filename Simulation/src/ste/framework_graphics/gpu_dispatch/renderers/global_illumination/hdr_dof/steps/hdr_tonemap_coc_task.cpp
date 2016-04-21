@@ -14,6 +14,6 @@ void hdr_tonemap_coc_task::set_context_state() const {
 }
 
 void hdr_tonemap_coc_task::dispatch() const {
-	gl_current_context::get()->memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT);
-	gl_current_context::get()->draw_arrays(GL_TRIANGLE_STRIP, 0, 4);
+	GL::gl_current_context::get()->memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT);
+	GL::gl_current_context::get()->draw_arrays(GL_TRIANGLE_STRIP, 0, 4);
 }

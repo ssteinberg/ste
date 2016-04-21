@@ -61,7 +61,7 @@ public:
 
 protected:
 	void set_context_state() const override final {
-		gl_current_context::get()->enable_depth_test();
+		GL::gl_current_context::get()->enable_depth_test();
 
 		0_tex_unit = *stars_tex;
 		meshptr->vao()->bind();
@@ -70,7 +70,7 @@ protected:
 	}
 
 	void dispatch() const override final {
-		gl_current_context::get()->draw_elements(GL_TRIANGLES, meshptr->ebo()->size(), GL_UNSIGNED_INT, nullptr);
+		GL::gl_current_context::get()->draw_elements(GL_TRIANGLES, meshptr->ebo()->size(), GL_UNSIGNED_INT, nullptr);
 	}
 };
 
@@ -123,10 +123,10 @@ int main() {
 	constexpr float clip_far = 3000.f;
 	constexpr float clip_near = 5.f;
 
-	gl_context::context_settings settings;
+	GL::gl_context::context_settings settings;
 	settings.vsync = false;
 	settings.fs = false;
-	StE::StEngineControl ctx(std::make_unique<gl_context>(settings, "Shlomi Steinberg - Global Illumination", glm::i32vec2{ w, h }));// , gli::FORMAT_RGBA8_UNORM));
+	StE::StEngineControl ctx(std::make_unique<GL::gl_context>(settings, "Shlomi Steinberg - Global Illumination", glm::i32vec2{ w, h }));// , gli::FORMAT_RGBA8_UNORM));
 	ctx.set_clipping_planes(clip_near, clip_far);
 
 	StE::Text::TextManager text_manager(ctx, StE::Text::Font("Data/ArchitectsDaughter.ttf"));

@@ -19,7 +19,7 @@
 
 namespace StE {
 namespace Core {
-    
+
 template <core_resource_type type>
 class image_container;
 
@@ -38,10 +38,10 @@ class ImageBinder {
 public:
 	static void bind(GenericResource::type id, const image_layout_binding &unit, int level, bool layered, int layer, ImageAccessMode access, gli::format format) {
 		auto swizzle = swizzles_rgba;
-		gl_current_context::get()->bind_image_texture(unit, id, level, layered, layer, static_cast<GLenum>(access), gl_utils::translate_format(format, swizzle).Internal);
+		GL::gl_current_context::get()->bind_image_texture(unit, id, level, layered, layer, static_cast<GLenum>(access), GL::gl_utils::translate_format(format, swizzle).Internal);
 	}
 	static void unbind(const image_layout_binding &unit, int level, bool layered, int layer, ImageAccessMode access, gli::format format) {
-		gl_current_context::get()->bind_image_texture(unit, 0, 0, 0, 0, 0, 0);
+		GL::gl_current_context::get()->bind_image_texture(unit, 0, 0, 0, 0, 0, 0);
 	}
 };
 
@@ -78,7 +78,7 @@ public:
 
 	auto get_image_handle() const {
 		auto swizzle = swizzles_rgba;
-		return image_handle(glGetImageHandleARB(get_resource_id(), level, layers > 1 ? true : false, layer, gl_utils::translate_format(format, swizzle).Internal), access);
+		return image_handle(glGetImageHandleARB(get_resource_id(), level, layers > 1 ? true : false, layer, GL::gl_utils::translate_format(format, swizzle).Internal), access);
 	}
 
 	void set_access(ImageAccessMode access) { this->access = access; }
@@ -95,7 +95,7 @@ template <core_resource_type type>
 class image : public image_layout_bindable<type>, virtual public RenderTargetGeneric {
 public:
 	using size_type = glm::ivec2;
-    
+
 private:
 	friend class image_container<type>;
 
@@ -123,7 +123,7 @@ template <core_resource_type type>
 class image_container : public image_layout_bindable<type> {
 public:
 	using size_type = glm::ivec2;
-    
+
 private:
 	using Base = image_layout_bindable<type>;
 

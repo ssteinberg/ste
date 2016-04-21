@@ -13,7 +13,7 @@
 #include <functional>
 #include <stdexcept>
 
-using namespace StE::Core;
+using namespace StE::Core::GL;
 
 class ste_context_intializer {
 private:
@@ -155,33 +155,6 @@ gl_context::window_type gl_context::create_window(const char * title, const glm:
 }
 
 void gl_context::set_defaults() {
-	disable_state(context_state_name::BLEND);
-	disable_state(context_state_name::CLIP_PLANE0);
-	disable_state(context_state_name::CLIP_PLANE1);
-	disable_state(context_state_name::CLIP_PLANE2);
-	disable_state(context_state_name::CLIP_PLANE3);
-	disable_state(context_state_name::CLIP_PLANE4);
-	disable_state(context_state_name::CLIP_PLANE5);
-	disable_state(context_state_name::COLOR_LOGIC_OP);
-	disable_state(context_state_name::CULL_FACE);
-	disable_state(context_state_name::DEPTH_TEST);
-	disable_state(context_state_name::FRAMEBUFFER_SRGB);
-	disable_state(context_state_name::LINE_SMOOTH);
-	disable_state(context_state_name::POLYGON_OFFSET_FILL);
-	disable_state(context_state_name::POLYGON_OFFSET_LINE);
-	disable_state(context_state_name::POLYGON_OFFSET_POINT);
-	disable_state(context_state_name::POLYGON_SMOOTH);
-	disable_state(context_state_name::SAMPLE_ALPHA_TO_COVERAGE);
-	disable_state(context_state_name::SAMPLE_ALPHA_TO_ONE);
-	disable_state(context_state_name::SAMPLE_COVERAGE);
-	disable_state(context_state_name::SCISSOR_TEST);
-	disable_state(context_state_name::STENCIL_TEST);
-	disable_state(context_state_name::VERTEX_PROGRAM_POINT_SIZE);
-
-	enable_state(context_state_name::DITHER);
-	enable_state(context_state_name::MULTISAMPLE);
-	enable_state(context_state_name::TEXTURE_CUBE_MAP_SEAMLESS);
-
 	color_mask(true, true, true, true);
 	depth_mask(true);
 	clear_color(.0f, .0f, .0f, 1.f);
@@ -200,7 +173,7 @@ void gl_context::create_default_framebuffer(gli::format format, gli::format dept
 	viewport(0, 0, ret.x, ret.y);
 	default_fb = std::make_unique<context_framebuffer>(ret, format);
 	if (srgb)
-		enable_state(context_state_name::FRAMEBUFFER_SRGB);
+		enable_state(BasicStateName::FRAMEBUFFER_SRGB);
 }
 
 void gl_context::make_current() {

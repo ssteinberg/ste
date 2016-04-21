@@ -27,9 +27,11 @@ namespace Core {
 
 class context_framebuffer;
 
+namespace GL {
+
 class gl_context : public gl_generic_context {
 	using Base = gl_generic_context;
-	
+
 private:
 	friend class StE::StEngineControl;
 
@@ -65,7 +67,7 @@ public:
 	gl_context(const gl_context &c) = delete;
 	gl_context& operator=(gl_context &&m) = delete;
 	gl_context& operator=(const gl_context &c) = delete;
-	
+
 	bool is_extension_supported(const char *ext) const { return glfwExtensionSupported(ext); }
 
 	int meminfo_total_dedicated_vram() const { int ret; glGetIntegerv(GL_GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX, &ret); return ret; }
@@ -82,15 +84,18 @@ public:
 
 }
 }
+}
 
 #include "context_framebuffer.hpp"
 
 namespace StE {
 namespace Core {
+namespace GL {
 
 gli::format inline gl_context::framebuffer_format() const { return default_fb->front_buffer().get_attachment_format(); }
 glm::ivec2 inline gl_context::framebuffer_size() const { return default_fb->front_buffer().get_attachment_size(); }
 context_framebuffer inline &gl_context::defaut_framebuffer() const { return *default_fb; }
 
+}
 }
 }

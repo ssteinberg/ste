@@ -1,78 +1,90 @@
 
 #include "stdafx.hpp"
 #include "gpu_state_transition.hpp"
-#include "gpu_state_transition_detail.hpp"
 
+#include "gpu_dispatchable.hpp"
+
+#include "gl_context_state_log.hpp"
 #include "gl_current_context.hpp"
 
 #include <algorithm>
 
 using namespace StE::Graphics;
 
-StE::Core::gl_virtual_context gpu_state_transition::virt_ctx;
+namespace StE {
+namespace detail {
 
-std::size_t gpu_state_transition::setup_virtual_context_and_calculate_transition(const gpu_task *task,
-																				 const gpu_task *next,
-																				 std::vector<Core::context_state_name> &states_to_push,
-																				 std::vector<Core::context_state_name> &states_to_pop,
-																				 _state_transition::state_container<Core::context_state> &states_to_set) {
-	auto ctx = Core::gl_current_context::get();
+inline void set_difference(StE::Core::GL::gl_context_state_log::container<StE::Core::GL::BasicStateName> &a,
+						   const StE::Core::GL::gl_context_state_log::container<StE::Core::GL::BasicStateName> &b) {
+	if (!a.size())
+		return;
 
-	virt_ctx.make_current();
-	virt_ctx.clear();
-
-	task->set_context_state();
-	auto states_intermediate = virt_ctx.get_states();
-	auto states_resources = virt_ctx.get_resources();
-
-	virt_ctx.clear();
-
-	next->set_context_state();
-	auto &final_states = virt_ctx.get_states();
-
-	ctx->make_current();
-
-	std::size_t cost = 0;
-	_state_transition::states_diff(std::move(states_intermediate), final_states, states_to_push, states_to_pop, states_to_set, cost);
-	for (auto &p : states_resources) {
-		assert(p.second.exists());
-		states_to_set.insert(std::move(p.second));
-		cost += _state_transition::cost_for_state_type(Core::context_state_type_from_name(p.first.get_name()));
+	auto *k = &a[0];
+	for (int i = 0; i < a.size();) {
+		auto it = std::find_if(b.begin(), b.end(), [=](const StE::Core::GL::BasicStateName &v){
+			return v == *k;
+		});
+		if (it != b.end())
+			a.erase(a.begin() + i, a.begin() + i + 1);
+		else
+			++i; ++k;
 	}
-
-	return cost;
 }
 
-std::unique_ptr<gpu_state_transition> gpu_state_transition::transition_function(const gpu_task *task, const gpu_task *next) {
-	std::vector<Core::context_state_name> states_to_pop, states_to_push;
-	_state_transition::state_container<Core::context_state> states_to_set;
-	auto cost = setup_virtual_context_and_calculate_transition(task, next, states_to_push, states_to_pop, states_to_set);
+inline void set_difference(StE::Core::GL::gl_context_state_log::container<StE::Core::GL::gl_context_state_log::states_value_type> &a,
+						   StE::Core::GL::gl_context_state_log::container<StE::Core::GL::gl_context_state_log::states_value_type> &b) {
+	if (!a.size())
+		return;
 
-	std::function<void(void)> dispatch = [states_to_push = std::move(states_to_push),
-										  states_to_pop  = std::move(states_to_pop),
-										  states_to_set  = std::move(states_to_set),
-										  task, next]() {
-		// std::cout << task->get_name() << std::endl;
-
-		// Set new states
-		for (auto &state : states_to_set) {
-			assert(state.exists());
-			Core::gl_current_context::get()->set_context_server_state(state.get_state());
+	auto *k = &a[0];
+	for (int i = 0; i < a.size();) {
+		auto it = std::find_if(b.begin(), b.end(), [=](const StE::Core::GL::gl_context_state_log::states_value_type &v){
+			return v.first == k->first;
+		});
+		if (it != b.end()) {
+			it->second = std::move(k->second);
+			a.erase(a.begin() + i, a.begin() + i + 1);
 		}
+		else
+			++i; ++k;
+	}
+}
 
-		// Dispatch
-		task->dispatch();
+}
+}
 
-		// Reset states used by task and unused by next
-		for (auto &k : states_to_pop)
-			Core::gl_current_context::get()->pop_state(k);
-		// Push states used by next and unusedby task
-		for (auto &k : states_to_push)
-			Core::gl_current_context::get()->push_state(k);
-	};
+void gpu_state_transition::log_and_set_task_state(const gpu_task *task) const {
+	task->dispatchable->context_state_descriptor.clear();
 
-	return std::make_unique<gpu_state_transition>(AccessToken(),
-												  std::move(dispatch),
-												  cost,
-												  task, next);
+	Core::GL::gl_current_context::get()->attach_logger(&task->dispatchable->context_state_descriptor);
+	task->set_context_state();
+	Core::GL::gl_current_context::get()->detach_logger();
+}
+
+StE::Core::GL::gl_context_state_log gpu_state_transition::state_to_pop(const gpu_task *prev_task, const gpu_task *task) const {
+	auto &l_prev = prev_task->dispatchable->context_state_descriptor;
+	auto &l = task->dispatchable->context_state_descriptor;
+
+	Core::GL::gl_context_state_log to_pop;
+	std::swap(to_pop, l_prev);
+
+	detail::set_difference(to_pop.get_basic_states(), l.get_basic_states());
+	detail::set_difference(to_pop.get_states(), l.get_states());
+
+	return to_pop;
+}
+
+void gpu_state_transition::update_weight_and_transition() const {
+	const gpu_task *prev_task = reinterpret_cast<const gpu_task*>(this->get_from());
+	const gpu_task *task = reinterpret_cast<const gpu_task*>(this->get_to());
+
+	log_and_set_task_state(task);
+	auto pop_descriptor = state_to_pop(prev_task, task);
+
+	Core::GL::gl_current_context::get()->restore_states_from_logger(pop_descriptor);
+
+	task->dispatch();
+
+	auto cost = task->dispatchable->context_state_descriptor.get_cost() + pop_descriptor.get_basic_states().size() + pop_descriptor.get_states().size();
+	set_weight(cost);
 }

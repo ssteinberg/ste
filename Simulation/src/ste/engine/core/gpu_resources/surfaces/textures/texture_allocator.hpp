@@ -36,7 +36,7 @@ template <> void create_gl_texture_storage<3, true>(GenericResource::type id, in
 template <core_resource_type tex_type>
 class texture_immutable_storage_allocator : public generic_resource_immutable_storage_allocator<int, int, const gli::gl::format &, const typename texture_size_type<texture_dimensions<tex_type>::dimensions>::type &, std::size_t> {
 	using Base = generic_resource_immutable_storage_allocator<int, int, const gli::gl::format &, const typename texture_size_type<texture_dimensions<tex_type>::dimensions>::type &, std::size_t>;
-	
+
 private:
 	static constexpr int dimensions = texture_dimensions<tex_type>::dimensions;
 	static constexpr bool multisampled = texture_is_multisampled<tex_type>::value;
@@ -44,7 +44,7 @@ private:
 public:
 	GenericResource::type allocate() override final {
 		GLuint id;
-		glCreateTextures(gl_utils::translate_type(tex_type), 1, &id);
+		glCreateTextures(GL::gl_utils::translate_type(tex_type), 1, &id);
 		return id;
 	}
 

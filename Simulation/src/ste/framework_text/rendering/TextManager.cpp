@@ -24,8 +24,8 @@ TextManager::text_renderable::text_renderable(TextManager *tr) : tr(tr) {
 }
 
 void TextManager::text_renderable::set_context_state() const {
-	gl_current_context::get()->enable_state(context_state_name::BLEND);
-	gl_current_context::get()->blend_func(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	GL::gl_current_context::get()->enable_state(GL::BasicStateName::BLEND);
+	GL::gl_current_context::get()->blend_func(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	0_storage_idx = tr->gm.ssbo();
 	vao.bind();
@@ -36,7 +36,7 @@ void TextManager::text_renderable::set_context_state() const {
 void TextManager::text_renderable::dispatch() const {
 	int start = static_cast<int>(range_in_use.start / sizeof(glyph_point));
 	if (start >=0 && points.size() > 0)
-		Core::gl_current_context::get()->draw_arrays(GL_POINTS, start, points.size());
+		Core::GL::gl_current_context::get()->draw_arrays(GL_POINTS, start, points.size());
 }
 
 

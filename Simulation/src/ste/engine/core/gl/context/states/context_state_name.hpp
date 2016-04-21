@@ -8,8 +8,9 @@
 
 namespace StE {
 namespace Core {
+namespace GL {
 
-enum class context_state_name : std::int32_t {
+enum class BasicStateName : std::int32_t {
 	// Basic states (boolean glenable/gldisable states)
 	BLEND = GL_BLEND,
 	CLIP_PLANE0 = GL_CLIP_PLANE0,
@@ -36,7 +37,9 @@ enum class context_state_name : std::int32_t {
 	STENCIL_TEST = GL_STENCIL_TEST,
 	TEXTURE_CUBE_MAP_SEAMLESS = GL_TEXTURE_CUBE_MAP_SEAMLESS,
 	VERTEX_PROGRAM_POINT_SIZE = GL_VERTEX_PROGRAM_POINT_SIZE,
+};
 
+enum class StateName : std::int32_t {
 	// States
 	VIEWPORT_STATE,
 	COLOR_MASK_STATE,
@@ -50,25 +53,34 @@ enum class context_state_name : std::int32_t {
 	CLEAR_COLOR_STATE,
 	CLEAR_DEPTH_STATE,
 
+	SAMPLER_OBJECT,
+	TRANSFORM_FEEDBACK_OBJECT,
+
 	// Resource states
 	BUFFER_OBJECT,
 	TEXTURE_OBJECT,
 	FRAMEBUFFER_OBJECT,
 	IMAGE_OBJECT,
 	RENDERBUFFER_OBJECT,
-	SAMPLER_OBJECT,
-	TRANSFORM_FEEDBACK_OBJECT,
 	VERTEX_ARRAY_OBJECT,
 	GLSL_PROGRAM_OBJECT,
 };
 
 }
 }
+}
 
 namespace std {
 
-template <> struct hash<StE::Core::context_state_name> {
-	size_t inline operator()(const StE::Core::context_state_name &x) const {
+template <> struct hash<StE::Core::GL::BasicStateName> {
+	size_t inline operator()(const StE::Core::GL::BasicStateName &x) const {
+		using T = typename std::underlying_type<typename std::decay<decltype(x)>::type>::type;
+		return std::hash<T>()(static_cast<T>(x));
+	}
+};
+
+template <> struct hash<StE::Core::GL::StateName> {
+	size_t inline operator()(const StE::Core::GL::StateName &x) const {
 		using T = typename std::underlying_type<typename std::decay<decltype(x)>::type>::type;
 		return std::hash<T>()(static_cast<T>(x));
 	}

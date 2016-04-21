@@ -36,14 +36,14 @@ texture_layout_binding inline operator "" _tex_unit(unsigned long long int i) { 
 template <core_resource_type type>
 class TextureBinder {
 private:
-	static constexpr GLenum gl_type() { return gl_utils::translate_type(type); }
+	static constexpr GLenum gl_type() { return GL::gl_utils::translate_type(type); }
 
 public:
 	static void bind(GenericResource::type id, const texture_layout_binding &sampler) {
-		gl_current_context::get()->bind_texture_unit(sampler.binding_index(), id);
+		GL::gl_current_context::get()->bind_texture_unit(sampler.binding_index(), id);
 	}
 	static void unbind(const texture_layout_binding &sampler) {
-		gl_current_context::get()->bind_texture_unit(sampler.binding_index(), 0);
+		GL::gl_current_context::get()->bind_texture_unit(sampler.binding_index(), 0);
 	}
 };
 
@@ -59,7 +59,7 @@ public:
 	static constexpr core_resource_type T = type;
 
 protected:
-	static constexpr GLenum gl_type() { return gl_utils::translate_type(type); }
+	static constexpr GLenum gl_type() { return GL::gl_utils::translate_type(type); }
 
 	int levels, samples;
 	typename texture_size_type<texture_dimensions<type>::dimensions>::type size;
@@ -75,7 +75,7 @@ protected:
 	int get_image_container_dimensions() const { return dimensions() > 2 ? size[2] : get_layers(); }
 
 	bool allocate_tex_storage(const size_type &size, const gli::format &gli_format, const gli::swizzles &swizzle, int levels, int samples, bool sparse, int page_size_idx = 0) {
-		gli::gl::format const glformat = gl_utils::translate_format(gli_format, swizzle);
+		gli::gl::format const glformat = GL::gl_utils::translate_format(gli_format, swizzle);
 
 		auto id = Base::get_resource_id();
 		if (sparse) {
@@ -119,11 +119,11 @@ public:
 	constexpr bool is_multisampled() const { return texture_is_multisampled<type>::value; }
 
 	void clear(void *data, int level = 0) {
-		gli::gl::format glformat = gl_utils::translate_format(format, swizzle);
+		gli::gl::format glformat = GL::gl_utils::translate_format(format, swizzle);
 		glClearTexImage(Base::get_resource_id(), level, glformat.External, glformat.Type, data);
 	}
 	void clear(void *data, glm::i32vec3 offset, glm::u32vec3 size, int level = 0) {
-		gli::gl::format glformat = gl_utils::translate_format(format, swizzle);
+		gli::gl::format glformat = GL::gl_utils::translate_format(format, swizzle);
 		glClearTexSubImage(Base::get_resource_id(), level, offset.x, offset.y, offset.z, size.x, size.y, size.z, glformat.External, glformat.Type, data);
 	}
 
@@ -206,7 +206,7 @@ public:
 	virtual void download_level(void *data,
 								std::size_t size,
 								int level) const {
-		auto gl_format = gl_utils::translate_format(Base::format, Base::swizzle);
+		auto gl_format = GL::gl_utils::translate_format(Base::format, Base::swizzle);
 		glGetTextureImage(Base::get_resource_id(), level, gl_format.External, gl_format.Type, size, data);
 	}
 	virtual void download_level(void *data,
@@ -215,7 +215,7 @@ public:
 								const gli::format &format,
 								const gli::swizzles &swizzle = swizzles_rgba,
 								bool compressed = false) const {
-		auto gl_format = gl_utils::translate_format(format, swizzle);
+		auto gl_format = GL::gl_utils::translate_format(format, swizzle);
 		if (compressed)
 			glGetCompressedTextureImage(Base::get_resource_id(), level, size, data);
 		else
@@ -243,10 +243,10 @@ public:
 	int get_levels() const { return levels; }
 
 	void generate_mipmaps() {
-		Base::bind();
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(Base::gl_type(), Base::get_resource_id());
+		Base::bind();
 		glGenerateMipmap(Base::gl_type());
+		Base::unbind();
 	}
 
 	static int calculate_mipmap_max_level(const typename texture_size_type<texture_layer_dimensions<type>::dimensions>::type &size) {

@@ -34,14 +34,14 @@ struct StE::ste_engine_control_impl {
 	std::chrono::time_point<std::chrono::steady_clock> last_frame_time{ std::chrono::steady_clock::now() };
 };
 
-StEngineControl::StEngineControl(std::unique_ptr<Core::gl_context> &&ctx) : pimpl(std::make_unique<ste_engine_control_impl>()), context(std::move(ctx)), global_cache("Cache", 1024 * 1024 * 256) {
+StEngineControl::StEngineControl(std::unique_ptr<Core::GL::gl_context> &&ctx) : pimpl(std::make_unique<ste_engine_control_impl>()), context(std::move(ctx)), global_cache("Cache", 1024 * 1024 * 256) {
 	assert(context.get());
 	if (context == nullptr)
 		throw std::runtime_error("context == nullptr");
 
 	glfwSetErrorCallback([](int err, const char* description) { ste_log_error() << "GLFW reported an error (" << err << "): " << description; });
 
-	Core::gl_utils::dump_gl_info(false);
+	Core::GL::gl_utils::dump_gl_info(false);
 
 	glfwSetWindowUserPointer(context->window.get(), this);
 

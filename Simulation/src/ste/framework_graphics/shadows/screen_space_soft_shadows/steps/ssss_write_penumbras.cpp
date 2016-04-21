@@ -9,7 +9,7 @@ using namespace StE::Graphics;
 using namespace StE::Core;
 
 void ssss_write_penumbras::set_context_state() const {
-	Core::gl_current_context::get()->enable_state(StE::Core::context_state_name::TEXTURE_CUBE_MAP_SEAMLESS);
+	Core::GL::gl_current_context::get()->enable_state(StE::Core::GL::BasicStateName::TEXTURE_CUBE_MAP_SEAMLESS);
 
 	0_image_idx = p->ssss->get_penumbra_layers()->make_image(0);
 	1_image_idx = p->ssss->get_z_buffer()->make_image();
@@ -27,5 +27,5 @@ void ssss_write_penumbras::set_context_state() const {
 void ssss_write_penumbras::dispatch() const {
 	auto size = p->ssss->layers_size();
 
-	Core::gl_current_context::get()->dispatch_compute(size.x / 32, size.y / 32, 1);
+	Core::GL::gl_current_context::get()->dispatch_compute(size.x / 32, size.y / 32, 1);
 }

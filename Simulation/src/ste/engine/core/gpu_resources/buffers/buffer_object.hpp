@@ -34,10 +34,10 @@ namespace Core {
 class BufferObjectBinder {
 public:
 	static void bind(GenericResource::type id, GLenum target) {
-		gl_current_context::get()->bind_buffer(target, id);
+		GL::gl_current_context::get()->bind_buffer(target, id);
 	}
 	static void unbind(GLenum target = 0) {
-		gl_current_context::get()->bind_buffer(target, 0);
+		GL::gl_current_context::get()->bind_buffer(target, 0);
 	}
 };
 
@@ -88,11 +88,11 @@ public:
 	virtual ~buffer_object() noexcept { unmap(); }
 
 	void clear(const gli::format format, const void *data, const gli::swizzles &swizzle = swizzles_rgba) {
-		auto glf = gl_utils::translate_format(format, swizzle);
+		auto glf = GL::gl_utils::translate_format(format, swizzle);
 		glClearNamedBufferData(Base::get_resource_id(), glf.Internal, glf.External, glf.Type, data);
 	}
 	void clear(const gli::format format, const void *data, int offset, std::size_t size, const gli::swizzles &swizzle = swizzles_rgba) {
-		auto glf = gl_utils::translate_format(format, swizzle);
+		auto glf = GL::gl_utils::translate_format(format, swizzle);
 		glClearNamedBufferSubData(Base::get_resource_id(), glf.Internal, offset * sizeof(T), size * sizeof(T), glf.External, glf.Type, data);
 	}
 	void invalidate_data() { glInvalidateBufferData(Base::get_resource_id()); }
@@ -125,16 +125,16 @@ public:
 		glNamedBufferSubData(Base::get_resource_id(), offset * sizeof(T), size * sizeof(T), data);
 	}
 
-	template <bool b = map_read_allowed> 
-	typename std::enable_if<b, const mapped_buffer_object_unique_ptr<T, U>>::type 
+	template <bool b = map_read_allowed>
+	typename std::enable_if<b, const mapped_buffer_object_unique_ptr<T, U>>::type
 		map_read(std::size_t len, int offset = 0, BufferUsage::buffer_mapping flags = BufferUsage::BufferMapNone) {
 		auto p = mapped_buffer_object_unique_ptr<T, U>(reinterpret_cast<const T*>(glMapNamedBufferRange(Base::get_resource_id(), offset * sizeof(T), len * sizeof(T), GL_MAP_READ_BIT | flags)),
-													   this, 
+													   this,
 													   { static_cast<std::size_t>(offset), len });
 		mapped_ptr_data = p.data;
 		return std::move(p);
 	}
-	template <bool b = map_write_allowed> 
+	template <bool b = map_write_allowed>
 	typename std::enable_if<b, mapped_buffer_object_unique_ptr<T, U>>::type
 		map_write(std::size_t len, int offset = 0, BufferUsage::buffer_mapping flags = BufferUsage::BufferMapNone) {
 		auto p = mapped_buffer_object_unique_ptr<T, U>(reinterpret_cast<T*>(glMapNamedBufferRange(Base::get_resource_id(), offset * sizeof(T), len * sizeof(T), GL_MAP_WRITE_BIT | flags)),
@@ -143,7 +143,7 @@ public:
 		mapped_ptr_data = p.data;
 		return std::move(p);
 	}
-	template <bool b = map_rw_allowed> 
+	template <bool b = map_rw_allowed>
 	typename std::enable_if<b, mapped_buffer_object_unique_ptr<T, U>>::type
 		map_rw(std::size_t len, int offset = 0, BufferUsage::buffer_mapping flags = BufferUsage::BufferMapNone) {
 		auto p = mapped_buffer_object_unique_ptr<T, U>(reinterpret_cast<T*>(glMapNamedBufferRange(Base::get_resource_id(), offset * sizeof(T), len * sizeof(T), GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | flags)),
@@ -197,13 +197,13 @@ private:
 
 public:
 	static void bind(GenericResource::type id, const LayoutLocationType &index, GLenum target) {
-		if (index != EmptyLayoutLocationType()) gl_current_context::get()->bind_buffer_base(target, index, id);
+		if (index != EmptyLayoutLocationType()) GL::gl_current_context::get()->bind_buffer_base(target, index, id);
 	}
 	static void unbind(const LayoutLocationType &index, GLenum target = 0) {
-		if (index != EmptyLayoutLocationType()) gl_current_context::get()->bind_buffer_base(target, index, 0);
+		if (index != EmptyLayoutLocationType()) GL::gl_current_context::get()->bind_buffer_base(target, index, 0);
 	}
 	static void bind_range(GenericResource::type id, const LayoutLocationType &index, GLenum target, int offset, std::size_t size) {
-		if (index != EmptyLayoutLocationType()) gl_current_context::get()->bind_buffer_range(target, index, id, offset, size);
+		if (index != EmptyLayoutLocationType()) GL::gl_current_context::get()->bind_buffer_range(target, index, id, offset, size);
 	}
 };
 

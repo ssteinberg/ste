@@ -26,7 +26,7 @@ void GIRenderer::deferred_composition::set_context_state() const {
 }
 
 void GIRenderer::deferred_composition::dispatch() const {
-	Core::gl_current_context::get()->draw_arrays(GL_TRIANGLE_STRIP, 0, 4);
+	Core::GL::gl_current_context::get()->draw_arrays(GL_TRIANGLE_STRIP, 0, 4);
 }
 
 

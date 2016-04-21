@@ -19,7 +19,7 @@ protected:
 	virtual void set_context_state() const override {}
 
 	virtual void dispatch() const override {
-		Core::gl_current_context::get()->clear_framebuffer(color, depth);
+		Core::GL::gl_current_context::get()->clear_framebuffer(color, depth);
 	}
 };
 

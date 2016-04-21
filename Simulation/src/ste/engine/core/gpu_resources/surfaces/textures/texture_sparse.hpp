@@ -27,11 +27,11 @@ protected:
 	typename Base::size_type tile_size;
 	int max_sparse_level;
 
-	texture_sparse_mipmapped(gli::format format, 
-							 const typename Base::size_type &size, 
-							 int levels, 
-							 const typename Base::size_type &tile_size, 
-							 int virtual_page_idx, 
+	texture_sparse_mipmapped(gli::format format,
+							 const typename Base::size_type &size,
+							 int levels,
+							 const typename Base::size_type &tile_size,
+							 int virtual_page_idx,
 							 const gli::swizzles &swizzle = swizzles_rgba) : Base(), tile_size(tile_size) {
 		this->levels = levels;
 		allocate_tex_storage(size, format, swizzle, levels, 1, true, virtual_page_idx);
@@ -67,7 +67,7 @@ public:
 	}
 
 	static std::vector<glm::ivec3> page_sizes(gli::format gli_format, const gli::swizzles &swizzle = swizzles_rgba) {
-		gli::gl::format const format = gl_utils::translate_format(gli_format, swizzle);
+		gli::gl::format const format = GL::gl_utils::translate_format(gli_format, swizzle);
 
 		int n;
 		glGetInternalformativ(Base::gl_type(), format.External, GL_NUM_VIRTUAL_PAGE_SIZES_ARB, 1, &n);

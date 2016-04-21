@@ -31,7 +31,7 @@ public:
 	bool upload(const gli::texture3d &t, bool generate_mipmaps = false);
 
 	void upload_level(const void *data, int level = 0, int layer = 0, CubeMapFace face = CubeMapFace::CubeMapFaceNone, int data_size = 0) override {
-		auto gl_format = gl_utils::translate_format(format, swizzle);
+		auto gl_format = GL::gl_utils::translate_format(format, swizzle);
 
 		if (is_compressed()) {
 			assert(data_size && "size must be specified for compressed levels");

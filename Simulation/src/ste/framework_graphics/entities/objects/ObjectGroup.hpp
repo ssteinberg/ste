@@ -107,8 +107,8 @@ public:
 
 protected:
 	void set_context_state() const override final {
-		Core::gl_current_context::get()->enable_depth_test();
-		Core::gl_current_context::get()->enable_state(Core::context_state_name::CULL_FACE);
+		Core::GL::gl_current_context::get()->enable_depth_test();
+		Core::GL::gl_current_context::get()->enable_state(Core::GL::BasicStateName::CULL_FACE);
 
 		bind_buffers();
 		object_program->bind();
@@ -117,7 +117,7 @@ protected:
 	void dispatch() const override final {
 		update_dirty_buffers();
 
-		Core::gl_current_context::get()->draw_multi_elements_indirect<elements_type::T>(GL_TRIANGLES, 0, idb.size(), 0);
+		Core::GL::gl_current_context::get()->draw_multi_elements_indirect<elements_type::T>(GL_TRIANGLES, 0, idb.size(), 0);
 
 		for (auto &r : ranges_to_lock)
 			mesh_data_bo.lock_range(r);

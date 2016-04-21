@@ -19,9 +19,9 @@ void hdr_compute_minmax_task::dispatch() const {
 	p->hdr_bokeh_param_buffer_prev << p->hdr_bokeh_param_buffer;
 	p->hdr_bokeh_param_buffer << *p->hdr_bokeh_param_buffer_eraser;
 
-	gl_current_context::get()->memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT);
+	GL::gl_current_context::get()->memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
-	gl_current_context::get()->dispatch_compute(p->luminance_size.x / 32,
-												p->luminance_size .y / 32,
-												1);
+	GL::gl_current_context::get()->dispatch_compute(p->luminance_size.x / 32,
+													p->luminance_size .y / 32,
+													1);
 }

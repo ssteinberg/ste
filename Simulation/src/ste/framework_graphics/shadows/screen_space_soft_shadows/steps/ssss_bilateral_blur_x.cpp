@@ -13,7 +13,7 @@ using namespace StE::Core;
 void ssss_bilateral_blur_x::set_context_state() const {
 	auto size = p->ssss->layers_size();
 
-	Core::gl_current_context::get()->viewport(0, 0, size.x, size.y);
+	Core::GL::gl_current_context::get()->viewport(0, 0, size.x, size.y);
 
 	7_tex_unit = *p->ssss->get_z_buffer();
 	7_sampler_idx = *Sampler::SamplerNearestClamp();
@@ -27,7 +27,7 @@ void ssss_bilateral_blur_x::set_context_state() const {
 }
 
 void ssss_bilateral_blur_x::dispatch() const {
-	Core::gl_current_context::get()->memory_barrier(GL_TEXTURE_FETCH_BARRIER_BIT);
+	Core::GL::gl_current_context::get()->memory_barrier(GL_TEXTURE_FETCH_BARRIER_BIT);
 
-	Core::gl_current_context::get()->draw_arrays_instanced(GL_TRIANGLE_STRIP, 0, 4, p->scene->scene_properties().lights_storage().get_lights().size());
+	Core::GL::gl_current_context::get()->draw_arrays_instanced(GL_TRIANGLE_STRIP, 0, 4, p->scene->scene_properties().lights_storage().get_lights().size());
 }

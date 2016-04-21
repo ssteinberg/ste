@@ -17,10 +17,10 @@ class graph;
 class edge {
 	template <typename V, typename E>
 	friend class graph;
-	
+
 private:
-	int weight;
-	
+	mutable int weight;
+
 	const vertex *from, *to;
 
 public:
@@ -29,14 +29,14 @@ public:
 		assert(to && "to must be a non-null vertex");
 	}
 	virtual ~edge() noexcept {}
-	edge(const edge &) = default;									
+	edge(const edge &) = default;
 	edge(edge &&) = default;
-	edge &operator=(const edge &) = default;									
+	edge &operator=(const edge &) = default;
 	edge &operator=(edge &&) = default;
-	
-	void set_weight(int w) { weight = w; }
+
+	void set_weight(int w) const { weight = w; }
 	auto get_weight() const { return weight; }
-	
+
 	auto get_from() const { return from; }
 	auto get_to() const { return to; }
 };

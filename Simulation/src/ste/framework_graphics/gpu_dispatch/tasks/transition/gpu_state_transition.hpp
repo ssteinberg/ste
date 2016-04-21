@@ -8,8 +8,7 @@
 #include "gpu_task.hpp"
 #include "sop_edge.hpp"
 
-#include "gl_virtual_context.hpp"
-#include "context_state_type.hpp"
+#include "gl_context_state_log.hpp"
 
 #include <functional>
 #include <vector>
@@ -20,52 +19,18 @@
 namespace StE {
 namespace Graphics {
 
-namespace _state_transition {
-
-template <typename T>
-struct state_comparator {
-	constexpr bool operator()(const T &lhs, const T &rhs) const {
-		return lhs.get_counter() < rhs.get_counter();
-	}
-};
-
-template <typename T>
-using state_container = boost::container::flat_set<T, state_comparator<T>>;
-
-}
-
 class gpu_state_transition : public Algorithm::SOP::sop_edge {
 	using Base = Algorithm::SOP::sop_edge;
 
 private:
-	struct AccessToken {};
-
-protected:
-	static Core::gl_virtual_context virt_ctx;
-
-private:
-	static std::size_t setup_virtual_context_and_calculate_transition(const gpu_task *task,
-																	  const gpu_task *next,
-																	  std::vector<Core::context_state_name> &states_to_push,
-																	  std::vector<Core::context_state_name> &states_to_pop,
-																	  _state_transition::state_container<Core::context_state> &states_to_set);
-
-private:
-	std::function<void(void)> dispatch_func;
+	void log_and_set_task_state(const gpu_task *task) const;
+	Core::GL::gl_context_state_log state_to_pop(const gpu_task *prev_task, const gpu_task *task) const;
 
 public:
-	static std::unique_ptr<gpu_state_transition> transition_function(const gpu_task *task, const gpu_task *next);
+	gpu_state_transition(const gpu_task *task,
+						 const gpu_task *next) : Base(task, next) {}
 
-	gpu_state_transition(const AccessToken&,
-						 std::function<void(void)> &&dispatch,
-						 unsigned cost,
-						 const gpu_task *task,
-						 const gpu_task *next) : Base(cost, task, next),
-												 dispatch_func(std::move(dispatch)) {}
-
-	void dispatch() const { dispatch_func(); }
-
-	auto get_cost() const { return Base::get_weight(); }
+	void update_weight_and_transition() const override final;
 };
 
 }

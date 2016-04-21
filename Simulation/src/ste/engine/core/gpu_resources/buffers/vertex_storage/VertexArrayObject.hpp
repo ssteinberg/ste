@@ -15,7 +15,7 @@
 
 namespace StE {
 namespace Core {
-	
+
 class VertexArrayObject;
 
 class VertexArrayObjectAllocator : public generic_resource_allocator {
@@ -36,10 +36,10 @@ public:
 class VertexArrayObjectBinder {
 public:
 	static void bind(GenericResource::type id) {
-		gl_current_context::get()->bind_vertex_array(id);
+		GL::gl_current_context::get()->bind_vertex_array(id);
 	}
 	static void unbind() {
-		gl_current_context::get()->bind_vertex_array(0);
+		GL::gl_current_context::get()->bind_vertex_array(0);
 	}
 };
 
@@ -77,7 +77,7 @@ public:
 
 class VertexArrayObject : public bindable_resource<VertexArrayObjectAllocator, VertexArrayObjectBinder> {
 	using Base = bindable_resource<VertexArrayObjectAllocator, VertexArrayObjectBinder>;
-	
+
 private:
 	friend class vertex_array_attrib_binder;
 
@@ -99,21 +99,21 @@ private:
 		auto descriptor = ptr->data_descriptor();
 
 		enable_vertex_attrib_array(attrib_index);
-		glVertexArrayVertexBuffer(Base::get_resource_id(), 
-								  binder.binding_index, 
-								  ptr->get_resource_id(), 
-								  descriptor->offset_to_attrib(binder.binding_index), 
+		glVertexArrayVertexBuffer(Base::get_resource_id(),
+								  binder.binding_index,
+								  ptr->get_resource_id(),
+								  descriptor->offset_to_attrib(binder.binding_index),
 								  binder.size);
-		glVertexArrayAttribFormat(Base::get_resource_id(), 
-								  attrib_index, 
-								  descriptor->attrib_element_count(binder.binding_index), 
-								  descriptor->attrib_element_type(binder.binding_index), 
-								  descriptor->attrib_element_normalized(binder.binding_index), 
+		glVertexArrayAttribFormat(Base::get_resource_id(),
+								  attrib_index,
+								  descriptor->attrib_element_count(binder.binding_index),
+								  descriptor->attrib_element_type(binder.binding_index),
+								  descriptor->attrib_element_normalized(binder.binding_index),
 								  binder.offset);
-		glVertexArrayAttribBinding(Base::get_resource_id(), 
-								   attrib_index, 
+		glVertexArrayAttribBinding(Base::get_resource_id(),
+								   attrib_index,
 								   binder.binding_index);
-								   
+
 		attrib_bindings[attrib_index] = ptr;
 	}
 
