@@ -53,7 +53,7 @@ private:
 
 	void set_projection_dirty();
 
-	std::unique_ptr<Core::gl_context> context;
+	std::unique_ptr<Core::GL::gl_context> context;
 	mutable task_scheduler global_scheduler;
 	mutable lru_cache<std::string> global_cache;
 	mutable Resource::glsl_programs_pool glslprogramspool{ *this };
@@ -90,7 +90,7 @@ public:
 	*
 	*  @param context	R-value reference to a unique_ptr to a GL context
 	*/
-	StEngineControl(std::unique_ptr<Core::gl_context> &&context);
+	StEngineControl(std::unique_ptr<Core::GL::gl_context> &&context);
 	~StEngineControl() noexcept;
 
 	/**

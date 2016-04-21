@@ -4,14 +4,20 @@
 #pragma once
 
 #include "stdafx.hpp"
+#include "gl_context_state_log.hpp"
 
 namespace StE {
 namespace Graphics {
 
 class gpu_task;
+class gpu_state_transition;
 
 class gpu_dispatchable {
 	friend class gpu_task;
+	friend class gpu_state_transition;
+
+private:
+	mutable Core::GL::gl_context_state_log context_state_descriptor;
 
 protected:
 	// Should set up gl resources, states, etc..

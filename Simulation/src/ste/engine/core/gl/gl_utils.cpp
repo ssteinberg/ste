@@ -11,7 +11,7 @@
 #include <cstdio>
 #include <iostream>
 
-using namespace StE::Core;
+using namespace StE::Core::GL;
 
 gli::gl gl_utils::GL(gli::gl::profile::PROFILE_GL33);
 
@@ -48,7 +48,7 @@ void gl_utils::dump_gl_info(bool dump_extensions) {
     if(dump_extensions) {
         GLint nExtensions;
         glGetIntegerv(GL_NUM_EXTENSIONS, &nExtensions);
-        for( int i = 0; i < nExtensions; i++ ) 
+        for( int i = 0; i < nExtensions; i++ )
 			ste_log() << glGetStringi(GL_EXTENSIONS, i) << std::endl;
     }
 }

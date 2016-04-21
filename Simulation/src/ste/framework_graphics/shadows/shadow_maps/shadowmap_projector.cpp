@@ -8,14 +8,14 @@ void shadowmap_projector::set_context_state() const {
 	object->set_context_state();
 
 	auto size = shadow_map->get_cubemaps()->get_size();
-	Core::gl_current_context::get()->viewport(0, 0, size.x, size.y);
+	Core::GL::gl_current_context::get()->viewport(0, 0, size.x, size.y);
 
 	lights->bind_buffers(2);
 	shadow_gen_program->bind();
 }
 
 void shadowmap_projector::dispatch() const {
-	Core::gl_current_context::get()->clear_framebuffer(false, true);
+	Core::GL::gl_current_context::get()->clear_framebuffer(false, true);
 
 	lights->update_storage();
 

@@ -30,9 +30,9 @@ void gpu_task_dispatch_queue::build_task_transitions(const TaskPtr &task) {
 			continue;
 
 		if (t->dependencies.find(task) == t->dependencies.end())
-			Base::add_edge(gpu_state_transition::transition_function(t.get(), task.get()));
+			Base::add_edge(std::make_unique<gpu_state_transition>(t.get(), task.get()));
 		if (task->dependencies.find(t) == task->dependencies.end())
-			Base::add_edge(gpu_state_transition::transition_function(task.get(), t.get()));
+			Base::add_edge(std::make_unique<gpu_state_transition>(task.get(), t.get()));
 	}
 }
 
@@ -122,7 +122,7 @@ void gpu_task_dispatch_queue::delete_dep(const TaskPtr &task, const TaskPtr &dep
 
 	if (Base::get_vertices().find(task) != Base::get_vertices().end() &&
 		Base::get_vertices().find(dep) != Base::get_vertices().end())
-		Base::add_edge(gpu_state_transition::transition_function(task.get(), dep.get()));
+		Base::add_edge(std::make_unique<gpu_state_transition>(task.get(), dep.get()));
 }
 
 void gpu_task_dispatch_queue::run_sop_iteration() {

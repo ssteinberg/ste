@@ -30,7 +30,7 @@ protected:
 	}
 
 	void dispatch() const override final {
-		Core::gl_current_context::get()->draw_arrays(GL_TRIANGLE_STRIP, 0, 4);
+		Core::GL::gl_current_context::get()->draw_arrays(GL_TRIANGLE_STRIP, 0, 4);
 	}
 };
 

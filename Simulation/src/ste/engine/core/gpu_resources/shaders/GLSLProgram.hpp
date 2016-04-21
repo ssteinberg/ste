@@ -44,8 +44,8 @@ public:
 
 class GLSLProgramBinder {
 public:
-	static void bind(GenericResource::type id) { gl_current_context::get()->bind_shader_program(id); }
-	static void unbind() { gl_current_context::get()->bind_shader_program(0); }
+	static void bind(GenericResource::type id) { GL::gl_current_context::get()->bind_shader_program(id); }
+	static void unbind() { GL::gl_current_context::get()->bind_shader_program(0); }
 };
 
 class GLSLProgram : public bindable_resource<GLSLProgramAllocator, GLSLProgramBinder> {

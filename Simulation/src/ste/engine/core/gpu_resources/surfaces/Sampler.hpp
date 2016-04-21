@@ -39,10 +39,10 @@ public:
 class SamplerBinder {
 public:
 	static void bind(GenericResource::type id, const sampler_layout_binding &sampler) {
-		gl_current_context::get()->bind_sampler(sampler.binding_index(), id);
+		GL::gl_current_context::get()->bind_sampler(sampler.binding_index(), id);
 	}
 	static void unbind(const sampler_layout_binding &sampler) {
-		gl_current_context::get()->bind_sampler(sampler.binding_index(), 0);
+		GL::gl_current_context::get()->bind_sampler(sampler.binding_index(), 0);
 	}
 };
 

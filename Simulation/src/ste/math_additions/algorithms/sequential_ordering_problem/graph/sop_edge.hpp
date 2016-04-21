@@ -38,7 +38,7 @@ private:
 	mutable float trail{ t0 };
 
 protected:
-	virtual int update_weight_and_transition() const = 0;
+	virtual void update_weight_and_transition() const = 0;
 	using Base::set_weight;
 
 public:

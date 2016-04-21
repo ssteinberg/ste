@@ -32,7 +32,7 @@ public:
 	bool upload_layer(int layer, const gli::texture2d &t);
 
 	void upload_level(const void *data, int level = 0, int layer = 0, CubeMapFace face = CubeMapFace::CubeMapFaceNone, int data_size = 0) override {
-		auto gl_format = gl_utils::translate_format(format, swizzle);
+		auto gl_format = GL::gl_utils::translate_format(format, swizzle);
 
 		if (is_compressed()) {
 			assert(data_size && "size must be specified for compressed levels");
@@ -56,7 +56,7 @@ public:
 						std::size_t size,
 						int level,
 						int layer) const {
-		auto gl_format = gl_utils::translate_format(Base::format, Base::swizzle);
+		auto gl_format = GL::gl_utils::translate_format(Base::format, Base::swizzle);
 
 		glGetTextureSubImage(get_resource_id(), level,
 							 0, 0, layer,
@@ -70,7 +70,7 @@ public:
 						const gli::format &format,
 						const gli::swizzles &swizzle = swizzles_rgba,
 						bool compressed = false) const {
-		auto gl_format = gl_utils::translate_format(format, swizzle);
+		auto gl_format = GL::gl_utils::translate_format(format, swizzle);
 
 		if (compressed)
 			glGetCompressedTextureSubImage(get_resource_id(), level,

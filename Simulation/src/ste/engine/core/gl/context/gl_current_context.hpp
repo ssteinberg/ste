@@ -7,6 +7,7 @@
 
 namespace StE {
 namespace Core {
+namespace GL {
 
 class gl_generic_context;
 
@@ -21,6 +22,7 @@ public:
 	static gl_generic_context *get() { return current; }
 };
 
+}
 }
 }
 

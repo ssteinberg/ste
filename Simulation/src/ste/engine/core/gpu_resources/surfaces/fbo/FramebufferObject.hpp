@@ -108,7 +108,7 @@ public:
 	virtual ~fbo_color_attachment_point() noexcept {}
 
 	void read_pixels(void *data, int data_size, const glm::uvec2 &rect_size, const glm::uvec2 &origin = { 0, 0 }) const {
-		auto gl_format = gl_utils::translate_format(Base::get_attachment_format(), swizzles_rgba);
+		auto gl_format = GL::gl_utils::translate_format(Base::get_attachment_format(), swizzles_rgba);
 
 		fbo->bind_read();
 		glReadBuffer(Base::get_attachment_point());
@@ -121,7 +121,7 @@ public:
 	void read_pixels(void *data, int data_size) const { read_pixels(data, data_size, Base::get_attachment_size()); }
 
 	void write_pixels(void *data, const glm::uvec2 &rect_size, const glm::uvec2 &origin = { 0, 0 }) {
-		auto gl_format = gl_utils::translate_format(Base::get_attachment_format(), swizzles_rgba);
+		auto gl_format = GL::gl_utils::translate_format(Base::get_attachment_format(), swizzles_rgba);
 
 		fbo->bind_write();
 		glWriteBuffer(Base::get_attachment_point());
@@ -194,8 +194,8 @@ public:
 
 class FramebufferObjectBinder {
 public:
-	static void bind(GenericResource::type id) { gl_current_context::get()->bind_framebuffer(GL_FRAMEBUFFER, id); }
-	static void unbind() { gl_current_context::get()->bind_framebuffer(GL_FRAMEBUFFER, 0); }
+	static void bind(GenericResource::type id) { GL::gl_current_context::get()->bind_framebuffer(GL_FRAMEBUFFER, id); }
+	static void unbind() { GL::gl_current_context::get()->bind_framebuffer(GL_FRAMEBUFFER, 0); }
 };
 
 class GenericFramebufferObject {
@@ -243,10 +243,10 @@ protected:
 			glNamedFramebufferDrawBuffers(Base::get_resource_id(), draw_buffers.size(), &draw_buffers[0]);
 	}
 
-	void bind_draw() const { gl_current_context::get()->bind_framebuffer(GL_DRAW_FRAMEBUFFER, Base::get_resource_id()); }
-	void unbind_draw() const { gl_current_context::get()->bind_framebuffer(GL_DRAW_FRAMEBUFFER, 0); }
-	void bind_read() const { gl_current_context::get()->bind_framebuffer(GL_READ_FRAMEBUFFER, Base::get_resource_id()); }
-	void unbind_read() const { gl_current_context::get()->bind_framebuffer(GL_READ_FRAMEBUFFER, 0); }
+	void bind_draw() const { GL::gl_current_context::get()->bind_framebuffer(GL_DRAW_FRAMEBUFFER, Base::get_resource_id()); }
+	void unbind_draw() const { GL::gl_current_context::get()->bind_framebuffer(GL_DRAW_FRAMEBUFFER, 0); }
+	void bind_read() const { GL::gl_current_context::get()->bind_framebuffer(GL_READ_FRAMEBUFFER, Base::get_resource_id()); }
+	void unbind_read() const { GL::gl_current_context::get()->bind_framebuffer(GL_READ_FRAMEBUFFER, 0); }
 
 public:
 	virtual ~frame_buffer_object() noexcept {}
