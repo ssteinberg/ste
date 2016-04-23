@@ -109,6 +109,7 @@ protected:
 	void set_context_state() const override final {
 		Core::GL::gl_current_context::get()->enable_depth_test();
 		Core::GL::gl_current_context::get()->enable_state(Core::GL::BasicStateName::CULL_FACE);
+		Core::GL::gl_current_context::get()->color_mask(false, false, false, false);
 
 		bind_buffers();
 		object_program->bind();

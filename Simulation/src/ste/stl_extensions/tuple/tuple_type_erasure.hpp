@@ -30,20 +30,19 @@ struct _type_checker : public _type_checker_helper<sizeof...(Args), Args...> {};
 
 class tuple_type_erasure {
 private:
-	std::size_t size;
 	std::vector<char> data;
 
 public:
 	tuple_type_erasure() = default;
 
 	template <typename... Args>
-	tuple_type_erasure(const std::tuple<Args...> &tuple_args, std::enable_if_t<1 < sizeof...(Args)>* = nullptr) : size(sizeof(tuple_args)), data(size) {
+	tuple_type_erasure(const std::tuple<Args...> &tuple_args, std::enable_if_t<1 < sizeof...(Args)>* = nullptr) : data(sizeof(tuple_args)) {
 		_tuple_type_erasure::_type_checker<Args...> check;
 
-		std::memcpy(data.data(), &tuple_args, size);
+		std::memcpy(data.data(), &tuple_args, data.size());
 	}
 	template <typename T>
-	tuple_type_erasure(const std::tuple<T> &tuple) : size(sizeof(typename std::remove_reference_t<T>)), data(size) {
+	tuple_type_erasure(const std::tuple<T> &tuple) : data(sizeof(typename std::remove_reference_t<T>)) {
 		*reinterpret_cast<typename std::remove_reference_t<T>*>(&data[0]) = std::get<0>(tuple);
 	}
 
@@ -53,8 +52,8 @@ public:
 	tuple_type_erasure &operator=(const tuple_type_erasure &) = default;
 
 	bool operator==(const tuple_type_erasure &te) const {
-		return size == te.size &&
-			   std::memcmp(&data[0], &te.data[0], size) == 0;
+		return data.size() == te.data.size() &&
+			   std::memcmp(&data[0], &te.data[0], data.size()) == 0;
 	}
 	bool operator!=(const tuple_type_erasure &te) const {
 		return !((*this) == te);
@@ -66,7 +65,7 @@ public:
 
 		std::size_t s = sizeof(tuple_args);
 
-		if (s == size)
+		if (s == data.size())
 			return std::memcmp(&tuple_args, data.data(), s) == 0;
 		return false;
 	}
@@ -78,7 +77,7 @@ public:
 
 		std::size_t s = sizeof(Type);
 
-		if (s == size)
+		if (s == data.size())
 			return *reinterpret_cast<const Type*>(&data[0]) == std::get<0>(tuple);
 		return false;
 	}
@@ -90,8 +89,8 @@ public:
 		using T = std::tuple<decltype(Args{})...>;
 		T t;
 
-		assert(sizeof(t) == size);
-		auto s = std::min(sizeof(t), size);
+		assert(sizeof(t) == data.size());
+		auto s = std::min(sizeof(t), data.size());
 
 		std::memcpy(&t, data.data(), s);
 
@@ -103,8 +102,8 @@ public:
 
 		using Type = typename std::remove_reference_t<T>;
 
-		assert(sizeof(Type) == size);
-		if (sizeof(Type) != size)
+		assert(sizeof(Type) == data.size());
+		if (sizeof(Type) != data.size())
 			return std::tuple<Type>();
 
 		return std::tuple<Type>(*reinterpret_cast<const T*>(&data[0]));

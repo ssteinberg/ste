@@ -10,10 +10,12 @@ using namespace StE::Graphics;
 
 ssss_generator::ssss_generator(const StEngineControl &ctx,
 							   const Scene *scene,
+							   const shadowmap_storage *shadows_storage,
 							   const ssss_storage *ssss,
-							   const deferred_fbo *deferred) : ssss(ssss),
-															   scene(scene),
-															   deferred(deferred) {
+							   const deferred_gbuffer *gbuffer) : shadows_storage(shadows_storage),
+							   									  ssss(ssss),
+																  scene(scene),
+																  gbuffer(gbuffer) {
 	bilateral_blur_x = std::make_unique<ssss_bilateral_blur_x>(this, ctx);
 	bilateral_blur_y = std::make_unique<ssss_bilateral_blur_y>(this, ctx);
 	write_penumbras = std::make_unique<ssss_write_penumbras>(this, ctx);

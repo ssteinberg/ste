@@ -256,10 +256,10 @@ int main() {
 				camera.step_right(time_delta*movement_factor);
 
 			constexpr float rotation_factor = .09f;
-			auto pp = ctx.get_pointer_position();
-			auto center = static_cast<glm::vec2>(ctx.get_backbuffer_size())*.5f;
-			ctx.set_pointer_position(static_cast<glm::ivec2>(center));
-			auto diff_v = (center - static_cast<decltype(center)>(pp)) * time_delta * rotation_factor;
+			glm::ivec2 pp = ctx.get_pointer_position();
+			glm::ivec2 center = ctx.get_backbuffer_size() / 2;
+			ctx.set_pointer_position(center);
+			auto diff_v = static_cast<glm::vec2>(center - pp) * time_delta * rotation_factor;
 			camera.pitch_and_yaw(-diff_v.y, diff_v.x);
 		}
 

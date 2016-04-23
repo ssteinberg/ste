@@ -12,19 +12,14 @@ layout(location = 3) in vec2 tex_coords;
 
 out vec4 gl_Position;
 out vec3 frag_position;
-out vec3 frag_wposition;
-out float frag_depth;
 out vec2 frag_texcoords;
 out vec3 frag_normal;
-out vec3 frag_wnormal;
 out vec3 frag_tangent;
 flat out int matIdx;
 
 uniform mat4 projection;
 uniform mat4 view_matrix;
 uniform mat4 trans_inverse_view_matrix;
-uniform float near = 5.0f;
-uniform float far = 10000.0f;
 
 layout(std430, binding = 1) buffer mesh_data {
 	mesh_descriptor mesh_descriptor_buffer[];
@@ -39,14 +34,10 @@ void main() {
 	vec4 eye_v = view_model * vec4(vert, 1);
 
 	frag_position = eye_v.xyz;
-	frag_wposition = vert;
 	frag_texcoords = tex_coords;
 	frag_normal = (trans_inverse_view_model * vec4(normal, 1)).xyz;
-	frag_wnormal = normal;
 	frag_tangent = (trans_inverse_view_model * vec4(tangent, 1)).xyz;
 	matIdx = md.matIdx;
 
 	gl_Position = projection * eye_v;
-
-	frag_depth = (-eye_v.z - near) / (far - near);
 }

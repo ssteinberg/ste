@@ -9,7 +9,6 @@
 
 #include "Camera.hpp"
 
-#include "deferred_fbo.hpp"
 #include "gpu_dispatchable.hpp"
 #include "gpu_task.hpp"
 
@@ -19,8 +18,15 @@
 
 #include "gpu_dummy_dispatchable.hpp"
 #include "hdr_dof_postprocess.hpp"
+
+#include "shadowmap_storage.hpp"
+#include "shadowmap_projector.hpp"
 #include "ssss_storage.hpp"
 #include "ssss_generator.hpp"
+
+#include "deferred_gbuffer.hpp"
+#include "gbuffer_clear_dispatch.hpp"
+#include "gbuffer_sort_dispatch.hpp"
 
 #include "dense_voxel_space.hpp"
 #include "fb_clear_dispatch.hpp"
@@ -63,7 +69,7 @@ private:
 	using FbClearTask = StE::Graphics::fb_clear_dispatch<>;
 
 private:
-	deferred_fbo fbo;
+	deferred_gbuffer gbuffer;
 	std::shared_ptr<ResizeSignalConnectionType> resize_connection;
 
 	const StEngineControl &ctx;
@@ -74,14 +80,18 @@ private:
 	gpu_task::TaskCollection gui_tasks;
 	gpu_task::TaskCollection added_tasks;
 
+	shadowmap_storage shadows_storage;
+	shadowmap_projector shadows_projector;
+
 	hdr_dof_postprocess hdr;
 	ssss_storage ssss_layers;
 	ssss_generator ssss;
-	gpu_dummy_dispatchable precomposer_dummy_dispatchable;
+	gbuffer_sort_dispatch gbuffer_sorter;
 
-	std::shared_ptr<const gpu_task> precomposer_dummy_task, composer_task, fb_clearer_task, ssss_task;
+	std::shared_ptr<const gpu_task> precomposer_dummy_task, composer_task, fb_clearer_task, gbuffer_clearer_task, shadow_projector_task, ssss_task, gbuffer_sort_task;
 
 	deferred_composition composer;
+	gbuffer_clear_dispatch gbuffer_clearer;
 	FbClearTask fb_clearer;
 
 	bool use_deferred_rendering{ true };
@@ -91,7 +101,7 @@ protected:
 
 	const Core::GenericFramebufferObject *get_fbo() const {
 		if (use_deferred_rendering)
-			return fbo.get_fbo();
+			return gbuffer.get_fbo();
 		return &ctx.gl()->defaut_framebuffer();
 	}
 

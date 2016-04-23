@@ -9,9 +9,6 @@
 
 #include "SceneProperties.hpp"
 
-#include "shadowmap_storage.hpp"
-#include "shadowmap_projector.hpp"
-
 #include "ObjectGroup.hpp"
 #include "entity.hpp"
 
@@ -27,9 +24,6 @@ private:
 	ObjectGroup objects;
 	SceneProperties scene_props;
 
-	shadowmap_storage shadows_storage;
-	shadowmap_projector shadows_projector;
-
 public:
 	Scene(Base::AccessToken, const StEngineControl &ctx);
 	~Scene() noexcept {}
@@ -39,8 +33,6 @@ public:
 
 	ObjectGroup &object_group() { return objects; }
 	const ObjectGroup &object_group() const { return objects; }
-
-	auto& shadow_storage() const { return shadows_storage; }
 
 public:
 	static std::shared_ptr<Scene> create(const StEngineControl &ctx) {

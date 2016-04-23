@@ -18,12 +18,8 @@ ObjectGroup::ObjectGroup(const StEngineControl &ctx, SceneProperties *props) : s
 	vao[3] = vbo_buffer[3];
 
 	object_program->set_uniform("projection", ctx.projection_matrix());
-	object_program->set_uniform("far", ctx.get_far_clip());
-	object_program->set_uniform("near", ctx.get_near_clip());
 	projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([=](const glm::mat4 &proj, float, float fnear, float ffar) {
 		this->object_program->set_uniform("projection", proj);
-		this->object_program->set_uniform("far", ffar);
-		this->object_program->set_uniform("near", fnear);
 	});
 	ctx.signal_projection_change().connect(projection_change_connection);
 }

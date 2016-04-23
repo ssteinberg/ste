@@ -2,12 +2,12 @@
 #type compute
 #version 450
 #extension GL_ARB_bindless_texture : require
+#extension GL_NV_gpu_shader5 : require
 
 #include "hdr_common.glsl"
+#include "gbuffer.glsl"
 
 layout(local_size_x = bins / 2, local_size_y = 1) in;
-
-layout(bindless_sampler) uniform sampler2D z_buffer;
 
 layout(std430, binding = 0) coherent buffer histogram_sums {
 	uint sums[bins];
@@ -23,6 +23,7 @@ shared uint shared_data[bins];
 
 uniform float time;
 uniform uint hdr_lum_resolution;
+uniform float far, near;
 
 void main() {
 	uint id = gl_LocalInvocationID.x;
@@ -41,8 +42,10 @@ void main() {
 	}
 
 	float focal;
-	if (id == 0)
-		focal = texelFetch(z_buffer, textureSize(z_buffer, 0) / 2, 0).x;
+	if (id == 0) {
+		g_buffer_element frag = gbuffer_load(gbuffer_size() / 2);
+		focal = gbuffer_linear_z(frag, far, near);
+	}
 
 	barrier();
 	memoryBarrierShared();

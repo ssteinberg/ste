@@ -9,40 +9,36 @@ const int light_buffers_first = 2;
 
 #include "material.glsl"
 #include "light.glsl"
+#include "gbuffer.glsl"
 //#include "voxels.glsl"
 
 in vec2 tex_coords;
 
 out vec4 gl_FragColor;
 
-layout(binding = 0) uniform sampler2D normal_tex;
-layout(binding = 1) uniform sampler2D position_tex;
-layout(binding = 2) uniform sampler2D color_tex;
-layout(binding = 3) uniform sampler2D tangent_tex;
-layout(binding = 4) uniform isampler2D mat_idx_tex;
-layout(binding = 5) uniform sampler2D wposition_tex;
-layout(binding = 6) uniform sampler2D wnormal_tex;
-
 layout(binding = 7) uniform sampler2DArray penumbra_layers;
 
 uniform float scattering_ro = 0.0003f;
 
 void main() {
-	int draw_idx = texelFetch(mat_idx_tex, ivec2(gl_FragCoord.xy), 0).x;
-	vec4 c = texelFetch(color_tex, ivec2(gl_FragCoord.xy), 0);
+	g_buffer_element frag = gbuffer_load(ivec2(gl_FragCoord.xy));
+
+	int draw_idx = frag.material;
+	vec4 c = frag.albedo;
 
 	vec3 diffuse = c.rgb;
-	float specular = mix(.3f, 1.f, c.w);
+	float alpha = c.a;
+	float specular = mix(.3f, 1.f, frag.specular);
 
 	if (draw_idx < 0) {
 		gl_FragColor = vec4(XYZtoxyY(RGBtoXYZ(diffuse)), 1);
 		return;
 	}
 
-	vec3 n = texelFetch(normal_tex, ivec2(gl_FragCoord.xy), 0).xyz;
-	vec3 t = texelFetch(tangent_tex, ivec2(gl_FragCoord.xy), 0).xyz;
+	vec3 n = frag.N;
+	vec3 t = frag.T;
 	vec3 b = cross(t, n);
-	vec3 position = texelFetch(position_tex, ivec2(gl_FragCoord.xy), 0).xyz;
+	vec3 position = frag.P;
 
 	material_descriptor md = mat_descriptor[draw_idx];
 

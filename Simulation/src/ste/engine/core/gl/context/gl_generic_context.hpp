@@ -66,7 +66,7 @@ private:
 		if (logger) {
 			if (&m == &states) {
 				optional<context_state::state_type> old_state = none;
-				if (execute && it->second.exists())
+				if (it != m.end() && execute && it->second.exists())
 					old_state = it->second.get_state();
 				logger->log_state_change(execute, std::make_pair(k, old_state));
 			}

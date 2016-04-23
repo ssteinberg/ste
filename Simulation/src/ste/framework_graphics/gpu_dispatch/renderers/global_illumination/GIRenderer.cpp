@@ -13,7 +13,7 @@ using namespace StE::Graphics;
 void GIRenderer::deferred_composition::set_context_state() const {
 	using namespace Core;
 
-	dr->fbo.bind_output_textures();
+	dr->gbuffer.bind_gbuffer();
 	0_storage_idx = dr->scene->scene_properties().materials_storage().buffer();
 	dr->scene->scene_properties().lights_storage().bind_buffers(2);
 
@@ -26,6 +26,7 @@ void GIRenderer::deferred_composition::set_context_state() const {
 }
 
 void GIRenderer::deferred_composition::dispatch() const {
+	Core::GL::gl_current_context::get()->memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 	Core::GL::gl_current_context::get()->draw_arrays(GL_TRIANGLE_STRIP, 0, 4);
 }
 
@@ -34,34 +35,39 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 					   const std::shared_ptr<Scene> &scene/*,
 					   std::size_t voxel_grid_size,
 					   float voxel_grid_ratio*/)
-					   : fbo(ctx.get_backbuffer_size()),
+					   : gbuffer(ctx.get_backbuffer_size()),
 						 scene(scene),
 						 ctx(ctx),
 						 //voxel_space(ctx, voxel_grid_size, voxel_grid_ratio),
-						 hdr(ctx, fbo.z_buffer()),
+						 hdr(ctx, &gbuffer),
+						 shadows_projector(ctx, &scene->object_group(), &scene->scene_properties().lights_storage(), &shadows_storage),
 						 ssss_layers(ctx),
-						 ssss(ctx, scene.get(), &ssss_layers, &fbo),
-						 composer(ctx, this) {
+						 ssss(ctx, scene.get(), &shadows_storage, &ssss_layers, &gbuffer),
+						 gbuffer_sorter(ctx, &gbuffer),
+						 composer(ctx, this),
+						 gbuffer_clearer(&gbuffer) {
 	resize_connection = std::make_shared<ResizeSignalConnectionType>([=](const glm::i32vec2 &size) {
-		this->fbo.resize(size);
-		hdr.set_z_buffer(fbo.z_buffer());
-
+		this->gbuffer.resize(size);
 		rebuild_task_queue();
 	});
 	ctx.signal_framebuffer_resize().connect(resize_connection);
 
 	// composer.program->set_uniform("inv_projection", glm::inverse(ctx.projection_matrix()));
 
-	precomposer_dummy_task = make_gpu_task("precomposer_dummy_task", &precomposer_dummy_dispatchable, nullptr);
 	ssss_task = ssss.get_task();
 	composer_task = make_gpu_task("deferred_composition", &composer, hdr.get_input_fbo());
 	fb_clearer_task = make_gpu_task("fb_clearer", &fb_clearer, get_fbo());
+	gbuffer_clearer_task = make_gpu_task("gbuffer_clearer", &gbuffer_clearer, nullptr);
+	gbuffer_sort_task = make_gpu_task("gbuffer_sorter", &gbuffer_sorter, nullptr);
+	shadow_projector_task = make_gpu_task("shadow_projector", &shadows_projector, shadows_storage.get_fbo());
 
+	fb_clearer_task->add_dependency(gbuffer_clearer_task);
 	composer_task->add_dependency(fb_clearer_task);
-	composer_task->add_dependency(precomposer_dummy_task);
+	composer_task->add_dependency(gbuffer_sort_task);
 	composer_task->add_dependency(ssss_task);
-	precomposer_dummy_task->add_dependency(fb_clearer_task);
-	ssss_task->add_dependency(precomposer_dummy_task);
+	gbuffer_sort_task->add_dependency(fb_clearer_task);
+	ssss_task->add_dependency(shadow_projector_task);
+	ssss_task->add_dependency(gbuffer_sort_task);
 	hdr.get_task()->add_dependency(composer_task);
 
 	add_task(fb_clearer_task);
@@ -105,7 +111,7 @@ void GIRenderer::add_task(const gpu_task::TaskPtr &t) {
 	mutate_gpu_task(t, get_fbo());
 	q.add_task(t);
 
-	q.add_task_dependency(precomposer_dummy_task, t);
+	q.add_task_dependency(gbuffer_sort_task, t);
 	if (t != fb_clearer_task)
 		q.add_task_dependency(t, fb_clearer_task);
 
@@ -115,7 +121,7 @@ void GIRenderer::add_task(const gpu_task::TaskPtr &t) {
 void GIRenderer::remove_task(const gpu_task::TaskPtr &t) {
 	q.remove_task(t);
 
-	q.remove_task_dependency(precomposer_dummy_task, t);
+	q.remove_task_dependency(gbuffer_sort_task, t);
 	q.remove_task_dependency(t, fb_clearer_task);
 
 	added_tasks.erase(t);
