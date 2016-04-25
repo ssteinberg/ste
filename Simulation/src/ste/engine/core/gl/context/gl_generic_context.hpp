@@ -66,7 +66,7 @@ private:
 		if (logger) {
 			if (&m == &states) {
 				optional<context_state::state_type> old_state = none;
-				if (execute && it->second.exists())
+				if (it != m.end() && execute && it->second.exists())
 					old_state = it->second.get_state();
 				logger->log_state_change(execute, std::make_pair(k, old_state));
 			}
@@ -208,6 +208,16 @@ public:
 	}
 	auto depth_mask() const {
 		return get_context_server_state(states, { StateName::DEPTH_MASK_STATE }).get_value<bool>();
+	}
+
+	void depth_func(GLenum func) const {
+		set_context_server_state(states,
+								 { StateName::DEPTH_FUNC_STATE },
+								 glDepthFunc,
+								 func);
+	}
+	auto depth_func() const {
+		return get_context_server_state(states, { StateName::DEPTH_FUNC_STATE }).get_value<GLenum>();
 	}
 
 	void cull_face(GLenum face) const {

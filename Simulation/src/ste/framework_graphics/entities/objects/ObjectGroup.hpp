@@ -33,12 +33,8 @@
 namespace StE {
 namespace Graphics {
 
-class shadowmap_projector;
-
 class ObjectGroup : public gpu_dispatchable, public entity_affine {
 	using Base = gpu_dispatchable;
-
-	friend class shadowmap_projector;
 
 private:
 	struct mesh_descriptor {
@@ -87,10 +83,6 @@ private:
 private:
 	std::shared_ptr<ProjectionSignalConnectionType> projection_change_connection;
 
-protected:
-	void bind_buffers() const;
-	void update_dirty_buffers() const;
-
 public:
 	ObjectGroup(const StEngineControl &ctx, SceneProperties *props);
 	~ObjectGroup() noexcept;
@@ -105,24 +97,15 @@ public:
 		object_program->set_uniform("trans_inverse_view_matrix", glm::transpose(glm::inverse(m)));
 	}
 
+	void bind_buffers() const;
+
 protected:
-	void set_context_state() const override final {
-		Core::GL::gl_current_context::get()->enable_depth_test();
-		Core::GL::gl_current_context::get()->enable_state(Core::GL::BasicStateName::CULL_FACE);
+	void update_dirty_buffers() const;
 
-		bind_buffers();
-		object_program->bind();
-	}
+	void set_context_state() const override final;
 
-	void dispatch() const override final {
-		update_dirty_buffers();
-
-		Core::GL::gl_current_context::get()->draw_multi_elements_indirect<elements_type::T>(GL_TRIANGLES, 0, idb.size(), 0);
-
-		for (auto &r : ranges_to_lock)
-			mesh_data_bo.lock_range(r);
-		ranges_to_lock.clear();
-	}
+public:
+	void dispatch() const override final;
 };
 
 }

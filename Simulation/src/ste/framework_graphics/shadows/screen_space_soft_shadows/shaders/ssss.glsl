@@ -1,29 +1,31 @@
 
 #type compute
 #version 450
+#extension GL_NV_gpu_shader5 : require
 
 layout(local_size_x = 32, local_size_y = 32) in;
 
 const int light_buffers_first = 2;
 #include "light.glsl"
 #include "shadow.glsl"
+#include "gbuffer.glsl"
 
-layout(binding = 5) uniform sampler2D wposition_tex;
-layout(binding = 6) uniform sampler2D wnormal_tex;
-layout(binding = 7) uniform sampler2D frag_depth_tex;
 layout(binding = 8) uniform samplerCubeArray shadow_depth_maps;
 layout(r16f, binding = 0) uniform image2DArray penumbra_layers;
 layout(r16f, binding = 1) uniform image2D z_buffer;
 
-uniform float far;
+uniform float far, near;
 uniform float half_over_tan_fov_over_two;
+uniform mat4 inverse_view_matrix;
+uniform mat4 transpose_view_matrix;
 
 void main() {
-	vec2 uv = vec2(gl_GlobalInvocationID.xy) / vec2(imageSize(penumbra_layers).xy);
+	ivec2 coords = ivec2(vec2(gl_GlobalInvocationID.xy) / vec2(imageSize(penumbra_layers).xy) * gbuffer_size());
 
-	vec3 n = textureLod(wnormal_tex, uv, 0).xyz;
-	vec3 w_pos = textureLod(wposition_tex, uv, 0).xyz;
-	float frag_depth = textureLod(frag_depth_tex, uv, 0).x;
+	g_buffer_element frag = gbuffer_load(coords);
+	vec3 n = (transpose_view_matrix * vec4(frag.N, 1)).xyz;
+	vec3 w_pos = (inverse_view_matrix * vec4(frag.P, 1)).xyz;
+	float frag_depth = gbuffer_linear_z(frag, far, near);
 
 	for (int i = 0; i < light_buffer.length(); ++i) {
 		vec3 l_pos = light_buffer[i].position_direction.xyz;

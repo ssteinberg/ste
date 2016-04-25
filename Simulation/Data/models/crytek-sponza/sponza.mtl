@@ -103,7 +103,7 @@ newmtl bricks
 	map_Ks textures\spnza_bricks_a_spec.tga
 	map_bump textures\spnza_bricks_a_diff.tga
 	bump textures\spnza_bricks_a_bump.png
-	brdf ward_metal\aluminium_anodised
+	brdf ward_metal\slightly_rough_aluminium_plate
 
 newmtl arch
 	Ns 10.0000
@@ -153,7 +153,7 @@ newmtl column_a
 	map_Ks textures\sponza_column_a_spec.tga
 	map_bump textures\sponza_column_a_bump.png
 	bump textures\sponza_column_a_bump.png
-	brdf ward_plastic\aluminium_anodised
+	brdf ward_metal\slightly_rough_aluminium_plate
 
 newmtl floor
 	Ns 10.0000
@@ -189,7 +189,7 @@ newmtl column_c
 	map_Ks textures\sponza_column_c_spec.tga
 	map_bump textures\sponza_column_c_bump.png
 	bump textures\sponza_column_c_bump.png
-	brdf ward_plastic\aluminium_anodised
+	brdf ward_metal\slightly_rough_aluminium_plate
 
 newmtl details
 	Ns 10.0000
@@ -223,7 +223,7 @@ newmtl column_b
 	map_Ks textures\sponza_column_b_spec.tga
 	map_bump textures\sponza_column_b_bump.png
 	bump textures\sponza_column_b_bump.png
-	brdf ward_plastic\aluminium_anodised
+	brdf ward_metal\slightly_rough_aluminium_plate
 
 newmtl Material__47
 	Ns 10.0000

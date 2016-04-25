@@ -9,18 +9,24 @@
 
 #include "Camera.hpp"
 
-#include "deferred_fbo.hpp"
 #include "gpu_dispatchable.hpp"
 #include "gpu_task.hpp"
 
 #include "Scene.hpp"
+#include "scene_prepopulate_depth_dispatch.hpp"
+
 #include "SceneProperties.hpp"
 #include "light.hpp"
 
 #include "gpu_dummy_dispatchable.hpp"
 #include "hdr_dof_postprocess.hpp"
-#include "ssss_storage.hpp"
-#include "ssss_generator.hpp"
+
+#include "shadowmap_storage.hpp"
+#include "shadowmap_projector.hpp"
+
+#include "deferred_gbuffer.hpp"
+#include "gbuffer_clear_dispatch.hpp"
+#include "gbuffer_sort_dispatch.hpp"
 
 #include "dense_voxel_space.hpp"
 #include "fb_clear_dispatch.hpp"
@@ -63,7 +69,7 @@ private:
 	using FbClearTask = StE::Graphics::fb_clear_dispatch<>;
 
 private:
-	deferred_fbo fbo;
+	deferred_gbuffer gbuffer;
 	std::shared_ptr<ResizeSignalConnectionType> resize_connection;
 
 	const StEngineControl &ctx;
@@ -74,14 +80,23 @@ private:
 	gpu_task::TaskCollection gui_tasks;
 	gpu_task::TaskCollection added_tasks;
 
-	hdr_dof_postprocess hdr;
-	ssss_storage ssss_layers;
-	ssss_generator ssss;
-	gpu_dummy_dispatchable precomposer_dummy_dispatchable;
+	shadowmap_storage shadows_storage;
+	shadowmap_projector shadows_projector;
 
-	std::shared_ptr<const gpu_task> precomposer_dummy_task, composer_task, fb_clearer_task, ssss_task;
+	hdr_dof_postprocess hdr;
+	gbuffer_sort_dispatch gbuffer_sorter;
+	scene_prepopulate_depth_dispatch prepopulate_depth_dispatch;
+
+	std::shared_ptr<const gpu_task> precomposer_dummy_task,
+									composer_task,
+									fb_clearer_task,
+									gbuffer_clearer_task,
+									shadow_projector_task,
+									gbuffer_sort_task,
+									prepopulate_depth_task;
 
 	deferred_composition composer;
+	gbuffer_clear_dispatch gbuffer_clearer;
 	FbClearTask fb_clearer;
 
 	bool use_deferred_rendering{ true };
@@ -91,7 +106,7 @@ protected:
 
 	const Core::GenericFramebufferObject *get_fbo() const {
 		if (use_deferred_rendering)
-			return fbo.get_fbo();
+			return gbuffer.get_fbo();
 		return &ctx.gl()->defaut_framebuffer();
 	}
 
@@ -104,6 +119,9 @@ public:
 
 	void set_model_matrix(const glm::mat4 &m) {
 		composer.program->set_uniform("view_matrix", m);
+		composer.program->set_uniform("inverse_view_matrix", glm::inverse(m));
+
+		prepopulate_depth_dispatch.set_proj_model_matrix(ctx.projection_matrix() * m);
 	}
 
 	void set_deferred_rendering_enabled(bool enabled);

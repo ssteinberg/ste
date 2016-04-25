@@ -17,6 +17,8 @@ struct material_descriptor {
 	vec4 emission;
 };
 
+const uint16_t material_none = uint16_t(0xFFFF);
+
 layout(std430, binding = 0) buffer material_data {
 	material_descriptor mat_descriptor[];
 };
@@ -43,12 +45,12 @@ float calc_brdf(material_descriptor md, vec3 position, vec3 normal, vec3 tangent
 
 	float theta_min = md.brdf.min_theta_in;
 	float theta_max = md.brdf.max_theta_in;
-	
+
 	mat3 TBN = transpose(mat3(tangent, bitangent, normal));
 
 	vec3 v = incident;
 	vec3 e = -position;
-	
+
 	vec3 win = normalize(v);
 	vec3 wout = normalize(e);
 	vec3 lwin = TBN * win;
@@ -66,7 +68,7 @@ float calc_brdf(material_descriptor md, vec3 position, vec3 normal, vec3 tangent
 	float cos_in_theta = dot(win, normal);
 	float in_theta = acos(cos_in_theta) / pi_2;
 	in_theta = clamp((in_theta - theta_min) / (theta_max - theta_min), .0f, 1.f);
-	
+
 	float cos_out_theta = max(.0f, dot(wout, normal));
 	float out_theta = acos(cos_out_theta) / pi_2;
 

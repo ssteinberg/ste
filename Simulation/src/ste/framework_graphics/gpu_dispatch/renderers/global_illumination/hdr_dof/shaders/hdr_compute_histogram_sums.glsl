@@ -2,12 +2,12 @@
 #type compute
 #version 450
 #extension GL_ARB_bindless_texture : require
+#extension GL_NV_gpu_shader5 : require
 
 #include "hdr_common.glsl"
+#include "gbuffer.glsl"
 
 layout(local_size_x = bins / 2, local_size_y = 1) in;
-
-layout(bindless_sampler) uniform sampler2D z_buffer;
 
 layout(std430, binding = 0) coherent buffer histogram_sums {
 	uint sums[bins];
@@ -21,8 +21,9 @@ layout(std430, binding = 2) coherent buffer hdr_bokeh_parameters_buffer {
 
 shared uint shared_data[bins];
 
-uniform float time;
+// uniform float time;
 uniform uint hdr_lum_resolution;
+uniform float far = 3000.f, near = .0f;
 
 void main() {
 	uint id = gl_LocalInvocationID.x;
@@ -41,8 +42,10 @@ void main() {
 	}
 
 	float focal;
-	if (id == 0)
-		focal = texelFetch(z_buffer, textureSize(z_buffer, 0) / 2, 0).x;
+	if (id == 0) {
+		g_buffer_element frag = gbuffer_load(gbuffer_size() / 2);
+		params.focus = gbuffer_linear_z(frag, far, near);
+	}
 
 	barrier();
 	memoryBarrierShared();
@@ -62,9 +65,9 @@ void main() {
 	sums[id * 2] = shared_data[id * 2];
 	sums[id * 2 + 1] = shared_data[id * 2 + 1];
 
-	if (id == 0) {
-		float t = (focal > params.focus ? 3.2f : 13.f) * time;
-		t = clamp(t, 0.f, 1.f);
-		params.focus = mix(params.focus, focal, t);
-	}
+	// if (id == 0) {
+	// 	float t = (focal > params.focus ? 3.2f : 13.f) * time;
+	// 	t = clamp(t, 0.f, 1.f);
+	// 	params.focus = mix(params.focus, focal, t);
+	// }
 }

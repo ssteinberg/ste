@@ -19,7 +19,8 @@
 
 using namespace StE::Graphics;
 
-hdr_dof_postprocess::hdr_dof_postprocess(const StEngineControl &context, const Core::Texture2D *z_buffer) : hdr_vision_properties_sampler(Core::TextureFiltering::Linear, Core::TextureFiltering::Linear, 16),
+hdr_dof_postprocess::hdr_dof_postprocess(const StEngineControl &context, const deferred_gbuffer *gbuffer) : hdr_vision_properties_sampler(Core::TextureFiltering::Linear, Core::TextureFiltering::Linear, 16),
+																											gbuffer(gbuffer),
 																											ctx(context) {
 	hdr_vision_properties_sampler.set_wrap_s(Core::TextureWrapMode::ClampToEdge);
 
@@ -27,11 +28,6 @@ hdr_dof_postprocess::hdr_dof_postprocess(const StEngineControl &context, const C
 
 	float big_float = 10000.f;
 	hdr_bokeh_param_buffer_eraser = std::make_unique<StE::Core::PixelBufferObject<std::int32_t>>(std::vector<std::int32_t>{ *reinterpret_cast<std::int32_t*>(&big_float), 0 });
-
-	resize_connection = std::make_shared<ResizeSignalConnectionType>([=](const glm::i32vec2 &size) {
-		this->resize(size);
-	});
-	ctx.signal_framebuffer_resize().connect(resize_connection);
 
 	hdr_compute_minmax = context.glslprograms_pool().fetch_program_task({ "hdr_compute_minmax.glsl" })();
 	hdr_create_histogram = context.glslprograms_pool().fetch_program_task({ "hdr_create_histogram.glsl" })();
@@ -41,8 +37,6 @@ hdr_dof_postprocess::hdr_dof_postprocess(const StEngineControl &context, const C
 	hdr_bloom_blury = context.glslprograms_pool().fetch_program_task({ "passthrough.vert", "hdr_bloom_blur_y.frag" })();
 	bokeh_blurx = context.glslprograms_pool().fetch_program_task({ "passthrough.vert", "bokeh_bilateral_blur_x.frag" })();
 	bokeh_blury = context.glslprograms_pool().fetch_program_task({ "passthrough.vert", "bokeh_bilateral_blur_y.frag" })();
-
-	this->set_z_buffer(z_buffer);
 
 	gli::texture1d hdr_human_vision_properties_data(gli::format::FORMAT_RGBA32_SFLOAT_PACK32, glm::tvec1<std::size_t>{ 4096 }, 1);
 	{
@@ -63,6 +57,27 @@ hdr_dof_postprocess::hdr_dof_postprocess(const StEngineControl &context, const C
 	hdr_tonemap_coc->set_uniform("hdr_vision_properties_texture", vision_handle);
 
 	resize(ctx.get_backbuffer_size());
+
+	setup_engine_connections();
+}
+
+void hdr_dof_postprocess::setup_engine_connections() {
+	resize_connection = std::make_shared<ResizeSignalConnectionType>([=](const glm::i32vec2 &size) {
+		this->resize(size);
+	});
+
+	hdr_tonemap_coc->set_uniform("far", ctx.get_far_clip());
+	hdr_tonemap_coc->set_uniform("near", ctx.get_near_clip());
+	hdr_compute_histogram_sums->set_uniform("far", ctx.get_far_clip());
+	hdr_compute_histogram_sums->set_uniform("near", ctx.get_near_clip());
+	projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([this](const glm::mat4&, float ffov, float fnear, float ffar) {
+		hdr_tonemap_coc->set_uniform("far", ffar);
+		hdr_tonemap_coc->set_uniform("near", fnear);
+		hdr_compute_histogram_sums->set_uniform("far", ffar);
+		hdr_compute_histogram_sums->set_uniform("near", fnear);
+	});
+	ctx.signal_framebuffer_resize().connect(resize_connection);
+	ctx.signal_projection_change().connect(projection_change_connection);
 }
 
 std::shared_ptr<const gpu_task> hdr_dof_postprocess::get_task() const {
@@ -102,16 +117,6 @@ std::vector<std::shared_ptr<const gpu_task>> hdr_dof_postprocess::create_sub_tas
 }
 
 hdr_dof_postprocess::~hdr_dof_postprocess() noexcept {
-}
-
-void hdr_dof_postprocess::set_z_buffer(const Core::Texture2D *z_buffer) {
-	this->z_buffer = z_buffer;
-
-	auto z_handle = z_buffer->get_texture_handle();
-	z_handle.make_resident();
-
-	hdr_tonemap_coc->set_uniform("z_buffer", z_handle);
-	hdr_compute_histogram_sums->set_uniform("z_buffer", z_handle);
 }
 
 void hdr_dof_postprocess::resize(glm::ivec2 size) {

@@ -21,6 +21,8 @@
 #include "GLSLProgram.hpp"
 #include "GLSLProgramFactory.hpp"
 
+#include "deferred_gbuffer.hpp"
+
 #include <memory>
 #include <array>
 
@@ -48,6 +50,7 @@ class hdr_dof_postprocess {
 
 private:
 	using ResizeSignalConnectionType = StEngineControl::framebuffer_resize_signal_type::connection_type;
+	using ProjectionSignalConnectionType = StEngineControl::projection_change_signal_type::connection_type;
 
 	struct hdr_bokeh_parameters {
 		std::int32_t lum_min, lum_max;
@@ -101,23 +104,24 @@ private:
 
 	glm::i32vec2 luminance_size;
 
-	const Core::Texture2D *z_buffer;
+	const deferred_gbuffer *gbuffer;
 	const StEngineControl &ctx;
 
 	std::array<std::uint32_t, 4> storage_buffers;
 
 private:
 	std::shared_ptr<ResizeSignalConnectionType> resize_connection;
+	std::shared_ptr<ProjectionSignalConnectionType> projection_change_connection;
 
 private:
 	std::vector<std::shared_ptr<const gpu_task>> create_sub_tasks();
 	hdr_bokeh_blury_task* create_dispatchable();
 
-public:
-	hdr_dof_postprocess(const StEngineControl &ctx, const Core::Texture2D *z_buffer);
-	~hdr_dof_postprocess() noexcept;
+	void setup_engine_connections();
 
-	void set_z_buffer(const Core::Texture2D *z_buffer);
+public:
+	hdr_dof_postprocess(const StEngineControl &ctx, const deferred_gbuffer *gbuffer);
+	~hdr_dof_postprocess() noexcept;
 
 	auto get_input_fbo() const { return &fbo_hdr_final; }
 

@@ -18,12 +18,8 @@ ObjectGroup::ObjectGroup(const StEngineControl &ctx, SceneProperties *props) : s
 	vao[3] = vbo_buffer[3];
 
 	object_program->set_uniform("projection", ctx.projection_matrix());
-	object_program->set_uniform("far", ctx.get_far_clip());
-	object_program->set_uniform("near", ctx.get_near_clip());
 	projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([=](const glm::mat4 &proj, float, float fnear, float ffar) {
 		this->object_program->set_uniform("projection", proj);
-		this->object_program->set_uniform("far", ffar);
-		this->object_program->set_uniform("near", fnear);
 	});
 	ctx.signal_projection_change().connect(projection_change_connection);
 }
@@ -106,4 +102,26 @@ void ObjectGroup::update_dirty_buffers() const {
 	}
 
 	signalled_objects.clear();
+}
+
+void ObjectGroup::set_context_state() const {
+	Core::GL::gl_current_context::get()->enable_depth_test();
+	Core::GL::gl_current_context::get()->depth_func(GL_LEQUAL);
+	Core::GL::gl_current_context::get()->color_mask(false, false, false, false);
+	Core::GL::gl_current_context::get()->depth_mask(false);
+
+	Core::GL::gl_current_context::get()->enable_state(Core::GL::BasicStateName::CULL_FACE);
+
+	bind_buffers();
+	object_program->bind();
+}
+
+void ObjectGroup::dispatch() const {
+	update_dirty_buffers();
+
+	Core::GL::gl_current_context::get()->draw_multi_elements_indirect<elements_type::T>(GL_TRIANGLES, 0, idb.size(), 0);
+
+	for (auto &r : ranges_to_lock)
+		mesh_data_bo.lock_range(r);
+	ranges_to_lock.clear();
 }

@@ -129,8 +129,8 @@ void gpu_task_dispatch_queue::run_sop_iteration() {
 	auto start_time = std::chrono::high_resolution_clock::now();
 	auto rdts_stamp = _rdtsc();
 	sop.optimizer(root.get(), 1)();
-	auto cycles = _rdtsc() - rdts_stamp;
-	auto ms = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start_time).count();
+	unsigned cycles = _rdtsc() - rdts_stamp;
+	unsigned ms = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start_time).count();
 
 #ifdef DEBUG
 	static int i = 0;
