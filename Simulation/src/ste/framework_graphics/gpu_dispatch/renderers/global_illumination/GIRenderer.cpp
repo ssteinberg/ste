@@ -19,7 +19,7 @@ void GIRenderer::deferred_composition::set_context_state() const {
 
 	Core::GL::gl_current_context::get()->enable_state(StE::Core::GL::BasicStateName::TEXTURE_CUBE_MAP_SEAMLESS);
 	8_tex_unit = *dr->shadows_storage.get_cubemaps();
-	8_sampler_idx = *Sampler::SamplerAnisotropicLinearClamp();
+	8_sampler_idx = dr->shadows_storage.get_shadow_sampler();
 
 	ScreenFillingQuad.vao()->bind();
 
@@ -41,6 +41,7 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 						 ctx(ctx),
 						 //voxel_space(ctx, voxel_grid_size, voxel_grid_ratio),
 						 hdr(ctx, &gbuffer),
+						 shadows_storage(ctx),
 						 shadows_projector(ctx, &scene->object_group(), &scene->scene_properties().lights_storage(), &shadows_storage),
 						 prepopulate_depth_dispatch(ctx, scene.get()),
 						 gbuffer_sorter(ctx, &gbuffer),
@@ -50,7 +51,13 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 		this->gbuffer.resize(size);
 		rebuild_task_queue();
 	});
+	projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([this](const glm::mat4&, float, float n, float f) {
+		shadowmap_storage::update_shader_shadow_proj_uniforms(composer.program.get(), n, f);
+	});
 	ctx.signal_framebuffer_resize().connect(resize_connection);
+	ctx.signal_projection_change().connect(projection_change_connection);
+
+	shadowmap_storage::update_shader_shadow_proj_uniforms(composer.program.get(), ctx.get_near_clip(), ctx.get_far_clip());
 
 	// composer.program->set_uniform("inv_projection", glm::inverse(ctx.projection_matrix()));
 
@@ -58,7 +65,7 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 	fb_clearer_task = make_gpu_task("fb_clearer", &fb_clearer, get_fbo());
 	gbuffer_clearer_task = make_gpu_task("gbuffer_clearer", &gbuffer_clearer, nullptr);
 	gbuffer_sort_task = make_gpu_task("gbuffer_sorter", &gbuffer_sorter, nullptr);
-	shadow_projector_task = make_gpu_task("shadow_projector", &shadows_projector, shadows_storage.get_fbo());
+	shadow_projector_task = make_gpu_task("shadow_projector", &shadows_projector, nullptr);
 	prepopulate_depth_task = make_gpu_task("scene_prepopulate_depth", &prepopulate_depth_dispatch, get_fbo());
 
 	fb_clearer_task->add_dependency(gbuffer_clearer_task);

@@ -99,7 +99,7 @@ auto create_light_object(const std::shared_ptr<StE::Graphics::Scene> &scene, con
 }
 
 void create_glass(const std::shared_ptr<StE::Graphics::Scene> &scene, StE::StEngineControl *ctx, const glm::vec3 &p0, const glm::vec3 &p1) {
-	std::shared_ptr<StE::Graphics::BRDF> brdf = StE::Graphics::bme_brdf_representation::BRDF_from_bme_representation_task(*ctx, "Data/bxdf/ward_metal/laminate_light_wood")();
+	std::shared_ptr<StE::Graphics::BRDF> brdf = StE::Graphics::bme_brdf_representation::BRDF_from_bme_representation_task(*ctx, "Data/bxdf/ward_metal/laminate_part_of_tile")();
 
 	glm::vec3 U = glm::vec3{ p0.x, p0.y, p0.z } - glm::vec3{ p1.x, p1.y, p1.z };
 	glm::vec3 V = glm::vec3{ p0.x, p1.y, p0.z } - glm::vec3{ p1.x, p1.y, p1.z };
@@ -212,7 +212,7 @@ int main() {
 																								  2.5f));
 
 	const glm::vec3 light0_pos{ -700.6, 138, -70 };
-	const glm::vec3 light1_pos{ 200.6, 550, 145 };
+	const glm::vec3 light1_pos{ 200, 550, 170 };
 	auto light0 = std::make_shared<StE::Graphics::SphericalLight>(4000.f, StE::Graphics::RGB({ 1.f, .57f, .16f }), light0_pos, 4.f);
 	auto light1 = std::make_shared<StE::Graphics::SphericalLight>(12000.f, StE::Graphics::RGB({ 0.5f, .8f, 1.f }), light1_pos, 9.f);
 	scene->scene_properties().lights_storage().add_light(light0);
@@ -222,12 +222,12 @@ int main() {
 	light0_obj = create_light_object(scene, light0_pos, light0);
 	light1_obj = create_light_object(scene, light1_pos, light1);
 
-	create_glass(scene, &ctx, { -450, 680, -280 }, { -600, 890, -280 });
-	create_glass(scene, &ctx, { -262, 680, -280 }, { -436, 890, -280 });
-	create_glass(scene, &ctx, { -60, 680, -280 }, { -230, 890, -280 });
-	create_glass(scene, &ctx, { 90, 680, -280 }, { -60, 890, -280 });
-	create_glass(scene, &ctx, { 290, 680, -280 }, { 100, 890, -280 });
-	create_glass(scene, &ctx, { 300, 680, -280 }, { 523, 890, -280 });
+	// create_glass(scene, &ctx, { -450, 680, -280 }, { -600, 890, -280 });
+	// create_glass(scene, &ctx, { -262, 680, -280 }, { -436, 890, -280 });
+	// create_glass(scene, &ctx, { -60, 680, -280 }, { -230, 890, -280 });
+	// create_glass(scene, &ctx, { 90, 680, -280 }, { -60, 890, -280 });
+	// create_glass(scene, &ctx, { 290, 680, -280 }, { 100, 890, -280 });
+	// create_glass(scene, &ctx, { 300, 680, -280 }, { 523, 890, -280 });
 
 	// Bind input
 	auto keyboard_listner = std::make_shared<decltype(ctx)::hid_keyboard_signal_type::connection_type>(

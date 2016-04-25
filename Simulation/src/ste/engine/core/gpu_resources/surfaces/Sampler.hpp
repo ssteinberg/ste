@@ -46,6 +46,7 @@ public:
 	}
 };
 
+
 struct sampler_descriptor {
 	TextureFiltering mag_filter{ TextureFiltering::Linear };
 	TextureFiltering min_filter{ TextureFiltering::Nearest };
@@ -53,6 +54,8 @@ struct sampler_descriptor {
 	TextureWrapMode wrap_s{ TextureWrapMode::Wrap };
 	TextureWrapMode wrap_t{ TextureWrapMode::Wrap };
 	TextureWrapMode wrap_r{ TextureWrapMode::Wrap };
+	TextureCompareMode compare_mode{ TextureCompareMode::None };
+	TextureCompareFunc compare_func;
 	float anisotropy{ 1.f };
 
 	GLenum min_mipmapping_filter() {
@@ -134,8 +137,8 @@ public:
 			glSamplerParameteri(get_resource_id(), GL_TEXTURE_MIN_FILTER, static_cast<GLenum>(filter));
 	}
 	virtual void set_anisotropic_filter(float anis) { descriptor.anisotropy = std::max(1.0f,std::min(16.0f,anis)); glSamplerParameterf(get_resource_id(), GL_TEXTURE_MAX_ANISOTROPY_EXT, descriptor.anisotropy); }
-	TextureFiltering get_mag_filter() const { return descriptor.mag_filter; }
-	TextureFiltering get_min_filter() const { return descriptor.min_filter; }
+	auto get_mag_filter() const { return descriptor.mag_filter; }
+	auto get_min_filter() const { return descriptor.min_filter; }
 	float get_anisotropic_filter_max() const { return descriptor.anisotropy; }
 
 	void set_wrap_s(TextureWrapMode wrap_mode) {
@@ -153,9 +156,14 @@ public:
 		if (wrap_mode != TextureWrapMode::None)
 			glSamplerParameteri(get_resource_id(), GL_TEXTURE_WRAP_R, static_cast<GLenum>(wrap_mode));
 	}
-	TextureWrapMode get_wrap_s() const { return descriptor.wrap_s; }
-	TextureWrapMode get_wrap_t() const { return descriptor.wrap_t; }
-	TextureWrapMode get_wrap_r() const { return descriptor.wrap_r; }
+	auto get_wrap_s() const { return descriptor.wrap_s; }
+	auto get_wrap_t() const { return descriptor.wrap_t; }
+	auto get_wrap_r() const { return descriptor.wrap_r; }
+
+	void set_compare_mode(TextureCompareMode mode) { descriptor.compare_mode = mode; glSamplerParameterf(get_resource_id(), GL_TEXTURE_COMPARE_MODE, static_cast<GLenum>(mode)); }
+	void set_compare_func(TextureCompareFunc func) { descriptor.compare_func = func; glSamplerParameterf(get_resource_id(), GL_TEXTURE_COMPARE_FUNC, static_cast<GLenum>(func)); }
+	auto get_compare_mode() const { return descriptor.compare_mode; }
+	auto get_compare_func() const { return descriptor.compare_func; }
 
 	core_resource_type resource_type() const override { return core_resource_type::SamplingDescriptor; }
 
