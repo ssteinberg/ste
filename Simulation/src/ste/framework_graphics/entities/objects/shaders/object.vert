@@ -11,11 +11,13 @@ layout(location = 2) in vec3 tangent;
 layout(location = 3) in vec2 tex_coords;
 
 out vec4 gl_Position;
-out vec3 frag_position;
-out vec2 frag_texcoords;
-out vec3 frag_normal;
-out vec3 frag_tangent;
-flat out int matIdx;
+out v {
+	vec3 frag_position;
+	vec2 frag_texcoords;
+	vec3 frag_normal;
+	vec3 frag_tangent;
+	flat int matIdx;
+} vout;
 
 uniform mat4 projection;
 uniform mat4 view_matrix;
@@ -28,16 +30,16 @@ layout(std430, binding = 1) buffer mesh_data {
 void main() {
 	mesh_descriptor md = mesh_descriptor_buffer[gl_DrawIDARB];
 
-	mat4 view_model = view_matrix * md.model;
 	mat4 trans_inverse_view_model = trans_inverse_view_matrix * md.transpose_inverse_model;
 
-	vec4 eye_v = view_model * vec4(vert, 1);
+	vec4 wpos = md.model * vec4(vert, 1);
+	vec4 eye_v = view_matrix * wpos;
 
-	frag_position = eye_v.xyz;
-	frag_texcoords = tex_coords;
-	frag_normal = (trans_inverse_view_model * vec4(normal, 1)).xyz;
-	frag_tangent = (trans_inverse_view_model * vec4(tangent, 1)).xyz;
-	matIdx = md.matIdx;
+	vout.frag_position = eye_v.xyz;
+	vout.frag_texcoords = tex_coords;
+	vout.frag_normal = (trans_inverse_view_model * vec4(normal, 1)).xyz;
+	vout.frag_tangent = (trans_inverse_view_model * vec4(tangent, 1)).xyz;
+	vout.matIdx = md.matIdx;
 
 	gl_Position = projection * eye_v;
 }

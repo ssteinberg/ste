@@ -17,8 +17,8 @@ void hdr_compute_histogram_sums_task::set_context_state() const {
 }
 
 void hdr_compute_histogram_sums_task::dispatch() const {
-	GL::gl_current_context::get()->memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_ATOMIC_COUNTER_BARRIER_BIT | GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
-	p->hdr_compute_histogram_sums->set_uniform("time", p->ctx.time_per_frame().count());
+	// p->hdr_compute_histogram_sums->set_uniform("time", p->ctx.time_per_frame().count());
 
+	GL::gl_current_context::get()->memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_ATOMIC_COUNTER_BARRIER_BIT | GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 	GL::gl_current_context::get()->dispatch_compute(1, 1, 1);
 }

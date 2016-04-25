@@ -157,6 +157,7 @@ gl_context::window_type gl_context::create_window(const char * title, const glm:
 void gl_context::set_defaults() {
 	color_mask(true, true, true, true);
 	depth_mask(true);
+	depth_func(GL_LESS);
 	clear_color(.0f, .0f, .0f, 1.f);
 	clear_depth(1.f);
 	cull_face(GL_BACK);

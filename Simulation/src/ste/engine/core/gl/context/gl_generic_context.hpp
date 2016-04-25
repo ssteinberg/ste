@@ -210,6 +210,16 @@ public:
 		return get_context_server_state(states, { StateName::DEPTH_MASK_STATE }).get_value<bool>();
 	}
 
+	void depth_func(GLenum func) const {
+		set_context_server_state(states,
+								 { StateName::DEPTH_FUNC_STATE },
+								 glDepthFunc,
+								 func);
+	}
+	auto depth_func() const {
+		return get_context_server_state(states, { StateName::DEPTH_FUNC_STATE }).get_value<GLenum>();
+	}
+
 	void cull_face(GLenum face) const {
 		set_context_server_state(states,
 								 { StateName::CULL_FACE_STATE },

@@ -61,7 +61,7 @@ private:
 
 public:
 	using framebuffer_resize_signal_type = signal<glm::i32vec2>;
-	using projection_change_signal_type = signal<glm::mat4, float, float, float>;
+	using projection_change_signal_type = signal<const glm::mat4&, float, float, float>;
 	using hid_pointer_button_signal_type = signal<HID::pointer::B, HID::Status, HID::ModifierBits>;
 	using hid_pointer_movement_signal_type = signal<glm::dvec2>;
 	using hid_scroll_signal_type = signal<glm::dvec2>;
@@ -149,7 +149,7 @@ public:
 	float get_fov() const;
 	float get_near_clip() const;
 	float get_far_clip() const;
-	glm::mat4 projection_matrix() const;
+	glm::mat4 &projection_matrix() const;
 
 	glm::mat4 ortho_projection_matrix() const {
 		auto vs = get_backbuffer_size();

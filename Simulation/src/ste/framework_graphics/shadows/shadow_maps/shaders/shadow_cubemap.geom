@@ -15,7 +15,7 @@ in vs_out {
 } vin[];
 
 out frag_in {
-	vec4 position;
+	vec3 position;
 	vec2 uv;
 	flat int matIdx;
 } vout;
@@ -30,7 +30,7 @@ void main() {
 		vec3 N = (vin[0].normal + vin[1].normal + vin[2].normal) / 3.f;
 		vec3 V = light_pos.xyz - gl_in[0].gl_Position.xyz;
 
-		if (dot(N ,V) > 0) {
+		if (dot(N,V) < 0) {
 			vec4 vertices[3];
 			vec4 transformed_vertices[3];
 
@@ -57,7 +57,7 @@ void main() {
 				for (int j = 0; j < 3; ++j) {
 					vout.uv = vin[j].uv;
 					vout.matIdx = vin[j].matIdx;
-					vout.position = vertices[j];
+					vout.position = vertices[j].xyz;
 
 					gl_Position = transformed_vertices[j];
 

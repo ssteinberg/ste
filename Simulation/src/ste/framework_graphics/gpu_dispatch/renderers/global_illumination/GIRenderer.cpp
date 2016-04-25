@@ -17,8 +17,9 @@ void GIRenderer::deferred_composition::set_context_state() const {
 	0_storage_idx = dr->scene->scene_properties().materials_storage().buffer();
 	dr->scene->scene_properties().lights_storage().bind_buffers(2);
 
-	7_tex_unit = *dr->ssss_layers.get_penumbra_layers();
-	7_sampler_idx = *Sampler::SamplerAnisotropicLinearClamp();
+	Core::GL::gl_current_context::get()->enable_state(StE::Core::GL::BasicStateName::TEXTURE_CUBE_MAP_SEAMLESS);
+	8_tex_unit = *dr->shadows_storage.get_cubemaps();
+	8_sampler_idx = *Sampler::SamplerAnisotropicLinearClamp();
 
 	ScreenFillingQuad.vao()->bind();
 
@@ -41,8 +42,7 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 						 //voxel_space(ctx, voxel_grid_size, voxel_grid_ratio),
 						 hdr(ctx, &gbuffer),
 						 shadows_projector(ctx, &scene->object_group(), &scene->scene_properties().lights_storage(), &shadows_storage),
-						 ssss_layers(ctx),
-						 ssss(ctx, scene.get(), &shadows_storage, &ssss_layers, &gbuffer),
+						 prepopulate_depth_dispatch(ctx, scene.get()),
 						 gbuffer_sorter(ctx, &gbuffer),
 						 composer(ctx, this),
 						 gbuffer_clearer(&gbuffer) {
@@ -54,21 +54,21 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 
 	// composer.program->set_uniform("inv_projection", glm::inverse(ctx.projection_matrix()));
 
-	ssss_task = ssss.get_task();
 	composer_task = make_gpu_task("deferred_composition", &composer, hdr.get_input_fbo());
 	fb_clearer_task = make_gpu_task("fb_clearer", &fb_clearer, get_fbo());
 	gbuffer_clearer_task = make_gpu_task("gbuffer_clearer", &gbuffer_clearer, nullptr);
 	gbuffer_sort_task = make_gpu_task("gbuffer_sorter", &gbuffer_sorter, nullptr);
 	shadow_projector_task = make_gpu_task("shadow_projector", &shadows_projector, shadows_storage.get_fbo());
+	prepopulate_depth_task = make_gpu_task("scene_prepopulate_depth", &prepopulate_depth_dispatch, get_fbo());
 
 	fb_clearer_task->add_dependency(gbuffer_clearer_task);
 	composer_task->add_dependency(fb_clearer_task);
 	composer_task->add_dependency(gbuffer_sort_task);
-	composer_task->add_dependency(ssss_task);
+	composer_task->add_dependency(shadow_projector_task);
 	gbuffer_sort_task->add_dependency(fb_clearer_task);
-	ssss_task->add_dependency(shadow_projector_task);
-	ssss_task->add_dependency(gbuffer_sort_task);
 	hdr.get_task()->add_dependency(composer_task);
+	prepopulate_depth_task->add_dependency(fb_clearer_task);
+	scene->add_dependency(prepopulate_depth_task);
 
 	add_task(fb_clearer_task);
 	rebuild_task_queue();

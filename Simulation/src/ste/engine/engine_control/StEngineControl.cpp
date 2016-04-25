@@ -154,7 +154,7 @@ void StEngineControl::set_projection_dirty() {
 	projection_change_signal.emit(projection, pimpl->field_of_view, pimpl->near_clip, pimpl->far_clip);
 }
 
-glm::mat4 StEngineControl::projection_matrix() const {
+glm::mat4& StEngineControl::projection_matrix() const {
 	return projection;
 }
 

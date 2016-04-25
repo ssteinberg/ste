@@ -10,35 +10,36 @@ const int light_buffers_first = 2;
 #include "material.glsl"
 #include "light.glsl"
 #include "gbuffer.glsl"
+#include "shadow.glsl"
 //#include "voxels.glsl"
 
 in vec2 tex_coords;
 
 out vec4 gl_FragColor;
 
-layout(binding = 7) uniform sampler2DArray penumbra_layers;
+layout(binding = 8) uniform samplerCubeArray shadow_depth_maps;
+// layout(binding = 7) uniform sampler2DArray penumbra_layers;
 
 uniform float scattering_ro = 0.0003f;
+uniform mat4 inverse_view_matrix;
+uniform float far = 3000.f;
 
-void main() {
-	g_buffer_element frag = gbuffer_load(ivec2(gl_FragCoord.xy));
-
-	int draw_idx = frag.material;
+vec4 shade(g_buffer_element frag) {
+	uint16_t draw_idx = frag.material;
 	vec4 c = frag.albedo;
 
 	vec3 diffuse = c.rgb;
 	float alpha = c.a;
 	float specular = mix(.3f, 1.f, frag.specular);
 
-	if (draw_idx < 0) {
-		gl_FragColor = vec4(XYZtoxyY(RGBtoXYZ(diffuse)), 1);
-		return;
-	}
+	if (draw_idx == material_none)
+		return vec4(diffuse, alpha);
 
 	vec3 n = frag.N;
 	vec3 t = frag.T;
 	vec3 b = cross(t, n);
-	vec3 position = frag.P;
+	vec3 position = frag.P.xyz;
+	vec3 w_pos = (inverse_view_matrix * vec4(position, 1)).xyz;
 
 	material_descriptor md = mat_descriptor[draw_idx];
 
@@ -51,12 +52,16 @@ void main() {
 			continue;
 
 		float dist = length(v);
+		float l_radius = light_buffer[i].radius;
 		vec3 l = diffuse * ld.diffuse.xyz;
+
+		vec3 shadow_v = w_pos - light_buffer[i].position_direction.xyz;
+		bool shadowed;
+		float w_penumbra = shadow_penumbra_width(shadow_depth_maps, i, shadow_v, l_radius, dist, far, shadowed);
 
 		float dist_att = dist * scattering_ro;
 		float shadow_attenuation = 1.f - exp(-dist_att * dist_att);
-		float shadow = textureLod(penumbra_layers, vec3(tex_coords, i), 0).x;
-		float obscurance = mix(1.f, .3f * shadow_attenuation, shadow);
+		float obscurance = mix(1.f, .3f * shadow_attenuation, shadowed);
 
 		float brdf = calc_brdf(md, position, n, t, b, v);
 		float attenuation_factor = light_attenuation_factor(ld, dist);
@@ -66,7 +71,22 @@ void main() {
 		rgb += l * max(0.f, irradiance);
 	}
 
-	vec3 xyY = XYZtoxyY(RGBtoXYZ(rgb));
+	return vec4(rgb, alpha);
+}
+
+void main() {
+	g_buffer_element frag = gbuffer_load(ivec2(gl_FragCoord.xy));
+	vec4 c = shade(frag);
+
+	int i = 0;
+	while (!gbuffer_eof(frag.next_ptr) && i++ < 5) {
+		frag = gbuffer_load(frag.next_ptr);
+		vec4 c2 = shade(frag);
+
+		c = c * c.a + c2 * (1.f - c.a);
+	}
+
+	vec3 xyY = XYZtoxyY(RGBtoXYZ(c.rgb));
 	xyY.z = max(min_luminance, xyY.z);
 
 	gl_FragColor = vec4(xyY, 1);

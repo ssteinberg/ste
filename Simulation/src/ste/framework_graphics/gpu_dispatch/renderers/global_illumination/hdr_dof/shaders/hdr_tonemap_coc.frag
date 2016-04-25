@@ -23,7 +23,7 @@ const float bloom_cutoff = .9f;
 layout(bindless_sampler) uniform sampler2D hdr;
 layout(bindless_sampler) uniform sampler1D hdr_vision_properties_texture;
 
-uniform float aperature_radius = .025f;
+uniform float aperature_radius = .25f;
 uniform float f1 = .1f;
 uniform float far, near;
 

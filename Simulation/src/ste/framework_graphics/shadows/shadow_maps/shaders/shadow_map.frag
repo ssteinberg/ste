@@ -6,7 +6,7 @@
 #include "material.glsl"
 
 in frag_in {
-	vec4 position;
+	vec3 position;
 	vec2 uv;
 	flat int matIdx;
 } vin;

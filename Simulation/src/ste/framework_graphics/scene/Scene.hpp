@@ -10,7 +10,6 @@
 #include "SceneProperties.hpp"
 
 #include "ObjectGroup.hpp"
-#include "entity.hpp"
 
 #include <memory>
 
@@ -37,6 +36,10 @@ public:
 public:
 	static std::shared_ptr<Scene> create(const StEngineControl &ctx) {
 		return std::make_shared<Scene>(Base::AccessToken(), ctx);
+	}
+
+	void set_model_matrix(const glm::mat4 &m) {
+		objects.set_model_matrix(m);
 	}
 };
 

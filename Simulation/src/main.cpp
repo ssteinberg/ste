@@ -22,6 +22,8 @@
 #include "RGB.hpp"
 #include "Sphere.hpp"
 #include "gpu_task.hpp"
+#include "BRDF.hpp"
+#include "bme_brdf_representation.hpp"
 
 using namespace StE::Core;
 using namespace StE::Text;
@@ -62,6 +64,7 @@ public:
 protected:
 	void set_context_state() const override final {
 		GL::gl_current_context::get()->enable_depth_test();
+		GL::gl_current_context::get()->color_mask(false, false, false, false);
 
 		0_tex_unit = *stars_tex;
 		meshptr->vao()->bind();
@@ -74,25 +77,9 @@ protected:
 	}
 };
 
-auto create_light_object(const std::shared_ptr<StE::Graphics::Scene> &scene, const glm::vec3 light_pos, const std::shared_ptr<StE::Graphics::SphericalLight> &light) {
-	std::unique_ptr<StE::Graphics::mesh<StE::Graphics::mesh_subdivion_mode::Triangles>> m = std::make_unique<StE::Graphics::mesh<StE::Graphics::mesh_subdivion_mode::Triangles>>();
-	std::vector<StE::Graphics::ObjectVertexData> vertices;
-	StE::Graphics::ObjectVertexData v;
-	v.p = { -100, -10, 0 };
-	v.uv = { 0, 0 };
-	vertices.push_back(v);
-	v.p = { 100, -10, 0 };
-	v.uv = { 1, 0 };
-	vertices.push_back(v);
-	v.p = { -50, 100, 0 };
-	v.uv = { 0, 1 };
-	vertices.push_back(v);
-	m->set_vertices(vertices);
-	m->set_indices(std::vector<std::uint32_t>{0,1,2});
-	auto light_obj = std::make_shared<StE::Graphics::Object>(std::move(m));
-
+auto create_light_object(const std::shared_ptr<StE::Graphics::Scene> &scene, const glm::vec3 &light_pos, const std::shared_ptr<StE::Graphics::SphericalLight> &light) {
 	std::unique_ptr<StE::Graphics::Sphere> sphere = std::make_unique<StE::Graphics::Sphere>(20, 20);
-	light_obj = std::make_shared<StE::Graphics::Object>(std::move(sphere));
+	auto light_obj = std::make_shared<StE::Graphics::Object>(std::move(sphere));
 
 	light_obj->set_model_matrix(glm::scale(glm::translate(glm::mat4(), light_pos), glm::vec3(light->get_radius())));
 
@@ -109,6 +96,71 @@ auto create_light_object(const std::shared_ptr<StE::Graphics::Scene> &scene, con
 	scene->object_group().add_object(light_obj);
 
 	return light_obj;
+}
+
+void create_glass(const std::shared_ptr<StE::Graphics::Scene> &scene, StE::StEngineControl *ctx, const glm::vec3 &p0, const glm::vec3 &p1) {
+	std::shared_ptr<StE::Graphics::BRDF> brdf = StE::Graphics::bme_brdf_representation::BRDF_from_bme_representation_task(*ctx, "Data/bxdf/ward_metal/laminate_light_wood")();
+
+	glm::vec3 U = glm::vec3{ p0.x, p0.y, p0.z } - glm::vec3{ p1.x, p1.y, p1.z };
+	glm::vec3 V = glm::vec3{ p0.x, p1.y, p0.z } - glm::vec3{ p1.x, p1.y, p1.z };
+	glm::vec3 N = glm::normalize(glm::cross(U, V));
+	glm::vec3 T = glm::normalize(glm::cross(N, glm::vec3{0,1,0}));
+
+	auto m = std::make_unique<StE::Graphics::mesh<StE::Graphics::mesh_subdivion_mode::Triangles>>();
+	std::vector<StE::Graphics::ObjectVertexData> vertices;
+	StE::Graphics::ObjectVertexData v;
+
+	v.n = N;
+	v.t = T;
+	v.p = { p0.x, p0.y, p0.z };
+	v.uv = { 0, 0 };
+	vertices.push_back(v);
+	v.p = { p1.x, p0.y, p1.z };
+	v.uv = { 1, 0 };
+	vertices.push_back(v);
+	v.p = { p0.x, p1.y, p0.z };
+	v.uv = { 0, 1 };
+	vertices.push_back(v);
+	v.p = { p1.x, p1.y, p1.z };
+	v.uv = { 1, 1 };
+	vertices.push_back(v);
+
+	v.n = -N;
+	v.t = -T;
+	v.p = { p0.x, p0.y, p0.z };
+	v.uv = { 0, 0 };
+	vertices.push_back(v);
+	v.p = { p1.x, p0.y, p1.z };
+	v.uv = { 1, 0 };
+	vertices.push_back(v);
+	v.p = { p0.x, p1.y, p0.z };
+	v.uv = { 0, 1 };
+	vertices.push_back(v);
+	v.p = { p1.x, p1.y, p1.z };
+	v.uv = { 1, 1 };
+	vertices.push_back(v);
+
+	m->set_vertices(vertices);
+	m->set_indices(std::vector<std::uint32_t>{0,2,1,1,2,3, 4,5,6,6,5,7});
+	auto obj = std::make_shared<StE::Graphics::Object>(std::move(m));
+
+	obj->set_model_matrix(glm::mat4());
+
+	auto tex = StE::Resource::SurfaceFactory::load_surface_2d_task("Data/textures/glass.png", true)();
+	auto nm = StE::Resource::SurfaceFactory::load_surface_2d_task("Data/textures/glass_normal.png", false)();
+	auto alpha = StE::Resource::SurfaceFactory::load_surface_2d_task("Data/textures/glass_alpha.png", false)();
+	auto spec = StE::Resource::SurfaceFactory::load_surface_2d_task("Data/textures/glass_specular.png", false)();
+
+	auto mat = std::make_shared<StE::Graphics::Material>();
+	mat->set_diffuse(std::make_shared<StE::Core::Texture2D>(tex, true));
+	mat->set_specular(std::make_shared<StE::Core::Texture2D>(spec, true));
+	mat->set_normalmap(std::make_shared<StE::Core::Texture2D>(nm, true));
+	mat->set_alphamap(std::make_shared<StE::Core::Texture2D>(alpha, true));
+	mat->set_brdf(brdf);
+
+	obj->set_material_id(scene->scene_properties().materials_storage().add_material(mat));
+
+	scene->object_group().add_object(obj);
 }
 
 int main() {
@@ -148,7 +200,7 @@ int main() {
 
 	StE::Graphics::Camera camera;
 	camera.set_position({ 25.8, 549.07, -249.2 });
-	camera.lookat({ 26.4, 548.5, 248.71 });
+	camera.lookat({ 26.4, 548.5, -248.71 });
 
 
 	bool running = true;
@@ -169,6 +221,13 @@ int main() {
 	std::shared_ptr<StE::Graphics::Object> light0_obj, light1_obj;
 	light0_obj = create_light_object(scene, light0_pos, light0);
 	light1_obj = create_light_object(scene, light1_pos, light1);
+
+	create_glass(scene, &ctx, { -450, 680, -280 }, { -600, 890, -280 });
+	create_glass(scene, &ctx, { -262, 680, -280 }, { -436, 890, -280 });
+	create_glass(scene, &ctx, { -60, 680, -280 }, { -230, 890, -280 });
+	create_glass(scene, &ctx, { 90, 680, -280 }, { -60, 890, -280 });
+	create_glass(scene, &ctx, { 290, 680, -280 }, { 100, 890, -280 });
+	create_glass(scene, &ctx, { 300, 680, -280 }, { 523, 890, -280 });
 
 	// Bind input
 	auto keyboard_listner = std::make_shared<decltype(ctx)::hid_keyboard_signal_type::connection_type>(
@@ -272,7 +331,7 @@ int main() {
 		light0->set_position(lp);
 
 		light0_obj->set_model_matrix(glm::scale(glm::translate(glm::mat4(), lp), glm::vec3(light0->get_radius() / 2.f)));
-		scene->object_group().set_model_matrix(mv);
+		scene->set_model_matrix(mv);
 		renderer.set_model_matrix(mv);
 		skydome->set_model_matrix(mvnt);
 

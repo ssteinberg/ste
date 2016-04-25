@@ -43,7 +43,8 @@ public:
 	}
 
 	void set_model_matrix(const glm::mat4 &m) const {
-		ssss_gen_program->set_uniform("trans_inverse_view_matrix", glm::transpose(glm::inverse(m)));
+		ssss_gen_program->set_uniform("inverse_view_matrix", glm::inverse(m));
+		ssss_gen_program->set_uniform("transpose_view_matrix", glm::transpose(m));
 	}
 
 	void set_context_state() const override final;

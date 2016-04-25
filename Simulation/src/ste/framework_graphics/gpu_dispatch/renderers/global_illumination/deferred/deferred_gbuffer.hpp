@@ -25,10 +25,9 @@ namespace Graphics {
 class deferred_gbuffer {
 private:
 	struct g_buffer_element {
-		glm::vec4 albedo;
-		glm::vec3 P;		std::uint32_t next_ptr;
-		glm::vec3 N;		float specular;
-		glm::vec3 T;		std::int32_t material;
+		glm::vec3 P;	std::uint32_t next_ptr;
+		glm::tvec3<float, glm::mediump> N, T;	std::int16_t specular; std::uint16_t material;
+		glm::tvec4<float, glm::mediump> albedo;
 	};
 
 	static constexpr Core::BufferUsage::buffer_usage usage = static_cast<Core::BufferUsage::buffer_usage>(Core::BufferUsage::BufferUsageSparse);

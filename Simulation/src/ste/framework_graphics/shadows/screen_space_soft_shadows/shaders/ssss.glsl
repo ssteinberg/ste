@@ -16,14 +16,15 @@ layout(r16f, binding = 1) uniform image2D z_buffer;
 
 uniform float far, near;
 uniform float half_over_tan_fov_over_two;
-uniform mat4 trans_inverse_view_matrix;
+uniform mat4 inverse_view_matrix;
+uniform mat4 transpose_view_matrix;
 
 void main() {
 	ivec2 coords = ivec2(vec2(gl_GlobalInvocationID.xy) / vec2(imageSize(penumbra_layers).xy) * gbuffer_size());
 
 	g_buffer_element frag = gbuffer_load(coords);
-	vec3 n = frag.N;
-	vec3 w_pos = (trans_inverse_view_matrix * vec4(frag.P, 1)).xyz;
+	vec3 n = (transpose_view_matrix * vec4(frag.N, 1)).xyz;
+	vec3 w_pos = (inverse_view_matrix * vec4(frag.P, 1)).xyz;
 	float frag_depth = gbuffer_linear_z(frag, far, near);
 
 	for (int i = 0; i < light_buffer.length(); ++i) {

@@ -1,9 +1,8 @@
 
 struct g_buffer_element {
-	vec4 albedo;
-	vec3 P;		uint32_t next_ptr;
-	vec3 N;		int32_t material;
-	vec3 T;		float specular;
+	vec3 P;				uint32_t next_ptr;
+	mediump vec3 N, T;	mediump float specular; uint16_t material;
+	mediump vec4 albedo;
 };
 
 layout(std430, binding = 6) buffer gbuffer_data {
@@ -12,7 +11,7 @@ layout(std430, binding = 6) buffer gbuffer_data {
 layout(binding = 7) uniform atomic_uint gbuffer_ll_counter;
 layout(r32ui, binding = 7) uniform uimage2D gbuffer_ll_heads;
 
-void gbuffer_store(vec3 P, vec4 albedo, float specular, vec3 N, vec3 T, int matIdx, ivec2 frag_coords) {
+void gbuffer_store(vec3 P, vec4 albedo, float specular, vec3 N, vec3 T, uint16_t matIdx, ivec2 frag_coords) {
 	g_buffer_element frag;
 	frag.albedo = albedo;
 	frag.P = P;

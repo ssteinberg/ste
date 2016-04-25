@@ -29,6 +29,7 @@ inline context_state_type context_state_type_from_name(const StateName &n) {
 	case StateName::VIEWPORT_STATE:
 	case StateName::COLOR_MASK_STATE:
 	case StateName::DEPTH_MASK_STATE:
+	case StateName::DEPTH_FUNC_STATE:
 	case StateName::CULL_FACE_STATE:
 	case StateName::FRONT_FACE_STATE:
 	case StateName::BLEND_FUNC_STATE:

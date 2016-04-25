@@ -26,8 +26,6 @@ hdr_dof_postprocess::hdr_dof_postprocess(const StEngineControl &context, const d
 
 	task = make_gpu_task("hdr", create_dispatchable(), &ctx.gl()->defaut_framebuffer(), create_sub_tasks());
 
-	setup_engine_connections();
-
 	float big_float = 10000.f;
 	hdr_bokeh_param_buffer_eraser = std::make_unique<StE::Core::PixelBufferObject<std::int32_t>>(std::vector<std::int32_t>{ *reinterpret_cast<std::int32_t*>(&big_float), 0 });
 
@@ -59,6 +57,8 @@ hdr_dof_postprocess::hdr_dof_postprocess(const StEngineControl &context, const d
 	hdr_tonemap_coc->set_uniform("hdr_vision_properties_texture", vision_handle);
 
 	resize(ctx.get_backbuffer_size());
+
+	setup_engine_connections();
 }
 
 void hdr_dof_postprocess::setup_engine_connections() {

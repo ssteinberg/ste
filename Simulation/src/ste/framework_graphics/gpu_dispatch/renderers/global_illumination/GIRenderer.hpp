@@ -13,6 +13,8 @@
 #include "gpu_task.hpp"
 
 #include "Scene.hpp"
+#include "scene_prepopulate_depth_dispatch.hpp"
+
 #include "SceneProperties.hpp"
 #include "light.hpp"
 
@@ -21,8 +23,6 @@
 
 #include "shadowmap_storage.hpp"
 #include "shadowmap_projector.hpp"
-#include "ssss_storage.hpp"
-#include "ssss_generator.hpp"
 
 #include "deferred_gbuffer.hpp"
 #include "gbuffer_clear_dispatch.hpp"
@@ -84,11 +84,16 @@ private:
 	shadowmap_projector shadows_projector;
 
 	hdr_dof_postprocess hdr;
-	ssss_storage ssss_layers;
-	ssss_generator ssss;
 	gbuffer_sort_dispatch gbuffer_sorter;
+	scene_prepopulate_depth_dispatch prepopulate_depth_dispatch;
 
-	std::shared_ptr<const gpu_task> precomposer_dummy_task, composer_task, fb_clearer_task, gbuffer_clearer_task, shadow_projector_task, ssss_task, gbuffer_sort_task;
+	std::shared_ptr<const gpu_task> precomposer_dummy_task,
+									composer_task,
+									fb_clearer_task,
+									gbuffer_clearer_task,
+									shadow_projector_task,
+									gbuffer_sort_task,
+									prepopulate_depth_task;
 
 	deferred_composition composer;
 	gbuffer_clear_dispatch gbuffer_clearer;
@@ -114,6 +119,9 @@ public:
 
 	void set_model_matrix(const glm::mat4 &m) {
 		composer.program->set_uniform("view_matrix", m);
+		composer.program->set_uniform("inverse_view_matrix", glm::inverse(m));
+
+		prepopulate_depth_dispatch.set_proj_model_matrix(ctx.projection_matrix() * m);
 	}
 
 	void set_deferred_rendering_enabled(bool enabled);
