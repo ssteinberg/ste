@@ -17,12 +17,15 @@ in vec2 tex_coords;
 
 out vec4 gl_FragColor;
 
-layout(binding = 8) uniform samplerCubeArray shadow_depth_maps;
-// layout(binding = 7) uniform sampler2DArray penumbra_layers;
+layout(std430, binding = 5) buffer projection_data {
+	mat4 shadow_transforms[];
+};
+
+layout(binding = 8) uniform samplerCubeArrayShadow shadow_depth_maps;
 
 uniform float scattering_ro = 0.0003f;
 uniform mat4 inverse_view_matrix;
-uniform float far = 3000.f;
+uniform float proj22, proj23;
 
 vec4 shade(g_buffer_element frag) {
 	uint16_t draw_idx = frag.material;
@@ -56,12 +59,11 @@ vec4 shade(g_buffer_element frag) {
 		vec3 l = diffuse * ld.diffuse.xyz;
 
 		vec3 shadow_v = w_pos - light_buffer[i].position_direction.xyz;
-		bool shadowed;
-		float w_penumbra = shadow_penumbra_width(shadow_depth_maps, i, shadow_v, l_radius, dist, far, shadowed);
+		float shadow = shadow_penumbra_width(shadow_depth_maps, i, shadow_v, l_radius, dist, proj22, proj23);
 
 		float dist_att = dist * scattering_ro;
 		float shadow_attenuation = 1.f - exp(-dist_att * dist_att);
-		float obscurance = mix(1.f, .3f * shadow_attenuation, shadowed);
+		float obscurance = mix(1.f, .3f * shadow_attenuation, shadow);
 
 		float brdf = calc_brdf(md, position, n, t, b, v);
 		float attenuation_factor = light_attenuation_factor(ld, dist);

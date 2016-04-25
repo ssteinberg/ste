@@ -15,12 +15,15 @@ in vs_out {
 } vin[];
 
 out frag_in {
-	vec3 position;
 	vec2 uv;
 	flat int matIdx;
 } vout;
 
-uniform mat4 shadow_transforms[6];
+layout(std430, binding = 5) buffer projection_data {
+	mat4 shadow_transforms[];
+};
+
+uniform float far;
 
 void main() {
 	int l = gl_InvocationID;
@@ -57,7 +60,6 @@ void main() {
 				for (int j = 0; j < 3; ++j) {
 					vout.uv = vin[j].uv;
 					vout.matIdx = vin[j].matIdx;
-					vout.position = vertices[j].xyz;
 
 					gl_Position = transformed_vertices[j];
 

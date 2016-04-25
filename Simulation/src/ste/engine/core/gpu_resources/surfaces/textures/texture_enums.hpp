@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -26,6 +26,22 @@ enum class TextureFiltering {
 	None = 0,
 	Linear = GL_LINEAR,
 	Nearest = GL_NEAREST,
+};
+
+enum class TextureCompareMode {
+	None = GL_NONE,
+	CompareToTextureDepth = GL_COMPARE_REF_TO_TEXTURE,
+};
+
+enum class TextureCompareFunc {
+	LEqual = GL_LEQUAL,
+	GEqual = GL_GEQUAL,
+	Less = GL_LESS,
+	Greater = GL_GREATER,
+	Equal = GL_EQUAL,
+	NotEqual = GL_NOTEQUAL,
+	Always = GL_ALWAYS,
+	Never = GL_NEVER,
 };
 
 }

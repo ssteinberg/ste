@@ -66,11 +66,13 @@ private:
 
 private:
 	using ResizeSignalConnectionType = StEngineControl::framebuffer_resize_signal_type::connection_type;
+	using ProjectionSignalConnectionType = StEngineControl::projection_change_signal_type::connection_type;
 	using FbClearTask = StE::Graphics::fb_clear_dispatch<>;
 
 private:
 	deferred_gbuffer gbuffer;
 	std::shared_ptr<ResizeSignalConnectionType> resize_connection;
+	std::shared_ptr<ProjectionSignalConnectionType> projection_change_connection;
 
 	const StEngineControl &ctx;
 	std::shared_ptr<Scene> scene;
