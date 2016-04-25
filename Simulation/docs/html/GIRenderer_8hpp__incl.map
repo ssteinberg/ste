@@ -1,0 +1,35 @@
+<map id="src/ste/framework_graphics/gpu_dispatch/renderers/global_illumination/GIRenderer.hpp" name="src/ste/framework_graphics/gpu_dispatch/renderers/global_illumination/GIRenderer.hpp">
+<area shape="rect" id="node2" href="$stdafx_8hpp.html" title="stdafx.hpp" alt="" coords="1433,811,1516,837"/>
+<area shape="rect" id="node15" href="$StEngineControl_8hpp.html" title="Engine Control class. " alt="" coords="2773,348,2915,375"/>
+<area shape="rect" id="node24" href="$rendering__system_8hpp.html" title="rendering_system.hpp" alt="" coords="1587,423,1741,449"/>
+<area shape="rect" id="node26" href="$gpu__task_8hpp.html" title="gpu_task.hpp" alt="" coords="2387,572,2487,599"/>
+<area shape="rect" id="node29" href="$gpu__dispatchable_8hpp.html" title="gpu_dispatchable.hpp" alt="" coords="791,647,942,673"/>
+<area shape="rect" id="node34" href="$GLSLProgram_8hpp.html" title="GLSLProgram.hpp" alt="" coords="2510,811,2642,837"/>
+<area shape="rect" id="node36" href="$Camera_8hpp.html" title="Camera.hpp" alt="" coords="686,348,781,375"/>
+<area shape="rect" id="node37" href="$Scene_8hpp.html" title="Scene.hpp" alt="" coords="2495,191,2580,218"/>
+<area shape="rect" id="node38" href="$SceneProperties_8hpp.html" title="SceneProperties.hpp" alt="" coords="1797,348,1944,375"/>
+<area shape="rect" id="node40" href="$scene__prepopulate__depth__dispatch_8hpp.html" title="scene_prepopulate_depth\l_dispatch.hpp" alt="" coords="2627,184,2803,225"/>
+<area shape="rect" id="node41" href="$light_8hpp.html" title="light.hpp" alt="" coords="331,109,402,136"/>
+<area shape="rect" id="node42" href="$gpu__dummy__dispatchable_8hpp.html" title="gpu_dummy_dispatchable.hpp" alt="" coords="371,572,573,599"/>
+<area shape="rect" id="node43" href="$hdr__dof__postprocess_8hpp.html" title="hdr_dof_postprocess.hpp" alt="" coords="2200,273,2371,300"/>
+<area shape="rect" id="node44" href="$deferred__gbuffer_8hpp.html" title="deferred_gbuffer.hpp" alt="" coords="1613,647,1757,673"/>
+<area shape="rect" id="node45" href="$shadowmap__storage_8hpp.html" title="shadowmap_storage.hpp" alt="" coords="1908,273,2081,300"/>
+<area shape="rect" id="node46" href="$shadowmap__projector_8hpp.html" title="shadowmap_projector.hpp" alt="" coords="2259,191,2437,218"/>
+<area shape="rect" id="node47" href="$gbuffer__clear__dispatch_8hpp.html" title="gbuffer_clear_dispatch.hpp" alt="" coords="598,572,778,599"/>
+<area shape="rect" id="node48" href="$gbuffer__sort__dispatch_8hpp.html" title="gbuffer_sort_dispatch.hpp" alt="" coords="1347,273,1519,300"/>
+<area shape="rect" id="node49" href="$dense__voxel__space_8hpp.html" title="dense_voxel_space.hpp" alt="" coords="2453,109,2621,136"/>
+<area shape="rect" id="node50" href="$fb__clear__dispatch_8hpp.html" title="fb_clear_dispatch.hpp" alt="" coords="145,572,295,599"/>
+<area shape="rect" id="node4" href="$gl_8hpp.html" title="gl.hpp" alt="" coords="1367,885,1425,912"/>
+<area shape="rect" id="node19" href="$gl__context_8hpp.html" title="gl_context.hpp" alt="" coords="3205,729,3312,755"/>
+<area shape="rect" id="node20" href="$hid_8hpp.html" title="hid.hpp" alt="" coords="2889,423,2953,449"/>
+<area shape="rect" id="node21" href="$signal_8hpp.html" title="signal.hpp" alt="" coords="3533,497,3616,524"/>
+<area shape="rect" id="node22" href="$task__scheduler_8hpp.html" title="task_scheduler.hpp" alt="" coords="2677,423,2814,449"/>
+<area shape="rect" id="node23" href="$lru__cache_8hpp.html" title="lru_cache.hpp" alt="" coords="3079,423,3183,449"/>
+<area shape="rect" id="node35" href="$glsl__programs__pool_8hpp.html" title="glsl_programs_pool.hpp" alt="" coords="2814,729,2978,755"/>
+<area shape="rect" id="node25" href="$gpu__task__dispatch__queue_8hpp.html" title="gpu_task_dispatch_queue.hpp" alt="" coords="2221,497,2424,524"/>
+<area shape="rect" id="node32" href="$FramebufferObject_8hpp.html" title="FramebufferObject.hpp" alt="" coords="2027,729,2181,755"/>
+<area shape="rect" id="node27" href="$sop__vertex_8hpp.html" title="sop_vertex.hpp" alt="" coords="1933,647,2045,673"/>
+<area shape="rect" id="node33" href="$gpu__task__factory_8hpp.html" title="gpu_task_factory.hpp" alt="" coords="2475,647,2621,673"/>
+<area shape="rect" id="node30" href="$gl__context__state__log_8hpp.html" title="gl_context_state_log.hpp" alt="" coords="761,729,930,755"/>
+<area shape="rect" id="node39" href="$ObjectGroup_8hpp.html" title="ObjectGroup.hpp" alt="" coords="2677,273,2798,300"/>
+</map>

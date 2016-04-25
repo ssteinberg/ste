@@ -1,0 +1,34 @@
+<map id="src/ste/engine/core/gpu_resources/surfaces/image.hpp" name="src/ste/engine/core/gpu_resources/surfaces/image.hpp">
+<area shape="rect" id="node2" href="$stdafx_8hpp.html" title="stdafx.hpp" alt="" coords="1383,512,1466,539"/>
+<area shape="rect" id="node17" href="$gl__utils_8hpp.html" title="gl_utils.hpp" alt="" coords="13,191,100,218"/>
+<area shape="rect" id="node19" href="$core__resource__type_8hpp.html" title="core_resource_type.hpp" alt="" coords="870,363,1035,389"/>
+<area shape="rect" id="node26" href="$gl__current__context_8hpp.html" title="gl_current_context.hpp" alt="" coords="1576,109,1731,136"/>
+<area shape="rect" id="node43" href="$bindable__resource_8hpp.html" title="bindable_resource.hpp" alt="" coords="719,109,876,136"/>
+<area shape="rect" id="node45" href="$layout__binding_8hpp.html" title="layout_binding.hpp" alt="" coords="798,281,930,307"/>
+<area shape="rect" id="node46" href="$texture__enums_8hpp.html" title="texture_enums.hpp" alt="" coords="1006,191,1139,218"/>
+<area shape="rect" id="node47" href="$surface__constants_8hpp.html" title="surface_constants.hpp" alt="" coords="486,191,640,218"/>
+<area shape="rect" id="node48" href="$image__handle_8hpp.html" title="image_handle.hpp" alt="" coords="1057,109,1189,136"/>
+<area shape="rect" id="node49" href="$RenderTarget_8hpp.html" title="RenderTarget.hpp" alt="" coords="332,109,463,136"/>
+<area shape="rect" id="node4" href="$gl_8hpp.html" title="gl.hpp" alt="" coords="1409,587,1466,613"/>
+<area shape="rect" id="node6" href="$gl__extensions_8h.html" title="gl_extensions.h" alt="" coords="1442,661,1556,688"/>
+<area shape="rect" id="node18" href="$resource_8hpp.html" title="resource.hpp" alt="" coords="615,281,714,307"/>
+<area shape="rect" id="node20" href="$resource__allocator_8hpp.html" title="resource_allocator.hpp" alt="" coords="461,363,620,389"/>
+<area shape="rect" id="node21" href="$Log_8hpp.html" title="Log.hpp" alt="" coords="94,437,163,464"/>
+<area shape="rect" id="node23" href="$AttributedString_8hpp.html" title="AttributedString.hpp" alt="" coords="473,437,608,464"/>
+<area shape="rect" id="node24" href="$attrib_8hpp.html" title="attrib.hpp" alt="" coords="688,437,763,464"/>
+<area shape="rect" id="node27" href="$gl__generic__context_8hpp.html" title="gl_generic_context.hpp" alt="" coords="1886,191,2045,218"/>
+<area shape="rect" id="node28" href="$gl__type__traits_8hpp.html" title="gl_type_traits.hpp" alt="" coords="1737,437,1861,464"/>
+<area shape="rect" id="node29" href="$context__state_8hpp.html" title="context_state.hpp" alt="" coords="2128,363,2254,389"/>
+<area shape="rect" id="node30" href="$tuple__type__erasure_8hpp.html" title="tuple_type_erasure.hpp" alt="" coords="2520,437,2678,464"/>
+<area shape="rect" id="node33" href="$optional_8hpp.html" title="optional.hpp" alt="" coords="2084,512,2178,539"/>
+<area shape="rect" id="node34" href="$context__basic__state_8hpp.html" title="context_basic_state.hpp" alt="" coords="2280,437,2444,464"/>
+<area shape="rect" id="node35" href="$context__state__key_8hpp.html" title="context_state_key.hpp" alt="" coords="1343,363,1498,389"/>
+<area shape="rect" id="node37" href="$context__state__name_8hpp.html" title="context_state_name.hpp" alt="" coords="1885,437,2052,464"/>
+<area shape="rect" id="node38" href="$gl__context__state__log_8hpp.html" title="gl_context_state_log.hpp" alt="" coords="1812,281,1981,307"/>
+<area shape="rect" id="node41" href="$tuple__call_8hpp.html" title="tuple_call.hpp" alt="" coords="1610,437,1713,464"/>
+<area shape="rect" id="node31" href="$typelist_8hpp.html" title="typelist.hpp" alt="" coords="2456,512,2542,539"/>
+<area shape="rect" id="node36" href="$hash__combine_8hpp.html" title="hash_combine.hpp" alt="" coords="1351,437,1484,464"/>
+<area shape="rect" id="node39" href="$context__state__type_8hpp.html" title="context_state_type.hpp" alt="" coords="1791,363,1948,389"/>
+<area shape="rect" id="node44" href="$shader__layout__bindable__resource_8hpp.html" title="shader_layout_bindable\l_resource.hpp" alt="" coords="715,184,880,225"/>
+<area shape="rect" id="node50" href="$render__target__allocator_8hpp.html" title="render_target_allocator.hpp" alt="" coords="124,191,309,218"/>
+</map>

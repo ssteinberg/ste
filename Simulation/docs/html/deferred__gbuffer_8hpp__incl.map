@@ -1,0 +1,35 @@
+<map id="src/ste/framework_graphics/gpu_dispatch/renderers/global_illumination/deferred/deferred_gbuffer.hpp" name="src/ste/framework_graphics/gpu_dispatch/renderers/global_illumination/deferred/deferred_gbuffer.hpp">
+<area shape="rect" id="node2" href="$stdafx_8hpp.html" title="stdafx.hpp" alt="" coords="1161,721,1244,748"/>
+<area shape="rect" id="node17" href="$resource_8hpp.html" title="resource.hpp" alt="" coords="2448,423,2547,449"/>
+<area shape="rect" id="node26" href="$RenderTarget_8hpp.html" title="RenderTarget.hpp" alt="" coords="2517,348,2648,375"/>
+<area shape="rect" id="node29" href="$Texture2D_8hpp.html" title="Texture2D.hpp" alt="" coords="803,124,914,151"/>
+<area shape="rect" id="node31" href="$gl__current__context_8hpp.html" title="gl_current_context.hpp" alt="" coords="301,348,456,375"/>
+<area shape="rect" id="node44" href="$FramebufferObject_8hpp.html" title="FramebufferObject.hpp" alt="" coords="2276,124,2431,151"/>
+<area shape="rect" id="node47" href="$buffer__usage_8hpp.html" title="buffer_usage.hpp" alt="" coords="581,348,704,375"/>
+<area shape="rect" id="node48" href="$ShaderStorageBuffer_8hpp.html" title="ShaderStorageBuffer.hpp" alt="" coords="607,124,779,151"/>
+<area shape="rect" id="node50" href="$AtomicCounterBufferObject_8hpp.html" title="AtomicCounterBufferObject.hpp" alt="" coords="377,124,583,151"/>
+<area shape="rect" id="node4" href="$gl_8hpp.html" title="gl.hpp" alt="" coords="1174,796,1231,823"/>
+<area shape="rect" id="node6" href="$gl__extensions_8h.html" title="gl_extensions.h" alt="" coords="1207,871,1321,897"/>
+<area shape="rect" id="node18" href="$core__resource__type_8hpp.html" title="core_resource_type.hpp" alt="" coords="1240,497,1405,524"/>
+<area shape="rect" id="node19" href="$resource__allocator_8hpp.html" title="resource_allocator.hpp" alt="" coords="2029,497,2187,524"/>
+<area shape="rect" id="node20" href="$Log_8hpp.html" title="Log.hpp" alt="" coords="1813,572,1883,599"/>
+<area shape="rect" id="node24" href="$AttributedString_8hpp.html" title="AttributedString.hpp" alt="" coords="2059,572,2194,599"/>
+<area shape="rect" id="node25" href="$attrib_8hpp.html" title="attrib.hpp" alt="" coords="1683,647,1757,673"/>
+<area shape="rect" id="node22" href="$gl__utils_8hpp.html" title="gl_utils.hpp" alt="" coords="1985,647,2071,673"/>
+<area shape="rect" id="node27" href="$surface__constants_8hpp.html" title="surface_constants.hpp" alt="" coords="2008,423,2163,449"/>
+<area shape="rect" id="node28" href="$render__target__allocator_8hpp.html" title="render_target_allocator.hpp" alt="" coords="2238,423,2423,449"/>
+<area shape="rect" id="node30" href="$texture__base_8hpp.html" title="texture_base.hpp" alt="" coords="1779,199,1901,225"/>
+<area shape="rect" id="node41" href="$image_8hpp.html" title="image.hpp" alt="" coords="1211,273,1295,300"/>
+<area shape="rect" id="node33" href="$bindable__resource_8hpp.html" title="bindable_resource.hpp" alt="" coords="2032,348,2189,375"/>
+<area shape="rect" id="node34" href="$layout__binding_8hpp.html" title="layout_binding.hpp" alt="" coords="1875,348,2007,375"/>
+<area shape="rect" id="node35" href="$Sampler_8hpp.html" title="Sampler.hpp" alt="" coords="1579,273,1675,300"/>
+<area shape="rect" id="node36" href="$texture__enums_8hpp.html" title="texture_enums.hpp" alt="" coords="880,423,1013,449"/>
+<area shape="rect" id="node37" href="$texture__traits_8hpp.html" title="texture_traits.hpp" alt="" coords="1615,423,1737,449"/>
+<area shape="rect" id="node38" href="$texture__handle_8hpp.html" title="texture_handle.hpp" alt="" coords="270,497,405,524"/>
+<area shape="rect" id="node39" href="$texture__allocator_8hpp.html" title="texture_allocator.hpp" alt="" coords="1603,348,1749,375"/>
+<area shape="rect" id="node40" href="$texture__cubemap__face_8hpp.html" title="texture_cubemap_face.hpp" alt="" coords="480,572,661,599"/>
+<area shape="rect" id="node32" href="$gl__generic__context_8hpp.html" title="gl_generic_context.hpp" alt="" coords="918,721,1077,748"/>
+<area shape="rect" id="node42" href="$image__handle_8hpp.html" title="image_handle.hpp" alt="" coords="931,348,1063,375"/>
+<area shape="rect" id="node45" href="$resource__traits_8hpp.html" title="resource_traits.hpp" alt="" coords="1342,348,1477,375"/>
+<area shape="rect" id="node49" href="$buffer__object_8hpp.html" title="buffer_object.hpp" alt="" coords="633,273,754,300"/>
+</map>

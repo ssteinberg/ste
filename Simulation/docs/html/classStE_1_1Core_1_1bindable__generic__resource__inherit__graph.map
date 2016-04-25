@@ -1,0 +1,4 @@
+<map id="StE::Core::bindable_generic_resource" name="StE::Core::bindable_generic_resource">
+<area shape="rect" id="node3" href="$classStE_1_1Core_1_1bindable__resource_3_01A_00_01B_01_4.html" title="{StE::Core::bindable\l_resource\&lt; A, B \&gt;\n||+ bindable_resource()\l+ operator=()\l+ bind()\l+ unbind()\l# bindable_resource()\l# bindable_resource()\l# ~bindable_resource()\l}" alt="" coords="31,417,191,597"/>
+<area shape="rect" id="node2" href="$classStE_1_1Core_1_1GenericResource.html" title="{StE::Core::GenericResource\n|# id\l|+ resource_type()\l+ get_resource_id()\l+ is_valid()\l+ GenericResource()\l+ operator=()\l+ GenericResource()\l+ operator=()\l# GenericResource()\l# ~GenericResource()\l}" alt="" coords="14,5,209,200"/>
+</map>

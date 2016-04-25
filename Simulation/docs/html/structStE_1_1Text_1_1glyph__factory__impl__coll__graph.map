@@ -1,0 +1,6 @@
+<map id="StE::Text::glyph_factory_impl" name="StE::Text::glyph_factory_impl">
+<area shape="rect" id="node3" href="$classStE_1_1Text_1_1Font.html" title="{StE::Text::Font\n||+ Font()\l+ operator==()\l+ get_path()\l+ get_name()\l}" alt="" coords="5,175,117,296"/>
+<area shape="rect" id="node4" href="$classStE_1_1Text_1_1glyph__factory__font.html" title="{StE::Text::glyph_factory_font\n||+ glyph_factory_font()\l+ ~glyph_factory_font()\l+ glyph_factory_font()\l+ operator=()\l+ get_face()\l+ get_spacing()\l+ insert_into_spacing\l_cache()\l}" alt="" coords="142,145,335,325"/>
+<area shape="rect" id="node5" title="STL class. " alt="" coords="359,189,502,281"/>
+<area shape="rect" id="node8" href="$classStE_1_1Text_1_1glyph__factory__ft__lib.html" title="{StE::Text::glyph_factory\l_ft_lib\n||+ glyph_factory_ft_lib()\l+ ~glyph_factory_ft_lib()\l+ glyph_factory_ft_lib()\l+ operator=()\l+ get_lib()\l}" alt="" coords="339,417,504,568"/>
+</map>

@@ -1,0 +1,6 @@
+<map id="StE::Core::texture_immutable_storage_allocator&lt; tex_type &gt;" name="StE::Core::texture_immutable_storage_allocator&lt; tex_type &gt;">
+<area shape="rect" id="node5" href="$classStE_1_1Core_1_1texture__immutable__storage__allocator.html" title="{StE::Core::texture\l_immutable_storage_allocator\l\&lt; type \&gt;\n||+ allocate()\l+ allocate_storage()\l+ deallocate()\l}" alt="" coords="10,832,213,968"/>
+<area shape="rect" id="node2" href="$classStE_1_1Core_1_1generic__resource__immutable__storage__allocator.html" title="{StE::Core::generic\l_resource_immutable\l_storage_allocator\&lt; int,\l int, const gli::gl::format\l &amp;, const texture_size_type\l\&lt; texture_dimensions\&lt; tex_type\l \&gt;::dimensions \&gt;::type &amp;, std\l::size_t \&gt;\n||}" alt="" coords="5,404,217,584"/>
+<area shape="rect" id="node3" href="$classStE_1_1Core_1_1generic__resource__allocator.html" title="{StE::Core::generic\l_resource_allocator\n||+ allocate()\l+ deallocate()\l+ is_valid()\l}" alt="" coords="58,5,199,127"/>
+<area shape="rect" id="node4" href="$classStE_1_1Core_1_1generic__resource__immutable__storage__allocator.html" title="{StE::Core::generic\l_resource_immutable\l_storage_allocator\&lt; Ts \&gt;\n||}" alt="" coords="128,176,303,283"/>
+</map>

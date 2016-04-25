@@ -1,0 +1,11 @@
+<map id="src/ste/framework_graphics/light/light.hpp" name="src/ste/framework_graphics/light/light.hpp">
+<area shape="rect" id="node2" href="$stdafx_8hpp.html" title="stdafx.hpp" alt="" coords="503,393,586,420"/>
+<area shape="rect" id="node17" href="$entity_8hpp.html" title="entity.hpp" alt="" coords="579,95,657,121"/>
+<area shape="rect" id="node19" href="$texture__handle_8hpp.html" title="texture_handle.hpp" alt="" coords="593,244,728,271"/>
+<area shape="rect" id="node20" href="$RGB_8hpp.html" title="RGB.hpp" alt="" coords="823,95,898,121"/>
+<area shape="rect" id="node4" href="$gl_8hpp.html" title="gl.hpp" alt="" coords="89,468,147,495"/>
+<area shape="rect" id="node6" href="$gl__extensions_8h.html" title="gl_extensions.h" alt="" coords="122,543,237,569"/>
+<area shape="rect" id="node21" href="$spectrum_8hpp.html" title="spectrum.hpp" alt="" coords="787,319,887,345"/>
+<area shape="rect" id="node23" href="$XYZ_8hpp.html" title="XYZ.hpp" alt="" coords="849,169,923,196"/>
+<area shape="rect" id="node24" href="$xyY_8hpp.html" title="xyY.hpp" alt="" coords="899,244,969,271"/>
+</map>

@@ -1,0 +1,4 @@
+var structStE_1_1Core_1_1surface__element__type_3_01gli_1_1format_1_1FORMAT__R32__SFLOAT__PACK32_01_4 =
+[
+    [ "type", "structStE_1_1Core_1_1surface__element__type_3_01gli_1_1format_1_1FORMAT__R32__SFLOAT__PACK32_01_4.html#a02b184b18275611d95f9103c954e1ffd", null ]
+];

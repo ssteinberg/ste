@@ -1,0 +1,32 @@
+<map id="src/ste/framework_graphics/material/Material.hpp" name="src/ste/framework_graphics/material/Material.hpp">
+<area shape="rect" id="node2" href="$Texture2D_8hpp.html" title="Texture2D.hpp" alt="" coords="2202,169,2313,196"/>
+<area shape="rect" id="node38" href="$BRDF_8hpp.html" title="BRDF.hpp" alt="" coords="1116,95,1199,121"/>
+<area shape="rect" id="node46" href="$RGB_8hpp.html" title="RGB.hpp" alt="" coords="3103,95,3177,121"/>
+<area shape="rect" id="node3" href="$stdafx_8hpp.html" title="stdafx.hpp" alt="" coords="1904,632,1987,659"/>
+<area shape="rect" id="node18" href="$texture__base_8hpp.html" title="texture_base.hpp" alt="" coords="1872,244,1995,271"/>
+<area shape="rect" id="node35" href="$image_8hpp.html" title="image.hpp" alt="" coords="2215,244,2299,271"/>
+<area shape="rect" id="node5" href="$gl_8hpp.html" title="gl.hpp" alt="" coords="1866,707,1923,733"/>
+<area shape="rect" id="node7" href="$gl__extensions_8h.html" title="gl_extensions.h" alt="" coords="1899,781,2013,808"/>
+<area shape="rect" id="node19" href="$gl__utils_8hpp.html" title="gl_utils.hpp" alt="" coords="1374,393,1461,420"/>
+<area shape="rect" id="node23" href="$Log_8hpp.html" title="Log.hpp" alt="" coords="845,319,915,345"/>
+<area shape="rect" id="node24" href="$gl__current__context_8hpp.html" title="gl_current_context.hpp" alt="" coords="1693,393,1848,420"/>
+<area shape="rect" id="node25" href="$bindable__resource_8hpp.html" title="bindable_resource.hpp" alt="" coords="1141,393,1299,420"/>
+<area shape="rect" id="node26" href="$layout__binding_8hpp.html" title="layout_binding.hpp" alt="" coords="1537,393,1669,420"/>
+<area shape="rect" id="node27" href="$RenderTarget_8hpp.html" title="RenderTarget.hpp" alt="" coords="2192,319,2323,345"/>
+<area shape="rect" id="node28" href="$surface__constants_8hpp.html" title="surface_constants.hpp" alt="" coords="2323,393,2477,420"/>
+<area shape="rect" id="node29" href="$Sampler_8hpp.html" title="Sampler.hpp" alt="" coords="1555,319,1651,345"/>
+<area shape="rect" id="node30" href="$texture__enums_8hpp.html" title="texture_enums.hpp" alt="" coords="2704,393,2837,420"/>
+<area shape="rect" id="node31" href="$texture__traits_8hpp.html" title="texture_traits.hpp" alt="" coords="1923,393,2045,420"/>
+<area shape="rect" id="node32" href="$texture__handle_8hpp.html" title="texture_handle.hpp" alt="" coords="2446,557,2581,584"/>
+<area shape="rect" id="node33" href="$texture__allocator_8hpp.html" title="texture_allocator.hpp" alt="" coords="2022,319,2167,345"/>
+<area shape="rect" id="node34" href="$texture__cubemap__face_8hpp.html" title="texture_cubemap_face.hpp" alt="" coords="2605,557,2787,584"/>
+<area shape="rect" id="node20" href="$resource_8hpp.html" title="resource.hpp" alt="" coords="1357,475,1456,502"/>
+<area shape="rect" id="node21" href="$core__resource__type_8hpp.html" title="core_resource_type.hpp" alt="" coords="1863,557,2028,584"/>
+<area shape="rect" id="node36" href="$image__handle_8hpp.html" title="image_handle.hpp" alt="" coords="2755,319,2887,345"/>
+<area shape="rect" id="node39" href="$BxDF_8hpp.html" title="BxDF.hpp" alt="" coords="1141,557,1221,584"/>
+<area shape="rect" id="node40" href="$common__brdf__representation_8hpp.html" title="common_brdf_representation.hpp" alt="" coords="443,393,661,420"/>
+<area shape="rect" id="node45" href="$Texture3D_8hpp.html" title="Texture3D.hpp" alt="" coords="1561,169,1671,196"/>
+<area shape="rect" id="node47" href="$spectrum_8hpp.html" title="spectrum.hpp" alt="" coords="3103,319,3203,345"/>
+<area shape="rect" id="node49" href="$XYZ_8hpp.html" title="XYZ.hpp" alt="" coords="3141,169,3214,196"/>
+<area shape="rect" id="node50" href="$xyY_8hpp.html" title="xyY.hpp" alt="" coords="3191,244,3260,271"/>
+</map>
