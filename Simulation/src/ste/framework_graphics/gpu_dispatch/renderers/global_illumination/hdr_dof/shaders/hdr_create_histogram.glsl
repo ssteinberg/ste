@@ -17,7 +17,7 @@ void main() {
 
 	float min_lum = intBitsToFloat(params.lum_min);
 	float max_lum = intBitsToFloat(params.lum_max);
-	
+
 	int bin = int(hdr_bin(max_lum, min_lum, l));
 	atomicCounterIncrement(histogram[bin]);
 }

@@ -29,16 +29,16 @@ void main() {
 				   dot(lums1, vec4(.25f)),
 				   dot(lums2, vec4(.25f)),
 				   dot(lums3, vec4(.25f)));
-	float l = hdr_lum(dot(ls, vec4(.25f)));
+	float x = dot(ls, vec4(.25f));
 
-	if (l >= min_luminance) {
-		int int_l = floatBitsToInt(l);
+	float l = hdr_lum(max(min_luminance, x));
 
-		imageStore(hdr_lums, ivec2(gl_GlobalInvocationID.xy), vec4(l,0,0,0));
+	int int_l = floatBitsToInt(l);
 
-		atomicMin(params.lum_min, int_l);
-		atomicMax(params.lum_max, int_l);
-	}
+	imageStore(hdr_lums, ivec2(gl_GlobalInvocationID.xy), vec4(l,0,0,0));
+
+	atomicMin(params.lum_min, int_l);
+	atomicMax(params.lum_max, int_l);
 
 	barrier();
 	memoryBarrierShared();
