@@ -2,15 +2,17 @@
 const int LightTypeSphere = 0;
 const int LightTypeDirectional = 1;
 
+const float light_cutoff = 0.001f;
+
 struct light_descriptor {
 	vec4 position_direction;
 	vec4 diffuse;
 
 	float luminance;
 	float radius;
+	float effective_range;
 
 	int type;
-	float _unused;
 };
 
 layout(std430, binding = light_buffers_first) buffer light_data {
@@ -33,6 +35,13 @@ float light_attenuation_factor(light_descriptor ld, float dist) {
 		float a = max(.001f, dist / ld.radius);
 		return a*a;
 	}
+}
+
+float light_effective_range(light_descriptor ld) {
+	if (ld.type == LightTypeDirectional)
+		return +1.0f / .0f;		// Infinity
+	else
+		return ld.effective_range;
 }
 
 void light_transform(mat4 mv, mat3 rmv) {

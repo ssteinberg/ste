@@ -67,7 +67,7 @@ vec4 shade(g_buffer_element frag) {
 
 		float brdf = calc_brdf(md, position, n, t, b, v);
 		float attenuation_factor = light_attenuation_factor(ld, dist);
-		float incident_radiance = ld.luminance / attenuation_factor;
+		float incident_radiance = max(ld.luminance / attenuation_factor - light_cutoff, .0f);
 
 		float irradiance = specular * brdf * incident_radiance * obscurance;
 		rgb += l * max(0.f, irradiance);

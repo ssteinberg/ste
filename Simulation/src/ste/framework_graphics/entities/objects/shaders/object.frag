@@ -40,5 +40,4 @@ void main() {
 	uint16_t material = vin.matIdx >= 0 ? uint16_t(vin.matIdx) : material_none;
 
 	gbuffer_store(P, albedo, specular, n, t, material, ivec2(gl_FragCoord.xy));
-	// gl_FragDepth = diffuse.a == 1.f ? gl_FragCoord.z : 1.f;
 }

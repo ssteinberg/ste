@@ -34,7 +34,7 @@ float red_response(float mesopic) {
 }
 
 float monochromaticity(float lum) {
-	return smoothstep(1.f, .0f, clamp((lum - min_luminance) / (.01f - min_luminance), .0f, 1.f));
+	return smoothstep(1.f, .0f, clamp((lum - min_luminance) / (.025f - min_luminance), .0f, 1.f));
 }
 
 float hdr_bin(float max_lum, float min_lum, float l) {

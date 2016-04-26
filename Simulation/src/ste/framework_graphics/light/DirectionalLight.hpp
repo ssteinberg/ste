@@ -11,7 +11,7 @@ namespace Graphics {
 
 class DirectionalLight : public light {
 public:
-	DirectionalLight(float luminance, const RGB &diffuse, const glm::vec3 &direction) : light(luminance, diffuse) {
+	DirectionalLight(float luminance, const RGB &diffuse, const glm::vec3 &direction) : light(luminance, 1.f, diffuse) {
 		descriptor.type = LightType::Directional;
 		descriptor.position_direction = decltype(descriptor.position_direction){ direction.x, direction.y, direction.z, descriptor.position_direction.w};
 	}

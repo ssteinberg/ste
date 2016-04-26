@@ -31,7 +31,7 @@ public:
 	}
 
 	static float monochromaticity(float lum) {
-		return glm::smoothstep(1.0f, .0f, glm::clamp((lum - min_luminance) / (.01f - min_luminance), 0.f, 1.f));
+		return glm::smoothstep(1.0f, .0f, glm::clamp((lum - min_luminance) / (.025f - min_luminance), 0.f, 1.f));
 	}
 };
 
