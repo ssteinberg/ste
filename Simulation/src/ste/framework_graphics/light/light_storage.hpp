@@ -8,6 +8,9 @@
 
 #include "gstack.hpp"
 
+#include "ShaderStorageBuffer.hpp"
+#include "AtomicCounterBufferObject.hpp"
+
 #include "range.hpp"
 
 #include <vector>
@@ -16,15 +19,29 @@
 namespace StE {
 namespace Graphics {
 
+constexpr std::size_t max_active_lights_per_frame = 32;
+
 class light_storage {
+private:
+	static constexpr Core::BufferUsage::buffer_usage usage = static_cast<Core::BufferUsage::buffer_usage>(Core::BufferUsage::BufferUsageSparse);
+	static constexpr std::size_t pages = 1024;
+
+	using lights_ll_type = Core::ShaderStorageBuffer<std::uint16_t, usage>;
+
 private:
 	std::vector<std::shared_ptr<light>> lights;
 	Core::gstack<light::light_descriptor> stack;
 	Core::gstack<glm::vec4> transformed_buffer_stack;
 
+	lights_ll_type active_lights_ll;
+	Core::AtomicCounterBufferObject<> active_lights_ll_counter;
+
 	mutable std::vector<range<>> ranges_to_lock;
 
 public:
+	light_storage() : active_lights_ll(pages * std::max(65536, lights_ll_type::page_size()) / 2),
+					  active_lights_ll_counter(1) {}
+
 	void update_storage() {
 		auto s = sizeof(decltype(stack)::value_type);
 
@@ -57,11 +74,16 @@ public:
 			add_light(l);
 	}
 
-	void bind_buffers(int first) const {
-		stack.get_buffer().bind_range(Core::shader_storage_layout_binding(first), 0, lights.size());
-		transformed_buffer_stack.get_buffer().bind_range(Core::shader_storage_layout_binding(first + 1), 0, lights.size());
+	void clear_active_ll() {
+		std::uint32_t zero = 0;
+		active_lights_ll_counter.clear(gli::FORMAT_R32_UINT_PACK32, &zero);
 	}
 
+	void bind_lights_buffer(int idx) const { stack.get_buffer().bind_range(Core::shader_storage_layout_binding(idx), 0, lights.size()); }
+	void bind_lights_transform_buffer(int idx) const { transformed_buffer_stack.get_buffer().bind_range(Core::shader_storage_layout_binding(idx), 0, lights.size()); }
+	auto& get_active_ll_counter() const { return active_lights_ll_counter; }
+	auto& get_active_ll() const { return active_lights_ll; }
+	auto size() const { return lights.size(); }
 	auto& get_lights() const { return lights; }
 };
 

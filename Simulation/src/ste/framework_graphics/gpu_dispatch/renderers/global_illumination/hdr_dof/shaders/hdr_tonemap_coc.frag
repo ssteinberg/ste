@@ -11,12 +11,19 @@ layout(location = 0) out vec4 rgbout;
 layout(location = 1) out vec4 bloomout;
 layout(location = 2) out vec2 coc_out;
 
-layout(std430, binding = 0) coherent buffer histogram_sums {
+layout(std430, binding = 6) restrict readonly buffer gbuffer_data {
+	g_buffer_element gbuffer[];
+};
+layout(r32ui, binding = 7) restrict readonly uniform uimage2D gbuffer_ll_heads;
+
+layout(std430, binding = 0) restrict readonly buffer histogram_sums {
 	uint histogram[bins];
 };
-layout(std430, binding = 2) coherent readonly buffer hdr_bokeh_parameters_buffer {
+layout(std430, binding = 2) restrict readonly buffer hdr_bokeh_parameters_buffer {
 	hdr_bokeh_parameters params;
 };
+
+#include "gbuffer_load.glsl"
 
 const float bloom_cutoff = .9f;
 const float vision_properties_max_lum = 10.f;
@@ -38,7 +45,7 @@ vec2 hdr_zcoc(vec4 RGBL, vec3 XYZ, float acuity, float mesopic) {
 
 	float focal = params.focus;
 
-	g_buffer_element frag = gbuffer_load(ivec2(gl_FragCoord.xy));
+	g_buffer_element frag = gbuffer_load(gbuffer_ll_heads, ivec2(gl_FragCoord.xy));
 	float s = gbuffer_linear_z(frag, far, near);
 
 	float C = aperature_radius * abs(focal - s) / s;

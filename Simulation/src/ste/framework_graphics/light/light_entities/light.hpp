@@ -15,6 +15,7 @@ namespace Graphics {
 class light : public entity {
 private:
 	static constexpr float light_cutoff = 0.001f;
+	static constexpr float light_min_effective_lum_ratio = 0.00001;
 
 public:
 	enum class LightType : std::int32_t {
@@ -23,14 +24,13 @@ public:
 	};
 
 	struct light_descriptor {
-		glm::vec4 position_direction;
-		glm::vec4 diffuse;
+		glm::vec3 position_direction;	LightType type;
+		glm::vec3 diffuse;				float luminance;
 
-		float luminance;
 		float radius;
 		float effective_range;
 
-		LightType type;
+		std::int32_t reserved[2];
 	};
 
 protected:
@@ -38,7 +38,8 @@ protected:
 	light_descriptor descriptor;
 
 	static float calculate_effective_range(float lum, float r) {
-		return r * (glm::sqrt(lum / light_cutoff) - 1.f);
+		float min_lum = glm::max(light_min_effective_lum_ratio * lum, light_cutoff);
+		return r * (glm::sqrt(lum / min_lum) - 1.f);
 	}
 
 public:
@@ -46,7 +47,7 @@ public:
 		descriptor.luminance = luminance;
 		descriptor.radius = radius;
 		descriptor.effective_range = calculate_effective_range(luminance, radius);
-		descriptor.diffuse = decltype(descriptor.diffuse){ diffuse.R(), diffuse.G(), diffuse.B(), descriptor.diffuse.w };
+		descriptor.diffuse = decltype(descriptor.diffuse){ diffuse.R(), diffuse.G(), diffuse.B() };
 	}
 	virtual ~light() noexcept {};
 
@@ -64,16 +65,16 @@ public:
 		dirty = true;
 	}
 	void set_diffuse(const RGB &d) {
-		descriptor.diffuse = decltype(descriptor.diffuse){ d.R(), d.G(), d.B(), descriptor.diffuse.w };
+		descriptor.diffuse = decltype(descriptor.diffuse){ d.R(), d.G(), d.B() };
 		dirty = true;
 	}
 
 	float get_luminance() const { return descriptor.luminance; }
 	float get_radius() const { return descriptor.radius; }
 	float get_effective_range() const { return descriptor.effective_range; }
-	glm::vec3 get_diffuse() const { return { descriptor.diffuse.x, descriptor.diffuse.y, descriptor.diffuse.z }; }
+	auto& get_diffuse() const { return descriptor.diffuse; }
 
-	auto get_descriptor() const { return descriptor; }
+	auto& get_descriptor() const { return descriptor; }
 };
 
 }

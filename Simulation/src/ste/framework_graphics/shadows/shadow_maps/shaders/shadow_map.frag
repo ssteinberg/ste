@@ -5,6 +5,10 @@
 
 #include "material.glsl"
 
+layout(std430, binding = 0) restrict readonly buffer material_data {
+	material_descriptor mat_descriptor[];
+};
+
 in frag_in {
 	vec2 uv;
 	flat int matIdx;

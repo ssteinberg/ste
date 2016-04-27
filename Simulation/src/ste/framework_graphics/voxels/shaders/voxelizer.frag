@@ -8,6 +8,10 @@
 #include "material.glsl"
 #include "voxels.glsl"
 
+layout(std430, binding = 0) restrict readonly buffer material_data {
+	material_descriptor mat_descriptor[];
+};
+
 in geo_out {
 	vec3 P, N;
 	vec2 st;
@@ -30,24 +34,24 @@ void main() {
 
 	vec2 dUVdx = dFdx(uv) * 4;
 	vec2 dUVdy = dFdy(uv) * 4;
-	
+
 	uint level = voxel_level(P);
 	float size = voxel_size(level);
 
 	P /= size;
 	vec3 C = round(P);
-	
+
 	voxelize(md, ivec3(C), uv, N, level, 1.f, dUVdx, dUVdy);
 
-	
+
 	vec3 dPdx = dFdx(P) * .5f;
 	vec3 dPdy = dFdy(P) * .5f;
-	
+
 	vec3 P00 = round(P - dPdx - dPdy) * fragment.ortho_projection_mask;
 	vec3 P10 = round(P + dPdx - dPdy) * fragment.ortho_projection_mask;
 	vec3 P01 = round(P - dPdx + dPdy) * fragment.ortho_projection_mask;
 	vec3 P11 = round(P + dPdx + dPdy) * fragment.ortho_projection_mask;
-	
+
 	vec3 Cplus1 = C * fragment.ortho_projection_mask + fragment.ortho_projection_mask;
 	vec3 Cminus1 = C * fragment.ortho_projection_mask - fragment.ortho_projection_mask;
 

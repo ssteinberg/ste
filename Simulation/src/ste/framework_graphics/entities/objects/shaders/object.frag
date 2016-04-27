@@ -9,6 +9,19 @@ layout(early_fragment_tests) in;
 #include "material.glsl"
 #include "gbuffer.glsl"
 
+layout(std430, binding = 0) restrict readonly buffer material_data {
+	material_descriptor mat_descriptor[];
+};
+
+layout(std430, binding = 6) restrict writeonly buffer gbuffer_data {
+	g_buffer_element gbuffer[];
+};
+
+layout(binding = 7) uniform atomic_uint gbuffer_ll_counter;
+layout(r32ui, binding = 7) restrict uniform uimage2D gbuffer_ll_heads;
+
+#include "gbuffer_store.glsl"
+
 in v {
 	vec3 frag_position;
 	vec2 frag_texcoords;
@@ -39,5 +52,5 @@ void main() {
 	vec4 albedo = vec4(diffuse, alpha);
 	uint16_t material = vin.matIdx >= 0 ? uint16_t(vin.matIdx) : material_none;
 
-	gbuffer_store(P, albedo, specular, n, t, material, ivec2(gl_FragCoord.xy));
+	gbuffer_store(gbuffer_ll_heads, gbuffer_ll_counter, P, albedo, specular, n, t, material, ivec2(gl_FragCoord.xy));
 }

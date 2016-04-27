@@ -7,7 +7,11 @@
 
 #include "material.glsl"
 #include "voxels.glsl"
- 
+
+layout(std430, binding = 0) restrict readonly buffer material_data {
+	material_descriptor mat_descriptor[];
+};
+
 layout (triangles) in;
 layout (triangle_strip, max_vertices = 3) out;
 
@@ -49,11 +53,11 @@ void main() {
 	vec3 U = gl_in[0].gl_Position.xyz;
 	vec3 V = gl_in[1].gl_Position.xyz;
 	vec3 W = gl_in[2].gl_Position.xyz;
-	
+
 	vec3 unnormedN = cross(V - U, W - U);
 	float len_N = length(unnormedN);
 	vec3 N = unnormedN / len_N;
-	
+
 	float voxel = voxel_size(N * dot(-U, N));
 
 	vec3 min_world_aabb = min(U, min(V, W));
@@ -69,11 +73,11 @@ void main() {
 		voxel = max(voxel, voxel_size(voxel_level(d_aabb)));
 	}
 
-	
+
 	vec3 pos0 = U / voxel;
 	vec3 pos1 = V / voxel;
 	vec3 pos2 = W / voxel;
-	
+
 	vec3 rp0 = round(pos0);
 	if (rp0 == round(pos1) && rp0 == round(pos2)) {
 		// Voxelize in geometry shader. Fast path.
@@ -81,17 +85,17 @@ void main() {
 
 		material_descriptor md = mat_descriptor[matIdx];
 		vec2 uv = vec2(.5f);
-		voxelize(md, 
-				 U, 
-				 uv, 
-				 (vin[0].N + vin[1].N + vin[2].N) / 3.f, 
+		voxelize(md,
+				 U,
+				 uv,
+				 (vin[0].N + vin[1].N + vin[2].N) / 3.f,
 				 area,
 				 vec2(1),
 				 vec2(1));
 
 		return;
 	}
-	
+
 	float voxels_texture_size = float(textureSize(voxel_space_radiance, 0).x);
 
 	mat3 T;
@@ -123,7 +127,7 @@ void main() {
 
 	vec2 minv = min(min(p0.xy, p1.xy), p2.xy);
 	vout.max_aabb = max(max(p0.xy, p1.xy), p2.xy) - minv + vec2(1);
-	
+
 	N = invT * N;
 	float d = dot(p0, N);
 
@@ -133,7 +137,7 @@ void main() {
 	p0.z = (d - dot(p0.xy, N.xy)) / N.z;
 	p1.z = (d - dot(p1.xy, N.xy)) / N.z;
 	p2.z = (d - dot(p2.xy, N.xy)) / N.z;
-	
+
 	U = T * (p0 * voxel);
 	V = T * (p1 * voxel);
 	W = T * (p2 * voxel);
@@ -141,21 +145,21 @@ void main() {
 	vec2 v0 = (p0.xy - minv) / voxels_texture_size - vec2(1, 1);
 	vec2 v1 = (p1.xy - minv) / voxels_texture_size - vec2(1, 1);
 	vec2 v2 = (p2.xy - minv) / voxels_texture_size - vec2(1, 1);
-	
+
 	vout.matIdx = matIdx;
-	
+
 	vout.st = vin[0].st;
 	vout.P = U;
 	vout.N = vin[0].N;
     gl_Position = vec4(v0, 0, 1);
     EmitVertex();
-	
+
 	vout.st = vin[1].st;
 	vout.P = V;
 	vout.N = vin[1].N;
     gl_Position = vec4(v1, 0, 1);
     EmitVertex();
-	
+
 	vout.st = vin[2].st;
 	vout.P = W;
 	vout.N = vin[2].N;

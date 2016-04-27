@@ -16,7 +16,11 @@
 #include "scene_prepopulate_depth_dispatch.hpp"
 
 #include "SceneProperties.hpp"
+
 #include "light.hpp"
+#include "light_preprocess_dispatch.hpp"
+#include "linked_light_lists.hpp"
+#include "linked_light_lists_gen_dispatch.hpp"
 
 #include "gpu_dummy_dispatchable.hpp"
 #include "hdr_dof_postprocess.hpp"
@@ -52,7 +56,7 @@ private:
 		std::shared_ptr<Core::GLSLProgram> program;
 
 	public:
-		deferred_composition(const StEngineControl &ctx, GIRenderer *dr) : program(ctx.glslprograms_pool().fetch_program_task({ "deferred.vert", "deferred.frag" })()), dr(dr) {
+		deferred_composition(const StEngineControl &ctx, GIRenderer *dr) : program(ctx.glslprograms_pool().fetch_program_task({ "passthrough.vert", "deferred_compose.frag" })()), dr(dr) {
 			// dr->voxel_space.add_consumer_program(this->get_program());
 		}
 		~deferred_composition() {
@@ -82,6 +86,10 @@ private:
 	gpu_task::TaskCollection gui_tasks;
 	gpu_task::TaskCollection added_tasks;
 
+	light_preprocess_dispatch light_preprocessor;
+	linked_light_lists lll_storage;
+	linked_light_lists_gen_dispatch lll_gen_dispatch;
+
 	shadowmap_storage shadows_storage;
 	shadowmap_projector shadows_projector;
 
@@ -95,7 +103,9 @@ private:
 									gbuffer_clearer_task,
 									shadow_projector_task,
 									gbuffer_sort_task,
-									prepopulate_depth_task;
+									prepopulate_depth_task,
+									light_preprocess_task,
+									lll_gen_task;
 
 	deferred_composition composer;
 	gbuffer_clear_dispatch gbuffer_clearer;
@@ -120,9 +130,9 @@ public:
 	virtual ~GIRenderer() noexcept {}
 
 	void set_model_matrix(const glm::mat4 &m) {
-		composer.program->set_uniform("view_matrix", m);
 		composer.program->set_uniform("inverse_view_matrix", glm::inverse(m));
 
+		light_preprocessor.set_model_matrix(m);
 		prepopulate_depth_dispatch.set_proj_model_matrix(ctx.projection_matrix() * m);
 	}
 
@@ -136,6 +146,8 @@ public:
 	virtual void render_queue() override;
 
 	// const dense_voxel_space& voxel_grid() const { return voxel_space; }
+
+	auto *get_gbuffer() const { return &gbuffer; }
 
 	virtual std::string rendering_system_name() const override { return "GIRenderer"; };
 };

@@ -8,6 +8,7 @@
 #include "gpu_task.hpp"
 
 #include "SceneProperties.hpp"
+#include "deferred_gbuffer.hpp"
 
 #include "ObjectGroup.hpp"
 

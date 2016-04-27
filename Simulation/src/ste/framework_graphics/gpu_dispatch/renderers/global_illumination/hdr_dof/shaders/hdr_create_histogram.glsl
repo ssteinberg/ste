@@ -6,9 +6,9 @@
 
 layout(local_size_x = 32, local_size_y = 32) in;
 
-layout(r32f, binding = 0) uniform image2D hdr_lums;
+layout(r32f, binding = 0) restrict readonly uniform image2D hdr_lums;
 layout(binding = 0) uniform atomic_uint histogram[bins];
-layout(std430, binding = 2) coherent buffer hdr_bokeh_parameters_buffer {
+layout(std430, binding = 2) restrict readonly buffer hdr_bokeh_parameters_buffer {
 	hdr_bokeh_parameters params;
 };
 

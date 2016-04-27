@@ -7,7 +7,6 @@
 
 #include "resource.hpp"
 
-#include "RenderTarget.hpp"
 #include "Texture2D.hpp"
 #include "FramebufferObject.hpp"
 
@@ -31,12 +30,12 @@ private:
 	};
 
 	static constexpr Core::BufferUsage::buffer_usage usage = static_cast<Core::BufferUsage::buffer_usage>(Core::BufferUsage::BufferUsageSparse);
-	static constexpr std::size_t pages = 2147483648;
+	static constexpr std::size_t virt_size = 2147483648;
 
 	using gbuffer_type = Core::ShaderStorageBuffer<g_buffer_element, usage>;
 
 private:
-	std::unique_ptr<Core::RenderTarget> depth_target;
+	std::unique_ptr<Core::Texture2D> depth_target;
 	Core::FramebufferObject fbo;
 
 	gbuffer_type gbuffer;
@@ -46,14 +45,14 @@ private:
 	glm::ivec2 size;
 
 	static constexpr std::size_t virtual_gbuffer_size() {
-		return pages / gbuffer_type::page_size() / sizeof(g_buffer_element) * gbuffer_type::page_size();
+		return virt_size / gbuffer_type::page_size() / sizeof(g_buffer_element) * gbuffer_type::page_size();
 	}
 
 public:
 	deferred_gbuffer(glm::ivec2 size) : gbuffer(virtual_gbuffer_size()), gbuffer_ll_counter(1) { resize(size); }
 
 	void resize(glm::ivec2 size);
-	auto get_size() const { return size; }
+	auto& get_size() const { return size; }
 
 	void clear() {
 		std::uint32_t zero = 0;
@@ -62,9 +61,10 @@ public:
 		gbuffer_ll_heads->clear(&end);
 	}
 
-	void bind_gbuffer() const;
+	void bind_gbuffer(bool readonly = true) const;
 
-	auto *get_fbo() const { return &fbo; }
+	auto* get_depth_target() const { return depth_target.get(); }
+	auto* get_fbo() const { return &fbo; }
 };
 
 }

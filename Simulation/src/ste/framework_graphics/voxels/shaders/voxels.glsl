@@ -46,7 +46,7 @@ float voxel_size(vec3 P) {
 
 void voxelize(ivec3 C, vec4 color, vec3 normal, uint level, float coverage) {
 	ivec3 vtc = C + ivec3(imageSize(voxel_radiance_levels(level)).x >> 1);
-	
+
 	imageAtomicAdd(voxel_data_levels(level), vtc, f16vec4(normal * coverage, coverage));
 	imageAtomicAdd(voxel_radiance_levels(level), vtc, f16vec4(color * coverage));
 }
@@ -96,7 +96,7 @@ void __voxel_filter(vec3 P, uint level, out vec4 color, out vec3 normal) {
 
 	ivec3 center = ivec3(textureSize(voxel_space_radiance, int(level)).x >> 1);
 	ivec3 coordinates = center + ivec3(floor(P_over_size));
-	
+
 	vec4 data000 = texelFetch(voxel_space_data, coordinates + ivec3(0, 0, 0), int(level));
 	vec4 data100 = texelFetch(voxel_space_data, coordinates + ivec3(1, 0, 0), int(level));
 	vec4 data010 = texelFetch(voxel_space_data, coordinates + ivec3(0, 1, 0), int(level));
@@ -158,7 +158,7 @@ void voxel_filter(vec3 P, float radius, out vec4 color, out vec3 normal) {
 			vec4 color1;
 			vec3 normal1;
 			__voxel_filter(P, level + 1, color1, normal1);
-			
+
 			color = mix(color, color1, frac);
 			normal = mix(normal, normal1, frac);
 		}
@@ -182,11 +182,11 @@ vec3 voxel_ray_march(vec3 P, vec3 dir, vec3 end_point, out bool hit, out float r
 		max_length = max_length > 0 ? min(ldir, max_length) : ldir;
 		dir /= ldir;
 	}
-	
+
 	vec3 inv_dir = 1.f / dir;
-	
+
 	__voxel_ray_trace_step(P, ray_length, dir, inv_dir, size);
-	
+
 	uint min_level = voxel_level(P);
 	level = max(min_level, level);
 	size = voxel_size(level);
@@ -199,7 +199,7 @@ vec3 voxel_ray_march(vec3 P, vec3 dir, vec3 end_point, out bool hit, out float r
 	while (true) {
 		float texel_counter = texelFetch(voxel_space_data, rcoords + center, int(level)).w;
 		if (texel_counter > .0f) {
-			if (level == min_level) {				
+			if (level == min_level) {
 				hit = true;
 				break;
 			}
@@ -213,10 +213,10 @@ vec3 voxel_ray_march(vec3 P, vec3 dir, vec3 end_point, out bool hit, out float r
 
 			continue;
 		}
-		
+
 		__voxel_ray_trace_step(P, ray_length, dir, inv_dir, size);
 		++counter;
-		
+
 		if (max_length > 0 && ray_length >= max_length)
 			break;
 
@@ -225,7 +225,7 @@ vec3 voxel_ray_march(vec3 P, vec3 dir, vec3 end_point, out bool hit, out float r
 			size *= 2.f;
 			center = center >> 1;
 		}
-		
+
 		min_level = voxel_level(P);
 		if (level < min_level) {
 			++level;
@@ -234,10 +234,10 @@ vec3 voxel_ray_march(vec3 P, vec3 dir, vec3 end_point, out bool hit, out float r
 		}
 
 		rcoords = ivec3(floor(P / size));
-		
+
 		if (!trace_to_point) {
 			const float far = voxels_world_size;
-			if (abs(P.x) >= far || abs(P.y) >= far || abs(P.z) >= far) 
+			if (abs(P.x) >= far || abs(P.y) >= far || abs(P.z) >= far)
 				break;
 		}
 	}
@@ -248,7 +248,7 @@ vec3 voxel_ray_march(vec3 P, vec3 dir, vec3 end_point, out bool hit, out float r
 vec3 voxel_cone_march(vec3 P, vec3 dir, vec3 end_point, float start_radius, float tan_theta, out float radius, out bool hit, out float ray_length, bool trace_to_point = false, float max_length = .0f) {
 	P += voxels_world_translation;
 	end_point += voxels_world_translation;
-	
+
 	radius = start_radius;
 	float cone_level = voxel_f_level_from_size(radius);
 	uint icone_level = uint(floor(cone_level));
@@ -267,9 +267,9 @@ vec3 voxel_cone_march(vec3 P, vec3 dir, vec3 end_point, float start_radius, floa
 		max_length = max_length > 0 ? min(ldir, max_length) : ldir;
 		dir /= ldir;
 	}
-	
+
 	vec3 inv_dir = 1.f / dir;
-	
+
 	__voxel_cone_trace_step(P, ray_length, radius, tan_theta, dir, inv_dir, size);
 
 	cone_level = voxel_f_level_from_size(radius);
@@ -301,10 +301,10 @@ vec3 voxel_cone_march(vec3 P, vec3 dir, vec3 end_point, float start_radius, floa
 
 			continue;
 		}
-		
+
 		__voxel_cone_trace_step(P, ray_length, radius, tan_theta, dir, inv_dir, size);
 		++counter;
-		
+
 		if (max_length > 0 && ray_length >= max_length)
 			break;
 
@@ -313,7 +313,7 @@ vec3 voxel_cone_march(vec3 P, vec3 dir, vec3 end_point, float start_radius, floa
 			size *= 2.f;
 			center = center >> 1;
 		}
-		
+
 		cone_level = voxel_f_level_from_size(radius);
 		icone_level = uint(floor(cone_level));
 		min_level = max(voxel_level(P), icone_level);
@@ -324,10 +324,10 @@ vec3 voxel_cone_march(vec3 P, vec3 dir, vec3 end_point, float start_radius, floa
 		}
 
 		rcoords = ivec3(floor(P / size));
-		
+
 		if (!trace_to_point) {
 			const float far = voxels_world_size;
-			if (abs(P.x) >= far || abs(P.y) >= far || abs(P.z) >= far) 
+			if (abs(P.x) >= far || abs(P.y) >= far || abs(P.z) >= far)
 				break;
 		}
 	}

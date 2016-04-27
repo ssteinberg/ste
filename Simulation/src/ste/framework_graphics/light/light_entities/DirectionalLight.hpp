@@ -13,12 +13,12 @@ class DirectionalLight : public light {
 public:
 	DirectionalLight(float luminance, const RGB &diffuse, const glm::vec3 &direction) : light(luminance, 1.f, diffuse) {
 		descriptor.type = LightType::Directional;
-		descriptor.position_direction = decltype(descriptor.position_direction){ direction.x, direction.y, direction.z, descriptor.position_direction.w};
+		descriptor.position_direction = decltype(descriptor.position_direction){ direction.x, direction.y, direction.z };
 	}
 	virtual ~DirectionalLight() noexcept {}
 
 	void set_direction(const glm::vec3 &d) {
-		descriptor.position_direction = decltype(descriptor.position_direction){ d.x, d.y, d.z, descriptor.position_direction.w};
+		descriptor.position_direction = decltype(descriptor.position_direction){ d.x, d.y, d.z };
 		dirty = true;
 	}
 

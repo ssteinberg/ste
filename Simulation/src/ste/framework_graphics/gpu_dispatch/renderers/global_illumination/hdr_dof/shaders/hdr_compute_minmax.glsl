@@ -9,11 +9,11 @@ layout(local_size_x = 32, local_size_y = 32) in;
 
 layout(bindless_sampler) uniform sampler2D hdr;
 
-layout(r32f, binding = 0) uniform image2D hdr_lums;
-layout(std430, binding = 2) coherent buffer hdr_bokeh_parameters_buffer {
+layout(r32f, binding = 0) restrict writeonly uniform image2D hdr_lums;
+layout(std430, binding = 2) restrict buffer hdr_bokeh_parameters_buffer {
 	hdr_bokeh_parameters params;
 };
-layout(std430, binding = 3) readonly buffer hdr_bokeh_parameters_prev_buffer {
+layout(std430, binding = 3) restrict readonly buffer hdr_bokeh_parameters_prev_buffer {
 	hdr_bokeh_parameters prev_params;
 };
 
