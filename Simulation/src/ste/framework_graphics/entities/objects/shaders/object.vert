@@ -23,7 +23,7 @@ uniform mat4 projection;
 uniform mat4 view_matrix;
 uniform mat4 trans_inverse_view_matrix;
 
-layout(std430, binding = 1) buffer mesh_data {
+layout(std430, binding = 1) restrict readonly buffer mesh_data {
 	mesh_descriptor mesh_descriptor_buffer[];
 };
 

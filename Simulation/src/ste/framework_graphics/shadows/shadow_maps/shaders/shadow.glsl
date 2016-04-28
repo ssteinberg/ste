@@ -3,12 +3,12 @@
 
 const float shadow_delta = 1.f / 1000000.f;
 
-float shadow_gather_pcf(samplerCubeArrayShadow shadow_depth_maps, int light, float zf, vec3 norm_v, vec3 v, float m, float r, int samples, out int i) {
+float shadow_gather_pcf(samplerCubeArrayShadow shadow_depth_maps, int light, float zf, vec3 norm_v, vec3 v, float m, float r, int samples, float jitter, out int i) {
 	const float map_size = 1.f / 1024.f;
 
 	float pcf = .0f;
 	for (int j = 0; j < samples; ++i, ++j) {
-		float a = (float(j) + .5f) / float(samples);
+		float a = (float(j) + jitter) / float(samples);
 		vec2 xy = vec2(sin(2.f * pi * a), cos(2.f * pi * a)) * r;
 
 		vec3 u;
@@ -41,25 +41,22 @@ float shadow_penumbra_width(samplerCubeArrayShadow shadow_depth_maps, int light,
 
 	float pcf = texture(shadow_depth_maps, vec4(norm_v, light), zf + shadow_delta).x;
 
-	const int samples_far = 4;
-	const int samples_med1 = 3;
-	const int samples_med2 = 3;
+	const int samples_far = 2;
+	const int samples_med = 3;
 	const int samples_near = 3;
-	const float radius_far = 9.f;
-	const float radius_med1 = 6.f;
-	const float radius_med2 = 4.f;
+	const float radius_far = 6.f;
+	const float radius_med = 4.f;
 	const float radius_near = 2.f;
 	int i = 0;
 
-	pcf += shadow_gather_pcf(shadow_depth_maps, light, zf, norm_v, v, m, radius_far, samples_far, i);
+	pcf += shadow_gather_pcf(shadow_depth_maps, light, zf, norm_v, v, m, radius_far, samples_far, .6, i);
 
 	float t = clamp(pcf / float(i + 1), .0f, 1.f);
 	if (t >= .99f || t <= .01f)
 		return t;
 
-	pcf += shadow_gather_pcf(shadow_depth_maps, light, zf, norm_v, v, m, radius_med1, samples_med1, i);
-	pcf += shadow_gather_pcf(shadow_depth_maps, light, zf, norm_v, v, m, radius_med2, samples_med2, i);
-	pcf += shadow_gather_pcf(shadow_depth_maps, light, zf, norm_v, v, m, radius_near, samples_near, i);
+	pcf += shadow_gather_pcf(shadow_depth_maps, light, zf, norm_v, v, m, radius_med, samples_med, .2, i);
+	pcf += shadow_gather_pcf(shadow_depth_maps, light, zf, norm_v, v, m, radius_near, samples_near, .7, i);
 
 	return clamp(pcf / float(i + 1), .0f, 1.f);
 }

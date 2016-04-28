@@ -49,6 +49,9 @@ class hdr_dof_postprocess {
 	friend class hdr_bokeh_blury_task;
 
 private:
+	constexpr static float vision_properties_max_lum = 10.f;
+
+private:
 	using ResizeSignalConnectionType = StEngineControl::framebuffer_resize_signal_type::connection_type;
 	using ProjectionSignalConnectionType = StEngineControl::projection_change_signal_type::connection_type;
 

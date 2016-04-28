@@ -9,8 +9,9 @@
 
 using namespace StE::Graphics;
 
-ObjectGroup::ObjectGroup(const StEngineControl &ctx, SceneProperties *props) : scene_props(props),
-																			   object_program(ctx.glslprograms_pool().fetch_program_task({ "object.vert", "object.frag" })()) {
+ObjectGroup::ObjectGroup(const StEngineControl &ctx,
+						 const SceneProperties *props) : scene_props(props),
+														 object_program(ctx.glslprograms_pool().fetch_program_task({ "object.vert", "object.frag" })()) {
 	auto vbo_buffer = Core::buffer_object_cast<vbo_type>(vbo.get_buffer());
 	vao[0] = vbo_buffer[0];
 	vao[1] = vbo_buffer[1];
@@ -111,6 +112,8 @@ void ObjectGroup::set_context_state() const {
 	Core::GL::gl_current_context::get()->depth_mask(false);
 
 	Core::GL::gl_current_context::get()->enable_state(Core::GL::BasicStateName::CULL_FACE);
+
+	gbuffer->bind_gbuffer(false);
 
 	bind_buffers();
 	object_program->bind();

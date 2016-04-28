@@ -11,14 +11,22 @@ layout(location = 0) out vec4 rgbout;
 layout(location = 1) out vec4 bloomout;
 layout(location = 2) out vec2 coc_out;
 
-layout(std430, binding = 0) coherent buffer histogram_sums {
+layout(std430, binding = 6) restrict readonly buffer gbuffer_data {
+	g_buffer_element gbuffer[];
+};
+layout(r32ui, binding = 7) restrict readonly uniform uimage2D gbuffer_ll_heads;
+
+layout(std430, binding = 0) restrict readonly buffer histogram_sums {
 	uint histogram[bins];
 };
-layout(std430, binding = 2) coherent readonly buffer hdr_bokeh_parameters_buffer {
+layout(std430, binding = 2) restrict readonly buffer hdr_bokeh_parameters_buffer {
 	hdr_bokeh_parameters params;
 };
 
+#include "gbuffer_load.glsl"
+
 const float bloom_cutoff = .9f;
+const float vision_properties_max_lum = 10.f;
 
 layout(bindless_sampler) uniform sampler2D hdr;
 layout(bindless_sampler) uniform sampler1D hdr_vision_properties_texture;
@@ -27,13 +35,31 @@ uniform float aperature_radius = .25f;
 uniform float f1 = .1f;
 uniform float far, near;
 
-void main() {
-	vec3 hdr_texel = texelFetch(hdr, ivec2(gl_FragCoord.xy), 0).rgb;
+vec2 hdr_zcoc(vec4 RGBL, vec3 XYZ, float acuity, float mesopic) {
+	if (XYZ.y > bloom_cutoff) {
+		float x = pow((XYZ.y - bloom_cutoff) / (1.f - bloom_cutoff), 8) * (1.f - mesopic);
+		bloomout = vec4(RGBL.rgb, x);
+	}
+	else
+		bloomout = vec4(0);
 
+	float focal = params.focus;
+
+	g_buffer_element frag = gbuffer_load(gbuffer_ll_heads, ivec2(gl_FragCoord.xy));
+	float s = gbuffer_linear_z(frag, far, near);
+
+	float C = aperature_radius * abs(focal - s) / s;
+	float c = C * f1 / focal;
+	float coc = clamp(smoothstep(0.f, 1.f, c), 0.f, 1.f);
+	coc += acuity;
+
+	return vec2(s, clamp(coc, 0.f, 1.f));
+}
+
+float hdr_tonemap(float l) {
 	float min_lum = intBitsToFloat(params.lum_min);
 	float max_lum = intBitsToFloat(params.lum_max);
 
-	float l = hdr_lum(hdr_texel.z);
 	float fbin = hdr_bin(max_lum, min_lum, l);
 	int bin = int(fbin);
 	float frac = fract(fbin);
@@ -45,14 +71,23 @@ void main() {
 
 	float toned_l = toned_bin_start + frac * toned_bin_size;
 
-	vec4 vision_properties = texture(hdr_vision_properties_texture, clamp((l - min_luminance) / (10.f - min_luminance), 0.f, 1.f));
+	return tonemap(toned_l);
+}
+
+void main() {
+	vec3 hdr_texel = texelFetch(hdr, ivec2(gl_FragCoord.xy), 0).rgb;
+	float x = hdr_texel.z;
+
+	float vision_properties_coord = (x - min_luminance) / (vision_properties_max_lum - min_luminance);
+	vec4 vision_properties = texture(hdr_vision_properties_texture, vision_properties_coord);
 	float scotopic = vision_properties.x;
 	float mesopic = vision_properties.y;
-	float monochr = vision_properties.z;
+	float monochr = monochromaticity(x);//vision_properties.z;
 	float acuity = vision_properties.w;
 	float red_coef = red_response(mesopic);
 
-	hdr_texel.z = tonemap(toned_l) * mix(1.f, .666f, scotopic);
+	float l = hdr_lum(x);
+	hdr_texel.z = hdr_tonemap(l) * mix(1.f, .666f, scotopic);
 
 	vec3 XYZ = xyYtoXYZ(hdr_texel);
 	vec3 RGB = XYZtoRGB(XYZ);
@@ -61,23 +96,5 @@ void main() {
 	vec4 RGBL = clamp(vec4(RGB, XYZ.y), vec4(0.f), vec4(1.f));
 
 	rgbout = RGBL;
-
-	if (XYZ.y > bloom_cutoff) {
-		float x = pow((XYZ.y - bloom_cutoff) / (1.f - bloom_cutoff), 8) * (1.f - mesopic);
-		bloomout = vec4(RGBL.rgb, x);
-	}
-	else
-		bloomout = vec4(0);
-
-	float focal = params.focus;
-
-	g_buffer_element frag = gbuffer_load(ivec2(gl_FragCoord.xy));
-	float s = gbuffer_linear_z(frag, far, near);
-
-	float C = aperature_radius * abs(focal - s) / s;
-	float c = C * f1 / focal;
-	float coc = clamp(smoothstep(0.f, 1.f, c), 0.f, 1.f);
-	coc += acuity;
-
-	coc_out = vec2(s, clamp(coc, 0.f, 1.f));
+	coc_out = hdr_zcoc(RGBL, XYZ, acuity, mesopic);
 }

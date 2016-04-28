@@ -9,11 +9,11 @@ layout(local_size_x = 32, local_size_y = 32) in;
 
 layout(bindless_sampler) uniform sampler2D hdr;
 
-layout(r32f, binding = 0) uniform image2D hdr_lums;
-layout(std430, binding = 2) coherent buffer hdr_bokeh_parameters_buffer {
+layout(r32f, binding = 0) restrict writeonly uniform image2D hdr_lums;
+layout(std430, binding = 2) restrict buffer hdr_bokeh_parameters_buffer {
 	hdr_bokeh_parameters params;
 };
-layout(std430, binding = 3) readonly buffer hdr_bokeh_parameters_prev_buffer {
+layout(std430, binding = 3) restrict readonly buffer hdr_bokeh_parameters_prev_buffer {
 	hdr_bokeh_parameters prev_params;
 };
 
@@ -29,16 +29,16 @@ void main() {
 				   dot(lums1, vec4(.25f)),
 				   dot(lums2, vec4(.25f)),
 				   dot(lums3, vec4(.25f)));
-	float l = hdr_lum(dot(ls, vec4(.25f)));
+	float x = dot(ls, vec4(.25f));
 
-	if (l >= min_luminance) {
-		int int_l = floatBitsToInt(l);
+	float l = hdr_lum(max(min_luminance, x));
 
-		imageStore(hdr_lums, ivec2(gl_GlobalInvocationID.xy), vec4(l,0,0,0));
+	int int_l = floatBitsToInt(l);
 
-		atomicMin(params.lum_min, int_l);
-		atomicMax(params.lum_max, int_l);
-	}
+	imageStore(hdr_lums, ivec2(gl_GlobalInvocationID.xy), vec4(l,0,0,0));
+
+	atomicMin(params.lum_min, int_l);
+	atomicMax(params.lum_max, int_l);
 
 	barrier();
 	memoryBarrierShared();

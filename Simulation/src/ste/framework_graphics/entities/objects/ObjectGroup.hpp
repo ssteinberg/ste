@@ -13,6 +13,8 @@
 #include "gl_current_context.hpp"
 #include "GLSLProgram.hpp"
 
+#include "deferred_gbuffer.hpp"
+
 #include "ElementBufferObject.hpp"
 #include "VertexBufferObject.hpp"
 #include "VertexArrayObject.hpp"
@@ -69,7 +71,8 @@ private:
 	using mesh_data_buffer_type = Core::ShaderStorageBuffer<mesh_descriptor, decltype(mesh_data_bo)::usage>;
 
 private:
-	SceneProperties *scene_props;
+	const SceneProperties *scene_props;
+	const deferred_gbuffer *gbuffer{ nullptr };
 	objects_map_type objects;
 
 	std::size_t total_vertices{ 0 };
@@ -84,8 +87,10 @@ private:
 	std::shared_ptr<ProjectionSignalConnectionType> projection_change_connection;
 
 public:
-	ObjectGroup(const StEngineControl &ctx, SceneProperties *props);
+	ObjectGroup(const StEngineControl &ctx, const SceneProperties *props);
 	~ObjectGroup() noexcept;
+
+	void draw_to_gbuffer(const deferred_gbuffer *gbuffer) { this->gbuffer = gbuffer; }
 
 	void add_object(const std::shared_ptr<Object> &);
 	void remove_all();

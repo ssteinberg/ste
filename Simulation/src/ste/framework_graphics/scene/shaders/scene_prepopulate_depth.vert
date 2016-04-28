@@ -8,7 +8,7 @@
 layout(location = 0) in vec3 vert;
 layout(location = 3) in vec2 tex_coords;
 
-layout(std430, binding = 1) buffer mesh_data {
+layout(std430, binding = 1) restrict readonly buffer mesh_data {
 	mesh_descriptor mesh_descriptor_buffer[];
 };
 

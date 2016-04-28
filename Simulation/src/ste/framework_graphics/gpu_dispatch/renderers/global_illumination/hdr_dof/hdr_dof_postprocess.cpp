@@ -26,7 +26,7 @@ hdr_dof_postprocess::hdr_dof_postprocess(const StEngineControl &context, const d
 
 	task = make_gpu_task("hdr", create_dispatchable(), &ctx.gl()->defaut_framebuffer(), create_sub_tasks());
 
-	float big_float = 10000.f;
+	float big_float = 10000000.f;
 	hdr_bokeh_param_buffer_eraser = std::make_unique<StE::Core::PixelBufferObject<std::int32_t>>(std::vector<std::int32_t>{ *reinterpret_cast<std::int32_t*>(&big_float), 0 });
 
 	hdr_compute_minmax = context.glslprograms_pool().fetch_program_task({ "hdr_compute_minmax.glsl" })();
@@ -42,11 +42,14 @@ hdr_dof_postprocess::hdr_dof_postprocess(const StEngineControl &context, const d
 	{
 		glm::vec4 *d = reinterpret_cast<glm::vec4*>(hdr_human_vision_properties_data.data());
 		for (unsigned i = 0; i < hdr_human_vision_properties_data.extent().x; ++i, ++d) {
-			float f = glm::mix(StE::Graphics::human_vision_properties::min_luminance, 10.f, static_cast<float>(i) / static_cast<float>(hdr_human_vision_properties_data.extent().x));
-			*d = {	StE::Graphics::human_vision_properties::scotopic_vision(f),
-					StE::Graphics::human_vision_properties::mesopic_vision(f),
-					StE::Graphics::human_vision_properties::monochromaticity(f),
-					StE::Graphics::human_vision_properties::visual_acuity(f) };
+			float x = static_cast<float>(i) / static_cast<float>(hdr_human_vision_properties_data.extent().x);
+			float l = glm::mix(StE::Graphics::human_vision_properties::min_luminance,
+							   vision_properties_max_lum,
+							   x);
+			*d = {	StE::Graphics::human_vision_properties::scotopic_vision(l),
+					StE::Graphics::human_vision_properties::mesopic_vision(l),
+					StE::Graphics::human_vision_properties::monochromaticity(l),
+					StE::Graphics::human_vision_properties::visual_acuity(l) };
 		}
 	}
 	hdr_vision_properties_texture = std::make_unique<StE::Core::Texture1D>(hdr_human_vision_properties_data, false);

@@ -7,6 +7,13 @@ layout(local_size_x = 16, local_size_y = 16) in;
 
 #include "gbuffer.glsl"
 
+layout(std430, binding = 6) restrict buffer gbuffer_data {
+	g_buffer_element gbuffer[];
+};
+layout(r32ui, binding = 7) restrict uniform uimage2D gbuffer_ll_heads;
+
+#include "gbuffer_load.glsl"
+
 const int max_depth = 4;
 
 struct fragment {
@@ -15,7 +22,7 @@ struct fragment {
 };
 
 void main() {
-	ivec2 size = gbuffer_size();
+	ivec2 size = gbuffer_size(gbuffer_ll_heads);
 	ivec2 coords = ivec2(gl_GlobalInvocationID.xy);
 	if (coords.x >= size.x ||
 		coords.y >= size.y)

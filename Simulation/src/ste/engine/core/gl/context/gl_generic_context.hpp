@@ -176,6 +176,9 @@ public:
 				const context_state::state_type &s = state.second.get();
 				set_context_server_state(states, state.first, s);
 			}
+			else {
+				assert(false && "Can't restore.");
+			}
 		}
 	}
 

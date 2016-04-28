@@ -19,7 +19,7 @@ out vs_out {
 uniform vec3 translation;
 uniform mat4 trans_inverse_view_matrix;
 
-layout(std430, binding = 1) buffer mesh_data {
+layout(std430, binding = 1) restrict readonly buffer mesh_data {
 	mesh_descriptor mesh_descriptor_buffer[];
 };
 
@@ -28,7 +28,7 @@ void main() {
 
 	mat4 model = md.model;
 	mat4 trans_inverse_model = trans_inverse_view_matrix * md.transpose_inverse_model;
-	
+
 	vec4 P = model * vec4(vert, 1);
 	P.xyz += translation;
 

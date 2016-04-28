@@ -13,7 +13,7 @@ void ssss_write_penumbras::set_context_state() const {
 
 	0_image_idx = p->ssss->get_penumbra_layers()->make_image(0);
 	1_image_idx = p->ssss->get_z_buffer()->make_image();
-	p->scene->scene_properties().lights_storage().bind_buffers(2);
+	p->scene->scene_properties().lights_storage().bind_lights_buffer(2);
 
 	p->gbuffer->bind_gbuffer();
 	8_tex_unit = *p->shadows_storage->get_cubemaps();

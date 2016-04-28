@@ -19,10 +19,6 @@ struct material_descriptor {
 
 const uint16_t material_none = uint16_t(0xFFFF);
 
-layout(std430, binding = 0) buffer material_data {
-	material_descriptor mat_descriptor[];
-};
-
 void normal_map(material_descriptor md, float height_map_scale, vec2 uv, inout vec3 n, inout vec3 t, inout vec3 P) {
 	if (md.normalmap.tex_handler>0) {
 		vec4 normal_height = texture(sampler2D(md.normalmap.tex_handler), uv);
@@ -51,7 +47,7 @@ float calc_brdf(material_descriptor md, vec3 position, vec3 normal, vec3 tangent
 	vec3 v = incident;
 	vec3 e = -position;
 
-	vec3 win = normalize(v);
+	vec3 win = v;
 	vec3 wout = normalize(e);
 	vec3 lwin = TBN * win;
 	vec3 lwout = TBN * wout;
