@@ -9,8 +9,10 @@
 
 #include "linked_light_lists.hpp"
 #include "light_storage.hpp"
+
 #include "GLSLProgram.hpp"
 #include "Texture2D.hpp"
+#include "Sampler.hpp"
 
 namespace StE {
 namespace Graphics {
@@ -26,6 +28,8 @@ private:
 	light_storage *ls;
 	linked_light_lists *lll;
 	std::shared_ptr<Core::GLSLProgram> program;
+
+	Core::Sampler depth_sampler;
 
 	Core::Texture2D *depth_map;
 
@@ -46,7 +50,7 @@ private:
 
 		program->set_uniform("near", n);
 		program->set_uniform("aspect", ctx.get_projection_aspect());
-		program->set_uniform("two_tan_fovy_over_two", 2.f * glm::tan(fovy * .5f));
+		program->set_uniform("two_near_tan_fovy_over_two", 2.f * n * glm::tan(fovy * .5f));
 		program->set_uniform("proj22", proj22);
 		program->set_uniform("proj23", proj23);
 	}
@@ -55,7 +59,8 @@ public:
 	linked_light_lists_gen_dispatch(const StEngineControl &ctx,
 									light_storage *ls,
 									linked_light_lists *lll) : ctx(ctx), ls(ls), lll(lll),
-															   program(ctx.glslprograms_pool().fetch_program_task({ "linked_light_lists_gen.glsl" })()) {
+															   program(ctx.glslprograms_pool().fetch_program_task({ "passthrough.vert", "linked_light_lists_gen.frag" })()),
+															   depth_sampler(Core::TextureFiltering::Linear, Core::TextureFiltering::Linear) {
 		update_uniforms();
 		projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([this](const glm::mat4&, float, float, float) {
 			update_uniforms();
@@ -65,6 +70,9 @@ public:
 		});
 		ctx.signal_projection_change().connect(projection_change_connection);
 		ctx.signal_framebuffer_resize().connect(resize_connection);
+
+		depth_sampler.set_compare_mode(Core::TextureCompareMode::CompareToTextureDepth);
+		depth_sampler.set_compare_func(Core::TextureCompareFunc::Less);
 	}
 
 	void set_depth_map(Core::Texture2D *dm) { depth_map = dm; }

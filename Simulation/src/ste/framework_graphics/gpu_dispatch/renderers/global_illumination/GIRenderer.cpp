@@ -17,6 +17,8 @@ void GIRenderer::deferred_composition::set_context_state() const {
 
 	auto &ls = dr->scene->scene_properties().lights_storage();
 
+	GL::gl_current_context::get()->enable_state(StE::Core::GL::BasicStateName::TEXTURE_CUBE_MAP_SEAMLESS);
+
 	dr->gbuffer.bind_gbuffer();
 	0_storage_idx = dr->scene->scene_properties().materials_storage().buffer();
 
@@ -25,7 +27,6 @@ void GIRenderer::deferred_composition::set_context_state() const {
 
 	dr->lll_storage.bind_lll_buffer();
 
-	Core::GL::gl_current_context::get()->enable_state(StE::Core::GL::BasicStateName::TEXTURE_CUBE_MAP_SEAMLESS);
 	8_tex_unit = *dr->shadows_storage.get_cubemaps();
 	8_sampler_idx = dr->shadows_storage.get_shadow_sampler();
 
@@ -86,7 +87,7 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 	gbuffer_sort_task = make_gpu_task("gbuffer_sorter", &gbuffer_sorter, nullptr);
 	shadow_projector_task = make_gpu_task("shadow_projector", &shadows_projector, nullptr);
 	light_preprocess_task = make_gpu_task("light_preprocessor", &light_preprocessor, nullptr);
-	lll_gen_task = make_gpu_task("lll_gen_dispatch", &lll_gen_dispatch, nullptr);
+	lll_gen_task = make_gpu_task("lll_gen_dispatch", &lll_gen_dispatch, get_fbo());
 
 	fb_clearer_task->add_dependency(gbuffer_clearer_task);
 	gbuffer_sort_task->add_dependency(fb_clearer_task);

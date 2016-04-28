@@ -56,7 +56,7 @@ vec4 shade(g_buffer_element frag) {
 
 	vec3 diffuse = c.rgb;
 	float alpha = c.a;
-	float specular = mix(.3f, 1.f, frag.specular);
+	float specular = mix(.2f, 1.f, frag.specular);
 
 	if (draw_idx == material_none)
 		return vec4(diffuse, alpha);
@@ -70,41 +70,46 @@ vec4 shade(g_buffer_element frag) {
 	vec3 w_pos = (inverse_view_matrix * vec4(position, 1)).xyz;
 	vec3 rgb = md.emission.rgb;
 
-	ivec2 lll_coords = ivec2(gl_FragCoord.xy) / 4;
+	ivec2 lll_coords = ivec2(gl_FragCoord.xy) / 8;
 
-	uint32_t lll_next_ptr = imageLoad(lll_heads, lll_coords).x;
-	for (int i = 0; i < max_active_lights_per_frame && !lll_eof(lll_next_ptr); ++i) {
-		lll_element l = lll_buffer[lll_next_ptr];
+	uint32_t lll_ptr = imageLoad(lll_heads, lll_coords).x;
+	for (int i = 0; i < max_active_lights_per_frame; ++i, ++lll_ptr) {
+		lll_element lll_p = lll_buffer[lll_ptr];
+		if (lll_eof(lll_p))
+			return vec4(rgb, alpha);
 
-		if (position.z >= l.z_min && position.z <= l.z_max) {
-			int light_idx = int(l.light_idx);
+		if (position.z >= lll_p.z_min && position.z <= lll_p.z_max) {
+			int light_idx = int(lll_p.light_idx);
 			light_descriptor ld = light_buffer[light_idx];
 
 			vec3 v = light_incidant_ray(ld, light_idx, position);
-			if (dot(n, v) <= 0)
-				continue;
+			if (dot(n, v) > 0) {
+				float dist = length(v);
+				float l_radius = ld.radius;
+				vec3 l = diffuse * ld.diffuse.xyz;
+				float min_lum = light_min_effective_luminance(ld);
 
-			float dist = length(v);
-			float l_radius = ld.radius;
-			vec3 l = diffuse * ld.diffuse.xyz;
-			float min_lum = light_min_effective_luminance(ld);
+				vec3 shadow_v = w_pos - ld.position_direction.xyz;
+				float shadow = shadow_penumbra_width(shadow_depth_maps,
+													int(lll_p.ll_idx),
+													shadow_v,
+													l_radius,
+													dist,
+													proj22,
+													proj23);
 
-			vec3 shadow_v = w_pos - ld.position_direction.xyz;
-			float shadow = shadow_penumbra_width(shadow_depth_maps, light_idx, shadow_v, l_radius, dist, proj22, proj23);
+				float dist_att = dist * scattering_ro;
+				float shadow_attenuation = 1.f - exp(-dist_att * dist_att);
+				float obscurance = mix(1.f, .05f * shadow_attenuation, shadow);
 
-			float dist_att = dist * scattering_ro;
-			float shadow_attenuation = 1.f - exp(-dist_att * dist_att);
-			float obscurance = mix(1.f, .05f * shadow_attenuation, shadow);
+				float brdf = calc_brdf(md, position, n, t, b, v / dist);
+				float attenuation_factor = light_attenuation_factor(ld, dist);
+				float incident_radiance = max(ld.luminance / attenuation_factor - min_lum, .0f);
 
-			float brdf = calc_brdf(md, position, n, t, b, v);
-			float attenuation_factor = light_attenuation_factor(ld, dist);
-			float incident_radiance = max(ld.luminance / attenuation_factor - min_lum, .0f);
-
-			float irradiance = specular * brdf * incident_radiance * obscurance;
-			rgb += l * max(0.f, irradiance);
+				float irradiance = specular * brdf * incident_radiance * obscurance;
+				rgb += l * max(0.f, irradiance);
+			}
 		}
-
-		lll_next_ptr = l.next_ptr;
 	}
 
 	return vec4(rgb, alpha);

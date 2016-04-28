@@ -47,7 +47,7 @@ float calc_brdf(material_descriptor md, vec3 position, vec3 normal, vec3 tangent
 	vec3 v = incident;
 	vec3 e = -position;
 
-	vec3 win = normalize(v);
+	vec3 win = v;
 	vec3 wout = normalize(e);
 	vec3 lwin = TBN * win;
 	vec3 lwout = TBN * wout;

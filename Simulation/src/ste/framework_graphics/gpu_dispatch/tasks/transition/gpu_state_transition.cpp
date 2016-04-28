@@ -16,7 +16,7 @@ namespace detail {
 
 inline void set_difference(StE::Core::GL::gl_context_state_log::container<StE::Core::GL::BasicStateName> &a,
 						   const StE::Core::GL::gl_context_state_log::container<StE::Core::GL::BasicStateName> &b) {
-	if (!a.size())
+	if (!a.size() || !b.size())
 		return;
 
 	auto *k = &a[0];
@@ -33,20 +33,19 @@ inline void set_difference(StE::Core::GL::gl_context_state_log::container<StE::C
 
 inline void set_difference(StE::Core::GL::gl_context_state_log::container<StE::Core::GL::gl_context_state_log::states_value_type> &a,
 						   StE::Core::GL::gl_context_state_log::container<StE::Core::GL::gl_context_state_log::states_value_type> &b) {
-	if (!a.size())
-		return;
-
-	auto *k = &a[0];
-	for (int i = 0; i < a.size();) {
-		auto it = std::find_if(b.begin(), b.end(), [=](const StE::Core::GL::gl_context_state_log::states_value_type &v){
-			return v.first == k->first;
-		});
-		if (it != b.end()) {
-			it->second = std::move(k->second);
-			a.erase(a.begin() + i, a.begin() + i + 1);
+	if (a.size() && b.size()) {
+		for (int i = 0; i < a.size();) {
+			auto &k = a[i];
+			auto it = std::find_if(b.begin(), b.end(), [&k](const StE::Core::GL::gl_context_state_log::states_value_type &v){
+				return v.first == k.first;
+			});
+			if (it != b.end()) {
+				it->second = std::move(k.second);
+				a.erase(a.begin() + i, a.begin() + i + 1);
+			}
+			else
+				++i;
 		}
-		else
-			++i; ++k;
 	}
 }
 

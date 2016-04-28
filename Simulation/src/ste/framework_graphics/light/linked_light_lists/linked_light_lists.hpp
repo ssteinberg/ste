@@ -24,7 +24,6 @@ namespace Graphics {
 class linked_light_lists {
 private:
 	struct lll_element {
-		std::uint32_t		next_ptr;
 		std::uint16_t		light_idx;
 		std::uint16_t		ll_idx;
 		glm::mediump_vec1	z_min, z_max;
@@ -37,7 +36,7 @@ private:
 
 private:
 	lll_type lll;
-	Core::AtomicCounterBufferObject<> lll_counter;
+	Core::ShaderStorageBuffer<std::uint32_t> lll_counter;
 	std::unique_ptr<Core::Texture2D> lll_heads;
 
 	glm::ivec2 size;
@@ -54,9 +53,7 @@ public:
 
 	void clear() {
 		std::uint32_t zero = 0;
-		std::uint32_t end = 0xFFFFFFFF;
 		lll_counter.clear(gli::FORMAT_R32_UINT_PACK32, &zero);
-		lll_heads->clear(&end);
 	}
 
 	void bind_lll_buffer(bool readonly = true) const;

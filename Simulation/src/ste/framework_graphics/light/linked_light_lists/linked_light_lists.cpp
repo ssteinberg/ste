@@ -5,7 +5,7 @@
 using namespace StE::Graphics;
 
 void linked_light_lists::resize(glm::ivec2 size) {
-	size /= 4;
+	size = (size + glm::ivec2(7)) / 8;
 
 	if (size.x <= 0 || size.y <= 0)
 		return;
@@ -23,5 +23,5 @@ void linked_light_lists::bind_lll_buffer(bool readonly) const {
 	6_image_idx = (*lll_heads)[0].with_access(readonly ? Core::ImageAccessMode::Read : Core::ImageAccessMode::ReadWrite);
 
 	if (!readonly)
-		5_atomic_idx = lll_counter;
+		7_storage_idx = lll_counter;
 }
