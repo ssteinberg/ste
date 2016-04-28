@@ -18,7 +18,7 @@
 #include "SceneProperties.hpp"
 
 #include "light.hpp"
-#include "light_preprocess_dispatch.hpp"
+#include "light_preprocessor.hpp"
 #include "linked_light_lists.hpp"
 #include "linked_light_lists_gen_dispatch.hpp"
 
@@ -86,7 +86,7 @@ private:
 	gpu_task::TaskCollection gui_tasks;
 	gpu_task::TaskCollection added_tasks;
 
-	light_preprocess_dispatch light_preprocessor;
+	light_preprocessor light_preprocess;
 	linked_light_lists lll_storage;
 	linked_light_lists_gen_dispatch lll_gen_dispatch;
 
@@ -104,7 +104,6 @@ private:
 									shadow_projector_task,
 									gbuffer_sort_task,
 									prepopulate_depth_task,
-									light_preprocess_task,
 									lll_gen_task;
 
 	deferred_composition composer;
@@ -132,7 +131,7 @@ public:
 	void set_model_matrix(const glm::mat4 &m) {
 		composer.program->set_uniform("inverse_view_matrix", glm::inverse(m));
 
-		light_preprocessor.set_model_matrix(m);
+		light_preprocess.set_model_matrix(m);
 		prepopulate_depth_dispatch.set_proj_model_matrix(ctx.projection_matrix() * m);
 	}
 
