@@ -36,9 +36,7 @@ layout(std430, binding = 9) restrict readonly buffer projection_data {
 
 uniform float far;
 
-void process(int face, uint16_t l, vec4 vertices[3]) {
-	int layer = face + int(l) * 6;
-
+void process(int face, int l, vec4 vertices[3]) {
 	vec4 transformed_vertices[3];
 
 	int out_of_bounds[6] = { 0, 0, 0, 0, 0, 0 };
@@ -59,7 +57,7 @@ void process(int face, uint16_t l, vec4 vertices[3]) {
 			in_frustum = false;
 
 	if (in_frustum) {
-		gl_Layer = layer;
+		gl_Layer = face + l * 6;
 		for (int j = 0; j < 3; ++j) {
 			vout.uv = vin[j].uv;
 			vout.matIdx = vin[j].matIdx;
@@ -74,9 +72,8 @@ void process(int face, uint16_t l, vec4 vertices[3]) {
 }
 
 void main() {
-	for (uint32_t i = 0; i < ll_counter; ++i) {
-		uint16_t l = ll[i];
-		light_descriptor ld = light_buffer[l];
+	for (int i = 0; i < ll_counter; ++i) {
+		light_descriptor ld = light_buffer[ll[i]];
 
 		vec4 light_pos = vec4(ld.position_direction.xyz, 0);
 		float light_range = min(ld.effective_range, far);
@@ -99,7 +96,7 @@ void main() {
 
 			if (out_of_range < 3) {
 				for (int face = 0; face < 6; ++face)
-					process(face, l, vertices);
+					process(face, i, vertices);
 			}
 		}
 	}
