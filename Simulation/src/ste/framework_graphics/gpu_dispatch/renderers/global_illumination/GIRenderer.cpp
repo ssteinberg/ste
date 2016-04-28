@@ -56,7 +56,7 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 						 shadows_projector(ctx, &scene->object_group(), &scene->scene_properties().lights_storage(), &shadows_storage),
 						 prepopulate_depth_dispatch(ctx, scene.get()),
 						 gbuffer_sorter(ctx, &gbuffer),
-						 light_preprocessor(ctx, &scene->scene_properties().lights_storage()),
+						 light_preprocess(ctx, &scene->scene_properties().lights_storage()),
 						 composer(ctx, this),
 						 gbuffer_clearer(&gbuffer) {
 	resize_connection = std::make_shared<ResizeSignalConnectionType>([=](const glm::i32vec2 &size) {
@@ -86,7 +86,6 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 	gbuffer_clearer_task = make_gpu_task("gbuffer_clearer", &gbuffer_clearer, nullptr);
 	gbuffer_sort_task = make_gpu_task("gbuffer_sorter", &gbuffer_sorter, nullptr);
 	shadow_projector_task = make_gpu_task("shadow_projector", &shadows_projector, nullptr);
-	light_preprocess_task = make_gpu_task("light_preprocessor", &light_preprocessor, nullptr);
 	lll_gen_task = make_gpu_task("lll_gen_dispatch", &lll_gen_dispatch, get_fbo());
 
 	fb_clearer_task->add_dependency(gbuffer_clearer_task);
@@ -94,13 +93,13 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 	hdr.get_task()->add_dependency(composer_task);
 	prepopulate_depth_task->add_dependency(fb_clearer_task);
 	scene->add_dependency(prepopulate_depth_task);
-	lll_gen_task->add_dependency(light_preprocess_task);
+	lll_gen_task->add_dependency(light_preprocess.get_task());
 	lll_gen_task->add_dependency(prepopulate_depth_task);
-	shadow_projector_task->add_dependency(light_preprocess_task);
+	shadow_projector_task->add_dependency(light_preprocess.get_task());
 	composer_task->add_dependency(fb_clearer_task);
 	composer_task->add_dependency(gbuffer_sort_task);
 	composer_task->add_dependency(lll_gen_task);
-	composer_task->add_dependency(light_preprocess_task);
+	composer_task->add_dependency(light_preprocess.get_task());
 	composer_task->add_dependency(shadow_projector_task);
 
 	add_task(fb_clearer_task);
