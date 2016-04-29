@@ -5,7 +5,10 @@
 
 layout(local_size_x = 128) in;
 
+#include "common.glsl"
+#include "fast_rand.glsl"
 #include "light.glsl"
+#include "hdr_common.glsl"
 
 layout(std430, binding = 2) restrict buffer light_data {
 	light_descriptor light_buffer[];
@@ -18,6 +21,10 @@ layout(std430, binding = 3) restrict writeonly buffer light_transform_data {
 layout(binding = 4) uniform atomic_uint ll_counter;
 layout(std430, binding = 5) restrict writeonly buffer ll_data {
 	uint16_t ll[];
+};
+
+layout(std430, binding = 6) restrict readonly buffer hdr_bokeh_parameters_buffer {
+	hdr_bokeh_parameters hdr_params;
 };
 
 uniform mat4 view_matrix;
@@ -43,8 +50,15 @@ void main() {
 	vec4 transformed_light_pos = light_transform(view_matrix, mat3(view_matrix), ld);
 	light_transform_buffer[light_idx] = transformed_light_pos;
 
+	// Calculate stohastic cutoff based on HDR exposure
+	float hdr_min_lum = intBitsToFloat(hdr_params.lum_min);
+	float err = max(.05f, hdr_lum_to_luminance(hdr_min_lum));
+	float alpha = err / (ld.radius * ld.luminance);
+	float xi = mix(.25f, 1.f, fast_rand(float(gl_GlobalInvocationID.x)));
+	float range = 1.f / sqrt(alpha * xi);
+
 	// Frustum cull based on light effective range
-	float r = ld.effective_range;
+	float r = range;
 	vec3 c = transformed_light_pos.xyz;
 	if (is_sphere_in_frustum(c, r)) {
 		// Add light to active light linked list
@@ -53,5 +67,9 @@ void main() {
 
 		// Zero out shadow face mask. It shall be computed later.
 		light_buffer[light_idx].shadow_face_mask = 0;
+
+		// Update stohastic variables
+		light_buffer[light_idx].effective_range = range;
+		light_buffer[light_idx].alpha = alpha;
 	}
 }

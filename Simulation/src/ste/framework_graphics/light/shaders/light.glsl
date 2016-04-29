@@ -1,9 +1,9 @@
 
+#include "hdr_common.glsl"
+
 const int LightTypeSphere = 0;
 const int LightTypeDirectional = 1;
 
-const float light_cutoff = 0.001f;
-const float light_min_effective_lum_ratio = 0.00001;
 const int max_active_lights_per_frame = 32;
 
 struct light_descriptor {
@@ -14,7 +14,7 @@ struct light_descriptor {
 	float effective_range;
 
 	uint32_t shadow_face_mask;
-	float _unused;
+	float alpha;
 };
 
 float light_attenuation_factor(light_descriptor ld, float dist) {
@@ -22,12 +22,16 @@ float light_attenuation_factor(light_descriptor ld, float dist) {
 		return 1;
 	else {
 		float a = max(.001f, dist / ld.radius);
-		return a*a;
-	}
-}
+		float f = 1.f / (a*a);
 
-float light_min_effective_luminance(light_descriptor ld) {
-	return max(light_min_effective_lum_ratio * ld.luminance, light_cutoff);
+		float r = ld.effective_range;
+		float alpha = ld.alpha;
+
+		float p = f / alpha;
+		float xi = 1.f / (r*r * alpha);
+
+		return p > xi ? max(alpha, f) : .0f;
+	}
 }
 
 float light_effective_range(light_descriptor ld) {
@@ -45,4 +49,9 @@ vec4 light_transform(mat4 mv, mat3 rmv, light_descriptor ld) {
 		transform.xyz = rmv * ld.position_direction.xyz;
 
 	return transform;
+}
+
+float light_calculate_effective_range(light_descriptor ld, float min_lum) {
+	float l = max(min_lum, ld.luminance * .00001f);
+	return ld.radius * (sqrt(ld.luminance / l) - 1.f);
 }

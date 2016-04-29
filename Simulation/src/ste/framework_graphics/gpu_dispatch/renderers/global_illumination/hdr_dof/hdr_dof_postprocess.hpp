@@ -131,6 +131,9 @@ public:
 	void resize(glm::ivec2 size);
 
 	std::shared_ptr<const gpu_task> get_task() const;
+	auto& get_exposure_params_buffer() const { return hdr_bokeh_param_buffer; }
+	auto& get_histogram_buffer() const { return histogram; }
+	auto& get_histogram_sums_buffer() const { return histogram_sums; }
 };
 
 }

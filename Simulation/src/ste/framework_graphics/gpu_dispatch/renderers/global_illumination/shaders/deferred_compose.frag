@@ -87,7 +87,6 @@ vec4 shade(g_buffer_element frag) {
 				float dist = length(v);
 				float l_radius = ld.radius;
 				vec3 l = diffuse * ld.diffuse.xyz;
-				float min_lum = light_min_effective_luminance(ld);
 
 				vec3 shadow_v = w_pos - ld.position_direction.xyz;
 				float shadow = shadow_penumbra_width(shadow_depth_maps,
@@ -104,7 +103,7 @@ vec4 shade(g_buffer_element frag) {
 
 				float brdf = calc_brdf(md, position, n, t, b, v / dist);
 				float attenuation_factor = light_attenuation_factor(ld, dist);
-				float incident_radiance = max(ld.luminance / attenuation_factor - min_lum, .0f);
+				float incident_radiance = max(ld.luminance * attenuation_factor, .0f);
 
 				float irradiance = specular * brdf * incident_radiance * obscurance;
 				rgb += l * max(0.f, irradiance);

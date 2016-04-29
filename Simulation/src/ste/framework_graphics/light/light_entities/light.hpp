@@ -13,10 +13,6 @@ namespace StE {
 namespace Graphics {
 
 class light : public entity {
-private:
-	static constexpr float light_cutoff = 0.001f;
-	static constexpr float light_min_effective_lum_ratio = 0.00001;
-
 public:
 	enum class LightType : std::int32_t {
 		Sphere = 0,
@@ -37,16 +33,10 @@ protected:
 	bool dirty{ false };
 	light_descriptor descriptor;
 
-	static float calculate_effective_range(float lum, float r) {
-		float min_lum = glm::max(light_min_effective_lum_ratio * lum, light_cutoff);
-		return r * (glm::sqrt(lum / min_lum) - 1.f);
-	}
-
 public:
 	light(float luminance, float radius, const RGB &diffuse) {
 		descriptor.luminance = luminance;
 		descriptor.radius = radius;
-		descriptor.effective_range = calculate_effective_range(luminance, radius);
 		descriptor.diffuse = decltype(descriptor.diffuse){ diffuse.R(), diffuse.G(), diffuse.B() };
 	}
 	virtual ~light() noexcept {};
@@ -54,14 +44,8 @@ public:
 	bool is_dirty() const { return dirty; }
 	void clear_dirty() { dirty = false; }
 
-	void set_radius(float r) {
-		descriptor.radius = r;
-		descriptor.effective_range = calculate_effective_range(descriptor.luminance, descriptor.radius);
-		dirty = true;
-	}
 	void set_luminance(float l) {
 		descriptor.luminance = l;
-		descriptor.effective_range = calculate_effective_range(descriptor.luminance, descriptor.radius);
 		dirty = true;
 	}
 	void set_diffuse(const RGB &d) {
