@@ -35,6 +35,8 @@ enum class core_resource_type {
 	QueryBufferObject,
 	QueryObjectAnySamples = GL_ANY_SAMPLES_PASSED,
 	QueryObjectAnySamplesConservative = GL_ANY_SAMPLES_PASSED_CONSERVATIVE,
+	QueryObjectTimestamp = GL_TIMESTAMP,
+	QueryObjectTimer = GL_TIME_ELAPSED,
 };
 
 }
