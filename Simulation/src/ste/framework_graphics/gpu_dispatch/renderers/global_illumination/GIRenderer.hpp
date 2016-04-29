@@ -11,6 +11,7 @@
 
 #include "gpu_dispatchable.hpp"
 #include "gpu_task.hpp"
+#include "profiler.hpp"
 
 #include "Scene.hpp"
 #include "scene_prepopulate_depth_dispatch.hpp"
@@ -152,6 +153,8 @@ public:
 	// const dense_voxel_space& voxel_grid() const { return voxel_space; }
 
 	auto *get_gbuffer() const { return &gbuffer; }
+
+	void attach_profiler(profiler *p) { q.attach_profiler(p); }
 
 	virtual std::string rendering_system_name() const override { return "GIRenderer"; };
 };

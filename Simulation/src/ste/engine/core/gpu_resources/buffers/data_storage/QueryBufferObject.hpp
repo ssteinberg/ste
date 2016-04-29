@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -32,7 +32,7 @@ public:
 
 	void bind() const final override { Binder::bind(get_resource_id(), GL_QUERY_BUFFER); };
 	void unbind() const final override { Binder::unbind(GL_QUERY_BUFFER); };
-	void bind_range(const LayoutLocationType &sampler, int offset, std::size_t size) const { Base::bind_range(sampler, GL_QUERY_BUFFER, offset, size); }
+	void bind_range(const typename Base::LayoutLocationType &sampler, int offset, std::size_t size) const { Base::bind_range(sampler, GL_QUERY_BUFFER, offset, size); }
 
 	core_resource_type resource_type() const override { return core_resource_type::QueryBufferObject; }
 };
