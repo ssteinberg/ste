@@ -7,12 +7,21 @@
 #include "mesh.hpp"
 #include "entity_signalling.hpp"
 
+#include "mesh_descriptor.hpp"
+
 #include <memory>
 
 namespace StE {
 namespace Graphics {
 
-class Object : public entity_signalling<Object*> {	
+class ObjectGroup;
+
+class Object : public entity_signalling<Object*> {
+	friend class ObjectGroup;
+
+private:
+	mesh_descriptor md;
+
 protected:
 	int material_id;
 	std::unique_ptr<mesh_generic> object_mesh;

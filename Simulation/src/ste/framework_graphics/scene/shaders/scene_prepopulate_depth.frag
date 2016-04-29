@@ -22,5 +22,5 @@ void main() {
 	if (diffuse.a * alpha < 1.f)
 		discard;
 
-	gl_FragDepth = gl_FragCoord.z + .00001f;
+	gl_FragDepth = gl_FragCoord.z * 1.00001f;
 }

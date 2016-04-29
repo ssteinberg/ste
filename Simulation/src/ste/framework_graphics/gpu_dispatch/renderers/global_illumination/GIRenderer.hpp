@@ -14,6 +14,7 @@
 
 #include "Scene.hpp"
 #include "scene_prepopulate_depth_dispatch.hpp"
+#include "scene_frustum_cull_dispatch.hpp"
 
 #include "SceneProperties.hpp"
 
@@ -95,7 +96,9 @@ private:
 
 	hdr_dof_postprocess hdr;
 	gbuffer_sort_dispatch gbuffer_sorter;
+
 	scene_prepopulate_depth_dispatch prepopulate_depth_dispatch;
+	scene_frustum_cull_dispatch scene_frustum_cull;
 
 	std::shared_ptr<const gpu_task> precomposer_dummy_task,
 									composer_task,
@@ -104,6 +107,7 @@ private:
 									shadow_projector_task,
 									gbuffer_sort_task,
 									prepopulate_depth_task,
+									scene_frustum_cull_task,
 									lll_gen_task;
 
 	deferred_composition composer;
@@ -132,6 +136,7 @@ public:
 		composer.program->set_uniform("inverse_view_matrix", glm::inverse(m));
 
 		light_preprocess.set_model_matrix(m);
+		scene_frustum_cull.set_model_matrix(m);
 		prepopulate_depth_dispatch.set_proj_model_matrix(ctx.projection_matrix() * m);
 	}
 

@@ -18,5 +18,5 @@ void scene_prepopulate_depth_dispatch::set_context_state() const {
 }
 
 void scene_prepopulate_depth_dispatch::dispatch() const {
-	scene->object_group().dispatch();
+	scene->object_group().draw_object_group();
 }
