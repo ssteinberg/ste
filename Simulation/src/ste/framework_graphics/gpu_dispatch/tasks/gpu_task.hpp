@@ -7,6 +7,8 @@
 
 #include "sop_vertex.hpp"
 
+#include "profileable.hpp"
+
 #include "gpu_dispatchable.hpp"
 #include "FramebufferObject.hpp"
 
@@ -26,7 +28,8 @@ class gpu_task_factory;
 
 class gpu_task : public Algorithm::SOP::sop_vertex<boost::container::flat_set<std::shared_ptr<const gpu_task>>,
 												   boost::container::flat_set<const gpu_task*>>,
-				 private std::enable_shared_from_this<gpu_task> {
+				 private std::enable_shared_from_this<gpu_task>,
+				 public profileable {
 private:
 	friend class gpu_task_dispatch_queue;
 	friend class gpu_state_transition;

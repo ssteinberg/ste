@@ -22,7 +22,7 @@
 #include "Kelvin.hpp"
 #include "Sphere.hpp"
 #include "gpu_task.hpp"
-#include "glm_print.hpp"
+#include "profiler.hpp"
 
 using namespace StE::Core;
 using namespace StE::Text;
@@ -131,6 +131,9 @@ int main() {
 
 	auto scene = StE::Graphics::Scene::create(ctx);
 	StE::Graphics::GIRenderer renderer(ctx, scene);
+
+	StE::Graphics::profiler gpu_tasks_profiler;
+	renderer.attach_profiler(&gpu_tasks_profiler);
 
 	std::unique_ptr<SkyDome> skydome = std::make_unique<SkyDome>(ctx);
 

@@ -126,21 +126,36 @@ void gpu_task_dispatch_queue::delete_dep(const TaskPtr &task, const TaskPtr &dep
 }
 
 void gpu_task_dispatch_queue::run_sop_iteration() {
-	auto start_time = std::chrono::high_resolution_clock::now();
-	auto rdts_stamp = _rdtsc();
+	// auto start_time = std::chrono::high_resolution_clock::now();
+	// auto rdts_stamp = _rdtsc();
 	sop.optimizer(root.get(), 1)();
-	unsigned cycles = _rdtsc() - rdts_stamp;
-	unsigned ms = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start_time).count();
-
-#ifdef DEBUG
-	static int i = 0;
-	if ((++i % 60) == 0)
-		ste_log() << "GPU dispatch: SOP optimization iteration completed in " << std::to_string(cycles) << " cycles (" << std::to_string(ms) << "ms)" << std::endl;
-#endif
+	// unsigned cycles = _rdtsc() - rdts_stamp;
+	// unsigned ms = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start_time).count();
 }
 
 void gpu_task_dispatch_queue::dispatch_sop_solution() {
-	if (!sop.run_solution()) {
+	bool ret;
+
+	if (prof != nullptr) {
+		ret = sop.run_solution([this](const gpu_state_transition *e){
+								   const gpu_task *task = reinterpret_cast<const gpu_task*>(e->get_to());
+								   task->query_start();
+							   }, [this](const gpu_state_transition *e){
+								   const gpu_task *task = reinterpret_cast<const gpu_task*>(e->get_to());
+								   task->query_end();
+
+								   profiler_entry entry;
+								   entry.name = task->get_name();
+								   entry.start = task->get_start_time();
+								   entry.end = task->get_end_time();
+								   this->prof->add_entry(entry);
+							   });
+	}
+	else {
+		ret = sop.run_solution();
+	}
+
+	if (!ret) {
 		assert(false);
 		ste_log_error() << "GPU dispatch: No SOP solution available during dispatch!" << std::endl;
 		return;

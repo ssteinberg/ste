@@ -78,14 +78,18 @@ public:
 
 	optimizer_type optimizer(const V *root, int iterations = 1);
 
-	bool run_solution() {
+	bool run_solution(std::function<void(const E*)> &&pre_transition, std::function<void(const E*)> &&post_transition) {
 		if (!best_solution)
 			return false;
 
 		int length_delta = 0;
 		for (auto p : best_solution.get().route) {
 			auto old_weight = p->get_weight();
+
+			pre_transition(p);
 			p->update_weight_and_transition();
+			post_transition(p);
+
 			auto new_weight = p->get_weight();
 
 			length_delta += new_weight - old_weight;
@@ -93,6 +97,10 @@ public:
 		update_solution_length(length_delta);
 
 		return true;
+	}
+
+	bool run_solution() {
+		return run_solution([](const E*){}, [](const E*){});
 	}
 
 	auto &get_solution() const {

@@ -15,6 +15,9 @@ class timestamp_query : public query_object<core_resource_type::QueryObjectTimes
 private:
 	using Base::begin_query;
 	using Base::end_query;
+
+public:
+	void query_counter() const { glQueryCounter(Base::get_resource_id(), GL_TIMESTAMP); }
 };
 
 }
