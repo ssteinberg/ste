@@ -26,9 +26,13 @@ uniform mat4 trans_inverse_view_matrix;
 layout(std430, binding = 1) restrict readonly buffer mesh_data {
 	mesh_descriptor mesh_descriptor_buffer[];
 };
+layout(std430, binding = 12) restrict readonly buffer id_to_drawid_data {
+	uint id_to_drawid[];
+};
 
 void main() {
-	mesh_descriptor md = mesh_descriptor_buffer[gl_DrawIDARB];
+	uint draw_id = id_to_drawid[gl_DrawIDARB];
+	mesh_descriptor md = mesh_descriptor_buffer[draw_id];
 
 	mat4 trans_inverse_view_model = trans_inverse_view_matrix * md.transpose_inverse_model;
 

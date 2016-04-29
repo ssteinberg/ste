@@ -52,7 +52,7 @@ void main() {
 
 	// Calculate stohastic cutoff based on HDR exposure
 	float hdr_min_lum = intBitsToFloat(hdr_params.lum_min);
-	float err = max(.05f, hdr_lum_to_luminance(hdr_min_lum));
+	float err = max(.025f, hdr_lum_to_luminance(hdr_min_lum));
 	float alpha = err / (ld.radius * ld.luminance);
 	float xi = mix(.25f, 1.f, fast_rand(float(gl_GlobalInvocationID.x)));
 	float range = 1.f / sqrt(alpha * xi);

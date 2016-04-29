@@ -106,7 +106,7 @@ int main() {
 	ste_log() << "Simulation is running";
 
 	// int w = 1688;
-	int w = 1500;
+	int w = 1700;
 	int h = w * 9 / 16;
 	constexpr float clip_far = 3000.f;
 	constexpr float clip_near = 5.f;

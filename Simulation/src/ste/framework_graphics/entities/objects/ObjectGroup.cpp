@@ -40,11 +40,9 @@ void ObjectGroup::add_object(const std::shared_ptr<Object> &obj) {
 								  object_information{ objects.size(), connection }));
 
  	draw_buffers.get_culled_indirect_command_stack().push_back(Core::IndirectMultiDrawElementsCommand());
+	draw_buffers.get_id_to_drawid_stack().push_back(0);
 	draw_buffers.get_vbo_stack().push_back(vertices);
 	draw_buffers.get_indices_stack().push_back(ind);
-
- 	total_vertices += vertices.size();
- 	total_indices += ind.size();
 
 	mesh_descriptor md;
 	md.model = obj->get_model_transform();
@@ -57,7 +55,10 @@ void ObjectGroup::add_object(const std::shared_ptr<Object> &obj) {
 
 	obj->md = md;
 
-	draw_buffers.get_mesh_data_stack().push_back(md);
+	draw_buffers.get_mesh_data_stack().push_back(std::move(md));
+
+ 	total_vertices += vertices.size();
+ 	total_indices += ind.size();
 }
 
 void ObjectGroup::remove_all() {
@@ -72,9 +73,10 @@ void ObjectGroup::bind_buffers() const {
 
 	draw_buffers.get_vao().bind();
 	draw_buffers.get_elements_buffer().bind();
-	draw_buffers.get_indirect_draw_buffer().bind();
+	draw_buffers.get_culled_indirect_draw().bind();
 	0_storage_idx = scene_props->materials_storage().buffer();
 	1_storage_idx = draw_buffers.get_mesh_data_buffer();
+	12_storage_idx = draw_buffers.get_id_to_drawid_buffer();
 }
 
 void ObjectGroup::update_dirty_buffers() const {
@@ -124,5 +126,6 @@ void ObjectGroup::set_context_state() const {
 }
 
 void ObjectGroup::dispatch() const {
+	Core::GL::gl_current_context::get()->memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_COMMAND_BARRIER_BIT);
 	Core::GL::gl_current_context::get()->draw_multi_elements_indirect<object_group_draw_buffers::elements_type::T>(GL_TRIANGLES, 0, draw_buffers.size(), 0);
 }

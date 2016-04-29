@@ -27,6 +27,7 @@ class scene_frustum_cull_dispatch : public gpu_dispatchable {
 	using ProjectionSignalConnectionType = StEngineControl::projection_change_signal_type::connection_type;
 
 private:
+	const StEngineControl &ctx;
 	const Scene *scene;
 
 	std::shared_ptr<Core::GLSLProgram> program;
@@ -39,8 +40,8 @@ private:
 
 public:
 	scene_frustum_cull_dispatch(const StEngineControl &ctx,
-								const Scene *scene) : scene(scene),
-													  program(ctx.glslprograms_pool().fetch_program_task({ "scene_frustum_cull_dispatch.glsl" })()) {
+								const Scene *scene) : ctx(ctx), scene(scene),
+													  program(ctx.glslprograms_pool().fetch_program_task({ "scene_frustum_cull.glsl" })()) {
 		set_projection_planes();
 		resize_connection = std::make_shared<ResizeSignalConnectionType>([=](const glm::i32vec2 &size) {
 			set_projection_planes();

@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -34,7 +34,7 @@ private:
 public:
 	gstack(std::size_t size = 10) : gstack(size, nullptr) {}
 	gstack(const std::vector<T> &data) : gstack(data.size(), &data[0]) {}
-	gstack(std::size_t size, const T *data) : len(data ? size : 0), buffer(pages * std::max(65536, buffer_type::page_size()) / sizeof(T)) {		
+	gstack(std::size_t size, const T *data) : len(data ? size : 0), buffer(pages * std::max(65536, buffer_type::page_size()) / sizeof(T)) {
 		if (data)
 			for (std::size_t i = 0; i < size; ++i)
 				push_back(data[i]);
@@ -95,6 +95,25 @@ public:
 			len = n + t.size();
 		}
 		buffer.upload(n, t.size(), &t[0]);
+	}
+
+	void overwrite_all(const gli::format format, const void *data, const gli::swizzles &swizzle = swizzles_rgba) {
+		if (!lockless) {
+			range<> lock_range{ 0, len * sizeof(T) };
+			buffer.client_wait_for_range(lock_range);
+		}
+
+		buffer.clear(format, data, swizzle);
+	}
+	void overwrite_all(const gli::format format, const void *data, int offset, std::size_t size, const gli::swizzles &swizzle = swizzles_rgba) {
+		assert(offset + size <= len && "Out of range.");
+
+		if (!lockless) {
+			range<> lock_range{ offset, size * sizeof(T) };
+			buffer.client_wait_for_range(lock_range);
+		}
+
+		buffer.clear(format, data, offset, size, swizzle);
 	}
 
 	template <bool b = !lockless>

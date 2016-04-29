@@ -5,7 +5,7 @@ struct mesh_descriptor {
 
 	vec4 bounding_sphere;
 
-	int mat_idx;
+	int matIdx;
 
 	uint count;
 	uint first_index;

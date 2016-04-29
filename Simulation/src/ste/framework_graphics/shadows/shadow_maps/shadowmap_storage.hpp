@@ -24,7 +24,7 @@ class shadowmap_storage {
 	using ProjectionSignalConnectionType = StEngineControl::projection_change_signal_type::connection_type;
 	using proj_mat_buffer_type = Core::ShaderStorageBuffer<glm::mat4>;
 
-	constexpr static unsigned default_map_size = 256;
+	constexpr static unsigned default_map_size = 512;
 	constexpr static float shadow_proj_near_clip = 20.0f;
 
 private:
