@@ -3,7 +3,7 @@
 #version 450
 #extension GL_ARB_shader_draw_parameters : enable
 
-#include "mesh.glsl"
+#include "mesh_descriptor.glsl"
 
 layout(location = 0) in vec3 vert;
 layout(location = 3) in vec2 tex_coords;

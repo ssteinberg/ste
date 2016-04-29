@@ -55,6 +55,7 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 						 shadows_storage(ctx),
 						 shadows_projector(ctx, &scene->object_group(), &scene->scene_properties().lights_storage(), &shadows_storage),
 						 prepopulate_depth_dispatch(ctx, scene.get()),
+						 scene_frustum_cull(ctx, scene.get()),
 						 gbuffer_sorter(ctx, &gbuffer),
 						 light_preprocess(ctx, &scene->scene_properties().lights_storage(), &hdr),
 						 composer(ctx, this),
@@ -78,11 +79,12 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 	// composer.program->set_uniform("inv_projection", glm::inverse(ctx.projection_matrix()));
 
 	lll_gen_dispatch.set_depth_map(gbuffer.get_depth_target());
-	scene->object_group().draw_to_gbuffer(get_gbuffer());
+	scene->object_group().set_target_gbuffer(get_gbuffer());
 
 	composer_task = make_gpu_task("deferred_composition", &composer, hdr.get_input_fbo());
 	fb_clearer_task = make_gpu_task("fb_clearer", &fb_clearer, get_fbo());
 	prepopulate_depth_task = make_gpu_task("scene_prepopulate_depth", &prepopulate_depth_dispatch, get_fbo());
+	scene_frustum_cull_task = make_gpu_task("scene_frustum_cull", &scene_frustum_cull, nullptr);
 	gbuffer_clearer_task = make_gpu_task("gbuffer_clearer", &gbuffer_clearer, nullptr);
 	gbuffer_sort_task = make_gpu_task("gbuffer_sorter", &gbuffer_sorter, nullptr);
 	shadow_projector_task = make_gpu_task("shadow_projector", &shadows_projector, nullptr);
@@ -92,7 +94,9 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 	gbuffer_sort_task->add_dependency(fb_clearer_task);
 	hdr.get_task()->add_dependency(composer_task);
 	prepopulate_depth_task->add_dependency(fb_clearer_task);
+	prepopulate_depth_task->add_dependency(scene_frustum_cull_task);
 	scene->add_dependency(prepopulate_depth_task);
+	scene->add_dependency(scene_frustum_cull_task);
 	lll_gen_task->add_dependency(light_preprocess.get_task());
 	lll_gen_task->add_dependency(prepopulate_depth_task);
 	shadow_projector_task->add_dependency(light_preprocess.get_task());
