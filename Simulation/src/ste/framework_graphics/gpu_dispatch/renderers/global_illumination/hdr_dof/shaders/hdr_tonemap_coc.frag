@@ -67,9 +67,8 @@ float hdr_tonemap(float l) {
 	float T = float(histogram[bins - 1]);
 	float toned_bin_start = bin > 0 ? float(histogram[bin - 1]) / T : .0f;
 	float toned_bin_end = float(histogram[bin]) / T;
-	float toned_bin_size = toned_bin_end - toned_bin_start;
 
-	float toned_l = toned_bin_start + frac * toned_bin_size;
+	float toned_l = mix(toned_bin_start, toned_bin_end, frac);
 
 	return tonemap(toned_l);
 }

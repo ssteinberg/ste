@@ -56,7 +56,7 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 						 shadows_projector(ctx, &scene->object_group(), &scene->scene_properties().lights_storage(), &shadows_storage),
 						 prepopulate_depth_dispatch(ctx, scene.get()),
 						 gbuffer_sorter(ctx, &gbuffer),
-						 light_preprocess(ctx, &scene->scene_properties().lights_storage()),
+						 light_preprocess(ctx, &scene->scene_properties().lights_storage(), &hdr),
 						 composer(ctx, this),
 						 gbuffer_clearer(&gbuffer) {
 	resize_connection = std::make_shared<ResizeSignalConnectionType>([=](const glm::i32vec2 &size) {

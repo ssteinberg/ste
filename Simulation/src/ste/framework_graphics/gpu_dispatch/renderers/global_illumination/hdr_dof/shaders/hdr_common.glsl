@@ -45,7 +45,11 @@ float hdr_bin(float max_lum, float min_lum, float l) {
 }
 
 float hdr_lum(float l) {
-	return log(l + 1.f) / log(10.f);
+	return log(l + 1.f);// / log(10.f);
+}
+
+float hdr_lum_to_luminance(float l) {
+	return exp(l) - 1.f;
 }
 
 float tonemap(float l) {
