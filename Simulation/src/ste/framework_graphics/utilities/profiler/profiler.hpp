@@ -18,7 +18,7 @@ struct profiler_entry {
 
 class profiler {
 private:
-	static constexpr const char * log_path = R"(Log/profiler_output.html)";
+	static constexpr const char * log_path = R"(Log/profiler_output.json)";
 
 private:
 	std::vector<profiler_entry> entries;
