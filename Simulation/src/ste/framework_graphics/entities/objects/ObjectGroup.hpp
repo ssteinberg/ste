@@ -75,9 +75,6 @@ public:
 
 	void set_model_matrix(const glm::mat4 &m) override {
 		entity_affine::set_model_matrix(m);
-
-		object_program->set_uniform("view_matrix", m);
-		object_program->set_uniform("trans_inverse_view_matrix", glm::transpose(glm::inverse(m)));
 	}
 
 	auto& get_draw_buffers() const { return draw_buffers; }

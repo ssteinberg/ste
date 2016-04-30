@@ -5,6 +5,7 @@
 
 layout(local_size_x = 128) in;
 
+#include "girenderer_matrix_buffer.glsl"
 #include "indirect.glsl"
 #include "mesh_descriptor.glsl"
 
@@ -19,7 +20,6 @@ layout(std430, binding = 12) restrict writeonly buffer id_to_drawid_data {
 	uint id_to_drawid[];
 };
 
-uniform mat4 view_matrix;
 uniform vec4 np, fp, rp, lp, tp, bp;
 
 bool is_sphere_in_frustum(vec3 c, float r) {
@@ -38,7 +38,7 @@ void main() {
 
 	mesh_descriptor md = mesh_descriptor_buffer[draw_id];
 
-	vec4 center = view_matrix * md.model * vec4(md.bounding_sphere.xyz, 1);
+	vec4 center = view_matrix_buffer.view_matrix * md.model * vec4(md.bounding_sphere.xyz, 1);
 	float radius = md.bounding_sphere.w;
 
 	if (is_sphere_in_frustum(center.xyz, radius)) {

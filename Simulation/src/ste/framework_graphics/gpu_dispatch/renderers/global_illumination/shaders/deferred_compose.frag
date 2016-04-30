@@ -10,6 +10,7 @@
 #include "light.glsl"
 #include "linked_light_lists.glsl"
 #include "gbuffer.glsl"
+#include "girenderer_matrix_buffer.glsl"
 //#include "voxels.glsl"
 
 layout(std430, binding = 0) restrict readonly buffer material_data {
@@ -47,10 +48,9 @@ in vs_out {
 out vec4 gl_FragColor;
 
 uniform float scattering_ro = 0.0003f;
-uniform mat4 inverse_view_matrix;
 uniform float proj22, proj23;
 
-vec4 shade(g_buffer_element frag) {
+vec4 shade(g_buffer_element frag, mat4 inverse_view_matrix) {
 	uint16_t draw_idx = frag.material;
 	vec4 c = frag.albedo;
 
@@ -115,13 +115,15 @@ vec4 shade(g_buffer_element frag) {
 }
 
 void main() {
+	mat4 inverse_view_matrix = transpose(view_matrix_buffer.transpose_inverse_view_matrix);
+
 	g_buffer_element frag = gbuffer_load(gbuffer_ll_heads, ivec2(gl_FragCoord.xy));
-	vec4 c = shade(frag);
+	vec4 c = shade(frag, inverse_view_matrix);
 
 	int i = 0;
 	while (!gbuffer_eof(frag.next_ptr) && i++ < 5) {
 		frag = gbuffer_load(frag.next_ptr);
-		vec4 c2 = shade(frag);
+		vec4 c2 = shade(frag, inverse_view_matrix);
 
 		c = c * c.a + c2 * (1.f - c.a);
 	}
