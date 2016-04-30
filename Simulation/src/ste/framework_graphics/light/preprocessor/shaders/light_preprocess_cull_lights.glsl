@@ -5,6 +5,7 @@
 
 layout(local_size_x = 128) in;
 
+#include "girenderer_matrix_buffer.glsl"
 #include "common.glsl"
 #include "fast_rand.glsl"
 #include "light.glsl"
@@ -27,7 +28,6 @@ layout(std430, binding = 6) restrict readonly buffer hdr_bokeh_parameters_buffer
 	hdr_bokeh_parameters hdr_params;
 };
 
-uniform mat4 view_matrix;
 uniform vec4 np, fp, rp, lp, tp, bp;
 
 bool is_sphere_in_frustum(vec3 c, float r) {
@@ -47,7 +47,7 @@ void main() {
 	light_descriptor ld = light_buffer[light_idx];
 
 	// Transform light position/direction
-	vec4 transformed_light_pos = light_transform(view_matrix, mat3(view_matrix), ld);
+	vec4 transformed_light_pos = light_transform(view_matrix_buffer.view_matrix, mat3(view_matrix_buffer.view_matrix), ld);
 	light_transform_buffer[light_idx] = transformed_light_pos;
 
 	// Calculate stohastic cutoff based on HDR exposure

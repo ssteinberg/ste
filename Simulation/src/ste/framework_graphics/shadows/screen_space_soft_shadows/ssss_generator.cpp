@@ -28,7 +28,3 @@ ssss_generator::ssss_generator(const StEngineControl &ctx,
 }
 
 ssss_generator::~ssss_generator() {}
-
-void ssss_generator::set_model_matrix(const glm::mat4 &m) const {
-	write_penumbras->set_model_matrix(m);
-}

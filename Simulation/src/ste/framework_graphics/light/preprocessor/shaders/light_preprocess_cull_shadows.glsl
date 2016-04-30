@@ -5,6 +5,7 @@
 
 layout(local_size_x = 128) in;
 
+#include "girenderer_matrix_buffer.glsl"
 #include "light.glsl"
 
 layout(std430, binding = 2) restrict buffer light_data {
@@ -20,7 +21,6 @@ layout(std430, binding = 5) restrict readonly buffer ll_data {
 	uint16_t ll[];
 };
 
-uniform mat4 view_matrix;
 uniform vec4 np, fp, rp, lp, tp, bp;
 
 const vec3 face_directions[6] = { vec3( 1, 0, 0),
@@ -49,7 +49,7 @@ void main() {
 	uint16_t light_idx = ll[ll_id];
 	light_descriptor ld = light_buffer[light_idx];
 
-	vec3 dir = mat3(view_matrix) * face_directions[face];
+	vec3 dir = mat3(view_matrix_buffer.view_matrix) * face_directions[face];
 	vec3 origin = light_transform_buffer[light_idx].xyz;
 
 	// Compute minimal bounding sphere of the shadow projection frustum

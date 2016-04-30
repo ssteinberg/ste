@@ -5,6 +5,7 @@
 
 layout(local_size_x = 32, local_size_y = 32) in;
 
+#include "girenderer_matrix_buffer.glsl"
 #include "light.glsl"
 #include "shadow.glsl"
 #include "gbuffer.glsl"
@@ -24,10 +25,11 @@ layout(r16f, binding = 1) restrict uniform image2D z_buffer;
 
 uniform float far, near;
 uniform float half_over_tan_fov_over_two;
-uniform mat4 inverse_view_matrix;
-uniform mat4 transpose_view_matrix;
 
 void main() {
+	mat4 inverse_view_matrix = transpose(view_matrix_buffer.transpose_inverse_view_matrix);
+	mat4 transpose_view_matrix = transpose(view_matrix_buffer.view_matrix);
+
 	ivec2 coords = ivec2(vec2(gl_GlobalInvocationID.xy) / vec2(imageSize(penumbra_layers).xy) * gbuffer_size(gbuffer_ll_heads));
 
 	g_buffer_element frag = gbuffer_load(gbuffer_ll_heads, coords);
