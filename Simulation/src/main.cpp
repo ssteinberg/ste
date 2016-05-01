@@ -24,6 +24,8 @@
 #include "gpu_task.hpp"
 #include "profiler.hpp"
 
+#include <imgui/imgui.h>
+
 using namespace StE::Core;
 using namespace StE::Text;
 
