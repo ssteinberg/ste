@@ -8,6 +8,7 @@
 #include "rendering_system.hpp"
 
 #include "Camera.hpp"
+#include "view_matrix_ring_buffer.hpp"
 
 #include "gpu_dispatchable.hpp"
 #include "gpu_task.hpp"
@@ -75,12 +76,16 @@ private:
 	using ProjectionSignalConnectionType = StEngineControl::projection_change_signal_type::connection_type;
 	using FbClearTask = StE::Graphics::fb_clear_dispatch<>;
 
+	constexpr static int view_matrix_buffer_bind_location = 20;
+
 private:
 	deferred_gbuffer gbuffer;
 	std::shared_ptr<ResizeSignalConnectionType> resize_connection;
 	std::shared_ptr<ProjectionSignalConnectionType> projection_change_connection;
 
 	const StEngineControl &ctx;
+	const Camera *camera;
+	view_matrix_ring_buffer view_matrix_buffer;
 	std::shared_ptr<Scene> scene;
 	// dense_voxel_space voxel_space;
 
@@ -128,18 +133,11 @@ protected:
 
 public:
 	GIRenderer(const StEngineControl &ctx,
+			   const Camera *camera,
 			   const std::shared_ptr<Scene> &scene/*,
 			   std::size_t voxel_grid_size = 512,
 			   float voxel_grid_ratio = .01f*/);
 	virtual ~GIRenderer() noexcept {}
-
-	void set_model_matrix(const glm::mat4 &m) {
-		composer.program->set_uniform("inverse_view_matrix", glm::inverse(m));
-
-		light_preprocess.set_model_matrix(m);
-		scene_frustum_cull.set_model_matrix(m);
-		prepopulate_depth_dispatch.set_proj_model_matrix(ctx.projection_matrix() * m);
-	}
 
 	void set_deferred_rendering_enabled(bool enabled);
 

@@ -42,12 +42,14 @@ void GIRenderer::deferred_composition::dispatch() const {
 
 
 GIRenderer::GIRenderer(const StEngineControl &ctx,
+					   const Camera *camera,
 					   const std::shared_ptr<Scene> &scene/*,
 					   std::size_t voxel_grid_size,
 					   float voxel_grid_ratio*/)
 					   : gbuffer(ctx.get_backbuffer_size()),
-						 scene(scene),
 						 ctx(ctx),
+						 camera(camera),
+						 scene(scene),
 						 //voxel_space(ctx, voxel_grid_size, voxel_grid_ratio),
 						 hdr(ctx, &gbuffer),
 						 lll_storage(ctx.get_backbuffer_size()),
@@ -140,6 +142,9 @@ void GIRenderer::set_deferred_rendering_enabled(bool enabled) {
 }
 
 void GIRenderer::render_queue() {
+	view_matrix_buffer.update_with_camera(*this->camera, ctx.projection_matrix());
+	view_matrix_buffer.bind_buffer(view_matrix_buffer_bind_location);
+
 	q.dispatch();
 }
 

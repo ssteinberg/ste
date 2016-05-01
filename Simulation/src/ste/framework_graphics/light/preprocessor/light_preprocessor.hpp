@@ -66,11 +66,6 @@ public:
 		task = make_gpu_task("light_preprocessor", &stage2, nullptr, { stage1_task });
 	}
 
-	void set_model_matrix(const glm::mat4 &m) {
-		light_preprocess_cull_lights_program->set_uniform("view_matrix", m);
-		light_preprocess_cull_shadows_program->set_uniform("view_matrix", m);
-	}
-
 	auto &get_task() const { return task; }
 };
 

@@ -1,9 +1,10 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
-#include <glm/glm.hpp>
+#include "stdafx.hpp"
+
 #include <glm/gtc/matrix_transform.hpp>
 
 namespace StE {

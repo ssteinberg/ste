@@ -3,6 +3,7 @@
 #version 450
 #extension GL_ARB_shader_draw_parameters : enable
 
+#include "girenderer_matrix_buffer.glsl"
 #include "mesh_descriptor.glsl"
 
 layout(location = 0) in vec3 vert;
@@ -20,13 +21,11 @@ out vs_out {
 	flat int matIdx;
 } vout;
 
-uniform mat4 projection_view_matrix;
-
 void main() {
 	uint draw_id = id_to_drawid[gl_DrawIDARB];
 	mesh_descriptor md = mesh_descriptor_buffer[draw_id];
 
-	mat4 view_model = projection_view_matrix * md.model;
+	mat4 view_model = view_matrix_buffer.projection_view_matrix * md.model;
 
 	gl_Position = view_model * vec4(vert, 1);
 	vout.uv = tex_coords;

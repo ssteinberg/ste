@@ -58,10 +58,6 @@ public:
 		ctx.signal_projection_change().connect(projection_change_connection);
 	}
 
-	void set_model_matrix(const glm::mat4 &m) {
-		program->set_uniform("view_model", m);
-	}
-
 protected:
 	void set_context_state() const override final {
 		GL::gl_current_context::get()->enable_depth_test();
@@ -131,20 +127,20 @@ int main() {
 	});
 	ctx.signal_framebuffer_resize().connect(resize_connection);
 
-	auto scene = StE::Graphics::Scene::create(ctx);
-	StE::Graphics::GIRenderer renderer(ctx, scene);
-
-	StE::Graphics::profiler gpu_tasks_profiler;
-	renderer.attach_profiler(&gpu_tasks_profiler);
-
-	std::unique_ptr<SkyDome> skydome = std::make_unique<SkyDome>(ctx);
-
-	ctx.set_renderer(&renderer);
 
 	StE::Graphics::Camera camera;
 	camera.set_position({ 25.8, 549.07, -249.2 });
 	camera.lookat({ 26.4, 548.5, -248.71 });
 
+	auto scene = StE::Graphics::Scene::create(ctx);
+	StE::Graphics::GIRenderer renderer(ctx, &camera, scene);
+	ctx.set_renderer(&renderer);
+
+	StE::Graphics::profiler gpu_tasks_profiler;
+	renderer.attach_profiler(&gpu_tasks_profiler);
+
+
+	std::unique_ptr<SkyDome> skydome = std::make_unique<SkyDome>(ctx);
 
 	bool running = true;
 	bool loaded = false;
@@ -172,7 +168,7 @@ int main() {
 					 glm::vec3{  120, 153, 552},
 					 glm::vec3{  490, 153, 552},
 					 glm::vec3{  885, 153, 552} }) {
-		auto wall_lamp = std::make_shared<StE::Graphics::SphericalLight>(6000.f, StE::Graphics::Kelvin(1700), v, 2.f);
+		auto wall_lamp = std::make_shared<StE::Graphics::SphericalLight>(5000.f, StE::Graphics::Kelvin(1800), v, 2.f);
 		create_light_object(scene, v, wall_lamp);
 	}
 
@@ -197,10 +193,10 @@ int main() {
 	auto footer_text = text_manager.create_renderer();
 	auto header_text = text_manager.create_renderer();
 
-	auto title_text_task = make_gpu_task(title_text.get());
+	auto title_text_task = make_gpu_task("title_text", title_text.get(), nullptr);
 
 	renderer.add_gui_task(title_text_task);
-	renderer.add_gui_task(make_gpu_task(footer_text.get()));
+	renderer.add_gui_task(make_gpu_task("footer_text", footer_text.get(), nullptr));
 	renderer.set_deferred_rendering_enabled(false);
 
 
@@ -236,11 +232,11 @@ int main() {
 	title_text = nullptr;
 	title_text_task = nullptr;
 
-	auto skydome_task = make_gpu_task(skydome.get());
+	auto skydome_task = make_gpu_task("skydome", skydome.get(), nullptr);
 
 	skydome_task->add_dependency(scene);
 
-	renderer.add_gui_task(make_gpu_task(header_text.get()));
+	renderer.add_gui_task(make_gpu_task("header_text", header_text.get(), nullptr));
 	renderer.add_task(scene);
 	renderer.add_task(skydome_task);
 	renderer.set_deferred_rendering_enabled(true);
@@ -278,9 +274,6 @@ int main() {
 		light0->set_position(lp);
 
 		light0_obj->set_model_matrix(glm::scale(glm::translate(glm::mat4(), lp), glm::vec3(light0->get_radius() / 2.f)));
-		scene->set_model_matrix(mv);
-		renderer.set_model_matrix(mv);
-		skydome->set_model_matrix(mvnt);
 
 		{
 			using namespace StE::Text::Attributes;
