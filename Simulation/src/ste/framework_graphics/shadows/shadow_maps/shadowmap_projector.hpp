@@ -51,6 +51,7 @@ public:
 		ctx.signal_projection_change().connect(projection_change_connection);
 	}
 
+protected:
 	void set_context_state() const override final;
 	void dispatch() const override final;
 };

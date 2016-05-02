@@ -22,6 +22,7 @@ void light_preprocess_cull_lights::dispatch() const {
 	auto size = (lp->ls->size() + jobs - 1) / jobs;
 
 	lp->ls->clear_active_ll();
+	GL::gl_current_context::get()->memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
 	lp->ls->update_storage();
 	Core::GL::gl_current_context::get()->dispatch_compute(size, 1, 1);

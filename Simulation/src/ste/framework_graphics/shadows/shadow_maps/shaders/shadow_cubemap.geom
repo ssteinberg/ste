@@ -51,27 +51,24 @@ void process(int face, int l, vec4 vertices[3]) {
 		if (transformed_vertices[j].z < -transformed_vertices[j].w) ++out_of_bounds[5];
 	}
 
-	bool in_frustum = true;
 	for (int k = 0; k < 6; ++k)
 		if (out_of_bounds[k] == 3)
-			in_frustum = false;
+			return;
 
-	if (in_frustum) {
-		gl_Layer = face + l * 6;
-		for (int j = 0; j < 3; ++j) {
-			vout.uv = vin[j].uv;
-			vout.matIdx = vin[j].matIdx;
+	gl_Layer = face + l * 6;
+	for (int j = 0; j < 3; ++j) {
+		vout.uv = vin[j].uv;
+		vout.matIdx = vin[j].matIdx;
 
-			gl_Position = transformed_vertices[j];
+		gl_Position = transformed_vertices[j];
 
-			EmitVertex();
-		}
-
-		EndPrimitive();
+		EmitVertex();
 	}
+
+	EndPrimitive();
 }
 
-void main() {
+void main() {return;
 	for (int i = 0; i < ll_counter; ++i) {
 		light_descriptor ld = light_buffer[ll[i]];
 
@@ -97,9 +94,10 @@ void main() {
 				}
 
 				if (out_of_range < 3) {
-					for (int face = 0; face < 6; ++face)
+					for (int face = 0; face < 6; ++face) {
 						if ((face_mask & (1 << face)) != 0)
 							process(face, i, vertices);
+					}
 				}
 			}
 		}

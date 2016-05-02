@@ -21,5 +21,6 @@ void light_preprocess_cull_shadows::dispatch() const {
 	constexpr int jobs = 128;
 	auto size = (max_active_lights_per_frame * 6 + jobs - 1) / jobs;
 
+	GL::gl_current_context::get()->memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT);
 	Core::GL::gl_current_context::get()->dispatch_compute(size, 1, 1);
 }

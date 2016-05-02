@@ -19,9 +19,7 @@ void gbuffer_store(layout(r32ui) restrict uimage2D gbuffer_ll_heads,
 	frag.material = matIdx;
 
 	uint32_t next_idx = atomicCounterIncrement(gbuffer_ll_counter);
-	uint32_t prev_head = imageAtomicExchange(gbuffer_ll_heads, frag_coords, next_idx);
-
-	frag.next_ptr = prev_head;
+	frag.next_ptr = imageAtomicExchange(gbuffer_ll_heads, frag_coords, next_idx);
 
 	gbuffer[next_idx] = frag;
 }

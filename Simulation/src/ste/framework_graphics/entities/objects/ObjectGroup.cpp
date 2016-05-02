@@ -13,13 +13,7 @@ using namespace StE::Graphics;
 
 ObjectGroup::ObjectGroup(const StEngineControl &ctx,
 						 const SceneProperties *props) : scene_props(props),
-														 object_program(ctx.glslprograms_pool().fetch_program_task({ "object.vert", "object.frag" })()) {
-	object_program->set_uniform("projection", ctx.projection_matrix());
-	projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([=](const glm::mat4 &proj, float, float fnear, float ffar) {
-		this->object_program->set_uniform("projection", proj);
-	});
-	ctx.signal_projection_change().connect(projection_change_connection);
-}
+														 object_program(ctx.glslprograms_pool().fetch_program_task({ "object.vert", "object.frag" })()) {}
 
 ObjectGroup::~ObjectGroup() {
 	remove_all();

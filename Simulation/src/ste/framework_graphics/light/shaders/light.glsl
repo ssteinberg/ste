@@ -14,7 +14,7 @@ struct light_descriptor {
 	float effective_range;
 
 	uint32_t shadow_face_mask;
-	float alpha;
+	float minimal_luminance;
 };
 
 float light_attenuation_factor(light_descriptor ld, float dist) {
@@ -24,13 +24,7 @@ float light_attenuation_factor(light_descriptor ld, float dist) {
 		float a = max(.001f, dist / ld.radius);
 		float f = 1.f / (a*a);
 
-		float r = ld.effective_range;
-		float alpha = ld.alpha;
-
-		float p = f / alpha;
-		float xi = 1.f / (r*r * alpha);
-
-		return p > xi ? max(alpha, f) : .0f;
+		return f;
 	}
 }
 
@@ -52,6 +46,6 @@ vec4 light_transform(mat4 mv, mat3 rmv, light_descriptor ld) {
 }
 
 float light_calculate_effective_range(light_descriptor ld, float min_lum) {
-	float l = max(min_lum, ld.luminance * .00001f);
+	float l = min_lum;
 	return ld.radius * (sqrt(ld.luminance / l) - 1.f);
 }

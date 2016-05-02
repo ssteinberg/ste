@@ -41,8 +41,6 @@ private:
 
 	using objects_map_type = std::unordered_map<std::shared_ptr<Object>, object_information>;
 
-	using ProjectionSignalConnectionType = StEngineControl::projection_change_signal_type::connection_type;
-
 private:
 	object_group_draw_buffers draw_buffers;
 
@@ -57,9 +55,6 @@ private:
 	mutable std::vector<range<>> ranges_to_lock;
 
 	std::shared_ptr<Core::GLSLProgram> object_program;
-
-private:
-	std::shared_ptr<ProjectionSignalConnectionType> projection_change_connection;
 
 public:
 	ObjectGroup(const StEngineControl &ctx, const SceneProperties *props);

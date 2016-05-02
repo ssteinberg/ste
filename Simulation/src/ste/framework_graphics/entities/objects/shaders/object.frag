@@ -16,7 +16,6 @@ layout(std430, binding = 0) restrict readonly buffer material_data {
 layout(std430, binding = 6) restrict writeonly buffer gbuffer_data {
 	g_buffer_element gbuffer[];
 };
-
 layout(binding = 7) uniform atomic_uint gbuffer_ll_counter;
 layout(r32ui, binding = 7) restrict uniform uimage2D gbuffer_ll_heads;
 
@@ -30,7 +29,7 @@ in v {
 	flat int matIdx;
 } vin;
 
-uniform float height_map_scale = 1.f;
+uniform float height_map_scale = .5f;
 
 void main() {
 	vec2 uv = vin.frag_texcoords;

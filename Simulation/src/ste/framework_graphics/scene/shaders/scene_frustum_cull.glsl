@@ -7,29 +7,32 @@ layout(local_size_x = 128) in;
 
 #include "girenderer_matrix_buffer.glsl"
 #include "indirect.glsl"
+#include "light.glsl"
 #include "mesh_descriptor.glsl"
+
+layout(std430, binding = 1) restrict readonly buffer mesh_data {
+	mesh_descriptor mesh_descriptor_buffer[];
+};
+layout(std430, binding = 2) restrict readonly buffer light_data {
+	light_descriptor light_buffer[];
+};
+layout(std430, binding = 3) restrict readonly buffer light_transform_data {
+	vec4 light_transform_buffer[];
+};
+layout(binding = 4) restrict readonly buffer ll_counter_data {
+	uint32_t ll_counter;
+};
+layout(std430, binding = 5) restrict readonly buffer ll_data {
+	uint16_t ll[];
+};
 
 layout(binding = 0) uniform atomic_uint counter;
 layout(std430, binding = 0) restrict writeonly buffer idb_data {
 	IndirectMultiDrawElementsCommand idb[];
 };
-layout(std430, binding = 1) restrict readonly buffer mesh_data {
-	mesh_descriptor mesh_descriptor_buffer[];
-};
 layout(std430, binding = 12) restrict writeonly buffer id_to_drawid_data {
 	uint id_to_drawid[];
 };
-
-uniform vec4 np, fp, rp, lp, tp, bp;
-
-bool is_sphere_in_frustum(vec3 c, float r) {
-	return  dot(np.xyz, c) + np.w > -r &&
-			dot(fp.xyz, c) + fp.w > -r &&
-			dot(rp.xyz, c) + rp.w > -r &&
-			dot(lp.xyz, c) + lp.w > -r &&
-			dot(tp.xyz, c) + tp.w > -r &&
-			dot(bp.xyz, c) + bp.w > -r;
-}
 
 void main() {
 	int draw_id = int(gl_GlobalInvocationID.x);
@@ -38,10 +41,25 @@ void main() {
 
 	mesh_descriptor md = mesh_descriptor_buffer[draw_id];
 
-	vec4 center = view_matrix_buffer.view_matrix * md.model * vec4(md.bounding_sphere.xyz, 1);
+	vec3 center = (view_matrix_buffer.view_matrix * (md.model * vec4(md.bounding_sphere.xyz, 1))).xyz;
 	float radius = md.bounding_sphere.w;
 
-	if (is_sphere_in_frustum(center.xyz, radius)) {
+	bool include = false;
+	for (int i = 0; i < ll_counter; ++i) {
+		uint16_t light_idx = ll[i];
+
+		vec3 lc = light_transform_buffer[light_idx].xyz;
+		float lr = light_buffer[light_idx].effective_range;
+
+		vec3 v = lc - center;
+		float d = lr + radius;
+		if (dot(v,v) < d*d) {
+			include = true;
+			break;
+		}
+	}
+
+	if (include) {
 		uint idx = atomicCounterIncrement(counter);
 
 		IndirectMultiDrawElementsCommand c;

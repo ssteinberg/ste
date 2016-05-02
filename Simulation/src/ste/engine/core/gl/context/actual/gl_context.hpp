@@ -50,7 +50,7 @@ protected:
 	void setup_debug_context();
 	void set_defaults();
 
-	window_type window;
+	mutable window_type window;
 	std::unique_ptr<context_framebuffer> default_fb;
 	context_settings ctx_settings;
 
@@ -77,6 +77,8 @@ public:
 	gli::format framebuffer_format() const;
 	glm::ivec2 framebuffer_size() const;
 	context_framebuffer &defaut_framebuffer() const;
+
+	auto *get_window() const { return window.get(); }
 
 	bool is_debug_context() const;
 	const context_settings &get_contex_settings() const { return ctx_settings; }

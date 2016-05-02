@@ -29,7 +29,5 @@ void shadowmap_projector::set_context_state() const {
 
 void shadowmap_projector::dispatch() const {
 	Core::GL::gl_current_context::get()->clear_framebuffer(false, true);
-
-	Core::GL::gl_current_context::get()->memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_COMMAND_BARRIER_BIT);
 	object->draw_object_group();
 }
