@@ -157,17 +157,17 @@ int main() {
 	auto light0_obj = create_light_object(scene, light0_pos, light0);
 	auto light1_obj = create_light_object(scene, light1_pos, light1);
 
-	for (auto &v : { glm::vec3{-622, 645, -310},
-					 glm::vec3{-244, 645, -310},
-					 glm::vec3{ 124, 645, -310},
-					 glm::vec3{ 497, 645, -310},
-					 glm::vec3{ 900, 645, -310},
-					 glm::vec3{-1008, 153, 552},
-					 glm::vec3{ -621, 153, 552},
-					 glm::vec3{ -242, 153, 552},
-					 glm::vec3{  120, 153, 552},
-					 glm::vec3{  490, 153, 552},
-					 glm::vec3{  885, 153, 552} }) {
+	for (auto &v : { glm::vec3{ -622, 645, -310},
+					 glm::vec3{  124, 645, -310},
+					 glm::vec3{  497, 645, -310},
+					 glm::vec3{ -242, 153, -310},
+					 glm::vec3{  120, 153, -310},
+					 glm::vec3{  124, 645,  552},
+					 glm::vec3{  497, 645,  552},
+					 glm::vec3{-1008, 153,  552},
+					 glm::vec3{ -242, 153,  552},
+					 glm::vec3{  120, 153,  552},
+					 glm::vec3{  885, 153,  552} }) {
 		auto wall_lamp = std::make_shared<StE::Graphics::SphericalLight>(5000.f, StE::Graphics::Kelvin(1800), v, 2.f);
 		create_light_object(scene, v, wall_lamp);
 	}

@@ -96,16 +96,14 @@ vec4 shade(g_buffer_element frag, mat4 inverse_view_matrix) {
 													dist,
 													proj22,
 													proj23);
-
-				float dist_att = dist * scattering_ro;
-				float shadow_attenuation = 1.f - exp(-dist_att * dist_att);
-				float obscurance = mix(1.f, .05f * shadow_attenuation, shadow);
+				if (shadow == 1.f)
+					continue;
 
 				float brdf = calc_brdf(md, position, n, t, b, v / dist);
 				float attenuation_factor = light_attenuation_factor(ld, dist);
-				float incident_radiance = max(ld.luminance * attenuation_factor, .0f);
+				float incident_radiance = max(ld.luminance * attenuation_factor - ld.minimal_luminance, .0f);
 
-				float irradiance = specular * brdf * incident_radiance * obscurance;
+				float irradiance = specular * brdf * incident_radiance * (1.f - shadow);
 				rgb += l * max(0.f, irradiance);
 			}
 		}
@@ -120,12 +118,11 @@ void main() {
 	g_buffer_element frag = gbuffer_load(gbuffer_ll_heads, ivec2(gl_FragCoord.xy));
 	vec4 c = shade(frag, inverse_view_matrix);
 
-	int i = 0;
-	while (!gbuffer_eof(frag.next_ptr) && i++ < 5) {
+	while (c.a < 1.f && !gbuffer_eof(frag.next_ptr)) {
 		frag = gbuffer_load(frag.next_ptr);
 		vec4 c2 = shade(frag, inverse_view_matrix);
 
-		c = c * c.a + c2 * (1.f - c.a);
+		c = mix(c2, c, c.a);
 	}
 
 	vec3 xyY = XYZtoxyY(RGBtoXYZ(c.rgb));

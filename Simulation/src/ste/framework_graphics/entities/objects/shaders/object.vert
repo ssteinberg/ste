@@ -27,8 +27,6 @@ layout(std430, binding = 12) restrict readonly buffer id_to_drawid_data {
 	uint id_to_drawid[];
 };
 
-uniform mat4 projection;
-
 void main() {
 	uint draw_id = id_to_drawid[gl_DrawIDARB];
 	mesh_descriptor md = mesh_descriptor_buffer[draw_id];
@@ -36,13 +34,12 @@ void main() {
 	mat4 trans_inverse_view_model = view_matrix_buffer.transpose_inverse_view_matrix * md.transpose_inverse_model;
 
 	vec4 wpos = md.model * vec4(vert, 1);
-	vec4 eye_v = view_matrix_buffer.view_matrix * wpos;
 
-	vout.frag_position = eye_v.xyz;
+	vout.frag_position = (view_matrix_buffer.view_matrix * wpos).xyz;
 	vout.frag_texcoords = tex_coords;
 	vout.frag_normal = (trans_inverse_view_model * vec4(normal, 1)).xyz;
 	vout.frag_tangent = (trans_inverse_view_model * vec4(tangent, 1)).xyz;
 	vout.matIdx = md.matIdx;
 
-	gl_Position = projection * eye_v;
+	gl_Position = view_matrix_buffer.projection_view_matrix * wpos;
 }

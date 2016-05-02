@@ -1,10 +1,10 @@
 
 #include "common.glsl"
 
-const float shadow_delta = 1.f / 1000000.f;
+const float shadow_delta = 2.f / 10000.f;
 
-float shadow_gather_pcf(samplerCubeArrayShadow shadow_depth_maps, int light, float zf, vec3 norm_v, vec3 v, float m, float r, int samples, float jitter, out int i) {
-	const float map_size = 1.f / 1024.f;
+float shadow_gather_pcf(samplerCubeArrayShadow shadow_depth_maps, int light, float zf, vec3 norm_v, vec3 v, float m, float r, int samples, float jitter, inout int i) {
+	const float map_size = 1.f / 512.f;
 
 	float pcf = .0f;
 	for (int j = 0; j < samples; ++i, ++j) {

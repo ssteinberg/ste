@@ -21,6 +21,4 @@ void main() {
 	float alpha = md.alphamap.tex_handler>0 ? texture(sampler2D(md.alphamap.tex_handler), vin.uv).x : 1.f;
 	if (diffuse.a * alpha < 1.f)
 		discard;
-
-	gl_FragDepth = gl_FragCoord.z * 1.00001f;
 }

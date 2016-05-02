@@ -25,9 +25,7 @@ void main() {
 	uint draw_id = id_to_drawid[gl_DrawIDARB];
 	mesh_descriptor md = mesh_descriptor_buffer[draw_id];
 
-	mat4 view_model = view_matrix_buffer.projection_view_matrix * md.model;
-
-	gl_Position = view_model * vec4(vert, 1);
+	gl_Position = view_matrix_buffer.projection_view_matrix * (md.model * vec4(vert, 1));
 	vout.uv = tex_coords;
 	vout.matIdx = md.matIdx;
 }

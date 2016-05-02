@@ -7,7 +7,6 @@ layout(local_size_x = 128) in;
 
 #include "girenderer_matrix_buffer.glsl"
 #include "common.glsl"
-#include "fast_rand.glsl"
 #include "light.glsl"
 #include "hdr_common.glsl"
 
@@ -50,12 +49,11 @@ void main() {
 	vec4 transformed_light_pos = light_transform(view_matrix_buffer.view_matrix, mat3(view_matrix_buffer.view_matrix), ld);
 	light_transform_buffer[light_idx] = transformed_light_pos;
 
-	// Calculate stohastic cutoff based on HDR exposure
+	// Calculate cutoff based on HDR exposure
 	float hdr_min_lum = intBitsToFloat(hdr_params.lum_min);
-	float err = max(.025f, hdr_lum_to_luminance(hdr_min_lum));
-	float alpha = err / (ld.radius * ld.luminance);
-	float xi = mix(.25f, 1.f, fast_rand(float(gl_GlobalInvocationID.x)));
-	float range = 1.f / sqrt(alpha * xi);
+	float minimal_light_luminance = ld.luminance * .000005f;
+	float err = max(minimal_light_luminance, hdr_lum_to_luminance(hdr_min_lum));
+	float range = light_calculate_effective_range(ld, err);
 
 	// Frustum cull based on light effective range
 	float r = range;
@@ -68,8 +66,7 @@ void main() {
 		// Zero out shadow face mask. It shall be computed later.
 		light_buffer[light_idx].shadow_face_mask = 0;
 
-		// Update stohastic variables
 		light_buffer[light_idx].effective_range = range;
-		light_buffer[light_idx].alpha = alpha;
+		light_buffer[light_idx].minimal_luminance = minimal_light_luminance;
 	}
 }

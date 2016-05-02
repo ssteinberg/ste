@@ -14,7 +14,7 @@ layout(r32ui, binding = 7) restrict uniform uimage2D gbuffer_ll_heads;
 
 #include "gbuffer_load.glsl"
 
-const int max_depth = 4;
+const int max_depth = 6;
 
 struct fragment {
 	float z;
