@@ -23,8 +23,7 @@
 #include "Sphere.hpp"
 #include "gpu_task.hpp"
 #include "profiler.hpp"
-
-#include <imgui/imgui.h>
+#include "debug_gui.hpp"
 
 using namespace StE::Core;
 using namespace StE::Text;
@@ -138,6 +137,7 @@ int main() {
 
 	StE::Graphics::profiler gpu_tasks_profiler;
 	renderer.attach_profiler(&gpu_tasks_profiler);
+	StE::Graphics::debug_gui debug_gui_dispatchable(ctx, &gpu_tasks_profiler);
 
 
 	std::unique_ptr<SkyDome> skydome = std::make_unique<SkyDome>(ctx);
@@ -191,7 +191,6 @@ int main() {
 
 	auto title_text = text_manager.create_renderer();
 	auto footer_text = text_manager.create_renderer();
-	auto header_text = text_manager.create_renderer();
 
 	auto title_text_task = make_gpu_task("title_text", title_text.get(), nullptr);
 
@@ -236,7 +235,7 @@ int main() {
 
 	skydome_task->add_dependency(scene);
 
-	renderer.add_gui_task(make_gpu_task("header_text", header_text.get(), nullptr));
+	renderer.add_gui_task(make_gpu_task("debug_gui", &debug_gui_dispatchable, nullptr));
 	renderer.add_task(scene);
 	renderer.add_task(skydome_task);
 	renderer.set_deferred_rendering_enabled(true);
@@ -282,18 +281,17 @@ int main() {
 			static float total_tpf = .0f;
 			total_tpf += ctx.time_per_frame().count();
 			++tpf_count;
+			static float tpf = .0f;
 			if (tpf_count % 5 == 0) {
-				auto tpf = total_tpf / 5.f;
+				tpf = total_tpf / 5.f;
 				total_tpf = .0f;
-
-				auto tpf_str = std::to_wstring(tpf);
-				header_text->set_text({ 30, h - 50 }, vsmall(b(stroke(dark_magenta, 1)(red(tpf_str)))) + L" ms");
 			}
 
 			auto total_vram = std::to_wstring(ctx.gl()->meminfo_total_available_vram() / 1024);
 			auto free_vram = std::to_wstring(ctx.gl()->meminfo_free_vram() / 1024);
 
-			footer_text->set_text({ 30, 20 }, vsmall(b((blue_violet(free_vram) + L" / " + stroke(red, 1)(dark_red(total_vram)) + L" MB"))));
+			footer_text->set_text({ 10, 50 }, line_height(28)(vsmall(b(stroke(dark_magenta, 1)(red(std::to_wstring(tpf))))) + L" ms\n" +
+															  vsmall(b((blue_violet(free_vram) + L" / " + stroke(red, 1)(dark_red(total_vram)) + L" MB")))));
 		}
 
 		time += ctx.time_per_frame().count();

@@ -47,7 +47,8 @@ SYSTEM_LIBRARIES += \
 	boost_filesystem \
 	boost_serialization \
 	cgraph \
-	gvc
+	gvc \
+	:imgui.a
 
 LINKFLAGS += $(shell pkg-config --static --libs glfw3)
 

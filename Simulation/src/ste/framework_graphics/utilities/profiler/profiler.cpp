@@ -40,3 +40,8 @@ profiler::~profiler() {
 
 	f << "]" << std::endl;
 }
+
+void profiler::record_frame(float t) {
+	std::copy(last_times_per_frame.begin() + 1, last_times_per_frame.end(), last_times_per_frame.begin());
+	last_times_per_frame.back() = t;
+}

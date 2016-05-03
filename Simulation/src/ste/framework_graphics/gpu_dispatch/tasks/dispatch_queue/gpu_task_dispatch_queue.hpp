@@ -94,7 +94,8 @@ public:
 
 	void dispatch();
 
-	void attach_profiler(profiler *p) { this->prof = p; }
+	void attach_profiler(profiler *p) { prof = p; }
+	auto get_profiler() const { return prof; }
 
 	using Base::write_dot;
 	using Base::write_png;
