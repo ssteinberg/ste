@@ -10,6 +10,7 @@
 #include "profiler.hpp"
 
 #include "signal.hpp"
+#include "Font.hpp"
 
 #include <memory>
 #include <map>
@@ -39,7 +40,7 @@ private:
 	std::shared_ptr<hid_keyboard_signal_connection_type> hid_keyboard_signal;
 
 public:
-	debug_gui(const StEngineControl &ctx, profiler *prof = nullptr);
+	debug_gui(const StEngineControl &ctx, profiler *prof, const StE::Text::Font &default_font);
 	~debug_gui() noexcept;
 
 protected:

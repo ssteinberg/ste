@@ -14,7 +14,6 @@ void scene_frustum_cull_dispatch::set_context_state() const {
 	0_atomic_idx = draw_buffers.get_culled_objects_counter();
  	0_storage_idx = draw_buffers.get_culled_indirect_command_buffer();
 	draw_buffers.get_mesh_data_buffer().bind_range(Core::shader_storage_layout_binding(1), 0, draw_buffers.size());
-	12_storage_idx = draw_buffers.get_id_to_drawid_buffer();
 
 	ls->bind_lights_buffer(2);
 	ls->bind_lights_transform_buffer(3);

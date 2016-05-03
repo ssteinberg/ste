@@ -34,7 +34,6 @@ void ObjectGroup::add_object(const std::shared_ptr<Object> &obj) {
 								  object_information{ objects.size(), connection }));
 
  	draw_buffers.get_culled_indirect_command_stack().push_back(Core::IndirectMultiDrawElementsCommand());
-	draw_buffers.get_id_to_drawid_stack().push_back(0);
 	draw_buffers.get_vbo_stack().push_back(vertices);
 	draw_buffers.get_indices_stack().push_back(ind);
 
@@ -70,7 +69,6 @@ void ObjectGroup::bind_buffers() const {
 	draw_buffers.get_culled_indirect_draw().bind();
 	0_storage_idx = scene_props->materials_storage().buffer();
 	1_storage_idx = draw_buffers.get_mesh_data_buffer();
-	12_storage_idx = draw_buffers.get_id_to_drawid_buffer();
 }
 
 void ObjectGroup::update_dirty_buffers() const {

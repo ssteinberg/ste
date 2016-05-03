@@ -31,7 +31,6 @@ private:
  	Core::gstack<ObjectVertexData> vbo;
 	Core::gstack<std::uint32_t> indices;
 	mutable Core::gstack<Core::IndirectMultiDrawElementsCommand, true> culled_indirect_command;
-	Core::gstack<std::uint32_t> id_to_drawid;
 	mutable Core::AtomicCounterBufferObject<> culled_objects_counter;
 
 public:
@@ -61,7 +60,6 @@ public:
 	auto& get_mesh_data_stack() const { return mesh_data_bo; }
 	auto& get_vbo_stack() { return vbo; }
 	auto& get_indices_stack() { return indices; }
-	auto& get_id_to_drawid_stack() { return id_to_drawid; }
 	auto& get_culled_indirect_command_stack() { return culled_indirect_command; }
 
 	auto  get_vbo_buffer() const { return Core::buffer_object_cast<vbo_type>(vbo.get_buffer()); }
@@ -70,7 +68,6 @@ public:
 	auto& get_culled_objects_counter() const { return culled_objects_counter; }
 
 	auto& get_mesh_data_buffer() const { return mesh_data_bo.get_buffer(); }
-	auto& get_id_to_drawid_buffer() const { return id_to_drawid.get_buffer(); }
 	auto& get_culled_indirect_command_buffer() const { return culled_indirect_command.get_buffer(); }
 
 	auto size() const { return culled_indirect_command.size(); }

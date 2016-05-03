@@ -12,9 +12,6 @@ layout(location = 3) in vec2 tex_coords;
 layout(std430, binding = 1) restrict readonly buffer mesh_data {
 	mesh_descriptor mesh_descriptor_buffer[];
 };
-layout(std430, binding = 12) restrict readonly buffer id_to_drawid_data {
-	uint id_to_drawid[];
-};
 
 out vs_out {
 	vec2 uv;
@@ -22,7 +19,7 @@ out vs_out {
 } vout;
 
 void main() {
-	uint draw_id = id_to_drawid[gl_DrawIDARB];
+	uint draw_id = gl_BaseInstanceARB;
 	mesh_descriptor md = mesh_descriptor_buffer[draw_id];
 
 	gl_Position = view_matrix_buffer.projection_view_matrix * (md.model * vec4(vert, 1));

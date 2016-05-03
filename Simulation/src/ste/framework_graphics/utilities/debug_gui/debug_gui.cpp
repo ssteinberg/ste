@@ -11,11 +11,15 @@
 #include <vector>
 #include <algorithm>
 #include <functional>
+#include <cstring>
 
 using namespace StE::Graphics;
 
-debug_gui::debug_gui(const StEngineControl &ctx, profiler *prof) : ctx(ctx), prof(prof) {
+debug_gui::debug_gui(const StEngineControl &ctx, profiler *prof, const StE::Text::Font &default_font) : ctx(ctx), prof(prof) {
 	assert(prof);
+
+	ImGuiIO& io = ImGui::GetIO();
+	io.Fonts->AddFontFromFileTTF(default_font.get_path().string().data(), 18);
 
 	auto window = ctx.gl()->get_window();
 	ImGui_ImplGlfwGL3_Init(window, false);
@@ -49,9 +53,9 @@ void debug_gui::dispatch() const {
 		float t = static_cast<float>(it->end - it->start) / 1000.f;
 
 		std::array<float, 10> new_arr;
-		new_arr.fill(10.f);
+		new_arr.fill(.0f);
 		auto last_samples_it = prof_tasks_last_samples.emplace(std::make_pair(it->name, new_arr)).first;
-		std::copy(last_samples_it->second.begin() + 1, last_samples_it->second.end(), last_samples_it->second.begin());
+		std::memmove(&last_samples_it->second[0], &last_samples_it->second[1], (last_samples_it->second.size() - 1) * sizeof(float));
 		last_samples_it->second.back() = t;
 
 		float time = .0f;
@@ -71,7 +75,7 @@ void debug_gui::dispatch() const {
 	ImGui_ImplGlfwGL3_NewFrame();
 
 	ImGui::SetNextWindowPos(ImVec2(20,20));
-	ImGui::SetNextWindowSize(ImVec2(bbsize.x - 40,125));
+	ImGui::SetNextWindowSize(ImVec2(bbsize.x - 40,138));
 	ImGui::Begin("StE debug", nullptr);
 
 	auto &fts = prof->get_last_times_per_frame();

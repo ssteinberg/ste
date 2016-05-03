@@ -25,10 +25,10 @@ CXXFLAGS += \
 	-wd672,10237,11012,11021,10382 \
 
 CXXFLAGS_release += \
-	-O3 -ipo -xHOST -no-prec-div -D NDEBUG
+	-O3 -ipo -xHOST -no-prec-div -falign-functions=16 -D NDEBUG
 
 CXXFLAGS_profile += \
-	-O3 -ipo -xHOST -no-prec-div -g -D NDEBUG
+	$(CXXFLAGS_release) -g
 
 CXXFLAGS_debug += \
 	-g -D DEBUG
