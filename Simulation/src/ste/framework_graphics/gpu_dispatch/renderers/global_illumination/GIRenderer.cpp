@@ -146,6 +146,11 @@ void GIRenderer::render_queue() {
 	view_matrix_buffer.update_with_camera(*this->camera, ctx.projection_matrix());
 	view_matrix_buffer.bind_buffer(view_matrix_buffer_bind_location);
 
+	if (q.get_profiler() != nullptr) {
+		auto ft = ctx.time_per_frame().count();
+		q.get_profiler()->record_frame(ft);
+	}
+
 	q.dispatch();
 }
 
