@@ -20,14 +20,13 @@ public:
 	};
 
 	struct light_descriptor {
-		glm::vec4 position_direction;
-		glm::vec4 diffuse;
+		glm::vec3 position_direction;	LightType type;
+		glm::vec3 diffuse;				float luminance;
 
-		float luminance;
 		float radius;
+		float effective_range;
 
-		LightType type;
-		float _unused;
+		std::int32_t reserved[2];
 	};
 
 protected:
@@ -35,9 +34,10 @@ protected:
 	light_descriptor descriptor;
 
 public:
-	light(float luminance, const RGB &diffuse) {
+	light(float luminance, float radius, const RGB &diffuse) {
 		descriptor.luminance = luminance;
-		descriptor.diffuse = decltype(descriptor.diffuse){ diffuse.R(), diffuse.G(), diffuse.B(), descriptor.diffuse.w };
+		descriptor.radius = radius;
+		descriptor.diffuse = decltype(descriptor.diffuse){ diffuse.R(), diffuse.G(), diffuse.B() };
 	}
 	virtual ~light() noexcept {};
 
@@ -49,15 +49,16 @@ public:
 		dirty = true;
 	}
 	void set_diffuse(const RGB &d) {
-		descriptor.diffuse = decltype(descriptor.diffuse){ d.R(), d.G(), d.B(), descriptor.diffuse.w };
+		descriptor.diffuse = decltype(descriptor.diffuse){ d.R(), d.G(), d.B() };
 		dirty = true;
 	}
 
 	float get_luminance() const { return descriptor.luminance; }
 	float get_radius() const { return descriptor.radius; }
-	glm::vec3 get_diffuse() const { return { descriptor.diffuse.x, descriptor.diffuse.y, descriptor.diffuse.z }; }
+	float get_effective_range() const { return descriptor.effective_range; }
+	auto& get_diffuse() const { return descriptor.diffuse; }
 
-	auto get_descriptor() const { return descriptor; }
+	auto& get_descriptor() const { return descriptor; }
 };
 
 }

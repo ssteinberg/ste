@@ -16,14 +16,14 @@
 #include "Texture2D.hpp"
 #include "Scene.hpp"
 #include "Object.hpp"
-#include "ObjectGroup.hpp"
 #include "TextManager.hpp"
 #include "AttributedString.hpp"
 #include "RGB.hpp"
+#include "Kelvin.hpp"
 #include "Sphere.hpp"
 #include "gpu_task.hpp"
-#include "BRDF.hpp"
-#include "bme_brdf_representation.hpp"
+#include "profiler.hpp"
+#include "debug_gui.hpp"
 
 using namespace StE::Core;
 using namespace StE::Text;
@@ -45,20 +45,16 @@ public:
 											   meshptr(std::make_unique<StE::Graphics::Sphere>(10, 10, .0f)) {
 		stars_tex = StE::Resource::SurfaceFactory::load_texture_2d_task("Data/textures/stars.jpg", true)();
 
-		program->set_uniform("sky_luminance", 5.f);
+		program->set_uniform("sky_luminance", 1.f);
 		program->set_uniform("projection", ctx.projection_matrix());
-		program->set_uniform("near", ctx.get_near_clip());
+//		program->set_uniform("near", ctx.get_near_clip());
 		program->set_uniform("far", ctx.get_far_clip());
 		projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([=](const glm::mat4 &proj, float, float clip_near, float clip_far) {
 			this->program->set_uniform("projection", proj);
-			this->program->set_uniform("near", clip_near);
+//			this->program->set_uniform("near", clip_near);
 			this->program->set_uniform("far", clip_far);
 		});
 		ctx.signal_projection_change().connect(projection_change_connection);
-	}
-
-	void set_model_matrix(const glm::mat4 &m) {
-		program->set_uniform("view_model", m);
 	}
 
 protected:
@@ -78,6 +74,8 @@ protected:
 };
 
 auto create_light_object(const std::shared_ptr<StE::Graphics::Scene> &scene, const glm::vec3 &light_pos, const std::shared_ptr<StE::Graphics::SphericalLight> &light) {
+	scene->scene_properties().lights_storage().add_light(light);
+
 	std::unique_ptr<StE::Graphics::Sphere> sphere = std::make_unique<StE::Graphics::Sphere>(20, 20);
 	auto light_obj = std::make_shared<StE::Graphics::Object>(std::move(sphere));
 
@@ -98,71 +96,6 @@ auto create_light_object(const std::shared_ptr<StE::Graphics::Scene> &scene, con
 	return light_obj;
 }
 
-void create_glass(const std::shared_ptr<StE::Graphics::Scene> &scene, StE::StEngineControl *ctx, const glm::vec3 &p0, const glm::vec3 &p1) {
-	std::shared_ptr<StE::Graphics::BRDF> brdf = StE::Graphics::bme_brdf_representation::BRDF_from_bme_representation_task(*ctx, "Data/bxdf/ward_metal/laminate_part_of_tile")();
-
-	glm::vec3 U = glm::vec3{ p0.x, p0.y, p0.z } - glm::vec3{ p1.x, p1.y, p1.z };
-	glm::vec3 V = glm::vec3{ p0.x, p1.y, p0.z } - glm::vec3{ p1.x, p1.y, p1.z };
-	glm::vec3 N = glm::normalize(glm::cross(U, V));
-	glm::vec3 T = glm::normalize(glm::cross(N, glm::vec3{0,1,0}));
-
-	auto m = std::make_unique<StE::Graphics::mesh<StE::Graphics::mesh_subdivion_mode::Triangles>>();
-	std::vector<StE::Graphics::ObjectVertexData> vertices;
-	StE::Graphics::ObjectVertexData v;
-
-	v.n = N;
-	v.t = T;
-	v.p = { p0.x, p0.y, p0.z };
-	v.uv = { 0, 0 };
-	vertices.push_back(v);
-	v.p = { p1.x, p0.y, p1.z };
-	v.uv = { 1, 0 };
-	vertices.push_back(v);
-	v.p = { p0.x, p1.y, p0.z };
-	v.uv = { 0, 1 };
-	vertices.push_back(v);
-	v.p = { p1.x, p1.y, p1.z };
-	v.uv = { 1, 1 };
-	vertices.push_back(v);
-
-	v.n = -N;
-	v.t = -T;
-	v.p = { p0.x, p0.y, p0.z };
-	v.uv = { 0, 0 };
-	vertices.push_back(v);
-	v.p = { p1.x, p0.y, p1.z };
-	v.uv = { 1, 0 };
-	vertices.push_back(v);
-	v.p = { p0.x, p1.y, p0.z };
-	v.uv = { 0, 1 };
-	vertices.push_back(v);
-	v.p = { p1.x, p1.y, p1.z };
-	v.uv = { 1, 1 };
-	vertices.push_back(v);
-
-	m->set_vertices(vertices);
-	m->set_indices(std::vector<std::uint32_t>{0,2,1,1,2,3, 4,5,6,6,5,7});
-	auto obj = std::make_shared<StE::Graphics::Object>(std::move(m));
-
-	obj->set_model_matrix(glm::mat4());
-
-	auto tex = StE::Resource::SurfaceFactory::load_surface_2d_task("Data/textures/glass.png", true)();
-	auto nm = StE::Resource::SurfaceFactory::load_surface_2d_task("Data/textures/glass_normal.png", false)();
-	auto alpha = StE::Resource::SurfaceFactory::load_surface_2d_task("Data/textures/glass_alpha.png", false)();
-	auto spec = StE::Resource::SurfaceFactory::load_surface_2d_task("Data/textures/glass_specular.png", false)();
-
-	auto mat = std::make_shared<StE::Graphics::Material>();
-	mat->set_diffuse(std::make_shared<StE::Core::Texture2D>(tex, true));
-	mat->set_specular(std::make_shared<StE::Core::Texture2D>(spec, true));
-	mat->set_normalmap(std::make_shared<StE::Core::Texture2D>(nm, true));
-	mat->set_alphamap(std::make_shared<StE::Core::Texture2D>(alpha, true));
-	mat->set_brdf(brdf);
-
-	obj->set_material_id(scene->scene_properties().materials_storage().add_material(mat));
-
-	scene->object_group().add_object(obj);
-}
-
 int main() {
 	StE::Log logger("Global Illumination");
 //	logger.redirect_std_outputs();
@@ -170,16 +103,18 @@ int main() {
 	ste_log() << "Simulation is running";
 
 	// int w = 1688;
-	int w = 1500;
+	int w = 1700;
 	int h = w * 9 / 16;
 	constexpr float clip_far = 3000.f;
 	constexpr float clip_near = 5.f;
+	constexpr float fovy = glm::pi<float>() * .225f;
 
 	GL::gl_context::context_settings settings;
 	settings.vsync = false;
 	settings.fs = false;
 	StE::StEngineControl ctx(std::make_unique<GL::gl_context>(settings, "Shlomi Steinberg - Global Illumination", glm::i32vec2{ w, h }));// , gli::FORMAT_RGBA8_UNORM));
 	ctx.set_clipping_planes(clip_near, clip_far);
+	ctx.set_fov(fovy);
 
 	StE::Text::TextManager text_manager(ctx, StE::Text::Font("Data/ArchitectsDaughter.ttf"));
 
@@ -191,17 +126,21 @@ int main() {
 	});
 	ctx.signal_framebuffer_resize().connect(resize_connection);
 
-	auto scene = StE::Graphics::Scene::create(ctx);
-	StE::Graphics::GIRenderer renderer(ctx, scene);
-
-	std::unique_ptr<SkyDome> skydome = std::make_unique<SkyDome>(ctx);
-
-	ctx.set_renderer(&renderer);
 
 	StE::Graphics::Camera camera;
 	camera.set_position({ 25.8, 549.07, -249.2 });
 	camera.lookat({ 26.4, 548.5, -248.71 });
 
+	auto scene = StE::Graphics::Scene::create(ctx);
+	StE::Graphics::GIRenderer renderer(ctx, &camera, scene);
+	ctx.set_renderer(&renderer);
+
+	StE::Graphics::profiler gpu_tasks_profiler;
+	renderer.attach_profiler(&gpu_tasks_profiler);
+	StE::Graphics::debug_gui debug_gui_dispatchable(ctx, &gpu_tasks_profiler);
+
+
+	std::unique_ptr<SkyDome> skydome = std::make_unique<SkyDome>(ctx);
 
 	bool running = true;
 	bool loaded = false;
@@ -213,21 +152,25 @@ int main() {
 
 	const glm::vec3 light0_pos{ -700.6, 138, -70 };
 	const glm::vec3 light1_pos{ 200, 550, 170 };
-	auto light0 = std::make_shared<StE::Graphics::SphericalLight>(4000.f, StE::Graphics::RGB({ 1.f, .57f, .16f }), light0_pos, 4.f);
-	auto light1 = std::make_shared<StE::Graphics::SphericalLight>(12000.f, StE::Graphics::RGB({ 0.5f, .8f, 1.f }), light1_pos, 9.f);
-	scene->scene_properties().lights_storage().add_light(light0);
-	scene->scene_properties().lights_storage().add_light(light1);
+	auto light0 = std::make_shared<StE::Graphics::SphericalLight>(8000.f, StE::Graphics::Kelvin(2000), light0_pos, 3.f);
+	auto light1 = std::make_shared<StE::Graphics::SphericalLight>(20000.f, StE::Graphics::Kelvin(7000), light1_pos, 5.f);
+	auto light0_obj = create_light_object(scene, light0_pos, light0);
+	auto light1_obj = create_light_object(scene, light1_pos, light1);
 
-	std::shared_ptr<StE::Graphics::Object> light0_obj, light1_obj;
-	light0_obj = create_light_object(scene, light0_pos, light0);
-	light1_obj = create_light_object(scene, light1_pos, light1);
-
-	// create_glass(scene, &ctx, { -450, 680, -280 }, { -600, 890, -280 });
-	// create_glass(scene, &ctx, { -262, 680, -280 }, { -436, 890, -280 });
-	// create_glass(scene, &ctx, { -60, 680, -280 }, { -230, 890, -280 });
-	// create_glass(scene, &ctx, { 90, 680, -280 }, { -60, 890, -280 });
-	// create_glass(scene, &ctx, { 290, 680, -280 }, { 100, 890, -280 });
-	// create_glass(scene, &ctx, { 300, 680, -280 }, { 523, 890, -280 });
+	for (auto &v : { glm::vec3{ -622, 645, -310},
+					 glm::vec3{  124, 645, -310},
+					 glm::vec3{  497, 645, -310},
+					 glm::vec3{ -242, 153, -310},
+					 glm::vec3{  120, 153, -310},
+					 glm::vec3{  124, 645,  552},
+					 glm::vec3{  497, 645,  552},
+					 glm::vec3{-1008, 153,  552},
+					 glm::vec3{ -242, 153,  552},
+					 glm::vec3{  120, 153,  552},
+					 glm::vec3{  885, 153,  552} }) {
+		auto wall_lamp = std::make_shared<StE::Graphics::SphericalLight>(5000.f, StE::Graphics::Kelvin(1800), v, 2.f);
+		create_light_object(scene, v, wall_lamp);
+	}
 
 	// Bind input
 	auto keyboard_listner = std::make_shared<decltype(ctx)::hid_keyboard_signal_type::connection_type>(
@@ -248,12 +191,11 @@ int main() {
 
 	auto title_text = text_manager.create_renderer();
 	auto footer_text = text_manager.create_renderer();
-	auto header_text = text_manager.create_renderer();
 
-	auto title_text_task = make_gpu_task(title_text.get());
+	auto title_text_task = make_gpu_task("title_text", title_text.get(), nullptr);
 
 	renderer.add_gui_task(title_text_task);
-	renderer.add_gui_task(make_gpu_task(footer_text.get()));
+	renderer.add_gui_task(make_gpu_task("footer_text", footer_text.get(), nullptr));
 	renderer.set_deferred_rendering_enabled(false);
 
 
@@ -289,11 +231,11 @@ int main() {
 	title_text = nullptr;
 	title_text_task = nullptr;
 
-	auto skydome_task = make_gpu_task(skydome.get());
+	auto skydome_task = make_gpu_task("skydome", skydome.get(), nullptr);
 
 	skydome_task->add_dependency(scene);
 
-	renderer.add_gui_task(make_gpu_task(header_text.get()));
+	renderer.add_gui_task(make_gpu_task("debug_gui", &debug_gui_dispatchable, nullptr));
 	renderer.add_task(scene);
 	renderer.add_task(skydome_task);
 	renderer.set_deferred_rendering_enabled(true);
@@ -331,9 +273,6 @@ int main() {
 		light0->set_position(lp);
 
 		light0_obj->set_model_matrix(glm::scale(glm::translate(glm::mat4(), lp), glm::vec3(light0->get_radius() / 2.f)));
-		scene->set_model_matrix(mv);
-		renderer.set_model_matrix(mv);
-		skydome->set_model_matrix(mvnt);
 
 		{
 			using namespace StE::Text::Attributes;
@@ -342,18 +281,17 @@ int main() {
 			static float total_tpf = .0f;
 			total_tpf += ctx.time_per_frame().count();
 			++tpf_count;
+			static float tpf = .0f;
 			if (tpf_count % 5 == 0) {
-				auto tpf = total_tpf / 5.f;
+				tpf = total_tpf / 5.f;
 				total_tpf = .0f;
-
-				auto tpf_str = std::to_wstring(tpf);
-				header_text->set_text({ 30, h - 50 }, vsmall(b(stroke(dark_magenta, 1)(red(tpf_str)))) + L" ms");
 			}
 
 			auto total_vram = std::to_wstring(ctx.gl()->meminfo_total_available_vram() / 1024);
 			auto free_vram = std::to_wstring(ctx.gl()->meminfo_free_vram() / 1024);
 
-			footer_text->set_text({ 30, 20 }, vsmall(b((blue_violet(free_vram) + L" / " + stroke(red, 1)(dark_red(total_vram)) + L" MB"))));
+			footer_text->set_text({ 10, 50 }, line_height(28)(vsmall(b(stroke(dark_magenta, 1)(red(std::to_wstring(tpf))))) + L" ms\n" +
+															  vsmall(b((blue_violet(free_vram) + L" / " + stroke(red, 1)(dark_red(total_vram)) + L" MB")))));
 		}
 
 		time += ctx.time_per_frame().count();

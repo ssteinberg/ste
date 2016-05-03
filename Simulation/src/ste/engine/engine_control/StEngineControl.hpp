@@ -149,6 +149,7 @@ public:
 	float get_fov() const;
 	float get_near_clip() const;
 	float get_far_clip() const;
+	float get_projection_aspect() const;
 	glm::mat4 &projection_matrix() const;
 
 	glm::mat4 ortho_projection_matrix() const {

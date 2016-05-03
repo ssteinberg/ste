@@ -50,8 +50,6 @@ public:
 				   const deferred_gbuffer *gbuffer);
 	~ssss_generator() noexcept;
 
-	void set_model_matrix(const glm::mat4 &m) const;
-
 	auto get_task() const { return task; }
 };
 

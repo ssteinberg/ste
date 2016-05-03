@@ -26,7 +26,7 @@ public:
 
 protected:
 	virtual void set_context_state() const override {
-		gbuffer->bind_gbuffer();
+		gbuffer->bind_gbuffer(false);
 		sort_program->bind();
 	}
 

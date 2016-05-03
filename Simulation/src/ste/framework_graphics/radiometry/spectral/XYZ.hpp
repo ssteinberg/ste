@@ -5,11 +5,14 @@
 
 #include "spectrum.hpp"
 
+#include <limits>
+
 namespace StE {
 namespace Graphics {
 
 class RGB;
 class xyY;
+class Kelvin;
 
 class XYZ : public spectrum<float, 3> {
 public:
@@ -33,12 +36,14 @@ public:
 
 	RGB toRGB() const;
 	xyY to_xyY() const;
+	Kelvin toKelvin() const;
 
 	T luminance() const override final { return Y(); };
 
 	operator glm::tvec3<T>() const { return glm::tvec3<T>{ X(), Y(), Z() }; }
 	operator RGB() const;
 	operator xyY() const;
+	operator Kelvin() const;
 };
 
 }
@@ -46,6 +51,7 @@ public:
 
 #include "RGB.hpp"
 #include "xyY.hpp"
+#include "Kelvin.hpp"
 
 namespace StE {
 namespace Graphics {
@@ -73,6 +79,10 @@ inline XYZ::operator RGB() const {
 
 inline XYZ::operator xyY() const {
 	return to_xyY();
+};
+
+inline XYZ::operator Kelvin() const {
+	return toKelvin();
 };
 
 }

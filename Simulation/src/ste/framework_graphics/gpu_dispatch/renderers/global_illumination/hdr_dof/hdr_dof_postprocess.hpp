@@ -49,6 +49,9 @@ class hdr_dof_postprocess {
 	friend class hdr_bokeh_blury_task;
 
 private:
+	constexpr static float vision_properties_max_lum = 10.f;
+
+private:
 	using ResizeSignalConnectionType = StEngineControl::framebuffer_resize_signal_type::connection_type;
 	using ProjectionSignalConnectionType = StEngineControl::projection_change_signal_type::connection_type;
 
@@ -128,6 +131,9 @@ public:
 	void resize(glm::ivec2 size);
 
 	std::shared_ptr<const gpu_task> get_task() const;
+	auto& get_exposure_params_buffer() const { return hdr_bokeh_param_buffer; }
+	auto& get_histogram_buffer() const { return histogram; }
+	auto& get_histogram_sums_buffer() const { return histogram_sums; }
 };
 
 }

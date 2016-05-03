@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -10,11 +10,11 @@ namespace Graphics {
 
 class human_vision_properties {
 public:
-	static constexpr float min_luminance = .00001f;
+	static constexpr float min_luminance = .000001f;
 
 public:
 	static float scotopic_vision(float lum) {
-		return 1.f - glm::clamp((lum - min_luminance) / (1.f - min_luminance), 0.f, 1.f);
+		return 1.f - glm::clamp((lum - min_luminance) / (.1f - min_luminance), 0.f, 1.f);
 	}
 
 	static float mesopic_vision(float lum) {
@@ -31,7 +31,7 @@ public:
 	}
 
 	static float monochromaticity(float lum) {
-		return glm::smoothstep(1.0f, .0f, glm::clamp((lum - min_luminance) / (2.f - min_luminance), 0.f, 1.f));
+		return glm::smoothstep(1.0f, .0f, glm::clamp((lum - min_luminance) / (.025f - min_luminance), 0.f, 1.f));
 	}
 };
 

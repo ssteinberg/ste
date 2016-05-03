@@ -9,6 +9,8 @@
 #include "gpu_state_transition.hpp"
 #include "sop_graph.hpp"
 
+#include "profiler.hpp"
+
 #include "FramebufferObject.hpp"
 
 #include "sequential_ordering_problem.hpp"
@@ -37,6 +39,8 @@ private:
 	mutable concurrent_queue<modify_task_log> modify_queue;
 	std::shared_ptr<detail::gpu_task_root> root;
 	sop_type sop;
+
+	profiler *prof{ nullptr };
 
 private:
 	void insert_task(const TaskPtr &task, bool);
@@ -89,6 +93,9 @@ public:
 	}
 
 	void dispatch();
+
+	void attach_profiler(profiler *p) { prof = p; }
+	auto get_profiler() const { return prof; }
 
 	using Base::write_dot;
 	using Base::write_png;

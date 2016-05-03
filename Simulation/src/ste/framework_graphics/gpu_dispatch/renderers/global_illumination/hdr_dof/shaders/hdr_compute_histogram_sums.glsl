@@ -9,15 +9,22 @@
 
 layout(local_size_x = bins / 2, local_size_y = 1) in;
 
-layout(std430, binding = 0) coherent buffer histogram_sums {
+layout(std430, binding = 6) restrict readonly buffer gbuffer_data {
+	g_buffer_element gbuffer[];
+};
+layout(r32ui, binding = 7) restrict readonly uniform uimage2D gbuffer_ll_heads;
+
+layout(std430, binding = 0) restrict writeonly buffer histogram_sums {
 	uint sums[bins];
 };
-layout(std430, binding = 1) coherent buffer histogram_bins {
+layout(std430, binding = 1) restrict readonly buffer histogram_bins {
 	uint histogram[bins];
 };
-layout(std430, binding = 2) coherent buffer hdr_bokeh_parameters_buffer {
+layout(std430, binding = 2) restrict writeonly buffer hdr_bokeh_parameters_buffer {
 	hdr_bokeh_parameters params;
 };
+
+#include "gbuffer_load.glsl"
 
 shared uint shared_data[bins];
 
@@ -43,7 +50,7 @@ void main() {
 
 	float focal;
 	if (id == 0) {
-		g_buffer_element frag = gbuffer_load(gbuffer_size() / 2);
+		g_buffer_element frag = gbuffer_load(gbuffer_ll_heads, gbuffer_size(gbuffer_ll_heads) / 2);
 		params.focus = gbuffer_linear_z(frag, far, near);
 	}
 

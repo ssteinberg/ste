@@ -158,7 +158,7 @@ void gl_context::set_defaults() {
 	color_mask(true, true, true, true);
 	depth_mask(true);
 	depth_func(GL_LESS);
-	clear_color(.0f, .0f, .0f, 1.f);
+	clear_color(.0f, .0f, .0f, .0f);
 	clear_depth(1.f);
 	cull_face(GL_BACK);
 	front_face(GL_CCW);

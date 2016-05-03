@@ -5,6 +5,8 @@
 #include "Quad.hpp"
 #include "Sampler.hpp"
 
+#include "ShaderStorageBuffer.hpp"
+
 #include "gl_current_context.hpp"
 
 using namespace StE::Graphics;
@@ -13,11 +15,18 @@ using namespace StE::Graphics;
 void GIRenderer::deferred_composition::set_context_state() const {
 	using namespace Core;
 
+	auto &ls = dr->scene->scene_properties().lights_storage();
+
+	GL::gl_current_context::get()->enable_state(StE::Core::GL::BasicStateName::TEXTURE_CUBE_MAP_SEAMLESS);
+
 	dr->gbuffer.bind_gbuffer();
 	0_storage_idx = dr->scene->scene_properties().materials_storage().buffer();
-	dr->scene->scene_properties().lights_storage().bind_buffers(2);
 
-	Core::GL::gl_current_context::get()->enable_state(StE::Core::GL::BasicStateName::TEXTURE_CUBE_MAP_SEAMLESS);
+	ls.bind_lights_buffer(2);
+	ls.bind_lights_transform_buffer(3);
+
+	dr->lll_storage.bind_lll_buffer();
+
 	8_tex_unit = *dr->shadows_storage.get_cubemaps();
 	8_sampler_idx = dr->shadows_storage.get_shadow_sampler();
 
@@ -33,22 +42,32 @@ void GIRenderer::deferred_composition::dispatch() const {
 
 
 GIRenderer::GIRenderer(const StEngineControl &ctx,
+					   const Camera *camera,
 					   const std::shared_ptr<Scene> &scene/*,
 					   std::size_t voxel_grid_size,
 					   float voxel_grid_ratio*/)
 					   : gbuffer(ctx.get_backbuffer_size()),
-						 scene(scene),
 						 ctx(ctx),
+						 camera(camera),
+						 scene(scene),
 						 //voxel_space(ctx, voxel_grid_size, voxel_grid_ratio),
 						 hdr(ctx, &gbuffer),
+						 lll_storage(ctx.get_backbuffer_size()),
+						 lll_gen_dispatch(ctx, &scene->scene_properties().lights_storage(), &lll_storage),
 						 shadows_storage(ctx),
 						 shadows_projector(ctx, &scene->object_group(), &scene->scene_properties().lights_storage(), &shadows_storage),
 						 prepopulate_depth_dispatch(ctx, scene.get()),
+						 scene_frustum_cull(ctx, scene.get(), &scene->scene_properties().lights_storage()),
 						 gbuffer_sorter(ctx, &gbuffer),
+						 light_preprocess(ctx, &scene->scene_properties().lights_storage(), &hdr),
 						 composer(ctx, this),
 						 gbuffer_clearer(&gbuffer) {
 	resize_connection = std::make_shared<ResizeSignalConnectionType>([=](const glm::i32vec2 &size) {
 		this->gbuffer.resize(size);
+		this->lll_storage.resize(size);
+
+		this->lll_gen_dispatch.set_depth_map(gbuffer.get_depth_target());
+
 		rebuild_task_queue();
 	});
 	projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([this](const glm::mat4&, float, float n, float f) {
@@ -61,21 +80,34 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 
 	// composer.program->set_uniform("inv_projection", glm::inverse(ctx.projection_matrix()));
 
-	composer_task = make_gpu_task("deferred_composition", &composer, hdr.get_input_fbo());
+	lll_gen_dispatch.set_depth_map(gbuffer.get_depth_target());
+	scene->object_group().set_target_gbuffer(get_gbuffer());
+
+	composer_task = make_gpu_task("composition", &composer, hdr.get_input_fbo());
 	fb_clearer_task = make_gpu_task("fb_clearer", &fb_clearer, get_fbo());
-	gbuffer_clearer_task = make_gpu_task("gbuffer_clearer", &gbuffer_clearer, nullptr);
-	gbuffer_sort_task = make_gpu_task("gbuffer_sorter", &gbuffer_sorter, nullptr);
-	shadow_projector_task = make_gpu_task("shadow_projector", &shadows_projector, nullptr);
-	prepopulate_depth_task = make_gpu_task("scene_prepopulate_depth", &prepopulate_depth_dispatch, get_fbo());
+	prepopulate_depth_task = make_gpu_task("prepopulate_depth", &prepopulate_depth_dispatch, get_fbo());
+	scene_frustum_cull_task = make_gpu_task("frustum_cull", &scene_frustum_cull, nullptr);
+	gbuffer_clearer_task = make_gpu_task("gbuffer_clear", &gbuffer_clearer, nullptr);
+	gbuffer_sort_task = make_gpu_task("gbuffer_sort", &gbuffer_sorter, nullptr);
+	shadow_projector_task = make_gpu_task("shadow_project", &shadows_projector, nullptr);
+	lll_gen_task = make_gpu_task("pp_ll_gen", &lll_gen_dispatch, get_fbo());
 
 	fb_clearer_task->add_dependency(gbuffer_clearer_task);
-	composer_task->add_dependency(fb_clearer_task);
-	composer_task->add_dependency(gbuffer_sort_task);
-	composer_task->add_dependency(shadow_projector_task);
 	gbuffer_sort_task->add_dependency(fb_clearer_task);
 	hdr.get_task()->add_dependency(composer_task);
 	prepopulate_depth_task->add_dependency(fb_clearer_task);
+	prepopulate_depth_task->add_dependency(scene_frustum_cull_task);
 	scene->add_dependency(prepopulate_depth_task);
+	scene->add_dependency(scene_frustum_cull_task);
+	scene_frustum_cull_task->add_dependency(light_preprocess.get_task());
+	lll_gen_task->add_dependency(light_preprocess.get_task());
+	lll_gen_task->add_dependency(prepopulate_depth_task);
+	shadow_projector_task->add_dependency(light_preprocess.get_task());
+	composer_task->add_dependency(fb_clearer_task);
+	composer_task->add_dependency(gbuffer_sort_task);
+	composer_task->add_dependency(lll_gen_task);
+	composer_task->add_dependency(light_preprocess.get_task());
+	composer_task->add_dependency(shadow_projector_task);
 
 	add_task(fb_clearer_task);
 	rebuild_task_queue();
@@ -111,6 +143,14 @@ void GIRenderer::set_deferred_rendering_enabled(bool enabled) {
 }
 
 void GIRenderer::render_queue() {
+	view_matrix_buffer.update_with_camera(*this->camera, ctx.projection_matrix());
+	view_matrix_buffer.bind_buffer(view_matrix_buffer_bind_location);
+
+	if (q.get_profiler() != nullptr) {
+		auto ft = ctx.time_per_frame().count();
+		q.get_profiler()->record_frame(ft);
+	}
+
 	q.dispatch();
 }
 

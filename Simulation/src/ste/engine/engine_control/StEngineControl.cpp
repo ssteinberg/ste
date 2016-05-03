@@ -147,8 +147,7 @@ void StEngineControl::set_clipping_planes(float near_clip_distance, float far_cl
 }
 
 void StEngineControl::set_projection_dirty() {
-	auto vs = get_backbuffer_size();
-	float aspect = vs.y ? vs.x / vs.y : 1;
+	float aspect = get_projection_aspect();
 	projection = glm::perspective(pimpl->field_of_view, aspect, pimpl->near_clip, pimpl->far_clip);
 
 	projection_change_signal.emit(projection, pimpl->field_of_view, pimpl->near_clip, pimpl->far_clip);
@@ -168,4 +167,9 @@ float StEngineControl::get_near_clip() const {
 
 float StEngineControl::get_far_clip() const {
 	return pimpl->far_clip;
+}
+
+float StEngineControl::get_projection_aspect() const {
+	auto vs = get_backbuffer_size();
+	return vs.y ? static_cast<float>(vs.x) / static_cast<float>(vs.y) : 1.f;
 }

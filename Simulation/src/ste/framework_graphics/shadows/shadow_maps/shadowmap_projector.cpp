@@ -16,9 +16,11 @@ void shadowmap_projector::set_context_state() const {
 	GL::gl_current_context::get()->viewport(0, 0, size.x, size.y);
 
 	object->bind_buffers();
-	lights->bind_buffers(2);
+	lights->bind_lights_buffer(2);
+	4_storage_idx = Core::buffer_object_cast<Core::ShaderStorageBuffer<std::uint32_t>>(lights->get_active_ll_counter());
+	5_storage_idx = lights->get_active_ll();
 
-	5_storage_idx = *shadow_map->get_shadow_projection_mats_buffer();
+	9_storage_idx = *shadow_map->get_shadow_projection_mats_buffer();
 
 	shadow_gen_program->bind();
 
@@ -27,10 +29,5 @@ void shadowmap_projector::set_context_state() const {
 
 void shadowmap_projector::dispatch() const {
 	Core::GL::gl_current_context::get()->clear_framebuffer(false, true);
-
-	lights->update_storage();
-
-	object->dispatch();
-
-	lights->lock_ranges();
+	object->draw_object_group();
 }

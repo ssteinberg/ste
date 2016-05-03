@@ -36,7 +36,7 @@ out geo_out {
 	flat int drawId;
 } vout;
 
-layout(std430, binding = 0) buffer glyph_data {
+layout(std430, binding = 0) restrict readonly buffer glyph_data {
 	buffer_glyph_descriptor glyphs[];
 };
 
@@ -46,7 +46,7 @@ void main() {
 	buffer_glyph_descriptor g = glyphs[vin[0].drawId];
 
 	float size = vin[0].size;
-	
+
 	vout.color = vin[0].color;
 	vout.stroke_color = vin[0].stroke_color;
 	vout.drawId = vin[0].drawId;
@@ -56,19 +56,19 @@ void main() {
 	vout.st = vec2(0, 0);
     gl_Position = pos + vec4(size * vec2(g.start_x, g.start_y) / fb_size, 0, 0);
     EmitVertex();
-	
+
 	vout.st = vec2(1, 0);
     gl_Position = pos + vec4(size * vec2(g.start_x + g.width, g.start_y) / fb_size, 0, 0);
     EmitVertex();
-	
+
 	vout.st = vec2(0, 1);
     gl_Position = pos + vec4(size * vec2(g.start_x, g.start_y + g.height) / fb_size, 0, 0);
     EmitVertex();
-	
+
 	vout.st = vec2(1, 1);
     gl_Position = pos + vec4(size * vec2(g.start_x + g.width, g.start_y + g.height) / fb_size, 0, 0);
     EmitVertex();
 
     EndPrimitive();
 }
-  
+

@@ -115,8 +115,8 @@ public:
 	gli::format get_format() const override final { return Base::format; }
 	size_type get_image_size() const final override { return Base::size; }
 
-	image<type> with_format(gli::format format) const { return image(*this, size, format, Base::access, Base::level, Base::layer); }
-	image<type> with_access(ImageAccessMode access) const { return image(*this, size, Base::format, access, Base::level, Base::layer); }
+	image<type> with_format(gli::format format) const { return image(*this, Base::size, format, Base::access, Base::level, Base::layer); }
+	image<type> with_access(ImageAccessMode access) const { return image(*this, Base::size, Base::format, access, Base::level, Base::layer); }
 };
 
 template <core_resource_type type>

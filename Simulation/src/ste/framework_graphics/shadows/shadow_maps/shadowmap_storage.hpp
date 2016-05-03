@@ -6,6 +6,8 @@
 #include "stdafx.hpp"
 #include "StEngineControl.hpp"
 
+#include "signal.hpp"
+
 #include "FramebufferObject.hpp"
 #include "ShaderStorageBuffer.hpp"
 #include "GLSLProgram.hpp"
@@ -13,14 +15,16 @@
 #include "TextureCubeMapArray.hpp"
 #include "Sampler.hpp"
 
+#include "light_storage.hpp"
+
 namespace StE {
 namespace Graphics {
 
 class shadowmap_storage {
-private:
 	using ProjectionSignalConnectionType = StEngineControl::projection_change_signal_type::connection_type;
 	using proj_mat_buffer_type = Core::ShaderStorageBuffer<glm::mat4>;
 
+	constexpr static unsigned default_map_size = 512;
 	constexpr static float shadow_proj_near_clip = 20.0f;
 
 private:
@@ -49,10 +53,11 @@ private:
 	}
 
 public:
-	shadowmap_storage(const StEngineControl &ctx, const glm::uvec2 &cube_size = { 1024, 1024 }) : cube_size(cube_size),
-																								  shadow_depth_sampler(Core::TextureFiltering::Linear, Core::TextureFiltering::Linear,
-																								  					   Core::TextureWrapMode::ClampToEdge, Core::TextureWrapMode::ClampToEdge, 16) {
-		set_count(2);
+	shadowmap_storage(const StEngineControl &ctx,
+					  const glm::uvec2 &cube_size = glm::uvec2(default_map_size)) : cube_size(cube_size),
+																					shadow_depth_sampler(Core::TextureFiltering::Linear, Core::TextureFiltering::Linear,
+																										 Core::TextureWrapMode::ClampToEdge, Core::TextureWrapMode::ClampToEdge, 16) {
+		set_count(max_active_lights_per_frame);
 
 		shadow_depth_sampler.set_compare_mode(Core::TextureCompareMode::CompareToTextureDepth);
 		shadow_depth_sampler.set_compare_func(Core::TextureCompareFunc::Greater);

@@ -19,13 +19,13 @@ out vs_out {
 	float size;
 } vout;
 
-void main() {	
+void main() {
 	vout.drawId = int(vert_glyph_size.z);
 	vout.size = vert_glyph_size.w;
 	vout.weight = weight;
 	vout.color = col;
 	vout.stroke_color = stroke_col;
 	vout.stroke_width = stroke_width;
+
     gl_Position = proj * vec4(vert_glyph_size.xy, 0, 1);
 }
-

@@ -8,15 +8,22 @@
 #include "rendering_system.hpp"
 
 #include "Camera.hpp"
+#include "view_matrix_ring_buffer.hpp"
 
 #include "gpu_dispatchable.hpp"
 #include "gpu_task.hpp"
+#include "profiler.hpp"
 
 #include "Scene.hpp"
 #include "scene_prepopulate_depth_dispatch.hpp"
+#include "scene_frustum_cull_dispatch.hpp"
 
 #include "SceneProperties.hpp"
+
 #include "light.hpp"
+#include "light_preprocessor.hpp"
+#include "linked_light_lists.hpp"
+#include "linked_light_lists_gen_dispatch.hpp"
 
 #include "gpu_dummy_dispatchable.hpp"
 #include "hdr_dof_postprocess.hpp"
@@ -52,7 +59,7 @@ private:
 		std::shared_ptr<Core::GLSLProgram> program;
 
 	public:
-		deferred_composition(const StEngineControl &ctx, GIRenderer *dr) : program(ctx.glslprograms_pool().fetch_program_task({ "deferred.vert", "deferred.frag" })()), dr(dr) {
+		deferred_composition(const StEngineControl &ctx, GIRenderer *dr) : program(ctx.glslprograms_pool().fetch_program_task({ "passthrough.vert", "deferred_compose.frag" })()), dr(dr) {
 			// dr->voxel_space.add_consumer_program(this->get_program());
 		}
 		~deferred_composition() {
@@ -69,12 +76,16 @@ private:
 	using ProjectionSignalConnectionType = StEngineControl::projection_change_signal_type::connection_type;
 	using FbClearTask = StE::Graphics::fb_clear_dispatch<>;
 
+	constexpr static int view_matrix_buffer_bind_location = 20;
+
 private:
 	deferred_gbuffer gbuffer;
 	std::shared_ptr<ResizeSignalConnectionType> resize_connection;
 	std::shared_ptr<ProjectionSignalConnectionType> projection_change_connection;
 
 	const StEngineControl &ctx;
+	const Camera *camera;
+	view_matrix_ring_buffer view_matrix_buffer;
 	std::shared_ptr<Scene> scene;
 	// dense_voxel_space voxel_space;
 
@@ -82,12 +93,18 @@ private:
 	gpu_task::TaskCollection gui_tasks;
 	gpu_task::TaskCollection added_tasks;
 
+	light_preprocessor light_preprocess;
+	linked_light_lists lll_storage;
+	linked_light_lists_gen_dispatch lll_gen_dispatch;
+
 	shadowmap_storage shadows_storage;
 	shadowmap_projector shadows_projector;
 
 	hdr_dof_postprocess hdr;
 	gbuffer_sort_dispatch gbuffer_sorter;
+
 	scene_prepopulate_depth_dispatch prepopulate_depth_dispatch;
+	scene_frustum_cull_dispatch scene_frustum_cull;
 
 	std::shared_ptr<const gpu_task> precomposer_dummy_task,
 									composer_task,
@@ -95,7 +112,9 @@ private:
 									gbuffer_clearer_task,
 									shadow_projector_task,
 									gbuffer_sort_task,
-									prepopulate_depth_task;
+									prepopulate_depth_task,
+									scene_frustum_cull_task,
+									lll_gen_task;
 
 	deferred_composition composer;
 	gbuffer_clear_dispatch gbuffer_clearer;
@@ -114,17 +133,11 @@ protected:
 
 public:
 	GIRenderer(const StEngineControl &ctx,
+			   const Camera *camera,
 			   const std::shared_ptr<Scene> &scene/*,
 			   std::size_t voxel_grid_size = 512,
 			   float voxel_grid_ratio = .01f*/);
 	virtual ~GIRenderer() noexcept {}
-
-	void set_model_matrix(const glm::mat4 &m) {
-		composer.program->set_uniform("view_matrix", m);
-		composer.program->set_uniform("inverse_view_matrix", glm::inverse(m));
-
-		prepopulate_depth_dispatch.set_proj_model_matrix(ctx.projection_matrix() * m);
-	}
 
 	void set_deferred_rendering_enabled(bool enabled);
 
@@ -136,6 +149,10 @@ public:
 	virtual void render_queue() override;
 
 	// const dense_voxel_space& voxel_grid() const { return voxel_space; }
+
+	auto *get_gbuffer() const { return &gbuffer; }
+
+	void attach_profiler(profiler *p) { q.attach_profiler(p); }
 
 	virtual std::string rendering_system_name() const override { return "GIRenderer"; };
 };

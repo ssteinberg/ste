@@ -28,10 +28,10 @@ CXXFLAGS_release += \
 	-O3 -ipo -xHOST -no-prec-div -D NDEBUG
 
 CXXFLAGS_profile += \
-	-O3 -ipo -xHOST -no-prec-div -g -gdwarf-4 -D NDEBUG
+	-O3 -ipo -xHOST -no-prec-div -g -D NDEBUG
 
 CXXFLAGS_debug += \
-	-g -gdwarf-4 -D DEBUG
+	-g -D DEBUG
 
 SYSTEM_LIBRARIES += \
 	GL \
@@ -47,7 +47,8 @@ SYSTEM_LIBRARIES += \
 	boost_filesystem \
 	boost_serialization \
 	cgraph \
-	gvc
+	gvc \
+	:imgui.a
 
 LINKFLAGS += $(shell pkg-config --static --libs glfw3)
 

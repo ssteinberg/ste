@@ -93,7 +93,6 @@ public:
 		auto vs = voxel_size * voxel_steps_multiplier;
 		glm::vec3 translation = -glm::round(translate / vs) * vs;
 		voxelizer_program->set_uniform("translation", translation);
-		voxelizer_program->set_uniform("trans_inverse_view_matrix", glm::transpose(glm::inverse(m)));
 
 		for (auto *p : consumers)
 			update_shader_voxel_world_translation(translate, *p);

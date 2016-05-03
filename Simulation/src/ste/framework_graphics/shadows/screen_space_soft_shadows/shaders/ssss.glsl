@@ -5,24 +5,34 @@
 
 layout(local_size_x = 32, local_size_y = 32) in;
 
-const int light_buffers_first = 2;
+#include "girenderer_matrix_buffer.glsl"
 #include "light.glsl"
 #include "shadow.glsl"
 #include "gbuffer.glsl"
 
+layout(std430, binding = 2) restrict readonly buffer light_data {
+	light_descriptor light_buffer[];
+};
+
+layout(std430, binding = 6) restrict readonly buffer gbuffer_data {
+	g_buffer_element gbuffer[];
+};
+layout(r32ui, binding = 7) restrict readonly uniform uimage2D gbuffer_ll_heads;
+
 layout(binding = 8) uniform samplerCubeArray shadow_depth_maps;
-layout(r16f, binding = 0) uniform image2DArray penumbra_layers;
-layout(r16f, binding = 1) uniform image2D z_buffer;
+layout(r16f, binding = 0) restrict uniform image2DArray penumbra_layers;
+layout(r16f, binding = 1) restrict uniform image2D z_buffer;
 
 uniform float far, near;
 uniform float half_over_tan_fov_over_two;
-uniform mat4 inverse_view_matrix;
-uniform mat4 transpose_view_matrix;
 
 void main() {
-	ivec2 coords = ivec2(vec2(gl_GlobalInvocationID.xy) / vec2(imageSize(penumbra_layers).xy) * gbuffer_size());
+	mat4 inverse_view_matrix = transpose(view_matrix_buffer.transpose_inverse_view_matrix);
+	mat4 transpose_view_matrix = transpose(view_matrix_buffer.view_matrix);
 
-	g_buffer_element frag = gbuffer_load(coords);
+	ivec2 coords = ivec2(vec2(gl_GlobalInvocationID.xy) / vec2(imageSize(penumbra_layers).xy) * gbuffer_size(gbuffer_ll_heads));
+
+	g_buffer_element frag = gbuffer_load(gbuffer_ll_heads, coords);
 	vec3 n = (transpose_view_matrix * vec4(frag.N, 1)).xyz;
 	vec3 w_pos = (inverse_view_matrix * vec4(frag.P, 1)).xyz;
 	float frag_depth = gbuffer_linear_z(frag, far, near);

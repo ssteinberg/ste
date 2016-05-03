@@ -24,7 +24,7 @@ in geo_out {
 	flat int drawId;
 } vin;
 
-layout(std430, binding = 0) buffer glyph_data {
+layout(std430, binding = 0) restrict readonly buffer glyph_data {
 	buffer_glyph_descriptor glyphs[];
 };
 
@@ -48,7 +48,7 @@ void main( void ) {
     float g = 1.0f - aastep(0.0, D);
 	if (g==0)
 		discard;
-		
+
 	vec4 c = vin.color;
 	if (vin.stroke_width > 0)
 		c = mix(vin.stroke_color, vin.color, clamp((- D - vin.stroke_width * .9f) / (vin.stroke_width * .2f), 0, 1));
