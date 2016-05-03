@@ -119,14 +119,14 @@ Inheritance diagram for StE::Graphics::light:</div>
 <div class="dyncontent">
 <div class="center"><img src="classStE_1_1Graphics_1_1light__inherit__graph.png" border="0" usemap="#StE_1_1Graphics_1_1light_inherit__map" alt="Inheritance graph"/></div>
 <map name="StE_1_1Graphics_1_1light_inherit__map" id="StE_1_1Graphics_1_1light_inherit__map">
-<area shape="rect" id="node3" href="classStE_1_1Graphics_1_1DirectionalLight.html" title="{StE::Graphics::Directional\lLight\n||+ DirectionalLight()\l+ ~DirectionalLight()\l+ set_direction()\l+ get_position()\l+ get_direction()\l}" alt="" coords="5,425,181,575"/><area shape="rect" id="node4" href="classStE_1_1Graphics_1_1SphericalLight.html" title="{StE::Graphics::Spherical\lLight\n||+ SphericalLight()\l+ ~SphericalLight()\l+ set_position()\l+ set_radius()\l+ get_position()\l+ get_radius()\l}" alt="" coords="205,417,373,583"/><area shape="rect" id="node2" href="classStE_1_1Graphics_1_1entity.html" title="{StE::Graphics::entity\n||+ ~entity()\l+ get_position()\l}" alt="" coords="119,5,262,97"/></map>
+<area shape="rect" id="node3" href="classStE_1_1Graphics_1_1DirectionalLight.html" title="{StE::Graphics::Directional\lLight\n||+ DirectionalLight()\l+ ~DirectionalLight()\l+ set_direction()\l+ get_position()\l+ get_direction()\l}" alt="" coords="5,432,181,583"/><area shape="rect" id="node4" href="classStE_1_1Graphics_1_1SphericalLight.html" title="{StE::Graphics::Spherical\lLight\n||+ SphericalLight()\l+ ~SphericalLight()\l+ set_position()\l+ set_radius()\l+ get_position()\l}" alt="" coords="205,432,373,583"/><area shape="rect" id="node2" href="classStE_1_1Graphics_1_1entity.html" title="{StE::Graphics::entity\n||+ ~entity()\l+ get_position()\l}" alt="" coords="119,5,262,97"/></map>
 </div>
 <div class="dynheader">
 Collaboration diagram for StE::Graphics::light:</div>
 <div class="dyncontent">
 <div class="center"><img src="classStE_1_1Graphics_1_1light__coll__graph.png" border="0" usemap="#StE_1_1Graphics_1_1light_coll__map" alt="Collaboration graph"/></div>
 <map name="StE_1_1Graphics_1_1light_coll__map" id="StE_1_1Graphics_1_1light_coll__map">
-<area shape="rect" id="node2" href="classStE_1_1Graphics_1_1entity.html" title="{StE::Graphics::entity\n||+ ~entity()\l+ get_position()\l}" alt="" coords="5,42,148,134"/><area shape="rect" id="node3" href="structStE_1_1Graphics_1_1light_1_1light__descriptor.html" title="{StE::Graphics::light\l::light_descriptor\n|+ position_direction\l+ diffuse\l+ luminance\l+ radius\l+ type\l+ _unused\l|}" alt="" coords="173,5,311,171"/></map>
+<area shape="rect" id="node2" href="classStE_1_1Graphics_1_1entity.html" title="{StE::Graphics::entity\n||+ ~entity()\l+ get_position()\l}" alt="" coords="5,49,148,141"/><area shape="rect" id="node3" href="structStE_1_1Graphics_1_1light_1_1light__descriptor.html" title="{StE::Graphics::light\l::light_descriptor\n|+ position_direction\l+ type\l+ diffuse\l+ luminance\l+ radius\l+ effective_range\l+ reserved\l|}" alt="" coords="173,5,311,185"/></map>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
@@ -143,8 +143,8 @@ Public Types</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a52b2bea3072671dc84518c84a3a76007"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1light.html#a52b2bea3072671dc84518c84a3a76007">light</a> (float luminance, const <a class="el" href="classStE_1_1Graphics_1_1RGB.html">RGB</a> &amp;diffuse)</td></tr>
-<tr class="separator:a52b2bea3072671dc84518c84a3a76007"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae029a040d6282a2dfe45206adda4cbc6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1light.html#ae029a040d6282a2dfe45206adda4cbc6">light</a> (float luminance, float radius, const <a class="el" href="classStE_1_1Graphics_1_1RGB.html">RGB</a> &amp;diffuse)</td></tr>
+<tr class="separator:ae029a040d6282a2dfe45206adda4cbc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8333527389fc745753a0ec2ff05736f1"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1light.html#a8333527389fc745753a0ec2ff05736f1">~light</a> () noexcept</td></tr>
 <tr class="separator:a8333527389fc745753a0ec2ff05736f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afd436e66cae11d4cc858697b4edad688"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1light.html#afd436e66cae11d4cc858697b4edad688">is_dirty</a> () const </td></tr>
@@ -159,10 +159,12 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a433e98b63a9ad1492706ef04866400ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a47de3a29f21938fa21ef8cc008d69403"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1light.html#a47de3a29f21938fa21ef8cc008d69403">get_radius</a> () const </td></tr>
 <tr class="separator:a47de3a29f21938fa21ef8cc008d69403"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a90ed24c9b2571477dbe109b2cc5a9379"><td class="memItemLeft" align="right" valign="top">glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1light.html#a90ed24c9b2571477dbe109b2cc5a9379">get_diffuse</a> () const </td></tr>
-<tr class="separator:a90ed24c9b2571477dbe109b2cc5a9379"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3bc5b34d15fc75022ce4a8cf1b89afe8"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1light.html#a3bc5b34d15fc75022ce4a8cf1b89afe8">get_descriptor</a> () const </td></tr>
-<tr class="separator:a3bc5b34d15fc75022ce4a8cf1b89afe8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36c615161f1d19d0b8ebce0c5f2a254e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1light.html#a36c615161f1d19d0b8ebce0c5f2a254e">get_effective_range</a> () const </td></tr>
+<tr class="separator:a36c615161f1d19d0b8ebce0c5f2a254e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3b2c4c7a162d5e3bc5af8c5868fb8de"><td class="memItemLeft" align="right" valign="top">auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1light.html#ad3b2c4c7a162d5e3bc5af8c5868fb8de">get_diffuse</a> () const </td></tr>
+<tr class="separator:ad3b2c4c7a162d5e3bc5af8c5868fb8de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf3d99734c90ef80681231ea3ae7399e"><td class="memItemLeft" align="right" valign="top">auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1light.html#acf3d99734c90ef80681231ea3ae7399e">get_descriptor</a> () const </td></tr>
+<tr class="separator:acf3d99734c90ef80681231ea3ae7399e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classStE_1_1Graphics_1_1entity"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classStE_1_1Graphics_1_1entity')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classStE_1_1Graphics_1_1entity.html">StE::Graphics::entity</a></td></tr>
 <tr class="memitem:ae27d9ccf13984d1f093edd1498fa793f inherit pub_methods_classStE_1_1Graphics_1_1entity"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1entity.html#ae27d9ccf13984d1f093edd1498fa793f">~entity</a> () noexcept</td></tr>
 <tr class="separator:ae27d9ccf13984d1f093edd1498fa793f inherit pub_methods_classStE_1_1Graphics_1_1entity"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -209,7 +211,7 @@ Protected Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" id="a52b2bea3072671dc84518c84a3a76007"></a>
+<a class="anchor" id="ae029a040d6282a2dfe45206adda4cbc6"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -221,6 +223,12 @@ Protected Attributes</h2></td></tr>
           <td>(</td>
           <td class="paramtype">float&#160;</td>
           <td class="paramname"><em>luminance</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -241,7 +249,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="light_8hpp_source.html#l00038">38</a> of file <a class="el" href="light_8hpp_source.html">light.hpp</a>.</p>
+<p>Definition at line <a class="el" href="light_8hpp_source.html#l00037">37</a> of file <a class="el" href="light_8hpp_source.html">light.hpp</a>.</p>
 
 </div>
 </div>
@@ -296,7 +304,7 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a3bc5b34d15fc75022ce4a8cf1b89afe8"></a>
+<a class="anchor" id="acf3d99734c90ef80681231ea3ae7399e"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -304,7 +312,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">auto StE::Graphics::light::get_descriptor </td>
+          <td class="memname">auto&amp; StE::Graphics::light::get_descriptor </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -317,11 +325,11 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="light_8hpp_source.html#l00060">60</a> of file <a class="el" href="light_8hpp_source.html">light.hpp</a>.</p>
+<p>Definition at line <a class="el" href="light_8hpp_source.html#l00061">61</a> of file <a class="el" href="light_8hpp_source.html">light.hpp</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a90ed24c9b2571477dbe109b2cc5a9379"></a>
+<a class="anchor" id="ad3b2c4c7a162d5e3bc5af8c5868fb8de"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -329,7 +337,32 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">glm::vec3 StE::Graphics::light::get_diffuse </td>
+          <td class="memname">auto&amp; StE::Graphics::light::get_diffuse </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="light_8hpp_source.html#l00059">59</a> of file <a class="el" href="light_8hpp_source.html">light.hpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a36c615161f1d19d0b8ebce0c5f2a254e"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float StE::Graphics::light::get_effective_range </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -492,7 +525,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="light_8hpp_source.html#l00035">35</a> of file <a class="el" href="light_8hpp_source.html">light.hpp</a>.</p>
+<p>Definition at line <a class="el" href="light_8hpp_source.html#l00034">34</a> of file <a class="el" href="light_8hpp_source.html">light.hpp</a>.</p>
 
 </div>
 </div>
@@ -514,12 +547,12 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="light_8hpp_source.html#l00034">34</a> of file <a class="el" href="light_8hpp_source.html">light.hpp</a>.</p>
+<p>Definition at line <a class="el" href="light_8hpp_source.html#l00033">33</a> of file <a class="el" href="light_8hpp_source.html">light.hpp</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>src/ste/framework_graphics/light/<a class="el" href="light_8hpp_source.html">light.hpp</a></li>
+<li>src/ste/framework_graphics/light/light_entities/<a class="el" href="light_8hpp_source.html">light.hpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

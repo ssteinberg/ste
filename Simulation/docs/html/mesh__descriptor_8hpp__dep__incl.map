@@ -1,0 +1,31 @@
+<map id="src/ste/framework_graphics/entities/objects/mesh_descriptor.hpp" name="src/ste/framework_graphics/entities/objects/mesh_descriptor.hpp">
+<area shape="rect" id="node2" href="$Object_8hpp.html" title="src/ste/framework_graphics\l/entities/objects/Object.hpp" alt="" coords="404,102,591,143"/>
+<area shape="rect" id="node5" href="$ObjectGroup_8cpp.html" title="src/ste/framework_graphics\l/entities/objects/ObjectGroup.cpp" alt="" coords="1571,295,1789,337"/>
+<area shape="rect" id="node30" href="$object__group__draw__buffers_8hpp.html" title="src/ste/framework_graphics\l/entities/objects/object\l_group_draw_buffers.hpp" alt="" coords="969,95,1156,151"/>
+<area shape="rect" id="node3" href="$main_8cpp.html" title="src/main.cpp" alt="" coords="254,748,351,775"/>
+<area shape="rect" id="node4" href="$ObjectGroup_8hpp.html" title="src/ste/framework_graphics\l/entities/objects/ObjectGroup.hpp" alt="" coords="953,199,1172,240"/>
+<area shape="rect" id="node29" href="$ModelFactory_8cpp.html" title="src/ste/framework_resources\l/models/ModelFactory.cpp" alt="" coords="43,399,239,441"/>
+<area shape="rect" id="node6" href="$Scene_8hpp.html" title="src/ste/framework_graphics\l/scene/Scene.hpp" alt="" coords="855,295,1041,337"/>
+<area shape="rect" id="node25" href="$scene__prepopulate__depth__dispatch_8hpp.html" title="src/ste/framework_graphics\l/scene/scene_prepopulate\l_depth_dispatch.hpp" alt="" coords="1085,288,1272,344"/>
+<area shape="rect" id="node26" href="$shadowmap__projector_8hpp.html" title="src/ste/framework_graphics\l/shadows/shadow_maps/shadowmap\l_projector.hpp" alt="" coords="1296,288,1547,344"/>
+<area shape="rect" id="node28" href="$ModelFactory_8hpp.html" title="src/ste/framework_resources\l/models/ModelFactory.hpp" alt="" coords="179,295,375,337"/>
+<area shape="rect" id="node7" href="$GIRenderer_8hpp.html" title="src/ste/framework_graphics\l/gpu_dispatch/renderers\l/global_illumination/GIRenderer.hpp" alt="" coords="913,622,1148,678"/>
+<area shape="rect" id="node9" href="$Scene_8cpp.html" title="src/ste/framework_graphics\l/scene/Scene.cpp" alt="" coords="635,399,821,441"/>
+<area shape="rect" id="node10" href="$scene__frustum__cull__dispatch_8hpp.html" title="src/ste/framework_graphics\l/scene/scene_frustum_cull\l_dispatch.hpp" alt="" coords="845,392,1032,448"/>
+<area shape="rect" id="node11" href="$scene__frustum__cull__dispatch_8cpp.html" title="src/ste/framework_graphics\l/scene/scene_frustum_cull\l_dispatch.cpp" alt="" coords="896,503,1083,559"/>
+<area shape="rect" id="node12" href="$scene__prepopulate__depth__dispatch_8cpp.html" title="src/ste/framework_graphics\l/scene/scene_prepopulate\l_depth_dispatch.cpp" alt="" coords="1157,392,1344,448"/>
+<area shape="rect" id="node13" href="$ssss__generator_8hpp.html" title="src/ste/framework_graphics\l/shadows/screen_space_soft\l_shadows/ssss_generator.hpp" alt="" coords="1584,392,1789,448"/>
+<area shape="rect" id="node21" href="$dense__voxelizer_8hpp.html" title="src/ste/framework_graphics\l/voxels/dense_voxelizer.hpp" alt="" coords="365,399,560,441"/>
+<area shape="rect" id="node22" href="$dense__voxel__space_8hpp.html" title="src/ste/framework_graphics\l/voxels/dense_voxel_space.hpp" alt="" coords="500,511,716,552"/>
+<area shape="rect" id="node8" href="$GIRenderer_8cpp.html" title="src/ste/framework_graphics\l/gpu_dispatch/renderers\l/global_illumination/GIRenderer.cpp" alt="" coords="913,733,1148,789"/>
+<area shape="rect" id="node14" href="$ssss__generator_8cpp.html" title="src/ste/framework_graphics\l/shadows/screen_space_soft\l_shadows/ssss_generator.cpp" alt="" coords="1833,622,2039,678"/>
+<area shape="rect" id="node15" href="$ssss__bilateral__blur__x_8hpp.html" title="src/ste/framework_graphics\l/shadows/screen_space_soft\l_shadows/steps/ssss_bilateral\l_blur_x.hpp" alt="" coords="1974,496,2181,567"/>
+<area shape="rect" id="node17" href="$ssss__bilateral__blur__y_8hpp.html" title="src/ste/framework_graphics\l/shadows/screen_space_soft\l_shadows/steps/ssss_bilateral\l_blur_y.hpp" alt="" coords="1470,496,1677,567"/>
+<area shape="rect" id="node19" href="$ssss__write__penumbras_8hpp.html" title="src/ste/framework_graphics\l/shadows/screen_space_soft\l_shadows/steps/ssss_write\l_penumbras.hpp" alt="" coords="1701,496,1899,567"/>
+<area shape="rect" id="node16" href="$ssss__bilateral__blur__x_8cpp.html" title="src/ste/framework_graphics\l/shadows/screen_space_soft\l_shadows/steps/ssss_bilateral\l_blur_x.cpp" alt="" coords="2063,615,2270,685"/>
+<area shape="rect" id="node18" href="$ssss__bilateral__blur__y_8cpp.html" title="src/ste/framework_graphics\l/shadows/screen_space_soft\l_shadows/steps/ssss_bilateral\l_blur_y.cpp" alt="" coords="1379,615,1586,685"/>
+<area shape="rect" id="node20" href="$ssss__write__penumbras_8cpp.html" title="src/ste/framework_graphics\l/shadows/screen_space_soft\l_shadows/steps/ssss_write\l_penumbras.cpp" alt="" coords="1610,615,1809,685"/>
+<area shape="rect" id="node24" href="$dense__voxelizer_8cpp.html" title="src/ste/framework_graphics\l/voxels/dense_voxelizer.cpp" alt="" coords="365,629,560,671"/>
+<area shape="rect" id="node23" href="$dense__voxel__space_8cpp.html" title="src/ste/framework_graphics\l/voxels/dense_voxel_space.cpp" alt="" coords="584,629,800,671"/>
+<area shape="rect" id="node27" href="$shadowmap__projector_8cpp.html" title="src/ste/framework_graphics\l/shadows/shadow_maps/shadowmap\l_projector.cpp" alt="" coords="1813,392,2064,448"/>
+</map>

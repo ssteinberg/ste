@@ -1,6 +1,7 @@
 var searchData=
 [
   ['data_5fguard',['data_guard',['../classStE_1_1shared__double__reference__guard_1_1data__guard.html',1,'StE::shared_double_reference_guard']]],
+  ['debug_5fgui',['debug_gui',['../classStE_1_1Graphics_1_1debug__gui.html',1,'StE::Graphics']]],
   ['deferred_5fgbuffer',['deferred_gbuffer',['../classStE_1_1Graphics_1_1deferred__gbuffer.html',1,'StE::Graphics']]],
   ['dense_5fvoxel_5fspace',['dense_voxel_space',['../classStE_1_1Graphics_1_1dense__voxel__space.html',1,'StE::Graphics']]],
   ['dense_5fvoxelizer',['dense_voxelizer',['../classStE_1_1Graphics_1_1dense__voxelizer.html',1,'StE::Graphics']]],

@@ -7,8 +7,8 @@ var searchData=
   ['phi_5fmin',['phi_min',['../classStE_1_1Graphics_1_1BRDF.html#a6c11dcbb57be4b2dca943c1e3b584f9b',1,'StE::Graphics::BRDF']]],
   ['pixel_5fsize',['pixel_size',['../structStE_1_1Text_1_1text__glyph__pair__key.html#a23af81b2d275299ee9b021fbe3943925',1,'StE::Text::text_glyph_pair_key']]],
   ['pool_5fhandle',['pool_handle',['../structStE_1_1Graphics_1_1texture__pool_1_1sbta__handle.html#a908217d0f400551cb60171c02ccd6964',1,'StE::Graphics::texture_pool::sbta_handle']]],
-  ['position_5fdirection',['position_direction',['../structStE_1_1Graphics_1_1light_1_1light__descriptor.html#a2cb2af26298ca0385f222b842ae8a2f0',1,'StE::Graphics::light::light_descriptor']]],
+  ['position_5fdirection',['position_direction',['../structStE_1_1Graphics_1_1light_1_1light__descriptor.html#a0e1c63fee31030c9bea677e6072d7aae',1,'StE::Graphics::light::light_descriptor']]],
   ['prim_5fcount',['prim_count',['../structStE_1_1Core_1_1IndirectDrawArraysCommand.html#ae5d92e32ba66ca91c16a7ed4871f094a',1,'StE::Core::IndirectDrawArraysCommand']]],
-  ['projection_5fchange_5fconnection',['projection_change_connection',['../classStE_1_1Graphics_1_1ssss__write__penumbras.html#ac0b370ff5a41b795242d1eaf10485297',1,'StE::Graphics::ssss_write_penumbras::projection_change_connection()'],['../ObjectGroup_8cpp.html#a92bb971b015070298ce85f98d5009a62',1,'projection_change_connection():&#160;ObjectGroup.cpp']]],
+  ['projection_5fchange_5fconnection',['projection_change_connection',['../classStE_1_1Graphics_1_1ssss__write__penumbras.html#ac0b370ff5a41b795242d1eaf10485297',1,'StE::Graphics::ssss_write_penumbras::projection_change_connection()'],['../classStE_1_1Graphics_1_1shadowmap__projector.html#af3217f46d154c85d9a0eb302f1d838c4',1,'StE::Graphics::shadowmap_projector::projection_change_connection()']]],
   ['properties',['properties',['../structStE_1_1Graphics_1_1texture__pool_1_1sbta__handle.html#a446752cc5f06b552c79a9d023a9ef433',1,'StE::Graphics::texture_pool::sbta_handle']]]
 ];

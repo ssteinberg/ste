@@ -6,6 +6,7 @@ var classStE_1_1Graphics_1_1Object =
     [ "get_mesh", "classStE_1_1Graphics_1_1Object.html#aaf58ce35af4858b8622870c02086c312", null ],
     [ "get_mesh", "classStE_1_1Graphics_1_1Object.html#a9faed4810960ba85f38a915edf0dcb8e", null ],
     [ "set_material_id", "classStE_1_1Graphics_1_1Object.html#a3cdf1303c2d5ce2bad72f8af392b224b", null ],
+    [ "ObjectGroup", "classStE_1_1Graphics_1_1Object.html#a362031bc826e6f29d29b615d5c4919b1", null ],
     [ "material_id", "classStE_1_1Graphics_1_1Object.html#ae6270d4044e1fecac50e7b79b17df54c", null ],
     [ "object_mesh", "classStE_1_1Graphics_1_1Object.html#afdc9e5e3da78177b3746fb570ec2f018", null ]
 ];

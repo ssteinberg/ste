@@ -34,5 +34,6 @@ var searchData=
   ['rgb',['RGB',['../classStE_1_1Graphics_1_1RGB.html',1,'StE::Graphics']]],
   ['ring_5fbuffer',['ring_buffer',['../classStE_1_1Core_1_1ring__buffer.html',1,'StE::Core']]],
   ['ring_5fbuffer_3c_20glyph_5fpoint_2c_20ringbuffer_5fmax_5fsize_2c_20using_5flockless_5fringbuffer_20_3e',['ring_buffer&lt; glyph_point, ringbuffer_max_size, using_lockless_ringbuffer &gt;',['../classStE_1_1Core_1_1ring__buffer.html',1,'StE::Core']]],
+  ['ring_5fbuffer_3c_20matrices_2c_203_2c_20false_20_3e',['ring_buffer&lt; matrices, 3, false &gt;',['../classStE_1_1Core_1_1ring__buffer.html',1,'StE::Core']]],
   ['rsh',['RSH',['../classStE_1_1RSH.html',1,'StE']]]
 ];

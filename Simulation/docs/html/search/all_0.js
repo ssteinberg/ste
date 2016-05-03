@@ -52,6 +52,5 @@ var searchData=
   ['_5ftype_5fchecker_5fhelper',['_type_checker_helper',['../structStE_1_1__tuple__type__erasure_1_1__type__checker__helper.html',1,'StE::_tuple_type_erasure']]],
   ['_5ftype_5fchecker_5fhelper_3c_200_2c_20tail_2e_2e_2e_3e',['_type_checker_helper&lt; 0, Tail...&gt;',['../structStE_1_1__tuple__type__erasure_1_1__type__checker__helper_3_010_00_01Tail_8_8_8_4.html',1,'StE::_tuple_type_erasure']]],
   ['_5ftype_5fchecker_5fhelper_3c_20sizeof_2e_2e_2e_28args_29_2c_20args_2e_2e_2e_3e',['_type_checker_helper&lt; sizeof...(Args), Args...&gt;',['../structStE_1_1__tuple__type__erasure_1_1__type__checker__helper.html',1,'StE::_tuple_type_erasure']]],
-  ['_5funused',['_unused',['../structStE_1_1Graphics_1_1light_1_1light__descriptor.html#a7b27562c1831543e94a9802daef90a11',1,'StE::Graphics::light::light_descriptor']]],
   ['_5fx',['_x',['../structStE_1_1__rsh__utils_1_1K.html#af313ea4d3029033b12e5370262cd2c82',1,'StE::_rsh_utils::K']]]
 ];

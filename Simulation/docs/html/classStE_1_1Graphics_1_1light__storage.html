@@ -121,6 +121,8 @@ Collaboration diagram for StE::Graphics::light_storage:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a98ecb779b45c05085336eabec72d2d10"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1light__storage.html#a98ecb779b45c05085336eabec72d2d10">light_storage</a> ()</td></tr>
+<tr class="separator:a98ecb779b45c05085336eabec72d2d10"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a05ef51ec9e442f164e29fb90ba95e9ab"><td class="memItemLeft" align="right" valign="top"><a class="el" href="gl__extensions_8h.html#a814c8b5745ecf82afdd1da718fbdc47c">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1light__storage.html#a05ef51ec9e442f164e29fb90ba95e9ab">update_storage</a> ()</td></tr>
 <tr class="separator:a05ef51ec9e442f164e29fb90ba95e9ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abcb095032a1267bd5dcf628951b7eb9d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="gl__extensions_8h.html#a814c8b5745ecf82afdd1da718fbdc47c">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1light__storage.html#abcb095032a1267bd5dcf628951b7eb9d">lock_ranges</a> ()</td></tr>
@@ -129,15 +131,51 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a29af1893f0491d69b688447d89715915"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0c0316ddfd7ad45ec02df37c6319c734"><td class="memItemLeft" align="right" valign="top"><a class="el" href="gl__extensions_8h.html#a814c8b5745ecf82afdd1da718fbdc47c">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1light__storage.html#a0c0316ddfd7ad45ec02df37c6319c734">add_lights</a> (const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classStE_1_1Graphics_1_1light.html">light</a> &gt;&gt; &amp;ls)</td></tr>
 <tr class="separator:a0c0316ddfd7ad45ec02df37c6319c734"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a81b4b5950c06aea2edb8a4afc3fdaa0a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="gl__extensions_8h.html#a814c8b5745ecf82afdd1da718fbdc47c">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1light__storage.html#a81b4b5950c06aea2edb8a4afc3fdaa0a">bind_buffers</a> (int first) const </td></tr>
-<tr class="separator:a81b4b5950c06aea2edb8a4afc3fdaa0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae14f7b96caaf4e1d4bd18d461bec0541"><td class="memItemLeft" align="right" valign="top"><a class="el" href="gl__extensions_8h.html#a814c8b5745ecf82afdd1da718fbdc47c">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1light__storage.html#ae14f7b96caaf4e1d4bd18d461bec0541">clear_active_ll</a> ()</td></tr>
+<tr class="separator:ae14f7b96caaf4e1d4bd18d461bec0541"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0ed3a25b5e4ed4f20dccdc50df3b39c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="gl__extensions_8h.html#a814c8b5745ecf82afdd1da718fbdc47c">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1light__storage.html#ae0ed3a25b5e4ed4f20dccdc50df3b39c">bind_lights_buffer</a> (int idx) const </td></tr>
+<tr class="separator:ae0ed3a25b5e4ed4f20dccdc50df3b39c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe543bc01fe3c22579b368187dfa2571"><td class="memItemLeft" align="right" valign="top"><a class="el" href="gl__extensions_8h.html#a814c8b5745ecf82afdd1da718fbdc47c">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1light__storage.html#abe543bc01fe3c22579b368187dfa2571">bind_lights_transform_buffer</a> (int idx) const </td></tr>
+<tr class="separator:abe543bc01fe3c22579b368187dfa2571"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb13b7f765cfb43f4db1e46e57ba22bc"><td class="memItemLeft" align="right" valign="top">auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1light__storage.html#adb13b7f765cfb43f4db1e46e57ba22bc">get_active_ll_counter</a> () const </td></tr>
+<tr class="separator:adb13b7f765cfb43f4db1e46e57ba22bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa2507f0f51073426602af75d57cba52d"><td class="memItemLeft" align="right" valign="top">auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1light__storage.html#aa2507f0f51073426602af75d57cba52d">get_active_ll</a> () const </td></tr>
+<tr class="separator:aa2507f0f51073426602af75d57cba52d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf836b87374133cf812873f86997bbc9"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1light__storage.html#adf836b87374133cf812873f86997bbc9">size</a> () const </td></tr>
+<tr class="separator:adf836b87374133cf812873f86997bbc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a57a74814f0dc2c9535ea8ab1392f5f75"><td class="memItemLeft" align="right" valign="top">auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1light__storage.html#a57a74814f0dc2c9535ea8ab1392f5f75">get_lights</a> () const </td></tr>
 <tr class="separator:a57a74814f0dc2c9535ea8ab1392f5f75"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p>Definition at line <a class="el" href="light__storage_8hpp_source.html#l00019">19</a> of file <a class="el" href="light__storage_8hpp_source.html">light_storage.hpp</a>.</p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
+<p>Definition at line <a class="el" href="light__storage_8hpp_source.html#l00024">24</a> of file <a class="el" href="light__storage_8hpp_source.html">light_storage.hpp</a>.</p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a class="anchor" id="a98ecb779b45c05085336eabec72d2d10"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">StE::Graphics::light_storage::light_storage </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="light__storage_8hpp_source.html#l00042">42</a> of file <a class="el" href="light__storage_8hpp_source.html">light_storage.hpp</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="a29af1893f0491d69b688447d89715915"></a>
 <div class="memitem">
 <div class="memproto">
@@ -160,7 +198,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="light__storage_8hpp_source.html#l00048">48</a> of file <a class="el" href="light__storage_8hpp_source.html">light_storage.hpp</a>.</p>
+<p>Definition at line <a class="el" href="light__storage_8hpp_source.html#l00065">65</a> of file <a class="el" href="light__storage_8hpp_source.html">light_storage.hpp</a>.</p>
 
 </div>
 </div>
@@ -186,11 +224,11 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="light__storage_8hpp_source.html#l00055">55</a> of file <a class="el" href="light__storage_8hpp_source.html">light_storage.hpp</a>.</p>
+<p>Definition at line <a class="el" href="light__storage_8hpp_source.html#l00072">72</a> of file <a class="el" href="light__storage_8hpp_source.html">light_storage.hpp</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a81b4b5950c06aea2edb8a4afc3fdaa0a"></a>
+<a class="anchor" id="ae0ed3a25b5e4ed4f20dccdc50df3b39c"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -198,10 +236,10 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="gl__extensions_8h.html#a814c8b5745ecf82afdd1da718fbdc47c">void</a> StE::Graphics::light_storage::bind_buffers </td>
+          <td class="memname"><a class="el" href="gl__extensions_8h.html#a814c8b5745ecf82afdd1da718fbdc47c">void</a> StE::Graphics::light_storage::bind_lights_buffer </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>first</em></td><td>)</td>
+          <td class="paramname"><em>idx</em></td><td>)</td>
           <td> const</td>
         </tr>
       </table>
@@ -212,7 +250,108 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="light__storage_8hpp_source.html#l00060">60</a> of file <a class="el" href="light__storage_8hpp_source.html">light_storage.hpp</a>.</p>
+<p>Definition at line <a class="el" href="light__storage_8hpp_source.html#l00082">82</a> of file <a class="el" href="light__storage_8hpp_source.html">light_storage.hpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="abe543bc01fe3c22579b368187dfa2571"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="gl__extensions_8h.html#a814c8b5745ecf82afdd1da718fbdc47c">void</a> StE::Graphics::light_storage::bind_lights_transform_buffer </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>idx</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="light__storage_8hpp_source.html#l00083">83</a> of file <a class="el" href="light__storage_8hpp_source.html">light_storage.hpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ae14f7b96caaf4e1d4bd18d461bec0541"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="gl__extensions_8h.html#a814c8b5745ecf82afdd1da718fbdc47c">void</a> StE::Graphics::light_storage::clear_active_ll </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="light__storage_8hpp_source.html#l00077">77</a> of file <a class="el" href="light__storage_8hpp_source.html">light_storage.hpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aa2507f0f51073426602af75d57cba52d"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto&amp; StE::Graphics::light_storage::get_active_ll </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="light__storage_8hpp_source.html#l00085">85</a> of file <a class="el" href="light__storage_8hpp_source.html">light_storage.hpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="adb13b7f765cfb43f4db1e46e57ba22bc"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto&amp; StE::Graphics::light_storage::get_active_ll_counter </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="light__storage_8hpp_source.html#l00084">84</a> of file <a class="el" href="light__storage_8hpp_source.html">light_storage.hpp</a>.</p>
 
 </div>
 </div>
@@ -237,7 +376,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="light__storage_8hpp_source.html#l00065">65</a> of file <a class="el" href="light__storage_8hpp_source.html">light_storage.hpp</a>.</p>
+<p>Definition at line <a class="el" href="light__storage_8hpp_source.html#l00087">87</a> of file <a class="el" href="light__storage_8hpp_source.html">light_storage.hpp</a>.</p>
 
 </div>
 </div>
@@ -262,7 +401,32 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="light__storage_8hpp_source.html#l00042">42</a> of file <a class="el" href="light__storage_8hpp_source.html">light_storage.hpp</a>.</p>
+<p>Definition at line <a class="el" href="light__storage_8hpp_source.html#l00059">59</a> of file <a class="el" href="light__storage_8hpp_source.html">light_storage.hpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="adf836b87374133cf812873f86997bbc9"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto StE::Graphics::light_storage::size </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="light__storage_8hpp_source.html#l00086">86</a> of file <a class="el" href="light__storage_8hpp_source.html">light_storage.hpp</a>.</p>
 
 </div>
 </div>
@@ -287,7 +451,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="light__storage_8hpp_source.html#l00028">28</a> of file <a class="el" href="light__storage_8hpp_source.html">light_storage.hpp</a>.</p>
+<p>Definition at line <a class="el" href="light__storage_8hpp_source.html#l00045">45</a> of file <a class="el" href="light__storage_8hpp_source.html">light_storage.hpp</a>.</p>
 
 </div>
 </div>

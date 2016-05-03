@@ -6,6 +6,7 @@ var classStE_1_1Algorithm_1_1SOP_1_1sequential__ordering__problem =
     [ "clear_best_solution", "classStE_1_1Algorithm_1_1SOP_1_1sequential__ordering__problem.html#af99a4580ff96fda92b3e949cede3878d", null ],
     [ "get_solution", "classStE_1_1Algorithm_1_1SOP_1_1sequential__ordering__problem.html#a6892357308d099cec5c95364d1a30daa", null ],
     [ "optimizer", "classStE_1_1Algorithm_1_1SOP_1_1sequential__ordering__problem.html#acc2db85ca3a5ede2b7d7a51bcf4c9a7c", null ],
+    [ "run_solution", "classStE_1_1Algorithm_1_1SOP_1_1sequential__ordering__problem.html#abbb2c45c217804a55c49ac9e0adf5f95", null ],
     [ "run_solution", "classStE_1_1Algorithm_1_1SOP_1_1sequential__ordering__problem.html#ad19d74531d7543836087af8bd2aa4a7f", null ],
     [ "sop_optimizer< GraphType >", "classStE_1_1Algorithm_1_1SOP_1_1sequential__ordering__problem.html#a1dc1e98c1d248a630fd80fef3a8c2ca3", null ]
 ];

@@ -1,5 +1,6 @@
 var namespaceStE =
 [
+    [ "_detail", "namespaceStE_1_1__detail.html", null ],
     [ "_legendre_polynomial_utils", "namespaceStE_1_1__legendre__polynomial__utils.html", "namespaceStE_1_1__legendre__polynomial__utils" ],
     [ "_rsh_utils", "namespaceStE_1_1__rsh__utils.html", "namespaceStE_1_1__rsh__utils" ],
     [ "_tuple_call_detail", "namespaceStE_1_1__tuple__call__detail.html", "namespaceStE_1_1__tuple__call__detail" ],

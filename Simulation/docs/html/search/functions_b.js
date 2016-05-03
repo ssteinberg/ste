@@ -26,6 +26,7 @@ var searchData=
   ['meminfo_5ftotal_5fdedicated_5fvram',['meminfo_total_dedicated_vram',['../classStE_1_1Core_1_1GL_1_1gl__context.html#a420f51a156802b59134d96b738f78b13',1,'StE::Core::GL::gl_context']]],
   ['memory_5fbarrier',['memory_barrier',['../classStE_1_1Core_1_1GL_1_1gl__generic__context.html#a0bb1049c8c07c872b468e5f94dfc1e7c',1,'StE::Core::GL::gl_generic_context']]],
   ['mesh_5faabb',['mesh_aabb',['../classStE_1_1Graphics_1_1mesh__aabb.html#a7616c381a00c4680692e5598c1147eee',1,'StE::Graphics::mesh_aabb::mesh_aabb()=default'],['../classStE_1_1Graphics_1_1mesh__aabb.html#ad94c6ef09c38b2a1d81f402b0e3c1186',1,'StE::Graphics::mesh_aabb::mesh_aabb(const glm::vec3 &amp;va, const glm::vec3 &amp;vb)']]],
+  ['mesh_5fbounding_5fsphere',['mesh_bounding_sphere',['../classStE_1_1Graphics_1_1mesh__bounding__sphere.html#adc84ee47fae8935221b07e193352c545',1,'StE::Graphics::mesh_bounding_sphere::mesh_bounding_sphere()=default'],['../classStE_1_1Graphics_1_1mesh__bounding__sphere.html#a782419678cf433c5dc203a4bd471d7d6',1,'StE::Graphics::mesh_bounding_sphere::mesh_bounding_sphere(const glm::vec3 &amp;c, float r)']]],
   ['meshptr',['meshptr',['../classSkyDome.html#a4e8ce83c8b5ea5123e55fd9e39f4d70c',1,'SkyDome']]],
   ['mesopic_5fvision',['mesopic_vision',['../classStE_1_1Graphics_1_1human__vision__properties.html#afd49ee2a7a1b880f3cd98878860d1ba6',1,'StE::Graphics::human_vision_properties']]],
   ['min',['min',['../namespaceStE_1_1Graphics.html#a4654abb7b636e345db489dcd8667bedd',1,'StE::Graphics']]],

@@ -1,8 +1,6 @@
 var structStE_1_1Core_1_1IndirectDispatchCommand =
 [
-    [ "base_instance", "structStE_1_1Core_1_1IndirectDispatchCommand.html#abbafb8bde4e64ae94cd79d0d71f74e06", null ],
-    [ "base_vertex", "structStE_1_1Core_1_1IndirectDispatchCommand.html#a30b53780a69597291cd6d4f3cdc002d9", null ],
-    [ "count", "structStE_1_1Core_1_1IndirectDispatchCommand.html#aa58937203c6189210ccd087ea6bd5360", null ],
-    [ "first_index", "structStE_1_1Core_1_1IndirectDispatchCommand.html#ad6046fd905be84ebfc227f70c497fa05", null ],
-    [ "instance_count", "structStE_1_1Core_1_1IndirectDispatchCommand.html#a98bea1854ce3143d2285a6ed3f6df3f9", null ]
+    [ "num_groups_x", "structStE_1_1Core_1_1IndirectDispatchCommand.html#a5944b1cc5ad8d95f3d267ba4b29b6feb", null ],
+    [ "num_groups_y", "structStE_1_1Core_1_1IndirectDispatchCommand.html#a833e77f66805e098a730ef7540d2bfa0", null ],
+    [ "num_groups_z", "structStE_1_1Core_1_1IndirectDispatchCommand.html#acd20faf8f0b43c4b36ad97779400b2a4", null ]
 ];

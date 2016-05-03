@@ -1,12 +1,17 @@
 var classStE_1_1Graphics_1_1ObjectGroup =
 [
-    [ "ObjectGroup", "classStE_1_1Graphics_1_1ObjectGroup.html#af4329f1b23e6acc318bcbaa5510b1799", null ],
-    [ "~ObjectGroup", "classStE_1_1Graphics_1_1ObjectGroup.html#ab2617080c3f6cfd3f52b18b16655c434", null ],
-    [ "add_object", "classStE_1_1Graphics_1_1ObjectGroup.html#aa040e732b3c8b6a735323f3695287b7f", null ],
-    [ "bind_buffers", "classStE_1_1Graphics_1_1ObjectGroup.html#add25887cf0ce9befe012dff36db38e9b", null ],
-    [ "dispatch", "classStE_1_1Graphics_1_1ObjectGroup.html#a10a5b865bdeeb49754e3e5ef2dc062ba", null ],
-    [ "remove_all", "classStE_1_1Graphics_1_1ObjectGroup.html#ae2b621a17f1b93f7d8bf994fe56f1949", null ],
-    [ "set_context_state", "classStE_1_1Graphics_1_1ObjectGroup.html#a26b37206e915a3e3c550260f4bbc045e", null ],
+    [ "ObjectGroup", "classStE_1_1Graphics_1_1ObjectGroup.html#a47116ad2ff216e6945a6b44e4fb2ae1d", null ],
+    [ "~ObjectGroup", "classStE_1_1Graphics_1_1ObjectGroup.html#a663bf606e1d0a27d1ed81b51e4e5157f", null ],
+    [ "add_object", "classStE_1_1Graphics_1_1ObjectGroup.html#ac5bb41278392a74dd5c5ca1a54a134df", null ],
+    [ "bind_buffers", "classStE_1_1Graphics_1_1ObjectGroup.html#abb42cac0784ef1ff7859c7f0760dccb4", null ],
+    [ "dispatch", "classStE_1_1Graphics_1_1ObjectGroup.html#a3c405b57cc6e5d0ce3d294425230f2c9", null ],
+    [ "draw_object_group", "classStE_1_1Graphics_1_1ObjectGroup.html#aa280954d02507bb159eacdb12acf18cb", null ],
+    [ "get_draw_buffers", "classStE_1_1Graphics_1_1ObjectGroup.html#ae16be12092fdd755a1ddc692e82b7cee", null ],
+    [ "lock_updated_buffers", "classStE_1_1Graphics_1_1ObjectGroup.html#a48830ee737a7a47991ebad40624dcc8d", null ],
+    [ "remove_all", "classStE_1_1Graphics_1_1ObjectGroup.html#a0f5d07a72b8a793cab0921d53a24e554", null ],
+    [ "set_context_state", "classStE_1_1Graphics_1_1ObjectGroup.html#a16429496593da0ac304c2f175da00ed0", null ],
     [ "set_model_matrix", "classStE_1_1Graphics_1_1ObjectGroup.html#af5c8eb92805ec69fa53011acb88c932c", null ],
-    [ "update_dirty_buffers", "classStE_1_1Graphics_1_1ObjectGroup.html#a0cd257a9521c54a2a0f96922e5421e26", null ]
+    [ "set_target_gbuffer", "classStE_1_1Graphics_1_1ObjectGroup.html#a84fbeecc0d861a00b560d598105f9a51", null ],
+    [ "total_objects", "classStE_1_1Graphics_1_1ObjectGroup.html#a8ceb2b59a85738649ca5299d68301ff9", null ],
+    [ "update_dirty_buffers", "classStE_1_1Graphics_1_1ObjectGroup.html#a5aef9f0d07c1d234a2df0f85bdc187bf", null ]
 ];

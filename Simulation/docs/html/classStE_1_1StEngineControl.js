@@ -19,6 +19,7 @@ var classStE_1_1StEngineControl =
     [ "get_near_clip", "classStE_1_1StEngineControl.html#a550c8f1118e205acda790cc66c0cefa9", null ],
     [ "get_pointer_button_status", "classStE_1_1StEngineControl.html#a2a014b72f6fa89eb4fdea94e974fa2d3", null ],
     [ "get_pointer_position", "classStE_1_1StEngineControl.html#a6a843febaed46d956de2912649088c29", null ],
+    [ "get_projection_aspect", "classStE_1_1StEngineControl.html#a076b7e268743e449ca1847f21fc6e0ef", null ],
     [ "get_window_position", "classStE_1_1StEngineControl.html#a621dd1725584af0bf26759e2446b586f", null ],
     [ "get_window_size", "classStE_1_1StEngineControl.html#a58f8f02d93fd6fb4529f1f4837aaa401", null ],
     [ "gl", "classStE_1_1StEngineControl.html#aeb5c557b8e86d1a908beb120bac737c7", null ],

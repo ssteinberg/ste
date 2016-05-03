@@ -9,6 +9,8 @@ var searchData=
   ['mesh_3c_20mesh_5fsubdivion_5fmode_3a_3atrianglesstrip_20_3e',['mesh&lt; mesh_subdivion_mode::TrianglesStrip &gt;',['../classStE_1_1Graphics_1_1mesh.html',1,'StE::Graphics']]],
   ['mesh_3c_20ste_3a_3agraphics_3a_3amesh_5fsubdivion_5fmode_3a_3atriangles_20_3e',['mesh&lt; StE::Graphics::mesh_subdivion_mode::Triangles &gt;',['../classStE_1_1Graphics_1_1mesh.html',1,'StE::Graphics']]],
   ['mesh_5faabb',['mesh_aabb',['../classStE_1_1Graphics_1_1mesh__aabb.html',1,'StE::Graphics']]],
+  ['mesh_5fbounding_5fsphere',['mesh_bounding_sphere',['../classStE_1_1Graphics_1_1mesh__bounding__sphere.html',1,'StE::Graphics']]],
+  ['mesh_5fdescriptor',['mesh_descriptor',['../structStE_1_1Graphics_1_1mesh__descriptor.html',1,'StE::Graphics']]],
   ['mesh_5fgeneric',['mesh_generic',['../classStE_1_1Graphics_1_1mesh__generic.html',1,'StE::Graphics']]],
   ['modelfactory',['ModelFactory',['../classStE_1_1Resource_1_1ModelFactory.html',1,'StE::Resource']]]
 ];

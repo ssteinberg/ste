@@ -3,6 +3,6 @@
 <area shape="rect" id="node3" href="$classStE_1_1Graphics_1_1entity__affine.html" title="{StE::Graphics::entity\l_affine\n|# model_mat\l|+ ~entity_affine()\l+ set_model_matrix()\l+ get_model_transform()\l+ get_position()\l}" alt="" coords="5,147,173,283"/>
 <area shape="rect" id="node5" href="$classStE_1_1Graphics_1_1entity__signalling.html" title="{StE::Graphics::entity\l_signalling\&lt; O \&gt;\n||+ entity_signalling()\l+ ~entity_signalling()\l+ signal_model_change()\l+ set_model_matrix()\l}" alt="" coords="87,345,262,481"/>
 <area shape="rect" id="node4" href="$classStE_1_1Graphics_1_1entity.html" title="{StE::Graphics::entity\n||+ ~entity()\l+ get_position()\l}" alt="" coords="18,5,161,97"/>
-<area shape="rect" id="node7" href="$classStE_1_1Graphics_1_1mesh__generic.html" title="{StE::Graphics::mesh\l_generic\n||+ ~mesh_generic()\l+ get_vertices()\l+ get_indices()\l+ aabb()\l}" alt="" coords="297,345,442,481"/>
+<area shape="rect" id="node7" href="$classStE_1_1Graphics_1_1mesh__generic.html" title="{StE::Graphics::mesh\l_generic\n||+ ~mesh_generic()\l+ get_vertices()\l+ get_indices()\l+ bounding_sphere()\l}" alt="" coords="297,345,442,481"/>
 <area shape="rect" id="node8" title="STL class. " alt="" coords="466,375,609,452"/>
 </map>

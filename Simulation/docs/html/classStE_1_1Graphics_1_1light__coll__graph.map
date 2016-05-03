@@ -1,4 +1,4 @@
 <map id="StE::Graphics::light" name="StE::Graphics::light">
-<area shape="rect" id="node2" href="$classStE_1_1Graphics_1_1entity.html" title="{StE::Graphics::entity\n||+ ~entity()\l+ get_position()\l}" alt="" coords="5,42,148,134"/>
-<area shape="rect" id="node3" href="$structStE_1_1Graphics_1_1light_1_1light__descriptor.html" title="{StE::Graphics::light\l::light_descriptor\n|+ position_direction\l+ diffuse\l+ luminance\l+ radius\l+ type\l+ _unused\l|}" alt="" coords="173,5,311,171"/>
+<area shape="rect" id="node2" href="$classStE_1_1Graphics_1_1entity.html" title="{StE::Graphics::entity\n||+ ~entity()\l+ get_position()\l}" alt="" coords="5,49,148,141"/>
+<area shape="rect" id="node3" href="$structStE_1_1Graphics_1_1light_1_1light__descriptor.html" title="{StE::Graphics::light\l::light_descriptor\n|+ position_direction\l+ type\l+ diffuse\l+ luminance\l+ radius\l+ effective_range\l+ reserved\l|}" alt="" coords="173,5,311,185"/>
 </map>

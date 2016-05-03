@@ -149,17 +149,12 @@ $(document).ready(function(){initNavTree('ssss__write__penumbras_8hpp_source.htm
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;        ctx.signal_projection_change().connect(projection_change_connection);</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    }</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;</div>
-<div class="line"><a name="l00045"></a><span class="lineno"><a class="line" href="classStE_1_1Graphics_1_1ssss__write__penumbras.html#ae6c4af53d47161f8acfec4a8e2a641ff">   45</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classStE_1_1Graphics_1_1ssss__write__penumbras.html#ae6c4af53d47161f8acfec4a8e2a641ff">set_model_matrix</a>(<span class="keyword">const</span> glm::mat4 &amp;m)<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;        ssss_gen_program-&gt;set_uniform(<span class="stringliteral">&quot;inverse_view_matrix&quot;</span>, glm::inverse(m));</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;        ssss_gen_program-&gt;set_uniform(<span class="stringliteral">&quot;transpose_view_matrix&quot;</span>, glm::transpose(m));</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    }</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classStE_1_1Graphics_1_1ssss__write__penumbras.html#abeee0034eeae8e861095ba8575034e2b">set_context_state</a>() const override final;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classStE_1_1Graphics_1_1ssss__write__penumbras.html#a29b4a7bcf1a290f3a57f833dca44fbcc">dispatch</a>() const override final;</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;};</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;}</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;}</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classStE_1_1Graphics_1_1ssss__write__penumbras.html#abeee0034eeae8e861095ba8575034e2b">set_context_state</a>() const override final;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classStE_1_1Graphics_1_1ssss__write__penumbras.html#a29b4a7bcf1a290f3a57f833dca44fbcc">dispatch</a>() const override final;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;};</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;}</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;}</div>
 <div class="ttc" id="stdafx_8hpp_html"><div class="ttname"><a href="stdafx_8hpp.html">stdafx.hpp</a></div></div>
 <div class="ttc" id="GLSLProgram_8hpp_html"><div class="ttname"><a href="GLSLProgram_8hpp.html">GLSLProgram.hpp</a></div></div>
 <div class="ttc" id="classStE_1_1Graphics_1_1ssss__write__penumbras_html_aec8a85b36e107525319a002ac6b74268"><div class="ttname"><a href="classStE_1_1Graphics_1_1ssss__write__penumbras.html#aec8a85b36e107525319a002ac6b74268">StE::Graphics::ssss_write_penumbras::ssss_write_penumbras</a></div><div class="ttdeci">ssss_write_penumbras(const ssss_generator *p, const StEngineControl &amp;ctx)</div><div class="ttdef"><b>Definition:</b> <a href="ssss__write__penumbras_8hpp_source.html#l00032">ssss_write_penumbras.hpp:32</a></div></div>
@@ -173,7 +168,6 @@ $(document).ready(function(){initNavTree('ssss__write__penumbras_8hpp_source.htm
 <div class="ttc" id="classStE_1_1Graphics_1_1ssss__write__penumbras_html"><div class="ttname"><a href="classStE_1_1Graphics_1_1ssss__write__penumbras.html">StE::Graphics::ssss_write_penumbras</a></div><div class="ttdef"><b>Definition:</b> <a href="ssss__write__penumbras_8hpp_source.html#l00018">ssss_write_penumbras.hpp:18</a></div></div>
 <div class="ttc" id="classStE_1_1connection_html"><div class="ttname"><a href="classStE_1_1connection.html">StE::connection</a></div><div class="ttdef"><b>Definition:</b> <a href="connection_8hpp_source.html#l00017">connection.hpp:17</a></div></div>
 <div class="ttc" id="classStE_1_1Graphics_1_1ssss__generator_html"><div class="ttname"><a href="classStE_1_1Graphics_1_1ssss__generator.html">StE::Graphics::ssss_generator</a></div><div class="ttdef"><b>Definition:</b> <a href="ssss__generator_8hpp_source.html#l00028">ssss_generator.hpp:28</a></div></div>
-<div class="ttc" id="classStE_1_1Graphics_1_1ssss__write__penumbras_html_ae6c4af53d47161f8acfec4a8e2a641ff"><div class="ttname"><a href="classStE_1_1Graphics_1_1ssss__write__penumbras.html#ae6c4af53d47161f8acfec4a8e2a641ff">StE::Graphics::ssss_write_penumbras::set_model_matrix</a></div><div class="ttdeci">void set_model_matrix(const glm::mat4 &amp;m) const </div><div class="ttdef"><b>Definition:</b> <a href="ssss__write__penumbras_8hpp_source.html#l00045">ssss_write_penumbras.hpp:45</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

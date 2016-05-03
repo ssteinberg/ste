@@ -136,8 +136,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ab7e38edb2e10fe3f0081821df330e2e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aba9bb1369c66bbe30458ad3aff23650c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="gl__extensions_8h.html#a814c8b5745ecf82afdd1da718fbdc47c">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Core_1_1QueryBufferObject.html#aba9bb1369c66bbe30458ad3aff23650c">unbind</a> () const finaloverride</td></tr>
 <tr class="separator:aba9bb1369c66bbe30458ad3aff23650c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ace1b5ff8507e373005a06d5b7b6f75d4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="gl__extensions_8h.html#a814c8b5745ecf82afdd1da718fbdc47c">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Core_1_1QueryBufferObject.html#ace1b5ff8507e373005a06d5b7b6f75d4">bind_range</a> (const LayoutLocationType &amp;sampler, int offset, std::size_t <a class="el" href="classStE_1_1Core_1_1buffer__object.html#ae4a907f3a1ed0dfd7024ba7ae3c9e221">size</a>) const </td></tr>
-<tr class="separator:ace1b5ff8507e373005a06d5b7b6f75d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a74d613c2c5cfeae227f831e362f5c977"><td class="memItemLeft" align="right" valign="top"><a class="el" href="gl__extensions_8h.html#a814c8b5745ecf82afdd1da718fbdc47c">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Core_1_1QueryBufferObject.html#a74d613c2c5cfeae227f831e362f5c977">bind_range</a> (const typename Base::LayoutLocationType &amp;sampler, int offset, std::size_t <a class="el" href="classStE_1_1Core_1_1buffer__object.html#ae4a907f3a1ed0dfd7024ba7ae3c9e221">size</a>) const </td></tr>
+<tr class="separator:a74d613c2c5cfeae227f831e362f5c977"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acb198984a9270aff9dfd39db50fb1536"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceStE_1_1Core.html#a87104792878375552ac09a0ee081859f">core_resource_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Core_1_1QueryBufferObject.html#acb198984a9270aff9dfd39db50fb1536">resource_type</a> () const override</td></tr>
 <tr class="separator:acb198984a9270aff9dfd39db50fb1536"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classStE_1_1Core_1_1buffer__object"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classStE_1_1Core_1_1buffer__object')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classStE_1_1Core_1_1buffer__object.html">StE::Core::buffer_object&lt; Type, U &gt;</a></td></tr>
@@ -324,7 +324,7 @@ class StE::Core::QueryBufferObject&lt; Type, U &gt;</h3>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Type , BufferUsage::buffer_usage U = BufferUsage::BufferUsageNone&gt; </div>
+template&lt;typename Type, BufferUsage::buffer_usage U = BufferUsage::BufferUsageNone&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -351,7 +351,7 @@ template&lt;typename Type , BufferUsage::buffer_usage U = BufferUsage::BufferUsa
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Type , BufferUsage::buffer_usage U = BufferUsage::BufferUsageNone&gt; </div>
+template&lt;typename Type, BufferUsage::buffer_usage U = BufferUsage::BufferUsageNone&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -376,11 +376,11 @@ template&lt;typename Type , BufferUsage::buffer_usage U = BufferUsage::BufferUsa
 
 </div>
 </div>
-<a class="anchor" id="ace1b5ff8507e373005a06d5b7b6f75d4"></a>
+<a class="anchor" id="a74d613c2c5cfeae227f831e362f5c977"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Type , BufferUsage::buffer_usage U = BufferUsage::BufferUsageNone&gt; </div>
+template&lt;typename Type, BufferUsage::buffer_usage U = BufferUsage::BufferUsageNone&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -388,7 +388,7 @@ template&lt;typename Type , BufferUsage::buffer_usage U = BufferUsage::BufferUsa
         <tr>
           <td class="memname"><a class="el" href="gl__extensions_8h.html#a814c8b5745ecf82afdd1da718fbdc47c">void</a> <a class="el" href="classStE_1_1Core_1_1QueryBufferObject.html">StE::Core::QueryBufferObject</a>&lt; Type, U &gt;::bind_range </td>
           <td>(</td>
-          <td class="paramtype">const LayoutLocationType &amp;&#160;</td>
+          <td class="paramtype">const typename Base::LayoutLocationType &amp;&#160;</td>
           <td class="paramname"><em>sampler</em>, </td>
         </tr>
         <tr>
@@ -424,7 +424,7 @@ template&lt;typename Type , BufferUsage::buffer_usage U = BufferUsage::BufferUsa
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Type , BufferUsage::buffer_usage U = BufferUsage::BufferUsageNone&gt; </div>
+template&lt;typename Type, BufferUsage::buffer_usage U = BufferUsage::BufferUsageNone&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -450,7 +450,7 @@ template&lt;typename Type , BufferUsage::buffer_usage U = BufferUsage::BufferUsa
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Type , BufferUsage::buffer_usage U = BufferUsage::BufferUsageNone&gt; </div>
+template&lt;typename Type, BufferUsage::buffer_usage U = BufferUsage::BufferUsageNone&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -479,7 +479,7 @@ template&lt;typename Type , BufferUsage::buffer_usage U = BufferUsage::BufferUsa
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Type , BufferUsage::buffer_usage U = BufferUsage::BufferUsageNone&gt; </div>
+template&lt;typename Type, BufferUsage::buffer_usage U = BufferUsage::BufferUsageNone&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">

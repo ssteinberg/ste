@@ -86,6 +86,8 @@ var namespaceStE_1_1Core =
     [ "OcclusionQueryAnySamplesConservative", "classStE_1_1Core_1_1OcclusionQueryAnySamplesConservative.html", null ],
     [ "QueryObjectAllocator", "classStE_1_1Core_1_1QueryObjectAllocator.html", "classStE_1_1Core_1_1QueryObjectAllocator" ],
     [ "query_object", "classStE_1_1Core_1_1query__object.html", "classStE_1_1Core_1_1query__object" ],
+    [ "timer_query", "classStE_1_1Core_1_1timer__query.html", null ],
+    [ "timestamp_query", "classStE_1_1Core_1_1timestamp__query.html", "classStE_1_1Core_1_1timestamp__query" ],
     [ "generic_resource_allocator", "classStE_1_1Core_1_1generic__resource__allocator.html", "classStE_1_1Core_1_1generic__resource__allocator" ],
     [ "generic_resource_immutable_storage_allocator", "classStE_1_1Core_1_1generic__resource__immutable__storage__allocator.html", null ],
     [ "llr_resource_stub_binder", "classStE_1_1Core_1_1llr__resource__stub__binder.html", null ],

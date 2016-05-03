@@ -26,6 +26,8 @@ var core__resource__type_8hpp =
       [ "AtomicCounterBufferObject", "core__resource__type_8hpp.html#a87104792878375552ac09a0ee081859fa703b010839fe6a6d29fd6fd87359e814", null ],
       [ "QueryBufferObject", "core__resource__type_8hpp.html#a87104792878375552ac09a0ee081859fa303b659a9be69537afe0357a0c55415b", null ],
       [ "QueryObjectAnySamples", "core__resource__type_8hpp.html#a87104792878375552ac09a0ee081859facb229f5755528a1f1c294a331c903449", null ],
-      [ "QueryObjectAnySamplesConservative", "core__resource__type_8hpp.html#a87104792878375552ac09a0ee081859fab7f6e84ce086d536ecfe5f5ce3a4f05a", null ]
+      [ "QueryObjectAnySamplesConservative", "core__resource__type_8hpp.html#a87104792878375552ac09a0ee081859fab7f6e84ce086d536ecfe5f5ce3a4f05a", null ],
+      [ "QueryObjectTimestamp", "core__resource__type_8hpp.html#a87104792878375552ac09a0ee081859fa3388f8235893ed5d386f4655a33aedab", null ],
+      [ "QueryObjectTimer", "core__resource__type_8hpp.html#a87104792878375552ac09a0ee081859fa61870fe056e8b1f07caaa3306cbd3ffd", null ]
     ] ]
 ];

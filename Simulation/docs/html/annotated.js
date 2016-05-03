@@ -1,5 +1,6 @@
 var annotated =
 [
+    [ "ImGui", "namespaceImGui.html", null ],
     [ "std", null, [
       [ "hash< StE::Core::GL::context_state_key< K > >", "structstd_1_1hash_3_01StE_1_1Core_1_1GL_1_1context__state__key_3_01K_01_4_01_4.html", "structstd_1_1hash_3_01StE_1_1Core_1_1GL_1_1context__state__key_3_01K_01_4_01_4" ],
       [ "hash< StE::Core::GL::BasicStateName >", "structstd_1_1hash_3_01StE_1_1Core_1_1GL_1_1BasicStateName_01_4.html", "structstd_1_1hash_3_01StE_1_1Core_1_1GL_1_1BasicStateName_01_4" ],

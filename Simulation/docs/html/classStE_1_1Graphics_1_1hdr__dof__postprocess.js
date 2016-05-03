@@ -2,6 +2,9 @@ var classStE_1_1Graphics_1_1hdr__dof__postprocess =
 [
     [ "hdr_dof_postprocess", "classStE_1_1Graphics_1_1hdr__dof__postprocess.html#aa98824895951252a50e5793758ed5af4", null ],
     [ "~hdr_dof_postprocess", "classStE_1_1Graphics_1_1hdr__dof__postprocess.html#afa9c5d5d78721a75d69346be4ffb165f", null ],
+    [ "get_exposure_params_buffer", "classStE_1_1Graphics_1_1hdr__dof__postprocess.html#a16e7fbd403dcd6a49b2499ab47bb7fd5", null ],
+    [ "get_histogram_buffer", "classStE_1_1Graphics_1_1hdr__dof__postprocess.html#ad0bcf9ce0b48d5abaf64422fc1d9c376", null ],
+    [ "get_histogram_sums_buffer", "classStE_1_1Graphics_1_1hdr__dof__postprocess.html#ae4c372da46c9a2d45ff4e35ba7433f1f", null ],
     [ "get_input_fbo", "classStE_1_1Graphics_1_1hdr__dof__postprocess.html#ac260dbba95f8034de7291cf4087dd669", null ],
     [ "get_task", "classStE_1_1Graphics_1_1hdr__dof__postprocess.html#a77fb9c9c929a2d1854b466c5fbae2433", null ],
     [ "resize", "classStE_1_1Graphics_1_1hdr__dof__postprocess.html#ac078a0d7dafeae2af6e96ad960d5942c", null ],

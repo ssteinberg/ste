@@ -33,6 +33,8 @@ var searchData=
   ['thread_5fconstants_2ecpp',['thread_constants.cpp',['../thread__constants_8cpp.html',1,'']]],
   ['thread_5fconstants_2ehpp',['thread_constants.hpp',['../thread__constants_8hpp.html',1,'']]],
   ['thread_5fpriority_2ehpp',['thread_priority.hpp',['../thread__priority_8hpp.html',1,'']]],
+  ['timer_5fquery_2ehpp',['timer_query.hpp',['../timer__query_8hpp.html',1,'']]],
+  ['timestamp_5fquery_2ehpp',['timestamp_query.hpp',['../timestamp__query_8hpp.html',1,'']]],
   ['trace_2ehpp',['trace.hpp',['../trace_8hpp.html',1,'']]],
   ['tuple_5fcall_2ehpp',['tuple_call.hpp',['../tuple__call_8hpp.html',1,'']]],
   ['tuple_5fprint_2ehpp',['tuple_print.hpp',['../tuple__print_8hpp.html',1,'']]],

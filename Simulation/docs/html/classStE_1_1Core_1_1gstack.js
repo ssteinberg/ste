@@ -8,6 +8,8 @@ var classStE_1_1Core_1_1gstack =
     [ "lock_range", "classStE_1_1Core_1_1gstack.html#ab34f960e9b5eee3f2bf9a30371c7850a", null ],
     [ "overwrite", "classStE_1_1Core_1_1gstack.html#a0a36b626c1267037a91b35c7a03059da", null ],
     [ "overwrite", "classStE_1_1Core_1_1gstack.html#a23dbbc605fb87d4216ba9228c19473c8", null ],
+    [ "overwrite_all", "classStE_1_1Core_1_1gstack.html#ad3c119268cf94da02e42a68507cb466a", null ],
+    [ "overwrite_all", "classStE_1_1Core_1_1gstack.html#a201997d5a00f5339fbcad3c42b9061ee", null ],
     [ "pop_back", "classStE_1_1Core_1_1gstack.html#a82f6ae92c352e19526897fb3869d18a1", null ],
     [ "push_back", "classStE_1_1Core_1_1gstack.html#af0b42dd79ec8d3f89891194394ebfa7b", null ],
     [ "push_back", "classStE_1_1Core_1_1gstack.html#a4d97050940a9806a8e082d540f0ec6a0", null ],

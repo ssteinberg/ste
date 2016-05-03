@@ -41,21 +41,22 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 ".html",
-"classStE_1_1Algorithm_1_1SOP_1_1sequential__ordering__problem.html",
-"classStE_1_1Core_1_1GL_1_1gl__generic__context.html#a1ed6cc0f6977d22982924d99efb902d3",
-"classStE_1_1Core_1_1Texture2D.html#ad666108e27446eb50a1dcf6301d5e314",
-"classStE_1_1Core_1_1gpu__sync.html#a8bd1185fc6ebf53f0a10a9026f3b1c40",
-"classStE_1_1Core_1_1texture__multisampled.html#a406ea23f735e0bcc28b271934bba885e",
-"classStE_1_1Graphics_1_1dense__voxel__space.html#a7d120aa36cc4031e1d2df325d80b8001",
-"classStE_1_1Graphics_1_1ssss__bilateral__blur__x.html#a7e4b356d9bb9b0c1f2e332e46c8a8987",
-"classStE_1_1StEngineControl.html#aa12cbcd17e5e286a83061e83cdc27fb5",
-"classStE_1_1interruptible__thread.html",
-"context__state__type_8hpp.html#a0ae73a47aeb444fa46d0ec2f2af7c3a5aa81b1131442203171da406b086bfe6d4",
-"gl_8hpp.html",
-"namespaceStE_1_1Text.html",
-"structStE_1_1Core_1_1surface__element__type_3_01gli_1_1format_1_1FORMAT__A16__UNORM__PACK16_01_4.html#aa95fc474953b2f2de4588ede9d771454",
-"structStE_1_1Core_1_1surface__is__normalized_3_01gli_1_1format_1_1FORMAT__RGBA16__SNORM__PACK16_01_4.html",
-"structStE_1_1__rsh__utils_1_1K.html"
+"classSkyDome.html#af814dbd9d6a739348c4404fa507d2c92",
+"classStE_1_1Core_1_1GL_1_1gl__generic__context.html#a1b7631ed5e1cec1a4fa1503316796eb1",
+"classStE_1_1Core_1_1Texture2D.html#a9bd57fd4755b8dff18f5d802c600485f",
+"classStE_1_1Core_1_1gpu__sync.html#a1a6f54173b7edecda7f9fdde4e1697ae",
+"classStE_1_1Core_1_1texture__mipmapped.html#ab6f2dced165924543d555a322817ed42",
+"classStE_1_1Graphics_1_1XYZ.html#afe946e521b3e97c5ff90c9c2e7c88aee",
+"classStE_1_1Graphics_1_1mesh.html#aa272d913b4af222c585f02e5c5102dc8",
+"classStE_1_1HID_1_1keyboard.html#ae0241d0927b0477efa170fd82db21b03aaf269d1e4ffb0df48d9cdf6b4d591a58",
+"classStE_1_1Text_1_1attributed__string.html#a2a8b4d4b319de3a785a753c20ef8d3e2",
+"classStE_1_1task.html#a773dabcaf33f519140f3ea79a75f2f96",
+"dir_dd3c0c5f63e5b870c636a60a3615709a.html",
+"hdr__compute__histogram__sums__task_8hpp_source.html",
+"query__object_8hpp.html",
+"structStE_1_1Core_1_1surface__element__type_3_01gli_1_1format_1_1FORMAT__RG16__UINT__PACK16_01_4.html",
+"structStE_1_1Core_1_1surface__is__signed_3_01gli_1_1format_1_1FORMAT__RG8__UNORM__PACK8_01_4.html",
+"structStE_1_1range.html#a59874272dbb13babfcbf5af7efda609d"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

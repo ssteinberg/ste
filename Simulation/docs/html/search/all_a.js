@@ -1,9 +1,13 @@
 var searchData=
 [
   ['k',['K',['../structStE_1_1__rsh__utils_1_1K.html',1,'StE::_rsh_utils']]],
-  ['k',['K',['../classStE_1_1HID_1_1keyboard.html#ae0241d0927b0477efa170fd82db21b03',1,'StE::HID::keyboard::K()'],['../structstd_1_1hash_3_01StE_1_1Text_1_1Font_01_4.html#ac7df9ab0d3eb19bd1a75c443be459d94',1,'std::hash&lt; StE::Text::Font &gt;::K()']]],
-  ['kern',['kern',['../classStE_1_1Text_1_1Attributes_1_1kern.html',1,'StE::Text::Attributes']]],
+  ['k',['K',['../classStE_1_1HID_1_1keyboard.html#ae0241d0927b0477efa170fd82db21b03',1,'StE::HID::keyboard::K()'],['../structstd_1_1hash_3_01StE_1_1Text_1_1Font_01_4.html#ac7df9ab0d3eb19bd1a75c443be459d94',1,'std::hash&lt; StE::Text::Font &gt;::K()'],['../classStE_1_1Graphics_1_1Kelvin.html#a940bc187d15492e0e2dbe6c92efb8045',1,'StE::Graphics::Kelvin::K()'],['../classStE_1_1Graphics_1_1Kelvin.html#ac457d6b18b23522b4e91627db565d2eb',1,'StE::Graphics::Kelvin::K() const ']]],
+  ['kelvin',['Kelvin',['../classStE_1_1Graphics_1_1Kelvin.html',1,'StE::Graphics']]],
+  ['kelvin',['Kelvin',['../classStE_1_1Graphics_1_1Kelvin.html#adbee71005efeaefb94b864aa291a4325',1,'StE::Graphics::Kelvin::Kelvin()=default'],['../classStE_1_1Graphics_1_1Kelvin.html#a19bb15f6e69e3e9e289620cb20974bfc',1,'StE::Graphics::Kelvin::Kelvin(float temperature)']]],
+  ['kelvin_2ecpp',['Kelvin.cpp',['../Kelvin_8cpp.html',1,'']]],
+  ['kelvin_2ehpp',['Kelvin.hpp',['../Kelvin_8hpp.html',1,'']]],
   ['kern',['kern',['../classStE_1_1Text_1_1Attributes_1_1kern.html#a8af31251dd1bd5d31701f98fe90bbf80',1,'StE::Text::Attributes::kern']]],
+  ['kern',['kern',['../classStE_1_1Text_1_1Attributes_1_1kern.html',1,'StE::Text::Attributes']]],
   ['key0',['Key0',['../classStE_1_1HID_1_1keyboard.html#ae0241d0927b0477efa170fd82db21b03aaf269d1e4ffb0df48d9cdf6b4d591a58',1,'StE::HID::keyboard']]],
   ['key1',['Key1',['../classStE_1_1HID_1_1keyboard.html#ae0241d0927b0477efa170fd82db21b03af64f4f750f097b4421a050c9d11d9c14',1,'StE::HID::keyboard']]],
   ['key2',['Key2',['../classStE_1_1HID_1_1keyboard.html#ae0241d0927b0477efa170fd82db21b03ac31650e34686537020ee36190e71da5b',1,'StE::HID::keyboard']]],

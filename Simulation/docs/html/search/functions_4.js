@@ -20,5 +20,6 @@ var searchData=
   ['erase_5fall_5fvertex_5fedges',['erase_all_vertex_edges',['../classStE_1_1Graph_1_1graph.html#a705c95c94f419e416d429d9228b3851e',1,'StE::Graph::graph']]],
   ['erase_5fedge',['erase_edge',['../classStE_1_1Graph_1_1graph.html#a45f38b889c98173d003211203e443e15',1,'StE::Graph::graph::erase_edge(const V *from, const V *to)'],['../classStE_1_1Graph_1_1graph.html#a2d4339e1a03c12d94dc50e0e69ccf763',1,'StE::Graph::graph::erase_edge(const EdgePtr &amp;e)']]],
   ['erase_5fvertex',['erase_vertex',['../classStE_1_1Graph_1_1graph.html#aeaf15155f2d17374c57df5b8df969e6f',1,'StE::Graph::graph']]],
-  ['exists',['exists',['../classStE_1_1Core_1_1GL_1_1context__basic__state.html#a86046af4a3a16cbe930620e23f522026',1,'StE::Core::GL::context_basic_state::exists()'],['../classStE_1_1Core_1_1GL_1_1context__state.html#aad73c8332f6867194db2b2bda158a583',1,'StE::Core::GL::context_state::exists()']]]
+  ['exists',['exists',['../classStE_1_1Core_1_1GL_1_1context__basic__state.html#a86046af4a3a16cbe930620e23f522026',1,'StE::Core::GL::context_basic_state::exists()'],['../classStE_1_1Core_1_1GL_1_1context__state.html#aad73c8332f6867194db2b2bda158a583',1,'StE::Core::GL::context_state::exists()']]],
+  ['extract_5fprojection_5ffrustum_5fplanes',['extract_projection_frustum_planes',['../namespaceStE.html#ac0d726a56f16623fb82c939f99115cdb',1,'StE']]]
 ];

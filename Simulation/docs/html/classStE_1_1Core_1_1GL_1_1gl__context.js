@@ -12,6 +12,7 @@ var classStE_1_1Core_1_1GL_1_1gl__context =
     [ "framebuffer_format", "classStE_1_1Core_1_1GL_1_1gl__context.html#a1ad486fc3215a3453614d0e0c98d7318", null ],
     [ "framebuffer_size", "classStE_1_1Core_1_1GL_1_1gl__context.html#a4510b7906c1f00924a857138fbad244a", null ],
     [ "get_contex_settings", "classStE_1_1Core_1_1GL_1_1gl__context.html#ae4003cb93732acad556e52a8ca53b0e6", null ],
+    [ "get_window", "classStE_1_1Core_1_1GL_1_1gl__context.html#a70d0d3b1e832b5ed47ef79e835ec0293", null ],
     [ "is_debug_context", "classStE_1_1Core_1_1GL_1_1gl__context.html#a0335bded2bdea23aa080701319e617f1", null ],
     [ "is_extension_supported", "classStE_1_1Core_1_1GL_1_1gl__context.html#a240948f6391c7a96f9b51e791e5bba75", null ],
     [ "make_current", "classStE_1_1Core_1_1GL_1_1gl__context.html#a9a486309272bd79f29d21f37f0448745", null ],

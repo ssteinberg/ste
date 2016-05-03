@@ -10,5 +10,6 @@ var searchData=
   ['vertexbufferdescriptor',['VertexBufferDescriptor',['../classStE_1_1Core_1_1VertexBufferDescriptor.html',1,'StE::Core']]],
   ['vertexbufferobject',['VertexBufferObject',['../classStE_1_1Core_1_1VertexBufferObject.html',1,'StE::Core']]],
   ['vertexbufferobject_3c_20t_2c_20d_2c_20u_20_3e',['VertexBufferObject&lt; T, D, U &gt;',['../classStE_1_1Core_1_1VertexBufferObject.html',1,'StE::Core']]],
-  ['vertexbufferobjectgeneric',['VertexBufferObjectGeneric',['../classStE_1_1Core_1_1VertexBufferObjectGeneric.html',1,'StE::Core']]]
+  ['vertexbufferobjectgeneric',['VertexBufferObjectGeneric',['../classStE_1_1Core_1_1VertexBufferObjectGeneric.html',1,'StE::Core']]],
+  ['view_5fmatrix_5fring_5fbuffer',['view_matrix_ring_buffer',['../classStE_1_1Graphics_1_1view__matrix__ring__buffer.html',1,'StE::Graphics']]]
 ];

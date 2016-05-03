@@ -1,7 +1,8 @@
 <map id="StE::Graphics::gpu_task" name="StE::Graphics::gpu_task">
-<area shape="rect" id="node6" href="$classStE_1_1Graphics_1_1detail_1_1gpu__task__root.html" title="{StE::Graphics::detail\l::gpu_task_root\n||+ gpu_task_root()\l}" alt="" coords="107,1024,253,1116"/>
-<area shape="rect" id="node7" href="$classStE_1_1Graphics_1_1Scene.html" title="{StE::Graphics::Scene\n||+ Scene()\l+ ~Scene()\l+ scene_properties()\l+ scene_properties()\l+ object_group()\l+ object_group()\l+ set_model_matrix()\l+ create()\l}" alt="" coords="277,980,427,1160"/>
+<area shape="rect" id="node7" href="$classStE_1_1Graphics_1_1detail_1_1gpu__task__root.html" title="{StE::Graphics::detail\l::gpu_task_root\n||+ gpu_task_root()\l}" alt="" coords="159,1017,305,1109"/>
+<area shape="rect" id="node8" href="$classStE_1_1Graphics_1_1Scene.html" title="{StE::Graphics::Scene\n||+ Scene()\l+ ~Scene()\l+ scene_properties()\l+ scene_properties()\l+ object_group()\l+ object_group()\l+ create()\l}" alt="" coords="329,980,479,1145"/>
 <area shape="rect" id="node2" href="$classStE_1_1Algorithm_1_1SOP_1_1sop__vertex.html" title="{StE::Algorithm::SOP\l::sop_vertex\&lt; boost\l::container::flat_set\l\&lt; std::shared_ptr\&lt; const\l gpu_task \&gt; \&gt;, boost::container\l::flat_set\&lt; const gpu_task * \&gt; \&gt;\n||+ ~sop_vertex()\l+ get_dependencies()\l+ get_requisite_for()\l}" alt="" coords="5,433,213,613"/>
 <area shape="rect" id="node3" href="$classStE_1_1Graph_1_1vertex.html" title="{StE::Graph::vertex\n||+ ~vertex()\l+ get_outgoing_edges()\l+ get_incoming_edges()\l+ get_name()\l}" alt="" coords="47,5,215,127"/>
 <area shape="rect" id="node4" href="$classStE_1_1Algorithm_1_1SOP_1_1sop__vertex.html" title="{StE::Algorithm::SOP\l::sop_vertex\&lt; DepsContainer,\l RequisiteContainer \&gt;\n||+ ~sop_vertex()\l+ get_dependencies()\l+ get_requisite_for()\l}" alt="" coords="125,176,328,312"/>
+<area shape="rect" id="node6" href="$classStE_1_1Graphics_1_1profileable.html" title="{StE::Graphics::profileable\n||+ query_start()\l+ query_end()\l+ get_start_time()\l+ get_end_time()\l}" alt="" coords="422,463,597,584"/>
 </map>
