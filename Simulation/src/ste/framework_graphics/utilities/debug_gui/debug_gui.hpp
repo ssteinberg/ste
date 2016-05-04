@@ -32,7 +32,7 @@ private:
 	const StEngineControl &ctx;
 	profiler *prof;
 
-	mutable std::map<std::string, std::array<float, 10>> prof_tasks_last_samples;
+	mutable std::map<std::string, std::vector<float>> prof_tasks_last_samples;
 
 private:
 	std::shared_ptr<hid_pointer_button_signal_connection_type> hid_pointer_button_signal;

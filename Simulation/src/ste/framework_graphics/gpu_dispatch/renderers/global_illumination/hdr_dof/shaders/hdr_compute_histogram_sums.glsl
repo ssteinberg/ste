@@ -9,15 +9,15 @@
 
 layout(local_size_x = bins / 2, local_size_y = 1) in;
 
-layout(std430, binding = 6) restrict readonly buffer gbuffer_data {
+layout(shared, binding = 6) restrict readonly buffer gbuffer_data {
 	g_buffer_element gbuffer[];
 };
 layout(r32ui, binding = 7) restrict readonly uniform uimage2D gbuffer_ll_heads;
 
-layout(std430, binding = 0) restrict writeonly buffer histogram_sums {
+layout(shared, binding = 0) restrict writeonly buffer histogram_sums {
 	uint sums[bins];
 };
-layout(std430, binding = 1) restrict readonly buffer histogram_bins {
+layout(shared, binding = 1) restrict readonly buffer histogram_bins {
 	uint histogram[bins];
 };
 layout(std430, binding = 2) restrict writeonly buffer hdr_bokeh_parameters_buffer {

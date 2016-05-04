@@ -3,7 +3,7 @@
 
 const float shadow_delta = 2.f / 10000.f;
 
-float shadow_gather_pcf(samplerCubeArrayShadow shadow_depth_maps, int light, float zf, vec3 norm_v, vec3 v, float m, float r, int samples, float jitter, inout int i) {
+float shadow_gather_pcf(samplerCubeArrayShadow shadow_depth_maps, uint light, float zf, vec3 norm_v, vec3 v, float m, float r, int samples, float jitter, inout int i) {
 	const float map_size = 1.f / 512.f;
 
 	float pcf = .0f;
@@ -22,7 +22,7 @@ float shadow_gather_pcf(samplerCubeArrayShadow shadow_depth_maps, int light, flo
 	return pcf;
 }
 
-float shadow_penumbra_width(samplerCubeArrayShadow shadow_depth_maps, int light, vec3 shadow_v, float l_radius, float dist, float proj22, float proj23) {
+float shadow_penumbra_width(samplerCubeArrayShadow shadow_depth_maps, uint light, vec3 shadow_v, float l_radius, float dist, float proj22, float proj23) {
 	vec3 v = abs(shadow_v);
 	float m = max(v.x, max(v.y, v.z));
 

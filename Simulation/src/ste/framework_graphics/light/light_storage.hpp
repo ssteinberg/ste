@@ -65,7 +65,7 @@ public:
 	void add_light(const std::shared_ptr<light> &l) {
 		lights.push_back(l);
 		stack.push_back(l->get_descriptor());
-		transformed_buffer_stack.push_back(glm::vec4(1.f));
+		transformed_buffer_stack.push_back(glm::vec4(0.f));
 		l->clear_dirty();
 	}
 
@@ -83,6 +83,7 @@ public:
 	void bind_lights_transform_buffer(int idx) const { transformed_buffer_stack.get_buffer().bind_range(Core::shader_storage_layout_binding(idx), 0, lights.size()); }
 	auto& get_active_ll_counter() const { return active_lights_ll_counter; }
 	auto& get_active_ll() const { return active_lights_ll; }
+
 	auto size() const { return lights.size(); }
 	auto& get_lights() const { return lights; }
 };

@@ -7,12 +7,13 @@ layout(local_size_x = 16, local_size_y = 16) in;
 
 #include "gbuffer.glsl"
 
-layout(std430, binding = 6) restrict buffer gbuffer_data {
+layout(shared, binding = 6) restrict buffer gbuffer_data {
 	g_buffer_element gbuffer[];
 };
 layout(r32ui, binding = 7) restrict uniform uimage2D gbuffer_ll_heads;
 
 #include "gbuffer_load.glsl"
+#include "gbuffer_store.glsl"
 
 const int max_depth = 6;
 
@@ -32,15 +33,15 @@ void main() {
 
 	fragment sorted[max_depth];
 
-	sorted[0].z = gbuffer[next_idx].P.z;
+	sorted[0].z = gbuffer_parse_position(gbuffer[next_idx]).z;
 	sorted[0].idx = next_idx;
 	int element_count = 1;
 
-	next_idx = gbuffer[next_idx].next_ptr;
+	next_idx = gbuffer_parse_nextptr(gbuffer[next_idx]);
 	bool changed_order = false;
 
 	for (; element_count < max_depth && !gbuffer_eof(next_idx); ++element_count) {
-		float z = gbuffer[next_idx].P.z;
+		float z = gbuffer_parse_position(gbuffer[next_idx]).z;
 
 		int i;
 		for (i = element_count; i > 0 && sorted[i - 1].z < z; --i)
@@ -52,15 +53,15 @@ void main() {
 		sorted[i].z = z;
 		sorted[i].idx = next_idx;
 
-		next_idx = gbuffer[next_idx].next_ptr;
+		next_idx = gbuffer_parse_nextptr(gbuffer[next_idx]);
 	}
 
 	if (!changed_order)
 		return;
 
 	for (int i = 0; i < element_count - 1; ++i)
-		gbuffer[sorted[i].idx].next_ptr = sorted[i + 1].idx;
-	gbuffer[sorted[element_count - 1].idx].next_ptr = 0xFFFFFFFF;
+		gbuffer_write_nextptr(gbuffer[sorted[i].idx], sorted[i + 1].idx);
+	gbuffer_write_nextptr(gbuffer[sorted[element_count - 1].idx], 0xFFFFFFFF);
 
 	imageStore(gbuffer_ll_heads, coords, sorted[0].idx.xxxx);
 }

@@ -23,10 +23,10 @@ layout(std430, binding = 2) restrict readonly buffer light_data {
 	light_descriptor light_buffer[];
 };
 
-layout(std430, binding = 4) restrict readonly buffer ll_counter_data {
+layout(shared, binding = 4) restrict readonly buffer ll_counter_data {
 	uint32_t ll_counter;
 };
-layout(std430, binding = 5) restrict readonly buffer ll_data {
+layout(shared, binding = 5) restrict readonly buffer ll_data {
 	uint16_t ll[];
 };
 

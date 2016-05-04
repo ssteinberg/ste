@@ -3,40 +3,6 @@
 #version 450
 #extension GL_ARB_bindless_texture : require
 #extension GL_NV_gpu_shader5 : require
-// #extension GL_NV_shader_atomic_fp16_vector : require
-
-#include "shadow.glsl"
-#include "material.glsl"
-#include "light.glsl"
-#include "linked_light_lists.glsl"
-#include "gbuffer.glsl"
-//#include "voxels.glsl"
-
-layout(std430, binding = 0) restrict readonly buffer material_data {
-	material_descriptor mat_descriptor[];
-};
-
-layout(std430, binding = 2) restrict readonly buffer light_data {
-	light_descriptor light_buffer[];
-};
-
-layout(std430, binding = 3) restrict readonly buffer light_transform_data {
-	vec4 light_transform_buffer[];
-};
-
-layout(std430, binding = 6) restrict readonly buffer gbuffer_data {
-	g_buffer_element gbuffer[];
-};
-layout(r32ui, binding = 7) restrict readonly uniform uimage2D gbuffer_ll_heads;
-
-layout(r32ui, binding = 6) restrict readonly uniform uimage2D lll_heads;
-layout(std430, binding = 11) restrict readonly buffer lll_data {
-	lll_element lll_buffer[];
-};
-
-#include "light_load.glsl"
-#include "linked_light_lists_load.glsl"
-#include "gbuffer_load.glsl"
 
 #include "hdr_blur.glsl"
 

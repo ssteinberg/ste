@@ -14,7 +14,7 @@ layout(std430, binding = 2) restrict readonly buffer light_data {
 	light_descriptor light_buffer[];
 };
 
-layout(std430, binding = 6) restrict readonly buffer gbuffer_data {
+layout(shared, binding = 6) restrict readonly buffer gbuffer_data {
 	g_buffer_element gbuffer[];
 };
 layout(r32ui, binding = 7) restrict readonly uniform uimage2D gbuffer_ll_heads;
