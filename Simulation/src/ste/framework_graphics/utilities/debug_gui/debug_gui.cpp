@@ -48,28 +48,30 @@ void debug_gui::dispatch() const {
 	auto &entries = prof->get_entries();
 	std::vector<std::pair<std::string, float>> times;
 
-	// std::string last_name = entries.size() ? entries.back().name : std::string();
-	// for (auto it = entries.rbegin(); it != entries.rend();) {
-	// 	float t = static_cast<float>(it->end - it->start) / 1000.f;
+	if (entries.size()) {
+		std::string last_name = entries.back().name;
+		for (auto it = entries.rbegin();;) {
+			float t = static_cast<float>(it->end - it->start) / 1000.f;
 
-		// auto last_samples_it = prof_tasks_last_samples.emplace(std::piecewise_construct,
-		// 													   std::forward_as_tuple(it->name),
-		// 													   std::forward_as_tuple()).first;
-		// last_samples_it->second.push_back(t);
-		// if (last_samples_it->second.size() > 10)
-		// 	last_samples_it->second.erase(last_samples_it->second.begin());
+			auto last_samples_it = prof_tasks_last_samples.emplace(std::piecewise_construct,
+																   std::forward_as_tuple(it->name),
+																   std::forward_as_tuple()).first;
+			last_samples_it->second.push_back(t);
+			if (last_samples_it->second.size() > 10)
+				last_samples_it->second.erase(last_samples_it->second.begin());
 
-		// float time = .0f;
-		// for (auto & st : last_samples_it->second)
-		// 	time += st;
-		// time /= 10.f;
+			float time = .0f;
+			for (auto & st : last_samples_it->second)
+				time += st;
+			time /= 10.f;
 
-	// 	times.emplace(times.begin(), it->name, time);
+			times.insert(times.begin(), std::make_pair(it->name, time));
 
-	// 	++it;
-	// 	if (it->name.compare(last_name) == 0)
-	// 		break;
-	// }
+			++it;
+			if (it == entries.rend() || it->name.compare(last_name) == 0)
+				break;
+		}
+	}
 
 	auto bbsize = ctx.get_backbuffer_size();
 
@@ -81,7 +83,7 @@ void debug_gui::dispatch() const {
 
 	auto &fts = prof->get_last_times_per_frame();
 	ImGui::PlotLines("Frame Times", &fts[0], fts.size(), 0, "ms", 0.f, .1f);
-	// ImGui::PlotTimeline(times);
+	ImGui::PlotTimeline(times);
 
 	ImGui::End();
 

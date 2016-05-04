@@ -28,6 +28,7 @@ in v {
 	vec3 frag_tangent;
 	flat int matIdx;
 } vin;
+uniform float height_map_scale = .5f;
 
 void main() {
 	vec2 uv = vin.frag_texcoords;
@@ -40,6 +41,9 @@ void main() {
 	vec3 P = vin.frag_position;
 	vec3 n = normalize(vin.frag_normal);
 	vec3 t = normalize(vin.frag_tangent);
+	vec3 b = cross(t, n);
+
+	normal_map(md, height_map_scale, uv, n, t, b, P);
 
 	float specular = md.specular.tex_handler>0 ? texture(sampler2D(md.specular.tex_handler), uv).x : 1.f;
 	int material = vin.matIdx >= 0 ? vin.matIdx : material_none;

@@ -40,14 +40,9 @@ layout(shared, binding = 11) restrict readonly buffer lll_data {
 
 layout(binding = 8) uniform samplerCubeArrayShadow shadow_depth_maps;
 
-in vs_out {
-	vec2 tex_coords;
-} vin;
-
 out vec4 gl_FragColor;
 
 uniform float scattering_ro = 0.0003f;
-uniform float height_map_scale = .5f;
 uniform float proj22, proj23;
 
 vec4 shade(g_buffer_element frag, mat4 inverse_view_matrix) {
@@ -70,8 +65,6 @@ vec4 shade(g_buffer_element frag, mat4 inverse_view_matrix) {
 	vec3 w_pos = (inverse_view_matrix * vec4(position, 1)).xyz;
 	vec3 rgb = md.emission.rgb;
 
-	normal_map(md, height_map_scale, uv, n, t, b, position);
-
 	ivec2 lll_coords = ivec2(gl_FragCoord.xy) / 8;
 	uint32_t lll_ptr = imageLoad(lll_heads, lll_coords).x;
 	for (int i = 0; i < max_active_lights_per_frame; ++i, ++lll_ptr) {
@@ -87,7 +80,7 @@ vec4 shade(g_buffer_element frag, mat4 inverse_view_matrix) {
 			if (dot(n, v) > 0) {
 				float dist = length(v);
 				float l_radius = ld.radius;
-				vec3 l = diffuse * ld.diffuse.xyz;
+				vec3 l = diffuse * ld.diffuse;
 
 				vec3 shadow_v = w_pos - ld.position_direction.xyz;
 				float shadow = shadow_penumbra_width(shadow_depth_maps,
