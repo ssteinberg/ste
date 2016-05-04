@@ -10,8 +10,6 @@ void hdr_tonemap_coc_task::set_context_state() const {
 	2_storage_idx = p->hdr_bokeh_param_buffer;
 	ScreenFillingQuad.vao()->bind();
 
-	p->gbuffer->bind_gbuffer();
-
 	p->hdr_tonemap_coc->bind();
 }
 

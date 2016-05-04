@@ -68,20 +68,27 @@ hdr_dof_postprocess::hdr_dof_postprocess(const StEngineControl &context, const d
 	setup_engine_connections();
 }
 
+void hdr_dof_postprocess::update_projection_uniforms() {
+	float n = ctx.get_near_clip();
+	float f = ctx.get_far_clip();
+
+	float proj22 = -(f + n) / (n - f);
+	float proj23 = -(2.f * f * n) / (n - f) / f;
+
+	hdr_tonemap_coc->set_uniform("proj22", proj22);
+	hdr_tonemap_coc->set_uniform("proj23", proj23);
+	hdr_compute_histogram_sums->set_uniform("proj22", proj22);
+	hdr_compute_histogram_sums->set_uniform("proj23", proj23);
+}
+
 void hdr_dof_postprocess::setup_engine_connections() {
 	resize_connection = std::make_shared<ResizeSignalConnectionType>([=](const glm::i32vec2 &size) {
 		this->resize(size);
 	});
 
-	hdr_tonemap_coc->set_uniform("far", ctx.get_far_clip());
-	hdr_tonemap_coc->set_uniform("near", ctx.get_near_clip());
-	hdr_compute_histogram_sums->set_uniform("far", ctx.get_far_clip());
-	hdr_compute_histogram_sums->set_uniform("near", ctx.get_near_clip());
+	update_projection_uniforms();
 	projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([this](const glm::mat4&, float ffov, float fnear, float ffar) {
-		hdr_tonemap_coc->set_uniform("far", ffar);
-		hdr_tonemap_coc->set_uniform("near", fnear);
-		hdr_compute_histogram_sums->set_uniform("far", ffar);
-		hdr_compute_histogram_sums->set_uniform("near", fnear);
+		update_projection_uniforms();
 	});
 	ctx.signal_framebuffer_resize().connect(resize_connection);
 	ctx.signal_projection_change().connect(projection_change_connection);
@@ -151,13 +158,14 @@ void hdr_dof_postprocess::resize(glm::ivec2 size) {
 	bokeh_blur_image_x = std::make_unique<Core::Texture2D>(gli::format::FORMAT_RGBA16_SFLOAT_PACK16, StE::Core::Texture2D::size_type(size), 1);
 	fbo_bokeh_blur_image[0] = (*bokeh_blur_image_x)[0];
 
-	auto bokeh_coc_handle = bokeh_coc->get_texture_handle(*Core::Sampler::SamplerLinear());
+	auto bokeh_coc_handle = bokeh_coc->get_texture_handle(*Core::Sampler::SamplerLinearClamp());
 	auto hdr_handle = hdr_image->get_texture_handle();
-	auto hdr_final_handle = hdr_final_image->get_texture_handle(*Core::Sampler::SamplerLinear());
+	auto hdr_final_handle = hdr_final_image->get_texture_handle(*Core::Sampler::SamplerLinearClamp());
 	auto hdr_final_handle_linear = hdr_final_image->get_texture_handle(*Core::Sampler::SamplerLinear());
-	auto hdr_bloom_handle = hdr_bloom_image->get_texture_handle(*Core::Sampler::SamplerLinear());
-	auto hdr_bloom_blurx_handle = hdr_bloom_blurx_image->get_texture_handle(*Core::Sampler::SamplerLinear());
-	auto bokeh_blurx_handle = bokeh_blur_image_x->get_texture_handle(*Core::Sampler::SamplerLinear());
+	auto hdr_bloom_handle = hdr_bloom_image->get_texture_handle(*Core::Sampler::SamplerLinearClamp());
+	auto hdr_bloom_blurx_handle = hdr_bloom_blurx_image->get_texture_handle(*Core::Sampler::SamplerLinearClamp());
+	auto bokeh_blurx_handle = bokeh_blur_image_x->get_texture_handle(*Core::Sampler::SamplerLinearClamp());
+	auto depth_handle = gbuffer->get_depth_target()->get_texture_handle();
 
 	bokeh_coc_handle.make_resident();
 	hdr_handle.make_resident();
@@ -166,8 +174,10 @@ void hdr_dof_postprocess::resize(glm::ivec2 size) {
 	hdr_bloom_handle.make_resident();
 	hdr_bloom_blurx_handle.make_resident();
 	bokeh_blurx_handle.make_resident();
+	depth_handle.make_resident();
 
 	hdr_tonemap_coc->set_uniform("hdr", hdr_final_handle);
+	hdr_tonemap_coc->set_uniform("depth", depth_handle);
 	hdr_bloom_blurx->set_uniform("hdr", hdr_bloom_handle);
 	hdr_bloom_blury->set_uniform("hdr", hdr_bloom_blurx_handle);
 	hdr_bloom_blury->set_uniform("unblured_hdr", hdr_handle);
@@ -176,6 +186,7 @@ void hdr_dof_postprocess::resize(glm::ivec2 size) {
 	bokeh_blurx->set_uniform("zcoc_buffer", bokeh_coc_handle);
 	bokeh_blury->set_uniform("hdr", bokeh_blurx_handle);
 	bokeh_blury->set_uniform("zcoc_buffer", bokeh_coc_handle);
+	hdr_compute_histogram_sums->set_uniform("depth", depth_handle);
 
 	hdr_compute_histogram_sums->set_uniform("hdr_lum_resolution", static_cast<std::uint32_t>(luminance_size.x * luminance_size.y));
 

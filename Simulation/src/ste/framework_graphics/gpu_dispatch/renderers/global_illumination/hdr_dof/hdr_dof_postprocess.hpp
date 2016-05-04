@@ -121,6 +121,7 @@ private:
 	hdr_bokeh_blury_task* create_dispatchable();
 
 	void setup_engine_connections();
+	void update_projection_uniforms();
 
 public:
 	hdr_dof_postprocess(const StEngineControl &ctx, const deferred_gbuffer *gbuffer);
