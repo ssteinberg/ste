@@ -165,7 +165,6 @@ void hdr_dof_postprocess::resize(glm::ivec2 size) {
 	auto hdr_bloom_handle = hdr_bloom_image->get_texture_handle(*Core::Sampler::SamplerLinearClamp());
 	auto hdr_bloom_blurx_handle = hdr_bloom_blurx_image->get_texture_handle(*Core::Sampler::SamplerLinearClamp());
 	auto bokeh_blurx_handle = bokeh_blur_image_x->get_texture_handle(*Core::Sampler::SamplerLinearClamp());
-	auto depth_handle = gbuffer->get_depth_target()->get_texture_handle();
 
 	bokeh_coc_handle.make_resident();
 	hdr_handle.make_resident();
@@ -174,10 +173,8 @@ void hdr_dof_postprocess::resize(glm::ivec2 size) {
 	hdr_bloom_handle.make_resident();
 	hdr_bloom_blurx_handle.make_resident();
 	bokeh_blurx_handle.make_resident();
-	depth_handle.make_resident();
 
 	hdr_tonemap_coc->set_uniform("hdr", hdr_final_handle);
-	hdr_tonemap_coc->set_uniform("depth", depth_handle);
 	hdr_bloom_blurx->set_uniform("hdr", hdr_bloom_handle);
 	hdr_bloom_blury->set_uniform("hdr", hdr_bloom_blurx_handle);
 	hdr_bloom_blury->set_uniform("unblured_hdr", hdr_handle);
@@ -186,7 +183,6 @@ void hdr_dof_postprocess::resize(glm::ivec2 size) {
 	bokeh_blurx->set_uniform("zcoc_buffer", bokeh_coc_handle);
 	bokeh_blury->set_uniform("hdr", bokeh_blurx_handle);
 	bokeh_blury->set_uniform("zcoc_buffer", bokeh_coc_handle);
-	hdr_compute_histogram_sums->set_uniform("depth", depth_handle);
 
 	hdr_compute_histogram_sums->set_uniform("hdr_lum_resolution", static_cast<std::uint32_t>(luminance_size.x * luminance_size.y));
 

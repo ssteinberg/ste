@@ -43,7 +43,18 @@ layout(binding = 8) uniform samplerCubeArrayShadow shadow_depth_maps;
 out vec4 gl_FragColor;
 
 uniform float scattering_ro = 0.0003f;
-uniform float proj22, proj23;
+uniform float proj00, proj11, proj22, proj23, shadow_proj22, shadow_proj23;
+
+vec3 unproject_position(g_buffer_element frag) {
+	float depth = gbuffer_parse_depth(frag);
+	vec3 frag_coords = vec3(gl_FragCoord.xy / vec2(gbuffer_size(gbuffer_ll_heads)), depth);
+	vec3 ndc = (frag_coords - vec3(.5f)) * 2.f;
+
+	float z = (proj23 / (ndc.z + proj22));
+	vec2 xy = (ndc.xy * z) / vec2(proj00, proj11);
+
+	return vec3(xy, -z);
+}
 
 vec4 shade(g_buffer_element frag, mat4 inverse_view_matrix) {
 	int draw_idx = gbuffer_parse_material(frag);
@@ -52,8 +63,10 @@ vec4 shade(g_buffer_element frag, mat4 inverse_view_matrix) {
 	material_descriptor md = mat_descriptor[draw_idx];
 
 	vec3 diffuse = md.diffuse.tex_handler>0 ? texture(sampler2D(md.diffuse.tex_handler), uv).rgb : vec3(1.f);
-	float alpha = gbuffer_parse_alpha(frag);
-	float specular = mix(.2f, 1.f, gbuffer_parse_specular(frag));
+	float alpha = md.alphamap.tex_handler>0 ? texture(sampler2D(md.alphamap.tex_handler), uv).x : 1.f;
+
+	float specular = md.specular.tex_handler>0 ? texture(sampler2D(md.specular.tex_handler), uv).x : 1.f;
+	specular = mix(.2f, 1.f, specular);
 
 	if (draw_idx == material_none)
 		return vec4(diffuse, alpha);
@@ -61,7 +74,8 @@ vec4 shade(g_buffer_element frag, mat4 inverse_view_matrix) {
 	vec3 n = gbuffer_parse_normal(frag);
 	vec3 t = gbuffer_parse_tangent(frag);
 	vec3 b = cross(t, n);
-	vec3 position = gbuffer_parse_position(frag);
+
+	vec3 position = unproject_position(frag);
 	vec3 w_pos = (inverse_view_matrix * vec4(position, 1)).xyz;
 	vec3 rgb = md.emission.rgb;
 
@@ -84,12 +98,12 @@ vec4 shade(g_buffer_element frag, mat4 inverse_view_matrix) {
 
 				vec3 shadow_v = w_pos - ld.position_direction.xyz;
 				float shadow = shadow_penumbra_width(shadow_depth_maps,
-													lll_parse_ll_idx(lll_p),
-													shadow_v,
-													l_radius,
-													dist,
-													proj22,
-													proj23);
+													 lll_parse_ll_idx(lll_p),
+													 shadow_v,
+													 l_radius,
+													 dist,
+													 shadow_proj22,
+													 shadow_proj23);
 				if (shadow == 1.f)
 					continue;
 

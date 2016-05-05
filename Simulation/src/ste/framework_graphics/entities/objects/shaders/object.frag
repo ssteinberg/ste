@@ -45,8 +45,7 @@ void main() {
 
 	normal_map(md, height_map_scale, uv, n, t, b, P);
 
-	float specular = md.specular.tex_handler>0 ? texture(sampler2D(md.specular.tex_handler), uv).x : 1.f;
 	int material = vin.matIdx >= 0 ? vin.matIdx : material_none;
 
-	gbuffer_store(gbuffer_ll_heads, gbuffer_ll_counter, P, alpha, specular, uv, f16vec3(n), f16vec3(t), material, ivec2(gl_FragCoord.xy));
+	gbuffer_store(gbuffer_ll_heads, gbuffer_ll_counter, gl_FragCoord.z, uv, f16vec3(n), f16vec3(t), material, ivec2(gl_FragCoord.xy));
 }

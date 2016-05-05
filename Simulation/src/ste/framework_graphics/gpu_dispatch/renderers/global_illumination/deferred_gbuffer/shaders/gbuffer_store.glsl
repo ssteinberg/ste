@@ -3,9 +3,7 @@
 
 void gbuffer_store(layout(r32ui) restrict uimage2D gbuffer_ll_heads,
 				   atomic_uint gbuffer_ll_counter,
-				   vec3 P,
-				   float alpha,
-				   float specular,
+				   float depth,
 				   vec2 UV,
 				   f16vec3 N,
 				   f16vec3 T,
@@ -18,10 +16,9 @@ void gbuffer_store(layout(r32ui) restrict uimage2D gbuffer_ll_heads,
 	float NzTx = uintBitsToFloat(packFloat2x16(f16vec2(N.z, T.x)));
 	float Tyz = uintBitsToFloat(packFloat2x16(T.yz));
 
-	mat3x4 data;
-	data[0] = vec4(P, uintBitsToFloat(next_ptr));
+	mat2x4 data;
+	data[0] = vec4(depth, UV, uintBitsToFloat(next_ptr));
 	data[1] = vec4(Nxy, NzTx, Tyz, intBitsToFloat(matIdx));
-	data[2] = vec4(UV, alpha, specular);
 
 	gbuffer[next_idx].data = data;
 }

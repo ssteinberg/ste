@@ -19,7 +19,7 @@ layout(std430, binding = 2) restrict writeonly buffer hdr_bokeh_parameters_buffe
 	hdr_bokeh_parameters params;
 };
 
-layout(bindless_sampler) uniform sampler2D depth;
+layout(binding = 11) uniform sampler2D depth;
 
 shared uint shared_data[bins];
 

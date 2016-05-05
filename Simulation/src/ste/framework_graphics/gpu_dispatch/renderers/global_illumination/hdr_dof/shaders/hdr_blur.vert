@@ -22,7 +22,7 @@ void main() {
 	vec2 offset = dir / size;
 	for (int i = 0; i < blur_samples_count; ++i) {
 		int after_middle = i >= blur_samples_count / 2 ? 1 : 0;
-		vout.blur_uvs[i] = tc + offset * (float(i - blur_samples_count / 2 + after_middle) * 2.f - .5f);
+		vout.blur_uvs[i] = tc + offset * (float(i - blur_samples_count / 2 + after_middle) * 2.f);
 	}
 
 	gl_Position = vec4(vert, 1);

@@ -17,11 +17,6 @@ layout(r32ui, binding = 7) restrict uniform uimage2D gbuffer_ll_heads;
 
 const int max_depth = 6;
 
-struct fragment {
-	float z;
-	uint32_t idx;
-};
-
 void main() {
 	ivec2 size = gbuffer_size(gbuffer_ll_heads);
 	ivec2 coords = ivec2(gl_GlobalInvocationID.xy);
@@ -31,27 +26,27 @@ void main() {
 
 	uint32_t next_idx = imageLoad(gbuffer_ll_heads, coords).x;
 
-	fragment sorted[max_depth];
+	vec2 sorted[max_depth];
 
-	sorted[0].z = gbuffer_parse_position(gbuffer[next_idx]).z;
-	sorted[0].idx = next_idx;
+	sorted[0].x = gbuffer_parse_depth(gbuffer[next_idx]);
+	sorted[0].y = uintBitsToFloat(next_idx);
 	int element_count = 1;
 
 	next_idx = gbuffer_parse_nextptr(gbuffer[next_idx]);
 	bool changed_order = false;
 
 	for (; element_count < max_depth && !gbuffer_eof(next_idx); ++element_count) {
-		float z = gbuffer_parse_position(gbuffer[next_idx]).z;
+		float z = gbuffer_parse_depth(gbuffer[next_idx]);
 
 		int i;
-		for (i = element_count; i > 0 && sorted[i - 1].z < z; --i)
+		for (i = element_count; i > 0 && sorted[i - 1].x > z; --i)
 			sorted[i] = sorted[i - 1];
 
 		if (i != element_count)
 			changed_order = true;
 
-		sorted[i].z = z;
-		sorted[i].idx = next_idx;
+		sorted[i].x = z;
+		sorted[i].y = uintBitsToFloat(next_idx);
 
 		next_idx = gbuffer_parse_nextptr(gbuffer[next_idx]);
 	}
@@ -60,8 +55,8 @@ void main() {
 		return;
 
 	for (int i = 0; i < element_count - 1; ++i)
-		gbuffer_write_nextptr(gbuffer[sorted[i].idx], sorted[i + 1].idx);
-	gbuffer_write_nextptr(gbuffer[sorted[element_count - 1].idx], 0xFFFFFFFF);
+		gbuffer_write_nextptr(gbuffer[floatBitsToUint(sorted[i].y)], floatBitsToUint(sorted[i + 1].y));
+	gbuffer_write_nextptr(gbuffer[floatBitsToUint(sorted[element_count - 1].y)], 0xFFFFFFFF);
 
-	imageStore(gbuffer_ll_heads, coords, sorted[0].idx.xxxx);
+	imageStore(gbuffer_ll_heads, coords, floatBitsToUint(sorted[0].y).xxxx);
 }

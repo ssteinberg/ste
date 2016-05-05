@@ -18,20 +18,12 @@ g_buffer_element gbuffer_load(uint32_t ptr) {
 	return gbuffer[ptr];
 }
 
-float gbuffer_parse_alpha(g_buffer_element frag) {
-	return frag.data[2].z;
-}
-
-vec3 gbuffer_parse_position(g_buffer_element frag) {
-	return frag.data[0].xyz;
+float gbuffer_parse_depth(g_buffer_element frag) {
+	return frag.data[0].x;
 }
 
 vec2 gbuffer_parse_uv(g_buffer_element frag) {
-	return frag.data[2].xy;
-}
-
-float gbuffer_parse_specular(g_buffer_element frag) {
-	return frag.data[2].w;
+	return frag.data[0].yz;
 }
 
 vec3 gbuffer_parse_normal(g_buffer_element frag) {
@@ -60,8 +52,4 @@ vec3 gbuffer_parse_tangent(g_buffer_element frag) {
 
 uint32_t gbuffer_parse_nextptr(g_buffer_element frag) {
 	return floatBitsToUint(frag.data[0].w);
-}
-
-float gbuffer_linear_z(g_buffer_element frag, float far, float near = .0f) {
-	return (-gbuffer_parse_position(frag).z - near) / (far - near);
 }

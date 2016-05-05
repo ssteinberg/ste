@@ -124,6 +124,7 @@ private:
 
 protected:
 	void rebuild_task_queue();
+	void update_shader_shadow_proj_uniforms(const glm::mat4&);
 
 	const Core::GenericFramebufferObject *get_fbo() const {
 		if (use_deferred_rendering)

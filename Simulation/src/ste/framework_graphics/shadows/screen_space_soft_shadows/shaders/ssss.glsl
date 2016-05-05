@@ -35,7 +35,7 @@ void main() {
 	g_buffer_element frag = gbuffer_load(gbuffer_ll_heads, coords);
 	vec3 n = (transpose_view_matrix * vec4(frag.N, 1)).xyz;
 	vec3 w_pos = (inverse_view_matrix * vec4(frag.P, 1)).xyz;
-	float frag_depth = gbuffer_linear_z(frag, far, near);
+	float frag_depth = ;//gbuffer_linear_z(frag, far, near);
 
 	for (int i = 0; i < light_buffer.length(); ++i) {
 		vec3 l_pos = light_buffer[i].position_direction.xyz;

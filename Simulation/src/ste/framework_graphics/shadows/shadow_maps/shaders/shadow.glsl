@@ -26,37 +26,29 @@ float shadow_penumbra_width(samplerCubeArrayShadow shadow_depth_maps, uint light
 	vec3 v = abs(shadow_v);
 	float m = max(v.x, max(v.y, v.z));
 
-	float c;
-	if (v.x == m)
-		c = v.x;
-	else if (v.y == m)
-		c = v.y;
-	else
-		c = v.z;
-
-	float ndc_zf = proj22 - proj23 / c;
+	float ndc_zf = proj22 - proj23 / m;
 	float zf = (ndc_zf + 1.f) * .5f;
 
-	vec3 norm_v = shadow_v / c;
+	// vec3 norm_v = shadow_v / m;
 
-	float pcf = texture(shadow_depth_maps, vec4(norm_v, light), zf + shadow_delta).x;
+	return texture(shadow_depth_maps, vec4(shadow_v, light), zf + shadow_delta).x;
 
-	const int samples_far = 2;
-	const int samples_med = 3;
-	const int samples_near = 3;
-	const float radius_far = 6.f;
-	const float radius_med = 4.f;
-	const float radius_near = 2.f;
-	int i = 0;
+	// const int samples_far = 2;
+	// const int samples_med = 3;
+	// const int samples_near = 3;
+	// const float radius_far = 6.f;
+	// const float radius_med = 4.f;
+	// const float radius_near = 2.f;
+	// int i = 0;
 
-	pcf += shadow_gather_pcf(shadow_depth_maps, light, zf, norm_v, v, m, radius_far, samples_far, .6, i);
+	// pcf += shadow_gather_pcf(shadow_depth_maps, light, zf, norm_v, v, m, radius_far, samples_far, .6, i);
 
-	float t = clamp(pcf / float(i + 1), .0f, 1.f);
-	if (t >= .99f || t <= .01f)
-		return t;
+	// float t = clamp(pcf / float(i + 1), .0f, 1.f);
+	// if (t >= .99f || t <= .01f)
+	// 	return t;
 
-	pcf += shadow_gather_pcf(shadow_depth_maps, light, zf, norm_v, v, m, radius_med, samples_med, .2, i);
-	pcf += shadow_gather_pcf(shadow_depth_maps, light, zf, norm_v, v, m, radius_near, samples_near, .7, i);
+	// pcf += shadow_gather_pcf(shadow_depth_maps, light, zf, norm_v, v, m, radius_med, samples_med, .2, i);
+	// pcf += shadow_gather_pcf(shadow_depth_maps, light, zf, norm_v, v, m, radius_near, samples_near, .7, i);
 
-	return clamp(pcf / float(i + 1), .0f, 1.f);
+	// return clamp(pcf / float(i + 1), .0f, 1.f);
 }
