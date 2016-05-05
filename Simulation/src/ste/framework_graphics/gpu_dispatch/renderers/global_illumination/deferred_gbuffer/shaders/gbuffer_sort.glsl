@@ -3,7 +3,7 @@
 #version 450
 #extension GL_NV_gpu_shader5 : require
 
-layout(local_size_x = 16, local_size_y = 16) in;
+layout(local_size_x = 32, local_size_y = 32) in;
 
 #include "gbuffer.glsl"
 

@@ -13,7 +13,7 @@
 #include "gpu_dispatchable.hpp"
 
 #include "light_storage.hpp"
-#include "ObjectGroup.hpp"
+#include "Scene.hpp"
 #include "shadowmap_storage.hpp"
 
 #include <memory>
@@ -27,7 +27,7 @@ class shadowmap_projector : public gpu_dispatchable {
 	using ProjectionSignalConnectionType = StEngineControl::projection_change_signal_type::connection_type;
 
 private:
-	const ObjectGroup *object;
+	const Scene *scene;
 	light_storage *lights;
 	const shadowmap_storage *shadow_map;
 
@@ -38,9 +38,9 @@ private:
 
 public:
 	shadowmap_projector(const StEngineControl &ctx,
-						const ObjectGroup *object,
+						const Scene *scene,
 						light_storage *lights,
-						const shadowmap_storage *shadow_map) : object(object),
+						const shadowmap_storage *shadow_map) : scene(scene),
 															   lights(lights),
 															   shadow_map(shadow_map),
 															   shadow_gen_program(ctx.glslprograms_pool().fetch_program_task({ "shadow_map.vert", "shadow_cubemap.geom" })()) {

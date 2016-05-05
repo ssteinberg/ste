@@ -73,7 +73,7 @@ protected:
 	}
 };
 
-auto create_light_object(const std::shared_ptr<StE::Graphics::Scene> &scene, const glm::vec3 &light_pos, const std::shared_ptr<StE::Graphics::SphericalLight> &light) {
+auto create_light_object(StE::Graphics::Scene *scene, const glm::vec3 &light_pos, const std::shared_ptr<StE::Graphics::SphericalLight> &light) {
 	scene->scene_properties().lights_storage().add_light(light);
 
 	std::unique_ptr<StE::Graphics::Sphere> sphere = std::make_unique<StE::Graphics::Sphere>(20, 20);
@@ -133,8 +133,8 @@ int main() {
 	camera.set_position({ 25.8, 549.07, -249.2 });
 	camera.lookat({ -5.4, 532.5, -228.71 });
 
-	auto scene = StE::Graphics::Scene::create(ctx);
-	StE::Graphics::GIRenderer renderer(ctx, &camera, scene);
+	StE::Graphics::Scene scene(ctx);
+	StE::Graphics::GIRenderer renderer(ctx, &camera, &scene);
 	ctx.set_renderer(&renderer);
 
 	std::unique_ptr<StE::Graphics::profiler> gpu_tasks_profiler = std::make_unique<StE::Graphics::profiler>();
@@ -148,16 +148,16 @@ int main() {
 	bool loaded = false;
 	auto model_future = ctx.scheduler().schedule_now(StE::Resource::ModelFactory::load_model_task(ctx,
 																								  R"(Data/models/crytek-sponza/sponza.obj)",
-																								  &scene->object_group(),
-																								  &scene->scene_properties(),
+																								  &scene.object_group(),
+																								  &scene.scene_properties(),
 																								  2.5f));
 
 	const glm::vec3 light0_pos{ -700.6, 138, -70 };
 	const glm::vec3 light1_pos{ 200, 550, 170 };
 	auto light0 = std::make_shared<StE::Graphics::SphericalLight>(8000.f, StE::Graphics::Kelvin(2000), light0_pos, 3.f);
 	auto light1 = std::make_shared<StE::Graphics::SphericalLight>(20000.f, StE::Graphics::Kelvin(7000), light1_pos, 5.f);
-	auto light0_obj = create_light_object(scene, light0_pos, light0);
-	auto light1_obj = create_light_object(scene, light1_pos, light1);
+	auto light0_obj = create_light_object(&scene, light0_pos, light0);
+	auto light1_obj = create_light_object(&scene, light1_pos, light1);
 
 	for (auto &v : { glm::vec3{ -622, 645, -310},
 					 glm::vec3{  124, 645, -310},
@@ -171,7 +171,7 @@ int main() {
 					 glm::vec3{  120, 153,  552},
 					 glm::vec3{  885, 153,  552} }) {
 		auto wall_lamp = std::make_shared<StE::Graphics::SphericalLight>(5000.f, StE::Graphics::Kelvin(1800), v, 2.f);
-		create_light_object(scene, v, wall_lamp);
+		create_light_object(&scene, v, wall_lamp);
 	}
 
 	// Bind input
@@ -235,10 +235,11 @@ int main() {
 
 	auto skydome_task = make_gpu_task("skydome", skydome.get(), nullptr);
 
-	skydome_task->add_dependency(scene);
+	auto &scene_task = renderer.get_scene_task();
+	skydome_task->add_dependency(scene_task);
 
 	renderer.add_gui_task(make_gpu_task("debug_gui", debug_gui_dispatchable.get(), nullptr));
-	renderer.add_task(scene);
+	renderer.add_task(scene_task);
 	renderer.add_task(skydome_task);
 	renderer.set_deferred_rendering_enabled(true);
 

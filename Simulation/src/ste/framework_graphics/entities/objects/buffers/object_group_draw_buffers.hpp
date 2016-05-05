@@ -12,9 +12,7 @@
 #include "ElementBufferObject.hpp"
 #include "VertexBufferObject.hpp"
 #include "VertexArrayObject.hpp"
-#include "IndirectDrawBufferObject.hpp"
 #include "ShaderStorageBuffer.hpp"
-#include "AtomicCounterBufferObject.hpp"
 
 #include "gstack.hpp"
 
@@ -30,28 +28,19 @@ private:
 	mutable Core::gstack<mesh_descriptor> mesh_data_bo;
  	Core::gstack<ObjectVertexData> vbo;
 	Core::gstack<std::uint32_t> indices;
-	mutable Core::gstack<Core::IndirectMultiDrawElementsCommand, true> culled_indirect_command;
-	mutable Core::AtomicCounterBufferObject<> culled_objects_counter;
 
 public:
  	using vbo_type = Core::VertexBufferObject<ObjectVertexData, ObjectVertexData::descriptor, decltype(vbo)::usage>;
  	using elements_type = Core::ElementBufferObject<std::uint32_t, decltype(indices)::usage>;
- 	using indirect_draw_buffer_type = Core::IndirectDrawBuffer<Core::IndirectMultiDrawElementsCommand, decltype(culled_indirect_command)::usage>;
 	using mesh_data_buffer_type = Core::ShaderStorageBuffer<mesh_descriptor, decltype(mesh_data_bo)::usage>;
 
 public:
-	object_group_draw_buffers() : culled_objects_counter(1) {
+	object_group_draw_buffers() {
 		auto vbo_buffer = Core::buffer_object_cast<vbo_type>(vbo.get_buffer());
 		vao[0] = vbo_buffer[0];
 		vao[1] = vbo_buffer[1];
 		vao[2] = vbo_buffer[2];
 		vao[3] = vbo_buffer[3];
-	}
-
-	void clear_indirect_command_buffer() const {
-		std::uint32_t zero = 0;
-		culled_indirect_command.overwrite_all(gli::format::FORMAT_R32_UINT_PACK32, &zero, 0, culled_indirect_command.size());
-		culled_objects_counter.clear(gli::format::FORMAT_R32_UINT_PACK32, &zero);
 	}
 
 	auto& get_vao() const { return vao; }
@@ -60,17 +49,18 @@ public:
 	auto& get_mesh_data_stack() const { return mesh_data_bo; }
 	auto& get_vbo_stack() { return vbo; }
 	auto& get_indices_stack() { return indices; }
-	auto& get_culled_indirect_command_stack() { return culled_indirect_command; }
 
 	auto  get_vbo_buffer() const { return Core::buffer_object_cast<vbo_type>(vbo.get_buffer()); }
 	auto  get_elements_buffer() const { return Core::buffer_object_cast<elements_type>(indices.get_buffer()); }
-	auto  get_culled_indirect_draw() const { return Core::buffer_object_cast<indirect_draw_buffer_type>(culled_indirect_command.get_buffer()); }
-	auto& get_culled_objects_counter() const { return culled_objects_counter; }
-
 	auto& get_mesh_data_buffer() const { return mesh_data_bo.get_buffer(); }
-	auto& get_culled_indirect_command_buffer() const { return culled_indirect_command.get_buffer(); }
 
-	auto size() const { return culled_indirect_command.size(); }
+	auto size() const { return mesh_data_bo.size(); }
+
+	void bind_buffers(int idx) const {
+		get_vao().bind();
+		get_elements_buffer().bind();
+		get_mesh_data_buffer().bind_range(Core::shader_storage_layout_binding(idx), 0, size());
+	}
 };
 
 }

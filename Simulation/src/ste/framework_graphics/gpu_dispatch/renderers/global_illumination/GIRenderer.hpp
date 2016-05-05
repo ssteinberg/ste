@@ -86,7 +86,7 @@ private:
 	const StEngineControl &ctx;
 	const Camera *camera;
 	view_matrix_ring_buffer view_matrix_buffer;
-	std::shared_ptr<Scene> scene;
+	Scene *scene;
 	// dense_voxel_space voxel_space;
 
 private:
@@ -107,6 +107,7 @@ private:
 	scene_frustum_cull_dispatch scene_frustum_cull;
 
 	std::shared_ptr<const gpu_task> precomposer_dummy_task,
+									scene_task,
 									composer_task,
 									fb_clearer_task,
 									gbuffer_clearer_task,
@@ -135,7 +136,7 @@ protected:
 public:
 	GIRenderer(const StEngineControl &ctx,
 			   const Camera *camera,
-			   const std::shared_ptr<Scene> &scene/*,
+			   Scene *scene/*,
 			   std::size_t voxel_grid_size = 512,
 			   float voxel_grid_ratio = .01f*/);
 	virtual ~GIRenderer() noexcept {}
@@ -152,6 +153,7 @@ public:
 	// const dense_voxel_space& voxel_grid() const { return voxel_space; }
 
 	auto *get_gbuffer() const { return &gbuffer; }
+	auto &get_scene_task() const { return scene_task; }
 
 	void attach_profiler(profiler *p) { q.attach_profiler(p); }
 

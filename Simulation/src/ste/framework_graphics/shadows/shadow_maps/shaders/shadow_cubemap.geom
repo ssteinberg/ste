@@ -69,35 +69,35 @@ void process(int face, int l, vec4 vertices[3]) {
 }
 
 void main() {return;
-	for (int i = 0; i < ll_counter; ++i) {
-		light_descriptor ld = light_buffer[ll[i]];
+	int i = gl_InvocationID;
 
-		uint32_t face_mask = ld.shadow_face_mask;
-		if (face_mask > 0) {
-			vec4 light_pos = vec4(ld.position_direction.xyz, 0);
-			float light_range = min(ld.effective_range, far);
-			float light_range2 = light_range * light_range;
+	light_descriptor ld = light_buffer[ll[i]];
 
-			vec3 N = (vin[0].normal + vin[1].normal + vin[2].normal) / 3.f;
-			vec3 V = light_pos.xyz - gl_in[0].gl_Position.xyz;
+	uint32_t face_mask = ld.shadow_face_mask;
+	if (face_mask > 0) {
+		vec4 light_pos = vec4(ld.position_direction.xyz, 0);
+		float light_range = min(ld.effective_range, far);
+		float light_range2 = light_range * light_range;
 
-			if (dot(N,V) < 0) {
-				vec4 vertices[3];
+		vec3 N = (vin[0].normal + vin[1].normal + vin[2].normal) / 3.f;
+		vec3 V = light_pos.xyz - gl_in[0].gl_Position.xyz;
 
-				int out_of_range = 0;
-				for (int j = 0; j < 3; ++j) {
-					vec4 P = gl_in[j].gl_Position - light_pos;
-					if (dot(P.xyz, P.xyz) >= light_range2)
-						++out_of_range;
+		if (dot(N,V) < 0) {
+			vec4 vertices[3];
 
-					vertices[j] = P;
-				}
+			int out_of_range = 0;
+			for (int j = 0; j < 3; ++j) {
+				vec4 P = gl_in[j].gl_Position - light_pos;
+				if (dot(P.xyz, P.xyz) >= light_range2)
+					++out_of_range;
 
-				if (out_of_range < 3) {
-					for (int face = 0; face < 6; ++face) {
-						if ((face_mask & (1 << face)) != 0)
-							process(face, i, vertices);
-					}
+				vertices[j] = P;
+			}
+
+			if (out_of_range < 3) {
+				for (int face = 0; face < 6; ++face) {
+					if ((face_mask & (1 << face)) != 0)
+						process(face, i, vertices);
 				}
 			}
 		}

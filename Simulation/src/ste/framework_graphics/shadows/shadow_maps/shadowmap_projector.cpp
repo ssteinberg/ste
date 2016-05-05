@@ -15,19 +15,20 @@ void shadowmap_projector::set_context_state() const {
 	auto size = shadow_map->get_cubemaps()->get_size();
 	GL::gl_current_context::get()->viewport(0, 0, size.x, size.y);
 
-	object->bind_buffers();
+	scene->get_shadow_idb().buffer().bind();
+	scene->bind_buffers();
 	lights->bind_lights_buffer(2);
+
 	4_storage_idx = Core::buffer_object_cast<Core::ShaderStorageBuffer<std::uint32_t>>(lights->get_active_ll_counter());
 	5_storage_idx = lights->get_active_ll();
 
 	9_storage_idx = *shadow_map->get_shadow_projection_mats_buffer();
 
 	shadow_gen_program->bind();
-
 	shadow_map->get_fbo()->bind();
 }
 
 void shadowmap_projector::dispatch() const {
 	Core::GL::gl_current_context::get()->clear_framebuffer(false, true);
-	object->draw_object_group();
+	scene->draw_object_group();
 }

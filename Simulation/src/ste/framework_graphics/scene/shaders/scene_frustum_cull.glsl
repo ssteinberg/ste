@@ -30,6 +30,9 @@ layout(binding = 0) uniform atomic_uint counter;
 layout(std430, binding = 0) restrict writeonly buffer idb_data {
 	IndirectMultiDrawElementsCommand idb[];
 };
+layout(std430, binding = 8) restrict writeonly buffer sidb_data {
+	IndirectMultiDrawElementsCommand sidb[];
+};
 
 void main() {
 	int draw_id = int(gl_GlobalInvocationID.x);
@@ -67,5 +70,8 @@ void main() {
 		c.base_instance = draw_id;
 
 		idb[idx] = c;
+
+		// c.instance_count = ll_counter;
+		sidb[idx] = c;
 	}
 }

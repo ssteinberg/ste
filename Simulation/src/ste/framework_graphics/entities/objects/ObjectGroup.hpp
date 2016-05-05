@@ -4,21 +4,15 @@
 #pragma once
 
 #include "stdafx.hpp"
-#include "StEngineControl.hpp"
 
 #include "entity.hpp"
 #include "Object.hpp"
 #include "gpu_dispatchable.hpp"
 
-#include "gl_current_context.hpp"
-#include "GLSLProgram.hpp"
-
-#include "deferred_gbuffer.hpp"
 #include "object_group_draw_buffers.hpp"
 
 #include "ObjectVertexData.hpp"
 #include "Material.hpp"
-#include "SceneProperties.hpp"
 
 #include "range.hpp"
 
@@ -28,7 +22,7 @@
 namespace StE {
 namespace Graphics {
 
-class ObjectGroup : public gpu_dispatchable, public entity_affine {
+class ObjectGroup : public entity_affine {
 	using Base = gpu_dispatchable;
 
 private:
@@ -44,8 +38,6 @@ private:
 private:
 	object_group_draw_buffers draw_buffers;
 
-	const SceneProperties *scene_props;
-	const deferred_gbuffer *gbuffer{ nullptr };
 	objects_map_type objects;
 
 	std::size_t total_vertices{ 0 };
@@ -54,16 +46,9 @@ private:
 	mutable std::vector<Object*> signalled_objects;
 	mutable std::vector<range<>> ranges_to_lock;
 
-	std::shared_ptr<Core::GLSLProgram> object_program;
-
 public:
-	ObjectGroup(const StEngineControl &ctx, const SceneProperties *props);
+	ObjectGroup() {}
 	~ObjectGroup() noexcept;
-
-	void set_target_gbuffer(const deferred_gbuffer *gbuffer) { this->gbuffer = gbuffer; }
-
-	void bind_buffers() const;
-	void draw_object_group() const { dispatch(); }
 
 	void add_object(const std::shared_ptr<Object> &);
 	void remove_all();
@@ -78,10 +63,6 @@ public:
 	void lock_updated_buffers() const;
 
 	std::size_t total_objects() const { return objects.size(); }
-
-protected:
-	void set_context_state() const override final;
-	void dispatch() const override final;
 };
 
 }

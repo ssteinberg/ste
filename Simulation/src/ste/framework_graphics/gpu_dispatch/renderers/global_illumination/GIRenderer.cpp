@@ -43,7 +43,7 @@ void GIRenderer::deferred_composition::dispatch() const {
 
 GIRenderer::GIRenderer(const StEngineControl &ctx,
 					   const Camera *camera,
-					   const std::shared_ptr<Scene> &scene/*,
+					   Scene *scene/*,
 					   std::size_t voxel_grid_size,
 					   float voxel_grid_ratio*/)
 					   : gbuffer(ctx.get_backbuffer_size()),
@@ -55,9 +55,9 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 						 lll_storage(ctx.get_backbuffer_size()),
 						 lll_gen_dispatch(ctx, &scene->scene_properties().lights_storage(), &lll_storage),
 						 shadows_storage(ctx),
-						 shadows_projector(ctx, &scene->object_group(), &scene->scene_properties().lights_storage(), &shadows_storage),
-						 prepopulate_depth_dispatch(ctx, scene.get()),
-						 scene_frustum_cull(ctx, scene.get(), &scene->scene_properties().lights_storage()),
+						 shadows_projector(ctx, scene, &scene->scene_properties().lights_storage(), &shadows_storage),
+						 prepopulate_depth_dispatch(ctx, scene),
+						 scene_frustum_cull(ctx, scene, &scene->scene_properties().lights_storage()),
 						 gbuffer_sorter(ctx, &gbuffer),
 						 light_preprocess(ctx, &scene->scene_properties().lights_storage(), &hdr),
 						 composer(ctx, this),
@@ -82,9 +82,10 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 
 
 	lll_gen_dispatch.set_depth_map(gbuffer.get_depth_target());
-	scene->object_group().set_target_gbuffer(get_gbuffer());
+	scene->set_target_gbuffer(get_gbuffer());
 
 	composer_task = make_gpu_task("composition", &composer, hdr.get_input_fbo());
+	scene_task = make_gpu_task("scene", scene, nullptr);
 	fb_clearer_task = make_gpu_task("fb_clearer", &fb_clearer, get_fbo());
 	prepopulate_depth_task = make_gpu_task("prepopulate_depth", &prepopulate_depth_dispatch, get_fbo());
 	scene_frustum_cull_task = make_gpu_task("frustum_cull", &scene_frustum_cull, nullptr);
@@ -98,8 +99,8 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 	hdr.get_task()->add_dependency(composer_task);
 	prepopulate_depth_task->add_dependency(fb_clearer_task);
 	prepopulate_depth_task->add_dependency(scene_frustum_cull_task);
-	scene->add_dependency(prepopulate_depth_task);
-	scene->add_dependency(scene_frustum_cull_task);
+	scene_task->add_dependency(prepopulate_depth_task);
+	scene_task->add_dependency(scene_frustum_cull_task);
 	scene_frustum_cull_task->add_dependency(light_preprocess.get_task());
 	lll_gen_task->add_dependency(light_preprocess.get_task());
 	lll_gen_task->add_dependency(prepopulate_depth_task);
