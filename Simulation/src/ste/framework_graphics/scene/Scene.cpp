@@ -9,13 +9,14 @@
 using namespace StE::Graphics;
 
 Scene::Scene(const StEngineControl &ctx) : culled_objects_counter(1),
+										   sproj_id_to_llid_tt(pages * std::max(65536, sproj_id_to_llid_tt_buffer_type::page_size()) / sizeof(shadow_projection_instance_to_ll_idx_translation)),
 										   object_program(ctx.glslprograms_pool().fetch_program_task({ "object.vert", "object.frag" })()) {}
 
 void Scene::bind_buffers() const {
 	using namespace Core;
 
-	0_storage_idx = scene_props.materials_storage().buffer();
-	objects.get_draw_buffers().bind_buffers(1);
+	13_storage_idx = scene_props.materials_storage().buffer();
+	objects.get_draw_buffers().bind_buffers(14);
 }
 
 void Scene::set_context_state() const {

@@ -26,6 +26,7 @@ private:
  	Core::VertexArrayObject vao;
 
 	mutable Core::gstack<mesh_descriptor> mesh_data_bo;
+	mutable Core::gstack<mesh_draw_params> mesh_draw_params_bo;
  	Core::gstack<ObjectVertexData> vbo;
 	Core::gstack<std::uint32_t> indices;
 
@@ -45,14 +46,15 @@ public:
 
 	auto& get_vao() const { return vao; }
 
-	auto& get_mesh_data_stack() { return mesh_data_bo; }
 	auto& get_mesh_data_stack() const { return mesh_data_bo; }
+	auto& get_mesh_draw_params_stack() const { return mesh_draw_params_bo; }
 	auto& get_vbo_stack() { return vbo; }
 	auto& get_indices_stack() { return indices; }
 
 	auto  get_vbo_buffer() const { return Core::buffer_object_cast<vbo_type>(vbo.get_buffer()); }
 	auto  get_elements_buffer() const { return Core::buffer_object_cast<elements_type>(indices.get_buffer()); }
 	auto& get_mesh_data_buffer() const { return mesh_data_bo.get_buffer(); }
+	auto& get_mesh_draw_params_buffer() const { return mesh_draw_params_bo.get_buffer(); }
 
 	auto size() const { return mesh_data_bo.size(); }
 

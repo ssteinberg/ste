@@ -20,7 +20,7 @@ out v {
 	flat int matIdx;
 } vout;
 
-layout(std430, binding = 1) restrict readonly buffer mesh_data {
+layout(std430, binding = 14) restrict readonly buffer mesh_data {
 	mesh_descriptor mesh_descriptor_buffer[];
 };
 

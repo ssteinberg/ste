@@ -22,6 +22,7 @@ void shadowmap_projector::set_context_state() const {
 	4_storage_idx = Core::buffer_object_cast<Core::ShaderStorageBuffer<std::uint32_t>>(lights->get_active_ll_counter());
 	5_storage_idx = lights->get_active_ll();
 
+	8_storage_idx = scene->get_sproj_id_to_llid_tt();
 	9_storage_idx = *shadow_map->get_shadow_projection_mats_buffer();
 
 	shadow_gen_program->bind();

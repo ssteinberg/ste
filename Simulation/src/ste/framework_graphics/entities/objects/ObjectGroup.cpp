@@ -37,13 +37,16 @@ void ObjectGroup::add_object(const std::shared_ptr<Object> &obj) {
 	md.transpose_inverse_model = glm::transpose(glm::inverse(md.model));
 	md.mat_idx = obj->get_material_id();
 	md.bounding_sphere = obj->get_mesh().bounding_sphere().sphere();
- 	md.count = ind.size();
- 	md.first_index = total_indices;
- 	md.base_vertex = total_vertices;
+
+	mesh_draw_params mdp;
+ 	mdp.count = ind.size();
+ 	mdp.first_index = total_indices;
+ 	mdp.base_vertex = total_vertices;
 
 	obj->md = md;
 
 	draw_buffers.get_mesh_data_stack().push_back(std::move(md));
+	draw_buffers.get_mesh_draw_params_stack().push_back(std::move(mdp));
 
  	total_vertices += vertices.size();
  	total_indices += ind.size();

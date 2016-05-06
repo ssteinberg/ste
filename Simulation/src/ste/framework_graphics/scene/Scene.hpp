@@ -12,8 +12,10 @@
 #include "object_group_indirect_command_buffer.hpp"
 
 #include "AtomicCounterBufferObject.hpp"
+#include "ShaderStorageBuffer.hpp"
 
 #include "ObjectGroup.hpp"
+#include "light_storage.hpp"
 
 #include <memory>
 
@@ -24,6 +26,16 @@ class Scene : public gpu_dispatchable {
 	using Base = gpu_dispatchable;
 
 private:
+	struct shadow_projection_instance_to_ll_idx_translation {
+		std::uint16_t ll_idx[max_active_lights_per_frame];
+	};
+
+	static constexpr Core::BufferUsage::buffer_usage usage = static_cast<Core::BufferUsage::buffer_usage>(Core::BufferUsage::BufferUsageSparse);
+	static constexpr int pages = 8192;
+
+ 	using sproj_id_to_llid_tt_buffer_type = Core::ShaderStorageBuffer<shadow_projection_instance_to_ll_idx_translation, usage>;
+
+private:
 	ObjectGroup objects;
 	SceneProperties scene_props;
 	const deferred_gbuffer *gbuffer{ nullptr };
@@ -31,6 +43,7 @@ private:
 	mutable Core::AtomicCounterBufferObject<> culled_objects_counter;
 	mutable object_group_indirect_command_buffer idb;
 	mutable object_group_indirect_command_buffer shadow_idb;
+	mutable sproj_id_to_llid_tt_buffer_type sproj_id_to_llid_tt;
 
 	std::shared_ptr<Core::GLSLProgram> object_program;
 
@@ -59,6 +72,7 @@ public:
 	auto &get_idb() const { return idb; }
 	auto &get_shadow_idb() const { return shadow_idb; }
 	auto &get_culled_objects_counter() const { return culled_objects_counter; }
+	auto &get_sproj_id_to_llid_tt() const { return sproj_id_to_llid_tt; }
 
 protected:
 	void set_context_state() const override final;

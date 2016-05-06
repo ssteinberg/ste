@@ -14,6 +14,7 @@ void scene_frustum_cull_dispatch::commit_idbs() const {
 		old_object_group_size = size;
 		scene->get_idb().buffer().commit_range(0, size);
 		scene->get_shadow_idb().buffer().commit_range(0, size);
+		scene->get_sproj_id_to_llid_tt().commit_range(0, size);
 	}
 }
 
@@ -22,8 +23,10 @@ void scene_frustum_cull_dispatch::set_context_state() const {
 
 	0_atomic_idx = scene->get_culled_objects_counter();
  	0_storage_idx = scene->get_idb().ssbo();
- 	8_storage_idx = scene->get_shadow_idb().ssbo();
-	draw_buffers.get_mesh_data_buffer().bind_range(Core::shader_storage_layout_binding(1), 0, draw_buffers.size());
+ 	1_storage_idx = scene->get_shadow_idb().ssbo();
+	8_storage_idx = scene->get_sproj_id_to_llid_tt();
+	draw_buffers.get_mesh_data_buffer().bind_range(Core::shader_storage_layout_binding(14), 0, draw_buffers.size());
+	draw_buffers.get_mesh_draw_params_buffer().bind_range(Core::shader_storage_layout_binding(15), 0, draw_buffers.size());
 
 	ls->bind_lights_buffer(2);
 	ls->bind_lights_transform_buffer(3);

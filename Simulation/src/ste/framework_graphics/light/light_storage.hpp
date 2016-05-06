@@ -67,6 +67,8 @@ public:
 		stack.push_back(l->get_descriptor());
 		transformed_buffer_stack.push_back(glm::vec4(0.f));
 		l->clear_dirty();
+
+		active_lights_ll.commit_range(0, lights.size());
 	}
 
 	void add_lights(const std::vector<std::shared_ptr<light>> &ls) {

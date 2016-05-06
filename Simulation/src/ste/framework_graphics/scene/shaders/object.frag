@@ -9,7 +9,7 @@ layout(early_fragment_tests) in;
 #include "material.glsl"
 #include "gbuffer.glsl"
 
-layout(std430, binding = 0) restrict readonly buffer material_data {
+layout(std430, binding = 13) restrict readonly buffer material_data {
 	material_descriptor mat_descriptor[];
 };
 
