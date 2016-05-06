@@ -13,8 +13,6 @@
 #include <functional>
 #include <forward_list>
 
-#include <gli/gli.hpp>
-
 namespace StE {
 namespace Graphics {
 

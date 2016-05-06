@@ -28,7 +28,7 @@ class gpu_task_factory;
 
 class gpu_task : public Algorithm::SOP::sop_vertex<boost::container::flat_set<std::shared_ptr<const gpu_task>>,
 												   boost::container::flat_set<const gpu_task*>>,
-				 private std::enable_shared_from_this<gpu_task>,
+				 public std::enable_shared_from_this<gpu_task>,
 				 public profileable {
 private:
 	friend class gpu_task_dispatch_queue;

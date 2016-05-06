@@ -3,6 +3,14 @@
 
 #pragma once
 
+#include "stdafx.hpp"
+#include "task_scheduler.hpp"
+
+#include "optional.hpp"
+#include "function_traits.hpp"
+
+#include "thread_constants.hpp"
+
 #include <thread>
 #include <functional>
 #include <memory>
@@ -10,14 +18,7 @@
 #include <future>
 #include <type_traits>
 
-#include "optional.hpp"
-#include "function_traits.hpp"
-
-#include "thread_constants.hpp"
-
 namespace StE {
-
-class task_scheduler;
 
 template <typename R>
 class task {
@@ -50,41 +51,54 @@ public:
 
 	template <typename L>
 	task<typename function_traits<L>::result_t> then(L &&lambda,
-											std::enable_if_t<function_traits<L>::arity == 1>* = 0) {
-		static_assert(std::is_constructible<typename function_traits<L>::template arg<0>::t, R>::value, "Lambda argument must be constructible with R");
-
-		return[func = std::forward<L>(lambda), thisf = this->f](SchedArg sched) {
-			auto r = thisf(sched);
-			return (!sched) ? func(std::move(r)) : sched.schedule_now([&]() { return func(std::move(r)); }).get();
-		};
-	}
+													 std::enable_if_t<function_traits<L>::arity == 1>* = 0);
 	template <typename L>
 	task<typename function_traits<L>::result_t> then(L &&lambda,
-											std::enable_if_t<function_traits<L>::arity == 2> * = 0) {
-		static_assert(std::is_constructible<typename function_traits<L>::template arg<0>::t, SchedArg>::value, "Lambda argument 0 must be constructible with SchedArg");
-		static_assert(std::is_constructible<typename function_traits<L>::template arg<1>::t, R>::value, "Lambda argument 1 must be constructible with R");
-
-		return[func = std::forward<L>(lambda), thisf = this->f](SchedArg sched) {
-			auto r = thisf(sched);
-			return (!sched) ? func(sched, std::move(r)) : sched->schedule_now([&]() { return func(sched, std::move(r)); }).get();
-		};
-	}
+													 std::enable_if_t<function_traits<L>::arity == 2> * = 0);
 	template <typename L>
 	task<typename function_traits<L>::result_t> then_on_main_thread(L &&lambda,
-														   std::enable_if_t<function_traits<L>::arity == 2>* = 0) {
-		static_assert(std::is_constructible<typename function_traits<L>::template arg<0>::t, SchedArg>::value, "Lambda argument 0 must be constructible with SchedArg");
-		static_assert(std::is_constructible<typename function_traits<L>::template arg<1>::t, R>::value, "Lambda argument 1 must be constructible with R");
-
-		return [func = std::forward<L>(lambda), thisf = this->f](SchedArg sched) {
-			auto r = thisf(sched);
-			if (!sched) assert(is_main_thread());
-			return (!sched) ? func(sched, std::move(r)) : sched->schedule_now_on_main_thread([&]() { return func(sched, std::move(r)); }).get();
-		};
-	}
+														   			std::enable_if_t<function_traits<L>::arity == 2>* = 0);
 
 	R operator()(SchedArg sched = none) const { return f(sched); }
 };
 
+template <typename R>
+template <typename L>
+task<typename function_traits<L>::result_t> task<R>::then(L &&lambda,
+												 		  std::enable_if_t<function_traits<L>::arity == 1>*) {
+	static_assert(std::is_constructible<typename function_traits<L>::template arg<0>::t, R>::value, "Lambda argument must be constructible with R");
+
+	return[func = std::forward<L>(lambda), thisf = this->f](SchedArg sched) {
+		auto r = thisf(sched);
+		return (!sched) ? func(std::move(r)) : sched->schedule_now([&]() { return func(std::move(r)); }).get();
+	};
 }
 
-#include "task_scheduler.hpp"
+template <typename R>
+template <typename L>
+task<typename function_traits<L>::result_t> task<R>::then(L &&lambda,
+												 		  std::enable_if_t<function_traits<L>::arity == 2>*) {
+	static_assert(std::is_constructible<typename function_traits<L>::template arg<0>::t, SchedArg>::value, "Lambda argument 0 must be constructible with SchedArg");
+	static_assert(std::is_constructible<typename function_traits<L>::template arg<1>::t, R>::value, "Lambda argument 1 must be constructible with R");
+
+	return[func = std::forward<L>(lambda), thisf = this->f](SchedArg sched) {
+		auto r = thisf(sched);
+		return (!sched) ? func(sched, std::move(r)) : sched->schedule_now([&]() { return func(sched, std::move(r)); }).get();
+	};
+}
+
+template <typename R>
+template <typename L>
+task<typename function_traits<L>::result_t> task<R>::then_on_main_thread(L &&lambda,
+																		 std::enable_if_t<function_traits<L>::arity == 2>*) {
+	static_assert(std::is_constructible<typename function_traits<L>::template arg<0>::t, SchedArg>::value, "Lambda argument 0 must be constructible with SchedArg");
+	static_assert(std::is_constructible<typename function_traits<L>::template arg<1>::t, R>::value, "Lambda argument 1 must be constructible with R");
+
+	return [func = std::forward<L>(lambda), thisf = this->f](SchedArg sched) {
+		auto r = thisf(sched);
+		if (!sched) assert(is_main_thread());
+		return (!sched) ? func(sched, std::move(r)) : sched->schedule_now_on_main_thread([&]() { return func(sched, std::move(r)); }).get();
+	};
+}
+
+}

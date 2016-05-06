@@ -14,25 +14,23 @@ LOCAL_LIBS += \
 BUILD_DIR = ./build
 
 CXXFLAGS += \
+	-std=c++17 \
 	-Wall \
-	-std=c++14 \
 	-D _linux \
 	-pthread \
-#	-w2 \
-#	-static-intel \
-	-diag-error-limit=5 \
-#	-wd672,10237,11012,11021,10382 \
+	-pipe
 
 CXXFLAGS_release += \
-	-O3 -ipo -xHOST -no-prec-div -falign-functions=16 -D NDEBUG
+	-O3 -march=native -flto -falign-functions=16 -falign-loops=16 -D NDEBUG
 
 CXXFLAGS_profile += \
 	$(CXXFLAGS_release) -g
 
 CXXFLAGS_debug += \
-	-g -D DEBUG
+	-Og -g -D DEBUG
 
 SYSTEM_LIBRARIES += \
+	atomic \
 	GL \
 	GLU \
 	GLEW \

@@ -55,8 +55,8 @@ private:
 		friend class GIRenderer;
 
 	private:
-		GIRenderer *dr;
 		std::shared_ptr<Core::GLSLProgram> program;
+		GIRenderer *dr;
 
 	public:
 		deferred_composition(const StEngineControl &ctx, GIRenderer *dr) : program(ctx.glslprograms_pool().fetch_program_task({ "passthrough.vert", "deferred_compose.frag" })()), dr(dr) {
@@ -93,9 +93,9 @@ private:
 	gpu_task::TaskCollection gui_tasks;
 	gpu_task::TaskCollection added_tasks;
 
-	light_preprocessor light_preprocess;
 	linked_light_lists lll_storage;
 	linked_light_lists_gen_dispatch lll_gen_dispatch;
+	light_preprocessor light_preprocess;
 
 	shadowmap_storage shadows_storage;
 	shadowmap_projector shadows_projector;

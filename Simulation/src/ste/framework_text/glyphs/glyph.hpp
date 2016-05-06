@@ -10,7 +10,6 @@
 #include <boost/serialization/split_member.hpp>
 
 #include <memory>
-#include <gli/gli.hpp>
 
 namespace StE {
 namespace Text {
@@ -42,8 +41,8 @@ public:
 	static constexpr int ttf_pixel_size = 64;
 
 private:
-	std::unique_ptr<gli::texture2d> glyph_distance_field;
 	glyph_metrics metrics;
+	std::unique_ptr<gli::texture2d> glyph_distance_field;
 
 private:
 	friend class boost::serialization::access;
@@ -86,7 +85,7 @@ public:
 
 	glyph(glyph &&) = default;
 	glyph &operator=(glyph &&) = default;
-	
+
 	glyph(const glyph &g) : metrics(g.metrics), glyph_distance_field(std::make_unique<gli::texture2d>(*g.glyph_distance_field)) {}
 	glyph &operator=(const glyph &g) {
 		metrics = g.metrics;

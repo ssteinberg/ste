@@ -33,10 +33,7 @@ namespace Text {
 class TextManager {
 private:
 	struct glyph_point {
-		struct {
-			glm::vec2 pos;
-			float glyph, size;
-		};
+		glm::vec2 pos; float glyph, size;
 		glm::vec4 color;
 		glm::vec4 stroke_color;
 		float stroke_width;

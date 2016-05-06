@@ -264,15 +264,15 @@ int main() {
 			glm::ivec2 center = ctx.get_backbuffer_size() / 2;
 			ctx.set_pointer_position(center);
 			auto diff_v = static_cast<glm::vec2>(center - pp) * time_delta * rotation_factor;
-			// camera.pitch_and_yaw(-diff_v.y, diff_v.x);
+			camera.pitch_and_yaw(-diff_v.y, diff_v.x);
 		}
 
 		float angle = time * glm::pi<float>() / 2.5f;
 		glm::vec3 lp = light0_pos + glm::vec3(glm::sin(angle) * 3, 0, glm::cos(angle)) * 115.f;
 
-		// light0->set_position(lp);
+		light0->set_position(lp);
 
-		// light0_obj->set_model_matrix(glm::scale(glm::translate(glm::mat4(), lp), glm::vec3(light0->get_radius() / 2.f)));
+		light0_obj->set_model_matrix(glm::scale(glm::translate(glm::mat4(), lp), glm::vec3(light0->get_radius() / 2.f)));
 
 		{
 			using namespace StE::Text::Attributes;

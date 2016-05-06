@@ -112,7 +112,7 @@ public:
 
 namespace std {
 	template<>
-	void swap(StE::Core::GL::gl_context_state_log& lhs, StE::Core::GL::gl_context_state_log& rhs) {
+	void inline swap(StE::Core::GL::gl_context_state_log& lhs, StE::Core::GL::gl_context_state_log& rhs) {
 		lhs.swap(rhs);
 	}
 }

@@ -34,7 +34,7 @@ protected:
 							 int virtual_page_idx,
 							 const gli::swizzles &swizzle = swizzles_rgba) : Base(), tile_size(tile_size) {
 		this->levels = levels;
-		allocate_tex_storage(size, format, swizzle, levels, 1, true, virtual_page_idx);
+		Base::allocate_tex_storage(size, format, swizzle, levels, 1, true, virtual_page_idx);
 		glGetTextureParameteriv(Base::get_resource_id(), GL_NUM_SPARSE_LEVELS_ARB, &max_sparse_level);
 	}
 
@@ -99,7 +99,7 @@ public:
 		return s;
 	}
 
-	const image<T> operator[](int level) const {
+	image<T> operator[](int level) const {
 		return image<T>(*this, Base::get_image_container_size(), Base::format, ImageAccessMode::ReadWrite, level, 0);
 	}
 };
@@ -120,7 +120,7 @@ public:
 		return s;
 	}
 
-	const image_container<T> operator[](int level) const {
+	image_container<T> operator[](int level) const {
 		return image_container<T>(*this, Base::get_image_container_size(), Base::format, ImageAccessMode::ReadWrite, level, Base::get_image_container_dimensions());
 	}
 };
@@ -141,7 +141,7 @@ public:
 		return max_layers;
 	}
 
-	const image_container<T> operator[](int level) const {
+	image_container<T> operator[](int level) const {
 		return image_container<T>(*this, Base::get_image_container_size(), Base::format, ImageAccessMode::ReadWrite, level, Base::get_image_container_dimensions());
 	}
 };

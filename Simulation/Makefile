@@ -14,7 +14,7 @@ PCH = $(WORK_DIR)/$(SOURCE_DIR)/$(PCHCPP).gch
 
 CXXFLAGS += $(CXXFLAGS_$(config))
 CXXFLAGS += $(addprefix -L, $(LOCAL_LIBS))
-INCLUDE_FLAGS = $(addprefix -I, $(LOCAL_INCLUDES))
+INCLUDE_FLAGS = -I$(dir $(PCH)) $(addprefix -I, $(LOCAL_INCLUDES))
 
 .SECONDARY: $(OBJECTS) $(PCH)
 .PHONY: docs
@@ -25,22 +25,22 @@ endef
 $(foreach d,$(SOURCES),$(eval $(call make-cpp-target,$(basename $(notdir $d)))))
 
 $(BUILD_DIR)/%.elf: $(OBJECTS)
-	#@/bin/echo -e "\e[1;37m[LINK] \e[1;92m$@ \e[0m$(CXXFLAGS) $(addprefix -l, $(SYSTEM_LIBRARIES)) $(LINKFLAGS)\e[0m"
+	@/bin/echo -e "\e[1;37m[LINK] \e[1;92m$@ \e[0m$(CXXFLAGS) $(addprefix -l, $(SYSTEM_LIBRARIES)) $(LINKFLAGS)\e[0m"
 	@/usr/bin/mkdir -p $(dir $@)
-	$(LINK) $(CXXFLAGS) -o $@ $^ $(addprefix -l, $(SYSTEM_LIBRARIES)) $(LINKFLAGS)
+	@$(LINK) $(CXXFLAGS) -o $@ $^ $(addprefix -l, $(SYSTEM_LIBRARIES)) $(LINKFLAGS)
 
 $(WORK_DIR)/%.gch: %
-	#@/bin/echo -e "\e[1;94mCreating precompiled-header $@...\e[0m"
+	@/bin/echo -e "\e[1;94mCreating precompiled-header $@...\e[0m"
 	@/usr/bin/rm -f $@
 	@/usr/bin/mkdir -p $(dir $@)
-	$(COMPILE) -c $^ -o $(WORK_DIR)/$*.gch -MMD -MP $(CXXFLAGS) $(INCLUDE_FLAGS)
+	@$(COMPILE) -x c++ -c $^ -o $(WORK_DIR)/$*.gch -MMD -MP $(CXXFLAGS) $(INCLUDE_FLAGS)
 	@/usr/bin/mkdir -p $(dir $(BUILD_DIR)/.depend/$*)
 	@/usr/bin/mv $(WORK_DIR)/$*.d $(BUILD_DIR)/.depend/$*_$(config).d
 
 $(WORK_DIR)/%.o: $(PCH) %.cpp
-	#@/bin/echo -e "\e[1;37m[CXX] \e[1;92m$*.cpp\e[0m $(CXXFLAGS)\e[0m"
+	@/bin/echo -e "\e[1;37m[CXX] \e[1;92m$*.cpp\e[0m $(CXXFLAGS)\e[0m"
 	@/usr/bin/mkdir -p $(dir $@)
-	$(COMPILE) -c $*.cpp -o $@ -MMD -MP $(CXXFLAGS) $(INCLUDE_FLAGS) -include $(PCHCPP)
+	@$(COMPILE) -c $*.cpp -o $@ -MMD -MP $(CXXFLAGS) $(INCLUDE_FLAGS)
 	@/usr/bin/mkdir -p $(dir $(BUILD_DIR)/.depend/$*)
 	@/usr/bin/mv $(WORK_DIR)/$*.d $(BUILD_DIR)/.depend/$*_$(config).d
 

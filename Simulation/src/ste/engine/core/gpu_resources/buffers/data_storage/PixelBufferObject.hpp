@@ -26,10 +26,10 @@ private:
 	using buffer_object<Type, U>::bind;
 	using buffer_object<Type, U>::unbind;
 
-	void bind_pack() const { Binder::bind(get_resource_id(), GL_PIXEL_PACK_BUFFER); }
-	void unbind_pack() const { Binder::unbind(GL_PIXEL_PACK_BUFFER); }
-	void bind_unpack() const { Binder::bind(get_resource_id(), GL_PIXEL_UNPACK_BUFFER); }
-	void unbind_unpack() const { Binder::unbind(GL_PIXEL_UNPACK_BUFFER); }
+	void bind_pack() const { Base::Binder::bind(Base::get_resource_id(), GL_PIXEL_PACK_BUFFER); }
+	void unbind_pack() const { Base::Binder::unbind(GL_PIXEL_PACK_BUFFER); }
+	void bind_unpack() const { Base::Binder::bind(Base::get_resource_id(), GL_PIXEL_UNPACK_BUFFER); }
+	void unbind_unpack() const { Base::Binder::unbind(GL_PIXEL_UNPACK_BUFFER); }
 
 	void unpacker(const std::function<void(void)> &unpacker) const {
 		bind_unpack();
@@ -50,11 +50,11 @@ public:
 
 	template <core_resource_type type>
 	void unpack_to(texture_pixel_transferable<type> &texture, int level, int layer, int offset, std::size_t size) const {
-		unpacker([&]() { texture.upload_level(reinterpret_cast<void*>(offset), level, layer, CubeMapFace::CubeMapFaceNone, size * sizeof(T)); });
+		unpacker([&]() { texture.upload_level(reinterpret_cast<void*>(offset), level, layer, CubeMapFace::CubeMapFaceNone, size * sizeof(Type)); });
 	}
 	template <core_resource_type type>
-	void unpack_to(texture_pixel_transferable<type> &texture, int level = 0, int layer = 0) const { 
-		unpack_to(texture, level, layer, 0, buffer_size); 
+	void unpack_to(texture_pixel_transferable<type> &texture, int level = 0, int layer = 0) const {
+		unpack_to(texture, level, layer, 0, Base::buffer_size);
 	}
 
 	template <core_resource_type type>
@@ -66,8 +66,8 @@ public:
 		packer([&]() { texture.download_level(reinterpret_cast<void*>(offset), size, level, layer); });
 	}
 	template <core_resource_type type>
-	void pack_from(const texture_pixel_transferable<type> &texture, int level = 0, int layer = 0) { 
-		pack_from(texture, level, layer, 0, buffer_size); 
+	void pack_from(const texture_pixel_transferable<type> &texture, int level = 0, int layer = 0) {
+		pack_from(texture, level, layer, 0, Base::buffer_size);
 	}
 
 	template <core_resource_type type>
@@ -78,11 +78,11 @@ public:
 
 	template<typename A, GLenum t>
 	void pack_from(const fbo_color_attachment_point<A, t> &fbo_attachment, int offset, const glm::uvec2 &rect_size, const glm::uvec2 &origin = { 0, 0 }) {
-		packer([&]() { fbo_attachment.read_pixels(reinterpret_cast<void*>(offset), buffer_size * sizeof(T), rect_size, origin); });
+		packer([&]() { fbo_attachment.read_pixels(reinterpret_cast<void*>(offset), Base::buffer_size * sizeof(Type), rect_size, origin); });
 	}
 	template<typename A, GLenum t>
 	void pack_from(const fbo_color_attachment_point<A, t> &fbo_attachment, int offset) {
-		packer([&]() { fbo_attachment.read_pixels(reinterpret_cast<void*>(offset), buffer_size * sizeof(T)); });
+		packer([&]() { fbo_attachment.read_pixels(reinterpret_cast<void*>(offset), Base::buffer_size * sizeof(Type)); });
 	}
 	template<typename A, GLenum t>
 	void pack_from(const fbo_color_attachment_point<A, t> &fbo_attachment) {

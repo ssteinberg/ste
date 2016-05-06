@@ -87,7 +87,7 @@ private:
 	std::string inject(std::string str, const log_entry *entry = nullptr) {
 		std::string::size_type p;
 		int i = 0;
-		while ((p = str.find("%%"), i) != std::string::npos) {
+		while (static_cast<std::size_t>(p = str.find("%%"), i) != std::string::npos) {
 			auto e = str.find("%%", p + 2);
 			if (e == std::string::npos)
 				break;
@@ -113,14 +113,14 @@ private:
 public:
 	log_stream_formatter(const std::string &name) : t_warn(0), t_err(0), t_fatal(0), name(name) {
 		std::string template_data;
-		
+
 		std::ifstream fs(log_template_path, std::ios::in);
 		if (!fs.good()) {
 			std::cerr << "Error while reading log template file \"" << log_template_path << "\": " << std::strerror(errno) << std::endl;
 			assert(false);
 			return;
 		}
-		
+
 		template_data = std::string((std::istreambuf_iterator<char>(fs)), (std::istreambuf_iterator<char>()));
 		fs.close();
 

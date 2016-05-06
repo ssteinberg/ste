@@ -13,20 +13,20 @@ namespace Graphics {
 template <typename T, int samples>
 class spectrum {
 private:
-	template <typename T, int samples>
-	friend spectrum<T, samples> sqrt(const spectrum<T, samples> &rhs);
-	template <typename T, int samples>
-	friend spectrum<T, samples> pow(const spectrum<T, samples> &rhs, const T& exponent);
-	template <typename T, int samples>
-	friend spectrum<T, samples> pow(const spectrum<T, samples> &rhs, const T& exponent);
-	template <typename T, int samples>
-	friend spectrum<T, samples> mix(const spectrum<T, samples> &a, const spectrum<T, samples> &b, float x);
-	template <typename T, int samples>
-	friend spectrum<T, samples> smoothstep(const spectrum<T, samples> &a, const spectrum<T, samples> &b, float x);
-	template <typename T, int samples>
-	friend spectrum<T, samples> min(const spectrum<T, samples> &a, const spectrum<T, samples> &b);
-	template <typename T, int samples>
-	friend spectrum<T, samples> max(const spectrum<T, samples> &a, const spectrum<T, samples> &b);
+	template<typename S, int s>
+	friend spectrum<S, s> sqrt(const spectrum<S, s> &rhs);
+	template<typename S, int s>
+	friend spectrum<S, s> pow(const spectrum<S, s> &rhs, const S& exponent);
+	template<typename S, int s>
+	friend spectrum<S, s> pow(const spectrum<S, s> &rhs, const S& exponent);
+	template<typename S, int s>
+	friend spectrum<S, s> mix(const spectrum<S, s> &a, const spectrum<S, s> &b, float x);
+	template<typename S, int s>
+	friend spectrum<S, s> smoothstep(const spectrum<S, s> &a, const spectrum<S, s> &b, float x);
+	template<typename S, int s>
+	friend spectrum<S, s> min(const spectrum<S, s> &a, const spectrum<S, s> &b);
+	template<typename S, int s>
+	friend spectrum<S, s> max(const spectrum<S, s> &a, const spectrum<S, s> &b);
 
 protected:
 	std::array<T, samples> c;

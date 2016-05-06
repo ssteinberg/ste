@@ -70,6 +70,10 @@ public:
 		char *base = &buffer.front();
 		setp(base, base + buffer.size());
 	}
+	log_streambuf(log_streambuf &&other) : std::streambuf(std::move(other)),
+										   force_flush(other.force_flush),
+										   sink(std::move(other.sink)),
+										   buffer(std::move(other.buffer)) {}
 };
 
 }

@@ -42,7 +42,7 @@ private:
 
 	glm::ivec2 size;
 
-	static constexpr std::size_t virtual_gbuffer_size() {
+	static std::size_t virtual_gbuffer_size() {
 		return virt_size / gbuffer_type::page_size() / sizeof(g_buffer_element) * gbuffer_type::page_size();
 	}
 

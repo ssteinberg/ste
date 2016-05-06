@@ -15,8 +15,6 @@
 
 #include "Sampler.hpp"
 
-#include <gli/gli.hpp>
-
 using namespace StE::Graphics;
 
 hdr_dof_postprocess::hdr_dof_postprocess(const StEngineControl &context, const deferred_gbuffer *gbuffer) : hdr_vision_properties_sampler(Core::TextureFiltering::Linear, Core::TextureFiltering::Linear, 16),
@@ -27,7 +25,9 @@ hdr_dof_postprocess::hdr_dof_postprocess(const StEngineControl &context, const d
 	task = make_gpu_task("hdr", create_dispatchable(), &ctx.gl()->defaut_framebuffer(), create_sub_tasks());
 
 	float big_float = 10000000.f;
-	hdr_bokeh_param_buffer_eraser = std::make_unique<StE::Core::PixelBufferObject<std::int32_t>>(std::vector<std::int32_t>{ *reinterpret_cast<std::int32_t*>(&big_float), 0 });
+	std::int32_t big_float_i;
+	std::memcpy(&big_float_i, &big_float, sizeof(float));
+	hdr_bokeh_param_buffer_eraser = std::make_unique<StE::Core::PixelBufferObject<std::int32_t>>(std::vector<std::int32_t>{ big_float_i, 0 });
 
 	hdr_compute_minmax = context.glslprograms_pool().fetch_program_task({ "hdr_compute_minmax.glsl" })();
 	hdr_create_histogram = context.glslprograms_pool().fetch_program_task({ "hdr_create_histogram.glsl" })();
@@ -41,7 +41,7 @@ hdr_dof_postprocess::hdr_dof_postprocess(const StEngineControl &context, const d
 	gli::texture1d hdr_human_vision_properties_data(gli::format::FORMAT_RGBA32_SFLOAT_PACK32, glm::tvec1<std::size_t>{ 4096 }, 1);
 	{
 		glm::vec4 *d = reinterpret_cast<glm::vec4*>(hdr_human_vision_properties_data.data());
-		for (unsigned i = 0; i < hdr_human_vision_properties_data.extent().x; ++i, ++d) {
+		for (int i = 0; i < hdr_human_vision_properties_data.extent().x; ++i, ++d) {
 			float x = static_cast<float>(i) / static_cast<float>(hdr_human_vision_properties_data.extent().x);
 			float l = glm::mix(StE::Graphics::human_vision_properties::min_luminance,
 							   vision_properties_max_lum,

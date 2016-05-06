@@ -5,8 +5,6 @@
 
 #include "FramebufferObject.hpp"
 
-#include <gli/gli.hpp>
-
 namespace StE {
 namespace Core {
 

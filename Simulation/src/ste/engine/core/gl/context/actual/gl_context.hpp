@@ -16,7 +16,6 @@
 #include <map>
 #include <unordered_map>
 
-#include <gli/gli.hpp>
 #include <GLFW/glfw3.h>
 
 namespace StE {

@@ -39,7 +39,7 @@ private:
 
 	glm::ivec2 size;
 
-	static constexpr std::size_t virtual_lll_size() {
+	static std::size_t virtual_lll_size() {
 		return (virt_size / lll_type::page_size() / sizeof(lll_element) + 1) * lll_type::page_size();
 	}
 
