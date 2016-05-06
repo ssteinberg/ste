@@ -8,8 +8,6 @@
 #include "surface_traits.hpp"
 #include "surface_element_cast.hpp"
 
-#include <gli/gli.hpp>
-
 namespace StE {
 namespace Graphics {
 
@@ -32,9 +30,8 @@ public:
 
 		float *data = reinterpret_cast<float*>(nm.data());
 		const T *heights = reinterpret_cast<const T*>(height_map.data());
-		for (unsigned y = 0; y < dim.y; ++y) {
-#pragma ivdep
-			for (unsigned x = 0; x < dim.x; ++x) {
+		for (int y = 0; y < dim.y; ++y) {
+			for (int x = 0; x < dim.x; ++x) {
 				glm::vec3 n;
 
 				T ic = heights[dim.x * y + x];

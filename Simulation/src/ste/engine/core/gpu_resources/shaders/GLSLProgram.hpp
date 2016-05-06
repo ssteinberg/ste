@@ -218,7 +218,7 @@ public:
 		static_assert(is_flat_container<V<int, Args...>>::value, "V must be a flat container.");
 		int loc = get_uniform_location(name);
 		if (loc >= 0)
-			glProgramUniform2fv(get_resource_id(), loc, v.size(), reinterpret_cast<const std::remove_reference_t<decltype(v)>::value_type::value_type*>(&v[0]));
+			glProgramUniform2fv(get_resource_id(), loc, v.size(), reinterpret_cast<const float*>(&v[0]));
 	}
 
 	template <template<typename, typename...> class V, typename ... Args>
@@ -226,7 +226,7 @@ public:
 		static_assert(is_flat_container<V<int, Args...>>::value, "V must be a flat container.");
 		int loc = get_uniform_location(name);
 		if (loc >= 0)
-			glProgramUniform2iv(get_resource_id(), loc, v.size(), reinterpret_cast<const std::remove_reference_t<decltype(v)>::value_type::value_type*>(&v[0]));
+			glProgramUniform2iv(get_resource_id(), loc, v.size(), reinterpret_cast<const std::int32_t*>(&v[0]));
 	}
 
 	template <template<typename, typename...> class V, typename ... Args>
@@ -234,7 +234,7 @@ public:
 		static_assert(is_flat_container<V<int, Args...>>::value, "V must be a flat container.");
 		int loc = get_uniform_location(name);
 		if (loc >= 0)
-			glProgramUniform2uiv(get_resource_id(), loc, v.size(), reinterpret_cast<const std::remove_reference_t<decltype(v)>::value_type::value_type*>(&v[0]));
+			glProgramUniform2uiv(get_resource_id(), loc, v.size(), reinterpret_cast<const std::uint32_t*>(&v[0]));
 	}
 
 	template <template<typename, typename...> class V, typename ... Args>
@@ -242,7 +242,7 @@ public:
 		static_assert(is_flat_container<V<int, Args...>>::value, "V must be a flat container.");
 		int loc = get_uniform_location(name);
 		if (loc >= 0)
-			glProgramUniform2i64vARB(get_resource_id(), loc, v.size(), reinterpret_cast<const std::remove_reference_t<decltype(v)>::value_type::value_type*>(&v[0]));
+			glProgramUniform2i64vARB(get_resource_id(), loc, v.size(), reinterpret_cast<const std::int64_t*>(&v[0]));
 	}
 
 	template <template<typename, typename...> class V, typename ... Args>
@@ -250,7 +250,7 @@ public:
 		static_assert(is_flat_container<V<int, Args...>>::value, "V must be a flat container.");
 		int loc = get_uniform_location(name);
 		if (loc >= 0)
-			glProgramUniform2ui64vARB(get_resource_id(), loc, v.size(), reinterpret_cast<const std::remove_reference_t<decltype(v)>::value_type::value_type*>(&v[0]));
+			glProgramUniform2ui64vARB(get_resource_id(), loc, v.size(), reinterpret_cast<const std::uint64_t*>(&v[0]));
 	}
 
 	template <template<typename, typename...> class V, typename ... Args>
@@ -258,7 +258,7 @@ public:
 		static_assert(is_flat_container<V<int, Args...>>::value, "V must be a flat container.");
 		int loc = get_uniform_location(name);
 		if (loc >= 0)
-			glProgramUniform3fv(get_resource_id(), loc, v.size(), reinterpret_cast<const std::remove_reference_t<decltype(v)>::value_type::value_type*>(&v[0]));
+			glProgramUniform3fv(get_resource_id(), loc, v.size(), reinterpret_cast<const float*>(&v[0]));
 	}
 
 	template <template<typename, typename...> class V, typename ... Args>
@@ -266,7 +266,7 @@ public:
 		static_assert(is_flat_container<V<int, Args...>>::value, "V must be a flat container.");
 		int loc = get_uniform_location(name);
 		if (loc >= 0)
-			glProgramUniform4fv(get_resource_id(), loc, v.size(), reinterpret_cast<const std::remove_reference_t<decltype(v)>::value_type::value_type*>(&v[0]));
+			glProgramUniform4fv(get_resource_id(), loc, v.size(), reinterpret_cast<const float*>(&v[0]));
 	}
 
 	template <template<typename, typename...> class V, typename ... Args>
@@ -298,7 +298,7 @@ public:
 		static_assert(is_flat_container<V<int, Args...>>::value, "V must be a flat container.");
 		int loc = get_uniform_location(name);
 		if (loc >= 0)
-			glProgramUniform1fv(get_resource_id(), loc, val.size(), reinterpret_cast<const std::remove_reference_t<decltype(val)>::value_type*>(&val[0]));
+			glProgramUniform1fv(get_resource_id(), loc, val.size(), reinterpret_cast<const float*>(&val[0]));
 	}
 
 	template <template<typename, typename...> class V, typename ... Args>
@@ -306,7 +306,7 @@ public:
 		static_assert(is_flat_container<V<int, Args...>>::value, "V must be a flat container.");
 		int loc = get_uniform_location(name);
 		if (loc >= 0)
-			glProgramUniform1iv(get_resource_id(), loc, val.size(), reinterpret_cast<const std::remove_reference_t<decltype(val)>::value_type*>(&val[0]));
+			glProgramUniform1iv(get_resource_id(), loc, val.size(), reinterpret_cast<const std::int32_t*>(&val[0]));
 	}
 
 	template <template<typename, typename...> class V, typename ... Args>
@@ -314,7 +314,7 @@ public:
 		static_assert(is_flat_container<V<int, Args...>>::value, "V must be a flat container.");
 		int loc = get_uniform_location(name);
 		if (loc >= 0)
-			glProgramUniform1i64vARB(get_resource_id(), loc, val.size(), reinterpret_cast<const std::remove_reference_t<decltype(val)>::value_type*>(&val[0]));
+			glProgramUniform1i64vARB(get_resource_id(), loc, val.size(), reinterpret_cast<const std::int64_t*>(&val[0]));
 	}
 
 	template <template<typename, typename...> class V, typename ... Args>
@@ -322,7 +322,7 @@ public:
 		static_assert(is_flat_container<V<int, Args...>>::value, "V must be a flat container.");
 		int loc = get_uniform_location(name);
 		if (loc >= 0)
-			glProgramUniform1uiv(get_resource_id(), loc, val.size(), reinterpret_cast<const std::remove_reference_t<decltype(val)>::value_type*>(&val[0]));
+			glProgramUniform1uiv(get_resource_id(), loc, val.size(), reinterpret_cast<const std::uint32_t*>(&val[0]));
 	}
 
 	template <template<typename, typename...> class V, typename ... Args>
@@ -330,7 +330,7 @@ public:
 		static_assert(is_flat_container<V<int, Args...>>::value, "V must be a flat container.");
 		int loc = get_uniform_location(name);
 		if (loc >= 0)
-			glProgramUniform1ui64vARB(get_resource_id(), loc, val.size(), reinterpret_cast<const std::remove_reference_t<decltype(val)>::value_type*>(&val[0]));
+			glProgramUniform1ui64vARB(get_resource_id(), loc, val.size(), reinterpret_cast<const std::uint64_t*>(&val[0]));
 	}
 
 	template <template<typename, typename...> class V, typename ... Args>

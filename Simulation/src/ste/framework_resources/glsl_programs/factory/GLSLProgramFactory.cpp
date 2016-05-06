@@ -89,12 +89,13 @@ std::unique_ptr<GLSLShaderGeneric> GLSLProgramFactory::compile_from_source(const
 	case GLSLShaderType::COMPUTE:	shader = std::make_unique<GLSLShader<GLSLShaderType::COMPUTE>>(code, prop); break;
 	case GLSLShaderType::TESS_CONTROL: shader = std::make_unique<GLSLShader<GLSLShaderType::TESS_CONTROL>>(code, prop); break;
 	case GLSLShaderType::TESS_EVALUATION: shader = std::make_unique<GLSLShader<GLSLShaderType::TESS_EVALUATION>>(code, prop); break;
+	default: assert(false && "unknown shader type.");
 	}
 
 	if (!shader->is_valid()) {
 		using namespace Attributes;
 		ste_log_error() << AttributedString("GLSL Shader ") + i(path.string()) + ": Unable to create GLSL shader program!";
-		return false;
+		return nullptr;
 	}
 
 	if (!shader->get_status()) {

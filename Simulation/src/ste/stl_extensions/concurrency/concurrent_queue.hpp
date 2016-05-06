@@ -91,8 +91,8 @@ protected:
 		node * const current_tail_ptr = old_tail.ptr;
 		while (!tail.compare_exchange_weak(old_tail, new_tail) && old_tail.ptr == current_tail_ptr);
 
-		old_tail.ptr == current_tail_ptr ? 
-			free_external_counter(old_tail) : 
+		old_tail.ptr == current_tail_ptr ?
+			free_external_counter(old_tail) :
 			current_tail_ptr->release_ref();
 	}
 
@@ -104,7 +104,7 @@ public:
 
 		head.store(new_counted_node);
 		tail.store(new_counted_node);
-		
+
 		assert(head.is_lock_free() && "head/tail not lock free!");
 		assert(new_counted_node.ptr->count.is_lock_free() && "count not lock free!");
 		assert(new_counted_node.ptr->next.is_lock_free() && "next not lock free!");
@@ -147,7 +147,6 @@ public:
 			T* old_data = nullptr;
 			if (old_tail.ptr->data.compare_exchange_strong(old_data, new_data.get())) {
 				counted_node_ptr old_next = { 0 };
-				auto oldnexta = old_tail.ptr->next.load();
 				if (!old_tail.ptr->next.compare_exchange_strong(old_next, new_next)) {
 					delete new_next.ptr;
 					new_next = old_next;
@@ -166,7 +165,7 @@ public:
 			}
 		}
 	}
-	
+
 	bool is_empty_hint() const {
 		counted_node_ptr h = head.load(std::memory_order_relaxed);
 		counted_node_ptr t = tail.load(std::memory_order_relaxed);

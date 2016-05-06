@@ -54,12 +54,16 @@ private:
 	static_assert(N > 2, "cache_line can't hold enough buckets");
 
 	struct concurrent_map_virtual_bucket {
-		std::array<std::atomic<unsigned long>, N> hash{ std::atomic<unsigned long>(0) };
-		std::array<std::atomic<concurrent_map_bucket_data*>, N> buckets{ std::atomic<concurrent_map_bucket_data*>(0) };
+		std::array<std::atomic<unsigned long>, N> hash;
+		std::array<std::atomic<concurrent_map_bucket_data*>, N> buckets;
 
 		std::atomic<concurrent_map_virtual_bucket*> next{ 0 };
 		void *_unused;
 
+		concurrent_map_virtual_bucket() {
+			std::fill(std::begin(hash), std::end(hash), 0);
+			std::fill(std::begin(buckets), std::end(buckets), nullptr);
+		}
 		~concurrent_map_virtual_bucket() {
 			auto ptr = next.load();
 			if (ptr)
@@ -350,7 +354,7 @@ public:
 			resize_with_pending_insert(table_guard, resize_guard, hash, key, true, true);
 	}
 
-	value_data_guard_type const try_get(const key_type &key) const {
+	value_data_guard_type try_get(const key_type &key) const {
 		unsigned long hash = hash_function(key);
 
 		auto table_guard = hash_table.acquire();
@@ -372,7 +376,7 @@ public:
 		}
 	}
 
-	auto operator[](const key_type &k) const {
+	decltype(auto) operator[](const key_type &k) const {
 		return try_get(k);
 	}
 };

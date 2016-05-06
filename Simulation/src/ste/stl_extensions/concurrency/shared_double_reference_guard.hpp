@@ -45,7 +45,7 @@ public:
 	}
 
 private:
-	static data_factory<data<DataType, recycle_pointers>, std::is_move_assignable<DataType>::value && recycle_pointers> recycler;
+	static data_factory<data<DataType, recycle_pointers>, std::is_trivially_copyable<DataType>::value && recycle_pointers> recycler;
 
 public:
 	static void release(data *ptr) { recycler.release(ptr); }
@@ -57,7 +57,7 @@ public:
 };
 
 template <typename DataType, bool recycle_pointers>
-data_factory<data<DataType, recycle_pointers>, std::is_move_assignable<DataType>::value && recycle_pointers> data<DataType, recycle_pointers>::recycler;
+data_factory<data<DataType, recycle_pointers>, std::is_trivially_copyable<DataType>::value && recycle_pointers> data<DataType, recycle_pointers>::recycler;
 
 }
 

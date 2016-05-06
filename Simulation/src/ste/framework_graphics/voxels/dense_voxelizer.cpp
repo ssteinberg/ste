@@ -23,7 +23,7 @@ void dense_voxelizer::dispatch() const {
 	dvs->voxelizer_upsampler_program->bind();
 	auto center = dvs->size / 2;
 
-	for (std::size_t i = 0; i < dvs->mipmaps - 1; ++i, center /= 2) {
+	for (int i = 0; i < dvs->mipmaps - 1; ++i, center /= 2) {
 		auto f = glm::min(center, dvs->step_size);
 		auto min = center - f;
 		auto max = center + f;

@@ -32,7 +32,10 @@ class VBODescriptorWithTypes {
 private:
 	using size_type = std::size_t;
 
-	template<int index> struct sizes_populator { using T = std::size_t; static constexpr T value = sizeof(typelist_type_at<index, Ts...>::type); };
+	template<int index> struct sizes_populator {
+		using T = std::size_t;
+		static constexpr T value = sizeof(typename typelist_type_at<index, Ts...>::type);
+	};
 	template<int index> struct elements_count_populator {
 		using T = std::size_t;
 		using ValT = typename typelist_type_at<index, Ts...>::type;
@@ -47,14 +50,14 @@ private:
 	};
 
 	class _descriptor : public VertexBufferDescriptor {
-		static constexpr auto sizes = generate_array<sizeof...(Ts), sizes_populator>::result::data;
-		static constexpr auto elements = generate_array<sizeof...(Ts), elements_count_populator>::result::data;
-		static constexpr auto element_type_names = generate_array<sizeof...(Ts), elements_type_name_populator>::result::data;
+		using sizes_arr = typename generate_array<sizeof...(Ts), sizes_populator>::result;
+		using elements_arr = typename generate_array<sizeof...(Ts), elements_count_populator>::result;
+		using element_type_names_arr = typename generate_array<sizeof...(Ts), elements_type_name_populator>::result;
 	public:
 		std::size_t attrib_count() const noexcept override{ return sizeof...(Ts); };
-		std::size_t attrib_size(int attrib) const noexcept override{ return sizes[attrib]; };
-		std::size_t attrib_element_count(int attrib) const noexcept override{ return elements[attrib]; };
-		GLenum attrib_element_type(int attrib) const noexcept override{ return element_type_names[attrib]; };
+		std::size_t attrib_size(int attrib) const noexcept override{ return sizes_arr::data[attrib]; };
+		std::size_t attrib_element_count(int attrib) const noexcept override{ return elements_arr::data[attrib]; };
+		GLenum attrib_element_type(int attrib) const noexcept override{ return element_type_names_arr::data[attrib]; };
 	};
 public:
 	using descriptor = _descriptor;
