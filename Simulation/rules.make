@@ -7,8 +7,7 @@ DOCS_DIR = ./docs
 
 LOCAL_INCLUDES += \
 	$(shell find $(SOURCE_DIR) -type d) \
-	/usr/include/freetype2 \
-	/usr/local/share/icc/compilers_and_libraries/linux/include/
+	/usr/include/freetype2
 
 LOCAL_LIBS += \
 
@@ -19,10 +18,10 @@ CXXFLAGS += \
 	-std=c++14 \
 	-D _linux \
 	-pthread \
-	-w2 \
-	-static-intel \
+#	-w2 \
+#	-static-intel \
 	-diag-error-limit=5 \
-	-wd672,10237,11012,11021,10382 \
+#	-wd672,10237,11012,11021,10382 \
 
 CXXFLAGS_release += \
 	-O3 -ipo -xHOST -no-prec-div -falign-functions=16 -D NDEBUG
@@ -52,15 +51,15 @@ SYSTEM_LIBRARIES += \
 
 LINKFLAGS += $(shell pkg-config --static --libs glfw3)
 
-PCHCPP = ste/engine/stdafx
+PCHCPP = ste/engine/stdafx.hpp
 
 SOURCES := $(shell find $(SOURCE_DIR) -iname "*.c")
 SOURCES += $(shell find $(SOURCE_DIR) -iname "*.cpp")
 HEADERS := $(shell find $(SOURCE_DIR) -iname "*.h")
 HEADERS += $(shell find $(SOURCE_DIR) -iname "*.hpp")
 
-COMPILE = icpc
-LINK 	= icpc
+COMPILE = g++
+LINK 	= g++
 
 TARGET = simulation
 
