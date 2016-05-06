@@ -20,21 +20,22 @@ inline void set_difference(StE::Core::GL::gl_context_state_log::container<StE::C
 		return;
 
 	auto *k = &a[0];
-	for (int i = 0; i < a.size();) {
+	for (std::size_t i = 0; i < a.size();) {
 		auto it = std::find_if(b.begin(), b.end(), [=](const StE::Core::GL::BasicStateName &v){
 			return v == *k;
 		});
 		if (it != b.end())
 			a.erase(a.begin() + i, a.begin() + i + 1);
-		else
+		else {
 			++i; ++k;
+		}
 	}
 }
 
 inline void set_difference(StE::Core::GL::gl_context_state_log::container<StE::Core::GL::gl_context_state_log::states_value_type> &a,
 						   StE::Core::GL::gl_context_state_log::container<StE::Core::GL::gl_context_state_log::states_value_type> &b) {
 	if (a.size() && b.size()) {
-		for (int i = 0; i < a.size();) {
+		for (std::size_t i = 0; i < a.size();) {
 			auto &k = a[i];
 			auto it = std::find_if(b.begin(), b.end(), [&k](const StE::Core::GL::gl_context_state_log::states_value_type &v){
 				return v.first == k.first;

@@ -9,11 +9,11 @@ layout(early_fragment_tests) in;
 #include "material.glsl"
 #include "gbuffer.glsl"
 
-layout(std430, binding = 0) restrict readonly buffer material_data {
+layout(std430, binding = 13) restrict readonly buffer material_data {
 	material_descriptor mat_descriptor[];
 };
 
-layout(std430, binding = 6) restrict writeonly buffer gbuffer_data {
+layout(shared, binding = 6) restrict writeonly buffer gbuffer_data {
 	g_buffer_element gbuffer[];
 };
 layout(binding = 7) uniform atomic_uint gbuffer_ll_counter;
@@ -28,7 +28,6 @@ in v {
 	vec3 frag_tangent;
 	flat int matIdx;
 } vin;
-
 uniform float height_map_scale = .5f;
 
 void main() {
@@ -42,14 +41,11 @@ void main() {
 	vec3 P = vin.frag_position;
 	vec3 n = normalize(vin.frag_normal);
 	vec3 t = normalize(vin.frag_tangent);
+	vec3 b = cross(t, n);
 
-	normal_map(md, height_map_scale, uv, n, t, P);
+	normal_map(md, height_map_scale, uv, n, t, b, P);
 
-	float specular = md.specular.tex_handler>0 ? texture(sampler2D(md.specular.tex_handler), uv).x : 1.f;
-	vec3 diffuse = md.diffuse.tex_handler>0 ? texture(sampler2D(md.diffuse.tex_handler), uv).rgb : vec3(1.f);
+	int material = vin.matIdx >= 0 ? vin.matIdx : material_none;
 
-	vec4 albedo = vec4(diffuse, alpha);
-	uint16_t material = vin.matIdx >= 0 ? uint16_t(vin.matIdx) : material_none;
-
-	gbuffer_store(gbuffer_ll_heads, gbuffer_ll_counter, P, albedo, specular, n, t, material, ivec2(gl_FragCoord.xy));
+	gbuffer_store(gbuffer_ll_heads, gbuffer_ll_counter, gl_FragCoord.z, uv, f16vec3(n), f16vec3(t), material, ivec2(gl_FragCoord.xy));
 }

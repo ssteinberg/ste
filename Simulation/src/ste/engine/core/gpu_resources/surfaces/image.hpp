@@ -66,15 +66,15 @@ protected:
 public:
 	image_layout_bindable(image_layout_bindable &&m) = default;
 	image_layout_bindable(const image_layout_bindable &c) = delete;
-	image_layout_bindable& operator=(image_layout_bindable &&m) = delete;
+	image_layout_bindable& operator=(image_layout_bindable &&m) = default;
 	image_layout_bindable& operator=(const image_layout_bindable &c) = delete;
 
 	virtual ~image_layout_bindable() noexcept {}
 
 	using Base::get_resource_id;
 
-	void bind(const LayoutLocationType &binding) const override final { Binder::bind(get_resource_id(), binding, level, layers>1?true:false, layer, access, format); }
-	void unbind(const LayoutLocationType &binding) const override final { Binder::unbind(binding, 0, false, 0, access, format); }
+	void bind(const LayoutLocationType &binding) const override final { Base::Binder::bind(get_resource_id(), binding, level, layers>1?true:false, layer, access, format); }
+	void unbind(const LayoutLocationType &binding) const override final { Base::Binder::unbind(binding, 0, false, 0, access, format); }
 
 	auto get_image_handle() const {
 		auto swizzle = swizzles_rgba;
@@ -107,7 +107,7 @@ public:
 
 	image(image &&m) = default;
 	image(const image &c) = delete;
-	image& operator=(image &&m) = delete;
+	image& operator=(image &&m) = default;
 	image& operator=(const image &c) = delete;
 
 	int get_layer() const { return Base::layer; }
@@ -133,10 +133,10 @@ public:
 
 	image_container(image_container &&m) = default;
 	image_container(const image_container &c) = delete;
-	image_container& operator=(image_container &&m) = delete;
+	image_container& operator=(image_container &&m) = default;
 	image_container& operator=(const image_container &c) = delete;
 
-	const image<type> operator[](int layer) const { return image<type>(*this, Base::size, Base::format, Base::access, Base::level, layer); }
+	image<type> operator[](int layer) const { return image<type>(*this, Base::size, Base::format, Base::access, Base::level, layer); }
 
 	image_container<type> with_format(gli::format format) const { return image_container(*this, Base::size, format, Base::access, Base::level, Base::layers); }
 	image_container<type> with_access(ImageAccessMode access) const { return image_container(*this, Base::size, Base::format, access, Base::level, Base::layers); }

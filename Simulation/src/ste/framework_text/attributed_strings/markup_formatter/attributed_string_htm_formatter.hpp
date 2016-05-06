@@ -15,13 +15,13 @@ template <typename CharT>
 class attributed_string_htm_formatter {
 public:
 	typename attributed_string<CharT>::string_type operator()(const attributed_string<CharT> &str) {
-		if (!str.length()) return attributed_string<CharT>::string_type();
+		if (!str.length()) return typename attributed_string<CharT>::string_type();
 
 		using namespace Attributes;
 
 		typename attributed_string<CharT>::string_type pstr;
 		typename attributed_string<CharT>::range_type r{ 0, str.length() };
-		
+
 		while (r.start < str.length()) {
 			typename attributed_string<CharT>::range_type cr = r, cw = r, cs = r, ci = r;
 			optional<const Attributes::rgb*>	color_attrib = str.attrib_of_type(rgb::attrib_type_s(), &cr);

@@ -3,23 +3,26 @@
 
 void gbuffer_store(layout(r32ui) restrict uimage2D gbuffer_ll_heads,
 				   atomic_uint gbuffer_ll_counter,
-				   vec3 P,
-				   vec4 albedo,
-				   float specular,
-				   vec3 N,
-				   vec3 T,
-				   uint16_t matIdx,
+				   float depth,
+				   vec2 UV,
+				   f16vec3 N,
+				   f16vec3 T,
+				   int matIdx,
 				   ivec2 frag_coords) {
-	g_buffer_element frag;
-	frag.albedo = albedo;
-	frag.P = P;
-	frag.N = N;
-	frag.T = T;
-	frag.specular = specular;
-	frag.material = matIdx;
-
 	uint32_t next_idx = atomicCounterIncrement(gbuffer_ll_counter);
-	frag.next_ptr = imageAtomicExchange(gbuffer_ll_heads, frag_coords, next_idx);
+	uint32_t next_ptr = imageAtomicExchange(gbuffer_ll_heads, frag_coords, next_idx);
 
-	gbuffer[next_idx] = frag;
+	float Nxy = uintBitsToFloat(packFloat2x16(N.xy));
+	float NzTx = uintBitsToFloat(packFloat2x16(f16vec2(N.z, T.x)));
+	float Tyz = uintBitsToFloat(packFloat2x16(T.yz));
+
+	mat2x4 data;
+	data[0] = vec4(depth, UV, uintBitsToFloat(next_ptr));
+	data[1] = vec4(Nxy, NzTx, Tyz, intBitsToFloat(matIdx));
+
+	gbuffer[next_idx].data = data;
+}
+
+void gbuffer_write_nextptr(inout g_buffer_element frag, uint32_t next_ptr) {
+	frag.data[0].w = uintBitsToFloat(next_ptr);
 }

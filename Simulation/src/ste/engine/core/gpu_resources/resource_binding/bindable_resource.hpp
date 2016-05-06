@@ -44,7 +44,7 @@ public:
 };
 
 template <class A, class B>
-class bindable_resource<A, B> : public resource<A>, public bindable_generic_resource{
+class bindable_resource<A, B> : public resource<A>, public bindable_generic_resource {
 protected:
 	using Binder = B;
 

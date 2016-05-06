@@ -17,12 +17,11 @@ struct material_descriptor {
 	vec4 emission;
 };
 
-const uint16_t material_none = uint16_t(0xFFFF);
+const int material_none = 0xFFFFFFFF;
 
-void normal_map(material_descriptor md, float height_map_scale, vec2 uv, inout vec3 n, inout vec3 t, inout vec3 P) {
-	if (md.normalmap.tex_handler>0) {
+void normal_map(material_descriptor md, float height_map_scale, vec2 uv, inout vec3 n, inout vec3 t, inout vec3 b, inout vec3 P) {
+	if (md.normalmap.tex_handler > 0) {
 		vec4 normal_height = texture(sampler2D(md.normalmap.tex_handler), uv);
-		vec3 b = cross(t, n);
 		mat3 tbn = mat3(t, b, n);
 
 		float h = normal_height.w * height_map_scale;
@@ -32,6 +31,7 @@ void normal_map(material_descriptor md, float height_map_scale, vec2 uv, inout v
 		n = tbn * nm;
 
 		t = cross(n, b);
+		b = cross(t ,n);
 	}
 }
 

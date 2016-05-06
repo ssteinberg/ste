@@ -73,7 +73,7 @@ protected:
 	}
 };
 
-auto create_light_object(const std::shared_ptr<StE::Graphics::Scene> &scene, const glm::vec3 &light_pos, const std::shared_ptr<StE::Graphics::SphericalLight> &light) {
+auto create_light_object(StE::Graphics::Scene *scene, const glm::vec3 &light_pos, const std::shared_ptr<StE::Graphics::SphericalLight> &light) {
 	scene->scene_properties().lights_storage().add_light(light);
 
 	std::unique_ptr<StE::Graphics::Sphere> sphere = std::make_unique<StE::Graphics::Sphere>(20, 20);
@@ -102,7 +102,6 @@ int main() {
 	ste_log_set_global_logger(&logger);
 	ste_log() << "Simulation is running";
 
-	// int w = 1688;
 	int w = 1700;
 	int h = w * 9 / 16;
 	constexpr float clip_far = 3000.f;
@@ -116,7 +115,10 @@ int main() {
 	ctx.set_clipping_planes(clip_near, clip_far);
 	ctx.set_fov(fovy);
 
-	StE::Text::TextManager text_manager(ctx, StE::Text::Font("Data/ArchitectsDaughter.ttf"));
+	auto font = StE::Text::Font("Data/ArchitectsDaughter.ttf");
+
+
+	StE::Text::TextManager text_manager(ctx, font);
 
 	using ResizeSignalConnectionType = StE::StEngineControl::framebuffer_resize_signal_type::connection_type;
 	std::shared_ptr<ResizeSignalConnectionType> resize_connection;
@@ -129,15 +131,15 @@ int main() {
 
 	StE::Graphics::Camera camera;
 	camera.set_position({ 25.8, 549.07, -249.2 });
-	camera.lookat({ 26.4, 548.5, -248.71 });
+	camera.lookat({ -5.4, 532.5, -228.71 });
 
-	auto scene = StE::Graphics::Scene::create(ctx);
-	StE::Graphics::GIRenderer renderer(ctx, &camera, scene);
+	StE::Graphics::Scene scene(ctx);
+	StE::Graphics::GIRenderer renderer(ctx, &camera, &scene);
 	ctx.set_renderer(&renderer);
 
-	StE::Graphics::profiler gpu_tasks_profiler;
-	renderer.attach_profiler(&gpu_tasks_profiler);
-	StE::Graphics::debug_gui debug_gui_dispatchable(ctx, &gpu_tasks_profiler);
+	std::unique_ptr<StE::Graphics::profiler> gpu_tasks_profiler = std::make_unique<StE::Graphics::profiler>();
+	renderer.attach_profiler(gpu_tasks_profiler.get());
+	std::unique_ptr<StE::Graphics::debug_gui> debug_gui_dispatchable = std::make_unique<StE::Graphics::debug_gui>(ctx, gpu_tasks_profiler.get(), font);
 
 
 	std::unique_ptr<SkyDome> skydome = std::make_unique<SkyDome>(ctx);
@@ -146,16 +148,16 @@ int main() {
 	bool loaded = false;
 	auto model_future = ctx.scheduler().schedule_now(StE::Resource::ModelFactory::load_model_task(ctx,
 																								  R"(Data/models/crytek-sponza/sponza.obj)",
-																								  &scene->object_group(),
-																								  &scene->scene_properties(),
+																								  &scene.object_group(),
+																								  &scene.scene_properties(),
 																								  2.5f));
 
 	const glm::vec3 light0_pos{ -700.6, 138, -70 };
 	const glm::vec3 light1_pos{ 200, 550, 170 };
 	auto light0 = std::make_shared<StE::Graphics::SphericalLight>(8000.f, StE::Graphics::Kelvin(2000), light0_pos, 3.f);
 	auto light1 = std::make_shared<StE::Graphics::SphericalLight>(20000.f, StE::Graphics::Kelvin(7000), light1_pos, 5.f);
-	auto light0_obj = create_light_object(scene, light0_pos, light0);
-	auto light1_obj = create_light_object(scene, light1_pos, light1);
+	auto light0_obj = create_light_object(&scene, light0_pos, light0);
+	auto light1_obj = create_light_object(&scene, light1_pos, light1);
 
 	for (auto &v : { glm::vec3{ -622, 645, -310},
 					 glm::vec3{  124, 645, -310},
@@ -169,7 +171,7 @@ int main() {
 					 glm::vec3{  120, 153,  552},
 					 glm::vec3{  885, 153,  552} }) {
 		auto wall_lamp = std::make_shared<StE::Graphics::SphericalLight>(5000.f, StE::Graphics::Kelvin(1800), v, 2.f);
-		create_light_object(scene, v, wall_lamp);
+		create_light_object(&scene, v, wall_lamp);
 	}
 
 	// Bind input
@@ -233,10 +235,11 @@ int main() {
 
 	auto skydome_task = make_gpu_task("skydome", skydome.get(), nullptr);
 
-	skydome_task->add_dependency(scene);
+	auto &scene_task = renderer.get_scene_task();
+	skydome_task->add_dependency(scene_task);
 
-	renderer.add_gui_task(make_gpu_task("debug_gui", &debug_gui_dispatchable, nullptr));
-	renderer.add_task(scene);
+	renderer.add_gui_task(make_gpu_task("debug_gui", debug_gui_dispatchable.get(), nullptr));
+	renderer.add_task(scene_task);
 	renderer.add_task(skydome_task);
 	renderer.set_deferred_rendering_enabled(true);
 
@@ -264,9 +267,6 @@ int main() {
 			camera.pitch_and_yaw(-diff_v.y, diff_v.x);
 		}
 
-		auto mv = camera.view_matrix();
-		auto mvnt = camera.view_matrix_no_translation();
-
 		float angle = time * glm::pi<float>() / 2.5f;
 		glm::vec3 lp = light0_pos + glm::vec3(glm::sin(angle) * 3, 0, glm::cos(angle)) * 115.f;
 
@@ -290,7 +290,7 @@ int main() {
 			auto total_vram = std::to_wstring(ctx.gl()->meminfo_total_available_vram() / 1024);
 			auto free_vram = std::to_wstring(ctx.gl()->meminfo_free_vram() / 1024);
 
-			footer_text->set_text({ 10, 50 }, line_height(28)(vsmall(b(stroke(dark_magenta, 1)(red(std::to_wstring(tpf))))) + L" ms\n" +
+			footer_text->set_text({ 10, 50 }, line_height(28)(vsmall(b(stroke(dark_magenta, 1)(red(std::to_wstring(tpf * 1000.f))))) + L" ms\n" +
 															  vsmall(b((blue_violet(free_vram) + L" / " + stroke(red, 1)(dark_red(total_vram)) + L" MB")))));
 		}
 

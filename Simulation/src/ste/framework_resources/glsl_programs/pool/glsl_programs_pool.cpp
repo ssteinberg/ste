@@ -8,7 +8,7 @@
 using namespace StE::Resource;
 
 StE::task<std::shared_ptr<StE::Core::GLSLProgram>> glsl_programs_pool::fetch_program_task(const glsl_programs_pool_key &k) {
-	return StE::task<std::shared_ptr<Core::GLSLProgram>>([k = std::move(k), this](optional<task_scheduler*> sched) -> std::shared_ptr<Core::GLSLProgram> {		
+	return StE::task<std::shared_ptr<Core::GLSLProgram>>([k = std::move(k), this](optional<task_scheduler*> sched) -> std::shared_ptr<Core::GLSLProgram> {
 		{
 			auto val_guard = programs[k];
 			if (val_guard.is_valid()) {
@@ -17,14 +17,14 @@ StE::task<std::shared_ptr<StE::Core::GLSLProgram>> glsl_programs_pool::fetch_pro
 					return prog_ptr;
 			}
 		}
-		
+
 		auto uptr_prog = GLSLProgramFactory::load_program_task(this->context, k.names)();
 		if (uptr_prog) {
 			std::shared_ptr<Core::GLSLProgram> prog = std::move(uptr_prog);
 			programs.emplace(k, prog);
 			return prog;
 		}
-		
+
 		return nullptr;
 	});
 }

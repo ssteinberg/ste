@@ -37,7 +37,7 @@ public:
 
 	template <typename... Args>
 	tuple_type_erasure(const std::tuple<Args...> &tuple_args, std::enable_if_t<1 < sizeof...(Args)>* = nullptr) : data(sizeof(tuple_args)) {
-		_tuple_type_erasure::_type_checker<Args...> check;
+		_tuple_type_erasure::_type_checker<Args...>();
 
 		std::memcpy(data.data(), &tuple_args, data.size());
 	}
@@ -61,7 +61,7 @@ public:
 
 	template <typename... Args>
 	bool compare_weak(const std::tuple<Args...> &tuple_args, std::enable_if_t<1 < sizeof...(Args)>* = nullptr) const {
-		_tuple_type_erasure::_type_checker<Args...> check;
+		_tuple_type_erasure::_type_checker<Args...>();
 
 		std::size_t s = sizeof(tuple_args);
 
@@ -71,7 +71,7 @@ public:
 	}
 	template <typename T>
 	bool compare_weak(const std::tuple<T> &tuple) const {
-		_tuple_type_erasure::_type_checker<T> check;
+		_tuple_type_erasure::_type_checker<T>();
 
 		using Type = typename std::remove_reference_t<T>;
 
@@ -84,7 +84,7 @@ public:
 
 	template <typename... Args>
 	auto get_weak(std::enable_if_t<1 < sizeof...(Args)>* = nullptr) const {
-		_tuple_type_erasure::_type_checker<Args...> check;
+		_tuple_type_erasure::_type_checker<Args...>();
 
 		using T = std::tuple<decltype(Args{})...>;
 		T t;
@@ -98,7 +98,7 @@ public:
 	}
 	template <typename T>
 	auto get_weak() const {
-		_tuple_type_erasure::_type_checker<T> check;
+		_tuple_type_erasure::_type_checker<T>();
 
 		using Type = typename std::remove_reference_t<T>;
 

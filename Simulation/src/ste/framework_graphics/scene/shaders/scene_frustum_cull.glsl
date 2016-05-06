@@ -9,20 +9,24 @@ layout(local_size_x = 128) in;
 #include "indirect.glsl"
 #include "light.glsl"
 #include "mesh_descriptor.glsl"
+#include "shadow_projection_instance_to_ll_idx_translation.glsl"
 
-layout(std430, binding = 1) restrict readonly buffer mesh_data {
+layout(std430, binding = 14) restrict readonly buffer mesh_data {
 	mesh_descriptor mesh_descriptor_buffer[];
+};
+layout(std430, binding = 15) restrict buffer mesh_draw_params_data {
+	mesh_draw_params mesh_draw_params_buffer[];
 };
 layout(std430, binding = 2) restrict readonly buffer light_data {
 	light_descriptor light_buffer[];
 };
-layout(std430, binding = 3) restrict readonly buffer light_transform_data {
+layout(shared, binding = 3) restrict readonly buffer light_transform_data {
 	vec4 light_transform_buffer[];
 };
-layout(binding = 4) restrict readonly buffer ll_counter_data {
+layout(shared, binding = 4) restrict readonly buffer ll_counter_data {
 	uint32_t ll_counter;
 };
-layout(std430, binding = 5) restrict readonly buffer ll_data {
+layout(shared, binding = 5) restrict readonly buffer ll_data {
 	uint16_t ll[];
 };
 
@@ -30,8 +34,11 @@ layout(binding = 0) uniform atomic_uint counter;
 layout(std430, binding = 0) restrict writeonly buffer idb_data {
 	IndirectMultiDrawElementsCommand idb[];
 };
-layout(std430, binding = 12) restrict writeonly buffer id_to_drawid_data {
-	uint id_to_drawid[];
+layout(std430, binding = 1) restrict writeonly buffer sidb_data {
+	IndirectMultiDrawElementsCommand sidb[];
+};
+layout(std430, binding = 8) restrict writeonly buffer shadow_projection_instance_to_ll_idx_translation_data {
+	shadow_projection_instance_to_ll_idx_translation sproj_id_to_llid_tt[];
 };
 
 void main() {
@@ -44,6 +51,7 @@ void main() {
 	vec3 center = (view_matrix_buffer.view_matrix * (md.model * vec4(md.bounding_sphere.xyz, 1))).xyz;
 	float radius = md.bounding_sphere.w;
 
+	uint shadow_instance_count = 0;
 	bool include = false;
 	for (int i = 0; i < ll_counter; ++i) {
 		uint16_t light_idx = ll[i];
@@ -55,7 +63,9 @@ void main() {
 		float d = lr + radius;
 		if (dot(v,v) < d*d) {
 			include = true;
-			break;
+
+			sproj_id_to_llid_tt[draw_id].ll_idx[shadow_instance_count] = uint16_t(i);
+			++shadow_instance_count;
 		}
 	}
 
@@ -63,13 +73,15 @@ void main() {
 		uint idx = atomicCounterIncrement(counter);
 
 		IndirectMultiDrawElementsCommand c;
-		c.count = md.count;
+		c.count = mesh_draw_params_buffer[draw_id].count;
 		c.instance_count = 1;
-		c.first_index = md.first_index;
-		c.base_vertex = md.base_vertex;
-		c.base_instance = 0;
+		c.first_index = mesh_draw_params_buffer[draw_id].first_index;
+		c.base_vertex = mesh_draw_params_buffer[draw_id].base_vertex;
+		c.base_instance = draw_id;
 
-		id_to_drawid[idx] = draw_id;
 		idb[idx] = c;
+
+		c.instance_count = shadow_instance_count;
+		sidb[idx] = c;
 	}
 }

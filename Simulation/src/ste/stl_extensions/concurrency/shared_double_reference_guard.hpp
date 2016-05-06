@@ -10,50 +10,65 @@
 
 namespace StE {
 
+namespace _shared_double_reference_guard_detail {
+
+template <typename data_t, bool b>
+class data_factory;
+template <typename data_t>
+class data_factory<data_t, false> {
+public:
+	void release(data_t *ptr) { delete ptr; }
+	template <typename ... Ts>
+	data_t* claim(Ts&&... args) { return new data_t(std::forward<Ts>(args)...); }
+};
+template <typename data_t>
+class data_factory<data_t, true> : public concurrent_pointer_recycler<data_t> {};
+
+template <typename DataType, bool recycle_pointers>
+class data {
+public:
+	std::atomic<int> internal_counter;
+	DataType object;
+
+	template <typename ... Ts>
+	data(Ts&&... args) : internal_counter(0), object(std::forward<Ts>(args)...) {}
+	data& operator=(data &&d) {
+		internal_counter.store(0);
+		object = std::move(d.object);
+		return *this;
+	}
+
+	void release_ref() {
+		if (internal_counter.fetch_add(1, std::memory_order_acquire) == -1) {
+			destroy();
+		}
+	}
+
+private:
+	static data_factory<data<DataType, recycle_pointers>, std::is_trivially_copyable<DataType>::value && recycle_pointers> recycler;
+
+public:
+	static void release(data *ptr) { recycler.release(ptr); }
+	template <typename ... Ts>
+	static data* claim(Ts&&... args) { return recycler.claim(std::forward<Ts>(args)...); }
+	void destroy() {
+		recycler.release(this);
+	}
+};
+
+template <typename DataType, bool recycle_pointers>
+data_factory<data<DataType, recycle_pointers>, std::is_trivially_copyable<DataType>::value && recycle_pointers> data<DataType, recycle_pointers>::recycler;
+
+}
+
 template <typename DataType, bool recycle_pointers>
 class shared_double_reference_guard {
 private:
-	class data {
-	public:
-		std::atomic<int> internal_counter;
-		DataType object;
-
-		template <typename ... Ts>
-		data(Ts&&... args) : internal_counter(0), object(std::forward<Ts>(args)...) {}
-		data& operator=(data &&d) {
-			internal_counter.store(0);
-			object = std::move(d.object);
-			return *this;
-		}
-
-		void release_ref() {
-			if (internal_counter.fetch_add(1, std::memory_order_acquire) == -1) {
-				destroy();
-			}
-		}
-
-	private:
-		template <bool b, typename = void>
-		class data_factory {
-		public:
-			void release(data *ptr) { delete ptr; }
-			template <typename ... Ts>
-			data* claim(Ts&&... args) { return new data(std::forward<Ts>(args)...); }
-		};
-		template <bool b>
-		class data_factory<b, std::enable_if_t<b>> : public concurrent_pointer_recycler<data> {};
-
-	public:
-		static data_factory<std::is_move_assignable<DataType>::value && recycle_pointers> recycler;
-
-		void destroy() {
-			recycler.release(this);
-		}
-	};
+	using data_t = _shared_double_reference_guard_detail::data<DataType, recycle_pointers>;
 
 	struct data_ptr {
 		int external_counter;
-		data *ptr;
+		data_t *ptr;
 	};
 
 public:
@@ -61,20 +76,20 @@ public:
 		friend class shared_double_reference_guard<DataType, recycle_pointers>;
 
 	private:
-		data *ptr;
+		data_t *ptr;
 
 	public:
-		data_guard(data *ptr) : ptr(ptr) { }
+		data_guard(data_t *ptr) : ptr(ptr) { }
 		data_guard(const data_guard &d) = delete;
 		data_guard &operator=(const data_guard &d) = delete;
 		data_guard(data_guard &&d) {
 			ptr = d.ptr;
-			d.ptr = 0; 
+			d.ptr = 0;
 		}
 		data_guard &operator=(data_guard &&d) {
 			if (ptr) ptr->release_ref();
 			ptr = d.ptr;
-			d.ptr = 0; 
+			d.ptr = 0;
 			return *this;
 		}
 
@@ -109,7 +124,7 @@ public:
 
 	template <typename ... Ts>
 	shared_double_reference_guard(Ts&&... args) {
-		data *new_data = data::recycler.claim(std::forward<Ts>(args)...);
+		data_t *new_data = data_t::claim(std::forward<Ts>(args)...);
 		data_ptr new_data_ptr{ 1, new_data };
 		guard.store(new_data_ptr);
 
@@ -134,7 +149,7 @@ public:
 
 	template <typename ... Ts>
 	data_guard emplace_and_acquire(std::memory_order order, Ts&&... args) {
-		data *new_data = data::recycler.claim(std::forward<Ts>(args)...);
+		data_t *new_data = data_t::claim(std::forward<Ts>(args)...);
 		data_ptr new_data_ptr{ 2, new_data };
 		data_ptr old_data_ptr = guard.load(std::memory_order_relaxed);
 		while (!guard.compare_exchange_weak(old_data_ptr, new_data_ptr, order, std::memory_order_relaxed));
@@ -146,7 +161,7 @@ public:
 
 	template <typename ... Ts>
 	void emplace(std::memory_order order, Ts&&... args) {
-		data *new_data = data::recycler.claim(std::forward<Ts>(args)...);
+		data_t *new_data = data_t::claim(std::forward<Ts>(args)...);
 		data_ptr new_data_ptr{ 1, new_data };
 		data_ptr old_data_ptr = guard.load(std::memory_order_relaxed);
 		while (!guard.compare_exchange_weak(old_data_ptr, new_data_ptr, order, std::memory_order_relaxed));
@@ -156,20 +171,20 @@ public:
 
 	template <typename ... Ts>
 	bool try_emplace(std::memory_order order1, std::memory_order order2, Ts&&... args) {
-		data *new_data = data::recycler.claim(std::forward<Ts>(args)...);
+		data_t *new_data = data_t::claim(std::forward<Ts>(args)...);
 		data_ptr new_data_ptr{ 1, new_data };
 		data_ptr old_data_ptr = guard.load(order2);
 		if (guard.compare_exchange_strong(old_data_ptr, new_data_ptr, order1, std::memory_order_relaxed)) {
 			release(old_data_ptr);
 			return true;
 		}
-		data::recycler.release(new_data);
+		data_t::release(new_data);
 		return false;
 	}
 
 	template <typename ... Ts>
 	bool try_compare_emplace(std::memory_order order, data_guard &old_data, Ts&&... args) {
-		data *new_data = data::recycler.claim(std::forward<Ts>(args)...);
+		data_t *new_data = data_t::claim(std::forward<Ts>(args)...);
 		data_ptr new_data_ptr{ 1, new_data };
 		data_ptr old_data_ptr = guard.load(std::memory_order_relaxed);
 
@@ -195,8 +210,5 @@ public:
 		release(old_data_ptr);
 	}
 };
-
-template <typename DataType, bool recycle_pointers>
-shared_double_reference_guard<DataType, recycle_pointers>::data::data_factory<std::is_move_assignable<DataType>::value && recycle_pointers> shared_double_reference_guard<DataType, recycle_pointers>::data::recycler;
 
 }

@@ -3,23 +3,19 @@
 #version 450
 #extension GL_NV_gpu_shader5 : require
 
-layout(local_size_x = 16, local_size_y = 16) in;
+layout(local_size_x = 32, local_size_y = 32) in;
 
 #include "gbuffer.glsl"
 
-layout(std430, binding = 6) restrict buffer gbuffer_data {
+layout(shared, binding = 6) restrict buffer gbuffer_data {
 	g_buffer_element gbuffer[];
 };
 layout(r32ui, binding = 7) restrict uniform uimage2D gbuffer_ll_heads;
 
 #include "gbuffer_load.glsl"
+#include "gbuffer_store.glsl"
 
 const int max_depth = 6;
-
-struct fragment {
-	float z;
-	uint32_t idx;
-};
 
 void main() {
 	ivec2 size = gbuffer_size(gbuffer_ll_heads);
@@ -30,37 +26,37 @@ void main() {
 
 	uint32_t next_idx = imageLoad(gbuffer_ll_heads, coords).x;
 
-	fragment sorted[max_depth];
+	vec2 sorted[max_depth];
 
-	sorted[0].z = gbuffer[next_idx].P.z;
-	sorted[0].idx = next_idx;
+	sorted[0].x = gbuffer_parse_depth(gbuffer[next_idx]);
+	sorted[0].y = uintBitsToFloat(next_idx);
 	int element_count = 1;
 
-	next_idx = gbuffer[next_idx].next_ptr;
+	next_idx = gbuffer_parse_nextptr(gbuffer[next_idx]);
 	bool changed_order = false;
 
 	for (; element_count < max_depth && !gbuffer_eof(next_idx); ++element_count) {
-		float z = gbuffer[next_idx].P.z;
+		float z = gbuffer_parse_depth(gbuffer[next_idx]);
 
 		int i;
-		for (i = element_count; i > 0 && sorted[i - 1].z < z; --i)
+		for (i = element_count; i > 0 && sorted[i - 1].x > z; --i)
 			sorted[i] = sorted[i - 1];
 
 		if (i != element_count)
 			changed_order = true;
 
-		sorted[i].z = z;
-		sorted[i].idx = next_idx;
+		sorted[i].x = z;
+		sorted[i].y = uintBitsToFloat(next_idx);
 
-		next_idx = gbuffer[next_idx].next_ptr;
+		next_idx = gbuffer_parse_nextptr(gbuffer[next_idx]);
 	}
 
 	if (!changed_order)
 		return;
 
 	for (int i = 0; i < element_count - 1; ++i)
-		gbuffer[sorted[i].idx].next_ptr = sorted[i + 1].idx;
-	gbuffer[sorted[element_count - 1].idx].next_ptr = 0xFFFFFFFF;
+		gbuffer_write_nextptr(gbuffer[floatBitsToUint(sorted[i].y)], floatBitsToUint(sorted[i + 1].y));
+	gbuffer_write_nextptr(gbuffer[floatBitsToUint(sorted[element_count - 1].y)], 0xFFFFFFFF);
 
-	imageStore(gbuffer_ll_heads, coords, sorted[0].idx.xxxx);
+	imageStore(gbuffer_ll_heads, coords, floatBitsToUint(sorted[0].y).xxxx);
 }

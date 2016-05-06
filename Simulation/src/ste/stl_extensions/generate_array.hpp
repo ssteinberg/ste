@@ -8,6 +8,8 @@
 namespace StE {
 
 template<typename T, T... args> struct _generate_array_holder { static constexpr std::array<T, sizeof...(args)> data = { args... }; };
+template<typename T, T... args>
+constexpr std::array<T, sizeof...(args)> _generate_array_holder<T, args...>::data;
 
 template<std::size_t N, template<int> class Populator, decltype(Populator<0>::value)... args>
 struct _generate_array_impl {

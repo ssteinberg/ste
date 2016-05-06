@@ -100,9 +100,8 @@ private:
 
 protected:
 	using Base = fbo_attachment_point<A>;
-	using Base::fbo_attachment_point;
 	using Base::fbo;
-	fbo_color_attachment_point(frame_buffer_object<A> *fbo, int index) : Base(fbo, color_attachment_point + index) {}
+	fbo_color_attachment_point(frame_buffer_object<A> *fbo, unsigned index) : Base(fbo, color_attachment_point + index) {}
 
 public:
 	virtual ~fbo_color_attachment_point() noexcept {}
@@ -154,13 +153,13 @@ private:
 	using Base = fbo_color_attachment_point<A>;
 
 private:
-	int index;
+	unsigned index;
 
 	void unbind(const LayoutLocationType &) const final override {};
 
 protected:
 	using fbo_color_attachment_point<A>::fbo_color_attachment_point;
-	fbo_layout_bindable_color_attachment_point(frame_buffer_object<A> *fbo, int index) : fbo_color_attachment_point<A>(fbo, index), index(index) {}
+	fbo_layout_bindable_color_attachment_point(frame_buffer_object<A> *fbo, unsigned index) : fbo_color_attachment_point<A>(fbo, index), index(index) {}
 
 public:
 	template <typename ... Ts>
@@ -173,7 +172,7 @@ public:
 
 	template<typename T>
 	void operator=(const T &target) {
-		*(static_cast<fbo_attachment_point<A>*>(this)) = target;
+		*(dynamic_cast<fbo_attachment_point<A>*>(this)) = target;
 	}
 };
 
@@ -220,12 +219,12 @@ private:
 	std::vector<GLenum> draw_buffers;
 
 protected:
-	void set_color_output_binding_index(int attachment_index, const color_layout_binding &binding) {
-		int color_output = binding == layout_binding_none<fbo_color_attachment_layout_binding_type>() ?
-			GL_NONE :
-			GL_COLOR_ATTACHMENT0 + binding.binding_index();
+	void set_color_output_binding_index(unsigned attachment_index, const color_layout_binding &binding) {
+		unsigned color_output = binding == layout_binding_none<fbo_color_attachment_layout_binding_type>() ?
+									GL_NONE :
+									GL_COLOR_ATTACHMENT0 + binding.binding_index();
 
-		if (draw_buffers.size() < static_cast<unsigned>(attachment_index + 1)) draw_buffers.resize(attachment_index + 1, GL_NONE);
+		if (draw_buffers.size() < attachment_index + 1) draw_buffers.resize(attachment_index + 1, GL_NONE);
 		bool changed = draw_buffers[attachment_index] != color_output;
 		draw_buffers[attachment_index] = color_output;
 
@@ -283,7 +282,7 @@ public:
 
 	static auto max_framebuffer_bindings() {
 		GLuint maxbuffers;
-		glGetIntergeri(GL_MAX_DRAW_BUFFERS, &maxbuffers);
+		glGetIntegerv(GL_MAX_DRAW_BUFFERS, &maxbuffers);
 		return maxbuffers;
 	}
 
@@ -300,13 +299,13 @@ private:
 	using Base = frame_buffer_object<FramebufferObjectAllocator>;
 	using depth_attachment_binding_type = fbo_attachment_point<Allocator>;
 	using color_attachment_binding_type = fbo_layout_bindable_color_attachment_point<Allocator>;
-	using color_attachments_binding_map_type = std::unordered_map<int, std::unique_ptr<color_attachment_binding_type>>;
+	using color_attachments_binding_map_type = std::unordered_map<unsigned, std::unique_ptr<color_attachment_binding_type>>;
 
 private:
 	depth_attachment_binding_type depth_attachment_binding_point{ this, GL_DEPTH_ATTACHMENT };
 	color_attachments_binding_map_type color_attachments_binding_points;
 
-	color_attachment_binding_type &color_binding_point(int index, bool * created = nullptr) {
+	color_attachment_binding_type &color_binding_point(unsigned index, bool * created = nullptr) {
 		auto emplace_result = color_attachments_binding_points.emplace(std::make_pair(index,std::make_unique<color_attachment_binding_type>(color_attachment_binding_type::emplace_helper(), this, index)));
 		auto &it = emplace_result.first;
 		if (created) *created = emplace_result.second;
@@ -322,7 +321,7 @@ public:
 	depth_attachment_binding_type &depth_binding_point() { return depth_attachment_binding_point; }
 	const depth_attachment_binding_type &depth_binding_point() const { return depth_attachment_binding_point; }
 
-	color_attachment_binding_type &operator[](int index) {
+	color_attachment_binding_type &operator[](unsigned index) {
 		bool created = false;
 		auto &ret = color_binding_point(index, &created);
 		if (created)

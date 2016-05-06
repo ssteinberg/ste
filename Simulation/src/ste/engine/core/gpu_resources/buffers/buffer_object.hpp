@@ -98,10 +98,10 @@ public:
 	void invalidate_data() { glInvalidateBufferData(Base::get_resource_id()); }
 	void invalidate_data(int offset, std::size_t length) { glInvalidateBufferSubData(Base::get_resource_id(), offset * sizeof(T), length * sizeof(T)); }
 
-	template <typename S, BufferUsage::buffer_usage U>
-	void copy_to(buffer_object<S, U> &bo) const { glCopyNamedBufferSubData(Base::get_resource_id(), bo.get_resource_id(), 0, 0, buffer_size * sizeof(T)); }
-	template <typename S, BufferUsage::buffer_usage U>
-	void copy_to(buffer_object<S, U> &bo, int read_offset, int write_offset, std::size_t size) const {
+	template <typename S, BufferUsage::buffer_usage UU>
+	void copy_to(buffer_object<S, UU> &bo) const { glCopyNamedBufferSubData(Base::get_resource_id(), bo.get_resource_id(), 0, 0, buffer_size * sizeof(T)); }
+	template <typename S, BufferUsage::buffer_usage UU>
+	void copy_to(buffer_object<S, UU> &bo, int read_offset, int write_offset, std::size_t size) const {
 		glCopyNamedBufferSubData(Base::get_resource_id(), bo.get_resource_id(), read_offset * sizeof(T), write_offset * sizeof(S), size * sizeof(T));
 	}
 

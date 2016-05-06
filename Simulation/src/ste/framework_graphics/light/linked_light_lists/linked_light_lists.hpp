@@ -24,9 +24,7 @@ namespace Graphics {
 class linked_light_lists {
 private:
 	struct lll_element {
-		std::uint16_t		light_idx;
-		std::uint16_t		ll_idx;
-		glm::mediump_vec1	z_min, z_max;
+		glm::vec4	data;
 	};
 
 	static constexpr Core::BufferUsage::buffer_usage usage = static_cast<Core::BufferUsage::buffer_usage>(Core::BufferUsage::BufferUsageSparse);
@@ -41,7 +39,7 @@ private:
 
 	glm::ivec2 size;
 
-	static constexpr std::size_t virtual_lll_size() {
+	static std::size_t virtual_lll_size() {
 		return (virt_size / lll_type::page_size() / sizeof(lll_element) + 1) * lll_type::page_size();
 	}
 

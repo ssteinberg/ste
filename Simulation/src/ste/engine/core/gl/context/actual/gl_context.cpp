@@ -15,10 +15,10 @@
 
 using namespace StE::Core::GL;
 
-class ste_context_intializer {
-private:
-	friend class gl_context;
+namespace _detail {
 
+class ste_context_intializer {
+public:
 	ste_context_intializer() { glfwInit(); }
 
 	std::atomic<bool> initialized{ false };
@@ -30,14 +30,17 @@ private:
 		}
 		return true;
 	}
+
 public:
 	~ste_context_intializer() {
 		glfwTerminate();
 	}
 };
 
+}
+
 gl_context::gl_context(const context_settings &settings, const char *title, const glm::i32vec2 &size, gli::format format, gli::format depth_format) : ctx_settings(settings) {
-	static ste_context_intializer ste_global_context_initializer;
+	static _detail::ste_context_intializer ste_global_context_initializer;
 
 	this->window = create_window(title, size, format, depth_format);
 	make_current();
@@ -204,7 +207,7 @@ void gl_context::setup_debug_context() {
 							  const void* userParam) {
 		using namespace StE::Text::Attributes;
 
-		const gl_context *this_context = reinterpret_cast<const gl_context*>(userParam);
+		// const gl_context *this_context = reinterpret_cast<const gl_context*>(userParam);
 
 		Text::AttributedString attr_str = b("OpenGL Debug Output: ") + "OpenGL object - " + i(std::to_string(id)) + " " + std::string(message, length);
 		switch (severity) {

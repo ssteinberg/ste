@@ -83,7 +83,7 @@ bool SurfaceFactory::write_png(const boost::filesystem::path &file_name, const c
 	free(row_pointers);
 
 	fclose(fp);
-	
+
 	return true;
 }
 
@@ -91,7 +91,7 @@ gli::texture2d SurfaceFactory::load_tga(const boost::filesystem::path &file_name
 	TGA *tga;
 
 	try {
-		tga = TGAOpen(const_cast<char*>(file_name.string().data()), "rb");
+		tga = TGAOpen(const_cast<char*>(file_name.string().data()), const_cast<char*>("rb"));
 		TGAReadHeader(tga);
 	}
 	catch (const std::exception &ex) {
@@ -325,30 +325,30 @@ gli::texture2d SurfaceFactory::load_png(const boost::filesystem::path &file_name
 gli::texture2d SurfaceFactory::load_jpeg(const boost::filesystem::path &path, bool srgb) {
 	int row_stride;
 	std::string content;
-	
+
 	std::ifstream fs(path.string(), std::ios::in);
 	if (!fs.good()) {
 		using namespace Attributes;
 		ste_log_error() << Text::AttributedString("Can't open JPEG ") + i(path.string()) + ": " + std::strerror(errno) << std::endl;
 		return gli::texture2d();
 	}
-	
+
 	content = std::string((std::istreambuf_iterator<char>(fs)), std::istreambuf_iterator<char>());
 	fs.close();
-		
-	unsigned char *data = reinterpret_cast<unsigned char*>(&content[0]); 
-	
+
+	unsigned char *data = reinterpret_cast<unsigned char*>(&content[0]);
+
 	if (content.size() == 0) {
 		ste_log_error() << "Can't open JPEG: " << path;
 		return gli::texture2d();
 	}
-	
+
 	auto tj = tjInitDecompress();
 	if (tj == nullptr) {
 		ste_log_error() << path << ": libturbojpeg signaled error.";
 		return gli::texture2d();
 	}
-	
+
 	int w, h, chro_sub_smpl, color_space;
 	tjDecompressHeader3(tj, data, content.size(), &w, &h, &chro_sub_smpl, &color_space);
 
@@ -369,21 +369,21 @@ gli::texture2d SurfaceFactory::load_jpeg(const boost::filesystem::path &path, bo
 	auto w0 = corrected_stride / comp + !!(corrected_stride%comp);
 	gli::texture2d tex(gli_format, { w0, h }, 1);
 	unsigned char *image_data = reinterpret_cast<unsigned char*>(tex.data());
-	auto level0_size = tex[0].size();
+	int level0_size = tex[0].size();
 	if (image_data == nullptr || level0_size < h * row_stride) {
 		ste_log_error() << path << " could not allocate memory for JPEG image data or format mismatch" << std::endl;
 		tjDestroy(tj);
 		return gli::texture2d();
 	}
-	
-	if (tjDecompress2(tj, 
+
+	if (tjDecompress2(tj,
 					  data,
-					  content.size(), 
-					  image_data, 
-					  w, 
-					  w0 * comp, 
-					  h, 
-					  TJPF_RGB, 
+					  content.size(),
+					  image_data,
+					  w,
+					  w0 * comp,
+					  h,
+					  TJPF_RGB,
 					  TJFLAG_BOTTOMUP) != 0) {
 		const char *err = tjGetErrorStr();
 		ste_log_error() << path << " libturbojpeg could not decompress JPEG image: " << (err ? err : "") << std::endl;

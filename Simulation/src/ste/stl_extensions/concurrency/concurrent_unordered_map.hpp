@@ -54,15 +54,19 @@ private:
 	static_assert(N > 2, "cache_line can't hold enough buckets");
 
 	struct concurrent_map_virtual_bucket {
-		std::array<std::atomic<unsigned long>, N> hash{ std::atomic<unsigned long>(0) };
-		std::array<std::atomic<concurrent_map_bucket_data*>, N> buckets{ std::atomic<concurrent_map_bucket_data*>(0) };
+		std::array<std::atomic<unsigned long>, N> hash;
+		std::array<std::atomic<concurrent_map_bucket_data*>, N> buckets;
 
 		std::atomic<concurrent_map_virtual_bucket*> next{ 0 };
 		void *_unused;
 
+		concurrent_map_virtual_bucket() {
+			std::fill(std::begin(hash), std::end(hash), 0);
+			std::fill(std::begin(buckets), std::end(buckets), nullptr);
+		}
 		~concurrent_map_virtual_bucket() {
 			auto ptr = next.load();
-			if (ptr) 
+			if (ptr)
 				delete ptr;
 			for (auto &b : buckets) {
 				auto ptr = b.load();
@@ -172,8 +176,8 @@ private:
 	template <typename ... Ts>
 	void resize_with_pending_insert(hash_table_guard_type &old_table_guard,
 											   resize_data_guard_type &resize_guard,
-											   unsigned long hash, 
-											   const key_type &key, 
+											   unsigned long hash,
+											   const key_type &key,
 											   bool helper_only,
 											   bool delete_item,
 											   Ts&&... val_args) {
@@ -214,7 +218,7 @@ private:
 				auto ptr = old_table_guard->buckets;
 				for (unsigned i = 0; i < old_table_guard->size; ++i)
 					(&ptr[i])->~virtual_bucket_type();
-					
+
 #ifdef _MSC_VER
 				_aligned_free(ptr);
 #elif defined _linux
@@ -251,8 +255,8 @@ private:
 
 	template <typename ... Ts>
 	bool insert_update_into_virtual_bucket(concurrent_map_virtual_bucket &virtual_bucket,
-													  unsigned long hash, 
-													  const key_type &key, 
+													  unsigned long hash,
+													  const key_type &key,
 													  float load_factor,
 													  bool is_new_item_insert,
 													  int depth,
@@ -282,7 +286,7 @@ private:
 			return !request_resize;
 		}
 
-		if (load_factor >= min_load_factor_for_resize && depth >= depth_threshold) 
+		if (load_factor >= min_load_factor_for_resize && depth >= depth_threshold)
 			request_resize = true;
 
 		auto next_ptr = virtual_bucket.next.load();
@@ -298,13 +302,13 @@ private:
 
 public:
 	concurrent_unordered_map() : hash_table(1024) {}
-	~concurrent_unordered_map() { 
+	~concurrent_unordered_map() {
 		auto data_guard = hash_table.acquire();
 		auto ptr = data_guard->buckets;
 		if (ptr) {
 			for (unsigned i = 0; i < data_guard->size; ++i)
 				(&ptr[i])->~virtual_bucket_type();
-				
+
 #ifdef _MSC_VER
 			_aligned_free(ptr);
 #elif defined _linux
@@ -350,7 +354,7 @@ public:
 			resize_with_pending_insert(table_guard, resize_guard, hash, key, true, true);
 	}
 
-	value_data_guard_type const try_get(const key_type &key) const {
+	value_data_guard_type try_get(const key_type &key) const {
 		unsigned long hash = hash_function(key);
 
 		auto table_guard = hash_table.acquire();
@@ -362,7 +366,7 @@ public:
 			int pos = find_hash_in_virtual_bucket(virtual_bucket, hash);
 			if (pos >= 0) {
 				auto bucket = virtual_bucket->buckets[pos].load(std::memory_order_relaxed);
-				if (bucket && bucket->k == key) 
+				if (bucket && bucket->k == key)
 					return bucket->v->acquire(std::memory_order_relaxed);
 			}
 
@@ -372,7 +376,7 @@ public:
 		}
 	}
 
-	auto operator[](const key_type &k) const {
+	decltype(auto) operator[](const key_type &k) const {
 		return try_get(k);
 	}
 };

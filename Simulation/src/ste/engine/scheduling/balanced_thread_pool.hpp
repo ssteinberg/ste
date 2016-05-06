@@ -162,7 +162,9 @@ public:
 			return;
 		last_pool_balance = now;
 
-		float idle_frac, kernel_frac, user_frac;
+		float idle_frac = .0f;
+		float kernel_frac = .0f;
+		float user_frac = .0f;
 		if (!sys_times.get_times_since_last_call(idle_frac, kernel_frac, user_frac))
 			return;
 

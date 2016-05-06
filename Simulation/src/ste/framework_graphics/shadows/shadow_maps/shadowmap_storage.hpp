@@ -86,8 +86,8 @@ public:
 		float proj22 = -(f + n) / (n - f);
 		float proj23 = -(2.f * f * n) / (n - f);
 
-		prog->set_uniform("proj22", proj22);
-		prog->set_uniform("proj23", proj23);
+		prog->set_uniform("shadow_proj22", proj22);
+		prog->set_uniform("shadow_proj23", proj23);
 	}
 };
 

@@ -4,8 +4,14 @@
 
 #include <functional>
 #include <fstream>
+#include <cstring>
 
 using namespace StE::Graphics;
+
+profiler::profiler() {
+	last_times_per_frame.resize(500);
+	std::memset(last_times_per_frame.data(), 0, sizeof(float) * 500);
+}
 
 profiler::~profiler() {
 	std::ofstream f(log_path);
@@ -42,6 +48,6 @@ profiler::~profiler() {
 }
 
 void profiler::record_frame(float t) {
-	std::copy(last_times_per_frame.begin() + 1, last_times_per_frame.end(), last_times_per_frame.begin());
+	std::memmove(&last_times_per_frame[0], &last_times_per_frame[1], (last_times_per_frame.size() - 1) * sizeof(float));
 	last_times_per_frame.back() = t;
 }

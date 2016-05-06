@@ -60,8 +60,8 @@ private:
 		auto it_attrib = std::move(it->second);
 		remove_attrib(it);
 
-		auto length_before = std::max<int>(r.start - it_range.start, 0);
-		auto length_after = std::max<int>(it_range.start + it_range.length - r.length - r.start, 0);
+		auto length_before = static_cast<std::size_t>(std::max<int>(r.start - it_range.start, 0));
+		auto length_after = static_cast<std::size_t>(std::max<int>(it_range.start + it_range.length - r.length - r.start, 0));
 
 		if (length_before)
 			attributes.insert(std::make_pair(range_type{ it_range.start, length_before }, std::unique_ptr<attrib_type>(it_attrib->clone())));
@@ -207,7 +207,7 @@ ostream& operator<<(ostream& os, const StE::Text::attributed_string<CharT>& str)
 template <typename CharT>
 struct hash<StE::Text::attributed_string<CharT>> {
 	size_t inline operator()(const StE::Text::attributed_string<CharT> &x) const {
-		return hash<StE::Text::attributed_string<CharT>::string_type>()(x.plain_string());
+		return hash<typename StE::Text::attributed_string<CharT>::string_type>()(x.plain_string());
 	}
 };
 

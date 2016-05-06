@@ -12,8 +12,6 @@
 #include <stdexcept>
 #include <memory>
 
-#include <gli/gli.hpp>
-
 namespace StE {
 namespace Graphics {
 

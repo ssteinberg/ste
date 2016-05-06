@@ -6,7 +6,6 @@
 #include "stdafx.hpp"
 #include "resource.hpp"
 
-#include <gli/gli.hpp>
 #include <string>
 #include <thread>
 

@@ -14,7 +14,7 @@ class concurrent_pointer_recycler {
 private:
 	std::array<std::atomic<T*>, N> pointers;
 
-	static_assert(std::is_move_assignable<T>::value, "T must be move-assignable");
+	static_assert(std::is_trivially_copyable<T>::value, "T must be trivially copyable");
 
 public:
 	~concurrent_pointer_recycler() {

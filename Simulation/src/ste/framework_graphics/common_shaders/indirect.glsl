@@ -17,5 +17,5 @@ struct IndirectDrawArraysCommand {
 struct IndirectDispatchCommand {
 	uint num_groups_x;
 	uint num_groups_y;
-	uint  num_groups_z;
+	uint num_groups_z;
 };

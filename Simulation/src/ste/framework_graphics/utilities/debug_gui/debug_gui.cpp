@@ -11,11 +11,15 @@
 #include <vector>
 #include <algorithm>
 #include <functional>
+#include <cstring>
 
 using namespace StE::Graphics;
 
-debug_gui::debug_gui(const StEngineControl &ctx, profiler *prof) : ctx(ctx), prof(prof) {
+debug_gui::debug_gui(const StEngineControl &ctx, profiler *prof, const StE::Text::Font &default_font) : ctx(ctx), prof(prof) {
 	assert(prof);
+
+	ImGuiIO& io = ImGui::GetIO();
+	io.Fonts->AddFontFromFileTTF(default_font.get_path().string().data(), 18);
 
 	auto window = ctx.gl()->get_window();
 	ImGui_ImplGlfwGL3_Init(window, false);
@@ -44,26 +48,29 @@ void debug_gui::dispatch() const {
 	auto &entries = prof->get_entries();
 	std::vector<std::pair<std::string, float>> times;
 
-	std::string last_name = entries.size() ? entries.back().name : std::string();
-	for (auto it = entries.rbegin(); it != entries.rend();) {
-		float t = static_cast<float>(it->end - it->start) / 1000.f;
+	if (entries.size()) {
+		std::string last_name = entries.back().name;
+		for (auto it = entries.rbegin();;) {
+			float t = static_cast<float>(it->end - it->start) / 1000.f;
 
-		std::array<float, 10> new_arr;
-		new_arr.fill(10.f);
-		auto last_samples_it = prof_tasks_last_samples.emplace(std::make_pair(it->name, new_arr)).first;
-		std::copy(last_samples_it->second.begin() + 1, last_samples_it->second.end(), last_samples_it->second.begin());
-		last_samples_it->second.back() = t;
+			auto last_samples_it = prof_tasks_last_samples.emplace(std::piecewise_construct,
+																   std::forward_as_tuple(it->name),
+																   std::forward_as_tuple()).first;
+			last_samples_it->second.push_back(t);
+			if (last_samples_it->second.size() > 10)
+				last_samples_it->second.erase(last_samples_it->second.begin());
 
-		float time = .0f;
-		for (auto & st : last_samples_it->second)
-			time += st;
-		time /= 10.f;
+			float time = .0f;
+			for (auto & st : last_samples_it->second)
+				time += st;
+			time /= 10.f;
 
-		times.emplace(times.begin(), it->name, time);
+			times.insert(times.begin(), std::make_pair(it->name, time));
 
-		++it;
-		if (it->name.compare(last_name) == 0)
-			break;
+			++it;
+			if (it == entries.rend() || it->name.compare(last_name) == 0)
+				break;
+		}
 	}
 
 	auto bbsize = ctx.get_backbuffer_size();
@@ -71,7 +78,7 @@ void debug_gui::dispatch() const {
 	ImGui_ImplGlfwGL3_NewFrame();
 
 	ImGui::SetNextWindowPos(ImVec2(20,20));
-	ImGui::SetNextWindowSize(ImVec2(bbsize.x - 40,125));
+	ImGui::SetNextWindowSize(ImVec2(bbsize.x - 40,138));
 	ImGui::Begin("StE debug", nullptr);
 
 	auto &fts = prof->get_last_times_per_frame();

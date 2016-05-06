@@ -6,8 +6,6 @@
 
 #include "texture1D_size_type.hpp"
 
-#include <gli/gli.hpp>
-
 namespace StE {
 namespace Core {
 
