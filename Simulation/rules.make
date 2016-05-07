@@ -27,7 +27,7 @@ CXXFLAGS_profile += \
 	$(CXXFLAGS_release) -g
 
 CXXFLAGS_debug += \
-	-Og -g -D DEBUG
+	-g -D DEBUG
 
 SYSTEM_LIBRARIES += \
 	atomic \

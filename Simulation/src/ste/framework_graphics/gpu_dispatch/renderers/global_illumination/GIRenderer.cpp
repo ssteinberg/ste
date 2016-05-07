@@ -89,9 +89,9 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 	fb_clearer_task = make_gpu_task("fb_clearer", &fb_clearer, get_fbo());
 	prepopulate_depth_task = make_gpu_task("prepopulate_depth", &prepopulate_depth_dispatch, get_fbo());
 	scene_frustum_cull_task = make_gpu_task("frustum_cull", &scene_frustum_cull, nullptr);
-	gbuffer_clearer_task = make_gpu_task("gbuffer_clear", &gbuffer_clearer, nullptr);
-	gbuffer_sort_task = make_gpu_task("gbuffer_sort", &gbuffer_sorter, nullptr);
-	shadow_projector_task = make_gpu_task("shadow_project", &shadows_projector, nullptr);
+	gbuffer_clearer_task = make_gpu_task("gbuf_clear", &gbuffer_clearer, nullptr);
+	gbuffer_sort_task = make_gpu_task("gbuf_sort", &gbuffer_sorter, nullptr);
+	shadow_projector_task = make_gpu_task("shdw_project", &shadows_projector, nullptr);
 	lll_gen_task = make_gpu_task("pp_ll_gen", &lll_gen_dispatch, get_fbo());
 
 	fb_clearer_task->add_dependency(gbuffer_clearer_task);
