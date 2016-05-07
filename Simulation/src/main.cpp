@@ -175,6 +175,7 @@ int main() {
 	}
 
 	// Bind input
+	bool mouse_down = false;
 	auto keyboard_listner = std::make_shared<decltype(ctx)::hid_keyboard_signal_type::connection_type>(
 		[&](StE::HID::keyboard::K key, int scanline, StE::HID::Status status, StE::HID::ModifierBits mods) {
 		using namespace StE::HID;
@@ -188,8 +189,14 @@ int main() {
 		if (key == keyboard::K::KeyPRINT_SCREEN || key == keyboard::K::KeyF12)
 			ctx.capture_screenshot();
 	});
+	auto pointer_button_listner = std::make_shared<decltype(ctx)::hid_pointer_button_signal_type::connection_type>(
+		[&](StE::HID::pointer::B b, StE::HID::Status status, StE::HID::ModifierBits mods) {
+		using namespace StE::HID;
+
+		mouse_down = b == pointer::B::Left && status == Status::KeyDown;
+	});
 	ctx.hid_signal_keyboard().connect(keyboard_listner);
-	ctx.set_pointer_hidden(true);
+	ctx.hid_signal_pointer_button().connect(pointer_button_listner);
 
 	auto title_text = text_manager.create_renderer();
 	auto footer_text = text_manager.create_renderer();
@@ -243,6 +250,7 @@ int main() {
 	renderer.add_task(skydome_task);
 	renderer.set_deferred_rendering_enabled(true);
 
+	glm::ivec2 last_pointer_pos;
 	float time = 0;
 	while (running) {
 		if (ctx.window_active()) {
@@ -260,18 +268,18 @@ int main() {
 				camera.step_right(time_delta*movement_factor);
 
 			constexpr float rotation_factor = .09f;
-			glm::ivec2 pp = ctx.get_pointer_position();
-			glm::ivec2 center = ctx.get_backbuffer_size() / 2;
-			ctx.set_pointer_position(center);
-			auto diff_v = static_cast<glm::vec2>(center - pp) * time_delta * rotation_factor;
-			camera.pitch_and_yaw(-diff_v.y, diff_v.x);
+			glm::vec2(.0f);
+			auto pp = ctx.get_pointer_position();
+			if (mouse_down) {
+				auto diff_v = static_cast<glm::vec2>(last_pointer_pos - pp) * time_delta * rotation_factor;
+				camera.pitch_and_yaw(-diff_v.y, diff_v.x);
+			}
+			last_pointer_pos = pp;
 		}
 
 		float angle = time * glm::pi<float>() / 2.5f;
 		glm::vec3 lp = light0_pos + glm::vec3(glm::sin(angle) * 3, 0, glm::cos(angle)) * 115.f;
-
 		light0->set_position(lp);
-
 		light0_obj->set_model_matrix(glm::scale(glm::translate(glm::mat4(), lp), glm::vec3(light0->get_radius() / 2.f)));
 
 		{

@@ -73,17 +73,16 @@ void debug_gui::dispatch() const {
 		}
 	}
 
-	auto bbsize = ctx.get_backbuffer_size();
-
 	ImGui_ImplGlfwGL3_NewFrame();
 
-	ImGui::SetNextWindowPos(ImVec2(20,20));
-	ImGui::SetNextWindowSize(ImVec2(bbsize.x - 40,138));
-	ImGui::Begin("StE debug", nullptr);
-
-	auto &fts = prof->get_last_times_per_frame();
-	ImGui::PlotLines("Frame Times", &fts[0], fts.size(), 0, "ms", 0.f, .1f);
-	ImGui::PlotTimeline(times);
+	auto bbsize = ctx.get_backbuffer_size();
+	ImGui::SetNextWindowPos(ImVec2(20,20), ImGuiSetCond_FirstUseEver);
+	ImGui::SetNextWindowSize(ImVec2(bbsize.x - 40,130), ImGuiSetCond_FirstUseEver);
+	if (ImGui::Begin("StE debug", nullptr)) {
+		auto &fts = prof->get_last_times_per_frame();
+		ImGui::PlotLines("Frame Times", &fts[0], fts.size(), 0, "ms", 0.f, .1f);
+		ImGui::PlotTimeline(times);
+	}
 
 	ImGui::End();
 

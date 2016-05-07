@@ -42,7 +42,7 @@ inline void PlotTimeline(const std::vector<std::pair<std::string, float>> &times
 
 		static constexpr int y0 = 18;
 		static constexpr int y1 = 38;
-		static constexpr int bar_h = 55;
+		static constexpr int bar_h = 35;
 
 		draw_list->AddRectFilled(ImVec2(offset, canvasPosition.y + y1),
 								 ImVec2(offset + poffset, canvasPosition.y + y1 + bar_h),

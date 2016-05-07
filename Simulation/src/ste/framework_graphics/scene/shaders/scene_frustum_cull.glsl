@@ -14,7 +14,7 @@ layout(local_size_x = 128) in;
 layout(std430, binding = 14) restrict readonly buffer mesh_data {
 	mesh_descriptor mesh_descriptor_buffer[];
 };
-layout(std430, binding = 15) restrict buffer mesh_draw_params_data {
+layout(std430, binding = 15) restrict readonly buffer mesh_draw_params_data {
 	mesh_draw_params mesh_draw_params_buffer[];
 };
 layout(std430, binding = 2) restrict readonly buffer light_data {

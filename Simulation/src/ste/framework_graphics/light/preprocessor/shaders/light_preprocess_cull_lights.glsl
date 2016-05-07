@@ -51,7 +51,7 @@ void main() {
 
 	// Calculate cutoff based on HDR exposure
 	float hdr_min_lum = intBitsToFloat(hdr_params.lum_min);
-	float minimal_light_luminance = ld.luminance * .000005f;
+	float minimal_light_luminance = ld.luminance * .0000075f;
 	float err = max(minimal_light_luminance, hdr_lum_to_luminance(hdr_min_lum));
 	float range = light_calculate_effective_range(ld, err);
 
