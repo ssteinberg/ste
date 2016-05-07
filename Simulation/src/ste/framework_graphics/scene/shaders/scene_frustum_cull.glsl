@@ -52,7 +52,6 @@ void main() {
 	float radius = md.bounding_sphere.w;
 
 	uint shadow_instance_count = 0;
-	bool include = false;
 	for (int i = 0; i < ll_counter; ++i) {
 		uint16_t light_idx = ll[i];
 
@@ -62,14 +61,12 @@ void main() {
 		vec3 v = lc - center;
 		float d = lr + radius;
 		if (dot(v,v) < d*d) {
-			include = true;
-
 			sproj_id_to_llid_tt[draw_id].ll_idx[shadow_instance_count] = uint16_t(i);
 			++shadow_instance_count;
 		}
 	}
 
-	if (include) {
+	if (shadow_instance_count > 0) {
 		uint idx = atomicCounterIncrement(counter);
 
 		IndirectMultiDrawElementsCommand c;

@@ -59,13 +59,15 @@ vec3 unproject_position(g_buffer_element frag) {
 vec4 shade(g_buffer_element frag, mat4 inverse_view_matrix) {
 	int draw_idx = gbuffer_parse_material(frag);
 	vec2 uv = gbuffer_parse_uv(frag);
+	vec2 duvdx = gbuffer_parse_duvdx(frag);
+	vec2 duvdy = gbuffer_parse_duvdy(frag);
 
 	material_descriptor md = mat_descriptor[draw_idx];
 
-	vec3 diffuse = md.diffuse.tex_handler>0 ? texture(sampler2D(md.diffuse.tex_handler), uv).rgb : vec3(1.f);
-	float alpha = md.alphamap.tex_handler>0 ? texture(sampler2D(md.alphamap.tex_handler), uv).x : 1.f;
+	vec3 diffuse = md.diffuse.tex_handler>0 ? textureGrad(sampler2D(md.diffuse.tex_handler), uv, duvdx, duvdy).rgb : vec3(1.f);
+	float alpha = md.alphamap.tex_handler>0 ? textureGrad(sampler2D(md.alphamap.tex_handler), uv, duvdx, duvdy).x : 1.f;
 
-	float specular = md.specular.tex_handler>0 ? texture(sampler2D(md.specular.tex_handler), uv).x : 1.f;
+	float specular = md.specular.tex_handler>0 ? textureGrad(sampler2D(md.specular.tex_handler), uv, duvdx, duvdy).x : 1.f;
 	specular = mix(.2f, 1.f, specular);
 
 	if (draw_idx == material_none)
@@ -89,7 +91,7 @@ vec4 shade(g_buffer_element frag, mat4 inverse_view_matrix) {
 		if (position.z >= lll_parse_zmin(lll_p) && position.z <= lll_parse_zmax(lll_p)) {
 			uint light_idx = lll_parse_light_idx(lll_p);
 			light_descriptor ld = light_buffer[light_idx];
-
+rgb = vec3(gl_FragCoord.xyy);
 			vec3 v = light_incidant_ray(ld, light_idx, position);
 			if (dot(n, v) > 0) {
 				float dist = length(v);

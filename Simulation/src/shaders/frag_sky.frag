@@ -31,5 +31,5 @@ void main() {
 
 	vec4 diffuse = vec4(texture(sky_tex, uv).rgb * sky_luminance, 1);
 
-	gbuffer_store(gbuffer_ll_heads, gbuffer_ll_counter, gl_FragCoord.z, uv, f16vec3(0,0,0), f16vec3(0,0,0), material_none, ivec2(gl_FragCoord.xy));
+	gbuffer_store(gbuffer_ll_heads, gbuffer_ll_counter, gl_FragCoord.z, uv, f16vec2(dFdx(uv)), f16vec2(dFdy(uv)), vec3(0,0,0), vec3(0,0,0), material_none, ivec2(gl_FragCoord.xy));
 }

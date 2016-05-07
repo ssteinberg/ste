@@ -20,7 +20,7 @@ layout(shared, binding = 5) restrict readonly buffer ll_data {
 	uint16_t ll[];
 };
 
-layout(r32ui, binding = 6) restrict uniform uimage2D lll_heads;
+layout(r32ui, binding = 6) restrict writeonly uniform uimage2D lll_heads;
 layout(shared, binding = 7) restrict buffer lll_counter_data {
 	uint32_t lll_counter;
 };

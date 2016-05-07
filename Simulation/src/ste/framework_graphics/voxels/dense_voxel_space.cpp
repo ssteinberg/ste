@@ -4,6 +4,10 @@
 
 using namespace StE::Graphics;
 
+constexpr gli::format dense_voxel_space::space_format_radiance;
+constexpr gli::format dense_voxel_space::space_format_data;
+constexpr int dense_voxel_space::voxel_steps_multiplier;
+
 dense_voxel_space::dense_voxel_space(const StEngineControl &ctx, std::size_t max_size, float voxel_size_factor) : ctx(ctx) {
 	auto ts = Core::texture_sparse_3d::page_sizes(space_format_radiance)[0];
 
