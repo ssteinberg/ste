@@ -198,8 +198,8 @@ $(document).ready(function(){initNavTree('concurrent__queue_8hpp_source.html',''
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;        node * <span class="keyword">const</span> current_tail_ptr = old_tail.ptr;</div>
 <div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;        <span class="keywordflow">while</span> (!<a class="code" href="classStE_1_1concurrent__queue.html#a588647876e4bdb9a31ee6a970be5a875">tail</a>.compare_exchange_weak(old_tail, new_tail) &amp;&amp; old_tail.ptr == current_tail_ptr);</div>
 <div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;        old_tail.ptr == current_tail_ptr ? </div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;            <a class="code" href="classStE_1_1concurrent__queue.html#aa8eeda5e2a1b7cebb5d3145c402d6053">free_external_counter</a>(old_tail) : </div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;        old_tail.ptr == current_tail_ptr ?</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;            <a class="code" href="classStE_1_1concurrent__queue.html#aa8eeda5e2a1b7cebb5d3145c402d6053">free_external_counter</a>(old_tail) :</div>
 <div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;            current_tail_ptr-&gt;release_ref();</div>
 <div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    }</div>
 <div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;</div>
@@ -211,7 +211,7 @@ $(document).ready(function(){initNavTree('concurrent__queue_8hpp_source.html',''
 <div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;</div>
 <div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;        <a class="code" href="classStE_1_1concurrent__queue.html#a02cfdcde8d86079e5133b5a288079c1e">head</a>.store(new_counted_node);</div>
 <div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;        <a class="code" href="classStE_1_1concurrent__queue.html#a588647876e4bdb9a31ee6a970be5a875">tail</a>.store(new_counted_node);</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;        </div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;</div>
 <div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;        assert(<a class="code" href="classStE_1_1concurrent__queue.html#a02cfdcde8d86079e5133b5a288079c1e">head</a>.is_lock_free() &amp;&amp; <span class="stringliteral">&quot;head/tail not lock free!&quot;</span>);</div>
 <div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;        assert(new_counted_node.ptr-&gt;count.is_lock_free() &amp;&amp; <span class="stringliteral">&quot;count not lock free!&quot;</span>);</div>
 <div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;        assert(new_counted_node.ptr-&gt;next.is_lock_free() &amp;&amp; <span class="stringliteral">&quot;next not lock free!&quot;</span>);</div>
@@ -254,39 +254,38 @@ $(document).ready(function(){initNavTree('concurrent__queue_8hpp_source.html',''
 <div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;            T* old_data = <span class="keyword">nullptr</span>;</div>
 <div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;            <span class="keywordflow">if</span> (old_tail.ptr-&gt;data.compare_exchange_strong(old_data, new_data.get())) {</div>
 <div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;                counted_node_ptr old_next = { 0 };</div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;                <span class="keyword">auto</span> oldnexta = old_tail.ptr-&gt;next.load();</div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;                <span class="keywordflow">if</span> (!old_tail.ptr-&gt;next.compare_exchange_strong(old_next, new_next)) {</div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;                    <span class="keyword">delete</span> new_next.ptr;</div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;                    new_next = old_next;</div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;                }</div>
-<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;                <a class="code" href="classStE_1_1concurrent__queue.html#a18d5c7a4e6c0ede937073c4b9b6a293c">set_new_tail</a>(old_tail, new_next);</div>
-<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;                new_data.release();</div>
-<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;                <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;            }</div>
-<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;            <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;                counted_node_ptr old_next = { 0 };</div>
-<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;                <span class="keywordflow">if</span> (old_tail.ptr-&gt;next.compare_exchange_strong(old_next, new_next)) {</div>
-<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;                    old_next = new_next;</div>
-<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;                    new_next.ptr = <span class="keyword">new</span> node;</div>
-<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;                }</div>
-<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;                <a class="code" href="classStE_1_1concurrent__queue.html#a18d5c7a4e6c0ede937073c4b9b6a293c">set_new_tail</a>(old_tail, old_next);</div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;            }</div>
-<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;        }</div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;    }</div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;    </div>
-<div class="line"><a name="l00170"></a><span class="lineno"><a class="line" href="classStE_1_1concurrent__queue.html#ad94453d955d5a1dfa74d4e72057e3084">  170</a></span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classStE_1_1concurrent__queue.html#ad94453d955d5a1dfa74d4e72057e3084">is_empty_hint</a>()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;        counted_node_ptr h = <a class="code" href="classStE_1_1concurrent__queue.html#a02cfdcde8d86079e5133b5a288079c1e">head</a>.load(std::memory_order_relaxed);</div>
-<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;        counted_node_ptr t = <a class="code" href="classStE_1_1concurrent__queue.html#a588647876e4bdb9a31ee6a970be5a875">tail</a>.load(std::memory_order_relaxed);</div>
-<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;        <span class="keywordflow">return</span> h.ptr == t.ptr;</div>
-<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;    }</div>
-<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;};</div>
-<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;</div>
-<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;}</div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;                <span class="keywordflow">if</span> (!old_tail.ptr-&gt;next.compare_exchange_strong(old_next, new_next)) {</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;                    <span class="keyword">delete</span> new_next.ptr;</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;                    new_next = old_next;</div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;                }</div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;                <a class="code" href="classStE_1_1concurrent__queue.html#a18d5c7a4e6c0ede937073c4b9b6a293c">set_new_tail</a>(old_tail, new_next);</div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;                new_data.release();</div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;                <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;            }</div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;            <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;                counted_node_ptr old_next = { 0 };</div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;                <span class="keywordflow">if</span> (old_tail.ptr-&gt;next.compare_exchange_strong(old_next, new_next)) {</div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;                    old_next = new_next;</div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;                    new_next.ptr = <span class="keyword">new</span> node;</div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;                }</div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;                <a class="code" href="classStE_1_1concurrent__queue.html#a18d5c7a4e6c0ede937073c4b9b6a293c">set_new_tail</a>(old_tail, old_next);</div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;            }</div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;        }</div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;    }</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;</div>
+<div class="line"><a name="l00169"></a><span class="lineno"><a class="line" href="classStE_1_1concurrent__queue.html#ad94453d955d5a1dfa74d4e72057e3084">  169</a></span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classStE_1_1concurrent__queue.html#ad94453d955d5a1dfa74d4e72057e3084">is_empty_hint</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;        counted_node_ptr h = <a class="code" href="classStE_1_1concurrent__queue.html#a02cfdcde8d86079e5133b5a288079c1e">head</a>.load(std::memory_order_relaxed);</div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;        counted_node_ptr t = <a class="code" href="classStE_1_1concurrent__queue.html#a588647876e4bdb9a31ee6a970be5a875">tail</a>.load(std::memory_order_relaxed);</div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;        <span class="keywordflow">return</span> h.ptr == t.ptr;</div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;    }</div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;};</div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;</div>
+<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;}</div>
 <div class="ttc" id="classStE_1_1concurrent__queue_html_a3b339247698bcd096dce227efc7dde66"><div class="ttname"><a href="classStE_1_1concurrent__queue.html#a3b339247698bcd096dce227efc7dde66">StE::concurrent_queue::increase_external_count</a></div><div class="ttdeci">static void increase_external_count(std::atomic&lt; counted_node_ptr &gt; &amp;counter, counted_node_ptr &amp;old_counter)</div><div class="ttdef"><b>Definition:</b> <a href="concurrent__queue_8hpp_source.html#l00064">concurrent_queue.hpp:64</a></div></div>
 <div class="ttc" id="classStE_1_1concurrent__queue_html_a588647876e4bdb9a31ee6a970be5a875"><div class="ttname"><a href="classStE_1_1concurrent__queue.html#a588647876e4bdb9a31ee6a970be5a875">StE::concurrent_queue::tail</a></div><div class="ttdeci">std::atomic&lt; counted_node_ptr &gt; tail</div><div class="ttdef"><b>Definition:</b> <a href="concurrent__queue_8hpp_source.html#l00062">concurrent_queue.hpp:62</a></div></div>
 <div class="ttc" id="classStE_1_1concurrent__queue_html_a02cfdcde8d86079e5133b5a288079c1e"><div class="ttname"><a href="classStE_1_1concurrent__queue.html#a02cfdcde8d86079e5133b5a288079c1e">StE::concurrent_queue::head</a></div><div class="ttdeci">std::atomic&lt; counted_node_ptr &gt; head</div><div class="ttdef"><b>Definition:</b> <a href="concurrent__queue_8hpp_source.html#l00062">concurrent_queue.hpp:62</a></div></div>
 <div class="ttc" id="classStE_1_1concurrent__queue_html_a641ae01fe33ea12f7533abadd3a778d9"><div class="ttname"><a href="classStE_1_1concurrent__queue.html#a641ae01fe33ea12f7533abadd3a778d9">StE::concurrent_queue::operator=</a></div><div class="ttdeci">concurrent_queue &amp; operator=(const concurrent_queue &amp;q)=delete</div></div>
-<div class="ttc" id="classStE_1_1concurrent__queue_html_ad94453d955d5a1dfa74d4e72057e3084"><div class="ttname"><a href="classStE_1_1concurrent__queue.html#ad94453d955d5a1dfa74d4e72057e3084">StE::concurrent_queue::is_empty_hint</a></div><div class="ttdeci">bool is_empty_hint() const </div><div class="ttdef"><b>Definition:</b> <a href="concurrent__queue_8hpp_source.html#l00170">concurrent_queue.hpp:170</a></div></div>
+<div class="ttc" id="classStE_1_1concurrent__queue_html_ad94453d955d5a1dfa74d4e72057e3084"><div class="ttname"><a href="classStE_1_1concurrent__queue.html#ad94453d955d5a1dfa74d4e72057e3084">StE::concurrent_queue::is_empty_hint</a></div><div class="ttdeci">bool is_empty_hint() const </div><div class="ttdef"><b>Definition:</b> <a href="concurrent__queue_8hpp_source.html#l00169">concurrent_queue.hpp:169</a></div></div>
 <div class="ttc" id="classStE_1_1concurrent__queue_html_a93132a3a0170c7b2e79601ecc1ff6184"><div class="ttname"><a href="classStE_1_1concurrent__queue.html#a93132a3a0170c7b2e79601ecc1ff6184">StE::concurrent_queue::push</a></div><div class="ttdeci">void push(T &amp;&amp;new_value)</div><div class="ttdef"><b>Definition:</b> <a href="concurrent__queue_8hpp_source.html#l00139">concurrent_queue.hpp:139</a></div></div>
 <div class="ttc" id="classStE_1_1concurrent__queue_html_aed423d0fbc544ccb27c2d58ff3d5bc8e"><div class="ttname"><a href="classStE_1_1concurrent__queue.html#aed423d0fbc544ccb27c2d58ff3d5bc8e">StE::concurrent_queue::concurrent_queue</a></div><div class="ttdeci">concurrent_queue()</div><div class="ttdef"><b>Definition:</b> <a href="concurrent__queue_8hpp_source.html#l00100">concurrent_queue.hpp:100</a></div></div>
 <div class="ttc" id="classStE_1_1concurrent__queue_html_a87c9e36eaa2ac924700286a008b0464e"><div class="ttname"><a href="classStE_1_1concurrent__queue.html#a87c9e36eaa2ac924700286a008b0464e">StE::concurrent_queue::pop</a></div><div class="ttdeci">std::unique_ptr&lt; T &gt; pop()</div><div class="ttdef"><b>Definition:</b> <a href="concurrent__queue_8hpp_source.html#l00120">concurrent_queue.hpp:120</a></div></div>

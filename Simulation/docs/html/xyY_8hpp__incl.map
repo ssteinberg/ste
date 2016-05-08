@@ -1,9 +1,9 @@
 <map id="src/ste/framework_graphics/radiometry/spectral/xyY.hpp" name="src/ste/framework_graphics/radiometry/spectral/xyY.hpp">
-<area shape="rect" id="node2" href="$spectrum_8hpp.html" title="spectrum.hpp" alt="" coords="540,319,640,345"/>
-<area shape="rect" id="node19" href="$XYZ_8hpp.html" title="XYZ.hpp" alt="" coords="585,95,659,121"/>
-<area shape="rect" id="node3" href="$stdafx_8hpp.html" title="stdafx.hpp" alt="" coords="503,393,586,420"/>
+<area shape="rect" id="node2" href="$spectrum_8hpp.html" title="spectrum.hpp" alt="" coords="1425,319,1525,345"/>
+<area shape="rect" id="node29" href="$XYZ_8hpp.html" title="XYZ.hpp" alt="" coords="1471,95,1544,121"/>
+<area shape="rect" id="node3" href="$stdafx_8hpp.html" title="stdafx.hpp" alt="" coords="1389,393,1471,420"/>
 <area shape="rect" id="node5" href="$gl_8hpp.html" title="gl.hpp" alt="" coords="89,468,147,495"/>
 <area shape="rect" id="node7" href="$gl__extensions_8h.html" title="gl_extensions.h" alt="" coords="122,543,237,569"/>
-<area shape="rect" id="node21" href="$RGB_8hpp.html" title="RGB.hpp" alt="" coords="623,244,698,271"/>
-<area shape="rect" id="node22" href="$Kelvin_8hpp.html" title="Kelvin.hpp" alt="" coords="710,169,793,196"/>
+<area shape="rect" id="node31" href="$RGB_8hpp.html" title="RGB.hpp" alt="" coords="1509,244,1583,271"/>
+<area shape="rect" id="node32" href="$Kelvin_8hpp.html" title="Kelvin.hpp" alt="" coords="1595,169,1678,196"/>
 </map>

@@ -85,7 +85,9 @@ var hierarchy =
     [ "StE::Graphics::Camera", "classStE_1_1Graphics_1_1Camera.html", null ],
     [ "StE::Graphics::common_brdf_representation", "classStE_1_1Graphics_1_1common__brdf__representation.html", null ],
     [ "StE::concurrent_pointer_recycler< T, N >", "classStE_1_1concurrent__pointer__recycler.html", null ],
-    [ "StE::concurrent_pointer_recycler< data >", "classStE_1_1concurrent__pointer__recycler.html", null ],
+    [ "StE::concurrent_pointer_recycler< data_t >", "classStE_1_1concurrent__pointer__recycler.html", [
+      [ "StE::_shared_double_reference_guard_detail::data_factory< data_t, true >", "classStE_1_1__shared__double__reference__guard__detail_1_1data__factory_3_01data__t_00_01true_01_4.html", null ]
+    ] ],
     [ "StE::concurrent_queue< T >", "classStE_1_1concurrent__queue.html", null ],
     [ "StE::concurrent_queue< delayed_task >", "classStE_1_1concurrent__queue.html", null ],
     [ "StE::concurrent_queue< modify_task_log >", "classStE_1_1concurrent__queue.html", null ],
@@ -100,6 +102,10 @@ var hierarchy =
     [ "StE::Core::GL::context_state", "classStE_1_1Core_1_1GL_1_1context__state.html", null ],
     [ "StE::Core::GL::context_state_key< K >", "classStE_1_1Core_1_1GL_1_1context__state__key.html", null ],
     [ "StE::create_type< N >", "structStE_1_1create__type.html", null ],
+    [ "StE::_shared_double_reference_guard_detail::data< DataType, recycle_pointers >", "classStE_1_1__shared__double__reference__guard__detail_1_1data.html", null ],
+    [ "StE::_shared_double_reference_guard_detail::data_factory< data_t, b >", "classStE_1_1__shared__double__reference__guard__detail_1_1data__factory.html", null ],
+    [ "StE::_shared_double_reference_guard_detail::data_factory< data_t, false >", "classStE_1_1__shared__double__reference__guard__detail_1_1data__factory_3_01data__t_00_01false_01_4.html", null ],
+    [ "StE::_shared_double_reference_guard_detail::data_factory< StE::_shared_double_reference_guard_detail::data< DataType, recycle_pointers >, std::is_trivially_copyable< DataType >::value &&recycle_pointers >", "classStE_1_1__shared__double__reference__guard__detail_1_1data__factory.html", null ],
     [ "StE::shared_double_reference_guard< DataType, recycle_pointers >::data_guard", "classStE_1_1shared__double__reference__guard_1_1data__guard.html", null ],
     [ "StE::Graphics::deferred_gbuffer", "classStE_1_1Graphics_1_1deferred__gbuffer.html", null ],
     [ "StE::Graphics::dense_voxel_space", "classStE_1_1Graphics_1_1dense__voxel__space.html", null ],
@@ -116,8 +122,7 @@ var hierarchy =
     ] ],
     [ "enable_shared_from_this", null, [
       [ "StE::Graphics::gpu_task", "classStE_1_1Graphics_1_1gpu__task.html", [
-        [ "StE::Graphics::detail::gpu_task_root", "classStE_1_1Graphics_1_1detail_1_1gpu__task__root.html", null ],
-        [ "StE::Graphics::Scene", "classStE_1_1Graphics_1_1Scene.html", null ]
+        [ "StE::Graphics::detail::gpu_task_root", "classStE_1_1Graphics_1_1detail_1_1gpu__task__root.html", null ]
       ] ]
     ] ],
     [ "StE::Graphics::entity", "classStE_1_1Graphics_1_1entity.html", [
@@ -295,9 +300,7 @@ var hierarchy =
             ] ]
           ] ],
           [ "StE::Core::buffer_object< Core::IndirectMultiDrawElementsCommand, U >", "classStE_1_1Core_1_1buffer__object.html", [
-            [ "StE::Core::buffer_object_layout_bindable< Core::IndirectMultiDrawElementsCommand, shader_storage_buffer_object_layout_binding_type, U >", "classStE_1_1Core_1_1buffer__object__layout__bindable.html", [
-              [ "StE::Core::ShaderStorageBuffer< Core::IndirectMultiDrawElementsCommand, usage >", "classStE_1_1Core_1_1ShaderStorageBuffer.html", null ]
-            ] ]
+            [ "StE::Core::IndirectDrawBuffer< Core::IndirectMultiDrawElementsCommand, usage >", "classStE_1_1Core_1_1IndirectDrawBuffer.html", null ]
           ] ],
           [ "StE::Core::buffer_object< g_buffer_element, U >", "classStE_1_1Core_1_1buffer__object.html", [
             [ "StE::Core::buffer_object_layout_bindable< g_buffer_element, shader_storage_buffer_object_layout_binding_type, U >", "classStE_1_1Core_1_1buffer__object__layout__bindable.html", [
@@ -350,6 +353,11 @@ var hierarchy =
               [ "StE::Core::ShaderStorageBuffer< node >", "classStE_1_1Core_1_1ShaderStorageBuffer.html", null ]
             ] ]
           ] ],
+          [ "StE::Core::buffer_object< shadow_projection_instance_to_ll_idx_translation, U >", "classStE_1_1Core_1_1buffer__object.html", [
+            [ "StE::Core::buffer_object_layout_bindable< shadow_projection_instance_to_ll_idx_translation, shader_storage_buffer_object_layout_binding_type, U >", "classStE_1_1Core_1_1buffer__object__layout__bindable.html", [
+              [ "StE::Core::ShaderStorageBuffer< shadow_projection_instance_to_ll_idx_translation, usage >", "classStE_1_1Core_1_1ShaderStorageBuffer.html", null ]
+            ] ]
+          ] ],
           [ "StE::Core::buffer_object< std::int32_t, BufferUsage::BufferUsageNone >", "classStE_1_1Core_1_1buffer__object.html", [
             [ "StE::Core::PixelBufferObject< std::int32_t >", "classStE_1_1Core_1_1PixelBufferObject.html", null ]
           ] ],
@@ -374,6 +382,11 @@ var hierarchy =
           [ "StE::Core::buffer_object< StE::Graphics::mesh_descriptor, U >", "classStE_1_1Core_1_1buffer__object.html", [
             [ "StE::Core::buffer_object_layout_bindable< StE::Graphics::mesh_descriptor, shader_storage_buffer_object_layout_binding_type, U >", "classStE_1_1Core_1_1buffer__object__layout__bindable.html", [
               [ "StE::Core::ShaderStorageBuffer< StE::Graphics::mesh_descriptor, usage >", "classStE_1_1Core_1_1ShaderStorageBuffer.html", null ]
+            ] ]
+          ] ],
+          [ "StE::Core::buffer_object< StE::Graphics::mesh_draw_params, U >", "classStE_1_1Core_1_1buffer__object.html", [
+            [ "StE::Core::buffer_object_layout_bindable< StE::Graphics::mesh_draw_params, shader_storage_buffer_object_layout_binding_type, U >", "classStE_1_1Core_1_1buffer__object__layout__bindable.html", [
+              [ "StE::Core::ShaderStorageBuffer< StE::Graphics::mesh_draw_params, usage >", "classStE_1_1Core_1_1ShaderStorageBuffer.html", null ]
             ] ]
           ] ],
           [ "StE::Core::buffer_object< StE::Graphics::ObjectVertexData, U >", "classStE_1_1Core_1_1buffer__object.html", [
@@ -555,7 +568,7 @@ var hierarchy =
       [ "StE::Graphics::light_preprocess_cull_lights", "classStE_1_1Graphics_1_1light__preprocess__cull__lights.html", null ],
       [ "StE::Graphics::light_preprocess_cull_shadows", "classStE_1_1Graphics_1_1light__preprocess__cull__shadows.html", null ],
       [ "StE::Graphics::linked_light_lists_gen_dispatch", "classStE_1_1Graphics_1_1linked__light__lists__gen__dispatch.html", null ],
-      [ "StE::Graphics::ObjectGroup", "classStE_1_1Graphics_1_1ObjectGroup.html", null ],
+      [ "StE::Graphics::Scene", "classStE_1_1Graphics_1_1Scene.html", null ],
       [ "StE::Graphics::scene_frustum_cull_dispatch", "classStE_1_1Graphics_1_1scene__frustum__cull__dispatch.html", null ],
       [ "StE::Graphics::scene_prepopulate_depth_dispatch", "classStE_1_1Graphics_1_1scene__prepopulate__depth__dispatch.html", null ],
       [ "StE::Graphics::shadowmap_projector", "classStE_1_1Graphics_1_1shadowmap__projector.html", null ],
@@ -576,7 +589,6 @@ var hierarchy =
     [ "StE::Graph::detail::graph_impl", "classStE_1_1Graph_1_1detail_1_1graph__impl.html", null ],
     [ "StE::Core::gstack< T, lockless >", "classStE_1_1Core_1_1gstack.html", null ],
     [ "StE::Core::gstack< buffer_glyph_descriptor >", "classStE_1_1Core_1_1gstack.html", null ],
-    [ "StE::Core::gstack< Core::IndirectMultiDrawElementsCommand, true >", "classStE_1_1Core_1_1gstack.html", null ],
     [ "StE::Core::gstack< glm::vec4 >", "classStE_1_1Core_1_1gstack.html", null ],
     [ "StE::Core::gstack< glyph_point, true >", "classStE_1_1Core_1_1gstack.html", null ],
     [ "StE::Core::gstack< material_descriptor >", "classStE_1_1Core_1_1gstack.html", null ],
@@ -584,6 +596,7 @@ var hierarchy =
     [ "StE::Core::gstack< std::uint32_t >", "classStE_1_1Core_1_1gstack.html", null ],
     [ "StE::Core::gstack< StE::Graphics::light::light_descriptor >", "classStE_1_1Core_1_1gstack.html", null ],
     [ "StE::Core::gstack< StE::Graphics::mesh_descriptor >", "classStE_1_1Core_1_1gstack.html", null ],
+    [ "StE::Core::gstack< StE::Graphics::mesh_draw_params >", "classStE_1_1Core_1_1gstack.html", null ],
     [ "StE::Core::gstack< StE::Graphics::ObjectVertexData >", "classStE_1_1Core_1_1gstack.html", null ],
     [ "std::hash< StE::Core::GL::BasicStateName >", "structstd_1_1hash_3_01StE_1_1Core_1_1GL_1_1BasicStateName_01_4.html", null ],
     [ "std::hash< StE::Core::GL::context_state_key< K > >", "structstd_1_1hash_3_01StE_1_1Core_1_1GL_1_1context__state__key_3_01K_01_4_01_4.html", null ],
@@ -604,6 +617,7 @@ var hierarchy =
     [ "StE::Core::IndirectDispatchCommand", "structStE_1_1Core_1_1IndirectDispatchCommand.html", null ],
     [ "StE::Core::IndirectDrawArraysCommand", "structStE_1_1Core_1_1IndirectDrawArraysCommand.html", null ],
     [ "StE::Core::IndirectDrawBufferGeneric", "classStE_1_1Core_1_1IndirectDrawBufferGeneric.html", [
+      [ "StE::Core::IndirectDrawBuffer< Core::IndirectMultiDrawElementsCommand, usage >", "classStE_1_1Core_1_1IndirectDrawBuffer.html", null ],
       [ "StE::Core::IndirectDrawBuffer< Type, U >", "classStE_1_1Core_1_1IndirectDrawBuffer.html", null ]
     ] ],
     [ "StE::Core::IndirectMultiDrawElementsCommand", "structStE_1_1Core_1_1IndirectMultiDrawElementsCommand.html", null ],
@@ -652,6 +666,7 @@ var hierarchy =
     [ "StE::Graphics::mesh_aabb", "classStE_1_1Graphics_1_1mesh__aabb.html", null ],
     [ "StE::Graphics::mesh_bounding_sphere", "classStE_1_1Graphics_1_1mesh__bounding__sphere.html", null ],
     [ "StE::Graphics::mesh_descriptor", "structStE_1_1Graphics_1_1mesh__descriptor.html", null ],
+    [ "StE::Graphics::mesh_draw_params", "structStE_1_1Graphics_1_1mesh__draw__params.html", null ],
     [ "StE::Graphics::mesh_generic", "classStE_1_1Graphics_1_1mesh__generic.html", [
       [ "StE::Graphics::mesh< mesh_subdivion_mode::Triangles >", "classStE_1_1Graphics_1_1mesh.html", [
         [ "StE::Graphics::Sphere", "classStE_1_1Graphics_1_1Sphere.html", null ]
@@ -667,6 +682,7 @@ var hierarchy =
     [ "StE::none_t", "structStE_1_1none__t.html", null ],
     [ "StE::Graphics::normal_map_from_height_map< Fin >", "classStE_1_1Graphics_1_1normal__map__from__height__map.html", null ],
     [ "StE::Graphics::object_group_draw_buffers", "classStE_1_1Graphics_1_1object__group__draw__buffers.html", null ],
+    [ "StE::Graphics::object_group_indirect_command_buffer", "classStE_1_1Graphics_1_1object__group__indirect__command__buffer.html", null ],
     [ "StE::Graphics::ObjectVertexData", "structStE_1_1Graphics_1_1ObjectVertexData.html", null ],
     [ "StE::optional< T >", "classStE_1_1optional.html", null ],
     [ "StE::optional< bool >", "classStE_1_1optional.html", null ],
@@ -701,11 +717,13 @@ var hierarchy =
       [ "StE::Core::buffer_object< material_descriptor, U >", "classStE_1_1Core_1_1buffer__object.html", null ],
       [ "StE::Core::buffer_object< matrices, U >", "classStE_1_1Core_1_1buffer__object.html", null ],
       [ "StE::Core::buffer_object< node, U >", "classStE_1_1Core_1_1buffer__object.html", null ],
+      [ "StE::Core::buffer_object< shadow_projection_instance_to_ll_idx_translation, U >", "classStE_1_1Core_1_1buffer__object.html", null ],
       [ "StE::Core::buffer_object< std::int32_t, BufferUsage::BufferUsageNone >", "classStE_1_1Core_1_1buffer__object.html", null ],
       [ "StE::Core::buffer_object< std::uint16_t, U >", "classStE_1_1Core_1_1buffer__object.html", null ],
       [ "StE::Core::buffer_object< std::uint32_t, U >", "classStE_1_1Core_1_1buffer__object.html", null ],
       [ "StE::Core::buffer_object< StE::Graphics::light::light_descriptor, U >", "classStE_1_1Core_1_1buffer__object.html", null ],
       [ "StE::Core::buffer_object< StE::Graphics::mesh_descriptor, U >", "classStE_1_1Core_1_1buffer__object.html", null ],
+      [ "StE::Core::buffer_object< StE::Graphics::mesh_draw_params, U >", "classStE_1_1Core_1_1buffer__object.html", null ],
       [ "StE::Core::buffer_object< StE::Graphics::ObjectVertexData, U >", "classStE_1_1Core_1_1buffer__object.html", null ],
       [ "StE::Core::buffer_object< T, U >", "classStE_1_1Core_1_1buffer__object.html", null ],
       [ "StE::Core::buffer_object< Type, U >", "classStE_1_1Core_1_1buffer__object.html", null ]
@@ -761,7 +779,6 @@ var hierarchy =
     ] ],
     [ "StE::Core::shader_layout_bindable_resource< shader_storage_buffer_object_layout_binding_type >", "classStE_1_1Core_1_1shader__layout__bindable__resource.html", [
       [ "StE::Core::buffer_object_layout_bindable< buffer_glyph_descriptor, shader_storage_buffer_object_layout_binding_type, U >", "classStE_1_1Core_1_1buffer__object__layout__bindable.html", null ],
-      [ "StE::Core::buffer_object_layout_bindable< Core::IndirectMultiDrawElementsCommand, shader_storage_buffer_object_layout_binding_type, U >", "classStE_1_1Core_1_1buffer__object__layout__bindable.html", null ],
       [ "StE::Core::buffer_object_layout_bindable< g_buffer_element, shader_storage_buffer_object_layout_binding_type, U >", "classStE_1_1Core_1_1buffer__object__layout__bindable.html", null ],
       [ "StE::Core::buffer_object_layout_bindable< glm::vec4, shader_storage_buffer_object_layout_binding_type, U >", "classStE_1_1Core_1_1buffer__object__layout__bindable.html", null ],
       [ "StE::Core::buffer_object_layout_bindable< GLuint, shader_storage_buffer_object_layout_binding_type, BufferUsage::BufferUsageNone >", "classStE_1_1Core_1_1buffer__object__layout__bindable.html", null ],
@@ -771,11 +788,13 @@ var hierarchy =
       [ "StE::Core::buffer_object_layout_bindable< material_descriptor, shader_storage_buffer_object_layout_binding_type, U >", "classStE_1_1Core_1_1buffer__object__layout__bindable.html", null ],
       [ "StE::Core::buffer_object_layout_bindable< matrices, shader_storage_buffer_object_layout_binding_type, U >", "classStE_1_1Core_1_1buffer__object__layout__bindable.html", null ],
       [ "StE::Core::buffer_object_layout_bindable< node, shader_storage_buffer_object_layout_binding_type, BufferUsage::BufferUsageNone >", "classStE_1_1Core_1_1buffer__object__layout__bindable.html", null ],
+      [ "StE::Core::buffer_object_layout_bindable< shadow_projection_instance_to_ll_idx_translation, shader_storage_buffer_object_layout_binding_type, U >", "classStE_1_1Core_1_1buffer__object__layout__bindable.html", null ],
       [ "StE::Core::buffer_object_layout_bindable< std::uint16_t, shader_storage_buffer_object_layout_binding_type, U >", "classStE_1_1Core_1_1buffer__object__layout__bindable.html", null ],
       [ "StE::Core::buffer_object_layout_bindable< std::uint32_t, shader_storage_buffer_object_layout_binding_type, BufferUsage::BufferUsageNone >", "classStE_1_1Core_1_1buffer__object__layout__bindable.html", null ],
       [ "StE::Core::buffer_object_layout_bindable< std::uint32_t, shader_storage_buffer_object_layout_binding_type, U >", "classStE_1_1Core_1_1buffer__object__layout__bindable.html", null ],
       [ "StE::Core::buffer_object_layout_bindable< StE::Graphics::light::light_descriptor, shader_storage_buffer_object_layout_binding_type, U >", "classStE_1_1Core_1_1buffer__object__layout__bindable.html", null ],
       [ "StE::Core::buffer_object_layout_bindable< StE::Graphics::mesh_descriptor, shader_storage_buffer_object_layout_binding_type, U >", "classStE_1_1Core_1_1buffer__object__layout__bindable.html", null ],
+      [ "StE::Core::buffer_object_layout_bindable< StE::Graphics::mesh_draw_params, shader_storage_buffer_object_layout_binding_type, U >", "classStE_1_1Core_1_1buffer__object__layout__bindable.html", null ],
       [ "StE::Core::buffer_object_layout_bindable< StE::Graphics::ObjectVertexData, shader_storage_buffer_object_layout_binding_type, U >", "classStE_1_1Core_1_1buffer__object__layout__bindable.html", null ],
       [ "StE::Core::buffer_object_layout_bindable< T, shader_storage_buffer_object_layout_binding_type, U >", "classStE_1_1Core_1_1buffer__object__layout__bindable.html", null ],
       [ "StE::Core::buffer_object_layout_bindable< Type, shader_storage_buffer_object_layout_binding_type, U >", "classStE_1_1Core_1_1buffer__object__layout__bindable.html", null ]
@@ -786,7 +805,6 @@ var hierarchy =
     [ "StE::Core::shader_storage_buffer_object_layout_binding_type", "classStE_1_1Core_1_1shader__storage__buffer__object__layout__binding__type.html", null ],
     [ "StE::Core::ShaderStorageBufferGeneric", "classStE_1_1Core_1_1ShaderStorageBufferGeneric.html", [
       [ "StE::Core::ShaderStorageBuffer< buffer_glyph_descriptor, usage >", "classStE_1_1Core_1_1ShaderStorageBuffer.html", null ],
-      [ "StE::Core::ShaderStorageBuffer< Core::IndirectMultiDrawElementsCommand, usage >", "classStE_1_1Core_1_1ShaderStorageBuffer.html", null ],
       [ "StE::Core::ShaderStorageBuffer< g_buffer_element, usage >", "classStE_1_1Core_1_1ShaderStorageBuffer.html", null ],
       [ "StE::Core::ShaderStorageBuffer< glm::vec4, usage >", "classStE_1_1Core_1_1ShaderStorageBuffer.html", null ],
       [ "StE::Core::ShaderStorageBuffer< GLuint >", "classStE_1_1Core_1_1ShaderStorageBuffer.html", null ],
@@ -796,11 +814,13 @@ var hierarchy =
       [ "StE::Core::ShaderStorageBuffer< material_descriptor, usage >", "classStE_1_1Core_1_1ShaderStorageBuffer.html", null ],
       [ "StE::Core::ShaderStorageBuffer< matrices, usage >", "classStE_1_1Core_1_1ShaderStorageBuffer.html", null ],
       [ "StE::Core::ShaderStorageBuffer< node >", "classStE_1_1Core_1_1ShaderStorageBuffer.html", null ],
+      [ "StE::Core::ShaderStorageBuffer< shadow_projection_instance_to_ll_idx_translation, usage >", "classStE_1_1Core_1_1ShaderStorageBuffer.html", null ],
       [ "StE::Core::ShaderStorageBuffer< std::uint16_t, usage >", "classStE_1_1Core_1_1ShaderStorageBuffer.html", null ],
       [ "StE::Core::ShaderStorageBuffer< std::uint32_t >", "classStE_1_1Core_1_1ShaderStorageBuffer.html", null ],
       [ "StE::Core::ShaderStorageBuffer< std::uint32_t, usage >", "classStE_1_1Core_1_1ShaderStorageBuffer.html", null ],
       [ "StE::Core::ShaderStorageBuffer< StE::Graphics::light::light_descriptor, usage >", "classStE_1_1Core_1_1ShaderStorageBuffer.html", null ],
       [ "StE::Core::ShaderStorageBuffer< StE::Graphics::mesh_descriptor, usage >", "classStE_1_1Core_1_1ShaderStorageBuffer.html", null ],
+      [ "StE::Core::ShaderStorageBuffer< StE::Graphics::mesh_draw_params, usage >", "classStE_1_1Core_1_1ShaderStorageBuffer.html", null ],
       [ "StE::Core::ShaderStorageBuffer< StE::Graphics::ObjectVertexData, usage >", "classStE_1_1Core_1_1ShaderStorageBuffer.html", null ],
       [ "StE::Core::ShaderStorageBuffer< T, usage >", "classStE_1_1Core_1_1ShaderStorageBuffer.html", null ],
       [ "StE::Core::ShaderStorageBuffer< Type, U >", "classStE_1_1Core_1_1ShaderStorageBuffer.html", null ]
@@ -829,7 +849,7 @@ var hierarchy =
     [ "StE::Graphics::ssss_generator", "classStE_1_1Graphics_1_1ssss__generator.html", null ],
     [ "StE::Graphics::ssss_storage", "classStE_1_1Graphics_1_1ssss__storage.html", null ],
     [ "StE::Core::GL::context_state::state_type", "structStE_1_1Core_1_1GL_1_1context__state_1_1state__type.html", null ],
-    [ "ste_context_intializer", "classste__context__intializer.html", null ],
+    [ "_detail::ste_context_intializer", "class__detail_1_1ste__context__intializer.html", null ],
     [ "StE::ste_engine_control_impl", "structStE_1_1ste__engine__control__impl.html", null ],
     [ "StE::StEngineControl", "classStE_1_1StEngineControl.html", null ],
     [ "streambuf", null, [

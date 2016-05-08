@@ -194,7 +194,7 @@ $(document).ready(function(){initNavTree('log__stream__formatter_8hpp_source.htm
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    std::string inject(std::string str, <span class="keyword">const</span> <a class="code" href="classStE_1_1log__entry.html">log_entry</a> *entry = <span class="keyword">nullptr</span>) {</div>
 <div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;        std::string::size_type p;</div>
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;        <span class="keywordtype">int</span> i = 0;</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;        <span class="keywordflow">while</span> ((p = str.find(<span class="stringliteral">&quot;%%&quot;</span>), i) != std::string::npos) {</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;        <span class="keywordflow">while</span> (static_cast&lt;std::size_t&gt;(p = str.find(<span class="stringliteral">&quot;%%&quot;</span>), i) != std::string::npos) {</div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;            <span class="keyword">auto</span> e = str.find(<span class="stringliteral">&quot;%%&quot;</span>, p + 2);</div>
 <div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;            <span class="keywordflow">if</span> (e == std::string::npos)</div>
 <div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;                <span class="keywordflow">break</span>;</div>
@@ -220,14 +220,14 @@ $(document).ready(function(){initNavTree('log__stream__formatter_8hpp_source.htm
 <div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;<span class="keyword">public</span>:</div>
 <div class="line"><a name="l00114"></a><span class="lineno"><a class="line" href="classStE_1_1log__stream__formatter.html#ac6a1c46617befb7e8ef485e4e7b1170a">  114</a></span>&#160;    <a class="code" href="classStE_1_1log__stream__formatter.html#ac6a1c46617befb7e8ef485e4e7b1170a">log_stream_formatter</a>(<span class="keyword">const</span> std::string &amp;name) : t_warn(0), t_err(0), t_fatal(0), name(name) {</div>
 <div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;        std::string template_data;</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;        </div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;</div>
 <div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;        std::ifstream fs(log_template_path, std::ios::in);</div>
 <div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;        <span class="keywordflow">if</span> (!fs.good()) {</div>
 <div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;            std::cerr &lt;&lt; <span class="stringliteral">&quot;Error while reading log template file \&quot;&quot;</span> &lt;&lt; log_template_path &lt;&lt; <span class="stringliteral">&quot;\&quot;: &quot;</span> &lt;&lt; std::strerror(errno) &lt;&lt; std::endl;</div>
 <div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;            assert(<span class="keyword">false</span>);</div>
 <div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;            <span class="keywordflow">return</span>;</div>
 <div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;        }</div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;        </div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;</div>
 <div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;        template_data = std::string((std::istreambuf_iterator&lt;char&gt;(fs)), (std::istreambuf_iterator&lt;char&gt;()));</div>
 <div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;        fs.close();</div>
 <div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;</div>

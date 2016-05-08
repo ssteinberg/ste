@@ -121,7 +121,7 @@ $(document).ready(function(){initNavTree('concurrent__pointer__recycler_8hpp_sou
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keyword">private</span>:</div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    std::array&lt;std::atomic&lt;T*&gt;, N&gt; pointers;</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    static_assert(std::is_move_assignable&lt;T&gt;::value, <span class="stringliteral">&quot;T must be move-assignable&quot;</span>);</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    static_assert(std::is_trivially_copyable&lt;T&gt;::value, <span class="stringliteral">&quot;T must be trivially copyable&quot;</span>);</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">public</span>:</div>
 <div class="line"><a name="l00020"></a><span class="lineno"><a class="line" href="classStE_1_1concurrent__pointer__recycler.html#a8e5049355e488ffea33c0649b75bfece">   20</a></span>&#160;    <a class="code" href="classStE_1_1concurrent__pointer__recycler.html#a8e5049355e488ffea33c0649b75bfece">~concurrent_pointer_recycler</a>() {</div>

@@ -106,7 +106,7 @@ $(document).ready(function(){initNavTree('hash__combine_8hpp_source.html','');})
 </div><!--header-->
 <div class="contents">
 <a href="hash__combine_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">// StE</span></div>
-<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment">// © Shlomi Steinberg, 2015</span></div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment">// ï¿½ Shlomi Steinberg, 2015</span></div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;</div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor"></span></div>
@@ -118,7 +118,7 @@ $(document).ready(function(){initNavTree('hash__combine_8hpp_source.html','');})
 <div class="line"><a name="l00011"></a><span class="lineno"><a class="line" href="namespaceStE.html#ac5018b102dca97b0793840af4512f4b8">   11</a></span>&#160;T <a class="code" href="namespaceStE.html#ac5018b102dca97b0793840af4512f4b8">hash_combine</a>(<span class="keyword">const</span> T &amp;h1, <span class="keyword">const</span> T &amp;h2) { assert(<span class="keyword">false</span>); }</div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;</div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keyword">template</span>&lt;&gt;</div>
-<div class="line"><a name="l00014"></a><span class="lineno"><a class="line" href="namespaceStE.html#a424d93cc027d01213fa8cf5a06a96e9d">   14</a></span>&#160;std::size_t hash_combine&lt;std::size_t&gt;(<span class="keyword">const</span> std::size_t &amp;h1, <span class="keyword">const</span> std::size_t &amp;h2) {</div>
+<div class="line"><a name="l00014"></a><span class="lineno"><a class="line" href="namespaceStE.html#a424d93cc027d01213fa8cf5a06a96e9d">   14</a></span>&#160;std::size_t <span class="keyword">inline</span> hash_combine&lt;std::size_t&gt;(<span class="keyword">const</span> std::size_t &amp;h1, <span class="keyword">const</span> std::size_t &amp;h2) {</div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    <span class="keywordflow">return</span> h1 ^ (h2 + 0x9e3779b9 + (h1 &lt;&lt; 6) + (h1 &gt;&gt; 2));</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;}</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;</div>

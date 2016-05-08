@@ -118,7 +118,7 @@ $(document).ready(function(){initNavTree('hdr__compute__histogram__sums__task_8c
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;    1_storage_idx = <a class="code" href="namespaceStE_1_1Core.html#a93b0bd1780ccc716a9caffb2c717947b">buffer_object_cast</a>&lt;<a class="code" href="classStE_1_1Core_1_1ShaderStorageBuffer.html">ShaderStorageBuffer&lt;std::uint32_t&gt;</a>&gt;(p-&gt;histogram);</div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;    2_storage_idx = p-&gt;hdr_bokeh_param_buffer;</div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;    p-&gt;gbuffer-&gt;bind_gbuffer();</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;    11_tex_unit = *p-&gt;gbuffer-&gt;get_depth_target();</div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;    p-&gt;hdr_compute_histogram_sums-&gt;<a class="code" href="classStE_1_1Core_1_1ShaderStorageBuffer.html#a593aea0a1df1944b3c450985929eb20b">bind</a>();</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;}</div>

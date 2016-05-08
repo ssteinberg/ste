@@ -1,3 +1,5 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classStE_1_1Graph_1_1detail_1_1graph__impl.html" title="StE::Graph::detail\l::graph_impl" alt="" coords="5,5,133,47"/>
+<area shape="rect" id="node1" href="$structStE_1_1function__traits.html" title="StE::function_traits\l\&lt; R(C &amp;, Args...)\&gt;" alt="" coords="5,39,136,80"/>
+<area shape="rect" id="node2" href="$structStE_1_1function__traits_3_01R_07C_1_1_5_08_07Args_8_8_8_08_01const_01_01_4.html" title="StE::function_traits\l\&lt; R(C::*)(Args...) const &#160;\&gt;" alt="" coords="184,5,351,47"/>
+<area shape="rect" id="node3" href="$structStE_1_1function__traits_3_01R_07C_1_1_5_08_07Args_8_8_8_08_4.html" title="StE::function_traits\l\&lt; R(C::*)(Args...)\&gt;" alt="" coords="202,71,333,112"/>
 </map>

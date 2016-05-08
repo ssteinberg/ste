@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['imgui',['ImGui',['../namespaceImGui.html',1,'']]]
+  ['_5fdetail',['_detail',['../namespace__detail.html',1,'']]]
 ];

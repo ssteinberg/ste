@@ -126,8 +126,6 @@ Public Types</h2></td></tr>
 <tr class="separator:ae0493df541c135208e8c4b834f78951a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2a5abae0c1c25cc318a97f896ec65b37"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1object__group__draw__buffers.html#a2a5abae0c1c25cc318a97f896ec65b37">elements_type</a> = <a class="el" href="classStE_1_1Core_1_1ElementBufferObject.html">Core::ElementBufferObject</a>&lt; std::uint32_t, decltype(indices)::usage &gt;</td></tr>
 <tr class="separator:a2a5abae0c1c25cc318a97f896ec65b37"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab40fee7c42c88fc546fb112a4db96c4b"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1object__group__draw__buffers.html#ab40fee7c42c88fc546fb112a4db96c4b">indirect_draw_buffer_type</a> = <a class="el" href="classStE_1_1Core_1_1IndirectDrawBuffer.html">Core::IndirectDrawBuffer</a>&lt; <a class="el" href="structStE_1_1Core_1_1IndirectMultiDrawElementsCommand.html">Core::IndirectMultiDrawElementsCommand</a>, decltype(culled_indirect_command)::usage &gt;</td></tr>
-<tr class="separator:ab40fee7c42c88fc546fb112a4db96c4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4763c092cfc66ab2968bfb133e73599f"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1object__group__draw__buffers.html#a4763c092cfc66ab2968bfb133e73599f">mesh_data_buffer_type</a> = <a class="el" href="classStE_1_1Core_1_1ShaderStorageBuffer.html">Core::ShaderStorageBuffer</a>&lt; <a class="el" href="structStE_1_1Graphics_1_1mesh__descriptor.html">mesh_descriptor</a>, decltype(mesh_data_bo)::usage &gt;</td></tr>
 <tr class="separator:a4763c092cfc66ab2968bfb133e73599f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -135,42 +133,32 @@ Public Types</h2></td></tr>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a6cde58665aed2a0b67cc252116ecdfef"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1object__group__draw__buffers.html#a6cde58665aed2a0b67cc252116ecdfef">object_group_draw_buffers</a> ()</td></tr>
 <tr class="separator:a6cde58665aed2a0b67cc252116ecdfef"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a387e27b964a018bd9daebc93adcbc2bc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="gl__extensions_8h.html#a814c8b5745ecf82afdd1da718fbdc47c">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1object__group__draw__buffers.html#a387e27b964a018bd9daebc93adcbc2bc">clear_indirect_command_buffer</a> () const </td></tr>
-<tr class="separator:a387e27b964a018bd9daebc93adcbc2bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6d7d431d64de07703899d0f8f1e1d6e9"><td class="memItemLeft" align="right" valign="top">auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1object__group__draw__buffers.html#a6d7d431d64de07703899d0f8f1e1d6e9">get_vao</a> () const </td></tr>
 <tr class="separator:a6d7d431d64de07703899d0f8f1e1d6e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4900162224ec0545eaf8b5b253a9a9bd"><td class="memItemLeft" align="right" valign="top">auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1object__group__draw__buffers.html#a4900162224ec0545eaf8b5b253a9a9bd">get_mesh_data_stack</a> ()</td></tr>
-<tr class="separator:a4900162224ec0545eaf8b5b253a9a9bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab93bacc81ef89127d668d4e07a84d367"><td class="memItemLeft" align="right" valign="top">auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1object__group__draw__buffers.html#ab93bacc81ef89127d668d4e07a84d367">get_mesh_data_stack</a> () const </td></tr>
 <tr class="separator:ab93bacc81ef89127d668d4e07a84d367"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92c1f3dcd6acfe366253daebe2f2051f"><td class="memItemLeft" align="right" valign="top">auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1object__group__draw__buffers.html#a92c1f3dcd6acfe366253daebe2f2051f">get_mesh_draw_params_stack</a> () const </td></tr>
+<tr class="separator:a92c1f3dcd6acfe366253daebe2f2051f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6e54147cc5ad3d8060731613964fa70f"><td class="memItemLeft" align="right" valign="top">auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1object__group__draw__buffers.html#a6e54147cc5ad3d8060731613964fa70f">get_vbo_stack</a> ()</td></tr>
 <tr class="separator:a6e54147cc5ad3d8060731613964fa70f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abf04ccf7f2812451d302d8107873dae5"><td class="memItemLeft" align="right" valign="top">auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1object__group__draw__buffers.html#abf04ccf7f2812451d302d8107873dae5">get_indices_stack</a> ()</td></tr>
 <tr class="separator:abf04ccf7f2812451d302d8107873dae5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a921439574b7915ee7568cf901fddf125"><td class="memItemLeft" align="right" valign="top">auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1object__group__draw__buffers.html#a921439574b7915ee7568cf901fddf125">get_id_to_drawid_stack</a> ()</td></tr>
-<tr class="separator:a921439574b7915ee7568cf901fddf125"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7182bb863777c574982f5fcb337da6a0"><td class="memItemLeft" align="right" valign="top">auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1object__group__draw__buffers.html#a7182bb863777c574982f5fcb337da6a0">get_culled_indirect_command_stack</a> ()</td></tr>
-<tr class="separator:a7182bb863777c574982f5fcb337da6a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a94b9e39d21663261e1b5ba4dbd0b568b"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1object__group__draw__buffers.html#a94b9e39d21663261e1b5ba4dbd0b568b">get_vbo_buffer</a> () const </td></tr>
 <tr class="separator:a94b9e39d21663261e1b5ba4dbd0b568b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8b0e447abfd2f880d1d951b9d0b8e0d1"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1object__group__draw__buffers.html#a8b0e447abfd2f880d1d951b9d0b8e0d1">get_elements_buffer</a> () const </td></tr>
 <tr class="separator:a8b0e447abfd2f880d1d951b9d0b8e0d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af6816349c82e671b05fea0cb5a936600"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1object__group__draw__buffers.html#af6816349c82e671b05fea0cb5a936600">get_culled_indirect_draw</a> () const </td></tr>
-<tr class="separator:af6816349c82e671b05fea0cb5a936600"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa0a858a2ab10d5311247bdd7d7ba4333"><td class="memItemLeft" align="right" valign="top">auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1object__group__draw__buffers.html#aa0a858a2ab10d5311247bdd7d7ba4333">get_culled_objects_counter</a> () const </td></tr>
-<tr class="separator:aa0a858a2ab10d5311247bdd7d7ba4333"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7788ce89855ca1ebbf2d09f064e51d9c"><td class="memItemLeft" align="right" valign="top">auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1object__group__draw__buffers.html#a7788ce89855ca1ebbf2d09f064e51d9c">get_mesh_data_buffer</a> () const </td></tr>
 <tr class="separator:a7788ce89855ca1ebbf2d09f064e51d9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac66f3cde6dc4dfc7f620ae826d550fa4"><td class="memItemLeft" align="right" valign="top">auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1object__group__draw__buffers.html#ac66f3cde6dc4dfc7f620ae826d550fa4">get_id_to_drawid_buffer</a> () const </td></tr>
-<tr class="separator:ac66f3cde6dc4dfc7f620ae826d550fa4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1bb2714365a154dc9e3ed8a41d76f79e"><td class="memItemLeft" align="right" valign="top">auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1object__group__draw__buffers.html#a1bb2714365a154dc9e3ed8a41d76f79e">get_culled_indirect_command_buffer</a> () const </td></tr>
-<tr class="separator:a1bb2714365a154dc9e3ed8a41d76f79e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a042d0e6ded105b7afa8c0df1bcab61dd"><td class="memItemLeft" align="right" valign="top">auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1object__group__draw__buffers.html#a042d0e6ded105b7afa8c0df1bcab61dd">get_mesh_draw_params_buffer</a> () const </td></tr>
+<tr class="separator:a042d0e6ded105b7afa8c0df1bcab61dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abfffbc3755cedfe63525fefe9f9f7cf0"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1object__group__draw__buffers.html#abfffbc3755cedfe63525fefe9f9f7cf0">size</a> () const </td></tr>
 <tr class="separator:abfffbc3755cedfe63525fefe9f9f7cf0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeadd3449863c598db679480dbb00f6bd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="gl__extensions_8h.html#a814c8b5745ecf82afdd1da718fbdc47c">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1object__group__draw__buffers.html#aeadd3449863c598db679480dbb00f6bd">bind_buffers</a> (int idx) const </td></tr>
+<tr class="separator:aeadd3449863c598db679480dbb00f6bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p>Definition at line <a class="el" href="object__group__draw__buffers_8hpp_source.html#l00026">26</a> of file <a class="el" href="object__group__draw__buffers_8hpp_source.html">object_group_draw_buffers.hpp</a>.</p>
+<p>Definition at line <a class="el" href="object__group__draw__buffers_8hpp_source.html#l00024">24</a> of file <a class="el" href="object__group__draw__buffers_8hpp_source.html">object_group_draw_buffers.hpp</a>.</p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
 <a class="anchor" id="a2a5abae0c1c25cc318a97f896ec65b37"></a>
 <div class="memitem">
@@ -182,21 +170,7 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="object__group__draw__buffers_8hpp_source.html#l00039">39</a> of file <a class="el" href="object__group__draw__buffers_8hpp_source.html">object_group_draw_buffers.hpp</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="ab40fee7c42c88fc546fb112a4db96c4b"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="classStE_1_1Graphics_1_1object__group__draw__buffers.html#ab40fee7c42c88fc546fb112a4db96c4b">StE::Graphics::object_group_draw_buffers::indirect_draw_buffer_type</a> =  <a class="el" href="classStE_1_1Core_1_1IndirectDrawBuffer.html">Core::IndirectDrawBuffer</a>&lt;<a class="el" href="structStE_1_1Core_1_1IndirectMultiDrawElementsCommand.html">Core::IndirectMultiDrawElementsCommand</a>, decltype(culled_indirect_command)::usage&gt;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="object__group__draw__buffers_8hpp_source.html#l00040">40</a> of file <a class="el" href="object__group__draw__buffers_8hpp_source.html">object_group_draw_buffers.hpp</a>.</p>
+<p>Definition at line <a class="el" href="object__group__draw__buffers_8hpp_source.html#l00035">35</a> of file <a class="el" href="object__group__draw__buffers_8hpp_source.html">object_group_draw_buffers.hpp</a>.</p>
 
 </div>
 </div>
@@ -210,7 +184,7 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="object__group__draw__buffers_8hpp_source.html#l00041">41</a> of file <a class="el" href="object__group__draw__buffers_8hpp_source.html">object_group_draw_buffers.hpp</a>.</p>
+<p>Definition at line <a class="el" href="object__group__draw__buffers_8hpp_source.html#l00036">36</a> of file <a class="el" href="object__group__draw__buffers_8hpp_source.html">object_group_draw_buffers.hpp</a>.</p>
 
 </div>
 </div>
@@ -224,7 +198,7 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="object__group__draw__buffers_8hpp_source.html#l00038">38</a> of file <a class="el" href="object__group__draw__buffers_8hpp_source.html">object_group_draw_buffers.hpp</a>.</p>
+<p>Definition at line <a class="el" href="object__group__draw__buffers_8hpp_source.html#l00034">34</a> of file <a class="el" href="object__group__draw__buffers_8hpp_source.html">object_group_draw_buffers.hpp</a>.</p>
 
 </div>
 </div>
@@ -250,12 +224,12 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="object__group__draw__buffers_8hpp_source.html#l00044">44</a> of file <a class="el" href="object__group__draw__buffers_8hpp_source.html">object_group_draw_buffers.hpp</a>.</p>
+<p>Definition at line <a class="el" href="object__group__draw__buffers_8hpp_source.html#l00039">39</a> of file <a class="el" href="object__group__draw__buffers_8hpp_source.html">object_group_draw_buffers.hpp</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a387e27b964a018bd9daebc93adcbc2bc"></a>
+<a class="anchor" id="aeadd3449863c598db679480dbb00f6bd"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -263,9 +237,10 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="gl__extensions_8h.html#a814c8b5745ecf82afdd1da718fbdc47c">void</a> StE::Graphics::object_group_draw_buffers::clear_indirect_command_buffer </td>
+          <td class="memname"><a class="el" href="gl__extensions_8h.html#a814c8b5745ecf82afdd1da718fbdc47c">void</a> StE::Graphics::object_group_draw_buffers::bind_buffers </td>
           <td>(</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>idx</em></td><td>)</td>
           <td> const</td>
         </tr>
       </table>
@@ -276,107 +251,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="object__group__draw__buffers_8hpp_source.html#l00052">52</a> of file <a class="el" href="object__group__draw__buffers_8hpp_source.html">object_group_draw_buffers.hpp</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a1bb2714365a154dc9e3ed8a41d76f79e"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">auto&amp; StE::Graphics::object_group_draw_buffers::get_culled_indirect_command_buffer </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="object__group__draw__buffers_8hpp_source.html#l00074">74</a> of file <a class="el" href="object__group__draw__buffers_8hpp_source.html">object_group_draw_buffers.hpp</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a7182bb863777c574982f5fcb337da6a0"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">auto&amp; StE::Graphics::object_group_draw_buffers::get_culled_indirect_command_stack </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="object__group__draw__buffers_8hpp_source.html#l00065">65</a> of file <a class="el" href="object__group__draw__buffers_8hpp_source.html">object_group_draw_buffers.hpp</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="af6816349c82e671b05fea0cb5a936600"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">auto StE::Graphics::object_group_draw_buffers::get_culled_indirect_draw </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="object__group__draw__buffers_8hpp_source.html#l00069">69</a> of file <a class="el" href="object__group__draw__buffers_8hpp_source.html">object_group_draw_buffers.hpp</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="aa0a858a2ab10d5311247bdd7d7ba4333"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">auto&amp; StE::Graphics::object_group_draw_buffers::get_culled_objects_counter </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="object__group__draw__buffers_8hpp_source.html#l00070">70</a> of file <a class="el" href="object__group__draw__buffers_8hpp_source.html">object_group_draw_buffers.hpp</a>.</p>
+<p>Definition at line <a class="el" href="object__group__draw__buffers_8hpp_source.html#l00061">61</a> of file <a class="el" href="object__group__draw__buffers_8hpp_source.html">object_group_draw_buffers.hpp</a>.</p>
 
 </div>
 </div>
@@ -401,57 +276,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="object__group__draw__buffers_8hpp_source.html#l00068">68</a> of file <a class="el" href="object__group__draw__buffers_8hpp_source.html">object_group_draw_buffers.hpp</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="ac66f3cde6dc4dfc7f620ae826d550fa4"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">auto&amp; StE::Graphics::object_group_draw_buffers::get_id_to_drawid_buffer </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="object__group__draw__buffers_8hpp_source.html#l00073">73</a> of file <a class="el" href="object__group__draw__buffers_8hpp_source.html">object_group_draw_buffers.hpp</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a921439574b7915ee7568cf901fddf125"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">auto&amp; StE::Graphics::object_group_draw_buffers::get_id_to_drawid_stack </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="object__group__draw__buffers_8hpp_source.html#l00064">64</a> of file <a class="el" href="object__group__draw__buffers_8hpp_source.html">object_group_draw_buffers.hpp</a>.</p>
+<p>Definition at line <a class="el" href="object__group__draw__buffers_8hpp_source.html#l00055">55</a> of file <a class="el" href="object__group__draw__buffers_8hpp_source.html">object_group_draw_buffers.hpp</a>.</p>
 
 </div>
 </div>
@@ -476,7 +301,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="object__group__draw__buffers_8hpp_source.html#l00063">63</a> of file <a class="el" href="object__group__draw__buffers_8hpp_source.html">object_group_draw_buffers.hpp</a>.</p>
+<p>Definition at line <a class="el" href="object__group__draw__buffers_8hpp_source.html#l00052">52</a> of file <a class="el" href="object__group__draw__buffers_8hpp_source.html">object_group_draw_buffers.hpp</a>.</p>
 
 </div>
 </div>
@@ -501,32 +326,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="object__group__draw__buffers_8hpp_source.html#l00072">72</a> of file <a class="el" href="object__group__draw__buffers_8hpp_source.html">object_group_draw_buffers.hpp</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a4900162224ec0545eaf8b5b253a9a9bd"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">auto&amp; StE::Graphics::object_group_draw_buffers::get_mesh_data_stack </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="object__group__draw__buffers_8hpp_source.html#l00060">60</a> of file <a class="el" href="object__group__draw__buffers_8hpp_source.html">object_group_draw_buffers.hpp</a>.</p>
+<p>Definition at line <a class="el" href="object__group__draw__buffers_8hpp_source.html#l00056">56</a> of file <a class="el" href="object__group__draw__buffers_8hpp_source.html">object_group_draw_buffers.hpp</a>.</p>
 
 </div>
 </div>
@@ -551,7 +351,57 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="object__group__draw__buffers_8hpp_source.html#l00061">61</a> of file <a class="el" href="object__group__draw__buffers_8hpp_source.html">object_group_draw_buffers.hpp</a>.</p>
+<p>Definition at line <a class="el" href="object__group__draw__buffers_8hpp_source.html#l00049">49</a> of file <a class="el" href="object__group__draw__buffers_8hpp_source.html">object_group_draw_buffers.hpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a042d0e6ded105b7afa8c0df1bcab61dd"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto&amp; StE::Graphics::object_group_draw_buffers::get_mesh_draw_params_buffer </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="object__group__draw__buffers_8hpp_source.html#l00057">57</a> of file <a class="el" href="object__group__draw__buffers_8hpp_source.html">object_group_draw_buffers.hpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a92c1f3dcd6acfe366253daebe2f2051f"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto&amp; StE::Graphics::object_group_draw_buffers::get_mesh_draw_params_stack </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="object__group__draw__buffers_8hpp_source.html#l00050">50</a> of file <a class="el" href="object__group__draw__buffers_8hpp_source.html">object_group_draw_buffers.hpp</a>.</p>
 
 </div>
 </div>
@@ -576,7 +426,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="object__group__draw__buffers_8hpp_source.html#l00058">58</a> of file <a class="el" href="object__group__draw__buffers_8hpp_source.html">object_group_draw_buffers.hpp</a>.</p>
+<p>Definition at line <a class="el" href="object__group__draw__buffers_8hpp_source.html#l00047">47</a> of file <a class="el" href="object__group__draw__buffers_8hpp_source.html">object_group_draw_buffers.hpp</a>.</p>
 
 </div>
 </div>
@@ -601,7 +451,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="object__group__draw__buffers_8hpp_source.html#l00067">67</a> of file <a class="el" href="object__group__draw__buffers_8hpp_source.html">object_group_draw_buffers.hpp</a>.</p>
+<p>Definition at line <a class="el" href="object__group__draw__buffers_8hpp_source.html#l00054">54</a> of file <a class="el" href="object__group__draw__buffers_8hpp_source.html">object_group_draw_buffers.hpp</a>.</p>
 
 </div>
 </div>
@@ -626,7 +476,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="object__group__draw__buffers_8hpp_source.html#l00062">62</a> of file <a class="el" href="object__group__draw__buffers_8hpp_source.html">object_group_draw_buffers.hpp</a>.</p>
+<p>Definition at line <a class="el" href="object__group__draw__buffers_8hpp_source.html#l00051">51</a> of file <a class="el" href="object__group__draw__buffers_8hpp_source.html">object_group_draw_buffers.hpp</a>.</p>
 
 </div>
 </div>
@@ -651,12 +501,12 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="object__group__draw__buffers_8hpp_source.html#l00076">76</a> of file <a class="el" href="object__group__draw__buffers_8hpp_source.html">object_group_draw_buffers.hpp</a>.</p>
+<p>Definition at line <a class="el" href="object__group__draw__buffers_8hpp_source.html#l00059">59</a> of file <a class="el" href="object__group__draw__buffers_8hpp_source.html">object_group_draw_buffers.hpp</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>src/ste/framework_graphics/entities/objects/<a class="el" href="object__group__draw__buffers_8hpp_source.html">object_group_draw_buffers.hpp</a></li>
+<li>src/ste/framework_graphics/entities/objects/buffers/<a class="el" href="object__group__draw__buffers_8hpp_source.html">object_group_draw_buffers.hpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

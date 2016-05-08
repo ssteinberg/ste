@@ -251,17 +251,8 @@ $(document).ready(function(){initNavTree('functions_g.html','');});
 <li>get_cubemaps()
 : <a class="el" href="classStE_1_1Graphics_1_1shadowmap__storage.html#acde11e3b7bea9e01c5cc636aac8e3f73">StE::Graphics::shadowmap_storage</a>
 </li>
-<li>get_culled_indirect_command_buffer()
-: <a class="el" href="classStE_1_1Graphics_1_1object__group__draw__buffers.html#a1bb2714365a154dc9e3ed8a41d76f79e">StE::Graphics::object_group_draw_buffers</a>
-</li>
-<li>get_culled_indirect_command_stack()
-: <a class="el" href="classStE_1_1Graphics_1_1object__group__draw__buffers.html#a7182bb863777c574982f5fcb337da6a0">StE::Graphics::object_group_draw_buffers</a>
-</li>
-<li>get_culled_indirect_draw()
-: <a class="el" href="classStE_1_1Graphics_1_1object__group__draw__buffers.html#af6816349c82e671b05fea0cb5a936600">StE::Graphics::object_group_draw_buffers</a>
-</li>
 <li>get_culled_objects_counter()
-: <a class="el" href="classStE_1_1Graphics_1_1object__group__draw__buffers.html#aa0a858a2ab10d5311247bdd7d7ba4333">StE::Graphics::object_group_draw_buffers</a>
+: <a class="el" href="classStE_1_1Graphics_1_1Scene.html#af37df9f96de870aad69cd91b468978d7">StE::Graphics::Scene</a>
 </li>
 <li>get_data()
 : <a class="el" href="classStE_1_1Graphics_1_1common__brdf__representation.html#a960fbe87d29cd17f7be96cea015e970c">StE::Graphics::common_brdf_representation</a>
@@ -351,11 +342,8 @@ $(document).ready(function(){initNavTree('functions_g.html','');});
 <li>get_histogram_sums_buffer()
 : <a class="el" href="classStE_1_1Graphics_1_1hdr__dof__postprocess.html#ae4c372da46c9a2d45ff4e35ba7433f1f">StE::Graphics::hdr_dof_postprocess</a>
 </li>
-<li>get_id_to_drawid_buffer()
-: <a class="el" href="classStE_1_1Graphics_1_1object__group__draw__buffers.html#ac66f3cde6dc4dfc7f620ae826d550fa4">StE::Graphics::object_group_draw_buffers</a>
-</li>
-<li>get_id_to_drawid_stack()
-: <a class="el" href="classStE_1_1Graphics_1_1object__group__draw__buffers.html#a921439574b7915ee7568cf901fddf125">StE::Graphics::object_group_draw_buffers</a>
+<li>get_idb()
+: <a class="el" href="classStE_1_1Graphics_1_1Scene.html#a2a4cb06a846e30b0455ce28cc9971244">StE::Graphics::Scene</a>
 </li>
 <li>get_image_container_dimensions()
 : <a class="el" href="classStE_1_1Core_1_1texture.html#a450a5556fb00b7aa80801b4fcd00ab0b">StE::Core::texture&lt; type &gt;</a>
@@ -445,7 +433,13 @@ $(document).ready(function(){initNavTree('functions_g.html','');});
 : <a class="el" href="classStE_1_1Graphics_1_1object__group__draw__buffers.html#a7788ce89855ca1ebbf2d09f064e51d9c">StE::Graphics::object_group_draw_buffers</a>
 </li>
 <li>get_mesh_data_stack()
-: <a class="el" href="classStE_1_1Graphics_1_1object__group__draw__buffers.html#a4900162224ec0545eaf8b5b253a9a9bd">StE::Graphics::object_group_draw_buffers</a>
+: <a class="el" href="classStE_1_1Graphics_1_1object__group__draw__buffers.html#ab93bacc81ef89127d668d4e07a84d367">StE::Graphics::object_group_draw_buffers</a>
+</li>
+<li>get_mesh_draw_params_buffer()
+: <a class="el" href="classStE_1_1Graphics_1_1object__group__draw__buffers.html#a042d0e6ded105b7afa8c0df1bcab61dd">StE::Graphics::object_group_draw_buffers</a>
+</li>
+<li>get_mesh_draw_params_stack()
+: <a class="el" href="classStE_1_1Graphics_1_1object__group__draw__buffers.html#a92c1f3dcd6acfe366253daebe2f2051f">StE::Graphics::object_group_draw_buffers</a>
 </li>
 <li>get_min_filter()
 : <a class="el" href="classStE_1_1Core_1_1Sampler.html#ac1c1e0b4a1ae446fd4968af0bbe66430">StE::Core::Sampler</a>
@@ -515,7 +509,7 @@ $(document).ready(function(){initNavTree('functions_g.html','');});
 : <a class="el" href="classStE_1_1Core_1_1query__object.html#aa35f096052db6acd132cf01c28edd2aa">StE::Core::query_object&lt; type &gt;</a>
 </li>
 <li>get_query_result_u32()
-: <a class="el" href="classStE_1_1Core_1_1query__object.html#ae24b3f64ca2c3b4d1caad679e3b7a3ba">StE::Core::query_object&lt; type &gt;</a>
+: <a class="el" href="classStE_1_1Core_1_1query__object.html#a1a90e90e643bf34440d5f4db23e29e0c">StE::Core::query_object&lt; type &gt;</a>
 </li>
 <li>get_query_result_u64()
 : <a class="el" href="classStE_1_1Core_1_1query__object.html#a6f744f64956b99c1e8b48f7b481312c3">StE::Core::query_object&lt; type &gt;</a>
@@ -531,13 +525,19 @@ $(document).ready(function(){initNavTree('functions_g.html','');});
 : <a class="el" href="classStE_1_1Core_1_1GenericResource.html#a083d15ef4d19673473dc64d1956ba32d">StE::Core::GenericResource</a>
 </li>
 <li>get_resources()
-: <a class="el" href="classStE_1_1Core_1_1GL_1_1gl__context__state__log.html#a765beac2ffea164fcf9283cec14f5438">StE::Core::GL::gl_context_state_log</a>
+: <a class="el" href="classStE_1_1Core_1_1GL_1_1gl__context__state__log.html#afc4bd2857b730819dc8ba5b543bb832b">StE::Core::GL::gl_context_state_log</a>
 </li>
 <li>get_samples()
 : <a class="el" href="classStE_1_1Core_1_1texture__multisampled.html#aa8319e5384071b168237f49d1e8bd7d9">StE::Core::texture_multisampled&lt; type &gt;</a>
 </li>
+<li>get_scene_task()
+: <a class="el" href="classStE_1_1Graphics_1_1GIRenderer.html#a6fc1911643eeb6aa8dfc22159e708879">StE::Graphics::GIRenderer</a>
+</li>
 <li>get_shader_properties()
 : <a class="el" href="classStE_1_1Core_1_1GLSLShader.html#a1c55620e3dbd18f54b7ce18375393b29">StE::Core::GLSLShader&lt; ShaderType &gt;</a>
+</li>
+<li>get_shadow_idb()
+: <a class="el" href="classStE_1_1Graphics_1_1Scene.html#a240a0dd4b126c3e7700afbaadc70600c">StE::Graphics::Scene</a>
 </li>
 <li>get_shadow_projection_mats_buffer()
 : <a class="el" href="classStE_1_1Graphics_1_1shadowmap__storage.html#ac2799632953d85e466b574f1ffaa5ac1">StE::Graphics::shadowmap_storage</a>
@@ -562,6 +562,9 @@ $(document).ready(function(){initNavTree('functions_g.html','');});
 </li>
 <li>get_specular()
 : <a class="el" href="classStE_1_1Graphics_1_1Material.html#a8bf176e2ad411c45008afa74fbd7c066">StE::Graphics::Material</a>
+</li>
+<li>get_sproj_id_to_llid_tt()
+: <a class="el" href="classStE_1_1Graphics_1_1Scene.html#af979896437ddea2578566d81ca3dd51e">StE::Graphics::Scene</a>
 </li>
 <li>get_start_time()
 : <a class="el" href="classStE_1_1Graphics_1_1profileable.html#aace5cdd1e01c46c7db2ee85544ba1e26">StE::Graphics::profileable</a>
@@ -672,7 +675,7 @@ $(document).ready(function(){initNavTree('functions_g.html','');});
 : <a class="el" href="classStE_1_1Graphics_1_1ssss__storage.html#ab9cfae6a9fdceb0a466e6bf6486611a0">StE::Graphics::ssss_storage</a>
 </li>
 <li>GIRenderer()
-: <a class="el" href="classStE_1_1Graphics_1_1GIRenderer.html#ac820a92f8a2f517b9321e16816b7e160">StE::Graphics::GIRenderer</a>
+: <a class="el" href="classStE_1_1Graphics_1_1GIRenderer.html#a1093593a44279553c776f093421ca8f6">StE::Graphics::GIRenderer</a>
 </li>
 <li>gl()
 : <a class="el" href="classStE_1_1StEngineControl.html#aeb5c557b8e86d1a908beb120bac737c7">StE::StEngineControl</a>
@@ -682,7 +685,6 @@ $(document).ready(function(){initNavTree('functions_g.html','');});
 </li>
 <li>gl_context()
 : <a class="el" href="classStE_1_1Core_1_1GL_1_1gl__context.html#ac1a0fe33b7cc6783bb0ac37918affb4b">StE::Core::GL::gl_context</a>
-, <a class="el" href="classste__context__intializer.html#a385b7fd977cf58622ac58d36b4811719">ste_context_intializer</a>
 </li>
 <li>gl_context_state_log()
 : <a class="el" href="classStE_1_1Core_1_1GL_1_1gl__context__state__log.html#ad2716a514d2c354656cd0b5a86b8839b">StE::Core::GL::gl_context_state_log</a>
@@ -715,7 +717,7 @@ $(document).ready(function(){initNavTree('functions_g.html','');});
 , <a class="el" href="classStE_1_1Resource_1_1glsl__programs__pool_1_1glsl__programs__pool__key.html#a59097a3915009f6ef747c212cc8ce2de">StE::Resource::glsl_programs_pool::glsl_programs_pool_key</a>
 </li>
 <li>glsl_programs_pool_key()
-: <a class="el" href="classStE_1_1Resource_1_1glsl__programs__pool_1_1glsl__programs__pool__key.html#ab1e1d7f254cb8874734faea7bacd97be">StE::Resource::glsl_programs_pool::glsl_programs_pool_key</a>
+: <a class="el" href="classStE_1_1Resource_1_1glsl__programs__pool_1_1glsl__programs__pool__key.html#a31c81957711f9c3a08ae63282565685c">StE::Resource::glsl_programs_pool::glsl_programs_pool_key</a>
 </li>
 <li>GLSLProgram()
 : <a class="el" href="classStE_1_1Core_1_1GLSLProgram.html#acdb59516f864947631c2f935c65de7d9">StE::Core::GLSLProgram</a>
@@ -734,10 +736,10 @@ $(document).ready(function(){initNavTree('functions_g.html','');});
 , <a class="el" href="classStE_1_1Text_1_1glyph__factory.html#aa8300ce87b83e158c0fe2ebc4211aa71">StE::Text::glyph_factory</a>
 </li>
 <li>glyph_factory_font()
-: <a class="el" href="classStE_1_1Text_1_1glyph__factory__font.html#a95e40cba726fe74573a1965ee2b8f906">StE::Text::glyph_factory_font</a>
+: <a class="el" href="classStE_1_1Text_1_1glyph__factory__font.html#a3a57df80af868ede6fb926a26165e406">StE::Text::glyph_factory_font</a>
 </li>
 <li>glyph_factory_ft_lib()
-: <a class="el" href="classStE_1_1Text_1_1glyph__factory__ft__lib.html#a14a7f0a091146e116e8b12a466db8cce">StE::Text::glyph_factory_ft_lib</a>
+: <a class="el" href="classStE_1_1Text_1_1glyph__factory__ft__lib.html#ac09fb8663f6cbe9fa39cb105e80439ae">StE::Text::glyph_factory_ft_lib</a>
 </li>
 <li>glyph_for_font()
 : <a class="el" href="classStE_1_1Text_1_1glyph__manager.html#af006228f34749856c079c734a2098c63">StE::Text::glyph_manager</a>
@@ -755,11 +757,11 @@ $(document).ready(function(){initNavTree('functions_g.html','');});
 , <a class="el" href="classStE_1_1Graphics_1_1gpu__task.html#a80bd6c973f74469b1c818016c73d2e00">StE::Graphics::gpu_task</a>
 </li>
 <li>gpu_sync()
-: <a class="el" href="classStE_1_1Core_1_1gpu__sync.html#a95f36ebeac74be07ec9511b7476c922b">StE::Core::gpu_sync</a>
+: <a class="el" href="classStE_1_1Core_1_1gpu__sync.html#aaaf996266eb40c85e4a5c96fd1ca2682">StE::Core::gpu_sync</a>
 </li>
 <li>gpu_task
 : <a class="el" href="classStE_1_1Graphics_1_1gpu__dispatchable.html#afd81d2d23e55e11f2572d7485573e2db">StE::Graphics::gpu_dispatchable</a>
-, <a class="el" href="classStE_1_1Graphics_1_1gpu__task.html#aaf585a8618534135beadb0785dd5aa45">StE::Graphics::gpu_task</a>
+, <a class="el" href="classStE_1_1Graphics_1_1gpu__task.html#a9cc9a3c54670ee7cd2b3db5a9df38166">StE::Graphics::gpu_task</a>
 </li>
 <li>gpu_task_dispatch_queue
 : <a class="el" href="classStE_1_1Graphics_1_1gpu__task.html#ac2c5ec01ce438607fd37fda441e9c811">StE::Graphics::gpu_task</a>
@@ -780,7 +782,7 @@ $(document).ready(function(){initNavTree('functions_g.html','');});
 , <a class="el" href="classStE_1_1Graph_1_1vertex.html#a3a351ad307019bbe56f083d0338de5f1">StE::Graph::vertex</a>
 </li>
 <li>gstack()
-: <a class="el" href="classStE_1_1Core_1_1gstack.html#afcc200dde1720b1b157ef0156fa224d5">StE::Core::gstack&lt; T, lockless &gt;</a>
+: <a class="el" href="classStE_1_1Core_1_1gstack.html#a928d6352cebe9232207ba448655eff55">StE::Core::gstack&lt; T, lockless &gt;</a>
 </li>
 </ul>
 </div><!-- contents -->

@@ -235,48 +235,51 @@ $(document).ready(function(){initNavTree('mesh_8hpp_source.html','');});
 <div class="line"><a name="l00128"></a><span class="lineno"><a class="line" href="classStE_1_1Graphics_1_1mesh.html#a646e1342c15c1c7518b63ae823a3a8c3">  128</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classStE_1_1Graphics_1_1mesh.html#a646e1342c15c1c7518b63ae823a3a8c3">transform</a>(<span class="keyword">const</span> glm::mat4 &amp;m) {</div>
 <div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;        <span class="keyword">auto</span> tim = glm::transpose(glm::inverse(m));</div>
 <div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;        <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;v : vertices) {</div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;            v.p = (m * glm::vec4(v.p, 1)).xyz;</div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;            v.n = glm::normalize((tim * glm::vec4(v.n, 1)).xyz);</div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;            v.t = glm::normalize((tim * glm::vec4(v.t, 1)).xyz);</div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;        }</div>
-<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;        <span class="comment">// calc_aabb();</span></div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;        calc_sphere();</div>
-<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;    }</div>
-<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;</div>
-<div class="line"><a name="l00139"></a><span class="lineno"><a class="line" href="classStE_1_1Graphics_1_1mesh.html#a582cead9a007380d6c012b6180082e43">  139</a></span>&#160;    <span class="keyword">const</span> <a class="code" href="classStE_1_1Core_1_1VertexBufferObject.html">vbo_type</a> *<a class="code" href="classStE_1_1Graphics_1_1mesh.html#a582cead9a007380d6c012b6180082e43">vbo</a>() {</div>
-<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;        <span class="keywordflow">if</span> (mesh_vbo != <span class="keyword">nullptr</span>)</div>
-<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;            <span class="keywordflow">return</span> mesh_vbo.get();</div>
-<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;</div>
-<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;        <span class="keywordflow">return</span> (mesh_vbo = std::make_unique&lt;vbo_type&gt;(<a class="code" href="classStE_1_1Graphics_1_1mesh.html#a5a4e3e63e3bef06211c0a6ee57d17bf5">get_vertices</a>())).get();</div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;    }</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;            <span class="keyword">auto</span> n = (tim * glm::vec4(v.n, 1)).xyz;</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;            <span class="keyword">auto</span> t = (tim * glm::vec4(v.t, 1)).xyz;</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;</div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;            v.p = (m * glm::vec4(v.p, 1)).xyz;</div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;            v.n = glm::normalize(n);</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;            v.t = glm::normalize(t);</div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;        }</div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;        <span class="comment">// calc_aabb();</span></div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;        calc_sphere();</div>
+<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;    }</div>
+<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;</div>
+<div class="line"><a name="l00142"></a><span class="lineno"><a class="line" href="classStE_1_1Graphics_1_1mesh.html#a582cead9a007380d6c012b6180082e43">  142</a></span>&#160;    <span class="keyword">const</span> <a class="code" href="classStE_1_1Core_1_1VertexBufferObject.html">vbo_type</a> *<a class="code" href="classStE_1_1Graphics_1_1mesh.html#a582cead9a007380d6c012b6180082e43">vbo</a>() {</div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;        <span class="keywordflow">if</span> (mesh_vbo != <span class="keyword">nullptr</span>)</div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;            <span class="keywordflow">return</span> mesh_vbo.get();</div>
 <div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;</div>
-<div class="line"><a name="l00146"></a><span class="lineno"><a class="line" href="classStE_1_1Graphics_1_1mesh.html#a80e3f7d97e296f055820ff002d58853d">  146</a></span>&#160;    <span class="keyword">const</span> <a class="code" href="classStE_1_1Core_1_1ElementBufferObject.html">StE::Core::ElementBufferObject&lt;&gt;</a> *<a class="code" href="classStE_1_1Graphics_1_1mesh.html#a80e3f7d97e296f055820ff002d58853d">ebo</a>() {</div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;        <span class="keywordflow">if</span> (mesh_ebo != <span class="keyword">nullptr</span>)</div>
-<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;            <span class="keywordflow">return</span> mesh_ebo.get();</div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;</div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;        <span class="keywordflow">return</span> (mesh_ebo = std::make_unique&lt;<a class="code" href="classStE_1_1Core_1_1ElementBufferObject.html">StE::Core::ElementBufferObject&lt;&gt;</a>&gt;(<a class="code" href="classStE_1_1Graphics_1_1mesh.html#afbd77b9e84a851ba9883882e1eb06bf7">get_indices</a>())).get();</div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;    }</div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;        <span class="keywordflow">return</span> (mesh_vbo = std::make_unique&lt;vbo_type&gt;(<a class="code" href="classStE_1_1Graphics_1_1mesh.html#a5a4e3e63e3bef06211c0a6ee57d17bf5">get_vertices</a>())).get();</div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;    }</div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;</div>
+<div class="line"><a name="l00149"></a><span class="lineno"><a class="line" href="classStE_1_1Graphics_1_1mesh.html#a80e3f7d97e296f055820ff002d58853d">  149</a></span>&#160;    <span class="keyword">const</span> <a class="code" href="classStE_1_1Core_1_1ElementBufferObject.html">StE::Core::ElementBufferObject&lt;&gt;</a> *<a class="code" href="classStE_1_1Graphics_1_1mesh.html#a80e3f7d97e296f055820ff002d58853d">ebo</a>() {</div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;        <span class="keywordflow">if</span> (mesh_ebo != <span class="keyword">nullptr</span>)</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;            <span class="keywordflow">return</span> mesh_ebo.get();</div>
 <div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;</div>
-<div class="line"><a name="l00153"></a><span class="lineno"><a class="line" href="classStE_1_1Graphics_1_1mesh.html#aaabf51cee7491ed0da9da89827389e8c">  153</a></span>&#160;    <span class="keyword">const</span> <a class="code" href="classStE_1_1Core_1_1VertexArrayObject.html">StE::Core::VertexArrayObject</a> *<a class="code" href="classStE_1_1Graphics_1_1mesh.html#aaabf51cee7491ed0da9da89827389e8c">vao</a>() {</div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;        <span class="keywordflow">if</span> (mesh_vao != <span class="keyword">nullptr</span>)</div>
-<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;            <span class="keywordflow">return</span> mesh_vao.get();</div>
-<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;</div>
-<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;        <a class="code" href="classStE_1_1Graphics_1_1mesh.html#a582cead9a007380d6c012b6180082e43">vbo</a>();</div>
-<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;</div>
-<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;        mesh_vao = std::make_unique&lt;StE::Core::VertexArrayObject&gt;();</div>
-<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;        (*mesh_vao)[0] = (*mesh_vbo)[0];</div>
-<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;        (*mesh_vao)[1] = (*mesh_vbo)[1];</div>
-<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;        (*mesh_vao)[2] = (*mesh_vbo)[2];</div>
-<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;        (*mesh_vao)[3] = (*mesh_vbo)[3];</div>
-<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;        <span class="keywordflow">return</span> mesh_vao.get();</div>
-<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;    }</div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;};</div>
-<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;</div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;}</div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;}</div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;        <span class="keywordflow">return</span> (mesh_ebo = std::make_unique&lt;<a class="code" href="classStE_1_1Core_1_1ElementBufferObject.html">StE::Core::ElementBufferObject&lt;&gt;</a>&gt;(<a class="code" href="classStE_1_1Graphics_1_1mesh.html#afbd77b9e84a851ba9883882e1eb06bf7">get_indices</a>())).get();</div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;    }</div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;</div>
+<div class="line"><a name="l00156"></a><span class="lineno"><a class="line" href="classStE_1_1Graphics_1_1mesh.html#aaabf51cee7491ed0da9da89827389e8c">  156</a></span>&#160;    <span class="keyword">const</span> <a class="code" href="classStE_1_1Core_1_1VertexArrayObject.html">StE::Core::VertexArrayObject</a> *<a class="code" href="classStE_1_1Graphics_1_1mesh.html#aaabf51cee7491ed0da9da89827389e8c">vao</a>() {</div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;        <span class="keywordflow">if</span> (mesh_vao != <span class="keyword">nullptr</span>)</div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;            <span class="keywordflow">return</span> mesh_vao.get();</div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;</div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;        <a class="code" href="classStE_1_1Graphics_1_1mesh.html#a582cead9a007380d6c012b6180082e43">vbo</a>();</div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;</div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;        mesh_vao = std::make_unique&lt;StE::Core::VertexArrayObject&gt;();</div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;        (*mesh_vao)[0] = (*mesh_vbo)[0];</div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;        (*mesh_vao)[1] = (*mesh_vbo)[1];</div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;        (*mesh_vao)[2] = (*mesh_vbo)[2];</div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;        (*mesh_vao)[3] = (*mesh_vbo)[3];</div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;        <span class="keywordflow">return</span> mesh_vao.get();</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;    }</div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;};</div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;</div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;}</div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;}</div>
 <div class="ttc" id="mesh__bounding__sphere_8hpp_html"><div class="ttname"><a href="mesh__bounding__sphere_8hpp.html">mesh_bounding_sphere.hpp</a></div></div>
 <div class="ttc" id="stdafx_8hpp_html"><div class="ttname"><a href="stdafx_8hpp.html">stdafx.hpp</a></div></div>
-<div class="ttc" id="classStE_1_1Graphics_1_1mesh_html_a582cead9a007380d6c012b6180082e43"><div class="ttname"><a href="classStE_1_1Graphics_1_1mesh.html#a582cead9a007380d6c012b6180082e43">StE::Graphics::mesh::vbo</a></div><div class="ttdeci">const vbo_type * vbo()</div><div class="ttdef"><b>Definition:</b> <a href="mesh_8hpp_source.html#l00139">mesh.hpp:139</a></div></div>
+<div class="ttc" id="classStE_1_1Graphics_1_1mesh_html_a582cead9a007380d6c012b6180082e43"><div class="ttname"><a href="classStE_1_1Graphics_1_1mesh.html#a582cead9a007380d6c012b6180082e43">StE::Graphics::mesh::vbo</a></div><div class="ttdeci">const vbo_type * vbo()</div><div class="ttdef"><b>Definition:</b> <a href="mesh_8hpp_source.html#l00142">mesh.hpp:142</a></div></div>
 <div class="ttc" id="classStE_1_1Core_1_1VertexBufferObject_html"><div class="ttname"><a href="classStE_1_1Core_1_1VertexBufferObject.html">StE::Core::VertexBufferObject</a></div><div class="ttdef"><b>Definition:</b> <a href="VertexBufferObject_8hpp_source.html#l00016">VertexBufferObject.hpp:16</a></div></div>
 <div class="ttc" id="classStE_1_1Graphics_1_1mesh__generic_html"><div class="ttname"><a href="classStE_1_1Graphics_1_1mesh__generic.html">StE::Graphics::mesh_generic</a></div><div class="ttdef"><b>Definition:</b> <a href="mesh_8hpp_source.html#l00025">mesh.hpp:25</a></div></div>
 <div class="ttc" id="mesh__aabb_8hpp_html"><div class="ttname"><a href="mesh__aabb_8hpp.html">mesh_aabb.hpp</a></div></div>
@@ -300,9 +303,9 @@ $(document).ready(function(){initNavTree('mesh_8hpp_source.html','');});
 <div class="ttc" id="VertexArrayObject_8hpp_html"><div class="ttname"><a href="VertexArrayObject_8hpp.html">VertexArrayObject.hpp</a></div></div>
 <div class="ttc" id="ObjectVertexData_8hpp_html"><div class="ttname"><a href="ObjectVertexData_8hpp.html">ObjectVertexData.hpp</a></div></div>
 <div class="ttc" id="namespaceStE_1_1Graphics_html_a1b3edd2bd5c94d94ae11c7000cf1cf92a7ca66fdfaad3eb33fc65d7490178f856"><div class="ttname"><a href="namespaceStE_1_1Graphics.html#a1b3edd2bd5c94d94ae11c7000cf1cf92a7ca66fdfaad3eb33fc65d7490178f856">StE::Graphics::mesh_subdivion_mode::Triangles</a></div></div>
-<div class="ttc" id="classStE_1_1Graphics_1_1mesh_html_a80e3f7d97e296f055820ff002d58853d"><div class="ttname"><a href="classStE_1_1Graphics_1_1mesh.html#a80e3f7d97e296f055820ff002d58853d">StE::Graphics::mesh::ebo</a></div><div class="ttdeci">const StE::Core::ElementBufferObject * ebo()</div><div class="ttdef"><b>Definition:</b> <a href="mesh_8hpp_source.html#l00146">mesh.hpp:146</a></div></div>
+<div class="ttc" id="classStE_1_1Graphics_1_1mesh_html_a80e3f7d97e296f055820ff002d58853d"><div class="ttname"><a href="classStE_1_1Graphics_1_1mesh.html#a80e3f7d97e296f055820ff002d58853d">StE::Graphics::mesh::ebo</a></div><div class="ttdeci">const StE::Core::ElementBufferObject * ebo()</div><div class="ttdef"><b>Definition:</b> <a href="mesh_8hpp_source.html#l00149">mesh.hpp:149</a></div></div>
 <div class="ttc" id="classStE_1_1Graphics_1_1mesh_html_abda2c28a9fcbbe053729ac8500c714fd"><div class="ttname"><a href="classStE_1_1Graphics_1_1mesh.html#abda2c28a9fcbbe053729ac8500c714fd">StE::Graphics::mesh::sphere</a></div><div class="ttdeci">mesh_bounding_sphere sphere</div><div class="ttdef"><b>Definition:</b> <a href="mesh_8hpp_source.html#l00057">mesh.hpp:57</a></div></div>
-<div class="ttc" id="classStE_1_1Graphics_1_1mesh_html_aaabf51cee7491ed0da9da89827389e8c"><div class="ttname"><a href="classStE_1_1Graphics_1_1mesh.html#aaabf51cee7491ed0da9da89827389e8c">StE::Graphics::mesh::vao</a></div><div class="ttdeci">const StE::Core::VertexArrayObject * vao()</div><div class="ttdef"><b>Definition:</b> <a href="mesh_8hpp_source.html#l00153">mesh.hpp:153</a></div></div>
+<div class="ttc" id="classStE_1_1Graphics_1_1mesh_html_aaabf51cee7491ed0da9da89827389e8c"><div class="ttname"><a href="classStE_1_1Graphics_1_1mesh.html#aaabf51cee7491ed0da9da89827389e8c">StE::Graphics::mesh::vao</a></div><div class="ttdeci">const StE::Core::VertexArrayObject * vao()</div><div class="ttdef"><b>Definition:</b> <a href="mesh_8hpp_source.html#l00156">mesh.hpp:156</a></div></div>
 <div class="ttc" id="classStE_1_1Graphics_1_1mesh__bounding__sphere_html"><div class="ttname"><a href="classStE_1_1Graphics_1_1mesh__bounding__sphere.html">StE::Graphics::mesh_bounding_sphere</a></div><div class="ttdef"><b>Definition:</b> <a href="mesh__bounding__sphere_8hpp_source.html#l00011">mesh_bounding_sphere.hpp:11</a></div></div>
 <div class="ttc" id="namespaceStE_1_1Graphics_html_a1b3edd2bd5c94d94ae11c7000cf1cf92"><div class="ttname"><a href="namespaceStE_1_1Graphics.html#a1b3edd2bd5c94d94ae11c7000cf1cf92">StE::Graphics::mesh_subdivion_mode</a></div><div class="ttdeci">mesh_subdivion_mode</div><div class="ttdef"><b>Definition:</b> <a href="mesh_8hpp_source.html#l00035">mesh.hpp:35</a></div></div>
 <div class="ttc" id="namespaceStE_1_1Graphics_html_a17882bbd40970b485a5a2bed3f9b6bf5"><div class="ttname"><a href="namespaceStE_1_1Graphics.html#a17882bbd40970b485a5a2bed3f9b6bf5">StE::Graphics::max</a></div><div class="ttdeci">spectrum&lt; T, samples &gt; max(const spectrum&lt; T, samples &gt; &amp;a, const spectrum&lt; T, samples &gt; &amp;b)</div><div class="ttdef"><b>Definition:</b> <a href="spectrum_8hpp_source.html#l00187">spectrum.hpp:187</a></div></div>

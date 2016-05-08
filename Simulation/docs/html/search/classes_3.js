@@ -7,7 +7,7 @@ var searchData=
   ['camera',['Camera',['../classStE_1_1Graphics_1_1Camera.html',1,'StE::Graphics']]],
   ['common_5fbrdf_5frepresentation',['common_brdf_representation',['../classStE_1_1Graphics_1_1common__brdf__representation.html',1,'StE::Graphics']]],
   ['concurrent_5fpointer_5frecycler',['concurrent_pointer_recycler',['../classStE_1_1concurrent__pointer__recycler.html',1,'StE']]],
-  ['concurrent_5fpointer_5frecycler_3c_20data_20_3e',['concurrent_pointer_recycler&lt; data &gt;',['../classStE_1_1concurrent__pointer__recycler.html',1,'StE']]],
+  ['concurrent_5fpointer_5frecycler_3c_20data_5ft_20_3e',['concurrent_pointer_recycler&lt; data_t &gt;',['../classStE_1_1concurrent__pointer__recycler.html',1,'StE']]],
   ['concurrent_5fqueue',['concurrent_queue',['../classStE_1_1concurrent__queue.html',1,'StE']]],
   ['concurrent_5fqueue_3c_20delayed_5ftask_20_3e',['concurrent_queue&lt; delayed_task &gt;',['../classStE_1_1concurrent__queue.html',1,'StE']]],
   ['concurrent_5fqueue_3c_20modify_5ftask_5flog_20_3e',['concurrent_queue&lt; modify_task_log &gt;',['../classStE_1_1concurrent__queue.html',1,'StE']]],

@@ -50,7 +50,6 @@ var searchData=
   ['graph_5fimpl',['graph_impl',['../classStE_1_1Graph_1_1detail_1_1graph__impl.html',1,'StE::Graph::detail']]],
   ['gstack',['gstack',['../classStE_1_1Core_1_1gstack.html',1,'StE::Core']]],
   ['gstack_3c_20buffer_5fglyph_5fdescriptor_20_3e',['gstack&lt; buffer_glyph_descriptor &gt;',['../classStE_1_1Core_1_1gstack.html',1,'StE::Core']]],
-  ['gstack_3c_20core_3a_3aindirectmultidrawelementscommand_2c_20true_20_3e',['gstack&lt; Core::IndirectMultiDrawElementsCommand, true &gt;',['../classStE_1_1Core_1_1gstack.html',1,'StE::Core']]],
   ['gstack_3c_20glm_3a_3avec4_20_3e',['gstack&lt; glm::vec4 &gt;',['../classStE_1_1Core_1_1gstack.html',1,'StE::Core']]],
   ['gstack_3c_20glyph_5fpoint_2c_20true_20_3e',['gstack&lt; glyph_point, true &gt;',['../classStE_1_1Core_1_1gstack.html',1,'StE::Core']]],
   ['gstack_3c_20material_5fdescriptor_20_3e',['gstack&lt; material_descriptor &gt;',['../classStE_1_1Core_1_1gstack.html',1,'StE::Core']]],
@@ -58,5 +57,6 @@ var searchData=
   ['gstack_3c_20std_3a_3auint32_5ft_20_3e',['gstack&lt; std::uint32_t &gt;',['../classStE_1_1Core_1_1gstack.html',1,'StE::Core']]],
   ['gstack_3c_20ste_3a_3agraphics_3a_3alight_3a_3alight_5fdescriptor_20_3e',['gstack&lt; StE::Graphics::light::light_descriptor &gt;',['../classStE_1_1Core_1_1gstack.html',1,'StE::Core']]],
   ['gstack_3c_20ste_3a_3agraphics_3a_3amesh_5fdescriptor_20_3e',['gstack&lt; StE::Graphics::mesh_descriptor &gt;',['../classStE_1_1Core_1_1gstack.html',1,'StE::Core']]],
+  ['gstack_3c_20ste_3a_3agraphics_3a_3amesh_5fdraw_5fparams_20_3e',['gstack&lt; StE::Graphics::mesh_draw_params &gt;',['../classStE_1_1Core_1_1gstack.html',1,'StE::Core']]],
   ['gstack_3c_20ste_3a_3agraphics_3a_3aobjectvertexdata_20_3e',['gstack&lt; StE::Graphics::ObjectVertexData &gt;',['../classStE_1_1Core_1_1gstack.html',1,'StE::Core']]]
 ];

@@ -115,7 +115,7 @@ $(document).ready(function(){initNavTree('glsl__programs__pool_8cpp_source.html'
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="keyword">using namespace </span>StE::Resource;</div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;</div>
 <div class="line"><a name="l00010"></a><span class="lineno"><a class="line" href="classStE_1_1Resource_1_1glsl__programs__pool.html#a5b6bf206ba336593b1932be82ac13b76">   10</a></span>&#160;<a class="code" href="classStE_1_1task.html">StE::task&lt;std::shared_ptr&lt;StE::Core::GLSLProgram&gt;</a>&gt; <a class="code" href="classStE_1_1Resource_1_1glsl__programs__pool.html#a1ace1ff43f63a91ccd4cebd6002e804b">glsl_programs_pool::fetch_program_task</a>(<span class="keyword">const</span> <a class="code" href="classStE_1_1Resource_1_1glsl__programs__pool_1_1glsl__programs__pool__key.html">glsl_programs_pool_key</a> &amp;k) {</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="classStE_1_1task.html">StE::task&lt;std::shared_ptr&lt;Core::GLSLProgram&gt;</a>&gt;([k = std::move(k), <span class="keyword">this</span>](<a class="code" href="classStE_1_1optional.html">optional&lt;task_scheduler*&gt;</a> sched) -&gt; std::shared_ptr&lt;Core::GLSLProgram&gt; {      </div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="classStE_1_1task.html">StE::task&lt;std::shared_ptr&lt;Core::GLSLProgram&gt;</a>&gt;([k = std::move(k), <span class="keyword">this</span>](<a class="code" href="classStE_1_1optional.html">optional&lt;task_scheduler*&gt;</a> sched) -&gt; std::shared_ptr&lt;Core::GLSLProgram&gt; {</div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;        {</div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;            <span class="keyword">auto</span> val_guard = programs[k];</div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;            <span class="keywordflow">if</span> (val_guard.is_valid()) {</div>
@@ -124,14 +124,14 @@ $(document).ready(function(){initNavTree('glsl__programs__pool_8cpp_source.html'
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;                    <span class="keywordflow">return</span> prog_ptr;</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;            }</div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;        }</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;        </div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;        <span class="keyword">auto</span> uptr_prog = <a class="code" href="classStE_1_1Resource_1_1GLSLProgramFactory.html#a2ac9dabd0833ad89c89c680c061c452c">GLSLProgramFactory::load_program_task</a>(this-&gt;context, k.names)();</div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;        <span class="keywordflow">if</span> (uptr_prog) {</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;            std::shared_ptr&lt;Core::GLSLProgram&gt; prog = std::move(uptr_prog);</div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;            programs.emplace(k, prog);</div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;            <span class="keywordflow">return</span> prog;</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;        }</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;        </div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    });</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;}</div>
@@ -146,9 +146,9 @@ $(document).ready(function(){initNavTree('glsl__programs__pool_8cpp_source.html'
 <div class="ttc" id="classStE_1_1optional_html"><div class="ttname"><a href="classStE_1_1optional.html">StE::optional</a></div><div class="ttdef"><b>Definition:</b> <a href="optional_8hpp_source.html#l00017">optional.hpp:17</a></div></div>
 <div class="ttc" id="StEngineControl_8hpp_html"><div class="ttname"><a href="StEngineControl_8hpp.html">StEngineControl.hpp</a></div><div class="ttdoc">Engine Control class. </div></div>
 <div class="ttc" id="GLSLProgramFactory_8hpp_html"><div class="ttname"><a href="GLSLProgramFactory_8hpp.html">GLSLProgramFactory.hpp</a></div></div>
-<div class="ttc" id="classStE_1_1Resource_1_1GLSLProgramFactory_html_a2ac9dabd0833ad89c89c680c061c452c"><div class="ttname"><a href="classStE_1_1Resource_1_1GLSLProgramFactory.html#a2ac9dabd0833ad89c89c680c061c452c">StE::Resource::GLSLProgramFactory::load_program_task</a></div><div class="ttdeci">static task&lt; std::unique_ptr&lt; Core::GLSLProgram &gt; &gt; load_program_task(const StEngineControl &amp;context, const std::vector&lt; std::string &gt; &amp;names)</div><div class="ttdef"><b>Definition:</b> <a href="GLSLProgramFactory_8cpp_source.html#l00239">GLSLProgramFactory.cpp:239</a></div></div>
+<div class="ttc" id="classStE_1_1Resource_1_1GLSLProgramFactory_html_a2ac9dabd0833ad89c89c680c061c452c"><div class="ttname"><a href="classStE_1_1Resource_1_1GLSLProgramFactory.html#a2ac9dabd0833ad89c89c680c061c452c">StE::Resource::GLSLProgramFactory::load_program_task</a></div><div class="ttdeci">static task&lt; std::unique_ptr&lt; Core::GLSLProgram &gt; &gt; load_program_task(const StEngineControl &amp;context, const std::vector&lt; std::string &gt; &amp;names)</div><div class="ttdef"><b>Definition:</b> <a href="GLSLProgramFactory_8cpp_source.html#l00240">GLSLProgramFactory.cpp:240</a></div></div>
 <div class="ttc" id="glsl__programs__pool_8hpp_html"><div class="ttname"><a href="glsl__programs__pool_8hpp.html">glsl_programs_pool.hpp</a></div></div>
-<div class="ttc" id="classStE_1_1task_html"><div class="ttname"><a href="classStE_1_1task.html">StE::task</a></div><div class="ttdef"><b>Definition:</b> <a href="task_8hpp_source.html#l00023">task.hpp:23</a></div></div>
+<div class="ttc" id="classStE_1_1task_html"><div class="ttname"><a href="classStE_1_1task.html">StE::task</a></div><div class="ttdef"><b>Definition:</b> <a href="task_8hpp_source.html#l00024">task.hpp:24</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

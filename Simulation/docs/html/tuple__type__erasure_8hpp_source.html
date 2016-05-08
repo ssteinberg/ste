@@ -144,7 +144,7 @@ $(document).ready(function(){initNavTree('tuple__type__erasure_8hpp_source.html'
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <span class="keyword">template</span> &lt;<span class="keyword">typename</span>... Args&gt;</div>
 <div class="line"><a name="l00039"></a><span class="lineno"><a class="line" href="classStE_1_1tuple__type__erasure.html#a0fc35bf15faf05b5019be00da4881005">   39</a></span>&#160;    <a class="code" href="classStE_1_1tuple__type__erasure.html#a0fc35bf15faf05b5019be00da4881005">tuple_type_erasure</a>(<span class="keyword">const</span> std::tuple&lt;Args...&gt; &amp;tuple_args, std::enable_if_t&lt;1 &lt; <span class="keyword">sizeof</span>...(Args)&gt;* = <span class="keyword">nullptr</span>) : data(sizeof(tuple_args)) {</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        <a class="code" href="structStE_1_1__tuple__type__erasure_1_1__type__checker.html">_tuple_type_erasure::_type_checker</a>&lt;Args...&gt; check;</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        <a class="code" href="structStE_1_1__tuple__type__erasure_1_1__type__checker.html">_tuple_type_erasure::_type_checker</a>&lt;Args...&gt;();</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;        std::memcpy(data.data(), &amp;tuple_args, data.size());</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    }</div>
@@ -168,7 +168,7 @@ $(document).ready(function(){initNavTree('tuple__type__erasure_8hpp_source.html'
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    <span class="keyword">template</span> &lt;<span class="keyword">typename</span>... Args&gt;</div>
 <div class="line"><a name="l00063"></a><span class="lineno"><a class="line" href="classStE_1_1tuple__type__erasure.html#ab76b132822e38f4684533596c77c73fa">   63</a></span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classStE_1_1tuple__type__erasure.html#ab76b132822e38f4684533596c77c73fa">compare_weak</a>(<span class="keyword">const</span> std::tuple&lt;Args...&gt; &amp;tuple_args, std::enable_if_t&lt;1 &lt; <span class="keyword">sizeof</span>...(Args)&gt;* = <span class="keyword">nullptr</span>)<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;        <a class="code" href="structStE_1_1__tuple__type__erasure_1_1__type__checker.html">_tuple_type_erasure::_type_checker</a>&lt;Args...&gt; check;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;        <a class="code" href="structStE_1_1__tuple__type__erasure_1_1__type__checker.html">_tuple_type_erasure::_type_checker</a>&lt;Args...&gt;();</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;</div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;        std::size_t s = <span class="keyword">sizeof</span>(tuple_args);</div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
@@ -178,7 +178,7 @@ $(document).ready(function(){initNavTree('tuple__type__erasure_8hpp_source.html'
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    }</div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
 <div class="line"><a name="l00073"></a><span class="lineno"><a class="line" href="classStE_1_1tuple__type__erasure.html#aba654a35f203afcdb7fdabaa835bde77">   73</a></span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classStE_1_1tuple__type__erasure.html#aba654a35f203afcdb7fdabaa835bde77">compare_weak</a>(<span class="keyword">const</span> std::tuple&lt;T&gt; &amp;tuple)<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;        <a class="code" href="structStE_1_1__tuple__type__erasure_1_1__type__checker.html">_tuple_type_erasure::_type_checker&lt;T&gt;</a> check;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;        <a class="code" href="structStE_1_1__tuple__type__erasure_1_1__type__checker.html">_tuple_type_erasure::_type_checker&lt;T&gt;</a>();</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;</div>
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;        <span class="keyword">using</span> Type = <span class="keyword">typename</span> std::remove_reference_t&lt;T&gt;;</div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;</div>
@@ -191,7 +191,7 @@ $(document).ready(function(){initNavTree('tuple__type__erasure_8hpp_source.html'
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;</div>
 <div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    <span class="keyword">template</span> &lt;<span class="keyword">typename</span>... Args&gt;</div>
 <div class="line"><a name="l00086"></a><span class="lineno"><a class="line" href="classStE_1_1tuple__type__erasure.html#ad8a05fb900f5b712af132605ca31d27d">   86</a></span>&#160;    <span class="keyword">auto</span> <a class="code" href="classStE_1_1tuple__type__erasure.html#ad8a05fb900f5b712af132605ca31d27d">get_weak</a>(std::enable_if_t&lt;1 &lt; <span class="keyword">sizeof</span>...(Args)&gt;* = <span class="keyword">nullptr</span>)<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;        <a class="code" href="structStE_1_1__tuple__type__erasure_1_1__type__checker.html">_tuple_type_erasure::_type_checker</a>&lt;Args...&gt; check;</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;        <a class="code" href="structStE_1_1__tuple__type__erasure_1_1__type__checker.html">_tuple_type_erasure::_type_checker</a>&lt;Args...&gt;();</div>
 <div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;</div>
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;        <span class="keyword">using</span> T = std::tuple&lt;decltype(Args{})...&gt;;</div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;        T t;</div>
@@ -205,7 +205,7 @@ $(document).ready(function(){initNavTree('tuple__type__erasure_8hpp_source.html'
 <div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    }</div>
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
 <div class="line"><a name="l00100"></a><span class="lineno"><a class="line" href="classStE_1_1tuple__type__erasure.html#ae11a886781ff918d31f2e028b4b21467">  100</a></span>&#160;    <span class="keyword">auto</span> <a class="code" href="classStE_1_1tuple__type__erasure.html#ae11a886781ff918d31f2e028b4b21467">get_weak</a>()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;        <a class="code" href="structStE_1_1__tuple__type__erasure_1_1__type__checker.html">_tuple_type_erasure::_type_checker&lt;T&gt;</a> check;</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;        <a class="code" href="structStE_1_1__tuple__type__erasure_1_1__type__checker.html">_tuple_type_erasure::_type_checker&lt;T&gt;</a>();</div>
 <div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;</div>
 <div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;        <span class="keyword">using</span> Type = <span class="keyword">typename</span> std::remove_reference_t&lt;T&gt;;</div>
 <div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;</div>

@@ -8,7 +8,7 @@ var classStE_1_1Core_1_1GenericResource =
     [ "GenericResource", "classStE_1_1Core_1_1GenericResource.html#ad8f150aebafe572e95a07e941ebc7e79", null ],
     [ "get_resource_id", "classStE_1_1Core_1_1GenericResource.html#a083d15ef4d19673473dc64d1956ba32d", null ],
     [ "is_valid", "classStE_1_1Core_1_1GenericResource.html#a48b9cea42a07d0d07fe0050879bf079b", null ],
-    [ "operator=", "classStE_1_1Core_1_1GenericResource.html#a996da2360ea5a9d4d83fcc66a94e18ff", null ],
+    [ "operator=", "classStE_1_1Core_1_1GenericResource.html#acdfe0199f72c71f97faf2bd4f8548efd", null ],
     [ "operator=", "classStE_1_1Core_1_1GenericResource.html#a3138b91cd60c8bb724c3445569883e2e", null ],
     [ "resource_type", "classStE_1_1Core_1_1GenericResource.html#a66ec5525d7df381efae7d19a5fe54dd8", null ],
     [ "id", "classStE_1_1Core_1_1GenericResource.html#a4c1b10e0639e8d1646511fb41a4d6302", null ]

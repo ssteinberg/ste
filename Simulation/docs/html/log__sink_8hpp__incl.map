@@ -1,8 +1,8 @@
 <map id="src/ste/engine/log/log_sink.hpp" name="src/ste/engine/log/log_sink.hpp">
-<area shape="rect" id="node2" href="$stdafx_8hpp.html" title="stdafx.hpp" alt="" coords="603,95,685,121"/>
-<area shape="rect" id="node17" href="$trace_8hpp.html" title="trace.hpp" alt="" coords="761,95,837,121"/>
-<area shape="rect" id="node19" href="$log__entry_8hpp.html" title="log_entry.hpp" alt="" coords="199,95,300,121"/>
-<area shape="rect" id="node4" href="$gl_8hpp.html" title="gl.hpp" alt="" coords="974,169,1031,196"/>
-<area shape="rect" id="node6" href="$gl__extensions_8h.html" title="gl_extensions.h" alt="" coords="1007,244,1121,271"/>
-<area shape="rect" id="node20" href="$log__class_8hpp.html" title="log_class.hpp" alt="" coords="5,169,109,196"/>
+<area shape="rect" id="node2" href="$stdafx_8hpp.html" title="stdafx.hpp" alt="" coords="1215,95,1297,121"/>
+<area shape="rect" id="node27" href="$trace_8hpp.html" title="trace.hpp" alt="" coords="2350,95,2426,121"/>
+<area shape="rect" id="node29" href="$log__entry_8hpp.html" title="log_entry.hpp" alt="" coords="2605,95,2707,121"/>
+<area shape="rect" id="node4" href="$gl_8hpp.html" title="gl.hpp" alt="" coords="874,169,931,196"/>
+<area shape="rect" id="node6" href="$gl__extensions_8h.html" title="gl_extensions.h" alt="" coords="907,244,1021,271"/>
+<area shape="rect" id="node30" href="$log__class_8hpp.html" title="log_class.hpp" alt="" coords="2660,169,2764,196"/>
 </map>

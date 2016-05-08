@@ -117,60 +117,63 @@ $(document).ready(function(){initNavTree('debug__gui_8hpp_source.html','');});
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="profiler_8hpp.html">profiler.hpp</a>&quot;</span></div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;</div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="signal_8hpp.html">signal.hpp</a>&quot;</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &lt;map&gt;</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &lt;array&gt;</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &lt;string&gt;</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">namespace </span>StE {</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">namespace </span>Graphics {</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div>
-<div class="line"><a name="l00022"></a><span class="lineno"><a class="line" href="classStE_1_1Graphics_1_1debug__gui.html">   22</a></span>&#160;<span class="keyword">class </span><a class="code" href="classStE_1_1Graphics_1_1debug__gui.html">debug_gui</a> : <span class="keyword">public</span> <a class="code" href="classStE_1_1Graphics_1_1gpu__dispatchable.html">gpu_dispatchable</a> {</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    <span class="keyword">using</span> <a class="code" href="classStE_1_1Graphics_1_1gpu__dispatchable.html">Base</a> = <a class="code" href="classStE_1_1Graphics_1_1gpu__dispatchable.html">gpu_dispatchable</a>;</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    <span class="keyword">using</span> <a class="code" href="classStE_1_1connection.html">hid_pointer_button_signal_connection_type</a> = <a class="code" href="classStE_1_1signal.html#a4122ef1907750da00aa3732a2569090d">StEngineControl::hid_pointer_button_signal_type::connection_type</a>;</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    <span class="keyword">using</span> <a class="code" href="classStE_1_1connection.html">hid_scroll_signal_connection_type</a> = <a class="code" href="classStE_1_1signal.html#a4122ef1907750da00aa3732a2569090d">StEngineControl::hid_scroll_signal_type::connection_type</a>;</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    <span class="keyword">using</span> <a class="code" href="classStE_1_1connection.html">hid_keyboard_signal_connection_type</a> = <a class="code" href="classStE_1_1signal.html#a4122ef1907750da00aa3732a2569090d">StEngineControl::hid_keyboard_signal_type::connection_type</a>;</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <span class="keyword">const</span> <a class="code" href="classStE_1_1StEngineControl.html">StEngineControl</a> &amp;ctx;</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <a class="code" href="classStE_1_1Graphics_1_1profiler.html">profiler</a> *prof;</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="keyword">mutable</span> std::map&lt;std::string, std::array&lt;float, 10&gt;&gt; prof_tasks_last_samples;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    std::shared_ptr&lt;hid_pointer_button_signal_connection_type&gt; hid_pointer_button_signal;</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    std::shared_ptr&lt;hid_scroll_signal_connection_type&gt; hid_scroll_signal;</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    std::shared_ptr&lt;hid_keyboard_signal_connection_type&gt; hid_keyboard_signal;</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <a class="code" href="classStE_1_1Graphics_1_1debug__gui.html#a50458b10f493f046dc2c92767c150988">debug_gui</a>(<span class="keyword">const</span> <a class="code" href="classStE_1_1StEngineControl.html">StEngineControl</a> &amp;ctx, <a class="code" href="classStE_1_1Graphics_1_1profiler.html">profiler</a> *prof = <span class="keyword">nullptr</span>);</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <a class="code" href="classStE_1_1Graphics_1_1debug__gui.html#a8e87e58ecc97bee01ee32aa281e32118">~debug_gui</a>() noexcept;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00046"></a><span class="lineno"><a class="line" href="classStE_1_1Graphics_1_1debug__gui.html#abaa3af4c0fe85ee3dbe90415e54b7bc6">   46</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classStE_1_1Graphics_1_1debug__gui.html#abaa3af4c0fe85ee3dbe90415e54b7bc6">set_context_state</a>() const override final {}</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classStE_1_1Graphics_1_1debug__gui.html#a48a8a397ddc867cba71c600e34b00625">dispatch</a>() const override final;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;};</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;}</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="Font_8hpp.html">Font.hpp</a>&quot;</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &lt;map&gt;</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &lt;array&gt;</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">namespace </span>StE {</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="keyword">namespace </span>Graphics {</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div>
+<div class="line"><a name="l00023"></a><span class="lineno"><a class="line" href="classStE_1_1Graphics_1_1debug__gui.html">   23</a></span>&#160;<span class="keyword">class </span><a class="code" href="classStE_1_1Graphics_1_1debug__gui.html">debug_gui</a> : <span class="keyword">public</span> <a class="code" href="classStE_1_1Graphics_1_1gpu__dispatchable.html">gpu_dispatchable</a> {</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    <span class="keyword">using</span> <a class="code" href="classStE_1_1Graphics_1_1gpu__dispatchable.html">Base</a> = <a class="code" href="classStE_1_1Graphics_1_1gpu__dispatchable.html">gpu_dispatchable</a>;</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    <span class="keyword">using</span> <a class="code" href="classStE_1_1connection.html">hid_pointer_button_signal_connection_type</a> = <a class="code" href="classStE_1_1signal.html#a4122ef1907750da00aa3732a2569090d">StEngineControl::hid_pointer_button_signal_type::connection_type</a>;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    <span class="keyword">using</span> <a class="code" href="classStE_1_1connection.html">hid_scroll_signal_connection_type</a> = <a class="code" href="classStE_1_1signal.html#a4122ef1907750da00aa3732a2569090d">StEngineControl::hid_scroll_signal_type::connection_type</a>;</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    <span class="keyword">using</span> <a class="code" href="classStE_1_1connection.html">hid_keyboard_signal_connection_type</a> = <a class="code" href="classStE_1_1signal.html#a4122ef1907750da00aa3732a2569090d">StEngineControl::hid_keyboard_signal_type::connection_type</a>;</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <span class="keyword">const</span> <a class="code" href="classStE_1_1StEngineControl.html">StEngineControl</a> &amp;ctx;</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <a class="code" href="classStE_1_1Graphics_1_1profiler.html">profiler</a> *prof;</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <span class="keyword">mutable</span> std::map&lt;std::string, std::vector&lt;float&gt;&gt; prof_tasks_last_samples;</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    std::shared_ptr&lt;hid_pointer_button_signal_connection_type&gt; hid_pointer_button_signal;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    std::shared_ptr&lt;hid_scroll_signal_connection_type&gt; hid_scroll_signal;</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    std::shared_ptr&lt;hid_keyboard_signal_connection_type&gt; hid_keyboard_signal;</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <a class="code" href="classStE_1_1Graphics_1_1debug__gui.html#a6ac57bc221a4a4d41a116d1a8bf3b761">debug_gui</a>(<span class="keyword">const</span> <a class="code" href="classStE_1_1StEngineControl.html">StEngineControl</a> &amp;ctx, <a class="code" href="classStE_1_1Graphics_1_1profiler.html">profiler</a> *prof, <span class="keyword">const</span> <a class="code" href="classStE_1_1Text_1_1Font.html">StE::Text::Font</a> &amp;default_font);</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <a class="code" href="classStE_1_1Graphics_1_1debug__gui.html#a8e87e58ecc97bee01ee32aa281e32118">~debug_gui</a>() noexcept;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00047"></a><span class="lineno"><a class="line" href="classStE_1_1Graphics_1_1debug__gui.html#abaa3af4c0fe85ee3dbe90415e54b7bc6">   47</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classStE_1_1Graphics_1_1debug__gui.html#abaa3af4c0fe85ee3dbe90415e54b7bc6">set_context_state</a>() const override final {}</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classStE_1_1Graphics_1_1debug__gui.html#a48a8a397ddc867cba71c600e34b00625">dispatch</a>() const override final;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;};</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;}</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;}</div>
 <div class="ttc" id="stdafx_8hpp_html"><div class="ttname"><a href="stdafx_8hpp.html">stdafx.hpp</a></div></div>
-<div class="ttc" id="classStE_1_1Graphics_1_1debug__gui_html_abaa3af4c0fe85ee3dbe90415e54b7bc6"><div class="ttname"><a href="classStE_1_1Graphics_1_1debug__gui.html#abaa3af4c0fe85ee3dbe90415e54b7bc6">StE::Graphics::debug_gui::set_context_state</a></div><div class="ttdeci">void set_context_state() const overridefinal</div><div class="ttdef"><b>Definition:</b> <a href="debug__gui_8hpp_source.html#l00046">debug_gui.hpp:46</a></div></div>
-<div class="ttc" id="classStE_1_1Graphics_1_1debug__gui_html_a8e87e58ecc97bee01ee32aa281e32118"><div class="ttname"><a href="classStE_1_1Graphics_1_1debug__gui.html#a8e87e58ecc97bee01ee32aa281e32118">StE::Graphics::debug_gui::~debug_gui</a></div><div class="ttdeci">~debug_gui() noexcept</div><div class="ttdef"><b>Definition:</b> <a href="debug__gui_8cpp_source.html#l00039">debug_gui.cpp:39</a></div></div>
-<div class="ttc" id="classStE_1_1Graphics_1_1debug__gui_html_a50458b10f493f046dc2c92767c150988"><div class="ttname"><a href="classStE_1_1Graphics_1_1debug__gui.html#a50458b10f493f046dc2c92767c150988">StE::Graphics::debug_gui::debug_gui</a></div><div class="ttdeci">debug_gui(const StEngineControl &amp;ctx, profiler *prof=nullptr)</div><div class="ttdef"><b>Definition:</b> <a href="debug__gui_8cpp_source.html#l00017">debug_gui.cpp:17</a></div></div>
+<div class="ttc" id="classStE_1_1Graphics_1_1debug__gui_html_abaa3af4c0fe85ee3dbe90415e54b7bc6"><div class="ttname"><a href="classStE_1_1Graphics_1_1debug__gui.html#abaa3af4c0fe85ee3dbe90415e54b7bc6">StE::Graphics::debug_gui::set_context_state</a></div><div class="ttdeci">void set_context_state() const overridefinal</div><div class="ttdef"><b>Definition:</b> <a href="debug__gui_8hpp_source.html#l00047">debug_gui.hpp:47</a></div></div>
+<div class="ttc" id="classStE_1_1Graphics_1_1debug__gui_html_a8e87e58ecc97bee01ee32aa281e32118"><div class="ttname"><a href="classStE_1_1Graphics_1_1debug__gui.html#a8e87e58ecc97bee01ee32aa281e32118">StE::Graphics::debug_gui::~debug_gui</a></div><div class="ttdeci">~debug_gui() noexcept</div><div class="ttdef"><b>Definition:</b> <a href="debug__gui_8cpp_source.html#l00043">debug_gui.cpp:43</a></div></div>
 <div class="ttc" id="StEngineControl_8hpp_html"><div class="ttname"><a href="StEngineControl_8hpp.html">StEngineControl.hpp</a></div><div class="ttdoc">Engine Control class. </div></div>
-<div class="ttc" id="classStE_1_1Graphics_1_1profiler_html"><div class="ttname"><a href="classStE_1_1Graphics_1_1profiler.html">StE::Graphics::profiler</a></div><div class="ttdef"><b>Definition:</b> <a href="profiler_8hpp_source.html#l00021">profiler.hpp:21</a></div></div>
+<div class="ttc" id="classStE_1_1Graphics_1_1profiler_html"><div class="ttname"><a href="classStE_1_1Graphics_1_1profiler.html">StE::Graphics::profiler</a></div><div class="ttdef"><b>Definition:</b> <a href="profiler_8hpp_source.html#l00020">profiler.hpp:20</a></div></div>
+<div class="ttc" id="classStE_1_1Text_1_1Font_html"><div class="ttname"><a href="classStE_1_1Text_1_1Font.html">StE::Text::Font</a></div><div class="ttdef"><b>Definition:</b> <a href="Font_8hpp_source.html#l00014">Font.hpp:14</a></div></div>
 <div class="ttc" id="classStE_1_1StEngineControl_html"><div class="ttname"><a href="classStE_1_1StEngineControl.html">StE::StEngineControl</a></div><div class="ttdoc">StE Engine Control class. </div><div class="ttdef"><b>Definition:</b> <a href="StEngineControl_8hpp_source.html#l00046">StEngineControl.hpp:46</a></div></div>
+<div class="ttc" id="classStE_1_1Graphics_1_1debug__gui_html_a6ac57bc221a4a4d41a116d1a8bf3b761"><div class="ttname"><a href="classStE_1_1Graphics_1_1debug__gui.html#a6ac57bc221a4a4d41a116d1a8bf3b761">StE::Graphics::debug_gui::debug_gui</a></div><div class="ttdeci">debug_gui(const StEngineControl &amp;ctx, profiler *prof, const StE::Text::Font &amp;default_font)</div><div class="ttdef"><b>Definition:</b> <a href="debug__gui_8cpp_source.html#l00018">debug_gui.cpp:18</a></div></div>
 <div class="ttc" id="gpu__dispatchable_8hpp_html"><div class="ttname"><a href="gpu__dispatchable_8hpp.html">gpu_dispatchable.hpp</a></div></div>
 <div class="ttc" id="classStE_1_1Graphics_1_1gpu__dispatchable_html"><div class="ttname"><a href="classStE_1_1Graphics_1_1gpu__dispatchable.html">StE::Graphics::gpu_dispatchable</a></div><div class="ttdef"><b>Definition:</b> <a href="gpu__dispatchable_8hpp_source.html#l00015">gpu_dispatchable.hpp:15</a></div></div>
 <div class="ttc" id="signal_8hpp_html"><div class="ttname"><a href="signal_8hpp.html">signal.hpp</a></div></div>
 <div class="ttc" id="classStE_1_1signal_html_a4122ef1907750da00aa3732a2569090d"><div class="ttname"><a href="classStE_1_1signal.html#a4122ef1907750da00aa3732a2569090d">StE::signal&lt; HID::pointer::B, HID::Status, HID::ModifierBits &gt;::connection_type</a></div><div class="ttdeci">connection&lt; Ts...&gt; connection_type</div><div class="ttdef"><b>Definition:</b> <a href="signal_8hpp_source.html#l00022">signal.hpp:22</a></div></div>
-<div class="ttc" id="classStE_1_1Graphics_1_1debug__gui_html_a48a8a397ddc867cba71c600e34b00625"><div class="ttname"><a href="classStE_1_1Graphics_1_1debug__gui.html#a48a8a397ddc867cba71c600e34b00625">StE::Graphics::debug_gui::dispatch</a></div><div class="ttdeci">void dispatch() const overridefinal</div><div class="ttdef"><b>Definition:</b> <a href="debug__gui_8cpp_source.html#l00043">debug_gui.cpp:43</a></div></div>
+<div class="ttc" id="classStE_1_1Graphics_1_1debug__gui_html_a48a8a397ddc867cba71c600e34b00625"><div class="ttname"><a href="classStE_1_1Graphics_1_1debug__gui.html#a48a8a397ddc867cba71c600e34b00625">StE::Graphics::debug_gui::dispatch</a></div><div class="ttdeci">void dispatch() const overridefinal</div><div class="ttdef"><b>Definition:</b> <a href="debug__gui_8cpp_source.html#l00047">debug_gui.cpp:47</a></div></div>
 <div class="ttc" id="profiler_8hpp_html"><div class="ttname"><a href="profiler_8hpp.html">profiler.hpp</a></div></div>
 <div class="ttc" id="classStE_1_1connection_html"><div class="ttname"><a href="classStE_1_1connection.html">StE::connection</a></div><div class="ttdef"><b>Definition:</b> <a href="connection_8hpp_source.html#l00017">connection.hpp:17</a></div></div>
-<div class="ttc" id="classStE_1_1Graphics_1_1debug__gui_html"><div class="ttname"><a href="classStE_1_1Graphics_1_1debug__gui.html">StE::Graphics::debug_gui</a></div><div class="ttdef"><b>Definition:</b> <a href="debug__gui_8hpp_source.html#l00022">debug_gui.hpp:22</a></div></div>
+<div class="ttc" id="Font_8hpp_html"><div class="ttname"><a href="Font_8hpp.html">Font.hpp</a></div></div>
+<div class="ttc" id="classStE_1_1Graphics_1_1debug__gui_html"><div class="ttname"><a href="classStE_1_1Graphics_1_1debug__gui.html">StE::Graphics::debug_gui</a></div><div class="ttdef"><b>Definition:</b> <a href="debug__gui_8hpp_source.html#l00023">debug_gui.hpp:23</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

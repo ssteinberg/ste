@@ -110,6 +110,9 @@ $(document).ready(function(){initNavTree('classStE_1_1lru__cache.html','');});
 </div><!--header-->
 <div class="contents">
 
+<p>LRU general purpose disk caching class.  
+ <a href="classStE_1_1lru__cache.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="lru__cache_8hpp_source.html">lru_cache.hpp</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for StE::lru_cache&lt; K &gt;:</div>
@@ -135,22 +138,33 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a8837cde251dfe89b4e0d10950608a11a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classStE_1_1lru__cache.html">lru_cache</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1lru__cache.html#a8837cde251dfe89b4e0d10950608a11a">operator=</a> (const <a class="el" href="classStE_1_1lru__cache.html">lru_cache</a> &amp;)=delete</td></tr>
 <tr class="separator:a8837cde251dfe89b4e0d10950608a11a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a25ff748ce03ca3af5e716ebfb5c59f7c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1lru__cache.html#a25ff748ce03ca3af5e716ebfb5c59f7c">lru_cache</a> (const boost::filesystem::path &amp;path, std::size_t quota=0)</td></tr>
+<tr class="memdesc:a25ff748ce03ca3af5e716ebfb5c59f7c"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classStE_1_1lru__cache.html" title="LRU general purpose disk caching class. ">lru_cache</a> ctor  <a href="#a25ff748ce03ca3af5e716ebfb5c59f7c">More...</a><br/></td></tr>
 <tr class="separator:a25ff748ce03ca3af5e716ebfb5c59f7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4daf66c4603f7bedd8985ad4c2564be6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1lru__cache.html#a4daf66c4603f7bedd8985ad4c2564be6">~lru_cache</a> ()</td></tr>
 <tr class="separator:a4daf66c4603f7bedd8985ad4c2564be6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adcffd7cbbc003f0f25c7ce8b635e4550"><td class="memTemplParams" colspan="2">template&lt;typename V &gt; </td></tr>
 <tr class="memitem:adcffd7cbbc003f0f25c7ce8b635e4550"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="gl__extensions_8h.html#a814c8b5745ecf82afdd1da718fbdc47c">void</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classStE_1_1lru__cache.html#adcffd7cbbc003f0f25c7ce8b635e4550">insert</a> (const key_type &amp;k, V &amp;&amp;v)</td></tr>
+<tr class="memdesc:adcffd7cbbc003f0f25c7ce8b635e4550"><td class="mdescLeft">&#160;</td><td class="mdescRight">Store an object in the cache.  <a href="#adcffd7cbbc003f0f25c7ce8b635e4550">More...</a><br/></td></tr>
 <tr class="separator:adcffd7cbbc003f0f25c7ce8b635e4550"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6681b1e2bb467e8e353ef22eda943301"><td class="memTemplParams" colspan="2">template&lt;typename V &gt; </td></tr>
 <tr class="memitem:a6681b1e2bb467e8e353ef22eda943301"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classStE_1_1task.html">task</a>&lt; <a class="el" href="classStE_1_1optional.html">optional</a>&lt; V &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classStE_1_1lru__cache.html#a6681b1e2bb467e8e353ef22eda943301">get</a> (const key_type &amp;k) const </td></tr>
+<tr class="memdesc:a6681b1e2bb467e8e353ef22eda943301"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read an object from the cache.  <a href="#a6681b1e2bb467e8e353ef22eda943301">More...</a><br/></td></tr>
 <tr class="separator:a6681b1e2bb467e8e353ef22eda943301"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><h3>template&lt;typename K&gt;<br/>
 class StE::lru_cache&lt; K &gt;</h3>
 
+<p>LRU general purpose disk caching class. </p>
+<p><a class="el" href="classStE_1_1lru__cache.html" title="LRU general purpose disk caching class. ">lru_cache</a> is a thread safe, lock-free general purpose disk caching facilities. Fetching operations can be run asynchronously. <a class="el" href="classStE_1_1lru__cache.html" title="LRU general purpose disk caching class. ">lru_cache</a> (de)serializes using boost::serialization. <a class="el" href="classStE_1_1lru__cache.html" title="LRU general purpose disk caching class. ">lru_cache</a> keeps an offline database (index) on disk.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">K</td><td>key type </td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p>Definition at line <a class="el" href="lru__cache_8hpp_source.html#l00024">24</a> of file <a class="el" href="lru__cache_8hpp_source.html">lru_cache.hpp</a>.</p>
+<p>Definition at line <a class="el" href="lru__cache_8hpp_source.html#l00041">41</a> of file <a class="el" href="lru__cache_8hpp_source.html">lru_cache.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a7890d11f2264318f7bac0af70884c7f6"></a>
 <div class="memitem">
@@ -238,7 +252,16 @@ template&lt;typename K&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="lru__cache_8hpp_source.html#l00067">67</a> of file <a class="el" href="lru__cache_8hpp_source.html">lru_cache.hpp</a>.</p>
+<p><a class="el" href="classStE_1_1lru__cache.html" title="LRU general purpose disk caching class. ">lru_cache</a> ctor </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">path</td><td>Cache directory </td></tr>
+    <tr><td class="paramname">quota</td><td>Max size in bytes. 0 for unlimited. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definition at line <a class="el" href="lru__cache_8hpp_source.html#l00090">90</a> of file <a class="el" href="lru__cache_8hpp_source.html">lru_cache.hpp</a>.</p>
 
 </div>
 </div>
@@ -265,7 +288,7 @@ template&lt;typename K&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="lru__cache_8hpp_source.html#l00102">102</a> of file <a class="el" href="lru__cache_8hpp_source.html">lru_cache.hpp</a>.</p>
+<p>Definition at line <a class="el" href="lru__cache_8hpp_source.html#l00125">125</a> of file <a class="el" href="lru__cache_8hpp_source.html">lru_cache.hpp</a>.</p>
 
 </div>
 </div>
@@ -296,7 +319,15 @@ template&lt;typename V &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="lru__cache_8hpp_source.html#l00132">132</a> of file <a class="el" href="lru__cache_8hpp_source.html">lru_cache.hpp</a>.</p>
+<p>Read an object from the cache. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">k</td><td>key </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definition at line <a class="el" href="lru__cache_8hpp_source.html#l00166">166</a> of file <a class="el" href="lru__cache_8hpp_source.html">lru_cache.hpp</a>.</p>
 
 </div>
 </div>
@@ -336,7 +367,16 @@ template&lt;typename V &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="lru__cache_8hpp_source.html#l00105">105</a> of file <a class="el" href="lru__cache_8hpp_source.html">lru_cache.hpp</a>.</p>
+<p>Store an object in the cache. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">k</td><td>key </td></tr>
+    <tr><td class="paramname">v</td><td>object to serialize </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definition at line <a class="el" href="lru__cache_8hpp_source.html#l00134">134</a> of file <a class="el" href="lru__cache_8hpp_source.html">lru_cache.hpp</a>.</p>
 
 </div>
 </div>

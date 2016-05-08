@@ -18,6 +18,7 @@ var searchData=
   ['increase_5fexternal_5fcount',['increase_external_count',['../classStE_1_1concurrent__queue.html#a3b339247698bcd096dce227efc7dde66',1,'StE::concurrent_queue']]],
   ['indirectdispatchbufferobject',['IndirectDispatchBufferObject',['../classStE_1_1Core_1_1IndirectDispatchBufferObject.html#a4b1852b198d0ca3352972745310764c7',1,'StE::Core::IndirectDispatchBufferObject']]],
   ['indirectdrawbuffer',['IndirectDrawBuffer',['../classStE_1_1Core_1_1IndirectDrawBuffer.html#a7820d0645f0313cddb884ce2e54d5f72',1,'StE::Core::IndirectDrawBuffer']]],
+  ['init_5fextensions',['init_extensions',['../class__detail_1_1ste__context__intializer.html#a793340059669cf73947d6d565dfa7fc1',1,'_detail::ste_context_intializer']]],
   ['init_5fglext',['init_glext',['../gl__extensions_8cpp.html#ae2690fbbf2944f09ce8ba5fc1f3b4c96',1,'init_glext():&#160;gl_extensions.cpp'],['../gl__extensions_8h.html#ae2690fbbf2944f09ce8ba5fc1f3b4c96',1,'init_glext():&#160;gl_extensions.cpp']]],
   ['insert',['insert',['../classStE_1_1lru__cache.html#adcffd7cbbc003f0f25c7ce8b635e4550',1,'StE::lru_cache::insert()'],['../classStE_1_1Core_1_1pinned__gvector.html#aafc99f59ee46d252820ffb252a03986d',1,'StE::Core::pinned_gvector::insert()']]],
   ['insert_5finto_5fspacing_5fcache',['insert_into_spacing_cache',['../classStE_1_1Text_1_1glyph__factory__font.html#a4a3a8f6faf5a8203bfc2f91182d5b8d4',1,'StE::Text::glyph_factory_font']]],

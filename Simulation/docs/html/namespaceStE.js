@@ -3,6 +3,7 @@ var namespaceStE =
     [ "_detail", "namespaceStE_1_1__detail.html", null ],
     [ "_legendre_polynomial_utils", "namespaceStE_1_1__legendre__polynomial__utils.html", "namespaceStE_1_1__legendre__polynomial__utils" ],
     [ "_rsh_utils", "namespaceStE_1_1__rsh__utils.html", "namespaceStE_1_1__rsh__utils" ],
+    [ "_shared_double_reference_guard_detail", "namespaceStE_1_1__shared__double__reference__guard__detail.html", "namespaceStE_1_1__shared__double__reference__guard__detail" ],
     [ "_tuple_call_detail", "namespaceStE_1_1__tuple__call__detail.html", "namespaceStE_1_1__tuple__call__detail" ],
     [ "_tuple_type_erasure", "namespaceStE_1_1__tuple__type__erasure.html", "namespaceStE_1_1__tuple__type__erasure" ],
     [ "Algorithm", "namespaceStE_1_1Algorithm.html", "namespaceStE_1_1Algorithm" ],

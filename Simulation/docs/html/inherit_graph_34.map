@@ -1,3 +1,4 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classStE_1_1concurrent__queue.html" title="StE::concurrent_queue\&lt; T \&gt;" alt="" coords="5,5,196,32"/>
+<area shape="rect" id="node1" href="$classStE_1_1concurrent__pointer__recycler.html" title="StE::concurrent_pointer\l_recycler\&lt; data_t \&gt;" alt="" coords="5,20,164,61"/>
+<area shape="rect" id="node2" href="$classStE_1_1__shared__double__reference__guard__detail_1_1data__factory_3_01data__t_00_01true_01_4.html" title="StE::_shared_double\l_reference_guard_detail\l::data_factory\&lt; data_t,\l true \&gt;" alt="" coords="212,5,380,76"/>
 </map>

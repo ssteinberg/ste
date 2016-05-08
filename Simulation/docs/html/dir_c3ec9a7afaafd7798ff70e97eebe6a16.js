@@ -1,13 +1,12 @@
 var dir_c3ec9a7afaafd7798ff70e97eebe6a16 =
 [
+    [ "buffers", "dir_6d50b200c487c34077b875d45812480e.html", "dir_6d50b200c487c34077b875d45812480e" ],
     [ "mesh_descriptor.hpp", "mesh__descriptor_8hpp.html", [
-      [ "mesh_descriptor", "structStE_1_1Graphics_1_1mesh__descriptor.html", "structStE_1_1Graphics_1_1mesh__descriptor" ]
+      [ "mesh_descriptor", "structStE_1_1Graphics_1_1mesh__descriptor.html", "structStE_1_1Graphics_1_1mesh__descriptor" ],
+      [ "mesh_draw_params", "structStE_1_1Graphics_1_1mesh__draw__params.html", "structStE_1_1Graphics_1_1mesh__draw__params" ]
     ] ],
     [ "Object.hpp", "Object_8hpp.html", [
       [ "Object", "classStE_1_1Graphics_1_1Object.html", "classStE_1_1Graphics_1_1Object" ]
-    ] ],
-    [ "object_group_draw_buffers.hpp", "object__group__draw__buffers_8hpp.html", [
-      [ "object_group_draw_buffers", "classStE_1_1Graphics_1_1object__group__draw__buffers.html", "classStE_1_1Graphics_1_1object__group__draw__buffers" ]
     ] ],
     [ "ObjectGroup.cpp", "ObjectGroup_8cpp.html", null ],
     [ "ObjectGroup.hpp", "ObjectGroup_8hpp.html", [

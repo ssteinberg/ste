@@ -177,12 +177,17 @@ $(document).ready(function(){initNavTree('log__streambuf_8hpp_source.html','');}
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;        <span class="keywordtype">char</span> *base = &amp;buffer.front();</div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;        setp(base, base + buffer.size());</div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    }</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;};</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;}</div>
+<div class="line"><a name="l00073"></a><span class="lineno"><a class="line" href="classStE_1_1log__streambuf.html#a3a122ed693d0839fc4d1e0ca6282e03b">   73</a></span>&#160;    <a class="code" href="classStE_1_1log__streambuf.html#a3a122ed693d0839fc4d1e0ca6282e03b">log_streambuf</a>(<a class="code" href="classStE_1_1log__streambuf.html">log_streambuf</a> &amp;&amp;other) : std::streambuf(std::move(other)),</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;                                           force_flush(other.force_flush),</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;                                           sink(std::move(other.sink)),</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;                                           buffer(std::move(other.buffer)) {}</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;};</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;}</div>
 <div class="ttc" id="classStE_1_1log__sink_html"><div class="ttname"><a href="classStE_1_1log__sink.html">StE::log_sink</a></div><div class="ttdef"><b>Definition:</b> <a href="log__sink_8hpp_source.html#l00019">log_sink.hpp:19</a></div></div>
 <div class="ttc" id="log__sink_8hpp_html"><div class="ttname"><a href="log__sink_8hpp.html">log_sink.hpp</a></div></div>
 <div class="ttc" id="classStE_1_1log__streambuf_html_a06c667836d53dff7026b8bab1f0276f9"><div class="ttname"><a href="classStE_1_1log__streambuf.html#a06c667836d53dff7026b8bab1f0276f9">StE::log_streambuf::log_streambuf</a></div><div class="ttdeci">log_streambuf(std::unique_ptr&lt; sink_type &gt; &amp;&amp;sink, bool force_flush)</div><div class="ttdef"><b>Definition:</b> <a href="log__streambuf_8hpp_source.html#l00069">log_streambuf.hpp:69</a></div></div>
+<div class="ttc" id="classStE_1_1log__streambuf_html_a3a122ed693d0839fc4d1e0ca6282e03b"><div class="ttname"><a href="classStE_1_1log__streambuf.html#a3a122ed693d0839fc4d1e0ca6282e03b">StE::log_streambuf::log_streambuf</a></div><div class="ttdeci">log_streambuf(log_streambuf &amp;&amp;other)</div><div class="ttdef"><b>Definition:</b> <a href="log__streambuf_8hpp_source.html#l00073">log_streambuf.hpp:73</a></div></div>
 <div class="ttc" id="classStE_1_1log__streambuf_html"><div class="ttname"><a href="classStE_1_1log__streambuf.html">StE::log_streambuf</a></div><div class="ttdef"><b>Definition:</b> <a href="log__streambuf_8hpp_source.html#l00018">log_streambuf.hpp:18</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

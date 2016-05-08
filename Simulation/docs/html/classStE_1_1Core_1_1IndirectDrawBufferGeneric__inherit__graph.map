@@ -1,3 +1,4 @@
 <map id="StE::Core::IndirectDrawBufferGeneric" name="StE::Core::IndirectDrawBufferGeneric">
-<area shape="rect" id="node2" href="$classStE_1_1Core_1_1IndirectDrawBuffer.html" title="{StE::Core::IndirectDrawBuffer\l\&lt; Type, U \&gt;\n||+ IndirectDrawBuffer()\l+ operator=()\l+ bind()\l+ unbind()\l+ resource_type()\l}" alt="" coords="10,175,207,325"/>
+<area shape="rect" id="node2" href="$classStE_1_1Core_1_1IndirectDrawBuffer.html" title="{StE::Core::IndirectDrawBuffer\l\&lt; Core::IndirectMultiDrawElements\lCommand, usage \&gt;\n||+ IndirectDrawBuffer()\l+ operator=()\l+ bind()\l+ unbind()\l+ resource_type()\l}" alt="" coords="5,404,235,569"/>
+<area shape="rect" id="node3" href="$classStE_1_1Core_1_1IndirectDrawBuffer.html" title="{StE::Core::IndirectDrawBuffer\l\&lt; Type, U \&gt;\n||+ IndirectDrawBuffer()\l+ operator=()\l+ bind()\l+ unbind()\l+ resource_type()\l}" alt="" coords="113,176,311,327"/>
 </map>

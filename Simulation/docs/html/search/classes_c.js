@@ -11,6 +11,7 @@ var searchData=
   ['mesh_5faabb',['mesh_aabb',['../classStE_1_1Graphics_1_1mesh__aabb.html',1,'StE::Graphics']]],
   ['mesh_5fbounding_5fsphere',['mesh_bounding_sphere',['../classStE_1_1Graphics_1_1mesh__bounding__sphere.html',1,'StE::Graphics']]],
   ['mesh_5fdescriptor',['mesh_descriptor',['../structStE_1_1Graphics_1_1mesh__descriptor.html',1,'StE::Graphics']]],
+  ['mesh_5fdraw_5fparams',['mesh_draw_params',['../structStE_1_1Graphics_1_1mesh__draw__params.html',1,'StE::Graphics']]],
   ['mesh_5fgeneric',['mesh_generic',['../classStE_1_1Graphics_1_1mesh__generic.html',1,'StE::Graphics']]],
   ['modelfactory',['ModelFactory',['../classStE_1_1Resource_1_1ModelFactory.html',1,'StE::Resource']]]
 ];

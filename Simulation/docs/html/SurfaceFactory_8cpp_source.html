@@ -190,7 +190,7 @@ $(document).ready(function(){initNavTree('SurfaceFactory_8cpp_source.html','');}
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    free(row_pointers);</div>
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;</div>
 <div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    fclose(fp);</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    </div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;</div>
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;}</div>
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;</div>
@@ -198,7 +198,7 @@ $(document).ready(function(){initNavTree('SurfaceFactory_8cpp_source.html','');}
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    TGA *tga;</div>
 <div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;</div>
 <div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    <span class="keywordflow">try</span> {</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;        tga = TGAOpen(const_cast&lt;char*&gt;(file_name.string().data()), <span class="stringliteral">&quot;rb&quot;</span>);</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;        tga = TGAOpen(const_cast&lt;char*&gt;(file_name.string().data()), const_cast&lt;char*&gt;(<span class="stringliteral">&quot;rb&quot;</span>));</div>
 <div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;        TGAReadHeader(tga);</div>
 <div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    }</div>
 <div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception &amp;ex) {</div>
@@ -432,30 +432,30 @@ $(document).ready(function(){initNavTree('SurfaceFactory_8cpp_source.html','');}
 <div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;gli::texture2d SurfaceFactory::load_jpeg(<span class="keyword">const</span> boost::filesystem::path &amp;path, <span class="keywordtype">bool</span> srgb) {</div>
 <div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;    <span class="keywordtype">int</span> row_stride;</div>
 <div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;    std::string content;</div>
-<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;    </div>
+<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;</div>
 <div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;    std::ifstream fs(path.string(), std::ios::in);</div>
 <div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;    <span class="keywordflow">if</span> (!fs.good()) {</div>
 <div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;        <span class="keyword">using namespace </span>Attributes;</div>
 <div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;        <a class="code" href="Log_8hpp.html#a15b75a81a5cf92296d07e25a6206d85d">ste_log_error</a>() &lt;&lt; <a class="code" href="namespaceStE_1_1Text.html#aeacc1e0e5ce3166e03f002d6e70de75f">Text::AttributedString</a>(<span class="stringliteral">&quot;Can&#39;t open JPEG &quot;</span>) + i(path.string()) + <span class="stringliteral">&quot;: &quot;</span> + std::strerror(errno) &lt;&lt; std::endl;</div>
 <div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;        <span class="keywordflow">return</span> gli::texture2d();</div>
 <div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;    }</div>
-<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;    </div>
+<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;</div>
 <div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;    content = std::string((std::istreambuf_iterator&lt;char&gt;(fs)), std::istreambuf_iterator&lt;char&gt;());</div>
 <div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;    fs.close();</div>
-<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;        </div>
-<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;    <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> *data = <span class="keyword">reinterpret_cast&lt;</span><span class="keywordtype">unsigned</span> <span class="keywordtype">char</span>*<span class="keyword">&gt;</span>(&amp;content[0]); </div>
-<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;    </div>
+<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;</div>
+<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;    <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> *data = <span class="keyword">reinterpret_cast&lt;</span><span class="keywordtype">unsigned</span> <span class="keywordtype">char</span>*<span class="keyword">&gt;</span>(&amp;content[0]);</div>
+<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;</div>
 <div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;    <span class="keywordflow">if</span> (content.size() == 0) {</div>
 <div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;        <a class="code" href="Log_8hpp.html#a15b75a81a5cf92296d07e25a6206d85d">ste_log_error</a>() &lt;&lt; <span class="stringliteral">&quot;Can&#39;t open JPEG: &quot;</span> &lt;&lt; path;</div>
 <div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;        <span class="keywordflow">return</span> gli::texture2d();</div>
 <div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;    }</div>
-<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;    </div>
+<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;</div>
 <div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;    <span class="keyword">auto</span> tj = tjInitDecompress();</div>
 <div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;    <span class="keywordflow">if</span> (tj == <span class="keyword">nullptr</span>) {</div>
 <div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;        <a class="code" href="Log_8hpp.html#a15b75a81a5cf92296d07e25a6206d85d">ste_log_error</a>() &lt;&lt; path &lt;&lt; <span class="stringliteral">&quot;: libturbojpeg signaled error.&quot;</span>;</div>
 <div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;        <span class="keywordflow">return</span> gli::texture2d();</div>
 <div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;    }</div>
-<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;    </div>
+<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;</div>
 <div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;    <span class="keywordtype">int</span> w, h, chro_sub_smpl, color_space;</div>
 <div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;    tjDecompressHeader3(tj, data, content.size(), &amp;w, &amp;h, &amp;chro_sub_smpl, &amp;color_space);</div>
 <div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;</div>
@@ -476,21 +476,21 @@ $(document).ready(function(){initNavTree('SurfaceFactory_8cpp_source.html','');}
 <div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;    <span class="keyword">auto</span> w0 = corrected_stride / comp + !!(corrected_stride%comp);</div>
 <div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;    gli::texture2d tex(gli_format, { w0, h }, 1);</div>
 <div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;    <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> *image_data = <span class="keyword">reinterpret_cast&lt;</span><span class="keywordtype">unsigned</span> <span class="keywordtype">char</span>*<span class="keyword">&gt;</span>(tex.data());</div>
-<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;    <span class="keyword">auto</span> level0_size = tex[0].size();</div>
+<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;    <span class="keywordtype">int</span> level0_size = tex[0].size();</div>
 <div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;    <span class="keywordflow">if</span> (image_data == <span class="keyword">nullptr</span> || level0_size &lt; h * row_stride) {</div>
 <div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;        <a class="code" href="Log_8hpp.html#a15b75a81a5cf92296d07e25a6206d85d">ste_log_error</a>() &lt;&lt; path &lt;&lt; <span class="stringliteral">&quot; could not allocate memory for JPEG image data or format mismatch&quot;</span> &lt;&lt; std::endl;</div>
 <div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;        tjDestroy(tj);</div>
 <div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;        <span class="keywordflow">return</span> gli::texture2d();</div>
 <div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;    }</div>
-<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;    </div>
-<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;    <span class="keywordflow">if</span> (tjDecompress2(tj, </div>
+<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;</div>
+<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;    <span class="keywordflow">if</span> (tjDecompress2(tj,</div>
 <div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;                      data,</div>
-<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;                      content.size(), </div>
-<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;                      image_data, </div>
-<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;                      w, </div>
-<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;                      w0 * comp, </div>
-<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;                      h, </div>
-<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;                      TJPF_RGB, </div>
+<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;                      content.size(),</div>
+<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;                      image_data,</div>
+<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;                      w,</div>
+<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;                      w0 * comp,</div>
+<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;                      h,</div>
+<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;                      TJPF_RGB,</div>
 <div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;                      TJFLAG_BOTTOMUP) != 0) {</div>
 <div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;        <span class="keyword">const</span> <span class="keywordtype">char</span> *err = tjGetErrorStr();</div>
 <div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;        <a class="code" href="Log_8hpp.html#a15b75a81a5cf92296d07e25a6206d85d">ste_log_error</a>() &lt;&lt; path &lt;&lt; <span class="stringliteral">&quot; libturbojpeg could not decompress JPEG image: &quot;</span> &lt;&lt; (err ? err : <span class="stringliteral">&quot;&quot;</span>) &lt;&lt; std::endl;</div>
@@ -508,8 +508,8 @@ $(document).ready(function(){initNavTree('SurfaceFactory_8cpp_source.html','');}
 <div class="ttc" id="namespaceStE_1_1Text_html_aeacc1e0e5ce3166e03f002d6e70de75f"><div class="ttname"><a href="namespaceStE_1_1Text.html#aeacc1e0e5ce3166e03f002d6e70de75f">StE::Text::AttributedString</a></div><div class="ttdeci">attributed_string&lt; char &gt; AttributedString</div><div class="ttdef"><b>Definition:</b> <a href="AttributedString_8hpp_source.html#l00011">AttributedString.hpp:11</a></div></div>
 <div class="ttc" id="AttributedString_8hpp_html"><div class="ttname"><a href="AttributedString_8hpp.html">AttributedString.hpp</a></div></div>
 <div class="ttc" id="Log_8hpp_html"><div class="ttname"><a href="Log_8hpp.html">Log.hpp</a></div></div>
-<div class="ttc" id="Log_8hpp_html_a15b75a81a5cf92296d07e25a6206d85d"><div class="ttname"><a href="Log_8hpp.html#a15b75a81a5cf92296d07e25a6206d85d">ste_log_error</a></div><div class="ttdeci">#define ste_log_error()</div><div class="ttdef"><b>Definition:</b> <a href="Log_8hpp_source.html#l00185">Log.hpp:185</a></div></div>
-<div class="ttc" id="Log_8hpp_html_a773393ef307fad999e82923a980495c3"><div class="ttname"><a href="Log_8hpp.html#a773393ef307fad999e82923a980495c3">ste_log_warn</a></div><div class="ttdeci">#define ste_log_warn()</div><div class="ttdef"><b>Definition:</b> <a href="Log_8hpp_source.html#l00184">Log.hpp:184</a></div></div>
+<div class="ttc" id="Log_8hpp_html_a15b75a81a5cf92296d07e25a6206d85d"><div class="ttname"><a href="Log_8hpp.html#a15b75a81a5cf92296d07e25a6206d85d">ste_log_error</a></div><div class="ttdeci">#define ste_log_error()</div><div class="ttdef"><b>Definition:</b> <a href="Log_8hpp_source.html#l00186">Log.hpp:186</a></div></div>
+<div class="ttc" id="Log_8hpp_html_a773393ef307fad999e82923a980495c3"><div class="ttname"><a href="Log_8hpp.html#a773393ef307fad999e82923a980495c3">ste_log_warn</a></div><div class="ttdeci">#define ste_log_warn()</div><div class="ttdef"><b>Definition:</b> <a href="Log_8hpp_source.html#l00185">Log.hpp:185</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

@@ -1,6 +1,7 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classStE_1_1Core_1_1fbo__attachment__point.html" title="StE::Core::fbo_attachment\l_point\&lt; context_framebuffer\l_dummy_allocator \&gt;" alt="" coords="5,61,191,117"/>
-<area shape="rect" id="node2" href="$classStE_1_1Core_1_1fbo__color__attachment__point.html" title="StE::Core::fbo_color\l_attachment_point\&lt; context\l_framebuffer_dummy_allocator,\l color_attachment_point \&gt;" alt="" coords="239,53,448,124"/>
-<area shape="rect" id="node3" href="$classStE_1_1Core_1_1context__fbo__color__attachment__point.html" title="StE::Core::context\l_fbo_color_attachment\l_point\&lt; context_framebuffer\l_dummy_allocator, GL_BACK \&gt;" alt="" coords="500,5,715,76"/>
-<area shape="rect" id="node4" href="$classStE_1_1Core_1_1context__fbo__color__attachment__point.html" title="StE::Core::context\l_fbo_color_attachment\l_point\&lt; context_framebuffer\l_dummy_allocator, GL_FRONT \&gt;" alt="" coords="496,100,719,171"/>
+<area shape="rect" id="node1" href="$structStE_1_1Core_1_1__gl__type__name__enum__impl.html" title="StE::Core::_gl_type\l_name_enum_impl\&lt; vecT \&gt;" alt="" coords="5,133,196,174"/>
+<area shape="rect" id="node2" href="$structStE_1_1Core_1_1__gl__type__name__enum__impl_3_01glm_1_1tvec1_3_01vecT_01_4_01_4.html" title="StE::Core::_gl_type\l_name_enum_impl\&lt; glm\l::tvec1\&lt; vecT \&gt; \&gt;" alt="" coords="244,5,412,61"/>
+<area shape="rect" id="node3" href="$structStE_1_1Core_1_1__gl__type__name__enum__impl_3_01glm_1_1tvec2_3_01vecT_01_4_01_4.html" title="StE::Core::_gl_type\l_name_enum_impl\&lt; glm\l::tvec2\&lt; vecT \&gt; \&gt;" alt="" coords="244,85,412,141"/>
+<area shape="rect" id="node4" href="$structStE_1_1Core_1_1__gl__type__name__enum__impl_3_01glm_1_1tvec3_3_01vecT_01_4_01_4.html" title="StE::Core::_gl_type\l_name_enum_impl\&lt; glm\l::tvec3\&lt; vecT \&gt; \&gt;" alt="" coords="244,165,412,221"/>
+<area shape="rect" id="node5" href="$structStE_1_1Core_1_1__gl__type__name__enum__impl_3_01glm_1_1tvec4_3_01vecT_01_4_01_4.html" title="StE::Core::_gl_type\l_name_enum_impl\&lt; glm\l::tvec4\&lt; vecT \&gt; \&gt;" alt="" coords="244,245,412,301"/>
 </map>

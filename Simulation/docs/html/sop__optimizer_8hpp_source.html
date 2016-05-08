@@ -156,7 +156,7 @@ $(document).ready(function(){initNavTree('sop__optimizer_8hpp_source.html','');}
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="keyword">private</span>:</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="keyword">inline</span> <span class="keywordtype">void</span> generate_missing_deps(<span class="keyword">const</span> V* node) {</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        <span class="keywordflow">if</span> (node-&gt;get_dependencies().size() &gt; 0 &amp;&amp; !node-&gt;missing_deps) {</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;            node-&gt;missing_deps.emplace(V::MissingDepsContainerT());</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;            node-&gt;missing_deps.emplace(<span class="keyword">typename</span> V::MissingDepsContainerT());</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;            node-&gt;missing_deps.get().reserve(node-&gt;get_dependencies().size());</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;            <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;v : node-&gt;get_dependencies())</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;                node-&gt;missing_deps.get().insert(v.get());</div>
@@ -334,7 +334,7 @@ $(document).ready(function(){initNavTree('sop__optimizer_8hpp_source.html','');}
 <div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;}</div>
 <div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;}</div>
 <div class="ttc" id="stdafx_8hpp_html"><div class="ttname"><a href="stdafx_8hpp.html">stdafx.hpp</a></div></div>
-<div class="ttc" id="Log_8hpp_html_ad91de0c9f3e2a5d3b36489db13ad166d"><div class="ttname"><a href="Log_8hpp.html#ad91de0c9f3e2a5d3b36489db13ad166d">ste_log</a></div><div class="ttdeci">#define ste_log()</div><div class="ttdef"><b>Definition:</b> <a href="Log_8hpp_source.html#l00183">Log.hpp:183</a></div></div>
+<div class="ttc" id="Log_8hpp_html_ad91de0c9f3e2a5d3b36489db13ad166d"><div class="ttname"><a href="Log_8hpp.html#ad91de0c9f3e2a5d3b36489db13ad166d">ste_log</a></div><div class="ttdeci">#define ste_log()</div><div class="ttdef"><b>Definition:</b> <a href="Log_8hpp_source.html#l00184">Log.hpp:184</a></div></div>
 <div class="ttc" id="classStE_1_1Algorithm_1_1SOP_1_1sop__optimizer_html_ae4c7e06c2cc6b305191adc9f5df63dad"><div class="ttname"><a href="classStE_1_1Algorithm_1_1SOP_1_1sop__optimizer.html#ae4c7e06c2cc6b305191adc9f5df63dad">StE::Algorithm::SOP::sop_optimizer::sop_optimizer</a></div><div class="ttdeci">sop_optimizer()=delete</div></div>
 <div class="ttc" id="classStE_1_1optional_html_a5eaf3c0bb6ef9b11c96bc01d7a4c2c40"><div class="ttname"><a href="classStE_1_1optional.html#a5eaf3c0bb6ef9b11c96bc01d7a4c2c40">StE::optional::get</a></div><div class="ttdeci">const std::remove_reference_t&lt; T &gt; &amp; get() const </div><div class="ttdef"><b>Definition:</b> <a href="optional_8hpp_source.html#l00133">optional.hpp:133</a></div></div>
 <div class="ttc" id="sequential__ordering__problem_8hpp_html"><div class="ttname"><a href="sequential__ordering__problem_8hpp.html">sequential_ordering_problem.hpp</a></div></div>

@@ -1,7 +1,7 @@
 var searchData=
 [
   ['base_5finstance',['base_instance',['../structStE_1_1Core_1_1IndirectMultiDrawElementsCommand.html#ad79e57da9f53118bf3f32e6691a3b5a7',1,'StE::Core::IndirectMultiDrawElementsCommand::base_instance()'],['../structStE_1_1Core_1_1IndirectDrawArraysCommand.html#a22e44f80e41bccf94362e7b5a1b750c5',1,'StE::Core::IndirectDrawArraysCommand::base_instance()']]],
-  ['base_5fvertex',['base_vertex',['../structStE_1_1Core_1_1IndirectMultiDrawElementsCommand.html#aec531a921dfc3b2b685f4a4207254b87',1,'StE::Core::IndirectMultiDrawElementsCommand::base_vertex()'],['../structStE_1_1Graphics_1_1mesh__descriptor.html#a26cd992917ce63b77403b187adf586fb',1,'StE::Graphics::mesh_descriptor::base_vertex()']]],
+  ['base_5fvertex',['base_vertex',['../structStE_1_1Core_1_1IndirectMultiDrawElementsCommand.html#aec531a921dfc3b2b685f4a4207254b87',1,'StE::Core::IndirectMultiDrawElementsCommand::base_vertex()'],['../structStE_1_1Graphics_1_1mesh__draw__params.html#a068931c47b898b8b7b00eb7d6013e466',1,'StE::Graphics::mesh_draw_params::base_vertex()']]],
   ['basic_5fstates',['basic_states',['../classStE_1_1Core_1_1GL_1_1gl__generic__context.html#a206b0086d8bc7fa3f50fa796de34a775',1,'StE::Core::GL::gl_generic_context']]],
   ['blob',['blob',['../structStE_1_1Resource_1_1glsl__loader_1_1program__binary.html#a1a726d3019240b5cb5127827953af93b',1,'StE::Resource::glsl_loader::program_binary']]],
   ['bounding_5fsphere',['bounding_sphere',['../structStE_1_1Graphics_1_1mesh__descriptor.html#a77853df51a5ea35a085e03b7d28331af',1,'StE::Graphics::mesh_descriptor']]],

@@ -7,7 +7,7 @@ var classStE_1_1Core_1_1image =
     [ "get_format", "classStE_1_1Core_1_1image.html#a2009a674bbea9a60fb78b4b755dd28ac", null ],
     [ "get_image_size", "classStE_1_1Core_1_1image.html#a0ddfdcf76f32899488960b80778dabb8", null ],
     [ "get_layer", "classStE_1_1Core_1_1image.html#a42d98d063e2613794c9722b1ad3548f5", null ],
-    [ "operator=", "classStE_1_1Core_1_1image.html#a4a0091d45325a68a92d0eb9b90172ff3", null ],
+    [ "operator=", "classStE_1_1Core_1_1image.html#ad7c5ce1c8744acc150882763f552cdec", null ],
     [ "operator=", "classStE_1_1Core_1_1image.html#aa4c21c36f68fc2a1baf2333df22e00c2", null ],
     [ "with_access", "classStE_1_1Core_1_1image.html#a18558716384ad1bc71f775fbabed71fa", null ],
     [ "with_format", "classStE_1_1Core_1_1image.html#a3eb903df7ac3e7152dcc569193f20f8b", null ],

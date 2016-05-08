@@ -12,7 +12,7 @@ var classStE_1_1Core_1_1frame__buffer__object =
     [ "is_fbo_complete", "classStE_1_1Core_1_1frame__buffer__object.html#af543af6a2f0c3900a08010edbe67917c", null ],
     [ "operator=", "classStE_1_1Core_1_1frame__buffer__object.html#a753e3f2c47c3774a27a87557448c1718", null ],
     [ "resource_type", "classStE_1_1Core_1_1frame__buffer__object.html#a03b29d407e6d3f0dfb7eea435311bac8", null ],
-    [ "set_color_output_binding_index", "classStE_1_1Core_1_1frame__buffer__object.html#ad1300edbb7ae730392fd8bff34efaea5", null ],
+    [ "set_color_output_binding_index", "classStE_1_1Core_1_1frame__buffer__object.html#acf0d9a918f9116883c2b267b71d7eeba", null ],
     [ "unbind", "classStE_1_1Core_1_1frame__buffer__object.html#a58386277683733827310bdc9eb5afced", null ],
     [ "unbind_draw", "classStE_1_1Core_1_1frame__buffer__object.html#a1a59763320c1668adb23df7303ebd040", null ],
     [ "unbind_read", "classStE_1_1Core_1_1frame__buffer__object.html#a424904664d5644fdf9ddf0fe3f6c3e67", null ],

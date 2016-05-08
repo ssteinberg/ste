@@ -7,8 +7,8 @@ var classStE_1_1task =
     [ "operator()", "classStE_1_1task.html#a57b0f8cc15fa08196bf8254afa3efd81", null ],
     [ "operator=", "classStE_1_1task.html#ae9e8ba3d0c0d542ad5847cc442454a7c", null ],
     [ "operator=", "classStE_1_1task.html#af25afb8cc6731e7c62c786b6ee30e0d3", null ],
-    [ "then", "classStE_1_1task.html#a49d8f73996a468af1c9678dfad7d74fe", null ],
-    [ "then", "classStE_1_1task.html#a78c803f0c5c7ef2a009c240e984debf9", null ],
-    [ "then_on_main_thread", "classStE_1_1task.html#aa587fdc5456056a88f30b1a46d66b9f2", null ],
+    [ "then", "classStE_1_1task.html#a9083ac466c79f0813bfb5d2466b9377f", null ],
+    [ "then", "classStE_1_1task.html#a41527cbb98d6445a0b0d71aca9e96a37", null ],
+    [ "then_on_main_thread", "classStE_1_1task.html#a47310715c2fb2bfd2bb5c664236303d9", null ],
     [ "task", "classStE_1_1task.html#a9b2840de776ec39d07113d85081550e0", null ]
 ];

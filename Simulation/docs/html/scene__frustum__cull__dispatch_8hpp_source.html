@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>StE: src/ste/framework_graphics/scene/scene_frustum_cull_dispatch.hpp Source File</title>
+<title>StE: src/ste/framework_graphics/scene/tasks/scene_frustum_cull_dispatch.hpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -136,25 +136,28 @@ $(document).ready(function(){initNavTree('scene__frustum__cull__dispatch_8hpp_so
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    std::shared_ptr&lt;Core::GLSLProgram&gt; program;</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <span class="keywordtype">void</span> set_projection_planes() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="classStE_1_1Graphics_1_1scene__frustum__cull__dispatch.html#a880270059b1b5cb582d0e152ce8569b1">   36</a></span>&#160;    <a class="code" href="classStE_1_1Graphics_1_1scene__frustum__cull__dispatch.html#a880270059b1b5cb582d0e152ce8569b1">scene_frustum_cull_dispatch</a>(<span class="keyword">const</span> <a class="code" href="classStE_1_1StEngineControl.html">StEngineControl</a> &amp;ctx,</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;                                <span class="keyword">const</span> <a class="code" href="classStE_1_1Graphics_1_1Scene.html">Scene</a> *scene,</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;                                <span class="keyword">const</span> <a class="code" href="classStE_1_1Graphics_1_1light__storage.html">light_storage</a> *ls) : scene(scene), ls(ls),</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;                                                           program(ctx.glslprograms_pool().fetch_program_task({ <span class="stringliteral">&quot;scene_frustum_cull.glsl&quot;</span> })()) {}</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classStE_1_1Graphics_1_1gpu__dispatchable.html#a929375e47d35a5f70d25a61c71286667">set_context_state</a>() const override final;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classStE_1_1Graphics_1_1scene__frustum__cull__dispatch.html#a20d0344d8367fb2c98a6e7521b41bd9f">dispatch</a>() const override final;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;};</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;}</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;}</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <span class="keyword">mutable</span> std::size_t old_object_group_size{ 0 };</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <span class="keywordtype">void</span> set_projection_planes() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    <span class="keywordtype">void</span> commit_idbs() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00039"></a><span class="lineno"><a class="line" href="classStE_1_1Graphics_1_1scene__frustum__cull__dispatch.html#a880270059b1b5cb582d0e152ce8569b1">   39</a></span>&#160;    <a class="code" href="classStE_1_1Graphics_1_1scene__frustum__cull__dispatch.html#a880270059b1b5cb582d0e152ce8569b1">scene_frustum_cull_dispatch</a>(<span class="keyword">const</span> <a class="code" href="classStE_1_1StEngineControl.html">StEngineControl</a> &amp;ctx,</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;                                <span class="keyword">const</span> <a class="code" href="classStE_1_1Graphics_1_1Scene.html">Scene</a> *scene,</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;                                <span class="keyword">const</span> <a class="code" href="classStE_1_1Graphics_1_1light__storage.html">light_storage</a> *ls) : scene(scene), ls(ls),</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;                                                           program(ctx.glslprograms_pool().fetch_program_task({ <span class="stringliteral">&quot;scene_frustum_cull.glsl&quot;</span> })()) {}</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classStE_1_1Graphics_1_1gpu__dispatchable.html#a929375e47d35a5f70d25a61c71286667">set_context_state</a>() const override final;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classStE_1_1Graphics_1_1scene__frustum__cull__dispatch.html#a20d0344d8367fb2c98a6e7521b41bd9f">dispatch</a>() const override final;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;};</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;}</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;}</div>
 <div class="ttc" id="stdafx_8hpp_html"><div class="ttname"><a href="stdafx_8hpp.html">stdafx.hpp</a></div></div>
 <div class="ttc" id="GLSLProgram_8hpp_html"><div class="ttname"><a href="GLSLProgram_8hpp.html">GLSLProgram.hpp</a></div></div>
-<div class="ttc" id="classStE_1_1Graphics_1_1scene__frustum__cull__dispatch_html_a20d0344d8367fb2c98a6e7521b41bd9f"><div class="ttname"><a href="classStE_1_1Graphics_1_1scene__frustum__cull__dispatch.html#a20d0344d8367fb2c98a6e7521b41bd9f">StE::Graphics::scene_frustum_cull_dispatch::dispatch</a></div><div class="ttdeci">void dispatch() const overridefinal</div><div class="ttdef"><b>Definition:</b> <a href="scene__frustum__cull__dispatch_8cpp_source.html#l00027">scene_frustum_cull_dispatch.cpp:27</a></div></div>
-<div class="ttc" id="classStE_1_1Graphics_1_1scene__frustum__cull__dispatch_html_a880270059b1b5cb582d0e152ce8569b1"><div class="ttname"><a href="classStE_1_1Graphics_1_1scene__frustum__cull__dispatch.html#a880270059b1b5cb582d0e152ce8569b1">StE::Graphics::scene_frustum_cull_dispatch::scene_frustum_cull_dispatch</a></div><div class="ttdeci">scene_frustum_cull_dispatch(const StEngineControl &amp;ctx, const Scene *scene, const light_storage *ls)</div><div class="ttdef"><b>Definition:</b> <a href="scene__frustum__cull__dispatch_8hpp_source.html#l00036">scene_frustum_cull_dispatch.hpp:36</a></div></div>
+<div class="ttc" id="classStE_1_1Graphics_1_1scene__frustum__cull__dispatch_html_a20d0344d8367fb2c98a6e7521b41bd9f"><div class="ttname"><a href="classStE_1_1Graphics_1_1scene__frustum__cull__dispatch.html#a20d0344d8367fb2c98a6e7521b41bd9f">StE::Graphics::scene_frustum_cull_dispatch::dispatch</a></div><div class="ttdeci">void dispatch() const overridefinal</div><div class="ttdef"><b>Definition:</b> <a href="scene__frustum__cull__dispatch_8cpp_source.html#l00039">scene_frustum_cull_dispatch.cpp:39</a></div></div>
+<div class="ttc" id="classStE_1_1Graphics_1_1scene__frustum__cull__dispatch_html_a880270059b1b5cb582d0e152ce8569b1"><div class="ttname"><a href="classStE_1_1Graphics_1_1scene__frustum__cull__dispatch.html#a880270059b1b5cb582d0e152ce8569b1">StE::Graphics::scene_frustum_cull_dispatch::scene_frustum_cull_dispatch</a></div><div class="ttdeci">scene_frustum_cull_dispatch(const StEngineControl &amp;ctx, const Scene *scene, const light_storage *ls)</div><div class="ttdef"><b>Definition:</b> <a href="scene__frustum__cull__dispatch_8hpp_source.html#l00039">scene_frustum_cull_dispatch.hpp:39</a></div></div>
 <div class="ttc" id="StEngineControl_8hpp_html"><div class="ttname"><a href="StEngineControl_8hpp.html">StEngineControl.hpp</a></div><div class="ttdoc">Engine Control class. </div></div>
 <div class="ttc" id="classStE_1_1StEngineControl_html"><div class="ttname"><a href="classStE_1_1StEngineControl.html">StE::StEngineControl</a></div><div class="ttdoc">StE Engine Control class. </div><div class="ttdef"><b>Definition:</b> <a href="StEngineControl_8hpp_source.html#l00046">StEngineControl.hpp:46</a></div></div>
 <div class="ttc" id="classStE_1_1Graphics_1_1scene__frustum__cull__dispatch_html"><div class="ttname"><a href="classStE_1_1Graphics_1_1scene__frustum__cull__dispatch.html">StE::Graphics::scene_frustum_cull_dispatch</a></div><div class="ttdef"><b>Definition:</b> <a href="scene__frustum__cull__dispatch_8hpp_source.html#l00023">scene_frustum_cull_dispatch.hpp:23</a></div></div>
@@ -162,7 +165,7 @@ $(document).ready(function(){initNavTree('scene__frustum__cull__dispatch_8hpp_so
 <div class="ttc" id="classStE_1_1Graphics_1_1light__storage_html"><div class="ttname"><a href="classStE_1_1Graphics_1_1light__storage.html">StE::Graphics::light_storage</a></div><div class="ttdef"><b>Definition:</b> <a href="light__storage_8hpp_source.html#l00024">light_storage.hpp:24</a></div></div>
 <div class="ttc" id="classStE_1_1Graphics_1_1gpu__dispatchable_html_a929375e47d35a5f70d25a61c71286667"><div class="ttname"><a href="classStE_1_1Graphics_1_1gpu__dispatchable.html#a929375e47d35a5f70d25a61c71286667">StE::Graphics::gpu_dispatchable::set_context_state</a></div><div class="ttdeci">virtual void set_context_state() const =0</div></div>
 <div class="ttc" id="classStE_1_1Graphics_1_1gpu__dispatchable_html"><div class="ttname"><a href="classStE_1_1Graphics_1_1gpu__dispatchable.html">StE::Graphics::gpu_dispatchable</a></div><div class="ttdef"><b>Definition:</b> <a href="gpu__dispatchable_8hpp_source.html#l00015">gpu_dispatchable.hpp:15</a></div></div>
-<div class="ttc" id="classStE_1_1Graphics_1_1Scene_html"><div class="ttname"><a href="classStE_1_1Graphics_1_1Scene.html">StE::Graphics::Scene</a></div><div class="ttdef"><b>Definition:</b> <a href="Scene_8hpp_source.html#l00020">Scene.hpp:20</a></div></div>
+<div class="ttc" id="classStE_1_1Graphics_1_1Scene_html"><div class="ttname"><a href="classStE_1_1Graphics_1_1Scene.html">StE::Graphics::Scene</a></div><div class="ttdef"><b>Definition:</b> <a href="Scene_8hpp_source.html#l00025">Scene.hpp:25</a></div></div>
 <div class="ttc" id="gl__current__context_8hpp_html"><div class="ttname"><a href="gl__current__context_8hpp.html">gl_current_context.hpp</a></div></div>
 <div class="ttc" id="light__storage_8hpp_html"><div class="ttname"><a href="light__storage_8hpp.html">light_storage.hpp</a></div></div>
 <div class="ttc" id="Scene_8hpp_html"><div class="ttname"><a href="Scene_8hpp.html">Scene.hpp</a></div></div>
@@ -171,7 +174,7 @@ $(document).ready(function(){initNavTree('scene__frustum__cull__dispatch_8hpp_so
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_f1b7ceb015efa797a5d0f17d43cb3bb2.html">src</a></li><li class="navelem"><a class="el" href="dir_d34427326b64b65ebb5fb4a6bc8a21a4.html">ste</a></li><li class="navelem"><a class="el" href="dir_428fa47c5aa5b34ff3fe20ca049edbcd.html">framework_graphics</a></li><li class="navelem"><a class="el" href="dir_feae3ad45836bbb256dc2aa8f9676755.html">scene</a></li><li class="navelem"><a class="el" href="scene__frustum__cull__dispatch_8hpp.html">scene_frustum_cull_dispatch.hpp</a></li>
+    <li class="navelem"><a class="el" href="dir_f1b7ceb015efa797a5d0f17d43cb3bb2.html">src</a></li><li class="navelem"><a class="el" href="dir_d34427326b64b65ebb5fb4a6bc8a21a4.html">ste</a></li><li class="navelem"><a class="el" href="dir_428fa47c5aa5b34ff3fe20ca049edbcd.html">framework_graphics</a></li><li class="navelem"><a class="el" href="dir_feae3ad45836bbb256dc2aa8f9676755.html">scene</a></li><li class="navelem"><a class="el" href="dir_2657a54909920a9b238c3d51b46c854e.html">tasks</a></li><li class="navelem"><a class="el" href="scene__frustum__cull__dispatch_8hpp.html">scene_frustum_cull_dispatch.hpp</a></li>
     <li class="footer">Generated by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>

@@ -1,26 +1,4 @@
 var searchData=
 [
-  ['_5fdetail',['_detail',['../namespaceStE_1_1__detail.html',1,'StE']]],
-  ['_5flegendre_5fpolynomial_5futils',['_legendre_polynomial_utils',['../namespaceStE_1_1__legendre__polynomial__utils.html',1,'StE']]],
-  ['_5frsh_5futils',['_rsh_utils',['../namespaceStE_1_1__rsh__utils.html',1,'StE']]],
-  ['_5fste_5fglslshader_5fcreator',['_ste_glslshader_creator',['../namespaceStE_1_1Core_1_1__ste__glslshader__creator.html',1,'StE::Core']]],
-  ['_5ftexture_5fstorage',['_texture_storage',['../namespaceStE_1_1Core_1_1__texture__storage.html',1,'StE::Core']]],
-  ['_5ftuple_5fcall_5fdetail',['_tuple_call_detail',['../namespaceStE_1_1__tuple__call__detail.html',1,'StE']]],
-  ['_5ftuple_5ftype_5ferasure',['_tuple_type_erasure',['../namespaceStE_1_1__tuple__type__erasure.html',1,'StE']]],
-  ['algorithm',['Algorithm',['../namespaceStE_1_1Algorithm.html',1,'StE']]],
-  ['attributes',['Attributes',['../namespaceStE_1_1Text_1_1Attributes.html',1,'StE::Text']]],
-  ['bufferusage',['BufferUsage',['../namespaceStE_1_1Core_1_1BufferUsage.html',1,'StE::Core']]],
-  ['core',['Core',['../namespaceStE_1_1Core.html',1,'StE']]],
-  ['detail',['detail',['../namespaceStE_1_1Graph_1_1detail.html',1,'StE::Graph']]],
-  ['detail',['detail',['../namespaceStE_1_1Graphics_1_1detail.html',1,'StE::Graphics']]],
-  ['detail',['detail',['../namespaceStE_1_1detail.html',1,'StE']]],
-  ['gl',['GL',['../namespaceStE_1_1Core_1_1GL.html',1,'StE::Core']]],
-  ['glsl_5floader',['glsl_loader',['../namespaceStE_1_1Resource_1_1glsl__loader.html',1,'StE::Resource']]],
-  ['graph',['Graph',['../namespaceStE_1_1Graph.html',1,'StE']]],
-  ['graphics',['Graphics',['../namespaceStE_1_1Graphics.html',1,'StE']]],
-  ['hid',['HID',['../namespaceStE_1_1HID.html',1,'StE']]],
-  ['resource',['Resource',['../namespaceStE_1_1Resource.html',1,'StE']]],
-  ['sop',['SOP',['../namespaceStE_1_1Algorithm_1_1SOP.html',1,'StE::Algorithm']]],
-  ['ste',['StE',['../namespaceStE.html',1,'']]],
-  ['text',['Text',['../namespaceStE_1_1Text.html',1,'StE']]]
+  ['imgui',['ImGui',['../namespaceImGui.html',1,'']]]
 ];

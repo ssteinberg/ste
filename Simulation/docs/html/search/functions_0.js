@@ -12,7 +12,7 @@ var searchData=
   ['add_5flights',['add_lights',['../classStE_1_1Graphics_1_1light__storage.html#a0c0316ddfd7ad45ec02df37c6319c734',1,'StE::Graphics::light_storage']]],
   ['add_5fmaterial',['add_material',['../classStE_1_1Graphics_1_1material__storage.html#ac6a9ba67c06295e2618eaa8c15ebadf4',1,'StE::Graphics::material_storage']]],
   ['add_5fmaterials',['add_materials',['../classStE_1_1Graphics_1_1material__storage.html#a17a60cb4f04aa488b1ae8b4597e5c685',1,'StE::Graphics::material_storage']]],
-  ['add_5fobject',['add_object',['../classStE_1_1Graphics_1_1ObjectGroup.html#ac5bb41278392a74dd5c5ca1a54a134df',1,'StE::Graphics::ObjectGroup']]],
+  ['add_5fobject',['add_object',['../classStE_1_1Graphics_1_1ObjectGroup.html#aa040e732b3c8b6a735323f3695287b7f',1,'StE::Graphics::ObjectGroup']]],
   ['add_5fshader',['add_shader',['../classStE_1_1Core_1_1GLSLProgram.html#af9cab7d3c065e7e3a4ff74540515c039',1,'StE::Core::GLSLProgram']]],
   ['add_5ftask',['add_task',['../classStE_1_1Graphics_1_1GIRenderer.html#ace0e6964a438500b1901db273a97933e',1,'StE::Graphics::GIRenderer::add_task()'],['../classStE_1_1Graphics_1_1gpu__task__dispatch__queue.html#af7f0a00afea7f3c42e5e6a73998c42cd',1,'StE::Graphics::gpu_task_dispatch_queue::add_task()']]],
   ['add_5ftask_5fdependency',['add_task_dependency',['../classStE_1_1Graphics_1_1gpu__task__dispatch__queue.html#ab274be352d78b6ef118cb69f3cdb2cbd',1,'StE::Graphics::gpu_task_dispatch_queue']]],
