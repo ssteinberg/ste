@@ -15,7 +15,7 @@ namespace Core {
 class GenericResource {
 public:
 	using type = std::uint32_t;
-	
+
 protected:
 	using generic_resource_shared_type = std::shared_ptr<type>;
 
@@ -30,8 +30,8 @@ public:
 	type get_resource_id() const { return *id; }
 	virtual bool is_valid() const = 0;
 
-	GenericResource(GenericResource &&res) : id(std::move(res.id)) {}
-	GenericResource &operator=(GenericResource &&res) = delete;
+	GenericResource(GenericResource &&res) {}
+	GenericResource &operator=(GenericResource &&res) { return *this; }
 	GenericResource(const GenericResource &res) = delete;
 	GenericResource &operator=(const GenericResource &res) = delete;
 };
@@ -58,7 +58,7 @@ private:
 protected:
 	Allocator allocator;
 
-	resource() { 
+	resource() {
 		type *res_id = new type(allocator.allocate());
 		this->id = generic_resource_shared_type(res_id, [=](type *ptr) {
 			Allocator::deallocate(*ptr);
@@ -71,8 +71,11 @@ protected:
 	~resource() {}
 
 public:
-	resource(resource &&m) = default;
-	resource& operator=(resource &&m) = default;
+	resource(resource &&m) { id = std::move(m.id); }
+	resource& operator=(resource &&m) {
+		id = std::move(m.id);
+		return *this;
+	}
 	resource& operator=(const resource &c) = delete;
 
 	bool is_valid() const { return Allocator::is_valid(*id); }

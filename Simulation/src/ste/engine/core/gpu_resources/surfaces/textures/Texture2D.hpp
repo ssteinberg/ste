@@ -50,10 +50,10 @@ public:
 		}
 	}
 
-	const image<T> operator[](int level) const {
+	image<T> operator[](int level) const {
 		return make_image(level);
 	}
-	const image<T> make_image(int level = 0) const {
+	image<T> make_image(int level = 0) const {
 		return image<T>(*this,
 						get_image_container_size(),
 						format, ImageAccessMode::ReadWrite,

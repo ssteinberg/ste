@@ -14,7 +14,7 @@ layout(std430, binding = 2) restrict readonly buffer light_data {
 	light_descriptor light_buffer[];
 };
 
-layout(std430, binding = 6) restrict readonly buffer gbuffer_data {
+layout(shared, binding = 6) restrict readonly buffer gbuffer_data {
 	g_buffer_element gbuffer[];
 };
 layout(r32ui, binding = 7) restrict readonly uniform uimage2D gbuffer_ll_heads;
@@ -35,7 +35,7 @@ void main() {
 	g_buffer_element frag = gbuffer_load(gbuffer_ll_heads, coords);
 	vec3 n = (transpose_view_matrix * vec4(frag.N, 1)).xyz;
 	vec3 w_pos = (inverse_view_matrix * vec4(frag.P, 1)).xyz;
-	float frag_depth = gbuffer_linear_z(frag, far, near);
+	float frag_depth = ;//gbuffer_linear_z(frag, far, near);
 
 	for (int i = 0; i < light_buffer.length(); ++i) {
 		vec3 l_pos = light_buffer[i].position_direction.xyz;

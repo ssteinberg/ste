@@ -24,7 +24,6 @@
 #include "surface_constants.hpp"
 
 #include <type_traits>
-#include <gli/gli.hpp>
 
 namespace StE {
 namespace Core {
@@ -48,7 +47,7 @@ public:
 };
 
 template <core_resource_type type>
-class texture : virtual public bindable_resource<texture_immutable_storage_allocator<type>, TextureBinder<type>, texture_layout_binding>,
+class texture : public bindable_resource<texture_immutable_storage_allocator<type>, TextureBinder<type>, texture_layout_binding>,
 				virtual public shader_layout_bindable_resource<texture_layout_binding_type> {
 private:
 	using Base = bindable_resource<texture_immutable_storage_allocator<type>, TextureBinder<type>, texture_layout_binding>;
@@ -180,7 +179,7 @@ public:
 
 	virtual ~texture_multisampled() noexcept {}
 
-	int get_samples() const { return samples; }
+	int get_samples() const { return Base::samples; }
 };
 
 template <core_resource_type type>
@@ -231,7 +230,7 @@ private:
 protected:
 	texture_mipmapped() {}
 	texture_mipmapped(gli::format format, const typename Base::size_type &size, int levels, const gli::swizzles &swizzle = swizzles_rgba) : Base() {
-		allocate_tex_storage(size, format, swizzle, levels, 1, false);
+		Base::allocate_tex_storage(size, format, swizzle, levels, 1, false);
 	}
 
 public:
@@ -240,7 +239,7 @@ public:
 
 	virtual ~texture_mipmapped() noexcept {}
 
-	int get_levels() const { return levels; }
+	int get_levels() const { return Base::levels; }
 
 	void generate_mipmaps() {
 		glActiveTexture(GL_TEXTURE0);

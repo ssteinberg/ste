@@ -6,7 +6,6 @@
 #include "stdafx.hpp"
 
 #include <vector>
-#include <array>
 #include <string>
 #include <algorithm>
 
@@ -24,10 +23,10 @@ private:
 
 private:
 	std::vector<profiler_entry> entries;
-	std::array<float, 500> last_times_per_frame{ 0.f };
+	std::vector<float> last_times_per_frame;
 
 public:
-	profiler() = default;
+	profiler();
 	~profiler() noexcept;
 
 	void add_entry(const profiler_entry &e) { entries.push_back(e); }

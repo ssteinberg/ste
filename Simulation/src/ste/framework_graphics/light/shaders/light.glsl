@@ -35,14 +35,10 @@ float light_effective_range(light_descriptor ld) {
 		return ld.effective_range;
 }
 
-vec4 light_transform(mat4 mv, mat3 rmv, light_descriptor ld) {
-	vec4 transform;
-	if (ld.type == LightTypeSphere)
-		transform = mv * vec4(ld.position_direction.xyz, 1);
-	else
-		transform.xyz = rmv * ld.position_direction.xyz;
-
-	return transform;
+vec3 light_transform(mat4 mv, mat3 rmv, light_descriptor ld) {
+	return ld.type == LightTypeSphere ?
+				(mv * vec4(ld.position_direction.xyz, 1)).xyz :
+				rmv * ld.position_direction.xyz;
 }
 
 float light_calculate_effective_range(light_descriptor ld, float min_lum) {

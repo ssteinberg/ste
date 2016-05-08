@@ -9,21 +9,20 @@ layout(location = 0) in vec3 vert;
 layout(location = 1) in vec3 normal;
 layout(location = 3) in vec2 tex_coords;
 
-layout(std430, binding = 1) restrict readonly buffer mesh_data {
+layout(std430, binding = 14) restrict readonly buffer mesh_data {
 	mesh_descriptor mesh_descriptor_buffer[];
-};
-layout(std430, binding = 12) restrict readonly buffer id_to_drawid_data {
-	uint id_to_drawid[];
 };
 
 out vs_out {
 	vec3 normal;
 	vec2 uv;
 	flat int matIdx;
+	flat int instanceIdx;
+	flat uint drawIdx;
 } vout;
 
 void main() {
-	uint draw_id = id_to_drawid[gl_DrawIDARB];
+	uint draw_id = gl_BaseInstanceARB;
 	mesh_descriptor md = mesh_descriptor_buffer[draw_id];
 
 	mat4 view_model = md.model;
@@ -33,4 +32,6 @@ void main() {
 	vout.normal = (trans_inverse_view_model * vec4(normal, 1)).xyz;
 	vout.uv = tex_coords;
 	vout.matIdx = md.matIdx;
+	vout.instanceIdx = gl_InstanceID;
+	vout.drawIdx = draw_id;
 }

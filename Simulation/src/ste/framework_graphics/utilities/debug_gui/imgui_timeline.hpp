@@ -42,7 +42,7 @@ inline void PlotTimeline(const std::vector<std::pair<std::string, float>> &times
 
 		static constexpr int y0 = 18;
 		static constexpr int y1 = 38;
-		static constexpr int bar_h = 40;
+		static constexpr int bar_h = 35;
 
 		draw_list->AddRectFilled(ImVec2(offset, canvasPosition.y + y1),
 								 ImVec2(offset + poffset, canvasPosition.y + y1 + bar_h),
@@ -51,14 +51,14 @@ inline void PlotTimeline(const std::vector<std::pair<std::string, float>> &times
 		auto clip0 = ImVec4(offset, canvasPosition.y + y1, offset + poffset, canvasPosition.y + y1 + bar_h);
 		auto clip1 = ImVec4(offset, canvasPosition.y + y0, offset + poffset, canvasPosition.y + y1);
 		draw_list->AddText(ImGui::GetFont(),
-						   ImGui::GetFontSize()*1.0f,
+						   ImGui::GetFontSize()*.8f,
 						   ImVec2(offset, canvasPosition.y + y1),
 						   ImColor(255, 128, 0, 255),
 						   pair.first.data(), nullptr, static_cast<float>(poffset),
 						   &clip0);
 		draw_list->AddText(ImGui::GetFont(),
-						   ImGui::GetFontSize()*1.0f,
-						   ImVec2(offset + poffset / 2, canvasPosition.y + y0),
+						   ImGui::GetFontSize()*1.f,
+						   ImVec2(offset + 3, canvasPosition.y + y0),
 						   ImColor(255, 0, 255, 255),
 						   t_str.data(), nullptr, 0.0f,
 						   &clip1);

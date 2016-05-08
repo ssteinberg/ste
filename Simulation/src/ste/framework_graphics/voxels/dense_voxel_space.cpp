@@ -4,6 +4,10 @@
 
 using namespace StE::Graphics;
 
+constexpr gli::format dense_voxel_space::space_format_radiance;
+constexpr gli::format dense_voxel_space::space_format_data;
+constexpr int dense_voxel_space::voxel_steps_multiplier;
+
 dense_voxel_space::dense_voxel_space(const StEngineControl &ctx, std::size_t max_size, float voxel_size_factor) : ctx(ctx) {
 	auto ts = Core::texture_sparse_3d::page_sizes(space_format_radiance)[0];
 
@@ -52,7 +56,7 @@ void dense_voxel_space::create_dense_voxel_space(float voxel_size_factor) {
 	space_data = std::make_unique<Core::texture_sparse_3d>(space_format_data, size, mipmaps, tile_size, 0);
 
 	auto center = size / 2;
-	for (std::size_t i = 0; i < mipmaps; ++i, center /= 2) {
+	for (int i = 0; i < mipmaps; ++i, center /= 2) {
 		auto min = glm::max(glm::ivec3(center - step_size), { 0,0,0 });
 		auto max = glm::min(center + step_size, center * 2);
 
@@ -105,7 +109,7 @@ void dense_voxel_space::clear_space() const {
 	glm::vec4 clear_data(.0f);
 
 	auto center = size / 2;
-	for (std::size_t i = 0; i < mipmaps; ++i, center /= 2) {
+	for (int i = 0; i < mipmaps; ++i, center /= 2) {
 		auto min = glm::max(glm::ivec3(center - step_size), { 0,0,0 });
 		auto max = glm::min(center + step_size, center * 2);
 

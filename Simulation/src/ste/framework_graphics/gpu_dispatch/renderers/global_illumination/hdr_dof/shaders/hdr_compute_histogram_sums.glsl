@@ -9,28 +9,22 @@
 
 layout(local_size_x = bins / 2, local_size_y = 1) in;
 
-layout(std430, binding = 6) restrict readonly buffer gbuffer_data {
-	g_buffer_element gbuffer[];
-};
-layout(r32ui, binding = 7) restrict readonly uniform uimage2D gbuffer_ll_heads;
-
-layout(std430, binding = 0) restrict writeonly buffer histogram_sums {
+layout(shared, binding = 0) restrict writeonly buffer histogram_sums {
 	uint sums[bins];
 };
-layout(std430, binding = 1) restrict readonly buffer histogram_bins {
+layout(shared, binding = 1) restrict readonly buffer histogram_bins {
 	uint histogram[bins];
 };
 layout(std430, binding = 2) restrict writeonly buffer hdr_bokeh_parameters_buffer {
 	hdr_bokeh_parameters params;
 };
 
-#include "gbuffer_load.glsl"
+layout(binding = 11) uniform sampler2D depth;
 
 shared uint shared_data[bins];
 
-// uniform float time;
 uniform uint hdr_lum_resolution;
-uniform float far = 3000.f, near = .0f;
+uniform float proj22, proj23;
 
 void main() {
 	uint id = gl_LocalInvocationID.x;
@@ -38,8 +32,6 @@ void main() {
 	float N = fbins;
 	float T = 1.25f / (N);
 	int bin_ceil = int(hdr_lum_resolution * T);
-
-	// float time_coef = 1.f / time;
 
 	for (int j=0; j<2; ++j) {
 		int h = int(histogram[id * 2 + j]);
@@ -50,8 +42,11 @@ void main() {
 
 	float focal;
 	if (id == 0) {
-		g_buffer_element frag = gbuffer_load(gbuffer_ll_heads, gbuffer_size(gbuffer_ll_heads) / 2);
-		params.focus = gbuffer_linear_z(frag, far, near);
+		float d = texelFetch(depth, textureSize(depth, 0) / 2, 0).x;
+		float d_ndc = d * 2.f - 1.f;
+		float z_lin = -proj23 / (d_ndc - proj22);
+
+		params.focus = z_lin;
 	}
 
 	barrier();
@@ -71,10 +66,4 @@ void main() {
 
 	sums[id * 2] = shared_data[id * 2];
 	sums[id * 2 + 1] = shared_data[id * 2 + 1];
-
-	// if (id == 0) {
-	// 	float t = (focal > params.focus ? 3.2f : 13.f) * time;
-	// 	t = clamp(t, 0.f, 1.f);
-	// 	params.focus = mix(params.focus, focal, t);
-	// }
 }

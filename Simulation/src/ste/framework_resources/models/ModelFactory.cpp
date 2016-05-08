@@ -13,8 +13,6 @@
 
 #include <algorithm>
 
-#include <gli/gli.hpp>
-
 using namespace StE::Resource;
 using namespace StE::Graphics;
 using StE::Core::Texture2D;
@@ -130,8 +128,8 @@ StE::task<void> ModelFactory::load_texture(const std::string &name,
 										  float normal_map_bias) {
 	return StE::task<std::unique_ptr<gli::texture2d>>([=](optional<task_scheduler*> sched) {
 		std::string normalized_name = name;
-		std::replace(normalized_name.begin(), normalized_name.end(), '\\', boost::filesystem::path::preferred_separator);
-		boost::filesystem::path full_path = dir / normalized_name;
+		std::replace(normalized_name.begin(), normalized_name.end(), '\\', '/');
+		boost::filesystem::path full_path = dir / boost::filesystem::path(normalized_name).make_preferred();
 
 		auto tex_task = SurfaceFactory::load_surface_2d_task(full_path, srgb);
 		gli::texture2d tex = tex_task(sched);
@@ -201,12 +199,12 @@ std::vector<std::future<void>> ModelFactory::load_brdfs(const StEngineControl *c
 		std::string brdf_name = materials[mat_idx].unknown_parameter["brdf"];
 		if (brdf_name.length() && brdf_map.find(brdf_name) == brdf_map.end()) {
 			std::string normalized_name = brdf_name;
-			std::replace(normalized_name.begin(), normalized_name.end(), '\\', boost::filesystem::path::preferred_separator);
+			std::replace(normalized_name.begin(), normalized_name.end(), '\\', '/');
 
 			brdf_map.emplace(std::make_pair(brdf_name, std::shared_ptr<Graphics::BRDF>(nullptr)));
 
 			futures.push_back(ctx->scheduler().schedule_now([brdfs = &brdf_map, normalized_name = normalized_name, brdf_name = brdf_name, ctx = ctx, dir = dir](optional<task_scheduler*> sched) {
-				std::unique_ptr<BRDF> ptr = Graphics::bme_brdf_representation::BRDF_from_bme_representation_task(*ctx, dir / normalized_name)(&*sched);
+				std::unique_ptr<BRDF> ptr = Graphics::bme_brdf_representation::BRDF_from_bme_representation_task(*ctx, dir / boost::filesystem::path(normalized_name).make_preferred())(&*sched);
 				std::shared_ptr<Graphics::BRDF> brdf = std::make_shared<Graphics::BRDF>(std::move(*ptr));
 				(*brdfs)[brdf_name] = brdf;
 			}));

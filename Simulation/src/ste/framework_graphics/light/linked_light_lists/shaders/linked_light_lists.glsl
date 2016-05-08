@@ -1,6 +1,4 @@
 
 struct lll_element {
-	uint16_t		light_idx;
-	uint16_t		ll_idx;
-	mediump float	z_min, z_max;
+	vec4 data;
 };

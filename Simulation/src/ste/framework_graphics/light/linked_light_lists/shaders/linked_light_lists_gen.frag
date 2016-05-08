@@ -5,25 +5,26 @@
 
 #include "light.glsl"
 #include "linked_light_lists.glsl"
+#include "linked_light_lists_store.glsl"
 
 layout(std430, binding = 2) restrict readonly buffer light_data {
 	light_descriptor light_buffer[];
 };
-layout(std430, binding = 3) restrict readonly buffer light_transform_data {
+layout(shared, binding = 3) restrict readonly buffer light_transform_data {
 	vec4 light_transform_buffer[];
 };
-layout(std430, binding = 4) restrict readonly buffer ll_counter_data {
+layout(shared, binding = 4) restrict readonly buffer ll_counter_data {
 	uint32_t ll_counter;
 };
-layout(std430, binding = 5) restrict readonly buffer ll_data {
+layout(shared, binding = 5) restrict readonly buffer ll_data {
 	uint16_t ll[];
 };
 
-layout(r32ui, binding = 6) restrict uniform uimage2D lll_heads;
-layout(std430, binding = 7) restrict buffer lll_counter_data {
+layout(r32ui, binding = 6) restrict writeonly uniform uimage2D lll_heads;
+layout(shared, binding = 7) restrict buffer lll_counter_data {
 	uint32_t lll_counter;
 };
-layout(std430, binding = 11) restrict writeonly buffer lll_data {
+layout(shared, binding = 11) restrict writeonly buffer lll_data {
 	lll_element lll_buffer[];
 };
 
@@ -90,10 +91,10 @@ void main() {
 			}
 
 			if (add_point) {
-				active_lights[total_active_lights].light_idx = light_idx;
-				active_lights[total_active_lights].ll_idx = uint16_t(ll_i);
-				active_lights[total_active_lights].z_min = z_min;
-				active_lights[total_active_lights].z_max = z_max;
+				active_lights[total_active_lights] = lll_encode(light_idx,
+																ll_i,
+																z_min,
+																z_max);
 
 				++total_active_lights;
 			}
@@ -105,5 +106,5 @@ void main() {
 
 	for (uint32_t i = 0; i < total_active_lights; ++i)
 		lll_buffer[next_idx + i] = active_lights[i];
-	lll_buffer[next_idx + total_active_lights].light_idx = uint16_t(0xFFFF);
+	lll_buffer[next_idx + total_active_lights].data.x = uintBitsToFloat(0xFFFFFFFF);
 }

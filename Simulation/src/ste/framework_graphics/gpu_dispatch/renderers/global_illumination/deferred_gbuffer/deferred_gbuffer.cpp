@@ -11,7 +11,7 @@ void deferred_gbuffer::resize(glm::ivec2 size) {
 
 	this->size = size;
 
-	gbuffer.commit_range(0, size.x * size.y * 3);
+	gbuffer.commit_range(0, size.x * size.y * 6);
 
 	gbuffer_ll_heads = std::make_unique<Core::Texture2D>(gli::format::FORMAT_R32_UINT_PACK32, glm::ivec2{ size });
 

@@ -17,8 +17,6 @@
 #include "function_traits.hpp"
 #include "thread_constants.hpp"
 
-#include "task.hpp"
-
 namespace StE {
 
 class task_scheduler {
@@ -37,24 +35,7 @@ private:
 	concurrent_queue<delayed_task> delayed_tasks_queue;
 	std::list<delayed_task> delayed_tasks_list;
 
-	void enqueue_delayed() {
-		auto now = std::chrono::high_resolution_clock::now();
-		for (auto it = delayed_tasks_list.begin(); it != delayed_tasks_list.end();) {
-			if (now >= it->run_at) {
-				schedule_now(std::move(it->f));
-				it = delayed_tasks_list.erase(it);
-			}
-			else
-				++it;
-		}
-
-		for (auto task = delayed_tasks_queue.pop(); task != nullptr; task = delayed_tasks_queue.pop()) {
-			if (now >= task->run_at)
-				schedule_now(std::move(task->f));
-			else
-				delayed_tasks_list.push_front(std::move(*task));
-		}
-	}
+	void enqueue_delayed();
 
 public:
 	task_scheduler() = default;
@@ -63,16 +44,7 @@ public:
 	task_scheduler(task_scheduler &&) = delete;
 	task_scheduler &operator=(task_scheduler &&) = delete;
 
-	void run_loop() {
-		assert(is_main_thread());
-
-		std::unique_ptr<function_wrapper> task;
-		while ((task = main_thread_task_queue.pop()) != nullptr)
-			(*task)();
-
-		pool.load_balance();
-		enqueue_delayed();
-	}
+	void run_loop();
 
 	template <typename F>
 	std::future<typename function_traits<F>::result_t> schedule_now(F &&f,

@@ -24,9 +24,7 @@ namespace Graphics {
 class deferred_gbuffer {
 private:
 	struct g_buffer_element {
-		glm::vec3 P;				std::uint32_t next_ptr;
-		glm::mediump_vec3 N, T;		glm::mediump_vec1 specular; 	std::uint16_t material;
-		glm::mediump_vec4 albedo;
+		glm::mat3x4 data;
 	};
 
 	static constexpr Core::BufferUsage::buffer_usage usage = static_cast<Core::BufferUsage::buffer_usage>(Core::BufferUsage::BufferUsageSparse);
@@ -44,7 +42,7 @@ private:
 
 	glm::ivec2 size;
 
-	static constexpr std::size_t virtual_gbuffer_size() {
+	static std::size_t virtual_gbuffer_size() {
 		return virt_size / gbuffer_type::page_size() / sizeof(g_buffer_element) * gbuffer_type::page_size();
 	}
 

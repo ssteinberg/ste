@@ -26,14 +26,14 @@ struct GLSLShaderProperties {
 
 namespace _ste_glslshader_creator {
 	template <GLSLShaderType T>
-	GenericResource::type creator() { assert(false); return 0; }
-	template <> GenericResource::type creator<GLSLShaderType::NONE>() { assert(false && "ShaderType cannot be none."); return 0; }
-	template <> GenericResource::type creator<GLSLShaderType::VERTEX>() { return glCreateShader(GL_VERTEX_SHADER); }
-	template <> GenericResource::type creator<GLSLShaderType::FRAGMENT>() { return glCreateShader(GL_FRAGMENT_SHADER); }
-	template <> GenericResource::type creator<GLSLShaderType::GEOMETRY>() { return glCreateShader(GL_GEOMETRY_SHADER); }
-	template <> GenericResource::type creator<GLSLShaderType::COMPUTE>() { return glCreateShader(GL_COMPUTE_SHADER); }
-	template <> GenericResource::type creator<GLSLShaderType::TESS_CONTROL>() { return glCreateShader(GL_TESS_CONTROL_SHADER); }
-	template <> GenericResource::type creator<GLSLShaderType::TESS_EVALUATION>() { return glCreateShader(GL_TESS_EVALUATION_SHADER); }
+	GenericResource::type inline creator() { assert(false && "unspecialized"); return 0; }
+	template <> GenericResource::type inline creator<GLSLShaderType::NONE>() { assert(false && "ShaderType cannot be none."); return 0; }
+	template <> GenericResource::type inline creator<GLSLShaderType::VERTEX>() { return glCreateShader(GL_VERTEX_SHADER); }
+	template <> GenericResource::type inline creator<GLSLShaderType::FRAGMENT>() { return glCreateShader(GL_FRAGMENT_SHADER); }
+	template <> GenericResource::type inline creator<GLSLShaderType::GEOMETRY>() { return glCreateShader(GL_GEOMETRY_SHADER); }
+	template <> GenericResource::type inline creator<GLSLShaderType::COMPUTE>() { return glCreateShader(GL_COMPUTE_SHADER); }
+	template <> GenericResource::type inline creator<GLSLShaderType::TESS_CONTROL>() { return glCreateShader(GL_TESS_CONTROL_SHADER); }
+	template <> GenericResource::type inline creator<GLSLShaderType::TESS_EVALUATION>() { return glCreateShader(GL_TESS_EVALUATION_SHADER); }
 };
 
 template <GLSLShaderType ShaderType>

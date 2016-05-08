@@ -29,6 +29,7 @@ private:
 
 private:
 	Logger(std::unique_ptr<log_sink> &&sink, bool force_flush = false) : stream(std::move(sink), force_flush) {}
+	Logger(Logger &&) = default;
 
 	log_ostream stream;
 

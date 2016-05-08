@@ -27,7 +27,7 @@
 
 #include <exception>
 
-#define BOOST_FILESYSTEM_NO_DEPRECATED 
+#define BOOST_FILESYSTEM_NO_DEPRECATED
 #include <boost/filesystem.hpp>
 
 namespace StE {
@@ -60,7 +60,7 @@ public:
 	};
 
 private:
-	using exitant_db = std::map<int, std::map<int, std::vector<bme_brdf_descriptor_entry>>>;
+	using exitant_db = std::unordered_map<int, std::unordered_map<int, std::vector<bme_brdf_descriptor_entry>>>;
 	using database_type = std::map<int, exitant_db>;
 
 	struct exitant_db_descriptor {
@@ -83,16 +83,16 @@ private:
 			exitant_db db;
 			float in_theta = -1;
 			int in_phi = -1;
-			
+
 			std::ifstream fs(bme_data.string(), std::ios::in);
 			if (!fs.good()) {
 				using namespace Text::Attributes;
 				ste_log_error() << Text::AttributedString("Error while reading BME database \"") + i(bme_data.string()) + "\": " + std::strerror(errno) << std::endl;
 				assert(false);
-				
+
 				return exitant_db_descriptor();
 			}
-				
+
 			std::string l;
 			while (std::getline(fs, l)) {
 				if (l[0] == '#') {
@@ -114,7 +114,7 @@ private:
 					append_entry(std::move(entry), db);
 				}
 			}
-			
+
 			fs.close();
 
 			exitant_db_descriptor desc;
@@ -143,17 +143,16 @@ private:
 
 	bme_brdf_representation() = default;
 	~bme_brdf_representation() = default;
-	
+
 protected:
-	static void create_layer(unsigned i, const database_type::iterator &it, common_brdf_representation &brdfdata, const glm::ivec3 &dims) {
+	static void create_layer(int i, const database_type::iterator &it, common_brdf_representation &brdfdata, const glm::ivec3 &dims) {
 		float *data = reinterpret_cast<float*>(brdfdata.get_data()->data()) + dims.x * dims.y * i;
 		exitant_db &db = it->second;
 
-		for (unsigned j = 0; j < dims.y; ++j) {
+		for (int j = 0; j < dims.y; ++j) {
 			float theta = glm::mix<float>(BRDF::theta_min, BRDF::theta_max, static_cast<float>(j) / static_cast<float>(dims.y - 1));
 
-#pragma ivdep
-			for (unsigned k = 0; k < dims.x; ++k) {
+			for (int k = 0; k < dims.x; ++k) {
 				float phi = glm::mix<float>(BRDF::phi_min, BRDF::phi_max, static_cast<float>(k) / static_cast<float>(dims.x - 1));
 
 				glm::vec3 w = BxDF::omega(theta, phi);
@@ -264,7 +263,7 @@ public:
 			std::vector<std::future<void>> futures;
 
 			auto it = bme.database.begin();
-			for (unsigned i = 0; i < dims.z; ++i, ++it) {
+			for (int i = 0; i < dims.z; ++i, ++it) {
 				futures.push_back(ctx->scheduler().schedule_now([&, i=i, it=it](optional<task_scheduler*> sched) {
 					create_layer(i, it, brdfdata, dims);
 				}));
@@ -275,8 +274,8 @@ public:
 
 			ctx->cache().insert(cache_key, brdfdata);
 			return std::move(brdfdata);
-		}).then_on_main_thread([=](optional<task_scheduler*> sched, common_brdf_representation &&data) {
-			auto ptr = std::make_unique<BRDF>(std::move(data));
+		}).then_on_main_thread([=](optional<task_scheduler*> sched, common_brdf_representation &&brdfdata) {
+			auto ptr = std::make_unique<BRDF>(std::move(brdfdata));
 			return ptr;
 		});
 	}

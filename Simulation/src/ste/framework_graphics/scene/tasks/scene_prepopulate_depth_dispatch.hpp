@@ -4,6 +4,7 @@
 #pragma once
 
 #include "stdafx.hpp"
+#include "StEngineControl.hpp"
 #include "gl_current_context.hpp"
 
 #include "GLSLProgram.hpp"

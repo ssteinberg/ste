@@ -87,16 +87,16 @@ public:
 								 gl_format.External, gl_format.Type, size, data);
 	}
 
-	const image<T> operator[](CubeMapFace face) const {
+	image<T> operator[](CubeMapFace face) const {
 		return make_image(face, 0);
 	}
-	const image_container<T> make_image(int level = 0) const {
+	image_container<T> make_image(int level = 0) const {
 		return image_container<T>(*this,
 								  get_image_container_size(),
 								  format, ImageAccessMode::ReadWrite,
 								  level, 6);
 	}
-	const image<T> make_image(CubeMapFace face, int level) const {
+	image<T> make_image(CubeMapFace face, int level) const {
 		return image<T>(*this,
 						get_image_container_size(),
 						format, ImageAccessMode::ReadWrite,

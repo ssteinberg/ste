@@ -104,7 +104,7 @@ public:
 		face = f.face;
 		spacing_cache = std::move(f.spacing_cache);
 		f.face = nullptr;
-		
+
 		return *this;
 	}
 
@@ -156,7 +156,7 @@ unsigned char* glyph_factory_impl::render_glyph_with(const Font &font, wchar_t c
 	auto metrics = face->glyph->metrics;
 
 	start_x = (metrics.horiBearingX >> 6) - glyph::padding;
-	start_y = (metrics.horiBearingY - metrics.height >> 6) - glyph::padding;
+	start_y = ((metrics.horiBearingY - metrics.height) >> 6) - glyph::padding;
 	w = bm.width + 2 * glyph::padding;
 	h = bm.rows + 2 * glyph::padding;
 

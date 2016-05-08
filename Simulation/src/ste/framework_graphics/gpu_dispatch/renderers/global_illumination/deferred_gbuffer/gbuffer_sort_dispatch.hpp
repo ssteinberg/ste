@@ -31,7 +31,7 @@ protected:
 	}
 
 	virtual void dispatch() const override {
-		constexpr int jobs = 16;
+		constexpr int jobs = 32;
 		auto size = (gbuffer->get_size() + glm::ivec2(jobs - 1)) / jobs;
 
 		Core::GL::gl_current_context::get()->memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);

@@ -16,9 +16,15 @@ struct mesh_descriptor {
 
 	std::int32_t mat_idx;
 
+	float _unused[3];
+};
+
+struct mesh_draw_params {
 	std::uint32_t count;
 	std::uint32_t first_index;
 	std::uint32_t base_vertex;
+
+	float _unused;
 };
 
 }

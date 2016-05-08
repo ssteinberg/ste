@@ -103,7 +103,7 @@ public:
 			buffer.client_wait_for_range(lock_range);
 		}
 
-		buffer.clear(format, data, swizzle);
+		buffer.clear(format, data, 0, size(), swizzle);
 	}
 	void overwrite_all(const gli::format format, const void *data, int offset, std::size_t size, const gli::swizzles &swizzle = swizzles_rgba) {
 		assert(offset + size <= len && "Out of range.");

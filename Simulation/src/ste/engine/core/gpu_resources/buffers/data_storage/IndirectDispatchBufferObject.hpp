@@ -36,8 +36,8 @@ public:
 
 	using Base::Base;
 
-	void bind() const final override { Binder::bind(get_resource_id(), GL_DISPATCH_INDIRECT_BUFFER); };
-	void unbind() const final override { Binder::unbind(GL_DISPATCH_INDIRECT_BUFFER); };
+	void bind() const final override { Base::Binder::bind(get_resource_id(), GL_DISPATCH_INDIRECT_BUFFER); };
+	void unbind() const final override { Base::Binder::unbind(GL_DISPATCH_INDIRECT_BUFFER); };
 	void bind_range(const LayoutLocationType &sampler, int offset, std::size_t size) const { Base::bind_range(sampler, GL_DISPATCH_INDIRECT_BUFFER, offset, size); }
 
 	core_resource_type resource_type() const override { return core_resource_type::IndirectDispatchBufferObject; }

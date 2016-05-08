@@ -7,7 +7,13 @@ struct mesh_descriptor {
 
 	int matIdx;
 
+	float _unused[3];
+};
+
+struct mesh_draw_params {
 	uint count;
 	uint first_index;
 	uint base_vertex;
+
+	float _unused;
 };

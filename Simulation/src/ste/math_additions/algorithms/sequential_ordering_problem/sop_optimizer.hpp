@@ -49,7 +49,7 @@ private:
 private:
 	inline void generate_missing_deps(const V* node) {
 		if (node->get_dependencies().size() > 0 && !node->missing_deps) {
-			node->missing_deps.emplace(V::MissingDepsContainerT());
+			node->missing_deps.emplace(typename V::MissingDepsContainerT());
 			node->missing_deps.get().reserve(node->get_dependencies().size());
 			for (auto &v : node->get_dependencies())
 				node->missing_deps.get().insert(v.get());

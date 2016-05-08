@@ -20,7 +20,7 @@ public:
 
 	Texture2DMSArray(gli::format format, const typename Base::size_type &size, int samples) : texture_multisampled(format, size, samples) {}
 
-	const image_container<T> operator[](int level) const {
+	image_container<T> operator[](int level) const {
 		return image_container<T>(*this, get_image_container_size(), format, ImageAccessMode::ReadWrite, level, get_image_container_dimensions());
 	}
 };

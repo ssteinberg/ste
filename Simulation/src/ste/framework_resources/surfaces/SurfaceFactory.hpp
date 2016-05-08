@@ -8,7 +8,7 @@
 #include <memory>
 #include <ios>
 
-#define BOOST_FILESYSTEM_NO_DEPRECATED 
+#define BOOST_FILESYSTEM_NO_DEPRECATED
 #include <boost/filesystem.hpp>
 
 #include "task.hpp"
@@ -16,6 +16,8 @@
 
 #include "Log.hpp"
 #include "AttributedString.hpp"
+
+#include <gli/load_dds.hpp>
 
 namespace StE {
 namespace Resource {
@@ -67,7 +69,7 @@ public:
 			}
 
 			bool generate_mipmaps = true;
-			
+
 			using namespace StE::Text;
 			using namespace Attributes;
 

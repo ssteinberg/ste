@@ -10,8 +10,6 @@
 #include "resource.hpp"
 #include "render_target_allocator.hpp"
 
-#include <gli/gli.hpp>
-
 namespace StE {
 namespace Core {
 

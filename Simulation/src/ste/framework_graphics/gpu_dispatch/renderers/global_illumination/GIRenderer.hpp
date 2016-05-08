@@ -55,8 +55,8 @@ private:
 		friend class GIRenderer;
 
 	private:
-		GIRenderer *dr;
 		std::shared_ptr<Core::GLSLProgram> program;
+		GIRenderer *dr;
 
 	public:
 		deferred_composition(const StEngineControl &ctx, GIRenderer *dr) : program(ctx.glslprograms_pool().fetch_program_task({ "passthrough.vert", "deferred_compose.frag" })()), dr(dr) {
@@ -86,16 +86,16 @@ private:
 	const StEngineControl &ctx;
 	const Camera *camera;
 	view_matrix_ring_buffer view_matrix_buffer;
-	std::shared_ptr<Scene> scene;
+	Scene *scene;
 	// dense_voxel_space voxel_space;
 
 private:
 	gpu_task::TaskCollection gui_tasks;
 	gpu_task::TaskCollection added_tasks;
 
-	light_preprocessor light_preprocess;
 	linked_light_lists lll_storage;
 	linked_light_lists_gen_dispatch lll_gen_dispatch;
+	light_preprocessor light_preprocess;
 
 	shadowmap_storage shadows_storage;
 	shadowmap_projector shadows_projector;
@@ -107,6 +107,7 @@ private:
 	scene_frustum_cull_dispatch scene_frustum_cull;
 
 	std::shared_ptr<const gpu_task> precomposer_dummy_task,
+									scene_task,
 									composer_task,
 									fb_clearer_task,
 									gbuffer_clearer_task,
@@ -124,6 +125,7 @@ private:
 
 protected:
 	void rebuild_task_queue();
+	void update_shader_shadow_proj_uniforms(const glm::mat4&);
 
 	const Core::GenericFramebufferObject *get_fbo() const {
 		if (use_deferred_rendering)
@@ -134,7 +136,7 @@ protected:
 public:
 	GIRenderer(const StEngineControl &ctx,
 			   const Camera *camera,
-			   const std::shared_ptr<Scene> &scene/*,
+			   Scene *scene/*,
 			   std::size_t voxel_grid_size = 512,
 			   float voxel_grid_ratio = .01f*/);
 	virtual ~GIRenderer() noexcept {}
@@ -151,6 +153,7 @@ public:
 	// const dense_voxel_space& voxel_grid() const { return voxel_space; }
 
 	auto *get_gbuffer() const { return &gbuffer; }
+	auto &get_scene_task() const { return scene_task; }
 
 	void attach_profiler(profiler *p) { q.attach_profiler(p); }
 

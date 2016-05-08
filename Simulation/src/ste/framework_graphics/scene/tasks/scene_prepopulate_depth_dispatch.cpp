@@ -11,12 +11,12 @@ void scene_prepopulate_depth_dispatch::set_context_state() const {
 	Core::GL::gl_current_context::get()->color_mask(false, false, false, false);
 	Core::GL::gl_current_context::get()->enable_state(Core::GL::BasicStateName::CULL_FACE);
 
-	scene->object_group().bind_buffers();
+	scene->get_idb().buffer().bind();
+	scene->bind_buffers();
 
 	program->bind();
-	scene->get_fbo()->bind();
 }
 
 void scene_prepopulate_depth_dispatch::dispatch() const {
-	scene->object_group().draw_object_group();
+	scene->draw_object_group();
 }
