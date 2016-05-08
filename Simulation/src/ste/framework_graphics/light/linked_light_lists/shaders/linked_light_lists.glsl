@@ -1,4 +1,4 @@
 
 struct lll_element {
-	vec4 data;
+	vec2 data;
 };

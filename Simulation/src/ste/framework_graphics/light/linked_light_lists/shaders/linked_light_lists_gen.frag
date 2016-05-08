@@ -51,9 +51,10 @@ void main() {
 	float a = dot(l, l);
 
 	lll_element active_lights[max_active_lights_per_frame];
-	uint32_t total_active_lights = 0;
+	int total_active_lights = 0;
 
-	for (int ll_i = 0; ll_i < ll_counter && total_active_lights < max_active_lights_per_frame; ++ll_i) {
+	for (int j = 0; j < ll_counter && total_active_lights < max_active_lights_per_frame; ++j) {
+		uint16_t ll_i = uint16_t(j);
 		uint16_t light_idx = ll[ll_i];
 		light_descriptor ld = light_buffer[light_idx];
 
@@ -69,22 +70,25 @@ void main() {
 			float z_max = l.z * (-b - sqrt_delta) / a;
 			float z_min = l.z * (-b + sqrt_delta) / a;
 
+			float ndc_zmin = proj22 + proj23 / z_min;
+			float ndc_zmax = proj22 + proj23 / z_max;
+			float depth_zmin = clamp((ndc_zmin + 1.f) * .5f, .0f, 1.f);
+			float depth_zmax = (ndc_zmax + 1.f) * .5f;
+
 			bool add_point = false;
 
 			if (z_min < -near) {
 				if (z_max >= -near) {
 					// Origin is inside the light radius
+					depth_zmax = .0f;
 					add_point = true;
 				}
 				else {
 					// Compare against depth buffer
-					float ndc_zf = proj22 + proj23 / z_max;
-					float zf = (ndc_zf + 1.f) * .5f;
-
-					float d00 = texture(depth_map, vec3(frag_coords + vec2(.0f) 					/ bb_size, zf)).x;
-					float d10 = texture(depth_map, vec3(frag_coords + vec2(res_multiplier - 1, .0f) / bb_size, zf)).x;
-					float d01 = texture(depth_map, vec3(frag_coords + vec2(.0f, res_multiplier - 1) / bb_size, zf)).x;
-					float d11 = texture(depth_map, vec3(frag_coords + vec2(res_multiplier - 1) 		/ bb_size, zf)).x;
+					float d00 = texture(depth_map, vec3(frag_coords + vec2(.5f) 						/ bb_size, depth_zmax)).x;
+					float d10 = texture(depth_map, vec3(frag_coords + vec2(res_multiplier - 1.5f, .5f)	/ bb_size, depth_zmax)).x;
+					float d01 = texture(depth_map, vec3(frag_coords + vec2(.5f, res_multiplier - 1.5f)	/ bb_size, depth_zmax)).x;
+					float d11 = texture(depth_map, vec3(frag_coords + vec2(res_multiplier - 1.5f) 		/ bb_size, depth_zmax)).x;
 					if (d00 + d10 + d01 + d11 > .5f)
 						add_point = true;
 				}
@@ -93,18 +97,18 @@ void main() {
 			if (add_point) {
 				active_lights[total_active_lights] = lll_encode(light_idx,
 																ll_i,
-																z_min,
-																z_max);
+																depth_zmax,
+																depth_zmin);
 
 				++total_active_lights;
 			}
 		}
 	}
 
-	uint32_t next_idx = atomicAdd(lll_counter, total_active_lights + 1);
+	uint32_t next_idx = atomicAdd(lll_counter, uint(total_active_lights + 1));
 	imageStore(lll_heads, image_coord, next_idx.xxxx);
 
-	for (uint32_t i = 0; i < total_active_lights; ++i)
+	for (int i = 0; i < total_active_lights; ++i)
 		lll_buffer[next_idx + i] = active_lights[i];
 	lll_buffer[next_idx + total_active_lights].data.x = uintBitsToFloat(0xFFFFFFFF);
 }
