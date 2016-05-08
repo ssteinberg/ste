@@ -46,8 +46,7 @@ uniform float scattering_ro = 0.0003f;
 uniform float height_map_scale = .5f;
 uniform float proj00, proj11, proj22, proj23, shadow_proj22, shadow_proj23;
 
-vec3 unproject_position(g_buffer_element frag) {
-	float depth = gbuffer_parse_depth(frag);
+vec3 unproject_position(float depth) {
 	vec3 frag_coords = vec3(gl_FragCoord.xy / vec2(gbuffer_size(gbuffer_ll_heads)), depth);
 	vec3 ndc = (frag_coords - vec3(.5f)) * 2.f;
 
@@ -74,7 +73,8 @@ vec4 shade(g_buffer_element frag, mat4 inverse_view_matrix) {
 	float specular = md.specular.tex_handler>0 ? textureGrad(sampler2D(md.specular.tex_handler), uv, duvdx, duvdy).x : 1.f;
 	specular = mix(.2f, 1.f, specular);
 
-	vec3 position = unproject_position(frag);
+	float depth = gbuffer_parse_depth(frag);
+	vec3 position = unproject_position(depth);
 	vec3 w_pos = (inverse_view_matrix * vec4(position, 1)).xyz;
 	vec3 n = gbuffer_parse_normal(frag);
 	vec3 t = gbuffer_parse_tangent(frag);
@@ -91,8 +91,10 @@ vec4 shade(g_buffer_element frag, mat4 inverse_view_matrix) {
 		if (lll_eof(lll_p))
 			break;
 
-		if (position.z >= lll_parse_zmin(lll_p) && position.z <= lll_parse_zmax(lll_p)) {
-			uint light_idx = lll_parse_light_idx(lll_p);
+		vec2 lll_depth_range = lll_parse_depth_range(lll_p);
+		if (depth >= lll_depth_range.x &&
+			depth <= lll_depth_range.y) {
+			uint light_idx = uint(lll_parse_light_idx(lll_p));
 			light_descriptor ld = light_buffer[light_idx];
 
 			vec3 v = light_incidant_ray(ld, light_idx, position);
@@ -103,7 +105,7 @@ vec4 shade(g_buffer_element frag, mat4 inverse_view_matrix) {
 
 				vec3 shadow_v = w_pos - ld.position_direction.xyz;
 				float shadow = shadow_penumbra_width(shadow_depth_maps,
-													 lll_parse_ll_idx(lll_p),
+													 uint(lll_parse_ll_idx(lll_p)),
 													 shadow_v,
 													 l_radius,
 													 dist,
