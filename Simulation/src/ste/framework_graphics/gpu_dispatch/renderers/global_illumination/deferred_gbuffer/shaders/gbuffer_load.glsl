@@ -1,5 +1,6 @@
 
 #include "gbuffer.glsl"
+#include "pack.glsl"
 
 bool gbuffer_eof(uint32_t ptr) {
 	return ptr == 0xFFFFFFFF;
@@ -18,38 +19,46 @@ g_buffer_element gbuffer_load(uint32_t ptr) {
 	return gbuffer[ptr];
 }
 
+uint32_t gbuffer_parse_nextptr(g_buffer_element frag) {
+	return floatBitsToUint(frag.data[0].y);
+}
+
+vec2 gbuffer_parse_depth_nextptr_pair(g_buffer_element frag) {
+	return frag.data[0].xy;
+}
+
 float gbuffer_parse_depth(g_buffer_element frag) {
 	return frag.data[0].x;
 }
 
 vec2 gbuffer_parse_uv(g_buffer_element frag) {
-	return frag.data[0].yz;
+	return frag.data[1].xy;
+}
+
+float gbuffer_parse_alpha(g_buffer_element frag) {
+	return frag.data[0].w;
 }
 
 vec3 gbuffer_parse_normal(g_buffer_element frag) {
-	float pNxy = frag.data[1].x;
-	float pNzTx = frag.data[1].y;
-
-	vec2 Nxy = unpackFloat2x16(floatBitsToUint(pNxy));
-	vec2 NzTx = unpackFloat2x16(floatBitsToUint(pNzTx));
-
-	return vec3(Nxy, NzTx.x);
-}
-
-int gbuffer_parse_material(g_buffer_element frag) {
-	return floatBitsToInt(frag.data[1].w);
+	uint Npack = floatBitsToUint(frag.data[1].z);
+	return snorm2x32_to_normal3x32(unpackSnorm2x16(Npack));
 }
 
 vec3 gbuffer_parse_tangent(g_buffer_element frag) {
-	float pNzTx = frag.data[1].y;
-	float pTyz = frag.data[1].z;
-
-	vec2 NzTx = unpackFloat2x16(floatBitsToUint(pNzTx));
-	vec2 Tyz = unpackFloat2x16(floatBitsToUint(pTyz));
-
-	return vec3(NzTx.y, Tyz);
+	uint Tpack = floatBitsToUint(frag.data[1].w);
+	return snorm2x32_to_normal3x32(unpackSnorm2x16(Tpack));
 }
 
-uint32_t gbuffer_parse_nextptr(g_buffer_element frag) {
-	return floatBitsToUint(frag.data[0].w);
+int gbuffer_parse_material(g_buffer_element frag) {
+	return floatBitsToInt(frag.data[0].z);
+}
+
+vec2 gbuffer_parse_duvdx(g_buffer_element frag) {
+	uint duvdx16 = floatBitsToUint(frag.data[2].x);
+	return unpackFloat2x16(duvdx16);
+}
+
+vec2 gbuffer_parse_duvdy(g_buffer_element frag) {
+	uint duvdy16 = floatBitsToUint(frag.data[2].y);
+	return unpackFloat2x16(duvdy16);
 }

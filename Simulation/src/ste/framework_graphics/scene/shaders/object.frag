@@ -28,7 +28,6 @@ in v {
 	vec3 frag_tangent;
 	flat int matIdx;
 } vin;
-uniform float height_map_scale = .5f;
 
 void main() {
 	vec2 uv = vin.frag_texcoords;
@@ -41,11 +40,18 @@ void main() {
 	vec3 P = vin.frag_position;
 	vec3 n = normalize(vin.frag_normal);
 	vec3 t = normalize(vin.frag_tangent);
-	vec3 b = cross(t, n);
-
-	normal_map(md, height_map_scale, uv, n, t, b, P);
 
 	int material = vin.matIdx >= 0 ? vin.matIdx : material_none;
 
-	gbuffer_store(gbuffer_ll_heads, gbuffer_ll_counter, gl_FragCoord.z, uv, f16vec3(n), f16vec3(t), material, ivec2(gl_FragCoord.xy));
+	gbuffer_store(gbuffer_ll_heads,
+				  gbuffer_ll_counter,
+				  gl_FragCoord.z,
+				  alpha,
+				  uv,
+				  dFdx(uv),
+				  dFdy(uv),
+				  n,
+				  t,
+				  material,
+				  ivec2(gl_FragCoord.xy));
 }

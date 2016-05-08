@@ -24,7 +24,7 @@ namespace Graphics {
 class deferred_gbuffer {
 private:
 	struct g_buffer_element {
-		glm::mat2x4 data;
+		glm::mat3x4 data;
 	};
 
 	static constexpr Core::BufferUsage::buffer_usage usage = static_cast<Core::BufferUsage::buffer_usage>(Core::BufferUsage::BufferUsageSparse);
