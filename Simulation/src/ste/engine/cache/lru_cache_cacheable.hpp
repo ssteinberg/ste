@@ -1,12 +1,18 @@
 // StE
 // © Shlomi Steinberg, 2015-2016
 
+/**	@file	lru_cache_cacheable.hpp
+ *	@brief	lru_cache cached object entry in cache index
+ *
+ *	@author	Shlomi Steinberg
+ */
+
 #pragma once
 
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/archive/binary_oarchive.hpp>
 
-#define BOOST_FILESYSTEM_NO_DEPRECATED 
+#define BOOST_FILESYSTEM_NO_DEPRECATED
 #include <boost/filesystem.hpp>
 
 #include <string>

@@ -1,6 +1,12 @@
 // StE
 // © Shlomi Steinberg, 2015-2016
 
+/**	@file	lru_cache_index.hpp
+ *	@brief	lru_cache index
+ *
+ *	@author	Shlomi Steinberg
+ */
+
 #pragma once
 
 #include "lru_cache_cacheable.hpp"
@@ -65,7 +71,7 @@ private:
 	void serialize(Archive & ar, const unsigned int version) {
 		ar & lru_list;
 	}
-	
+
 	void write_index() const {
 		std::ofstream ofs(index_path.string(), std::ios::binary);
 		boost::archive::binary_oarchive oa(ofs);
@@ -95,13 +101,13 @@ private:
 			} catch (const std::exception &e) {
 				using namespace Text::Attributes;
 				ste_log_warn() << b("LRU Cache: ") + "Failed reading index (Reason: " + e.what() + "). Clearing " + i(path.string()) + "." << std::endl;
-				
+
 				for (boost::filesystem::directory_iterator end_dir_it, it(path); it!=end_dir_it; ++it)
 					boost::filesystem::remove(it->path());
 			}
 		}
 	}
-	
+
 	~lru_cache_index() {
 		write_index();
 	}
