@@ -19,52 +19,20 @@ vec2 unorm8x3_to_snorm12x2(uvec3 iu) {
 	return clamp(s * (1.f / 2047.f) - 1.f, vec2(-1.f), vec2(1.f));
 }
 
-vec2 signNotZero(vec2 v) {
-	return vec2((v.x >= 0.f) ? +1.f : -1.f, (v.y >= 0.f) ? +1.f : -1.f);
+vec2 OctWrap(vec2 v) {
+    return (1.0 - abs(v.yx)) * vec2(v.x >= 0.0 ? 1.0 : -1.0, v.y >= 0.0 ? 1.0 : -1.0);
 }
 
-// Assume normalized input. Output is on [-1, 1] for each component.
-vec2 float32x3_to_oct(in vec3 v) {
-	// Project the sphere onto the octahedron, and then onto the xy plane
-	vec2 p = v.xy * (1.f / (abs(v.x) + abs(v.y) + abs(v.z)));
-	// Reflect the folds of the lower hemisphere over the diagonals
-	return (v.z <= 0.f) ? ((1.f - abs(p.yx)) * signNotZero(p)) : p;
+vec2 normal3x32_to_snorm2x32(vec3 n) {
+    n /= (abs(n.x) + abs(n.y) + abs(n.z));
+    n.xy = n.z >= 0.0 ? n.xy : OctWrap(n.xy);
+    return n.xy;
 }
 
-vec3 oct_to_float32x3(vec2 e) {
-	vec3 v = vec3(e.xy, 1.f - abs(e.x) - abs(e.y));
-	if (v.z < 0) v.xy = (1.f - abs(v.yx)) * signNotZero(v.xy);
-	return normalize(v);
-}
-
-vec2 float32x3_to_octn_precise(vec3 v, const in int n) {
-	// http://jcgt.org/published/0003/02/01/paper.pdf
-
-	vec2 s = float32x3_to_oct(v); // Remap to the square
-	// Each snorm’s max value interpreted as an integer,
-	// e.g., 127.0 for snorm8
-	float M = float(1 << ((n/2) - 1)) - 1.f;
-	// Remap components to snorm(n/2) precision...with floor instead
-	// of round (see equation 1)
-	s = floor(clamp(s, -1.f, +1.f) * M) * (1.f / M);
-	vec2 bestRepresentation = s;
-	float highestCosine = dot(oct_to_float32x3(s), v);
-	// Test all combinations of floor and ceil and keep the best.
-	// Note that at +/- 1, this will exit the square... but that
-	// will be a worse encoding and never win.
-	for (int i = 0; i <= 1; ++i)
-		for (int j = 0; j <= 1; ++j)
-			// This branch will be evaluated at compile time
-			if ((i != 0) || (j != 0)) {
-				// Offset the bit pattern (which is stored in floating
-				// point!) to effectively change the rounding mode
-				// (when i or j is 0: floor, when it is one: ceiling)
-				vec2 candidate = vec2(i, j) * (1 / M) + s;
-				float cosine = dot(oct_to_float32x3(candidate), v);
-				if (cosine > highestCosine) {
-					bestRepresentation = candidate;
-					highestCosine = cosine;
-				}
-			}
-	return bestRepresentation;
+vec3 snorm2x32_to_normal3x32(vec2 encN) {
+    vec3 n;
+    n.z = 1.0 - abs(encN.x) - abs(encN.y);
+    n.xy = n.z >= 0.0 ? encN.xy : OctWrap(encN.xy);
+    n = normalize(n);
+    return n;
 }

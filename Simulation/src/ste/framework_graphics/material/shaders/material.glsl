@@ -19,9 +19,9 @@ struct material_descriptor {
 
 const int material_none = 0xFFFFFFFF;
 
-void normal_map(material_descriptor md, float height_map_scale, vec2 uv, inout vec3 n, inout vec3 t, inout vec3 b, inout vec3 P) {
+void normal_map(material_descriptor md, float height_map_scale, vec2 uv, vec2 duvdx, vec2 duvdy, inout vec3 n, inout vec3 t, inout vec3 b, inout vec3 P) {
 	if (md.normalmap.tex_handler > 0) {
-		vec4 normal_height = texture(sampler2D(md.normalmap.tex_handler), uv);
+		vec4 normal_height = textureGrad(sampler2D(md.normalmap.tex_handler), uv, duvdx, duvdy);
 		mat3 tbn = mat3(t, b, n);
 
 		float h = normal_height.w * height_map_scale;

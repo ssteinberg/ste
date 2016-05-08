@@ -43,6 +43,7 @@ layout(binding = 8) uniform samplerCubeArrayShadow shadow_depth_maps;
 out vec4 gl_FragColor;
 
 uniform float scattering_ro = 0.0003f;
+uniform float height_map_scale = .5f;
 uniform float proj00, proj11, proj22, proj23, shadow_proj22, shadow_proj23;
 
 vec3 unproject_position(g_buffer_element frag) {
@@ -65,20 +66,22 @@ vec4 shade(g_buffer_element frag, mat4 inverse_view_matrix) {
 	material_descriptor md = mat_descriptor[draw_idx];
 
 	vec3 diffuse = md.diffuse.tex_handler>0 ? textureGrad(sampler2D(md.diffuse.tex_handler), uv, duvdx, duvdy).rgb : vec3(1.f);
-	float alpha = md.alphamap.tex_handler>0 ? textureGrad(sampler2D(md.alphamap.tex_handler), uv, duvdx, duvdy).x : 1.f;
-
-	float specular = md.specular.tex_handler>0 ? textureGrad(sampler2D(md.specular.tex_handler), uv, duvdx, duvdy).x : 1.f;
-	specular = mix(.2f, 1.f, specular);
+	float alpha = gbuffer_parse_alpha(frag);
 
 	if (draw_idx == material_none)
 		return vec4(diffuse, alpha);
 
+	float specular = md.specular.tex_handler>0 ? textureGrad(sampler2D(md.specular.tex_handler), uv, duvdx, duvdy).x : 1.f;
+	specular = mix(.2f, 1.f, specular);
+
+	vec3 position = unproject_position(frag);
+	vec3 w_pos = (inverse_view_matrix * vec4(position, 1)).xyz;
 	vec3 n = gbuffer_parse_normal(frag);
 	vec3 t = gbuffer_parse_tangent(frag);
 	vec3 b = cross(t, n);
 
-	vec3 position = unproject_position(frag);
-	vec3 w_pos = (inverse_view_matrix * vec4(position, 1)).xyz;
+	normal_map(md, height_map_scale, uv, duvdx, duvdy, n, t, b, position);
+
 	vec3 rgb = md.emission.rgb;
 
 	ivec2 lll_coords = ivec2(gl_FragCoord.xy) / 8;
@@ -91,7 +94,7 @@ vec4 shade(g_buffer_element frag, mat4 inverse_view_matrix) {
 		if (position.z >= lll_parse_zmin(lll_p) && position.z <= lll_parse_zmax(lll_p)) {
 			uint light_idx = lll_parse_light_idx(lll_p);
 			light_descriptor ld = light_buffer[light_idx];
-rgb = vec3(gl_FragCoord.xyy);
+
 			vec3 v = light_incidant_ray(ld, light_idx, position);
 			if (dot(n, v) > 0) {
 				float dist = length(v);

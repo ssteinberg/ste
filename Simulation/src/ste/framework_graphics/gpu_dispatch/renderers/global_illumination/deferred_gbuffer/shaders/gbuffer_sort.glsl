@@ -17,6 +17,11 @@ layout(r32ui, binding = 7) restrict uniform uimage2D gbuffer_ll_heads;
 
 const int max_depth = 6;
 
+struct fragment {
+	float z;
+	uint ptr;
+};
+
 void main() {
 	ivec2 size = gbuffer_size(gbuffer_ll_heads);
 	ivec2 coords = ivec2(gl_GlobalInvocationID.xy);
@@ -24,39 +29,41 @@ void main() {
 		coords.y >= size.y)
 		return;
 
-	uint32_t next_idx = imageLoad(gbuffer_ll_heads, coords).x;
+	uint32_t head_idx = imageLoad(gbuffer_ll_heads, coords).x;
+	vec2 z_next_pair = gbuffer_parse_depth_nextptr_pair(gbuffer[head_idx]);
 
-	vec2 sorted[max_depth];
+	fragment sorted[max_depth];
 
-	sorted[0].x = gbuffer_parse_depth(gbuffer[next_idx]);
-	sorted[0].y = uintBitsToFloat(next_idx);
+	sorted[0].z = z_next_pair.x;
+	sorted[0].ptr = head_idx;
 	int element_count = 1;
 
-	next_idx = gbuffer_parse_nextptr(gbuffer[next_idx]);
+	uint32_t next_idx = floatBitsToUint(z_next_pair.y);
 	bool changed_order = false;
 
 	for (; element_count < max_depth && !gbuffer_eof(next_idx); ++element_count) {
-		float z = gbuffer_parse_depth(gbuffer[next_idx]);
+		vec2 z_next_pair = gbuffer_parse_depth_nextptr_pair(gbuffer[next_idx]);
 
 		int i;
-		for (i = element_count; i > 0 && sorted[i - 1].x > z; --i)
+		for (i = element_count; i > 0 && sorted[i - 1].z > z_next_pair.x; --i)
 			sorted[i] = sorted[i - 1];
 
 		if (i != element_count)
 			changed_order = true;
 
-		sorted[i].x = z;
-		sorted[i].y = uintBitsToFloat(next_idx);
+		sorted[i].z = z_next_pair.x;
+		sorted[i].ptr = next_idx;
 
-		next_idx = gbuffer_parse_nextptr(gbuffer[next_idx]);
+		next_idx = floatBitsToUint(z_next_pair.y);
 	}
 
 	if (!changed_order)
 		return;
 
 	for (int i = 0; i < element_count - 1; ++i)
-		gbuffer_write_nextptr(gbuffer[floatBitsToUint(sorted[i].y)], floatBitsToUint(sorted[i + 1].y));
-	gbuffer_write_nextptr(gbuffer[floatBitsToUint(sorted[element_count - 1].y)], 0xFFFFFFFF);
+		gbuffer_write_nextptr(gbuffer[sorted[i].ptr], sorted[i + 1].ptr);
+	gbuffer_write_nextptr(gbuffer[sorted[element_count - 1].ptr], 0xFFFFFFFF);
 
-	imageStore(gbuffer_ll_heads, coords, floatBitsToUint(sorted[0].y).xxxx);
+	if (head_idx != sorted[0].ptr)
+		imageStore(gbuffer_ll_heads, coords, sorted[0].ptr.xxxx);
 }
