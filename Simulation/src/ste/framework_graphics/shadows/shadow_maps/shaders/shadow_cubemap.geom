@@ -45,29 +45,29 @@ uniform float far;
 void process(int face, uint16_t l, vec4 vertices[3]) {
 	vec4 transformed_vertices[3];
 
-	int left_oob = 0;
-	int right_oob = 0;
-	int top_oob = 0;
-	int bottom_oob = 0;
-	int near_oob = 0;
-	int far_oob = 0;
-	for (int j = 0; j < 3; ++j) {
+	for (int j = 0; j < 3; ++j)
 		transformed_vertices[j] = shadow_transforms[face] * vertices[j];
 
-		if (transformed_vertices[j].x >  transformed_vertices[j].w) ++right_oob;
-		if (transformed_vertices[j].x < -transformed_vertices[j].w) ++left_oob;
-		if (transformed_vertices[j].y >  transformed_vertices[j].w) ++top_oob;
-		if (transformed_vertices[j].y < -transformed_vertices[j].w) ++bottom_oob;
-		if (transformed_vertices[j].z >  transformed_vertices[j].w) ++far_oob;
-		if (transformed_vertices[j].z < -transformed_vertices[j].w) ++near_oob;
-	}
-
-	if (left_oob == 3) return;
-	if (right_oob == 3) return;
-	if (top_oob == 3) return;
-	if (bottom_oob == 3) return;
-	if (near_oob == 3) return;
-	if (far_oob == 3) return;
+	if (transformed_vertices[0].x > transformed_vertices[0].w &&
+		transformed_vertices[1].x > transformed_vertices[1].w &&
+		transformed_vertices[2].x > transformed_vertices[2].w)
+		return;
+	if (transformed_vertices[0].x < -transformed_vertices[0].w &&
+		transformed_vertices[1].x < -transformed_vertices[1].w &&
+		transformed_vertices[2].x < -transformed_vertices[2].w)
+		return;
+	if (transformed_vertices[0].y > transformed_vertices[0].w &&
+		transformed_vertices[1].y > transformed_vertices[1].w &&
+		transformed_vertices[2].y > transformed_vertices[2].w)
+		return;
+	if (transformed_vertices[0].y < -transformed_vertices[0].w &&
+		transformed_vertices[1].y < -transformed_vertices[1].w &&
+		transformed_vertices[2].y < -transformed_vertices[2].w)
+		return;
+	if (transformed_vertices[0].z < -transformed_vertices[0].w &&
+		transformed_vertices[1].z < -transformed_vertices[1].w &&
+		transformed_vertices[2].z < -transformed_vertices[2].w)
+		return;
 
 	gl_Layer = face + int(l) * 6;
 	for (int j = 0; j < 3; ++j) {
