@@ -59,7 +59,7 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 						 hdr(ctx, &gbuffer),
 						 gbuffer_sorter(ctx, &gbuffer),
 						 prepopulate_depth_dispatch(ctx, scene),
-						 scene_frustum_cull(ctx, scene, &scene->scene_properties().lights_storage()),
+						 scene_geo_cull(ctx, scene, &scene->scene_properties().lights_storage()),
 						 composer(ctx, this),
 						 gbuffer_clearer(&gbuffer) {
 	resize_connection = std::make_shared<ResizeSignalConnectionType>([=](const glm::i32vec2 &size) {
@@ -88,7 +88,7 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 	scene_task = make_gpu_task("scene", scene, nullptr);
 	fb_clearer_task = make_gpu_task("fb_clearer", &fb_clearer, get_fbo());
 	prepopulate_depth_task = make_gpu_task("prepopulate_depth", &prepopulate_depth_dispatch, get_fbo());
-	scene_frustum_cull_task = make_gpu_task("frustum_cull", &scene_frustum_cull, nullptr);
+	scene_geo_cull_task = make_gpu_task("geo_cull", &scene_geo_cull, nullptr);
 	gbuffer_clearer_task = make_gpu_task("gbuf_clear", &gbuffer_clearer, nullptr);
 	gbuffer_sort_task = make_gpu_task("gbuf_sort", &gbuffer_sorter, nullptr);
 	shadow_projector_task = make_gpu_task("shdw_project", &shadows_projector, nullptr);
@@ -98,10 +98,10 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 	gbuffer_sort_task->add_dependency(fb_clearer_task);
 	hdr.get_task()->add_dependency(composer_task);
 	prepopulate_depth_task->add_dependency(fb_clearer_task);
-	prepopulate_depth_task->add_dependency(scene_frustum_cull_task);
+	prepopulate_depth_task->add_dependency(scene_geo_cull_task);
 	scene_task->add_dependency(prepopulate_depth_task);
-	scene_task->add_dependency(scene_frustum_cull_task);
-	scene_frustum_cull_task->add_dependency(light_preprocess.get_task());
+	scene_task->add_dependency(scene_geo_cull_task);
+	scene_geo_cull_task->add_dependency(light_preprocess.get_task());
 	lll_gen_task->add_dependency(light_preprocess.get_task());
 	lll_gen_task->add_dependency(prepopulate_depth_task);
 	shadow_projector_task->add_dependency(light_preprocess.get_task());
