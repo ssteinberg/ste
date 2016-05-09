@@ -10,17 +10,9 @@ layout(triangle_strip, max_vertices=15) out;
 #include "shadow_projection_instance_to_ll_idx_translation.glsl"
 
 in vs_out {
-	vec3 normal;
-	vec2 uv;
-	flat int matIdx;
 	flat int instanceIdx;
 	flat uint drawIdx;
 } vin[];
-
-out frag_in {
-	vec2 uv;
-	flat int matIdx;
-} vout;
 
 layout(std430, binding = 2) restrict readonly buffer light_data {
 	light_descriptor light_buffer[];
@@ -48,32 +40,26 @@ void process(int face, uint16_t l, vec4 vertices[3]) {
 	for (int j = 0; j < 3; ++j)
 		transformed_vertices[j] = shadow_transforms[face] * vertices[j];
 
-	if (transformed_vertices[0].x > transformed_vertices[0].w &&
-		transformed_vertices[1].x > transformed_vertices[1].w &&
-		transformed_vertices[2].x > transformed_vertices[2].w)
-		return;
-	if (transformed_vertices[0].x < -transformed_vertices[0].w &&
-		transformed_vertices[1].x < -transformed_vertices[1].w &&
-		transformed_vertices[2].x < -transformed_vertices[2].w)
-		return;
-	if (transformed_vertices[0].y > transformed_vertices[0].w &&
-		transformed_vertices[1].y > transformed_vertices[1].w &&
-		transformed_vertices[2].y > transformed_vertices[2].w)
-		return;
-	if (transformed_vertices[0].y < -transformed_vertices[0].w &&
-		transformed_vertices[1].y < -transformed_vertices[1].w &&
-		transformed_vertices[2].y < -transformed_vertices[2].w)
-		return;
-	if (transformed_vertices[0].z < -transformed_vertices[0].w &&
-		transformed_vertices[1].z < -transformed_vertices[1].w &&
-		transformed_vertices[2].z < -transformed_vertices[2].w)
+	if ((transformed_vertices[0].x > transformed_vertices[0].w &&
+		 transformed_vertices[1].x > transformed_vertices[1].w &&
+		 transformed_vertices[2].x > transformed_vertices[2].w) ||
+		(transformed_vertices[0].x < -transformed_vertices[0].w &&
+		 transformed_vertices[1].x < -transformed_vertices[1].w &&
+		 transformed_vertices[2].x < -transformed_vertices[2].w) ||
+		(transformed_vertices[0].y > transformed_vertices[0].w &&
+		 transformed_vertices[1].y > transformed_vertices[1].w &&
+		 transformed_vertices[2].y > transformed_vertices[2].w) ||
+		(transformed_vertices[0].y < -transformed_vertices[0].w &&
+		 transformed_vertices[1].y < -transformed_vertices[1].w &&
+		 transformed_vertices[2].y < -transformed_vertices[2].w) ||
+		(transformed_vertices[0].z < -transformed_vertices[0].w &&
+		 transformed_vertices[1].z < -transformed_vertices[1].w &&
+		 transformed_vertices[2].z < -transformed_vertices[2].w))
 		return;
 
 	gl_Layer = face + int(l) * 6;
 	for (int j = 0; j < 3; ++j) {
-		vout.uv = vin[j].uv;
 		gl_Position = transformed_vertices[j];
-
 		EmitVertex();
 	}
 
@@ -95,7 +81,9 @@ void main() {
 	float light_range = min(ld.effective_range, far);
 	float light_range2 = light_range * light_range;
 
-	vec3 N = (vin[0].normal + vin[1].normal + vin[2].normal) / 3.f;
+	vec3 u = gl_in[2].gl_Position.xyz - gl_in[1].gl_Position.xyz;
+	vec3 v = gl_in[0].gl_Position.xyz - gl_in[1].gl_Position.xyz;
+	vec3 N = cross(u,v);
 	vec3 V = light_pos.xyz - gl_in[0].gl_Position.xyz;
 
 	if (dot(N,V) >= 0)
@@ -114,7 +102,6 @@ void main() {
 	if (out_of_range == 3)
 		return;
 
-	vout.matIdx = vin[0].matIdx;
 	for (int face = 0; face < 6; ++face) {
 		if ((face_mask & (1 << face)) != 0)
 			process(face, ll_id, vertices);

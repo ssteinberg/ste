@@ -111,7 +111,7 @@ vec4 shade(g_buffer_element frag, mat4 inverse_view_matrix) {
 													 dist,
 													 shadow_proj22,
 													 shadow_proj23);
-				if (shadow == 1.f)
+				if (shadow >= 1.f)
 					continue;
 
 				float brdf = calc_brdf(md, position, n, t, b, v / dist);

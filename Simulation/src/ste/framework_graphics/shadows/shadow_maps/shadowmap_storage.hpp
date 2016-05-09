@@ -56,7 +56,7 @@ public:
 	shadowmap_storage(const StEngineControl &ctx,
 					  const glm::uvec2 &cube_size = glm::uvec2(default_map_size)) : cube_size(cube_size),
 																					shadow_depth_sampler(Core::TextureFiltering::Linear, Core::TextureFiltering::Linear,
-																										 Core::TextureWrapMode::ClampToEdge, Core::TextureWrapMode::ClampToEdge, 16) {
+																										 Core::TextureWrapMode::ClampToEdge, Core::TextureWrapMode::ClampToEdge) {
 		set_count(max_active_lights_per_frame);
 
 		shadow_depth_sampler.set_compare_mode(Core::TextureCompareMode::CompareToTextureDepth);
