@@ -84,7 +84,7 @@ vec4 shade(g_buffer_element frag, mat4 inverse_view_matrix) {
 
 	vec3 rgb = md.emission.rgb;
 
-	ivec2 lll_coords = ivec2(gl_FragCoord.xy) / 8;
+	ivec2 lll_coords = ivec2(gl_FragCoord.xy) / lll_image_res_multiplier;
 	uint32_t lll_ptr = imageLoad(lll_heads, lll_coords).x;
 	for (int i = 0; i < max_active_lights_per_frame; ++i, ++lll_ptr) {
 		lll_element lll_p = lll_buffer[lll_ptr];

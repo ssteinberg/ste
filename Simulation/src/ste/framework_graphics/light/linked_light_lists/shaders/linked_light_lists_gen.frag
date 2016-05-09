@@ -34,13 +34,11 @@ uniform float near, aspect;
 uniform float two_near_tan_fovy_over_two;	// 2 * near * tan(fovy * .5)
 uniform float proj22, proj23;
 
-const int res_multiplier = 8;
-
 void main() {
-	vec2 bb_size = textureSize(depth_map, 0).xy / float(res_multiplier);
+	vec2 bb_size = textureSize(depth_map, 0).xy;
 
 	ivec2 image_coord = ivec2(gl_FragCoord.xy);
-	vec2 frag_coords = vec2(gl_FragCoord.xy) / bb_size;
+	vec2 frag_coords = (vec2(gl_FragCoord.xy) + vec2(.5f)) / bb_size * float(lll_image_res_multiplier);
 
 	vec2 ndc = frag_coords - vec2(.5f);
 	float near_plane_h = two_near_tan_fovy_over_two;
@@ -85,11 +83,13 @@ void main() {
 				}
 				else {
 					// Compare against depth buffer
-					float d00 = texture(depth_map, vec3(frag_coords + vec2(.5f) 						/ bb_size, depth_zmax)).x;
-					float d10 = texture(depth_map, vec3(frag_coords + vec2(res_multiplier - 1.5f, .5f)	/ bb_size, depth_zmax)).x;
-					float d01 = texture(depth_map, vec3(frag_coords + vec2(.5f, res_multiplier - 1.5f)	/ bb_size, depth_zmax)).x;
-					float d11 = texture(depth_map, vec3(frag_coords + vec2(res_multiplier - 1.5f) 		/ bb_size, depth_zmax)).x;
-					if (d00 + d10 + d01 + d11 > .5f)
+					vec2 texture_offset = .5f * vec2(lll_image_res_multiplier - 1) / bb_size;
+					float d00 = texture(depth_map, vec3(frag_coords + vec2(-1.f, -1.f) * texture_offset + vec2(-1.f, -1.f) / bb_size, depth_zmax)).x;
+					float d10 = texture(depth_map, vec3(frag_coords + vec2( 1.f, -1.f) * texture_offset + vec2( .0f, -1.f) / bb_size, depth_zmax)).x;
+					float d01 = texture(depth_map, vec3(frag_coords + vec2(-1.f,  1.f) * texture_offset + vec2(-1.f,  .0f) / bb_size, depth_zmax)).x;
+					float d11 = texture(depth_map, vec3(frag_coords + vec2( 1.f,  1.f) * texture_offset + vec2( .0f,  .0f) / bb_size, depth_zmax)).x;
+					float d =   texture(depth_map, vec3(frag_coords, depth_zmax)).x;
+					if (d00 + d10 + d01 + d11 + d > .5f)
 						add_point = true;
 				}
 			}

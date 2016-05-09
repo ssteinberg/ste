@@ -1,8 +1,6 @@
 
 #include "common.glsl"
 
-const float shadow_delta = 2.f / 100000.f;
-
 float shadow_gather_pcf(samplerCubeArrayShadow shadow_depth_maps, uint light, float zf, vec3 norm_v, vec3 v, float m, float r, int samples, float jitter, inout int i) {
 	const float map_size = 1.f / 512.f;
 
@@ -16,7 +14,7 @@ float shadow_gather_pcf(samplerCubeArrayShadow shadow_depth_maps, uint light, fl
 		else if (v.y == m)	u = vec3(xy.x, 0, xy.y);
 		else				u = vec3(xy, 0);
 
-		pcf += texture(shadow_depth_maps, vec4(norm_v + u * map_size, light), zf + shadow_delta).x;
+		pcf += texture(shadow_depth_maps, vec4(norm_v + u * map_size, light), zf).x;
 	}
 
 	return pcf;
@@ -31,7 +29,7 @@ float shadow_penumbra_width(samplerCubeArrayShadow shadow_depth_maps, uint light
 
 	vec3 norm_v = shadow_v / m;
 
-	float pcf = texture(shadow_depth_maps, vec4(shadow_v, light), zf + shadow_delta).x;
+	float pcf = texture(shadow_depth_maps, vec4(shadow_v, light), zf).x;
 
 	const int samples_far = 3;
 	const int samples_near = 3;
