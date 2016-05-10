@@ -31,6 +31,10 @@
 #include "shadowmap_storage.hpp"
 #include "shadowmap_projector.hpp"
 
+#include "volumetric_scattering_storage.hpp"
+#include "volumetric_scattering_scatter_dispatch.hpp"
+#include "volumetric_scattering_gather_dispatch.hpp"
+
 #include "deferred_gbuffer.hpp"
 #include "gbuffer_clear_dispatch.hpp"
 #include "gbuffer_sort_dispatch.hpp"
@@ -100,6 +104,10 @@ private:
 	shadowmap_storage shadows_storage;
 	shadowmap_projector shadows_projector;
 
+	volumetric_scattering_storage volumetric_scattering;
+	volumetric_scattering_scatter_dispatch volumetric_scattering_scatter;
+	volumetric_scattering_gather_dispatch volumetric_scattering_gather;
+
 	hdr_dof_postprocess hdr;
 	gbuffer_sort_dispatch gbuffer_sorter;
 
@@ -112,6 +120,8 @@ private:
 									fb_clearer_task,
 									gbuffer_clearer_task,
 									shadow_projector_task,
+									volumetric_scattering_scatter_task,
+									volumetric_scattering_gather_task,
 									gbuffer_sort_task,
 									prepopulate_depth_task,
 									scene_frustum_cull_task,
@@ -125,7 +135,7 @@ private:
 
 protected:
 	void rebuild_task_queue();
-	void update_shader_shadow_proj_uniforms(const glm::mat4&);
+	void update_shader_proj_uniforms(const glm::mat4&);
 
 	const Core::GenericFramebufferObject *get_fbo() const {
 		if (use_deferred_rendering)
