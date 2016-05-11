@@ -65,7 +65,7 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 						 hdr(ctx, &gbuffer),
 						 gbuffer_sorter(ctx, &gbuffer),
 						 prepopulate_depth_dispatch(ctx, scene),
-						 scene_frustum_cull(ctx, scene, &scene->scene_properties().lights_storage()),
+						 scene_geo_cull(ctx, scene, &scene->scene_properties().lights_storage()),
 						 composer(ctx, this),
 						 gbuffer_clearer(&gbuffer) {
 	resize_connection = std::make_shared<ResizeSignalConnectionType>([=](const glm::i32vec2 &size) {
@@ -78,14 +78,13 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 
 		rebuild_task_queue();
 	});
-	projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([this](const glm::mat4 &proj, float, float n, float f) {
-		shadowmap_storage::update_shader_shadow_proj_uniforms(composer.program.get(), n, f);
+	projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([this](const glm::mat4 &proj, float, float n) {
 		update_shader_proj_uniforms(proj);
 	});
 	ctx.signal_framebuffer_resize().connect(resize_connection);
 	ctx.signal_projection_change().connect(projection_change_connection);
 
-	shadowmap_storage::update_shader_shadow_proj_uniforms(composer.program.get(), ctx.get_near_clip(), ctx.get_far_clip());
+	shadowmap_storage::update_shader_shadow_proj_uniforms(composer.program.get());
 	update_shader_proj_uniforms(ctx.projection_matrix());
 
 
@@ -97,7 +96,7 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 	scene_task = make_gpu_task("scene", scene, nullptr);
 	fb_clearer_task = make_gpu_task("fb_clearer", &fb_clearer, get_fbo());
 	prepopulate_depth_task = make_gpu_task("prepopulate_depth", &prepopulate_depth_dispatch, get_fbo());
-	scene_frustum_cull_task = make_gpu_task("frustum_cull", &scene_frustum_cull, nullptr);
+	scene_geo_cull_task = make_gpu_task("geo_cull", &scene_geo_cull, nullptr);
 	gbuffer_clearer_task = make_gpu_task("gbuf_clear", &gbuffer_clearer, nullptr);
 	gbuffer_sort_task = make_gpu_task("gbuf_sort", &gbuffer_sorter, nullptr);
 	shadow_projector_task = make_gpu_task("shdw_project", &shadows_projector, nullptr);
@@ -109,10 +108,10 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 	gbuffer_sort_task->add_dependency(fb_clearer_task);
 	hdr.get_task()->add_dependency(composer_task);
 	prepopulate_depth_task->add_dependency(fb_clearer_task);
-	prepopulate_depth_task->add_dependency(scene_frustum_cull_task);
+	prepopulate_depth_task->add_dependency(scene_geo_cull_task);
 	scene_task->add_dependency(prepopulate_depth_task);
-	scene_task->add_dependency(scene_frustum_cull_task);
-	scene_frustum_cull_task->add_dependency(light_preprocess.get_task());
+	scene_task->add_dependency(scene_geo_cull_task);
+	scene_geo_cull_task->add_dependency(light_preprocess.get_task());
 	lll_gen_task->add_dependency(light_preprocess.get_task());
 	lll_gen_task->add_dependency(prepopulate_depth_task);
 	shadow_projector_task->add_dependency(light_preprocess.get_task());
@@ -216,11 +215,9 @@ void GIRenderer::remove_gui_task(const gpu_task::TaskPtr &t) {
 void GIRenderer::update_shader_proj_uniforms(const glm::mat4 &projection) {
 	float proj00 = projection[0][0];
 	float proj11 = projection[1][1];
-	float proj22 = projection[2][2];
 	float proj23 = projection[3][2];
 
 	composer.program->set_uniform("proj00", proj00);
 	composer.program->set_uniform("proj11", proj11);
-	composer.program->set_uniform("proj22", proj22);
 	composer.program->set_uniform("proj23", proj23);
 }

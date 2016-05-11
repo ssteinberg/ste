@@ -16,7 +16,7 @@
 
 #include "Scene.hpp"
 #include "scene_prepopulate_depth_dispatch.hpp"
-#include "scene_frustum_cull_dispatch.hpp"
+#include "scene_geo_cull_dispatch.hpp"
 
 #include "SceneProperties.hpp"
 
@@ -112,7 +112,7 @@ private:
 	gbuffer_sort_dispatch gbuffer_sorter;
 
 	scene_prepopulate_depth_dispatch prepopulate_depth_dispatch;
-	scene_frustum_cull_dispatch scene_frustum_cull;
+	scene_geo_cull_dispatch scene_geo_cull;
 
 	std::shared_ptr<const gpu_task> precomposer_dummy_task,
 									scene_task,
@@ -124,7 +124,7 @@ private:
 									volumetric_scattering_gather_task,
 									gbuffer_sort_task,
 									prepopulate_depth_task,
-									scene_frustum_cull_task,
+									scene_geo_cull_task,
 									lll_gen_task;
 
 	deferred_composition composer;

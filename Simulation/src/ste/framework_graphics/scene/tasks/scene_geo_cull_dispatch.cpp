@@ -1,6 +1,6 @@
 
 #include "stdafx.hpp"
-#include "scene_frustum_cull_dispatch.hpp"
+#include "scene_geo_cull_dispatch.hpp"
 
 #include "Scene.hpp"
 #include "extract_projection_planes.hpp"
@@ -8,7 +8,7 @@
 using namespace StE::Graphics;
 using namespace StE::Core;
 
-void scene_frustum_cull_dispatch::commit_idbs() const {
+void scene_geo_cull_dispatch::commit_idbs() const {
 	auto size = scene->object_group().get_draw_buffers().size();
 	if (size != old_object_group_size) {
 		old_object_group_size = size;
@@ -18,7 +18,7 @@ void scene_frustum_cull_dispatch::commit_idbs() const {
 	}
 }
 
-void scene_frustum_cull_dispatch::set_context_state() const {
+void scene_geo_cull_dispatch::set_context_state() const {
 	auto& draw_buffers = scene->object_group().get_draw_buffers();
 
 	0_atomic_idx = scene->get_culled_objects_counter();
@@ -36,7 +36,7 @@ void scene_frustum_cull_dispatch::set_context_state() const {
 	program->bind();
 }
 
-void scene_frustum_cull_dispatch::dispatch() const {
+void scene_geo_cull_dispatch::dispatch() const {
 	commit_idbs();
 
 	auto& draw_buffers = scene->object_group().get_draw_buffers();

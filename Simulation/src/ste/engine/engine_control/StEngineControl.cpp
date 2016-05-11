@@ -8,6 +8,8 @@
 #include "Texture2D.hpp"
 #include "SurfaceFactory.hpp"
 
+#include "reversed_perspective.hpp"
+
 #include <chrono>
 #include <thread>
 #include <exception>
@@ -24,7 +26,6 @@ using namespace StE;
 struct StE::ste_engine_control_impl {
 	float field_of_view{ glm::quarter_pi<float>() };
 	float near_clip{ 0.1 };
-	float far_clip{ 1000 };
 
 	float fps{ 0 };
 	int frames{ 0 };
@@ -138,17 +139,16 @@ void StEngineControl::set_fov(float rad) {
 	set_projection_dirty();
 }
 
-void StEngineControl::set_clipping_planes(float near_clip_distance, float far_clip_distance) {
+void StEngineControl::set_clipping_planes(float near_clip_distance) {
 	pimpl->near_clip = near_clip_distance;
-	pimpl->far_clip = far_clip_distance;
 	set_projection_dirty();
 }
 
 void StEngineControl::set_projection_dirty() {
 	float aspect = get_projection_aspect();
-	projection = glm::perspective(pimpl->field_of_view, aspect, pimpl->near_clip, pimpl->far_clip);
+	projection = reversed_infinite_perspective<float>(pimpl->field_of_view, aspect, pimpl->near_clip);
 
-	projection_change_signal.emit(projection, pimpl->field_of_view, pimpl->near_clip, pimpl->far_clip);
+	projection_change_signal.emit(projection, pimpl->field_of_view, pimpl->near_clip);
 }
 
 glm::mat4& StEngineControl::projection_matrix() const {
@@ -161,10 +161,6 @@ float StEngineControl::get_fov() const {
 
 float StEngineControl::get_near_clip() const {
 	return pimpl->near_clip;
-}
-
-float StEngineControl::get_far_clip() const {
-	return pimpl->far_clip;
 }
 
 float StEngineControl::get_projection_aspect() const {

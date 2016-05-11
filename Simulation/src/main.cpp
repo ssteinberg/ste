@@ -47,12 +47,8 @@ public:
 
 		program->set_uniform("sky_luminance", 1.f);
 		program->set_uniform("projection", ctx.projection_matrix());
-//		program->set_uniform("near", ctx.get_near_clip());
-		program->set_uniform("far", ctx.get_far_clip());
-		projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([=](const glm::mat4 &proj, float, float clip_near, float clip_far) {
+		projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([=](const glm::mat4 &proj, float, float clip_near) {
 			this->program->set_uniform("projection", proj);
-//			this->program->set_uniform("near", clip_near);
-			this->program->set_uniform("far", clip_far);
 		});
 		ctx.signal_projection_change().connect(projection_change_connection);
 	}
@@ -104,15 +100,14 @@ int main() {
 
 	int w = 1700;
 	int h = w * 9 / 16;
-	constexpr float clip_far = 3000.f;
-	constexpr float clip_near = 5.f;
+	constexpr float clip_near = 1.f;
 	constexpr float fovy = glm::pi<float>() * .225f;
 
 	GL::gl_context::context_settings settings;
 	settings.vsync = false;
 	settings.fs = false;
 	StE::StEngineControl ctx(std::make_unique<GL::gl_context>(settings, "Shlomi Steinberg - Global Illumination", glm::i32vec2{ w, h }));// , gli::FORMAT_RGBA8_UNORM));
-	ctx.set_clipping_planes(clip_near, clip_far);
+	ctx.set_clipping_planes(clip_near);
 	ctx.set_fov(fovy);
 
 	auto font = StE::Text::Font("Data/ArchitectsDaughter.ttf");
@@ -277,10 +272,10 @@ int main() {
 			last_pointer_pos = pp;
 		}
 
-		// float angle = time * glm::pi<float>() / 2.5f;
-		// glm::vec3 lp = light0_pos + glm::vec3(glm::sin(angle) * 3, 0, glm::cos(angle)) * 115.f;
-		// light0->set_position(lp);
-		// light0_obj->set_model_matrix(glm::scale(glm::translate(glm::mat4(), lp), glm::vec3(light0->get_radius() / 2.f)));
+		float angle = time * glm::pi<float>() / 2.5f;
+		glm::vec3 lp = light0_pos + glm::vec3(glm::sin(angle) * 3, 0, glm::cos(angle)) * 115.f;
+		light0->set_position(lp);
+		light0_obj->set_model_matrix(glm::scale(glm::translate(glm::mat4(), lp), glm::vec3(light0->get_radius() / 2.f)));
 
 		{
 			using namespace StE::Text::Attributes;
