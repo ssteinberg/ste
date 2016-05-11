@@ -29,7 +29,7 @@ private:
 	linked_light_lists *lll;
 	std::shared_ptr<Core::GLSLProgram> program;
 
-	Core::Sampler depth_sampler;
+	Core::SamplerMipmapped depth_sampler;
 
 	Core::Texture2D *depth_map;
 
@@ -55,7 +55,7 @@ public:
 									light_storage *ls,
 									linked_light_lists *lll) : ctx(ctx), ls(ls), lll(lll),
 															   program(ctx.glslprograms_pool().fetch_program_task({ "passthrough.vert", "linked_light_lists_gen.frag" })()),
-															   depth_sampler(Core::TextureFiltering::Linear, Core::TextureFiltering::Linear) {
+															   depth_sampler(Core::TextureFiltering::Nearest, Core::TextureFiltering::Nearest, Core::TextureFiltering::Nearest) {
 		update_uniforms();
 		projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([this](const glm::mat4&, float, float) {
 			update_uniforms();

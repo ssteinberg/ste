@@ -4,19 +4,18 @@
 #pragma once
 
 #include "stdafx.hpp"
+#include "gpu_dispatchable.hpp"
+
 #include "StEngineControl.hpp"
 #include "gl_current_context.hpp"
 
 #include "GLSLProgram.hpp"
-#include "gpu_dispatchable.hpp"
-#include "ObjectGroup.hpp"
+#include "Scene.hpp"
 
 #include <memory>
 
 namespace StE {
 namespace Graphics {
-
-class Scene;
 
 class scene_prepopulate_depth_dispatch : public gpu_dispatchable {
 	using Base = gpu_dispatchable;
