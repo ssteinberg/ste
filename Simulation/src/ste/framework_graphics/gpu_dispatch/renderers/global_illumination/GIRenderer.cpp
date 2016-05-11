@@ -70,14 +70,13 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 
 		rebuild_task_queue();
 	});
-	projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([this](const glm::mat4 &proj, float, float n, float f) {
-		shadowmap_storage::update_shader_shadow_proj_uniforms(composer.program.get(), n, f);
+	projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([this](const glm::mat4 &proj, float, float n) {
 		update_shader_shadow_proj_uniforms(proj);
 	});
 	ctx.signal_framebuffer_resize().connect(resize_connection);
 	ctx.signal_projection_change().connect(projection_change_connection);
 
-	shadowmap_storage::update_shader_shadow_proj_uniforms(composer.program.get(), ctx.get_near_clip(), ctx.get_far_clip());
+	shadowmap_storage::update_shader_shadow_proj_uniforms(composer.program.get());
 	update_shader_shadow_proj_uniforms(ctx.projection_matrix());
 
 
@@ -199,11 +198,9 @@ void GIRenderer::remove_gui_task(const gpu_task::TaskPtr &t) {
 void GIRenderer::update_shader_shadow_proj_uniforms(const glm::mat4 &projection) {
 	float proj00 = projection[0][0];
 	float proj11 = projection[1][1];
-	float proj22 = projection[2][2];
 	float proj23 = projection[3][2];
 
 	composer.program->set_uniform("proj00", proj00);
 	composer.program->set_uniform("proj11", proj11);
-	composer.program->set_uniform("proj22", proj22);
 	composer.program->set_uniform("proj23", proj23);
 }
