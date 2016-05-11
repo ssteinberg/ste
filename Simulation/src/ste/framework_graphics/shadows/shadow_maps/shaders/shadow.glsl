@@ -20,7 +20,7 @@ float shadow_gather_pcf(samplerCubeArrayShadow shadow_depth_maps, uint light, fl
 	return pcf;
 }
 
-float shadow_penumbra_width(samplerCubeArrayShadow shadow_depth_maps, uint light, vec3 shadow_v, float l_radius, float dist, float proj22, float proj23) {
+float shadow(samplerCubeArrayShadow shadow_depth_maps, uint light, vec3 shadow_v, float l_radius, float dist, float proj23) {
 	const int samples_far = 3;
 	const int samples_med = 3;
 	const int samples_near = 3;
@@ -47,8 +47,7 @@ float shadow_penumbra_width(samplerCubeArrayShadow shadow_depth_maps, uint light
 	vec3 v = abs(shadow_v);
 	float m = max(v.x, max(v.y, v.z));
 
-	float ndc_zf = proj22 - proj23 / m;
-	float zf = (ndc_zf + 1.f) * .5f;
+	float zf = proj23 / m;
 
 	vec3 norm_v = shadow_v / m;
 

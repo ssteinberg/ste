@@ -6,6 +6,7 @@
 
 #include "hdr_common.glsl"
 #include "gbuffer.glsl"
+#include "project.glsl"
 
 layout(local_size_x = bins / 2, local_size_y = 1) in;
 
@@ -24,7 +25,7 @@ layout(binding = 11) uniform sampler2D depth;
 shared uint shared_data[bins];
 
 uniform uint hdr_lum_resolution;
-uniform float proj22, proj23;
+uniform float proj23;
 
 void main() {
 	uint id = gl_LocalInvocationID.x;
@@ -43,8 +44,7 @@ void main() {
 	float focal;
 	if (id == 0) {
 		float d = texelFetch(depth, textureSize(depth, 0) / 2, 0).x;
-		float d_ndc = d * 2.f - 1.f;
-		float z_lin = -proj23 / (d_ndc - proj22);
+		float z_lin = -unproject_depth(d, proj23);
 
 		params.focus = z_lin;
 	}

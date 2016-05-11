@@ -10,6 +10,7 @@
 #include "light.glsl"
 #include "linked_light_lists.glsl"
 #include "gbuffer.glsl"
+#include "project.glsl"
 #include "girenderer_matrix_buffer.glsl"
 //#include "voxels.glsl"
 
@@ -44,17 +45,7 @@ out vec4 gl_FragColor;
 
 uniform float scattering_ro = 0.0003f;
 uniform float height_map_scale = .5f;
-uniform float proj00, proj11, proj22, proj23, shadow_proj22, shadow_proj23;
-
-vec3 unproject_position(float depth) {
-	vec3 frag_coords = vec3(gl_FragCoord.xy / vec2(gbuffer_size(gbuffer_ll_heads)), depth);
-	vec3 ndc = (frag_coords - vec3(.5f)) * 2.f;
-
-	float z = (proj23 / (ndc.z + proj22));
-	vec2 xy = (ndc.xy * z) / vec2(proj00, proj11);
-
-	return vec3(xy, -z);
-}
+uniform float proj00, proj11, proj23, shadow_proj23;
 
 vec4 shade(g_buffer_element frag, mat4 inverse_view_matrix) {
 	int draw_idx = gbuffer_parse_material(frag);
@@ -74,7 +65,7 @@ vec4 shade(g_buffer_element frag, mat4 inverse_view_matrix) {
 	specular = mix(.2f, 1.f, specular);
 
 	float depth = gbuffer_parse_depth(frag);
-	vec3 position = unproject_position(depth);
+	vec3 position = unproject_screen_position(depth, gl_FragCoord.xy / vec2(gbuffer_size(gbuffer_ll_heads)), proj23, proj00, proj11);
 	vec3 w_pos = (inverse_view_matrix * vec4(position, 1)).xyz;
 	vec3 n = gbuffer_parse_normal(frag);
 	vec3 t = gbuffer_parse_tangent(frag);
@@ -104,21 +95,20 @@ vec4 shade(g_buffer_element frag, mat4 inverse_view_matrix) {
 				vec3 l = diffuse * ld.diffuse;
 
 				vec3 shadow_v = w_pos - ld.position_direction.xyz;
-				float shadow = shadow_penumbra_width(shadow_depth_maps,
-													 uint(lll_parse_ll_idx(lll_p)),
-													 shadow_v,
-													 l_radius,
-													 dist,
-													 shadow_proj22,
-													 shadow_proj23);
-				if (shadow >= 1.f)
+				float shadow = shadow(shadow_depth_maps,
+									  uint(lll_parse_ll_idx(lll_p)),
+									  shadow_v,
+									  l_radius,
+									  dist,
+									  shadow_proj23);
+				if (shadow <= .0f)
 					continue;
 
 				float brdf = calc_brdf(md, position, n, t, b, v / dist);
 				float attenuation_factor = light_attenuation_factor(ld, dist);
 				float incident_radiance = max(ld.luminance * attenuation_factor - ld.minimal_luminance, .0f);
 
-				float irradiance = specular * brdf * incident_radiance * (1.f - shadow);
+				float irradiance = specular * brdf * incident_radiance * shadow;
 				rgb += l * max(0.f, irradiance);
 			}
 		}

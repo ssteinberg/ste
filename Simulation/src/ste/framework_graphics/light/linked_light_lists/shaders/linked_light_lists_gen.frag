@@ -7,6 +7,8 @@
 #include "linked_light_lists.glsl"
 #include "linked_light_lists_store.glsl"
 
+#include "project.glsl"
+
 layout(std430, binding = 2) restrict readonly buffer light_data {
 	light_descriptor light_buffer[];
 };
@@ -32,7 +34,7 @@ layout(binding = 11) uniform sampler2DShadow depth_map;
 
 uniform float near, aspect;
 uniform float two_near_tan_fovy_over_two;	// 2 * near * tan(fovy * .5)
-uniform float proj22, proj23;
+uniform float proj23;
 
 void main() {
 	vec2 bb_size = textureSize(depth_map, 0).xy;
@@ -68,17 +70,15 @@ void main() {
 			float z_max = l.z * (-b - sqrt_delta) / a;
 			float z_min = l.z * (-b + sqrt_delta) / a;
 
-			float ndc_zmin = proj22 + proj23 / z_min;
-			float ndc_zmax = proj22 + proj23 / z_max;
-			float depth_zmin = clamp((ndc_zmin + 1.f) * .5f, .0f, 1.f);
-			float depth_zmax = (ndc_zmax + 1.f) * .5f;
+			float depth_zmin = clamp(project_depth(z_min, proj23), .0f, 1.f);
+			float depth_zmax = project_depth(z_max, proj23);
 
 			bool add_point = false;
 
 			if (z_min < -near) {
 				if (z_max >= -near) {
 					// Origin is inside the light radius
-					depth_zmax = .0f;
+					depth_zmax = 1.f;
 					add_point = true;
 				}
 				else {
@@ -97,8 +97,8 @@ void main() {
 			if (add_point) {
 				active_lights[total_active_lights] = lll_encode(light_idx,
 																ll_i,
-																depth_zmax,
-																depth_zmin);
+																depth_zmin,
+																depth_zmax);
 
 				++total_active_lights;
 			}

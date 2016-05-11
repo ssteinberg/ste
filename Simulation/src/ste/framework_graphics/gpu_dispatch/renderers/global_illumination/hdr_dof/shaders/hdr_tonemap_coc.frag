@@ -6,6 +6,7 @@
 
 #include "hdr_common.glsl"
 #include "gbuffer.glsl"
+#include "project.glsl"
 
 layout(location = 0) out vec4 rgbout;
 layout(location = 1) out vec4 bloomout;
@@ -27,7 +28,7 @@ layout(binding = 11) uniform sampler2D depth;
 
 uniform float aperature_radius = .2f;
 uniform float f1 = .1f;
-uniform float proj22, proj23;
+uniform float proj23;
 
 vec2 hdr_zcoc(vec4 RGBL, vec3 XYZ, float acuity, float mesopic) {
 	if (XYZ.y > bloom_cutoff) {
@@ -40,8 +41,7 @@ vec2 hdr_zcoc(vec4 RGBL, vec3 XYZ, float acuity, float mesopic) {
 	float focal = params.focus;
 
 	float d = texelFetch(depth, ivec2(gl_FragCoord.xy), 0).x;
-	float d_ndc = d * 2.f - 1.f;
-	float z_lin = -proj23 / (d_ndc - proj22);
+	float z_lin = -unproject_depth(d, proj23);
 
 	float s = z_lin;
 

@@ -32,8 +32,6 @@ layout(std430, binding = 9) restrict readonly buffer projection_data {
 	mat4 shadow_transforms[];
 };
 
-uniform float far;
-
 void process(int face, uint16_t l, vec4 vertices[3]) {
 	vec4 transformed_vertices[3];
 
@@ -78,7 +76,7 @@ void main() {
 		return;
 
 	vec4 light_pos = vec4(ld.position_direction.xyz, 0);
-	float light_range = min(ld.effective_range, far);
+	float light_range = ld.effective_range;
 	float light_range2 = light_range * light_range;
 
 	vec3 u = gl_in[2].gl_Position.xyz - gl_in[1].gl_Position.xyz;

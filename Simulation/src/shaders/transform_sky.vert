@@ -15,8 +15,7 @@ out vec3 frag_wposition;
 out vec2 frag_texcoords;
 
 uniform mat4 projection;
-uniform float near = 5.0f;
-uniform float far = 10000.0f;
+const float far = 100000.0f;
 
 void main() {
 	vec3 p = vert * far * .99f + vec3(0, -far * .05f, 0);

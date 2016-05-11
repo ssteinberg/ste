@@ -68,17 +68,9 @@ hdr_dof_postprocess::hdr_dof_postprocess(const StEngineControl &context, const d
 	setup_engine_connections();
 }
 
-void hdr_dof_postprocess::update_projection_uniforms() {
-	float n = ctx.get_near_clip();
-	float f = ctx.get_far_clip();
-
-	float proj22 = -(f + n) / (n - f);
-	float proj23 = -(2.f * f * n) / (n - f) / f;
-
-	hdr_tonemap_coc->set_uniform("proj22", proj22);
-	hdr_tonemap_coc->set_uniform("proj23", proj23);
-	hdr_compute_histogram_sums->set_uniform("proj22", proj22);
-	hdr_compute_histogram_sums->set_uniform("proj23", proj23);
+void hdr_dof_postprocess::update_projection_uniforms(const glm::mat4 &proj) {
+	hdr_tonemap_coc->set_uniform("proj23", proj[3][2]);
+	hdr_compute_histogram_sums->set_uniform("proj23", proj[3][2]);
 }
 
 void hdr_dof_postprocess::setup_engine_connections() {
@@ -86,9 +78,9 @@ void hdr_dof_postprocess::setup_engine_connections() {
 		this->resize(size);
 	});
 
-	update_projection_uniforms();
-	projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([this](const glm::mat4&, float ffov, float fnear, float ffar) {
-		update_projection_uniforms();
+	update_projection_uniforms(ctx.projection_matrix());
+	projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([this](const glm::mat4& proj, float ffov, float fnear) {
+		update_projection_uniforms(proj);
 	});
 	ctx.signal_framebuffer_resize().connect(resize_connection);
 	ctx.signal_projection_change().connect(projection_change_connection);

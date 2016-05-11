@@ -28,7 +28,7 @@ dense_voxel_space::dense_voxel_space(const StEngineControl &ctx, std::size_t max
 	sampler.set_wrap_r(Core::TextureWrapMode::ClampToBorder);
 
 	create_dense_voxel_space(voxel_size_factor);
-	projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([=](const glm::mat4 &, float, float, float) {
+	projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([=](const glm::mat4 &, float, float) {
 		create_dense_voxel_space(voxel_size_factor);
 	});
 	ctx.signal_projection_change().connect(projection_change_connection);
@@ -39,7 +39,7 @@ void dense_voxel_space::create_dense_voxel_space(float voxel_size_factor) {
 	handles_data.clear();
 
 	float fb_pixel_size = 2.f * glm::tan(.5f * ctx.get_fov()) * ctx.get_near_clip() / ctx.get_backbuffer_size().x;
-	space_size = ctx.get_far_clip();
+	space_size = 10000.f; // far clip
 
 	float fb_pixel_theta = glm::atan(fb_pixel_size / ctx.get_near_clip());
 	float l = fb_pixel_size / voxel_size_factor / glm::tan(fb_pixel_theta);

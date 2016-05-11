@@ -48,6 +48,7 @@ protected:
 	void resize(const glm::i32vec2 &size);
 	void setup_debug_context();
 	void set_defaults();
+	void setup_depth_buffer_gl_settings();
 
 	mutable window_type window;
 	std::unique_ptr<context_framebuffer> default_fb;
