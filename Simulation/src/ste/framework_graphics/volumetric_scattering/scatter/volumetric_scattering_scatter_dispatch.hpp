@@ -40,12 +40,10 @@ private:
 	void update_shader_proj_uniforms(const glm::mat4 &projection) {
 		float proj00 = projection[0][0];
 		float proj11 = projection[1][1];
-		float proj22 = projection[2][2];
 		float proj23 = projection[3][2];
 
 		program->set_uniform("proj00", proj00);
 		program->set_uniform("proj11", proj11);
-		program->set_uniform("proj22", proj22);
 		program->set_uniform("proj23", proj23);
 	}
 
@@ -56,13 +54,13 @@ public:
 										   const light_storage *ls,
 										   const shadowmap_storage *shadows_storage) : vss(vss), llls(llls), ls(ls), shadows_storage(shadows_storage),
 																					   program(ctx.glslprograms_pool().fetch_program_task({ "volumetric_scattering_scatter.glsl" })()) {
-		shadowmap_storage::update_shader_shadow_proj_uniforms(program.get(), ctx.get_near_clip(), ctx.get_far_clip());
 		update_shader_proj_uniforms(ctx.projection_matrix());
-		projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([this](const glm::mat4 &proj, float, float n, float f) {
-			shadowmap_storage::update_shader_shadow_proj_uniforms(this->program.get(), n, f);
+		projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([this](const glm::mat4 &proj, float, float n) {
 			update_shader_proj_uniforms(proj);
 		});
 		ctx.signal_projection_change().connect(projection_change_connection);
+
+		shadowmap_storage::update_shader_shadow_proj_uniforms(program.get());
 	}
 
 	void set_context_state() const override final;

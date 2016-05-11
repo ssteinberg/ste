@@ -6,10 +6,13 @@
 layout(local_size_x = 32, local_size_y = 32, local_size_z = 1) in;
 
 #include "volumetric_scattering.glsl"
+
 #include "shadow.glsl"
 #include "light.glsl"
 #include "linked_light_lists.glsl"
+
 #include "girenderer_matrix_buffer.glsl"
+#include "project.glsl"
 
 layout(std430, binding = 2) restrict readonly buffer light_data {
 	light_descriptor light_buffer[];
@@ -30,17 +33,7 @@ layout(binding = 8) uniform samplerCubeArrayShadow shadow_depth_maps;
 #include "light_load.glsl"
 #include "linked_light_lists_load.glsl"
 
-uniform float proj00, proj11, proj22, proj23, shadow_proj22, shadow_proj23;
-
-vec3 unproject_position(float depth, vec2 frag_xy) {
-	vec3 frag_coords = vec3(frag_xy, depth);
-	vec3 ndc = (frag_coords - vec3(.5f)) * 2.f;
-
-	float z = (proj23 / (ndc.z + proj22));
-	vec2 xy = (ndc.xy * z) / vec2(proj00, proj11);
-
-	return vec3(xy, -z);
-}
+uniform float proj00, proj11, proj23, shadow_proj23;
 
 void main() {
 	mat4 inverse_view_matrix = transpose(view_matrix_buffer.transpose_inverse_view_matrix);
@@ -50,8 +43,8 @@ void main() {
 
 	float depth = volumetric_scattering_depth_for_tile(volume_coords.z);
 	float depth_next_tile = volumetric_scattering_depth_for_tile(volume_coords.z + 1);
-	vec3 position = unproject_position(depth, fragcoords);
-	float z_next_tile = unproject_position(depth_next_tile, fragcoords).z;
+	vec3 position = unproject_screen_position(depth, fragcoords, proj23, proj00, proj11);
+	float z_next_tile = unproject_depth(depth_next_tile, proj23);
 
 	float thickness = position.z - z_next_tile;
 	vec3 w_pos = (inverse_view_matrix * vec4(position, 1)).xyz;
@@ -83,19 +76,18 @@ void main() {
 			float l_radius = ld.radius;
 
 			vec3 shadow_v = w_pos - ld.position_direction.xyz;
-			float shadow = shadow_penumbra_width(shadow_depth_maps,
-												 uint(lll_parse_ll_idx(lll_p)),
-												 shadow_v,
-												 l_radius,
-												 dist,
-												 shadow_proj22,
-												 shadow_proj23);
-			if (shadow >= 1.f)
+			float shadow = shadow(shadow_depth_maps,
+								  uint(lll_parse_ll_idx(lll_p)),
+								  shadow_v,
+								  l_radius,
+								  dist,
+								  shadow_proj23);
+			if (shadow <= .0f)
 				continue;
 
 			float attenuation_factor = light_attenuation_factor(ld, dist);
 			float incident_radiance = max(ld.luminance * attenuation_factor - ld.minimal_luminance, .0f);
-			float irradiance = incident_radiance * (1.f - shadow);
+			float irradiance = incident_radiance * shadow;
 
 			rgb += ld.diffuse * volumetric_scattering_phase(v / dist, view_dir);
 		}

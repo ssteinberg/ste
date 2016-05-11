@@ -32,7 +32,7 @@ void main() {
 	for (; p.z < volumetric_scattering_depth_tiles; ++p.z) {
 		vec4 next_rgba = imageLoad(volume, p);
 		rgba = accumulate(rgba, next_rgba);
-		write_out(p, rgba);
-		// write_out(p, (p.z % 2 == 0) ? vec4(0,0,1,0) : vec4(1,0,0,0));
+		// write_out(p, rgba);
+		write_out(p, (p.z % 2 == 0) ? vec4(0,0,1,0) : vec4(1,0,0,0));
 	}
 }
