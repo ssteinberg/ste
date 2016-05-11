@@ -29,6 +29,7 @@ layout(shared, binding = 11) restrict readonly buffer lll_data {
 layout(rgba16f, binding = 7) restrict writeonly uniform image3D volume;
 
 layout(binding = 8) uniform samplerCubeArrayShadow shadow_depth_maps;
+layout(binding = 11) uniform sampler2D depth_map;
 
 #include "light_load.glsl"
 #include "linked_light_lists_load.glsl"
@@ -36,9 +37,15 @@ layout(binding = 8) uniform samplerCubeArrayShadow shadow_depth_maps;
 uniform float proj00, proj11, proj23, shadow_proj23;
 
 void main() {
+	ivec3 volume_coords = ivec3(gl_GlobalInvocationID.xyz);
+
+	float depth_buffer_d = texelFetch(depth_map, volume_coords.xy * 8, 0).x;
+	int max_tile = min(int(volumetric_scattering_tile_for_depth(depth_buffer_d) + 1.5f), volumetric_scattering_depth_tiles);
+	if (volume_coords.z >= max_tile)
+		return;
+
 	mat4 inverse_view_matrix = transpose(view_matrix_buffer.transpose_inverse_view_matrix);
 
-	ivec3 volume_coords = ivec3(gl_GlobalInvocationID.xyz);
 	vec2 fragcoords = (vec2(volume_coords.xy) + vec2(.5f)) / vec2(1500.f /8.f, 1500.f /16.f*9.f/8.f);
 
 	float depth = volumetric_scattering_depth_for_tile(volume_coords.z);

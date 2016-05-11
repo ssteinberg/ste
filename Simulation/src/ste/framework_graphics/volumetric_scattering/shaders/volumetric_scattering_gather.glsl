@@ -8,7 +8,7 @@ layout(local_size_x = 32, local_size_y = 32) in;
 #include "volumetric_scattering.glsl"
 
 layout(rgba16f, binding = 7) restrict uniform image3D volume;
-layout(binding = 11) uniform sampler2DShadow depth_map;
+layout(binding = 11) uniform sampler2D depth_map;
 
 void write_out(ivec3 p, vec4 rgba) {
 	float scatter = exp(-rgba.a);
@@ -24,12 +24,15 @@ vec4 accumulate(vec4 front, vec4 back) {
 void main() {
 	ivec2 slice_coords = ivec2(gl_GlobalInvocationID.xy);
 
+	float depth_buffer_d = texelFetch(depth_map, slice_coords * 8, 0).x;
+	int max_tile = min(int(volumetric_scattering_tile_for_depth(depth_buffer_d) + 1.5f), volumetric_scattering_depth_tiles);
+
 	ivec3 p = ivec3(slice_coords, 0);
 	vec4 rgba = imageLoad(volume, p);
 	write_out(p, rgba);
 
 	++p.z;
-	for (; p.z < volumetric_scattering_depth_tiles; ++p.z) {
+	for (; p.z < max_tile; ++p.z) {
 		vec4 next_rgba = imageLoad(volume, p);
 		rgba = accumulate(rgba, next_rgba);
 		write_out(p, rgba);

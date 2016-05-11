@@ -8,8 +8,8 @@ using namespace StE::Core;
 void volumetric_scattering_gather_dispatch::set_context_state() const {
 	7_image_idx = vss->get_volume_texture()->make_image();
 
-	// 11_sampler_idx = vss->get_depth_sampler();
 	11_tex_unit = *vss->get_depth_map();
+	11_sampler_idx = vss->get_depth_sampler();
 
 	program->bind();
 }

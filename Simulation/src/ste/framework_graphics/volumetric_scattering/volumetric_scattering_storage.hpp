@@ -24,13 +24,16 @@ private:
 private:
 	Core::Texture2D *depth_map;
 	std::unique_ptr<Core::Texture3D> volume;
+
 	Core::Sampler volume_sampler;
+	Core::Sampler depth_sampler;
 
 	glm::ivec3 size;
 
 public:
 	volumetric_scattering_storage(glm::ivec2 size) : volume_sampler(Core::TextureFiltering::Linear, Core::TextureFiltering::Linear,
-																    Core::TextureWrapMode::ClampToEdge, Core::TextureWrapMode::ClampToEdge, 16) {
+																    Core::TextureWrapMode::ClampToEdge, Core::TextureWrapMode::ClampToEdge, 16),
+													  depth_sampler(Core::TextureFiltering::Nearest, Core::TextureFiltering::Nearest) {
 		volume_sampler.set_wrap_r(Core::TextureWrapMode::ClampToEdge);
 
 		resize(size);
@@ -50,9 +53,12 @@ public:
 	void set_depth_map(Core::Texture2D *dm) { depth_map = dm; }
 
 	auto& get_size() const { return size; }
+
 	auto* get_volume_texture() const { return volume.get(); }
-	auto& get_volume_sampler() const { return volume_sampler; }
 	auto* get_depth_map() const { return depth_map; }
+
+	auto& get_volume_sampler() const { return volume_sampler; }
+	auto& get_depth_sampler() const { return depth_sampler; }
 };
 
 }
