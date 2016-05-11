@@ -28,7 +28,7 @@ private:
 public:
 	gbuffer_downsample_depth_dispatch(const StEngineControl &ctx,
 									  const deferred_gbuffer *gbuffer) : gbuffer(gbuffer),
-																		 program(ctx.glslprograms_pool().fetch_program_task({ "passthrough.vert", "gbuffer_downsample_depth.frag" })()) {}
+																		 program(ctx.glslprograms_pool().fetch_program_task({ "gbuffer_downsample_depth.glsl" })()) {}
 
 	void set_context_state() const override final;
 	void dispatch() const override final;

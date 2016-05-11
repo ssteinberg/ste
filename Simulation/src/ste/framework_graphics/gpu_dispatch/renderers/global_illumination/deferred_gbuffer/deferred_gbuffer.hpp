@@ -34,6 +34,7 @@ private:
 
 private:
 	std::unique_ptr<Core::Texture2D> depth_target;
+	std::unique_ptr<Core::Texture2D> downsampled_depth_target;
 	Core::FramebufferObject fbo;
 
 	gbuffer_type gbuffer;
@@ -56,7 +57,6 @@ public:
 
 	void resize(glm::ivec2 size);
 	auto& get_size() const { return size; }
-	auto get_depth_buffer_levels() const { return depth_buffer_levels; }
 
 	void clear() {
 		std::uint32_t zero = 0;
@@ -68,6 +68,7 @@ public:
 	void bind_gbuffer(bool readonly = true) const;
 
 	auto* get_depth_target() const { return depth_target.get(); }
+	auto* get_downsampled_depth_target() const { return downsampled_depth_target.get(); }
 	auto* get_fbo() const { return &fbo; }
 };
 

@@ -9,7 +9,7 @@ using namespace StE::Graphics;
 constexpr int linked_light_lists::lll_image_res_multiplier;
 
 void linked_light_lists::resize(glm::ivec2 size) {
-	size = (size + glm::ivec2(lll_image_res_multiplier - 1)) / lll_image_res_multiplier;
+	size = size / lll_image_res_multiplier;
 
 	if (size.x <= 0 || size.y <= 0)
 		return;

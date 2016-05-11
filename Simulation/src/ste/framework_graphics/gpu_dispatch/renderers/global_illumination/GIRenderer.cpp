@@ -46,7 +46,7 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 					   Scene *scene/*,
 					   std::size_t voxel_grid_size,
 					   float voxel_grid_ratio*/)
-					   : gbuffer(ctx.get_backbuffer_size(), glm::log(linked_light_lists::lll_image_res_multiplier)),
+					   : gbuffer(ctx.get_backbuffer_size(), gbuffer_depth_target_levels()),
 						 ctx(ctx),
 						 camera(camera),
 						 scene(scene),
@@ -97,12 +97,14 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 
 	fb_clearer_task->add_dependency(gbuffer_clearer_task);
 	gbuffer_sort_task->add_dependency(fb_clearer_task);
+	gbuffer_sort_task->add_dependency(scene_task);
 	hdr.get_task()->add_dependency(composer_task);
 	prepopulate_depth_task->add_dependency(fb_clearer_task);
 	prepopulate_depth_task->add_dependency(scene_geo_cull_task);
 	downsample_depth_task->add_dependency(prepopulate_depth_task);
 	scene_task->add_dependency(prepopulate_depth_task);
 	scene_task->add_dependency(scene_geo_cull_task);
+	scene_task->add_dependency(downsample_depth_task);
 	scene_geo_cull_task->add_dependency(light_preprocess.get_task());
 	lll_gen_task->add_dependency(light_preprocess.get_task());
 	lll_gen_task->add_dependency(prepopulate_depth_task);
@@ -197,6 +199,10 @@ void GIRenderer::remove_gui_task(const gpu_task::TaskPtr &t) {
 	q.remove_task_dependency(t, fb_clearer_task);
 
 	gui_tasks.erase(t);
+}
+
+int GIRenderer::gbuffer_depth_target_levels() {
+	return glm::ceil(glm::log(linked_light_lists::lll_image_res_multiplier)) + 1;
 }
 
 void GIRenderer::update_shader_shadow_proj_uniforms(const glm::mat4 &projection) {
