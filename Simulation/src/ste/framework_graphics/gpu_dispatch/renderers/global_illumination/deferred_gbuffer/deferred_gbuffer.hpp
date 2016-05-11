@@ -41,16 +41,22 @@ private:
 	std::unique_ptr<Core::Texture2D> gbuffer_ll_heads;
 
 	glm::ivec2 size;
+	int depth_buffer_levels;
 
 	static std::size_t virtual_gbuffer_size() {
 		return virt_size / gbuffer_type::page_size() / sizeof(g_buffer_element) * gbuffer_type::page_size();
 	}
 
 public:
-	deferred_gbuffer(glm::ivec2 size) : gbuffer(virtual_gbuffer_size()), gbuffer_ll_counter(1) { resize(size); }
+	deferred_gbuffer(glm::ivec2 size, int depth_buffer_levels) : gbuffer(virtual_gbuffer_size()),
+																 gbuffer_ll_counter(1),
+																 depth_buffer_levels(depth_buffer_levels) {
+		resize(size);
+	}
 
 	void resize(glm::ivec2 size);
 	auto& get_size() const { return size; }
+	auto get_depth_buffer_levels() const { return depth_buffer_levels; }
 
 	void clear() {
 		std::uint32_t zero = 0;
