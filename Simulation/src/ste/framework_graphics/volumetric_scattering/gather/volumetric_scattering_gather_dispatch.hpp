@@ -7,6 +7,8 @@
 #include "StEngineControl.hpp"
 #include "gl_current_context.hpp"
 
+#include "signal.hpp"
+
 #include "GLSLProgram.hpp"
 #include "gpu_dispatchable.hpp"
 

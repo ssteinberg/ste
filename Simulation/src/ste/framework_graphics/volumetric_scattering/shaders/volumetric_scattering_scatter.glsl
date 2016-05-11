@@ -39,7 +39,7 @@ void main() {
 	mat4 inverse_view_matrix = transpose(view_matrix_buffer.transpose_inverse_view_matrix);
 
 	ivec3 volume_coords = ivec3(gl_GlobalInvocationID.xyz);
-	vec2 fragcoords = vec2(volume_coords.xy) / vec2(1500.f /8.f, 1500.f /16.f*9.f/8.f);
+	vec2 fragcoords = (vec2(volume_coords.xy) + vec2(.5f)) / vec2(1500.f /8.f, 1500.f /16.f*9.f/8.f);
 
 	float depth = volumetric_scattering_depth_for_tile(volume_coords.z);
 	float depth_next_tile = volumetric_scattering_depth_for_tile(volume_coords.z + 1);

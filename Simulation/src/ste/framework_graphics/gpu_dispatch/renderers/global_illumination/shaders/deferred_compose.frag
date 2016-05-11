@@ -124,8 +124,8 @@ vec4 shade(g_buffer_element frag, mat4 inverse_view_matrix) {
 	vec4 inscattering_transmittance = volumetric_scattering_load_inscattering_transmittance(scattering_volume,
 																							vec2(gl_FragCoord.xy),
 																							depth);
-	// rgb *= inscattering_transmittance.a;
-	// rgb += inscattering_transmittance.rgb;
+	rgb *= inscattering_transmittance.a;
+	rgb += inscattering_transmittance.rgb;
 
 	return vec4(rgb, alpha);
 }
