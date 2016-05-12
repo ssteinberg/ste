@@ -38,6 +38,7 @@
 #include "deferred_gbuffer.hpp"
 #include "gbuffer_clear_dispatch.hpp"
 #include "gbuffer_sort_dispatch.hpp"
+#include "gbuffer_downsample_depth_dispatch.hpp"
 
 #include "dense_voxel_space.hpp"
 #include "fb_clear_dispatch.hpp"
@@ -110,6 +111,7 @@ private:
 
 	hdr_dof_postprocess hdr;
 	gbuffer_sort_dispatch gbuffer_sorter;
+	gbuffer_downsample_depth_dispatch downsample_depth;
 
 	scene_prepopulate_depth_dispatch prepopulate_depth_dispatch;
 	scene_geo_cull_dispatch scene_geo_cull;
@@ -123,6 +125,7 @@ private:
 									volumetric_scattering_scatter_task,
 									volumetric_scattering_gather_task,
 									gbuffer_sort_task,
+									downsample_depth_task,
 									prepopulate_depth_task,
 									scene_geo_cull_task,
 									lll_gen_task;
@@ -136,6 +139,7 @@ private:
 protected:
 	void rebuild_task_queue();
 	void update_shader_proj_uniforms(const glm::mat4&);
+	static int gbuffer_depth_target_levels();
 
 	const Core::GenericFramebufferObject *get_fbo() const {
 		if (use_deferred_rendering)

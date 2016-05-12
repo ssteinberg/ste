@@ -18,8 +18,6 @@
 namespace StE {
 namespace Graphics {
 
-class Scene;
-
 class scene_geo_cull_dispatch : public gpu_dispatchable {
 	using Base = gpu_dispatchable;
 

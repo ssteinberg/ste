@@ -49,7 +49,7 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 					   Scene *scene/*,
 					   std::size_t voxel_grid_size,
 					   float voxel_grid_ratio*/)
-					   : gbuffer(ctx.get_backbuffer_size()),
+					   : gbuffer(ctx.get_backbuffer_size(), gbuffer_depth_target_levels()),
 						 ctx(ctx),
 						 camera(camera),
 						 scene(scene),
@@ -64,6 +64,7 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 						 volumetric_scattering_gather(ctx, &volumetric_scattering),
 						 hdr(ctx, &gbuffer),
 						 gbuffer_sorter(ctx, &gbuffer),
+						 downsample_depth(ctx, &gbuffer),
 						 prepopulate_depth_dispatch(ctx, scene),
 						 scene_geo_cull(ctx, scene, &scene->scene_properties().lights_storage()),
 						 composer(ctx, this),
@@ -99,6 +100,7 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 	scene_geo_cull_task = make_gpu_task("geo_cull", &scene_geo_cull, nullptr);
 	gbuffer_clearer_task = make_gpu_task("gbuf_clear", &gbuffer_clearer, nullptr);
 	gbuffer_sort_task = make_gpu_task("gbuf_sort", &gbuffer_sorter, nullptr);
+	downsample_depth_task = make_gpu_task("downsample_depth", &downsample_depth, nullptr);
 	shadow_projector_task = make_gpu_task("shdw_project", &shadows_projector, nullptr);
 	volumetric_scattering_scatter_task = make_gpu_task("scatter", &volumetric_scattering_scatter, nullptr);
 	volumetric_scattering_gather_task = make_gpu_task("gather", &volumetric_scattering_gather, nullptr);
@@ -106,14 +108,18 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 
 	fb_clearer_task->add_dependency(gbuffer_clearer_task);
 	gbuffer_sort_task->add_dependency(fb_clearer_task);
+	gbuffer_sort_task->add_dependency(scene_task);
 	hdr.get_task()->add_dependency(composer_task);
 	prepopulate_depth_task->add_dependency(fb_clearer_task);
 	prepopulate_depth_task->add_dependency(scene_geo_cull_task);
+	downsample_depth_task->add_dependency(prepopulate_depth_task);
 	scene_task->add_dependency(prepopulate_depth_task);
 	scene_task->add_dependency(scene_geo_cull_task);
+	scene_task->add_dependency(downsample_depth_task);
 	scene_geo_cull_task->add_dependency(light_preprocess.get_task());
 	lll_gen_task->add_dependency(light_preprocess.get_task());
 	lll_gen_task->add_dependency(prepopulate_depth_task);
+	lll_gen_task->add_dependency(downsample_depth_task);
 	shadow_projector_task->add_dependency(light_preprocess.get_task());
 	volumetric_scattering_scatter_task->add_dependency(light_preprocess.get_task());
 	volumetric_scattering_scatter_task->add_dependency(shadow_projector_task);
@@ -210,6 +216,10 @@ void GIRenderer::remove_gui_task(const gpu_task::TaskPtr &t) {
 	q.remove_task_dependency(t, fb_clearer_task);
 
 	gui_tasks.erase(t);
+}
+
+int GIRenderer::gbuffer_depth_target_levels() {
+	return glm::ceil(glm::log(linked_light_lists::lll_image_res_multiplier)) + 1;
 }
 
 void GIRenderer::update_shader_proj_uniforms(const glm::mat4 &projection) {
