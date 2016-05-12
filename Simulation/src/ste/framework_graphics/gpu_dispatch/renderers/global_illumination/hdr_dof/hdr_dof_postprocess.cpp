@@ -77,12 +77,12 @@ void hdr_dof_postprocess::setup_engine_connections() {
 	resize_connection = std::make_shared<ResizeSignalConnectionType>([=](const glm::i32vec2 &size) {
 		this->resize(size);
 	});
+	ctx.signal_framebuffer_resize().connect(resize_connection);
 
 	update_projection_uniforms(ctx.projection_matrix());
 	projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([this](const glm::mat4& proj, float ffov, float fnear) {
 		update_projection_uniforms(proj);
 	});
-	ctx.signal_framebuffer_resize().connect(resize_connection);
 	ctx.signal_projection_change().connect(projection_change_connection);
 }
 

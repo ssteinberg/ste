@@ -25,9 +25,9 @@ void volumetric_scattering_scatter_dispatch::set_context_state() const {
 }
 
 void volumetric_scattering_scatter_dispatch::dispatch() const {
-	const glm::ivec3 jobs = { 32, 32, 1 };
-	auto size = (vss->get_size() + jobs - glm::ivec3(1)) / jobs;
+	const glm::ivec2 jobs = { 32, 32 };
+	auto size = (glm::ivec2{ vss->get_size().x, vss->get_size().y } + jobs - glm::ivec2(1)) / jobs;
 
 	Core::GL::gl_current_context::get()->memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
-	Core::GL::gl_current_context::get()->dispatch_compute(size.x, size.y, size.z);
+	Core::GL::gl_current_context::get()->dispatch_compute(size.x, size.y, 1);
 }

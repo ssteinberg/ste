@@ -25,6 +25,7 @@ namespace Graphics {
 class volumetric_scattering_scatter_dispatch : public gpu_dispatchable {
 	using Base = gpu_dispatchable;
 
+	using ResizeSignalConnectionType = StEngineControl::framebuffer_resize_signal_type::connection_type;
 	using ProjectionSignalConnectionType = StEngineControl::projection_change_signal_type::connection_type;
 
 private:
@@ -36,6 +37,7 @@ private:
 	std::shared_ptr<Core::GLSLProgram> program;
 
 private:
+	std::shared_ptr<ResizeSignalConnectionType> resize_connection;
 	std::shared_ptr<ProjectionSignalConnectionType> projection_change_connection;
 
 private:
@@ -61,6 +63,12 @@ public:
 			update_shader_proj_uniforms(proj);
 		});
 		ctx.signal_projection_change().connect(projection_change_connection);
+
+		this->program->set_uniform("backbuffer_size", glm::vec2(ctx.get_backbuffer_size()));
+		resize_connection = std::make_shared<ResizeSignalConnectionType>([=](const glm::i32vec2 &size) {
+			this->program->set_uniform("backbuffer_size", glm::vec2(size));
+		});
+		ctx.signal_framebuffer_resize().connect(resize_connection);
 
 		shadowmap_storage::update_shader_shadow_proj_uniforms(program.get());
 	}

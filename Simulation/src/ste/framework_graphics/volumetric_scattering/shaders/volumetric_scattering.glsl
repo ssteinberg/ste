@@ -5,7 +5,7 @@
 const int volumetric_scattering_tile_size = 8;
 const int volumetric_scattering_depth_tiles = 512;
 
-const float volumetric_scattering_tiles_exponential_depth_coefficient = 15.f;
+const float volumetric_scattering_tiles_exponential_depth_coefficient = 8.f;
 
 float volumetric_scattering_depth_for_tile(int t) {
 	float ratio = float(t + .5f) / float(volumetric_scattering_depth_tiles);
@@ -32,7 +32,7 @@ float volumetric_scattering_scattering_coefficient(float density, float thicknes
 }
 
 float volumetric_scattering_absorption_coefficient(float density, float thickness) {
-	return .0000001f * density * thickness;
+	return .00000002f * density * thickness;
 }
 
 float volumetric_scattering_phase(vec3 l_dir, vec3 v_dir) {

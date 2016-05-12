@@ -56,7 +56,8 @@ public:
 									light_storage *ls,
 									linked_light_lists *lll) : ctx(ctx), ls(ls), lll(lll),
 															   program(ctx.glslprograms_pool().fetch_program_task({ "passthrough.vert", "linked_light_lists_gen.frag" })()),
-															   depth_sampler(Core::TextureFiltering::Nearest, Core::TextureFiltering::Nearest, Core::TextureFiltering::Nearest) {
+															   depth_sampler(Core::TextureFiltering::Nearest, Core::TextureFiltering::Nearest, Core::TextureFiltering::Nearest,
+															   				 Core::TextureWrapMode::ClampToEdge, Core::TextureWrapMode::ClampToEdge) {
 		update_uniforms();
 		projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([this](const glm::mat4&, float, float) {
 			update_uniforms();
