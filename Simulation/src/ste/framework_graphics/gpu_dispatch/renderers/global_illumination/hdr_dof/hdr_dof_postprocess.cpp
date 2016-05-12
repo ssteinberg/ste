@@ -33,10 +33,10 @@ hdr_dof_postprocess::hdr_dof_postprocess(const StEngineControl &context, const d
 	hdr_create_histogram = context.glslprograms_pool().fetch_program_task({ "hdr_create_histogram.glsl" })();
 	hdr_compute_histogram_sums = context.glslprograms_pool().fetch_program_task({ "hdr_compute_histogram_sums.glsl" })();
 	hdr_tonemap_coc = context.glslprograms_pool().fetch_program_task({ "passthrough.vert", "hdr_tonemap_coc.frag" })();
-	hdr_bloom_blurx = context.glslprograms_pool().fetch_program_task({ "hdr_blur.vert", "hdr_bloom_blur_x.frag" })();
-	hdr_bloom_blury = context.glslprograms_pool().fetch_program_task({ "hdr_blur.vert", "hdr_bloom_blur_y.frag" })();
-	bokeh_blurx = context.glslprograms_pool().fetch_program_task({ "hdr_blur.vert", "bokeh_bilateral_blur_x.frag" })();
-	bokeh_blury = context.glslprograms_pool().fetch_program_task({ "hdr_blur.vert", "bokeh_bilateral_blur_y.frag" })();
+	hdr_bloom_blurx = context.glslprograms_pool().fetch_program_task({ "passthrough.vert", "hdr_bloom_blur_x.frag" })();
+	hdr_bloom_blury = context.glslprograms_pool().fetch_program_task({ "passthrough.vert", "hdr_bloom_blur_y.frag" })();
+	bokeh_blurx = context.glslprograms_pool().fetch_program_task({ "passthrough.vert", "bokeh_bilateral_blur_x.frag" })();
+	bokeh_blury = context.glslprograms_pool().fetch_program_task({ "passthrough.vert", "bokeh_bilateral_blur_y.frag" })();
 
 	gli::texture1d hdr_human_vision_properties_data(gli::format::FORMAT_RGBA32_SFLOAT_PACK32, glm::tvec1<std::size_t>{ 4096 }, 1);
 	{
@@ -129,7 +129,7 @@ void hdr_dof_postprocess::resize(glm::ivec2 size) {
 	if (size.x <= 0 || size.y <= 0)
 		return;
 
-	bokeh_coc = std::make_unique<Core::Texture2D>(gli::format::FORMAT_RGBA16_SFLOAT_PACK16, StE::Core::Texture2D::size_type(size), 1);
+	bokeh_coc = std::make_unique<Core::Texture2D>(gli::format::FORMAT_RG16_SFLOAT_PACK16, StE::Core::Texture2D::size_type(size), 1);
 
 	hdr_image = std::make_unique<Core::Texture2D>(gli::format::FORMAT_RGBA16_SFLOAT_PACK16, StE::Core::Texture2D::size_type(size), 1);
 	hdr_final_image = std::make_unique<Core::Texture2D>(gli::format::FORMAT_RGBA16_SFLOAT_PACK16, StE::Core::Texture2D::size_type(size), 1);

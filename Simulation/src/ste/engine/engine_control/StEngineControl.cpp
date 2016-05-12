@@ -113,12 +113,15 @@ void StEngineControl::capture_screenshot() const {
 	auto size = gl()->framebuffer_size();
 
 	auto fbo = std::make_unique<StE::Core::FramebufferObject>();
-	StE::Core::Texture2D fbo_tex(gli::format::FORMAT_RGB8_UNORM_PACK8, size, 1);
+	StE::Core::Texture2D fbo_tex(gli::format::FORMAT_RGBA8_UNORM_PACK8, size, 1);
 	(*fbo)[0] = fbo_tex[0];
 
 	gl()->defaut_framebuffer().blit_to(*fbo, size, size);
-	gli::texture2d tex(gli::FORMAT_RGB8_UNORM_PACK8, size);
-	(*fbo)[0].read_pixels(tex.data(), 3 * size.x * size.y);
+	gli::texture2d tex(gli::FORMAT_RGBA8_UNORM_PACK8, size);
+	(*fbo)[0].read_pixels(tex.data(), 4 * size.x * size.y);
+
+	for (int i=0; i<size.x * size.y; ++i)
+		reinterpret_cast<glm::u8vec4*>(tex.data())[i].w = 255;
 
 	scheduler().schedule_now([=](optional<task_scheduler*> sched) {
 		boost::filesystem::create_directory("Screenshots");
