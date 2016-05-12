@@ -99,11 +99,9 @@ vec4 shade(g_buffer_element frag, mat4 inverse_view_matrix) {
 
 					vec3 shadow_v = w_pos - ld.position_direction.xyz;
 					float shadow = shadow(shadow_depth_maps,
-										uint(lll_parse_ll_idx(lll_p)),
-										shadow_v,
-										l_radius,
-										dist,
-										shadow_proj23);
+										  uint(lll_parse_ll_idx(lll_p)),
+										  shadow_v,
+										  shadow_proj23);
 					if (shadow <= .0f)
 						continue;
 

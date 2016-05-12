@@ -101,17 +101,13 @@ void main() {
 				light_descriptor ld = light_buffer[light_idx];
 
 				vec3 v = light_incidant_ray(ld, light_idx, position);
-
 				float dist = length(v);
-				float l_radius = ld.radius;
 
 				vec3 shadow_v = w_pos - ld.position_direction.xyz;
-				float shadow = shadow(shadow_depth_maps,
-									uint(lll_parse_ll_idx(lll_p)),
-									shadow_v,
-									l_radius,
-									dist,
-									shadow_proj23);
+				float shadow = shadow_fast(shadow_depth_maps,
+										   uint(lll_parse_ll_idx(lll_p)),
+										   shadow_v,
+										   shadow_proj23);
 				if (shadow <= .0f)
 					continue;
 
