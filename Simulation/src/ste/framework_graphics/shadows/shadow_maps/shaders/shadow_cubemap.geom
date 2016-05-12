@@ -26,7 +26,7 @@ layout(shared, binding = 5) restrict readonly buffer ll_data {
 };
 
 layout(std430, binding = 8) restrict readonly buffer shadow_projection_instance_to_ll_idx_translation_data {
-	shadow_projection_instance_to_ll_idx_translation sproj_id_to_llid_tt[max_active_lights_per_frame];
+	shadow_projection_instance_to_ll_idx_translation sproj_id_to_llid_tt[shadow_proj_id_to_ll_id_table_size];
 };
 layout(std430, binding = 9) restrict readonly buffer projection_data {
 	mat4 shadow_transforms[];
