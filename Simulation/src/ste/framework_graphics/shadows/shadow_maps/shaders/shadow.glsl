@@ -20,7 +20,7 @@ float shadow_gather_pcf(samplerCubeArrayShadow shadow_depth_maps, uint light, fl
 	return pcf;
 }
 
-float shadow(samplerCubeArrayShadow shadow_depth_maps, uint light, vec3 shadow_v, float l_radius, float dist, float proj23) {
+float shadow(samplerCubeArrayShadow shadow_depth_maps, uint light, vec3 shadow_v, float proj23) {
 	const int samples_far = 3;
 	const int samples_med = 3;
 	const int samples_near = 3;
@@ -63,4 +63,13 @@ float shadow(samplerCubeArrayShadow shadow_depth_maps, uint light, vec3 shadow_v
 	pcf += shadow_gather_pcf(shadow_depth_maps, light, zf, norm_v, v, m, radius_near, samples_near, .2) * weight_near;
 
 	return pcf;
+}
+
+float shadow_fast(samplerCubeArrayShadow shadow_depth_maps, uint light, vec3 shadow_v, float proj23) {
+	vec3 v = abs(shadow_v);
+	float m = max(v.x, max(v.y, v.z));
+
+	float zf = proj23 / m;
+
+	return texture(shadow_depth_maps, vec4(shadow_v, light), zf).x;
 }

@@ -48,6 +48,7 @@ private:
 		program->set_uniform("aspect", ctx.get_projection_aspect());
 		program->set_uniform("two_near_tan_fovy_over_two", 2.f * n * glm::tan(fovy * .5f));
 		program->set_uniform("proj23", ctx.projection_matrix()[3][2]);
+		program->set_uniform("backbuffer_size", glm::vec2(ctx.get_backbuffer_size()));
 	}
 
 public:
@@ -55,7 +56,8 @@ public:
 									light_storage *ls,
 									linked_light_lists *lll) : ctx(ctx), ls(ls), lll(lll),
 															   program(ctx.glslprograms_pool().fetch_program_task({ "passthrough.vert", "linked_light_lists_gen.frag" })()),
-															   depth_sampler(Core::TextureFiltering::Nearest, Core::TextureFiltering::Nearest, Core::TextureFiltering::Nearest) {
+															   depth_sampler(Core::TextureFiltering::Nearest, Core::TextureFiltering::Nearest, Core::TextureFiltering::Nearest,
+															   				 Core::TextureWrapMode::ClampToEdge, Core::TextureWrapMode::ClampToEdge) {
 		update_uniforms();
 		projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([this](const glm::mat4&, float, float) {
 			update_uniforms();
@@ -65,9 +67,6 @@ public:
 		});
 		ctx.signal_projection_change().connect(projection_change_connection);
 		ctx.signal_framebuffer_resize().connect(resize_connection);
-
-		depth_sampler.set_compare_mode(Core::TextureCompareMode::CompareToTextureDepth);
-		depth_sampler.set_compare_func(Core::TextureCompareFunc::Greater);
 	}
 
 	void set_depth_map(Core::Texture2D *dm) { depth_map = dm; }

@@ -55,7 +55,7 @@ bool SurfaceFactory::write_png(const boost::filesystem::path &file_name, const c
 	// set the individual row_pointers to point at the correct offsets of image_data
 	// To maintain compatability png_write_image requests a non-const double pointer, hack the const away...
 	for (int i = 0; i < height; i++)
-		row_pointers[height - 1 - i] = (png_byte*)reinterpret_cast<const png_byte*>(image_data + i * width * components);
+		row_pointers[height - 1 - i] = const_cast<png_byte*>(reinterpret_cast<const png_byte*>(image_data + i * width * components));
 
 	png_init_io(png, fp);
 

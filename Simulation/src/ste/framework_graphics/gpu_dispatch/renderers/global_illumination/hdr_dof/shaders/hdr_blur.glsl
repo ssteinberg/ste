@@ -2,18 +2,21 @@
 const float center_weight = 0.181231;
 const vec4 weights = vec4(0.040897, 0.078445, 0.124913, 0.16513);
 
-vec4 hdr_blur(sampler2D hdr, vec2 uv, vec2 uvs[blur_samples_count]) {
+vec4 hdr_blur(sampler2D hdr, vec2 size, vec2 dir) {
 	vec4 one = vec4(1.f);
 
-	vec4 l3 = textureLod(hdr, uvs[0], 0);
-	vec4 l2 = textureLod(hdr, uvs[1], 0);
-	vec4 l1 = textureLod(hdr, uvs[2], 0);
-	vec4 l0 = textureLod(hdr, uvs[3], 0);
+	vec2 coord = vec2(gl_FragCoord.xy) / size;
+	vec2 offset = dir / size;
+
+	vec4 l3 = texture(hdr, coord - offset * 4.55f);
+	vec4 l2 = texture(hdr, coord - offset * 3.45f);
+	vec4 l1 = texture(hdr, coord - offset * 2.35f);
+	vec4 l0 = texture(hdr, coord - offset * 1.25f);
 	vec4 c  = texelFetch(hdr, ivec2(gl_FragCoord.xy), 0);
-	vec4 r0 = textureLod(hdr, uvs[4], 0);
-	vec4 r1 = textureLod(hdr, uvs[5], 0);
-	vec4 r2 = textureLod(hdr, uvs[6], 0);
-	vec4 r3 = textureLod(hdr, uvs[7], 0);
+	vec4 r0 = texture(hdr, coord + offset * 1.25f);
+	vec4 r1 = texture(hdr, coord + offset * 2.35f);
+	vec4 r2 = texture(hdr, coord + offset * 3.45f);
+	vec4 r3 = texture(hdr, coord + offset * 4.55f);
 
 	vec4 lw = weights;
 	vec4 rw = weights;
@@ -26,29 +29,32 @@ vec4 hdr_blur(sampler2D hdr, vec2 uv, vec2 uvs[blur_samples_count]) {
 	return blur;
 }
 
-vec4 bokeh_blur(sampler2D hdr, sampler2D zcoc_buffer, vec2 uv, vec2 uvs[blur_samples_count]) {
+vec4 bokeh_blur(sampler2D hdr, sampler2D zcoc_buffer, vec2 size, vec2 dir) {
 	vec4 one = vec4(1.f);
 	vec4 zero = vec4(.0f);
 
-	vec4 l3 = textureLod(hdr, uvs[0], 0);
-	vec4 l2 = textureLod(hdr, uvs[1], 0);
-	vec4 l1 = textureLod(hdr, uvs[2], 0);
-	vec4 l0 = textureLod(hdr, uvs[3], 0);
-	vec4 c  = texelFetch(hdr, ivec2(gl_FragCoord.xy), 0);
-	vec4 r0 = textureLod(hdr, uvs[4], 0);
-	vec4 r1 = textureLod(hdr, uvs[5], 0);
-	vec4 r2 = textureLod(hdr, uvs[6], 0);
-	vec4 r3 = textureLod(hdr, uvs[7], 0);
+	vec2 coord = vec2(gl_FragCoord.xy) / size;
+	vec2 offset = dir / size;
 
-	vec2 z_l3 = textureLod(zcoc_buffer, uvs[0], 0).xy;
-	vec2 z_l2 = textureLod(zcoc_buffer, uvs[1], 0).xy;
-	vec2 z_l1 = textureLod(zcoc_buffer, uvs[2], 0).xy;
-	vec2 z_l0 = textureLod(zcoc_buffer, uvs[3], 0).xy;
+	vec4 l3 = texture(hdr, coord - offset * 4.55f);
+	vec4 l2 = texture(hdr, coord - offset * 3.45f);
+	vec4 l1 = texture(hdr, coord - offset * 2.35f);
+	vec4 l0 = texture(hdr, coord - offset * 1.25f);
+	vec4 c  = texelFetch(hdr, ivec2(gl_FragCoord.xy), 0);
+	vec4 r0 = texture(hdr, coord + offset * 1.25f);
+	vec4 r1 = texture(hdr, coord + offset * 2.35f);
+	vec4 r2 = texture(hdr, coord + offset * 3.45f);
+	vec4 r3 = texture(hdr, coord + offset * 4.55f);
+
+	vec2 z_l3 = texture(zcoc_buffer, coord - offset * 4.55f).xy;
+	vec2 z_l2 = texture(zcoc_buffer, coord - offset * 3.45f).xy;
+	vec2 z_l1 = texture(zcoc_buffer, coord - offset * 2.35f).xy;
+	vec2 z_l0 = texture(zcoc_buffer, coord - offset * 1.25f).xy;
 	float z_c = texelFetch(zcoc_buffer, ivec2(gl_FragCoord.xy), 0).x;
-	vec2 z_r0 = textureLod(zcoc_buffer, uvs[4], 0).xy;
-	vec2 z_r1 = textureLod(zcoc_buffer, uvs[5], 0).xy;
-	vec2 z_r2 = textureLod(zcoc_buffer, uvs[6], 0).xy;
-	vec2 z_r3 = textureLod(zcoc_buffer, uvs[7], 0).xy;
+	vec2 z_r0 = texture(zcoc_buffer, coord + offset * 1.25f).xy;
+	vec2 z_r1 = texture(zcoc_buffer, coord + offset * 2.35f).xy;
+	vec2 z_r2 = texture(zcoc_buffer, coord + offset * 3.45f).xy;
+	vec2 z_r3 = texture(zcoc_buffer, coord + offset * 4.55f).xy;
 
 	vec4 l = vec4(l3.w, l2.w, l1.w, l0.w);
 	vec4 r = vec4(r3.w, r2.w, r1.w, r0.w);

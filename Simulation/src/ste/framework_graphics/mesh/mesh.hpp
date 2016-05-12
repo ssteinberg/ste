@@ -128,10 +128,10 @@ public:
 	void transform(const glm::mat4 &m) {
 		auto tim = glm::transpose(glm::inverse(m));
 		for (auto &v : vertices) {
-			auto n = (tim * glm::vec4(v.n, 1)).xyz;
-			auto t = (tim * glm::vec4(v.t, 1)).xyz;
+			auto n = (tim * glm::vec4(v.n, 1)).xyz();
+			auto t = (tim * glm::vec4(v.t, 1)).xyz();
 
-			v.p = (m * glm::vec4(v.p, 1)).xyz;
+			v.p = (m * glm::vec4(v.p, 1)).xyz();
 			v.n = glm::normalize(n);
 			v.t = glm::normalize(t);
 		}

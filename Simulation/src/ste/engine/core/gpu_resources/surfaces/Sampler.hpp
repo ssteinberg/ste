@@ -197,6 +197,11 @@ public:
 		set_min_filter(min_filter);
 		set_mipmap_filter(mipmap_filter);
 	}
+	SamplerMipmapped(TextureFiltering mag_filter, TextureFiltering min_filter, TextureFiltering mipmap_filter,
+					 TextureWrapMode wrap_s, TextureWrapMode wrap_t) : SamplerMipmapped(mag_filter, min_filter, mipmap_filter) {
+		set_wrap_s(wrap_s);
+		set_wrap_t(wrap_t);
+	}
 
 	void set_min_filter(TextureFiltering filter) override final {
 		descriptor.min_filter = filter;

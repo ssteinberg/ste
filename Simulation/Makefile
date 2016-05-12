@@ -28,6 +28,7 @@ $(BUILD_DIR)/%.elf: $(OBJECTS)
 	@/bin/echo -e "\e[1;37m[LINK] \e[1;92m$@ \e[0m$(CXXFLAGS) $(addprefix -l, $(SYSTEM_LIBRARIES)) $(LINKFLAGS)\e[0m"
 	@/usr/bin/mkdir -p $(dir $@)
 	@$(LINK) $(CXXFLAGS) -o $@ $^ $(addprefix -l, $(SYSTEM_LIBRARIES)) $(LINKFLAGS)
+	@/bin/echo -e "\e[1;94mCompleted\e[0m"
 
 $(WORK_DIR)/%.gch: %
 	@/bin/echo -e "\e[1;94mCreating precompiled-header $@...\e[0m"

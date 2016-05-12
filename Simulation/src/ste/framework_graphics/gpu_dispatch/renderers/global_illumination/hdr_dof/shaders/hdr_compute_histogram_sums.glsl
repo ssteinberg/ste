@@ -5,7 +5,6 @@
 #extension GL_NV_gpu_shader5 : require
 
 #include "hdr_common.glsl"
-#include "gbuffer.glsl"
 #include "project.glsl"
 
 layout(local_size_x = bins / 2, local_size_y = 1) in;
@@ -41,10 +40,9 @@ void main() {
 		shared_data[id * 2 + j] = uint(h - trim);
 	}
 
-	float focal;
 	if (id == 0) {
 		float d = texelFetch(depth, textureSize(depth, 0) / 2, 0).x;
-		float z_lin = -unproject_depth(d, proj23);
+		float z_lin = unproject_depth(d, proj23) / 10000.f;
 
 		params.focus = z_lin;
 	}

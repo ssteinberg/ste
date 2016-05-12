@@ -16,6 +16,9 @@ in vs_out {
 
 layout(bindless_sampler) uniform sampler2D hdr;
 
+uniform vec2 size;
+uniform vec2 dir;
+
 void main() {
-	gl_FragColor = hdr_blur(hdr, vin.uv, vin.blur_uvs);
+	gl_FragColor = hdr_blur(hdr, size, dir);
 }
