@@ -39,7 +39,7 @@ uniform float proj00, proj11, proj23, shadow_proj23;
 void main() {
 	ivec3 volume_coords = ivec3(gl_GlobalInvocationID.xyz);
 
-	float depth_buffer_d = texelFetch(depth_map, volume_coords.xy * 8, 0).x;
+	float depth_buffer_d = texelFetch(depth_map, volume_coords.xy * 8, 2).x;
 	int max_tile = min(int(volumetric_scattering_tile_for_depth(depth_buffer_d) + 1.5f), volumetric_scattering_depth_tiles);
 	if (volume_coords.z >= max_tile)
 		return;

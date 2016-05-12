@@ -24,7 +24,7 @@ vec4 accumulate(vec4 front, vec4 back) {
 void main() {
 	ivec2 slice_coords = ivec2(gl_GlobalInvocationID.xy);
 
-	float depth_buffer_d = texelFetch(depth_map, slice_coords * 8, 0).x;
+	float depth_buffer_d = texelFetch(depth_map, slice_coords * 8, 2).x;
 	int max_tile = min(int(volumetric_scattering_tile_for_depth(depth_buffer_d) + 1.5f), volumetric_scattering_depth_tiles);
 
 	ivec3 p = ivec3(slice_coords, 0);

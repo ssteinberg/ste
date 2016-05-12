@@ -74,8 +74,8 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 		this->lll_storage.resize(size);
 		this->volumetric_scattering.resize(size);
 
-		this->lll_gen_dispatch.set_depth_map(gbuffer.get_depth_target());
-		this->volumetric_scattering.set_depth_map(gbuffer.get_depth_target());
+		this->lll_gen_dispatch.set_depth_map(gbuffer.get_downsampled_depth_target());
+		this->volumetric_scattering.set_depth_map(gbuffer.get_downsampled_depth_target());
 
 		rebuild_task_queue();
 	});
@@ -89,8 +89,8 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 	update_shader_proj_uniforms(ctx.projection_matrix());
 
 
-	lll_gen_dispatch.set_depth_map(gbuffer.get_depth_target());
-	volumetric_scattering.set_depth_map(gbuffer.get_depth_target());
+	lll_gen_dispatch.set_depth_map(gbuffer.get_downsampled_depth_target());
+	volumetric_scattering.set_depth_map(gbuffer.get_downsampled_depth_target());
 	scene->set_target_gbuffer(get_gbuffer());
 
 	composer_task = make_gpu_task("composition", &composer, hdr.get_input_fbo());
@@ -123,9 +123,11 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 	shadow_projector_task->add_dependency(light_preprocess.get_task());
 	volumetric_scattering_scatter_task->add_dependency(light_preprocess.get_task());
 	volumetric_scattering_scatter_task->add_dependency(shadow_projector_task);
+	volumetric_scattering_scatter_task->add_dependency(downsample_depth_task);
 	volumetric_scattering_scatter_task->add_dependency(lll_gen_task);
 	volumetric_scattering_scatter_task->add_dependency(prepopulate_depth_task);
 	volumetric_scattering_gather_task->add_dependency(volumetric_scattering_scatter_task);
+	volumetric_scattering_gather_task->add_dependency(downsample_depth_task);
 	composer_task->add_dependency(fb_clearer_task);
 	composer_task->add_dependency(gbuffer_sort_task);
 	composer_task->add_dependency(lll_gen_task);

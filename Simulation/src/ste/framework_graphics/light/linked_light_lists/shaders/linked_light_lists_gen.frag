@@ -30,19 +30,18 @@ layout(shared, binding = 11) restrict writeonly buffer lll_data {
 	lll_element lll_buffer[];
 };
 
-layout(binding = 11) uniform sampler2DShadow depth_map;
+layout(binding = 11) uniform sampler2D depth_map;
 
 uniform float near, aspect;
 uniform float two_near_tan_fovy_over_two;	// 2 * near * tan(fovy * .5)
 uniform float proj23;
+uniform vec2 backbuffer_size;
 
 void main() {
-	vec2 bb_size = textureSize(depth_map, 0).xy;
-
 	ivec2 image_coord = ivec2(gl_FragCoord.xy);
-	vec2 frag_coords = (vec2(gl_FragCoord.xy) + vec2(.5f)) / bb_size * float(lll_image_res_multiplier);
+	vec2 frag_coords = (vec2(gl_FragCoord.xy) + vec2(.5f)) / backbuffer_size * float(lll_image_res_multiplier);
 
-	int depth_lod = 3;
+	int depth_lod = 2;
 
 	vec2 ndc = frag_coords - vec2(.5f);
 	float near_plane_h = two_near_tan_fovy_over_two;
@@ -85,8 +84,8 @@ void main() {
 				}
 				else {
 					// Compare against depth buffer
-					float d = textureLod(depth_map, vec3(vec2(image_coord) / textureSize(depth_map, depth_lod).xy, depth_zmax), depth_lod).x;
-					if (d > .25f)
+					float d = textureLod(depth_map, vec2(image_coord) / textureSize(depth_map, depth_lod).xy, depth_lod).x;
+					if (d <= depth_zmax)
 						add_point = true;
 				}
 			}
