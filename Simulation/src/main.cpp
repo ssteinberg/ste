@@ -225,9 +225,9 @@ int main() {
 			footer_text->set_text({ 10, 50 },
 								  line_height(32)(vsmall(b(blue_violet(free_vram) + L" / " + stroke(red, 1)(dark_red(total_vram)) + L" MB")) + L"\n" +
 												  vsmall(b(L"Thread pool workers: ") +
-														 olive(std::to_wstring(workers_active)) + L" busy, " +
-														 olive(std::to_wstring(workers_sleep)) + L" sleeping | " +
-														 orange(std::to_wstring(pending_requests) + L" pending requests"))));
+														 olive(std::to_wstring(workers_active)) + 	L" busy, " +
+														 olive(std::to_wstring(workers_sleep)) + 	L" sleeping | " +
+														 orange(std::to_wstring(pending_requests) +	L" pending requests"))));
 		}
 
 		if (model_future.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
@@ -245,7 +245,7 @@ int main() {
 	auto &scene_task = renderer.get_scene_task();
 	skydome_task->add_dependency(scene_task);
 
-	// renderer.add_gui_task(make_gpu_task("debug_gui", debug_gui_dispatchable.get(), nullptr));
+	renderer.add_gui_task(make_gpu_task("debug_gui", debug_gui_dispatchable.get(), nullptr));
 	renderer.add_task(scene_task);
 	renderer.add_task(skydome_task);
 	renderer.set_deferred_rendering_enabled(true);
@@ -298,8 +298,8 @@ int main() {
 			auto total_vram = std::to_wstring(ctx.gl()->meminfo_total_available_vram() / 1024);
 			auto free_vram = std::to_wstring(ctx.gl()->meminfo_free_vram() / 1024);
 
-			footer_text->set_text({ 10, 50 }, L"");//line_height(28)(vsmall(b(stroke(dark_magenta, 1)(red(std::to_wstring(tpf * 1000.f))))) + L" ms\n" +
-													//		  vsmall(b((blue_violet(free_vram) + L" / " + stroke(red, 1)(dark_red(total_vram)) + L" MB")))));
+			footer_text->set_text({ 10, 50 }, line_height(28)(vsmall(b(stroke(dark_magenta, 1)(red(std::to_wstring(tpf * 1000.f))))) + L" ms\n" +
+															  vsmall(b((blue_violet(free_vram) + L" / " + stroke(red, 1)(dark_red(total_vram)) + L" MB")))));
 		}
 
 		time += ctx.time_per_frame().count();
