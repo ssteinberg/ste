@@ -23,13 +23,11 @@ in vec3 frag_wposition;
 
 layout(binding = 0) uniform sampler2D sky_tex;
 
-uniform float sky_luminance;
+uniform int material;
 
 void main() {
 	vec2 uv = frag_texcoords;
 	vec3 P = frag_position;
-
-	vec4 diffuse = vec4(texture(sky_tex, uv).rgb * sky_luminance, 1);
 
 	gbuffer_store(gbuffer_ll_heads,
 				  gbuffer_ll_counter,
@@ -40,6 +38,6 @@ void main() {
 				  dFdy(uv),
 				  vec3(0,0,0),
 				  vec3(0,0,0),
-				  material_none,
+				  material,
 				  ivec2(gl_FragCoord.xy));
 }

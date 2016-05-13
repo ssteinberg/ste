@@ -51,6 +51,17 @@ private:
 		program->set_uniform("proj23", proj23);
 	}
 
+	void update_phase_uniforms(float g) {
+		float g2 = g * g;
+		float p1 = (1.f - g2) / (4.f * glm::pi<float>());
+		float p2 = 1.f + g2;
+		float p3 = 2.f * g;
+
+		program->set_uniform("phase1", p1);
+		program->set_uniform("phase2", p2);
+		program->set_uniform("phase3", p3);
+	}
+
 public:
 	volumetric_scattering_scatter_dispatch(const StEngineControl &ctx,
 										   const volumetric_scattering_storage *vss,
@@ -70,6 +81,7 @@ public:
 		});
 		ctx.signal_framebuffer_resize().connect(resize_connection);
 
+		update_phase_uniforms(vss->get_scattering_phase_anisotropy_coefficient());
 		shadowmap_storage::update_shader_shadow_proj_uniforms(program.get());
 	}
 

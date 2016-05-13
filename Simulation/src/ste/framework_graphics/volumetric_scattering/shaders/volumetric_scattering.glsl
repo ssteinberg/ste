@@ -3,24 +3,23 @@
 #include "project.glsl"
 
 const int volumetric_scattering_tile_size = 8;
-const int volumetric_scattering_depth_tiles = 512;
+const int volumetric_scattering_depth_tiles = 256;
 
-const float volumetric_scattering_tiles_exponential_depth_coefficient = 8.f;
+const float volumetric_scattering_ka = 0.025f;
+const float volumetric_scattering_kb = 1.06f;
 
 float volumetric_scattering_depth_for_tile(int t) {
-	float ratio = float(t + .5f) / float(volumetric_scattering_depth_tiles);
-	float z = -exp(ratio * volumetric_scattering_tiles_exponential_depth_coefficient);
+	float z = -volumetric_scattering_ka * pow(volumetric_scattering_kb, float(t) + .5f);
 	return -1.f / z;
 }
 
-float volumetric_scattering_zcoord_for_depth(float d) {
+float volumetric_scattering_tile_for_depth(float d) {
 	float z = -1.f / d;
-	float ratio = log(-z) / volumetric_scattering_tiles_exponential_depth_coefficient;
-	return ratio;
+	return log(-z / volumetric_scattering_ka) / log(volumetric_scattering_kb);
 }
 
-float volumetric_scattering_tile_for_depth(float d) {
-	return volumetric_scattering_zcoord_for_depth(d) * float(volumetric_scattering_depth_tiles);
+float volumetric_scattering_zcoord_for_depth(float d) {
+	return volumetric_scattering_tile_for_depth(d) / float(volumetric_scattering_depth_tiles);
 }
 
 float volumetric_scattering_particle_density(vec3 w_pos) {
@@ -28,20 +27,17 @@ float volumetric_scattering_particle_density(vec3 w_pos) {
 }
 
 float volumetric_scattering_scattering_coefficient(float density, float thickness) {
-	return 0.005f * density * thickness;
+	return 0.0055f * density * thickness;
 }
 
 float volumetric_scattering_absorption_coefficient(float density, float thickness) {
-	return .00000002f * density * thickness;
+	return .00000001f * density * thickness;
 }
 
-float volumetric_scattering_phase(vec3 l_dir, vec3 v_dir) {
-	float g = .15f;
-
+float volumetric_scattering_phase(vec3 l_dir, vec3 v_dir, float phase1, float phase2, float phase3) {
 	float t = dot(l_dir, v_dir);
-	float g2 = g*g;
-	float denom = pow(1.f + g2 - 2.f*g*t, 3.f / 2.f);
-	return ((1.f - g2) / denom) / (4.f * pi);
+	float denom = pow(phase2 - phase3 * t, 3.f / 2.f);
+	return phase1 / denom;
 }
 
 vec4 volumetric_scattering_load_inscattering_transmittance(sampler3D volume, vec2 frag_coords, float depth) {

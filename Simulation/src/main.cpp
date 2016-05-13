@@ -34,18 +34,24 @@ class SkyDome : public StE::Graphics::gpu_dispatchable {
 private:
 	using ProjectionSignalConnectionType = StE::StEngineControl::projection_change_signal_type::connection_type;
 
-	std::unique_ptr<Texture2D> stars_tex;
 	std::shared_ptr<GLSLProgram> program;
 	std::shared_ptr<ProjectionSignalConnectionType> projection_change_connection;
 
 	std::unique_ptr<StE::Graphics::mesh<StE::Graphics::mesh_subdivion_mode::Triangles>> meshptr;
 
 public:
-	SkyDome(const StE::StEngineControl &ctx) : program(ctx.glslprograms_pool().fetch_program_task({ "transform_sky.vert", "frag_sky.frag" })()),
-											   meshptr(std::make_unique<StE::Graphics::Sphere>(10, 10, .0f)) {
-		stars_tex = StE::Resource::SurfaceFactory::load_texture_2d_task("Data/textures/stars.jpg", true)();
+	SkyDome(const StE::StEngineControl &ctx,
+			StE::Graphics::Scene *scene) : program(ctx.glslprograms_pool().fetch_program_task({ "transform_sky.vert", "frag_sky.frag" })()),
+										   meshptr(std::make_unique<StE::Graphics::Sphere>(10, 10, .0f)) {
+		auto stars_tex = std::make_shared<StE::Core::Texture2D>(StE::Resource::SurfaceFactory::load_surface_2d_task("Data/textures/stars.jpg", true)());
 
-		program->set_uniform("sky_luminance", 1.f);
+		auto sky_mat = std::make_shared<StE::Graphics::Material>();
+		sky_mat->set_diffuse(stars_tex);
+		sky_mat->set_emission(glm::vec3(1.f));
+
+		int material = scene->scene_properties().materials_storage().add_material(sky_mat);
+
+		program->set_uniform("material", material);
 		program->set_uniform("projection", ctx.projection_matrix());
 		projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([=](const glm::mat4 &proj, float, float clip_near) {
 			this->program->set_uniform("projection", proj);
@@ -58,7 +64,6 @@ protected:
 		GL::gl_current_context::get()->enable_depth_test();
 		GL::gl_current_context::get()->color_mask(false, false, false, false);
 
-		0_tex_unit = *stars_tex;
 		meshptr->vao()->bind();
 		meshptr->ebo()->bind();
 		program->bind();
@@ -137,7 +142,7 @@ int main() {
 	std::unique_ptr<StE::Graphics::debug_gui> debug_gui_dispatchable = std::make_unique<StE::Graphics::debug_gui>(ctx, gpu_tasks_profiler.get(), font);
 
 
-	std::unique_ptr<SkyDome> skydome = std::make_unique<SkyDome>(ctx);
+	std::unique_ptr<SkyDome> skydome = std::make_unique<SkyDome>(ctx, &scene);
 
 	bool running = true;
 	bool loaded = false;
@@ -240,7 +245,7 @@ int main() {
 	auto &scene_task = renderer.get_scene_task();
 	skydome_task->add_dependency(scene_task);
 
-	renderer.add_gui_task(make_gpu_task("debug_gui", debug_gui_dispatchable.get(), nullptr));
+	// renderer.add_gui_task(make_gpu_task("debug_gui", debug_gui_dispatchable.get(), nullptr));
 	renderer.add_task(scene_task);
 	renderer.add_task(skydome_task);
 	renderer.set_deferred_rendering_enabled(true);
@@ -272,10 +277,10 @@ int main() {
 			last_pointer_pos = pp;
 		}
 
-		// float angle = time * glm::pi<float>() / 2.5f;
-		// glm::vec3 lp = light0_pos + glm::vec3(glm::sin(angle) * 3, 0, glm::cos(angle)) * 115.f;
-		// light0->set_position(lp);
-		// light0_obj->set_model_matrix(glm::scale(glm::translate(glm::mat4(), lp), glm::vec3(light0->get_radius() / 2.f)));
+		float angle = time * glm::pi<float>() / 2.5f;
+		glm::vec3 lp = light0_pos + glm::vec3(glm::sin(angle) * 3, 0, glm::cos(angle)) * 115.f;
+		light0->set_position(lp);
+		light0_obj->set_model_matrix(glm::scale(glm::translate(glm::mat4(), lp), glm::vec3(light0->get_radius() / 2.f)));
 
 		{
 			using namespace StE::Text::Attributes;
@@ -293,8 +298,8 @@ int main() {
 			auto total_vram = std::to_wstring(ctx.gl()->meminfo_total_available_vram() / 1024);
 			auto free_vram = std::to_wstring(ctx.gl()->meminfo_free_vram() / 1024);
 
-			footer_text->set_text({ 10, 50 }, line_height(28)(vsmall(b(stroke(dark_magenta, 1)(red(std::to_wstring(tpf * 1000.f))))) + L" ms\n" +
-															  vsmall(b((blue_violet(free_vram) + L" / " + stroke(red, 1)(dark_red(total_vram)) + L" MB")))));
+			footer_text->set_text({ 10, 50 }, L"");//line_height(28)(vsmall(b(stroke(dark_magenta, 1)(red(std::to_wstring(tpf * 1000.f))))) + L" ms\n" +
+													//		  vsmall(b((blue_violet(free_vram) + L" / " + stroke(red, 1)(dark_red(total_vram)) + L" MB")))));
 		}
 
 		time += ctx.time_per_frame().count();
