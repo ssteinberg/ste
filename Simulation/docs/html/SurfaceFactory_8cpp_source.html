@@ -162,7 +162,7 @@ $(document).ready(function(){initNavTree('SurfaceFactory_8cpp_source.html','');}
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    <span class="comment">// set the individual row_pointers to point at the correct offsets of image_data</span></div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <span class="comment">// To maintain compatability png_write_image requests a non-const double pointer, hack the const away...</span></div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; height; i++)</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;        row_pointers[height - 1 - i] = (png_byte*)<span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span>png_byte*<span class="keyword">&gt;</span>(image_data + i * width * components);</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;        row_pointers[height - 1 - i] = const_cast&lt;png_byte*&gt;(reinterpret_cast&lt;const png_byte*&gt;(image_data + i * width * components));</div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    png_init_io(png, fp);</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;</div>

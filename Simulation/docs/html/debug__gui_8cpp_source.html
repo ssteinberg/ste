@@ -184,7 +184,7 @@ $(document).ready(function(){initNavTree('debug__gui_8cpp_source.html','');});
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;</div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    <span class="keyword">auto</span> bbsize = ctx.<a class="code" href="classStE_1_1StEngineControl.html#a2d0c25338fb47b2581dd8acba65e9875">get_backbuffer_size</a>();</div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    ImGui::SetNextWindowPos(ImVec2(20,20), ImGuiSetCond_FirstUseEver);</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    ImGui::SetNextWindowSize(ImVec2(bbsize.x - 40,130), ImGuiSetCond_FirstUseEver);</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    ImGui::SetNextWindowSize(ImVec2(bbsize.x - 40,135), ImGuiSetCond_FirstUseEver);</div>
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    <span class="keywordflow">if</span> (ImGui::Begin(<span class="stringliteral">&quot;StE debug&quot;</span>, <span class="keyword">nullptr</span>)) {</div>
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;        <span class="keyword">auto</span> &amp;fts = prof-&gt;<a class="code" href="classStE_1_1Graphics_1_1profiler.html#a2c945309ae2467d9116b306d61e1c268">get_last_times_per_frame</a>();</div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;        ImGui::PlotLines(<span class="stringliteral">&quot;Frame Times&quot;</span>, &amp;fts[0], fts.size(), 0, <span class="stringliteral">&quot;ms&quot;</span>, 0.f, .1f);</div>

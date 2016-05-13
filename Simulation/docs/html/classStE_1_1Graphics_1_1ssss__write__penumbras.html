@@ -131,8 +131,6 @@ Collaboration diagram for StE::Graphics::ssss_write_penumbras:</div>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:aec8a85b36e107525319a002ac6b74268"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1ssss__write__penumbras.html#aec8a85b36e107525319a002ac6b74268">ssss_write_penumbras</a> (const <a class="el" href="classStE_1_1Graphics_1_1ssss__generator.html">ssss_generator</a> *p, const <a class="el" href="classStE_1_1StEngineControl.html">StEngineControl</a> &amp;ctx)</td></tr>
 <tr class="separator:aec8a85b36e107525319a002ac6b74268"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4f040ac337fd20a5ea530cb5453e8fcb"><td class="memItemLeft" align="right" valign="top">ssss_gen_program&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1ssss__write__penumbras.html#a4f040ac337fd20a5ea530cb5453e8fcb">set_uniform</a> (&quot;near&quot;, ctx.get_near_clip())</td></tr>
-<tr class="separator:a4f040ac337fd20a5ea530cb5453e8fcb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a35eec8454e991d2a34d4ce02e97cd601"><td class="memItemLeft" align="right" valign="top">ssss_gen_program&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1ssss__write__penumbras.html#a35eec8454e991d2a34d4ce02e97cd601">set_uniform</a> (&quot;half_over_tan_fov_over_two&quot;,.5f/glm::tan(ctx.get_fov()*.5f))</td></tr>
 <tr class="separator:a35eec8454e991d2a34d4ce02e97cd601"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a439679893af12d07eeadf995fecc6ec6"><td class="memItemLeft" align="right" valign="top">ctx&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1ssss__write__penumbras.html#a439679893af12d07eeadf995fecc6ec6">signal_projection_change</a> ().connect(projection_change_connection)</td></tr>
@@ -248,32 +246,6 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a4f040ac337fd20a5ea530cb5453e8fcb"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">ssss_gen_program StE::Graphics::ssss_write_penumbras::set_uniform </td>
-          <td>(</td>
-          <td class="paramtype">&quot;near&quot;&#160;</td>
-          <td class="paramname">, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">ctx.&#160;</td>
-          <td class="paramname"><em>get_near_clip</em>()&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a class="anchor" id="a35eec8454e991d2a34d4ce02e97cd601"></a>
 <div class="memitem">
 <div class="memproto">
@@ -325,13 +297,12 @@ Additional Inherited Members</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">= std::make_shared&lt;ProjectionSignalConnectionType&gt;([<span class="keyword">this</span>](<span class="keyword">const</span> glm::mat4&amp;, <span class="keywordtype">float</span> ffov, <span class="keywordtype">float</span> fnear, <span class="keywordtype">float</span> ffar) {</div>
-<div class="line">            ssss_gen_program-&gt;set_uniform(<span class="stringliteral">&quot;far&quot;</span>, ffar);</div>
+<b>Initial value:</b><div class="fragment"><div class="line">= std::make_shared&lt;ProjectionSignalConnectionType&gt;([<span class="keyword">this</span>](<span class="keyword">const</span> glm::mat4&amp;, <span class="keywordtype">float</span> ffov, <span class="keywordtype">float</span> fnear) {</div>
 <div class="line">            ssss_gen_program-&gt;set_uniform(<span class="stringliteral">&quot;near&quot;</span>, fnear);</div>
 <div class="line">            ssss_gen_program-&gt;set_uniform(<span class="stringliteral">&quot;half_over_tan_fov_over_two&quot;</span>, .5f / glm::tan(ffov * .5f));</div>
 <div class="line">        })</div>
 </div><!-- fragment -->
-<p>Definition at line <a class="el" href="ssss__write__penumbras_8hpp_source.html#l00037">37</a> of file <a class="el" href="ssss__write__penumbras_8hpp_source.html">ssss_write_penumbras.hpp</a>.</p>
+<p>Definition at line <a class="el" href="ssss__write__penumbras_8hpp_source.html#l00036">36</a> of file <a class="el" href="ssss__write__penumbras_8hpp_source.html">ssss_write_penumbras.hpp</a>.</p>
 
 </div>
 </div>

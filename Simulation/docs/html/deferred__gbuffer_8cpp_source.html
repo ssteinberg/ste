@@ -123,21 +123,22 @@ $(document).ready(function(){initNavTree('deferred__gbuffer_8cpp_source.html',''
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;    gbuffer_ll_heads = std::make_unique&lt;Core::Texture2D&gt;(gli::format::FORMAT_R32_UINT_PACK32, glm::ivec2{ size });</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    depth_target = std::make_unique&lt;Core::Texture2D&gt;(gli::format::FORMAT_D32_SFLOAT_PACK32, glm::ivec2{ size });</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    fbo.depth_binding_point() = *depth_target;</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;}</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div>
-<div class="line"><a name="l00022"></a><span class="lineno"><a class="line" href="classStE_1_1Graphics_1_1deferred__gbuffer.html#aebe42a221c68d2fb53f29cf3cfe32c2e">   22</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classStE_1_1Graphics_1_1deferred__gbuffer.html#aebe42a221c68d2fb53f29cf3cfe32c2e">deferred_gbuffer::bind_gbuffer</a>(<span class="keywordtype">bool</span> readonly)<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    6_storage_idx = gbuffer;</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    7_image_idx = (*gbuffer_ll_heads)[0].with_access(readonly ? <a class="code" href="namespaceStE_1_1Core.html#adeb26cc8fd9914f1ff464e4ab0493103a7a1a5f3e79fdc91edf2f5ead9d66abb4">Core::ImageAccessMode::Read</a> : <a class="code" href="namespaceStE_1_1Core.html#adeb26cc8fd9914f1ff464e4ab0493103a70a2a84088d405a2e3f1e3accaa16723">Core::ImageAccessMode::ReadWrite</a>);</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    <span class="keywordflow">if</span> (!readonly)</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;        7_atomic_idx = gbuffer_ll_counter;</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;}</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    downsampled_depth_target = std::make_unique&lt;Core::Texture2D&gt;(gli::format::FORMAT_R32_SFLOAT_PACK32, glm::ivec2{ size } / 2, depth_buffer_levels - 1);</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    fbo.depth_binding_point() = *depth_target;</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;}</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div>
+<div class="line"><a name="l00023"></a><span class="lineno"><a class="line" href="classStE_1_1Graphics_1_1deferred__gbuffer.html#aebe42a221c68d2fb53f29cf3cfe32c2e">   23</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classStE_1_1Graphics_1_1deferred__gbuffer.html#aebe42a221c68d2fb53f29cf3cfe32c2e">deferred_gbuffer::bind_gbuffer</a>(<span class="keywordtype">bool</span> readonly)<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    6_storage_idx = gbuffer;</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    7_image_idx = (*gbuffer_ll_heads)[0].with_access(readonly ? <a class="code" href="namespaceStE_1_1Core.html#adeb26cc8fd9914f1ff464e4ab0493103a7a1a5f3e79fdc91edf2f5ead9d66abb4">Core::ImageAccessMode::Read</a> : <a class="code" href="namespaceStE_1_1Core.html#adeb26cc8fd9914f1ff464e4ab0493103a70a2a84088d405a2e3f1e3accaa16723">Core::ImageAccessMode::ReadWrite</a>);</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    <span class="keywordflow">if</span> (!readonly)</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;        7_atomic_idx = gbuffer_ll_counter;</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;}</div>
 <div class="ttc" id="stdafx_8hpp_html"><div class="ttname"><a href="stdafx_8hpp.html">stdafx.hpp</a></div></div>
 <div class="ttc" id="namespaceStE_1_1Core_html_adeb26cc8fd9914f1ff464e4ab0493103a7a1a5f3e79fdc91edf2f5ead9d66abb4"><div class="ttname"><a href="namespaceStE_1_1Core.html#adeb26cc8fd9914f1ff464e4ab0493103a7a1a5f3e79fdc91edf2f5ead9d66abb4">StE::Core::ImageAccessMode::Read</a></div></div>
 <div class="ttc" id="classStE_1_1Graphics_1_1deferred__gbuffer_html_ad09357b25ef4737f7e0dfd9aff4fe3b0"><div class="ttname"><a href="classStE_1_1Graphics_1_1deferred__gbuffer.html#ad09357b25ef4737f7e0dfd9aff4fe3b0">StE::Graphics::deferred_gbuffer::resize</a></div><div class="ttdeci">void resize(glm::ivec2 size)</div><div class="ttdef"><b>Definition:</b> <a href="deferred__gbuffer_8cpp_source.html#l00008">deferred_gbuffer.cpp:8</a></div></div>
 <div class="ttc" id="namespaceStE_1_1Core_html_adeb26cc8fd9914f1ff464e4ab0493103a70a2a84088d405a2e3f1e3accaa16723"><div class="ttname"><a href="namespaceStE_1_1Core.html#adeb26cc8fd9914f1ff464e4ab0493103a70a2a84088d405a2e3f1e3accaa16723">StE::Core::ImageAccessMode::ReadWrite</a></div></div>
-<div class="ttc" id="classStE_1_1Graphics_1_1deferred__gbuffer_html_aebe42a221c68d2fb53f29cf3cfe32c2e"><div class="ttname"><a href="classStE_1_1Graphics_1_1deferred__gbuffer.html#aebe42a221c68d2fb53f29cf3cfe32c2e">StE::Graphics::deferred_gbuffer::bind_gbuffer</a></div><div class="ttdeci">void bind_gbuffer(bool readonly=true) const </div><div class="ttdef"><b>Definition:</b> <a href="deferred__gbuffer_8cpp_source.html#l00022">deferred_gbuffer.cpp:22</a></div></div>
+<div class="ttc" id="classStE_1_1Graphics_1_1deferred__gbuffer_html_aebe42a221c68d2fb53f29cf3cfe32c2e"><div class="ttname"><a href="classStE_1_1Graphics_1_1deferred__gbuffer.html#aebe42a221c68d2fb53f29cf3cfe32c2e">StE::Graphics::deferred_gbuffer::bind_gbuffer</a></div><div class="ttdeci">void bind_gbuffer(bool readonly=true) const </div><div class="ttdef"><b>Definition:</b> <a href="deferred__gbuffer_8cpp_source.html#l00023">deferred_gbuffer.cpp:23</a></div></div>
 <div class="ttc" id="deferred__gbuffer_8hpp_html"><div class="ttname"><a href="deferred__gbuffer_8hpp.html">deferred_gbuffer.hpp</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

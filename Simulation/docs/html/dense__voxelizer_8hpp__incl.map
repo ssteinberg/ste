@@ -6,7 +6,7 @@
 <area shape="rect" id="node45" href="$Scene_8hpp.html" title="Scene.hpp" alt="" coords="821,95,907,121"/>
 <area shape="rect" id="node50" href="$GLSLProgramFactory_8hpp.html" title="GLSLProgramFactory.hpp" alt="" coords="2637,95,2814,121"/>
 <area shape="rect" id="node4" href="$gl_8hpp.html" title="gl.hpp" alt="" coords="773,423,830,449"/>
-<area shape="rect" id="node29" href="$gl__context_8hpp.html" title="gl_context.hpp" alt="" coords="2359,266,2465,293"/>
+<area shape="rect" id="node29" href="$gl__context_8hpp.html" title="Setups drawing context, window and default framebuffer. " alt="" coords="2359,266,2465,293"/>
 <area shape="rect" id="node30" href="$hid_8hpp.html" title="hid.hpp" alt="" coords="3036,266,3100,293"/>
 <area shape="rect" id="node31" href="$signal_8hpp.html" title="signal.hpp" alt="" coords="2601,348,2684,375"/>
 <area shape="rect" id="node32" href="$task__scheduler_8hpp.html" title="task_scheduler.hpp" alt="" coords="3175,266,3313,293"/>

@@ -5,7 +5,7 @@
 <area shape="rect" id="node43" href="$gpu__dispatchable_8hpp.html" title="gpu_dispatchable.hpp" alt="" coords="2315,273,2466,300"/>
 <area shape="rect" id="node45" href="$deferred__gbuffer_8hpp.html" title="deferred_gbuffer.hpp" alt="" coords="2573,199,2717,225"/>
 <area shape="rect" id="node4" href="$gl_8hpp.html" title="gl.hpp" alt="" coords="3242,497,3299,524"/>
-<area shape="rect" id="node29" href="$gl__context_8hpp.html" title="gl_context.hpp" alt="" coords="781,348,888,375"/>
+<area shape="rect" id="node29" href="$gl__context_8hpp.html" title="Setups drawing context, window and default framebuffer. " alt="" coords="781,348,888,375"/>
 <area shape="rect" id="node30" href="$hid_8hpp.html" title="hid.hpp" alt="" coords="24,199,88,225"/>
 <area shape="rect" id="node31" href="$signal_8hpp.html" title="signal.hpp" alt="" coords="507,423,589,449"/>
 <area shape="rect" id="node32" href="$task__scheduler_8hpp.html" title="task_scheduler.hpp" alt="" coords="113,199,250,225"/>

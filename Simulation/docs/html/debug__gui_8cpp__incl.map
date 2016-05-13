@@ -12,7 +12,7 @@
 <area shape="rect" id="node44" href="$profiler_8hpp.html" title="profiler.hpp" alt="" coords="442,408,529,435"/>
 <area shape="rect" id="node45" href="$Font_8hpp.html" title="Font.hpp" alt="" coords="705,184,777,211"/>
 <area shape="rect" id="node29" href="$gl__context__state__log_8hpp.html" title="gl_context_state_log.hpp" alt="" coords="706,408,875,435"/>
-<area shape="rect" id="node35" href="$gl__context_8hpp.html" title="gl_context.hpp" alt="" coords="1629,259,1736,285"/>
+<area shape="rect" id="node35" href="$gl__context_8hpp.html" title="Setups drawing context, window and default framebuffer. " alt="" coords="1629,259,1736,285"/>
 <area shape="rect" id="node39" href="$hid_8hpp.html" title="hid.hpp" alt="" coords="1976,259,2040,285"/>
 <area shape="rect" id="node41" href="$task__scheduler_8hpp.html" title="task_scheduler.hpp" alt="" coords="2446,259,2583,285"/>
 <area shape="rect" id="node42" href="$lru__cache_8hpp.html" title="LRU general purpose disk caching class. " alt="" coords="2165,259,2269,285"/>

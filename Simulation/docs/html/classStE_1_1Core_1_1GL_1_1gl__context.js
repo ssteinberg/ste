@@ -24,6 +24,7 @@ var classStE_1_1Core_1_1GL_1_1gl__context =
     [ "resize", "classStE_1_1Core_1_1GL_1_1gl__context.html#a2a5aec3df3b3f6d29cb7103cb848a5bf", null ],
     [ "set_defaults", "classStE_1_1Core_1_1GL_1_1gl__context.html#a950990c6c8071d0397ee1b1288df362e", null ],
     [ "setup_debug_context", "classStE_1_1Core_1_1GL_1_1gl__context.html#a5bb6bb424676089b151cc7e006e024b0", null ],
+    [ "setup_depth_buffer_gl_settings", "classStE_1_1Core_1_1GL_1_1gl__context.html#a2efa899b923aa66267cad1fbbb3b4241", null ],
     [ "StE::StEngineControl", "classStE_1_1Core_1_1GL_1_1gl__context.html#a2ae98f124e2af25f5d11cb139ac9db33", null ],
     [ "ctx_settings", "classStE_1_1Core_1_1GL_1_1gl__context.html#aaaf9409ae08d73328665816279c23b32", null ],
     [ "default_fb", "classStE_1_1Core_1_1GL_1_1gl__context.html#a9d060a50279110f7e929b142e3b69f20", null ],

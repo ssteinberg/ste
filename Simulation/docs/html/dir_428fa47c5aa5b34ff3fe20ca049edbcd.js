@@ -11,5 +11,6 @@ var dir_428fa47c5aa5b34ff3fe20ca049edbcd =
     [ "scene", "dir_feae3ad45836bbb256dc2aa8f9676755.html", "dir_feae3ad45836bbb256dc2aa8f9676755" ],
     [ "shadows", "dir_8afa73102b9ccd5133b1b8f6dae7b659.html", "dir_8afa73102b9ccd5133b1b8f6dae7b659" ],
     [ "utilities", "dir_c5f12cd059a98ed83b61a4f3105d7bf1.html", "dir_c5f12cd059a98ed83b61a4f3105d7bf1" ],
+    [ "volumetric_scattering", "dir_132aa1b0bc4c968572532e52838c0303.html", "dir_132aa1b0bc4c968572532e52838c0303" ],
     [ "voxels", "dir_ae9cfe492da74c399696b4dc525fe916.html", "dir_ae9cfe492da74c399696b4dc525fe916" ]
 ];

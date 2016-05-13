@@ -1,19 +1,19 @@
 <map id="src/ste/engine/engine_control/StEngineControl.cpp" name="src/ste/engine/engine_control/StEngineControl.cpp">
-<area shape="rect" id="node2" href="$stdafx_8hpp.html" title="stdafx.hpp" alt="" coords="1420,319,1503,345"/>
-<area shape="rect" id="node25" href="$gl__utils_8hpp.html" title="gl_utils.hpp" alt="" coords="2430,244,2517,271"/>
-<area shape="rect" id="node28" href="$StEngineControl_8hpp.html" title="Engine Control class. " alt="" coords="2159,169,2302,196"/>
-<area shape="rect" id="node42" href="$Log_8hpp.html" title="Log.hpp" alt="" coords="3027,169,3096,196"/>
-<area shape="rect" id="node46" href="$Texture2D_8hpp.html" title="Texture2D.hpp" alt="" coords="2025,169,2135,196"/>
-<area shape="rect" id="node47" href="$SurfaceFactory_8hpp.html" title="SurfaceFactory.hpp" alt="" coords="2886,95,3023,121"/>
-<area shape="rect" id="node4" href="$gl_8hpp.html" title="gl.hpp" alt="" coords="162,393,219,420"/>
-<area shape="rect" id="node26" href="$resource_8hpp.html" title="resource.hpp" alt="" coords="2220,319,2319,345"/>
-<area shape="rect" id="node32" href="$gl__context_8hpp.html" title="gl_context.hpp" alt="" coords="1729,244,1836,271"/>
-<area shape="rect" id="node33" href="$hid_8hpp.html" title="hid.hpp" alt="" coords="1591,244,1655,271"/>
-<area shape="rect" id="node34" href="$signal_8hpp.html" title="signal.hpp" alt="" coords="2113,319,2196,345"/>
-<area shape="rect" id="node35" href="$task__scheduler_8hpp.html" title="task_scheduler.hpp" alt="" coords="2643,244,2781,271"/>
-<area shape="rect" id="node37" href="$lru__cache_8hpp.html" title="LRU general purpose disk caching class. " alt="" coords="3163,244,3267,271"/>
-<area shape="rect" id="node40" href="$rendering__system_8hpp.html" title="rendering_system.hpp" alt="" coords="1911,244,2065,271"/>
-<area shape="rect" id="node41" href="$glsl__programs__pool_8hpp.html" title="glsl_programs_pool.hpp" alt="" coords="2089,244,2253,271"/>
-<area shape="rect" id="node36" href="$concurrent__queue_8hpp.html" title="concurrent_queue.hpp" alt="" coords="2973,319,3126,345"/>
-<area shape="rect" id="node45" href="$log__ostream_8hpp.html" title="log_ostream.hpp" alt="" coords="3642,319,3763,345"/>
+<area shape="rect" id="node2" href="$stdafx_8hpp.html" title="stdafx.hpp" alt="" coords="1478,319,1561,345"/>
+<area shape="rect" id="node25" href="$gl__utils_8hpp.html" title="gl_utils.hpp" alt="" coords="2612,244,2699,271"/>
+<area shape="rect" id="node28" href="$StEngineControl_8hpp.html" title="Engine Control class. " alt="" coords="2220,169,2363,196"/>
+<area shape="rect" id="node42" href="$Log_8hpp.html" title="Log.hpp" alt="" coords="3226,169,3295,196"/>
+<area shape="rect" id="node45" href="$Texture2D_8hpp.html" title="Texture2D.hpp" alt="" coords="2085,169,2196,196"/>
+<area shape="rect" id="node46" href="$SurfaceFactory_8hpp.html" title="SurfaceFactory.hpp" alt="" coords="3308,95,3445,121"/>
+<area shape="rect" id="node48" href="$reversed__perspective_8hpp.html" title="reversed_perspective.hpp" alt="" coords="1253,95,1429,121"/>
+<area shape="rect" id="node4" href="$gl_8hpp.html" title="gl.hpp" alt="" coords="356,393,413,420"/>
+<area shape="rect" id="node26" href="$resource_8hpp.html" title="resource.hpp" alt="" coords="2153,319,2251,345"/>
+<area shape="rect" id="node32" href="$gl__context_8hpp.html" title="Setups drawing context, window and default framebuffer. " alt="" coords="1606,244,1713,271"/>
+<area shape="rect" id="node33" href="$hid_8hpp.html" title="hid.hpp" alt="" coords="2294,244,2358,271"/>
+<area shape="rect" id="node34" href="$signal_8hpp.html" title="signal.hpp" alt="" coords="2046,319,2129,345"/>
+<area shape="rect" id="node35" href="$task__scheduler_8hpp.html" title="task_scheduler.hpp" alt="" coords="2723,244,2860,271"/>
+<area shape="rect" id="node37" href="$lru__cache_8hpp.html" title="LRU general purpose disk caching class. " alt="" coords="3115,244,3219,271"/>
+<area shape="rect" id="node40" href="$rendering__system_8hpp.html" title="rendering_system.hpp" alt="" coords="2383,244,2536,271"/>
+<area shape="rect" id="node41" href="$glsl__programs__pool_8hpp.html" title="glsl_programs_pool.hpp" alt="" coords="1788,244,1952,271"/>
+<area shape="rect" id="node36" href="$concurrent__queue_8hpp.html" title="concurrent_queue.hpp" alt="" coords="2868,319,3021,345"/>
 </map>

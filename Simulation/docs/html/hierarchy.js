@@ -533,6 +533,8 @@ var hierarchy =
     [ "StE::Core::GL::gl_generic_context", "classStE_1_1Core_1_1GL_1_1gl__generic__context.html", [
       [ "StE::Core::GL::gl_context", "classStE_1_1Core_1_1GL_1_1gl__context.html", null ]
     ] ],
+    [ "StE::Core::gl_type_is_floating_point< T >", "structStE_1_1Core_1_1gl__type__is__floating__point.html", null ],
+    [ "StE::Core::gl_type_is_signed< T >", "structStE_1_1Core_1_1gl__type__is__signed.html", null ],
     [ "StE::Core::gl_type_name_enum< T >", "structStE_1_1Core_1_1gl__type__name__enum.html", null ],
     [ "StE::Core::GL::gl_utils", "classStE_1_1Core_1_1GL_1_1gl__utils.html", null ],
     [ "StE::Resource::glsl_programs_pool", "classStE_1_1Resource_1_1glsl__programs__pool.html", null ],
@@ -555,6 +557,7 @@ var hierarchy =
       [ "StE::Graphics::dense_voxelizer", "classStE_1_1Graphics_1_1dense__voxelizer.html", null ],
       [ "StE::Graphics::fb_clear_dispatch< color, depth >", "classStE_1_1Graphics_1_1fb__clear__dispatch.html", null ],
       [ "StE::Graphics::gbuffer_clear_dispatch", "classStE_1_1Graphics_1_1gbuffer__clear__dispatch.html", null ],
+      [ "StE::Graphics::gbuffer_downsample_depth_dispatch", "classStE_1_1Graphics_1_1gbuffer__downsample__depth__dispatch.html", null ],
       [ "StE::Graphics::gbuffer_sort_dispatch", "classStE_1_1Graphics_1_1gbuffer__sort__dispatch.html", null ],
       [ "StE::Graphics::gpu_dummy_dispatchable", "classStE_1_1Graphics_1_1gpu__dummy__dispatchable.html", null ],
       [ "StE::Graphics::hdr_bloom_blurx_task", "classStE_1_1Graphics_1_1hdr__bloom__blurx__task.html", null ],
@@ -569,12 +572,14 @@ var hierarchy =
       [ "StE::Graphics::light_preprocess_cull_shadows", "classStE_1_1Graphics_1_1light__preprocess__cull__shadows.html", null ],
       [ "StE::Graphics::linked_light_lists_gen_dispatch", "classStE_1_1Graphics_1_1linked__light__lists__gen__dispatch.html", null ],
       [ "StE::Graphics::Scene", "classStE_1_1Graphics_1_1Scene.html", null ],
-      [ "StE::Graphics::scene_frustum_cull_dispatch", "classStE_1_1Graphics_1_1scene__frustum__cull__dispatch.html", null ],
+      [ "StE::Graphics::scene_geo_cull_dispatch", "classStE_1_1Graphics_1_1scene__geo__cull__dispatch.html", null ],
       [ "StE::Graphics::scene_prepopulate_depth_dispatch", "classStE_1_1Graphics_1_1scene__prepopulate__depth__dispatch.html", null ],
       [ "StE::Graphics::shadowmap_projector", "classStE_1_1Graphics_1_1shadowmap__projector.html", null ],
       [ "StE::Graphics::ssss_bilateral_blur_x", "classStE_1_1Graphics_1_1ssss__bilateral__blur__x.html", null ],
       [ "StE::Graphics::ssss_bilateral_blur_y", "classStE_1_1Graphics_1_1ssss__bilateral__blur__y.html", null ],
       [ "StE::Graphics::ssss_write_penumbras", "classStE_1_1Graphics_1_1ssss__write__penumbras.html", null ],
+      [ "StE::Graphics::volumetric_scattering_gather_dispatch", "classStE_1_1Graphics_1_1volumetric__scattering__gather__dispatch.html", null ],
+      [ "StE::Graphics::volumetric_scattering_scatter_dispatch", "classStE_1_1Graphics_1_1volumetric__scattering__scatter__dispatch.html", null ],
       [ "StE::Text::TextManager::text_renderable", "classStE_1_1Text_1_1TextManager_1_1text__renderable.html", null ]
     ] ],
     [ "StE::Core::gpu_sync", "classStE_1_1Core_1_1gpu__sync.html", null ],
@@ -831,7 +836,7 @@ var hierarchy =
     [ "StE::shared_double_reference_guard< resize_data_struct< buckets_ptr >, false >", "classStE_1_1shared__double__reference__guard.html", null ],
     [ "StE::shared_double_reference_guard< table_ptr, false >", "classStE_1_1shared__double__reference__guard.html", null ],
     [ "StE::signal< Ts >", "classStE_1_1signal.html", null ],
-    [ "StE::signal< const glm::mat4 &, float, float, float >", "classStE_1_1signal.html", null ],
+    [ "StE::signal< const glm::mat4 &, float, float >", "classStE_1_1signal.html", null ],
     [ "StE::signal< glm::dvec2 >", "classStE_1_1signal.html", null ],
     [ "StE::signal< glm::i32vec2 >", "classStE_1_1signal.html", null ],
     [ "StE::signal< HID::keyboard::K, int, HID::Status, HID::ModifierBits >", "classStE_1_1signal.html", null ],
@@ -1175,5 +1180,6 @@ var hierarchy =
       [ "StE::Core::VertexBufferObject< typename, class, buffer_usage >", "classStE_1_1Core_1_1VertexBufferObject.html", null ],
       [ "StE::Core::VertexBufferObject< T, D, U >", "classStE_1_1Core_1_1VertexBufferObject.html", null ]
     ] ],
-    [ "StE::Graphics::view_matrix_ring_buffer", "classStE_1_1Graphics_1_1view__matrix__ring__buffer.html", null ]
+    [ "StE::Graphics::view_matrix_ring_buffer", "classStE_1_1Graphics_1_1view__matrix__ring__buffer.html", null ],
+    [ "StE::Graphics::volumetric_scattering_storage", "classStE_1_1Graphics_1_1volumetric__scattering__storage.html", null ]
 ];

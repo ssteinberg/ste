@@ -10,7 +10,7 @@
 <area shape="rect" id="node49" href="$object__group__indirect__command__buffer_8hpp.html" title="object_group_indirect\l_command_buffer.hpp" alt="" coords="2693,95,2845,136"/>
 <area shape="rect" id="node50" href="$ObjectGroup_8hpp.html" title="ObjectGroup.hpp" alt="" coords="1667,102,1788,129"/>
 <area shape="rect" id="node4" href="$gl_8hpp.html" title="gl.hpp" alt="" coords="2116,408,2173,435"/>
-<area shape="rect" id="node29" href="$gl__context_8hpp.html" title="gl_context.hpp" alt="" coords="1551,259,1658,285"/>
+<area shape="rect" id="node29" href="$gl__context_8hpp.html" title="Setups drawing context, window and default framebuffer. " alt="" coords="1551,259,1658,285"/>
 <area shape="rect" id="node30" href="$hid_8hpp.html" title="hid.hpp" alt="" coords="579,259,643,285"/>
 <area shape="rect" id="node31" href="$signal_8hpp.html" title="signal.hpp" alt="" coords="1602,333,1685,360"/>
 <area shape="rect" id="node32" href="$task__scheduler_8hpp.html" title="task_scheduler.hpp" alt="" coords="668,259,805,285"/>

@@ -106,7 +106,8 @@ $(document).ready(function(){initNavTree('classStE_1_1Graphics_1_1GIRenderer.htm
   <div class="summary">
 <a href="#nested-classes">Data Structures</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pro-methods">Protected Member Functions</a>  </div>
+<a href="#pro-methods">Protected Member Functions</a> &#124;
+<a href="#pro-static-methods">Static Protected Member Functions</a>  </div>
   <div class="headertitle">
 <div class="title">StE::Graphics::GIRenderer Class Reference</div>  </div>
 </div><!--header-->
@@ -162,11 +163,16 @@ Public Member Functions</h2></td></tr>
 Protected Member Functions</h2></td></tr>
 <tr class="memitem:a350e5f52444f09bfb96a8d3fcb056ccf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="gl__extensions_8h.html#a814c8b5745ecf82afdd1da718fbdc47c">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1GIRenderer.html#a350e5f52444f09bfb96a8d3fcb056ccf">rebuild_task_queue</a> ()</td></tr>
 <tr class="separator:a350e5f52444f09bfb96a8d3fcb056ccf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9ef53fdad4269d68b625b3475d1a2b4d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="gl__extensions_8h.html#a814c8b5745ecf82afdd1da718fbdc47c">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1GIRenderer.html#a9ef53fdad4269d68b625b3475d1a2b4d">update_shader_shadow_proj_uniforms</a> (const glm::mat4 &amp;)</td></tr>
-<tr class="separator:a9ef53fdad4269d68b625b3475d1a2b4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59ef606ec596510ba7b2bc6a43edaaf7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="gl__extensions_8h.html#a814c8b5745ecf82afdd1da718fbdc47c">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1GIRenderer.html#a59ef606ec596510ba7b2bc6a43edaaf7">update_shader_proj_uniforms</a> (const glm::mat4 &amp;)</td></tr>
+<tr class="separator:a59ef606ec596510ba7b2bc6a43edaaf7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3f24ce9d92d22f3e690e6dcd0e5e3963"><td class="memItemLeft" align="right" valign="top">const <br class="typebreak"/>
 <a class="el" href="classStE_1_1Core_1_1GenericFramebufferObject.html">Core::GenericFramebufferObject</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1GIRenderer.html#a3f24ce9d92d22f3e690e6dcd0e5e3963">get_fbo</a> () const </td></tr>
 <tr class="separator:a3f24ce9d92d22f3e690e6dcd0e5e3963"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-static-methods"></a>
+Static Protected Member Functions</h2></td></tr>
+<tr class="memitem:aa85b3b6d6393f0cd767a69bff3c8c69d"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1GIRenderer.html#aa85b3b6d6393f0cd767a69bff3c8c69d">gbuffer_depth_target_levels</a> ()</td></tr>
+<tr class="separator:aa85b3b6d6393f0cd767a69bff3c8c69d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -176,7 +182,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p>Definition at line <a class="el" href="GIRenderer_8hpp_source.html#l00048">48</a> of file <a class="el" href="GIRenderer_8hpp_source.html">GIRenderer.hpp</a>.</p>
+<p>Definition at line <a class="el" href="GIRenderer_8hpp_source.html#l00053">53</a> of file <a class="el" href="GIRenderer_8hpp_source.html">GIRenderer.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a1093593a44279553c776f093421ca8f6"></a>
 <div class="memitem">
@@ -208,7 +214,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="GIRenderer_8cpp_source.html#l00044">44</a> of file <a class="el" href="GIRenderer_8cpp_source.html">GIRenderer.cpp</a>.</p>
+<p>Definition at line <a class="el" href="GIRenderer_8cpp_source.html#l00047">47</a> of file <a class="el" href="GIRenderer_8cpp_source.html">GIRenderer.cpp</a>.</p>
 
 </div>
 </div>
@@ -233,7 +239,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="GIRenderer_8hpp_source.html#l00142">142</a> of file <a class="el" href="GIRenderer_8hpp_source.html">GIRenderer.hpp</a>.</p>
+<p>Definition at line <a class="el" href="GIRenderer_8hpp_source.html#l00156">156</a> of file <a class="el" href="GIRenderer_8hpp_source.html">GIRenderer.hpp</a>.</p>
 
 </div>
 </div>
@@ -252,7 +258,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="GIRenderer_8cpp_source.html#l00179">179</a> of file <a class="el" href="GIRenderer_8cpp_source.html">GIRenderer.cpp</a>.</p>
+<p>Definition at line <a class="el" href="GIRenderer_8cpp_source.html#l00203">203</a> of file <a class="el" href="GIRenderer_8cpp_source.html">GIRenderer.cpp</a>.</p>
 
 </div>
 </div>
@@ -270,7 +276,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="GIRenderer_8cpp_source.html#l00159">159</a> of file <a class="el" href="GIRenderer_8cpp_source.html">GIRenderer.cpp</a>.</p>
+<p>Definition at line <a class="el" href="GIRenderer_8cpp_source.html#l00183">183</a> of file <a class="el" href="GIRenderer_8cpp_source.html">GIRenderer.cpp</a>.</p>
 
 </div>
 </div>
@@ -296,7 +302,32 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="GIRenderer_8hpp_source.html#l00158">158</a> of file <a class="el" href="GIRenderer_8hpp_source.html">GIRenderer.hpp</a>.</p>
+<p>Definition at line <a class="el" href="GIRenderer_8hpp_source.html#l00172">172</a> of file <a class="el" href="GIRenderer_8hpp_source.html">GIRenderer.hpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aa85b3b6d6393f0cd767a69bff3c8c69d"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int GIRenderer::gbuffer_depth_target_levels </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="GIRenderer_8cpp_source.html#l00223">223</a> of file <a class="el" href="GIRenderer_8cpp_source.html">GIRenderer.cpp</a>.</p>
 
 </div>
 </div>
@@ -321,7 +352,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="GIRenderer_8hpp_source.html#l00130">130</a> of file <a class="el" href="GIRenderer_8hpp_source.html">GIRenderer.hpp</a>.</p>
+<p>Definition at line <a class="el" href="GIRenderer_8hpp_source.html#l00144">144</a> of file <a class="el" href="GIRenderer_8hpp_source.html">GIRenderer.hpp</a>.</p>
 
 </div>
 </div>
@@ -346,7 +377,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="GIRenderer_8hpp_source.html#l00155">155</a> of file <a class="el" href="GIRenderer_8hpp_source.html">GIRenderer.hpp</a>.</p>
+<p>Definition at line <a class="el" href="GIRenderer_8hpp_source.html#l00169">169</a> of file <a class="el" href="GIRenderer_8hpp_source.html">GIRenderer.hpp</a>.</p>
 
 </div>
 </div>
@@ -371,7 +402,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="GIRenderer_8hpp_source.html#l00156">156</a> of file <a class="el" href="GIRenderer_8hpp_source.html">GIRenderer.hpp</a>.</p>
+<p>Definition at line <a class="el" href="GIRenderer_8hpp_source.html#l00170">170</a> of file <a class="el" href="GIRenderer_8hpp_source.html">GIRenderer.hpp</a>.</p>
 
 </div>
 </div>
@@ -396,7 +427,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="GIRenderer_8cpp_source.html#l00118">118</a> of file <a class="el" href="GIRenderer_8cpp_source.html">GIRenderer.cpp</a>.</p>
+<p>Definition at line <a class="el" href="GIRenderer_8cpp_source.html#l00142">142</a> of file <a class="el" href="GIRenderer_8cpp_source.html">GIRenderer.cpp</a>.</p>
 
 </div>
 </div>
@@ -414,7 +445,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="GIRenderer_8cpp_source.html#l00190">190</a> of file <a class="el" href="GIRenderer_8cpp_source.html">GIRenderer.cpp</a>.</p>
+<p>Definition at line <a class="el" href="GIRenderer_8cpp_source.html#l00214">214</a> of file <a class="el" href="GIRenderer_8cpp_source.html">GIRenderer.cpp</a>.</p>
 
 </div>
 </div>
@@ -432,7 +463,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="GIRenderer_8cpp_source.html#l00170">170</a> of file <a class="el" href="GIRenderer_8cpp_source.html">GIRenderer.cpp</a>.</p>
+<p>Definition at line <a class="el" href="GIRenderer_8cpp_source.html#l00194">194</a> of file <a class="el" href="GIRenderer_8cpp_source.html">GIRenderer.cpp</a>.</p>
 
 </div>
 </div>
@@ -459,7 +490,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classStE_1_1Graphics_1_1rendering__system.html#ad6c7ae38f4187aa5a2e7a10622ab0e4a">StE::Graphics::rendering_system</a>.</p>
 
-<p>Definition at line <a class="el" href="GIRenderer_8cpp_source.html#l00147">147</a> of file <a class="el" href="GIRenderer_8cpp_source.html">GIRenderer.cpp</a>.</p>
+<p>Definition at line <a class="el" href="GIRenderer_8cpp_source.html#l00171">171</a> of file <a class="el" href="GIRenderer_8cpp_source.html">GIRenderer.cpp</a>.</p>
 
 </div>
 </div>
@@ -486,7 +517,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classStE_1_1Graphics_1_1rendering__system.html#a99b9a38a18ce6d1c44ed12914b4eb0e8">StE::Graphics::rendering_system</a>.</p>
 
-<p>Definition at line <a class="el" href="GIRenderer_8hpp_source.html#l00160">160</a> of file <a class="el" href="GIRenderer_8hpp_source.html">GIRenderer.hpp</a>.</p>
+<p>Definition at line <a class="el" href="GIRenderer_8hpp_source.html#l00174">174</a> of file <a class="el" href="GIRenderer_8hpp_source.html">GIRenderer.hpp</a>.</p>
 
 </div>
 </div>
@@ -504,11 +535,11 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="GIRenderer_8cpp_source.html#l00142">142</a> of file <a class="el" href="GIRenderer_8cpp_source.html">GIRenderer.cpp</a>.</p>
+<p>Definition at line <a class="el" href="GIRenderer_8cpp_source.html#l00166">166</a> of file <a class="el" href="GIRenderer_8cpp_source.html">GIRenderer.cpp</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a9ef53fdad4269d68b625b3475d1a2b4d"></a>
+<a class="anchor" id="a59ef606ec596510ba7b2bc6a43edaaf7"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -516,7 +547,7 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="gl__extensions_8h.html#a814c8b5745ecf82afdd1da718fbdc47c">void</a> GIRenderer::update_shader_shadow_proj_uniforms </td>
+          <td class="memname"><a class="el" href="gl__extensions_8h.html#a814c8b5745ecf82afdd1da718fbdc47c">void</a> GIRenderer::update_shader_proj_uniforms </td>
           <td>(</td>
           <td class="paramtype">const glm::mat4 &amp;&#160;</td>
           <td class="paramname"><em>projection</em></td><td>)</td>
@@ -530,7 +561,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="GIRenderer_8cpp_source.html#l00199">199</a> of file <a class="el" href="GIRenderer_8cpp_source.html">GIRenderer.cpp</a>.</p>
+<p>Definition at line <a class="el" href="GIRenderer_8cpp_source.html#l00227">227</a> of file <a class="el" href="GIRenderer_8cpp_source.html">GIRenderer.cpp</a>.</p>
 
 </div>
 </div>

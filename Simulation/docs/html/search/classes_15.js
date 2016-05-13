@@ -11,5 +11,8 @@ var searchData=
   ['vertexbufferobject',['VertexBufferObject',['../classStE_1_1Core_1_1VertexBufferObject.html',1,'StE::Core']]],
   ['vertexbufferobject_3c_20t_2c_20d_2c_20u_20_3e',['VertexBufferObject&lt; T, D, U &gt;',['../classStE_1_1Core_1_1VertexBufferObject.html',1,'StE::Core']]],
   ['vertexbufferobjectgeneric',['VertexBufferObjectGeneric',['../classStE_1_1Core_1_1VertexBufferObjectGeneric.html',1,'StE::Core']]],
-  ['view_5fmatrix_5fring_5fbuffer',['view_matrix_ring_buffer',['../classStE_1_1Graphics_1_1view__matrix__ring__buffer.html',1,'StE::Graphics']]]
+  ['view_5fmatrix_5fring_5fbuffer',['view_matrix_ring_buffer',['../classStE_1_1Graphics_1_1view__matrix__ring__buffer.html',1,'StE::Graphics']]],
+  ['volumetric_5fscattering_5fgather_5fdispatch',['volumetric_scattering_gather_dispatch',['../classStE_1_1Graphics_1_1volumetric__scattering__gather__dispatch.html',1,'StE::Graphics']]],
+  ['volumetric_5fscattering_5fscatter_5fdispatch',['volumetric_scattering_scatter_dispatch',['../classStE_1_1Graphics_1_1volumetric__scattering__scatter__dispatch.html',1,'StE::Graphics']]],
+  ['volumetric_5fscattering_5fstorage',['volumetric_scattering_storage',['../classStE_1_1Graphics_1_1volumetric__scattering__storage.html',1,'StE::Graphics']]]
 ];

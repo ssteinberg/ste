@@ -1,7 +1,7 @@
 <map id="src/ste/engine/core/gl/context/actual/gl_context.cpp" name="src/ste/engine/core/gl/context/actual/gl_context.cpp">
 <area shape="rect" id="node2" href="$stdafx_8hpp.html" title="stdafx.hpp" alt="" coords="1628,333,1711,360"/>
 <area shape="rect" id="node6" href="$gl__extensions_8h.html" title="gl_extensions.h" alt="" coords="172,483,287,509"/>
-<area shape="rect" id="node27" href="$gl__context_8hpp.html" title="gl_context.hpp" alt="" coords="1669,109,1776,136"/>
+<area shape="rect" id="node27" href="$gl__context_8hpp.html" title="Setups drawing context, window and default framebuffer. " alt="" coords="1669,109,1776,136"/>
 <area shape="rect" id="node29" href="$gl__current__context_8hpp.html" title="gl_current_context.hpp" alt="" coords="1592,259,1747,285"/>
 <area shape="rect" id="node35" href="$Log_8hpp.html" title="Log.hpp" alt="" coords="2989,109,3059,136"/>
 <area shape="rect" id="node48" href="$AttributedString_8hpp.html" title="AttributedString.hpp" alt="" coords="2029,109,2163,136"/>

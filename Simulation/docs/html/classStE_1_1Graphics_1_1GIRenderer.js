@@ -14,5 +14,5 @@ var classStE_1_1Graphics_1_1GIRenderer =
     [ "render_queue", "classStE_1_1Graphics_1_1GIRenderer.html#a28abb8106a9ba611e52e809cbfa47156", null ],
     [ "rendering_system_name", "classStE_1_1Graphics_1_1GIRenderer.html#aae367969dd1659b46e1cd73db81f6dcc", null ],
     [ "set_deferred_rendering_enabled", "classStE_1_1Graphics_1_1GIRenderer.html#af4b2573a342322e15c3b31921c4457dc", null ],
-    [ "update_shader_shadow_proj_uniforms", "classStE_1_1Graphics_1_1GIRenderer.html#a9ef53fdad4269d68b625b3475d1a2b4d", null ]
+    [ "update_shader_proj_uniforms", "classStE_1_1Graphics_1_1GIRenderer.html#a59ef606ec596510ba7b2bc6a43edaaf7", null ]
 ];

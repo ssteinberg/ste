@@ -11,7 +11,7 @@
 <area shape="rect" id="node31" href="$BxDF_8hpp.html" title="BxDF.hpp" alt="" coords="943,273,1023,300"/>
 <area shape="rect" id="node32" href="$Texture3D_8hpp.html" title="Texture3D.hpp" alt="" coords="1047,273,1158,300"/>
 <area shape="rect" id="node33" href="$Sampler_8hpp.html" title="Sampler.hpp" alt="" coords="1183,273,1279,300"/>
-<area shape="rect" id="node38" href="$gl__context_8hpp.html" title="gl_context.hpp" alt="" coords="1992,273,2099,300"/>
+<area shape="rect" id="node38" href="$gl__context_8hpp.html" title="Setups drawing context, window and default framebuffer. " alt="" coords="1992,273,2099,300"/>
 <area shape="rect" id="node39" href="$hid_8hpp.html" title="hid.hpp" alt="" coords="2259,199,2323,225"/>
 <area shape="rect" id="node40" href="$signal_8hpp.html" title="signal.hpp" alt="" coords="2139,355,2221,382"/>
 <area shape="rect" id="node41" href="$task__scheduler_8hpp.html" title="task_scheduler.hpp" alt="" coords="2550,355,2687,382"/>

@@ -235,10 +235,10 @@ $(document).ready(function(){initNavTree('mesh_8hpp_source.html','');});
 <div class="line"><a name="l00128"></a><span class="lineno"><a class="line" href="classStE_1_1Graphics_1_1mesh.html#a646e1342c15c1c7518b63ae823a3a8c3">  128</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classStE_1_1Graphics_1_1mesh.html#a646e1342c15c1c7518b63ae823a3a8c3">transform</a>(<span class="keyword">const</span> glm::mat4 &amp;m) {</div>
 <div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;        <span class="keyword">auto</span> tim = glm::transpose(glm::inverse(m));</div>
 <div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;        <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;v : vertices) {</div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;            <span class="keyword">auto</span> n = (tim * glm::vec4(v.n, 1)).xyz;</div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;            <span class="keyword">auto</span> t = (tim * glm::vec4(v.t, 1)).xyz;</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;            <span class="keyword">auto</span> n = (tim * glm::vec4(v.n, 1)).xyz();</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;            <span class="keyword">auto</span> t = (tim * glm::vec4(v.t, 1)).xyz();</div>
 <div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;</div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;            v.p = (m * glm::vec4(v.p, 1)).xyz;</div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;            v.p = (m * glm::vec4(v.p, 1)).xyz();</div>
 <div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;            v.n = glm::normalize(n);</div>
 <div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;            v.t = glm::normalize(t);</div>
 <div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;        }</div>

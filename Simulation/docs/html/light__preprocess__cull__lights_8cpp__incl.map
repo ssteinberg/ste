@@ -13,7 +13,7 @@
 <area shape="rect" id="node48" href="$light__storage_8hpp.html" title="light_storage.hpp" alt="" coords="1416,437,1539,464"/>
 <area shape="rect" id="node49" href="$hdr__dof__postprocess_8hpp.html" title="hdr_dof_postprocess.hpp" alt="" coords="2089,191,2260,218"/>
 <area shape="rect" id="node50" href="$light__preprocess__cull__shadows_8hpp.html" title="light_preprocess_cull\l_shadows.hpp" alt="" coords="867,273,1013,315"/>
-<area shape="rect" id="node36" href="$gl__context_8hpp.html" title="gl_context.hpp" alt="" coords="2413,437,2520,464"/>
+<area shape="rect" id="node36" href="$gl__context_8hpp.html" title="Setups drawing context, window and default framebuffer. " alt="" coords="2413,437,2520,464"/>
 <area shape="rect" id="node37" href="$hid_8hpp.html" title="hid.hpp" alt="" coords="2811,437,2875,464"/>
 <area shape="rect" id="node39" href="$task__scheduler_8hpp.html" title="task_scheduler.hpp" alt="" coords="3179,437,3317,464"/>
 <area shape="rect" id="node40" href="$lru__cache_8hpp.html" title="LRU general purpose disk caching class. " alt="" coords="2949,437,3053,464"/>

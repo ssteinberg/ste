@@ -1,6 +1,5 @@
 var structStE_1_1ste__engine__control__impl =
 [
-    [ "far_clip", "structStE_1_1ste__engine__control__impl.html#a97725ec9e7b949b3488a18d2daa88054", null ],
     [ "field_of_view", "structStE_1_1ste__engine__control__impl.html#a931c4376e9d61ea7312aba8f86781868", null ],
     [ "fps", "structStE_1_1ste__engine__control__impl.html#a5044678279124eefcd84195e5d625c2d", null ],
     [ "frames", "structStE_1_1ste__engine__control__impl.html#af0be1b107872e839cd5d301d6b0fb84a", null ],

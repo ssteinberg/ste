@@ -25,7 +25,7 @@
 <area shape="rect" id="node29" href="$texture__handle_8hpp.html" title="texture_handle.hpp" alt="" coords="1446,468,1581,495"/>
 <area shape="rect" id="node35" href="$gstack_8hpp.html" title="gstack.hpp" alt="" coords="1182,468,1269,495"/>
 <area shape="rect" id="node40" href="$light__storage_8hpp.html" title="light_storage.hpp" alt="" coords="661,393,784,420"/>
-<area shape="rect" id="node43" href="$gl__context_8hpp.html" title="gl_context.hpp" alt="" coords="2376,393,2483,420"/>
+<area shape="rect" id="node43" href="$gl__context_8hpp.html" title="Setups drawing context, window and default framebuffer. " alt="" coords="2376,393,2483,420"/>
 <area shape="rect" id="node44" href="$hid_8hpp.html" title="hid.hpp" alt="" coords="3027,244,3091,271"/>
 <area shape="rect" id="node45" href="$signal_8hpp.html" title="signal.hpp" alt="" coords="2157,543,2240,569"/>
 <area shape="rect" id="node46" href="$lru__cache_8hpp.html" title="LRU general purpose disk caching class. " alt="" coords="2632,244,2736,271"/>

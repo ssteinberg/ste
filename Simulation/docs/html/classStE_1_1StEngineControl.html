@@ -119,14 +119,16 @@ $(document).ready(function(){initNavTree('classStE_1_1StEngineControl.html','');
 Collaboration diagram for StE::StEngineControl:</div>
 <div class="dyncontent">
 <div class="center"><img src="classStE_1_1StEngineControl__coll__graph.png" border="0" usemap="#StE_1_1StEngineControl_coll__map" alt="Collaboration graph"/></div>
+<map name="StE_1_1StEngineControl_coll__map" id="StE_1_1StEngineControl_coll__map">
+</map>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
 <tr class="memitem:a0867e1f3123396050a4c708bbe9060bb"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1StEngineControl.html#a0867e1f3123396050a4c708bbe9060bb">framebuffer_resize_signal_type</a> = <a class="el" href="classStE_1_1signal.html">signal</a>&lt; glm::i32vec2 &gt;</td></tr>
 <tr class="separator:a0867e1f3123396050a4c708bbe9060bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2e490500d7941015d022fe83db3c2c2a"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1StEngineControl.html#a2e490500d7941015d022fe83db3c2c2a">projection_change_signal_type</a> = <a class="el" href="classStE_1_1signal.html">signal</a>&lt; const glm::mat4 &amp;, float, float, float &gt;</td></tr>
-<tr class="separator:a2e490500d7941015d022fe83db3c2c2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c084187405c0a81c5218ba6b66ab080"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1StEngineControl.html#a7c084187405c0a81c5218ba6b66ab080">projection_change_signal_type</a> = <a class="el" href="classStE_1_1signal.html">signal</a>&lt; const glm::mat4 &amp;, float, float &gt;</td></tr>
+<tr class="separator:a7c084187405c0a81c5218ba6b66ab080"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a264e0dabc0948b48fdb8d39b796edb12"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1StEngineControl.html#a264e0dabc0948b48fdb8d39b796edb12">hid_pointer_button_signal_type</a> = <a class="el" href="classStE_1_1signal.html">signal</a>&lt; <a class="el" href="classStE_1_1HID_1_1pointer.html#a4f2bee21a0aef0bd926069192c92ccd6">HID::pointer::B</a>, <a class="el" href="namespaceStE_1_1HID.html#acc512c70a66b06f07900e02c977e03d2">HID::Status</a>, <a class="el" href="namespaceStE_1_1HID.html#a0ba8579430702aa7cabf94635ab7f169">HID::ModifierBits</a> &gt;</td></tr>
 <tr class="separator:a264e0dabc0948b48fdb8d39b796edb12"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adcf4bd2a194a3caa3f3f15bffe98bfb3"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1StEngineControl.html#adcf4bd2a194a3caa3f3f15bffe98bfb3">hid_pointer_movement_signal_type</a> = <a class="el" href="classStE_1_1signal.html">signal</a>&lt; glm::dvec2 &gt;</td></tr>
@@ -204,14 +206,12 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 <tr class="separator:a2d0c25338fb47b2581dd8acba65e9875"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a394381ddfe6f8fcba336fd3d6c49a786"><td class="memItemLeft" align="right" valign="top"><a class="el" href="gl__extensions_8h.html#a814c8b5745ecf82afdd1da718fbdc47c">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1StEngineControl.html#a394381ddfe6f8fcba336fd3d6c49a786">set_fov</a> (float rad)</td></tr>
 <tr class="separator:a394381ddfe6f8fcba336fd3d6c49a786"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa12cbcd17e5e286a83061e83cdc27fb5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="gl__extensions_8h.html#a814c8b5745ecf82afdd1da718fbdc47c">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1StEngineControl.html#aa12cbcd17e5e286a83061e83cdc27fb5">set_clipping_planes</a> (float near_clip_distance, float far_clip_distance)</td></tr>
-<tr class="separator:aa12cbcd17e5e286a83061e83cdc27fb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f60f2b6432deb9d92893bb030bc171b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="gl__extensions_8h.html#a814c8b5745ecf82afdd1da718fbdc47c">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1StEngineControl.html#a7f60f2b6432deb9d92893bb030bc171b">set_clipping_planes</a> (float near_clip_distance)</td></tr>
+<tr class="separator:a7f60f2b6432deb9d92893bb030bc171b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab96fef274aff06e37761738e95247685"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1StEngineControl.html#ab96fef274aff06e37761738e95247685">get_fov</a> () const </td></tr>
 <tr class="separator:ab96fef274aff06e37761738e95247685"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a550c8f1118e205acda790cc66c0cefa9"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1StEngineControl.html#a550c8f1118e205acda790cc66c0cefa9">get_near_clip</a> () const </td></tr>
 <tr class="separator:a550c8f1118e205acda790cc66c0cefa9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7a01d703dc46a3f3c6c86c063265ae99"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1StEngineControl.html#a7a01d703dc46a3f3c6c86c063265ae99">get_far_clip</a> () const </td></tr>
-<tr class="separator:a7a01d703dc46a3f3c6c86c063265ae99"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a076b7e268743e449ca1847f21fc6e0ef"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1StEngineControl.html#a076b7e268743e449ca1847f21fc6e0ef">get_projection_aspect</a> () const </td></tr>
 <tr class="separator:a076b7e268743e449ca1847f21fc6e0ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a600760833d769de112644af9efce4b64"><td class="memItemLeft" align="right" valign="top">glm::mat4 &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1StEngineControl.html#a600760833d769de112644af9efce4b64">projection_matrix</a> () const </td></tr>
@@ -304,12 +304,12 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 
 </div>
 </div>
-<a class="anchor" id="a2e490500d7941015d022fe83db3c2c2a"></a>
+<a class="anchor" id="a7c084187405c0a81c5218ba6b66ab080"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="classStE_1_1StEngineControl.html#a2e490500d7941015d022fe83db3c2c2a">StE::StEngineControl::projection_change_signal_type</a> =  <a class="el" href="classStE_1_1signal.html">signal</a>&lt;const glm::mat4&amp;, float, float, float&gt;</td>
+          <td class="memname">using <a class="el" href="classStE_1_1StEngineControl.html#a7c084187405c0a81c5218ba6b66ab080">StE::StEngineControl::projection_change_signal_type</a> =  <a class="el" href="classStE_1_1signal.html">signal</a>&lt;const glm::mat4&amp;, float, float&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -389,7 +389,7 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="StEngineControl_8cpp_source.html#l00035">35</a> of file <a class="el" href="StEngineControl_8cpp_source.html">StEngineControl.cpp</a>.</p>
+<p>Definition at line <a class="el" href="StEngineControl_8cpp_source.html#l00036">36</a> of file <a class="el" href="StEngineControl_8cpp_source.html">StEngineControl.cpp</a>.</p>
 
 </div>
 </div>
@@ -414,7 +414,7 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="StEngineControl_8cpp_source.html#l00050">50</a> of file <a class="el" href="StEngineControl_8cpp_source.html">StEngineControl.cpp</a>.</p>
+<p>Definition at line <a class="el" href="StEngineControl_8cpp_source.html#l00051">51</a> of file <a class="el" href="StEngineControl_8cpp_source.html">StEngineControl.cpp</a>.</p>
 
 </div>
 </div>
@@ -457,7 +457,7 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="StEngineControl_8cpp_source.html#l00111">111</a> of file <a class="el" href="StEngineControl_8cpp_source.html">StEngineControl.cpp</a>.</p>
+<p>Definition at line <a class="el" href="StEngineControl_8cpp_source.html#l00112">112</a> of file <a class="el" href="StEngineControl_8cpp_source.html">StEngineControl.cpp</a>.</p>
 
 </div>
 </div>
@@ -486,23 +486,6 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 
 </div>
 </div>
-<a class="anchor" id="a7a01d703dc46a3f3c6c86c063265ae99"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">float StEngineControl::get_far_clip </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="StEngineControl_8cpp_source.html#l00166">166</a> of file <a class="el" href="StEngineControl_8cpp_source.html">StEngineControl.cpp</a>.</p>
-
-</div>
-</div>
 <a class="anchor" id="ab96fef274aff06e37761738e95247685"></a>
 <div class="memitem">
 <div class="memproto">
@@ -516,7 +499,7 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="StEngineControl_8cpp_source.html#l00158">158</a> of file <a class="el" href="StEngineControl_8cpp_source.html">StEngineControl.cpp</a>.</p>
+<p>Definition at line <a class="el" href="StEngineControl_8cpp_source.html#l00161">161</a> of file <a class="el" href="StEngineControl_8cpp_source.html">StEngineControl.cpp</a>.</p>
 
 </div>
 </div>
@@ -542,7 +525,7 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00171">171</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
+<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00170">170</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
 
 </div>
 </div>
@@ -559,7 +542,7 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="StEngineControl_8cpp_source.html#l00162">162</a> of file <a class="el" href="StEngineControl_8cpp_source.html">StEngineControl.cpp</a>.</p>
+<p>Definition at line <a class="el" href="StEngineControl_8cpp_source.html#l00165">165</a> of file <a class="el" href="StEngineControl_8cpp_source.html">StEngineControl.cpp</a>.</p>
 
 </div>
 </div>
@@ -585,7 +568,7 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00172">172</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
+<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00171">171</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
 
 </div>
 </div>
@@ -610,7 +593,7 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00161">161</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
+<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00160">160</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
 
 </div>
 </div>
@@ -627,7 +610,7 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="StEngineControl_8cpp_source.html#l00170">170</a> of file <a class="el" href="StEngineControl_8cpp_source.html">StEngineControl.cpp</a>.</p>
+<p>Definition at line <a class="el" href="StEngineControl_8cpp_source.html#l00169">169</a> of file <a class="el" href="StEngineControl_8cpp_source.html">StEngineControl.cpp</a>.</p>
 
 </div>
 </div>
@@ -900,7 +883,7 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00155">155</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
+<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00154">154</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
 
 </div>
 </div>
@@ -917,7 +900,7 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="StEngineControl_8cpp_source.html#l00154">154</a> of file <a class="el" href="StEngineControl_8cpp_source.html">StEngineControl.cpp</a>.</p>
+<p>Definition at line <a class="el" href="StEngineControl_8cpp_source.html#l00157">157</a> of file <a class="el" href="StEngineControl_8cpp_source.html">StEngineControl.cpp</a>.</p>
 
 </div>
 </div>
@@ -961,7 +944,7 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 
 <p>Dispatch rendering tasks, swap buffers, handle input and window system events. </p>
 
-<p>Definition at line <a class="el" href="StEngineControl_8cpp_source.html#l00098">98</a> of file <a class="el" href="StEngineControl_8cpp_source.html">StEngineControl.cpp</a>.</p>
+<p>Definition at line <a class="el" href="StEngineControl_8cpp_source.html#l00099">99</a> of file <a class="el" href="StEngineControl_8cpp_source.html">StEngineControl.cpp</a>.</p>
 
 </div>
 </div>
@@ -990,7 +973,7 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 
 </div>
 </div>
-<a class="anchor" id="aa12cbcd17e5e286a83061e83cdc27fb5"></a>
+<a class="anchor" id="a7f60f2b6432deb9d92893bb030bc171b"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -998,23 +981,13 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
           <td class="memname"><a class="el" href="gl__extensions_8h.html#a814c8b5745ecf82afdd1da718fbdc47c">void</a> StEngineControl::set_clipping_planes </td>
           <td>(</td>
           <td class="paramtype">float&#160;</td>
-          <td class="paramname"><em>near_clip_distance</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramname"><em>near_clip_distance</em></td><td>)</td>
           <td></td>
-          <td class="paramtype">float&#160;</td>
-          <td class="paramname"><em>far_clip_distance</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="StEngineControl_8cpp_source.html#l00141">141</a> of file <a class="el" href="StEngineControl_8cpp_source.html">StEngineControl.cpp</a>.</p>
+<p>Definition at line <a class="el" href="StEngineControl_8cpp_source.html#l00145">145</a> of file <a class="el" href="StEngineControl_8cpp_source.html">StEngineControl.cpp</a>.</p>
 
 </div>
 </div>
@@ -1032,7 +1005,7 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="StEngineControl_8cpp_source.html#l00136">136</a> of file <a class="el" href="StEngineControl_8cpp_source.html">StEngineControl.cpp</a>.</p>
+<p>Definition at line <a class="el" href="StEngineControl_8cpp_source.html#l00140">140</a> of file <a class="el" href="StEngineControl_8cpp_source.html">StEngineControl.cpp</a>.</p>
 
 </div>
 </div>
@@ -1058,7 +1031,7 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00170">170</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
+<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00169">169</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
 
 </div>
 </div>
@@ -1084,7 +1057,7 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00167">167</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
+<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00166">166</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
 
 </div>
 </div>

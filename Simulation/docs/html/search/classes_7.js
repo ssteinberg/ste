@@ -1,6 +1,7 @@
 var searchData=
 [
   ['gbuffer_5fclear_5fdispatch',['gbuffer_clear_dispatch',['../classStE_1_1Graphics_1_1gbuffer__clear__dispatch.html',1,'StE::Graphics']]],
+  ['gbuffer_5fdownsample_5fdepth_5fdispatch',['gbuffer_downsample_depth_dispatch',['../classStE_1_1Graphics_1_1gbuffer__downsample__depth__dispatch.html',1,'StE::Graphics']]],
   ['gbuffer_5fsort_5fdispatch',['gbuffer_sort_dispatch',['../classStE_1_1Graphics_1_1gbuffer__sort__dispatch.html',1,'StE::Graphics']]],
   ['generate_5farray',['generate_array',['../structStE_1_1generate__array.html',1,'StE']]],
   ['generic_5fresource_5fallocator',['generic_resource_allocator',['../classStE_1_1Core_1_1generic__resource__allocator.html',1,'StE::Core']]],
@@ -17,6 +18,8 @@ var searchData=
   ['gl_5fcurrent_5fcontext',['gl_current_context',['../classStE_1_1Core_1_1GL_1_1gl__current__context.html',1,'StE::Core::GL']]],
   ['gl_5felements_5fcount',['gl_elements_count',['../structStE_1_1Core_1_1gl__elements__count.html',1,'StE::Core']]],
   ['gl_5fgeneric_5fcontext',['gl_generic_context',['../classStE_1_1Core_1_1GL_1_1gl__generic__context.html',1,'StE::Core::GL']]],
+  ['gl_5ftype_5fis_5ffloating_5fpoint',['gl_type_is_floating_point',['../structStE_1_1Core_1_1gl__type__is__floating__point.html',1,'StE::Core']]],
+  ['gl_5ftype_5fis_5fsigned',['gl_type_is_signed',['../structStE_1_1Core_1_1gl__type__is__signed.html',1,'StE::Core']]],
   ['gl_5ftype_5fname_5fenum',['gl_type_name_enum',['../structStE_1_1Core_1_1gl__type__name__enum.html',1,'StE::Core']]],
   ['gl_5futils',['gl_utils',['../classStE_1_1Core_1_1GL_1_1gl__utils.html',1,'StE::Core::GL']]],
   ['glsl_5fprograms_5fpool',['glsl_programs_pool',['../classStE_1_1Resource_1_1glsl__programs__pool.html',1,'StE::Resource']]],

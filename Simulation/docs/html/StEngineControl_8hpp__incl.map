@@ -1,6 +1,6 @@
 <map id="src/ste/engine/engine_control/StEngineControl.hpp" name="src/ste/engine/engine_control/StEngineControl.hpp">
 <area shape="rect" id="node2" href="$stdafx_8hpp.html" title="stdafx.hpp" alt="" coords="1461,244,1543,271"/>
-<area shape="rect" id="node28" href="$gl__context_8hpp.html" title="gl_context.hpp" alt="" coords="2231,95,2338,121"/>
+<area shape="rect" id="node28" href="$gl__context_8hpp.html" title="Setups drawing context, window and default framebuffer. " alt="" coords="2231,95,2338,121"/>
 <area shape="rect" id="node35" href="$hid_8hpp.html" title="hid.hpp" alt="" coords="3918,95,3982,121"/>
 <area shape="rect" id="node38" href="$signal_8hpp.html" title="signal.hpp" alt="" coords="2582,169,2665,196"/>
 <area shape="rect" id="node40" href="$task__scheduler_8hpp.html" title="task_scheduler.hpp" alt="" coords="3159,95,3296,121"/>

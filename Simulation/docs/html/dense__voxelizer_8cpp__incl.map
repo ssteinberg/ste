@@ -10,7 +10,7 @@
 <area shape="rect" id="node42" href="$gpu__task_8hpp.html" title="gpu_task.hpp" alt="" coords="2324,393,2424,420"/>
 <area shape="rect" id="node45" href="$Scene_8hpp.html" title="Scene.hpp" alt="" coords="2090,244,2175,271"/>
 <area shape="rect" id="node46" href="$GLSLProgramFactory_8hpp.html" title="GLSLProgramFactory.hpp" alt="" coords="1280,244,1457,271"/>
-<area shape="rect" id="node32" href="$gl__context_8hpp.html" title="gl_context.hpp" alt="" coords="2631,393,2738,420"/>
+<area shape="rect" id="node32" href="$gl__context_8hpp.html" title="Setups drawing context, window and default framebuffer. " alt="" coords="2631,393,2738,420"/>
 <area shape="rect" id="node35" href="$hid_8hpp.html" title="hid.hpp" alt="" coords="2006,393,2070,420"/>
 <area shape="rect" id="node36" href="$signal_8hpp.html" title="signal.hpp" alt="" coords="2874,617,2957,644"/>
 <area shape="rect" id="node37" href="$task__scheduler_8hpp.html" title="task_scheduler.hpp" alt="" coords="3123,393,3260,420"/>

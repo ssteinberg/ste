@@ -1,6 +1,8 @@
 var searchData=
 [
   ['gbuffer_5fclear_5fdispatch_2ehpp',['gbuffer_clear_dispatch.hpp',['../gbuffer__clear__dispatch_8hpp.html',1,'']]],
+  ['gbuffer_5fdownsample_5fdepth_5fdispatch_2ecpp',['gbuffer_downsample_depth_dispatch.cpp',['../gbuffer__downsample__depth__dispatch_8cpp.html',1,'']]],
+  ['gbuffer_5fdownsample_5fdepth_5fdispatch_2ehpp',['gbuffer_downsample_depth_dispatch.hpp',['../gbuffer__downsample__depth__dispatch_8hpp.html',1,'']]],
   ['gbuffer_5fsort_5fdispatch_2ehpp',['gbuffer_sort_dispatch.hpp',['../gbuffer__sort__dispatch_8hpp.html',1,'']]],
   ['generate_5farray_2ehpp',['generate_array.hpp',['../generate__array_8hpp.html',1,'']]],
   ['getcwd_2ehpp',['getcwd.hpp',['../getcwd_8hpp.html',1,'']]],

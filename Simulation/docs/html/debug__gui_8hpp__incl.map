@@ -12,7 +12,7 @@
 <area shape="rect" id="node30" href="$context__state__name_8hpp.html" title="context_state_name.hpp" alt="" coords="1567,483,1733,509"/>
 <area shape="rect" id="node31" href="$context__state__key_8hpp.html" title="context_state_key.hpp" alt="" coords="1458,408,1613,435"/>
 <area shape="rect" id="node32" href="$context__state__type_8hpp.html" title="context_state_type.hpp" alt="" coords="1226,408,1383,435"/>
-<area shape="rect" id="node38" href="$gl__context_8hpp.html" title="gl_context.hpp" alt="" coords="1831,184,1938,211"/>
+<area shape="rect" id="node38" href="$gl__context_8hpp.html" title="Setups drawing context, window and default framebuffer. " alt="" coords="1831,184,1938,211"/>
 <area shape="rect" id="node41" href="$hid_8hpp.html" title="hid.hpp" alt="" coords="1245,184,1309,211"/>
 <area shape="rect" id="node44" href="$task__scheduler_8hpp.html" title="task_scheduler.hpp" alt="" coords="2372,184,2509,211"/>
 <area shape="rect" id="node45" href="$lru__cache_8hpp.html" title="LRU general purpose disk caching class. " alt="" coords="1333,184,1437,211"/>

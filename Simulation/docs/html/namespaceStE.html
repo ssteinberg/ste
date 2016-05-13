@@ -280,6 +280,12 @@ Enumerations</h2></td></tr>
 Functions</h2></td></tr>
 <tr class="memitem:ac0d726a56f16623fb82c939f99115cdb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="gl__extensions_8h.html#a814c8b5745ecf82afdd1da718fbdc47c">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceStE.html#ac0d726a56f16623fb82c939f99115cdb">extract_projection_frustum_planes</a> (float far, float near, float fovy, float aspect, glm::vec4 *np, glm::vec4 *fp, glm::vec4 *rp, glm::vec4 *lp, glm::vec4 *tp, glm::vec4 *bp)</td></tr>
 <tr class="separator:ac0d726a56f16623fb82c939f99115cdb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a52b1692c14489170810bcaa43ebe399f"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a52b1692c14489170810bcaa43ebe399f"><td class="memTemplItemLeft" align="right" valign="top">glm::mat4&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceStE.html#a52b1692c14489170810bcaa43ebe399f">reversed_perspective</a> (T fovy, T aspect, T n, T f)</td></tr>
+<tr class="separator:a52b1692c14489170810bcaa43ebe399f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7eeb3613c5375070b768de8ac4291c81"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a7eeb3613c5375070b768de8ac4291c81"><td class="memTemplItemLeft" align="right" valign="top">glm::mat4&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceStE.html#a7eeb3613c5375070b768de8ac4291c81">reversed_infinite_perspective</a> (T fovy, T aspect, T n)</td></tr>
+<tr class="separator:a7eeb3613c5375070b768de8ac4291c81"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac5018b102dca97b0793840af4512f4b8"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:ac5018b102dca97b0793840af4512f4b8"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceStE.html#ac5018b102dca97b0793840af4512f4b8">hash_combine</a> (const T &amp;h1, const T &amp;h2)</td></tr>
 <tr class="separator:ac5018b102dca97b0793840af4512f4b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -855,6 +861,84 @@ template&lt;typename Container , typename ConstIterator &gt; </div>
 </div><div class="memdoc">
 
 <p>Definition at line <a class="el" href="remove__iterator__constness_8hpp_source.html#l00009">9</a> of file <a class="el" href="remove__iterator__constness_8hpp_source.html">remove_iterator_constness.hpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a7eeb3613c5375070b768de8ac4291c81"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::mat4 StE::reversed_infinite_perspective </td>
+          <td>(</td>
+          <td class="paramtype">T&#160;</td>
+          <td class="paramname"><em>fovy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">T&#160;</td>
+          <td class="paramname"><em>aspect</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">T&#160;</td>
+          <td class="paramname"><em>n</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="reversed__perspective_8hpp_source.html#l00024">24</a> of file <a class="el" href="reversed__perspective_8hpp_source.html">reversed_perspective.hpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a52b1692c14489170810bcaa43ebe399f"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::mat4 StE::reversed_perspective </td>
+          <td>(</td>
+          <td class="paramtype">T&#160;</td>
+          <td class="paramname"><em>fovy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">T&#160;</td>
+          <td class="paramname"><em>aspect</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">T&#160;</td>
+          <td class="paramname"><em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">T&#160;</td>
+          <td class="paramname"><em>f</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="reversed__perspective_8hpp_source.html#l00011">11</a> of file <a class="el" href="reversed__perspective_8hpp_source.html">reversed_perspective.hpp</a>.</p>
 
 </div>
 </div>

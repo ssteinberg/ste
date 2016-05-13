@@ -43,6 +43,8 @@ var namespaceStE_1_1Core =
     [ "_gl_type_name_enum_impl< glm::tmat4x3< matT > >", "structStE_1_1Core_1_1__gl__type__name__enum__impl_3_01glm_1_1tmat4x3_3_01matT_01_4_01_4.html", null ],
     [ "_gl_type_name_enum_impl< glm::tmat4x4< matT > >", "structStE_1_1Core_1_1__gl__type__name__enum__impl_3_01glm_1_1tmat4x4_3_01matT_01_4_01_4.html", null ],
     [ "gl_type_name_enum", "structStE_1_1Core_1_1gl__type__name__enum.html", "structStE_1_1Core_1_1gl__type__name__enum" ],
+    [ "gl_type_is_floating_point", "structStE_1_1Core_1_1gl__type__is__floating__point.html", "structStE_1_1Core_1_1gl__type__is__floating__point" ],
+    [ "gl_type_is_signed", "structStE_1_1Core_1_1gl__type__is__signed.html", "structStE_1_1Core_1_1gl__type__is__signed" ],
     [ "BufferObjectBinder", "classStE_1_1Core_1_1BufferObjectBinder.html", null ],
     [ "buffer_object", "classStE_1_1Core_1_1buffer__object.html", "classStE_1_1Core_1_1buffer__object" ],
     [ "BufferObjectLayoutBinder", "classStE_1_1Core_1_1BufferObjectLayoutBinder.html", null ],

@@ -10,7 +10,7 @@
 <area shape="rect" id="node48" href="$texture__sparse_8hpp.html" title="texture_sparse.hpp" alt="" coords="3268,408,3403,435"/>
 <area shape="rect" id="node49" href="$Sampler_8hpp.html" title="Sampler.hpp" alt="" coords="2156,408,2252,435"/>
 <area shape="rect" id="node4" href="$gl_8hpp.html" title="gl.hpp" alt="" coords="2442,557,2499,584"/>
-<area shape="rect" id="node29" href="$gl__context_8hpp.html" title="gl_context.hpp" alt="" coords="432,408,538,435"/>
+<area shape="rect" id="node29" href="$gl__context_8hpp.html" title="Setups drawing context, window and default framebuffer. " alt="" coords="432,408,538,435"/>
 <area shape="rect" id="node30" href="$hid_8hpp.html" title="hid.hpp" alt="" coords="880,408,944,435"/>
 <area shape="rect" id="node31" href="$signal_8hpp.html" title="signal.hpp" alt="" coords="1100,483,1182,509"/>
 <area shape="rect" id="node32" href="$task__scheduler_8hpp.html" title="task_scheduler.hpp" alt="" coords="968,408,1106,435"/>

@@ -15,7 +15,7 @@
 <area shape="rect" id="node32" href="$GLSLShader_8hpp.html" title="GLSLShader.hpp" alt="" coords="195,415,319,442"/>
 <area shape="rect" id="node34" href="$task__scheduler_8hpp.html" title="task_scheduler.hpp" alt="" coords="2807,497,2944,524"/>
 <area shape="rect" id="node37" href="$optional_8hpp.html" title="optional.hpp" alt="" coords="1886,497,1979,524"/>
-<area shape="rect" id="node44" href="$gl__context_8hpp.html" title="gl_context.hpp" alt="" coords="2294,415,2401,442"/>
+<area shape="rect" id="node44" href="$gl__context_8hpp.html" title="Setups drawing context, window and default framebuffer. " alt="" coords="2294,415,2401,442"/>
 <area shape="rect" id="node45" href="$hid_8hpp.html" title="hid.hpp" alt="" coords="3017,259,3081,285"/>
 <area shape="rect" id="node46" href="$signal_8hpp.html" title="signal.hpp" alt="" coords="2649,497,2731,524"/>
 <area shape="rect" id="node47" href="$lru__cache_8hpp.html" title="LRU general purpose disk caching class. " alt="" coords="2065,333,2169,360"/>

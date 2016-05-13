@@ -8,7 +8,7 @@
 <area shape="rect" id="node47" href="$light__storage_8hpp.html" title="light_storage.hpp" alt="" coords="1807,259,1930,285"/>
 <area shape="rect" id="node50" href="$Sampler_8hpp.html" title="Sampler.hpp" alt="" coords="2172,259,2268,285"/>
 <area shape="rect" id="node4" href="$gl_8hpp.html" title="gl.hpp" alt="" coords="2258,483,2316,509"/>
-<area shape="rect" id="node29" href="$gl__context_8hpp.html" title="gl_context.hpp" alt="" coords="688,333,795,360"/>
+<area shape="rect" id="node29" href="$gl__context_8hpp.html" title="Setups drawing context, window and default framebuffer. " alt="" coords="688,333,795,360"/>
 <area shape="rect" id="node30" href="$hid_8hpp.html" title="hid.hpp" alt="" coords="271,184,335,211"/>
 <area shape="rect" id="node31" href="$signal_8hpp.html" title="signal.hpp" alt="" coords="24,408,107,435"/>
 <area shape="rect" id="node32" href="$task__scheduler_8hpp.html" title="task_scheduler.hpp" alt="" coords="1494,184,1632,211"/>

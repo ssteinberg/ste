@@ -14,7 +14,7 @@
 <area shape="rect" id="node30" href="$function__traits_8hpp.html" title="function_traits.hpp" alt="" coords="2853,408,2979,435"/>
 <area shape="rect" id="node31" href="$thread__constants_8hpp.html" title="thread_constants.hpp" alt="" coords="1553,408,1701,435"/>
 <area shape="rect" id="node33" href="$types_8hpp.html" title="types.hpp" alt="" coords="1387,483,1466,509"/>
-<area shape="rect" id="node37" href="$gl__context_8hpp.html" title="gl_context.hpp" alt="" coords="3105,326,3212,353"/>
+<area shape="rect" id="node37" href="$gl__context_8hpp.html" title="Setups drawing context, window and default framebuffer. " alt="" coords="3105,326,3212,353"/>
 <area shape="rect" id="node38" href="$hid_8hpp.html" title="hid.hpp" alt="" coords="2876,169,2940,196"/>
 <area shape="rect" id="node39" href="$signal_8hpp.html" title="signal.hpp" alt="" coords="3252,483,3335,509"/>
 <area shape="rect" id="node40" href="$lru__cache_8hpp.html" title="LRU general purpose disk caching class. " alt="" coords="1929,169,2033,196"/>
