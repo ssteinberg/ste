@@ -15,16 +15,16 @@ BUILD_DIR = ./build
 
 CXXFLAGS += \
 	-std=c++17 \
-	-Wall \
 	-D _linux \
 	-pthread \
-	-pipe
+	-pipe \
+	-Wall -Wformat=2 -Wcast-align -Wundef -Wcast-qual -Wwrite-strings
 
 CXXFLAGS_release += \
 	-O3 -march=native -flto -falign-functions=16 -falign-loops=16 -D NDEBUG
 
 CXXFLAGS_profile += \
-	$(CXXFLAGS_release) -g
+	$(CXXFLAGS_release) -pg -g
 
 CXXFLAGS_debug += \
 	-g -D DEBUG

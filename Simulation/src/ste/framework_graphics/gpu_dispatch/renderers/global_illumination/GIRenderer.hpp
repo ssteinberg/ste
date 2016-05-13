@@ -16,7 +16,7 @@
 
 #include "Scene.hpp"
 #include "scene_prepopulate_depth_dispatch.hpp"
-#include "scene_frustum_cull_dispatch.hpp"
+#include "scene_geo_cull_dispatch.hpp"
 
 #include "SceneProperties.hpp"
 
@@ -31,9 +31,14 @@
 #include "shadowmap_storage.hpp"
 #include "shadowmap_projector.hpp"
 
+#include "volumetric_scattering_storage.hpp"
+#include "volumetric_scattering_scatter_dispatch.hpp"
+#include "volumetric_scattering_gather_dispatch.hpp"
+
 #include "deferred_gbuffer.hpp"
 #include "gbuffer_clear_dispatch.hpp"
 #include "gbuffer_sort_dispatch.hpp"
+#include "gbuffer_downsample_depth_dispatch.hpp"
 
 #include "dense_voxel_space.hpp"
 #include "fb_clear_dispatch.hpp"
@@ -100,11 +105,16 @@ private:
 	shadowmap_storage shadows_storage;
 	shadowmap_projector shadows_projector;
 
+	volumetric_scattering_storage volumetric_scattering;
+	volumetric_scattering_scatter_dispatch volumetric_scattering_scatter;
+	volumetric_scattering_gather_dispatch volumetric_scattering_gather;
+
 	hdr_dof_postprocess hdr;
 	gbuffer_sort_dispatch gbuffer_sorter;
+	gbuffer_downsample_depth_dispatch downsample_depth;
 
 	scene_prepopulate_depth_dispatch prepopulate_depth_dispatch;
-	scene_frustum_cull_dispatch scene_frustum_cull;
+	scene_geo_cull_dispatch scene_geo_cull;
 
 	std::shared_ptr<const gpu_task> precomposer_dummy_task,
 									scene_task,
@@ -112,9 +122,12 @@ private:
 									fb_clearer_task,
 									gbuffer_clearer_task,
 									shadow_projector_task,
+									volumetric_scattering_scatter_task,
+									volumetric_scattering_gather_task,
 									gbuffer_sort_task,
+									downsample_depth_task,
 									prepopulate_depth_task,
-									scene_frustum_cull_task,
+									scene_geo_cull_task,
 									lll_gen_task;
 
 	deferred_composition composer;
@@ -125,7 +138,8 @@ private:
 
 protected:
 	void rebuild_task_queue();
-	void update_shader_shadow_proj_uniforms(const glm::mat4&);
+	void update_shader_proj_uniforms(const glm::mat4&);
+	static int gbuffer_depth_target_levels();
 
 	const Core::GenericFramebufferObject *get_fbo() const {
 		if (use_deferred_rendering)

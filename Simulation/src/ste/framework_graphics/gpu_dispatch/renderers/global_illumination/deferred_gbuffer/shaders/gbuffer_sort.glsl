@@ -45,7 +45,7 @@ void main() {
 		vec2 z_next_pair = gbuffer_parse_depth_nextptr_pair(gbuffer[next_idx]);
 
 		int i;
-		for (i = element_count; i > 0 && sorted[i - 1].z > z_next_pair.x; --i)
+		for (i = element_count; i > 0 && sorted[i - 1].z < z_next_pair.x; --i)
 			sorted[i] = sorted[i - 1];
 
 		if (i != element_count)

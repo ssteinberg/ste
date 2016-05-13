@@ -6,6 +6,7 @@
 
 #include "hdr_common.glsl"
 #include "gbuffer.glsl"
+#include "project.glsl"
 
 layout(location = 0) out vec4 rgbout;
 layout(location = 1) out vec4 bloomout;
@@ -20,33 +21,34 @@ layout(std430, binding = 2) restrict readonly buffer hdr_bokeh_parameters_buffer
 
 const float bloom_cutoff = .9f;
 const float vision_properties_max_lum = 10.f;
+const float aperature_distance = 0.5f;
 
 layout(bindless_sampler) uniform sampler2D hdr;
 layout(bindless_sampler) uniform sampler1D hdr_vision_properties_texture;
 layout(binding = 11) uniform sampler2D depth;
 
-uniform float aperature_radius = .2f;
-uniform float f1 = .1f;
-uniform float proj22, proj23;
+uniform float aperature_diameter = .02f;
+uniform float proj23;
 
-vec2 hdr_zcoc(vec4 RGBL, vec3 XYZ, float acuity, float mesopic) {
+vec4 hdr_bloom(vec4 RGBL, vec3 XYZ, float mesopic) {
 	if (XYZ.y > bloom_cutoff) {
 		float x = pow((XYZ.y - bloom_cutoff) / (1.f - bloom_cutoff), 8) * (1.f - mesopic);
-		bloomout = vec4(RGBL.rgb, x);
+		return vec4(RGBL.rgb, x);
 	}
 	else
-		bloomout = vec4(0);
+		return vec4(0);
+}
 
+vec2 hdr_zcoc(float acuity) {
 	float focal = params.focus;
 
 	float d = texelFetch(depth, ivec2(gl_FragCoord.xy), 0).x;
-	float d_ndc = d * 2.f - 1.f;
-	float z_lin = -proj23 / (d_ndc - proj22);
+	float z_lin = unproject_depth(d, proj23) / 10000.f;
 
 	float s = z_lin;
 
-	float C = aperature_radius * abs(focal - s) / s;
-	float c = C * f1 / focal;
+	float C = aperature_diameter * abs(focal - s) / s;
+	float c = C * aperature_distance / focal;
 	float coc = clamp(smoothstep(0.f, 1.f, c), 0.f, 1.f);
 	coc += acuity;
 
@@ -92,5 +94,6 @@ void main() {
 	vec4 RGBL = clamp(vec4(RGB, XYZ.y), vec4(0.f), vec4(1.f));
 
 	rgbout = RGBL;
-	coc_out = hdr_zcoc(RGBL, XYZ, acuity, mesopic);
+	bloomout = hdr_bloom(RGBL, XYZ, mesopic);
+	coc_out = hdr_zcoc(acuity);
 }

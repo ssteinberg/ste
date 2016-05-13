@@ -27,11 +27,10 @@ layout(std430, binding = 6) restrict readonly buffer hdr_bokeh_parameters_buffer
 	hdr_bokeh_parameters hdr_params;
 };
 
-uniform vec4 np, fp, rp, lp, tp, bp;
+uniform vec4 np, rp, lp, tp, bp;
 
 bool is_sphere_in_frustum(vec3 c, float r) {
 	return  dot(np.xyz, c) + np.w > -r &&
-			dot(fp.xyz, c) + fp.w > -r &&
 			dot(rp.xyz, c) + rp.w > -r &&
 			dot(lp.xyz, c) + lp.w > -r &&
 			dot(tp.xyz, c) + tp.w > -r &&

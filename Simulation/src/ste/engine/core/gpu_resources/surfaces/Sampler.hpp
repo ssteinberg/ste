@@ -12,6 +12,8 @@
 #include "texture_enums.hpp"
 #include "texture_traits.hpp"
 
+#include "gl_type_traits.hpp"
+
 #include <memory>
 
 namespace StE {
@@ -165,6 +167,22 @@ public:
 	auto get_compare_mode() const { return descriptor.compare_mode; }
 	auto get_compare_func() const { return descriptor.compare_func; }
 
+	void set_border_color(const glm::vec4 &c) const {
+		glSamplerParameterfv(get_resource_id(), GL_TEXTURE_BORDER_COLOR, &c[0]);
+	}
+	void set_border_color(const glm::ivec4 &c) const {
+		glSamplerParameterIiv(get_resource_id(), GL_TEXTURE_BORDER_COLOR, &c[0]);
+	}
+	void set_border_color(const glm::uvec4 &c) const {
+		glSamplerParameterIuiv(get_resource_id(), GL_TEXTURE_BORDER_COLOR, &c[0]);
+	}
+	void set_border_color(float c) const {
+		glSamplerParameterf(get_resource_id(), GL_TEXTURE_BORDER_COLOR, c);
+	}
+	void set_border_color(int c) const {
+		glSamplerParameteri(get_resource_id(), GL_TEXTURE_BORDER_COLOR, c);
+	}
+
 	core_resource_type resource_type() const override { return core_resource_type::SamplingDescriptor; }
 
 
@@ -196,6 +214,11 @@ public:
 		set_mag_filter(mag_filter);
 		set_min_filter(min_filter);
 		set_mipmap_filter(mipmap_filter);
+	}
+	SamplerMipmapped(TextureFiltering mag_filter, TextureFiltering min_filter, TextureFiltering mipmap_filter,
+					 TextureWrapMode wrap_s, TextureWrapMode wrap_t) : SamplerMipmapped(mag_filter, min_filter, mipmap_filter) {
+		set_wrap_s(wrap_s);
+		set_wrap_t(wrap_t);
 	}
 
 	void set_min_filter(TextureFiltering filter) override final {

@@ -6,8 +6,6 @@
 #include "stdafx.hpp"
 #include "StEngineControl.hpp"
 
-#include "signal.hpp"
-
 #include "FramebufferObject.hpp"
 #include "ShaderStorageBuffer.hpp"
 #include "GLSLProgram.hpp"
@@ -17,11 +15,12 @@
 
 #include "light_storage.hpp"
 
+#include "reversed_perspective.hpp"
+
 namespace StE {
 namespace Graphics {
 
 class shadowmap_storage {
-	using ProjectionSignalConnectionType = StEngineControl::projection_change_signal_type::connection_type;
 	using proj_mat_buffer_type = Core::ShaderStorageBuffer<glm::mat4>;
 
 	constexpr static unsigned default_map_size = 512;
@@ -37,11 +36,8 @@ private:
 	std::unique_ptr<proj_mat_buffer_type> shadow_projection_mats_buffer{ nullptr };
 
 private:
-	std::shared_ptr<ProjectionSignalConnectionType> projection_change_connection;
-
-private:
-	void update_transforms(float far) {
-		auto shadow_proj = glm::perspective(glm::half_pi<float>(), 1.f, shadow_proj_near_clip, 2.f * far);
+	void update_transforms() {
+		auto shadow_proj = reversed_infinite_perspective<float>(glm::half_pi<float>(), 1.f, shadow_proj_near_clip);
 		shadow_projection_mats_buffer = std::make_unique<proj_mat_buffer_type>(std::vector<glm::mat4>{
 			shadow_proj * glm::lookAt(glm::vec3(0), glm::vec3( 1.f, 0.f, 0.f), glm::vec3(0.f,-1.f, 0.f)),
 			shadow_proj * glm::lookAt(glm::vec3(0), glm::vec3(-1.f, 0.f, 0.f), glm::vec3(0.f,-1.f, 0.f)),
@@ -56,17 +52,13 @@ public:
 	shadowmap_storage(const StEngineControl &ctx,
 					  const glm::uvec2 &cube_size = glm::uvec2(default_map_size)) : cube_size(cube_size),
 																					shadow_depth_sampler(Core::TextureFiltering::Linear, Core::TextureFiltering::Linear,
-																										 Core::TextureWrapMode::ClampToEdge, Core::TextureWrapMode::ClampToEdge, 16) {
+																										 Core::TextureWrapMode::ClampToEdge, Core::TextureWrapMode::ClampToEdge) {
 		set_count(max_active_lights_per_frame);
 
 		shadow_depth_sampler.set_compare_mode(Core::TextureCompareMode::CompareToTextureDepth);
 		shadow_depth_sampler.set_compare_func(Core::TextureCompareFunc::Greater);
 
-		update_transforms(ctx.get_far_clip());
-		projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([this](const glm::mat4&, float, float, float ffar) {
-			update_transforms(ffar);
-		});
-		ctx.signal_projection_change().connect(projection_change_connection);
+		update_transforms();
 	}
 
 	void set_count(std::size_t size) {
@@ -80,14 +72,8 @@ public:
 	auto& get_shadow_sampler() const { return shadow_depth_sampler; }
 	auto* get_shadow_projection_mats_buffer() const { return shadow_projection_mats_buffer.get(); }
 
-	static void update_shader_shadow_proj_uniforms(Core::GLSLProgram *prog, float near, float far) {
-		float f = 2.f * far;
-		float n = shadow_proj_near_clip;
-		float proj22 = -(f + n) / (n - f);
-		float proj23 = -(2.f * f * n) / (n - f);
-
-		prog->set_uniform("shadow_proj22", proj22);
-		prog->set_uniform("shadow_proj23", proj23);
+	static void update_shader_shadow_proj_uniforms(Core::GLSLProgram *prog) {
+		prog->set_uniform("shadow_proj23", shadow_proj_near_clip);
 	}
 };
 

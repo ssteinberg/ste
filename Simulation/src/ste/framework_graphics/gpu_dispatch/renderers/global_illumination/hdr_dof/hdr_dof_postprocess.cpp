@@ -33,10 +33,10 @@ hdr_dof_postprocess::hdr_dof_postprocess(const StEngineControl &context, const d
 	hdr_create_histogram = context.glslprograms_pool().fetch_program_task({ "hdr_create_histogram.glsl" })();
 	hdr_compute_histogram_sums = context.glslprograms_pool().fetch_program_task({ "hdr_compute_histogram_sums.glsl" })();
 	hdr_tonemap_coc = context.glslprograms_pool().fetch_program_task({ "passthrough.vert", "hdr_tonemap_coc.frag" })();
-	hdr_bloom_blurx = context.glslprograms_pool().fetch_program_task({ "hdr_blur.vert", "hdr_bloom_blur_x.frag" })();
-	hdr_bloom_blury = context.glslprograms_pool().fetch_program_task({ "hdr_blur.vert", "hdr_bloom_blur_y.frag" })();
-	bokeh_blurx = context.glslprograms_pool().fetch_program_task({ "hdr_blur.vert", "bokeh_bilateral_blur_x.frag" })();
-	bokeh_blury = context.glslprograms_pool().fetch_program_task({ "hdr_blur.vert", "bokeh_bilateral_blur_y.frag" })();
+	hdr_bloom_blurx = context.glslprograms_pool().fetch_program_task({ "passthrough.vert", "hdr_bloom_blur_x.frag" })();
+	hdr_bloom_blury = context.glslprograms_pool().fetch_program_task({ "passthrough.vert", "hdr_bloom_blur_y.frag" })();
+	bokeh_blurx = context.glslprograms_pool().fetch_program_task({ "passthrough.vert", "bokeh_bilateral_blur_x.frag" })();
+	bokeh_blury = context.glslprograms_pool().fetch_program_task({ "passthrough.vert", "bokeh_bilateral_blur_y.frag" })();
 
 	gli::texture1d hdr_human_vision_properties_data(gli::format::FORMAT_RGBA32_SFLOAT_PACK32, glm::tvec1<std::size_t>{ 4096 }, 1);
 	{
@@ -68,29 +68,21 @@ hdr_dof_postprocess::hdr_dof_postprocess(const StEngineControl &context, const d
 	setup_engine_connections();
 }
 
-void hdr_dof_postprocess::update_projection_uniforms() {
-	float n = ctx.get_near_clip();
-	float f = ctx.get_far_clip();
-
-	float proj22 = -(f + n) / (n - f);
-	float proj23 = -(2.f * f * n) / (n - f) / f;
-
-	hdr_tonemap_coc->set_uniform("proj22", proj22);
-	hdr_tonemap_coc->set_uniform("proj23", proj23);
-	hdr_compute_histogram_sums->set_uniform("proj22", proj22);
-	hdr_compute_histogram_sums->set_uniform("proj23", proj23);
+void hdr_dof_postprocess::update_projection_uniforms(const glm::mat4 &proj) {
+	hdr_tonemap_coc->set_uniform("proj23", proj[3][2]);
+	hdr_compute_histogram_sums->set_uniform("proj23", proj[3][2]);
 }
 
 void hdr_dof_postprocess::setup_engine_connections() {
 	resize_connection = std::make_shared<ResizeSignalConnectionType>([=](const glm::i32vec2 &size) {
 		this->resize(size);
 	});
-
-	update_projection_uniforms();
-	projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([this](const glm::mat4&, float ffov, float fnear, float ffar) {
-		update_projection_uniforms();
-	});
 	ctx.signal_framebuffer_resize().connect(resize_connection);
+
+	update_projection_uniforms(ctx.projection_matrix());
+	projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([this](const glm::mat4& proj, float ffov, float fnear) {
+		update_projection_uniforms(proj);
+	});
 	ctx.signal_projection_change().connect(projection_change_connection);
 }
 
@@ -137,7 +129,7 @@ void hdr_dof_postprocess::resize(glm::ivec2 size) {
 	if (size.x <= 0 || size.y <= 0)
 		return;
 
-	bokeh_coc = std::make_unique<Core::Texture2D>(gli::format::FORMAT_RGBA16_SFLOAT_PACK16, StE::Core::Texture2D::size_type(size), 1);
+	bokeh_coc = std::make_unique<Core::Texture2D>(gli::format::FORMAT_RG16_SFLOAT_PACK16, StE::Core::Texture2D::size_type(size), 1);
 
 	hdr_image = std::make_unique<Core::Texture2D>(gli::format::FORMAT_RGBA16_SFLOAT_PACK16, StE::Core::Texture2D::size_type(size), 1);
 	hdr_final_image = std::make_unique<Core::Texture2D>(gli::format::FORMAT_RGBA16_SFLOAT_PACK16, StE::Core::Texture2D::size_type(size), 1);

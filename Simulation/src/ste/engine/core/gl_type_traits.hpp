@@ -58,5 +58,15 @@ template<typename T> struct gl_type_name_enum {
 	static constexpr GLenum gl_enum = _gl_type_name_enum_impl<TypeT>::gl_enum;
 };
 
+template<typename T> struct gl_type_is_floating_point {
+	using TypeT = std::remove_const_t<std::remove_reference_t<T>>;
+	static constexpr bool value = gl_type_name_enum<TypeT>::gl_enum == GL_FLOAT || gl_type_name_enum<TypeT>::gl_enum == GL_DOUBLE;
+};
+
+template<typename T> struct gl_type_is_signed {
+	using TypeT = std::remove_const_t<std::remove_reference_t<T>>;
+	static constexpr bool value = !(gl_type_name_enum<TypeT>::gl_enum == GL_UNSIGNED_BYTE || gl_type_name_enum<TypeT>::gl_enum == GL_UNSIGNED_SHORT || gl_type_name_enum<TypeT>::gl_enum == GL_UNSIGNED_INT);
+};
+
 }
 }

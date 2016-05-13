@@ -8,6 +8,8 @@
 #include "Texture2D.hpp"
 #include "SurfaceFactory.hpp"
 
+#include "reversed_perspective.hpp"
+
 #include <chrono>
 #include <thread>
 #include <exception>
@@ -24,7 +26,6 @@ using namespace StE;
 struct StE::ste_engine_control_impl {
 	float field_of_view{ glm::quarter_pi<float>() };
 	float near_clip{ 0.1 };
-	float far_clip{ 1000 };
 
 	float fps{ 0 };
 	int frames{ 0 };
@@ -112,12 +113,15 @@ void StEngineControl::capture_screenshot() const {
 	auto size = gl()->framebuffer_size();
 
 	auto fbo = std::make_unique<StE::Core::FramebufferObject>();
-	StE::Core::Texture2D fbo_tex(gli::format::FORMAT_RGB8_UNORM_PACK8, size, 1);
+	StE::Core::Texture2D fbo_tex(gli::format::FORMAT_RGBA8_UNORM_PACK8, size, 1);
 	(*fbo)[0] = fbo_tex[0];
 
 	gl()->defaut_framebuffer().blit_to(*fbo, size, size);
-	gli::texture2d tex(gli::FORMAT_RGB8_UNORM_PACK8, size);
-	(*fbo)[0].read_pixels(tex.data(), 3 * size.x * size.y);
+	gli::texture2d tex(gli::FORMAT_RGBA8_UNORM_PACK8, size);
+	(*fbo)[0].read_pixels(tex.data(), 4 * size.x * size.y);
+
+	for (int i=0; i<size.x * size.y; ++i)
+		reinterpret_cast<glm::u8vec4*>(tex.data())[i].w = 255;
 
 	scheduler().schedule_now([=](optional<task_scheduler*> sched) {
 		boost::filesystem::create_directory("Screenshots");
@@ -138,17 +142,16 @@ void StEngineControl::set_fov(float rad) {
 	set_projection_dirty();
 }
 
-void StEngineControl::set_clipping_planes(float near_clip_distance, float far_clip_distance) {
+void StEngineControl::set_clipping_planes(float near_clip_distance) {
 	pimpl->near_clip = near_clip_distance;
-	pimpl->far_clip = far_clip_distance;
 	set_projection_dirty();
 }
 
 void StEngineControl::set_projection_dirty() {
 	float aspect = get_projection_aspect();
-	projection = glm::perspective(pimpl->field_of_view, aspect, pimpl->near_clip, pimpl->far_clip);
+	projection = reversed_infinite_perspective<float>(pimpl->field_of_view, aspect, pimpl->near_clip);
 
-	projection_change_signal.emit(projection, pimpl->field_of_view, pimpl->near_clip, pimpl->far_clip);
+	projection_change_signal.emit(projection, pimpl->field_of_view, pimpl->near_clip);
 }
 
 glm::mat4& StEngineControl::projection_matrix() const {
@@ -161,10 +164,6 @@ float StEngineControl::get_fov() const {
 
 float StEngineControl::get_near_clip() const {
 	return pimpl->near_clip;
-}
-
-float StEngineControl::get_far_clip() const {
-	return pimpl->far_clip;
 }
 
 float StEngineControl::get_projection_aspect() const {

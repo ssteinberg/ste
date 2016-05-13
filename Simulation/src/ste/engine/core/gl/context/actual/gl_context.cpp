@@ -86,6 +86,7 @@ gl_context::gl_context(const context_settings &settings, const char *title, cons
 
 	set_defaults();
 	create_default_framebuffer(format, depth_format);
+	setup_depth_buffer_gl_settings();
 }
 
 gl_context::window_type gl_context::create_window(const char * title, const glm::i32vec2 &size, gli::format format, gli::format depth_format) {
@@ -157,12 +158,17 @@ gl_context::window_type gl_context::create_window(const char * title, const glm:
 	return win;
 }
 
+void gl_context::setup_depth_buffer_gl_settings() {
+	depth_func(GL_GREATER);
+	clear_depth(.0f);
+	glDepthRange(0, 1);
+	glClipControl(GL_LOWER_LEFT, GL_ZERO_TO_ONE);
+}
+
 void gl_context::set_defaults() {
 	color_mask(true, true, true, true);
 	depth_mask(true);
-	depth_func(GL_LESS);
 	clear_color(.0f, .0f, .0f, .0f);
-	clear_depth(1.f);
 	cull_face(GL_BACK);
 	front_face(GL_CCW);
 	blend_func(GL_ONE, GL_ZERO);

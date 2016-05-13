@@ -1,5 +1,11 @@
-// StE
-// © Shlomi Steinberg, 2015-2016
+//	StE
+// © Shlomi Steinberg 2015-2016
+
+/**	@file	gl_context.hpp
+ *	@brief	Setups drawing context, window and default framebuffer
+ *
+ *	@author	Shlomi Steinberg
+ */
 
 #pragma once
 
@@ -28,6 +34,14 @@ class context_framebuffer;
 
 namespace GL {
 
+/**
+ *	@brief	Rendering context and window manager
+ *
+ *	gl_context creates a default framebuffer of specified format, a window
+ *	and an OpenGL 4.5 context.
+ *
+ *	@param K	key type
+ */
 class gl_context : public gl_generic_context {
 	using Base = gl_generic_context;
 
@@ -48,6 +62,7 @@ protected:
 	void resize(const glm::i32vec2 &size);
 	void setup_debug_context();
 	void set_defaults();
+	void setup_depth_buffer_gl_settings();
 
 	mutable window_type window;
 	std::unique_ptr<context_framebuffer> default_fb;
@@ -58,8 +73,27 @@ protected:
 	void make_current() override;
 
 public:
+	/**
+	*	@brief	gl_context ctor
+	*
+	* 	@param settings		Context settings struct. Defines basic requested parameters.
+	*	@param title		Window title.
+	*	@param size			Framebuffer size.
+	*	@param format		Framebuffer format.
+	*	@param depth_format	Framebuffer depth format.
+	*/
 	gl_context(const context_settings &settings, const char *title, const glm::i32vec2 &size, gli::format format = gli::FORMAT_RGBA8_SRGB_PACK32, gli::format depth_format = gli::FORMAT_D24_UNORM_PACK32);
+
+	/**
+	*	@brief	gl_context ctor with default settings
+	*
+	*	@param title		Window title.
+	*	@param size			Framebuffer size.
+	*	@param format		Framebuffer format.
+	*	@param depth_format	Framebuffer depth format.
+	*/
 	gl_context(const char * title, const glm::i32vec2 &size, gli::format format = gli::FORMAT_RGBA8_SRGB_PACK32, gli::format depth_format = gli::FORMAT_D24_UNORM_PACK32) : gl_context(context_settings(), title, size, format, depth_format) {}
+
 	~gl_context() {}
 
 	gl_context(gl_context &&m) = delete;
@@ -67,6 +101,11 @@ public:
 	gl_context& operator=(gl_context &&m) = delete;
 	gl_context& operator=(const gl_context &c) = delete;
 
+	/**
+	*	@brief	Check GL context's extension support
+	*
+	*	@param ext	OpenGL extension name
+	*/
 	bool is_extension_supported(const char *ext) const { return glfwExtensionSupported(ext); }
 
 	int meminfo_total_dedicated_vram() const { int ret; glGetIntegerv(GL_GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX, &ret); return ret; }
@@ -77,6 +116,9 @@ public:
 	glm::ivec2 framebuffer_size() const;
 	context_framebuffer &defaut_framebuffer() const;
 
+	/**
+	*	@brief	Returns windowing system handle
+	*/
 	auto *get_window() const { return window.get(); }
 
 	bool is_debug_context() const;

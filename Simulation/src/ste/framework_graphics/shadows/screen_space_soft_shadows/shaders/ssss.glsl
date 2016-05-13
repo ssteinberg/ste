@@ -23,7 +23,7 @@ layout(binding = 8) uniform samplerCubeArray shadow_depth_maps;
 layout(r16f, binding = 0) restrict uniform image2DArray penumbra_layers;
 layout(r16f, binding = 1) restrict uniform image2D z_buffer;
 
-uniform float far, near;
+uniform float near;
 uniform float half_over_tan_fov_over_two;
 
 void main() {
@@ -35,7 +35,7 @@ void main() {
 	g_buffer_element frag = gbuffer_load(gbuffer_ll_heads, coords);
 	vec3 n = (transpose_view_matrix * vec4(frag.N, 1)).xyz;
 	vec3 w_pos = (inverse_view_matrix * vec4(frag.P, 1)).xyz;
-	float frag_depth = ;//gbuffer_linear_z(frag, far, near);
+	float frag_depth = ;
 
 	for (int i = 0; i < light_buffer.length(); ++i) {
 		vec3 l_pos = light_buffer[i].position_direction.xyz;
@@ -49,7 +49,7 @@ void main() {
 			float dist = length(w_pos - l_pos);
 
 			bool shadowed;
-			float w_penumbra = shadow_penumbra_width(shadow_depth_maps, i, shadow_v, l_radius, dist, far, shadowed);
+			float w_penumbra = shadow_penumbra_width(shadow_depth_maps, i, shadow_v, l_radius, dist, shadowed);
 
 			if (shadowed) {
 				float anisotropy = dist / d;

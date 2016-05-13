@@ -26,8 +26,10 @@ class Scene : public gpu_dispatchable {
 	using Base = gpu_dispatchable;
 
 private:
+	static constexpr int shadow_proj_id_to_ll_id_table_size = max_active_lights_per_frame;
+
 	struct shadow_projection_instance_to_ll_idx_translation {
-		std::uint16_t ll_idx[max_active_lights_per_frame];
+		std::uint16_t ll_idx[shadow_proj_id_to_ll_id_table_size];
 	};
 
 	static constexpr Core::BufferUsage::buffer_usage usage = static_cast<Core::BufferUsage::buffer_usage>(Core::BufferUsage::BufferUsageSparse);

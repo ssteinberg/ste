@@ -24,13 +24,16 @@ namespace Graphics {
 class linked_light_lists {
 private:
 	struct lll_element {
-		glm::vec4	data;
+		glm::vec2 data;
 	};
 
 	static constexpr Core::BufferUsage::buffer_usage usage = static_cast<Core::BufferUsage::buffer_usage>(Core::BufferUsage::BufferUsageSparse);
 	static constexpr std::size_t virt_size = 2147483648;
 
 	using lll_type = Core::ShaderStorageBuffer<lll_element, usage>;
+
+public:
+	static constexpr int lll_image_res_multiplier = 8;
 
 private:
 	lll_type lll;
