@@ -35,18 +35,19 @@ layout(binding = 11) uniform sampler2D depth_map;
 #include "linked_light_lists_load.glsl"
 
 uniform float proj00, proj11, proj23, shadow_proj23;
+uniform float phase1, phase2, phase3;
 uniform vec2 backbuffer_size;
 
-float depth3x3(ivec2 uv, int lod) {
-	float d00 = texelFetchOffset(depth_map, uv, lod, ivec2(-1,-1)).x;
-	float d10 = texelFetchOffset(depth_map, uv, lod, ivec2( 0,-1)).x;
-	float d20 = texelFetchOffset(depth_map, uv, lod, ivec2( 1,-1)).x;
-	float d01 = texelFetchOffset(depth_map, uv, lod, ivec2(-1, 0)).x;
-	float d11 = texelFetch(depth_map, uv, lod).x;
-	float d21 = texelFetchOffset(depth_map, uv, lod, ivec2( 1, 0)).x;
-	float d02 = texelFetchOffset(depth_map, uv, lod, ivec2(-1, 1)).x;
-	float d12 = texelFetchOffset(depth_map, uv, lod, ivec2( 0, 1)).x;
-	float d22 = texelFetchOffset(depth_map, uv, lod, ivec2( 1, 1)).x;
+float depth3x3(vec2 uv, int lod) {
+	float d00 = textureLodOffset(depth_map, uv, lod, ivec2(-1,-1)).x;
+	float d10 = textureLodOffset(depth_map, uv, lod, ivec2( 0,-1)).x;
+	float d20 = textureLodOffset(depth_map, uv, lod, ivec2( 1,-1)).x;
+	float d01 = textureLodOffset(depth_map, uv, lod, ivec2(-1, 0)).x;
+	float d11 = textureLod(depth_map, uv, lod).x;
+	float d21 = textureLodOffset(depth_map, uv, lod, ivec2( 1, 0)).x;
+	float d02 = textureLodOffset(depth_map, uv, lod, ivec2(-1, 1)).x;
+	float d12 = textureLodOffset(depth_map, uv, lod, ivec2( 0, 1)).x;
+	float d22 = textureLodOffset(depth_map, uv, lod, ivec2( 1, 1)).x;
 
 	float a = min(min(d00, d10), min(d20, d01));
 	float b = min(min(d11, d21), min(d02, d12));
@@ -55,16 +56,17 @@ float depth3x3(ivec2 uv, int lod) {
 }
 
 void main() {
+	ivec3 volume_size = imageSize(volume);
 	ivec2 slice_coords = ivec2(gl_GlobalInvocationID.xy);
-	if (slice_coords.x >= imageSize(volume).x ||
-		slice_coords.y >= imageSize(volume).y)
+	if (slice_coords.x >= volume_size.x ||
+		slice_coords.y >= volume_size.y)
 		return;
 
 	int depth_lod = 2;
 	vec2 fragcoords = (vec2(slice_coords) + vec2(.5f)) * 8.f / backbuffer_size;
 	mat4 inverse_view_matrix = transpose(view_matrix_buffer.transpose_inverse_view_matrix);
 
-	float depth_buffer_d = depth3x3(slice_coords, depth_lod);
+	float depth_buffer_d = depth3x3((vec2(slice_coords) + vec2(.5f)) / vec2(volume_size.xy), depth_lod);
 
 	uint32_t lll_ptr_base = imageLoad(lll_heads, slice_coords).x;
 
@@ -115,7 +117,7 @@ void main() {
 				float incident_radiance = max(ld.luminance * attenuation_factor - ld.minimal_luminance, .0f);
 				float irradiance = incident_radiance * shadow;
 
-				rgb += ld.diffuse * volumetric_scattering_phase(v / dist, view_dir);
+				rgb += ld.diffuse * volumetric_scattering_phase(v / dist, view_dir, phase1, phase2, phase3);
 			}
 		}
 

@@ -27,20 +27,17 @@ float volumetric_scattering_particle_density(vec3 w_pos) {
 }
 
 float volumetric_scattering_scattering_coefficient(float density, float thickness) {
-	return 0.005f * density * thickness;
+	return 0.0055f * density * thickness;
 }
 
 float volumetric_scattering_absorption_coefficient(float density, float thickness) {
-	return .00000002f * density * thickness;
+	return .00000001f * density * thickness;
 }
 
-float volumetric_scattering_phase(vec3 l_dir, vec3 v_dir) {
-	float g = .15f;
-
+float volumetric_scattering_phase(vec3 l_dir, vec3 v_dir, float phase1, float phase2, float phase3) {
 	float t = dot(l_dir, v_dir);
-	float g2 = g*g;
-	float denom = pow(1.f + g2 - 2.f*g*t, 3.f / 2.f);
-	return ((1.f - g2) / denom) / (4.f * pi);
+	float denom = pow(phase2 - phase3 * t, 3.f / 2.f);
+	return phase1 / denom;
 }
 
 vec4 volumetric_scattering_load_inscattering_transmittance(sampler3D volume, vec2 frag_coords, float depth) {
