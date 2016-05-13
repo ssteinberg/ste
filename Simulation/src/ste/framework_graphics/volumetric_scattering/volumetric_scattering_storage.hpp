@@ -19,7 +19,7 @@ namespace Graphics {
 class volumetric_scattering_storage {
 private:
 	constexpr static int tile_size = linked_light_lists::lll_image_res_multiplier;
-	constexpr static int depth_tiles = 512;
+	constexpr static int depth_tiles = 256;
 
 private:
 	Core::Texture2D *depth_map;
