@@ -41,7 +41,7 @@ void main() {
 	vec3 n = normalize(vin.frag_normal);
 	vec3 t = normalize(vin.frag_tangent);
 
-	int material = vin.matIdx >= 0 ? vin.matIdx : material_none;
+	int material = vin.matIdx;
 
 	gbuffer_store(gbuffer_ll_heads,
 				  gbuffer_ll_counter,
