@@ -28,6 +28,7 @@ $(BUILD_DIR)/%.elf: $(OBJECTS)
 	@/bin/echo -e "\e[1;37m[LINK] \e[1;92m$@ \e[0m$(CXXFLAGS) $(addprefix -l, $(SYSTEM_LIBRARIES)) $(LINKFLAGS)\e[0m"
 	@/usr/bin/mkdir -p $(dir $@)
 	@$(LINK) $(CXXFLAGS) -o $@ $^ $(addprefix -l, $(SYSTEM_LIBRARIES)) $(LINKFLAGS)
+	@/usr/bin/mv $@ bin/
 	@/bin/echo -e "\e[1;94mCompleted\e[0m"
 
 $(WORK_DIR)/%.gch: %
@@ -49,10 +50,13 @@ $(WORK_DIR)/$(SOURCE_DIR)/$(PCHCPP).o:
 
 $(BUILD_CONFIGURATIONS):	$(BUILD_DIR)/$(TARGET)_$(config).elf
 
+libs:
+	@make -C third_party
+
 help:
 	@/usr/bin/echo '"$(TARGET)" makefile'
 	@/usr/bin/echo "Possible build configurations: $(BUILD_CONFIGURATIONS)"
-	@/usr/bin/echo "Additional targets: docs vars help clean clean_config"
+	@/usr/bin/echo "Additional targets: libs docs vars help clean clean_config"
 
 vars:
 	@/usr/bin/echo '"TARGET": $(TARGET)'

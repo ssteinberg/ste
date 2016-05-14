@@ -47,7 +47,6 @@ private:
 	mutable std::vector<range<>> ranges_to_lock;
 
 public:
-	ObjectGroup() {}
 	~ObjectGroup() noexcept;
 
 	void add_object(const std::shared_ptr<Object> &);
