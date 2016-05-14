@@ -11,7 +11,6 @@
 
 #include "object_group_draw_buffers.hpp"
 
-#include "ObjectVertexData.hpp"
 #include "Material.hpp"
 
 #include "range.hpp"

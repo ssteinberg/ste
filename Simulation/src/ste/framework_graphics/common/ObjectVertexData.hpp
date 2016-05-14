@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
@@ -8,11 +8,16 @@
 namespace StE {
 namespace Graphics {
 
-struct ObjectVertexData {
-	glm::vec3 p, n, t;
+class ObjectVertexData {
+public:
+	glm::quat tangent_frame_quat;
+	glm::vec3 p;
 	glm::vec2 uv;
 
-	using descriptor = Core::VBODescriptorWithTypes<glm::vec3, glm::vec3, glm::vec3, glm::vec2>::descriptor;
+public:
+	using descriptor = Core::VBODescriptorWithTypes<glm::vec4, glm::vec3, glm::vec2>::descriptor;
+
+public:
 };
 
 }
