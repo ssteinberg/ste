@@ -1,0 +1,11 @@
+prefix=/home/shlomi/src/Shlomi/git/simulation/Simulation/third_party
+exec_prefix=/home/shlomi/src/Shlomi/git/simulation/Simulation/third_party
+libdir=/home/shlomi/src/Shlomi/git/simulation/Simulation/third_party/lib
+includedir=/home/shlomi/src/Shlomi/git/simulation/Simulation/third_party/include/libpng16
+
+Name: libpng
+Description: Loads and saves PNG files
+Version: 1.6.22
+Libs: -L${libdir} -lpng16
+Libs.private: -lz -lm
+Cflags: -I${includedir}

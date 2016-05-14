@@ -11,8 +11,8 @@
 #include "is_base_of.hpp"
 #include <functional>
 
-#include <graphviz/cgraph.h>
-#include <graphviz/gvc.h>
+// #include <graphviz/cgraph.h>
+// #include <graphviz/gvc.h>
 
 namespace StE {
 namespace Algorithm {
@@ -28,44 +28,44 @@ class sop_graph : public Graph::graph<V, E> {
 public:
 	virtual ~sop_graph() noexcept {}
 
-	bool write_trail_dot(const boost::filesystem::path &p, bool include_zero_trail_edges = false) const {
-		Agraph_t* g;
-		g = agopen("G", Agdirected, NULL);
+	// bool write_trail_dot(const boost::filesystem::path &p, bool include_zero_trail_edges = false) const {
+	// 	Agraph_t* g;
+	// 	g = agopen("G", Agdirected, NULL);
 
-		agattr(g, AGEDGE, "label", "");
+	// 	agattr(g, AGEDGE, "label", "");
 
-		std::unordered_map<const Graph::vertex*, Agnode_t*> vm;
-		for (auto vert : Base::get_vertices()) {
-			auto node = agnode(g, const_cast<char*>(vert->get_name().data()), true);
-			vm.insert(std::make_pair(vert, node));
-		}
-		for (auto e : Base::get_edges()) {
-			if (!include_zero_trail_edges && e->trail == E::t0)
-				continue;
+	// 	std::unordered_map<const Graph::vertex*, Agnode_t*> vm;
+	// 	for (auto vert : Base::get_vertices()) {
+	// 		auto node = agnode(g, const_cast<char*>(vert->get_name().data()), true);
+	// 		vm.insert(std::make_pair(vert, node));
+	// 	}
+	// 	for (auto e : Base::get_edges()) {
+	// 		if (!include_zero_trail_edges && e->trail == E::t0)
+	// 			continue;
 
-			Agnode_t* u = vm[e->get_from()];
-			Agnode_t* v = vm[e->get_to()];
+	// 		Agnode_t* u = vm[e->get_from()];
+	// 		Agnode_t* v = vm[e->get_to()];
 
-			auto ag_e = agedge(g, u, v, "", true);
-			auto label = std::to_string(e->trail) + "/" + std::to_string(e->get_weight());
-			agset(ag_e, "label", const_cast<char*>(label.data()));
-		}
+	// 		auto ag_e = agedge(g, u, v, "", true);
+	// 		auto label = std::to_string(e->trail) + "/" + std::to_string(e->get_weight());
+	// 		agset(ag_e, "label", const_cast<char*>(label.data()));
+	// 	}
 
-		bool ret = false;
-		FILE *f = fopen(p.string().data(), "wb");
-		if (f) {
-			agwrite(g, f);
-			fclose(f);
+	// 	bool ret = false;
+	// 	FILE *f = fopen(p.string().data(), "wb");
+	// 	if (f) {
+	// 		agwrite(g, f);
+	// 		fclose(f);
 
-			ret = true;
-		}
-		else
-			perror("graph_impl::write_dot - fopen() failed");
+	// 		ret = true;
+	// 	}
+	// 	else
+	// 		perror("graph_impl::write_dot - fopen() failed");
 
-		agclose(g);
+	// 	agclose(g);
 
-		return ret;
-	}
+	// 	return ret;
+	// }
 };
 
 }

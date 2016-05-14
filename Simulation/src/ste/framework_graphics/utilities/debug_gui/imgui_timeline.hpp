@@ -26,7 +26,7 @@ inline void PlotTimeline(const std::vector<std::pair<std::string, float>> &times
 	ImVec2 canvasPosition = ImGui::GetCursorScreenPos();
 	ImVec2 canvasSize = ImGui::GetContentRegionAvail();
 
-	draw_list->PushClipRect(ImVec4(canvasPosition.x, canvasPosition.y, canvasPosition.x + canvasSize.x, canvasPosition.y + canvasSize.y));
+	draw_list->PushClipRect(ImVec2(canvasPosition.x, canvasPosition.y), ImVec2(canvasPosition.x + canvasSize.x, canvasPosition.y + canvasSize.y), true);
 
 	ImGui::InvisibleButton("canvas", canvasSize);
 

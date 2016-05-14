@@ -8,6 +8,9 @@
 
 #include "stdafx.hpp"
 
+#include <imgui/imgui.cpp>
+#include <imgui/imgui_draw.cpp>
+
 #include <imgui/imgui.h>
 #include "imgui_impl_glfw_gl3.h"
 

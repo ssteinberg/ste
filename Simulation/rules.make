@@ -7,9 +7,12 @@ DOCS_DIR = ./docs
 
 LOCAL_INCLUDES += \
 	$(shell find $(SOURCE_DIR) -type d) \
-	/usr/include/freetype2
+	third_party/include/freetype2 \
+	third_party/include
 
 LOCAL_LIBS += \
+	third_party/lib \
+	third_party/lib64
 
 BUILD_DIR = ./build
 
@@ -31,23 +34,22 @@ CXXFLAGS_debug += \
 
 SYSTEM_LIBRARIES += \
 	atomic \
+	z \
+	bz2 \
 	GL \
 	GLU \
-	GLEW \
-	glfw3 \
-	freetype \
-	png16 \
-	tga \
-	turbojpeg \
-	tinyobjloader \
+	:libGLEW.a \
+	:libglfw3.a dl X11 Xcursor Xrandr Xext Xxf86vm Xinerama \
+	:libfreetype.a harfbuzz \
+	:libpng16.a \
+	:libtga.a \
+	:libturbojpeg.a \
+	:libtinyobjloader.a \
 	boost_system \
 	boost_filesystem \
-	boost_serialization \
-	cgraph \
-	gvc \
-	imgui
+	boost_serialization
 
-LINKFLAGS += $(shell pkg-config --static --libs glfw3)
+# LINKFLAGS += $(shell pkg-config --static --libs glfw3)
 
 PCHCPP = ste/engine/stdafx.hpp
 
