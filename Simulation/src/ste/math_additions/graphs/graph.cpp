@@ -4,8 +4,8 @@
 
 #include "graph_detail.hpp"
 
-#include <graphviz/cgraph.h>
-#include <graphviz/gvc.h>
+// #include <graphviz/cgraph.h>
+// #include <graphviz/gvc.h>
 
 #include <map>
 
@@ -14,67 +14,67 @@
 using namespace StE::Graph;
 using namespace StE::Graph::detail;
 
-Agraph_t* StE::Graph::detail::create_graphviz_graph(const GraphSet<graph_impl::VertexPtr> *vertices,
-													const GraphSet<graph_impl::EdgePtr> *edges) {
-	Agraph_t* g;
-	g = agopen(const_cast<char*>("G"), Agdirected, NULL);
+// Agraph_t* StE::Graph::detail::create_graphviz_graph(const GraphSet<graph_impl::VertexPtr> *vertices,
+// 													const GraphSet<graph_impl::EdgePtr> *edges) {
+// 	Agraph_t* g;
+// 	g = agopen(const_cast<char*>("G"), Agdirected, NULL);
 
-	agattr(g, AGEDGE, const_cast<char*>("label"), const_cast<char*>(""));
+// 	agattr(g, AGEDGE, const_cast<char*>("label"), const_cast<char*>(""));
 
-	std::unordered_map<const vertex*, Agnode_t*> vm;
-	for (auto vert : *vertices) {
-		auto node = agnode(g, const_cast<char*>(vert->get_name().data()), true);
-		vm.insert(std::make_pair(vert.get(), node));
-	}
-	for (auto e : *edges) {
-		Agnode_t* u = vm[e->get_from()];
-		Agnode_t* v = vm[e->get_to()];
+// 	std::unordered_map<const vertex*, Agnode_t*> vm;
+// 	for (auto vert : *vertices) {
+// 		auto node = agnode(g, const_cast<char*>(vert->get_name().data()), true);
+// 		vm.insert(std::make_pair(vert.get(), node));
+// 	}
+// 	for (auto e : *edges) {
+// 		Agnode_t* u = vm[e->get_from()];
+// 		Agnode_t* v = vm[e->get_to()];
 
-		auto ag_e = agedge(g, u, v, const_cast<char*>(""), true);
-		agset(ag_e, const_cast<char*>("label"), const_cast<char*>(std::to_string(e->get_weight()).data()));
-	}
+// 		auto ag_e = agedge(g, u, v, const_cast<char*>(""), true);
+// 		agset(ag_e, const_cast<char*>("label"), const_cast<char*>(std::to_string(e->get_weight()).data()));
+// 	}
 
-	return g;
-}
+// 	return g;
+// }
 
-bool graph_impl::write_dot(const GraphSet<VertexPtr> *vertices,
-						   const GraphSet<EdgePtr> *edges,
-						   const boost::filesystem::path &p) {
-	bool ret = false;
+// bool graph_impl::write_dot(const GraphSet<VertexPtr> *vertices,
+// 						   const GraphSet<EdgePtr> *edges,
+// 						   const boost::filesystem::path &p) {
+// 	bool ret = false;
 
-	Agraph_t* g = create_graphviz_graph(vertices, edges);
+// 	Agraph_t* g = create_graphviz_graph(vertices, edges);
 
-	FILE *f = fopen(p.string().data(), "wb");
-	if (f) {
-		agwrite(g, f);
-		fclose(f);
+// 	FILE *f = fopen(p.string().data(), "wb");
+// 	if (f) {
+// 		agwrite(g, f);
+// 		fclose(f);
 
-		ret = true;
-	}
-	else
-		perror("graph_impl::write_dot - fopen() failed");
+// 		ret = true;
+// 	}
+// 	else
+// 		perror("graph_impl::write_dot - fopen() failed");
 
-	agclose(g);
+// 	agclose(g);
 
-	return ret;
-}
+// 	return ret;
+// }
 
-bool graph_impl::write_png(const GraphSet<VertexPtr> *vertices,
-						   const GraphSet<EdgePtr> *edges,
-						   const boost::filesystem::path &p) {
-	Agraph_t* g = create_graphviz_graph(vertices, edges);
+// bool graph_impl::write_png(const GraphSet<VertexPtr> *vertices,
+// 						   const GraphSet<EdgePtr> *edges,
+// 						   const boost::filesystem::path &p) {
+// 	Agraph_t* g = create_graphviz_graph(vertices, edges);
 
-	GVC_t* gvc;
-	gvc = gvContext();
-	gvLayout(gvc, g, "dot");
-	bool ret = gvRenderFilename(gvc, g, "dot", p.string().data()) == 0;
-	gvFreeLayout(gvc, g);
-	gvFreeContext(gvc);
+// 	GVC_t* gvc;
+// 	gvc = gvContext();
+// 	gvLayout(gvc, g, "dot");
+// 	bool ret = gvRenderFilename(gvc, g, "dot", p.string().data()) == 0;
+// 	gvFreeLayout(gvc, g);
+// 	gvFreeContext(gvc);
 
-	agclose(g);
+// 	agclose(g);
 
-	if (!ret)
-		perror("graph_impl::write_png - gvRenderFilename() failed");
+// 	if (!ret)
+// 		perror("graph_impl::write_png - gvRenderFilename() failed");
 
-	return ret;
-}
+// 	return ret;
+// }

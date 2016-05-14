@@ -1,0 +1,13 @@
+prefix=/home/shlomi/src/Shlomi/git/simulation/Simulation/third_party
+exec_prefix=/home/shlomi/src/Shlomi/git/simulation/Simulation/third_party
+libdir=/home/shlomi/src/Shlomi/git/simulation/Simulation/third_party/lib64
+includedir=/home/shlomi/src/Shlomi/git/simulation/Simulation/third_party/include
+
+Name: harfbuzz
+Description: HarfBuzz text shaping library ICU integration
+Version: 1.2.7
+
+Requires: harfbuzz
+Requires.private: icu-uc
+Libs: -L${libdir} -lharfbuzz-icu
+Cflags: -I${includedir}/harfbuzz

@@ -202,7 +202,10 @@ UpgradeLog*.htm
 # Microsoft Fakes
 FakesAssemblies/
 
-# LightSwitch generated files
+Simulation/third_party/packages/*
+Simulation/third_party/bin/
+Simulation/third_party/share/
+Simulation/bin/
 Simulation/Log/
 Simulation/My Amplifier XE Results - Simulation/
 Simulation/My Inspector XE Results - Simulation/
