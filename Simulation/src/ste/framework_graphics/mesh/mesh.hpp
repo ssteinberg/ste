@@ -128,12 +128,13 @@ public:
 	void transform(const glm::mat4 &m) {
 		auto tim = glm::transpose(glm::inverse(m));
 		for (auto &v : vertices) {
-			auto n = (tim * glm::vec4(v.n, 1)).xyz();
-			auto t = (tim * glm::vec4(v.t, 1)).xyz();
+			auto tangent_frame = v.extract_tangent_frame();
+
+			for (int i=0; i<3; ++i)
+				tangent_frame[i] = glm::normalize((tim * glm::vec4(tangent_frame[i], 1)).xyz());
 
 			v.p = (m * glm::vec4(v.p, 1)).xyz();
-			v.n = glm::normalize(n);
-			v.t = glm::normalize(t);
+			v.tangent_frame_from_tbn(tangent_frame[0], tangent_frame[1], tangent_frame[2]);
 		}
 		// calc_aabb();
 		calc_sphere();

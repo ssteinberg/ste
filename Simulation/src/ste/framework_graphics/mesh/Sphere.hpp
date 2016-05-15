@@ -26,10 +26,14 @@ public:
 				v.p.y = glm::sin(theta);
 				v.p.x = glm::cos(theta) * glm::sin(phi);
 				v.p.z = glm::cos(theta) * glm::cos(phi);
-				v.n = v.p;
+
+				glm::vec3 n = v.p;
+				glm::vec3 t;
 				v.t.y = glm::sin(theta + glm::half_pi<float>());
 				v.t.x = glm::cos(theta + glm::half_pi<float>()) * glm::sin(phi);
 				v.t.z = glm::cos(theta + glm::half_pi<float>()) * glm::cos(phi);
+				glm::vec3 b = glm::cross(t,n);
+				v.tangent_frame_from_tbn(t,b,n);
 
 				v.uv.x = .5f + glm::atan(-v.p.z, -v.p.x) / glm::two_pi<float>();
 				v.uv.y = static_cast<float>(y) / static_cast<float>(vert_slices - 1);

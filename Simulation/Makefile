@@ -12,9 +12,9 @@ OBJECTS = $(SOURCES:%.cpp=$(WORK_DIR)/%.o)
 DEPS = $(SOURCES:%.cpp=$(BUILD_DIR)/.depend/%_$(config).d)
 PCH = $(WORK_DIR)/$(SOURCE_DIR)/$(PCHCPP).gch
 
-CXXFLAGS += $(CXXFLAGS_$(config))
-CXXFLAGS += $(addprefix -L, $(LOCAL_LIBS))
 INCLUDE_FLAGS = -I$(dir $(PCH)) $(addprefix -I, $(LOCAL_INCLUDES))
+CXXFLAGS += $(CXXFLAGS_$(config)) $(addprefix -isystem, $(SYSTEM_INCLUDES))
+LINKFLAGS += $(addprefix -L, $(SYSTEM_LIBS))
 
 .SECONDARY: $(OBJECTS) $(PCH)
 .PHONY: docs

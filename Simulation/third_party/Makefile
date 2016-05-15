@@ -2,7 +2,7 @@
 PACKAGE_DIR = packages
 INSTALL_DIR = $(CURDIR)
 
-CMAKE_LIBS = freetype2 glfw libpng tinyobjloader zlib
+CMAKE_LIBS = glm gli glfw freetype2 libpng tinyobjloader zlib
 MAKE_LIBS = libtga
 AUTOGEN_LIBS = harfbuzz
 CUSTOM_LIBS = glew libjpeg-turbo imgui
@@ -76,7 +76,7 @@ clean::
 
 imgui:
 	@/bin/echo -e "\e[1;94mBuilding\e[1;92m $@\e[1;94m...\e[0m"
-	cd include; ln -s ../$(PACKAGE_DIR)/$@ imgui
+	cd include; mkdir imgui 2> /dev/null || true && cp ../$(PACKAGE_DIR)/$@/*.cpp ./imgui/ && cp ../$(PACKAGE_DIR)/$@/*.h ./imgui/
 
 clean::
 	rm -rf include lib lib64 bin
@@ -93,6 +93,8 @@ init:
 	@cd $(PACKAGE_DIR)/; git clone --single-branch --branch master https://github.com/ocornut/imgui.git
 	@cd $(PACKAGE_DIR)/; wget -O libtga.tar.gz 'http://downloads.sourceforge.net/project/tgalib/libtga/1.0.1/libtga-1.0.1.tar.gz?r=https%3A%2F%2Fsourceforge.net%2Fprojects%2Ftgalib%2F&ts=1463234964&use_mirror=netix' && tar xvpf libtga.tar.gz && mv libtga-1.0.1 libtga && rm libtga.tar.gz
 	@cd $(PACKAGE_DIR)/; git clone --single-branch --branch 1.2.7 https://github.com/behdad/harfbuzz
+	@cd $(PACKAGE_DIR)/; git clone --single-branch --branch master https://github.com/g-truc/glm.git
+	@cd $(PACKAGE_DIR)/; git clone --single-branch --branch master https://github.com/g-truc/gli.git
 
 .PHONY: $(CMAKE_LIBS)
 .PHONY: $(MAKE_LIBS)
