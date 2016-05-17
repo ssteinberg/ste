@@ -12,6 +12,8 @@
 #include "TextureCubeMapArray.hpp"
 #include "Sampler.hpp"
 
+#include "light_storage.hpp"
+
 namespace StE {
 namespace Graphics {
 

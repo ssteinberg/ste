@@ -283,10 +283,10 @@ int main() {
 			last_pointer_pos = pp;
 		}
 
-		float angle = time * glm::pi<float>() / 2.5f;
-		glm::vec3 lp = light0_pos + glm::vec3(glm::sin(angle) * 3, 0, glm::cos(angle)) * 115.f;
-		light0->set_position(lp);
-		light0_obj->set_model_matrix(glm::translate(glm::mat4(), lp));
+		// float angle = time * glm::pi<float>() / 2.5f;
+		// glm::vec3 lp = light0_pos + glm::vec3(glm::sin(angle) * 3, 0, glm::cos(angle)) * 115.f;
+		// light0->set_position(lp);
+		// light0_obj->set_model_matrix(glm::translate(glm::mat4(), lp));
 
 		{
 			using namespace StE::Text::Attributes;
