@@ -108,7 +108,7 @@ public:
 	}
 
 	mesh& operator*=(float scale) {
-		for (auto &v : vertices) v *= scale;
+		for (auto &v : vertices) v.p *= scale;
 		calc_sphere();
 		return *this;
 	}
