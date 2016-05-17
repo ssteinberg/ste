@@ -56,7 +56,7 @@ public:
 		resize_connection = std::make_shared<ResizeSignalConnectionType>([=](const glm::i32vec2 &size) {
 			set_projection_planes();
 		});
-		projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([this](const glm::mat4&, float, float n) {
+		projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([this](float, float, float n) {
 			set_projection_planes();
 		});
 		ctx.signal_framebuffer_resize().connect(resize_connection);

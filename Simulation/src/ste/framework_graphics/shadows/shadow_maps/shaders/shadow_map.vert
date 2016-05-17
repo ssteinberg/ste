@@ -20,9 +20,7 @@ void main() {
 	uint draw_id = gl_BaseInstanceARB;
 	mesh_descriptor md = mesh_descriptor_buffer[draw_id];
 
-	mat4 view_model = md.model;
-
-	gl_Position = view_model * vec4(vert, 1);
+	gl_Position = vec4(dquat_mul_vec(md.model_transform, vert), 1);
 	vout.instanceIdx = gl_InstanceID;
 	vout.drawIdx = draw_id;
 }

@@ -58,7 +58,7 @@ public:
 															   depth_sampler(Core::TextureFiltering::Nearest, Core::TextureFiltering::Nearest, Core::TextureFiltering::Nearest,
 															   				 Core::TextureWrapMode::ClampToEdge, Core::TextureWrapMode::ClampToEdge) {
 		update_uniforms();
-		projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([this](const glm::mat4&, float, float) {
+		projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([this](float, float, float) {
 			update_uniforms();
 		});
 		resize_connection = std::make_shared<ResizeSignalConnectionType>([=](const glm::i32vec2 &size) {

@@ -24,8 +24,6 @@
 #include "gpu_task.hpp"
 #include "profiler.hpp"
 #include "debug_gui.hpp"
-#include <glm/gtx/matrix_interpolation.hpp>
-#include <glm/gtx/dual_quaternion.hpp>
 
 using namespace StE::Core;
 using namespace StE::Text;
@@ -34,10 +32,7 @@ class SkyDome : public StE::Graphics::gpu_dispatchable {
 	using Base = StE::Graphics::gpu_dispatchable;
 
 private:
-	using ProjectionSignalConnectionType = StE::StEngineControl::projection_change_signal_type::connection_type;
-
 	std::shared_ptr<GLSLProgram> program;
-	std::shared_ptr<ProjectionSignalConnectionType> projection_change_connection;
 
 	std::unique_ptr<StE::Graphics::mesh<StE::Graphics::mesh_subdivion_mode::Triangles>> meshptr;
 
@@ -54,11 +49,6 @@ public:
 		int material = scene->scene_properties().materials_storage().add_material(sky_mat);
 
 		program->set_uniform("material", material);
-		program->set_uniform("projection", ctx.projection_matrix());
-		projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([=](const glm::mat4 &proj, float, float clip_near) {
-			this->program->set_uniform("projection", proj);
-		});
-		ctx.signal_projection_change().connect(projection_change_connection);
 	}
 
 protected:
@@ -80,9 +70,10 @@ auto create_light_object(StE::Graphics::Scene *scene, const glm::vec3 &light_pos
 	scene->scene_properties().lights_storage().add_light(light);
 
 	std::unique_ptr<StE::Graphics::Sphere> sphere = std::make_unique<StE::Graphics::Sphere>(20, 20);
+	sphere *= light->get_radius();
 	auto light_obj = std::make_shared<StE::Graphics::Object>(std::move(sphere));
 
-	light_obj->set_model_matrix(glm::scale(glm::translate(glm::mat4(), light_pos), glm::vec3(light->get_radius())));
+	light_obj->set_model_matrix(glm::translate(glm::mat4(), light_pos));
 
 	gli::texture2d light_color_tex{ gli::format::FORMAT_RGB8_UNORM_PACK8, { 1, 1 }, 1 };
 	auto c = light->get_diffuse();
@@ -99,55 +90,7 @@ auto create_light_object(StE::Graphics::Scene *scene, const glm::vec3 &light_pos
 	return light_obj;
 }
 
-using namespace glm;
-vec3 dquat_mul_vec(glm::dualquat q, vec3 v) {
-	glm::vec3 rxyz = {q.real.x,q.real.y,q.real.z};
-	glm::vec3 dxyz = {q.dual.x,q.dual.y,q.dual.z};
-	return v +
-			2.f * cross(rxyz, cross(rxyz, v) + q.real.w * v) +
-			2.f * (q.real.w * dxyz - q.dual.w * rxyz + cross(rxyz, dxyz));
-}
-
-vec4 project(float one_over_tan_half_fovy, float one_over_aspect, float near, vec4 v) {
-	vec4 p = vec4(v.xy * one_over_tan_half_fovy, near * v.w, -v.z);
-	p.x *= one_over_aspect;
-	return p;
-}
-
 int main() {
-	{
-		vec3 camera_position = { 25.8, 549.07, -249.2 };
-		vec3 camera_look_at = { -5.4, 532.5, -228.71 };
-		auto m = glm::lookAt(camera_position, camera_look_at - camera_position, glm::vec3{0,1,0});
-
-		glm::mat3 r = m;
-		glm::vec3 t = -camera_position;
-
-		auto dqt = glm::dualquat(glm::quat(), glm::quat(0.f, t.x * .5f, t.y * .5f, t.z * .5f));
-		auto dqr = glm::dualquat(r, glm::quat(0.f,0.f,0.f,0.f));
-		auto dq = dqr * dqt;
-
-		glm::vec3 v = {1,10,-10};
-		auto rtu = r * (v + t);
-		auto tru = r * v + t;
-		auto u1 = dq * v;
-		auto u2 = dquat_mul_vec(dq, v);
-		auto u3 = m * vec4(v, 1);
-
-		float tanHalfFovy = glm::tan(glm::pi<float>() * .225f * .5f);
-		float one_over_tan_half_fovy = 1.f / tanHalfFovy;
-		float one_over_aspect = 1.f / (16.f/9.f);
-		float near = 1.f;
-
-		auto pm = StE::reversed_infinite_perspective(glm::pi<float>() * .225f, 16.f/9.f, 1.f);
-
-		auto u = vec4(u1, 1);
-		auto p1 = project(one_over_tan_half_fovy, one_over_aspect, near, u);
-		auto p2 = pm * u;
-
-		std::cout << "A";
-	}
-
 	StE::Log logger("Global Illumination");
 //	logger.redirect_std_outputs();
 	ste_log_set_global_logger(&logger);
@@ -329,7 +272,7 @@ int main() {
 		float angle = time * glm::pi<float>() / 2.5f;
 		glm::vec3 lp = light0_pos + glm::vec3(glm::sin(angle) * 3, 0, glm::cos(angle)) * 115.f;
 		light0->set_position(lp);
-		light0_obj->set_model_matrix(glm::scale(glm::translate(glm::mat4(), lp), glm::vec3(light0->get_radius() / 2.f)));
+		light0_obj->set_model_matrix(glm::translate(glm::mat4(), lp));
 
 		{
 			using namespace StE::Text::Attributes;

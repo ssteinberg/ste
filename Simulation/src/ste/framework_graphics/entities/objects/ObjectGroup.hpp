@@ -21,7 +21,7 @@
 namespace StE {
 namespace Graphics {
 
-class ObjectGroup : public entity_affine {
+class ObjectGroup : public entity_dquat {
 	using Base = gpu_dispatchable;
 
 private:
@@ -50,10 +50,6 @@ public:
 
 	void add_object(const std::shared_ptr<Object> &);
 	void remove_all();
-
-	void set_model_matrix(const glm::mat4 &m) override {
-		entity_affine::set_model_matrix(m);
-	}
 
 	auto& get_draw_buffers() const { return draw_buffers; }
 

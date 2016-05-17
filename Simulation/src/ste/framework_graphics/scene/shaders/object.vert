@@ -29,8 +29,8 @@ void main() {
 	uint draw_id = gl_BaseInstanceARB;
 	mesh_descriptor md = mesh_descriptor_buffer[draw_id];
 
-	vec3 wpos = (md.model * vec4(vert, 1)).xyz;
-	vec3 spos = dquat_mul_vec(view_transform_buffer.view_transform, wpos.xyz);
+	vec3 wpos = dquat_mul_vec(md.model_transform, vert);
+	vec3 spos = dquat_mul_vec(view_transform_buffer.view_transform, wpos);
 
 	mat3 tbn = extract_tangent_frame(view_transform_buffer.view_transform.real, tangent_frame_quat);
 

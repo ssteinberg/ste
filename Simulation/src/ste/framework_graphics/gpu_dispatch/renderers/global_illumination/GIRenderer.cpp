@@ -133,10 +133,8 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 
 		rebuild_task_queue();
 	});
-	projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([this](const glm::mat4 &proj, float, float n) {
-		this->transform_buffers.update_proj_data(this->ctx.get_fov(),
-												 this->ctx.get_projection_aspect(),
-												 this->ctx.get_near_clip());
+	projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([this](float aspect, float fovy, float near) {
+		this->transform_buffers.update_proj_data(fovy, aspect, near);
 	});
 	ctx.signal_framebuffer_resize().connect(resize_connection);
 	ctx.signal_projection_change().connect(projection_change_connection);

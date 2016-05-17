@@ -4,9 +4,9 @@
 #pragma once
 
 #include "stdafx.hpp"
+#include "dual_quaternion.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/dual_quaternion.hpp>
 
 namespace StE {
 namespace Graphics {
@@ -50,11 +50,7 @@ public:
 		glm::mat3 r = view_matrix_no_translation();
 		glm::vec3 t = -camera_position;
 
-		auto dqt = glm::dualquat(glm::quat(), glm::quat(0.f, t * .5f));
-		auto dqr = glm::dualquat(r, glm::quat(0.f,0.f,0.f,0.f));
-		auto dq = dqr * dqt;
-
-		return dq;
+		return dualquat_translate_rotate(r, t);
 	}
 };
 
