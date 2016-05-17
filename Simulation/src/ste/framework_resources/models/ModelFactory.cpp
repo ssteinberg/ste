@@ -26,6 +26,7 @@ std::future<void> ModelFactory::process_model_mesh(optional<task_scheduler*> sch
 												  brdf_map_type &brdfs) {
 	std::vector<ObjectVertexData> vbo_data;
 	std::vector<std::uint32_t> vbo_indices;
+	std::vector<std::pair<glm::vec3, glm::vec3>> nt;
 
 	unsigned vertices = shape.mesh.positions.size() / 3;
 	unsigned tc_stride = shape.mesh.texcoords.size() / vertices;
@@ -33,15 +34,19 @@ std::future<void> ModelFactory::process_model_mesh(optional<task_scheduler*> sch
 	for (unsigned i = 0; i < vertices; ++i) {
 		ObjectVertexData v;
 		v.p = { shape.mesh.positions[3 * i + 0], shape.mesh.positions[3 * i + 1], shape.mesh.positions[3 * i + 2] };
+
 		if (tc_stride)
 			v.uv = { shape.mesh.texcoords[tc_stride * i + 0], shape.mesh.texcoords[tc_stride * i + 1] };
 		else
 			v.uv = glm::vec2(0);
-		if (normals_stride)
-			v.n = { shape.mesh.normals[normals_stride * i + 0], shape.mesh.normals[normals_stride * i + 1], shape.mesh.normals[normals_stride * i + 2] };
+
+		if (normals_stride) {
+			glm::vec3 n = { shape.mesh.normals[normals_stride * i + 0], shape.mesh.normals[normals_stride * i + 1], shape.mesh.normals[normals_stride * i + 2] };
+			n = glm::normalize(n);
+			nt.push_back(std::make_pair(n, glm::vec3(0)));
+		}
 		else
-			v.n = glm::vec3(0);
-		v.t = glm::vec3(0);
+			nt.push_back(std::make_pair(glm::vec3(0), glm::vec3(0)));
 
 		vbo_data.push_back(v);
 	}
@@ -79,15 +84,20 @@ std::future<void> ModelFactory::process_model_mesh(optional<task_scheduler*> sch
 			float r = 1.f / (s0 * t1 - s1 * t0);
 			glm::vec3 sdir((t1 * x0 - t0 * x1) * r, (t1 * y0 - t0 * y1) * r, (t1 * z0 - t0 * z1) * r);
 
-			v0.t += sdir;
-			v1.t += sdir;
-			v2.t += sdir;
+			nt[i0].second += sdir;
+			nt[i1].second += sdir;
+			nt[i2].second += sdir;
 		}
 
-		for (auto &v : vbo_data) {
-			glm::vec3 t = v.t;
+		for (unsigned i = 0; i < vbo_data.size(); ++i) {
+			auto &v = vbo_data[i];
 
-			v.t = glm::normalize(t - v.n * glm::dot(v.n, t));
+			glm::vec3 n = nt[i].first;
+			glm::vec3 t = nt[i].second;
+			t = glm::normalize(t - n * glm::dot(n, t));
+			glm::vec3 b = glm::cross(t,n);
+
+			v.tangent_frame_from_tbn(t,b,n);
 		}
 	}
 

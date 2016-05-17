@@ -1,6 +1,8 @@
 
 #include "common.glsl"
 
+const float shadow_near = 20.f;
+
 float shadow_gather_pcf(samplerCubeArrayShadow shadow_depth_maps, uint light, float zf, vec3 norm_v, vec3 v, float m, float r, int samples, float jitter) {
 	const float map_size = 1.f / 512.f;
 
@@ -20,7 +22,7 @@ float shadow_gather_pcf(samplerCubeArrayShadow shadow_depth_maps, uint light, fl
 	return pcf;
 }
 
-float shadow(samplerCubeArrayShadow shadow_depth_maps, uint light, vec3 shadow_v, float proj23) {
+float shadow(samplerCubeArrayShadow shadow_depth_maps, uint light, vec3 shadow_v) {
 	const int samples_far = 3;
 	const int samples_med = 3;
 	const int samples_near = 3;
@@ -47,7 +49,7 @@ float shadow(samplerCubeArrayShadow shadow_depth_maps, uint light, vec3 shadow_v
 	vec3 v = abs(shadow_v);
 	float m = max(v.x, max(v.y, v.z));
 
-	float zf = proj23 / m;
+	float zf = shadow_near / m;
 
 	vec3 norm_v = shadow_v / m;
 
@@ -65,11 +67,11 @@ float shadow(samplerCubeArrayShadow shadow_depth_maps, uint light, vec3 shadow_v
 	return pcf;
 }
 
-float shadow_fast(samplerCubeArrayShadow shadow_depth_maps, uint light, vec3 shadow_v, float proj23) {
+float shadow_fast(samplerCubeArrayShadow shadow_depth_maps, uint light, vec3 shadow_v) {
 	vec3 v = abs(shadow_v);
 	float m = max(v.x, max(v.y, v.z));
 
-	float zf = proj23 / m;
+	float zf = shadow_near / m;
 
 	return texture(shadow_depth_maps, vec4(shadow_v, light), zf).x;
 }

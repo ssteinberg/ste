@@ -4,6 +4,7 @@
 #pragma once
 
 #include "stdafx.hpp"
+#include "dual_quaternion.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -44,6 +45,13 @@ public:
 
 	glm::mat4 view_matrix() const { return glm::lookAt(camera_position, camera_look_at, camera_up); }
 	glm::mat4 view_matrix_no_translation() const { return glm::lookAt(glm::vec3(0), camera_look_at - camera_position, camera_up); }
+
+	glm::dualquat view_transform_dquat() const {
+		glm::mat3 r = view_matrix_no_translation();
+		glm::vec3 t = -camera_position;
+
+		return dualquat_translate_rotate(r, t);
+	}
 };
 
 }

@@ -4,33 +4,39 @@ DEFAULT_CONFIGURATION = debug
 
 SOURCE_DIR = ./src
 DOCS_DIR = ./docs
+THIRD_PARTY_DIR = ./third_party
 
 LOCAL_INCLUDES += \
-	$(shell find $(SOURCE_DIR) -type d) \
-	third_party/include/freetype2 \
-	third_party/include
+	$(shell find $(SOURCE_DIR) -type d)
 
-LOCAL_LIBS += \
-	third_party/lib \
-	third_party/lib64
+SYSTEM_INCLUDES += \
+	$(THIRD_PARTY_DIR)/include/freetype2 \
+	$(THIRD_PARTY_DIR)/include
+
+SYSTEM_LIBS += \
+	$(THIRD_PARTY_DIR)/lib \
+	$(THIRD_PARTY_DIR)/lib64
 
 BUILD_DIR = ./build
+BIN_DIR = ./bin
+
+DEBUG_SYMBOLS_FLAGS = -g3 -ggdb
 
 CXXFLAGS += \
 	-std=c++17 \
 	-D _linux \
 	-pthread \
 	-pipe \
-	-Wall -Wformat=2 -Wcast-align -Wundef -Wcast-qual -Wwrite-strings
+	-Wall -Wformat=2 -Wcast-align -Wcast-qual -Wwrite-strings
 
 CXXFLAGS_release += \
 	-O3 -march=native -flto -falign-functions=16 -falign-loops=16 -D NDEBUG
 
 CXXFLAGS_profile += \
-	$(CXXFLAGS_release) -pg -g
+	$(CXXFLAGS_release) $(DEBUG_SYMBOLS_FLAGS)
 
 CXXFLAGS_debug += \
-	-g -D DEBUG
+	$(DEBUG_SYMBOLS_FLAGS) -D DEBUG
 
 SYSTEM_LIBRARIES += \
 	atomic \
@@ -48,8 +54,6 @@ SYSTEM_LIBRARIES += \
 	boost_system \
 	boost_filesystem \
 	boost_serialization
-
-# LINKFLAGS += $(shell pkg-config --static --libs glfw3)
 
 PCHCPP = ste/engine/stdafx.hpp
 

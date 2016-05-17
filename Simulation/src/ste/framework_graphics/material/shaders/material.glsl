@@ -31,7 +31,7 @@ void normal_map(material_descriptor md, float height_map_scale, vec2 uv, vec2 du
 		n = tbn * nm;
 
 		t = cross(n, b);
-		b = cross(t ,n);
+		b = cross(t, n);
 	}
 }
 

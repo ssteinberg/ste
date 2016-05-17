@@ -32,10 +32,7 @@ class SkyDome : public StE::Graphics::gpu_dispatchable {
 	using Base = StE::Graphics::gpu_dispatchable;
 
 private:
-	using ProjectionSignalConnectionType = StE::StEngineControl::projection_change_signal_type::connection_type;
-
 	std::shared_ptr<GLSLProgram> program;
-	std::shared_ptr<ProjectionSignalConnectionType> projection_change_connection;
 
 	std::unique_ptr<StE::Graphics::mesh<StE::Graphics::mesh_subdivion_mode::Triangles>> meshptr;
 
@@ -52,11 +49,6 @@ public:
 		int material = scene->scene_properties().materials_storage().add_material(sky_mat);
 
 		program->set_uniform("material", material);
-		program->set_uniform("projection", ctx.projection_matrix());
-		projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([=](const glm::mat4 &proj, float, float clip_near) {
-			this->program->set_uniform("projection", proj);
-		});
-		ctx.signal_projection_change().connect(projection_change_connection);
 	}
 
 protected:
@@ -78,9 +70,10 @@ auto create_light_object(StE::Graphics::Scene *scene, const glm::vec3 &light_pos
 	scene->scene_properties().lights_storage().add_light(light);
 
 	std::unique_ptr<StE::Graphics::Sphere> sphere = std::make_unique<StE::Graphics::Sphere>(20, 20);
+	(*sphere) *= light->get_radius();
 	auto light_obj = std::make_shared<StE::Graphics::Object>(std::move(sphere));
 
-	light_obj->set_model_matrix(glm::scale(glm::translate(glm::mat4(), light_pos), glm::vec3(light->get_radius())));
+	light_obj->set_model_matrix(glm::translate(glm::mat4(), light_pos));
 
 	gli::texture2d light_color_tex{ gli::format::FORMAT_RGB8_UNORM_PACK8, { 1, 1 }, 1 };
 	auto c = light->get_diffuse();
@@ -98,6 +91,20 @@ auto create_light_object(StE::Graphics::Scene *scene, const glm::vec3 &light_pos
 }
 
 int main() {
+	auto m0 = glm::lookAt(glm::vec3(0), glm::vec3( 1.f, 0.f, 0.f), glm::vec3(0.f,-1.f, 0.f));
+	auto m1 = glm::lookAt(glm::vec3(0), glm::vec3(-1.f, 0.f, 0.f), glm::vec3(0.f,-1.f, 0.f));
+	auto m2 = glm::lookAt(glm::vec3(0), glm::vec3( 0.f, 1.f, 0.f), glm::vec3(0.f, 0.f, 1.f));
+	auto m3 = glm::lookAt(glm::vec3(0), glm::vec3( 0.f,-1.f, 0.f), glm::vec3(0.f, 0.f,-1.f));
+	auto m4 = glm::lookAt(glm::vec3(0), glm::vec3( 0.f, 0.f, 1.f), glm::vec3(0.f,-1.f, 0.f));
+	auto m5 = glm::lookAt(glm::vec3(0), glm::vec3( 0.f, 0.f,-1.f), glm::vec3(0.f,-1.f, 0.f));
+	glm::vec3 v(-3,1,2);
+	auto u0 = m0 * glm::vec4(v, 1);
+	auto u1 = m1 * glm::vec4(v, 1);
+	auto u2 = m2 * glm::vec4(v, 1);
+	auto u3 = m3 * glm::vec4(v, 1);
+	auto u4 = m4 * glm::vec4(v, 1);
+	auto u5 = m5 * glm::vec4(v, 1);
+
 	StE::Log logger("Global Illumination");
 //	logger.redirect_std_outputs();
 	ste_log_set_global_logger(&logger);
@@ -116,7 +123,6 @@ int main() {
 	ctx.set_fov(fovy);
 
 	auto font = StE::Text::Font("Data/ArchitectsDaughter.ttf");
-
 
 	StE::Text::TextManager text_manager(ctx, font);
 
@@ -277,10 +283,10 @@ int main() {
 			last_pointer_pos = pp;
 		}
 
-		float angle = time * glm::pi<float>() / 2.5f;
-		glm::vec3 lp = light0_pos + glm::vec3(glm::sin(angle) * 3, 0, glm::cos(angle)) * 115.f;
-		light0->set_position(lp);
-		light0_obj->set_model_matrix(glm::scale(glm::translate(glm::mat4(), lp), glm::vec3(light0->get_radius() / 2.f)));
+		// float angle = time * glm::pi<float>() / 2.5f;
+		// glm::vec3 lp = light0_pos + glm::vec3(glm::sin(angle) * 3, 0, glm::cos(angle)) * 115.f;
+		// light0->set_position(lp);
+		// light0_obj->set_model_matrix(glm::translate(glm::mat4(), lp));
 
 		{
 			using namespace StE::Text::Attributes;

@@ -1,5 +1,7 @@
 
 #include "hdr_common.glsl"
+#include "quaternion.glsl"
+#include "dual_quaternion.glsl"
 
 const int LightTypeSphere = 0;
 const int LightTypeDirectional = 1;
@@ -35,10 +37,10 @@ float light_effective_range(light_descriptor ld) {
 		return ld.effective_range;
 }
 
-vec3 light_transform(mat4 mv, mat3 rmv, light_descriptor ld) {
+vec3 light_transform(dual_quaternion transform, light_descriptor ld) {
 	return ld.type == LightTypeSphere ?
-				(mv * vec4(ld.position_direction.xyz, 1)).xyz :
-				rmv * ld.position_direction.xyz;
+				dquat_mul_vec(transform, ld.position_direction.xyz) :
+				quat_mul_vec(transform.real, ld.position_direction.xyz);
 }
 
 float light_calculate_effective_range(light_descriptor ld, float min_lum) {

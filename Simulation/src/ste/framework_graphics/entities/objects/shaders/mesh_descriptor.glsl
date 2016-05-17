@@ -1,13 +1,15 @@
 
+#include "dual_quaternion.glsl"
+
 struct mesh_descriptor {
-	mat4 model;
-	mat4 transpose_inverse_model;
+	dual_quaternion model_transform;
 
 	vec4 bounding_sphere;
 
 	int matIdx;
+	int light_caster;
 
-	float _unused[3];
+	float _unused[2];
 };
 
 struct mesh_draw_params {

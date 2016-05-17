@@ -15,7 +15,7 @@
 #include "volumetric_scattering.glsl"
 
 #include "project.glsl"
-#include "girenderer_matrix_buffer.glsl"
+#include "girenderer_transform_buffer.glsl"
 
 layout(std430, binding = 0) restrict readonly buffer material_data {
 	material_descriptor mat_descriptor[];
@@ -48,9 +48,8 @@ layout(binding = 9) uniform sampler3D scattering_volume;
 out vec4 gl_FragColor;
 
 uniform float height_map_scale = .5f;
-uniform float proj00, proj11, proj23, shadow_proj23;
 
-vec4 shade(g_buffer_element frag, mat4 inverse_view_matrix) {
+vec4 shade(g_buffer_element frag) {
 	int draw_idx = gbuffer_parse_material(frag);
 	vec2 uv = gbuffer_parse_uv(frag);
 	vec2 duvdx = gbuffer_parse_duvdx(frag);
@@ -65,12 +64,12 @@ vec4 shade(g_buffer_element frag, mat4 inverse_view_matrix) {
 	float specular = md.specular.tex_handler>0 ? textureGrad(sampler2D(md.specular.tex_handler), uv, duvdx, duvdy).x : 1.f;
 	specular = mix(.2f, 1.f, specular);
 
-	vec3 position = unproject_screen_position(depth, gl_FragCoord.xy / vec2(gbuffer_size(gbuffer_ll_heads)), proj23, proj00, proj11);
-	vec3 w_pos = (inverse_view_matrix * vec4(position, 1)).xyz;
+	vec3 position = unproject_screen_position(depth, gl_FragCoord.xy / vec2(gbuffer_size(gbuffer_ll_heads)));
+	vec3 w_pos = dquat_mul_vec(view_transform_buffer.inverse_view_transform, position);
+
 	vec3 n = gbuffer_parse_normal(frag);
 	vec3 t = gbuffer_parse_tangent(frag);
 	vec3 b = cross(t, n);
-
 	normal_map(md, height_map_scale, uv, duvdx, duvdy, n, t, b, position);
 
 	vec3 rgb = md.emission.rgb;
@@ -96,9 +95,8 @@ vec4 shade(g_buffer_element frag, mat4 inverse_view_matrix) {
 
 				vec3 shadow_v = w_pos - ld.position_direction.xyz;
 				float shadow = shadow(shadow_depth_maps,
-										uint(lll_parse_ll_idx(lll_p)),
-										shadow_v,
-										shadow_proj23);
+									  uint(lll_parse_ll_idx(lll_p)),
+									  shadow_v);
 				if (shadow <= .0f)
 					continue;
 
@@ -121,15 +119,13 @@ vec4 shade(g_buffer_element frag, mat4 inverse_view_matrix) {
 }
 
 void main() {
-	mat4 inverse_view_matrix = transpose(view_matrix_buffer.transpose_inverse_view_matrix);
-
 	g_buffer_element frag = gbuffer_load(gbuffer_ll_heads, ivec2(gl_FragCoord.xy));
-	vec4 c = shade(frag, inverse_view_matrix);
+	vec4 c = shade(frag);
 
 	uint32_t next_ptr = gbuffer_parse_nextptr(frag);
 	while (c.a < 1.f && !gbuffer_eof(next_ptr)) {
 		frag = gbuffer_load(next_ptr);
-		vec4 c2 = shade(frag, inverse_view_matrix);
+		vec4 c2 = shade(frag);
 
 		c = mix(c2, c, c.a);
 

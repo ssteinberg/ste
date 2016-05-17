@@ -26,7 +26,6 @@ class volumetric_scattering_scatter_dispatch : public gpu_dispatchable {
 	using Base = gpu_dispatchable;
 
 	using ResizeSignalConnectionType = StEngineControl::framebuffer_resize_signal_type::connection_type;
-	using ProjectionSignalConnectionType = StEngineControl::projection_change_signal_type::connection_type;
 
 private:
 	const volumetric_scattering_storage *vss;
@@ -38,19 +37,8 @@ private:
 
 private:
 	std::shared_ptr<ResizeSignalConnectionType> resize_connection;
-	std::shared_ptr<ProjectionSignalConnectionType> projection_change_connection;
 
 private:
-	void update_shader_proj_uniforms(const glm::mat4 &projection) {
-		float proj00 = projection[0][0];
-		float proj11 = projection[1][1];
-		float proj23 = projection[3][2];
-
-		program->set_uniform("proj00", proj00);
-		program->set_uniform("proj11", proj11);
-		program->set_uniform("proj23", proj23);
-	}
-
 	void update_phase_uniforms(float g) {
 		float g2 = g * g;
 		float p1 = (1.f - g2) / (4.f * glm::pi<float>());
@@ -69,11 +57,6 @@ public:
 										   const light_storage *ls,
 										   const shadowmap_storage *shadows_storage) : vss(vss), llls(llls), ls(ls), shadows_storage(shadows_storage),
 																					   program(ctx.glslprograms_pool().fetch_program_task({ "volumetric_scattering_scatter.glsl" })()) {
-		update_shader_proj_uniforms(ctx.projection_matrix());
-		projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([this](const glm::mat4 &proj, float, float n) {
-			update_shader_proj_uniforms(proj);
-		});
-		ctx.signal_projection_change().connect(projection_change_connection);
 
 		this->program->set_uniform("backbuffer_size", glm::vec2(ctx.get_backbuffer_size()));
 		resize_connection = std::make_shared<ResizeSignalConnectionType>([=](const glm::i32vec2 &size) {
@@ -81,8 +64,7 @@ public:
 		});
 		ctx.signal_framebuffer_resize().connect(resize_connection);
 
-		update_phase_uniforms(vss->get_scattering_phase_anisotropy_coefficient());
-		shadowmap_storage::update_shader_shadow_proj_uniforms(program.get());
+		update_phase_uniforms(vss->get_scattering_phase_anisotropy_coefficient());\
 	}
 
 	void set_context_state() const override final;

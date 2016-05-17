@@ -23,9 +23,9 @@ layout(r32ui, binding = 7) restrict uniform uimage2D gbuffer_ll_heads;
 
 in v {
 	vec3 frag_position;
-	vec2 frag_texcoords;
 	vec3 frag_normal;
 	vec3 frag_tangent;
+	vec2 frag_texcoords;
 	flat int matIdx;
 } vin;
 
