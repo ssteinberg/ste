@@ -19,7 +19,6 @@ layout(r32ui, binding = 7) restrict uniform uimage2D gbuffer_ll_heads;
 
 in vec2 frag_texcoords;
 in vec3 frag_position;
-in vec3 frag_wposition;
 
 layout(binding = 0) uniform sampler2D sky_tex;
 

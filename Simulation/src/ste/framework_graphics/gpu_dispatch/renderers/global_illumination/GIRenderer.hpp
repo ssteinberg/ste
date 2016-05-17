@@ -8,7 +8,7 @@
 #include "rendering_system.hpp"
 
 #include "Camera.hpp"
-#include "view_matrix_ring_buffer.hpp"
+#include "transforms_ring_buffers.hpp"
 
 #include "gpu_dispatchable.hpp"
 #include "gpu_task.hpp"
@@ -81,7 +81,8 @@ private:
 	using ProjectionSignalConnectionType = StEngineControl::projection_change_signal_type::connection_type;
 	using FbClearTask = StE::Graphics::fb_clear_dispatch<>;
 
-	constexpr static int view_matrix_buffer_bind_location = 20;
+	constexpr static int view_transform_buffer_bind_location = 20;
+	constexpr static int proj_transform_buffer_bind_location = 21;
 
 private:
 	deferred_gbuffer gbuffer;
@@ -90,7 +91,7 @@ private:
 
 	const StEngineControl &ctx;
 	const Camera *camera;
-	view_matrix_ring_buffer view_matrix_buffer;
+	transforms_ring_buffers transform_buffers;
 	Scene *scene;
 	// dense_voxel_space voxel_space;
 
@@ -137,8 +138,9 @@ private:
 	bool use_deferred_rendering{ true };
 
 protected:
+	void setup_tasks();
 	void rebuild_task_queue();
-	void update_shader_proj_uniforms(const glm::mat4&);
+
 	static int gbuffer_depth_target_levels();
 
 	const Core::GenericFramebufferObject *get_fbo() const {

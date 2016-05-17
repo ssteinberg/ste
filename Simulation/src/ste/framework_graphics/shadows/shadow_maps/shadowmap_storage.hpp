@@ -71,10 +71,6 @@ public:
 	auto* get_cubemaps() const { return shadow_depth_cube_maps.get(); }
 	auto& get_shadow_sampler() const { return shadow_depth_sampler; }
 	auto* get_shadow_projection_mats_buffer() const { return shadow_projection_mats_buffer.get(); }
-
-	static void update_shader_shadow_proj_uniforms(Core::GLSLProgram *prog) {
-		prog->set_uniform("shadow_proj23", shadow_proj_near_clip);
-	}
 };
 
 }

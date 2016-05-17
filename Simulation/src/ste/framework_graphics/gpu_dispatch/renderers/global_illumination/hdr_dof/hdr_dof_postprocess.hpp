@@ -53,7 +53,6 @@ private:
 
 private:
 	using ResizeSignalConnectionType = StEngineControl::framebuffer_resize_signal_type::connection_type;
-	using ProjectionSignalConnectionType = StEngineControl::projection_change_signal_type::connection_type;
 
 	struct hdr_bokeh_parameters {
 		std::int32_t lum_min, lum_max;
@@ -114,14 +113,12 @@ private:
 
 private:
 	std::shared_ptr<ResizeSignalConnectionType> resize_connection;
-	std::shared_ptr<ProjectionSignalConnectionType> projection_change_connection;
 
 private:
 	std::vector<std::shared_ptr<const gpu_task>> create_sub_tasks();
 	hdr_bokeh_blury_task* create_dispatchable();
 
 	void setup_engine_connections();
-	void update_projection_uniforms(const glm::mat4 &proj);
 
 public:
 	hdr_dof_postprocess(const StEngineControl &ctx, const deferred_gbuffer *gbuffer);

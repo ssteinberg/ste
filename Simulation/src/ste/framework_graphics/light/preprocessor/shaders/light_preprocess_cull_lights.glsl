@@ -5,7 +5,7 @@
 
 layout(local_size_x = 128) in;
 
-#include "girenderer_matrix_buffer.glsl"
+#include "girenderer_transform_buffer.glsl"
 #include "common.glsl"
 #include "light.glsl"
 #include "hdr_common.glsl"
@@ -45,7 +45,7 @@ void main() {
 	light_descriptor ld = light_buffer[light_idx];
 
 	// Transform light position/direction
-	vec4 transformed_light_pos = vec4(light_transform(view_matrix_buffer.view_matrix, mat3(view_matrix_buffer.view_matrix), ld), 0);
+	vec4 transformed_light_pos = vec4(light_transform(view_transform_buffer.view_transform, ld), 0);
 	light_transform_buffer[light_idx] = transformed_light_pos;
 
 	// Calculate cutoff based on HDR exposure

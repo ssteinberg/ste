@@ -28,7 +28,6 @@ public:
 
 	virtual const std::vector<ObjectVertexData> &get_vertices() const = 0;
 	virtual const std::vector<std::uint32_t> &get_indices() const = 0;
-	// virtual const mesh_aabb &aabb() const = 0;
 	virtual const mesh_bounding_sphere &bounding_sphere() const = 0;
 };
 
@@ -53,23 +52,9 @@ private:
 	std::unique_ptr<StE::Core::VertexArrayObject> mesh_vao;
 
 protected:
-	// mesh_aabb m_aabb;
 	mesh_bounding_sphere sphere;
 
 private:
-	// void calc_aabb() {
-	// 	if (!vertices.size()) {
-	// 		m_aabb = mesh_aabb({ 0,0,0 }, { 0,0,0 });
-	// 		return;
-	// 	}
-
-	// 	glm::vec3 a = vertices.begin()->p, b = vertices.begin()->p;
-	// 	for (auto &v : vertices) {
-	// 		a = glm::min(a, v.p);
-	// 		b = glm::max(b, v.p);
-	// 	}
-	// 	m_aabb = mesh_aabb(a, b);
-	// }
 	void calc_sphere() {
 		if (!vertices.size()) {
 			sphere = mesh_bounding_sphere({ 0,0,0 }, .0f);
@@ -98,14 +83,12 @@ public:
 
 	const std::vector<ObjectVertexData> &get_vertices() const override final { return vertices; }
 	const std::vector<ebo_type::T> &get_indices() const override final { return indices; }
-	// const mesh_aabb &aabb() const override { return m_aabb; }
 	const mesh_bounding_sphere &bounding_sphere() const override final { return sphere; };
 
 	template <typename T>
 	void set_vertices(T &&vert) {
 		vertices = decltype(vertices)(std::forward<T>(vert));
 		mesh_vbo = nullptr;
-		// calc_aabb();
 		calc_sphere();
 	}
 	template <typename T>
@@ -120,7 +103,12 @@ public:
 		auto offset = indices.size();
 		indices.insert(indices.end(), rhs.indices.begin(), rhs.indices.end());
 		for (int i = 0; i < offset; ++i) indices[i] += offset;
-		// calc_aabb();
+		calc_sphere();
+		return *this;
+	}
+
+	mesh& operator*=(float scale) {
+		for (auto &v : vertices) v *= scale;
 		calc_sphere();
 		return *this;
 	}
@@ -136,7 +124,6 @@ public:
 			v.p = (m * glm::vec4(v.p, 1)).xyz();
 			v.tangent_frame_from_tbn(tangent_frame[0], tangent_frame[1], tangent_frame[2]);
 		}
-		// calc_aabb();
 		calc_sphere();
 	}
 
@@ -164,7 +151,6 @@ public:
 		(*mesh_vao)[0] = (*mesh_vbo)[0];
 		(*mesh_vao)[1] = (*mesh_vbo)[1];
 		(*mesh_vao)[2] = (*mesh_vbo)[2];
-		(*mesh_vao)[3] = (*mesh_vbo)[3];
 		return mesh_vao.get();
 	}
 };

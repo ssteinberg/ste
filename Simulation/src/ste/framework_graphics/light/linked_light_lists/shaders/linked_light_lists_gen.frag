@@ -7,7 +7,7 @@
 #include "linked_light_lists.glsl"
 #include "linked_light_lists_store.glsl"
 
-#include "project.glsl"
+#include "girenderer_transform_buffer.glsl"
 
 layout(std430, binding = 2) restrict readonly buffer light_data {
 	light_descriptor light_buffer[];
@@ -34,7 +34,6 @@ layout(binding = 11) uniform sampler2D depth_map;
 
 uniform float near, aspect;
 uniform float two_near_tan_fovy_over_two;	// 2 * near * tan(fovy * .5)
-uniform float proj23;
 uniform vec2 backbuffer_size;
 
 void main() {
@@ -71,8 +70,8 @@ void main() {
 			float z_max = l.z * (-b - sqrt_delta) / a;
 			float z_min = l.z * (-b + sqrt_delta) / a;
 
-			float depth_zmin = clamp(project_depth(z_min, proj23), .0f, 1.f);
-			float depth_zmax = project_depth(z_max, proj23);
+			float depth_zmin = clamp(project_depth(z_min), .0f, 1.f);
+			float depth_zmax = project_depth(z_max);
 
 			bool add_point = false;
 

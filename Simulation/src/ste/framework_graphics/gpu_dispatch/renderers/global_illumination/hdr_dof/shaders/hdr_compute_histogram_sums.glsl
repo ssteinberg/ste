@@ -5,7 +5,8 @@
 #extension GL_NV_gpu_shader5 : require
 
 #include "hdr_common.glsl"
-#include "project.glsl"
+
+#include "girenderer_transform_buffer.glsl"
 
 layout(local_size_x = bins / 2, local_size_y = 1) in;
 
@@ -24,7 +25,6 @@ layout(binding = 11) uniform sampler2D depth;
 shared uint shared_data[bins];
 
 uniform uint hdr_lum_resolution;
-uniform float proj23;
 
 void main() {
 	uint id = gl_LocalInvocationID.x;
@@ -42,7 +42,7 @@ void main() {
 
 	if (id == 0) {
 		float d = texelFetch(depth, textureSize(depth, 0) / 2, 0).x;
-		float z_lin = unproject_depth(d, proj23) / 10000.f;
+		float z_lin = unproject_depth(d) / 10000.f;
 
 		params.focus = z_lin;
 	}

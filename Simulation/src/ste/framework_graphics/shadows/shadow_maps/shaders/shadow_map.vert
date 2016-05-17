@@ -5,7 +5,7 @@
 
 #include "mesh_descriptor.glsl"
 
-layout(location = 0) in vec3 vert;
+layout(location = 1) in vec3 vert;
 
 layout(std430, binding = 14) restrict readonly buffer mesh_data {
 	mesh_descriptor mesh_descriptor_buffer[];

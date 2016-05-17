@@ -41,7 +41,6 @@ public:
 		vao[0] = vbo_buffer[0];
 		vao[1] = vbo_buffer[1];
 		vao[2] = vbo_buffer[2];
-		vao[3] = vbo_buffer[3];
 	}
 
 	auto& get_vao() const { return vao; }

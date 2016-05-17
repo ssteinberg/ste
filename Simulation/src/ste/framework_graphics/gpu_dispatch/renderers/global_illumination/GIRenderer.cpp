@@ -44,6 +44,60 @@ void GIRenderer::deferred_composition::dispatch() const {
 }
 
 
+void GIRenderer::setup_tasks() {
+	composer_task = make_gpu_task("composition", &composer, hdr.get_input_fbo());
+	scene_task = make_gpu_task("scene", scene, nullptr);
+	fb_clearer_task = make_gpu_task("fb_clearer", &fb_clearer, get_fbo());
+	prepopulate_depth_task = make_gpu_task("prepopulate_depth", &prepopulate_depth_dispatch, get_fbo());
+	scene_geo_cull_task = make_gpu_task("geo_cull", &scene_geo_cull, nullptr);
+	gbuffer_clearer_task = make_gpu_task("gbuf_clear", &gbuffer_clearer, nullptr);
+	gbuffer_sort_task = make_gpu_task("gbuf_sort", &gbuffer_sorter, nullptr);
+	downsample_depth_task = make_gpu_task("downsample_depth", &downsample_depth, nullptr);
+	shadow_projector_task = make_gpu_task("shdw_project", &shadows_projector, nullptr);
+	volumetric_scattering_scatter_task = make_gpu_task("scatter", &volumetric_scattering_scatter, nullptr);
+	volumetric_scattering_gather_task = make_gpu_task("gather", &volumetric_scattering_gather, nullptr);
+	lll_gen_task = make_gpu_task("pp_ll_gen", &lll_gen_dispatch, get_fbo());
+
+	fb_clearer_task->add_dependency(gbuffer_clearer_task);
+
+	gbuffer_sort_task->add_dependency(fb_clearer_task);
+	gbuffer_sort_task->add_dependency(scene_task);
+
+	hdr.get_task()->add_dependency(composer_task);
+
+	prepopulate_depth_task->add_dependency(fb_clearer_task);
+	prepopulate_depth_task->add_dependency(scene_geo_cull_task);
+
+	downsample_depth_task->add_dependency(prepopulate_depth_task);
+
+	scene_task->add_dependency(prepopulate_depth_task);
+	scene_task->add_dependency(scene_geo_cull_task);
+	scene_task->add_dependency(downsample_depth_task);
+
+	scene_geo_cull_task->add_dependency(light_preprocess.get_task());
+
+	lll_gen_task->add_dependency(light_preprocess.get_task());
+	lll_gen_task->add_dependency(prepopulate_depth_task);
+	lll_gen_task->add_dependency(downsample_depth_task);
+
+	shadow_projector_task->add_dependency(light_preprocess.get_task());
+
+	volumetric_scattering_scatter_task->add_dependency(light_preprocess.get_task());
+	volumetric_scattering_scatter_task->add_dependency(shadow_projector_task);
+	volumetric_scattering_scatter_task->add_dependency(downsample_depth_task);
+	volumetric_scattering_scatter_task->add_dependency(lll_gen_task);
+	volumetric_scattering_scatter_task->add_dependency(prepopulate_depth_task);
+	volumetric_scattering_gather_task->add_dependency(volumetric_scattering_scatter_task);
+	volumetric_scattering_gather_task->add_dependency(downsample_depth_task);
+
+	composer_task->add_dependency(fb_clearer_task);
+	composer_task->add_dependency(gbuffer_sort_task);
+	composer_task->add_dependency(lll_gen_task);
+	composer_task->add_dependency(light_preprocess.get_task());
+	composer_task->add_dependency(shadow_projector_task);
+	composer_task->add_dependency(volumetric_scattering_gather_task);
+}
+
 GIRenderer::GIRenderer(const StEngineControl &ctx,
 					   const Camera *camera,
 					   Scene *scene/*,
@@ -80,60 +134,20 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 		rebuild_task_queue();
 	});
 	projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([this](const glm::mat4 &proj, float, float n) {
-		update_shader_proj_uniforms(proj);
+		this->transform_buffers.update_proj_data(this->ctx.get_fov(),
+												 this->ctx.get_projection_aspect(),
+												 this->ctx.get_near_clip());
 	});
 	ctx.signal_framebuffer_resize().connect(resize_connection);
 	ctx.signal_projection_change().connect(projection_change_connection);
 
-	shadowmap_storage::update_shader_shadow_proj_uniforms(composer.program.get());
-	update_shader_proj_uniforms(ctx.projection_matrix());
-
+	this->transform_buffers.update_proj_data(ctx.get_fov(), ctx.get_projection_aspect(), ctx.get_near_clip());
 
 	lll_gen_dispatch.set_depth_map(gbuffer.get_downsampled_depth_target());
 	volumetric_scattering.set_depth_map(gbuffer.get_downsampled_depth_target());
 	scene->set_target_gbuffer(get_gbuffer());
 
-	composer_task = make_gpu_task("composition", &composer, hdr.get_input_fbo());
-	scene_task = make_gpu_task("scene", scene, nullptr);
-	fb_clearer_task = make_gpu_task("fb_clearer", &fb_clearer, get_fbo());
-	prepopulate_depth_task = make_gpu_task("prepopulate_depth", &prepopulate_depth_dispatch, get_fbo());
-	scene_geo_cull_task = make_gpu_task("geo_cull", &scene_geo_cull, nullptr);
-	gbuffer_clearer_task = make_gpu_task("gbuf_clear", &gbuffer_clearer, nullptr);
-	gbuffer_sort_task = make_gpu_task("gbuf_sort", &gbuffer_sorter, nullptr);
-	downsample_depth_task = make_gpu_task("downsample_depth", &downsample_depth, nullptr);
-	shadow_projector_task = make_gpu_task("shdw_project", &shadows_projector, nullptr);
-	volumetric_scattering_scatter_task = make_gpu_task("scatter", &volumetric_scattering_scatter, nullptr);
-	volumetric_scattering_gather_task = make_gpu_task("gather", &volumetric_scattering_gather, nullptr);
-	lll_gen_task = make_gpu_task("pp_ll_gen", &lll_gen_dispatch, get_fbo());
-
-	fb_clearer_task->add_dependency(gbuffer_clearer_task);
-	gbuffer_sort_task->add_dependency(fb_clearer_task);
-	gbuffer_sort_task->add_dependency(scene_task);
-	hdr.get_task()->add_dependency(composer_task);
-	prepopulate_depth_task->add_dependency(fb_clearer_task);
-	prepopulate_depth_task->add_dependency(scene_geo_cull_task);
-	downsample_depth_task->add_dependency(prepopulate_depth_task);
-	scene_task->add_dependency(prepopulate_depth_task);
-	scene_task->add_dependency(scene_geo_cull_task);
-	scene_task->add_dependency(downsample_depth_task);
-	scene_geo_cull_task->add_dependency(light_preprocess.get_task());
-	lll_gen_task->add_dependency(light_preprocess.get_task());
-	lll_gen_task->add_dependency(prepopulate_depth_task);
-	lll_gen_task->add_dependency(downsample_depth_task);
-	shadow_projector_task->add_dependency(light_preprocess.get_task());
-	volumetric_scattering_scatter_task->add_dependency(light_preprocess.get_task());
-	volumetric_scattering_scatter_task->add_dependency(shadow_projector_task);
-	volumetric_scattering_scatter_task->add_dependency(downsample_depth_task);
-	volumetric_scattering_scatter_task->add_dependency(lll_gen_task);
-	volumetric_scattering_scatter_task->add_dependency(prepopulate_depth_task);
-	volumetric_scattering_gather_task->add_dependency(volumetric_scattering_scatter_task);
-	volumetric_scattering_gather_task->add_dependency(downsample_depth_task);
-	composer_task->add_dependency(fb_clearer_task);
-	composer_task->add_dependency(gbuffer_sort_task);
-	composer_task->add_dependency(lll_gen_task);
-	composer_task->add_dependency(light_preprocess.get_task());
-	composer_task->add_dependency(shadow_projector_task);
-	composer_task->add_dependency(volumetric_scattering_gather_task);
+	setup_tasks();
 
 	add_task(fb_clearer_task);
 	rebuild_task_queue();
@@ -169,8 +183,9 @@ void GIRenderer::set_deferred_rendering_enabled(bool enabled) {
 }
 
 void GIRenderer::render_queue() {
-	view_matrix_buffer.update_with_camera(*this->camera, ctx.projection_matrix());
-	view_matrix_buffer.bind_buffer(view_matrix_buffer_bind_location);
+	transform_buffers.update_view_data(*this->camera);
+	transform_buffers.bind_view_buffer(view_transform_buffer_bind_location);
+	transform_buffers.bind_proj_buffer(proj_transform_buffer_bind_location);
 
 	if (q.get_profiler() != nullptr) {
 		auto ft = ctx.time_per_frame().count();
@@ -222,14 +237,4 @@ void GIRenderer::remove_gui_task(const gpu_task::TaskPtr &t) {
 
 int GIRenderer::gbuffer_depth_target_levels() {
 	return glm::ceil(glm::log(linked_light_lists::lll_image_res_multiplier)) + 1;
-}
-
-void GIRenderer::update_shader_proj_uniforms(const glm::mat4 &projection) {
-	float proj00 = projection[0][0];
-	float proj11 = projection[1][1];
-	float proj23 = projection[3][2];
-
-	composer.program->set_uniform("proj00", proj00);
-	composer.program->set_uniform("proj11", proj11);
-	composer.program->set_uniform("proj23", proj23);
 }

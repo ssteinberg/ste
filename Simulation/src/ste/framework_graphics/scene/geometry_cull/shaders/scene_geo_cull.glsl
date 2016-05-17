@@ -5,7 +5,7 @@
 
 layout(local_size_x = 128) in;
 
-#include "girenderer_matrix_buffer.glsl"
+#include "girenderer_transform_buffer.glsl"
 #include "indirect.glsl"
 #include "light.glsl"
 #include "mesh_descriptor.glsl"
@@ -48,7 +48,7 @@ void main() {
 
 	mesh_descriptor md = mesh_descriptor_buffer[draw_id];
 
-	vec3 center = (view_matrix_buffer.view_matrix * (md.model * vec4(md.bounding_sphere.xyz, 1))).xyz;
+	vec3 center = dquat_mul_vec(view_transform_buffer.view_transform, (md.model * vec4(md.bounding_sphere.xyz, 1)).xyz);
 	float radius = md.bounding_sphere.w;
 
 	uint shadow_instance_count = 0;

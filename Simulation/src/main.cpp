@@ -24,6 +24,8 @@
 #include "gpu_task.hpp"
 #include "profiler.hpp"
 #include "debug_gui.hpp"
+#include <glm/gtx/matrix_interpolation.hpp>
+#include <glm/gtx/dual_quaternion.hpp>
 
 using namespace StE::Core;
 using namespace StE::Text;
@@ -97,7 +99,55 @@ auto create_light_object(StE::Graphics::Scene *scene, const glm::vec3 &light_pos
 	return light_obj;
 }
 
+using namespace glm;
+vec3 dquat_mul_vec(glm::dualquat q, vec3 v) {
+	glm::vec3 rxyz = {q.real.x,q.real.y,q.real.z};
+	glm::vec3 dxyz = {q.dual.x,q.dual.y,q.dual.z};
+	return v +
+			2.f * cross(rxyz, cross(rxyz, v) + q.real.w * v) +
+			2.f * (q.real.w * dxyz - q.dual.w * rxyz + cross(rxyz, dxyz));
+}
+
+vec4 project(float one_over_tan_half_fovy, float one_over_aspect, float near, vec4 v) {
+	vec4 p = vec4(v.xy * one_over_tan_half_fovy, near * v.w, -v.z);
+	p.x *= one_over_aspect;
+	return p;
+}
+
 int main() {
+	{
+		vec3 camera_position = { 25.8, 549.07, -249.2 };
+		vec3 camera_look_at = { -5.4, 532.5, -228.71 };
+		auto m = glm::lookAt(camera_position, camera_look_at - camera_position, glm::vec3{0,1,0});
+
+		glm::mat3 r = m;
+		glm::vec3 t = -camera_position;
+
+		auto dqt = glm::dualquat(glm::quat(), glm::quat(0.f, t.x * .5f, t.y * .5f, t.z * .5f));
+		auto dqr = glm::dualquat(r, glm::quat(0.f,0.f,0.f,0.f));
+		auto dq = dqr * dqt;
+
+		glm::vec3 v = {1,10,-10};
+		auto rtu = r * (v + t);
+		auto tru = r * v + t;
+		auto u1 = dq * v;
+		auto u2 = dquat_mul_vec(dq, v);
+		auto u3 = m * vec4(v, 1);
+
+		float tanHalfFovy = glm::tan(glm::pi<float>() * .225f * .5f);
+		float one_over_tan_half_fovy = 1.f / tanHalfFovy;
+		float one_over_aspect = 1.f / (16.f/9.f);
+		float near = 1.f;
+
+		auto pm = StE::reversed_infinite_perspective(glm::pi<float>() * .225f, 16.f/9.f, 1.f);
+
+		auto u = vec4(u1, 1);
+		auto p1 = project(one_over_tan_half_fovy, one_over_aspect, near, u);
+		auto p2 = pm * u;
+
+		std::cout << "A";
+	}
+
 	StE::Log logger("Global Illumination");
 //	logger.redirect_std_outputs();
 	ste_log_set_global_logger(&logger);
@@ -116,7 +166,6 @@ int main() {
 	ctx.set_fov(fovy);
 
 	auto font = StE::Text::Font("Data/ArchitectsDaughter.ttf");
-
 
 	StE::Text::TextManager text_manager(ctx, font);
 

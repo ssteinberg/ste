@@ -29,9 +29,9 @@ public:
 
 				glm::vec3 n = v.p;
 				glm::vec3 t;
-				v.t.y = glm::sin(theta + glm::half_pi<float>());
-				v.t.x = glm::cos(theta + glm::half_pi<float>()) * glm::sin(phi);
-				v.t.z = glm::cos(theta + glm::half_pi<float>()) * glm::cos(phi);
+				t.y = glm::sin(theta + glm::half_pi<float>());
+				t.x = glm::cos(theta + glm::half_pi<float>()) * glm::sin(phi);
+				t.z = glm::cos(theta + glm::half_pi<float>()) * glm::cos(phi);
 				glm::vec3 b = glm::cross(t,n);
 				v.tangent_frame_from_tbn(t,b,n);
 

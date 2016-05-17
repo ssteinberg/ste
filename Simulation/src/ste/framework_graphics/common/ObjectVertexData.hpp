@@ -4,7 +4,7 @@
 #pragma once
 
 #include "VertexBufferDescriptor.hpp"
-#include "qaternion_tangent_frame.hpp"
+#include "quaternion_tangent_frame.hpp"
 
 namespace StE {
 namespace Graphics {

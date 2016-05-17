@@ -11,7 +11,7 @@ layout(local_size_x = 32, local_size_y = 32, local_size_z = 1) in;
 #include "light.glsl"
 #include "linked_light_lists.glsl"
 
-#include "girenderer_matrix_buffer.glsl"
+#include "girenderer_transform_buffer.glsl"
 #include "project.glsl"
 
 layout(std430, binding = 2) restrict readonly buffer light_data {
@@ -34,7 +34,6 @@ layout(binding = 11) uniform sampler2D depth_map;
 #include "light_load.glsl"
 #include "linked_light_lists_load.glsl"
 
-uniform float proj00, proj11, proj23, shadow_proj23;
 uniform float phase1, phase2, phase3;
 uniform vec2 backbuffer_size;
 
@@ -64,7 +63,6 @@ void main() {
 
 	int depth_lod = 2;
 	vec2 fragcoords = (vec2(slice_coords) + vec2(.5f)) * 8.f / backbuffer_size;
-	mat4 inverse_view_matrix = transpose(view_matrix_buffer.transpose_inverse_view_matrix);
 
 	float depth_buffer_d = depth3x3((vec2(slice_coords) + vec2(.5f)) / vec2(volume_size.xy), depth_lod);
 
@@ -76,11 +74,11 @@ void main() {
 		ivec3 volume_coords = ivec3(slice_coords, tile);
 
 		float depth_next_tile = volumetric_scattering_depth_for_tile(tile + 1);
-		vec3 position = unproject_screen_position(depth, fragcoords, proj23, proj00, proj11);
-		float z_next_tile = unproject_depth(depth_next_tile, proj23);
+		vec3 position = unproject_screen_position(depth, fragcoords);
+		float z_next_tile = unproject_depth(depth_next_tile);
 
 		float thickness = position.z - z_next_tile;
-		vec3 w_pos = (inverse_view_matrix * vec4(position, 1)).xyz;
+		vec3 w_pos = dquat_mul_vec(view_transform_buffer.inverse_view_transform, position);
 		vec3 view_dir = normalize(position);
 
 		float particle_density = volumetric_scattering_particle_density(w_pos);
@@ -108,8 +106,7 @@ void main() {
 				vec3 shadow_v = w_pos - ld.position_direction.xyz;
 				float shadow = shadow_fast(shadow_depth_maps,
 										   uint(lll_parse_ll_idx(lll_p)),
-										   shadow_v,
-										   shadow_proj23);
+										   shadow_v);
 				if (shadow <= .0f)
 					continue;
 
