@@ -103,7 +103,7 @@ void main() {
 				vec3 v = light_incidant_ray(ld, light_idx, position);
 				float dist = length(v);
 
-				vec3 shadow_v = w_pos - ld.position_direction.xyz;
+				vec3 shadow_v = w_pos - ld.position_range.xyz;
 				float shadow = shadow_fast(shadow_depth_maps,
 										   uint(lll_parse_ll_idx(lll_p)),
 										   shadow_v);

@@ -12,7 +12,6 @@ void light_preprocess_cull_lights::set_context_state() const {
 	lp->ls->bind_lights_transform_buffer(3);
 	4_atomic_idx = lp->ls->get_active_ll_counter();
 	5_storage_idx = lp->ls->get_active_ll();
-	6_storage_idx = lp->hdr->get_exposure_params_buffer();
 
 	lp->light_preprocess_cull_lights_program->bind();
 }

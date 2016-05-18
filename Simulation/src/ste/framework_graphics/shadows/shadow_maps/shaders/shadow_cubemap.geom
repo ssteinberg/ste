@@ -89,8 +89,8 @@ void main() {
 	if (face_mask == 0)
 		return;
 
-	vec3 light_pos = ld.position_direction.xyz;
-	float light_range = ld.effective_range;
+	vec3 light_pos = ld.position_range.xyz;
+	float light_range = ld.position_range.w;
 	float light_range2 = light_range * light_range;
 
 	vec3 u = gl_in[2].gl_Position.xyz - gl_in[1].gl_Position.xyz;

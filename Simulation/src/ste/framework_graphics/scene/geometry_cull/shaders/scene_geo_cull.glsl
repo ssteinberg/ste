@@ -55,8 +55,10 @@ void main() {
 	for (int i = 0; i < ll_counter; ++i) {
 		uint16_t light_idx = ll[i];
 
-		vec3 lc = light_transform_buffer[light_idx].xyz;
-		float lr = light_buffer[light_idx].effective_range;
+		vec4 ldata = light_transform_buffer[light_idx];
+
+		vec3 lc = ldata.xyz;
+		float lr = ldata.w;
 
 		vec3 v = lc - center;
 		float d = lr + radius;
@@ -66,6 +68,7 @@ void main() {
 		}
 	}
 
+	// Write to scene and shadows indirect draw buffers
 	if (shadow_instance_count > 0) {
 		uint idx = atomicCounterIncrement(counter);
 

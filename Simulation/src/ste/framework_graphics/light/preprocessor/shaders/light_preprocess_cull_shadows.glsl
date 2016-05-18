@@ -47,14 +47,15 @@ void main() {
 
 	int face = int(gl_GlobalInvocationID.x) % 6;
 	uint16_t light_idx = ll[ll_id];
-	light_descriptor ld = light_buffer[light_idx];
+	vec4 ldata = light_transform_buffer[light_idx];
+	// light_descriptor ld = light_buffer[light_idx];
 
 	vec3 dir = quat_mul_vec(view_transform_buffer.view_transform.real, face_directions[face]);
-	vec3 origin = light_transform_buffer[light_idx].xyz;
+	vec3 origin = ldata.xyz;
 
 	// Compute minimal bounding sphere of the shadow projection frustum
 	float n = near;
-	float f = max(ld.effective_range, n);
+	float f = max(ldata.w, n);
 	float h = f - n;
 
 	float f2 = f*f;

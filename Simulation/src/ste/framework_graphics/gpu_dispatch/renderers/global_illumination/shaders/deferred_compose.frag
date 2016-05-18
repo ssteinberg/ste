@@ -89,11 +89,16 @@ vec4 shade(g_buffer_element frag) {
 
 			vec3 v = light_incidant_ray(ld, light_idx, position);
 			if (dot(n, v) > 0) {
-				float dist = length(v);
+				float light_effective_range = ld.position_range.w;
+				float dist2 = dot(v,v);
+				if (dist2 >= light_effective_range*light_effective_range)
+					continue;
+
+				float dist = sqrt(dist2);
 				float l_radius = ld.radius;
 				vec3 l = diffuse * ld.diffuse;
 
-				vec3 shadow_v = w_pos - ld.position_direction.xyz;
+				vec3 shadow_v = w_pos - ld.position_range.xyz;
 				float shadow = shadow(shadow_depth_maps,
 									  uint(lll_parse_ll_idx(lll_p)),
 									  shadow_v);

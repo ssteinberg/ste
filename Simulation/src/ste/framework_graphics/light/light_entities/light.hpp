@@ -20,13 +20,13 @@ public:
 	};
 
 	struct light_descriptor {
-		glm::vec3 position_direction;	LightType type;
-		glm::vec3 diffuse;				float luminance;
+		glm::vec4 position_range;
+		glm::vec3 diffuse;	float luminance;
 
 		float radius;
-		float effective_range;
+		LightType type;
 
-		std::int32_t reserved[2];
+		float _reserved[2];
 	};
 
 protected:
@@ -55,7 +55,6 @@ public:
 
 	float get_luminance() const { return descriptor.luminance; }
 	float get_radius() const { return descriptor.radius; }
-	float get_effective_range() const { return descriptor.effective_range; }
 	auto& get_diffuse() const { return descriptor.diffuse; }
 
 	auto& get_descriptor() const { return descriptor; }

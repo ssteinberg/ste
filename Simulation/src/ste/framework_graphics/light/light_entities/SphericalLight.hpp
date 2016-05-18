@@ -13,12 +13,12 @@ class SphericalLight : public light {
 public:
 	SphericalLight(float luminance, const RGB &diffuse, const glm::vec3 &position, float radius) : light(luminance, radius, diffuse) {
 		descriptor.type = LightType::Sphere;
-		descriptor.position_direction = decltype(descriptor.position_direction){ position.x, position.y, position.z };
+		descriptor.position_range = decltype(descriptor.position_range){ position.x, position.y, position.z, 0 };
 	}
 	virtual ~SphericalLight() noexcept {}
 
 	void set_position(const glm::vec3 &p) {
-		descriptor.position_direction = decltype(descriptor.position_direction){ p.x, p.y, p.z };
+		descriptor.position_range = decltype(descriptor.position_range){ p.x, p.y, p.z, 0 };
 		dirty = true;
 	}
 	void set_radius(float r) {
@@ -26,7 +26,7 @@ public:
 		dirty = true;
 	}
 
-	glm::vec3 get_position() const override { return { descriptor.position_direction.x, descriptor.position_direction.y, descriptor.position_direction.z }; }
+	glm::vec3 get_position() const override { return { descriptor.position_range.x, descriptor.position_range.y, descriptor.position_range.z }; }
 };
 
 }
