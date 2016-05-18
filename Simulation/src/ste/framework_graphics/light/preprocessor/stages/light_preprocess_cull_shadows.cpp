@@ -10,7 +10,6 @@ using namespace StE::Core;
 
 void light_preprocess_cull_shadows::set_context_state() const {
 	lp->ls->bind_lights_buffer(2);
-	lp->ls->bind_lights_transform_buffer(3);
 	4_storage_idx = Core::buffer_object_cast<Core::ShaderStorageBuffer<std::uint32_t>>(lp->ls->get_active_ll_counter());
 	5_storage_idx = lp->ls->get_active_ll();
 

@@ -12,9 +12,7 @@
 layout(std430, binding = 2) restrict readonly buffer light_data {
 	light_descriptor light_buffer[];
 };
-layout(shared, binding = 3) restrict readonly buffer light_transform_data {
-	vec4 light_transform_buffer[];
-};
+
 layout(shared, binding = 4) restrict readonly buffer ll_counter_data {
 	uint32_t ll_counter;
 };
@@ -56,11 +54,10 @@ void main() {
 	for (int j = 0; j < ll_counter && total_active_lights < max_active_lights_per_frame; ++j) {
 		uint16_t ll_i = uint16_t(j);
 		uint16_t light_idx = ll[ll_i];
-		// light_descriptor ld = light_buffer[light_idx];
+		light_descriptor ld = light_buffer[light_idx];
 
-		vec4 ldata = light_transform_buffer[light_idx];
-		vec3 c = ldata.xyz;
-		float r = ldata.w * 1.05f;
+		vec3 c = ld.transformed_position;
+		float r = ld.effective_range * 1.05f;
 
 		vec3 _c = -c;
 		float b = dot(l, _c);

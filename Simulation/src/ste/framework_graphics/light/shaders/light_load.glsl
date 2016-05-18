@@ -1,7 +1,7 @@
 
 #include "light.glsl"
 
-vec3 light_incidant_ray(light_descriptor ld, uint i, vec3 position) {
-	if (ld.type == LightTypeDirectional) return -light_transform_buffer[i].xyz;
-	else return light_transform_buffer[i].xyz - position;
+vec3 light_incidant_ray(light_descriptor ld, vec3 position) {
+	if (ld.type == LightTypeDirectional) return -ld.transformed_position;
+	else return ld.transformed_position - position;
 }

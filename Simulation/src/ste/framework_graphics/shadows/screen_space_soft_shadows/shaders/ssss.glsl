@@ -38,7 +38,7 @@ void main() {
 	float frag_depth = ;
 
 	for (int i = 0; i < light_buffer.length(); ++i) {
-		vec3 l_pos = light_buffer[i].position_range.xyz;
+		vec3 l_pos = light_buffer[i].position;
 		vec3 shadow_v = w_pos - l_pos;
 		float d = dot(n, -shadow_v);
 

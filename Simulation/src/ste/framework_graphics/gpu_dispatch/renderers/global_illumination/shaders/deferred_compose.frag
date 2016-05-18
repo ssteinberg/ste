@@ -24,9 +24,6 @@ layout(std430, binding = 0) restrict readonly buffer material_data {
 layout(std430, binding = 2) restrict readonly buffer light_data {
 	light_descriptor light_buffer[];
 };
-layout(shared, binding = 3) restrict readonly buffer light_transform_data {
-	vec4 light_transform_buffer[];
-};
 
 layout(r32ui, binding = 7) restrict readonly uniform uimage2D gbuffer_ll_heads;
 layout(shared, binding = 6) restrict readonly buffer gbuffer_data {
@@ -87,9 +84,9 @@ vec4 shade(g_buffer_element frag) {
 			uint light_idx = uint(lll_parse_light_idx(lll_p));
 			light_descriptor ld = light_buffer[light_idx];
 
-			vec3 v = light_incidant_ray(ld, light_idx, position);
+			vec3 v = light_incidant_ray(ld, position);
 			if (dot(n, v) > 0) {
-				float light_effective_range = ld.position_range.w;
+				float light_effective_range = ld.effective_range;
 				float dist2 = dot(v,v);
 				if (dist2 >= light_effective_range*light_effective_range)
 					continue;
@@ -98,7 +95,7 @@ vec4 shade(g_buffer_element frag) {
 				float l_radius = ld.radius;
 				vec3 l = diffuse * ld.diffuse;
 
-				vec3 shadow_v = w_pos - ld.position_range.xyz;
+				vec3 shadow_v = w_pos - ld.position;
 				float shadow = shadow(shadow_depth_maps,
 									  uint(lll_parse_ll_idx(lll_p)),
 									  shadow_v);

@@ -17,9 +17,6 @@ layout(local_size_x = 32, local_size_y = 32, local_size_z = 1) in;
 layout(std430, binding = 2) restrict readonly buffer light_data {
 	light_descriptor light_buffer[];
 };
-layout(shared, binding = 3) restrict readonly buffer light_transform_data {
-	vec4 light_transform_buffer[];
-};
 
 layout(r32ui, binding = 6) restrict readonly uniform uimage2D lll_heads;
 layout(shared, binding = 11) restrict readonly buffer lll_data {
@@ -100,10 +97,10 @@ void main() {
 				uint light_idx = uint(lll_parse_light_idx(lll_p));
 				light_descriptor ld = light_buffer[light_idx];
 
-				vec3 v = light_incidant_ray(ld, light_idx, position);
+				vec3 v = light_incidant_ray(ld, position);
 				float dist = length(v);
 
-				vec3 shadow_v = w_pos - ld.position_range.xyz;
+				vec3 shadow_v = w_pos - ld.position;
 				float shadow = shadow_fast(shadow_depth_maps,
 										   uint(lll_parse_ll_idx(lll_p)),
 										   shadow_v);
