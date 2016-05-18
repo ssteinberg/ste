@@ -9,7 +9,7 @@
 
 #include "texture_handle.hpp"
 #include "Sampler.hpp"
-#include "BRDF.hpp"
+#include "pBRDF.hpp"
 
 #include "gstack.hpp"
 
@@ -29,7 +29,7 @@ private:
 		material_texture_descriptor specular;
 		material_texture_descriptor normalmap;
 		material_texture_descriptor alphamap;
-		BRDF::brdf_descriptor brdf;
+		pBRDF::brdf_descriptor brdf;
 		glm::vec4 emission;
 	};
 
