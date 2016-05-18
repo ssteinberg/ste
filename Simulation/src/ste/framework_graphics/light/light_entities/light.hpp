@@ -20,13 +20,12 @@ public:
 	};
 
 	struct light_descriptor {
-		glm::vec4 position_range;
+		glm::vec3 position;	float radius;
 		glm::vec3 diffuse;	float luminance;
 
-		float radius;
 		LightType type;
 
-		float _reserved[2];
+		float _reserved[7];
 	};
 
 protected:

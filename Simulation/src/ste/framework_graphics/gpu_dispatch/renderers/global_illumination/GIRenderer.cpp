@@ -23,7 +23,6 @@ void GIRenderer::deferred_composition::set_context_state() const {
 	0_storage_idx = dr->scene->scene_properties().materials_storage().buffer();
 
 	ls.bind_lights_buffer(2);
-	ls.bind_lights_transform_buffer(3);
 
 	dr->lll_storage.bind_lll_buffer();
 

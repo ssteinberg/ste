@@ -9,7 +9,6 @@ using namespace StE::Core;
 
 void light_preprocess_cull_lights::set_context_state() const {
 	lp->ls->bind_lights_buffer(2);
-	lp->ls->bind_lights_transform_buffer(3);
 	4_atomic_idx = lp->ls->get_active_ll_counter();
 	5_storage_idx = lp->ls->get_active_ll();
 

@@ -12,9 +12,7 @@ layout(local_size_x = 128) in;
 layout(std430, binding = 2) restrict buffer light_data {
 	light_descriptor light_buffer[];
 };
-layout(shared, binding = 3) restrict readonly buffer light_transform_data {
-	vec4 light_transform_buffer[];
-};
+
 layout(shared, binding = 4) restrict readonly buffer ll_counter_data {
 	uint32_t ll_counter;
 };
@@ -47,15 +45,14 @@ void main() {
 
 	int face = int(gl_GlobalInvocationID.x) % 6;
 	uint16_t light_idx = ll[ll_id];
-	vec4 ldata = light_transform_buffer[light_idx];
-	// light_descriptor ld = light_buffer[light_idx];
+	light_descriptor ld = light_buffer[light_idx];
 
 	vec3 dir = quat_mul_vec(view_transform_buffer.view_transform.real, face_directions[face]);
-	vec3 origin = ldata.xyz;
+	vec3 origin = ld.transformed_position;
 
 	// Compute minimal bounding sphere of the shadow projection frustum
 	float n = near;
-	float f = max(ldata.w, n);
+	float f = max(ld.effective_range, n);
 	float h = f - n;
 
 	float f2 = f*f;

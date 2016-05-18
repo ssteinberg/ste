@@ -91,20 +91,6 @@ auto create_light_object(StE::Graphics::Scene *scene, const glm::vec3 &light_pos
 }
 
 int main() {
-	auto m0 = glm::lookAt(glm::vec3(0), glm::vec3( 1.f, 0.f, 0.f), glm::vec3(0.f,-1.f, 0.f));
-	auto m1 = glm::lookAt(glm::vec3(0), glm::vec3(-1.f, 0.f, 0.f), glm::vec3(0.f,-1.f, 0.f));
-	auto m2 = glm::lookAt(glm::vec3(0), glm::vec3( 0.f, 1.f, 0.f), glm::vec3(0.f, 0.f, 1.f));
-	auto m3 = glm::lookAt(glm::vec3(0), glm::vec3( 0.f,-1.f, 0.f), glm::vec3(0.f, 0.f,-1.f));
-	auto m4 = glm::lookAt(glm::vec3(0), glm::vec3( 0.f, 0.f, 1.f), glm::vec3(0.f,-1.f, 0.f));
-	auto m5 = glm::lookAt(glm::vec3(0), glm::vec3( 0.f, 0.f,-1.f), glm::vec3(0.f,-1.f, 0.f));
-	glm::vec3 v(-3,1,2);
-	auto u0 = m0 * glm::vec4(v, 1);
-	auto u1 = m1 * glm::vec4(v, 1);
-	auto u2 = m2 * glm::vec4(v, 1);
-	auto u3 = m3 * glm::vec4(v, 1);
-	auto u4 = m4 * glm::vec4(v, 1);
-	auto u5 = m5 * glm::vec4(v, 1);
-
 	StE::Log logger("Global Illumination");
 //	logger.redirect_std_outputs();
 	ste_log_set_global_logger(&logger);

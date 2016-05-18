@@ -17,12 +17,11 @@ layout(std430, binding = 14) restrict readonly buffer mesh_data {
 layout(std430, binding = 15) restrict readonly buffer mesh_draw_params_data {
 	mesh_draw_params mesh_draw_params_buffer[];
 };
+
 layout(std430, binding = 2) restrict readonly buffer light_data {
 	light_descriptor light_buffer[];
 };
-layout(shared, binding = 3) restrict readonly buffer light_transform_data {
-	vec4 light_transform_buffer[];
-};
+
 layout(shared, binding = 4) restrict readonly buffer ll_counter_data {
 	uint32_t ll_counter;
 };
@@ -55,10 +54,10 @@ void main() {
 	for (int i = 0; i < ll_counter; ++i) {
 		uint16_t light_idx = ll[i];
 
-		vec4 ldata = light_transform_buffer[light_idx];
+		light_descriptor ld = light_buffer[light_idx];
 
-		vec3 lc = ldata.xyz;
-		float lr = ldata.w;
+		vec3 lc = ld.transformed_position;
+		float lr = ld.effective_range;
 
 		vec3 v = lc - center;
 		float d = lr + radius;

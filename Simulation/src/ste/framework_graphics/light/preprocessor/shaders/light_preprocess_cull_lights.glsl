@@ -14,10 +14,6 @@ layout(std430, binding = 2) restrict buffer light_data {
 	light_descriptor light_buffer[];
 };
 
-layout(shared, binding = 3) restrict writeonly buffer light_transform_data {
-	vec4 light_transform_buffer[];
-};
-
 layout(binding = 4) uniform atomic_uint ll_counter;
 layout(shared, binding = 5) restrict writeonly buffer ll_data {
 	uint16_t ll[];
@@ -47,7 +43,6 @@ void main() {
 
 	// Transform light position/direction
 	vec3 transformed_light_pos = light_transform(view_transform_buffer.view_transform, ld);
-	light_transform_buffer[light_idx] = vec4(transformed_light_pos, range);
 
 	// Frustum cull based on light effective range
 	float r = range;
@@ -60,7 +55,8 @@ void main() {
 		// Zero out shadow face mask. It shall be computed later.
 		light_buffer[light_idx].shadow_face_mask = 0;
 
-		light_buffer[light_idx].position_range.w = range;
+		light_buffer[light_idx].effective_range = range;
+		light_buffer[light_idx].transformed_position = transformed_light_pos;
 		light_buffer[light_idx].minimal_luminance = minimal_light_luminance;
 	}
 }
