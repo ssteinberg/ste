@@ -85,30 +85,31 @@ vec4 shade(g_buffer_element frag) {
 			light_descriptor ld = light_buffer[light_idx];
 
 			vec3 v = light_incidant_ray(ld, position);
-			if (dot(n, v) > 0) {
-				float light_effective_range = ld.effective_range;
-				float dist2 = dot(v,v);
-				if (dist2 >= light_effective_range*light_effective_range)
-					continue;
+			if (dot(n, v) <= 0)
+				continue;
 
-				float dist = sqrt(dist2);
-				float l_radius = ld.radius;
-				vec3 l = diffuse * ld.diffuse;
+			float light_effective_range = ld.effective_range;
+			float dist2 = dot(v,v);
+			if (dist2 >= light_effective_range*light_effective_range)
+				continue;
 
-				vec3 shadow_v = w_pos - ld.position;
-				float shadow = shadow(shadow_depth_maps,
-									  uint(lll_parse_ll_idx(lll_p)),
-									  shadow_v);
-				if (shadow <= .0f)
-					continue;
+			float dist = sqrt(dist2);
+			float l_radius = ld.radius;
+			vec3 l = diffuse * ld.diffuse;
 
-				float brdf = calc_brdf(md, position, n, t, b, v / dist);
-				float attenuation_factor = light_attenuation_factor(ld, dist);
-				float incident_radiance = max(ld.luminance * attenuation_factor - ld.minimal_luminance, .0f);
+			vec3 shadow_v = w_pos - ld.position;
+			float shadow = shadow(shadow_depth_maps,
+									uint(lll_parse_ll_idx(lll_p)),
+									shadow_v);
+			if (shadow <= .0f)
+				continue;
 
-				float irradiance = specular * brdf * incident_radiance * shadow;
-				rgb += l * max(0.f, irradiance);
-			}
+			float brdf = calc_brdf(md, position, n, t, b, v / dist);
+			float attenuation_factor = light_attenuation_factor(ld, dist);
+			float incident_radiance = max(ld.luminance * attenuation_factor - ld.minimal_luminance, .0f);
+
+			float irradiance = specular * brdf * incident_radiance * shadow;
+			rgb += l * max(0.f, irradiance);
 		}
 	}
 
