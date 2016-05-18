@@ -52,7 +52,7 @@ public:
 			std::getline(istream, l);
 			entry.brdf = std::stof(l, nullptr);
 
-			entry.v = BxDF::omega(glm::radians(entry.theta), glm::radians(entry.phi));
+			entry.v = BxDF<float>::omega(glm::radians(entry.theta), glm::radians(entry.phi));
 
 			return istream;
 		}
@@ -155,7 +155,7 @@ protected:
 			for (int k = 0; k < dims.x; ++k) {
 				float phi = glm::mix<float>(pBRDF::phi_min, pBRDF::phi_max, static_cast<float>(k) / static_cast<float>(dims.x - 1));
 
-				glm::vec3 w = BxDF::omega(glm::radians(theta), glm::radians(phi));
+				glm::vec3 w = BxDF<float>::omega(glm::radians(theta), glm::radians(phi));
 
 				std::vector<bme_brdf_descriptor_entry*> entries;
 				int theta_bucket = static_cast<int>(theta / bucket_size);

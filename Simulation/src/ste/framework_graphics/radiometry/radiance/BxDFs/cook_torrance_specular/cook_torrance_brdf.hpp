@@ -11,20 +11,20 @@ namespace Graphics {
 
 template <typename T,
 		  template <typename> class NDF,
-		  template <typename> class F,
-		  template <typename> class G>
+		  template <typename> class Fresnel,
+		  template <typename> class GAF>
 class cook_torrance_brdf : public BxDF<T> {
 public:
-	T operator()(const glm::tvec3<T> &l,
+	glm::tvec3<T> operator()(const glm::tvec3<T> &l,
 				 const glm::tvec3<T> &v,
 				 const glm::tvec3<T> &n,
 				 const T &roughness,
-				 const T &cspec) {
+				 const glm::tvec3<T> &cspec) {
 		auto h = glm::normalize(v + l);
 
 		auto d = NDF<T>()(h, n, roughness);
-		auto g = G<T>()(l, v, n, roughness);
-		auto f = F<T>()(l, h, cspec);
+		auto g = GAF<T>()(l, v, n, roughness);
+		auto f = Fresnel<T>()(l, h, cspec);
 
 		auto denom = static_cast<T>(4) * glm::dot(n,l) * glm::dot(n,v);
 
