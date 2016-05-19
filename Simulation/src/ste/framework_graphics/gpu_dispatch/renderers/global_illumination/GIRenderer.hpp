@@ -38,8 +38,6 @@
 #include "deferred_composer.hpp"
 
 #include "deferred_gbuffer.hpp"
-#include "gbuffer_clear_dispatch.hpp"
-#include "gbuffer_sort_dispatch.hpp"
 #include "gbuffer_downsample_depth_dispatch.hpp"
 
 #include "dense_voxel_space.hpp"
@@ -92,7 +90,6 @@ private:
 	volumetric_scattering_gather_dispatch volumetric_scattering_gather;
 
 	hdr_dof_postprocess hdr;
-	gbuffer_sort_dispatch gbuffer_sorter;
 	gbuffer_downsample_depth_dispatch downsample_depth;
 
 	scene_prepopulate_depth_dispatch prepopulate_depth_dispatch;
@@ -102,18 +99,15 @@ private:
 									scene_task,
 									composer_task,
 									fb_clearer_task,
-									gbuffer_clearer_task,
 									shadow_projector_task,
 									volumetric_scattering_scatter_task,
 									volumetric_scattering_gather_task,
-									gbuffer_sort_task,
 									downsample_depth_task,
 									prepopulate_depth_task,
 									scene_geo_cull_task,
 									lll_gen_task;
 
 	deferred_composer composer;
-	gbuffer_clear_dispatch gbuffer_clearer;
 	FbClearTask fb_clearer;
 
 	bool use_deferred_rendering{ true };

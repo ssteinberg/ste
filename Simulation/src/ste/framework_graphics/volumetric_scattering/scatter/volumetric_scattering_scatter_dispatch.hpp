@@ -7,8 +7,6 @@
 #include "StEngineControl.hpp"
 #include "gl_current_context.hpp"
 
-#include "signal.hpp"
-
 #include "GLSLProgram.hpp"
 #include "gpu_dispatchable.hpp"
 
@@ -25,8 +23,6 @@ namespace Graphics {
 class volumetric_scattering_scatter_dispatch : public gpu_dispatchable {
 	using Base = gpu_dispatchable;
 
-	using ResizeSignalConnectionType = StEngineControl::framebuffer_resize_signal_type::connection_type;
-
 private:
 	const volumetric_scattering_storage *vss;
 	const linked_light_lists *llls;
@@ -34,9 +30,6 @@ private:
 	const shadowmap_storage *shadows_storage;
 
 	std::shared_ptr<Core::GLSLProgram> program;
-
-private:
-	std::shared_ptr<ResizeSignalConnectionType> resize_connection;
 
 private:
 	void update_phase_uniforms(float g) {
@@ -57,14 +50,7 @@ public:
 										   const light_storage *ls,
 										   const shadowmap_storage *shadows_storage) : vss(vss), llls(llls), ls(ls), shadows_storage(shadows_storage),
 																					   program(ctx.glslprograms_pool().fetch_program_task({ "volumetric_scattering_scatter.glsl" })()) {
-
-		this->program->set_uniform("backbuffer_size", glm::vec2(ctx.get_backbuffer_size()));
-		resize_connection = std::make_shared<ResizeSignalConnectionType>([=](const glm::i32vec2 &size) {
-			this->program->set_uniform("backbuffer_size", glm::vec2(size));
-		});
-		ctx.signal_framebuffer_resize().connect(resize_connection);
-
-		update_phase_uniforms(vss->get_scattering_phase_anisotropy_coefficient());\
+		update_phase_uniforms(vss->get_scattering_phase_anisotropy_coefficient());
 	}
 
 	void set_context_state() const override final;
