@@ -108,7 +108,7 @@ std::future<void> ModelFactory::process_model_mesh(optional<task_scheduler*> sch
 	std::shared_ptr<Core::Texture2D> normalmap = materials[mat_idx].bump_texname.length() ? textures[materials[mat_idx].bump_texname + "nm"] : nullptr;
 
 	std::string brdf_name = materials[mat_idx].unknown_parameter["brdf"];
-	std::shared_ptr<BRDF> brdf = brdf_name.length() ? brdfs[brdf_name] : nullptr;
+	std::shared_ptr<pBRDF> brdf = brdf_name.length() ? brdfs[brdf_name] : nullptr;
 
 	return sched->schedule_now_on_main_thread([=, vbo_data = std::move(vbo_data), vbo_indices = std::move(vbo_indices)](optional<task_scheduler*> sched) {
 		auto mat = std::make_shared<Material>();
@@ -211,11 +211,11 @@ std::vector<std::future<void>> ModelFactory::load_brdfs(const StEngineControl *c
 			std::string normalized_name = brdf_name;
 			std::replace(normalized_name.begin(), normalized_name.end(), '\\', '/');
 
-			brdf_map.emplace(std::make_pair(brdf_name, std::shared_ptr<Graphics::BRDF>(nullptr)));
+			brdf_map.emplace(std::make_pair(brdf_name, std::shared_ptr<Graphics::pBRDF>(nullptr)));
 
 			futures.push_back(ctx->scheduler().schedule_now([brdfs = &brdf_map, normalized_name = normalized_name, brdf_name = brdf_name, ctx = ctx, dir = dir](optional<task_scheduler*> sched) {
-				std::unique_ptr<BRDF> ptr = Graphics::bme_brdf_representation::BRDF_from_bme_representation_task(*ctx, dir / boost::filesystem::path(normalized_name).make_preferred())(&*sched);
-				std::shared_ptr<Graphics::BRDF> brdf = std::make_shared<Graphics::BRDF>(std::move(*ptr));
+				std::unique_ptr<pBRDF> ptr = Graphics::bme_brdf_representation::BRDF_from_bme_representation_task(*ctx, dir / boost::filesystem::path(normalized_name).make_preferred())(&*sched);
+				std::shared_ptr<Graphics::pBRDF> brdf = std::make_shared<Graphics::pBRDF>(std::move(*ptr));
 				(*brdfs)[brdf_name] = brdf;
 			}));
 		}

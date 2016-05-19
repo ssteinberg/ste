@@ -11,38 +11,6 @@
 
 using namespace StE::Graphics;
 
-
-void GIRenderer::deferred_composition::set_context_state() const {
-	using namespace Core;
-
-	auto &ls = dr->scene->scene_properties().lights_storage();
-
-	GL::gl_current_context::get()->enable_state(StE::Core::GL::BasicStateName::TEXTURE_CUBE_MAP_SEAMLESS);
-
-	dr->gbuffer.bind_gbuffer();
-	0_storage_idx = dr->scene->scene_properties().materials_storage().buffer();
-
-	ls.bind_lights_buffer(2);
-
-	dr->lll_storage.bind_lll_buffer();
-
-	8_tex_unit = *dr->shadows_storage.get_cubemaps();
-	8_sampler_idx = dr->shadows_storage.get_shadow_sampler();
-
-	9_tex_unit = *dr->volumetric_scattering.get_volume_texture();
-	9_sampler_idx = dr->volumetric_scattering.get_volume_sampler();
-
-	ScreenFillingQuad.vao()->bind();
-
-	program->bind();
-}
-
-void GIRenderer::deferred_composition::dispatch() const {
-	Core::GL::gl_current_context::get()->memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
-	Core::GL::gl_current_context::get()->draw_arrays(GL_TRIANGLE_STRIP, 0, 4);
-}
-
-
 void GIRenderer::setup_tasks() {
 	composer_task = make_gpu_task("composition", &composer, hdr.get_input_fbo());
 	scene_task = make_gpu_task("scene", scene, nullptr);
@@ -123,6 +91,8 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 						 composer(ctx, this),
 						 gbuffer_clearer(&gbuffer) {
 	resize_connection = std::make_shared<ResizeSignalConnectionType>([=](const glm::i32vec2 &size) {
+		this->transform_buffers.update_proj_data(this->ctx.get_fov(), this->ctx.get_projection_aspect(), this->ctx.get_near_clip(), size);
+
 		this->gbuffer.resize(size);
 		this->lll_storage.resize(size);
 		this->volumetric_scattering.resize(size);
@@ -130,15 +100,15 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 		this->lll_gen_dispatch.set_depth_map(gbuffer.get_downsampled_depth_target());
 		this->volumetric_scattering.set_depth_map(gbuffer.get_downsampled_depth_target());
 
-		rebuild_task_queue();
+		this->rebuild_task_queue();
 	});
 	projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([this](float aspect, float fovy, float near) {
-		this->transform_buffers.update_proj_data(fovy, aspect, near);
+		this->transform_buffers.update_proj_data(fovy, aspect, near, this->ctx.get_backbuffer_size());
 	});
 	ctx.signal_framebuffer_resize().connect(resize_connection);
 	ctx.signal_projection_change().connect(projection_change_connection);
 
-	this->transform_buffers.update_proj_data(ctx.get_fov(), ctx.get_projection_aspect(), ctx.get_near_clip());
+	this->transform_buffers.update_proj_data(ctx.get_fov(), ctx.get_projection_aspect(), ctx.get_near_clip(), this->ctx.get_backbuffer_size());
 
 	lll_gen_dispatch.set_depth_map(gbuffer.get_downsampled_depth_target());
 	volumetric_scattering.set_depth_map(gbuffer.get_downsampled_depth_target());

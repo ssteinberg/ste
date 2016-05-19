@@ -6,7 +6,7 @@
 #include "stdafx.hpp"
 
 #include "common_brdf_representation.hpp"
-#include "BRDF.hpp"
+#include "pBRDF.hpp"
 
 #include "StEngineControl.hpp"
 #include "lru_cache.hpp"
@@ -52,7 +52,7 @@ public:
 			std::getline(istream, l);
 			entry.brdf = std::stof(l, nullptr);
 
-			entry.v = BxDF::omega(entry.theta, entry.phi);
+			entry.v = BxDF<float>::omega(glm::radians(entry.theta), glm::radians(entry.phi));
 
 			return istream;
 		}
@@ -109,8 +109,8 @@ private:
 
 				if (entry.brdf > .0f) {
 					entry.phi -= in_phi;
-					while (entry.phi > BRDF::phi_max) entry.phi -= 360.f;
-					while (entry.phi < BRDF::phi_min) entry.phi += 360.f;
+					while (entry.phi > pBRDF::phi_max) entry.phi -= 360.f;
+					while (entry.phi < pBRDF::phi_min) entry.phi += 360.f;
 					append_entry(std::move(entry), db);
 				}
 			}
@@ -150,25 +150,25 @@ protected:
 		exitant_db &db = it->second;
 
 		for (int j = 0; j < dims.y; ++j) {
-			float theta = glm::mix<float>(BRDF::theta_min, BRDF::theta_max, static_cast<float>(j) / static_cast<float>(dims.y - 1));
+			float theta = glm::mix<float>(pBRDF::theta_min, pBRDF::theta_max, static_cast<float>(j) / static_cast<float>(dims.y - 1));
 
 			for (int k = 0; k < dims.x; ++k) {
-				float phi = glm::mix<float>(BRDF::phi_min, BRDF::phi_max, static_cast<float>(k) / static_cast<float>(dims.x - 1));
+				float phi = glm::mix<float>(pBRDF::phi_min, pBRDF::phi_max, static_cast<float>(k) / static_cast<float>(dims.x - 1));
 
-				glm::vec3 w = BxDF::omega(theta, phi);
+				glm::vec3 w = BxDF<float>::omega(glm::radians(theta), glm::radians(phi));
 
 				std::vector<bme_brdf_descriptor_entry*> entries;
 				int theta_bucket = static_cast<int>(theta / bucket_size);
 				int phi_bucket = static_cast<int>(phi / bucket_size);
 
 				constexpr int samples = 15;
-				constexpr auto p_range = BRDF::phi_max - BRDF::phi_min + 1;
+				constexpr auto p_range = pBRDF::phi_max - pBRDF::phi_min + 1;
 				int bias = 1;
 				while (entries.size() < samples) {
 					for (int x = -bias; x <= bias; ++x) {
-						int tm = glm::clamp(theta_bucket + x, BRDF::theta_min, BRDF::theta_max);
-						int pm = phi_bucket + bias <= BRDF::phi_max ? phi_bucket + bias : phi_bucket + bias - p_range;
-						int pn = phi_bucket - bias >= BRDF::phi_min ? phi_bucket - bias : phi_bucket - bias + p_range;
+						int tm = glm::clamp(theta_bucket + x, pBRDF::theta_min, pBRDF::theta_max);
+						int pm = phi_bucket + bias <= pBRDF::phi_max ? phi_bucket + bias : phi_bucket + bias - p_range;
+						int pn = phi_bucket - bias >= pBRDF::phi_min ? phi_bucket - bias : phi_bucket - bias + p_range;
 						for (auto &e : db[tm][pm])
 							entries.push_back(&e);
 						if (bias)
@@ -176,11 +176,11 @@ protected:
 								entries.push_back(&e);
 					}
 					for (int x = -bias + 1; x < bias; ++x) {
-						int tm = glm::clamp(theta_bucket + bias, BRDF::theta_min, BRDF::theta_max);
-						int tn = glm::clamp(theta_bucket - bias, BRDF::theta_min, BRDF::theta_max);
+						int tm = glm::clamp(theta_bucket + bias, pBRDF::theta_min, pBRDF::theta_max);
+						int tn = glm::clamp(theta_bucket - bias, pBRDF::theta_min, pBRDF::theta_max);
 						int pm = phi_bucket + x;
-						if (pm > BRDF::phi_max) pm -= p_range;
-						if (pm < BRDF::phi_min) pm += p_range;
+						if (pm > pBRDF::phi_max) pm -= p_range;
+						if (pm < pBRDF::phi_min) pm += p_range;
 						for (auto &e : db[tm][pm])
 							entries.push_back(&e);
 						if (bias)
@@ -227,7 +227,7 @@ protected:
 	}
 
 public:
-	static task<std::unique_ptr<BRDF>> BRDF_from_bme_representation_task(const StEngineControl &context, const boost::filesystem::path &bme_data_dir) {
+	static task<std::unique_ptr<pBRDF>> BRDF_from_bme_representation_task(const StEngineControl &context, const boost::filesystem::path &bme_data_dir) {
 		const StEngineControl *ctx = &context;
 		std::string cache_key = std::string("bme_brdf_representation_") + bme_data_dir.string();
 		return task<common_brdf_representation> ([=](optional<task_scheduler*> sched) {
@@ -237,7 +237,7 @@ public:
 				optional<common_brdf_representation> opt = cache_get_task();
 				if (opt) {
 					using namespace Text::Attributes;
-					ste_log() << b("bme_brdf_representation") + " - BRDF loaded from cache: " + i(bme_data_dir.string()) << std::endl;
+					ste_log() << b("bme_brdf_representation") + " - pBRDF loaded from cache: " + i(bme_data_dir.string()) << std::endl;
 					return std::move(opt.get());
 				}
 			}
@@ -245,15 +245,15 @@ public:
 
 			{
 				using namespace Text::Attributes;
-				ste_log() << b("bme_brdf_representation") + " - Loading BRDF: " + i(bme_data_dir.string()) << std::endl;
+				ste_log() << b("bme_brdf_representation") + " - Loading pBRDF: " + i(bme_data_dir.string()) << std::endl;
 			}
 
 			bme_brdf_representation bme;
 			bme.load(*ctx, bme_data_dir);
 
 			glm::ivec3 dims;
-			dims.x = glm::ceil((BRDF::phi_max - BRDF::phi_min) / resolution + 1);
-			dims.y = glm::ceil((BRDF::theta_max - BRDF::theta_min) / resolution + 1);
+			dims.x = glm::ceil((pBRDF::phi_max - pBRDF::phi_min) / resolution + 1);
+			dims.y = glm::ceil((pBRDF::theta_max - pBRDF::theta_min) / resolution + 1);
 			dims.z = bme.database.size();
 
 			brdfdata.get_data() = std::make_unique<gli::texture3d>(gli::format::FORMAT_R32_SFLOAT_PACK32, dims, 1);
@@ -275,7 +275,7 @@ public:
 			ctx->cache().insert(cache_key, brdfdata);
 			return std::move(brdfdata);
 		}).then_on_main_thread([=](optional<task_scheduler*> sched, common_brdf_representation &&brdfdata) {
-			auto ptr = std::make_unique<BRDF>(std::move(brdfdata));
+			auto ptr = std::make_unique<pBRDF>(std::move(brdfdata));
 			return ptr;
 		});
 	}

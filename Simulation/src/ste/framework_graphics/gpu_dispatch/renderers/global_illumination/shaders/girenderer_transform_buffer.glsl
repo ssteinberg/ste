@@ -9,6 +9,7 @@ struct view_transform_buffer_struct {
 
 struct proj_transform_buffer_struct {
 	vec4 proj_xywz;
+	uvec2 backbuffer_size;
 };
 
 layout(std430, binding = 20) restrict readonly buffer view_transform_buffer_data {
@@ -33,6 +34,10 @@ vec3 unproject_screen_position(float depth, vec2 norm_frag_coords) {
 
 float projection_near_clip() {
 	return proj_transform_buffer.proj_xywz.z;
+}
+
+uvec2 backbuffer_size() {
+	return proj_transform_buffer.backbuffer_size;
 }
 
 float project_depth(float z) {

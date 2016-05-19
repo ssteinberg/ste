@@ -17,7 +17,7 @@
 namespace StE {
 namespace Graphics {
 
-class BRDF : public BxDF {
+class pBRDF : public BxDF<float> {
 public:
 	struct brdf_descriptor {
 		Core::texture_handle tex_handler;
@@ -35,8 +35,8 @@ private:
 	Core::SamplerMipmapped sampler;
 
 public:
-	BRDF(const common_brdf_representation &brdf) : 	min_theta(glm::radians(static_cast<float>(brdf.get_min_incident()))), 
-													max_theta(glm::radians(static_cast<float>(brdf.get_max_incident()))), 
+	pBRDF(const common_brdf_representation &brdf) : min_theta(glm::radians(static_cast<float>(brdf.get_min_incident()))),
+													max_theta(glm::radians(static_cast<float>(brdf.get_max_incident()))),
 													sampler(Core::TextureFiltering::Linear, Core::TextureFiltering::Linear, Core::TextureFiltering::Linear) {
 		texture = std::make_unique<Core::Texture3D>(*brdf.get_data(), true);
 		sampler.set_wrap_r(Core::TextureWrapMode::Wrap);

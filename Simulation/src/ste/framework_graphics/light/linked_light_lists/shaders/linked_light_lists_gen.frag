@@ -32,11 +32,10 @@ layout(binding = 11) uniform sampler2D depth_map;
 
 uniform float near, aspect;
 uniform float two_near_tan_fovy_over_two;	// 2 * near * tan(fovy * .5)
-uniform vec2 backbuffer_size;
 
 void main() {
 	ivec2 image_coord = ivec2(gl_FragCoord.xy);
-	vec2 frag_coords = (vec2(gl_FragCoord.xy) + vec2(.5f)) / backbuffer_size * float(lll_image_res_multiplier);
+	vec2 frag_coords = (vec2(gl_FragCoord.xy) + vec2(.5f)) / vec2(backbuffer_size()) * float(lll_image_res_multiplier);
 
 	int depth_lod = 2;
 

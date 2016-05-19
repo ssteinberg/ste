@@ -1,11 +1,11 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
 #include "Texture2D.hpp"
 
-#include "BRDF.hpp"
+#include "pBRDF.hpp"
 #include "RGB.hpp"
 
 #include <memory>
@@ -20,7 +20,7 @@ protected:
 	std::shared_ptr<Core::Texture2D> normalmap;
 	std::shared_ptr<Core::Texture2D> alphamap;
 
-	std::shared_ptr<BRDF> brdf;
+	std::shared_ptr<pBRDF> brdf;
 
 	RGB emission{ glm::vec3(.0f, .0f, .0f) };
 
@@ -32,7 +32,7 @@ public:
 
 	void set_emission(const RGB &t) { emission = t; }
 
-	void set_brdf(const std::shared_ptr<BRDF> &b) { brdf = b; }
+	void set_brdf(const std::shared_ptr<pBRDF> &b) { brdf = b; }
 
 	const Core::Texture2D *get_diffuse() const { return diffuse.get(); }
 	const Core::Texture2D *get_specular() const { return specular.get(); }
@@ -41,7 +41,7 @@ public:
 
 	RGB get_emission() const { return emission; }
 
-	const BRDF *get_brdf() const { return brdf.get(); }
+	const pBRDF *get_brdf() const { return brdf.get(); }
 };
 
 }

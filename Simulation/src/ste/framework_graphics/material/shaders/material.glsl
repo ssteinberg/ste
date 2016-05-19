@@ -35,20 +35,74 @@ void normal_map(material_descriptor md, float height_map_scale, vec2 uv, vec2 du
 	}
 }
 
-float calc_brdf(material_descriptor md, vec3 position, vec3 normal, vec3 tangent, vec3 bitangent, vec3 incident) {
-	if (md.brdf.tex_handler == 0)
-		return .0f;
+vec3 oren_nayar_brdf(vec3 n,
+				 	 vec3 v,
+				 	 vec3 l,
+				 	 float roughness,
+				 	 vec3 albedo) {
+	float roughness2 = roughness * roughness;
+	float dotNL = dot(n,l);
+	float dotVL = dot(v,l);
+	float dotNV = dot(n,v);
 
-	float theta_min = md.brdf.min_theta_in;
-	float theta_max = md.brdf.max_theta_in;
+	float s = max(0.f, dotVL - dotNV * dotNL);
+	float t = min(1.f, dotNL / dotNV);
 
+	float r1 = roughness2 / (roughness2 + 0.33f);
+	float a = dotNL * (1.f - r1 * .5f);
+
+	float b = (0.45f * roughness2 / (roughness2 + 0.09f)) * s * t;
+
+	float d = a + b;
+
+	return albedo * d / pi;
+}
+
+vec3 cook_torrance_brdf(vec3 n,
+						vec3 v,
+						vec3 l,
+						float roughness,
+						vec3 c_spec) {
+	vec3 h = normalize(v + l);
+
+	float dotNH = dot(n,h);
+	float dotNV = dot(n,v);
+	float dotNL = dot(n,l);
+	float dotLH = dot(l,h);
+
+	float alpha = roughness * roughness;
+	float alpha2 = alpha * alpha;
+	float dotNH2 = dotNH * dotNH;
+	float denom_ndf = dotNH2 * (alpha2 - 1.f) + 1.f;
+	float d = alpha2 / (pi * denom_ndf * denom_ndf);
+
+	float k = roughness * roughness / 2.f;
+	float invk = 1.f - k;
+	float g1 = 1.f / (dotNL * invk + k);
+	float g2 = 1.f / (dotNV * invk + k);
+	float g = g1 * g2;
+
+	float p = 1.f - dotLH;
+	float p2 = p*p;
+	float p4 = p2*p2;
+	float p5 = p4*p;
+	vec3 f = c_spec + (vec3(1) - c_spec) * p5;
+
+	return d * g * f / 4.f;
+}
+
+float pbrdf(sampler3D brdf,
+			float theta_min,
+			float theta_max,
+			vec3 v,
+			vec3 l,
+			vec3 normal,
+			vec3 tangent,
+			vec3 bitangent) {
 	mat3 TBN = transpose(mat3(tangent, bitangent, normal));
 
-	vec3 v = incident;
-	vec3 e = -position;
-
-	vec3 win = v;
-	vec3 wout = normalize(e);
+	vec3 win = l;
+	vec3 wout = v;
 	vec3 lwin = TBN * win;
 	vec3 lwout = TBN * wout;
 
@@ -69,7 +123,7 @@ float calc_brdf(material_descriptor md, vec3 position, vec3 normal, vec3 tangent
 	float out_theta = acos(cos_out_theta) / pi_2;
 
 	vec3 tp = vec3(out_phi, out_theta, in_theta);
-	float l = texture(sampler3D(md.brdf.tex_handler), tp).x;
+	float radiance = texture(brdf, tp).x;
 
-	return l * max(0, cos_in_theta);
+	return radiance * max(0, cos_in_theta);
 }
