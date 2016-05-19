@@ -2,32 +2,32 @@
 const float pi = 3.1415926535897932384626433832795;
 const float pi_2 = pi * .5f;
 
+mat3 conversion_matrix_rgb_ro_xyz = mat3(
+	0.412453, 0.212671, 0.019334,
+	0.357580, 0.715160, 0.119193,
+	0.180423, 0.072169, 0.950227
+);
+
+mat3 conversion_matrix_xyz_ro_rgb = mat3(
+	+3.240479, -0.969256, +0.055648,
+	-1.537150, +1.875991, -0.204043,
+	-0.498535, +0.041556, +1.057311
+);
+
 vec3 RGBtoXYZ(vec3 rgb) {
-	vec3 xyz;
-	xyz.x = 0.412453*rgb.r + 0.357580*rgb.g + 0.180423*rgb.b;
-	xyz.y = 0.212671*rgb.r + 0.715160*rgb.g + 0.072169*rgb.b;
-	xyz.z = 0.019334*rgb.r + 0.119193*rgb.g + 0.950227*rgb.b;
-	return xyz;
+	return conversion_matrix_rgb_ro_xyz * rgb;
 }
 
 vec3 XYZtoxyY(vec3 XYZ) {
 	float XYZtotal = XYZ.x + XYZ.y + XYZ.z;
-	if (XYZtotal <= 0)
-		return vec3(0);
 	return vec3(XYZ.xy / XYZtotal, XYZ.y);
 }
 
 vec3 XYZtoRGB(vec3 xyz) {
-	vec3 rgb;
-	rgb.r = 3.240479*xyz.x - 1.537150*xyz.y - 0.498535*xyz.z;
-	rgb.g =-0.969256*xyz.x + 1.875991*xyz.y + 0.041556*xyz.z;
-	rgb.b = 0.055648*xyz.x - 0.204043*xyz.y + 1.057311*xyz.z;
-	return rgb;
+	return conversion_matrix_xyz_ro_rgb * rgb;
 }
 
 vec3 xyYtoXYZ(vec3 xyY) {
-	if (xyY.y <= 0)
-		return vec3(0);
 	vec3 XYZ;
 	float Y_y = xyY.z / xyY.y;
 	XYZ.x = Y_y * xyY.x;
