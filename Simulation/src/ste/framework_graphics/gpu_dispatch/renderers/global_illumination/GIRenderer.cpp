@@ -17,18 +17,11 @@ void GIRenderer::setup_tasks() {
 	fb_clearer_task = make_gpu_task("fb_clearer", &fb_clearer, get_fbo());
 	prepopulate_depth_task = make_gpu_task("prepopulate_depth", &prepopulate_depth_dispatch, get_fbo());
 	scene_geo_cull_task = make_gpu_task("geo_cull", &scene_geo_cull, nullptr);
-	gbuffer_clearer_task = make_gpu_task("gbuf_clear", &gbuffer_clearer, nullptr);
-	gbuffer_sort_task = make_gpu_task("gbuf_sort", &gbuffer_sorter, nullptr);
 	downsample_depth_task = make_gpu_task("downsample_depth", &downsample_depth, nullptr);
 	shadow_projector_task = make_gpu_task("shdw_project", &shadows_projector, nullptr);
 	volumetric_scattering_scatter_task = make_gpu_task("scatter", &volumetric_scattering_scatter, nullptr);
 	volumetric_scattering_gather_task = make_gpu_task("gather", &volumetric_scattering_gather, nullptr);
 	lll_gen_task = make_gpu_task("pp_ll_gen", &lll_gen_dispatch, get_fbo());
-
-	fb_clearer_task->add_dependency(gbuffer_clearer_task);
-
-	gbuffer_sort_task->add_dependency(fb_clearer_task);
-	gbuffer_sort_task->add_dependency(scene_task);
 
 	hdr.get_task()->add_dependency(composer_task);
 
@@ -58,7 +51,6 @@ void GIRenderer::setup_tasks() {
 	volumetric_scattering_gather_task->add_dependency(downsample_depth_task);
 
 	composer_task->add_dependency(fb_clearer_task);
-	composer_task->add_dependency(gbuffer_sort_task);
 	composer_task->add_dependency(lll_gen_task);
 	composer_task->add_dependency(light_preprocess.get_task());
 	composer_task->add_dependency(shadow_projector_task);
@@ -67,14 +59,11 @@ void GIRenderer::setup_tasks() {
 
 GIRenderer::GIRenderer(const StEngineControl &ctx,
 					   const Camera *camera,
-					   Scene *scene/*,
-					   std::size_t voxel_grid_size,
-					   float voxel_grid_ratio*/)
+					   Scene *scene)
 					   : gbuffer(ctx.get_backbuffer_size(), gbuffer_depth_target_levels()),
 						 ctx(ctx),
 						 camera(camera),
 						 scene(scene),
-						 //voxel_space(ctx, voxel_grid_size, voxel_grid_ratio),
 						 lll_storage(ctx.get_backbuffer_size()),
 						 lll_gen_dispatch(ctx, &scene->scene_properties().lights_storage(), &lll_storage),
 						 light_preprocess(ctx, &scene->scene_properties().lights_storage(), &hdr),
@@ -84,12 +73,10 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 						 volumetric_scattering_scatter(ctx, &volumetric_scattering, &lll_storage, &scene->scene_properties().lights_storage(), &shadows_storage),
 						 volumetric_scattering_gather(ctx, &volumetric_scattering),
 						 hdr(ctx, &gbuffer),
-						 gbuffer_sorter(ctx, &gbuffer),
 						 downsample_depth(ctx, &gbuffer),
 						 prepopulate_depth_dispatch(ctx, scene),
 						 scene_geo_cull(ctx, scene, &scene->scene_properties().lights_storage()),
-						 composer(ctx, this),
-						 gbuffer_clearer(&gbuffer) {
+						 composer(ctx, this) {
 	resize_connection = std::make_shared<ResizeSignalConnectionType>([=](const glm::i32vec2 &size) {
 		this->transform_buffers.update_proj_data(this->ctx.get_fov(), this->ctx.get_projection_aspect(), this->ctx.get_near_clip(), size);
 
@@ -166,7 +153,6 @@ void GIRenderer::add_task(const gpu_task::TaskPtr &t) {
 	mutate_gpu_task(t, get_fbo());
 	q.add_task(t);
 
-	q.add_task_dependency(gbuffer_sort_task, t);
 	if (t != fb_clearer_task)
 		q.add_task_dependency(t, fb_clearer_task);
 
@@ -176,7 +162,6 @@ void GIRenderer::add_task(const gpu_task::TaskPtr &t) {
 void GIRenderer::remove_task(const gpu_task::TaskPtr &t) {
 	q.remove_task(t);
 
-	q.remove_task_dependency(gbuffer_sort_task, t);
 	q.remove_task_dependency(t, fb_clearer_task);
 
 	added_tasks.erase(t);

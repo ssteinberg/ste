@@ -29,7 +29,7 @@ void Scene::set_context_state() const {
 
 	Core::GL::gl_current_context::get()->enable_state(Core::GL::BasicStateName::CULL_FACE);
 
-	gbuffer->bind_gbuffer(false);
+	gbuffer->bind_gbuffer();
 	idb.buffer().bind();
 	bind_buffers();
 

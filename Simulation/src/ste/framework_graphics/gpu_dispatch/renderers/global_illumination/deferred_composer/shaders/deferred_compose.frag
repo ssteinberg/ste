@@ -25,7 +25,6 @@ layout(std430, binding = 2) restrict readonly buffer light_data {
 	light_descriptor light_buffer[];
 };
 
-layout(r32ui, binding = 7) restrict readonly uniform uimage2D gbuffer_ll_heads;
 layout(shared, binding = 6) restrict readonly buffer gbuffer_data {
 	g_buffer_element gbuffer[];
 };
@@ -46,7 +45,7 @@ out vec4 gl_FragColor;
 
 uniform float height_map_scale = .5f;
 
-vec4 shade(g_buffer_element frag) {
+vec3 shade(g_buffer_element frag) {
 	int draw_idx = gbuffer_parse_material(frag);
 	vec2 uv = gbuffer_parse_uv(frag);
 	vec2 duvdx = gbuffer_parse_duvdx(frag);
@@ -55,13 +54,12 @@ vec4 shade(g_buffer_element frag) {
 	material_descriptor md = mat_descriptor[draw_idx];
 
 	vec3 diffuse = md.diffuse.tex_handler>0 ? textureGrad(sampler2D(md.diffuse.tex_handler), uv, duvdx, duvdy).rgb : vec3(1.f);
-	float alpha = gbuffer_parse_alpha(frag);
 	float depth = gbuffer_parse_depth(frag);
 
 	float specular = md.specular.tex_handler>0 ? textureGrad(sampler2D(md.specular.tex_handler), uv, duvdx, duvdy).x : 1.f;
 	specular = mix(.2f, 1.f, specular);
 
-	vec3 position = unproject_screen_position(depth, gl_FragCoord.xy / vec2(gbuffer_size(gbuffer_ll_heads)));
+	vec3 position = unproject_screen_position(depth, gl_FragCoord.xy / vec2(backbuffer_size()));
 	vec3 w_pos = dquat_mul_vec(view_transform_buffer.inverse_view_transform, position);
 
 	vec3 n = gbuffer_parse_normal(frag);
@@ -129,22 +127,12 @@ vec4 shade(g_buffer_element frag) {
 																		 depth);
 	rgb = rgb * vol_sam.a + vol_sam.rgb;
 
-	return vec4(rgb, alpha);
+	return rgb;
 }
 
 void main() {
-	g_buffer_element frag = gbuffer_load(gbuffer_ll_heads, ivec2(gl_FragCoord.xy));
+	g_buffer_element frag = gbuffer_load(ivec2(gl_FragCoord.xy));
 	vec4 c = shade(frag);
-
-	uint32_t next_ptr = gbuffer_parse_nextptr(frag);
-	while (c.a < 1.f && !gbuffer_eof(next_ptr)) {
-		frag = gbuffer_load(next_ptr);
-		vec4 c2 = shade(frag);
-
-		c = mix(c2, c, c.a);
-
-		next_ptr = gbuffer_parse_nextptr(frag);
-	}
 
 	vec3 xyY = XYZtoxyY(RGBtoXYZ(c.rgb));
 	xyY.z = max(min_luminance, xyY.z);
