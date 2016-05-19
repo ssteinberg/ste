@@ -35,6 +35,8 @@
 #include "volumetric_scattering_scatter_dispatch.hpp"
 #include "volumetric_scattering_gather_dispatch.hpp"
 
+#include "deferred_composer.hpp"
+
 #include "deferred_gbuffer.hpp"
 #include "gbuffer_clear_dispatch.hpp"
 #include "gbuffer_sort_dispatch.hpp"
@@ -53,28 +55,7 @@ namespace Graphics {
 class GIRenderer : public rendering_system {
 	using Base = rendering_system;
 
-private:
-	class deferred_composition : public gpu_dispatchable {
-		using Base = gpu_dispatchable;
-
-		friend class GIRenderer;
-
-	private:
-		std::shared_ptr<Core::GLSLProgram> program;
-		GIRenderer *dr;
-
-	public:
-		deferred_composition(const StEngineControl &ctx, GIRenderer *dr) : program(ctx.glslprograms_pool().fetch_program_task({ "passthrough.vert", "deferred_compose.frag" })()), dr(dr) {
-			// dr->voxel_space.add_consumer_program(this->get_program());
-		}
-		~deferred_composition() {
-			// dr->voxel_space.remove_consumer_program(this->get_program());
-		}
-
-	protected:
-		void set_context_state() const override final;
-		void dispatch() const override final;
-	};
+	friend class deferred_composer;
 
 private:
 	using ResizeSignalConnectionType = StEngineControl::framebuffer_resize_signal_type::connection_type;
@@ -131,7 +112,7 @@ private:
 									scene_geo_cull_task,
 									lll_gen_task;
 
-	deferred_composition composer;
+	deferred_composer composer;
 	gbuffer_clear_dispatch gbuffer_clearer;
 	FbClearTask fb_clearer;
 

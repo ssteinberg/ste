@@ -69,7 +69,7 @@ vec4 shade(g_buffer_element frag) {
 	vec3 b = cross(t, n);
 	normal_map(md, height_map_scale, uv, duvdx, duvdy, n, t, b, position);
 
-	float roughness = .1f;
+	float roughness = .5f;
 
 	vec3 rgb = md.emission.rgb;
 
@@ -86,19 +86,19 @@ vec4 shade(g_buffer_element frag) {
 			uint light_idx = uint(lll_parse_light_idx(lll_p));
 			light_descriptor ld = light_buffer[light_idx];
 
-			vec3 l = light_incidant_ray(ld, position);
-			if (dot(n, l) <= 0)
+			vec3 incident = light_incidant_ray(ld, position);
+			if (dot(n, incident) <= 0)
 				continue;
 
 			float light_effective_range = ld.effective_range;
-			float dist2 = dot(l,l);
+			float dist2 = dot(incident,incident);
 			if (dist2 >= light_effective_range*light_effective_range)
 				continue;
 
 			vec3 shadow_v = w_pos - ld.position;
 			float shadow = shadow(shadow_depth_maps,
-									uint(lll_parse_ll_idx(lll_p)),
-									shadow_v);
+								  uint(lll_parse_ll_idx(lll_p)),
+								  shadow_v);
 			if (shadow <= .0f)
 				continue;
 
@@ -106,14 +106,18 @@ vec4 shade(g_buffer_element frag) {
 			float l_radius = ld.radius;
 
 			vec3 v = normalize(-position);
-			l /= dist;
+			vec3 l = incident / dist;
 
 			float attenuation_factor = light_attenuation_factor(ld, dist);
 			float incident_radiance = max(ld.luminance * attenuation_factor - ld.minimal_luminance, .0f);
 			vec3 irradiance = ld.diffuse * max(0.f, specular * incident_radiance * shadow);
 
-			vec3 spec_brdf = cook_torrance_brdf(n, v, l, roughness, diffuse);
-			vec3 diff_brdf = oren_nayar_brdf(n, v, l, roughness, diffuse);
+			vec3 spec_brdf = cook_torrance_brdf(n, v, l,
+												roughness,
+												diffuse);
+			vec3 diff_brdf = oren_nayar_brdf(n, v, l,
+											 roughness,
+											 diffuse);
 			vec3 brdf = spec_brdf + diff_brdf;
 
 			rgb += brdf * irradiance * max(0.f, dot(n, l));

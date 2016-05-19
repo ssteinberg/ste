@@ -23,7 +23,7 @@ public:
 		auto h = glm::normalize(v + l);
 
 		auto d = NDF<T>()(h, n, roughness);
-		auto g = GAF<T>()(l, v, n, roughness);
+		auto g = GAF<T>()(l, v, n, h, roughness);
 		auto f = Fresnel<T>()(l, h, cspec);
 
 		auto denom = static_cast<T>(4) * glm::dot(n,l) * glm::dot(n,v);
