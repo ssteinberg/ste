@@ -91,6 +91,8 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 						 composer(ctx, this),
 						 gbuffer_clearer(&gbuffer) {
 	resize_connection = std::make_shared<ResizeSignalConnectionType>([=](const glm::i32vec2 &size) {
+		this->transform_buffers.update_proj_data(this->ctx.get_fov(), this->ctx.get_projection_aspect(), this->ctx.get_near_clip(), size);
+
 		this->gbuffer.resize(size);
 		this->lll_storage.resize(size);
 		this->volumetric_scattering.resize(size);
@@ -98,15 +100,15 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 		this->lll_gen_dispatch.set_depth_map(gbuffer.get_downsampled_depth_target());
 		this->volumetric_scattering.set_depth_map(gbuffer.get_downsampled_depth_target());
 
-		rebuild_task_queue();
+		this->rebuild_task_queue();
 	});
 	projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([this](float aspect, float fovy, float near) {
-		this->transform_buffers.update_proj_data(fovy, aspect, near);
+		this->transform_buffers.update_proj_data(fovy, aspect, near, this->ctx.get_backbuffer_size());
 	});
 	ctx.signal_framebuffer_resize().connect(resize_connection);
 	ctx.signal_projection_change().connect(projection_change_connection);
 
-	this->transform_buffers.update_proj_data(ctx.get_fov(), ctx.get_projection_aspect(), ctx.get_near_clip());
+	this->transform_buffers.update_proj_data(ctx.get_fov(), ctx.get_projection_aspect(), ctx.get_near_clip(), this->ctx.get_backbuffer_size());
 
 	lll_gen_dispatch.set_depth_map(gbuffer.get_downsampled_depth_target());
 	volumetric_scattering.set_depth_map(gbuffer.get_downsampled_depth_target());

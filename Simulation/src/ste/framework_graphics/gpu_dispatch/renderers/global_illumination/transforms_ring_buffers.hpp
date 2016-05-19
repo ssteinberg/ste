@@ -22,6 +22,7 @@ private:
 	};
 	struct proj_data {
 		glm::vec4 proj_xywz;
+		glm::uvec2 backbuffer_size;
 	};
 
 	using view_ring_buffer_type = Core::ring_buffer<view_data, 3, false>;
@@ -45,7 +46,7 @@ public:
 		this->r = r;
 	}
 
-	void update_proj_data(float fovy, float aspect, float near) {
+	void update_proj_data(float fovy, float aspect, float near, const glm::uvec2 backbuffer_size) {
 		proj_data p;
 
 		float tanHalfFovy = glm::tan(fovy * .5f);
@@ -53,8 +54,9 @@ public:
 		float one_over_aspect_tan_half_fovy = 1.f / (aspect * tanHalfFovy);
 
 		p.proj_xywz = { one_over_aspect_tan_half_fovy, one_over_tan_half_fovy, near, -1.f };
+		p.backbuffer_size = backbuffer_size;
 
-		proj_buffer.commit(p);
+		proj_buffer.lock_range(proj_buffer.commit(p));
 	}
 
 	void bind_view_buffer(int idx) const {

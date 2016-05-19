@@ -102,7 +102,7 @@ public:
 	template <bool b = lockless>
 	range<> commit(const std::vector<T> &v, std::enable_if_t<b>* = nullptr) {
 		assert(v.size() < max_size);
-		
+
 		if (storage.size() + v.size() < max_size) {
 			storage.push_back(v);
 			return { (storage.size() - v.size()) * sizeof(T), v.size() * sizeof(T) };
@@ -110,7 +110,7 @@ public:
 
 		if (offset + v.size() > max_size)
 			offset = 0;
-			
+
 		range<> r{ offset * sizeof(T), v.size() * sizeof(T) };
 		storage.overwrite(offset, v);
 		offset += v.size();
@@ -119,7 +119,7 @@ public:
 	}
 
 	template <bool b = lockless>
-	void lock_range(const range<> &r, std::enable_if_t<!b>* = nullptr) const { storage.get_buffer().lock_range(r); }
+	void lock_range(const range<> &r, std::enable_if_t<b>* = nullptr) const { storage.get_buffer().lock_range(r); }
 
 	const auto &get_buffer() const { return storage.get_buffer(); }
 	const auto size() const { return storage.size(); }

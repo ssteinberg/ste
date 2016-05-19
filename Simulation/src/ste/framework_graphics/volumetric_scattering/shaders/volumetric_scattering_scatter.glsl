@@ -32,7 +32,6 @@ layout(binding = 11) uniform sampler2D depth_map;
 #include "linked_light_lists_load.glsl"
 
 uniform float phase1, phase2, phase3;
-uniform vec2 backbuffer_size;
 
 float depth3x3(vec2 uv, int lod) {
 	float d00 = textureLodOffset(depth_map, uv, lod, ivec2(-1,-1)).x;
@@ -59,7 +58,7 @@ void main() {
 		return;
 
 	int depth_lod = 2;
-	vec2 fragcoords = (vec2(slice_coords) + vec2(.5f)) * 8.f / backbuffer_size;
+	vec2 fragcoords = (vec2(slice_coords) + vec2(.5f)) * 8.f / vec2(backbuffer_size());
 
 	float depth_buffer_d = depth3x3((vec2(slice_coords) + vec2(.5f)) / vec2(volume_size.xy), depth_lod);
 
