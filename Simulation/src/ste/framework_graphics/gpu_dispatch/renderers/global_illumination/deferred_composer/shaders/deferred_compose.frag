@@ -122,19 +122,16 @@ vec3 shade(g_buffer_element frag) {
 		}
 	}
 
-	vec4 vol_sam = volumetric_scattering_load_inscattering_transmittance(scattering_volume,
-																		 vec2(gl_FragCoord.xy),
-																		 depth);
-	rgb = rgb * vol_sam.a + vol_sam.rgb;
+	rgb = volumetric_scattering(scattering_volume, rgb, vec2(gl_FragCoord.xy), depth);
 
 	return rgb;
 }
 
 void main() {
 	g_buffer_element frag = gbuffer_load(ivec2(gl_FragCoord.xy));
-	vec4 c = shade(frag);
+	vec3 c = shade(frag);
 
-	vec3 xyY = XYZtoxyY(RGBtoXYZ(c.rgb));
+	vec3 xyY = XYZtoxyY(RGBtoXYZ(c));
 	xyY.z = max(min_luminance, xyY.z);
 
 	gl_FragColor = vec4(xyY, 1);

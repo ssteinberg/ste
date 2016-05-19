@@ -45,3 +45,10 @@ vec4 volumetric_scattering_load_inscattering_transmittance(sampler3D volume, vec
 	vec3 p = vec3(xy, volumetric_scattering_zcoord_for_depth(depth));
 	return texture(volume, p);
 }
+
+vec3 volumetric_scattering(sampler3D volume, vec3 rgb, vec2 frag_coords, float depth) {
+	vec4 vol_sam = volumetric_scattering_load_inscattering_transmittance(volume,
+																		 frag_coords,
+																		 depth);
+	return rgb * vol_sam.a + vol_sam.rgb;
+}

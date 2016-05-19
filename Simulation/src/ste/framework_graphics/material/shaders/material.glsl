@@ -76,7 +76,7 @@ vec3 cook_torrance_brdf(vec3 n,
 	float denom_ndf = dotNH2 * (alpha2 - 1.f) + 1.f;
 	float d = alpha2 / (pi * denom_ndf * denom_ndf);
 
-	float k = roughness * roughness / 2.f;
+	float k = roughness * roughness / 4.f;
 	float invk = 1.f - k;
 	float g1 = 1.f / (dotNL * invk + k);
 	float g2 = 1.f / (dotNV * invk + k);
