@@ -34,6 +34,10 @@ vec3 unproject_screen_position(float depth, vec2 norm_frag_coords) {
 	return unproject_screen_position(depth, norm_frag_coords, proj_transform_buffer.proj_xywz);
 }
 
+vec3 unproject_screen_position_with_z(float z, vec2 norm_frag_coords) {
+	return unproject_screen_position_with_z(z, norm_frag_coords, proj_transform_buffer.proj_xywz);
+}
+
 float projection_near_clip() {
 	return proj_transform_buffer.proj_xywz.z;
 }

@@ -72,7 +72,7 @@ vec3 cook_torrance_iso_brdf(vec3 n,
 	float g = gaf_schlick_ggx(roughness, clamped_dotNL, clamped_dotNV);
 	vec3 f = fresnel_cook_torrance(dot(l,h), c_spec);
 
-	return d * g * f / 4.f;
+	return max(vec3(0), d * g * f / 4.f);
 }
 
 vec3 cook_torrance_ansi_brdf(vec3 n,
@@ -94,5 +94,5 @@ vec3 cook_torrance_ansi_brdf(vec3 n,
 	float g = gaf_schlick_ggx(roughness, clamped_dotNL, clamped_dotNV);
 	vec3 f = fresnel_cook_torrance(dot(l,h), c_spec);
 
-	return d * g * f / 4.f;
+	return max(vec3(0), d * g * f / 4.f);
 }

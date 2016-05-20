@@ -14,6 +14,8 @@ layout(local_size_x = 32, local_size_y = 32, local_size_z = 1) in;
 #include "girenderer_transform_buffer.glsl"
 #include "project.glsl"
 
+#include "fast_rand.glsl"
+
 layout(std430, binding = 2) restrict readonly buffer light_data {
 	light_descriptor light_buffer[];
 };
@@ -32,6 +34,8 @@ layout(binding = 11) uniform sampler2D depth_map;
 #include "linked_light_lists_load.glsl"
 
 uniform float phase1, phase2, phase3;
+
+const int samples = 2;
 
 float depth3x3(vec2 uv, int lod) {
 	float d00 = textureLodOffset(depth_map, uv, lod, ivec2(-1,-1)).x;
@@ -58,8 +62,6 @@ void main() {
 		return;
 
 	int depth_lod = 2;
-	vec2 fragcoords = (vec2(slice_coords) + vec2(.5f)) * 8.f / vec2(backbuffer_size());
-
 	float depth_buffer_d = depth3x3((vec2(slice_coords) + vec2(.5f)) / vec2(volume_size.xy), depth_lod);
 
 	uint32_t lll_ptr_base = imageLoad(lll_heads, slice_coords).x;
@@ -68,16 +70,15 @@ void main() {
 	float depth = volumetric_scattering_depth_for_tile(0);
 	for (int tile = 0; tile < max_tile; ++tile) {
 		ivec3 volume_coords = ivec3(slice_coords, tile);
+		vec2 fragcoords = (vec2(slice_coords) + vec2(.5f)) * 8.f / vec2(backbuffer_size());
 
 		float depth_next_tile = volumetric_scattering_depth_for_tile(tile + 1);
-		vec3 position = unproject_screen_position(depth, fragcoords);
-		float z_next_tile = unproject_depth(depth_next_tile);
+		float z_next = unproject_depth(depth_next_tile);
+		float z_start = unproject_depth(depth);
+		float z_center = mix(z_start, z_next, .5f);
+		float thickness = z_start - z_next;
 
-		float thickness = position.z - z_next_tile;
-		vec3 w_pos = dquat_mul_vec(view_transform_buffer.inverse_view_transform, position);
-		vec3 view_dir = normalize(position);
-
-		float particle_density = volumetric_scattering_particle_density(w_pos);
+		float particle_density = volumetric_scattering_particle_density(unproject_screen_position_with_z(z_center, fragcoords));
 		float k_scattering = volumetric_scattering_scattering_coefficient(particle_density, thickness);
 		float k_absorption = volumetric_scattering_absorption_coefficient(particle_density, thickness);
 		vec3 fog_diffuse = vec3(1.f);
@@ -92,25 +93,43 @@ void main() {
 
 			vec2 lll_depth_range = lll_parse_depth_range(lll_p);
 			if (depth >= lll_depth_range.x &&
-				depth <= lll_depth_range.y) {
+				depth_next_tile <= lll_depth_range.y) {
 				uint light_idx = uint(lll_parse_light_idx(lll_p));
 				light_descriptor ld = light_buffer[light_idx];
 
-				vec3 v = light_incidant_ray(ld, position);
-				float dist = length(v);
+				float scatter = 0.f;
+				for (int s = 0; s < samples; ++s) {
+					float r = (float(s) + .5f) / float(samples);
+					float z = mix(z_start, z_next, r);
+					float jitter_x = fast_rand(vec2(depth, r));
+					float jitter_y = fast_rand(vec2(r, depth));
+					vec2 coords = fragcoords + .4f * vec2(jitter_x, jitter_y);
 
-				vec3 shadow_v = w_pos - ld.position;
-				float shadow = shadow_fast(shadow_depth_maps,
-										   uint(lll_parse_ll_idx(lll_p)),
-										   shadow_v);
-				if (shadow <= .0f)
-					continue;
+					vec3 position = unproject_screen_position_with_z(z, fragcoords);
+					vec3 w_pos = dquat_mul_vec(view_transform_buffer.inverse_view_transform, position);
 
-				float attenuation_factor = light_attenuation_factor(ld, dist);
-				float incident_radiance = max(ld.luminance * attenuation_factor - ld.minimal_luminance, .0f);
-				float irradiance = incident_radiance * shadow;
+					vec3 shadow_v = w_pos - ld.position;
+					float shadow = shadow_fast(shadow_depth_maps,
+											   uint(lll_parse_ll_idx(lll_p)),
+											   shadow_v);
+					if (shadow <= .0f)
+						continue;
 
-				rgb += ld.diffuse * volumetric_scattering_phase(v / dist, view_dir, phase1, phase2, phase3);
+					vec3 v = light_incidant_ray(ld, position);
+					float dist = length(v);
+					vec3 view_dir = normalize(position);
+
+					float attenuation_factor = light_attenuation_factor(ld, dist);
+					float incident_radiance = max(ld.luminance * attenuation_factor - ld.minimal_luminance, .0f);
+					float irradiance = incident_radiance * shadow;
+
+					float scaling_size = thickness;
+					float scale = min(dist, scaling_size) / scaling_size;
+
+					scatter += scale * irradiance * volumetric_scattering_phase(v / dist, -view_dir, phase1, phase2, phase3);
+				}
+
+				rgb += ld.diffuse * scatter / float(samples);
 			}
 		}
 
