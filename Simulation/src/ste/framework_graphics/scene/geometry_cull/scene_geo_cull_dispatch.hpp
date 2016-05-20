@@ -30,7 +30,6 @@ private:
 	mutable std::size_t old_object_group_size{ 0 };
 
 private:
-	void set_projection_planes() const;
 	void commit_idbs() const;
 
 public:

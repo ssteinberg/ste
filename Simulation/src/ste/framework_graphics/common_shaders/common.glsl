@@ -24,7 +24,7 @@ vec3 XYZtoxyY(vec3 XYZ) {
 }
 
 vec3 XYZtoRGB(vec3 xyz) {
-	return conversion_matrix_xyz_ro_rgb * rgb;
+	return conversion_matrix_xyz_ro_rgb * xyz;
 }
 
 vec3 xyYtoXYZ(vec3 xyY) {

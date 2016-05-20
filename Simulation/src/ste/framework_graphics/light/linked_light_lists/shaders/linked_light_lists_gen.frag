@@ -30,18 +30,17 @@ layout(shared, binding = 11) restrict writeonly buffer lll_data {
 
 layout(binding = 11) uniform sampler2D depth_map;
 
-uniform float near, aspect;
-uniform float two_near_tan_fovy_over_two;	// 2 * near * tan(fovy * .5)
-
 void main() {
 	ivec2 image_coord = ivec2(gl_FragCoord.xy);
 	vec2 frag_coords = (vec2(gl_FragCoord.xy) + vec2(.5f)) / vec2(backbuffer_size()) * float(lll_image_res_multiplier);
 
 	int depth_lod = 2;
 
-	vec2 ndc = frag_coords - vec2(.5f);
-	float near_plane_h = two_near_tan_fovy_over_two;
-	float near_plane_w = near_plane_h * aspect;
+	float near = projection_near_clip();
+	vec2 ndc = frag_coords * 2.f - vec2(1.f);
+
+	float near_plane_h = projection_tan_half_fovy() * near;
+	float near_plane_w = near_plane_h * projection_aspect();
 	vec2 near_plane_pos = ndc * vec2(near_plane_w, near_plane_h);
 
 	vec3 l = vec3(near_plane_pos, -near);
