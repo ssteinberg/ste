@@ -21,5 +21,5 @@ vec3 oren_nayar_brdf(vec3 n,
 
 	float d = a + b;
 
-	return albedo * d / pi;
+	return max(vec3(0), albedo * d / pi);
 }
