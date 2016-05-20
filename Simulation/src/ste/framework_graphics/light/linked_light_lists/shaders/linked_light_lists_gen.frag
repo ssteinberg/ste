@@ -79,7 +79,7 @@ void main() {
 				}
 				else {
 					// Compare against depth buffer
-					float d = textureLod(depth_map, vec2(image_coord) / textureSize(depth_map, depth_lod).xy, depth_lod).x;
+					float d = textureLod(depth_map, (vec2(image_coord) + vec2(.5f)) / textureSize(depth_map, depth_lod).xy, depth_lod).x;
 					if (d <= depth_zmax)
 						add_point = true;
 				}

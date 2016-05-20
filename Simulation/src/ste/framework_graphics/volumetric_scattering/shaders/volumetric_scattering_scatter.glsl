@@ -92,8 +92,8 @@ void main() {
 				break;
 
 			vec2 lll_depth_range = lll_parse_depth_range(lll_p);
-			if (depth >= lll_depth_range.x &&
-				depth_next_tile <= lll_depth_range.y) {
+			if (depth_next_tile >= lll_depth_range.x &&
+				depth <= lll_depth_range.y) {
 				uint light_idx = uint(lll_parse_light_idx(lll_p));
 				light_descriptor ld = light_buffer[light_idx];
 
