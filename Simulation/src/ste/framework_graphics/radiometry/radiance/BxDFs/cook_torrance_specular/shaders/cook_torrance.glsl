@@ -25,7 +25,8 @@ float ndf_ggx_ansiotropic(vec3 X, vec3 Y, vec3 h, float roughness_x, float rough
 }
 
 float gaf_schlick_ggx(float roughness, float dotNL, float dotNV) {
-	float k = (roughness + 1.f) * (roughness + 1.f) / 8.f;
+	float alpha = roughness * roughness;
+	float k = alpha / 2.f;
 	float invk = 1.f - k;
 	float g1 = 1.f / (dotNL * invk + k);
 	float g2 = 1.f / (dotNV * invk + k);
@@ -63,8 +64,12 @@ vec3 cook_torrance_iso_brdf(vec3 n,
 							vec3 c_spec) {
 	vec3 h = normalize(v + l);
 
+	// Singularity at "grazing-angles", i.e. dot(n,v) == 0
+	float clamped_dotNL = max(epsilon, dot(n,l));
+	float clamped_dotNV = max(epsilon, dot(n,v));
+
 	float d = ndf_ggx_isotropic(roughness, dot(n,h));
-	float g = gaf_schlick_ggx(roughness, dot(n,l), dot(n,v));
+	float g = gaf_schlick_ggx(roughness, clamped_dotNL, clamped_dotNV);
 	vec3 f = fresnel_cook_torrance(dot(l,h), c_spec);
 
 	return d * g * f / 4.f;
@@ -81,8 +86,12 @@ vec3 cook_torrance_ansi_brdf(vec3 n,
 	vec3 h = normalize(v + l);
 	float roughness = mix(roughness_x, roughness_y, .5f);
 
+	// Like the isotropic case
+	float clamped_dotNL = max(epsilon, dot(n,l));
+	float clamped_dotNV = max(epsilon, dot(n,v));
+
 	float d = ndf_ggx_ansiotropic(t, b, h, roughness_x, roughness_y, dot(n,h));
-	float g = gaf_schlick_ggx(roughness, dot(n,l), dot(n,v));
+	float g = gaf_schlick_ggx(roughness, clamped_dotNL, clamped_dotNV);
 	vec3 f = fresnel_cook_torrance(dot(l,h), c_spec);
 
 	return d * g * f / 4.f;

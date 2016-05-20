@@ -1,6 +1,7 @@
 
 const float pi = 3.1415926535897932384626433832795;
 const float pi_2 = pi * .5f;
+const float epsilon = .0000001f;
 
 mat3 conversion_matrix_rgb_ro_xyz = mat3(
 	0.412453, 0.212671, 0.019334,
