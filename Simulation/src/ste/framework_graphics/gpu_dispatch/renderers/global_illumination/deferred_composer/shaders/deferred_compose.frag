@@ -5,6 +5,8 @@
 #extension GL_NV_gpu_shader5 : require
 
 #include "material.glsl"
+#include "cook_torrance.glsl"
+#include "oren_nayar.glsl"
 
 #include "shadow.glsl"
 #include "light.glsl"
@@ -110,9 +112,9 @@ vec3 shade(g_buffer_element frag) {
 			float incident_radiance = max(ld.luminance * attenuation_factor - ld.minimal_luminance, .0f);
 			vec3 irradiance = ld.diffuse * max(0.f, specular * incident_radiance * shadow);
 
-			vec3 spec_brdf = cook_torrance_brdf(n, v, l,
-												roughness,
-												diffuse);
+			vec3 spec_brdf = cook_torrance_iso_brdf(n, v, l,
+													roughness,
+													diffuse);
 			vec3 diff_brdf = oren_nayar_brdf(n, v, l,
 											 roughness,
 											 diffuse);
