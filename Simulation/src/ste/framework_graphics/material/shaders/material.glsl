@@ -1,7 +1,7 @@
 
 #include "common.glsl"
 #include "cook_torrance.glsl"
-#include "oren_nayar.glsl"
+#include "disney_diffuse.glsl"
 
 struct material_texture_descriptor {
 	uint64_t tex_handler;
@@ -103,10 +103,10 @@ vec3 material_evaluate_reflection(material_descriptor md,
 								   c_spec);
 	}
 
-	vec3 D = base_color * oren_nayar_brdf(n, v, l,
-										  roughness);
+	vec3 D = base_color * disney_diffuse_brdf(n, v, l, h,
+											  roughness);
 
-	vec3 c_sheen = fresnel_schlick(dot(l,h), vec3(0)) * sheen_tint * sheen;
+	vec3 c_sheen = fresnel_schlick(dot(l,h)) * sheen_tint * sheen;
 
 	vec3 brdf = S + (1.f - metallic) * (D + c_sheen);
 	return brdf * irradiance * dot(n, l);

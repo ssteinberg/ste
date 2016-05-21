@@ -29,11 +29,9 @@ public:
 
 public:
 	glm::tvec3<T> operator()(const glm::tvec3<T> &l,
-				 const glm::tvec3<T> &v,
-				 const glm::tvec3<T> &n,
-				 const T &roughness,
-				 const glm::tvec3<T> &albedo,
-				 const glm::tvec3<T> &irradiance) {
+							 const glm::tvec3<T> &v,
+							 const glm::tvec3<T> &n,
+							 const T &roughness) {
 		auto dotNL = glm::dot(n,l);
 		auto dotVL = glm::dot(v,l);
 		auto dotNV = glm::dot(n,v);
@@ -48,7 +46,7 @@ public:
 
 		auto d = a + b;
 
-		return albedo * irradiance * d / glm::pi<T>();
+		return d / glm::pi<T>();
 	}
 };
 
