@@ -14,14 +14,14 @@ class oren_nayar_brdf : public BxDF<T> {
 public:
 	T improved_oren_nayar_Lm(T r,
 							 T dotNL) {
-		T one_m_NdotL = 1 - dotNL;
+		T one_m_NdotL = static_cast<T>(1) - dotNL;
 		T one_m_NdotL2 = one_m_NdotL * one_m_NdotL;
 
-		T a = glm::max(1 - 2 * r, .0f);
-		T b = 1 - one_m_NdotL2 * one_m_NdotL2 * one_m_NdotL;
-		T p1 = a * b + glm::min(2*r, 1);
+		T a = glm::max(static_cast<T>(1) - static_cast<T>(2) * r, static_cast<T>(.0));
+		T b = static_cast<T>(1) - one_m_NdotL2 * one_m_NdotL2 * one_m_NdotL;
+		T p1 = a * b + glm::min(static_cast<T>(2)*r, static_cast<T>(1));
 
-		T p2 = dotNL * (1 - .5f * r) + .5f * r * dotNL * dotNL;
+		T p2 = dotNL * (static_cast<T>(1) - static_cast<T>(.5) * r) + static_cast<T>(.5) * r * dotNL * dotNL;
 
 		return p1 * p2;
 	}
@@ -29,9 +29,9 @@ public:
 	T improved_oren_nayar_Vd(T r2,
 							 T dotNL,
 							 T dotNV) {
-		T power = (1 - 0.3726732f * dotNV * dotNV) / (.188566f + .388410 * dotNV);
-		T p1 = r2 / ((r2 + .09f) * (1.31072f + .995584f * dotNV));
-		T p2 = 1 - glm::pow(1 - dotNL, power);
+		T power = (static_cast<T>(1) - static_cast<T>(0.3726732) * dotNV * dotNV) / (static_cast<T>(.188566) + static_cast<T>(.388410) * dotNV);
+		T p1 = r2 / ((r2 + static_cast<T>(.09)) * (static_cast<T>(1.31072) + static_cast<T>(.995584) * dotNV));
+		T p2 = static_cast<T>(1) - glm::pow(1 - dotNL, power);
 
 		return p1 * p2;
 	}
@@ -40,8 +40,8 @@ public:
 							 T dotNV,
 							 T dotVL) {
 		T delta = dotVL - dotNV * dotNL;
-		if (delta < .0f)
-			return 1.4f * dotNV * dotNL * delta;
+		if (delta < static_cast<T>(.0))
+			return static_cast<T>(1.4) * dotNV * dotNL * delta;
 		else
 			return delta;
 	}
@@ -52,9 +52,9 @@ public:
 		T r3 = r2 * r;
 		T r4 = r2 * r2;
 
-		T p1 = 1 - (.542026f * r2 + .303573 * r) / (r2 + 1.36053f);
-		T p2 = 1 - glm::pow(1 - dotNV, 5 - 4 * r2);
-		T p3 = (-.733996f*r3 + 1.50912*r2 - 1.16402*r) * glm::pow(1 - dotNV, 1 + 1 / (39 * r4 + 1)) + 1;
+		T p1 = static_cast<T>(1) - (static_cast<T>(.542026) * r2 + static_cast<T>(.303573) * r) / (r2 + static_cast<T>(1.36053));
+		T p2 = static_cast<T>(1) - glm::pow(1 - dotNV, 5 - 4 * r2);
+		T p3 = (-static_cast<T>(.733996)*r3 + static_cast<T>(1.50912)*r2 - static_cast<T>(1.16402)*r) * glm::pow(static_cast<T>(1) - dotNV, static_cast<T>(1) + static_cast<T>(1) / (static_cast<T>(39) * r4 + static_cast<T>(1))) + static_cast<T>(1);
 
 		return p1 * p2 * p3;
 	}

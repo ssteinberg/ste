@@ -27,7 +27,7 @@ float oren_nayar_brdf(vec3 n,
 //	Improved Oren-Nayar
 //	Energy conserving with Fresnel and GGX for NDF
 //
-//	Designing Reflectance Models for New Consoles [Gotanda 2014]
+//	Source: Designing Reflectance Models for New Consoles [Gotanda 2014]
 //
 
 float improved_oren_nayar_Lm(float r,
