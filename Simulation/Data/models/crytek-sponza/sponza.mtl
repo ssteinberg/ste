@@ -283,6 +283,7 @@ newmtl flagpole
 	roughness 0.58
 	metallic 1.0
 	anisotropy 0.8
+	ior 5
 
 newmtl fabric_e
 	Ns 10.0000
@@ -414,6 +415,7 @@ newmtl chain
 	roughness 0.32
 	metallic 1.0
 	anisotropy 0.2
+	ior 5
 
 newmtl vase_hanging
 	Ns 10.0000
@@ -431,6 +433,7 @@ newmtl vase_hanging
 	roughness 0.28
 	metallic 1.0
 	anisotropy 0.4
+	ior 5
 
 newmtl vase
 	Ns 10.0000
@@ -469,6 +472,7 @@ newmtl Material__25
 	roughness 0.3
 	metallic 1.0
 	anisotropy 0.2
+	ior 5
 
 newmtl roof
 	Ns 10.0000

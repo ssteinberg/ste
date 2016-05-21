@@ -27,7 +27,7 @@ protected:
 	float roughness{ .5f };
 	float anisotropy{ .0f };
 	float metallic{ .0f };
-	float specular{ .5f };
+	float index_of_refraction{ 1.5f };
 	float sheen{ .0f };
 
 public:
@@ -37,6 +37,7 @@ public:
 	* 	@param tex	2D texture object
 	*/
 	void set_basecolor_map(const std::shared_ptr<Core::Texture2D> &tex) { basecolor_map = tex; }
+
 	/**
 	*	@brief	Set material cavity map
 	*
@@ -45,12 +46,14 @@ public:
 	* 	@param tex	2D texture object
 	*/
 	void set_cavity_map(const std::shared_ptr<Core::Texture2D> &tex) { cavity_map = tex; }
+
 	/**
 	*	@brief	Set material normal map
 	*
 	* 	@param tex	2D texture object
 	*/
 	void set_normal_map(const std::shared_ptr<Core::Texture2D> &tex) { normal_map = tex; }
+
 	/**
 	*	@brief	Set material mask map
 	*
@@ -68,45 +71,52 @@ public:
 	* 	@param tex	2D texture object
 	*/
 	void set_emission(const RGB &t) { emission = t; }
+
 	/**
 	*	@brief	Set material roughness
 	*
 	*	Roughness as defines by the Micorfacet theory. Controls both diffuse and specular response. Defaults to 0.5.
 	*
-	* 	@param tex	2D texture object
+	* 	@param t	Roughness - range: [0,1]
 	*/
 	void set_roughness(float t) { roughness = t; }
+
 	/**
 	*	@brief	Set material anisotropy
 	*
 	*	Anisotropy modifies material's anisotropic roughness
 	*
-	* 	@param tex	2D texture object
+	* 	@param t	Anisotropy - range: [0,1] (May take negative values which invert X, Y anisotropy)
 	*/
 	void set_anisotropy(float t) { anisotropy = t; }
+
 	/**
 	*	@brief	Set material metallicity
 	*
 	*	Controls material's metal appearance. Defaults to 0.0.
 	*
-	* 	@param tex	2D texture object
+	* 	@param t	Metallicity - range: [0,1] (Usually a binary value)
 	*/
 	void set_metallic(float t) { metallic = t; }
+
 	/**
-	*	@brief	Set material incident specular amount
+	*	@brief	Set material incident specular amount given an index-of-refraction
 	*
-	*	Controls material's index of refraction. Defaults to 0.5.
+	*	Sets specular term using a given index-of-refraction. Assumes secondary media has IOR of 1. Defaults to 1.5.
 	*
-	* 	@param tex	2D texture object
+	* 	@param t	Index-of-refraction - range: [1,infinity) (Usually in range [1,2])
 	*/
-	void set_specular(float t) { specular = t; }
+	void set_index_of_refraction(float t) {
+		index_of_refraction = t;
+	}
+
 	/**
 	*	@brief	Set material sheen
 	*
 	*	Sheen provides an additional cloth-like grazing component. Defaults to 0.0.
 	*	Similiar to Disney's implementation.
 	*
-	* 	@param tex	2D texture object
+	* 	@param t	Sheen value	- range: [0,1]
 	*/
 	void set_sheen(float t) { sheen = t; }
 
@@ -119,8 +129,23 @@ public:
 	float get_roughness() const { return roughness; }
 	float get_anisotropy() const { return anisotropy; }
 	float get_metallic() const { return metallic; }
-	float get_specular() const { return specular; }
+	float get_index_of_refraction() const { return index_of_refraction; }
 	float get_sheen() const { return sheen; }
+
+	/**
+	*	@brief	Get material anisotropy ratio which is used to adjust anisotropic roughness values
+	*/
+	float get_anisotropy_ratio_from_anisotropy() {
+		return anisotropy != .0f ? glm::sqrt(1.f - anisotropy * .9f) : 1.f;
+	}
+
+	/**
+	*	@brief	Get the specular reflection coefficient at normal incidence for Schlick's Fresnel approximation
+	*			derived from material's IOR
+	*/
+	float get_F0_from_ior() {
+		return glm::pow((1.f - index_of_refraction) / (1.f + index_of_refraction), 2.f);
+	}
 };
 
 }

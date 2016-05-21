@@ -111,12 +111,12 @@ std::future<void> ModelFactory::process_model_mesh(optional<task_scheduler*> sch
 
 	bool has_roughness = material.unknown_parameter.find("roughness") != material.unknown_parameter.end();
 	bool has_metallic = material.unknown_parameter.find("metallic") != material.unknown_parameter.end();
-	bool has_specular = material.unknown_parameter.find("specular") != material.unknown_parameter.end();
+	bool has_ior = material.unknown_parameter.find("ior") != material.unknown_parameter.end();
 	bool has_anisotropy = material.unknown_parameter.find("anisotropy") != material.unknown_parameter.end();
 	bool has_sheen = material.unknown_parameter.find("sheen") != material.unknown_parameter.end();
 	float roughness = has_roughness ? std::stof(material.unknown_parameter["roughness"]) : .0f;
 	float metallic = has_metallic ? std::stof(material.unknown_parameter["metallic"]) : .0f;
-	float specular = has_specular ? std::stof(material.unknown_parameter["specular"]) : .0f;
+	float ior = has_ior ? std::stof(material.unknown_parameter["ior"]) : .0f;
 	float anisotropy = has_anisotropy ? std::stof(material.unknown_parameter["anisotropy"]) : .0f;
 	float sheen = has_sheen ? std::stof(material.unknown_parameter["sheen"]) : .0f;
 
@@ -128,7 +128,7 @@ std::future<void> ModelFactory::process_model_mesh(optional<task_scheduler*> sch
 		if (opacity_map != nullptr) mat->set_mask_map(opacity_map);
 		if (has_roughness) mat->set_roughness(roughness);
 		if (has_metallic) mat->set_metallic(metallic);
-		if (has_specular) mat->set_specular(specular);
+		if (has_ior) mat->set_index_of_refraction(ior);
 		if (has_anisotropy) mat->set_anisotropy(anisotropy);
 		if (has_sheen) mat->set_sheen(sheen);
 

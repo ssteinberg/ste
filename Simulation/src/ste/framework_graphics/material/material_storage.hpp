@@ -42,15 +42,6 @@ private:
 	Core::SamplerMipmapped linear_sampler;
 	Core::gstack<material_descriptor> stack;
 
-private:
-	static float anisotropy_ratio_from_anisotropy(float anisotropy) {
-		return anisotropy != .0f ? glm::sqrt(1.f - anisotropy * .9f) : 1.f;
-	}
-
-	static float F0_from_specular(float specular) {
-		return specular * .08f;
-	}
-
 public:
 	material_storage() {
 		linear_sampler.set_wrap_s(Core::TextureWrapMode::Wrap);
@@ -87,9 +78,9 @@ public:
 		}
 		md.emission = material->get_emission();
 		md.roughness = material->get_roughness();
-		md.anisotropy_ratio = anisotropy_ratio_from_anisotropy(material->get_anisotropy());
+		md.anisotropy_ratio = material->get_anisotropy_ratio_from_anisotropy();
 		md.metallic = material->get_metallic();
-		md.F0 = F0_from_specular(material->get_specular());
+		md.F0 = material->get_F0_from_ior();
 		md.sheen = material->get_sheen();
 
 		materials.push_back(material);
