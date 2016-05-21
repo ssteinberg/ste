@@ -22,6 +22,11 @@ public:
 		G() = vec.g;
 		B() = vec.b;
 	}
+	RGB(const T &r, const T &g, const T &b) {
+		R() = r;
+		G() = g;
+		B() = b;
+	}
 
 	T &R() { return c[0]; }
 	T &G() { return c[1]; }

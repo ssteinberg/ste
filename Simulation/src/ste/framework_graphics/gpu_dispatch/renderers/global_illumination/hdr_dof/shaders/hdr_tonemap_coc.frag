@@ -4,6 +4,8 @@
 #extension GL_ARB_bindless_texture : require
 #extension GL_NV_gpu_shader5 : require
 
+#include "chromaticity.glsl"
+
 #include "hdr_common.glsl"
 #include "gbuffer.glsl"
 #include "girenderer_transform_buffer.glsl"

@@ -18,7 +18,9 @@ newmtl leaf
 	map_d textures\sponza_thorn_mask.tga
 	map_bump textures\sponza_thorn_bump.png
 	bump textures\sponza_thorn_bump.png
-	brdf ward_plastic\aluminium_anodised
+	roughness 0.33
+	metallic 0.0
+	anisotropy 0.0
 
 newmtl vase_round
 	Ns 10.0000
@@ -36,7 +38,9 @@ newmtl vase_round
 	map_Ks textures\vase_round_spec.tga
 	map_bump textures\vase_round_bump.png
 	bump textures\vase_round_bump.png
-	brdf ward_plastic\aluminium_anodised
+	roughness 0.44
+	metallic 0.0
+	anisotropy 0.0
 
 newmtl Material__57
 	Ns 10.0000
@@ -53,7 +57,9 @@ newmtl Material__57
 	map_Kd textures\vase_plant.tga
 	map_Ks textures\vase_plant_spec.tga
 	map_d textures\vase_plant_mask.tga
-	brdf ward_plastic\aluminium_anodised
+	roughness 0.33
+	metallic 0.0
+	anisotropy 0.0
 
 newmtl Material__298
 	Ns 10.0000
@@ -70,7 +76,9 @@ newmtl Material__298
 	map_Kd textures\background.tga
 	map_bump textures\background_bump.png
 	bump textures\background_bump.png
-	brdf ward_metal\aluminium_anodised
+	roughness 0.36
+	metallic 0.0
+	anisotropy 0.0
 
 newmtl 16___Default
 	Ns 10.0000
@@ -85,7 +93,9 @@ newmtl 16___Default
 	Ke 0.0000 0.0000 0.0000
 	map_Ka textures\gi_flag.tga
 	map_Kd textures\gi_flag.tga
-	brdf ward_plastic\aluminium_anodised
+	roughness 0.75
+	metallic 0.0
+	anisotropy 0.8
 
 newmtl bricks
 	Ns 10.0000
@@ -103,7 +113,9 @@ newmtl bricks
 	map_Ks textures\spnza_bricks_a_spec.tga
 	map_bump textures\spnza_bricks_a_diff.tga
 	bump textures\spnza_bricks_a_bump.png
-	brdf ward_metal\slightly_rough_aluminium_plate
+	roughness 0.26
+	metallic 0.0
+	anisotropy 0.0
 
 newmtl arch
 	Ns 10.0000
@@ -119,7 +131,9 @@ newmtl arch
 	map_Ka textures\sponza_arch_diff.tga
 	map_Kd textures\sponza_arch_diff.tga
 	map_Ks textures\sponza_arch_spec.tga
-	brdf ward_plastic\aluminium_anodised
+	roughness 0.4
+	metallic 0.0
+	anisotropy 0.0
 
 newmtl ceiling
 	Ns 10.0000
@@ -135,7 +149,9 @@ newmtl ceiling
 	map_Ka textures\sponza_ceiling_a_diff.tga
 	map_Kd textures\sponza_ceiling_a_diff.tga
 	map_Ks textures\sponza_ceiling_a_spec.tga
-	brdf ward_plastic\ceramic_tile_california
+	roughness 0.4
+	metallic 0.0
+	anisotropy 0.0
 
 newmtl column_a
 	Ns 10.0000
@@ -153,7 +169,9 @@ newmtl column_a
 	map_Ks textures\sponza_column_a_spec.tga
 	map_bump textures\sponza_column_a_bump.png
 	bump textures\sponza_column_a_bump.png
-	brdf ward_metal\slightly_rough_aluminium_plate
+	roughness 0.4
+	metallic 0.0
+	anisotropy 0.0
 
 newmtl floor
 	Ns 10.0000
@@ -171,7 +189,9 @@ newmtl floor
 	map_Ks textures\sponza_floor_a_spec.tga
 	map_bump textures\sponza_floor_a_bump.png
 	bump textures\sponza_floor_a_bump.png
-	brdf ward_plastic\aluminium_bead_blasted
+	roughness 0.28
+	metallic 0.0
+	anisotropy 0.1
 
 newmtl column_c
 	Ns 10.0000
@@ -189,7 +209,9 @@ newmtl column_c
 	map_Ks textures\sponza_column_c_spec.tga
 	map_bump textures\sponza_column_c_bump.png
 	bump textures\sponza_column_c_bump.png
-	brdf ward_metal\slightly_rough_aluminium_plate
+	roughness 0.4
+	metallic 0.0
+	anisotropy 0.0
 
 newmtl details
 	Ns 10.0000
@@ -205,7 +227,9 @@ newmtl details
 	map_Ka textures\sponza_details_diff.tga
 	map_Kd textures\sponza_details_diff.tga
 	map_Ks textures\sponza_details_spec.tga
-	brdf ward_plastic\aluminium_anodised
+	roughness 0.4
+	metallic 0.0
+	anisotropy 0.0
 
 newmtl column_b
 	Ns 10.0000
@@ -223,7 +247,9 @@ newmtl column_b
 	map_Ks textures\sponza_column_b_spec.tga
 	map_bump textures\sponza_column_b_bump.png
 	bump textures\sponza_column_b_bump.png
-	brdf ward_metal\slightly_rough_aluminium_plate
+	roughness 0.4
+	metallic 0.0
+	anisotropy 0.0
 
 newmtl Material__47
 	Ns 10.0000
@@ -236,7 +262,9 @@ newmtl Material__47
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	brdf ward_plastic\aluminium_anodised
+	roughness 0.28
+	metallic 0.0
+	anisotropy 0.0
 
 newmtl flagpole
 	Ns 10.0000
@@ -252,7 +280,9 @@ newmtl flagpole
 	map_Ka textures\sponza_flagpole_diff.tga
 	map_Kd textures\sponza_flagpole_diff.tga
 	map_Ks textures\sponza_flagpole_spec.tga
-	brdf ward_plastic\aluminium_anodised
+	roughness 0.58
+	metallic 1.0
+	anisotropy 0.8
 
 newmtl fabric_e
 	Ns 10.0000
@@ -268,7 +298,10 @@ newmtl fabric_e
 	map_Ka textures\sponza_fabric_green_diff.tga
 	map_Kd textures\sponza_fabric_green_diff.tga
 	map_Ks textures\sponza_fabric_spec.tga
-	brdf ward_plastic\office_carpet
+	roughness 0.75
+	metallic 0.0
+	anisotropy 0.7
+	sheen 1.0
 
 newmtl fabric_d
 	Ns 10.0000
@@ -284,7 +317,10 @@ newmtl fabric_d
 	map_Ka textures\sponza_fabric_blue_diff.tga
 	map_Kd textures\sponza_fabric_blue_diff.tga
 	map_Ks textures\sponza_fabric_spec.tga
-	brdf ward_plastic\office_carpet
+	roughness 0.75
+	metallic 0.0
+	anisotropy 0.7
+	sheen 1.0
 
 newmtl fabric_a
 	Ns 10.0000
@@ -300,7 +336,10 @@ newmtl fabric_a
 	map_Ka textures\sponza_fabric_diff.tga
 	map_Kd textures\sponza_fabric_diff.tga
 	map_Ks textures\sponza_fabric_spec.tga
-	brdf ward_plastic\office_carpet
+	roughness 0.75
+	metallic 0.0
+	anisotropy 0.7
+	sheen 1.0
 
 newmtl fabric_g
 	Ns 10.0000
@@ -315,7 +354,10 @@ newmtl fabric_g
 	Ke 0.0000 0.0000 0.0000
 	map_Ka textures\sponza_curtain_blue_diff.tga
 	map_Kd textures\sponza_curtain_blue_diff.tga
-	brdf ward_plastic\office_carpet
+	roughness 0.75
+	metallic 0.0
+	anisotropy 0.7
+	sheen 1.0
 
 newmtl fabric_c
 	Ns 10.0000
@@ -330,7 +372,10 @@ newmtl fabric_c
 	Ke 0.0000 0.0000 0.0000
 	map_Ka textures\sponza_curtain_diff.tga
 	map_Kd textures\sponza_curtain_diff.tga
-	brdf ward_plastic\office_carpet
+	roughness 0.75
+	metallic 0.0
+	anisotropy 0.7
+	sheen 1.0
 
 newmtl fabric_f
 	Ns 10.0000
@@ -345,7 +390,10 @@ newmtl fabric_f
 	Ke 0.0000 0.0000 0.0000
 	map_Ka textures\sponza_curtain_green_diff.tga
 	map_Kd textures\sponza_curtain_green_diff.tga
-	brdf ward_plastic\office_carpet
+	roughness 0.75
+	metallic 0.0
+	anisotropy 0.7
+	sheen 1.0
 
 newmtl chain
 	Ns 10.0000
@@ -363,7 +411,9 @@ newmtl chain
 	map_d textures\chain_texture_mask.tga
 	map_bump textures\chain_texture_bump.png
 	bump textures\chain_texture_bump.png
-	brdf ward_plastic\aluminium_anodised
+	roughness 0.32
+	metallic 1.0
+	anisotropy 0.2
 
 newmtl vase_hanging
 	Ns 10.0000
@@ -378,7 +428,9 @@ newmtl vase_hanging
 	Ke 0.0000 0.0000 0.0000
 	map_Ka textures\vase_hanging.tga
 	map_Kd textures\vase_hanging.tga
-	brdf ward_plastic\aluminium_anodised
+	roughness 0.28
+	metallic 1.0
+	anisotropy 0.4
 
 newmtl vase
 	Ns 10.0000
@@ -395,7 +447,9 @@ newmtl vase
 	map_Kd textures\vase_dif.tga
 	map_bump textures\vase_bump.png
 	bump textures\vase_bump.png
-	brdf ward_plastic\aluminium_anodised
+	roughness 0.44
+	metallic 0.0
+	anisotropy 0.0
 
 newmtl Material__25
 	Ns 10.0000
@@ -412,7 +466,9 @@ newmtl Material__25
 	map_Kd textures\lion.tga
 	map_bump textures\lion_bump.png
 	bump textures\lion_bump.png
-	brdf ward_metal\aluminium_anodised
+	roughness 0.3
+	metallic 1.0
+	anisotropy 0.2
 
 newmtl roof
 	Ns 10.0000
@@ -427,4 +483,6 @@ newmtl roof
 	Ke 0.0000 0.0000 0.0000
 	map_Ka textures\sponza_roof_diff.tga
 	map_Kd textures\sponza_roof_diff.tga
-	brdf ward_plastic\ceramic_tile_california
+	roughness 0.44
+	metallic 0.0
+	anisotropy 0.0

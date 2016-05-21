@@ -97,7 +97,7 @@ void main() {
 				uint light_idx = uint(lll_parse_light_idx(lll_p));
 				light_descriptor ld = light_buffer[light_idx];
 
-				float scatter = 0.f;
+				vec3 scatter = vec3(0.f);
 				for (int s = 0; s < samples; ++s) {
 					float r = (float(s) + .5f) / float(samples);
 					float z = mix(z_start, z_next, r);
@@ -119,9 +119,7 @@ void main() {
 					float dist = length(v);
 					vec3 view_dir = normalize(position);
 
-					float attenuation_factor = light_attenuation_factor(ld, dist);
-					float incident_radiance = max(ld.luminance * attenuation_factor - ld.minimal_luminance, .0f);
-					float irradiance = incident_radiance * shadow;
+					vec3 irradiance = light_irradiance(ld, dist) * shadow;
 
 					float scaling_size = thickness;
 					float scale = min(dist, scaling_size) / scaling_size;
@@ -129,7 +127,7 @@ void main() {
 					scatter += scale * irradiance * volumetric_scattering_phase(v / dist, -view_dir, phase1, phase2, phase3);
 				}
 
-				rgb += ld.diffuse * scatter / float(samples);
+				rgb += scatter / float(samples);
 			}
 		}
 

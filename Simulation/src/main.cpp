@@ -43,7 +43,7 @@ public:
 		auto stars_tex = std::make_shared<StE::Core::Texture2D>(StE::Resource::SurfaceFactory::load_surface_2d_task("Data/textures/stars.jpg", true)());
 
 		auto sky_mat = std::make_shared<StE::Graphics::Material>();
-		sky_mat->set_diffuse(stars_tex);
+		sky_mat->set_basecolor_map(stars_tex);
 		sky_mat->set_emission(glm::vec3(1.f));
 
 		int material = scene->scene_properties().materials_storage().add_material(sky_mat);
@@ -80,7 +80,7 @@ auto create_light_object(StE::Graphics::Scene *scene, const glm::vec3 &light_pos
 	*reinterpret_cast<glm::u8vec3*>(light_color_tex.data()) = glm::u8vec3(c.r * 255.5f, c.g * 255.5f, c.b * 255.5f);
 
 	auto light_mat = std::make_shared<StE::Graphics::Material>();
-	light_mat->set_diffuse(std::make_shared<StE::Core::Texture2D>(light_color_tex, false));
+	light_mat->set_basecolor_map(std::make_shared<StE::Core::Texture2D>(light_color_tex, false));
 	light_mat->set_emission(c * light->get_luminance());
 
 	light_obj->set_material_id(scene->scene_properties().materials_storage().add_material(light_mat));
@@ -96,7 +96,7 @@ int main() {
 	ste_log_set_global_logger(&logger);
 	ste_log() << "Simulation is running";
 
-	int w = 1700;
+	int w = 1920;
 	int h = w * 9 / 16;
 	constexpr float clip_near = 1.f;
 	constexpr float fovy = glm::pi<float>() * .225f;

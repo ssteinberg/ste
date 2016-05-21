@@ -25,17 +25,31 @@ private:
 		Core::texture_handle tex_handler;
 	};
 	struct material_descriptor {
-		material_texture_descriptor diffuse;
-		material_texture_descriptor specular;
-		material_texture_descriptor normalmap;
-		material_texture_descriptor alphamap;
-		pBRDF::brdf_descriptor brdf;
-		glm::vec4 emission;
+		material_texture_descriptor basecolor_map;
+		material_texture_descriptor cavity_map;
+		material_texture_descriptor normal_map;
+		material_texture_descriptor mask_map;
+
+		glm::vec3 emission;
+		float roughness;
+		float anisotropy_ratio;
+		float metallic;
+		float F0;
+		float sheen;
 	};
 
 	std::vector<std::shared_ptr<Material>> materials;
 	Core::SamplerMipmapped linear_sampler;
 	Core::gstack<material_descriptor> stack;
+
+private:
+	static float anisotropy_ratio_from_anisotropy(float anisotropy) {
+		return anisotropy != .0f ? glm::sqrt(1.f - anisotropy * .9f) : 1.f;
+	}
+
+	static float F0_from_specular(float specular) {
+		return specular * .08f;
+	}
 
 public:
 	material_storage() {
@@ -45,39 +59,38 @@ public:
 		linear_sampler.set_min_filter(Core::TextureFiltering::Linear);
 		linear_sampler.set_mag_filter(Core::TextureFiltering::Linear);
 		linear_sampler.set_mipmap_filter(Core::TextureFiltering::Linear);
-		linear_sampler.set_anisotropic_filter(16);
+		linear_sampler.set_anisotropic_filter(8);
 	}
 
 	std::size_t add_material(const std::shared_ptr<Material> &material) {
-		auto diffuse = material->get_diffuse();
-		auto specular = material->get_specular();
-		auto normalmap = material->get_normalmap();
-		auto alphamap = material->get_alphamap();
-		auto brdf = material->get_brdf();
+		auto basecolor_map = material->get_basecolor_map();
+		auto cavity_map = material->get_cavity_map();
+		auto normal_map = material->get_normal_map();
+		auto mask_map = material->get_mask_map();
 
 		material_descriptor md;
-		if (diffuse != nullptr) {
-			md.diffuse.tex_handler = diffuse->get_texture_handle(linear_sampler);
-			md.diffuse.tex_handler.make_resident();
+		if (basecolor_map != nullptr) {
+			md.basecolor_map.tex_handler = basecolor_map->get_texture_handle(linear_sampler);
+			md.basecolor_map.tex_handler.make_resident();
 		}
-		if (specular != nullptr) {
-			md.specular.tex_handler = specular->get_texture_handle(linear_sampler);
-			md.specular.tex_handler.make_resident();
+		if (cavity_map != nullptr) {
+			md.cavity_map.tex_handler = cavity_map->get_texture_handle(linear_sampler);
+			md.cavity_map.tex_handler.make_resident();
 		}
-		if (normalmap != nullptr) {
-			md.normalmap.tex_handler = normalmap->get_texture_handle(linear_sampler);
-			md.normalmap.tex_handler.make_resident();
+		if (normal_map != nullptr) {
+			md.normal_map.tex_handler = normal_map->get_texture_handle(linear_sampler);
+			md.normal_map.tex_handler.make_resident();
 		}
-		if (alphamap != nullptr) {
-			md.alphamap.tex_handler = alphamap->get_texture_handle(linear_sampler);
-			md.alphamap.tex_handler.make_resident();
+		if (mask_map != nullptr) {
+			md.mask_map.tex_handler = mask_map->get_texture_handle(linear_sampler);
+			md.mask_map.tex_handler.make_resident();
 		}
-		if (brdf != nullptr) {
-			md.brdf = brdf->descriptor();
-			md.brdf.tex_handler.make_resident();
-		}
-		auto memss = material->get_emission();
-		md.emission = decltype(md.emission){ memss.R(), memss.G(), memss.B(), md.emission.w };
+		md.emission = material->get_emission();
+		md.roughness = material->get_roughness();
+		md.anisotropy_ratio = anisotropy_ratio_from_anisotropy(material->get_anisotropy());
+		md.metallic = material->get_metallic();
+		md.F0 = F0_from_specular(material->get_specular());
+		md.sheen = material->get_sheen();
 
 		materials.push_back(material);
 		stack.push_back(md);

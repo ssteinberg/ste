@@ -4,9 +4,9 @@
 #extension GL_ARB_bindless_texture : require
 #extension GL_NV_gpu_shader5 : require
 
+#include "chromaticity.glsl"
+
 #include "material.glsl"
-#include "cook_torrance.glsl"
-#include "oren_nayar.glsl"
 
 #include "shadow.glsl"
 #include "light.glsl"
@@ -49,29 +49,25 @@ uniform float height_map_scale = .5f;
 
 vec3 shade(g_buffer_element frag) {
 	int draw_idx = gbuffer_parse_material(frag);
+	material_descriptor md = mat_descriptor[draw_idx];
+
 	vec2 uv = gbuffer_parse_uv(frag);
 	vec2 duvdx = gbuffer_parse_duvdx(frag);
 	vec2 duvdy = gbuffer_parse_duvdy(frag);
 
-	material_descriptor md = mat_descriptor[draw_idx];
-
-	vec3 diffuse = md.diffuse.tex_handler>0 ? textureGrad(sampler2D(md.diffuse.tex_handler), uv, duvdx, duvdy).rgb : vec3(1.f);
 	float depth = gbuffer_parse_depth(frag);
-
-	float specular = md.specular.tex_handler>0 ? textureGrad(sampler2D(md.specular.tex_handler), uv, duvdx, duvdy).x : 1.f;
-	specular = mix(.2f, 1.f, specular);
-
 	vec3 position = unproject_screen_position(depth, gl_FragCoord.xy / vec2(backbuffer_size()));
 	vec3 w_pos = dquat_mul_vec(view_transform_buffer.inverse_view_transform, position);
 
 	vec3 n = gbuffer_parse_normal(frag);
 	vec3 t = gbuffer_parse_tangent(frag);
 	vec3 b = cross(t, n);
-	normal_map(md, height_map_scale, uv, duvdx, duvdy, n, t, b, position);
+	normal_map(md, uv, duvdx, duvdy, height_map_scale, n, t, b, position);
 
-	float roughness = .5f;
+	vec3 diffuse_color = material_base_color(md, uv, duvdx, duvdy);
+	float cavity = material_cavity(md, uv, duvdx, duvdy);
 
-	vec3 rgb = md.emission.rgb;
+	vec3 rgb = material_emission(md);
 
 	ivec2 lll_coords = ivec2(gl_FragCoord.xy) / lll_image_res_multiplier;
 	uint32_t lll_ptr = imageLoad(lll_heads, lll_coords).x;
@@ -81,8 +77,7 @@ vec3 shade(g_buffer_element frag) {
 			break;
 
 		vec2 lll_depth_range = lll_parse_depth_range(lll_p);
-		if (depth >= lll_depth_range.x &&
-			depth <= lll_depth_range.y) {
+		if (depth >= lll_depth_range.x) {
 			uint light_idx = uint(lll_parse_light_idx(lll_p));
 			light_descriptor ld = light_buffer[light_idx];
 
@@ -108,19 +103,14 @@ vec3 shade(g_buffer_element frag) {
 			vec3 v = normalize(-position);
 			vec3 l = incident / dist;
 
-			float attenuation_factor = light_attenuation_factor(ld, dist);
-			float incident_radiance = max(ld.luminance * attenuation_factor - ld.minimal_luminance, .0f);
-			vec3 irradiance = ld.diffuse * max(0.f, specular * incident_radiance * shadow);
+			vec3 irradiance = light_irradiance(ld, dist) * shadow;
 
-			vec3 spec_brdf = cook_torrance_iso_brdf(n, v, l,
-													roughness,
-													diffuse);
-			vec3 diff_brdf = oren_nayar_brdf(n, v, l,
-											 roughness,
-											 diffuse);
-			vec3 brdf = spec_brdf + diff_brdf;
-
-			rgb += brdf * irradiance * max(0.f, dot(n, l));
+			rgb += material_evaluate_reflection(md,
+												n, t, b,
+												v, l,
+												diffuse_color,
+												cavity,
+												irradiance);
 		}
 	}
 

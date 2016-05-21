@@ -52,7 +52,7 @@ void voxelize(ivec3 C, vec4 color, vec3 normal, uint level, float coverage) {
 }
 
 void voxelize(material_descriptor md, ivec3 C, vec2 uv, vec3 normal, uint level, float coverage, vec2 dx, vec2 dy) {
-	vec4 diffuse = md.diffuse.tex_handler > 0 ? textureGrad(sampler2D(md.diffuse.tex_handler), uv, dx, dy) : vec4(1.f);
+	vec4 diffuse = material_base_color(md, height_map_scale, uv, dx, dy);
 	voxelize(C, diffuse, normal, level, coverage);
 }
 

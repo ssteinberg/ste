@@ -31,8 +31,7 @@ void main() {
 	vec2 uv = vin.frag_texcoords;
 	material_descriptor md = mat_descriptor[vin.matIdx];
 
-	float alpha = md.alphamap.tex_handler>0 ? texture(sampler2D(md.alphamap.tex_handler), uv).x : 1.f;
-	if (alpha < .5f)
+	if (material_is_masked(md, uv))
 		return;
 
 	vec3 P = vin.frag_position;

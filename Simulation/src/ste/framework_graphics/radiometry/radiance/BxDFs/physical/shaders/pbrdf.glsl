@@ -1,6 +1,11 @@
 
 #include "common.glsl"
 
+struct brdf_descriptor {
+	uint64_t tex_handler;
+	int min_theta_in, max_theta_in;
+};
+
 float pbrdf(sampler3D brdf,
 			float theta_min,
 			float theta_max,

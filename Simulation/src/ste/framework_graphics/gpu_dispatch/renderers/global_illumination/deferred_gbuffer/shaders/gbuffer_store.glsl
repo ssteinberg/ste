@@ -17,10 +17,9 @@ void gbuffer_store(float depth,
 	uint Npack = packSnorm2x16(normal3x32_to_snorm2x32(N));
 	uint Tpack = packSnorm2x16(normal3x32_to_snorm2x32(T));
 
-	mat3x4 data;
+	mat2x4 data;
 	data[0] = vec4(depth, uintBitsToFloat(matIdx), dUVdx16, dUVdy16);
 	data[1] = vec4(UV, uintBitsToFloat(Npack), uintBitsToFloat(Tpack));
-	// data[2] = vec4();
 
 	uint idx = frag_coords.y * backbuffer_size().x + frag_coords.x;
 	gbuffer[idx].data = data;

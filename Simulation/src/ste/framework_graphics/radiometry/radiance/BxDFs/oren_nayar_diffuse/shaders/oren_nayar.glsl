@@ -1,11 +1,10 @@
 
 #include "common.glsl"
 
-vec3 oren_nayar_brdf(vec3 n,
-				 	 vec3 v,
-				 	 vec3 l,
-				 	 float roughness,
-				 	 vec3 albedo) {
+float oren_nayar_brdf(vec3 n,
+					  vec3 v,
+					  vec3 l,
+					  float roughness) {
 	float roughness2 = roughness * roughness;
 	float dotNL = dot(n,l);
 	float dotVL = dot(v,l);
@@ -21,5 +20,5 @@ vec3 oren_nayar_brdf(vec3 n,
 
 	float d = a + b;
 
-	return max(vec3(0), albedo * d / pi);
+	return max(.0f, d / pi);
 }
