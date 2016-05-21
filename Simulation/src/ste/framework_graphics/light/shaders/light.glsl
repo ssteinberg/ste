@@ -26,8 +26,8 @@ float light_attenuation_factor(light_descriptor ld, float dist) {
 	if (ld.type == LightTypeDirectional)
 		return 1;
 	else {
-		float a = max(.001f, dist / ld.radius);
-		float f = 1.f / (a*a);
+		float a = max(.0f, dist / ld.radius);
+		float f = 1.f / (1.f + a*a);
 
 		return f;
 	}

@@ -4,12 +4,7 @@
 #include "GIRenderer.hpp"
 
 #include "Sampler.hpp"
-
 #include "ShaderStorageBuffer.hpp"
-
-#include "schlick_smith_simplified_gaf.hpp"
-#include "ggx_ndf.hpp"
-#include "oren_nayar_diffuse.hpp"
 
 #include "gl_current_context.hpp"
 

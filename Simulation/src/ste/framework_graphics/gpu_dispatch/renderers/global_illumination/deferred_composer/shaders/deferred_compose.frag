@@ -102,7 +102,6 @@ vec3 shade(g_buffer_element frag) {
 
 			vec3 v = normalize(-position);
 			vec3 l = incident / dist;
-
 			vec3 irradiance = light_irradiance(ld, dist) * shadow;
 
 			rgb += material_evaluate_reflection(md,
