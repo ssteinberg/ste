@@ -11,13 +11,12 @@
 namespace StE {
 namespace Graphics {
 
-template <gli::format Fin>
+template <gli::format Fin, bool height_in_alpha = true>
 class normal_map_from_height_map {
 private:
 	using T = typename Core::surface_element_type<Fin>::type;
 
 public:
-	template <bool height_in_alpha = true>
 	gli::texture2d operator()(const gli::texture2d &height_map, float height_scale) {
 		assert(Fin == height_map.format());
 

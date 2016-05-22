@@ -23,7 +23,7 @@ float volumetric_scattering_zcoord_for_depth(float d) {
 }
 
 float volumetric_scattering_particle_density(vec3 w_pos) {
-	return .01f;
+	return .0175f;
 }
 
 float volumetric_scattering_scattering_coefficient(float density, float thickness) {

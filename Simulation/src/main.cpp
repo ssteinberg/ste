@@ -28,44 +28,6 @@
 using namespace StE::Core;
 using namespace StE::Text;
 
-class SkyDome : public StE::Graphics::gpu_dispatchable {
-	using Base = StE::Graphics::gpu_dispatchable;
-
-private:
-	std::shared_ptr<GLSLProgram> program;
-
-	std::unique_ptr<StE::Graphics::mesh<StE::Graphics::mesh_subdivion_mode::Triangles>> meshptr;
-
-public:
-	SkyDome(const StE::StEngineControl &ctx,
-			StE::Graphics::Scene *scene) : program(ctx.glslprograms_pool().fetch_program_task({ "transform_sky.vert", "frag_sky.frag" })()),
-										   meshptr(std::make_unique<StE::Graphics::Sphere>(10, 10, .0f)) {
-		auto stars_tex = std::make_shared<StE::Core::Texture2D>(StE::Resource::SurfaceFactory::load_surface_2d_task("Data/textures/stars.jpg", true)());
-
-		auto sky_mat = std::make_shared<StE::Graphics::Material>();
-		sky_mat->set_basecolor_map(stars_tex);
-		sky_mat->set_emission(glm::vec3(1.f));
-
-		int material = scene->scene_properties().materials_storage().add_material(sky_mat);
-
-		program->set_uniform("material", material);
-	}
-
-protected:
-	void set_context_state() const override final {
-		GL::gl_current_context::get()->enable_depth_test();
-		GL::gl_current_context::get()->color_mask(false, false, false, false);
-
-		meshptr->vao()->bind();
-		meshptr->ebo()->bind();
-		program->bind();
-	}
-
-	void dispatch() const override final {
-		GL::gl_current_context::get()->draw_elements(GL_TRIANGLES, meshptr->ebo()->size(), GL_UNSIGNED_INT, nullptr);
-	}
-};
-
 auto create_light_object(StE::Graphics::Scene *scene, const glm::vec3 &light_pos, const std::shared_ptr<StE::Graphics::SphericalLight> &light) {
 	scene->scene_properties().lights_storage().add_light(light);
 
@@ -134,16 +96,6 @@ int main() {
 	std::unique_ptr<StE::Graphics::debug_gui> debug_gui_dispatchable = std::make_unique<StE::Graphics::debug_gui>(ctx, gpu_tasks_profiler.get(), font);
 
 
-	std::unique_ptr<SkyDome> skydome = std::make_unique<SkyDome>(ctx, &scene);
-
-	bool running = true;
-	bool loaded = false;
-	auto model_future = ctx.scheduler().schedule_now(StE::Resource::ModelFactory::load_model_task(ctx,
-																								  R"(Data/models/crytek-sponza/sponza.obj)",
-																								  &scene.object_group(),
-																								  &scene.scene_properties(),
-																								  2.5f));
-
 	const glm::vec3 light0_pos{ -700.6, 138, -70 };
 	const glm::vec3 light1_pos{ 200, 550, 170 };
 	auto light0 = std::make_shared<StE::Graphics::SphericalLight>(8000.f, StE::Graphics::Kelvin(2000), light0_pos, 3.f);
@@ -165,6 +117,23 @@ int main() {
 		auto wall_lamp = std::make_shared<StE::Graphics::SphericalLight>(5000.f, StE::Graphics::Kelvin(1800), v, 2.f);
 		create_light_object(&scene, v, wall_lamp);
 	}
+
+
+	bool running = true;
+	bool loaded = false;
+	auto model_future = ctx.scheduler().schedule_now(StE::Resource::ModelFactory::load_model_task(ctx,
+																								  R"(Data/models/crytek-sponza/sponza.obj)",
+																								  &scene.object_group(),
+																								  &scene.scene_properties(),
+																								  2.5f)
+											   .then([&](StE::optional<StE::task_scheduler*> sched, bool result) {
+												   return StE::Resource::ModelFactory::load_model_task(ctx,
+																									   R"(Data/models/lucy/lucy_low.obj)",
+																									   &scene.object_group(),
+																									   &scene.scene_properties(),
+																									   1.f)(sched) && result;
+											   }));
+
 
 	// Bind input
 	bool mouse_down = false;
@@ -199,7 +168,6 @@ int main() {
 	renderer.add_gui_task(make_gpu_task("footer_text", footer_text.get(), nullptr));
 	renderer.set_deferred_rendering_enabled(false);
 
-
 	while (!loaded && running) {
 		{
 			using namespace StE::Text::Attributes;
@@ -232,14 +200,10 @@ int main() {
 	title_text = nullptr;
 	title_text_task = nullptr;
 
-	auto skydome_task = make_gpu_task("skydome", skydome.get(), nullptr);
-
 	auto &scene_task = renderer.get_scene_task();
-	skydome_task->add_dependency(scene_task);
 
 	renderer.add_gui_task(make_gpu_task("debug_gui", debug_gui_dispatchable.get(), nullptr));
 	renderer.add_task(scene_task);
-	renderer.add_task(skydome_task);
 	renderer.set_deferred_rendering_enabled(true);
 
 	glm::ivec2 last_pointer_pos;
