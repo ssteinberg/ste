@@ -15,7 +15,7 @@ const float far = 100000.0f;
 
 void main() {
 	vec3 p = vert * far * .99f + vec3(0, -far * .05f, 0);
-	vec3 eye_v = dquat_mul_vec(view_transform_buffer.view_transform, p);
+	vec3 eye_v = transform_view(p);
 
 	frag_position = eye_v.xyz;
 	frag_texcoords = tex_coords;

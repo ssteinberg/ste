@@ -19,6 +19,6 @@ struct mesh_draw_params {
 	float _unused;
 };
 
-vec3 model_transform(mesh_descriptor mesh, vec3 v) {
+vec3 transform_model(mesh_descriptor mesh, vec3 v) {
 	return vec4(v, 1) * mesh.model_transform_matrix;
 }

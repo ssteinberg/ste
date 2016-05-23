@@ -22,6 +22,10 @@ layout(std430, binding = 21) restrict readonly buffer proj_transform_buffer_data
 	proj_transform_buffer_struct proj_transform_buffer;
 };
 
+vec3 transform_view(vec3 v) {
+	return dquat_mul_vec(view_transform_buffer.view_transform, v);
+}
+
 vec4 project(vec4 v) {
 	return project(proj_transform_buffer.proj_xywz, v);
 }

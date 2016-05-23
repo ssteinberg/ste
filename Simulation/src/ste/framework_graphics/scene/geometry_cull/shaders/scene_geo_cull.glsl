@@ -47,7 +47,7 @@ void main() {
 
 	mesh_descriptor md = mesh_descriptor_buffer[draw_id];
 
-	vec3 center = dquat_mul_vec(view_transform_buffer.view_transform, model_transform(md, md.bounding_sphere.xyz));
+	vec3 center = transform_view(transform_model(md, md.bounding_sphere.xyz));
 	float radius = md.bounding_sphere.w;
 
 	uint shadow_instance_count = 0;
