@@ -33,7 +33,8 @@ void ObjectGroup::add_object(const std::shared_ptr<Object> &obj) {
 	draw_buffers.get_indices_stack().push_back(ind);
 
 	mesh_descriptor md;
-	md.model_transform = obj->get_model_transform();
+	md.model_transform_matrix = glm::transpose(obj->get_model_transform());
+	md.tangent_transform_quat = obj->get_orientation();
 	md.mat_idx = obj->get_material_id();
 	md.bounding_sphere = obj->get_mesh().bounding_sphere().sphere();
 
@@ -73,7 +74,8 @@ void ObjectGroup::update_dirty_buffers() const {
 							sizeof(object_group_draw_buffers::mesh_data_buffer_type::T) };
 
 		mesh_descriptor md = obj_ptr->md;
-		md.model_transform = obj_ptr->get_model_transform();
+		md.model_transform_matrix = glm::transpose(obj_ptr->get_model_transform());
+		md.tangent_transform_quat = obj_ptr->get_orientation();
 		md.mat_idx = obj_ptr->get_material_id();
 		draw_buffers.get_mesh_data_stack().overwrite(info.index, md);
 

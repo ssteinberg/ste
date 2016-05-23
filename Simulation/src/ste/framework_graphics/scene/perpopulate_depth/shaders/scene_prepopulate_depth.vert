@@ -22,7 +22,7 @@ void main() {
 	uint draw_id = gl_BaseInstanceARB;
 	mesh_descriptor md = mesh_descriptor_buffer[draw_id];
 
-	vec3 wpos = dquat_mul_vec(md.model_transform, vert);
+	vec3 wpos = model_transform(md, vert);
 	vec3 spos = dquat_mul_vec(view_transform_buffer.view_transform, wpos);
 
 	vout.uv = tex_coords;

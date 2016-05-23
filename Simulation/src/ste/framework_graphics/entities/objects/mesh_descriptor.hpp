@@ -5,13 +5,14 @@
 
 #include "stdafx.hpp"
 
-#include <glm/gtx/dual_quaternion.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 namespace StE {
 namespace Graphics {
 
 struct mesh_descriptor {
-	glm::dualquat model_transform;
+	glm::mat3x4 model_transform_matrix;
+	glm::quat tangent_transform_quat;
 
 	glm::vec4 bounding_sphere;
 

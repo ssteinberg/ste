@@ -1,8 +1,7 @@
 
-#include "dual_quaternion.glsl"
-
 struct mesh_descriptor {
-	dual_quaternion model_transform;
+	mat3x4 model_transform_matrix;
+	vec4 tangent_transform_quat;
 
 	vec4 bounding_sphere;
 
@@ -19,3 +18,7 @@ struct mesh_draw_params {
 
 	float _unused;
 };
+
+vec3 model_transform(mesh_descriptor mesh, vec3 v) {
+	return vec4(v, 1) * mesh.model_transform_matrix;
+}

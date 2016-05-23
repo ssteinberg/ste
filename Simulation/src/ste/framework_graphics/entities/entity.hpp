@@ -4,9 +4,9 @@
 #pragma once
 
 #include "stdafx.hpp"
-#include "dual_quaternion.hpp"
 
 #include <glm/gtx/matrix_decompose.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 namespace StE {
 namespace Graphics {
@@ -20,54 +20,54 @@ public:
 
 /**
 *	@brief	Transformable entity. Transformation is encoded as a
-*	dual-quaternion.
+*	4x3 matrix.
 */
-class entity_dquat : public entity {
+class entity_affine : public entity {
 private:
-	glm::dualquat model_transform;
+	glm::mat4x3 model_transform_matrix{ 1.f };
 
 public:
-	virtual ~entity_dquat() noexcept {}
+	virtual ~entity_affine() noexcept {}
 
 	/**
 	*	@brief	Set transform
 	*
 	* 	@param q	Transform dual-quaternion
 	*/
-	virtual void set_model_transform(const glm::dualquat &q) { model_transform = q; }
+	virtual void set_model_transform(const glm::mat4x3 &m) { model_transform_matrix = m; }
 
-	/**
-	*	@brief	Set transform (matrix version)
-	*
-	*	Rotation and translation will be decomposed from the matrix
-	*	and encoded via a dual-quaternion
-	*
-	* 	@param m	4x4 affine transformation matrix
-	*/
-	void set_model_matrix(const glm::mat4 &m) {
+	glm::vec3 get_position() const override {
 		glm::vec3 scale, translation, skew;
 		glm::vec4 perspective;
 		glm::quat orientation;
 
-		glm::decompose(m,
+		glm::decompose(glm::mat4(model_transform_matrix),
 					   scale,
 					   orientation,
 					   translation,
 					   skew,
 					   perspective);
 
-		glm::mat3 r = m;
-		glm::vec3 t = translation;
-
-		this->set_model_transform(dualquat_translate_rotate(r, t));
+		return -translation;
 	}
 
-	glm::vec3 get_position() const override {
-		auto q = (2.f * model_transform.dual * glm::inverse(model_transform.real));
-		return { q.x, q.y, q.z };
+	glm::quat get_orientation() const {
+		glm::vec3 scale, translation, skew;
+		glm::vec4 perspective;
+		glm::quat orientation;
+
+		glm::decompose(glm::mat4(model_transform_matrix),
+					   scale,
+					   orientation,
+					   translation,
+					   skew,
+					   perspective);
+
+		return orientation;
 	}
-	const glm::dualquat &get_model_transform() const {
-		return model_transform;
+
+	auto &get_model_transform() const {
+		return model_transform_matrix;
 	}
 };
 

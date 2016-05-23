@@ -21,7 +21,7 @@
 namespace StE {
 namespace Graphics {
 
-class ObjectGroup : public entity_dquat {
+class ObjectGroup : public entity_affine {
 	using Base = gpu_dispatchable;
 
 private:
