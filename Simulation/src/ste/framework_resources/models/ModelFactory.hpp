@@ -3,7 +3,11 @@
 
 #pragma once
 
+#include "stdafx.hpp"
+
 #include "task.hpp"
+
+#include "Object.hpp"
 #include "ObjectGroup.hpp"
 #include "SceneProperties.hpp"
 #include "Texture2D.hpp"
@@ -37,8 +41,8 @@ private:
 
 	static StE::task<void> load_texture(const std::string &name,
 										bool srgb,
+										bool displacement,
 										texture_map_type *texmap,
-										bool bumpmap,
 										const boost::filesystem::path &dir,
 										float normal_map_bias);
 	static std::vector<std::future<void>> load_textures(task_scheduler* sched,
@@ -52,14 +56,16 @@ private:
 												const tinyobj::shape_t &,
 												Graphics::ObjectGroup *,
 												materials_type &,
-												texture_map_type &);
+												texture_map_type &,
+									 			std::vector<std::shared_ptr<Graphics::Object>> *loaded_objects);
 
 public:
 	static task<bool> load_model_task(const StEngineControl &context,
 									  const boost::filesystem::path &file_path,
 									  Graphics::ObjectGroup *object_group,
 									  Graphics::SceneProperties *scene_properties,
-									  float normal_map_bias);
+									  float normal_map_bias,
+									  std::vector<std::shared_ptr<Graphics::Object>> *loaded_objects);
 };
 
 }
