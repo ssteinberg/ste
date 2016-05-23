@@ -3,7 +3,6 @@
 #include "ModelFactory.hpp"
 
 #include "Material.hpp"
-#include "Object.hpp"
 #include "mesh.hpp"
 
 #include "SurfaceFactory.hpp"
@@ -22,7 +21,8 @@ std::future<void> ModelFactory::process_model_mesh(optional<task_scheduler*> sch
 												  const tinyobj::shape_t &shape,
 												  Graphics::ObjectGroup *object_group,
 												  materials_type &materials,
-												  texture_map_type &textures) {
+												  texture_map_type &textures,
+												  std::vector<std::shared_ptr<Graphics::Object>> *loaded_objects) {
 	std::vector<ObjectVertexData> vbo_data;
 	std::vector<std::uint32_t> vbo_indices;
 	std::vector<std::pair<glm::vec3, glm::vec3>> nt;
@@ -107,7 +107,7 @@ std::future<void> ModelFactory::process_model_mesh(optional<task_scheduler*> sch
 	std::shared_ptr<Core::Texture2D> &diff_map = textures[material.diffuse_texname];
 	std::shared_ptr<Core::Texture2D> &opacity_map = textures[material.alpha_texname];
 	std::shared_ptr<Core::Texture2D> &specular_map = textures[material.specular_texname];
-	std::shared_ptr<Core::Texture2D> normalmap = material.bump_texname.length() ? textures[material.bump_texname + "nm"] : nullptr;
+	std::shared_ptr<Core::Texture2D> &normalmap = textures[material.bump_texname];
 
 	bool has_roughness = material.unknown_parameter.find("roughness") != material.unknown_parameter.end();
 	bool has_metallic = material.unknown_parameter.find("metallic") != material.unknown_parameter.end();
@@ -134,21 +134,24 @@ std::future<void> ModelFactory::process_model_mesh(optional<task_scheduler*> sch
 
 		auto matid = matstorage->add_material(mat);
 
-		std::unique_ptr<StE::Graphics::mesh<StE::Graphics::mesh_subdivion_mode::Triangles>> m = std::make_unique<StE::Graphics::mesh<StE::Graphics::mesh_subdivion_mode::Triangles>>();
+		std::unique_ptr<Graphics::mesh<Graphics::mesh_subdivion_mode::Triangles>> m = std::make_unique<Graphics::mesh<Graphics::mesh_subdivion_mode::Triangles>>();
 		m->set_indices(std::move(vbo_indices));
 		m->set_vertices(std::move(vbo_data));
 
-		std::shared_ptr<StE::Graphics::Object> obj = std::make_shared<StE::Graphics::Object>(std::move(m));
+		std::shared_ptr<Graphics::Object> obj = std::make_shared<Graphics::Object>(std::move(m));
 		obj->set_material_id(matid);
 
 		object_group->add_object(obj);
+
+		if (loaded_objects)
+			loaded_objects->push_back(obj);
 	});
 }
 
 StE::task<void> ModelFactory::load_texture(const std::string &name,
 										  bool srgb,
+										  bool displacement,
 										  texture_map_type *texmap,
-										  bool bumpmap,
 										  const boost::filesystem::path &dir,
 										  float normal_map_bias) {
 	return StE::task<std::unique_ptr<gli::texture2d>>([=](optional<task_scheduler*> sched) {
@@ -163,10 +166,12 @@ StE::task<void> ModelFactory::load_texture(const std::string &name,
 
 		return std::make_unique<gli::texture2d>(std::move(tex));
 	}).then_on_main_thread([=](optional<task_scheduler*> sched, std::unique_ptr<gli::texture2d> &&tex) {
-		if (!tex->empty() && bumpmap) {
-			auto nm = normal_map_from_height_map<gli::FORMAT_R8_UNORM_PACK8>()(*tex, normal_map_bias);
-			auto nm_tex = std::make_shared<Core::Texture2D>(std::move(nm), true);
-			(*texmap)[name + "nm"] = std::move(nm_tex);
+		if (tex->empty())
+			return;
+
+		if (displacement) {
+			auto nm = normal_map_from_height_map<gli::FORMAT_R8_UNORM_PACK8, false>()(*tex, normal_map_bias);
+			(*texmap)[name] = std::make_shared<Core::Texture2D>(std::move(nm), true);
 		}
 		else
 			(*texmap)[name] = std::make_shared<Core::Texture2D>(*tex, true);
@@ -185,27 +190,29 @@ std::vector<std::future<void>> ModelFactory::load_textures(task_scheduler* sched
 	for (auto &shape : shapes) {
 		int mat_idx = shape.mesh.material_ids[0];
 
-		for (auto &str : { materials[mat_idx].diffuse_texname })
+		for (auto &str : { materials[mat_idx].diffuse_texname,
+						   materials[mat_idx].bump_texname,
+						   materials[mat_idx].displacement_texname,
+						   materials[mat_idx].alpha_texname,
+						   materials[mat_idx].specular_texname })
 			if (str.length() && tex_map.find(str) == tex_map.end()) {
+				bool srgb = str == materials[mat_idx].diffuse_texname;
+				bool displacement = str == materials[mat_idx].displacement_texname;
+
 				tex_map.emplace(std::make_pair(str, std::shared_ptr<Core::Texture2D>(nullptr)));
 				futures.push_back(sched->schedule_now(load_texture(str,
-																   true,
+																   srgb,
+																   displacement,
 																   &tex_map,
-																   false,
 																   dir,
 																   normal_map_bias)));
 			}
 
-		for (auto &str : { materials[mat_idx].bump_texname, materials[mat_idx].alpha_texname, materials[mat_idx].specular_texname })
-			if (str.length() && tex_map.find(str) == tex_map.end()) {
-				tex_map.emplace(std::make_pair(str, std::shared_ptr<Core::Texture2D>(nullptr)));
-				futures.push_back(sched->schedule_now(load_texture(str,
-																   false,
-																   &tex_map,
-																   str == materials[mat_idx].bump_texname,
-																   dir,
-																   normal_map_bias)));
-			}
+
+		if (materials[mat_idx].bump_texname.length())
+			materials[mat_idx].displacement_texname = "";
+		else
+			materials[mat_idx].bump_texname = materials[mat_idx].displacement_texname;
 	}
 
 	return futures;
@@ -215,7 +222,8 @@ StE::task<bool> ModelFactory::load_model_task(const StEngineControl &context,
 											  const boost::filesystem::path &file_path,
 											  ObjectGroup *object_group,
 											  Graphics::SceneProperties *scene_properties,
-											  float normal_map_bias) {
+											  float normal_map_bias,
+											  std::vector<std::shared_ptr<Graphics::Object>> *loaded_objects) {
 	struct _model_loader_task_block {
 		bool ret;
 		std::unique_ptr<texture_map_type> textures;
@@ -250,7 +258,7 @@ StE::task<bool> ModelFactory::load_model_task(const StEngineControl &context,
 		{
 			std::vector<std::future<void>> futures;
 			for (auto &shape : shapes)
-				futures.push_back(process_model_mesh(sched, &scene_properties->materials_storage(), shape, object_group, materials, *block.textures));
+				futures.push_back(process_model_mesh(sched, &scene_properties->materials_storage(), shape, object_group, materials, *block.textures, loaded_objects));
 
 			for (auto &f : futures)
 				f.wait();
