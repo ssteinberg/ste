@@ -91,3 +91,7 @@ void debug_gui::dispatch() const {
 
 	ImGui::Render();
 }
+
+bool debug_gui::is_gui_active() const {
+	return ImGui::IsAnyItemActive();
+}

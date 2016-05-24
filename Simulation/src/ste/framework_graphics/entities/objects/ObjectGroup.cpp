@@ -32,9 +32,12 @@ void ObjectGroup::add_object(const std::shared_ptr<Object> &obj) {
 	draw_buffers.get_vbo_stack().push_back(vertices);
 	draw_buffers.get_indices_stack().push_back(ind);
 
+	auto transform_quat = obj->get_orientation();
+	transform_quat.w *= -1.f;
+
 	mesh_descriptor md;
 	md.model_transform_matrix = glm::transpose(obj->get_model_transform());
-	md.tangent_transform_quat = obj->get_orientation();
+	md.tangent_transform_quat = transform_quat;
 	md.mat_idx = mat_storage->index_of(obj->get_material());
 	md.bounding_sphere = obj->get_mesh().bounding_sphere().sphere();
 
@@ -70,9 +73,12 @@ void ObjectGroup::update_dirty_buffers() const {
 		}
 		object_information info = it->second;
 
+		auto transform_quat = obj_ptr->get_orientation();
+		transform_quat.w *= -1.f;
+
 		mesh_descriptor md = obj_ptr->md;
 		md.model_transform_matrix = glm::transpose(obj_ptr->get_model_transform());
-		md.tangent_transform_quat = obj_ptr->get_orientation();
+		md.tangent_transform_quat = transform_quat;
 		md.mat_idx = mat_storage->index_of(obj_ptr->get_material());
 		draw_buffers.get_mesh_data_stack().overwrite(info.index, md);
 	}

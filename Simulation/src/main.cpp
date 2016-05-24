@@ -135,7 +135,7 @@ int main() {
 																								  nullptr,
 																								  nullptr));
 	auto lucy_future = ctx.scheduler().schedule_now(StE::Resource::ModelFactory::load_model_task(ctx,
-													R"(Data/models/lucy/lucy_low.obj)",
+													R"(Data/models/lucy/lucy.obj)",
 													&scene.object_group(),
 													&scene.scene_properties(),
 													1.f,
@@ -209,23 +209,39 @@ int main() {
 	auto lucy = lucy_objects.back();
 	auto lucy_material = lucy_materials.back();
 
-	auto lucy_transform = glm::rotate(glm::mat4(), -glm::half_pi<float>(), {1.f,0.f,.0f});
-	lucy_transform = glm::rotate(lucy_transform, glm::half_pi<float>(), {0.f,0.f,1.0f});
-	lucy_transform = glm::scale(lucy_transform, glm::vec3{13,13,13});
+	auto lucy_transform = glm::rotate(glm::mat4(), -glm::half_pi<float>(), {.0f,1.f,.0f});
+	lucy_transform = glm::scale(lucy_transform, glm::vec3{15,17,15});
 	lucy->set_model_transform(lucy_transform);
 
-	lucy_material->set_metallic(1.f);
 
-
-	float lucy_roughness = .5f;
+	float lucy_roughness = lucy_material->get_roughness();
+	float lucy_anisotropy = lucy_material->get_anisotropy();
+	float lucy_metallic = lucy_material->get_metallic();
+	float lucy_index_of_refraction = lucy_material->get_index_of_refraction();
+	float lucy_sheen = lucy_material->get_sheen();
 	debug_gui_dispatchable->add_custom_gui([&](const glm::ivec2 &bbsize) {
 		ImGui::SetNextWindowPos(ImVec2(20,bbsize.y - 400), ImGuiSetCond_FirstUseEver);
 		ImGui::SetNextWindowSize(ImVec2(120,400), ImGuiSetCond_FirstUseEver);
 		if (ImGui::Begin("Material", nullptr)) {
-			ImGui::InputFloat("Roughness ##value", &lucy_roughness, 0.01f, .0f, 1.f);
+			ImGui::SliderFloat("Roughness ##value", &lucy_roughness, .0f, 1.f);
+			ImGui::SliderFloat("Anisotropy ##value", &lucy_anisotropy, .0f, 1.f);
+			ImGui::SliderFloat("Metallic ##value", &lucy_metallic, .0f, 1.f);
+			ImGui::SliderFloat("IOR ##value", &lucy_index_of_refraction, 1.f, 15.f);
+			ImGui::SliderFloat("Sheen ##value", &lucy_sheen, .0f, 1.f);
 		}
 
 		ImGui::End();
+
+		if (lucy_material->get_roughness() != lucy_roughness)
+			lucy_material->set_roughness(lucy_roughness);
+		if (lucy_material->get_anisotropy() != lucy_anisotropy)
+			lucy_material->set_anisotropy(lucy_anisotropy);
+		if (lucy_material->get_metallic() != lucy_metallic)
+			lucy_material->set_metallic(lucy_metallic);
+		if (lucy_material->get_index_of_refraction() != lucy_index_of_refraction)
+			lucy_material->set_index_of_refraction(lucy_index_of_refraction);
+		if (lucy_material->get_sheen() != lucy_sheen)
+			lucy_material->set_sheen(lucy_sheen);
 	});
 
 
@@ -259,7 +275,7 @@ int main() {
 			constexpr float rotation_factor = .09f;
 			glm::vec2(.0f);
 			auto pp = ctx.get_pointer_position();
-			if (mouse_down) {
+			if (mouse_down && !debug_gui_dispatchable->is_gui_active()) {
 				auto diff_v = static_cast<glm::vec2>(last_pointer_pos - pp) * time_delta * rotation_factor;
 				camera.pitch_and_yaw(-diff_v.y, diff_v.x);
 			}

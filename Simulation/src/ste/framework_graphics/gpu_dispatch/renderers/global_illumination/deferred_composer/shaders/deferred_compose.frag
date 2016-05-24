@@ -123,7 +123,5 @@ void main() {
 	vec3 c = shade(frag);
 
 	vec3 xyY = XYZtoxyY(RGBtoXYZ(c));
-	xyY.z = max(min_luminance, xyY.z);
-
 	gl_FragColor = vec4(xyY, 1);
 }

@@ -24,9 +24,7 @@ hdr_dof_postprocess::hdr_dof_postprocess(const StEngineControl &context, const d
 
 	task = make_gpu_task("hdr", create_dispatchable(), &ctx.gl()->defaut_framebuffer(), create_sub_tasks());
 
-	float big_float = 10000000.f;
-	std::int32_t big_float_i;
-	std::memcpy(&big_float_i, &big_float, sizeof(float));
+	std::int32_t big_float_i = 0x7FFFFFFF;
 	hdr_bokeh_param_buffer_eraser = std::make_unique<StE::Core::PixelBufferObject<std::int32_t>>(std::vector<std::int32_t>{ big_float_i, 0 });
 
 	hdr_compute_minmax = context.glslprograms_pool().fetch_program_task({ "hdr_compute_minmax.glsl" })();

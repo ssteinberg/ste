@@ -32,11 +32,9 @@ void main() {
 	float x = dot(ls, vec4(.25f));
 
 	float l = hdr_lum(max(min_luminance, x));
+	imageStore(hdr_lums, ivec2(gl_GlobalInvocationID.xy), l.xxxx);
 
 	int int_l = floatBitsToInt(l);
-
-	imageStore(hdr_lums, ivec2(gl_GlobalInvocationID.xy), vec4(l,0,0,0));
-
 	atomicMin(params.lum_min, int_l);
 	atomicMax(params.lum_max, int_l);
 
@@ -48,7 +46,7 @@ void main() {
 
 		float min_lum = mix(intBitsToFloat(prev_params.lum_min), intBitsToFloat(params.lum_min), t);
 		float max_lum = mix(intBitsToFloat(prev_params.lum_max), intBitsToFloat(params.lum_max), t);
-		// max_lum = max(max_lum, min_lum + .001f);
+		max_lum = prev_params.lum_max != 0x7FFFFFFF ? max(max_lum, min_lum + min_luminance) : intBitsToFloat(params.lum_max);
 
 		params.lum_min = floatBitsToInt(min_lum);
 		params.lum_max = floatBitsToInt(max_lum);

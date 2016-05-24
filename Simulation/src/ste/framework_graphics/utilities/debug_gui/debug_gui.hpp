@@ -48,6 +48,8 @@ public:
 
 	void add_custom_gui(std::function<void(const glm::ivec2 &)> &&f) { user_guis.push_back(std::move(f)); }
 
+	bool is_gui_active() const;
+
 protected:
 	void set_context_state() const override final {}
 	void dispatch() const override final;
