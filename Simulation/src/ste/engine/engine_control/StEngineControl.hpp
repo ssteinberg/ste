@@ -47,8 +47,6 @@ class StEngineControl {
 private:
 	std::unique_ptr<ste_engine_control_impl> pimpl;
 
-	mutable glm::mat4 projection;
-
 	std::chrono::duration<float> tpf{ 0 };
 
 	void set_projection_dirty();
@@ -61,7 +59,7 @@ private:
 
 public:
 	using framebuffer_resize_signal_type = signal<glm::i32vec2>;
-	using projection_change_signal_type = signal<const glm::mat4&, float, float>;
+	using projection_change_signal_type = signal<float, float, float>;
 	using hid_pointer_button_signal_type = signal<HID::pointer::B, HID::Status, HID::ModifierBits>;
 	using hid_pointer_movement_signal_type = signal<glm::dvec2>;
 	using hid_scroll_signal_type = signal<glm::dvec2>;
@@ -149,12 +147,6 @@ public:
 	float get_fov() const;
 	float get_near_clip() const;
 	float get_projection_aspect() const;
-	glm::mat4 &projection_matrix() const;
-
-	glm::mat4 ortho_projection_matrix() const {
-		auto vs = get_backbuffer_size();
-		return glm::ortho<float>(0, vs.x, 0, vs.y, -1, 1);
-	}
 
 public:
 	glm::i32vec2 get_pointer_position() {

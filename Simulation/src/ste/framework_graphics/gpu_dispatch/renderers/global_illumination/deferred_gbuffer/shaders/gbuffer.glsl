@@ -1,4 +1,4 @@
 
 struct g_buffer_element {
-	mat3x4 data;
+	mat2x4 data;
 };

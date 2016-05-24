@@ -33,7 +33,7 @@ public:
 																				ssss_gen_program(ctx.glslprograms_pool().fetch_program_task({ "ssss.glsl" })()) {
 		ssss_gen_program->set_uniform("near", ctx.get_near_clip());
 		ssss_gen_program->set_uniform("half_over_tan_fov_over_two", .5f / glm::tan(ctx.get_fov() * .5f));
-		projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([this](const glm::mat4&, float ffov, float fnear) {
+		projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([this](float, float ffov, float fnear) {
 			ssss_gen_program->set_uniform("near", fnear);
 			ssss_gen_program->set_uniform("half_over_tan_fov_over_two", .5f / glm::tan(ffov * .5f));
 		});

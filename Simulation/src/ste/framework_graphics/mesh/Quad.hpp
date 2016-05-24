@@ -15,8 +15,11 @@ public:
 	Quad() {
 		std::vector<ObjectVertexData> vert;
 		ObjectVertexData vd;
-		vd.n = { 0,0,1 };
-		vd.t = { 1,0,0 };
+		glm::vec3 n = { 0,0,1 };
+		glm::vec3 t = { 1,0,0 };
+		glm::vec3 b = { 0,1,0 };
+
+		vd.tangent_frame_from_tbn(t,b,n);
 
 		vd.p = { -1, -1, 0 };
 		vd.uv = { 0,0 };

@@ -5,7 +5,7 @@
 
 layout(local_size_x = 128) in;
 
-#include "girenderer_matrix_buffer.glsl"
+#include "girenderer_transform_buffer.glsl"
 #include "common.glsl"
 #include "light.glsl"
 #include "hdr_common.glsl"
@@ -14,17 +14,9 @@ layout(std430, binding = 2) restrict buffer light_data {
 	light_descriptor light_buffer[];
 };
 
-layout(shared, binding = 3) restrict writeonly buffer light_transform_data {
-	vec4 light_transform_buffer[];
-};
-
 layout(binding = 4) uniform atomic_uint ll_counter;
 layout(shared, binding = 5) restrict writeonly buffer ll_data {
 	uint16_t ll[];
-};
-
-layout(std430, binding = 6) restrict readonly buffer hdr_bokeh_parameters_buffer {
-	hdr_bokeh_parameters hdr_params;
 };
 
 uniform vec4 np, rp, lp, tp, bp;
@@ -44,15 +36,13 @@ void main() {
 
 	light_descriptor ld = light_buffer[light_idx];
 
-	// Transform light position/direction
-	vec4 transformed_light_pos = vec4(light_transform(view_matrix_buffer.view_matrix, mat3(view_matrix_buffer.view_matrix), ld), 0);
-	light_transform_buffer[light_idx] = transformed_light_pos;
-
-	// Calculate cutoff based on HDR exposure
-	float hdr_min_lum = intBitsToFloat(hdr_params.lum_min);
+	// Calculate cutoff
 	float minimal_light_luminance = ld.luminance * .0000075f;
-	float err = max(minimal_light_luminance, hdr_lum_to_luminance(hdr_min_lum));
+	float err = minimal_light_luminance;
 	float range = light_calculate_effective_range(ld, err);
+
+	// Transform light position/direction
+	vec3 transformed_light_pos = light_transform(view_transform_buffer.view_transform, ld);
 
 	// Frustum cull based on light effective range
 	float r = range;
@@ -66,6 +56,7 @@ void main() {
 		light_buffer[light_idx].shadow_face_mask = 0;
 
 		light_buffer[light_idx].effective_range = range;
+		light_buffer[light_idx].transformed_position = transformed_light_pos;
 		light_buffer[light_idx].minimal_luminance = minimal_light_luminance;
 	}
 }

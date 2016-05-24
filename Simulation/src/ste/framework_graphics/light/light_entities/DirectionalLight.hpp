@@ -10,23 +10,25 @@ namespace StE {
 namespace Graphics {
 
 class DirectionalLight : public light {
+	using Base = light;
+
 public:
 	DirectionalLight(float luminance, const RGB &diffuse, const glm::vec3 &direction) : light(luminance, 1.f, diffuse) {
 		descriptor.type = LightType::Directional;
-		descriptor.position_direction = decltype(descriptor.position_direction){ direction.x, direction.y, direction.z };
+		descriptor.position = decltype(descriptor.position){ direction.x, direction.y, direction.z };
 	}
 	virtual ~DirectionalLight() noexcept {}
 
 	void set_direction(const glm::vec3 &d) {
-		descriptor.position_direction = decltype(descriptor.position_direction){ d.x, d.y, d.z };
-		dirty = true;
+		descriptor.position = decltype(descriptor.position){ d.x, d.y, d.z };
+		Base::notify();
 	}
 
 	glm::vec3 get_position() const override {
 		auto inf = std::numeric_limits<glm::vec3::value_type>::infinity();
 		return { inf, inf, inf };
 	}
-	glm::vec3 get_direction() const { return { descriptor.position_direction.x, descriptor.position_direction.y, descriptor.position_direction.z }; }
+	glm::vec3 get_direction() const { return { descriptor.position.x, descriptor.position.y, descriptor.position.z }; }
 };
 
 }

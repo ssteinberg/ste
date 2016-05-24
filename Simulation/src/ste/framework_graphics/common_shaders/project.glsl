@@ -1,19 +1,31 @@
 
-float unproject_depth(float d, float proj23) {
-	return -proj23 / d;
+vec4 project(vec4 proj_xywz, vec4 v) {
+	return v.xywz * proj_xywz;
 }
 
-float project_depth(float z, float proj23) {
-	return -proj23 / z;
+float project_depth(float z, float n) {
+	return -n / z;
 }
 
-vec3 unproject_screen_position(float depth, vec2 norm_frag_coords, float proj23, float proj00, float proj11) {
+float unproject_depth(float d, float n) {
+	return -n / d;
+}
+
+vec3 unproject_screen_position(float depth, vec2 norm_frag_coords, vec4 proj_xywz) {
 	norm_frag_coords *= 2.f;
 	norm_frag_coords -= vec2(1);
-	vec3 p = vec3(norm_frag_coords, depth);
 
-	float z = proj23 / p.z;
-	vec2 xy = (p.xy * z) / vec2(proj00, proj11);
+	float z = unproject_depth(depth, proj_xywz.z);
+	vec2 xy = (norm_frag_coords * z) / vec2(proj_xywz.xy);
 
-	return vec3(xy, -z);
+	return vec3(-xy, z);
+}
+
+vec3 unproject_screen_position_with_z(float z, vec2 norm_frag_coords, vec4 proj_xywz) {
+	norm_frag_coords *= 2.f;
+	norm_frag_coords -= vec2(1);
+
+	vec2 xy = (norm_frag_coords * z) / vec2(proj_xywz.xy);
+
+	return vec3(-xy, z);
 }

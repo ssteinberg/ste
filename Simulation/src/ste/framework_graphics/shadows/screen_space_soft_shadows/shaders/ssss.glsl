@@ -5,7 +5,7 @@
 
 layout(local_size_x = 32, local_size_y = 32) in;
 
-#include "girenderer_matrix_buffer.glsl"
+#include "girenderer_transform_buffer.glsl"
 #include "light.glsl"
 #include "shadow.glsl"
 #include "gbuffer.glsl"
@@ -27,8 +27,8 @@ uniform float near;
 uniform float half_over_tan_fov_over_two;
 
 void main() {
-	mat4 inverse_view_matrix = transpose(view_matrix_buffer.transpose_inverse_view_matrix);
-	mat4 transpose_view_matrix = transpose(view_matrix_buffer.view_matrix);
+	mat4 inverse_view_matrix = transpose(view_transform_buffer.transpose_inverse_view_matrix);
+	mat4 transpose_view_matrix = transpose(view_transform_buffer.view_matrix);
 
 	ivec2 coords = ivec2(vec2(gl_GlobalInvocationID.xy) / vec2(imageSize(penumbra_layers).xy) * gbuffer_size(gbuffer_ll_heads));
 
@@ -38,7 +38,7 @@ void main() {
 	float frag_depth = ;
 
 	for (int i = 0; i < light_buffer.length(); ++i) {
-		vec3 l_pos = light_buffer[i].position_direction.xyz;
+		vec3 l_pos = light_buffer[i].position;
 		vec3 shadow_v = w_pos - l_pos;
 		float d = dot(n, -shadow_v);
 

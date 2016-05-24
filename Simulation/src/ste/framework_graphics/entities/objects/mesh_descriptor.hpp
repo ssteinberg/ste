@@ -5,18 +5,21 @@
 
 #include "stdafx.hpp"
 
+#include <glm/gtc/quaternion.hpp>
+
 namespace StE {
 namespace Graphics {
 
 struct mesh_descriptor {
-	glm::mat4 model;
-	glm::mat4 transpose_inverse_model;
+	glm::mat3x4 model_transform_matrix;
+	glm::quat tangent_transform_quat;
 
 	glm::vec4 bounding_sphere;
 
 	std::int32_t mat_idx;
+	std::int32_t light_caster;
 
-	float _unused[3];
+	float _unused[2];
 };
 
 struct mesh_draw_params {

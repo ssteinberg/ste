@@ -24,7 +24,7 @@ namespace Graphics {
 class deferred_gbuffer {
 private:
 	struct g_buffer_element {
-		glm::mat3x4 data;
+		glm::mat2x4 data;
 	};
 
 	static constexpr Core::BufferUsage::buffer_usage usage = static_cast<Core::BufferUsage::buffer_usage>(Core::BufferUsage::BufferUsageSparse);
@@ -38,8 +38,6 @@ private:
 	Core::FramebufferObject fbo;
 
 	gbuffer_type gbuffer;
-	Core::AtomicCounterBufferObject<> gbuffer_ll_counter;
-	std::unique_ptr<Core::Texture2D> gbuffer_ll_heads;
 
 	glm::ivec2 size;
 	int depth_buffer_levels;
@@ -50,7 +48,6 @@ private:
 
 public:
 	deferred_gbuffer(glm::ivec2 size, int depth_buffer_levels) : gbuffer(virtual_gbuffer_size()),
-																 gbuffer_ll_counter(1),
 																 depth_buffer_levels(depth_buffer_levels) {
 		resize(size);
 	}
@@ -58,14 +55,7 @@ public:
 	void resize(glm::ivec2 size);
 	auto& get_size() const { return size; }
 
-	void clear() {
-		std::uint32_t zero = 0;
-		std::uint32_t end = 0xFFFFFFFF;
-		gbuffer_ll_counter.clear(gli::FORMAT_R32_UINT_PACK32, &zero);
-		gbuffer_ll_heads->clear(&end);
-	}
-
-	void bind_gbuffer(bool readonly = true) const;
+	void bind_gbuffer() const;
 
 	auto* get_depth_target() const { return depth_target.get(); }
 	auto* get_downsampled_depth_target() const { return downsampled_depth_target.get(); }

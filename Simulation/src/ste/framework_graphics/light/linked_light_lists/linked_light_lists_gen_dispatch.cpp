@@ -15,7 +15,6 @@ void linked_light_lists_gen_dispatch::set_context_state() const {
 	GL::gl_current_context::get()->viewport(0, 0, size.x, size.y);
 
 	ls->bind_lights_buffer(2);
-	ls->bind_lights_transform_buffer(3);
 	4_storage_idx = Core::buffer_object_cast<Core::ShaderStorageBuffer<std::uint32_t>>(ls->get_active_ll_counter());
 	5_storage_idx = ls->get_active_ll();
 

@@ -22,6 +22,11 @@ public:
 		G() = vec.g;
 		B() = vec.b;
 	}
+	RGB(const T &r, const T &g, const T &b) {
+		R() = r;
+		G() = g;
+		B() = b;
+	}
 
 	T &R() { return c[0]; }
 	T &G() { return c[1]; }
@@ -48,9 +53,9 @@ namespace Graphics {
 
 inline XYZ RGB::toXYZ() const {
 	XYZ ret;
-	ret.X() = 0.412453*R() + 0.357580*G() + 0.180423*B();
-	ret.Y() = 0.212671*R() + 0.715160*G() + 0.072169*B();
-	ret.Z() = 0.019334*R() + 0.119193*G() + 0.950227*B();
+	ret.X() = 0.412453f * R() + 0.357580f * G() + 0.180423f * B();
+	ret.Y() = 0.212671f * R() + 0.715160f * G() + 0.072169f * B();
+	ret.Z() = 0.019334f * R() + 0.119193f * G() + 0.950227f * B();
 	return ret;
 }
 

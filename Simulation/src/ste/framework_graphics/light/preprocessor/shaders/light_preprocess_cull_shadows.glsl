@@ -5,15 +5,14 @@
 
 layout(local_size_x = 128) in;
 
-#include "girenderer_matrix_buffer.glsl"
+#include "girenderer_transform_buffer.glsl"
 #include "light.glsl"
+#include "quaternion.glsl"
 
 layout(std430, binding = 2) restrict buffer light_data {
 	light_descriptor light_buffer[];
 };
-layout(shared, binding = 3) restrict readonly buffer light_transform_data {
-	vec4 light_transform_buffer[];
-};
+
 layout(shared, binding = 4) restrict readonly buffer ll_counter_data {
 	uint32_t ll_counter;
 };
@@ -48,8 +47,8 @@ void main() {
 	uint16_t light_idx = ll[ll_id];
 	light_descriptor ld = light_buffer[light_idx];
 
-	vec3 dir = mat3(view_matrix_buffer.view_matrix) * face_directions[face];
-	vec3 origin = light_transform_buffer[light_idx].xyz;
+	vec3 dir = quat_mul_vec(view_transform_buffer.view_transform.real, face_directions[face]);
+	vec3 origin = ld.transformed_position;
 
 	// Compute minimal bounding sphere of the shadow projection frustum
 	float n = near;

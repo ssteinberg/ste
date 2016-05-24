@@ -1,27 +1,55 @@
 
-#include "hdr_common.glsl"
+#include "common.glsl"
+#include "cook_torrance.glsl"
+#include "disney_diffuse.glsl"
 
 struct material_texture_descriptor {
 	uint64_t tex_handler;
 };
-struct brdf_descriptor {
-	uint64_t tex_handler;
-	int min_theta_in, max_theta_in;
-};
 struct material_descriptor {
-	material_texture_descriptor diffuse;
-	material_texture_descriptor specular;
-	material_texture_descriptor normalmap;
-	material_texture_descriptor alphamap;
-	brdf_descriptor brdf;
-	vec4 emission;
+	material_texture_descriptor basecolor_map;
+	material_texture_descriptor cavity_map;
+	material_texture_descriptor normal_map;
+	material_texture_descriptor mask_map;
+
+	vec3 emission;
+	float roughness;
+	float anisotropy_ratio;
+	float metallic;
+	float F0;
+	float sheen;
 };
 
 const int material_none = 0xFFFFFFFF;
 
-void normal_map(material_descriptor md, float height_map_scale, vec2 uv, vec2 duvdx, vec2 duvdy, inout vec3 n, inout vec3 t, inout vec3 b, inout vec3 P) {
-	if (md.normalmap.tex_handler > 0) {
-		vec4 normal_height = textureGrad(sampler2D(md.normalmap.tex_handler), uv, duvdx, duvdy);
+vec3 material_emission(material_descriptor md) {
+	return md.emission.rgb;
+}
+
+vec3 material_base_color(material_descriptor md, vec2 uv, vec2 duvdx, vec2 duvdy) {
+	return md.basecolor_map.tex_handler>0 ? textureGrad(sampler2D(md.basecolor_map.tex_handler), uv, duvdx, duvdy).rgb : vec3(1.f);
+}
+vec3 material_base_color(material_descriptor md, vec2 uv) {
+	return md.basecolor_map.tex_handler>0 ? texture(sampler2D(md.basecolor_map.tex_handler), uv).rgb : vec3(1.f);
+}
+
+float material_cavity(material_descriptor md, vec2 uv, vec2 duvdx, vec2 duvdy) {
+	return md.cavity_map.tex_handler>0 ? textureGrad(sampler2D(md.cavity_map.tex_handler), uv, duvdx, duvdy).x : 1.f;
+}
+float material_cavity(material_descriptor md, vec2 uv) {
+	return md.cavity_map.tex_handler>0 ? texture(sampler2D(md.cavity_map.tex_handler), uv).x : 1.f;
+}
+
+bool material_is_masked(material_descriptor md, vec2 uv, vec2 duvdx, vec2 duvdy) {
+	return md.mask_map.tex_handler>0 ? textureGrad(sampler2D(md.mask_map.tex_handler), uv, duvdx, duvdy).x < .5f : false;
+}
+bool material_is_masked(material_descriptor md, vec2 uv) {
+	return md.mask_map.tex_handler>0 ? texture(sampler2D(md.mask_map.tex_handler), uv).x < .5f : false;
+}
+
+void normal_map(material_descriptor md, vec2 uv, vec2 duvdx, vec2 duvdy, float height_map_scale, inout vec3 n, inout vec3 t, inout vec3 b, inout vec3 P) {
+	if (md.normal_map.tex_handler > 0) {
+		vec4 normal_height = textureGrad(sampler2D(md.normal_map.tex_handler), uv, duvdx, duvdy);
 		mat3 tbn = mat3(t, b, n);
 
 		float h = normal_height.w * height_map_scale;
@@ -31,45 +59,55 @@ void normal_map(material_descriptor md, float height_map_scale, vec2 uv, vec2 du
 		n = tbn * nm;
 
 		t = cross(n, b);
-		b = cross(t ,n);
+		b = cross(t, n);
 	}
 }
 
-float calc_brdf(material_descriptor md, vec3 position, vec3 normal, vec3 tangent, vec3 bitangent, vec3 incident) {
-	if (md.brdf.tex_handler == 0)
-		return .0f;
+vec3 material_evaluate_reflection(material_descriptor md,
+								  vec3 n,
+								  vec3 t,
+								  vec3 b,
+								  vec3 v,
+								  vec3 l,
+								  vec3 base_color,
+								  float cavity,
+								  vec3 irradiance) {
+	vec3 h = normalize(v + l);
 
-	float theta_min = md.brdf.min_theta_in;
-	float theta_max = md.brdf.max_theta_in;
+	float roughness = md.roughness;
+	float metallic = md.metallic;
+	float F0 = md.F0;
+	float anisotropy_ratio = md.anisotropy_ratio;
+	float sheen = md.sheen;
 
-	mat3 TBN = transpose(mat3(tangent, bitangent, normal));
+	vec3 specular_tint = vec3(1);
+	vec3 sheen_tint = vec3(1);
 
-	vec3 v = incident;
-	vec3 e = -position;
+	vec3 c_spec = mix(F0 * specular_tint, base_color, metallic);
 
-	vec3 win = v;
-	vec3 wout = normalize(e);
-	vec3 lwin = TBN * win;
-	vec3 lwout = TBN * wout;
+	irradiance *= mix(.2f, 1.f, cavity);
 
-	float out_phi = .0f;
-	float tl = length(lwin.xy);
-	vec2 t = lwin.xy / tl;
-	mat2 rotation_mat = mat2(t.x, -t.y, t.y, t.x);
-	vec2 s = normalize(rotation_mat * lwout.xy);
-	out_phi = acos(s.x);
-	out_phi /= 2*pi;
-	out_phi += .5f;
+	vec3 S;
+	if (anisotropy_ratio != 1.0f) {
+		float roughness_x = roughness * anisotropy_ratio;
+		float roughness_y = roughness / anisotropy_ratio;
 
-	float cos_in_theta = dot(win, normal);
-	float in_theta = acos(cos_in_theta) / pi_2;
-	in_theta = clamp((in_theta - theta_min) / (theta_max - theta_min), .0f, 1.f);
+		S = cook_torrance_ansi_brdf(n, t, b,
+									v, l, h,
+									roughness_x,
+									roughness_y,
+									c_spec);
+	} else {
+		S = cook_torrance_iso_brdf(n, v, l, h,
+								   roughness,
+								   c_spec);
+	}
 
-	float cos_out_theta = max(.0f, dot(wout, normal));
-	float out_theta = acos(cos_out_theta) / pi_2;
+	vec3 D = base_color * disney_diffuse_brdf(n, v, l, h,
+											  roughness);
 
-	vec3 tp = vec3(out_phi, out_theta, in_theta);
-	float l = texture(sampler3D(md.brdf.tex_handler), tp).x;
+	vec3 c_sheen = fresnel_schlick(dot(l,h)) * sheen_tint * sheen;
 
-	return l * max(0, cos_in_theta);
+	vec3 brdf = S + (1.f - metallic) * (D + c_sheen);
+	return brdf * irradiance * dot(n, l);
 }

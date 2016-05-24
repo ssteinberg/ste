@@ -8,7 +8,7 @@
 #include "rendering_system.hpp"
 
 #include "Camera.hpp"
-#include "view_matrix_ring_buffer.hpp"
+#include "transforms_ring_buffers.hpp"
 
 #include "gpu_dispatchable.hpp"
 #include "gpu_task.hpp"
@@ -35,9 +35,9 @@
 #include "volumetric_scattering_scatter_dispatch.hpp"
 #include "volumetric_scattering_gather_dispatch.hpp"
 
+#include "deferred_composer.hpp"
+
 #include "deferred_gbuffer.hpp"
-#include "gbuffer_clear_dispatch.hpp"
-#include "gbuffer_sort_dispatch.hpp"
 #include "gbuffer_downsample_depth_dispatch.hpp"
 
 #include "dense_voxel_space.hpp"
@@ -53,35 +53,15 @@ namespace Graphics {
 class GIRenderer : public rendering_system {
 	using Base = rendering_system;
 
-private:
-	class deferred_composition : public gpu_dispatchable {
-		using Base = gpu_dispatchable;
-
-		friend class GIRenderer;
-
-	private:
-		std::shared_ptr<Core::GLSLProgram> program;
-		GIRenderer *dr;
-
-	public:
-		deferred_composition(const StEngineControl &ctx, GIRenderer *dr) : program(ctx.glslprograms_pool().fetch_program_task({ "passthrough.vert", "deferred_compose.frag" })()), dr(dr) {
-			// dr->voxel_space.add_consumer_program(this->get_program());
-		}
-		~deferred_composition() {
-			// dr->voxel_space.remove_consumer_program(this->get_program());
-		}
-
-	protected:
-		void set_context_state() const override final;
-		void dispatch() const override final;
-	};
+	friend class deferred_composer;
 
 private:
 	using ResizeSignalConnectionType = StEngineControl::framebuffer_resize_signal_type::connection_type;
 	using ProjectionSignalConnectionType = StEngineControl::projection_change_signal_type::connection_type;
 	using FbClearTask = StE::Graphics::fb_clear_dispatch<>;
 
-	constexpr static int view_matrix_buffer_bind_location = 20;
+	constexpr static int view_transform_buffer_bind_location = 20;
+	constexpr static int proj_transform_buffer_bind_location = 21;
 
 private:
 	deferred_gbuffer gbuffer;
@@ -90,7 +70,7 @@ private:
 
 	const StEngineControl &ctx;
 	const Camera *camera;
-	view_matrix_ring_buffer view_matrix_buffer;
+	transforms_ring_buffers transform_buffers;
 	Scene *scene;
 	// dense_voxel_space voxel_space;
 
@@ -110,7 +90,6 @@ private:
 	volumetric_scattering_gather_dispatch volumetric_scattering_gather;
 
 	hdr_dof_postprocess hdr;
-	gbuffer_sort_dispatch gbuffer_sorter;
 	gbuffer_downsample_depth_dispatch downsample_depth;
 
 	scene_prepopulate_depth_dispatch prepopulate_depth_dispatch;
@@ -120,25 +99,23 @@ private:
 									scene_task,
 									composer_task,
 									fb_clearer_task,
-									gbuffer_clearer_task,
 									shadow_projector_task,
 									volumetric_scattering_scatter_task,
 									volumetric_scattering_gather_task,
-									gbuffer_sort_task,
 									downsample_depth_task,
 									prepopulate_depth_task,
 									scene_geo_cull_task,
 									lll_gen_task;
 
-	deferred_composition composer;
-	gbuffer_clear_dispatch gbuffer_clearer;
+	deferred_composer composer;
 	FbClearTask fb_clearer;
 
 	bool use_deferred_rendering{ true };
 
 protected:
+	void setup_tasks();
 	void rebuild_task_queue();
-	void update_shader_proj_uniforms(const glm::mat4&);
+
 	static int gbuffer_depth_target_levels();
 
 	const Core::GenericFramebufferObject *get_fbo() const {

@@ -6,93 +6,31 @@
 #include "stdafx.hpp"
 
 #include "Material.hpp"
+#include "resource_storage_stable.hpp"
 
-#include "texture_handle.hpp"
-#include "Sampler.hpp"
-#include "BRDF.hpp"
-
-#include "gstack.hpp"
-
-#include <vector>
 #include <memory>
+#include <vector>
 
 namespace StE {
 namespace Graphics {
 
-class material_storage {
-private:
-	struct material_texture_descriptor {
-		Core::texture_handle tex_handler;
-	};
-	struct material_descriptor {
-		material_texture_descriptor diffuse;
-		material_texture_descriptor specular;
-		material_texture_descriptor normalmap;
-		material_texture_descriptor alphamap;
-		BRDF::brdf_descriptor brdf;
-		glm::vec4 emission;
-	};
+class material_storage : public Core::resource_storage_stable<material_descriptor> {
+	using Base = resource_storage_stable<material_descriptor>;
 
-	std::vector<std::shared_ptr<Material>> materials;
-	Core::SamplerMipmapped linear_sampler;
-	Core::gstack<material_descriptor> stack;
+private:
+	std::vector<std::unique_ptr<Material>> materials;
 
 public:
-	material_storage() {
-		linear_sampler.set_wrap_s(Core::TextureWrapMode::Wrap);
-		linear_sampler.set_wrap_t(Core::TextureWrapMode::Wrap);
-		linear_sampler.set_wrap_r(Core::TextureWrapMode::Wrap);
-		linear_sampler.set_min_filter(Core::TextureFiltering::Linear);
-		linear_sampler.set_mag_filter(Core::TextureFiltering::Linear);
-		linear_sampler.set_mipmap_filter(Core::TextureFiltering::Linear);
-		linear_sampler.set_anisotropic_filter(16);
+	Material* allocate_material() {
+		materials.push_back(Base::allocate_resource<Material>());
+		return materials.back().get();
+	}
+	void erase_material(const Material *material) {
+		erase_resource(material);
 	}
 
-	std::size_t add_material(const std::shared_ptr<Material> &material) {
-		auto diffuse = material->get_diffuse();
-		auto specular = material->get_specular();
-		auto normalmap = material->get_normalmap();
-		auto alphamap = material->get_alphamap();
-		auto brdf = material->get_brdf();
-
-		material_descriptor md;
-		if (diffuse != nullptr) {
-			md.diffuse.tex_handler = diffuse->get_texture_handle(linear_sampler);
-			md.diffuse.tex_handler.make_resident();
-		}
-		if (specular != nullptr) {
-			md.specular.tex_handler = specular->get_texture_handle(linear_sampler);
-			md.specular.tex_handler.make_resident();
-		}
-		if (normalmap != nullptr) {
-			md.normalmap.tex_handler = normalmap->get_texture_handle(linear_sampler);
-			md.normalmap.tex_handler.make_resident();
-		}
-		if (alphamap != nullptr) {
-			md.alphamap.tex_handler = alphamap->get_texture_handle(linear_sampler);
-			md.alphamap.tex_handler.make_resident();
-		}
-		if (brdf != nullptr) {
-			md.brdf = brdf->descriptor();
-			md.brdf.tex_handler.make_resident();
-		}
-		auto memss = material->get_emission();
-		md.emission = decltype(md.emission){ memss.R(), memss.G(), memss.B(), md.emission.w };
-
-		materials.push_back(material);
-		stack.push_back(md);
-
-		return stack.size() - 1;
-	}
-
-	std::size_t add_materials(const std::vector<std::shared_ptr<Material>> &mats) {
-		int i = stack.size();
-		for (auto &m : mats)
-			add_material(m);
-		return i;
-	}
-
-	auto &buffer() const { return stack.get_buffer(); }
+	auto size() const { return materials.size(); }
+	auto &get_materials() const { return materials; }
 };
 
 }

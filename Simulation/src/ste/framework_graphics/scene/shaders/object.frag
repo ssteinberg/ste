@@ -16,16 +16,14 @@ layout(std430, binding = 13) restrict readonly buffer material_data {
 layout(shared, binding = 6) restrict writeonly buffer gbuffer_data {
 	g_buffer_element gbuffer[];
 };
-layout(binding = 7) uniform atomic_uint gbuffer_ll_counter;
-layout(r32ui, binding = 7) restrict uniform uimage2D gbuffer_ll_heads;
 
 #include "gbuffer_store.glsl"
 
 in v {
 	vec3 frag_position;
-	vec2 frag_texcoords;
 	vec3 frag_normal;
 	vec3 frag_tangent;
+	vec2 frag_texcoords;
 	flat int matIdx;
 } vin;
 
@@ -33,8 +31,7 @@ void main() {
 	vec2 uv = vin.frag_texcoords;
 	material_descriptor md = mat_descriptor[vin.matIdx];
 
-	float alpha = md.alphamap.tex_handler>0 ? texture(sampler2D(md.alphamap.tex_handler), uv).x : 1.f;
-	if (alpha == .0f)
+	if (material_is_masked(md, uv))
 		return;
 
 	vec3 P = vin.frag_position;
@@ -43,10 +40,7 @@ void main() {
 
 	int material = vin.matIdx;
 
-	gbuffer_store(gbuffer_ll_heads,
-				  gbuffer_ll_counter,
-				  gl_FragCoord.z,
-				  alpha,
+	gbuffer_store(gl_FragCoord.z,
 				  uv,
 				  dFdx(uv),
 				  dFdy(uv),

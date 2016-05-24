@@ -29,7 +29,6 @@ void scene_geo_cull_dispatch::set_context_state() const {
 	draw_buffers.get_mesh_draw_params_buffer().bind_range(Core::shader_storage_layout_binding(15), 0, draw_buffers.size());
 
 	ls->bind_lights_buffer(2);
-	ls->bind_lights_transform_buffer(3);
 	4_storage_idx = Core::buffer_object_cast<Core::ShaderStorageBuffer<std::uint32_t>>(ls->get_active_ll_counter());
 	5_storage_idx = ls->get_active_ll();
 
@@ -46,8 +45,5 @@ void scene_geo_cull_dispatch::dispatch() const {
 
 	scene->clear_indirect_command_buffers();
 	GL::gl_current_context::get()->memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT);
-
-	scene->object_group().update_dirty_buffers();
 	Core::GL::gl_current_context::get()->dispatch_compute(size, 1, 1);
-	scene->object_group().lock_updated_buffers();
 }

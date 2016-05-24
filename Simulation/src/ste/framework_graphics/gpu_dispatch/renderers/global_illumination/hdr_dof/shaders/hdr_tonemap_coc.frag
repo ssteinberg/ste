@@ -4,9 +4,11 @@
 #extension GL_ARB_bindless_texture : require
 #extension GL_NV_gpu_shader5 : require
 
+#include "chromaticity.glsl"
+
 #include "hdr_common.glsl"
 #include "gbuffer.glsl"
-#include "project.glsl"
+#include "girenderer_transform_buffer.glsl"
 
 layout(location = 0) out vec4 rgbout;
 layout(location = 1) out vec4 bloomout;
@@ -28,7 +30,6 @@ layout(bindless_sampler) uniform sampler1D hdr_vision_properties_texture;
 layout(binding = 11) uniform sampler2D depth;
 
 uniform float aperature_diameter = .02f;
-uniform float proj23;
 
 vec4 hdr_bloom(vec4 RGBL, vec3 XYZ, float mesopic) {
 	if (XYZ.y > bloom_cutoff) {
@@ -43,7 +44,7 @@ vec2 hdr_zcoc(float acuity) {
 	float focal = params.focus;
 
 	float d = texelFetch(depth, ivec2(gl_FragCoord.xy), 0).x;
-	float z_lin = unproject_depth(d, proj23) / 10000.f;
+	float z_lin = unproject_depth(d) / 10000.f;
 
 	float s = z_lin;
 

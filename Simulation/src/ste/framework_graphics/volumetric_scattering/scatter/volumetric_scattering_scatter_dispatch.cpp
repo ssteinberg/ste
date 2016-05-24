@@ -9,7 +9,6 @@ void volumetric_scattering_scatter_dispatch::set_context_state() const {
 	GL::gl_current_context::get()->enable_state(StE::Core::GL::BasicStateName::TEXTURE_CUBE_MAP_SEAMLESS);
 
 	ls->bind_lights_buffer(2);
-	ls->bind_lights_transform_buffer(3);
 
 	llls->bind_lll_buffer();
 

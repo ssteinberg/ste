@@ -17,7 +17,6 @@ in vs_out {
 void main() {
 	material_descriptor md = mat_descriptor[vin.matIdx];
 
-	float alpha = md.alphamap.tex_handler>0 ? texture(sampler2D(md.alphamap.tex_handler), vin.uv).x : 1.f;
-	if (alpha < 1.f)
+	if (material_is_masked(md, vin.uv))
 		discard;
 }
