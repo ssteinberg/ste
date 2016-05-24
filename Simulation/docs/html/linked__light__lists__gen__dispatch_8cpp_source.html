@@ -122,34 +122,33 @@ $(document).ready(function(){initNavTree('linked__light__lists__gen__dispatch_8c
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    GL::gl_current_context::get()-&gt;viewport(0, 0, size.x, size.y);</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    ls-&gt;bind_lights_buffer(2);</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    ls-&gt;bind_lights_transform_buffer(3);</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    4_storage_idx = <a class="code" href="namespaceStE_1_1Core.html#a93b0bd1780ccc716a9caffb2c717947b">Core::buffer_object_cast</a>&lt;<a class="code" href="classStE_1_1Core_1_1ShaderStorageBuffer.html">Core::ShaderStorageBuffer&lt;std::uint32_t&gt;</a>&gt;(ls-&gt;get_active_ll_counter());</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    5_storage_idx = ls-&gt;get_active_ll();</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    lll-&gt;bind_lll_buffer(<span class="keyword">false</span>);</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    11_sampler_idx = depth_sampler;</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    11_tex_unit = *depth_map;</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    <a class="code" href="namespaceStE_1_1Graphics.html#ad48607f06061e2b2175b461474537481">ScreenFillingQuad</a>.<a class="code" href="classStE_1_1Graphics_1_1mesh.html#aaabf51cee7491ed0da9da89827389e8c">vao</a>()-&gt;<a class="code" href="classStE_1_1Core_1_1bindable__resource.html#ab6fc65d33e7c81904f0379aecad8de32">bind</a>();</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    program-&gt;bind();</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;}</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
-<div class="line"><a name="l00032"></a><span class="lineno"><a class="line" href="classStE_1_1Graphics_1_1linked__light__lists__gen__dispatch.html#ae6df99e002fa229dee1ce7e03dad2b85">   32</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classStE_1_1Graphics_1_1linked__light__lists__gen__dispatch.html#ae6df99e002fa229dee1ce7e03dad2b85">linked_light_lists_gen_dispatch::dispatch</a>()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    lll-&gt;clear();</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    GL::gl_current_context::get()-&gt;memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT);</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    GL::gl_current_context::get()-&gt;draw_arrays(GL_TRIANGLE_STRIP, 0, 4);</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;}</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    4_storage_idx = <a class="code" href="namespaceStE_1_1Core.html#a93b0bd1780ccc716a9caffb2c717947b">Core::buffer_object_cast</a>&lt;<a class="code" href="classStE_1_1Core_1_1ShaderStorageBuffer.html">Core::ShaderStorageBuffer&lt;std::uint32_t&gt;</a>&gt;(ls-&gt;get_active_ll_counter());</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    5_storage_idx = ls-&gt;get_active_ll();</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    lll-&gt;bind_lll_buffer(<span class="keyword">false</span>);</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    11_sampler_idx = depth_sampler;</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    11_tex_unit = *depth_map;</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    <a class="code" href="namespaceStE_1_1Graphics.html#ad48607f06061e2b2175b461474537481">ScreenFillingQuad</a>.<a class="code" href="classStE_1_1Graphics_1_1mesh.html#aaabf51cee7491ed0da9da89827389e8c">vao</a>()-&gt;<a class="code" href="classStE_1_1Core_1_1bindable__resource.html#ab6fc65d33e7c81904f0379aecad8de32">bind</a>();</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    program-&gt;bind();</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;}</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
+<div class="line"><a name="l00031"></a><span class="lineno"><a class="line" href="classStE_1_1Graphics_1_1linked__light__lists__gen__dispatch.html#ae6df99e002fa229dee1ce7e03dad2b85">   31</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classStE_1_1Graphics_1_1linked__light__lists__gen__dispatch.html#ae6df99e002fa229dee1ce7e03dad2b85">linked_light_lists_gen_dispatch::dispatch</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    lll-&gt;clear();</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    GL::gl_current_context::get()-&gt;memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT);</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    GL::gl_current_context::get()-&gt;draw_arrays(GL_TRIANGLE_STRIP, 0, 4);</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;}</div>
 <div class="ttc" id="stdafx_8hpp_html"><div class="ttname"><a href="stdafx_8hpp.html">stdafx.hpp</a></div></div>
 <div class="ttc" id="classStE_1_1Graphics_1_1linked__light__lists__gen__dispatch_html_ad2a7de213de93195fb40de7a1e037b7c"><div class="ttname"><a href="classStE_1_1Graphics_1_1linked__light__lists__gen__dispatch.html#ad2a7de213de93195fb40de7a1e037b7c">StE::Graphics::linked_light_lists_gen_dispatch::set_context_state</a></div><div class="ttdeci">virtual void set_context_state() const override</div><div class="ttdef"><b>Definition:</b> <a href="linked__light__lists__gen__dispatch_8cpp_source.html#l00010">linked_light_lists_gen_dispatch.cpp:10</a></div></div>
 <div class="ttc" id="namespaceStE_1_1Graphics_html_ad48607f06061e2b2175b461474537481"><div class="ttname"><a href="namespaceStE_1_1Graphics.html#ad48607f06061e2b2175b461474537481">StE::Graphics::ScreenFillingQuad</a></div><div class="ttdeci">Quad ScreenFillingQuad</div><div class="ttdef"><b>Definition:</b> <a href="Quad_8cpp_source.html#l00005">Quad.cpp:5</a></div></div>
 <div class="ttc" id="Quad_8hpp_html"><div class="ttname"><a href="Quad_8hpp.html">Quad.hpp</a></div></div>
 <div class="ttc" id="classStE_1_1Core_1_1ShaderStorageBuffer_html"><div class="ttname"><a href="classStE_1_1Core_1_1ShaderStorageBuffer.html">StE::Core::ShaderStorageBuffer&lt; std::uint32_t &gt;</a></div></div>
-<div class="ttc" id="classStE_1_1Graphics_1_1linked__light__lists__gen__dispatch_html_ae6df99e002fa229dee1ce7e03dad2b85"><div class="ttname"><a href="classStE_1_1Graphics_1_1linked__light__lists__gen__dispatch.html#ae6df99e002fa229dee1ce7e03dad2b85">StE::Graphics::linked_light_lists_gen_dispatch::dispatch</a></div><div class="ttdeci">virtual void dispatch() const override</div><div class="ttdef"><b>Definition:</b> <a href="linked__light__lists__gen__dispatch_8cpp_source.html#l00032">linked_light_lists_gen_dispatch.cpp:32</a></div></div>
+<div class="ttc" id="classStE_1_1Graphics_1_1linked__light__lists__gen__dispatch_html_ae6df99e002fa229dee1ce7e03dad2b85"><div class="ttname"><a href="classStE_1_1Graphics_1_1linked__light__lists__gen__dispatch.html#ae6df99e002fa229dee1ce7e03dad2b85">StE::Graphics::linked_light_lists_gen_dispatch::dispatch</a></div><div class="ttdeci">virtual void dispatch() const override</div><div class="ttdef"><b>Definition:</b> <a href="linked__light__lists__gen__dispatch_8cpp_source.html#l00031">linked_light_lists_gen_dispatch.cpp:31</a></div></div>
 <div class="ttc" id="classStE_1_1Core_1_1bindable__resource_html_ab6fc65d33e7c81904f0379aecad8de32"><div class="ttname"><a href="classStE_1_1Core_1_1bindable__resource.html#ab6fc65d33e7c81904f0379aecad8de32">StE::Core::bindable_resource::bind</a></div><div class="ttdeci">void bind(const BindingArgs &amp;...args) const </div><div class="ttdef"><b>Definition:</b> <a href="bindable__resource_8hpp_source.html#l00042">bindable_resource.hpp:42</a></div></div>
 <div class="ttc" id="namespaceStE_1_1Core_html_a93b0bd1780ccc716a9caffb2c717947b"><div class="ttname"><a href="namespaceStE_1_1Core.html#a93b0bd1780ccc716a9caffb2c717947b">StE::Core::buffer_object_cast</a></div><div class="ttdeci">BufferTypeTo buffer_object_cast(BufferTypeFrom &amp;&amp;s)</div><div class="ttdef"><b>Definition:</b> <a href="buffer__object__cast_8hpp_source.html#l00017">buffer_object_cast.hpp:17</a></div></div>
-<div class="ttc" id="classStE_1_1Graphics_1_1mesh_html_aaabf51cee7491ed0da9da89827389e8c"><div class="ttname"><a href="classStE_1_1Graphics_1_1mesh.html#aaabf51cee7491ed0da9da89827389e8c">StE::Graphics::mesh::vao</a></div><div class="ttdeci">const StE::Core::VertexArrayObject * vao()</div><div class="ttdef"><b>Definition:</b> <a href="mesh_8hpp_source.html#l00156">mesh.hpp:156</a></div></div>
+<div class="ttc" id="classStE_1_1Graphics_1_1mesh_html_aaabf51cee7491ed0da9da89827389e8c"><div class="ttname"><a href="classStE_1_1Graphics_1_1mesh.html#aaabf51cee7491ed0da9da89827389e8c">StE::Graphics::mesh::vao</a></div><div class="ttdeci">const StE::Core::VertexArrayObject * vao()</div><div class="ttdef"><b>Definition:</b> <a href="mesh_8hpp_source.html#l00144">mesh.hpp:144</a></div></div>
 <div class="ttc" id="linked__light__lists__gen__dispatch_8hpp_html"><div class="ttname"><a href="linked__light__lists__gen__dispatch_8hpp.html">linked_light_lists_gen_dispatch.hpp</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

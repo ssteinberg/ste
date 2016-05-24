@@ -297,7 +297,7 @@ Additional Inherited Members</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">= std::make_shared&lt;ProjectionSignalConnectionType&gt;([<span class="keyword">this</span>](<span class="keyword">const</span> glm::mat4&amp;, <span class="keywordtype">float</span> ffov, <span class="keywordtype">float</span> fnear) {</div>
+<b>Initial value:</b><div class="fragment"><div class="line">= std::make_shared&lt;ProjectionSignalConnectionType&gt;([<span class="keyword">this</span>](float, <span class="keywordtype">float</span> ffov, <span class="keywordtype">float</span> fnear) {</div>
 <div class="line">            ssss_gen_program-&gt;set_uniform(<span class="stringliteral">&quot;near&quot;</span>, fnear);</div>
 <div class="line">            ssss_gen_program-&gt;set_uniform(<span class="stringliteral">&quot;half_over_tan_fov_over_two&quot;</span>, .5f / glm::tan(ffov * .5f));</div>
 <div class="line">        })</div>

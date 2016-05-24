@@ -1,13 +1,17 @@
 <map id="src/ste/framework_graphics/light/light_entities/DirectionalLight.hpp" name="src/ste/framework_graphics/light/light_entities/DirectionalLight.hpp">
-<area shape="rect" id="node2" href="$stdafx_8hpp.html" title="stdafx.hpp" alt="" coords="1389,483,1471,509"/>
-<area shape="rect" id="node27" href="$light_8hpp.html" title="light.hpp" alt="" coords="1479,109,1549,136"/>
-<area shape="rect" id="node4" href="$gl_8hpp.html" title="gl.hpp" alt="" coords="89,557,147,584"/>
-<area shape="rect" id="node6" href="$gl__extensions_8h.html" title="gl_extensions.h" alt="" coords="122,632,237,659"/>
-<area shape="rect" id="node28" href="$entity_8hpp.html" title="entity.hpp" alt="" coords="1475,184,1553,211"/>
-<area shape="rect" id="node30" href="$texture__handle_8hpp.html" title="texture_handle.hpp" alt="" coords="1539,408,1673,435"/>
-<area shape="rect" id="node31" href="$RGB_8hpp.html" title="RGB.hpp" alt="" coords="1871,184,1946,211"/>
-<area shape="rect" id="node32" href="$spectrum_8hpp.html" title="spectrum.hpp" alt="" coords="1767,408,1867,435"/>
-<area shape="rect" id="node34" href="$XYZ_8hpp.html" title="XYZ.hpp" alt="" coords="1872,259,1945,285"/>
-<area shape="rect" id="node36" href="$xyY_8hpp.html" title="xyY.hpp" alt="" coords="1931,333,2001,360"/>
-<area shape="rect" id="node37" href="$Kelvin_8hpp.html" title="Kelvin.hpp" alt="" coords="2025,333,2107,360"/>
+<area shape="rect" id="node2" href="$stdafx_8hpp.html" title="stdafx.hpp" alt="" coords="1585,483,1668,509"/>
+<area shape="rect" id="node27" href="$light_8hpp.html" title="light.hpp" alt="" coords="1542,109,1613,136"/>
+<area shape="rect" id="node4" href="$gl_8hpp.html" title="gl.hpp" alt="" coords="2119,557,2177,584"/>
+<area shape="rect" id="node6" href="$gl__extensions_8h.html" title="gl_extensions.h" alt="" coords="2152,632,2267,659"/>
+<area shape="rect" id="node28" href="$entity_8hpp.html" title="entity.hpp" alt="" coords="1785,184,1863,211"/>
+<area shape="rect" id="node31" href="$light__descriptor_8hpp.html" title="light_descriptor.hpp" alt="" coords="1564,408,1700,435"/>
+<area shape="rect" id="node32" href="$observable__resource_8hpp.html" title="observable_resource.hpp" alt="" coords="2411,333,2584,360"/>
+<area shape="rect" id="node35" href="$texture__handle_8hpp.html" title="texture_handle.hpp" alt="" coords="1354,184,1489,211"/>
+<area shape="rect" id="node36" href="$RGB_8hpp.html" title="RGB.hpp" alt="" coords="2160,184,2235,211"/>
+<area shape="rect" id="node33" href="$signal_8hpp.html" title="signal.hpp" alt="" coords="2460,408,2543,435"/>
+<area shape="rect" id="node34" href="$connection_8hpp.html" title="connection.hpp" alt="" coords="2446,483,2557,509"/>
+<area shape="rect" id="node37" href="$spectrum_8hpp.html" title="spectrum.hpp" alt="" coords="2179,408,2279,435"/>
+<area shape="rect" id="node39" href="$XYZ_8hpp.html" title="XYZ.hpp" alt="" coords="2161,259,2234,285"/>
+<area shape="rect" id="node41" href="$xyY_8hpp.html" title="xyY.hpp" alt="" coords="2267,333,2336,360"/>
+<area shape="rect" id="node42" href="$Kelvin_8hpp.html" title="Kelvin.hpp" alt="" coords="2032,333,2115,360"/>
 </map>

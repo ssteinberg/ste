@@ -7,6 +7,7 @@ var classStE_1_1Graphics_1_1mesh =
     [ "ebo", "classStE_1_1Graphics_1_1mesh.html#a80e3f7d97e296f055820ff002d58853d", null ],
     [ "get_indices", "classStE_1_1Graphics_1_1mesh.html#afbd77b9e84a851ba9883882e1eb06bf7", null ],
     [ "get_vertices", "classStE_1_1Graphics_1_1mesh.html#a5a4e3e63e3bef06211c0a6ee57d17bf5", null ],
+    [ "operator*=", "classStE_1_1Graphics_1_1mesh.html#a754bd8b1dc9fa051fdea2d579dcdb613", null ],
     [ "operator+=", "classStE_1_1Graphics_1_1mesh.html#a104d1241fc73ff211b496f2ebeb7bea3", null ],
     [ "set_indices", "classStE_1_1Graphics_1_1mesh.html#a532ee1ac245151c3a725fb319b342d40", null ],
     [ "set_vertices", "classStE_1_1Graphics_1_1mesh.html#aa272d913b4af222c585f02e5c5102dc8", null ],

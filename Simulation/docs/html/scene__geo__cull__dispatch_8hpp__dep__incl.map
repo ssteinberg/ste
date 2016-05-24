@@ -1,6 +1,7 @@
 <map id="src/ste/framework_graphics/scene/geometry_cull/scene_geo_cull_dispatch.hpp" name="src/ste/framework_graphics/scene/geometry_cull/scene_geo_cull_dispatch.hpp">
-<area shape="rect" id="node2" href="$GIRenderer_8hpp.html" title="src/ste/framework_graphics\l/gpu_dispatch/renderers\l/global_illumination/GIRenderer.hpp" alt="" coords="31,109,266,165"/>
-<area shape="rect" id="node5" href="$scene__geo__cull__dispatch_8cpp.html" title="src/ste/framework_graphics\l/scene/geometry_cull/scene\l_geo_cull_dispatch.cpp" alt="" coords="290,109,482,165"/>
-<area shape="rect" id="node3" href="$main_8cpp.html" title="src/main.cpp" alt="" coords="5,228,103,255"/>
-<area shape="rect" id="node4" href="$GIRenderer_8cpp.html" title="src/ste/framework_graphics\l/gpu_dispatch/renderers\l/global_illumination/GIRenderer.cpp" alt="" coords="127,213,362,269"/>
+<area shape="rect" id="node2" href="$GIRenderer_8hpp.html" title="src/ste/framework_graphics\l/gpu_dispatch/renderers\l/global_illumination/GIRenderer.hpp" alt="" coords="127,109,362,165"/>
+<area shape="rect" id="node6" href="$scene__geo__cull__dispatch_8cpp.html" title="src/ste/framework_graphics\l/scene/geometry_cull/scene\l_geo_cull_dispatch.cpp" alt="" coords="386,109,578,165"/>
+<area shape="rect" id="node3" href="$main_8cpp.html" title="src/main.cpp" alt="" coords="5,235,103,262"/>
+<area shape="rect" id="node4" href="$deferred__composer_8cpp.html" title="src/ste/framework_graphics\l/gpu_dispatch/renderers\l/global_illumination/deferred\l_composer/deferred_composer.cpp" alt="" coords="127,213,362,284"/>
+<area shape="rect" id="node5" href="$GIRenderer_8cpp.html" title="src/ste/framework_graphics\l/gpu_dispatch/renderers\l/global_illumination/GIRenderer.cpp" alt="" coords="386,221,621,277"/>
 </map>

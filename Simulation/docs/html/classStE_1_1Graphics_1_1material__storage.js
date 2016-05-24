@@ -1,7 +1,7 @@
 var classStE_1_1Graphics_1_1material__storage =
 [
-    [ "material_storage", "classStE_1_1Graphics_1_1material__storage.html#a47f698de628f36eea6594e999b9bdac6", null ],
-    [ "add_material", "classStE_1_1Graphics_1_1material__storage.html#ac6a9ba67c06295e2618eaa8c15ebadf4", null ],
-    [ "add_materials", "classStE_1_1Graphics_1_1material__storage.html#a17a60cb4f04aa488b1ae8b4597e5c685", null ],
-    [ "buffer", "classStE_1_1Graphics_1_1material__storage.html#a1a7a3fad39b77e8763d21e486c663624", null ]
+    [ "allocate_material", "classStE_1_1Graphics_1_1material__storage.html#af0e7f0224bdffcfd5711fcf9ab50dbd4", null ],
+    [ "erase_material", "classStE_1_1Graphics_1_1material__storage.html#abe73ad8c8f751892b94a582955fcb382", null ],
+    [ "get_materials", "classStE_1_1Graphics_1_1material__storage.html#ac73c078fe563d4f55e54153787b7cb8e", null ],
+    [ "size", "classStE_1_1Graphics_1_1material__storage.html#a9d57f36d7c3327cbc659bbbb19ea62fd", null ]
 ];

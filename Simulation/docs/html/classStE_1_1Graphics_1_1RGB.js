@@ -3,6 +3,7 @@ var classStE_1_1Graphics_1_1RGB =
     [ "T", "classStE_1_1Graphics_1_1RGB.html#aa9bc706e877a1385f78b94d27e33cb64", null ],
     [ "RGB", "classStE_1_1Graphics_1_1RGB.html#ae5a3b00bd9a5ccb9c352054183bb34da", null ],
     [ "RGB", "classStE_1_1Graphics_1_1RGB.html#afb270ef7bf1bb33170614e1325e2c31b", null ],
+    [ "RGB", "classStE_1_1Graphics_1_1RGB.html#a51aa9373767d1c0624681dc59d72a69d", null ],
     [ "B", "classStE_1_1Graphics_1_1RGB.html#ace7da818eed779e400682c0f15cf0ff4", null ],
     [ "B", "classStE_1_1Graphics_1_1RGB.html#ab5a51628a0e4b7ebbb2f727bd9846abb", null ],
     [ "G", "classStE_1_1Graphics_1_1RGB.html#a27cccd455ca38cf5baee9c33400b9751", null ],

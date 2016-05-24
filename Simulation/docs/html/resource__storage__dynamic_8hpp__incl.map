@@ -1,0 +1,26 @@
+<map id="src/ste/engine/core/gpu_resources/gpu_data_structures/resource_storage/resource_storage_dynamic.hpp" name="src/ste/engine/core/gpu_resources/gpu_data_structures/resource_storage/resource_storage_dynamic.hpp">
+<area shape="rect" id="node2" href="$stdafx_8hpp.html" title="stdafx.hpp" alt="" coords="1808,445,1891,471"/>
+<area shape="rect" id="node27" href="$resource__storage_8hpp.html" title="resource_storage.hpp" alt="" coords="357,273,509,300"/>
+<area shape="rect" id="node31" href="$is__base__of_8hpp.html" title="is_base_of.hpp" alt="" coords="595,355,706,382"/>
+<area shape="rect" id="node32" href="$gstack_8hpp.html" title="gstack.hpp" alt="" coords="735,124,822,151"/>
+<area shape="rect" id="node4" href="$gl_8hpp.html" title="gl.hpp" alt="" coords="2769,527,2826,553"/>
+<area shape="rect" id="node6" href="$gl__extensions_8h.html" title="gl_extensions.h" alt="" coords="2679,601,2793,628"/>
+<area shape="rect" id="node28" href="$observable__resource_8hpp.html" title="observable_resource.hpp" alt="" coords="347,355,520,382"/>
+<area shape="rect" id="node29" href="$signal_8hpp.html" title="signal.hpp" alt="" coords="360,445,443,471"/>
+<area shape="rect" id="node30" href="$connection_8hpp.html" title="connection.hpp" alt="" coords="346,527,457,553"/>
+<area shape="rect" id="node33" href="$ShaderStorageBuffer_8hpp.html" title="ShaderStorageBuffer.hpp" alt="" coords="1597,199,1769,225"/>
+<area shape="rect" id="node34" href="$buffer__object_8hpp.html" title="buffer_object.hpp" alt="" coords="2261,273,2382,300"/>
+<area shape="rect" id="node35" href="$bindable__resource_8hpp.html" title="bindable_resource.hpp" alt="" coords="3095,355,3252,382"/>
+<area shape="rect" id="node37" href="$shader__layout__bindable__resource_8hpp.html" title="shader_layout_bindable\l_resource.hpp" alt="" coords="3195,437,3360,479"/>
+<area shape="rect" id="node38" href="$layout__binding_8hpp.html" title="layout_binding.hpp" alt="" coords="3278,527,3410,553"/>
+<area shape="rect" id="node39" href="$gl__utils_8hpp.html" title="gl_utils.hpp" alt="" coords="2839,355,2926,382"/>
+<area shape="rect" id="node41" href="$gl__current__context_8hpp.html" title="gl_current_context.hpp" alt="" coords="2011,355,2165,382"/>
+<area shape="rect" id="node42" href="$buffer__usage_8hpp.html" title="buffer_usage.hpp" alt="" coords="1429,355,1552,382"/>
+<area shape="rect" id="node43" href="$mapped__buffer__object__unique__ptr_8hpp.html" title="mapped_buffer_object\l_unique_ptr.hpp" alt="" coords="2415,348,2569,389"/>
+<area shape="rect" id="node44" href="$range_8hpp.html" title="range.hpp" alt="" coords="2451,445,2533,471"/>
+<area shape="rect" id="node45" href="$buffer__object__allocator_8hpp.html" title="buffer_object_allocator.hpp" alt="" coords="1577,355,1757,382"/>
+<area shape="rect" id="node46" href="$range__lockable_8hpp.html" title="range_lockable.hpp" alt="" coords="2252,355,2391,382"/>
+<area shape="rect" id="node47" href="$surface__constants_8hpp.html" title="surface_constants.hpp" alt="" coords="1781,355,1936,382"/>
+<area shape="rect" id="node49" href="$buffer__object__cast_8hpp.html" title="buffer_object_cast.hpp" alt="" coords="2645,355,2798,382"/>
+<area shape="rect" id="node36" href="$resource_8hpp.html" title="resource.hpp" alt="" coords="3155,527,3253,553"/>
+</map>

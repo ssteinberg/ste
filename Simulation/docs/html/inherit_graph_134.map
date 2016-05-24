@@ -1,3 +1,4 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classStE_1_1Core_1_1ring__buffer.html" title="StE::Core::ring_buffer\l\&lt; T, max_size, lockless,\l Storage \&gt;" alt="" coords="5,5,177,61"/>
+<area shape="rect" id="node1" href="$classStE_1_1Core_1_1resource__storage.html" title="StE::Core::resource\l_storage\&lt; resource_storage\l_dynamic\&lt; Descriptor \&gt;,\l Descriptor, gstack \&gt;" alt="" coords="5,5,199,76"/>
+<area shape="rect" id="node2" href="$classStE_1_1Core_1_1resource__storage__dynamic.html" title="StE::Core::resource\l_storage_dynamic\&lt; Descriptor \&gt;" alt="" coords="247,20,465,61"/>
 </map>

@@ -1,6 +1,4 @@
 <map id="StE::Graphics::Object" name="StE::Graphics::Object">
-<area shape="rect" id="node2" href="$classStE_1_1Graphics_1_1entity__signalling.html" title="{StE::Graphics::entity\l_signalling\&lt; Object * \&gt;\n||+ entity_signalling()\l+ ~entity_signalling()\l+ signal_model_change()\l+ set_model_matrix()\l}" alt="" coords="27,531,202,667"/>
-<area shape="rect" id="node3" href="$classStE_1_1Graphics_1_1entity__affine.html" title="{StE::Graphics::entity\l_affine\n|# model_mat\l|+ ~entity_affine()\l+ set_model_matrix()\l+ get_model_transform()\l+ get_position()\l}" alt="" coords="5,147,173,283"/>
-<area shape="rect" id="node5" href="$classStE_1_1Graphics_1_1entity__signalling.html" title="{StE::Graphics::entity\l_signalling\&lt; O \&gt;\n||+ entity_signalling()\l+ ~entity_signalling()\l+ signal_model_change()\l+ set_model_matrix()\l}" alt="" coords="111,332,286,468"/>
-<area shape="rect" id="node4" href="$classStE_1_1Graphics_1_1entity.html" title="{StE::Graphics::entity\n||+ ~entity()\l+ get_position()\l}" alt="" coords="18,5,161,97"/>
+<area shape="rect" id="node2" href="$classStE_1_1Graphics_1_1entity__affine.html" title="Transformable entity. Transformation is encoded as a 4x3 matrix. " alt="" coords="9,145,177,296"/>
+<area shape="rect" id="node3" href="$classStE_1_1Graphics_1_1entity.html" title="{StE::Graphics::entity\n||+ ~entity()\l+ get_position()\l}" alt="" coords="21,5,164,97"/>
 </map>

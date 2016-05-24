@@ -4,8 +4,5 @@ var dir_138832ae593ec300d07c0d676234634b =
     [ "entity.hpp", "entity_8hpp.html", [
       [ "entity", "classStE_1_1Graphics_1_1entity.html", "classStE_1_1Graphics_1_1entity" ],
       [ "entity_affine", "classStE_1_1Graphics_1_1entity__affine.html", "classStE_1_1Graphics_1_1entity__affine" ]
-    ] ],
-    [ "entity_signalling.hpp", "entity__signalling_8hpp.html", [
-      [ "entity_signalling", "classStE_1_1Graphics_1_1entity__signalling.html", "classStE_1_1Graphics_1_1entity__signalling" ]
     ] ]
 ];

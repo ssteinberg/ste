@@ -1,0 +1,25 @@
+<map id="src/ste/framework_graphics/gpu_dispatch/renderers/global_illumination/deferred_composer/deferred_composer.hpp" name="src/ste/framework_graphics/gpu_dispatch/renderers/global_illumination/deferred_composer/deferred_composer.hpp">
+<area shape="rect" id="node2" href="$stdafx_8hpp.html" title="stdafx.hpp" alt="" coords="2027,423,2109,449"/>
+<area shape="rect" id="node26" href="$StEngineControl_8hpp.html" title="Engine Control class. " alt="" coords="647,124,790,151"/>
+<area shape="rect" id="node37" href="$GLSLProgram_8hpp.html" title="GLSLProgram.hpp" alt="" coords="1438,273,1570,300"/>
+<area shape="rect" id="node46" href="$gpu__dispatchable_8hpp.html" title="gpu_dispatchable.hpp" alt="" coords="2677,124,2827,151"/>
+<area shape="rect" id="node48" href="$Texture2D_8hpp.html" title="Texture2D.hpp" alt="" coords="2111,199,2222,225"/>
+<area shape="rect" id="node4" href="$gl_8hpp.html" title="gl.hpp" alt="" coords="2341,497,2398,524"/>
+<area shape="rect" id="node30" href="$gl__context_8hpp.html" title="Setups drawing context, window and default framebuffer. " alt="" coords="372,348,479,375"/>
+<area shape="rect" id="node31" href="$hid_8hpp.html" title="hid.hpp" alt="" coords="377,199,441,225"/>
+<area shape="rect" id="node32" href="$signal_8hpp.html" title="signal.hpp" alt="" coords="245,423,328,449"/>
+<area shape="rect" id="node33" href="$task__scheduler_8hpp.html" title="task_scheduler.hpp" alt="" coords="707,423,845,449"/>
+<area shape="rect" id="node34" href="$lru__cache_8hpp.html" title="LRU general purpose disk caching class. " alt="" coords="577,199,681,225"/>
+<area shape="rect" id="node35" href="$rendering__system_8hpp.html" title="rendering_system.hpp" alt="" coords="959,348,1113,375"/>
+<area shape="rect" id="node36" href="$glsl__programs__pool_8hpp.html" title="glsl_programs_pool.hpp" alt="" coords="1362,199,1526,225"/>
+<area shape="rect" id="node38" href="$gl__current__context_8hpp.html" title="gl_current_context.hpp" alt="" coords="2105,348,2260,375"/>
+<area shape="rect" id="node39" href="$is__flat__container_8hpp.html" title="is_flat_container.hpp" alt="" coords="1470,423,1613,449"/>
+<area shape="rect" id="node40" href="$bindable__resource_8hpp.html" title="bindable_resource.hpp" alt="" coords="2441,348,2599,375"/>
+<area shape="rect" id="node41" href="$GLSLShader_8hpp.html" title="GLSLShader.hpp" alt="" coords="1391,348,1515,375"/>
+<area shape="rect" id="node42" href="$texture__handle_8hpp.html" title="texture_handle.hpp" alt="" coords="1743,348,1878,375"/>
+<area shape="rect" id="node43" href="$image__handle_8hpp.html" title="image_handle.hpp" alt="" coords="2285,348,2417,375"/>
+<area shape="rect" id="node44" href="$Log_8hpp.html" title="Log.hpp" alt="" coords="1224,423,1293,449"/>
+<area shape="rect" id="node47" href="$gl__context__state__log_8hpp.html" title="gl_context_state_log.hpp" alt="" coords="2667,199,2837,225"/>
+<area shape="rect" id="node49" href="$texture__base_8hpp.html" title="texture_base.hpp" alt="" coords="2105,273,2228,300"/>
+<area shape="rect" id="node50" href="$image_8hpp.html" title="image.hpp" alt="" coords="2309,273,2393,300"/>
+</map>

@@ -1,7 +1,6 @@
 var searchData=
 [
   ['range',['range',['../structStE_1_1range.html',1,'StE']]],
-  ['range_3c_3e',['range&lt;&gt;',['../structStE_1_1range.html',1,'StE']]],
   ['range_5flockable',['range_lockable',['../classStE_1_1Core_1_1range__lockable.html',1,'StE::Core']]],
   ['rendering_5fsystem',['rendering_system',['../classStE_1_1Graphics_1_1rendering__system.html',1,'StE::Graphics']]],
   ['rendertarget',['RenderTarget',['../classStE_1_1Core_1_1RenderTarget.html',1,'StE::Core']]],
@@ -30,10 +29,20 @@ var searchData=
   ['resource_5fis_5ftexture_3c_20core_5fresource_5ftype_3a_3atexture3d_20_3e',['resource_is_texture&lt; core_resource_type::Texture3D &gt;',['../structStE_1_1Core_1_1resource__is__texture_3_01core__resource__type_1_1Texture3D_01_4.html',1,'StE::Core']]],
   ['resource_5fis_5ftexture_3c_20core_5fresource_5ftype_3a_3atexturecubemap_20_3e',['resource_is_texture&lt; core_resource_type::TextureCubeMap &gt;',['../structStE_1_1Core_1_1resource__is__texture_3_01core__resource__type_1_1TextureCubeMap_01_4.html',1,'StE::Core']]],
   ['resource_5fis_5ftexture_3c_20core_5fresource_5ftype_3a_3atexturecubemaparray_20_3e',['resource_is_texture&lt; core_resource_type::TextureCubeMapArray &gt;',['../structStE_1_1Core_1_1resource__is__texture_3_01core__resource__type_1_1TextureCubeMapArray_01_4.html',1,'StE::Core']]],
+  ['resource_5fstorage',['resource_storage',['../classStE_1_1Core_1_1resource__storage.html',1,'StE::Core']]],
+  ['resource_5fstorage_3c_20resource_5fstorage_5fdynamic_3c_20descriptor_20_3e_2c_20descriptor_2c_20gstack_20_3e',['resource_storage&lt; resource_storage_dynamic&lt; Descriptor &gt;, Descriptor, gstack &gt;',['../classStE_1_1Core_1_1resource__storage.html',1,'StE::Core']]],
+  ['resource_5fstorage_3c_20resource_5fstorage_5fdynamic_3c_20light_5fdescriptor_20_3e_2c_20light_5fdescriptor_2c_20gstack_20_3e',['resource_storage&lt; resource_storage_dynamic&lt; light_descriptor &gt;, light_descriptor, gstack &gt;',['../classStE_1_1Core_1_1resource__storage.html',1,'StE::Core']]],
+  ['resource_5fstorage_3c_20resource_5fstorage_5fstable_3c_20descriptor_20_3e_2c_20descriptor_2c_20gstack_5fstable_20_3e',['resource_storage&lt; resource_storage_stable&lt; Descriptor &gt;, Descriptor, gstack_stable &gt;',['../classStE_1_1Core_1_1resource__storage.html',1,'StE::Core']]],
+  ['resource_5fstorage_3c_20resource_5fstorage_5fstable_3c_20material_5fdescriptor_20_3e_2c_20material_5fdescriptor_2c_20gstack_5fstable_20_3e',['resource_storage&lt; resource_storage_stable&lt; material_descriptor &gt;, material_descriptor, gstack_stable &gt;',['../classStE_1_1Core_1_1resource__storage.html',1,'StE::Core']]],
+  ['resource_5fstorage_5fdynamic',['resource_storage_dynamic',['../classStE_1_1Core_1_1resource__storage__dynamic.html',1,'StE::Core']]],
+  ['resource_5fstorage_5fdynamic_3c_20light_5fdescriptor_20_3e',['resource_storage_dynamic&lt; light_descriptor &gt;',['../classStE_1_1Core_1_1resource__storage__dynamic.html',1,'StE::Core']]],
+  ['resource_5fstorage_5fstable',['resource_storage_stable',['../classStE_1_1Core_1_1resource__storage__stable.html',1,'StE::Core']]],
+  ['resource_5fstorage_5fstable_3c_20material_5fdescriptor_20_3e',['resource_storage_stable&lt; material_descriptor &gt;',['../classStE_1_1Core_1_1resource__storage__stable.html',1,'StE::Core']]],
   ['rgb',['rgb',['../classStE_1_1Text_1_1Attributes_1_1rgb.html',1,'StE::Text::Attributes']]],
   ['rgb',['RGB',['../classStE_1_1Graphics_1_1RGB.html',1,'StE::Graphics']]],
   ['ring_5fbuffer',['ring_buffer',['../classStE_1_1Core_1_1ring__buffer.html',1,'StE::Core']]],
-  ['ring_5fbuffer_3c_20glyph_5fpoint_2c_20ringbuffer_5fmax_5fsize_2c_20using_5flockless_5fringbuffer_20_3e',['ring_buffer&lt; glyph_point, ringbuffer_max_size, using_lockless_ringbuffer &gt;',['../classStE_1_1Core_1_1ring__buffer.html',1,'StE::Core']]],
-  ['ring_5fbuffer_3c_20matrices_2c_203_2c_20false_20_3e',['ring_buffer&lt; matrices, 3, false &gt;',['../classStE_1_1Core_1_1ring__buffer.html',1,'StE::Core']]],
+  ['ring_5fbuffer_3c_20glyph_5fpoint_2c_20ringbuffer_5fmax_5fsize_20_3e',['ring_buffer&lt; glyph_point, ringbuffer_max_size &gt;',['../classStE_1_1Core_1_1ring__buffer.html',1,'StE::Core']]],
+  ['ring_5fbuffer_3c_20proj_5fdata_2c_201_20_3e',['ring_buffer&lt; proj_data, 1 &gt;',['../classStE_1_1Core_1_1ring__buffer.html',1,'StE::Core']]],
+  ['ring_5fbuffer_3c_20view_5fdata_2c_203_20_3e',['ring_buffer&lt; view_data, 3 &gt;',['../classStE_1_1Core_1_1ring__buffer.html',1,'StE::Core']]],
   ['rsh',['RSH',['../classStE_1_1RSH.html',1,'StE']]]
 ];

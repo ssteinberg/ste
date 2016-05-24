@@ -121,32 +121,34 @@ Collaboration diagram for StE::Graphics::mesh_descriptor:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Data Fields</h2></td></tr>
-<tr class="memitem:a94213f0166efac5bcb526de05f3bd878"><td class="memItemLeft" align="right" valign="top">glm::mat4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structStE_1_1Graphics_1_1mesh__descriptor.html#a94213f0166efac5bcb526de05f3bd878">model</a></td></tr>
-<tr class="separator:a94213f0166efac5bcb526de05f3bd878"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6012340ca06b08bbbd5e3b266ffce6fc"><td class="memItemLeft" align="right" valign="top">glm::mat4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structStE_1_1Graphics_1_1mesh__descriptor.html#a6012340ca06b08bbbd5e3b266ffce6fc">transpose_inverse_model</a></td></tr>
-<tr class="separator:a6012340ca06b08bbbd5e3b266ffce6fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae7e03da797d0eb9033d486e526558146"><td class="memItemLeft" align="right" valign="top">glm::mat3x4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structStE_1_1Graphics_1_1mesh__descriptor.html#ae7e03da797d0eb9033d486e526558146">model_transform_matrix</a></td></tr>
+<tr class="separator:ae7e03da797d0eb9033d486e526558146"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a438f7fae8781908ac59f070650b68597"><td class="memItemLeft" align="right" valign="top">glm::quat&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structStE_1_1Graphics_1_1mesh__descriptor.html#a438f7fae8781908ac59f070650b68597">tangent_transform_quat</a></td></tr>
+<tr class="separator:a438f7fae8781908ac59f070650b68597"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a77853df51a5ea35a085e03b7d28331af"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structStE_1_1Graphics_1_1mesh__descriptor.html#a77853df51a5ea35a085e03b7d28331af">bounding_sphere</a></td></tr>
 <tr class="separator:a77853df51a5ea35a085e03b7d28331af"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae7eebaef985a26f51e1bb56e08986c67"><td class="memItemLeft" align="right" valign="top">std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structStE_1_1Graphics_1_1mesh__descriptor.html#ae7eebaef985a26f51e1bb56e08986c67">mat_idx</a></td></tr>
 <tr class="separator:ae7eebaef985a26f51e1bb56e08986c67"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4cf81c7d60fd908cf622d4a45e5986da"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structStE_1_1Graphics_1_1mesh__descriptor.html#a4cf81c7d60fd908cf622d4a45e5986da">_unused</a> [3]</td></tr>
-<tr class="separator:a4cf81c7d60fd908cf622d4a45e5986da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b83c837d9437f4dcb14f091f81365c0"><td class="memItemLeft" align="right" valign="top">std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structStE_1_1Graphics_1_1mesh__descriptor.html#a6b83c837d9437f4dcb14f091f81365c0">light_caster</a></td></tr>
+<tr class="separator:a6b83c837d9437f4dcb14f091f81365c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54a75c767326be7f5fca52deae2d47c9"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structStE_1_1Graphics_1_1mesh__descriptor.html#a54a75c767326be7f5fca52deae2d47c9">_unused</a> [2]</td></tr>
+<tr class="separator:a54a75c767326be7f5fca52deae2d47c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p>Definition at line <a class="el" href="mesh__descriptor_8hpp_source.html#l00011">11</a> of file <a class="el" href="mesh__descriptor_8hpp_source.html">mesh_descriptor.hpp</a>.</p>
+<p>Definition at line <a class="el" href="mesh__descriptor_8hpp_source.html#l00013">13</a> of file <a class="el" href="mesh__descriptor_8hpp_source.html">mesh_descriptor.hpp</a>.</p>
 </div><h2 class="groupheader">Field Documentation</h2>
-<a class="anchor" id="a4cf81c7d60fd908cf622d4a45e5986da"></a>
+<a class="anchor" id="a54a75c767326be7f5fca52deae2d47c9"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">float StE::Graphics::mesh_descriptor::_unused[3]</td>
+          <td class="memname">float StE::Graphics::mesh_descriptor::_unused[2]</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="mesh__descriptor_8hpp_source.html#l00019">19</a> of file <a class="el" href="mesh__descriptor_8hpp_source.html">mesh_descriptor.hpp</a>.</p>
+<p>Definition at line <a class="el" href="mesh__descriptor_8hpp_source.html#l00022">22</a> of file <a class="el" href="mesh__descriptor_8hpp_source.html">mesh_descriptor.hpp</a>.</p>
 
 </div>
 </div>
@@ -160,7 +162,21 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="mesh__descriptor_8hpp_source.html#l00015">15</a> of file <a class="el" href="mesh__descriptor_8hpp_source.html">mesh_descriptor.hpp</a>.</p>
+<p>Definition at line <a class="el" href="mesh__descriptor_8hpp_source.html#l00017">17</a> of file <a class="el" href="mesh__descriptor_8hpp_source.html">mesh_descriptor.hpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a6b83c837d9437f4dcb14f091f81365c0"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t StE::Graphics::mesh_descriptor::light_caster</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="mesh__descriptor_8hpp_source.html#l00020">20</a> of file <a class="el" href="mesh__descriptor_8hpp_source.html">mesh_descriptor.hpp</a>.</p>
 
 </div>
 </div>
@@ -174,35 +190,35 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="mesh__descriptor_8hpp_source.html#l00017">17</a> of file <a class="el" href="mesh__descriptor_8hpp_source.html">mesh_descriptor.hpp</a>.</p>
+<p>Definition at line <a class="el" href="mesh__descriptor_8hpp_source.html#l00019">19</a> of file <a class="el" href="mesh__descriptor_8hpp_source.html">mesh_descriptor.hpp</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a94213f0166efac5bcb526de05f3bd878"></a>
+<a class="anchor" id="ae7e03da797d0eb9033d486e526558146"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">glm::mat4 StE::Graphics::mesh_descriptor::model</td>
+          <td class="memname">glm::mat3x4 StE::Graphics::mesh_descriptor::model_transform_matrix</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="mesh__descriptor_8hpp_source.html#l00012">12</a> of file <a class="el" href="mesh__descriptor_8hpp_source.html">mesh_descriptor.hpp</a>.</p>
+<p>Definition at line <a class="el" href="mesh__descriptor_8hpp_source.html#l00014">14</a> of file <a class="el" href="mesh__descriptor_8hpp_source.html">mesh_descriptor.hpp</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a6012340ca06b08bbbd5e3b266ffce6fc"></a>
+<a class="anchor" id="a438f7fae8781908ac59f070650b68597"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">glm::mat4 StE::Graphics::mesh_descriptor::transpose_inverse_model</td>
+          <td class="memname">glm::quat StE::Graphics::mesh_descriptor::tangent_transform_quat</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="mesh__descriptor_8hpp_source.html#l00013">13</a> of file <a class="el" href="mesh__descriptor_8hpp_source.html">mesh_descriptor.hpp</a>.</p>
+<p>Definition at line <a class="el" href="mesh__descriptor_8hpp_source.html#l00015">15</a> of file <a class="el" href="mesh__descriptor_8hpp_source.html">mesh_descriptor.hpp</a>.</p>
 
 </div>
 </div>

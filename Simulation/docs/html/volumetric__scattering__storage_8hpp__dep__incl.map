@@ -1,10 +1,11 @@
 <map id="src/ste/framework_graphics/volumetric_scattering/volumetric_scattering_storage.hpp" name="src/ste/framework_graphics/volumetric_scattering/volumetric_scattering_storage.hpp">
 <area shape="rect" id="node2" href="$GIRenderer_8hpp.html" title="src/ste/framework_graphics\l/gpu_dispatch/renderers\l/global_illumination/GIRenderer.hpp" alt="" coords="227,235,461,291"/>
-<area shape="rect" id="node5" href="$volumetric__scattering__gather__dispatch_8hpp.html" title="src/ste/framework_graphics\l/volumetric_scattering/gather\l/volumetric_scattering_gather\l_dispatch.hpp" alt="" coords="109,109,307,180"/>
-<area shape="rect" id="node7" href="$volumetric__scattering__scatter__dispatch_8hpp.html" title="src/ste/framework_graphics\l/volumetric_scattering/scatter\l/volumetric_scattering_scatter\l_dispatch.hpp" alt="" coords="381,109,579,180"/>
-<area shape="rect" id="node9" href="$volumetric__scattering__storage_8cpp.html" title="src/ste/framework_graphics\l/volumetric_scattering/volumetric\l_scattering_storage.cpp" alt="" coords="603,117,821,173"/>
-<area shape="rect" id="node3" href="$main_8cpp.html" title="src/main.cpp" alt="" coords="201,361,298,388"/>
-<area shape="rect" id="node4" href="$GIRenderer_8cpp.html" title="src/ste/framework_graphics\l/gpu_dispatch/renderers\l/global_illumination/GIRenderer.cpp" alt="" coords="323,347,557,403"/>
-<area shape="rect" id="node6" href="$volumetric__scattering__gather__dispatch_8cpp.html" title="src/ste/framework_graphics\l/volumetric_scattering/gather\l/volumetric_scattering_gather\l_dispatch.cpp" alt="" coords="5,228,203,299"/>
-<area shape="rect" id="node8" href="$volumetric__scattering__scatter__dispatch_8cpp.html" title="src/ste/framework_graphics\l/volumetric_scattering/scatter\l/volumetric_scattering_scatter\l_dispatch.cpp" alt="" coords="485,228,683,299"/>
+<area shape="rect" id="node6" href="$volumetric__scattering__gather__dispatch_8hpp.html" title="src/ste/framework_graphics\l/volumetric_scattering/gather\l/volumetric_scattering_gather\l_dispatch.hpp" alt="" coords="109,109,307,180"/>
+<area shape="rect" id="node8" href="$volumetric__scattering__scatter__dispatch_8hpp.html" title="src/ste/framework_graphics\l/volumetric_scattering/scatter\l/volumetric_scattering_scatter\l_dispatch.hpp" alt="" coords="381,109,579,180"/>
+<area shape="rect" id="node10" href="$volumetric__scattering__storage_8cpp.html" title="src/ste/framework_graphics\l/volumetric_scattering/volumetric\l_scattering_storage.cpp" alt="" coords="603,117,821,173"/>
+<area shape="rect" id="node3" href="$main_8cpp.html" title="src/main.cpp" alt="" coords="105,369,202,395"/>
+<area shape="rect" id="node4" href="$deferred__composer_8cpp.html" title="src/ste/framework_graphics\l/gpu_dispatch/renderers\l/global_illumination/deferred\l_composer/deferred_composer.cpp" alt="" coords="227,347,461,417"/>
+<area shape="rect" id="node5" href="$GIRenderer_8cpp.html" title="src/ste/framework_graphics\l/gpu_dispatch/renderers\l/global_illumination/GIRenderer.cpp" alt="" coords="485,354,720,410"/>
+<area shape="rect" id="node7" href="$volumetric__scattering__gather__dispatch_8cpp.html" title="src/ste/framework_graphics\l/volumetric_scattering/gather\l/volumetric_scattering_gather\l_dispatch.cpp" alt="" coords="5,228,203,299"/>
+<area shape="rect" id="node9" href="$volumetric__scattering__scatter__dispatch_8cpp.html" title="src/ste/framework_graphics\l/volumetric_scattering/scatter\l/volumetric_scattering_scatter\l_dispatch.cpp" alt="" coords="485,228,683,299"/>
 </map>

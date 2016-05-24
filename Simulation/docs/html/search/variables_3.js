@@ -1,6 +1,7 @@
 var searchData=
 [
   ['c',['c',['../structStE_1_1log__entry__data.html#ab2da25d46dda74446ff1f41144bf65bb',1,'StE::log_entry_data::c()'],['../classStE_1_1Graphics_1_1spectrum.html#aa288e22b21eafb77ed7a452a0ec3833c',1,'StE::Graphics::spectrum::c()']]],
+  ['cavity_5fhandle',['cavity_handle',['../structStE_1_1Graphics_1_1material__descriptor.html#a3528dea2ed8640e2973444d9577cc1b2',1,'StE::Graphics::material_descriptor']]],
   ['compare_5ffunc',['compare_func',['../structStE_1_1Core_1_1sampler__descriptor.html#af650014a028b4be1c8e4a3e560c60426',1,'StE::Core::sampler_descriptor']]],
   ['compare_5fmode',['compare_mode',['../structStE_1_1Core_1_1sampler__descriptor.html#af70aa414113fe86775804a0e77d9d4d3',1,'StE::Core::sampler_descriptor']]],
   ['consumers',['consumers',['../classStE_1_1Graphics_1_1dense__voxel__space.html#acca21f480546264f56af6e67050a03fd',1,'StE::Graphics::dense_voxel_space']]],

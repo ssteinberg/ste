@@ -1,3 +1,4 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structStE_1_1Graphics_1_1gpu__task_1_1AccessToken.html" title="StE::Graphics::gpu\l_task::AccessToken" alt="" coords="5,5,152,47"/>
+<area shape="rect" id="node1" href="$classStE_1_1Graphics_1_1BxDF.html" title="StE::Graphics::BxDF\l\&lt; float \&gt;" alt="" coords="5,5,152,47"/>
+<area shape="rect" id="node2" href="$classStE_1_1Graphics_1_1pBRDF.html" title="StE::Graphics::pBRDF" alt="" coords="200,13,355,39"/>
 </map>

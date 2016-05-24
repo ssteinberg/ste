@@ -7,17 +7,18 @@ var searchData=
   ['map_5frw_5fallowed',['map_rw_allowed',['../classStE_1_1Core_1_1buffer__object.html#a3c92087533c6924bb5a80fc286b522b6',1,'StE::Core::buffer_object']]],
   ['map_5fwrite_5fallowed',['map_write_allowed',['../classStE_1_1Core_1_1buffer__object.html#aba17c4287dbdd71b706fb154ac408bdb',1,'StE::Core::buffer_object']]],
   ['mapped_5fptr_5fdata',['mapped_ptr_data',['../classStE_1_1Core_1_1buffer__object.html#a06b45856d76f94af311caeb5b21e6dff',1,'StE::Core::buffer_object']]],
+  ['mask_5fhandle',['mask_handle',['../structStE_1_1Graphics_1_1material__descriptor.html#a74ff404e41806cd1677ba02f02aaf04e',1,'StE::Graphics::material_descriptor']]],
   ['mat_5fidx',['mat_idx',['../structStE_1_1Graphics_1_1mesh__descriptor.html#ae7eebaef985a26f51e1bb56e08986c67',1,'StE::Graphics::mesh_descriptor']]],
-  ['material_5fid',['material_id',['../classStE_1_1Graphics_1_1Object.html#ae6270d4044e1fecac50e7b79b17df54c',1,'StE::Graphics::Object']]],
+  ['material',['material',['../classStE_1_1Graphics_1_1Object.html#a86be0af4a63f415b5b7f23ab8d2e9b2d',1,'StE::Graphics::Object']]],
   ['max_5factive_5flights_5fper_5fframe',['max_active_lights_per_frame',['../namespaceStE_1_1Graphics.html#a67e9fe71a7d196e2efe27c020c09e2f5',1,'StE::Graphics']]],
   ['max_5fsparse_5flevel',['max_sparse_level',['../classStE_1_1Core_1_1texture__sparse__mipmapped.html#a6634862c13027a481320e8ba7e74f9a7',1,'StE::Core::texture_sparse_mipmapped']]],
-  ['max_5ftheta_5fin',['max_theta_in',['../structStE_1_1Graphics_1_1BRDF_1_1brdf__descriptor.html#ad0c357e5a5913d795764ac9073503a46',1,'StE::Graphics::BRDF::brdf_descriptor']]],
+  ['max_5ftheta_5fin',['max_theta_in',['../structStE_1_1Graphics_1_1pBRDF_1_1brdf__descriptor.html#a8c9635ce0dba04f9f949f60c3b2b1606',1,'StE::Graphics::pBRDF::brdf_descriptor']]],
+  ['metallic',['metallic',['../structStE_1_1Graphics_1_1material__descriptor.html#a623c15ace1a90aaa25211d8be07db6cd',1,'StE::Graphics::material_descriptor']]],
   ['metrics',['metrics',['../structStE_1_1Text_1_1glyph__manager_1_1glyph__descriptor.html#a81e269c95303e243792ef074b8e27164',1,'StE::Text::glyph_manager::glyph_descriptor']]],
   ['min_5ffilter',['min_filter',['../structStE_1_1Core_1_1sampler__descriptor.html#afba322f502fe2c7ea5ab30e58ef361b4',1,'StE::Core::sampler_descriptor']]],
   ['min_5fluminance',['min_luminance',['../classStE_1_1Graphics_1_1human__vision__properties.html#a1c85c00a8f4c97b199929fee740395b4',1,'StE::Graphics::human_vision_properties']]],
-  ['min_5ftheta_5fin',['min_theta_in',['../structStE_1_1Graphics_1_1BRDF_1_1brdf__descriptor.html#a2d2bb0dbfeb5ce4138b9c572f84faffd',1,'StE::Graphics::BRDF::brdf_descriptor']]],
+  ['min_5ftheta_5fin',['min_theta_in',['../structStE_1_1Graphics_1_1pBRDF_1_1brdf__descriptor.html#a1f6dda3002bd4410c11af6ec32cdfa8e',1,'StE::Graphics::pBRDF::brdf_descriptor']]],
   ['mipmap_5ffilter',['mipmap_filter',['../structStE_1_1Core_1_1sampler__descriptor.html#a5a7392adcccc35ae89991debd39c28c6',1,'StE::Core::sampler_descriptor']]],
   ['mode',['mode',['../classStE_1_1Graphics_1_1mesh.html#ac76fb20879b9b91c51c6c57b3fabc9ad',1,'StE::Graphics::mesh']]],
-  ['model',['model',['../structStE_1_1Graphics_1_1mesh__descriptor.html#a94213f0166efac5bcb526de05f3bd878',1,'StE::Graphics::mesh_descriptor']]],
-  ['model_5fmat',['model_mat',['../classStE_1_1Graphics_1_1entity__affine.html#a66f0484054170778ee6d2e88b84f4ee7',1,'StE::Graphics::entity_affine']]]
+  ['model_5ftransform_5fmatrix',['model_transform_matrix',['../structStE_1_1Graphics_1_1mesh__descriptor.html#ae7e03da797d0eb9033d486e526558146',1,'StE::Graphics::mesh_descriptor']]]
 ];

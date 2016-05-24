@@ -1,14 +1,12 @@
 var classStE_1_1Core_1_1ring__buffer =
 [
-    [ "value_type", "classStE_1_1Core_1_1ring__buffer.html#a89beeeabe2422bf2076f1499eaf270e4", null ],
-    [ "ring_buffer", "classStE_1_1Core_1_1ring__buffer.html#af54b8f414a8752e6d89fb4064f647695", null ],
-    [ "ring_buffer", "classStE_1_1Core_1_1ring__buffer.html#ac88dffaf21d932f31a534098908d93d8", null ],
-    [ "ring_buffer", "classStE_1_1Core_1_1ring__buffer.html#adfa3a5e37d92f68a8af4ecdca3a4928c", null ],
-    [ "commit", "classStE_1_1Core_1_1ring__buffer.html#a5e0b5dce6bb4ffcefb86b541b8368ab4", null ],
-    [ "commit", "classStE_1_1Core_1_1ring__buffer.html#ad4d983c1ead8a136f2685a0da5640478", null ],
-    [ "commit", "classStE_1_1Core_1_1ring__buffer.html#ade30fd8dffe4a7d10e32d27a9b35b84a", null ],
-    [ "commit", "classStE_1_1Core_1_1ring__buffer.html#aaaaab70c5388529dff77c3a2db462e77", null ],
-    [ "get_buffer", "classStE_1_1Core_1_1ring__buffer.html#a97cd11c9a79fce57a29d2a7b0dfdfd8f", null ],
-    [ "lock_range", "classStE_1_1Core_1_1ring__buffer.html#aa72b0500e01a5aea963e92167bcdefef", null ],
-    [ "size", "classStE_1_1Core_1_1ring__buffer.html#a400cb064fd7754933ba5536d2160a8fa", null ]
+    [ "storage_type", "classStE_1_1Core_1_1ring__buffer.html#a8b629260d06407b7b21389605a3fd54f", null ],
+    [ "value_type", "classStE_1_1Core_1_1ring__buffer.html#a00f87597b564d842497dd4a553ff1ec9", null ],
+    [ "ring_buffer", "classStE_1_1Core_1_1ring__buffer.html#a6c5e963584de820fd1df2a9bb1bf0ef9", null ],
+    [ "ring_buffer", "classStE_1_1Core_1_1ring__buffer.html#a446c6c6d2362995268b4a90b85cd0b6f", null ],
+    [ "ring_buffer", "classStE_1_1Core_1_1ring__buffer.html#a78cda208db4e72e78e1b210fb6cb0df3", null ],
+    [ "commit", "classStE_1_1Core_1_1ring__buffer.html#a8ed7f127e010b045e0c44bf60f53f446", null ],
+    [ "commit", "classStE_1_1Core_1_1ring__buffer.html#ab2c247a74ad54288f2e8e8b8b84aa7ae", null ],
+    [ "get_buffer", "classStE_1_1Core_1_1ring__buffer.html#af0373337b6454c4f29bcbb967a4936a5", null ],
+    [ "size", "classStE_1_1Core_1_1ring__buffer.html#a0566f1b38db646ea202ae2bff115db6d", null ]
 ];

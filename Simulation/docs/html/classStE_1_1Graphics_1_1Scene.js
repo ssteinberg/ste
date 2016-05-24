@@ -15,5 +15,6 @@ var classStE_1_1Graphics_1_1Scene =
     [ "scene_properties", "classStE_1_1Graphics_1_1Scene.html#aa5133dc15c41173e76bb8430d99c95b0", null ],
     [ "scene_properties", "classStE_1_1Graphics_1_1Scene.html#a0af28c2e4acca8737d9147bb3db79b1e", null ],
     [ "set_context_state", "classStE_1_1Graphics_1_1Scene.html#ad829af105e62206f9202e33a48eaf7db", null ],
-    [ "set_target_gbuffer", "classStE_1_1Graphics_1_1Scene.html#a4f819822cc7e9e6c3729189cfd4458a0", null ]
+    [ "set_target_gbuffer", "classStE_1_1Graphics_1_1Scene.html#a4f819822cc7e9e6c3729189cfd4458a0", null ],
+    [ "update_scene", "classStE_1_1Graphics_1_1Scene.html#aa307db076277f4aa4750667f49a0760b", null ]
 ];

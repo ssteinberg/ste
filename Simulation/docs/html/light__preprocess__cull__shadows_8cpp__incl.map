@@ -1,25 +1,28 @@
 <map id="src/ste/framework_graphics/light/preprocessor/stages/light_preprocess_cull_shadows.cpp" name="src/ste/framework_graphics/light/preprocessor/stages/light_preprocess_cull_shadows.cpp">
-<area shape="rect" id="node2" href="$stdafx_8hpp.html" title="stdafx.hpp" alt="" coords="1432,512,1515,539"/>
-<area shape="rect" id="node27" href="$light__preprocess__cull__lights_8hpp.html" title="light_preprocess_cull\l_lights.hpp" alt="" coords="1324,184,1471,225"/>
-<area shape="rect" id="node30" href="$light__storage_8hpp.html" title="light_storage.hpp" alt="" coords="763,191,885,218"/>
-<area shape="rect" id="node41" href="$light__preprocessor_8hpp.html" title="light_preprocessor.hpp" alt="" coords="1721,109,1877,136"/>
-<area shape="rect" id="node4" href="$gl_8hpp.html" title="gl.hpp" alt="" coords="1351,587,1409,613"/>
-<area shape="rect" id="node6" href="$gl__extensions_8h.html" title="gl_extensions.h" alt="" coords="1384,661,1499,688"/>
-<area shape="rect" id="node28" href="$gpu__dispatchable_8hpp.html" title="gpu_dispatchable.hpp" alt="" coords="1386,363,1537,389"/>
-<area shape="rect" id="node29" href="$gl__context__state__log_8hpp.html" title="gl_context_state_log.hpp" alt="" coords="1254,437,1423,464"/>
-<area shape="rect" id="node31" href="$light_8hpp.html" title="light.hpp" alt="" coords="978,363,1049,389"/>
-<area shape="rect" id="node35" href="$gstack_8hpp.html" title="gstack.hpp" alt="" coords="739,281,826,307"/>
-<area shape="rect" id="node36" href="$ShaderStorageBuffer_8hpp.html" title="ShaderStorageBuffer.hpp" alt="" coords="502,363,674,389"/>
-<area shape="rect" id="node38" href="$range_8hpp.html" title="range.hpp" alt="" coords="198,512,279,539"/>
-<area shape="rect" id="node40" href="$AtomicCounterBufferObject_8hpp.html" title="AtomicCounterBufferObject.hpp" alt="" coords="406,281,613,307"/>
-<area shape="rect" id="node32" href="$entity_8hpp.html" title="entity.hpp" alt="" coords="1051,437,1128,464"/>
-<area shape="rect" id="node33" href="$texture__handle_8hpp.html" title="texture_handle.hpp" alt="" coords="1550,437,1685,464"/>
-<area shape="rect" id="node34" href="$RGB_8hpp.html" title="RGB.hpp" alt="" coords="901,437,976,464"/>
-<area shape="rect" id="node37" href="$buffer__object_8hpp.html" title="buffer_object.hpp" alt="" coords="467,437,589,464"/>
-<area shape="rect" id="node42" href="$StEngineControl_8hpp.html" title="Engine Control class. " alt="" coords="2725,437,2867,464"/>
-<area shape="rect" id="node46" href="$signal_8hpp.html" title="signal.hpp" alt="" coords="2520,512,2603,539"/>
-<area shape="rect" id="node47" href="$gpu__task_8hpp.html" title="gpu_task.hpp" alt="" coords="1811,281,1911,307"/>
-<area shape="rect" id="node48" href="$hdr__dof__postprocess_8hpp.html" title="hdr_dof_postprocess.hpp" alt="" coords="1864,191,2035,218"/>
-<area shape="rect" id="node49" href="$GLSLProgram_8hpp.html" title="GLSLProgram.hpp" alt="" coords="2189,363,2321,389"/>
-<area shape="rect" id="node50" href="$light__preprocess__cull__shadows_8hpp.html" title="light_preprocess_cull\l_shadows.hpp" alt="" coords="1589,273,1736,315"/>
+<area shape="rect" id="node2" href="$stdafx_8hpp.html" title="stdafx.hpp" alt="" coords="1773,512,1856,539"/>
+<area shape="rect" id="node27" href="$light__preprocess__cull__lights_8hpp.html" title="light_preprocess_cull\l_lights.hpp" alt="" coords="1817,184,1964,225"/>
+<area shape="rect" id="node31" href="$light__storage_8hpp.html" title="light_storage.hpp" alt="" coords="1988,191,2111,218"/>
+<area shape="rect" id="node45" href="$light__preprocessor_8hpp.html" title="light_preprocessor.hpp" alt="" coords="1190,109,1346,136"/>
+<area shape="rect" id="node4" href="$gl_8hpp.html" title="gl.hpp" alt="" coords="2221,587,2278,613"/>
+<area shape="rect" id="node6" href="$gl__extensions_8h.html" title="gl_extensions.h" alt="" coords="2253,661,2368,688"/>
+<area shape="rect" id="node28" href="$gpu__dispatchable_8hpp.html" title="gpu_dispatchable.hpp" alt="" coords="1221,363,1371,389"/>
+<area shape="rect" id="node29" href="$gl__context__state__log_8hpp.html" title="gl_context_state_log.hpp" alt="" coords="1582,437,1751,464"/>
+<area shape="rect" id="node32" href="$light_8hpp.html" title="light.hpp" alt="" coords="2030,363,2101,389"/>
+<area shape="rect" id="node39" href="$resource__storage__dynamic_8hpp.html" title="resource_storage_dynamic.hpp" alt="" coords="2512,281,2723,307"/>
+<area shape="rect" id="node43" href="$ShaderStorageBuffer_8hpp.html" title="ShaderStorageBuffer.hpp" alt="" coords="3042,512,3214,539"/>
+<area shape="rect" id="node44" href="$AtomicCounterBufferObject_8hpp.html" title="AtomicCounterBufferObject.hpp" alt="" coords="1174,281,1381,307"/>
+<area shape="rect" id="node33" href="$entity_8hpp.html" title="entity.hpp" alt="" coords="2288,437,2365,464"/>
+<area shape="rect" id="node34" href="$light__descriptor_8hpp.html" title="light_descriptor.hpp" alt="" coords="2077,437,2213,464"/>
+<area shape="rect" id="node35" href="$observable__resource_8hpp.html" title="observable_resource.hpp" alt="" coords="1333,437,1507,464"/>
+<area shape="rect" id="node37" href="$texture__handle_8hpp.html" title="texture_handle.hpp" alt="" coords="1123,437,1258,464"/>
+<area shape="rect" id="node38" href="$RGB_8hpp.html" title="RGB.hpp" alt="" coords="1979,437,2053,464"/>
+<area shape="rect" id="node36" href="$signal_8hpp.html" title="signal.hpp" alt="" coords="509,512,592,539"/>
+<area shape="rect" id="node40" href="$resource__storage_8hpp.html" title="resource_storage.hpp" alt="" coords="2541,363,2693,389"/>
+<area shape="rect" id="node41" href="$is__base__of_8hpp.html" title="is_base_of.hpp" alt="" coords="2694,437,2805,464"/>
+<area shape="rect" id="node42" href="$gstack_8hpp.html" title="gstack.hpp" alt="" coords="2829,437,2915,464"/>
+<area shape="rect" id="node46" href="$StEngineControl_8hpp.html" title="Engine Control class. " alt="" coords="347,437,490,464"/>
+<area shape="rect" id="node47" href="$gpu__task_8hpp.html" title="gpu_task.hpp" alt="" coords="833,281,933,307"/>
+<area shape="rect" id="node48" href="$hdr__dof__postprocess_8hpp.html" title="hdr_dof_postprocess.hpp" alt="" coords="797,191,968,218"/>
+<area shape="rect" id="node49" href="$GLSLProgram_8hpp.html" title="GLSLProgram.hpp" alt="" coords="662,363,794,389"/>
+<area shape="rect" id="node50" href="$light__preprocess__cull__shadows_8hpp.html" title="light_preprocess_cull\l_shadows.hpp" alt="" coords="1456,273,1603,315"/>
 </map>

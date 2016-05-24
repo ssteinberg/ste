@@ -136,30 +136,26 @@ $(document).ready(function(){initNavTree('scene__geo__cull__dispatch_8cpp_source
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    draw_buffers.get_mesh_draw_params_buffer().bind_range(<a class="code" href="namespaceStE_1_1Core.html#a278b03dd771a061419b574001231bdcd">Core::shader_storage_layout_binding</a>(15), 0, draw_buffers.size());</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    ls-&gt;bind_lights_buffer(2);</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    ls-&gt;bind_lights_transform_buffer(3);</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    4_storage_idx = <a class="code" href="namespaceStE_1_1Core.html#a93b0bd1780ccc716a9caffb2c717947b">Core::buffer_object_cast</a>&lt;Core::ShaderStorageBuffer&lt;std::uint32_t&gt;&gt;(ls-&gt;get_active_ll_counter());</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    5_storage_idx = ls-&gt;get_active_ll();</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    program-&gt;bind();</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;}</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
-<div class="line"><a name="l00039"></a><span class="lineno"><a class="line" href="classStE_1_1Graphics_1_1scene__geo__cull__dispatch.html#ab4848a56b9e5bd3b8fc14d6df60ca93d">   39</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classStE_1_1Graphics_1_1scene__geo__cull__dispatch.html#ab4848a56b9e5bd3b8fc14d6df60ca93d">scene_geo_cull_dispatch::dispatch</a>()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    commit_idbs();</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <span class="keyword">auto</span>&amp; draw_buffers = scene-&gt;object_group().get_draw_buffers();</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    constexpr <span class="keywordtype">int</span> jobs = 128;</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    <span class="keyword">auto</span> size = (draw_buffers.size() + jobs - 1) / jobs;</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    scene-&gt;clear_indirect_command_buffers();</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    GL::gl_current_context::get()-&gt;memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT);</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    scene-&gt;object_group().update_dirty_buffers();</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <a class="code" href="classStE_1_1Core_1_1GL_1_1gl__current__context.html#a200e37b5e758b2215a7ea0476b11f37c">Core::GL::gl_current_context::get</a>()-&gt;<a class="code" href="classStE_1_1Core_1_1GL_1_1gl__generic__context.html#ab5810ef2be89434794e1c54a0096b9a7">dispatch_compute</a>(size, 1, 1);</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    scene-&gt;object_group().lock_updated_buffers();</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;}</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    4_storage_idx = <a class="code" href="namespaceStE_1_1Core.html#a93b0bd1780ccc716a9caffb2c717947b">Core::buffer_object_cast</a>&lt;Core::ShaderStorageBuffer&lt;std::uint32_t&gt;&gt;(ls-&gt;get_active_ll_counter());</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    5_storage_idx = ls-&gt;get_active_ll();</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    program-&gt;bind();</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;}</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
+<div class="line"><a name="l00038"></a><span class="lineno"><a class="line" href="classStE_1_1Graphics_1_1scene__geo__cull__dispatch.html#ab4848a56b9e5bd3b8fc14d6df60ca93d">   38</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classStE_1_1Graphics_1_1scene__geo__cull__dispatch.html#ab4848a56b9e5bd3b8fc14d6df60ca93d">scene_geo_cull_dispatch::dispatch</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    commit_idbs();</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <span class="keyword">auto</span>&amp; draw_buffers = scene-&gt;object_group().get_draw_buffers();</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    constexpr <span class="keywordtype">int</span> jobs = 128;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <span class="keyword">auto</span> size = (draw_buffers.size() + jobs - 1) / jobs;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    scene-&gt;clear_indirect_command_buffers();</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    GL::gl_current_context::get()-&gt;memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT);</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <a class="code" href="classStE_1_1Core_1_1GL_1_1gl__current__context.html#a200e37b5e758b2215a7ea0476b11f37c">Core::GL::gl_current_context::get</a>()-&gt;<a class="code" href="classStE_1_1Core_1_1GL_1_1gl__generic__context.html#ab5810ef2be89434794e1c54a0096b9a7">dispatch_compute</a>(size, 1, 1);</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;}</div>
 <div class="ttc" id="stdafx_8hpp_html"><div class="ttname"><a href="stdafx_8hpp.html">stdafx.hpp</a></div></div>
-<div class="ttc" id="classStE_1_1Graphics_1_1scene__geo__cull__dispatch_html_ab4848a56b9e5bd3b8fc14d6df60ca93d"><div class="ttname"><a href="classStE_1_1Graphics_1_1scene__geo__cull__dispatch.html#ab4848a56b9e5bd3b8fc14d6df60ca93d">StE::Graphics::scene_geo_cull_dispatch::dispatch</a></div><div class="ttdeci">void dispatch() const overridefinal</div><div class="ttdef"><b>Definition:</b> <a href="scene__geo__cull__dispatch_8cpp_source.html#l00039">scene_geo_cull_dispatch.cpp:39</a></div></div>
+<div class="ttc" id="classStE_1_1Graphics_1_1scene__geo__cull__dispatch_html_ab4848a56b9e5bd3b8fc14d6df60ca93d"><div class="ttname"><a href="classStE_1_1Graphics_1_1scene__geo__cull__dispatch.html#ab4848a56b9e5bd3b8fc14d6df60ca93d">StE::Graphics::scene_geo_cull_dispatch::dispatch</a></div><div class="ttdeci">void dispatch() const overridefinal</div><div class="ttdef"><b>Definition:</b> <a href="scene__geo__cull__dispatch_8cpp_source.html#l00038">scene_geo_cull_dispatch.cpp:38</a></div></div>
 <div class="ttc" id="namespaceStE_1_1Core_html_a278b03dd771a061419b574001231bdcd"><div class="ttname"><a href="namespaceStE_1_1Core.html#a278b03dd771a061419b574001231bdcd">StE::Core::shader_storage_layout_binding</a></div><div class="ttdeci">layout_binding&lt; shader_storage_buffer_object_layout_binding_type &gt; shader_storage_layout_binding</div><div class="ttdef"><b>Definition:</b> <a href="ShaderStorageBuffer_8hpp_source.html#l00012">ShaderStorageBuffer.hpp:12</a></div></div>
 <div class="ttc" id="classStE_1_1Core_1_1GL_1_1gl__current__context_html_a200e37b5e758b2215a7ea0476b11f37c"><div class="ttname"><a href="classStE_1_1Core_1_1GL_1_1gl__current__context.html#a200e37b5e758b2215a7ea0476b11f37c">StE::Core::GL::gl_current_context::get</a></div><div class="ttdeci">static gl_generic_context * get()</div><div class="ttdef"><b>Definition:</b> <a href="gl__current__context_8hpp_source.html#l00022">gl_current_context.hpp:22</a></div></div>
 <div class="ttc" id="classStE_1_1Core_1_1GL_1_1gl__generic__context_html_ab5810ef2be89434794e1c54a0096b9a7"><div class="ttname"><a href="classStE_1_1Core_1_1GL_1_1gl__generic__context.html#ab5810ef2be89434794e1c54a0096b9a7">StE::Core::GL::gl_generic_context::dispatch_compute</a></div><div class="ttdeci">void dispatch_compute(std::uint32_t x, std::uint32_t y, std::uint32_t z) const </div><div class="ttdef"><b>Definition:</b> <a href="gl__generic__context_8hpp_source.html#l00520">gl_generic_context.hpp:520</a></div></div>

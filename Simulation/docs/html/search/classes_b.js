@@ -9,7 +9,7 @@ var searchData=
   ['legendre_5fpolynomial_3c_20m_2c_20l_2c_20typename_20std_3a_3aenable_5fif_5ft_3c_20l_3d_3dm_2b1_20_3e_20_3e',['legendre_polynomial&lt; m, l, typename std::enable_if_t&lt; l==m+1 &gt; &gt;',['../classStE_1_1legendre__polynomial_3_01m_00_01l_00_01typename_01std_1_1enable__if__t_3_01l_0A_0Am_091_01_4_01_4.html',1,'StE']]],
   ['legendre_5fpolynomial_3c_20m_2c_20m_20_3e',['legendre_polynomial&lt; m, m &gt;',['../classStE_1_1legendre__polynomial_3_01m_00_01m_01_4.html',1,'StE']]],
   ['light',['light',['../classStE_1_1Graphics_1_1light.html',1,'StE::Graphics']]],
-  ['light_5fdescriptor',['light_descriptor',['../structStE_1_1Graphics_1_1light_1_1light__descriptor.html',1,'StE::Graphics::light']]],
+  ['light_5fdescriptor',['light_descriptor',['../structStE_1_1Graphics_1_1light__descriptor.html',1,'StE::Graphics']]],
   ['light_5fpreprocess_5fcull_5flights',['light_preprocess_cull_lights',['../classStE_1_1Graphics_1_1light__preprocess__cull__lights.html',1,'StE::Graphics']]],
   ['light_5fpreprocess_5fcull_5fshadows',['light_preprocess_cull_shadows',['../classStE_1_1Graphics_1_1light__preprocess__cull__shadows.html',1,'StE::Graphics']]],
   ['light_5fpreprocessor',['light_preprocessor',['../classStE_1_1Graphics_1_1light__preprocessor.html',1,'StE::Graphics']]],

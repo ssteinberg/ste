@@ -127,8 +127,8 @@ Collaboration diagram for StE::StEngineControl:</div>
 Public Types</h2></td></tr>
 <tr class="memitem:a0867e1f3123396050a4c708bbe9060bb"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1StEngineControl.html#a0867e1f3123396050a4c708bbe9060bb">framebuffer_resize_signal_type</a> = <a class="el" href="classStE_1_1signal.html">signal</a>&lt; glm::i32vec2 &gt;</td></tr>
 <tr class="separator:a0867e1f3123396050a4c708bbe9060bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7c084187405c0a81c5218ba6b66ab080"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1StEngineControl.html#a7c084187405c0a81c5218ba6b66ab080">projection_change_signal_type</a> = <a class="el" href="classStE_1_1signal.html">signal</a>&lt; const glm::mat4 &amp;, float, float &gt;</td></tr>
-<tr class="separator:a7c084187405c0a81c5218ba6b66ab080"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a372cc0233cf6f606486e656f7f304dd0"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1StEngineControl.html#a372cc0233cf6f606486e656f7f304dd0">projection_change_signal_type</a> = <a class="el" href="classStE_1_1signal.html">signal</a>&lt; float, float, float &gt;</td></tr>
+<tr class="separator:a372cc0233cf6f606486e656f7f304dd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a264e0dabc0948b48fdb8d39b796edb12"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1StEngineControl.html#a264e0dabc0948b48fdb8d39b796edb12">hid_pointer_button_signal_type</a> = <a class="el" href="classStE_1_1signal.html">signal</a>&lt; <a class="el" href="classStE_1_1HID_1_1pointer.html#a4f2bee21a0aef0bd926069192c92ccd6">HID::pointer::B</a>, <a class="el" href="namespaceStE_1_1HID.html#acc512c70a66b06f07900e02c977e03d2">HID::Status</a>, <a class="el" href="namespaceStE_1_1HID.html#a0ba8579430702aa7cabf94635ab7f169">HID::ModifierBits</a> &gt;</td></tr>
 <tr class="separator:a264e0dabc0948b48fdb8d39b796edb12"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adcf4bd2a194a3caa3f3f15bffe98bfb3"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1StEngineControl.html#adcf4bd2a194a3caa3f3f15bffe98bfb3">hid_pointer_movement_signal_type</a> = <a class="el" href="classStE_1_1signal.html">signal</a>&lt; glm::dvec2 &gt;</td></tr>
@@ -214,10 +214,6 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 <tr class="separator:a550c8f1118e205acda790cc66c0cefa9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a076b7e268743e449ca1847f21fc6e0ef"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1StEngineControl.html#a076b7e268743e449ca1847f21fc6e0ef">get_projection_aspect</a> () const </td></tr>
 <tr class="separator:a076b7e268743e449ca1847f21fc6e0ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a600760833d769de112644af9efce4b64"><td class="memItemLeft" align="right" valign="top">glm::mat4 &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1StEngineControl.html#a600760833d769de112644af9efce4b64">projection_matrix</a> () const </td></tr>
-<tr class="separator:a600760833d769de112644af9efce4b64"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af9de36bf0c4086d3c8de81b8f4ea32c7"><td class="memItemLeft" align="right" valign="top">glm::mat4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1StEngineControl.html#af9de36bf0c4086d3c8de81b8f4ea32c7">ortho_projection_matrix</a> () const </td></tr>
-<tr class="separator:af9de36bf0c4086d3c8de81b8f4ea32c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6a843febaed46d956de2912649088c29"><td class="memItemLeft" align="right" valign="top">glm::i32vec2&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1StEngineControl.html#a6a843febaed46d956de2912649088c29">get_pointer_position</a> ()</td></tr>
 <tr class="separator:a6a843febaed46d956de2912649088c29"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:add65bb88185c5b7a1180983dc5ae7489"><td class="memItemLeft" align="right" valign="top"><a class="el" href="gl__extensions_8h.html#a814c8b5745ecf82afdd1da718fbdc47c">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1StEngineControl.html#add65bb88185c5b7a1180983dc5ae7489">set_pointer_position</a> (const glm::dvec2 &amp;pos)</td></tr>
@@ -244,7 +240,7 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00063">63</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
+<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00061">61</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
 
 </div>
 </div>
@@ -258,7 +254,7 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00068">68</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
+<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00066">66</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
 
 </div>
 </div>
@@ -272,7 +268,7 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00065">65</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
+<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00063">63</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
 
 </div>
 </div>
@@ -286,7 +282,7 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00066">66</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
+<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00064">64</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
 
 </div>
 </div>
@@ -300,21 +296,21 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00067">67</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
+<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00065">65</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a7c084187405c0a81c5218ba6b66ab080"></a>
+<a class="anchor" id="a372cc0233cf6f606486e656f7f304dd0"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="classStE_1_1StEngineControl.html#a7c084187405c0a81c5218ba6b66ab080">StE::StEngineControl::projection_change_signal_type</a> =  <a class="el" href="classStE_1_1signal.html">signal</a>&lt;const glm::mat4&amp;, float, float&gt;</td>
+          <td class="memname">using <a class="el" href="classStE_1_1StEngineControl.html#a372cc0233cf6f606486e656f7f304dd0">StE::StEngineControl::projection_change_signal_type</a> =  <a class="el" href="classStE_1_1signal.html">signal</a>&lt;float, float, float&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00064">64</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
+<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00062">62</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
 
 </div>
 </div>
@@ -440,7 +436,7 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00106">106</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
+<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00104">104</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
 
 </div>
 </div>
@@ -482,7 +478,7 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00145">145</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
+<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00143">143</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
 
 </div>
 </div>
@@ -499,7 +495,7 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="StEngineControl_8cpp_source.html#l00161">161</a> of file <a class="el" href="StEngineControl_8cpp_source.html">StEngineControl.cpp</a>.</p>
+<p>Definition at line <a class="el" href="StEngineControl_8cpp_source.html#l00155">155</a> of file <a class="el" href="StEngineControl_8cpp_source.html">StEngineControl.cpp</a>.</p>
 
 </div>
 </div>
@@ -525,7 +521,7 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00170">170</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
+<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00162">162</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
 
 </div>
 </div>
@@ -542,7 +538,7 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="StEngineControl_8cpp_source.html#l00165">165</a> of file <a class="el" href="StEngineControl_8cpp_source.html">StEngineControl.cpp</a>.</p>
+<p>Definition at line <a class="el" href="StEngineControl_8cpp_source.html#l00159">159</a> of file <a class="el" href="StEngineControl_8cpp_source.html">StEngineControl.cpp</a>.</p>
 
 </div>
 </div>
@@ -568,7 +564,7 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00171">171</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
+<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00163">163</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
 
 </div>
 </div>
@@ -593,7 +589,7 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00160">160</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
+<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00152">152</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
 
 </div>
 </div>
@@ -610,7 +606,7 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="StEngineControl_8cpp_source.html#l00169">169</a> of file <a class="el" href="StEngineControl_8cpp_source.html">StEngineControl.cpp</a>.</p>
+<p>Definition at line <a class="el" href="StEngineControl_8cpp_source.html#l00163">163</a> of file <a class="el" href="StEngineControl_8cpp_source.html">StEngineControl.cpp</a>.</p>
 
 </div>
 </div>
@@ -635,7 +631,7 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00111">111</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
+<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00109">109</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
 
 </div>
 </div>
@@ -660,7 +656,7 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00119">119</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
+<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00117">117</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
 
 </div>
 </div>
@@ -685,7 +681,7 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00104">104</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
+<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00102">102</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
 
 </div>
 </div>
@@ -710,7 +706,7 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00107">107</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
+<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00105">105</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
 
 </div>
 </div>
@@ -735,7 +731,7 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00142">142</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
+<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00140">140</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
 
 </div>
 </div>
@@ -760,7 +756,7 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00140">140</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
+<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00138">138</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
 
 </div>
 </div>
@@ -785,7 +781,7 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00139">139</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
+<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00137">137</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
 
 </div>
 </div>
@@ -810,7 +806,7 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00141">141</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
+<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00139">139</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
 
 </div>
 </div>
@@ -862,48 +858,6 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 
 </div>
 </div>
-<a class="anchor" id="af9de36bf0c4086d3c8de81b8f4ea32c7"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">glm::mat4 StE::StEngineControl::ortho_projection_matrix </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00154">154</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a600760833d769de112644af9efce4b64"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">glm::mat4 &amp; StEngineControl::projection_matrix </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="StEngineControl_8cpp_source.html#l00157">157</a> of file <a class="el" href="StEngineControl_8cpp_source.html">StEngineControl.cpp</a>.</p>
-
-</div>
-</div>
 <a class="anchor" id="a8afa24ee558247da87f48945966eb3f3"></a>
 <div class="memitem">
 <div class="memproto">
@@ -925,7 +879,7 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00108">108</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
+<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00106">106</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
 
 </div>
 </div>
@@ -969,7 +923,7 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00105">105</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
+<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00103">103</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
 
 </div>
 </div>
@@ -1031,7 +985,7 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00169">169</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
+<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00161">161</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
 
 </div>
 </div>
@@ -1057,7 +1011,7 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00166">166</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
+<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00158">158</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
 
 </div>
 </div>
@@ -1091,7 +1045,7 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00102">102</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
+<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00100">100</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
 
 </div>
 </div>
@@ -1117,7 +1071,7 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00116">116</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
+<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00114">114</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
 
 </div>
 </div>
@@ -1143,7 +1097,7 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00124">124</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
+<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00122">122</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
 
 </div>
 </div>
@@ -1169,7 +1123,7 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00110">110</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
+<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00108">108</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
 
 </div>
 </div>
@@ -1194,7 +1148,7 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00137">137</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
+<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00135">135</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
 
 </div>
 </div>
@@ -1219,7 +1173,7 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00138">138</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
+<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00136">136</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
 
 </div>
 </div>
@@ -1244,7 +1198,7 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00128">128</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
+<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00126">126</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
 
 </div>
 </div>
@@ -1269,7 +1223,7 @@ const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00144">144</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
+<p>Definition at line <a class="el" href="StEngineControl_8hpp_source.html#l00142">142</a> of file <a class="el" href="StEngineControl_8hpp_source.html">StEngineControl.hpp</a>.</p>
 
 </div>
 </div>

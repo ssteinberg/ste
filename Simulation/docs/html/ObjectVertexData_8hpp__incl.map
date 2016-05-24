@@ -1,9 +1,10 @@
 <map id="src/ste/framework_graphics/common/ObjectVertexData.hpp" name="src/ste/framework_graphics/common/ObjectVertexData.hpp">
-<area shape="rect" id="node2" href="$VertexBufferDescriptor_8hpp.html" title="VertexBufferDescriptor.hpp" alt="" coords="1304,95,1484,121"/>
-<area shape="rect" id="node3" href="$stdafx_8hpp.html" title="stdafx.hpp" alt="" coords="1313,244,1395,271"/>
-<area shape="rect" id="node28" href="$gl__type__traits_8hpp.html" title="gl_type_traits.hpp" alt="" coords="1192,169,1316,196"/>
-<area shape="rect" id="node29" href="$typelist_8hpp.html" title="typelist.hpp" alt="" coords="1392,169,1479,196"/>
-<area shape="rect" id="node30" href="$generate__array_8hpp.html" title="generate_array.hpp" alt="" coords="1503,169,1642,196"/>
-<area shape="rect" id="node5" href="$gl_8hpp.html" title="gl.hpp" alt="" coords="208,319,265,345"/>
-<area shape="rect" id="node7" href="$gl__extensions_8h.html" title="gl_extensions.h" alt="" coords="241,393,355,420"/>
+<area shape="rect" id="node2" href="$VertexBufferDescriptor_8hpp.html" title="VertexBufferDescriptor.hpp" alt="" coords="635,102,815,129"/>
+<area shape="rect" id="node32" href="$quaternion__tangent__frame_8hpp.html" title="quaternion_tangent\l_frame.hpp" alt="" coords="990,95,1126,136"/>
+<area shape="rect" id="node3" href="$stdafx_8hpp.html" title="stdafx.hpp" alt="" coords="1093,259,1175,285"/>
+<area shape="rect" id="node28" href="$gl__type__traits_8hpp.html" title="gl_type_traits.hpp" alt="" coords="263,184,387,211"/>
+<area shape="rect" id="node29" href="$typelist_8hpp.html" title="typelist.hpp" alt="" coords="763,184,849,211"/>
+<area shape="rect" id="node30" href="$generate__array_8hpp.html" title="generate_array.hpp" alt="" coords="95,184,234,211"/>
+<area shape="rect" id="node5" href="$gl_8hpp.html" title="gl.hpp" alt="" coords="1575,333,1632,360"/>
+<area shape="rect" id="node7" href="$gl__extensions_8h.html" title="gl_extensions.h" alt="" coords="1607,408,1722,435"/>
 </map>

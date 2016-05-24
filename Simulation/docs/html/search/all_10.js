@@ -1,10 +1,11 @@
 var searchData=
 [
   ['q',['q',['../classStE_1_1Graphics_1_1rendering__system.html#ada68634fb6c9d2cae16e08f1f17c118f',1,'StE::Graphics::rendering_system']]],
-  ['quad',['Quad',['../classStE_1_1Graphics_1_1Quad.html',1,'StE::Graphics']]],
   ['quad',['Quad',['../classStE_1_1Graphics_1_1Quad.html#aa0114085345d07292f33a84127410aea',1,'StE::Graphics::Quad']]],
+  ['quad',['Quad',['../classStE_1_1Graphics_1_1Quad.html',1,'StE::Graphics']]],
   ['quad_2ecpp',['Quad.cpp',['../Quad_8cpp.html',1,'']]],
   ['quad_2ehpp',['Quad.hpp',['../Quad_8hpp.html',1,'']]],
+  ['quaternion_5ftangent_5fframe_2ehpp',['quaternion_tangent_frame.hpp',['../quaternion__tangent__frame_8hpp.html',1,'']]],
   ['query_5fcounter',['query_counter',['../classStE_1_1Core_1_1timestamp__query.html#aa0395ebf4debd8253b4878b4fdafb728',1,'StE::Core::timestamp_query']]],
   ['query_5fend',['query_end',['../classStE_1_1Graphics_1_1profileable.html#a08299bcbda7c98d92e836d4e57b05c68',1,'StE::Graphics::profileable']]],
   ['query_5fgl_5ferror',['query_gl_error',['../classStE_1_1Core_1_1GL_1_1gl__utils.html#a301f90c148df4c9f1c0d1156d3251be1',1,'StE::Core::GL::gl_utils']]],

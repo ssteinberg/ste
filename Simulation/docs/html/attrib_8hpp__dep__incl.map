@@ -1,7 +1,7 @@
 <map id="src/ste/framework_text/attributed_strings/attrib.hpp" name="src/ste/framework_text/attributed_strings/attrib.hpp">
 <area shape="rect" id="node2" href="$resource__allocator_8hpp.html" title="src/ste/engine/core\l/gpu_resources/resource\l_allocator.hpp" alt="" coords="1351,317,1523,373"/>
 <area shape="rect" id="node35" href="$GLSLProgramFactory_8cpp.html" title="src/ste/framework_resources\l/glsl_programs/factory/GLSLProgram\lFactory.cpp" alt="" coords="3050,1007,3295,1063"/>
-<area shape="rect" id="node39" href="$SurfaceFactory_8cpp.html" title="src/ste/framework_resources\l/surfaces/SurfaceFactory.cpp" alt="" coords="3973,896,4169,937"/>
+<area shape="rect" id="node39" href="$SurfaceFactory_8cpp.html" title="src/ste/framework_resources\l/surfaces/SurfaceFactory.cpp" alt="" coords="3964,896,4160,937"/>
 <area shape="rect" id="node47" href="$attrib_8cpp.html" title="src/ste/framework_text\l/attributed_strings/attrib.cpp" alt="" coords="3411,213,3593,255"/>
 <area shape="rect" id="node48" href="$attributed__string_8hpp.html" title="src/ste/framework_text\l/attributed_strings/markup\l_formatter/attributed_string.hpp" alt="" coords="3609,95,3811,151"/>
 <area shape="rect" id="node50" href="$attributed__string__htm__formatter_8hpp.html" title="src/ste/framework_text\l/attributed_strings/markup\l_formatter/attributed_string\l_htm_formatter.hpp" alt="" coords="3827,199,4006,269"/>
@@ -38,11 +38,11 @@
 <area shape="rect" id="node29" href="$StEngineControl_8cpp.html" title="src/ste/engine/engine\l_control/StEngineControl.cpp" alt="" coords="3203,896,3396,937"/>
 <area shape="rect" id="node30" href="$Log_8hpp.html" title="src/ste/engine/log\l/Log.hpp" alt="" coords="3241,666,3371,707"/>
 <area shape="rect" id="node25" href="$context__framebuffer_8hpp.html" title="src/ste/engine/core\l/gpu_resources/surfaces\l/fbo/context_framebuffer.hpp" alt="" coords="177,1126,365,1182"/>
-<area shape="rect" id="node31" href="$lru__cache__index_8hpp.html" title="lru_cache index " alt="" coords="4320,777,4468,819"/>
+<area shape="rect" id="node31" href="$lru__cache__index_8hpp.html" title="lru_cache index " alt="" coords="4300,777,4448,819"/>
 <area shape="rect" id="node32" href="$gl__context_8cpp.html" title="src/ste/engine/core\l/gl/context/actual/gl\l_context.cpp" alt="" coords="3641,770,3779,826"/>
 <area shape="rect" id="node33" href="$GLSLProgram_8hpp.html" title="src/ste/engine/core\l/gpu_resources/shaders\l/GLSLProgram.hpp" alt="" coords="2541,770,2709,826"/>
 <area shape="rect" id="node36" href="$gpu__task__dispatch__queue_8cpp.html" title="src/ste/framework_graphics\l/gpu_dispatch/tasks/dispatch\l_queue/gpu_task_dispatch_queue.cpp" alt="" coords="3803,770,4054,826"/>
-<area shape="rect" id="node37" href="$bme__brdf__representation_8hpp.html" title="src/ste/framework_graphics\l/radiometry/radiance_distribution\l_functions/representations/bme\l_brdf_representation.hpp" alt="" coords="4079,763,4296,833"/>
+<area shape="rect" id="node37" href="$bme__brdf__representation_8hpp.html" title="src/ste/framework_graphics\l/radiometry/radiance/BxDFs\l/physical/representations\l/bme_brdf_representation.hpp" alt="" coords="4078,763,4275,833"/>
 <area shape="rect" id="node38" href="$SurfaceFactory_8hpp.html" title="src/ste/framework_resources\l/surfaces/SurfaceFactory.hpp" alt="" coords="3369,777,3565,819"/>
 <area shape="rect" id="node34" href="$GLSLProgramFactory_8hpp.html" title="src/ste/framework_resources\l/glsl_programs/factory/GLSLProgram\lFactory.hpp" alt="" coords="2730,889,2975,945"/>
 <area shape="rect" id="node41" href="$Sampler_8hpp.html" title="src/ste/engine/core\l/gpu_resources/surfaces\l/Sampler.hpp" alt="" coords="369,770,539,826"/>

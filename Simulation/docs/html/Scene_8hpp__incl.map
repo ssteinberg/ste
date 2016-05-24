@@ -1,27 +1,27 @@
 <map id="src/ste/framework_graphics/scene/Scene.hpp" name="src/ste/framework_graphics/scene/Scene.hpp">
-<area shape="rect" id="node2" href="$stdafx_8hpp.html" title="stdafx.hpp" alt="" coords="2210,333,2293,360"/>
-<area shape="rect" id="node25" href="$StEngineControl_8hpp.html" title="Engine Control class. " alt="" coords="665,184,808,211"/>
-<area shape="rect" id="node36" href="$gpu__dispatchable_8hpp.html" title="gpu_dispatchable.hpp" alt="" coords="2481,184,2632,211"/>
-<area shape="rect" id="node38" href="$SceneProperties_8hpp.html" title="SceneProperties.hpp" alt="" coords="3082,102,3229,129"/>
-<area shape="rect" id="node40" href="$light__storage_8hpp.html" title="light_storage.hpp" alt="" coords="2955,184,3078,211"/>
-<area shape="rect" id="node41" href="$ShaderStorageBuffer_8hpp.html" title="ShaderStorageBuffer.hpp" alt="" coords="1885,259,2057,285"/>
-<area shape="rect" id="node42" href="$AtomicCounterBufferObject_8hpp.html" title="AtomicCounterBufferObject.hpp" alt="" coords="2912,259,3119,285"/>
-<area shape="rect" id="node43" href="$deferred__gbuffer_8hpp.html" title="deferred_gbuffer.hpp" alt="" coords="2186,102,2330,129"/>
-<area shape="rect" id="node49" href="$object__group__indirect__command__buffer_8hpp.html" title="object_group_indirect\l_command_buffer.hpp" alt="" coords="2693,95,2845,136"/>
-<area shape="rect" id="node50" href="$ObjectGroup_8hpp.html" title="ObjectGroup.hpp" alt="" coords="1667,102,1788,129"/>
-<area shape="rect" id="node4" href="$gl_8hpp.html" title="gl.hpp" alt="" coords="2116,408,2173,435"/>
-<area shape="rect" id="node29" href="$gl__context_8hpp.html" title="Setups drawing context, window and default framebuffer. " alt="" coords="1551,259,1658,285"/>
-<area shape="rect" id="node30" href="$hid_8hpp.html" title="hid.hpp" alt="" coords="579,259,643,285"/>
-<area shape="rect" id="node31" href="$signal_8hpp.html" title="signal.hpp" alt="" coords="1602,333,1685,360"/>
-<area shape="rect" id="node32" href="$task__scheduler_8hpp.html" title="task_scheduler.hpp" alt="" coords="668,259,805,285"/>
-<area shape="rect" id="node33" href="$lru__cache_8hpp.html" title="LRU general purpose disk caching class. " alt="" coords="83,259,187,285"/>
-<area shape="rect" id="node34" href="$rendering__system_8hpp.html" title="rendering_system.hpp" alt="" coords="881,259,1035,285"/>
-<area shape="rect" id="node35" href="$glsl__programs__pool_8hpp.html" title="glsl_programs_pool.hpp" alt="" coords="1059,259,1223,285"/>
-<area shape="rect" id="node37" href="$gl__context__state__log_8hpp.html" title="gl_context_state_log.hpp" alt="" coords="2565,259,2735,285"/>
-<area shape="rect" id="node39" href="$material__storage_8hpp.html" title="material_storage.hpp" alt="" coords="3245,259,3391,285"/>
-<area shape="rect" id="node44" href="$resource_8hpp.html" title="resource.hpp" alt="" coords="1327,333,1426,360"/>
-<area shape="rect" id="node45" href="$Texture2D_8hpp.html" title="Texture2D.hpp" alt="" coords="2347,184,2457,211"/>
-<area shape="rect" id="node46" href="$FramebufferObject_8hpp.html" title="FramebufferObject.hpp" alt="" coords="2066,184,2221,211"/>
-<area shape="rect" id="node47" href="$gl__current__context_8hpp.html" title="gl_current_context.hpp" alt="" coords="2183,259,2338,285"/>
-<area shape="rect" id="node48" href="$buffer__usage_8hpp.html" title="buffer_usage.hpp" alt="" coords="2707,184,2830,211"/>
+<area shape="rect" id="node2" href="$stdafx_8hpp.html" title="stdafx.hpp" alt="" coords="1433,333,1515,360"/>
+<area shape="rect" id="node25" href="$StEngineControl_8hpp.html" title="Engine Control class. " alt="" coords="2735,184,2877,211"/>
+<area shape="rect" id="node36" href="$gpu__dispatchable_8hpp.html" title="gpu_dispatchable.hpp" alt="" coords="1036,184,1187,211"/>
+<area shape="rect" id="node38" href="$SceneProperties_8hpp.html" title="SceneProperties.hpp" alt="" coords="1915,184,2062,211"/>
+<area shape="rect" id="node40" href="$light__storage_8hpp.html" title="light_storage.hpp" alt="" coords="3457,259,3579,285"/>
+<area shape="rect" id="node41" href="$ShaderStorageBuffer_8hpp.html" title="ShaderStorageBuffer.hpp" alt="" coords="3861,333,4033,360"/>
+<area shape="rect" id="node42" href="$AtomicCounterBufferObject_8hpp.html" title="AtomicCounterBufferObject.hpp" alt="" coords="4057,333,4264,360"/>
+<area shape="rect" id="node43" href="$deferred__gbuffer_8hpp.html" title="deferred_gbuffer.hpp" alt="" coords="1797,102,1941,129"/>
+<area shape="rect" id="node49" href="$object__group__indirect__command__buffer_8hpp.html" title="object_group_indirect\l_command_buffer.hpp" alt="" coords="809,95,961,136"/>
+<area shape="rect" id="node50" href="$ObjectGroup_8hpp.html" title="ObjectGroup.hpp" alt="" coords="1645,102,1767,129"/>
+<area shape="rect" id="node4" href="$gl_8hpp.html" title="gl.hpp" alt="" coords="1099,408,1156,435"/>
+<area shape="rect" id="node29" href="$gl__context_8hpp.html" title="Setups drawing context, window and default framebuffer. " alt="" coords="2137,259,2243,285"/>
+<area shape="rect" id="node30" href="$hid_8hpp.html" title="hid.hpp" alt="" coords="2926,259,2990,285"/>
+<area shape="rect" id="node31" href="$signal_8hpp.html" title="signal.hpp" alt="" coords="2538,333,2621,360"/>
+<area shape="rect" id="node32" href="$task__scheduler_8hpp.html" title="task_scheduler.hpp" alt="" coords="3015,259,3152,285"/>
+<area shape="rect" id="node33" href="$lru__cache_8hpp.html" title="LRU general purpose disk caching class. " alt="" coords="3654,259,3758,285"/>
+<area shape="rect" id="node34" href="$rendering__system_8hpp.html" title="rendering_system.hpp" alt="" coords="3228,259,3381,285"/>
+<area shape="rect" id="node35" href="$glsl__programs__pool_8hpp.html" title="glsl_programs_pool.hpp" alt="" coords="2420,259,2584,285"/>
+<area shape="rect" id="node37" href="$gl__context__state__log_8hpp.html" title="gl_context_state_log.hpp" alt="" coords="1239,259,1408,285"/>
+<area shape="rect" id="node39" href="$material__storage_8hpp.html" title="material_storage.hpp" alt="" coords="1763,259,1910,285"/>
+<area shape="rect" id="node44" href="$resource_8hpp.html" title="resource.hpp" alt="" coords="2365,333,2463,360"/>
+<area shape="rect" id="node45" href="$Texture2D_8hpp.html" title="Texture2D.hpp" alt="" coords="1360,184,1471,211"/>
+<area shape="rect" id="node46" href="$FramebufferObject_8hpp.html" title="FramebufferObject.hpp" alt="" coords="1737,184,1891,211"/>
+<area shape="rect" id="node47" href="$gl__current__context_8hpp.html" title="gl_current_context.hpp" alt="" coords="1433,259,1587,285"/>
+<area shape="rect" id="node48" href="$buffer__usage_8hpp.html" title="buffer_usage.hpp" alt="" coords="838,184,961,211"/>
 </map>

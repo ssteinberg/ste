@@ -1,0 +1,4 @@
+<map id="StE::Graphics::pBRDF" name="StE::Graphics::pBRDF">
+<area shape="rect" id="node2" href="$classStE_1_1Graphics_1_1BxDF.html" title="{StE::Graphics::BxDF\l\&lt; float \&gt;\n||+ cos_theta()\l+ sin2_theta()\l+ sin_theta()\l+ cos_phi()\l+ sin_phi()\l+ omega()\l}" alt="" coords="22,219,169,384"/>
+<area shape="rect" id="node3" href="$classStE_1_1Graphics_1_1BxDF.html" title="{StE::Graphics::BxDF\&lt; T \&gt;\n||+ cos_theta()\l+ sin2_theta()\l+ sin_theta()\l+ cos_phi()\l+ sin_phi()\l+ omega()\l}" alt="" coords="5,5,185,156"/>
+</map>

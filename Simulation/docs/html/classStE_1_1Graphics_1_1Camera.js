@@ -15,5 +15,6 @@ var classStE_1_1Graphics_1_1Camera =
     [ "step_right", "classStE_1_1Graphics_1_1Camera.html#aba6d4ff1ced144c5133bc0c9a35600bc", null ],
     [ "step_up", "classStE_1_1Graphics_1_1Camera.html#afc9a6d754eaf72dea75b6bb7f358aa1b", null ],
     [ "view_matrix", "classStE_1_1Graphics_1_1Camera.html#ad9cf995bc6086f48693b2c5ff6b5090d", null ],
-    [ "view_matrix_no_translation", "classStE_1_1Graphics_1_1Camera.html#a721d01ab18c05630cfd1ca9cf142b752", null ]
+    [ "view_matrix_no_translation", "classStE_1_1Graphics_1_1Camera.html#a721d01ab18c05630cfd1ca9cf142b752", null ],
+    [ "view_transform_dquat", "classStE_1_1Graphics_1_1Camera.html#a27d601223ed290ca14f145bbe2d2998f", null ]
 ];

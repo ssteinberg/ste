@@ -1,6 +1,7 @@
 var searchData=
 [
   ['f',['F',['../classStE_1_1HID_1_1pointer.html#a4f2bee21a0aef0bd926069192c92ccd6a800618943025315f869e4e1f09471012',1,'StE::HID::pointer']]],
+  ['f0',['F0',['../structStE_1_1Graphics_1_1material__descriptor.html#a718486eb27a416d94f79af9b19f954b8',1,'StE::Graphics::material_descriptor']]],
   ['factorial',['factorial',['../structStE_1_1__rsh__utils_1_1factorial.html',1,'StE::_rsh_utils']]],
   ['factorial_3c_200_20_3e',['factorial&lt; 0 &gt;',['../structStE_1_1__rsh__utils_1_1factorial_3_010_01_4.html',1,'StE::_rsh_utils']]],
   ['fatal_5fclass_5flog',['fatal_class_log',['../namespaceStE.html#a317ed8670bf654645478b4c137fbfbd4aa8e6e34fdec540e1ae86a42cc931361d',1,'StE']]],
@@ -28,8 +29,8 @@ var searchData=
   ['file',['file',['../structStE_1_1log__entry__data.html#a9d0caf8ea77533bd75d4c9315368e278',1,'StE::log_entry_data']]],
   ['first_5findex',['first_index',['../structStE_1_1Core_1_1IndirectMultiDrawElementsCommand.html#a7c6f597ce7689e77f63590e6791614c4',1,'StE::Core::IndirectMultiDrawElementsCommand::first_index()'],['../structStE_1_1Core_1_1IndirectDrawArraysCommand.html#a3f73bd7558c8322d0f451a95d5001e57',1,'StE::Core::IndirectDrawArraysCommand::first_index()'],['../structStE_1_1Graphics_1_1mesh__draw__params.html#ab714dc11a1343a10b0447d7c8e90c45e',1,'StE::Graphics::mesh_draw_params::first_index()']]],
   ['flush',['flush',['../classStE_1_1Core_1_1mapped__buffer__object__unique__ptr.html#aa120fd77652028549e9be86c67a52960',1,'StE::Core::mapped_buffer_object_unique_ptr']]],
-  ['font',['font',['../classStE_1_1Text_1_1Attributes_1_1font.html#a00dc5e70d6fd7ec95af86fe47606d840',1,'StE::Text::Attributes::font::font()'],['../classStE_1_1Text_1_1Font.html#ad1bac26e2c4801f781e2305334d0c2b7',1,'StE::Text::Font::Font()']]],
   ['font',['font',['../classStE_1_1Text_1_1Attributes_1_1font.html',1,'StE::Text::Attributes']]],
+  ['font',['font',['../classStE_1_1Text_1_1Attributes_1_1font.html#a00dc5e70d6fd7ec95af86fe47606d840',1,'StE::Text::Attributes::font::font()'],['../classStE_1_1Text_1_1Font.html#ad1bac26e2c4801f781e2305334d0c2b7',1,'StE::Text::Font::Font()']]],
   ['font',['Font',['../classStE_1_1Text_1_1Font.html',1,'StE::Text']]],
   ['font_2ecpp',['Font.cpp',['../Font_8cpp.html',1,'']]],
   ['font_2ehpp',['Font.hpp',['../Font_8hpp.html',1,'']]],
@@ -58,6 +59,7 @@ var searchData=
   ['framebufferobjectbinder',['FramebufferObjectBinder',['../classStE_1_1Core_1_1FramebufferObjectBinder.html',1,'StE::Core']]],
   ['frames',['frames',['../structStE_1_1ste__engine__control__impl.html#af0be1b107872e839cd5d301d6b0fb84a',1,'StE::ste_engine_control_impl']]],
   ['free_5fexternal_5fcounter',['free_external_counter',['../classStE_1_1concurrent__queue.html#aa8eeda5e2a1b7cebb5d3145c402d6053',1,'StE::concurrent_queue']]],
+  ['fresnel_5fk',['fresnel_k',['../classStE_1_1Graphics_1_1schlick__fresnel.html#ac28b11a07b8cb5726971fb82660bd2ff',1,'StE::Graphics::schlick_fresnel']]],
   ['front_5fbuffer',['front_buffer',['../classStE_1_1Core_1_1context__framebuffer.html#a22094da940f1808998c0bf891e78765b',1,'StE::Core::context_framebuffer::front_buffer()'],['../classStE_1_1Core_1_1context__framebuffer.html#a2a04d40ff650ddb0145026f306264336',1,'StE::Core::context_framebuffer::front_buffer() const ']]],
   ['front_5fface',['front_face',['../classStE_1_1Core_1_1GL_1_1gl__generic__context.html#a1f676545cdd5cd8a174cbfab19dd525a',1,'StE::Core::GL::gl_generic_context::front_face(GLenum face) const '],['../classStE_1_1Core_1_1GL_1_1gl__generic__context.html#a442db13c855e19688fdc08f88b9b4dc5',1,'StE::Core::GL::gl_generic_context::front_face() const ']]],
   ['front_5fface_5fstate',['FRONT_FACE_STATE',['../namespaceStE_1_1Core_1_1GL.html#a5a2c695a9be85f7cca0cb91ce5ec30e7aa00c3f4cf00c52f5921afaf241236032',1,'StE::Core::GL']]],
@@ -74,7 +76,7 @@ var searchData=
   ['function_5ftraits_3c_20returntype_28args_2e_2e_2e_29_3e',['function_traits&lt; ReturnType(Args...)&gt;',['../structStE_1_1function__traits_3_01ReturnType_07Args_8_8_8_08_4.html',1,'StE']]],
   ['function_5ftraits_3c_20t_20_26_20_3e',['function_traits&lt; T &amp; &gt;',['../structStE_1_1function__traits_3_01T_01_6_01_4.html',1,'StE']]],
   ['function_5ftraits_3c_20t_20_26_26_20_3e',['function_traits&lt; T &amp;&amp; &gt;',['../structStE_1_1function__traits_3_01T_01_6_6_01_4.html',1,'StE']]],
-  ['function_5fwrapper',['function_wrapper',['../classStE_1_1function__wrapper.html#afa858a38363c559e1a406cf743693a61',1,'StE::function_wrapper::function_wrapper()=default'],['../classStE_1_1function__wrapper.html#acef34b11961229161228d0b9186836c2',1,'StE::function_wrapper::function_wrapper(F &amp;&amp;f)']]],
   ['function_5fwrapper',['function_wrapper',['../classStE_1_1function__wrapper.html',1,'StE']]],
+  ['function_5fwrapper',['function_wrapper',['../classStE_1_1function__wrapper.html#afa858a38363c559e1a406cf743693a61',1,'StE::function_wrapper::function_wrapper()=default'],['../classStE_1_1function__wrapper.html#acef34b11961229161228d0b9186836c2',1,'StE::function_wrapper::function_wrapper(F &amp;&amp;f)']]],
   ['function_5fwrapper_2ehpp',['function_wrapper.hpp',['../function__wrapper_8hpp.html',1,'']]]
 ];

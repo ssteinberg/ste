@@ -121,49 +121,51 @@ $(document).ready(function(){initNavTree('Quad_8hpp_source.html','');});
 <div class="line"><a name="l00014"></a><span class="lineno"><a class="line" href="classStE_1_1Graphics_1_1Quad.html#a31ae37de55b1ab39a67d2f85e9a0334d">   14</a></span>&#160;    <a class="code" href="classStE_1_1Graphics_1_1Quad.html#a31ae37de55b1ab39a67d2f85e9a0334d">~Quad</a>() noexcept<span class="keyword"> override </span>{}</div>
 <div class="line"><a name="l00015"></a><span class="lineno"><a class="line" href="classStE_1_1Graphics_1_1Quad.html#aa0114085345d07292f33a84127410aea">   15</a></span>&#160;    <a class="code" href="classStE_1_1Graphics_1_1Quad.html#aa0114085345d07292f33a84127410aea">Quad</a>() {</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;        std::vector&lt;ObjectVertexData&gt; vert;</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;        <a class="code" href="structStE_1_1Graphics_1_1ObjectVertexData.html">ObjectVertexData</a> vd;</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;        vd.<a class="code" href="structStE_1_1Graphics_1_1ObjectVertexData.html#a8d7c12518b2c9f2feba0df81506fcf66">n</a> = { 0,0,1 };</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;        vd.<a class="code" href="structStE_1_1Graphics_1_1ObjectVertexData.html#a70242827a2433e8921af3b11e90cc7ea">t</a> = { 1,0,0 };</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;        vd.<a class="code" href="structStE_1_1Graphics_1_1ObjectVertexData.html#a43eb9ff1e786c0b36a0a41179e111184">p</a> = { -1, -1, 0 };</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;        vd.<a class="code" href="structStE_1_1Graphics_1_1ObjectVertexData.html#a33d10464dc60c780d1566cbbcedea9c8">uv</a> = { 0,0 };</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;        vert.push_back(vd);</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;        vd.<a class="code" href="structStE_1_1Graphics_1_1ObjectVertexData.html#a43eb9ff1e786c0b36a0a41179e111184">p</a> = { 1, -1, 0 };</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;        vd.<a class="code" href="structStE_1_1Graphics_1_1ObjectVertexData.html#a33d10464dc60c780d1566cbbcedea9c8">uv</a> = { 1,0 };</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;        vert.push_back(vd);</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;        vd.<a class="code" href="structStE_1_1Graphics_1_1ObjectVertexData.html#a43eb9ff1e786c0b36a0a41179e111184">p</a> = { -1, 1, 0 };</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;        vd.<a class="code" href="structStE_1_1Graphics_1_1ObjectVertexData.html#a33d10464dc60c780d1566cbbcedea9c8">uv</a> = { 0,1 };</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;        vert.push_back(vd);</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;        vd.<a class="code" href="structStE_1_1Graphics_1_1ObjectVertexData.html#a43eb9ff1e786c0b36a0a41179e111184">p</a> = { 1, 1, 0 };</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;        vd.<a class="code" href="structStE_1_1Graphics_1_1ObjectVertexData.html#a33d10464dc60c780d1566cbbcedea9c8">uv</a> = { 1,1 };</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;        vert.push_back(vd);</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;        <a class="code" href="classStE_1_1Graphics_1_1mesh.html#aa272d913b4af222c585f02e5c5102dc8">set_vertices</a>(vert);</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;        <a class="code" href="classStE_1_1Graphics_1_1mesh.html#a532ee1ac245151c3a725fb319b342d40">set_indices</a>(std::vector&lt;std::uint32_t&gt;{ 0,1,2,3 });</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    }</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;};</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="keyword">extern</span> Quad <a class="code" href="namespaceStE_1_1Graphics.html#ad48607f06061e2b2175b461474537481">ScreenFillingQuad</a>;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;}</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;}</div>
-<div class="ttc" id="structStE_1_1Graphics_1_1ObjectVertexData_html_a43eb9ff1e786c0b36a0a41179e111184"><div class="ttname"><a href="structStE_1_1Graphics_1_1ObjectVertexData.html#a43eb9ff1e786c0b36a0a41179e111184">StE::Graphics::ObjectVertexData::p</a></div><div class="ttdeci">glm::vec3 p</div><div class="ttdef"><b>Definition:</b> <a href="ObjectVertexData_8hpp_source.html#l00012">ObjectVertexData.hpp:12</a></div></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;        <a class="code" href="classStE_1_1Graphics_1_1ObjectVertexData.html">ObjectVertexData</a> vd;</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;        glm::vec3 n = { 0,0,1 };</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;        glm::vec3 t = { 1,0,0 };</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;        glm::vec3 b = { 0,1,0 };</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;        vd.<a class="code" href="classStE_1_1Graphics_1_1ObjectVertexData.html#a91b03f43ea201d1f72a6df47449e2f4e">tangent_frame_from_tbn</a>(t,b,n);</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;        vd.<a class="code" href="classStE_1_1Graphics_1_1ObjectVertexData.html#a43eb9ff1e786c0b36a0a41179e111184">p</a> = { -1, -1, 0 };</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;        vd.<a class="code" href="classStE_1_1Graphics_1_1ObjectVertexData.html#a33d10464dc60c780d1566cbbcedea9c8">uv</a> = { 0,0 };</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;        vert.push_back(vd);</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;        vd.<a class="code" href="classStE_1_1Graphics_1_1ObjectVertexData.html#a43eb9ff1e786c0b36a0a41179e111184">p</a> = { 1, -1, 0 };</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;        vd.<a class="code" href="classStE_1_1Graphics_1_1ObjectVertexData.html#a33d10464dc60c780d1566cbbcedea9c8">uv</a> = { 1,0 };</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;        vert.push_back(vd);</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;        vd.<a class="code" href="classStE_1_1Graphics_1_1ObjectVertexData.html#a43eb9ff1e786c0b36a0a41179e111184">p</a> = { -1, 1, 0 };</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;        vd.<a class="code" href="classStE_1_1Graphics_1_1ObjectVertexData.html#a33d10464dc60c780d1566cbbcedea9c8">uv</a> = { 0,1 };</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;        vert.push_back(vd);</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;        vd.<a class="code" href="classStE_1_1Graphics_1_1ObjectVertexData.html#a43eb9ff1e786c0b36a0a41179e111184">p</a> = { 1, 1, 0 };</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;        vd.<a class="code" href="classStE_1_1Graphics_1_1ObjectVertexData.html#a33d10464dc60c780d1566cbbcedea9c8">uv</a> = { 1,1 };</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;        vert.push_back(vd);</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        <a class="code" href="classStE_1_1Graphics_1_1mesh.html#aa272d913b4af222c585f02e5c5102dc8">set_vertices</a>(vert);</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;        <a class="code" href="classStE_1_1Graphics_1_1mesh.html#a532ee1ac245151c3a725fb319b342d40">set_indices</a>(std::vector&lt;std::uint32_t&gt;{ 0,1,2,3 });</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    }</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;};</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="keyword">extern</span> Quad <a class="code" href="namespaceStE_1_1Graphics.html#ad48607f06061e2b2175b461474537481">ScreenFillingQuad</a>;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;}</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;}</div>
 <div class="ttc" id="stdafx_8hpp_html"><div class="ttname"><a href="stdafx_8hpp.html">stdafx.hpp</a></div></div>
 <div class="ttc" id="classStE_1_1Graphics_1_1Quad_html"><div class="ttname"><a href="classStE_1_1Graphics_1_1Quad.html">StE::Graphics::Quad</a></div><div class="ttdef"><b>Definition:</b> <a href="Quad_8hpp_source.html#l00012">Quad.hpp:12</a></div></div>
-<div class="ttc" id="structStE_1_1Graphics_1_1ObjectVertexData_html_a33d10464dc60c780d1566cbbcedea9c8"><div class="ttname"><a href="structStE_1_1Graphics_1_1ObjectVertexData.html#a33d10464dc60c780d1566cbbcedea9c8">StE::Graphics::ObjectVertexData::uv</a></div><div class="ttdeci">glm::vec2 uv</div><div class="ttdef"><b>Definition:</b> <a href="ObjectVertexData_8hpp_source.html#l00013">ObjectVertexData.hpp:13</a></div></div>
 <div class="ttc" id="classStE_1_1Graphics_1_1Quad_html_a31ae37de55b1ab39a67d2f85e9a0334d"><div class="ttname"><a href="classStE_1_1Graphics_1_1Quad.html#a31ae37de55b1ab39a67d2f85e9a0334d">StE::Graphics::Quad::~Quad</a></div><div class="ttdeci">~Quad() noexceptoverride</div><div class="ttdef"><b>Definition:</b> <a href="Quad_8hpp_source.html#l00014">Quad.hpp:14</a></div></div>
-<div class="ttc" id="classStE_1_1Graphics_1_1mesh_html_aa272d913b4af222c585f02e5c5102dc8"><div class="ttname"><a href="classStE_1_1Graphics_1_1mesh.html#aa272d913b4af222c585f02e5c5102dc8">StE::Graphics::mesh&lt; mesh_subdivion_mode::TrianglesStrip &gt;::set_vertices</a></div><div class="ttdeci">void set_vertices(T &amp;&amp;vert)</div><div class="ttdef"><b>Definition:</b> <a href="mesh_8hpp_source.html#l00105">mesh.hpp:105</a></div></div>
-<div class="ttc" id="structStE_1_1Graphics_1_1ObjectVertexData_html"><div class="ttname"><a href="structStE_1_1Graphics_1_1ObjectVertexData.html">StE::Graphics::ObjectVertexData</a></div><div class="ttdef"><b>Definition:</b> <a href="ObjectVertexData_8hpp_source.html#l00011">ObjectVertexData.hpp:11</a></div></div>
-<div class="ttc" id="classStE_1_1Graphics_1_1mesh_html"><div class="ttname"><a href="classStE_1_1Graphics_1_1mesh.html">StE::Graphics::mesh</a></div><div class="ttdef"><b>Definition:</b> <a href="mesh_8hpp_source.html#l00042">mesh.hpp:42</a></div></div>
+<div class="ttc" id="classStE_1_1Graphics_1_1ObjectVertexData_html_a91b03f43ea201d1f72a6df47449e2f4e"><div class="ttname"><a href="classStE_1_1Graphics_1_1ObjectVertexData.html#a91b03f43ea201d1f72a6df47449e2f4e">StE::Graphics::ObjectVertexData::tangent_frame_from_tbn</a></div><div class="ttdeci">void tangent_frame_from_tbn(const glm::vec3 &amp;t, const glm::vec3 &amp;b, const glm::vec3 &amp;n)</div><div class="ttdef"><b>Definition:</b> <a href="ObjectVertexData_8hpp_source.html#l00022">ObjectVertexData.hpp:22</a></div></div>
+<div class="ttc" id="classStE_1_1Graphics_1_1mesh_html_aa272d913b4af222c585f02e5c5102dc8"><div class="ttname"><a href="classStE_1_1Graphics_1_1mesh.html#aa272d913b4af222c585f02e5c5102dc8">StE::Graphics::mesh&lt; mesh_subdivion_mode::TrianglesStrip &gt;::set_vertices</a></div><div class="ttdeci">void set_vertices(T &amp;&amp;vert)</div><div class="ttdef"><b>Definition:</b> <a href="mesh_8hpp_source.html#l00089">mesh.hpp:89</a></div></div>
+<div class="ttc" id="classStE_1_1Graphics_1_1ObjectVertexData_html"><div class="ttname"><a href="classStE_1_1Graphics_1_1ObjectVertexData.html">StE::Graphics::ObjectVertexData</a></div><div class="ttdef"><b>Definition:</b> <a href="ObjectVertexData_8hpp_source.html#l00012">ObjectVertexData.hpp:12</a></div></div>
+<div class="ttc" id="classStE_1_1Graphics_1_1mesh_html"><div class="ttname"><a href="classStE_1_1Graphics_1_1mesh.html">StE::Graphics::mesh</a></div><div class="ttdef"><b>Definition:</b> <a href="mesh_8hpp_source.html#l00041">mesh.hpp:41</a></div></div>
 <div class="ttc" id="namespaceStE_1_1Graphics_html_ad48607f06061e2b2175b461474537481"><div class="ttname"><a href="namespaceStE_1_1Graphics.html#ad48607f06061e2b2175b461474537481">StE::Graphics::ScreenFillingQuad</a></div><div class="ttdeci">Quad ScreenFillingQuad</div><div class="ttdef"><b>Definition:</b> <a href="Quad_8cpp_source.html#l00005">Quad.cpp:5</a></div></div>
-<div class="ttc" id="structStE_1_1Graphics_1_1ObjectVertexData_html_a70242827a2433e8921af3b11e90cc7ea"><div class="ttname"><a href="structStE_1_1Graphics_1_1ObjectVertexData.html#a70242827a2433e8921af3b11e90cc7ea">StE::Graphics::ObjectVertexData::t</a></div><div class="ttdeci">glm::vec3 t</div><div class="ttdef"><b>Definition:</b> <a href="ObjectVertexData_8hpp_source.html#l00012">ObjectVertexData.hpp:12</a></div></div>
+<div class="ttc" id="classStE_1_1Graphics_1_1ObjectVertexData_html_a33d10464dc60c780d1566cbbcedea9c8"><div class="ttname"><a href="classStE_1_1Graphics_1_1ObjectVertexData.html#a33d10464dc60c780d1566cbbcedea9c8">StE::Graphics::ObjectVertexData::uv</a></div><div class="ttdeci">glm::vec2 uv</div><div class="ttdef"><b>Definition:</b> <a href="ObjectVertexData_8hpp_source.html#l00016">ObjectVertexData.hpp:16</a></div></div>
 <div class="ttc" id="mesh_8hpp_html"><div class="ttname"><a href="mesh_8hpp.html">mesh.hpp</a></div></div>
 <div class="ttc" id="classStE_1_1Graphics_1_1Quad_html_aa0114085345d07292f33a84127410aea"><div class="ttname"><a href="classStE_1_1Graphics_1_1Quad.html#aa0114085345d07292f33a84127410aea">StE::Graphics::Quad::Quad</a></div><div class="ttdeci">Quad()</div><div class="ttdef"><b>Definition:</b> <a href="Quad_8hpp_source.html#l00015">Quad.hpp:15</a></div></div>
-<div class="ttc" id="classStE_1_1Graphics_1_1mesh_html_a532ee1ac245151c3a725fb319b342d40"><div class="ttname"><a href="classStE_1_1Graphics_1_1mesh.html#a532ee1ac245151c3a725fb319b342d40">StE::Graphics::mesh&lt; mesh_subdivion_mode::TrianglesStrip &gt;::set_indices</a></div><div class="ttdeci">void set_indices(T &amp;&amp;ind)</div><div class="ttdef"><b>Definition:</b> <a href="mesh_8hpp_source.html#l00112">mesh.hpp:112</a></div></div>
-<div class="ttc" id="structStE_1_1Graphics_1_1ObjectVertexData_html_a8d7c12518b2c9f2feba0df81506fcf66"><div class="ttname"><a href="structStE_1_1Graphics_1_1ObjectVertexData.html#a8d7c12518b2c9f2feba0df81506fcf66">StE::Graphics::ObjectVertexData::n</a></div><div class="ttdeci">glm::vec3 n</div><div class="ttdef"><b>Definition:</b> <a href="ObjectVertexData_8hpp_source.html#l00012">ObjectVertexData.hpp:12</a></div></div>
+<div class="ttc" id="classStE_1_1Graphics_1_1ObjectVertexData_html_a43eb9ff1e786c0b36a0a41179e111184"><div class="ttname"><a href="classStE_1_1Graphics_1_1ObjectVertexData.html#a43eb9ff1e786c0b36a0a41179e111184">StE::Graphics::ObjectVertexData::p</a></div><div class="ttdeci">glm::vec3 p</div><div class="ttdef"><b>Definition:</b> <a href="ObjectVertexData_8hpp_source.html#l00015">ObjectVertexData.hpp:15</a></div></div>
+<div class="ttc" id="classStE_1_1Graphics_1_1mesh_html_a532ee1ac245151c3a725fb319b342d40"><div class="ttname"><a href="classStE_1_1Graphics_1_1mesh.html#a532ee1ac245151c3a725fb319b342d40">StE::Graphics::mesh&lt; mesh_subdivion_mode::TrianglesStrip &gt;::set_indices</a></div><div class="ttdeci">void set_indices(T &amp;&amp;ind)</div><div class="ttdef"><b>Definition:</b> <a href="mesh_8hpp_source.html#l00095">mesh.hpp:95</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

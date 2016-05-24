@@ -37,6 +37,7 @@ var searchData=
   ['timer_5fquery_2ehpp',['timer_query.hpp',['../timer__query_8hpp.html',1,'']]],
   ['timestamp_5fquery_2ehpp',['timestamp_query.hpp',['../timestamp__query_8hpp.html',1,'']]],
   ['trace_2ehpp',['trace.hpp',['../trace_8hpp.html',1,'']]],
+  ['transforms_5fring_5fbuffers_2ehpp',['transforms_ring_buffers.hpp',['../transforms__ring__buffers_8hpp.html',1,'']]],
   ['tuple_5fcall_2ehpp',['tuple_call.hpp',['../tuple__call_8hpp.html',1,'']]],
   ['tuple_5fprint_2ehpp',['tuple_print.hpp',['../tuple__print_8hpp.html',1,'']]],
   ['tuple_5ftype_5ferasure_2ehpp',['tuple_type_erasure.hpp',['../tuple__type__erasure_8hpp.html',1,'']]],

@@ -278,8 +278,20 @@ Enumerations</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:aea126525ba27cf7509fbbef1b859d5a1"><td class="memTemplParams" colspan="2">template&lt;typename T , glm::precision P&gt; </td></tr>
+<tr class="memitem:aea126525ba27cf7509fbbef1b859d5a1"><td class="memTemplItemLeft" align="right" valign="top">glm::tdualquat&lt; T, P &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceStE.html#aea126525ba27cf7509fbbef1b859d5a1">dualquat_rotate_translate</a> (const glm::tmat3x3&lt; T, P &gt; &amp;r, const glm::tvec3&lt; T, P &gt; &amp;t)</td></tr>
+<tr class="memdesc:aea126525ba27cf7509fbbef1b859d5a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">dual quaternion from rotation, translation  <a href="#aea126525ba27cf7509fbbef1b859d5a1">More...</a><br/></td></tr>
+<tr class="separator:aea126525ba27cf7509fbbef1b859d5a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac17dcebd02b32b2d01c28a82ca49f920"><td class="memTemplParams" colspan="2">template&lt;typename T , glm::precision P&gt; </td></tr>
+<tr class="memitem:ac17dcebd02b32b2d01c28a82ca49f920"><td class="memTemplItemLeft" align="right" valign="top">glm::tdualquat&lt; T, P &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceStE.html#ac17dcebd02b32b2d01c28a82ca49f920">dualquat_translate_rotate</a> (const glm::tmat3x3&lt; T, P &gt; &amp;r, const glm::tvec3&lt; T, P &gt; &amp;t)</td></tr>
+<tr class="memdesc:ac17dcebd02b32b2d01c28a82ca49f920"><td class="mdescLeft">&#160;</td><td class="mdescRight">dual quaternion from translation, rotation  <a href="#ac17dcebd02b32b2d01c28a82ca49f920">More...</a><br/></td></tr>
+<tr class="separator:ac17dcebd02b32b2d01c28a82ca49f920"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac0d726a56f16623fb82c939f99115cdb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="gl__extensions_8h.html#a814c8b5745ecf82afdd1da718fbdc47c">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceStE.html#ac0d726a56f16623fb82c939f99115cdb">extract_projection_frustum_planes</a> (float far, float near, float fovy, float aspect, glm::vec4 *np, glm::vec4 *fp, glm::vec4 *rp, glm::vec4 *lp, glm::vec4 *tp, glm::vec4 *bp)</td></tr>
 <tr class="separator:ac0d726a56f16623fb82c939f99115cdb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af7e4c69b2937405cc06dff2a2c329dde"><td class="memItemLeft" align="right" valign="top">glm::quat&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceStE.html#af7e4c69b2937405cc06dff2a2c329dde">tbn_to_tangent_frame</a> (const glm::vec3 &amp;t, const glm::vec3 &amp;b, const glm::vec3 &amp;n)</td></tr>
+<tr class="separator:af7e4c69b2937405cc06dff2a2c329dde"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4f582f9f77eaf7da0938d1f213838cc"><td class="memItemLeft" align="right" valign="top">glm::mat3x3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceStE.html#ac4f582f9f77eaf7da0938d1f213838cc">extract_tangent_frame</a> (const glm::quat &amp;transform, const glm::quat &amp;tangent_frame)</td></tr>
+<tr class="separator:ac4f582f9f77eaf7da0938d1f213838cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a52b1692c14489170810bcaa43ebe399f"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a52b1692c14489170810bcaa43ebe399f"><td class="memTemplItemLeft" align="right" valign="top">glm::mat4&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceStE.html#a52b1692c14489170810bcaa43ebe399f">reversed_perspective</a> (T fovy, T aspect, T n, T f)</td></tr>
 <tr class="separator:a52b1692c14489170810bcaa43ebe399f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -400,6 +412,86 @@ template&lt;typename T , template&lt; typename...&gt; class C&gt; </div>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
+<a class="anchor" id="aea126525ba27cf7509fbbef1b859d5a1"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T , glm::precision P&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::tdualquat&lt;T, P&gt; StE::dualquat_rotate_translate </td>
+          <td>(</td>
+          <td class="paramtype">const glm::tmat3x3&lt; T, P &gt; &amp;&#160;</td>
+          <td class="paramname"><em>r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::tvec3&lt; T, P &gt; &amp;&#160;</td>
+          <td class="paramname"><em>t</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>dual quaternion from rotation, translation </p>
+<p>Applies rotation and translation in that order.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">r</td><td>3x3 orthogonal rotation matrix </td></tr>
+    <tr><td class="paramname">t</td><td>translation vector </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definition at line <a class="el" href="dual__quaternion_8hpp_source.html#l00021">21</a> of file <a class="el" href="dual__quaternion_8hpp_source.html">dual_quaternion.hpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ac17dcebd02b32b2d01c28a82ca49f920"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T , glm::precision P&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::tdualquat&lt;T, P&gt; StE::dualquat_translate_rotate </td>
+          <td>(</td>
+          <td class="paramtype">const glm::tmat3x3&lt; T, P &gt; &amp;&#160;</td>
+          <td class="paramname"><em>r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::tvec3&lt; T, P &gt; &amp;&#160;</td>
+          <td class="paramname"><em>t</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>dual quaternion from translation, rotation </p>
+<p>Applies translation and rotation in that order.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">r</td><td>3x3 orthogonal rotation matrix </td></tr>
+    <tr><td class="paramname">t</td><td>translation vector </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definition at line <a class="el" href="dual__quaternion_8hpp_source.html#l00036">36</a> of file <a class="el" href="dual__quaternion_8hpp_source.html">dual_quaternion.hpp</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="ac0d726a56f16623fb82c939f99115cdb"></a>
 <div class="memitem">
 <div class="memproto">
@@ -481,6 +573,42 @@ template&lt;typename T , template&lt; typename...&gt; class C&gt; </div>
 </div><div class="memdoc">
 
 <p>Definition at line <a class="el" href="extract__projection__planes_8hpp_source.html#l00021">21</a> of file <a class="el" href="extract__projection__planes_8hpp_source.html">extract_projection_planes.hpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ac4f582f9f77eaf7da0938d1f213838cc"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::mat3x3 StE::extract_tangent_frame </td>
+          <td>(</td>
+          <td class="paramtype">const glm::quat &amp;&#160;</td>
+          <td class="paramname"><em>transform</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::quat &amp;&#160;</td>
+          <td class="paramname"><em>tangent_frame</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="quaternion__tangent__frame_8hpp_source.html#l00046">46</a> of file <a class="el" href="quaternion__tangent__frame_8hpp_source.html">quaternion_tangent_frame.hpp</a>.</p>
 
 </div>
 </div>
@@ -939,6 +1067,48 @@ template&lt;typename T &gt; </div>
 </div><div class="memdoc">
 
 <p>Definition at line <a class="el" href="reversed__perspective_8hpp_source.html#l00011">11</a> of file <a class="el" href="reversed__perspective_8hpp_source.html">reversed_perspective.hpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="af7e4c69b2937405cc06dff2a2c329dde"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::quat StE::tbn_to_tangent_frame </td>
+          <td>(</td>
+          <td class="paramtype">const glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>t</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>n</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="quaternion__tangent__frame_8hpp_source.html#l00022">22</a> of file <a class="el" href="quaternion__tangent__frame_8hpp_source.html">quaternion_tangent_frame.hpp</a>.</p>
 
 </div>
 </div>

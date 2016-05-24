@@ -7,6 +7,6 @@ var searchData=
   ['samplingdescriptor',['SamplingDescriptor',['../namespaceStE_1_1Core.html#a87104792878375552ac09a0ee081859fa409dd1edab84772cff3f7de1c620eb12',1,'StE::Core']]],
   ['scissor_5ftest',['SCISSOR_TEST',['../namespaceStE_1_1Core_1_1GL.html#a1013826a141dcd7be8defaeb829ee3d4aa527bbbc7b629e468522e5d74350c1f5',1,'StE::Core::GL']]],
   ['shaderstoragebufferobject',['ShaderStorageBufferObject',['../namespaceStE_1_1Core.html#a87104792878375552ac09a0ee081859fa4eabec1192ecc62502c687abccdb2c49',1,'StE::Core']]],
-  ['sphere',['Sphere',['../classStE_1_1Graphics_1_1light.html#aeda976c02795bec4a605920c3f575e1eab7095f057db3fefa7325ad93a04e14fd',1,'StE::Graphics::light']]],
+  ['sphere',['Sphere',['../namespaceStE_1_1Graphics.html#a6885d50b4c7a7c1d3d80e12c2740d035ab7095f057db3fefa7325ad93a04e14fd',1,'StE::Graphics']]],
   ['stencil_5ftest',['STENCIL_TEST',['../namespaceStE_1_1Core_1_1GL.html#a1013826a141dcd7be8defaeb829ee3d4aeb0a53c0c3e59812922cab45a05ae24e',1,'StE::Core::GL']]]
 ];

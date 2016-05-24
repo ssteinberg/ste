@@ -1,5 +1,7 @@
 <map id="StE::Graphics::SphericalLight" name="StE::Graphics::SphericalLight">
-<area shape="rect" id="node2" href="$classStE_1_1Graphics_1_1light.html" title="{StE::Graphics::light\n|# dirty\l|+ light()\l+ ~light()\l+ is_dirty()\l+ clear_dirty()\l+ set_luminance()\l+ set_diffuse()\l+ get_luminance()\l+ get_radius()\l+ get_effective_range()\l+ get_diffuse()\l+ get_descriptor()\l}" alt="" coords="79,248,239,472"/>
-<area shape="rect" id="node3" href="$classStE_1_1Graphics_1_1entity.html" title="{StE::Graphics::entity\n||+ ~entity()\l+ get_position()\l}" alt="" coords="5,49,148,141"/>
-<area shape="rect" id="node4" href="$structStE_1_1Graphics_1_1light_1_1light__descriptor.html" title="{StE::Graphics::light\l::light_descriptor\n|+ position_direction\l+ type\l+ diffuse\l+ luminance\l+ radius\l+ effective_range\l+ reserved\l|}" alt="" coords="173,5,311,185"/>
+<area shape="rect" id="node2" href="$classStE_1_1Graphics_1_1light.html" title="{StE::Graphics::light\n||+ light()\l+ ~light()\l+ set_luminance()\l+ set_diffuse()\l+ get_luminance()\l+ get_radius()\l+ get_diffuse()\l+ get_descriptor()\l}" alt="" coords="229,432,365,612"/>
+<area shape="rect" id="node3" href="$classStE_1_1Core_1_1observable__resource.html" title="{StE::Core::observable\l_resource\&lt; light_descriptor \&gt;\n||+ ~observable_resource()\l+ get_descriptor()\l# resource_signal()\l# notify()\l}" alt="" coords="5,219,201,355"/>
+<area shape="rect" id="node4" href="$classStE_1_1Core_1_1observable__resource.html" title="Resource consumed by a resource_storage. " alt="" coords="15,5,192,141"/>
+<area shape="rect" id="node5" href="$classStE_1_1Graphics_1_1entity.html" title="{StE::Graphics::entity\n||+ ~entity()\l+ get_position()\l}" alt="" coords="225,241,368,333"/>
+<area shape="rect" id="node6" href="$structStE_1_1Graphics_1_1light__descriptor.html" title="{StE::Graphics::light\l_descriptor\n|+ position\l+ radius\l+ diffuse\l+ luminance\l+ type\l+ _internal\l|}" alt="" coords="391,204,527,369"/>
 </map>

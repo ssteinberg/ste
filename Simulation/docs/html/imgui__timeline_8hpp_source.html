@@ -133,7 +133,7 @@ $(document).ready(function(){initNavTree('imgui__timeline_8hpp_source.html','');
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    ImVec2 canvasPosition = ImGui::GetCursorScreenPos();</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    ImVec2 canvasSize = ImGui::GetContentRegionAvail();</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    draw_list-&gt;PushClipRect(ImVec4(canvasPosition.x, canvasPosition.y, canvasPosition.x + canvasSize.x, canvasPosition.y + canvasSize.y));</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    draw_list-&gt;PushClipRect(ImVec2(canvasPosition.x, canvasPosition.y), ImVec2(canvasPosition.x + canvasSize.x, canvasPosition.y + canvasSize.y), <span class="keyword">true</span>);</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    ImGui::InvisibleButton(<span class="stringliteral">&quot;canvas&quot;</span>, canvasSize);</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;</div>

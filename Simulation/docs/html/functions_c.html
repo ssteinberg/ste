@@ -178,6 +178,9 @@ $(document).ready(function(){initNavTree('functions_c.html','');});
 <li>capture_screenshot()
 : <a class="el" href="classStE_1_1StEngineControl.html#a86417459448ba8a3109dbd6622e9a14f">StE::StEngineControl</a>
 </li>
+<li>cavity_handle
+: <a class="el" href="structStE_1_1Graphics_1_1material__descriptor.html#a3528dea2ed8640e2973444d9577cc1b2">StE::Graphics::material_descriptor</a>
+</li>
 <li>Center
 : <a class="el" href="classStE_1_1Text_1_1Attributes_1_1align.html#a0f3c999cb8d2c04f52e38ce36765aa17a4f1f6016fc9f3f2353c0cc7c67b292bd">StE::Text::Attributes::align</a>
 </li>
@@ -197,7 +200,6 @@ $(document).ready(function(){initNavTree('functions_c.html','');});
 , <a class="el" href="classStE_1_1Core_1_1GL_1_1gl__context__state__log.html#ae8b10eb744f204ec9e51a6be542b2f4a">StE::Core::GL::gl_context_state_log</a>
 , <a class="el" href="classStE_1_1Core_1_1texture.html#accd3c1b35ebd74fc84a385417a282852">StE::Core::texture&lt; type &gt;</a>
 , <a class="el" href="classStE_1_1Graph_1_1graph.html#ab57ccf9711d09bf4036183da1c34d3d7">StE::Graph::graph&lt; V, E &gt;</a>
-, <a class="el" href="classStE_1_1Graphics_1_1deferred__gbuffer.html#a3c8392daaaa218238607235e9c301e83">StE::Graphics::deferred_gbuffer</a>
 , <a class="el" href="classStE_1_1Graphics_1_1linked__light__lists.html#acdec5f02a67d73fb942d6f9c943831d9">StE::Graphics::linked_light_lists</a>
 </li>
 <li>clear_active_ll()
@@ -211,9 +213,6 @@ $(document).ready(function(){initNavTree('functions_c.html','');});
 </li>
 <li>clear_depth()
 : <a class="el" href="classStE_1_1Core_1_1GL_1_1gl__generic__context.html#aa0498d1b5affb2c1c29d0997e207647c">StE::Core::GL::gl_generic_context</a>
-</li>
-<li>clear_dirty()
-: <a class="el" href="classStE_1_1Graphics_1_1light.html#aab9ef410c4a2e6a95aa12c77a2591c3a">StE::Graphics::light</a>
 </li>
 <li>clear_framebuffer()
 : <a class="el" href="classStE_1_1Core_1_1GL_1_1gl__generic__context.html#ad4444eee1944637febf1d5b4f3ca8d29">StE::Core::GL::gl_generic_context</a>
@@ -251,7 +250,7 @@ $(document).ready(function(){initNavTree('functions_c.html','');});
 : <a class="el" href="classStE_1_1Core_1_1GL_1_1gl__generic__context.html#adc09967a382f0dc3ff7a42839c3643e4">StE::Core::GL::gl_generic_context</a>
 </li>
 <li>commit()
-: <a class="el" href="classStE_1_1Core_1_1ring__buffer.html#a5e0b5dce6bb4ffcefb86b541b8368ab4">StE::Core::ring_buffer&lt; T, max_size, lockless, Storage &gt;</a>
+: <a class="el" href="classStE_1_1Core_1_1ring__buffer.html#a8ed7f127e010b045e0c44bf60f53f446">StE::Core::ring_buffer&lt; T, max_size &gt;</a>
 , <a class="el" href="classStE_1_1Graphics_1_1texture__pool.html#ab061ea286ced1085ccea827fe6277f86">StE::Graphics::texture_pool</a>
 </li>
 <li>commit_range()
@@ -262,7 +261,7 @@ $(document).ready(function(){initNavTree('functions_c.html','');});
 </li>
 <li>compare()
 : <a class="el" href="classStE_1_1Core_1_1GL_1_1context__basic__state.html#af7d113de5ed2015c14ef36305be15c30">StE::Core::GL::context_basic_state</a>
-, <a class="el" href="classStE_1_1Core_1_1GL_1_1context__state.html#aacc7d961bd771da945e8f55d0842e0a3">StE::Core::GL::context_state</a>
+, <a class="el" href="classStE_1_1Core_1_1GL_1_1context__state.html#a8c13551dd8d5846512811664e7f7f6e7">StE::Core::GL::context_state</a>
 </li>
 <li>compare_func
 : <a class="el" href="structStE_1_1Core_1_1sampler__descriptor.html#af650014a028b4be1c8e4a3e560c60426">StE::Core::sampler_descriptor</a>
@@ -309,7 +308,7 @@ $(document).ready(function(){initNavTree('functions_c.html','');});
 </li>
 <li>context_framebuffer
 : <a class="el" href="classStE_1_1Core_1_1context__fbo__color__attachment__point.html#ad60fc53d3036ae796a2940fdb039fd85">StE::Core::context_fbo_color_attachment_point&lt; A, color_attachment_point &gt;</a>
-, <a class="el" href="classStE_1_1Core_1_1context__framebuffer.html#a9e8baf46941c9c20990f60e51128ab23">StE::Core::context_framebuffer</a>
+, <a class="el" href="classStE_1_1Core_1_1context__framebuffer.html#a90ce45217a76b03ce97abad8bb9c1868">StE::Core::context_framebuffer</a>
 </li>
 <li>context_state()
 : <a class="el" href="classStE_1_1Core_1_1GL_1_1context__state.html#a73e4691ddb8f2b1eabaeec7a1a2c8e0f">StE::Core::GL::context_state</a>
@@ -317,8 +316,14 @@ $(document).ready(function(){initNavTree('functions_c.html','');});
 <li>context_state_key()
 : <a class="el" href="classStE_1_1Core_1_1GL_1_1context__state__key.html#aedb3f6cfd979842d5b3d8aad87e04075">StE::Core::GL::context_state_key&lt; K &gt;</a>
 </li>
+<li>convert_anisotropy_to_ratio()
+: <a class="el" href="classStE_1_1Graphics_1_1Material.html#a95379ad45dc2d264e1d20df7f41c46d9">StE::Graphics::Material</a>
+</li>
 <li>convert_button()
 : <a class="el" href="classStE_1_1HID_1_1pointer.html#a5d97984cc0eda0b18817d309b3697d15">StE::HID::pointer</a>
+</li>
+<li>convert_ior_to_F0()
+: <a class="el" href="classStE_1_1Graphics_1_1Material.html#afb0583314962c4d7934ea68692755a45">StE::Graphics::Material</a>
 </li>
 <li>convert_key()
 : <a class="el" href="classStE_1_1HID_1_1keyboard.html#aebc977d8181f591b6aa81ed1420c0cf6">StE::HID::keyboard</a>
@@ -327,13 +332,13 @@ $(document).ready(function(){initNavTree('functions_c.html','');});
 : <a class="el" href="classStE_1_1Core_1_1buffer__object.html#a4a1dfd2059d05d86bdf9f8d4e65fbe18">StE::Core::buffer_object&lt; Type, U &gt;</a>
 </li>
 <li>copy_to()
-: <a class="el" href="classStE_1_1Core_1_1buffer__object.html#a3b226950f290701438b6342ba93dc946">StE::Core::buffer_object&lt; Type, U &gt;</a>
+: <a class="el" href="classStE_1_1Core_1_1buffer__object.html#a9e6eb5a534f8bf4e1000f67c92811ff4">StE::Core::buffer_object&lt; Type, U &gt;</a>
 </li>
 <li>cos_phi()
-: <a class="el" href="classStE_1_1Graphics_1_1BxDF.html#ada3a027719fb27bc258448631a8e6d1a">StE::Graphics::BxDF</a>
+: <a class="el" href="classStE_1_1Graphics_1_1BxDF.html#a6f039add6eeb4725071423818df2979e">StE::Graphics::BxDF&lt; T &gt;</a>
 </li>
 <li>cos_theta()
-: <a class="el" href="classStE_1_1Graphics_1_1BxDF.html#a7140879e41853f19de4ebb17a0cb6f55">StE::Graphics::BxDF</a>
+: <a class="el" href="classStE_1_1Graphics_1_1BxDF.html#ad2bbe5c96d30cbb941dda6060cd76cd8">StE::Graphics::BxDF&lt; T &gt;</a>
 </li>
 <li>count
 : <a class="el" href="structStE_1_1Core_1_1IndirectDrawArraysCommand.html#a7c8e773f8b495db522f2eac6d388a4ab">StE::Core::IndirectDrawArraysCommand</a>

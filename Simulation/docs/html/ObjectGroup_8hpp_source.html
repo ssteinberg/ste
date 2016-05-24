@@ -118,84 +118,75 @@ $(document).ready(function(){initNavTree('ObjectGroup_8hpp_source.html','');});
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;</div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="object__group__draw__buffers_8hpp.html">object_group_draw_buffers.hpp</a>&quot;</span></div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="ObjectVertexData_8hpp.html">ObjectVertexData.hpp</a>&quot;</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="Material_8hpp.html">Material.hpp</a>&quot;</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="Material_8hpp.html">Material.hpp</a>&quot;</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="material__storage_8hpp.html">material_storage.hpp</a>&quot;</span></div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="range_8hpp.html">range.hpp</a>&quot;</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="keyword">namespace </span>StE {</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="keyword">namespace </span>Graphics {</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;</div>
-<div class="line"><a name="l00025"></a><span class="lineno"><a class="line" href="classStE_1_1Graphics_1_1ObjectGroup.html">   25</a></span>&#160;<span class="keyword">class </span><a class="code" href="classStE_1_1Graphics_1_1ObjectGroup.html">ObjectGroup</a> : <span class="keyword">public</span> <a class="code" href="classStE_1_1Graphics_1_1entity__affine.html">entity_affine</a> {</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    <span class="keyword">using</span> <a class="code" href="classStE_1_1Graphics_1_1gpu__dispatchable.html">Base</a> = <a class="code" href="classStE_1_1Graphics_1_1gpu__dispatchable.html">gpu_dispatchable</a>;</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    <span class="keyword">using</span> signal_connection_type = Object::signal_type::connection_type;</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <span class="keyword">struct </span>object_information {</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;        std::size_t index;</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;        std::shared_ptr&lt;signal_connection_type&gt; <a class="code" href="classStE_1_1connection.html">connection</a>;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    };</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">namespace </span>StE {</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="keyword">namespace </span>Graphics {</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div>
+<div class="line"><a name="l00023"></a><span class="lineno"><a class="line" href="classStE_1_1Graphics_1_1ObjectGroup.html">   23</a></span>&#160;<span class="keyword">class </span><a class="code" href="classStE_1_1Graphics_1_1ObjectGroup.html">ObjectGroup</a> : <span class="keyword">public</span> <a class="code" href="classStE_1_1Graphics_1_1entity__affine.html">entity_affine</a> {</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    <span class="keyword">using</span> <a class="code" href="classStE_1_1Graphics_1_1gpu__dispatchable.html">Base</a> = <a class="code" href="classStE_1_1Graphics_1_1gpu__dispatchable.html">gpu_dispatchable</a>;</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    <span class="keyword">using</span> <a class="code" href="classStE_1_1connection.html">signal_connection_type</a> = <a class="code" href="classStE_1_1signal.html#a4122ef1907750da00aa3732a2569090d">Object::signal_type::connection_type</a>;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    <span class="keyword">struct </span>object_information {</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;        std::size_t index;</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;        std::shared_ptr&lt;signal_connection_type&gt; <a class="code" href="classStE_1_1connection.html">connection</a>;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    };</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="keyword">using</span> objects_map_type = std::unordered_map&lt;std::shared_ptr&lt;Object&gt;, object_information&gt;;</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    <span class="keyword">using</span> objects_map_type = std::unordered_map&lt;std::shared_ptr&lt;Object&gt;, object_information&gt;;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    <span class="keyword">const</span> <a class="code" href="classStE_1_1Graphics_1_1material__storage.html">material_storage</a> *mat_storage;</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    <a class="code" href="classStE_1_1Graphics_1_1object__group__draw__buffers.html">object_group_draw_buffers</a> draw_buffers;</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    objects_map_type objects;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    std::size_t total_vertices{ 0 };</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    std::size_t total_indices{ 0 };</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <span class="keyword">mutable</span> std::vector&lt;Object*&gt; signalled_objects;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="keyword">mutable</span> std::vector&lt;range&lt;&gt;&gt; ranges_to_lock;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00050"></a><span class="lineno"><a class="line" href="classStE_1_1Graphics_1_1ObjectGroup.html#a99369274dd356c8eb4438ca682e3b8d1">   50</a></span>&#160;    <a class="code" href="classStE_1_1Graphics_1_1ObjectGroup.html#a99369274dd356c8eb4438ca682e3b8d1">ObjectGroup</a>() {}</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <a class="code" href="classStE_1_1Graphics_1_1ObjectGroup.html#ab2617080c3f6cfd3f52b18b16655c434">~ObjectGroup</a>() noexcept;</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classStE_1_1Graphics_1_1ObjectGroup.html#aa040e732b3c8b6a735323f3695287b7f">add_object</a>(const std::shared_ptr&lt;<a class="code" href="classStE_1_1Graphics_1_1Object.html">Object</a>&gt; &amp;);</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classStE_1_1Graphics_1_1ObjectGroup.html#ae2b621a17f1b93f7d8bf994fe56f1949">remove_all</a>();</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    objects_map_type objects;</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    std::size_t total_vertices{ 0 };</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    std::size_t total_indices{ 0 };</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    <span class="keyword">mutable</span> std::vector&lt;Object*&gt; signalled_objects;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00048"></a><span class="lineno"><a class="line" href="classStE_1_1Graphics_1_1ObjectGroup.html#a50ae4b87661fefd4828995477d61cb5e">   48</a></span>&#160;    <a class="code" href="classStE_1_1Graphics_1_1ObjectGroup.html#a50ae4b87661fefd4828995477d61cb5e">ObjectGroup</a>(<span class="keyword">const</span> <a class="code" href="classStE_1_1Graphics_1_1material__storage.html">material_storage</a> *mat_storage) : mat_storage(mat_storage) {}</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <a class="code" href="classStE_1_1Graphics_1_1ObjectGroup.html#ab2617080c3f6cfd3f52b18b16655c434">~ObjectGroup</a>() noexcept;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classStE_1_1Graphics_1_1ObjectGroup.html#aa040e732b3c8b6a735323f3695287b7f">add_object</a>(const std::shared_ptr&lt;<a class="code" href="classStE_1_1Graphics_1_1Object.html">Object</a>&gt; &amp;);</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classStE_1_1Graphics_1_1ObjectGroup.html#ae2b621a17f1b93f7d8bf994fe56f1949">remove_all</a>();</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
+<div class="line"><a name="l00054"></a><span class="lineno"><a class="line" href="classStE_1_1Graphics_1_1ObjectGroup.html#ae16be12092fdd755a1ddc692e82b7cee">   54</a></span>&#160;    auto&amp; <a class="code" href="classStE_1_1Graphics_1_1ObjectGroup.html#ae16be12092fdd755a1ddc692e82b7cee">get_draw_buffers</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> draw_buffers; }</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
-<div class="line"><a name="l00056"></a><span class="lineno"><a class="line" href="classStE_1_1Graphics_1_1ObjectGroup.html#af5c8eb92805ec69fa53011acb88c932c">   56</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classStE_1_1Graphics_1_1ObjectGroup.html#af5c8eb92805ec69fa53011acb88c932c">set_model_matrix</a>(const glm::mat4 &amp;m)<span class="keyword"> override </span>{</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;        <a class="code" href="classStE_1_1Graphics_1_1entity__affine.html#a4d6a12aa628cf5838b7ef5494512cd15">entity_affine::set_model_matrix</a>(m);</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    }</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
-<div class="line"><a name="l00060"></a><span class="lineno"><a class="line" href="classStE_1_1Graphics_1_1ObjectGroup.html#ae16be12092fdd755a1ddc692e82b7cee">   60</a></span>&#160;    <span class="keyword">auto</span>&amp; <a class="code" href="classStE_1_1Graphics_1_1ObjectGroup.html#ae16be12092fdd755a1ddc692e82b7cee">get_draw_buffers</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> draw_buffers; }</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classStE_1_1Graphics_1_1ObjectGroup.html#a0cd257a9521c54a2a0f96922e5421e26">update_dirty_buffers</a>() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classStE_1_1Graphics_1_1ObjectGroup.html#a9cc386bfd85532b96f868f208f194b1d">lock_updated_buffers</a>() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
-<div class="line"><a name="l00065"></a><span class="lineno"><a class="line" href="classStE_1_1Graphics_1_1ObjectGroup.html#a8ceb2b59a85738649ca5299d68301ff9">   65</a></span>&#160;    std::size_t <a class="code" href="classStE_1_1Graphics_1_1ObjectGroup.html#a8ceb2b59a85738649ca5299d68301ff9">total_objects</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> objects.size(); }</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;};</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;}</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;}</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classStE_1_1Graphics_1_1ObjectGroup.html#a0cd257a9521c54a2a0f96922e5421e26">update_dirty_buffers</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;</div>
+<div class="line"><a name="l00058"></a><span class="lineno"><a class="line" href="classStE_1_1Graphics_1_1ObjectGroup.html#a8ceb2b59a85738649ca5299d68301ff9">   58</a></span>&#160;    std::size_t <a class="code" href="classStE_1_1Graphics_1_1ObjectGroup.html#a8ceb2b59a85738649ca5299d68301ff9">total_objects</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> objects.size(); }</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;};</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;}</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;}</div>
 <div class="ttc" id="stdafx_8hpp_html"><div class="ttname"><a href="stdafx_8hpp.html">stdafx.hpp</a></div></div>
 <div class="ttc" id="classStE_1_1Graphics_1_1object__group__draw__buffers_html"><div class="ttname"><a href="classStE_1_1Graphics_1_1object__group__draw__buffers.html">StE::Graphics::object_group_draw_buffers</a></div><div class="ttdef"><b>Definition:</b> <a href="object__group__draw__buffers_8hpp_source.html#l00024">object_group_draw_buffers.hpp:24</a></div></div>
-<div class="ttc" id="classStE_1_1Graphics_1_1Object_html"><div class="ttname"><a href="classStE_1_1Graphics_1_1Object.html">StE::Graphics::Object</a></div><div class="ttdef"><b>Definition:</b> <a href="Object_8hpp_source.html#l00019">Object.hpp:19</a></div></div>
+<div class="ttc" id="classStE_1_1Graphics_1_1Object_html"><div class="ttname"><a href="classStE_1_1Graphics_1_1Object.html">StE::Graphics::Object</a></div><div class="ttdef"><b>Definition:</b> <a href="Object_8hpp_source.html#l00023">Object.hpp:23</a></div></div>
+<div class="ttc" id="material__storage_8hpp_html"><div class="ttname"><a href="material__storage_8hpp.html">material_storage.hpp</a></div></div>
+<div class="ttc" id="classStE_1_1Graphics_1_1material__storage_html"><div class="ttname"><a href="classStE_1_1Graphics_1_1material__storage.html">StE::Graphics::material_storage</a></div><div class="ttdef"><b>Definition:</b> <a href="material__storage_8hpp_source.html#l00017">material_storage.hpp:17</a></div></div>
 <div class="ttc" id="Object_8hpp_html"><div class="ttname"><a href="Object_8hpp.html">Object.hpp</a></div></div>
-<div class="ttc" id="classStE_1_1Graphics_1_1ObjectGroup_html_a9cc386bfd85532b96f868f208f194b1d"><div class="ttname"><a href="classStE_1_1Graphics_1_1ObjectGroup.html#a9cc386bfd85532b96f868f208f194b1d">StE::Graphics::ObjectGroup::lock_updated_buffers</a></div><div class="ttdeci">void lock_updated_buffers() const </div><div class="ttdef"><b>Definition:</b> <a href="ObjectGroup_8cpp_source.html#l00088">ObjectGroup.cpp:88</a></div></div>
 <div class="ttc" id="Material_8hpp_html"><div class="ttname"><a href="Material_8hpp.html">Material.hpp</a></div></div>
 <div class="ttc" id="classStE_1_1Graphics_1_1ObjectGroup_html_ae2b621a17f1b93f7d8bf994fe56f1949"><div class="ttname"><a href="classStE_1_1Graphics_1_1ObjectGroup.html#ae2b621a17f1b93f7d8bf994fe56f1949">StE::Graphics::ObjectGroup::remove_all</a></div><div class="ttdeci">void remove_all()</div><div class="ttdef"><b>Definition:</b> <a href="ObjectGroup_8cpp_source.html#l00055">ObjectGroup.cpp:55</a></div></div>
 <div class="ttc" id="classStE_1_1Graphics_1_1ObjectGroup_html_aa040e732b3c8b6a735323f3695287b7f"><div class="ttname"><a href="classStE_1_1Graphics_1_1ObjectGroup.html#aa040e732b3c8b6a735323f3695287b7f">StE::Graphics::ObjectGroup::add_object</a></div><div class="ttdeci">void add_object(const std::shared_ptr&lt; Object &gt; &amp;)</div><div class="ttdef"><b>Definition:</b> <a href="ObjectGroup_8cpp_source.html#l00018">ObjectGroup.cpp:18</a></div></div>
-<div class="ttc" id="classStE_1_1Graphics_1_1ObjectGroup_html_af5c8eb92805ec69fa53011acb88c932c"><div class="ttname"><a href="classStE_1_1Graphics_1_1ObjectGroup.html#af5c8eb92805ec69fa53011acb88c932c">StE::Graphics::ObjectGroup::set_model_matrix</a></div><div class="ttdeci">void set_model_matrix(const glm::mat4 &amp;m) override</div><div class="ttdef"><b>Definition:</b> <a href="ObjectGroup_8hpp_source.html#l00056">ObjectGroup.hpp:56</a></div></div>
-<div class="ttc" id="classStE_1_1Graphics_1_1ObjectGroup_html_a99369274dd356c8eb4438ca682e3b8d1"><div class="ttname"><a href="classStE_1_1Graphics_1_1ObjectGroup.html#a99369274dd356c8eb4438ca682e3b8d1">StE::Graphics::ObjectGroup::ObjectGroup</a></div><div class="ttdeci">ObjectGroup()</div><div class="ttdef"><b>Definition:</b> <a href="ObjectGroup_8hpp_source.html#l00050">ObjectGroup.hpp:50</a></div></div>
 <div class="ttc" id="object__group__draw__buffers_8hpp_html"><div class="ttname"><a href="object__group__draw__buffers_8hpp.html">object_group_draw_buffers.hpp</a></div></div>
-<div class="ttc" id="classStE_1_1Graphics_1_1entity__affine_html"><div class="ttname"><a href="classStE_1_1Graphics_1_1entity__affine.html">StE::Graphics::entity_affine</a></div><div class="ttdef"><b>Definition:</b> <a href="entity_8hpp_source.html#l00019">entity.hpp:19</a></div></div>
-<div class="ttc" id="classStE_1_1Graphics_1_1ObjectGroup_html_ae16be12092fdd755a1ddc692e82b7cee"><div class="ttname"><a href="classStE_1_1Graphics_1_1ObjectGroup.html#ae16be12092fdd755a1ddc692e82b7cee">StE::Graphics::ObjectGroup::get_draw_buffers</a></div><div class="ttdeci">auto &amp; get_draw_buffers() const </div><div class="ttdef"><b>Definition:</b> <a href="ObjectGroup_8hpp_source.html#l00060">ObjectGroup.hpp:60</a></div></div>
+<div class="ttc" id="classStE_1_1Graphics_1_1entity__affine_html"><div class="ttname"><a href="classStE_1_1Graphics_1_1entity__affine.html">StE::Graphics::entity_affine</a></div><div class="ttdoc">Transformable entity. Transformation is encoded as a 4x3 matrix. </div><div class="ttdef"><b>Definition:</b> <a href="entity_8hpp_source.html#l00025">entity.hpp:25</a></div></div>
+<div class="ttc" id="classStE_1_1Graphics_1_1ObjectGroup_html_ae16be12092fdd755a1ddc692e82b7cee"><div class="ttname"><a href="classStE_1_1Graphics_1_1ObjectGroup.html#ae16be12092fdd755a1ddc692e82b7cee">StE::Graphics::ObjectGroup::get_draw_buffers</a></div><div class="ttdeci">auto &amp; get_draw_buffers() const </div><div class="ttdef"><b>Definition:</b> <a href="ObjectGroup_8hpp_source.html#l00054">ObjectGroup.hpp:54</a></div></div>
 <div class="ttc" id="gpu__dispatchable_8hpp_html"><div class="ttname"><a href="gpu__dispatchable_8hpp.html">gpu_dispatchable.hpp</a></div></div>
+<div class="ttc" id="classStE_1_1Graphics_1_1ObjectGroup_html_a50ae4b87661fefd4828995477d61cb5e"><div class="ttname"><a href="classStE_1_1Graphics_1_1ObjectGroup.html#a50ae4b87661fefd4828995477d61cb5e">StE::Graphics::ObjectGroup::ObjectGroup</a></div><div class="ttdeci">ObjectGroup(const material_storage *mat_storage)</div><div class="ttdef"><b>Definition:</b> <a href="ObjectGroup_8hpp_source.html#l00048">ObjectGroup.hpp:48</a></div></div>
 <div class="ttc" id="classStE_1_1Graphics_1_1gpu__dispatchable_html"><div class="ttname"><a href="classStE_1_1Graphics_1_1gpu__dispatchable.html">StE::Graphics::gpu_dispatchable</a></div><div class="ttdef"><b>Definition:</b> <a href="gpu__dispatchable_8hpp_source.html#l00015">gpu_dispatchable.hpp:15</a></div></div>
 <div class="ttc" id="entity_8hpp_html"><div class="ttname"><a href="entity_8hpp.html">entity.hpp</a></div></div>
-<div class="ttc" id="classStE_1_1Graphics_1_1ObjectGroup_html"><div class="ttname"><a href="classStE_1_1Graphics_1_1ObjectGroup.html">StE::Graphics::ObjectGroup</a></div><div class="ttdef"><b>Definition:</b> <a href="ObjectGroup_8hpp_source.html#l00025">ObjectGroup.hpp:25</a></div></div>
-<div class="ttc" id="ObjectVertexData_8hpp_html"><div class="ttname"><a href="ObjectVertexData_8hpp.html">ObjectVertexData.hpp</a></div></div>
-<div class="ttc" id="classStE_1_1Graphics_1_1entity__affine_html_a4d6a12aa628cf5838b7ef5494512cd15"><div class="ttname"><a href="classStE_1_1Graphics_1_1entity__affine.html#a4d6a12aa628cf5838b7ef5494512cd15">StE::Graphics::entity_affine::set_model_matrix</a></div><div class="ttdeci">virtual void set_model_matrix(const glm::mat4 &amp;m)</div><div class="ttdef"><b>Definition:</b> <a href="entity_8hpp_source.html#l00026">entity.hpp:26</a></div></div>
+<div class="ttc" id="classStE_1_1signal_html_a4122ef1907750da00aa3732a2569090d"><div class="ttname"><a href="classStE_1_1signal.html#a4122ef1907750da00aa3732a2569090d">StE::signal&lt; Object * &gt;::connection_type</a></div><div class="ttdeci">connection&lt; Ts...&gt; connection_type</div><div class="ttdef"><b>Definition:</b> <a href="signal_8hpp_source.html#l00022">signal.hpp:22</a></div></div>
+<div class="ttc" id="classStE_1_1Graphics_1_1ObjectGroup_html"><div class="ttname"><a href="classStE_1_1Graphics_1_1ObjectGroup.html">StE::Graphics::ObjectGroup</a></div><div class="ttdef"><b>Definition:</b> <a href="ObjectGroup_8hpp_source.html#l00023">ObjectGroup.hpp:23</a></div></div>
 <div class="ttc" id="classStE_1_1Graphics_1_1ObjectGroup_html_a0cd257a9521c54a2a0f96922e5421e26"><div class="ttname"><a href="classStE_1_1Graphics_1_1ObjectGroup.html#a0cd257a9521c54a2a0f96922e5421e26">StE::Graphics::ObjectGroup::update_dirty_buffers</a></div><div class="ttdeci">void update_dirty_buffers() const </div><div class="ttdef"><b>Definition:</b> <a href="ObjectGroup_8cpp_source.html#l00062">ObjectGroup.cpp:62</a></div></div>
-<div class="ttc" id="classStE_1_1Graphics_1_1ObjectGroup_html_a8ceb2b59a85738649ca5299d68301ff9"><div class="ttname"><a href="classStE_1_1Graphics_1_1ObjectGroup.html#a8ceb2b59a85738649ca5299d68301ff9">StE::Graphics::ObjectGroup::total_objects</a></div><div class="ttdeci">std::size_t total_objects() const </div><div class="ttdef"><b>Definition:</b> <a href="ObjectGroup_8hpp_source.html#l00065">ObjectGroup.hpp:65</a></div></div>
-<div class="ttc" id="range_8hpp_html"><div class="ttname"><a href="range_8hpp.html">range.hpp</a></div></div>
+<div class="ttc" id="classStE_1_1Graphics_1_1ObjectGroup_html_a8ceb2b59a85738649ca5299d68301ff9"><div class="ttname"><a href="classStE_1_1Graphics_1_1ObjectGroup.html#a8ceb2b59a85738649ca5299d68301ff9">StE::Graphics::ObjectGroup::total_objects</a></div><div class="ttdeci">std::size_t total_objects() const </div><div class="ttdef"><b>Definition:</b> <a href="ObjectGroup_8hpp_source.html#l00058">ObjectGroup.hpp:58</a></div></div>
 <div class="ttc" id="classStE_1_1Graphics_1_1ObjectGroup_html_ab2617080c3f6cfd3f52b18b16655c434"><div class="ttname"><a href="classStE_1_1Graphics_1_1ObjectGroup.html#ab2617080c3f6cfd3f52b18b16655c434">StE::Graphics::ObjectGroup::~ObjectGroup</a></div><div class="ttdeci">~ObjectGroup() noexcept</div><div class="ttdef"><b>Definition:</b> <a href="ObjectGroup_8cpp_source.html#l00014">ObjectGroup.cpp:14</a></div></div>
 <div class="ttc" id="classStE_1_1connection_html"><div class="ttname"><a href="classStE_1_1connection.html">StE::connection</a></div><div class="ttdef"><b>Definition:</b> <a href="connection_8hpp_source.html#l00017">connection.hpp:17</a></div></div>
 </div><!-- fragment --></div><!-- contents -->

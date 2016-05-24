@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>StE: StE::Core::ring_buffer&lt; T, max_size, lockless, Storage &gt; Class Template Reference</title>
+<title>StE: StE::Core::ring_buffer&lt; T, max_size &gt; Class Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -108,100 +108,106 @@ $(document).ready(function(){initNavTree('classStE_1_1Core_1_1ring__buffer.html'
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-static-attribs">Static Public Attributes</a>  </div>
   <div class="headertitle">
-<div class="title">StE::Core::ring_buffer&lt; T, max_size, lockless, Storage &gt; Class Template Reference</div>  </div>
+<div class="title">StE::Core::ring_buffer&lt; T, max_size &gt; Class Template Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
 <p><code>#include &lt;<a class="el" href="ring__buffer_8hpp_source.html">ring_buffer.hpp</a>&gt;</code></p>
 <div class="dynheader">
-Inheritance diagram for StE::Core::ring_buffer&lt; T, max_size, lockless, Storage &gt;:</div>
+Inheritance diagram for StE::Core::ring_buffer&lt; T, max_size &gt;:</div>
 <div class="dyncontent">
-<div class="center"><img src="classStE_1_1Core_1_1ring__buffer__inherit__graph.png" border="0" usemap="#StE_1_1Core_1_1ring__buffer_3_01T_00_01max__size_00_01lockless_00_01Storage_01_4_inherit__map" alt="Inheritance graph"/></div>
-<map name="StE_1_1Core_1_1ring__buffer_3_01T_00_01max__size_00_01lockless_00_01Storage_01_4_inherit__map" id="StE_1_1Core_1_1ring__buffer_3_01T_00_01max__size_00_01lockless_00_01Storage_01_4_inherit__map">
-<area shape="rect" id="node2" href="classStE_1_1Core_1_1ring__buffer.html" title="{StE::Core::ring_buffer\l\&lt; matrices, 3, false \&gt;\n|+ usage\l|+ ring_buffer()\l+ ring_buffer()\l+ ring_buffer()\l+ commit()\l+ commit()\l+ commit()\l+ commit()\l+ lock_range()\l+ get_buffer()\l+ size()\l}" alt="" coords="5,351,155,575"/><area shape="rect" id="node3" href="classStE_1_1Core_1_1ring__buffer.html" title="{StE::Core::ring_buffer\l\&lt; glyph_point, ringbuffer\l_max_size, using_lockless\l_ringbuffer \&gt;\n|+ usage\l|+ ring_buffer()\l+ ring_buffer()\l+ ring_buffer()\l+ commit()\l+ commit()\l+ commit()\l+ commit()\l+ lock_range()\l+ get_buffer()\l+ size()\l}" alt="" coords="179,336,363,589"/></map>
+<div class="center"><img src="classStE_1_1Core_1_1ring__buffer__inherit__graph.png" border="0" usemap="#StE_1_1Core_1_1ring__buffer_3_01T_00_01max__size_01_4_inherit__map" alt="Inheritance graph"/></div>
+<map name="StE_1_1Core_1_1ring__buffer_3_01T_00_01max__size_01_4_inherit__map" id="StE_1_1Core_1_1ring__buffer_3_01T_00_01max__size_01_4_inherit__map">
+<area shape="rect" id="node2" href="classStE_1_1Core_1_1ring__buffer.html" title="{StE::Core::ring_buffer\l\&lt; proj_data, 1 \&gt;\n|+ usage\l|+ ring_buffer()\l+ ring_buffer()\l+ ring_buffer()\l+ commit()\l+ commit()\l+ get_buffer()\l+ size()\l}" alt="" coords="5,270,155,450"/><area shape="rect" id="node3" href="classStE_1_1Core_1_1ring__buffer.html" title="{StE::Core::ring_buffer\l\&lt; view_data, 3 \&gt;\n|+ usage\l|+ ring_buffer()\l+ ring_buffer()\l+ ring_buffer()\l+ commit()\l+ commit()\l+ get_buffer()\l+ size()\l}" alt="" coords="179,270,328,450"/><area shape="rect" id="node4" href="classStE_1_1Core_1_1ring__buffer.html" title="{StE::Core::ring_buffer\l\&lt; glyph_point, ringbuffer\l_max_size \&gt;\n|+ usage\l|+ ring_buffer()\l+ ring_buffer()\l+ ring_buffer()\l+ commit()\l+ commit()\l+ get_buffer()\l+ size()\l}" alt="" coords="352,263,515,457"/></map>
 </div>
 <div class="dynheader">
-Collaboration diagram for StE::Core::ring_buffer&lt; T, max_size, lockless, Storage &gt;:</div>
+Collaboration diagram for StE::Core::ring_buffer&lt; T, max_size &gt;:</div>
 <div class="dyncontent">
-<div class="center"><img src="classStE_1_1Core_1_1ring__buffer__coll__graph.png" border="0" usemap="#StE_1_1Core_1_1ring__buffer_3_01T_00_01max__size_00_01lockless_00_01Storage_01_4_coll__map" alt="Collaboration graph"/></div>
-<map name="StE_1_1Core_1_1ring__buffer_3_01T_00_01max__size_00_01lockless_00_01Storage_01_4_coll__map" id="StE_1_1Core_1_1ring__buffer_3_01T_00_01max__size_00_01lockless_00_01Storage_01_4_coll__map">
+<div class="center"><img src="classStE_1_1Core_1_1ring__buffer__coll__graph.png" border="0" usemap="#StE_1_1Core_1_1ring__buffer_3_01T_00_01max__size_01_4_coll__map" alt="Collaboration graph"/></div>
+<map name="StE_1_1Core_1_1ring__buffer_3_01T_00_01max__size_01_4_coll__map" id="StE_1_1Core_1_1ring__buffer_3_01T_00_01max__size_01_4_coll__map">
 </map>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a89beeeabe2422bf2076f1499eaf270e4"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Core_1_1ring__buffer.html#a89beeeabe2422bf2076f1499eaf270e4">value_type</a> = T</td></tr>
-<tr class="separator:a89beeeabe2422bf2076f1499eaf270e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a00f87597b564d842497dd4a553ff1ec9"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Core_1_1ring__buffer.html#a00f87597b564d842497dd4a553ff1ec9">value_type</a> = T</td></tr>
+<tr class="separator:a00f87597b564d842497dd4a553ff1ec9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b629260d06407b7b21389605a3fd54f"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Core_1_1ring__buffer.html#a8b629260d06407b7b21389605a3fd54f">storage_type</a> = <a class="el" href="classStE_1_1Core_1_1gstack.html">gstack</a>&lt; T &gt;</td></tr>
+<tr class="separator:a8b629260d06407b7b21389605a3fd54f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:af54b8f414a8752e6d89fb4064f647695"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Core_1_1ring__buffer.html#af54b8f414a8752e6d89fb4064f647695">ring_buffer</a> ()</td></tr>
-<tr class="separator:af54b8f414a8752e6d89fb4064f647695"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac88dffaf21d932f31a534098908d93d8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Core_1_1ring__buffer.html#ac88dffaf21d932f31a534098908d93d8">ring_buffer</a> (const std::vector&lt; T &gt; &amp;data)</td></tr>
-<tr class="separator:ac88dffaf21d932f31a534098908d93d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adfa3a5e37d92f68a8af4ecdca3a4928c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Core_1_1ring__buffer.html#adfa3a5e37d92f68a8af4ecdca3a4928c">ring_buffer</a> (std::size_t <a class="el" href="classStE_1_1Core_1_1ring__buffer.html#a400cb064fd7754933ba5536d2160a8fa">size</a>, const T *data)</td></tr>
-<tr class="separator:adfa3a5e37d92f68a8af4ecdca3a4928c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5e0b5dce6bb4ffcefb86b541b8368ab4"><td class="memTemplParams" colspan="2">template&lt;bool b = lockless&gt; </td></tr>
-<tr class="memitem:a5e0b5dce6bb4ffcefb86b541b8368ab4"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="structStE_1_1range.html">range</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classStE_1_1Core_1_1ring__buffer.html#a5e0b5dce6bb4ffcefb86b541b8368ab4">commit</a> (const T &amp;t, std::enable_if_t&lt;!b &gt; *=nullptr)</td></tr>
-<tr class="separator:a5e0b5dce6bb4ffcefb86b541b8368ab4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad4d983c1ead8a136f2685a0da5640478"><td class="memTemplParams" colspan="2">template&lt;bool b = lockless&gt; </td></tr>
-<tr class="memitem:ad4d983c1ead8a136f2685a0da5640478"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="structStE_1_1range.html">range</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classStE_1_1Core_1_1ring__buffer.html#ad4d983c1ead8a136f2685a0da5640478">commit</a> (const T &amp;t, std::enable_if_t&lt; b &gt; *=nullptr)</td></tr>
-<tr class="separator:ad4d983c1ead8a136f2685a0da5640478"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ade30fd8dffe4a7d10e32d27a9b35b84a"><td class="memTemplParams" colspan="2">template&lt;bool b = lockless&gt; </td></tr>
-<tr class="memitem:ade30fd8dffe4a7d10e32d27a9b35b84a"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="structStE_1_1range.html">range</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classStE_1_1Core_1_1ring__buffer.html#ade30fd8dffe4a7d10e32d27a9b35b84a">commit</a> (const std::vector&lt; T &gt; &amp;v, std::enable_if_t&lt;!b &gt; *=nullptr)</td></tr>
-<tr class="separator:ade30fd8dffe4a7d10e32d27a9b35b84a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaaaab70c5388529dff77c3a2db462e77"><td class="memTemplParams" colspan="2">template&lt;bool b = lockless&gt; </td></tr>
-<tr class="memitem:aaaaab70c5388529dff77c3a2db462e77"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="structStE_1_1range.html">range</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classStE_1_1Core_1_1ring__buffer.html#aaaaab70c5388529dff77c3a2db462e77">commit</a> (const std::vector&lt; T &gt; &amp;v, std::enable_if_t&lt; b &gt; *=nullptr)</td></tr>
-<tr class="separator:aaaaab70c5388529dff77c3a2db462e77"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa72b0500e01a5aea963e92167bcdefef"><td class="memTemplParams" colspan="2">template&lt;bool b = lockless&gt; </td></tr>
-<tr class="memitem:aa72b0500e01a5aea963e92167bcdefef"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="gl__extensions_8h.html#a814c8b5745ecf82afdd1da718fbdc47c">void</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classStE_1_1Core_1_1ring__buffer.html#aa72b0500e01a5aea963e92167bcdefef">lock_range</a> (const <a class="el" href="structStE_1_1range.html">range</a>&lt;&gt; &amp;r, std::enable_if_t&lt;!b &gt; *=nullptr) const </td></tr>
-<tr class="separator:aa72b0500e01a5aea963e92167bcdefef"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a97cd11c9a79fce57a29d2a7b0dfdfd8f"><td class="memItemLeft" align="right" valign="top">const auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Core_1_1ring__buffer.html#a97cd11c9a79fce57a29d2a7b0dfdfd8f">get_buffer</a> () const </td></tr>
-<tr class="separator:a97cd11c9a79fce57a29d2a7b0dfdfd8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a400cb064fd7754933ba5536d2160a8fa"><td class="memItemLeft" align="right" valign="top">const auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Core_1_1ring__buffer.html#a400cb064fd7754933ba5536d2160a8fa">size</a> () const </td></tr>
-<tr class="separator:a400cb064fd7754933ba5536d2160a8fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c5e963584de820fd1df2a9bb1bf0ef9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Core_1_1ring__buffer.html#a6c5e963584de820fd1df2a9bb1bf0ef9">ring_buffer</a> ()</td></tr>
+<tr class="separator:a6c5e963584de820fd1df2a9bb1bf0ef9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a446c6c6d2362995268b4a90b85cd0b6f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Core_1_1ring__buffer.html#a446c6c6d2362995268b4a90b85cd0b6f">ring_buffer</a> (const std::vector&lt; T &gt; &amp;data)</td></tr>
+<tr class="separator:a446c6c6d2362995268b4a90b85cd0b6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a78cda208db4e72e78e1b210fb6cb0df3"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Core_1_1ring__buffer.html#a78cda208db4e72e78e1b210fb6cb0df3">ring_buffer</a> (std::size_t <a class="el" href="classStE_1_1Core_1_1ring__buffer.html#a0566f1b38db646ea202ae2bff115db6d">size</a>, const T *data)</td></tr>
+<tr class="separator:a78cda208db4e72e78e1b210fb6cb0df3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ed7f127e010b045e0c44bf60f53f446"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structStE_1_1range.html">range</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Core_1_1ring__buffer.html#a8ed7f127e010b045e0c44bf60f53f446">commit</a> (const T &amp;t)</td></tr>
+<tr class="separator:a8ed7f127e010b045e0c44bf60f53f446"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab2c247a74ad54288f2e8e8b8b84aa7ae"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structStE_1_1range.html">range</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Core_1_1ring__buffer.html#ab2c247a74ad54288f2e8e8b8b84aa7ae">commit</a> (const std::vector&lt; T &gt; &amp;v)</td></tr>
+<tr class="separator:ab2c247a74ad54288f2e8e8b8b84aa7ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af0373337b6454c4f29bcbb967a4936a5"><td class="memItemLeft" align="right" valign="top">const auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Core_1_1ring__buffer.html#af0373337b6454c4f29bcbb967a4936a5">get_buffer</a> () const </td></tr>
+<tr class="separator:af0373337b6454c4f29bcbb967a4936a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0566f1b38db646ea202ae2bff115db6d"><td class="memItemLeft" align="right" valign="top">const auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Core_1_1ring__buffer.html#a0566f1b38db646ea202ae2bff115db6d">size</a> () const </td></tr>
+<tr class="separator:a0566f1b38db646ea202ae2bff115db6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
-<tr class="memitem:a69b4ad0449c223f8e4cf994be1aadc0f"><td class="memItemLeft" align="right" valign="top">static constexpr <br class="typebreak"/>
-<a class="el" href="namespaceStE_1_1Core_1_1BufferUsage.html#a89a389be2377b0d203dd7873311ac604">BufferUsage::buffer_usage</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Core_1_1ring__buffer.html#a69b4ad0449c223f8e4cf994be1aadc0f">usage</a> = Storage::usage</td></tr>
-<tr class="separator:a69b4ad0449c223f8e4cf994be1aadc0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2cd5bd56f42fb7604996f6215e4b41d2"><td class="memItemLeft" align="right" valign="top">static constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Core_1_1ring__buffer.html#a2cd5bd56f42fb7604996f6215e4b41d2">usage</a> = storage_type::usage</td></tr>
+<tr class="separator:a2cd5bd56f42fb7604996f6215e4b41d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><h3>template&lt;typename T, std::size_t max_size = 4096, bool lockless = false, class Storage = gstack&lt;T, true&gt;&gt;<br/>
-class StE::Core::ring_buffer&lt; T, max_size, lockless, Storage &gt;</h3>
+<div class="textblock"><h3>template&lt;typename T, std::size_t max_size = 4096&gt;<br/>
+class StE::Core::ring_buffer&lt; T, max_size &gt;</h3>
 
 
-<p>Definition at line <a class="el" href="ring__buffer_8hpp_source.html#l00019">19</a> of file <a class="el" href="ring__buffer_8hpp_source.html">ring_buffer.hpp</a>.</p>
+<p>Definition at line <a class="el" href="ring__buffer_8hpp_source.html#l00018">18</a> of file <a class="el" href="ring__buffer_8hpp_source.html">ring_buffer.hpp</a>.</p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
-<a class="anchor" id="a89beeeabe2422bf2076f1499eaf270e4"></a>
+<a class="anchor" id="a8b629260d06407b7b21389605a3fd54f"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T, std::size_t max_size = 4096, bool lockless = false, class Storage = gstack&lt;T, true&gt;&gt; </div>
+template&lt;typename T, std::size_t max_size = 4096&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="classStE_1_1Core_1_1ring__buffer.html">StE::Core::ring_buffer</a>&lt; T, max_size, lockless, Storage &gt;::<a class="el" href="classStE_1_1Core_1_1ring__buffer.html#a89beeeabe2422bf2076f1499eaf270e4">value_type</a> =  T</td>
+          <td class="memname">using <a class="el" href="classStE_1_1Core_1_1ring__buffer.html">StE::Core::ring_buffer</a>&lt; T, max_size &gt;::<a class="el" href="classStE_1_1Core_1_1ring__buffer.html#a8b629260d06407b7b21389605a3fd54f">storage_type</a> =  <a class="el" href="classStE_1_1Core_1_1gstack.html">gstack</a>&lt;T&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="ring__buffer_8hpp_source.html#l00022">22</a> of file <a class="el" href="ring__buffer_8hpp_source.html">ring_buffer.hpp</a>.</p>
+<p>Definition at line <a class="el" href="ring__buffer_8hpp_source.html#l00021">21</a> of file <a class="el" href="ring__buffer_8hpp_source.html">ring_buffer.hpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a00f87597b564d842497dd4a553ff1ec9"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T, std::size_t max_size = 4096&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classStE_1_1Core_1_1ring__buffer.html">StE::Core::ring_buffer</a>&lt; T, max_size &gt;::<a class="el" href="classStE_1_1Core_1_1ring__buffer.html#a00f87597b564d842497dd4a553ff1ec9">value_type</a> =  T</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="ring__buffer_8hpp_source.html#l00020">20</a> of file <a class="el" href="ring__buffer_8hpp_source.html">ring_buffer.hpp</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" id="af54b8f414a8752e6d89fb4064f647695"></a>
+<a class="anchor" id="a6c5e963584de820fd1df2a9bb1bf0ef9"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T, std::size_t max_size = 4096, bool lockless = false, class Storage = gstack&lt;T, true&gt;&gt; </div>
+template&lt;typename T, std::size_t max_size = 4096&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classStE_1_1Core_1_1ring__buffer.html">StE::Core::ring_buffer</a>&lt; T, max_size, lockless, Storage &gt;::<a class="el" href="classStE_1_1Core_1_1ring__buffer.html">ring_buffer</a> </td>
+          <td class="memname"><a class="el" href="classStE_1_1Core_1_1ring__buffer.html">StE::Core::ring_buffer</a>&lt; T, max_size &gt;::<a class="el" href="classStE_1_1Core_1_1ring__buffer.html">ring_buffer</a> </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -218,17 +224,17 @@ template&lt;typename T, std::size_t max_size = 4096, bool lockless = false, clas
 
 </div>
 </div>
-<a class="anchor" id="ac88dffaf21d932f31a534098908d93d8"></a>
+<a class="anchor" id="a446c6c6d2362995268b4a90b85cd0b6f"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T, std::size_t max_size = 4096, bool lockless = false, class Storage = gstack&lt;T, true&gt;&gt; </div>
+template&lt;typename T, std::size_t max_size = 4096&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classStE_1_1Core_1_1ring__buffer.html">StE::Core::ring_buffer</a>&lt; T, max_size, lockless, Storage &gt;::<a class="el" href="classStE_1_1Core_1_1ring__buffer.html">ring_buffer</a> </td>
+          <td class="memname"><a class="el" href="classStE_1_1Core_1_1ring__buffer.html">StE::Core::ring_buffer</a>&lt; T, max_size &gt;::<a class="el" href="classStE_1_1Core_1_1ring__buffer.html">ring_buffer</a> </td>
           <td>(</td>
           <td class="paramtype">const std::vector&lt; T &gt; &amp;&#160;</td>
           <td class="paramname"><em>data</em></td><td>)</td>
@@ -246,17 +252,17 @@ template&lt;typename T, std::size_t max_size = 4096, bool lockless = false, clas
 
 </div>
 </div>
-<a class="anchor" id="adfa3a5e37d92f68a8af4ecdca3a4928c"></a>
+<a class="anchor" id="a78cda208db4e72e78e1b210fb6cb0df3"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T, std::size_t max_size = 4096, bool lockless = false, class Storage = gstack&lt;T, true&gt;&gt; </div>
+template&lt;typename T, std::size_t max_size = 4096&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classStE_1_1Core_1_1ring__buffer.html">StE::Core::ring_buffer</a>&lt; T, max_size, lockless, Storage &gt;::<a class="el" href="classStE_1_1Core_1_1ring__buffer.html">ring_buffer</a> </td>
+          <td class="memname"><a class="el" href="classStE_1_1Core_1_1ring__buffer.html">StE::Core::ring_buffer</a>&lt; T, max_size &gt;::<a class="el" href="classStE_1_1Core_1_1ring__buffer.html">ring_buffer</a> </td>
           <td>(</td>
           <td class="paramtype">std::size_t&#160;</td>
           <td class="paramname"><em>size</em>, </td>
@@ -285,33 +291,21 @@ template&lt;typename T, std::size_t max_size = 4096, bool lockless = false, clas
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a5e0b5dce6bb4ffcefb86b541b8368ab4"></a>
+<a class="anchor" id="a8ed7f127e010b045e0c44bf60f53f446"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T, std::size_t max_size = 4096, bool lockless = false, class Storage = gstack&lt;T, true&gt;&gt; </div>
-<div class="memtemplate">
-template&lt;bool b = lockless&gt; </div>
+template&lt;typename T, std::size_t max_size = 4096&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structStE_1_1range.html">range</a> <a class="el" href="classStE_1_1Core_1_1ring__buffer.html">StE::Core::ring_buffer</a>&lt; T, max_size, lockless, Storage &gt;::commit </td>
+          <td class="memname"><a class="el" href="structStE_1_1range.html">range</a> <a class="el" href="classStE_1_1Core_1_1ring__buffer.html">StE::Core::ring_buffer</a>&lt; T, max_size &gt;::commit </td>
           <td>(</td>
           <td class="paramtype">const T &amp;&#160;</td>
-          <td class="paramname"><em>t</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramname"><em>t</em></td><td>)</td>
           <td></td>
-          <td class="paramtype">std::enable_if_t&lt;!b &gt; *&#160;</td>
-          <td class="paramname"> = <code>nullptr</code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -321,77 +315,25 @@ template&lt;bool b = lockless&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="ring__buffer_8hpp_source.html#l00041">41</a> of file <a class="el" href="ring__buffer_8hpp_source.html">ring_buffer.hpp</a>.</p>
+<p>Definition at line <a class="el" href="ring__buffer_8hpp_source.html#l00040">40</a> of file <a class="el" href="ring__buffer_8hpp_source.html">ring_buffer.hpp</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="ad4d983c1ead8a136f2685a0da5640478"></a>
+<a class="anchor" id="ab2c247a74ad54288f2e8e8b8b84aa7ae"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T, std::size_t max_size = 4096, bool lockless = false, class Storage = gstack&lt;T, true&gt;&gt; </div>
-<div class="memtemplate">
-template&lt;bool b = lockless&gt; </div>
+template&lt;typename T, std::size_t max_size = 4096&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structStE_1_1range.html">range</a> <a class="el" href="classStE_1_1Core_1_1ring__buffer.html">StE::Core::ring_buffer</a>&lt; T, max_size, lockless, Storage &gt;::commit </td>
-          <td>(</td>
-          <td class="paramtype">const T &amp;&#160;</td>
-          <td class="paramname"><em>t</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::enable_if_t&lt; b &gt; *&#160;</td>
-          <td class="paramname"> = <code>nullptr</code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="ring__buffer_8hpp_source.html#l00062">62</a> of file <a class="el" href="ring__buffer_8hpp_source.html">ring_buffer.hpp</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="ade30fd8dffe4a7d10e32d27a9b35b84a"></a>
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename T, std::size_t max_size = 4096, bool lockless = false, class Storage = gstack&lt;T, true&gt;&gt; </div>
-<div class="memtemplate">
-template&lt;bool b = lockless&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="structStE_1_1range.html">range</a> <a class="el" href="classStE_1_1Core_1_1ring__buffer.html">StE::Core::ring_buffer</a>&lt; T, max_size, lockless, Storage &gt;::commit </td>
+          <td class="memname"><a class="el" href="structStE_1_1range.html">range</a> <a class="el" href="classStE_1_1Core_1_1ring__buffer.html">StE::Core::ring_buffer</a>&lt; T, max_size &gt;::commit </td>
           <td>(</td>
           <td class="paramtype">const std::vector&lt; T &gt; &amp;&#160;</td>
-          <td class="paramname"><em>v</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramname"><em>v</em></td><td>)</td>
           <td></td>
-          <td class="paramtype">std::enable_if_t&lt;!b &gt; *&#160;</td>
-          <td class="paramname"> = <code>nullptr</code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -401,61 +343,21 @@ template&lt;bool b = lockless&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="ring__buffer_8hpp_source.html#l00078">78</a> of file <a class="el" href="ring__buffer_8hpp_source.html">ring_buffer.hpp</a>.</p>
+<p>Definition at line <a class="el" href="ring__buffer_8hpp_source.html#l00055">55</a> of file <a class="el" href="ring__buffer_8hpp_source.html">ring_buffer.hpp</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="aaaaab70c5388529dff77c3a2db462e77"></a>
+<a class="anchor" id="af0373337b6454c4f29bcbb967a4936a5"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T, std::size_t max_size = 4096, bool lockless = false, class Storage = gstack&lt;T, true&gt;&gt; </div>
-<div class="memtemplate">
-template&lt;bool b = lockless&gt; </div>
+template&lt;typename T, std::size_t max_size = 4096&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structStE_1_1range.html">range</a> <a class="el" href="classStE_1_1Core_1_1ring__buffer.html">StE::Core::ring_buffer</a>&lt; T, max_size, lockless, Storage &gt;::commit </td>
-          <td>(</td>
-          <td class="paramtype">const std::vector&lt; T &gt; &amp;&#160;</td>
-          <td class="paramname"><em>v</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::enable_if_t&lt; b &gt; *&#160;</td>
-          <td class="paramname"> = <code>nullptr</code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="ring__buffer_8hpp_source.html#l00103">103</a> of file <a class="el" href="ring__buffer_8hpp_source.html">ring_buffer.hpp</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a97cd11c9a79fce57a29d2a7b0dfdfd8f"></a>
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename T, std::size_t max_size = 4096, bool lockless = false, class Storage = gstack&lt;T, true&gt;&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">const auto&amp; <a class="el" href="classStE_1_1Core_1_1ring__buffer.html">StE::Core::ring_buffer</a>&lt; T, max_size, lockless, Storage &gt;::get_buffer </td>
+          <td class="memname">const auto&amp; <a class="el" href="classStE_1_1Core_1_1ring__buffer.html">StE::Core::ring_buffer</a>&lt; T, max_size &gt;::get_buffer </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -468,61 +370,21 @@ template&lt;typename T, std::size_t max_size = 4096, bool lockless = false, clas
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="ring__buffer_8hpp_source.html#l00124">124</a> of file <a class="el" href="ring__buffer_8hpp_source.html">ring_buffer.hpp</a>.</p>
+<p>Definition at line <a class="el" href="ring__buffer_8hpp_source.html#l00073">73</a> of file <a class="el" href="ring__buffer_8hpp_source.html">ring_buffer.hpp</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="aa72b0500e01a5aea963e92167bcdefef"></a>
+<a class="anchor" id="a0566f1b38db646ea202ae2bff115db6d"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T, std::size_t max_size = 4096, bool lockless = false, class Storage = gstack&lt;T, true&gt;&gt; </div>
-<div class="memtemplate">
-template&lt;bool b = lockless&gt; </div>
+template&lt;typename T, std::size_t max_size = 4096&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="gl__extensions_8h.html#a814c8b5745ecf82afdd1da718fbdc47c">void</a> <a class="el" href="classStE_1_1Core_1_1ring__buffer.html">StE::Core::ring_buffer</a>&lt; T, max_size, lockless, Storage &gt;::lock_range </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="structStE_1_1range.html">range</a>&lt;&gt; &amp;&#160;</td>
-          <td class="paramname"><em>r</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::enable_if_t&lt;!b &gt; *&#160;</td>
-          <td class="paramname"> = <code>nullptr</code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="ring__buffer_8hpp_source.html#l00122">122</a> of file <a class="el" href="ring__buffer_8hpp_source.html">ring_buffer.hpp</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a400cb064fd7754933ba5536d2160a8fa"></a>
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename T, std::size_t max_size = 4096, bool lockless = false, class Storage = gstack&lt;T, true&gt;&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">const auto <a class="el" href="classStE_1_1Core_1_1ring__buffer.html">StE::Core::ring_buffer</a>&lt; T, max_size, lockless, Storage &gt;::size </td>
+          <td class="memname">const auto <a class="el" href="classStE_1_1Core_1_1ring__buffer.html">StE::Core::ring_buffer</a>&lt; T, max_size &gt;::size </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -535,22 +397,22 @@ template&lt;typename T, std::size_t max_size = 4096, bool lockless = false, clas
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="ring__buffer_8hpp_source.html#l00125">125</a> of file <a class="el" href="ring__buffer_8hpp_source.html">ring_buffer.hpp</a>.</p>
+<p>Definition at line <a class="el" href="ring__buffer_8hpp_source.html#l00074">74</a> of file <a class="el" href="ring__buffer_8hpp_source.html">ring_buffer.hpp</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Field Documentation</h2>
-<a class="anchor" id="a69b4ad0449c223f8e4cf994be1aadc0f"></a>
+<a class="anchor" id="a2cd5bd56f42fb7604996f6215e4b41d2"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T, std::size_t max_size = 4096, bool lockless = false, class Storage = gstack&lt;T, true&gt;&gt; </div>
+template&lt;typename T, std::size_t max_size = 4096&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr <a class="el" href="namespaceStE_1_1Core_1_1BufferUsage.html#a89a389be2377b0d203dd7873311ac604">BufferUsage::buffer_usage</a> <a class="el" href="classStE_1_1Core_1_1ring__buffer.html">StE::Core::ring_buffer</a>&lt; T, max_size, lockless, Storage &gt;::usage = Storage::usage</td>
+          <td class="memname">constexpr auto <a class="el" href="classStE_1_1Core_1_1ring__buffer.html">StE::Core::ring_buffer</a>&lt; T, max_size &gt;::usage = storage_type::usage</td>
         </tr>
       </table>
   </td>
@@ -560,7 +422,7 @@ template&lt;typename T, std::size_t max_size = 4096, bool lockless = false, clas
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="ring__buffer_8hpp_source.html#l00021">21</a> of file <a class="el" href="ring__buffer_8hpp_source.html">ring_buffer.hpp</a>.</p>
+<p>Definition at line <a class="el" href="ring__buffer_8hpp_source.html#l00022">22</a> of file <a class="el" href="ring__buffer_8hpp_source.html">ring_buffer.hpp</a>.</p>
 
 </div>
 </div>

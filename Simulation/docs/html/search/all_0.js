@@ -49,10 +49,11 @@ var searchData=
   ['_5fgl_5ftype_5fname_5fenum_5fimpl_3c_20std_3a_3auint32_5ft_20_3e',['_gl_type_name_enum_impl&lt; std::uint32_t &gt;',['../structStE_1_1Core_1_1__gl__type__name__enum__impl_3_01std_1_1uint32__t_01_4.html',1,'StE::Core']]],
   ['_5fgl_5ftype_5fname_5fenum_5fimpl_3c_20std_3a_3auint8_5ft_20_3e',['_gl_type_name_enum_impl&lt; std::uint8_t &gt;',['../structStE_1_1Core_1_1__gl__type__name__enum__impl_3_01std_1_1uint8__t_01_4.html',1,'StE::Core']]],
   ['_5fgl_5ftype_5fname_5fenum_5fimpl_3c_20vect_20_3e',['_gl_type_name_enum_impl&lt; vecT &gt;',['../structStE_1_1Core_1_1__gl__type__name__enum__impl.html',1,'StE::Core']]],
+  ['_5finternal',['_internal',['../structStE_1_1Graphics_1_1light__descriptor.html#a139a692b029192fe9d2f1d60dc1211db',1,'StE::Graphics::light_descriptor']]],
   ['_5ftype_5fchecker',['_type_checker',['../structStE_1_1__tuple__type__erasure_1_1__type__checker.html',1,'StE::_tuple_type_erasure']]],
   ['_5ftype_5fchecker_5fhelper',['_type_checker_helper',['../structStE_1_1__tuple__type__erasure_1_1__type__checker__helper.html',1,'StE::_tuple_type_erasure']]],
   ['_5ftype_5fchecker_5fhelper_3c_200_2c_20tail_2e_2e_2e_3e',['_type_checker_helper&lt; 0, Tail...&gt;',['../structStE_1_1__tuple__type__erasure_1_1__type__checker__helper_3_010_00_01Tail_8_8_8_4.html',1,'StE::_tuple_type_erasure']]],
   ['_5ftype_5fchecker_5fhelper_3c_20sizeof_2e_2e_2e_28args_29_2c_20args_2e_2e_2e_3e',['_type_checker_helper&lt; sizeof...(Args), Args...&gt;',['../structStE_1_1__tuple__type__erasure_1_1__type__checker__helper.html',1,'StE::_tuple_type_erasure']]],
-  ['_5funused',['_unused',['../structStE_1_1Graphics_1_1mesh__descriptor.html#a4cf81c7d60fd908cf622d4a45e5986da',1,'StE::Graphics::mesh_descriptor::_unused()'],['../structStE_1_1Graphics_1_1mesh__draw__params.html#a493513d026fb2b3551388c950bd13643',1,'StE::Graphics::mesh_draw_params::_unused()']]],
+  ['_5funused',['_unused',['../structStE_1_1Graphics_1_1mesh__descriptor.html#a54a75c767326be7f5fca52deae2d47c9',1,'StE::Graphics::mesh_descriptor::_unused()'],['../structStE_1_1Graphics_1_1mesh__draw__params.html#a493513d026fb2b3551388c950bd13643',1,'StE::Graphics::mesh_draw_params::_unused()']]],
   ['_5fx',['_x',['../structStE_1_1__rsh__utils_1_1K.html#af313ea4d3029033b12e5370262cd2c82',1,'StE::_rsh_utils::K']]]
 ];

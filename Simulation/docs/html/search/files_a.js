@@ -3,6 +3,7 @@ var searchData=
   ['layout_5fbinding_2ehpp',['layout_binding.hpp',['../layout__binding_8hpp.html',1,'']]],
   ['legendre_5fpolynomial_2ehpp',['legendre_polynomial.hpp',['../legendre__polynomial_8hpp.html',1,'']]],
   ['light_2ehpp',['light.hpp',['../light_8hpp.html',1,'']]],
+  ['light_5fdescriptor_2ehpp',['light_descriptor.hpp',['../light__descriptor_8hpp.html',1,'']]],
   ['light_5fpreprocess_5fcull_5flights_2ecpp',['light_preprocess_cull_lights.cpp',['../light__preprocess__cull__lights_8cpp.html',1,'']]],
   ['light_5fpreprocess_5fcull_5flights_2ehpp',['light_preprocess_cull_lights.hpp',['../light__preprocess__cull__lights_8hpp.html',1,'']]],
   ['light_5fpreprocess_5fcull_5fshadows_2ecpp',['light_preprocess_cull_shadows.cpp',['../light__preprocess__cull__shadows_8cpp.html',1,'']]],

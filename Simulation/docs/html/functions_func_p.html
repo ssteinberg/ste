@@ -98,6 +98,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="functions_func_k.html#index_k"><span>k</span></a></li>
       <li><a href="functions_func_l.html#index_l"><span>l</span></a></li>
       <li><a href="functions_func_m.html#index_m"><span>m</span></a></li>
+      <li><a href="functions_func_n.html#index_n"><span>n</span></a></li>
       <li><a href="functions_func_o.html#index_o"><span>o</span></a></li>
       <li class="current"><a href="functions_func_p.html#index_p"><span>p</span></a></li>
       <li><a href="functions_func_q.html#index_q"><span>q</span></a></li>
@@ -155,6 +156,9 @@ $(document).ready(function(){initNavTree('functions_func_p.html','');});
 <li>page_sizes()
 : <a class="el" href="classStE_1_1Core_1_1texture__sparse__mipmapped.html#a01de8e23f415558407d6b49e0691b549">StE::Core::texture_sparse_mipmapped&lt; type &gt;</a>
 </li>
+<li>pBRDF()
+: <a class="el" href="classStE_1_1Graphics_1_1pBRDF.html#a7109d5c5744f9b40adf099c1939db491">StE::Graphics::pBRDF</a>
+</li>
 <li>pinned_gvector()
 : <a class="el" href="classStE_1_1Core_1_1pinned__gvector.html#a2778b9d2d4354537212da695c091cada">StE::Core::pinned_gvector&lt; T, lockless &gt;</a>
 </li>
@@ -173,7 +177,8 @@ $(document).ready(function(){initNavTree('functions_func_p.html','');});
 , <a class="el" href="classStE_1_1Core_1_1GL_1_1context__state.html#a485f3cfdfffe3666fc234b637a940092">StE::Core::GL::context_state</a>
 </li>
 <li>pop_back()
-: <a class="el" href="classStE_1_1Core_1_1gstack.html#a82f6ae92c352e19526897fb3869d18a1">StE::Core::gstack&lt; T, lockless &gt;</a>
+: <a class="el" href="classStE_1_1Core_1_1gstack.html#ad9dd09c08903b485e43a119899608b48">StE::Core::gstack&lt; T &gt;</a>
+, <a class="el" href="classStE_1_1Core_1_1gvector__pinned.html#aaddd4adee468cd88b0506e71763578b5">StE::Core::gvector_pinned&lt; T, lockless &gt;</a>
 , <a class="el" href="classStE_1_1Core_1_1pinned__gvector.html#a2a221799d385667d135c4888d5f8e4e8">StE::Core::pinned_gvector&lt; T, lockless &gt;</a>
 </li>
 <li>pop_buffer_state()
@@ -212,17 +217,15 @@ $(document).ready(function(){initNavTree('functions_func_p.html','');});
 <li>profiler()
 : <a class="el" href="classStE_1_1Graphics_1_1profiler.html#aa7fe18cd88d566ccce6141d6aa8bbfbb">StE::Graphics::profiler</a>
 </li>
-<li>projection_matrix()
-: <a class="el" href="classStE_1_1StEngineControl.html#a600760833d769de112644af9efce4b64">StE::StEngineControl</a>
-</li>
 <li>push()
 : <a class="el" href="classStE_1_1concurrent__queue.html#a93132a3a0170c7b2e79601ecc1ff6184">StE::concurrent_queue&lt; T &gt;</a>
 , <a class="el" href="classStE_1_1Core_1_1GL_1_1context__basic__state.html#ac884b184d5a4e967e005d788d1262b45">StE::Core::GL::context_basic_state</a>
 , <a class="el" href="classStE_1_1Core_1_1GL_1_1context__state.html#ae57ba81c20b1075e56714cbab3b54809">StE::Core::GL::context_state</a>
 </li>
 <li>push_back()
-: <a class="el" href="classStE_1_1Core_1_1gstack.html#a4d97050940a9806a8e082d540f0ec6a0">StE::Core::gstack&lt; T, lockless &gt;</a>
-, <a class="el" href="classStE_1_1Core_1_1pinned__gvector.html#a168d4b2bec0b1582198bcff658ca3552">StE::Core::pinned_gvector&lt; T, lockless &gt;</a>
+: <a class="el" href="classStE_1_1Core_1_1gstack.html#a6107734c3a00d5f5624d2c46ae32cfbd">StE::Core::gstack&lt; T &gt;</a>
+, <a class="el" href="classStE_1_1Core_1_1gvector__pinned.html#aef3fe76baf43e3db9842743f89c69000">StE::Core::gvector_pinned&lt; T, lockless &gt;</a>
+, <a class="el" href="classStE_1_1Core_1_1pinned__gvector.html#a49b483f7942c02be44d39049a9ee4b69">StE::Core::pinned_gvector&lt; T, lockless &gt;</a>
 </li>
 <li>push_buffer_state()
 : <a class="el" href="classStE_1_1Core_1_1GL_1_1gl__generic__context.html#a64ee327b1a8dfd71705b070c03cf7bd8">StE::Core::GL::gl_generic_context</a>
@@ -243,7 +246,7 @@ $(document).ready(function(){initNavTree('functions_func_p.html','');});
 : <a class="el" href="classStE_1_1Core_1_1GL_1_1gl__generic__context.html#a924000a752c1f083da5a6592cef0d997">StE::Core::GL::gl_generic_context</a>
 </li>
 <li>push_state()
-: <a class="el" href="classStE_1_1Core_1_1GL_1_1gl__generic__context.html#ac1ac34d660b6cba56bdd639528894ac5">StE::Core::GL::gl_generic_context</a>
+: <a class="el" href="classStE_1_1Core_1_1GL_1_1gl__generic__context.html#a23c0370b2917733f9ee6519c940eda2b">StE::Core::GL::gl_generic_context</a>
 </li>
 <li>push_texture_unit_state()
 : <a class="el" href="classStE_1_1Core_1_1GL_1_1gl__generic__context.html#a1b7631ed5e1cec1a4fa1503316796eb1">StE::Core::GL::gl_generic_context</a>

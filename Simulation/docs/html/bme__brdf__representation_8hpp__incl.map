@@ -1,7 +1,7 @@
-<map id="src/ste/framework_graphics/radiometry/radiance_distribution_functions/representations/bme_brdf_representation.hpp" name="src/ste/framework_graphics/radiometry/radiance_distribution_functions/representations/bme_brdf_representation.hpp">
+<map id="src/ste/framework_graphics/radiometry/radiance/BxDFs/physical/representations/bme_brdf_representation.hpp" name="src/ste/framework_graphics/radiometry/radiance/BxDFs/physical/representations/bme_brdf_representation.hpp">
 <area shape="rect" id="node2" href="$stdafx_8hpp.html" title="stdafx.hpp" alt="" coords="1085,355,1168,382"/>
 <area shape="rect" id="node25" href="$common__brdf__representation_8hpp.html" title="common_brdf_representation.hpp" alt="" coords="1471,273,1689,300"/>
-<area shape="rect" id="node30" href="$BRDF_8hpp.html" title="BRDF.hpp" alt="" coords="1125,199,1208,225"/>
+<area shape="rect" id="node30" href="$pBRDF_8hpp.html" title="pBRDF.hpp" alt="" coords="1122,199,1211,225"/>
 <area shape="rect" id="node34" href="$StEngineControl_8hpp.html" title="Engine Control class. " alt="" coords="2339,124,2482,151"/>
 <area shape="rect" id="node42" href="$lru__cache_8hpp.html" title="LRU general purpose disk caching class. " alt="" coords="2856,199,2960,225"/>
 <area shape="rect" id="node43" href="$task_8hpp.html" title="task.hpp" alt="" coords="2606,273,2677,300"/>

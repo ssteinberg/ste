@@ -1,6 +1,13 @@
 var searchData=
 [
-  ['x',['x',['../classStE_1_1Graphics_1_1xyY.html#ac90f93e896bdcd93a7b80c479108ab70',1,'StE::Graphics::xyY::x()'],['../classStE_1_1Graphics_1_1xyY.html#ab1d17e9cc4b7da59689f4e68df4708e6',1,'StE::Graphics::xyY::x() const '],['../classStE_1_1Graphics_1_1XYZ.html#ae138ca1726de82d0072263c6f8a18073',1,'StE::Graphics::XYZ::X()'],['../classStE_1_1Graphics_1_1XYZ.html#a11d916d3926cb8f970469a673efff277',1,'StE::Graphics::XYZ::X() const ']]],
-  ['xyy',['xyY',['../classStE_1_1Graphics_1_1xyY.html#abe544e47b34045bba1f2979835d0b3ef',1,'StE::Graphics::xyY::xyY()=default'],['../classStE_1_1Graphics_1_1xyY.html#a814d8f103cc1c89a58f5b5bdecf7be94',1,'StE::Graphics::xyY::xyY(const glm::tvec3&lt; T &gt; &amp;vec)']]],
-  ['xyz',['XYZ',['../classStE_1_1Graphics_1_1XYZ.html#a58f50335cff283f88d1e6780fa459f32',1,'StE::Graphics::XYZ::XYZ()=default'],['../classStE_1_1Graphics_1_1XYZ.html#a6365eb15fea29e6a01a937c67a30b277',1,'StE::Graphics::XYZ::XYZ(const glm::tvec3&lt; T &gt; &amp;vec)']]]
+  ['wait',['wait',['../classStE_1_1Core_1_1mapped__buffer__object__unique__ptr.html#a26adeb7d8118f4363a3bb9b5ad010987',1,'StE::Core::mapped_buffer_object_unique_ptr::wait() const '],['../classStE_1_1Core_1_1mapped__buffer__object__unique__ptr.html#a066dcb08c0525491e8f14c451b02bc19',1,'StE::Core::mapped_buffer_object_unique_ptr::wait(const range&lt;&gt; &amp;sub_range) const '],['../classStE_1_1Core_1_1gpu__sync.html#abae5ec699ec0462ee80c7b7e2325f2e8',1,'StE::Core::gpu_sync::wait()']]],
+  ['wait_5ffor_5frange',['wait_for_range',['../classStE_1_1Core_1_1range__lockable.html#aadaebd2658ff533c69cbfc9f77a355a5',1,'StE::Core::range_lockable']]],
+  ['weight',['weight',['../classStE_1_1Text_1_1Attributes_1_1weight.html#a6a52267e363f23f830e6190849a2695e',1,'StE::Text::Attributes::weight']]],
+  ['window_5factive',['window_active',['../classStE_1_1StEngineControl.html#a6882897b945959ed71bd84130829388b',1,'StE::StEngineControl']]],
+  ['with_5faccess',['with_access',['../classStE_1_1Core_1_1image.html#a18558716384ad1bc71f775fbabed71fa',1,'StE::Core::image::with_access()'],['../classStE_1_1Core_1_1image__container.html#a3926d878f05011b7a49870b1a8f85ad9',1,'StE::Core::image_container::with_access()']]],
+  ['with_5fformat',['with_format',['../classStE_1_1Core_1_1image.html#a3eb903df7ac3e7152dcc569193f20f8b',1,'StE::Core::image::with_format()'],['../classStE_1_1Core_1_1image__container.html#aff00f1f24c3fcf1a6e4c662b72de4d94',1,'StE::Core::image_container::with_format()']]],
+  ['write_5fdot',['write_dot',['../classStE_1_1Graph_1_1graph.html#a2e12827d857f3194e8f2b2b6ce6af291',1,'StE::Graph::graph']]],
+  ['write_5fpixels',['write_pixels',['../classStE_1_1Core_1_1fbo__color__attachment__point.html#a3ce7b6f3fe69139d98c1bd005857c565',1,'StE::Core::fbo_color_attachment_point::write_pixels(void *data, const glm::uvec2 &amp;rect_size, const glm::uvec2 &amp;origin={0, 0})'],['../classStE_1_1Core_1_1fbo__color__attachment__point.html#ad67b3693ac28ef2bc7586ee6357f4442',1,'StE::Core::fbo_color_attachment_point::write_pixels(void *data)']]],
+  ['write_5fpng',['write_png',['../classStE_1_1Graph_1_1graph.html#ac6e8b5d18e681a5ef7f8e75d4d75c24e',1,'StE::Graph::graph']]],
+  ['write_5fsurface_5f2d_5ftask',['write_surface_2d_task',['../classStE_1_1Resource_1_1SurfaceFactory.html#acdc1f079e6a589a0498ec95b52ecf8db',1,'StE::Resource::SurfaceFactory']]]
 ];
