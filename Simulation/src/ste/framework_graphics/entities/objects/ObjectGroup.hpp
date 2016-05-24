@@ -12,8 +12,7 @@
 #include "object_group_draw_buffers.hpp"
 
 #include "Material.hpp"
-
-#include "range.hpp"
+#include "material_storage.hpp"
 
 #include <unordered_map>
 #include <memory>
@@ -35,17 +34,18 @@ private:
 	using objects_map_type = std::unordered_map<std::shared_ptr<Object>, object_information>;
 
 private:
-	object_group_draw_buffers draw_buffers;
+	const material_storage *mat_storage;
 
+	object_group_draw_buffers draw_buffers;
 	objects_map_type objects;
 
 	std::size_t total_vertices{ 0 };
 	std::size_t total_indices{ 0 };
 
 	mutable std::vector<Object*> signalled_objects;
-	mutable std::vector<range<>> ranges_to_lock;
 
 public:
+	ObjectGroup(const material_storage *mat_storage) : mat_storage(mat_storage) {}
 	~ObjectGroup() noexcept;
 
 	void add_object(const std::shared_ptr<Object> &);
@@ -54,7 +54,6 @@ public:
 	auto& get_draw_buffers() const { return draw_buffers; }
 
 	void update_dirty_buffers() const;
-	void lock_updated_buffers() const;
 
 	std::size_t total_objects() const { return objects.size(); }
 };

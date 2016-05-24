@@ -53,6 +53,12 @@ public:
 	Scene(const StEngineControl &ctx);
 	~Scene() noexcept {}
 
+	void update_scene() {
+		objects.update_dirty_buffers();
+		scene_props.lights_storage().update();
+		scene_props.materials_storage().update();
+	}
+
 	SceneProperties &scene_properties() { return scene_props; }
 	const SceneProperties &scene_properties() const { return scene_props; }
 

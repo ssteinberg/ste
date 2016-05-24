@@ -16,6 +16,7 @@
 #include "task.hpp"
 
 #include "ring_buffer.hpp"
+#include "range.hpp"
 
 #include "VertexArrayObject.hpp"
 #include "VertexBufferObject.hpp"
@@ -48,10 +49,9 @@ public:
 	class text_renderable : public Graphics::gpu_dispatchable {
 		using Base = Graphics::gpu_task;
 
-		static constexpr bool using_lockless_ringbuffer = true;
 		static constexpr std::size_t ringbuffer_max_size = 4096;
 
-		using ring_buffer_type = Core::ring_buffer<glyph_point, ringbuffer_max_size, using_lockless_ringbuffer>;
+		using ring_buffer_type = Core::ring_buffer<glyph_point, ringbuffer_max_size>;
 
 	private:
 		mutable TextManager *tr;

@@ -45,8 +45,5 @@ void scene_geo_cull_dispatch::dispatch() const {
 
 	scene->clear_indirect_command_buffers();
 	GL::gl_current_context::get()->memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT);
-
-	scene->object_group().update_dirty_buffers();
 	Core::GL::gl_current_context::get()->dispatch_compute(size, 1, 1);
-	scene->object_group().lock_updated_buffers();
 }

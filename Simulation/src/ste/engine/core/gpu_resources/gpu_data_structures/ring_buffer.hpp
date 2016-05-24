@@ -17,9 +17,9 @@ namespace Core {
 template <typename T, std::size_t max_size = 4096>
 class ring_buffer {
 public:
-	static constexpr BufferUsage::buffer_usage usage = Storage::usage;
 	using value_type = T;
 	using storage_type = gstack<T>;
+	static constexpr auto usage = storage_type::usage;
 
 	static_assert(max_size > 0, "max_size must be positive");
 	static_assert(std::is_trivially_copyable<T>::value, "T must be trivially copyable");
@@ -43,7 +43,7 @@ public:
 			return { (storage.size() - 1) * sizeof(T), sizeof(T) };
 		}
 
-		if (offset >= max_size)
+		if (offset + 1 >= max_size)
 			offset = 0;
 
 		range<> r{ offset * sizeof(T), sizeof(T) };
@@ -52,7 +52,7 @@ public:
 		return r;
 	}
 
-	range<> commit(const std::vector<T> &) {
+	range<> commit(const std::vector<T> &v) {
 		assert(v.size() < max_size);
 
 		if (storage.size() + v.size() < max_size) {

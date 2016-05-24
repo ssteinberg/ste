@@ -28,9 +28,7 @@
 using namespace StE::Core;
 using namespace StE::Text;
 
-auto create_light_object(StE::Graphics::Scene *scene, const glm::vec3 &light_pos, const std::shared_ptr<StE::Graphics::SphericalLight> &light) {
-	scene->scene_properties().lights_storage().add_light(light);
-
+auto create_light_object(StE::Graphics::Scene *scene, const glm::vec3 &light_pos, StE::Graphics::SphericalLight *light) {
 	std::unique_ptr<StE::Graphics::Sphere> sphere = std::make_unique<StE::Graphics::Sphere>(20, 20);
 	(*sphere) *= light->get_radius();
 	auto light_obj = std::make_shared<StE::Graphics::Object>(std::move(sphere));
@@ -41,15 +39,32 @@ auto create_light_object(StE::Graphics::Scene *scene, const glm::vec3 &light_pos
 	auto c = light->get_diffuse();
 	*reinterpret_cast<glm::u8vec3*>(light_color_tex.data()) = glm::u8vec3(c.r * 255.5f, c.g * 255.5f, c.b * 255.5f);
 
-	auto light_mat = std::make_shared<StE::Graphics::Material>();
-	light_mat->set_basecolor_map(std::make_shared<StE::Core::Texture2D>(light_color_tex, false));
+	auto light_mat = scene->scene_properties().materials_storage().allocate_material();
+	light_mat->set_basecolor_map(std::make_unique<StE::Core::Texture2D>(light_color_tex, false));
 	light_mat->set_emission(c * light->get_luminance());
 
-	light_obj->set_material_id(scene->scene_properties().materials_storage().add_material(light_mat));
+	light_obj->set_material(light_mat);
 
 	scene->object_group().add_object(light_obj);
 
 	return light_obj;
+}
+
+void add_scene_lights(StE::Graphics::Scene &scene) {
+	for (auto &v : { glm::vec3{ -622, 645, -310},
+					 glm::vec3{  124, 645, -310},
+					 glm::vec3{  497, 645, -310},
+					 glm::vec3{ -242, 153, -310},
+					 glm::vec3{  120, 153, -310},
+					 glm::vec3{  124, 645,  552},
+					 glm::vec3{  497, 645,  552},
+					 glm::vec3{-1008, 153,  552},
+					 glm::vec3{ -242, 153,  552},
+					 glm::vec3{  120, 153,  552},
+					 glm::vec3{  885, 153,  552} }) {
+		auto wall_lamp = scene.scene_properties().lights_storage().allocate_light<StE::Graphics::SphericalLight>(5000.f, StE::Graphics::Kelvin(1800), v, 2.f);
+		create_light_object(&scene, v, wall_lamp);
+	}
 }
 
 int main() {
@@ -98,26 +113,16 @@ int main() {
 
 	const glm::vec3 light0_pos{ -700.6, 138, -70 };
 	const glm::vec3 light1_pos{ 200, 550, 170 };
-	auto light0 = std::make_shared<StE::Graphics::SphericalLight>(8000.f, StE::Graphics::Kelvin(2000), light0_pos, 3.f);
-	auto light1 = std::make_shared<StE::Graphics::SphericalLight>(20000.f, StE::Graphics::Kelvin(7000), light1_pos, 5.f);
+	auto light0 = scene.scene_properties().lights_storage().allocate_light<StE::Graphics::SphericalLight>(8000.f, StE::Graphics::Kelvin(2000), light0_pos, 3.f);
+	auto light1 = scene.scene_properties().lights_storage().allocate_light<StE::Graphics::SphericalLight>(20000.f, StE::Graphics::Kelvin(7000), light1_pos, 5.f);
 	auto light0_obj = create_light_object(&scene, light0_pos, light0);
 	auto light1_obj = create_light_object(&scene, light1_pos, light1);
+	add_scene_lights(scene);
+	scene.scene_properties().lights_storage().erase_light(light1);
 
-	for (auto &v : { glm::vec3{ -622, 645, -310},
-					 glm::vec3{  124, 645, -310},
-					 glm::vec3{  497, 645, -310},
-					 glm::vec3{ -242, 153, -310},
-					 glm::vec3{  120, 153, -310},
-					 glm::vec3{  124, 645,  552},
-					 glm::vec3{  497, 645,  552},
-					 glm::vec3{-1008, 153,  552},
-					 glm::vec3{ -242, 153,  552},
-					 glm::vec3{  120, 153,  552},
-					 glm::vec3{  885, 153,  552} }) {
-		auto wall_lamp = std::make_shared<StE::Graphics::SphericalLight>(5000.f, StE::Graphics::Kelvin(1800), v, 2.f);
-		create_light_object(&scene, v, wall_lamp);
-	}
 
+	std::vector<std::shared_ptr<StE::Graphics::Object>> lucy_objects;
+	std::vector<StE::Graphics::Material*> lucy_materials;
 
 	bool running = true;
 	bool loaded = false;
@@ -125,14 +130,16 @@ int main() {
 																								  R"(Data/models/crytek-sponza/sponza.obj)",
 																								  &scene.object_group(),
 																								  &scene.scene_properties(),
-																								  2.5f)
-											   .then([&](StE::optional<StE::task_scheduler*> sched, bool result) {
-												   return StE::Resource::ModelFactory::load_model_task(ctx,
-																									   R"(Data/models/lucy/lucy_low.obj)",
-																									   &scene.object_group(),
-																									   &scene.scene_properties(),
-																									   1.f)(sched) && result;
-											   }));
+																								  2.5f,
+																								  nullptr,
+																								  nullptr));
+	auto lucy_future = ctx.scheduler().schedule_now(StE::Resource::ModelFactory::load_model_task(ctx,
+													R"(Data/models/lucy/lucy_low.obj)",
+													&scene.object_group(),
+													&scene.scene_properties(),
+													1.f,
+													&lucy_objects,
+													&lucy_materials));
 
 
 	// Bind input
@@ -190,11 +197,24 @@ int main() {
 														 orange(std::to_wstring(pending_requests) +	L" pending requests"))));
 		}
 
-		if (model_future.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
+		if (model_future.wait_for(std::chrono::seconds(0)) == std::future_status::ready &&
+			lucy_future.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
 			loaded = true;
 
 		ctx.run_loop();
 	}
+
+
+	auto lucy = lucy_objects.back();
+	auto lucy_material = lucy_materials.back();
+
+	auto lucy_transform = glm::rotate(glm::mat4(), -glm::half_pi<float>(), {1.f,0.f,.0f});
+	lucy_transform = glm::rotate(lucy_transform, glm::half_pi<float>(), {0.f,0.f,1.0f});
+	lucy_transform = glm::scale(lucy_transform, glm::vec3{13,13,13});
+	lucy->set_model_transform(lucy_transform);
+
+	lucy_material->set_metallic(1.f);
+
 
 	renderer.remove_gui_task(title_text_task);
 	title_text = nullptr;

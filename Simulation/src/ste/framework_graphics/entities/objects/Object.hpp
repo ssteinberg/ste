@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include "stdafx.hpp"
+
 #include "Material.hpp"
 #include "mesh.hpp"
 #include "entity.hpp"
@@ -31,7 +33,7 @@ private:
 	mesh_descriptor md;
 
 protected:
-	int material_id;
+	const Material *material;
 	std::unique_ptr<mesh_generic> object_mesh;
 
 public:
@@ -41,8 +43,11 @@ public:
 	mesh_generic &get_mesh() { return *object_mesh; }
 	const mesh_generic &get_mesh() const { return *object_mesh; }
 
-	void set_material_id(int m) { material_id = m; }
-	auto get_material_id() const { return material_id; }
+	void set_material(const Material *mat) {
+		material = mat;
+		model_change_signal.emit(this);
+	}
+	auto *get_material() const { return material; }
 
 public:
 	const signal_type &signal_model_change() const { return model_change_signal; }

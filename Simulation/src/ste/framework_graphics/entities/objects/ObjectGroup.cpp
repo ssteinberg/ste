@@ -35,7 +35,7 @@ void ObjectGroup::add_object(const std::shared_ptr<Object> &obj) {
 	mesh_descriptor md;
 	md.model_transform_matrix = glm::transpose(obj->get_model_transform());
 	md.tangent_transform_quat = obj->get_orientation();
-	md.mat_idx = obj->get_material_id();
+	md.mat_idx = mat_storage->index_of(obj->get_material());
 	md.bounding_sphere = obj->get_mesh().bounding_sphere().sphere();
 
 	mesh_draw_params mdp;
@@ -70,23 +70,12 @@ void ObjectGroup::update_dirty_buffers() const {
 		}
 		object_information info = it->second;
 
-		range<> lock_range{ info.index * sizeof(object_group_draw_buffers::mesh_data_buffer_type::T),
-							sizeof(object_group_draw_buffers::mesh_data_buffer_type::T) };
-
 		mesh_descriptor md = obj_ptr->md;
 		md.model_transform_matrix = glm::transpose(obj_ptr->get_model_transform());
 		md.tangent_transform_quat = obj_ptr->get_orientation();
-		md.mat_idx = obj_ptr->get_material_id();
+		md.mat_idx = mat_storage->index_of(obj_ptr->get_material());
 		draw_buffers.get_mesh_data_stack().overwrite(info.index, md);
-
-		ranges_to_lock.push_back(lock_range);
 	}
 
 	signalled_objects.clear();
-}
-
-void ObjectGroup::lock_updated_buffers() const {
-	for (auto &r : ranges_to_lock)
-		draw_buffers.get_mesh_data_stack().lock_range(r);
-	ranges_to_lock.clear();
 }
