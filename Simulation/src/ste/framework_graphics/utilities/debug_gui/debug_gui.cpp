@@ -86,5 +86,8 @@ void debug_gui::dispatch() const {
 
 	ImGui::End();
 
+	for (auto &f : user_guis)
+		f(bbsize);
+
 	ImGui::Render();
 }

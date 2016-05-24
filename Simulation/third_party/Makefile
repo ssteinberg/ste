@@ -83,6 +83,7 @@ clean::
 
 init:
 	rm -rf $(PACKAGE_DIR)/*
+	@mkdir -p $(PACKAGE_DIR)
 	@cd $(PACKAGE_DIR)/; git clone --single-branch --branch master http://git.savannah.gnu.org/r/freetype/freetype2.git
 	@cd $(PACKAGE_DIR)/; git clone --single-branch --branch master https://github.com/madler/zlib.git
 	@cd $(PACKAGE_DIR)/; git clone --single-branch --branch master https://github.com/nigels-com/glew.git
@@ -94,7 +95,7 @@ init:
 	@cd $(PACKAGE_DIR)/; wget -O libtga.tar.gz 'http://downloads.sourceforge.net/project/tgalib/libtga/1.0.1/libtga-1.0.1.tar.gz?r=https%3A%2F%2Fsourceforge.net%2Fprojects%2Ftgalib%2F&ts=1463234964&use_mirror=netix' && tar xvpf libtga.tar.gz && mv libtga-1.0.1 libtga && rm libtga.tar.gz
 	@cd $(PACKAGE_DIR)/; git clone --single-branch --branch 1.2.7 https://github.com/behdad/harfbuzz
 	@cd $(PACKAGE_DIR)/; git clone --single-branch --branch master https://github.com/g-truc/glm.git
-	@cd $(PACKAGE_DIR)/; git clone --single-branch --branch master https://github.com/g-truc/gli.git
+	@cd $(PACKAGE_DIR)/; git clone --single-branch --branch 0.8.1.0 https://github.com/g-truc/gli.git
 
 .PHONY: $(CMAKE_LIBS)
 .PHONY: $(MAKE_LIBS)

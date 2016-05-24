@@ -23,6 +23,8 @@
 #include "Sphere.hpp"
 #include "gpu_task.hpp"
 #include "profiler.hpp"
+
+#include <imgui/imgui.h>
 #include "debug_gui.hpp"
 
 using namespace StE::Core;
@@ -213,6 +215,18 @@ int main() {
 	lucy->set_model_transform(lucy_transform);
 
 	lucy_material->set_metallic(1.f);
+
+
+	float lucy_roughness = .5f;
+	debug_gui_dispatchable->add_custom_gui([&](const glm::ivec2 &bbsize) {
+		ImGui::SetNextWindowPos(ImVec2(20,bbsize.y - 400), ImGuiSetCond_FirstUseEver);
+		ImGui::SetNextWindowSize(ImVec2(120,400), ImGuiSetCond_FirstUseEver);
+		if (ImGui::Begin("Material", nullptr)) {
+			ImGui::InputFloat("Roughness ##value", &lucy_roughness, 0.01f, .0f, 1.f);
+		}
+
+		ImGui::End();
+	});
 
 
 	renderer.remove_gui_task(title_text_task);
