@@ -27,8 +27,8 @@ private:
 		float aspect;
 	};
 
-	using view_ring_buffer_type = Core::ring_buffer<view_data, 3, false>;
-	using proj_ring_buffer_type = Core::ring_buffer<proj_data, 1, true>;
+	using view_ring_buffer_type = Core::ring_buffer<view_data, 3>;
+	using proj_ring_buffer_type = Core::ring_buffer<proj_data, 1>;
 
 private:
 	view_ring_buffer_type view_buffer;
@@ -60,7 +60,7 @@ public:
 		p.tan_half_fovy = tanHalfFovy;
 		p.aspect = aspect;
 
-		proj_buffer.lock_range(proj_buffer.commit(p));
+		proj_buffer.commit(p);
 	}
 
 	void bind_view_buffer(int idx) const {

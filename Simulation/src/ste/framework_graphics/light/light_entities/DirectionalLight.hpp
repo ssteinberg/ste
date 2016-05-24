@@ -10,6 +10,8 @@ namespace StE {
 namespace Graphics {
 
 class DirectionalLight : public light {
+	using Base = light;
+
 public:
 	DirectionalLight(float luminance, const RGB &diffuse, const glm::vec3 &direction) : light(luminance, 1.f, diffuse) {
 		descriptor.type = LightType::Directional;
@@ -19,7 +21,7 @@ public:
 
 	void set_direction(const glm::vec3 &d) {
 		descriptor.position = decltype(descriptor.position){ d.x, d.y, d.z };
-		dirty = true;
+		Base::notify();
 	}
 
 	glm::vec3 get_position() const override {

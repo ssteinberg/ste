@@ -22,7 +22,8 @@ std::future<void> ModelFactory::process_model_mesh(optional<task_scheduler*> sch
 												  Graphics::ObjectGroup *object_group,
 												  materials_type &materials,
 												  texture_map_type &textures,
-												  std::vector<std::shared_ptr<Graphics::Object>> *loaded_objects) {
+												  std::vector<std::shared_ptr<Graphics::Object>> *loaded_objects,
+									 			  std::vector<Graphics::Material*> *loaded_materials) {
 	std::vector<ObjectVertexData> vbo_data;
 	std::vector<std::uint32_t> vbo_indices;
 	std::vector<std::pair<glm::vec3, glm::vec3>> nt;
@@ -121,7 +122,7 @@ std::future<void> ModelFactory::process_model_mesh(optional<task_scheduler*> sch
 	float sheen = has_sheen ? std::stof(material.unknown_parameter["sheen"]) : .0f;
 
 	return sched->schedule_now_on_main_thread([=, vbo_data = std::move(vbo_data), vbo_indices = std::move(vbo_indices)](optional<task_scheduler*> sched) {
-		auto mat = std::make_shared<Material>();
+		auto mat = matstorage->allocate_material();
 		if (diff_map != nullptr) mat->set_basecolor_map(diff_map);
 		if (specular_map != nullptr) mat->set_cavity_map(specular_map);
 		if (normalmap != nullptr) mat->set_normal_map(normalmap);
@@ -132,19 +133,17 @@ std::future<void> ModelFactory::process_model_mesh(optional<task_scheduler*> sch
 		if (has_anisotropy) mat->set_anisotropy(anisotropy);
 		if (has_sheen) mat->set_sheen(sheen);
 
-		auto matid = matstorage->add_material(mat);
-
 		std::unique_ptr<Graphics::mesh<Graphics::mesh_subdivion_mode::Triangles>> m = std::make_unique<Graphics::mesh<Graphics::mesh_subdivion_mode::Triangles>>();
 		m->set_indices(std::move(vbo_indices));
 		m->set_vertices(std::move(vbo_data));
 
 		std::shared_ptr<Graphics::Object> obj = std::make_shared<Graphics::Object>(std::move(m));
-		obj->set_material_id(matid);
+		obj->set_material(mat);
 
 		object_group->add_object(obj);
 
-		if (loaded_objects)
-			loaded_objects->push_back(obj);
+		if (loaded_objects) loaded_objects->push_back(obj);
+		if (loaded_materials) loaded_materials->push_back(mat);
 	});
 }
 
@@ -223,7 +222,8 @@ StE::task<bool> ModelFactory::load_model_task(const StEngineControl &context,
 											  ObjectGroup *object_group,
 											  Graphics::SceneProperties *scene_properties,
 											  float normal_map_bias,
-											  std::vector<std::shared_ptr<Graphics::Object>> *loaded_objects) {
+											  std::vector<std::shared_ptr<Graphics::Object>> *loaded_objects,
+											  std::vector<Graphics::Material*> *loaded_materials) {
 	struct _model_loader_task_block {
 		bool ret;
 		std::unique_ptr<texture_map_type> textures;
@@ -258,7 +258,14 @@ StE::task<bool> ModelFactory::load_model_task(const StEngineControl &context,
 		{
 			std::vector<std::future<void>> futures;
 			for (auto &shape : shapes)
-				futures.push_back(process_model_mesh(sched, &scene_properties->materials_storage(), shape, object_group, materials, *block.textures, loaded_objects));
+				futures.push_back(process_model_mesh(sched,
+													 &scene_properties->materials_storage(),
+													 shape,
+													 object_group,
+													 materials,
+													 *block.textures,
+													 loaded_objects,
+													 loaded_materials));
 
 			for (auto &f : futures)
 				f.wait();

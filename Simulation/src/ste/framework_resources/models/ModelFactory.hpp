@@ -57,7 +57,8 @@ private:
 												Graphics::ObjectGroup *,
 												materials_type &,
 												texture_map_type &,
-									 			std::vector<std::shared_ptr<Graphics::Object>> *loaded_objects);
+									 			std::vector<std::shared_ptr<Graphics::Object>> *loaded_objects,
+									 			std::vector<Graphics::Material*> *loaded_materials);
 
 public:
 	static task<bool> load_model_task(const StEngineControl &context,
@@ -65,7 +66,8 @@ public:
 									  Graphics::ObjectGroup *object_group,
 									  Graphics::SceneProperties *scene_properties,
 									  float normal_map_bias,
-									  std::vector<std::shared_ptr<Graphics::Object>> *loaded_objects);
+									  std::vector<std::shared_ptr<Graphics::Object>> *loaded_objects,
+									  std::vector<Graphics::Material*> *loaded_materials);
 };
 
 }

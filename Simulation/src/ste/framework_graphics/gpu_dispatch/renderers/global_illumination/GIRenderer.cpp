@@ -141,6 +141,8 @@ void GIRenderer::render_queue() {
 	transform_buffers.bind_view_buffer(view_transform_buffer_bind_location);
 	transform_buffers.bind_proj_buffer(proj_transform_buffer_bind_location);
 
+	scene->update_scene();
+
 	if (q.get_profiler() != nullptr) {
 		auto ft = ctx.time_per_frame().count();
 		q.get_profiler()->record_frame(ft);

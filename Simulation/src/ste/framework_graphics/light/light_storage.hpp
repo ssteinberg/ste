@@ -6,22 +6,23 @@
 #include "stdafx.hpp"
 #include "light.hpp"
 
-#include "gstack.hpp"
+#include "resource_storage_dynamic.hpp"
 
 #include "ShaderStorageBuffer.hpp"
 #include "AtomicCounterBufferObject.hpp"
 
-#include "range.hpp"
-
 #include <vector>
 #include <memory>
+#include <functional>
 
 namespace StE {
 namespace Graphics {
 
 constexpr std::size_t max_active_lights_per_frame = 32;
 
-class light_storage {
+class light_storage : public Core::resource_storage_dynamic<light_descriptor> {
+	using Base = Core::resource_storage_dynamic<light_descriptor>;
+
 private:
 	static constexpr Core::BufferUsage::buffer_usage usage = static_cast<Core::BufferUsage::buffer_usage>(Core::BufferUsage::BufferUsageSparse);
 	static constexpr std::size_t pages = 1024;
@@ -29,49 +30,27 @@ private:
 	using lights_ll_type = Core::ShaderStorageBuffer<std::uint16_t, usage>;
 
 private:
-	std::vector<std::shared_ptr<light>> lights;
-	Core::gstack<light::light_descriptor> stack;
+	std::vector<std::unique_ptr<light>> lights;
 
 	lights_ll_type active_lights_ll;
 	Core::AtomicCounterBufferObject<> active_lights_ll_counter;
-
-	mutable std::vector<range<>> ranges_to_lock;
 
 public:
 	light_storage() : active_lights_ll(pages * std::max(65536, lights_ll_type::page_size()) / 2),
 					  active_lights_ll_counter(1) {}
 
-	void update_storage() {
-		auto s = sizeof(decltype(stack)::value_type);
+	template <typename LightType, typename ... Ts>
+	LightType* allocate_light(Ts&&... args) {
+		auto res = Base::allocate_resource<LightType>(std::forward<Ts>(args)...);
+		auto ptr = res.get();
+		lights.push_back(std::move(res));
 
-		stack.get_buffer().client_wait_for_range({ 0, stack.size() * s });
+		active_lights_ll.commit_range(0, size());
 
-		for (unsigned i = 0; i < lights.size();++i) {
-			if (lights[i]->is_dirty()) {
-				lights[i]->clear_dirty();
-				stack.overwrite(i, lights[i]->get_descriptor());
-				ranges_to_lock.push_back({ s * i, s });
-			}
-		}
+		return ptr;
 	}
-
-	void lock_ranges() {
-		for (auto &r : ranges_to_lock)
-			stack.lock_range(r);
-		ranges_to_lock.clear();
-	}
-
-	void add_light(const std::shared_ptr<light> &l) {
-		lights.push_back(l);
-		stack.push_back(l->get_descriptor());
-		l->clear_dirty();
-
-		active_lights_ll.commit_range(0, lights.size());
-	}
-
-	void add_lights(const std::vector<std::shared_ptr<light>> &ls) {
-		for (auto &l : ls)
-			add_light(l);
+	void erase_light(const light *l) {
+		erase_resource(l);
 	}
 
 	void clear_active_ll() {
@@ -79,11 +58,11 @@ public:
 		active_lights_ll_counter.clear(gli::FORMAT_R32_UINT_PACK32, &zero);
 	}
 
-	void bind_lights_buffer(int idx) const { stack.get_buffer().bind_range(Core::shader_storage_layout_binding(idx), 0, lights.size()); }
+	void bind_lights_buffer(int idx) const { Base::buffer().bind_range(Core::shader_storage_layout_binding(idx), 0, lights.size()); }
 	auto& get_active_ll_counter() const { return active_lights_ll_counter; }
 	auto& get_active_ll() const { return active_lights_ll; }
 
-	auto size() const { return lights.size(); }
+	std::size_t size() const { return lights.size(); }
 	auto& get_lights() const { return lights; }
 };
 

@@ -5,6 +5,9 @@
 
 #include "stdafx.hpp"
 #include "entity.hpp"
+#include "light_descriptor.hpp"
+
+#include "observable_resource.hpp"
 
 #include "texture_handle.hpp"
 #include "RGB.hpp"
@@ -12,24 +15,11 @@
 namespace StE {
 namespace Graphics {
 
-class light : public entity {
-public:
-	enum class LightType : std::int32_t {
-		Sphere = 0,
-		Directional = 1,
-	};
-
-	struct light_descriptor {
-		glm::vec3 position;	float radius;
-		glm::vec3 diffuse;	float luminance;
-
-		LightType type;
-
-		float _reserved[7];
-	};
+class light : public Core::observable_resource<light_descriptor>,
+			  public entity {
+	using Base = Core::observable_resource<light_descriptor>;
 
 protected:
-	bool dirty{ false };
 	light_descriptor descriptor;
 
 public:
@@ -40,23 +30,20 @@ public:
 	}
 	virtual ~light() noexcept {};
 
-	bool is_dirty() const { return dirty; }
-	void clear_dirty() { dirty = false; }
-
 	void set_luminance(float l) {
 		descriptor.luminance = l;
-		dirty = true;
+		Base::notify();
 	}
 	void set_diffuse(const RGB &d) {
 		descriptor.diffuse = decltype(descriptor.diffuse){ d.R(), d.G(), d.B() };
-		dirty = true;
+		Base::notify();
 	}
 
 	float get_luminance() const { return descriptor.luminance; }
 	float get_radius() const { return descriptor.radius; }
 	auto& get_diffuse() const { return descriptor.diffuse; }
 
-	auto& get_descriptor() const { return descriptor; }
+	const light_descriptor& get_descriptor() const override final { return descriptor; }
 };
 
 }
