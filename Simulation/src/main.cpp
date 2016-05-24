@@ -118,7 +118,6 @@ int main() {
 	auto light0_obj = create_light_object(&scene, light0_pos, light0);
 	auto light1_obj = create_light_object(&scene, light1_pos, light1);
 	add_scene_lights(scene);
-	scene.scene_properties().lights_storage().erase_light(light1);
 
 
 	std::vector<std::shared_ptr<StE::Graphics::Object>> lucy_objects;
