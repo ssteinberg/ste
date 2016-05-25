@@ -2,6 +2,8 @@
 #include "stdafx.hpp"
 #include "hdr_dof_postprocess.hpp"
 
+#include "GLSLProgramFactory.hpp"
+
 #include "human_vision_properties.hpp"
 
 #include "hdr_compute_minmax_task.hpp"
@@ -26,13 +28,13 @@ hdr_dof_postprocess::hdr_dof_postprocess(const StEngineControl &context, const d
 	std::int32_t big_float_i = 0x7FFFFFFF;
 	hdr_bokeh_param_buffer_eraser = std::make_unique<StE::Core::PixelBufferObject<std::int32_t>>(std::vector<std::int32_t>{ big_float_i, 0 });
 
-	hdr_compute_minmax = context.glslprograms_pool().fetch_program_task({ "hdr_compute_minmax.glsl" })();
-	hdr_create_histogram = context.glslprograms_pool().fetch_program_task({ "hdr_create_histogram.glsl" })();
-	hdr_compute_histogram_sums = context.glslprograms_pool().fetch_program_task({ "hdr_compute_histogram_sums.glsl" })();
-	hdr_tonemap_coc = context.glslprograms_pool().fetch_program_task({ "passthrough.vert", "hdr_tonemap_coc.frag" })();
-	hdr_bloom_blurx = context.glslprograms_pool().fetch_program_task({ "passthrough.vert", "hdr_bloom_blur_x.frag" })();
-	hdr_bloom_blury = context.glslprograms_pool().fetch_program_task({ "passthrough.vert", "hdr_bloom_blur_y.frag" })();
-	bokeh_blur = context.glslprograms_pool().fetch_program_task({ "passthrough.vert", "bokeh_bilateral_blur.frag" })();
+	hdr_compute_minmax = Resource::GLSLProgramFactory::load_program_task(ctx, { "hdr_compute_minmax.glsl" })();
+	hdr_create_histogram = Resource::GLSLProgramFactory::load_program_task(ctx, { "hdr_create_histogram.glsl" })();
+	hdr_compute_histogram_sums = Resource::GLSLProgramFactory::load_program_task(ctx, { "hdr_compute_histogram_sums.glsl" })();
+	hdr_tonemap_coc = Resource::GLSLProgramFactory::load_program_task(ctx, { "passthrough.vert", "hdr_tonemap_coc.frag" })();
+	hdr_bloom_blurx = Resource::GLSLProgramFactory::load_program_task(ctx, { "passthrough.vert", "hdr_bloom_blur_x.frag" })();
+	hdr_bloom_blury = Resource::GLSLProgramFactory::load_program_task(ctx, { "passthrough.vert", "hdr_bloom_blur_y.frag" })();
+	bokeh_blur = Resource::GLSLProgramFactory::load_program_task(ctx, { "passthrough.vert", "bokeh_bilateral_blur.frag" })();
 
 	gli::texture1d hdr_human_vision_properties_data(gli::format::FORMAT_RGBA32_SFLOAT_PACK32, glm::tvec1<std::size_t>{ 4096 }, 1);
 	{

@@ -7,6 +7,8 @@
 #include "StEngineControl.hpp"
 #include "gpu_dispatchable.hpp"
 
+#include "GLSLProgramFactory.hpp"
+
 #include "linked_light_lists.hpp"
 #include "light_storage.hpp"
 
@@ -34,7 +36,7 @@ public:
 	linked_light_lists_gen_dispatch(const StEngineControl &ctx,
 									light_storage *ls,
 									linked_light_lists *lll) : ctx(ctx), ls(ls), lll(lll),
-															   program(ctx.glslprograms_pool().fetch_program_task({ "passthrough.vert", "linked_light_lists_gen.frag" })()),
+															   program(Resource::GLSLProgramFactory::load_program_task(ctx, { "passthrough.vert", "linked_light_lists_gen.frag" })()),
 															   depth_sampler(Core::TextureFiltering::Nearest, Core::TextureFiltering::Nearest, Core::TextureFiltering::Nearest,
 															   				 Core::TextureWrapMode::ClampToEdge, Core::TextureWrapMode::ClampToEdge) {}
 

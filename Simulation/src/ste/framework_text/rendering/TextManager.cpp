@@ -41,7 +41,7 @@ void TextManager::text_renderable::dispatch() const {
 
 
 TextManager::TextManager(const StEngineControl &context, const Font &default_font, int default_size) : gm(context), default_font(default_font), default_size(default_size) {
-	text_distance_mapping = context.glslprograms_pool().fetch_program_task({ "text_distance_map_contour.vert", "text_distance_map_contour.frag", "text_distance_map_contour.geom" })();
+	text_distance_mapping = Resource::GLSLProgramFactory::load_program_task(context, { "text_distance_map_contour.vert", "text_distance_map_contour.frag", "text_distance_map_contour.geom" })();
 
 	resize_connection = std::make_shared<ResizeSignalConnectionType>([=](const glm::i32vec2 &size) {
 		text_distance_mapping->set_uniform("proj", glm::ortho<float>(0, size.x, 0, size.y, -1, 1));

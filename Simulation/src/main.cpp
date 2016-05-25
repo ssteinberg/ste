@@ -23,6 +23,7 @@
 #include "Sphere.hpp"
 #include "gpu_task.hpp"
 #include "profiler.hpp"
+#include "future_collection.hpp"
 
 #include <imgui/imgui.h>
 #include "debug_gui.hpp"
@@ -128,20 +129,21 @@ int main() {
 
 	bool running = true;
 	bool loaded = false;
-	auto model_future = ctx.scheduler().schedule_now(StE::Resource::ModelFactory::load_model_task(ctx,
-																								  R"(Data/models/crytek-sponza/sponza.obj)",
-																								  &scene.object_group(),
-																								  &scene.scene_properties(),
-																								  2.5f,
-																								  nullptr,
-																								  nullptr));
-	auto lucy_future = ctx.scheduler().schedule_now(StE::Resource::ModelFactory::load_model_task(ctx,
-													R"(Data/models/lucy/lucy_low.obj)",
-													&scene.object_group(),
-													&scene.scene_properties(),
-													1.f,
-													&lucy_objects,
-													&lucy_materials));
+	StE::future_collection<bool> loading_futures;
+	loading_futures.insert(ctx.scheduler().schedule_now(StE::Resource::ModelFactory::load_model_task(ctx,
+																									 R"(Data/models/crytek-sponza/sponza.obj)",
+																									 &scene.object_group(),
+																									 &scene.scene_properties(),
+																									 2.5f,
+																									 nullptr,
+																									 nullptr)));
+	loading_futures.insert(ctx.scheduler().schedule_now(StE::Resource::ModelFactory::load_model_task(ctx,
+														R"(Data/models/lucy/lucy_low.obj)",
+														&scene.object_group(),
+														&scene.scene_properties(),
+														1.f,
+														&lucy_objects,
+														&lucy_materials)));
 
 
 	// Bind input
@@ -199,8 +201,7 @@ int main() {
 														 orange(std::to_wstring(pending_requests) +	L" pending requests"))));
 		}
 
-		if (model_future.wait_for(std::chrono::seconds(0)) == std::future_status::ready &&
-			lucy_future.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
+		if (loading_futures.ready_all())
 			loaded = true;
 
 		ctx.run_loop();

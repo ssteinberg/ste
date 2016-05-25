@@ -3,6 +3,8 @@
 #include "deferred_composer.hpp"
 #include "GIRenderer.hpp"
 
+#include "GLSLProgramFactory.hpp"
+
 #include "Sampler.hpp"
 #include "ShaderStorageBuffer.hpp"
 
@@ -10,7 +12,7 @@
 
 using namespace StE::Graphics;
 
-deferred_composer::deferred_composer(const StEngineControl &ctx, GIRenderer *dr) : program(ctx.glslprograms_pool().fetch_program_task({ "passthrough.vert", "deferred_compose.frag" })()),
+deferred_composer::deferred_composer(const StEngineControl &ctx, GIRenderer *dr) : program(Resource::GLSLProgramFactory::load_program_task(ctx, { "passthrough.vert", "deferred_compose.frag" })()),
 																				   dr(dr) {}
 
 void deferred_composer::set_context_state() const {

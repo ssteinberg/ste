@@ -9,6 +9,7 @@
 
 #include "signal.hpp"
 
+#include "GLSLProgramFactory.hpp"
 #include "GLSLProgram.hpp"
 #include "gpu_dispatchable.hpp"
 
@@ -30,7 +31,7 @@ private:
 public:
 	volumetric_scattering_gather_dispatch(const StEngineControl &ctx,
 										  const volumetric_scattering_storage *vss) : vss(vss),
-																					  program(ctx.glslprograms_pool().fetch_program_task({ "volumetric_scattering_gather.glsl" })()) {}
+																					  program(Resource::GLSLProgramFactory::load_program_task(ctx, { "volumetric_scattering_gather.glsl" })()) {}
 
 	void set_context_state() const override final;
 	void dispatch() const override final;

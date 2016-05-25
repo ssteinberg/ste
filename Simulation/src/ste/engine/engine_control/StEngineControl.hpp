@@ -34,7 +34,6 @@
 #include "task_scheduler.hpp"
 #include "lru_cache.hpp"
 #include "rendering_system.hpp"
-#include "glsl_programs_pool.hpp"
 
 namespace StE {
 
@@ -54,7 +53,6 @@ private:
 	std::unique_ptr<Core::GL::gl_context> context;
 	mutable task_scheduler global_scheduler;
 	mutable lru_cache<std::string> global_cache;
-	mutable Resource::glsl_programs_pool glslprogramspool{ *this };
 	mutable Graphics::rendering_system* global_renderer{ nullptr };
 
 public:
@@ -99,10 +97,21 @@ public:
 	*/
 	void set_renderer(Graphics::rendering_system *r) { global_renderer = r; }
 
+	/**
+	*	@brief	Get reference to GL drawing context
+	*/
 	auto &gl() const { return context; }
+	/**
+	*	@brief	Get global task schduler
+	*/
 	auto &scheduler() const { return global_scheduler; }
+	/**
+	*	@brief	Get reference to engine lru_cache
+	*/
 	auto &cache() const { return global_cache; }
-	auto &glslprograms_pool() const { return glslprogramspool; }
+	/**
+	*	@brief	Get reference to engine renderer
+	*/
 	Graphics::rendering_system *renderer() const { return global_renderer; }
 
 	void set_window_title(const char * title) { glfwSetWindowTitle(context->window.get(), title); }
@@ -130,6 +139,9 @@ public:
 	*/
 	bool run_loop();
 
+	/**
+	*	@brief	Capture framebuffer and saves it to Screenshots/ directory
+	*/
 	void capture_screenshot() const;
 
 	const decltype(framebuffer_resize_signal) &signal_framebuffer_resize() const { return framebuffer_resize_signal; }
@@ -139,9 +151,22 @@ public:
 	const decltype(hid_scroll_signal) &hid_signal_scroll() const { return hid_scroll_signal; }
 	const decltype(hid_keyboard_signal) &hid_signal_keyboard() const { return hid_keyboard_signal; }
 
+	/**
+	*	@brief	Returns true if the application window is focused, false otherwise
+	*/
 	bool window_active() const { return !!glfwGetWindowAttrib(context->window.get(), GLFW_FOCUSED); }
+	/**
+	*	@brief	Returns backbuffer size in pixels. Ignores multisampling.
+	*/
 	glm::i32vec2 get_backbuffer_size() const { return context->framebuffer_size(); }
+
+	/**
+	*	@brief	Set perspective projection vertical field-of-view
+	*/
 	void set_fov(float rad);
+	/**
+	*	@brief	Set perspective projection clipping planes
+	*/
 	void set_clipping_planes(float near_clip_distance);
 
 	float get_fov() const;

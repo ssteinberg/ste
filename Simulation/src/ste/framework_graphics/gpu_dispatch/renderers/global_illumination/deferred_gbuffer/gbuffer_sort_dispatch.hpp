@@ -7,6 +7,8 @@
 #include "StEngineControl.hpp"
 #include "gpu_dispatchable.hpp"
 
+#include "GLSLProgramFactory.hpp"
+
 #include "deferred_gbuffer.hpp"
 #include "GLSLProgram.hpp"
 
@@ -22,7 +24,7 @@ private:
 
 public:
 	gbuffer_sort_dispatch(const StEngineControl &ctx, deferred_gbuffer *gbuffer) : gbuffer(gbuffer),
-																				   sort_program(ctx.glslprograms_pool().fetch_program_task({ "gbuffer_sort.glsl" })()) {}
+																				   sort_program(Resource::GLSLProgramFactory::load_program_task({ "gbuffer_sort.glsl" })()) {}
 
 protected:
 	virtual void set_context_state() const override {

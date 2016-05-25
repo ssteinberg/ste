@@ -8,6 +8,7 @@
 
 #include "ssss_generator.hpp"
 
+#include "GLSLProgramFactory.hpp"
 #include "GLSLProgram.hpp"
 
 #include <memory>
@@ -30,7 +31,7 @@ private:
 
 public:
 	ssss_write_penumbras(const ssss_generator *p, const StEngineControl &ctx) : p(p),
-																				ssss_gen_program(ctx.glslprograms_pool().fetch_program_task({ "ssss.glsl" })()) {
+																				ssss_gen_program(Resource::GLSLProgramFactory::load_program_task(ctx, { "ssss.glsl" })()) {
 		ssss_gen_program->set_uniform("near", ctx.get_near_clip());
 		ssss_gen_program->set_uniform("half_over_tan_fov_over_two", .5f / glm::tan(ctx.get_fov() * .5f));
 		projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([this](float, float ffov, float fnear) {

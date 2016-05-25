@@ -6,6 +6,8 @@
 #include "stdafx.hpp"
 #include "gpu_dispatchable.hpp"
 
+#include "GLSLProgramFactory.hpp"
+
 #include "StEngineControl.hpp"
 #include "gl_current_context.hpp"
 
@@ -28,7 +30,7 @@ private:
 public:
 	scene_prepopulate_depth_dispatch(const StEngineControl &ctx,
 									 const Scene *scene) : scene(scene),
-														   program(ctx.glslprograms_pool().fetch_program_task({ "scene_prepopulate_depth.vert", "scene_prepopulate_depth.frag" })()) {}
+														   program(Resource::GLSLProgramFactory::load_program_task(ctx, { "scene_prepopulate_depth.vert", "scene_prepopulate_depth.frag" })()) {}
 
 	void set_context_state() const override final;
 	void dispatch() const override final;
