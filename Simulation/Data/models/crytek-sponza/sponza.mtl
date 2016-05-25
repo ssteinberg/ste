@@ -458,10 +458,9 @@ newmtl Material__25
 	map_Ka textures\lion.tga
 	map_Kd textures\lion.tga
 	disp textures\lion_bump.png
-	roughness 0.3
-	metallic 1.0
-	anisotropy 0.2
-	ior 5
+	roughness 0.32
+	metallic 0.0
+	anisotropy 0.0
 
 newmtl roof
 	Ns 10.0000

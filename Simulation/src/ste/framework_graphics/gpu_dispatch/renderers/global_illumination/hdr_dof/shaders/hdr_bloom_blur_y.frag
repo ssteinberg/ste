@@ -7,7 +7,7 @@ const int blur_samples_count = 8;
 
 #include "hdr_blur.glsl"
 
-out vec4 gl_FragColor;
+out vec3 gl_FragColor;
 
 layout(bindless_sampler) uniform sampler2D unblured_hdr;
 layout(bindless_sampler) uniform sampler2D hdr;
@@ -20,5 +20,5 @@ void main() {
 
 	vec4 hdr_texel = texelFetch(unblured_hdr, ivec2(gl_FragCoord.xy), 0);
 	vec3 blend = blur.rgb * blur.a + hdr_texel.rgb;
-	gl_FragColor = vec4(blend, hdr_texel.w + .1f);
+	gl_FragColor = blend;
 }

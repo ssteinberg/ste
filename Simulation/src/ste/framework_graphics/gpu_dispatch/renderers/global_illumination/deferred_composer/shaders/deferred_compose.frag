@@ -45,8 +45,6 @@ layout(binding = 9) uniform sampler3D scattering_volume;
 
 out vec4 gl_FragColor;
 
-uniform float height_map_scale = .5f;
-
 vec3 shade(g_buffer_element frag) {
 	int draw_idx = gbuffer_parse_material(frag);
 	material_descriptor md = mat_descriptor[draw_idx];
@@ -62,7 +60,7 @@ vec3 shade(g_buffer_element frag) {
 	vec3 n = gbuffer_parse_normal(frag);
 	vec3 t = gbuffer_parse_tangent(frag);
 	vec3 b = cross(t, n);
-	normal_map(md, uv, duvdx, duvdy, height_map_scale, n, t, b, position);
+	normal_map(md, uv, duvdx, duvdy, n, t, b, position);
 
 	vec3 diffuse_color = material_base_color(md, uv, duvdx, duvdy);
 	float cavity = material_cavity(md, uv, duvdx, duvdy);

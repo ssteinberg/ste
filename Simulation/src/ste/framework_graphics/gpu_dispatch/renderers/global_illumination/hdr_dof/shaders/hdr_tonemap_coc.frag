@@ -12,7 +12,6 @@
 
 layout(location = 0) out vec4 rgbout;
 layout(location = 1) out vec4 bloomout;
-layout(location = 2) out vec2 coc_out;
 
 layout(shared, binding = 0) restrict readonly buffer histogram_sums {
 	uint histogram[bins];
@@ -23,13 +22,10 @@ layout(std430, binding = 2) restrict readonly buffer hdr_bokeh_parameters_buffer
 
 const float bloom_cutoff = .9f;
 const float vision_properties_max_lum = 10.f;
-const float aperature_distance = 0.5f;
 
 layout(bindless_sampler) uniform sampler2D hdr;
 layout(bindless_sampler) uniform sampler1D hdr_vision_properties_texture;
 layout(binding = 11) uniform sampler2D depth;
-
-uniform float aperature_diameter = .02f;
 
 vec4 hdr_bloom(vec4 RGBL, vec3 XYZ, float mesopic) {
 	if (XYZ.y > bloom_cutoff) {
@@ -38,22 +34,6 @@ vec4 hdr_bloom(vec4 RGBL, vec3 XYZ, float mesopic) {
 	}
 	else
 		return vec4(0);
-}
-
-vec2 hdr_zcoc(float acuity) {
-	float focal = params.focus;
-
-	float d = texelFetch(depth, ivec2(gl_FragCoord.xy), 0).x;
-	float z_lin = unproject_depth(d) / 10000.f;
-
-	float s = z_lin;
-
-	float C = aperature_diameter * abs(focal - s) / s;
-	float c = C * aperature_distance / focal;
-	float coc = clamp(smoothstep(0.f, 1.f, c), 0.f, 1.f);
-	coc += acuity;
-
-	return vec2(s, clamp(coc, 0.f, 1.f));
 }
 
 float hdr_tonemap(float l) {
@@ -96,5 +76,4 @@ void main() {
 
 	rgbout = RGBL;
 	bloomout = hdr_bloom(RGBL, XYZ, mesopic);
-	coc_out = hdr_zcoc(acuity);
 }
