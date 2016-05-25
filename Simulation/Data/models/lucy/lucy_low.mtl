@@ -1,0 +1,38 @@
+# 
+# Wavefront material file
+# Converted by the DEEP Exploration  Deep Exploration 6.3 x64 6.3.5.8307
+# Right Hemisphere, LTD
+# http://www.righthemisphere.com/
+# 
+
+newmtl _1___Default
+Ka 0.588235 0.588235 0.588235
+Kd 0.588235 0.588235 0.588235
+Ks 0.968628 0.866667 0.556863
+illum 2
+Ns 12.996
+map_Kd 
+map_bump Lucy_NormalsMap.tga
+bump Lucy_NormalsMap.tga
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl wireframe_color_0xE18F57
+Ka 0.117647 0.117647 0.117647
+Kd 0.882353 0.560784 0.341176
+Ks 0.752941 0.752941 0.752941
+illum 2
+Ns 8
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 

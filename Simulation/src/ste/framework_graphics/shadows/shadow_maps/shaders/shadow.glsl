@@ -23,18 +23,18 @@ float shadow_gather_pcf(samplerCubeArrayShadow shadow_depth_maps, uint light, fl
 }
 
 float shadow(samplerCubeArrayShadow shadow_depth_maps, uint light, vec3 shadow_v) {
-	const int samples_far = 3;
-	const int samples_med = 3;
-	const int samples_near = 3;
-	const float radius_far = 6.f;
-	const float radius_med = 4.f;
-	const float radius_near = 2.f;
+	const int samples_far = 5;
+	const int samples_med = 7;
+	const int samples_near = 7;
+	const float radius_far = 4.5f;
+	const float radius_med = 2.5f;
+	const float radius_near = 1.f;
 
 	const int total_samples = samples_far + samples_med + samples_near + 1;
 
-	const float weight_far_per_sample = .3f;
-	const float weight_med_per_sample = .6f;
-	const float weight_near_per_sample = .8f;
+	const float weight_far_per_sample = .4f;
+	const float weight_med_per_sample = .55f;
+	const float weight_near_per_sample = .7f;
 	const float weight_center_per_sample = 1.f;
 	const float total_weight = weight_center_per_sample +
 							   weight_far_per_sample  * samples_far +

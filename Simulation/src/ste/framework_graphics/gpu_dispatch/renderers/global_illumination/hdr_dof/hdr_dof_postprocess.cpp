@@ -10,8 +10,7 @@
 #include "hdr_tonemap_coc_task.hpp"
 #include "hdr_bloom_blurx_task.hpp"
 #include "hdr_bloom_blury_task.hpp"
-#include "hdr_bokeh_blurx_task.hpp"
-#include "hdr_bokeh_blury_task.hpp"
+#include "hdr_bokeh_blur_task.hpp"
 
 #include "Sampler.hpp"
 
@@ -33,8 +32,7 @@ hdr_dof_postprocess::hdr_dof_postprocess(const StEngineControl &context, const d
 	hdr_tonemap_coc = context.glslprograms_pool().fetch_program_task({ "passthrough.vert", "hdr_tonemap_coc.frag" })();
 	hdr_bloom_blurx = context.glslprograms_pool().fetch_program_task({ "passthrough.vert", "hdr_bloom_blur_x.frag" })();
 	hdr_bloom_blury = context.glslprograms_pool().fetch_program_task({ "passthrough.vert", "hdr_bloom_blur_y.frag" })();
-	bokeh_blurx = context.glslprograms_pool().fetch_program_task({ "passthrough.vert", "bokeh_bilateral_blur_x.frag" })();
-	bokeh_blury = context.glslprograms_pool().fetch_program_task({ "passthrough.vert", "bokeh_bilateral_blur_y.frag" })();
+	bokeh_blur = context.glslprograms_pool().fetch_program_task({ "passthrough.vert", "bokeh_bilateral_blur.frag" })();
 
 	gli::texture1d hdr_human_vision_properties_data(gli::format::FORMAT_RGBA32_SFLOAT_PACK32, glm::tvec1<std::size_t>{ 4096 }, 1);
 	{
@@ -58,8 +56,6 @@ hdr_dof_postprocess::hdr_dof_postprocess(const StEngineControl &context, const d
 	hdr_tonemap_coc->set_uniform("hdr_vision_properties_texture", vision_handle);
 	hdr_bloom_blurx->set_uniform("dir", glm::vec2{ 1.f, .0f });
 	hdr_bloom_blury->set_uniform("dir", glm::vec2{ .0f, 1.f });
-	bokeh_blurx->set_uniform("dir", glm::vec2{ 1.f, .0f });
-	bokeh_blury->set_uniform("dir", glm::vec2{ .0f, 1.f });
 
 	resize(ctx.get_backbuffer_size());
 
@@ -77,9 +73,9 @@ std::shared_ptr<const gpu_task> hdr_dof_postprocess::get_task() const {
 	return task;
 }
 
-hdr_bokeh_blury_task* hdr_dof_postprocess::create_dispatchable() {
-	bokeh_blury_task = std::make_unique<hdr_bokeh_blury_task>(this);
-	return bokeh_blury_task.get();
+hdr_bokeh_blur_task* hdr_dof_postprocess::create_dispatchable() {
+	bokeh_blur_task = std::make_unique<hdr_bokeh_blur_task>(this);
+	return bokeh_blur_task.get();
 }
 
 std::vector<std::shared_ptr<const gpu_task>> hdr_dof_postprocess::create_sub_tasks() {
@@ -89,7 +85,6 @@ std::vector<std::shared_ptr<const gpu_task>> hdr_dof_postprocess::create_sub_tas
 	tonemap_coc_task = std::make_unique<hdr_tonemap_coc_task>(this);
 	bloom_blurx_task = std::make_unique<hdr_bloom_blurx_task>(this);
 	bloom_blury_task = std::make_unique<hdr_bloom_blury_task>(this);
-	bokeh_blurx_task = std::make_unique<hdr_bokeh_blurx_task>(this);
 
 	auto compute_minmax = make_gpu_task("hdr_compute_minmax", compute_minmax_task.get(), nullptr);
 	auto create_histogram = make_gpu_task("hdr_create_histogram", create_histogram_task.get(), nullptr);
@@ -97,16 +92,14 @@ std::vector<std::shared_ptr<const gpu_task>> hdr_dof_postprocess::create_sub_tas
 	auto tonemap_coc = make_gpu_task("hdr_tonemap_coc", tonemap_coc_task.get(), &fbo_hdr);
 	auto bloom_blurx = make_gpu_task("hdr_bloom_blurx", bloom_blurx_task.get(), &fbo_hdr_bloom_blurx_image);
 	auto bloom_blury = make_gpu_task("hdr_bloom_blury", bloom_blury_task.get(), &fbo_hdr_final);
-	auto bokeh_blurx = make_gpu_task("hdr_bokeh_blurx", bokeh_blurx_task.get(), &fbo_bokeh_blur_image);
 
-	bokeh_blurx->add_dependency(bloom_blury);
 	bloom_blury->add_dependency(bloom_blurx);
 	bloom_blurx->add_dependency(tonemap_coc);
 	tonemap_coc->add_dependency(compute_histogram_sums);
 	compute_histogram_sums->add_dependency(create_histogram);
 	create_histogram->add_dependency(compute_minmax);
 
-	return { bokeh_blurx, bloom_blury, bloom_blurx, tonemap_coc, compute_histogram_sums, create_histogram, compute_minmax };
+	return { bloom_blury, bloom_blurx, tonemap_coc, compute_histogram_sums, create_histogram, compute_minmax };
 }
 
 hdr_dof_postprocess::~hdr_dof_postprocess() noexcept {
@@ -116,16 +109,13 @@ void hdr_dof_postprocess::resize(glm::ivec2 size) {
 	if (size.x <= 0 || size.y <= 0)
 		return;
 
-	bokeh_coc = std::make_unique<Core::Texture2D>(gli::format::FORMAT_RG16_SFLOAT_PACK16, StE::Core::Texture2D::size_type(size), 1);
-
 	hdr_image = std::make_unique<Core::Texture2D>(gli::format::FORMAT_RGBA16_SFLOAT_PACK16, StE::Core::Texture2D::size_type(size), 1);
-	hdr_final_image = std::make_unique<Core::Texture2D>(gli::format::FORMAT_RGBA16_SFLOAT_PACK16, StE::Core::Texture2D::size_type(size), 1);
+	hdr_final_image = std::make_unique<Core::Texture2D>(gli::format::FORMAT_RGB16_SFLOAT_PACK16, StE::Core::Texture2D::size_type(size), 1);
 	hdr_bloom_image = std::make_unique<Core::Texture2D>(gli::format::FORMAT_RGBA16_SFLOAT_PACK16, StE::Core::Texture2D::size_type(size), 1);
 
 	fbo_hdr_final[0] = (*hdr_final_image)[0];
 	fbo_hdr[0] = (*hdr_image)[0];
 	fbo_hdr[1] = (*hdr_bloom_image)[0];
-	fbo_hdr[2] = (*bokeh_coc)[0];
 
 	hdr_bloom_blurx_image = std::make_unique<Core::Texture2D>(gli::format::FORMAT_RGBA16_SFLOAT_PACK16, StE::Core::Texture2D::size_type(size), 1);
 
@@ -134,41 +124,31 @@ void hdr_dof_postprocess::resize(glm::ivec2 size) {
 	luminance_size = size / 4;
 
 	hdr_lums = std::make_unique<Core::Texture2D>(gli::format::FORMAT_R32_SFLOAT_PACK32, StE::Core::Texture2D::size_type(luminance_size), 1);
-	bokeh_blur_image_x = std::make_unique<Core::Texture2D>(gli::format::FORMAT_RGBA16_SFLOAT_PACK16, StE::Core::Texture2D::size_type(size), 1);
-	fbo_bokeh_blur_image[0] = (*bokeh_blur_image_x)[0];
 
-	auto bokeh_coc_handle = bokeh_coc->get_texture_handle(*Core::Sampler::SamplerLinearClamp());
 	auto hdr_handle = hdr_image->get_texture_handle();
 	auto hdr_final_handle = hdr_final_image->get_texture_handle(*Core::Sampler::SamplerLinearClamp());
 	auto hdr_final_handle_linear = hdr_final_image->get_texture_handle(*Core::Sampler::SamplerLinear());
 	auto hdr_bloom_handle = hdr_bloom_image->get_texture_handle(*Core::Sampler::SamplerLinearClamp());
 	auto hdr_bloom_blurx_handle = hdr_bloom_blurx_image->get_texture_handle(*Core::Sampler::SamplerLinearClamp());
-	auto bokeh_blurx_handle = bokeh_blur_image_x->get_texture_handle(*Core::Sampler::SamplerLinearClamp());
 
-	bokeh_coc_handle.make_resident();
 	hdr_handle.make_resident();
 	hdr_final_handle.make_resident();
 	hdr_final_handle_linear.make_resident();
 	hdr_bloom_handle.make_resident();
 	hdr_bloom_blurx_handle.make_resident();
-	bokeh_blurx_handle.make_resident();
 
 	hdr_tonemap_coc->set_uniform("hdr", hdr_final_handle);
 	hdr_bloom_blurx->set_uniform("hdr", hdr_bloom_handle);
 	hdr_bloom_blury->set_uniform("hdr", hdr_bloom_blurx_handle);
 	hdr_bloom_blury->set_uniform("unblured_hdr", hdr_handle);
 	hdr_compute_minmax->set_uniform("hdr", hdr_final_handle_linear);
-	bokeh_blurx->set_uniform("hdr", hdr_final_handle);
-	bokeh_blurx->set_uniform("zcoc_buffer", bokeh_coc_handle);
-	bokeh_blury->set_uniform("hdr", bokeh_blurx_handle);
-	bokeh_blury->set_uniform("zcoc_buffer", bokeh_coc_handle);
+	bokeh_blur->set_uniform("hdr", hdr_final_handle);
 
 	hdr_compute_histogram_sums->set_uniform("hdr_lum_resolution", static_cast<std::uint32_t>(luminance_size.x * luminance_size.y));
 
 	hdr_bloom_blurx->set_uniform("size", glm::vec2{ size });
 	hdr_bloom_blury->set_uniform("size", glm::vec2{ size });
-	bokeh_blurx->set_uniform("size", glm::vec2{ size });
-	bokeh_blury->set_uniform("size", glm::vec2{ size });
+	bokeh_blur->set_uniform("size", glm::vec2{ size });
 
 	hdr_bokeh_param_buffer << *hdr_bokeh_param_buffer_eraser;
 	hdr_bokeh_param_buffer_prev << *hdr_bokeh_param_buffer_eraser;

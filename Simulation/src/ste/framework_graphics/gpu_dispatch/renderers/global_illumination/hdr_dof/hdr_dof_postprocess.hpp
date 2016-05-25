@@ -35,8 +35,7 @@ class hdr_compute_histogram_sums_task;
 class hdr_tonemap_coc_task;
 class hdr_bloom_blurx_task;
 class hdr_bloom_blury_task;
-class hdr_bokeh_blurx_task;
-class hdr_bokeh_blury_task;
+class hdr_bokeh_blur_task;
 
 class hdr_dof_postprocess {
 	friend class hdr_compute_minmax_task;
@@ -45,8 +44,7 @@ class hdr_dof_postprocess {
 	friend class hdr_tonemap_coc_task;
 	friend class hdr_bloom_blurx_task;
 	friend class hdr_bloom_blury_task;
-	friend class hdr_bokeh_blurx_task;
-	friend class hdr_bokeh_blury_task;
+	friend class hdr_bokeh_blur_task;
 
 private:
 	constexpr static float vision_properties_max_lum = 10.f;
@@ -68,8 +66,7 @@ private:
 	std::unique_ptr<hdr_tonemap_coc_task> tonemap_coc_task;
 	std::unique_ptr<hdr_bloom_blurx_task> bloom_blurx_task;
 	std::unique_ptr<hdr_bloom_blury_task> bloom_blury_task;
-	std::unique_ptr<hdr_bokeh_blurx_task> bokeh_blurx_task;
-	std::unique_ptr<hdr_bokeh_blury_task> bokeh_blury_task;
+	std::unique_ptr<hdr_bokeh_blur_task> bokeh_blur_task;
 
 	std::shared_ptr<Core::GLSLProgram> hdr_compute_minmax;
 	std::shared_ptr<Core::GLSLProgram> hdr_create_histogram;
@@ -77,26 +74,22 @@ private:
 	std::shared_ptr<Core::GLSLProgram> hdr_tonemap_coc;
 	std::shared_ptr<Core::GLSLProgram> hdr_bloom_blurx;
 	std::shared_ptr<Core::GLSLProgram> hdr_bloom_blury;
-	std::shared_ptr<Core::GLSLProgram> bokeh_blurx;
-	std::shared_ptr<Core::GLSLProgram> bokeh_blury;
+	std::shared_ptr<Core::GLSLProgram> bokeh_blur;
 
 	Core::Sampler hdr_vision_properties_sampler;
 
 	std::unique_ptr<Core::Texture1D> hdr_vision_properties_texture;
 	Core::texture_handle hdr_vision_properties_texture_handle;
 
-	std::unique_ptr<Core::Texture2D> bokeh_coc;
 	std::unique_ptr<Core::Texture2D> hdr_image;
 	std::unique_ptr<Core::Texture2D> hdr_final_image;
 	std::unique_ptr<Core::Texture2D> hdr_bloom_image;
 	std::unique_ptr<Core::Texture2D> hdr_bloom_blurx_image;
 	std::unique_ptr<Core::Texture2D> hdr_lums;
-	std::unique_ptr<Core::Texture2D> bokeh_blur_image_x;
 
 	Core::FramebufferObject fbo_hdr_final;
 	Core::FramebufferObject fbo_hdr;
 	Core::FramebufferObject fbo_hdr_bloom_blurx_image;
-	Core::FramebufferObject fbo_bokeh_blur_image;
 
 	mutable Core::ShaderStorageBuffer<hdr_bokeh_parameters> hdr_bokeh_param_buffer{ 1 };
 	mutable Core::ShaderStorageBuffer<hdr_bokeh_parameters> hdr_bokeh_param_buffer_prev{ 1 };
@@ -116,7 +109,7 @@ private:
 
 private:
 	std::vector<std::shared_ptr<const gpu_task>> create_sub_tasks();
-	hdr_bokeh_blury_task* create_dispatchable();
+	hdr_bokeh_blur_task* create_dispatchable();
 
 	void setup_engine_connections();
 
