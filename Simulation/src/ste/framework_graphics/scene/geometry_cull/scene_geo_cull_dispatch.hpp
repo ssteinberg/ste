@@ -7,6 +7,7 @@
 #include "StEngineControl.hpp"
 #include "gl_current_context.hpp"
 
+#include "GLSLProgramFactory.hpp"
 #include "GLSLProgram.hpp"
 #include "gpu_dispatchable.hpp"
 
@@ -36,7 +37,7 @@ public:
 	scene_geo_cull_dispatch(const StEngineControl &ctx,
 							const Scene *scene,
 							const light_storage *ls) : scene(scene), ls(ls),
-													   program(ctx.glslprograms_pool().fetch_program_task({ "scene_geo_cull.glsl" })()) {}
+													   program(Resource::GLSLProgramFactory::load_program_task(ctx, { "scene_geo_cull.glsl" })()) {}
 
 	void set_context_state() const override final;
 	void dispatch() const override final;

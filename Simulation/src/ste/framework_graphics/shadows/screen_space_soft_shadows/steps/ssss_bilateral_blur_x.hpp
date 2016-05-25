@@ -9,6 +9,7 @@
 
 #include "ssss_generator.hpp"
 
+#include "GLSLProgramFactory.hpp"
 #include "GLSLProgram.hpp"
 
 #include "Quad.hpp"
@@ -25,7 +26,7 @@ private:
 
 public:
 	ssss_bilateral_blur_x(const ssss_generator *p, const StEngineControl &ctx) : p(p),
-																				 ssss_blur_program(ctx.glslprograms_pool().fetch_program_task({ "ssss_blur.vert", "ssss_blur.geom", "ssss_blur_x.frag" })()) {}
+																				 ssss_blur_program(Resource::GLSLProgramFactory::load_program_task(ctx, { "ssss_blur.vert", "ssss_blur.geom", "ssss_blur_x.frag" })()) {}
 
 	void set_context_state() const override final;
 	void dispatch() const override final;

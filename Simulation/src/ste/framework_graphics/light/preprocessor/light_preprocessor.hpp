@@ -7,6 +7,8 @@
 #include "StEngineControl.hpp"
 #include "gpu_task.hpp"
 
+#include "GLSLProgramFactory.hpp"
+
 #include "signal.hpp"
 
 #include "light_storage.hpp"
@@ -50,8 +52,8 @@ public:
 					   light_storage *ls,
 					   const hdr_dof_postprocess *hdr) : ctx(ctx), ls(ls), hdr(hdr),
 														 stage1(this), stage2(this),
-														 light_preprocess_cull_lights_program(ctx.glslprograms_pool().fetch_program_task({ "light_preprocess_cull_lights.glsl" })()),
-														 light_preprocess_cull_shadows_program(ctx.glslprograms_pool().fetch_program_task({ "light_preprocess_cull_shadows.glsl" })()) {
+														 light_preprocess_cull_lights_program(Resource::GLSLProgramFactory::load_program_task(ctx, { "light_preprocess_cull_lights.glsl" })()),
+														 light_preprocess_cull_shadows_program(Resource::GLSLProgramFactory::load_program_task(ctx, { "light_preprocess_cull_shadows.glsl" })()) {
 		set_projection_planes();
 		resize_connection = std::make_shared<ResizeSignalConnectionType>([=](const glm::i32vec2 &size) {
 			set_projection_planes();

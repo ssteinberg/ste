@@ -4,7 +4,6 @@
 
 #include "mesh_descriptor.hpp"
 
-#include "glsl_programs_pool.hpp"
 #include "gl_current_context.hpp"
 
 #include <algorithm>

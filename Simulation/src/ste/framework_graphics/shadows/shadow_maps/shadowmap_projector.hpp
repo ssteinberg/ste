@@ -7,6 +7,7 @@
 #include "StEngineControl.hpp"
 #include "gl_current_context.hpp"
 
+#include "GLSLProgramFactory.hpp"
 #include "GLSLProgram.hpp"
 #include "gpu_dispatchable.hpp"
 
@@ -36,7 +37,7 @@ public:
 						const shadowmap_storage *shadow_map) : scene(scene),
 															   lights(lights),
 															   shadow_map(shadow_map),
-															   shadow_gen_program(ctx.glslprograms_pool().fetch_program_task({ "shadow_map.vert", "shadow_cubemap.geom" })()) {}
+															   shadow_gen_program(Resource::GLSLProgramFactory::load_program_task(ctx, { "shadow_map.vert", "shadow_cubemap.geom" })()) {}
 
 protected:
 	void set_context_state() const override final;

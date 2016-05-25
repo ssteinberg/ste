@@ -2,6 +2,8 @@
 #include "stdafx.hpp"
 #include "dense_voxel_space.hpp"
 
+#include "GLSLProgramFactory.hpp"
+
 using namespace StE::Graphics;
 
 constexpr gli::format dense_voxel_space::space_format_radiance;
@@ -14,8 +16,8 @@ dense_voxel_space::dense_voxel_space(const StEngineControl &ctx, std::size_t max
 	size = static_cast<decltype(size)>(glm::min<int>(Core::texture_sparse_3d::max_size(), max_size));
 	tile_size = static_cast<decltype(tile_size)>(glm::max(ts.x, glm::max(ts.y, ts.z)));
 
-	voxelizer_program = ctx.glslprograms_pool().fetch_program_task({ "voxelizer.vert", "voxelizer.frag", "voxelizer.geom" })();
-	voxelizer_upsampler_program = ctx.glslprograms_pool().fetch_program_task({ "voxelizer_upsampler.glsl" })();
+	voxelizer_program = Resource::GLSLProgramFactory::load_program_task(ctx, { "voxelizer.vert", "voxelizer.frag", "voxelizer.geom" })();
+	voxelizer_upsampler_program = Resource::GLSLProgramFactory::load_program_task(ctx, { "voxelizer_upsampler.glsl" })();
 
 	voxelizer_output = std::make_unique<Core::RenderTarget>(gli::format::FORMAT_R8_UNORM_PACK8, glm::ivec2{ size.x, size.y });
 	voxelizer_fbo[0] = *voxelizer_output;

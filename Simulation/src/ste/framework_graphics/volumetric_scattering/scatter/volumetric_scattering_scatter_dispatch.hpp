@@ -7,6 +7,7 @@
 #include "StEngineControl.hpp"
 #include "gl_current_context.hpp"
 
+#include "GLSLProgramFactory.hpp"
 #include "GLSLProgram.hpp"
 #include "gpu_dispatchable.hpp"
 
@@ -49,7 +50,7 @@ public:
 										   const linked_light_lists *llls,
 										   const light_storage *ls,
 										   const shadowmap_storage *shadows_storage) : vss(vss), llls(llls), ls(ls), shadows_storage(shadows_storage),
-																					   program(ctx.glslprograms_pool().fetch_program_task({ "volumetric_scattering_scatter.glsl" })()) {
+																					   program(Resource::GLSLProgramFactory::load_program_task(ctx, { "volumetric_scattering_scatter.glsl" })()) {
 		update_phase_uniforms(vss->get_scattering_phase_anisotropy_coefficient());
 	}
 
