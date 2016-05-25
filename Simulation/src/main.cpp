@@ -26,6 +26,7 @@
 
 #include <imgui/imgui.h>
 #include "debug_gui.hpp"
+#include "xyY.hpp"
 
 using namespace StE::Core;
 using namespace StE::Text;
@@ -135,7 +136,7 @@ int main() {
 																								  nullptr,
 																								  nullptr));
 	auto lucy_future = ctx.scheduler().schedule_now(StE::Resource::ModelFactory::load_model_task(ctx,
-													R"(Data/models/lucy/lucy.obj)",
+													R"(Data/models/lucy/lucy_low.obj)",
 													&scene.object_group(),
 													&scene.scene_properties(),
 													1.f,
@@ -209,9 +210,16 @@ int main() {
 	auto lucy = lucy_objects.back();
 	auto lucy_material = lucy_materials.back();
 
-	auto lucy_transform = glm::rotate(glm::mat4(), -glm::half_pi<float>(), {.0f,1.f,.0f});
-	lucy_transform = glm::scale(lucy_transform, glm::vec3{15,17,15});
+	auto lucy_transform = glm::rotate(glm::mat4(), -glm::half_pi<float>(), {1.0f,0.f,.0f});
+	lucy_transform = glm::rotate(lucy_transform, -glm::half_pi<float>(), {.0f,0.f,1.0f});
+	lucy_transform = glm::scale(lucy_transform, glm::vec3{10,10,10});
 	lucy->set_model_transform(lucy_transform);
+
+	StE::Graphics::RGB lucy_base_color = {1.f,1.f,1.f};
+	gli::texture2d lucy_color_tex_data{ gli::format::FORMAT_RGB8_UNORM_PACK8, { 1, 1 }, 1 };
+	*reinterpret_cast<glm::u8vec3*>(lucy_color_tex_data.data()) = glm::u8vec3(lucy_base_color.R() * 255.5f, lucy_base_color.G() * 255.5f, lucy_base_color.B() * 255.5f);
+	auto lucy_color_tex = std::make_shared<StE::Core::Texture2D>(lucy_color_tex_data, false);
+	lucy_material->set_basecolor_map(lucy_color_tex);
 
 
 	float lucy_roughness = lucy_material->get_roughness();
@@ -223,6 +231,9 @@ int main() {
 		ImGui::SetNextWindowPos(ImVec2(20,bbsize.y - 400), ImGuiSetCond_FirstUseEver);
 		ImGui::SetNextWindowSize(ImVec2(120,400), ImGuiSetCond_FirstUseEver);
 		if (ImGui::Begin("Material", nullptr)) {
+			ImGui::SliderFloat("R ##value", &lucy_base_color.R(), .0f, 1.f);
+			ImGui::SliderFloat("G ##value", &lucy_base_color.G(), .0f, 1.f);
+			ImGui::SliderFloat("B ##value", &lucy_base_color.B(), .0f, 1.f);
 			ImGui::SliderFloat("Roughness ##value", &lucy_roughness, .0f, 1.f);
 			ImGui::SliderFloat("Anisotropy ##value", &lucy_anisotropy, .0f, 1.f);
 			ImGui::SliderFloat("Metallic ##value", &lucy_metallic, .0f, 1.f);
@@ -232,6 +243,8 @@ int main() {
 
 		ImGui::End();
 
+		auto t = glm::u8vec3(lucy_base_color.R() * 255.5f, lucy_base_color.G() * 255.5f, lucy_base_color.B() * 255.5f);
+		lucy_color_tex->clear(&t);
 		if (lucy_material->get_roughness() != lucy_roughness)
 			lucy_material->set_roughness(lucy_roughness);
 		if (lucy_material->get_anisotropy() != lucy_anisotropy)

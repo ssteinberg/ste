@@ -52,21 +52,21 @@ void process(int face, uint16_t l, vec3 vertices[3]) {
 	for (int j = 0; j < 3; ++j)
 		transformed_vertices[j] = transform(face, vertices[j]);
 
-	if ((transformed_vertices[0].x > transformed_vertices[0].w &&
-		 transformed_vertices[1].x > transformed_vertices[1].w &&
-		 transformed_vertices[2].x > transformed_vertices[2].w) ||
+	if ((transformed_vertices[0].x >  transformed_vertices[0].w &&
+		 transformed_vertices[1].x >  transformed_vertices[1].w &&
+		 transformed_vertices[2].x >  transformed_vertices[2].w) ||
 		(transformed_vertices[0].x < -transformed_vertices[0].w &&
 		 transformed_vertices[1].x < -transformed_vertices[1].w &&
 		 transformed_vertices[2].x < -transformed_vertices[2].w) ||
-		(transformed_vertices[0].y > transformed_vertices[0].w &&
-		 transformed_vertices[1].y > transformed_vertices[1].w &&
-		 transformed_vertices[2].y > transformed_vertices[2].w) ||
+		(transformed_vertices[0].y >  transformed_vertices[0].w &&
+		 transformed_vertices[1].y >  transformed_vertices[1].w &&
+		 transformed_vertices[2].y >  transformed_vertices[2].w) ||
 		(transformed_vertices[0].y < -transformed_vertices[0].w &&
 		 transformed_vertices[1].y < -transformed_vertices[1].w &&
 		 transformed_vertices[2].y < -transformed_vertices[2].w) ||
-		(transformed_vertices[0].z < -transformed_vertices[0].w &&
-		 transformed_vertices[1].z < -transformed_vertices[1].w &&
-		 transformed_vertices[2].z < -transformed_vertices[2].w))
+		(transformed_vertices[0].z >  transformed_vertices[0].w &&
+		 transformed_vertices[1].z >  transformed_vertices[1].w &&
+		 transformed_vertices[2].z >  transformed_vertices[2].w))
 		return;
 
 	gl_Layer = face + int(l) * 6;
