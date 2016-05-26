@@ -1,70 +1,54 @@
 
 #include "common.glsl"
+#include "fast_rand.glsl"
 
 const float shadow_near = 20.f;
 
-float shadow_gather_pcf(samplerCubeArrayShadow shadow_depth_maps, uint light, float zf, vec3 norm_v, vec3 v, float m, float r, int samples, float jitter) {
-	const float map_size = 1.f / 512.f;
+float shadow_gather_pcf(samplerCubeArrayShadow shadow_depth_maps, uint light, float zf, vec3 norm_v, vec3 v, float m, vec2 xy) {
+	vec3 u;
+	if (v.x == m)		u = vec3(0, xy);
+	else if (v.y == m)	u = vec3(xy.x, 0, xy.y);
+	else				u = vec3(xy, 0);
 
-	float pcf = .0f;
-	for (int j = 0; j < samples; ++j) {
-		float a = (float(j) + jitter) / float(samples);
-		vec2 xy = vec2(sin(2.f * pi * a), cos(2.f * pi * a)) * r;
-
-		vec3 u;
-		if (v.x == m)		u = vec3(0, xy);
-		else if (v.y == m)	u = vec3(xy.x, 0, xy.y);
-		else				u = vec3(xy, 0);
-
-		pcf += texture(shadow_depth_maps, vec4(norm_v + u * map_size, light), zf).x;
-	}
-
-	return pcf;
+	return texture(shadow_depth_maps, vec4(norm_v + u, light), zf).x;
 }
 
 float shadow(samplerCubeArrayShadow shadow_depth_maps, uint light, vec3 shadow_v) {
-	const int samples_far = 5;
-	const int samples_med = 7;
-	const int samples_near = 7;
-	const float radius_far = 4.5f;
-	const float radius_med = 2.5f;
-	const float radius_near = 1.f;
-
-	const int total_samples = samples_far + samples_med + samples_near + 1;
-
-	const float weight_far_per_sample = .4f;
-	const float weight_med_per_sample = .55f;
-	const float weight_near_per_sample = .7f;
-	const float weight_center_per_sample = 1.f;
-	const float total_weight = weight_center_per_sample +
-							   weight_far_per_sample  * samples_far +
-							   weight_med_per_sample  * samples_med +
-							   weight_near_per_sample * samples_near;
-
-	const float weight_center = 1.f / total_weight;
-	const float weight_far = weight_far_per_sample / total_weight;
-	const float weight_med = weight_med_per_sample / total_weight;
-	const float weight_near = weight_near_per_sample / total_weight;
+	const int rings = 3;
+	const int samples = 4;
+	const float map_size = 1.f / 512.f;
 
 	vec3 v = abs(shadow_v);
 	float m = max(v.x, max(v.y, v.z));
 
 	float zf = shadow_near / m;
-
 	vec3 norm_v = shadow_v / m;
 
-	float center = texture(shadow_depth_maps, vec4(shadow_v, light), zf).x * weight_center_per_sample;
-	float far = shadow_gather_pcf(shadow_depth_maps, light, zf, norm_v, v, m, radius_far, samples_far, .45);
+	float accum = texture(shadow_depth_maps, vec4(shadow_v, light), zf).x;
 
-	float t = (center + far) / float(samples_far + 1);
-	if (t >= .999f || t <= .001f)
-		return t;
+	vec2 noise = vec2(fast_rand(gl_FragCoord.x), fast_rand(gl_FragCoord.y)) * .0002f;
+	vec2 wh = vec2(map_size) + noise;
+	float s = 1.f;
+	for (int i = rings; i >= 1; --i) {
+		int ringsamples = samples;
+		float jitter = fast_rand(gl_FragCoord.xy * float(i));
 
-	float pcf = center * weight_center + far * weight_far;
-	pcf += shadow_gather_pcf(shadow_depth_maps, light, zf, norm_v, v, m, radius_med, samples_med, .7) * weight_med;
-	pcf += shadow_gather_pcf(shadow_depth_maps, light, zf, norm_v, v, m, radius_near, samples_near, .2) * weight_near;
+		for (int j = 0; j < ringsamples; ++j) {
+			float step = (float(j) + jitter) * pi*2.f / float(ringsamples);
+			vec2 c = vec2(cos(step), sin(step)) * float(i) * 1.75f;
+			float w = mix(1.f, float(i) / float(rings), .4f);
 
-	return pcf;
+			accum += shadow_gather_pcf(shadow_depth_maps, light, zf, norm_v, v, m, c * wh) * w;
+			s += w;
+		}
+
+		if (rings == i) {
+			if (accum / s == .99f || accum / s == .01f)
+				return accum / s;
+		}
+	}
+
+	return accum / s;
 }
 
 float shadow_fast(samplerCubeArrayShadow shadow_depth_maps, uint light, vec3 shadow_v) {

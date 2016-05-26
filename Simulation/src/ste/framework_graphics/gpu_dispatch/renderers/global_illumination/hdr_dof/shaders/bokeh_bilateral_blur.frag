@@ -10,7 +10,7 @@
 #include "gbuffer.glsl"
 #include "girenderer_transform_buffer.glsl"
 
-out vec4 gl_FragColor;
+out vec3 gl_FragColor;
 
 layout(std430, binding = 2) restrict readonly buffer hdr_bokeh_parameters_buffer {
 	hdr_bokeh_parameters params;
@@ -62,32 +62,32 @@ float coc(float z) {
 
 void main() {
 	vec2 uv = vec2(gl_FragCoord.xy) / size;
+	vec3 col = texture(hdr, uv).rgb;
 
 	float d = texelFetch(depth_texture, ivec2(gl_FragCoord.xy), 0).x;
 	float z = unproject_depth(d);
     float blur = coc(z);
 
-	vec2 noise = vec2(fast_rand(uv.x), fast_rand(uv.y)) * namount * blur;
+	if (blur > .01f) {
+		vec2 noise = vec2(fast_rand(uv.x), fast_rand(uv.y)) * namount * blur;
+		vec2 wh = (1.f / size) * blur * blur_coef + noise;
 
-	vec2 wh = (1.f / size) * blur * blur_coef + noise;
+		float s = 1.f;
+		for (int i = 1; i <= rings; ++i) {
+			int ringsamples = i * samples;
 
-	vec3 col = texture(hdr, uv).rgb;
-	float s = 1.f;
+			for (int j = 0; j < ringsamples; ++j) {
+				float step = float(j) * pi*2.f / float(ringsamples);
+				vec2 c = vec2(cos(step), sin(step)) * float(i);
+				float w = mix(1.f, float(i) / float(rings), bias);
 
-	for (int i = 1; i <= rings; ++i) {
-		int ringsamples = i * samples;
-
-		for (int j = 0 ; j < ringsamples ; ++j) {
-			float step = float(j) * pi*2.f / float(ringsamples);
-			vec2 c = vec2(cos(step), sin(step)) * float(i);
-			float w = mix(1.f, float(i) / float(rings), bias);
-
-			col += color(uv + c * wh, blur) * w;
-			s += w;
+				col += color(uv + c * wh, blur) * w;
+				s += w;
+			}
 		}
+
+		col /= s;
 	}
 
-	col /= s;
-
-	gl_FragColor = vec4(col, 1);
+	gl_FragColor = col;
 }
