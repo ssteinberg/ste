@@ -11,8 +11,6 @@
 #include "StEngineControl.hpp"
 #include "lru_cache.hpp"
 
-#include "task.hpp"
-
 #include "Log.hpp"
 #include "AttributedString.hpp"
 
@@ -78,8 +76,8 @@ private:
 		db[theta_bucket][phi_bucket].push_back(std::move(entry));
 	}
 
-	task<exitant_db_descriptor> load_bme_brdf_task(const boost::filesystem::path &bme_data) const {
-		return [=](optional<task_scheduler*> sched) {
+	auto load_bme_brdf_task(const boost::filesystem::path &bme_data) const {
+		return [=]() -> exitant_db_descriptor {
 			exitant_db db;
 			float in_theta = -1;
 			int in_phi = -1;
@@ -129,7 +127,7 @@ private:
 	}
 
 	void load(const StEngineControl &context, const boost::filesystem::path &bme_data_dir) {
-		std::vector<std::future<exitant_db_descriptor>> futures;
+		std::vector<std::task_future<exitant_db_descriptor>> futures;
 		for (boost::filesystem::directory_iterator it(bme_data_dir); it != boost::filesystem::directory_iterator(); ++it)
 			if (boost::filesystem::is_regular_file(it->path()))
 				futures.push_back(context.scheduler().schedule_now(load_bme_brdf_task(it->path())));
@@ -227,10 +225,10 @@ protected:
 	}
 
 public:
-	static task<std::unique_ptr<pBRDF>> BRDF_from_bme_representation_task(const StEngineControl &context, const boost::filesystem::path &bme_data_dir) {
+	static auto BRDF_from_bme_representation_task(const StEngineControl &context, const boost::filesystem::path &bme_data_dir) {
 		const StEngineControl *ctx = &context;
 		std::string cache_key = std::string("bme_brdf_representation_") + bme_data_dir.string();
-		return task<common_brdf_representation> ([=](optional<task_scheduler*> sched) {
+		return context.scheduler().schedule_now([=]() {
 			common_brdf_representation brdfdata;
 			try {
 				auto cache_get_task = ctx->cache().get<common_brdf_representation>(cache_key);
@@ -260,11 +258,11 @@ public:
 			brdfdata.set_min_incident(bme.database.begin()->first);
 			brdfdata.set_max_incident((--bme.database.end())->first);
 
-			std::vector<std::future<void>> futures;
+			std::vector<std::task_future<void>> futures;
 
 			auto it = bme.database.begin();
 			for (int i = 0; i < dims.z; ++i, ++it) {
-				futures.push_back(ctx->scheduler().schedule_now([&, i=i, it=it](optional<task_scheduler*> sched) {
+				futures.push_back(ctx->scheduler().schedule_now([&, i=i, it=it]() {
 					create_layer(i, it, brdfdata, dims);
 				}));
 			}
@@ -274,7 +272,7 @@ public:
 
 			ctx->cache().insert(cache_key, brdfdata);
 			return std::move(brdfdata);
-		}).then_on_main_thread([=](optional<task_scheduler*> sched, common_brdf_representation &&brdfdata) {
+		}).then_on_main_thread([=](common_brdf_representation &&brdfdata) {
 			auto ptr = std::make_unique<pBRDF>(std::move(brdfdata));
 			return ptr;
 		});

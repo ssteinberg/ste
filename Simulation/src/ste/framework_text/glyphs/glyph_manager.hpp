@@ -8,7 +8,7 @@
 #include "Font.hpp"
 
 #include "StEngineControl.hpp"
-#include "task.hpp"
+#include "task_scheduler.hpp"
 #include "optional.hpp"
 
 #include "ShaderStorageBuffer.hpp"
@@ -55,8 +55,8 @@ private:
 	Core::Sampler text_glyph_sampler;
 
 private:
-	task<const glyph_descriptor*> glyph_loader_task(const Font &font, wchar_t codepoint) {
-		return task<glyph>([=](optional<task_scheduler*> sched) -> glyph {
+	task_future_chain<const glyph_descriptor*> glyph_loader_task(task_schduler *sched, const Font &font, wchar_t codepoint) {
+		return sched->schedule_now([=]() -> glyph {
 			std::string cache_key = std::string("ttfdf") + font.get_path().string() + std::to_string(static_cast<std::uint32_t>(codepoint));
 
 			optional<glyph> og = none;
@@ -77,7 +77,7 @@ private:
 			context.cache().insert<glyph>(cache_key, std::move(g));
 
 			return std::move(retg);
-		}).then_on_main_thread([=](optional<task_scheduler*> sched, glyph &&g) -> const glyph_descriptor* {
+		}).then_on_main_thread([=](glyph &&g) -> const glyph_descriptor* {
 			if (g.empty())
 				return nullptr;
 
@@ -126,14 +126,14 @@ public:
 		return factory.read_kerning(font, chars, pixel_size);
 	}
 
-	task<void> preload_glyphs_task(const Font &font, std::vector<wchar_t> codepoints) {
-		return [=](optional<task_scheduler*> sched) {
+	task_future<void> preload_glyphs_task(task_schduler *sched, const Font &font, std::vector<wchar_t> codepoints) {
+		return sched->schedule_now() {
 			std::vector<std::future<const glyph_descriptor*>> futures;
 			for (wchar_t codepoint : codepoints) {
 				auto codepoint_task = this->glyph_loader_task(font, codepoint);
-				if (sched) 
+				if (sched)
 					futures.push_back(sched->schedule_now(std::move(codepoint_task)));
-				else 
+				else
 					codepoint_task();
 			}
 

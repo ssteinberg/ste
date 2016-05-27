@@ -1,8 +1,7 @@
 
 #include "stdafx.hpp"
 #include "task_scheduler.hpp"
-
-#include "task.hpp"
+#include "task_future.hpp"
 
 using namespace StE;
 

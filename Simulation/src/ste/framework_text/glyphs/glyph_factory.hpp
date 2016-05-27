@@ -1,12 +1,12 @@
 // StE
-// © Shlomi Steinberg, 2015
+// ï¿½ Shlomi Steinberg, 2015
 
 #pragma once
 
 #include "glyph.hpp"
 #include "Font.hpp"
 
-#include "task.hpp"
+#include "task_scheduler.hpp"
 
 #include <memory>
 #include <string>
@@ -24,7 +24,7 @@ public:
 	glyph_factory();
 	~glyph_factory();
 
-	task<glyph> create_glyph_task(const Font &font, wchar_t codepoint);
+	task_future<glyph> create_glyph_task(task_scheduler *sched, const Font &font, wchar_t codepoint);
 
 	int read_kerning(const Font &font, const std::pair<wchar_t, wchar_t> &p, int pixel_size);
 };

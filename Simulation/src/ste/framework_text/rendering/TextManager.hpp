@@ -13,7 +13,6 @@
 #include "gpu_dispatchable.hpp"
 #include "gl_current_context.hpp"
 #include "StEngineControl.hpp"
-#include "task.hpp"
 
 #include "ring_buffer.hpp"
 #include "range.hpp"

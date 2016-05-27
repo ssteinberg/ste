@@ -6,8 +6,6 @@
 #include "stdafx.hpp"
 #include "sequential_ordering_problem.hpp"
 
-#include "task.hpp"
-
 #include "Log.hpp"
 
 #include <vector>

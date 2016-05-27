@@ -73,7 +73,7 @@ vec3 material_evaluate_reflection(material_descriptor md,
 	float metallic = md.metallic;
 	float F0 = md.F0;
 	float anisotropy_ratio = md.anisotropy_ratio;
-	float sheen = md.sheen;
+	float sheen = md.sheen * 4.f;
 
 	vec3 specular_tint = vec3(1);
 	vec3 sheen_tint = vec3(1);
