@@ -226,9 +226,8 @@ protected:
 
 public:
 	static auto BRDF_from_bme_representation_task(const StEngineControl &context, const boost::filesystem::path &bme_data_dir) {
-		const StEngineControl *ctx = &context;
 		std::string cache_key = std::string("bme_brdf_representation_") + bme_data_dir.string();
-		return context.scheduler().schedule_now([=]() {
+		return context.scheduler().schedule_now([=, ctx = &context]() {
 			common_brdf_representation brdfdata;
 			try {
 				auto cache_get_task = ctx->cache().get<common_brdf_representation>(cache_key);

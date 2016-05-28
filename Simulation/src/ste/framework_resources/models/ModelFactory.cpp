@@ -218,7 +218,7 @@ std::vector<StE::task_future<void>> ModelFactory::load_textures(task_scheduler* 
 	return futures;
 }
 
-StE::task_future<bool> ModelFactory::load_model_task(const StEngineControl &context,
+StE::task_future<bool> ModelFactory::load_model_task(const StEngineControl &ctx,
 													 const boost::filesystem::path &file_path,
 													 ObjectGroup *object_group,
 													 Graphics::SceneProperties *scene_properties,
@@ -230,8 +230,7 @@ StE::task_future<bool> ModelFactory::load_model_task(const StEngineControl &cont
 		std::unique_ptr<texture_map_type> textures;
 	};
 
-	auto ctx = &context;
-	return context.scheduler().schedule_now([=]() {
+	return ctx.scheduler().schedule_now([=, &ctx]() {
 		_model_loader_task_block block;
 		block.textures = std::make_unique<texture_map_type>();
 
@@ -251,14 +250,14 @@ StE::task_future<bool> ModelFactory::load_model_task(const StEngineControl &cont
 		}
 
 		{
-			for (auto &f : load_textures(&ctx->scheduler(), shapes, materials, *block.textures, dir, normal_map_bias))
+			for (auto &f : load_textures(&ctx.scheduler(), shapes, materials, *block.textures, dir, normal_map_bias))
 				f.get();
 		}
 
 		{
 			std::vector<StE::task_future<void>> futures;
 			for (auto &shape : shapes)
-				futures.push_back(process_model_mesh(&ctx->scheduler(),
+				futures.push_back(process_model_mesh(&ctx.scheduler(),
 													 &scene_properties->materials_storage(),
 													 shape,
 													 object_group,

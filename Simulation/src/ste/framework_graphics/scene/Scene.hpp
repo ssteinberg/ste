@@ -7,6 +7,10 @@
 #include "StEngineControl.hpp"
 #include "gpu_dispatchable.hpp"
 
+#include "resource_instance.hpp"
+#include "resource_loading_task.hpp"
+#include "glsl_program_loading_task.hpp"
+
 #include "SceneProperties.hpp"
 #include "deferred_gbuffer.hpp"
 #include "object_group_indirect_command_buffer.hpp"
@@ -24,6 +28,8 @@ namespace Graphics {
 
 class Scene : public gpu_dispatchable {
 	using Base = gpu_dispatchable;
+
+	friend class Resource::resource_loading_task<Scene>;
 
 private:
 	static constexpr int shadow_proj_id_to_ll_id_table_size = max_active_lights_per_frame;
@@ -47,7 +53,7 @@ private:
 	mutable object_group_indirect_command_buffer shadow_idb;
 	mutable sproj_id_to_llid_tt_buffer_type sproj_id_to_llid_tt;
 
-	std::shared_ptr<Core::GLSLProgram> object_program;
+	Resource::resource_instance<Core::glsl_program> object_program;
 
 public:
 	Scene(const StEngineControl &ctx);
@@ -85,6 +91,27 @@ public:
 protected:
 	void set_context_state() const override final;
 	void dispatch() const override final;
+};
+
+}
+
+namespace Resource {
+
+template <>
+class resource_loading_task<Graphics::Scene> {
+	using R = Graphics::Scene;
+
+public:
+	template <typename ... Ts>
+	auto loader(const StEngineControl &ctx, Ts&&... args) {
+		return ctx.scheduler().schedule_now([=, &ctx]() {
+			auto object = std::make_unique<R>(ctx, std::forward<Ts>(args)...);
+
+			object->object_program.wait();
+
+			return object;
+		});
+	}
 };
 
 }

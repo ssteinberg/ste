@@ -28,13 +28,13 @@ hdr_dof_postprocess::hdr_dof_postprocess(const StEngineControl &context, const d
 	std::int32_t big_float_i = 0x7FFFFFFF;
 	hdr_bokeh_param_buffer_eraser = std::make_unique<StE::Core::PixelBufferObject<std::int32_t>>(std::vector<std::int32_t>{ big_float_i, 0 });
 
-	hdr_compute_minmax = Resource::GLSLProgramFactory::load_program_task(ctx, { "hdr_compute_minmax.glsl" })();
-	hdr_create_histogram = Resource::GLSLProgramFactory::load_program_task(ctx, { "hdr_create_histogram.glsl" })();
-	hdr_compute_histogram_sums = Resource::GLSLProgramFactory::load_program_task(ctx, { "hdr_compute_histogram_sums.glsl" })();
-	hdr_tonemap_coc = Resource::GLSLProgramFactory::load_program_task(ctx, { "passthrough.vert", "hdr_tonemap_coc.frag" })();
-	hdr_bloom_blurx = Resource::GLSLProgramFactory::load_program_task(ctx, { "passthrough.vert", "hdr_bloom_blur_x.frag" })();
-	hdr_bloom_blury = Resource::GLSLProgramFactory::load_program_task(ctx, { "passthrough.vert", "hdr_bloom_blur_y.frag" })();
-	bokeh_blur = Resource::GLSLProgramFactory::load_program_task(ctx, { "passthrough.vert", "bokeh_bilateral_blur.frag" })();
+	hdr_compute_minmax.load(ctx, { "hdr_compute_minmax.glsl" })();
+	hdr_create_histogram.load(ctx, { "hdr_create_histogram.glsl" })();
+	hdr_compute_histogram_sums.load(ctx, { "hdr_compute_histogram_sums.glsl" })();
+	hdr_tonemap_coc.load(ctx, { "passthrough.vert", "hdr_tonemap_coc.frag" })();
+	hdr_bloom_blurx.load(ctx, { "passthrough.vert", "hdr_bloom_blur_x.frag" })();
+	hdr_bloom_blury.load(ctx, { "passthrough.vert", "hdr_bloom_blur_y.frag" })();
+	bokeh_blur.load(ctx, { "passthrough.vert", "bokeh_bilateral_blur.frag" })();
 
 	gli::texture1d hdr_human_vision_properties_data(gli::format::FORMAT_RGBA32_SFLOAT_PACK32, glm::tvec1<std::size_t>{ 4096 }, 1);
 	{
@@ -55,9 +55,9 @@ hdr_dof_postprocess::hdr_dof_postprocess(const StEngineControl &context, const d
 	auto vision_handle = hdr_vision_properties_texture->get_texture_handle(hdr_vision_properties_sampler);
 	vision_handle.make_resident();
 
-	hdr_tonemap_coc->set_uniform("hdr_vision_properties_texture", vision_handle);
-	hdr_bloom_blurx->set_uniform("dir", glm::vec2{ 1.f, .0f });
-	hdr_bloom_blury->set_uniform("dir", glm::vec2{ .0f, 1.f });
+	hdr_tonemap_coc.get().set_uniform("hdr_vision_properties_texture", vision_handle);
+	hdr_bloom_blurx.get().set_uniform("dir", glm::vec2{ 1.f, .0f });
+	hdr_bloom_blury.get().set_uniform("dir", glm::vec2{ .0f, 1.f });
 
 	resize(ctx.get_backbuffer_size());
 
@@ -139,18 +139,18 @@ void hdr_dof_postprocess::resize(glm::ivec2 size) {
 	hdr_bloom_handle.make_resident();
 	hdr_bloom_blurx_handle.make_resident();
 
-	hdr_tonemap_coc->set_uniform("hdr", hdr_final_handle);
-	hdr_bloom_blurx->set_uniform("hdr", hdr_bloom_handle);
-	hdr_bloom_blury->set_uniform("hdr", hdr_bloom_blurx_handle);
-	hdr_bloom_blury->set_uniform("unblured_hdr", hdr_handle);
-	hdr_compute_minmax->set_uniform("hdr", hdr_final_handle_linear);
-	bokeh_blur->set_uniform("hdr", hdr_final_handle);
+	hdr_tonemap_coc.get().set_uniform("hdr", hdr_final_handle);
+	hdr_bloom_blurx.get().set_uniform("hdr", hdr_bloom_handle);
+	hdr_bloom_blury.get().set_uniform("hdr", hdr_bloom_blurx_handle);
+	hdr_bloom_blury.get().set_uniform("unblured_hdr", hdr_handle);
+	hdr_compute_minmax.get().set_uniform("hdr", hdr_final_handle_linear);
+	bokeh_blur.get().set_uniform("hdr", hdr_final_handle);
 
-	hdr_compute_histogram_sums->set_uniform("hdr_lum_resolution", static_cast<std::uint32_t>(luminance_size.x * luminance_size.y));
+	hdr_compute_histogram_sums.get().set_uniform("hdr_lum_resolution", static_cast<std::uint32_t>(luminance_size.x * luminance_size.y));
 
-	hdr_bloom_blurx->set_uniform("size", glm::vec2{ size });
-	hdr_bloom_blury->set_uniform("size", glm::vec2{ size });
-	bokeh_blur->set_uniform("size", glm::vec2{ size });
+	hdr_bloom_blurx.get().set_uniform("size", glm::vec2{ size });
+	hdr_bloom_blury.get().set_uniform("size", glm::vec2{ size });
+	bokeh_blur.get().set_uniform("size", glm::vec2{ size });
 
 	hdr_bokeh_param_buffer << *hdr_bokeh_param_buffer_eraser;
 	hdr_bokeh_param_buffer_prev << *hdr_bokeh_param_buffer_eraser;

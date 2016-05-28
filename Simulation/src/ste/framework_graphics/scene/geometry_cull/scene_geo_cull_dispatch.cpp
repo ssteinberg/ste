@@ -32,7 +32,7 @@ void scene_geo_cull_dispatch::set_context_state() const {
 	4_storage_idx = Core::buffer_object_cast<Core::ShaderStorageBuffer<std::uint32_t>>(ls->get_active_ll_counter());
 	5_storage_idx = ls->get_active_ll();
 
-	program->bind();
+	program.get().bind();
 }
 
 void scene_geo_cull_dispatch::dispatch() const {

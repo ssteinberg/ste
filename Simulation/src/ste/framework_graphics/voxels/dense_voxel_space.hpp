@@ -9,7 +9,7 @@
 #include "dense_voxelizer.hpp"
 #include "Scene.hpp"
 
-#include "GLSLProgram.hpp"
+#include "glsl_program.hpp"
 #include "GLSLProgramFactory.hpp"
 
 #include "FramebufferObject.hpp"
@@ -53,10 +53,10 @@ private:
 	std::unique_ptr<Core::RenderTarget> voxelizer_output;
 
 protected:
-	std::shared_ptr<Core::GLSLProgram> voxelizer_program;
-	std::shared_ptr<Core::GLSLProgram> voxelizer_upsampler_program;
+	Resource::resource_instance<Core::glsl_program> voxelizer_program;
+	Resource::resource_instance<Core::glsl_program> voxelizer_upsampler_program;
 
-	mutable std::unordered_set<const Core::GLSLProgram*> consumers;
+	mutable std::unordered_set<const Core::glsl_program*> consumers;
 
 	std::vector<Core::image_handle> handles_radiance;
 	std::vector<Core::image_handle> handles_data;
@@ -67,8 +67,8 @@ protected:
 	void create_dense_voxel_space(float voxel_size_factor);
 	void clear_space() const;
 
-	void update_shader_voxel_uniforms(const Core::GLSLProgram &prg) const;
-	void update_shader_voxel_world_translation(const glm::vec3 &c, const Core::GLSLProgram &prg) const {
+	void update_shader_voxel_uniforms(const Core::glsl_program &prg) const;
+	void update_shader_voxel_world_translation(const glm::vec3 &c, const Core::glsl_program &prg) const {
 		auto vs = voxel_size * voxel_steps_multiplier;
 		glm::vec3 translation = glm::round(c / vs) * vs;
 		prg.set_uniform("voxels_world_translation", c - translation);
@@ -77,11 +77,11 @@ protected:
 public:
 	dense_voxel_space(const StEngineControl &ctx, std::size_t max_size = 1024, float voxel_size_factor = 1.f);
 
-	void add_consumer_program(const Core::GLSLProgram *prg) const {
+	void add_consumer_program(const Core::glsl_program *prg) const {
 		consumers.insert(prg);
 		update_shader_voxel_uniforms(*prg);
 	}
-	void remove_consumer_program(const Core::GLSLProgram *prg) const {
+	void remove_consumer_program(const Core::glsl_program *prg) const {
 		consumers.erase(prg);
 	}
 
@@ -92,7 +92,7 @@ public:
 	void set_model_matrix(const glm::mat4 &m, const glm::vec3 &translate) const {
 		auto vs = voxel_size * voxel_steps_multiplier;
 		glm::vec3 translation = -glm::round(translate / vs) * vs;
-		voxelizer_program->set_uniform("translation", translation);
+		voxelizer_program.get().set_uniform("translation", translation);
 
 		for (auto *p : consumers)
 			update_shader_voxel_world_translation(translate, *p);

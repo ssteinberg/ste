@@ -6,6 +6,10 @@
 #include "stdafx.hpp"
 #include "StEngineControl.hpp"
 
+#include "resource_instance.hpp"
+#include "resource_loading_task.hpp"
+#include "glsl_program_loading_task.hpp"
+
 #include "signal.hpp"
 
 #include "gpu_task.hpp"
@@ -18,8 +22,7 @@
 #include "PixelBufferObject.hpp"
 #include "AtomicCounterBufferObject.hpp"
 #include "FramebufferObject.hpp"
-#include "GLSLProgram.hpp"
-#include "GLSLProgramFactory.hpp"
+#include "glsl_program.hpp"
 
 #include "deferred_gbuffer.hpp"
 
@@ -68,13 +71,13 @@ private:
 	std::unique_ptr<hdr_bloom_blury_task> bloom_blury_task;
 	std::unique_ptr<hdr_bokeh_blur_task> bokeh_blur_task;
 
-	std::shared_ptr<Core::GLSLProgram> hdr_compute_minmax;
-	std::shared_ptr<Core::GLSLProgram> hdr_create_histogram;
-	std::shared_ptr<Core::GLSLProgram> hdr_compute_histogram_sums;
-	std::shared_ptr<Core::GLSLProgram> hdr_tonemap_coc;
-	std::shared_ptr<Core::GLSLProgram> hdr_bloom_blurx;
-	std::shared_ptr<Core::GLSLProgram> hdr_bloom_blury;
-	std::shared_ptr<Core::GLSLProgram> bokeh_blur;
+	Resource::resource_instance<Core::glsl_program> hdr_compute_minmax;
+	Resource::resource_instance<Core::glsl_program> hdr_create_histogram;
+	Resource::resource_instance<Core::glsl_program> hdr_compute_histogram_sums;
+	Resource::resource_instance<Core::glsl_program> hdr_tonemap_coc;
+	Resource::resource_instance<Core::glsl_program> hdr_bloom_blurx;
+	Resource::resource_instance<Core::glsl_program> hdr_bloom_blury;
+	Resource::resource_instance<Core::glsl_program> bokeh_blur;
 
 	Core::Sampler hdr_vision_properties_sampler;
 
@@ -125,6 +128,33 @@ public:
 	auto& get_exposure_params_buffer() const { return hdr_bokeh_param_buffer; }
 	auto& get_histogram_buffer() const { return histogram; }
 	auto& get_histogram_sums_buffer() const { return histogram_sums; }
+};
+
+}
+
+namespace Resource {
+
+template <>
+class resource_loading_task<Graphics::hdr_dof_postprocess> {
+	using R = Graphics::hdr_dof_postprocess;
+
+public:
+	template <typename ... Ts>
+	auto loader(const StEngineControl &ctx, Ts&&... args) {
+		return ctx.scheduler().schedule_now([=, &ctx]() {
+			auto object = std::make_unique<R>(ctx, std::forward<Ts>(args)...);
+
+			object->hdr_compute_minmax.wait();
+			object->hdr_create_histogram.wait();
+			object->hdr_compute_histogram_sums.wait();
+			object->hdr_tonemap_coc.wait();
+			object->hdr_bloom_blurx.wait();
+			object->hdr_bloom_blury.wait();
+			object->bokeh_blur.wait();
+
+			return object;
+		});
+	}
 };
 
 }

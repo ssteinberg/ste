@@ -18,7 +18,7 @@
 #include "is_flat_container.hpp"
 
 #include "bindable_resource.hpp"
-#include "GLSLShader.hpp"
+#include "glsl_shader_object.hpp"
 
 #include "texture_handle.hpp"
 #include "image_handle.hpp"
@@ -48,12 +48,12 @@ public:
 	static void unbind() { GL::gl_current_context::get()->bind_shader_program(0); }
 };
 
-class GLSLProgram : public bindable_resource<GLSLProgramAllocator, GLSLProgramBinder> {
+class glsl_program : public bindable_resource<GLSLProgramAllocator, GLSLProgramBinder> {
 	using Base = bindable_resource<GLSLProgramAllocator, GLSLProgramBinder>;
 
 private:
 	bool linked;
-	std::vector<std::unique_ptr<GLSLShaderGeneric>> shaders;
+	std::vector<std::unique_ptr<glsl_shader_object_generic>> shaders;
 	mutable std::unordered_map<std::string, int> uniform_map;
 
 	int get_uniform_location(const std::string &name) const {
@@ -72,15 +72,15 @@ private:
 	}
 
 public:
-	GLSLProgram(GLSLProgram &&m) = default;
-	GLSLProgram(const GLSLProgram &c) = delete;
-	GLSLProgram& operator=(GLSLProgram &&m) = default;
-	GLSLProgram& operator=(const GLSLProgram &c) = delete;
+	glsl_program(glsl_program &&m) = default;
+	glsl_program(const glsl_program &c) = delete;
+	glsl_program& operator=(glsl_program &&m) = default;
+	glsl_program& operator=(const glsl_program &c) = delete;
 
-	GLSLProgram() : linked(false) {}
-	~GLSLProgram() noexcept {}
+	glsl_program() : linked(false) {}
+	~glsl_program() noexcept {}
 
-	void add_shader(std::unique_ptr<GLSLShaderGeneric> shader) {
+	void add_shader(std::unique_ptr<glsl_shader_object_generic> shader) {
 		if (shader == nullptr || !shader->is_valid()) {
 			ste_log_error() << "Error: invalid shader." << std::endl;
 			assert(false);

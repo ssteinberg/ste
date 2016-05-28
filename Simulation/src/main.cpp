@@ -11,7 +11,7 @@
 #include "DirectionalLight.hpp"
 #include "ModelFactory.hpp"
 #include "Camera.hpp"
-#include "GLSLProgram.hpp"
+#include "glsl_program.hpp"
 #include "SurfaceFactory.hpp"
 #include "Texture2D.hpp"
 #include "Scene.hpp"

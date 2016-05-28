@@ -10,7 +10,7 @@ void hdr_compute_minmax_task::set_context_state() const {
 	2_storage_idx = p->hdr_bokeh_param_buffer;
 	3_storage_idx = p->hdr_bokeh_param_buffer_prev;
 
-	p->hdr_compute_minmax->bind();
+	p->hdr_compute_minmax.get().bind();
 }
 
 void hdr_compute_minmax_task::dispatch() const {

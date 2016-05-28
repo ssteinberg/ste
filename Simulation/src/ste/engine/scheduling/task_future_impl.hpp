@@ -7,6 +7,8 @@
 #include "task_future.hpp"
 #include "task_scheduler.hpp"
 
+#include <thread>
+
 namespace StE {
 
 namespace _detail {
@@ -59,6 +61,14 @@ task_future_impl<typename function_traits<L>::result_t, is_shared> then_on_main_
 	}), task_future_chaining_construct() };
 }
 
+}
+
+template <typename R, bool is_shared>
+void task_future_impl<R, is_shared>::loop_until_ready() const {
+	while (wait_for(std::chrono::microseconds(0)) != std::future_status::ready) {
+		sched->run_loop();
+		std::this_thread::yield();
+	}
 }
 
 template <typename R, bool is_shared>

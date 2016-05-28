@@ -12,7 +12,7 @@ void light_preprocess_cull_lights::set_context_state() const {
 	4_atomic_idx = lp->ls->get_active_ll_counter();
 	5_storage_idx = lp->ls->get_active_ll();
 
-	lp->light_preprocess_cull_lights_program->bind();
+	lp->light_preprocess_cull_lights_program.get().bind();
 }
 
 void light_preprocess_cull_lights::dispatch() const {

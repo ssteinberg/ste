@@ -17,7 +17,8 @@ namespace StE {
 namespace Resource {
 namespace glsl_loader {
 
-struct program_binary {
+class program_binary {
+public:
 	GLenum format;
 	std::uint64_t time;
 	std::string blob;

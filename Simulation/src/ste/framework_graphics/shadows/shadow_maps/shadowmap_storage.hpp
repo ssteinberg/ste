@@ -7,7 +7,7 @@
 #include "StEngineControl.hpp"
 
 #include "FramebufferObject.hpp"
-#include "GLSLProgram.hpp"
+#include "glsl_program.hpp"
 
 #include "TextureCubeMapArray.hpp"
 #include "Sampler.hpp"

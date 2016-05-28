@@ -8,6 +8,8 @@
 #include "function_traits.hpp"
 #include "thread_constants.hpp"
 
+#include "future_collection.hpp"
+
 #include <functional>
 #include <memory>
 
@@ -37,8 +39,8 @@ private:
 	task_scheduler *sched;
 	future_type future;
 
-	chaining_future_type chaining_future;
 	bool chain{ false };
+	mutable chaining_future_type chaining_future;
 	mutable std::shared_ptr<chained_task_future> chained_future{ nullptr };
 
 private:
@@ -99,18 +101,20 @@ private:
 		return chained_future->wait_until(timeout_time);
 	}
 
+	void loop_until_ready() const;
+
 public:
 	template <bool b>
 	task_future_impl(task_future_impl<chained_task_future, b> &&f,
 					 task_future_chaining_construct) : sched(f.sched),
-													   chaining_future(std::move(f.future)),
-													   chain(true) {
+													   chain(true),
+													   chaining_future(std::move(f.future)) {
 		assert(!f.chain && "Can not double chain task_futures");
 	}
 	task_future_impl(const task_future_impl<chained_task_future, true> &f,
 					 task_future_chaining_construct) : sched(f.sched),
-													   chaining_future(f.future),
-													   chain(true) {
+													   chain(true,
+													   chaining_future(f.future)) {
 		assert(!f.chain && "Can not double chain task_futures");
 	}
 
@@ -122,7 +126,8 @@ public:
 	~task_future_impl() noexcept {}
 
 	R get() {
-		assert(!is_main_thread() && "Blocking main thread");
+		if (is_main_thread())
+			loop_until_ready();
 
 		if (chain)
 			return chained_get();
@@ -130,7 +135,8 @@ public:
 	}
 
 	void wait() const {
-		assert(!is_main_thread() && "Blocking main thread");
+		if (is_main_thread())
+			loop_until_ready();
 
 		if (chain)
 			return chained_wait();
@@ -168,5 +174,8 @@ template <typename R>
 using task_future = task_future_impl<R, false>;
 template <typename R>
 using task_shared_future = task_future_impl<R, true>;
+
+template <typename R>
+using task_future_collection = future_collection<R, task_future>;
 
 }
