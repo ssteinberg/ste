@@ -147,13 +147,13 @@ StE::task_future<void> ModelFactory::process_model_mesh(task_scheduler* sched,
 	});
 }
 
-StE::task_future_chain<void> ModelFactory::load_texture(task_scheduler* sched,
-														const std::string &name,
-														bool srgb,
-														bool displacement,
-														texture_map_type *texmap,
-														const boost::filesystem::path &dir,
-														float normal_map_bias) {
+StE::task_future<void> ModelFactory::load_texture(task_scheduler* sched,
+												  const std::string &name,
+												  bool srgb,
+												  bool displacement,
+												  texture_map_type *texmap,
+												  const boost::filesystem::path &dir,
+												  float normal_map_bias) {
 	return sched->schedule_now([=]() -> std::unique_ptr<gli::texture2d> {
 		std::string normalized_name = name;
 		std::replace(normalized_name.begin(), normalized_name.end(), '\\', '/');
@@ -177,15 +177,15 @@ StE::task_future_chain<void> ModelFactory::load_texture(task_scheduler* sched,
 	});
 }
 
-std::vector<StE::task_future_chain<void>> ModelFactory::load_textures(task_scheduler* sched,
-														 			  shapes_type &shapes,
-														 			  materials_type &materials,
-														 			  texture_map_type &tex_map,
-														 			  const boost::filesystem::path &dir,
-														 			  float normal_map_bias) {
+std::vector<StE::task_future<void>> ModelFactory::load_textures(task_scheduler* sched,
+														 		shapes_type &shapes,
+														 		materials_type &materials,
+														 		texture_map_type &tex_map,
+														 		const boost::filesystem::path &dir,
+														 		float normal_map_bias) {
 	tex_map.emplace(std::make_pair(std::string(""), std::shared_ptr<Core::Texture2D>(nullptr)));
 
-	std::vector<StE::task_future_chain<void>> futures;
+	std::vector<StE::task_future<void>> futures;
 	for (auto &shape : shapes) {
 		int mat_idx = shape.mesh.material_ids[0];
 
@@ -218,13 +218,13 @@ std::vector<StE::task_future_chain<void>> ModelFactory::load_textures(task_sched
 	return futures;
 }
 
-StE::task_future_chain<bool> ModelFactory::load_model_task(const StEngineControl &context,
-														   const boost::filesystem::path &file_path,
-														   ObjectGroup *object_group,
-														   Graphics::SceneProperties *scene_properties,
-														   float normal_map_bias,
-														   std::vector<std::shared_ptr<Graphics::Object>> *loaded_objects,
-														   std::vector<Graphics::Material*> *loaded_materials) {
+StE::task_future<bool> ModelFactory::load_model_task(const StEngineControl &context,
+													 const boost::filesystem::path &file_path,
+													 ObjectGroup *object_group,
+													 Graphics::SceneProperties *scene_properties,
+													 float normal_map_bias,
+													 std::vector<std::shared_ptr<Graphics::Object>> *loaded_objects,
+													 std::vector<Graphics::Material*> *loaded_materials) {
 	struct _model_loader_task_block {
 		bool ret;
 		std::unique_ptr<texture_map_type> textures;

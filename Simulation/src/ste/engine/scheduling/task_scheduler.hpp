@@ -48,16 +48,16 @@ public:
 
 	void run_loop();
 
-	template <typename F>
-	task_future<typename function_traits<F>::result_t> schedule_now(F &&f) {
+	template <bool shared, typename F>
+	task_future_impl<typename function_traits<F>::result_t, shared> schedule_now(F &&f) {
 		static_assert(function_traits<F>::arity == 0, "lambda takes too many arguments");
 
 		return { std::move(pool.enqueue(std::forward<F>(f))), this };
 	}
 
-	template<typename F>
-	task_future<typename function_traits<F>::result_t> schedule_at(const std::chrono::high_resolution_clock::time_point &at,
-												   				   F &&f) {
+	template <bool shared, typename F>
+	task_future_impl<typename function_traits<F>::result_t, shared> schedule_at(const std::chrono::high_resolution_clock::time_point &at,
+												   				   				F &&f) {
 		static_assert(function_traits<F>::arity == 0, "lambda takes too many arguments");
 
 		std::packaged_task<std::result_of_t<F()>()> pt(std::forward<F>(f));
@@ -66,9 +66,9 @@ public:
 		return { std::move(future), this };
 	}
 
-	template<typename F, class Rep, class Period>
-	task_future<typename function_traits<F>::result_t> schedule_after(const std::chrono::duration<Rep, Period> &after,
-																	  F &&f) {
+	template <bool shared, typename F, class Rep, class Period>
+	task_future_impl<typename function_traits<F>::result_t, shared> schedule_after(const std::chrono::duration<Rep, Period> &after,
+																	  			   F &&f) {
 		static_assert(function_traits<F>::arity == 0, "lambda takes too many arguments");
 
 		std::packaged_task<std::result_of_t<F()>()> pt(std::forward<F>(f));
@@ -77,8 +77,8 @@ public:
 		return { std::move(future), this };
 	}
 
-	template <typename F>
-	task_future<typename function_traits<F>::result_t> schedule_now_on_main_thread(F &&f) {
+	template <bool shared, typename F>
+	task_future_impl<typename function_traits<F>::result_t, shared> schedule_now_on_main_thread(F &&f) {
 		static_assert(function_traits<F>::arity == 0, "lambda takes too many arguments");
 
 		std::packaged_task<std::result_of_t<F()>()> pt(std::forward<F>(f));
@@ -92,9 +92,26 @@ public:
 		return { std::move(future), this };
 	}
 
+	template <typename F>
+	auto schedule_now(F &&f) {
+		return schedule_now<false>(std::forward<F>(f));
+	}
+	template <typename F>
+	auto schedule_at(const std::chrono::high_resolution_clock::time_point &at, F &&f) {
+		return schedule_at<false>(at, std::forward<F>(f));
+	}
+	template <typename F, class Rep, class Period>
+	auto schedule_after(const std::chrono::duration<Rep, Period> &after, F &&f) {
+		return schedule_after<false>(after, std::forward<F>(f));
+	}
+	template <typename F>
+	auto schedule_now_on_main_thread(F &&f) {
+		return schedule_now_on_main_thread<false>(std::forward<F>(f));
+	}
+
 	const balanced_thread_pool *get_thread_pool() const { return &pool; }
 };
 
 }
 
-#include "task_future_than.hpp"
+#include "task_future_impl.hpp"

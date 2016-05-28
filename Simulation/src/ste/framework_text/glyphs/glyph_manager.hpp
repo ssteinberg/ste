@@ -55,7 +55,7 @@ private:
 	Core::Sampler text_glyph_sampler;
 
 private:
-	task_future_chain<const glyph_descriptor*> glyph_loader_task(task_schduler *sched, const Font &font, wchar_t codepoint) {
+	task_future<const glyph_descriptor*> glyph_loader_task(task_schduler *sched, const Font &font, wchar_t codepoint) {
 		return sched->schedule_now([=]() -> glyph {
 			std::string cache_key = std::string("ttfdf") + font.get_path().string() + std::to_string(static_cast<std::uint32_t>(codepoint));
 
