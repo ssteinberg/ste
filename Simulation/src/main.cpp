@@ -235,7 +235,7 @@ int main() {
 	std::vector<std::unique_ptr<StE::Graphics::light>> lights;
 	std::vector<std::unique_ptr<StE::Graphics::Material>> materials;
 
-	StE::task_future_collection<bool> loading_futures;
+	StE::task_future_collection<void> loading_futures;
 
 	const glm::vec3 light0_pos{ -700.6, 138, -70 };
 	const glm::vec3 light1_pos{ 200, 550, 170 };
