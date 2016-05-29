@@ -116,8 +116,8 @@ void add_scene_lights(StE::Graphics::Scene &scene, std::vector<std::unique_ptr<S
 }
 
 auto create_material_editor_object(StE::Graphics::Scene *scene, const glm::vec3 &pos) {
-	std::unique_ptr<StE::Graphics::Sphere> sphere = std::make_unique<StE::Graphics::Sphere>(50, 50);
-	(*sphere) *= 100;
+	std::unique_ptr<StE::Graphics::Sphere> sphere = std::make_unique<StE::Graphics::Sphere>(20, 20);
+	(*sphere) *= 30;
 	auto obj = std::make_shared<StE::Graphics::Object>(std::move(sphere));
 
 	obj->set_model_transform(glm::translate(glm::mat4(), pos));
@@ -268,7 +268,7 @@ int main() {
 	renderer.get().attach_profiler(gpu_tasks_profiler.get());
 	std::unique_ptr<StE::Graphics::debug_gui> debug_gui_dispatchable = std::make_unique<StE::Graphics::debug_gui>(ctx, gpu_tasks_profiler.get(), font);
 
-	auto mat = create_material_editor_object(&scene.get(), {0,100,0});
+	auto mat = create_material_editor_object(&scene.get(), {0,200,50});
 
 	StE::Graphics::RGB base_color{1,1,1};
 	float roughness = mat->get_roughness();

@@ -105,33 +105,30 @@ StE::task_future<void> ModelFactory::process_model_mesh(task_scheduler* sched,
 	int mat_idx = shape.mesh.material_ids[0];
 	auto &material = materials[mat_idx];
 
-	std::shared_ptr<Core::Texture2D> &diff_map = textures[material.diffuse_texname];
-	std::shared_ptr<Core::Texture2D> &opacity_map = textures[material.alpha_texname];
-	std::shared_ptr<Core::Texture2D> &specular_map = textures[material.specular_texname];
-	std::shared_ptr<Core::Texture2D> &normalmap = textures[material.bump_texname];
+	auto roughness_it = material.unknown_parameter.find("roughness");
+	auto metallic_it = material.unknown_parameter.find("metallic");
+	auto ior_it = material.unknown_parameter.find("ior");
+	auto anisotropy_it = material.unknown_parameter.find("anisotropy");
+	auto sheen_it = material.unknown_parameter.find("sheen");
 
-	bool has_roughness = material.unknown_parameter.find("roughness") != material.unknown_parameter.end();
-	bool has_metallic = material.unknown_parameter.find("metallic") != material.unknown_parameter.end();
-	bool has_ior = material.unknown_parameter.find("ior") != material.unknown_parameter.end();
-	bool has_anisotropy = material.unknown_parameter.find("anisotropy") != material.unknown_parameter.end();
-	bool has_sheen = material.unknown_parameter.find("sheen") != material.unknown_parameter.end();
-	float roughness = has_roughness ? std::stof(material.unknown_parameter["roughness"]) : .0f;
-	float metallic = has_metallic ? std::stof(material.unknown_parameter["metallic"]) : .0f;
-	float ior = has_ior ? std::stof(material.unknown_parameter["ior"]) : .0f;
-	float anisotropy = has_anisotropy ? std::stof(material.unknown_parameter["anisotropy"]) : .0f;
-	float sheen = has_sheen ? std::stof(material.unknown_parameter["sheen"]) : .0f;
+	return sched->schedule_now_on_main_thread([=, vbo_data = std::move(vbo_data), vbo_indices = std::move(vbo_indices), &loaded_materials, &textures, &material]() {
+		std::shared_ptr<Core::Texture2D> diff_map = textures[material.diffuse_texname];
+		std::shared_ptr<Core::Texture2D> opacity_map = textures[material.alpha_texname];
+		std::shared_ptr<Core::Texture2D> specular_map = textures[material.specular_texname];
+		std::shared_ptr<Core::Texture2D> normalmap = textures[material.bump_texname];
 
-	return sched->schedule_now_on_main_thread([=, &loaded_materials, vbo_data = std::move(vbo_data), vbo_indices = std::move(vbo_indices)]() {
 		auto mat = matstorage->allocate_material();
+
 		if (diff_map != nullptr) mat->set_basecolor_map(diff_map);
 		if (specular_map != nullptr) mat->set_cavity_map(specular_map);
 		if (normalmap != nullptr) mat->set_normal_map(normalmap);
 		if (opacity_map != nullptr) mat->set_mask_map(opacity_map);
-		if (has_roughness) mat->set_roughness(roughness);
-		if (has_metallic) mat->set_metallic(metallic);
-		if (has_ior) mat->set_index_of_refraction(ior);
-		if (has_anisotropy) mat->set_anisotropy(anisotropy);
-		if (has_sheen) mat->set_sheen(sheen);
+
+		if (roughness_it != material.unknown_parameter.end()) mat->set_roughness(std::stof(roughness_it->second));
+		if (metallic_it != material.unknown_parameter.end()) mat->set_metallic(std::stof(metallic_it->second));
+		if (ior_it != material.unknown_parameter.end()) mat->set_index_of_refraction(std::stof(ior_it->second));
+		if (anisotropy_it != material.unknown_parameter.end()) mat->set_anisotropy(std::stof(anisotropy_it->second));
+		if (sheen_it != material.unknown_parameter.end()) mat->set_sheen(std::stof(sheen_it->second));
 
 		std::unique_ptr<Graphics::mesh<Graphics::mesh_subdivion_mode::Triangles>> m = std::make_unique<Graphics::mesh<Graphics::mesh_subdivion_mode::Triangles>>();
 		m->set_indices(std::move(vbo_indices));
@@ -154,7 +151,7 @@ StE::task_future<void> ModelFactory::load_texture(task_scheduler* sched,
 												  texture_map_type *texmap,
 												  const boost::filesystem::path &dir,
 												  float normal_map_bias) {
-	return sched->schedule_now([=]() -> std::unique_ptr<gli::texture2d> {
+	return sched->schedule_now([=]() {
 		std::string normalized_name = name;
 		std::replace(normalized_name.begin(), normalized_name.end(), '\\', '/');
 		boost::filesystem::path full_path = dir / boost::filesystem::path(normalized_name).make_preferred();

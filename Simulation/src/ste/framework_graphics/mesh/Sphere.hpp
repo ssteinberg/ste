@@ -50,10 +50,10 @@ public:
 				std::uint32_t i3 = (x + 1) * vert_slices + y + 1;
 
 				ind.push_back(i0);
-				ind.push_back(i2);
-				ind.push_back(i1);
 				ind.push_back(i1);
 				ind.push_back(i2);
+				ind.push_back(i2);
+				ind.push_back(i1);
 				ind.push_back(i3);
 			}
 		}

@@ -99,8 +99,9 @@ void main() {
 
 				vec3 scatter = vec3(0.f);
 				for (int s = 0; s < samples; ++s) {
-					float r = (float(s) + .5f) / float(samples);
+					float r = mix(.1f, .9f, fast_rand(slice_coords * float(s)));
 					float z = mix(z_start, z_next, r);
+
 					float jitter_x = fast_rand(vec2(depth, r));
 					float jitter_y = fast_rand(vec2(r, depth));
 					vec2 coords = fragcoords + .4f * vec2(jitter_x, jitter_y);
