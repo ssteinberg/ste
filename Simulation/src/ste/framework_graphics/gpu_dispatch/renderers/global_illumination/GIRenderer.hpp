@@ -64,7 +64,7 @@ class GIRenderer : public rendering_system {
 private:
 	using ResizeSignalConnectionType = StEngineControl::framebuffer_resize_signal_type::connection_type;
 	using ProjectionSignalConnectionType = StEngineControl::projection_change_signal_type::connection_type;
-	using FbClearTask = StE::Graphics::fb_clear_dispatch<>;
+	using FbClearTask = StE::Graphics::fb_clear_dispatch<false>;
 
 	constexpr static int view_transform_buffer_bind_location = 20;
 	constexpr static int proj_transform_buffer_bind_location = 21;

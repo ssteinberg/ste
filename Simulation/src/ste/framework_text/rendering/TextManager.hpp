@@ -78,7 +78,7 @@ public:
 		}).then([](std::unique_ptr<R> &&object) {
 			object->text_distance_mapping.wait();
 			return std::move(object);
-		}).then_on_main_thread([&](std::unique_ptr<R> &&object) {
+		}).then_on_main_thread([&ctx](std::unique_ptr<R> &&object) {
 			auto size = ctx.get_backbuffer_size();
 			object->text_distance_mapping.get().set_uniform("proj", glm::ortho<float>(0, size.x, 0, size.y, -1, 1));
 			object->text_distance_mapping.get().set_uniform("fb_size", glm::vec2(size));

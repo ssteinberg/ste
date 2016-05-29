@@ -81,7 +81,7 @@ public:
 		}).then([](std::unique_ptr<R> &&object) {
 			object->program.wait();
 			return std::move(object);
-		}).then_on_main_thread([&](std::unique_ptr<R> &&object) {
+		}).then_on_main_thread([](std::unique_ptr<R> &&object) {
 			object->update_phase_uniforms(object->vss->get_scattering_phase_anisotropy_coefficient());
 			return std::move(object);
 		});

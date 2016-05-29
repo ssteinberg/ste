@@ -67,7 +67,7 @@ public:
 		}).then([](std::unique_ptr<R> &&object) {
 			object->ssss_gen_program.wait();
 			return std::move(object);
-		}).then_on_main_thread([&](std::unique_ptr<R> &&object) {
+		}).then_on_main_thread([&ctx](std::unique_ptr<R> &&object) {
 			object->ssss_gen_program.get().set_uniform("near", ctx.get_near_clip());
 			object->ssss_gen_program.get().set_uniform("half_over_tan_fov_over_two", .5f / glm::tan(ctx.get_fov() * .5f));
 

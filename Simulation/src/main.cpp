@@ -7,6 +7,7 @@
 #include "Pointer.hpp"
 #include "StEngineControl.hpp"
 #include "GIRenderer.hpp"
+#include "basic_renderer.hpp"
 #include "SphericalLight.hpp"
 #include "DirectionalLight.hpp"
 #include "ModelFactory.hpp"
@@ -111,8 +112,8 @@ int main() {
 	camera.lookat({ -5.4, 532.5, -228.71 });
 
 	StE::Resource::resource_instance<StE::Graphics::Scene> scene(ctx);
+	StE::Graphics::basic_renderer basic_renderer(ctx);
 	StE::Resource::resource_instance<StE::Graphics::GIRenderer> renderer(ctx, &camera, &scene.get());
-	ctx.set_renderer(&renderer.get());
 
 
 	const glm::vec3 light0_pos{ -700.6, 138, -70 };
@@ -166,41 +167,46 @@ int main() {
 	ctx.hid_signal_keyboard().connect(keyboard_listner);
 	ctx.hid_signal_pointer_button().connect(pointer_button_listner);
 
-	auto title_text = text_manager.get().create_renderer();
+
 	auto footer_text = text_manager.get().create_renderer();
+	auto footer_text_task = make_gpu_task("footer_text", footer_text.get(), nullptr);
 
-	auto title_text_task = make_gpu_task("title_text", title_text.get(), nullptr);
+	{
+		auto title_text = text_manager.get().create_renderer();
+		auto title_text_task = make_gpu_task("title_text", title_text.get(), nullptr);
 
-	renderer.get().add_gui_task(title_text_task);
-	renderer.get().add_gui_task(make_gpu_task("footer_text", footer_text.get(), nullptr));
-	renderer.get().set_deferred_rendering_enabled(false);
+		ctx.set_renderer(&basic_renderer);
+		basic_renderer.add_task(title_text_task);
+		basic_renderer.add_task(footer_text_task);
 
-	while (!loaded && running) {
-		{
-			using namespace StE::Text::Attributes;
-			AttributedWString str = center(stroke(blue_violet, 2)(purple(vvlarge(b(L"Global Illumination\n")))) +
-										   azure(large(L"Loading...\n")) +
-										   orange(regular(L"By Shlomi Steinberg")));
-			auto total_vram = std::to_wstring(ctx.gl()->meminfo_total_available_vram() / 1024);
-			auto free_vram = std::to_wstring(ctx.gl()->meminfo_free_vram() / 1024);
+		while (!loaded && running) {
+			{
+				using namespace StE::Text::Attributes;
+				AttributedWString str = center(stroke(blue_violet, 2)(purple(vvlarge(b(L"Global Illumination\n")))) +
+											azure(large(L"Loading...\n")) +
+											orange(regular(L"By Shlomi Steinberg")));
+				auto total_vram = std::to_wstring(ctx.gl()->meminfo_total_available_vram() / 1024);
+				auto free_vram = std::to_wstring(ctx.gl()->meminfo_free_vram() / 1024);
 
-			auto workers_active = ctx.scheduler().get_thread_pool()->get_active_workers_count();
-			auto workers_sleep = ctx.scheduler().get_thread_pool()->get_sleeping_workers_count();
-			auto pending_requests = ctx.scheduler().get_thread_pool()->get_pending_requests_count();
+				auto workers_active = ctx.scheduler().get_thread_pool()->get_active_workers_count();
+				auto workers_sleep = ctx.scheduler().get_thread_pool()->get_sleeping_workers_count();
+				auto pending_requests = ctx.scheduler().get_thread_pool()->get_pending_requests_count();
 
-			title_text->set_text({ w / 2, h / 2 + 100 }, str);
-			footer_text->set_text({ 10, 50 },
-								  line_height(32)(vsmall(b(blue_violet(free_vram) + L" / " + stroke(red, 1)(dark_red(total_vram)) + L" MB")) + L"\n" +
-												  vsmall(b(L"Thread pool workers: ") +
-														 olive(std::to_wstring(workers_active)) + 	L" busy, " +
-														 olive(std::to_wstring(workers_sleep)) + 	L" sleeping | " +
-														 orange(std::to_wstring(pending_requests) +	L" pending requests"))));
+				title_text->set_text({ w / 2, h / 2 + 100 }, str);
+				footer_text->set_text({ 10, 50 },
+									line_height(32)(vsmall(b(blue_violet(free_vram) + L" / " + stroke(red, 1)(dark_red(total_vram)) + L" MB")) + L"\n" +
+													vsmall(b(L"Thread pool workers: ") +
+															olive(std::to_wstring(workers_active)) + 	L" busy, " +
+															olive(std::to_wstring(workers_sleep)) + 	L" sleeping | " +
+															orange(std::to_wstring(pending_requests) +	L" pending requests"))));
+			}
+
+			if (loading_futures.ready_all() &&
+				renderer.future().wait_for(std::chrono::nanoseconds(0)) == std::future_status::ready)
+				loaded = true;
+
+			ctx.run_loop();
 		}
-
-		if (loading_futures.ready_all())
-			loaded = true;
-
-		ctx.run_loop();
 	}
 
 
@@ -260,15 +266,13 @@ int main() {
 	});
 
 
-	renderer.get().remove_gui_task(title_text_task);
-	title_text = nullptr;
-	title_text_task = nullptr;
+	ctx.set_renderer(&renderer.get());
 
 	auto &scene_task = renderer.get().get_scene_task();
 
+	renderer.get().add_gui_task(footer_text_task);
 	renderer.get().add_gui_task(make_gpu_task("debug_gui", debug_gui_dispatchable.get(), nullptr));
 	renderer.get().add_task(scene_task);
-	renderer.get().set_deferred_rendering_enabled(true);
 
 	glm::ivec2 last_pointer_pos;
 	float time = 0;

@@ -23,7 +23,7 @@ public:
 	auto loader(const StEngineControl &ctx, const Ts&... args) {
 		return ctx.scheduler().schedule_now_on_main_thread([=, &ctx]() {
 			return std::make_unique<R>(R::ctor_token(), ctx, args...);
-		}).then([&](std::unique_ptr<R> &&object) {
+		}).then([](std::unique_ptr<R> &&object) {
 			object->hdr.wait();
 			object->downsample_depth.wait();
 			object->prepopulate_depth_dispatch.wait();
