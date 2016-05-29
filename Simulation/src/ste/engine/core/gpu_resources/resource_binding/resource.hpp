@@ -5,6 +5,8 @@
 
 #include "core_resource_type.hpp"
 
+#include "thread_constants.hpp"
+
 #include <functional>
 #include <memory>
 #include <type_traits>
@@ -59,6 +61,8 @@ protected:
 	Allocator allocator;
 
 	resource() {
+		assert(is_main_thread() && "Must create Core::resource instance on main thread");
+
 		type *res_id = new type(allocator.allocate());
 		this->id = generic_resource_shared_type(res_id, [=](type *ptr) {
 			Allocator::deallocate(*ptr);
@@ -68,7 +72,9 @@ protected:
 	template <class A2>
 	explicit resource(const resource<A2> &res) { id = res.id; }
 	explicit resource(const resource &res) { id = res.id; }
-	~resource() {}
+	~resource() {
+		assert(is_main_thread() && "Must destroy Core::resource instance on main thread");
+	}
 
 public:
 	resource(resource &&m) { id = std::move(m.id); }

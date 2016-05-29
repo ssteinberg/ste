@@ -24,6 +24,8 @@ class ssss_write_penumbras : public gpu_dispatchable {
 
 	friend class Resource::resource_loading_task<ssss_write_penumbras>;
 
+	struct ctor_token {};
+
 private:
 	using ProjectionSignalConnectionType = StEngineControl::projection_change_signal_type::connection_type;
 
@@ -33,8 +35,8 @@ private:
 
 	std::shared_ptr<ProjectionSignalConnectionType> projection_change_connection;
 
-private:
-	ssss_write_penumbras(const StEngineControl &ctx, const ssss_generator *p) : p(p) {
+public:
+	ssss_write_penumbras(ctor_token, const StEngineControl &ctx, const ssss_generator *p) : p(p) {
 		ssss_gen_program.load(ctx, "ssss.glsl");
 
 		projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([this](float, float ffov, float fnear) {
@@ -59,16 +61,17 @@ class resource_loading_task<Graphics::ssss_write_penumbras> {
 
 public:
 	template <typename ... Ts>
-	auto loader(const StEngineControl &ctx, Ts&&... args) {
-		return ctx.scheduler().schedule_now([=, &ctx]() {
-			auto object = std::make_unique<R>(ctx, std::forward<Ts>(args)...);
-
+	auto loader(const StEngineControl &ctx, const Ts&... args) {
+		return ctx.scheduler().schedule_now_on_main_thread([=, &ctx]() {
+			return std::make_unique<R>(R::ctor_token(), ctx, args...);
+		}).then([](std::unique_ptr<R> &&object) {
 			object->ssss_gen_program.wait();
-
+			return std::move(object);
+		}).then_on_main_thread([&](std::unique_ptr<R> &&object) {
 			object->ssss_gen_program.get().set_uniform("near", ctx.get_near_clip());
 			object->ssss_gen_program.get().set_uniform("half_over_tan_fov_over_two", .5f / glm::tan(ctx.get_fov() * .5f));
 
-			return object;
+			return std::move(object);
 		});
 	}
 };

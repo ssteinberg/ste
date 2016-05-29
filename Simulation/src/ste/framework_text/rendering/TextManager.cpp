@@ -4,54 +4,17 @@
 
 #include "gl_current_context.hpp"
 
-#include "GLSLProgramFactory.hpp"
-
-#include <vector>
-
-#include <glm/glm.hpp>
-
 using namespace StE::Text;
 using namespace StE::Core;
 
-
-TextManager::text_renderable::text_renderable(TextManager *tr) : tr(tr) {
-	auto vbo_buffer = Core::buffer_object_cast<vbo_type>(vbo.get_buffer());
-	vao[0] = vbo_buffer[0];
-	vao[1] = vbo_buffer[1];
-	vao[2] = vbo_buffer[2];
-	vao[3] = vbo_buffer[3];
-	vao[4] = vbo_buffer[4];
-}
-
-void TextManager::text_renderable::set_context_state() const {
-	GL::gl_current_context::get()->enable_state(GL::BasicStateName::BLEND);
-	GL::gl_current_context::get()->blend_func(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	0_storage_idx = tr->gm.ssbo();
-	vao.bind();
-
-	tr->text_distance_mapping->bind();
-}
-
-void TextManager::text_renderable::dispatch() const {
-	int start = static_cast<int>(range_in_use.start / sizeof(glyph_point));
-	if (start >=0 && points.size() > 0)
-		Core::GL::gl_current_context::get()->draw_arrays(GL_POINTS, start, points.size());
-}
-
-
-TextManager::TextManager(const StEngineControl &context, const Font &default_font, int default_size) : gm(context), default_font(default_font), default_size(default_size) {
-	text_distance_mapping = Resource::GLSLProgramFactory::load_program_task(context, { "text_distance_map_contour.vert", "text_distance_map_contour.frag", "text_distance_map_contour.geom" })();
+TextManager::TextManager(ctor_token, const StEngineControl &context, const Font &default_font, int default_size) : context(context), gm(context), default_font(default_font), default_size(default_size) {
+	text_distance_mapping.load(context, std::vector<std::string>{ "text_distance_map_contour.vert", "text_distance_map_contour.frag", "text_distance_map_contour.geom" });
 
 	resize_connection = std::make_shared<ResizeSignalConnectionType>([=](const glm::i32vec2 &size) {
-		text_distance_mapping->set_uniform("proj", glm::ortho<float>(0, size.x, 0, size.y, -1, 1));
-		text_distance_mapping->set_uniform("fb_size", glm::vec2(size));
+		text_distance_mapping.get().set_uniform("proj", glm::ortho<float>(0, size.x, 0, size.y, -1, 1));
+		text_distance_mapping.get().set_uniform("fb_size", glm::vec2(size));
 	});
 	context.signal_framebuffer_resize().connect(resize_connection);
-
-	auto size = context.get_backbuffer_size();
-	text_distance_mapping->set_uniform("proj", glm::ortho<float>(0, size.x, 0, size.y, -1, 1));
-	text_distance_mapping->set_uniform("fb_size", glm::vec2(size));
 }
 
 void TextManager::adjust_line(std::vector<glyph_point> &points, const AttributedWString &wstr, unsigned line_start_index, float line_start, float line_height, const glm::vec2 &ortho_pos) {
@@ -73,7 +36,7 @@ void TextManager::adjust_line(std::vector<glyph_point> &points, const Attributed
 		points[i].pos.y -= line_height;
 }
 
-std::vector<TextManager::glyph_point> TextManager::create_points(glm::vec2 ortho_pos, const AttributedWString &wstr) {
+std::vector<glyph_point> TextManager::create_points(glm::vec2 ortho_pos, const AttributedWString &wstr) {
 	float line_start = ortho_pos.x;
 	int line_start_index = 0;
 	float prev_line_height = 0;
@@ -106,7 +69,7 @@ std::vector<TextManager::glyph_point> TextManager::create_points(glm::vec2 ortho
 		int size = size_attrib ? size_attrib->get() : default_size;
 		glm::u8vec4 color = color_attrib ? color_attrib->get() : glm::u8vec4{255, 255, 255, 255};
 
-		auto g = gm.glyph_for_font(font, wstr[i]);
+		auto g = gm.glyph_for_font(&context.scheduler(), font, wstr[i]);
 
 		float f = static_cast<float>(size) / static_cast<float>(glyph::ttf_pixel_size);
 		float w = weight_attrib ? weight_attrib->get() : 400.f;

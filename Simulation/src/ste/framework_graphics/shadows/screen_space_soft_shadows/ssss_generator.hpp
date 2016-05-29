@@ -71,9 +71,9 @@ class resource_loading_task<Graphics::ssss_generator> {
 
 public:
 	template <typename ... Ts>
-	auto loader(const StEngineControl &ctx, Ts&&... args) {
+	auto loader(const StEngineControl &ctx, const Ts&... args) {
 		return ctx.scheduler().schedule_now([=, &ctx]() {
-			auto object = std::make_unique<R>(ctx, std::forward<Ts>(args)...);
+			auto object = std::make_unique<R>(ctx, args...);
 
 			auto blur_x_task = make_gpu_task("ssss_blur_x", object->bilateral_blur_x.get(), nullptr);
 			auto write_task = make_gpu_task("ssss_write_penumbras", object->write_penumbras.get(), nullptr);

@@ -60,9 +60,9 @@ class resource_loading_task<Graphics::shadowmap_projector> {
 
 public:
 	template <typename ... Ts>
-	auto loader(const StEngineControl &ctx, Ts&&... args) {
+	auto loader(const StEngineControl &ctx, const Ts&... args) {
 		return ctx.scheduler().schedule_now([=, &ctx]() {
-			auto object = std::make_unique<R>(ctx, std::forward<Ts>(args)...);
+			auto object = std::make_unique<R>(ctx, args...);
 
 			object->shadow_gen_program.wait();
 

@@ -133,7 +133,7 @@ void StEngineControl::capture_screenshot() const {
 		timeinfo = localtime(&rawtime);
 		strftime(buffer, 256, "%a %d%b%y %H.%M.%S", timeinfo);
 
-		StE::Resource::SurfaceFactory::write_surface_2d_async(tex, std::string("Screenshots/") + buffer + ".png").get();
+		StE::Resource::SurfaceFactory::write_surface_2d_task(this->scheduler(), tex, std::string("Screenshots/") + buffer + ".png").get();
 	});
 }
 

@@ -145,7 +145,7 @@ public:
 
 	template <class Rep, class Period>
 	std::future_status wait_for(const std::chrono::duration<Rep,Period> &timeout_duration) const {
-		assert((std::chrono::duration_cast<std::chrono::microseconds>(timeout_duration) == std::chrono::microseconds(0) ||
+		assert((std::chrono::duration_cast<std::chrono::microseconds>(timeout_duration) <= std::chrono::microseconds(0) ||
 				!is_main_thread()) && "Blocking main thread");
 
 		if (chain)

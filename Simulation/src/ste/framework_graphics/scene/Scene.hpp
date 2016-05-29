@@ -31,6 +31,8 @@ class Scene : public gpu_dispatchable {
 
 	friend class Resource::resource_loading_task<Scene>;
 
+	struct ctor_token {};
+
 private:
 	static constexpr int shadow_proj_id_to_ll_id_table_size = max_active_lights_per_frame;
 
@@ -56,7 +58,7 @@ private:
 	Resource::resource_instance<Core::glsl_program> object_program;
 
 public:
-	Scene(const StEngineControl &ctx);
+	Scene(ctor_token, const StEngineControl &ctx);
 	~Scene() noexcept {}
 
 	void update_scene() {
@@ -103,13 +105,13 @@ class resource_loading_task<Graphics::Scene> {
 
 public:
 	template <typename ... Ts>
-	auto loader(const StEngineControl &ctx, Ts&&... args) {
-		return ctx.scheduler().schedule_now([=, &ctx]() {
-			auto object = std::make_unique<R>(ctx, std::forward<Ts>(args)...);
-
+	auto loader(const StEngineControl &ctx, const Ts&... args) {
+		return ctx.scheduler().schedule_now_on_main_thread([=, &ctx]() {
+			return std::make_unique<R>(R::ctor_token(), ctx, args...);
+		}).then([](std::unique_ptr<R> &&object) {
 			object->object_program.wait();
 
-			return object;
+			return std::move(object);
 		});
 	}
 };

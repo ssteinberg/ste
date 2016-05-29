@@ -47,7 +47,7 @@ inline void extract_projection_frustum_planes(float far,
 	auto ntl = nc + (up * Hnear * .5f) - (right * Wnear * .5f);
 	auto ntr = nc + (up * Hnear * .5f) + (right * Wnear * .5f);
 	auto nbl = nc - (up * Hnear * .5f) - (right * Wnear * .5f);
-	auto nbr = nc - (up * Hnear * .5f) + (right * Wnear * .5f);
+	// auto nbr = nc - (up * Hnear * .5f) + (right * Wnear * .5f);
 
 	*np = { 0, 0, -1, near };
 	*fp = { 0, 0, 1, far };

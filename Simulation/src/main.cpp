@@ -24,10 +24,10 @@
 #include "gpu_task.hpp"
 #include "profiler.hpp"
 #include "future_collection.hpp"
+#include "resource_instance.hpp"
 
 #include <imgui/imgui.h>
 #include "debug_gui.hpp"
-#include "xyY.hpp"
 
 using namespace StE::Core;
 using namespace StE::Text;
@@ -89,10 +89,6 @@ int main() {
 	ctx.set_clipping_planes(clip_near);
 	ctx.set_fov(fovy);
 
-	auto font = StE::Text::Font("Data/ArchitectsDaughter.ttf");
-
-	StE::Text::TextManager text_manager(ctx, font);
-
 	using ResizeSignalConnectionType = StE::StEngineControl::framebuffer_resize_signal_type::connection_type;
 	std::shared_ptr<ResizeSignalConnectionType> resize_connection;
 	resize_connection = std::make_shared<ResizeSignalConnectionType>([&](const glm::i32vec2 &size) {
@@ -102,48 +98,48 @@ int main() {
 	ctx.signal_framebuffer_resize().connect(resize_connection);
 
 
+	auto font = StE::Text::Font("Data/ArchitectsDaughter.ttf");
+	StE::Resource::resource_instance<StE::Text::TextManager> text_manager(ctx, font);
+
+
+	bool running = true;
+	bool loaded = false;
+	StE::task_future_collection<bool> loading_futures;
+
 	StE::Graphics::Camera camera;
 	camera.set_position({ 25.8, 549.07, -249.2 });
 	camera.lookat({ -5.4, 532.5, -228.71 });
 
-	StE::Graphics::Scene scene(ctx);
-	StE::Graphics::GIRenderer renderer(ctx, &camera, &scene);
-	ctx.set_renderer(&renderer);
-
-	std::unique_ptr<StE::Graphics::profiler> gpu_tasks_profiler = std::make_unique<StE::Graphics::profiler>();
-	renderer.attach_profiler(gpu_tasks_profiler.get());
-	std::unique_ptr<StE::Graphics::debug_gui> debug_gui_dispatchable = std::make_unique<StE::Graphics::debug_gui>(ctx, gpu_tasks_profiler.get(), font);
+	StE::Resource::resource_instance<StE::Graphics::Scene> scene(ctx);
+	StE::Resource::resource_instance<StE::Graphics::GIRenderer> renderer(ctx, &camera, &scene.get());
+	ctx.set_renderer(&renderer.get());
 
 
 	const glm::vec3 light0_pos{ -700.6, 138, -70 };
 	const glm::vec3 light1_pos{ 200, 550, 170 };
-	auto light0 = scene.scene_properties().lights_storage().allocate_light<StE::Graphics::SphericalLight>(8000.f, StE::Graphics::Kelvin(2000), light0_pos, 3.f);
-	auto light1 = scene.scene_properties().lights_storage().allocate_light<StE::Graphics::SphericalLight>(20000.f, StE::Graphics::Kelvin(7000), light1_pos, 5.f);
-	auto light0_obj = create_light_object(&scene, light0_pos, light0);
-	auto light1_obj = create_light_object(&scene, light1_pos, light1);
-	add_scene_lights(scene);
+	auto light0 = scene.get().scene_properties().lights_storage().allocate_light<StE::Graphics::SphericalLight>(8000.f, StE::Graphics::Kelvin(2000), light0_pos, 3.f);
+	auto light1 = scene.get().scene_properties().lights_storage().allocate_light<StE::Graphics::SphericalLight>(20000.f, StE::Graphics::Kelvin(7000), light1_pos, 5.f);
+	auto light0_obj = create_light_object(&scene.get(), light0_pos, light0);
+	auto light1_obj = create_light_object(&scene.get(), light1_pos, light1);
+	add_scene_lights(scene.get());
 
 
 	std::vector<std::shared_ptr<StE::Graphics::Object>> lucy_objects;
 	std::vector<StE::Graphics::Material*> lucy_materials;
-
-	bool running = true;
-	bool loaded = false;
-	StE::future_collection<bool> loading_futures;
-	loading_futures.insert(ctx.scheduler().schedule_now(StE::Resource::ModelFactory::load_model_task(ctx,
-																									 R"(Data/models/crytek-sponza/sponza.obj)",
-																									 &scene.object_group(),
-																									 &scene.scene_properties(),
-																									 2.5f,
-																									 nullptr,
-																									 nullptr)));
-	loading_futures.insert(ctx.scheduler().schedule_now(StE::Resource::ModelFactory::load_model_task(ctx,
-														R"(Data/models/lucy/lucy_low.obj)",
-														&scene.object_group(),
-														&scene.scene_properties(),
-														1.f,
-														&lucy_objects,
-														&lucy_materials)));
+	loading_futures.insert(StE::Resource::ModelFactory::load_model_task(ctx,
+																		R"(Data/models/crytek-sponza/sponza.obj)",
+																		&scene.get().object_group(),
+																		&scene.get().scene_properties(),
+																		2.5f,
+																		nullptr,
+																		nullptr));
+	loading_futures.insert(StE::Resource::ModelFactory::load_model_task(ctx,
+																		R"(Data/models/lucy/lucy_low.obj)",
+																		&scene.get().object_group(),
+																		&scene.get().scene_properties(),
+																		1.f,
+																		&lucy_objects,
+																		&lucy_materials));
 
 
 	// Bind input
@@ -170,14 +166,14 @@ int main() {
 	ctx.hid_signal_keyboard().connect(keyboard_listner);
 	ctx.hid_signal_pointer_button().connect(pointer_button_listner);
 
-	auto title_text = text_manager.create_renderer();
-	auto footer_text = text_manager.create_renderer();
+	auto title_text = text_manager.get().create_renderer();
+	auto footer_text = text_manager.get().create_renderer();
 
 	auto title_text_task = make_gpu_task("title_text", title_text.get(), nullptr);
 
-	renderer.add_gui_task(title_text_task);
-	renderer.add_gui_task(make_gpu_task("footer_text", footer_text.get(), nullptr));
-	renderer.set_deferred_rendering_enabled(false);
+	renderer.get().add_gui_task(title_text_task);
+	renderer.get().add_gui_task(make_gpu_task("footer_text", footer_text.get(), nullptr));
+	renderer.get().set_deferred_rendering_enabled(false);
 
 	while (!loaded && running) {
 		{
@@ -206,6 +202,11 @@ int main() {
 
 		ctx.run_loop();
 	}
+
+
+	std::unique_ptr<StE::Graphics::profiler> gpu_tasks_profiler = std::make_unique<StE::Graphics::profiler>();
+	renderer.get().attach_profiler(gpu_tasks_profiler.get());
+	std::unique_ptr<StE::Graphics::debug_gui> debug_gui_dispatchable = std::make_unique<StE::Graphics::debug_gui>(ctx, gpu_tasks_profiler.get(), font);
 
 
 	auto lucy = lucy_objects.back();
@@ -259,15 +260,15 @@ int main() {
 	});
 
 
-	renderer.remove_gui_task(title_text_task);
+	renderer.get().remove_gui_task(title_text_task);
 	title_text = nullptr;
 	title_text_task = nullptr;
 
-	auto &scene_task = renderer.get_scene_task();
+	auto &scene_task = renderer.get().get_scene_task();
 
-	renderer.add_gui_task(make_gpu_task("debug_gui", debug_gui_dispatchable.get(), nullptr));
-	renderer.add_task(scene_task);
-	renderer.set_deferred_rendering_enabled(true);
+	renderer.get().add_gui_task(make_gpu_task("debug_gui", debug_gui_dispatchable.get(), nullptr));
+	renderer.get().add_task(scene_task);
+	renderer.get().set_deferred_rendering_enabled(true);
 
 	glm::ivec2 last_pointer_pos;
 	float time = 0;

@@ -29,6 +29,8 @@ class volumetric_scattering_scatter_dispatch : public gpu_dispatchable {
 
 	friend class Resource::resource_loading_task<volumetric_scattering_scatter_dispatch>;
 
+	struct ctor_token {};
+
 private:
 	const volumetric_scattering_storage *vss;
 	const linked_light_lists *llls;
@@ -49,7 +51,9 @@ private:
 		program.get().set_uniform("phase3", p3);
 	}
 
-	volumetric_scattering_scatter_dispatch(const StEngineControl &ctx,
+public:
+	volumetric_scattering_scatter_dispatch(ctor_token,
+										   const StEngineControl &ctx,
 										   const volumetric_scattering_storage *vss,
 										   const linked_light_lists *llls,
 										   const light_storage *ls,
@@ -57,7 +61,6 @@ private:
 		program.load(ctx, "volumetric_scattering_scatter.glsl");
 	}
 
-public:
 	void set_context_state() const override final;
 	void dispatch() const override final;
 };
@@ -72,14 +75,15 @@ class resource_loading_task<Graphics::volumetric_scattering_scatter_dispatch> {
 
 public:
 	template <typename ... Ts>
-	auto loader(const StEngineControl &ctx, Ts&&... args) {
-		return ctx.scheduler().schedule_now([=, &ctx]() {
-			auto object = std::make_unique<R>(ctx, std::forward<Ts>(args)...);
-
+	auto loader(const StEngineControl &ctx, const Ts&... args) {
+		return ctx.scheduler().schedule_now_on_main_thread([=, &ctx]() {
+			return std::make_unique<R>(R::ctor_token(), ctx, args...);
+		}).then([](std::unique_ptr<R> &&object) {
 			object->program.wait();
+			return std::move(object);
+		}).then_on_main_thread([&](std::unique_ptr<R> &&object) {
 			object->update_phase_uniforms(object->vss->get_scattering_phase_anisotropy_coefficient());
-
-			return object;
+			return std::move(object);
 		});
 	}
 };

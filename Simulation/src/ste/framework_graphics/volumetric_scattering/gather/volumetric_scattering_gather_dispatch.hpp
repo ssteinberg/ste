@@ -52,9 +52,9 @@ class resource_loading_task<Graphics::volumetric_scattering_gather_dispatch> {
 
 public:
 	template <typename ... Ts>
-	auto loader(const StEngineControl &ctx, Ts&&... args) {
+	auto loader(const StEngineControl &ctx, const Ts&... args) {
 		return ctx.scheduler().schedule_now([=, &ctx]() {
-			auto object = std::make_unique<R>(ctx, std::forward<Ts>(args)...);
+			auto object = std::make_unique<R>(ctx, args...);
 
 			object->program.wait();
 

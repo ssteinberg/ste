@@ -48,9 +48,9 @@ class resource_loading_task<Graphics::ssss_bilateral_blur_x> {
 
 public:
 	template <typename ... Ts>
-	auto loader(const StEngineControl &ctx, Ts&&... args) {
+	auto loader(const StEngineControl &ctx, const Ts&... args) {
 		return ctx.scheduler().schedule_now([=, &ctx]() {
-			auto object = std::make_unique<R>(ctx, std::forward<Ts>(args)...);
+			auto object = std::make_unique<R>(ctx, args...);
 
 			object->ssss_blur_program.wait();
 

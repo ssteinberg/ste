@@ -25,6 +25,8 @@ namespace Graphics {
 class scene_geo_cull_dispatch : public gpu_dispatchable {
 	using Base = gpu_dispatchable;
 
+	friend class Resource::resource_loading_task<scene_geo_cull_dispatch>;
+
 private:
 	const Scene *scene;
 	const light_storage *ls;
@@ -36,37 +38,30 @@ private:
 private:
 	void commit_idbs() const;
 
-private:
-	scene_geo_cull_dispatch(const Scene *scene,
-							const light_storage *ls) : scene(scene), ls(ls) {}
-
 public:
-	template <typename ... Ts>
-	static auto loader(const StEngineControl &ctx, Ts&&... args) {
-		return ctx.scheduler().schedule_now([=, &ctx]() {
-			auto object = std::make_unique<scene_geo_cull_dispatch>(std::forward<Ts>(args)...);
-
-			auto guard = object->program.load_and_wait_guard(ctx, "scene_geo_cull.glsl");
-
-			return object;
-		});
+	scene_geo_cull_dispatch(const StEngineControl &ctx,
+							const Scene *scene,
+							const light_storage *ls) : scene(scene), ls(ls) {
+		program.load(ctx, "scene_geo_cull.glsl");
 	}
 
 	void set_context_state() const override final;
 	void dispatch() const override final;
 };
 
+}
+
 namespace Resource {
 
 template <>
-class resource_loading_task<deferred_composer> {
-	using R = deferred_composer;
+class resource_loading_task<Graphics::scene_geo_cull_dispatch> {
+	using R = Graphics::scene_geo_cull_dispatch;
 
 public:
 	template <typename ... Ts>
-	auto loader(const StEngineControl &ctx, Ts&&... args) {
+	auto loader(const StEngineControl &ctx, const Ts&... args) {
 		return ctx.scheduler().schedule_now([=, &ctx]() {
-			auto object = std::make_unique<R>(ctx, std::forward<Ts>(args)...);
+			auto object = std::make_unique<R>(ctx, args...);
 
 			object->program.wait();
 
@@ -75,4 +70,5 @@ public:
 	}
 };
 
+}
 }

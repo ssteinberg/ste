@@ -29,8 +29,8 @@ void deferred_composer::set_context_state() const {
 	8_tex_unit = *dr->shadows_storage.get_cubemaps();
 	8_sampler_idx = dr->shadows_storage.get_shadow_sampler();
 
-	9_tex_unit = *dr->volumetric_scattering.get_volume_texture();
-	9_sampler_idx = dr->volumetric_scattering.get_volume_sampler();
+	9_tex_unit = *dr->vol_scat_storage.get_volume_texture();
+	9_sampler_idx = dr->vol_scat_storage.get_volume_sampler();
 
 	ScreenFillingQuad.vao()->bind();
 
