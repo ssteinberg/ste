@@ -14,7 +14,7 @@ void hdr_compute_minmax_task::set_context_state() const {
 }
 
 void hdr_compute_minmax_task::dispatch() const {
-	p->hdr_compute_minmax->set_uniform("time", p->ctx.time_per_frame().count());
+	p->hdr_compute_minmax.get().set_uniform("time", p->ctx.time_per_frame().count());
 
 	p->hdr_bokeh_param_buffer_prev << p->hdr_bokeh_param_buffer;
 	p->hdr_bokeh_param_buffer << *p->hdr_bokeh_param_buffer_eraser;

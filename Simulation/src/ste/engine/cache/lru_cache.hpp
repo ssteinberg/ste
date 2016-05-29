@@ -157,7 +157,7 @@ public:
 	}
 
 	/**
-	*	@brief	Read an object from the cache
+	*	@brief	Returns a lambda that read the object associated with key k from the cache, if any.
 	*
 	* 	@param k	key
 	*/

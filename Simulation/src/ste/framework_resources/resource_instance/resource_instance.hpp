@@ -41,12 +41,6 @@ public:
 		loader_future = std::make_unique<loader_future_type>(std::move(f));
 	}
 
-	template <typename ... Ts>
-	auto load_and_wait_guard(const StEngineControl &ctx, Ts&&... args) {
-		load(ctx, std::forward<Ts>(args)...);
-		return resource_loading_guard<R>(*loader_future);
-	}
-
 	void wait() const {
 		if (resource == nullptr) {
 			assert(loader_future != nullptr && "load() wasn't called!");

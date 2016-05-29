@@ -76,7 +76,7 @@ private:
 		db[theta_bucket][phi_bucket].push_back(std::move(entry));
 	}
 
-	auto load_bme_brdf_task(const boost::filesystem::path &bme_data) const {
+	auto bme_brdf_loader_lambda(const boost::filesystem::path &bme_data) const {
 		return [=]() -> exitant_db_descriptor {
 			exitant_db db;
 			float in_theta = -1;
@@ -130,7 +130,7 @@ private:
 		std::vector<std::task_future<exitant_db_descriptor>> futures;
 		for (boost::filesystem::directory_iterator it(bme_data_dir); it != boost::filesystem::directory_iterator(); ++it)
 			if (boost::filesystem::is_regular_file(it->path()))
-				futures.push_back(context.scheduler().schedule_now(load_bme_brdf_task(it->path())));
+				futures.push_back(context.scheduler().schedule_now(bme_brdf_loader_lambda(it->path())));
 
 		for (auto &f : futures) {
 			auto db = std::move(f.get());
@@ -225,13 +225,13 @@ protected:
 	}
 
 public:
-	static auto BRDF_from_bme_representation_task(const StEngineControl &context, const boost::filesystem::path &bme_data_dir) {
+	static auto BRDF_from_bme_representation_async(const StEngineControl &context, const boost::filesystem::path &bme_data_dir) {
 		std::string cache_key = std::string("bme_brdf_representation_") + bme_data_dir.string();
 		return context.scheduler().schedule_now([=, ctx = &context]() {
 			common_brdf_representation brdfdata;
 			try {
-				auto cache_get_task = ctx->cache().get<common_brdf_representation>(cache_key);
-				optional<common_brdf_representation> opt = cache_get_task();
+				auto cache_get_lambda = ctx->cache().get<common_brdf_representation>(cache_key);
+				optional<common_brdf_representation> opt = cache_get_lambda();
 				if (opt) {
 					using namespace Text::Attributes;
 					ste_log() << b("bme_brdf_representation") + " - pBRDF loaded from cache: " + i(bme_data_dir.string()) << std::endl;

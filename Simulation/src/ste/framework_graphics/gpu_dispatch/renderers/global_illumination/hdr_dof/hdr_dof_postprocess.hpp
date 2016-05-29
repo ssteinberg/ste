@@ -41,6 +41,10 @@ class hdr_bloom_blury_task;
 class hdr_bokeh_blur_task;
 
 class hdr_dof_postprocess {
+	friend class Resource::resource_loading_task<hdr_dof_postprocess>;
+
+	struct ctor_token {};
+
 	friend class hdr_compute_minmax_task;
 	friend class hdr_create_histogram_task;
 	friend class hdr_compute_histogram_sums_task;
@@ -117,7 +121,7 @@ private:
 	void setup_engine_connections();
 
 public:
-	hdr_dof_postprocess(const StEngineControl &ctx, const deferred_gbuffer *gbuffer);
+	hdr_dof_postprocess(ctor_token, const StEngineControl &ctx, const deferred_gbuffer *gbuffer);
 	~hdr_dof_postprocess() noexcept;
 
 	auto get_input_fbo() const { return &fbo_hdr_final; }
@@ -140,10 +144,10 @@ class resource_loading_task<Graphics::hdr_dof_postprocess> {
 
 public:
 	template <typename ... Ts>
-	auto loader(const StEngineControl &ctx, Ts&&... args) {
-		return ctx.scheduler().schedule_now([=, &ctx]() {
-			auto object = std::make_unique<R>(ctx, std::forward<Ts>(args)...);
-
+	auto loader(const StEngineControl &ctx, const Ts&... args) {
+		return ctx.scheduler().schedule_now_on_main_thread([=, &ctx]() {
+			return std::make_unique<R>(R::ctor_token(), ctx, args...);
+		}).then([](std::unique_ptr<R> &&object) {
 			object->hdr_compute_minmax.wait();
 			object->hdr_create_histogram.wait();
 			object->hdr_compute_histogram_sums.wait();
@@ -152,7 +156,7 @@ public:
 			object->hdr_bloom_blury.wait();
 			object->bokeh_blur.wait();
 
-			return object;
+			return std::move(object);
 		});
 	}
 };

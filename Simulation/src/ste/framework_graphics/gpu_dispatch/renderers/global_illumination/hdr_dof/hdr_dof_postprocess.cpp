@@ -18,23 +18,22 @@
 
 using namespace StE::Graphics;
 
-hdr_dof_postprocess::hdr_dof_postprocess(const StEngineControl &context, const deferred_gbuffer *gbuffer) : hdr_vision_properties_sampler(Core::TextureFiltering::Linear, Core::TextureFiltering::Linear, 16),
-																											gbuffer(gbuffer),
-																											ctx(context) {
+hdr_dof_postprocess::hdr_dof_postprocess(ctor_token,
+										 const StEngineControl &context,
+										 const deferred_gbuffer *gbuffer) : hdr_vision_properties_sampler(Core::TextureFiltering::Linear, Core::TextureFiltering::Linear, 16),
+																			gbuffer(gbuffer), ctx(context) {
 	hdr_vision_properties_sampler.set_wrap_s(Core::TextureWrapMode::ClampToEdge);
-
-	task = make_gpu_task("hdr", create_dispatchable(), &ctx.gl()->defaut_framebuffer(), create_sub_tasks());
 
 	std::int32_t big_float_i = 0x7FFFFFFF;
 	hdr_bokeh_param_buffer_eraser = std::make_unique<StE::Core::PixelBufferObject<std::int32_t>>(std::vector<std::int32_t>{ big_float_i, 0 });
 
-	hdr_compute_minmax.load(ctx, { "hdr_compute_minmax.glsl" })();
-	hdr_create_histogram.load(ctx, { "hdr_create_histogram.glsl" })();
-	hdr_compute_histogram_sums.load(ctx, { "hdr_compute_histogram_sums.glsl" })();
-	hdr_tonemap_coc.load(ctx, { "passthrough.vert", "hdr_tonemap_coc.frag" })();
-	hdr_bloom_blurx.load(ctx, { "passthrough.vert", "hdr_bloom_blur_x.frag" })();
-	hdr_bloom_blury.load(ctx, { "passthrough.vert", "hdr_bloom_blur_y.frag" })();
-	bokeh_blur.load(ctx, { "passthrough.vert", "bokeh_bilateral_blur.frag" })();
+	hdr_compute_minmax.load(ctx, "hdr_compute_minmax.glsl");
+	hdr_create_histogram.load(ctx, "hdr_create_histogram.glsl");
+	hdr_compute_histogram_sums.load(ctx, "hdr_compute_histogram_sums.glsl");
+	hdr_tonemap_coc.load(ctx, std::vector<std::string>{ "passthrough.vert", "hdr_tonemap_coc.frag" });
+	hdr_bloom_blurx.load(ctx, std::vector<std::string>{ "passthrough.vert", "hdr_bloom_blur_x.frag" });
+	hdr_bloom_blury.load(ctx, std::vector<std::string>{ "passthrough.vert", "hdr_bloom_blur_y.frag" });
+	bokeh_blur.load(ctx, std::vector<std::string>{ "passthrough.vert", "bokeh_bilateral_blur.frag" });
 
 	gli::texture1d hdr_human_vision_properties_data(gli::format::FORMAT_RGBA32_SFLOAT_PACK32, glm::tvec1<std::size_t>{ 4096 }, 1);
 	{
@@ -59,6 +58,7 @@ hdr_dof_postprocess::hdr_dof_postprocess(const StEngineControl &context, const d
 	hdr_bloom_blurx.get().set_uniform("dir", glm::vec2{ 1.f, .0f });
 	hdr_bloom_blury.get().set_uniform("dir", glm::vec2{ .0f, 1.f });
 
+	task = make_gpu_task("dof_bokeh", create_dispatchable(), &ctx.gl()->defaut_framebuffer(), create_sub_tasks());
 	resize(ctx.get_backbuffer_size());
 
 	setup_engine_connections();

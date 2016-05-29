@@ -59,20 +59,23 @@ class GIRenderer : public rendering_system {
 	friend class deferred_composer;
 	friend class Resource::resource_loading_task<GIRenderer>;
 
+	struct ctor_token {};
+
 private:
 	using ResizeSignalConnectionType = StEngineControl::framebuffer_resize_signal_type::connection_type;
 	using ProjectionSignalConnectionType = StEngineControl::projection_change_signal_type::connection_type;
-	using FbClearTask = StE::Graphics::fb_clear_dispatch<>;
+	using FbClearTask = StE::Graphics::fb_clear_dispatch<false>;
 
 	constexpr static int view_transform_buffer_bind_location = 20;
 	constexpr static int proj_transform_buffer_bind_location = 21;
 
 private:
+	const StEngineControl &ctx;
+
 	deferred_gbuffer gbuffer;
 	std::shared_ptr<ResizeSignalConnectionType> resize_connection;
 	std::shared_ptr<ProjectionSignalConnectionType> projection_change_connection;
 
-	const StEngineControl &ctx;
 	const Camera *camera;
 	transforms_ring_buffers transform_buffers;
 	Scene *scene;
@@ -83,19 +86,19 @@ private:
 
 	FbClearTask fb_clearer;
 
-	volumetric_scattering_storage volumetric_scattering;
+	linked_light_lists lll_storage;
+	shadowmap_storage shadows_storage;
+	volumetric_scattering_storage vol_scat_storage;
 
 	Resource::resource_instance<deferred_composer> composer;
 
-	Resource::resource_instance<linked_light_lists> lll_storage;
 	Resource::resource_instance<linked_light_lists_gen_dispatch> lll_gen_dispatch;
 	Resource::resource_instance<light_preprocessor> light_preprocess;
 
-	Resource::resource_instance<shadowmap_storage> shadows_storage;
 	Resource::resource_instance<shadowmap_projector> shadows_projector;
 
-	Resource::resource_instance<volumetric_scattering_scatter_dispatch> volumetric_scattering_scatter;
-	Resource::resource_instance<volumetric_scattering_gather_dispatch> volumetric_scattering_gather;
+	Resource::resource_instance<volumetric_scattering_scatter_dispatch> vol_scat_scatter;
+	Resource::resource_instance<volumetric_scattering_gather_dispatch> vol_scat_gather;
 
 	Resource::resource_instance<hdr_dof_postprocess> hdr;
 	Resource::resource_instance<gbuffer_downsample_depth_dispatch> downsample_depth;
@@ -115,8 +118,6 @@ private:
 									scene_geo_cull_task,
 									lll_gen_task;
 
-	bool use_deferred_rendering{ true };
-
 protected:
 	void setup_tasks();
 	void rebuild_task_queue();
@@ -124,20 +125,15 @@ protected:
 	static int gbuffer_depth_target_levels();
 
 	const Core::GenericFramebufferObject *get_fbo() const {
-		if (use_deferred_rendering)
-			return gbuffer.get_fbo();
-		return &ctx.gl()->defaut_framebuffer();
+		return gbuffer.get_fbo();
 	}
 
-private:
-	GIRenderer(const StEngineControl &ctx,
+public:
+	GIRenderer(ctor_token,
+			   const StEngineControl &ctx,
 			   const Camera *camera,
 			   Scene *scene);
-
-public:
 	virtual ~GIRenderer() noexcept {}
-
-	void set_deferred_rendering_enabled(bool enabled);
 
 	void add_task(const gpu_task::TaskPtr &t);
 	void remove_task(const gpu_task::TaskPtr &t);

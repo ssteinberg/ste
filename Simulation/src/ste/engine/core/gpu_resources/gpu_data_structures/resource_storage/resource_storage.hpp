@@ -4,9 +4,8 @@
 #pragma once
 
 #include "stdafx.hpp"
-
+#include "resource_storage_base.hpp"
 #include "observable_resource.hpp"
-#include "signal.hpp"
 
 #include "is_base_of.hpp"
 
@@ -29,19 +28,17 @@ namespace Core {
  *	@param Storage			Storage class.
  */
 template <typename Specialization, typename Descriptor, template<class> typename Storage>
-class resource_storage {
+class resource_storage : public resource_storage_base<Descriptor> {
+	using Base = resource_storage_base<Descriptor>;
+
 	friend Specialization;
 
-	using descriptor_type = Descriptor;
-	using resource_type = observable_resource<descriptor_type>;
+	using resource_type = typename Base::resource_type;
+	using descriptor_type = typename Base::descriptor_type;
 	using storage_type = Storage<descriptor_type>;
-	using resource_signal_connection_type = typename resource_type::signal_type::connection_type;
 
 private:
 	storage_type stack;
-
-	std::unordered_set<const resource_type*> signalled_objects;
-	std::unordered_map<const resource_type*, std::shared_ptr<resource_signal_connection_type>> connections;
 
 private:
 	/**
@@ -65,14 +62,6 @@ private:
 	*/
 	virtual int index_of_with_identifier(std::size_t resource_storage_identifier) const = 0;
 
-	void attach_resource_connection(resource_type *res) {
-		auto connection = std::make_shared<resource_signal_connection_type>(
-			[this](const resource_type* obj) { assert(obj); this->signalled_objects.insert(obj); }
-		);
-		res->resource_signal().connect(connection);
-		connections.insert(std::make_pair(res, std::move(connection)));
-	}
-
 protected:
 	/**
 	*	@brief	Allocates a new slot, and returns a uniquely owned newly-constructed resource.
@@ -83,8 +72,9 @@ protected:
 		static_assert(std::is_base_of<resource_type, T>::value, "T must derive from Core::observable_resource<Descriptor> !");
 
 		auto ptr = std::make_unique<T>(std::forward<Ts>(args)...);
+		ptr->storage_ptr = dynamic_cast<Specialization*>(this);
 		ptr->resource_storage_identifier = allocate_identifier(ptr->get_descriptor());
-		attach_resource_connection(ptr.get());
+		Base::objects.insert(ptr.get());
 
 		return std::move(ptr);
 	}
@@ -92,25 +82,33 @@ protected:
 	/**
 	*	@brief	Erase the resource, freeing a slot.
 	*/
-	void erase_resource(const resource_type *res) {
+	void erase_resource(const resource_type *res) override final {
+		assert(res);
+
 		deallocate_identifier(res->resource_storage_identifier);
-		connections.erase(res);
+		Base::objects.erase(res);
+		Base::signalled_objects.erase(res);
+
+		res->storage_ptr = nullptr;
 	}
 
 public:
-	virtual ~resource_storage() {}
+	virtual ~resource_storage() {
+		for (auto &res : Base::objects)
+			erase_resource(res);
+	}
 
 	/**
 	*	@brief	Run an update pass, uploading descriptors of mutated resources. A resource is marked mutated if its notify method
 	*			was called.
 	*/
 	void update() {
-		for (auto &res : signalled_objects) {
+		for (auto &res : Base::signalled_objects) {
 			auto idx = index_of(res);
 			stack.overwrite(idx, res->get_descriptor());
 		}
 
-		signalled_objects.clear();
+		Base::signalled_objects.clear();
 	}
 
 	/**
@@ -122,7 +120,14 @@ public:
 	*	@brief	Get SSBO
 	*/
 	auto &buffer() const { return stack.get_buffer(); }
+
+	/**
+	*	@brief	Total count of active resources in storage
+	*/
+	std::size_t size() const { return Base::objects.size(); }
 };
 
 }
 }
+
+#include "observable_resource_impl.hpp"

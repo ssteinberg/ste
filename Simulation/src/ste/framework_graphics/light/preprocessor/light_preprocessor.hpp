@@ -14,7 +14,6 @@
 #include "signal.hpp"
 
 #include "light_storage.hpp"
-#include "hdr_dof_postprocess.hpp"
 #include "glsl_program.hpp"
 
 #include "light_preprocess_cull_lights.hpp"
@@ -29,13 +28,15 @@ class light_preprocessor {
 
 	friend class Resource::resource_loading_task<light_preprocessor>;
 
+	struct ctor_token {};
+
+private:
 	using ResizeSignalConnectionType = StEngineControl::framebuffer_resize_signal_type::connection_type;
 	using ProjectionSignalConnectionType = StEngineControl::projection_change_signal_type::connection_type;
 
 private:
 	const StEngineControl &ctx;
 	light_storage *ls;
-	const hdr_dof_postprocess *hdr;
 
 	light_preprocess_cull_lights stage1;
 	light_preprocess_cull_shadows stage2;
@@ -52,11 +53,13 @@ private:
 	void set_projection_planes() const;
 
 public:
-	light_preprocessor(const StEngineControl &ctx,
-					   light_storage *ls,
-					   const hdr_dof_postprocess *hdr) : ctx(ctx), ls(ls), hdr(hdr),
-														 stage1(this), stage2(this) {
-		set_projection_planes();
+	light_preprocessor(ctor_token,
+					   const StEngineControl &ctx,
+					   light_storage *ls) : ctx(ctx), ls(ls),
+											stage1(this), stage2(this) {
+		light_preprocess_cull_lights_program.load(ctx, "light_preprocess_cull_lights.glsl");
+		light_preprocess_cull_shadows_program.load(ctx, "light_preprocess_cull_shadows.glsl");
+
 		resize_connection = std::make_shared<ResizeSignalConnectionType>([=](const glm::i32vec2 &size) {
 			set_projection_planes();
 		});
@@ -68,9 +71,6 @@ public:
 
 		auto stage1_task = make_gpu_task("light_preprocessor_stage1", &stage1, nullptr);
 		task = make_gpu_task("light_preprocessor", &stage2, nullptr, { stage1_task });
-
-		light_preprocess_cull_lights_program.load(ctx, "light_preprocess_cull_lights.glsl");
-		light_preprocess_cull_shadows_program.load(ctx, "light_preprocess_cull_shadows.glsl");
 	}
 
 	auto &get_task() const { return task; }
@@ -86,14 +86,18 @@ class resource_loading_task<Graphics::light_preprocessor> {
 
 public:
 	template <typename ... Ts>
-	auto loader(const StEngineControl &ctx, Ts&&... args) {
-		return ctx.scheduler().schedule_now([=, &ctx]() {
-			auto object = std::make_unique<R>(ctx, std::forward<Ts>(args)...);
-
+	auto loader(const StEngineControl &ctx, const Ts&... args) {
+		return ctx.scheduler().schedule_now_on_main_thread([=, &ctx]() {
+			return std::make_unique<R>(R::ctor_token(), ctx, args...);
+		}).then([](std::unique_ptr<R> &&object) {
 			object->light_preprocess_cull_lights_program.wait();
 			object->light_preprocess_cull_shadows_program.wait();
 
-			return object;
+			return std::move(object);
+		}).then_on_main_thread([](std::unique_ptr<R> &&object) {
+			object->set_projection_planes();
+
+			return std::move(object);
 		});
 	}
 };

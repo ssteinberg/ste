@@ -20,31 +20,24 @@ namespace Graphics {
 class gbuffer_sort_dispatch : public gpu_dispatchable {
 	using Base = gpu_dispatchable;
 
+	friend class Resource::resource_loading_task<gbuffer_sort_dispatch>;
+
 private:
 	deferred_gbuffer *gbuffer;
 	Resource::resource_instance<Core::glsl_program> sort_program;
 
-private:
-	gbuffer_sort_dispatch(deferred_gbuffer *gbuffer) : gbuffer(gbuffer) {}
-
 public:
-	static auto loader(const StEngineControl &ctx, deferred_gbuffer *gbuffer) {
-		return ctx.scheduler().schedule_now([=, &ctx]() {
-			auto object = std::make_unique<gbuffer_sort_dispatch>(gbuffer);
-
-			auto guard = object->sort_program.load_and_wait_guard(ctx, "gbuffer_sort.glsl");
-
-			return object;
-		});
+	gbuffer_sort_dispatch(const StEngineControl &ctx, deferred_gbuffer *gbuffer) : gbuffer(gbuffer) {
+		sort_program.load(ctx, "gbuffer_sort.glsl");
 	}
 
 protected:
-	virtual void set_context_state() const override {
+	void set_context_state() const override final {
 		gbuffer->bind_gbuffer();
 		sort_program.get().bind();
 	}
 
-	virtual void dispatch() const override {
+	void dispatch() const override final {
 		constexpr int jobs = 32;
 		auto size = (gbuffer->get_size() + glm::ivec2(jobs - 1)) / jobs;
 
@@ -53,23 +46,26 @@ protected:
 	}
 };
 
+}
+
 namespace Resource {
 
 template <>
-class resource_loading_task<deferred_composer> {
-	using R = deferred_composer;
+class resource_loading_task<Graphics::gbuffer_sort_dispatch> {
+	using R = Graphics::gbuffer_sort_dispatch;
 
 public:
 	template <typename ... Ts>
-	auto loader(const StEngineControl &ctx, Ts&&... args) {
+	auto loader(const StEngineControl &ctx, const Ts&... args) {
 		return ctx.scheduler().schedule_now([=, &ctx]() {
-			auto object = std::make_unique<R>(ctx, std::forward<Ts>(args)...);
+			auto object = std::make_unique<R>(ctx, args...);
 
-			object->program.wait();
+			object->sort_program.wait();
 
 			return object;
 		});
 	}
 };
 
+}
 }

@@ -16,8 +16,8 @@ dense_voxel_space::dense_voxel_space(const StEngineControl &ctx, std::size_t max
 	size = static_cast<decltype(size)>(glm::min<int>(Core::texture_sparse_3d::max_size(), max_size));
 	tile_size = static_cast<decltype(tile_size)>(glm::max(ts.x, glm::max(ts.y, ts.z)));
 
-	voxelizer_program.load(ctx, { "voxelizer.vert", "voxelizer.frag", "voxelizer.geom" })();
-	voxelizer_upsampler_program.load(ctx, { "voxelizer_upsampler.glsl" })();
+	voxelizer_program.load(ctx, std::vector<std::string>{ "voxelizer.vert", "voxelizer.frag", "voxelizer.geom" });
+	voxelizer_upsampler_program.load(ctx, "voxelizer_upsampler.glsl");
 
 	voxelizer_output = std::make_unique<Core::RenderTarget>(gli::format::FORMAT_R8_UNORM_PACK8, glm::ivec2{ size.x, size.y });
 	voxelizer_fbo[0] = *voxelizer_output;
@@ -91,8 +91,8 @@ void dense_voxel_space::create_dense_voxel_space(float voxel_size_factor) {
 	radiance_texture_handle.make_resident();
 	data_texture_handle.make_resident();
 
-	update_shader_voxel_uniforms(*voxelizer_program);
-	update_shader_voxel_uniforms(*voxelizer_upsampler_program);
+	update_shader_voxel_uniforms(voxelizer_program.get());
+	update_shader_voxel_uniforms(voxelizer_upsampler_program.get());
 }
 
 void dense_voxel_space::update_shader_voxel_uniforms(const Core::glsl_program &prg) const {

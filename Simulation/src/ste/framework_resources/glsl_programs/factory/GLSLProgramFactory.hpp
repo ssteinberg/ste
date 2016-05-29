@@ -48,7 +48,7 @@ private:
 	static std::string parse_directive(const std::string &, const std::string &, std::string::size_type &, std::string::size_type &);
 
 public:
-	static task_future<std::unique_ptr<Core::glsl_program>> load_program_task(const StEngineControl &context, const std::vector<std::string> &names);
+	static task_future<std::unique_ptr<Core::glsl_program>> load_program_async(const StEngineControl &context, const std::vector<std::string> &names);
 };
 
 }
