@@ -2,7 +2,6 @@
 #include "stdafx.hpp"
 
 #include "GLSLProgramFactory.hpp"
-#include "program_binary.hpp"
 
 #include "lru_cache.hpp"
 #include "Log.hpp"
@@ -28,11 +27,11 @@
 using namespace StE::Resource;
 using namespace StE::Resource::glsl_loader;
 using namespace StE::Text;
-using StE::Core::GLSLShaderGeneric;
-using StE::Core::GLSLShader;
+using StE::Core::glsl_shader_object_generic;
+using StE::Core::glsl_shader_object;
 using StE::Core::GLSLShaderType;
 using StE::Core::GLSLShaderProperties;
-using StE::Core::GLSLProgram;
+using StE::Core::glsl_program;
 
 
 const std::unordered_map<std::string, GLSLShaderType> GLSLProgramFactory::type_map = { { "compute", GLSLShaderType::COMPUTE },{ "frag", GLSLShaderType::FRAGMENT },{ "vert", GLSLShaderType::VERTEX },{ "geometry", GLSLShaderType::GEOMETRY },{ "tes", GLSLShaderType::TESS_EVALUATION },{ "tcs", GLSLShaderType::TESS_CONTROL } };
@@ -48,7 +47,7 @@ std::string GLSLProgramFactory::load_source(const boost::filesystem::path &path)
 	return std::string((std::istreambuf_iterator<char>(fs)), (std::istreambuf_iterator<char>()));
 }
 
-std::unique_ptr<GLSLShaderGeneric> GLSLProgramFactory::compile_from_path(const boost::filesystem::path &path) {
+std::unique_ptr<glsl_shader_object_generic> GLSLProgramFactory::compile_from_path(const boost::filesystem::path &path) {
 	std::string line;
 	std::string src;
 	GLSLShaderProperties prop{ 0,0 };
@@ -79,16 +78,16 @@ std::unique_ptr<GLSLShaderGeneric> GLSLProgramFactory::compile_from_path(const b
 	return compile_from_source(path, src, prop, type);
 }
 
-std::unique_ptr<GLSLShaderGeneric> GLSLProgramFactory::compile_from_source(const boost::filesystem::path &path, std::string code,
+std::unique_ptr<glsl_shader_object_generic> GLSLProgramFactory::compile_from_source(const boost::filesystem::path &path, std::string code,
 																		  GLSLShaderProperties prop, GLSLShaderType type) {
-	std::unique_ptr<GLSLShaderGeneric> shader;
+	std::unique_ptr<glsl_shader_object_generic> shader;
 	switch (type) {
-	case GLSLShaderType::VERTEX:	shader = std::make_unique<GLSLShader<GLSLShaderType::VERTEX>>(code, prop); break;
-	case GLSLShaderType::FRAGMENT:	shader = std::make_unique<GLSLShader<GLSLShaderType::FRAGMENT>>(code, prop); break;
-	case GLSLShaderType::GEOMETRY:	shader = std::make_unique<GLSLShader<GLSLShaderType::GEOMETRY>>(code, prop); break;
-	case GLSLShaderType::COMPUTE:	shader = std::make_unique<GLSLShader<GLSLShaderType::COMPUTE>>(code, prop); break;
-	case GLSLShaderType::TESS_CONTROL: shader = std::make_unique<GLSLShader<GLSLShaderType::TESS_CONTROL>>(code, prop); break;
-	case GLSLShaderType::TESS_EVALUATION: shader = std::make_unique<GLSLShader<GLSLShaderType::TESS_EVALUATION>>(code, prop); break;
+	case GLSLShaderType::VERTEX:	shader = std::make_unique<glsl_shader_object<GLSLShaderType::VERTEX>>(code, prop); break;
+	case GLSLShaderType::FRAGMENT:	shader = std::make_unique<glsl_shader_object<GLSLShaderType::FRAGMENT>>(code, prop); break;
+	case GLSLShaderType::GEOMETRY:	shader = std::make_unique<glsl_shader_object<GLSLShaderType::GEOMETRY>>(code, prop); break;
+	case GLSLShaderType::COMPUTE:	shader = std::make_unique<glsl_shader_object<GLSLShaderType::COMPUTE>>(code, prop); break;
+	case GLSLShaderType::TESS_CONTROL: shader = std::make_unique<glsl_shader_object<GLSLShaderType::TESS_CONTROL>>(code, prop); break;
+	case GLSLShaderType::TESS_EVALUATION: shader = std::make_unique<glsl_shader_object<GLSLShaderType::TESS_EVALUATION>>(code, prop); break;
 	default: assert(false && "unknown shader type.");
 	}
 
@@ -237,14 +236,14 @@ StE::optional<boost::filesystem::path> GLSLProgramFactory::resolve_program(const
 	return it->path();
 }
 
-StE::task<std::unique_ptr<GLSLProgram>> GLSLProgramFactory::load_program_task(const StEngineControl &context, const std::vector<std::string> &names) {
+StE::task_future<std::unique_ptr<glsl_program>> GLSLProgramFactory::load_program_task(const StEngineControl &context, const std::vector<std::string> &names) {
 	struct loader_data {
 		program_binary bin;
 		std::string cache_key;
 		std::vector<boost::filesystem::path> files;
 	};
 
-	return StE::task<loader_data>([names = std::move(names), &context](optional<task_scheduler*> sched) -> loader_data {
+	return context.scheduler().schedule_now([names = std::move(names), &context]() -> loader_data {
 		loader_data data;
 		std::chrono::system_clock::time_point modification_time;
 
@@ -300,16 +299,16 @@ StE::task<std::unique_ptr<GLSLProgram>> GLSLProgramFactory::load_program_task(co
 		}
 
 		return data;
-	}).then_on_main_thread([=, &context](optional<task_scheduler*> sched, loader_data data) -> std::unique_ptr<Core::GLSLProgram> {
+	}).then_on_main_thread([=, &context](loader_data data) -> std::unique_ptr<glsl_program> {
 		if (data.bin.blob.length()) {
-			std::unique_ptr<GLSLProgram> program = std::make_unique<GLSLProgram>();
+			std::unique_ptr<glsl_program> program = std::make_unique<glsl_program>();
 			if (program->link_from_binary(data.bin.format, data.bin.blob)) {
 				ste_log() << "Successfully linked GLSL program from cached binary";
 				return program;
 			}
 		}
 
-		std::unique_ptr<GLSLProgram> program = std::make_unique<GLSLProgram>();
+		std::unique_ptr<glsl_program> program = std::make_unique<glsl_program>();
 		for (auto &shader_path : data.files)
 			program->add_shader(compile_from_path(shader_path));
 		if (!program->link())

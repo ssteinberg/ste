@@ -16,15 +16,9 @@ ssss_generator::ssss_generator(const StEngineControl &ctx,
 							   									  ssss(ssss),
 																  scene(scene),
 																  gbuffer(gbuffer) {
-	bilateral_blur_x = std::make_unique<ssss_bilateral_blur_x>(this, ctx);
-	bilateral_blur_y = std::make_unique<ssss_bilateral_blur_y>(this, ctx);
-	write_penumbras = std::make_unique<ssss_write_penumbras>(this, ctx);
-
-	auto blur_x_task = make_gpu_task("ssss_blur_x", bilateral_blur_x.get(), nullptr);
-	auto write_task = make_gpu_task("ssss_write_penumbras", write_penumbras.get(), nullptr);
-	blur_x_task->add_dependency(write_task);
-
-	task = make_gpu_task("ssss_blur_y", bilateral_blur_y.get(), nullptr, { blur_x_task, write_task });
+	bilateral_blur_x.load(ctx, this);
+	bilateral_blur_y.load(ctx, this);
+	write_penumbras.load(ctx, this);
 }
 
 ssss_generator::~ssss_generator() {}

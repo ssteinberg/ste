@@ -13,7 +13,6 @@
 #include "lru_cache_index.hpp"
 
 #include "concurrent_queue.hpp"
-#include "task.hpp"
 #include "interruptible_thread.hpp"
 
 #include <string>
@@ -163,7 +162,7 @@ public:
 	* 	@param k	key
 	*/
 	template <typename V>
-	task<optional<V>> get(const key_type &k) const {
+	auto get(const key_type &k) const {
 		return [=]() -> optional<V> {
 			auto val_guard = this->index.map[k];
 			if (!val_guard.is_valid())

@@ -7,10 +7,12 @@
 #include "StEngineControl.hpp"
 #include "gpu_dispatchable.hpp"
 
-#include "GLSLProgramFactory.hpp"
+#include "resource_instance.hpp"
+#include "resource_loading_task.hpp"
+#include "glsl_program_loading_task.hpp"
 
 #include "deferred_gbuffer.hpp"
-#include "GLSLProgram.hpp"
+#include "glsl_program.hpp"
 
 namespace StE {
 namespace Graphics {
@@ -20,16 +22,26 @@ class gbuffer_sort_dispatch : public gpu_dispatchable {
 
 private:
 	deferred_gbuffer *gbuffer;
-	std::shared_ptr<Core::GLSLProgram> sort_program;
+	Resource::resource_instance<Core::glsl_program> sort_program;
+
+private:
+	gbuffer_sort_dispatch(deferred_gbuffer *gbuffer) : gbuffer(gbuffer) {}
 
 public:
-	gbuffer_sort_dispatch(const StEngineControl &ctx, deferred_gbuffer *gbuffer) : gbuffer(gbuffer),
-																				   sort_program(Resource::GLSLProgramFactory::load_program_task({ "gbuffer_sort.glsl" })()) {}
+	static auto loader(const StEngineControl &ctx, deferred_gbuffer *gbuffer) {
+		return ctx.scheduler().schedule_now([=, &ctx]() {
+			auto object = std::make_unique<gbuffer_sort_dispatch>(gbuffer);
+
+			auto guard = object->sort_program.load_and_wait_guard(ctx, "gbuffer_sort.glsl");
+
+			return object;
+		});
+	}
 
 protected:
 	virtual void set_context_state() const override {
 		gbuffer->bind_gbuffer();
-		sort_program->bind();
+		sort_program.get().bind();
 	}
 
 	virtual void dispatch() const override {
@@ -41,5 +53,23 @@ protected:
 	}
 };
 
-}
+namespace Resource {
+
+template <>
+class resource_loading_task<deferred_composer> {
+	using R = deferred_composer;
+
+public:
+	template <typename ... Ts>
+	auto loader(const StEngineControl &ctx, Ts&&... args) {
+		return ctx.scheduler().schedule_now([=, &ctx]() {
+			auto object = std::make_unique<R>(ctx, std::forward<Ts>(args)...);
+
+			object->program.wait();
+
+			return object;
+		});
+	}
+};
+
 }

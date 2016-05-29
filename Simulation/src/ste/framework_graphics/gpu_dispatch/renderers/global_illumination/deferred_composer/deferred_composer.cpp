@@ -12,9 +12,6 @@
 
 using namespace StE::Graphics;
 
-deferred_composer::deferred_composer(const StEngineControl &ctx, GIRenderer *dr) : program(Resource::GLSLProgramFactory::load_program_task(ctx, { "passthrough.vert", "deferred_compose.frag" })()),
-																				   dr(dr) {}
-
 void deferred_composer::set_context_state() const {
 	using namespace Core;
 
@@ -37,7 +34,7 @@ void deferred_composer::set_context_state() const {
 
 	ScreenFillingQuad.vao()->bind();
 
-	program->bind();
+	program.get().bind();
 }
 
 void deferred_composer::dispatch() const {

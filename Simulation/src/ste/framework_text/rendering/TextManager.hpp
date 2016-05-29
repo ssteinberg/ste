@@ -13,7 +13,6 @@
 #include "gpu_dispatchable.hpp"
 #include "gl_current_context.hpp"
 #include "StEngineControl.hpp"
-#include "task.hpp"
 
 #include "ring_buffer.hpp"
 #include "range.hpp"
@@ -21,7 +20,7 @@
 #include "VertexArrayObject.hpp"
 #include "VertexBufferObject.hpp"
 #include "ShaderStorageBuffer.hpp"
-#include "GLSLProgram.hpp"
+#include "glsl_program.hpp"
 #include "Sampler.hpp"
 
 #include <memory>
@@ -83,7 +82,7 @@ private:
 	friend class text_renderable;
 
 private:
-	std::shared_ptr<Core::GLSLProgram> text_distance_mapping;
+	std::unique_ptr<Core::glsl_program> text_distance_mapping;
 	std::shared_ptr<ResizeSignalConnectionType> resize_connection;
 
 	glyph_manager gm;

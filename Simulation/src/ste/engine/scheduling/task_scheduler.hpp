@@ -11,6 +11,8 @@
 
 #include <type_traits>
 
+#include "task_future.hpp"
+
 #include "balanced_thread_pool.hpp"
 #include "concurrent_queue.hpp"
 #include "function_wrapper.hpp"
@@ -46,77 +48,70 @@ public:
 
 	void run_loop();
 
-	template <typename F>
-	std::future<typename function_traits<F>::result_t> schedule_now(F &&f,
-																	std::enable_if_t<function_traits<F>::arity == 0>* = 0) {
-		return pool.enqueue(std::forward<F>(f));
-	}
-	template <typename F>
-	std::future<typename function_traits<F>::result_t> schedule_now(F &&f,
-																	std::enable_if_t<function_traits<F>::arity == 1>* = 0) {
-		static_assert(std::is_constructible<typename function_traits<F>::template arg<0>::t, task_scheduler*>::value, "Lambda argument must be constructible with task_scheduler*");
+	template <bool shared, typename F>
+	task_future_impl<typename function_traits<F>::result_t, shared> schedule_now(F &&f) {
+		static_assert(function_traits<F>::arity == 0, "lambda takes too many arguments");
 
-		return schedule_now([func = std::forward<F>(f), this]() { return func(this); });
+		return { std::move(pool.enqueue(std::forward<F>(f))), this };
 	}
 
-	template<typename F>
-	std::future<typename function_traits<F>::result_t> schedule_at(const std::chrono::high_resolution_clock::time_point &at,
-												   				   F &&f,
-												   				   std::enable_if_t<function_traits<F>::arity == 0>* = 0) {
+	template <bool shared, typename F>
+	task_future_impl<typename function_traits<F>::result_t, shared> schedule_at(const std::chrono::high_resolution_clock::time_point &at,
+												   				   				F &&f) {
+		static_assert(function_traits<F>::arity == 0, "lambda takes too many arguments");
+
 		std::packaged_task<std::result_of_t<F()>()> pt(std::forward<F>(f));
 		auto future = pt.get_future();
 		delayed_tasks_queue.push({ at, std::move(pt) });
-		return future;
-	}
-	template <typename F>
-	std::future<typename function_traits<F>::result_t> schedule_at(const std::chrono::high_resolution_clock::time_point &at,
-												  				   F &&f,
-												  				   std::enable_if_t<function_traits<F>::arity == 1>* = 0) {
-		static_assert(std::is_constructible<typename function_traits<F>::template arg<0>::t, task_scheduler*>::value, "Lambda argument must be constructible with task_scheduler*");
-
-		return schedule_at(at, [func = std::forward<F>(f), this]() { return func(this); });
+		return { std::move(future), this };
 	}
 
-	template<typename F, class Rep, class Period>
-	std::future<typename function_traits<F>::result_t> schedule_after(const std::chrono::duration<Rep, Period> &after,
-																	  F &&f,
-																	  std::enable_if_t<function_traits<F>::arity == 0>* = 0) {
+	template <bool shared, typename F, class Rep, class Period>
+	task_future_impl<typename function_traits<F>::result_t, shared> schedule_after(const std::chrono::duration<Rep, Period> &after,
+																	  			   F &&f) {
+		static_assert(function_traits<F>::arity == 0, "lambda takes too many arguments");
+
 		std::packaged_task<std::result_of_t<F()>()> pt(std::forward<F>(f));
 		auto future = pt.get_future();
 		delayed_tasks_queue.push({ std::chrono::high_resolution_clock::now() + after, std::move(pt) });
-		return future;
-	}
-	template <typename F, class Rep, class Period>
-	std::future<typename function_traits<F>::result_t> schedule_after(const std::chrono::duration<Rep, Period> &after,
-													  				  F &&f,
-													  				  std::enable_if_t<function_traits<F>::arity == 1>* = 0) {
-		static_assert(std::is_constructible<typename function_traits<F>::template arg<0>::t, task_scheduler*>::value, "Lambda argument must be constructible with task_scheduler*");
-
-		return schedule_after(after, [func = std::forward<F>(f), this]() { return func(this); });
+		return { std::move(future), this };
 	}
 
-	template <typename F>
-	std::future<typename function_traits<F>::result_t> schedule_now_on_main_thread(F &&f,
-																   				   std::enable_if_t<function_traits<F>::arity == 0>* = 0) {
+	template <bool shared, typename F>
+	task_future_impl<typename function_traits<F>::result_t, shared> schedule_now_on_main_thread(F &&f) {
+		static_assert(function_traits<F>::arity == 0, "lambda takes too many arguments");
+
 		std::packaged_task<std::result_of_t<F()>()> pt(std::forward<F>(f));
 		auto future = pt.get_future();
 		if (is_main_thread()) {
 			pt();
-			return future;
+			return { std::move(future), this };
 		}
 
 		main_thread_task_queue.push(std::move(pt));
-		return future;
+		return { std::move(future), this };
+	}
+
+	template <typename F>
+	auto schedule_now(F &&f) {
+		return schedule_now<false>(std::forward<F>(f));
 	}
 	template <typename F>
-	std::future<typename function_traits<F>::result_t> schedule_now_on_main_thread(F &&f,
-																   				   std::enable_if_t<function_traits<F>::arity == 1>* = 0) {
-		static_assert(std::is_constructible<typename function_traits<F>::template arg<0>::t, task_scheduler*>::value, "Lambda argument must be constructible with task_scheduler*");
-
-		return schedule_now_on_main_thread([func = std::forward<F>(f), this]() { func(this); });
+	auto schedule_at(const std::chrono::high_resolution_clock::time_point &at, F &&f) {
+		return schedule_at<false>(at, std::forward<F>(f));
+	}
+	template <typename F, class Rep, class Period>
+	auto schedule_after(const std::chrono::duration<Rep, Period> &after, F &&f) {
+		return schedule_after<false>(after, std::forward<F>(f));
+	}
+	template <typename F>
+	auto schedule_now_on_main_thread(F &&f) {
+		return schedule_now_on_main_thread<false>(std::forward<F>(f));
 	}
 
 	const balanced_thread_pool *get_thread_pool() const { return &pool; }
 };
 
 }
+
+#include "task_future_impl.hpp"

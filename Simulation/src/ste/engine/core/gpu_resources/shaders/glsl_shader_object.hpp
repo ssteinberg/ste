@@ -51,16 +51,16 @@ public:
 	}
 };
 
-class GLSLShaderGeneric : virtual public GenericResource {
+class glsl_shader_object_generic : virtual public GenericResource {
 public:
 	virtual std::string read_info_log() const = 0;
 	virtual bool get_status() const = 0;
 
-	virtual ~GLSLShaderGeneric() noexcept {}
+	virtual ~glsl_shader_object_generic() noexcept {}
 };
 
 template <GLSLShaderType ShaderType>
-class GLSLShader : public resource<GLSLShaderAllocator<ShaderType>>, public GLSLShaderGeneric {
+class glsl_shader_object : public resource<GLSLShaderAllocator<ShaderType>>, public glsl_shader_object_generic {
 private:
 	int status;
 	GLSLShaderProperties properties;
@@ -74,12 +74,12 @@ public:
 	static constexpr GLSLShaderType type = ShaderType;
 
 public:
-	GLSLShader(GLSLShader &&m) = default;
-	GLSLShader(const GLSLShader &c) = delete;
-	GLSLShader& operator=(GLSLShader &&m) = default;
-	GLSLShader& operator=(const GLSLShader &c) = delete;
+	glsl_shader_object(glsl_shader_object &&m) = default;
+	glsl_shader_object(const glsl_shader_object &c) = delete;
+	glsl_shader_object& operator=(glsl_shader_object &&m) = default;
+	glsl_shader_object& operator=(const glsl_shader_object &c) = delete;
 
-	GLSLShader(const std::string &src, const GLSLShaderProperties &properties) : properties(properties) {
+	glsl_shader_object(const std::string &src, const GLSLShaderProperties &properties) : properties(properties) {
 		auto str = src.data();
 		glShaderSource(get_resource_id(), 1, &str, NULL);
 

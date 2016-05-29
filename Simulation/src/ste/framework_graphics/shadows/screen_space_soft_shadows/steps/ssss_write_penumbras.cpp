@@ -19,7 +19,7 @@ void ssss_write_penumbras::set_context_state() const {
 	8_tex_unit = *p->shadows_storage->get_cubemaps();
 	8_sampler_idx = *Sampler::SamplerAnisotropicLinearClamp();
 
-	ssss_gen_program->bind();
+	ssss_gen_program.get().bind();
 }
 
 void ssss_write_penumbras::dispatch() const {

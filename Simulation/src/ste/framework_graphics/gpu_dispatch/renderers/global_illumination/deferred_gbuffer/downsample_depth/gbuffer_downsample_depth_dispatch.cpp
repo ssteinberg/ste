@@ -14,7 +14,7 @@ void gbuffer_downsample_depth_dispatch::set_context_state() const {
 	12_sampler_idx = *SamplerMipmapped::MipmappedSamplerNearestClamp();
 	12_tex_unit = *gbuffer->get_downsampled_depth_target();
 
-	program->bind();
+	program.get().bind();
 }
 
 void gbuffer_downsample_depth_dispatch::dispatch() const {
@@ -26,7 +26,7 @@ void gbuffer_downsample_depth_dispatch::dispatch() const {
 
 	for (int i = 0; i < gbuffer->get_downsampled_depth_target()->get_levels(); ++i, size /= 2) {
 		4_image_idx = gbuffer->get_downsampled_depth_target()->make_image(i).with_access(ImageAccessMode::Write);
-		program->set_uniform("lod", i);
+		program.get().set_uniform("lod", i);
 
 		auto s = (size + glm::ivec2(jobs - 1)) / jobs;
 

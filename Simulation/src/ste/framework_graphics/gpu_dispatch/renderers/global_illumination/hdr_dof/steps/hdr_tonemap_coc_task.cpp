@@ -12,7 +12,7 @@ void hdr_tonemap_coc_task::set_context_state() const {
 
 	11_tex_unit = *p->gbuffer->get_depth_target();
 
-	p->hdr_tonemap_coc->bind();
+	p->hdr_tonemap_coc.get().bind();
 }
 
 void hdr_tonemap_coc_task::dispatch() const {

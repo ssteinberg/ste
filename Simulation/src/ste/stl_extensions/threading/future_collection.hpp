@@ -6,20 +6,25 @@
 #include <vector>
 #include <future>
 #include <functional>
+#include <type_traits>
 
 namespace StE {
 
-template <typename R>
+template <typename R, template<class> typename F = std::future>
 class future_collection {
 public:
-	using future_type = std::future<R>;
+	using future_type = F<R>;
 
 private:
 	std::vector<future_type> futures;
 
 public:
 	void insert(future_type &&f) {
-		futures.push_back(std::move(f));
+		futures.emplace_back(std::move(f));
+	}
+	template <typename T = future_type>
+	void insert(const T &f, typename std::enable_if_t<std::is_copy_constructible<T>::value>* = nullptr) {
+		futures.emplace_back(f);
 	}
 
 	int wait_for_any() const {

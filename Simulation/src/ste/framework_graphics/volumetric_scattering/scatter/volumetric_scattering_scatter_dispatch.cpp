@@ -20,7 +20,7 @@ void volumetric_scattering_scatter_dispatch::set_context_state() const {
 
 	7_image_idx = vss->get_volume_texture()->make_image().with_access(Core::ImageAccessMode::Write);
 
-	program->bind();
+	program.get().bind();
 }
 
 void volumetric_scattering_scatter_dispatch::dispatch() const {

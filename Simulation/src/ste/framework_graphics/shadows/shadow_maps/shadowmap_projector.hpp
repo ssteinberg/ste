@@ -7,8 +7,11 @@
 #include "StEngineControl.hpp"
 #include "gl_current_context.hpp"
 
-#include "GLSLProgramFactory.hpp"
-#include "GLSLProgram.hpp"
+#include "resource_instance.hpp"
+#include "resource_loading_task.hpp"
+#include "glsl_program_loading_task.hpp"
+
+#include "glsl_program.hpp"
 #include "gpu_dispatchable.hpp"
 
 #include "light_storage.hpp"
@@ -23,12 +26,14 @@ namespace Graphics {
 class shadowmap_projector : public gpu_dispatchable {
 	using Base = gpu_dispatchable;
 
+	friend class Resource::resource_loading_task<shadowmap_projector>;
+
 private:
 	const Scene *scene;
 	light_storage *lights;
 	const shadowmap_storage *shadow_map;
 
-	std::shared_ptr<Core::GLSLProgram> shadow_gen_program;
+	Resource::resource_instance<Core::glsl_program> shadow_gen_program;
 
 public:
 	shadowmap_projector(const StEngineControl &ctx,
@@ -36,12 +41,34 @@ public:
 						light_storage *lights,
 						const shadowmap_storage *shadow_map) : scene(scene),
 															   lights(lights),
-															   shadow_map(shadow_map),
-															   shadow_gen_program(Resource::GLSLProgramFactory::load_program_task(ctx, { "shadow_map.vert", "shadow_cubemap.geom" })()) {}
+															   shadow_map(shadow_map) {
+		shadow_gen_program.load(ctx, std::vector<std::string>{ "shadow_map.vert", "shadow_cubemap.geom" });
+	}
 
 protected:
 	void set_context_state() const override final;
 	void dispatch() const override final;
+};
+
+}
+
+namespace Resource {
+
+template <>
+class resource_loading_task<Graphics::shadowmap_projector> {
+	using R = Graphics::shadowmap_projector;
+
+public:
+	template <typename ... Ts>
+	auto loader(const StEngineControl &ctx, Ts&&... args) {
+		return ctx.scheduler().schedule_now([=, &ctx]() {
+			auto object = std::make_unique<R>(ctx, std::forward<Ts>(args)...);
+
+			object->shadow_gen_program.wait();
+
+			return object;
+		});
+	}
 };
 
 }

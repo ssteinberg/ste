@@ -10,7 +10,7 @@ void hdr_create_histogram_task::set_context_state() const {
 	0_image_idx = (*p->hdr_lums)[0];
 	2_storage_idx = p->hdr_bokeh_param_buffer;
 
-	p->hdr_create_histogram->bind();
+	p->hdr_create_histogram.get().bind();
 }
 
 void hdr_create_histogram_task::dispatch() const {

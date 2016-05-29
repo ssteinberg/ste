@@ -13,7 +13,7 @@
 #include <type_traits>
 #include <memory>
 
-#include <vector>
+#include <unordered_set>
 #include <map>
 
 namespace StE {
@@ -40,7 +40,7 @@ class resource_storage {
 private:
 	storage_type stack;
 
-	std::vector<const resource_type*> signalled_objects;
+	std::unordered_set<const resource_type*> signalled_objects;
 	std::unordered_map<const resource_type*, std::shared_ptr<resource_signal_connection_type>> connections;
 
 private:
@@ -67,7 +67,7 @@ private:
 
 	void attach_resource_connection(resource_type *res) {
 		auto connection = std::make_shared<resource_signal_connection_type>(
-			[this](const resource_type* obj) { assert(obj); this->signalled_objects.push_back(obj); }
+			[this](const resource_type* obj) { assert(obj); this->signalled_objects.insert(obj); }
 		);
 		res->resource_signal().connect(connection);
 		connections.insert(std::make_pair(res, std::move(connection)));

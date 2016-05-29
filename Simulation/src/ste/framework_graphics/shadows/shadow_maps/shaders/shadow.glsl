@@ -14,8 +14,8 @@ float shadow_gather_pcf(samplerCubeArrayShadow shadow_depth_maps, uint light, fl
 }
 
 float shadow(samplerCubeArrayShadow shadow_depth_maps, uint light, vec3 shadow_v) {
-	const int rings = 3;
-	const int samples = 4;
+	const int rings = 4;
+	const int samples = 2;
 	const float map_size = 1.f / 512.f;
 
 	vec3 v = abs(shadow_v);
@@ -26,12 +26,12 @@ float shadow(samplerCubeArrayShadow shadow_depth_maps, uint light, vec3 shadow_v
 
 	float accum = texture(shadow_depth_maps, vec4(shadow_v, light), zf).x;
 
-	vec2 noise = vec2(fast_rand(gl_FragCoord.x), fast_rand(gl_FragCoord.y)) * .0002f;
-	vec2 wh = vec2(map_size) + noise;
+	vec2 wh = vec2(map_size);
+	int ringsamples = samples;
+
 	float s = 1.f;
-	for (int i = rings; i >= 1; --i) {
-		int ringsamples = samples;
-		float jitter = fast_rand(gl_FragCoord.xy * float(i));
+	for (int i = rings; i >= 1; --i, ++ringsamples) {
+		float jitter = fast_rand(float(i));
 
 		for (int j = 0; j < ringsamples; ++j) {
 			float step = (float(j) + jitter) * pi*2.f / float(ringsamples);

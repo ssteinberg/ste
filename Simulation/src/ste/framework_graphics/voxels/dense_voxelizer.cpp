@@ -20,7 +20,7 @@ void dense_voxelizer::dispatch() const {
 
 	Core::GL::gl_current_context::get()->memory_barrier(GL_TEXTURE_FETCH_BARRIER_BIT);
 
-	dvs->voxelizer_upsampler_program->bind();
+	dvs->voxelizer_upsampler_program.get().bind();
 	auto center = dvs->size / 2;
 
 	for (int i = 0; i < dvs->mipmaps - 1; ++i, center /= 2) {
@@ -30,8 +30,8 @@ void dense_voxelizer::dispatch() const {
 		auto count3 = max - min;
 		auto count = count3 / 16;
 
-		dvs->voxelizer_upsampler_program->set_uniform("tiles", int(f.x));
-		dvs->voxelizer_upsampler_program->set_uniform("level", int(i));
+		dvs->voxelizer_upsampler_program.get().set_uniform("tiles", int(f.x));
+		dvs->voxelizer_upsampler_program.get().set_uniform("level", int(i));
 
 		Core::GL::gl_current_context::get()->dispatch_compute(count.x, count.y, count.z);
 

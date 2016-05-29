@@ -25,7 +25,7 @@ void linked_light_lists_gen_dispatch::set_context_state() const {
 
 	ScreenFillingQuad.vao()->bind();
 
-	program->bind();
+	program.get().bind();
 }
 
 void linked_light_lists_gen_dispatch::dispatch() const {

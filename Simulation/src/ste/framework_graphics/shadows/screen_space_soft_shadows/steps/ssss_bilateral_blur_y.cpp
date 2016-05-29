@@ -20,7 +20,7 @@ void ssss_bilateral_blur_y::set_context_state() const {
 	8_tex_unit = *p->ssss->get_blur_layers();
 	8_sampler_idx = *Sampler::SamplerNearestClamp();
 
-	ssss_blur_program->bind();
+	ssss_blur_program.get().bind();
 
 	ScreenFillingQuad.vao()->bind();
 	p->ssss->get_penumbra_fbo()->bind();

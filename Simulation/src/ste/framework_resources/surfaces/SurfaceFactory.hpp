@@ -11,7 +11,8 @@
 #define BOOST_FILESYSTEM_NO_DEPRECATED
 #include <boost/filesystem.hpp>
 
-#include "task.hpp"
+#include "task_future.hpp"
+#include "task_scheduler.hpp"
 #include "Texture2D.hpp"
 
 #include "Log.hpp"
@@ -32,8 +33,8 @@ private:
 	~SurfaceFactory() {}
 
 public:
-	static task<bool> write_surface_2d_task(const gli::texture2d &surface, const boost::filesystem::path &path) {
-		return [=](optional<task_scheduler*> sched) -> bool {
+	static auto write_surface_2d_task(task_scheduler &sched, const gli::texture2d &surface, const boost::filesystem::path &path) {
+		return sched.schedule_now([=]() -> bool {
 			int components;
 			if (surface.format() == gli::format::FORMAT_R8_UNORM_PACK8)			components = 1;
 			else if (surface.format() == gli::format::FORMAT_RGB8_UNORM_PACK8)	components = 3;
@@ -43,11 +44,11 @@ public:
 				return false;
 			}
 			return write_png(path, reinterpret_cast<const char*>(surface.data()), components, surface.extent().x, surface.extent().y);
-		};
+		});
 	}
 
-	static task<gli::texture2d> load_surface_2d_task(const boost::filesystem::path &path, bool srgb) {
-		return [=](optional<task_scheduler*> sched) -> gli::texture2d {
+	static auto load_surface_2d_task(task_scheduler &sched, const boost::filesystem::path &path, bool srgb) {
+		return sched.schedule_now([=]() -> gli::texture2d {
 			unsigned char magic[4] = { 0, 0, 0, 0 };
 
 			// Check image format
@@ -116,15 +117,14 @@ public:
 				ste_log_error() << red(AttributedString("Incompatible surface format: \"")) + i(path.string()) + "\"." << std::endl;
 				return gli::texture2d();
 			}
-		};
+		});
 	}
 
-	static auto load_texture_2d_task(const boost::filesystem::path &path, bool srgb) {
-		return task<gli::texture2d>([=](optional<task_scheduler*> sched) {
-			return load_surface_2d_task(path, srgb)(sched);
-		}).then_on_main_thread([](optional<task_scheduler*> sched, const gli::texture2d &surface) {
-			return std::make_unique<Core::Texture2D>(surface, surface.levels() == 1);
-		});
+	static auto load_texture_2d_task(task_scheduler &sched, const boost::filesystem::path &path, bool srgb) {
+		return load_surface_2d_task(sched, path, srgb)
+				.then_on_main_thread([](const gli::texture2d &surface) {
+					return std::make_unique<Core::Texture2D>(surface, surface.levels() == 1);
+				});
 	}
 };
 

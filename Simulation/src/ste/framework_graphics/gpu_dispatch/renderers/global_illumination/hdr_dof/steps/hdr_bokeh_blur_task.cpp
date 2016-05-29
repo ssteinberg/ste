@@ -10,7 +10,7 @@ void hdr_bokeh_blur_task::set_context_state() const {
 	11_tex_unit = *p->gbuffer->get_depth_target();
 
 	ScreenFillingQuad.vao()->bind();
-	p->bokeh_blur->bind();
+	p->bokeh_blur.get().bind();
 }
 
 void hdr_bokeh_blur_task::dispatch() const {

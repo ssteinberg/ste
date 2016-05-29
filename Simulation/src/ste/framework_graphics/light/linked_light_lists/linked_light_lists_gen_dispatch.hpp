@@ -7,12 +7,14 @@
 #include "StEngineControl.hpp"
 #include "gpu_dispatchable.hpp"
 
-#include "GLSLProgramFactory.hpp"
+#include "resource_instance.hpp"
+#include "resource_loading_task.hpp"
+#include "glsl_program_loading_task.hpp"
 
 #include "linked_light_lists.hpp"
 #include "light_storage.hpp"
 
-#include "GLSLProgram.hpp"
+#include "glsl_program.hpp"
 #include "Texture2D.hpp"
 #include "Sampler.hpp"
 
@@ -22,11 +24,12 @@ namespace Graphics {
 class linked_light_lists_gen_dispatch : public gpu_dispatchable {
 	using Base = gpu_dispatchable;
 
+	friend class Resource::resource_loading_task<linked_light_lists_gen_dispatch>;
+
 private:
-	const StEngineControl &ctx;
 	light_storage *ls;
 	linked_light_lists *lll;
-	std::shared_ptr<Core::GLSLProgram> program;
+	Resource::resource_instance<Core::glsl_program> program;
 
 	Core::SamplerMipmapped depth_sampler;
 
@@ -35,16 +38,38 @@ private:
 public:
 	linked_light_lists_gen_dispatch(const StEngineControl &ctx,
 									light_storage *ls,
-									linked_light_lists *lll) : ctx(ctx), ls(ls), lll(lll),
-															   program(Resource::GLSLProgramFactory::load_program_task(ctx, { "passthrough.vert", "linked_light_lists_gen.frag" })()),
+									linked_light_lists *lll) : ls(ls), lll(lll),
 															   depth_sampler(Core::TextureFiltering::Nearest, Core::TextureFiltering::Nearest, Core::TextureFiltering::Nearest,
-															   				 Core::TextureWrapMode::ClampToEdge, Core::TextureWrapMode::ClampToEdge) {}
+															   				 Core::TextureWrapMode::ClampToEdge, Core::TextureWrapMode::ClampToEdge) {
+		program.load(ctx, std::vector<std::string>{ "passthrough.vert", "linked_light_lists_gen.frag" });
+	}
 
 	void set_depth_map(Core::Texture2D *dm) { depth_map = dm; }
 
 protected:
 	virtual void set_context_state() const override;
 	virtual void dispatch() const override;
+};
+
+}
+
+namespace Resource {
+
+template <>
+class resource_loading_task<Graphics::linked_light_lists_gen_dispatch> {
+	using R = Graphics::linked_light_lists_gen_dispatch;
+
+public:
+	template <typename ... Ts>
+	auto loader(const StEngineControl &ctx, Ts&&... args) {
+		return ctx.scheduler().schedule_now([=, &ctx]() {
+			auto object = std::make_unique<R>(ctx, std::forward<Ts>(args)...);
+
+			object->program.wait();
+
+			return object;
+		});
+	}
 };
 
 }

@@ -7,6 +7,9 @@
 #include "StEngineControl.hpp"
 #include "rendering_system.hpp"
 
+#include "resource_instance.hpp"
+#include "resource_loading_task.hpp"
+
 #include "Camera.hpp"
 #include "transforms_ring_buffers.hpp"
 
@@ -43,7 +46,7 @@
 #include "dense_voxel_space.hpp"
 #include "fb_clear_dispatch.hpp"
 
-#include "GLSLProgram.hpp"
+#include "glsl_program.hpp"
 
 #include <memory>
 
@@ -54,6 +57,7 @@ class GIRenderer : public rendering_system {
 	using Base = rendering_system;
 
 	friend class deferred_composer;
+	friend class Resource::resource_loading_task<GIRenderer>;
 
 private:
 	using ResizeSignalConnectionType = StEngineControl::framebuffer_resize_signal_type::connection_type;
@@ -72,28 +76,32 @@ private:
 	const Camera *camera;
 	transforms_ring_buffers transform_buffers;
 	Scene *scene;
-	// dense_voxel_space voxel_space;
 
 private:
 	gpu_task::TaskCollection gui_tasks;
 	gpu_task::TaskCollection added_tasks;
 
-	linked_light_lists lll_storage;
-	linked_light_lists_gen_dispatch lll_gen_dispatch;
-	light_preprocessor light_preprocess;
-
-	shadowmap_storage shadows_storage;
-	shadowmap_projector shadows_projector;
+	FbClearTask fb_clearer;
 
 	volumetric_scattering_storage volumetric_scattering;
-	volumetric_scattering_scatter_dispatch volumetric_scattering_scatter;
-	volumetric_scattering_gather_dispatch volumetric_scattering_gather;
 
-	hdr_dof_postprocess hdr;
-	gbuffer_downsample_depth_dispatch downsample_depth;
+	Resource::resource_instance<deferred_composer> composer;
 
-	scene_prepopulate_depth_dispatch prepopulate_depth_dispatch;
-	scene_geo_cull_dispatch scene_geo_cull;
+	Resource::resource_instance<linked_light_lists> lll_storage;
+	Resource::resource_instance<linked_light_lists_gen_dispatch> lll_gen_dispatch;
+	Resource::resource_instance<light_preprocessor> light_preprocess;
+
+	Resource::resource_instance<shadowmap_storage> shadows_storage;
+	Resource::resource_instance<shadowmap_projector> shadows_projector;
+
+	Resource::resource_instance<volumetric_scattering_scatter_dispatch> volumetric_scattering_scatter;
+	Resource::resource_instance<volumetric_scattering_gather_dispatch> volumetric_scattering_gather;
+
+	Resource::resource_instance<hdr_dof_postprocess> hdr;
+	Resource::resource_instance<gbuffer_downsample_depth_dispatch> downsample_depth;
+
+	Resource::resource_instance<scene_prepopulate_depth_dispatch> prepopulate_depth_dispatch;
+	Resource::resource_instance<scene_geo_cull_dispatch> scene_geo_cull;
 
 	std::shared_ptr<const gpu_task> precomposer_dummy_task,
 									scene_task,
@@ -106,9 +114,6 @@ private:
 									prepopulate_depth_task,
 									scene_geo_cull_task,
 									lll_gen_task;
-
-	deferred_composer composer;
-	FbClearTask fb_clearer;
 
 	bool use_deferred_rendering{ true };
 
@@ -124,12 +129,12 @@ protected:
 		return &ctx.gl()->defaut_framebuffer();
 	}
 
-public:
+private:
 	GIRenderer(const StEngineControl &ctx,
 			   const Camera *camera,
-			   Scene *scene/*,
-			   std::size_t voxel_grid_size = 512,
-			   float voxel_grid_ratio = .01f*/);
+			   Scene *scene);
+
+public:
 	virtual ~GIRenderer() noexcept {}
 
 	void set_deferred_rendering_enabled(bool enabled);
@@ -141,8 +146,6 @@ public:
 
 	virtual void render_queue() override;
 
-	// const dense_voxel_space& voxel_grid() const { return voxel_space; }
-
 	auto *get_gbuffer() const { return &gbuffer; }
 	auto &get_scene_task() const { return scene_task; }
 
@@ -153,3 +156,5 @@ public:
 
 }
 }
+
+#include "girenderer_loader.hpp"

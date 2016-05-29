@@ -123,7 +123,7 @@ void StEngineControl::capture_screenshot() const {
 	for (int i=0; i<size.x * size.y; ++i)
 		reinterpret_cast<glm::u8vec4*>(tex.data())[i].w = 255;
 
-	scheduler().schedule_now([=](optional<task_scheduler*> sched) {
+	scheduler().schedule_now([=]() {
 		boost::filesystem::create_directory("Screenshots");
 
 		time_t rawtime;
@@ -133,7 +133,7 @@ void StEngineControl::capture_screenshot() const {
 		timeinfo = localtime(&rawtime);
 		strftime(buffer, 256, "%a %d%b%y %H.%M.%S", timeinfo);
 
-		StE::Resource::SurfaceFactory::write_surface_2d_task(tex, std::string("Screenshots/") + buffer + ".png")(sched);
+		StE::Resource::SurfaceFactory::write_surface_2d_async(tex, std::string("Screenshots/") + buffer + ".png").get();
 	});
 }
 
