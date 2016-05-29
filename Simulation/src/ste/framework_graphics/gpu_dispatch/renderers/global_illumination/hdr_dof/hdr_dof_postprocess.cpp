@@ -58,7 +58,7 @@ hdr_dof_postprocess::hdr_dof_postprocess(ctor_token,
 	hdr_bloom_blurx.get().set_uniform("dir", glm::vec2{ 1.f, .0f });
 	hdr_bloom_blury.get().set_uniform("dir", glm::vec2{ .0f, 1.f });
 
-	task = make_gpu_task("hdr", create_dispatchable(), &ctx.gl()->defaut_framebuffer(), create_sub_tasks());
+	task = make_gpu_task("dof_bokeh", create_dispatchable(), &ctx.gl()->defaut_framebuffer(), create_sub_tasks());
 	resize(ctx.get_backbuffer_size());
 
 	setup_engine_connections();

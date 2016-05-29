@@ -72,7 +72,7 @@ void display_loading_screen_until(StE::StEngineControl &ctx, StE::Text::TextMana
 	}
 }
 
-auto create_light_object(StE::Graphics::Scene *scene, const glm::vec3 &light_pos, StE::Graphics::SphericalLight *light) {
+auto create_light_object(StE::Graphics::Scene *scene, const glm::vec3 &light_pos, StE::Graphics::SphericalLight *light, std::vector<std::unique_ptr<StE::Graphics::Material>> &materials) {
 	std::unique_ptr<StE::Graphics::Sphere> sphere = std::make_unique<StE::Graphics::Sphere>(20, 20);
 	(*sphere) *= light->get_radius();
 	auto light_obj = std::make_shared<StE::Graphics::Object>(std::move(sphere));
@@ -87,14 +87,16 @@ auto create_light_object(StE::Graphics::Scene *scene, const glm::vec3 &light_pos
 	light_mat->set_basecolor_map(std::make_unique<StE::Core::Texture2D>(light_color_tex, false));
 	light_mat->set_emission(c * light->get_luminance());
 
-	light_obj->set_material(light_mat);
+	light_obj->set_material(light_mat.get());
 
 	scene->object_group().add_object(light_obj);
+
+	materials.push_back(std::move(light_mat));
 
 	return light_obj;
 }
 
-void add_scene_lights(StE::Graphics::Scene &scene) {
+void add_scene_lights(StE::Graphics::Scene &scene, std::vector<std::unique_ptr<StE::Graphics::light>> &lights, std::vector<std::unique_ptr<StE::Graphics::Material>> &materials) {
 	for (auto &v : { glm::vec3{ -622, 645, -310},
 					 glm::vec3{  124, 645, -310},
 					 glm::vec3{  497, 645, -310},
@@ -107,7 +109,9 @@ void add_scene_lights(StE::Graphics::Scene &scene) {
 					 glm::vec3{  120, 153,  552},
 					 glm::vec3{  885, 153,  552} }) {
 		auto wall_lamp = scene.scene_properties().lights_storage().allocate_light<StE::Graphics::SphericalLight>(5000.f, StE::Graphics::Kelvin(1800), v, 2.f);
-		create_light_object(&scene, v, wall_lamp);
+		create_light_object(&scene, v, wall_lamp.get(), materials);
+
+		lights.push_back(std::move(wall_lamp));
 	}
 }
 
@@ -124,51 +128,11 @@ auto create_material_editor_object(StE::Graphics::Scene *scene, const glm::vec3 
 	auto mat = scene->scene_properties().materials_storage().allocate_material();
 	mat->set_basecolor_map(std::make_unique<StE::Core::Texture2D>(base_color_tex, false));
 
-	obj->set_material(mat);
+	obj->set_material(mat.get());
 
 	scene->object_group().add_object(obj);
 
-	return mat;
-}
-
-void create_material_editor(StE::Graphics::Scene *scene, StE::Graphics::debug_gui *debug_gui_dispatchable) {
-	auto material_editor_material = create_material_editor_object(scene, {0,100,0});
-
-	StE::Graphics::RGB material_editor_base_color = {1,1,1};
-	float material_editor_roughness = material_editor_material->get_roughness();
-	float material_editor_anisotropy = material_editor_material->get_anisotropy();
-	float material_editor_metallic = material_editor_material->get_metallic();
-	float material_editor_index_of_refraction = material_editor_material->get_index_of_refraction();
-	float material_editor_sheen = material_editor_material->get_sheen();
-	debug_gui_dispatchable->add_custom_gui([&, material_editor_material](const glm::ivec2 &bbsize) {
-		ImGui::SetNextWindowPos(ImVec2(20,bbsize.y - 400), ImGuiSetCond_FirstUseEver);
-		ImGui::SetNextWindowSize(ImVec2(120,400), ImGuiSetCond_FirstUseEver);
-		if (ImGui::Begin("Material", nullptr)) {
-			ImGui::SliderFloat("R ##value", &material_editor_base_color.R(), .0f, 1.f);
-			ImGui::SliderFloat("G ##value", &material_editor_base_color.G(), .0f, 1.f);
-			ImGui::SliderFloat("B ##value", &material_editor_base_color.B(), .0f, 1.f);
-			ImGui::SliderFloat("Roughness ##value", &material_editor_roughness, .0f, 1.f);
-			ImGui::SliderFloat("Anisotropy ##value", &material_editor_anisotropy, -1.f, 1.f);
-			ImGui::SliderFloat("Metallic ##value", &material_editor_metallic, .0f, 1.f);
-			ImGui::SliderFloat("IOR ##value", &material_editor_index_of_refraction, 1.f, 15.f);
-			ImGui::SliderFloat("Sheen ##value", &material_editor_sheen, .0f, 1.f);
-		}
-
-		ImGui::End();
-
-		auto t = glm::u8vec3(material_editor_base_color.R() * 255.5f, material_editor_base_color.G() * 255.5f, material_editor_base_color.B() * 255.5f);
-		material_editor_material->get_basecolor_map()->clear(&t);
-		if (material_editor_material->get_roughness() != material_editor_roughness)
-			material_editor_material->set_roughness(material_editor_roughness);
-		if (material_editor_material->get_anisotropy() != material_editor_anisotropy)
-			material_editor_material->set_anisotropy(material_editor_anisotropy);
-		if (material_editor_material->get_metallic() != material_editor_metallic)
-			material_editor_material->set_metallic(material_editor_metallic);
-		if (material_editor_material->get_index_of_refraction() != material_editor_index_of_refraction)
-			material_editor_material->set_index_of_refraction(material_editor_index_of_refraction);
-		if (material_editor_material->get_sheen() != material_editor_sheen)
-			material_editor_material->set_sheen(material_editor_sheen);
-	});
+	return std::move(mat);
 }
 
 
@@ -268,24 +232,26 @@ int main() {
 	 *	Start loading resources and display loading screen
 	 */
 
+	std::vector<std::unique_ptr<StE::Graphics::light>> lights;
+	std::vector<std::unique_ptr<StE::Graphics::Material>> materials;
+
 	StE::task_future_collection<bool> loading_futures;
 
 	const glm::vec3 light0_pos{ -700.6, 138, -70 };
 	const glm::vec3 light1_pos{ 200, 550, 170 };
 	auto light0 = scene.get().scene_properties().lights_storage().allocate_light<StE::Graphics::SphericalLight>(8000.f, StE::Graphics::Kelvin(2000), light0_pos, 3.f);
 	auto light1 = scene.get().scene_properties().lights_storage().allocate_light<StE::Graphics::SphericalLight>(20000.f, StE::Graphics::Kelvin(7000), light1_pos, 5.f);
-	auto light0_obj = create_light_object(&scene.get(), light0_pos, light0);
-	auto light1_obj = create_light_object(&scene.get(), light1_pos, light1);
-	add_scene_lights(scene.get());
+	auto light0_obj = create_light_object(&scene.get(), light0_pos, light0.get(), materials);
+	auto light1_obj = create_light_object(&scene.get(), light1_pos, light1.get(), materials);
 
+	add_scene_lights(scene.get(), lights, materials);
 
 	loading_futures.insert(StE::Resource::ModelFactory::load_model_async(ctx,
 																		 R"(Data/models/crytek-sponza/sponza.obj)",
 																		 &scene.get().object_group(),
 																		 &scene.get().scene_properties(),
 																		 2.5f,
-																		 nullptr,
-																		 nullptr));
+																		 materials));
 
 
 	display_loading_screen_until(ctx, &text_manager.get(), &w, &h, [&]() -> bool {
@@ -302,7 +268,43 @@ int main() {
 	renderer.get().attach_profiler(gpu_tasks_profiler.get());
 	std::unique_ptr<StE::Graphics::debug_gui> debug_gui_dispatchable = std::make_unique<StE::Graphics::debug_gui>(ctx, gpu_tasks_profiler.get(), font);
 
-	create_material_editor(&scene.get(), debug_gui_dispatchable.get());
+	auto mat = create_material_editor_object(&scene.get(), {0,100,0});
+
+	StE::Graphics::RGB base_color{1,1,1};
+	float roughness = mat->get_roughness();
+	float anisotropy = mat->get_anisotropy();
+	float metallic = mat->get_metallic();
+	float index_of_refraction = mat->get_index_of_refraction();
+	float sheen = mat->get_sheen();
+	debug_gui_dispatchable->add_custom_gui([&](const glm::ivec2 &bbsize) {
+		ImGui::SetNextWindowPos(ImVec2(20,bbsize.y - 400), ImGuiSetCond_FirstUseEver);
+		ImGui::SetNextWindowSize(ImVec2(120,400), ImGuiSetCond_FirstUseEver);
+		if (ImGui::Begin("Material", nullptr)) {
+			ImGui::SliderFloat("R ##value", &base_color.R(), .0f, 1.f);
+			ImGui::SliderFloat("G ##value", &base_color.G(), .0f, 1.f);
+			ImGui::SliderFloat("B ##value", &base_color.B(), .0f, 1.f);
+			ImGui::SliderFloat("Roughness ##value", &roughness, .0f, 1.f);
+			ImGui::SliderFloat("Anisotropy ##value", &anisotropy, -1.f, 1.f);
+			ImGui::SliderFloat("Metallic ##value", &metallic, .0f, 1.f);
+			ImGui::SliderFloat("IOR ##value", &index_of_refraction, 1.f, 15.f);
+			ImGui::SliderFloat("Sheen ##value", &sheen, .0f, 1.f);
+		}
+
+		ImGui::End();
+
+		auto t = glm::u8vec3(base_color.R() * 255.5f, base_color.G() * 255.5f, base_color.B() * 255.5f);
+		mat->get_basecolor_map()->clear(&t);
+		if (mat->get_roughness() != roughness)
+			mat->set_roughness(roughness);
+		if (mat->get_anisotropy() != anisotropy)
+			mat->set_anisotropy(anisotropy);
+		if (mat->get_metallic() != metallic)
+			mat->set_metallic(metallic);
+		if (mat->get_index_of_refraction() != index_of_refraction)
+			mat->set_index_of_refraction(index_of_refraction);
+		if (mat->get_sheen() != sheen)
+			mat->set_sheen(sheen);
+	});
 
 
 	/*

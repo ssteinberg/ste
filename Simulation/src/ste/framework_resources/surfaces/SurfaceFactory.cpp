@@ -13,43 +13,43 @@
 using namespace StE::Text;
 using namespace StE::Resource;
 
-bool SurfaceFactory::write_png(const boost::filesystem::path &file_name, const char *image_data, int components, int width, int height) {
+void SurfaceFactory::write_png(const boost::filesystem::path &file_name, const char *image_data, int components, int width, int height) {
 	if (components != 1 && components != 3 && components != 4) {
 		ste_log_error() << file_name << " can't write " << components << " channel PNG.";
-		return false;
+		throw surface_unsupported_format_error("Unsupported PNG component count");
 	}
 
 	FILE *fp = fopen(file_name.string().data(), "wb");
 	if (!fp) {
 		ste_log_error() << file_name << " can't be opened for writing";
-		return false;
+		throw resource_io_error();
 	}
 
 	png_structp png = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 	if (!png) {
 		ste_log_error() << file_name << " png_create_write_struct failed";
 		fclose(fp);
-		return false;
+		throw surface_error();
 	}
 
 	png_infop info = png_create_info_struct(png);
 	if (!info) {
 		ste_log_error() << file_name << " png_create_info_struct failed";
 		fclose(fp);
-		return false;
+		throw surface_error();
 	}
 
 	if (setjmp(png_jmpbuf(png))) {
 		ste_log_error() << file_name << " png_jmpbuf failed";
 		fclose(fp);
-		return false;
+		throw surface_error();
 	}
 
 	png_byte ** const row_pointers = (png_byte **)malloc(height * sizeof(png_byte *));
 	if (row_pointers == NULL) {
 		ste_log_error() << file_name << " could not allocate memory for PNG row pointers";
 		fclose(fp);
-		return false;
+		throw surface_error();
 	}
 
 	// set the individual row_pointers to point at the correct offsets of image_data
@@ -65,7 +65,7 @@ bool SurfaceFactory::write_png(const boost::filesystem::path &file_name, const c
 	case 3: color_type = PNG_COLOR_TYPE_RGB; break;
 	case 4: color_type = PNG_COLOR_TYPE_RGBA; break;
 	default:
-		break;
+		throw surface_unsupported_format_error();
 	}
 	png_set_IHDR(png,
 				 info,
@@ -83,8 +83,6 @@ bool SurfaceFactory::write_png(const boost::filesystem::path &file_name, const c
 	free(row_pointers);
 
 	fclose(fp);
-
-	return true;
 }
 
 gli::texture2d SurfaceFactory::load_tga(const boost::filesystem::path &file_name, bool srgb) {
@@ -96,13 +94,13 @@ gli::texture2d SurfaceFactory::load_tga(const boost::filesystem::path &file_name
 	}
 	catch (const std::exception &ex) {
 		ste_log_error() << file_name << " is not a valid 24-bit TGA" << std::endl;
-		return gli::texture2d();
+		throw resource_io_error();
 	}
 
 	if (tga->last != TGA_OK) {
 		TGAClose(tga);
 		ste_log_error() << file_name << " is not a valid 24-bit TGA" << std::endl;
-		return gli::texture2d();
+		throw surface_unsupported_format_error("Not a valid 24-bit TGA");
 	}
 
 	unsigned w = tga->hdr.width;
@@ -132,7 +130,7 @@ gli::texture2d SurfaceFactory::load_tga(const boost::filesystem::path &file_name
 	default:
 		TGAClose(tga);
 		ste_log_error() << file_name << " Unsupported libtga depth (" << tga->hdr.depth << ") and image type (" << tga->hdr.img_t << ") combination" << std::endl;
-		return gli::texture2d();
+		throw surface_unsupported_format_error("Unsupported TGA depth/type combination");
 	}
 
 	unsigned rowbytes = w * components;
@@ -148,7 +146,7 @@ gli::texture2d SurfaceFactory::load_tga(const boost::filesystem::path &file_name
 	if (image_data == nullptr || level0_size < rowbytes*h) {
 		TGAClose(tga);
 		ste_log_error() << file_name << " could not allocate memory for TGA image data or format mismatch";
-		return gli::texture2d();
+		throw surface_error();
 	}
 
 	try {
@@ -156,7 +154,7 @@ gli::texture2d SurfaceFactory::load_tga(const boost::filesystem::path &file_name
 	}
 	catch (const std::exception &ex) {
 		ste_log_error() << file_name << " is not a valid 24-bit TGA" << std::endl;
-		return gli::texture2d();
+		throw surface_unsupported_format_error("Not a valid 24-bit TGA");
 	}
 
 	TGAClose(tga);
@@ -169,8 +167,7 @@ gli::texture2d SurfaceFactory::load_png(const boost::filesystem::path &file_name
 
 	FILE *fp = fopen(file_name.string().data(), "rb");
 	if (fp == 0) {
-		perror(file_name.string().data());
-		return gli::texture2d();
+		throw resource_io_error();
 	}
 
 	// read the header
@@ -179,14 +176,14 @@ gli::texture2d SurfaceFactory::load_png(const boost::filesystem::path &file_name
 	if (png_sig_cmp(header, 0, 8)) {
 		ste_log_error() << file_name << " is not a PNG";
 		fclose(fp);
-		return gli::texture2d();
+		throw surface_unsupported_format_error("Not a valid PNG");
 	}
 
 	png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 	if (!png_ptr) {
 		ste_log_error() << file_name << " png_create_read_struct returned 0";
 		fclose(fp);
-		return gli::texture2d();
+		throw surface_unsupported_format_error("Not a valid PNG");
 	}
 
 	// create png info struct
@@ -195,7 +192,7 @@ gli::texture2d SurfaceFactory::load_png(const boost::filesystem::path &file_name
 		ste_log_error() << file_name << " png_create_info_struct returned 0";
 		png_destroy_read_struct(&png_ptr, (png_infopp)NULL, (png_infopp)NULL);
 		fclose(fp);
-		return gli::texture2d();
+		throw surface_unsupported_format_error("Not a valid PNG");
 	}
 
 	// create png info struct
@@ -204,7 +201,7 @@ gli::texture2d SurfaceFactory::load_png(const boost::filesystem::path &file_name
 		ste_log_error() << file_name << " png_create_info_struct returned 0";
 		png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
 		fclose(fp);
-		return gli::texture2d();
+		throw surface_unsupported_format_error("Not a valid PNG");
 	}
 
 	// the code in this if statement gets called if libpng encounters an error
@@ -212,7 +209,7 @@ gli::texture2d SurfaceFactory::load_png(const boost::filesystem::path &file_name
 		ste_log_error() << file_name << " error from libpng";
 		png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
 		fclose(fp);
-		return gli::texture2d();
+		throw surface_error("libpng error");
 	}
 
 	// init png reading
@@ -236,7 +233,7 @@ gli::texture2d SurfaceFactory::load_png(const boost::filesystem::path &file_name
 
 	if (bit_depth != 8 && (bit_depth != 1 || color_type != PNG_COLOR_TYPE_GRAY)) {
 		ste_log_error() << file_name << " Unsupported bit depth " << bit_depth << ".  Must be 8";
-		return gli::texture2d();
+		throw surface_unsupported_format_error("Unsupported bit depth");
 	}
 
 	gli::format format;
@@ -257,7 +254,7 @@ gli::texture2d SurfaceFactory::load_png(const boost::filesystem::path &file_name
 	default:
 		ste_log_error() << file_name << " Unknown libpng color type " << color_type;
 		fclose(fp);
-		return gli::texture2d();
+		throw surface_unsupported_format_error("Unsupported PNG color type");
 	}
 
 	// Update the png info struct.
@@ -282,7 +279,7 @@ gli::texture2d SurfaceFactory::load_png(const boost::filesystem::path &file_name
 		ste_log_error() << file_name << " could not allocate memory for PNG image data or format mismatch";
 		png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
 		fclose(fp);
-		return gli::texture2d();
+		throw surface_error();
 	}
 
 	// row_pointers is for pointing to image_data for reading the png with libpng
@@ -330,7 +327,7 @@ gli::texture2d SurfaceFactory::load_jpeg(const boost::filesystem::path &path, bo
 	if (!fs.good()) {
 		using namespace Attributes;
 		ste_log_error() << Text::AttributedString("Can't open JPEG ") + i(path.string()) + ": " + std::strerror(errno) << std::endl;
-		return gli::texture2d();
+		throw resource_io_error();
 	}
 
 	content = std::string((std::istreambuf_iterator<char>(fs)), std::istreambuf_iterator<char>());
@@ -340,13 +337,13 @@ gli::texture2d SurfaceFactory::load_jpeg(const boost::filesystem::path &path, bo
 
 	if (content.size() == 0) {
 		ste_log_error() << "Can't open JPEG: " << path;
-		return gli::texture2d();
+		throw resource_io_error();
 	}
 
 	auto tj = tjInitDecompress();
 	if (tj == nullptr) {
 		ste_log_error() << path << ": libturbojpeg signaled error.";
-		return gli::texture2d();
+		throw surface_error("libjpegturbo error");
 	}
 
 	int w, h, chro_sub_smpl, color_space;
@@ -373,7 +370,7 @@ gli::texture2d SurfaceFactory::load_jpeg(const boost::filesystem::path &path, bo
 	if (image_data == nullptr || level0_size < h * row_stride) {
 		ste_log_error() << path << " could not allocate memory for JPEG image data or format mismatch" << std::endl;
 		tjDestroy(tj);
-		return gli::texture2d();
+		throw surface_error();
 	}
 
 	if (tjDecompress2(tj,
@@ -388,7 +385,7 @@ gli::texture2d SurfaceFactory::load_jpeg(const boost::filesystem::path &path, bo
 		const char *err = tjGetErrorStr();
 		ste_log_error() << path << " libturbojpeg could not decompress JPEG image: " << (err ? err : "") << std::endl;
 		tjDestroy(tj);
-		return gli::texture2d();
+		throw surface_error();
 	}
 
 	tjDestroy(tj);

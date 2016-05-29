@@ -40,7 +40,6 @@ public:
 			return std::move(object);
 		}).then_on_main_thread([](std::unique_ptr<R> &&object) {
 			object->setup_tasks();
-			object->add_task(object->fb_clearer_task);
 			object->rebuild_task_queue();
 
 			return std::move(object);

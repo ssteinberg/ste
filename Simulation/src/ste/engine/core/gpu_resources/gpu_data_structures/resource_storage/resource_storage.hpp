@@ -120,6 +120,11 @@ public:
 	*	@brief	Get SSBO
 	*/
 	auto &buffer() const { return stack.get_buffer(); }
+
+	/**
+	*	@brief	Total count of active resources in storage
+	*/
+	std::size_t size() const { return Base::objects.size(); }
 };
 
 }

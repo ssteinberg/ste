@@ -58,17 +58,17 @@ private:
 													 Graphics::ObjectGroup *,
 													 materials_type &,
 													 texture_map_type &,
-									 				 std::vector<std::shared_ptr<Graphics::Object>> *loaded_objects,
-									 				 std::vector<Graphics::Material*> *loaded_materials);
+									 				 std::vector<std::unique_ptr<Graphics::Material>> &loaded_materials,
+									 				 std::vector<std::shared_ptr<Graphics::Object>> *loaded_objects);
 
 public:
-	static StE::task_future<bool> load_model_async(const StEngineControl &context,
+	static StE::task_future<void> load_model_async(const StEngineControl &context,
 												   const boost::filesystem::path &file_path,
 												   Graphics::ObjectGroup *object_group,
 												   Graphics::SceneProperties *scene_properties,
 												   float normal_map_bias,
-												   std::vector<std::shared_ptr<Graphics::Object>> *loaded_objects,
-												   std::vector<Graphics::Material*> *loaded_materials);
+												   std::vector<std::unique_ptr<Graphics::Material>> &loaded_materials,
+												   std::vector<std::shared_ptr<Graphics::Object>> *loaded_objects = nullptr);
 };
 
 }

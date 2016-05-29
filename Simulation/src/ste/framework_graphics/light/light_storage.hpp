@@ -30,8 +30,6 @@ private:
 	using lights_ll_type = Core::ShaderStorageBuffer<std::uint16_t, usage>;
 
 private:
-	std::vector<std::unique_ptr<light>> lights;
-
 	lights_ll_type active_lights_ll;
 	Core::AtomicCounterBufferObject<> active_lights_ll_counter;
 
@@ -40,14 +38,11 @@ public:
 					  active_lights_ll_counter(1) {}
 
 	template <typename LightType, typename ... Ts>
-	LightType* allocate_light(Ts&&... args) {
+	std::unique_ptr<LightType> allocate_light(Ts&&... args) {
 		auto res = Base::allocate_resource<LightType>(std::forward<Ts>(args)...);
-		auto ptr = res.get();
-		lights.push_back(std::move(res));
+		active_lights_ll.commit_range(0, Base::size());
 
-		active_lights_ll.commit_range(0, size());
-
-		return ptr;
+		return std::move(res);;
 	}
 	void erase_light(const light *l) {
 		erase_resource(l);
@@ -58,12 +53,9 @@ public:
 		active_lights_ll_counter.clear(gli::FORMAT_R32_UINT_PACK32, &zero);
 	}
 
-	void bind_lights_buffer(int idx) const { Base::buffer().bind_range(Core::shader_storage_layout_binding(idx), 0, lights.size()); }
+	void bind_lights_buffer(int idx) const { Base::buffer().bind_range(Core::shader_storage_layout_binding(idx), 0, Base::size()); }
 	auto& get_active_ll_counter() const { return active_lights_ll_counter; }
 	auto& get_active_ll() const { return active_lights_ll; }
-
-	std::size_t size() const { return lights.size(); }
-	auto& get_lights() const { return lights; }
 };
 
 }

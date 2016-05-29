@@ -46,7 +46,7 @@ public:
 	debug_gui(const StEngineControl &ctx, profiler *prof, const StE::Text::Font &default_font);
 	~debug_gui() noexcept;
 
-	void add_custom_gui(std::function<void(const glm::ivec2 &)> &&f) { user_guis.push_back(std::move(f)); }
+	void add_custom_gui(std::function<void(const glm::ivec2 &)> &&f) { user_guis.emplace_back(std::move(f)); }
 
 	bool is_gui_active() const;
 

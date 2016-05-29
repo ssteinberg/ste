@@ -104,9 +104,10 @@ GIRenderer::GIRenderer(ctor_token,
 }
 
 void GIRenderer::rebuild_task_queue() {
+	add_task(get_scene_task());
+
 	q.add_task(composer_task);
 	q.add_task(hdr.get().get_task());
-	q.add_task(get_scene_task());
 
 	for (auto &task_ptr : added_tasks)
 		mutate_gpu_task(task_ptr, get_fbo());

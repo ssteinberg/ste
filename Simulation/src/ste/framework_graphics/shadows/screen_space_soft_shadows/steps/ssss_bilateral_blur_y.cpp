@@ -27,5 +27,5 @@ void ssss_bilateral_blur_y::set_context_state() const {
 }
 
 void ssss_bilateral_blur_y::dispatch() const {
-	Core::GL::gl_current_context::get()->draw_arrays_instanced(GL_TRIANGLE_STRIP, 0, 4, p->scene->scene_properties().lights_storage().get_lights().size());
+	Core::GL::gl_current_context::get()->draw_arrays_instanced(GL_TRIANGLE_STRIP, 0, 4, p->scene->scene_properties().lights_storage().size());
 }
