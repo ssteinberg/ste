@@ -62,13 +62,13 @@ private:
 									 				 std::vector<Graphics::Material*> *loaded_materials);
 
 public:
-	static StE::task_future<bool> load_model_task(const StEngineControl &context,
-												  const boost::filesystem::path &file_path,
-												  Graphics::ObjectGroup *object_group,
-												  Graphics::SceneProperties *scene_properties,
-												  float normal_map_bias,
-												  std::vector<std::shared_ptr<Graphics::Object>> *loaded_objects,
-												  std::vector<Graphics::Material*> *loaded_materials);
+	static StE::task_future<bool> load_model_async(const StEngineControl &context,
+												   const boost::filesystem::path &file_path,
+												   Graphics::ObjectGroup *object_group,
+												   Graphics::SceneProperties *scene_properties,
+												   float normal_map_bias,
+												   std::vector<std::shared_ptr<Graphics::Object>> *loaded_objects,
+												   std::vector<Graphics::Material*> *loaded_materials);
 };
 
 }

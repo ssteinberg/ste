@@ -44,6 +44,8 @@ public:
 	const mesh_generic &get_mesh() const { return *object_mesh; }
 
 	void set_material(const Material *mat) {
+		assert(mat->is_valid() && "Orphaned Material");
+
 		material = mat;
 		model_change_signal.emit(this);
 	}

@@ -33,6 +33,45 @@
 using namespace StE::Core;
 using namespace StE::Text;
 
+void display_loading_screen_until(StE::StEngineControl &ctx, StE::Text::TextManager *text_manager, int *w, int *h, std::function<bool()> &&lambda) {
+	StE::Graphics::basic_renderer basic_renderer(ctx);
+
+	auto footer_text = text_manager->create_renderer();
+	auto footer_text_task = make_gpu_task("footer_text", footer_text.get(), nullptr);
+
+	auto title_text = text_manager->create_renderer();
+	auto title_text_task = make_gpu_task("title_text", title_text.get(), nullptr);
+
+	ctx.set_renderer(&basic_renderer);
+	basic_renderer.add_task(title_text_task);
+	basic_renderer.add_task(footer_text_task);
+
+	while (true) {
+		using namespace StE::Text::Attributes;
+
+		AttributedWString str = center(stroke(blue_violet, 2)(purple(vvlarge(b(L"Global Illumination\n")))) +
+									azure(large(L"Loading...\n")) +
+									orange(regular(L"By Shlomi Steinberg")));
+		auto total_vram = std::to_wstring(ctx.gl()->meminfo_total_available_vram() / 1024);
+		auto free_vram = std::to_wstring(ctx.gl()->meminfo_free_vram() / 1024);
+
+		auto workers_active = ctx.scheduler().get_thread_pool()->get_active_workers_count();
+		auto workers_sleep = ctx.scheduler().get_thread_pool()->get_sleeping_workers_count();
+		auto pending_requests = ctx.scheduler().get_thread_pool()->get_pending_requests_count();
+
+		title_text->set_text({ *w / 2, *h / 2 + 100 }, str);
+		footer_text->set_text({ 10, 50 },
+							line_height(32)(vsmall(b(blue_violet(free_vram) + L" / " + stroke(red, 1)(dark_red(total_vram)) + L" MB")) + L"\n" +
+											vsmall(b(L"Thread pool workers: ") +
+													olive(std::to_wstring(workers_active)) + 	L" busy, " +
+													olive(std::to_wstring(workers_sleep)) + 	L" sleeping | " +
+													orange(std::to_wstring(pending_requests) +	L" pending requests"))));
+
+		if (!ctx.run_loop() || !lambda())
+			break;
+	}
+}
+
 auto create_light_object(StE::Graphics::Scene *scene, const glm::vec3 &light_pos, StE::Graphics::SphericalLight *light) {
 	std::unique_ptr<StE::Graphics::Sphere> sphere = std::make_unique<StE::Graphics::Sphere>(20, 20);
 	(*sphere) *= light->get_radius();
@@ -72,11 +111,83 @@ void add_scene_lights(StE::Graphics::Scene &scene) {
 	}
 }
 
+auto create_material_editor_object(StE::Graphics::Scene *scene, const glm::vec3 &pos) {
+	std::unique_ptr<StE::Graphics::Sphere> sphere = std::make_unique<StE::Graphics::Sphere>(50, 50);
+	(*sphere) *= 100;
+	auto obj = std::make_shared<StE::Graphics::Object>(std::move(sphere));
+
+	obj->set_model_transform(glm::translate(glm::mat4(), pos));
+
+	gli::texture2d base_color_tex{ gli::format::FORMAT_RGB8_UNORM_PACK8, { 1, 1 }, 1 };
+	*reinterpret_cast<glm::u8vec3*>(base_color_tex.data()) = glm::u8vec3(255);
+
+	auto mat = scene->scene_properties().materials_storage().allocate_material();
+	mat->set_basecolor_map(std::make_unique<StE::Core::Texture2D>(base_color_tex, false));
+
+	obj->set_material(mat);
+
+	scene->object_group().add_object(obj);
+
+	return mat;
+}
+
+void create_material_editor(StE::Graphics::Scene *scene, StE::Graphics::debug_gui *debug_gui_dispatchable) {
+	auto material_editor_material = create_material_editor_object(scene, {0,100,0});
+
+	StE::Graphics::RGB material_editor_base_color = {1,1,1};
+	float material_editor_roughness = material_editor_material->get_roughness();
+	float material_editor_anisotropy = material_editor_material->get_anisotropy();
+	float material_editor_metallic = material_editor_material->get_metallic();
+	float material_editor_index_of_refraction = material_editor_material->get_index_of_refraction();
+	float material_editor_sheen = material_editor_material->get_sheen();
+	debug_gui_dispatchable->add_custom_gui([&, material_editor_material](const glm::ivec2 &bbsize) {
+		ImGui::SetNextWindowPos(ImVec2(20,bbsize.y - 400), ImGuiSetCond_FirstUseEver);
+		ImGui::SetNextWindowSize(ImVec2(120,400), ImGuiSetCond_FirstUseEver);
+		if (ImGui::Begin("Material", nullptr)) {
+			ImGui::SliderFloat("R ##value", &material_editor_base_color.R(), .0f, 1.f);
+			ImGui::SliderFloat("G ##value", &material_editor_base_color.G(), .0f, 1.f);
+			ImGui::SliderFloat("B ##value", &material_editor_base_color.B(), .0f, 1.f);
+			ImGui::SliderFloat("Roughness ##value", &material_editor_roughness, .0f, 1.f);
+			ImGui::SliderFloat("Anisotropy ##value", &material_editor_anisotropy, -1.f, 1.f);
+			ImGui::SliderFloat("Metallic ##value", &material_editor_metallic, .0f, 1.f);
+			ImGui::SliderFloat("IOR ##value", &material_editor_index_of_refraction, 1.f, 15.f);
+			ImGui::SliderFloat("Sheen ##value", &material_editor_sheen, .0f, 1.f);
+		}
+
+		ImGui::End();
+
+		auto t = glm::u8vec3(material_editor_base_color.R() * 255.5f, material_editor_base_color.G() * 255.5f, material_editor_base_color.B() * 255.5f);
+		material_editor_material->get_basecolor_map()->clear(&t);
+		if (material_editor_material->get_roughness() != material_editor_roughness)
+			material_editor_material->set_roughness(material_editor_roughness);
+		if (material_editor_material->get_anisotropy() != material_editor_anisotropy)
+			material_editor_material->set_anisotropy(material_editor_anisotropy);
+		if (material_editor_material->get_metallic() != material_editor_metallic)
+			material_editor_material->set_metallic(material_editor_metallic);
+		if (material_editor_material->get_index_of_refraction() != material_editor_index_of_refraction)
+			material_editor_material->set_index_of_refraction(material_editor_index_of_refraction);
+		if (material_editor_material->get_sheen() != material_editor_sheen)
+			material_editor_material->set_sheen(material_editor_sheen);
+	});
+}
+
+
+
 int main() {
+
+	/*
+	 *	Create logger
+	 */
+
 	StE::Log logger("Global Illumination");
 //	logger.redirect_std_outputs();
 	ste_log_set_global_logger(&logger);
 	ste_log() << "Simulation is running";
+
+
+	/*
+	 *	Create GL context and window
+	 */
 
 	int w = 1920;
 	int h = w * 9 / 16;
@@ -99,51 +210,11 @@ int main() {
 	ctx.signal_framebuffer_resize().connect(resize_connection);
 
 
-	auto font = StE::Text::Font("Data/ArchitectsDaughter.ttf");
-	StE::Resource::resource_instance<StE::Text::TextManager> text_manager(ctx, font);
-
+	/*
+	 *	Connect input handlers
+	 */
 
 	bool running = true;
-	bool loaded = false;
-	StE::task_future_collection<bool> loading_futures;
-
-	StE::Graphics::Camera camera;
-	camera.set_position({ 25.8, 549.07, -249.2 });
-	camera.lookat({ -5.4, 532.5, -228.71 });
-
-	StE::Resource::resource_instance<StE::Graphics::Scene> scene(ctx);
-	StE::Graphics::basic_renderer basic_renderer(ctx);
-	StE::Resource::resource_instance<StE::Graphics::GIRenderer> renderer(ctx, &camera, &scene.get());
-
-
-	const glm::vec3 light0_pos{ -700.6, 138, -70 };
-	const glm::vec3 light1_pos{ 200, 550, 170 };
-	auto light0 = scene.get().scene_properties().lights_storage().allocate_light<StE::Graphics::SphericalLight>(8000.f, StE::Graphics::Kelvin(2000), light0_pos, 3.f);
-	auto light1 = scene.get().scene_properties().lights_storage().allocate_light<StE::Graphics::SphericalLight>(20000.f, StE::Graphics::Kelvin(7000), light1_pos, 5.f);
-	auto light0_obj = create_light_object(&scene.get(), light0_pos, light0);
-	auto light1_obj = create_light_object(&scene.get(), light1_pos, light1);
-	add_scene_lights(scene.get());
-
-
-	std::vector<std::shared_ptr<StE::Graphics::Object>> lucy_objects;
-	std::vector<StE::Graphics::Material*> lucy_materials;
-	loading_futures.insert(StE::Resource::ModelFactory::load_model_task(ctx,
-																		R"(Data/models/crytek-sponza/sponza.obj)",
-																		&scene.get().object_group(),
-																		&scene.get().scene_properties(),
-																		2.5f,
-																		nullptr,
-																		nullptr));
-	loading_futures.insert(StE::Resource::ModelFactory::load_model_task(ctx,
-																		R"(Data/models/lucy/lucy_low.obj)",
-																		&scene.get().object_group(),
-																		&scene.get().scene_properties(),
-																		1.f,
-																		&lucy_objects,
-																		&lucy_materials));
-
-
-	// Bind input
 	bool mouse_down = false;
 	auto keyboard_listner = std::make_shared<decltype(ctx)::hid_keyboard_signal_type::connection_type>(
 		[&](StE::HID::keyboard::K key, int scanline, StE::HID::Status status, StE::HID::ModifierBits mods) {
@@ -168,111 +239,83 @@ int main() {
 	ctx.hid_signal_pointer_button().connect(pointer_button_listner);
 
 
-	auto footer_text = text_manager.get().create_renderer();
-	auto footer_text_task = make_gpu_task("footer_text", footer_text.get(), nullptr);
+	/*
+	 *	Create text manager and choose default font
+	 */
 
-	{
-		auto title_text = text_manager.get().create_renderer();
-		auto title_text_task = make_gpu_task("title_text", title_text.get(), nullptr);
+	auto font = StE::Text::Font("Data/ArchitectsDaughter.ttf");
+	StE::Resource::resource_instance<StE::Text::TextManager> text_manager(ctx, font);
 
-		ctx.set_renderer(&basic_renderer);
-		basic_renderer.add_task(title_text_task);
-		basic_renderer.add_task(footer_text_task);
 
-		while (!loaded && running) {
-			{
-				using namespace StE::Text::Attributes;
-				AttributedWString str = center(stroke(blue_violet, 2)(purple(vvlarge(b(L"Global Illumination\n")))) +
-											azure(large(L"Loading...\n")) +
-											orange(regular(L"By Shlomi Steinberg")));
-				auto total_vram = std::to_wstring(ctx.gl()->meminfo_total_available_vram() / 1024);
-				auto free_vram = std::to_wstring(ctx.gl()->meminfo_free_vram() / 1024);
+	/*
+	 *	Create camera
+	 */
 
-				auto workers_active = ctx.scheduler().get_thread_pool()->get_active_workers_count();
-				auto workers_sleep = ctx.scheduler().get_thread_pool()->get_sleeping_workers_count();
-				auto pending_requests = ctx.scheduler().get_thread_pool()->get_pending_requests_count();
+	StE::Graphics::Camera camera;
+	camera.set_position({ 25.8, 549.07, -249.2 });
+	camera.lookat({ -5.4, 532.5, -228.71 });
 
-				title_text->set_text({ w / 2, h / 2 + 100 }, str);
-				footer_text->set_text({ 10, 50 },
-									line_height(32)(vsmall(b(blue_violet(free_vram) + L" / " + stroke(red, 1)(dark_red(total_vram)) + L" MB")) + L"\n" +
-													vsmall(b(L"Thread pool workers: ") +
-															olive(std::to_wstring(workers_active)) + 	L" busy, " +
-															olive(std::to_wstring(workers_sleep)) + 	L" sleeping | " +
-															orange(std::to_wstring(pending_requests) +	L" pending requests"))));
-			}
 
-			if (loading_futures.ready_all() &&
-				renderer.future().wait_for(std::chrono::nanoseconds(0)) == std::future_status::ready)
-				loaded = true;
+	/*
+	 *	Create and load scene object and GI renderer
+	 */
 
-			ctx.run_loop();
-		}
-	}
+	StE::Resource::resource_instance<StE::Graphics::Scene> scene(ctx);
+	StE::Resource::resource_instance<StE::Graphics::GIRenderer> renderer(ctx, &camera, &scene.get());
 
+
+	/*
+	 *	Start loading resources and display loading screen
+	 */
+
+	StE::task_future_collection<bool> loading_futures;
+
+	const glm::vec3 light0_pos{ -700.6, 138, -70 };
+	const glm::vec3 light1_pos{ 200, 550, 170 };
+	auto light0 = scene.get().scene_properties().lights_storage().allocate_light<StE::Graphics::SphericalLight>(8000.f, StE::Graphics::Kelvin(2000), light0_pos, 3.f);
+	auto light1 = scene.get().scene_properties().lights_storage().allocate_light<StE::Graphics::SphericalLight>(20000.f, StE::Graphics::Kelvin(7000), light1_pos, 5.f);
+	auto light0_obj = create_light_object(&scene.get(), light0_pos, light0);
+	auto light1_obj = create_light_object(&scene.get(), light1_pos, light1);
+	add_scene_lights(scene.get());
+
+
+	loading_futures.insert(StE::Resource::ModelFactory::load_model_async(ctx,
+																		 R"(Data/models/crytek-sponza/sponza.obj)",
+																		 &scene.get().object_group(),
+																		 &scene.get().scene_properties(),
+																		 2.5f,
+																		 nullptr,
+																		 nullptr));
+
+
+	display_loading_screen_until(ctx, &text_manager.get(), &w, &h, [&]() -> bool {
+		return running && (!loading_futures.ready_all() ||
+						   renderer.future().wait_for(std::chrono::nanoseconds(0)) != std::future_status::ready);
+	});
+
+
+	/*
+	 *	Create debug view window and material editor
+	 */
 
 	std::unique_ptr<StE::Graphics::profiler> gpu_tasks_profiler = std::make_unique<StE::Graphics::profiler>();
 	renderer.get().attach_profiler(gpu_tasks_profiler.get());
 	std::unique_ptr<StE::Graphics::debug_gui> debug_gui_dispatchable = std::make_unique<StE::Graphics::debug_gui>(ctx, gpu_tasks_profiler.get(), font);
 
-
-	auto lucy = lucy_objects.back();
-	auto lucy_material = lucy_materials.back();
-
-	auto lucy_transform = glm::rotate(glm::mat4(), -glm::half_pi<float>(), {1.0f,0.f,.0f});
-	lucy_transform = glm::rotate(lucy_transform, -glm::half_pi<float>(), {.0f,0.f,1.0f});
-	lucy_transform = glm::scale(lucy_transform, glm::vec3{10,10,10});
-	lucy->set_model_transform(lucy_transform);
-
-	StE::Graphics::RGB lucy_base_color = {1.f,1.f,1.f};
-	gli::texture2d lucy_color_tex_data{ gli::format::FORMAT_RGB8_UNORM_PACK8, { 1, 1 }, 1 };
-	*reinterpret_cast<glm::u8vec3*>(lucy_color_tex_data.data()) = glm::u8vec3(lucy_base_color.R() * 255.5f, lucy_base_color.G() * 255.5f, lucy_base_color.B() * 255.5f);
-	auto lucy_color_tex = std::make_shared<StE::Core::Texture2D>(lucy_color_tex_data, false);
-	lucy_material->set_basecolor_map(lucy_color_tex);
+	create_material_editor(&scene.get(), debug_gui_dispatchable.get());
 
 
-	float lucy_roughness = lucy_material->get_roughness();
-	float lucy_anisotropy = lucy_material->get_anisotropy();
-	float lucy_metallic = lucy_material->get_metallic();
-	float lucy_index_of_refraction = lucy_material->get_index_of_refraction();
-	float lucy_sheen = lucy_material->get_sheen();
-	debug_gui_dispatchable->add_custom_gui([&](const glm::ivec2 &bbsize) {
-		ImGui::SetNextWindowPos(ImVec2(20,bbsize.y - 400), ImGuiSetCond_FirstUseEver);
-		ImGui::SetNextWindowSize(ImVec2(120,400), ImGuiSetCond_FirstUseEver);
-		if (ImGui::Begin("Material", nullptr)) {
-			ImGui::SliderFloat("R ##value", &lucy_base_color.R(), .0f, 1.f);
-			ImGui::SliderFloat("G ##value", &lucy_base_color.G(), .0f, 1.f);
-			ImGui::SliderFloat("B ##value", &lucy_base_color.B(), .0f, 1.f);
-			ImGui::SliderFloat("Roughness ##value", &lucy_roughness, .0f, 1.f);
-			ImGui::SliderFloat("Anisotropy ##value", &lucy_anisotropy, .0f, 1.f);
-			ImGui::SliderFloat("Metallic ##value", &lucy_metallic, .0f, 1.f);
-			ImGui::SliderFloat("IOR ##value", &lucy_index_of_refraction, 1.f, 15.f);
-			ImGui::SliderFloat("Sheen ##value", &lucy_sheen, .0f, 1.f);
-		}
-
-		ImGui::End();
-
-		auto t = glm::u8vec3(lucy_base_color.R() * 255.5f, lucy_base_color.G() * 255.5f, lucy_base_color.B() * 255.5f);
-		lucy_color_tex->clear(&t);
-		if (lucy_material->get_roughness() != lucy_roughness)
-			lucy_material->set_roughness(lucy_roughness);
-		if (lucy_material->get_anisotropy() != lucy_anisotropy)
-			lucy_material->set_anisotropy(lucy_anisotropy);
-		if (lucy_material->get_metallic() != lucy_metallic)
-			lucy_material->set_metallic(lucy_metallic);
-		if (lucy_material->get_index_of_refraction() != lucy_index_of_refraction)
-			lucy_material->set_index_of_refraction(lucy_index_of_refraction);
-		if (lucy_material->get_sheen() != lucy_sheen)
-			lucy_material->set_sheen(lucy_sheen);
-	});
-
+	/*
+	 *	Switch to GI renderer and start render loop
+	 */
 
 	ctx.set_renderer(&renderer.get());
 
-	auto &scene_task = renderer.get().get_scene_task();
+	auto footer_text = text_manager.get().create_renderer();
+	auto footer_text_task = make_gpu_task("footer_text", footer_text.get(), nullptr);
 
 	renderer.get().add_gui_task(footer_text_task);
 	renderer.get().add_gui_task(make_gpu_task("debug_gui", debug_gui_dispatchable.get(), nullptr));
-	renderer.get().add_task(scene_task);
 
 	glm::ivec2 last_pointer_pos;
 	float time = 0;

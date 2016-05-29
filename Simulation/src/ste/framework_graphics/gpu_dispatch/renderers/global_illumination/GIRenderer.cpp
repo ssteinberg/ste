@@ -104,30 +104,16 @@ GIRenderer::GIRenderer(ctor_token,
 }
 
 void GIRenderer::rebuild_task_queue() {
-	if (!use_deferred_rendering) {
-		for (auto &task_ptr : gui_tasks)
-			q.remove_task_dependency(task_ptr, hdr.get().get_task());
-
-		q.remove_task(hdr.get().get_task());
-		q.remove_task(composer_task);
-	}
-	else {
-		q.add_task(composer_task);
-		q.add_task(hdr.get().get_task());
-	}
+	q.add_task(composer_task);
+	q.add_task(hdr.get().get_task());
+	q.add_task(get_scene_task());
 
 	for (auto &task_ptr : added_tasks)
 		mutate_gpu_task(task_ptr, get_fbo());
 	mutate_gpu_task(fb_clearer_task, get_fbo());
 
-	if (use_deferred_rendering)
-		for (auto &task_ptr : gui_tasks)
-			q.add_task_dependency(task_ptr, hdr.get().get_task());
-}
-
-void GIRenderer::set_deferred_rendering_enabled(bool enabled) {
-	use_deferred_rendering = enabled;
-	rebuild_task_queue();
+	for (auto &task_ptr : gui_tasks)
+		q.add_task_dependency(task_ptr, hdr.get().get_task());
 }
 
 void GIRenderer::render_queue() {
@@ -167,8 +153,7 @@ void GIRenderer::add_gui_task(const gpu_task::TaskPtr &t) {
 	mutate_gpu_task(t, &ctx.gl()->defaut_framebuffer());
 	q.add_task(t);
 
-	if (use_deferred_rendering)
-		q.add_task_dependency(t, hdr.get().get_task());
+	q.add_task_dependency(t, hdr.get().get_task());
 	q.add_task_dependency(t, fb_clearer_task);
 
 	gui_tasks.insert(t);

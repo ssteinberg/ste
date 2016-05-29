@@ -33,7 +33,7 @@ private:
 	~SurfaceFactory() {}
 
 public:
-	static auto write_surface_2d_task(task_scheduler &sched, const gli::texture2d &surface, const boost::filesystem::path &path) {
+	static auto write_surface_2d_async(task_scheduler &sched, const gli::texture2d &surface, const boost::filesystem::path &path) {
 		return sched.schedule_now([=]() -> bool {
 			int components;
 			if (surface.format() == gli::format::FORMAT_R8_UNORM_PACK8)			components = 1;
@@ -47,7 +47,7 @@ public:
 		});
 	}
 
-	static auto load_surface_2d_task(task_scheduler &sched, const boost::filesystem::path &path, bool srgb) {
+	static auto load_surface_2d_async(task_scheduler &sched, const boost::filesystem::path &path, bool srgb) {
 		return sched.schedule_now([=]() -> gli::texture2d {
 			unsigned char magic[4] = { 0, 0, 0, 0 };
 
@@ -120,8 +120,8 @@ public:
 		});
 	}
 
-	static auto load_texture_2d_task(task_scheduler &sched, const boost::filesystem::path &path, bool srgb) {
-		return load_surface_2d_task(sched, path, srgb)
+	static auto load_texture_2d_async(task_scheduler &sched, const boost::filesystem::path &path, bool srgb) {
+		return load_surface_2d_async(sched, path, srgb)
 				.then_on_main_thread([](const gli::texture2d &surface) {
 					return std::make_unique<Core::Texture2D>(surface, surface.levels() == 1);
 				});

@@ -118,8 +118,6 @@ private:
 									scene_geo_cull_task,
 									lll_gen_task;
 
-	bool use_deferred_rendering{ true };
-
 protected:
 	void setup_tasks();
 	void rebuild_task_queue();
@@ -127,9 +125,7 @@ protected:
 	static int gbuffer_depth_target_levels();
 
 	const Core::GenericFramebufferObject *get_fbo() const {
-		if (use_deferred_rendering)
-			return gbuffer.get_fbo();
-		return &ctx.gl()->defaut_framebuffer();
+		return gbuffer.get_fbo();
 	}
 
 public:
@@ -138,8 +134,6 @@ public:
 			   const Camera *camera,
 			   Scene *scene);
 	virtual ~GIRenderer() noexcept {}
-
-	void set_deferred_rendering_enabled(bool enabled);
 
 	void add_task(const gpu_task::TaskPtr &t);
 	void remove_task(const gpu_task::TaskPtr &t);

@@ -24,10 +24,10 @@ class resource_loading_task<Core::glsl_program> {
 
 public:
 	auto loader(const StEngineControl &ctx, const std::vector<std::string> &names) {
-		return GLSLProgramFactory::load_program_task(ctx, names);
+		return GLSLProgramFactory::load_program_async(ctx, names);
 	}
 	auto loader(const StEngineControl &ctx, const std::string &name) {
-		return GLSLProgramFactory::load_program_task(ctx, { name });
+		return GLSLProgramFactory::load_program_async(ctx, { name });
 	}
 };
 

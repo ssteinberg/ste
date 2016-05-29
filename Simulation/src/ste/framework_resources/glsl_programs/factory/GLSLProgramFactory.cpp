@@ -236,7 +236,7 @@ StE::optional<boost::filesystem::path> GLSLProgramFactory::resolve_program(const
 	return it->path();
 }
 
-StE::task_future<std::unique_ptr<glsl_program>> GLSLProgramFactory::load_program_task(const StEngineControl &context, const std::vector<std::string> &names) {
+StE::task_future<std::unique_ptr<glsl_program>> GLSLProgramFactory::load_program_async(const StEngineControl &context, const std::vector<std::string> &names) {
 	struct loader_data {
 		program_binary bin;
 		std::string cache_key;
@@ -289,8 +289,8 @@ StE::task_future<std::unique_ptr<glsl_program>> GLSLProgramFactory::load_program
 		}
 
 		try {
-			auto cache_get_task = context.cache().get<program_binary>(data.cache_key);
-			optional<program_binary> opt = cache_get_task();
+			auto cache_get_lambda = context.cache().get<program_binary>(data.cache_key);
+			optional<program_binary> opt = cache_get_lambda();
 			if (opt && opt->get_time_point() > modification_time)
 				data.bin = opt.get();
 		}

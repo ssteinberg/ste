@@ -159,7 +159,7 @@ StE::task_future<void> ModelFactory::load_texture(task_scheduler* sched,
 		std::replace(normalized_name.begin(), normalized_name.end(), '\\', '/');
 		boost::filesystem::path full_path = dir / boost::filesystem::path(normalized_name).make_preferred();
 
-		gli::texture2d tex = SurfaceFactory::load_surface_2d_task(*sched, full_path, srgb).get();
+		gli::texture2d tex = SurfaceFactory::load_surface_2d_async(*sched, full_path, srgb).get();
 		if (tex.empty())
 			ste_log_warn() << "Couldn't load texture " << full_path.string() << std::endl;
 
@@ -218,13 +218,13 @@ std::vector<StE::task_future<void>> ModelFactory::load_textures(task_scheduler* 
 	return futures;
 }
 
-StE::task_future<bool> ModelFactory::load_model_task(const StEngineControl &ctx,
-													 const boost::filesystem::path &file_path,
-													 ObjectGroup *object_group,
-													 Graphics::SceneProperties *scene_properties,
-													 float normal_map_bias,
-													 std::vector<std::shared_ptr<Graphics::Object>> *loaded_objects,
-													 std::vector<Graphics::Material*> *loaded_materials) {
+StE::task_future<bool> ModelFactory::load_model_async(const StEngineControl &ctx,
+													  const boost::filesystem::path &file_path,
+													  ObjectGroup *object_group,
+													  Graphics::SceneProperties *scene_properties,
+													  float normal_map_bias,
+													  std::vector<std::shared_ptr<Graphics::Object>> *loaded_objects,
+													  std::vector<Graphics::Material*> *loaded_materials) {
 	struct _model_loader_task_block {
 		bool ret;
 		std::unique_ptr<texture_map_type> textures;
