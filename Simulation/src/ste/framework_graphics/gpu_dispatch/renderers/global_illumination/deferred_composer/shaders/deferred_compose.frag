@@ -41,11 +41,12 @@ layout(shared, binding = 11) restrict readonly buffer lll_data {
 #include "gbuffer_load.glsl"
 
 layout(binding = 8) uniform samplerCubeArrayShadow shadow_depth_maps;
-layout(binding = 9) uniform sampler3D scattering_volume;
+layout(binding = 9) uniform samplerCubeArray shadow_maps;
+layout(binding = 10) uniform sampler3D scattering_volume;
 
 out vec4 gl_FragColor;
 
-vec3 shade(g_buffer_element frag) {
+vec3 deferred_shade_fragment(g_buffer_element frag) {
 	int draw_idx = gbuffer_parse_material(frag);
 	material_descriptor md = mat_descriptor[draw_idx];
 
@@ -88,16 +89,17 @@ vec3 shade(g_buffer_element frag) {
 			if (dist2 >= light_effective_range*light_effective_range)
 				continue;
 
+			float l_radius = ld.radius;
 			vec3 shadow_v = w_pos - ld.position;
 			float shadow = shadow(shadow_depth_maps,
+								  shadow_maps,
 								  uint(lll_parse_ll_idx(lll_p)),
-								  shadow_v);
+								  shadow_v,
+								  l_radius * 50.f);
 			if (shadow <= .0f)
 				continue;
 
 			float dist = sqrt(dist2);
-			float l_radius = ld.radius;
-
 			vec3 v = normalize(-position);
 			vec3 l = incident / dist;
 			vec3 irradiance = light_irradiance(ld, dist) * shadow;
@@ -117,9 +119,10 @@ vec3 shade(g_buffer_element frag) {
 }
 
 void main() {
-	g_buffer_element frag = gbuffer_load(ivec2(gl_FragCoord.xy));
-	vec3 c = shade(frag);
+	g_buffer_element g_frag = gbuffer_load(ivec2(gl_FragCoord.xy));
 
-	vec3 xyY = XYZtoxyY(RGBtoXYZ(c));
+	vec3 shaded_fragment = deferred_shade_fragment(g_frag);
+	vec3 xyY = XYZtoxyY(RGBtoXYZ(shaded_fragment));
+
 	gl_FragColor = vec4(xyY, 1);
 }

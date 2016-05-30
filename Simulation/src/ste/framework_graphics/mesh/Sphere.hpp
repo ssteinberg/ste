@@ -35,7 +35,7 @@ public:
 				glm::vec3 b = glm::cross(t,n);
 				v.tangent_frame_from_tbn(t,b,n);
 
-				v.uv.x = .5f + glm::atan(-v.p.z, -v.p.x) / glm::two_pi<float>();
+				v.uv.x = .5f + glm::atan(v.p.x, v.p.z) / glm::two_pi<float>();
 				v.uv.y = static_cast<float>(y) / static_cast<float>(vert_slices - 1);
 
 				vert.push_back(v);

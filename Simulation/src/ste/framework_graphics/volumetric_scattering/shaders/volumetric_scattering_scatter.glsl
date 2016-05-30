@@ -54,6 +54,10 @@ float depth3x3(vec2 uv, int lod) {
 	return min(c, d22);
 }
 
+vec2 slice_coords_to_fragcoords(vec2 v) {
+	return (v + vec2(.5f)) * 8.f / vec2(backbuffer_size());
+}
+
 void main() {
 	ivec3 volume_size = imageSize(volume);
 	ivec2 slice_coords = ivec2(gl_GlobalInvocationID.xy);
@@ -70,7 +74,7 @@ void main() {
 	float depth = volumetric_scattering_depth_for_tile(0);
 	for (int tile = 0; tile < max_tile; ++tile) {
 		ivec3 volume_coords = ivec3(slice_coords, tile);
-		vec2 fragcoords = (vec2(slice_coords) + vec2(.5f)) * 8.f / vec2(backbuffer_size());
+		vec2 fragcoords = slice_coords_to_fragcoords(vec2(slice_coords));
 
 		float depth_next_tile = volumetric_scattering_depth_for_tile(tile + 1);
 		float z_next = unproject_depth(depth_next_tile);
@@ -99,14 +103,13 @@ void main() {
 
 				vec3 scatter = vec3(0.f);
 				for (int s = 0; s < samples; ++s) {
-					float r = mix(.1f, .9f, fast_rand(slice_coords * float(s)));
-					float z = mix(z_start, z_next, r);
+					float r = fast_rand(slice_coords * float(light_idx + 1) * vec2(depth, float(s + 1)));
+					float z = mix(z_start, z_next, r * .99f);
 
-					float jitter_x = fast_rand(vec2(depth, r));
-					float jitter_y = fast_rand(vec2(r, depth));
-					vec2 coords = fragcoords + .4f * vec2(jitter_x, jitter_y);
+					vec2 jitter = vec2(fract(r * 12.696f), fract(r * 78.329f));
+					vec2 coords = slice_coords_to_fragcoords(vec2(slice_coords) + jitter);
 
-					vec3 position = unproject_screen_position_with_z(z, fragcoords);
+					vec3 position = unproject_screen_position_with_z(z, coords);
 					vec3 w_pos = dquat_mul_vec(view_transform_buffer.inverse_view_transform, position);
 
 					vec3 shadow_v = w_pos - ld.position;

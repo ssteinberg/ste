@@ -42,7 +42,6 @@ bool glsl_program::link() {
 		}
 
 		ste_log_error() << "Linking GLSL program failed! Reason: " << reason;
-		assert(false);
 
 		return false;
 	}

@@ -81,6 +81,13 @@ std::unique_ptr<glsl_shader_object_generic> GLSLProgramFactory::compile_from_pat
 
 std::unique_ptr<glsl_shader_object_generic> GLSLProgramFactory::compile_from_source(const boost::filesystem::path &path, std::string code,
 																		  GLSLShaderProperties prop, GLSLShaderType type) {
+#ifdef DEBUG
+	{
+		std::ofstream otemp(std::string("tmp/") + path.filename().string() + ".tmp");
+		otemp << code << std::endl;
+	}
+#endif
+
 	std::unique_ptr<glsl_shader_object_generic> shader;
 	switch (type) {
 	case GLSLShaderType::VERTEX:	shader = std::make_unique<glsl_shader_object<GLSLShaderType::VERTEX>>(code, prop); break;
@@ -180,51 +187,44 @@ bool GLSLProgramFactory::parse_include(const boost::filesystem::path &path, int 
 	std::string name;
 	std::string path_string = path.string();
 
-	bool matched = false;
-
-	while ((name = parse_directive(source, "#include", it, end)).length()) {
+	if ((name = parse_directive(source, "#include", it, end)).length()) {
 		if (name[0] != '"')
-			break;
+			return false;
 		auto name_len = name.find('"', 1);
 		if (name_len == std::string::npos)
-			break;
+			return false;
 
 		std::string file_name = name.substr(1, name_len - 1);
 
-		bool duplicate = false;
 		for (auto &p : paths)
 			if (p == file_name) {
 				source.replace(it, end - it, "");
-				duplicate = true;
-				break;
+				return false;
 			}
-		if (duplicate)
-			continue;
-
-		if (matched) {
-			line = 0;
-			for (unsigned i = 0; i < it; ++i) if (source[i] == '\n') ++line;
-		}
 
 		auto include_path = resolve_program(file_name);
 		if (!include_path) {
 			ste_log_error() << "GLSL program " + file_name + " couldn't be found!";
-			assert(false);
-
 			throw resource_io_error();
 		}
 
 		auto include = load_source(*include_path);
-		source.insert(end, std::string("\n#line ") + std::to_string(line) + " \"" + path_string + "\"\n");
-		source.replace(it, end - it, include);
-		source.insert(it, std::string("#line 1 \"") + include_path->string() + "\"\n");
+		std::istringstream include_stream(include);
+		std::string include_line, include_src;
+		for (int i = 1; std::getline(include_stream, include_line); ++i, include_src += include_line + "\n") {
+			if (include_line[0] == '#') parse_include(*include_path, i, include_line, paths);
+		}
+		include_src.insert(0, std::string("#line 1 \"") + include_path->string() + "\"\n");
 
-		path_string = include_path->string();
-		matched = true;
+		source.insert(end, std::string("\n#line ") + std::to_string(line) + " \"" + path_string + "\"\n");
+		source.replace(it, end - it, include_src);
+
 		paths.push_back(file_name);
+
+		return true;
 	}
 
-	return matched;
+	return false;
 }
 
 StE::optional<boost::filesystem::path> GLSLProgramFactory::resolve_program(const std::string &program_name) {
