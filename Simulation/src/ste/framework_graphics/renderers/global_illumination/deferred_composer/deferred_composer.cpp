@@ -3,10 +3,8 @@
 #include "deferred_composer.hpp"
 #include "GIRenderer.hpp"
 
-#include "GLSLProgramFactory.hpp"
-
 #include "Sampler.hpp"
-#include "ShaderStorageBuffer.hpp"
+#include "Quad.hpp"
 
 #include "gl_current_context.hpp"
 
