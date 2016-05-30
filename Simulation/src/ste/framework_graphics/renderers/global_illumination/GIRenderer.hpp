@@ -28,8 +28,9 @@
 #include "linked_light_lists.hpp"
 #include "linked_light_lists_gen_dispatch.hpp"
 
-#include "gpu_dummy_dispatchable.hpp"
 #include "hdr_dof_postprocess.hpp"
+
+#include "fxaa_dispatchable.hpp"
 
 #include "shadowmap_storage.hpp"
 #include "shadowmap_projector.hpp"
@@ -91,6 +92,7 @@ private:
 	volumetric_scattering_storage vol_scat_storage;
 
 	Resource::resource_instance<deferred_composer> composer;
+	Resource::resource_instance<fxaa_dispatchable> fxaa;
 
 	Resource::resource_instance<linked_light_lists_gen_dispatch> lll_gen_dispatch;
 	Resource::resource_instance<light_preprocessor> light_preprocess;
@@ -106,9 +108,9 @@ private:
 	Resource::resource_instance<scene_prepopulate_depth_dispatch> prepopulate_depth_dispatch;
 	Resource::resource_instance<scene_geo_cull_dispatch> scene_geo_cull;
 
-	std::shared_ptr<const gpu_task> precomposer_dummy_task,
-									scene_task,
+	std::shared_ptr<const gpu_task> scene_task,
 									composer_task,
+									fxaa_task,
 									fb_clearer_task,
 									shadow_projector_task,
 									volumetric_scattering_scatter_task,

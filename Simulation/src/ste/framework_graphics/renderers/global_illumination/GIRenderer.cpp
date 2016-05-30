@@ -12,6 +12,7 @@
 using namespace StE::Graphics;
 
 void GIRenderer::setup_tasks() {
+	fxaa_task = make_gpu_task("fxaa", &fxaa.get(), &ctx.gl()->defaut_framebuffer());
 	composer_task = make_gpu_task("composition", &composer.get(), hdr.get().get_input_fbo());
 	scene_task = make_gpu_task("scene", scene, nullptr);
 	fb_clearer_task = make_gpu_task("fb_clearer", &fb_clearer, get_fbo());
@@ -23,10 +24,15 @@ void GIRenderer::setup_tasks() {
 	volumetric_scattering_gather_task = make_gpu_task("gather", &vol_scat_gather.get(), nullptr);
 	lll_gen_task = make_gpu_task("pp_ll_gen", &lll_gen_dispatch.get(), get_fbo());
 
+	mutate_gpu_task(hdr.get().get_task(), fxaa.get().get_input_fbo());
+
 	hdr.get().get_task()->add_dependency(composer_task);
+
+	fxaa_task->add_dependency(hdr.get().get_task());
 
 	prepopulate_depth_task->add_dependency(fb_clearer_task);
 	prepopulate_depth_task->add_dependency(scene_geo_cull_task);
+	prepopulate_depth_task->add_dependency(shadow_projector_task);
 
 	downsample_depth_task->add_dependency(prepopulate_depth_task);
 
@@ -41,6 +47,7 @@ void GIRenderer::setup_tasks() {
 	lll_gen_task->add_dependency(downsample_depth_task);
 
 	shadow_projector_task->add_dependency(light_preprocess.get().get_task());
+	shadow_projector_task->add_dependency(scene_geo_cull_task);
 
 	volumetric_scattering_scatter_task->add_dependency(light_preprocess.get().get_task());
 	volumetric_scattering_scatter_task->add_dependency(shadow_projector_task);
@@ -55,6 +62,7 @@ void GIRenderer::setup_tasks() {
 	composer_task->add_dependency(light_preprocess.get().get_task());
 	composer_task->add_dependency(shadow_projector_task);
 	composer_task->add_dependency(volumetric_scattering_gather_task);
+	composer_task->add_dependency(scene_task);
 }
 
 GIRenderer::GIRenderer(ctor_token,
@@ -69,6 +77,7 @@ GIRenderer::GIRenderer(ctor_token,
 						 shadows_storage(ctx),
 						 vol_scat_storage(ctx.get_backbuffer_size()) {
 	hdr.load(ctx, &gbuffer);
+	fxaa.load(ctx);
 	downsample_depth.load(ctx, &gbuffer);
 	prepopulate_depth_dispatch.load(ctx, scene);
 	scene_geo_cull.load(ctx, scene, &scene->scene_properties().lights_storage());
@@ -104,17 +113,14 @@ GIRenderer::GIRenderer(ctor_token,
 }
 
 void GIRenderer::rebuild_task_queue() {
-	add_task(get_scene_task());
-
-	q.add_task(composer_task);
-	q.add_task(hdr.get().get_task());
+	q.add_task(fxaa_task);
 
 	for (auto &task_ptr : added_tasks)
 		mutate_gpu_task(task_ptr, get_fbo());
 	mutate_gpu_task(fb_clearer_task, get_fbo());
 
 	for (auto &task_ptr : gui_tasks)
-		q.add_task_dependency(task_ptr, hdr.get().get_task());
+		q.add_task_dependency(task_ptr, fxaa_task);
 }
 
 void GIRenderer::render_queue() {
@@ -139,6 +145,8 @@ void GIRenderer::add_task(const gpu_task::TaskPtr &t) {
 	if (t != fb_clearer_task)
 		q.add_task_dependency(t, fb_clearer_task);
 
+	composer_task->add_dependency(t);
+
 	added_tasks.insert(t);
 }
 
@@ -146,6 +154,7 @@ void GIRenderer::remove_task(const gpu_task::TaskPtr &t) {
 	q.remove_task(t);
 
 	q.remove_task_dependency(t, fb_clearer_task);
+	q.remove_task_dependency(composer_task, t);
 
 	added_tasks.erase(t);
 }
@@ -154,7 +163,7 @@ void GIRenderer::add_gui_task(const gpu_task::TaskPtr &t) {
 	mutate_gpu_task(t, &ctx.gl()->defaut_framebuffer());
 	q.add_task(t);
 
-	q.add_task_dependency(t, hdr.get().get_task());
+	q.add_task_dependency(t, fxaa_task);
 	q.add_task_dependency(t, fb_clearer_task);
 
 	gui_tasks.insert(t);
@@ -163,7 +172,7 @@ void GIRenderer::add_gui_task(const gpu_task::TaskPtr &t) {
 void GIRenderer::remove_gui_task(const gpu_task::TaskPtr &t) {
 	q.remove_task(t);
 
-	q.remove_task_dependency(t, hdr.get().get_task());
+	q.remove_task_dependency(t, fxaa_task);
 	q.remove_task_dependency(t, fb_clearer_task);
 
 	gui_tasks.erase(t);

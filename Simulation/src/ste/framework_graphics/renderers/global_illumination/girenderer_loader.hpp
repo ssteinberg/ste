@@ -25,6 +25,7 @@ public:
 			return std::make_unique<R>(R::ctor_token(), ctx, args...);
 		}).then([](std::unique_ptr<R> &&object) {
 			object->hdr.wait();
+			object->fxaa.wait();
 			object->downsample_depth.wait();
 			object->prepopulate_depth_dispatch.wait();
 			object->scene_geo_cull.wait();
