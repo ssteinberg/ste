@@ -1,6 +1,6 @@
 
 #include "stdafx.hpp"
-#include "glsl_program.hpp"
+#include "glsl_program_object.hpp"
 
 #include "Log.hpp"
 
@@ -12,7 +12,7 @@
 
 using namespace StE::Core;
 
-bool glsl_program::link() {
+bool glsl_program_object::link() {
 	if (linked) return true;
 	if (!Base::is_valid()) return false;
 
@@ -51,7 +51,7 @@ bool glsl_program::link() {
 	}
 }
 
-bool glsl_program::link_from_binary(std::uint32_t format, const std::string &data) {
+bool glsl_program_object::link_from_binary(std::uint32_t format, const std::string &data) {
 	glProgramBinary(get_resource_id(), format, data.data(), data.length());
 	int success = 0;
 	glGetProgramiv(get_resource_id(), GL_LINK_STATUS, &success);
@@ -59,7 +59,7 @@ bool glsl_program::link_from_binary(std::uint32_t format, const std::string &dat
 	return success;
 }
 
-std::string glsl_program::get_binary_represantation(std::uint32_t *format) {
+std::string glsl_program_object::get_binary_represantation(std::uint32_t *format) {
 	int bin_len = 0;
 	glGetProgramiv(get_resource_id(), GL_PROGRAM_BINARY_LENGTH, &bin_len);
 	std::string data;

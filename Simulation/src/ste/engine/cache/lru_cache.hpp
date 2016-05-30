@@ -66,7 +66,8 @@ private:
 		t.interrupt();
 		do { cv.notify_one(); } while (!m.try_lock());
 		m.unlock();
-		t.join();
+		if (t.joinable())
+			t.join();
 	}
 
 	void item_accessed(typename index_type::val_data_guard &&val_guard) const {
@@ -87,9 +88,8 @@ public:
 	*	@param quota	Max size in bytes. 0 for unlimited.
 	*/
 	lru_cache(const boost::filesystem::path &path, std::size_t quota = 0) : index(path, total_size), path(path), quota(quota), t([this] (){
-		auto flag = interruptible_thread::interruption_flag;
 		for (;;) {
-			if (flag->is_set()) return;
+			if (interruptible_thread::is_interruption_flag_set()) return;
 
 			{
 				std::unique_lock<std::mutex> l(this->m);

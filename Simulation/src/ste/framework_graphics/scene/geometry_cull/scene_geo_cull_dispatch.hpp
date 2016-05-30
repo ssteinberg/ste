@@ -9,7 +9,6 @@
 
 #include "resource_instance.hpp"
 #include "resource_loading_task.hpp"
-#include "glsl_program_loading_task.hpp"
 
 #include "glsl_program.hpp"
 #include "gpu_dispatchable.hpp"
@@ -31,7 +30,7 @@ private:
 	const Scene *scene;
 	const light_storage *ls;
 
-	Resource::resource_instance<Core::glsl_program> program;
+	Resource::resource_instance<Resource::glsl_program> program;
 
 	mutable std::size_t old_object_group_size{ 0 };
 
@@ -41,9 +40,9 @@ private:
 public:
 	scene_geo_cull_dispatch(const StEngineControl &ctx,
 							const Scene *scene,
-							const light_storage *ls) : scene(scene), ls(ls) {
-		program.load(ctx, "scene_geo_cull.glsl");
-	}
+							const light_storage *ls) : scene(scene),
+													   ls(ls),
+													   program(ctx, "scene_geo_cull.glsl") {}
 
 	void set_context_state() const override final;
 	void dispatch() const override final;
@@ -58,14 +57,9 @@ class resource_loading_task<Graphics::scene_geo_cull_dispatch> {
 	using R = Graphics::scene_geo_cull_dispatch;
 
 public:
-	template <typename ... Ts>
-	auto loader(const StEngineControl &ctx, const Ts&... args) {
-		return ctx.scheduler().schedule_now([=, &ctx]() {
-			auto object = std::make_unique<R>(ctx, args...);
-
+	auto loader(const StEngineControl &ctx, R* object) {
+		return ctx.scheduler().schedule_now([object, &ctx]() {
 			object->program.wait();
-
-			return object;
 		});
 	}
 };

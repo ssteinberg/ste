@@ -7,6 +7,7 @@
 #include "StEngineControl.hpp"
 
 #include "resource_loading_task.hpp"
+#include "resource_instance_getter.hpp"
 
 #include <memory>
 #include <functional>
@@ -17,17 +18,17 @@ namespace Resource {
 template <typename R>
 class resource_instance {
 public:
-	using loader_future_type = task_future<std::unique_ptr<R>>;
+	using loader_future_type = task_future<void>;
 
 private:
-	mutable std::unique_ptr<R> resource{ nullptr };
+	R resource;
 	mutable std::unique_ptr<loader_future_type> loader_future{ nullptr };
 
 public:
-	resource_instance() = default;
 	template <typename ... Ts>
-	resource_instance(const StEngineControl &ctx, Ts&&... args) {
-		load(ctx, std::forward<Ts>(args)...);
+	resource_instance(const StEngineControl &ctx, Ts&&... args) : resource(ctx, std::forward<Ts>(args)...) {
+		auto f = resource_loading_task<R>().loader(ctx, &resource);
+		loader_future = std::make_unique<loader_future_type>(std::move(f));
 	}
 
 	resource_instance(resource_instance &&) = default;
@@ -35,30 +36,20 @@ public:
 	resource_instance &operator=(resource_instance &&) = default;
 	resource_instance &operator=(const resource_instance &) = delete;
 
-	template <typename ... Ts>
-	void load(const StEngineControl &ctx, Ts&&... args) {
-		auto f = resource_loading_task<R>().loader(ctx, std::forward<Ts>(args)...);
-		loader_future = std::make_unique<loader_future_type>(std::move(f));
-	}
-
 	void wait() const {
-		if (resource == nullptr) {
-			assert(loader_future != nullptr && "load() wasn't called!");
-
-			resource = loader_future->get();
-			assert(resource != nullptr && "loader returned nullptr!");
-
+		if (loader_future != nullptr) {
+			loader_future->get();
 			loader_future = nullptr;
 		}
 	}
 
 	auto &get() {
 		wait();
-		return *resource.get();
+		return resource_instance_getter<R>().get(&resource);
 	}
 	const auto &get() const {
 		wait();
-		return *resource.get();
+		return resource_instance_getter<R>().get(&resource);
 	}
 
 	auto &future() const {

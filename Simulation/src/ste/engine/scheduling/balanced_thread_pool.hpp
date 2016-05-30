@@ -32,7 +32,7 @@ private:
 	mutable std::mutex m;
 	std::condition_variable notifier;
 	std::vector<interruptible_thread> workers;
-	std::vector<std::pair<std::future<bool>, interruptible_thread>> despawned_workers;
+	std::vector<interruptible_thread> despawned_workers;
 
 	concurrent_queue<function_wrapper> task_queue;
 
@@ -50,17 +50,17 @@ private:
 	void spawn_worker(int schedule_on_cpu = -1) {
 		workers.emplace_back([this]() {
 			std::unique_ptr<function_wrapper> task;
-			auto flag = interruptible_thread::interruption_flag;
 
 			for (;;) {
-				if (flag->is_set()) return;
+				if (interruptible_thread::is_interruption_flag_set()) return;
 
 				{
 					std::unique_lock<std::mutex> l(this->m);
 
 					++threads_sleeping;
 					this->notifier.wait(l, [&]() {
-						return flag->is_set() || (task = task_queue.pop()) != nullptr;
+						return interruptible_thread::is_interruption_flag_set() ||
+							   (task = task_queue.pop()) != nullptr;
 					});
 					--threads_sleeping;
 				}
@@ -69,7 +69,8 @@ private:
 
 				while (task != nullptr) {
 					run_task(task);
-					if (flag->is_set()) return;
+					if (interruptible_thread::is_interruption_flag_set())
+						return;
 					task = task_queue.pop();
 				}
 
@@ -91,12 +92,13 @@ private:
 
 	void despawn_worker() {
 		assert(workers.size());
-		auto &ref = workers.back();
+
+		auto ref = std::move(workers.back());
+		workers.pop_back();
+
 		ref.interrupt();
 		ref.detach();
-		auto future = ref.get_future();
-		despawned_workers.push_back(std::make_pair(std::move(future), std::move(ref)));
-		workers.pop_back();
+		despawned_workers.push_back(std::move(ref));
 	}
 
 	void on_enqueue() {
@@ -134,7 +136,7 @@ public:
 		for (auto &t : workers)
 			t.join();
 		for (auto &t : despawned_workers)
-			t.first.wait();
+			t.get_future().get();
 	}
 
 	balanced_thread_pool(balanced_thread_pool &&) = delete;
@@ -168,10 +170,22 @@ public:
 		if (!sys_times.get_times_since_last_call(idle_frac, kernel_frac, user_frac))
 			return;
 
+		// Cleanup despawn queue
 		for (auto it = despawned_workers.begin(); it != despawned_workers.end(); ) {
-			if (!it->first.valid() ||
-				it->first.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
+			if (it->get_future().wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
+				it->get_future().get();			// Might throw
 				it = despawned_workers.erase(it);
+			}
+			else
+				++it;
+		}
+
+		// Check for workers with exceptions
+		for (auto it = workers.begin(); it != workers.end(); ) {
+			if (it->get_future().wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
+				it->get_future().get();
+				it = workers.erase(it);
+			}
 			else
 				++it;
 		}

@@ -9,7 +9,7 @@
 
 #include "resource_instance.hpp"
 #include "resource_loading_task.hpp"
-#include "glsl_program_loading_task.hpp"
+#include "glsl_program.hpp"
 
 #include "linked_light_lists.hpp"
 #include "light_storage.hpp"
@@ -26,26 +26,22 @@ class linked_light_lists_gen_dispatch : public gpu_dispatchable {
 
 	friend class Resource::resource_loading_task<linked_light_lists_gen_dispatch>;
 
-	struct ctor_token {};
-
 private:
 	light_storage *ls;
 	linked_light_lists *lll;
-	Resource::resource_instance<Core::glsl_program> program;
+	Resource::resource_instance<Resource::glsl_program> program;
 
 	Core::SamplerMipmapped depth_sampler;
 
 	Core::Texture2D *depth_map;
 
 public:
-	linked_light_lists_gen_dispatch(ctor_token,
-					   				const StEngineControl &ctx,
+	linked_light_lists_gen_dispatch(const StEngineControl &ctx,
 									light_storage *ls,
 									linked_light_lists *lll) : ls(ls), lll(lll),
+															   program(ctx, std::vector<std::string>{ "passthrough.vert", "linked_light_lists_gen.frag" }),
 															   depth_sampler(Core::TextureFiltering::Nearest, Core::TextureFiltering::Nearest, Core::TextureFiltering::Nearest,
-															   				 Core::TextureWrapMode::ClampToEdge, Core::TextureWrapMode::ClampToEdge) {
-		program.load(ctx, std::vector<std::string>{ "passthrough.vert", "linked_light_lists_gen.frag" });
-	}
+															   				 Core::TextureWrapMode::ClampToEdge, Core::TextureWrapMode::ClampToEdge) {}
 
 	void set_depth_map(Core::Texture2D *dm) { depth_map = dm; }
 
@@ -63,14 +59,9 @@ class resource_loading_task<Graphics::linked_light_lists_gen_dispatch> {
 	using R = Graphics::linked_light_lists_gen_dispatch;
 
 public:
-	template <typename ... Ts>
-	auto loader(const StEngineControl &ctx, const Ts&... args) {
-		return ctx.scheduler().schedule_now_on_main_thread([=, &ctx]() {
-			return std::make_unique<R>(R::ctor_token(), ctx, args...);
-		}).then([](std::unique_ptr<R> &&object) {
+	auto loader(const StEngineControl &ctx, R* object) {
+		return ctx.scheduler().schedule_now([object, &ctx]() {
 			object->program.wait();
-
-			return std::move(object);
 		});
 	}
 };

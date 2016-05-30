@@ -7,9 +7,13 @@
 using namespace StE::Text;
 using namespace StE::Core;
 
-TextManager::TextManager(ctor_token, const StEngineControl &context, const Font &default_font, int default_size) : context(context), gm(context), default_font(default_font), default_size(default_size) {
-	text_distance_mapping.load(context, std::vector<std::string>{ "text_distance_map_contour.vert", "text_distance_map_contour.frag", "text_distance_map_contour.geom" });
-
+TextManager::TextManager(const StEngineControl &context,
+						 const Font &default_font,
+						 int default_size) : context(context),
+						 					 gm(context),
+											 default_font(default_font),
+											 default_size(default_size),
+											 text_distance_mapping(context, std::vector<std::string>{ "text_distance_map_contour.vert", "text_distance_map_contour.frag", "text_distance_map_contour.geom" }) {
 	resize_connection = std::make_shared<ResizeSignalConnectionType>([=](const glm::i32vec2 &size) {
 		text_distance_mapping.get().set_uniform("proj", glm::ortho<float>(0, size.x, 0, size.y, -1, 1));
 		text_distance_mapping.get().set_uniform("fb_size", glm::vec2(size));

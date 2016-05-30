@@ -11,7 +11,7 @@
 #include "resource_instance.hpp"
 #include "resource_loading_task.hpp"
 
-#include "glsl_program_loading_task.hpp"
+#include "glsl_program.hpp"
 #include "Texture2D.hpp"
 
 #include <memory>
@@ -27,13 +27,11 @@ class deferred_composer : public gpu_dispatchable {
 	friend class Resource::resource_loading_task<deferred_composer>;
 
 private:
-	Resource::resource_instance<Core::glsl_program> program;
+	Resource::resource_instance<Resource::glsl_program> program;
 	GIRenderer *dr;
 
 public:
-	deferred_composer(const StEngineControl &ctx, GIRenderer *dr) : dr(dr) {
-		program.load(ctx, std::vector<std::string>{ "passthrough.vert", "deferred_compose.frag" });
-	}
+	deferred_composer(const StEngineControl &ctx, GIRenderer *dr) : program(ctx, std::vector<std::string>{ "passthrough.vert", "deferred_compose.frag" }), dr(dr) {}
 	~deferred_composer() noexcept {}
 
 protected:
@@ -50,14 +48,9 @@ class resource_loading_task<Graphics::deferred_composer> {
 	using R = Graphics::deferred_composer;
 
 public:
-	template <typename ... Ts>
-	auto loader(const StEngineControl &ctx, const Ts&... args) {
-		return ctx.scheduler().schedule_now([=, &ctx]() {
-			auto object = std::make_unique<R>(ctx, args...);
-
+	auto loader(const StEngineControl &ctx, R* object) {
+		return ctx.scheduler().schedule_now([object, &ctx]() {
 			object->program.wait();
-
-			return object;
 		});
 	}
 };

@@ -59,8 +59,7 @@ class GIRenderer : public rendering_system {
 
 	friend class deferred_composer;
 	friend class Resource::resource_loading_task<GIRenderer>;
-
-	struct ctor_token {};
+	friend class Resource::resource_instance<GIRenderer>;
 
 private:
 	using ResizeSignalConnectionType = StEngineControl::framebuffer_resize_signal_type::connection_type;
@@ -93,6 +92,11 @@ private:
 
 	Resource::resource_instance<deferred_composer> composer;
 	Resource::resource_instance<fxaa_dispatchable> fxaa;
+	Resource::resource_instance<hdr_dof_postprocess> hdr;
+
+	Resource::resource_instance<gbuffer_downsample_depth_dispatch> downsample_depth;
+	Resource::resource_instance<scene_prepopulate_depth_dispatch> prepopulate_depth_dispatch;
+	Resource::resource_instance<scene_geo_cull_dispatch> scene_geo_cull;
 
 	Resource::resource_instance<linked_light_lists_gen_dispatch> lll_gen_dispatch;
 	Resource::resource_instance<light_preprocessor> light_preprocess;
@@ -101,12 +105,6 @@ private:
 
 	Resource::resource_instance<volumetric_scattering_scatter_dispatch> vol_scat_scatter;
 	Resource::resource_instance<volumetric_scattering_gather_dispatch> vol_scat_gather;
-
-	Resource::resource_instance<hdr_dof_postprocess> hdr;
-	Resource::resource_instance<gbuffer_downsample_depth_dispatch> downsample_depth;
-
-	Resource::resource_instance<scene_prepopulate_depth_dispatch> prepopulate_depth_dispatch;
-	Resource::resource_instance<scene_geo_cull_dispatch> scene_geo_cull;
 
 	std::shared_ptr<const gpu_task> scene_task,
 									composer_task,
@@ -130,11 +128,12 @@ protected:
 		return gbuffer.get_fbo();
 	}
 
-public:
-	GIRenderer(ctor_token,
-			   const StEngineControl &ctx,
+private:
+	GIRenderer(const StEngineControl &ctx,
 			   const Camera *camera,
 			   Scene *scene);
+
+public:
 	virtual ~GIRenderer() noexcept {}
 
 	void add_task(const gpu_task::TaskPtr &t);

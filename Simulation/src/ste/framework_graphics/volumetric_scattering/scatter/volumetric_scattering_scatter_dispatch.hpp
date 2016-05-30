@@ -9,7 +9,6 @@
 
 #include "resource_instance.hpp"
 #include "resource_loading_task.hpp"
-#include "glsl_program_loading_task.hpp"
 
 #include "glsl_program.hpp"
 #include "gpu_dispatchable.hpp"
@@ -28,8 +27,7 @@ class volumetric_scattering_scatter_dispatch : public gpu_dispatchable {
 	using Base = gpu_dispatchable;
 
 	friend class Resource::resource_loading_task<volumetric_scattering_scatter_dispatch>;
-
-	struct ctor_token {};
+	friend class Resource::resource_instance<volumetric_scattering_scatter_dispatch>;
 
 private:
 	const volumetric_scattering_storage *vss;
@@ -37,7 +35,7 @@ private:
 	const light_storage *ls;
 	const shadowmap_storage *shadows_storage;
 
-	Resource::resource_instance<Core::glsl_program> program;
+	Resource::resource_instance<Resource::glsl_program> program;
 
 private:
 	void update_phase_uniforms(float g) {
@@ -51,16 +49,18 @@ private:
 		program.get().set_uniform("phase3", p3);
 	}
 
-public:
-	volumetric_scattering_scatter_dispatch(ctor_token,
-										   const StEngineControl &ctx,
+private:
+	volumetric_scattering_scatter_dispatch(const StEngineControl &ctx,
 										   const volumetric_scattering_storage *vss,
 										   const linked_light_lists *llls,
 										   const light_storage *ls,
-										   const shadowmap_storage *shadows_storage) : vss(vss), llls(llls), ls(ls), shadows_storage(shadows_storage) {
-		program.load(ctx, "volumetric_scattering_scatter.glsl");
-	}
+										   const shadowmap_storage *shadows_storage) : vss(vss),
+										   											   llls(llls),
+																					   ls(ls),
+																					   shadows_storage(shadows_storage),
+																					   program(ctx, "volumetric_scattering_scatter.glsl") {}
 
+public:
 	void set_context_state() const override final;
 	void dispatch() const override final;
 };
@@ -74,16 +74,11 @@ class resource_loading_task<Graphics::volumetric_scattering_scatter_dispatch> {
 	using R = Graphics::volumetric_scattering_scatter_dispatch;
 
 public:
-	template <typename ... Ts>
-	auto loader(const StEngineControl &ctx, const Ts&... args) {
-		return ctx.scheduler().schedule_now_on_main_thread([=, &ctx]() {
-			return std::make_unique<R>(R::ctor_token(), ctx, args...);
-		}).then([](std::unique_ptr<R> &&object) {
+	auto loader(const StEngineControl &ctx, R* object) {
+		return ctx.scheduler().schedule_now([object, &ctx]() {
 			object->program.wait();
-			return std::move(object);
-		}).then_on_main_thread([](std::unique_ptr<R> &&object) {
+		}).then_on_main_thread([object]() {
 			object->update_phase_uniforms(object->vss->get_scattering_phase_anisotropy_coefficient());
-			return std::move(object);
 		});
 	}
 };

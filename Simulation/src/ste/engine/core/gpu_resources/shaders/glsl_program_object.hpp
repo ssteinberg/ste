@@ -48,7 +48,7 @@ public:
 	static void unbind() { GL::gl_current_context::get()->bind_shader_program(0); }
 };
 
-class glsl_program : public bindable_resource<GLSLProgramAllocator, GLSLProgramBinder> {
+class glsl_program_object : public bindable_resource<GLSLProgramAllocator, GLSLProgramBinder> {
 	using Base = bindable_resource<GLSLProgramAllocator, GLSLProgramBinder>;
 
 private:
@@ -72,13 +72,13 @@ private:
 	}
 
 public:
-	glsl_program(glsl_program &&m) = default;
-	glsl_program(const glsl_program &c) = delete;
-	glsl_program& operator=(glsl_program &&m) = default;
-	glsl_program& operator=(const glsl_program &c) = delete;
+	glsl_program_object(glsl_program_object &&m) = default;
+	glsl_program_object(const glsl_program_object &c) = delete;
+	glsl_program_object& operator=(glsl_program_object &&m) = default;
+	glsl_program_object& operator=(const glsl_program_object &c) = delete;
 
-	glsl_program() : linked(false) {}
-	~glsl_program() noexcept {}
+	glsl_program_object() : linked(false) {}
+	~glsl_program_object() noexcept {}
 
 	void add_shader(std::unique_ptr<glsl_shader_object_generic> shader) {
 		if (shader == nullptr || !shader->is_valid()) {

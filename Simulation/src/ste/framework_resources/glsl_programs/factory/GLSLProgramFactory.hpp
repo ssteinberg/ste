@@ -6,7 +6,7 @@
 #include "stdafx.hpp"
 
 #include "glsl_shader_object.hpp"
-#include "glsl_program.hpp"
+#include "glsl_program_object.hpp"
 
 #include "program_binary.hpp"
 
@@ -48,7 +48,7 @@ private:
 	static std::string parse_directive(const std::string &, const std::string &, std::string::size_type &, std::string::size_type &);
 
 public:
-	static task_future<std::unique_ptr<Core::glsl_program>> load_program_async(const StEngineControl &context, const std::vector<std::string> &names);
+	static task_future<std::unique_ptr<Core::glsl_program_object>> load_program_async(const StEngineControl &context, const std::vector<std::string> &names);
 };
 
 }

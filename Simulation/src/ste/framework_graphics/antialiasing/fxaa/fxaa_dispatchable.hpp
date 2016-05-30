@@ -12,7 +12,7 @@
 
 #include "resource_instance.hpp"
 #include "resource_loading_task.hpp"
-#include "glsl_program_loading_task.hpp"
+#include "glsl_program.hpp"
 
 #include "Texture2D.hpp"
 #include "FramebufferObject.hpp"
@@ -31,7 +31,7 @@ private:
 	using ResizeSignalConnectionType = StEngineControl::framebuffer_resize_signal_type::connection_type;
 
 private:
-	Resource::resource_instance<Core::glsl_program> program;
+	Resource::resource_instance<Resource::glsl_program> program;
 	Core::FramebufferObject fbo;
 	std::unique_ptr<Core::Texture2D> input;
 
@@ -44,9 +44,7 @@ private:
 	}
 
 public:
-	fxaa_dispatchable(const StEngineControl &ctx) {
-		program.load(ctx, std::vector<std::string>{ "fxaa.vert", "fxaa.frag" });
-
+	fxaa_dispatchable(const StEngineControl &ctx) : program(ctx, std::vector<std::string>{ "fxaa.vert", "fxaa.frag" }) {
 		resize(ctx.get_backbuffer_size());
 		resize_connection = std::make_shared<ResizeSignalConnectionType>([=](const glm::i32vec2 &size) {
 			resize(size);
@@ -71,13 +69,9 @@ class resource_loading_task<Graphics::fxaa_dispatchable> {
 	using R = Graphics::fxaa_dispatchable;
 
 public:
-	template <typename ... Ts>
-	auto loader(const StEngineControl &ctx, const Ts&... args) {
-		return ctx.scheduler().schedule_now_on_main_thread([=, &ctx]() {
-			return std::make_unique<R>(ctx, args...);
-		}).then([](std::unique_ptr<R> &&object) {
+	auto loader(const StEngineControl &ctx, R* object) {
+		return ctx.scheduler().schedule_now([object, &ctx]() {
 			object->program.wait();
-			return std::move(object);
 		});
 	}
 };

@@ -11,7 +11,6 @@
 
 #include "resource_instance.hpp"
 #include "resource_loading_task.hpp"
-#include "glsl_program_loading_task.hpp"
 
 #include "glsl_program.hpp"
 #include "gpu_dispatchable.hpp"
@@ -31,12 +30,12 @@ class volumetric_scattering_gather_dispatch : public gpu_dispatchable {
 private:
 	const volumetric_scattering_storage *vss;
 
-	Resource::resource_instance<Core::glsl_program> program;
+	Resource::resource_instance<Resource::glsl_program> program;
 
 public:
-	volumetric_scattering_gather_dispatch(const StEngineControl &ctx, const volumetric_scattering_storage *vss) : vss(vss) {
-		program.load(ctx, "volumetric_scattering_gather.glsl");
-	}
+	volumetric_scattering_gather_dispatch(const StEngineControl &ctx,
+										  const volumetric_scattering_storage *vss) : vss(vss),
+																					  program(ctx, "volumetric_scattering_gather.glsl") {}
 
 	void set_context_state() const override final;
 	void dispatch() const override final;
@@ -51,14 +50,9 @@ class resource_loading_task<Graphics::volumetric_scattering_gather_dispatch> {
 	using R = Graphics::volumetric_scattering_gather_dispatch;
 
 public:
-	template <typename ... Ts>
-	auto loader(const StEngineControl &ctx, const Ts&... args) {
-		return ctx.scheduler().schedule_now([=, &ctx]() {
-			auto object = std::make_unique<R>(ctx, args...);
-
+	auto loader(const StEngineControl &ctx, R* object) {
+		return ctx.scheduler().schedule_now([object, &ctx]() {
 			object->program.wait();
-
-			return object;
 		});
 	}
 };

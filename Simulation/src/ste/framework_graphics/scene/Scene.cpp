@@ -4,7 +4,7 @@
 
 #include "resource_instance.hpp"
 #include "resource_loading_task.hpp"
-#include "glsl_program_loading_task.hpp"
+#include "glsl_program.hpp"
 
 #include "gl_current_context.hpp"
 
@@ -14,10 +14,9 @@ using namespace StE::Graphics;
 
 constexpr int Scene::shadow_proj_id_to_ll_id_table_size;
 
-Scene::Scene(ctor_token, const StEngineControl &ctx) : objects(&scene_props.materials_storage()), culled_objects_counter(1),
-				 									   sproj_id_to_llid_tt(pages * std::max(65536, sproj_id_to_llid_tt_buffer_type::page_size()) / sizeof(shadow_projection_instance_to_ll_idx_translation)) {
-	object_program.load(ctx, std::vector<std::string>{ "object.vert", "object.frag" });
-}
+Scene::Scene(const StEngineControl &ctx) : objects(&scene_props.materials_storage()), culled_objects_counter(1),
+										   sproj_id_to_llid_tt(pages * std::max(65536, sproj_id_to_llid_tt_buffer_type::page_size()) / sizeof(shadow_projection_instance_to_ll_idx_translation)),
+										   object_program(ctx, std::vector<std::string>{ "object.vert", "object.frag" }) {}
 
 void Scene::bind_buffers() const {
 	using namespace Core;

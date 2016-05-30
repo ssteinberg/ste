@@ -12,6 +12,7 @@
 using namespace StE::Graphics;
 
 void GIRenderer::setup_tasks() {
+	mutate_gpu_task(hdr.get().get_task(), fxaa.get().get_input_fbo());
 	fxaa_task = make_gpu_task("fxaa", &fxaa.get(), &ctx.gl()->defaut_framebuffer());
 	composer_task = make_gpu_task("composition", &composer.get(), hdr.get().get_input_fbo());
 	scene_task = make_gpu_task("scene", scene, nullptr);
@@ -23,8 +24,6 @@ void GIRenderer::setup_tasks() {
 	volumetric_scattering_scatter_task = make_gpu_task("scatter", &vol_scat_scatter.get(), nullptr);
 	volumetric_scattering_gather_task = make_gpu_task("gather", &vol_scat_gather.get(), nullptr);
 	lll_gen_task = make_gpu_task("pp_ll_gen", &lll_gen_dispatch.get(), get_fbo());
-
-	mutate_gpu_task(hdr.get().get_task(), fxaa.get().get_input_fbo());
 
 	hdr.get().get_task()->add_dependency(composer_task);
 
@@ -65,29 +64,34 @@ void GIRenderer::setup_tasks() {
 	composer_task->add_dependency(scene_task);
 }
 
-GIRenderer::GIRenderer(ctor_token,
-					   const StEngineControl &ctx,
+GIRenderer::GIRenderer(const StEngineControl &ctx,
 					   const Camera *camera,
 					   Scene *scene)
 					   : ctx(ctx),
 					   	 gbuffer(ctx.get_backbuffer_size(), gbuffer_depth_target_levels()),
 						 camera(camera),
 						 scene(scene),
+
 						 lll_storage(ctx.get_backbuffer_size()),
 						 shadows_storage(ctx),
-						 vol_scat_storage(ctx.get_backbuffer_size()) {
-	hdr.load(ctx, &gbuffer);
-	fxaa.load(ctx);
-	downsample_depth.load(ctx, &gbuffer);
-	prepopulate_depth_dispatch.load(ctx, scene);
-	scene_geo_cull.load(ctx, scene, &scene->scene_properties().lights_storage());
-	composer.load(ctx, this);
-	shadows_projector.load(ctx, scene, &scene->scene_properties().lights_storage(), &shadows_storage);
-	lll_gen_dispatch.load(ctx, &scene->scene_properties().lights_storage(), &lll_storage);
-	light_preprocess.load(ctx, &scene->scene_properties().lights_storage());
-	vol_scat_gather.load(ctx, &vol_scat_storage);
-	vol_scat_scatter.load(ctx, &vol_scat_storage, &lll_storage, &scene->scene_properties().lights_storage(), &shadows_storage);
+						 vol_scat_storage(ctx.get_backbuffer_size()),
 
+						 composer(ctx, this),
+						 fxaa(ctx),
+						 hdr(ctx, &gbuffer),
+
+						 downsample_depth(ctx, &gbuffer),
+						 prepopulate_depth_dispatch(ctx, scene),
+						 scene_geo_cull(ctx, scene, &scene->scene_properties().lights_storage()),
+
+						 lll_gen_dispatch(ctx, &scene->scene_properties().lights_storage(), &lll_storage),
+						 light_preprocess(ctx, &scene->scene_properties().lights_storage()),
+
+						 shadows_projector(ctx, scene, &scene->scene_properties().lights_storage(), &shadows_storage),
+
+						 vol_scat_scatter(ctx, &vol_scat_storage, &lll_storage, &scene->scene_properties().lights_storage(), &shadows_storage),
+						 vol_scat_gather(ctx, &vol_scat_storage)
+{
 	resize_connection = std::make_shared<ResizeSignalConnectionType>([=](const glm::i32vec2 &size) {
 		this->transform_buffers.update_proj_data(this->ctx.get_fov(), this->ctx.get_projection_aspect(), this->ctx.get_near_clip(), size);
 

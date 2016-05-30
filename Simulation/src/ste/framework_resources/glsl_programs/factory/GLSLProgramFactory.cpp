@@ -32,7 +32,7 @@ using StE::Core::glsl_shader_object_generic;
 using StE::Core::glsl_shader_object;
 using StE::Core::GLSLShaderType;
 using StE::Core::GLSLShaderProperties;
-using StE::Core::glsl_program;
+using StE::Core::glsl_program_object;
 
 
 const std::unordered_map<std::string, GLSLShaderType> GLSLProgramFactory::type_map = { { "compute", GLSLShaderType::COMPUTE },{ "frag", GLSLShaderType::FRAGMENT },{ "vert", GLSLShaderType::VERTEX },{ "geometry", GLSLShaderType::GEOMETRY },{ "tes", GLSLShaderType::TESS_EVALUATION },{ "tcs", GLSLShaderType::TESS_CONTROL } };
@@ -72,7 +72,7 @@ std::unique_ptr<glsl_shader_object_generic> GLSLProgramFactory::compile_from_pat
 
 	if (type == GLSLShaderType::NONE || prop.version_major == 0) {
 		using namespace Attributes;
-		ste_log_error() << AttributedString("GLSL Shader ") + i(path.string()) + ": No shader #type or #version specified.";
+		ste_log_error() << AttributedString("GLSL Shader ") + i(path.string()) + ": No shader #type or #version specified." << std::endl;
 		throw glsl_program_undefined_program_error();
 	}
 
@@ -102,19 +102,19 @@ std::unique_ptr<glsl_shader_object_generic> GLSLProgramFactory::compile_from_sou
 
 	if (!shader->is_valid()) {
 		using namespace Attributes;
-		ste_log_error() << AttributedString("GLSL Shader ") + i(path.string()) + ": Unable to create GLSL shader program!";
+		ste_log_error() << AttributedString("GLSL Shader ") + i(path.string()) + ": Unable to create GLSL shader program!" << std::endl;
 
 		throw glsl_program_shader_compilation_error();
 	}
 
 	if (!shader->get_status()) {
 		using namespace Attributes;
-		ste_log_error() << AttributedString("GLSL Shader ") + i(path.string()) + ": Compiling GLSL shader failed! Reason: " << shader->read_info_log();
+		ste_log_error() << AttributedString("GLSL Shader ") + i(path.string()) + ": Compiling GLSL shader failed! Reason: " << shader->read_info_log() << std::endl;
 
 		throw glsl_program_shader_compilation_error();
 	}
 
-	ste_log() << "Successfully compiled GLSL shader";
+	ste_log() << "Successfully compiled GLSL shader" << std::endl;
 
 	return std::move(shader);
 }
@@ -204,7 +204,7 @@ bool GLSLProgramFactory::parse_include(const boost::filesystem::path &path, int 
 
 		auto include_path = resolve_program(file_name);
 		if (!include_path) {
-			ste_log_error() << "GLSL program " + file_name + " couldn't be found!";
+			ste_log_error() << "GLSL program " + file_name + " couldn't be found!" << std::endl;
 			throw resource_io_error();
 		}
 
@@ -240,7 +240,7 @@ StE::optional<boost::filesystem::path> GLSLProgramFactory::resolve_program(const
 	return it->path();
 }
 
-StE::task_future<std::unique_ptr<glsl_program>> GLSLProgramFactory::load_program_async(const StEngineControl &context, const std::vector<std::string> &names) {
+StE::task_future<std::unique_ptr<glsl_program_object>> GLSLProgramFactory::load_program_async(const StEngineControl &context, const std::vector<std::string> &names) {
 	struct loader_data {
 		program_binary bin;
 		std::string cache_key;
@@ -256,7 +256,7 @@ StE::task_future<std::unique_ptr<glsl_program>> GLSLProgramFactory::load_program
 			for (auto &program_name : names) {
 				auto path = resolve_program(program_name);
 				if (!path) {
-					ste_log_error() << "GLSL program " + program_name + " couldn't be found!";
+					ste_log_error() << "GLSL program " + program_name + " couldn't be found!" << std::endl;
 					throw resource_io_error();
 				}
 
@@ -273,7 +273,7 @@ StE::task_future<std::unique_ptr<glsl_program>> GLSLProgramFactory::load_program
 				for (auto &p : includes) {
 					auto path = resolve_program(p);
 					if (!path) {
-						ste_log_error() << "GLSL program " + p + " couldn't be found!";
+						ste_log_error() << "GLSL program " + p + " couldn't be found!" << std::endl;
 						throw resource_io_error();
 					}
 
@@ -301,16 +301,16 @@ StE::task_future<std::unique_ptr<glsl_program>> GLSLProgramFactory::load_program
 		}
 
 		return data;
-	}).then_on_main_thread([=, &context](loader_data data) -> std::unique_ptr<glsl_program> {
+	}).then_on_main_thread([=, &context](loader_data data) -> std::unique_ptr<glsl_program_object> {
 		if (data.bin.blob.length()) {
-			std::unique_ptr<glsl_program> program = std::make_unique<glsl_program>();
+			std::unique_ptr<glsl_program_object> program = std::make_unique<glsl_program_object>();
 			if (program->link_from_binary(data.bin.format, data.bin.blob)) {
-				ste_log() << "Successfully linked GLSL program from cached binary";
+				ste_log() << "Successfully linked GLSL program from cached binary" << std::endl;
 				return program;
 			}
 		}
 
-		std::unique_ptr<glsl_program> program = std::make_unique<glsl_program>();
+		std::unique_ptr<glsl_program_object> program = std::make_unique<glsl_program_object>();
 		for (auto &shader_path : data.files)
 			program->add_shader(compile_from_path(shader_path));
 		if (!program->link())

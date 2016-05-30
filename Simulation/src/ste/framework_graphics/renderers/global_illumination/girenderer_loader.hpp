@@ -19,11 +19,8 @@ class resource_loading_task<Graphics::GIRenderer> {
 	using R = Graphics::GIRenderer;
 
 public:
-	template <typename ... Ts>
-	auto loader(const StEngineControl &ctx, const Ts&... args) {
-		return ctx.scheduler().schedule_now_on_main_thread([=, &ctx]() {
-			return std::make_unique<R>(R::ctor_token(), ctx, args...);
-		}).then([](std::unique_ptr<R> &&object) {
+	auto loader(const StEngineControl &ctx, R* object) {
+		return ctx.scheduler().schedule_now([object, &ctx]() {
 			object->hdr.wait();
 			object->fxaa.wait();
 			object->downsample_depth.wait();
@@ -37,13 +34,9 @@ public:
 			object->vol_scat_scatter.wait();
 
 			object->lll_gen_dispatch.get().set_depth_map(object->gbuffer.get_downsampled_depth_target());
-
-			return std::move(object);
-		}).then_on_main_thread([](std::unique_ptr<R> &&object) {
+		}).then_on_main_thread([object]() {
 			object->setup_tasks();
 			object->rebuild_task_queue();
-
-			return std::move(object);
 		});
 	}
 };
