@@ -77,7 +77,7 @@ auto create_light_object(StE::Graphics::Scene *scene, const glm::vec3 &light_pos
 	(*sphere) *= light->get_radius();
 	auto light_obj = std::make_shared<StE::Graphics::Object>(std::move(sphere));
 
-	light_obj->set_model_transform(glm::translate(glm::mat4(), light_pos));
+	light_obj->set_model_transform(glm::mat4x3(glm::translate(glm::mat4(), light_pos)));
 
 	gli::texture2d light_color_tex{ gli::format::FORMAT_RGB8_UNORM_PACK8, { 1, 1 }, 1 };
 	auto c = light->get_diffuse();
@@ -120,7 +120,7 @@ auto create_material_editor_object(StE::Graphics::Scene *scene, const glm::vec3 
 	(*sphere) *= 30;
 	auto obj = std::make_shared<StE::Graphics::Object>(std::move(sphere));
 
-	obj->set_model_transform(glm::translate(glm::mat4(), pos));
+	obj->set_model_transform(glm::mat4x3(glm::translate(glm::mat4(), pos)));
 
 	gli::texture2d base_color_tex{ gli::format::FORMAT_RGB8_UNORM_PACK8, { 1, 1 }, 1 };
 	*reinterpret_cast<glm::u8vec3*>(base_color_tex.data()) = glm::u8vec3(255);
@@ -350,7 +350,7 @@ int main() {
 		float angle = time * glm::pi<float>() / 2.5f;
 		glm::vec3 lp = light0_pos + glm::vec3(glm::sin(angle) * 3, 0, glm::cos(angle)) * 115.f;
 		light0->set_position(lp);
-		light0_obj->set_model_transform(glm::translate(glm::mat4(), lp));
+		light0_obj->set_model_transform(glm::mat4x3(glm::translate(glm::mat4(), lp)));
 
 		{
 			using namespace StE::Text::Attributes;

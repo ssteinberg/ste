@@ -59,8 +59,7 @@ void Camera::set_position(const glm::vec3 &pos)  {
 }
 
 void Camera::lookat(const glm::vec3 &pos)  {
-	camera_look_at = pos;
-	camera_direction = glm::normalize(camera_look_at - camera_position);
+	camera_direction = glm::normalize(pos - camera_position);
 	camera_look_at = camera_position + camera_direction;
 }
 
