@@ -33,8 +33,8 @@ private:
 	using gbuffer_type = Core::ShaderStorageBuffer<g_buffer_element, usage>;
 
 private:
-	std::unique_ptr<Core::Texture2D> depth_target;
-	std::unique_ptr<Core::Texture2D> downsampled_depth_target;
+	std::unique_ptr<Core::Texture2D> depth_target{ nullptr };
+	std::unique_ptr<Core::Texture2D> downsampled_depth_target{ nullptr };
 	Core::FramebufferObject fbo;
 
 	gbuffer_type gbuffer;

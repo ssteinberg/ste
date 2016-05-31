@@ -24,8 +24,8 @@ private:
 	constexpr static int depth_tiles = 256;
 
 private:
-	Core::Texture2D *depth_map;
-	std::unique_ptr<Core::Texture3D> volume;
+	Core::Texture2D *depth_map{ nullptr };
+	std::unique_ptr<Core::Texture3D> volume{ nullptr };
 
 	Core::Sampler volume_sampler;
 	Core::SamplerMipmapped depth_sampler;

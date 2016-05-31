@@ -21,6 +21,11 @@
 
 namespace StE {
 
+/**
+ *	@brief	Thread-safe task scheduler. Can schedule into a background thread pool or on the main thread.
+ * 			Uses a load balancing thread pool. Returns task_futures that natively interruct with task_scheduler
+ *			and can be chained.
+*/
 class task_scheduler {
 private:
 	using LoadBalancingPool = balanced_thread_pool;
@@ -46,8 +51,19 @@ public:
 	task_scheduler(task_scheduler &&) = delete;
 	task_scheduler &operator=(task_scheduler &&) = delete;
 
+	/**
+	*	@brief	Load balances thread pool and executes pending main thread tasks.
+	*			Must be called from main thread. Shouldn't be called manually, task_futures and StEngineControl
+	*			handle it.
+	*/
 	void run_loop();
 
+	/**
+	*	@brief	Schedule task in background for execution as soon as a worker is free.
+	*
+	*	@param f		Lambda to schedule
+	*	@param shared	If true returns a task_shared_future, otherwise a task_future.
+	*/
 	template <bool shared, typename F>
 	task_future_impl<typename function_traits<F>::result_t, shared> schedule_now(F &&f) {
 		static_assert(function_traits<F>::arity == 0, "lambda takes too many arguments");
@@ -55,6 +71,13 @@ public:
 		return { std::move(pool.enqueue(std::forward<F>(f))), this };
 	}
 
+	/**
+	*	@brief	Schedule task in background for execution at a specifed timepoint.
+	*
+	*	@param at		Timepoint
+	*	@param f		Lambda to schedule
+	*	@param shared	If true returns a task_shared_future, otherwise a task_future.
+	*/
 	template <bool shared, typename F>
 	task_future_impl<typename function_traits<F>::result_t, shared> schedule_at(const std::chrono::high_resolution_clock::time_point &at,
 												   				   				F &&f) {
@@ -66,6 +89,13 @@ public:
 		return { std::move(future), this };
 	}
 
+	/**
+	*	@brief	Schedule task in background for execution after specified duration.
+	*
+	*	@param after	Time duration to wait before scheduling
+	*	@param f		Lambda to schedule
+	*	@param shared	If true returns a task_shared_future, otherwise a task_future.
+	*/
 	template <bool shared, typename F, class Rep, class Period>
 	task_future_impl<typename function_traits<F>::result_t, shared> schedule_after(const std::chrono::duration<Rep, Period> &after,
 																	  			   F &&f) {
@@ -77,6 +107,12 @@ public:
 		return { std::move(future), this };
 	}
 
+	/**
+	*	@brief	Schedule task on main thread for execution at next run_loop iteration.
+	*
+	*	@param f		Lambda to schedule
+	*	@param shared	If true returns a task_shared_future, otherwise a task_future.
+	*/
 	template <bool shared, typename F>
 	task_future_impl<typename function_traits<F>::result_t, shared> schedule_now_on_main_thread(F &&f) {
 		static_assert(function_traits<F>::arity == 0, "lambda takes too many arguments");
@@ -92,18 +128,40 @@ public:
 		return { std::move(future), this };
 	}
 
+	/**
+	*	@brief	Schedule task in background for execution as soon as a worker is free.
+	*
+	*	@param f		Lambda to schedule
+	*/
 	template <typename F>
 	auto schedule_now(F &&f) {
 		return schedule_now<false>(std::forward<F>(f));
 	}
+	/**
+	*	@brief	Schedule task in background for execution at a specifed timepoint.
+	*
+	*	@param at		Timepoint
+	*	@param f		Lambda to schedule
+	*/
 	template <typename F>
 	auto schedule_at(const std::chrono::high_resolution_clock::time_point &at, F &&f) {
 		return schedule_at<false>(at, std::forward<F>(f));
 	}
+	/**
+	*	@brief	Schedule task in background for execution after specified duration.
+	*
+	*	@param after	Time duration to wait before scheduling
+	*	@param f		Lambda to schedule
+	*/
 	template <typename F, class Rep, class Period>
 	auto schedule_after(const std::chrono::duration<Rep, Period> &after, F &&f) {
 		return schedule_after<false>(after, std::forward<F>(f));
 	}
+	/**
+	*	@brief	Schedule task on main thread for execution at next run_loop iteration.
+	*
+	*	@param f		Lambda to schedule
+	*/
 	template <typename F>
 	auto schedule_now_on_main_thread(F &&f) {
 		return schedule_now_on_main_thread<false>(std::forward<F>(f));
