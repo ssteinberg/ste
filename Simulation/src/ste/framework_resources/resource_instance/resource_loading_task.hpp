@@ -12,6 +12,14 @@
 namespace StE {
 namespace Resource {
 
+/**
+*	@brief	Defines loader for resource_instance<R>
+*
+*	Partial specializations can be defined to specify a loading task. loader() takes a context reference and a pointer
+*	to the resource being loaded, and returns a task_future. Default implementations does nothing.
+*
+ *	@param R	resource type
+*/
 template <typename R>
 class resource_loading_task {
 private:

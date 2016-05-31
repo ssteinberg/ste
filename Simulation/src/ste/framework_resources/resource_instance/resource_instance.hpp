@@ -40,6 +40,15 @@ public:
 	virtual void wait() const = 0;
 };
 
+/**
+ *	@brief	Resource instance wrap
+ *
+ *	Wraps a resource R and provides async loading facilities
+ *	resource_loading_task<R> defines custom loading process.
+ *	resource_instance_getter<R> defines custom getters.
+ *
+ *	@param R	resource type
+ */
 template <typename R>
 class resource_instance : protected resource_instance_base {
 public:
@@ -63,6 +72,14 @@ private:
 	}
 
 public:
+	/**
+	*	@brief	Resource ctor
+	*
+	*	Calls R ctor and schedules loading task
+	*
+	*	@param ctx	Engine context reference
+	*	@param args	Will be perfectly forwarded to resource ctor
+	*/
 	template <typename ... Ts>
 	resource_instance(const StEngineControl &ctx, Ts&&... args) : resource_instance_base(),
 																  loading_data(std::make_unique<loading_struct>()),
@@ -79,6 +96,12 @@ public:
 	resource_instance &operator=(resource_instance &&) = default;
 	resource_instance &operator=(const resource_instance &) = delete;
 
+	/**
+	*	@brief	Wait for loading to complete
+	*
+	*	Blocks till loading of resource and all child-resources is completed. Unhandled exceptions raised
+	*	while loading are rethrown here.
+	*/
 	void wait() const override final {
 		if (loading_data != nullptr) {
 			std::unique_lock<std::mutex> ul(m);
@@ -94,10 +117,20 @@ public:
 		}
 	}
 
+	/**
+	*	@brief	Get resource reference
+	*
+	*	Calls wait and returns a reference to underlying resource
+	*/
 	auto &get() {
 		wait();
 		return resource_instance_getter<R>().get(&resource);
 	}
+	/**
+	*	@brief	Get resource reference
+	*
+	*	Calls wait and returns a reference to underlying resource
+	*/
 	const auto &get() const {
 		wait();
 		return resource_instance_getter<R>().get(&resource);

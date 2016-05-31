@@ -6,6 +6,13 @@
 namespace StE {
 namespace Resource {
 
+/**
+*	@brief	Defines getter for resource_instance<R>
+*
+*	Partial specializations can be defined to override default get()
+*
+ *	@param R	resource type
+*/
 template <typename R>
 class resource_instance_getter {
 public:

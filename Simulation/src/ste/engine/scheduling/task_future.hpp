@@ -26,6 +26,12 @@ class task_scheduler;
 
 class task_future_chaining_construct {};
 
+/**
+ *	@brief	Wrapper around std::future for StE::task_scheduler
+ *
+ *	@param R			Future return type
+ *	@param is_shared	Indicates whether or not this is a shared_future
+*/
 template <typename R, bool is_shared>
 class task_future_impl {
 	friend class task_scheduler;
@@ -121,6 +127,12 @@ private:
 
 public:
 	task_future_impl() = default;
+
+	/**
+	*	@brief	Chain a future with this one. Used for then_on_main_thread().
+	*
+	*	@param f	Future to chain. Will be moved from.
+	*/
 	template <bool b>
 	task_future_impl(task_future_impl<chained_task_future, b> &&f,
 					 task_future_chaining_construct) : sched(f.sched),
@@ -128,6 +140,11 @@ public:
 													   chaining_future(std::move(f.future)) {
 		assert(!f.chain && "Can not double chain task_futures");
 	}
+	/**
+	*	@brief	Chain a future with this one. Used for then_on_main_thread().
+	*
+	*	@param f	Future to chain. Will be moved from.
+	*/
 	task_future_impl(const task_future_impl<chained_task_future, true> &f,
 					 task_future_chaining_construct) : sched(f.sched),
 													   chain(true),
@@ -169,6 +186,9 @@ public:
 
 	~task_future_impl() noexcept {}
 
+	/**
+	*	@brief	Get future return. Will busy wait if called on main thread.
+	*/
 	R get() {
 		if (is_main_thread())
 			loop_until_ready();
@@ -178,6 +198,9 @@ public:
 		return future.get();
 	}
 
+	/**
+	*	@brief	Wait for future. Will busy wait if called on main thread.
+	*/
 	void wait() const {
 		if (is_main_thread())
 			loop_until_ready();
@@ -187,6 +210,11 @@ public:
 		return future.wait();
 	}
 
+	/**
+	*	@brief	Wait for future for limited duration. Can not be called on main thread unless timeout_duration is 0.
+	*
+	*	@param	timeout_duration	Timeout
+	*/
 	template <class Rep, class Period>
 	std::future_status wait_for(const std::chrono::duration<Rep,Period> &timeout_duration) const {
 		assert((std::chrono::duration_cast<std::chrono::microseconds>(timeout_duration) <= std::chrono::microseconds(0) ||
@@ -197,6 +225,11 @@ public:
 		return future.wait_for(timeout_duration);
 	}
 
+	/**
+	*	@brief	Wait for future until a time point. Can not be called on main thread.
+	*
+	*	@param	timeout_time	Timeout time point
+	*/
 	template <class Clock, class Duration>
 	std::future_status wait_until(const std::chrono::time_point<Clock,Duration>& timeout_time) const {
 		assert(!is_main_thread() && "Blocking main thread");
@@ -208,11 +241,24 @@ public:
 
 	bool valid() const { return future.valid(); }
 
+	/**
+	*	@brief	Schedules a lambda after this future's completion. Moves from this future and creates a new future.
+	*
+	*	@param	lambda	Lambda expression
+	*/
 	template <typename L>
 	task_future_impl<typename function_traits<L>::result_t, is_shared> then(L &&lambda) &&;
+	/**
+	*	@brief	Schedules a lambda on the main thread after this future's completion. Moves from this future and creates a new future.
+	*
+	*	@param	lambda	Lambda expression
+	*/
 	template <typename L>
 	task_future_impl<typename function_traits<L>::result_t, is_shared> then_on_main_thread(L &&lambda) &&;
 
+	/**
+	*	@brief	Moves this future into a shared future.
+	*/
 	task_future_impl<R, true> shared() &&;
 };
 
