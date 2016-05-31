@@ -10,10 +10,7 @@
 
 #include "gpu_dispatchable.hpp"
 
-#include "resource_instance.hpp"
-#include "resource_loading_task.hpp"
 #include "glsl_program.hpp"
-
 #include "Texture2D.hpp"
 #include "FramebufferObject.hpp"
 
@@ -24,8 +21,6 @@ namespace Graphics {
 
 class fxaa_dispatchable : public gpu_dispatchable {
 	using Base = gpu_dispatchable;
-
-	friend class Resource::resource_loading_task<fxaa_dispatchable>;
 
 private:
 	using ResizeSignalConnectionType = StEngineControl::framebuffer_resize_signal_type::connection_type;
@@ -58,22 +53,6 @@ public:
 protected:
 	void set_context_state() const override final;
 	void dispatch() const override final;
-};
-
-}
-
-namespace Resource {
-
-template <>
-class resource_loading_task<Graphics::fxaa_dispatchable> {
-	using R = Graphics::fxaa_dispatchable;
-
-public:
-	auto loader(const StEngineControl &ctx, R* object) {
-		return ctx.scheduler().schedule_now([object, &ctx]() {
-			object->program.wait();
-		});
-	}
 };
 
 }

@@ -14,6 +14,8 @@
 #include <memory>
 
 #include <future>
+#include <mutex>
+
 #include <chrono>
 
 #include <type_traits>
@@ -43,6 +45,8 @@ private:
 	mutable chaining_future_type chaining_future;
 	mutable std::shared_ptr<chained_task_future> chained_future{ nullptr };
 
+	mutable std::mutex chaining_mutex;
+
 private:
 	task_future_impl(typename task_future_impl<R, false>::future_type &&f, task_scheduler *sched) : sched(sched), future(std::move(f)) {}
 	task_future_impl(typename task_future_impl<R, true >::future_type &&f, task_scheduler *sched) : sched(sched), future(std::move(f)) {}
@@ -51,17 +55,22 @@ private:
 					 task_scheduler *sched,
 					 typename std::enable_if_t<b>* = nullptr) : sched(sched), future(f) {}
 
-	auto chained_get() {
+	void resolve_chained_future() const {
+		std::unique_lock<std::mutex> ul(chaining_mutex);
+
 		if (chained_future == nullptr)
 			chained_future = std::make_shared<chained_task_future>(chaining_future.get());
+	}
+
+	auto chained_get() {
+		if (chained_future == nullptr)
+			resolve_chained_future();
 		return chained_future->get();
 	}
 
 	void chained_wait() const {
-		if (chained_future == nullptr) {
-			chaining_future.wait();
-			chained_future = std::make_shared<chained_task_future>(chaining_future.get());
-		}
+		if (chained_future == nullptr)
+			resolve_chained_future();
 
 		chained_future->wait();
 	}
@@ -73,16 +82,20 @@ private:
 		if (chained_future == nullptr) {
 			auto start = std::chrono::high_resolution_clock::now();
 
-			auto wait_result = chaining_future.wait_for(timeout_duration);
-			if (wait_result == std::future_status::ready) {
-				chained_future = std::make_shared<chained_task_future>(chaining_future.get());
-
-				auto end = std::chrono::high_resolution_clock::now();
-				auto elapsed = std::chrono::duration_cast<decltype(available_time)>(end - start);
-				available_time -= elapsed;
+			{
+				std::unique_lock<std::mutex> ul(chaining_mutex);
+				if (chained_future == nullptr) {
+					auto wait_result = chaining_future.wait_for(timeout_duration);
+					if (wait_result == std::future_status::ready)
+						chained_future = std::make_shared<chained_task_future>(chaining_future.get());
+					else
+						return wait_result;
+				}
 			}
-			else
-				return wait_result;
+
+			auto end = std::chrono::high_resolution_clock::now();
+			auto elapsed = std::chrono::duration_cast<decltype(available_time)>(end - start);
+			available_time -= elapsed;
 		}
 
 		return chained_future->wait_for(available_time);
@@ -91,11 +104,14 @@ private:
 	template <class Clock, class Duration>
 	auto chained_wait_until(const std::chrono::time_point<Clock,Duration>& timeout_time) const {
 		if (chained_future == nullptr) {
-			auto wait_result = chaining_future.wait_until(timeout_time);
-			if (wait_result == std::future_status::ready)
-				chained_future = std::make_shared<chained_task_future>(chaining_future.get());
-			else
-				return wait_result;
+			std::unique_lock<std::mutex> ul(chaining_mutex);
+			if (chained_future == nullptr) {
+				auto wait_result = chaining_future.wait_until(timeout_time);
+				if (wait_result == std::future_status::ready)
+					chained_future = std::make_shared<chained_task_future>(chaining_future.get());
+				else
+					return wait_result;
+			}
 		}
 
 		return chained_future->wait_until(timeout_time);
@@ -104,6 +120,7 @@ private:
 	void loop_until_ready() const;
 
 public:
+	task_future_impl() = default;
 	template <bool b>
 	task_future_impl(task_future_impl<chained_task_future, b> &&f,
 					 task_future_chaining_construct) : sched(f.sched),
@@ -113,15 +130,42 @@ public:
 	}
 	task_future_impl(const task_future_impl<chained_task_future, true> &f,
 					 task_future_chaining_construct) : sched(f.sched),
-													   chain(true,
-													   chaining_future(f.future)) {
+													   chain(true),
+													   chaining_future(f.future) {
 		assert(!f.chain && "Can not double chain task_futures");
 	}
 
-	task_future_impl(task_future_impl &&) = default;
-	task_future_impl(const task_future_impl &) = default;
-	task_future_impl &operator=(task_future_impl &&) = default;
-	task_future_impl &operator=(const task_future_impl &) = default;
+	task_future_impl(task_future_impl &&other) : sched(other.sched),
+												 future(std::move(other.future)),
+												 chain(other.chain),
+												 chaining_future(std::move(other.chaining_future)),
+												 chained_future(std::move(other.chained_future)) {}
+	template <bool b = is_shared>
+	task_future_impl(const task_future_impl &other, std::enable_if_t<b>* = nullptr) : sched(other.sched),
+																					  future(other.future),
+																					  chain(other.chain),
+																					  chaining_future(other.chaining_future),
+																					  chained_future(other.chained_future) {}
+
+	task_future_impl &operator=(task_future_impl &&other) {
+		sched = other.sched;
+		future = std::move(other.future);
+		chain = other.chain;
+		chaining_future = std::move(other.chaining_future);
+		chained_future = std::move(other.chained_future);
+
+		return *this;
+	}
+	template <bool b = is_shared>
+	std::enable_if_t<b, task_future_impl&> operator=(const task_future_impl &other) {
+		sched = other.sched;
+		future = other.future;
+		chain = other.chain;
+		chaining_future = other.chaining_future;
+		chained_future = other.chained_future;
+
+		return *this;
+	}
 
 	~task_future_impl() noexcept {}
 
@@ -161,6 +205,8 @@ public:
 			return chained_wait_until(timeout_time);
 		return future.wait_until(timeout_time);
 	}
+
+	bool valid() const { return future.valid(); }
 
 	template <typename L>
 	task_future_impl<typename function_traits<L>::result_t, is_shared> then(L &&lambda) &&;

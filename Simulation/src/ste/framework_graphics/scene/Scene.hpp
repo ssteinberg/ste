@@ -7,14 +7,11 @@
 #include "StEngineControl.hpp"
 #include "gpu_dispatchable.hpp"
 
-#include "resource_instance.hpp"
-#include "resource_loading_task.hpp"
-#include "glsl_program.hpp"
-
 #include "SceneProperties.hpp"
 #include "deferred_gbuffer.hpp"
 #include "object_group_indirect_command_buffer.hpp"
 
+#include "glsl_program.hpp"
 #include "AtomicCounterBufferObject.hpp"
 #include "ShaderStorageBuffer.hpp"
 
@@ -28,8 +25,6 @@ namespace Graphics {
 
 class Scene : public gpu_dispatchable {
 	using Base = gpu_dispatchable;
-
-	friend class Resource::resource_loading_task<Scene>;
 
 private:
 	static constexpr int shadow_proj_id_to_ll_id_table_size = max_active_lights_per_frame;
@@ -91,22 +86,6 @@ public:
 protected:
 	void set_context_state() const override final;
 	void dispatch() const override final;
-};
-
-}
-
-namespace Resource {
-
-template <>
-class resource_loading_task<Graphics::Scene> {
-	using R = Graphics::Scene;
-
-public:
-	auto loader(const StEngineControl &ctx, R* object) {
-		return ctx.scheduler().schedule_now([object, &ctx]() {
-			object->object_program.wait();
-		});
-	}
 };
 
 }

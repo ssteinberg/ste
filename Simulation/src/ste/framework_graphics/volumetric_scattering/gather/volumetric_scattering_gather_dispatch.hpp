@@ -9,9 +9,6 @@
 
 #include "signal.hpp"
 
-#include "resource_instance.hpp"
-#include "resource_loading_task.hpp"
-
 #include "glsl_program.hpp"
 #include "gpu_dispatchable.hpp"
 
@@ -25,8 +22,6 @@ namespace Graphics {
 class volumetric_scattering_gather_dispatch : public gpu_dispatchable {
 	using Base = gpu_dispatchable;
 
-	friend class Resource::resource_loading_task<volumetric_scattering_gather_dispatch>;
-
 private:
 	const volumetric_scattering_storage *vss;
 
@@ -39,22 +34,6 @@ public:
 
 	void set_context_state() const override final;
 	void dispatch() const override final;
-};
-
-}
-
-namespace Resource {
-
-template <>
-class resource_loading_task<Graphics::volumetric_scattering_gather_dispatch> {
-	using R = Graphics::volumetric_scattering_gather_dispatch;
-
-public:
-	auto loader(const StEngineControl &ctx, R* object) {
-		return ctx.scheduler().schedule_now([object, &ctx]() {
-			object->program.wait();
-		});
-	}
 };
 
 }

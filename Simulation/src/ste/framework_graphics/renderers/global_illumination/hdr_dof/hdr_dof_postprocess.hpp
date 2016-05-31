@@ -152,7 +152,15 @@ public:
 			object->hdr_bloom_blurx.wait();
 			object->hdr_bloom_blury.wait();
 			object->bokeh_blur.wait();
-		});
+		}).then_on_main_thread([object, &ctx]() {
+			auto vision_handle = object->hdr_vision_properties_texture->get_texture_handle(object->hdr_vision_properties_sampler);
+			vision_handle.make_resident();
+
+			object->hdr_tonemap_coc.get().set_uniform("hdr_vision_properties_texture", vision_handle);
+			object->hdr_bloom_blurx.get().set_uniform("dir", glm::vec2{ 1.f, .0f });
+			object->hdr_bloom_blury.get().set_uniform("dir", glm::vec2{ .0f, 1.f });
+			object->resize(ctx.get_backbuffer_size());
+		});;
 	}
 };
 

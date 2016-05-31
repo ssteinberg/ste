@@ -252,11 +252,12 @@ int main() {
 																		 &scene.get().scene_properties(),
 																		 2.5f,
 																		 materials));
-
+	loading_futures.insert(ctx.scheduler().schedule_now([&]() {
+		renderer.wait();
+	}));
 
 	display_loading_screen_until(ctx, &text_manager.get(), &w, &h, [&]() -> bool {
-		return running && (!loading_futures.ready_all() ||
-						   renderer.future().wait_for(std::chrono::nanoseconds(0)) != std::future_status::ready);
+		return running && !loading_futures.ready_all();
 	});
 
 

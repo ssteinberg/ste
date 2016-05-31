@@ -17,8 +17,6 @@
 
 #include <stdexcept>
 
-#include "SurfaceFactory.hpp"
-
 using namespace StE::Text;
 
 namespace StE {

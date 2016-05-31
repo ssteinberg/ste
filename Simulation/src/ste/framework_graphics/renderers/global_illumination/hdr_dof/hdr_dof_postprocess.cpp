@@ -49,15 +49,7 @@ hdr_dof_postprocess::hdr_dof_postprocess(const StEngineControl &context,
 	}
 	hdr_vision_properties_texture = std::make_unique<StE::Core::Texture1D>(hdr_human_vision_properties_data, false);
 
-	auto vision_handle = hdr_vision_properties_texture->get_texture_handle(hdr_vision_properties_sampler);
-	vision_handle.make_resident();
-
-	hdr_tonemap_coc.get().set_uniform("hdr_vision_properties_texture", vision_handle);
-	hdr_bloom_blurx.get().set_uniform("dir", glm::vec2{ 1.f, .0f });
-	hdr_bloom_blury.get().set_uniform("dir", glm::vec2{ .0f, 1.f });
-
 	task = make_gpu_task("dof_bokeh", create_dispatchable(), nullptr, create_sub_tasks());
-	resize(ctx.get_backbuffer_size());
 
 	setup_engine_connections();
 }

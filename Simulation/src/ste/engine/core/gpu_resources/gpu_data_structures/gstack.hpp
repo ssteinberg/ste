@@ -95,6 +95,8 @@ public:
 		ShaderStorageBuffer<T> temp(len - n - count);
 		buffer.copy_to(temp, n + count, 0, len - n - count);
 		temp.copy_to(buffer, 0, n, len - n - count);
+
+		len -= count;
 	}
 
 	void overwrite_all(const gli::format format, const void *data, const gli::swizzles &swizzle = swizzles_rgba) {

@@ -7,8 +7,6 @@
 #include "StEngineControl.hpp"
 #include "gpu_dispatchable.hpp"
 
-#include "resource_instance.hpp"
-#include "resource_loading_task.hpp"
 #include "glsl_program.hpp"
 
 #include "linked_light_lists.hpp"
@@ -23,8 +21,6 @@ namespace Graphics {
 
 class linked_light_lists_gen_dispatch : public gpu_dispatchable {
 	using Base = gpu_dispatchable;
-
-	friend class Resource::resource_loading_task<linked_light_lists_gen_dispatch>;
 
 private:
 	light_storage *ls;
@@ -48,22 +44,6 @@ public:
 protected:
 	virtual void set_context_state() const override;
 	virtual void dispatch() const override;
-};
-
-}
-
-namespace Resource {
-
-template <>
-class resource_loading_task<Graphics::linked_light_lists_gen_dispatch> {
-	using R = Graphics::linked_light_lists_gen_dispatch;
-
-public:
-	auto loader(const StEngineControl &ctx, R* object) {
-		return ctx.scheduler().schedule_now([object, &ctx]() {
-			object->program.wait();
-		});
-	}
 };
 
 }
