@@ -1,13 +1,18 @@
 var searchData=
 [
-  ['wait',['wait',['../classStE_1_1Core_1_1mapped__buffer__object__unique__ptr.html#a26adeb7d8118f4363a3bb9b5ad010987',1,'StE::Core::mapped_buffer_object_unique_ptr::wait() const '],['../classStE_1_1Core_1_1mapped__buffer__object__unique__ptr.html#a066dcb08c0525491e8f14c451b02bc19',1,'StE::Core::mapped_buffer_object_unique_ptr::wait(const range&lt;&gt; &amp;sub_range) const '],['../classStE_1_1Core_1_1gpu__sync.html#abae5ec699ec0462ee80c7b7e2325f2e8',1,'StE::Core::gpu_sync::wait()']]],
-  ['wait_5ffor_5frange',['wait_for_range',['../classStE_1_1Core_1_1range__lockable.html#aadaebd2658ff533c69cbfc9f77a355a5',1,'StE::Core::range_lockable']]],
-  ['weight',['weight',['../classStE_1_1Text_1_1Attributes_1_1weight.html#a6a52267e363f23f830e6190849a2695e',1,'StE::Text::Attributes::weight']]],
-  ['window_5factive',['window_active',['../classStE_1_1StEngineControl.html#a6882897b945959ed71bd84130829388b',1,'StE::StEngineControl']]],
-  ['with_5faccess',['with_access',['../classStE_1_1Core_1_1image.html#a18558716384ad1bc71f775fbabed71fa',1,'StE::Core::image::with_access()'],['../classStE_1_1Core_1_1image__container.html#a3926d878f05011b7a49870b1a8f85ad9',1,'StE::Core::image_container::with_access()']]],
-  ['with_5fformat',['with_format',['../classStE_1_1Core_1_1image.html#a3eb903df7ac3e7152dcc569193f20f8b',1,'StE::Core::image::with_format()'],['../classStE_1_1Core_1_1image__container.html#aff00f1f24c3fcf1a6e4c662b72de4d94',1,'StE::Core::image_container::with_format()']]],
-  ['write_5fdot',['write_dot',['../classStE_1_1Graph_1_1graph.html#a2e12827d857f3194e8f2b2b6ce6af291',1,'StE::Graph::graph']]],
-  ['write_5fpixels',['write_pixels',['../classStE_1_1Core_1_1fbo__color__attachment__point.html#a3ce7b6f3fe69139d98c1bd005857c565',1,'StE::Core::fbo_color_attachment_point::write_pixels(void *data, const glm::uvec2 &amp;rect_size, const glm::uvec2 &amp;origin={0, 0})'],['../classStE_1_1Core_1_1fbo__color__attachment__point.html#ad67b3693ac28ef2bc7586ee6357f4442',1,'StE::Core::fbo_color_attachment_point::write_pixels(void *data)']]],
-  ['write_5fpng',['write_png',['../classStE_1_1Graph_1_1graph.html#ac6e8b5d18e681a5ef7f8e75d4d75c24e',1,'StE::Graph::graph']]],
-  ['write_5fsurface_5f2d_5ftask',['write_surface_2d_task',['../classStE_1_1Resource_1_1SurfaceFactory.html#acdc1f079e6a589a0498ec95b52ecf8db',1,'StE::Resource::SurfaceFactory']]]
+  ['valid',['valid',['../classStE_1_1task__future__impl.html#ac4da2644d5afbc2de3eccc95ca18d082',1,'StE::task_future_impl']]],
+  ['vao',['vao',['../classStE_1_1Graphics_1_1mesh.html#aaabf51cee7491ed0da9da89827389e8c',1,'StE::Graphics::mesh']]],
+  ['vbo',['vbo',['../classStE_1_1Graphics_1_1mesh.html#a582cead9a007380d6c012b6180082e43',1,'StE::Graphics::mesh']]],
+  ['vertexarrayobject',['VertexArrayObject',['../classStE_1_1Core_1_1VertexArrayObject.html#af6a21187f2f0c75b63ffcd067a82ca57',1,'StE::Core::VertexArrayObject::VertexArrayObject()'],['../classStE_1_1Core_1_1VertexArrayObject.html#ab476c0989b678ec27600f86bd3cfd24c',1,'StE::Core::VertexArrayObject::VertexArrayObject(VertexArrayObject &amp;&amp;m)=default']]],
+  ['vertexbufferobject',['VertexBufferObject',['../classStE_1_1Core_1_1VertexBufferObject.html#ae9fcb65d0c06070e95604fbc5324710d',1,'StE::Core::VertexBufferObject']]],
+  ['view_5fmatrix',['view_matrix',['../classStE_1_1Graphics_1_1Camera.html#ad9cf995bc6086f48693b2c5ff6b5090d',1,'StE::Graphics::Camera']]],
+  ['view_5fmatrix_5fno_5ftranslation',['view_matrix_no_translation',['../classStE_1_1Graphics_1_1Camera.html#a721d01ab18c05630cfd1ca9cf142b752',1,'StE::Graphics::Camera']]],
+  ['view_5ftransform_5fdquat',['view_transform_dquat',['../classStE_1_1Graphics_1_1Camera.html#a27d601223ed290ca14f145bbe2d2998f',1,'StE::Graphics::Camera']]],
+  ['viewport',['viewport',['../classStE_1_1Core_1_1GL_1_1gl__generic__context.html#ac5d5144d1ccfc6df65095037d6f3c8b3',1,'StE::Core::GL::gl_generic_context::viewport(std::int32_t x, std::int32_t y, std::uint32_t w, std::uint32_t h) const '],['../classStE_1_1Core_1_1GL_1_1gl__generic__context.html#a37bbebc1901c0329657e54fddfd8a899',1,'StE::Core::GL::gl_generic_context::viewport() const ']]],
+  ['visual_5facuity',['visual_acuity',['../classStE_1_1Graphics_1_1human__vision__properties.html#aa4f318725aecdb884eeb3509b9144744',1,'StE::Graphics::human_vision_properties']]],
+  ['void',['void',['../gl__extensions_8h.html#a814c8b5745ecf82afdd1da718fbdc47c',1,'gl_extensions.h']]],
+  ['volumetric_5fscattering_5fgather_5fdispatch',['volumetric_scattering_gather_dispatch',['../classStE_1_1Graphics_1_1volumetric__scattering__gather__dispatch.html#a341439942a16fd5159a22e6661d7b54d',1,'StE::Graphics::volumetric_scattering_gather_dispatch']]],
+  ['volumetric_5fscattering_5fstorage',['volumetric_scattering_storage',['../classStE_1_1Graphics_1_1volumetric__scattering__storage.html#adbaef576019456443359fa516b993eac',1,'StE::Graphics::volumetric_scattering_storage']]],
+  ['voxelizer',['voxelizer',['../classStE_1_1Graphics_1_1dense__voxel__space.html#ae19ebe16328f102969892017144e71c8',1,'StE::Graphics::dense_voxel_space']]],
+  ['voxelizer_5fupsampler_5fprogram',['voxelizer_upsampler_program',['../dense__voxel__space_8cpp.html#ac72a1b2cd5b0ace5136f9b9b614f4047',1,'dense_voxel_space.cpp']]]
 ];

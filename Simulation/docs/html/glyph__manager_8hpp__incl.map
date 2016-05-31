@@ -1,26 +1,29 @@
 <map id="src/ste/framework_text/glyphs/glyph_manager.hpp" name="src/ste/framework_text/glyphs/glyph_manager.hpp">
-<area shape="rect" id="node2" href="$glyph_8hpp.html" title="glyph.hpp" alt="" coords="505,244,583,271"/>
-<area shape="rect" id="node22" href="$glyph__factory_8hpp.html" title="glyph_factory.hpp" alt="" coords="788,169,913,196"/>
-<area shape="rect" id="node23" href="$Font_8hpp.html" title="Font.hpp" alt="" coords="685,244,757,271"/>
-<area shape="rect" id="node25" href="$task_8hpp.html" title="task.hpp" alt="" coords="1874,244,1945,271"/>
-<area shape="rect" id="node32" href="$optional_8hpp.html" title="optional.hpp" alt="" coords="1384,408,1477,435"/>
-<area shape="rect" id="node35" href="$StEngineControl_8hpp.html" title="Engine Control class. " alt="" coords="2431,95,2574,121"/>
-<area shape="rect" id="node44" href="$ShaderStorageBuffer_8hpp.html" title="ShaderStorageBuffer.hpp" alt="" coords="2311,326,2483,353"/>
-<area shape="rect" id="node46" href="$gstack_8hpp.html" title="gstack.hpp" alt="" coords="3410,244,3497,271"/>
-<area shape="rect" id="node47" href="$Texture2D_8hpp.html" title="Texture2D.hpp" alt="" coords="2629,326,2739,353"/>
-<area shape="rect" id="node3" href="$stdafx_8hpp.html" title="stdafx.hpp" alt="" coords="2723,483,2805,509"/>
-<area shape="rect" id="node5" href="$gl_8hpp.html" title="gl.hpp" alt="" coords="2359,557,2417,584"/>
-<area shape="rect" id="node26" href="$task__scheduler_8hpp.html" title="task_scheduler.hpp" alt="" coords="1841,326,1978,353"/>
-<area shape="rect" id="node30" href="$function__traits_8hpp.html" title="function_traits.hpp" alt="" coords="2853,408,2979,435"/>
-<area shape="rect" id="node31" href="$thread__constants_8hpp.html" title="thread_constants.hpp" alt="" coords="1553,408,1701,435"/>
-<area shape="rect" id="node33" href="$types_8hpp.html" title="types.hpp" alt="" coords="1387,483,1466,509"/>
-<area shape="rect" id="node37" href="$gl__context_8hpp.html" title="Setups drawing context, window and default framebuffer. " alt="" coords="3105,326,3212,353"/>
-<area shape="rect" id="node38" href="$hid_8hpp.html" title="hid.hpp" alt="" coords="2876,169,2940,196"/>
-<area shape="rect" id="node39" href="$signal_8hpp.html" title="signal.hpp" alt="" coords="3252,483,3335,509"/>
-<area shape="rect" id="node40" href="$lru__cache_8hpp.html" title="LRU general purpose disk caching class. " alt="" coords="1929,169,2033,196"/>
-<area shape="rect" id="node41" href="$rendering__system_8hpp.html" title="rendering_system.hpp" alt="" coords="1105,408,1258,435"/>
-<area shape="rect" id="node42" href="$glsl__programs__pool_8hpp.html" title="glsl_programs_pool.hpp" alt="" coords="2421,169,2585,196"/>
-<area shape="rect" id="node45" href="$buffer__object_8hpp.html" title="buffer_object.hpp" alt="" coords="2197,408,2318,435"/>
-<area shape="rect" id="node48" href="$texture__base_8hpp.html" title="texture_base.hpp" alt="" coords="2495,408,2617,435"/>
-<area shape="rect" id="node49" href="$image_8hpp.html" title="image.hpp" alt="" coords="2642,408,2726,435"/>
+<area shape="rect" id="node2" href="$glyph_8hpp.html" title="glyph.hpp" alt="" coords="3232,169,3311,196"/>
+<area shape="rect" id="node18" href="$glyph__factory_8hpp.html" title="glyph_factory.hpp" alt="" coords="3064,95,3189,121"/>
+<area shape="rect" id="node19" href="$Font_8hpp.html" title="Font.hpp" alt="" coords="3808,169,3880,196"/>
+<area shape="rect" id="node21" href="$task__scheduler_8hpp.html" title="task_scheduler.hpp" alt="" coords="1907,169,2044,196"/>
+<area shape="rect" id="node34" href="$StEngineControl_8hpp.html" title="Engine Control class. " alt="" coords="2654,95,2796,121"/>
+<area shape="rect" id="node37" href="$optional_8hpp.html" title="optional.hpp" alt="" coords="754,483,848,509"/>
+<area shape="rect" id="node43" href="$ShaderStorageBuffer_8hpp.html" title="ShaderStorageBuffer.hpp" alt="" coords="288,333,460,360"/>
+<area shape="rect" id="node45" href="$gstack_8hpp.html" title="gstack.hpp" alt="" coords="108,251,195,278"/>
+<area shape="rect" id="node46" href="$Texture2D_8hpp.html" title="Texture2D.hpp" alt="" coords="484,333,595,360"/>
+<area shape="rect" id="node3" href="$stdafx_8hpp.html" title="stdafx.hpp" alt="" coords="1254,483,1337,509"/>
+<area shape="rect" id="node5" href="$gl_8hpp.html" title="gl.hpp" alt="" coords="1214,557,1271,584"/>
+<area shape="rect" id="node26" href="$task__future_8hpp.html" title="task_future.hpp" alt="" coords="1514,333,1624,360"/>
+<area shape="rect" id="node27" href="$function__traits_8hpp.html" title="function_traits.hpp" alt="" coords="1244,408,1371,435"/>
+<area shape="rect" id="node28" href="$thread__constants_8hpp.html" title="thread_constants.hpp" alt="" coords="1700,408,1848,435"/>
+<area shape="rect" id="node29" href="$balanced__thread__pool_8hpp.html" title="balanced_thread_pool.hpp" alt="" coords="1886,333,2066,360"/>
+<area shape="rect" id="node30" href="$concurrent__queue_8hpp.html" title="concurrent_queue.hpp" alt="" coords="2464,408,2618,435"/>
+<area shape="rect" id="node32" href="$function__wrapper_8hpp.html" title="function_wrapper.hpp" alt="" coords="2242,408,2389,435"/>
+<area shape="rect" id="node33" href="$task__future__impl_8hpp.html" title="task_future_impl.hpp" alt="" coords="1568,251,1709,278"/>
+<area shape="rect" id="node36" href="$gl__context_8hpp.html" title="Setups drawing context, window and default framebuffer. " alt="" coords="1012,333,1118,360"/>
+<area shape="rect" id="node39" href="$hid_8hpp.html" title="hid.hpp" alt="" coords="2658,169,2722,196"/>
+<area shape="rect" id="node40" href="$signal_8hpp.html" title="signal.hpp" alt="" coords="2997,483,3080,509"/>
+<area shape="rect" id="node41" href="$lru__cache_8hpp.html" title="LRU general purpose disk caching class. " alt="" coords="2666,333,2770,360"/>
+<area shape="rect" id="node42" href="$rendering__system_8hpp.html" title="rendering_system.hpp" alt="" coords="2998,408,3151,435"/>
+<area shape="rect" id="node38" href="$types_8hpp.html" title="types.hpp" alt="" coords="831,557,910,584"/>
+<area shape="rect" id="node44" href="$buffer__object_8hpp.html" title="buffer_object.hpp" alt="" coords="132,408,254,435"/>
+<area shape="rect" id="node47" href="$texture__base_8hpp.html" title="texture_base.hpp" alt="" coords="430,408,553,435"/>
+<area shape="rect" id="node48" href="$image_8hpp.html" title="image.hpp" alt="" coords="628,408,712,435"/>
 </map>

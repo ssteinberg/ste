@@ -115,6 +115,8 @@ $(document).ready(function(){initNavTree('classStE_1_1Text_1_1glyph__factory.htm
 Collaboration diagram for StE::Text::glyph_factory:</div>
 <div class="dyncontent">
 <div class="center"><img src="classStE_1_1Text_1_1glyph__factory__coll__graph.png" border="0" usemap="#StE_1_1Text_1_1glyph__factory_coll__map" alt="Collaboration graph"/></div>
+<map name="StE_1_1Text_1_1glyph__factory_coll__map" id="StE_1_1Text_1_1glyph__factory_coll__map">
+</map>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
@@ -123,8 +125,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aa8300ce87b83e158c0fe2ebc4211aa71"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a24cb6d58f9c15585ab391dffb110045e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Text_1_1glyph__factory.html#a24cb6d58f9c15585ab391dffb110045e">~glyph_factory</a> ()</td></tr>
 <tr class="separator:a24cb6d58f9c15585ab391dffb110045e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a56fa2d57d48deebc24a9fcf3f1cb83dd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classStE_1_1task.html">task</a>&lt; <a class="el" href="classStE_1_1Text_1_1glyph.html">glyph</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Text_1_1glyph__factory.html#a56fa2d57d48deebc24a9fcf3f1cb83dd">create_glyph_task</a> (const <a class="el" href="classStE_1_1Text_1_1Font.html">Font</a> &amp;font, wchar_t codepoint)</td></tr>
-<tr class="separator:a56fa2d57d48deebc24a9fcf3f1cb83dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63462dbb3d3a0fa7003da4e78c8cafd3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceStE.html#a29ae5406646408186ac2acb580d0c321">task_future</a>&lt; <a class="el" href="classStE_1_1Text_1_1glyph.html">glyph</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Text_1_1glyph__factory.html#a63462dbb3d3a0fa7003da4e78c8cafd3">create_glyph_async</a> (<a class="el" href="classStE_1_1task__scheduler.html">task_scheduler</a> *sched, const <a class="el" href="classStE_1_1Text_1_1Font.html">Font</a> &amp;font, wchar_t codepoint)</td></tr>
+<tr class="separator:a63462dbb3d3a0fa7003da4e78c8cafd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a355dd46f5efacc10d9c4ef53dc38c9a1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Text_1_1glyph__factory.html#a355dd46f5efacc10d9c4ef53dc38c9a1">read_kerning</a> (const <a class="el" href="classStE_1_1Text_1_1Font.html">Font</a> &amp;font, const std::pair&lt; wchar_t, wchar_t &gt; &amp;p, int pixel_size)</td></tr>
 <tr class="separator:a355dd46f5efacc10d9c4ef53dc38c9a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -145,7 +147,7 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="glyph__factory_8cpp_source.html#l00174">174</a> of file <a class="el" href="glyph__factory_8cpp_source.html">glyph_factory.cpp</a>.</p>
+<p>Definition at line <a class="el" href="glyph__factory_8cpp_source.html#l00172">172</a> of file <a class="el" href="glyph__factory_8cpp_source.html">glyph_factory.cpp</a>.</p>
 
 </div>
 </div>
@@ -162,18 +164,24 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="glyph__factory_8cpp_source.html#l00176">176</a> of file <a class="el" href="glyph__factory_8cpp_source.html">glyph_factory.cpp</a>.</p>
+<p>Definition at line <a class="el" href="glyph__factory_8cpp_source.html#l00174">174</a> of file <a class="el" href="glyph__factory_8cpp_source.html">glyph_factory.cpp</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a56fa2d57d48deebc24a9fcf3f1cb83dd"></a>
+<a class="anchor" id="a63462dbb3d3a0fa7003da4e78c8cafd3"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classStE_1_1task.html">StE::task</a>&lt; <a class="el" href="classStE_1_1Text_1_1glyph.html">glyph</a> &gt; glyph_factory::create_glyph_task </td>
+          <td class="memname"><a class="el" href="namespaceStE.html#a29ae5406646408186ac2acb580d0c321">StE::task_future</a>&lt; <a class="el" href="classStE_1_1Text_1_1glyph.html">glyph</a> &gt; glyph_factory::create_glyph_async </td>
           <td>(</td>
+          <td class="paramtype"><a class="el" href="classStE_1_1task__scheduler.html">task_scheduler</a> *&#160;</td>
+          <td class="paramname"><em>sched</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">const <a class="el" href="classStE_1_1Text_1_1Font.html">Font</a> &amp;&#160;</td>
           <td class="paramname"><em>font</em>, </td>
         </tr>
@@ -191,7 +199,7 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="glyph__factory_8cpp_source.html#l00178">178</a> of file <a class="el" href="glyph__factory_8cpp_source.html">glyph_factory.cpp</a>.</p>
+<p>Definition at line <a class="el" href="glyph__factory_8cpp_source.html#l00176">176</a> of file <a class="el" href="glyph__factory_8cpp_source.html">glyph_factory.cpp</a>.</p>
 
 </div>
 </div>
@@ -225,7 +233,7 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="glyph__factory_8cpp_source.html#l00198">198</a> of file <a class="el" href="glyph__factory_8cpp_source.html">glyph_factory.cpp</a>.</p>
+<p>Definition at line <a class="el" href="glyph__factory_8cpp_source.html#l00196">196</a> of file <a class="el" href="glyph__factory_8cpp_source.html">glyph_factory.cpp</a>.</p>
 
 </div>
 </div>

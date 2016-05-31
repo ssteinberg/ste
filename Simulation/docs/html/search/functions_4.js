@@ -21,7 +21,7 @@ var searchData=
   ['erase_5fedge',['erase_edge',['../classStE_1_1Graph_1_1graph.html#a45f38b889c98173d003211203e443e15',1,'StE::Graph::graph::erase_edge(const V *from, const V *to)'],['../classStE_1_1Graph_1_1graph.html#a2d4339e1a03c12d94dc50e0e69ccf763',1,'StE::Graph::graph::erase_edge(const EdgePtr &amp;e)']]],
   ['erase_5flight',['erase_light',['../classStE_1_1Graphics_1_1light__storage.html#a81fda72fe9a9cd22c022bd24f86ad767',1,'StE::Graphics::light_storage']]],
   ['erase_5fmaterial',['erase_material',['../classStE_1_1Graphics_1_1material__storage.html#abe73ad8c8f751892b94a582955fcb382',1,'StE::Graphics::material_storage']]],
-  ['erase_5fresource',['erase_resource',['../classStE_1_1Core_1_1resource__storage.html#a2737caca0782f9f9081f48c8d3a5eb28',1,'StE::Core::resource_storage']]],
+  ['erase_5fresource',['erase_resource',['../classStE_1_1Core_1_1resource__storage.html#a0541f836da8cb94a370ca0fb2a345e64',1,'StE::Core::resource_storage::erase_resource()'],['../classStE_1_1Core_1_1resource__storage__base.html#a5d8fb2df5ad74c9f766d2235f142d532',1,'StE::Core::resource_storage_base::erase_resource()']]],
   ['erase_5fvertex',['erase_vertex',['../classStE_1_1Graph_1_1graph.html#aeaf15155f2d17374c57df5b8df969e6f',1,'StE::Graph::graph']]],
   ['evaluate',['evaluate',['../classStE_1_1Graphics_1_1schlick__smith__simplified__gaf.html#ade9ef07414bbe68cf2007d928572a06b',1,'StE::Graphics::schlick_smith_simplified_gaf::evaluate()'],['../classStE_1_1Graphics_1_1ggx__ndf.html#a506a51b6e77c1cc5bbbd258f2592e2a9',1,'StE::Graphics::ggx_ndf::evaluate()']]],
   ['evaluate_5fa',['evaluate_a',['../classStE_1_1Graphics_1_1oren__nayar__brdf.html#a8bf58bda48f2711486548f5704b08f08',1,'StE::Graphics::oren_nayar_brdf']]],

@@ -1,5 +1,8 @@
 var dir_fab0011c6070a32dc960ba11934f8d44 =
 [
+    [ "future_collection.hpp", "future__collection_8hpp.html", [
+      [ "future_collection", "classStE_1_1future__collection.html", "classStE_1_1future__collection" ]
+    ] ],
     [ "interruptible_thread.cpp", "interruptible__thread_8cpp.html", null ],
     [ "interruptible_thread.hpp", "interruptible__thread_8hpp.html", [
       [ "interruptible_thread", "classStE_1_1interruptible__thread.html", "classStE_1_1interruptible__thread" ]

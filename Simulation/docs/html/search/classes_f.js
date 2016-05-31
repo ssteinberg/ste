@@ -8,5 +8,5 @@ var searchData=
   ['profileable',['profileable',['../classStE_1_1Graphics_1_1profileable.html',1,'StE::Graphics']]],
   ['profiler',['profiler',['../classStE_1_1Graphics_1_1profiler.html',1,'StE::Graphics']]],
   ['profiler_5fentry',['profiler_entry',['../structStE_1_1Graphics_1_1profiler__entry.html',1,'StE::Graphics']]],
-  ['program_5fbinary',['program_binary',['../structStE_1_1Resource_1_1glsl__loader_1_1program__binary.html',1,'StE::Resource::glsl_loader']]]
+  ['program_5fbinary',['program_binary',['../classStE_1_1Resource_1_1glsl__loader_1_1program__binary.html',1,'StE::Resource::glsl_loader']]]
 ];

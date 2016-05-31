@@ -1,6 +1,9 @@
 var searchData=
 [
   ['t',['T',['../classStE_1_1Core_1_1buffer__object.html#a7d8ef740753bd09340b97720a7f0fa53',1,'StE::Core::buffer_object::T()'],['../classStE_1_1Graphics_1_1Kelvin.html#a418f65c804d9b14989c9827bc0393fd8',1,'StE::Graphics::Kelvin::T()'],['../classStE_1_1Graphics_1_1RGB.html#aa9bc706e877a1385f78b94d27e33cb64',1,'StE::Graphics::RGB::T()'],['../classStE_1_1Graphics_1_1xyY.html#ac80280afe29b77b987df426fd4e88d35',1,'StE::Graphics::xyY::T()'],['../classStE_1_1Graphics_1_1XYZ.html#afe946e521b3e97c5ff90c9c2e7c88aee',1,'StE::Graphics::XYZ::T()'],['../structStE_1_1__tuple__type__erasure_1_1__type__checker__helper.html#a733fb13048067e74cd419905fd1e3127',1,'StE::_tuple_type_erasure::_type_checker_helper::T()']]],
+  ['task_5ffuture',['task_future',['../namespaceStE.html#a29ae5406646408186ac2acb580d0c321',1,'StE']]],
+  ['task_5ffuture_5fcollection',['task_future_collection',['../namespaceStE.html#a074a3db74aac9f4b610d1549ef628102',1,'StE']]],
+  ['task_5fshared_5ffuture',['task_shared_future',['../namespaceStE.html#ade4baf165b71464a9c032ae9bbc40d2a',1,'StE']]],
   ['taskcollection',['TaskCollection',['../classStE_1_1Graphics_1_1gpu__task.html#a3a731fe6c072116dec1bb312d7df7dd7',1,'StE::Graphics::gpu_task']]],
   ['taskptr',['TaskPtr',['../classStE_1_1Graphics_1_1gpu__task.html#a7130381f43333ab3db634697eecf1272',1,'StE::Graphics::gpu_task']]],
   ['taskt',['TaskT',['../classStE_1_1Graphics_1_1gpu__task.html#a5f78c1081c5bde3ad70a24aa82ae5c68',1,'StE::Graphics::gpu_task']]],

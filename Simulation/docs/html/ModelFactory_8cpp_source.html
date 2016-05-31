@@ -123,19 +123,19 @@ $(document).ready(function(){initNavTree('ModelFactory_8cpp_source.html','');});
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">using namespace </span>StE::Graphics;</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keyword">using</span> <a class="code" href="classStE_1_1Core_1_1Texture2D.html">StE::Core::Texture2D</a>;</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;std::future&lt;void&gt; ModelFactory::process_model_mesh(optional&lt;task_scheduler*&gt; sched,</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;                                                  Graphics::material_storage *matstorage,</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;                                                  <span class="keyword">const</span> tinyobj::shape_t &amp;shape,</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;                                                  Graphics::ObjectGroup *object_group,</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;                                                  materials_type &amp;materials,</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;                                                  texture_map_type &amp;textures,</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;                                                  std::vector&lt;std::shared_ptr&lt;Graphics::Object&gt;&gt; *loaded_objects,</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;                                                  std::vector&lt;Graphics::Material*&gt; *loaded_materials) {</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<a class="code" href="classStE_1_1task__future__impl.html">StE::task_future&lt;void&gt;</a> ModelFactory::process_model_mesh(task_scheduler* sched,</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;                                                        Graphics::material_storage *matstorage,</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;                                                        <span class="keyword">const</span> tinyobj::shape_t &amp;shape,</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;                                                        Graphics::ObjectGroup *object_group,</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;                                                        materials_type &amp;materials,</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;                                                        texture_map_type &amp;textures,</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;                                                        std::vector&lt;std::unique_ptr&lt;Graphics::Material&gt;&gt; &amp;loaded_materials,</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;                                                        std::vector&lt;std::shared_ptr&lt;Graphics::Object&gt;&gt; *loaded_objects) {</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    std::vector&lt;ObjectVertexData&gt; vbo_data;</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    std::vector&lt;std::uint32_t&gt; vbo_indices;</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    std::vector&lt;std::pair&lt;glm::vec3, glm::vec3&gt;&gt; nt;</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <span class="keywordtype">unsigned</span> vertices = shape.mesh.positions.<a class="code" href="classStE_1_1Core_1_1texture.html#a7b58c52af407a450bba4864bfdf49cce">size</a>() / 3;</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <span class="keywordtype">unsigned</span> vertices = shape.mesh.positions.size() / 3;</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <span class="keywordtype">unsigned</span> tc_stride = shape.mesh.texcoords.size() / vertices;</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <span class="keywordtype">unsigned</span> normals_stride = shape.mesh.normals.size() / vertices;</div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> i = 0; i &lt; vertices; ++i) {</div>
@@ -212,106 +212,106 @@ $(document).ready(function(){initNavTree('ModelFactory_8cpp_source.html','');});
 <div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    <span class="keywordtype">int</span> mat_idx = shape.mesh.material_ids[0];</div>
 <div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    <span class="keyword">auto</span> &amp;material = materials[mat_idx];</div>
 <div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    std::shared_ptr&lt;Core::Texture2D&gt; &amp;diff_map = textures[material.diffuse_texname];</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;    std::shared_ptr&lt;Core::Texture2D&gt; &amp;opacity_map = textures[material.alpha_texname];</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    std::shared_ptr&lt;Core::Texture2D&gt; &amp;specular_map = textures[material.specular_texname];</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    std::shared_ptr&lt;Core::Texture2D&gt; &amp;normalmap = textures[material.bump_texname];</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;    <span class="keywordtype">bool</span> has_roughness = material.unknown_parameter.find(<span class="stringliteral">&quot;roughness&quot;</span>) != material.unknown_parameter.end();</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;    <span class="keywordtype">bool</span> has_metallic = material.unknown_parameter.find(<span class="stringliteral">&quot;metallic&quot;</span>) != material.unknown_parameter.end();</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;    <span class="keywordtype">bool</span> has_ior = material.unknown_parameter.find(<span class="stringliteral">&quot;ior&quot;</span>) != material.unknown_parameter.end();</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;    <span class="keywordtype">bool</span> has_anisotropy = material.unknown_parameter.find(<span class="stringliteral">&quot;anisotropy&quot;</span>) != material.unknown_parameter.end();</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;    <span class="keywordtype">bool</span> has_sheen = material.unknown_parameter.find(<span class="stringliteral">&quot;sheen&quot;</span>) != material.unknown_parameter.end();</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;    <span class="keywordtype">float</span> roughness = has_roughness ? std::stof(material.unknown_parameter[<span class="stringliteral">&quot;roughness&quot;</span>]) : .0f;</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;    <span class="keywordtype">float</span> metallic = has_metallic ? std::stof(material.unknown_parameter[<span class="stringliteral">&quot;metallic&quot;</span>]) : .0f;</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;    <span class="keywordtype">float</span> ior = has_ior ? std::stof(material.unknown_parameter[<span class="stringliteral">&quot;ior&quot;</span>]) : .0f;</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;    <span class="keywordtype">float</span> anisotropy = has_anisotropy ? std::stof(material.unknown_parameter[<span class="stringliteral">&quot;anisotropy&quot;</span>]) : .0f;</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;    <span class="keywordtype">float</span> sheen = has_sheen ? std::stof(material.unknown_parameter[<span class="stringliteral">&quot;sheen&quot;</span>]) : .0f;</div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;</div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;    <span class="keywordflow">return</span> sched-&gt;schedule_now_on_main_thread([=, vbo_data = std::move(vbo_data), vbo_indices = std::move(vbo_indices)](optional&lt;task_scheduler*&gt; sched) {</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;        <span class="keyword">auto</span> mat = matstorage-&gt;allocate_material();</div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;        <span class="keywordflow">if</span> (diff_map != <span class="keyword">nullptr</span>) mat-&gt;set_basecolor_map(diff_map);</div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;        <span class="keywordflow">if</span> (specular_map != <span class="keyword">nullptr</span>) mat-&gt;set_cavity_map(specular_map);</div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;        <span class="keywordflow">if</span> (normalmap != <span class="keyword">nullptr</span>) mat-&gt;set_normal_map(normalmap);</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;        <span class="keywordflow">if</span> (opacity_map != <span class="keyword">nullptr</span>) mat-&gt;set_mask_map(opacity_map);</div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;        <span class="keywordflow">if</span> (has_roughness) mat-&gt;set_roughness(roughness);</div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;        <span class="keywordflow">if</span> (has_metallic) mat-&gt;set_metallic(metallic);</div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;        <span class="keywordflow">if</span> (has_ior) mat-&gt;set_index_of_refraction(ior);</div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;        <span class="keywordflow">if</span> (has_anisotropy) mat-&gt;set_anisotropy(anisotropy);</div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;        <span class="keywordflow">if</span> (has_sheen) mat-&gt;set_sheen(sheen);</div>
-<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;</div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;        std::unique_ptr&lt;Graphics::mesh&lt;Graphics::mesh_subdivion_mode::Triangles&gt;&gt; m = std::make_unique&lt;Graphics::mesh&lt;Graphics::mesh_subdivion_mode::Triangles&gt;&gt;();</div>
-<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;        m-&gt;set_indices(std::move(vbo_indices));</div>
-<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;        m-&gt;set_vertices(std::move(vbo_data));</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    <span class="keyword">auto</span> roughness_it = material.unknown_parameter.find(<span class="stringliteral">&quot;roughness&quot;</span>);</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;    <span class="keyword">auto</span> metallic_it = material.unknown_parameter.find(<span class="stringliteral">&quot;metallic&quot;</span>);</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    <span class="keyword">auto</span> ior_it = material.unknown_parameter.find(<span class="stringliteral">&quot;ior&quot;</span>);</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    <span class="keyword">auto</span> anisotropy_it = material.unknown_parameter.find(<span class="stringliteral">&quot;anisotropy&quot;</span>);</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    <span class="keyword">auto</span> sheen_it = material.unknown_parameter.find(<span class="stringliteral">&quot;sheen&quot;</span>);</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;    <span class="keywordflow">return</span> sched-&gt;schedule_now_on_main_thread([=, vbo_data = std::move(vbo_data), vbo_indices = std::move(vbo_indices), &amp;loaded_materials, &amp;textures, &amp;material]() {</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;        std::shared_ptr&lt;Core::Texture2D&gt; diff_map = textures[material.diffuse_texname];</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;        std::shared_ptr&lt;Core::Texture2D&gt; opacity_map = textures[material.alpha_texname];</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;        std::shared_ptr&lt;Core::Texture2D&gt; specular_map = textures[material.specular_texname];</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;        std::shared_ptr&lt;Core::Texture2D&gt; normalmap = textures[material.bump_texname];</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;        <span class="keyword">auto</span> mat = matstorage-&gt;allocate_material();</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;        <span class="keywordflow">if</span> (diff_map != <span class="keyword">nullptr</span>) mat-&gt;set_basecolor_map(diff_map);</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;        <span class="keywordflow">if</span> (specular_map != <span class="keyword">nullptr</span>) mat-&gt;set_cavity_map(specular_map);</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;        <span class="keywordflow">if</span> (normalmap != <span class="keyword">nullptr</span>) mat-&gt;set_normal_map(normalmap);</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;        <span class="keywordflow">if</span> (opacity_map != <span class="keyword">nullptr</span>) mat-&gt;set_mask_map(opacity_map);</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;        <span class="keywordflow">if</span> (roughness_it != material.unknown_parameter.end()) mat-&gt;set_roughness(std::stof(roughness_it-&gt;second));</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;        <span class="keywordflow">if</span> (metallic_it != material.unknown_parameter.end()) mat-&gt;set_metallic(std::stof(metallic_it-&gt;second));</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;        <span class="keywordflow">if</span> (ior_it != material.unknown_parameter.end()) mat-&gt;set_index_of_refraction(std::stof(ior_it-&gt;second));</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;        <span class="keywordflow">if</span> (anisotropy_it != material.unknown_parameter.end()) mat-&gt;set_anisotropy(std::stof(anisotropy_it-&gt;second));</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;        <span class="keywordflow">if</span> (sheen_it != material.unknown_parameter.end()) mat-&gt;set_sheen(std::stof(sheen_it-&gt;second));</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;        std::unique_ptr&lt;Graphics::mesh&lt;Graphics::mesh_subdivion_mode::Triangles&gt;&gt; m = std::make_unique&lt;Graphics::mesh&lt;Graphics::mesh_subdivion_mode::Triangles&gt;&gt;();</div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;        m-&gt;set_indices(std::move(vbo_indices));</div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;        m-&gt;set_vertices(std::move(vbo_data));</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;</div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;        std::shared_ptr&lt;Graphics::Object&gt; obj = std::make_shared&lt;Graphics::Object&gt;(std::move(m));</div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;        obj-&gt;set_material(mat.get());</div>
 <div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;</div>
-<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;        std::shared_ptr&lt;Graphics::Object&gt; obj = std::make_shared&lt;Graphics::Object&gt;(std::move(m));</div>
-<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;        obj-&gt;set_material(mat);</div>
-<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;</div>
-<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;        object_group-&gt;add_object(obj);</div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;</div>
-<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;        <span class="keywordflow">if</span> (loaded_objects) loaded_objects-&gt;push_back(obj);</div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;        <span class="keywordflow">if</span> (loaded_materials) loaded_materials-&gt;push_back(mat);</div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;    });</div>
-<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;}</div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;</div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;<a class="code" href="classStE_1_1task.html">StE::task&lt;void&gt;</a> ModelFactory::load_texture(<span class="keyword">const</span> std::string &amp;name,</div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;                                          <span class="keywordtype">bool</span> srgb,</div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;                                          <span class="keywordtype">bool</span> displacement,</div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;                                          texture_map_type *texmap,</div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;                                          <span class="keyword">const</span> boost::filesystem::path &amp;dir,</div>
-<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;                                          <span class="keywordtype">float</span> normal_map_bias) {</div>
-<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="classStE_1_1task.html">StE::task&lt;std::unique_ptr&lt;gli::texture2d&gt;</a>&gt;([=](optional&lt;task_scheduler*&gt; sched) {</div>
-<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;        std::string normalized_name = name;</div>
-<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;        std::replace(normalized_name.begin(), normalized_name.end(), <span class="charliteral">&#39;\\&#39;</span>, <span class="charliteral">&#39;/&#39;</span>);</div>
-<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;        boost::filesystem::path full_path = dir / boost::filesystem::path(normalized_name).make_preferred();</div>
-<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;</div>
-<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;        <span class="keyword">auto</span> tex_task = <a class="code" href="classStE_1_1Resource_1_1SurfaceFactory.html#a3251a22775a7e985aa8f2f90d49f2e15">SurfaceFactory::load_surface_2d_task</a>(full_path, srgb);</div>
-<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;        gli::texture2d tex = tex_task(sched);</div>
-<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;        <span class="keywordflow">if</span> (tex.empty())</div>
-<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;            <a class="code" href="Log_8hpp.html#a773393ef307fad999e82923a980495c3">ste_log_warn</a>() &lt;&lt; <span class="stringliteral">&quot;Couldn&#39;t load texture &quot;</span> &lt;&lt; full_path.string() &lt;&lt; std::endl;</div>
-<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;</div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;        <span class="keywordflow">return</span> std::make_unique&lt;gli::texture2d&gt;(std::move(tex));</div>
-<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;    }).then_on_main_thread([=](optional&lt;task_scheduler*&gt; sched, std::unique_ptr&lt;gli::texture2d&gt; &amp;&amp;tex) {</div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;        <span class="keywordflow">if</span> (tex-&gt;empty())</div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;            <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;</div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;        <span class="keywordflow">if</span> (displacement) {</div>
-<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;            <span class="keyword">auto</span> nm = <a class="code" href="classStE_1_1Graphics_1_1normal__map__from__height__map.html">normal_map_from_height_map&lt;gli::FORMAT_R8_UNORM_PACK8, false&gt;</a>()(*tex, normal_map_bias);</div>
-<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;            (*texmap)[name] = std::make_shared&lt;Core::Texture2D&gt;(std::move(nm), <span class="keyword">true</span>);</div>
-<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;        }</div>
-<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;        <span class="keywordflow">else</span></div>
-<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;            (*texmap)[name] = std::make_shared&lt;Core::Texture2D&gt;(*tex, <span class="keyword">true</span>);</div>
-<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;    });</div>
-<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;}</div>
-<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;</div>
-<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;std::vector&lt;std::future&lt;void&gt;&gt; ModelFactory::load_textures(task_scheduler* sched,</div>
-<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;                                                          shapes_type &amp;shapes,</div>
-<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;                                                          materials_type &amp;materials,</div>
-<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;                                                          texture_map_type &amp;tex_map,</div>
-<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;                                                          <span class="keyword">const</span> boost::filesystem::path &amp;dir,</div>
-<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;                                                          <span class="keywordtype">float</span> normal_map_bias) {</div>
-<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;    tex_map.emplace(std::make_pair(std::string(<span class="stringliteral">&quot;&quot;</span>), std::shared_ptr&lt;Core::Texture2D&gt;(<span class="keyword">nullptr</span>)));</div>
-<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;</div>
-<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;    std::vector&lt;std::future&lt;void&gt;&gt; futures;</div>
-<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;shape : shapes) {</div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;        <span class="keywordtype">int</span> mat_idx = shape.mesh.material_ids[0];</div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;</div>
-<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;        <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;str : { materials[mat_idx].diffuse_texname,</div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;                           materials[mat_idx].bump_texname,</div>
-<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;                           materials[mat_idx].displacement_texname,</div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;                           materials[mat_idx].alpha_texname,</div>
-<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;                           materials[mat_idx].specular_texname })</div>
-<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;            <span class="keywordflow">if</span> (str.length() &amp;&amp; tex_map.find(str) == tex_map.end()) {</div>
-<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;                <span class="keywordtype">bool</span> srgb = str == materials[mat_idx].diffuse_texname;</div>
-<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;                <span class="keywordtype">bool</span> displacement = str == materials[mat_idx].displacement_texname;</div>
-<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;</div>
-<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;                tex_map.emplace(std::make_pair(str, std::shared_ptr&lt;Core::Texture2D&gt;(<span class="keyword">nullptr</span>)));</div>
-<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;                futures.push_back(sched-&gt;schedule_now(load_texture(str,</div>
-<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;                                                                   srgb,</div>
-<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;                                                                   displacement,</div>
-<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;                                                                   &amp;tex_map,</div>
-<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;                                                                   dir,</div>
-<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;                                                                   normal_map_bias)));</div>
+<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;        object_group-&gt;add_object(obj);</div>
+<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;</div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;        loaded_materials.push_back(std::move(mat));</div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;        <span class="keywordflow">if</span> (loaded_objects) loaded_objects-&gt;push_back(obj);</div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;    });</div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;}</div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;</div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;<a class="code" href="classStE_1_1task__future__impl.html">StE::task_future&lt;void&gt;</a> ModelFactory::load_texture(task_scheduler* sched,</div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;                                                  <span class="keyword">const</span> std::string &amp;name,</div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;                                                  <span class="keywordtype">bool</span> srgb,</div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;                                                  <span class="keywordtype">bool</span> displacement,</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;                                                  texture_map_type *texmap,</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;                                                  <span class="keyword">const</span> boost::filesystem::path &amp;dir,</div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;                                                  <span class="keywordtype">float</span> normal_map_bias) {</div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;    <span class="keywordflow">return</span> sched-&gt;schedule_now([=]() {</div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;        std::string normalized_name = name;</div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;        std::replace(normalized_name.begin(), normalized_name.end(), <span class="charliteral">&#39;\\&#39;</span>, <span class="charliteral">&#39;/&#39;</span>);</div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;        boost::filesystem::path full_path = dir / boost::filesystem::path(normalized_name).make_preferred();</div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;</div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;        gli::texture2d tex = <a class="code" href="classStE_1_1Resource_1_1SurfaceFactory.html#a2419cdc9cfb9750645c9d0533bd2bd81">SurfaceFactory::load_surface_2d</a>(full_path, srgb);</div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;        <span class="keywordflow">if</span> (tex.empty())</div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;            <a class="code" href="Log_8hpp.html#a773393ef307fad999e82923a980495c3">ste_log_warn</a>() &lt;&lt; <span class="stringliteral">&quot;Couldn&#39;t load texture &quot;</span> &lt;&lt; full_path.string() &lt;&lt; std::endl;</div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;</div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;        <span class="keywordflow">return</span> std::make_unique&lt;gli::texture2d&gt;(std::move(tex));</div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;    }).<a class="code" href="namespaceStE_1_1__detail.html#ad266580a1829da8f0fe682cb7b56390d">then_on_main_thread</a>([=](std::unique_ptr&lt;gli::texture2d&gt; &amp;&amp;tex) {</div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;        <span class="keywordflow">if</span> (tex-&gt;empty()) {</div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;            <a class="code" href="Log_8hpp.html#a773393ef307fad999e82923a980495c3">ste_log_warn</a>() &lt;&lt; <span class="stringliteral">&quot;Couldn&#39;t load model texture: &quot;</span> &lt;&lt; name &lt;&lt; std::endl;</div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;            <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;        }</div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;</div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;        <span class="keywordflow">if</span> (displacement) {</div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;            <span class="keyword">auto</span> nm = <a class="code" href="classStE_1_1Graphics_1_1normal__map__from__height__map.html">normal_map_from_height_map&lt;gli::FORMAT_R8_UNORM_PACK8, false&gt;</a>()(*tex, normal_map_bias);</div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;            (*texmap)[name] = std::make_shared&lt;Core::Texture2D&gt;(std::move(nm), <span class="keyword">true</span>);</div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;        }</div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;        <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;            (*texmap)[name] = std::make_shared&lt;Core::Texture2D&gt;(*tex, <span class="keyword">true</span>);</div>
+<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;    });</div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;}</div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;</div>
+<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;std::vector&lt;StE::task_future&lt;void&gt;&gt; ModelFactory::load_textures(task_scheduler* sched,</div>
+<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;                                                                shapes_type &amp;shapes,</div>
+<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;                                                                materials_type &amp;materials,</div>
+<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;                                                                texture_map_type &amp;tex_map,</div>
+<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;                                                                <span class="keyword">const</span> boost::filesystem::path &amp;dir,</div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;                                                                <span class="keywordtype">float</span> normal_map_bias) {</div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;    tex_map.emplace(std::make_pair(std::string(<span class="stringliteral">&quot;&quot;</span>), std::shared_ptr&lt;Core::Texture2D&gt;(<span class="keyword">nullptr</span>)));</div>
+<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;</div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;    std::vector&lt;StE::task_future&lt;void&gt;&gt; futures;</div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;shape : shapes) {</div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;        <span class="keywordtype">int</span> mat_idx = shape.mesh.material_ids[0];</div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;</div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;        <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;str : { materials[mat_idx].diffuse_texname,</div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;                           materials[mat_idx].bump_texname,</div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;                           materials[mat_idx].displacement_texname,</div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;                           materials[mat_idx].alpha_texname,</div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;                           materials[mat_idx].specular_texname })</div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;            <span class="keywordflow">if</span> (str.length() &amp;&amp; tex_map.find(str) == tex_map.end()) {</div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;                <span class="keywordtype">bool</span> srgb = str == materials[mat_idx].diffuse_texname;</div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;                <span class="keywordtype">bool</span> displacement = str == materials[mat_idx].displacement_texname;</div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;</div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;                tex_map.emplace(std::make_pair(str, std::shared_ptr&lt;Core::Texture2D&gt;(<span class="keyword">nullptr</span>)));</div>
+<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;                futures.push_back(load_texture(sched,</div>
+<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;                                               str,</div>
+<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;                                               srgb,</div>
+<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;                                               displacement,</div>
+<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;                                               &amp;tex_map,</div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;                                               dir,</div>
+<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;                                               normal_map_bias));</div>
 <div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;            }</div>
 <div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;</div>
 <div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;</div>
@@ -324,91 +324,81 @@ $(document).ready(function(){initNavTree('ModelFactory_8cpp_source.html','');});
 <div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;    <span class="keywordflow">return</span> futures;</div>
 <div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;}</div>
 <div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;</div>
-<div class="line"><a name="l00220"></a><span class="lineno"><a class="line" href="classStE_1_1Resource_1_1ModelFactory.html#a4b2557125c484c2e75272255881e8c50">  220</a></span>&#160;<a class="code" href="classStE_1_1task.html">StE::task&lt;bool&gt;</a> <a class="code" href="classStE_1_1Resource_1_1ModelFactory.html#a4b2557125c484c2e75272255881e8c50">ModelFactory::load_model_task</a>(<span class="keyword">const</span> <a class="code" href="classStE_1_1StEngineControl.html">StEngineControl</a> &amp;context,</div>
-<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;                                              <span class="keyword">const</span> boost::filesystem::path &amp;file_path,</div>
-<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;                                              <a class="code" href="classStE_1_1Graphics_1_1ObjectGroup.html">ObjectGroup</a> *object_group,</div>
-<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;                                              <a class="code" href="classStE_1_1Graphics_1_1SceneProperties.html">Graphics::SceneProperties</a> *scene_properties,</div>
-<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;                                              <span class="keywordtype">float</span> normal_map_bias,</div>
-<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;                                              std::vector&lt;std::shared_ptr&lt;Graphics::Object&gt;&gt; *loaded_objects,</div>
-<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;                                              std::vector&lt;Graphics::Material*&gt; *loaded_materials) {</div>
-<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;    <span class="keyword">struct </span>_model_loader_task_block {</div>
-<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;        <span class="keywordtype">bool</span> ret;</div>
-<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;        std::unique_ptr&lt;texture_map_type&gt; textures;</div>
-<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;    };</div>
-<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;</div>
-<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="classStE_1_1task.html">task&lt;_model_loader_task_block&gt;</a>([=](<a class="code" href="classStE_1_1optional.html">optional&lt;task_scheduler*&gt;</a> sched) {</div>
-<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;        assert(sched);</div>
+<div class="line"><a name="l00220"></a><span class="lineno"><a class="line" href="classStE_1_1Resource_1_1ModelFactory.html#a4ae66a81c8043a2cf1ddda09e9a04379">  220</a></span>&#160;<a class="code" href="classStE_1_1task__future__impl.html">StE::task_future&lt;void&gt;</a> <a class="code" href="classStE_1_1Resource_1_1ModelFactory.html#a4ae66a81c8043a2cf1ddda09e9a04379">ModelFactory::load_model_async</a>(<span class="keyword">const</span> <a class="code" href="classStE_1_1StEngineControl.html">StEngineControl</a> &amp;ctx,</div>
+<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;                                                      <span class="keyword">const</span> boost::filesystem::path &amp;file_path,</div>
+<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;                                                      <a class="code" href="classStE_1_1Graphics_1_1ObjectGroup.html">ObjectGroup</a> *object_group,</div>
+<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;                                                      <a class="code" href="classStE_1_1Graphics_1_1SceneProperties.html">Graphics::SceneProperties</a> *scene_properties,</div>
+<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;                                                      <span class="keywordtype">float</span> normal_map_bias,</div>
+<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;                                                      std::vector&lt;std::unique_ptr&lt;Graphics::Material&gt;&gt; &amp;loaded_materials,</div>
+<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;                                                      std::vector&lt;std::shared_ptr&lt;Graphics::Object&gt;&gt; *loaded_objects) {</div>
+<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;    <span class="keywordflow">return</span> ctx.<a class="code" href="classStE_1_1StEngineControl.html#af177f2f0a93345dfc0bf092161ed4e0f">scheduler</a>().schedule_now([=, &amp;loaded_materials, &amp;ctx]() {</div>
+<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;        std::unique_ptr&lt;texture_map_type&gt; textures = std::make_unique&lt;texture_map_type&gt;();</div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;</div>
+<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;        <span class="keyword">auto</span> path_string = file_path.string();</div>
+<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;        <a class="code" href="Log_8hpp.html#ad91de0c9f3e2a5d3b36489db13ad166d">ste_log</a>() &lt;&lt; <span class="stringliteral">&quot;Loading OBJ model &quot;</span> &lt;&lt; path_string &lt;&lt; std::endl;</div>
+<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;</div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;        std::string dir = { path_string.begin(), std::find_if(path_string.rbegin(), path_string.rend(), [](<span class="keywordtype">char</span> c) { <span class="keywordflow">return</span> c == <span class="charliteral">&#39;/&#39;</span> || c == <span class="charliteral">&#39;\\&#39;</span>; }).base() };</div>
 <div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;</div>
-<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;        _model_loader_task_block block;</div>
-<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;        block.textures = std::make_unique&lt;texture_map_type&gt;();</div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;        shapes_type shapes;</div>
+<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;        materials_type materials;</div>
 <div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;</div>
-<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;        <span class="keyword">auto</span> path_string = file_path.string();</div>
-<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;        <a class="code" href="Log_8hpp.html#ad91de0c9f3e2a5d3b36489db13ad166d">ste_log</a>() &lt;&lt; <span class="stringliteral">&quot;Loading OBJ model &quot;</span> &lt;&lt; path_string &lt;&lt; std::endl;</div>
-<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;</div>
-<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;        std::string dir = { path_string.begin(), std::find_if(path_string.rbegin(), path_string.rend(), [](<span class="keywordtype">char</span> c) { <span class="keywordflow">return</span> c == <span class="charliteral">&#39;/&#39;</span> || c == <span class="charliteral">&#39;\\&#39;</span>; }).base() };</div>
-<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;</div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;        shapes_type shapes;</div>
-<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;        materials_type materials;</div>
-<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;</div>
-<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;        std::string err;</div>
-<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;        <span class="keywordflow">if</span> (!tinyobj::LoadObj(shapes, materials, err, path_string.c_str(), dir.c_str(), <span class="keyword">true</span>)) {</div>
-<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;            <a class="code" href="Log_8hpp.html#a15b75a81a5cf92296d07e25a6206d85d">ste_log_error</a>() &lt;&lt; <span class="stringliteral">&quot;Couldn&#39;t load model &quot;</span> &lt;&lt; path_string &lt;&lt; <span class="stringliteral">&quot;: &quot;</span> &lt;&lt; err;</div>
-<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;            block.ret = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;            <span class="keywordflow">return</span> block;</div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;        }</div>
-<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;</div>
-<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;        {</div>
-<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;            <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;f : load_textures(&amp;*sched, shapes, materials, *block.textures, dir, normal_map_bias))</div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;                f.wait();</div>
-<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;        }</div>
-<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;</div>
-<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;        {</div>
-<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;            std::vector&lt;std::future&lt;void&gt;&gt; futures;</div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;            <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;shape : shapes)</div>
-<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;                futures.push_back(process_model_mesh(sched,</div>
-<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;                                                     &amp;scene_properties-&gt;<a class="code" href="classStE_1_1Graphics_1_1SceneProperties.html#ac493cd2686e6c840ad872d4088392a0b">materials_storage</a>(),</div>
-<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;                                                     shape,</div>
-<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;                                                     object_group,</div>
-<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;                                                     materials,</div>
-<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;                                                     *block.textures,</div>
-<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;                                                     loaded_objects,</div>
-<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;                                                     loaded_materials));</div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;</div>
-<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;            <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;f : futures)</div>
-<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;                f.wait();</div>
-<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;        }</div>
-<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;</div>
-<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;        block.ret = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;        <span class="keywordflow">return</span> block;</div>
-<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;    }).then_on_main_thread([](<a class="code" href="classStE_1_1optional.html">optional&lt;task_scheduler*&gt;</a> sched, _model_loader_task_block &amp;&amp;block) -&gt; <span class="keywordtype">bool</span> {</div>
-<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;        block.textures = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;        <span class="keywordflow">return</span> block.ret;</div>
-<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;    });</div>
-<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;}</div>
+<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;        std::string err;</div>
+<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;        <span class="keywordflow">if</span> (!tinyobj::LoadObj(shapes, materials, err, path_string.c_str(), dir.c_str(), <span class="keyword">true</span>)) {</div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;            <a class="code" href="Log_8hpp.html#a15b75a81a5cf92296d07e25a6206d85d">ste_log_error</a>() &lt;&lt; <span class="stringliteral">&quot;Couldn&#39;t load model &quot;</span> &lt;&lt; path_string &lt;&lt; <span class="stringliteral">&quot;: &quot;</span> &lt;&lt; err;</div>
+<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;            <span class="keywordflow">throw</span> <a class="code" href="classStE_1_1Resource_1_1resource__io__error.html">resource_io_error</a>(<span class="stringliteral">&quot;Could not load/parse model&quot;</span>);</div>
+<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;        }</div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;</div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;        {</div>
+<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;            <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;f : load_textures(&amp;ctx.<a class="code" href="classStE_1_1StEngineControl.html#af177f2f0a93345dfc0bf092161ed4e0f">scheduler</a>(), shapes, materials, *textures, dir, normal_map_bias))</div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;                f.get();</div>
+<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;        }</div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;</div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;        {</div>
+<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;            std::vector&lt;StE::task_future&lt;void&gt;&gt; futures;</div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;            <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;shape : shapes)</div>
+<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;                futures.push_back(process_model_mesh(&amp;ctx.<a class="code" href="classStE_1_1StEngineControl.html#af177f2f0a93345dfc0bf092161ed4e0f">scheduler</a>(),</div>
+<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;                                                     &amp;scene_properties-&gt;<a class="code" href="classStE_1_1Graphics_1_1SceneProperties.html#ac493cd2686e6c840ad872d4088392a0b">materials_storage</a>(),</div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;                                                     shape,</div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;                                                     object_group,</div>
+<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;                                                     materials,</div>
+<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;                                                     *textures,</div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;                                                     loaded_materials,</div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;                                                     loaded_objects));</div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;</div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;            <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;f : futures)</div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;                f.get();</div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;        }</div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;</div>
+<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;        <span class="keywordflow">return</span> textures;</div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;    }).<a class="code" href="namespaceStE_1_1__detail.html#ad266580a1829da8f0fe682cb7b56390d">then_on_main_thread</a>([](std::unique_ptr&lt;texture_map_type&gt; &amp;&amp;textures) {</div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;        textures = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;    });</div>
+<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;}</div>
 <div class="ttc" id="stdafx_8hpp_html"><div class="ttname"><a href="stdafx_8hpp.html">stdafx.hpp</a></div></div>
 <div class="ttc" id="Log_8hpp_html_ad91de0c9f3e2a5d3b36489db13ad166d"><div class="ttname"><a href="Log_8hpp.html#ad91de0c9f3e2a5d3b36489db13ad166d">ste_log</a></div><div class="ttdeci">#define ste_log()</div><div class="ttdef"><b>Definition:</b> <a href="Log_8hpp_source.html#l00184">Log.hpp:184</a></div></div>
 <div class="ttc" id="SurfaceFactory_8hpp_html"><div class="ttname"><a href="SurfaceFactory_8hpp.html">SurfaceFactory.hpp</a></div></div>
-<div class="ttc" id="classStE_1_1Core_1_1texture_html_a7b58c52af407a450bba4864bfdf49cce"><div class="ttname"><a href="classStE_1_1Core_1_1texture.html#a7b58c52af407a450bba4864bfdf49cce">StE::Core::texture::size</a></div><div class="ttdeci">texture_size_type&lt; texture_dimensions&lt; type &gt;::dimensions &gt;::type size</div><div class="ttdef"><b>Definition:</b> <a href="texture__base_8hpp_source.html#l00064">texture_base.hpp:64</a></div></div>
+<div class="ttc" id="classStE_1_1task__future__impl_html"><div class="ttname"><a href="classStE_1_1task__future__impl.html">StE::task_future_impl</a></div><div class="ttdoc">Wrapper around std::future for StE::task_scheduler. </div><div class="ttdef"><b>Definition:</b> <a href="task__future_8hpp_source.html#l00036">task_future.hpp:36</a></div></div>
+<div class="ttc" id="classStE_1_1Resource_1_1ModelFactory_html_a4ae66a81c8043a2cf1ddda09e9a04379"><div class="ttname"><a href="classStE_1_1Resource_1_1ModelFactory.html#a4ae66a81c8043a2cf1ddda09e9a04379">StE::Resource::ModelFactory::load_model_async</a></div><div class="ttdeci">static StE::task_future&lt; void &gt; load_model_async(const StEngineControl &amp;context, const boost::filesystem::path &amp;file_path, Graphics::ObjectGroup *object_group, Graphics::SceneProperties *scene_properties, float normal_map_bias, std::vector&lt; std::unique_ptr&lt; Graphics::Material &gt;&gt; &amp;loaded_materials, std::vector&lt; std::shared_ptr&lt; Graphics::Object &gt;&gt; *loaded_objects=nullptr)</div><div class="ttdef"><b>Definition:</b> <a href="ModelFactory_8cpp_source.html#l00220">ModelFactory.cpp:220</a></div></div>
 <div class="ttc" id="classStE_1_1Graphics_1_1ObjectVertexData_html_a91b03f43ea201d1f72a6df47449e2f4e"><div class="ttname"><a href="classStE_1_1Graphics_1_1ObjectVertexData.html#a91b03f43ea201d1f72a6df47449e2f4e">StE::Graphics::ObjectVertexData::tangent_frame_from_tbn</a></div><div class="ttdeci">void tangent_frame_from_tbn(const glm::vec3 &amp;t, const glm::vec3 &amp;b, const glm::vec3 &amp;n)</div><div class="ttdef"><b>Definition:</b> <a href="ObjectVertexData_8hpp_source.html#l00022">ObjectVertexData.hpp:22</a></div></div>
 <div class="ttc" id="classStE_1_1Graphics_1_1SceneProperties_html"><div class="ttname"><a href="classStE_1_1Graphics_1_1SceneProperties.html">StE::Graphics::SceneProperties</a></div><div class="ttdef"><b>Definition:</b> <a href="SceneProperties_8hpp_source.html#l00013">SceneProperties.hpp:13</a></div></div>
 <div class="ttc" id="Material_8hpp_html"><div class="ttname"><a href="Material_8hpp.html">Material.hpp</a></div></div>
 <div class="ttc" id="classStE_1_1Graphics_1_1normal__map__from__height__map_html"><div class="ttname"><a href="classStE_1_1Graphics_1_1normal__map__from__height__map.html">StE::Graphics::normal_map_from_height_map</a></div><div class="ttdef"><b>Definition:</b> <a href="normal__map__from__height__map_8hpp_source.html#l00015">normal_map_from_height_map.hpp:15</a></div></div>
-<div class="ttc" id="classStE_1_1optional_html"><div class="ttname"><a href="classStE_1_1optional.html">StE::optional</a></div><div class="ttdef"><b>Definition:</b> <a href="optional_8hpp_source.html#l00017">optional.hpp:17</a></div></div>
+<div class="ttc" id="classStE_1_1StEngineControl_html_af177f2f0a93345dfc0bf092161ed4e0f"><div class="ttname"><a href="classStE_1_1StEngineControl.html#af177f2f0a93345dfc0bf092161ed4e0f">StE::StEngineControl::scheduler</a></div><div class="ttdeci">auto &amp; scheduler() const </div><div class="ttdoc">Get global task schduler. </div><div class="ttdef"><b>Definition:</b> <a href="StEngineControl_8hpp_source.html#l00107">StEngineControl.hpp:107</a></div></div>
 <div class="ttc" id="classStE_1_1Graphics_1_1SceneProperties_html_ac493cd2686e6c840ad872d4088392a0b"><div class="ttname"><a href="classStE_1_1Graphics_1_1SceneProperties.html#ac493cd2686e6c840ad872d4088392a0b">StE::Graphics::SceneProperties::materials_storage</a></div><div class="ttdeci">material_storage &amp; materials_storage()</div><div class="ttdef"><b>Definition:</b> <a href="SceneProperties_8hpp_source.html#l00019">SceneProperties.hpp:19</a></div></div>
 <div class="ttc" id="classStE_1_1Graphics_1_1ObjectVertexData_html"><div class="ttname"><a href="classStE_1_1Graphics_1_1ObjectVertexData.html">StE::Graphics::ObjectVertexData</a></div><div class="ttdef"><b>Definition:</b> <a href="ObjectVertexData_8hpp_source.html#l00012">ObjectVertexData.hpp:12</a></div></div>
-<div class="ttc" id="classStE_1_1Resource_1_1SurfaceFactory_html_a3251a22775a7e985aa8f2f90d49f2e15"><div class="ttname"><a href="classStE_1_1Resource_1_1SurfaceFactory.html#a3251a22775a7e985aa8f2f90d49f2e15">StE::Resource::SurfaceFactory::load_surface_2d_task</a></div><div class="ttdeci">static task&lt; gli::texture2d &gt; load_surface_2d_task(const boost::filesystem::path &amp;path, bool srgb)</div><div class="ttdef"><b>Definition:</b> <a href="SurfaceFactory_8hpp_source.html#l00049">SurfaceFactory.hpp:49</a></div></div>
+<div class="ttc" id="classStE_1_1Resource_1_1resource__io__error_html"><div class="ttname"><a href="classStE_1_1Resource_1_1resource__io__error.html">StE::Resource::resource_io_error</a></div><div class="ttdef"><b>Definition:</b> <a href="resource__loading__exception_8hpp_source.html#l00019">resource_loading_exception.hpp:19</a></div></div>
+<div class="ttc" id="classStE_1_1Resource_1_1SurfaceFactory_html_a2419cdc9cfb9750645c9d0533bd2bd81"><div class="ttname"><a href="classStE_1_1Resource_1_1SurfaceFactory.html#a2419cdc9cfb9750645c9d0533bd2bd81">StE::Resource::SurfaceFactory::load_surface_2d</a></div><div class="ttdeci">static auto load_surface_2d(const boost::filesystem::path &amp;path, bool srgb)</div><div class="ttdef"><b>Definition:</b> <a href="SurfaceFactory_8hpp_source.html#l00057">SurfaceFactory.hpp:57</a></div></div>
 <div class="ttc" id="classStE_1_1Graphics_1_1ObjectVertexData_html_a33d10464dc60c780d1566cbbcedea9c8"><div class="ttname"><a href="classStE_1_1Graphics_1_1ObjectVertexData.html#a33d10464dc60c780d1566cbbcedea9c8">StE::Graphics::ObjectVertexData::uv</a></div><div class="ttdeci">glm::vec2 uv</div><div class="ttdef"><b>Definition:</b> <a href="ObjectVertexData_8hpp_source.html#l00016">ObjectVertexData.hpp:16</a></div></div>
 <div class="ttc" id="ModelFactory_8hpp_html"><div class="ttname"><a href="ModelFactory_8hpp.html">ModelFactory.hpp</a></div></div>
 <div class="ttc" id="normal__map__from__height__map_8hpp_html"><div class="ttname"><a href="normal__map__from__height__map_8hpp.html">normal_map_from_height_map.hpp</a></div></div>
-<div class="ttc" id="classStE_1_1StEngineControl_html"><div class="ttname"><a href="classStE_1_1StEngineControl.html">StE::StEngineControl</a></div><div class="ttdoc">StE Engine Control class. </div><div class="ttdef"><b>Definition:</b> <a href="StEngineControl_8hpp_source.html#l00046">StEngineControl.hpp:46</a></div></div>
+<div class="ttc" id="namespaceStE_1_1__detail_html_ad266580a1829da8f0fe682cb7b56390d"><div class="ttname"><a href="namespaceStE_1_1__detail.html#ad266580a1829da8f0fe682cb7b56390d">StE::_detail::then_on_main_thread</a></div><div class="ttdeci">task_future_impl&lt; typename function_traits&lt; L &gt;::result_t, is_shared &gt; then_on_main_thread(task_future_impl&lt; R, is_shared &gt; &amp;&amp;f, task_scheduler *sched, L &amp;&amp;lambda, std::enable_if_t&lt;!std::is_void&lt; R &gt;::value &gt; *=nullptr)</div><div class="ttdef"><b>Definition:</b> <a href="task__future__impl_8hpp_source.html#l00028">task_future_impl.hpp:28</a></div></div>
+<div class="ttc" id="classStE_1_1StEngineControl_html"><div class="ttname"><a href="classStE_1_1StEngineControl.html">StE::StEngineControl</a></div><div class="ttdoc">StE Engine Control class. </div><div class="ttdef"><b>Definition:</b> <a href="StEngineControl_8hpp_source.html#l00045">StEngineControl.hpp:45</a></div></div>
 <div class="ttc" id="mesh_8hpp_html"><div class="ttname"><a href="mesh_8hpp.html">mesh.hpp</a></div></div>
 <div class="ttc" id="classStE_1_1Graphics_1_1ObjectGroup_html"><div class="ttname"><a href="classStE_1_1Graphics_1_1ObjectGroup.html">StE::Graphics::ObjectGroup</a></div><div class="ttdef"><b>Definition:</b> <a href="ObjectGroup_8hpp_source.html#l00023">ObjectGroup.hpp:23</a></div></div>
-<div class="ttc" id="classStE_1_1Resource_1_1ModelFactory_html_a4b2557125c484c2e75272255881e8c50"><div class="ttname"><a href="classStE_1_1Resource_1_1ModelFactory.html#a4b2557125c484c2e75272255881e8c50">StE::Resource::ModelFactory::load_model_task</a></div><div class="ttdeci">static task&lt; bool &gt; load_model_task(const StEngineControl &amp;context, const boost::filesystem::path &amp;file_path, Graphics::ObjectGroup *object_group, Graphics::SceneProperties *scene_properties, float normal_map_bias, std::vector&lt; std::shared_ptr&lt; Graphics::Object &gt;&gt; *loaded_objects, std::vector&lt; Graphics::Material * &gt; *loaded_materials)</div><div class="ttdef"><b>Definition:</b> <a href="ModelFactory_8cpp_source.html#l00220">ModelFactory.cpp:220</a></div></div>
 <div class="ttc" id="classStE_1_1Graphics_1_1ObjectVertexData_html_a43eb9ff1e786c0b36a0a41179e111184"><div class="ttname"><a href="classStE_1_1Graphics_1_1ObjectVertexData.html#a43eb9ff1e786c0b36a0a41179e111184">StE::Graphics::ObjectVertexData::p</a></div><div class="ttdeci">glm::vec3 p</div><div class="ttdef"><b>Definition:</b> <a href="ObjectVertexData_8hpp_source.html#l00015">ObjectVertexData.hpp:15</a></div></div>
 <div class="ttc" id="Log_8hpp_html_a15b75a81a5cf92296d07e25a6206d85d"><div class="ttname"><a href="Log_8hpp.html#a15b75a81a5cf92296d07e25a6206d85d">ste_log_error</a></div><div class="ttdeci">#define ste_log_error()</div><div class="ttdef"><b>Definition:</b> <a href="Log_8hpp_source.html#l00186">Log.hpp:186</a></div></div>
 <div class="ttc" id="Log_8hpp_html_a773393ef307fad999e82923a980495c3"><div class="ttname"><a href="Log_8hpp.html#a773393ef307fad999e82923a980495c3">ste_log_warn</a></div><div class="ttdeci">#define ste_log_warn()</div><div class="ttdef"><b>Definition:</b> <a href="Log_8hpp_source.html#l00185">Log.hpp:185</a></div></div>
 <div class="ttc" id="classStE_1_1Core_1_1Texture2D_html"><div class="ttname"><a href="classStE_1_1Core_1_1Texture2D.html">StE::Core::Texture2D</a></div><div class="ttdef"><b>Definition:</b> <a href="Texture2D_8hpp_source.html#l00015">Texture2D.hpp:15</a></div></div>
-<div class="ttc" id="classStE_1_1task_html"><div class="ttname"><a href="classStE_1_1task.html">StE::task</a></div><div class="ttdef"><b>Definition:</b> <a href="task_8hpp_source.html#l00024">task.hpp:24</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

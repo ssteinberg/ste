@@ -1,4 +1,4 @@
 <map id="StE::Graphics::Material" name="StE::Graphics::Material">
-<area shape="rect" id="node2" href="$classStE_1_1Core_1_1observable__resource.html" title="{StE::Core::observable\l_resource\&lt; material_descriptor \&gt;\n||+ ~observable_resource()\l+ get_descriptor()\l# resource_signal()\l# notify()\l}" alt="" coords="5,204,225,340"/>
-<area shape="rect" id="node3" href="$classStE_1_1Core_1_1observable__resource.html" title="Resource consumed by a resource_storage. " alt="" coords="27,5,204,141"/>
+<area shape="rect" id="node2" href="$classStE_1_1Core_1_1observable__resource.html" title="{StE::Core::observable\l_resource\&lt; material_descriptor \&gt;\n||+ ~observable_resource()\l+ get_descriptor()\l+ dealloc()\l+ is_valid()\l# notify()\l}" alt="" coords="5,219,225,369"/>
+<area shape="rect" id="node3" href="$classStE_1_1Core_1_1observable__resource.html" title="Resource consumed by a resource_storage. " alt="" coords="27,5,204,156"/>
 </map>

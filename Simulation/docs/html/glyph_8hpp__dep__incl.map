@@ -3,6 +3,7 @@
 <area shape="rect" id="node4" href="$glyph__manager_8hpp.html" title="src/ste/framework_text\l/glyphs/glyph_manager.hpp" alt="" coords="202,184,389,225"/>
 <area shape="rect" id="node3" href="$glyph__factory_8cpp.html" title="src/ste/framework_text\l/glyphs/glyph_factory.cpp" alt="" coords="5,184,177,225"/>
 <area shape="rect" id="node5" href="$TextManager_8hpp.html" title="src/ste/framework_text\l/rendering/TextManager.hpp" alt="" coords="199,273,392,315"/>
-<area shape="rect" id="node6" href="$main_8cpp.html" title="src/main.cpp" alt="" coords="163,370,260,397"/>
-<area shape="rect" id="node7" href="$TextManager_8cpp.html" title="src/ste/framework_text\l/rendering/TextManager.cpp" alt="" coords="284,363,477,404"/>
+<area shape="rect" id="node6" href="$main_8cpp.html" title="src/main.cpp" alt="" coords="72,370,169,397"/>
+<area shape="rect" id="node7" href="$text__renderable_8cpp.html" title="src/ste/framework_text\l/rendering/text_renderable.cpp" alt="" coords="193,363,397,404"/>
+<area shape="rect" id="node8" href="$TextManager_8cpp.html" title="src/ste/framework_text\l/rendering/TextManager.cpp" alt="" coords="421,363,615,404"/>
 </map>

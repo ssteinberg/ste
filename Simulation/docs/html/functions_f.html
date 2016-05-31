@@ -96,6 +96,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="functions_g.html#index_g"><span>g</span></a></li>
       <li><a href="functions_h.html#index_h"><span>h</span></a></li>
       <li><a href="functions_i.html#index_i"><span>i</span></a></li>
+      <li><a href="functions_j.html#index_j"><span>j</span></a></li>
       <li><a href="functions_k.html#index_k"><span>k</span></a></li>
       <li><a href="functions_l.html#index_l"><span>l</span></a></li>
       <li><a href="functions_m.html#index_m"><span>m</span></a></li>
@@ -180,9 +181,6 @@ $(document).ready(function(){initNavTree('functions_f.html','');});
 <li>fbo_layout_bindable_color_attachment_point&lt; Allocator &gt;
 : <a class="el" href="classStE_1_1Core_1_1frame__buffer__object.html#a2d949e0a520a9df9b99aa9ac7d856ff0">StE::Core::frame_buffer_object&lt; A &gt;</a>
 </li>
-<li>fetch_program_task()
-: <a class="el" href="classStE_1_1Resource_1_1glsl__programs__pool.html#a1ace1ff43f63a91ccd4cebd6002e804b">StE::Resource::glsl_programs_pool</a>
-</li>
 <li>field_of_view
 : <a class="el" href="structStE_1_1ste__engine__control__impl.html#a931c4376e9d61ea7312aba8f86781868">StE::ste_engine_control_impl</a>
 </li>
@@ -211,7 +209,7 @@ $(document).ready(function(){initNavTree('functions_f.html','');});
 , <a class="el" href="classStE_1_1Core_1_1RenderTarget.html#a4f548c192c7a6e400842da2cb2b4eed1">StE::Core::RenderTarget</a>
 , <a class="el" href="classStE_1_1Core_1_1texture.html#ad3b142717678a78a1b2444e1a05b3056">StE::Core::texture&lt; type &gt;</a>
 , <a class="el" href="structStE_1_1Graphics_1_1sbta__key.html#ab6da29e1df14f4a1baf0aa7661f76041">StE::Graphics::sbta_key</a>
-, <a class="el" href="structStE_1_1Resource_1_1glsl__loader_1_1program__binary.html#a24b70d09d587592e85265d2efc2f0e73">StE::Resource::glsl_loader::program_binary</a>
+, <a class="el" href="classStE_1_1Resource_1_1glsl__loader_1_1program__binary.html#a24b70d09d587592e85265d2efc2f0e73">StE::Resource::glsl_loader::program_binary</a>
 </li>
 <li>format_head()
 : <a class="el" href="classStE_1_1log__stream__formatter.html#aaea4ad4802dcf724cf98840ee23d3915">StE::log_stream_formatter</a>
@@ -241,7 +239,7 @@ $(document).ready(function(){initNavTree('functions_f.html','');});
 : <a class="el" href="classStE_1_1Core_1_1fbo__attachment__point.html#a8126904e34b54570c4989934fa78d44d">StE::Core::fbo_attachment_point&lt; A &gt;</a>
 , <a class="el" href="classStE_1_1Core_1_1fbo__color__attachment__point.html#a8126904e34b54570c4989934fa78d44d">StE::Core::fbo_color_attachment_point&lt; A, color_attachment_point &gt;</a>
 , <a class="el" href="classStE_1_1Core_1_1fbo__layout__bindable__color__attachment__point.html#a8126904e34b54570c4989934fa78d44d">StE::Core::fbo_layout_bindable_color_attachment_point&lt; A &gt;</a>
-, <a class="el" href="classStE_1_1Core_1_1FramebufferObject.html#a6fc955b1db6959799eb4962979a10634">StE::Core::FramebufferObject</a>
+, <a class="el" href="classStE_1_1Core_1_1FramebufferObject.html#a4273bdb26d10b10d2ea248745c4c0872">StE::Core::FramebufferObject</a>
 </li>
 <li>frames
 : <a class="el" href="structStE_1_1ste__engine__control__impl.html#af0be1b107872e839cd5d301d6b0fb84a">StE::ste_engine_control_impl</a>
@@ -253,10 +251,10 @@ $(document).ready(function(){initNavTree('functions_f.html','');});
 : <a class="el" href="classStE_1_1Graphics_1_1schlick__fresnel.html#ac28b11a07b8cb5726971fb82660bd2ff">StE::Graphics::schlick_fresnel&lt; T &gt;</a>
 </li>
 <li>front_buffer()
-: <a class="el" href="classStE_1_1Core_1_1context__framebuffer.html#a2a04d40ff650ddb0145026f306264336">StE::Core::context_framebuffer</a>
+: <a class="el" href="classStE_1_1Core_1_1context__framebuffer.html#a22094da940f1808998c0bf891e78765b">StE::Core::context_framebuffer</a>
 </li>
 <li>front_face()
-: <a class="el" href="classStE_1_1Core_1_1GL_1_1gl__generic__context.html#a1f676545cdd5cd8a174cbfab19dd525a">StE::Core::GL::gl_generic_context</a>
+: <a class="el" href="classStE_1_1Core_1_1GL_1_1gl__generic__context.html#a442db13c855e19688fdc08f88b9b4dc5">StE::Core::GL::gl_generic_context</a>
 </li>
 <li>fs
 : <a class="el" href="structStE_1_1Core_1_1GL_1_1gl__context_1_1context__settings.html#a71cccd39512ae65883553ca0f3a5a2b8">StE::Core::GL::gl_context::context_settings</a>
@@ -266,6 +264,16 @@ $(document).ready(function(){initNavTree('functions_f.html','');});
 </li>
 <li>function_wrapper()
 : <a class="el" href="classStE_1_1function__wrapper.html#acef34b11961229161228d0b9186836c2">StE::function_wrapper</a>
+</li>
+<li>future()
+: <a class="el" href="classStE_1_1interruptible__thread.html#a13e9f6acd755c49ce394e0ccc4b637a5">StE::interruptible_thread</a>
+</li>
+<li>future_type
+: <a class="el" href="classStE_1_1future__collection.html#ae2637074e94646d32e3a2a0fcd779a4a">StE::future_collection&lt; R, F &gt;</a>
+, <a class="el" href="classStE_1_1task__future__impl.html#a59fda1dc1853d24edda5125f69621ec5">StE::task_future_impl&lt; R, is_shared &gt;</a>
+</li>
+<li>fxaa_dispatchable()
+: <a class="el" href="classStE_1_1Graphics_1_1fxaa__dispatchable.html#a712eb62814d28feee0dd8b95c71f4503">StE::Graphics::fxaa_dispatchable</a>
 </li>
 </ul>
 </div><!-- contents -->

@@ -1,19 +1,20 @@
 <map id="src/ste/engine/core/gl/gl_utils.hpp" name="src/ste/engine/core/gl/gl_utils.hpp">
-<area shape="rect" id="node2" href="$stdafx_8hpp.html" title="stdafx.hpp" alt="" coords="1613,543,1695,569"/>
-<area shape="rect" id="node27" href="$resource_8hpp.html" title="resource.hpp" alt="" coords="1343,95,1442,121"/>
-<area shape="rect" id="node4" href="$gl_8hpp.html" title="gl.hpp" alt="" coords="2500,617,2557,644"/>
-<area shape="rect" id="node6" href="$gl__extensions_8h.html" title="gl_extensions.h" alt="" coords="2533,692,2647,719"/>
-<area shape="rect" id="node28" href="$core__resource__type_8hpp.html" title="core_resource_type.hpp" alt="" coords="1533,169,1698,196"/>
-<area shape="rect" id="node29" href="$resource__allocator_8hpp.html" title="resource_allocator.hpp" alt="" coords="1313,169,1472,196"/>
-<area shape="rect" id="node30" href="$Log_8hpp.html" title="Log.hpp" alt="" coords="638,244,707,271"/>
-<area shape="rect" id="node46" href="$AttributedString_8hpp.html" title="AttributedString.hpp" alt="" coords="1325,244,1460,271"/>
-<area shape="rect" id="node48" href="$attrib_8hpp.html" title="attrib.hpp" alt="" coords="1465,468,1539,495"/>
-<area shape="rect" id="node37" href="$concurrent__queue_8hpp.html" title="concurrent_queue.hpp" alt="" coords="323,319,476,345"/>
-<area shape="rect" id="node39" href="$log__ostream_8hpp.html" title="log_ostream.hpp" alt="" coords="841,319,963,345"/>
-<area shape="rect" id="node42" href="$log__sink_8hpp.html" title="log_sink.hpp" alt="" coords="954,468,1050,495"/>
-<area shape="rect" id="node43" href="$log__stream__formatter_8hpp.html" title="log_stream_formatter.hpp" alt="" coords="649,543,821,569"/>
-<area shape="rect" id="node45" href="$log__class_8hpp.html" title="log_class.hpp" alt="" coords="87,617,191,644"/>
-<area shape="rect" id="node41" href="$log__streambuf_8hpp.html" title="log_streambuf.hpp" alt="" coords="837,393,967,420"/>
-<area shape="rect" id="node47" href="$attributed__string_8hpp.html" title="attributed_string.hpp" alt="" coords="1323,393,1462,420"/>
-<area shape="rect" id="node49" href="$Font_8hpp.html" title="Font.hpp" alt="" coords="1423,543,1495,569"/>
+<area shape="rect" id="node2" href="$stdafx_8hpp.html" title="stdafx.hpp" alt="" coords="1393,543,1476,569"/>
+<area shape="rect" id="node27" href="$resource_8hpp.html" title="resource.hpp" alt="" coords="1949,95,2048,121"/>
+<area shape="rect" id="node4" href="$gl_8hpp.html" title="gl.hpp" alt="" coords="495,617,553,644"/>
+<area shape="rect" id="node6" href="$gl__extensions_8h.html" title="gl_extensions.h" alt="" coords="528,692,643,719"/>
+<area shape="rect" id="node28" href="$core__resource__type_8hpp.html" title="core_resource_type.hpp" alt="" coords="1428,169,1593,196"/>
+<area shape="rect" id="node29" href="$thread__constants_8hpp.html" title="thread_constants.hpp" alt="" coords="3063,244,3211,271"/>
+<area shape="rect" id="node31" href="$resource__allocator_8hpp.html" title="resource_allocator.hpp" alt="" coords="1919,169,2078,196"/>
+<area shape="rect" id="node32" href="$Log_8hpp.html" title="Log.hpp" alt="" coords="2769,244,2839,271"/>
+<area shape="rect" id="node46" href="$AttributedString_8hpp.html" title="AttributedString.hpp" alt="" coords="1889,244,2023,271"/>
+<area shape="rect" id="node48" href="$attrib_8hpp.html" title="attrib.hpp" alt="" coords="1713,468,1788,495"/>
+<area shape="rect" id="node38" href="$concurrent__queue_8hpp.html" title="concurrent_queue.hpp" alt="" coords="2890,319,3043,345"/>
+<area shape="rect" id="node40" href="$log__ostream_8hpp.html" title="log_ostream.hpp" alt="" coords="2475,319,2597,345"/>
+<area shape="rect" id="node43" href="$log__sink_8hpp.html" title="log_sink.hpp" alt="" coords="2296,468,2392,495"/>
+<area shape="rect" id="node44" href="$log__stream__formatter_8hpp.html" title="log_stream_formatter.hpp" alt="" coords="2530,543,2702,569"/>
+<area shape="rect" id="node45" href="$log__class_8hpp.html" title="log_class.hpp" alt="" coords="3004,617,3108,644"/>
+<area shape="rect" id="node42" href="$log__streambuf_8hpp.html" title="log_streambuf.hpp" alt="" coords="2471,393,2601,420"/>
+<area shape="rect" id="node47" href="$attributed__string_8hpp.html" title="attributed_string.hpp" alt="" coords="1885,393,2024,420"/>
+<area shape="rect" id="node49" href="$Font_8hpp.html" title="Font.hpp" alt="" coords="1863,543,1935,569"/>
 </map>

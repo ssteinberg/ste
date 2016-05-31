@@ -115,18 +115,20 @@ $(document).ready(function(){initNavTree('classStE_1_1Resource_1_1ModelFactory.h
 Collaboration diagram for StE::Resource::ModelFactory:</div>
 <div class="dyncontent">
 <div class="center"><img src="classStE_1_1Resource_1_1ModelFactory__coll__graph.png" border="0" usemap="#StE_1_1Resource_1_1ModelFactory_coll__map" alt="Collaboration graph"/></div>
+<map name="StE_1_1Resource_1_1ModelFactory_coll__map" id="StE_1_1Resource_1_1ModelFactory_coll__map">
+</map>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a4b2557125c484c2e75272255881e8c50"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classStE_1_1task.html">task</a>&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Resource_1_1ModelFactory.html#a4b2557125c484c2e75272255881e8c50">load_model_task</a> (const <a class="el" href="classStE_1_1StEngineControl.html">StEngineControl</a> &amp;context, const boost::filesystem::path &amp;file_path, <a class="el" href="classStE_1_1Graphics_1_1ObjectGroup.html">Graphics::ObjectGroup</a> *object_group, <a class="el" href="classStE_1_1Graphics_1_1SceneProperties.html">Graphics::SceneProperties</a> *scene_properties, float normal_map_bias, std::vector&lt; std::shared_ptr&lt; <a class="el" href="classStE_1_1Graphics_1_1Object.html">Graphics::Object</a> &gt;&gt; *loaded_objects, std::vector&lt; <a class="el" href="classStE_1_1Graphics_1_1Material.html">Graphics::Material</a> * &gt; *loaded_materials)</td></tr>
-<tr class="separator:a4b2557125c484c2e75272255881e8c50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ae66a81c8043a2cf1ddda09e9a04379"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="namespaceStE.html#a29ae5406646408186ac2acb580d0c321">StE::task_future</a>&lt; <a class="el" href="gl__extensions_8h.html#a814c8b5745ecf82afdd1da718fbdc47c">void</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Resource_1_1ModelFactory.html#a4ae66a81c8043a2cf1ddda09e9a04379">load_model_async</a> (const <a class="el" href="classStE_1_1StEngineControl.html">StEngineControl</a> &amp;context, const boost::filesystem::path &amp;file_path, <a class="el" href="classStE_1_1Graphics_1_1ObjectGroup.html">Graphics::ObjectGroup</a> *object_group, <a class="el" href="classStE_1_1Graphics_1_1SceneProperties.html">Graphics::SceneProperties</a> *scene_properties, float normal_map_bias, std::vector&lt; std::unique_ptr&lt; <a class="el" href="classStE_1_1Graphics_1_1Material.html">Graphics::Material</a> &gt;&gt; &amp;loaded_materials, std::vector&lt; std::shared_ptr&lt; <a class="el" href="classStE_1_1Graphics_1_1Object.html">Graphics::Object</a> &gt;&gt; *loaded_objects=nullptr)</td></tr>
+<tr class="separator:a4ae66a81c8043a2cf1ddda09e9a04379"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
 <p>Definition at line <a class="el" href="ModelFactory_8hpp_source.html#l00033">33</a> of file <a class="el" href="ModelFactory_8hpp_source.html">ModelFactory.hpp</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a4b2557125c484c2e75272255881e8c50"></a>
+<a class="anchor" id="a4ae66a81c8043a2cf1ddda09e9a04379"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -134,7 +136,7 @@ Static Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classStE_1_1task.html">StE::task</a>&lt; bool &gt; ModelFactory::load_model_task </td>
+          <td class="memname"><a class="el" href="namespaceStE.html#a29ae5406646408186ac2acb580d0c321">StE::task_future</a>&lt; <a class="el" href="gl__extensions_8h.html#a814c8b5745ecf82afdd1da718fbdc47c">void</a> &gt; ModelFactory::load_model_async </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classStE_1_1StEngineControl.html">StEngineControl</a> &amp;&#160;</td>
           <td class="paramname"><em>context</em>, </td>
@@ -166,14 +168,14 @@ Static Public Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::vector&lt; std::shared_ptr&lt; <a class="el" href="classStE_1_1Graphics_1_1Object.html">Graphics::Object</a> &gt;&gt; *&#160;</td>
-          <td class="paramname"><em>loaded_objects</em>, </td>
+          <td class="paramtype">std::vector&lt; std::unique_ptr&lt; <a class="el" href="classStE_1_1Graphics_1_1Material.html">Graphics::Material</a> &gt;&gt; &amp;&#160;</td>
+          <td class="paramname"><em>loaded_materials</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::vector&lt; <a class="el" href="classStE_1_1Graphics_1_1Material.html">Graphics::Material</a> * &gt; *&#160;</td>
-          <td class="paramname"><em>loaded_materials</em>&#160;</td>
+          <td class="paramtype">std::vector&lt; std::shared_ptr&lt; <a class="el" href="classStE_1_1Graphics_1_1Object.html">Graphics::Object</a> &gt;&gt; *&#160;</td>
+          <td class="paramname"><em>loaded_objects</em> = <code>nullptr</code>&#160;</td>
         </tr>
         <tr>
           <td></td>

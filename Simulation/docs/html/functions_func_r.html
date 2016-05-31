@@ -95,6 +95,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="functions_func_g.html#index_g"><span>g</span></a></li>
       <li><a href="functions_func_h.html#index_h"><span>h</span></a></li>
       <li><a href="functions_func_i.html#index_i"><span>i</span></a></li>
+      <li><a href="functions_func_j.html#index_j"><span>j</span></a></li>
       <li><a href="functions_func_k.html#index_k"><span>k</span></a></li>
       <li><a href="functions_func_l.html#index_l"><span>l</span></a></li>
       <li><a href="functions_func_m.html#index_m"><span>m</span></a></li>
@@ -154,14 +155,20 @@ $(document).ready(function(){initNavTree('functions_func_r.html','');});
 : <a class="el" href="structStE_1_1range.html#aa0bbe5b5390f785dc5e506a7c00e24c1">StE::range&lt; T &gt;</a>
 </li>
 <li>read_info_log()
-: <a class="el" href="classStE_1_1Core_1_1GLSLShader.html#ae5ebe9d2637d456fc91b60f59e3a0181">StE::Core::GLSLShader&lt; ShaderType &gt;</a>
-, <a class="el" href="classStE_1_1Core_1_1GLSLShaderGeneric.html#ab338c7228a3eb521c053da7794857edf">StE::Core::GLSLShaderGeneric</a>
+: <a class="el" href="classStE_1_1Core_1_1glsl__shader__object.html#a87cb8464cd13e32408020b10866d3b9f">StE::Core::glsl_shader_object&lt; ShaderType &gt;</a>
+, <a class="el" href="classStE_1_1Core_1_1glsl__shader__object__generic.html#a74259230cb0a21788fd0400e4145202b">StE::Core::glsl_shader_object_generic</a>
 </li>
 <li>read_kerning()
 : <a class="el" href="classStE_1_1Text_1_1glyph__factory.html#a355dd46f5efacc10d9c4ef53dc38c9a1">StE::Text::glyph_factory</a>
 </li>
 <li>read_pixels()
 : <a class="el" href="classStE_1_1Core_1_1fbo__color__attachment__point.html#aa1837b72c0beef0aee40708003b1abc5">StE::Core::fbo_color_attachment_point&lt; A, color_attachment_point &gt;</a>
+</li>
+<li>ready_all()
+: <a class="el" href="classStE_1_1future__collection.html#ada6c159a1aded3a82762ba49f47dbbfd">StE::future_collection&lt; R, F &gt;</a>
+</li>
+<li>ready_any()
+: <a class="el" href="classStE_1_1future__collection.html#a753bab6ba91b6adf9bccfedfcdd3049b">StE::future_collection&lt; R, F &gt;</a>
 </li>
 <li>rebuild_task_queue()
 : <a class="el" href="classStE_1_1Graphics_1_1GIRenderer.html#a350e5f52444f09bfb96a8d3fcb056ccf">StE::Graphics::GIRenderer</a>
@@ -194,7 +201,7 @@ $(document).ready(function(){initNavTree('functions_func_r.html','');});
 : <a class="el" href="classStE_1_1Text_1_1attributed__string.html#a1474f60d542abc24e2295b15a990d036">StE::Text::attributed_string&lt; CharT &gt;</a>
 </li>
 <li>remove_consumer_program()
-: <a class="el" href="classStE_1_1Graphics_1_1dense__voxel__space.html#a4047733f466004a872e59ae98eb74309">StE::Graphics::dense_voxel_space</a>
+: <a class="el" href="classStE_1_1Graphics_1_1dense__voxel__space.html#a827ee56838496958f1536d4065ac82a2">StE::Graphics::dense_voxel_space</a>
 </li>
 <li>remove_dependency()
 : <a class="el" href="classStE_1_1Graphics_1_1gpu__task.html#ab0372b99e35a92e7ea5cfb3b19df894b">StE::Graphics::gpu_task</a>
@@ -203,7 +210,8 @@ $(document).ready(function(){initNavTree('functions_func_r.html','');});
 : <a class="el" href="classStE_1_1Graphics_1_1GIRenderer.html#aaeb7e7c33b1ba9bf90333d08531ee191">StE::Graphics::GIRenderer</a>
 </li>
 <li>remove_task()
-: <a class="el" href="classStE_1_1Graphics_1_1GIRenderer.html#a93f5668083111b1a8ec2e9137a0b4c2f">StE::Graphics::GIRenderer</a>
+: <a class="el" href="classStE_1_1Graphics_1_1basic__renderer.html#a8963f86fdc2d82c3491091353a7e9de4">StE::Graphics::basic_renderer</a>
+, <a class="el" href="classStE_1_1Graphics_1_1GIRenderer.html#a93f5668083111b1a8ec2e9137a0b4c2f">StE::Graphics::GIRenderer</a>
 , <a class="el" href="classStE_1_1Graphics_1_1gpu__task__dispatch__queue.html#a34f28554dc55a7a30d8e66c1aeec7c63">StE::Graphics::gpu_task_dispatch_queue</a>
 </li>
 <li>remove_task_dependency()
@@ -213,14 +221,16 @@ $(document).ready(function(){initNavTree('functions_func_r.html','');});
 : <a class="el" href="structStE_1_1Text_1_1glyph__factory__impl.html#a0b9200faf578eb32a2a69b400ddef81e">StE::Text::glyph_factory_impl</a>
 </li>
 <li>render_queue()
-: <a class="el" href="classStE_1_1Graphics_1_1GIRenderer.html#a28abb8106a9ba611e52e809cbfa47156">StE::Graphics::GIRenderer</a>
+: <a class="el" href="classStE_1_1Graphics_1_1basic__renderer.html#a4d29cbcbfb298715329cf0db57d766b3">StE::Graphics::basic_renderer</a>
+, <a class="el" href="classStE_1_1Graphics_1_1GIRenderer.html#a28abb8106a9ba611e52e809cbfa47156">StE::Graphics::GIRenderer</a>
 , <a class="el" href="classStE_1_1Graphics_1_1rendering__system.html#ad6c7ae38f4187aa5a2e7a10622ab0e4a">StE::Graphics::rendering_system</a>
 </li>
 <li>renderer()
 : <a class="el" href="classStE_1_1StEngineControl.html#a8afa24ee558247da87f48945966eb3f3">StE::StEngineControl</a>
 </li>
 <li>rendering_system_name()
-: <a class="el" href="classStE_1_1Graphics_1_1GIRenderer.html#aae367969dd1659b46e1cd73db81f6dcc">StE::Graphics::GIRenderer</a>
+: <a class="el" href="classStE_1_1Graphics_1_1basic__renderer.html#a3cdeaa881e0a88dd25bc15b41b644cab">StE::Graphics::basic_renderer</a>
+, <a class="el" href="classStE_1_1Graphics_1_1GIRenderer.html#aae367969dd1659b46e1cd73db81f6dcc">StE::Graphics::GIRenderer</a>
 , <a class="el" href="classStE_1_1Graphics_1_1rendering__system.html#a99b9a38a18ce6d1c44ed12914b4eb0e8">StE::Graphics::rendering_system</a>
 </li>
 <li>RenderTarget()
@@ -236,22 +246,27 @@ $(document).ready(function(){initNavTree('functions_func_r.html','');});
 , <a class="el" href="classStE_1_1Graphics_1_1deferred__gbuffer.html#ad09357b25ef4737f7e0dfd9aff4fe3b0">StE::Graphics::deferred_gbuffer</a>
 , <a class="el" href="classStE_1_1Graphics_1_1hdr__dof__postprocess.html#ac078a0d7dafeae2af6e96ad960d5942c">StE::Graphics::hdr_dof_postprocess</a>
 , <a class="el" href="classStE_1_1Graphics_1_1linked__light__lists.html#a943dc74cdb4cdfe80c2712b86c82d2e4">StE::Graphics::linked_light_lists</a>
-, <a class="el" href="classStE_1_1Graphics_1_1ssss__storage.html#af5710fd58f9d4c9becbe455c5322df45">StE::Graphics::ssss_storage</a>
 , <a class="el" href="classStE_1_1Graphics_1_1volumetric__scattering__storage.html#a8fbd6e839f94f10801c99322045c5a2e">StE::Graphics::volumetric_scattering_storage</a>
 </li>
 <li>resource()
-: <a class="el" href="classStE_1_1Core_1_1resource.html#ae57afc20b0d5cc5629c06063025d6aee">StE::Core::resource&lt; Allocator &gt;</a>
+: <a class="el" href="classStE_1_1Core_1_1resource.html#a79fad21c0ff0a00ea7df0b60a60047ac">StE::Core::resource&lt; Allocator &gt;</a>
 </li>
-<li>resource_signal()
-: <a class="el" href="classStE_1_1Core_1_1observable__resource.html#a8f7b2954f3ced4dbfc1298831d3f0b7f">StE::Core::observable_resource&lt; Descriptor &gt;</a>
+<li>resource_instance()
+: <a class="el" href="classStE_1_1Resource_1_1resource__instance.html#aa38a1657b560b35034c8ab6818c87a64">StE::Resource::resource_instance&lt; R &gt;</a>
+</li>
+<li>resource_instance_base()
+: <a class="el" href="classStE_1_1Resource_1_1resource__instance__base.html#a2305fea90b8c73a49e40e78581356b5f">StE::Resource::resource_instance_base</a>
+</li>
+<li>resource_loading_exception()
+: <a class="el" href="classStE_1_1Resource_1_1resource__loading__exception.html#a45cbf146a130b1e27512b63c09979049">StE::Resource::resource_loading_exception</a>
 </li>
 <li>resource_type()
 : <a class="el" href="classStE_1_1Core_1_1AtomicCounterBufferObject.html#ac050546d4437c4e92fd6d354d8628699">StE::Core::AtomicCounterBufferObject&lt; U &gt;</a>
 , <a class="el" href="classStE_1_1Core_1_1ElementBufferObject.html#ad539f050699f06db85156ca568db75c2">StE::Core::ElementBufferObject&lt; T, U &gt;</a>
 , <a class="el" href="classStE_1_1Core_1_1frame__buffer__object.html#a03b29d407e6d3f0dfb7eea435311bac8">StE::Core::frame_buffer_object&lt; A &gt;</a>
 , <a class="el" href="classStE_1_1Core_1_1GenericResource.html#a66ec5525d7df381efae7d19a5fe54dd8">StE::Core::GenericResource</a>
-, <a class="el" href="classStE_1_1Core_1_1GLSLProgram.html#af3f71cbecf40deb7acc12a3b5ca7ac62">StE::Core::GLSLProgram</a>
-, <a class="el" href="classStE_1_1Core_1_1GLSLShader.html#a5eea8fd795506f64aa3c4e11d05b9a94">StE::Core::GLSLShader&lt; ShaderType &gt;</a>
+, <a class="el" href="classStE_1_1Core_1_1glsl__program__object.html#aa1508ead101cd579f6434bc8d6f56754">StE::Core::glsl_program_object</a>
+, <a class="el" href="classStE_1_1Core_1_1glsl__shader__object.html#ab354cdbf473a70f2e598e3de03a1fe6d">StE::Core::glsl_shader_object&lt; ShaderType &gt;</a>
 , <a class="el" href="classStE_1_1Core_1_1image__layout__bindable.html#a8003e474ebfa7ab34ba26480d904e657">StE::Core::image_layout_bindable&lt; type &gt;</a>
 , <a class="el" href="classStE_1_1Core_1_1IndirectDispatchBufferObject.html#ad5172cbf85806645540e541a23532c79">StE::Core::IndirectDispatchBufferObject&lt; U &gt;</a>
 , <a class="el" href="classStE_1_1Core_1_1IndirectDrawBuffer.html#af0644dc43307eb96fb082e7d9d98f6c3">StE::Core::IndirectDrawBuffer&lt; Type, U &gt;</a>
@@ -272,20 +287,20 @@ $(document).ready(function(){initNavTree('functions_func_r.html','');});
 : <a class="el" href="classStE_1_1Core_1_1GL_1_1gl__generic__context.html#a97071b315fa875a010f6c4cdaa089d4b">StE::Core::GL::gl_generic_context</a>
 </li>
 <li>RGB()
-: <a class="el" href="classStE_1_1Graphics_1_1RGB.html#ae5a3b00bd9a5ccb9c352054183bb34da">StE::Graphics::RGB</a>
+: <a class="el" href="classStE_1_1Graphics_1_1RGB.html#afb270ef7bf1bb33170614e1325e2c31b">StE::Graphics::RGB</a>
 </li>
 <li>rgb()
 : <a class="el" href="classStE_1_1Text_1_1Attributes_1_1rgb.html#a8293b587178f20cf60a67df5d03053ba">StE::Text::Attributes::rgb</a>
 </li>
 <li>ring_buffer()
-: <a class="el" href="classStE_1_1Core_1_1ring__buffer.html#a78cda208db4e72e78e1b210fb6cb0df3">StE::Core::ring_buffer&lt; T, max_size &gt;</a>
+: <a class="el" href="classStE_1_1Core_1_1ring__buffer.html#a446c6c6d2362995268b4a90b85cd0b6f">StE::Core::ring_buffer&lt; T, max_size &gt;</a>
 </li>
 <li>run_loop()
 : <a class="el" href="classStE_1_1StEngineControl.html#a441be1071b910680ccff46d351dff1d7">StE::StEngineControl</a>
 , <a class="el" href="classStE_1_1task__scheduler.html#ada4e1003f989e4428fd94eaa975cbb50">StE::task_scheduler</a>
 </li>
 <li>run_solution()
-: <a class="el" href="classStE_1_1Algorithm_1_1SOP_1_1sequential__ordering__problem.html#ad19d74531d7543836087af8bd2aa4a7f">StE::Algorithm::SOP::sequential_ordering_problem&lt; GraphType &gt;</a>
+: <a class="el" href="classStE_1_1Algorithm_1_1SOP_1_1sequential__ordering__problem.html#abbb2c45c217804a55c49ac9e0adf5f95">StE::Algorithm::SOP::sequential_ordering_problem&lt; GraphType &gt;</a>
 </li>
 </ul>
 </div><!-- contents -->

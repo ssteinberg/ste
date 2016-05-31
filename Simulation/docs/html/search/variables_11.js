@@ -6,7 +6,8 @@ var searchData=
   ['setter',['setter',['../structStE_1_1Core_1_1GL_1_1context__state_1_1state__type.html#acc37696e2d6aa9fece179d663df0cca2',1,'StE::Core::GL::context_state::state_type']]],
   ['shader_5fchange_5fcost',['shader_change_cost',['../classStE_1_1Core_1_1GL_1_1gl__context__state__log.html#ad86e79a71f6bebabbb30ff829a01fffa',1,'StE::Core::GL::gl_context_state_log']]],
   ['sheen',['sheen',['../structStE_1_1Graphics_1_1material__descriptor.html#a53739f94ecffb21b05dbca7d99531516',1,'StE::Graphics::material_descriptor']]],
-  ['size',['size',['../classStE_1_1Core_1_1image__layout__bindable.html#a775b8ee832f2992061e36f52adadfbcc',1,'StE::Core::image_layout_bindable::size()'],['../classStE_1_1Core_1_1RenderTarget.html#a5edfe2aaadd4130320b1612243faf86d',1,'StE::Core::RenderTarget::size()'],['../classStE_1_1Core_1_1texture.html#a7b58c52af407a450bba4864bfdf49cce',1,'StE::Core::texture::size()'],['../structStE_1_1Graphics_1_1sbta__key.html#a94e9719fd3bb52e4655fb764751b839c',1,'StE::Graphics::sbta_key::size()']]],
+  ['signalled_5fobjects',['signalled_objects',['../classStE_1_1Core_1_1resource__storage__base.html#a06412493e1408ea55d91fce8d5e1fd97',1,'StE::Core::resource_storage_base']]],
+  ['size',['size',['../classStE_1_1Core_1_1image__layout__bindable.html#a775b8ee832f2992061e36f52adadfbcc',1,'StE::Core::image_layout_bindable::size()'],['../classStE_1_1Core_1_1RenderTarget.html#a5edfe2aaadd4130320b1612243faf86d',1,'StE::Core::RenderTarget::size()'],['../classStE_1_1Core_1_1texture.html#a7b58c52af407a450bba4864bfdf49cce',1,'StE::Core::texture::size()'],['../structStE_1_1Graphics_1_1sbta__key.html#a94e9719fd3bb52e4655fb764751b839c',1,'StE::Graphics::sbta_key::size()'],['../structStE_1_1Text_1_1glyph__point.html#a4e052fa3460ec47077441ad7830f0dd4',1,'StE::Text::glyph_point::size()']]],
   ['sphere',['sphere',['../classStE_1_1Graphics_1_1mesh.html#abda2c28a9fcbbe053729ac8500c714fd',1,'StE::Graphics::mesh']]],
   ['start',['start',['../structStE_1_1Graphics_1_1profiler__entry.html#a9a898fa53859261d9a0c6e1d0b0a4acc',1,'StE::Graphics::profiler_entry::start()'],['../structStE_1_1range.html#abc6cd40272b640be9eedb1c34bf3f1ae',1,'StE::range::start()']]],
   ['start_5fx',['start_x',['../structStE_1_1Text_1_1glyph_1_1glyph__metrics.html#a0e9c1e40d5e47eee84bfc1b9caa7f0c7',1,'StE::Text::glyph::glyph_metrics']]],
@@ -14,6 +15,8 @@ var searchData=
   ['state_5fchange_5fcost',['state_change_cost',['../classStE_1_1Core_1_1GL_1_1gl__context__state__log.html#aeb43efa152c9d2ef21904ae6ef1f48ce',1,'StE::Core::GL::gl_context_state_log']]],
   ['states',['states',['../classStE_1_1Core_1_1GL_1_1gl__generic__context.html#ad3c14ab5a2e60504d8a38361d0456743',1,'StE::Core::GL::gl_generic_context']]],
   ['ste_5fglobal_5flogger',['ste_global_logger',['../namespaceStE.html#aebbaf09383f19e9ea0e606e2f9ae32f3',1,'StE']]],
+  ['stroke_5fcolor',['stroke_color',['../structStE_1_1Text_1_1glyph__point.html#a82c22bfe2240dbca076767bc75234caf',1,'StE::Text::glyph_point']]],
+  ['stroke_5fwidth',['stroke_width',['../structStE_1_1Text_1_1glyph__point.html#aa72f75aab97b5356282ce0ee05b243a0',1,'StE::Text::glyph_point']]],
   ['swizzle',['swizzle',['../classStE_1_1Core_1_1texture.html#a13c46e20c92a938cda0739144408fc4e',1,'StE::Core::texture']]],
   ['swizzles_5frgba',['swizzles_rgba',['../namespaceStE_1_1Core.html#a2545e6364131491f66108c0b120a9131',1,'StE::Core']]]
 ];

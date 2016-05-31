@@ -11,5 +11,7 @@ var namespaceStE_1_1Text =
     [ "glyph_factory_impl", "structStE_1_1Text_1_1glyph__factory__impl.html", "structStE_1_1Text_1_1glyph__factory__impl" ],
     [ "glyph_factory", "classStE_1_1Text_1_1glyph__factory.html", "classStE_1_1Text_1_1glyph__factory" ],
     [ "glyph_manager", "classStE_1_1Text_1_1glyph__manager.html", "classStE_1_1Text_1_1glyph__manager" ],
+    [ "glyph_point", "structStE_1_1Text_1_1glyph__point.html", "structStE_1_1Text_1_1glyph__point" ],
+    [ "text_renderable", "classStE_1_1Text_1_1text__renderable.html", "classStE_1_1Text_1_1text__renderable" ],
     [ "TextManager", "classStE_1_1Text_1_1TextManager.html", "classStE_1_1Text_1_1TextManager" ]
 ];

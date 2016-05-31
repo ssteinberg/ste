@@ -137,9 +137,8 @@ $(document).ready(function(){initNavTree('functions_rela.html','');});
 
 <h3><a class="anchor" id="index_b"></a>- b -</h3><ul>
 <li>boost::serialization::access
-: <a class="el" href="classStE_1_1Graphics_1_1common__brdf__representation.html#ac98d07dd8f7b70e16ccb9a01abf56b9c">StE::Graphics::common_brdf_representation</a>
-, <a class="el" href="classStE_1_1lru__cache__index.html#ac98d07dd8f7b70e16ccb9a01abf56b9c">StE::lru_cache_index&lt; K &gt;</a>
-, <a class="el" href="structStE_1_1Resource_1_1glsl__loader_1_1program__binary.html#ac98d07dd8f7b70e16ccb9a01abf56b9c">StE::Resource::glsl_loader::program_binary</a>
+: <a class="el" href="classStE_1_1lru__cache__index.html#ac98d07dd8f7b70e16ccb9a01abf56b9c">StE::lru_cache_index&lt; K &gt;</a>
+, <a class="el" href="classStE_1_1Resource_1_1glsl__loader_1_1program__binary.html#ac98d07dd8f7b70e16ccb9a01abf56b9c">StE::Resource::glsl_loader::program_binary</a>
 , <a class="el" href="classStE_1_1Text_1_1glyph.html#ac98d07dd8f7b70e16ccb9a01abf56b9c">StE::Text::glyph</a>
 , <a class="el" href="structStE_1_1Text_1_1glyph_1_1glyph__metrics.html#ac98d07dd8f7b70e16ccb9a01abf56b9c">StE::Text::glyph::glyph_metrics</a>
 </li>
@@ -203,9 +202,6 @@ $(document).ready(function(){initNavTree('functions_rela.html','');});
 <li>gl_generic_context
 : <a class="el" href="classStE_1_1Core_1_1GL_1_1gl__current__context.html#a94ad784e03a8b1667752ea52381725aa">StE::Core::GL::gl_current_context</a>
 </li>
-<li>glsl_programs_pool
-: <a class="el" href="classStE_1_1Resource_1_1glsl__programs__pool_1_1glsl__programs__pool__key.html#a59097a3915009f6ef747c212cc8ce2de">StE::Resource::glsl_programs_pool::glsl_programs_pool_key</a>
-</li>
 <li>glyph_factory
 : <a class="el" href="classStE_1_1Text_1_1glyph.html#a56a94fa275bfdf0fbe5a1e1ef183d898">StE::Text::glyph</a>
 </li>
@@ -239,11 +235,8 @@ $(document).ready(function(){initNavTree('functions_rela.html','');});
 <li>hdr_bloom_blury_task
 : <a class="el" href="classStE_1_1Graphics_1_1hdr__dof__postprocess.html#a2253bda5545f8f068f97f145383a51fd">StE::Graphics::hdr_dof_postprocess</a>
 </li>
-<li>hdr_bokeh_blurx_task
-: <a class="el" href="classStE_1_1Graphics_1_1hdr__dof__postprocess.html#a16419a8fea849cc043e549dfe496ed2b">StE::Graphics::hdr_dof_postprocess</a>
-</li>
-<li>hdr_bokeh_blury_task
-: <a class="el" href="classStE_1_1Graphics_1_1hdr__dof__postprocess.html#ae9e5cb9932728366a293df0715ff5d46">StE::Graphics::hdr_dof_postprocess</a>
+<li>hdr_bokeh_blur_task
+: <a class="el" href="classStE_1_1Graphics_1_1hdr__dof__postprocess.html#a63431d992c3af3334479afa764677b9f">StE::Graphics::hdr_dof_postprocess</a>
 </li>
 <li>hdr_compute_histogram_sums_task
 : <a class="el" href="classStE_1_1Graphics_1_1hdr__dof__postprocess.html#a90eca6010ad2b61f6a290d14424b451d">StE::Graphics::hdr_dof_postprocess</a>
@@ -300,8 +293,8 @@ $(document).ready(function(){initNavTree('functions_rela.html','');});
 <li>ObjectGroup
 : <a class="el" href="classStE_1_1Graphics_1_1Object.html#a362031bc826e6f29d29b615d5c4919b1">StE::Graphics::Object</a>
 </li>
-<li>operator&gt;&gt;
-: <a class="el" href="structStE_1_1Graphics_1_1bme__brdf__representation_1_1bme__brdf__descriptor__entry.html#a771cd72d60aacf8a45de34d2ab34883a">StE::Graphics::bme_brdf_representation::bme_brdf_descriptor_entry</a>
+<li>observable_resource&lt; Descriptor &gt;
+: <a class="el" href="classStE_1_1Core_1_1resource__storage__base.html#ac0186b477956b7c95730cbc29ab3afd9">StE::Core::resource_storage_base&lt; Descriptor &gt;</a>
 </li>
 <li>optional
 : <a class="el" href="classStE_1_1optional.html#aa756d67787488b1e2bba885ce4da6fe0">StE::optional&lt; T &gt;</a>
@@ -320,8 +313,50 @@ $(document).ready(function(){initNavTree('functions_rela.html','');});
 <li>resource
 : <a class="el" href="classStE_1_1Core_1_1resource.html#a10dac526a08b422e1767d8fa1cfd8dd3">StE::Core::resource&lt; Allocator &gt;</a>
 </li>
+<li>Resource::resource_instance&lt; GIRenderer &gt;
+: <a class="el" href="classStE_1_1Graphics_1_1GIRenderer.html#a54714a5d0ae4d17e14e1c7f260156947">StE::Graphics::GIRenderer</a>
+</li>
+<li>Resource::resource_instance&lt; hdr_dof_postprocess &gt;
+: <a class="el" href="classStE_1_1Graphics_1_1hdr__dof__postprocess.html#a91e2db804c269da5485ec0f9f63a8d67">StE::Graphics::hdr_dof_postprocess</a>
+</li>
+<li>Resource::resource_instance&lt; light_preprocessor &gt;
+: <a class="el" href="classStE_1_1Graphics_1_1light__preprocessor.html#a3a629a7a3efe869354b2dfb796e10772">StE::Graphics::light_preprocessor</a>
+</li>
+<li>Resource::resource_instance&lt; TextManager &gt;
+: <a class="el" href="classStE_1_1Text_1_1TextManager.html#a147824c7c77de5c5a24fe2f6d97a5b29">StE::Text::TextManager</a>
+</li>
+<li>Resource::resource_instance&lt; volumetric_scattering_scatter_dispatch &gt;
+: <a class="el" href="classStE_1_1Graphics_1_1volumetric__scattering__scatter__dispatch.html#a5b696d59ba8c9b2e789ce6b6b26ad9e9">StE::Graphics::volumetric_scattering_scatter_dispatch</a>
+</li>
+<li>Resource::resource_loading_task&lt; GIRenderer &gt;
+: <a class="el" href="classStE_1_1Graphics_1_1GIRenderer.html#a40e360e3fcff91bedff04bf5c33c39d6">StE::Graphics::GIRenderer</a>
+</li>
+<li>Resource::resource_loading_task&lt; hdr_dof_postprocess &gt;
+: <a class="el" href="classStE_1_1Graphics_1_1hdr__dof__postprocess.html#a8332dce46dbec5c0c06c41755bae9f88">StE::Graphics::hdr_dof_postprocess</a>
+</li>
+<li>Resource::resource_loading_task&lt; light_preprocessor &gt;
+: <a class="el" href="classStE_1_1Graphics_1_1light__preprocessor.html#ac5176aee650122397efba51a7820df4d">StE::Graphics::light_preprocessor</a>
+</li>
+<li>Resource::resource_loading_task&lt; TextManager &gt;
+: <a class="el" href="classStE_1_1Text_1_1TextManager.html#a228f8ca2ada3eaa274e5cc591ca819fa">StE::Text::TextManager</a>
+</li>
+<li>Resource::resource_loading_task&lt; volumetric_scattering_scatter_dispatch &gt;
+: <a class="el" href="classStE_1_1Graphics_1_1volumetric__scattering__scatter__dispatch.html#a0ff0802511530268d91397e901dcc58c">StE::Graphics::volumetric_scattering_scatter_dispatch</a>
+</li>
+<li>resource_instance&lt; glsl_program &gt;
+: <a class="el" href="classStE_1_1Resource_1_1glsl__program.html#ab7c1fc860966fbcfef488bdebb94e16e">StE::Resource::glsl_program</a>
+</li>
+<li>resource_instance_getter&lt; glsl_program &gt;
+: <a class="el" href="classStE_1_1Resource_1_1glsl__program.html#af835401fd3b0b0f605a248e2cf38d12c">StE::Resource::glsl_program</a>
+</li>
+<li>resource_loading_task&lt; glsl_program &gt;
+: <a class="el" href="classStE_1_1Resource_1_1glsl__program.html#af65fde08ad54d940df72fdb33f06ed6f">StE::Resource::glsl_program</a>
+</li>
 <li>resource_storage
 : <a class="el" href="classStE_1_1Core_1_1observable__resource.html#a849cd0be2dca96ac9e1b714d80c6db95">StE::Core::observable_resource&lt; Descriptor &gt;</a>
+</li>
+<li>resource_storage_base&lt; Descriptor &gt;
+: <a class="el" href="classStE_1_1Core_1_1observable__resource.html#abebfbb724eccb71ad842308968d00fac">StE::Core::observable_resource&lt; Descriptor &gt;</a>
 </li>
 </ul>
 
@@ -357,20 +392,8 @@ $(document).ready(function(){initNavTree('functions_rela.html','');});
 <li>sqrt
 : <a class="el" href="classStE_1_1Graphics_1_1spectrum.html#a7f328c204fc2c171c74f27c1b171fd57">StE::Graphics::spectrum&lt; T, samples &gt;</a>
 </li>
-<li>ssss_bilateral_blur_x
-: <a class="el" href="classStE_1_1Graphics_1_1ssss__generator.html#a922a7d50dd138ce178d83360a5be11a6">StE::Graphics::ssss_generator</a>
-</li>
-<li>ssss_bilateral_blur_y
-: <a class="el" href="classStE_1_1Graphics_1_1ssss__generator.html#a05c8cd60cd514e097e7c50dd364b2413">StE::Graphics::ssss_generator</a>
-</li>
-<li>ssss_write_penumbras
-: <a class="el" href="classStE_1_1Graphics_1_1ssss__generator.html#aca0f808b583effc7507ff9d2fec24501">StE::Graphics::ssss_generator</a>
-</li>
 <li>std::hash&lt; context_state_key &gt;
 : <a class="el" href="classStE_1_1Core_1_1GL_1_1context__state__key.html#a1fcc7a6553c4b8d010ebd4160a883f30">StE::Core::GL::context_state_key&lt; K &gt;</a>
-</li>
-<li>std::hash&lt; glsl_programs_pool_key &gt;
-: <a class="el" href="classStE_1_1Resource_1_1glsl__programs__pool_1_1glsl__programs__pool__key.html#a5bd2c610224b20e087b1440619b9b881">StE::Resource::glsl_programs_pool::glsl_programs_pool_key</a>
 </li>
 <li>std::hash&lt; sbta_key &gt;
 : <a class="el" href="classStE_1_1Graphics_1_1texture__pool.html#a8915d11ec78e1ad15f9757b533a960ed">StE::Graphics::texture_pool</a>
@@ -385,6 +408,12 @@ $(document).ready(function(){initNavTree('functions_rela.html','');});
 
 
 <h3><a class="anchor" id="index_t"></a>- t -</h3><ul>
+<li>task_future_impl
+: <a class="el" href="classStE_1_1task__future__impl.html#a4cbf326cfd795568d24b8f24479745ac">StE::task_future_impl&lt; R, is_shared &gt;</a>
+</li>
+<li>task_scheduler
+: <a class="el" href="classStE_1_1task__future__impl.html#aa924bd2e8921fe19230c5a45f2b306d6">StE::task_future_impl&lt; R, is_shared &gt;</a>
+</li>
 <li>text_renderable
 : <a class="el" href="classStE_1_1Text_1_1TextManager.html#af8e54cf0d26a95af0868c64ded551008">StE::Text::TextManager</a>
 </li>

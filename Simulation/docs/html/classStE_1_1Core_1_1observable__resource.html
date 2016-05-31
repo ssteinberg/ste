@@ -122,7 +122,7 @@ Inheritance diagram for StE::Core::observable_resource&lt; Descriptor &gt;:</div
 <div class="dyncontent">
 <div class="center"><img src="classStE_1_1Core_1_1observable__resource__inherit__graph.png" border="0" usemap="#StE_1_1Core_1_1observable__resource_3_01Descriptor_01_4_inherit__map" alt="Inheritance graph"/></div>
 <map name="StE_1_1Core_1_1observable__resource_3_01Descriptor_01_4_inherit__map" id="StE_1_1Core_1_1observable__resource_3_01Descriptor_01_4_inherit__map">
-<area shape="rect" id="node2" href="classStE_1_1Core_1_1observable__resource.html" title="{StE::Core::observable\l_resource\&lt; light_descriptor \&gt;\n||+ ~observable_resource()\l+ get_descriptor()\l# resource_signal()\l# notify()\l}" alt="" coords="93,204,289,340"/><area shape="rect" id="node6" href="classStE_1_1Core_1_1observable__resource.html" title="{StE::Core::observable\l_resource\&lt; material_descriptor \&gt;\n||+ ~observable_resource()\l+ get_descriptor()\l# resource_signal()\l# notify()\l}" alt="" coords="313,204,533,340"/><area shape="rect" id="node3" href="classStE_1_1Graphics_1_1light.html" title="{StE::Graphics::light\n|# descriptor\l|+ light()\l+ ~light()\l+ set_luminance()\l+ set_diffuse()\l+ get_luminance()\l+ get_radius()\l+ get_diffuse()\l+ get_descriptor()\l}" alt="" coords="123,433,259,613"/><area shape="rect" id="node4" href="classStE_1_1Graphics_1_1DirectionalLight.html" title="{StE::Graphics::Directional\lLight\n||+ DirectionalLight()\l+ ~DirectionalLight()\l+ set_direction()\l+ get_position()\l+ get_direction()\l}" alt="" coords="5,707,181,857"/><area shape="rect" id="node5" href="classStE_1_1Graphics_1_1SphericalLight.html" title="{StE::Graphics::Spherical\lLight\n||+ SphericalLight()\l+ ~SphericalLight()\l+ set_position()\l+ set_radius()\l+ get_position()\l}" alt="" coords="205,707,373,857"/><area shape="rect" id="node7" href="classStE_1_1Graphics_1_1Material.html" title="Defines rendering material. " alt="" coords="333,389,513,657"/></map>
+<area shape="rect" id="node2" href="classStE_1_1Core_1_1observable__resource.html" title="{StE::Core::observable\l_resource\&lt; light_descriptor \&gt;\n||+ ~observable_resource()\l+ get_descriptor()\l+ dealloc()\l+ is_valid()\l# notify()\l}" alt="" coords="93,219,289,369"/><area shape="rect" id="node6" href="classStE_1_1Core_1_1observable__resource.html" title="{StE::Core::observable\l_resource\&lt; material_descriptor \&gt;\n||+ ~observable_resource()\l+ get_descriptor()\l+ dealloc()\l+ is_valid()\l# notify()\l}" alt="" coords="313,219,533,369"/><area shape="rect" id="node3" href="classStE_1_1Graphics_1_1light.html" title="{StE::Graphics::light\n|# descriptor\l|+ light()\l+ ~light()\l+ set_luminance()\l+ set_diffuse()\l+ get_luminance()\l+ get_radius()\l+ get_diffuse()\l+ get_descriptor()\l}" alt="" coords="123,463,259,643"/><area shape="rect" id="node4" href="classStE_1_1Graphics_1_1DirectionalLight.html" title="{StE::Graphics::Directional\lLight\n||+ DirectionalLight()\l+ ~DirectionalLight()\l+ set_direction()\l+ get_position()\l+ get_direction()\l}" alt="" coords="5,736,181,887"/><area shape="rect" id="node5" href="classStE_1_1Graphics_1_1SphericalLight.html" title="{StE::Graphics::Spherical\lLight\n||+ SphericalLight()\l+ ~SphericalLight()\l+ set_position()\l+ set_radius()\l+ get_position()\l}" alt="" coords="205,736,373,887"/><area shape="rect" id="node7" href="classStE_1_1Graphics_1_1Material.html" title="Defines rendering material. " alt="" coords="343,419,503,687"/></map>
 </div>
 <div class="dynheader">
 Collaboration diagram for StE::Core::observable_resource&lt; Descriptor &gt;:</div>
@@ -136,8 +136,8 @@ Collaboration diagram for StE::Core::observable_resource&lt; Descriptor &gt;:</d
 Public Types</h2></td></tr>
 <tr class="memitem:a7600d040b0cae2046f1ee09fbcd5cf05"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Core_1_1observable__resource.html#a7600d040b0cae2046f1ee09fbcd5cf05">resource_descriptor_type</a> = Descriptor</td></tr>
 <tr class="separator:a7600d040b0cae2046f1ee09fbcd5cf05"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aec37e7bb8b9c418e23a7399db8bcf78c"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Core_1_1observable__resource.html#aec37e7bb8b9c418e23a7399db8bcf78c">signal_type</a> = <a class="el" href="classStE_1_1signal.html">signal</a>&lt; const <a class="el" href="classStE_1_1Core_1_1observable__resource.html">observable_resource</a>&lt; Descriptor &gt; * &gt;</td></tr>
-<tr class="separator:aec37e7bb8b9c418e23a7399db8bcf78c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec6729a557e5ff209e4f0833d67eb2cd"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Core_1_1observable__resource.html#aec6729a557e5ff209e4f0833d67eb2cd">storage_type</a> = <a class="el" href="classStE_1_1Core_1_1resource__storage__base.html">resource_storage_base</a>&lt; <a class="el" href="classStE_1_1Core_1_1observable__resource.html#a7600d040b0cae2046f1ee09fbcd5cf05">resource_descriptor_type</a> &gt;</td></tr>
+<tr class="separator:aec6729a557e5ff209e4f0833d67eb2cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -146,11 +146,14 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:afdc7f87c0b781b024b73b50d918ebfbe"><td class="memItemLeft" align="right" valign="top">virtual const <br class="typebreak"/>
 <a class="el" href="classStE_1_1Core_1_1observable__resource.html#a7600d040b0cae2046f1ee09fbcd5cf05">resource_descriptor_type</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Core_1_1observable__resource.html#afdc7f87c0b781b024b73b50d918ebfbe">get_descriptor</a> () const =0</td></tr>
 <tr class="separator:afdc7f87c0b781b024b73b50d918ebfbe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeaa69ad9627a67fb6e7b95f31f0e0849"><td class="memItemLeft" align="right" valign="top"><a class="el" href="gl__extensions_8h.html#a814c8b5745ecf82afdd1da718fbdc47c">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Core_1_1observable__resource.html#aeaa69ad9627a67fb6e7b95f31f0e0849">dealloc</a> ()</td></tr>
+<tr class="memdesc:aeaa69ad9627a67fb6e7b95f31f0e0849"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deallocate resource. Identical to calling resource's' storage erase_resource().  <a href="#aeaa69ad9627a67fb6e7b95f31f0e0849">More...</a><br/></td></tr>
+<tr class="separator:aeaa69ad9627a67fb6e7b95f31f0e0849"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a0db97828a3d7b0f75a20fbd19add04"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Core_1_1observable__resource.html#a0a0db97828a3d7b0f75a20fbd19add04">is_valid</a> () const </td></tr>
+<tr class="separator:a0a0db97828a3d7b0f75a20fbd19add04"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:a8f7b2954f3ced4dbfc1298831d3f0b7f"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classStE_1_1Core_1_1observable__resource.html#aec37e7bb8b9c418e23a7399db8bcf78c">signal_type</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Core_1_1observable__resource.html#a8f7b2954f3ced4dbfc1298831d3f0b7f">resource_signal</a> () const </td></tr>
-<tr class="separator:a8f7b2954f3ced4dbfc1298831d3f0b7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5a053397798795976a6b46482f991e26"><td class="memItemLeft" align="right" valign="top"><a class="el" href="gl__extensions_8h.html#a814c8b5745ecf82afdd1da718fbdc47c">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Core_1_1observable__resource.html#a5a053397798795976a6b46482f991e26">notify</a> ()</td></tr>
 <tr class="memdesc:a5a053397798795976a6b46482f991e26"><td class="mdescLeft">&#160;</td><td class="mdescRight">On data change that needs to be reflected on the GPU-side, call notify to schedule update.  <a href="#a5a053397798795976a6b46482f991e26">More...</a><br/></td></tr>
 <tr class="separator:a5a053397798795976a6b46482f991e26"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -160,6 +163,8 @@ Friends</h2></td></tr>
 <tr class="memitem:a849cd0be2dca96ac9e1b714d80c6db95"><td class="memTemplParams" colspan="2">template&lt;typename , typename , template&lt; class &gt; typename&gt; </td></tr>
 <tr class="memitem:a849cd0be2dca96ac9e1b714d80c6db95"><td class="memTemplItemLeft" align="right" valign="top">class&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classStE_1_1Core_1_1observable__resource.html#a849cd0be2dca96ac9e1b714d80c6db95">resource_storage</a></td></tr>
 <tr class="separator:a849cd0be2dca96ac9e1b714d80c6db95"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abebfbb724eccb71ad842308968d00fac"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Core_1_1observable__resource.html#abebfbb724eccb71ad842308968d00fac">resource_storage_base&lt; Descriptor &gt;</a></td></tr>
+<tr class="separator:abebfbb724eccb71ad842308968d00fac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><h3>template&lt;typename Descriptor&gt;<br/>
@@ -173,7 +178,7 @@ class StE::Core::observable_resource&lt; Descriptor &gt;</h3>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="observable__resource_8hpp_source.html#l00022">22</a> of file <a class="el" href="observable__resource_8hpp_source.html">observable_resource.hpp</a>.</p>
+<p>Definition at line <a class="el" href="observable__resource_8hpp_source.html#l00021">21</a> of file <a class="el" href="observable__resource_8hpp_source.html">observable_resource.hpp</a>.</p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
 <a class="anchor" id="a7600d040b0cae2046f1ee09fbcd5cf05"></a>
 <div class="memitem">
@@ -191,14 +196,14 @@ template&lt;typename Descriptor&gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="aec37e7bb8b9c418e23a7399db8bcf78c"></a>
+<a class="anchor" id="aec6729a557e5ff209e4f0833d67eb2cd"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
 template&lt;typename Descriptor&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="classStE_1_1Core_1_1observable__resource.html">StE::Core::observable_resource</a>&lt; Descriptor &gt;::<a class="el" href="classStE_1_1Core_1_1observable__resource.html#aec37e7bb8b9c418e23a7399db8bcf78c">signal_type</a> =  <a class="el" href="classStE_1_1signal.html">signal</a>&lt;const <a class="el" href="classStE_1_1Core_1_1observable__resource.html">observable_resource</a>&lt;Descriptor&gt;*&gt;</td>
+          <td class="memname">using <a class="el" href="classStE_1_1Core_1_1observable__resource.html">StE::Core::observable_resource</a>&lt; Descriptor &gt;::<a class="el" href="classStE_1_1Core_1_1observable__resource.html#aec6729a557e5ff209e4f0833d67eb2cd">storage_type</a> =  <a class="el" href="classStE_1_1Core_1_1resource__storage__base.html">resource_storage_base</a>&lt;<a class="el" href="classStE_1_1Core_1_1observable__resource.html#a7600d040b0cae2046f1ee09fbcd5cf05">resource_descriptor_type</a>&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -236,6 +241,27 @@ template&lt;typename Descriptor&gt; </div>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="aeaa69ad9627a67fb6e7b95f31f0e0849"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Descriptor &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="gl__extensions_8h.html#a814c8b5745ecf82afdd1da718fbdc47c">void</a> <a class="el" href="classStE_1_1Core_1_1observable__resource.html">StE::Core::observable_resource</a>&lt; Descriptor &gt;::dealloc </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Deallocate resource. Identical to calling resource's' storage erase_resource(). </p>
+
+<p>Definition at line <a class="el" href="observable__resource__impl_8hpp_source.html#l00021">21</a> of file <a class="el" href="observable__resource__impl_8hpp_source.html">observable_resource_impl.hpp</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="afdc7f87c0b781b024b73b50d918ebfbe"></a>
 <div class="memitem">
 <div class="memproto">
@@ -263,11 +289,38 @@ template&lt;typename Descriptor&gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="a5a053397798795976a6b46482f991e26"></a>
+<a class="anchor" id="a0a0db97828a3d7b0f75a20fbd19add04"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
 template&lt;typename Descriptor&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="classStE_1_1Core_1_1observable__resource.html">StE::Core::observable_resource</a>&lt; Descriptor &gt;::is_valid </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="observable__resource_8hpp_source.html#l00052">52</a> of file <a class="el" href="observable__resource_8hpp_source.html">observable_resource.hpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a5a053397798795976a6b46482f991e26"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Descriptor &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -281,41 +334,14 @@ template&lt;typename Descriptor&gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">protected</span></span>  </td>
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 <p>On data change that needs to be reflected on the GPU-side, call notify to schedule update. </p>
 
-<p>Definition at line <a class="el" href="observable__resource_8hpp_source.html#l00044">44</a> of file <a class="el" href="observable__resource_8hpp_source.html">observable_resource.hpp</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a8f7b2954f3ced4dbfc1298831d3f0b7f"></a>
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename Descriptor&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">const <a class="el" href="classStE_1_1Core_1_1observable__resource.html#aec37e7bb8b9c418e23a7399db8bcf78c">signal_type</a>&amp; <a class="el" href="classStE_1_1Core_1_1observable__resource.html">StE::Core::observable_resource</a>&lt; Descriptor &gt;::resource_signal </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="observable__resource_8hpp_source.html#l00039">39</a> of file <a class="el" href="observable__resource_8hpp_source.html">observable_resource.hpp</a>.</p>
+<p>Definition at line <a class="el" href="observable__resource__impl_8hpp_source.html#l00015">15</a> of file <a class="el" href="observable__resource__impl_8hpp_source.html">observable_resource_impl.hpp</a>.</p>
 
 </div>
 </div>
@@ -342,12 +368,37 @@ template&lt;typename , typename , template&lt; class &gt; typename&gt; </div>
 </table>
 </div><div class="memdoc">
 
+<p>Definition at line <a class="el" href="observable__resource_8hpp_source.html#l00023">23</a> of file <a class="el" href="observable__resource_8hpp_source.html">observable_resource.hpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="abebfbb724eccb71ad842308968d00fac"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Descriptor&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classStE_1_1Core_1_1resource__storage__base.html">resource_storage_base</a>&lt; Descriptor &gt;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
 <p>Definition at line <a class="el" href="observable__resource_8hpp_source.html#l00024">24</a> of file <a class="el" href="observable__resource_8hpp_source.html">observable_resource.hpp</a>.</p>
 
 </div>
 </div>
-<hr/>The documentation for this class was generated from the following file:<ul>
+<hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/ste/engine/core/gpu_resources/gpu_data_structures/resource_storage/<a class="el" href="observable__resource_8hpp_source.html">observable_resource.hpp</a></li>
+<li>src/ste/engine/core/gpu_resources/gpu_data_structures/resource_storage/<a class="el" href="observable__resource__impl_8hpp_source.html">observable_resource_impl.hpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

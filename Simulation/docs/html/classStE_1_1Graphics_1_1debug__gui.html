@@ -133,6 +133,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a6ac57bc221a4a4d41a116d1a8bf3b761"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8e87e58ecc97bee01ee32aa281e32118"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1debug__gui.html#a8e87e58ecc97bee01ee32aa281e32118">~debug_gui</a> () noexcept</td></tr>
 <tr class="separator:a8e87e58ecc97bee01ee32aa281e32118"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f97d92086a18fe6537ec387e474b8f7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="gl__extensions_8h.html#a814c8b5745ecf82afdd1da718fbdc47c">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1debug__gui.html#a8f97d92086a18fe6537ec387e474b8f7">add_custom_gui</a> (std::function&lt; <a class="el" href="gl__extensions_8h.html#a814c8b5745ecf82afdd1da718fbdc47c">void</a>(const glm::ivec2 &amp;)&gt; &amp;&amp;f)</td></tr>
+<tr class="separator:a8f97d92086a18fe6537ec387e474b8f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca75b40555a3475c9883c7dceeca8403"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1debug__gui.html#aca75b40555a3475c9883c7dceeca8403">is_gui_active</a> () const </td></tr>
+<tr class="separator:aca75b40555a3475c9883c7dceeca8403"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classStE_1_1Graphics_1_1gpu__dispatchable"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classStE_1_1Graphics_1_1gpu__dispatchable')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classStE_1_1Graphics_1_1gpu__dispatchable.html">StE::Graphics::gpu_dispatchable</a></td></tr>
 <tr class="memitem:a1a9a673dfb3d85e9c3193212dfe946f4 inherit pub_methods_classStE_1_1Graphics_1_1gpu__dispatchable"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1gpu__dispatchable.html#a1a9a673dfb3d85e9c3193212dfe946f4">~gpu_dispatchable</a> () noexcept</td></tr>
 <tr class="separator:a1a9a673dfb3d85e9c3193212dfe946f4 inherit pub_methods_classStE_1_1Graphics_1_1gpu__dispatchable"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -146,7 +150,7 @@ Protected Member Functions</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p>Definition at line <a class="el" href="debug__gui_8hpp_source.html#l00023">23</a> of file <a class="el" href="debug__gui_8hpp_source.html">debug_gui.hpp</a>.</p>
+<p>Definition at line <a class="el" href="debug__gui_8hpp_source.html#l00024">24</a> of file <a class="el" href="debug__gui_8hpp_source.html">debug_gui.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a6ac57bc221a4a4d41a116d1a8bf3b761"></a>
 <div class="memitem">
@@ -208,6 +212,32 @@ Protected Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a8f97d92086a18fe6537ec387e474b8f7"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="gl__extensions_8h.html#a814c8b5745ecf82afdd1da718fbdc47c">void</a> StE::Graphics::debug_gui::add_custom_gui </td>
+          <td>(</td>
+          <td class="paramtype">std::function&lt; <a class="el" href="gl__extensions_8h.html#a814c8b5745ecf82afdd1da718fbdc47c">void</a>(const glm::ivec2 &amp;)&gt; &amp;&amp;&#160;</td>
+          <td class="paramname"><em>f</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="debug__gui_8hpp_source.html#l00049">49</a> of file <a class="el" href="debug__gui_8hpp_source.html">debug_gui.hpp</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="a48a8a397ddc867cba71c600e34b00625"></a>
 <div class="memitem">
 <div class="memproto">
@@ -235,6 +265,23 @@ Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="aca75b40555a3475c9883c7dceeca8403"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool debug_gui::is_gui_active </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="debug__gui_8cpp_source.html#l00095">95</a> of file <a class="el" href="debug__gui_8cpp_source.html">debug_gui.cpp</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="abaa3af4c0fe85ee3dbe90415e54b7bc6"></a>
 <div class="memitem">
 <div class="memproto">
@@ -258,7 +305,7 @@ Protected Member Functions</h2></td></tr>
 
 <p>Implements <a class="el" href="classStE_1_1Graphics_1_1gpu__dispatchable.html#a929375e47d35a5f70d25a61c71286667">StE::Graphics::gpu_dispatchable</a>.</p>
 
-<p>Definition at line <a class="el" href="debug__gui_8hpp_source.html#l00047">47</a> of file <a class="el" href="debug__gui_8hpp_source.html">debug_gui.hpp</a>.</p>
+<p>Definition at line <a class="el" href="debug__gui_8hpp_source.html#l00054">54</a> of file <a class="el" href="debug__gui_8hpp_source.html">debug_gui.hpp</a>.</p>
 
 </div>
 </div>

@@ -1,2 +1,5 @@
 <map id="StE::Core::resource_storage&lt; typename, typename, typename &gt;" name="StE::Core::resource_storage&lt; typename, typename, typename &gt;">
+<area shape="rect" id="node2" href="$classStE_1_1Core_1_1resource__storage__base.html" title="{StE::Core::resource\l_storage_base\&lt; Descriptor \&gt;\n||+ ~resource_storage_base()\l# erase_resource()\l}" alt="" coords="62,557,259,664"/>
+<area shape="rect" id="node4" href="$classStE_1_1Core_1_1observable__resource.html" title="Resource consumed by a resource_storage. " alt="" coords="5,145,183,296"/>
+<area shape="rect" id="node5" title="STL class. " alt="" coords="207,182,375,259"/>
 </map>

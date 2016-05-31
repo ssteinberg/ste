@@ -1,8 +1,28 @@
 var namespaceStE_1_1Resource =
 [
     [ "glsl_loader", "namespaceStE_1_1Resource_1_1glsl__loader.html", "namespaceStE_1_1Resource_1_1glsl__loader" ],
+    [ "resource_loading_task< Graphics::light_preprocessor >", "classStE_1_1Resource_1_1resource__loading__task_3_01Graphics_1_1light__preprocessor_01_4.html", "classStE_1_1Resource_1_1resource__loading__task_3_01Graphics_1_1light__preprocessor_01_4" ],
+    [ "resource_loading_task< Graphics::GIRenderer >", "classStE_1_1Resource_1_1resource__loading__task_3_01Graphics_1_1GIRenderer_01_4.html", "classStE_1_1Resource_1_1resource__loading__task_3_01Graphics_1_1GIRenderer_01_4" ],
+    [ "resource_loading_task< Graphics::hdr_dof_postprocess >", "classStE_1_1Resource_1_1resource__loading__task_3_01Graphics_1_1hdr__dof__postprocess_01_4.html", "classStE_1_1Resource_1_1resource__loading__task_3_01Graphics_1_1hdr__dof__postprocess_01_4" ],
+    [ "resource_loading_task< Graphics::volumetric_scattering_scatter_dispatch >", "classStE_1_1Resource_1_1resource__loading__task_3_01Graphics_1_1volumetric__scattering__scatter__dispatch_01_4.html", "classStE_1_1Resource_1_1resource__loading__task_3_01Graphics_1_1volumetric__scattering__scatter__dispatch_01_4" ],
+    [ "glsl_program_error", "classStE_1_1Resource_1_1glsl__program__error.html", null ],
+    [ "glsl_program_undefined_program_error", "classStE_1_1Resource_1_1glsl__program__undefined__program__error.html", null ],
+    [ "glsl_program_undefined_shader_error", "classStE_1_1Resource_1_1glsl__program__undefined__shader__error.html", null ],
+    [ "glsl_program_shader_compilation_error", "classStE_1_1Resource_1_1glsl__program__shader__compilation__error.html", null ],
+    [ "glsl_program_linking_error", "classStE_1_1Resource_1_1glsl__program__linking__error.html", null ],
     [ "GLSLProgramFactory", "classStE_1_1Resource_1_1GLSLProgramFactory.html", null ],
-    [ "glsl_programs_pool", "classStE_1_1Resource_1_1glsl__programs__pool.html", "classStE_1_1Resource_1_1glsl__programs__pool" ],
+    [ "glsl_program", "classStE_1_1Resource_1_1glsl__program.html", "classStE_1_1Resource_1_1glsl__program" ],
+    [ "resource_loading_task< glsl_program >", "classStE_1_1Resource_1_1resource__loading__task_3_01glsl__program_01_4.html", "classStE_1_1Resource_1_1resource__loading__task_3_01glsl__program_01_4" ],
+    [ "resource_instance_getter< glsl_program >", "classStE_1_1Resource_1_1resource__instance__getter_3_01glsl__program_01_4.html", "classStE_1_1Resource_1_1resource__instance__getter_3_01glsl__program_01_4" ],
     [ "ModelFactory", "classStE_1_1Resource_1_1ModelFactory.html", null ],
-    [ "SurfaceFactory", "classStE_1_1Resource_1_1SurfaceFactory.html", null ]
+    [ "resource_instance_base", "classStE_1_1Resource_1_1resource__instance__base.html", "classStE_1_1Resource_1_1resource__instance__base" ],
+    [ "resource_instance", "classStE_1_1Resource_1_1resource__instance.html", "classStE_1_1Resource_1_1resource__instance" ],
+    [ "resource_instance_getter", "classStE_1_1Resource_1_1resource__instance__getter.html", "classStE_1_1Resource_1_1resource__instance__getter" ],
+    [ "resource_loading_exception", "classStE_1_1Resource_1_1resource__loading__exception.html", "classStE_1_1Resource_1_1resource__loading__exception" ],
+    [ "resource_io_error", "classStE_1_1Resource_1_1resource__io__error.html", null ],
+    [ "resource_loading_task", "classStE_1_1Resource_1_1resource__loading__task.html", "classStE_1_1Resource_1_1resource__loading__task" ],
+    [ "surface_error", "classStE_1_1Resource_1_1surface__error.html", null ],
+    [ "surface_unsupported_format_error", "classStE_1_1Resource_1_1surface__unsupported__format__error.html", null ],
+    [ "SurfaceFactory", "classStE_1_1Resource_1_1SurfaceFactory.html", null ],
+    [ "resource_loading_task< Text::TextManager >", "classStE_1_1Resource_1_1resource__loading__task_3_01Text_1_1TextManager_01_4.html", "classStE_1_1Resource_1_1resource__loading__task_3_01Text_1_1TextManager_01_4" ]
 ];

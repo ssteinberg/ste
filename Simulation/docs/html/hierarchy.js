@@ -70,8 +70,6 @@ var hierarchy =
     [ "StE::Text::attributed_string< CharT >", "classStE_1_1Text_1_1attributed__string.html", null ],
     [ "StE::Text::attributed_string_htm_formatter< CharT >", "classStE_1_1Text_1_1attributed__string__htm__formatter.html", null ],
     [ "StE::balanced_thread_pool", "classStE_1_1balanced__thread__pool.html", null ],
-    [ "StE::Graphics::bme_brdf_representation::bme_brdf_descriptor_entry", "structStE_1_1Graphics_1_1bme__brdf__representation_1_1bme__brdf__descriptor__entry.html", null ],
-    [ "StE::Graphics::bme_brdf_representation", "classStE_1_1Graphics_1_1bme__brdf__representation.html", null ],
     [ "StE::Graphics::pBRDF::brdf_descriptor", "structStE_1_1Graphics_1_1pBRDF_1_1brdf__descriptor.html", null ],
     [ "StE::Core::BufferObjectBinder", "classStE_1_1Core_1_1BufferObjectBinder.html", null ],
     [ "StE::Core::BufferObjectLayoutBinder< BinderType >", "classStE_1_1Core_1_1BufferObjectLayoutBinder.html", null ],
@@ -89,7 +87,6 @@ var hierarchy =
     [ "StE::_tuple_call_detail::call_impl_ex< B, F, Tuple, Done, Total, N >", "structStE_1_1__tuple__call__detail_1_1call__impl__ex.html", null ],
     [ "StE::_tuple_call_detail::call_impl_ex< B, F, Tuple, true, Total, N...>", "structStE_1_1__tuple__call__detail_1_1call__impl__ex_3_01B_00_01F_00_01Tuple_00_01true_00_01Total_00_01N_8_8_8_4.html", null ],
     [ "StE::Graphics::Camera", "classStE_1_1Graphics_1_1Camera.html", null ],
-    [ "StE::Graphics::common_brdf_representation", "classStE_1_1Graphics_1_1common__brdf__representation.html", null ],
     [ "StE::concurrent_pointer_recycler< T, N >", "classStE_1_1concurrent__pointer__recycler.html", null ],
     [ "StE::concurrent_pointer_recycler< data_t >", "classStE_1_1concurrent__pointer__recycler.html", [
       [ "StE::_shared_double_reference_guard_detail::data_factory< data_t, true >", "classStE_1_1__shared__double__reference__guard__detail_1_1data__factory_3_01data__t_00_01true_01_4.html", null ]
@@ -101,7 +98,6 @@ var hierarchy =
     [ "StE::concurrent_queue< typename lru_cache_index< key_type >::val_data_guard >", "classStE_1_1concurrent__queue.html", null ],
     [ "StE::concurrent_unordered_map< K, V, cache_line >", "classStE_1_1concurrent__unordered__map.html", null ],
     [ "StE::concurrent_unordered_map< key_type, val_type >", "classStE_1_1concurrent__unordered__map.html", null ],
-    [ "StE::concurrent_unordered_map< StE::Resource::glsl_programs_pool::glsl_programs_pool_key, std::weak_ptr< Core::GLSLProgram > >", "classStE_1_1concurrent__unordered__map.html", null ],
     [ "StE::connection< Ts >", "classStE_1_1connection.html", null ],
     [ "StE::Core::GL::context_basic_state", "classStE_1_1Core_1_1GL_1_1context__basic__state.html", null ],
     [ "StE::Core::GL::gl_context::context_settings", "structStE_1_1Core_1_1GL_1_1gl__context_1_1context__settings.html", null ],
@@ -139,6 +135,22 @@ var hierarchy =
       [ "StE::Graphics::light", "classStE_1_1Graphics_1_1light.html", [
         [ "StE::Graphics::DirectionalLight", "classStE_1_1Graphics_1_1DirectionalLight.html", null ],
         [ "StE::Graphics::SphericalLight", "classStE_1_1Graphics_1_1SphericalLight.html", null ]
+      ] ]
+    ] ],
+    [ "std::exception", null, [
+      [ "std::runtime_error", null, [
+        [ "StE::Resource::resource_loading_exception", "classStE_1_1Resource_1_1resource__loading__exception.html", [
+          [ "StE::Resource::glsl_program_error", "classStE_1_1Resource_1_1glsl__program__error.html", [
+            [ "StE::Resource::glsl_program_linking_error", "classStE_1_1Resource_1_1glsl__program__linking__error.html", null ],
+            [ "StE::Resource::glsl_program_shader_compilation_error", "classStE_1_1Resource_1_1glsl__program__shader__compilation__error.html", null ],
+            [ "StE::Resource::glsl_program_undefined_program_error", "classStE_1_1Resource_1_1glsl__program__undefined__program__error.html", null ],
+            [ "StE::Resource::glsl_program_undefined_shader_error", "classStE_1_1Resource_1_1glsl__program__undefined__shader__error.html", null ]
+          ] ],
+          [ "StE::Resource::resource_io_error", "classStE_1_1Resource_1_1resource__io__error.html", null ],
+          [ "StE::Resource::surface_error", "classStE_1_1Resource_1_1surface__error.html", [
+            [ "StE::Resource::surface_unsupported_format_error", "classStE_1_1Resource_1_1surface__unsupported__format__error.html", null ]
+          ] ]
+        ] ]
       ] ]
     ] ],
     [ "StE::_rsh_utils::factorial< x >", "structStE_1_1__rsh__utils_1_1factorial.html", null ],
@@ -259,6 +271,7 @@ var hierarchy =
       [ "StE::function_traits< ReturnType(*)(Args...)>", "structStE_1_1function__traits_3_01ReturnType_07_5_08_07Args_8_8_8_08_4.html", null ]
     ] ],
     [ "StE::function_wrapper", "classStE_1_1function__wrapper.html", null ],
+    [ "StE::future_collection< R, F >", "classStE_1_1future__collection.html", null ],
     [ "StE::generate_array< N, Populator >", "structStE_1_1generate__array.html", null ],
     [ "StE::Core::generic_resource_allocator", "classStE_1_1Core_1_1generic__resource__allocator.html", [
       [ "StE::Core::generic_resource_immutable_storage_allocator< int, const gli::gl::format &, const glm::ivec2 &, std::size_t >", "classStE_1_1Core_1_1generic__resource__immutable__storage__allocator.html", [
@@ -413,11 +426,11 @@ var hierarchy =
       ] ],
       [ "StE::Core::resource< GLSLProgramAllocator >", "classStE_1_1Core_1_1resource.html", [
         [ "StE::Core::bindable_resource< GLSLProgramAllocator, GLSLProgramBinder >", "classStE_1_1Core_1_1bindable__resource.html", [
-          [ "StE::Core::GLSLProgram", "classStE_1_1Core_1_1GLSLProgram.html", null ]
+          [ "StE::Core::glsl_program_object", "classStE_1_1Core_1_1glsl__program__object.html", null ]
         ] ]
       ] ],
       [ "StE::Core::resource< GLSLShaderAllocator< ShaderType > >", "classStE_1_1Core_1_1resource.html", [
-        [ "StE::Core::GLSLShader< ShaderType >", "classStE_1_1Core_1_1GLSLShader.html", null ]
+        [ "StE::Core::glsl_shader_object< ShaderType >", "classStE_1_1Core_1_1glsl__shader__object.html", null ]
       ] ],
       [ "StE::Core::resource< image_dummy_resource_allocator >", "classStE_1_1Core_1_1resource.html", [
         [ "StE::Core::bindable_resource< image_dummy_resource_allocator, ImageBinder, image_layout_binding, int, bool, int, ImageAccessMode, gli::format >", "classStE_1_1Core_1_1bindable__resource.html", [
@@ -508,8 +521,8 @@ var hierarchy =
       [ "StE::Core::bindable_generic_resource", "classStE_1_1Core_1_1bindable__generic__resource.html", [
         [ "StE::Core::bindable_resource< A, B >", "classStE_1_1Core_1_1bindable__resource_3_01A_00_01B_01_4.html", null ]
       ] ],
-      [ "StE::Core::GLSLShaderGeneric", "classStE_1_1Core_1_1GLSLShaderGeneric.html", [
-        [ "StE::Core::GLSLShader< ShaderType >", "classStE_1_1Core_1_1GLSLShader.html", null ]
+      [ "StE::Core::glsl_shader_object_generic", "classStE_1_1Core_1_1glsl__shader__object__generic.html", [
+        [ "StE::Core::glsl_shader_object< ShaderType >", "classStE_1_1Core_1_1glsl__shader__object.html", null ]
       ] ],
       [ "StE::Core::resource< Allocator >", "classStE_1_1Core_1_1resource.html", [
         [ "StE::Core::bindable_resource< Allocator, FramebufferObjectBinder >", "classStE_1_1Core_1_1bindable__resource.html", [
@@ -531,8 +544,7 @@ var hierarchy =
     [ "StE::Core::gl_type_is_signed< T >", "structStE_1_1Core_1_1gl__type__is__signed.html", null ],
     [ "StE::Core::gl_type_name_enum< T >", "structStE_1_1Core_1_1gl__type__name__enum.html", null ],
     [ "StE::Core::GL::gl_utils", "classStE_1_1Core_1_1GL_1_1gl__utils.html", null ],
-    [ "StE::Resource::glsl_programs_pool", "classStE_1_1Resource_1_1glsl__programs__pool.html", null ],
-    [ "StE::Resource::glsl_programs_pool::glsl_programs_pool_key", "classStE_1_1Resource_1_1glsl__programs__pool_1_1glsl__programs__pool__key.html", null ],
+    [ "StE::Resource::glsl_program", "classStE_1_1Resource_1_1glsl__program.html", null ],
     [ "StE::Core::GLSLProgramBinder", "classStE_1_1Core_1_1GLSLProgramBinder.html", null ],
     [ "StE::Resource::GLSLProgramFactory", "classStE_1_1Resource_1_1GLSLProgramFactory.html", null ],
     [ "StE::Core::GLSLShaderProperties", "structStE_1_1Core_1_1GLSLShaderProperties.html", null ],
@@ -544,20 +556,21 @@ var hierarchy =
     [ "StE::Text::glyph_factory_impl", "structStE_1_1Text_1_1glyph__factory__impl.html", null ],
     [ "StE::Text::glyph_manager", "classStE_1_1Text_1_1glyph__manager.html", null ],
     [ "StE::Text::glyph::glyph_metrics", "structStE_1_1Text_1_1glyph_1_1glyph__metrics.html", null ],
+    [ "StE::Text::glyph_point", "structStE_1_1Text_1_1glyph__point.html", null ],
     [ "StE::Graphics::gpu_dispatchable", "classStE_1_1Graphics_1_1gpu__dispatchable.html", [
+      [ "StE::Graphics::fb_clear_dispatch< false >", "classStE_1_1Graphics_1_1fb__clear__dispatch.html", null ],
       [ "StE::Graphics::fb_clear_dispatch<>", "classStE_1_1Graphics_1_1fb__clear__dispatch.html", null ],
       [ "StE::Graphics::debug_gui", "classStE_1_1Graphics_1_1debug__gui.html", null ],
       [ "StE::Graphics::deferred_composer", "classStE_1_1Graphics_1_1deferred__composer.html", null ],
       [ "StE::Graphics::dense_voxelizer", "classStE_1_1Graphics_1_1dense__voxelizer.html", null ],
       [ "StE::Graphics::fb_clear_dispatch< color, depth >", "classStE_1_1Graphics_1_1fb__clear__dispatch.html", null ],
+      [ "StE::Graphics::fxaa_dispatchable", "classStE_1_1Graphics_1_1fxaa__dispatchable.html", null ],
       [ "StE::Graphics::gbuffer_clear_dispatch", "classStE_1_1Graphics_1_1gbuffer__clear__dispatch.html", null ],
       [ "StE::Graphics::gbuffer_downsample_depth_dispatch", "classStE_1_1Graphics_1_1gbuffer__downsample__depth__dispatch.html", null ],
-      [ "StE::Graphics::gbuffer_sort_dispatch", "classStE_1_1Graphics_1_1gbuffer__sort__dispatch.html", null ],
       [ "StE::Graphics::gpu_dummy_dispatchable", "classStE_1_1Graphics_1_1gpu__dummy__dispatchable.html", null ],
       [ "StE::Graphics::hdr_bloom_blurx_task", "classStE_1_1Graphics_1_1hdr__bloom__blurx__task.html", null ],
       [ "StE::Graphics::hdr_bloom_blury_task", "classStE_1_1Graphics_1_1hdr__bloom__blury__task.html", null ],
-      [ "StE::Graphics::hdr_bokeh_blurx_task", "classStE_1_1Graphics_1_1hdr__bokeh__blurx__task.html", null ],
-      [ "StE::Graphics::hdr_bokeh_blury_task", "classStE_1_1Graphics_1_1hdr__bokeh__blury__task.html", null ],
+      [ "StE::Graphics::hdr_bokeh_blur_task", "classStE_1_1Graphics_1_1hdr__bokeh__blur__task.html", null ],
       [ "StE::Graphics::hdr_compute_histogram_sums_task", "classStE_1_1Graphics_1_1hdr__compute__histogram__sums__task.html", null ],
       [ "StE::Graphics::hdr_compute_minmax_task", "classStE_1_1Graphics_1_1hdr__compute__minmax__task.html", null ],
       [ "StE::Graphics::hdr_create_histogram_task", "classStE_1_1Graphics_1_1hdr__create__histogram__task.html", null ],
@@ -569,12 +582,9 @@ var hierarchy =
       [ "StE::Graphics::scene_geo_cull_dispatch", "classStE_1_1Graphics_1_1scene__geo__cull__dispatch.html", null ],
       [ "StE::Graphics::scene_prepopulate_depth_dispatch", "classStE_1_1Graphics_1_1scene__prepopulate__depth__dispatch.html", null ],
       [ "StE::Graphics::shadowmap_projector", "classStE_1_1Graphics_1_1shadowmap__projector.html", null ],
-      [ "StE::Graphics::ssss_bilateral_blur_x", "classStE_1_1Graphics_1_1ssss__bilateral__blur__x.html", null ],
-      [ "StE::Graphics::ssss_bilateral_blur_y", "classStE_1_1Graphics_1_1ssss__bilateral__blur__y.html", null ],
-      [ "StE::Graphics::ssss_write_penumbras", "classStE_1_1Graphics_1_1ssss__write__penumbras.html", null ],
       [ "StE::Graphics::volumetric_scattering_gather_dispatch", "classStE_1_1Graphics_1_1volumetric__scattering__gather__dispatch.html", null ],
       [ "StE::Graphics::volumetric_scattering_scatter_dispatch", "classStE_1_1Graphics_1_1volumetric__scattering__scatter__dispatch.html", null ],
-      [ "StE::Text::TextManager::text_renderable", "classStE_1_1Text_1_1TextManager_1_1text__renderable.html", null ]
+      [ "StE::Text::text_renderable", "classStE_1_1Text_1_1text__renderable.html", null ]
     ] ],
     [ "StE::Core::gpu_sync", "classStE_1_1Core_1_1gpu__sync.html", null ],
     [ "StE::Graphics::gpu_task_factory", "classStE_1_1Graphics_1_1gpu__task__factory.html", null ],
@@ -602,7 +612,6 @@ var hierarchy =
     [ "std::hash< StE::Core::GL::context_state_key< K > >", "structstd_1_1hash_3_01StE_1_1Core_1_1GL_1_1context__state__key_3_01K_01_4_01_4.html", null ],
     [ "std::hash< StE::Core::GL::StateName >", "structstd_1_1hash_3_01StE_1_1Core_1_1GL_1_1StateName_01_4.html", null ],
     [ "std::hash< StE::Graphics::sbta_key >", "structstd_1_1hash_3_01StE_1_1Graphics_1_1sbta__key_01_4.html", null ],
-    [ "std::hash< StE::Resource::glsl_programs_pool::glsl_programs_pool_key >", "structstd_1_1hash_3_01StE_1_1Resource_1_1glsl__programs__pool_1_1glsl__programs__pool__key_01_4.html", null ],
     [ "std::hash< StE::Text::attributed_string< CharT > >", "structstd_1_1hash_3_01StE_1_1Text_1_1attributed__string_3_01CharT_01_4_01_4.html", null ],
     [ "std::hash< StE::Text::Font >", "structstd_1_1hash_3_01StE_1_1Text_1_1Font_01_4.html", null ],
     [ "std::hash< StE::Text::text_glyph_pair_key >", "structstd_1_1hash_3_01StE_1_1Text_1_1text__glyph__pair__key_01_4.html", null ],
@@ -702,7 +711,7 @@ var hierarchy =
     ] ],
     [ "StE::Graphics::profiler", "classStE_1_1Graphics_1_1profiler.html", null ],
     [ "StE::Graphics::profiler_entry", "structStE_1_1Graphics_1_1profiler__entry.html", null ],
-    [ "StE::Resource::glsl_loader::program_binary", "structStE_1_1Resource_1_1glsl__loader_1_1program__binary.html", null ],
+    [ "StE::Resource::glsl_loader::program_binary", "classStE_1_1Resource_1_1glsl__loader_1_1program__binary.html", null ],
     [ "StE::Core::QueryBufferObjectGeneric", "classStE_1_1Core_1_1QueryBufferObjectGeneric.html", [
       [ "StE::Core::QueryBufferObject< Type, U >", "classStE_1_1Core_1_1QueryBufferObject.html", null ]
     ] ],
@@ -730,12 +739,30 @@ var hierarchy =
       [ "StE::Core::buffer_object< Type, U >", "classStE_1_1Core_1_1buffer__object.html", null ]
     ] ],
     [ "StE::Graphics::rendering_system", "classStE_1_1Graphics_1_1rendering__system.html", [
+      [ "StE::Graphics::basic_renderer", "classStE_1_1Graphics_1_1basic__renderer.html", null ],
       [ "StE::Graphics::GIRenderer", "classStE_1_1Graphics_1_1GIRenderer.html", null ]
     ] ],
     [ "StE::Core::RenderTargetGeneric", "classStE_1_1Core_1_1RenderTargetGeneric.html", [
       [ "StE::Core::image< type >", "classStE_1_1Core_1_1image.html", null ],
       [ "StE::Core::RenderTarget", "classStE_1_1Core_1_1RenderTarget.html", null ]
     ] ],
+    [ "StE::Resource::resource_instance_base", "classStE_1_1Resource_1_1resource__instance__base.html", [
+      [ "StE::Resource::resource_instance< Resource::glsl_program >", "classStE_1_1Resource_1_1resource__instance.html", null ],
+      [ "StE::Resource::resource_instance< StE::Graphics::deferred_composer >", "classStE_1_1Resource_1_1resource__instance.html", null ],
+      [ "StE::Resource::resource_instance< StE::Graphics::fxaa_dispatchable >", "classStE_1_1Resource_1_1resource__instance.html", null ],
+      [ "StE::Resource::resource_instance< StE::Graphics::gbuffer_downsample_depth_dispatch >", "classStE_1_1Resource_1_1resource__instance.html", null ],
+      [ "StE::Resource::resource_instance< StE::Graphics::hdr_dof_postprocess >", "classStE_1_1Resource_1_1resource__instance.html", null ],
+      [ "StE::Resource::resource_instance< StE::Graphics::light_preprocessor >", "classStE_1_1Resource_1_1resource__instance.html", null ],
+      [ "StE::Resource::resource_instance< StE::Graphics::linked_light_lists_gen_dispatch >", "classStE_1_1Resource_1_1resource__instance.html", null ],
+      [ "StE::Resource::resource_instance< StE::Graphics::scene_geo_cull_dispatch >", "classStE_1_1Resource_1_1resource__instance.html", null ],
+      [ "StE::Resource::resource_instance< StE::Graphics::scene_prepopulate_depth_dispatch >", "classStE_1_1Resource_1_1resource__instance.html", null ],
+      [ "StE::Resource::resource_instance< StE::Graphics::shadowmap_projector >", "classStE_1_1Resource_1_1resource__instance.html", null ],
+      [ "StE::Resource::resource_instance< StE::Graphics::volumetric_scattering_gather_dispatch >", "classStE_1_1Resource_1_1resource__instance.html", null ],
+      [ "StE::Resource::resource_instance< StE::Graphics::volumetric_scattering_scatter_dispatch >", "classStE_1_1Resource_1_1resource__instance.html", null ],
+      [ "StE::Resource::resource_instance< R >", "classStE_1_1Resource_1_1resource__instance.html", null ]
+    ] ],
+    [ "StE::Resource::resource_instance_getter< R >", "classStE_1_1Resource_1_1resource__instance__getter.html", null ],
+    [ "StE::Resource::resource_instance_getter< glsl_program >", "classStE_1_1Resource_1_1resource__instance__getter_3_01glsl__program_01_4.html", null ],
     [ "StE::Core::resource_is_render_target< type >", "structStE_1_1Core_1_1resource__is__render__target.html", null ],
     [ "StE::Core::resource_is_render_target< core_resource_type::RenderbufferObject >", "structStE_1_1Core_1_1resource__is__render__target_3_01core__resource__type_1_1RenderbufferObject_01_4.html", null ],
     [ "StE::Core::resource_is_texture< type >", "structStE_1_1Core_1_1resource__is__texture.html", null ],
@@ -748,22 +775,31 @@ var hierarchy =
     [ "StE::Core::resource_is_texture< core_resource_type::Texture3D >", "structStE_1_1Core_1_1resource__is__texture_3_01core__resource__type_1_1Texture3D_01_4.html", null ],
     [ "StE::Core::resource_is_texture< core_resource_type::TextureCubeMap >", "structStE_1_1Core_1_1resource__is__texture_3_01core__resource__type_1_1TextureCubeMap_01_4.html", null ],
     [ "StE::Core::resource_is_texture< core_resource_type::TextureCubeMapArray >", "structStE_1_1Core_1_1resource__is__texture_3_01core__resource__type_1_1TextureCubeMapArray_01_4.html", null ],
-    [ "StE::Core::resource_storage< typename, typename, typename >", "classStE_1_1Core_1_1resource__storage.html", null ],
-    [ "StE::Core::resource_storage< resource_storage_dynamic< Descriptor >, Descriptor, gstack >", "classStE_1_1Core_1_1resource__storage.html", [
-      [ "StE::Core::resource_storage_dynamic< Descriptor >", "classStE_1_1Core_1_1resource__storage__dynamic.html", null ]
-    ] ],
-    [ "StE::Core::resource_storage< resource_storage_dynamic< light_descriptor >, light_descriptor, gstack >", "classStE_1_1Core_1_1resource__storage.html", [
-      [ "StE::Core::resource_storage_dynamic< light_descriptor >", "classStE_1_1Core_1_1resource__storage__dynamic.html", [
-        [ "StE::Graphics::light_storage", "classStE_1_1Graphics_1_1light__storage.html", null ]
-      ] ]
-    ] ],
-    [ "StE::Core::resource_storage< resource_storage_stable< Descriptor >, Descriptor, gstack_stable >", "classStE_1_1Core_1_1resource__storage.html", [
-      [ "StE::Core::resource_storage_stable< Descriptor >", "classStE_1_1Core_1_1resource__storage__stable.html", null ]
-    ] ],
-    [ "StE::Core::resource_storage< resource_storage_stable< material_descriptor >, material_descriptor, gstack_stable >", "classStE_1_1Core_1_1resource__storage.html", [
-      [ "StE::Core::resource_storage_stable< material_descriptor >", "classStE_1_1Core_1_1resource__storage__stable.html", [
-        [ "StE::Graphics::material_storage", "classStE_1_1Graphics_1_1material__storage.html", null ]
-      ] ]
+    [ "StE::Resource::resource_loading_task< R >", "classStE_1_1Resource_1_1resource__loading__task.html", null ],
+    [ "StE::Resource::resource_loading_task< glsl_program >", "classStE_1_1Resource_1_1resource__loading__task_3_01glsl__program_01_4.html", null ],
+    [ "StE::Resource::resource_loading_task< Graphics::GIRenderer >", "classStE_1_1Resource_1_1resource__loading__task_3_01Graphics_1_1GIRenderer_01_4.html", null ],
+    [ "StE::Resource::resource_loading_task< Graphics::hdr_dof_postprocess >", "classStE_1_1Resource_1_1resource__loading__task_3_01Graphics_1_1hdr__dof__postprocess_01_4.html", null ],
+    [ "StE::Resource::resource_loading_task< Graphics::light_preprocessor >", "classStE_1_1Resource_1_1resource__loading__task_3_01Graphics_1_1light__preprocessor_01_4.html", null ],
+    [ "StE::Resource::resource_loading_task< Graphics::volumetric_scattering_scatter_dispatch >", "classStE_1_1Resource_1_1resource__loading__task_3_01Graphics_1_1volumetric__scattering__scatter__dispatch_01_4.html", null ],
+    [ "StE::Resource::resource_loading_task< Text::TextManager >", "classStE_1_1Resource_1_1resource__loading__task_3_01Text_1_1TextManager_01_4.html", null ],
+    [ "StE::Core::resource_storage_base< Descriptor >", "classStE_1_1Core_1_1resource__storage__base.html", [
+      [ "StE::Core::resource_storage< resource_storage_dynamic< Descriptor >, Descriptor, gstack >", "classStE_1_1Core_1_1resource__storage.html", [
+        [ "StE::Core::resource_storage_dynamic< Descriptor >", "classStE_1_1Core_1_1resource__storage__dynamic.html", null ]
+      ] ],
+      [ "StE::Core::resource_storage< resource_storage_dynamic< light_descriptor >, light_descriptor, gstack >", "classStE_1_1Core_1_1resource__storage.html", [
+        [ "StE::Core::resource_storage_dynamic< light_descriptor >", "classStE_1_1Core_1_1resource__storage__dynamic.html", [
+          [ "StE::Graphics::light_storage", "classStE_1_1Graphics_1_1light__storage.html", null ]
+        ] ]
+      ] ],
+      [ "StE::Core::resource_storage< resource_storage_stable< Descriptor >, Descriptor, gstack_stable >", "classStE_1_1Core_1_1resource__storage.html", [
+        [ "StE::Core::resource_storage_stable< Descriptor >", "classStE_1_1Core_1_1resource__storage__stable.html", null ]
+      ] ],
+      [ "StE::Core::resource_storage< resource_storage_stable< material_descriptor >, material_descriptor, gstack_stable >", "classStE_1_1Core_1_1resource__storage.html", [
+        [ "StE::Core::resource_storage_stable< material_descriptor >", "classStE_1_1Core_1_1resource__storage__stable.html", [
+          [ "StE::Graphics::material_storage", "classStE_1_1Graphics_1_1material__storage.html", null ]
+        ] ]
+      ] ],
+      [ "StE::Core::resource_storage< typename, typename, typename >", "classStE_1_1Core_1_1resource__storage.html", null ]
     ] ],
     [ "StE::Core::ring_buffer< T, max_size >", "classStE_1_1Core_1_1ring__buffer.html", null ],
     [ "StE::Core::ring_buffer< glyph_point, ringbuffer_max_size >", "classStE_1_1Core_1_1ring__buffer.html", null ],
@@ -849,9 +885,6 @@ var hierarchy =
     [ "StE::shared_double_reference_guard< resize_data_struct< buckets_ptr >, false >", "classStE_1_1shared__double__reference__guard.html", null ],
     [ "StE::shared_double_reference_guard< table_ptr, false >", "classStE_1_1shared__double__reference__guard.html", null ],
     [ "StE::signal< Ts >", "classStE_1_1signal.html", null ],
-    [ "StE::signal< const observable_resource< Descriptor > * >", "classStE_1_1signal.html", null ],
-    [ "StE::signal< const observable_resource< light_descriptor > * >", "classStE_1_1signal.html", null ],
-    [ "StE::signal< const observable_resource< material_descriptor > * >", "classStE_1_1signal.html", null ],
     [ "StE::signal< float, float, float >", "classStE_1_1signal.html", null ],
     [ "StE::signal< glm::dvec2 >", "classStE_1_1signal.html", null ],
     [ "StE::signal< glm::i32vec2 >", "classStE_1_1signal.html", null ],
@@ -866,8 +899,6 @@ var hierarchy =
       [ "StE::Graphics::xyY", "classStE_1_1Graphics_1_1xyY.html", null ],
       [ "StE::Graphics::XYZ", "classStE_1_1Graphics_1_1XYZ.html", null ]
     ] ],
-    [ "StE::Graphics::ssss_generator", "classStE_1_1Graphics_1_1ssss__generator.html", null ],
-    [ "StE::Graphics::ssss_storage", "classStE_1_1Graphics_1_1ssss__storage.html", null ],
     [ "StE::Core::GL::context_state::state_type", "structStE_1_1Core_1_1GL_1_1context__state_1_1state__type.html", null ],
     [ "_detail::ste_context_intializer", "class__detail_1_1ste__context__intializer.html", null ],
     [ "StE::ste_engine_control_impl", "structStE_1_1ste__engine__control__impl.html", null ],
@@ -1075,7 +1106,8 @@ var hierarchy =
     [ "StE::Core::surface_stride< gli::format::FORMAT_RGBA8_UNORM_PACK8 >", "structStE_1_1Core_1_1surface__stride_3_01gli_1_1format_1_1FORMAT__RGBA8__UNORM__PACK8_01_4.html", null ],
     [ "StE::Resource::SurfaceFactory", "classStE_1_1Resource_1_1SurfaceFactory.html", null ],
     [ "StE::system_times", "classStE_1_1system__times.html", null ],
-    [ "StE::task< R >", "classStE_1_1task.html", null ],
+    [ "StE::task_future_chaining_construct", "classStE_1_1task__future__chaining__construct.html", null ],
+    [ "StE::task_future_impl< R, is_shared >", "classStE_1_1task__future__impl.html", null ],
     [ "StE::task_scheduler", "classStE_1_1task__scheduler.html", null ],
     [ "StE::Text::text_glyph_pair_key", "structStE_1_1Text_1_1text__glyph__pair__key.html", null ],
     [ "StE::Text::TextManager", "classStE_1_1Text_1_1TextManager.html", null ],

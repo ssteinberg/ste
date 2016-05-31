@@ -1,32 +1,35 @@
-<map id="src/ste/framework_graphics/gpu_dispatch/renderers/global_illumination/GIRenderer.hpp" name="src/ste/framework_graphics/gpu_dispatch/renderers/global_illumination/GIRenderer.hpp">
-<area shape="rect" id="node2" href="$stdafx_8hpp.html" title="stdafx.hpp" alt="" coords="1495,452,1577,479"/>
-<area shape="rect" id="node23" href="$StEngineControl_8hpp.html" title="Engine Control class. " alt="" coords="2235,295,2378,322"/>
-<area shape="rect" id="node24" href="$rendering__system_8hpp.html" title="rendering_system.hpp" alt="" coords="1145,377,1298,404"/>
-<area shape="rect" id="node25" href="$Camera_8hpp.html" title="Camera.hpp" alt="" coords="97,206,191,233"/>
-<area shape="rect" id="node26" href="$transforms__ring__buffers_8hpp.html" title="transforms_ring_buffers.hpp" alt="" coords="59,117,242,143"/>
-<area shape="rect" id="node27" href="$gpu__dispatchable_8hpp.html" title="gpu_dispatchable.hpp" alt="" coords="1322,377,1473,404"/>
-<area shape="rect" id="node28" href="$gpu__task_8hpp.html" title="gpu_task.hpp" alt="" coords="1689,295,1789,322"/>
-<area shape="rect" id="node29" href="$profiler_8hpp.html" title="profiler.hpp" alt="" coords="54,377,141,404"/>
-<area shape="rect" id="node30" href="$Scene_8hpp.html" title="Scene.hpp" alt="" coords="1405,206,1491,233"/>
-<area shape="rect" id="node31" href="$SceneProperties_8hpp.html" title="SceneProperties.hpp" alt="" coords="872,295,1019,322"/>
-<area shape="rect" id="node32" href="$deferred__gbuffer_8hpp.html" title="deferred_gbuffer.hpp" alt="" coords="1813,295,1957,322"/>
-<area shape="rect" id="node33" href="$scene__prepopulate__depth__dispatch_8hpp.html" title="scene_prepopulate_depth\l_dispatch.hpp" alt="" coords="1625,109,1801,151"/>
-<area shape="rect" id="node34" href="$GLSLProgram_8hpp.html" title="GLSLProgram.hpp" alt="" coords="2853,295,2985,322"/>
-<area shape="rect" id="node35" href="$scene__geo__cull__dispatch_8hpp.html" title="scene_geo_cull_dispatch.hpp" alt="" coords="1402,117,1601,143"/>
-<area shape="rect" id="node36" href="$light_8hpp.html" title="light.hpp" alt="" coords="383,377,454,404"/>
-<area shape="rect" id="node37" href="$light__preprocessor_8hpp.html" title="light_preprocessor.hpp" alt="" coords="1171,117,1327,143"/>
-<area shape="rect" id="node38" href="$hdr__dof__postprocess_8hpp.html" title="hdr_dof_postprocess.hpp" alt="" coords="1787,206,1957,233"/>
-<area shape="rect" id="node39" href="$linked__light__lists_8hpp.html" title="linked_light_lists.hpp" alt="" coords="3590,377,3733,404"/>
-<area shape="rect" id="node40" href="$linked__light__lists__gen__dispatch_8hpp.html" title="linked_light_lists\l_gen_dispatch.hpp" alt="" coords="2336,199,2469,240"/>
-<area shape="rect" id="node41" href="$gpu__dummy__dispatchable_8hpp.html" title="gpu_dummy_dispatchable.hpp" alt="" coords="368,295,571,322"/>
-<area shape="rect" id="node42" href="$shadowmap__storage_8hpp.html" title="shadowmap_storage.hpp" alt="" coords="2493,206,2667,233"/>
-<area shape="rect" id="node43" href="$shadowmap__projector_8hpp.html" title="shadowmap_projector.hpp" alt="" coords="1995,117,2173,143"/>
-<area shape="rect" id="node44" href="$volumetric__scattering__storage_8hpp.html" title="volumetric_scattering\l_storage.hpp" alt="" coords="3539,288,3687,329"/>
-<area shape="rect" id="node45" href="$volumetric__scattering__scatter__dispatch_8hpp.html" title="volumetric_scattering\l_scatter_dispatch.hpp" alt="" coords="3171,109,3322,151"/>
-<area shape="rect" id="node46" href="$volumetric__scattering__gather__dispatch_8hpp.html" title="volumetric_scattering\l_gather_dispatch.hpp" alt="" coords="3286,199,3434,240"/>
-<area shape="rect" id="node47" href="$deferred__composer_8hpp.html" title="deferred_composer.hpp" alt="" coords="2691,206,2855,233"/>
-<area shape="rect" id="node48" href="$gbuffer__downsample__depth__dispatch_8hpp.html" title="gbuffer_downsample\l_depth_dispatch.hpp" alt="" coords="1616,199,1763,240"/>
-<area shape="rect" id="node49" href="$dense__voxel__space_8hpp.html" title="dense_voxel_space.hpp" alt="" coords="2197,117,2365,143"/>
-<area shape="rect" id="node50" href="$fb__clear__dispatch_8hpp.html" title="fb_clear_dispatch.hpp" alt="" coords="646,295,797,322"/>
-<area shape="rect" id="node4" href="$gl_8hpp.html" title="gl.hpp" alt="" coords="1145,527,1202,553"/>
+<map id="src/ste/framework_graphics/renderers/global_illumination/GIRenderer.hpp" name="src/ste/framework_graphics/renderers/global_illumination/GIRenderer.hpp">
+<area shape="rect" id="node2" href="$stdafx_8hpp.html" title="stdafx.hpp" alt="" coords="2863,676,2945,703"/>
+<area shape="rect" id="node20" href="$StEngineControl_8hpp.html" title="Engine Control class. " alt="" coords="1493,527,1635,553"/>
+<area shape="rect" id="node21" href="$rendering__system_8hpp.html" title="rendering_system.hpp" alt="" coords="1487,601,1641,628"/>
+<area shape="rect" id="node22" href="$resource__instance_8hpp.html" title="resource_instance.hpp" alt="" coords="2634,377,2790,404"/>
+<area shape="rect" id="node23" href="$resource__loading__task_8hpp.html" title="resource_loading_task.hpp" alt="" coords="2375,452,2558,479"/>
+<area shape="rect" id="node24" href="$Camera_8hpp.html" title="Camera.hpp" alt="" coords="4494,206,4589,233"/>
+<area shape="rect" id="node25" href="$transforms__ring__buffers_8hpp.html" title="transforms_ring_buffers.hpp" alt="" coords="4321,117,4503,143"/>
+<area shape="rect" id="node26" href="$gpu__dispatchable_8hpp.html" title="gpu_dispatchable.hpp" alt="" coords="3145,377,3295,404"/>
+<area shape="rect" id="node27" href="$gpu__task_8hpp.html" title="gpu_task.hpp" alt="" coords="3601,295,3701,322"/>
+<area shape="rect" id="node28" href="$profiler_8hpp.html" title="profiler.hpp" alt="" coords="4579,601,4666,628"/>
+<area shape="rect" id="node29" href="$Scene_8hpp.html" title="Scene.hpp" alt="" coords="2229,206,2315,233"/>
+<area shape="rect" id="node30" href="$SceneProperties_8hpp.html" title="SceneProperties.hpp" alt="" coords="4029,295,4176,322"/>
+<area shape="rect" id="node31" href="$deferred__gbuffer_8hpp.html" title="deferred_gbuffer.hpp" alt="" coords="1483,295,1627,322"/>
+<area shape="rect" id="node32" href="$glsl__program_8hpp.html" title="glsl_program.hpp" alt="" coords="1955,295,2079,322"/>
+<area shape="rect" id="node33" href="$scene__prepopulate__depth__dispatch_8hpp.html" title="scene_prepopulate_depth\l_dispatch.hpp" alt="" coords="2385,109,2561,151"/>
+<area shape="rect" id="node34" href="$scene__geo__cull__dispatch_8hpp.html" title="scene_geo_cull_dispatch.hpp" alt="" coords="2113,117,2311,143"/>
+<area shape="rect" id="node35" href="$light_8hpp.html" title="light.hpp" alt="" coords="3979,452,4050,479"/>
+<area shape="rect" id="node36" href="$light__preprocessor_8hpp.html" title="light_preprocessor.hpp" alt="" coords="3181,206,3337,233"/>
+<area shape="rect" id="node37" href="$linked__light__lists_8hpp.html" title="linked_light_lists.hpp" alt="" coords="351,377,494,404"/>
+<area shape="rect" id="node38" href="$linked__light__lists__gen__dispatch_8hpp.html" title="linked_light_lists\l_gen_dispatch.hpp" alt="" coords="1629,199,1763,240"/>
+<area shape="rect" id="node39" href="$hdr__dof__postprocess_8hpp.html" title="hdr_dof_postprocess.hpp" alt="" coords="2669,206,2840,233"/>
+<area shape="rect" id="node40" href="$fxaa__dispatchable_8hpp.html" title="fxaa_dispatchable.hpp" alt="" coords="2440,206,2595,233"/>
+<area shape="rect" id="node41" href="$shadowmap__storage_8hpp.html" title="shadowmap_storage.hpp" alt="" coords="1331,206,1504,233"/>
+<area shape="rect" id="node42" href="$shadowmap__projector_8hpp.html" title="shadowmap_projector.hpp" alt="" coords="1532,117,1711,143"/>
+<area shape="rect" id="node43" href="$volumetric__scattering__storage_8hpp.html" title="volumetric_scattering\l_storage.hpp" alt="" coords="347,288,495,329"/>
+<area shape="rect" id="node44" href="$volumetric__scattering__scatter__dispatch_8hpp.html" title="volumetric_scattering\l_scatter_dispatch.hpp" alt="" coords="1230,109,1381,151"/>
+<area shape="rect" id="node45" href="$volumetric__scattering__gather__dispatch_8hpp.html" title="volumetric_scattering\l_gather_dispatch.hpp" alt="" coords="1006,199,1154,240"/>
+<area shape="rect" id="node46" href="$deferred__composer_8hpp.html" title="deferred_composer.hpp" alt="" coords="1787,206,1951,233"/>
+<area shape="rect" id="node47" href="$gbuffer__downsample__depth__dispatch_8hpp.html" title="gbuffer_downsample\l_depth_dispatch.hpp" alt="" coords="784,199,931,240"/>
+<area shape="rect" id="node48" href="$dense__voxel__space_8hpp.html" title="dense_voxel_space.hpp" alt="" coords="1871,117,2039,143"/>
+<area shape="rect" id="node49" href="$fb__clear__dispatch_8hpp.html" title="fb_clear_dispatch.hpp" alt="" coords="4302,295,4453,322"/>
+<area shape="rect" id="node50" href="$girenderer__loader_8hpp.html" title="girenderer_loader.hpp" alt="" coords="2611,295,2765,322"/>
+<area shape="rect" id="node4" href="$gl_8hpp.html" title="gl.hpp" alt="" coords="3246,751,3303,777"/>
 </map>

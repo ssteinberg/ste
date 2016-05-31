@@ -176,7 +176,10 @@ Data Structures</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1balanced__thread__pool.html">balanced_thread_pool</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1task.html">task</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1task__future__chaining__construct.html">task_future_chaining_construct</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1task__future__impl.html">task_future_impl</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wrapper around std::future for <a class="el" href="classStE_1_1task__scheduler.html">StE::task_scheduler</a>.  <a href="classStE_1_1task__future__impl.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1task__scheduler.html">task_scheduler</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -222,6 +225,8 @@ Data Structures</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1connection.html">connection</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1future__collection.html">future_collection</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1interruptible__thread.html">interruptible_thread</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1scoped__thread.html">scoped_thread</a></td></tr>
@@ -263,6 +268,15 @@ Data Structures</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
+<tr class="memitem:a29ae5406646408186ac2acb580d0c321"><td class="memTemplParams" colspan="2">template&lt;typename R &gt; </td></tr>
+<tr class="memitem:a29ae5406646408186ac2acb580d0c321"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceStE.html#a29ae5406646408186ac2acb580d0c321">task_future</a> = <a class="el" href="classStE_1_1task__future__impl.html">task_future_impl</a>&lt; R, false &gt;</td></tr>
+<tr class="separator:a29ae5406646408186ac2acb580d0c321"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade4baf165b71464a9c032ae9bbc40d2a"><td class="memTemplParams" colspan="2">template&lt;typename R &gt; </td></tr>
+<tr class="memitem:ade4baf165b71464a9c032ae9bbc40d2a"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceStE.html#ade4baf165b71464a9c032ae9bbc40d2a">task_shared_future</a> = <a class="el" href="classStE_1_1task__future__impl.html">task_future_impl</a>&lt; R, true &gt;</td></tr>
+<tr class="separator:ade4baf165b71464a9c032ae9bbc40d2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a074a3db74aac9f4b610d1549ef628102"><td class="memTemplParams" colspan="2">template&lt;typename R &gt; </td></tr>
+<tr class="memitem:a074a3db74aac9f4b610d1549ef628102"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceStE.html#a074a3db74aac9f4b610d1549ef628102">task_future_collection</a> = <a class="el" href="classStE_1_1future__collection.html">future_collection</a>&lt; R, <a class="el" href="namespaceStE.html#a29ae5406646408186ac2acb580d0c321">task_future</a> &gt;</td></tr>
+<tr class="separator:a074a3db74aac9f4b610d1549ef628102"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a80222d5599aca48f003b88f40e3d2458"><td class="memTemplParams" colspan="2">template&lt;typename T , template&lt; typename...&gt; class C&gt; </td></tr>
 <tr class="memitem:a80222d5599aca48f003b88f40e3d2458"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceStE.html#a80222d5599aca48f003b88f40e3d2458">is_base_of</a> = decltype(<a class="el" href="namespaceStE_1_1detail.html#a003a16af9a5d8e7b60700d4d13d6c56b">detail::is_base_of_template_impl</a>&lt; C &gt;(std::declval&lt; T * &gt;()))</td></tr>
 <tr class="separator:a80222d5599aca48f003b88f40e3d2458"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -375,6 +389,54 @@ template&lt;typename T , template&lt; typename...&gt; class C&gt; </div>
 </div><div class="memdoc">
 
 <p>Definition at line <a class="el" href="is__base__of_8hpp_source.html#l00019">19</a> of file <a class="el" href="is__base__of_8hpp_source.html">is_base_of.hpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a29ae5406646408186ac2acb580d0c321"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename R &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceStE.html#a29ae5406646408186ac2acb580d0c321">StE::task_future</a> = typedef <a class="el" href="classStE_1_1task__future__impl.html">task_future_impl</a>&lt;R, false&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="task__future_8hpp_source.html#l00266">266</a> of file <a class="el" href="task__future_8hpp_source.html">task_future.hpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a074a3db74aac9f4b610d1549ef628102"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename R &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceStE.html#a074a3db74aac9f4b610d1549ef628102">StE::task_future_collection</a> = typedef <a class="el" href="classStE_1_1future__collection.html">future_collection</a>&lt;R, <a class="el" href="namespaceStE.html#a29ae5406646408186ac2acb580d0c321">task_future</a>&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="task__future_8hpp_source.html#l00271">271</a> of file <a class="el" href="task__future_8hpp_source.html">task_future.hpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ade4baf165b71464a9c032ae9bbc40d2a"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename R &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceStE.html#ade4baf165b71464a9c032ae9bbc40d2a">StE::task_shared_future</a> = typedef <a class="el" href="classStE_1_1task__future__impl.html">task_future_impl</a>&lt;R, true&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="task__future_8hpp_source.html#l00268">268</a> of file <a class="el" href="task__future_8hpp_source.html">task_future.hpp</a>.</p>
 
 </div>
 </div>

@@ -95,6 +95,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="functions_func_g.html#index_g"><span>g</span></a></li>
       <li><a href="functions_func_h.html#index_h"><span>h</span></a></li>
       <li><a href="functions_func_i.html#index_i"><span>i</span></a></li>
+      <li><a href="functions_func_j.html#index_j"><span>j</span></a></li>
       <li><a href="functions_func_k.html#index_k"><span>k</span></a></li>
       <li><a href="functions_func_l.html#index_l"><span>l</span></a></li>
       <li><a href="functions_func_m.html#index_m"><span>m</span></a></li>
@@ -159,6 +160,9 @@ $(document).ready(function(){initNavTree('functions_func_b.html','');});
 <li>balanced_thread_pool()
 : <a class="el" href="classStE_1_1balanced__thread__pool.html#a9030d695452408c90b917c5f634bcded">StE::balanced_thread_pool</a>
 </li>
+<li>basic_renderer()
+: <a class="el" href="classStE_1_1Graphics_1_1basic__renderer.html#a4f950f95ddad7a3f48802e217a5c5b6b">StE::Graphics::basic_renderer</a>
+</li>
 <li>begin_query()
 : <a class="el" href="classStE_1_1Core_1_1query__object.html#ac83e97b5f3686e385168708b423b1c1e">StE::Core::query_object&lt; type &gt;</a>
 </li>
@@ -198,7 +202,7 @@ $(document).ready(function(){initNavTree('functions_func_b.html','');});
 , <a class="el" href="classStE_1_1Core_1_1VertexBufferObjectGeneric.html#a3d71750d8079b249ae8349f58862c264">StE::Core::VertexBufferObjectGeneric</a>
 </li>
 <li>bind_attrib_location()
-: <a class="el" href="classStE_1_1Core_1_1GLSLProgram.html#a396c848b54d6897fa9fd95316875ba93">StE::Core::GLSLProgram</a>
+: <a class="el" href="classStE_1_1Core_1_1glsl__program__object.html#aca6c30cfcffb4964f89d6ea87c756274">StE::Core::glsl_program_object</a>
 </li>
 <li>bind_buffer()
 : <a class="el" href="classStE_1_1Core_1_1GL_1_1gl__generic__context.html#a795bebcec797bd81f20a77e5c9761648">StE::Core::GL::gl_generic_context</a>
@@ -218,7 +222,7 @@ $(document).ready(function(){initNavTree('functions_func_b.html','');});
 : <a class="el" href="classStE_1_1Core_1_1frame__buffer__object.html#a444285941b25d2c5bbb3a14b20d71534">StE::Core::frame_buffer_object&lt; A &gt;</a>
 </li>
 <li>bind_frag_data_location()
-: <a class="el" href="classStE_1_1Core_1_1GLSLProgram.html#a285fe50d66b9ba35d394059d0d419d10">StE::Core::GLSLProgram</a>
+: <a class="el" href="classStE_1_1Core_1_1glsl__program__object.html#ab7893a4b4d08cfe281555a1d70514b72">StE::Core::glsl_program_object</a>
 </li>
 <li>bind_framebuffer()
 : <a class="el" href="classStE_1_1Core_1_1GL_1_1gl__generic__context.html#ab66bb99fb2658caa9208ae9994695f75">StE::Core::GL::gl_generic_context</a>
@@ -271,7 +275,7 @@ $(document).ready(function(){initNavTree('functions_func_b.html','');});
 : <a class="el" href="classStE_1_1Graphics_1_1transforms__ring__buffers.html#a6dba1dd6caf0be4abc10ec6d2f6a9db5">StE::Graphics::transforms_ring_buffers</a>
 </li>
 <li>bindable_resource()
-: <a class="el" href="classStE_1_1Core_1_1bindable__resource.html#a80f0b7f20236bb078ba439e1e8edb590">StE::Core::bindable_resource&lt; A, B, BindingArgs &gt;</a>
+: <a class="el" href="classStE_1_1Core_1_1bindable__resource.html#a7d7d7f26043efc6d51a4e8fa33be7d1a">StE::Core::bindable_resource&lt; A, B, BindingArgs &gt;</a>
 , <a class="el" href="classStE_1_1Core_1_1bindable__resource_3_01A_00_01B_01_4.html#a25c8eb38e3cf39f22d2577c5ba558577">StE::Core::bindable_resource&lt; A, B &gt;</a>
 </li>
 <li>binder()
@@ -287,7 +291,7 @@ $(document).ready(function(){initNavTree('functions_func_b.html','');});
 : <a class="el" href="classStE_1_1Core_1_1GL_1_1gl__generic__context.html#a6db329c3ff42d4bd8c9deb28eeffd5c8">StE::Core::GL::gl_generic_context</a>
 </li>
 <li>blend_func()
-: <a class="el" href="classStE_1_1Core_1_1GL_1_1gl__generic__context.html#af9c2a342b757f25d18a1a6a5c4fc9f98">StE::Core::GL::gl_generic_context</a>
+: <a class="el" href="classStE_1_1Core_1_1GL_1_1gl__generic__context.html#aef1f89fe68b947d3d9f84cea9bcab469">StE::Core::GL::gl_generic_context</a>
 </li>
 <li>blend_func_separate()
 : <a class="el" href="classStE_1_1Core_1_1GL_1_1gl__generic__context.html#a6d123ceaf1a32c17a5c788af0ac0b220">StE::Core::GL::gl_generic_context</a>
@@ -298,9 +302,6 @@ $(document).ready(function(){initNavTree('functions_func_b.html','');});
 <li>bounding_sphere()
 : <a class="el" href="classStE_1_1Graphics_1_1mesh.html#a10fbba99f71ad7ef81128e06901a542e">StE::Graphics::mesh&lt; Mode &gt;</a>
 , <a class="el" href="classStE_1_1Graphics_1_1mesh__generic.html#ad90f68b615e51ac1cd582e0e68ba22fe">StE::Graphics::mesh_generic</a>
-</li>
-<li>BRDF_from_bme_representation_task()
-: <a class="el" href="classStE_1_1Graphics_1_1bme__brdf__representation.html#afc798d8cc8d46969c88ea6f7e8b44a9f">StE::Graphics::bme_brdf_representation</a>
 </li>
 <li>brdf_texture()
 : <a class="el" href="classStE_1_1Graphics_1_1pBRDF.html#a1f5bc8e9e0cef8254cd8df1a03e9309e">StE::Graphics::pBRDF</a>
@@ -313,7 +314,7 @@ $(document).ready(function(){initNavTree('functions_func_b.html','');});
 , <a class="el" href="classStE_1_1Graphics_1_1object__group__indirect__command__buffer.html#a8300a2bf50fb8a1b01101230c91e6147">StE::Graphics::object_group_indirect_command_buffer</a>
 </li>
 <li>buffer_object()
-: <a class="el" href="classStE_1_1Core_1_1buffer__object.html#a234c40a97d03956a386f0776612a53e4">StE::Core::buffer_object&lt; Type, U &gt;</a>
+: <a class="el" href="classStE_1_1Core_1_1buffer__object.html#a3e8f1431b598de7efb433446185f7143">StE::Core::buffer_object&lt; Type, U &gt;</a>
 </li>
 <li>buffer_object_layout_bindable()
 : <a class="el" href="classStE_1_1Core_1_1buffer__object__layout__bindable.html#a1862f58c6ea39eafa2e35455579c0b49">StE::Core::buffer_object_layout_bindable&lt; Type, BinderType, U, LB &gt;</a>

@@ -2,7 +2,6 @@ var searchData=
 [
   ['graph',['graph',['../classStE_1_1Graph_1_1detail_1_1graph__impl.html#a14e2fae25934a48fd130d79a0e130c66',1,'StE::Graph::detail::graph_impl']]],
   ['hash_3c_20context_5fstate_5fkey_20_3e',['hash&lt; context_state_key &gt;',['../classStE_1_1Core_1_1GL_1_1context__state__key.html#a1fcc7a6553c4b8d010ebd4160a883f30',1,'StE::Core::GL::context_state_key']]],
-  ['hash_3c_20glsl_5fprograms_5fpool_5fkey_20_3e',['hash&lt; glsl_programs_pool_key &gt;',['../classStE_1_1Resource_1_1glsl__programs__pool_1_1glsl__programs__pool__key.html#a5bd2c610224b20e087b1440619b9b881',1,'StE::Resource::glsl_programs_pool::glsl_programs_pool_key']]],
   ['hash_3c_20sbta_5fkey_20_3e',['hash&lt; sbta_key &gt;',['../classStE_1_1Graphics_1_1texture__pool.html#a8915d11ec78e1ad15f9757b533a960ed',1,'StE::Graphics::texture_pool']]],
   ['sequential_5fordering_5fproblem',['sequential_ordering_problem',['../classStE_1_1Algorithm_1_1SOP_1_1sop__edge.html#ae4f49da8f361ccf3517b55e972cad22b',1,'StE::Algorithm::SOP::sop_edge::sequential_ordering_problem()'],['../classStE_1_1Algorithm_1_1SOP_1_1sop__vertex.html#ae4f49da8f361ccf3517b55e972cad22b',1,'StE::Algorithm::SOP::sop_vertex::sequential_ordering_problem()']]],
   ['sequential_5fordering_5fproblem_3c_20g_20_3e',['sequential_ordering_problem&lt; G &gt;',['../classStE_1_1Algorithm_1_1SOP_1_1sop__optimizer.html#af6c825831386334151d8e4557f581f3f',1,'StE::Algorithm::SOP::sop_optimizer']]],
@@ -13,8 +12,5 @@ var searchData=
   ['sop_5foptimizer',['sop_optimizer',['../classStE_1_1Algorithm_1_1SOP_1_1sop__edge.html#a65000a981ea8efaecc2bc9cb87881ebc',1,'StE::Algorithm::SOP::sop_edge::sop_optimizer()'],['../classStE_1_1Algorithm_1_1SOP_1_1sop__vertex.html#a65000a981ea8efaecc2bc9cb87881ebc',1,'StE::Algorithm::SOP::sop_vertex::sop_optimizer()']]],
   ['sop_5foptimizer_3c_20graphtype_20_3e',['sop_optimizer&lt; GraphType &gt;',['../classStE_1_1Algorithm_1_1SOP_1_1sequential__ordering__problem.html#a1dc1e98c1d248a630fd80fef3a8c2ca3',1,'StE::Algorithm::SOP::sequential_ordering_problem']]],
   ['sqrt',['sqrt',['../classStE_1_1Graphics_1_1spectrum.html#a7f328c204fc2c171c74f27c1b171fd57',1,'StE::Graphics::spectrum']]],
-  ['ssss_5fbilateral_5fblur_5fx',['ssss_bilateral_blur_x',['../classStE_1_1Graphics_1_1ssss__generator.html#a922a7d50dd138ce178d83360a5be11a6',1,'StE::Graphics::ssss_generator']]],
-  ['ssss_5fbilateral_5fblur_5fy',['ssss_bilateral_blur_y',['../classStE_1_1Graphics_1_1ssss__generator.html#a05c8cd60cd514e097e7c50dd364b2413',1,'StE::Graphics::ssss_generator']]],
-  ['ssss_5fwrite_5fpenumbras',['ssss_write_penumbras',['../classStE_1_1Graphics_1_1ssss__generator.html#aca0f808b583effc7507ff9d2fec24501',1,'StE::Graphics::ssss_generator']]],
   ['stenginecontrol',['StEngineControl',['../classStE_1_1Core_1_1GL_1_1gl__context.html#a2ae98f124e2af25f5d11cb139ac9db33',1,'StE::Core::GL::gl_context']]]
 ];

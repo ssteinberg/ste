@@ -3,6 +3,7 @@ var searchData=
   ['factorial',['factorial',['../structStE_1_1__rsh__utils_1_1factorial.html',1,'StE::_rsh_utils']]],
   ['factorial_3c_200_20_3e',['factorial&lt; 0 &gt;',['../structStE_1_1__rsh__utils_1_1factorial_3_010_01_4.html',1,'StE::_rsh_utils']]],
   ['fb_5fclear_5fdispatch',['fb_clear_dispatch',['../classStE_1_1Graphics_1_1fb__clear__dispatch.html',1,'StE::Graphics']]],
+  ['fb_5fclear_5fdispatch_3c_20false_20_3e',['fb_clear_dispatch&lt; false &gt;',['../classStE_1_1Graphics_1_1fb__clear__dispatch.html',1,'StE::Graphics']]],
   ['fb_5fclear_5fdispatch_3c_3e',['fb_clear_dispatch&lt;&gt;',['../classStE_1_1Graphics_1_1fb__clear__dispatch.html',1,'StE::Graphics']]],
   ['fbo_5fattachment_5fpoint',['fbo_attachment_point',['../classStE_1_1Core_1_1fbo__attachment__point.html',1,'StE::Core']]],
   ['fbo_5fattachment_5fpoint_3c_20allocator_20_3e',['fbo_attachment_point&lt; Allocator &gt;',['../classStE_1_1Core_1_1fbo__attachment__point.html',1,'StE::Core']]],
@@ -32,5 +33,7 @@ var searchData=
   ['function_5ftraits_3c_20returntype_28args_2e_2e_2e_29_3e',['function_traits&lt; ReturnType(Args...)&gt;',['../structStE_1_1function__traits_3_01ReturnType_07Args_8_8_8_08_4.html',1,'StE']]],
   ['function_5ftraits_3c_20t_20_26_20_3e',['function_traits&lt; T &amp; &gt;',['../structStE_1_1function__traits_3_01T_01_6_01_4.html',1,'StE']]],
   ['function_5ftraits_3c_20t_20_26_26_20_3e',['function_traits&lt; T &amp;&amp; &gt;',['../structStE_1_1function__traits_3_01T_01_6_6_01_4.html',1,'StE']]],
-  ['function_5fwrapper',['function_wrapper',['../classStE_1_1function__wrapper.html',1,'StE']]]
+  ['function_5fwrapper',['function_wrapper',['../classStE_1_1function__wrapper.html',1,'StE']]],
+  ['future_5fcollection',['future_collection',['../classStE_1_1future__collection.html',1,'StE']]],
+  ['fxaa_5fdispatchable',['fxaa_dispatchable',['../classStE_1_1Graphics_1_1fxaa__dispatchable.html',1,'StE::Graphics']]]
 ];

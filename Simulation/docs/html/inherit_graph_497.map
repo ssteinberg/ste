@@ -1,3 +1,14 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classStE_1_1Text_1_1attributed__string.html" title="StE::Text::attributed\l_string\&lt; CharT \&gt;" alt="" coords="5,5,145,47"/>
+<area shape="rect" id="node1" href="$classStE_1_1Text_1_1Attributes_1_1attrib.html" title="StE::Text::Attributes\l::attrib" alt="" coords="5,332,145,373"/>
+<area shape="rect" id="node2" href="$classStE_1_1Text_1_1Attributes_1_1align.html" title="StE::Text::Attributes\l::align" alt="" coords="207,5,347,47"/>
+<area shape="rect" id="node3" href="$classStE_1_1Text_1_1Attributes_1_1font.html" title="StE::Text::Attributes\l::font" alt="" coords="207,71,347,112"/>
+<area shape="rect" id="node4" href="$classStE_1_1Text_1_1Attributes_1_1italic.html" title="StE::Text::Attributes\l::italic" alt="" coords="207,136,347,177"/>
+<area shape="rect" id="node5" href="$classStE_1_1Text_1_1Attributes_1_1kern.html" title="StE::Text::Attributes\l::kern" alt="" coords="207,201,347,243"/>
+<area shape="rect" id="node6" href="$classStE_1_1Text_1_1Attributes_1_1line__height.html" title="StE::Text::Attributes\l::line_height" alt="" coords="207,267,347,308"/>
+<area shape="rect" id="node7" href="$classStE_1_1Text_1_1Attributes_1_1link.html" title="StE::Text::Attributes\l::link" alt="" coords="207,332,347,373"/>
+<area shape="rect" id="node8" href="$classStE_1_1Text_1_1Attributes_1_1rgb.html" title="StE::Text::Attributes::rgb" alt="" coords="193,398,360,425"/>
+<area shape="rect" id="node9" href="$classStE_1_1Text_1_1Attributes_1_1size.html" title="StE::Text::Attributes\l::size" alt="" coords="207,449,347,491"/>
+<area shape="rect" id="node10" href="$classStE_1_1Text_1_1Attributes_1_1stroke.html" title="StE::Text::Attributes\l::stroke" alt="" coords="207,515,347,556"/>
+<area shape="rect" id="node11" href="$classStE_1_1Text_1_1Attributes_1_1underline.html" title="StE::Text::Attributes\l::underline" alt="" coords="207,580,347,621"/>
+<area shape="rect" id="node12" href="$classStE_1_1Text_1_1Attributes_1_1weight.html" title="StE::Text::Attributes\l::weight" alt="" coords="207,645,347,687"/>
 </map>

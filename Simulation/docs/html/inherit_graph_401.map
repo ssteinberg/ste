@@ -1,33 +1,3 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classStE_1_1Graphics_1_1gpu__dispatchable.html" title="StE::Graphics::gpu\l_dispatchable" alt="" coords="5,940,140,981"/>
-<area shape="rect" id="node2" href="$classStE_1_1Graphics_1_1fb__clear__dispatch.html" title="StE::Graphics::fb_clear\l_dispatch\&lt;\&gt;" alt="" coords="217,5,376,47"/>
-<area shape="rect" id="node3" href="$classStE_1_1Graphics_1_1debug__gui.html" title="StE::Graphics::debug_gui" alt="" coords="209,71,384,98"/>
-<area shape="rect" id="node4" href="$classStE_1_1Graphics_1_1deferred__composer.html" title="StE::Graphics::deferred\l_composer" alt="" coords="215,123,378,164"/>
-<area shape="rect" id="node5" href="$classStE_1_1Graphics_1_1dense__voxelizer.html" title="StE::Graphics::dense\l_voxelizer" alt="" coords="221,188,372,229"/>
-<area shape="rect" id="node6" href="$classStE_1_1Graphics_1_1fb__clear__dispatch.html" title="StE::Graphics::fb_clear\l_dispatch\&lt; color, depth \&gt;" alt="" coords="209,253,384,295"/>
-<area shape="rect" id="node7" href="$classStE_1_1Graphics_1_1gbuffer__clear__dispatch.html" title="StE::Graphics::gbuffer\l_clear_dispatch" alt="" coords="221,319,373,360"/>
-<area shape="rect" id="node8" href="$classStE_1_1Graphics_1_1gbuffer__downsample__depth__dispatch.html" title="StE::Graphics::gbuffer\l_downsample_depth_dispatch" alt="" coords="195,384,398,425"/>
-<area shape="rect" id="node9" href="$classStE_1_1Graphics_1_1gbuffer__sort__dispatch.html" title="StE::Graphics::gbuffer\l_sort_dispatch" alt="" coords="221,449,373,491"/>
-<area shape="rect" id="node10" href="$classStE_1_1Graphics_1_1gpu__dummy__dispatchable.html" title="StE::Graphics::gpu\l_dummy_dispatchable" alt="" coords="219,515,375,556"/>
-<area shape="rect" id="node11" href="$classStE_1_1Graphics_1_1hdr__bloom__blurx__task.html" title="StE::Graphics::hdr\l_bloom_blurx_task" alt="" coords="230,580,363,621"/>
-<area shape="rect" id="node12" href="$classStE_1_1Graphics_1_1hdr__bloom__blury__task.html" title="StE::Graphics::hdr\l_bloom_blury_task" alt="" coords="230,645,363,687"/>
-<area shape="rect" id="node13" href="$classStE_1_1Graphics_1_1hdr__bokeh__blurx__task.html" title="StE::Graphics::hdr\l_bokeh_blurx_task" alt="" coords="230,711,363,752"/>
-<area shape="rect" id="node14" href="$classStE_1_1Graphics_1_1hdr__bokeh__blury__task.html" title="StE::Graphics::hdr\l_bokeh_blury_task" alt="" coords="230,776,363,817"/>
-<area shape="rect" id="node15" href="$classStE_1_1Graphics_1_1hdr__compute__histogram__sums__task.html" title="StE::Graphics::hdr\l_compute_histogram_sums_task" alt="" coords="188,841,405,883"/>
-<area shape="rect" id="node16" href="$classStE_1_1Graphics_1_1hdr__compute__minmax__task.html" title="StE::Graphics::hdr\l_compute_minmax_task" alt="" coords="213,907,380,948"/>
-<area shape="rect" id="node17" href="$classStE_1_1Graphics_1_1hdr__create__histogram__task.html" title="StE::Graphics::hdr\l_create_histogram_task" alt="" coords="214,972,379,1013"/>
-<area shape="rect" id="node18" href="$classStE_1_1Graphics_1_1hdr__tonemap__coc__task.html" title="StE::Graphics::hdr\l_tonemap_coc_task" alt="" coords="225,1037,368,1079"/>
-<area shape="rect" id="node19" href="$classStE_1_1Graphics_1_1light__preprocess__cull__lights.html" title="StE::Graphics::light\l_preprocess_cull_lights" alt="" coords="216,1103,377,1144"/>
-<area shape="rect" id="node20" href="$classStE_1_1Graphics_1_1light__preprocess__cull__shadows.html" title="StE::Graphics::light\l_preprocess_cull_shadows" alt="" coords="204,1168,389,1209"/>
-<area shape="rect" id="node21" href="$classStE_1_1Graphics_1_1linked__light__lists__gen__dispatch.html" title="StE::Graphics::linked\l_light_lists_gen_dispatch" alt="" coords="211,1233,382,1275"/>
-<area shape="rect" id="node22" href="$classStE_1_1Graphics_1_1Scene.html" title="StE::Graphics::Scene" alt="" coords="221,1299,372,1326"/>
-<area shape="rect" id="node23" href="$classStE_1_1Graphics_1_1scene__geo__cull__dispatch.html" title="StE::Graphics::scene\l_geo_cull_dispatch" alt="" coords="222,1351,371,1392"/>
-<area shape="rect" id="node24" href="$classStE_1_1Graphics_1_1scene__prepopulate__depth__dispatch.html" title="StE::Graphics::scene\l_prepopulate_depth_dispatch" alt="" coords="199,1416,395,1457"/>
-<area shape="rect" id="node25" href="$classStE_1_1Graphics_1_1shadowmap__projector.html" title="StE::Graphics::shadowmap\l_projector" alt="" coords="203,1481,390,1523"/>
-<area shape="rect" id="node26" href="$classStE_1_1Graphics_1_1ssss__bilateral__blur__x.html" title="StE::Graphics::ssss\l_bilateral_blur_x" alt="" coords="227,1547,367,1588"/>
-<area shape="rect" id="node27" href="$classStE_1_1Graphics_1_1ssss__bilateral__blur__y.html" title="StE::Graphics::ssss\l_bilateral_blur_y" alt="" coords="227,1612,367,1653"/>
-<area shape="rect" id="node28" href="$classStE_1_1Graphics_1_1ssss__write__penumbras.html" title="StE::Graphics::ssss\l_write_penumbras" alt="" coords="227,1677,367,1719"/>
-<area shape="rect" id="node29" href="$classStE_1_1Graphics_1_1volumetric__scattering__gather__dispatch.html" title="StE::Graphics::volumetric\l_scattering_gather_dispatch" alt="" coords="202,1743,391,1784"/>
-<area shape="rect" id="node30" href="$classStE_1_1Graphics_1_1volumetric__scattering__scatter__dispatch.html" title="StE::Graphics::volumetric\l_scattering_scatter_dispatch" alt="" coords="201,1808,392,1849"/>
-<area shape="rect" id="node31" href="$classStE_1_1Text_1_1TextManager_1_1text__renderable.html" title="StE::Text::TextManager\l::text_renderable" alt="" coords="213,1873,381,1915"/>
+<area shape="rect" id="node1" href="$classStE_1_1Graphics_1_1linked__light__lists.html" title="StE::Graphics::linked\l_light_lists" alt="" coords="5,5,153,47"/>
 </map>

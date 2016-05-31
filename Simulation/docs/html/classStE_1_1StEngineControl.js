@@ -22,7 +22,6 @@ var classStE_1_1StEngineControl =
     [ "get_window_position", "classStE_1_1StEngineControl.html#a621dd1725584af0bf26759e2446b586f", null ],
     [ "get_window_size", "classStE_1_1StEngineControl.html#a58f8f02d93fd6fb4529f1f4837aaa401", null ],
     [ "gl", "classStE_1_1StEngineControl.html#aeb5c557b8e86d1a908beb120bac737c7", null ],
-    [ "glslprograms_pool", "classStE_1_1StEngineControl.html#aef25c5d4ec3c65ae40a68b177105f518", null ],
     [ "hid_signal_keyboard", "classStE_1_1StEngineControl.html#a1b5825ea73c92b267daea8930ab3cc04", null ],
     [ "hid_signal_pointer_button", "classStE_1_1StEngineControl.html#a79d3f85e0873b8adc0cf74ff86bec94c", null ],
     [ "hid_signal_pointer_movement", "classStE_1_1StEngineControl.html#a8c51abe95fb771164029f37e006a859f", null ],

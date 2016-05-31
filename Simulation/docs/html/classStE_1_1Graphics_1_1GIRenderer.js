@@ -1,6 +1,5 @@
 var classStE_1_1Graphics_1_1GIRenderer =
 [
-    [ "GIRenderer", "classStE_1_1Graphics_1_1GIRenderer.html#a1093593a44279553c776f093421ca8f6", null ],
     [ "~GIRenderer", "classStE_1_1Graphics_1_1GIRenderer.html#ad3b79afd1d2b91a5c8e691f95f072e19", null ],
     [ "add_gui_task", "classStE_1_1Graphics_1_1GIRenderer.html#a9d641a2252173adeeec50dd5e8ac5e7b", null ],
     [ "add_task", "classStE_1_1Graphics_1_1GIRenderer.html#ace0e6964a438500b1901db273a97933e", null ],
@@ -13,7 +12,8 @@ var classStE_1_1Graphics_1_1GIRenderer =
     [ "remove_task", "classStE_1_1Graphics_1_1GIRenderer.html#a93f5668083111b1a8ec2e9137a0b4c2f", null ],
     [ "render_queue", "classStE_1_1Graphics_1_1GIRenderer.html#a28abb8106a9ba611e52e809cbfa47156", null ],
     [ "rendering_system_name", "classStE_1_1Graphics_1_1GIRenderer.html#aae367969dd1659b46e1cd73db81f6dcc", null ],
-    [ "set_deferred_rendering_enabled", "classStE_1_1Graphics_1_1GIRenderer.html#af4b2573a342322e15c3b31921c4457dc", null ],
     [ "setup_tasks", "classStE_1_1Graphics_1_1GIRenderer.html#af2d9b620d089f8cd6a74f13da8deef4e", null ],
-    [ "deferred_composer", "classStE_1_1Graphics_1_1GIRenderer.html#a67be56d2b8e023dba8706bc6f53cf7ca", null ]
+    [ "deferred_composer", "classStE_1_1Graphics_1_1GIRenderer.html#a67be56d2b8e023dba8706bc6f53cf7ca", null ],
+    [ "Resource::resource_instance< GIRenderer >", "classStE_1_1Graphics_1_1GIRenderer.html#a54714a5d0ae4d17e14e1c7f260156947", null ],
+    [ "Resource::resource_loading_task< GIRenderer >", "classStE_1_1Graphics_1_1GIRenderer.html#a40e360e3fcff91bedff04bf5c33c39d6", null ]
 ];

@@ -1,20 +1,15 @@
 <map id="src/ste/framework_text/glyphs" name="src/ste/framework_text/glyphs">
 <area shape="rect" id="node2" href="dir_1ede7453476acd8187f020ef08f6ac4e.html" title="distance_field" alt="" coords="37,159,142,207"/>
-<area shape="rect" id="edge10-headlabel" href="dir_000097_000098.html" title="1" alt="" coords="101,135,109,149"/>
-<area shape="rect" id="node3" href="dir_0a02da5788466c7e84d515f2edb54de5.html" title="engine" alt="" coords="243,255,315,303"/>
-<area shape="rect" id="edge6-headlabel" href="dir_000097_000002.html" title="8" alt="" coords="260,227,268,242"/>
-<area shape="rect" id="node4" href="dir_2418b4e5938fe7197b97fc9fc06c7509.html" title="framework_resources" alt="" coords="109,351,261,399"/>
-<area shape="rect" id="edge7-headlabel" href="dir_000097_000087.html" title="1" alt="" coords="189,325,197,340"/>
-<area shape="rect" id="node5" href="dir_f637600c2359dc7b8c2897fca92c6d18.html" title="stl_extensions" alt="" coords="257,447,364,495"/>
-<area shape="rect" id="edge8-headlabel" href="dir_000097_000109.html" title="3" alt="" coords="335,427,343,442"/>
-<area shape="rect" id="node6" href="dir_378bc2022261a10ca0355b7db90f156a.html" title="fonts" alt="" coords="268,159,340,207"/>
-<area shape="rect" id="edge9-headlabel" href="dir_000097_000096.html" title="2" alt="" coords="251,142,259,156"/>
-<area shape="rect" id="edge1-headlabel" href="dir_000002_000087.html" title="2" alt="" coords="215,336,223,350"/>
-<area shape="rect" id="edge2-headlabel" href="dir_000002_000109.html" title="41" alt="" coords="297,419,312,434"/>
-<area shape="rect" id="edge3-headlabel" href="dir_000087_000002.html" title="24" alt="" coords="238,303,252,318"/>
-<area shape="rect" id="edge4-headlabel" href="dir_000087_000109.html" title="3" alt="" coords="267,422,275,436"/>
-<area shape="rect" id="edge5-headlabel" href="dir_000109_000002.html" title="8" alt="" coords="281,315,289,330"/>
-<area shape="rect" id="edge11-headlabel" href="dir_000096_000002.html" title="1" alt="" coords="294,232,302,247"/>
+<area shape="rect" id="edge6-headlabel" href="dir_000097_000098.html" title="1" alt="" coords="101,135,109,149"/>
+<area shape="rect" id="node3" href="dir_0a02da5788466c7e84d515f2edb54de5.html" title="engine" alt="" coords="217,255,289,303"/>
+<area shape="rect" id="edge3-headlabel" href="dir_000097_000002.html" title="10" alt="" coords="216,228,230,243"/>
+<area shape="rect" id="node4" href="dir_f637600c2359dc7b8c2897fca92c6d18.html" title="stl_extensions" alt="" coords="200,351,307,399"/>
+<area shape="rect" id="edge4-headlabel" href="dir_000097_000109.html" title="3" alt="" coords="288,334,296,348"/>
+<area shape="rect" id="node5" href="dir_378bc2022261a10ca0355b7db90f156a.html" title="fonts" alt="" coords="217,159,289,207"/>
+<area shape="rect" id="edge5-headlabel" href="dir_000097_000096.html" title="2" alt="" coords="202,134,210,149"/>
+<area shape="rect" id="edge1-headlabel" href="dir_000002_000109.html" title="40" alt="" coords="245,325,260,339"/>
+<area shape="rect" id="edge2-headlabel" href="dir_000109_000002.html" title="8" alt="" coords="250,314,258,329"/>
+<area shape="rect" id="edge7-headlabel" href="dir_000096_000002.html" title="1" alt="" coords="258,229,266,244"/>
 <area shape="rect" id="clust2" href="dir_26dc5de33a945bd2b73d26ae043047a7.html" alt="" coords="27,52,152,217"/>
 <area shape="rect" id="clust1" href="dir_3448f3c0c2cce449bc39a11f79fc1c81.html" title="framework_text" alt="" coords="16,16,163,228"/>
 </map>

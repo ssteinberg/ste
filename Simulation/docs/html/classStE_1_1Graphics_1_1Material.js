@@ -1,6 +1,7 @@
 var classStE_1_1Graphics_1_1Material =
 [
     [ "Material", "classStE_1_1Graphics_1_1Material.html#a137e987401b63eb7c6c27c3e38bc74b5", null ],
+    [ "~Material", "classStE_1_1Graphics_1_1Material.html#a43f7d480f22e9b1022807afcc2934ec2", null ],
     [ "get_anisotropy", "classStE_1_1Graphics_1_1Material.html#a6bcf974513f191c61213592de519f06c", null ],
     [ "get_basecolor_map", "classStE_1_1Graphics_1_1Material.html#aa53896d8b6470e9f29453d2aac316a8a", null ],
     [ "get_cavity_map", "classStE_1_1Graphics_1_1Material.html#a70e458d5e5bc8a7875e076ab570c67c1", null ],

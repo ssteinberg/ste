@@ -1,6 +1,6 @@
 var searchData=
 [
   ['objectgroup',['ObjectGroup',['../classStE_1_1Graphics_1_1Object.html#a362031bc826e6f29d29b615d5c4919b1',1,'StE::Graphics::Object']]],
-  ['operator_3e_3e',['operator&gt;&gt;',['../structStE_1_1Graphics_1_1bme__brdf__representation_1_1bme__brdf__descriptor__entry.html#a771cd72d60aacf8a45de34d2ab34883a',1,'StE::Graphics::bme_brdf_representation::bme_brdf_descriptor_entry']]],
+  ['observable_5fresource_3c_20descriptor_20_3e',['observable_resource&lt; Descriptor &gt;',['../classStE_1_1Core_1_1resource__storage__base.html#ac0186b477956b7c95730cbc29ab3afd9',1,'StE::Core::resource_storage_base']]],
   ['optional',['optional',['../classStE_1_1optional.html#aa756d67787488b1e2bba885ce4da6fe0',1,'StE::optional']]]
 ];

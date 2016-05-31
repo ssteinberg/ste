@@ -1,9 +1,10 @@
 var searchData=
 [
-  ['task',['task',['../classStE_1_1task.html',1,'StE']]],
+  ['task_5ffuture_5fchaining_5fconstruct',['task_future_chaining_construct',['../classStE_1_1task__future__chaining__construct.html',1,'StE']]],
+  ['task_5ffuture_5fimpl',['task_future_impl',['../classStE_1_1task__future__impl.html',1,'StE']]],
   ['task_5fscheduler',['task_scheduler',['../classStE_1_1task__scheduler.html',1,'StE']]],
   ['text_5fglyph_5fpair_5fkey',['text_glyph_pair_key',['../structStE_1_1Text_1_1text__glyph__pair__key.html',1,'StE::Text']]],
-  ['text_5frenderable',['text_renderable',['../classStE_1_1Text_1_1TextManager_1_1text__renderable.html',1,'StE::Text::TextManager']]],
+  ['text_5frenderable',['text_renderable',['../classStE_1_1Text_1_1text__renderable.html',1,'StE::Text']]],
   ['textmanager',['TextManager',['../classStE_1_1Text_1_1TextManager.html',1,'StE::Text']]],
   ['texture',['texture',['../classStE_1_1Core_1_1texture.html',1,'StE::Core']]],
   ['texture1d',['Texture1D',['../classStE_1_1Core_1_1Texture1D.html',1,'StE::Core']]],

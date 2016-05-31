@@ -41,23 +41,23 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 ".html",
-"classStE_1_1Algorithm_1_1SOP_1_1sequential__ordering__problem.html#aa80dc1f0da0f00abf4da384f4cc5850f",
-"classStE_1_1Core_1_1GL_1_1gl__generic__context.html#a206b0086d8bc7fa3f50fa796de34a775",
-"classStE_1_1Core_1_1Texture2D.html#a4c17d214bb84317ef021d2534e68b996",
-"classStE_1_1Core_1_1gpu__sync.html#a0c0ff3200c142419f51491c290b54436",
-"classStE_1_1Core_1_1texture.html#aad84770e32093ef7f7f69eb2fa449deb",
-"classStE_1_1Graphics_1_1RGB.html#a2a7e0f4f0ed908a70ff08d16ff41a4ce",
-"classStE_1_1Graphics_1_1light.html",
-"classStE_1_1Graphics_1_1volumetric__scattering__storage.html#ace2ea440424382f8e38060cd30096391",
-"classStE_1_1Text_1_1Attributes_1_1attrib.html#a626d4df18f082ceb0378d35e69c9898d",
-"classStE_1_1log__stream__formatter.html#ac8121f09fa0e34896c888974efcd7c22",
-"core__resource__type_8hpp.html#a87104792878375552ac09a0ee081859fa7dee0ef8de7545de201887f6acdf445a",
-"functions_vars_o.html",
-"light__preprocess__cull__shadows_8hpp.html",
-"sop__graph_8hpp.html",
-"structStE_1_1Core_1_1surface__element__type_3_01gli_1_1format_1_1FORMAT__RGB8__UINT__PACK8_01_4.html",
-"structStE_1_1Core_1_1surface__stride_3_01gli_1_1format_1_1FORMAT__R8__SINT__PACK8_01_4.html",
-"surface__constants_8hpp_source.html"
+"classStE_1_1Algorithm_1_1SOP_1_1sop__optimizer.html#ab4fbe41cf6dee2be011408cf5a44298b",
+"classStE_1_1Core_1_1GenericResource.html#acdfe0199f72c71f97faf2bd4f8548efd",
+"classStE_1_1Core_1_1VertexBufferObject.html#a05aece121483e4afd898a68ed25fe879",
+"classStE_1_1Core_1_1gstack.html#a59bb345b9dbe158562e816c47968addf",
+"classStE_1_1Core_1_1texture.html#ad92ed2edcf5215c83a32086de7ef31aa",
+"classStE_1_1Graphics_1_1RGB.html#ade263ac1efef7c2250946b0537d0a9a9",
+"classStE_1_1Graphics_1_1light.html#ae029a040d6282a2dfe45206adda4cbc6",
+"classStE_1_1HID_1_1keyboard.html#ae0241d0927b0477efa170fd82db21b03a3cc10ca49715014a022cb1f6ecbae5e6",
+"classStE_1_1Text_1_1Attributes_1_1attrib.html#a53ce584137e05fe2642ca2fc3467e4f5",
+"classStE_1_1legendre__polynomial.html",
+"context__state__name_8hpp.html#a5a2c695a9be85f7cca0cb91ce5ec30e7ad3187e53db53c965199fcaa6d029ac1f",
+"functions_func_x.html",
+"human__vision__properties_8hpp.html",
+"quaternion__tangent__frame_8hpp.html#af7e4c69b2937405cc06dff2a2c329dde",
+"structStE_1_1Core_1_1surface__element__type_3_01gli_1_1format_1_1FORMAT__R32__UINT__PACK32_01_4.html#ab4a105b94ba3202cdf96e2d81637d6d5",
+"structStE_1_1Core_1_1surface__is__signed_3_01gli_1_1format_1_1FORMAT__R64__SINT__PACK64_01_4.html",
+"structStE_1_1function__traits.html#aa0488f71be2af75faf17cf4cd059f221"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

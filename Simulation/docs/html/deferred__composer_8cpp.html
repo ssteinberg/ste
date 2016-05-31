@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>StE: src/ste/framework_graphics/gpu_dispatch/renderers/global_illumination/deferred_composer/deferred_composer.cpp File Reference</title>
+<title>StE: src/ste/framework_graphics/renderers/global_illumination/deferred_composer/deferred_composer.cpp File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -101,8 +101,6 @@ $(document).ready(function(){initNavTree('deferred__composer_8cpp.html','');});
 </div>
 
 <div class="header">
-  <div class="summary">
-<a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">deferred_composer.cpp File Reference</div>  </div>
 </div><!--header-->
@@ -111,48 +109,23 @@ $(document).ready(function(){initNavTree('deferred__composer_8cpp.html','');});
 <code>#include &quot;<a class="el" href="deferred__composer_8hpp_source.html">deferred_composer.hpp</a>&quot;</code><br/>
 <code>#include &quot;<a class="el" href="GIRenderer_8hpp_source.html">GIRenderer.hpp</a>&quot;</code><br/>
 <code>#include &quot;<a class="el" href="Sampler_8hpp_source.html">Sampler.hpp</a>&quot;</code><br/>
-<code>#include &quot;<a class="el" href="ShaderStorageBuffer_8hpp_source.html">ShaderStorageBuffer.hpp</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="Quad_8hpp_source.html">Quad.hpp</a>&quot;</code><br/>
 <code>#include &quot;<a class="el" href="gl__current__context_8hpp_source.html">gl_current_context.hpp</a>&quot;</code><br/>
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for deferred_composer.cpp:</div>
 <div class="dyncontent">
-<div class="center"><img src="deferred__composer_8cpp__incl.png" border="0" usemap="#src_2ste_2framework__graphics_2gpu__dispatch_2renderers_2global__illumination_2deferred__composer_2deferred__composer_8cpp" alt=""/></div>
-<map name="src_2ste_2framework__graphics_2gpu__dispatch_2renderers_2global__illumination_2deferred__composer_2deferred__composer_8cpp" id="src_2ste_2framework__graphics_2gpu__dispatch_2renderers_2global__illumination_2deferred__composer_2deferred__composer_8cpp">
-<area shape="rect" id="node2" href="stdafx_8hpp.html" title="stdafx.hpp" alt="" coords="1479,527,1561,553"/><area shape="rect" id="node25" href="deferred__composer_8hpp.html" title="deferred_composer.hpp" alt="" coords="601,295,765,322"/><area shape="rect" id="node30" href="gl__current__context_8hpp.html" title="gl_current_context.hpp" alt="" coords="1701,452,1856,479"/><area shape="rect" id="node32" href="GIRenderer_8hpp.html" title="GIRenderer.hpp" alt="" coords="1630,124,1746,151"/><area shape="rect" id="node39" href="ShaderStorageBuffer_8hpp.html" title="ShaderStorageBuffer.hpp" alt="" coords="2805,452,2977,479"/><area shape="rect" id="node47" href="Sampler_8hpp.html" title="Sampler.hpp" alt="" coords="1091,377,1187,404"/><area shape="rect" id="node4" href="gl_8hpp.html" title="gl.hpp" alt="" coords="1641,601,1698,628"/><area shape="rect" id="node26" href="StEngineControl_8hpp.html" title="Engine Control class. " alt="" coords="873,377,1015,404"/><area shape="rect" id="node28" href="gpu__dispatchable_8hpp.html" title="gpu_dispatchable.hpp" alt="" coords="2089,452,2239,479"/><area shape="rect" id="node29" href="GLSLProgram_8hpp.html" title="GLSLProgram.hpp" alt="" coords="513,377,645,404"/><area shape="rect" id="node31" href="Texture2D_8hpp.html" title="Texture2D.hpp" alt="" coords="1465,452,1575,479"/><area shape="rect" id="node27" href="rendering__system_8hpp.html" title="rendering_system.hpp" alt="" coords="3103,452,3257,479"/><area shape="rect" id="node33" href="Camera_8hpp.html" title="Camera.hpp" alt="" coords="3033,295,3127,322"/><area shape="rect" id="node34" href="transforms__ring__buffers_8hpp.html" title="transforms_ring_buffers.hpp" alt="" coords="2859,206,3042,233"/><area shape="rect" id="node35" href="gpu__task_8hpp.html" title="gpu_task.hpp" alt="" coords="1363,377,1463,404"/><area shape="rect" id="node36" href="profiler_8hpp.html" title="profiler.hpp" alt="" coords="3281,452,3367,479"/><area shape="rect" id="node37" href="Scene_8hpp.html" title="Scene.hpp" alt="" coords="2264,295,2349,322"/><area shape="rect" id="node38" href="SceneProperties_8hpp.html" title="SceneProperties.hpp" alt="" coords="2467,377,2613,404"/><area shape="rect" id="node40" href="scene__prepopulate__depth__dispatch_8hpp.html" title="scene_prepopulate_depth\l_dispatch.hpp" alt="" coords="1537,199,1713,240"/><area shape="rect" id="node41" href="scene__geo__cull__dispatch_8hpp.html" title="scene_geo_cull_dispatch.hpp" alt="" coords="1991,206,2190,233"/><area shape="rect" id="node42" href="light_8hpp.html" title="light.hpp" alt="" coords="470,206,541,233"/><area shape="rect" id="node43" href="light__preprocessor_8hpp.html" title="light_preprocessor.hpp" alt="" coords="1234,206,1390,233"/><area shape="rect" id="node44" href="hdr__dof__postprocess_8hpp.html" title="hdr_dof_postprocess.hpp" alt="" coords="1341,295,1512,322"/><area shape="rect" id="node45" href="linked__light__lists_8hpp.html" title="linked_light_lists.hpp" alt="" coords="1742,377,1885,404"/><area shape="rect" id="node46" href="linked__light__lists__gen__dispatch_8hpp.html" title="linked_light_lists\l_gen_dispatch.hpp" alt="" coords="1739,288,1872,329"/><area shape="rect" id="node48" href="gpu__dummy__dispatchable_8hpp.html" title="gpu_dummy_dispatchable.hpp" alt="" coords="2688,377,2891,404"/><area shape="rect" id="node49" href="shadowmap__storage_8hpp.html" title="shadowmap_storage.hpp" alt="" coords="840,295,1013,322"/><area shape="rect" id="node50" href="shadowmap__projector_8hpp.html" title="shadowmap_projector.hpp" alt="" coords="1788,206,1967,233"/></map>
+<div class="center"><img src="deferred__composer_8cpp__incl.png" border="0" usemap="#src_2ste_2framework__graphics_2renderers_2global__illumination_2deferred__composer_2deferred__composer_8cpp" alt=""/></div>
+<map name="src_2ste_2framework__graphics_2renderers_2global__illumination_2deferred__composer_2deferred__composer_8cpp" id="src_2ste_2framework__graphics_2renderers_2global__illumination_2deferred__composer_2deferred__composer_8cpp">
+<area shape="rect" id="node2" href="stdafx_8hpp.html" title="stdafx.hpp" alt="" coords="1601,751,1684,777"/><area shape="rect" id="node25" href="deferred__composer_8hpp.html" title="deferred_composer.hpp" alt="" coords="1013,295,1177,322"/><area shape="rect" id="node33" href="GIRenderer_8hpp.html" title="GIRenderer.hpp" alt="" coords="1903,124,2019,151"/><area shape="rect" id="node41" href="gl__current__context_8hpp.html" title="gl_current_context.hpp" alt="" coords="321,452,476,479"/><area shape="rect" id="node47" href="Sampler_8hpp.html" title="Sampler.hpp" alt="" coords="453,377,549,404"/><area shape="rect" id="node49" href="Quad_8hpp.html" title="Quad.hpp" alt="" coords="1502,377,1581,404"/><area shape="rect" id="node4" href="gl_8hpp.html" title="gl.hpp" alt="" coords="2091,825,2149,852"/><area shape="rect" id="node26" href="StEngineControl_8hpp.html" title="Engine Control class. " alt="" coords="2697,601,2839,628"/><area shape="rect" id="node28" href="gpu__dispatchable_8hpp.html" title="gpu_dispatchable.hpp" alt="" coords="1350,452,1501,479"/><area shape="rect" id="node29" href="glsl__program_8hpp.html" title="glsl_program.hpp" alt="" coords="2385,377,2509,404"/><area shape="rect" id="node32" href="Texture2D_8hpp.html" title="Texture2D.hpp" alt="" coords="1151,452,1262,479"/><area shape="rect" id="node27" href="rendering__system_8hpp.html" title="rendering_system.hpp" alt="" coords="3179,676,3333,703"/><area shape="rect" id="node30" href="resource__instance_8hpp.html" title="resource_instance.hpp" alt="" coords="2846,452,3002,479"/><area shape="rect" id="node31" href="resource__loading__task_8hpp.html" title="resource_loading_task.hpp" alt="" coords="2515,527,2698,553"/><area shape="rect" id="node34" href="Camera_8hpp.html" title="Camera.hpp" alt="" coords="131,295,226,322"/><area shape="rect" id="node35" href="transforms__ring__buffers_8hpp.html" title="transforms_ring_buffers.hpp" alt="" coords="94,206,277,233"/><area shape="rect" id="node36" href="gpu__task_8hpp.html" title="gpu_task.hpp" alt="" coords="3091,377,3191,404"/><area shape="rect" id="node37" href="profiler_8hpp.html" title="profiler.hpp" alt="" coords="2491,676,2578,703"/><area shape="rect" id="node38" href="Scene_8hpp.html" title="Scene.hpp" alt="" coords="2000,295,2085,322"/><area shape="rect" id="node39" href="SceneProperties_8hpp.html" title="SceneProperties.hpp" alt="" coords="1808,377,1955,404"/><area shape="rect" id="node40" href="scene__prepopulate__depth__dispatch_8hpp.html" title="scene_prepopulate_depth\l_dispatch.hpp" alt="" coords="1811,199,1987,240"/><area shape="rect" id="node42" href="scene__geo__cull__dispatch_8hpp.html" title="scene_geo_cull_dispatch.hpp" alt="" coords="2061,206,2259,233"/><area shape="rect" id="node43" href="light_8hpp.html" title="light.hpp" alt="" coords="551,527,622,553"/><area shape="rect" id="node44" href="light__preprocessor_8hpp.html" title="light_preprocessor.hpp" alt="" coords="2874,295,3030,322"/><area shape="rect" id="node45" href="linked__light__lists_8hpp.html" title="linked_light_lists.hpp" alt="" coords="675,377,818,404"/><area shape="rect" id="node46" href="linked__light__lists__gen__dispatch_8hpp.html" title="linked_light_lists\l_gen_dispatch.hpp" alt="" coords="804,288,937,329"/><area shape="rect" id="node48" href="hdr__dof__postprocess_8hpp.html" title="hdr_dof_postprocess.hpp" alt="" coords="2599,295,2769,322"/><area shape="rect" id="node50" href="fxaa__dispatchable_8hpp.html" title="fxaa_dispatchable.hpp" alt="" coords="1579,295,1733,322"/></map>
 </div>
 </div>
 <p><a href="deferred__composer_8cpp_source.html">Go to the source code of this file.</a></p>
-<table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
-Functions</h2></td></tr>
-<tr class="memitem:aa5120eecf2e1ad5095b68dfada816ed9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="deferred__composer_8cpp.html#aa5120eecf2e1ad5095b68dfada816ed9">dr</a> (dr)</td></tr>
-<tr class="separator:aa5120eecf2e1ad5095b68dfada816ed9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table>
-<h2 class="groupheader">Function Documentation</h2>
-<a class="anchor" id="aa5120eecf2e1ad5095b68dfada816ed9"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">dr </td>
-          <td>(</td>
-          <td class="paramtype">dr&#160;</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="deferred__composer_8cpp_source.html#l00014">14</a> of file <a class="el" href="deferred__composer_8cpp_source.html">deferred_composer.cpp</a>.</p>
-
-</div>
-</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_f1b7ceb015efa797a5d0f17d43cb3bb2.html">src</a></li><li class="navelem"><a class="el" href="dir_d34427326b64b65ebb5fb4a6bc8a21a4.html">ste</a></li><li class="navelem"><a class="el" href="dir_428fa47c5aa5b34ff3fe20ca049edbcd.html">framework_graphics</a></li><li class="navelem"><a class="el" href="dir_950cb64ce76bdc284cf92d43eb6ef1ff.html">gpu_dispatch</a></li><li class="navelem"><a class="el" href="dir_f594cdf1f1ba99dbed46f9ac9b5a64d5.html">renderers</a></li><li class="navelem"><a class="el" href="dir_f25cd5f901aaf2df5e4a4aec602cf99e.html">global_illumination</a></li><li class="navelem"><a class="el" href="dir_7807a97fde3b8abac02ec42a39d68f2e.html">deferred_composer</a></li><li class="navelem"><a class="el" href="deferred__composer_8cpp.html">deferred_composer.cpp</a></li>
+    <li class="navelem"><a class="el" href="dir_f1b7ceb015efa797a5d0f17d43cb3bb2.html">src</a></li><li class="navelem"><a class="el" href="dir_d34427326b64b65ebb5fb4a6bc8a21a4.html">ste</a></li><li class="navelem"><a class="el" href="dir_428fa47c5aa5b34ff3fe20ca049edbcd.html">framework_graphics</a></li><li class="navelem"><a class="el" href="dir_e83a5b33daab614e15bf5ab227b01325.html">renderers</a></li><li class="navelem"><a class="el" href="dir_8451b7ba90a3a6206c820656a4759bc0.html">global_illumination</a></li><li class="navelem"><a class="el" href="dir_8bd7e05cd844651ff75036e0d9c209dd.html">deferred_composer</a></li><li class="navelem"><a class="el" href="deferred__composer_8cpp.html">deferred_composer.cpp</a></li>
     <li class="footer">Generated by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>

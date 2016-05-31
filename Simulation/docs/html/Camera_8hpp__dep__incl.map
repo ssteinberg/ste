@@ -1,8 +1,9 @@
 <map id="src/ste/framework_graphics/utilities/camera/Camera.hpp" name="src/ste/framework_graphics/utilities/camera/Camera.hpp">
-<area shape="rect" id="node2" href="$main_8cpp.html" title="src/main.cpp" alt="" coords="5,339,103,366"/>
-<area shape="rect" id="node3" href="$GIRenderer_8hpp.html" title="src/ste/framework_graphics\l/gpu_dispatch/renderers\l/global_illumination/GIRenderer.hpp" alt="" coords="126,213,361,269"/>
-<area shape="rect" id="node6" href="$transforms__ring__buffers_8hpp.html" title="src/ste/framework_graphics\l/gpu_dispatch/renderers\l/global_illumination/transforms\l_ring_buffers.hpp" alt="" coords="142,95,345,165"/>
-<area shape="rect" id="node7" href="$Camera_8cpp.html" title="src/ste/framework_graphics\l/utilities/camera/Camera.cpp" alt="" coords="369,109,563,151"/>
-<area shape="rect" id="node4" href="$deferred__composer_8cpp.html" title="src/ste/framework_graphics\l/gpu_dispatch/renderers\l/global_illumination/deferred\l_composer/deferred_composer.cpp" alt="" coords="127,317,362,388"/>
-<area shape="rect" id="node5" href="$GIRenderer_8cpp.html" title="src/ste/framework_graphics\l/gpu_dispatch/renderers\l/global_illumination/GIRenderer.cpp" alt="" coords="386,325,621,381"/>
+<area shape="rect" id="node2" href="$main_8cpp.html" title="src/main.cpp" alt="" coords="5,325,103,351"/>
+<area shape="rect" id="node3" href="$GIRenderer_8hpp.html" title="src/ste/framework_graphics\l/renderers/global_illumination\l/GIRenderer.hpp" alt="" coords="297,199,496,255"/>
+<area shape="rect" id="node7" href="$transforms__ring__buffers_8hpp.html" title="src/ste/framework_graphics\l/renderers/global_illumination\l/transforms_ring_buffers.hpp" alt="" coords="297,95,496,151"/>
+<area shape="rect" id="node8" href="$Camera_8cpp.html" title="src/ste/framework_graphics\l/utilities/camera/Camera.cpp" alt="" coords="520,102,713,143"/>
+<area shape="rect" id="node4" href="$deferred__composer_8cpp.html" title="src/ste/framework_graphics\l/renderers/global_illumination\l/deferred_composer/deferred\l_composer.cpp" alt="" coords="127,303,325,373"/>
+<area shape="rect" id="node5" href="$GIRenderer_8cpp.html" title="src/ste/framework_graphics\l/renderers/global_illumination\l/GIRenderer.cpp" alt="" coords="349,310,548,366"/>
+<area shape="rect" id="node6" href="$girenderer__loader_8hpp.html" title="src/ste/framework_graphics\l/renderers/global_illumination\l/girenderer_loader.hpp" alt="" coords="572,310,771,366"/>
 </map>

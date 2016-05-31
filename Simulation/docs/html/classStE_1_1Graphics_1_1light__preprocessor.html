@@ -116,14 +116,12 @@ $(document).ready(function(){initNavTree('classStE_1_1Graphics_1_1light__preproc
 Collaboration diagram for StE::Graphics::light_preprocessor:</div>
 <div class="dyncontent">
 <div class="center"><img src="classStE_1_1Graphics_1_1light__preprocessor__coll__graph.png" border="0" usemap="#StE_1_1Graphics_1_1light__preprocessor_coll__map" alt="Collaboration graph"/></div>
+<map name="StE_1_1Graphics_1_1light__preprocessor_coll__map" id="StE_1_1Graphics_1_1light__preprocessor_coll__map">
+</map>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ae495c16b23cd332ef165d7371be95677"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1light__preprocessor.html#ae495c16b23cd332ef165d7371be95677">light_preprocessor</a> (const <a class="el" href="classStE_1_1StEngineControl.html">StEngineControl</a> &amp;ctx, <a class="el" href="classStE_1_1Graphics_1_1light__storage.html">light_storage</a> *ls, const <a class="el" href="classStE_1_1Graphics_1_1hdr__dof__postprocess.html">hdr_dof_postprocess</a> *hdr)</td></tr>
-<tr class="separator:ae495c16b23cd332ef165d7371be95677"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a28787b9705036140e42fadc5e5c0d56a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1light__preprocessor.html#a28787b9705036140e42fadc5e5c0d56a">light_preprocess_cull_shadows_program</a> (ctx.glslprograms_pool().fetch_program_task({&quot;light_preprocess_cull_shadows.glsl&quot;})())</td></tr>
-<tr class="separator:a28787b9705036140e42fadc5e5c0d56a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa33c60d555e786847cf533f7e49bcc96"><td class="memItemLeft" align="right" valign="top">auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1light__preprocessor.html#aa33c60d555e786847cf533f7e49bcc96">get_task</a> () const </td></tr>
 <tr class="separator:aa33c60d555e786847cf533f7e49bcc96"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -133,54 +131,15 @@ Friends</h2></td></tr>
 <tr class="separator:a42c7a8a6a4eddc2ab2c9a773dd930cf9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae33436a08a0b7968394d1e01acd1f478"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1light__preprocessor.html#ae33436a08a0b7968394d1e01acd1f478">light_preprocess_cull_shadows</a></td></tr>
 <tr class="separator:ae33436a08a0b7968394d1e01acd1f478"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac5176aee650122397efba51a7820df4d"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1light__preprocessor.html#ac5176aee650122397efba51a7820df4d">Resource::resource_loading_task&lt; light_preprocessor &gt;</a></td></tr>
+<tr class="separator:ac5176aee650122397efba51a7820df4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a629a7a3efe869354b2dfb796e10772"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1Graphics_1_1light__preprocessor.html#a3a629a7a3efe869354b2dfb796e10772">Resource::resource_instance&lt; light_preprocessor &gt;</a></td></tr>
+<tr class="separator:a3a629a7a3efe869354b2dfb796e10772"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p>Definition at line <a class="el" href="light__preprocessor_8hpp_source.html#l00022">22</a> of file <a class="el" href="light__preprocessor_8hpp_source.html">light_preprocessor.hpp</a>.</p>
-</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" id="ae495c16b23cd332ef165d7371be95677"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">StE::Graphics::light_preprocessor::light_preprocessor </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="classStE_1_1StEngineControl.html">StEngineControl</a> &amp;&#160;</td>
-          <td class="paramname"><em>ctx</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="classStE_1_1Graphics_1_1light__storage.html">light_storage</a> *&#160;</td>
-          <td class="paramname"><em>ls</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classStE_1_1Graphics_1_1hdr__dof__postprocess.html">hdr_dof_postprocess</a> *&#160;</td>
-          <td class="paramname"><em>hdr</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="light__preprocessor_8hpp_source.html#l00049">49</a> of file <a class="el" href="light__preprocessor_8hpp_source.html">light_preprocessor.hpp</a>.</p>
-
-</div>
-</div>
-<h2 class="groupheader">Member Function Documentation</h2>
+<p>Definition at line <a class="el" href="light__preprocessor_8hpp_source.html#l00024">24</a> of file <a class="el" href="light__preprocessor_8hpp_source.html">light_preprocessor.hpp</a>.</p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="aa33c60d555e786847cf533f7e49bcc96"></a>
 <div class="memitem">
 <div class="memproto">
@@ -202,33 +161,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="light__preprocessor_8hpp_source.html#l00069">69</a> of file <a class="el" href="light__preprocessor_8hpp_source.html">light_preprocessor.hpp</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a28787b9705036140e42fadc5e5c0d56a"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">StE::Graphics::light_preprocessor::light_preprocess_cull_shadows_program </td>
-          <td>(</td>
-          <td class="paramtype">ctx.&#160;</td>
-          <td class="paramname"><em>glslprograms_pool</em>).fetch_program_task({&quot;light_preprocess_cull_shadows.glsl&quot;})(</td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="light__preprocessor_8hpp_source.html#l00054">54</a> of file <a class="el" href="light__preprocessor_8hpp_source.html">light_preprocessor.hpp</a>.</p>
+<p>Definition at line <a class="el" href="light__preprocessor_8hpp_source.html#l00073">73</a> of file <a class="el" href="light__preprocessor_8hpp_source.html">light_preprocessor.hpp</a>.</p>
 
 </div>
 </div>
@@ -251,7 +184,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="light__preprocessor_8hpp_source.html#l00023">23</a> of file <a class="el" href="light__preprocessor_8hpp_source.html">light_preprocessor.hpp</a>.</p>
+<p>Definition at line <a class="el" href="light__preprocessor_8hpp_source.html#l00025">25</a> of file <a class="el" href="light__preprocessor_8hpp_source.html">light_preprocessor.hpp</a>.</p>
 
 </div>
 </div>
@@ -273,7 +206,51 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="light__preprocessor_8hpp_source.html#l00024">24</a> of file <a class="el" href="light__preprocessor_8hpp_source.html">light_preprocessor.hpp</a>.</p>
+<p>Definition at line <a class="el" href="light__preprocessor_8hpp_source.html#l00026">26</a> of file <a class="el" href="light__preprocessor_8hpp_source.html">light_preprocessor.hpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a3a629a7a3efe869354b2dfb796e10772"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classStE_1_1Resource_1_1resource__instance.html">Resource::resource_instance</a>&lt; <a class="el" href="classStE_1_1Graphics_1_1light__preprocessor.html">light_preprocessor</a> &gt;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="light__preprocessor_8hpp_source.html#l00029">29</a> of file <a class="el" href="light__preprocessor_8hpp_source.html">light_preprocessor.hpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ac5176aee650122397efba51a7820df4d"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classStE_1_1Resource_1_1resource__loading__task.html">Resource::resource_loading_task</a>&lt; <a class="el" href="classStE_1_1Graphics_1_1light__preprocessor.html">light_preprocessor</a> &gt;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="light__preprocessor_8hpp_source.html#l00028">28</a> of file <a class="el" href="light__preprocessor_8hpp_source.html">light_preprocessor.hpp</a>.</p>
 
 </div>
 </div>

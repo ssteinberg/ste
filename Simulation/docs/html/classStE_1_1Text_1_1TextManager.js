@@ -1,8 +1,8 @@
 var classStE_1_1Text_1_1TextManager =
 [
-    [ "text_renderable", "classStE_1_1Text_1_1TextManager_1_1text__renderable.html", "classStE_1_1Text_1_1TextManager_1_1text__renderable" ],
-    [ "ResizeSignalConnectionType", "classStE_1_1Text_1_1TextManager.html#a42c1dbcee442d59cab5df4a12f91ad70", null ],
-    [ "TextManager", "classStE_1_1Text_1_1TextManager.html#a36960e90affd03145a3e6c379d4a78eb", null ],
+    [ "~TextManager", "classStE_1_1Text_1_1TextManager.html#a7755b3bcd1b140b8a9a043a2001e82a5", null ],
     [ "create_renderer", "classStE_1_1Text_1_1TextManager.html#a3c0f185cebe69d149b1488fbe4fb59f2", null ],
+    [ "Resource::resource_instance< TextManager >", "classStE_1_1Text_1_1TextManager.html#a147824c7c77de5c5a24fe2f6d97a5b29", null ],
+    [ "Resource::resource_loading_task< TextManager >", "classStE_1_1Text_1_1TextManager.html#a228f8ca2ada3eaa274e5cc591ca819fa", null ],
     [ "text_renderable", "classStE_1_1Text_1_1TextManager.html#af8e54cf0d26a95af0868c64ded551008", null ]
 ];

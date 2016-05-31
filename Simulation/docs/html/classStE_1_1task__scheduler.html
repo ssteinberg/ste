@@ -116,6 +116,8 @@ $(document).ready(function(){initNavTree('classStE_1_1task__scheduler.html','');
 Collaboration diagram for StE::task_scheduler:</div>
 <div class="dyncontent">
 <div class="center"><img src="classStE_1_1task__scheduler__coll__graph.png" border="0" usemap="#StE_1_1task__scheduler_coll__map" alt="Collaboration graph"/></div>
+<map name="StE_1_1task__scheduler_coll__map" id="StE_1_1task__scheduler_coll__map">
+</map>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
@@ -132,44 +134,44 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ae9b2dc03d3e5bd48fbdb7dcf1e61ce2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ada4e1003f989e4428fd94eaa975cbb50"><td class="memItemLeft" align="right" valign="top"><a class="el" href="gl__extensions_8h.html#a814c8b5745ecf82afdd1da718fbdc47c">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1task__scheduler.html#ada4e1003f989e4428fd94eaa975cbb50">run_loop</a> ()</td></tr>
 <tr class="separator:ada4e1003f989e4428fd94eaa975cbb50"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa05012f05124818f53f8e96832e4ae44"><td class="memTemplParams" colspan="2">template&lt;typename F &gt; </td></tr>
-<tr class="memitem:aa05012f05124818f53f8e96832e4ae44"><td class="memTemplItemLeft" align="right" valign="top">std::future&lt; typename <br class="typebreak"/>
-<a class="el" href="structStE_1_1function__traits.html">function_traits</a>&lt; F &gt;::result_t &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classStE_1_1task__scheduler.html#aa05012f05124818f53f8e96832e4ae44">schedule_now</a> (F &amp;&amp;f, std::enable_if_t&lt; <a class="el" href="structStE_1_1function__traits.html">function_traits</a>&lt; F &gt;::arity==0 &gt; *=0)</td></tr>
-<tr class="separator:aa05012f05124818f53f8e96832e4ae44"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a66ff2cde56881758d4e727918f5dab2b"><td class="memTemplParams" colspan="2">template&lt;typename F &gt; </td></tr>
-<tr class="memitem:a66ff2cde56881758d4e727918f5dab2b"><td class="memTemplItemLeft" align="right" valign="top">std::future&lt; typename <br class="typebreak"/>
-<a class="el" href="structStE_1_1function__traits.html">function_traits</a>&lt; F &gt;::result_t &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classStE_1_1task__scheduler.html#a66ff2cde56881758d4e727918f5dab2b">schedule_now</a> (F &amp;&amp;f, std::enable_if_t&lt; <a class="el" href="structStE_1_1function__traits.html">function_traits</a>&lt; F &gt;::arity==1 &gt; *=0)</td></tr>
-<tr class="separator:a66ff2cde56881758d4e727918f5dab2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5f6b7db096bef5d60a24be93ca43abde"><td class="memTemplParams" colspan="2">template&lt;typename F &gt; </td></tr>
-<tr class="memitem:a5f6b7db096bef5d60a24be93ca43abde"><td class="memTemplItemLeft" align="right" valign="top">std::future&lt; typename <br class="typebreak"/>
-<a class="el" href="structStE_1_1function__traits.html">function_traits</a>&lt; F &gt;::result_t &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classStE_1_1task__scheduler.html#a5f6b7db096bef5d60a24be93ca43abde">schedule_at</a> (const std::chrono::high_resolution_clock::time_point &amp;at, F &amp;&amp;f, std::enable_if_t&lt; <a class="el" href="structStE_1_1function__traits.html">function_traits</a>&lt; F &gt;::arity==0 &gt; *=0)</td></tr>
-<tr class="separator:a5f6b7db096bef5d60a24be93ca43abde"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a03b6b491c04de2e447496cd64109bf69"><td class="memTemplParams" colspan="2">template&lt;typename F &gt; </td></tr>
-<tr class="memitem:a03b6b491c04de2e447496cd64109bf69"><td class="memTemplItemLeft" align="right" valign="top">std::future&lt; typename <br class="typebreak"/>
-<a class="el" href="structStE_1_1function__traits.html">function_traits</a>&lt; F &gt;::result_t &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classStE_1_1task__scheduler.html#a03b6b491c04de2e447496cd64109bf69">schedule_at</a> (const std::chrono::high_resolution_clock::time_point &amp;at, F &amp;&amp;f, std::enable_if_t&lt; <a class="el" href="structStE_1_1function__traits.html">function_traits</a>&lt; F &gt;::arity==1 &gt; *=0)</td></tr>
-<tr class="separator:a03b6b491c04de2e447496cd64109bf69"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa08549acbe872f7e2c56327c90651f4a"><td class="memTemplParams" colspan="2">template&lt;typename F , class Rep , class Period &gt; </td></tr>
-<tr class="memitem:aa08549acbe872f7e2c56327c90651f4a"><td class="memTemplItemLeft" align="right" valign="top">std::future&lt; typename <br class="typebreak"/>
-<a class="el" href="structStE_1_1function__traits.html">function_traits</a>&lt; F &gt;::result_t &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classStE_1_1task__scheduler.html#aa08549acbe872f7e2c56327c90651f4a">schedule_after</a> (const std::chrono::duration&lt; Rep, Period &gt; &amp;after, F &amp;&amp;f, std::enable_if_t&lt; <a class="el" href="structStE_1_1function__traits.html">function_traits</a>&lt; F &gt;::arity==0 &gt; *=0)</td></tr>
-<tr class="separator:aa08549acbe872f7e2c56327c90651f4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a68b6fe9c3fd8606996faa7dbf7e78f6d"><td class="memTemplParams" colspan="2">template&lt;typename F , class Rep , class Period &gt; </td></tr>
-<tr class="memitem:a68b6fe9c3fd8606996faa7dbf7e78f6d"><td class="memTemplItemLeft" align="right" valign="top">std::future&lt; typename <br class="typebreak"/>
-<a class="el" href="structStE_1_1function__traits.html">function_traits</a>&lt; F &gt;::result_t &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classStE_1_1task__scheduler.html#a68b6fe9c3fd8606996faa7dbf7e78f6d">schedule_after</a> (const std::chrono::duration&lt; Rep, Period &gt; &amp;after, F &amp;&amp;f, std::enable_if_t&lt; <a class="el" href="structStE_1_1function__traits.html">function_traits</a>&lt; F &gt;::arity==1 &gt; *=0)</td></tr>
-<tr class="separator:a68b6fe9c3fd8606996faa7dbf7e78f6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a75c07df7428dfec7455e2d2741b3d177"><td class="memTemplParams" colspan="2">template&lt;typename F &gt; </td></tr>
-<tr class="memitem:a75c07df7428dfec7455e2d2741b3d177"><td class="memTemplItemLeft" align="right" valign="top">std::future&lt; typename <br class="typebreak"/>
-<a class="el" href="structStE_1_1function__traits.html">function_traits</a>&lt; F &gt;::result_t &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classStE_1_1task__scheduler.html#a75c07df7428dfec7455e2d2741b3d177">schedule_now_on_main_thread</a> (F &amp;&amp;f, std::enable_if_t&lt; <a class="el" href="structStE_1_1function__traits.html">function_traits</a>&lt; F &gt;::arity==0 &gt; *=0)</td></tr>
-<tr class="separator:a75c07df7428dfec7455e2d2741b3d177"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afef49db39091e2f63b8d033d8acfdeb1"><td class="memTemplParams" colspan="2">template&lt;typename F &gt; </td></tr>
-<tr class="memitem:afef49db39091e2f63b8d033d8acfdeb1"><td class="memTemplItemLeft" align="right" valign="top">std::future&lt; typename <br class="typebreak"/>
-<a class="el" href="structStE_1_1function__traits.html">function_traits</a>&lt; F &gt;::result_t &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classStE_1_1task__scheduler.html#afef49db39091e2f63b8d033d8acfdeb1">schedule_now_on_main_thread</a> (F &amp;&amp;f, std::enable_if_t&lt; <a class="el" href="structStE_1_1function__traits.html">function_traits</a>&lt; F &gt;::arity==1 &gt; *=0)</td></tr>
-<tr class="separator:afef49db39091e2f63b8d033d8acfdeb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac5e1384c7e9f813869add9a5e8bcbef1"><td class="memTemplParams" colspan="2">template&lt;bool shared, typename F &gt; </td></tr>
+<tr class="memitem:ac5e1384c7e9f813869add9a5e8bcbef1"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classStE_1_1task__future__impl.html">task_future_impl</a>&lt; typename <br class="typebreak"/>
+<a class="el" href="structStE_1_1function__traits.html">function_traits</a>&lt; F &gt;::result_t, <br class="typebreak"/>
+shared &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classStE_1_1task__scheduler.html#ac5e1384c7e9f813869add9a5e8bcbef1">schedule_now</a> (F &amp;&amp;f)</td></tr>
+<tr class="separator:ac5e1384c7e9f813869add9a5e8bcbef1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1402c2b610d8b6c3070a7de70b33718d"><td class="memTemplParams" colspan="2">template&lt;bool shared, typename F &gt; </td></tr>
+<tr class="memitem:a1402c2b610d8b6c3070a7de70b33718d"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classStE_1_1task__future__impl.html">task_future_impl</a>&lt; typename <br class="typebreak"/>
+<a class="el" href="structStE_1_1function__traits.html">function_traits</a>&lt; F &gt;::result_t, <br class="typebreak"/>
+shared &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classStE_1_1task__scheduler.html#a1402c2b610d8b6c3070a7de70b33718d">schedule_at</a> (const std::chrono::high_resolution_clock::time_point &amp;at, F &amp;&amp;f)</td></tr>
+<tr class="separator:a1402c2b610d8b6c3070a7de70b33718d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e3a2226ce74b52d75e560cda9016d33"><td class="memTemplParams" colspan="2">template&lt;bool shared, typename F , class Rep , class Period &gt; </td></tr>
+<tr class="memitem:a6e3a2226ce74b52d75e560cda9016d33"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classStE_1_1task__future__impl.html">task_future_impl</a>&lt; typename <br class="typebreak"/>
+<a class="el" href="structStE_1_1function__traits.html">function_traits</a>&lt; F &gt;::result_t, <br class="typebreak"/>
+shared &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classStE_1_1task__scheduler.html#a6e3a2226ce74b52d75e560cda9016d33">schedule_after</a> (const std::chrono::duration&lt; Rep, Period &gt; &amp;after, F &amp;&amp;f)</td></tr>
+<tr class="separator:a6e3a2226ce74b52d75e560cda9016d33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a005717cc3f1625301a50da6b90ab4f7f"><td class="memTemplParams" colspan="2">template&lt;bool shared, typename F &gt; </td></tr>
+<tr class="memitem:a005717cc3f1625301a50da6b90ab4f7f"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classStE_1_1task__future__impl.html">task_future_impl</a>&lt; typename <br class="typebreak"/>
+<a class="el" href="structStE_1_1function__traits.html">function_traits</a>&lt; F &gt;::result_t, <br class="typebreak"/>
+shared &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classStE_1_1task__scheduler.html#a005717cc3f1625301a50da6b90ab4f7f">schedule_now_on_main_thread</a> (F &amp;&amp;f)</td></tr>
+<tr class="separator:a005717cc3f1625301a50da6b90ab4f7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a029e6c7cbd48324b244e2274d51d21b4"><td class="memTemplParams" colspan="2">template&lt;typename F &gt; </td></tr>
+<tr class="memitem:a029e6c7cbd48324b244e2274d51d21b4"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classStE_1_1task__scheduler.html#a029e6c7cbd48324b244e2274d51d21b4">schedule_now</a> (F &amp;&amp;f)</td></tr>
+<tr class="separator:a029e6c7cbd48324b244e2274d51d21b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a823ea3f3556382e90778cde5fd8afa9d"><td class="memTemplParams" colspan="2">template&lt;typename F &gt; </td></tr>
+<tr class="memitem:a823ea3f3556382e90778cde5fd8afa9d"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classStE_1_1task__scheduler.html#a823ea3f3556382e90778cde5fd8afa9d">schedule_at</a> (const std::chrono::high_resolution_clock::time_point &amp;at, F &amp;&amp;f)</td></tr>
+<tr class="separator:a823ea3f3556382e90778cde5fd8afa9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a733b0d7e989cbbf08c3ce0eea4ca4704"><td class="memTemplParams" colspan="2">template&lt;typename F , class Rep , class Period &gt; </td></tr>
+<tr class="memitem:a733b0d7e989cbbf08c3ce0eea4ca4704"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classStE_1_1task__scheduler.html#a733b0d7e989cbbf08c3ce0eea4ca4704">schedule_after</a> (const std::chrono::duration&lt; Rep, Period &gt; &amp;after, F &amp;&amp;f)</td></tr>
+<tr class="separator:a733b0d7e989cbbf08c3ce0eea4ca4704"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae04a0121cea2f3f96f77c41d80a678af"><td class="memTemplParams" colspan="2">template&lt;typename F &gt; </td></tr>
+<tr class="memitem:ae04a0121cea2f3f96f77c41d80a678af"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classStE_1_1task__scheduler.html#ae04a0121cea2f3f96f77c41d80a678af">schedule_now_on_main_thread</a> (F &amp;&amp;f)</td></tr>
+<tr class="separator:ae04a0121cea2f3f96f77c41d80a678af"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3934469fac806465320dc721f50af34b"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classStE_1_1balanced__thread__pool.html">balanced_thread_pool</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStE_1_1task__scheduler.html#a3934469fac806465320dc721f50af34b">get_thread_pool</a> () const </td></tr>
 <tr class="separator:a3934469fac806465320dc721f50af34b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p>Definition at line <a class="el" href="task__scheduler_8hpp_source.html#l00022">22</a> of file <a class="el" href="task__scheduler_8hpp_source.html">task_scheduler.hpp</a>.</p>
+<p>Definition at line <a class="el" href="task__scheduler_8hpp_source.html#l00024">24</a> of file <a class="el" href="task__scheduler_8hpp_source.html">task_scheduler.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a2952e8106aaf92d0b6fa94b4b8373163"></a>
 <div class="memitem">
@@ -264,7 +266,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="task__scheduler_8hpp_source.html#l00119">119</a> of file <a class="el" href="task__scheduler_8hpp_source.html">task_scheduler.hpp</a>.</p>
+<p>Definition at line <a class="el" href="task__scheduler_8hpp_source.html#l00112">112</a> of file <a class="el" href="task__scheduler_8hpp_source.html">task_scheduler.hpp</a>.</p>
 
 </div>
 </div>
@@ -329,11 +331,49 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="task__scheduler_8cpp_source.html#l00028">28</a> of file <a class="el" href="task__scheduler_8cpp_source.html">task_scheduler.cpp</a>.</p>
+<p>Definition at line <a class="el" href="task__scheduler_8cpp_source.html#l00027">27</a> of file <a class="el" href="task__scheduler_8cpp_source.html">task_scheduler.cpp</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="aa08549acbe872f7e2c56327c90651f4a"></a>
+<a class="anchor" id="a6e3a2226ce74b52d75e560cda9016d33"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;bool shared, typename F , class Rep , class Period &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classStE_1_1task__future__impl.html">task_future_impl</a>&lt;typename <a class="el" href="structStE_1_1function__traits.html">function_traits</a>&lt;F&gt;::result_t, shared&gt; StE::task_scheduler::schedule_after </td>
+          <td>(</td>
+          <td class="paramtype">const std::chrono::duration&lt; Rep, Period &gt; &amp;&#160;</td>
+          <td class="paramname"><em>after</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">F &amp;&amp;&#160;</td>
+          <td class="paramname"><em>f</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="task__scheduler_8hpp_source.html#l00070">70</a> of file <a class="el" href="task__scheduler_8hpp_source.html">task_scheduler.hpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a733b0d7e989cbbf08c3ce0eea4ca4704"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
@@ -343,7 +383,7 @@ template&lt;typename F , class Rep , class Period &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::future&lt;typename <a class="el" href="structStE_1_1function__traits.html">function_traits</a>&lt;F&gt;::result_t&gt; StE::task_scheduler::schedule_after </td>
+          <td class="memname">auto StE::task_scheduler::schedule_after </td>
           <td>(</td>
           <td class="paramtype">const std::chrono::duration&lt; Rep, Period &gt; &amp;&#160;</td>
           <td class="paramname"><em>after</em>, </td>
@@ -352,18 +392,172 @@ template&lt;typename F , class Rep , class Period &gt; </div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">F &amp;&amp;&#160;</td>
-          <td class="paramname"><em>f</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::enable_if_t&lt; <a class="el" href="structStE_1_1function__traits.html">function_traits</a>&lt; F &gt;::arity==0 &gt; *&#160;</td>
-          <td class="paramname"> = <code>0</code>&#160;</td>
+          <td class="paramname"><em>f</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
           <td>)</td>
           <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="task__scheduler_8hpp_source.html#l00104">104</a> of file <a class="el" href="task__scheduler_8hpp_source.html">task_scheduler.hpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a1402c2b610d8b6c3070a7de70b33718d"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;bool shared, typename F &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classStE_1_1task__future__impl.html">task_future_impl</a>&lt;typename <a class="el" href="structStE_1_1function__traits.html">function_traits</a>&lt;F&gt;::result_t, shared&gt; StE::task_scheduler::schedule_at </td>
+          <td>(</td>
+          <td class="paramtype">const std::chrono::high_resolution_clock::time_point &amp;&#160;</td>
+          <td class="paramname"><em>at</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">F &amp;&amp;&#160;</td>
+          <td class="paramname"><em>f</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="task__scheduler_8hpp_source.html#l00059">59</a> of file <a class="el" href="task__scheduler_8hpp_source.html">task_scheduler.hpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a823ea3f3556382e90778cde5fd8afa9d"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename F &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto StE::task_scheduler::schedule_at </td>
+          <td>(</td>
+          <td class="paramtype">const std::chrono::high_resolution_clock::time_point &amp;&#160;</td>
+          <td class="paramname"><em>at</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">F &amp;&amp;&#160;</td>
+          <td class="paramname"><em>f</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="task__scheduler_8hpp_source.html#l00100">100</a> of file <a class="el" href="task__scheduler_8hpp_source.html">task_scheduler.hpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ac5e1384c7e9f813869add9a5e8bcbef1"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;bool shared, typename F &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classStE_1_1task__future__impl.html">task_future_impl</a>&lt;typename <a class="el" href="structStE_1_1function__traits.html">function_traits</a>&lt;F&gt;::result_t, shared&gt; StE::task_scheduler::schedule_now </td>
+          <td>(</td>
+          <td class="paramtype">F &amp;&amp;&#160;</td>
+          <td class="paramname"><em>f</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="task__scheduler_8hpp_source.html#l00052">52</a> of file <a class="el" href="task__scheduler_8hpp_source.html">task_scheduler.hpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a029e6c7cbd48324b244e2274d51d21b4"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename F &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto StE::task_scheduler::schedule_now </td>
+          <td>(</td>
+          <td class="paramtype">F &amp;&amp;&#160;</td>
+          <td class="paramname"><em>f</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="task__scheduler_8hpp_source.html#l00096">96</a> of file <a class="el" href="task__scheduler_8hpp_source.html">task_scheduler.hpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a005717cc3f1625301a50da6b90ab4f7f"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;bool shared, typename F &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classStE_1_1task__future__impl.html">task_future_impl</a>&lt;typename <a class="el" href="structStE_1_1function__traits.html">function_traits</a>&lt;F&gt;::result_t, shared&gt; StE::task_scheduler::schedule_now_on_main_thread </td>
+          <td>(</td>
+          <td class="paramtype">F &amp;&amp;&#160;</td>
+          <td class="paramname"><em>f</em></td><td>)</td>
+          <td></td>
         </tr>
       </table>
   </td>
@@ -377,51 +571,7 @@ template&lt;typename F , class Rep , class Period &gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="a68b6fe9c3fd8606996faa7dbf7e78f6d"></a>
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename F , class Rep , class Period &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::future&lt;typename <a class="el" href="structStE_1_1function__traits.html">function_traits</a>&lt;F&gt;::result_t&gt; StE::task_scheduler::schedule_after </td>
-          <td>(</td>
-          <td class="paramtype">const std::chrono::duration&lt; Rep, Period &gt; &amp;&#160;</td>
-          <td class="paramname"><em>after</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">F &amp;&amp;&#160;</td>
-          <td class="paramname"><em>f</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::enable_if_t&lt; <a class="el" href="structStE_1_1function__traits.html">function_traits</a>&lt; F &gt;::arity==1 &gt; *&#160;</td>
-          <td class="paramname"> = <code>0</code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="task__scheduler_8hpp_source.html#l00090">90</a> of file <a class="el" href="task__scheduler_8hpp_source.html">task_scheduler.hpp</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a5f6b7db096bef5d60a24be93ca43abde"></a>
+<a class="anchor" id="ae04a0121cea2f3f96f77c41d80a678af"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
@@ -431,27 +581,11 @@ template&lt;typename F &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::future&lt;typename <a class="el" href="structStE_1_1function__traits.html">function_traits</a>&lt;F&gt;::result_t&gt; StE::task_scheduler::schedule_at </td>
+          <td class="memname">auto StE::task_scheduler::schedule_now_on_main_thread </td>
           <td>(</td>
-          <td class="paramtype">const std::chrono::high_resolution_clock::time_point &amp;&#160;</td>
-          <td class="paramname"><em>at</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
           <td class="paramtype">F &amp;&amp;&#160;</td>
-          <td class="paramname"><em>f</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramname"><em>f</em></td><td>)</td>
           <td></td>
-          <td class="paramtype">std::enable_if_t&lt; <a class="el" href="structStE_1_1function__traits.html">function_traits</a>&lt; F &gt;::arity==0 &gt; *&#160;</td>
-          <td class="paramname"> = <code>0</code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -461,203 +595,7 @@ template&lt;typename F &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="task__scheduler_8hpp_source.html#l00063">63</a> of file <a class="el" href="task__scheduler_8hpp_source.html">task_scheduler.hpp</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a03b6b491c04de2e447496cd64109bf69"></a>
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename F &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::future&lt;typename <a class="el" href="structStE_1_1function__traits.html">function_traits</a>&lt;F&gt;::result_t&gt; StE::task_scheduler::schedule_at </td>
-          <td>(</td>
-          <td class="paramtype">const std::chrono::high_resolution_clock::time_point &amp;&#160;</td>
-          <td class="paramname"><em>at</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">F &amp;&amp;&#160;</td>
-          <td class="paramname"><em>f</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::enable_if_t&lt; <a class="el" href="structStE_1_1function__traits.html">function_traits</a>&lt; F &gt;::arity==1 &gt; *&#160;</td>
-          <td class="paramname"> = <code>0</code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="task__scheduler_8hpp_source.html#l00072">72</a> of file <a class="el" href="task__scheduler_8hpp_source.html">task_scheduler.hpp</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="aa05012f05124818f53f8e96832e4ae44"></a>
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename F &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::future&lt;typename <a class="el" href="structStE_1_1function__traits.html">function_traits</a>&lt;F&gt;::result_t&gt; StE::task_scheduler::schedule_now </td>
-          <td>(</td>
-          <td class="paramtype">F &amp;&amp;&#160;</td>
-          <td class="paramname"><em>f</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::enable_if_t&lt; <a class="el" href="structStE_1_1function__traits.html">function_traits</a>&lt; F &gt;::arity==0 &gt; *&#160;</td>
-          <td class="paramname"> = <code>0</code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="task__scheduler_8hpp_source.html#l00050">50</a> of file <a class="el" href="task__scheduler_8hpp_source.html">task_scheduler.hpp</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a66ff2cde56881758d4e727918f5dab2b"></a>
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename F &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::future&lt;typename <a class="el" href="structStE_1_1function__traits.html">function_traits</a>&lt;F&gt;::result_t&gt; StE::task_scheduler::schedule_now </td>
-          <td>(</td>
-          <td class="paramtype">F &amp;&amp;&#160;</td>
-          <td class="paramname"><em>f</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::enable_if_t&lt; <a class="el" href="structStE_1_1function__traits.html">function_traits</a>&lt; F &gt;::arity==1 &gt; *&#160;</td>
-          <td class="paramname"> = <code>0</code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="task__scheduler_8hpp_source.html#l00055">55</a> of file <a class="el" href="task__scheduler_8hpp_source.html">task_scheduler.hpp</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a75c07df7428dfec7455e2d2741b3d177"></a>
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename F &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::future&lt;typename <a class="el" href="structStE_1_1function__traits.html">function_traits</a>&lt;F&gt;::result_t&gt; StE::task_scheduler::schedule_now_on_main_thread </td>
-          <td>(</td>
-          <td class="paramtype">F &amp;&amp;&#160;</td>
-          <td class="paramname"><em>f</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::enable_if_t&lt; <a class="el" href="structStE_1_1function__traits.html">function_traits</a>&lt; F &gt;::arity==0 &gt; *&#160;</td>
-          <td class="paramname"> = <code>0</code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="task__scheduler_8hpp_source.html#l00099">99</a> of file <a class="el" href="task__scheduler_8hpp_source.html">task_scheduler.hpp</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="afef49db39091e2f63b8d033d8acfdeb1"></a>
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename F &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::future&lt;typename <a class="el" href="structStE_1_1function__traits.html">function_traits</a>&lt;F&gt;::result_t&gt; StE::task_scheduler::schedule_now_on_main_thread </td>
-          <td>(</td>
-          <td class="paramtype">F &amp;&amp;&#160;</td>
-          <td class="paramname"><em>f</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::enable_if_t&lt; <a class="el" href="structStE_1_1function__traits.html">function_traits</a>&lt; F &gt;::arity==1 &gt; *&#160;</td>
-          <td class="paramname"> = <code>0</code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="task__scheduler_8hpp_source.html#l00112">112</a> of file <a class="el" href="task__scheduler_8hpp_source.html">task_scheduler.hpp</a>.</p>
+<p>Definition at line <a class="el" href="task__scheduler_8hpp_source.html#l00108">108</a> of file <a class="el" href="task__scheduler_8hpp_source.html">task_scheduler.hpp</a>.</p>
 
 </div>
 </div>

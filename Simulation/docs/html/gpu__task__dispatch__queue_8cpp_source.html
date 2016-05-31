@@ -131,7 +131,7 @@ $(document).ready(function(){initNavTree('gpu__task__dispatch__queue_8cpp_source
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;</div>
 <div class="line"><a name="l00025"></a><span class="lineno"><a class="line" href="classStE_1_1Graphics_1_1gpu__task__dispatch__queue.html#ae42515d9c880bfba8af3ce42a6f65745">   25</a></span>&#160;<a class="code" href="classStE_1_1Graphics_1_1gpu__task__dispatch__queue.html#ae42515d9c880bfba8af3ce42a6f65745">gpu_task_dispatch_queue::~gpu_task_dispatch_queue</a>() noexcept {}</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="keywordtype">void</span> gpu_task_dispatch_queue::build_task_transitions(<span class="keyword">const</span> TaskPtr &amp;<a class="code" href="classStE_1_1task.html">task</a>) {</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="keywordtype">void</span> gpu_task_dispatch_queue::build_task_transitions(<span class="keyword">const</span> TaskPtr &amp;task) {</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;t : <a class="code" href="classStE_1_1Graph_1_1graph.html#a92768c040dbdbe801cc847e39f33211f">Base::get_vertices</a>()) {</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;        <span class="keywordflow">if</span> (t==task)</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;            <span class="keywordflow">continue</span>;</div>
@@ -316,7 +316,6 @@ $(document).ready(function(){initNavTree('gpu__task__dispatch__queue_8cpp_source
 <div class="ttc" id="classStE_1_1Graphics_1_1gpu__task_html_aa79887a4e59f0773f4b9dbd2e7cb3acd"><div class="ttname"><a href="classStE_1_1Graphics_1_1gpu__task.html#aa79887a4e59f0773f4b9dbd2e7cb3acd">StE::Graphics::gpu_task::get_name</a></div><div class="ttdeci">std::string get_name() const overridefinal</div><div class="ttdef"><b>Definition:</b> <a href="gpu__task_8hpp_source.html#l00092">gpu_task.hpp:92</a></div></div>
 <div class="ttc" id="structStE_1_1Graphics_1_1profiler__entry_html_a0482d3bc4fd701f712a9e69500a19b44"><div class="ttname"><a href="structStE_1_1Graphics_1_1profiler__entry.html#a0482d3bc4fd701f712a9e69500a19b44">StE::Graphics::profiler_entry::name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition:</b> <a href="profiler_8hpp_source.html#l00016">profiler.hpp:16</a></div></div>
 <div class="ttc" id="classStE_1_1Graph_1_1graph_html_a92768c040dbdbe801cc847e39f33211f"><div class="ttname"><a href="classStE_1_1Graph_1_1graph.html#a92768c040dbdbe801cc847e39f33211f">StE::Graph::graph::get_vertices</a></div><div class="ttdeci">const auto &amp; get_vertices() const </div><div class="ttdef"><b>Definition:</b> <a href="graph_8hpp_source.html#l00174">graph.hpp:174</a></div></div>
-<div class="ttc" id="classStE_1_1task_html"><div class="ttname"><a href="classStE_1_1task.html">StE::task</a></div><div class="ttdef"><b>Definition:</b> <a href="task_8hpp_source.html#l00024">task.hpp:24</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

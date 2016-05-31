@@ -1,23 +1,22 @@
 <map id="src/ste/engine/cache/lru_cache.hpp" name="src/ste/engine/cache/lru_cache.hpp">
-<area shape="rect" id="node2" href="$lru__cache__cacheable_8hpp.html" title="lru_cache cached object entry in cache index " alt="" coords="894,266,1069,293"/>
-<area shape="rect" id="node11" href="$lru__cache__index_8hpp.html" title="lru_cache index " alt="" coords="1071,95,1215,121"/>
-<area shape="rect" id="node18" href="$concurrent__queue_8hpp.html" title="concurrent_queue.hpp" alt="" coords="3267,355,3421,382"/>
-<area shape="rect" id="node45" href="$task_8hpp.html" title="task.hpp" alt="" coords="3154,177,3225,203"/>
-<area shape="rect" id="node50" href="$interruptible__thread_8hpp.html" title="interruptible_thread.hpp" alt="" coords="3949,266,4107,293"/>
-<area shape="rect" id="node12" href="$Log_8hpp.html" title="Log.hpp" alt="" coords="1144,177,1213,203"/>
-<area shape="rect" id="node33" href="$AttributedString_8hpp.html" title="AttributedString.hpp" alt="" coords="1238,177,1373,203"/>
-<area shape="rect" id="node36" href="$concurrent__unordered__map_8hpp.html" title="concurrent_unordered\l_map.hpp" alt="" coords="2538,259,2691,300"/>
-<area shape="rect" id="node19" href="$log__ostream_8hpp.html" title="log_ostream.hpp" alt="" coords="1195,266,1317,293"/>
-<area shape="rect" id="node20" href="$log__sink_8hpp.html" title="log_sink.hpp" alt="" coords="1221,355,1317,382"/>
-<area shape="rect" id="node30" href="$log__stream__formatter_8hpp.html" title="log_stream_formatter.hpp" alt="" coords="646,266,818,293"/>
-<area shape="rect" id="node31" href="$log__class_8hpp.html" title="log_class.hpp" alt="" coords="656,355,760,382"/>
-<area shape="rect" id="node32" href="$gl__utils_8hpp.html" title="gl_utils.hpp" alt="" coords="1393,355,1479,382"/>
-<area shape="rect" id="node21" href="$stdafx_8hpp.html" title="stdafx.hpp" alt="" coords="1665,437,1748,464"/>
-<area shape="rect" id="node23" href="$gl_8hpp.html" title="gl.hpp" alt="" coords="1449,512,1506,539"/>
-<area shape="rect" id="node34" href="$attributed__string_8hpp.html" title="attributed_string.hpp" alt="" coords="1641,355,1780,382"/>
-<area shape="rect" id="node35" href="$optional_8hpp.html" title="optional.hpp" alt="" coords="2744,437,2837,464"/>
-<area shape="rect" id="node41" href="$shared__double__reference__guard_8hpp.html" title="shared_double_reference\l_guard.hpp" alt="" coords="2311,348,2487,389"/>
-<area shape="rect" id="node46" href="$task__scheduler_8hpp.html" title="task_scheduler.hpp" alt="" coords="3475,266,3613,293"/>
-<area shape="rect" id="node48" href="$function__traits_8hpp.html" title="function_traits.hpp" alt="" coords="2007,355,2134,382"/>
-<area shape="rect" id="node49" href="$thread__constants_8hpp.html" title="thread_constants.hpp" alt="" coords="3713,355,3861,382"/>
+<area shape="rect" id="node2" href="$lru__cache__cacheable_8hpp.html" title="lru_cache cached object entry in cache index " alt="" coords="562,177,737,203"/>
+<area shape="rect" id="node11" href="$lru__cache__index_8hpp.html" title="lru_cache index " alt="" coords="1220,95,1364,121"/>
+<area shape="rect" id="node18" href="$concurrent__queue_8hpp.html" title="concurrent_queue.hpp" alt="" coords="1751,355,1905,382"/>
+<area shape="rect" id="node49" href="$interruptible__thread_8hpp.html" title="interruptible_thread.hpp" alt="" coords="2039,95,2198,121"/>
+<area shape="rect" id="node12" href="$Log_8hpp.html" title="Log.hpp" alt="" coords="1195,177,1264,203"/>
+<area shape="rect" id="node38" href="$AttributedString_8hpp.html" title="AttributedString.hpp" alt="" coords="1637,177,1771,203"/>
+<area shape="rect" id="node41" href="$concurrent__unordered__map_8hpp.html" title="concurrent_unordered\l_map.hpp" alt="" coords="2850,348,3003,389"/>
+<area shape="rect" id="node19" href="$log__ostream_8hpp.html" title="log_ostream.hpp" alt="" coords="1371,266,1493,293"/>
+<area shape="rect" id="node23" href="$log__sink_8hpp.html" title="log_sink.hpp" alt="" coords="1225,445,1321,471"/>
+<area shape="rect" id="node31" href="$log__class_8hpp.html" title="log_class.hpp" alt="" coords="476,601,580,628"/>
+<area shape="rect" id="node32" href="$log__stream__formatter_8hpp.html" title="log_stream_formatter.hpp" alt="" coords="867,445,1039,471"/>
+<area shape="rect" id="node36" href="$gl__utils_8hpp.html" title="gl_utils.hpp" alt="" coords="1898,445,1985,471"/>
+<area shape="rect" id="node21" href="$log__streambuf_8hpp.html" title="log_streambuf.hpp" alt="" coords="1343,355,1473,382"/>
+<area shape="rect" id="node24" href="$stdafx_8hpp.html" title="stdafx.hpp" alt="" coords="2109,527,2192,553"/>
+<area shape="rect" id="node29" href="$trace_8hpp.html" title="trace.hpp" alt="" coords="1325,527,1401,553"/>
+<area shape="rect" id="node30" href="$log__entry_8hpp.html" title="log_entry.hpp" alt="" coords="895,527,996,553"/>
+<area shape="rect" id="node37" href="$resource_8hpp.html" title="resource.hpp" alt="" coords="2439,527,2537,553"/>
+<area shape="rect" id="node39" href="$attributed__string_8hpp.html" title="attributed_string.hpp" alt="" coords="1980,355,2119,382"/>
+<area shape="rect" id="node40" href="$attrib_8hpp.html" title="attrib.hpp" alt="" coords="2188,445,2263,471"/>
+<area shape="rect" id="node45" href="$shared__double__reference__guard_8hpp.html" title="shared_double_reference\l_guard.hpp" alt="" coords="2540,437,2716,479"/>
 </map>

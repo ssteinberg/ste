@@ -1,7 +1,7 @@
 <map id="StE::Graphics::light" name="StE::Graphics::light">
-<area shape="rect" id="node5" href="$classStE_1_1Graphics_1_1DirectionalLight.html" title="{StE::Graphics::Directional\lLight\n||+ DirectionalLight()\l+ ~DirectionalLight()\l+ set_direction()\l+ get_position()\l+ get_direction()\l}" alt="" coords="62,619,238,769"/>
-<area shape="rect" id="node6" href="$classStE_1_1Graphics_1_1SphericalLight.html" title="{StE::Graphics::Spherical\lLight\n||+ SphericalLight()\l+ ~SphericalLight()\l+ set_position()\l+ set_radius()\l+ get_position()\l}" alt="" coords="262,619,430,769"/>
-<area shape="rect" id="node2" href="$classStE_1_1Core_1_1observable__resource.html" title="{StE::Core::observable\l_resource\&lt; light_descriptor \&gt;\n||+ ~observable_resource()\l+ get_descriptor()\l# resource_signal()\l# notify()\l}" alt="" coords="5,204,201,340"/>
-<area shape="rect" id="node3" href="$classStE_1_1Core_1_1observable__resource.html" title="Resource consumed by a resource_storage. " alt="" coords="15,5,192,141"/>
-<area shape="rect" id="node4" href="$classStE_1_1Graphics_1_1entity.html" title="{StE::Graphics::entity\n||+ ~entity()\l+ get_position()\l}" alt="" coords="225,226,368,318"/>
+<area shape="rect" id="node5" href="$classStE_1_1Graphics_1_1DirectionalLight.html" title="{StE::Graphics::Directional\lLight\n||+ DirectionalLight()\l+ ~DirectionalLight()\l+ set_direction()\l+ get_position()\l+ get_direction()\l}" alt="" coords="62,648,238,799"/>
+<area shape="rect" id="node6" href="$classStE_1_1Graphics_1_1SphericalLight.html" title="{StE::Graphics::Spherical\lLight\n||+ SphericalLight()\l+ ~SphericalLight()\l+ set_position()\l+ set_radius()\l+ get_position()\l}" alt="" coords="262,648,430,799"/>
+<area shape="rect" id="node2" href="$classStE_1_1Core_1_1observable__resource.html" title="{StE::Core::observable\l_resource\&lt; light_descriptor \&gt;\n||+ ~observable_resource()\l+ get_descriptor()\l+ dealloc()\l+ is_valid()\l# notify()\l}" alt="" coords="5,219,201,369"/>
+<area shape="rect" id="node3" href="$classStE_1_1Core_1_1observable__resource.html" title="Resource consumed by a resource_storage. " alt="" coords="15,5,192,156"/>
+<area shape="rect" id="node4" href="$classStE_1_1Graphics_1_1entity.html" title="{StE::Graphics::entity\n||+ ~entity()\l+ get_position()\l}" alt="" coords="225,248,368,340"/>
 </map>

@@ -1,6 +1,7 @@
 var searchData=
 [
   ['balanced_5fthread_5fpool',['balanced_thread_pool',['../classStE_1_1balanced__thread__pool.html',1,'StE']]],
+  ['basic_5frenderer',['basic_renderer',['../classStE_1_1Graphics_1_1basic__renderer.html',1,'StE::Graphics']]],
   ['bindable_5fgeneric_5fresource',['bindable_generic_resource',['../classStE_1_1Core_1_1bindable__generic__resource.html',1,'StE::Core']]],
   ['bindable_5fresource',['bindable_resource',['../classStE_1_1Core_1_1bindable__resource.html',1,'StE::Core']]],
   ['bindable_5fresource_3c_20a_2c_20b_20_3e',['bindable_resource&lt; A, B &gt;',['../classStE_1_1Core_1_1bindable__resource_3_01A_00_01B_01_4.html',1,'StE::Core']]],
@@ -11,8 +12,6 @@ var searchData=
   ['bindable_5fresource_3c_20samplerallocator_2c_20samplerbinder_2c_20sampler_5flayout_5fbinding_20_3e',['bindable_resource&lt; SamplerAllocator, SamplerBinder, sampler_layout_binding &gt;',['../classStE_1_1Core_1_1bindable__resource.html',1,'StE::Core']]],
   ['bindable_5fresource_3c_20texture_5fimmutable_5fstorage_5fallocator_3c_20type_20_3e_2c_20texturebinder_3c_20type_20_3e_2c_20texture_5flayout_5fbinding_20_3e',['bindable_resource&lt; texture_immutable_storage_allocator&lt; type &gt;, TextureBinder&lt; type &gt;, texture_layout_binding &gt;',['../classStE_1_1Core_1_1bindable__resource.html',1,'StE::Core']]],
   ['bindable_5fresource_3c_20vertexarrayobjectallocator_2c_20vertexarrayobjectbinder_20_3e',['bindable_resource&lt; VertexArrayObjectAllocator, VertexArrayObjectBinder &gt;',['../classStE_1_1Core_1_1bindable__resource.html',1,'StE::Core']]],
-  ['bme_5fbrdf_5fdescriptor_5fentry',['bme_brdf_descriptor_entry',['../structStE_1_1Graphics_1_1bme__brdf__representation_1_1bme__brdf__descriptor__entry.html',1,'StE::Graphics::bme_brdf_representation']]],
-  ['bme_5fbrdf_5frepresentation',['bme_brdf_representation',['../classStE_1_1Graphics_1_1bme__brdf__representation.html',1,'StE::Graphics']]],
   ['brdf_5fdescriptor',['brdf_descriptor',['../structStE_1_1Graphics_1_1pBRDF_1_1brdf__descriptor.html',1,'StE::Graphics::pBRDF']]],
   ['buffer_5fobject',['buffer_object',['../classStE_1_1Core_1_1buffer__object.html',1,'StE::Core']]],
   ['buffer_5fobject_3c_20buffer_5fglyph_5fdescriptor_2c_20u_20_3e',['buffer_object&lt; buffer_glyph_descriptor, U &gt;',['../classStE_1_1Core_1_1buffer__object.html',1,'StE::Core']]],

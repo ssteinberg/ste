@@ -1,9 +1,12 @@
 <map id="src/ste/engine/core/gpu_resources/gpu_data_structures/ring_buffer.hpp" name="src/ste/engine/core/gpu_resources/gpu_data_structures/ring_buffer.hpp">
-<area shape="rect" id="node2" href="$transforms__ring__buffers_8hpp.html" title="src/ste/framework_graphics\l/gpu_dispatch/renderers\l/global_illumination/transforms\l_ring_buffers.hpp" alt="" coords="241,109,444,180"/>
-<area shape="rect" id="node7" href="$TextManager_8hpp.html" title="src/ste/framework_text\l/rendering/TextManager.hpp" alt="" coords="477,124,670,165"/>
-<area shape="rect" id="node3" href="$GIRenderer_8hpp.html" title="src/ste/framework_graphics\l/gpu_dispatch/renderers\l/global_illumination/GIRenderer.hpp" alt="" coords="217,228,452,284"/>
-<area shape="rect" id="node4" href="$main_8cpp.html" title="src/main.cpp" alt="" coords="569,354,666,381"/>
-<area shape="rect" id="node5" href="$deferred__composer_8cpp.html" title="src/ste/framework_graphics\l/gpu_dispatch/renderers\l/global_illumination/deferred\l_composer/deferred_composer.cpp" alt="" coords="5,332,240,403"/>
-<area shape="rect" id="node6" href="$GIRenderer_8cpp.html" title="src/ste/framework_graphics\l/gpu_dispatch/renderers\l/global_illumination/GIRenderer.cpp" alt="" coords="264,339,499,395"/>
-<area shape="rect" id="node8" href="$TextManager_8cpp.html" title="src/ste/framework_text\l/rendering/TextManager.cpp" alt="" coords="477,235,670,277"/>
+<area shape="rect" id="node2" href="$transforms__ring__buffers_8hpp.html" title="src/ste/framework_graphics\l/renderers/global_illumination\l/transforms_ring_buffers.hpp" alt="" coords="509,109,708,165"/>
+<area shape="rect" id="node8" href="$text__renderable_8hpp.html" title="src/ste/framework_text\l/rendering/text_renderable.hpp" alt="" coords="789,117,993,158"/>
+<area shape="rect" id="node3" href="$GIRenderer_8hpp.html" title="src/ste/framework_graphics\l/renderers/global_illumination\l/GIRenderer.hpp" alt="" coords="451,213,649,269"/>
+<area shape="rect" id="node4" href="$main_8cpp.html" title="src/main.cpp" alt="" coords="673,339,771,366"/>
+<area shape="rect" id="node5" href="$deferred__composer_8cpp.html" title="src/ste/framework_graphics\l/renderers/global_illumination\l/deferred_composer/deferred\l_composer.cpp" alt="" coords="5,317,204,388"/>
+<area shape="rect" id="node6" href="$GIRenderer_8cpp.html" title="src/ste/framework_graphics\l/renderers/global_illumination\l/GIRenderer.cpp" alt="" coords="228,325,427,381"/>
+<area shape="rect" id="node7" href="$girenderer__loader_8hpp.html" title="src/ste/framework_graphics\l/renderers/global_illumination\l/girenderer_loader.hpp" alt="" coords="451,325,649,381"/>
+<area shape="rect" id="node9" href="$text__renderable_8cpp.html" title="src/ste/framework_text\l/rendering/text_renderable.cpp" alt="" coords="1012,332,1216,373"/>
+<area shape="rect" id="node10" href="$TextManager_8hpp.html" title="src/ste/framework_text\l/rendering/TextManager.hpp" alt="" coords="795,221,988,262"/>
+<area shape="rect" id="node11" href="$TextManager_8cpp.html" title="src/ste/framework_text\l/rendering/TextManager.cpp" alt="" coords="795,332,988,373"/>
 </map>

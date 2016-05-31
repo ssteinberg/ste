@@ -114,7 +114,7 @@ $(document).ready(function(){initNavTree('extract__projection__planes_8hpp_sourc
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;</div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="keyword">namespace </span>StE {</div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;</div>
-<div class="line"><a name="l00010"></a><span class="lineno"><a class="line" href="namespaceStE_1_1__detail.html">   10</a></span>&#160;<span class="keyword">namespace </span>_detail {</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="keyword">namespace </span>_detail {</div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;</div>
 <div class="line"><a name="l00012"></a><span class="lineno"><a class="line" href="namespaceStE_1_1__detail.html#a3abc17c2c2e9d57228fd611661454fb7">   12</a></span>&#160;<span class="keyword">inline</span> glm::vec4 <a class="code" href="namespaceStE_1_1__detail.html#a3abc17c2c2e9d57228fd611661454fb7">dist_and_normal</a>(<span class="keyword">const</span> glm::vec3 &amp;p0, <span class="keyword">const</span> glm::vec3 &amp;p1, <span class="keyword">const</span> glm::vec3 &amp;p2) {</div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;    <span class="keyword">auto</span> u = p2 - p0;</div>
@@ -154,7 +154,7 @@ $(document).ready(function(){initNavTree('extract__projection__planes_8hpp_sourc
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="keyword">auto</span> ntl = nc + (up * Hnear * .5f) - (right * Wnear * .5f);</div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <span class="keyword">auto</span> ntr = nc + (up * Hnear * .5f) + (right * Wnear * .5f);</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <span class="keyword">auto</span> nbl = nc - (up * Hnear * .5f) - (right * Wnear * .5f);</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="keyword">auto</span> nbr = nc - (up * Hnear * .5f) + (right * Wnear * .5f);</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="comment">// auto nbr = nc - (up * Hnear * .5f) + (right * Wnear * .5f);</span></div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    *np = { 0, 0, -1, near };</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    *fp = { 0, 0, 1, far };</div>

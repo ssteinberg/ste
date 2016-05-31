@@ -1,19 +1,20 @@
 <map id="src/ste/math_additions/algorithms/sequential_ordering_problem/sop_optimizer.hpp" name="src/ste/math_additions/algorithms/sequential_ordering_problem/sop_optimizer.hpp">
-<area shape="rect" id="node2" href="$stdafx_8hpp.html" title="stdafx.hpp" alt="" coords="1823,348,1905,375"/>
-<area shape="rect" id="node26" href="$sequential__ordering__problem_8hpp.html" title="sequential_ordering\l_problem.hpp" alt="" coords="307,184,448,225"/>
-<area shape="rect" id="node31" href="$task_8hpp.html" title="task.hpp" alt="" coords="862,109,933,136"/>
-<area shape="rect" id="node40" href="$Log_8hpp.html" title="Log.hpp" alt="" coords="2304,109,2373,136"/>
-<area shape="rect" id="node4" href="$gl_8hpp.html" title="gl.hpp" alt="" coords="1618,423,1675,449"/>
-<area shape="rect" id="node27" href="$sop__graph_8hpp.html" title="sop_graph.hpp" alt="" coords="245,273,355,300"/>
-<area shape="rect" id="node28" href="$is__base__of_8hpp.html" title="is_base_of.hpp" alt="" coords="202,348,313,375"/>
-<area shape="rect" id="node29" href="$optional_8hpp.html" title="optional.hpp" alt="" coords="456,348,549,375"/>
-<area shape="rect" id="node32" href="$task__scheduler_8hpp.html" title="task_scheduler.hpp" alt="" coords="1181,191,1318,218"/>
-<area shape="rect" id="node38" href="$function__traits_8hpp.html" title="function_traits.hpp" alt="" coords="1562,273,1689,300"/>
-<area shape="rect" id="node39" href="$thread__constants_8hpp.html" title="thread_constants.hpp" alt="" coords="1338,273,1486,300"/>
-<area shape="rect" id="node36" href="$concurrent__queue_8hpp.html" title="concurrent_queue.hpp" alt="" coords="1007,273,1161,300"/>
-<area shape="rect" id="node45" href="$log__ostream_8hpp.html" title="log_ostream.hpp" alt="" coords="2179,191,2301,218"/>
-<area shape="rect" id="node46" href="$log__sink_8hpp.html" title="log_sink.hpp" alt="" coords="2265,273,2361,300"/>
-<area shape="rect" id="node47" href="$log__stream__formatter_8hpp.html" title="log_stream_formatter.hpp" alt="" coords="2561,348,2733,375"/>
-<area shape="rect" id="node48" href="$log__class_8hpp.html" title="log_class.hpp" alt="" coords="2983,423,3087,449"/>
-<area shape="rect" id="node49" href="$gl__utils_8hpp.html" title="gl_utils.hpp" alt="" coords="2069,273,2155,300"/>
+<area shape="rect" id="node2" href="$stdafx_8hpp.html" title="stdafx.hpp" alt="" coords="1137,348,1220,375"/>
+<area shape="rect" id="node27" href="$sequential__ordering__problem_8hpp.html" title="sequential_ordering\l_problem.hpp" alt="" coords="523,109,664,151"/>
+<area shape="rect" id="node37" href="$Log_8hpp.html" title="Log.hpp" alt="" coords="2456,117,2525,143"/>
+<area shape="rect" id="node4" href="$gl_8hpp.html" title="gl.hpp" alt="" coords="402,423,459,449"/>
+<area shape="rect" id="node6" href="$gl__extensions_8h.html" title="gl_extensions.h" alt="" coords="435,497,549,524"/>
+<area shape="rect" id="node28" href="$sop__graph_8hpp.html" title="sop_graph.hpp" alt="" coords="605,199,715,225"/>
+<area shape="rect" id="node32" href="$optional_8hpp.html" title="optional.hpp" alt="" coords="671,348,764,375"/>
+<area shape="rect" id="node35" href="$is__base__of_8hpp.html" title="is_base_of.hpp" alt="" coords="434,273,545,300"/>
+<area shape="rect" id="node29" href="$graph_8hpp.html" title="graph.hpp" alt="" coords="620,273,700,300"/>
+<area shape="rect" id="node31" href="$sop__vertex_8hpp.html" title="sop_vertex.hpp" alt="" coords="724,273,836,300"/>
+<area shape="rect" id="node34" href="$sop__edge_8hpp.html" title="sop_edge.hpp" alt="" coords="911,273,1017,300"/>
+<area shape="rect" id="node33" href="$types_8hpp.html" title="types.hpp" alt="" coords="191,423,270,449"/>
+<area shape="rect" id="node44" href="$concurrent__queue_8hpp.html" title="concurrent_queue.hpp" alt="" coords="2615,199,2769,225"/>
+<area shape="rect" id="node46" href="$log__ostream_8hpp.html" title="log_ostream.hpp" alt="" coords="2242,199,2363,225"/>
+<area shape="rect" id="node47" href="$log__sink_8hpp.html" title="log_sink.hpp" alt="" coords="2255,273,2351,300"/>
+<area shape="rect" id="node48" href="$log__stream__formatter_8hpp.html" title="log_stream_formatter.hpp" alt="" coords="2546,348,2718,375"/>
+<area shape="rect" id="node49" href="$log__class_8hpp.html" title="log_class.hpp" alt="" coords="2764,423,2868,449"/>
+<area shape="rect" id="node50" href="$gl__utils_8hpp.html" title="gl_utils.hpp" alt="" coords="1989,199,2075,225"/>
 </map>

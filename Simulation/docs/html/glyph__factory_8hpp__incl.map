@@ -1,20 +1,19 @@
 <map id="src/ste/framework_text/glyphs/glyph_factory.hpp" name="src/ste/framework_text/glyphs/glyph_factory.hpp">
-<area shape="rect" id="node2" href="$glyph_8hpp.html" title="glyph.hpp" alt="" coords="1503,244,1581,271"/>
-<area shape="rect" id="node31" href="$Font_8hpp.html" title="Font.hpp" alt="" coords="1615,95,1687,121"/>
-<area shape="rect" id="node33" href="$task_8hpp.html" title="task.hpp" alt="" coords="2459,95,2529,121"/>
-<area shape="rect" id="node3" href="$stdafx_8hpp.html" title="stdafx.hpp" alt="" coords="1743,326,1826,353"/>
-<area shape="rect" id="node5" href="$gl_8hpp.html" title="gl.hpp" alt="" coords="2071,408,2128,435"/>
-<area shape="rect" id="node7" href="$gl__extensions_8h.html" title="gl_extensions.h" alt="" coords="2103,483,2218,509"/>
-<area shape="rect" id="node34" href="$task__scheduler_8hpp.html" title="task_scheduler.hpp" alt="" coords="2857,169,2995,196"/>
-<area shape="rect" id="node44" href="$thread__constants_8hpp.html" title="thread_constants.hpp" alt="" coords="3940,326,4088,353"/>
-<area shape="rect" id="node48" href="$function__traits_8hpp.html" title="function_traits.hpp" alt="" coords="2296,244,2423,271"/>
-<area shape="rect" id="node49" href="$optional_8hpp.html" title="optional.hpp" alt="" coords="2235,326,2329,353"/>
-<area shape="rect" id="node39" href="$balanced__thread__pool_8hpp.html" title="balanced_thread_pool.hpp" alt="" coords="3031,244,3211,271"/>
-<area shape="rect" id="node40" href="$concurrent__queue_8hpp.html" title="concurrent_queue.hpp" alt="" coords="2879,326,3032,353"/>
-<area shape="rect" id="node43" href="$function__wrapper_8hpp.html" title="function_wrapper.hpp" alt="" coords="2707,326,2854,353"/>
-<area shape="rect" id="node42" href="$interruptible__thread_8hpp.html" title="interruptible_thread.hpp" alt="" coords="3311,326,3469,353"/>
-<area shape="rect" id="node45" href="$thread__priority_8hpp.html" title="thread_priority.hpp" alt="" coords="3494,326,3625,353"/>
-<area shape="rect" id="node46" href="$thread__affinity_8hpp.html" title="thread_affinity.hpp" alt="" coords="3649,326,3777,353"/>
-<area shape="rect" id="node47" href="$system__times_8hpp.html" title="system_times.hpp" alt="" coords="3158,326,3286,353"/>
-<area shape="rect" id="node50" href="$types_8hpp.html" title="types.hpp" alt="" coords="2373,408,2452,435"/>
+<area shape="rect" id="node2" href="$glyph_8hpp.html" title="glyph.hpp" alt="" coords="1545,319,1623,345"/>
+<area shape="rect" id="node29" href="$Font_8hpp.html" title="Font.hpp" alt="" coords="4267,95,4339,121"/>
+<area shape="rect" id="node31" href="$task__scheduler_8hpp.html" title="task_scheduler.hpp" alt="" coords="2502,95,2639,121"/>
+<area shape="rect" id="node3" href="$stdafx_8hpp.html" title="stdafx.hpp" alt="" coords="1673,401,1756,427"/>
+<area shape="rect" id="node5" href="$gl_8hpp.html" title="gl.hpp" alt="" coords="1861,483,1918,509"/>
+<area shape="rect" id="node36" href="$task__future_8hpp.html" title="task_future.hpp" alt="" coords="2190,244,2301,271"/>
+<area shape="rect" id="node37" href="$function__traits_8hpp.html" title="function_traits.hpp" alt="" coords="1647,319,1774,345"/>
+<area shape="rect" id="node38" href="$thread__constants_8hpp.html" title="thread_constants.hpp" alt="" coords="2511,319,2659,345"/>
+<area shape="rect" id="node41" href="$balanced__thread__pool_8hpp.html" title="balanced_thread_pool.hpp" alt="" coords="2857,244,3037,271"/>
+<area shape="rect" id="node42" href="$concurrent__queue_8hpp.html" title="concurrent_queue.hpp" alt="" coords="3817,319,3970,345"/>
+<area shape="rect" id="node45" href="$function__wrapper_8hpp.html" title="function_wrapper.hpp" alt="" coords="3995,319,4141,345"/>
+<area shape="rect" id="node50" href="$task__future__impl_8hpp.html" title="task_future_impl.hpp" alt="" coords="2260,169,2401,196"/>
+<area shape="rect" id="node39" href="$future__collection_8hpp.html" title="future_collection.hpp" alt="" coords="2103,319,2246,345"/>
+<area shape="rect" id="node44" href="$interruptible__thread_8hpp.html" title="interruptible_thread.hpp" alt="" coords="2867,319,3026,345"/>
+<area shape="rect" id="node46" href="$thread__priority_8hpp.html" title="thread_priority.hpp" alt="" coords="3357,319,3488,345"/>
+<area shape="rect" id="node47" href="$thread__affinity_8hpp.html" title="thread_affinity.hpp" alt="" coords="3512,319,3640,345"/>
+<area shape="rect" id="node48" href="$system__times_8hpp.html" title="system_times.hpp" alt="" coords="3051,319,3179,345"/>
 </map>

@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>StE: src/ste/framework_graphics/gpu_dispatch/renderers/global_illumination/hdr_dof/hdr_dof_postprocess.cpp File Reference</title>
+<title>StE: src/ste/framework_graphics/renderers/global_illumination/hdr_dof/hdr_dof_postprocess.cpp File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -101,12 +101,15 @@ $(document).ready(function(){initNavTree('hdr__dof__postprocess_8cpp.html','');}
 </div>
 
 <div class="header">
+  <div class="summary">
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">hdr_dof_postprocess.cpp File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="stdafx_8hpp_source.html">stdafx.hpp</a>&quot;</code><br/>
 <code>#include &quot;<a class="el" href="hdr__dof__postprocess_8hpp_source.html">hdr_dof_postprocess.hpp</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="GLSLProgramFactory_8hpp_source.html">GLSLProgramFactory.hpp</a>&quot;</code><br/>
 <code>#include &quot;<a class="el" href="human__vision__properties_8hpp_source.html">human_vision_properties.hpp</a>&quot;</code><br/>
 <code>#include &quot;<a class="el" href="hdr__compute__minmax__task_8hpp_source.html">hdr_compute_minmax_task.hpp</a>&quot;</code><br/>
 <code>#include &quot;<a class="el" href="hdr__create__histogram__task_8hpp_source.html">hdr_create_histogram_task.hpp</a>&quot;</code><br/>
@@ -114,24 +117,148 @@ $(document).ready(function(){initNavTree('hdr__dof__postprocess_8cpp.html','');}
 <code>#include &quot;<a class="el" href="hdr__tonemap__coc__task_8hpp_source.html">hdr_tonemap_coc_task.hpp</a>&quot;</code><br/>
 <code>#include &quot;<a class="el" href="hdr__bloom__blurx__task_8hpp_source.html">hdr_bloom_blurx_task.hpp</a>&quot;</code><br/>
 <code>#include &quot;<a class="el" href="hdr__bloom__blury__task_8hpp_source.html">hdr_bloom_blury_task.hpp</a>&quot;</code><br/>
-<code>#include &quot;<a class="el" href="hdr__bokeh__blurx__task_8hpp_source.html">hdr_bokeh_blurx_task.hpp</a>&quot;</code><br/>
-<code>#include &quot;<a class="el" href="hdr__bokeh__blury__task_8hpp_source.html">hdr_bokeh_blury_task.hpp</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="hdr__bokeh__blur__task_8hpp_source.html">hdr_bokeh_blur_task.hpp</a>&quot;</code><br/>
 <code>#include &quot;<a class="el" href="Sampler_8hpp_source.html">Sampler.hpp</a>&quot;</code><br/>
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for hdr_dof_postprocess.cpp:</div>
 <div class="dyncontent">
-<div class="center"><img src="hdr__dof__postprocess_8cpp__incl.png" border="0" usemap="#src_2ste_2framework__graphics_2gpu__dispatch_2renderers_2global__illumination_2hdr__dof_2hdr__dof__postprocess_8cpp" alt=""/></div>
-<map name="src_2ste_2framework__graphics_2gpu__dispatch_2renderers_2global__illumination_2hdr__dof_2hdr__dof__postprocess_8cpp" id="src_2ste_2framework__graphics_2gpu__dispatch_2renderers_2global__illumination_2hdr__dof_2hdr__dof__postprocess_8cpp">
-<area shape="rect" id="node2" href="stdafx_8hpp.html" title="stdafx.hpp" alt="" coords="1115,512,1198,539"/><area shape="rect" id="node25" href="hdr__dof__postprocess_8hpp.html" title="hdr_dof_postprocess.hpp" alt="" coords="1542,213,1713,240"/><area shape="rect" id="node41" href="human__vision__properties_8hpp.html" title="human_vision_properties.hpp" alt="" coords="261,213,455,240"/><area shape="rect" id="node42" href="hdr__compute__minmax__task_8hpp.html" title="hdr_compute_minmax\l_task.hpp" alt="" coords="776,124,929,165"/><area shape="rect" id="node43" href="hdr__create__histogram__task_8hpp.html" title="hdr_create_histogram\l_task.hpp" alt="" coords="1163,124,1315,165"/><area shape="rect" id="node44" href="hdr__compute__histogram__sums__task_8hpp.html" title="hdr_compute_histogram\l_sums_task.hpp" alt="" coords="2669,124,2834,165"/><area shape="rect" id="node45" href="hdr__tonemap__coc__task_8hpp.html" title="hdr_tonemap_coc_task.hpp" alt="" coords="953,131,1139,158"/><area shape="rect" id="node46" href="hdr__bloom__blurx__task_8hpp.html" title="hdr_bloom_blurx_task.hpp" alt="" coords="1539,131,1715,158"/><area shape="rect" id="node47" href="hdr__bloom__blury__task_8hpp.html" title="hdr_bloom_blury_task.hpp" alt="" coords="1790,131,1966,158"/><area shape="rect" id="node48" href="hdr__bokeh__blurx__task_8hpp.html" title="hdr_bokeh_blurx_task.hpp" alt="" coords="1990,131,2166,158"/><area shape="rect" id="node49" href="hdr__bokeh__blury__task_8hpp.html" title="hdr_bokeh_blury_task.hpp" alt="" coords="1339,131,1515,158"/><area shape="rect" id="node50" href="Sampler_8hpp.html" title="Sampler.hpp" alt="" coords="3369,437,3465,464"/><area shape="rect" id="node4" href="gl_8hpp.html" title="gl.hpp" alt="" coords="697,587,755,613"/><area shape="rect" id="node26" href="StEngineControl_8hpp.html" title="Engine Control class. " alt="" coords="2441,437,2584,464"/><area shape="rect" id="node27" href="signal_8hpp.html" title="signal.hpp" alt="" coords="2502,512,2585,539"/><area shape="rect" id="node28" href="gpu__task_8hpp.html" title="gpu_task.hpp" alt="" coords="2316,288,2416,315"/><area shape="rect" id="node29" href="FramebufferObject_8hpp.html" title="FramebufferObject.hpp" alt="" coords="1939,363,2094,389"/><area shape="rect" id="node30" href="image_8hpp.html" title="image.hpp" alt="" coords="1097,437,1181,464"/><area shape="rect" id="node31" href="Quad_8hpp.html" title="Quad.hpp" alt="" coords="863,437,941,464"/><area shape="rect" id="node32" href="Texture1D_8hpp.html" title="Texture1D.hpp" alt="" coords="885,363,996,389"/><area shape="rect" id="node33" href="Texture2D_8hpp.html" title="Texture2D.hpp" alt="" coords="1020,363,1131,389"/><area shape="rect" id="node34" href="ShaderStorageBuffer_8hpp.html" title="ShaderStorageBuffer.hpp" alt="" coords="1540,363,1712,389"/><area shape="rect" id="node35" href="PixelBufferObject_8hpp.html" title="PixelBufferObject.hpp" alt="" coords="1889,288,2037,315"/><area shape="rect" id="node36" href="AtomicCounterBufferObject_8hpp.html" title="AtomicCounterBufferObject.hpp" alt="" coords="1257,363,1464,389"/><area shape="rect" id="node37" href="GLSLProgram_8hpp.html" title="GLSLProgram.hpp" alt="" coords="2193,512,2325,539"/><area shape="rect" id="node38" href="GLSLProgramFactory_8hpp.html" title="GLSLProgramFactory.hpp" alt="" coords="2169,363,2347,389"/><area shape="rect" id="node39" href="deferred__gbuffer_8hpp.html" title="deferred_gbuffer.hpp" alt="" coords="1446,288,1590,315"/></map>
+<div class="center"><img src="hdr__dof__postprocess_8cpp__incl.png" border="0" usemap="#src_2ste_2framework__graphics_2renderers_2global__illumination_2hdr__dof_2hdr__dof__postprocess_8cpp" alt=""/></div>
+<map name="src_2ste_2framework__graphics_2renderers_2global__illumination_2hdr__dof_2hdr__dof__postprocess_8cpp" id="src_2ste_2framework__graphics_2renderers_2global__illumination_2hdr__dof_2hdr__dof__postprocess_8cpp">
+<area shape="rect" id="node2" href="stdafx_8hpp.html" title="stdafx.hpp" alt="" coords="1432,572,1515,599"/><area shape="rect" id="node25" href="hdr__dof__postprocess_8hpp.html" title="hdr_dof_postprocess.hpp" alt="" coords="1656,199,1827,225"/><area shape="rect" id="node40" href="GLSLProgramFactory_8hpp.html" title="GLSLProgramFactory.hpp" alt="" coords="2739,423,2917,449"/><area shape="rect" id="node42" href="human__vision__properties_8hpp.html" title="human_vision_properties.hpp" alt="" coords="5,199,200,225"/><area shape="rect" id="node43" href="hdr__compute__minmax__task_8hpp.html" title="hdr_compute_minmax\l_task.hpp" alt="" coords="1361,109,1514,151"/><area shape="rect" id="node44" href="hdr__create__histogram__task_8hpp.html" title="hdr_create_histogram\l_task.hpp" alt="" coords="2189,109,2341,151"/><area shape="rect" id="node45" href="hdr__compute__histogram__sums__task_8hpp.html" title="hdr_compute_histogram\l_sums_task.hpp" alt="" coords="1539,109,1704,151"/><area shape="rect" id="node46" href="hdr__tonemap__coc__task_8hpp.html" title="hdr_tonemap_coc_task.hpp" alt="" coords="1779,117,1965,143"/><area shape="rect" id="node47" href="hdr__bloom__blurx__task_8hpp.html" title="hdr_bloom_blurx_task.hpp" alt="" coords="1989,117,2165,143"/><area shape="rect" id="node48" href="hdr__bloom__blury__task_8hpp.html" title="hdr_bloom_blury_task.hpp" alt="" coords="2365,117,2541,143"/><area shape="rect" id="node49" href="hdr__bokeh__blur__task_8hpp.html" title="hdr_bokeh_blur_task.hpp" alt="" coords="2566,117,2735,143"/><area shape="rect" id="node50" href="Sampler_8hpp.html" title="Sampler.hpp" alt="" coords="3347,497,3443,524"/><area shape="rect" id="node4" href="gl_8hpp.html" title="gl.hpp" alt="" coords="1098,647,1155,673"/><area shape="rect" id="node26" href="StEngineControl_8hpp.html" title="Engine Control class. " alt="" coords="2369,497,2511,524"/><area shape="rect" id="node27" href="signal_8hpp.html" title="signal.hpp" alt="" coords="2109,572,2192,599"/><area shape="rect" id="node28" href="resource__instance_8hpp.html" title="resource_instance.hpp" alt="" coords="2078,348,2234,375"/><area shape="rect" id="node29" href="resource__loading__task_8hpp.html" title="resource_loading_task.hpp" alt="" coords="1923,423,2106,449"/><area shape="rect" id="node30" href="gpu__task_8hpp.html" title="gpu_task.hpp" alt="" coords="2539,348,2639,375"/><area shape="rect" id="node31" href="FramebufferObject_8hpp.html" title="FramebufferObject.hpp" alt="" coords="911,423,1065,449"/><area shape="rect" id="node32" href="image_8hpp.html" title="image.hpp" alt="" coords="729,497,813,524"/><area shape="rect" id="node33" href="Quad_8hpp.html" title="Quad.hpp" alt="" coords="1670,273,1749,300"/><area shape="rect" id="node34" href="Texture1D_8hpp.html" title="Texture1D.hpp" alt="" coords="538,423,649,449"/><area shape="rect" id="node35" href="Texture2D_8hpp.html" title="Texture2D.hpp" alt="" coords="775,423,886,449"/><area shape="rect" id="node36" href="ShaderStorageBuffer_8hpp.html" title="ShaderStorageBuffer.hpp" alt="" coords="1191,423,1363,449"/><area shape="rect" id="node37" href="PixelBufferObject_8hpp.html" title="PixelBufferObject.hpp" alt="" coords="914,348,1062,375"/><area shape="rect" id="node38" href="AtomicCounterBufferObject_8hpp.html" title="AtomicCounterBufferObject.hpp" alt="" coords="1387,423,1594,449"/><area shape="rect" id="node39" href="glsl__program_8hpp.html" title="glsl_program.hpp" alt="" coords="2094,273,2218,300"/><area shape="rect" id="node41" href="deferred__gbuffer_8hpp.html" title="deferred_gbuffer.hpp" alt="" coords="1205,348,1349,375"/></map>
 </div>
 </div>
 <p><a href="hdr__dof__postprocess_8cpp_source.html">Go to the source code of this file.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a7ea9629c485633648be3031761820239"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hdr__dof__postprocess_8cpp.html#a7ea9629c485633648be3031761820239">hdr_bloom_blurx</a> (ctx, std::vector&lt; std::string &gt;{&quot;passthrough.vert&quot;,&quot;hdr_bloom_blur_x.frag&quot;})</td></tr>
+<tr class="separator:a7ea9629c485633648be3031761820239"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3df68b1c9fb18952855ef27c43fbc405"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hdr__dof__postprocess_8cpp.html#a3df68b1c9fb18952855ef27c43fbc405">hdr_bloom_blury</a> (ctx, std::vector&lt; std::string &gt;{&quot;passthrough.vert&quot;,&quot;hdr_bloom_blur_y.frag&quot;})</td></tr>
+<tr class="separator:a3df68b1c9fb18952855ef27c43fbc405"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e415f158ce76f2bd239ae01c547edcc"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hdr__dof__postprocess_8cpp.html#a7e415f158ce76f2bd239ae01c547edcc">bokeh_blur</a> (ctx, std::vector&lt; std::string &gt;{&quot;passthrough.vert&quot;,&quot;bokeh_bilateral_blur.frag&quot;})</td></tr>
+<tr class="separator:a7e415f158ce76f2bd239ae01c547edcc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c270926fc8aba8251fbe8dc97c1c489"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hdr__dof__postprocess_8cpp.html#a7c270926fc8aba8251fbe8dc97c1c489">hdr_vision_properties_sampler</a> (Core::TextureFiltering::Linear, Core::TextureFiltering::Linear, 16)</td></tr>
+<tr class="separator:a7c270926fc8aba8251fbe8dc97c1c489"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">Function Documentation</h2>
+<a class="anchor" id="a7e415f158ce76f2bd239ae01c547edcc"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bokeh_blur </td>
+          <td>(</td>
+          <td class="paramtype">ctx&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; std::string &gt;{&quot;passthrough.vert&quot;,&quot;bokeh_bilateral_blur.frag&quot;}&#160;</td>
+          <td class="paramname">&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a7ea9629c485633648be3031761820239"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">hdr_bloom_blurx </td>
+          <td>(</td>
+          <td class="paramtype">ctx&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; std::string &gt;{&quot;passthrough.vert&quot;,&quot;hdr_bloom_blur_x.frag&quot;}&#160;</td>
+          <td class="paramname">&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a3df68b1c9fb18952855ef27c43fbc405"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">hdr_bloom_blury </td>
+          <td>(</td>
+          <td class="paramtype">ctx&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; std::string &gt;{&quot;passthrough.vert&quot;,&quot;hdr_bloom_blur_y.frag&quot;}&#160;</td>
+          <td class="paramname">&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a7c270926fc8aba8251fbe8dc97c1c489"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">hdr_vision_properties_sampler </td>
+          <td>(</td>
+          <td class="paramtype">Core::TextureFiltering::Linear&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Core::TextureFiltering::Linear&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">16&#160;</td>
+          <td class="paramname">&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="hdr__dof__postprocess_8cpp_source.html#l00030">30</a> of file <a class="el" href="hdr__dof__postprocess_8cpp_source.html">hdr_dof_postprocess.cpp</a>.</p>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_f1b7ceb015efa797a5d0f17d43cb3bb2.html">src</a></li><li class="navelem"><a class="el" href="dir_d34427326b64b65ebb5fb4a6bc8a21a4.html">ste</a></li><li class="navelem"><a class="el" href="dir_428fa47c5aa5b34ff3fe20ca049edbcd.html">framework_graphics</a></li><li class="navelem"><a class="el" href="dir_950cb64ce76bdc284cf92d43eb6ef1ff.html">gpu_dispatch</a></li><li class="navelem"><a class="el" href="dir_f594cdf1f1ba99dbed46f9ac9b5a64d5.html">renderers</a></li><li class="navelem"><a class="el" href="dir_f25cd5f901aaf2df5e4a4aec602cf99e.html">global_illumination</a></li><li class="navelem"><a class="el" href="dir_ce75aaa62415950389c749504b990180.html">hdr_dof</a></li><li class="navelem"><a class="el" href="hdr__dof__postprocess_8cpp.html">hdr_dof_postprocess.cpp</a></li>
+    <li class="navelem"><a class="el" href="dir_f1b7ceb015efa797a5d0f17d43cb3bb2.html">src</a></li><li class="navelem"><a class="el" href="dir_d34427326b64b65ebb5fb4a6bc8a21a4.html">ste</a></li><li class="navelem"><a class="el" href="dir_428fa47c5aa5b34ff3fe20ca049edbcd.html">framework_graphics</a></li><li class="navelem"><a class="el" href="dir_e83a5b33daab614e15bf5ab227b01325.html">renderers</a></li><li class="navelem"><a class="el" href="dir_8451b7ba90a3a6206c820656a4759bc0.html">global_illumination</a></li><li class="navelem"><a class="el" href="dir_d615f196f6f1c3598e4f9a13cfe8a63a.html">hdr_dof</a></li><li class="navelem"><a class="el" href="hdr__dof__postprocess_8cpp.html">hdr_dof_postprocess.cpp</a></li>
     <li class="footer">Generated by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>

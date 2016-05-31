@@ -1,3 +1,12 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structStE_1_1Core_1_1__gl__type__name__enum__impl_3_01double_01_4.html" title="StE::Core::_gl_type\l_name_enum_impl\&lt; double \&gt;" alt="" coords="5,5,204,47"/>
+<area shape="rect" id="node1" href="$structStE_1_1Core_1_1__gl__type__name__enum__impl.html" title="StE::Core::_gl_type\l_name_enum_impl\&lt; matT \&gt;" alt="" coords="5,333,196,374"/>
+<area shape="rect" id="node2" href="$structStE_1_1Core_1_1__gl__type__name__enum__impl_3_01glm_1_1tmat2x2_3_01matT_01_4_01_4.html" title="StE::Core::_gl_type\l_name_enum_impl\&lt; glm\l::tmat2x2\&lt; matT \&gt; \&gt;" alt="" coords="244,5,412,61"/>
+<area shape="rect" id="node3" href="$structStE_1_1Core_1_1__gl__type__name__enum__impl_3_01glm_1_1tmat2x3_3_01matT_01_4_01_4.html" title="StE::Core::_gl_type\l_name_enum_impl\&lt; glm\l::tmat2x3\&lt; matT \&gt; \&gt;" alt="" coords="244,85,412,141"/>
+<area shape="rect" id="node4" href="$structStE_1_1Core_1_1__gl__type__name__enum__impl_3_01glm_1_1tmat2x4_3_01matT_01_4_01_4.html" title="StE::Core::_gl_type\l_name_enum_impl\&lt; glm\l::tmat2x4\&lt; matT \&gt; \&gt;" alt="" coords="244,165,412,221"/>
+<area shape="rect" id="node5" href="$structStE_1_1Core_1_1__gl__type__name__enum__impl_3_01glm_1_1tmat3x2_3_01matT_01_4_01_4.html" title="StE::Core::_gl_type\l_name_enum_impl\&lt; glm\l::tmat3x2\&lt; matT \&gt; \&gt;" alt="" coords="244,245,412,301"/>
+<area shape="rect" id="node6" href="$structStE_1_1Core_1_1__gl__type__name__enum__impl_3_01glm_1_1tmat3x3_3_01matT_01_4_01_4.html" title="StE::Core::_gl_type\l_name_enum_impl\&lt; glm\l::tmat3x3\&lt; matT \&gt; \&gt;" alt="" coords="244,325,412,381"/>
+<area shape="rect" id="node7" href="$structStE_1_1Core_1_1__gl__type__name__enum__impl_3_01glm_1_1tmat3x4_3_01matT_01_4_01_4.html" title="StE::Core::_gl_type\l_name_enum_impl\&lt; glm\l::tmat3x4\&lt; matT \&gt; \&gt;" alt="" coords="244,405,412,461"/>
+<area shape="rect" id="node8" href="$structStE_1_1Core_1_1__gl__type__name__enum__impl_3_01glm_1_1tmat4x2_3_01matT_01_4_01_4.html" title="StE::Core::_gl_type\l_name_enum_impl\&lt; glm\l::tmat4x2\&lt; matT \&gt; \&gt;" alt="" coords="244,485,412,541"/>
+<area shape="rect" id="node9" href="$structStE_1_1Core_1_1__gl__type__name__enum__impl_3_01glm_1_1tmat4x3_3_01matT_01_4_01_4.html" title="StE::Core::_gl_type\l_name_enum_impl\&lt; glm\l::tmat4x3\&lt; matT \&gt; \&gt;" alt="" coords="244,565,412,621"/>
+<area shape="rect" id="node10" href="$structStE_1_1Core_1_1__gl__type__name__enum__impl_3_01glm_1_1tmat4x4_3_01matT_01_4_01_4.html" title="StE::Core::_gl_type\l_name_enum_impl\&lt; glm\l::tmat4x4\&lt; matT \&gt; \&gt;" alt="" coords="244,645,412,701"/>
 </map>

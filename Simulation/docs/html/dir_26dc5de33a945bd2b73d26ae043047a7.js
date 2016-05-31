@@ -19,5 +19,8 @@ var dir_26dc5de33a945bd2b73d26ae043047a7 =
       [ "glyph_manager", "classStE_1_1Text_1_1glyph__manager.html", "classStE_1_1Text_1_1glyph__manager" ],
       [ "glyph_descriptor", "structStE_1_1Text_1_1glyph__manager_1_1glyph__descriptor.html", "structStE_1_1Text_1_1glyph__manager_1_1glyph__descriptor" ],
       [ "font_storage", "structStE_1_1Text_1_1glyph__manager_1_1font__storage.html", "structStE_1_1Text_1_1glyph__manager_1_1font__storage" ]
+    ] ],
+    [ "glyph_point.hpp", "glyph__point_8hpp.html", [
+      [ "glyph_point", "structStE_1_1Text_1_1glyph__point.html", "structStE_1_1Text_1_1glyph__point" ]
     ] ]
 ];

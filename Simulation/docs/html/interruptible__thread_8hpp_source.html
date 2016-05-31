@@ -106,55 +106,103 @@ $(document).ready(function(){initNavTree('interruptible__thread_8hpp_source.html
 </div><!--header-->
 <div class="contents">
 <a href="interruptible__thread_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">// StE</span></div>
-<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment">// © Shlomi Steinberg, 2015</span></div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment">// ï¿½ Shlomi Steinberg, 2015</span></div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;</div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor"></span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &lt;thread&gt;</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &lt;future&gt;</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="keyword">namespace </span>StE {</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;</div>
-<div class="line"><a name="l00012"></a><span class="lineno"><a class="line" href="classStE_1_1interruptible__thread.html">   12</a></span>&#160;<span class="keyword">class </span><a class="code" href="classStE_1_1interruptible__thread.html">interruptible_thread</a> {</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;    <span class="keyword">class </span>interruptible_thread_flag {</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;        std::atomic&lt;bool&gt; flag{ <span class="keyword">false</span> };</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;        <span class="keywordtype">void</span> set() { flag = <span class="keyword">true</span>; }</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;        <span class="keywordtype">bool</span> is_set()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> flag; }</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    };</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00024"></a><span class="lineno"><a class="line" href="classStE_1_1interruptible__thread.html#ab05821ef176ef5b08255426d1180744e">   24</a></span>&#160;    <span class="keyword">static</span> thread_local interruptible_thread_flag *<a class="code" href="classStE_1_1interruptible__thread.html#ab05821ef176ef5b08255426d1180744e">interruption_flag</a>;</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    std::unique_ptr&lt;interruptible_thread_flag&gt; flag;</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    std::unique_ptr&lt;std::promise&lt;bool&gt;&gt; promise;</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    std::thread t;</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> Functor&gt;</div>
-<div class="line"><a name="l00033"></a><span class="lineno"><a class="line" href="classStE_1_1interruptible__thread.html#a475f5ad4293da866bff0e408d7a27d6c">   33</a></span>&#160;    <a class="code" href="classStE_1_1interruptible__thread.html#a475f5ad4293da866bff0e408d7a27d6c">interruptible_thread</a>(Functor&amp;&amp; func) : flag(new interruptible_thread_flag), promise(new std::promise&lt;bool&gt;), t([f = std::move(func), ptr_flag = flag.get(), ptr_promise = promise.get()]() {</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;        <a class="code" href="classStE_1_1interruptible__thread.html#ab05821ef176ef5b08255426d1180744e">interruption_flag</a> = ptr_flag;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;        f();</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;        ptr_promise-&gt;set_value(<span class="keyword">true</span>);</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    }) {}</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <span class="keywordtype">void</span> interrupt() { flag-&gt;set(); }</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    <span class="keywordtype">void</span> join() { t.join(); }</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    <span class="keywordtype">bool</span> joinable()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> t.joinable(); }</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <span class="keywordtype">void</span> detach() { t.detach(); }</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    std::future&lt;bool&gt; get_future() { <span class="keywordflow">return</span> promise-&gt;get_future(); }</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    std::thread &amp;get_thread() { <span class="keywordflow">return</span> t; }</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;};</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;}</div>
-<div class="ttc" id="classStE_1_1interruptible__thread_html"><div class="ttname"><a href="classStE_1_1interruptible__thread.html">StE::interruptible_thread</a></div><div class="ttdef"><b>Definition:</b> <a href="interruptible__thread_8hpp_source.html#l00012">interruptible_thread.hpp:12</a></div></div>
-<div class="ttc" id="classStE_1_1interruptible__thread_html_ab05821ef176ef5b08255426d1180744e"><div class="ttname"><a href="classStE_1_1interruptible__thread.html#ab05821ef176ef5b08255426d1180744e">StE::interruptible_thread::interruption_flag</a></div><div class="ttdeci">static thread_local interruptible_thread_flag * interruption_flag</div><div class="ttdef"><b>Definition:</b> <a href="interruptible__thread_8hpp_source.html#l00024">interruptible_thread.hpp:24</a></div></div>
-<div class="ttc" id="classStE_1_1interruptible__thread_html_a475f5ad4293da866bff0e408d7a27d6c"><div class="ttname"><a href="classStE_1_1interruptible__thread.html#a475f5ad4293da866bff0e408d7a27d6c">StE::interruptible_thread::interruptible_thread</a></div><div class="ttdeci">interruptible_thread(Functor &amp;&amp;func)</div><div class="ttdef"><b>Definition:</b> <a href="interruptible__thread_8hpp_source.html#l00033">interruptible_thread.hpp:33</a></div></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &lt;exception&gt;</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="keyword">namespace </span>StE {</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;</div>
+<div class="line"><a name="l00013"></a><span class="lineno"><a class="line" href="classStE_1_1interruptible__thread.html">   13</a></span>&#160;<span class="keyword">class </span><a class="code" href="classStE_1_1interruptible__thread.html">interruptible_thread</a> {</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    <span class="keyword">class </span>interruptible_thread_flag {</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;    <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;        std::atomic&lt;bool&gt; flag{ <span class="keyword">false</span> };</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;        <span class="keywordtype">void</span> set() { flag = <span class="keyword">true</span>; }</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;        <span class="keywordtype">bool</span> is_set()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> flag; }</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    };</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    <span class="keyword">static</span> thread_local interruptible_thread_flag *interruption_flag;</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00028"></a><span class="lineno"><a class="line" href="classStE_1_1interruptible__thread.html#a10f3734e81b12e90b5ec481e083810ce">   28</a></span>&#160;    <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code" href="classStE_1_1interruptible__thread.html#a10f3734e81b12e90b5ec481e083810ce">is_interruption_flag_set</a>() { <span class="keywordflow">return</span> interruption_flag-&gt;is_set(); }</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    std::unique_ptr&lt;interruptible_thread_flag&gt; flag;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    std::unique_ptr&lt;std::promise&lt;bool&gt;&gt; promise;</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    std::future&lt;bool&gt; future;</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    std::thread t;</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> Functor&gt;</div>
+<div class="line"><a name="l00038"></a><span class="lineno"><a class="line" href="classStE_1_1interruptible__thread.html#a475f5ad4293da866bff0e408d7a27d6c">   38</a></span>&#160;    <a class="code" href="classStE_1_1interruptible__thread.html#a475f5ad4293da866bff0e408d7a27d6c">interruptible_thread</a>(Functor&amp;&amp; func) : flag(std::make_unique&lt;interruptible_thread_flag&gt;()),</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;                                           promise(std::make_unique&lt;std::promise&lt;bool&gt;&gt;()),</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;                                           future(promise-&gt;<a class="code" href="classStE_1_1interruptible__thread.html#a5ab5c9799681b56810cb3712ab77585d">get_future</a>()),</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;                                           t([f = std::move(func), ptr_flag = flag.get(), ptr_promise = promise.get()]() {</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;        interruption_flag = ptr_flag;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;        <span class="keywordflow">try</span> {</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;            f();</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;            ptr_promise-&gt;set_value(<span class="keyword">true</span>);</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;        }</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;        <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;            ptr_promise-&gt;set_exception(std::current_exception());</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;        }</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    }) {}</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    ~<a class="code" href="classStE_1_1interruptible__thread.html#a475f5ad4293da866bff0e408d7a27d6c">interruptible_thread</a>() {</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;        <span class="keywordflow">if</span> (flag != <span class="keyword">nullptr</span>) {</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;            <a class="code" href="classStE_1_1interruptible__thread.html#a54cc709694e231d7209d2561ddc2f9e9">interrupt</a>();</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;            <span class="keywordflow">if</span> (<a class="code" href="classStE_1_1interruptible__thread.html#ac916f003d2400071946fe33ece9ac515">joinable</a>())</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;                <a class="code" href="classStE_1_1interruptible__thread.html#a39ab2e53fd510083d67b15deda649eec">join</a>();</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;        }</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    }</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    <a class="code" href="classStE_1_1interruptible__thread.html#a475f5ad4293da866bff0e408d7a27d6c">interruptible_thread</a>(<a class="code" href="classStE_1_1interruptible__thread.html#a475f5ad4293da866bff0e408d7a27d6c">interruptible_thread</a> &amp;&amp;other) : flag(std::move(other.flag)),</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;                                                         promise(std::move(other.promise)),</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;                                                         future(std::move(other.future)),</div>
+<div class="line"><a name="l00062"></a><span class="lineno"><a class="line" href="classStE_1_1interruptible__thread.html#a62f50e5b21852798971a868839efccc7">   62</a></span>&#160;                                                         t(std::move(other.t)) {</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;        other.flag = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    }</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;</div>
+<div class="line"><a name="l00066"></a><span class="lineno"><a class="line" href="classStE_1_1interruptible__thread.html#a6c38c470340d0280e0a6cf99a0d64877">   66</a></span>&#160;    <a class="code" href="classStE_1_1interruptible__thread.html">interruptible_thread</a> &amp;<a class="code" href="classStE_1_1interruptible__thread.html#a6c38c470340d0280e0a6cf99a0d64877">operator=</a>(<a class="code" href="classStE_1_1interruptible__thread.html">interruptible_thread</a> &amp;&amp;other) {</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;        flag = std::move(other.flag);</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;        promise = std::move(other.promise);</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;        future = std::move(other.future);</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;        t = std::move(other.t);</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;        other.flag = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;        <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    }</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;</div>
+<div class="line"><a name="l00077"></a><span class="lineno"><a class="line" href="classStE_1_1interruptible__thread.html#a54cc709694e231d7209d2561ddc2f9e9">   77</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classStE_1_1interruptible__thread.html#a54cc709694e231d7209d2561ddc2f9e9">interrupt</a>() { flag-&gt;set(); }</div>
+<div class="line"><a name="l00078"></a><span class="lineno"><a class="line" href="classStE_1_1interruptible__thread.html#a39ab2e53fd510083d67b15deda649eec">   78</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classStE_1_1interruptible__thread.html#a39ab2e53fd510083d67b15deda649eec">join</a>() { t.join(); }</div>
+<div class="line"><a name="l00079"></a><span class="lineno"><a class="line" href="classStE_1_1interruptible__thread.html#ac916f003d2400071946fe33ece9ac515">   79</a></span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classStE_1_1interruptible__thread.html#ac916f003d2400071946fe33ece9ac515">joinable</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> t.joinable(); }</div>
+<div class="line"><a name="l00080"></a><span class="lineno"><a class="line" href="classStE_1_1interruptible__thread.html#a12a4f931d90f8261b5f561f0db24b2bb">   80</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classStE_1_1interruptible__thread.html#a12a4f931d90f8261b5f561f0db24b2bb">detach</a>() { t.detach(); }</div>
+<div class="line"><a name="l00081"></a><span class="lineno"><a class="line" href="classStE_1_1interruptible__thread.html#a5ab5c9799681b56810cb3712ab77585d">   81</a></span>&#160;    <span class="keyword">auto</span> &amp;<a class="code" href="classStE_1_1interruptible__thread.html#a5ab5c9799681b56810cb3712ab77585d">get_future</a>() { <span class="keywordflow">return</span> future; }</div>
+<div class="line"><a name="l00082"></a><span class="lineno"><a class="line" href="classStE_1_1interruptible__thread.html#af738b0d98bc704b3456425f50b399df2">   82</a></span>&#160;    <span class="keyword">auto</span> &amp;<a class="code" href="classStE_1_1interruptible__thread.html#af738b0d98bc704b3456425f50b399df2">get_future</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> future; }</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;</div>
+<div class="line"><a name="l00084"></a><span class="lineno"><a class="line" href="classStE_1_1interruptible__thread.html#a893478daddeb673734ab3df3f1dcf82c">   84</a></span>&#160;    std::thread &amp;<a class="code" href="classStE_1_1interruptible__thread.html#a893478daddeb673734ab3df3f1dcf82c">get_thread</a>() { <span class="keywordflow">return</span> t; }</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;};</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;}</div>
+<div class="ttc" id="classStE_1_1interruptible__thread_html"><div class="ttname"><a href="classStE_1_1interruptible__thread.html">StE::interruptible_thread</a></div><div class="ttdef"><b>Definition:</b> <a href="interruptible__thread_8hpp_source.html#l00013">interruptible_thread.hpp:13</a></div></div>
+<div class="ttc" id="classStE_1_1interruptible__thread_html_a5ab5c9799681b56810cb3712ab77585d"><div class="ttname"><a href="classStE_1_1interruptible__thread.html#a5ab5c9799681b56810cb3712ab77585d">StE::interruptible_thread::get_future</a></div><div class="ttdeci">auto &amp; get_future()</div><div class="ttdef"><b>Definition:</b> <a href="interruptible__thread_8hpp_source.html#l00081">interruptible_thread.hpp:81</a></div></div>
+<div class="ttc" id="classStE_1_1interruptible__thread_html_a6c38c470340d0280e0a6cf99a0d64877"><div class="ttname"><a href="classStE_1_1interruptible__thread.html#a6c38c470340d0280e0a6cf99a0d64877">StE::interruptible_thread::operator=</a></div><div class="ttdeci">interruptible_thread &amp; operator=(interruptible_thread &amp;&amp;other)</div><div class="ttdef"><b>Definition:</b> <a href="interruptible__thread_8hpp_source.html#l00066">interruptible_thread.hpp:66</a></div></div>
+<div class="ttc" id="classStE_1_1interruptible__thread_html_a39ab2e53fd510083d67b15deda649eec"><div class="ttname"><a href="classStE_1_1interruptible__thread.html#a39ab2e53fd510083d67b15deda649eec">StE::interruptible_thread::join</a></div><div class="ttdeci">void join()</div><div class="ttdef"><b>Definition:</b> <a href="interruptible__thread_8hpp_source.html#l00078">interruptible_thread.hpp:78</a></div></div>
+<div class="ttc" id="classStE_1_1interruptible__thread_html_a893478daddeb673734ab3df3f1dcf82c"><div class="ttname"><a href="classStE_1_1interruptible__thread.html#a893478daddeb673734ab3df3f1dcf82c">StE::interruptible_thread::get_thread</a></div><div class="ttdeci">std::thread &amp; get_thread()</div><div class="ttdef"><b>Definition:</b> <a href="interruptible__thread_8hpp_source.html#l00084">interruptible_thread.hpp:84</a></div></div>
+<div class="ttc" id="classStE_1_1interruptible__thread_html_a12a4f931d90f8261b5f561f0db24b2bb"><div class="ttname"><a href="classStE_1_1interruptible__thread.html#a12a4f931d90f8261b5f561f0db24b2bb">StE::interruptible_thread::detach</a></div><div class="ttdeci">void detach()</div><div class="ttdef"><b>Definition:</b> <a href="interruptible__thread_8hpp_source.html#l00080">interruptible_thread.hpp:80</a></div></div>
+<div class="ttc" id="classStE_1_1interruptible__thread_html_a54cc709694e231d7209d2561ddc2f9e9"><div class="ttname"><a href="classStE_1_1interruptible__thread.html#a54cc709694e231d7209d2561ddc2f9e9">StE::interruptible_thread::interrupt</a></div><div class="ttdeci">void interrupt()</div><div class="ttdef"><b>Definition:</b> <a href="interruptible__thread_8hpp_source.html#l00077">interruptible_thread.hpp:77</a></div></div>
+<div class="ttc" id="classStE_1_1interruptible__thread_html_ac916f003d2400071946fe33ece9ac515"><div class="ttname"><a href="classStE_1_1interruptible__thread.html#ac916f003d2400071946fe33ece9ac515">StE::interruptible_thread::joinable</a></div><div class="ttdeci">bool joinable() const </div><div class="ttdef"><b>Definition:</b> <a href="interruptible__thread_8hpp_source.html#l00079">interruptible_thread.hpp:79</a></div></div>
+<div class="ttc" id="classStE_1_1interruptible__thread_html_af738b0d98bc704b3456425f50b399df2"><div class="ttname"><a href="classStE_1_1interruptible__thread.html#af738b0d98bc704b3456425f50b399df2">StE::interruptible_thread::get_future</a></div><div class="ttdeci">auto &amp; get_future() const </div><div class="ttdef"><b>Definition:</b> <a href="interruptible__thread_8hpp_source.html#l00082">interruptible_thread.hpp:82</a></div></div>
+<div class="ttc" id="classStE_1_1interruptible__thread_html_a475f5ad4293da866bff0e408d7a27d6c"><div class="ttname"><a href="classStE_1_1interruptible__thread.html#a475f5ad4293da866bff0e408d7a27d6c">StE::interruptible_thread::interruptible_thread</a></div><div class="ttdeci">interruptible_thread(Functor &amp;&amp;func)</div><div class="ttdef"><b>Definition:</b> <a href="interruptible__thread_8hpp_source.html#l00038">interruptible_thread.hpp:38</a></div></div>
+<div class="ttc" id="classStE_1_1interruptible__thread_html_a10f3734e81b12e90b5ec481e083810ce"><div class="ttname"><a href="classStE_1_1interruptible__thread.html#a10f3734e81b12e90b5ec481e083810ce">StE::interruptible_thread::is_interruption_flag_set</a></div><div class="ttdeci">static bool is_interruption_flag_set()</div><div class="ttdef"><b>Definition:</b> <a href="interruptible__thread_8hpp_source.html#l00028">interruptible_thread.hpp:28</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
