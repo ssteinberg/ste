@@ -30,8 +30,7 @@
 /// @author Christophe Riccio
 ///////////////////////////////////////////////////////////////////////////////////
 
-namespace glm{
-namespace detail
+namespace glm
 {
 	/// Make a linear combination of two vectors and return the result.
 	// result = (a * ascl) + (b * bscl)
@@ -45,15 +44,24 @@ namespace detail
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER tvec3<T, P> scale(tvec3<T, P> const& v, T desiredLength)
+	GLM_FUNC_QUALIFIER void v3Scale(tvec3<T, P> & v, T desiredLength)
 	{
-		return v * desiredLength / length(v);
+		T len = glm::length(v);
+		if(len != 0)
+		{
+			T l = desiredLength / len;
+			v[0] *= l;
+			v[1] *= l;
+			v[2] *= l;
+		}
 	}
-}//namespace detail
 
-	// Matrix decompose
-	// http://www.opensource.apple.com/source/WebCore/WebCore-514/platform/graphics/transforms/TransformationMatrix.cpp
-	// Decomposes the mode matrix to translations,rotation scale components
+	/**
+	* Matrix decompose
+	* http://www.opensource.apple.com/source/WebCore/WebCore-514/platform/graphics/transforms/TransformationMatrix.cpp
+	* Decomposes the mode matrix to translations,rotation scale components
+	* 
+	*/
 
 	template <typename T, precision P>
 	GLM_FUNC_QUALIFIER bool decompose(tmat4x4<T, P> const & ModelMatrix, tvec3<T, P> & Scale, tquat<T, P> & Orientation, tvec3<T, P> & Translation, tvec3<T, P> & Skew, tvec4<T, P> & Perspective)
@@ -123,26 +131,26 @@ namespace detail
 		// Compute X scale factor and normalize first row.
 		Scale.x = length(Row[0]);// v3Length(Row[0]);
 
-		Row[0] = detail::scale(Row[0], static_cast<T>(1));
+		v3Scale(Row[0], static_cast<T>(1));
 
 		// Compute XY shear factor and make 2nd row orthogonal to 1st.
 		Skew.z = dot(Row[0], Row[1]);
-		Row[1] = detail::combine(Row[1], Row[0], static_cast<T>(1), -Skew.z);
+		Row[1] = combine(Row[1], Row[0], static_cast<T>(1), -Skew.z);
 
 		// Now, compute Y scale and normalize 2nd row.
 		Scale.y = length(Row[1]);
-		Row[1] = detail::scale(Row[1], static_cast<T>(1));
+		v3Scale(Row[1], static_cast<T>(1));
 		Skew.z /= Scale.y;
 
 		// Compute XZ and YZ shears, orthogonalize 3rd row.
 		Skew.y = glm::dot(Row[0], Row[2]);
-		Row[2] = detail::combine(Row[2], Row[0], static_cast<T>(1), -Skew.y);
+		Row[2] = combine(Row[2], Row[0], static_cast<T>(1), -Skew.y);
 		Skew.x = glm::dot(Row[1], Row[2]);
-		Row[2] = detail::combine(Row[2], Row[1], static_cast<T>(1), -Skew.x);
+		Row[2] = combine(Row[2], Row[1], static_cast<T>(1), -Skew.x);
 
 		// Next, get Z scale and normalize 3rd row.
 		Scale.z = length(Row[2]);
-		Row[2] = detail::scale(Row[2], static_cast<T>(1));
+		v3Scale(Row[2], static_cast<T>(1));
 		Skew.y /= Scale.z;
 		Skew.x /= Scale.z;
 

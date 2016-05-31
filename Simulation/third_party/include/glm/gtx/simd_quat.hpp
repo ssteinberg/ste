@@ -76,6 +76,11 @@ namespace detail
 		typedef tquat<bool, defaultp> bool_type;
 		typedef tquat<float, defaultp> pure_type;
 
+#		ifdef GLM_META_PROG_HELPERS
+			static GLM_RELAXED_CONSTEXPR length_t components = 4;
+			static GLM_RELAXED_CONSTEXPR precision prec = defaultp;
+#		endif//GLM_META_PROG_HELPERS
+
 #ifdef GLM_SIMD_ENABLE_XYZW_UNION
 		union
 		{

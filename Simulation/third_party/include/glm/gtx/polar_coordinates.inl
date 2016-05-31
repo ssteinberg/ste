@@ -43,7 +43,7 @@ namespace glm
 		T const xz_dist(sqrt(tmp.x * tmp.x + tmp.z * tmp.z));
 
 		return tvec3<T, P>(
-			asin(tmp.y),	// latitude
+			atan(xz_dist, tmp.y),	// latitude
 			atan(tmp.x, tmp.z),		// longitude
 			xz_dist);				// xz distance
 	}

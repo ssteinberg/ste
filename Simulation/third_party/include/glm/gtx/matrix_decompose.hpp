@@ -45,7 +45,6 @@
 #include "../mat4x4.hpp"
 #include "../vec3.hpp"
 #include "../vec4.hpp"
-#include "../geometric.hpp"
 #include "../gtc/quaternion.hpp"
 #include "../gtc/matrix_transform.hpp"
 

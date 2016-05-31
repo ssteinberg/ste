@@ -1,0 +1,7 @@
+prefix=/home/shlomi/src/Shlomi/git/simulation/Simulation/third_party
+includedir=${prefix}/include
+
+Name: GLM
+Description: OpenGL Mathematics
+Version: 0.9.8
+Cflags: -I${includedir}

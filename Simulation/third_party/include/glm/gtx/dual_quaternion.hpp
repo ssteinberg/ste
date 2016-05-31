@@ -66,40 +66,54 @@ namespace glm
 		typedef T value_type;
 		typedef glm::tquat<T, P> part_type;
 
+#		ifdef GLM_META_PROG_HELPERS
+			static GLM_RELAXED_CONSTEXPR length_t components = 2;
+			static GLM_RELAXED_CONSTEXPR precision prec = P;
+#		endif//GLM_META_PROG_HELPERS
+
 		// -- Data --
 
 		glm::tquat<T, P> real, dual;
 
 		// -- Component accesses --
 
-		typedef length_t length_type;
-		/// Return the count of components of a dual quaternion
-		GLM_FUNC_DECL GLM_CONSTEXPR length_type length() const;
+#		ifdef GLM_FORCE_SIZE_FUNC
+			typedef size_t size_type;
+			/// Return the count of components of a dual quaternion
+			GLM_FUNC_DECL GLM_CONSTEXPR size_type size() const;
 
-		GLM_FUNC_DECL part_type & operator[](length_type i);
-		GLM_FUNC_DECL part_type const & operator[](length_type i) const;
+			GLM_FUNC_DECL part_type & operator[](size_type i);
+			GLM_FUNC_DECL part_type const & operator[](size_type i) const;
+#		else
+			typedef length_t length_type;
+			/// Return the count of components of a dual quaternion
+			GLM_FUNC_DECL GLM_CONSTEXPR length_type length() const;
+
+			GLM_FUNC_DECL part_type & operator[](length_type i);
+			GLM_FUNC_DECL part_type const & operator[](length_type i) const;
+#		endif//GLM_FORCE_SIZE_FUNC
 
 		// -- Implicit basic constructors --
 
-		GLM_FUNC_DECL GLM_CONSTEXPR tdualquat() GLM_DEFAULT_CTOR;
-		GLM_FUNC_DECL GLM_CONSTEXPR tdualquat(tdualquat<T, P> const & d) GLM_DEFAULT;
+		GLM_FUNC_DECL tdualquat() GLM_DEFAULT_CTOR;
+		GLM_FUNC_DECL tdualquat(tdualquat<T, P> const & d) GLM_DEFAULT;
 		template <precision Q>
-		GLM_FUNC_DECL GLM_CONSTEXPR tdualquat(tdualquat<T, Q> const & d);
+		GLM_FUNC_DECL tdualquat(tdualquat<T, Q> const & d);
 
 		// -- Explicit basic constructors --
 
-		GLM_FUNC_DECL GLM_CONSTEXPR_CTOR explicit tdualquat(ctor);
-		GLM_FUNC_DECL GLM_CONSTEXPR tdualquat(tquat<T, P> const & real);
-		GLM_FUNC_DECL GLM_CONSTEXPR tdualquat(tquat<T, P> const & orientation, tvec3<T, P> const & translation);
-		GLM_FUNC_DECL GLM_CONSTEXPR tdualquat(tquat<T, P> const & real, tquat<T, P> const & dual);
+		GLM_FUNC_DECL explicit tdualquat(ctor);
+		GLM_FUNC_DECL explicit tdualquat(tquat<T, P> const & real);
+		GLM_FUNC_DECL tdualquat(tquat<T, P> const & orientation, tvec3<T, P> const & translation);
+		GLM_FUNC_DECL tdualquat(tquat<T, P> const & real, tquat<T, P> const & dual);
 
 		// -- Conversion constructors --
 
 		template <typename U, precision Q>
-		GLM_FUNC_DECL GLM_CONSTEXPR GLM_EXPLICIT tdualquat(tdualquat<U, Q> const & q);
+		GLM_FUNC_DECL GLM_EXPLICIT tdualquat(tdualquat<U, Q> const & q);
 
-		GLM_FUNC_DECL GLM_EXPLICIT tdualquat(tmat2x4<T, P> const & holder_mat);
-		GLM_FUNC_DECL GLM_EXPLICIT tdualquat(tmat3x4<T, P> const & aug_mat);
+		GLM_FUNC_DECL explicit tdualquat(tmat2x4<T, P> const & holder_mat);
+		GLM_FUNC_DECL explicit tdualquat(tmat3x4<T, P> const & aug_mat);
 
 		// -- Unary arithmetic operators --
 

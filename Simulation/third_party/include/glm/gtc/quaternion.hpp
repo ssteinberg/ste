@@ -67,36 +67,50 @@ namespace glm
 		typedef tquat<T, P> type;
 		typedef T value_type;
 
+#		ifdef GLM_META_PROG_HELPERS
+			static GLM_RELAXED_CONSTEXPR length_t components = 4;
+			static GLM_RELAXED_CONSTEXPR precision prec = P;
+#		endif//GLM_META_PROG_HELPERS
+
 		// -- Data --
 
 		T x, y, z, w;
 
 		// -- Component accesses --
 
-		typedef length_t length_type;
-		/// Return the count of components of a quaternion
-		GLM_FUNC_DECL GLM_CONSTEXPR length_type length() const;
+#		ifdef GLM_FORCE_SIZE_FUNC
+			typedef size_t size_type;
+			/// Return the count of components of a quaternion
+			GLM_FUNC_DECL GLM_CONSTEXPR size_type size() const;
 
-		GLM_FUNC_DECL T & operator[](length_type i);
-		GLM_FUNC_DECL T const & operator[](length_type i) const;
+			GLM_FUNC_DECL T & operator[](size_type i);
+			GLM_FUNC_DECL T const & operator[](size_type i) const;
+#		else
+			typedef length_t length_type;
+			/// Return the count of components of a quaternion
+			GLM_FUNC_DECL GLM_CONSTEXPR length_type length() const;
+
+			GLM_FUNC_DECL T & operator[](length_type i);
+			GLM_FUNC_DECL T const & operator[](length_type i) const;
+#		endif//GLM_FORCE_SIZE_FUNC
 
 		// -- Implicit basic constructors --
 
-		GLM_FUNC_DECL GLM_CONSTEXPR tquat() GLM_DEFAULT_CTOR;
-		GLM_FUNC_DECL GLM_CONSTEXPR tquat(tquat<T, P> const & q) GLM_DEFAULT;
+		GLM_FUNC_DECL tquat() GLM_DEFAULT_CTOR;
+		GLM_FUNC_DECL tquat(tquat<T, P> const & q) GLM_DEFAULT;
 		template <precision Q>
-		GLM_FUNC_DECL GLM_CONSTEXPR tquat(tquat<T, Q> const & q);
+		GLM_FUNC_DECL tquat(tquat<T, Q> const & q);
 
 		// -- Explicit basic constructors --
 
-		GLM_FUNC_DECL GLM_CONSTEXPR_CTOR explicit tquat(ctor);
-		GLM_FUNC_DECL GLM_CONSTEXPR tquat(T const & s, tvec3<T, P> const & v);
-		GLM_FUNC_DECL GLM_CONSTEXPR tquat(T const & w, T const & x, T const & y, T const & z);
+		GLM_FUNC_DECL explicit tquat(ctor);
+		GLM_FUNC_DECL explicit tquat(T const & s, tvec3<T, P> const & v);
+		GLM_FUNC_DECL tquat(T const & w, T const & x, T const & y, T const & z);
 
 		// -- Conversion constructors --
 
 		template <typename U, precision Q>
-		GLM_FUNC_DECL GLM_CONSTEXPR GLM_EXPLICIT tquat(tquat<U, Q> const & q);
+		GLM_FUNC_DECL GLM_EXPLICIT tquat(tquat<U, Q> const & q);
 
 		/// Explicit conversion operators
 #		if GLM_HAS_EXPLICIT_CONVERSION_OPERATORS
@@ -110,12 +124,12 @@ namespace glm
 		/// @param v A second normalized axis
 		/// @see gtc_quaternion
 		/// @see http://lolengine.net/blog/2013/09/18/beautiful-maths-quaternion-from-vectors
-		GLM_FUNC_DECL tquat(tvec3<T, P> const & u, tvec3<T, P> const & v);
+		GLM_FUNC_DECL explicit tquat(tvec3<T, P> const & u,	tvec3<T, P> const & v);
 
 		/// Build a quaternion from euler angles (pitch, yaw, roll), in radians.
-		GLM_FUNC_DECL GLM_EXPLICIT tquat(tvec3<T, P> const & eulerAngles);
-		GLM_FUNC_DECL GLM_EXPLICIT tquat(tmat3x3<T, P> const & m);
-		GLM_FUNC_DECL GLM_EXPLICIT tquat(tmat4x4<T, P> const & m);
+		GLM_FUNC_DECL explicit tquat(tvec3<T, P> const & eulerAngles);
+		GLM_FUNC_DECL explicit tquat(tmat3x3<T, P> const & m);
+		GLM_FUNC_DECL explicit tquat(tmat4x4<T, P> const & m);
 
 		// -- Unary arithmetic operators --
 
@@ -253,7 +267,7 @@ namespace glm
 	template <typename T, precision P>
 	GLM_FUNC_DECL tquat<T, P> rotate(tquat<T, P> const & q, T const & angle, tvec3<T, P> const & axis);
 
-	/// Returns euler angles, pitch as x, yaw as y, roll as z.
+	/// Returns euler angles, yitch as x, yaw as y, roll as z.
 	/// The result is expressed in radians if GLM_FORCE_RADIANS is defined or degrees otherwise.
 	/// 
 	/// @see gtc_quaternion

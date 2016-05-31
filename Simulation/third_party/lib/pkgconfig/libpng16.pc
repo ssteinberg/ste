@@ -5,7 +5,7 @@ includedir=/home/shlomi/src/Shlomi/git/simulation/Simulation/third_party/include
 
 Name: libpng
 Description: Loads and saves PNG files
-Version: 1.6.22
+Version: 1.6.23
 Libs: -L${libdir} -lpng16
 Libs.private: -lz -lm
 Cflags: -I${includedir}

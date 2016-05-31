@@ -76,6 +76,13 @@ namespace detail
 		typedef tvec4<float, defaultp> pure_col_type;
 		typedef tmat4x4<float, defaultp> pure_transpose_type;
 
+#		ifdef GLM_META_PROG_HELPERS
+			static GLM_RELAXED_CONSTEXPR length_t components = 4;
+			static GLM_RELAXED_CONSTEXPR length_t cols = 4;
+			static GLM_RELAXED_CONSTEXPR length_t rows = 4;
+			static GLM_RELAXED_CONSTEXPR precision prec = defaultp;
+#		endif//GLM_META_PROG_HELPERS
+
 		GLM_FUNC_DECL length_t length() const;
 
 		fvec4SIMD Data[4];
