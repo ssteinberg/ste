@@ -58,13 +58,13 @@ public:
 	}
 
 	template <core_resource_type TexType>
-	void attach(const image<TexType> &img, std::enable_if_t<texture_is_array<TexType>::value>* = 0) {
+	void attach(const image<TexType> &img, std::enable_if_t<texture_is_array<TexType>::value>* = nullptr) {
 		glNamedFramebufferTextureLayer(fbo->get_resource_id(), attachment_point, img.get_resource_id(), img.get_level(), img.get_layer());
 		size = img.get_image_size();
 		format = img.get_format();
 	}
 	template <core_resource_type TexType>
-	void attach(const image<TexType> &img, std::enable_if_t<!texture_is_array<TexType>::value>* = 0) {
+	void attach(const image<TexType> &img, std::enable_if_t<!texture_is_array<TexType>::value>* = nullptr) {
 		glNamedFramebufferTexture(fbo->get_resource_id(), attachment_point, img.get_resource_id(), img.get_level());
 		size = img.get_image_size();
 		format = img.get_format();

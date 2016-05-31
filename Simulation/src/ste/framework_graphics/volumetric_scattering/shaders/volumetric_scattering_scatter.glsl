@@ -28,7 +28,6 @@ layout(shared, binding = 11) restrict readonly buffer lll_data {
 
 layout(rgba16f, binding = 7) restrict writeonly uniform image3D volume;
 
-
 #include "light_load.glsl"
 #include "linked_light_lists_load.glsl"
 

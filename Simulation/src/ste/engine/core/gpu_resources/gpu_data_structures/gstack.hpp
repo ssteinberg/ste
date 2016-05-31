@@ -34,7 +34,7 @@ protected:
 public:
 	gstack() : gstack(0, nullptr) {}
 	gstack(const std::vector<T> &data) : gstack(data.size(), &data[0]) {}
-	gstack(std::size_t size, const T *data) : len(data ? size : 0), buffer(pages * std::max(65536, buffer_type::page_size()) / sizeof(T)) {
+	gstack(std::size_t size, const T *data) : len(data ? size : 0), buffer(pages * std::max<std::size_t>(65536, buffer_type::page_size()) / sizeof(T)) {
 		if (data)
 			for (std::size_t i = 0; i < size; ++i)
 				push_back(data[i]);
