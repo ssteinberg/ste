@@ -16,6 +16,8 @@ void deferred_gbuffer::resize(glm::ivec2 size) {
 	depth_target = std::make_unique<Core::Texture2D>(gli::format::FORMAT_D32_SFLOAT_PACK32, glm::ivec2{ size });
 	downsampled_depth_target = std::make_unique<Core::Texture2D>(gli::format::FORMAT_R32_SFLOAT_PACK32, glm::ivec2{ size } / 2, depth_buffer_levels - 1);
 	fbo.depth_binding_point() = *depth_target;
+
+	depth_target_modified_signal.emit();
 }
 
 void deferred_gbuffer::bind_gbuffer() const {

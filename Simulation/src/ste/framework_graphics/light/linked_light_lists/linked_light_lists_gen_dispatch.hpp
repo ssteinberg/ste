@@ -29,8 +29,6 @@ private:
 
 	Core::SamplerMipmapped depth_sampler;
 
-	Core::Texture2D *depth_map;
-
 public:
 	linked_light_lists_gen_dispatch(const StEngineControl &ctx,
 									light_storage *ls,
@@ -39,7 +37,11 @@ public:
 															   depth_sampler(Core::TextureFiltering::Nearest, Core::TextureFiltering::Nearest, Core::TextureFiltering::Nearest,
 															   				 Core::TextureWrapMode::ClampToEdge, Core::TextureWrapMode::ClampToEdge) {}
 
-	void set_depth_map(Core::Texture2D *dm) { depth_map = dm; }
+	void set_depth_map(Core::Texture2D *depth_map) {
+		auto handle = depth_map->get_texture_handle(depth_sampler);
+		handle.make_resident();
+		program.get().set_uniform("depth_map", handle);
+	}
 
 protected:
 	virtual void set_context_state() const override;

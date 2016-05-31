@@ -2,7 +2,6 @@
 #include "stdafx.hpp"
 #include "fxaa_dispatchable.hpp"
 
-#include "Sampler.hpp"
 #include "Quad.hpp"
 
 #include "gl_current_context.hpp"
@@ -11,9 +10,6 @@ using namespace StE::Graphics;
 
 void fxaa_dispatchable::set_context_state() const {
 	using namespace Core;
-
-	0_tex_unit = *input;
-	0_sampler_idx = *Sampler::SamplerLinearClamp();
 
 	ScreenFillingQuad.vao()->bind();
 

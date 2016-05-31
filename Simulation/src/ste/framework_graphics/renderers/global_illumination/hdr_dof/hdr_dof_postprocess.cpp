@@ -51,14 +51,19 @@ hdr_dof_postprocess::hdr_dof_postprocess(const StEngineControl &context,
 
 	task = make_gpu_task("dof_bokeh", create_dispatchable(), nullptr, create_sub_tasks());
 
-	setup_engine_connections();
+	setup_connections();
 }
 
-void hdr_dof_postprocess::setup_engine_connections() {
+void hdr_dof_postprocess::setup_connections() {
 	resize_connection = std::make_shared<ResizeSignalConnectionType>([=](const glm::i32vec2 &size) {
 		this->resize(size);
 	});
 	ctx.signal_framebuffer_resize().connect(resize_connection);
+
+	gbuffer_depth_target_connection = std::make_shared<connection<>>([&]() {
+		attach_handles();
+	});
+	gbuffer->get_depth_target_modified_signal().connect(gbuffer_depth_target_connection);
 }
 
 std::shared_ptr<const gpu_task> hdr_dof_postprocess::get_task() const {
@@ -95,6 +100,17 @@ std::vector<std::shared_ptr<const gpu_task>> hdr_dof_postprocess::create_sub_tas
 }
 
 hdr_dof_postprocess::~hdr_dof_postprocess() noexcept {
+}
+
+void hdr_dof_postprocess::attach_handles() const {
+	auto depth_texture = gbuffer->get_depth_target();
+	if (depth_texture) {
+		auto depth_target_handle = depth_texture->get_texture_handle(*Core::Sampler::SamplerNearestClamp());
+		depth_target_handle.make_resident();
+
+		hdr_compute_histogram_sums.get().set_uniform("depth_texture", depth_target_handle);
+		bokeh_blur.get().set_uniform("depth_texture", depth_target_handle);
+	}
 }
 
 void hdr_dof_postprocess::resize(glm::ivec2 size) {

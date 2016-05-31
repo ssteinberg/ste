@@ -1,6 +1,7 @@
 
 #type compute
 #version 450
+#extension GL_ARB_bindless_texture : require
 #extension GL_NV_gpu_shader5 : require
 
 layout(local_size_x = 32, local_size_y = 32) in;
@@ -8,7 +9,7 @@ layout(local_size_x = 32, local_size_y = 32) in;
 #include "volumetric_scattering.glsl"
 
 layout(rgba16f, binding = 7) restrict uniform image3D volume;
-layout(binding = 11) uniform sampler2D depth_map;
+layout(bindless_sampler) uniform sampler2D depth_map;
 
 float depth3x3(vec2 uv, int lod) {
 	float d00 = textureLodOffset(depth_map, uv, lod, ivec2(-1,-1)).x;

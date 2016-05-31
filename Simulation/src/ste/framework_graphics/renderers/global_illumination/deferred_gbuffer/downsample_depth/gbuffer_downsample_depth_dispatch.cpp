@@ -2,17 +2,10 @@
 #include "stdafx.hpp"
 #include "gbuffer_downsample_depth_dispatch.hpp"
 
-#include "Sampler.hpp"
-
 using namespace StE::Graphics;
 
 void gbuffer_downsample_depth_dispatch::set_context_state() const {
 	using namespace Core;
-
-	11_sampler_idx = *Sampler::SamplerNearestClamp();
-	11_tex_unit = *gbuffer->get_depth_target();
-	12_sampler_idx = *SamplerMipmapped::MipmappedSamplerNearestClamp();
-	12_tex_unit = *gbuffer->get_downsampled_depth_target();
 
 	program.get().bind();
 }

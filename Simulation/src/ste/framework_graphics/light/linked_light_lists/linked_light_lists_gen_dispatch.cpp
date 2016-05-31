@@ -20,9 +20,6 @@ void linked_light_lists_gen_dispatch::set_context_state() const {
 
 	lll->bind_lll_buffer(false);
 
-	11_sampler_idx = depth_sampler;
-	11_tex_unit = *depth_map;
-
 	ScreenFillingQuad.vao()->bind();
 
 	program.get().bind();

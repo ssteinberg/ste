@@ -12,12 +12,6 @@ void volumetric_scattering_scatter_dispatch::set_context_state() const {
 
 	llls->bind_lll_buffer();
 
-	8_tex_unit = *shadows_storage->get_cubemaps();
-	8_sampler_idx = shadows_storage->get_shadow_sampler();
-
-	11_tex_unit = *vss->get_depth_map();
-	11_sampler_idx = vss->get_depth_sampler();
-
 	7_image_idx = vss->get_volume_texture()->make_image().with_access(Core::ImageAccessMode::Write);
 
 	program.get().bind();

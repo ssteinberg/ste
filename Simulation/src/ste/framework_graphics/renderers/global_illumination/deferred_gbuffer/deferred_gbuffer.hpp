@@ -5,7 +5,7 @@
 
 #include "stdafx.hpp"
 
-#include "resource.hpp"
+#include "signal.hpp"
 
 #include "Texture2D.hpp"
 #include "FramebufferObject.hpp"
@@ -46,6 +46,8 @@ private:
 		return virt_size / gbuffer_type::page_size() / sizeof(g_buffer_element) * gbuffer_type::page_size();
 	}
 
+	signal<> depth_target_modified_signal;
+
 public:
 	deferred_gbuffer(glm::ivec2 size, int depth_buffer_levels) : gbuffer(virtual_gbuffer_size()),
 																 depth_buffer_levels(depth_buffer_levels) {
@@ -60,6 +62,8 @@ public:
 	auto* get_depth_target() const { return depth_target.get(); }
 	auto* get_downsampled_depth_target() const { return downsampled_depth_target.get(); }
 	auto* get_fbo() const { return &fbo; }
+
+	auto& get_depth_target_modified_signal() const { return depth_target_modified_signal; }
 };
 
 }

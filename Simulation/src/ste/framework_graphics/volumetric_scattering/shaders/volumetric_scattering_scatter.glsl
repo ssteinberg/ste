@@ -1,6 +1,7 @@
 
 #type compute
 #version 450
+#extension GL_ARB_bindless_texture : require
 #extension GL_NV_gpu_shader5 : require
 
 layout(local_size_x = 32, local_size_y = 32, local_size_z = 1) in;
@@ -27,11 +28,12 @@ layout(shared, binding = 11) restrict readonly buffer lll_data {
 
 layout(rgba16f, binding = 7) restrict writeonly uniform image3D volume;
 
-layout(binding = 8) uniform samplerCubeArrayShadow shadow_depth_maps;
-layout(binding = 11) uniform sampler2D depth_map;
 
 #include "light_load.glsl"
 #include "linked_light_lists_load.glsl"
+
+layout(bindless_sampler) uniform samplerCubeArrayShadow shadow_depth_maps;
+layout(bindless_sampler) uniform sampler2D depth_map;
 
 uniform float phase1, phase2, phase3;
 

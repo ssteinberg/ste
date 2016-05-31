@@ -40,9 +40,9 @@ layout(shared, binding = 11) restrict readonly buffer lll_data {
 #include "linked_light_lists_load.glsl"
 #include "gbuffer_load.glsl"
 
-layout(binding = 8) uniform samplerCubeArrayShadow shadow_depth_maps;
-layout(binding = 9) uniform samplerCubeArray shadow_maps;
-layout(binding = 10) uniform sampler3D scattering_volume;
+layout(bindless_sampler) uniform samplerCubeArrayShadow shadow_depth_maps;
+layout(bindless_sampler) uniform samplerCubeArray shadow_maps;
+layout(bindless_sampler) uniform sampler3D scattering_volume;
 
 out vec4 gl_FragColor;
 

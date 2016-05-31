@@ -7,7 +7,6 @@ using namespace StE::Core;
 
 void hdr_bokeh_blur_task::set_context_state() const {
 	2_storage_idx = p->hdr_bokeh_param_buffer;
-	11_tex_unit = *p->gbuffer->get_depth_target();
 
 	ScreenFillingQuad.vao()->bind();
 	p->bokeh_blur.get().bind();
