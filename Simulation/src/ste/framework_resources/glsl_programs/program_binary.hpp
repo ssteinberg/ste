@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015
+// Â© Shlomi Steinberg, 2015-2016
 
 #pragma once
 
@@ -17,7 +17,8 @@ namespace StE {
 namespace Resource {
 namespace glsl_loader {
 
-struct program_binary {
+class program_binary {
+public:
 	GLenum format;
 	std::uint64_t time;
 	std::string blob;

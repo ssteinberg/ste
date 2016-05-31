@@ -86,5 +86,12 @@ void debug_gui::dispatch() const {
 
 	ImGui::End();
 
+	for (auto &f : user_guis)
+		f(bbsize);
+
 	ImGui::Render();
+}
+
+bool debug_gui::is_gui_active() const {
+	return ImGui::IsAnyItemActive();
 }

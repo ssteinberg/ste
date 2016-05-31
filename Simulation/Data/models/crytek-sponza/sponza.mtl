@@ -293,7 +293,7 @@ newmtl fabric_e
 	map_Ks textures\sponza_fabric_spec.tga
 	roughness 0.75
 	metallic 0.0
-	anisotropy 0.7
+	anisotropy 0.5
 	sheen 1.0
 
 newmtl fabric_d
@@ -312,7 +312,7 @@ newmtl fabric_d
 	map_Ks textures\sponza_fabric_spec.tga
 	roughness 0.75
 	metallic 0.0
-	anisotropy 0.7
+	anisotropy 0.5
 	sheen 1.0
 
 newmtl fabric_a
@@ -331,7 +331,7 @@ newmtl fabric_a
 	map_Ks textures\sponza_fabric_spec.tga
 	roughness 0.75
 	metallic 0.0
-	anisotropy 0.7
+	anisotropy 0.5
 	sheen 1.0
 
 newmtl fabric_g
@@ -347,9 +347,9 @@ newmtl fabric_g
 	Ke 0.0000 0.0000 0.0000
 	map_Ka textures\sponza_curtain_blue_diff.tga
 	map_Kd textures\sponza_curtain_blue_diff.tga
-	roughness 0.75
+	roughness 0.85
 	metallic 0.0
-	anisotropy 0.7
+	anisotropy 0.5
 	sheen 1.0
 
 newmtl fabric_c
@@ -365,9 +365,9 @@ newmtl fabric_c
 	Ke 0.0000 0.0000 0.0000
 	map_Ka textures\sponza_curtain_diff.tga
 	map_Kd textures\sponza_curtain_diff.tga
-	roughness 0.75
+	roughness 0.85
 	metallic 0.0
-	anisotropy 0.7
+	anisotropy 0.5
 	sheen 1.0
 
 newmtl fabric_f
@@ -383,9 +383,9 @@ newmtl fabric_f
 	Ke 0.0000 0.0000 0.0000
 	map_Ka textures\sponza_curtain_green_diff.tga
 	map_Kd textures\sponza_curtain_green_diff.tga
-	roughness 0.75
+	roughness 0.85
 	metallic 0.0
-	anisotropy 0.7
+	anisotropy 0.5
 	sheen 1.0
 
 newmtl chain
@@ -458,10 +458,9 @@ newmtl Material__25
 	map_Ka textures\lion.tga
 	map_Kd textures\lion.tga
 	disp textures\lion_bump.png
-	roughness 0.3
-	metallic 1.0
-	anisotropy 0.2
-	ior 5
+	roughness 0.32
+	metallic 0.0
+	anisotropy 0.0
 
 newmtl roof
 	Ns 10.0000

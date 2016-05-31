@@ -4,8 +4,7 @@
 #pragma once
 
 #include "stdafx.hpp"
-
-#include "signal.hpp"
+#include "resource_storage_base.hpp"
 
 namespace StE {
 namespace Core {
@@ -22,27 +21,38 @@ template <typename Descriptor>
 class observable_resource {
 	template <typename, typename, template<class> typename>
 	friend class resource_storage;
+	friend class resource_storage_base<Descriptor>;
 
 public:
 	using resource_descriptor_type = Descriptor;
-	using signal_type = signal<const observable_resource<Descriptor>*>;
+	using storage_type = resource_storage_base<resource_descriptor_type>;
 
 private:
 	std::size_t resource_storage_identifier;
-	signal_type resource_notify_signal;
+	mutable storage_type *storage_ptr{ nullptr };
 
 public:
-	virtual ~observable_resource() {}
+	virtual ~observable_resource() {
+		dealloc();
+	}
 	virtual const resource_descriptor_type &get_descriptor() const = 0;
 
 protected:
-	const signal_type &resource_signal() const { return resource_notify_signal; }
-
 	/**
 	*	@brief	On data change that needs to be reflected on the GPU-side, call notify to schedule update.
 	*/
-	void notify() { resource_notify_signal.emit(this); }
+	void notify();
+
+public:
+	/**
+	*	@brief	Deallocate resource. Identical to calling resource's' storage erase_resource().
+	*/
+	void dealloc();
+
+	bool is_valid() const { return storage_ptr != nullptr; }
 };
 
 }
 }
+
+#include "observable_resource_impl.hpp"

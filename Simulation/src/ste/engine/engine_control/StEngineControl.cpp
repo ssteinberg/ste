@@ -34,6 +34,11 @@ struct StE::ste_engine_control_impl {
 };
 
 StEngineControl::StEngineControl(std::unique_ptr<Core::GL::gl_context> &&ctx) : pimpl(std::make_unique<ste_engine_control_impl>()), context(std::move(ctx)), global_cache("Cache", 1024 * 1024 * 256) {
+	std::set_unexpected([]() {
+		ste_log_fatal() << "Unhandled exception" << std::endl;
+		std::abort();
+	});
+
 	assert(context.get());
 	if (context == nullptr)
 		throw std::runtime_error("context == nullptr");
@@ -123,7 +128,7 @@ void StEngineControl::capture_screenshot() const {
 	for (int i=0; i<size.x * size.y; ++i)
 		reinterpret_cast<glm::u8vec4*>(tex.data())[i].w = 255;
 
-	scheduler().schedule_now([=](optional<task_scheduler*> sched) {
+	scheduler().schedule_now([=]() {
 		boost::filesystem::create_directory("Screenshots");
 
 		time_t rawtime;
@@ -133,7 +138,7 @@ void StEngineControl::capture_screenshot() const {
 		timeinfo = localtime(&rawtime);
 		strftime(buffer, 256, "%a %d%b%y %H.%M.%S", timeinfo);
 
-		StE::Resource::SurfaceFactory::write_surface_2d_task(tex, std::string("Screenshots/") + buffer + ".png")(sched);
+		StE::Resource::SurfaceFactory::write_surface_2d(tex, std::string("Screenshots/") + buffer + ".png");
 	});
 }
 

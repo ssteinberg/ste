@@ -47,19 +47,14 @@ bool material_is_masked(material_descriptor md, vec2 uv) {
 	return md.mask_map.tex_handler>0 ? texture(sampler2D(md.mask_map.tex_handler), uv).x < .5f : false;
 }
 
-void normal_map(material_descriptor md, vec2 uv, vec2 duvdx, vec2 duvdy, float height_map_scale, inout vec3 n, inout vec3 t, inout vec3 b, inout vec3 P) {
+void normal_map(material_descriptor md, vec2 uv, vec2 duvdx, vec2 duvdy, inout vec3 n, inout vec3 t, inout vec3 b, inout vec3 P) {
 	if (md.normal_map.tex_handler > 0) {
-		vec4 normal_height = textureGrad(sampler2D(md.normal_map.tex_handler), uv, duvdx, duvdy);
+		vec3 nm = textureGrad(sampler2D(md.normal_map.tex_handler), uv, duvdx, duvdy).xyz;
 		mat3 tbn = mat3(t, b, n);
+		n = tbn * normalize(vec3(nm));
 
-		float h = normal_height.w * height_map_scale;
-		P += h * n;
-
-		vec3 nm = normal_height.xyz;
-		n = tbn * nm;
-
-		t = cross(n, b);
 		b = cross(t, n);
+		t = cross(n, b);
 	}
 }
 
@@ -78,12 +73,12 @@ vec3 material_evaluate_reflection(material_descriptor md,
 	float metallic = md.metallic;
 	float F0 = md.F0;
 	float anisotropy_ratio = md.anisotropy_ratio;
-	float sheen = md.sheen;
+	float sheen = md.sheen * 4.f;
 
 	vec3 specular_tint = vec3(1);
 	vec3 sheen_tint = vec3(1);
 
-	vec3 c_spec = mix(F0 * specular_tint, base_color, metallic);
+	vec3 c_spec = F0 * mix(specular_tint, base_color, metallic);
 
 	irradiance *= mix(.2f, 1.f, cavity);
 

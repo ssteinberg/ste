@@ -16,14 +16,14 @@ using namespace StE::Resource;
 using namespace StE::Graphics;
 using StE::Core::Texture2D;
 
-std::future<void> ModelFactory::process_model_mesh(optional<task_scheduler*> sched,
-												  Graphics::material_storage *matstorage,
-												  const tinyobj::shape_t &shape,
-												  Graphics::ObjectGroup *object_group,
-												  materials_type &materials,
-												  texture_map_type &textures,
-												  std::vector<std::shared_ptr<Graphics::Object>> *loaded_objects,
-									 			  std::vector<Graphics::Material*> *loaded_materials) {
+StE::task_future<void> ModelFactory::process_model_mesh(task_scheduler* sched,
+														Graphics::material_storage *matstorage,
+														const tinyobj::shape_t &shape,
+														Graphics::ObjectGroup *object_group,
+														materials_type &materials,
+														texture_map_type &textures,
+									 					std::vector<std::unique_ptr<Graphics::Material>> &loaded_materials,
+									 					std::vector<std::shared_ptr<Graphics::Object>> *loaded_objects) {
 	std::vector<ObjectVertexData> vbo_data;
 	std::vector<std::uint32_t> vbo_indices;
 	std::vector<std::pair<glm::vec3, glm::vec3>> nt;
@@ -105,68 +105,67 @@ std::future<void> ModelFactory::process_model_mesh(optional<task_scheduler*> sch
 	int mat_idx = shape.mesh.material_ids[0];
 	auto &material = materials[mat_idx];
 
-	std::shared_ptr<Core::Texture2D> &diff_map = textures[material.diffuse_texname];
-	std::shared_ptr<Core::Texture2D> &opacity_map = textures[material.alpha_texname];
-	std::shared_ptr<Core::Texture2D> &specular_map = textures[material.specular_texname];
-	std::shared_ptr<Core::Texture2D> &normalmap = textures[material.bump_texname];
+	auto roughness_it = material.unknown_parameter.find("roughness");
+	auto metallic_it = material.unknown_parameter.find("metallic");
+	auto ior_it = material.unknown_parameter.find("ior");
+	auto anisotropy_it = material.unknown_parameter.find("anisotropy");
+	auto sheen_it = material.unknown_parameter.find("sheen");
 
-	bool has_roughness = material.unknown_parameter.find("roughness") != material.unknown_parameter.end();
-	bool has_metallic = material.unknown_parameter.find("metallic") != material.unknown_parameter.end();
-	bool has_ior = material.unknown_parameter.find("ior") != material.unknown_parameter.end();
-	bool has_anisotropy = material.unknown_parameter.find("anisotropy") != material.unknown_parameter.end();
-	bool has_sheen = material.unknown_parameter.find("sheen") != material.unknown_parameter.end();
-	float roughness = has_roughness ? std::stof(material.unknown_parameter["roughness"]) : .0f;
-	float metallic = has_metallic ? std::stof(material.unknown_parameter["metallic"]) : .0f;
-	float ior = has_ior ? std::stof(material.unknown_parameter["ior"]) : .0f;
-	float anisotropy = has_anisotropy ? std::stof(material.unknown_parameter["anisotropy"]) : .0f;
-	float sheen = has_sheen ? std::stof(material.unknown_parameter["sheen"]) : .0f;
+	return sched->schedule_now_on_main_thread([=, vbo_data = std::move(vbo_data), vbo_indices = std::move(vbo_indices), &loaded_materials, &textures, &material]() {
+		std::shared_ptr<Core::Texture2D> diff_map = textures[material.diffuse_texname];
+		std::shared_ptr<Core::Texture2D> opacity_map = textures[material.alpha_texname];
+		std::shared_ptr<Core::Texture2D> specular_map = textures[material.specular_texname];
+		std::shared_ptr<Core::Texture2D> normalmap = textures[material.bump_texname];
 
-	return sched->schedule_now_on_main_thread([=, vbo_data = std::move(vbo_data), vbo_indices = std::move(vbo_indices)](optional<task_scheduler*> sched) {
 		auto mat = matstorage->allocate_material();
+
 		if (diff_map != nullptr) mat->set_basecolor_map(diff_map);
 		if (specular_map != nullptr) mat->set_cavity_map(specular_map);
 		if (normalmap != nullptr) mat->set_normal_map(normalmap);
 		if (opacity_map != nullptr) mat->set_mask_map(opacity_map);
-		if (has_roughness) mat->set_roughness(roughness);
-		if (has_metallic) mat->set_metallic(metallic);
-		if (has_ior) mat->set_index_of_refraction(ior);
-		if (has_anisotropy) mat->set_anisotropy(anisotropy);
-		if (has_sheen) mat->set_sheen(sheen);
+
+		if (roughness_it != material.unknown_parameter.end()) mat->set_roughness(std::stof(roughness_it->second));
+		if (metallic_it != material.unknown_parameter.end()) mat->set_metallic(std::stof(metallic_it->second));
+		if (ior_it != material.unknown_parameter.end()) mat->set_index_of_refraction(std::stof(ior_it->second));
+		if (anisotropy_it != material.unknown_parameter.end()) mat->set_anisotropy(std::stof(anisotropy_it->second));
+		if (sheen_it != material.unknown_parameter.end()) mat->set_sheen(std::stof(sheen_it->second));
 
 		std::unique_ptr<Graphics::mesh<Graphics::mesh_subdivion_mode::Triangles>> m = std::make_unique<Graphics::mesh<Graphics::mesh_subdivion_mode::Triangles>>();
 		m->set_indices(std::move(vbo_indices));
 		m->set_vertices(std::move(vbo_data));
 
 		std::shared_ptr<Graphics::Object> obj = std::make_shared<Graphics::Object>(std::move(m));
-		obj->set_material(mat);
+		obj->set_material(mat.get());
 
 		object_group->add_object(obj);
 
+		loaded_materials.push_back(std::move(mat));
 		if (loaded_objects) loaded_objects->push_back(obj);
-		if (loaded_materials) loaded_materials->push_back(mat);
 	});
 }
 
-StE::task<void> ModelFactory::load_texture(const std::string &name,
-										  bool srgb,
-										  bool displacement,
-										  texture_map_type *texmap,
-										  const boost::filesystem::path &dir,
-										  float normal_map_bias) {
-	return StE::task<std::unique_ptr<gli::texture2d>>([=](optional<task_scheduler*> sched) {
+StE::task_future<void> ModelFactory::load_texture(task_scheduler* sched,
+												  const std::string &name,
+												  bool srgb,
+												  bool displacement,
+												  texture_map_type *texmap,
+												  const boost::filesystem::path &dir,
+												  float normal_map_bias) {
+	return sched->schedule_now([=]() {
 		std::string normalized_name = name;
 		std::replace(normalized_name.begin(), normalized_name.end(), '\\', '/');
 		boost::filesystem::path full_path = dir / boost::filesystem::path(normalized_name).make_preferred();
 
-		auto tex_task = SurfaceFactory::load_surface_2d_task(full_path, srgb);
-		gli::texture2d tex = tex_task(sched);
+		gli::texture2d tex = SurfaceFactory::load_surface_2d(full_path, srgb);
 		if (tex.empty())
 			ste_log_warn() << "Couldn't load texture " << full_path.string() << std::endl;
 
 		return std::make_unique<gli::texture2d>(std::move(tex));
-	}).then_on_main_thread([=](optional<task_scheduler*> sched, std::unique_ptr<gli::texture2d> &&tex) {
-		if (tex->empty())
+	}).then_on_main_thread([=](std::unique_ptr<gli::texture2d> &&tex) {
+		if (tex->empty()) {
+			ste_log_warn() << "Couldn't load model texture: " << name << std::endl;
 			return;
+		}
 
 		if (displacement) {
 			auto nm = normal_map_from_height_map<gli::FORMAT_R8_UNORM_PACK8, false>()(*tex, normal_map_bias);
@@ -177,15 +176,15 @@ StE::task<void> ModelFactory::load_texture(const std::string &name,
 	});
 }
 
-std::vector<std::future<void>> ModelFactory::load_textures(task_scheduler* sched,
-														  shapes_type &shapes,
-														  materials_type &materials,
-														  texture_map_type &tex_map,
-														  const boost::filesystem::path &dir,
-														  float normal_map_bias) {
+std::vector<StE::task_future<void>> ModelFactory::load_textures(task_scheduler* sched,
+														 		shapes_type &shapes,
+														 		materials_type &materials,
+														 		texture_map_type &tex_map,
+														 		const boost::filesystem::path &dir,
+														 		float normal_map_bias) {
 	tex_map.emplace(std::make_pair(std::string(""), std::shared_ptr<Core::Texture2D>(nullptr)));
 
-	std::vector<std::future<void>> futures;
+	std::vector<StE::task_future<void>> futures;
 	for (auto &shape : shapes) {
 		int mat_idx = shape.mesh.material_ids[0];
 
@@ -199,12 +198,13 @@ std::vector<std::future<void>> ModelFactory::load_textures(task_scheduler* sched
 				bool displacement = str == materials[mat_idx].displacement_texname;
 
 				tex_map.emplace(std::make_pair(str, std::shared_ptr<Core::Texture2D>(nullptr)));
-				futures.push_back(sched->schedule_now(load_texture(str,
-																   srgb,
-																   displacement,
-																   &tex_map,
-																   dir,
-																   normal_map_bias)));
+				futures.push_back(load_texture(sched,
+											   str,
+											   srgb,
+											   displacement,
+											   &tex_map,
+											   dir,
+											   normal_map_bias));
 			}
 
 
@@ -217,23 +217,15 @@ std::vector<std::future<void>> ModelFactory::load_textures(task_scheduler* sched
 	return futures;
 }
 
-StE::task<bool> ModelFactory::load_model_task(const StEngineControl &context,
-											  const boost::filesystem::path &file_path,
-											  ObjectGroup *object_group,
-											  Graphics::SceneProperties *scene_properties,
-											  float normal_map_bias,
-											  std::vector<std::shared_ptr<Graphics::Object>> *loaded_objects,
-											  std::vector<Graphics::Material*> *loaded_materials) {
-	struct _model_loader_task_block {
-		bool ret;
-		std::unique_ptr<texture_map_type> textures;
-	};
-
-	return task<_model_loader_task_block>([=](optional<task_scheduler*> sched) {
-		assert(sched);
-
-		_model_loader_task_block block;
-		block.textures = std::make_unique<texture_map_type>();
+StE::task_future<void> ModelFactory::load_model_async(const StEngineControl &ctx,
+													  const boost::filesystem::path &file_path,
+													  ObjectGroup *object_group,
+													  Graphics::SceneProperties *scene_properties,
+													  float normal_map_bias,
+													  std::vector<std::unique_ptr<Graphics::Material>> &loaded_materials,
+													  std::vector<std::shared_ptr<Graphics::Object>> *loaded_objects) {
+	return ctx.scheduler().schedule_now([=, &loaded_materials, &ctx]() {
+		std::unique_ptr<texture_map_type> textures = std::make_unique<texture_map_type>();
 
 		auto path_string = file_path.string();
 		ste_log() << "Loading OBJ model " << path_string << std::endl;
@@ -246,35 +238,32 @@ StE::task<bool> ModelFactory::load_model_task(const StEngineControl &context,
 		std::string err;
 		if (!tinyobj::LoadObj(shapes, materials, err, path_string.c_str(), dir.c_str(), true)) {
 			ste_log_error() << "Couldn't load model " << path_string << ": " << err;
-			block.ret = false;
-			return block;
+			throw resource_io_error("Could not load/parse model");
 		}
 
 		{
-			for (auto &f : load_textures(&*sched, shapes, materials, *block.textures, dir, normal_map_bias))
-				f.wait();
+			for (auto &f : load_textures(&ctx.scheduler(), shapes, materials, *textures, dir, normal_map_bias))
+				f.get();
 		}
 
 		{
-			std::vector<std::future<void>> futures;
+			std::vector<StE::task_future<void>> futures;
 			for (auto &shape : shapes)
-				futures.push_back(process_model_mesh(sched,
+				futures.push_back(process_model_mesh(&ctx.scheduler(),
 													 &scene_properties->materials_storage(),
 													 shape,
 													 object_group,
 													 materials,
-													 *block.textures,
-													 loaded_objects,
-													 loaded_materials));
+													 *textures,
+													 loaded_materials,
+													 loaded_objects));
 
 			for (auto &f : futures)
-				f.wait();
+				f.get();
 		}
 
-		block.ret = true;
-		return block;
-	}).then_on_main_thread([](optional<task_scheduler*> sched, _model_loader_task_block &&block) -> bool {
-		block.textures = nullptr;
-		return block.ret;
+		return textures;
+	}).then_on_main_thread([](std::unique_ptr<texture_map_type> &&textures) {
+		textures = nullptr;
 	});
 }

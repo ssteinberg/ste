@@ -8,7 +8,6 @@
 #include "gpu_task.hpp"
 
 #include "FramebufferObject.hpp"
-#include "GLSLProgram.hpp"
 
 #include <functional>
 #include <memory>

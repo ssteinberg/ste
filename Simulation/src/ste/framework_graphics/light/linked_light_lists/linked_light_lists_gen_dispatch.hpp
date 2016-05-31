@@ -7,10 +7,12 @@
 #include "StEngineControl.hpp"
 #include "gpu_dispatchable.hpp"
 
+#include "glsl_program.hpp"
+
 #include "linked_light_lists.hpp"
 #include "light_storage.hpp"
 
-#include "GLSLProgram.hpp"
+#include "glsl_program.hpp"
 #include "Texture2D.hpp"
 #include "Sampler.hpp"
 
@@ -21,10 +23,9 @@ class linked_light_lists_gen_dispatch : public gpu_dispatchable {
 	using Base = gpu_dispatchable;
 
 private:
-	const StEngineControl &ctx;
 	light_storage *ls;
 	linked_light_lists *lll;
-	std::shared_ptr<Core::GLSLProgram> program;
+	Resource::resource_instance<Resource::glsl_program> program;
 
 	Core::SamplerMipmapped depth_sampler;
 
@@ -33,8 +34,8 @@ private:
 public:
 	linked_light_lists_gen_dispatch(const StEngineControl &ctx,
 									light_storage *ls,
-									linked_light_lists *lll) : ctx(ctx), ls(ls), lll(lll),
-															   program(ctx.glslprograms_pool().fetch_program_task({ "passthrough.vert", "linked_light_lists_gen.frag" })()),
+									linked_light_lists *lll) : ls(ls), lll(lll),
+															   program(ctx, std::vector<std::string>{ "passthrough.vert", "linked_light_lists_gen.frag" }),
 															   depth_sampler(Core::TextureFiltering::Nearest, Core::TextureFiltering::Nearest, Core::TextureFiltering::Nearest,
 															   				 Core::TextureWrapMode::ClampToEdge, Core::TextureWrapMode::ClampToEdge) {}
 

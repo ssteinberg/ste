@@ -13,7 +13,7 @@ void light_preprocess_cull_shadows::set_context_state() const {
 	4_storage_idx = Core::buffer_object_cast<Core::ShaderStorageBuffer<std::uint32_t>>(lp->ls->get_active_ll_counter());
 	5_storage_idx = lp->ls->get_active_ll();
 
-	lp->light_preprocess_cull_shadows_program->bind();
+	lp->light_preprocess_cull_shadows_program.get().bind();
 }
 
 void light_preprocess_cull_shadows::dispatch() const {

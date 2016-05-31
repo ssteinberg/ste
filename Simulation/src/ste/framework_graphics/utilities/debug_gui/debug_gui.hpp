@@ -12,10 +12,11 @@
 #include "signal.hpp"
 #include "Font.hpp"
 
-#include <memory>
 #include <map>
-#include <array>
+#include <vector>
+#include <memory>
 #include <string>
+#include <functional>
 
 namespace StE {
 namespace Graphics {
@@ -39,9 +40,15 @@ private:
 	std::shared_ptr<hid_scroll_signal_connection_type> hid_scroll_signal;
 	std::shared_ptr<hid_keyboard_signal_connection_type> hid_keyboard_signal;
 
+	std::vector<std::function<void(const glm::ivec2 &)>> user_guis;
+
 public:
 	debug_gui(const StEngineControl &ctx, profiler *prof, const StE::Text::Font &default_font);
 	~debug_gui() noexcept;
+
+	void add_custom_gui(std::function<void(const glm::ivec2 &)> &&f) { user_guis.emplace_back(std::move(f)); }
+
+	bool is_gui_active() const;
 
 protected:
 	void set_context_state() const override final {}

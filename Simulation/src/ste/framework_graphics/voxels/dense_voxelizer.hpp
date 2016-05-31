@@ -9,7 +9,7 @@
 #include "gpu_task.hpp"
 #include "Scene.hpp"
 
-#include "GLSLProgram.hpp"
+#include "glsl_program.hpp"
 #include "GLSLProgramFactory.hpp"
 
 namespace StE {

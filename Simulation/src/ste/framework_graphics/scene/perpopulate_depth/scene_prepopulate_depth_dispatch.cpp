@@ -14,7 +14,7 @@ void scene_prepopulate_depth_dispatch::set_context_state() const {
 	scene->get_idb().buffer().bind();
 	scene->bind_buffers();
 
-	program->bind();
+	program.get().bind();
 }
 
 void scene_prepopulate_depth_dispatch::dispatch() const {

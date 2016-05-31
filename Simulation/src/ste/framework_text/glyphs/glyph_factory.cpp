@@ -17,8 +17,6 @@
 
 #include <stdexcept>
 
-#include "SurfaceFactory.hpp"
-
 using namespace StE::Text;
 
 namespace StE {
@@ -175,8 +173,8 @@ glyph_factory::glyph_factory() : pimpl(std::make_unique<glyph_factory_impl>()) {
 
 glyph_factory::~glyph_factory() {}
 
-StE::task<glyph> glyph_factory::create_glyph_task(const Font &font, wchar_t codepoint) {
-	return task<glyph>([=](optional<task_scheduler*> sched) -> glyph {
+StE::task_future<glyph> glyph_factory::create_glyph_async(task_scheduler *sched, const Font &font, wchar_t codepoint) {
+	return sched->schedule_now([=]() -> glyph {
 		glyph g;
 		int start_x, start_y, w, h;
 		int px_size = glyph::ttf_pixel_size;

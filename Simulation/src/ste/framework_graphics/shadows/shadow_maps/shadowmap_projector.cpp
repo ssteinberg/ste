@@ -24,7 +24,7 @@ void shadowmap_projector::set_context_state() const {
 
 	8_storage_idx = scene->get_sproj_id_to_llid_tt();
 
-	shadow_gen_program->bind();
+	shadow_gen_program.get().bind();
 	shadow_map->get_fbo()->bind();
 }
 

@@ -9,7 +9,7 @@
 #include "StEngineControl.hpp"
 #include "gl_current_context.hpp"
 
-#include "GLSLProgram.hpp"
+#include "glsl_program.hpp"
 #include "Scene.hpp"
 
 #include <memory>
@@ -23,12 +23,11 @@ class scene_prepopulate_depth_dispatch : public gpu_dispatchable {
 private:
 	const Scene *scene;
 
-	std::shared_ptr<Core::GLSLProgram> program;
+	Resource::resource_instance<Resource::glsl_program> program;
 
 public:
-	scene_prepopulate_depth_dispatch(const StEngineControl &ctx,
-									 const Scene *scene) : scene(scene),
-														   program(ctx.glslprograms_pool().fetch_program_task({ "scene_prepopulate_depth.vert", "scene_prepopulate_depth.frag" })()) {}
+	scene_prepopulate_depth_dispatch(const StEngineControl &ctx, const Scene *scene) : scene(scene),
+																					   program(ctx, std::vector<std::string>{ "scene_prepopulate_depth.vert", "scene_prepopulate_depth.frag" }) {}
 
 	void set_context_state() const override final;
 	void dispatch() const override final;

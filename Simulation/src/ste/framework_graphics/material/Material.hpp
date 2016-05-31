@@ -28,10 +28,10 @@ class Material : public Core::observable_resource<material_descriptor> {
 private:
 	Core::SamplerMipmapped material_sampler;
 
-	std::shared_ptr<Core::Texture2D> basecolor_map;
-	std::shared_ptr<Core::Texture2D> cavity_map;
-	std::shared_ptr<Core::Texture2D> normal_map;
-	std::shared_ptr<Core::Texture2D> mask_map;
+	std::shared_ptr<Core::Texture2D> basecolor_map{ nullptr };
+	std::shared_ptr<Core::Texture2D> cavity_map{ nullptr };
+	std::shared_ptr<Core::Texture2D> normal_map{ nullptr };
+	std::shared_ptr<Core::Texture2D> mask_map{ nullptr };
 
 	float anisotropy{ .0f };
 	float index_of_refraction{ 1.5f };
@@ -66,6 +66,12 @@ public:
 
 public:
 	Material();
+	~Material() {
+		basecolor_map = nullptr;
+		cavity_map = nullptr;
+		normal_map = nullptr;
+		mask_map = nullptr;
+	}
 
 	/**
 	*	@brief	Set material base color (diffuse) map

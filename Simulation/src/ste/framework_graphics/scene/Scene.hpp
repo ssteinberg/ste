@@ -11,6 +11,7 @@
 #include "deferred_gbuffer.hpp"
 #include "object_group_indirect_command_buffer.hpp"
 
+#include "glsl_program.hpp"
 #include "AtomicCounterBufferObject.hpp"
 #include "ShaderStorageBuffer.hpp"
 
@@ -47,7 +48,7 @@ private:
 	mutable object_group_indirect_command_buffer shadow_idb;
 	mutable sproj_id_to_llid_tt_buffer_type sproj_id_to_llid_tt;
 
-	std::shared_ptr<Core::GLSLProgram> object_program;
+	Resource::resource_instance<Resource::glsl_program> object_program;
 
 public:
 	Scene(const StEngineControl &ctx);

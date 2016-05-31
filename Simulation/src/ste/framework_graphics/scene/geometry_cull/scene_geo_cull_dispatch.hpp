@@ -7,7 +7,7 @@
 #include "StEngineControl.hpp"
 #include "gl_current_context.hpp"
 
-#include "GLSLProgram.hpp"
+#include "glsl_program.hpp"
 #include "gpu_dispatchable.hpp"
 
 #include "Scene.hpp"
@@ -25,7 +25,7 @@ private:
 	const Scene *scene;
 	const light_storage *ls;
 
-	std::shared_ptr<Core::GLSLProgram> program;
+	Resource::resource_instance<Resource::glsl_program> program;
 
 	mutable std::size_t old_object_group_size{ 0 };
 
@@ -35,8 +35,9 @@ private:
 public:
 	scene_geo_cull_dispatch(const StEngineControl &ctx,
 							const Scene *scene,
-							const light_storage *ls) : scene(scene), ls(ls),
-													   program(ctx.glslprograms_pool().fetch_program_task({ "scene_geo_cull.glsl" })()) {}
+							const light_storage *ls) : scene(scene),
+													   ls(ls),
+													   program(ctx, "scene_geo_cull.glsl") {}
 
 	void set_context_state() const override final;
 	void dispatch() const override final;

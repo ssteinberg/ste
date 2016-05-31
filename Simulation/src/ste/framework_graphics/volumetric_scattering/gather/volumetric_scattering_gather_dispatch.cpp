@@ -11,7 +11,7 @@ void volumetric_scattering_gather_dispatch::set_context_state() const {
 	11_tex_unit = *vss->get_depth_map();
 	11_sampler_idx = vss->get_depth_sampler();
 
-	program->bind();
+	program.get().bind();
 }
 
 void volumetric_scattering_gather_dispatch::dispatch() const {

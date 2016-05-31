@@ -7,11 +7,13 @@
 #include "StEngineControl.hpp"
 #include "gpu_task.hpp"
 
+#include "resource_instance.hpp"
+#include "resource_loading_task.hpp"
+
 #include "signal.hpp"
 
 #include "light_storage.hpp"
-#include "hdr_dof_postprocess.hpp"
-#include "GLSLProgram.hpp"
+#include "glsl_program.hpp"
 
 #include "light_preprocess_cull_lights.hpp"
 #include "light_preprocess_cull_shadows.hpp"
@@ -23,19 +25,22 @@ class light_preprocessor {
 	friend class light_preprocess_cull_lights;
 	friend class light_preprocess_cull_shadows;
 
+	friend class Resource::resource_loading_task<light_preprocessor>;
+	friend class Resource::resource_instance<light_preprocessor>;
+
+private:
 	using ResizeSignalConnectionType = StEngineControl::framebuffer_resize_signal_type::connection_type;
 	using ProjectionSignalConnectionType = StEngineControl::projection_change_signal_type::connection_type;
 
 private:
 	const StEngineControl &ctx;
 	light_storage *ls;
-	const hdr_dof_postprocess *hdr;
 
 	light_preprocess_cull_lights stage1;
 	light_preprocess_cull_shadows stage2;
 
-	std::shared_ptr<Core::GLSLProgram> light_preprocess_cull_lights_program;
-	std::shared_ptr<Core::GLSLProgram> light_preprocess_cull_shadows_program;
+	Resource::resource_instance<Resource::glsl_program> light_preprocess_cull_lights_program;
+	Resource::resource_instance<Resource::glsl_program> light_preprocess_cull_shadows_program;
 
 	std::shared_ptr<const gpu_task> task;
 
@@ -45,14 +50,12 @@ private:
 private:
 	void set_projection_planes() const;
 
-public:
+private:
 	light_preprocessor(const StEngineControl &ctx,
-					   light_storage *ls,
-					   const hdr_dof_postprocess *hdr) : ctx(ctx), ls(ls), hdr(hdr),
-														 stage1(this), stage2(this),
-														 light_preprocess_cull_lights_program(ctx.glslprograms_pool().fetch_program_task({ "light_preprocess_cull_lights.glsl" })()),
-														 light_preprocess_cull_shadows_program(ctx.glslprograms_pool().fetch_program_task({ "light_preprocess_cull_shadows.glsl" })()) {
-		set_projection_planes();
+					   light_storage *ls) : ctx(ctx), ls(ls),
+											stage1(this), stage2(this),
+											light_preprocess_cull_lights_program(ctx, "light_preprocess_cull_lights.glsl"),
+											light_preprocess_cull_shadows_program(ctx, "light_preprocess_cull_shadows.glsl") {
 		resize_connection = std::make_shared<ResizeSignalConnectionType>([=](const glm::i32vec2 &size) {
 			set_projection_planes();
 		});
@@ -62,11 +65,31 @@ public:
 		ctx.signal_framebuffer_resize().connect(resize_connection);
 		ctx.signal_projection_change().connect(projection_change_connection);
 
-		auto stage1_task = make_gpu_task("light_preprocessor_stage1", &stage1, nullptr);;
+		auto stage1_task = make_gpu_task("light_preprocessor_stage1", &stage1, nullptr);
 		task = make_gpu_task("light_preprocessor", &stage2, nullptr, { stage1_task });
 	}
 
+public:
 	auto &get_task() const { return task; }
+};
+
+}
+
+namespace Resource {
+
+template <>
+class resource_loading_task<Graphics::light_preprocessor> {
+	using R = Graphics::light_preprocessor;
+
+public:
+	auto loader(const StEngineControl &ctx, R* object) {
+		return ctx.scheduler().schedule_now([object, &ctx]() {
+			object->light_preprocess_cull_lights_program.wait();
+			object->light_preprocess_cull_shadows_program.wait();
+		}).then_on_main_thread([object]() {
+			object->set_projection_planes();
+		});
+	}
 };
 
 }

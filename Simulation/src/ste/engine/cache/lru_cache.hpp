@@ -13,7 +13,6 @@
 #include "lru_cache_index.hpp"
 
 #include "concurrent_queue.hpp"
-#include "task.hpp"
 #include "interruptible_thread.hpp"
 
 #include <string>
@@ -67,7 +66,8 @@ private:
 		t.interrupt();
 		do { cv.notify_one(); } while (!m.try_lock());
 		m.unlock();
-		t.join();
+		if (t.joinable())
+			t.join();
 	}
 
 	void item_accessed(typename index_type::val_data_guard &&val_guard) const {
@@ -88,9 +88,8 @@ public:
 	*	@param quota	Max size in bytes. 0 for unlimited.
 	*/
 	lru_cache(const boost::filesystem::path &path, std::size_t quota = 0) : index(path, total_size), path(path), quota(quota), t([this] (){
-		auto flag = interruptible_thread::interruption_flag;
 		for (;;) {
-			if (flag->is_set()) return;
+			if (interruptible_thread::is_interruption_flag_set()) return;
 
 			{
 				std::unique_lock<std::mutex> l(this->m);
@@ -158,12 +157,12 @@ public:
 	}
 
 	/**
-	*	@brief	Read an object from the cache
+	*	@brief	Returns a lambda that read the object associated with key k from the cache, if any.
 	*
 	* 	@param k	key
 	*/
 	template <typename V>
-	task<optional<V>> get(const key_type &k) const {
+	auto get(const key_type &k) const {
 		return [=]() -> optional<V> {
 			auto val_guard = this->index.map[k];
 			if (!val_guard.is_valid())
