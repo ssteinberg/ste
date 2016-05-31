@@ -119,6 +119,7 @@ private:
 									lll_gen_task;
 
 protected:
+	void init();
 	void setup_tasks();
 	void rebuild_task_queue();
 

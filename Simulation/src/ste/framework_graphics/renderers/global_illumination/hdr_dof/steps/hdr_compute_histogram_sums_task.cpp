@@ -11,8 +11,6 @@ void hdr_compute_histogram_sums_task::set_context_state() const {
 	1_storage_idx = buffer_object_cast<ShaderStorageBuffer<std::uint32_t>>(p->histogram);
 	2_storage_idx = p->hdr_bokeh_param_buffer;
 
-	11_tex_unit = *p->gbuffer->get_depth_target();
-
 	p->hdr_compute_histogram_sums.get().bind();
 }
 

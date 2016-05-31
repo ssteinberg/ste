@@ -1,6 +1,7 @@
 
 #type frag
 #version 450
+#extension GL_ARB_bindless_texture : require
 #extension GL_NV_gpu_shader5 : require
 
 #include "light.glsl"
@@ -28,7 +29,7 @@ layout(shared, binding = 11) restrict writeonly buffer lll_data {
 	lll_element lll_buffer[];
 };
 
-layout(binding = 11) uniform sampler2D depth_map;
+layout(bindless_sampler) uniform sampler2D depth_map;
 
 void main() {
 	ivec2 image_coord = ivec2(gl_FragCoord.xy);

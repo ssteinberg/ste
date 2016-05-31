@@ -37,6 +37,9 @@ private:
 
 	Resource::resource_instance<Resource::glsl_program> program;
 
+	std::shared_ptr<connection<>> vss_storage_connection;
+	std::shared_ptr<connection<>> shadows_storage_connection;
+
 private:
 	void update_phase_uniforms(float g) {
 		float g2 = g * g;
@@ -49,6 +52,22 @@ private:
 		program.get().set_uniform("phase3", p3);
 	}
 
+	void attach_handles() const {
+		auto depth_map = vss->get_depth_map();
+		if (depth_map) {
+			auto depth_map_handle = depth_map->get_texture_handle(vss->get_depth_sampler());
+			depth_map_handle.make_resident();
+			program.get().set_uniform("depth_map", depth_map_handle);
+		}
+
+		auto shadow_map = shadows_storage->get_cubemaps();
+		if (shadow_map) {
+			auto shadow_map_handle = shadow_map->get_texture_handle(shadows_storage->get_shadow_sampler());
+			shadow_map_handle.make_resident();
+			program.get().set_uniform("shadow_depth_maps", shadow_map_handle);
+		}
+	}
+
 private:
 	volumetric_scattering_scatter_dispatch(const StEngineControl &ctx,
 										   const volumetric_scattering_storage *vss,
@@ -58,7 +77,16 @@ private:
 										   											   llls(llls),
 																					   ls(ls),
 																					   shadows_storage(shadows_storage),
-																					   program(ctx, "volumetric_scattering_scatter.glsl") {}
+																					   program(ctx, "volumetric_scattering_scatter.glsl") {
+		vss_storage_connection = std::make_shared<connection<>>([&]() {
+			attach_handles();
+		});
+		shadows_storage_connection = std::make_shared<connection<>>([&]() {
+			attach_handles();
+		});
+		vss->get_storage_modified_signal().connect(vss_storage_connection);
+		shadows_storage->get_storage_modified_signal().connect(shadows_storage_connection);
+	}
 
 public:
 	void set_context_state() const override final;
@@ -79,6 +107,7 @@ public:
 			object->program.wait();
 		}).then_on_main_thread([object]() {
 			object->update_phase_uniforms(object->vss->get_scattering_phase_anisotropy_coefficient());
+			object->attach_handles();
 		});
 	}
 };

@@ -1,6 +1,7 @@
 
 #type frag
 #version 450
+#extension GL_ARB_bindless_texture : require
 
 #define FXAA_PRESET 3
 #define FXAA_GLSL_130
@@ -13,8 +14,8 @@ in v_out {
 
 out vec4 gl_FragColor;
 
-layout(binding = 0) uniform sampler2D tex;
+layout(bindless_sampler) uniform sampler2D input;
 
 void main() {
-	gl_FragColor = vec4(FxaaPixelShader(vin.uv, tex, vin.rcp_frame), 1);
+	gl_FragColor = vec4(FxaaPixelShader(vin.uv, input, vin.rcp_frame), 1);
 }
