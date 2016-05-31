@@ -91,10 +91,11 @@ public:
 			return;
 		}
 
-		// Create temporary buffer
-		ShaderStorageBuffer<T> temp(len - n - count);
-		buffer.copy_to(temp, n + count, 0, len - n - count);
-		temp.copy_to(buffer, 0, n, len - n - count);
+		// Copy tail to buffer end and then move to correct position
+		auto move_size = len - n - count;
+		buffer.commit_range(len, move_size);
+		buffer.copy_to(buffer, n + count, len, move_size);
+		buffer.copy_to(buffer, len, n, move_size);
 
 		len -= count;
 	}
