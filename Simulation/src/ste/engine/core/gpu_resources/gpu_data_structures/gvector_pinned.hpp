@@ -186,7 +186,7 @@ public:
 	}
 
 	template <bool b = !lockless>
-	void lock_range(const range<> &r, std::enable_if_t<b>* = 0) const { ptr.lock(r); }
+	void lock_range(const range<> &r, std::enable_if_t<b>* = nullptr) const { ptr.lock(r); }
 
 	const T &operator[](std::size_t n) const {
 		assert(n < len && "Subscript out of range.");

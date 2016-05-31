@@ -22,7 +22,7 @@ private:
 	indirect_draw_buffer_type idb;
 
 public:
-	object_group_indirect_command_buffer() : idb(pages * std::max(65536, indirect_draw_buffer_type::page_size()) / sizeof(Core::IndirectMultiDrawElementsCommand)) {}
+	object_group_indirect_command_buffer() : idb(pages * std::max<std::size_t>(65536, indirect_draw_buffer_type::page_size()) / sizeof(Core::IndirectMultiDrawElementsCommand)) {}
 
 	auto &buffer() { return idb; }
 	auto &buffer() const { return idb; }

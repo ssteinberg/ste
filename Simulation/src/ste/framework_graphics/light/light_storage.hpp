@@ -34,7 +34,7 @@ private:
 	Core::AtomicCounterBufferObject<> active_lights_ll_counter;
 
 public:
-	light_storage() : active_lights_ll(pages * std::max(65536, lights_ll_type::page_size()) / 2),
+	light_storage() : active_lights_ll(pages * std::max<std::size_t>(65536, lights_ll_type::page_size()) / 2),
 					  active_lights_ll_counter(1) {}
 
 	template <typename LightType, typename ... Ts>
