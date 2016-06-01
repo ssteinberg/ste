@@ -115,27 +115,6 @@ void add_scene_lights(StE::Graphics::Scene &scene, std::vector<std::unique_ptr<S
 	}
 }
 
-auto create_material_editor_object(StE::Graphics::Scene *scene, const glm::vec3 &pos) {
-	std::unique_ptr<StE::Graphics::Sphere> sphere = std::make_unique<StE::Graphics::Sphere>(20, 20);
-	(*sphere) *= 30;
-	auto obj = std::make_shared<StE::Graphics::Object>(std::move(sphere));
-
-	obj->set_model_transform(glm::mat4x3(glm::translate(glm::mat4(), pos)));
-
-	gli::texture2d base_color_tex{ gli::format::FORMAT_RGB8_UNORM_PACK8, { 1, 1 }, 1 };
-	*reinterpret_cast<glm::u8vec3*>(base_color_tex.data()) = glm::u8vec3(255);
-
-	auto mat = scene->scene_properties().materials_storage().allocate_material();
-	mat->set_basecolor_map(std::make_unique<StE::Core::Texture2D>(base_color_tex, false));
-
-	obj->set_material(mat.get());
-
-	scene->object_group().add_object(obj);
-
-	return std::move(mat);
-}
-
-
 
 int main() {
 
@@ -234,6 +213,8 @@ int main() {
 
 	std::vector<std::unique_ptr<StE::Graphics::light>> lights;
 	std::vector<std::unique_ptr<StE::Graphics::Material>> materials;
+	std::vector<std::unique_ptr<StE::Graphics::Material>> ball_materials;
+	std::vector<std::shared_ptr<StE::Graphics::Object>> ball_objects;
 
 	StE::task_future_collection<void> loading_futures;
 
@@ -252,6 +233,13 @@ int main() {
 																		 &scene.get().scene_properties(),
 																		 2.5f,
 																		 materials));
+	loading_futures.insert(StE::Resource::ModelFactory::load_model_async(ctx,
+																		 R"(Data/models/ball/Football.obj)",
+																		 &scene.get().object_group(),
+																		 &scene.get().scene_properties(),
+																		 2.5f,
+																		 ball_materials,
+																		 &ball_objects));
 	loading_futures.insert(ctx.scheduler().schedule_now([&]() {
 		renderer.wait();
 	}));
@@ -269,7 +257,14 @@ int main() {
 	renderer.get().attach_profiler(gpu_tasks_profiler.get());
 	std::unique_ptr<StE::Graphics::debug_gui> debug_gui_dispatchable = std::make_unique<StE::Graphics::debug_gui>(ctx, gpu_tasks_profiler.get(), font);
 
-	auto mat = create_material_editor_object(&scene.get(), {0,200,50});
+	auto ball = ball_objects.back().get();
+	auto ball_model_transform = glm::translate(glm::mat4(), glm::vec3{ .0f, 100.f, .0f });
+	ball->set_model_transform(ball_model_transform);
+
+	auto mat = ball_materials.back().get();
+	gli::texture2d base_color_tex{ gli::format::FORMAT_RGB8_UNORM_PACK8, { 1, 1 }, 1 };
+	*reinterpret_cast<glm::u8vec3*>(base_color_tex.data()) = glm::u8vec3(255);
+	mat->set_basecolor_map(std::make_unique<StE::Core::Texture2D>(base_color_tex, false));
 
 	StE::Graphics::RGB base_color{1,1,1};
 	float roughness = mat->get_roughness();
