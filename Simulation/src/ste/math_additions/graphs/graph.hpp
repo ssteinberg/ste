@@ -10,9 +10,8 @@
 #include <algorithm>
 #include <functional>
 
-#define BOOST_FILESYSTEM_NO_DEPRECATED
-#include <boost/filesystem.hpp>
-#include <boost/container/flat_set.hpp>
+#include "boost_filesystem.hpp"
+#include "boost_flatset.hpp"
 
 namespace StE {
 namespace Graph {

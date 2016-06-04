@@ -26,7 +26,7 @@ private:
 	mutable std::vector<std::unique_ptr<const edge>> originating_edges;
 
 public:	
-	virtual ~vertex() noexcept {}
+	virtual ~vertex() noexcept;
 	
 	const auto &get_outgoing_edges() const { return originating_edges; }
 	const auto &get_incoming_edges() const { return terminating_edges; }

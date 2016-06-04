@@ -12,6 +12,7 @@
 #include <type_traits>
 
 #include "task_future.hpp"
+#include "thread_pool_task.hpp"
 
 #include "balanced_thread_pool.hpp"
 #include "concurrent_queue.hpp"
@@ -32,13 +33,13 @@ private:
 
 	struct delayed_task {
 		std::chrono::high_resolution_clock::time_point run_at;
-		function_wrapper f;
+		unique_function_wrapper f;
 	};
 
 private:
 	LoadBalancingPool pool;
 
-	concurrent_queue<function_wrapper> main_thread_task_queue;
+	concurrent_queue<unique_function_wrapper> main_thread_task_queue;
 	concurrent_queue<delayed_task> delayed_tasks_queue;
 	std::list<delayed_task> delayed_tasks_list;
 
@@ -66,9 +67,10 @@ public:
 	*/
 	template <bool shared, typename F>
 	task_future_impl<typename function_traits<F>::result_t, shared> schedule_now(F &&f) {
-		static_assert(function_traits<F>::arity == 0, "lambda takes too many arguments");
+		thread_pool_task<typename function_traits<F>::result_t> task(std::forward<F>(f));
+		auto future = pool.enqueue(std::move(task));
 
-		return { std::move(pool.enqueue(std::forward<F>(f))), this };
+		return { std::move(future), this };
 	}
 
 	/**
@@ -81,11 +83,10 @@ public:
 	template <bool shared, typename F>
 	task_future_impl<typename function_traits<F>::result_t, shared> schedule_at(const std::chrono::high_resolution_clock::time_point &at,
 												   				   				F &&f) {
-		static_assert(function_traits<F>::arity == 0, "lambda takes too many arguments");
+		thread_pool_task<typename function_traits<F>::result_t> task(std::forward<F>(f));
+		auto future = task.get_future();
 
-		std::packaged_task<std::result_of_t<F()>()> pt(std::forward<F>(f));
-		auto future = pt.get_future();
-		delayed_tasks_queue.push({ at, std::move(pt) });
+		delayed_tasks_queue.push({ at, std::move(task) });
 		return { std::move(future), this };
 	}
 
@@ -99,11 +100,10 @@ public:
 	template <bool shared, typename F, class Rep, class Period>
 	task_future_impl<typename function_traits<F>::result_t, shared> schedule_after(const std::chrono::duration<Rep, Period> &after,
 																	  			   F &&f) {
-		static_assert(function_traits<F>::arity == 0, "lambda takes too many arguments");
+		thread_pool_task<typename function_traits<F>::result_t> task(std::forward<F>(f));
+		auto future = task.get_future();
 
-		std::packaged_task<std::result_of_t<F()>()> pt(std::forward<F>(f));
-		auto future = pt.get_future();
-		delayed_tasks_queue.push({ std::chrono::high_resolution_clock::now() + after, std::move(pt) });
+		delayed_tasks_queue.push({ std::chrono::high_resolution_clock::now() + after, std::move(task) });
 		return { std::move(future), this };
 	}
 
@@ -115,16 +115,15 @@ public:
 	*/
 	template <bool shared, typename F>
 	task_future_impl<typename function_traits<F>::result_t, shared> schedule_now_on_main_thread(F &&f) {
-		static_assert(function_traits<F>::arity == 0, "lambda takes too many arguments");
+		thread_pool_task<typename function_traits<F>::result_t> task(std::forward<F>(f));
+		auto future = task.get_future();
 
-		std::packaged_task<std::result_of_t<F()>()> pt(std::forward<F>(f));
-		auto future = pt.get_future();
 		if (is_main_thread()) {
-			pt();
+			task();
 			return { std::move(future), this };
 		}
 
-		main_thread_task_queue.push(std::move(pt));
+		main_thread_task_queue.push(std::move(task));
 		return { std::move(future), this };
 	}
 

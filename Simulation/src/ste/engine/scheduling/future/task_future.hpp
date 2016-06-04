@@ -269,8 +269,25 @@ public:
 
 	~task_future_impl() noexcept {}
 
-	task_future_impl &operator=(task_future_impl &&other) = delete;
 	task_future_impl &operator=(const task_future_impl &other) = delete;
+
+	/**
+	*	@brief	Move operator.
+	*
+	*	@param other	Future to move.
+	*/
+	task_future_impl &operator=(task_future_impl &&other) {
+		future_lock_guard<write_lock_type>(mutex, chain_mutex, chain);
+		future_lock_guard<write_lock_type>(other.mutex, other.chain_mutex, other.chain);
+
+		sched = other.sched;
+		future = std::move(other.future);
+		chain = other.chain;
+		chaining_future = std::move(other.chaining_future);
+		chained_future = std::move(other.chained_future);
+
+		return *this;
+	}
 
 	/**
 	*	@brief	Get future return. Will busy wait if called on main thread.

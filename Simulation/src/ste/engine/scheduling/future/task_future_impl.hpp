@@ -33,7 +33,7 @@ task_future_impl<typename function_traits<L>::result_t, is_shared> then_on_main_
 		R r = f.get();
 		return sched->schedule_now_on_main_thread<is_shared>([func = std::move(func), r = std::move(r)]() mutable {
 			return func(std::move(r));
-		});
+		}); 
 	}), task_future_chaining_construct() };
 }
 

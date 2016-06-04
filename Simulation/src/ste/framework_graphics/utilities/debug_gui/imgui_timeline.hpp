@@ -7,7 +7,7 @@
 
 #include "profiler.hpp"
 
-#include <iostream>
+#include <sstream>
 #include <iomanip>
 #include <map>
 #include <string>

@@ -16,10 +16,10 @@
 namespace StE {
 namespace Core {
 
-template <core_resource_type type>
-class texture_sparse_mipmapped : public texture_mipmapped<type> {
+template <core_resource_type TextureType>
+class texture_sparse_mipmapped : public texture_mipmapped<TextureType> {
 private:
-	using Base = texture_mipmapped<type>;
+	using Base = texture_mipmapped<TextureType>;
 
 	void upload_level(const void *data, int level = 0, int layer = 0, CubeMapFace face = CubeMapFace::CubeMapFaceNone, int data_size = 0) override {}
 

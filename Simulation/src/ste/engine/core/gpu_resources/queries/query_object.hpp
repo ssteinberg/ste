@@ -16,12 +16,12 @@ enum class QueryResultType {
 	QueryResultNoWait = GL_QUERY_RESULT_NO_WAIT,
 };
 
-template <core_resource_type type>
+template <core_resource_type ResType>
 class QueryObjectAllocator : public generic_resource_allocator {
 public:
 	GenericResource::type allocate() override final {
 		GenericResource::type o;
-		glCreateQueries(static_cast<GLenum>(type), 1, &o);
+		glCreateQueries(static_cast<GLenum>(ResType), 1, &o);
 		return o;
 	}
 	static void deallocate(GenericResource::type &id) {
@@ -32,13 +32,13 @@ public:
 	}
 };
 
-template <core_resource_type type>
-class query_object : public resource<QueryObjectAllocator<type>> {
-	using Base = resource<QueryObjectAllocator<type>>;
+template <core_resource_type ResType>
+class query_object : public resource<QueryObjectAllocator<ResType>> {
+	using Base = resource<QueryObjectAllocator<ResType>>;
 
 public:
-	void begin_query() const { glBeginQuery(type, Base::get_resource_id()); }
-	void end_query() const { glEndQuery(type, Base::get_resource_id()); }
+	void begin_query() const { glBeginQuery(ResType, Base::get_resource_id()); }
+	void end_query() const { glEndQuery(ResType, Base::get_resource_id()); }
 
 	std::int32_t get_query_result_32(QueryResultType qt) const {
 		std::int32_t r;
@@ -82,7 +82,7 @@ public:
 		glGetQueryObjectui64v(Base::get_resource_id(), static_cast<GLenum>(qt), reinterpret_cast<void*>(offset));
 	}
 
-	core_resource_type resource_type() const override { return type; }
+	core_resource_type resource_type() const override { return ResType; }
 };
 
 }

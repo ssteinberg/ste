@@ -6,6 +6,6 @@
 namespace StE {
 
 struct none_t {};
-constexpr none_t none;
+constexpr none_t none = none_t();
 
 }
