@@ -37,7 +37,6 @@ struct thread_pool_task_exec_impl<void> {
 class unique_thread_pool_type_erased_task {
 private:
 	unique_function_wrapper callable;
-	bool value_set{ false };
 
 protected:
 	unique_thread_pool_type_erased_task() {}
@@ -52,10 +51,8 @@ public:
 	unique_thread_pool_type_erased_task &operator=(unique_thread_pool_type_erased_task &&) = default;
 	virtual ~unique_thread_pool_type_erased_task() {}
 
-	void operator()() {
-		assert(!value_set);
+	void operator()() const {
 		callable();
-		value_set = true;
 	}
 };
 

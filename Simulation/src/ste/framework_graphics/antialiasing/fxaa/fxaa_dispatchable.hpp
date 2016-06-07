@@ -46,7 +46,7 @@ private:
 
 		auto handle = input->get_texture_handle(*Core::Sampler::SamplerLinearClamp());
 		handle.make_resident();
-		program.get().set_uniform("input", handle);
+		program.get().set_uniform("input_tex", handle);
 	}
 
 public:

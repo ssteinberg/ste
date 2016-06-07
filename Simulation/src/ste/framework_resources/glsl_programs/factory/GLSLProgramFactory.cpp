@@ -214,8 +214,12 @@ bool GLSLProgramFactory::parse_include(const boost::filesystem::path &path, int 
 		for (int i = 1; std::getline(include_stream, include_line); ++i, include_src += include_line + "\n") {
 			if (include_line[0] == '#') parse_include(*include_path, i, include_line, paths);
 		}
-		include_src.insert(0, std::string("#line 1 \"") + include_path->string() + "\"\n");
 
+		std::string include_path_string = include_path->string();
+		std::replace(include_path_string.begin(), include_path_string.end(), '\\', '/');
+		std::replace(path_string.begin(), path_string.end(), '\\', '/');
+
+		include_src.insert(0, std::string("#line 1 \"") + include_path_string + "\"\n");
 		source.insert(end, std::string("\n#line ") + std::to_string(line) + " \"" + path_string + "\"\n");
 		source.replace(it, end - it, include_src);
 
