@@ -18,8 +18,8 @@ inline glm::vec4 dist_and_normal(const glm::vec3 &p0, const glm::vec3 &p1, const
 
 }
 
-inline void extract_projection_frustum_planes(float far,
-											  float near,
+inline void extract_projection_frustum_planes(float ffar,
+											  float fnear,
 											  float fovy,
 											  float aspect,
 											  glm::vec4 *np,
@@ -33,24 +33,24 @@ inline void extract_projection_frustum_planes(float far,
 	const glm::vec3 up = { 0, 1, 0 };
 	const glm::vec3 right = { 1, 0, 0 };
 
-	float Hnear = 2.f * near * glm::tan(fovy * .5f);
-	float Hfar = 2.f * far * glm::tan(fovy * .5f);
+	float Hnear = 2.f * fnear * glm::tan(fovy * .5f);
+	float Hfar = 2.f * ffar * glm::tan(fovy * .5f);
 	float Wnear = Hnear * aspect;
 	float Wfar = Hfar * aspect;
 
-	auto fc = p + d * far;
+	auto fc = p + d * ffar;
 	auto ftl = fc + (up * Hfar * .5f) - (right * Wfar * .5f);
 	auto ftr = fc + (up * Hfar * .5f) + (right * Wfar * .5f);
 	auto fbl = fc - (up * Hfar * .5f) - (right * Wfar * .5f);
 	auto fbr = fc - (up * Hfar * .5f) + (right * Wfar * .5f);
-	auto nc = p + d * near;
+	auto nc = p + d * fnear;
 	auto ntl = nc + (up * Hnear * .5f) - (right * Wnear * .5f);
 	auto ntr = nc + (up * Hnear * .5f) + (right * Wnear * .5f);
 	auto nbl = nc - (up * Hnear * .5f) - (right * Wnear * .5f);
 	// auto nbr = nc - (up * Hnear * .5f) + (right * Wnear * .5f);
 
-	*np = { 0, 0, -1, near };
-	*fp = { 0, 0, 1, far };
+	*np = { 0, 0, -1, fnear };
+	*fp = { 0, 0, 1, ffar };
 	*rp = _detail::dist_and_normal(ntr, fbr, ftr);
 	*lp = _detail::dist_and_normal(ntl, ftl, fbl);
 	*tp = _detail::dist_and_normal(ntl, ftr, ftl);

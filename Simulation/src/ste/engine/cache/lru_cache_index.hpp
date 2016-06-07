@@ -16,9 +16,8 @@
 
 #include "concurrent_unordered_map.hpp"
 
-#include <boost/archive/binary_iarchive.hpp>
-#include <boost/archive/binary_oarchive.hpp>
-#include <boost/serialization/list.hpp>
+#include "boost_binary_ioarchive.hpp"
+#include "boost_serialization.hpp"
 
 #include <list>
 #include <string>

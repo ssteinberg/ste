@@ -9,10 +9,8 @@
 #include "GIRenderer.hpp"
 #include "basic_renderer.hpp"
 #include "SphericalLight.hpp"
-#include "DirectionalLight.hpp"
 #include "ModelFactory.hpp"
 #include "Camera.hpp"
-#include "glsl_program.hpp"
 #include "SurfaceFactory.hpp"
 #include "Texture2D.hpp"
 #include "Scene.hpp"
@@ -116,14 +114,21 @@ void add_scene_lights(StE::Graphics::Scene &scene, std::vector<std::unique_ptr<S
 }
 
 
-int main() {
-
+#ifdef _MSC_VER
+int CALLBACK WinMain(HINSTANCE hInstance,
+					 HINSTANCE hPrevInstance,
+					 LPSTR     lpCmdLine,
+					 int       nCmdShow)
+#else
+int main()
+#endif
+{
 	/*
 	 *	Create logger
 	 */
 
 	StE::Log logger("Global Illumination");
-//	logger.redirect_std_outputs();
+	logger.redirect_std_outputs();
 	ste_log_set_global_logger(&logger);
 	ste_log() << "Simulation is running";
 
@@ -135,7 +140,7 @@ int main() {
 	int w = 1920;
 	int h = w * 9 / 16;
 	constexpr float clip_near = 1.f;
-	constexpr float fovy = glm::pi<float>() * .225f;
+	float fovy = glm::pi<float>() * .225f;
 
 	GL::gl_context::context_settings settings;
 	settings.vsync = false;
@@ -259,7 +264,7 @@ int main() {
 
 	auto ball = ball_objects.back().get();
 	auto ball_model_transform = glm::translate(glm::mat4(), glm::vec3{ .0f, 100.f, .0f });
-	ball->set_model_transform(ball_model_transform);
+	ball->set_model_transform(glm::mat4x3(ball_model_transform));
 
 	auto mat = ball_materials.back().get();
 	gli::texture2d base_color_tex{ gli::format::FORMAT_RGB8_UNORM_PACK8, { 1, 1 }, 1 };

@@ -55,7 +55,7 @@ class rgb : public attrib {
 private:
 	glm::u8vec4 color;
 
-#ifdef DEBUG
+#ifdef _DEBUG
 	const char *name{ typeid(*this).name() };
 #endif
 
@@ -220,7 +220,7 @@ private:
 	rgb color;
 	float width;
 
-#ifdef DEBUG
+#ifdef _DEBUG
 	const char *name{ typeid(*this).name() };
 #endif
 
@@ -242,7 +242,7 @@ class font : public attrib {
 private:
 	Font f;
 
-#ifdef DEBUG
+#ifdef _DEBUG
 	const char *name{ typeid(*this).name() };
 #endif
 
@@ -266,7 +266,7 @@ private:
 	using T = int;
 	T s;
 
-#ifdef DEBUG
+#ifdef _DEBUG
 	const char *name{ typeid(*this).name() };
 #endif
 
@@ -298,7 +298,7 @@ private:
 	using T = float;
 	T s;
 
-#ifdef DEBUG
+#ifdef _DEBUG
 	const char *name{ typeid(*this).name() };
 #endif
 
@@ -322,7 +322,7 @@ private:
 	using T = float;
 	T k;
 
-#ifdef DEBUG
+#ifdef _DEBUG
 	const char *name{ typeid(*this).name() };
 #endif
 
@@ -350,7 +350,7 @@ public:
 private:
 	alignment a;
 
-#ifdef DEBUG
+#ifdef _DEBUG
 	const char *name{ typeid(*this).name() };
 #endif
 
@@ -377,7 +377,7 @@ private:
 	using T = int;
 	T w;
 
-#ifdef DEBUG
+#ifdef _DEBUG
 	const char *name{ typeid(*this).name() };
 #endif
 
@@ -398,7 +398,7 @@ public:
 static const weight b = weight(700);
 
 class underline : public attrib {
-#ifdef DEBUG
+#ifdef _DEBUG
 	const char *name{ typeid(*this).name() };
 #endif
 
@@ -415,7 +415,7 @@ public:
 static const underline u = underline();
 
 class italic : public attrib {
-#ifdef DEBUG
+#ifdef _DEBUG
 	const char *name{ typeid(*this).name() };
 #endif
 
@@ -436,7 +436,7 @@ private:
 	using T = std::string;
 	T l;
 
-#ifdef DEBUG
+#ifdef _DEBUG
 	const char *name{ typeid(*this).name() };
 #endif
 

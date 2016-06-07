@@ -48,14 +48,14 @@ public:
 		this->r = r;
 	}
 
-	void update_proj_data(float fovy, float aspect, float near, const glm::uvec2 backbuffer_size) {
+	void update_proj_data(float fovy, float aspect, float fnear, const glm::uvec2 backbuffer_size) {
 		proj_data p;
 
 		float tanHalfFovy = glm::tan(fovy * .5f);
 		float one_over_tan_half_fovy = 1.f / tanHalfFovy;
 		float one_over_aspect_tan_half_fovy = 1.f / (aspect * tanHalfFovy);
 
-		p.proj_xywz = { one_over_aspect_tan_half_fovy, one_over_tan_half_fovy, near, -1.f };
+		p.proj_xywz = { one_over_aspect_tan_half_fovy, one_over_tan_half_fovy, fnear, -1.f };
 		p.backbuffer_size = backbuffer_size;
 		p.tan_half_fovy = tanHalfFovy;
 		p.aspect = aspect;

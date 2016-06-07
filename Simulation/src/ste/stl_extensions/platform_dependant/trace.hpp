@@ -3,7 +3,7 @@
 
 #pragma once
 
-#ifdef DEBUG
+#ifdef _DEBUG
 #define	ENABLE_TRACE
 #endif
 
@@ -17,5 +17,5 @@
 #    define TRACE(x)  { std::cerr << (x) << std::flush; }
 #  endif
 #else
-#  define TRACE(x)
+#  define TRACE(x)	{}
 #endif

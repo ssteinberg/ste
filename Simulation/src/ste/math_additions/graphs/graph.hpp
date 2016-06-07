@@ -10,9 +10,8 @@
 #include <algorithm>
 #include <functional>
 
-#define BOOST_FILESYSTEM_NO_DEPRECATED
-#include <boost/filesystem.hpp>
-#include <boost/container/flat_set.hpp>
+#include "boost_filesystem.hpp"
+#include "boost_flatset.hpp"
 
 namespace StE {
 namespace Graph {
@@ -107,7 +106,7 @@ public:
 
 		assert(e_ptr);
 
-#ifdef DEBUG
+#ifdef _DEBUG
 		for (auto &e : e_ptr->from->originating_edges)
 			assert(e->to != e_ptr->to && "Edge exists");
 #endif

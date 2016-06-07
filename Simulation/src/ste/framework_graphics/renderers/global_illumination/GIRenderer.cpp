@@ -51,8 +51,8 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 
 		this->rebuild_task_queue();
 	});
-	projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([this](float aspect, float fovy, float near) {
-		this->transform_buffers.update_proj_data(fovy, aspect, near, this->ctx.get_backbuffer_size());
+	projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([this](float aspect, float fovy, float fnear) {
+		this->transform_buffers.update_proj_data(fovy, aspect, fnear, this->ctx.get_backbuffer_size());
 	});
 	ctx.signal_framebuffer_resize().connect(resize_connection);
 	ctx.signal_projection_change().connect(projection_change_connection);

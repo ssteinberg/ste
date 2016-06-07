@@ -13,6 +13,7 @@ GRTAGS
 GPATH
 *.vscode
 *.elf
+*.VC.db
 
 imgui.ini
 
@@ -75,6 +76,10 @@ dlldata.c
 *.svclog
 *.scc
 *.opendb
+*.db
+*.tss
+
+/s4*
 
 # Chutzpah Test files
 _Chutzpah*
