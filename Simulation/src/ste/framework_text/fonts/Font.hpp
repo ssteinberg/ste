@@ -5,8 +5,7 @@
 
 #include <string>
 
-#define BOOST_FILESYSTEM_NO_DEPRECATED 
-#include <boost/filesystem.hpp>
+#include "boost_filesystem.hpp"
 
 namespace StE {
 namespace Text {

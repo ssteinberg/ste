@@ -9,11 +9,9 @@
 
 #pragma once
 
-#include <boost/archive/binary_iarchive.hpp>
-#include <boost/archive/binary_oarchive.hpp>
+#include "boost_binary_ioarchive.hpp"
 
-#define BOOST_FILESYSTEM_NO_DEPRECATED
-#include <boost/filesystem.hpp>
+#include "boost_filesystem.hpp"
 
 #include <string>
 #include <iostream>

@@ -81,7 +81,7 @@ std::unique_ptr<glsl_shader_object_generic> GLSLProgramFactory::compile_from_pat
 
 std::unique_ptr<glsl_shader_object_generic> GLSLProgramFactory::compile_from_source(const boost::filesystem::path &path, std::string code,
 																		  GLSLShaderProperties prop, GLSLShaderType type) {
-#ifdef DEBUG
+#ifdef _DEBUG
 	{
 		std::ofstream otemp(std::string("tmp/") + path.filename().string() + ".tmp");
 		otemp << code << std::endl;

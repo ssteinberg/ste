@@ -8,8 +8,7 @@
 #include <memory>
 #include <ios>
 
-#define BOOST_FILESYSTEM_NO_DEPRECATED
-#include <boost/filesystem.hpp>
+#include "boost_filesystem.hpp"
 
 #include "task_future.hpp"
 #include "task_scheduler.hpp"
@@ -134,15 +133,16 @@ public:
 	}
 
 	static auto load_surface_2d_async(task_scheduler &sched, const boost::filesystem::path &path, bool srgb) {
-		return sched.schedule_now([&]() -> gli::texture2d {
-			return load_surface_2d(path, srgb);
+		return sched.schedule_now([&]() {
+			return std::make_unique<gli::texture2d>(load_surface_2d(path, srgb));
 		});
 	}
 
 	static auto load_texture_2d_async(task_scheduler &sched, const boost::filesystem::path &path, bool srgb) {
 		return load_surface_2d_async(sched, path, srgb)
-				.then_on_main_thread([](const gli::texture2d &surface) {
-					return std::make_unique<Core::Texture2D>(surface, surface.levels() == 1);
+				.then_on_main_thread([](std::unique_ptr<gli::texture2d> &&surface) {
+					bool mipmap = surface->levels() == 1;
+					return std::make_unique<Core::Texture2D>(*surface, mipmap);
 				});
 	}
 	static auto load_texture_2d(const boost::filesystem::path &path, bool srgb) {

@@ -8,6 +8,8 @@
 #include "gl_current_context.hpp"
 #include "Log.hpp"
 
+#include "context_framebuffer.hpp"
+
 #include "AttributedString.hpp"
 
 #include <functional>
@@ -88,6 +90,8 @@ gl_context::gl_context(const context_settings &settings, const char *title, cons
 	create_default_framebuffer(format, depth_format);
 	setup_depth_buffer_gl_settings();
 }
+
+gl_context::~gl_context() {}
 
 gl_context::window_type gl_context::create_window(const char * title, const glm::i32vec2 &size, gli::format format, gli::format depth_format) {
 	auto format_flags = gli::detail::get_format_info(format).Flags;
@@ -195,7 +199,7 @@ void gl_context::make_current() {
 bool gl_context::is_debug_context() const {
 	if (ctx_settings.debug_context)
 		return ctx_settings.debug_context.get();
-#ifdef DEBUG
+#ifdef _DEBUG
 	return true;
 #else
 	return false;

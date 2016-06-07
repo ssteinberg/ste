@@ -15,8 +15,7 @@
 #include "StEngineControl.hpp"
 #include "material_storage.hpp"
 
-#define BOOST_FILESYSTEM_NO_DEPRECATED
-#include <boost/filesystem.hpp>
+#include "boost_filesystem.hpp"
 
 #include <memory>
 #include <unordered_map>
@@ -25,7 +24,10 @@
 #include <vector>
 #include <future>
 
+#pragma warning push
+#pragma warning(disable:663)
 #include <tiny_obj_loader.h>
+#pragma warning pop
 
 namespace StE {
 namespace Resource {

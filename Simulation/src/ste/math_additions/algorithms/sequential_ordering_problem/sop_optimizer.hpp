@@ -37,7 +37,7 @@ private:
 		~visited_nodes_guard() {
 			for (auto &v : g.get_vertices()) {
 				v->visited = false;
-#ifdef DEBUG
+#ifdef _DEBUG
 				assert(!v->missing_deps);
 #endif
 			}
@@ -207,7 +207,7 @@ public:
 
 		if (!sop.best_solution ||
 			(best_solution && best_solution.get().length < sop.best_solution.get().length)) {
-#ifdef DEBUG
+#ifdef _DEBUG
 			std::string path_str;
 			for (auto p : best_solution.get().route)
 				path_str += p->get_from()->get_name() + " -> ";

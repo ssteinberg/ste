@@ -66,8 +66,8 @@ private:
 	using ProjectionSignalConnectionType = StEngineControl::projection_change_signal_type::connection_type;
 	using FbClearTask = StE::Graphics::fb_clear_dispatch<false>;
 
-	constexpr static int view_transform_buffer_bind_location = 20;
-	constexpr static int proj_transform_buffer_bind_location = 21;
+	static constexpr int view_transform_buffer_bind_location = 20;
+	static constexpr int proj_transform_buffer_bind_location = 21;
 
 private:
 	const StEngineControl &ctx;

@@ -20,8 +20,8 @@ namespace StE {
 namespace Graphics {
 
 class shadowmap_storage {
-	constexpr static unsigned default_map_size = 512;
-	constexpr static float shadow_proj_near_clip = 20.0f;
+	static constexpr unsigned default_map_size = 512;
+	static constexpr float shadow_proj_near_clip = 20.0f;
 
 private:
 	glm::uvec2 cube_size;

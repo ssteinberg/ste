@@ -137,7 +137,7 @@ public:
 			index.insert(k, std::move(item));
 		}
 		catch (const std::exception &e) {
-#ifdef DEBUG
+#ifdef _DEBUG
 			std::cerr << "lru_cache: Failed archiving: " << e.what() << std::endl;
 #endif
 			return;
@@ -174,7 +174,7 @@ public:
 				return optional<V>(std::move(v));
 			}
 			catch (const std::exception &e) {
-#ifdef DEBUG
+#ifdef _DEBUG
 				std::cerr << "lru_cache: Failed unarchiving: " << e.what() << std::endl;
 #endif
 				return none;

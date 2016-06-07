@@ -18,10 +18,6 @@
 #include <memory>
 #include <functional>
 
-#include <array>
-#include <map>
-#include <unordered_map>
-
 #include <GLFW/glfw3.h>
 
 namespace StE {
@@ -94,7 +90,7 @@ public:
 	*/
 	gl_context(const char * title, const glm::i32vec2 &size, gli::format format = gli::FORMAT_RGBA8_SRGB_PACK32, gli::format depth_format = gli::FORMAT_D24_UNORM_PACK32) : gl_context(context_settings(), title, size, format, depth_format) {}
 
-	~gl_context() {}
+	~gl_context();
 
 	gl_context(gl_context &&m) = delete;
 	gl_context(const gl_context &c) = delete;
