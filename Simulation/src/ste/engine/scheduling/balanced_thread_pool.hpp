@@ -7,7 +7,6 @@
 
 #include "concurrent_queue.hpp"
 #include "interruptible_thread.hpp"
-#include "function_wrapper.hpp"
 #include "thread_pool_task.hpp"
 
 #include "thread_constants.hpp"
@@ -35,7 +34,7 @@ private:
 	std::vector<interruptible_thread> workers;
 	std::vector<interruptible_thread> despawned_workers;
 
-	concurrent_queue<unique_function_wrapper> task_queue;
+	concurrent_queue<unique_thread_pool_type_erased_task> task_queue;
 
 	system_times sys_times;
 	std::chrono::high_resolution_clock::time_point last_pool_balance;
@@ -50,7 +49,7 @@ private:
 private:
 	void spawn_worker(int schedule_on_cpu = -1) {
 		workers.emplace_back([this]() {
-			std::unique_ptr<unique_function_wrapper> task;
+			std::unique_ptr<unique_thread_pool_type_erased_task> task;
 
 			for (;;) {
 				if (interruptible_thread::is_interruption_flag_set()) return;
@@ -107,7 +106,7 @@ private:
 		notifier.notify_one();
 	}
 
-	void run_task(const unique_function_wrapper &&task) {
+	void run_task(unique_thread_pool_type_erased_task &&task) {
 		requests_pending.fetch_add(-1, std::memory_order_relaxed);
 		task();
 	}
@@ -146,7 +145,7 @@ public:
 	balanced_thread_pool &operator=(const balanced_thread_pool &) = delete;
 
  	template <typename R>
- 	std::future<R> enqueue(thread_pool_task<R> &&f) {
+ 	std::future<R> enqueue(unique_thread_pool_task<R> &&f) {
  		auto future = f.get_future();
  		task_queue.push(std::move(f));
 

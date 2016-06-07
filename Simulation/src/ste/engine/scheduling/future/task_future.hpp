@@ -12,6 +12,7 @@
 
 #include <functional>
 #include <memory>
+#include <atomic>
 
 #include <future>
 #include <mutex>
@@ -120,20 +121,25 @@ private:
 	}
 
 	auto chained_get() {
+		std::atomic_thread_fence(std::memory_order_acquire);
 		if (chained_future == nullptr) {
 			chain_lock_type cl(chain_mutex);
-			if (chained_future == nullptr)
+			if (chained_future == nullptr) {
 				resolve_chained_future();
+				std::atomic_thread_fence(std::memory_order_release);
+			}
 		}
 
 		return future_get(*chained_future);
 	}
 
 	void chained_wait() const {
+		std::atomic_thread_fence(std::memory_order_acquire);
 		if (chained_future == nullptr) {
 			chain_lock_type cl(chain_mutex);
 			if (chained_future == nullptr)
 				resolve_chained_future();
+				std::atomic_thread_fence(std::memory_order_release);
 		}
 
 		future_wait(*chained_future);
@@ -141,6 +147,7 @@ private:
 
 	template <class Rep, class Period>
 	auto chained_wait_for(std::chrono::duration<Rep,Period> timeout_duration) const {
+		std::atomic_thread_fence(std::memory_order_acquire);
 		if (chained_future == nullptr) {
 			auto start = std::chrono::high_resolution_clock::now();
 
@@ -151,8 +158,10 @@ private:
 
 				if (chained_future == nullptr) {
 					auto wait_result = chaining_future.wait_for(timeout_duration);
-					if (wait_result == std::future_status::ready)
+					if (wait_result == std::future_status::ready) {
 						resolve_chained_future();
+						std::atomic_thread_fence(std::memory_order_release);
+					}
 					else
 						return wait_result;
 				}
@@ -168,6 +177,7 @@ private:
 
 	template <class Clock, class Duration>
 	auto chained_wait_until(const std::chrono::time_point<Clock,Duration>& timeout_time) const {
+		std::atomic_thread_fence(std::memory_order_acquire);
 		if (chained_future == nullptr) {
 			chain_lock_type cl(chain_mutex, std::defer_lock);
 			if (!cl.try_lock_until(timeout_time))
@@ -175,8 +185,10 @@ private:
 
 			if (chained_future == nullptr) {
 				auto wait_result = chaining_future.wait_until(timeout_time);
-				if (wait_result == std::future_status::ready)
+				if (wait_result == std::future_status::ready) {
 					resolve_chained_future();
+					std::atomic_thread_fence(std::memory_order_release);
+				}
 				else
 					return wait_result;
 			}

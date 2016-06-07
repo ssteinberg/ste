@@ -103,6 +103,7 @@ public:
 	*	while loading are rethrown here.
 	*/
 	void wait() const override final {
+		std::atomic_thread_fence(std::memory_order_acquire);
 		if (loading_data != nullptr) {
 			std::unique_lock<std::mutex> ul(m);
 			if (loading_data == nullptr)
@@ -114,6 +115,7 @@ public:
 				loading_data->loader_future->get();
 
 			loading_data = nullptr;
+			std::atomic_thread_fence(std::memory_order_release);
 		}
 	}
 

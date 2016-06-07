@@ -16,7 +16,6 @@
 
 #include "balanced_thread_pool.hpp"
 #include "concurrent_queue.hpp"
-#include "function_wrapper.hpp"
 #include "function_traits.hpp"
 #include "thread_constants.hpp"
 
@@ -33,13 +32,13 @@ private:
 
 	struct delayed_task {
 		std::chrono::high_resolution_clock::time_point run_at;
-		unique_function_wrapper f;
+		unique_thread_pool_type_erased_task f;
 	};
 
 private:
 	LoadBalancingPool pool;
 
-	concurrent_queue<unique_function_wrapper> main_thread_task_queue;
+	concurrent_queue<unique_thread_pool_type_erased_task> main_thread_task_queue;
 	concurrent_queue<delayed_task> delayed_tasks_queue;
 	std::list<delayed_task> delayed_tasks_list;
 
@@ -67,7 +66,7 @@ public:
 	*/
 	template <bool shared, typename F>
 	task_future_impl<typename function_traits<F>::result_t, shared> schedule_now(F &&f) {
-		thread_pool_task<typename function_traits<F>::result_t> task(std::forward<F>(f));
+		unique_thread_pool_task<typename function_traits<F>::result_t> task(std::forward<F>(f));
 		auto future = pool.enqueue(std::move(task));
 
 		return { std::move(future), this };
@@ -83,7 +82,7 @@ public:
 	template <bool shared, typename F>
 	task_future_impl<typename function_traits<F>::result_t, shared> schedule_at(const std::chrono::high_resolution_clock::time_point &at,
 												   				   				F &&f) {
-		thread_pool_task<typename function_traits<F>::result_t> task(std::forward<F>(f));
+		unique_thread_pool_task<typename function_traits<F>::result_t> task(std::forward<F>(f));
 		auto future = task.get_future();
 
 		delayed_tasks_queue.push({ at, std::move(task) });
@@ -100,7 +99,7 @@ public:
 	template <bool shared, typename F, class Rep, class Period>
 	task_future_impl<typename function_traits<F>::result_t, shared> schedule_after(const std::chrono::duration<Rep, Period> &after,
 																	  			   F &&f) {
-		thread_pool_task<typename function_traits<F>::result_t> task(std::forward<F>(f));
+		unique_thread_pool_task<typename function_traits<F>::result_t> task(std::forward<F>(f));
 		auto future = task.get_future();
 
 		delayed_tasks_queue.push({ std::chrono::high_resolution_clock::now() + after, std::move(task) });
@@ -115,7 +114,7 @@ public:
 	*/
 	template <bool shared, typename F>
 	task_future_impl<typename function_traits<F>::result_t, shared> schedule_now_on_main_thread(F &&f) {
-		thread_pool_task<typename function_traits<F>::result_t> task(std::forward<F>(f));
+		unique_thread_pool_task<typename function_traits<F>::result_t> task(std::forward<F>(f));
 		auto future = task.get_future();
 
 		if (is_main_thread()) {

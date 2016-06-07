@@ -34,27 +34,62 @@ struct thread_pool_task_exec_impl<void> {
 
 }
 
-template <typename R>
-class thread_pool_task {
+class unique_thread_pool_type_erased_task {
 private:
-	std::promise<R> promise;
 	unique_function_wrapper callable;
+	bool value_set{ false };
+
+protected:
+	unique_thread_pool_type_erased_task() {}
+
+	template <typename F>
+	void set_callable(F &&f) {
+		callable = unique_function_wrapper(std::move(f));
+	}
+
+public:
+	unique_thread_pool_type_erased_task(unique_thread_pool_type_erased_task &&) = default;
+	unique_thread_pool_type_erased_task &operator=(unique_thread_pool_type_erased_task &&) = default;
+	virtual ~unique_thread_pool_type_erased_task() {}
+
+	void operator()() {
+		assert(!value_set);
+		callable();
+		value_set = true;
+	}
+};
+
+template <typename R>
+class unique_thread_pool_task : public unique_thread_pool_type_erased_task {
+	using Base = unique_thread_pool_type_erased_task;
+
+private:
+	std::future<R> future;
 
 public:
 	template <typename F>
-	thread_pool_task(F &&f) : callable([f = std::forward<F>(f), this]() mutable {
-		try {
-			_detail::thread_pool_task_exec_impl<R>()(f, this->promise);
-		}
-		catch (...) {
-			this->promise.set_exception(std::current_exception());
-		}
-	}) {
+	unique_thread_pool_task(F &&f) {
 		static_assert(function_traits<F>::arity == 0, "lambda takes too many arguments");
+
+		std::promise<R> promise;
+		future = promise.get_future();
+
+		Base::set_callable([f = std::forward<F>(f), promise = std::move(promise)]() mutable {
+			try {
+				_detail::thread_pool_task_exec_impl<R>()(f, promise);
+			}
+			catch (...) {
+				promise.set_exception(std::current_exception());
+			}
+		});
 	}
 
-	void operator()() const { callable(); }
-	auto get_future() { return promise.get_future(); }
+	unique_thread_pool_task(unique_thread_pool_task &&) = default;
+	unique_thread_pool_task &operator=(unique_thread_pool_task &&) = default;
+
+	virtual ~unique_thread_pool_task() {}
+
+	auto get_future() { return std::move(future); }
 };
 
 }

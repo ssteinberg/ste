@@ -3,7 +3,7 @@
 
 #pragma once
 
-#ifdef DEBUG
+#ifdef _DEBUG
 #define	ENABLE_TRACE
 #endif
 

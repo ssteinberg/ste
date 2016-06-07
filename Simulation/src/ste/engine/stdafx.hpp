@@ -9,6 +9,9 @@
 
 #include <cstdint>
 
+#ifdef _MSC_VER
+#include "windows.hpp"
+#endif
 #include "gl.hpp"
 
 #pragma warning push

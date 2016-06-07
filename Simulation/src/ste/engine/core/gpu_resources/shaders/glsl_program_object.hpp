@@ -62,7 +62,7 @@ private:
 			return it->second;
 
 		auto ret = (uniform_map[name] = glGetUniformLocation(get_resource_id(), name.c_str()));
-#ifdef DEBUG
+#ifdef _DEBUG
 		if (ret == -1) {
 			ste_log_warn() << "Uniform \"" << name << "\" not found\n";
 		}

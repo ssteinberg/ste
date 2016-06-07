@@ -75,7 +75,8 @@ dlldata.c
 *.svclog
 *.scc
 *.opendb
-*.VC.db
+*.db
+*.tss
 
 /s4*
 

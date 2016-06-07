@@ -106,7 +106,7 @@ public:
 
 		assert(e_ptr);
 
-#ifdef DEBUG
+#ifdef _DEBUG
 		for (auto &e : e_ptr->from->originating_edges)
 			assert(e->to != e_ptr->to && "Edge exists");
 #endif

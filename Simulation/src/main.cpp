@@ -9,10 +9,8 @@
 #include "GIRenderer.hpp"
 #include "basic_renderer.hpp"
 #include "SphericalLight.hpp"
-#include "DirectionalLight.hpp"
 #include "ModelFactory.hpp"
 #include "Camera.hpp"
-#include "glsl_program.hpp"
 #include "SurfaceFactory.hpp"
 #include "Texture2D.hpp"
 #include "Scene.hpp"
@@ -116,14 +114,21 @@ void add_scene_lights(StE::Graphics::Scene &scene, std::vector<std::unique_ptr<S
 }
 
 
-int main() {
-
+#ifdef _MSC_VER
+int CALLBACK WinMain(HINSTANCE hInstance,
+					 HINSTANCE hPrevInstance,
+					 LPSTR     lpCmdLine,
+					 int       nCmdShow)
+#else
+int main()
+#endif
+{
 	/*
 	 *	Create logger
 	 */
 
 	StE::Log logger("Global Illumination");
-//	logger.redirect_std_outputs();
+	logger.redirect_std_outputs();
 	ste_log_set_global_logger(&logger);
 	ste_log() << "Simulation is running";
 
