@@ -13,6 +13,7 @@ GRTAGS
 GPATH
 *.vscode
 *.elf
+*.VC.db
 
 imgui.ini
 
