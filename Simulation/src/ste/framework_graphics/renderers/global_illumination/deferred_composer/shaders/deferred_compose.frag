@@ -23,6 +23,10 @@ layout(std430, binding = 0) restrict readonly buffer material_data {
 	material_descriptor mat_descriptor[];
 };
 
+layout(std430, binding = 1) restrict readonly buffer material_layer_data {
+	material_layer_descriptor mat_layer_descriptor[];
+};
+
 layout(std430, binding = 2) restrict readonly buffer light_data {
 	light_descriptor light_buffer[];
 };
@@ -38,7 +42,11 @@ layout(shared, binding = 11) restrict readonly buffer lll_data {
 
 #include "light_load.glsl"
 #include "linked_light_lists_load.glsl"
+
 #include "gbuffer_load.glsl"
+
+#include "material_evaluate.glsl"
+
 
 layout(bindless_sampler) uniform samplerCubeArrayShadow shadow_depth_maps;
 layout(bindless_sampler) uniform samplerCubeArray shadow_maps;
@@ -63,7 +71,7 @@ vec3 deferred_shade_fragment(g_buffer_element frag) {
 	vec3 b = cross(t, n);
 	normal_map(md, uv, duvdx, duvdy, n, t, b, position);
 
-	vec3 diffuse_color = material_base_color(md, uv, duvdx, duvdy);
+	uint32_t head_layer = md.head_layer;
 	float cavity = material_cavity(md, uv, duvdx, duvdy);
 
 	vec3 rgb = material_emission(md);
@@ -91,24 +99,24 @@ vec3 deferred_shade_fragment(g_buffer_element frag) {
 
 			float l_radius = ld.radius;
 			vec3 shadow_v = w_pos - ld.position;
-			float shadow = shadow(shadow_depth_maps,
-								  shadow_maps,
-								  uint(lll_parse_ll_idx(lll_p)),
-								  shadow_v,
-								  l_radius * 50.f);
-			if (shadow <= .0f)
+			float shdw = shadow(shadow_depth_maps,
+								shadow_maps,
+								uint(lll_parse_ll_idx(lll_p)),
+								shadow_v,
+								l_radius * 50.f);
+			if (shdw<= .0f)
 				continue;
 
 			float dist = sqrt(dist2);
+
 			vec3 v = normalize(-position);
 			vec3 l = incident / dist;
-			vec3 irradiance = light_irradiance(ld, dist) * shadow;
+			vec3 irradiance = light_irradiance(ld, dist) * cavity * shdw;
 
-			rgb += material_evaluate_reflection(md,
+			rgb += material_evaluate_irradiance(head_layer,
 												n, t, b,
 												v, l,
-												diffuse_color,
-												cavity,
+												uv, uvdx, uvdy,
 												irradiance);
 		}
 	}

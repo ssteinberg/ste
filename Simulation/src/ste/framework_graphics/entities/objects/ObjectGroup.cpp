@@ -37,8 +37,9 @@ void ObjectGroup::add_object(const std::shared_ptr<Object> &obj) {
 	mesh_descriptor md;
 	md.model_transform_matrix = glm::transpose(obj->get_model_transform());
 	md.tangent_transform_quat = transform_quat;
-	md.mat_idx = mat_storage->index_of(obj->get_material());
+	md.mat_idx = obj->get_material()->resource_index_in_storage();
 	md.bounding_sphere = obj->get_mesh().bounding_sphere().sphere();
+	assert(md.mat_idx >= 0);
 
 	mesh_draw_params mdp;
  	mdp.count = ind.size();
@@ -78,7 +79,9 @@ void ObjectGroup::update_dirty_buffers() const {
 		mesh_descriptor md = obj_ptr->md;
 		md.model_transform_matrix = glm::transpose(obj_ptr->get_model_transform());
 		md.tangent_transform_quat = transform_quat;
-		md.mat_idx = mat_storage->index_of(obj_ptr->get_material());
+		md.mat_idx = obj_ptr->get_material()->resource_index_in_storage();
+		assert(md.mat_idx >= 0);
+
 		draw_buffers.get_mesh_data_stack().overwrite(info.index, md);
 	}
 

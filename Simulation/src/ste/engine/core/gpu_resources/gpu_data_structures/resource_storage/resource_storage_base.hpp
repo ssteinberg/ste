@@ -38,6 +38,11 @@ private:
 		signalled_objects.insert(res);
 	}
 
+	/**
+	*	@brief	Get physical index of resource's slot in storage
+	*/
+	virtual int index_of(const resource_type *res) const = 0;
+
 protected:
 	/**
 	*	@brief	Erase the resource, freeing a slot.

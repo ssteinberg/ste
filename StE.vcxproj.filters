@@ -225,6 +225,9 @@
     <ClCompile Include="Simulation\src\ste\math_additions\graphs\nodes\graph_vertex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Simulation\src\ste\framework_graphics\material\layer\material_layer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Simulation\src\ste\engine\cache\lru_cache.hpp">
@@ -1022,5 +1025,17 @@
     <ClInclude Include="Simulation\src\ste\engine\scheduling\thread_pool_task.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\material\layer\material_layer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\material\layer\material_layer_descriptor.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\material\layer\material_layer_storage.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Simulation\src\ste\framework_graphics\material\shaders\material_evaluate.glsl" />
   </ItemGroup>
 </Project>

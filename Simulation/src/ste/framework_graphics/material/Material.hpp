@@ -8,8 +8,10 @@
 #include "material_descriptor.hpp"
 #include "observable_resource.hpp"
 
-#include "Texture2D.hpp"
+#include "material_layer.hpp"
+
 #include "Sampler.hpp"
+#include "Texture2D.hpp"
 
 #include "RGB.hpp"
 
@@ -28,13 +30,11 @@ class Material : public Core::observable_resource<material_descriptor> {
 private:
 	Core::SamplerMipmapped material_sampler;
 
-	std::shared_ptr<Core::Texture2D> basecolor_map{ nullptr };
 	std::shared_ptr<Core::Texture2D> cavity_map{ nullptr };
 	std::shared_ptr<Core::Texture2D> normal_map{ nullptr };
 	std::shared_ptr<Core::Texture2D> mask_map{ nullptr };
 
-	float anisotropy{ .0f };
-	float index_of_refraction{ 1.5f };
+	material_layer *head_layer;
 
 private:
 	material_descriptor descriptor;
@@ -49,39 +49,11 @@ private:
 	Core::texture_handle handle_for_texture(const Core::Texture2D *t) const;
 
 public:
-	/**
-	*	@brief	Convert material anisotropy value to ratio which is used to adjust anisotropic roughness values
-	*/
-	static float convert_anisotropy_to_ratio(float ansio) {
-		return ansio != .0f ? glm::sqrt(1.f - ansio * .9f) : 1.f;
-	}
-
-	/**
-	*	@brief	Convert index-of-refraction to the specular reflection coefficient at normal incidence for
-	*			Schlick's Fresnel approximation
-	*/
-	static float convert_ior_to_F0(float ior) {
-		return glm::pow((1.f - ior) / (1.f + ior), 2.f);
-	}
-
-public:
 	Material();
 	~Material() {
-		basecolor_map = nullptr;
 		cavity_map = nullptr;
 		normal_map = nullptr;
 		mask_map = nullptr;
-	}
-
-	/**
-	*	@brief	Set material base color (diffuse) map
-	*
-	* 	@param tex	2D texture object
-	*/
-	void set_basecolor_map(const std::shared_ptr<Core::Texture2D> &tex) {
-		basecolor_map = tex;
-		descriptor.basecolor_handle = handle_for_texture(basecolor_map.get());
-		Base::notify();
 	}
 
 	/**
@@ -132,81 +104,37 @@ public:
 		descriptor.emission = rgb;
 		Base::notify();
 	}
-
+	
 	/**
-	*	@brief	Set material roughness
+	*	@brief	Set material layer
 	*
-	*	Roughness as defines by the Micorfacet theory. Controls both diffuse and specular response. Defaults to 0.5.
+	*	Layers are stacked top-to-bottom as a single linked list. This sets the head layer id (top layer).
+	*	To set lower layers, link the next layer to the head layer directly.
 	*
-	* 	@param r	Roughness - range: [0,1]
+	* 	@param layer	Material layer
 	*/
-	void set_roughness(float r) {
-		descriptor.roughness = r;
+	void set_layer(material_layer *layer) {
+		int layerid = material_layer_none;
+		if (layer != nullptr) {
+			auto id = layer->resource_index_in_storage();
+			assert(id >= 0);
+			if (id >= 0)
+				layerid = id;
+		}
+
+		descriptor.layer_id = layerid;
+		head_layer = layerid == material_layer_none ? nullptr : layer;
+		
 		Base::notify();
 	}
 
-	/**
-	*	@brief	Set material anisotropy
-	*
-	*	Anisotropy modifies material's anisotropic roughness
-	*
-	* 	@param a	Anisotropy - range: [0,1] (May take negative values which invert X, Y anisotropy)
-	*/
-	void set_anisotropy(float a) {
-		anisotropy = a;
-		descriptor.anisotropy_ratio = convert_anisotropy_to_ratio(a);
-		Base::notify();
-	}
-
-	/**
-	*	@brief	Set material metallicity
-	*
-	*	Controls material's metal appearance. Defaults to 0.0.
-	*
-	* 	@param m	Metallicity - range: [0,1] (Usually a binary value)
-	*/
-	void set_metallic(float m) {
-		descriptor.metallic = m;
-		Base::notify();
-	}
-
-	/**
-	*	@brief	Set material incident specular amount given an index-of-refraction
-	*
-	*	Sets specular term using a given index-of-refraction. Assumes secondary media has IOR of 1. Defaults to 1.5.
-	*
-	* 	@param ior	Index-of-refraction - range: [1,infinity) (Usually in range [1,2])
-	*/
-	void set_index_of_refraction(float ior) {
-		index_of_refraction = ior;
-		descriptor.F0 = convert_ior_to_F0(ior);
-		Base::notify();
-	}
-
-	/**
-	*	@brief	Set material sheen
-	*
-	*	Sheen provides an additional cloth-like grazing component. Defaults to 0.0.
-	*	Similiar to Disney's implementation.
-	*
-	* 	@param s	Sheen value	- range: [0,1]
-	*/
-	void set_sheen(float s) {
-		descriptor.sheen = s;
-		Base::notify();
-	}
-
-	auto *get_basecolor_map() const { return basecolor_map.get(); }
 	auto *get_cavity_map() const { return cavity_map.get(); }
 	auto *get_normal_map() const { return normal_map.get(); }
 	auto *get_mask_map() const { return mask_map.get(); }
 
 	RGB get_emission() const { return descriptor.emission; }
-	float get_roughness() const { return descriptor.roughness; }
-	float get_anisotropy() const { return anisotropy; }
-	float get_metallic() const { return descriptor.metallic; }
-	float get_index_of_refraction() const { return index_of_refraction; }
-	float get_sheen() const { return descriptor.sheen; }
+	
+	auto *get_head_layer() const { return head_layer; }
 
 	const material_descriptor &get_descriptor() const override final { return descriptor; }
 };

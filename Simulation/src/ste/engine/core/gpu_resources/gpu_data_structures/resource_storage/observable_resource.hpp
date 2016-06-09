@@ -49,6 +49,7 @@ public:
 	*/
 	void dealloc();
 
+	auto resource_index_in_storage() const { return is_valid() ? storage_ptr->index_of(this) : -1; }
 	bool is_valid() const { return storage_ptr != nullptr; }
 };
 
