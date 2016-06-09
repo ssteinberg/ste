@@ -208,31 +208,31 @@ private:
 					 typename std::enable_if_t<b>* = nullptr) : sched(sched), future(f) {}
 
 	template <bool b>
-	task_future_impl(task_future_impl<chained_task_future, b> &&f,
-					 write_lock_type &&wl,
+	task_future_impl(write_lock_type &&wl,
+					 task_future_impl<chained_task_future, b> &&f,
 					 task_future_chaining_construct) : sched(f.sched),
 													   chain(true),
 													   chaining_future(std::move(f.future)) {
 		assert(!f.chain && "Can not double chain task_futures");
 	}
 
-	task_future_impl(const task_future_impl<chained_task_future, true> &f,
-					 read_lock_type &&rl,
+	task_future_impl(read_lock_type &&rl,
+					 const task_future_impl<chained_task_future, true> &f,
 					 task_future_chaining_construct) : sched(f.sched),
 													   chain(true),
 													   chaining_future(f.future) {
 		assert(!f.chain && "Can not double chain task_futures");
 	}
 
-	task_future_impl(task_future_impl &&other,
-					 future_lock_guard<write_lock_type> &&l) : sched(other.sched),
-															   future(std::move(other.future)),
-															   chain(other.chain),
-															   chaining_future(std::move(other.chaining_future)),
-															   chained_future(std::move(other.chained_future)) {}
+	task_future_impl(future_lock_guard<write_lock_type> &&l,
+					 task_future_impl &&other) : sched(other.sched),
+												 future(std::move(other.future)),
+												 chain(other.chain),
+												 chaining_future(std::move(other.chaining_future)),
+												 chained_future(std::move(other.chained_future)) {}
 	template <bool b = is_shared>
-	task_future_impl(const task_future_impl &other,
-					 future_lock_guard<read_lock_type> &&l,
+	task_future_impl(future_lock_guard<read_lock_type> &&l,
+					 const task_future_impl &other,
 					 std::enable_if_t<b>* = nullptr) : sched(other.sched),
 													   future(other.future),
 													   chain(other.chain),
@@ -249,17 +249,17 @@ public:
 	*/
 	template <bool b>
 	task_future_impl(task_future_impl<chained_task_future, b> &&other,
-					 task_future_chaining_construct) : task_future_impl(std::move(other),
-					 													write_lock_type(other.mutex),
-																		task_future_chaining_construct()) {}
+					 task_future_chaining_construct) : task_future_impl(write_lock_type(other.mutex),
+																		std::move(other),
+					 													task_future_chaining_construct()) {}
 	/**
 	*	@brief	Chain a future with this one. Used for then_on_main_thread().
 	*
 	*	@param other	Future to chain. Will be copied from.
 	*/
 	task_future_impl(const task_future_impl<chained_task_future, true> &other,
-					 task_future_chaining_construct) : task_future_impl(other,
-					 													read_lock_type(other.mutex),
+					 task_future_chaining_construct) : task_future_impl(read_lock_type(other.mutex),
+																		other,
 																		task_future_chaining_construct()) {}
 
 	/**
@@ -267,8 +267,8 @@ public:
 	*
 	*	@param other	Future to move.
 	*/
-	task_future_impl(task_future_impl &&other) : task_future_impl(std::move(other),
-																  future_lock_guard<write_lock_type>(other.mutex, other.chain_mutex, other.chain)) {}
+	task_future_impl(task_future_impl &&other) : task_future_impl(future_lock_guard<write_lock_type>(other.mutex, other.chain_mutex, other.chain),
+																  std::move(other)) {}
 	/**
 	*	@brief	Copy ctor.
 	*
@@ -276,8 +276,8 @@ public:
 	*/
 	template <bool b = is_shared>
 	task_future_impl(const task_future_impl &other,
-					 std::enable_if_t<b>* = nullptr) : task_future_impl(other,
-																		future_lock_guard<read_lock_type>(other.mutex, other.chain_mutex, other.chain)) {}
+					 std::enable_if_t<b>* = nullptr) : task_future_impl(future_lock_guard<read_lock_type>(other.mutex, other.chain_mutex, other.chain),
+																		other) {}
 
 	~task_future_impl() noexcept {}
 

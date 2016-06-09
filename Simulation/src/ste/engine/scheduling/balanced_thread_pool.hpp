@@ -101,13 +101,16 @@ private:
 		despawned_workers.push_back(std::move(ref));
 	}
 
-	void on_enqueue() {
-		requests_pending.fetch_add(1, std::memory_order_release);
-		notifier.notify_one();
+	void notify_workers_on_enqueue() {
+		int pending = requests_pending.fetch_add(1);
+		if (pending == 0)
+			notifier.notify_one();
+		else
+			notifier.notify_all();
 	}
 
 	void run_task(unique_thread_pool_type_erased_task &&task) {
-		requests_pending.fetch_add(-1, std::memory_order_relaxed);
+		requests_pending.fetch_add(-1, std::memory_order_release);
 		task();
 	}
 
@@ -149,7 +152,7 @@ public:
  		auto future = f.get_future();
  		task_queue.push(std::move(f));
 
-		on_enqueue();
+		notify_workers_on_enqueue();
 
  		return future;
 	}
