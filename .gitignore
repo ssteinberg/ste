@@ -78,6 +78,7 @@ dlldata.c
 *.opendb
 *.db
 *.tss
+*.vcxproj.filters
 
 /s4*
 
