@@ -11,7 +11,7 @@ material_layer::material_layer() {
 	material_sampler.set_min_filter(Core::TextureFiltering::Linear);
 	material_sampler.set_mag_filter(Core::TextureFiltering::Linear);
 	material_sampler.set_mipmap_filter(Core::TextureFiltering::Linear);
-	material_sampler.set_anisotropic_filter(8);
+	material_sampler.set_anisotropic_filter(16);
 }
 
 StE::Core::texture_handle material_layer::handle_for_texture(const Core::Texture2D *t) const {
