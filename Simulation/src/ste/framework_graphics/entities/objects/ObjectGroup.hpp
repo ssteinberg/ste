@@ -11,8 +11,6 @@
 
 #include "object_group_draw_buffers.hpp"
 
-#include "Material.hpp"
-
 #include <unordered_map>
 #include <memory>
 

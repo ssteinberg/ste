@@ -70,7 +70,7 @@ void display_loading_screen_until(StE::StEngineControl &ctx, StE::Text::TextMana
 	}
 }
 
-auto create_light_object(StE::Graphics::Scene *scene, const glm::vec3 &light_pos, StE::Graphics::SphericalLight *light, std::vector<std::unique_ptr<StE::Graphics::Material>> &materials, std::vector<std::unique_ptr<StE::Graphics::material_layer>> &layers) {
+auto create_light_object(StE::Graphics::Scene *scene, const glm::vec3 &light_pos, StE::Graphics::SphericalLight *light, std::vector<std::unique_ptr<StE::Graphics::material>> &materials, std::vector<std::unique_ptr<StE::Graphics::material_layer>> &layers) {
 	std::unique_ptr<StE::Graphics::Sphere> sphere = std::make_unique<StE::Graphics::Sphere>(20, 20);
 	(*sphere) *= light->get_radius();
 	auto light_obj = std::make_shared<StE::Graphics::Object>(std::move(sphere));
@@ -81,8 +81,8 @@ auto create_light_object(StE::Graphics::Scene *scene, const glm::vec3 &light_pos
 	auto c = light->get_diffuse();
 	*reinterpret_cast<glm::u8vec3*>(light_color_tex.data()) = glm::u8vec3(c.r * 255.5f, c.g * 255.5f, c.b * 255.5f);
 	
-	auto mat = scene->scene_properties().materials_storage().allocate_material();
 	auto layer = scene->scene_properties().material_layers_storage().allocate_layer();
+	auto mat = scene->scene_properties().materials_storage().allocate_material(layer.get());
 	layer->set_basecolor_map(std::make_unique<StE::Core::Texture2D>(light_color_tex, false));
 	mat->set_emission(c * light->get_luminance());
 	mat->set_layer(layer.get());
@@ -97,7 +97,7 @@ auto create_light_object(StE::Graphics::Scene *scene, const glm::vec3 &light_pos
 	return light_obj;
 }
 
-void add_scene_lights(StE::Graphics::Scene &scene, std::vector<std::unique_ptr<StE::Graphics::light>> &lights, std::vector<std::unique_ptr<StE::Graphics::Material>> &materials, std::vector<std::unique_ptr<StE::Graphics::material_layer>> &layers) {
+void add_scene_lights(StE::Graphics::Scene &scene, std::vector<std::unique_ptr<StE::Graphics::light>> &lights, std::vector<std::unique_ptr<StE::Graphics::material>> &materials, std::vector<std::unique_ptr<StE::Graphics::material_layer>> &layers) {
 	for (auto &v : { glm::vec3{ -622, 645, -310},
 					 glm::vec3{  124, 645, -310},
 					 glm::vec3{  497, 645, -310},
@@ -220,7 +220,7 @@ int main()
 	 */
 
 	std::vector<std::unique_ptr<StE::Graphics::light>> lights;
-	std::vector<std::unique_ptr<StE::Graphics::Material>> materials;
+	std::vector<std::unique_ptr<StE::Graphics::material>> materials;
 	std::vector<std::unique_ptr<StE::Graphics::material_layer>> material_layers;
 
 	StE::task_future_collection<void> loading_futures;
@@ -242,7 +242,7 @@ int main()
 																		 materials,
 																		 material_layers));
 	
-	std::vector<std::unique_ptr<StE::Graphics::Material>> ball_materials;
+	std::vector<std::unique_ptr<StE::Graphics::material>> ball_materials;
 	std::vector<std::unique_ptr<StE::Graphics::material_layer>> ball_layers;
 	std::vector<std::shared_ptr<StE::Graphics::Object>> ball_objects;
 	loading_futures.insert(StE::Resource::ModelFactory::load_model_async(ctx,
@@ -286,6 +286,7 @@ int main()
 	float metallic = layer->get_metallic();
 	float index_of_refraction = layer->get_index_of_refraction();
 	float sheen = layer->get_sheen();
+	float sheen_power = layer->get_sheen_power();
 	debug_gui_dispatchable->add_custom_gui([&](const glm::ivec2 &bbsize) {
 		ImGui::SetNextWindowPos(ImVec2(20,bbsize.y - 400), ImGuiSetCond_FirstUseEver);
 		ImGui::SetNextWindowSize(ImVec2(120,400), ImGuiSetCond_FirstUseEver);
@@ -298,6 +299,7 @@ int main()
 			ImGui::SliderFloat("Metallic ##value", &metallic, .0f, 1.f);
 			ImGui::SliderFloat("IOR ##value", &index_of_refraction, 1.f, 15.f);
 			ImGui::SliderFloat("Sheen ##value", &sheen, .0f, 1.f);
+			ImGui::SliderFloat("Sheen Power ##value", &sheen_power, .0f, 1.f);
 		}
 
 		ImGui::End();
@@ -314,6 +316,8 @@ int main()
 			layer->set_index_of_refraction(index_of_refraction);
 		if (layer->get_sheen() != sheen)
 			layer->set_sheen(sheen);
+		if (layer->get_sheen_power() != sheen_power)
+			layer->set_sheen_power(sheen_power);
 	});
 
 

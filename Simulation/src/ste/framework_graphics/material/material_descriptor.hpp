@@ -15,6 +15,7 @@ struct material_descriptor {
 	Core::texture_handle cavity_handle;
 	Core::texture_handle normal_handle;
 	Core::texture_handle mask_handle;
+	Core::texture_handle _unused;
 
 	glm::vec3 emission{ .0f, .0f, .0f };
 

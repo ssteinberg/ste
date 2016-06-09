@@ -11,6 +11,8 @@
 #include "ObjectGroup.hpp"
 #include "SceneProperties.hpp"
 #include "Texture2D.hpp"
+#include "material.hpp"
+#include "material_layer.hpp"
 
 #include "StEngineControl.hpp"
 
@@ -59,7 +61,7 @@ private:
 													 Graphics::ObjectGroup *,
 													 materials_type &,
 													 texture_map_type &,
-									 				 std::vector<std::unique_ptr<Graphics::Material>> &loaded_materials,
+									 				 std::vector<std::unique_ptr<Graphics::material>> &loaded_materials,
 													 std::vector<std::unique_ptr<Graphics::material_layer>> &loaded_material_layers,
 									 				 std::vector<std::shared_ptr<Graphics::Object>> *loaded_objects);
 
@@ -69,7 +71,7 @@ public:
 												   Graphics::ObjectGroup *object_group,
 												   Graphics::SceneProperties *scene_properties,
 												   float normal_map_bias,
-												   std::vector<std::unique_ptr<Graphics::Material>> &loaded_materials,
+												   std::vector<std::unique_ptr<Graphics::material>> &loaded_materials,
 												   std::vector<std::unique_ptr<Graphics::material_layer>> &loaded_material_layers,
 												   std::vector<std::shared_ptr<Graphics::Object>> *loaded_objects = nullptr);
 };

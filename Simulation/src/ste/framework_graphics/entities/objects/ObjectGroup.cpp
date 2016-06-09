@@ -3,6 +3,7 @@
 #include "ObjectGroup.hpp"
 
 #include "mesh_descriptor.hpp"
+#include "material.hpp"
 
 #include "gl_current_context.hpp"
 

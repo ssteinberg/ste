@@ -14,7 +14,7 @@
 #include "RGB.hpp"
 
 #include <memory>
-#include <functional>
+#include <type_traits>
 
 namespace StE {
 namespace Graphics {
@@ -31,7 +31,7 @@ private:
 	std::shared_ptr<Core::Texture2D> basecolor_map{ nullptr };
 	float anisotropy{ .0f };
 
-	material_layer *next_layer;
+	material_layer *next_layer{ nullptr };
 
 private:
 	material_layer_descriptor descriptor;
@@ -131,11 +131,24 @@ public:
 		descriptor.sheen = s;
 		Base::notify();
 	}
+
+	/**
+	*	@brief	Set material sheen power
+	*
+	*	Controls sheen's curve. Defaults to 0.0.
+	*
+	* 	@param s	Sheen power value	- range: [0,1]
+	*/
+	void set_sheen_power(float sp) {
+		descriptor.sheen_power = sp;
+		Base::notify();
+	}
 	
 	/**
 	*	@brief	Set next layer
 	*
-	*	Layers are stacked top-to-bottom as a single linked list. This sets the next layer id (the layer directly under the current layer).
+	*	Layers are stacked top-to-bottom as a single linked list. This method sets the next layer id (the layer directly under the current layer),
+	*	or nullptr if this is the base material.
 	*
 	* 	@param layer	Material layer
 	*/
@@ -160,6 +173,7 @@ public:
 	float get_metallic() const { return descriptor.metallic; }
 	float get_index_of_refraction() const { return descriptor.ior; }
 	float get_sheen() const { return descriptor.sheen; }
+	float get_sheen_power() const { return descriptor.sheen_power; }
 
 	auto *get_next_layer() const { return next_layer; }
 

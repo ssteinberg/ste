@@ -2,7 +2,7 @@
 #include "stdafx.hpp"
 #include "ModelFactory.hpp"
 
-#include "Material.hpp"
+#include "material.hpp"
 #include "mesh.hpp"
 
 #include "material_storage.hpp"
@@ -25,7 +25,7 @@ StE::task_future<void> ModelFactory::process_model_mesh(task_scheduler* sched,
 														Graphics::ObjectGroup *object_group,
 														materials_type &materials,
 														texture_map_type &textures,
-									 					std::vector<std::unique_ptr<Graphics::Material>> &loaded_materials,
+									 					std::vector<std::unique_ptr<Graphics::material>> &loaded_materials,
 														std::vector<std::unique_ptr<Graphics::material_layer>> &loaded_material_layers,
 									 					std::vector<std::shared_ptr<Graphics::Object>> *loaded_objects) {
 	std::vector<ObjectVertexData> vbo_data;
@@ -120,9 +120,9 @@ StE::task_future<void> ModelFactory::process_model_mesh(task_scheduler* sched,
 		std::shared_ptr<Core::Texture2D> opacity_map = textures[material.alpha_texname];
 		std::shared_ptr<Core::Texture2D> specular_map = textures[material.specular_texname];
 		std::shared_ptr<Core::Texture2D> normalmap = textures[material.bump_texname];
-
-		auto mat = scene_properties->materials_storage().allocate_material();
+		
 		auto layer = scene_properties->material_layers_storage().allocate_layer();
+		auto mat = scene_properties->materials_storage().allocate_material(layer.get());
 
 		if (diff_map != nullptr) layer->set_basecolor_map(diff_map);
 		if (specular_map != nullptr) mat->set_cavity_map(specular_map);
@@ -230,7 +230,7 @@ StE::task_future<void> ModelFactory::load_model_async(const StEngineControl &ctx
 													  ObjectGroup *object_group,
 													  Graphics::SceneProperties *scene_properties,
 													  float normal_map_bias,
-													  std::vector<std::unique_ptr<Graphics::Material>> &loaded_materials,
+													  std::vector<std::unique_ptr<Graphics::material>> &loaded_materials,
 													  std::vector<std::unique_ptr<Graphics::material_layer>> &loaded_material_layers,
 													  std::vector<std::shared_ptr<Graphics::Object>> *loaded_objects) {
 	return ctx.scheduler().schedule_now([=, &loaded_materials, &loaded_material_layers, &ctx]() {

@@ -116,7 +116,7 @@ vec3 deferred_shade_fragment(g_buffer_element frag) {
 			rgb += material_evaluate_irradiance(head_layer,
 												n, t, b,
 												v, l,
-												uv, uvdx, uvdy,
+												uv, duvdx, duvdy,
 												irradiance);
 		}
 	}

@@ -32,6 +32,7 @@ vec3 material_evaluate_irradiance(uint32_t head_layer,
 	float F0 = material_convert_ior_to_F0(layer.ior, 1.f);
 	float anisotropy_ratio = layer.anisotropy_ratio;
 	float sheen = layer.sheen * 4.f;
+	float sheen_power = mix(5.f, 2.f, layer.sheen_power);
 
 	vec3 specular_tint = vec3(1);
 	vec3 sheen_tint = vec3(1);

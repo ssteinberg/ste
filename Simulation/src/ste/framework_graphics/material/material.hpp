@@ -22,9 +22,9 @@ namespace StE {
 namespace Graphics {
 
 /**
- *	@brief	Defines rendering material
+ *	@brief	Defines rendering material basic properties
  */
-class Material : public Core::observable_resource<material_descriptor> {
+class material : public Core::observable_resource<material_descriptor> {
 	using Base = Core::observable_resource<material_descriptor>;
 
 private:
@@ -40,17 +40,24 @@ private:
 	material_descriptor descriptor;
 
 private:
-	Material(Material &&m) = delete;
-	Material(const Material &m) = delete;
-	Material &operator=(Material &&m) = delete;
-	Material &operator=(const Material &m) = delete;
+	material(material &&m) = delete;
+	material(const material &m) = delete;
+	material &operator=(material &&m) = delete;
+	material &operator=(const material &m) = delete;
 
 private:
 	Core::texture_handle handle_for_texture(const Core::Texture2D *t) const;
 
 public:
-	Material();
-	~Material() {
+	/**
+	*	@brief	Material ctor
+	*
+	*	Constructs a new material using an upper layer. See set_layer method description for more information.
+	*
+	* 	@param head_layer	material layer
+	*/
+	explicit material(material_layer *head_layer);
+	~material() {
 		cavity_map = nullptr;
 		normal_map = nullptr;
 		mask_map = nullptr;
@@ -106,12 +113,13 @@ public:
 	}
 	
 	/**
-	*	@brief	Set material layer
+	*	@brief	Set the head layer (top layer) of the layer stack
 	*
-	*	Layers are stacked top-to-bottom as a single linked list. This sets the head layer id (top layer).
-	*	To set lower layers, link the next layer to the head layer directly.
+	*	Materials are composed of variable thickness layers, see material_layer for more information about material layer parameters.
+	*	Layers are stacked top to bottom (base) layer using a single linked list. This method set the id of the top layer, to link additional layers
+	*	consult the set_next_layer method of material_layer. The layer which has no further layer linked is the base layer.
 	*
-	* 	@param layer	Material layer
+	* 	@param layer	material layer
 	*/
 	void set_layer(material_layer *layer) {
 		int layerid = material_layer_none;
