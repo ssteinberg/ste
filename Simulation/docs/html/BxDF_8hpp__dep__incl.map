@@ -1,7 +1,0 @@
-<map id="src/ste/framework_graphics/radiometry/radiance/BxDFs/BxDF.hpp" name="src/ste/framework_graphics/radiometry/radiance/BxDFs/BxDF.hpp">
-<area shape="rect" id="node2" href="$cook__torrance__brdf_8hpp.html" title="src/ste/framework_graphics\l/radiometry/radiance/BxDFs\l/cook_torrance_specular/cook\l_torrance_brdf.hpp" alt="" coords="5,109,209,180"/>
-<area shape="rect" id="node3" href="$disney__diffuse_8hpp.html" title="src/ste/framework_graphics\l/radiometry/radiance/BxDFs\l/disney_diffuse/disney_diffuse.hpp" alt="" coords="234,117,461,173"/>
-<area shape="rect" id="node4" href="$improved__oren__nayar__diffuse_8hpp.html" title="src/ste/framework_graphics\l/radiometry/radiance/BxDFs\l/oren_nayar_diffuse/improved\l_oren_nayar_diffuse.hpp" alt="" coords="485,109,685,180"/>
-<area shape="rect" id="node5" href="$oren__nayar__diffuse_8hpp.html" title="src/ste/framework_graphics\l/radiometry/radiance/BxDFs\l/oren_nayar_diffuse/oren_nayar\l_diffuse.hpp" alt="" coords="708,109,920,180"/>
-<area shape="rect" id="node6" href="$pBRDF_8hpp.html" title="src/ste/framework_graphics\l/radiometry/radiance/BxDFs\l/physical/pBRDF.hpp" alt="" coords="945,117,1137,173"/>
-</map>

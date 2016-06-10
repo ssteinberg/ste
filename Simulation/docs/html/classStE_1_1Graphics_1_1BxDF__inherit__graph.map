@@ -1,7 +1,0 @@
-<map id="StE::Graphics::BxDF&lt; T &gt;" name="StE::Graphics::BxDF&lt; T &gt;">
-<area shape="rect" id="node2" href="$classStE_1_1Graphics_1_1cook__torrance__brdf.html" title="{StE::Graphics::cook\l_torrance_brdf\&lt; T \&gt;\n||+ operator()()\l}" alt="" coords="5,277,148,369"/>
-<area shape="rect" id="node3" href="$classStE_1_1Graphics_1_1disney__diffuse__brdf.html" title="{StE::Graphics::disney\l_diffuse_brdf\&lt; T \&gt;\n||+ operator()()\l}" alt="" coords="173,277,325,369"/>
-<area shape="rect" id="node4" href="$classStE_1_1Graphics_1_1oren__nayar__brdf.html" title="{StE::Graphics::oren\l_nayar_brdf\&lt; T \&gt;\n||+ improved_oren_nayar_Lm()\l+ improved_oren_nayar_Vd()\l+ improved_oren_nayar_Bp()\l+ improved_oren_nayar_Fr()\l+ operator()()\l+ evaluate_r1()\l+ evaluate_r2()\l+ evaluate_a()\l+ operator()()\l}" alt="" coords="349,219,548,428"/>
-<area shape="rect" id="node5" href="$classStE_1_1Graphics_1_1BxDF.html" title="{StE::Graphics::BxDF\l\&lt; float \&gt;\n||+ cos_theta()\l+ sin2_theta()\l+ sin_theta()\l+ cos_phi()\l+ sin_phi()\l+ omega()\l}" alt="" coords="573,241,719,406"/>
-<area shape="rect" id="node6" href="$classStE_1_1Graphics_1_1pBRDF.html" title="{StE::Graphics::pBRDF\n|+ theta_min\l+ theta_max\l+ phi_min\l+ phi_max\l|+ pBRDF()\l+ descriptor()\l+ min_incident_theta()\l+ max_incident_theta()\l+ brdf_texture()\l}" alt="" coords="567,477,725,657"/>
-</map>

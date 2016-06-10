@@ -1,9 +1,0 @@
-<map id="src/ste/framework_graphics/shadows/screen_space_soft_shadows/ssss_generator.hpp" name="src/ste/framework_graphics/shadows/screen_space_soft_shadows/ssss_generator.hpp">
-<area shape="rect" id="node2" href="$ssss__generator_8cpp.html" title="src/ste/framework_graphics\l/shadows/screen_space_soft\l_shadows/ssss_generator.cpp" alt="" coords="237,235,442,291"/>
-<area shape="rect" id="node3" href="$ssss__bilateral__blur__x_8hpp.html" title="src/ste/framework_graphics\l/shadows/screen_space_soft\l_shadows/steps/ssss_bilateral\l_blur_x.hpp" alt="" coords="95,109,301,180"/>
-<area shape="rect" id="node5" href="$ssss__bilateral__blur__y_8hpp.html" title="src/ste/framework_graphics\l/shadows/screen_space_soft\l_shadows/steps/ssss_bilateral\l_blur_y.hpp" alt="" coords="377,109,584,180"/>
-<area shape="rect" id="node7" href="$ssss__write__penumbras_8hpp.html" title="src/ste/framework_graphics\l/shadows/screen_space_soft\l_shadows/steps/ssss_write\l_penumbras.hpp" alt="" coords="608,109,807,180"/>
-<area shape="rect" id="node4" href="$ssss__bilateral__blur__x_8cpp.html" title="src/ste/framework_graphics\l/shadows/screen_space_soft\l_shadows/steps/ssss_bilateral\l_blur_x.cpp" alt="" coords="5,228,212,299"/>
-<area shape="rect" id="node6" href="$ssss__bilateral__blur__y_8cpp.html" title="src/ste/framework_graphics\l/shadows/screen_space_soft\l_shadows/steps/ssss_bilateral\l_blur_y.cpp" alt="" coords="467,228,673,299"/>
-<area shape="rect" id="node8" href="$ssss__write__penumbras_8cpp.html" title="src/ste/framework_graphics\l/shadows/screen_space_soft\l_shadows/steps/ssss_write\l_penumbras.cpp" alt="" coords="697,228,896,299"/>
-</map>

@@ -1,8 +1,0 @@
-<map id="src/ste/framework_graphics/renderers/global_illumination/deferred_gbuffer/downsample_depth/gbuffer_downsample_depth_dispatch.hpp" name="src/ste/framework_graphics/renderers/global_illumination/deferred_gbuffer/downsample_depth/gbuffer_downsample_depth_dispatch.hpp">
-<area shape="rect" id="node2" href="$gbuffer__downsample__depth__dispatch_8cpp.html" title="src/ste/framework_graphics\l/renderers/global_illumination\l/deferred_gbuffer/downsample\l_depth/gbuffer_downsample_depth\l_dispatch.cpp" alt="" coords="95,139,325,224"/>
-<area shape="rect" id="node3" href="$GIRenderer_8hpp.html" title="src/ste/framework_graphics\l/renderers/global_illumination\l/GIRenderer.hpp" alt="" coords="349,153,548,209"/>
-<area shape="rect" id="node4" href="$main_8cpp.html" title="src/main.cpp" alt="" coords="5,294,103,321"/>
-<area shape="rect" id="node5" href="$deferred__composer_8cpp.html" title="src/ste/framework_graphics\l/renderers/global_illumination\l/deferred_composer/deferred\l_composer.cpp" alt="" coords="127,272,325,343"/>
-<area shape="rect" id="node6" href="$GIRenderer_8cpp.html" title="src/ste/framework_graphics\l/renderers/global_illumination\l/GIRenderer.cpp" alt="" coords="349,279,548,335"/>
-<area shape="rect" id="node7" href="$girenderer__loader_8hpp.html" title="src/ste/framework_graphics\l/renderers/global_illumination\l/girenderer_loader.hpp" alt="" coords="572,279,771,335"/>
-</map>

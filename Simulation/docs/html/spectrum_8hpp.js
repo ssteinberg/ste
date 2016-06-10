@@ -1,6 +1,6 @@
 var spectrum_8hpp =
 [
-    [ "spectrum", "classStE_1_1Graphics_1_1spectrum.html", "classStE_1_1Graphics_1_1spectrum" ],
+    [ "spectrum", "class_st_e_1_1_graphics_1_1spectrum.html", "class_st_e_1_1_graphics_1_1spectrum" ],
     [ "clamp", "spectrum_8hpp.html#affda5e2614949218b17836746c70844e", null ],
     [ "max", "spectrum_8hpp.html#a17882bbd40970b485a5a2bed3f9b6bf5", null ],
     [ "min", "spectrum_8hpp.html#a4654abb7b636e345db489dcd8667bedd", null ],

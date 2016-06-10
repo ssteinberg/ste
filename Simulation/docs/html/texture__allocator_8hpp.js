@@ -1,6 +1,6 @@
 var texture__allocator_8hpp =
 [
-    [ "texture_immutable_storage_allocator", "classStE_1_1Core_1_1texture__immutable__storage__allocator.html", "classStE_1_1Core_1_1texture__immutable__storage__allocator" ],
+    [ "texture_immutable_storage_allocator", "class_st_e_1_1_core_1_1texture__immutable__storage__allocator.html", "class_st_e_1_1_core_1_1texture__immutable__storage__allocator" ],
     [ "create_gl_texture_storage", "texture__allocator_8hpp.html#aa9255b16d0d4c244ac56034e4d379987", null ],
     [ "create_gl_texture_storage< 1, false >", "texture__allocator_8hpp.html#a75a8213f65377af985b5d851297e7814", null ],
     [ "create_gl_texture_storage< 2, false >", "texture__allocator_8hpp.html#ab1011f159627e6a2a988ec8c16dc0b77", null ],

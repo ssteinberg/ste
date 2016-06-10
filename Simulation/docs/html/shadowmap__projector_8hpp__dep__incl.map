@@ -1,8 +1,0 @@
-<map id="src/ste/framework_graphics/shadows/shadow_maps/shadowmap_projector.hpp" name="src/ste/framework_graphics/shadows/shadow_maps/shadowmap_projector.hpp">
-<area shape="rect" id="node2" href="$GIRenderer_8hpp.html" title="src/ste/framework_graphics\l/renderers/global_illumination\l/GIRenderer.hpp" alt="" coords="349,109,548,165"/>
-<area shape="rect" id="node7" href="$shadowmap__projector_8cpp.html" title="src/ste/framework_graphics\l/shadows/shadow_maps/shadowmap\l_projector.cpp" alt="" coords="573,109,823,165"/>
-<area shape="rect" id="node3" href="$main_8cpp.html" title="src/main.cpp" alt="" coords="5,235,103,262"/>
-<area shape="rect" id="node4" href="$deferred__composer_8cpp.html" title="src/ste/framework_graphics\l/renderers/global_illumination\l/deferred_composer/deferred\l_composer.cpp" alt="" coords="127,213,325,284"/>
-<area shape="rect" id="node5" href="$GIRenderer_8cpp.html" title="src/ste/framework_graphics\l/renderers/global_illumination\l/GIRenderer.cpp" alt="" coords="349,221,548,277"/>
-<area shape="rect" id="node6" href="$girenderer__loader_8hpp.html" title="src/ste/framework_graphics\l/renderers/global_illumination\l/girenderer_loader.hpp" alt="" coords="572,221,771,277"/>
-</map>

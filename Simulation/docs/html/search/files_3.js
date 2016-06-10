@@ -10,7 +10,7 @@ var searchData=
   ['dense_5fvoxel_5fspace_2ehpp',['dense_voxel_space.hpp',['../dense__voxel__space_8hpp.html',1,'']]],
   ['dense_5fvoxelizer_2ecpp',['dense_voxelizer.cpp',['../dense__voxelizer_8cpp.html',1,'']]],
   ['dense_5fvoxelizer_2ehpp',['dense_voxelizer.hpp',['../dense__voxelizer_8hpp.html',1,'']]],
-  ['directionallight_2ehpp',['DirectionalLight.hpp',['../DirectionalLight_8hpp.html',1,'']]],
+  ['directionallight_2ehpp',['DirectionalLight.hpp',['../_directional_light_8hpp.html',1,'']]],
   ['disney_5fdiffuse_2ehpp',['disney_diffuse.hpp',['../disney__diffuse_8hpp.html',1,'']]],
   ['dual_5fquaternion_2ehpp',['dual_quaternion.hpp',['../dual__quaternion_8hpp.html',1,'']]]
 ];

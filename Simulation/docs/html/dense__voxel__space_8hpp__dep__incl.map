@@ -1,9 +1,0 @@
-<map id="src/ste/framework_graphics/voxels/dense_voxel_space.hpp" name="src/ste/framework_graphics/voxels/dense_voxel_space.hpp">
-<area shape="rect" id="node2" href="$GIRenderer_8hpp.html" title="src/ste/framework_graphics\l/renderers/global_illumination\l/GIRenderer.hpp" alt="" coords="349,95,548,151"/>
-<area shape="rect" id="node7" href="$dense__voxel__space_8cpp.html" title="src/ste/framework_graphics\l/voxels/dense_voxel_space.cpp" alt="" coords="573,102,789,143"/>
-<area shape="rect" id="node8" href="$dense__voxelizer_8cpp.html" title="src/ste/framework_graphics\l/voxels/dense_voxelizer.cpp" alt="" coords="813,102,1007,143"/>
-<area shape="rect" id="node3" href="$main_8cpp.html" title="src/main.cpp" alt="" coords="5,221,103,247"/>
-<area shape="rect" id="node4" href="$deferred__composer_8cpp.html" title="src/ste/framework_graphics\l/renderers/global_illumination\l/deferred_composer/deferred\l_composer.cpp" alt="" coords="127,199,325,269"/>
-<area shape="rect" id="node5" href="$GIRenderer_8cpp.html" title="src/ste/framework_graphics\l/renderers/global_illumination\l/GIRenderer.cpp" alt="" coords="349,206,548,262"/>
-<area shape="rect" id="node6" href="$girenderer__loader_8hpp.html" title="src/ste/framework_graphics\l/renderers/global_illumination\l/girenderer_loader.hpp" alt="" coords="572,206,771,262"/>
-</map>

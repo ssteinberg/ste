@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['weight',['weight',['../classStE_1_1Text_1_1Attributes_1_1weight.html',1,'StE::Text::Attributes']]]
+  ['weight',['weight',['../class_st_e_1_1_text_1_1_attributes_1_1weight.html',1,'StE::Text::Attributes']]]
 ];

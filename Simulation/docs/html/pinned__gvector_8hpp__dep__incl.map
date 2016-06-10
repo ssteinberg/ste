@@ -1,9 +1,0 @@
-<map id="src/ste/engine/core/gpu_resources/gpu_data_structures/pinned_gvector.hpp" name="src/ste/engine/core/gpu_resources/gpu_data_structures/pinned_gvector.hpp">
-<area shape="rect" id="node2" href="$ring__buffer_8hpp.html" title="src/ste/engine/core\l/gpu_resources/gpu_data\l_structures/ring_buffer.hpp" alt="" coords="161,109,335,165"/>
-<area shape="rect" id="node3" href="$view__matrix__ring__buffer_8hpp.html" title="src/ste/framework_graphics\l/utilities/camera/view_matrix\l_ring_buffer.hpp" alt="" coords="45,213,235,269"/>
-<area shape="rect" id="node7" href="$TextManager_8hpp.html" title="src/ste/framework_text\l/rendering/TextManager.hpp" alt="" coords="259,221,453,262"/>
-<area shape="rect" id="node4" href="$GIRenderer_8hpp.html" title="src/ste/framework_graphics\l/gpu_dispatch/renderers\l/global_illumination/GIRenderer.hpp" alt="" coords="23,317,257,373"/>
-<area shape="rect" id="node5" href="$main_8cpp.html" title="src/main.cpp" alt="" coords="265,436,362,463"/>
-<area shape="rect" id="node6" href="$GIRenderer_8cpp.html" title="src/ste/framework_graphics\l/gpu_dispatch/renderers\l/global_illumination/GIRenderer.cpp" alt="" coords="5,421,240,477"/>
-<area shape="rect" id="node8" href="$TextManager_8cpp.html" title="src/ste/framework_text\l/rendering/TextManager.cpp" alt="" coords="351,325,545,366"/>
-</map>

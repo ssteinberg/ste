@@ -1,4 +1,0 @@
-<map id="StE::Graphics::Object" name="StE::Graphics::Object">
-<area shape="rect" id="node2" href="$classStE_1_1Graphics_1_1entity__affine.html" title="Transformable entity. Transformation is encoded as a 4x3 matrix. " alt="" coords="9,145,177,296"/>
-<area shape="rect" id="node3" href="$classStE_1_1Graphics_1_1entity.html" title="{StE::Graphics::entity\n||+ ~entity()\l+ get_position()\l}" alt="" coords="21,5,164,97"/>
-</map>

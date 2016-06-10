@@ -1,7 +1,7 @@
 var context__state__name_8hpp =
 [
-    [ "hash< StE::Core::GL::BasicStateName >", "structstd_1_1hash_3_01StE_1_1Core_1_1GL_1_1BasicStateName_01_4.html", "structstd_1_1hash_3_01StE_1_1Core_1_1GL_1_1BasicStateName_01_4" ],
-    [ "hash< StE::Core::GL::StateName >", "structstd_1_1hash_3_01StE_1_1Core_1_1GL_1_1StateName_01_4.html", "structstd_1_1hash_3_01StE_1_1Core_1_1GL_1_1StateName_01_4" ],
+    [ "hash< StE::Core::GL::BasicStateName >", "structstd_1_1hash_3_01_st_e_1_1_core_1_1_g_l_1_1_basic_state_name_01_4.html", "structstd_1_1hash_3_01_st_e_1_1_core_1_1_g_l_1_1_basic_state_name_01_4" ],
+    [ "hash< StE::Core::GL::StateName >", "structstd_1_1hash_3_01_st_e_1_1_core_1_1_g_l_1_1_state_name_01_4.html", "structstd_1_1hash_3_01_st_e_1_1_core_1_1_g_l_1_1_state_name_01_4" ],
     [ "BasicStateName", "context__state__name_8hpp.html#a1013826a141dcd7be8defaeb829ee3d4", [
       [ "BLEND", "context__state__name_8hpp.html#a1013826a141dcd7be8defaeb829ee3d4af58072a9536aaeef0196115e445fa4d8", null ],
       [ "CLIP_PLANE0", "context__state__name_8hpp.html#a1013826a141dcd7be8defaeb829ee3d4a4932be75aaa1eaf8f060ece124f57fe9", null ],

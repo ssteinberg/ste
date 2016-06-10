@@ -1,4 +1,0 @@
-var structStE_1_1Core_1_1surface__element__type_3_01gli_1_1format_1_1FORMAT__RGB64__SINT__PACK64_01_4 =
-[
-    [ "type", "structStE_1_1Core_1_1surface__element__type_3_01gli_1_1format_1_1FORMAT__RGB64__SINT__PACK64_01_4.html#aa8def921cb2fb66f8b4da7a94378be71", null ]
-];

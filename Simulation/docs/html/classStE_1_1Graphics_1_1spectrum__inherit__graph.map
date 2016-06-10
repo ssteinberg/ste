@@ -1,6 +1,0 @@
-<map id="StE::Graphics::spectrum&lt; T, samples &gt;" name="StE::Graphics::spectrum&lt; T, samples &gt;">
-<area shape="rect" id="node2" href="$classStE_1_1Graphics_1_1spectrum.html" title="{StE::Graphics::spectrum\l\&lt; float, 3 \&gt;\n|# c\l|+ spectrum()\l+ spectrum()\l+ operator+=()\l+ operator+=()\l+ operator&#45;=()\l+ operator&#45;=()\l+ operator*=()\l+ operator*=()\l+ operator/=()\l+ operator/=()\land 10 more...\l}" alt="" coords="234,307,401,545"/>
-<area shape="rect" id="node3" href="$classStE_1_1Graphics_1_1RGB.html" title="{StE::Graphics::RGB\n||+ RGB()\l+ RGB()\l+ RGB()\l+ R()\l+ G()\l+ B()\l+ R()\l+ G()\l+ B()\l+ toXYZ()\l+ luminance()\l+ operator glm::tvec3\&lt; T \&gt;()\l+ operator XYZ()\l}" alt="" coords="5,595,197,848"/>
-<area shape="rect" id="node4" href="$classStE_1_1Graphics_1_1xyY.html" title="{StE::Graphics::xyY\n||+ xyY()\l+ xyY()\l+ x()\l+ y()\l+ Y()\l+ x()\l+ y()\l+ Y()\l+ toXYZ()\l+ luminance()\l+ operator glm::tvec3\&lt; T \&gt;()\l+ operator XYZ()\l}" alt="" coords="221,602,413,841"/>
-<area shape="rect" id="node5" href="$classStE_1_1Graphics_1_1XYZ.html" title="{StE::Graphics::XYZ\n||+ XYZ()\l+ XYZ()\l+ X()\l+ Y()\l+ Z()\l+ X()\l+ Y()\l+ Z()\l+ toRGB()\l+ to_xyY()\land 6 more...\l}" alt="" coords="437,609,576,833"/>
-</map>

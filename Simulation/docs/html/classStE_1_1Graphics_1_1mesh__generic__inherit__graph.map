@@ -1,7 +1,0 @@
-<map id="StE::Graphics::mesh_generic" name="StE::Graphics::mesh_generic">
-<area shape="rect" id="node2" href="$classStE_1_1Graphics_1_1mesh.html" title="{StE::Graphics::mesh\l\&lt; mesh_subdivion_mode\l::Triangles \&gt;\n|+ mode\l# sphere\l|+ ~mesh()\l+ get_vertices()\l+ get_indices()\l+ bounding_sphere()\l+ set_vertices()\l+ set_indices()\l+ operator+=()\l+ operator*=()\l+ transform()\l+ vbo()\l+ ebo()\l+ vao()\l}" alt="" coords="5,536,179,819"/>
-<area shape="rect" id="node4" href="$classStE_1_1Graphics_1_1mesh.html" title="{StE::Graphics::mesh\l\&lt; mesh_subdivion_mode\l::TrianglesStrip \&gt;\n|+ mode\l# sphere\l|+ ~mesh()\l+ get_vertices()\l+ get_indices()\l+ bounding_sphere()\l+ set_vertices()\l+ set_indices()\l+ operator+=()\l+ operator*=()\l+ transform()\l+ vbo()\l+ ebo()\l+ vao()\l}" alt="" coords="219,536,392,819"/>
-<area shape="rect" id="node6" href="$classStE_1_1Graphics_1_1mesh.html" title="{StE::Graphics::mesh\l\&lt; Mode \&gt;\n|+ mode\l# sphere\l|+ ~mesh()\l+ get_vertices()\l+ get_indices()\l+ bounding_sphere()\l+ set_vertices()\l+ set_indices()\l+ operator+=()\l+ operator*=()\l+ transform()\l+ vbo()\l+ ebo()\l+ vao()\l}" alt="" coords="159,191,305,459"/>
-<area shape="rect" id="node3" href="$classStE_1_1Graphics_1_1Sphere.html" title="{StE::Graphics::Sphere\n||+ ~Sphere()\l+ Sphere()\l}" alt="" coords="15,868,169,960"/>
-<area shape="rect" id="node5" href="$classStE_1_1Graphics_1_1Quad.html" title="{StE::Graphics::Quad\n||+ ~Quad()\l+ Quad()\l}" alt="" coords="233,868,378,960"/>
-</map>

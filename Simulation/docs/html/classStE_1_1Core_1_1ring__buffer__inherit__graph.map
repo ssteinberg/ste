@@ -1,5 +1,0 @@
-<map id="StE::Core::ring_buffer&lt; T, max_size &gt;" name="StE::Core::ring_buffer&lt; T, max_size &gt;">
-<area shape="rect" id="node2" href="$classStE_1_1Core_1_1ring__buffer.html" title="{StE::Core::ring_buffer\l\&lt; proj_data, 1 \&gt;\n|+ usage\l|+ ring_buffer()\l+ ring_buffer()\l+ ring_buffer()\l+ commit()\l+ commit()\l+ get_buffer()\l+ size()\l}" alt="" coords="5,270,155,450"/>
-<area shape="rect" id="node3" href="$classStE_1_1Core_1_1ring__buffer.html" title="{StE::Core::ring_buffer\l\&lt; view_data, 3 \&gt;\n|+ usage\l|+ ring_buffer()\l+ ring_buffer()\l+ ring_buffer()\l+ commit()\l+ commit()\l+ get_buffer()\l+ size()\l}" alt="" coords="179,270,328,450"/>
-<area shape="rect" id="node4" href="$classStE_1_1Core_1_1ring__buffer.html" title="{StE::Core::ring_buffer\l\&lt; glyph_point, ringbuffer\l_max_size \&gt;\n|+ usage\l|+ ring_buffer()\l+ ring_buffer()\l+ ring_buffer()\l+ commit()\l+ commit()\l+ get_buffer()\l+ size()\l}" alt="" coords="352,263,515,457"/>
-</map>

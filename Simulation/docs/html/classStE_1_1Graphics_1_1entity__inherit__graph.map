@@ -1,8 +1,0 @@
-<map id="StE::Graphics::entity" name="StE::Graphics::entity">
-<area shape="rect" id="node2" href="$classStE_1_1Graphics_1_1entity__affine.html" title="Transformable entity. Transformation is encoded as a 4x3 matrix. " alt="" coords="214,160,382,311"/>
-<area shape="rect" id="node5" href="$classStE_1_1Graphics_1_1light.html" title="{StE::Graphics::light\n|# descriptor\l|+ light()\l+ ~light()\l+ set_luminance()\l+ set_diffuse()\l+ get_luminance()\l+ get_radius()\l+ get_diffuse()\l+ get_descriptor()\l}" alt="" coords="435,145,571,325"/>
-<area shape="rect" id="node3" href="$classStE_1_1Graphics_1_1Object.html" title="{StE::Graphics::Object\n|# material\l# object_mesh\l|+ Object()\l+ ~Object()\l+ get_mesh()\l+ get_mesh()\l+ set_material()\l+ get_material()\l+ signal_model_change()\l+ set_model_transform()\l}" alt="" coords="5,373,180,568"/>
-<area shape="rect" id="node4" href="$classStE_1_1Graphics_1_1ObjectGroup.html" title="{StE::Graphics::ObjectGroup\n||+ ObjectGroup()\l+ ~ObjectGroup()\l+ add_object()\l+ remove_all()\l+ get_draw_buffers()\l+ update_dirty_buffers()\l+ total_objects()\l}" alt="" coords="205,388,391,553"/>
-<area shape="rect" id="node6" href="$classStE_1_1Graphics_1_1DirectionalLight.html" title="{StE::Graphics::Directional\lLight\n||+ DirectionalLight()\l+ ~DirectionalLight()\l+ set_direction()\l+ get_position()\l+ get_direction()\l}" alt="" coords="415,395,591,546"/>
-<area shape="rect" id="node7" href="$classStE_1_1Graphics_1_1SphericalLight.html" title="{StE::Graphics::Spherical\lLight\n||+ SphericalLight()\l+ ~SphericalLight()\l+ set_position()\l+ set_radius()\l+ get_position()\l}" alt="" coords="615,395,783,546"/>
-</map>

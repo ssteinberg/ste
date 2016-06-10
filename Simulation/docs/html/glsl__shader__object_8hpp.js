@@ -1,9 +1,9 @@
 var glsl__shader__object_8hpp =
 [
-    [ "GLSLShaderProperties", "structStE_1_1Core_1_1GLSLShaderProperties.html", "structStE_1_1Core_1_1GLSLShaderProperties" ],
-    [ "GLSLShaderAllocator", "classStE_1_1Core_1_1GLSLShaderAllocator.html", "classStE_1_1Core_1_1GLSLShaderAllocator" ],
-    [ "glsl_shader_object_generic", "classStE_1_1Core_1_1glsl__shader__object__generic.html", "classStE_1_1Core_1_1glsl__shader__object__generic" ],
-    [ "glsl_shader_object", "classStE_1_1Core_1_1glsl__shader__object.html", "classStE_1_1Core_1_1glsl__shader__object" ],
+    [ "GLSLShaderProperties", "struct_st_e_1_1_core_1_1_g_l_s_l_shader_properties.html", "struct_st_e_1_1_core_1_1_g_l_s_l_shader_properties" ],
+    [ "GLSLShaderAllocator", "class_st_e_1_1_core_1_1_g_l_s_l_shader_allocator.html", "class_st_e_1_1_core_1_1_g_l_s_l_shader_allocator" ],
+    [ "glsl_shader_object_generic", "class_st_e_1_1_core_1_1glsl__shader__object__generic.html", "class_st_e_1_1_core_1_1glsl__shader__object__generic" ],
+    [ "glsl_shader_object", "class_st_e_1_1_core_1_1glsl__shader__object.html", "class_st_e_1_1_core_1_1glsl__shader__object" ],
     [ "GLSLShaderType", "glsl__shader__object_8hpp.html#a9cc33341f971e83ec68ebca58102f622", [
       [ "NONE", "glsl__shader__object_8hpp.html#a9cc33341f971e83ec68ebca58102f622ab50339a10e1de285ac99d4c3990b8693", null ],
       [ "VERTEX", "glsl__shader__object_8hpp.html#a9cc33341f971e83ec68ebca58102f622a0c3e47aef93a7f244f41ab309a33634b", null ],

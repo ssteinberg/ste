@@ -1,6 +1,0 @@
-var dir_e87ccd0e828dc982b382d0eb0d7d9441 =
-[
-    [ "ObjectVertexData.hpp", "ObjectVertexData_8hpp.html", [
-      [ "ObjectVertexData", "classStE_1_1Graphics_1_1ObjectVertexData.html", "classStE_1_1Graphics_1_1ObjectVertexData" ]
-    ] ]
-];

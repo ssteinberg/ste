@@ -1,7 +1,0 @@
-<map id="StE::Core::resource_storage_dynamic&lt; Descriptor &gt;" name="StE::Core::resource_storage_dynamic&lt; Descriptor &gt;">
-<area shape="rect" id="node2" href="$classStE_1_1Core_1_1resource__storage.html" title="{StE::Core::resource\l_storage\&lt; resource_storage\l_dynamic\&lt; Descriptor \&gt;,\l Descriptor, gstack \&gt;\n||+ ~resource_storage()\l+ update()\l+ index_of()\l+ buffer()\l+ size()\l# allocate_resource()\l# erase_resource()\l}" alt="" coords="88,1000,281,1209"/>
-<area shape="rect" id="node3" href="$classStE_1_1Core_1_1resource__storage__base.html" title="{StE::Core::resource\l_storage_base\&lt; Descriptor \&gt;\n||+ ~resource_storage_base()\l# erase_resource()\l}" alt="" coords="62,557,259,664"/>
-<area shape="rect" id="node8" href="$classStE_1_1Core_1_1resource__storage.html" title="resource_storage base class " alt="" coords="183,713,347,908"/>
-<area shape="rect" id="node5" href="$classStE_1_1Core_1_1observable__resource.html" title="Resource consumed by a resource_storage. " alt="" coords="5,145,183,296"/>
-<area shape="rect" id="node6" title="STL class. " alt="" coords="207,182,375,259"/>
-</map>

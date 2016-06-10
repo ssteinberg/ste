@@ -1,9 +1,0 @@
-<map id="StE::Resource::glsl_program_error" name="StE::Resource::glsl_program_error">
-<area shape="rect" id="node5" href="$classStE_1_1Resource_1_1glsl__program__linking__error.html" title="{StE::Resource::glsl\l_program_linking_error\n||}" alt="" coords="5,536,164,628"/>
-<area shape="rect" id="node6" href="$classStE_1_1Resource_1_1glsl__program__shader__compilation__error.html" title="{StE::Resource::glsl\l_program_shader_compilation_error\n||}" alt="" coords="188,536,427,628"/>
-<area shape="rect" id="node7" href="$classStE_1_1Resource_1_1glsl__program__undefined__program__error.html" title="{StE::Resource::glsl\l_program_undefined_program_error\n||}" alt="" coords="451,536,689,628"/>
-<area shape="rect" id="node8" href="$classStE_1_1Resource_1_1glsl__program__undefined__shader__error.html" title="{StE::Resource::glsl\l_program_undefined_shader_error\n||}" alt="" coords="713,536,942,628"/>
-<area shape="rect" id="node2" href="$classStE_1_1Resource_1_1resource__loading__exception.html" title="{StE::Resource::resource\l_loading_exception\n||+ resource_loading_exception()\l}" alt="" coords="332,256,544,348"/>
-<area shape="rect" id="node3" title="STL class. " alt="" coords="375,131,501,208"/>
-<area shape="rect" id="node4" title="STL class. " alt="" coords="385,5,491,83"/>
-</map>

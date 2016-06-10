@@ -1,8 +1,0 @@
-<map id="src/ste/framework_graphics/antialiasing/fxaa/fxaa_dispatchable.hpp" name="src/ste/framework_graphics/antialiasing/fxaa/fxaa_dispatchable.hpp">
-<area shape="rect" id="node2" href="$fxaa__dispatchable_8cpp.html" title="src/ste/framework_graphics\l/antialiasing/fxaa/fxaa\l_dispatchable.cpp" alt="" coords="138,109,325,165"/>
-<area shape="rect" id="node3" href="$GIRenderer_8hpp.html" title="src/ste/framework_graphics\l/renderers/global_illumination\l/GIRenderer.hpp" alt="" coords="349,109,548,165"/>
-<area shape="rect" id="node4" href="$main_8cpp.html" title="src/main.cpp" alt="" coords="5,235,103,262"/>
-<area shape="rect" id="node5" href="$deferred__composer_8cpp.html" title="src/ste/framework_graphics\l/renderers/global_illumination\l/deferred_composer/deferred\l_composer.cpp" alt="" coords="127,213,325,284"/>
-<area shape="rect" id="node6" href="$GIRenderer_8cpp.html" title="src/ste/framework_graphics\l/renderers/global_illumination\l/GIRenderer.cpp" alt="" coords="349,221,548,277"/>
-<area shape="rect" id="node7" href="$girenderer__loader_8hpp.html" title="src/ste/framework_graphics\l/renderers/global_illumination\l/girenderer_loader.hpp" alt="" coords="572,221,771,277"/>
-</map>

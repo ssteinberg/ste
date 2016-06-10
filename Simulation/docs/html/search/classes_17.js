@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['xyy',['xyY',['../classStE_1_1Graphics_1_1xyY.html',1,'StE::Graphics']]],
-  ['xyz',['XYZ',['../classStE_1_1Graphics_1_1XYZ.html',1,'StE::Graphics']]]
+  ['xyy',['xyY',['../class_st_e_1_1_graphics_1_1xy_y.html',1,'StE::Graphics']]],
+  ['xyz',['XYZ',['../class_st_e_1_1_graphics_1_1_x_y_z.html',1,'StE::Graphics']]]
 ];

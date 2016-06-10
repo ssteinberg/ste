@@ -1,4 +1,0 @@
-<map id="StE::Graphics::rendering_system" name="StE::Graphics::rendering_system">
-<area shape="rect" id="node2" href="$classStE_1_1Graphics_1_1basic__renderer.html" title="{StE::Graphics::basic\l_renderer\n||+ basic_renderer()\l+ ~basic_renderer()\l+ add_task()\l+ remove_task()\l+ render_queue()\l+ rendering_system_name()\l}" alt="" coords="5,233,196,399"/>
-<area shape="rect" id="node3" href="$classStE_1_1Graphics_1_1GIRenderer.html" title="{StE::Graphics::GIRenderer\n||+ ~GIRenderer()\l+ add_task()\l+ remove_task()\l+ add_gui_task()\l+ remove_gui_task()\l+ render_queue()\l+ get_gbuffer()\l+ get_scene_task()\l+ attach_profiler()\l+ rendering_system_name()\l# setup_tasks()\l# rebuild_task_queue()\l# get_fbo()\l# gbuffer_depth_target\l_levels()\l}" alt="" coords="220,175,411,457"/>
-</map>

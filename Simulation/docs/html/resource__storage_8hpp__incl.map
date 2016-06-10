@@ -1,9 +1,0 @@
-<map id="src/ste/engine/core/gpu_resources/gpu_data_structures/resource_storage/resource_storage.hpp" name="src/ste/engine/core/gpu_resources/gpu_data_structures/resource_storage/resource_storage.hpp">
-<area shape="rect" id="node2" href="$stdafx_8hpp.html" title="stdafx.hpp" alt="" coords="1697,363,1780,389"/>
-<area shape="rect" id="node27" href="$resource__storage__base_8hpp.html" title="resource_storage_base.hpp" alt="" coords="2191,288,2380,315"/>
-<area shape="rect" id="node29" href="$observable__resource_8hpp.html" title="observable_resource.hpp" alt="" coords="2137,124,2311,151"/>
-<area shape="rect" id="node30" href="$observable__resource__impl_8hpp.html" title="observable_resource\l_impl.hpp" alt="" coords="2211,199,2360,240"/>
-<area shape="rect" id="node31" href="$is__base__of_8hpp.html" title="is_base_of.hpp" alt="" coords="2609,124,2719,151"/>
-<area shape="rect" id="node4" href="$gl_8hpp.html" title="gl.hpp" alt="" coords="1930,437,1987,464"/>
-<area shape="rect" id="node6" href="$gl__extensions_8h.html" title="gl_extensions.h" alt="" coords="1963,512,2077,539"/>
-</map>

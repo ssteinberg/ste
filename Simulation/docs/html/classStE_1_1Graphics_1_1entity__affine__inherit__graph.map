@@ -1,5 +1,0 @@
-<map id="StE::Graphics::entity_affine" name="StE::Graphics::entity_affine">
-<area shape="rect" id="node3" href="$classStE_1_1Graphics_1_1Object.html" title="{StE::Graphics::Object\n|# material\l# object_mesh\l|+ Object()\l+ ~Object()\l+ get_mesh()\l+ get_mesh()\l+ set_material()\l+ get_material()\l+ signal_model_change()\l+ set_model_transform()\l}" alt="" coords="5,344,180,539"/>
-<area shape="rect" id="node4" href="$classStE_1_1Graphics_1_1ObjectGroup.html" title="{StE::Graphics::ObjectGroup\n||+ ObjectGroup()\l+ ~ObjectGroup()\l+ add_object()\l+ remove_all()\l+ get_draw_buffers()\l+ update_dirty_buffers()\l+ total_objects()\l}" alt="" coords="205,359,391,524"/>
-<area shape="rect" id="node2" href="$classStE_1_1Graphics_1_1entity.html" title="{StE::Graphics::entity\n||+ ~entity()\l+ get_position()\l}" alt="" coords="124,5,267,97"/>
-</map>

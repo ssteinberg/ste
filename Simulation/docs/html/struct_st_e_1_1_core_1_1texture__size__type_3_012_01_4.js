@@ -1,0 +1,4 @@
+var struct_st_e_1_1_core_1_1texture__size__type_3_012_01_4 =
+[
+    [ "type", "struct_st_e_1_1_core_1_1texture__size__type_3_012_01_4.html#afb851c49e872e01e18b153a96a8743aa", null ]
+];

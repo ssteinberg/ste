@@ -1,6 +1,0 @@
-<map id="StE::Core::glsl_shader_object&lt; ShaderType &gt;" name="StE::Core::glsl_shader_object&lt; ShaderType &gt;">
-<area shape="rect" id="node2" href="$classStE_1_1Core_1_1resource.html" title="{StE::Core::resource\l\&lt; GLSLShaderAllocator\l\&lt; ShaderType \&gt; \&gt;\n|# allocator\l|+ resource()\l+ operator=()\l+ operator=()\l+ is_valid()\l# resource()\l# resource()\l# resource()\l# ~resource()\l}" alt="" coords="122,641,287,851"/>
-<area shape="rect" id="node3" href="$classStE_1_1Core_1_1GenericResource.html" title="{StE::Core::GenericResource\n|# id\l|+ resource_type()\l+ get_resource_id()\l+ is_valid()\l+ GenericResource()\l+ operator=()\l+ GenericResource()\l+ operator=()\l# GenericResource()\l# ~GenericResource()\l}" alt="" coords="37,5,231,200"/>
-<area shape="rect" id="node4" href="$classStE_1_1Core_1_1resource.html" title="{StE::Core::resource\l\&lt; Allocator \&gt;\n||+ resource()\l+ operator=()\l+ operator=()\l+ is_valid()\l# resource()\l# resource()\l# resource()\l# ~resource()\l}" alt="" coords="222,263,363,457"/>
-<area shape="rect" id="node6" href="$classStE_1_1Core_1_1glsl__shader__object__generic.html" title="{StE::Core::glsl_shader\l_object_generic\n||+ read_info_log()\l+ get_status()\l+ ~glsl_shader_object\l_generic()\l}" alt="" coords="5,481,164,617"/>
-</map>
