@@ -25,7 +25,6 @@ const float vision_properties_max_lum = 10.f;
 
 layout(bindless_sampler) uniform sampler2D hdr;
 layout(bindless_sampler) uniform sampler1D hdr_vision_properties_texture;
-layout(binding = 11) uniform sampler2D depth;
 
 vec4 hdr_bloom(vec4 RGBL, vec3 XYZ, float mesopic) {
 	if (XYZ.y > bloom_cutoff) {

@@ -5,9 +5,8 @@
 
 #include "stdafx.hpp"
 
-#include <boost/archive/binary_iarchive.hpp>
-#include <boost/archive/binary_oarchive.hpp>
-#include <boost/serialization/split_member.hpp>
+#include "boost_binary_ioarchive.hpp"
+#include "boost_serialization.hpp"
 
 #include <memory>
 

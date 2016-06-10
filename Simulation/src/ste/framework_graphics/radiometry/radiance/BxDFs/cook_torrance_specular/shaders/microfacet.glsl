@@ -41,6 +41,11 @@ float fresnel_schlick(float dotLH) {
 	return p2 * p2 * p;
 }
 
+float fresnel_schlick(float dotLH, float power) {
+	float p = 1.f - dotLH;
+	return pow(p, power);
+}
+
 vec3 fresnel_cook_torrance(float dotLH, vec3 F0) {
 	vec3 sqrtF0 = sqrt(F0);
 	vec3 eta = (vec3(1) + sqrtF0) / (vec3(1) - sqrtF0);

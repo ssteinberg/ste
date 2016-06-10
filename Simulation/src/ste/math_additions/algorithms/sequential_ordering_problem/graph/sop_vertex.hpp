@@ -8,7 +8,7 @@
 
 #include "optional.hpp"
 
-#include <boost/container/flat_set.hpp>
+#include "boost_flatset.hpp"
 
 namespace StE {
 namespace Algorithm {

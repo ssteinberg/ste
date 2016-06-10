@@ -45,16 +45,22 @@ private:
 
 	static_assert(std::is_default_constructible<mapped_type>::value, "V must be default constructible.");
 
-	static constexpr int bucket_size = sizeof(unsigned long) + sizeof(concurrent_map_bucket_data*);
+	using hash_type = typename std::conditional<sizeof(void*) == 4, std::uint32_t, std::uint64_t>::type;
+
+	static constexpr int bucket_size = sizeof(hash_type) + sizeof(concurrent_map_bucket_data*);
+
+	static_assert(sizeof(hash_type) == sizeof(concurrent_map_bucket_data*), "Sanity check error");
+	static_assert((cache_line % bucket_size) == 0, "cache_line is indivisible by bucket size.");
+
 	static constexpr int N = cache_line / bucket_size - 1;
+
+	static_assert(N > 2, "cache_line can't hold enough buckets");
+
 	static constexpr int depth_threshold = 1;
 	static constexpr float min_load_factor_for_resize = .5f;
 
-	static_assert((cache_line % bucket_size) == 0, "cache_line is indivisible by bucket size");
-	static_assert(N > 2, "cache_line can't hold enough buckets");
-
 	struct concurrent_map_virtual_bucket {
-		std::array<std::atomic<unsigned long>, N> hash;
+		std::array<std::atomic<hash_type>, N> hash;
 		std::array<std::atomic<concurrent_map_bucket_data*>, N> buckets;
 
 		std::atomic<concurrent_map_virtual_bucket*> next{ 0 };
@@ -137,11 +143,11 @@ private:
 	std::atomic<int> items{ 0 };
 
 	template <typename T>
-	unsigned long hash_function(T&& t) const { auto h = Hasher()(std::forward<T>(t)); return h ? h : 1; }
+	hash_type hash_function(T&& t) const { auto h = Hasher()(std::forward<T>(t)); return h ? h : 1; }
 
-	void copy_to_new_table(resize_data_guard_type &resize_guard, unsigned long hash, const key_type &key, const mapped_type &val) {
-		unsigned long mask = resize_guard->size - 1;
-		unsigned long i = hash & mask;
+	void copy_to_new_table(resize_data_guard_type &resize_guard, hash_type hash, const key_type &key, const mapped_type &val) {
+		hash_type mask = resize_guard->size - 1;
+		hash_type i = hash & mask;
 		auto &virtual_bucket = resize_guard->buckets[i];
 
 		insert_update_into_virtual_bucket(virtual_bucket, hash, key, .0f, false, 1, val);
@@ -176,7 +182,7 @@ private:
 	template <typename ... Ts>
 	void resize_with_pending_insert(hash_table_guard_type &old_table_guard,
 											   resize_data_guard_type &resize_guard,
-											   unsigned long hash,
+											   hash_type hash,
 											   const key_type &key,
 											   bool helper_only,
 											   bool delete_item,
@@ -194,8 +200,8 @@ private:
 			}
 		}
 
-		unsigned long mask = resize_guard->size - 1;
-		unsigned long i = hash & mask;
+		hash_type mask = resize_guard->size - 1;
+		hash_type i = hash & mask;
 		auto &virtual_bucket = resize_guard->buckets[i];
 		!delete_item ?
 			insert_update_into_virtual_bucket(virtual_bucket, hash, key, .0f, true, 1, std::forward<Ts>(val_args)...) :
@@ -228,7 +234,7 @@ private:
 		}
 	}
 
-	int find_hash_in_virtual_bucket(virtual_bucket_type *virtual_bucket, unsigned long hash) const {
+	int find_hash_in_virtual_bucket(virtual_bucket_type *virtual_bucket, hash_type hash) const {
 		for (int j = 0; j < N; ++j) {
 			auto h = virtual_bucket->hash[j].load(std::memory_order_relaxed);
 			if (h == hash)
@@ -237,7 +243,7 @@ private:
 		return -1;
 	}
 
-	bool remove_from_virtual_bucket(concurrent_map_virtual_bucket &virtual_bucket, unsigned long hash, const key_type &key) {
+	bool remove_from_virtual_bucket(concurrent_map_virtual_bucket &virtual_bucket, hash_type hash, const key_type &key) {
 		int pos = find_hash_in_virtual_bucket(&virtual_bucket, hash);
 		if (pos >= 0) {
 			auto bucket = virtual_bucket.buckets[pos].load();
@@ -255,17 +261,17 @@ private:
 
 	template <typename ... Ts>
 	bool insert_update_into_virtual_bucket(concurrent_map_virtual_bucket &virtual_bucket,
-													  unsigned long hash,
-													  const key_type &key,
-													  float load_factor,
-													  bool is_new_item_insert,
-													  int depth,
-													  Ts&&... val_args) {
+										   hash_type hash,
+										   const key_type &key,
+										   float load_factor,
+										   bool is_new_item_insert,
+										   int depth,
+										   Ts&&... val_args) {
 		bool request_resize = false;
 		for (int j = 0; j < N;) {
 			auto bucket_data = virtual_bucket.buckets[j].load();
 			if (!bucket_data) {
-				unsigned long old_hash = virtual_bucket.hash[j].load(std::memory_order_relaxed);
+				hash_type old_hash = virtual_bucket.hash[j].load(std::memory_order_relaxed);
 				if (virtual_bucket.hash[j].compare_exchange_strong(old_hash, hash, std::memory_order_acq_rel, std::memory_order_relaxed)) {
 					virtual_bucket.buckets[j].store(new concurrent_map_bucket_data(key, std::forward<Ts>(val_args)...), std::memory_order_release);
 					if (is_new_item_insert)
@@ -276,7 +282,7 @@ private:
 				continue;
 			}
 
-			unsigned long old_hash = virtual_bucket.hash[j].load();
+			hash_type old_hash = virtual_bucket.hash[j].load();
 			if (old_hash != hash || bucket_data->k != key) {
 				++j; continue;
 			}
@@ -319,11 +325,11 @@ public:
 
 	template <typename ... Ts>
 	void emplace(const key_type &key, Ts&&... val_args) {
-		unsigned long hash = hash_function(key);
+		hash_type hash = hash_function(key);
 
 		auto table_guard = hash_table.acquire();
-		unsigned long mask = table_guard->size - 1;
-		unsigned long i = hash & mask;
+		hash_type mask = table_guard->size - 1;
+		hash_type i = hash & mask;
 		auto &virtual_bucket = table_guard->buckets[i];
 
 		resize_data_guard_type resize_guard{ 0 };
@@ -342,11 +348,11 @@ public:
 	}
 
 	void remove(const key_type &key) {
-		unsigned long hash = hash_function(key);
+		hash_type hash = hash_function(key);
 
 		auto table_guard = hash_table.acquire();
-		unsigned long mask = table_guard->size - 1;
-		unsigned long i = hash & mask;
+		hash_type mask = table_guard->size - 1;
+		hash_type i = hash & mask;
 		remove_from_virtual_bucket(table_guard->buckets[i], hash, key);
 
 		auto resize_guard = table_guard->resize_ptr.acquire();
@@ -355,11 +361,11 @@ public:
 	}
 
 	value_data_guard_type try_get(const key_type &key) const {
-		unsigned long hash = hash_function(key);
+		hash_type hash = hash_function(key);
 
 		auto table_guard = hash_table.acquire();
-		unsigned long mask = table_guard->size - 1;
-		unsigned long i = hash & mask;
+		hash_type mask = table_guard->size - 1;
+		hash_type i = hash & mask;
 
 		auto *virtual_bucket = &table_guard->buckets[i];
 		for (;;) {

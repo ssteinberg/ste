@@ -11,6 +11,7 @@
 #include "buffer_usage.hpp"
 #include "mapped_buffer_object_unique_ptr.hpp"
 #include "buffer_object_allocator.hpp"
+#include "sparse_buffer_commitment_data.hpp"
 
 #include "range_lockable.hpp"
 
@@ -52,9 +53,13 @@ public:
 	using T = Type;
 
 	static constexpr bool dynamic_buffer = !!(access_usage & BufferUsage::BufferUsageDynamic);
+	static constexpr bool sparse_buffer = !!(access_usage & BufferUsage::BufferUsageSparse);
 	static constexpr bool map_read_allowed = !!(access_usage & BufferUsage::BufferUsageMapRead);
 	static constexpr bool map_write_allowed = !!(access_usage & BufferUsage::BufferUsageMapWrite);
 	static constexpr bool map_rw_allowed = map_read_allowed && map_write_allowed;
+
+	static_assert(!sparse_buffer || (!map_read_allowed && !map_write_allowed),
+				  "Sparse buffers can not be mapable.");
 
 private:
 	template <typename T2, BufferUsage::buffer_usage U2>
@@ -64,6 +69,7 @@ private:
 
 protected:
 	std::shared_ptr<typename mapped_buffer_object_unique_ptr<T, U>::mapped_buffer_data> mapped_ptr_data;
+	sparse_buffer_commitment_data<sparse_buffer> commitment_data;
 	std::size_t buffer_size;
 
 	using Base::bind;
@@ -117,11 +123,11 @@ public:
 	}
 
 	template <bool b = dynamic_buffer>
-	void upload(const T *data, std::enable_if_t<b>* = 0) {
+	void upload(const T *data, std::enable_if_t<b>* = nullptr) {
 		glNamedBufferSubData(Base::get_resource_id(), 0, buffer_size * sizeof(T), data);
 	}
 	template <bool b = dynamic_buffer>
-	void upload(int offset, std::size_t size, const T *data, std::enable_if_t<b>* = 0) {
+	void upload(int offset, std::size_t size, const T *data, std::enable_if_t<b>* = nullptr) {
 		glNamedBufferSubData(Base::get_resource_id(), offset * sizeof(T), size * sizeof(T), data);
 	}
 
@@ -162,25 +168,34 @@ public:
 
 	auto size() const { return buffer_size; }
 
-	void commit_range(int offset, std::size_t size) {
-		int ps = page_size();
-		int start_page = ps * (offset * sizeof(T) / ps);
-		int pages = ps * (((offset + size) * sizeof(T) + ps - 1) / ps) - start_page;
+	template <bool b = sparse_buffer>
+	void commit_range(int offset, std::size_t size, std::enable_if_t<b>* = nullptr) {
+		assert(size);
 
-		glNamedBufferPageCommitmentEXT(Base::get_resource_id(), start_page, pages, true);
+		std::size_t ps = page_size();
+		std::size_t start_page = ps * (offset * sizeof(T) / ps);
+		std::size_t pages = ps * (((offset + size) * sizeof(T) + ps - 1) / ps) - start_page;
+
+		if (commitment_data.commit({ start_page / ps, (pages + ps - 1) / ps }))
+			glNamedBufferPageCommitmentEXT(Base::get_resource_id(), start_page, pages, true);
 	}
-	void uncommit_range(int offset, std::size_t size) {
-		int ps = page_size();
-		int start_page = ps * (offset * sizeof(T) / ps);
-		int pages = ps * (((offset + size) * sizeof(T) + ps - 1) / ps) - start_page;
+	template <bool b = sparse_buffer>
+	void uncommit_range(int offset, std::size_t size, std::enable_if_t<b>* = nullptr) {
+		assert(size);
 
-		glNamedBufferPageCommitmentEXT(Base::get_resource_id(), start_page, pages, false);
+		std::size_t ps = page_size();
+		std::size_t start_page = ps * (offset * sizeof(T) / ps);
+		std::size_t pages = ps * (((offset + size) * sizeof(T) + ps - 1) / ps) - start_page;
+
+		if (commitment_data.uncommit({ start_page / ps, (pages + ps - 1) / ps }))
+			glNamedBufferPageCommitmentEXT(Base::get_resource_id(), start_page, pages, false);
 	}
 
-	static int page_size() {
+	static std::size_t page_size() {
 		int n;
 		glGetIntegerv(GL_SPARSE_BUFFER_PAGE_SIZE_ARB, &n);
-		return n;
+		assert(n>0);
+		return static_cast<std::size_t>(n);
 	}
 };
 

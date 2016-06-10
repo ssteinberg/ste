@@ -6,6 +6,7 @@
 #include "stdafx.hpp"
 
 #include "sop_vertex.hpp"
+#include "sop_edge.hpp"
 
 #include "profileable.hpp"
 
@@ -17,7 +18,7 @@
 #include <algorithm>
 #include <string>
 
-#include <boost/container/flat_set.hpp>
+#include "boost_flatset.hpp"
 
 namespace StE {
 namespace Graphics {

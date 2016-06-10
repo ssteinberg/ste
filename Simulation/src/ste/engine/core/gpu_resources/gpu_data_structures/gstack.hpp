@@ -34,7 +34,7 @@ protected:
 public:
 	gstack() : gstack(0, nullptr) {}
 	gstack(const std::vector<T> &data) : gstack(data.size(), &data[0]) {}
-	gstack(std::size_t size, const T *data) : len(data ? size : 0), buffer(pages * std::max(65536, buffer_type::page_size()) / sizeof(T)) {
+	gstack(std::size_t size, const T *data) : len(data ? size : 0), buffer(pages * std::max<std::size_t>(65536, buffer_type::page_size()) / sizeof(T)) {
 		if (data)
 			for (std::size_t i = 0; i < size; ++i)
 				push_back(data[i]);
@@ -91,10 +91,11 @@ public:
 			return;
 		}
 
-		// Create temporary buffer
-		ShaderStorageBuffer<T> temp(len - n - count);
-		buffer.copy_to(temp, n + count, 0, len - n - count);
-		temp.copy_to(buffer, 0, n, len - n - count);
+		// Copy tail to buffer end and then move to correct position
+		auto move_size = len - n - count;
+		buffer.commit_range(len, move_size);
+		buffer.copy_to(buffer, n + count, len, move_size);
+		buffer.copy_to(buffer, len, n, move_size);
 
 		len -= count;
 	}

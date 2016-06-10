@@ -6,8 +6,8 @@
 #include <vector>
 #include <array>
 #include <type_traits>
-#include <boost/container/flat_set.hpp>
-#include <boost/container/flat_map.hpp>
+#include "boost_flatset.hpp"
+#include "boost_flatmap.hpp"
 
 namespace StE {
 

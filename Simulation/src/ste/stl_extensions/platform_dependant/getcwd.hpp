@@ -12,8 +12,7 @@
 #define __get_cwd getcwd
 #endif
 
-#define BOOST_FILESYSTEM_NO_DEPRECATED 
-#include <boost/filesystem.hpp>
+#include "boost_filesystem.hpp"
 
 namespace StE {
 

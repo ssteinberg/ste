@@ -1,11 +1,12 @@
 
 #type compute
 #version 450
+#extension GL_ARB_bindless_texture : require
 
 layout(local_size_x = 32, local_size_y = 32) in;
 
-layout(binding = 11) uniform sampler2D depth_target;
-layout(binding = 12) uniform sampler2D downsampled_depth_target;
+layout(bindless_sampler) uniform sampler2D depth_target;
+layout(bindless_sampler) uniform sampler2D downsampled_depth_target;
 layout(r32f, binding = 4) restrict writeonly uniform image2D output_image;
 
 uniform int lod;

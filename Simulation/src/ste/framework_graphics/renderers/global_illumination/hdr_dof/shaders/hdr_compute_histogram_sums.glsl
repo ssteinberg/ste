@@ -20,7 +20,7 @@ layout(std430, binding = 2) restrict writeonly buffer hdr_bokeh_parameters_buffe
 	hdr_bokeh_parameters params;
 };
 
-layout(binding = 11) uniform sampler2D depth;
+layout(bindless_sampler) uniform sampler2D depth_texture;
 
 shared uint shared_data[bins];
 
@@ -41,7 +41,7 @@ void main() {
 	}
 
 	if (id == 0) {
-		float d = texelFetch(depth, textureSize(depth, 0) / 2, 0).x;
+		float d = texelFetch(depth_texture, textureSize(depth_texture, 0) / 2, 0).x;
 		float z_lin = unproject_depth(d) / 10000.f;
 
 		params.focus = z_lin;

@@ -13,6 +13,7 @@ GRTAGS
 GPATH
 *.vscode
 *.elf
+*.VC.db
 
 imgui.ini
 
@@ -73,6 +74,11 @@ dlldata.c
 *.pidb
 *.svclog
 *.scc
+*.opendb
+*.db
+*.tss
+
+/s4*
 
 # Chutzpah Test files
 _Chutzpah*
@@ -200,9 +206,8 @@ UpgradeLog*.htm
 # Microsoft Fakes
 FakesAssemblies/
 
-Simulation/third_party/packages/*
-Simulation/third_party/bin/
-Simulation/third_party/share/
+Simulation/third_party/*
+!Simulation/third_party/Makefile
 Simulation/bin/
 Simulation/Log/
 Simulation/My Amplifier XE Results - Simulation/

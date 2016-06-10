@@ -5,8 +5,7 @@
 
 #include "stdafx.hpp"
 
-#include <boost/archive/binary_iarchive.hpp>
-#include <boost/archive/binary_oarchive.hpp>
+#include "boost_binary_ioarchive.hpp"
 
 #include <memory>
 #include <string>

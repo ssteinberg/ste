@@ -3,12 +3,47 @@
 #include "deferred_composer.hpp"
 #include "GIRenderer.hpp"
 
-#include "Sampler.hpp"
 #include "Quad.hpp"
+
+#include "Sampler.hpp"
 
 #include "gl_current_context.hpp"
 
 using namespace StE::Graphics;
+
+deferred_composer::deferred_composer(const StEngineControl &ctx, GIRenderer *dr) : program(ctx, std::vector<std::string>{ "passthrough.vert", "deferred_compose.frag" }), dr(dr) {
+	vss_storage_connection = std::make_shared<connection<>>([&]() {
+		attach_handles();
+	});
+	shadows_storage_connection = std::make_shared<connection<>>([&]() {
+		attach_handles();
+	});
+	dr->vol_scat_storage.get_storage_modified_signal().connect(vss_storage_connection);
+	dr->shadows_storage.get_storage_modified_signal().connect(shadows_storage_connection);
+}
+
+void deferred_composer::attach_handles() const {
+	auto scattering_volume = dr->vol_scat_storage.get_volume_texture();
+	if (scattering_volume) {
+		auto scattering_volume_handle = scattering_volume->get_texture_handle(dr->vol_scat_storage.get_volume_sampler());
+		scattering_volume_handle.make_resident();
+		program.get().set_uniform("scattering_volume", scattering_volume_handle);
+	}
+
+	auto shadow_depth_maps = dr->shadows_storage.get_cubemaps();
+	if (shadow_depth_maps) {
+		auto shadow_depth_maps_handle = shadow_depth_maps->get_texture_handle(dr->shadows_storage.get_shadow_sampler());
+		shadow_depth_maps_handle.make_resident();
+		program.get().set_uniform("shadow_depth_maps", shadow_depth_maps_handle);
+	}
+
+	auto shadow_maps = dr->shadows_storage.get_cubemaps();
+	if (shadow_maps) {
+		auto shadow_maps_handle = shadow_maps->get_texture_handle(*Core::Sampler::SamplerLinearClamp());
+		shadow_maps_handle.make_resident();
+		program.get().set_uniform("shadow_maps", shadow_maps_handle);
+	}
+}
 
 void deferred_composer::set_context_state() const {
 	using namespace Core;
@@ -19,18 +54,11 @@ void deferred_composer::set_context_state() const {
 
 	dr->gbuffer.bind_gbuffer();
 	0_storage_idx = dr->scene->scene_properties().materials_storage().buffer();
+	1_storage_idx = dr->scene->scene_properties().material_layers_storage().buffer();
 
 	ls.bind_lights_buffer(2);
 
 	dr->lll_storage.bind_lll_buffer();
-
-	8_tex_unit = *dr->shadows_storage.get_cubemaps();
-	8_sampler_idx = dr->shadows_storage.get_shadow_sampler();
-	9_tex_unit = *dr->shadows_storage.get_cubemaps();
-	9_sampler_idx = *Sampler::SamplerLinearClamp();
-
-	10_tex_unit = *dr->vol_scat_storage.get_volume_texture();
-	10_sampler_idx = dr->vol_scat_storage.get_volume_sampler();
 
 	ScreenFillingQuad.vao()->bind();
 

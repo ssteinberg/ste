@@ -25,7 +25,7 @@
 #include <map>
 #include <type_traits>
 
-#include <boost/container/flat_map.hpp>
+#include "boost_flatmap.hpp"
 
 namespace StE {
 namespace Core {

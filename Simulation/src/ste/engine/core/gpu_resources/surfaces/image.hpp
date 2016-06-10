@@ -91,15 +91,15 @@ public:
 	core_resource_type resource_type() const override { return core_resource_type::ImageObject; }
 };
 
-template <core_resource_type type>
-class image : public image_layout_bindable<type>, virtual public RenderTargetGeneric {
+template <core_resource_type ImageType>
+class image : public image_layout_bindable<ImageType>, virtual public RenderTargetGeneric {
 public:
 	using size_type = glm::ivec2;
 
 private:
-	friend class image_container<type>;
+	friend class image_container<ImageType>;
 
-	using Base = image_layout_bindable<type>;
+	using Base = image_layout_bindable<ImageType>;
 
 public:
 	template <class A2>
@@ -115,17 +115,17 @@ public:
 	gli::format get_format() const override final { return Base::format; }
 	size_type get_image_size() const final override { return Base::size; }
 
-	image<type> with_format(gli::format format) const { return image(*this, Base::size, format, Base::access, Base::level, Base::layer); }
-	image<type> with_access(ImageAccessMode access) const { return image(*this, Base::size, Base::format, access, Base::level, Base::layer); }
+	image<ImageType> with_format(gli::format format) const { return image(*this, Base::size, format, Base::access, Base::level, Base::layer); }
+	image<ImageType> with_access(ImageAccessMode access) const { return image(*this, Base::size, Base::format, access, Base::level, Base::layer); }
 };
 
-template <core_resource_type type>
-class image_container : public image_layout_bindable<type> {
+template <core_resource_type ImageType>
+class image_container : public image_layout_bindable<ImageType> {
 public:
 	using size_type = glm::ivec2;
 
 private:
-	using Base = image_layout_bindable<type>;
+	using Base = image_layout_bindable<ImageType>;
 
 public:
 	template <class A2>
@@ -136,10 +136,10 @@ public:
 	image_container& operator=(image_container &&m) = default;
 	image_container& operator=(const image_container &c) = delete;
 
-	image<type> operator[](int layer) const { return image<type>(*this, Base::size, Base::format, Base::access, Base::level, layer); }
+	image<ImageType> operator[](int layer) const { return image<ImageType>(*this, Base::size, Base::format, Base::access, Base::level, layer); }
 
-	image_container<type> with_format(gli::format format) const { return image_container(*this, Base::size, format, Base::access, Base::level, Base::layers); }
-	image_container<type> with_access(ImageAccessMode access) const { return image_container(*this, Base::size, Base::format, access, Base::level, Base::layers); }
+	image_container<ImageType> with_format(gli::format format) const { return image_container(*this, Base::size, format, Base::access, Base::level, Base::layers); }
+	image_container<ImageType> with_access(ImageAccessMode access) const { return image_container(*this, Base::size, Base::format, access, Base::level, Base::layers); }
 };
 
 }

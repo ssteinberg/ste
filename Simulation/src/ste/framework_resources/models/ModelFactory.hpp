@@ -11,12 +11,12 @@
 #include "ObjectGroup.hpp"
 #include "SceneProperties.hpp"
 #include "Texture2D.hpp"
+#include "material.hpp"
+#include "material_layer.hpp"
 
 #include "StEngineControl.hpp"
-#include "material_storage.hpp"
 
-#define BOOST_FILESYSTEM_NO_DEPRECATED
-#include <boost/filesystem.hpp>
+#include "boost_filesystem.hpp"
 
 #include <memory>
 #include <unordered_map>
@@ -25,7 +25,10 @@
 #include <vector>
 #include <future>
 
+#pragma warning push
+#pragma warning(disable:663)
 #include <tiny_obj_loader.h>
+#pragma warning pop
 
 namespace StE {
 namespace Resource {
@@ -53,12 +56,13 @@ private:
 															 const boost::filesystem::path &dir,
 															 float normal_map_bias);
 	static StE::task_future<void> process_model_mesh(task_scheduler* sched,
-													 Graphics::material_storage *,
+													 Graphics::SceneProperties *,
 													 const tinyobj::shape_t &,
 													 Graphics::ObjectGroup *,
 													 materials_type &,
 													 texture_map_type &,
-									 				 std::vector<std::unique_ptr<Graphics::Material>> &loaded_materials,
+									 				 std::vector<std::unique_ptr<Graphics::material>> &loaded_materials,
+													 std::vector<std::unique_ptr<Graphics::material_layer>> &loaded_material_layers,
 									 				 std::vector<std::shared_ptr<Graphics::Object>> *loaded_objects);
 
 public:
@@ -67,7 +71,8 @@ public:
 												   Graphics::ObjectGroup *object_group,
 												   Graphics::SceneProperties *scene_properties,
 												   float normal_map_bias,
-												   std::vector<std::unique_ptr<Graphics::Material>> &loaded_materials,
+												   std::vector<std::unique_ptr<Graphics::material>> &loaded_materials,
+												   std::vector<std::unique_ptr<Graphics::material_layer>> &loaded_material_layers,
 												   std::vector<std::shared_ptr<Graphics::Object>> *loaded_objects = nullptr);
 };
 

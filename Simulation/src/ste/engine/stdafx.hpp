@@ -4,9 +4,20 @@
 #ifndef _PCH_
 #define _PCH_
 
+#pragma warning push
+#pragma warning(disable:869)
+
 #include <cstdint>
 
+#ifdef _MSC_VER
+#include "windows.hpp"
+#endif
 #include "gl.hpp"
+
+#pragma warning push
+#pragma warning(disable:186)
+#pragma warning(disable:3280)
+#pragma warning(disable:470)
 
 #define GLM_FORCE_AVX
 #define GLM_EXT_INCLUDED
@@ -23,6 +34,9 @@
 #include <gli/texture3d.hpp>
 #include <gli/texture_cube.hpp>
 #include <gli/texture_cube_array.hpp>
+
+#pragma warning pop
+
 
 #include <memory>
 #include <vector>

@@ -11,6 +11,55 @@
 
 using namespace StE::Graphics;
 
+GIRenderer::GIRenderer(const StEngineControl &ctx,
+					   const Camera *camera,
+					   Scene *scene)
+					   : ctx(ctx),
+					   	 gbuffer(ctx.get_backbuffer_size(), gbuffer_depth_target_levels()),
+						 camera(camera),
+						 scene(scene),
+
+						 lll_storage(ctx.get_backbuffer_size()),
+						 shadows_storage(ctx),
+						 vol_scat_storage(ctx.get_backbuffer_size()),
+
+						 composer(ctx, this),
+						 fxaa(ctx),
+						 hdr(ctx, &gbuffer),
+
+						 downsample_depth(ctx, &gbuffer),
+						 prepopulate_depth_dispatch(ctx, scene),
+						 scene_geo_cull(ctx, scene, &scene->scene_properties().lights_storage()),
+
+						 lll_gen_dispatch(ctx, &scene->scene_properties().lights_storage(), &lll_storage),
+						 light_preprocess(ctx, &scene->scene_properties().lights_storage()),
+
+						 shadows_projector(ctx, scene, &scene->scene_properties().lights_storage(), &shadows_storage),
+
+						 vol_scat_scatter(ctx, &vol_scat_storage, &lll_storage, &scene->scene_properties().lights_storage(), &shadows_storage),
+						 vol_scat_gather(ctx, &vol_scat_storage)
+{
+	resize_connection = std::make_shared<ResizeSignalConnectionType>([=](const glm::i32vec2 &size) {
+		this->transform_buffers.update_proj_data(this->ctx.get_fov(), this->ctx.get_projection_aspect(), this->ctx.get_near_clip(), size);
+
+		this->gbuffer.resize(size);
+		this->lll_storage.resize(size);
+		this->vol_scat_storage.resize(size);
+
+		this->lll_gen_dispatch.get().set_depth_map(gbuffer.get_downsampled_depth_target());
+		this->vol_scat_storage.set_depth_map(gbuffer.get_downsampled_depth_target());
+
+		this->rebuild_task_queue();
+	});
+	projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([this](float aspect, float fovy, float fnear) {
+		this->transform_buffers.update_proj_data(fovy, aspect, fnear, this->ctx.get_backbuffer_size());
+	});
+	ctx.signal_framebuffer_resize().connect(resize_connection);
+	ctx.signal_projection_change().connect(projection_change_connection);
+
+	this->transform_buffers.update_proj_data(ctx.get_fov(), ctx.get_projection_aspect(), ctx.get_near_clip(), this->ctx.get_backbuffer_size());
+}
+
 void GIRenderer::setup_tasks() {
 	mutate_gpu_task(hdr.get().get_task(), fxaa.get().get_input_fbo());
 	fxaa_task = make_gpu_task("fxaa", &fxaa.get(), &ctx.gl()->defaut_framebuffer());
@@ -64,54 +113,11 @@ void GIRenderer::setup_tasks() {
 	composer_task->add_dependency(scene_task);
 }
 
-GIRenderer::GIRenderer(const StEngineControl &ctx,
-					   const Camera *camera,
-					   Scene *scene)
-					   : ctx(ctx),
-					   	 gbuffer(ctx.get_backbuffer_size(), gbuffer_depth_target_levels()),
-						 camera(camera),
-						 scene(scene),
+void GIRenderer::init() {
+	setup_tasks();
+	rebuild_task_queue();
 
-						 lll_storage(ctx.get_backbuffer_size()),
-						 shadows_storage(ctx),
-						 vol_scat_storage(ctx.get_backbuffer_size()),
-
-						 composer(ctx, this),
-						 fxaa(ctx),
-						 hdr(ctx, &gbuffer),
-
-						 downsample_depth(ctx, &gbuffer),
-						 prepopulate_depth_dispatch(ctx, scene),
-						 scene_geo_cull(ctx, scene, &scene->scene_properties().lights_storage()),
-
-						 lll_gen_dispatch(ctx, &scene->scene_properties().lights_storage(), &lll_storage),
-						 light_preprocess(ctx, &scene->scene_properties().lights_storage()),
-
-						 shadows_projector(ctx, scene, &scene->scene_properties().lights_storage(), &shadows_storage),
-
-						 vol_scat_scatter(ctx, &vol_scat_storage, &lll_storage, &scene->scene_properties().lights_storage(), &shadows_storage),
-						 vol_scat_gather(ctx, &vol_scat_storage)
-{
-	resize_connection = std::make_shared<ResizeSignalConnectionType>([=](const glm::i32vec2 &size) {
-		this->transform_buffers.update_proj_data(this->ctx.get_fov(), this->ctx.get_projection_aspect(), this->ctx.get_near_clip(), size);
-
-		this->gbuffer.resize(size);
-		this->lll_storage.resize(size);
-		this->vol_scat_storage.resize(size);
-
-		this->lll_gen_dispatch.get().set_depth_map(gbuffer.get_downsampled_depth_target());
-		this->vol_scat_storage.set_depth_map(gbuffer.get_downsampled_depth_target());
-
-		this->rebuild_task_queue();
-	});
-	projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([this](float aspect, float fovy, float near) {
-		this->transform_buffers.update_proj_data(fovy, aspect, near, this->ctx.get_backbuffer_size());
-	});
-	ctx.signal_framebuffer_resize().connect(resize_connection);
-	ctx.signal_projection_change().connect(projection_change_connection);
-
-	this->transform_buffers.update_proj_data(ctx.get_fov(), ctx.get_projection_aspect(), ctx.get_near_clip(), this->ctx.get_backbuffer_size());
-
+	lll_gen_dispatch.get().set_depth_map(gbuffer.get_downsampled_depth_target());
 	vol_scat_storage.set_depth_map(gbuffer.get_downsampled_depth_target());
 	scene->set_target_gbuffer(&gbuffer);
 }

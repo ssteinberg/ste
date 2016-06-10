@@ -5,6 +5,8 @@
 
 #include "stdafx.hpp"
 
+#include "signal.hpp"
+
 #include "Texture2D.hpp"
 #include "Texture3D.hpp"
 #include "Sampler.hpp"
@@ -18,12 +20,12 @@ namespace Graphics {
 
 class volumetric_scattering_storage {
 private:
-	constexpr static int tile_size = linked_light_lists::lll_image_res_multiplier;
-	constexpr static int depth_tiles = 256;
+	static constexpr int tile_size = linked_light_lists::lll_image_res_multiplier;
+	static constexpr int depth_tiles = 256;
 
 private:
-	Core::Texture2D *depth_map;
-	std::unique_ptr<Core::Texture3D> volume;
+	Core::Texture2D *depth_map{ nullptr };
+	std::unique_ptr<Core::Texture3D> volume{ nullptr };
 
 	Core::Sampler volume_sampler;
 	Core::SamplerMipmapped depth_sampler;
@@ -31,6 +33,8 @@ private:
 	float scatter_phase_aniso_coefficient;
 
 	glm::ivec3 size;
+
+	signal<> storage_modified_signal;
 
 public:
 	volumetric_scattering_storage(glm::ivec2 size,
@@ -52,9 +56,14 @@ public:
 						   depth_tiles };
 
 		volume = std::make_unique<Core::Texture3D>(gli::format::FORMAT_RGBA16_SFLOAT_PACK16, size);
+
+		storage_modified_signal.emit();
 	}
 
-	void set_depth_map(Core::Texture2D *dm) { depth_map = dm; }
+	void set_depth_map(Core::Texture2D *dm) {
+		depth_map = dm;
+		storage_modified_signal.emit();
+	}
 
 	auto& get_size() const { return size; }
 
@@ -65,6 +74,8 @@ public:
 
 	auto& get_volume_sampler() const { return volume_sampler; }
 	auto& get_depth_sampler() const { return depth_sampler; }
+
+	auto& get_storage_modified_signal() const { return storage_modified_signal; }
 };
 
 }

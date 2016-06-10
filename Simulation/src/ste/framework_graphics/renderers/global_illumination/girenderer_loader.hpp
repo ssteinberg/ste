@@ -32,11 +32,8 @@ public:
 			object->light_preprocess.wait();
 			object->vol_scat_gather.wait();
 			object->vol_scat_scatter.wait();
-
-			object->lll_gen_dispatch.get().set_depth_map(object->gbuffer.get_downsampled_depth_target());
 		}).then_on_main_thread([object]() {
-			object->setup_tasks();
-			object->rebuild_task_queue();
+			object->init();
 		});
 	}
 };

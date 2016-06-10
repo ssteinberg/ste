@@ -52,7 +52,7 @@ class hdr_dof_postprocess {
 	friend class hdr_bokeh_blur_task;
 
 private:
-	constexpr static float vision_properties_max_lum = 10.f;
+	static constexpr float vision_properties_max_lum = 10.f;
 
 private:
 	using ResizeSignalConnectionType = StEngineControl::framebuffer_resize_signal_type::connection_type;
@@ -111,12 +111,14 @@ private:
 
 private:
 	std::shared_ptr<ResizeSignalConnectionType> resize_connection;
+	std::shared_ptr<connection<>> gbuffer_depth_target_connection;
 
 private:
 	std::vector<std::shared_ptr<const gpu_task>> create_sub_tasks();
 	hdr_bokeh_blur_task* create_dispatchable();
 
-	void setup_engine_connections();
+	void setup_connections();
+	void attach_handles() const;
 
 private:
 	hdr_dof_postprocess(const StEngineControl &ctx, const deferred_gbuffer *gbuffer);
@@ -155,6 +157,8 @@ public:
 		}).then_on_main_thread([object, &ctx]() {
 			auto vision_handle = object->hdr_vision_properties_texture->get_texture_handle(object->hdr_vision_properties_sampler);
 			vision_handle.make_resident();
+
+			object->attach_handles();
 
 			object->hdr_tonemap_coc.get().set_uniform("hdr_vision_properties_texture", vision_handle);
 			object->hdr_bloom_blurx.get().set_uniform("dir", glm::vec2{ 1.f, .0f });

@@ -32,10 +32,10 @@ class texture_layout_binding_type {};
 using texture_layout_binding = layout_binding<texture_layout_binding_type>;
 texture_layout_binding inline operator "" _tex_unit(unsigned long long int i) { return texture_layout_binding(i); }
 
-template <core_resource_type type>
+template <core_resource_type TextureType>
 class TextureBinder {
 private:
-	static constexpr GLenum gl_type() { return GL::gl_utils::translate_type(type); }
+	static constexpr GLenum gl_type() { return GL::gl_utils::translate_type(TextureType); }
 
 public:
 	static void bind(GenericResource::type id, const texture_layout_binding &sampler) {
@@ -46,22 +46,22 @@ public:
 	}
 };
 
-template <core_resource_type type>
-class texture : public bindable_resource<texture_immutable_storage_allocator<type>, TextureBinder<type>, texture_layout_binding>,
+template <core_resource_type TextureType>
+class texture : public bindable_resource<texture_immutable_storage_allocator<TextureType>, TextureBinder<TextureType>, texture_layout_binding>,
 				virtual public shader_layout_bindable_resource<texture_layout_binding_type> {
 private:
-	using Base = bindable_resource<texture_immutable_storage_allocator<type>, TextureBinder<type>, texture_layout_binding>;
+	using Base = bindable_resource<texture_immutable_storage_allocator<TextureType>, TextureBinder<TextureType>, texture_layout_binding>;
 
 public:
-	using size_type = typename texture_size_type<texture_dimensions<type>::dimensions>::type;
-	using image_size_type = typename texture_size_type<texture_dimensions<type>::dimensions>::type;
-	static constexpr core_resource_type T = type;
+	using size_type = typename texture_size_type<texture_dimensions<TextureType>::dimensions>::type;
+	using image_size_type = typename texture_size_type<texture_dimensions<TextureType>::dimensions>::type;
+	static constexpr core_resource_type T = TextureType;
 
 protected:
-	static constexpr GLenum gl_type() { return GL::gl_utils::translate_type(type); }
+	static constexpr GLenum gl_type() { return GL::gl_utils::translate_type(TextureType); }
 
 	int levels, samples;
-	typename texture_size_type<texture_dimensions<type>::dimensions>::type size;
+	typename texture_size_type<texture_dimensions<TextureType>::dimensions>::type size;
 	gli::format format;
 	gli::swizzles swizzle{ swizzles_rgba };
 
@@ -113,9 +113,9 @@ public:
 	void bind(const LayoutLocationType &sampler) const final override { Base::bind(sampler); };
 	void unbind(const LayoutLocationType &sampler) const final override { Base::unbind(sampler); };
 
-	constexpr int dimensions() const { return texture_dimensions<type>::dimensions; }
-	constexpr bool is_array_texture() const { return texture_is_array<type>::value; }
-	constexpr bool is_multisampled() const { return texture_is_multisampled<type>::value; }
+	constexpr int dimensions() const { return texture_dimensions<TextureType>::dimensions; }
+	constexpr bool is_array_texture() const { return texture_is_array<TextureType>::value; }
+	constexpr bool is_multisampled() const { return texture_is_multisampled<TextureType>::value; }
 
 	void clear(void *data, int level = 0) {
 		gli::gl::format glformat = GL::gl_utils::translate_format(format, swizzle);
@@ -129,20 +129,20 @@ public:
 	auto get_size() const { return size; }
 	auto get_image_size(int level) const {
 		image_size_type ret;
-		for (int i = 0; i < texture_layer_dimensions<type>::dimensions; ++i)
+		for (int i = 0; i < texture_layer_dimensions<TextureType>::dimensions; ++i)
 			ret[i] = size[i] >> level;
 		return ret;
 	}
 	auto get_image_size() const { return get_image_size(0); }
 	gli::format get_format() const { return format; }
-	int get_layers() const { return texture_is_array<type>::value ? this->size[texture_dimensions<type>::dimensions - 1] : 1; }
+	int get_layers() const { return texture_is_array<TextureType>::value ? this->size[texture_dimensions<TextureType>::dimensions - 1] : 1; }
 	bool is_compressed() const { return gli::is_compressed(format); }
 
 	std::size_t get_storage_size(int level) const {
 		std::size_t b = gli::block_size(format);
 		auto block_extend = gli::block_extent(format);
 		int i;
-		for (i = 0; i < texture_layer_dimensions<type>::dimensions; ++i) b *= std::max<decltype(size.x)>(1u, size[i] >> static_cast<decltype(size.x)>(level));
+		for (i = 0; i < texture_layer_dimensions<TextureType>::dimensions; ++i) b *= std::max<decltype(size.x)>(1u, size[i] >> static_cast<decltype(size.x)>(level));
 		for (; i < dimensions(); ++i) b *= size[i] / block_extend[i];
 		return b;
 	}
@@ -160,13 +160,13 @@ public:
 		return texture_handle(glGetTextureSamplerHandleARB(Base::get_resource_id(), sam_id));
 	}
 
-	core_resource_type resource_type() const override { return type; }
+	core_resource_type resource_type() const override { return TextureType; }
 };
 
-template <core_resource_type type>
-class texture_multisampled : public texture<type> {
+template <core_resource_type TextureType>
+class texture_multisampled : public texture<TextureType> {
 private:
-	using Base = texture<type>;
+	using Base = texture<TextureType>;
 
 protected:
 	texture_multisampled(gli::format format, const typename Base::size_type &size, int samples, const gli::swizzles &swizzle = swizzles_rgba) {
@@ -182,10 +182,10 @@ public:
 	int get_samples() const { return Base::samples; }
 };
 
-template <core_resource_type type>
-class texture_pixel_transferable : public texture<type> {
+template <core_resource_type TextureType>
+class texture_pixel_transferable : public texture<TextureType> {
 private:
-	using Base = texture<type>;
+	using Base = texture<TextureType>;
 
 protected:
 	using Base::texture;
@@ -222,10 +222,10 @@ public:
 	}
 };
 
-template <core_resource_type type>
-class texture_mipmapped : public texture_pixel_transferable<type> {
+template <core_resource_type TextureType>
+class texture_mipmapped : public texture_pixel_transferable<TextureType> {
 private:
-	using Base = texture_pixel_transferable<type>;
+	using Base = texture_pixel_transferable<TextureType>;
 
 protected:
 	texture_mipmapped() {}
@@ -248,9 +248,9 @@ public:
 		Base::unbind();
 	}
 
-	static int calculate_mipmap_max_level(const typename texture_size_type<texture_layer_dimensions<type>::dimensions>::type &size) {
+	static int calculate_mipmap_max_level(const typename texture_size_type<texture_layer_dimensions<TextureType>::dimensions>::type &size) {
 		int levels = 0;
-		for (int i = 0; i < texture_layer_dimensions<type>::dimensions; ++i) {
+		for (int i = 0; i < texture_layer_dimensions<TextureType>::dimensions; ++i) {
 			int l;
 			auto x = size[i];
 			for (l = 0; x >> l > 1; ++l);

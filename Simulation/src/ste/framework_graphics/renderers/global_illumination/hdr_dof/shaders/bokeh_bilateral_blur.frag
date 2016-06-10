@@ -17,7 +17,7 @@ layout(std430, binding = 2) restrict readonly buffer hdr_bokeh_parameters_buffer
 };
 
 layout(bindless_sampler) uniform sampler2D hdr;
-layout(binding = 11) uniform sampler2D depth_texture;
+layout(bindless_sampler) uniform sampler2D depth_texture;
 
 const int samples = 2;
 const int rings = 5;

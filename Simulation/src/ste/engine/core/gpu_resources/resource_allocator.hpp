@@ -16,6 +16,8 @@ namespace Core {
 
 class generic_resource_allocator {
 public:
+	virtual ~generic_resource_allocator() {}
+
 	virtual GenericResource::type allocate() = 0;
 	static void deallocate(GenericResource::type &id) { id = 0; }
 	static bool is_valid(GenericResource::type id) { return !!id; }

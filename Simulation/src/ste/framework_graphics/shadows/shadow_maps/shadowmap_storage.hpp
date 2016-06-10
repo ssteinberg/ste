@@ -6,6 +6,8 @@
 #include "stdafx.hpp"
 #include "StEngineControl.hpp"
 
+#include "signal.hpp"
+
 #include "FramebufferObject.hpp"
 #include "glsl_program.hpp"
 
@@ -18,8 +20,8 @@ namespace StE {
 namespace Graphics {
 
 class shadowmap_storage {
-	constexpr static unsigned default_map_size = 512;
-	constexpr static float shadow_proj_near_clip = 20.0f;
+	static constexpr unsigned default_map_size = 512;
+	static constexpr float shadow_proj_near_clip = 20.0f;
 
 private:
 	glm::uvec2 cube_size;
@@ -27,6 +29,8 @@ private:
 	Core::FramebufferObject shadow_depth_cube_map_fbo;
 
 	Core::Sampler shadow_depth_sampler;
+
+	signal<> storage_modified_signal;
 
 public:
 	shadowmap_storage(const StEngineControl &ctx,
@@ -42,12 +46,16 @@ public:
 	void set_count(std::size_t size) {
 		shadow_depth_cube_maps = std::make_unique<Core::TextureCubeMapArray>(gli::format::FORMAT_D32_SFLOAT_PACK32, glm::ivec3{ cube_size.x, cube_size.y, size * 6 });
 		shadow_depth_cube_map_fbo.depth_binding_point() = *shadow_depth_cube_maps;
+
+		storage_modified_signal.emit();
 	}
 	auto count() const { return shadow_depth_cube_maps->get_layers(); }
 
 	auto* get_fbo() const { return &shadow_depth_cube_map_fbo; }
 	auto* get_cubemaps() const { return shadow_depth_cube_maps.get(); }
 	auto& get_shadow_sampler() const { return shadow_depth_sampler; }
+
+	auto& get_storage_modified_signal() const { return storage_modified_signal; }
 };
 
 }

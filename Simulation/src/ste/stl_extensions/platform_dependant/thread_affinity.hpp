@@ -26,7 +26,7 @@ bool inline thread_set_affinity(std::thread *thread, const std::bitset<N> &mask)
 
 #ifdef _MSC_VER
 
-	DWORD m =0;
+	DWORD m = 0;
 	if (sizeof(DWORD) == sizeof(decltype(mask.to_ulong())))
 		m = mask.to_ulong();
 	else if (sizeof(DWORD) == sizeof(decltype(mask.to_ullong())))
@@ -34,7 +34,7 @@ bool inline thread_set_affinity(std::thread *thread, const std::bitset<N> &mask)
 	else
 		assert(false);
 
-	return SetThreadAffinityMask(handle, &m) != 0;
+	return SetThreadAffinityMask(handle, m) != 0;
 
 #elif defined _linux
 
