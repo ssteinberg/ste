@@ -56,8 +56,7 @@ public:
 
 	void update_scene() {
 		objects.update_dirty_buffers();
-		scene_props.lights_storage().update();
-		scene_props.materials_storage().update();
+		scene_props.update();
 	}
 
 	SceneProperties &scene_properties() { return scene_props; }

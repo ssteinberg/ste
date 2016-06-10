@@ -2,8 +2,11 @@
 #include "stdafx.hpp"
 #include "ModelFactory.hpp"
 
-#include "Material.hpp"
+#include "material.hpp"
 #include "mesh.hpp"
+
+#include "material_storage.hpp"
+#include "material_layer_storage.hpp"
 
 #include "SurfaceFactory.hpp"
 
@@ -17,12 +20,13 @@ using namespace StE::Graphics;
 using StE::Core::Texture2D;
 
 StE::task_future<void> ModelFactory::process_model_mesh(task_scheduler* sched,
-														Graphics::material_storage *matstorage,
+														Graphics::SceneProperties *scene_properties,
 														const tinyobj::shape_t &shape,
 														Graphics::ObjectGroup *object_group,
 														materials_type &materials,
 														texture_map_type &textures,
-									 					std::vector<std::unique_ptr<Graphics::Material>> &loaded_materials,
+									 					std::vector<std::unique_ptr<Graphics::material>> &loaded_materials,
+														std::vector<std::unique_ptr<Graphics::material_layer>> &loaded_material_layers,
 									 					std::vector<std::shared_ptr<Graphics::Object>> *loaded_objects) {
 	std::vector<ObjectVertexData> vbo_data;
 	std::vector<std::uint32_t> vbo_indices;
@@ -111,24 +115,25 @@ StE::task_future<void> ModelFactory::process_model_mesh(task_scheduler* sched,
 	auto anisotropy_it = material.unknown_parameter.find("anisotropy");
 	auto sheen_it = material.unknown_parameter.find("sheen");
 
-	return sched->schedule_now_on_main_thread([=, vbo_data = std::move(vbo_data), vbo_indices = std::move(vbo_indices), &loaded_materials, &textures, &material]() {
+	return sched->schedule_now_on_main_thread([=, vbo_data = std::move(vbo_data), vbo_indices = std::move(vbo_indices), &loaded_materials, &loaded_material_layers, &textures, &material]() {
 		std::shared_ptr<Core::Texture2D> diff_map = textures[material.diffuse_texname];
 		std::shared_ptr<Core::Texture2D> opacity_map = textures[material.alpha_texname];
 		std::shared_ptr<Core::Texture2D> specular_map = textures[material.specular_texname];
 		std::shared_ptr<Core::Texture2D> normalmap = textures[material.bump_texname];
+		
+		auto layer = scene_properties->material_layers_storage().allocate_layer();
+		auto mat = scene_properties->materials_storage().allocate_material(layer.get());
 
-		auto mat = matstorage->allocate_material();
-
-		if (diff_map != nullptr) mat->set_basecolor_map(diff_map);
+		if (diff_map != nullptr) layer->set_basecolor_map(diff_map);
 		if (specular_map != nullptr) mat->set_cavity_map(specular_map);
 		if (normalmap != nullptr) mat->set_normal_map(normalmap);
 		if (opacity_map != nullptr) mat->set_mask_map(opacity_map);
 
-		if (roughness_it != material.unknown_parameter.end()) mat->set_roughness(std::stof(roughness_it->second));
-		if (metallic_it != material.unknown_parameter.end()) mat->set_metallic(std::stof(metallic_it->second));
-		if (ior_it != material.unknown_parameter.end()) mat->set_index_of_refraction(std::stof(ior_it->second));
-		if (anisotropy_it != material.unknown_parameter.end()) mat->set_anisotropy(std::stof(anisotropy_it->second));
-		if (sheen_it != material.unknown_parameter.end()) mat->set_sheen(std::stof(sheen_it->second));
+		if (roughness_it != material.unknown_parameter.end()) layer->set_roughness(std::stof(roughness_it->second));
+		if (metallic_it != material.unknown_parameter.end()) layer->set_metallic(std::stof(metallic_it->second));
+		if (ior_it != material.unknown_parameter.end()) layer->set_index_of_refraction(std::stof(ior_it->second));
+		if (anisotropy_it != material.unknown_parameter.end()) layer->set_anisotropy(std::stof(anisotropy_it->second));
+		if (sheen_it != material.unknown_parameter.end()) layer->set_sheen(std::stof(sheen_it->second));
 
 		std::unique_ptr<Graphics::mesh<Graphics::mesh_subdivion_mode::Triangles>> m = std::make_unique<Graphics::mesh<Graphics::mesh_subdivion_mode::Triangles>>();
 		m->set_indices(std::move(vbo_indices));
@@ -140,6 +145,7 @@ StE::task_future<void> ModelFactory::process_model_mesh(task_scheduler* sched,
 		object_group->add_object(obj);
 
 		loaded_materials.push_back(std::move(mat));
+		loaded_material_layers.push_back(std::move(layer));
 		if (loaded_objects) loaded_objects->push_back(obj);
 	});
 }
@@ -222,9 +228,10 @@ StE::task_future<void> ModelFactory::load_model_async(const StEngineControl &ctx
 													  ObjectGroup *object_group,
 													  Graphics::SceneProperties *scene_properties,
 													  float normal_map_bias,
-													  std::vector<std::unique_ptr<Graphics::Material>> &loaded_materials,
+													  std::vector<std::unique_ptr<Graphics::material>> &loaded_materials,
+													  std::vector<std::unique_ptr<Graphics::material_layer>> &loaded_material_layers,
 													  std::vector<std::shared_ptr<Graphics::Object>> *loaded_objects) {
-	return ctx.scheduler().schedule_now([=, &loaded_materials, &ctx]() {
+	return ctx.scheduler().schedule_now([=, &loaded_materials, &loaded_material_layers, &ctx]() {
 		std::unique_ptr<texture_map_type> textures = std::make_unique<texture_map_type>();
 
 		auto path_string = file_path.string();
@@ -250,12 +257,13 @@ StE::task_future<void> ModelFactory::load_model_async(const StEngineControl &ctx
 			std::vector<StE::task_future<void>> futures;
 			for (auto &shape : shapes)
 				futures.push_back(process_model_mesh(&ctx.scheduler(),
-													 &scene_properties->materials_storage(),
+													 scene_properties,
 													 shape,
 													 object_group,
 													 materials,
 													 *textures,
 													 loaded_materials,
+													 loaded_material_layers,
 													 loaded_objects));
 
 			for (auto &f : futures)

@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "stdafx.hpp"
 #include "material_storage.hpp"
+#include "material_layer_storage.hpp"
 #include "light_storage.hpp"
 
 namespace StE {
@@ -13,13 +13,22 @@ namespace Graphics {
 class SceneProperties {
 private:
 	material_storage materials;
+	material_layer_storage material_layers;
 	light_storage lights;
 
 public:
-	material_storage& materials_storage() { return materials; }
-	const material_storage& materials_storage() const { return materials; }
-	light_storage& lights_storage() { return lights; }
-	const light_storage& lights_storage() const { return lights; }
+	auto& materials_storage() { return materials; }
+	auto& materials_storage() const { return materials; }
+	auto& material_layers_storage() { return material_layers; }
+	auto& material_layers_storage() const { return material_layers; }
+	auto& lights_storage() { return lights; }
+	auto& lights_storage() const { return lights; }
+
+	void update() {
+		materials.update();
+		material_layers.update();
+		lights.update();
+	}
 };
 
 }

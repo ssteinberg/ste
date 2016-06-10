@@ -6,103 +6,91 @@
 struct material_texture_descriptor {
 	uint64_t tex_handler;
 };
+
 struct material_descriptor {
-	material_texture_descriptor basecolor_map;
 	material_texture_descriptor cavity_map;
 	material_texture_descriptor normal_map;
 	material_texture_descriptor mask_map;
+	material_texture_descriptor _unused;
 
 	vec3 emission;
+
+	uint32_t head_layer;
+};
+
+struct material_layer_descriptor {
+	material_texture_descriptor basecolor_map;
+	
+	float thickness;
+
 	float roughness;
 	float anisotropy_ratio;
 	float metallic;
-	float F0;
-	float sheen;
+	float ior;
+
+	float sheen_ratio;
+	float sheen_power;
+
+	uint32_t next_layer;
+
+	float _unused[2];
 };
 
 const int material_none = 0xFFFFFFFF;
+const float material_cavity_min = .2f;
+const float material_cavity_max = 1.f;
+const float material_alpha_discard_threshold = .5f;
+
+float material_convert_ior_to_F0(float ior1, float ior2) {
+	float t = (ior1 - ior2) / (ior1 + ior2);
+	return t * t;
+} 
 
 vec3 material_emission(material_descriptor md) {
 	return md.emission.rgb;
 }
 
-vec3 material_base_color(material_descriptor md, vec2 uv, vec2 duvdx, vec2 duvdy) {
-	return md.basecolor_map.tex_handler>0 ? textureGrad(sampler2D(md.basecolor_map.tex_handler), uv, duvdx, duvdy).rgb : vec3(1.f);
+vec3 material_layer_base_color(material_layer_descriptor layer, vec2 uv, vec2 duvdx, vec2 duvdy) {
+	if (layer.basecolor_map.tex_handler > 0)
+		return textureGrad(sampler2D(layer.basecolor_map.tex_handler), uv, duvdx, duvdy).rgb;
+	return vec3(1.f);
 }
-vec3 material_base_color(material_descriptor md, vec2 uv) {
-	return md.basecolor_map.tex_handler>0 ? texture(sampler2D(md.basecolor_map.tex_handler), uv).rgb : vec3(1.f);
+vec3 material_layer_base_color(material_layer_descriptor layer, vec2 uv) {
+	if (layer.basecolor_map.tex_handler > 0)
+		return texture(sampler2D(layer.basecolor_map.tex_handler), uv).rgb;
+	return vec3(1.f);
 }
 
 float material_cavity(material_descriptor md, vec2 uv, vec2 duvdx, vec2 duvdy) {
-	return md.cavity_map.tex_handler>0 ? textureGrad(sampler2D(md.cavity_map.tex_handler), uv, duvdx, duvdy).x : 1.f;
+	if (md.cavity_map.tex_handler > 0)
+		return mix(material_cavity_min, material_cavity_max, textureGrad(sampler2D(md.cavity_map.tex_handler), uv, duvdx, duvdx).x);
+	return 1.f;
 }
 float material_cavity(material_descriptor md, vec2 uv) {
-	return md.cavity_map.tex_handler>0 ? texture(sampler2D(md.cavity_map.tex_handler), uv).x : 1.f;
+	if (md.cavity_map.tex_handler > 0)
+		return mix(material_cavity_min, material_cavity_max, texture(sampler2D(md.cavity_map.tex_handler), uv).x);
+	return 1.f;
 }
 
 bool material_is_masked(material_descriptor md, vec2 uv, vec2 duvdx, vec2 duvdy) {
-	return md.mask_map.tex_handler>0 ? textureGrad(sampler2D(md.mask_map.tex_handler), uv, duvdx, duvdy).x < .5f : false;
+	if (md.mask_map.tex_handler > 0)
+		return textureGrad(sampler2D(md.mask_map.tex_handler), uv, duvdx, duvdy).x < material_alpha_discard_threshold;
+	return false;
 }
 bool material_is_masked(material_descriptor md, vec2 uv) {
-	return md.mask_map.tex_handler>0 ? texture(sampler2D(md.mask_map.tex_handler), uv).x < .5f : false;
+	if (md.mask_map.tex_handler > 0)
+		return texture(sampler2D(md.mask_map.tex_handler), uv).x < material_alpha_discard_threshold;
+	return false;
 }
 
-void normal_map(material_descriptor md, vec2 uv, vec2 duvdx, vec2 duvdy, inout vec3 n, inout vec3 t, inout vec3 b, inout vec3 P) {
+void normal_map(material_descriptor md, vec2 uv, vec2 duvdx, vec2 duvdy, inout vec3 n, inout vec3 t, inout vec3 b) {
 	if (md.normal_map.tex_handler > 0) {
-		vec3 nm = textureGrad(sampler2D(md.normal_map.tex_handler), uv, duvdx, duvdy).xyz;
 		mat3 tbn = mat3(t, b, n);
-		n = tbn * normalize(vec3(nm));
+
+		vec3 nm = textureGrad(sampler2D(md.normal_map.tex_handler), uv, duvdx, duvdy).xyz;
+		n = tbn * normalize(nm);
 
 		b = cross(t, n);
 		t = cross(n, b);
 	}
-}
-
-vec3 material_evaluate_reflection(material_descriptor md,
-								  vec3 n,
-								  vec3 t,
-								  vec3 b,
-								  vec3 v,
-								  vec3 l,
-								  vec3 base_color,
-								  float cavity,
-								  vec3 irradiance) {
-	vec3 h = normalize(v + l);
-
-	float roughness = md.roughness;
-	float metallic = md.metallic;
-	float F0 = md.F0;
-	float anisotropy_ratio = md.anisotropy_ratio;
-	float sheen = md.sheen * 4.f;
-
-	vec3 specular_tint = vec3(1);
-	vec3 sheen_tint = vec3(1);
-
-	vec3 c_spec = F0 * mix(specular_tint, base_color, metallic);
-
-	irradiance *= mix(.2f, 1.f, cavity);
-
-	vec3 S;
-	if (anisotropy_ratio != 1.0f) {
-		float roughness_x = roughness * anisotropy_ratio;
-		float roughness_y = roughness / anisotropy_ratio;
-
-		S = cook_torrance_ansi_brdf(n, t, b,
-									v, l, h,
-									roughness_x,
-									roughness_y,
-									c_spec);
-	} else {
-		S = cook_torrance_iso_brdf(n, v, l, h,
-								   roughness,
-								   c_spec);
-	}
-
-	vec3 D = base_color * disney_diffuse_brdf(n, v, l, h,
-											  roughness);
-
-	vec3 c_sheen = fresnel_schlick(dot(l,h)) * sheen_tint * sheen;
-
-	vec3 brdf = S + (1.f - metallic) * (D + c_sheen);
-	return brdf * irradiance * dot(n, l);
 }

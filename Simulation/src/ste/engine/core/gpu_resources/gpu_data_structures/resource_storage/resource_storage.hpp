@@ -114,7 +114,7 @@ public:
 	/**
 	*	@brief	Get physical index of resource's slot in storage
 	*/
-	int index_of(const resource_type *res) const { return this->index_of_with_identifier(res->resource_storage_identifier); }
+	int index_of(const resource_type *res) const override final { return this->index_of_with_identifier(res->resource_storage_identifier); }
 
 	/**
 	*	@brief	Get SSBO
