@@ -102,9 +102,6 @@
     <ClCompile Include="Simulation\src\ste\framework_graphics\light\preprocessor\stages\light_preprocess_cull_shadows.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\material\Material.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_graphics\mesh\Quad.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -226,6 +223,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_graphics\material\layer\material_layer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Simulation\src\ste\framework_graphics\material\material.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -603,9 +603,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\light\preprocessor\stages\light_preprocess_cull_shadows.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\material\Material.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\material\material_descriptor.hpp">
@@ -1034,8 +1031,14 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\material\layer\material_layer_storage.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\material\material.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Simulation\src\ste\framework_graphics\material\shaders\material_evaluate.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\material\shaders\material.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\deferred_composer\shaders\deferred_compose.frag" />
+    <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\shaders\girenderer_transform_buffer.glsl" />
   </ItemGroup>
 </Project>

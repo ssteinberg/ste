@@ -21,8 +21,8 @@ struct material_layer_descriptor {
 	float metallic{ .0f };
 	float ior{ 1.5f };
 
-	float sheen{ .0f };
-	float sheen_power{ .0f };
+	float sheen_ratio{ .0f };
+	float sheen_power{ 5.f };
 
 	std::uint32_t next_layer_id{ material_layer_none };
 

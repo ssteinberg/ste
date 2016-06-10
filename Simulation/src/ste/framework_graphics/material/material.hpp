@@ -16,7 +16,6 @@
 #include "RGB.hpp"
 
 #include <memory>
-#include <functional>
 
 namespace StE {
 namespace Graphics {
@@ -117,24 +116,11 @@ public:
 	*
 	*	Materials are composed of variable thickness layers, see material_layer for more information about material layer parameters.
 	*	Layers are stacked top to bottom (base) layer using a single linked list. This method set the id of the top layer, to link additional layers
-	*	consult the set_next_layer method of material_layer. The layer which has no further layer linked is the base layer.
+	*	consult the set_next_layer method of material_layer. The layer which has no further linked layer is the base layer.
 	*
 	* 	@param layer	material layer
 	*/
-	void set_layer(material_layer *layer) {
-		int layerid = material_layer_none;
-		if (layer != nullptr) {
-			auto id = layer->resource_index_in_storage();
-			assert(id >= 0);
-			if (id >= 0)
-				layerid = id;
-		}
-
-		descriptor.layer_id = layerid;
-		head_layer = layerid == material_layer_none ? nullptr : layer;
-		
-		Base::notify();
-	}
+	void set_layer(material_layer *layer);
 
 	auto *get_cavity_map() const { return cavity_map.get(); }
 	auto *get_normal_map() const { return normal_map.get(); }

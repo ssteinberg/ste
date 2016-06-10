@@ -23,6 +23,12 @@ public:
 	auto& material_layers_storage() const { return material_layers; }
 	auto& lights_storage() { return lights; }
 	auto& lights_storage() const { return lights; }
+
+	void update() {
+		materials.update();
+		material_layers.update();
+		lights.update();
+	}
 };
 
 }

@@ -85,7 +85,6 @@ auto create_light_object(StE::Graphics::Scene *scene, const glm::vec3 &light_pos
 	auto mat = scene->scene_properties().materials_storage().allocate_material(layer.get());
 	layer->set_basecolor_map(std::make_unique<StE::Core::Texture2D>(light_color_tex, false));
 	mat->set_emission(c * light->get_luminance());
-	mat->set_layer(layer.get());
 
 	light_obj->set_material(mat.get());
 
@@ -274,8 +273,8 @@ int main()
 	auto ball_model_transform = glm::translate(glm::mat4(), glm::vec3{ .0f, 100.f, .0f });
 	ball->set_model_transform(glm::mat4x3(ball_model_transform));
 	
-	auto mat = std::move(ball_materials.back());
-	auto layer = std::move(ball_layers.back());
+	auto mat = std::move(*ball_materials.begin());
+	auto layer = std::move(*ball_layers.begin());
 	gli::texture2d base_color_tex{ gli::format::FORMAT_RGB8_UNORM_PACK8, { 1, 1 }, 1 };
 	*reinterpret_cast<glm::u8vec3*>(base_color_tex.data()) = glm::u8vec3(255);
 	layer->set_basecolor_map(std::make_unique<StE::Core::Texture2D>(base_color_tex, false));
@@ -328,10 +327,10 @@ int main()
 	ctx.set_renderer(&renderer.get());
 
 	auto footer_text = text_manager.get().create_renderer();
-	auto footer_text_task = make_gpu_task("footer_text", footer_text.get(), nullptr);
+	auto footer_text_task = StE::Graphics::make_gpu_task("footer_text", footer_text.get(), nullptr);
 
 	renderer.get().add_gui_task(footer_text_task);
-	renderer.get().add_gui_task(make_gpu_task("debug_gui", debug_gui_dispatchable.get(), nullptr));
+	renderer.get().add_gui_task(StE::Graphics::make_gpu_task("debug_gui", debug_gui_dispatchable.get(), nullptr));
 
 	glm::ivec2 last_pointer_pos;
 	float time = 0;

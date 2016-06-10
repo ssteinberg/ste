@@ -69,7 +69,7 @@ vec3 deferred_shade_fragment(g_buffer_element frag) {
 	vec3 n = gbuffer_parse_normal(frag);
 	vec3 t = gbuffer_parse_tangent(frag);
 	vec3 b = cross(t, n);
-	normal_map(md, uv, duvdx, duvdy, n, t, b, position);
+	normal_map(md, uv, duvdx, duvdy, n, t, b);
 
 	uint32_t head_layer = md.head_layer;
 	float cavity = material_cavity(md, uv, duvdx, duvdy);
@@ -93,7 +93,7 @@ vec3 deferred_shade_fragment(g_buffer_element frag) {
 				continue;
 
 			float light_effective_range = ld.effective_range;
-			float dist2 = dot(incident,incident);
+			float dist2 = dot(incident, incident);
 			if (dist2 >= light_effective_range*light_effective_range)
 				continue;
 
@@ -104,7 +104,7 @@ vec3 deferred_shade_fragment(g_buffer_element frag) {
 								uint(lll_parse_ll_idx(lll_p)),
 								shadow_v,
 								l_radius * 50.f);
-			if (shdw<= .0f)
+			if (shdw <= .0f)
 				continue;
 
 			float dist = sqrt(dist2);

@@ -135,8 +135,6 @@ StE::task_future<void> ModelFactory::process_model_mesh(task_scheduler* sched,
 		if (anisotropy_it != material.unknown_parameter.end()) layer->set_anisotropy(std::stof(anisotropy_it->second));
 		if (sheen_it != material.unknown_parameter.end()) layer->set_sheen(std::stof(sheen_it->second));
 
-		mat->set_layer(layer.get());
-
 		std::unique_ptr<Graphics::mesh<Graphics::mesh_subdivion_mode::Triangles>> m = std::make_unique<Graphics::mesh<Graphics::mesh_subdivion_mode::Triangles>>();
 		m->set_indices(std::move(vbo_indices));
 		m->set_vertices(std::move(vbo_data));

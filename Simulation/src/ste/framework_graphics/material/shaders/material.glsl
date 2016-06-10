@@ -28,7 +28,7 @@ struct material_layer_descriptor {
 	float metallic;
 	float ior;
 
-	float sheen;
+	float sheen_ratio;
 	float sheen_power;
 
 	uint32_t next_layer;
@@ -81,4 +81,16 @@ bool material_is_masked(material_descriptor md, vec2 uv) {
 	if (md.mask_map.tex_handler > 0)
 		return texture(sampler2D(md.mask_map.tex_handler), uv).x < material_alpha_discard_threshold;
 	return false;
+}
+
+void normal_map(material_descriptor md, vec2 uv, vec2 duvdx, vec2 duvdy, inout vec3 n, inout vec3 t, inout vec3 b) {
+	if (md.normal_map.tex_handler > 0) {
+		mat3 tbn = mat3(t, b, n);
+
+		vec3 nm = textureGrad(sampler2D(md.normal_map.tex_handler), uv, duvdx, duvdy).xyz;
+		n = tbn * normalize(nm);
+
+		b = cross(t, n);
+		t = cross(n, b);
+	}
 }

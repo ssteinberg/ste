@@ -11,10 +11,7 @@
 #include "Texture2D.hpp"
 #include "Sampler.hpp"
 
-#include "RGB.hpp"
-
 #include <memory>
-#include <type_traits>
 
 namespace StE {
 namespace Graphics {
@@ -30,6 +27,8 @@ private:
 
 	std::shared_ptr<Core::Texture2D> basecolor_map{ nullptr };
 	float anisotropy{ .0f };
+	float sheen{ .0f };
+	float sheen_power{ .0f };
 
 	material_layer *next_layer{ nullptr };
 
@@ -51,6 +50,20 @@ public:
 	*/
 	static float convert_anisotropy_to_ratio(float ansio) {
 		return ansio != .0f ? glm::sqrt(1.f - ansio * .9f) : 1.f;
+	}
+	
+	/**
+	*	@brief	Convert normalized sheen value to sheen ratio
+	*/
+	static float convert_sheen_to_sheen_ratio(float s) {
+		return s * 4;
+	}
+	
+	/**
+	*	@brief	Convert normalized sheen power value to sheen power parameter
+	*/
+	static float convert_sheen_power(float s) {
+		return glm::mix(5.f, 2.f, s);
 	}
 
 public:
@@ -128,7 +141,8 @@ public:
 	* 	@param s	Sheen value	- range: [0,1]
 	*/
 	void set_sheen(float s) {
-		descriptor.sheen = s;
+		sheen = s;
+		descriptor.sheen_ratio = convert_sheen_to_sheen_ratio(s);
 		Base::notify();
 	}
 
@@ -140,7 +154,8 @@ public:
 	* 	@param s	Sheen power value	- range: [0,1]
 	*/
 	void set_sheen_power(float sp) {
-		descriptor.sheen_power = sp;
+		sheen_power = sp;
+		descriptor.sheen_power = convert_sheen_power(sp);
 		Base::notify();
 	}
 	
@@ -172,8 +187,8 @@ public:
 	float get_anisotropy() const { return anisotropy; }
 	float get_metallic() const { return descriptor.metallic; }
 	float get_index_of_refraction() const { return descriptor.ior; }
-	float get_sheen() const { return descriptor.sheen; }
-	float get_sheen_power() const { return descriptor.sheen_power; }
+	float get_sheen() const { return sheen; }
+	float get_sheen_power() const { return sheen_power; }
 
 	auto *get_next_layer() const { return next_layer; }
 
