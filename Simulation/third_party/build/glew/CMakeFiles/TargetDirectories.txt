@@ -1,0 +1,7 @@
+C:/src/git/StE/Simulation/third_party/build/glew/CMakeFiles/glewinfo.dir
+C:/src/git/StE/Simulation/third_party/build/glew/CMakeFiles/glew.dir
+C:/src/git/StE/Simulation/third_party/build/glew/CMakeFiles/glew_s.dir
+C:/src/git/StE/Simulation/third_party/build/glew/CMakeFiles/visualinfo.dir
+C:/src/git/StE/Simulation/third_party/build/glew/CMakeFiles/INSTALL.dir
+C:/src/git/StE/Simulation/third_party/build/glew/CMakeFiles/ALL_BUILD.dir
+C:/src/git/StE/Simulation/third_party/build/glew/CMakeFiles/ZERO_CHECK.dir
