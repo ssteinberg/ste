@@ -1,9 +1,6 @@
 [submodule "Simulation/third_party/packages/zlib"]
 	path = Simulation/third_party/packages/zlib
 	url = https://github.com/madler/zlib.git
-[submodule "Simulation/third_party/packages/glew"]
-	path = Simulation/third_party/packages/glew
-	url = https://github.com/nigels-com/glew.git
 [submodule "Simulation/third_party/packages/glfw"]
 	path = Simulation/third_party/packages/glfw
 	url = https://github.com/glfw/glfw.git
