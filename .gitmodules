@@ -29,3 +29,6 @@
 [submodule "Simulation/third_party/packages/freetype2"]
 	path = Simulation/third_party/packages/freetype2
 	url = http://git.savannah.gnu.org/r/freetype/freetype2.git
+[submodule "Simulation/third_party/packages/libtga"]
+	path = Simulation/third_party/packages/libtga
+	url = https://github.com/tommylutz/libtga
