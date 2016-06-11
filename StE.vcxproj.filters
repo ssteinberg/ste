@@ -1046,5 +1046,14 @@
     <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\deferred_gbuffer\shaders\gbuffer.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\deferred_gbuffer\shaders\gbuffer_load.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\deferred_gbuffer\shaders\gbuffer_store.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\shaders\bokeh_bilateral_blur.frag" />
+    <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\shaders\hdr_bloom_blur_x.frag" />
+    <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\shaders\hdr_bloom_blur_y.frag" />
+    <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\shaders\hdr_blur.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\shaders\hdr_common.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\shaders\hdr_compute_histogram_sums.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\shaders\hdr_compute_minmax.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\shaders\hdr_create_histogram.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\shaders\hdr_tonemap_coc.frag" />
   </ItemGroup>
 </Project>
