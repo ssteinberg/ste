@@ -207,6 +207,8 @@ UpgradeLog*.htm
 # Microsoft Fakes
 FakesAssemblies/
 
+!Simulation/third_party/build/
+Simulation/third_party/build/work/
 Simulation/bin/
 Simulation/Log/
 Simulation/My Amplifier XE Results - Simulation/

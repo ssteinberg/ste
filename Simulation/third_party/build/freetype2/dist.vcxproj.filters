@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\CMakeLists.txt" />
+    <CustomBuild Include="C:\src\git\StE\Simulation\third_party\build\freetype2\CMakeFiles\e45e4f97ee3744597f37e9e01e603bf1\dist.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\src\git\StE\Simulation\third_party\build\freetype2\CMakeFiles\dist" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{DD5C726F-A206-3C93-B061-D81D2F9E71F1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
