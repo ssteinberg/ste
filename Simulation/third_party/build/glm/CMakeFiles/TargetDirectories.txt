@@ -1,0 +1,16 @@
+C:/src/git/StE/Simulation/third_party/build/glm/CMakeFiles/RUN_TESTS.dir
+C:/src/git/StE/Simulation/third_party/build/glm/CMakeFiles/INSTALL.dir
+C:/src/git/StE/Simulation/third_party/build/glm/CMakeFiles/ALL_BUILD.dir
+C:/src/git/StE/Simulation/third_party/build/glm/CMakeFiles/ZERO_CHECK.dir
+C:/src/git/StE/Simulation/third_party/build/glm/glm/CMakeFiles/RUN_TESTS.dir
+C:/src/git/StE/Simulation/third_party/build/glm/glm/CMakeFiles/INSTALL.dir
+C:/src/git/StE/Simulation/third_party/build/glm/test/CMakeFiles/RUN_TESTS.dir
+C:/src/git/StE/Simulation/third_party/build/glm/test/CMakeFiles/INSTALL.dir
+C:/src/git/StE/Simulation/third_party/build/glm/test/bug/CMakeFiles/RUN_TESTS.dir
+C:/src/git/StE/Simulation/third_party/build/glm/test/bug/CMakeFiles/INSTALL.dir
+C:/src/git/StE/Simulation/third_party/build/glm/test/core/CMakeFiles/RUN_TESTS.dir
+C:/src/git/StE/Simulation/third_party/build/glm/test/core/CMakeFiles/INSTALL.dir
+C:/src/git/StE/Simulation/third_party/build/glm/test/gtc/CMakeFiles/RUN_TESTS.dir
+C:/src/git/StE/Simulation/third_party/build/glm/test/gtc/CMakeFiles/INSTALL.dir
+C:/src/git/StE/Simulation/third_party/build/glm/test/gtx/CMakeFiles/RUN_TESTS.dir
+C:/src/git/StE/Simulation/third_party/build/glm/test/gtx/CMakeFiles/INSTALL.dir

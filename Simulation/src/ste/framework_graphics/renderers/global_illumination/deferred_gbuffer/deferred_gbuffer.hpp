@@ -28,7 +28,7 @@ private:
 	};
 
 	static constexpr Core::BufferUsage::buffer_usage usage = static_cast<Core::BufferUsage::buffer_usage>(Core::BufferUsage::BufferUsageSparse);
-	static constexpr std::size_t virt_size = 2147483648;
+	static constexpr std::size_t virt_size = 2147483648 / 2;
 
 	using gbuffer_type = Core::ShaderStorageBuffer<g_buffer_element, usage>;
 

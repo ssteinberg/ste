@@ -1,0 +1,285 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|Win32">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|Win32">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGUID>{057D8013-EFDF-3C16-ABA7-65137331E358}</ProjectGUID>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>Win32</Platform>
+    <ProjectName>glew_s</ProjectName>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\src\git\StE\Simulation\third_party\build\glew\lib\Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\work\glew_s.dir\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">libglew32d</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\src\git\StE\Simulation\third_party\build\glew\lib\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\work\glew_s.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">libglew32</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">C:\src\git\StE\Simulation\third_party\build\glew\lib\MinSizeRel\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">glew_s.dir\MinSizeRel\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">libglew32</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:\src\git\StE\Simulation\third_party\build\glew\lib\RelWithDebInfo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">glew_s.dir\RelWithDebInfo\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">libglew32</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">.lib</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\src\git\StE\Simulation\third_party\manual_packages\glew\build\cmake\..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>Debug/</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <CompileAs>CompileAsC</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;GLEW_STATIC;VC_EXTRALEAN;GLEW_NO_GLU;CMAKE_INTDIR="Debug";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;GLEW_STATIC;VC_EXTRALEAN;GLEW_NO_GLU;CMAKE_INTDIR=\"Debug\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\src\git\StE\Simulation\third_party\manual_packages\glew\build\cmake\..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\src\git\StE\Simulation\third_party\manual_packages\glew\build\cmake\..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions> /machine:X86 %(AdditionalOptions)</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\src\git\StE\Simulation\third_party\manual_packages\glew\build\cmake\..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>Release/</AssemblerListingLocation>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <CompileAs>CompileAsC</CompileAs>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;GLEW_STATIC;VC_EXTRALEAN;GLEW_NO_GLU;CMAKE_INTDIR="Release";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;GLEW_STATIC;VC_EXTRALEAN;GLEW_NO_GLU;CMAKE_INTDIR=\"Release\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\src\git\StE\Simulation\third_party\manual_packages\glew\build\cmake\..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\src\git\StE\Simulation\third_party\manual_packages\glew\build\cmake\..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions> /machine:X86 %(AdditionalOptions)</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\src\git\StE\Simulation\third_party\manual_packages\glew\build\cmake\..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>MinSizeRel/</AssemblerListingLocation>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <CompileAs>CompileAsC</CompileAs>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MinSpace</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;GLEW_STATIC;VC_EXTRALEAN;GLEW_NO_GLU;CMAKE_INTDIR="MinSizeRel";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;GLEW_STATIC;VC_EXTRALEAN;GLEW_NO_GLU;CMAKE_INTDIR=\"MinSizeRel\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\src\git\StE\Simulation\third_party\manual_packages\glew\build\cmake\..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\src\git\StE\Simulation\third_party\manual_packages\glew\build\cmake\..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions> /machine:X86 %(AdditionalOptions)</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\src\git\StE\Simulation\third_party\manual_packages\glew\build\cmake\..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>RelWithDebInfo/</AssemblerListingLocation>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <CompileAs>CompileAsC</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;GLEW_STATIC;VC_EXTRALEAN;GLEW_NO_GLU;CMAKE_INTDIR="RelWithDebInfo";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;GLEW_STATIC;VC_EXTRALEAN;GLEW_NO_GLU;CMAKE_INTDIR=\"RelWithDebInfo\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\src\git\StE\Simulation\third_party\manual_packages\glew\build\cmake\..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\src\git\StE\Simulation\third_party\manual_packages\glew\build\cmake\..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions> /machine:X86 %(AdditionalOptions)</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\src\git\StE\Simulation\third_party\manual_packages\glew\build\cmake\CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Building Custom Rule C:/src/git/StE/Simulation/third_party/manual_packages/glew/build/cmake/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files (x86)\CMake\bin\cmake.exe" -HC:/src/git/StE/Simulation/third_party/manual_packages/glew/build/cmake -BC:/src/git/StE/Simulation/third_party/build/glew --check-stamp-file C:\src\git\StE\Simulation\third_party\build\glew\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:/src/git/StE/Simulation/third_party/manual_packages/glew/build/cmake/CMakeLists.txt;C:\src\git\StE\Simulation\third_party\manual_packages\glew\build\cmake\CMakeLists.txt;C:\src\git\StE\Simulation\third_party\build\glew\CMakeFiles\3.5.2\CMakeSystem.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeSystemSpecificInitialize.cmake;C:\src\git\StE\Simulation\third_party\build\glew\CMakeFiles\3.5.2\CMakeCCompiler.cmake;C:\src\git\StE\Simulation\third_party\build\glew\CMakeFiles\3.5.2\CMakeCXXCompiler.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeGenericSystem.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Platform\Windows.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Platform\WindowsPaths.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeCInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeLanguageInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Platform\Windows-MSVC.cmake;C:\src\git\StE\Simulation\third_party\build\glew\CMakeFiles\3.5.2\CMakeRCCompiler.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeRCInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeCXXInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeLanguageInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Platform\Windows-MSVC.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\GNUInstallDirs.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\FindOpenGL.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\FindPackageMessage.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeParseArguments.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\FindX11.cmake;C:\src\git\StE\Simulation\third_party\manual_packages\glew\glew.pc.in;C:\src\git\StE\Simulation\third_party\manual_packages\glew\build\cmake\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\src\git\StE\Simulation\third_party\build\glew\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Building Custom Rule C:/src/git/StE/Simulation/third_party/manual_packages/glew/build/cmake/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files (x86)\CMake\bin\cmake.exe" -HC:/src/git/StE/Simulation/third_party/manual_packages/glew/build/cmake -BC:/src/git/StE/Simulation/third_party/build/glew --check-stamp-file C:\src\git\StE\Simulation\third_party\build\glew\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:/src/git/StE/Simulation/third_party/manual_packages/glew/build/cmake/CMakeLists.txt;C:\src\git\StE\Simulation\third_party\manual_packages\glew\build\cmake\CMakeLists.txt;C:\src\git\StE\Simulation\third_party\build\glew\CMakeFiles\3.5.2\CMakeSystem.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeSystemSpecificInitialize.cmake;C:\src\git\StE\Simulation\third_party\build\glew\CMakeFiles\3.5.2\CMakeCCompiler.cmake;C:\src\git\StE\Simulation\third_party\build\glew\CMakeFiles\3.5.2\CMakeCXXCompiler.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeGenericSystem.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Platform\Windows.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Platform\WindowsPaths.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeCInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeLanguageInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Platform\Windows-MSVC.cmake;C:\src\git\StE\Simulation\third_party\build\glew\CMakeFiles\3.5.2\CMakeRCCompiler.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeRCInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeCXXInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeLanguageInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Platform\Windows-MSVC.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\GNUInstallDirs.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\FindOpenGL.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\FindPackageMessage.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeParseArguments.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\FindX11.cmake;C:\src\git\StE\Simulation\third_party\manual_packages\glew\glew.pc.in;C:\src\git\StE\Simulation\third_party\manual_packages\glew\build\cmake\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\src\git\StE\Simulation\third_party\build\glew\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">Building Custom Rule C:/src/git/StE/Simulation/third_party/manual_packages/glew/build/cmake/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files (x86)\CMake\bin\cmake.exe" -HC:/src/git/StE/Simulation/third_party/manual_packages/glew/build/cmake -BC:/src/git/StE/Simulation/third_party/build/glew --check-stamp-file C:\src\git\StE\Simulation\third_party\build\glew\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">C:/src/git/StE/Simulation/third_party/manual_packages/glew/build/cmake/CMakeLists.txt;C:\src\git\StE\Simulation\third_party\manual_packages\glew\build\cmake\CMakeLists.txt;C:\src\git\StE\Simulation\third_party\build\glew\CMakeFiles\3.5.2\CMakeSystem.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeSystemSpecificInitialize.cmake;C:\src\git\StE\Simulation\third_party\build\glew\CMakeFiles\3.5.2\CMakeCCompiler.cmake;C:\src\git\StE\Simulation\third_party\build\glew\CMakeFiles\3.5.2\CMakeCXXCompiler.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeGenericSystem.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Platform\Windows.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Platform\WindowsPaths.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeCInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeLanguageInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Platform\Windows-MSVC.cmake;C:\src\git\StE\Simulation\third_party\build\glew\CMakeFiles\3.5.2\CMakeRCCompiler.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeRCInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeCXXInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeLanguageInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Platform\Windows-MSVC.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\GNUInstallDirs.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\FindOpenGL.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\FindPackageMessage.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeParseArguments.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\FindX11.cmake;C:\src\git\StE\Simulation\third_party\manual_packages\glew\glew.pc.in;C:\src\git\StE\Simulation\third_party\manual_packages\glew\build\cmake\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">C:\src\git\StE\Simulation\third_party\build\glew\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">Building Custom Rule C:/src/git/StE/Simulation/third_party/manual_packages/glew/build/cmake/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files (x86)\CMake\bin\cmake.exe" -HC:/src/git/StE/Simulation/third_party/manual_packages/glew/build/cmake -BC:/src/git/StE/Simulation/third_party/build/glew --check-stamp-file C:\src\git\StE\Simulation\third_party\build\glew\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:/src/git/StE/Simulation/third_party/manual_packages/glew/build/cmake/CMakeLists.txt;C:\src\git\StE\Simulation\third_party\manual_packages\glew\build\cmake\CMakeLists.txt;C:\src\git\StE\Simulation\third_party\build\glew\CMakeFiles\3.5.2\CMakeSystem.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeSystemSpecificInitialize.cmake;C:\src\git\StE\Simulation\third_party\build\glew\CMakeFiles\3.5.2\CMakeCCompiler.cmake;C:\src\git\StE\Simulation\third_party\build\glew\CMakeFiles\3.5.2\CMakeCXXCompiler.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeGenericSystem.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Platform\Windows.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Platform\WindowsPaths.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeCInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeLanguageInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Platform\Windows-MSVC.cmake;C:\src\git\StE\Simulation\third_party\build\glew\CMakeFiles\3.5.2\CMakeRCCompiler.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeRCInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeCXXInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeLanguageInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Platform\Windows-MSVC.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\GNUInstallDirs.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\FindOpenGL.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\FindPackageMessage.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeParseArguments.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\FindX11.cmake;C:\src\git\StE\Simulation\third_party\manual_packages\glew\glew.pc.in;C:\src\git\StE\Simulation\third_party\manual_packages\glew\build\cmake\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:\src\git\StE\Simulation\third_party\build\glew\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\manual_packages\glew\include\GL\wglew.h" />
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\manual_packages\glew\include\GL\glew.h" />
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\manual_packages\glew\include\GL\glxew.h" />
+    <ClCompile Include="C:\src\git\StE\Simulation\third_party\manual_packages\glew\src\glew.c" />
+    <ResourceCompile Include="C:\src\git\StE\Simulation\third_party\manual_packages\glew\build\glew.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/glew/ZERO_CHECK.vcxproj">
+      <Project>8F85D76D-B075-3671-9CA5-B470E23833F7</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

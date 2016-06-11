@@ -1,0 +1,11 @@
+prefix=C:/src/git/StE/Simulation/third_party
+exec_prefix=${prefix}
+libdir=${prefix}/lib
+includedir=${prefix}/include
+
+Name: glew
+Description: The OpenGL Extension Wrangler library
+Version: 2.0.0
+Cflags: -I${includedir} 
+Libs: -L${libdir} -lglew32
+Requires: glu

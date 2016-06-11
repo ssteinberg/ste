@@ -54,6 +54,7 @@ void deferred_composer::set_context_state() const {
 
 	dr->gbuffer.bind_gbuffer();
 	0_storage_idx = dr->scene->scene_properties().materials_storage().buffer();
+	1_storage_idx = dr->scene->scene_properties().material_layers_storage().buffer();
 
 	ls.bind_lights_buffer(2);
 

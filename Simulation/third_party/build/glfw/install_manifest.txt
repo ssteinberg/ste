@@ -1,0 +1,8 @@
+C:/src/git/StE/Simulation/third_party/include/GLFW/glfw3.h
+C:/src/git/StE/Simulation/third_party/include/GLFW/glfw3native.h
+C:/src/git/StE/Simulation/third_party/lib/cmake/glfw3/glfw3Config.cmake
+C:/src/git/StE/Simulation/third_party/lib/cmake/glfw3/glfw3ConfigVersion.cmake
+C:/src/git/StE/Simulation/third_party/lib/cmake/glfw3/glfw3Targets.cmake
+C:/src/git/StE/Simulation/third_party/lib/cmake/glfw3/glfw3Targets-release.cmake
+C:/src/git/StE/Simulation/third_party/lib/pkgconfig/glfw3.pc
+C:/src/git/StE/Simulation/third_party/lib/glfw3.lib

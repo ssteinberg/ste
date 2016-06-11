@@ -1,0 +1,335 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\core\dummy.cpp">
+      <Filter>Core Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\clear.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\comparison.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\convert.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\copy.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\duplicate.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\dx.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\filter.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\format.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\generate_mipmaps.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\gl.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\gli.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\image.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\levels.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\load.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\load_dds.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\load_kmg.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\load_ktx.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\make_texture.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\reduce.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\sampler.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\sampler1d.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\sampler1d_array.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\sampler2d.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\sampler2d_array.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\sampler3d.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\sampler_cube.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\sampler_cube_array.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\save.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\save_dds.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\save_kmg.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\save_ktx.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\target.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\texture.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\texture1d.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\texture1d_array.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\texture2d.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\texture2d_array.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\texture3d.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\texture_cube.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\texture_cube_array.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\transform.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\type.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\view.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\core\clear.inl">
+      <Filter>Core Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\core\comparison.inl">
+      <Filter>Core Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\core\convert.inl">
+      <Filter>Core Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\core\copy.inl">
+      <Filter>Core Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\core\duplicate.inl">
+      <Filter>Core Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\core\dx.inl">
+      <Filter>Core Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\core\filter.inl">
+      <Filter>Core Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\core\flip.inl">
+      <Filter>Core Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\core\format.inl">
+      <Filter>Core Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\core\generate_mipmaps.inl">
+      <Filter>Core Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\core\gl.inl">
+      <Filter>Core Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\core\image.inl">
+      <Filter>Core Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\core\levels.inl">
+      <Filter>Core Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\core\load.inl">
+      <Filter>Core Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\core\load_dds.inl">
+      <Filter>Core Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\core\load_kmg.inl">
+      <Filter>Core Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\core\load_ktx.inl">
+      <Filter>Core Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\core\make_texture.inl">
+      <Filter>Core Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\core\reduce.inl">
+      <Filter>Core Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\core\sampler.inl">
+      <Filter>Core Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\core\sampler1d.inl">
+      <Filter>Core Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\core\sampler1d_array.inl">
+      <Filter>Core Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\core\sampler2d.inl">
+      <Filter>Core Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\core\sampler2d_array.inl">
+      <Filter>Core Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\core\sampler3d.inl">
+      <Filter>Core Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\core\sampler_cube.inl">
+      <Filter>Core Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\core\sampler_cube_array.inl">
+      <Filter>Core Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\core\save.inl">
+      <Filter>Core Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\core\save_dds.inl">
+      <Filter>Core Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\core\save_kmg.inl">
+      <Filter>Core Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\core\save_ktx.inl">
+      <Filter>Core Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\core\storage.inl">
+      <Filter>Core Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\core\storage_linear.inl">
+      <Filter>Core Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\core\texture.inl">
+      <Filter>Core Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\core\texture1d.inl">
+      <Filter>Core Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\core\texture1d_array.inl">
+      <Filter>Core Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\core\texture2d.inl">
+      <Filter>Core Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\core\texture2d_array.inl">
+      <Filter>Core Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\core\texture3d.inl">
+      <Filter>Core Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\core\texture_cube.inl">
+      <Filter>Core Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\core\texture_cube_array.inl">
+      <Filter>Core Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\core\transform.inl">
+      <Filter>Core Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\core\view.inl">
+      <Filter>Core Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\core\clear.hpp">
+      <Filter>Core Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\core\convert_func.hpp">
+      <Filter>Core Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\core\coord.hpp">
+      <Filter>Core Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\core\filter_compute.hpp">
+      <Filter>Core Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\core\flip.hpp">
+      <Filter>Core Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\core\mipmaps_compute.hpp">
+      <Filter>Core Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\core\storage.hpp">
+      <Filter>Core Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\core\storage_linear.hpp">
+      <Filter>Core Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\core\workaround.hpp">
+      <Filter>Core Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\src\git\StE\Simulation\third_party\packages\gli\gli\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\src\git\StE\Simulation\third_party\packages\gli\CMakeLists.txt">
+      <Filter>Text Files</Filter>
+    </None>
+    <None Include="C:\src\git\StE\Simulation\third_party\packages\gli\copying.md">
+      <Filter>Text Files</Filter>
+    </None>
+    <None Include="C:\src\git\StE\Simulation\third_party\packages\gli\readme.md">
+      <Filter>Text Files</Filter>
+    </None>
+    <None Include="C:\src\git\StE\Simulation\third_party\packages\gli\releases.md">
+      <Filter>Text Files</Filter>
+    </None>
+    <None Include="C:\src\git\StE\Simulation\third_party\packages\gli\sample-convert.md">
+      <Filter>Text Files</Filter>
+    </None>
+    <None Include="C:\src\git\StE\Simulation\third_party\packages\gli\sample-creating-texture-object.md">
+      <Filter>Text Files</Filter>
+    </None>
+    <None Include="C:\src\git\StE\Simulation\third_party\packages\gli\doc\spec\index.html">
+      <Filter>KMG Spec</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{308248A3-9C37-33C3-96F6-68482E777072}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="KMG Spec">
+      <UniqueIdentifier>{0328B0CB-F038-3983-A777-209100752D44}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Text Files">
+      <UniqueIdentifier>{2DF7AB06-97E3-3419-9318-5BB22DE021AA}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Files">
+      <UniqueIdentifier>{44ECFF8A-B86D-3EE3-95D8-0B3D3213F3CB}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

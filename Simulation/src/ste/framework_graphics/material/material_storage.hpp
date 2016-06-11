@@ -5,11 +5,11 @@
 
 #include "stdafx.hpp"
 
-#include "Material.hpp"
+#include "material.hpp"
 #include "resource_storage_stable.hpp"
 
 #include <memory>
-#include <vector>
+#include <type_traits>
 
 namespace StE {
 namespace Graphics {
@@ -18,11 +18,12 @@ class material_storage : public Core::resource_storage_stable<material_descripto
 	using Base = resource_storage_stable<material_descriptor>;
 
 public:
-	std::unique_ptr<Material> allocate_material() {
-		return Base::allocate_resource<Material>();
+	template <typename ... Ts>
+	std::unique_ptr<material> allocate_material(Ts&&... args) {
+		return Base::allocate_resource<material>(std::forward<Ts>(args)...);
 	}
-	void erase_material(const Material *material) {
-		erase_resource(material);
+	void erase_material(const material *mat) {
+		erase_resource(mat);
 	}
 };
 

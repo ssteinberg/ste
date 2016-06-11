@@ -14,8 +14,8 @@ in v_out {
 
 out vec4 gl_FragColor;
 
-layout(bindless_sampler) uniform sampler2D input;
+layout(bindless_sampler) uniform sampler2D input_tex;
 
 void main() {
-	gl_FragColor = vec4(FxaaPixelShader(vin.uv, input, vin.rcp_frame), 1);
+	gl_FragColor = vec4(FxaaPixelShader(vin.uv, input_tex, vin.rcp_frame), 1);
 }

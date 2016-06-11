@@ -5,7 +5,7 @@
 
 #include "stdafx.hpp"
 
-#include "Material.hpp"
+#include "material.hpp"
 #include "mesh.hpp"
 #include "entity.hpp"
 
@@ -33,7 +33,7 @@ private:
 	mesh_descriptor md;
 
 protected:
-	const Material *material;
+	const material *mat;
 	std::unique_ptr<mesh_generic> object_mesh;
 
 public:
@@ -43,13 +43,13 @@ public:
 	mesh_generic &get_mesh() { return *object_mesh; }
 	const mesh_generic &get_mesh() const { return *object_mesh; }
 
-	void set_material(const Material *mat) {
-		assert(mat->is_valid() && "Orphaned Material");
+	void set_material(const material *m) {
+		assert(m->is_valid() && "Orphaned Material");
 
-		material = mat;
+		mat = m;
 		model_change_signal.emit(this);
 	}
-	auto *get_material() const { return material; }
+	auto *get_material() const { return mat; }
 
 public:
 	const signal_type &signal_model_change() const { return model_change_signal; }

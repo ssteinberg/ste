@@ -102,9 +102,6 @@
     <ClCompile Include="Simulation\src\ste\framework_graphics\light\preprocessor\stages\light_preprocess_cull_shadows.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\material\Material.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_graphics\mesh\Quad.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -223,6 +220,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Simulation\src\ste\math_additions\graphs\nodes\graph_vertex.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Simulation\src\ste\framework_graphics\material\layer\material_layer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Simulation\src\ste\framework_graphics\material\material.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -600,9 +603,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\light\preprocessor\stages\light_preprocess_cull_shadows.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\material\Material.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\material\material_descriptor.hpp">
@@ -1022,5 +1022,38 @@
     <ClInclude Include="Simulation\src\ste\engine\scheduling\thread_pool_task.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\material\layer\material_layer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\material\layer\material_layer_descriptor.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\material\layer\material_layer_storage.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\material\material.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Simulation\src\ste\framework_graphics\material\shaders\material_evaluate.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\material\shaders\material.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\deferred_composer\shaders\deferred_compose.frag" />
+    <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\shaders\girenderer_transform_buffer.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\antialiasing\fxaa\shaders\fxaa.frag" />
+    <None Include="Simulation\src\ste\framework_graphics\antialiasing\fxaa\shaders\fxaa.vert" />
+    <None Include="Simulation\src\ste\framework_graphics\antialiasing\fxaa\shaders\nvidia_fxaa.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\deferred_gbuffer\shaders\gbuffer.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\deferred_gbuffer\shaders\gbuffer_load.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\deferred_gbuffer\shaders\gbuffer_store.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\shaders\bokeh_bilateral_blur.frag" />
+    <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\shaders\hdr_bloom_blur_x.frag" />
+    <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\shaders\hdr_bloom_blur_y.frag" />
+    <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\shaders\hdr_blur.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\shaders\hdr_common.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\shaders\hdr_compute_histogram_sums.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\shaders\hdr_compute_minmax.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\shaders\hdr_create_histogram.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\shaders\hdr_tonemap_coc.frag" />
   </ItemGroup>
 </Project>

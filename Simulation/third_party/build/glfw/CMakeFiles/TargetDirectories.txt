@@ -1,0 +1,6 @@
+C:/src/git/StE/Simulation/third_party/build/glfw/CMakeFiles/uninstall.dir
+C:/src/git/StE/Simulation/third_party/build/glfw/CMakeFiles/INSTALL.dir
+C:/src/git/StE/Simulation/third_party/build/glfw/CMakeFiles/ALL_BUILD.dir
+C:/src/git/StE/Simulation/third_party/build/glfw/CMakeFiles/ZERO_CHECK.dir
+C:/src/git/StE/Simulation/third_party/build/glfw/src/CMakeFiles/glfw.dir
+C:/src/git/StE/Simulation/third_party/build/glfw/src/CMakeFiles/INSTALL.dir
