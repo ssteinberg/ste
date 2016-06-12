@@ -267,56 +267,87 @@ int main()
 
 	std::unique_ptr<StE::Graphics::profiler> gpu_tasks_profiler = std::make_unique<StE::Graphics::profiler>();
 	renderer.get().attach_profiler(gpu_tasks_profiler.get());
-	std::unique_ptr<StE::Graphics::debug_gui> debug_gui_dispatchable = std::make_unique<StE::Graphics::debug_gui>(ctx, gpu_tasks_profiler.get(), font);
+	std::unique_ptr<StE::Graphics::debug_gui> debug_gui_dispatchable = std::make_unique<StE::Graphics::debug_gui>(ctx, gpu_tasks_profiler.get(), font, &camera);
 
 	auto ball = ball_objects.back().get();
 	auto ball_model_transform = glm::translate(glm::mat4(), glm::vec3{ .0f, 100.f, .0f });
 	ball->set_model_transform(glm::mat4x3(ball_model_transform));
+
+	constexpr int layers_count = 3;
 	
 	auto mat = std::move(*ball_materials.begin());
-	auto layer = std::move(*ball_layers.begin());
-	gli::texture2d base_color_tex{ gli::format::FORMAT_RGB8_UNORM_PACK8, { 1, 1 }, 1 };
-	*reinterpret_cast<glm::u8vec3*>(base_color_tex.data()) = glm::u8vec3(255);
-	layer->set_basecolor_map(std::make_unique<StE::Core::Texture2D>(base_color_tex, false));
+	std::unique_ptr<StE::Graphics::material_layer> layers[layers_count];
+	layers[0] = std::move(*ball_layers.begin());
 
-	StE::Graphics::RGB base_color{1,1,1};
-	float roughness = layer->get_roughness();
-	float anisotropy = layer->get_anisotropy();
-	float metallic = layer->get_metallic();
-	float index_of_refraction = layer->get_index_of_refraction();
-	float sheen = layer->get_sheen();
-	float sheen_power = layer->get_sheen_power();
+	StE::Graphics::RGB base_color[3];
+	float roughness[3];
+	float anisotropy[3];
+	float metallic[3];
+	float index_of_refraction[3];
+	float sheen[3];
+	float sheen_power[3];
+	float thickness[3];
+
+	for (int i = 0; i < layers_count; ++i) {
+		if (i > 0) {
+			layers[i] = scene.get().scene_properties().material_layers_storage().allocate_layer();
+			layers[i-1]->set_next_layer(layers[i].get());
+		}
+
+		gli::texture2d base_color_tex{ gli::format::FORMAT_RGB8_UNORM_PACK8, { 1, 1 }, 1 }; 
+		*reinterpret_cast<glm::u8vec3*>(base_color_tex.data()) = glm::u8vec3(255); 
+		layers[i]->set_basecolor_map(std::make_unique<StE::Core::Texture2D>(base_color_tex, false));
+
+		base_color[i] = {1,1,1};
+		roughness[i] = .5f;
+		anisotropy[i] = 0;
+		metallic[i] = 0;
+		index_of_refraction[i] = 1.5f;
+		sheen[i] = 0;
+		sheen_power[i] = 0;
+		thickness[i] = 0;
+	}
+
 	debug_gui_dispatchable->add_custom_gui([&](const glm::ivec2 &bbsize) {
 		ImGui::SetNextWindowPos(ImVec2(20,bbsize.y - 400), ImGuiSetCond_FirstUseEver);
 		ImGui::SetNextWindowSize(ImVec2(120,400), ImGuiSetCond_FirstUseEver);
 		if (ImGui::Begin("Material", nullptr)) {
-			ImGui::SliderFloat("R ##value", &base_color.R(), .0f, 1.f);
-			ImGui::SliderFloat("G ##value", &base_color.G(), .0f, 1.f);
-			ImGui::SliderFloat("B ##value", &base_color.B(), .0f, 1.f);
-			ImGui::SliderFloat("Roughness ##value", &roughness, .0f, 1.f);
-			ImGui::SliderFloat("Anisotropy ##value", &anisotropy, -1.f, 1.f);
-			ImGui::SliderFloat("Metallic ##value", &metallic, .0f, 1.f);
-			ImGui::SliderFloat("IOR ##value", &index_of_refraction, 1.f, 15.f);
-			ImGui::SliderFloat("Sheen ##value", &sheen, .0f, 1.f);
-			ImGui::SliderFloat("Sheen Power ##value", &sheen_power, .0f, 1.f);
+			for (int i = 0; i < layers_count; ++i) {
+				ImGui::Text((std::string("Layer ") + std::to_string(i)).data());
+
+				ImGui::SliderFloat("R ##value", &base_color[i].R(), .0f, 1.f);
+				ImGui::SliderFloat("G ##value", &base_color[i].G(), .0f, 1.f);
+				ImGui::SliderFloat("B ##value", &base_color[i].B(), .0f, 1.f);
+				ImGui::SliderFloat("Roughness ##value", &roughness[i], .0f, 1.f);
+				ImGui::SliderFloat("Anisotropy ##value", &anisotropy[i], -1.f, 1.f);
+				ImGui::SliderFloat("Metallic ##value", &metallic[i], .0f, 1.f);
+				ImGui::SliderFloat("IOR ##value", &index_of_refraction[i], 1.f, 15.f);
+				ImGui::SliderFloat("Sheen ##value", &sheen[i], .0f, 1.f);
+				ImGui::SliderFloat("Sheen Power ##value", &sheen_power[i], .0f, 1.f);
+				ImGui::SliderFloat("Thickness ##value", &thickness[i], .0f, .1f);
+			}
 		}
 
 		ImGui::End();
-
-		auto t = glm::u8vec3(base_color.R() * 255.5f, base_color.G() * 255.5f, base_color.B() * 255.5f);
-		layer->get_basecolor_map()->clear(&t);
-		if (layer->get_roughness() != roughness)
-			layer->set_roughness(roughness);
-		if (layer->get_anisotropy() != anisotropy)
-			layer->set_anisotropy(anisotropy);
-		if (layer->get_metallic() != metallic)
-			layer->set_metallic(metallic);
-		if (layer->get_index_of_refraction() != index_of_refraction)
-			layer->set_index_of_refraction(index_of_refraction);
-		if (layer->get_sheen() != sheen)
-			layer->set_sheen(sheen);
-		if (layer->get_sheen_power() != sheen_power)
-			layer->set_sheen_power(sheen_power);
+		
+		for (int i = 0; i < layers_count; ++i) {
+			auto t = glm::u8vec3(base_color[i].R() * 255.5f, base_color[i].G() * 255.5f, base_color[i].B() * 255.5f);
+			layers[i]->get_basecolor_map()->clear(&t);
+			if (layers[i]->get_roughness() != roughness[i])
+				layers[i]->set_roughness(roughness[i]);
+			if (layers[i]->get_anisotropy() != anisotropy[i])
+				layers[i]->set_anisotropy(anisotropy[i]);
+			if (layers[i]->get_metallic() != metallic[i])
+				layers[i]->set_metallic(metallic[i]);
+			if (layers[i]->get_index_of_refraction() != index_of_refraction[i])
+				layers[i]->set_index_of_refraction(index_of_refraction[i]);
+			if (layers[i]->get_sheen() != sheen[i])
+				layers[i]->set_sheen(sheen[i]);
+			if (layers[i]->get_sheen_power() != sheen_power[i])
+				layers[i]->set_sheen_power(sheen_power[i]);
+			if (layers[i]->get_layer_thickness() != thickness[i])
+				layers[i]->set_layer_thickness(thickness[i]);
+		}
 	});
 
 

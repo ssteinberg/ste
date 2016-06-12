@@ -31,7 +31,7 @@ struct material_layer_descriptor {
 	float sheen_ratio;
 	float sheen_power;
 
-	uint32_t next_layer;
+	uint32_t next_layer_id;
 
 	float _unused[2];
 };
