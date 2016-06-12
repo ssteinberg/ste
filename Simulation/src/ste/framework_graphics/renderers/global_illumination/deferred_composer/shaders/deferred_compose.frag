@@ -113,11 +113,11 @@ vec3 deferred_shade_fragment(g_buffer_element frag) {
 			vec3 l = incident / dist;
 			vec3 irradiance = light_irradiance(ld, dist) * cavity * shdw;
 
-			rgb += material_evaluate_irradiance(head_layer,
-												n, t, b,
-												v, l,
-												uv, duvdx, duvdy,
-												irradiance);
+			rgb += material_evaluate_radiance(head_layer,
+											  n, t, b,
+											  v, l,
+											  uv, duvdx, duvdy,
+											  irradiance);
 		}
 	}
 

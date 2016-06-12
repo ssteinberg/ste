@@ -1,18 +1,16 @@
 
 #include "material.glsl"
 
-vec3 material_evaluate_irradiance(uint32_t head_layer,
-								  vec3 n,
-								  vec3 t,
-								  vec3 b,
-								  vec3 v,
-								  vec3 l,
-								  vec2 uv,
-								  vec2 duvdx,
-								  vec2 duvdy,
-								  vec3 irradiance) {
-	material_layer_descriptor layer = mat_layer_descriptor[head_layer];
-
+vec3 material_evaluate_layer_radiance(material_layer_descriptor layer,
+									  vec3 n,
+									  vec3 t,
+									  vec3 b,
+									  vec3 v,
+									  vec3 l,
+									  vec2 uv,
+									  vec2 duvdx,
+									  vec2 duvdy,
+									  vec3 irradiance) {
 	vec3 h = normalize(v + l);
 
 	// Read layer parameters
@@ -58,4 +56,37 @@ vec3 material_evaluate_irradiance(uint32_t head_layer,
 	// Evaluate BRDF
 	vec3 brdf = S + (1.f - metallic) * (D + c_sheen);
 	return brdf * irradiance * dot(n, l);
+}
+
+vec3 material_evaluate_radiance(uint32_t head_layer,
+								vec3 n,
+								vec3 t,
+								vec3 b,
+								vec3 v,
+								vec3 l,
+								vec2 uv,
+								vec2 duvdx,
+								vec2 duvdy,
+								vec3 irradiance) {
+	material_layer_descriptor layer = mat_layer_descriptor[head_layer];
+	
+	vec3 rgb = vec3(.0f);
+	float w = .0f;
+	while (true) {
+		uint32_t next_layer = layer.next_layer_id;
+		float thickness = next_layer == material_none ? 1 : layer.thickness;
+
+		rgb += material_evaluate_layer_radiance(layer,
+												n, t, b,
+												v, l,
+												uv, duvdx, duvdy,
+												irradiance) * thickness;
+		w += thickness;
+		
+		if (next_layer == material_none)
+			break;
+		layer = mat_layer_descriptor[next_layer];
+	}
+
+	return rgb / w;
 }
