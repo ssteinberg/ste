@@ -19,6 +19,11 @@ private:
 
 public:
 	gl_utils();
+	
+	static std::string get_vendor();
+	static std::string get_renderer();
+	static std::string get_gl_version();
+	static std::string get_glsl_version();
 
 	static int query_gl_error(std::string &out);
 	static void dump_gl_info(bool dump_extensions = false);
