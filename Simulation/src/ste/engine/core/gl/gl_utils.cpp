@@ -29,11 +29,31 @@ int gl_utils::query_gl_error(std::string &out) {
 	return 0;
 }
 
+std::string gl_utils::get_vendor() {
+    const GLubyte *vendor = glGetString(GL_VENDOR);
+	return std::string(reinterpret_cast<const char*>(vendor));
+}
+
+std::string gl_utils::get_renderer() {
+    const GLubyte *renderer = glGetString(GL_RENDERER);
+	return std::string(reinterpret_cast<const char*>(renderer));
+}
+
+std::string gl_utils::get_gl_version() {
+    const GLubyte *version = glGetString(GL_VERSION);
+	return std::string(reinterpret_cast<const char*>(version));
+}
+
+std::string gl_utils::get_glsl_version() {
+    const GLubyte *glslVersion = glGetString(GL_SHADING_LANGUAGE_VERSION);
+	return std::string(reinterpret_cast<const char*>(glslVersion));
+}
+
 void gl_utils::dump_gl_info(bool dump_extensions) {
-    const GLubyte *renderer = glGetString( GL_RENDERER );
-    const GLubyte *vendor = glGetString( GL_VENDOR );
-    const GLubyte *version = glGetString( GL_VERSION );
-    const GLubyte *glslVersion = glGetString( GL_SHADING_LANGUAGE_VERSION );
+    const std::string renderer = get_renderer();
+    const std::string vendor = get_vendor();
+    const std::string version = get_gl_version();
+    const std::string glslVersion = get_glsl_version();
 
     GLint major, minor;
     glGetIntegerv(GL_MAJOR_VERSION, &major);

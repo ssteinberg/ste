@@ -8,14 +8,18 @@
 #include "imgui_impl_glfw_gl3.h"
 #include "imgui_timeline.hpp"
 
+#include "gl_utils.hpp"
+#include "glm_print.hpp"
+
 #include <vector>
 #include <algorithm>
 #include <functional>
 #include <cstring>
+#include <sstream>
 
 using namespace StE::Graphics;
 
-debug_gui::debug_gui(const StEngineControl &ctx, profiler *prof, const StE::Text::Font &default_font) : ctx(ctx), prof(prof) {
+debug_gui::debug_gui(const StEngineControl &ctx, profiler *prof, const StE::Text::Font &default_font, const Camera *camera) : ctx(ctx), prof(prof), camera(camera) {
 	assert(prof);
 
 	ImGuiIO& io = ImGui::GetIO();
@@ -81,6 +85,16 @@ void debug_gui::dispatch() const {
 	if (ImGui::Begin("StE debug", nullptr)) {
 		auto &fts = prof->get_last_times_per_frame();
 		ImGui::PlotLines("Frame Times", &fts[0], fts.size(), 0, "ms", 0.f, .1f);
+
+		ImGui::SameLine(0, 75);
+		if (camera) {
+			std::stringstream camera_pos_str;
+			print_vec(camera_pos_str, camera->get_position());
+			ImGui::Text(camera_pos_str.str().data());
+		}
+		ImGui::SameLine(0, 75);
+		ImGui::Text(Core::GL::gl_utils::get_renderer().data());
+		
 		ImGui::PlotTimeline(times);
 	}
 
