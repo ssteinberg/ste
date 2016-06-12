@@ -151,11 +151,23 @@ public:
 	*
 	*	Controls sheen's curve. Defaults to 0.0.
 	*
-	* 	@param s	Sheen power value	- range: [0,1]
+	* 	@param sp	Sheen power value	- range: [0,1]
 	*/
 	void set_sheen_power(float sp) {
 		sheen_power = sp;
 		descriptor.sheen_power = convert_sheen_power(sp);
+		Base::notify();
+	}
+
+	/**
+	*	@brief	Set material layer thickness
+	*
+	*	Controls the material layer thickness. Ignored for base layers.
+	*
+	* 	@param t	Thickness in standard units
+	*/
+	void set_layer_thickness(float t) {
+		descriptor.thickness = t;
 		Base::notify();
 	}
 	
@@ -189,6 +201,7 @@ public:
 	float get_index_of_refraction() const { return descriptor.ior; }
 	float get_sheen() const { return sheen; }
 	float get_sheen_power() const { return sheen_power; }
+	float get_layer_thickness() const { return descriptor.thickness; }
 
 	auto *get_next_layer() const { return next_layer; }
 
