@@ -706,6 +706,7 @@
     <None Include="Simulation\src\ste\framework_graphics\antialiasing\fxaa\shaders\nvidia_fxaa.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\material\shaders\material.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\material\shaders\material_evaluate.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\material\shaders\material_layer_unpack.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\deferred_composer\shaders\deferred_compose.frag" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\deferred_gbuffer\shaders\gbuffer.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\deferred_gbuffer\shaders\gbuffer_load.glsl" />

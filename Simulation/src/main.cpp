@@ -288,6 +288,7 @@ int main()
 	float sheen[3];
 	float sheen_power[3];
 	float thickness[3];
+	float absorption[3];
 
 	for (int i = 0; i < layers_count; ++i) {
 		if (i > 0) {
@@ -307,6 +308,7 @@ int main()
 		sheen[i] = 0;
 		sheen_power[i] = 0;
 		thickness[i] = 0;
+		absorption[i] = 0;
 	}
 
 	debug_gui_dispatchable->add_custom_gui([&](const glm::ivec2 &bbsize) {
@@ -330,7 +332,8 @@ int main()
 					ImGui::SliderFloat((std::string("IOR ##value") +	" ##" + layer_label).data(), &index_of_refraction[i],1.f, 15.f);
 					ImGui::SliderFloat((std::string("Shn ##value") +	" ##" + layer_label).data(), &sheen[i],				 .0f, 1.f);
 					ImGui::SliderFloat((std::string("ShnPwr ##value") +	" ##" + layer_label).data(), &sheen_power[i],		 .0f, 1.f);
-					ImGui::SliderFloat((std::string("Thick ##value") +	" ##" + layer_label).data(), &thickness[i],			 .0f, .1f);
+					ImGui::SliderFloat((std::string("Thick ##value") +	" ##" + layer_label).data(), &thickness[i],			 .0f, StE::Graphics::material_layer_max_thickness);
+					ImGui::SliderFloat((std::string("Alpha ##value") +	" ##" + layer_label).data(), &absorption[i],		 .0f, 10.f);
 				}
 			}
 		}
@@ -354,6 +357,8 @@ int main()
 				layers[i]->set_sheen_power(sheen_power[i]);
 			if (layers[i]->get_layer_thickness() != thickness[i])
 				layers[i]->set_layer_thickness(thickness[i]);
+			if (layers[i]->get_absorption_alpha() != absorption[i])
+				layers[i]->set_absorption_alpha(absorption[i]);
 
 			if (i != 0) {
 				bool enabled = layers[i - 1]->get_next_layer() != nullptr;
