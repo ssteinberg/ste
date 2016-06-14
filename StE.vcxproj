@@ -109,6 +109,8 @@
     <Link>
       <AdditionalDependencies>opengl32.lib;glu32.lib;libboost_system-vc140-mt-gd-1_61.lib;libboost_filesystem-vc140-mt-gd-1_61.lib;libboost_serialization-vc140-mt-gd-1_61.lib;libboost_exception-vc140-mt-gd-1_61.lib;zlibstaticd.lib;freetyped.lib;libglew32d.lib;glfw3d.lib;turbojpeg-staticd.lib;libpng16_staticd.lib;tga_staticd.lib;tinyobjloaderd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:\src\boost_1_61_0\lib32-msvc-14.0;$(SolutionDir)Simulation\third_party\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <InterproceduralOptimization>false</InterproceduralOptimization>
+      <GenerateDebugInformation>Debug</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -134,6 +136,8 @@
     <Link>
       <AdditionalLibraryDirectories>C:\src\boost_1_61_0\lib64-msvc-14.0;$(SolutionDir)Simulation\third_party\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>opengl32.lib;glu32.lib;libboost_system-vc140-mt-gd-1_61.lib;libboost_filesystem-vc140-mt-gd-1_61.lib;libboost_serialization-vc140-mt-gd-1_61.lib;libboost_exception-vc140-mt-gd-1_61.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <InterproceduralOptimization>false</InterproceduralOptimization>
+      <GenerateDebugInformation>Debug</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -173,6 +177,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>opengl32.lib;glu32.lib;libboost_system-vc140-mt-1_61.lib;libboost_filesystem-vc140-mt-1_61.lib;libboost_serialization-vc140-mt-1_61.lib;libboost_exception-vc140-mt-1_61.lib;zlibstatic.lib;freetype.lib;libglew32.lib;glfw3.lib;turbojpeg-static.lib;libpng16_static.lib;tga_static.lib;tinyobjloader.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:\src\boost_1_61_0\lib32-msvc-14.0;$(SolutionDir)Simulation\third_party\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -208,6 +213,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>C:\src\boost_1_61_0\lib64-msvc-14.0;$(SolutionDir)Simulation\third_party\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>opengl32.lib;glu32.lib;libboost_system-vc140-mt-1_61.lib;libboost_filesystem-vc140-mt-1_61.lib;libboost_serialization-vc140-mt-1_61.lib;libboost_exception-vc140-mt-1_61.lib\;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
