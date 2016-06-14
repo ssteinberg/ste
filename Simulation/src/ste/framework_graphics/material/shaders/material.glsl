@@ -21,30 +21,21 @@ struct material_descriptor {
 struct material_layer_descriptor {
 	material_texture_descriptor basecolor_map;
 	
-	float thickness;
+	uint32_t sheen_pack;
+	uint32_t ansi_metal_pack;
+	uint32_t roughness_thickness_pack;
 
-	float roughness;
-	float anisotropy_ratio;
-	float metallic;
 	float ior;
-
-	float sheen_ratio;
-	float sheen_power;
+	float absorption_alpha;
 
 	uint32_t next_layer_id;
-
-	float _unused[2];
 };
 
 const int material_none = 0xFFFFFFFF;
 const float material_cavity_min = .2f;
 const float material_cavity_max = 1.f;
 const float material_alpha_discard_threshold = .5f;
-
-float material_convert_ior_to_F0(float ior1, float ior2) {
-	float t = (ior1 - ior2) / (ior1 + ior2);
-	return t * t;
-} 
+const float material_max_thickness = .1f;
 
 vec3 material_emission(material_descriptor md) {
 	return md.emission.rgb;
