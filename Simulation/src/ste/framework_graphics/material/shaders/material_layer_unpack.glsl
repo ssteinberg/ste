@@ -13,8 +13,6 @@ struct material_layer_unpacked_descriptor {
 
 	float ior;
 	float absorption_alpha;
-
-	uint32_t next_layer_id;
 };
 
 float material_convert_ior_to_F0(float ior1, float ior2) {
@@ -48,8 +46,7 @@ material_layer_unpacked_descriptor material_layer_unpack(material_layer_descript
 	d.thickness = pack.y * material_max_thickness;
 
 	d.ior = l.ior;
-	d.absorption_alpha = d.absorption_alpha;
-	d.next_layer_id = d.next_layer_id;
+	d.absorption_alpha = l.absorption_alpha;
 
 	d.base_color = material_layer_base_color(l, uv, duvdx, duvdy);
 

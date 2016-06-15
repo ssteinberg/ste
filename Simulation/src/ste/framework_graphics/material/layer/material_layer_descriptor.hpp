@@ -18,19 +18,17 @@ public:
 	Core::texture_handle basecolor_handle;
 	
 private:
-	std::uint32_t sheen_pack;
-	std::uint32_t ansi_metal_pack;
-	std::uint32_t roughness_thickness_pack;
+	std::uint32_t sheen_pack{ 0 };
+	std::uint32_t ansi_metal_pack{ 0 };
+	std::uint32_t roughness_thickness_pack{ 0 };
 	
-	float ior{ 1.5f };
+	float ior{ .0f };
 	float absorption_alpha{ .0f };
 
 	std::uint32_t next_layer_id{ material_layer_none };
 
 public:
-	material_layer_descriptor() : sheen_pack(glm::packUnorm2x16({.0f, .0f})),
-								  ansi_metal_pack(glm::packUnorm2x16({.5f, .0f})),
-								  roughness_thickness_pack(glm::packUnorm2x16({.5f, .0f})) {}
+	material_layer_descriptor() = default;
 	
 	material_layer_descriptor(material_layer_descriptor &&) = default;
 	material_layer_descriptor(const material_layer_descriptor &) = default;

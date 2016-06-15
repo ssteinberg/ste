@@ -2,14 +2,14 @@
 #include "material.glsl"
 #include "material_layer_unpack.glsl"
 
-vec3 material_evaluate_layer_radiance(material_layer_descriptor layer,
+vec3 material_evaluate_layer_radiance(material_layer_unpacked_descriptor descriptor,
 									  vec3 n,
 									  vec3 t,
 									  vec3 b,
 									  vec3 v,
 									  vec3 l,
-									  material_layer_unpacked_descriptor descriptor,
 									  float F0,
+									  float diffuse_attenuation,
 									  vec3 irradiance,
 									  out float D,
 									  out float G,
@@ -47,8 +47,8 @@ vec3 material_evaluate_layer_radiance(material_layer_descriptor layer,
 	}
 
 	// Diffuse
-	vec3 Diffuse = base_color * disney_diffuse_brdf(n, v, l, h,
-													descriptor.roughness);
+	vec3 Diffuse = diffuse_attenuation * base_color * disney_diffuse_brdf(n, v, l, h,
+																		  descriptor.roughness);
 
 	// Evaluate BRDF
 	vec3 brdf = Specular + (1.f - descriptor.metallic) * (Diffuse + c_sheen);
@@ -83,40 +83,45 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 								vec2 duvdy,
 								vec3 irradiance,
 								float external_medium_ior = 1.00029f) {
+	float D;
+	float G;
+	float F;
 	vec3 rgb = vec3(0);
 	
+	material_layer_unpacked_descriptor descriptor = material_layer_unpack(layer, uv, duvdx, duvdy);
 	float F0 = material_convert_ior_to_F0(external_medium_ior, layer.ior);
 	vec3 atten = vec3(1.f);
-	while (true) {
-		material_layer_unpacked_descriptor descriptor = material_layer_unpack(layer, uv, duvdx, duvdy);
+	while (layer.next_layer_id != material_none) {
+		material_layer_descriptor next_layer = mat_layer_descriptor[layer.next_layer_id];
 
-		float D;
-		float G;
-		float F;
-		rgb += atten * material_evaluate_layer_radiance(layer,
-														n, t, b,
-														v, l,
-														descriptor,
-														F0,
-														irradiance, 
-														D, G, F);
-
-		uint32_t next_layer_id = layer.next_layer_id;
-		if (next_layer_id == material_none)
-			break;
-
-		material_layer_descriptor next_layer = mat_layer_descriptor[next_layer_id];
-	
-		if (!material_snell_refraction(v, n, layer.ior, next_layer.ior) ||
-			!material_snell_refraction(l, n, layer.ior, next_layer.ior))
-			break;
-			
 		float thickness = descriptor.thickness;
 		float metallic = descriptor.metallic;
+		float absorption_coefficient = descriptor.absorption_alpha;
+
+		vec3 in_v = v;
+		vec3 in_l = l;
+		
+		bool internal_reflection = !material_snell_refraction(v, n, layer.ior, next_layer.ior) || !material_snell_refraction(l, n, layer.ior, next_layer.ior);
+		if (internal_reflection) {
+			v = in_v;
+			l = in_l;
+			break;
+		}
 	
-		vec3 absorption_coefficient = vec3(.1f);
-		float path_length = thickness * (1.f / dot(v, n) + 1.f / dot(l, n));
-		vec3 absorption = exp(-path_length * absorption_coefficient);
+		float dotNV = max(.0f, dot(n,v));
+		float dotNL = max(.0f, dot(n,l));
+		float path_length = thickness * (1.f / dotNV + 1.f / dotNL);
+		float absorption = exp(-path_length * absorption_coefficient);
+
+		float diffuse_attenuation = 1.f - absorption;
+
+		rgb += atten * material_evaluate_layer_radiance(descriptor,
+														n, t, b,
+														in_v, in_l,
+														F0,
+														diffuse_attenuation,
+														irradiance, 
+														D, G, F);
 	
 		vec3 h = normalize(v + l);
 		float F21 = fresnel_schlick(F0, dot(l,h));
@@ -128,8 +133,18 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 
 		atten *= absorption * T12 * g * passthrough;
 		F0 = material_convert_ior_to_F0(layer.ior, next_layer.ior);
+
 		layer = next_layer;
+		descriptor = material_layer_unpack(layer, uv, duvdx, duvdy);
 	}
+
+	rgb += atten * material_evaluate_layer_radiance(descriptor,
+													n, t, b,
+													v, l,
+													F0,
+													1.f,
+													irradiance, 
+													D, G, F);
 
 	return rgb;
 }
