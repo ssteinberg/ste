@@ -122,11 +122,11 @@ public:
 	*
 	*	Sets specular term using a given index-of-refraction. Defaults to 1.5.
 	*
-	* 	@param ior	Index-of-refraction - range: [1,infinity) (Usually in range [1,2])
+	* 	@param ior	Index-of-refraction - range: [1,infinity) (Usually in range [1,2] for non-metals)
 	*/
 	void set_index_of_refraction(float ior) {
-		index_of_refraction = ior;
-		descriptor.ior = ior;
+		index_of_refraction = glm::max(1.f, ior);
+		descriptor.ior = index_of_refraction;
 		Base::notify();
 	}
 
@@ -140,8 +140,8 @@ public:
 	* 	@param a	Absorption alpha - range: [0,infinity)
 	*/
 	void set_absorption_alpha(float a) {
-		absorption_alpha = a;
-		descriptor.absorption_alpha = a;
+		absorption_alpha = glm::max(.0f, a);
+		descriptor.absorption_alpha = absorption_alpha;
 		Base::notify();
 	}
 
