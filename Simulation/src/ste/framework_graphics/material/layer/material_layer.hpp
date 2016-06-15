@@ -31,6 +31,7 @@ private:
 
 	float roughness{ .5f };
 	float anisotropy{ .0f };
+	float aniso_ratio{ 1.f };
 	float metallic{ .0f };
 
 	float index_of_refraction{ 1.5f };
@@ -58,7 +59,8 @@ public:
 	*	@brief	Convert material anisotropy value to ratio which is used to adjust anisotropic roughness values
 	*/
 	static float convert_anisotropy_to_ratio(float ansio) {
-		return ansio != .0f ? glm::sqrt(1.f - ansio * .9f) : 1.f;
+		float ratio = ansio != .0f ? glm::sqrt(1.f - ansio * .9f) : 1.f;
+		return glm::clamp(ratio, .0f, material_layer_max_ansio_ratio);
 	}
 
 public:
@@ -100,7 +102,8 @@ public:
 	*/
 	void set_anisotropy(float a) {
 		anisotropy = a;
-		descriptor.set_anisotropy_and_metallicity(convert_anisotropy_to_ratio(anisotropy), metallic);
+		aniso_ratio = convert_anisotropy_to_ratio(anisotropy);
+		descriptor.set_anisotropy_and_metallicity(aniso_ratio, metallic);
 		Base::notify();
 	}
 
@@ -113,7 +116,7 @@ public:
 	*/
 	void set_metallic(float m) {
 		metallic = m;
-		descriptor.set_anisotropy_and_metallicity(convert_anisotropy_to_ratio(anisotropy), metallic);
+		descriptor.set_anisotropy_and_metallicity(aniso_ratio, metallic);
 		Base::notify();
 	}
 
@@ -125,8 +128,8 @@ public:
 	* 	@param ior	Index-of-refraction - range: [1,infinity) (Usually in range [1,2] for non-metals)
 	*/
 	void set_index_of_refraction(float ior) {
-		index_of_refraction = glm::max(1.f, ior);
-		descriptor.ior = index_of_refraction;
+		index_of_refraction = ior;
+		descriptor.set_ior(index_of_refraction);
 		Base::notify();
 	}
 
@@ -140,8 +143,8 @@ public:
 	* 	@param a	Absorption alpha - range: [0,infinity)
 	*/
 	void set_absorption_alpha(float a) {
-		absorption_alpha = glm::max(.0f, a);
-		descriptor.absorption_alpha = absorption_alpha;
+		absorption_alpha = a;
+		descriptor.set_alpha(absorption_alpha);
 		Base::notify();
 	}
 
@@ -202,7 +205,7 @@ public:
 				layerid = id;
 		}
 
-		descriptor.next_layer_id = layerid;
+		descriptor.set_next_layer_id(layerid);
 		next_layer = layerid == material_layer_none ? nullptr : layer;
 		
 		Base::notify();

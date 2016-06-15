@@ -11,6 +11,7 @@ namespace Graphics {
 
 static constexpr std::uint32_t material_layer_none = 0xFFFFFFFF;
 static constexpr float material_layer_max_thickness = .1f;
+static constexpr float material_layer_max_ansio_ratio = 1.4f;
 
 class material_layer_descriptor {
 public:
@@ -21,7 +22,6 @@ private:
 	std::uint32_t ansi_metal_pack;
 	std::uint32_t roughness_thickness_pack;
 	
-public:
 	float ior{ 1.5f };
 	float absorption_alpha{ .0f };
 
@@ -44,15 +44,29 @@ public:
 	}
 	
 	void set_anisotropy_and_metallicity(float ansi_ratio, float metallic) {
-		ansi_ratio = glm::clamp(ansi_ratio, -1.f, 1.f);
+		ansi_ratio = glm::clamp(ansi_ratio / material_layer_max_ansio_ratio, .0f, 1.f);
 		metallic = glm::clamp(metallic, .0f, 1.f);
-		ansi_metal_pack = glm::packUnorm2x16({ ansi_ratio * .5f + .5f, metallic });
+		ansi_metal_pack = glm::packUnorm2x16({ ansi_ratio, metallic });
 	}
 	
 	void set_roughness_and_thickness(float roughness, float thickness) {
 		roughness = glm::clamp(roughness, .0f, 1.f);
-		thickness = glm::clamp(thickness, .0f, material_layer_max_thickness);
-		roughness_thickness_pack = glm::packUnorm2x16({ roughness, thickness / material_layer_max_thickness });
+		thickness = glm::clamp(thickness / material_layer_max_thickness, .0f, 1.f);
+		roughness_thickness_pack = glm::packUnorm2x16({ roughness, thickness });
+	}
+
+	void set_ior(float f) {
+		f = glm::max(1.f, f);
+		ior = f;
+	}
+
+	void set_alpha(float a) {
+		a = glm::max(.0f, a);
+		absorption_alpha = a;
+	}
+
+	void set_next_layer_id(std::uint32_t id) {
+		next_layer_id = id;
 	}
 };
 

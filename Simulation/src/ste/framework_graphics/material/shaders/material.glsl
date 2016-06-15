@@ -36,6 +36,7 @@ const float material_cavity_min = .2f;
 const float material_cavity_max = 1.f;
 const float material_alpha_discard_threshold = .5f;
 const float material_max_thickness = .1f;
+const float material_layer_max_ansio_ratio = 1.4f;
 
 vec3 material_emission(material_descriptor md) {
 	return md.emission.rgb;

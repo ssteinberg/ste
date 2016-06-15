@@ -40,7 +40,7 @@ material_layer_unpacked_descriptor material_layer_unpack(material_layer_descript
 	d.sheen_power = material_convert_sheen_power(pack.y);
 
 	pack = unpackUnorm2x16(l.ansi_metal_pack);
-	d.anisotropy_ratio = pack.x * 2.f - 1.f;
+	d.anisotropy_ratio = pack.x * material_layer_max_ansio_ratio;
 	d.metallic = pack.y;
 
 	pack = unpackUnorm2x16(l.roughness_thickness_pack);
