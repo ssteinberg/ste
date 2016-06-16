@@ -36,21 +36,23 @@ const float material_cavity_min = .2f;
 const float material_cavity_max = 1.f;
 const float material_alpha_discard_threshold = .5f;
 const float material_max_thickness = .1f;
-const float material_layer_max_ansio_ratio = 1.4f;
+const float material_layer_ansio_ratio_scale = .9f;
+const float material_layer_max_ansio_ratio = 1.f / sqrt(1.f - 1.f * material_layer_ansio_ratio_scale);
+const float material_layer_min_ansio_ratio = sqrt(1.f - 1.f * material_layer_ansio_ratio_scale);
 
 vec3 material_emission(material_descriptor md) {
 	return md.emission.rgb;
 }
 
-vec3 material_layer_base_color(material_layer_descriptor layer, vec2 uv, vec2 duvdx, vec2 duvdy) {
+vec4 material_layer_base_color(material_layer_descriptor layer, vec2 uv, vec2 duvdx, vec2 duvdy) {
 	if (layer.basecolor_map.tex_handler > 0)
-		return textureGrad(sampler2D(layer.basecolor_map.tex_handler), uv, duvdx, duvdy).rgb;
-	return vec3(1.f);
+		return textureGrad(sampler2D(layer.basecolor_map.tex_handler), uv, duvdx, duvdy);
+	return vec4(1.f);
 }
-vec3 material_layer_base_color(material_layer_descriptor layer, vec2 uv) {
+vec4 material_layer_base_color(material_layer_descriptor layer, vec2 uv) {
 	if (layer.basecolor_map.tex_handler > 0)
-		return texture(sampler2D(layer.basecolor_map.tex_handler), uv).rgb;
-	return vec3(1.f);
+		return texture(sampler2D(layer.basecolor_map.tex_handler), uv);
+	return vec4(1.f);
 }
 
 float material_cavity(material_descriptor md, vec2 uv, vec2 duvdx, vec2 duvdy) {

@@ -2,7 +2,7 @@
 #include "material.glsl"
 
 struct material_layer_unpacked_descriptor {
-	vec3 base_color;
+	vec4 base_color;
 
 	float sheen;
 	float sheen_power;
@@ -31,19 +31,17 @@ float material_convert_sheen_power(float s) {
 material_layer_unpacked_descriptor material_layer_unpack(material_layer_descriptor l, vec2 uv, vec2 duvdx, vec2 duvdy) {
 	material_layer_unpacked_descriptor d;
 
-	vec2 pack;
-	
-	pack = unpackUnorm2x16(l.sheen_pack);
-	d.sheen = material_convert_sheen_to_sheen_ratio(pack.x);
-	d.sheen_power = material_convert_sheen_power(pack.y);
+	vec2 sheen_pack = unpackUnorm2x16(l.sheen_pack);
+	d.sheen = material_convert_sheen_to_sheen_ratio(sheen_pack.x);
+	d.sheen_power = material_convert_sheen_power(sheen_pack.y);
 
-	pack = unpackUnorm2x16(l.ansi_metal_pack);
-	d.anisotropy_ratio = pack.x * material_layer_max_ansio_ratio;
-	d.metallic = pack.y;
+	vec2 ansi_metal_pack = unpackUnorm2x16(l.ansi_metal_pack);
+	d.anisotropy_ratio = mix(material_layer_min_ansio_ratio, material_layer_max_ansio_ratio, ansi_metal_pack.x);
+	d.metallic = ansi_metal_pack.y;
 
-	pack = unpackUnorm2x16(l.roughness_thickness_pack);
-	d.roughness = pack.x;
-	d.thickness = pack.y * material_max_thickness;
+	vec2 rough_thick_pack = unpackUnorm2x16(l.roughness_thickness_pack);
+	d.roughness = rough_thick_pack.x;
+	d.thickness = rough_thick_pack.y * material_max_thickness;
 
 	d.ior = l.ior;
 	d.absorption_alpha = l.absorption_alpha;

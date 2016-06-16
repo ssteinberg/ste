@@ -8,14 +8,14 @@ vec3 material_evaluate_layer_radiance(material_layer_unpacked_descriptor descrip
 									  vec3 b,
 									  vec3 v,
 									  vec3 l,
+									  vec3 h,
 									  float F0,
 									  float diffuse_attenuation,
 									  vec3 irradiance,
 									  out float D,
 									  out float G,
 									  out float F) {
-	vec3 h = normalize(v + l);
-	vec3 base_color = descriptor.base_color;
+	vec3 base_color = descriptor.base_color.rgb;
 	
 	// Tints
 	vec3 specular_tint = vec3(1);
@@ -89,12 +89,17 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 	vec3 rgb = vec3(0);
 	
 	material_layer_unpacked_descriptor descriptor = material_layer_unpack(layer, uv, duvdx, duvdy);
+
 	float F0 = material_convert_ior_to_F0(external_medium_ior, layer.ior);
-	vec3 atten = vec3(1.f);
+	float atten = 1.f;
+	vec3 h = normalize(v + l);
+
 	while (layer.next_layer_id != material_none) {
 		material_layer_descriptor next_layer = mat_layer_descriptor[layer.next_layer_id];
 
-		float thickness = descriptor.thickness;
+		float thickness_scale = descriptor.base_color.a;
+
+		float thickness = thickness_scale * descriptor.thickness;
 		float metallic = descriptor.metallic;
 		float absorption_coefficient = descriptor.absorption_alpha;
 
@@ -117,13 +122,13 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 
 		rgb += atten * material_evaluate_layer_radiance(descriptor,
 														n, t, b,
-														in_v, in_l,
+														in_v, in_l, h,
 														F0,
 														diffuse_attenuation,
-														irradiance, 
+														irradiance,
 														D, G, F);
 	
-		vec3 h = normalize(v + l);
+		h = normalize(v + l);
 		float F21 = fresnel_schlick(F0, dot(l,h));
 	
 		float T12 = 1.f - F;
@@ -135,12 +140,12 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 		F0 = material_convert_ior_to_F0(layer.ior, next_layer.ior);
 
 		layer = next_layer;
-		descriptor = material_layer_unpack(layer, uv, duvdx, duvdy);
+		descriptor = material_layer_unpack(next_layer, uv, duvdx, duvdy);
 	}
 
 	rgb += atten * material_evaluate_layer_radiance(descriptor,
 													n, t, b,
-													v, l,
+													v, l, h,
 													F0,
 													1.f,
 													irradiance, 

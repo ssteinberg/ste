@@ -309,6 +309,7 @@
     </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_graphics\material\layer\material_layer.cpp" />
     <ClCompile Include="Simulation\src\ste\framework_graphics\material\material.cpp" />
+    <ClCompile Include="Simulation\src\ste\framework_graphics\material\layer\material_layer_descriptor.cpp" />
     <ClCompile Include="Simulation\src\ste\framework_graphics\mesh\Quad.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>

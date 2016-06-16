@@ -59,8 +59,10 @@ public:
 	*	@brief	Convert material anisotropy value to ratio which is used to adjust anisotropic roughness values
 	*/
 	static float convert_anisotropy_to_ratio(float ansio) {
-		float ratio = ansio != .0f ? glm::sqrt(1.f - ansio * .9f) : 1.f;
-		return glm::clamp(ratio, .0f, material_layer_max_ansio_ratio);
+		float ratio = glm::sqrt(1.f - glm::abs(ansio) * material_layer_ansio_ratio_scale);
+		if (ansio < .0f)
+			ratio = 1.f / ratio;
+		return ratio;
 	}
 
 public:
@@ -71,6 +73,9 @@ public:
 
 	/**
 	*	@brief	Set material base color (diffuse) map
+	*
+	*	If the base color texture contains an alpha channel, the alpha value is used to modulate the layer thickness,
+	*	i.e. layer thickness = thickness * base_color.alpha
 	*
 	* 	@param tex	2D texture object
 	*/

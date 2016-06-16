@@ -11,7 +11,9 @@ namespace Graphics {
 
 static constexpr std::uint32_t material_layer_none = 0xFFFFFFFF;
 static constexpr float material_layer_max_thickness = .1f;
-static constexpr float material_layer_max_ansio_ratio = 1.4f;
+static constexpr float material_layer_ansio_ratio_scale = .9f;
+extern const float material_layer_max_ansio_ratio;
+extern const float material_layer_min_ansio_ratio;
 
 class material_layer_descriptor {
 public:
@@ -41,10 +43,11 @@ public:
 		sheen_pack = glm::packUnorm2x16({ sheen, sheen_power });
 	}
 	
-	void set_anisotropy_and_metallicity(float ansi_ratio, float metallic) {
-		ansi_ratio = glm::clamp(ansi_ratio / material_layer_max_ansio_ratio, .0f, 1.f);
+	void set_anisotropy_and_metallicity(float ansio_ratio, float metallic) {
+		ansio_ratio = (ansio_ratio - material_layer_min_ansio_ratio) / (material_layer_max_ansio_ratio - material_layer_min_ansio_ratio);
+		ansio_ratio = glm::clamp(ansio_ratio, .0f, 1.f);
 		metallic = glm::clamp(metallic, .0f, 1.f);
-		ansi_metal_pack = glm::packUnorm2x16({ ansi_ratio, metallic });
+		ansi_metal_pack = glm::packUnorm2x16({ ansio_ratio, metallic });
 	}
 	
 	void set_roughness_and_thickness(float roughness, float thickness) {
