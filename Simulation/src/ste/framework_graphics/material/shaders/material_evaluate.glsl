@@ -113,8 +113,8 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 			break;
 		}
 	
-		float dotNV = max(.0f, dot(n,v));
-		float dotNL = max(.0f, dot(n,l));
+		float dotNV = max(epsilon, dot(n,v));
+		float dotNL = max(epsilon, dot(n,l));
 		float path_length = thickness * (1.f / dotNV + 1.f / dotNL);
 		float absorption = exp(-path_length * absorption_coefficient);
 
@@ -136,7 +136,7 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 		float g = (1.f - G) + T21 * G;
 		float passthrough = 1.f - metallic;
 
-		atten *= absorption * T12 * g * passthrough;
+		atten *= max(.0f, absorption * T12 * g * passthrough);
 		F0 = material_convert_ior_to_F0(layer.ior, next_layer.ior);
 
 		layer = next_layer;
