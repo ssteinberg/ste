@@ -71,7 +71,7 @@ vec3 deferred_shade_fragment(g_buffer_element frag) {
 	vec3 b = cross(t, n);
 	normal_map(md, uv, duvdx, duvdy, n, t, b);
 
-	uint32_t head_layer = md.head_layer;
+	material_layer_descriptor head_layer = mat_layer_descriptor[md.head_layer];
 	float cavity = material_cavity(md, uv, duvdx, duvdy);
 
 	vec3 rgb = material_emission(md);
@@ -112,7 +112,7 @@ vec3 deferred_shade_fragment(g_buffer_element frag) {
 			vec3 v = normalize(-position);
 			vec3 l = incident / dist;
 			vec3 irradiance = light_irradiance(ld, dist) * cavity * shdw;
-
+			
 			rgb += material_evaluate_radiance(head_layer,
 											  n, t, b,
 											  v, l,

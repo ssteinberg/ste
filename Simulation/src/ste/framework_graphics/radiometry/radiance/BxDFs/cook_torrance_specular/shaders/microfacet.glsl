@@ -34,16 +34,19 @@ float gaf_schlick_ggx(float roughness, float dotNL, float dotNV) {
 	return g1 * g2;
 }
 
-float fresnel_schlick(float dotLH) {
+float fresnel_schlick_ratio(float dotLH) {
 	float p = 1.f - dotLH;
 	float p2 = p*p;
-
 	return p2 * p2 * p;
 }
 
-float fresnel_schlick(float dotLH, float power) {
+float fresnel_schlick_ratio(float dotLH, float power) {
 	float p = 1.f - dotLH;
 	return pow(p, power);
+}
+
+float fresnel_schlick(float F0, float dotLH) {
+	return mix(F0, 1.f, fresnel_schlick_ratio(dotLH));
 }
 
 vec3 fresnel_cook_torrance(float dotLH, vec3 F0) {

@@ -1,64 +1,78 @@
 
 #include "material.glsl"
+#include "material_layer_unpack.glsl"
 
-vec3 material_evaluate_layer_radiance(material_layer_descriptor layer,
+vec3 material_evaluate_layer_radiance(material_layer_unpacked_descriptor descriptor,
 									  vec3 n,
 									  vec3 t,
 									  vec3 b,
 									  vec3 v,
 									  vec3 l,
-									  vec2 uv,
-									  vec2 duvdx,
-									  vec2 duvdy,
-									  vec3 irradiance) {
-	vec3 h = normalize(v + l);
-
-	// Read layer parameters
-	float roughness = layer.roughness;
-	float metallic = layer.metallic;
-	float F0 = material_convert_ior_to_F0(layer.ior, 1.f);
-	float anisotropy_ratio = layer.anisotropy_ratio;
-	float sheen = layer.sheen_ratio;
-	float sheen_power = layer.sheen_power;
+									  vec3 h,
+									  float F0,
+									  float diffuse_attenuation,
+									  vec3 irradiance,
+									  out float D,
+									  out float G,
+									  out float F) {
+	vec3 base_color = descriptor.base_color.rgb;
 	
-	// Colors and tints
-	vec3 base_color = material_layer_base_color(layer, uv, duvdx, duvdy);
+	// Tints
 	vec3 specular_tint = vec3(1);
 	vec3 sheen_tint = vec3(1);
 
 	// Specular color
-	vec3 c_spec = F0 * mix(specular_tint, base_color, metallic);
+	vec3 c_spec = mix(specular_tint, base_color, descriptor.metallic);
 
 	// Additional sheen color (diffuse at grazing angles)
-	vec3 c_sheen = fresnel_schlick(dot(l,h), sheen_power) * sheen_tint * sheen;
+	vec3 c_sheen = fresnel_schlick_ratio(dot(l,h), descriptor.sheen_power) * sheen_tint * descriptor.sheen;
 
 	// Specular
-	vec3 S;
-	if (anisotropy_ratio != 1.f) {
-		float roughness_x = roughness * anisotropy_ratio;
-		float roughness_y = roughness / anisotropy_ratio;
+	vec3 Specular;
+	if (descriptor.anisotropy_ratio != 1.f) {
+		float roughness_x = descriptor.roughness * descriptor.anisotropy_ratio;
+		float roughness_y = descriptor.roughness / descriptor.anisotropy_ratio;
 
-		S = cook_torrance_ansi_brdf(n, t, b,
-									v, l, h,
-									roughness_x,
-									roughness_y,
-									c_spec);
+		Specular = cook_torrance_ansi_brdf(n, t, b,
+										   v, l, h,
+										   roughness_x,
+										   roughness_y,
+										   F0, c_spec,
+										   D, G, F);
 	} else {
-		S = cook_torrance_iso_brdf(n, v, l, h,
-								   roughness,
-								   c_spec);
+		Specular = cook_torrance_iso_brdf(n, v, l, h,
+										  descriptor.roughness,
+										  F0, c_spec,
+										  D, G, F);
 	}
 
 	// Diffuse
-	vec3 D = base_color * disney_diffuse_brdf(n, v, l, h,
-											  roughness);
+	vec3 Diffuse = diffuse_attenuation * base_color * disney_diffuse_brdf(n, v, l, h,
+																		  descriptor.roughness);
 
 	// Evaluate BRDF
-	vec3 brdf = S + (1.f - metallic) * (D + c_sheen);
+	vec3 brdf = Specular + (1.f - descriptor.metallic) * (Diffuse + c_sheen);
 	return brdf * irradiance * dot(n, l);
 }
 
-vec3 material_evaluate_radiance(uint32_t head_layer,
+bool material_snell_refraction(inout vec3 v,
+							   vec3 n,
+							   float ior1,
+							   float ior2) {
+	vec3 t = cross(n, -v);
+	float ior = ior1 / ior2;
+
+	float cosine2 = 1.f - ior * ior * dot(t, t);
+	if (cosine2 < .0f)
+		return false;
+
+	vec3 normal_by_cosine = n * sqrt(cosine2);
+	v = normal_by_cosine - ior * cross(n, -t);
+
+	return true;
+}
+
+vec3 material_evaluate_radiance(material_layer_descriptor layer,
 								vec3 n,
 								vec3 t,
 								vec3 b,
@@ -67,26 +81,75 @@ vec3 material_evaluate_radiance(uint32_t head_layer,
 								vec2 uv,
 								vec2 duvdx,
 								vec2 duvdy,
-								vec3 irradiance) {
-	material_layer_descriptor layer = mat_layer_descriptor[head_layer];
+								vec3 irradiance,
+								float external_medium_ior = 1.00029f) {
+	float D;
+	float G;
+	float F;
+	vec3 rgb = vec3(0);
 	
-	vec3 rgb = vec3(.0f);
-	float w = .0f;
-	while (true) {
-		uint32_t next_layer = layer.next_layer_id;
-		float thickness = next_layer == material_none ? 1 : layer.thickness;
+	material_layer_unpacked_descriptor descriptor = material_layer_unpack(layer, uv, duvdx, duvdy);
 
-		rgb += material_evaluate_layer_radiance(layer,
-												n, t, b,
-												v, l,
-												uv, duvdx, duvdy,
-												irradiance) * thickness;
-		w += thickness;
+	float F0 = material_convert_ior_to_F0(external_medium_ior, layer.ior);
+	float atten = 1.f;
+	vec3 h = normalize(v + l);
+
+	while (layer.next_layer_id != material_none) {
+		material_layer_descriptor next_layer = mat_layer_descriptor[layer.next_layer_id];
+
+		float thickness_scale = descriptor.base_color.a;
+
+		float thickness = thickness_scale * descriptor.thickness;
+		float metallic = descriptor.metallic;
+		float absorption_coefficient = descriptor.absorption_alpha;
+
+		vec3 in_v = v;
+		vec3 in_l = l;
 		
-		if (next_layer == material_none)
+		bool internal_reflection = !material_snell_refraction(v, n, layer.ior, next_layer.ior) || !material_snell_refraction(l, n, layer.ior, next_layer.ior);
+		if (internal_reflection) {
+			v = in_v;
+			l = in_l;
 			break;
-		layer = mat_layer_descriptor[next_layer];
+		}
+	
+		float dotNV = max(epsilon, dot(n,v));
+		float dotNL = max(epsilon, dot(n,l));
+		float path_length = thickness * (1.f / dotNV + 1.f / dotNL);
+		float absorption = exp(-path_length * absorption_coefficient);
+
+		float diffuse_attenuation = 1.f - absorption;
+
+		rgb += atten * material_evaluate_layer_radiance(descriptor,
+														n, t, b,
+														in_v, in_l, h,
+														F0,
+														diffuse_attenuation,
+														irradiance,
+														D, G, F);
+	
+		h = normalize(v + l);
+		float F21 = fresnel_schlick(F0, dot(l,h));
+	
+		float T12 = 1.f - F;
+		float T21 = 1.f - F21;
+		float g = (1.f - G) + T21 * G;
+		float passthrough = 1.f - metallic;
+
+		atten *= max(.0f, absorption * T12 * g * passthrough);
+		F0 = material_convert_ior_to_F0(layer.ior, next_layer.ior);
+
+		layer = next_layer;
+		descriptor = material_layer_unpack(next_layer, uv, duvdx, duvdy);
 	}
 
-	return rgb / w;
+	rgb += atten * material_evaluate_layer_radiance(descriptor,
+													n, t, b,
+													v, l, h,
+													F0,
+													1.f,
+													irradiance, 
+													D, G, F);
+
+	return rgb;
 }

@@ -109,6 +109,8 @@
     <Link>
       <AdditionalDependencies>opengl32.lib;glu32.lib;libboost_system-vc140-mt-gd-1_61.lib;libboost_filesystem-vc140-mt-gd-1_61.lib;libboost_serialization-vc140-mt-gd-1_61.lib;libboost_exception-vc140-mt-gd-1_61.lib;zlibstaticd.lib;freetyped.lib;libglew32d.lib;glfw3d.lib;turbojpeg-staticd.lib;libpng16_staticd.lib;tga_staticd.lib;tinyobjloaderd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:\src\boost_1_61_0\lib32-msvc-14.0;$(SolutionDir)Simulation\third_party\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <InterproceduralOptimization>false</InterproceduralOptimization>
+      <GenerateDebugInformation>Debug</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -134,6 +136,8 @@
     <Link>
       <AdditionalLibraryDirectories>C:\src\boost_1_61_0\lib64-msvc-14.0;$(SolutionDir)Simulation\third_party\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>opengl32.lib;glu32.lib;libboost_system-vc140-mt-gd-1_61.lib;libboost_filesystem-vc140-mt-gd-1_61.lib;libboost_serialization-vc140-mt-gd-1_61.lib;libboost_exception-vc140-mt-gd-1_61.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <InterproceduralOptimization>false</InterproceduralOptimization>
+      <GenerateDebugInformation>Debug</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -173,6 +177,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>opengl32.lib;glu32.lib;libboost_system-vc140-mt-1_61.lib;libboost_filesystem-vc140-mt-1_61.lib;libboost_serialization-vc140-mt-1_61.lib;libboost_exception-vc140-mt-1_61.lib;zlibstatic.lib;freetype.lib;libglew32.lib;glfw3.lib;turbojpeg-static.lib;libpng16_static.lib;tga_static.lib;tinyobjloader.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:\src\boost_1_61_0\lib32-msvc-14.0;$(SolutionDir)Simulation\third_party\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -208,6 +213,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>C:\src\boost_1_61_0\lib64-msvc-14.0;$(SolutionDir)Simulation\third_party\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>opengl32.lib;glu32.lib;libboost_system-vc140-mt-1_61.lib;libboost_filesystem-vc140-mt-1_61.lib;libboost_serialization-vc140-mt-1_61.lib;libboost_exception-vc140-mt-1_61.lib\;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -303,6 +309,7 @@
     </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_graphics\material\layer\material_layer.cpp" />
     <ClCompile Include="Simulation\src\ste\framework_graphics\material\material.cpp" />
+    <ClCompile Include="Simulation\src\ste\framework_graphics\material\layer\material_layer_descriptor.cpp" />
     <ClCompile Include="Simulation\src\ste\framework_graphics\mesh\Quad.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
@@ -698,8 +705,27 @@
     <None Include="Simulation\src\ste\framework_graphics\antialiasing\fxaa\shaders\fxaa.frag" />
     <None Include="Simulation\src\ste\framework_graphics\antialiasing\fxaa\shaders\fxaa.vert" />
     <None Include="Simulation\src\ste\framework_graphics\antialiasing\fxaa\shaders\nvidia_fxaa.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\common_shaders\chromaticity.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\common_shaders\common.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\common_shaders\dual_quaternion.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\common_shaders\fast_rand.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\common_shaders\indirect.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\common_shaders\noise.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\common_shaders\pack.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\common_shaders\passthrough.vert" />
+    <None Include="Simulation\src\ste\framework_graphics\common_shaders\project.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\common_shaders\quaternion.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\common_shaders\tangent_frame.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\common_shaders\transform.vert" />
+    <None Include="Simulation\src\ste\framework_graphics\common_shaders\utils.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\material\shaders\material.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\material\shaders\material_evaluate.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\material\shaders\material_layer_unpack.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\radiometry\radiance\BxDFs\cook_torrance_specular\shaders\cook_torrance.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\radiometry\radiance\BxDFs\cook_torrance_specular\shaders\microfacet.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\radiometry\radiance\BxDFs\disney_diffuse\shaders\disney_diffuse.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\radiometry\radiance\BxDFs\oren_nayar_diffuse\shaders\oren_nayar.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\radiometry\radiance\BxDFs\physical\shaders\pbrdf.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\deferred_composer\shaders\deferred_compose.frag" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\deferred_gbuffer\shaders\gbuffer.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\deferred_gbuffer\shaders\gbuffer_load.glsl" />

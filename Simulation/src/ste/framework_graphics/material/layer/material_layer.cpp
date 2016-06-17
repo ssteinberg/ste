@@ -12,6 +12,13 @@ material_layer::material_layer() {
 	material_sampler.set_mag_filter(Core::TextureFiltering::Linear);
 	material_sampler.set_mipmap_filter(Core::TextureFiltering::Linear);
 	material_sampler.set_anisotropic_filter(16);
+	
+	// Write default values
+	descriptor.set_roughness_and_thickness(roughness, thickness);
+	descriptor.set_anisotropy_and_metallicity(aniso_ratio, metallic);
+	descriptor.set_sheen(sheen, sheen_power);
+	descriptor.set_ior(index_of_refraction);
+	descriptor.set_alpha(absorption_alpha);
 }
 
 StE::Core::texture_handle material_layer::handle_for_texture(const Core::Texture2D *t) const {

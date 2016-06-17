@@ -279,6 +279,7 @@ int main()
 	std::unique_ptr<StE::Graphics::material_layer> layers[layers_count];
 	layers[0] = std::move(*ball_layers.begin());
 
+	bool layer_enabled[3] = { true, false, false };
 	StE::Graphics::RGB base_color[3];
 	float roughness[3];
 	float anisotropy[3];
@@ -287,6 +288,7 @@ int main()
 	float sheen[3];
 	float sheen_power[3];
 	float thickness[3];
+	float absorption[3];
 
 	for (int i = 0; i < layers_count; ++i) {
 		if (i > 0) {
@@ -306,25 +308,33 @@ int main()
 		sheen[i] = 0;
 		sheen_power[i] = 0;
 		thickness[i] = 0;
+		absorption[i] = 0;
 	}
 
 	debug_gui_dispatchable->add_custom_gui([&](const glm::ivec2 &bbsize) {
 		ImGui::SetNextWindowPos(ImVec2(20,bbsize.y - 400), ImGuiSetCond_FirstUseEver);
 		ImGui::SetNextWindowSize(ImVec2(120,400), ImGuiSetCond_FirstUseEver);
-		if (ImGui::Begin("Material", nullptr)) {
+		if (ImGui::Begin("Material Editor", nullptr)) {
 			for (int i = 0; i < layers_count; ++i) {
-				ImGui::Text((std::string("Layer ") + std::to_string(i)).data());
+				std::string layer_label = std::string("Layer ") + std::to_string(i);
+				if (i != 0)
+					ImGui::Checkbox(layer_label.data(), &layer_enabled[i]);
+				else
+					ImGui::Text(layer_label.data());
 
-				ImGui::SliderFloat("R ##value", &base_color[i].R(), .0f, 1.f);
-				ImGui::SliderFloat("G ##value", &base_color[i].G(), .0f, 1.f);
-				ImGui::SliderFloat("B ##value", &base_color[i].B(), .0f, 1.f);
-				ImGui::SliderFloat("Roughness ##value", &roughness[i], .0f, 1.f);
-				ImGui::SliderFloat("Anisotropy ##value", &anisotropy[i], -1.f, 1.f);
-				ImGui::SliderFloat("Metallic ##value", &metallic[i], .0f, 1.f);
-				ImGui::SliderFloat("IOR ##value", &index_of_refraction[i], 1.f, 15.f);
-				ImGui::SliderFloat("Sheen ##value", &sheen[i], .0f, 1.f);
-				ImGui::SliderFloat("Sheen Power ##value", &sheen_power[i], .0f, 1.f);
-				ImGui::SliderFloat("Thickness ##value", &thickness[i], .0f, .1f);
+				if (layer_enabled[i]) {
+					ImGui::SliderFloat((std::string("R ##value") +		" ##" + layer_label).data(), &base_color[i].R(),	 .0f, 1.f);
+					ImGui::SliderFloat((std::string("G ##value") +		" ##" + layer_label).data(), &base_color[i].G(),	 .0f, 1.f);
+					ImGui::SliderFloat((std::string("B ##value") +		" ##" + layer_label).data(), &base_color[i].B(),	 .0f, 1.f);
+					ImGui::SliderFloat((std::string("Rghn ##value") +	" ##" + layer_label).data(), &roughness[i],			 .0f, 1.f);
+					ImGui::SliderFloat((std::string("Aniso ##value") +	" ##" + layer_label).data(), &anisotropy[i],		-1.f, 1.f, "%.3f", 2.f);
+					ImGui::SliderFloat((std::string("Metal ##value") +	" ##" + layer_label).data(), &metallic[i],			 .0f, 1.f);
+					ImGui::SliderFloat((std::string("IOR ##value") +	" ##" + layer_label).data(), &index_of_refraction[i],1.f, 20.f, "%.5f", 3.f);
+					ImGui::SliderFloat((std::string("Shn ##value") +	" ##" + layer_label).data(), &sheen[i],				 .0f, 1.f);
+					ImGui::SliderFloat((std::string("ShnPwr ##value") +	" ##" + layer_label).data(), &sheen_power[i],		 .0f, 1.f);
+					ImGui::SliderFloat((std::string("Thick ##value") +	" ##" + layer_label).data(), &thickness[i],			 .0f, StE::Graphics::material_layer_max_thickness, "%.5f", 3.f);
+					ImGui::SliderFloat((std::string("Alpha ##value") +	" ##" + layer_label).data(), &absorption[i],		 .0f, 1000.f, "%.3f", 4.f);
+				}
 			}
 		}
 
@@ -347,6 +357,14 @@ int main()
 				layers[i]->set_sheen_power(sheen_power[i]);
 			if (layers[i]->get_layer_thickness() != thickness[i])
 				layers[i]->set_layer_thickness(thickness[i]);
+			if (layers[i]->get_absorption_alpha() != absorption[i])
+				layers[i]->set_absorption_alpha(absorption[i]);
+
+			if (i != 0) {
+				bool enabled = layers[i - 1]->get_next_layer() != nullptr;
+				if (layer_enabled[i] != enabled)
+					layers[i - 1]->set_next_layer(layer_enabled[i] ? layers[i].get() : nullptr);
+			}
 		}
 	});
 

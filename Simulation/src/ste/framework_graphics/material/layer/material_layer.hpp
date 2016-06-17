@@ -26,7 +26,17 @@ private:
 	Core::SamplerMipmapped material_sampler;
 
 	std::shared_ptr<Core::Texture2D> basecolor_map{ nullptr };
+	
+	float thickness{ .0f };
+
+	float roughness{ .5f };
 	float anisotropy{ .0f };
+	float aniso_ratio{ 1.f };
+	float metallic{ .0f };
+
+	float index_of_refraction{ 1.5f };
+	float absorption_alpha{ .0f };
+
 	float sheen{ .0f };
 	float sheen_power{ .0f };
 
@@ -49,21 +59,10 @@ public:
 	*	@brief	Convert material anisotropy value to ratio which is used to adjust anisotropic roughness values
 	*/
 	static float convert_anisotropy_to_ratio(float ansio) {
-		return ansio != .0f ? glm::sqrt(1.f - ansio * .9f) : 1.f;
-	}
-	
-	/**
-	*	@brief	Convert normalized sheen value to sheen ratio
-	*/
-	static float convert_sheen_to_sheen_ratio(float s) {
-		return s * 4;
-	}
-	
-	/**
-	*	@brief	Convert normalized sheen power value to sheen power parameter
-	*/
-	static float convert_sheen_power(float s) {
-		return glm::mix(5.f, 2.f, s);
+		float ratio = glm::sqrt(1.f - glm::abs(ansio) * material_layer_ansio_ratio_scale);
+		if (ansio < .0f)
+			ratio = 1.f / ratio;
+		return ratio;
 	}
 
 public:
@@ -74,6 +73,9 @@ public:
 
 	/**
 	*	@brief	Set material base color (diffuse) map
+	*
+	*	If the base color texture contains an alpha channel, the alpha value is used to modulate the layer thickness,
+	*	i.e. layer thickness = thickness * base_color.alpha
 	*
 	* 	@param tex	2D texture object
 	*/
@@ -91,7 +93,8 @@ public:
 	* 	@param r	Roughness - range: [0,1]
 	*/
 	void set_roughness(float r) {
-		descriptor.roughness = r;
+		roughness = r;
+		descriptor.set_roughness_and_thickness(roughness, thickness);
 		Base::notify();
 	}
 
@@ -104,7 +107,8 @@ public:
 	*/
 	void set_anisotropy(float a) {
 		anisotropy = a;
-		descriptor.anisotropy_ratio = convert_anisotropy_to_ratio(a);
+		aniso_ratio = convert_anisotropy_to_ratio(anisotropy);
+		descriptor.set_anisotropy_and_metallicity(aniso_ratio, metallic);
 		Base::notify();
 	}
 
@@ -116,7 +120,8 @@ public:
 	* 	@param m	Metallicity - range: [0,1] (Usually a binary value)
 	*/
 	void set_metallic(float m) {
-		descriptor.metallic = m;
+		metallic = m;
+		descriptor.set_anisotropy_and_metallicity(aniso_ratio, metallic);
 		Base::notify();
 	}
 
@@ -125,10 +130,26 @@ public:
 	*
 	*	Sets specular term using a given index-of-refraction. Defaults to 1.5.
 	*
-	* 	@param ior	Index-of-refraction - range: [1,infinity) (Usually in range [1,2])
+	* 	@param ior	Index-of-refraction - range: [1,infinity) (Usually in range [1,2] for non-metals)
 	*/
 	void set_index_of_refraction(float ior) {
-		descriptor.ior = ior;
+		index_of_refraction = ior;
+		descriptor.set_ior(index_of_refraction);
+		Base::notify();
+	}
+
+	/**
+	*	@brief	Set material absorption coefficient
+	*
+	*	Sets the absorption coefficient (alpha) as per the Beer–Lambert law. 
+	*	Absorption is wave-length dependent, with the dependence being the inverse of the luminance of the material base color
+	*	multiplied by alpha. Defaults to 0.
+	*
+	* 	@param a	Absorption alpha - range: [0,infinity)
+	*/
+	void set_absorption_alpha(float a) {
+		absorption_alpha = a;
+		descriptor.set_alpha(absorption_alpha);
 		Base::notify();
 	}
 
@@ -142,7 +163,7 @@ public:
 	*/
 	void set_sheen(float s) {
 		sheen = s;
-		descriptor.sheen_ratio = convert_sheen_to_sheen_ratio(s);
+		descriptor.set_sheen(sheen, sheen_power);
 		Base::notify();
 	}
 
@@ -155,7 +176,7 @@ public:
 	*/
 	void set_sheen_power(float sp) {
 		sheen_power = sp;
-		descriptor.sheen_power = convert_sheen_power(sp);
+		descriptor.set_sheen(sheen, sheen_power);
 		Base::notify();
 	}
 
@@ -164,10 +185,11 @@ public:
 	*
 	*	Controls the material layer thickness. Ignored for base layers.
 	*
-	* 	@param t	Thickness in standard units
+	* 	@param t	Thickness in standard units	- range: (0,material_layer_max_thickness)
 	*/
 	void set_layer_thickness(float t) {
-		descriptor.thickness = t;
+		thickness = t;
+		descriptor.set_roughness_and_thickness(roughness, thickness);
 		Base::notify();
 	}
 	
@@ -188,20 +210,21 @@ public:
 				layerid = id;
 		}
 
-		descriptor.next_layer_id = layerid;
+		descriptor.set_next_layer_id(layerid);
 		next_layer = layerid == material_layer_none ? nullptr : layer;
 		
 		Base::notify();
 	}
 
 	auto *get_basecolor_map() const { return basecolor_map.get(); }
-	float get_roughness() const { return descriptor.roughness; }
+	float get_roughness() const { return roughness; }
 	float get_anisotropy() const { return anisotropy; }
-	float get_metallic() const { return descriptor.metallic; }
-	float get_index_of_refraction() const { return descriptor.ior; }
+	float get_metallic() const { return metallic; }
+	float get_index_of_refraction() const { return index_of_refraction; }
 	float get_sheen() const { return sheen; }
 	float get_sheen_power() const { return sheen_power; }
-	float get_layer_thickness() const { return descriptor.thickness; }
+	float get_layer_thickness() const { return thickness; }
+	float get_absorption_alpha() const { return absorption_alpha; }
 
 	auto *get_next_layer() const { return next_layer; }
 
