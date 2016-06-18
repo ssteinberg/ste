@@ -1,5 +1,6 @@
 
 #include "common.glsl"
+#include "interleaved_gradient_noise.glsl"
 
 const float shadow_near = 20.f;
 
@@ -25,8 +26,14 @@ float shadow_blocker_search(samplerCubeArray shadow_maps, uint light, vec3 norm_
 }
 
 float shadow(samplerCubeArrayShadow shadow_depth_maps, samplerCubeArray shadow_maps, uint light, vec3 shadow_v, float light_radius) {
-	const float pcf_step = 2.f;
-	const float weight_bias = .6f;
+	const vec2 cluster_samples[8] = { vec2(-.7071f,  .7071f),
+									  vec2( .0000f,	-.8750f),
+									  vec2( .5303f,	 .5303f),
+									  vec2(-.6250f,	-.0000f),
+									  vec2( .3536f,	-.3536f),
+									  vec2(-.0000f,	 .3750f),
+									  vec2(-.1768f,	-.1768f),
+									  vec2( .1250f,	 .0000f) };
 
 	vec3 v = abs(shadow_v);
 	float dist_receiver = max(v.x, max(v.y, v.z));
@@ -45,47 +52,34 @@ float shadow(samplerCubeArrayShadow shadow_depth_maps, samplerCubeArray shadow_m
 		return 1.f;
 
 	float w_penumbra = (dist_receiver - d_blocker) * light_radius / d_blocker;
-	float p = w_penumbra / pcf_step / dist_receiver;
-	int samples = clamp(int(round(p)), 1, 3);
+	float p = max(3.f, w_penumbra / 2.f);
+	int clusters_to_sample = int(ceil(p / 2.f));
+	
+	float noise = 2.f * pi * interleaved_gradient_noise(gl_FragCoord.xy);
 
-	float accum = texture(shadow_depth_maps, vec4(shadow_v, light), zf).x;
-	float tw = 1.f;
+	float accum = .0f;
+	float w = .0f;
+	for (int i=0; i<clusters_to_sample; ++i) {
+		float flip = (i%2) == 0 ? -1.f : 1.f;
 
-	if (samples > 0) {
-		float t = .0f;
-		t += texture(shadow_depth_maps, vec4(shadow_cubemap_jitter_uv(norm_v, m, vec2(-samples,-samples) * pcf_step), light), zf).x;
-		t += texture(shadow_depth_maps, vec4(shadow_cubemap_jitter_uv(norm_v, m, vec2(-samples, samples) * pcf_step), light), zf).x;
-		t += texture(shadow_depth_maps, vec4(shadow_cubemap_jitter_uv(norm_v, m, vec2( samples,-samples) * pcf_step), light), zf).x;
-		t += texture(shadow_depth_maps, vec4(shadow_cubemap_jitter_uv(norm_v, m, vec2( samples, samples) * pcf_step), light), zf).x;
+		float noise_offset = 2.f * pi * float(i >> 1) / float((clusters_to_sample >> 1) + 1);
+		float sin_noise = sin(noise + noise_offset);
+		float cos_noise = cos(noise + noise_offset);
+		mat2 sample_rotation_matrix = mat2(cos_noise, sin_noise, -sin_noise, cos_noise);
 
-		float far = (accum + t) * .2f;
-		if (far <= .01f && far >= .99f)
-			return far;
+		for (int s=0; s<8; ++s) {
+			vec2 u = flip * p * (sample_rotation_matrix * cluster_samples[s]);
+			
+			const float gaussian = 6.f;
+			float l = length(cluster_samples[s]) * p;
+			float t = exp(-l*l / (2 * gaussian * gaussian)) / (2 * pi * gaussian * gaussian);
 
-		float wt = 1.f - float(samples) / float(samples + 1);
-		float w = mix(1.f, wt * wt, weight_bias);
-
-		accum += t * w;
-		tw += 4.f * w;
-	}
-
-	for (int x=-samples; x<=samples; ++x) {
-		for (int y=-samples; y<=samples; ++y) {
-			if (abs(x) == samples && abs(y) == samples)
-				continue;
-			if (x == 0 && y == 0)
-				continue;
-
-			float wx = 1.f - float(x) / float(samples + 1);
-			float wy = 1.f - float(y) / float(samples + 1);
-			float w = mix(1.f, wx * wy, weight_bias);
-
-			accum += texture(shadow_depth_maps, vec4(shadow_cubemap_jitter_uv(norm_v, m, vec2(x,y) * pcf_step), light), zf).x * w;
-			tw += w;
+			accum += texture(shadow_depth_maps, vec4(shadow_cubemap_jitter_uv(norm_v, m, u), light), zf).x * t;
+			w += t;
 		}
 	}
 
-	return accum /= tw;
+	return accum /= w;
 }
 
 float shadow_fast(samplerCubeArrayShadow shadow_depth_maps, uint light, vec3 shadow_v) {

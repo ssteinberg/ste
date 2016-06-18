@@ -103,7 +103,7 @@ vec3 deferred_shade_fragment(g_buffer_element frag) {
 								shadow_maps,
 								uint(lll_parse_ll_idx(lll_p)),
 								shadow_v,
-								l_radius * 50.f);
+								l_radius);
 			if (shdw <= .0f)
 				continue;
 
