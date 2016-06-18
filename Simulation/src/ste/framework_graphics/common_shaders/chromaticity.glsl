@@ -32,3 +32,7 @@ vec3 xyYtoXYZ(vec3 xyY) {
 	XYZ.y = xyY.z;
 	return XYZ;
 }
+
+vec3 luminance_saturate(vec3 c) {
+	return c / max(c.x, max(c.y, c.z));
+}

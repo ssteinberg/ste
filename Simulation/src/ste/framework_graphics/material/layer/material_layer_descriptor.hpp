@@ -25,7 +25,7 @@ private:
 	std::uint32_t roughness_thickness_pack{ 0 };
 	
 	float ior{ .0f };
-	float absorption_alpha{ .0f };
+	float attenuation_coefficient{ .0f };
 
 	std::uint32_t next_layer_id{ material_layer_none };
 
@@ -61,9 +61,9 @@ public:
 		ior = f;
 	}
 
-	void set_alpha(float a) {
+	void set_attenuation_coefficient(float a) {
 		a = glm::max(.0f, a);
-		absorption_alpha = a;
+		attenuation_coefficient = a;
 	}
 
 	void set_next_layer_id(std::uint32_t id) {

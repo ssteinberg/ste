@@ -333,7 +333,7 @@ int main()
 					ImGui::SliderFloat((std::string("Shn ##value") +	" ##" + layer_label).data(), &sheen[i],				 .0f, 1.f);
 					ImGui::SliderFloat((std::string("ShnPwr ##value") +	" ##" + layer_label).data(), &sheen_power[i],		 .0f, 1.f);
 					ImGui::SliderFloat((std::string("Thick ##value") +	" ##" + layer_label).data(), &thickness[i],			 .0f, StE::Graphics::material_layer_max_thickness, "%.5f", 3.f);
-					ImGui::SliderFloat((std::string("Alpha ##value") +	" ##" + layer_label).data(), &absorption[i],		 .0f, 1000.f, "%.3f", 4.f);
+					ImGui::SliderFloat((std::string("Attn ##value") +	" ##" + layer_label).data(), &absorption[i],		 .0f, 1000.f, "%.3f", 4.f);
 				}
 			}
 		}
@@ -357,8 +357,8 @@ int main()
 				layers[i]->set_sheen_power(sheen_power[i]);
 			if (layers[i]->get_layer_thickness() != thickness[i])
 				layers[i]->set_layer_thickness(thickness[i]);
-			if (layers[i]->get_absorption_alpha() != absorption[i])
-				layers[i]->set_absorption_alpha(absorption[i]);
+			if (layers[i]->get_attenuation_coefficient() != absorption[i])
+				layers[i]->set_attenuation_coefficient(absorption[i]);
 
 			if (i != 0) {
 				bool enabled = layers[i - 1]->get_next_layer() != nullptr;

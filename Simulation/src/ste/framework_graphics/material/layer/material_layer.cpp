@@ -18,7 +18,7 @@ material_layer::material_layer() {
 	descriptor.set_anisotropy_and_metallicity(aniso_ratio, metallic);
 	descriptor.set_sheen(sheen, sheen_power);
 	descriptor.set_ior(index_of_refraction);
-	descriptor.set_alpha(absorption_alpha);
+	descriptor.set_attenuation_coefficient(attenuation_coefficient);
 }
 
 StE::Core::texture_handle material_layer::handle_for_texture(const Core::Texture2D *t) const {

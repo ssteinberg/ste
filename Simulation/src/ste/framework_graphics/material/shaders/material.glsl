@@ -26,7 +26,7 @@ struct material_layer_descriptor {
 	uint32_t roughness_thickness_pack;
 
 	float ior;
-	float absorption_alpha;
+	float attenuation_coefficient;
 
 	uint32_t next_layer_id;
 };

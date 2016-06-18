@@ -12,7 +12,7 @@ struct material_layer_unpacked_descriptor {
 	float thickness;
 
 	float ior;
-	float absorption_alpha;
+	float attenuation_coefficient;
 };
 
 float material_convert_ior_to_F0(float ior1, float ior2) {
@@ -44,7 +44,7 @@ material_layer_unpacked_descriptor material_layer_unpack(material_layer_descript
 	d.thickness = rough_thick_pack.y * material_max_thickness;
 
 	d.ior = l.ior;
-	d.absorption_alpha = l.absorption_alpha;
+	d.attenuation_coefficient = l.attenuation_coefficient;
 
 	d.base_color = material_layer_base_color(l, uv, duvdx, duvdy);
 

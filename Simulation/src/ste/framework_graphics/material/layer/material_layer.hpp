@@ -35,7 +35,7 @@ private:
 	float metallic{ .0f };
 
 	float index_of_refraction{ 1.5f };
-	float absorption_alpha{ .0f };
+	float attenuation_coefficient{ .0f };
 
 	float sheen{ .0f };
 	float sheen_power{ .0f };
@@ -139,17 +139,18 @@ public:
 	}
 
 	/**
-	*	@brief	Set material absorption coefficient
+	*	@brief	Set material attenuation coefficient
 	*
-	*	Sets the absorption coefficient (alpha) as per the Beer–Lambert law. 
-	*	Absorption is wave-length dependent, with the dependence being the inverse of the luminance of the material base color
-	*	multiplied by alpha. Defaults to 0.
+	*	Sets the total attenuation coefficient as per the Beer–Lambert law. 
+	*	Total attenuation equals to scattering + absorption. Scattering is wave-length dependent according to the material base color. 
+	*	The rest is absorped light.
+	*	Defaults to 0.0.
 	*
-	* 	@param a	Absorption alpha - range: [0,infinity)
+	* 	@param a	Total attenuation coefficient  - range: [0,infinity)
 	*/
-	void set_absorption_alpha(float a) {
-		absorption_alpha = a;
-		descriptor.set_alpha(absorption_alpha);
+	void set_attenuation_coefficient(float a) {
+		attenuation_coefficient = a;
+		descriptor.set_attenuation_coefficient(attenuation_coefficient);
 		Base::notify();
 	}
 
@@ -224,7 +225,7 @@ public:
 	float get_sheen() const { return sheen; }
 	float get_sheen_power() const { return sheen_power; }
 	float get_layer_thickness() const { return thickness; }
-	float get_absorption_alpha() const { return absorption_alpha; }
+	float get_attenuation_coefficient() const { return attenuation_coefficient; }
 
 	auto *get_next_layer() const { return next_layer; }
 
