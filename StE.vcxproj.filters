@@ -1077,5 +1077,12 @@
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\quaternion.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\tangent_frame.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\transform.vert" />
+    <None Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shaders\shadow.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shaders\shadow_cubemap.geom" />
+    <None Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shaders\shadow_map.vert" />
+    <None Include="Simulation\src\ste\framework_graphics\common_shaders\interleaved_gradient_noise.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\volumetric_scattering\shaders\volumetric_scattering.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\volumetric_scattering\shaders\volumetric_scattering_gather.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\volumetric_scattering\shaders\volumetric_scattering_scatter.glsl" />
   </ItemGroup>
 </Project>

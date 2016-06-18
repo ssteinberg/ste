@@ -20,7 +20,7 @@ namespace StE {
 namespace Graphics {
 
 class shadowmap_storage {
-	static constexpr unsigned default_map_size = 512;
+	static constexpr unsigned default_map_size = 1024;
 	static constexpr float shadow_proj_near_clip = 20.0f;
 
 private:

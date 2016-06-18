@@ -15,7 +15,7 @@ layout(local_size_x = 32, local_size_y = 32, local_size_z = 1) in;
 #include "girenderer_transform_buffer.glsl"
 #include "project.glsl"
 
-#include "fast_rand.glsl"
+#include "interleaved_gradient_noise.glsl"
 
 layout(std430, binding = 2) restrict readonly buffer light_data {
 	light_descriptor light_buffer[];
@@ -104,10 +104,10 @@ void main() {
 
 				vec3 scatter = vec3(0.f);
 				for (int s = 0; s < samples; ++s) {
-					float r = fast_rand(slice_coords * float(light_idx + 1) * vec2(depth, float(s + 1)));
+					float r = interleaved_gradient_noise(slice_coords + vec2(light_idx + s + 1, depth));
 					float z = mix(z_start, z_next, r * .99f);
-
-					vec2 jitter = vec2(fract(r * 12.696f), fract(r * 78.329f));
+					
+					vec2 jitter = vec2(fract(r * 1.696f), fract(-r * 2.329f));
 					vec2 coords = slice_coords_to_fragcoords(vec2(slice_coords) + jitter);
 
 					vec3 position = unproject_screen_position_with_z(z, coords);

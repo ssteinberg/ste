@@ -710,6 +710,7 @@
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\dual_quaternion.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\fast_rand.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\indirect.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\common_shaders\interleaved_gradient_noise.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\noise.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\pack.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\passthrough.vert" />
@@ -740,6 +741,12 @@
     <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\shaders\hdr_create_histogram.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\shaders\hdr_tonemap_coc.frag" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\shaders\girenderer_transform_buffer.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shaders\shadow.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shaders\shadow_cubemap.geom" />
+    <None Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shaders\shadow_map.vert" />
+    <None Include="Simulation\src\ste\framework_graphics\volumetric_scattering\shaders\volumetric_scattering.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\volumetric_scattering\shaders\volumetric_scattering_gather.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\volumetric_scattering\shaders\volumetric_scattering_scatter.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
