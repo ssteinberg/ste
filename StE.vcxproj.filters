@@ -1084,5 +1084,28 @@
     <None Include="Simulation\src\ste\framework_graphics\volumetric_scattering\shaders\volumetric_scattering.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\volumetric_scattering\shaders\volumetric_scattering_gather.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\volumetric_scattering\shaders\volumetric_scattering_scatter.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\scene\shaders\object.frag" />
+    <None Include="Simulation\src\ste\framework_graphics\scene\shaders\object.vert" />
+    <None Include="Simulation\src\ste\framework_graphics\scene\shaders\shadow_projection_instance_to_ll_idx_translation.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\scene\perpopulate_depth\shaders\scene_prepopulate_depth.frag" />
+    <None Include="Simulation\src\ste\framework_graphics\scene\perpopulate_depth\shaders\scene_prepopulate_depth.vert" />
+    <None Include="Simulation\src\ste\framework_graphics\scene\geometry_cull\shaders\scene_geo_cull.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\voxels\shaders\voxelizer.frag" />
+    <None Include="Simulation\src\ste\framework_graphics\voxels\shaders\voxelizer.geom" />
+    <None Include="Simulation\src\ste\framework_graphics\voxels\shaders\voxelizer.vert" />
+    <None Include="Simulation\src\ste\framework_graphics\voxels\shaders\voxelizer_upsampler.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\voxels\shaders\voxels.glsl" />
+    <None Include="Simulation\src\ste\framework_text\rendering\shaders\text_distance_map_contour.frag" />
+    <None Include="Simulation\src\ste\framework_text\rendering\shaders\text_distance_map_contour.geom" />
+    <None Include="Simulation\src\ste\framework_text\rendering\shaders\text_distance_map_contour.vert" />
+    <None Include="Simulation\src\ste\framework_graphics\light\shaders\light.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\light\shaders\light_load.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\light\linked_light_lists\shaders\linked_light_lists.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\light\linked_light_lists\shaders\linked_light_lists_gen.frag" />
+    <None Include="Simulation\src\ste\framework_graphics\light\linked_light_lists\shaders\linked_light_lists_load.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\light\linked_light_lists\shaders\linked_light_lists_store.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\light\preprocessor\shaders\light_preprocess_cull_lights.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\light\preprocessor\shaders\light_preprocess_cull_shadows.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\entities\objects\shaders\mesh_descriptor.glsl" />
   </ItemGroup>
 </Project>
