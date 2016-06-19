@@ -30,9 +30,9 @@ float shadow(samplerCubeArrayShadow shadow_depth_maps, samplerCubeArray shadow_m
 									  vec2(-.1768f,	-.1768f),
 									  vec2( .1250f,	 .0000f) };
 	const float penumbra_scale = 5.f;
-	const float min_v_dot_n = .05f;
+	const float min_v_dot_n = .075f;
 	const int max_cluster_samples = 12;
-	const float penumbra_w_to_clusters_ratio = .1f;
+	const float penumbra_w_to_clusters_ratio = .05f;
 	const float gaussian = 10.f;
 
 	float dist_receiver;
@@ -77,9 +77,12 @@ float shadow(samplerCubeArrayShadow shadow_depth_maps, samplerCubeArray shadow_m
 			accum += texture(shadow_depth_maps, vec4(shadow_cubemap_jitter_uv(norm_v, m, u), light), zf).x * t;
 			w += t;
 		}
+
+		if (i == 0 && (accum <= .001f || accum >= w * .999f))
+			return accum / w;
 	}
 
-	return accum /= w;
+	return accum / w;
 }
 
 float shadow_fast(samplerCubeArrayShadow shadow_depth_maps, uint light, vec3 shadow_v) {
