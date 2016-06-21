@@ -51,6 +51,9 @@ void deferred_composer::set_context_state() const {
 	auto &ls = dr->scene->scene_properties().lights_storage();
 
 	GL::gl_current_context::get()->enable_state(StE::Core::GL::BasicStateName::TEXTURE_CUBE_MAP_SEAMLESS);
+	
+	0_tex_unit = *dr->gbuffer.get_backface_depth_target();
+	1_tex_unit = *dr->gbuffer.get_depth_target();
 
 	dr->gbuffer.bind_gbuffer();
 	0_storage_idx = dr->scene->scene_properties().materials_storage().buffer();

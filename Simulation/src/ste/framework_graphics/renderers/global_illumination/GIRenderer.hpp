@@ -21,8 +21,6 @@
 #include "scene_prepopulate_depth_dispatch.hpp"
 #include "scene_geo_cull_dispatch.hpp"
 
-#include "SceneProperties.hpp"
-
 #include "light.hpp"
 #include "light_preprocessor.hpp"
 #include "linked_light_lists.hpp"
@@ -83,8 +81,9 @@ private:
 private:
 	gpu_task::TaskCollection gui_tasks;
 	gpu_task::TaskCollection added_tasks;
-
+	
 	FbClearTask fb_clearer;
+	FbClearTask backface_fb_clearer;
 
 	linked_light_lists lll_storage;
 	shadowmap_storage shadows_storage;
@@ -96,6 +95,7 @@ private:
 
 	Resource::resource_instance<gbuffer_downsample_depth_dispatch> downsample_depth;
 	Resource::resource_instance<scene_prepopulate_depth_dispatch> prepopulate_depth_dispatch;
+	Resource::resource_instance<scene_prepopulate_depth_dispatch> prepopulate_backface_depth_dispatch;
 	Resource::resource_instance<scene_geo_cull_dispatch> scene_geo_cull;
 
 	Resource::resource_instance<linked_light_lists_gen_dispatch> lll_gen_dispatch;
@@ -110,11 +110,13 @@ private:
 									composer_task,
 									fxaa_task,
 									fb_clearer_task,
+									backface_fb_clearer_task,
 									shadow_projector_task,
 									volumetric_scattering_scatter_task,
 									volumetric_scattering_gather_task,
 									downsample_depth_task,
 									prepopulate_depth_task,
+									prepopulate_backface_depth_task,
 									scene_geo_cull_task,
 									lll_gen_task;
 
@@ -124,10 +126,6 @@ protected:
 	void rebuild_task_queue();
 
 	static int gbuffer_depth_target_levels();
-
-	const Core::GenericFramebufferObject *get_fbo() const {
-		return gbuffer.get_fbo();
-	}
 
 private:
 	GIRenderer(const StEngineControl &ctx,

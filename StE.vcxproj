@@ -595,7 +595,6 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\deferred_composer\deferred_composer.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\deferred_gbuffer\deferred_gbuffer.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\deferred_gbuffer\downsample_depth\gbuffer_downsample_depth_dispatch.hpp" />
-    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\deferred_gbuffer\gbuffer_clear_dispatch.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\GIRenderer.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\girenderer_loader.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\hdr_dof_postprocess.hpp" />
@@ -752,9 +751,8 @@
     <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\shaders\girenderer_transform_buffer.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\scene\geometry_cull\shaders\scene_geo_cull.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\scene\perpopulate_depth\shaders\scene_prepopulate_depth.frag" />
-    <None Include="Simulation\src\ste\framework_graphics\scene\perpopulate_depth\shaders\scene_prepopulate_depth.vert" />
     <None Include="Simulation\src\ste\framework_graphics\scene\shaders\object.frag" />
-    <None Include="Simulation\src\ste\framework_graphics\scene\shaders\object.vert" />
+    <None Include="Simulation\src\ste\framework_graphics\scene\shaders\scene_transform.vert" />
     <None Include="Simulation\src\ste\framework_graphics\scene\shaders\shadow_projection_instance_to_ll_idx_translation.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shaders\shadow.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shaders\shadow_cubemap.geom" />

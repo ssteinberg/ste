@@ -13,7 +13,7 @@ layout(location = 1) in vec3 vert;
 layout(location = 2) in vec2 tex_coords;
 
 out vec4 gl_Position;
-out v {
+out scene_transform {
 	vec3 frag_position;
 	vec3 frag_normal;
 	vec3 frag_tangent;

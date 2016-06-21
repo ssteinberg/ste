@@ -16,7 +16,7 @@ constexpr int Scene::shadow_proj_id_to_ll_id_table_size;
 
 Scene::Scene(const StEngineControl &ctx) : culled_objects_counter(1),
 										   sproj_id_to_llid_tt(pages * std::max<std::size_t>(65536, sproj_id_to_llid_tt_buffer_type::page_size()) / sizeof(shadow_projection_instance_to_ll_idx_translation)),
-										   object_program(ctx, std::vector<std::string>{ "object.vert", "object.frag" }) {}
+										   object_program(ctx, std::vector<std::string>{ "scene_transform.vert", "object.frag" }) {}
 
 void Scene::bind_buffers() const {
 	using namespace Core;

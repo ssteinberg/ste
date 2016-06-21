@@ -52,7 +52,17 @@ layout(bindless_sampler) uniform samplerCubeArrayShadow shadow_depth_maps;
 layout(bindless_sampler) uniform samplerCubeArray shadow_maps;
 layout(bindless_sampler) uniform sampler3D scattering_volume;
 
+layout(binding = 0) uniform sampler2D back_face_depth;
+layout(binding = 1) uniform sampler2D front_face_depth;
+
 out vec4 gl_FragColor;
+
+float get_thickness(ivec2 coord) {
+	float fd = unproject_depth(texelFetch(front_face_depth, coord, 0).x);
+	float bd = unproject_depth(texelFetch(back_face_depth, coord, 0).x);
+
+	return fd - bd;
+}
 
 vec3 deferred_shade_fragment(g_buffer_element frag) {
 	int draw_idx = gbuffer_parse_material(frag);
