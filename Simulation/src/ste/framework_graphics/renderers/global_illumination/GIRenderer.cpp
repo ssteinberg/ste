@@ -86,6 +86,7 @@ void GIRenderer::setup_tasks() {
 	prepopulate_depth_task->add_dependency(shadow_projector_task);
 	
 	prepopulate_backface_depth_task->add_dependency(backface_fb_clearer_task);
+	prepopulate_backface_depth_task->add_dependency(scene_task);
 
 	downsample_depth_task->add_dependency(prepopulate_depth_task);
 

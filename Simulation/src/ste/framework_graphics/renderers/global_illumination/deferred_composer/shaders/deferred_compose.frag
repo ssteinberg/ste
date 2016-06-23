@@ -109,12 +109,10 @@ vec3 deferred_shade_fragment(g_buffer_element frag) {
 
 			float l_radius = ld.radius;
 			vec3 shadow_v = w_pos - ld.position;
-			vec3 ss_v = normalize(quat_mul_vec(view_transform_buffer.view_transform.real, shadow_v));
 			float shdw = shadow(shadow_depth_maps,
 								shadow_maps,
 								uint(lll_parse_ll_idx(lll_p)),
 								shadow_v,
-								dot(n, ss_v),
 								l_radius);
 			if (shdw <= .0f)
 				continue;

@@ -116,7 +116,8 @@ void main() {
 					vec3 shadow_v = w_pos - ld.position;
 					float shadow = shadow_fast(shadow_depth_maps,
 											   uint(lll_parse_ll_idx(lll_p)),
-											   shadow_v);
+											   shadow_v,
+											   ld.radius);
 					if (shadow <= .0f)
 						continue;
 
