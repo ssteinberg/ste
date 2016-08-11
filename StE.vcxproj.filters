@@ -1103,5 +1103,7 @@
     <None Include="Simulation\src\ste\framework_graphics\light\preprocessor\shaders\light_preprocess_cull_shadows.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\entities\objects\shaders\mesh_descriptor.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\scene\shaders\scene_transform.vert" />
+    <None Include="Simulation\src\ste\framework_graphics\radiometry\radiance\subsurface_scattering\shaders\subsurface_scattering.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\deferred_composer\shaders\deferred_shading.glsl" />
   </ItemGroup>
 </Project>

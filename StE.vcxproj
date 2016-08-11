@@ -735,7 +735,9 @@
     <None Include="Simulation\src\ste\framework_graphics\radiometry\radiance\BxDFs\disney_diffuse\shaders\disney_diffuse.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\radiometry\radiance\BxDFs\oren_nayar_diffuse\shaders\oren_nayar.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\radiometry\radiance\BxDFs\physical\shaders\pbrdf.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\radiometry\radiance\subsurface_scattering\shaders\subsurface_scattering.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\deferred_composer\shaders\deferred_compose.frag" />
+    <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\deferred_composer\shaders\deferred_shading.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\deferred_gbuffer\shaders\gbuffer.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\deferred_gbuffer\shaders\gbuffer_load.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\deferred_gbuffer\shaders\gbuffer_store.glsl" />

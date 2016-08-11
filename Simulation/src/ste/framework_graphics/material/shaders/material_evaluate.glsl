@@ -2,6 +2,8 @@
 #include "material.glsl"
 #include "material_layer_unpack.glsl"
 
+#include "subsurface_scattering.glsl"
+
 #include "common.glsl"
 
 vec3 material_evaluate_layer_radiance(material_layer_unpacked_descriptor descriptor,
@@ -74,6 +76,7 @@ bool material_snell_refraction(inout vec3 v,
 }
 
 vec3 material_evaluate_radiance(material_layer_descriptor layer,
+								vec3 position,
 								vec3 n,
 								vec3 t,
 								vec3 b,
@@ -82,6 +85,9 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 								vec2 uv,
 								vec2 duvdx,
 								vec2 duvdy,
+								float object_thickness,
+								light_descriptor ld,
+								samplerCubeArray shadow_maps, uint light,
 								vec3 irradiance,
 								float external_medium_ior = 1.00029f) {
 	float D;
@@ -96,6 +102,8 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 
 	float atten = 1.f;
 	vec3 h = normalize(v + l);
+
+	float outer_layers_attenuation_approximation_for_sss = 1.f;
 
 	while (layer.next_layer_id != material_none) {
 		material_layer_descriptor next_layer = mat_layer_descriptor[layer.next_layer_id];
@@ -140,6 +148,8 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 		float g = (1.f - G) + T21 * G;
 		float passthrough = 1.f - metallic;
 
+		outer_layers_attenuation_approximation_for_sss *= exp(-thickness * attenuation_coefficient) * (1.f - F0) * passthrough;
+
 		atten *= max(.0f, (1.f - extinction) * T12 * g * passthrough);
 		F0 = material_convert_ior_to_F0(layer.ior, next_layer.ior);
 
@@ -157,6 +167,17 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 													base_color,
 													base_color,
 													D, G, F);
+
+	outer_layers_attenuation_approximation_for_sss *= (1.f - F0) * (1.f - descriptor.metallic);
+	rgb += subsurface_scattering(descriptor, 
+								 position,
+								 base_color,
+								 n, -n,
+								 outer_layers_attenuation_approximation_for_sss,
+							 	 object_thickness,
+								 ld,
+								 shadow_maps, light,
+								 -v);
 
 	return rgb;
 }

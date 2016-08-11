@@ -2,6 +2,8 @@
 #include "common.glsl"
 #include "interleaved_gradient_noise.glsl"
 
+#include "project.glsl"
+
 const float shadow_map_size = 1024.f;
 
 float shadow_calculate_test_depth(float zf) {
@@ -106,4 +108,18 @@ float shadow_fast(samplerCubeArrayShadow shadow_depth_maps, uint light, vec3 sha
 	float zf = shadow_near / m;
 
 	return texture(shadow_depth_maps, vec4(shadow_v, light), shadow_calculate_test_depth(zf)).x;
+}
+
+float shadow_depth(samplerCubeArray shadow_maps, uint light, vec3 shadow_v) {
+	vec3 v = abs(shadow_v);
+	float m = max(v.x, max(v.y, v.z));
+
+	return texture(shadow_maps, vec4(shadow_v, light)).x;
+}
+
+float shadow_dist(samplerCubeArray shadow_maps, uint light, vec3 shadow_v, float light_radius) {
+	float d = shadow_depth(shadow_maps, light, shadow_v);
+	float shadow_near = light_radius;
+
+	return unproject_depth(d, shadow_near);
 }

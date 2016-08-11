@@ -35,11 +35,8 @@ void deferred_composer::attach_handles() const {
 		auto shadow_depth_maps_handle = shadow_depth_maps->get_texture_handle(dr->shadows_storage.get_shadow_sampler());
 		shadow_depth_maps_handle.make_resident();
 		program.get().set_uniform("shadow_depth_maps", shadow_depth_maps_handle);
-	}
 
-	auto shadow_maps = dr->shadows_storage.get_cubemaps();
-	if (shadow_maps) {
-		auto shadow_maps_handle = shadow_maps->get_texture_handle(*Core::Sampler::SamplerLinearClamp());
+		auto shadow_maps_handle = shadow_depth_maps->get_texture_handle(*Core::Sampler::SamplerLinearClamp());
 		shadow_maps_handle.make_resident();
 		program.get().set_uniform("shadow_maps", shadow_maps_handle);
 	}
