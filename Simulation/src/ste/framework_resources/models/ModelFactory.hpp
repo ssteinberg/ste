@@ -40,6 +40,9 @@ private:
 	using materials_type = std::vector<tinyobj::material_t>;
 
 private:
+	static tinyobj::material_t empty_mat;
+
+private:
 	~ModelFactory() {}
 
 	static StE::task_future<void> load_texture(task_scheduler *sched,
