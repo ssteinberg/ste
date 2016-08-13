@@ -10,9 +10,9 @@ int subsurface_scattering_calculate_steps(float thickness) {
 }
 
 vec3 subsurface_scattering(material_layer_unpacked_descriptor descriptor,
-						   vec3 position,
 						   vec3 base_color,
-						   vec3 n, vec3 backside_n,
+						   vec3 position,
+						   vec3 n,
 						   float outer_layers_attenuation,
 						   float thickness,
 						   light_descriptor ld,
@@ -22,12 +22,11 @@ vec3 subsurface_scattering(material_layer_unpacked_descriptor descriptor,
 	float l_radius = ld.radius;
 	vec3 l_pos = ld.position;
 	
-	vec3 rgb = vec3(0);
-	
 	if (attenuation_coefficient <= .0f || outer_layers_attenuation < .01f)
-		return rgb;
+		return vec3(.0f);
 
 	int steps = subsurface_scattering_calculate_steps(thickness);
+	vec3 samples_accum = vec3(0);
 
 	for (int i = 0; i < steps; ++i) {
 		float dist0 = (float(i) + .5f) / float(steps) * thickness;
@@ -41,11 +40,12 @@ vec3 subsurface_scattering(material_layer_unpacked_descriptor descriptor,
 		float path_length = dist0 + (dist_light_to_sample - dist_light_to_object);
 
 		vec3 irradiance = light_irradiance(ld, dist_light_to_object) * outer_layers_attenuation;
-		float extinction = 1.f - exp(-path_length * attenuation_coefficient);
-		vec3 scattering = extinction * base_color;
 
-		rgb += irradiance * scattering;
+		float attenuation = exp(-path_length * attenuation_coefficient);
+		vec3 scattering = attenuation * irradiance;
+
+		samples_accum += base_color * scattering;
 	}
 
-	return rgb * outer_layers_attenuation;
+	return samples_accum / float(steps) * outer_layers_attenuation;
 }

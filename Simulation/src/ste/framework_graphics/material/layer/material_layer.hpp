@@ -217,7 +217,7 @@ public:
 		Base::notify();
 	}
 
-	auto *get_basecolor_map() const { return basecolor_map.get(); }
+	auto get_basecolor_map() const { return basecolor_map; }
 	float get_roughness() const { return roughness; }
 	float get_anisotropy() const { return anisotropy; }
 	float get_metallic() const { return metallic; }

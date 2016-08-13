@@ -121,7 +121,6 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 		if (total_internal_reflection) {
 			v = in_v;
 			l = in_l;
-			break;
 		}
 	
 		float dotNV = max(epsilon, dot(n,v));
@@ -170,9 +169,9 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 
 	outer_layers_attenuation_approximation_for_sss *= (1.f - F0) * (1.f - descriptor.metallic);
 	rgb += subsurface_scattering(descriptor, 
-								 position,
 								 base_color,
-								 n, -n,
+								 position,
+								 n,
 								 outer_layers_attenuation_approximation_for_sss,
 							 	 object_thickness,
 								 ld,
