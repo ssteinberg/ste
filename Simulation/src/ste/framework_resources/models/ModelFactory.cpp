@@ -179,12 +179,12 @@ StE::task_future<void> ModelFactory::load_texture(task_scheduler* sched,
 		}
 
 		if (is_displacement_map && tex->format() != gli::FORMAT_R8_UNORM_PACK8) {
-			if (tex->format() == gli::FORMAT_RGB8_UNORM_PACK8) {
-				ste_log_warn() << "Texture \"" << name << "\" doesn't look like a displacement map. Assuming normal map." << std::endl;
+			if (tex->format() == gli::FORMAT_RGB8_UNORM_PACK8 || tex->format() == gli::FORMAT_RGBA8_UNORM_PACK8) {
+				ste_log_warn() << "Texture \"" << name << "\" looks like a normal map and not a displacement map as specified by the model. Assuming a normal map." << std::endl;
 				is_displacement_map = false;
 			}
 			else {
-				ste_log_warn() << "Texture \"" << name << "\" doesn't look like a displacement map. Bailing..." << std::endl;
+				ste_log_warn() << "Texture \"" << name << "\" doesn't look like a displacement map. Bailing out..." << std::endl;
 				return;
 			}
 		}

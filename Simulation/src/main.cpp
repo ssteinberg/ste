@@ -241,17 +241,17 @@ int main()
 																		 materials,
 																		 material_layers));
 	
-	std::vector<std::unique_ptr<StE::Graphics::material>> ball_materials;
-	std::vector<std::unique_ptr<StE::Graphics::material_layer>> ball_layers;
-	std::vector<std::shared_ptr<StE::Graphics::Object>> ball_objects;
+	std::vector<std::unique_ptr<StE::Graphics::material>> mat_editor_materials;
+	std::vector<std::unique_ptr<StE::Graphics::material_layer>> mat_editor_layers;
+	std::vector<std::shared_ptr<StE::Graphics::Object>> mat_editor_objects;
 	loading_futures.insert(StE::Resource::ModelFactory::load_model_async(ctx,
-																		 R"(Data/models/ball/Football.obj)",
+																		 R"(Data/models/dragon/china_dragon.obj)",
 																		 &scene.get().object_group(),
 																		 &scene.get().scene_properties(),
 																		 2.5f,
-																		 ball_materials,
-																		 ball_layers,
-																		 &ball_objects));
+																		 mat_editor_materials,
+																		 mat_editor_layers,
+																		 &mat_editor_objects));
 	loading_futures.insert(ctx.scheduler().schedule_now([&]() {
 		renderer.wait();
 	}));
@@ -265,19 +265,19 @@ int main()
 	 *	Create debug view window and material editor
 	 */
 
+	constexpr int layers_count = 3;
+
 	std::unique_ptr<StE::Graphics::profiler> gpu_tasks_profiler = std::make_unique<StE::Graphics::profiler>();
 	renderer.get().attach_profiler(gpu_tasks_profiler.get());
 	std::unique_ptr<StE::Graphics::debug_gui> debug_gui_dispatchable = std::make_unique<StE::Graphics::debug_gui>(ctx, gpu_tasks_profiler.get(), font, &camera);
 
-	auto ball = ball_objects.back().get();
-	auto ball_model_transform = glm::translate(glm::mat4(), glm::vec3{ .0f, 100.f, .0f });
-	ball->set_model_transform(glm::mat4x3(ball_model_transform));
-
-	constexpr int layers_count = 3;
+	auto mat_editor_model_transform = glm::scale(glm::mat4(), glm::vec3{ 3.5f });
+	mat_editor_model_transform = glm::translate(mat_editor_model_transform, glm::vec3{ .0f, -15.f, .0f });
+	for (auto &o : mat_editor_objects)
+		o->set_model_transform(glm::mat4x3(mat_editor_model_transform));
 	
-	auto mat = std::move(*ball_materials.begin());
 	std::unique_ptr<StE::Graphics::material_layer> layers[layers_count];
-	layers[0] = std::move(*ball_layers.begin());
+	layers[0] = std::move(mat_editor_layers.back());
 
 	bool layer_enabled[3] = { true, false, false };
 	StE::Graphics::RGB base_color[3];
@@ -296,18 +296,18 @@ int main()
 			layers[i-1]->set_next_layer(layers[i].get());
 		}
 
-		gli::texture2d base_color_tex{ gli::format::FORMAT_RGB8_UNORM_PACK8, { 1, 1 }, 1 }; 
-		*reinterpret_cast<glm::u8vec3*>(base_color_tex.data()) = glm::u8vec3(255); 
+		gli::texture2d base_color_tex{ gli::format::FORMAT_RGB8_UNORM_PACK8, { 1, 1 }, 1 };
+		*reinterpret_cast<glm::u8vec3*>(base_color_tex.data()) = glm::u8vec3(255);
 		layers[i]->set_basecolor_map(std::make_unique<StE::Core::Texture2D>(base_color_tex, false));
 
-		base_color[i] = {1,1,1};
+		base_color[i] = { 1,1,1 };
 		roughness[i] = .5f;
 		anisotropy[i] = 0;
 		metallic[i] = 0;
 		index_of_refraction[i] = 1.5f;
 		sheen[i] = 0;
 		sheen_power[i] = 0;
-		thickness[i] = 0;
+		thickness[i] = 0.001f;
 		absorption[i] = 0;
 	}
 
@@ -332,8 +332,9 @@ int main()
 					ImGui::SliderFloat((std::string("IOR ##value") +	" ##" + layer_label).data(), &index_of_refraction[i],1.f, 20.f, "%.5f", 3.f);
 					ImGui::SliderFloat((std::string("Shn ##value") +	" ##" + layer_label).data(), &sheen[i],				 .0f, 1.f);
 					ImGui::SliderFloat((std::string("ShnPwr ##value") +	" ##" + layer_label).data(), &sheen_power[i],		 .0f, 1.f);
-					ImGui::SliderFloat((std::string("Thick ##value") +	" ##" + layer_label).data(), &thickness[i],			 .0f, StE::Graphics::material_layer_max_thickness, "%.5f", 3.f);
-					ImGui::SliderFloat((std::string("Attn ##value") +	" ##" + layer_label).data(), &absorption[i],		 .0f, 1000.f, "%.3f", 4.f);
+					if (i < layers_count - 1 && layer_enabled[i + 1])
+						ImGui::SliderFloat((std::string("Thick ##value") + " ##" + layer_label).data(), &thickness[i], .0f, StE::Graphics::material_layer_max_thickness, "%.5f", 3.f);
+					ImGui::SliderFloat((std::string("Attn ##value") +	" ##" + layer_label).data(), &absorption[i],		 .0f, 1000.f, "%.3f", 7.f);
 				}
 			}
 		}
