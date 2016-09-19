@@ -127,7 +127,7 @@ StE::task_future<void> ModelFactory::process_model_mesh(task_scheduler* sched,
 		auto layer = scene_properties->material_layers_storage().allocate_layer();
 		auto mat = scene_properties->materials_storage().allocate_material(layer.get());
 
-		if (diff_map != nullptr) layer->set_basecolor_map(diff_map);
+		if (diff_map != nullptr) mat->set_texture(diff_map);
 		if (specular_map != nullptr) mat->set_cavity_map(specular_map);
 		if (normalmap != nullptr) mat->set_normal_map(normalmap);
 		if (opacity_map != nullptr) mat->set_mask_map(opacity_map);

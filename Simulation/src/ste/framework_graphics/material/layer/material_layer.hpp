@@ -11,6 +11,8 @@
 #include "Texture2D.hpp"
 #include "Sampler.hpp"
 
+#include "RGB.hpp"
+
 #include <memory>
 
 namespace StE {
@@ -25,7 +27,7 @@ class material_layer : public Core::observable_resource<material_layer_descripto
 private:
 	Core::SamplerMipmapped material_sampler;
 
-	std::shared_ptr<Core::Texture2D> basecolor_map{ nullptr };
+	RGB color;
 	
 	float thickness{ .0f };
 
@@ -35,7 +37,7 @@ private:
 	float metallic{ .0f };
 
 	float index_of_refraction{ 1.5f };
-	float attenuation_coefficient{ .0f };
+	glm::vec3 attenuation_coefficient{ .0f };
 
 	float sheen{ .0f };
 	float sheen_power{ .0f };
@@ -67,21 +69,19 @@ public:
 
 public:
 	material_layer();
-	~material_layer() {
-		basecolor_map = nullptr;
-	}
 
 	/**
-	*	@brief	Set material base color (diffuse) map
+	*	@brief	Set material color
 	*
-	*	If the base color texture contains an alpha channel, the alpha value is used to modulate the layer thickness,
-	*	i.e. layer thickness = thickness * base_color.alpha
+	*	Color of the material, defaults to { 0,0,0 }.
 	*
-	* 	@param tex	2D texture object
+	* 	@param rgb	Material color
 	*/
-	void set_basecolor_map(const std::shared_ptr<Core::Texture2D> &tex) {
-		basecolor_map = tex;
-		descriptor.basecolor_handle = handle_for_texture(basecolor_map.get());
+	void set_color(const RGB &rgb) {
+		color = rgb;
+
+		glm::vec3 v = rgb;
+		descriptor.set_color(glm::vec4{ v.r, v.g, v.b, 1.f });
 		Base::notify();
 	}
 
@@ -142,13 +142,14 @@ public:
 	*	@brief	Set material attenuation coefficient
 	*
 	*	Sets the total attenuation coefficient as per the Beer–Lambert law. 
-	*	Total attenuation equals to scattering + absorption. Scattering is wave-length dependent according to the material base color. 
-	*	The rest is absorped light.
-	*	Defaults to 0.0.
+	*	Total attenuation equals to scattering + absorption, both are wavelength dependant. 
+	*	Scattering is dependent according to the material layer color. The rest is absorped light.
+	*	
+	*	Defaults to { 0, 0, 0 }
 	*
 	* 	@param a	Total attenuation coefficient  - range: [0,infinity)
 	*/
-	void set_attenuation_coefficient(float a) {
+	void set_attenuation_coefficient(const glm::vec3 a) {
 		attenuation_coefficient = a;
 		descriptor.set_attenuation_coefficient(attenuation_coefficient);
 		Base::notify();
@@ -217,7 +218,7 @@ public:
 		Base::notify();
 	}
 
-	auto get_basecolor_map() const { return basecolor_map; }
+	auto get_color() const { return color; }
 	float get_roughness() const { return roughness; }
 	float get_anisotropy() const { return anisotropy; }
 	float get_metallic() const { return metallic; }
@@ -225,7 +226,7 @@ public:
 	float get_sheen() const { return sheen; }
 	float get_sheen_power() const { return sheen_power; }
 	float get_layer_thickness() const { return thickness; }
-	float get_attenuation_coefficient() const { return attenuation_coefficient; }
+	auto get_attenuation_coefficient() const { return attenuation_coefficient; }
 
 	auto *get_next_layer() const { return next_layer; }
 

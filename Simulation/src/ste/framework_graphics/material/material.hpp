@@ -32,6 +32,9 @@ private:
 	std::shared_ptr<Core::Texture2D> cavity_map{ nullptr };
 	std::shared_ptr<Core::Texture2D> normal_map{ nullptr };
 	std::shared_ptr<Core::Texture2D> mask_map{ nullptr };
+	std::shared_ptr<Core::Texture2D> texture{ nullptr };
+
+	RGB emission{ 0, 0, 0 };
 
 	material_layer *head_layer;
 
@@ -46,20 +49,37 @@ private:
 
 private:
 	Core::texture_handle handle_for_texture(const Core::Texture2D *t) const;
+	void set_head_layer(material_layer *head_layer);
 
 public:
 	/**
 	*	@brief	Material ctor
 	*
-	*	Constructs a new material using an upper layer. See set_layer method description for more information.
+	*	Constructs a new material using an upper layer. See attach_layer_stack method description for more information.
 	*
-	* 	@param head_layer	material layer
+	* 	@param head_layer	material head layer (top layer) of the layer stack
 	*/
 	explicit material(material_layer *head_layer);
 	~material() {
 		cavity_map = nullptr;
 		normal_map = nullptr;
 		mask_map = nullptr;
+		texture = nullptr;
+	}
+
+	/**
+	*	@brief	Set material texture
+	*
+	*	The material texture is used to add an additional texture detail on top of material layers' colors.
+	*	The final color value after computing irradiance, reflection and subsurface scattering is multiplied by the texture sample.
+	*	For correct results, primary material color should be expressed as layer color, with texture only modulating it.
+	*
+	* 	@param tex	2D texture object
+	*/
+	void set_texture(const std::shared_ptr<Core::Texture2D> &tex) {
+		texture = tex;
+		descriptor.texture_handle = handle_for_texture(texture.get());
+		Base::notify();
 	}
 
 	/**
@@ -107,26 +127,30 @@ public:
 	* 	@param rgb	Emission color
 	*/
 	void set_emission(const RGB &rgb) {
-		descriptor.emission = rgb;
+		emission = rgb;
+
+		glm::vec3 v = rgb;
+		descriptor.set_emission(glm::vec4{ v.r, v.g, v.b, 1.f });
 		Base::notify();
 	}
 	
 	/**
-	*	@brief	Set the head layer (top layer) of the layer stack
+	*	@brief	Set the material layer stack
 	*
 	*	Materials are composed of variable thickness layers, see material_layer for more information about material layer parameters.
 	*	Layers are stacked top to bottom (base) layer using a single linked list. This method set the id of the top layer, to link additional layers
 	*	consult the set_next_layer method of material_layer. The layer which has no further linked layer is the base layer.
 	*
-	* 	@param layer	material layer
+	* 	@param head_layer	material head layer (top layer) of the layer stack
 	*/
-	void set_layer(material_layer *layer);
+	void attach_layer_stack(material_layer *head_layer);
 
 	auto *get_cavity_map() const { return cavity_map.get(); }
 	auto *get_normal_map() const { return normal_map.get(); }
 	auto *get_mask_map() const { return mask_map.get(); }
+	auto *get_texture() const { return texture.get(); }
 
-	RGB get_emission() const { return descriptor.emission; }
+	RGB get_emission() const { return emission; }
 	
 	auto *get_head_layer() const { return head_layer; }
 

@@ -83,7 +83,7 @@ auto create_light_object(StE::Graphics::Scene *scene, const glm::vec3 &light_pos
 	
 	auto layer = scene->scene_properties().material_layers_storage().allocate_layer();
 	auto mat = scene->scene_properties().materials_storage().allocate_material(layer.get());
-	layer->set_basecolor_map(std::make_unique<StE::Core::Texture2D>(light_color_tex, false));
+	mat->set_texture(std::make_unique<StE::Core::Texture2D>(light_color_tex, false));
 	mat->set_emission(c * light->get_luminance());
 
 	light_obj->set_material(mat.get());
@@ -296,10 +296,6 @@ int main()
 			layers[i-1]->set_next_layer(layers[i].get());
 		}
 
-		gli::texture2d base_color_tex{ gli::format::FORMAT_RGB8_UNORM_PACK8, { 1, 1 }, 1 };
-		*reinterpret_cast<glm::u8vec3*>(base_color_tex.data()) = glm::u8vec3(255);
-		layers[i]->set_basecolor_map(std::make_unique<StE::Core::Texture2D>(base_color_tex, false));
-
 		base_color[i] = { 1,1,1 };
 		roughness[i] = .5f;
 		anisotropy[i] = 0;
@@ -308,7 +304,7 @@ int main()
 		sheen[i] = 0;
 		sheen_power[i] = 0;
 		thickness[i] = 0.001f;
-		absorption[i] = 0;
+		absorption[i] = 1.f;
 	}
 
 	debug_gui_dispatchable->add_custom_gui([&](const glm::ivec2 &bbsize) {
@@ -334,7 +330,7 @@ int main()
 					ImGui::SliderFloat((std::string("ShnPwr ##value") +	" ##" + layer_label).data(), &sheen_power[i],		 .0f, 1.f);
 					if (i < layers_count - 1 && layer_enabled[i + 1])
 						ImGui::SliderFloat((std::string("Thick ##value") + " ##" + layer_label).data(), &thickness[i], .0f, StE::Graphics::material_layer_max_thickness, "%.5f", 3.f);
-					ImGui::SliderFloat((std::string("Attn ##value") +	" ##" + layer_label).data(), &absorption[i],		 .0f, 1000.f, "%.3f", 7.f);
+					ImGui::SliderFloat((std::string("Attn ##value") +	" ##" + layer_label).data(), &absorption[i],		 .000001f, 20.f, "%.8f", 4.f);
 				}
 			}
 		}
@@ -343,7 +339,8 @@ int main()
 		
 		for (int i = 0; i < layers_count; ++i) {
 			auto t = glm::u8vec3(base_color[i].R() * 255.5f, base_color[i].G() * 255.5f, base_color[i].B() * 255.5f);
-			layers[i]->get_basecolor_map()->clear(&t);
+			if (layers[i]->get_color() != base_color[i])
+				layers[i]->set_color(base_color[i]);
 			if (layers[i]->get_roughness() != roughness[i])
 				layers[i]->set_roughness(roughness[i]);
 			if (layers[i]->get_anisotropy() != anisotropy[i])
@@ -358,8 +355,8 @@ int main()
 				layers[i]->set_sheen_power(sheen_power[i]);
 			if (layers[i]->get_layer_thickness() != thickness[i])
 				layers[i]->set_layer_thickness(thickness[i]);
-			if (layers[i]->get_attenuation_coefficient() != absorption[i])
-				layers[i]->set_attenuation_coefficient(absorption[i]);
+			if (layers[i]->get_attenuation_coefficient().x != absorption[i])
+				layers[i]->set_attenuation_coefficient(glm::vec3{ absorption[i] });
 
 			if (i != 0) {
 				bool enabled = layers[i - 1]->get_next_layer() != nullptr;
@@ -410,7 +407,7 @@ int main()
 		}
 
 		float angle = time * glm::pi<float>() / 2.5f;
-		glm::vec3 lp = light0_pos + glm::vec3(glm::sin(angle) * 3, 0, glm::cos(angle)) * 115.f;
+		glm::vec3 lp = light0_pos;// +glm::vec3(glm::sin(angle) * 3, 0, glm::cos(angle)) * 115.f;
 		light0->set_position(lp);
 		light0_obj->set_model_transform(glm::mat4x3(glm::translate(glm::mat4(), lp)));
 
