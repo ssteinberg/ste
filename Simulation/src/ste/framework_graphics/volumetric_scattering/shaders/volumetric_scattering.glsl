@@ -41,7 +41,7 @@ float volumetric_scattering_phase(vec3 l_dir, vec3 v_dir, float phase1, float ph
 }
 
 vec4 volumetric_scattering_load_inscattering_transmittance(sampler3D volume, vec2 frag_coords, float depth) {
-	vec2 xy = frag_coords / float(volumetric_scattering_tile_size) / textureSize(volume, 0).xy;
+	vec2 xy = frag_coords / (float(volumetric_scattering_tile_size) * textureSize(volume, 0).xy);
 	vec3 p = vec3(xy, volumetric_scattering_zcoord_for_depth(depth));
 	return texture(volume, p);
 }

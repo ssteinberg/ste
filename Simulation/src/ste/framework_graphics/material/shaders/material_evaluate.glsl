@@ -20,6 +20,9 @@ vec3 material_evaluate_layer_radiance(material_layer_unpacked_descriptor descrip
 									  out float D,
 									  out float G,
 									  out float F) {
+	float dotLH = max(dot(l, h), .0f);
+	float dotNL = max(dot(n, l), .0f);
+
 	// Tints
 	vec3 specular_tint = vec3(1);
 	vec3 sheen_tint = vec3(1);
@@ -28,7 +31,7 @@ vec3 material_evaluate_layer_radiance(material_layer_unpacked_descriptor descrip
 	vec3 c_spec = mix(specular_tint, base_color, descriptor.metallic);
 
 	// Additional sheen color (diffuse at grazing angles)
-	vec3 c_sheen = fresnel_schlick_ratio(dot(l,h), descriptor.sheen_power) * sheen_tint * descriptor.sheen;
+	vec3 c_sheen = fresnel_schlick_ratio(dotLH, descriptor.sheen_power) * sheen_tint * descriptor.sheen;
 
 	// Specular
 	vec3 Specular;
@@ -55,7 +58,7 @@ vec3 material_evaluate_layer_radiance(material_layer_unpacked_descriptor descrip
 
 	// Evaluate BRDF
 	vec3 brdf = Specular + (1.f - descriptor.metallic) * (Diffuse + c_sheen);
-	return brdf * irradiance * dot(n, l);
+	return brdf * irradiance * dotNL;
 }
 
 bool material_snell_refraction(inout vec3 v,
@@ -80,7 +83,9 @@ float material_attenuation_through_layer(vec3 v, vec3 l,
 										 float F, float G,
 										 out vec3 h) {
 	h = normalize(v + l);
-	float F21 = fresnel_schlick(F0, dot(l,h));
+	float dotLH = max(dot(l, h), .0f);
+
+	float F21 = fresnel_schlick(F0, dotLH);
 	
 	float T12 = 1.f - F;
 	float T21 = 1.f - F21;
@@ -97,37 +102,43 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 								vec3 b,
 								vec3 v,
 								vec3 l,
-								vec2 uv,
-								vec2 duvdx,
-								vec2 duvdy,
 								float object_thickness,
 								light_descriptor ld,
 								samplerCubeArray shadow_maps, uint light,
-								vec3 irradiance,
+								float light_dist,
+								float occlusion,
 								float external_medium_ior = 1.00029f) {
 	float D;
 	float G;
 	float F;
 	vec3 rgb = vec3(0);
 	
-	material_layer_unpacked_descriptor descriptor = material_layer_unpack(layer, uv, duvdx, duvdy);
+	material_layer_unpacked_descriptor descriptor = material_layer_unpack(layer);
+	
+	vec3 attenuation_coefficient = descriptor.attenuation_coefficient;
+	bool has_subsurface_scattering = all(greaterThan(attenuation_coefficient, vec3(.0)));
+
+	// Early bail
+	if (occlusion <= .0f && !has_subsurface_scattering)
+		return vec3(.0f);
+		
+	vec3 irradiance = light_irradiance(ld, light_dist) * occlusion;
 
 	float F0 = material_convert_ior_to_F0(external_medium_ior, layer.ior);
-	vec3 base_color = descriptor.base_color.rgb;
+	vec3 base_color = descriptor.color.rgb;
 
-	float atten = 1.f;
+	vec3 atten = vec3(1.f);
 	vec3 h = normalize(v + l);
 	
-	float outer_back_layers_attenuation_approximation_for_sss = 1.f;
+	vec3 outer_back_layers_attenuation_approximation_for_sss = vec3(1.f);
 
 	while (layer.next_layer_id != material_none) {
 		material_layer_descriptor next_layer = mat_layer_descriptor[layer.next_layer_id];
 
-		float thickness_scale = descriptor.base_color.a;
+		float thickness_scale = 1.f;
 
 		float thickness = thickness_scale * descriptor.thickness;
 		float metallic = descriptor.metallic;
-		float attenuation_coefficient = descriptor.attenuation_coefficient;
 
 		vec3 in_v = v;
 		vec3 in_l = l;
@@ -142,7 +153,7 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 		float dotNL = max(epsilon, dot(n,l));
 		float path_length = thickness * (1.f / dotNV + 1.f / dotNL);
 
-		float extinction = 1.f - exp(-path_length * attenuation_coefficient);
+		vec3 extinction = vec3(1.f) - exp(-path_length * attenuation_coefficient);
 		vec3 scattering = extinction * base_color;
 
 		rgb += atten * material_evaluate_layer_radiance(descriptor,
@@ -159,18 +170,20 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 																			 F, G,
 																			 h);
 
-		outer_back_layers_attenuation_approximation_for_sss *= exp(-thickness * attenuation_coefficient) * (1.f - F0) * (1.f - metallic);
-		atten *= (1.f - extinction) * layer_surface_attenuation;
+		outer_back_layers_attenuation_approximation_for_sss *= exp(-thickness * attenuation_coefficient) * vec3((1.f - F0) * (1.f - metallic));
+		atten *= (vec3(1.f) - extinction) * layer_surface_attenuation;
 
 		F0 = material_convert_ior_to_F0(layer.ior, next_layer.ior);
 		layer = next_layer;
-		descriptor = material_layer_unpack(next_layer, uv, duvdx, duvdy);
+		descriptor = material_layer_unpack(next_layer);
 		
-		base_color = descriptor.base_color.rgb;
+		attenuation_coefficient = descriptor.attenuation_coefficient;
+		base_color = descriptor.color.rgb;
 	}
 			
-	float attenuation_coefficient = descriptor.attenuation_coefficient;		
-	float extinction = attenuation_coefficient > .0f ? 1.f - exp(-object_thickness * attenuation_coefficient) : 1.f;
+	vec3 extinction = has_subsurface_scattering ? 
+							vec3(1.f) - exp(-object_thickness * attenuation_coefficient) :
+							vec3(1.f);
 	vec3 scattering = extinction * base_color;
 
 	rgb += atten * material_evaluate_layer_radiance(descriptor,
@@ -187,7 +200,8 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 												F, G,
 												h);
 
-	if (atten > .01f) {
+	bool fully_attenuated = all(lessThan(atten, vec3(.0001f)));
+	if (has_subsurface_scattering && !fully_attenuated) {
 		outer_back_layers_attenuation_approximation_for_sss *= (1.f - F0) * (1.f - descriptor.metallic);
 		rgb += atten * subsurface_scattering(descriptor, 
 											 base_color,
