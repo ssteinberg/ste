@@ -35,6 +35,21 @@ public:
 	spectrum() = default;
 	spectrum(const T &v) { c.fill(v); }
 
+	spectrum(spectrum &&rhs) = default;
+	spectrum(const spectrum &rhs) = default;
+	spectrum &operator=(spectrum &&rhs) = default;
+	spectrum &operator=(const spectrum &rhs) = default;
+
+	virtual ~spectrum() noexcept {}
+
+	bool operator==(const spectrum &rhs) const {
+		return c == rhs.c;
+	}
+
+	bool operator!=(const spectrum &rhs) const {
+		return !(*this == rhs);
+	}
+
 	spectrum &operator+=(const spectrum &rhs) {
 		for (int i = 0; i < samples; ++i)
 			c[i] += rhs.c[i];
@@ -132,7 +147,14 @@ public:
 		return true;
 	}
 
-	virtual T luminance() const = 0;
+	virtual T luminance() const {
+		T ret = static_cast<T>(0);
+		for (auto &s : c)
+			ret += s;
+		ret /= static_cast<T>(samples);
+
+		return ret;
+	}
 };
 
 template <typename T, int samples>
