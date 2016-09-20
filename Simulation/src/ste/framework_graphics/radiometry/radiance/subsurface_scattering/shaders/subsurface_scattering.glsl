@@ -1,13 +1,14 @@
 
 #include "common.glsl"
 #include "shadow.glsl"
+#include "light_transport.glsl"
 
 #include "light_load.glsl"
 #include "girenderer_transform_buffer.glsl"
 
 int subsurface_scattering_calculate_steps(float thickness) {
-	const int max_samples = 5;
-	const float thickness_multiplier = 1.f / 5.f;
+	const int max_samples = 4;
+	const float thickness_multiplier = 1.f / 3.f;
 
 	return min(max_samples, int(ceil(thickness * thickness_multiplier)));
 }
@@ -21,10 +22,11 @@ vec3 subsurface_scattering(material_layer_unpacked_descriptor descriptor,
 						   light_descriptor ld,
 						   samplerCubeArray shadow_maps, uint light,
 						   vec3 view_ray) {
-						   thickness = 10.f;
 	const float minimal_attenuation_for_effective_thickness = .000001f;
 
 	vec3 attenuation_coefficient = descriptor.attenuation_coefficient;
+	float g = descriptor.phase_g;
+
 	float l_radius = ld.radius;
 	vec3 l_pos = ld.position;
 	
@@ -33,7 +35,7 @@ vec3 subsurface_scattering(material_layer_unpacked_descriptor descriptor,
 		return vec3(.0f);
 
 	vec3 depth_to_reach_minimal_attenuation3 = vec3(-log(minimal_attenuation_for_effective_thickness)) / attenuation_coefficient;
-	float depth_to_reach_minimal_attenuation = min(depth_to_reach_minimal_attenuation3.x, min(depth_to_reach_minimal_attenuation3.y, depth_to_reach_minimal_attenuation3.z));
+	float depth_to_reach_minimal_attenuation = max(depth_to_reach_minimal_attenuation3.x, max(depth_to_reach_minimal_attenuation3.y, depth_to_reach_minimal_attenuation3.z));
 	float effective_thickness = min(thickness, depth_to_reach_minimal_attenuation);
 	int steps = subsurface_scattering_calculate_steps(effective_thickness);
 
@@ -50,10 +52,11 @@ vec3 subsurface_scattering(material_layer_unpacked_descriptor descriptor,
 		float dist_light_to_sample = length(shadow_v);
 		float dist_light_to_object = min(length(shadow_occluder_v), dist_light_to_sample);
 		float path_length = dist0 + (dist_light_to_sample - dist_light_to_object);
-
-		float phase = 1.f / (2.f * pi);
+		
+		vec3 incident = light_incidant_ray(ld, p) / dist_light_to_sample;
 		vec3 irradiance = light_irradiance(ld, dist_light_to_object) * outer_back_layers_attenuation;
 		vec3 attenuation = exp(-path_length * attenuation_coefficient);
+		float phase = henyey_greenstein_phase_function(incident, view_ray, g);
 
 		vec3 scattering = phase * attenuation * irradiance;
 

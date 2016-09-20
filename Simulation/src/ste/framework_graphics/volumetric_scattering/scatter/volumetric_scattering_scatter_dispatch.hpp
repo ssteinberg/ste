@@ -42,14 +42,7 @@ private:
 
 private:
 	void update_phase_uniforms(float g) {
-		float g2 = g * g;
-		float p1 = (1.f - g2) / (4.f * glm::pi<float>());
-		float p2 = 1.f + g2;
-		float p3 = 2.f * g;
-
-		program.get().set_uniform("phase1", p1);
-		program.get().set_uniform("phase2", p2);
-		program.get().set_uniform("phase3", p3);
+		program.get().set_uniform("phase", g);
 	}
 
 	void attach_handles() const {

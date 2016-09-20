@@ -34,12 +34,6 @@ float volumetric_scattering_absorption_coefficient(float density, float thicknes
 	return .0000001f * density * thickness;
 }
 
-float volumetric_scattering_phase(vec3 l_dir, vec3 v_dir, float phase1, float phase2, float phase3) {
-	float t = dot(l_dir, v_dir);
-	float denom = pow(phase2 - phase3 * t, 3.f / 2.f);
-	return phase1 / denom;
-}
-
 vec4 volumetric_scattering_load_inscattering_transmittance(sampler3D volume, vec2 frag_coords, float depth) {
 	vec2 xy = frag_coords / (float(volumetric_scattering_tile_size) * textureSize(volume, 0).xy);
 	vec3 p = vec3(xy, volumetric_scattering_zcoord_for_depth(depth));

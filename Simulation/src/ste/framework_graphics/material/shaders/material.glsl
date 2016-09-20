@@ -30,7 +30,7 @@ struct material_layer_descriptor {
 
 	float ior;
 	
-	uint32_t attenuation_coefficients;
+	uint32_t packed_attenuation_coefficient_rgb_phase;
 	float attenuation_coefficient_scale;
 
 	uint32_t next_layer_id;

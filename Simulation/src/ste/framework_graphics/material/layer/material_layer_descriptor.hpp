@@ -24,7 +24,7 @@ private:
 	
 	float ior{ .0f };
 
-	std::uint32_t attenuation_coefficients{ 0 };
+	std::uint32_t attenuation_coefficient_rgb_phase{ 0 };
 	float attenuation_coefficient_scale{ .0f };
 
 	std::uint32_t next_layer_id{ material_layer_none };
@@ -65,18 +65,18 @@ public:
 		ior = f;
 	}
 
-	void set_attenuation_coefficient(const glm::vec3 &a) {
+	void set_attenuation_coefficient(const glm::vec3 &a, float phase_g) {
 		auto clamped_a = glm::max(glm::vec3(.0f), a);
+		phase_g = glm::clamp(phase_g, -1.f, +1.f);
+		float shifted_phase_g = phase_g * .5f + .5f;
 
 		auto mag = glm::length(clamped_a);
-		std::uint32_t pack = 0;
+		glm::vec3 n = { 0, 0, 0 };
 
-		if (mag > 0.000001f) {
-			auto n = clamped_a / mag;
-			pack = glm::packUnorm4x8(glm::vec4({ n.x, n.y, n.z, .0f }));
-		}
+		if (mag > 0.000001f)
+			n = clamped_a / mag;
 
-		attenuation_coefficients = pack;
+		attenuation_coefficient_rgb_phase = glm::packUnorm4x8(glm::vec4({ n.x, n.y, n.z, shifted_phase_g }));
 		attenuation_coefficient_scale = mag;
 	}
 

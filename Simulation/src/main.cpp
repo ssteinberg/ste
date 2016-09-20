@@ -146,7 +146,7 @@ int main()
 
 	GL::gl_context::context_settings settings;
 	settings.vsync = false;
-	settings.fs = false;
+	settings.fs = true;
 	StE::StEngineControl ctx(std::make_unique<GL::gl_context>(settings, "Shlomi Steinberg - Global Illumination", glm::i32vec2{ w, h }));// , gli::FORMAT_RGBA8_UNORM));
 	ctx.set_clipping_planes(clip_near);
 	ctx.set_fov(fovy);
@@ -289,6 +289,7 @@ int main()
 	float sheen_power[3];
 	float thickness[3];
 	float absorption[3];
+	float phase[3];
 
 	for (int i = 0; i < layers_count; ++i) {
 		if (i > 0) {
@@ -305,6 +306,7 @@ int main()
 		sheen_power[i] = 0;
 		thickness[i] = 0.001f;
 		absorption[i] = 1.f;
+		phase[i] = .0f;
 	}
 
 	debug_gui_dispatchable->add_custom_gui([&](const glm::ivec2 &bbsize) {
@@ -330,7 +332,8 @@ int main()
 					ImGui::SliderFloat((std::string("ShnPwr ##value") +	" ##" + layer_label).data(), &sheen_power[i],		 .0f, 1.f);
 					if (i < layers_count - 1 && layer_enabled[i + 1])
 						ImGui::SliderFloat((std::string("Thick ##value") + " ##" + layer_label).data(), &thickness[i], .0f, StE::Graphics::material_layer_max_thickness, "%.5f", 3.f);
-					ImGui::SliderFloat((std::string("Attn ##value") +	" ##" + layer_label).data(), &absorption[i],		 .000001f, 20.f, "%.8f", 4.f);
+					ImGui::SliderFloat((std::string("Attn ##value") +	" ##" + layer_label).data(), &absorption[i], .000001f, 20.f, "%.8f", 4.f);
+					ImGui::SliderFloat((std::string("Phase ##value") +	" ##" + layer_label).data(), &phase[i], -1.f, +1.f);
 				}
 			}
 		}
@@ -357,6 +360,8 @@ int main()
 				layers[i]->set_layer_thickness(thickness[i]);
 			if (layers[i]->get_attenuation_coefficient().x != absorption[i])
 				layers[i]->set_attenuation_coefficient(glm::vec3{ absorption[i] });
+			if (layers[i]->get_scattering_phase_parameter() != phase[i])
+				layers[i]->set_scattering_phase_parameter(phase[i]);
 
 			if (i != 0) {
 				bool enabled = layers[i - 1]->get_next_layer() != nullptr;
@@ -397,7 +402,8 @@ int main()
 				camera.step_right(time_delta*movement_factor);
 
 			constexpr float rotation_factor = .09f;
-			glm::vec2(.0f);
+			bool rotate_camera = mouse_down;
+
 			auto pp = ctx.get_pointer_position();
 			if (mouse_down && !debug_gui_dispatchable->is_gui_active()) {
 				auto diff_v = static_cast<glm::vec2>(last_pointer_pos - pp) * time_delta * rotation_factor;
@@ -407,7 +413,7 @@ int main()
 		}
 
 		float angle = time * glm::pi<float>() / 2.5f;
-		glm::vec3 lp = light0_pos;// +glm::vec3(glm::sin(angle) * 3, 0, glm::cos(angle)) * 115.f;
+		glm::vec3 lp = light0_pos +glm::vec3(glm::sin(angle) * 3, 0, glm::cos(angle)) * 115.f;
 		light0->set_position(lp);
 		light0_obj->set_model_transform(glm::mat4x3(glm::translate(glm::mat4(), lp)));
 

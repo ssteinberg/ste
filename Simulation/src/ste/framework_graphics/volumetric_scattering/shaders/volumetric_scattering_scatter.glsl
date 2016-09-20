@@ -8,6 +8,7 @@ layout(local_size_x = 32, local_size_y = 32, local_size_z = 1) in;
 
 #include "volumetric_scattering.glsl"
 
+#include "light_transport.glsl"
 #include "shadow.glsl"
 #include "light.glsl"
 #include "linked_light_lists.glsl"
@@ -34,7 +35,7 @@ layout(rgba16f, binding = 7) restrict writeonly uniform image3D volume;
 layout(bindless_sampler) uniform samplerCubeArrayShadow shadow_depth_maps;
 layout(bindless_sampler) uniform sampler2D depth_map;
 
-uniform float phase1, phase2, phase3;
+uniform float phase;
 
 const int samples = 2;
 
@@ -130,7 +131,7 @@ void main() {
 					float scaling_size = thickness;
 					float scale = min(dist, scaling_size) / scaling_size;
 
-					scatter += scale * irradiance * volumetric_scattering_phase(v / dist, -view_dir, phase1, phase2, phase3);
+					scatter += scale * irradiance * henyey_greenstein_phase_function(v / dist, view_dir, phase);
 				}
 
 				rgb += scatter / float(samples);

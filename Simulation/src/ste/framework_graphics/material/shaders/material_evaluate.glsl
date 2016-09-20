@@ -180,6 +180,8 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 		attenuation_coefficient = descriptor.attenuation_coefficient;
 		base_color = descriptor.color.rgb;
 	}
+	
+	has_subsurface_scattering = has_subsurface_scattering && all(greaterThan(attenuation_coefficient, vec3(.0)));
 			
 	vec3 extinction = has_subsurface_scattering ? 
 							vec3(1.f) - exp(-object_thickness * attenuation_coefficient) :
@@ -194,7 +196,7 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 													base_color,
 													scattering,
 													D, G, F);
-													
+
 	atten *= material_attenuation_through_layer(v, l,
 												F0, descriptor.metallic,
 												F, G,
@@ -211,7 +213,7 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 							 				 object_thickness,
 											 ld,
 											 shadow_maps, light,
-											 -v);
+											 -v) * 100;
 	}
 
 	return rgb;

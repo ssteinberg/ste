@@ -715,6 +715,7 @@
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\passthrough.vert" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\project.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\quaternion.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\common_shaders\light_transport.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\tangent_frame.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\transform.vert" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\utils.glsl" />

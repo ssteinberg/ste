@@ -38,6 +38,7 @@ private:
 
 	float index_of_refraction{ 1.5f };
 	glm::vec3 attenuation_coefficient{ .0f };
+	float phase_g{ .0f };
 
 	float sheen{ .0f };
 	float sheen_power{ .0f };
@@ -141,17 +142,35 @@ public:
 	/**
 	*	@brief	Set material attenuation coefficient
 	*
-	*	Sets the total attenuation coefficient as per the Beer–Lambert law. 
-	*	Total attenuation equals to scattering + absorption, both are wavelength dependant. 
+	*	Sets the total attenuation coefficient as per the Beer–Lambert law.
+	*	Total attenuation equals to scattering + absorption, both are wavelength dependant.
 	*	Scattering is dependent according to the material layer color. The rest is absorped light.
-	*	
+	*
 	*	Defaults to { 0, 0, 0 }
 	*
 	* 	@param a	Total attenuation coefficient  - range: [0,infinity)
 	*/
 	void set_attenuation_coefficient(const glm::vec3 a) {
 		attenuation_coefficient = a;
-		descriptor.set_attenuation_coefficient(attenuation_coefficient);
+		descriptor.set_attenuation_coefficient(attenuation_coefficient, phase_g);
+		Base::notify();
+	}
+
+	/**
+	*	@brief	Set material Henyey-Greenstein phase function g parameter
+	*
+	*	Controls the subsurface-scattering pahse function. The parameter adjusts the relative amount of
+	*	back and forward scattering with a value of 0 corresponding to purely isotropic scattering, values 
+	*	close to -1 give highly peaked back scattering and values close to +1 give highly peaked forward 
+	*	scattering.
+	*
+	*	Defaults to 0
+	*
+	* 	@param g	Henyey-Greenstein phase function parameter  - range: (-1,+1)
+	*/
+	void set_scattering_phase_parameter(float g) {
+		phase_g = g;
+		descriptor.set_attenuation_coefficient(attenuation_coefficient, phase_g);
 		Base::notify();
 	}
 
@@ -227,6 +246,7 @@ public:
 	float get_sheen_power() const { return sheen_power; }
 	float get_layer_thickness() const { return thickness; }
 	auto get_attenuation_coefficient() const { return attenuation_coefficient; }
+	float get_scattering_phase_parameter() const { return phase_g; }
 
 	auto *get_next_layer() const { return next_layer; }
 
