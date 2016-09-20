@@ -11,22 +11,27 @@ struct material_descriptor {
 	material_texture_descriptor cavity_map;
 	material_texture_descriptor normal_map;
 	material_texture_descriptor mask_map;
-	material_texture_descriptor _unused;
-
-	vec3 emission;
-
+	material_texture_descriptor texture;
+	
+	float emission;
+	uint32_t packed_emission_color;
+	
 	uint32_t head_layer;
+
+	float _unused;
 };
 
 struct material_layer_descriptor {
-	material_texture_descriptor basecolor_map;
-	
+	uint32_t packed_color;
+
 	uint32_t sheen_pack;
 	uint32_t ansi_metal_pack;
 	uint32_t roughness_thickness_pack;
 
 	float ior;
-	float attenuation_coefficient;
+	
+	uint32_t packed_attenuation_coefficient_rgb_phase;
+	float attenuation_coefficient_scale;
 
 	uint32_t next_layer_id;
 };
@@ -41,17 +46,18 @@ const float material_layer_max_ansio_ratio = 1.f / sqrt(1.f - 1.f * material_lay
 const float material_layer_min_ansio_ratio = sqrt(1.f - 1.f * material_layer_ansio_ratio_scale);
 
 vec3 material_emission(material_descriptor md) {
-	return md.emission.rgb;
+	vec3 emission_color = unpackUnorm4x8(md.packed_emission_color).rgb;
+	return emission_color * md.emission;
 }
 
-vec4 material_layer_base_color(material_layer_descriptor layer, vec2 uv, vec2 duvdx, vec2 duvdy) {
-	if (layer.basecolor_map.tex_handler > 0)
-		return textureGrad(sampler2D(layer.basecolor_map.tex_handler), uv, duvdx, duvdy);
+vec4 material_base_texture(material_descriptor md, vec2 uv, vec2 duvdx, vec2 duvdy) {
+	if (md.texture.tex_handler > 0)
+		return textureGrad(sampler2D(md.texture.tex_handler), uv, duvdx, duvdy);
 	return vec4(1.f);
 }
-vec4 material_layer_base_color(material_layer_descriptor layer, vec2 uv) {
-	if (layer.basecolor_map.tex_handler > 0)
-		return texture(sampler2D(layer.basecolor_map.tex_handler), uv);
+vec4 material_base_texture(material_descriptor md, vec2 uv) {
+	if (md.texture.tex_handler > 0)
+		return texture(sampler2D(md.texture.tex_handler), uv);
 	return vec4(1.f);
 }
 

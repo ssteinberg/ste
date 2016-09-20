@@ -79,6 +79,9 @@ dlldata.c
 *.tss
 
 /s4*
+/temp_*
+/errfile-child-of-*
+/outfile-child-of-*
 
 # Chutzpah Test files
 _Chutzpah*

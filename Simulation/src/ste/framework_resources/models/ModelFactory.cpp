@@ -19,6 +19,8 @@ using namespace StE::Resource;
 using namespace StE::Graphics;
 using StE::Core::Texture2D;
 
+tinyobj::material_t ModelFactory::empty_mat;
+
 StE::task_future<void> ModelFactory::process_model_mesh(task_scheduler* sched,
 														Graphics::SceneProperties *scene_properties,
 														const tinyobj::shape_t &shape,
@@ -106,8 +108,9 @@ StE::task_future<void> ModelFactory::process_model_mesh(task_scheduler* sched,
 		}
 	}
 
-	int mat_idx = shape.mesh.material_ids[0];
-	auto &material = materials[mat_idx];
+	int mat_idx = shape.mesh.material_ids.size() > 0 ? shape.mesh.material_ids[0] : -1;
+
+	auto &material = mat_idx >= 0 ? materials[mat_idx] : empty_mat;
 
 	auto roughness_it = material.unknown_parameter.find("roughness");
 	auto metallic_it = material.unknown_parameter.find("metallic");
@@ -116,15 +119,15 @@ StE::task_future<void> ModelFactory::process_model_mesh(task_scheduler* sched,
 	auto sheen_it = material.unknown_parameter.find("sheen");
 
 	return sched->schedule_now_on_main_thread([=, vbo_data = std::move(vbo_data), vbo_indices = std::move(vbo_indices), &loaded_materials, &loaded_material_layers, &textures, &material]() {
-		std::shared_ptr<Core::Texture2D> diff_map = textures[material.diffuse_texname];
-		std::shared_ptr<Core::Texture2D> opacity_map = textures[material.alpha_texname];
-		std::shared_ptr<Core::Texture2D> specular_map = textures[material.specular_texname];
-		std::shared_ptr<Core::Texture2D> normalmap = textures[material.bump_texname];
+		std::shared_ptr<Core::Texture2D> diff_map = mat_idx >= 0 ? textures[material.diffuse_texname] : nullptr;
+		std::shared_ptr<Core::Texture2D> opacity_map = mat_idx >= 0 ? textures[material.alpha_texname] : nullptr;
+		std::shared_ptr<Core::Texture2D> specular_map = mat_idx >= 0 ? textures[material.specular_texname] : nullptr;
+		std::shared_ptr<Core::Texture2D> normalmap = mat_idx >= 0 ? textures[material.bump_texname] : nullptr;
 		
 		auto layer = scene_properties->material_layers_storage().allocate_layer();
 		auto mat = scene_properties->materials_storage().allocate_material(layer.get());
 
-		if (diff_map != nullptr) layer->set_basecolor_map(diff_map);
+		if (diff_map != nullptr) mat->set_texture(diff_map);
 		if (specular_map != nullptr) mat->set_cavity_map(specular_map);
 		if (normalmap != nullptr) mat->set_normal_map(normalmap);
 		if (opacity_map != nullptr) mat->set_mask_map(opacity_map);
@@ -168,12 +171,25 @@ StE::task_future<void> ModelFactory::load_texture(task_scheduler* sched,
 
 		return std::make_unique<gli::texture2d>(std::move(tex));
 	}).then_on_main_thread([=](std::unique_ptr<gli::texture2d> &&tex) {
+		bool is_displacement_map = displacement;
+
 		if (tex->empty()) {
 			ste_log_warn() << "Couldn't load model texture: " << name << std::endl;
 			return;
 		}
 
-		if (displacement) {
+		if (is_displacement_map && tex->format() != gli::FORMAT_R8_UNORM_PACK8) {
+			if (tex->format() == gli::FORMAT_RGB8_UNORM_PACK8 || tex->format() == gli::FORMAT_RGBA8_UNORM_PACK8) {
+				ste_log_warn() << "Texture \"" << name << "\" looks like a normal map and not a displacement map as specified by the model. Assuming a normal map." << std::endl;
+				is_displacement_map = false;
+			}
+			else {
+				ste_log_warn() << "Texture \"" << name << "\" doesn't look like a displacement map. Bailing out..." << std::endl;
+				return;
+			}
+		}
+
+		if (is_displacement_map) {
 			auto nm = normal_map_from_height_map<gli::FORMAT_R8_UNORM_PACK8, false>()(*tex, normal_map_bias);
 			(*texmap)[name] = std::make_shared<Core::Texture2D>(std::move(nm), true);
 		}
@@ -192,7 +208,9 @@ std::vector<StE::task_future<void>> ModelFactory::load_textures(task_scheduler* 
 
 	std::vector<StE::task_future<void>> futures;
 	for (auto &shape : shapes) {
-		int mat_idx = shape.mesh.material_ids[0];
+		int mat_idx = shape.mesh.material_ids.size() > 0 ? shape.mesh.material_ids[0] : -1;
+		if (mat_idx < 0)
+			continue;
 
 		for (auto &str : { materials[mat_idx].diffuse_texname,
 						   materials[mat_idx].bump_texname,

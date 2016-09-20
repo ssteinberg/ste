@@ -19,7 +19,7 @@ layout(shared, binding = 6) restrict writeonly buffer gbuffer_data {
 
 #include "gbuffer_store.glsl"
 
-in v {
+in scene_transform {
 	vec3 frag_position;
 	vec3 frag_normal;
 	vec3 frag_tangent;

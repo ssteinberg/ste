@@ -20,7 +20,7 @@ layout(bindless_sampler) uniform sampler2D hdr;
 layout(bindless_sampler) uniform sampler2D depth_texture;
 
 const int samples = 2;
-const int rings = 5;
+const int max_rings = 5;
 
 const float aperature_distance = 0.5f;
 
@@ -73,6 +73,7 @@ void main() {
 		vec2 wh = (1.f / size) * blur * blur_coef + noise;
 
 		float s = 1.f;
+		int rings = min(max_rings, max(2, int(blur * 15.f)));
 		for (int i = 1; i <= rings; ++i) {
 			int ringsamples = i * samples;
 

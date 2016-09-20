@@ -35,11 +35,8 @@ void deferred_composer::attach_handles() const {
 		auto shadow_depth_maps_handle = shadow_depth_maps->get_texture_handle(dr->shadows_storage.get_shadow_sampler());
 		shadow_depth_maps_handle.make_resident();
 		program.get().set_uniform("shadow_depth_maps", shadow_depth_maps_handle);
-	}
 
-	auto shadow_maps = dr->shadows_storage.get_cubemaps();
-	if (shadow_maps) {
-		auto shadow_maps_handle = shadow_maps->get_texture_handle(*Core::Sampler::SamplerLinearClamp());
+		auto shadow_maps_handle = shadow_depth_maps->get_texture_handle(*Core::Sampler::SamplerLinearClamp());
 		shadow_maps_handle.make_resident();
 		program.get().set_uniform("shadow_maps", shadow_maps_handle);
 	}
@@ -51,6 +48,9 @@ void deferred_composer::set_context_state() const {
 	auto &ls = dr->scene->scene_properties().lights_storage();
 
 	GL::gl_current_context::get()->enable_state(StE::Core::GL::BasicStateName::TEXTURE_CUBE_MAP_SEAMLESS);
+	
+	0_tex_unit = *dr->gbuffer.get_backface_depth_target();
+	1_tex_unit = *dr->gbuffer.get_depth_target();
 
 	dr->gbuffer.bind_gbuffer();
 	0_storage_idx = dr->scene->scene_properties().materials_storage().buffer();

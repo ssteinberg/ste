@@ -34,8 +34,10 @@ private:
 
 private:
 	std::unique_ptr<Core::Texture2D> depth_target{ nullptr };
+	std::unique_ptr<Core::Texture2D> backface_depth_target{ nullptr };
 	std::unique_ptr<Core::Texture2D> downsampled_depth_target{ nullptr };
 	Core::FramebufferObject fbo;
+	Core::FramebufferObject backface_fbo;
 
 	gbuffer_type gbuffer;
 
@@ -58,10 +60,12 @@ public:
 	auto& get_size() const { return size; }
 
 	void bind_gbuffer() const;
-
+	
 	auto* get_depth_target() const { return depth_target.get(); }
+	auto* get_backface_depth_target() const { return backface_depth_target.get(); }
 	auto* get_downsampled_depth_target() const { return downsampled_depth_target.get(); }
 	auto* get_fbo() const { return &fbo; }
+	auto* get_backface_fbo() const { return &backface_fbo; }
 
 	auto& get_depth_target_modified_signal() const { return depth_target_modified_signal; }
 };

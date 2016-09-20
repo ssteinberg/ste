@@ -2,7 +2,7 @@
 #include "material.glsl"
 
 struct material_layer_unpacked_descriptor {
-	vec4 base_color;
+	vec4 color;
 
 	float sheen;
 	float sheen_power;
@@ -12,7 +12,8 @@ struct material_layer_unpacked_descriptor {
 	float thickness;
 
 	float ior;
-	float attenuation_coefficient;
+	vec3 attenuation_coefficient;
+	float phase_g;
 };
 
 float material_convert_ior_to_F0(float ior1, float ior2) {
@@ -28,7 +29,7 @@ float material_convert_sheen_power(float s) {
 	return mix(5.f, 2.f, s);
 }
 
-material_layer_unpacked_descriptor material_layer_unpack(material_layer_descriptor l, vec2 uv, vec2 duvdx, vec2 duvdy) {
+material_layer_unpacked_descriptor material_layer_unpack(material_layer_descriptor l) {
 	material_layer_unpacked_descriptor d;
 
 	vec2 sheen_pack = unpackUnorm2x16(l.sheen_pack);
@@ -44,9 +45,12 @@ material_layer_unpacked_descriptor material_layer_unpack(material_layer_descript
 	d.thickness = rough_thick_pack.y * material_max_thickness;
 
 	d.ior = l.ior;
-	d.attenuation_coefficient = l.attenuation_coefficient;
 
-	d.base_color = material_layer_base_color(l, uv, duvdx, duvdy);
+	vec4 unpacked_att_coefficients_and_phase = unpackUnorm4x8(l.packed_attenuation_coefficient_rgb_phase);
+	d.attenuation_coefficient = unpacked_att_coefficients_and_phase.xyz * l.attenuation_coefficient_scale;
+	d.phase_g = mix(-1.f, +1.f, unpacked_att_coefficients_and_phase.w);
+
+	d.color = unpackUnorm4x8(l.packed_color);
 
 	return d;
 }
