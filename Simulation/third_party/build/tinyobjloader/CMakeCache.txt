@@ -148,7 +148,7 @@ CMAKE_VERBOSE_MAKEFILE:BOOL=OFF
 //Build OBJ Sticher Application
 TINYOBJLOADER_BUILD_OBJ_STICHER:BOOL=OFF
 
-//Build Example Loader Application
+//Build Test Loader Application
 TINYOBJLOADER_BUILD_TEST_LOADER:BOOL=OFF
 
 //Build as shared library
