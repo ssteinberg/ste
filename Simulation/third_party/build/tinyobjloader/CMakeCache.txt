@@ -17,20 +17,20 @@
 //Semicolon separated list of supported configuration types, only
 // supports Debug, Release, MinSizeRel, and RelWithDebInfo, anything
 // else will be ignored.
-CMAKE_CONFIGURATION_TYPES:STRING=Debug;Release;MinSizeRel;RelWithDebInfo
+CMAKE_CONFIGURATION_TYPES:STRING=Debug;Release;
 
 //Flags used by the compiler during all build types.
 CMAKE_CXX_FLAGS:STRING= /DWIN32 /D_WINDOWS /W3 /GR /EHsc
 
 //Flags used by the compiler during debug builds.
-CMAKE_CXX_FLAGS_DEBUG:STRING=/D_DEBUG /MDd /Zi /Ob0 /Od /RTC1
+CMAKE_CXX_FLAGS_DEBUG:STRING='/D_DEBUG /MTd /Zi /Ob0 /Od '
 
 //Flags used by the compiler during release builds for minimum
 // size.
 CMAKE_CXX_FLAGS_MINSIZEREL:STRING=/MD /O1 /Ob1 /D NDEBUG
 
 //Flags used by the compiler during release builds.
-CMAKE_CXX_FLAGS_RELEASE:STRING=/MD /O2 /Ob2 /D NDEBUG
+CMAKE_CXX_FLAGS_RELEASE:STRING=/MT /O2 /Ob2 /D NDEBUG
 
 //Flags used by the compiler during release builds with debug info.
 CMAKE_CXX_FLAGS_RELWITHDEBINFO:STRING=/MD /Zi /O2 /Ob1 /D NDEBUG
@@ -42,14 +42,14 @@ CMAKE_CXX_STANDARD_LIBRARIES:STRING=kernel32.lib user32.lib gdi32.lib winspool.l
 CMAKE_C_FLAGS:STRING= /DWIN32 /D_WINDOWS /W3
 
 //Flags used by the compiler during debug builds.
-CMAKE_C_FLAGS_DEBUG:STRING=/D_DEBUG /MDd /Zi /Ob0 /Od /RTC1
+CMAKE_C_FLAGS_DEBUG:STRING='/D_DEBUG /MTd /Zi /Ob0 /Od '
 
 //Flags used by the compiler during release builds for minimum
 // size.
 CMAKE_C_FLAGS_MINSIZEREL:STRING=/MD /O1 /Ob1 /D NDEBUG
 
 //Flags used by the compiler during release builds.
-CMAKE_C_FLAGS_RELEASE:STRING=/MD /O2 /Ob2 /D NDEBUG
+CMAKE_C_FLAGS_RELEASE:STRING=/MT /O2 /Ob2 /D NDEBUG
 
 //Flags used by the compiler during release builds with debug info.
 CMAKE_C_FLAGS_RELWITHDEBINFO:STRING=/MD /Zi /O2 /Ob1 /D NDEBUG
@@ -148,8 +148,11 @@ CMAKE_VERBOSE_MAKEFILE:BOOL=OFF
 //Build OBJ Sticher Application
 TINYOBJLOADER_BUILD_OBJ_STICHER:BOOL=OFF
 
-//Build Test Loader Application
+//Build Example Loader Application
 TINYOBJLOADER_BUILD_TEST_LOADER:BOOL=OFF
+
+//Build as shared library
+TINYOBJLOADER_COMPILATION_SHARED:BOOL=OFF
 
 //Value Computed by CMake
 tinyobjloader_BINARY_DIR:STATIC=C:/src/git/StE/Simulation/third_party/build/tinyobjloader

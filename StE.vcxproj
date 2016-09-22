@@ -105,12 +105,13 @@
       <DisableSpecificWarnings>2358;1736</DisableSpecificWarnings>
       <ErrorLimit>10</ErrorLimit>
       <PreprocessorDefinitions>_ENABLE_ATOMIC_ALIGNMENT_FIX;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <AdditionalDependencies>opengl32.lib;glu32.lib;libboost_system-vc140-mt-gd-1_61.lib;libboost_filesystem-vc140-mt-gd-1_61.lib;libboost_serialization-vc140-mt-gd-1_61.lib;libboost_exception-vc140-mt-gd-1_61.lib;zlibstaticd.lib;freetyped.lib;libglew32d.lib;glfw3d.lib;turbojpeg-staticd.lib;libpng16_staticd.lib;tga_staticd.lib;tinyobjloaderd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:\src\boost_1_61_0\lib32-msvc-14.0;$(SolutionDir)Simulation\third_party\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <InterproceduralOptimization>false</InterproceduralOptimization>
       <GenerateDebugInformation>Debug</GenerateDebugInformation>
+      <InterproceduralOptimization>false</InterproceduralOptimization>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -171,6 +172,7 @@
       <ErrorLimit>10</ErrorLimit>
       <UseProcessorExtensions>AVX</UseProcessorExtensions>
       <PreprocessorDefinitions>_ENABLE_ATOMIC_ALIGNMENT_FIX;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -716,6 +718,7 @@
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\project.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\quaternion.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\light_transport.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\common_shaders\spherical.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\tangent_frame.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\transform.vert" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\utils.glsl" />
