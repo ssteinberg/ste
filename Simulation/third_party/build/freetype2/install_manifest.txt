@@ -49,6 +49,6 @@ C:/src/git/StE/Simulation/third_party/include/freetype2/freetype/ttunpat.h
 C:/src/git/StE/Simulation/third_party/include/freetype2/ft2build.h
 C:/src/git/StE/Simulation/third_party/include/freetype2/freetype/config/ftconfig.h
 C:/src/git/StE/Simulation/third_party/include/freetype2/freetype/config/ftoption.h
-C:/src/git/StE/Simulation/third_party/lib/freetype.lib
+C:/src/git/StE/Simulation/third_party/lib/freetyped.lib
 C:/src/git/StE/Simulation/third_party/lib/cmake/freetype/freetype-config.cmake
-C:/src/git/StE/Simulation/third_party/lib/cmake/freetype/freetype-config-release.cmake
+C:/src/git/StE/Simulation/third_party/lib/cmake/freetype/freetype-config-debug.cmake

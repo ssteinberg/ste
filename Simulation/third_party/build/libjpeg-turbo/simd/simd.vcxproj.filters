@@ -65,6 +65,9 @@
     <CustomBuild Include="C:\src\git\StE\Simulation\third_party\build\libjpeg-turbo\CMakeFiles\9adf80f25de77105c77e4cbc6c6c3e56\jcgray-sse2.obj.rule">
       <Filter>CMake Rules</Filter>
     </CustomBuild>
+    <CustomBuild Include="C:\src\git\StE\Simulation\third_party\build\libjpeg-turbo\CMakeFiles\9adf80f25de77105c77e4cbc6c6c3e56\jchuff-sse2.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
     <CustomBuild Include="C:\src\git\StE\Simulation\third_party\build\libjpeg-turbo\CMakeFiles\9adf80f25de77105c77e4cbc6c6c3e56\jcsample-sse2.obj.rule">
       <Filter>CMake Rules</Filter>
     </CustomBuild>

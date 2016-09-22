@@ -1,6 +1,6 @@
-C:/src/git/StE/Simulation/third_party/lib/zlib.lib
-C:/src/git/StE/Simulation/third_party/bin/zlib.dll
-C:/src/git/StE/Simulation/third_party/lib/zlibstatic.lib
+C:/src/git/StE/Simulation/third_party/lib/zlibd.lib
+C:/src/git/StE/Simulation/third_party/bin/zlibd.dll
+C:/src/git/StE/Simulation/third_party/lib/zlibstaticd.lib
 C:/src/git/StE/Simulation/third_party/include/zconf.h
 C:/src/git/StE/Simulation/third_party/include/zlib.h
 C:/src/git/StE/Simulation/third_party/share/man/man3/zlib.3
