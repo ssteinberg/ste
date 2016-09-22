@@ -1,6 +1,6 @@
 !include x64.nsh
 Name "libjpeg-turbo SDK for Visual C++"
-OutFile "C:/src/git/StE/Simulation/third_party/build/libjpeg-turbo\${BUILDDIR}libjpeg-turbo-1.4.3-vc.exe"
+OutFile "C:/src/git/StE/Simulation/third_party/build/libjpeg-turbo\${BUILDDIR}libjpeg-turbo-1.5.1-vc.exe"
 InstallDir C:\src\git\StE\Simulation\third_party
 
 SetCompressor bzip2
@@ -79,21 +79,22 @@ Section "libjpeg-turbo SDK for Visual C++ (required)"
 	File "C:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo\jpeglib.h"
 	File "C:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo\turbojpeg.h"
 	SetOutPath $INSTDIR\doc
-	File "C:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo\README"
-	File "C:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo\README-turbo.txt"
+	File "C:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo\README.ijg"
+	File "C:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo\README.md"
+	File "C:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo\LICENSE.md"
 	File "C:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo\example.c"
 	File "C:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo\libjpeg.txt"
 	File "C:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo\structure.txt"
 	File "C:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo\usage.txt"
 	File "C:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo\wizard.txt"
 
-	WriteRegStr HKLM "SOFTWARE\libjpeg-turbo 1.4.3" "Install_Dir" "$INSTDIR"
+	WriteRegStr HKLM "SOFTWARE\libjpeg-turbo 1.5.1" "Install_Dir" "$INSTDIR"
 
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\libjpeg-turbo 1.4.3" "DisplayName" "libjpeg-turbo SDK v1.4.3 for Visual C++"
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\libjpeg-turbo 1.4.3" "UninstallString" '"$INSTDIR\uninstall_1.4.3.exe"'
-	WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\libjpeg-turbo 1.4.3" "NoModify" 1
-	WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\libjpeg-turbo 1.4.3" "NoRepair" 1
-	WriteUninstaller "uninstall_1.4.3.exe"
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\libjpeg-turbo 1.5.1" "DisplayName" "libjpeg-turbo SDK v1.5.1 for Visual C++"
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\libjpeg-turbo 1.5.1" "UninstallString" '"$INSTDIR\uninstall_1.5.1.exe"'
+	WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\libjpeg-turbo 1.5.1" "NoModify" 1
+	WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\libjpeg-turbo 1.5.1" "NoRepair" 1
+	WriteUninstaller "uninstall_1.5.1.exe"
 SectionEnd
 
 Section "Uninstall"
@@ -105,8 +106,8 @@ Section "Uninstall"
 
 	SetShellVarContext all
 
-	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\libjpeg-turbo 1.4.3"
-	DeleteRegKey HKLM "SOFTWARE\libjpeg-turbo 1.4.3"
+	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\libjpeg-turbo 1.5.1"
+	DeleteRegKey HKLM "SOFTWARE\libjpeg-turbo 1.5.1"
 
 !ifdef GCC
 	Delete $INSTDIR\bin\libjpeg-62.dll
@@ -139,9 +140,10 @@ Section "Uninstall"
 	Delete $INSTDIR\include\jmorecfg.h"
 	Delete $INSTDIR\include\jpeglib.h"
 	Delete $INSTDIR\include\turbojpeg.h"
-	Delete $INSTDIR\uninstall_1.4.3.exe
-	Delete $INSTDIR\doc\README
-	Delete $INSTDIR\doc\README-turbo.txt
+	Delete $INSTDIR\uninstall_1.5.1.exe
+	Delete $INSTDIR\doc\README.ijg
+	Delete $INSTDIR\doc\README.md
+	Delete $INSTDIR\doc\LICENSE.md
 	Delete $INSTDIR\doc\example.c
 	Delete $INSTDIR\doc\libjpeg.txt
 	Delete $INSTDIR\doc\structure.txt

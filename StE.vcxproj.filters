@@ -1106,5 +1106,6 @@
     <None Include="Simulation\src\ste\framework_graphics\radiometry\radiance\subsurface_scattering\shaders\subsurface_scattering.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\deferred_composer\shaders\deferred_shading.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\light_transport.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\common_shaders\spherical.glsl" />
   </ItemGroup>
 </Project>
