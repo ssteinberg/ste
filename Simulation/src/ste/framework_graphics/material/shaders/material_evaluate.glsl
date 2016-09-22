@@ -36,17 +36,17 @@ vec3 material_evaluate_layer_radiance(material_layer_unpacked_descriptor descrip
 	// Specular
 	vec3 Specular;
 	if (descriptor.anisotropy_ratio != 1.f) {
-		float roughness_x = descriptor.roughness * descriptor.anisotropy_ratio;
-		float roughness_y = descriptor.roughness / descriptor.anisotropy_ratio;
+		float rx = descriptor.roughness * descriptor.anisotropy_ratio;
+		float ry = descriptor.roughness / descriptor.anisotropy_ratio;
 
 		Specular = cook_torrance_ansi_brdf(n, t, b,
 										   v, l, h,
-										   roughness_x,
-										   roughness_y,
+										   rx, ry,
 										   F0, c_spec,
 										   D, G, F);
 	} else {
-		Specular = cook_torrance_iso_brdf(n, v, l, h,
+		Specular = cook_torrance_iso_brdf(n, 
+										  v, l, h,
 										  descriptor.roughness,
 										  F0, c_spec,
 										  D, G, F);
@@ -72,8 +72,8 @@ bool material_snell_refraction(inout vec3 v,
 	if (cosine2 < .0f)
 		return false;
 
-	vec3 normal_by_cosine = n * sqrt(cosine2);
-	v = normal_by_cosine - ior * cross(n, -t);
+	vec3 x = n * sqrt(cosine2);
+	v = x - ior * cross(n, -t);
 
 	return true;
 }
