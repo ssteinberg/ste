@@ -17,23 +17,23 @@
 //Semicolon separated list of supported configuration types, only
 // supports Debug, Release, MinSizeRel, and RelWithDebInfo, anything
 // else will be ignored.
-CMAKE_CONFIGURATION_TYPES:STRING=Debug;Release;MinSizeRel;RelWithDebInfo
+CMAKE_CONFIGURATION_TYPES:STRING=Debug;Release;
 
 //Flags used by the compiler during all build types.
 CMAKE_C_FLAGS:STRING= /DWIN32 /D_WINDOWS /W3
 
 //Flags used by the compiler during debug builds.
-CMAKE_C_FLAGS_DEBUG:STRING=/D_DEBUG /MDd /Zi /Ob0 /Od /RTC1
+CMAKE_C_FLAGS_DEBUG:STRING='/D_DEBUG /MTd /Zi /Ob0 /Od '
 
 //Flags used by the compiler during release builds for minimum
 // size.
 CMAKE_C_FLAGS_MINSIZEREL:STRING=/MD /O1 /Ob1 /D NDEBUG
 
 //Flags used by the compiler during release builds.
-CMAKE_C_FLAGS_RELEASE:STRING=/MD /O2 /Ob2 /D NDEBUG
+CMAKE_C_FLAGS_RELEASE:STRING=/MT /O2 /Ob2 /D NDEBUG
 
 //Flags used by the compiler during release builds with debug info.
-CMAKE_C_FLAGS_RELWITHDEBINFO:STRING=/MD /Zi /O2 /Ob1 /D NDEBUG
+CMAKE_C_FLAGS_RELWITHDEBINFO:STRING=/MT /Zi /O2 /Ob1 /D NDEBUG
 
 //Libraries linked by default with all C applications.
 CMAKE_C_STANDARD_LIBRARIES:STRING=kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib
@@ -139,10 +139,12 @@ NASM:FILEPATH=C:\Users\Shlomi Steinberg\AppData\Local\NASM\nasm.exe
 // WITH_TURBOJPEG=0 WITH_ARITH_ENC=0 WITH_ARITH_DEC=0)
 WITH_12BIT:BOOL=OFF
 
-//Include arithmetic decoding support
+//Include arithmetic decoding support when emulating the libjpeg
+// v6b API/ABI
 WITH_ARITH_DEC:BOOL=ON
 
-//Include arithmetic encoding support
+//Include arithmetic encoding support when emulating the libjpeg
+// v6b API/ABI
 WITH_ARITH_ENC:BOOL=ON
 
 //Link all libjpeg-turbo libraries and executables with the C run-time
@@ -257,7 +259,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELEASE-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO
 CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=2
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=3
 //ADVANCED property for variable: CMAKE_RC_COMPILER
 CMAKE_RC_COMPILER-ADVANCED:INTERNAL=1
 CMAKE_RC_COMPILER_WORKS:INTERNAL=1

@@ -47,6 +47,8 @@
 
 // Define this to 1 if building as a shared library / dynamic library / DLL
 /* #undef _GLFW_BUILD_DLL */
+// Define this to 1 to use Vulkan loader linked statically into application
+/* #undef _GLFW_VULKAN_STATIC */
 
 // Define this to 1 to force use of high-performance GPU on hybrid systems
 /* #undef _GLFW_USE_HYBRID_HPG */
