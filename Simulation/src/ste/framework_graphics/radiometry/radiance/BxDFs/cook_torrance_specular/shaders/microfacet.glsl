@@ -1,6 +1,17 @@
 
 #include "common.glsl"
 
+float ndf_ggx_isotropic_cdf(float roughness, float dotNH) {
+	float alpha = roughness * roughness;
+	float alpha2 = alpha * alpha;
+	float dotNH2 = dotNH * dotNH;
+	float t = alpha2 - 1.f;
+
+	float denom = t * (dotNH2 * t + 1.f);
+
+	return alpha2 / denom - 1.f / t;
+}
+
 float ndf_ggx_isotropic(float roughness, float dotNH) {
 	float alpha = roughness * roughness;
 	float alpha2 = alpha * alpha;
