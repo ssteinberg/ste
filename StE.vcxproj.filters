@@ -1034,6 +1034,9 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\material\material.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Simulation\src\ste\math_additions\numerical\romberg_integration\romberg_integration.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Simulation\src\ste\framework_graphics\material\shaders\material_evaluate.glsl" />
