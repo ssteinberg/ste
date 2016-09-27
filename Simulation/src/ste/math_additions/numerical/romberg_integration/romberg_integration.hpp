@@ -12,24 +12,20 @@ namespace StE {
 /**
 *	@brief	Implementation of Romberg's method for numerical integration
 */
-template <int N>
+template <unsigned N>
 class romberg_integration {
+	static_assert(N > 0, "Iterations count must be positive.");
+
 private:
-	// Calculates the sum of n-1 trapezoids using n equally spaced segments between a and b.
-	// n >= 1
+	// Calculates the partial sum of trapezoids using half of n equally spaced segments between a and b.
 	template <typename F>
-	static float trapezoid(const F &f, float a, float b, int n) {
-		assert(n >= 1);
+	static double trapezoid(const F &f, double h, double a, double b, std::uint64_t n) {
+		double t = .0;
 
-		float c = (b - a) / static_cast<float>(n);
-		float t = .0f;
-
-		for (int i=1; i<n; ++i) {
-			float x = a + static_cast<float>(i) / static_cast<float>(n) * (b - a);
-			t += c * static_cast<float>(f(x));
+		for (std::uint64_t i=1; i<n; i+=2) {
+			float x = a + static_cast<double>(i) * h;
+			t += static_cast<double>(f(x));
 		}
-
-		t += .5f * c * static_cast<float>(f(a) + f(b));
 
 		return t;
 	}
@@ -40,32 +36,37 @@ public:
 	*	
 	*	https://en.wikipedia.org/wiki/Romberg's_method
 	*
-	* 	@param f	funtion to integrate
+	* 	@param f	Function to integrate
 	* 	@param a	Interval start
 	* 	@param b	Interval end
 	*/
 	template <typename F>
-	static typename function_traits<F>::result_t integrate(const F &f, float a, float b) {
+	static typename function_traits<F>::result_t integrate(const F &f, double a, double b) {
 		using T = typename function_traits<F>::result_t;
 
-		float t = .0f;
-		std::array<float, N> Tk;
+		assert(b > a);
+
+		float t;
+		std::array<double, N> Tk;
 		Tk.fill(.0f);
 
-		for (int k = 1; k <= N; ++k) {
-			int segments = 1 << (k - 1);
-			t = trapezoid(f, a, b, segments);
+		Tk[0] = .5 * (b - a) * (f(a) + f(b));
 
-			for (int i = 1; i < k; ++i) {
-				float four_i = 2 << i;
+		for (std::uint64_t n = 1; n < N; ++n) {
+			std::uint64_t k = static_cast<std::uint64_t>(1) << n;
+			double h = (b - a) / static_cast<double>(k);
+			t = .5 * Tk[0] + h * trapezoid(f, h, a, b, k);
 
-				float s = (four_i * t - Tk[i - 1]) / (four_i - 1.f);
-				Tk[i - 1] = t;
+			for (std::uint64_t m = 1; m <= n; ++m) {
+				double s = t + (t - Tk[m - 1]) / static_cast<double>((1 << 2 * m) - 1);
+				Tk[m - 1] = t;
 				t = s;
 			}
+
+			Tk[n] = t;
 		}
 
-		return t;
+		return static_cast<T>(Tk[N - 1]);
 	}
 };
 
