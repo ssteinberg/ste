@@ -27,6 +27,7 @@ vec3 deferred_shade_fragment(g_buffer_element frag, ivec2 coord,
 							 samplerCubeArrayShadow shadow_depth_maps, 
 							 samplerCubeArray shadow_maps, 
 							 sampler3D scattering_volume, 
+							 sampler2DArray microfacet_refraction_ratio_fit_lut, 
 							 sampler2D back_face_depth, 
 							 sampler2D front_face_depth) {
 	// Read G-buffer data from fragment 
@@ -104,6 +105,7 @@ vec3 deferred_shade_fragment(g_buffer_element frag, ivec2 coord,
 																	 v, l,
 																	 thickness,
 																	 ld,
+																	 microfacet_refraction_ratio_fit_lut,
 																	 shadow_maps, light_id,
 																	 dist,
 																	 occlusion);

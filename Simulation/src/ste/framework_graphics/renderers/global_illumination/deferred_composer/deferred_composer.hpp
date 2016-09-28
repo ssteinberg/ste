@@ -14,7 +14,7 @@
 #include "gpu_dispatchable.hpp"
 
 #include "glsl_program.hpp"
-#include "Texture2D.hpp"
+#include "Texture2DArray.hpp"
 
 #include <memory>
 
@@ -36,7 +36,10 @@ private:
 	std::shared_ptr<connection<>> vss_storage_connection;
 	std::shared_ptr<connection<>> shadows_storage_connection;
 
+	std::unique_ptr<Core::Texture2DArray> microfacet_refraction_ratio_fit_lut;
+
 private:
+	void load_microfacet_fit_lut();
 	void attach_handles() const;
 
 private:
@@ -64,6 +67,7 @@ public:
 			object->program.wait();
 		}).then_on_main_thread([object]() {
 			object->attach_handles();
+			object->load_microfacet_fit_lut();
 		});
 	}
 };
