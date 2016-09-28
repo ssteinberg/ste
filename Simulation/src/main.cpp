@@ -393,7 +393,7 @@ int main()
 					ImGui::SliderFloat((std::string("Rghn ##value") +	" ##" + layer_label).data(), &roughness[i],			 .0f, 1.f);
 					ImGui::SliderFloat((std::string("Aniso ##value") +	" ##" + layer_label).data(), &anisotropy[i],		-1.f, 1.f, "%.3f", 2.f);
 					ImGui::SliderFloat((std::string("Metal ##value") +	" ##" + layer_label).data(), &metallic[i],			 .0f, 1.f);
-					ImGui::SliderFloat((std::string("IOR ##value") +	" ##" + layer_label).data(), &index_of_refraction[i],1.f, 20.f, "%.5f", 3.f);
+					ImGui::SliderFloat((std::string("IOR ##value") +	" ##" + layer_label).data(), &index_of_refraction[i],1.f, 4.f, "%.5f", 3.f);
 					ImGui::SliderFloat((std::string("Shn ##value") +	" ##" + layer_label).data(), &sheen[i],				 .0f, 1.f);
 					ImGui::SliderFloat((std::string("ShnPwr ##value") +	" ##" + layer_label).data(), &sheen_power[i],		 .0f, 1.f);
 					if (i < layers_count - 1 && layer_enabled[i + 1])

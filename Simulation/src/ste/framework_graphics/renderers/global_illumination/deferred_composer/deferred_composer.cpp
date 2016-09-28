@@ -44,7 +44,7 @@ void deferred_composer::load_microfacet_fit_lut() {
 
 	microfacet_refraction_ratio_fit_lut = std::make_unique<Core::Texture2DArray>(microfacet_refraction_ratio_fit_data);
 
-	auto handle = microfacet_refraction_ratio_fit_lut->get_texture_handle();
+	auto handle = microfacet_refraction_ratio_fit_lut->get_texture_handle(*Core::Sampler::SamplerNearestClamp());
 	handle.make_resident();
 	program.get().set_uniform("microfacet_refraction_ratio_fit_lut", handle);
 

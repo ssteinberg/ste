@@ -177,9 +177,10 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>opengl32.lib;glu32.lib;libboost_system-vc140-s-1_61.lib;libboost_filesystem-vc140-s-1_61.lib;libboost_serialization-vc140-s-1_61.lib;libboost_exception-vc140-mt-1_61.lib;zlibstatic.lib;freetype.lib;libglew32.lib;glfw3.lib;turbojpeg-static.lib;libpng16_static.lib;tga_static.lib;tinyobjloader.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glu32.lib;libboost_system-vc140-s-1_61.lib;libboost_filesystem-vc140-s-1_61.lib;libboost_serialization-vc140-s-1_61.lib;zlibstatic.lib;freetype.lib;libglew32.lib;glfw3.lib;turbojpeg-static.lib;libpng16_static.lib;tga_static.lib;tinyobjloader.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:\src\boost_1_61_0\stage\lib32;$(SolutionDir)Simulation\third_party\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
+      <AdditionalOptions> /FORCE:MULTIPLE %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

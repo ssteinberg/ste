@@ -104,6 +104,7 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 								vec3 l,
 								float object_thickness,
 								light_descriptor ld,
+								sampler2DArray microfacet_refraction_ratio_fit_lut,
 								samplerCubeArray shadow_maps, uint light,
 								float light_dist,
 								float occlusion,
@@ -139,14 +140,23 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 
 		float thickness = thickness_scale * descriptor.thickness;
 		float metallic = descriptor.metallic;
+		float roughness = descriptor.roughness;
 
 		vec3 in_v = v;
 		vec3 in_l = l;
 		
-		bool total_internal_reflection = !material_snell_refraction(v, n, layer.ior, next_layer.ior) || !material_snell_refraction(l, n, layer.ior, next_layer.ior);
-		if (total_internal_reflection) {
+		//bool total_internal_reflection = !material_snell_refraction(v, n, layer.ior, next_layer.ior) || !material_snell_refraction(l, n, layer.ior, next_layer.ior);
+		//if (total_internal_reflection) {
 			v = in_v;
 			l = in_l;
+		//}
+
+		float refracted_light = 1.f;
+		if (layer.ior > next_layer.ior) {
+			refracted_light = ggx_refraction_ratio(microfacet_refraction_ratio_fit_lut, 
+												   v, n, 
+												   roughness, 
+												   layer.ior, next_layer.ior);
 		}
 	
 		float dotNV = max(epsilon, dot(n,v));
@@ -154,7 +164,7 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 		float path_length = thickness * (1.f / dotNV + 1.f / dotNL);
 
 		vec3 extinction = vec3(1.f) - exp(-path_length * attenuation_coefficient);
-		vec3 scattering = extinction * base_color;
+		vec3 scattering = refracted_light * extinction * base_color;
 
 		rgb += atten * material_evaluate_layer_radiance(descriptor,
 														n, t, b,
@@ -171,7 +181,7 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 																			 h);
 
 		outer_back_layers_attenuation_approximation_for_sss *= exp(-thickness * attenuation_coefficient) * vec3((1.f - F0) * (1.f - metallic));
-		atten *= (vec3(1.f) - extinction) * layer_surface_attenuation;
+		atten *= (vec3(1.f) - extinction) * refracted_light * layer_surface_attenuation;
 
 		F0 = material_convert_ior_to_F0(layer.ior, next_layer.ior);
 		layer = next_layer;

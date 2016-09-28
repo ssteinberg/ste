@@ -45,7 +45,10 @@ layout(shared, binding = 11) restrict readonly buffer lll_data {
 
 layout(bindless_sampler) uniform samplerCubeArrayShadow shadow_depth_maps;
 layout(bindless_sampler) uniform samplerCubeArray shadow_maps;
+
 layout(bindless_sampler) uniform sampler3D scattering_volume;
+
+layout(bindless_sampler) uniform sampler2DArray microfacet_refraction_ratio_fit_lut;
 
 layout(binding = 0) uniform sampler2D back_face_depth;
 layout(binding = 1) uniform sampler2D front_face_depth;
@@ -61,6 +64,7 @@ void main() {
 												   shadow_depth_maps, 
 												   shadow_maps, 
 												   scattering_volume, 
+												   microfacet_refraction_ratio_fit_lut,
 												   back_face_depth, 
 												   front_face_depth);
 
