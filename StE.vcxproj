@@ -584,6 +584,7 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\radiometry\radiance\BxDFs\cook_torrance_specular\geometry_attenuation_factor\schlick_smith_gaf.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\radiometry\radiance\BxDFs\cook_torrance_specular\geometry_attenuation_factor\schlick_smith_simplified_gaf.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\radiometry\radiance\BxDFs\cook_torrance_specular\ndf\ggx_ndf.hpp" />
+    <ClInclude Include="Simulation\src\ste\framework_graphics\radiometry\radiance\BxDFs\cook_torrance_specular\ndf\microfacet_refraction_ratio_fit.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\radiometry\radiance\BxDFs\disney_diffuse\disney_diffuse.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\radiometry\radiance\BxDFs\oren_nayar_diffuse\improved_oren_nayar_diffuse.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\radiometry\radiance\BxDFs\oren_nayar_diffuse\oren_nayar_diffuse.hpp" />
