@@ -40,6 +40,8 @@ private:
 	Core::FramebufferObject backface_fbo;
 
 	gbuffer_type gbuffer;
+	Core::AtomicCounterBufferObject<> gbuffer_counter{ 1 };
+	std::unique_ptr<Core::Texture2D> gbuffer_ptrs;
 
 	glm::ivec2 size;
 	int depth_buffer_levels;
@@ -57,9 +59,11 @@ public:
 	}
 
 	void resize(glm::ivec2 size);
-	auto& get_size() const { return size; }
+	void clear(bool clear_ptrs = false) const;
 
 	void bind_gbuffer() const;
+
+	auto& get_size() const { return size; }
 	
 	auto* get_depth_target() const { return depth_target.get(); }
 	auto* get_backface_depth_target() const { return backface_depth_target.get(); }

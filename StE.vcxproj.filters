@@ -231,6 +231,9 @@
     <ClCompile Include="Simulation\src\ste\framework_graphics\material\layer\material_layer_descriptor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\deferred_gbuffer\gbuffer_clearer\gbuffer_clear_dispatch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Simulation\src\ste\engine\cache\lru_cache.hpp">
@@ -1038,6 +1041,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\radiometry\radiance\BxDFs\cook_torrance_specular\ndf\microfacet_refraction_ratio_fit.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\deferred_gbuffer\gbuffer_clearer\gbuffer_clear_dispatch.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
