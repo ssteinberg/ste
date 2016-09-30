@@ -4,8 +4,6 @@
 struct material_layer_unpacked_descriptor {
 	vec4 color;
 
-	float sheen;
-	float sheen_power;
 	float anisotropy_ratio;
 	float metallic;
 	float roughness;
@@ -31,10 +29,6 @@ float material_convert_sheen_power(float s) {
 
 material_layer_unpacked_descriptor material_layer_unpack(material_layer_descriptor l) {
 	material_layer_unpacked_descriptor d;
-
-	vec2 sheen_pack = unpackUnorm2x16(l.sheen_pack);
-	d.sheen = material_convert_sheen_to_sheen_ratio(sheen_pack.x);
-	d.sheen_power = material_convert_sheen_power(sheen_pack.y);
 
 	vec2 ansi_metal_pack = unpackUnorm2x16(l.ansi_metal_pack);
 	d.anisotropy_ratio = mix(material_layer_min_ansio_ratio, material_layer_max_ansio_ratio, ansi_metal_pack.x);

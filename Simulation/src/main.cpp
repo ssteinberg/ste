@@ -351,7 +351,6 @@ int main()
 	float anisotropy[3];
 	float metallic[3];
 	float index_of_refraction[3];
-	float sheen[3];
 	float sheen_power[3];
 	float thickness[3];
 	float absorption[3];
@@ -368,7 +367,6 @@ int main()
 		anisotropy[i] = 0;
 		metallic[i] = 0;
 		index_of_refraction[i] = 1.5f;
-		sheen[i] = 0;
 		sheen_power[i] = 0;
 		thickness[i] = 0.001f;
 		absorption[i] = 1.f;
@@ -394,8 +392,6 @@ int main()
 					ImGui::SliderFloat((std::string("Aniso ##value") +	" ##" + layer_label).data(), &anisotropy[i],		-1.f, 1.f, "%.3f", 2.f);
 					ImGui::SliderFloat((std::string("Metal ##value") +	" ##" + layer_label).data(), &metallic[i],			 .0f, 1.f);
 					ImGui::SliderFloat((std::string("IOR ##value") +	" ##" + layer_label).data(), &index_of_refraction[i],1.f, 4.f, "%.5f", 3.f);
-					ImGui::SliderFloat((std::string("Shn ##value") +	" ##" + layer_label).data(), &sheen[i],				 .0f, 1.f);
-					ImGui::SliderFloat((std::string("ShnPwr ##value") +	" ##" + layer_label).data(), &sheen_power[i],		 .0f, 1.f);
 					if (i < layers_count - 1 && layer_enabled[i + 1])
 						ImGui::SliderFloat((std::string("Thick ##value") + " ##" + layer_label).data(), &thickness[i], .0f, StE::Graphics::material_layer_max_thickness, "%.5f", 3.f);
 					ImGui::SliderFloat((std::string("Attn ##value") +	" ##" + layer_label).data(), &absorption[i], .000001f, 20.f, "%.8f", 4.f);
@@ -418,10 +414,6 @@ int main()
 				layers[i]->set_metallic(metallic[i]);
 			if (layers[i]->get_index_of_refraction() != index_of_refraction[i])
 				layers[i]->set_index_of_refraction(index_of_refraction[i]);
-			if (layers[i]->get_sheen() != sheen[i])
-				layers[i]->set_sheen(sheen[i]);
-			if (layers[i]->get_sheen_power() != sheen_power[i])
-				layers[i]->set_sheen_power(sheen_power[i]);
 			if (layers[i]->get_layer_thickness() != thickness[i])
 				layers[i]->set_layer_thickness(thickness[i]);
 			if (layers[i]->get_attenuation_coefficient().x != absorption[i])

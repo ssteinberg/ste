@@ -30,9 +30,6 @@ vec3 material_evaluate_layer_radiance(material_layer_unpacked_descriptor descrip
 	// Specular color
 	vec3 c_spec = mix(specular_tint, base_color, descriptor.metallic);
 
-	// Additional sheen color (diffuse at grazing angles)
-	vec3 c_sheen = fresnel_schlick_ratio(dotLH, descriptor.sheen_power) * sheen_tint * descriptor.sheen;
-
 	// Specular
 	vec3 Specular;
 	if (descriptor.anisotropy_ratio != 1.f) {
@@ -57,7 +54,7 @@ vec3 material_evaluate_layer_radiance(material_layer_unpacked_descriptor descrip
 													   descriptor.roughness);
 
 	// Evaluate BRDF
-	vec3 brdf = Specular + (1.f - descriptor.metallic) * (Diffuse + c_sheen);
+	vec3 brdf = Specular + (1.f - descriptor.metallic) * Diffuse;
 	return brdf * irradiance * dotNL;
 }
 

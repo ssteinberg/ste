@@ -16,7 +16,6 @@ material_layer::material_layer() {
 	// Write default values
 	descriptor.set_roughness_and_thickness(roughness, thickness);
 	descriptor.set_anisotropy_and_metallicity(aniso_ratio, metallic);
-	descriptor.set_sheen(sheen, sheen_power);
 	descriptor.set_ior(index_of_refraction);
 	descriptor.set_attenuation_coefficient(attenuation_coefficient, phase_g);
 }

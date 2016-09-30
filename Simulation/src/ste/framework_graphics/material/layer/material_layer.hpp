@@ -40,9 +40,6 @@ private:
 	glm::vec3 attenuation_coefficient{ .0f };
 	float phase_g{ .0f };
 
-	float sheen{ .0f };
-	float sheen_power{ .0f };
-
 	material_layer *next_layer{ nullptr };
 
 private:
@@ -175,33 +172,6 @@ public:
 	}
 
 	/**
-	*	@brief	Set material sheen
-	*
-	*	Sheen provides an additional cloth-like grazing component. Defaults to 0.0.
-	*	Similiar to Disney's implementation.
-	*
-	* 	@param s	Sheen value	- range: [0,1]
-	*/
-	void set_sheen(float s) {
-		sheen = s;
-		descriptor.set_sheen(sheen, sheen_power);
-		Base::notify();
-	}
-
-	/**
-	*	@brief	Set material sheen power
-	*
-	*	Controls sheen's curve. Defaults to 0.0.
-	*
-	* 	@param sp	Sheen power value	- range: [0,1]
-	*/
-	void set_sheen_power(float sp) {
-		sheen_power = sp;
-		descriptor.set_sheen(sheen, sheen_power);
-		Base::notify();
-	}
-
-	/**
 	*	@brief	Set material layer thickness
 	*
 	*	Controls the material layer thickness. Ignored for base layers.
@@ -242,8 +212,6 @@ public:
 	float get_anisotropy() const { return anisotropy; }
 	float get_metallic() const { return metallic; }
 	float get_index_of_refraction() const { return index_of_refraction; }
-	float get_sheen() const { return sheen; }
-	float get_sheen_power() const { return sheen_power; }
 	float get_layer_thickness() const { return thickness; }
 	auto get_attenuation_coefficient() const { return attenuation_coefficient; }
 	float get_scattering_phase_parameter() const { return phase_g; }

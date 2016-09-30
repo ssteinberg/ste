@@ -18,7 +18,6 @@ class material_layer_descriptor {
 private:
 	std::uint32_t packed_color{ 0xFFFFFFFF };
 
-	std::uint32_t sheen_pack{ 0 };
 	std::uint32_t ansi_metal_pack{ 0 };
 	std::uint32_t roughness_thickness_pack{ 0 };
 	
@@ -28,6 +27,8 @@ private:
 	float attenuation_coefficient_scale{ .0f };
 
 	std::uint32_t next_layer_id{ material_layer_none };
+
+	float _unused;
 
 public:
 	material_layer_descriptor() = default;
@@ -39,12 +40,6 @@ public:
 
 	void set_color(const glm::vec4 &c) {
 		packed_color = glm::packUnorm4x8(c);
-	}
-	
-	void set_sheen(float sheen, float sheen_power) {
-		sheen = glm::clamp(sheen, .0f, 1.f);
-		sheen_power = glm::clamp(sheen_power, .0f, 1.f);
-		sheen_pack = glm::packUnorm2x16({ sheen, sheen_power });
 	}
 	
 	void set_anisotropy_and_metallicity(float ansio_ratio, float metallic) {

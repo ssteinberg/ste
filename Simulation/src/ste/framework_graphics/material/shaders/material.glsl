@@ -24,7 +24,6 @@ struct material_descriptor {
 struct material_layer_descriptor {
 	uint32_t packed_color;
 
-	uint32_t sheen_pack;
 	uint32_t ansi_metal_pack;
 	uint32_t roughness_thickness_pack;
 
@@ -34,6 +33,8 @@ struct material_layer_descriptor {
 	float attenuation_coefficient_scale;
 
 	uint32_t next_layer_id;
+	
+	float _unused;
 };
 
 const int material_none = 0xFFFFFFFF;
