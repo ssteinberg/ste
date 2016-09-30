@@ -81,31 +81,20 @@ float ggx_refraction_ratio(sampler2DArray microfacet_refraction_ratio_fit_lut,
 						   float ior1,
 						   float ior2) {
 	const float min_ior_ratio = 1.f / 3.f;
-
+	
+	float cos_theta = dot(v, n);
 	float ior_ratio = clamp(((ior2 / ior1) - min_ior_ratio) / (1f - min_ior_ratio), .0f, 1.f);
 	vec2 uv = vec2(ior_ratio, roughness);
 	
-	vec4 theta = vec4(acos(dot(v, n)));
-	
-	vec4 a0 = textureGather(microfacet_refraction_ratio_fit_lut, vec3(uv, 0), 0);
-	vec4 b0 = textureGather(microfacet_refraction_ratio_fit_lut, vec3(uv, 0), 1);
-	vec4 c0 = textureGather(microfacet_refraction_ratio_fit_lut, vec3(uv, 0), 2);
-	vec4 a1 = textureGather(microfacet_refraction_ratio_fit_lut, vec3(uv, 1), 0);
-	vec4 b1 = textureGather(microfacet_refraction_ratio_fit_lut, vec3(uv, 1), 1);
-	vec4 c1 = textureGather(microfacet_refraction_ratio_fit_lut, vec3(uv, 1), 2);
-	
-	vec4 x0 = (theta - b0) / c0;
-	vec4 x1 = (theta - b1) / c1;
-	
-	vec4 gauss0 = a0 * exp(-x0*x0);
-	vec4 gauss1 = a1 * exp(-x1*x1);
-	
-	vec2 lut_size = textureSize(microfacet_refraction_ratio_fit_lut, 0).xy;
-	vec2 w = fract(uv * lut_size - vec2(.5f + 1.f / 4096.f));
-	
-	vec2 gauss_xy = mix(vec2(gauss0.x, gauss1.x), vec2(gauss0.y, gauss1.y), w.x);
-	vec2 gauss_wz = mix(vec2(gauss0.w, gauss1.z), vec2(gauss0.w, gauss1.z), w.x);
-	vec2 gauss_lin = mix(gauss_xy, gauss_wz, w.y);
+	vec3 lut0 = texture(microfacet_refraction_ratio_fit_lut, vec3(uv, 0)).xyz;
+	vec3 lut1 = texture(microfacet_refraction_ratio_fit_lut, vec3(uv, 1)).xyz;
 
-	return gauss_lin.x + gauss_lin.y;
+	vec2 a = lut0.xy;
+	vec2 b = vec2(lut0.z, lut1.z);
+	vec2 c = lut1.xy;
+	
+	vec2 t = (vec2(cos_theta) + b) * c;
+	vec2 gauss = a * exp(-(t * t));
+
+	return gauss.x + gauss.y;
 }

@@ -91,11 +91,11 @@ public:
 				auto offset = x + y * size;
 
 				lut0[offset] = { static_cast<float>(fit_data->data[offset].a1), 
-								 static_cast<float>(fit_data->data[offset].b1),
-								 static_cast<float>(fit_data->data[offset].c1) };
-				lut1[offset] = { static_cast<float>(fit_data->data[offset].a2),
-								 static_cast<float>(fit_data->data[offset].b2),
-								 static_cast<float>(fit_data->data[offset].c2) };
+								 static_cast<float>(fit_data->data[offset].a2),
+								 -static_cast<float>(fit_data->data[offset].b1) };
+				lut1[offset] = { 1.f / static_cast<float>(fit_data->data[offset].c1),
+								 1.f / static_cast<float>(fit_data->data[offset].c2),
+								 -static_cast<float>(fit_data->data[offset].b2) };
 			}
 		}
 
