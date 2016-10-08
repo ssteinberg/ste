@@ -115,70 +115,6 @@ void add_scene_lights(StE::Graphics::Scene &scene, std::vector<std::unique_ptr<S
 	}
 }
 
-float cdf(float roughness, float theta) {
-	float alpha = roughness * roughness;
-	float a2 = alpha * alpha;
-	float b = a2 - 1;
-	float c = glm::cos(theta);
-
-	return a2 / (b * (c*c*b + 1)) - 1 / b;
-}
-
-glm::vec3 vec_from_spherical(float theta, float phi, float r = 1.f) {
-	float sine_theta = glm::sin(theta);
-	return{ r * sine_theta * glm::cos(phi), r * sine_theta * glm::sin(phi), r * glm::cos(theta) };
-}
-
-void spherical_from_vec(const glm::vec3 &v, float &theta, float &phi, float &r) {
-	float x2y2 = v.x*v.x + v.y*v.y;
-
-	r = glm::sqrt(x2y2 + v.z*v.z);
-	theta = glm::atan(glm::sqrt(x2y2) / v.z);
-	phi = glm::atan(v.y, v.x);
-}
-
-void test() {
-	std::random_device rd;
-	std::mt19937 gen(rd());
-
-	float theta = .4f;
-	float phi = 1.2f;
-	float theta1 = .2f;
-	float phi1 = -.4f;
-	float roughness = .4f;
-
-	glm::vec3 n = { 0, 0, 1 };
-	glm::vec3 v = vec_from_spherical(theta, phi);
-	glm::vec3 l = vec_from_spherical(theta1, phi1);
-	glm::vec3 h = glm::normalize(v + l);
-
-	std::cout << "v: " << v.x << " " << v.y << " " << v.z << " " << std::endl;
-	std::cout << "l: " << l.x << " " << l.y << " " << l.z << " " << std::endl;
-	std::cout << "h: " << h.x << " " << h.y << " " << h.z << " " << std::endl;
-
-	float ior1 = 2.3f;
-	float ior2 = 1.5f;
-
-	std::cout << "ior1: " << ior1 << std::endl;
-	std::cout << "ior2: " << ior2 << std::endl;
-
-	float theta_c = glm::asin(ior2 / ior1);
-	float theta_h = glm::acos(glm::dot(v, h));
-	float theta_n = glm::acos(glm::dot(v, n));
-
-	std::cout << "theta_c: " << theta_c << std::endl;
-	std::cout << "theta_h: " << theta_h << std::endl;
-	std::cout << "theta_n: " << theta_n << std::endl;
-
-	float c = cdf(roughness, theta_c);
-	float transformed_c1 = c / (4.f * glm::dot(l, h));
-	float c2 = cdf(roughness, theta_n);
-
-	std::cout << c << " " << c2 << std::endl;
-	std::cout << transformed_c1 << std::endl;
-}
-
-
 #ifdef _MSC_VER
 int CALLBACK WinMain(HINSTANCE hInstance,
 					 HINSTANCE hPrevInstance,
@@ -188,7 +124,6 @@ int CALLBACK WinMain(HINSTANCE hInstance,
 int main()
 #endif
 {
-
 	/*
 	 *	Create logger
 	 */
@@ -197,8 +132,6 @@ int main()
 	logger.redirect_std_outputs();
 	ste_log_set_global_logger(&logger);
 	ste_log() << "Simulation is running";
-
-	test();
 
 
 	/*
