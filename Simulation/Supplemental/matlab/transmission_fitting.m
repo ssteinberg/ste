@@ -1,12 +1,12 @@
 function [] = transmission_fitting()
 
 DIM = 256;
-N = 90;
+N = 40;
 Rmin = .2;
 Rmax = 3.2;
 
-roughness = .5001;
-r = .75;
+roughness = .25001;
+r = 2.;
 
 fprintf('%s - Starting\n', datetime('now'));
 
@@ -23,24 +23,19 @@ data = zeros(DIM,DIM,6);
         
         F = @(x) (Rp(x) + Rs(x)) / 2;
 
-        x = zeros(N,1);
-        y = zeros(N,1);
+        x = single(zeros(N,1));
+        y = single(zeros(N,1));
         for k = 1:N
             v = (k-1) / (N-1) * pi / 2;
             
             t = @(theta) s * sin(pi/2 * (theta - (v - s)) / s); 
             f = @(theta) D(cos(theta)) * sin(abs(2 * theta)) / 2 * ...
-                integral(@(phi) (1 - fresnel(v, theta, phi, r)), -t(theta), t(theta), 'ArrayValued', true, 'RelTol', 1e-5, 'AbsTol', 1e-6);
+                integral(@(phi) (1 - fresnel(v, theta, phi, r)), -t(theta), t(theta), 'ArrayValued', true, 'RelTol', 1e-4, 'AbsTol', 1e-4);
         
             a = max(-pi/2, v - s);
             b = min( pi/2, v + s);
             
-            if roughness < .1
-                err = 1e-5;
-            else
-                err = 1e-6;
-            end
-            Fv = integral(f, a, b, 'ArrayValued', true, 'RelTol', err, 'AbsTol', 1e-10);
+            Fv = integral(f, a, b, 'ArrayValued', true, 'RelTol', 1e-4, 'AbsTol', 1e-4);
 
             x(k) = cos(v);
             y(k) = Fv;

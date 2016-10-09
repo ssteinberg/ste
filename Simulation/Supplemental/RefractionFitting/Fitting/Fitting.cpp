@@ -192,9 +192,9 @@ int main() {
 						glm::dvec3 numerical_integration = StE::romberg_integration<10>::integrate(std::bind(f, std::placeholders::_1, omega), s, t);
 
 						auto intgv_len = glm::length(numerical_integration);
-						auto intgv = numerical_integration / intgv_len;
+						auto intgv = intgv_len > 0 ? numerical_integration / intgv_len : glm::dvec3(0);
 
-						res = numerical_integration.x;
+						res = intgv.x;
 						if (std::isnan(res)) {
 							std::cout << "!! nan for " << omega<<  "," << roughness << " !!" << std::endl;
 							res = .0;
