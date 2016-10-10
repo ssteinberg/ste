@@ -233,7 +233,7 @@ int main() {
 	crc_computer.process_bytes(reinterpret_cast<const std::uint8_t*>(&lut->data), sizeof(lut->data));
 	lut->hash = crc_computer.checksum();
 
-	std::ofstream ofs("microfacet_ggx_refraction_ratio_fit.bin", std::ios::binary);
+	std::ofstream ofs("microfacet_ggx_refraction_fit.bin", std::ios::binary);
 	ofs.write(reinterpret_cast<const char*>(lut), sizeof(*lut));
 	ofs.close();
 
