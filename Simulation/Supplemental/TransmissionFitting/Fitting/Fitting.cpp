@@ -209,7 +209,7 @@ int main() {
 					cos_theta += cos_theta_step;
 				}
 
-				std::string cmd = "x=[" + strx + "];\ny=[" + stry + "];\nw = ones(length(x),1); w(1) = 10; w(length(x))=100;ft = fitoptions('gauss2'); ft.Weights = w; sf = fit(x.',y.', 'gauss2', ft);\np = coeffvalues(sf);plot(sf,x,y,'o');";
+				std::string cmd = "x=[" + strx + "];\ny=[" + stry + "];\nw = ones(length(x),1); w(1) = 10; w(length(x))=100;ft = fitoptions('gauss2'); ft.Weights = w; sf = fit(x.',y.', 'gauss2', ft);\np = coeffvalues(sf);";//plot(sf,x,y,'o');";
 
 				return std::make_tuple(cmd, x, y);
 			});

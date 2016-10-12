@@ -20,8 +20,6 @@ data = zeros(DIM,DIM,6);
 %     for j = 1:DIM
 %         r = (j-1) / (DIM-1) * (Rmax - Rmin) + Rmin;
         s = asin(min(1, r));
-        
-        F = @(x) (Rp(x) + Rs(x)) / 2;
 
         x = single(zeros(N,1));
         y = single(zeros(N,1));

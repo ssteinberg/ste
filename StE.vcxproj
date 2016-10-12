@@ -716,6 +716,7 @@
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\indirect.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\interleaved_gradient_noise.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\noise.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\common_shaders\optical_geometry.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\pack.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\passthrough.vert" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\project.glsl" />
