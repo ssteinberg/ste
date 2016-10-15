@@ -10,6 +10,8 @@
 #include "lambert_diffuse.glsl"
 #include "disney_diffuse.glsl"
 
+#include "fresnel.glsl"
+
 #include "common.glsl"
 
 vec3 material_evaluate_layer_radiance(material_layer_unpacked_descriptor descriptor,
@@ -19,8 +21,7 @@ vec3 material_evaluate_layer_radiance(material_layer_unpacked_descriptor descrip
 									  vec3 v,
 									  vec3 l,
 									  vec3 h,
-									  float F0,
-									  float cos_critical,
+									  float cos_critical, float sin_critical,
 									  vec3 irradiance,
 									  vec3 base_color,
 									  vec3 diffuse_color,
@@ -43,17 +44,17 @@ vec3 material_evaluate_layer_radiance(material_layer_unpacked_descriptor descrip
 	vec3 Specular = cook_torrance_ansi_brdf(n, t, b, 
 											v, l, h,
 											rx, ry,
-											F0, cos_critical,
+											cos_critical, sin_critical,
 											c_spec,
 											D, Gmask, Gshadow, F);
 
 	// Diffuse
-	//vec3 Diffuse = diffuse_color * disney_diffuse_brdf(n, v, l, h, roughness);
+	//vec3 Diffuse = diffuse_color * disney_diffuse_brdf(n, v, l, h, descriptor.roughness);
 	vec3 Diffuse = diffuse_color * lambert_diffuse_brdf();
 
 	// Evaluate BRDF
-	vec3 brdf = Specular + (1.f - descriptor.metallic) * Diffuse;
-	return brdf * irradiance * dotNL;
+	vec3 brdf = Specular * dotNL + (1.f - descriptor.metallic) * Diffuse;
+	return brdf * irradiance;
 }
 
 float material_attenuation_through_layer(float fresnel,
@@ -115,16 +116,16 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 		float cos_critical = sin_critical < 1.f ? 
 								sqrt(1.f - sin_critical * sin_critical) :
 								.0f;
-		float F0 = material_convert_ior_to_F0(sin_critical);
+		float F0 = fresnel_F0(sin_critical);
 
 		float inner_transmission_ratio = ggx_transmission_ratio(microfacet_transmission_fit_lut, 
 																v, n, 
 																roughness, 
 																sin_critical);
 		float outer_transmission_ratio = ggx_transmission_ratio(microfacet_transmission_fit_lut, 
-																 l, n, 
-																 roughness, 
-																 1.f / sin_critical);
+																l, n, 
+																roughness, 
+																1.f / sin_critical);
 
 		vec3 h = normalize(v + l);
 
@@ -149,7 +150,7 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 		rgb += attenuation * material_evaluate_layer_radiance(descriptor,
 															  n, t, b,
 															  v, l, h,
-															  F0, cos_critical,
+															  cos_critical, sin_critical,
 															  irradiance,
 															  base_color,
 															  scattering,
