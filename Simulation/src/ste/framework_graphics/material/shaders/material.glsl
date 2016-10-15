@@ -1,7 +1,5 @@
 
 #include "common.glsl"
-#include "cook_torrance.glsl"
-#include "disney_diffuse.glsl"
 
 struct material_texture_descriptor {
 	uint64_t tex_handler;
@@ -11,54 +9,58 @@ struct material_descriptor {
 	material_texture_descriptor cavity_map;
 	material_texture_descriptor normal_map;
 	material_texture_descriptor mask_map;
-	material_texture_descriptor _unused;
-
-	vec3 emission;
-
+	material_texture_descriptor texture;
+	
+	float emission;
+	uint32_t packed_emission_color;
+	
 	uint32_t head_layer;
+
+	float _unused;
 };
 
 struct material_layer_descriptor {
-	material_texture_descriptor basecolor_map;
+	uint32_t packed_color;
+
+	uint32_t ansi_metal_pack;
+	uint32_t roughness_thickness_pack;
 	
-	float thickness;
-
-	float roughness;
-	float anisotropy_ratio;
-	float metallic;
-	float ior;
-
-	float sheen_ratio;
-	float sheen_power;
-
-	uint32_t next_layer;
-
-	float _unused[2];
+	uint32_t next_layer_id;
+	
+	vec3 attenuation_coefficient;
+	uint32_t ior_phase_pack;
 };
 
 const int material_none = 0xFFFFFFFF;
+
 const float material_cavity_min = .2f;
 const float material_cavity_max = 1.f;
+
 const float material_alpha_discard_threshold = .5f;
 
-float material_convert_ior_to_F0(float ior1, float ior2) {
-	float t = (ior1 - ior2) / (ior1 + ior2);
-	return t * t;
-} 
+const float material_max_thickness = .1f;
+
+const float material_layer_ansio_ratio_scale = .9f;
+const float material_layer_max_ansio_ratio = 1.f / sqrt(1.f - 1.f * material_layer_ansio_ratio_scale);
+const float material_layer_min_ansio_ratio = sqrt(1.f - 1.f * material_layer_ansio_ratio_scale);
+
+const float material_layer_min_ior = 1.f;
+const float material_layer_max_ior = 5.f;
 
 vec3 material_emission(material_descriptor md) {
-	return md.emission.rgb;
+	vec3 emission_color = unpackUnorm4x8(md.packed_emission_color).rgb;
+	return emission_color * md.emission;
 }
 
-vec3 material_layer_base_color(material_layer_descriptor layer, vec2 uv, vec2 duvdx, vec2 duvdy) {
-	if (layer.basecolor_map.tex_handler > 0)
-		return textureGrad(sampler2D(layer.basecolor_map.tex_handler), uv, duvdx, duvdy).rgb;
-	return vec3(1.f);
+vec4 material_base_texture(material_descriptor md, vec2 uv, vec2 duvdx, vec2 duvdy) {
+	if (md.texture.tex_handler > 0)
+		return textureGrad(sampler2D(md.texture.tex_handler), uv, duvdx, duvdy);
+	return vec4(1.f);
 }
-vec3 material_layer_base_color(material_layer_descriptor layer, vec2 uv) {
-	if (layer.basecolor_map.tex_handler > 0)
-		return texture(sampler2D(layer.basecolor_map.tex_handler), uv).rgb;
-	return vec3(1.f);
+vec4 material_base_texture(material_descriptor md, vec2 uv) {
+	if (md.texture.tex_handler > 0)
+		return texture(sampler2D(md.texture.tex_handler), uv);
+	return vec4(1.f);
 }
 
 float material_cavity(material_descriptor md, vec2 uv, vec2 duvdx, vec2 duvdy) {

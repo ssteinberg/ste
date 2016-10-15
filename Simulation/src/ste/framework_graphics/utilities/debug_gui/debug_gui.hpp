@@ -12,6 +12,8 @@
 #include "signal.hpp"
 #include "Font.hpp"
 
+#include "Camera.hpp"
+
 #include <map>
 #include <vector>
 #include <memory>
@@ -32,6 +34,7 @@ private:
 private:
 	const StEngineControl &ctx;
 	profiler *prof;
+	const Camera *camera;
 
 	mutable std::map<std::string, std::vector<float>> prof_tasks_last_samples;
 
@@ -43,7 +46,7 @@ private:
 	std::vector<std::function<void(const glm::ivec2 &)>> user_guis;
 
 public:
-	debug_gui(const StEngineControl &ctx, profiler *prof, const StE::Text::Font &default_font);
+	debug_gui(const StEngineControl &ctx, profiler *prof, const StE::Text::Font &default_font, const Camera *camera = nullptr);
 	~debug_gui() noexcept;
 
 	void add_custom_gui(std::function<void(const glm::ivec2 &)> &&f) { user_guis.emplace_back(std::move(f)); }

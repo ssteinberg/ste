@@ -7,8 +7,8 @@ C:/src/git/StE/Simulation/third_party/bin/djpeg.exe
 C:/src/git/StE/Simulation/third_party/bin/jpegtran.exe
 C:/src/git/StE/Simulation/third_party/bin/rdjpgcom.exe
 C:/src/git/StE/Simulation/third_party/bin/wrjpgcom.exe
-C:/src/git/StE/Simulation/third_party/doc/README
-C:/src/git/StE/Simulation/third_party/doc/README-turbo.txt
+C:/src/git/StE/Simulation/third_party/doc/README.ijg
+C:/src/git/StE/Simulation/third_party/doc/README.md
 C:/src/git/StE/Simulation/third_party/doc/example.c
 C:/src/git/StE/Simulation/third_party/doc/libjpeg.txt
 C:/src/git/StE/Simulation/third_party/doc/structure.txt

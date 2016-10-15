@@ -11,7 +11,10 @@
 #include "Texture2D.hpp"
 #include "Sampler.hpp"
 
+#include "RGB.hpp"
+
 #include <memory>
+#include <limits>
 
 namespace StE {
 namespace Graphics {
@@ -25,10 +28,18 @@ class material_layer : public Core::observable_resource<material_layer_descripto
 private:
 	Core::SamplerMipmapped material_sampler;
 
-	std::shared_ptr<Core::Texture2D> basecolor_map{ nullptr };
+	RGB color;
+	
+	float thickness{ .0f };
+
+	float roughness{ .5f };
 	float anisotropy{ .0f };
-	float sheen{ .0f };
-	float sheen_power{ .0f };
+	float aniso_ratio{ 1.f };
+	float metallic{ .0f };
+
+	float index_of_refraction{ 1.5f };
+	glm::vec3 attenuation_coefficient{ std::numeric_limits<float>::infinity() };
+	float phase_g{ .0f };
 
 	material_layer *next_layer{ nullptr };
 
@@ -49,37 +60,27 @@ public:
 	*	@brief	Convert material anisotropy value to ratio which is used to adjust anisotropic roughness values
 	*/
 	static float convert_anisotropy_to_ratio(float ansio) {
-		return ansio != .0f ? glm::sqrt(1.f - ansio * .9f) : 1.f;
-	}
-	
-	/**
-	*	@brief	Convert normalized sheen value to sheen ratio
-	*/
-	static float convert_sheen_to_sheen_ratio(float s) {
-		return s * 4;
-	}
-	
-	/**
-	*	@brief	Convert normalized sheen power value to sheen power parameter
-	*/
-	static float convert_sheen_power(float s) {
-		return glm::mix(5.f, 2.f, s);
+		float ratio = glm::sqrt(1.f - glm::abs(ansio) * material_layer_ansio_ratio_scale);
+		if (ansio < .0f)
+			ratio = 1.f / ratio;
+		return ratio;
 	}
 
 public:
 	material_layer();
-	~material_layer() {
-		basecolor_map = nullptr;
-	}
 
 	/**
-	*	@brief	Set material base color (diffuse) map
+	*	@brief	Set material color
 	*
-	* 	@param tex	2D texture object
+	*	Color of the material, defaults to { 0,0,0 }.
+	*
+	* 	@param rgb	Material color
 	*/
-	void set_basecolor_map(const std::shared_ptr<Core::Texture2D> &tex) {
-		basecolor_map = tex;
-		descriptor.basecolor_handle = handle_for_texture(basecolor_map.get());
+	void set_color(const RGB &rgb) {
+		color = rgb;
+
+		glm::vec3 v = rgb;
+		descriptor.set_color(glm::vec4{ v.r, v.g, v.b, 1.f });
 		Base::notify();
 	}
 
@@ -91,7 +92,8 @@ public:
 	* 	@param r	Roughness - range: [0,1]
 	*/
 	void set_roughness(float r) {
-		descriptor.roughness = r;
+		roughness = r;
+		descriptor.set_roughness_and_thickness(roughness, thickness);
 		Base::notify();
 	}
 
@@ -104,7 +106,8 @@ public:
 	*/
 	void set_anisotropy(float a) {
 		anisotropy = a;
-		descriptor.anisotropy_ratio = convert_anisotropy_to_ratio(a);
+		aniso_ratio = convert_anisotropy_to_ratio(anisotropy);
+		descriptor.set_anisotropy_and_metallicity(aniso_ratio, metallic);
 		Base::notify();
 	}
 
@@ -116,7 +119,8 @@ public:
 	* 	@param m	Metallicity - range: [0,1] (Usually a binary value)
 	*/
 	void set_metallic(float m) {
-		descriptor.metallic = m;
+		metallic = m;
+		descriptor.set_anisotropy_and_metallicity(aniso_ratio, metallic);
 		Base::notify();
 	}
 
@@ -125,37 +129,59 @@ public:
 	*
 	*	Sets specular term using a given index-of-refraction. Defaults to 1.5.
 	*
-	* 	@param ior	Index-of-refraction - range: [1,infinity) (Usually in range [1,2])
+	* 	@param ior	Index-of-refraction - range: [1,infinity) (Usually in range [1,2] for non-metals)
 	*/
 	void set_index_of_refraction(float ior) {
-		descriptor.ior = ior;
+		index_of_refraction = ior;
+		descriptor.set_ior_phase(index_of_refraction, phase_g);
 		Base::notify();
 	}
 
 	/**
-	*	@brief	Set material sheen
+	*	@brief	Set material attenuation coefficient
 	*
-	*	Sheen provides an additional cloth-like grazing component. Defaults to 0.0.
-	*	Similiar to Disney's implementation.
+	*	Sets the total attenuation coefficient as per the Beer–Lambert law.
+	*	Total attenuation equals to scattering + absorption, both are wavelength dependant.
+	*	Scattering is dependent according to the material layer color. The rest is absorped light.
 	*
-	* 	@param s	Sheen value	- range: [0,1]
+	*	Defaults to { 0, 0, 0 }
+	*
+	* 	@param a	Per-channel total attenuation coefficient  - range: [0,infinity)
 	*/
-	void set_sheen(float s) {
-		sheen = s;
-		descriptor.sheen_ratio = convert_sheen_to_sheen_ratio(s);
+	void set_attenuation_coefficient(const glm::vec3 a) {
+		attenuation_coefficient = a;
+		descriptor.set_attenuation_coefficient(attenuation_coefficient);
 		Base::notify();
 	}
 
 	/**
-	*	@brief	Set material sheen power
+	*	@brief	Set material Henyey-Greenstein phase function g parameter
 	*
-	*	Controls sheen's curve. Defaults to 0.0.
+	*	Controls the subsurface-scattering pahse function. The parameter adjusts the relative amount of
+	*	back and forward scattering with a value of 0 corresponding to purely isotropic scattering, values 
+	*	close to -1 give highly peaked back scattering and values close to +1 give highly peaked forward 
+	*	scattering.
 	*
-	* 	@param s	Sheen power value	- range: [0,1]
+	*	Defaults to 0
+	*
+	* 	@param g	Henyey-Greenstein phase function parameter  - range: (-1,+1)
 	*/
-	void set_sheen_power(float sp) {
-		sheen_power = sp;
-		descriptor.sheen_power = convert_sheen_power(sp);
+	void set_scattering_phase_parameter(float g) {
+		phase_g = g;
+		descriptor.set_ior_phase(index_of_refraction, phase_g);
+		Base::notify();
+	}
+
+	/**
+	*	@brief	Set material layer thickness
+	*
+	*	Controls the material layer thickness. Ignored for base layers.
+	*
+	* 	@param t	Thickness in standard units	- range: (0,material_layer_max_thickness)
+	*/
+	void set_layer_thickness(float t) {
+		thickness = t;
+		descriptor.set_roughness_and_thickness(roughness, thickness);
 		Base::notify();
 	}
 	
@@ -176,19 +202,20 @@ public:
 				layerid = id;
 		}
 
-		descriptor.next_layer_id = layerid;
+		descriptor.set_next_layer_id(layerid);
 		next_layer = layerid == material_layer_none ? nullptr : layer;
 		
 		Base::notify();
 	}
 
-	auto *get_basecolor_map() const { return basecolor_map.get(); }
-	float get_roughness() const { return descriptor.roughness; }
-	float get_anisotropy() const { return anisotropy; }
-	float get_metallic() const { return descriptor.metallic; }
-	float get_index_of_refraction() const { return descriptor.ior; }
-	float get_sheen() const { return sheen; }
-	float get_sheen_power() const { return sheen_power; }
+	auto get_color() const { return color; }
+	auto get_roughness() const { return roughness; }
+	auto get_anisotropy() const { return anisotropy; }
+	auto get_metallic() const { return metallic; }
+	auto get_index_of_refraction() const { return index_of_refraction; }
+	auto get_layer_thickness() const { return thickness; }
+	auto get_attenuation_coefficient() const { return attenuation_coefficient; }
+	float get_scattering_phase_parameter() const { return phase_g; }
 
 	auto *get_next_layer() const { return next_layer; }
 

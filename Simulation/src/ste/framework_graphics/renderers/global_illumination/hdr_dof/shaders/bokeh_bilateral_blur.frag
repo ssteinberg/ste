@@ -20,7 +20,7 @@ layout(bindless_sampler) uniform sampler2D hdr;
 layout(bindless_sampler) uniform sampler2D depth_texture;
 
 const int samples = 2;
-const int rings = 5;
+const int max_rings = 5;
 
 const float aperature_distance = 0.5f;
 
@@ -66,18 +66,19 @@ void main() {
 
 	float d = texelFetch(depth_texture, ivec2(gl_FragCoord.xy), 0).x;
 	float z = unproject_depth(d);
-    float blur = coc(z);
+	float blur = coc(z);
 
 	if (blur > .01f) {
 		vec2 noise = vec2(fast_rand(uv.x), fast_rand(uv.y)) * namount * blur;
 		vec2 wh = (1.f / size) * blur * blur_coef + noise;
 
 		float s = 1.f;
+		int rings = min(max_rings, max(2, int(blur * 15.f)));
 		for (int i = 1; i <= rings; ++i) {
 			int ringsamples = i * samples;
 
 			for (int j = 0; j < ringsamples; ++j) {
-				float step = float(j) * pi*2.f / float(ringsamples);
+				float step = float(j) * two_pi / float(ringsamples);
 				vec2 c = vec2(cos(step), sin(step)) * float(i);
 				float w = mix(1.f, float(i) / float(rings), bias);
 

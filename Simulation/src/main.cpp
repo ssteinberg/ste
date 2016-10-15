@@ -83,7 +83,7 @@ auto create_light_object(StE::Graphics::Scene *scene, const glm::vec3 &light_pos
 	
 	auto layer = scene->scene_properties().material_layers_storage().allocate_layer();
 	auto mat = scene->scene_properties().materials_storage().allocate_material(layer.get());
-	layer->set_basecolor_map(std::make_unique<StE::Core::Texture2D>(light_color_tex, false));
+	mat->set_texture(std::make_unique<StE::Core::Texture2D>(light_color_tex, false));
 	mat->set_emission(c * light->get_luminance());
 
 	light_obj->set_material(mat.get());
@@ -114,7 +114,6 @@ void add_scene_lights(StE::Graphics::Scene &scene, std::vector<std::unique_ptr<S
 		lights.push_back(std::move(wall_lamp));
 	}
 }
-
 
 #ifdef _MSC_VER
 int CALLBACK WinMain(HINSTANCE hInstance,
@@ -202,8 +201,8 @@ int main()
 	 */
 
 	StE::Graphics::Camera camera;
-	camera.set_position({ 25.8, 549.07, -249.2 });
-	camera.lookat({ -5.4, 532.5, -228.71 });
+	camera.set_position({ 901.4, 566.93, 112.43 });
+	camera.lookat({ 771.5, 530.9, 65.6 });
 
 
 	/*
@@ -241,17 +240,17 @@ int main()
 																		 materials,
 																		 material_layers));
 	
-	std::vector<std::unique_ptr<StE::Graphics::material>> ball_materials;
-	std::vector<std::unique_ptr<StE::Graphics::material_layer>> ball_layers;
-	std::vector<std::shared_ptr<StE::Graphics::Object>> ball_objects;
+	std::vector<std::unique_ptr<StE::Graphics::material>> mat_editor_materials;
+	std::vector<std::unique_ptr<StE::Graphics::material_layer>> mat_editor_layers;
+	std::vector<std::shared_ptr<StE::Graphics::Object>> mat_editor_objects;
 	loading_futures.insert(StE::Resource::ModelFactory::load_model_async(ctx,
-																		 R"(Data/models/ball/Football.obj)",
+																		 R"(Data/models/dragon/china_dragon.obj)",
 																		 &scene.get().object_group(),
 																		 &scene.get().scene_properties(),
 																		 2.5f,
-																		 ball_materials,
-																		 ball_layers,
-																		 &ball_objects));
+																		 mat_editor_materials,
+																		 mat_editor_layers,
+																		 &mat_editor_objects));
 	loading_futures.insert(ctx.scheduler().schedule_now([&]() {
 		renderer.wait();
 	}));
@@ -265,58 +264,100 @@ int main()
 	 *	Create debug view window and material editor
 	 */
 
+	constexpr int layers_count = 3;
+
 	std::unique_ptr<StE::Graphics::profiler> gpu_tasks_profiler = std::make_unique<StE::Graphics::profiler>();
 	renderer.get().attach_profiler(gpu_tasks_profiler.get());
-	std::unique_ptr<StE::Graphics::debug_gui> debug_gui_dispatchable = std::make_unique<StE::Graphics::debug_gui>(ctx, gpu_tasks_profiler.get(), font);
+	std::unique_ptr<StE::Graphics::debug_gui> debug_gui_dispatchable = std::make_unique<StE::Graphics::debug_gui>(ctx, gpu_tasks_profiler.get(), font, &camera);
 
-	auto ball = ball_objects.back().get();
-	auto ball_model_transform = glm::translate(glm::mat4(), glm::vec3{ .0f, 100.f, .0f });
-	ball->set_model_transform(glm::mat4x3(ball_model_transform));
+	auto mat_editor_model_transform = glm::scale(glm::mat4(), glm::vec3{ 3.5f });
+	mat_editor_model_transform = glm::translate(mat_editor_model_transform, glm::vec3{ .0f, -15.f, .0f });
+	for (auto &o : mat_editor_objects)
+		o->set_model_transform(glm::mat4x3(mat_editor_model_transform));
 	
-	auto mat = std::move(*ball_materials.begin());
-	auto layer = std::move(*ball_layers.begin());
-	gli::texture2d base_color_tex{ gli::format::FORMAT_RGB8_UNORM_PACK8, { 1, 1 }, 1 };
-	*reinterpret_cast<glm::u8vec3*>(base_color_tex.data()) = glm::u8vec3(255);
-	layer->set_basecolor_map(std::make_unique<StE::Core::Texture2D>(base_color_tex, false));
+	std::unique_ptr<StE::Graphics::material_layer> layers[layers_count];
+	layers[0] = std::move(mat_editor_layers.back());
 
-	StE::Graphics::RGB base_color{1,1,1};
-	float roughness = layer->get_roughness();
-	float anisotropy = layer->get_anisotropy();
-	float metallic = layer->get_metallic();
-	float index_of_refraction = layer->get_index_of_refraction();
-	float sheen = layer->get_sheen();
-	float sheen_power = layer->get_sheen_power();
+	bool layer_enabled[3] = { true, false, false };
+	StE::Graphics::RGB base_color[3];
+	float roughness[3];
+	float anisotropy[3];
+	float metallic[3];
+	float index_of_refraction[3];
+	float sheen_power[3];
+	float thickness[3];
+	float absorption[3];
+	float phase[3];
+
+	for (int i = 0; i < layers_count; ++i) {
+		if (i > 0)
+			layers[i] = scene.get().scene_properties().material_layers_storage().allocate_layer();
+
+		base_color[i] = { 1,1,1 };
+		roughness[i] = .5f;
+		anisotropy[i] = 0;
+		metallic[i] = 0;
+		index_of_refraction[i] = 1.5f;
+		sheen_power[i] = 0;
+		thickness[i] = 0.001f;
+		absorption[i] = 1.f;
+		phase[i] = .0f;
+	}
+
 	debug_gui_dispatchable->add_custom_gui([&](const glm::ivec2 &bbsize) {
 		ImGui::SetNextWindowPos(ImVec2(20,bbsize.y - 400), ImGuiSetCond_FirstUseEver);
 		ImGui::SetNextWindowSize(ImVec2(120,400), ImGuiSetCond_FirstUseEver);
-		if (ImGui::Begin("Material", nullptr)) {
-			ImGui::SliderFloat("R ##value", &base_color.R(), .0f, 1.f);
-			ImGui::SliderFloat("G ##value", &base_color.G(), .0f, 1.f);
-			ImGui::SliderFloat("B ##value", &base_color.B(), .0f, 1.f);
-			ImGui::SliderFloat("Roughness ##value", &roughness, .0f, 1.f);
-			ImGui::SliderFloat("Anisotropy ##value", &anisotropy, -1.f, 1.f);
-			ImGui::SliderFloat("Metallic ##value", &metallic, .0f, 1.f);
-			ImGui::SliderFloat("IOR ##value", &index_of_refraction, 1.f, 15.f);
-			ImGui::SliderFloat("Sheen ##value", &sheen, .0f, 1.f);
-			ImGui::SliderFloat("Sheen Power ##value", &sheen_power, .0f, 1.f);
+		if (ImGui::Begin("Material Editor", nullptr)) {
+			for (int i = 0; i < layers_count; ++i) {
+				std::string layer_label = std::string("Layer ") + std::to_string(i);
+				if (i != 0)
+					ImGui::Checkbox(layer_label.data(), &layer_enabled[i]);
+				else
+					ImGui::Text(layer_label.data());
+
+				if (layer_enabled[i]) {
+					ImGui::SliderFloat((std::string("R ##value") +		" ##" + layer_label).data(), &base_color[i].R(),	 .0f, 1.f);
+					ImGui::SliderFloat((std::string("G ##value") +		" ##" + layer_label).data(), &base_color[i].G(),	 .0f, 1.f);
+					ImGui::SliderFloat((std::string("B ##value") +		" ##" + layer_label).data(), &base_color[i].B(),	 .0f, 1.f);
+					ImGui::SliderFloat((std::string("Rghn ##value") +	" ##" + layer_label).data(), &roughness[i],			 .0f, 1.f);
+					ImGui::SliderFloat((std::string("Aniso ##value") +	" ##" + layer_label).data(), &anisotropy[i],		-1.f, 1.f, "%.3f", 2.f);
+					ImGui::SliderFloat((std::string("Metal ##value") +	" ##" + layer_label).data(), &metallic[i],			 .0f, 1.f);
+					ImGui::SliderFloat((std::string("IOR ##value") +	" ##" + layer_label).data(), &index_of_refraction[i],1.f, 4.f, "%.5f", 3.f);
+					if (i < layers_count - 1 && layer_enabled[i + 1])
+						ImGui::SliderFloat((std::string("Thick ##value") + " ##" + layer_label).data(), &thickness[i], .0f, StE::Graphics::material_layer_max_thickness, "%.5f", 3.f);
+					ImGui::SliderFloat((std::string("Attn ##value") +	" ##" + layer_label).data(), &absorption[i], .000001f, 50.f, "%.8f", 5.f);
+					ImGui::SliderFloat((std::string("Phase ##value") +	" ##" + layer_label).data(), &phase[i], -1.f, +1.f);
+				}
+			}
 		}
 
 		ImGui::End();
+		
+		for (int i = 0; i < layers_count; ++i) {
+			auto t = glm::u8vec3(base_color[i].R() * 255.5f, base_color[i].G() * 255.5f, base_color[i].B() * 255.5f);
+			if (layers[i]->get_color() != base_color[i])
+				layers[i]->set_color(base_color[i]);
+			if (layers[i]->get_roughness() != roughness[i])
+				layers[i]->set_roughness(roughness[i]);
+			if (layers[i]->get_anisotropy() != anisotropy[i])
+				layers[i]->set_anisotropy(anisotropy[i]);
+			if (layers[i]->get_metallic() != metallic[i])
+				layers[i]->set_metallic(metallic[i]);
+			if (layers[i]->get_index_of_refraction() != index_of_refraction[i])
+				layers[i]->set_index_of_refraction(index_of_refraction[i]);
+			if (layers[i]->get_layer_thickness() != thickness[i])
+				layers[i]->set_layer_thickness(thickness[i]);
+			if (layers[i]->get_attenuation_coefficient().x != absorption[i])
+				layers[i]->set_attenuation_coefficient(glm::vec3{ absorption[i] });
+			if (layers[i]->get_scattering_phase_parameter() != phase[i])
+				layers[i]->set_scattering_phase_parameter(phase[i]);
 
-		auto t = glm::u8vec3(base_color.R() * 255.5f, base_color.G() * 255.5f, base_color.B() * 255.5f);
-		layer->get_basecolor_map()->clear(&t);
-		if (layer->get_roughness() != roughness)
-			layer->set_roughness(roughness);
-		if (layer->get_anisotropy() != anisotropy)
-			layer->set_anisotropy(anisotropy);
-		if (layer->get_metallic() != metallic)
-			layer->set_metallic(metallic);
-		if (layer->get_index_of_refraction() != index_of_refraction)
-			layer->set_index_of_refraction(index_of_refraction);
-		if (layer->get_sheen() != sheen)
-			layer->set_sheen(sheen);
-		if (layer->get_sheen_power() != sheen_power)
-			layer->set_sheen_power(sheen_power);
+			if (i != 0) {
+				bool enabled = layers[i - 1]->get_next_layer() != nullptr;
+				if (layer_enabled[i] != enabled)
+					layers[i - 1]->set_next_layer(layer_enabled[i] ? layers[i].get() : nullptr);
+			}
+		}
 	});
 
 
@@ -329,7 +370,7 @@ int main()
 	auto footer_text = text_manager.get().create_renderer();
 	auto footer_text_task = StE::Graphics::make_gpu_task("footer_text", footer_text.get(), nullptr);
 
-	renderer.get().add_gui_task(footer_text_task);
+//	renderer.get().add_gui_task(footer_text_task);
 	renderer.get().add_gui_task(StE::Graphics::make_gpu_task("debug_gui", debug_gui_dispatchable.get(), nullptr));
 
 	glm::ivec2 last_pointer_pos;
@@ -350,7 +391,8 @@ int main()
 				camera.step_right(time_delta*movement_factor);
 
 			constexpr float rotation_factor = .09f;
-			glm::vec2(.0f);
+			bool rotate_camera = mouse_down;
+
 			auto pp = ctx.get_pointer_position();
 			if (mouse_down && !debug_gui_dispatchable->is_gui_active()) {
 				auto diff_v = static_cast<glm::vec2>(last_pointer_pos - pp) * time_delta * rotation_factor;
@@ -360,7 +402,7 @@ int main()
 		}
 
 		float angle = time * glm::pi<float>() / 2.5f;
-		glm::vec3 lp = light0_pos + glm::vec3(glm::sin(angle) * 3, 0, glm::cos(angle)) * 115.f;
+		glm::vec3 lp = light0_pos;// + glm::vec3(glm::sin(angle) * 3, 0, glm::cos(angle)) * 115.f;
 		light0->set_position(lp);
 		light0_obj->set_model_transform(glm::mat4x3(glm::translate(glm::mat4(), lp)));
 

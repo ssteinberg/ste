@@ -26,20 +26,20 @@ BZIP2_LIBRARY_RELEASE:FILEPATH=BZIP2_LIBRARY_RELEASE-NOTFOUND
 //Semicolon separated list of supported configuration types, only
 // supports Debug, Release, MinSizeRel, and RelWithDebInfo, anything
 // else will be ignored.
-CMAKE_CONFIGURATION_TYPES:STRING=Debug;Release;MinSizeRel;RelWithDebInfo
+CMAKE_CONFIGURATION_TYPES:STRING=Debug;Release
 
 //Flags used by the compiler during all build types.
 CMAKE_CXX_FLAGS:STRING= /DWIN32 /D_WINDOWS /W3 /GR /EHsc
 
 //Flags used by the compiler during debug builds.
-CMAKE_CXX_FLAGS_DEBUG:STRING=/D_DEBUG /MDd /Zi /Ob0 /Od /RTC1
+CMAKE_CXX_FLAGS_DEBUG:STRING=/D_DEBUG /MTd /Zi /Ob0 /Od
 
 //Flags used by the compiler during release builds for minimum
 // size.
 CMAKE_CXX_FLAGS_MINSIZEREL:STRING=/MD /O1 /Ob1 /D NDEBUG
 
 //Flags used by the compiler during release builds.
-CMAKE_CXX_FLAGS_RELEASE:STRING=/MD /O2 /Ob2 /D NDEBUG
+CMAKE_CXX_FLAGS_RELEASE:STRING=/MT /O2 /Ob2 /D NDEBUG
 
 //Flags used by the compiler during release builds with debug info.
 CMAKE_CXX_FLAGS_RELWITHDEBINFO:STRING=/MD /Zi /O2 /Ob1 /D NDEBUG
@@ -51,14 +51,14 @@ CMAKE_CXX_STANDARD_LIBRARIES:STRING=kernel32.lib user32.lib gdi32.lib winspool.l
 CMAKE_C_FLAGS:STRING= /DWIN32 /D_WINDOWS /W3
 
 //Flags used by the compiler during debug builds.
-CMAKE_C_FLAGS_DEBUG:STRING=/D_DEBUG /MDd /Zi /Ob0 /Od /RTC1
+CMAKE_C_FLAGS_DEBUG:STRING='/D_DEBUG /MTd /Zi /Ob0 /Od '
 
 //Flags used by the compiler during release builds for minimum
 // size.
 CMAKE_C_FLAGS_MINSIZEREL:STRING=/MD /O1 /Ob1 /D NDEBUG
 
 //Flags used by the compiler during release builds.
-CMAKE_C_FLAGS_RELEASE:STRING=/MD /O2 /Ob2 /D NDEBUG
+CMAKE_C_FLAGS_RELEASE:STRING=/MT /O2 /Ob2 /D NDEBUG
 
 //Flags used by the compiler during release builds with debug info.
 CMAKE_C_FLAGS_RELWITHDEBINFO:STRING=/MD /Zi /O2 /Ob1 /D NDEBUG
@@ -163,20 +163,29 @@ HARFBUZZ_LIBRARIES:FILEPATH=HARFBUZZ_LIBRARIES-NOTFOUND
 //pkg-config executable
 PKG_CONFIG_EXECUTABLE:FILEPATH=PKG_CONFIG_EXECUTABLE-NOTFOUND
 
+//Path to a library.
+PNG_LIBRARY_DEBUG:FILEPATH=PNG_LIBRARY_DEBUG-NOTFOUND
+
+//Path to a library.
+PNG_LIBRARY_RELEASE:FILEPATH=PNG_LIBRARY_RELEASE-NOTFOUND
+
 //Path to a file.
-ZLIB_INCLUDE_DIR:PATH=ZLIB_INCLUDE_DIR-NOTFOUND
+PNG_PNG_INCLUDE_DIR:PATH=C:/src/git/StE/Simulation/third_party/include
+
+//Path to a file.
+ZLIB_INCLUDE_DIR:PATH=C:/src/git/StE/Simulation/third_party/include
 
 //Path to a library.
-ZLIB_LIBRARY_DEBUG:FILEPATH=ZLIB_LIBRARY_DEBUG-NOTFOUND
+ZLIB_LIBRARY_DEBUG:FILEPATH=C:/src/git/StE/Simulation/third_party/lib/zlibd.lib
 
 //Path to a library.
-ZLIB_LIBRARY_RELEASE:FILEPATH=ZLIB_LIBRARY_RELEASE-NOTFOUND
+ZLIB_LIBRARY_RELEASE:FILEPATH=C:/src/git/StE/Simulation/third_party/lib/zlib.lib
 
 //Value Computed by CMake
 freetype_BINARY_DIR:STATIC=C:/src/git/StE/Simulation/third_party/build/freetype2
 
-//Dependencies for target
-freetype_LIB_DEPENDS:STATIC=
+//Dependencies for the target
+freetype_LIB_DEPENDS:STATIC=optimized;C:/src/git/StE/Simulation/third_party/lib/zlib.lib;debug;C:/src/git/StE/Simulation/third_party/lib/zlibd.lib;
 
 //Value Computed by CMake
 freetype_SOURCE_DIR:STATIC=C:/src/git/StE/Simulation/third_party/packages/freetype2
@@ -328,6 +337,12 @@ PC_HARFBUZZ_STATIC_LIBS_PATHS:INTERNAL=
 PC_HARFBUZZ_VERSION:INTERNAL=
 //ADVANCED property for variable: PKG_CONFIG_EXECUTABLE
 PKG_CONFIG_EXECUTABLE-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: PNG_LIBRARY_DEBUG
+PNG_LIBRARY_DEBUG-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: PNG_LIBRARY_RELEASE
+PNG_LIBRARY_RELEASE-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: PNG_PNG_INCLUDE_DIR
+PNG_PNG_INCLUDE_DIR-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: ZLIB_INCLUDE_DIR
 ZLIB_INCLUDE_DIR-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: ZLIB_LIBRARY_DEBUG

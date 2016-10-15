@@ -21,7 +21,6 @@
 
 #define GLM_FORCE_AVX
 #define GLM_EXT_INCLUDED
-#define GLM_SWIZZLE
 #include <glm/glm.hpp>
 #include <glm/gtx/bit.hpp>
 

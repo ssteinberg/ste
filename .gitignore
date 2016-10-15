@@ -18,8 +18,8 @@ GPATH
 imgui.ini
 
 # docs
-Simulation/docs/latex/
-Simulation/docs/html/
+Simulation/docs/latex
+Simulation/docs/html
 
 Simulation/browse.VC.db
 Simulation/.vscode/.browse.VC.db
@@ -79,6 +79,9 @@ dlldata.c
 *.tss
 
 /s4*
+/temp_*
+/errfile-child-of-*
+/outfile-child-of-*
 
 # Chutzpah Test files
 _Chutzpah*

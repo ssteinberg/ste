@@ -29,13 +29,9 @@ endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
   if("${CMAKE_INSTALL_CONFIG_NAME}" MATCHES "^([Dd][Ee][Bb][Uu][Gg])$")
-    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "C:/src/git/StE/Simulation/third_party/build/libjpeg-turbo/Debug/turbojpeg-staticd.lib")
+    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "C:/src/git/StE/Simulation/third_party/build/libjpeg-turbo/Debug/turbojpeg-static.lib")
   elseif("${CMAKE_INSTALL_CONFIG_NAME}" MATCHES "^([Rr][Ee][Ll][Ee][Aa][Ss][Ee])$")
     file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "C:/src/git/StE/Simulation/third_party/build/libjpeg-turbo/Release/turbojpeg-static.lib")
-  elseif("${CMAKE_INSTALL_CONFIG_NAME}" MATCHES "^([Mm][Ii][Nn][Ss][Ii][Zz][Ee][Rr][Ee][Ll])$")
-    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "C:/src/git/StE/Simulation/third_party/build/libjpeg-turbo/MinSizeRel/turbojpeg-static.lib")
-  elseif("${CMAKE_INSTALL_CONFIG_NAME}" MATCHES "^([Rr][Ee][Ll][Ww][Ii][Tt][Hh][Dd][Ee][Bb][Ii][Nn][Ff][Oo])$")
-    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "C:/src/git/StE/Simulation/third_party/build/libjpeg-turbo/RelWithDebInfo/turbojpeg-static.lib")
   endif()
 endif()
 
@@ -49,13 +45,9 @@ endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
   if("${CMAKE_INSTALL_CONFIG_NAME}" MATCHES "^([Dd][Ee][Bb][Uu][Gg])$")
-    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "C:/src/git/StE/Simulation/third_party/build/libjpeg-turbo/Debug/jpeg-staticd.lib")
+    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "C:/src/git/StE/Simulation/third_party/build/libjpeg-turbo/Debug/jpeg-static.lib")
   elseif("${CMAKE_INSTALL_CONFIG_NAME}" MATCHES "^([Rr][Ee][Ll][Ee][Aa][Ss][Ee])$")
     file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "C:/src/git/StE/Simulation/third_party/build/libjpeg-turbo/Release/jpeg-static.lib")
-  elseif("${CMAKE_INSTALL_CONFIG_NAME}" MATCHES "^([Mm][Ii][Nn][Ss][Ii][Zz][Ee][Rr][Ee][Ll])$")
-    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "C:/src/git/StE/Simulation/third_party/build/libjpeg-turbo/MinSizeRel/jpeg-static.lib")
-  elseif("${CMAKE_INSTALL_CONFIG_NAME}" MATCHES "^([Rr][Ee][Ll][Ww][Ii][Tt][Hh][Dd][Ee][Bb][Ii][Nn][Ff][Oo])$")
-    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "C:/src/git/StE/Simulation/third_party/build/libjpeg-turbo/RelWithDebInfo/jpeg-static.lib")
   endif()
 endif()
 
@@ -76,10 +68,6 @@ if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspeci
     file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "C:/src/git/StE/Simulation/third_party/build/libjpeg-turbo/Debug/rdjpgcom.exe")
   elseif("${CMAKE_INSTALL_CONFIG_NAME}" MATCHES "^([Rr][Ee][Ll][Ee][Aa][Ss][Ee])$")
     file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "C:/src/git/StE/Simulation/third_party/build/libjpeg-turbo/Release/rdjpgcom.exe")
-  elseif("${CMAKE_INSTALL_CONFIG_NAME}" MATCHES "^([Mm][Ii][Nn][Ss][Ii][Zz][Ee][Rr][Ee][Ll])$")
-    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "C:/src/git/StE/Simulation/third_party/build/libjpeg-turbo/MinSizeRel/rdjpgcom.exe")
-  elseif("${CMAKE_INSTALL_CONFIG_NAME}" MATCHES "^([Rr][Ee][Ll][Ww][Ii][Tt][Hh][Dd][Ee][Bb][Ii][Nn][Ff][Oo])$")
-    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "C:/src/git/StE/Simulation/third_party/build/libjpeg-turbo/RelWithDebInfo/rdjpgcom.exe")
   endif()
 endif()
 
@@ -88,17 +76,13 @@ if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspeci
     file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "C:/src/git/StE/Simulation/third_party/build/libjpeg-turbo/Debug/wrjpgcom.exe")
   elseif("${CMAKE_INSTALL_CONFIG_NAME}" MATCHES "^([Rr][Ee][Ll][Ee][Aa][Ss][Ee])$")
     file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "C:/src/git/StE/Simulation/third_party/build/libjpeg-turbo/Release/wrjpgcom.exe")
-  elseif("${CMAKE_INSTALL_CONFIG_NAME}" MATCHES "^([Mm][Ii][Nn][Ss][Ii][Zz][Ee][Rr][Ee][Ll])$")
-    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "C:/src/git/StE/Simulation/third_party/build/libjpeg-turbo/MinSizeRel/wrjpgcom.exe")
-  elseif("${CMAKE_INSTALL_CONFIG_NAME}" MATCHES "^([Rr][Ee][Ll][Ww][Ii][Tt][Hh][Dd][Ee][Bb][Ii][Nn][Ff][Oo])$")
-    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "C:/src/git/StE/Simulation/third_party/build/libjpeg-turbo/RelWithDebInfo/wrjpgcom.exe")
   endif()
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/doc" TYPE FILE FILES
-    "C:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/README"
-    "C:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/README-turbo.txt"
+    "C:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/README.ijg"
+    "C:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/README.md"
     "C:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/example.c"
     "C:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/libjpeg.txt"
     "C:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/structure.txt"
@@ -119,6 +103,7 @@ endif()
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
   include("C:/src/git/StE/Simulation/third_party/build/libjpeg-turbo/simd/cmake_install.cmake")
+  include("C:/src/git/StE/Simulation/third_party/build/libjpeg-turbo/md5/cmake_install.cmake")
 
 endif()
 

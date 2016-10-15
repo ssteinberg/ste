@@ -23,7 +23,7 @@ public:
 		T fresnel_l = schlick_fresnel<T>().fresnel_k(glm::dot(n,l));
 		T fresnel_v = schlick_fresnel<T>().fresnel_k(glm::dot(n,v));
 		T Fd90 = static_cast<T>(.5) + static_cast<T>(2) * dotLH*dotLH * roughness;
-		return glm::mix(static_cast<T>(1), Fd90, fresnel_l) * glm::mix(static_cast<T>(1), Fd90, fresnel_v) / glm::pi<T>();
+		return glm::mix(static_cast<T>(1), Fd90, fresnel_l) * glm::mix(static_cast<T>(1), Fd90, fresnel_v) * glm::one_over_pi<T>();
 	}
 };
 
