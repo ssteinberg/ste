@@ -57,6 +57,7 @@ var namespace_st_e =
     [ "none_t", "struct_st_e_1_1none__t.html", null ],
     [ "optional", "class_st_e_1_1optional.html", "class_st_e_1_1optional" ],
     [ "range", "struct_st_e_1_1range.html", "struct_st_e_1_1range" ],
+    [ "romberg_integration", "class_st_e_1_1romberg__integration.html", null ],
     [ "RSH", "class_st_e_1_1_r_s_h.html", null ],
     [ "scoped_thread", "class_st_e_1_1scoped__thread.html", "class_st_e_1_1scoped__thread" ],
     [ "shared_double_reference_guard", "class_st_e_1_1shared__double__reference__guard.html", "class_st_e_1_1shared__double__reference__guard" ],

@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['d',['d',['../struct_st_e_1_1_graphics_1_1microfacet__refraction__fit_1_1refraction__fit__data_1_1refraction__fit__exp2.html#a00b73f652b3e190abdd66662474546f0',1,'StE::Graphics::microfacet_refraction_fit::refraction_fit_data::refraction_fit_exp2']]],
   ['data',['data',['../struct_st_e_1_1_core_1_1gqueue_1_1node.html#a3ad2fb947d6966f188fd3018335a4fb4',1,'StE::Core::gqueue::node::data()'],['../struct_st_e_1_1__generate__array__holder.html#a0d6fee77ad6816ec3a524c5bc0a98ae6',1,'StE::_generate_array_holder::data()']]],
   ['data_5ftexture_5fhandle',['data_texture_handle',['../class_st_e_1_1_graphics_1_1dense__voxel__space.html#ad4cf475b4bda2f1990f12e09b3f9068a',1,'StE::Graphics::dense_voxel_space']]],
   ['debug_5fcontext',['debug_context',['../struct_st_e_1_1_core_1_1_g_l_1_1gl__context_1_1context__settings.html#a0a582386a34082a8a9e5fa45e2129bb2',1,'StE::Core::GL::gl_context::context_settings']]],

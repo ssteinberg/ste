@@ -13,6 +13,18 @@ int subsurface_scattering_calculate_steps(float thickness) {
 	return max(int(ceil(thickness * thickness_multiplier)), max_samples);
 }
 
+/*
+ *	Subsurface scattering approximation
+ *
+ *	@param descriptor	Material layer descriptor
+ *	@param position		Eye space position
+ *	@param n			Normal
+ *	@param thickness	Object thickness at shaded fragment
+ *	@param ld			Light descriptor
+ *	@param shadow_maps	Shadow maps
+ *	@param light		Light index
+ *	@param view_ray		Normalized vector from eye to position
+ */
 vec3 subsurface_scattering(material_layer_unpacked_descriptor descriptor,
 						   vec3 position,
 						   vec3 n,

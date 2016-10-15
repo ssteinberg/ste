@@ -76,6 +76,7 @@ var hierarchy =
     [ "StE::Graphics::BxDF< T >", "class_st_e_1_1_graphics_1_1_bx_d_f.html", [
       [ "StE::Graphics::cook_torrance_brdf< T, NDF, Fresnel, GAF >", "class_st_e_1_1_graphics_1_1cook__torrance__brdf.html", null ],
       [ "StE::Graphics::disney_diffuse_brdf< T >", "class_st_e_1_1_graphics_1_1disney__diffuse__brdf.html", null ],
+      [ "StE::Graphics::lambert_diffuse_brdf< T >", "class_st_e_1_1_graphics_1_1lambert__diffuse__brdf.html", null ],
       [ "StE::Graphics::oren_nayar_brdf< T >", "class_st_e_1_1_graphics_1_1oren__nayar__brdf.html", null ],
       [ "StE::Graphics::oren_nayar_brdf< T >", "class_st_e_1_1_graphics_1_1oren__nayar__brdf.html", null ]
     ] ],
@@ -564,7 +565,6 @@ var hierarchy =
       [ "StE::Graphics::dense_voxelizer", "class_st_e_1_1_graphics_1_1dense__voxelizer.html", null ],
       [ "StE::Graphics::fb_clear_dispatch< color, depth >", "class_st_e_1_1_graphics_1_1fb__clear__dispatch.html", null ],
       [ "StE::Graphics::fxaa_dispatchable", "class_st_e_1_1_graphics_1_1fxaa__dispatchable.html", null ],
-      [ "StE::Graphics::gbuffer_clear_dispatch", "class_st_e_1_1_graphics_1_1gbuffer__clear__dispatch.html", null ],
       [ "StE::Graphics::gbuffer_downsample_depth_dispatch", "class_st_e_1_1_graphics_1_1gbuffer__downsample__depth__dispatch.html", null ],
       [ "StE::Graphics::gpu_dummy_dispatchable", "class_st_e_1_1_graphics_1_1gpu__dummy__dispatchable.html", null ],
       [ "StE::Graphics::hdr_bloom_blurx_task", "class_st_e_1_1_graphics_1_1hdr__bloom__blurx__task.html", null ],
@@ -649,6 +649,7 @@ var hierarchy =
     [ "StE::Graphics::light_preprocessor", "class_st_e_1_1_graphics_1_1light__preprocessor.html", null ],
     [ "StE::Graphics::linked_light_lists", "class_st_e_1_1_graphics_1_1linked__light__lists.html", null ],
     [ "StE::Core::llr_resource_stub_binder", "class_st_e_1_1_core_1_1llr__resource__stub__binder.html", null ],
+    [ "StE::Graphics::deferred_composer_detail::load_lut< T >", "struct_st_e_1_1_graphics_1_1deferred__composer__detail_1_1load__lut.html", null ],
     [ "StE::Log", "class_st_e_1_1_log.html", null ],
     [ "StE::log_entry", "class_st_e_1_1log__entry.html", null ],
     [ "StE::log_entry_data", "struct_st_e_1_1log__entry__data.html", null ],
@@ -663,7 +664,7 @@ var hierarchy =
     [ "StE::Core::mapped_buffer_object_unique_ptr< Type, U >", "class_st_e_1_1_core_1_1mapped__buffer__object__unique__ptr.html", null ],
     [ "StE::Core::mapped_buffer_object_unique_ptr< T, usage >", "class_st_e_1_1_core_1_1mapped__buffer__object__unique__ptr.html", null ],
     [ "StE::Graphics::material_descriptor", "struct_st_e_1_1_graphics_1_1material__descriptor.html", null ],
-    [ "StE::Graphics::material_layer_descriptor", "struct_st_e_1_1_graphics_1_1material__layer__descriptor.html", null ],
+    [ "StE::Graphics::material_layer_descriptor", "class_st_e_1_1_graphics_1_1material__layer__descriptor.html", null ],
     [ "StE::Graphics::mesh_aabb", "class_st_e_1_1_graphics_1_1mesh__aabb.html", null ],
     [ "StE::Graphics::mesh_bounding_sphere", "class_st_e_1_1_graphics_1_1mesh__bounding__sphere.html", null ],
     [ "StE::Graphics::mesh_descriptor", "struct_st_e_1_1_graphics_1_1mesh__descriptor.html", null ],
@@ -677,6 +678,8 @@ var hierarchy =
       ] ],
       [ "StE::Graphics::mesh< Mode >", "class_st_e_1_1_graphics_1_1mesh.html", null ]
     ] ],
+    [ "StE::Graphics::microfacet_refraction_fit", "class_st_e_1_1_graphics_1_1microfacet__refraction__fit.html", null ],
+    [ "StE::Graphics::microfacet_transmission_fit", "class_st_e_1_1_graphics_1_1microfacet__transmission__fit.html", null ],
     [ "StE::Resource::ModelFactory", "class_st_e_1_1_resource_1_1_model_factory.html", null ],
     [ "StE::Core::gqueue< T, Size >::node", "struct_st_e_1_1_core_1_1gqueue_1_1node.html", null ],
     [ "StE::none_t", "struct_st_e_1_1none__t.html", null ],
@@ -737,6 +740,7 @@ var hierarchy =
       [ "StE::Core::buffer_object< view_data, U >", "class_st_e_1_1_core_1_1buffer__object.html", null ],
       [ "StE::Core::buffer_object< Type, U >", "class_st_e_1_1_core_1_1buffer__object.html", null ]
     ] ],
+    [ "StE::Graphics::microfacet_refraction_fit::refraction_fit_data::refraction_fit_exp2", "struct_st_e_1_1_graphics_1_1microfacet__refraction__fit_1_1refraction__fit__data_1_1refraction__fit__exp2.html", null ],
     [ "StE::Graphics::rendering_system", "class_st_e_1_1_graphics_1_1rendering__system.html", [
       [ "StE::Graphics::basic_renderer", "class_st_e_1_1_graphics_1_1basic__renderer.html", null ],
       [ "StE::Graphics::GIRenderer", "class_st_e_1_1_graphics_1_1_g_i_renderer.html", null ]
@@ -819,8 +823,10 @@ var hierarchy =
     [ "StE::Core::ring_buffer< glyph_point, ringbuffer_max_size >", "class_st_e_1_1_core_1_1ring__buffer.html", null ],
     [ "StE::Core::ring_buffer< proj_data, 1 >", "class_st_e_1_1_core_1_1ring__buffer.html", null ],
     [ "StE::Core::ring_buffer< view_data, 3 >", "class_st_e_1_1_core_1_1ring__buffer.html", null ],
+    [ "StE::romberg_integration< N >", "class_st_e_1_1romberg__integration.html", null ],
     [ "StE::RSH< m, l, typename >", "class_st_e_1_1_r_s_h.html", null ],
     [ "runtime_error", null, [
+      [ "microfacet_fit_error", "classmicrofacet__fit__error.html", null ],
       [ "StE::Resource::resource_loading_exception", "class_st_e_1_1_resource_1_1resource__loading__exception.html", [
         [ "StE::Resource::glsl_program_error", "class_st_e_1_1_resource_1_1glsl__program__error.html", [
           [ "StE::Resource::glsl_program_linking_error", "class_st_e_1_1_resource_1_1glsl__program__linking__error.html", null ],
@@ -1176,6 +1182,7 @@ var hierarchy =
     [ "StE::_detail::thread_pool_task_exec_impl< R >", "struct_st_e_1_1__detail_1_1thread__pool__task__exec__impl.html", null ],
     [ "StE::_detail::thread_pool_task_exec_impl< void >", "struct_st_e_1_1__detail_1_1thread__pool__task__exec__impl_3_01void_01_4.html", null ],
     [ "StE::Graphics::transforms_ring_buffers", "class_st_e_1_1_graphics_1_1transforms__ring__buffers.html", null ],
+    [ "StE::Graphics::microfacet_transmission_fit::transmission_fit_data::transmission_fit_gauss2", "struct_st_e_1_1_graphics_1_1microfacet__transmission__fit_1_1transmission__fit__data_1_1transmission__fit__gauss2.html", null ],
     [ "true_type", null, [
       [ "StE::Core::surface_is_normalized< gli::format::FORMAT_A16_UNORM_PACK16 >", "struct_st_e_1_1_core_1_1surface__is__normalized_3_01gli_1_1format_1_1_f_o_r_m_a_t___a16___u_n_o_r_m___p_a_c_k16_01_4.html", null ],
       [ "StE::Core::surface_is_normalized< gli::format::FORMAT_A8_UNORM_PACK8 >", "struct_st_e_1_1_core_1_1surface__is__normalized_3_01gli_1_1format_1_1_f_o_r_m_a_t___a8___u_n_o_r_m___p_a_c_k8_01_4.html", null ],

@@ -5,7 +5,7 @@ var searchData=
   ['material',['material',['../class_st_e_1_1_graphics_1_1material.html',1,'StE::Graphics']]],
   ['material_5fdescriptor',['material_descriptor',['../struct_st_e_1_1_graphics_1_1material__descriptor.html',1,'StE::Graphics']]],
   ['material_5flayer',['material_layer',['../class_st_e_1_1_graphics_1_1material__layer.html',1,'StE::Graphics']]],
-  ['material_5flayer_5fdescriptor',['material_layer_descriptor',['../struct_st_e_1_1_graphics_1_1material__layer__descriptor.html',1,'StE::Graphics']]],
+  ['material_5flayer_5fdescriptor',['material_layer_descriptor',['../class_st_e_1_1_graphics_1_1material__layer__descriptor.html',1,'StE::Graphics']]],
   ['material_5flayer_5fstorage',['material_layer_storage',['../class_st_e_1_1_graphics_1_1material__layer__storage.html',1,'StE::Graphics']]],
   ['material_5fstorage',['material_storage',['../class_st_e_1_1_graphics_1_1material__storage.html',1,'StE::Graphics']]],
   ['mesh',['mesh',['../class_st_e_1_1_graphics_1_1mesh.html',1,'StE::Graphics']]],
@@ -16,5 +16,8 @@ var searchData=
   ['mesh_5fdescriptor',['mesh_descriptor',['../struct_st_e_1_1_graphics_1_1mesh__descriptor.html',1,'StE::Graphics']]],
   ['mesh_5fdraw_5fparams',['mesh_draw_params',['../struct_st_e_1_1_graphics_1_1mesh__draw__params.html',1,'StE::Graphics']]],
   ['mesh_5fgeneric',['mesh_generic',['../class_st_e_1_1_graphics_1_1mesh__generic.html',1,'StE::Graphics']]],
+  ['microfacet_5ffit_5ferror',['microfacet_fit_error',['../classmicrofacet__fit__error.html',1,'']]],
+  ['microfacet_5frefraction_5ffit',['microfacet_refraction_fit',['../class_st_e_1_1_graphics_1_1microfacet__refraction__fit.html',1,'StE::Graphics']]],
+  ['microfacet_5ftransmission_5ffit',['microfacet_transmission_fit',['../class_st_e_1_1_graphics_1_1microfacet__transmission__fit.html',1,'StE::Graphics']]],
   ['modelfactory',['ModelFactory',['../class_st_e_1_1_resource_1_1_model_factory.html',1,'StE::Resource']]]
 ];

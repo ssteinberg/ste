@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['gbuffer_5fclear_5fdispatch',['gbuffer_clear_dispatch',['../class_st_e_1_1_graphics_1_1gbuffer__clear__dispatch.html',1,'StE::Graphics']]],
   ['gbuffer_5fdownsample_5fdepth_5fdispatch',['gbuffer_downsample_depth_dispatch',['../class_st_e_1_1_graphics_1_1gbuffer__downsample__depth__dispatch.html',1,'StE::Graphics']]],
   ['generate_5farray',['generate_array',['../struct_st_e_1_1generate__array.html',1,'StE']]],
   ['generic_5fresource_5fallocator',['generic_resource_allocator',['../class_st_e_1_1_core_1_1generic__resource__allocator.html',1,'StE::Core']]],

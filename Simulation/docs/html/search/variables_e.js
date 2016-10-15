@@ -1,6 +1,7 @@
 var searchData=
 [
   ['p',['p',['../class_st_e_1_1_graphics_1_1_object_vertex_data.html#a43eb9ff1e786c0b36a0a41179e111184',1,'StE::Graphics::ObjectVertexData']]],
+  ['packed_5femission_5fcolor',['packed_emission_color',['../struct_st_e_1_1_graphics_1_1material__descriptor.html#a5ce0387879680ef1d0efb4e7075f944d',1,'StE::Graphics::material_descriptor']]],
   ['padding',['padding',['../class_st_e_1_1_text_1_1glyph.html#a111c6bcdbc81d13155a86d17b3cb0f2e',1,'StE::Text::glyph']]],
   ['phi_5fmax',['phi_max',['../class_st_e_1_1_graphics_1_1p_b_r_d_f.html#ad06bb6523faffa885f83ba4d002dd72c',1,'StE::Graphics::pBRDF']]],
   ['phi_5fmin',['phi_min',['../class_st_e_1_1_graphics_1_1p_b_r_d_f.html#a18359f0af6cc8aa6ab26379adbd1bf57',1,'StE::Graphics::pBRDF']]],

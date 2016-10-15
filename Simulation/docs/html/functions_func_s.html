@@ -184,7 +184,7 @@ $(document).ready(function(){initNavTree('functions_func_s.html','');});
 : <a class="el" href="class_st_e_1_1_graphics_1_1scene__geo__cull__dispatch.html#abec172619f4646a5f30fc120546758a9">StE::Graphics::scene_geo_cull_dispatch</a>
 </li>
 <li>scene_prepopulate_depth_dispatch()
-: <a class="el" href="class_st_e_1_1_graphics_1_1scene__prepopulate__depth__dispatch.html#a387464ad990d401de9e0ae00a55318f2">StE::Graphics::scene_prepopulate_depth_dispatch</a>
+: <a class="el" href="class_st_e_1_1_graphics_1_1scene__prepopulate__depth__dispatch.html#a3558577f07da7e83f29ba799ce774d61">StE::Graphics::scene_prepopulate_depth_dispatch</a>
 </li>
 <li>scene_properties()
 : <a class="el" href="class_st_e_1_1_graphics_1_1_scene.html#aa5133dc15c41173e76bb8430d99c95b0">StE::Graphics::Scene</a>
@@ -226,8 +226,12 @@ $(document).ready(function(){initNavTree('functions_func_s.html','');});
 <li>set_anisotropy()
 : <a class="el" href="class_st_e_1_1_graphics_1_1material__layer.html#af8347e202e1f17f379b0f9a59c894ffb">StE::Graphics::material_layer</a>
 </li>
-<li>set_basecolor_map()
-: <a class="el" href="class_st_e_1_1_graphics_1_1material__layer.html#ad2c7254bdf8f118da69f340b199b29cb">StE::Graphics::material_layer</a>
+<li>set_anisotropy_and_metallicity()
+: <a class="el" href="class_st_e_1_1_graphics_1_1material__layer__descriptor.html#a178b0343d3bd8ed2d39fe559d9e2da28">StE::Graphics::material_layer_descriptor</a>
+</li>
+<li>set_attenuation_coefficient()
+: <a class="el" href="class_st_e_1_1_graphics_1_1material__layer.html#a6bb956d29c9fcfd704950cc62bfcef62">StE::Graphics::material_layer</a>
+, <a class="el" href="class_st_e_1_1_graphics_1_1material__layer__descriptor.html#afb38e087fc51d6aafd46eb61c2bb042d">StE::Graphics::material_layer_descriptor</a>
 </li>
 <li>set_border_color()
 : <a class="el" href="class_st_e_1_1_core_1_1_sampler.html#a2cfa5b1a141b629a4aa0bdfbc74ddf5d">StE::Core::Sampler</a>
@@ -240,6 +244,10 @@ $(document).ready(function(){initNavTree('functions_func_s.html','');});
 </li>
 <li>set_clipping_planes()
 : <a class="el" href="class_st_e_1_1_st_engine_control.html#a7f60f2b6432deb9d92893bb030bc171b">StE::StEngineControl</a>
+</li>
+<li>set_color()
+: <a class="el" href="class_st_e_1_1_graphics_1_1material__layer.html#a8b1f121acd2e91ec9afe3795bcf42a05">StE::Graphics::material_layer</a>
+, <a class="el" href="class_st_e_1_1_graphics_1_1material__layer__descriptor.html#a17ee37901b43c77cf4a71f380020b56f">StE::Graphics::material_layer_descriptor</a>
 </li>
 <li>set_color_output_binding_index()
 : <a class="el" href="class_st_e_1_1_core_1_1frame__buffer__object.html#a93b26ef6429f359f4d3110853d0d0c13">StE::Core::frame_buffer_object&lt; Allocator &gt;</a>
@@ -256,7 +264,6 @@ $(document).ready(function(){initNavTree('functions_func_s.html','');});
 , <a class="el" href="class_st_e_1_1_graphics_1_1dense__voxelizer.html#a5598a1bce11e8cdb1a9a76df78ef0334">StE::Graphics::dense_voxelizer</a>
 , <a class="el" href="class_st_e_1_1_graphics_1_1fb__clear__dispatch.html#a1d9a87b8ac9b8a59ecb8c470401d4efc">StE::Graphics::fb_clear_dispatch&lt; color, depth &gt;</a>
 , <a class="el" href="class_st_e_1_1_graphics_1_1fxaa__dispatchable.html#adda17ecb65916b8a789f4f02e54442db">StE::Graphics::fxaa_dispatchable</a>
-, <a class="el" href="class_st_e_1_1_graphics_1_1gbuffer__clear__dispatch.html#a77305e9a655e1261163544a5590fdcd8">StE::Graphics::gbuffer_clear_dispatch</a>
 , <a class="el" href="class_st_e_1_1_graphics_1_1gbuffer__downsample__depth__dispatch.html#ae1d81302e14c89226cab4d4be886c0f7">StE::Graphics::gbuffer_downsample_depth_dispatch</a>
 , <a class="el" href="class_st_e_1_1_graphics_1_1gpu__dispatchable.html#a31faa5a05a40022fbf8c6ea3100fce3a">StE::Graphics::gpu_dispatchable</a>
 , <a class="el" href="class_st_e_1_1_graphics_1_1gpu__dummy__dispatchable.html#af0b9cd21a551974b86e89a87b1783f9e">StE::Graphics::gpu_dummy_dispatchable</a>
@@ -296,6 +303,7 @@ $(document).ready(function(){initNavTree('functions_func_s.html','');});
 </li>
 <li>set_emission()
 : <a class="el" href="class_st_e_1_1_graphics_1_1material.html#abbeb283f7bc5b40298297e0264b0a408">StE::Graphics::material</a>
+, <a class="el" href="struct_st_e_1_1_graphics_1_1material__descriptor.html#a6aa3ddfcf8e13985e8d96eb88e4371e4">StE::Graphics::material_descriptor</a>
 </li>
 <li>set_fbo()
 : <a class="el" href="class_st_e_1_1_graphics_1_1gpu__task.html#aaf9a5535771fe980d73eb6a0b7b3d078">StE::Graphics::gpu_task</a>
@@ -309,8 +317,11 @@ $(document).ready(function(){initNavTree('functions_func_s.html','');});
 <li>set_indices()
 : <a class="el" href="class_st_e_1_1_graphics_1_1mesh.html#a532ee1ac245151c3a725fb319b342d40">StE::Graphics::mesh&lt; Mode &gt;</a>
 </li>
-<li>set_layer()
-: <a class="el" href="class_st_e_1_1_graphics_1_1material.html#a60d27ea7b9345b07fe222359d5d7cafd">StE::Graphics::material</a>
+<li>set_ior_phase()
+: <a class="el" href="class_st_e_1_1_graphics_1_1material__layer__descriptor.html#a070ad94c3a6c74939d3368c666cf53c7">StE::Graphics::material_layer_descriptor</a>
+</li>
+<li>set_layer_thickness()
+: <a class="el" href="class_st_e_1_1_graphics_1_1material__layer.html#a69f7b9b97a3317a214697e1bf09fab80">StE::Graphics::material_layer</a>
 </li>
 <li>set_luminance()
 : <a class="el" href="class_st_e_1_1_graphics_1_1light.html#aecfe1fd7e4ed6c2ddef82595f76aed91">StE::Graphics::light</a>
@@ -347,6 +358,9 @@ $(document).ready(function(){initNavTree('functions_func_s.html','');});
 <li>set_next_layer()
 : <a class="el" href="class_st_e_1_1_graphics_1_1material__layer.html#a4b5f4dd78335f7dde8531d662272d278">StE::Graphics::material_layer</a>
 </li>
+<li>set_next_layer_id()
+: <a class="el" href="class_st_e_1_1_graphics_1_1material__layer__descriptor.html#a90f30305d94ea3338e6b2f1a913bf0f6">StE::Graphics::material_layer_descriptor</a>
+</li>
 <li>set_normal_map()
 : <a class="el" href="class_st_e_1_1_graphics_1_1material.html#a9686480ea01e3d26dc67b35879f2c2ed">StE::Graphics::material</a>
 </li>
@@ -372,11 +386,11 @@ $(document).ready(function(){initNavTree('functions_func_s.html','');});
 <li>set_roughness()
 : <a class="el" href="class_st_e_1_1_graphics_1_1material__layer.html#ae83bdc25b49d52772963c7a3a465bf59">StE::Graphics::material_layer</a>
 </li>
-<li>set_sheen()
-: <a class="el" href="class_st_e_1_1_graphics_1_1material__layer.html#a6deb9befe6a53d999e43b07d9e465c96">StE::Graphics::material_layer</a>
+<li>set_roughness_and_thickness()
+: <a class="el" href="class_st_e_1_1_graphics_1_1material__layer__descriptor.html#a7549ae7144342fafcf5d656109b4e939">StE::Graphics::material_layer_descriptor</a>
 </li>
-<li>set_sheen_power()
-: <a class="el" href="class_st_e_1_1_graphics_1_1material__layer.html#a7113025347e4fe8932dc0cee74a6a9fe">StE::Graphics::material_layer</a>
+<li>set_scattering_phase_parameter()
+: <a class="el" href="class_st_e_1_1_graphics_1_1material__layer.html#ab4de8e9bd2d55cf9970fb5333e9a03a0">StE::Graphics::material_layer</a>
 </li>
 <li>set_speed()
 : <a class="el" href="class_st_e_1_1_graphics_1_1_camera.html#a9f986c7979aaf58c69deb6e8f2ff39a8">StE::Graphics::Camera</a>
@@ -393,11 +407,14 @@ $(document).ready(function(){initNavTree('functions_func_s.html','');});
 <li>set_text()
 : <a class="el" href="class_st_e_1_1_text_1_1text__renderable.html#aa1d62ea03c0eb9ae883d2ea5384728e4">StE::Text::text_renderable</a>
 </li>
+<li>set_texture()
+: <a class="el" href="class_st_e_1_1_graphics_1_1material.html#ad661f98f1f43924ec5042aa628c3c2ff">StE::Graphics::material</a>
+</li>
 <li>set_time_point()
 : <a class="el" href="class_st_e_1_1_resource_1_1glsl__loader_1_1program__binary.html#acb607fb6f927d3d2a72d09b4fb40db17">StE::Resource::glsl_loader::program_binary</a>
 </li>
 <li>set_uniform()
-: <a class="el" href="class_st_e_1_1_core_1_1glsl__program__object.html#a0f450ad27a6a0595e0ebbd525fdd746b">StE::Core::glsl_program_object</a>
+: <a class="el" href="class_st_e_1_1_core_1_1glsl__program__object.html#abcbc75b134863b9c2e1b549ded79e44b">StE::Core::glsl_program_object</a>
 </li>
 <li>set_uniform_subroutine()
 : <a class="el" href="class_st_e_1_1_core_1_1glsl__program__object.html#ac08198435971df4743a8725895575845">StE::Core::glsl_program_object</a>
@@ -451,7 +468,7 @@ $(document).ready(function(){initNavTree('functions_func_s.html','');});
 : <a class="el" href="class_st_e_1_1shared__double__reference__guard.html#a93d187fd1bd8f5b98dd1ff24a5ee3add">StE::shared_double_reference_guard&lt; DataType, recycle_pointers &gt;</a>
 </li>
 <li>shared_function_wrapper()
-: <a class="el" href="class_st_e_1_1shared__function__wrapper.html#a0d51a3c302d6ed04fbdbe058e6619203">StE::shared_function_wrapper</a>
+: <a class="el" href="class_st_e_1_1shared__function__wrapper.html#a8ac31e6f1155fc0ba54bbd2466f30c20">StE::shared_function_wrapper</a>
 </li>
 <li>signal()
 : <a class="el" href="class_st_e_1_1signal.html#a78f251326a0b930482f02ab667e7eef2">StE::signal&lt; Ts &gt;</a>
@@ -485,10 +502,10 @@ $(document).ready(function(){initNavTree('functions_func_s.html','');});
 , <a class="el" href="class_st_e_1_1_text_1_1_attributes_1_1size.html#a639beb7ac707bd20ad78573c4d8ccf78">StE::Text::Attributes::size</a>
 </li>
 <li>sop_edge()
-: <a class="el" href="class_st_e_1_1_algorithm_1_1_s_o_p_1_1sop__edge.html#a9da7d4212998d424988ba23b71972322">StE::Algorithm::SOP::sop_edge</a>
+: <a class="el" href="class_st_e_1_1_algorithm_1_1_s_o_p_1_1sop__edge.html#a5b41ea34f596fa256358dd36d1741040">StE::Algorithm::SOP::sop_edge</a>
 </li>
 <li>sop_optimizer()
-: <a class="el" href="class_st_e_1_1_algorithm_1_1_s_o_p_1_1sop__optimizer.html#aec04216bbc856bfcb6cc5b0de54e3149">StE::Algorithm::SOP::sop_optimizer&lt; G &gt;</a>
+: <a class="el" href="class_st_e_1_1_algorithm_1_1_s_o_p_1_1sop__optimizer.html#a0e34332c1f7105ee63faae7a06e6aa39">StE::Algorithm::SOP::sop_optimizer&lt; G &gt;</a>
 </li>
 <li>spacing()
 : <a class="el" href="class_st_e_1_1_text_1_1glyph__manager.html#ab732fa6ee64b16d34dadc2a738945df3">StE::Text::glyph_manager</a>

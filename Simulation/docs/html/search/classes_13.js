@@ -79,6 +79,7 @@ var searchData=
   ['timer_5fquery',['timer_query',['../class_st_e_1_1_core_1_1timer__query.html',1,'StE::Core']]],
   ['timestamp_5fquery',['timestamp_query',['../class_st_e_1_1_core_1_1timestamp__query.html',1,'StE::Core']]],
   ['transforms_5fring_5fbuffers',['transforms_ring_buffers',['../class_st_e_1_1_graphics_1_1transforms__ring__buffers.html',1,'StE::Graphics']]],
+  ['transmission_5ffit_5fgauss2',['transmission_fit_gauss2',['../struct_st_e_1_1_graphics_1_1microfacet__transmission__fit_1_1transmission__fit__data_1_1transmission__fit__gauss2.html',1,'StE::Graphics::microfacet_transmission_fit::transmission_fit_data']]],
   ['tuple_5ftype_5ferasure',['tuple_type_erasure',['../class_st_e_1_1tuple__type__erasure.html',1,'StE']]],
   ['typelist_5ftype_5fat',['typelist_type_at',['../struct_st_e_1_1typelist__type__at.html',1,'StE']]],
   ['typelist_5ftype_5fat_3c_200_2c_20h_2c_20tail_2e_2e_2e_20_3e',['typelist_type_at&lt; 0, H, Tail... &gt;',['../struct_st_e_1_1typelist__type__at_3_010_00_01_h_00_01_tail_8_8_8_01_4.html',1,'StE']]]

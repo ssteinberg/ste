@@ -848,7 +848,11 @@ FILE_PATTERNS          = *.c \
                          *.ucf \
                          *.qsf \
                          *.as \
-                         *.js
+                         *.js \
+                         *.glsl \
+                         *.vert \
+                         *.frag \
+                         *.geom
 
 # The RECURSIVE tag can be used to specify whether or not subdirectories should
 # be searched for input files as well.

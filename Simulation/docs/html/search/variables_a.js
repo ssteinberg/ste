@@ -2,7 +2,6 @@ var searchData=
 [
   ['last_5fframe_5ftime',['last_frame_time',['../struct_st_e_1_1ste__engine__control__impl.html#ab502197da8b30b6b3d35f0499578e3c3',1,'StE::ste_engine_control_impl']]],
   ['layer',['layer',['../class_st_e_1_1_core_1_1image__layout__bindable.html#aa954053f9b5d1d8cfe0bed4e0a6c3331',1,'StE::Core::image_layout_bindable::layer()'],['../struct_st_e_1_1_graphics_1_1texture__pool_1_1sbta__handle.html#a50ede97242779b64b9f4dfaf370e02b5',1,'StE::Graphics::texture_pool::sbta_handle::layer()']]],
-  ['layer_5fid',['layer_id',['../struct_st_e_1_1_graphics_1_1material__descriptor.html#ae76156301c9096e9de5c71390cd16b44',1,'StE::Graphics::material_descriptor']]],
   ['layers',['layers',['../class_st_e_1_1_core_1_1image__layout__bindable.html#abecf2ad05261e55cb18a5d4106cfb92f',1,'StE::Core::image_layout_bindable']]],
   ['left',['left',['../struct_st_e_1_1_text_1_1text__glyph__pair__key.html#a22b1618361b0f725c1f62e0379a66656',1,'StE::Text::text_glyph_pair_key']]],
   ['len',['len',['../class_st_e_1_1_core_1_1gstack.html#a26ec13aded4cc259ce1b40d7798b818f',1,'StE::Core::gstack::len()'],['../class_st_e_1_1_core_1_1gvector__pinned.html#a5245a790bd96772396874d394aa042c9',1,'StE::Core::gvector_pinned::len()']]],

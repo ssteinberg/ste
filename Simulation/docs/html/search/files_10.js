@@ -21,5 +21,6 @@ var searchData=
   ['reversed_5fperspective_2ehpp',['reversed_perspective.hpp',['../reversed__perspective_8hpp.html',1,'']]],
   ['rgb_2ehpp',['RGB.hpp',['../_r_g_b_8hpp.html',1,'']]],
   ['ring_5fbuffer_2ehpp',['ring_buffer.hpp',['../ring__buffer_8hpp.html',1,'']]],
+  ['romberg_5fintegration_2ehpp',['romberg_integration.hpp',['../romberg__integration_8hpp.html',1,'']]],
   ['rsh_2ehpp',['RSH.hpp',['../_r_s_h_8hpp.html',1,'']]]
 ];

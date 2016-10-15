@@ -4,7 +4,6 @@ var class_st_e_1_1_graphics_1_1_g_i_renderer =
     [ "add_gui_task", "class_st_e_1_1_graphics_1_1_g_i_renderer.html#a9d641a2252173adeeec50dd5e8ac5e7b", null ],
     [ "add_task", "class_st_e_1_1_graphics_1_1_g_i_renderer.html#ace0e6964a438500b1901db273a97933e", null ],
     [ "attach_profiler", "class_st_e_1_1_graphics_1_1_g_i_renderer.html#afa3764d58583153cf32a829190dbcde2", null ],
-    [ "get_fbo", "class_st_e_1_1_graphics_1_1_g_i_renderer.html#a3f24ce9d92d22f3e690e6dcd0e5e3963", null ],
     [ "get_gbuffer", "class_st_e_1_1_graphics_1_1_g_i_renderer.html#a419c3c4137f4b2778cf5ac8a25e0c7ea", null ],
     [ "get_scene_task", "class_st_e_1_1_graphics_1_1_g_i_renderer.html#a6fc1911643eeb6aa8dfc22159e708879", null ],
     [ "init", "class_st_e_1_1_graphics_1_1_g_i_renderer.html#a73ac0d78b2a309a43bed6fe8f8a02127", null ],

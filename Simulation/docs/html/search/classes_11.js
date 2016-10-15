@@ -2,6 +2,7 @@ var searchData=
 [
   ['range',['range',['../struct_st_e_1_1range.html',1,'StE']]],
   ['range_5flockable',['range_lockable',['../class_st_e_1_1_core_1_1range__lockable.html',1,'StE::Core']]],
+  ['refraction_5ffit_5fexp2',['refraction_fit_exp2',['../struct_st_e_1_1_graphics_1_1microfacet__refraction__fit_1_1refraction__fit__data_1_1refraction__fit__exp2.html',1,'StE::Graphics::microfacet_refraction_fit::refraction_fit_data']]],
   ['rendering_5fsystem',['rendering_system',['../class_st_e_1_1_graphics_1_1rendering__system.html',1,'StE::Graphics']]],
   ['rendertarget',['RenderTarget',['../class_st_e_1_1_core_1_1_render_target.html',1,'StE::Core']]],
   ['rendertargetallocator',['RenderTargetAllocator',['../class_st_e_1_1_core_1_1_render_target_allocator.html',1,'StE::Core']]],
@@ -75,11 +76,12 @@ var searchData=
   ['resource_5fstorage_5fstable',['resource_storage_stable',['../class_st_e_1_1_core_1_1resource__storage__stable.html',1,'StE::Core']]],
   ['resource_5fstorage_5fstable_3c_20material_5fdescriptor_20_3e',['resource_storage_stable&lt; material_descriptor &gt;',['../class_st_e_1_1_core_1_1resource__storage__stable.html',1,'StE::Core']]],
   ['resource_5fstorage_5fstable_3c_20material_5flayer_5fdescriptor_20_3e',['resource_storage_stable&lt; material_layer_descriptor &gt;',['../class_st_e_1_1_core_1_1resource__storage__stable.html',1,'StE::Core']]],
-  ['rgb',['rgb',['../class_st_e_1_1_text_1_1_attributes_1_1rgb.html',1,'StE::Text::Attributes']]],
   ['rgb',['RGB',['../class_st_e_1_1_graphics_1_1_r_g_b.html',1,'StE::Graphics']]],
+  ['rgb',['rgb',['../class_st_e_1_1_text_1_1_attributes_1_1rgb.html',1,'StE::Text::Attributes']]],
   ['ring_5fbuffer',['ring_buffer',['../class_st_e_1_1_core_1_1ring__buffer.html',1,'StE::Core']]],
   ['ring_5fbuffer_3c_20glyph_5fpoint_2c_20ringbuffer_5fmax_5fsize_20_3e',['ring_buffer&lt; glyph_point, ringbuffer_max_size &gt;',['../class_st_e_1_1_core_1_1ring__buffer.html',1,'StE::Core']]],
   ['ring_5fbuffer_3c_20proj_5fdata_2c_201_20_3e',['ring_buffer&lt; proj_data, 1 &gt;',['../class_st_e_1_1_core_1_1ring__buffer.html',1,'StE::Core']]],
   ['ring_5fbuffer_3c_20view_5fdata_2c_203_20_3e',['ring_buffer&lt; view_data, 3 &gt;',['../class_st_e_1_1_core_1_1ring__buffer.html',1,'StE::Core']]],
+  ['romberg_5fintegration',['romberg_integration',['../class_st_e_1_1romberg__integration.html',1,'StE']]],
   ['rsh',['RSH',['../class_st_e_1_1_r_s_h.html',1,'StE']]]
 ];

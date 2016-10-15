@@ -1,6 +1,8 @@
 var searchData=
 [
-  ['c',['c',['../struct_st_e_1_1log__entry__data.html#ab2da25d46dda74446ff1f41144bf65bb',1,'StE::log_entry_data::c()'],['../class_st_e_1_1_graphics_1_1spectrum.html#aa288e22b21eafb77ed7a452a0ec3833c',1,'StE::Graphics::spectrum::c()']]],
+  ['c',['c',['../struct_st_e_1_1log__entry__data.html#ab2da25d46dda74446ff1f41144bf65bb',1,'StE::log_entry_data::c()'],['../struct_st_e_1_1_graphics_1_1microfacet__refraction__fit_1_1refraction__fit__data_1_1refraction__fit__exp2.html#ac887c2bfc99ca147a51438bc39396007',1,'StE::Graphics::microfacet_refraction_fit::refraction_fit_data::refraction_fit_exp2::c()'],['../class_st_e_1_1_graphics_1_1spectrum.html#aa288e22b21eafb77ed7a452a0ec3833c',1,'StE::Graphics::spectrum::c()']]],
+  ['c1',['c1',['../struct_st_e_1_1_graphics_1_1microfacet__transmission__fit_1_1transmission__fit__data_1_1transmission__fit__gauss2.html#a5025bd7463292c3f37fc8af4afe87ad3',1,'StE::Graphics::microfacet_transmission_fit::transmission_fit_data::transmission_fit_gauss2']]],
+  ['c2',['c2',['../struct_st_e_1_1_graphics_1_1microfacet__transmission__fit_1_1transmission__fit__data_1_1transmission__fit__gauss2.html#a64f2879ce626d902318c153e0df52bc5',1,'StE::Graphics::microfacet_transmission_fit::transmission_fit_data::transmission_fit_gauss2']]],
   ['cavity_5fhandle',['cavity_handle',['../struct_st_e_1_1_graphics_1_1material__descriptor.html#a3528dea2ed8640e2973444d9577cc1b2',1,'StE::Graphics::material_descriptor']]],
   ['color',['color',['../struct_st_e_1_1_text_1_1glyph__point.html#a0df99251bae2b4923da95bac2052ec89',1,'StE::Text::glyph_point']]],
   ['commitment_5fdata',['commitment_data',['../class_st_e_1_1_core_1_1buffer__object.html#a16d7d3fc9f5c1b81686bf811d15b46f9',1,'StE::Core::buffer_object']]],
