@@ -1125,5 +1125,7 @@
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\optical_geometry.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\radiometry\radiance\BxDFs\lambert_diffuse\shaders\lambert_diffuse.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\radiometry\radiance\fittings\shaders\microfacet_ggx_fitting.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\common_shaders\constants.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\radiometry\radiance\BxDFs\shaders\fresnel.glsl" />
   </ItemGroup>
 </Project>

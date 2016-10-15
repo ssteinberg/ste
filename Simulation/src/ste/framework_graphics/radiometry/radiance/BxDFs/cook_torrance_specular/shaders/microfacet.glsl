@@ -58,32 +58,6 @@ float gaf_schlick_ggx(float roughness, float dotNL, float dotNV, out float g_mas
 	return g_mask * g_shadow;
 }
 
-float fresnel_schlick_ratio(float dotLH) {
-	float p = 1.f - dotLH;
-	float p2 = p*p;
-	return p2 * p2 * p;
-}
-
-float fresnel_schlick_ratio(float dotLH, float power) {
-	float p = 1.f - dotLH;
-	return pow(p, power);
-}
-
-float fresnel_schlick(float F0, float dotLH) {
-	return mix(F0, 1.f, fresnel_schlick_ratio(dotLH));
-}
-
-float fresnel_schlick_tir(float F0, float dotLH, float cos_critical) {
-	if (dotLH <= cos_critical)
-		return 1.f;
-
-	float p = 1.f - (dotLH - cos_critical) / (1 - cos_critical);
-	float p2 = p*p;
-	float a = p2 * p2;
-
-	return mix(F0, 1.f, a);
-}
-
 vec3 fresnel_cook_torrance(float dotLH, vec3 F0) {
 	vec3 sqrtF0 = sqrt(F0);
 	vec3 eta = (vec3(1) + sqrtF0) / (vec3(1) - sqrtF0);

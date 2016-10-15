@@ -16,11 +16,6 @@ struct material_layer_unpacked_descriptor {
 	uint32_t next_layer_id;
 };
 
-float material_convert_ior_to_F0(float sin_critical) {
-	float t = (1.f - sin_critical) / (1.f + sin_critical);
-	return t * t;
-}
-
 bool material_is_base_layer(material_layer_unpacked_descriptor desc) {
 	return desc.next_layer_id == material_none;
 }

@@ -201,8 +201,8 @@ int main()
 	 */
 
 	StE::Graphics::Camera camera;
-	camera.set_position({ 25.8, 549.07, -249.2 });
-	camera.lookat({ -5.4, 532.5, -228.71 });
+	camera.set_position({ 901.4, 566.93, 112.43 });
+	camera.lookat({ 771.5, 530.9, 65.6 });
 
 
 	/*
@@ -370,7 +370,7 @@ int main()
 	auto footer_text = text_manager.get().create_renderer();
 	auto footer_text_task = StE::Graphics::make_gpu_task("footer_text", footer_text.get(), nullptr);
 
-	renderer.get().add_gui_task(footer_text_task);
+//	renderer.get().add_gui_task(footer_text_task);
 	renderer.get().add_gui_task(StE::Graphics::make_gpu_task("debug_gui", debug_gui_dispatchable.get(), nullptr));
 
 	glm::ivec2 last_pointer_pos;
@@ -402,7 +402,7 @@ int main()
 		}
 
 		float angle = time * glm::pi<float>() / 2.5f;
-		glm::vec3 lp = light0_pos +glm::vec3(glm::sin(angle) * 3, 0, glm::cos(angle)) * 115.f;
+		glm::vec3 lp = light0_pos;// + glm::vec3(glm::sin(angle) * 3, 0, glm::cos(angle)) * 115.f;
 		light0->set_position(lp);
 		light0_obj->set_model_transform(glm::mat4x3(glm::translate(glm::mat4(), lp)));
 

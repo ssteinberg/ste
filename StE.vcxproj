@@ -714,6 +714,7 @@
     <None Include="Simulation\src\ste\framework_graphics\antialiasing\fxaa\shaders\nvidia_fxaa.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\chromaticity.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\common.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\common_shaders\constants.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\dual_quaternion.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\fast_rand.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\indirect.glsl" />
@@ -747,6 +748,7 @@
     <None Include="Simulation\src\ste\framework_graphics\radiometry\radiance\BxDFs\lambert_diffuse\shaders\lambert_diffuse.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\radiometry\radiance\BxDFs\oren_nayar_diffuse\shaders\oren_nayar.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\radiometry\radiance\BxDFs\physical\shaders\pbrdf.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\radiometry\radiance\BxDFs\shaders\fresnel.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\radiometry\radiance\fittings\shaders\microfacet_ggx_fitting.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\radiometry\radiance\subsurface_scattering\shaders\subsurface_scattering.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\deferred_composer\shaders\deferred_compose.frag" />

@@ -1,14 +1,14 @@
 
 #include "common.glsl"
 #include "microfacet.glsl"
+#include "fresnel.glsl"
 
 vec3 cook_torrance_iso_brdf(vec3 n,
 							vec3 v,
 							vec3 l,
 							vec3 h,
 							float roughness,
-							float F0,
-							float cos_critical,
+							float cos_critical, float sin_critical,
 							vec3 c_spec,
 							out float D,
 							out float Gmask,
@@ -20,7 +20,7 @@ vec3 cook_torrance_iso_brdf(vec3 n,
 
 	D = ndf_ggx_isotropic(roughness, dot(n,h));
 	float G = gaf_schlick_ggx(roughness, clamped_dotNL, clamped_dotNV, Gmask, Gshadow);
-	F = fresnel_schlick_tir(F0, dot(l,h), cos_critical);
+	F = fresnel(dot(l,h), cos_critical, sin_critical);
 
 	return c_spec * max(.0f, D * G * F / 4.f);
 }
@@ -33,8 +33,7 @@ vec3 cook_torrance_ansi_brdf(vec3 n,
 							 vec3 h,
 							 float roughness_x,
 							 float roughness_y,
-							 float F0,
-							 float cos_critical,
+							 float cos_critical, float sin_critical,
 							 vec3 c_spec,
 							 out float D,
 							 out float Gmask,
@@ -49,7 +48,7 @@ vec3 cook_torrance_ansi_brdf(vec3 n,
 
 	D = ndf_ggx_ansiotropic(t, b, h, roughness_x, roughness_y, dot(n,h));
 	float G = gaf_schlick_ggx(roughness, clamped_dotNL, clamped_dotNV, Gmask, Gshadow);
-	F = fresnel_schlick_tir(F0, dot(l,h), cos_critical);
+	F = fresnel(dot(l,h), cos_critical, sin_critical);
 
 	return c_spec * max(.0f, D * G * F / 4.f);
 }
