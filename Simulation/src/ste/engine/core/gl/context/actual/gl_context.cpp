@@ -52,10 +52,10 @@ gl_context::gl_context(const context_settings &settings, const char *title, cons
 	if (settings.vsync)
 		 glfwSwapInterval(settings.vsync.get() ? 1 : 0);
 
- 	if (!ste_global_context_initializer.init_extensions()) {
- 		ste_log_fatal() << "Couldn't fetch OpenGL function pointers." << std::endl;
- 		throw std::runtime_error("Couldn't fetch OpenGL function pointers.");
- 	}
+	if (!ste_global_context_initializer.init_extensions()) {
+		ste_log_fatal() << "Couldn't fetch OpenGL function pointers." << std::endl;
+		throw std::runtime_error("Couldn't fetch OpenGL function pointers.");
+	}
 	if (!glCreateTextures || !glNamedFramebufferDrawBuffers) {
 		ste_log_fatal() << "Not a valid 4.5 OpenGL context." << std::endl;
 		throw std::runtime_error("Not a valid 4.5 OpenGL context.");

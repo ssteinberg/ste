@@ -16,3 +16,6 @@ C:/src/git/StE/Simulation/third_party/build/libjpeg-turbo/CMakeFiles/ZERO_CHECK.
 C:/src/git/StE/Simulation/third_party/build/libjpeg-turbo/simd/CMakeFiles/RUN_TESTS.dir
 C:/src/git/StE/Simulation/third_party/build/libjpeg-turbo/simd/CMakeFiles/INSTALL.dir
 C:/src/git/StE/Simulation/third_party/build/libjpeg-turbo/simd/CMakeFiles/simd.dir
+C:/src/git/StE/Simulation/third_party/build/libjpeg-turbo/md5/CMakeFiles/md5cmp.dir
+C:/src/git/StE/Simulation/third_party/build/libjpeg-turbo/md5/CMakeFiles/RUN_TESTS.dir
+C:/src/git/StE/Simulation/third_party/build/libjpeg-turbo/md5/CMakeFiles/INSTALL.dir

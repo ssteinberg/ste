@@ -25,6 +25,7 @@ public:
 			object->fxaa.wait();
 			object->downsample_depth.wait();
 			object->prepopulate_depth_dispatch.wait();
+			object->prepopulate_backface_depth_dispatch.wait();
 			object->scene_geo_cull.wait();
 			object->composer.wait();
 			object->shadows_projector.wait();

@@ -8,6 +8,7 @@ layout(local_size_x = 32, local_size_y = 32, local_size_z = 1) in;
 
 #include "volumetric_scattering.glsl"
 
+#include "light_transport.glsl"
 #include "shadow.glsl"
 #include "light.glsl"
 #include "linked_light_lists.glsl"
@@ -15,7 +16,7 @@ layout(local_size_x = 32, local_size_y = 32, local_size_z = 1) in;
 #include "girenderer_transform_buffer.glsl"
 #include "project.glsl"
 
-#include "fast_rand.glsl"
+#include "interleaved_gradient_noise.glsl"
 
 layout(std430, binding = 2) restrict readonly buffer light_data {
 	light_descriptor light_buffer[];
@@ -34,7 +35,7 @@ layout(rgba16f, binding = 7) restrict writeonly uniform image3D volume;
 layout(bindless_sampler) uniform samplerCubeArrayShadow shadow_depth_maps;
 layout(bindless_sampler) uniform sampler2D depth_map;
 
-uniform float phase1, phase2, phase3;
+uniform float phase;
 
 const int samples = 2;
 
@@ -104,10 +105,10 @@ void main() {
 
 				vec3 scatter = vec3(0.f);
 				for (int s = 0; s < samples; ++s) {
-					float r = fast_rand(slice_coords * float(light_idx + 1) * vec2(depth, float(s + 1)));
+					float r = interleaved_gradient_noise(slice_coords + vec2(light_idx + s + 1, depth));
 					float z = mix(z_start, z_next, r * .99f);
-
-					vec2 jitter = vec2(fract(r * 12.696f), fract(r * 78.329f));
+					
+					vec2 jitter = vec2(fract(r * 1.696f), fract(-r * 2.329f));
 					vec2 coords = slice_coords_to_fragcoords(vec2(slice_coords) + jitter);
 
 					vec3 position = unproject_screen_position_with_z(z, coords);
@@ -116,7 +117,8 @@ void main() {
 					vec3 shadow_v = w_pos - ld.position;
 					float shadow = shadow_fast(shadow_depth_maps,
 											   uint(lll_parse_ll_idx(lll_p)),
-											   shadow_v);
+											   shadow_v,
+											   ld.radius);
 					if (shadow <= .0f)
 						continue;
 
@@ -129,7 +131,7 @@ void main() {
 					float scaling_size = thickness;
 					float scale = min(dist, scaling_size) / scaling_size;
 
-					scatter += scale * irradiance * volumetric_scattering_phase(v / dist, -view_dir, phase1, phase2, phase3);
+					scatter += scale * irradiance * henyey_greenstein_phase_function(v / dist, view_dir, phase);
 				}
 
 				rgb += scatter / float(samples);

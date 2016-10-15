@@ -231,6 +231,9 @@
     <Object Include="C:\src\git\StE\Simulation\third_party\build\libjpeg-turbo\simd\$(Configuration)\jcgray-sse2.obj">
       <Filter>Object Files</Filter>
     </Object>
+    <Object Include="C:\src\git\StE\Simulation\third_party\build\libjpeg-turbo\simd\$(Configuration)\jchuff-sse2.obj">
+      <Filter>Object Files</Filter>
+    </Object>
     <Object Include="C:\src\git\StE\Simulation\third_party\build\libjpeg-turbo\simd\$(Configuration)\jcsample-sse2.obj">
       <Filter>Object Files</Filter>
     </Object>

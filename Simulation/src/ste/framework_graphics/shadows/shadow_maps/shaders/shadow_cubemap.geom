@@ -32,7 +32,7 @@ layout(std430, binding = 8) restrict readonly buffer shadow_projection_instance_
 	shadow_projection_instance_to_ll_idx_translation sproj_id_to_llid_tt[shadow_proj_id_to_ll_id_table_size];
 };
 
-vec4 transform(int face, vec3 v) {
+vec4 transform(int face, vec3 v, float shadow_near) {
 	vec3 u;
 	vec2 t = vec2(1,-1);
 
@@ -46,11 +46,11 @@ vec4 transform(int face, vec3 v) {
 	return project(vec4(1.f, 1.f, shadow_near, -1.f), vec4(u, 1));
 }
 
-void process(int face, uint16_t l, vec3 vertices[3]) {
+void process(int face, uint16_t l, vec3 vertices[3], float shadow_near) {
 	vec4 transformed_vertices[3];
 
 	for (int j = 0; j < 3; ++j)
-		transformed_vertices[j] = transform(face, vertices[j]);
+		transformed_vertices[j] = transform(face, vertices[j], shadow_near);
 
 	if ((transformed_vertices[0].x >  transformed_vertices[0].w &&
 		 transformed_vertices[1].x >  transformed_vertices[1].w &&
@@ -98,7 +98,7 @@ void main() {
 	vec3 N = cross(u,v);
 	vec3 V = light_pos.xyz - gl_in[0].gl_Position.xyz;
 
-	if (dot(N,V) >= 0)
+	if (dot(N,V) <= 0)
 		return;
 
 	vec3 vertices[3];
@@ -116,6 +116,6 @@ void main() {
 
 	for (int face = 0; face < 6; ++face) {
 		if ((face_mask & (1 << face)) != 0)
-			process(face, ll_id, vertices);
+			process(face, ll_id, vertices, ld.radius);
 	}
 }

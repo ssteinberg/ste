@@ -5,7 +5,7 @@ libdir=${exec_prefix}/lib
 
 Name: GLFW
 Description: A multi-platform library for OpenGL, window and input
-Version: 3.2.0
+Version: 3.2.1
 URL: http://www.glfw.org/
 Requires.private: 
 Libs: -L${libdir} -lglfw3
