@@ -1,7 +1,5 @@
 
 #include "common.glsl"
-#include "cook_torrance.glsl"
-#include "disney_diffuse.glsl"
 
 struct material_texture_descriptor {
 	uint64_t tex_handler;
@@ -24,26 +22,30 @@ struct material_descriptor {
 struct material_layer_descriptor {
 	uint32_t packed_color;
 
-	uint32_t sheen_pack;
 	uint32_t ansi_metal_pack;
 	uint32_t roughness_thickness_pack;
-
-	float ior;
 	
-	uint32_t packed_attenuation_coefficient_rgb_phase;
-	float attenuation_coefficient_scale;
-
 	uint32_t next_layer_id;
+	
+	vec3 attenuation_coefficient;
+	uint32_t ior_phase_pack;
 };
 
 const int material_none = 0xFFFFFFFF;
+
 const float material_cavity_min = .2f;
 const float material_cavity_max = 1.f;
+
 const float material_alpha_discard_threshold = .5f;
+
 const float material_max_thickness = .1f;
+
 const float material_layer_ansio_ratio_scale = .9f;
 const float material_layer_max_ansio_ratio = 1.f / sqrt(1.f - 1.f * material_layer_ansio_ratio_scale);
 const float material_layer_min_ansio_ratio = sqrt(1.f - 1.f * material_layer_ansio_ratio_scale);
+
+const float material_layer_min_ior = 1.f;
+const float material_layer_max_ior = 5.f;
 
 vec3 material_emission(material_descriptor md) {
 	vec3 emission_color = unpackUnorm4x8(md.packed_emission_color).rgb;

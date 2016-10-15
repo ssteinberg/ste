@@ -66,7 +66,7 @@ void main() {
 
 	float d = texelFetch(depth_texture, ivec2(gl_FragCoord.xy), 0).x;
 	float z = unproject_depth(d);
-    float blur = coc(z);
+	float blur = coc(z);
 
 	if (blur > .01f) {
 		vec2 noise = vec2(fast_rand(uv.x), fast_rand(uv.y)) * namount * blur;
@@ -78,7 +78,7 @@ void main() {
 			int ringsamples = i * samples;
 
 			for (int j = 0; j < ringsamples; ++j) {
-				float step = float(j) * pi*2.f / float(ringsamples);
+				float step = float(j) * two_pi / float(ringsamples);
 				vec2 c = vec2(cos(step), sin(step)) * float(i);
 				float w = mix(1.f, float(i) / float(rings), bias);
 

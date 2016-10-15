@@ -20,7 +20,7 @@ float oren_nayar_brdf(vec3 n,
 
 	float d = a + b;
 
-	return max(.0f, d / pi);
+	return max(.0f, d * one_over_pi);
 }
 
 //

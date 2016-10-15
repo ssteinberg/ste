@@ -115,70 +115,6 @@ void add_scene_lights(StE::Graphics::Scene &scene, std::vector<std::unique_ptr<S
 	}
 }
 
-float cdf(float roughness, float theta) {
-	float alpha = roughness * roughness;
-	float a2 = alpha * alpha;
-	float b = a2 - 1;
-	float c = glm::cos(theta);
-
-	return a2 / (b * (c*c*b + 1)) - 1 / b;
-}
-
-glm::vec3 vec_from_spherical(float theta, float phi, float r = 1.f) {
-	float sine_theta = glm::sin(theta);
-	return{ r * sine_theta * glm::cos(phi), r * sine_theta * glm::sin(phi), r * glm::cos(theta) };
-}
-
-void spherical_from_vec(const glm::vec3 &v, float &theta, float &phi, float &r) {
-	float x2y2 = v.x*v.x + v.y*v.y;
-
-	r = glm::sqrt(x2y2 + v.z*v.z);
-	theta = glm::atan(glm::sqrt(x2y2) / v.z);
-	phi = glm::atan(v.y, v.x);
-}
-
-void test() {
-	std::random_device rd;
-	std::mt19937 gen(rd());
-
-	float theta = .4f;
-	float phi = 1.2f;
-	float theta1 = .2f;
-	float phi1 = -.4f;
-	float roughness = .4f;
-
-	glm::vec3 n = { 0, 0, 1 };
-	glm::vec3 v = vec_from_spherical(theta, phi);
-	glm::vec3 l = vec_from_spherical(theta1, phi1);
-	glm::vec3 h = glm::normalize(v + l);
-
-	std::cout << "v: " << v.x << " " << v.y << " " << v.z << " " << std::endl;
-	std::cout << "l: " << l.x << " " << l.y << " " << l.z << " " << std::endl;
-	std::cout << "h: " << h.x << " " << h.y << " " << h.z << " " << std::endl;
-
-	float ior1 = 2.3f;
-	float ior2 = 1.5f;
-
-	std::cout << "ior1: " << ior1 << std::endl;
-	std::cout << "ior2: " << ior2 << std::endl;
-
-	float theta_c = glm::asin(ior2 / ior1);
-	float theta_h = glm::acos(glm::dot(v, h));
-	float theta_n = glm::acos(glm::dot(v, n));
-
-	std::cout << "theta_c: " << theta_c << std::endl;
-	std::cout << "theta_h: " << theta_h << std::endl;
-	std::cout << "theta_n: " << theta_n << std::endl;
-
-	float c = cdf(roughness, theta_c);
-	float transformed_c1 = c / (4.f * glm::dot(l, h));
-	float c2 = cdf(roughness, theta_n);
-
-	std::cout << c << " " << c2 << std::endl;
-	std::cout << transformed_c1 << std::endl;
-}
-
-
 #ifdef _MSC_VER
 int CALLBACK WinMain(HINSTANCE hInstance,
 					 HINSTANCE hPrevInstance,
@@ -188,7 +124,6 @@ int CALLBACK WinMain(HINSTANCE hInstance,
 int main()
 #endif
 {
-
 	/*
 	 *	Create logger
 	 */
@@ -197,8 +132,6 @@ int main()
 	logger.redirect_std_outputs();
 	ste_log_set_global_logger(&logger);
 	ste_log() << "Simulation is running";
-
-	test();
 
 
 	/*
@@ -351,24 +284,20 @@ int main()
 	float anisotropy[3];
 	float metallic[3];
 	float index_of_refraction[3];
-	float sheen[3];
 	float sheen_power[3];
 	float thickness[3];
 	float absorption[3];
 	float phase[3];
 
 	for (int i = 0; i < layers_count; ++i) {
-		if (i > 0) {
+		if (i > 0)
 			layers[i] = scene.get().scene_properties().material_layers_storage().allocate_layer();
-			layers[i-1]->set_next_layer(layers[i].get());
-		}
 
 		base_color[i] = { 1,1,1 };
 		roughness[i] = .5f;
 		anisotropy[i] = 0;
 		metallic[i] = 0;
 		index_of_refraction[i] = 1.5f;
-		sheen[i] = 0;
 		sheen_power[i] = 0;
 		thickness[i] = 0.001f;
 		absorption[i] = 1.f;
@@ -394,11 +323,9 @@ int main()
 					ImGui::SliderFloat((std::string("Aniso ##value") +	" ##" + layer_label).data(), &anisotropy[i],		-1.f, 1.f, "%.3f", 2.f);
 					ImGui::SliderFloat((std::string("Metal ##value") +	" ##" + layer_label).data(), &metallic[i],			 .0f, 1.f);
 					ImGui::SliderFloat((std::string("IOR ##value") +	" ##" + layer_label).data(), &index_of_refraction[i],1.f, 4.f, "%.5f", 3.f);
-					ImGui::SliderFloat((std::string("Shn ##value") +	" ##" + layer_label).data(), &sheen[i],				 .0f, 1.f);
-					ImGui::SliderFloat((std::string("ShnPwr ##value") +	" ##" + layer_label).data(), &sheen_power[i],		 .0f, 1.f);
 					if (i < layers_count - 1 && layer_enabled[i + 1])
 						ImGui::SliderFloat((std::string("Thick ##value") + " ##" + layer_label).data(), &thickness[i], .0f, StE::Graphics::material_layer_max_thickness, "%.5f", 3.f);
-					ImGui::SliderFloat((std::string("Attn ##value") +	" ##" + layer_label).data(), &absorption[i], .000001f, 20.f, "%.8f", 4.f);
+					ImGui::SliderFloat((std::string("Attn ##value") +	" ##" + layer_label).data(), &absorption[i], .000001f, 50.f, "%.8f", 5.f);
 					ImGui::SliderFloat((std::string("Phase ##value") +	" ##" + layer_label).data(), &phase[i], -1.f, +1.f);
 				}
 			}
@@ -418,10 +345,6 @@ int main()
 				layers[i]->set_metallic(metallic[i]);
 			if (layers[i]->get_index_of_refraction() != index_of_refraction[i])
 				layers[i]->set_index_of_refraction(index_of_refraction[i]);
-			if (layers[i]->get_sheen() != sheen[i])
-				layers[i]->set_sheen(sheen[i]);
-			if (layers[i]->get_sheen_power() != sheen_power[i])
-				layers[i]->set_sheen_power(sheen_power[i]);
 			if (layers[i]->get_layer_thickness() != thickness[i])
 				layers[i]->set_layer_thickness(thickness[i]);
 			if (layers[i]->get_attenuation_coefficient().x != absorption[i])
