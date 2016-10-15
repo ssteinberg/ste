@@ -112,7 +112,7 @@ struct refraction_ratio_fit_data {
 };
 
 struct refraction_ratio_fit {
-	static constexpr int N = 256;
+	static constexpr int N = 512;
 
 	unsigned char ndf_type[8];
 	std::uint16_t version;
@@ -218,7 +218,7 @@ int main() {
 
 						double a = roughness * roughness;
 						double t = c * sin(glm::pi<double>() / 2 * (x - (theta - c)) / c);
-						auto intg = StE::romberg_integration<10>::integrate(std::bind(refract_clamp, theta, x, std::placeholders::_1, ior_ratio), -t, +t);
+						auto intg = StE::romberg_integration<9>::integrate(std::bind(refract_clamp, theta, x, std::placeholders::_1, ior_ratio), -t, +t);
 
 						double denom = glm::cos(x) * glm::cos(x) * (a*a - 1.0) + 1.0;
 						return a*a / glm::pi<double>() * .5 * glm::sin(2 * glm::abs(x)) / (denom * denom) * intg;
