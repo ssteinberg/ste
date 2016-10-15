@@ -19,7 +19,6 @@ imgui.ini
 
 # docs
 Simulation/docs/latex/
-Simulation/docs/html/
 
 Simulation/browse.VC.db
 Simulation/.vscode/.browse.VC.db

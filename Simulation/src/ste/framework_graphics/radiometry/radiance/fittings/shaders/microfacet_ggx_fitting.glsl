@@ -1,6 +1,15 @@
 
 #include "common.glsl"
 
+/*
+ *	Evaluate Fresnel transmission using precomputed fitting for GGX NDF
+ *
+ *	@param microfacet_transmission_fit_lut		Look-up-table
+ *	@param v			Outbound vector (facing away from fragment to camera)
+ *	@param n			Normal
+ *	@param roughness	Material roughness
+ *	@param sin_critical	Sine of critical angle
+ */
 float ggx_transmission_ratio(sampler2DArray microfacet_transmission_fit_lut,
 							 vec3 v,
 							 vec3 n,
@@ -26,6 +35,15 @@ float ggx_transmission_ratio(sampler2DArray microfacet_transmission_fit_lut,
 	return clamp(gauss.x + gauss.y, .0f, 1.f);
 }
 
+/*
+ *	Evaluate refracted vector using precomputed fitting for GGX NDF
+ *
+ *	@param microfacet_refraction_fit_lut		Look-up-table
+ *	@param v			Outbound vector (facing away from fragment to camera)
+ *	@param n			Normal
+ *	@param roughness	Material roughness
+ *	@param sin_critical	Sine of critical angle
+ */
 vec3 ggx_refract(sampler2D microfacet_refraction_fit_lut,
 				 vec3 v,
 				 vec3 n,

@@ -3,6 +3,22 @@
 #include "microfacet.glsl"
 #include "fresnel.glsl"
 
+/*
+ *	Cook-Torrance isotropic BRDF
+ *
+ *	@param n			Normal
+ *	@param v			Outbound vector (facing away from fragment to camera)
+ *	@param l			Incident vector (facing away from fragment to light)
+ *	@param h			Half vector
+ *	@param roughness	Material roughness
+ *	@param cos_critical	Cosine of critical angle
+ *	@param sin_critical	Sine of critical angle
+ *	@param c_spec		Specular color
+ *	@param D			Outputs microfacet NDF value
+ *	@param Gmask		Outputs microfacet G1 masking value
+ *	@param Gshadow		Outputs microfacet G1 shadowing value
+ *	@param F			Outputs Fresnel reflectance value
+ */
 vec3 cook_torrance_iso_brdf(vec3 n,
 							vec3 v,
 							vec3 l,
@@ -25,6 +41,25 @@ vec3 cook_torrance_iso_brdf(vec3 n,
 	return c_spec * max(.0f, D * G * F / 4.f);
 }
 
+/*
+ *	Cook-Torrance ansiotropic BRDF
+ *
+ *	@param n			Normal
+ *	@param t			Tangent
+ *	@param b			Bitangent
+ *	@param v			Outbound vector (facing away from fragment to camera)
+ *	@param l			Incident vector (facing away from fragment to light)
+ *	@param h			Half vector
+ *	@param roughness_x	Material roughness in tangent direction
+ *	@param roughness_y	Material roughness in bitangent direction
+ *	@param cos_critical	Cosine of critical angle
+ *	@param sin_critical	Sine of critical angle
+ *	@param c_spec		Specular color
+ *	@param D			Outputs microfacet NDF value
+ *	@param Gmask		Outputs microfacet G1 masking value
+ *	@param Gshadow		Outputs microfacet G1 shadowing value
+ *	@param F			Outputs Fresnel reflectance value
+ */
 vec3 cook_torrance_ansi_brdf(vec3 n,
 							 vec3 t,
 							 vec3 b,
