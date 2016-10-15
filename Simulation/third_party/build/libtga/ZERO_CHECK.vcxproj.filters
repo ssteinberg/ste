@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\src\git\StE\Simulation\third_party\build\libtga\CMakeFiles\148b4c993d0aa7f56fcc8929916102a5\generate.stamp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{0403A4E4-D9CD-3682-B4D4-FE876A388A21}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

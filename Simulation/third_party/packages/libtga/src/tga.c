@@ -25,8 +25,8 @@
 
 
 TGA*
-TGAOpen(char *file, 
-	char *mode)
+TGAOpen(const char *file, 
+	const char *mode)
 {
  	TGA *tga;
 	FILE *fd;
@@ -91,7 +91,7 @@ TGAClose(TGA *tga)
 }
 
 
-char*
+const char*
 TGAStrError(tuint8 code)
 {
 	if (code >= TGA_ERRORS) code = TGA_ERROR;

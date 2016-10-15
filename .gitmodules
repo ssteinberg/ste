@@ -1,0 +1,34 @@
+[submodule "Simulation/third_party/packages/zlib"]
+	path = Simulation/third_party/packages/zlib
+	url = https://github.com/madler/zlib.git
+[submodule "Simulation/third_party/packages/glfw"]
+	path = Simulation/third_party/packages/glfw
+	url = https://github.com/glfw/glfw.git
+	branch = latest
+[submodule "Simulation/third_party/packages/libjpeg-turbo"]
+	path = Simulation/third_party/packages/libjpeg-turbo
+	url = https://github.com/libjpeg-turbo/libjpeg-turbo.git
+	branch = 1.4.x
+[submodule "Simulation/third_party/packages/libpng"]
+	path = Simulation/third_party/packages/libpng
+	url = https://github.com/glennrp/libpng.git
+	branch = libpng16
+[submodule "Simulation/third_party/packages/tinyobjloader"]
+	path = Simulation/third_party/packages/tinyobjloader
+	url = https://github.com/syoyo/tinyobjloader.git
+[submodule "Simulation/third_party/packages/imgui"]
+	path = Simulation/third_party/packages/imgui
+	url = https://github.com/ocornut/imgui.git
+[submodule "Simulation/third_party/packages/glm"]
+	path = Simulation/third_party/packages/glm
+	url = https://github.com/g-truc/glm.git
+	branch = 0.9.7
+[submodule "Simulation/third_party/packages/gli"]
+	path = Simulation/third_party/packages/gli
+	url = https://github.com/g-truc/gli.git
+[submodule "Simulation/third_party/packages/freetype2"]
+	path = Simulation/third_party/packages/freetype2
+	url = http://git.savannah.gnu.org/r/freetype/freetype2.git
+[submodule "Simulation/third_party/packages/libtga"]
+	path = Simulation/third_party/packages/libtga
+	url = https://github.com/tommylutz/libtga

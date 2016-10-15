@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\libtga\src\tga.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\libtga\src\tgaread.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\libtga\src\tgawrite.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\libtga\src\tga.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\src\git\StE\Simulation\third_party\packages\libtga\src\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{40C610DD-5758-3363-8664-DDFE53FF32E7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{05DC91A1-C1BD-37EC-8C65-A034117D2C06}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

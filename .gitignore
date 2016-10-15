@@ -30,7 +30,6 @@ Simulation/.vscode/.browse.VC.db-shm
 [Dd]ebugPublic/
 [Rr]elease/
 x64/
-build/
 bld/
 [Bb]in/
 [Oo]bj/
@@ -206,8 +205,9 @@ UpgradeLog*.htm
 # Microsoft Fakes
 FakesAssemblies/
 
-Simulation/third_party/*
-!Simulation/third_party/Makefile
+Simulation/third_party/build/work/
+
+Simulation/build/
 Simulation/bin/
 Simulation/Log/
 Simulation/My Amplifier XE Results - Simulation/
@@ -218,3 +218,6 @@ Simulation/Screenshots/*
 Simulation/My Advisor XE Results - Simulation/
 
 !.vscode
+
+!*.lib
+!*.dll
