@@ -14,6 +14,7 @@
 #include "RGB.hpp"
 
 #include <memory>
+#include <limits>
 
 namespace StE {
 namespace Graphics {
@@ -37,7 +38,7 @@ private:
 	float metallic{ .0f };
 
 	float index_of_refraction{ 1.5f };
-	glm::vec3 attenuation_coefficient{ .0f };
+	glm::vec3 attenuation_coefficient{ std::numeric_limits<float>::infinity() };
 	float phase_g{ .0f };
 
 	material_layer *next_layer{ nullptr };
@@ -132,7 +133,7 @@ public:
 	*/
 	void set_index_of_refraction(float ior) {
 		index_of_refraction = ior;
-		descriptor.set_ior(index_of_refraction);
+		descriptor.set_ior_phase(index_of_refraction, phase_g);
 		Base::notify();
 	}
 
@@ -145,11 +146,11 @@ public:
 	*
 	*	Defaults to { 0, 0, 0 }
 	*
-	* 	@param a	Total attenuation coefficient  - range: [0,infinity)
+	* 	@param a	Per-channel total attenuation coefficient  - range: [0,infinity)
 	*/
 	void set_attenuation_coefficient(const glm::vec3 a) {
 		attenuation_coefficient = a;
-		descriptor.set_attenuation_coefficient(attenuation_coefficient, phase_g);
+		descriptor.set_attenuation_coefficient(attenuation_coefficient);
 		Base::notify();
 	}
 
@@ -167,7 +168,7 @@ public:
 	*/
 	void set_scattering_phase_parameter(float g) {
 		phase_g = g;
-		descriptor.set_attenuation_coefficient(attenuation_coefficient, phase_g);
+		descriptor.set_ior_phase(index_of_refraction, phase_g);
 		Base::notify();
 	}
 
@@ -208,11 +209,11 @@ public:
 	}
 
 	auto get_color() const { return color; }
-	float get_roughness() const { return roughness; }
-	float get_anisotropy() const { return anisotropy; }
-	float get_metallic() const { return metallic; }
-	float get_index_of_refraction() const { return index_of_refraction; }
-	float get_layer_thickness() const { return thickness; }
+	auto get_roughness() const { return roughness; }
+	auto get_anisotropy() const { return anisotropy; }
+	auto get_metallic() const { return metallic; }
+	auto get_index_of_refraction() const { return index_of_refraction; }
+	auto get_layer_thickness() const { return thickness; }
 	auto get_attenuation_coefficient() const { return attenuation_coefficient; }
 	float get_scattering_phase_parameter() const { return phase_g; }
 

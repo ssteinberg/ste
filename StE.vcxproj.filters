@@ -1037,7 +1037,16 @@
     <ClInclude Include="Simulation\src\ste\math_additions\numerical\romberg_integration\romberg_integration.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\radiometry\radiance\BxDFs\cook_torrance_specular\ndf\microfacet_refraction_ratio_fit.hpp">
+    <ClInclude Include="Simulation\src\ste\framework_graphics\radiometry\radiance\Fittings\microfacet_fit_error.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\radiometry\radiance\Fittings\microfacet_refraction_fit.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\radiometry\radiance\Fittings\microfacet_transmission_fit.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\radiometry\radiance\BxDFs\lambert_diffuse\lambert_diffuse.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1113,5 +1122,8 @@
     <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\deferred_composer\shaders\deferred_shading.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\light_transport.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\spherical.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\common_shaders\optical_geometry.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\radiometry\radiance\BxDFs\lambert_diffuse\shaders\lambert_diffuse.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\radiometry\radiance\fittings\shaders\microfacet_ggx_fitting.glsl" />
   </ItemGroup>
 </Project>

@@ -290,10 +290,8 @@ int main()
 	float phase[3];
 
 	for (int i = 0; i < layers_count; ++i) {
-		if (i > 0) {
+		if (i > 0)
 			layers[i] = scene.get().scene_properties().material_layers_storage().allocate_layer();
-			layers[i-1]->set_next_layer(layers[i].get());
-		}
 
 		base_color[i] = { 1,1,1 };
 		roughness[i] = .5f;
@@ -327,7 +325,7 @@ int main()
 					ImGui::SliderFloat((std::string("IOR ##value") +	" ##" + layer_label).data(), &index_of_refraction[i],1.f, 4.f, "%.5f", 3.f);
 					if (i < layers_count - 1 && layer_enabled[i + 1])
 						ImGui::SliderFloat((std::string("Thick ##value") + " ##" + layer_label).data(), &thickness[i], .0f, StE::Graphics::material_layer_max_thickness, "%.5f", 3.f);
-					ImGui::SliderFloat((std::string("Attn ##value") +	" ##" + layer_label).data(), &absorption[i], .000001f, 20.f, "%.8f", 4.f);
+					ImGui::SliderFloat((std::string("Attn ##value") +	" ##" + layer_label).data(), &absorption[i], .000001f, 50.f, "%.8f", 5.f);
 					ImGui::SliderFloat((std::string("Phase ##value") +	" ##" + layer_label).data(), &phase[i], -1.f, +1.f);
 				}
 			}

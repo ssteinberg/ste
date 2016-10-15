@@ -86,13 +86,18 @@ public:
 };
 
 }
+
+glm::dvec3 refract(const glm::dvec3 &m, const glm::dvec3 &l, double r) {
+	double t = 1 / r;
+	double c = glm::dot(l, m);
+	return -t*l + (t*c - sqrt(1 - t*t*(1 - c*c)))*m;
+}
+
 glm::dvec3 refract_clamp(double theta_v, double theta, double phi, double r) {
 	glm::dvec3 m = { glm::sin(theta) * glm::cos(phi), glm::sin(theta) * glm::sin(phi), glm::cos(theta) };
 	glm::dvec3 l = { glm::sin(theta_v), 0, glm::cos(theta_v) };
 
-	double t = 1 / r;
-	double c = glm::dot(l, m);
-	glm::dvec3 o = -t*l + (t*c - sqrt(1 - t*t*(1 - c*c)))*m;
+	glm::dvec3 o = refract(m,l,r);
 
 	glm::dvec3 v{ 0, 0, 0 };
 	auto len = glm::length(o);
@@ -101,7 +106,6 @@ glm::dvec3 refract_clamp(double theta_v, double theta, double phi, double r) {
 
 	return v;
 }
-
 
 struct refraction_ratio_fit_data {
 	double a1, a2, b1, b2;
@@ -144,6 +148,42 @@ int main() {
 	constexpr double Rmin = .2;
 	constexpr double Rmax = 3.2;
 	auto *lut = new refraction_ratio_fit;
+
+	/*
+	 * Usage example
+	 *
+	{
+		std::ifstream ifs("microfacet_ggx_refraction_fit.bin", std::ios::binary);
+		ifs.read(reinterpret_cast<char*>(lut), sizeof(*lut));
+		ifs.close();
+
+		double ior_ratio = .55;
+		double roughness = .2;
+		double theta = glm::half_pi<double>() * .165;
+		double cos_theta = glm::cos(theta);
+
+		int x = glm::round(glm::clamp((ior_ratio - Rmin) / (Rmax - Rmin), .0, 1.) * refraction_ratio_fit::N);
+		int y = glm::round(roughness * refraction_ratio_fit::N);
+
+		std::cout << "x: " << x << " y: " << y << std::endl;
+
+		auto exp2_fit = lut->data[x][y];
+		double Vx = exp2_fit.a1 * glm::exp(exp2_fit.a2 * cos_theta) + exp2_fit.b1 * glm::exp(exp2_fit.b2 * cos_theta);
+		std::cout << Vx << std::endl;
+		Vx = -glm::clamp(Vx, -1., 1.);
+		std::cout << Vx << std::endl;
+
+		glm::dvec3 v = glm::dvec3{ glm::sin(theta), 0, cos_theta };
+		glm::dvec3 n = glm::dvec3{ 0, 0, 1 };
+		glm::dvec3 w = glm::normalize(glm::cross(n,glm::cross(n,v)));
+
+		std::cout << "V: <" << v.x << ", " << v.y << ", " << v.z << ">" << std::endl;
+		std::cout << "N: <" << n.x << ", " << n.y << ", " << n.z << ">" << std::endl;
+		std::cout << "W: <" << w.x << ", " << w.y << ", " << w.z << ">" << std::endl;
+
+		glm::dvec3 t = Vx * w - glm::sqrt(1 - Vx*Vx) * n;
+		std::cout << "T1: <" << t.x << ", " << t.y << ", " << t.z << ">" << std::endl;
+	}*/
 
 	void * vpDcom = NULL;
 	int ret = 0;

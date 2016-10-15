@@ -78,14 +78,14 @@ float shadow(samplerCubeArrayShadow shadow_depth_maps, samplerCubeArray shadow_m
 	int clusters_to_sample = int(round(mix(.51f, max_cluster_samples + .49f, penumbra_ratio)));
 
 	// Interleaved gradient noise
-	float noise = 2.f * pi * interleaved_gradient_noise(gl_FragCoord.xy);
+	float noise = two_pi * interleaved_gradient_noise(gl_FragCoord.xy);
 	float accum = .0f;
 	float w = .0f;
 
 	// Accumulate samples
 	// Each cluster is rotated around and offseted by the generated interleaved noise
 	for (int i=0; i<clusters_to_sample; ++i) {
-		float noise_offset = 2.f * pi * float(i) / float(clusters_to_sample);
+		float noise_offset = two_pi * float(i) / float(clusters_to_sample);
 		float sin_noise = sin(noise + noise_offset);
 		float cos_noise = cos(noise + noise_offset);
 		mat2 sample_rotation_matrix = mat2(cos_noise, sin_noise, -sin_noise, cos_noise);
@@ -98,7 +98,7 @@ float shadow(samplerCubeArrayShadow shadow_depth_maps, samplerCubeArray shadow_m
 			
 			float gaussian = penumbra;
 			float l = length(shadow_cluster_samples[s]) * penumbra;
-			float t = exp(-l*l / (2 * gaussian * gaussian)) / (2 * pi * gaussian * gaussian);
+			float t = exp(-l*l / (2 * gaussian * gaussian)) * one_over_pi / (2 * gaussian * gaussian);
 
 			float shadow_sample = texture(shadow_depth_maps, vec4(shadow_cubemap_jitter_uv(norm_v, m, u), light), shadow_calculate_test_depth(zf)).x;
 			accum += shadow_sample * t;
@@ -157,7 +157,7 @@ vec3 shadow_occluder(samplerCubeArray shadow_maps, uint light, vec3 shadow_v, fl
 
 	if (dist_receiver > d_blocker) {
 		float penumbra = min(shadow_calculate_penumbra(d_blocker, light_radius, dist_receiver) / cutoff, max_penumbra);
-		float noise = 2.f * pi * interleaved_gradient_noise(gl_FragCoord.xy);
+		float noise = two_pi * interleaved_gradient_noise(gl_FragCoord.xy);
 		
 		if (penumbra >= min_penumbra) {
 			float accum = .0f;
@@ -167,7 +167,7 @@ vec3 shadow_occluder(samplerCubeArray shadow_maps, uint light, vec3 shadow_v, fl
 			
 				float gaussian = penumbra;
 				float l = length(shadow_cluster_samples[s]) * penumbra;
-				float t = exp(-l*l / (2 * gaussian * gaussian)) / (2 * pi * gaussian * gaussian);
+				float t = exp(-l*l / (2 * gaussian * gaussian)) * one_over_pi / (2 * gaussian * gaussian);
 
 				float shadow_sample = texture(shadow_maps, vec4(shadow_cubemap_jitter_uv(norm_v, m, u), light)).x;
 				accum += shadow_sample * t;

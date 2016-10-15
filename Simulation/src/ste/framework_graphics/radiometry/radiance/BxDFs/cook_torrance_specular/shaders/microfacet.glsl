@@ -1,6 +1,18 @@
 
 #include "common.glsl"
 
+float material_anisotropic_roughness(float rx, float ry,
+									 vec3 n, vec3 t,
+									 vec3 v) {
+	vec3 w = v - dot(v, n)*n;
+	float lenw = length(w);
+	float ansi_ratio = lenw == .0f ? 
+							.5f : 
+							abs(dot(w / lenw, t));
+
+	return mix(ry, rx, ansi_ratio);
+}
+
 float ndf_ggx_isotropic_cdf(float roughness, float dotNH) {
 	float alpha = roughness * roughness;
 	float alpha2 = alpha * alpha;
@@ -18,31 +30,32 @@ float ndf_ggx_isotropic(float roughness, float dotNH) {
 	float dotNH2 = dotNH * dotNH;
 	float denom_ndf = dotNH2 * (alpha2 - 1.f) + 1.f;
 
-	return alpha2 / (pi * denom_ndf * denom_ndf);
+	return one_over_pi * alpha2 / (denom_ndf * denom_ndf);
 }
 
 float ndf_ggx_ansiotropic(vec3 X, vec3 Y, vec3 h, float roughness_x, float roughness_y, float dotNH) {
 	float alphax = roughness_x * roughness_x;
 	float alphay = roughness_y * roughness_y;
 
-	float a = pi * alphax * alphay;
+	float a = alphax * alphay;
 
 	float ansix = dot(X, h) / alphax;
 	float ansiy = dot(Y, h) / alphay;
 
 	float denom = ansix * ansix + ansiy * ansiy + dotNH * dotNH;
 
-	return 1.f / (a * denom * denom);
+	return one_over_pi / (a * denom * denom);
 }
 
-float gaf_schlick_ggx(float roughness, float dotNL, float dotNV) {
+float gaf_schlick_ggx(float roughness, float dotNL, float dotNV, out float g_mask, out float g_shadow) {
 	float alpha = roughness * roughness;
 	float k = alpha / 2.f;
 	float invk = 1.f - k;
-	float g1 = 1.f / (dotNL * invk + k);
-	float g2 = 1.f / (dotNV * invk + k);
 
-	return g1 * g2;
+	g_mask = 1.f / (dotNL * invk + k);
+	g_shadow = 1.f / (dotNV * invk + k);
+
+	return g_mask * g_shadow;
 }
 
 float fresnel_schlick_ratio(float dotLH) {
@@ -60,6 +73,17 @@ float fresnel_schlick(float F0, float dotLH) {
 	return mix(F0, 1.f, fresnel_schlick_ratio(dotLH));
 }
 
+float fresnel_schlick_tir(float F0, float dotLH, float cos_critical) {
+	if (dotLH <= cos_critical)
+		return 1.f;
+
+	float p = 1.f - (dotLH - cos_critical) / (1 - cos_critical);
+	float p2 = p*p;
+	float a = p2 * p2;
+
+	return mix(F0, 1.f, a);
+}
+
 vec3 fresnel_cook_torrance(float dotLH, vec3 F0) {
 	vec3 sqrtF0 = sqrt(F0);
 	vec3 eta = (vec3(1) + sqrtF0) / (vec3(1) - sqrtF0);
@@ -72,29 +96,4 @@ vec3 fresnel_cook_torrance(float dotLH, vec3 F0) {
 	vec3 f2 = (gpc * dotLH - vec3(1)) / (gmc * dotLH + vec3(1));
 
 	return .5f * f1 * f1 * (vec3(1) + f2 * f2);
-}
-
-float ggx_refraction_ratio(sampler2DArray microfacet_refraction_ratio_fit_lut,
-						   vec3 v,
-						   vec3 n,
-						   float roughness,
-						   float ior1,
-						   float ior2) {
-	const float min_ior_ratio = 1.f / 3.f;
-	
-	float cos_theta = dot(v, n);
-	float ior_ratio = clamp(((ior2 / ior1) - min_ior_ratio) / (1f - min_ior_ratio), .0f, 1.f);
-	vec2 uv = vec2(ior_ratio, roughness);
-	
-	vec3 lut0 = texture(microfacet_refraction_ratio_fit_lut, vec3(uv, 0)).xyz;
-	vec3 lut1 = texture(microfacet_refraction_ratio_fit_lut, vec3(uv, 1)).xyz;
-
-	vec2 a = lut0.xy;
-	vec2 b = vec2(lut0.z, lut1.z);
-	vec2 c = lut1.xy;
-	
-	vec2 t = (vec2(cos_theta) + b) * c;
-	vec2 gauss = a * exp(-(t * t));
-
-	return gauss.x + gauss.y;
 }
