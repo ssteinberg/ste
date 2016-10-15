@@ -1,4 +1,0 @@
-var struct_st_e_1_1_core_1_1surface__element__type_3_01gli_1_1format_1_1_f_o_r_m_a_t___r_g_b_a32___s_f_l_o_a_t___p_a_c_k32_01_4 =
-[
-    [ "type", "struct_st_e_1_1_core_1_1surface__element__type_3_01gli_1_1format_1_1_f_o_r_m_a_t___r_g_b_a32___s_f_l_o_a_t___p_a_c_k32_01_4.html#a8ecdf97fed9ac7737c5ad59ab40a938d", null ]
-];
