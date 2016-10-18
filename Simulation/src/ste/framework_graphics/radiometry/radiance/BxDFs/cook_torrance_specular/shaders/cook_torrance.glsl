@@ -42,16 +42,16 @@ vec3 cook_torrance_iso_brdf(vec3 n,
 }
 
 /*
- *	Cook-Torrance ansiotropic BRDF
+ *	Cook-Torrance anisotropic BRDF
  *
  *	@param n			Normal
  *	@param t			Tangent
- *	@param b			Bitangent
+ *	@param b			Bi-tangent
  *	@param v			Outbound vector (facing away from fragment to camera)
  *	@param l			Incident vector (facing away from fragment to light)
  *	@param h			Half vector
  *	@param roughness_x	Material roughness in tangent direction
- *	@param roughness_y	Material roughness in bitangent direction
+ *	@param roughness_y	Material roughness in bi-tangent direction
  *	@param cos_critical	Cosine of critical angle
  *	@param sin_critical	Sine of critical angle
  *	@param c_spec		Specular color
