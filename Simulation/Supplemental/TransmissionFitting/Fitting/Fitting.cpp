@@ -120,7 +120,29 @@ struct transmission_fit {
 
 using fitting_future = std::future<std::tuple<std::string, int, int>>;
 
-void fit(fitting_future &future, Engine* matlabEngine, transmission_fit *lut) {
+bool matlab_eval(const std::string &cmd, int x, int y, int elements, Engine *matlabEngine, transmission_fit *lut) {
+	try {
+		if (engEvalString(matlabEngine, cmd.c_str()) != 0)
+			return false;
+
+		auto *mxp = engGetVariable(matlabEngine, "p");
+		if (mxGetNumberOfElements(mxp) != elements) {
+			mxDestroyArray(mxp);
+			return false;
+		}
+
+		const double *p = reinterpret_cast<const double*>(mxGetData(mxp));
+		std::copy(p, p + elements, reinterpret_cast<double*>(&lut->data[x][y]));
+		mxDestroyArray(mxp);
+	}
+	catch (std::exception) {
+		return false;
+	}
+
+	return true;
+}
+
+void fit(fitting_future &future, Engine* &matlabEngine, transmission_fit *lut) {
 	if (!future.valid())
 		return;
 
@@ -130,15 +152,25 @@ void fit(fitting_future &future, Engine* matlabEngine, transmission_fit *lut) {
 	int x = std::get<1>(fdata);
 	int y = std::get<2>(fdata);
 
-	engEvalString(matlabEngine, cmd.c_str());
+	for (int itry = 0; itry < 3; ++itry) {
+		if (matlab_eval(cmd, x, y, 6, matlabEngine, lut)) {
+			std::cout << "gauss2(" << x << "," << y << "): <" << lut->data[x][y].a1 << ", " << lut->data[x][y].b1 << ", " << lut->data[x][y].c1 << "; " <<
+				lut->data[x][y].a2 << ", " << lut->data[x][y].b2 << ", " << lut->data[x][y].c2 << ">" << std::endl;
+			return;
+		}
 
-	auto *mxp = engGetVariable(matlabEngine, "p");
-	const double *p = reinterpret_cast<const double*>(mxGetData(mxp));
-	std::copy(p, p + 6, reinterpret_cast<double*>(&lut->data[x][y]));
-	mxDestroyArray(mxp);
+		std::cout << "Matlab fitting error... Retrying..." << std::endl;
+		try {
+			engClose(matlabEngine);
+		}
+		catch (std::exception) {}
 
-	std::cout << "gauss2(" << x << "," << y << "): <" << lut->data[x][y].a1 << ", " << lut->data[x][y].b1 << ", " << lut->data[x][y].c1 << "; " << 
-		lut->data[x][y].a2 << ", " << lut->data[x][y].b2 << ", " << lut->data[x][y].c2 << ">" << std::endl;
+		void * vpDcom = nullptr;
+		int ret = 0;
+		matlabEngine = engOpenSingleUse(0, vpDcom, &ret);
+	}
+
+	throw new std::runtime_error("Couldn't restart Matlab");
 }
 
 int main() {
