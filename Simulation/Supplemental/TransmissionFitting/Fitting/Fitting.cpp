@@ -108,7 +108,7 @@ struct transmission_fit_data {
 };
 
 struct transmission_fit {
-	static constexpr int N = 256;
+	static constexpr int N = 512;
 
 	unsigned char ndf_type[8];
 	std::uint16_t version;
@@ -120,7 +120,29 @@ struct transmission_fit {
 
 using fitting_future = std::future<std::tuple<std::string, int, int>>;
 
-void fit(fitting_future &future, Engine* matlabEngine, transmission_fit *lut) {
+bool matlab_eval(const std::string &cmd, int x, int y, int elements, Engine *matlabEngine, transmission_fit *lut) {
+	try {
+		if (engEvalString(matlabEngine, cmd.c_str()) != 0)
+			return false;
+
+		auto *mxp = engGetVariable(matlabEngine, "p");
+		if (mxGetNumberOfElements(mxp) != elements) {
+			mxDestroyArray(mxp);
+			return false;
+		}
+
+		const double *p = reinterpret_cast<const double*>(mxGetData(mxp));
+		std::copy(p, p + elements, reinterpret_cast<double*>(&lut->data[x][y]));
+		mxDestroyArray(mxp);
+	}
+	catch (std::exception) {
+		return false;
+	}
+
+	return true;
+}
+
+void fit(fitting_future &future, Engine* &matlabEngine, transmission_fit *lut) {
 	if (!future.valid())
 		return;
 
@@ -130,15 +152,25 @@ void fit(fitting_future &future, Engine* matlabEngine, transmission_fit *lut) {
 	int x = std::get<1>(fdata);
 	int y = std::get<2>(fdata);
 
-	engEvalString(matlabEngine, cmd.c_str());
+	for (int itry = 0; itry < 3; ++itry) {
+		if (matlab_eval(cmd, x, y, 6, matlabEngine, lut)) {
+			std::cout << "gauss2(" << x << "," << y << "): <" << lut->data[x][y].a1 << ", " << lut->data[x][y].b1 << ", " << lut->data[x][y].c1 << "; " <<
+				lut->data[x][y].a2 << ", " << lut->data[x][y].b2 << ", " << lut->data[x][y].c2 << ">" << std::endl;
+			return;
+		}
 
-	auto *mxp = engGetVariable(matlabEngine, "p");
-	const double *p = reinterpret_cast<const double*>(mxGetData(mxp));
-	std::copy(p, p + 6, reinterpret_cast<double*>(&lut->data[x][y]));
-	mxDestroyArray(mxp);
+		std::cout << "Matlab fitting error... Retrying..." << std::endl;
+		try {
+			engClose(matlabEngine);
+		}
+		catch (std::exception) {}
 
-	std::cout << "gauss2(" << x << "," << y << "): <" << lut->data[x][y].a1 << ", " << lut->data[x][y].b1 << ", " << lut->data[x][y].c1 << "; " << 
-		lut->data[x][y].a2 << ", " << lut->data[x][y].b2 << ", " << lut->data[x][y].c2 << ">" << std::endl;
+		void * vpDcom = nullptr;
+		int ret = 0;
+		matlabEngine = engOpenSingleUse(0, vpDcom, &ret);
+	}
+
+	throw new std::runtime_error("Couldn't restart Matlab");
 }
 
 int main() {
@@ -173,7 +205,7 @@ int main() {
 
 					double theta = glm::acos(cos_theta);
 
-					auto f = [&](double x, double c) {
+					auto f = [&](double x, double c, bool with_fresnel) {
 						// Dirac delta when roughness == 0
 						if (roughness == .0) {
 							auto f0 = (1 - ior_ratio) / (1 + ior_ratio);
@@ -182,7 +214,9 @@ int main() {
 
 						double a = roughness * roughness;
 						double t = c * sin(glm::pi<double>() / 2 * (x - (theta - c)) / c);
-						auto intg = StE::romberg_integration<9>::integrate(std::bind(transmission_fresnel, theta, x, std::placeholders::_1, ior_ratio), -t, +t);
+						auto intg = with_fresnel ?
+							StE::romberg_integration<9>::integrate(std::bind(transmission_fresnel, theta, x, std::placeholders::_1, ior_ratio), -t, +t) :
+							1.0;
 
 						double cx = glm::cos(x);
 						double denom = cx * cx * (a*a - 1.0) + 1.0;
@@ -192,11 +226,15 @@ int main() {
 					double res = .0;
 					if (omega > .0) {
 						double s = glm::max(theta - omega, -glm::half_pi<double>());
-						double t = glm::min(theta + omega,  glm::half_pi<double>());
+						double t = glm::min(theta + omega, glm::half_pi<double>());
+						double norm_s = glm::max(theta - glm::half_pi<double>(), -glm::half_pi<double>());
+						double norm_t = glm::min(theta + glm::half_pi<double>(), glm::half_pi<double>());
 
-						double numerical_integration = StE::romberg_integration<10>::integrate(std::bind(f, std::placeholders::_1, omega), s, t);
+						double numerical_integration = StE::romberg_integration<10>::integrate(std::bind(f, std::placeholders::_1, omega, true), s, t);
+						double normalizer = StE::romberg_integration<10>::integrate(std::bind(f, std::placeholders::_1, glm::half_pi<double>(), false), 
+							norm_s, norm_t);
 
-						res = numerical_integration;
+						res = normalizer > 0 ? numerical_integration / normalizer : .0;
 						if (std::isnan(res)) {
 							std::cout << "!! nan for " << omega<<  "," << roughness << " !!" << std::endl;
 							res = 1.0;

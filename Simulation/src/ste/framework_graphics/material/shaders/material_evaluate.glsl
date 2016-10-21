@@ -21,7 +21,8 @@ vec3 material_evaluate_layer_radiance(material_layer_unpacked_descriptor descrip
 									  vec3 v,
 									  vec3 l,
 									  vec3 h,
-									  float cos_critical, float sin_critical,
+									  float cos_critical, 
+									  float refractive_ratio,
 									  vec3 irradiance,
 									  vec3 base_color,
 									  vec3 diffuse_color,
@@ -44,7 +45,8 @@ vec3 material_evaluate_layer_radiance(material_layer_unpacked_descriptor descrip
 	vec3 Specular = cook_torrance_ansi_brdf(n, t, b, 
 											v, l, h,
 											rx, ry,
-											cos_critical, sin_critical,
+											cos_critical, 
+											refractive_ratio,
 											c_spec,
 											D, Gmask, Gshadow, F);
 
@@ -134,22 +136,22 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 		float bottom_medium_ior = descriptor.ior;
 		
 		// Compute sine and cosine of critical angle
-		float sin_critical = bottom_medium_ior / top_medium_ior;
-		float cos_critical = sin_critical < 1.f ? 
-								sqrt(1.f - sin_critical * sin_critical) :
+		float refractive_ratio = bottom_medium_ior / top_medium_ior;
+		float cos_critical = refractive_ratio < 1.f ? 
+								sqrt(1.f - refractive_ratio * refractive_ratio) :
 								.0f;
 		// Compute fresnel reflection at 0 angle incidence
-		float F0 = fresnel_F0(sin_critical);
+		float F0 = fresnel_F0(refractive_ratio);
 
 		// Evaluate total inner (downwards into material) and outer (upwards towards eye) transmission
 		float inner_transmission_ratio = ggx_transmission_ratio(microfacet_transmission_fit_lut, 
 																v, n, 
 																roughness, 
-																sin_critical);
+																refractive_ratio);
 		float outer_transmission_ratio = ggx_transmission_ratio(microfacet_transmission_fit_lut, 
 																l, n, 
 																roughness, 
-																1.f / sin_critical);
+																1.f / refractive_ratio);
 
 		// Half vector
 		vec3 h = normalize(v + l);
@@ -158,11 +160,11 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 		vec3 refracted_v = -ggx_refract(microfacet_refraction_fit_lut,
 										v, n,
 										roughness,
-										sin_critical);
+										refractive_ratio);
 		vec3 refracted_l = -ggx_refract(microfacet_refraction_fit_lut,
 										l, n,
 										roughness,
-										sin_critical);
+										refractive_ratio);
 	
 		// Compute total and outer path lengths inside current layer
 		float dotNV = max(epsilon, dot(n,refracted_v));
@@ -174,13 +176,14 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 		vec3 extinction = material_beer_lambert(attenuation_coefficient, path_length);
 		vec3 outer_extinction = material_beer_lambert(attenuation_coefficient, outer_path_length);
 		// Diffuse light is scattered light inside layer, unattenuated light doesn't contribute to diffuse
-		vec3 scattering = inner_transmission_ratio * (vec3(1.f) - extinction) * base_color;
+		vec3 scattering = inner_transmission_ratio * outer_transmission_ratio * (vec3(1.f) - extinction) * base_color;
 
 		// Evaluate layer BRDF
 		rgb += attenuation * material_evaluate_layer_radiance(descriptor,
 															  n, t, b,
 															  v, l, h,
-															  cos_critical, sin_critical,
+															  cos_critical, 
+															  refractive_ratio,
 															  irradiance,
 															  base_color,
 															  scattering,
