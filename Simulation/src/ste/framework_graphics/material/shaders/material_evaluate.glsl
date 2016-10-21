@@ -176,7 +176,7 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 		vec3 extinction = material_beer_lambert(attenuation_coefficient, path_length);
 		vec3 outer_extinction = material_beer_lambert(attenuation_coefficient, outer_path_length);
 		// Diffuse light is scattered light inside layer, unattenuated light doesn't contribute to diffuse
-		vec3 scattering = inner_transmission_ratio * (vec3(1.f) - extinction) * base_color;
+		vec3 scattering = inner_transmission_ratio * outer_transmission_ratio * (vec3(1.f) - extinction) * base_color;
 
 		// Evaluate layer BRDF
 		rgb += attenuation * material_evaluate_layer_radiance(descriptor,

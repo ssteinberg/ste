@@ -225,3 +225,6 @@ Simulation/My Advisor XE Results - Simulation/
 
 !*.lib
 !*.dll
+
+!*.obj
+!*.mtl
