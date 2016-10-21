@@ -1,5 +1,0 @@
-*.obj filter=lfs diff=lfs merge=lfs -text
-*.bsdf filter=lfs diff=lfs merge=lfs -text
-*.VC.db filter=lfs diff=lfs merge=lfs -text
-*.lib filter=lfs diff=lfs merge=lfs -text
-*.dll filter=lfs diff=lfs merge=lfs -text

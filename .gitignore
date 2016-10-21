@@ -18,8 +18,8 @@ GPATH
 imgui.ini
 
 # docs
-Simulation/docs/latex/
-Simulation/docs/html/
+Simulation/docs/latex
+Simulation/docs/html
 
 Simulation/browse.VC.db
 Simulation/.vscode/.browse.VC.db
@@ -225,3 +225,6 @@ Simulation/My Advisor XE Results - Simulation/
 
 !*.lib
 !*.dll
+
+!*.obj
+!*.mtl

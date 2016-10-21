@@ -116,7 +116,6 @@ StE::task_future<void> ModelFactory::process_model_mesh(task_scheduler* sched,
 	auto metallic_it = material.unknown_parameter.find("metallic");
 	auto ior_it = material.unknown_parameter.find("ior");
 	auto anisotropy_it = material.unknown_parameter.find("anisotropy");
-	auto sheen_it = material.unknown_parameter.find("sheen");
 
 	return sched->schedule_now_on_main_thread([=, vbo_data = std::move(vbo_data), vbo_indices = std::move(vbo_indices), &loaded_materials, &loaded_material_layers, &textures, &material]() {
 		std::shared_ptr<Core::Texture2D> diff_map = mat_idx >= 0 ? textures[material.diffuse_texname] : nullptr;
@@ -136,7 +135,6 @@ StE::task_future<void> ModelFactory::process_model_mesh(task_scheduler* sched,
 		if (metallic_it != material.unknown_parameter.end()) layer->set_metallic(std::stof(metallic_it->second));
 		if (ior_it != material.unknown_parameter.end()) layer->set_index_of_refraction(std::stof(ior_it->second));
 		if (anisotropy_it != material.unknown_parameter.end()) layer->set_anisotropy(std::stof(anisotropy_it->second));
-		if (sheen_it != material.unknown_parameter.end()) layer->set_sheen(std::stof(sheen_it->second));
 
 		std::unique_ptr<Graphics::mesh<Graphics::mesh_subdivion_mode::Triangles>> m = std::make_unique<Graphics::mesh<Graphics::mesh_subdivion_mode::Triangles>>();
 		m->set_indices(std::move(vbo_indices));

@@ -1,28 +1,66 @@
 
 #include "common.glsl"
 #include "microfacet.glsl"
+#include "fresnel.glsl"
 
+/*
+ *	Cook-Torrance isotropic BRDF
+ *
+ *	@param n			Normal
+ *	@param v			Outbound vector (facing away from fragment to camera)
+ *	@param l			Incident vector (facing away from fragment to light)
+ *	@param h			Half vector
+ *	@param roughness	Material roughness
+ *	@param cos_critical	Cosine of critical angle
+ *	@param refractive_ratio	Ratio of refractive-indices, ior2/ior1
+ *	@param c_spec		Specular color
+ *	@param D			Outputs microfacet NDF value
+ *	@param Gmask		Outputs microfacet G1 masking value
+ *	@param Gshadow		Outputs microfacet G1 shadowing value
+ *	@param F			Outputs Fresnel reflectance value
+ */
 vec3 cook_torrance_iso_brdf(vec3 n,
 							vec3 v,
 							vec3 l,
 							vec3 h,
 							float roughness,
-							float F0,
+							float cos_critical, 
+							float refractive_ratio,
 							vec3 c_spec,
 							out float D,
-							out float G,
+							out float Gmask,
+							out float Gshadow,
 							out float F) {
 	// Singularity at "grazing-angles", i.e. dot(n,v) == 0
 	float clamped_dotNL = max(epsilon, dot(n,l));
 	float clamped_dotNV = max(epsilon, dot(n,v));
 
 	D = ndf_ggx_isotropic(roughness, dot(n,h));
-	G = gaf_schlick_ggx(roughness, clamped_dotNL, clamped_dotNV);
-	F = fresnel_schlick(F0, dot(l,h));
+	float G = gaf_schlick_ggx(roughness, clamped_dotNL, clamped_dotNV, Gmask, Gshadow);
+	F = fresnel(dot(l,h), cos_critical, refractive_ratio);
 
 	return c_spec * max(.0f, D * G * F / 4.f);
 }
 
+/*
+ *	Cook-Torrance anisotropic BRDF
+ *
+ *	@param n			Normal
+ *	@param t			Tangent
+ *	@param b			Bi-tangent
+ *	@param v			Outbound vector (facing away from fragment to camera)
+ *	@param l			Incident vector (facing away from fragment to light)
+ *	@param h			Half vector
+ *	@param roughness_x	Material roughness in tangent direction
+ *	@param roughness_y	Material roughness in bi-tangent direction
+ *	@param cos_critical	Cosine of critical angle
+ *	@param refractive_ratio	Ratio of refractive-indices, ior2/ior1
+ *	@param c_spec		Specular color
+ *	@param D			Outputs microfacet NDF value
+ *	@param Gmask		Outputs microfacet G1 masking value
+ *	@param Gshadow		Outputs microfacet G1 shadowing value
+ *	@param F			Outputs Fresnel reflectance value
+ */
 vec3 cook_torrance_ansi_brdf(vec3 n,
 							 vec3 t,
 							 vec3 b,
@@ -31,10 +69,12 @@ vec3 cook_torrance_ansi_brdf(vec3 n,
 							 vec3 h,
 							 float roughness_x,
 							 float roughness_y,
-							 float F0,
+							 float cos_critical, 
+							 float refractive_ratio,
 							 vec3 c_spec,
 							 out float D,
-							 out float G,
+							 out float Gmask,
+							 out float Gshadow,
 							 out float F) {
 	// Like the isotropic case
 	float clamped_dotNL = max(epsilon, dot(n,l));
@@ -44,8 +84,8 @@ vec3 cook_torrance_ansi_brdf(vec3 n,
 	float roughness = mix(roughness_y, roughness_x, ansi_ratio);
 
 	D = ndf_ggx_ansiotropic(t, b, h, roughness_x, roughness_y, dot(n,h));
-	G = gaf_schlick_ggx(roughness, clamped_dotNL, clamped_dotNV);
-	F = fresnel_schlick(F0, dot(l,h));
+	float G = gaf_schlick_ggx(roughness, clamped_dotNL, clamped_dotNV, Gmask, Gshadow);
+	F = fresnel(dot(l,h), cos_critical, refractive_ratio);
 
 	return c_spec * max(.0f, D * G * F / 4.f);
 }

@@ -3,7 +3,8 @@
 #include "deferred_composer.hpp"
 #include "GIRenderer.hpp"
 
-#include "microfacet_refraction_ratio_fit.hpp"
+#include "microfacet_refraction_fit.hpp"
+#include "microfacet_transmission_fit.hpp"
 
 #include "Quad.hpp"
 
@@ -19,6 +20,34 @@
 
 using namespace StE::Graphics;
 
+namespace StE {
+namespace Graphics {
+namespace deferred_composer_detail {
+
+template <typename T>
+struct load_lut {
+	auto operator()(const char *name) const {
+		using namespace Text::Attributes;
+
+		std::ifstream ifs(name, std::ios::binary);
+		if (!ifs.good()) {
+			ste_log_error() << Text::AttributedString("Can't open \"") + i(name) + "\": " + std::strerror(errno) << std::endl;
+			throw std::runtime_error(std::string(name) + "not found");
+		}
+
+		auto fit_data = T(ifs).create_lut();
+		ifs.close();
+
+		ste_log() << Text::AttributedString("Loaded \"") + i(name) + "\" successfully." << std::endl;
+
+		return fit_data;
+	};
+};
+
+}
+}
+}
+
 deferred_composer::deferred_composer(const StEngineControl &ctx, GIRenderer *dr) : program(ctx, std::vector<std::string>{ "passthrough.vert", "deferred_compose.frag" }), dr(dr) {
 	vss_storage_connection = std::make_shared<connection<>>([&]() {
 		attach_handles();
@@ -30,25 +59,26 @@ deferred_composer::deferred_composer(const StEngineControl &ctx, GIRenderer *dr)
 	dr->shadows_storage.get_storage_modified_signal().connect(shadows_storage_connection);
 }
 
-void deferred_composer::load_microfacet_fit_lut() {
-	using namespace Text::Attributes;
+void deferred_composer::load_microfacet_fit_luts() {
+	static const char *refraction_fit_name = R"(Data/microfacet_ggx_refraction_fit.bin)";
+	static const char *transmission_fit_name = R"(Data/microfacet_ggx_transmission_fit.bin)";
 
-	std::ifstream ifs(R"(Data/microfacet_ggx_refraction_ratio_fit.bin)", std::ios::binary);
-	if (!ifs.good()) {
-		ste_log_error() << Text::AttributedString("Can't open ") + i("\"Data/microfacet_ggx_refraction_ratio_fit.bin\": ") + std::strerror(errno) << std::endl;
-		throw std::runtime_error("\"Data/microfacet_ggx_refraction_ratio_fit.bin\" not found");
+	try {
+		microfacet_refraction_fit_lut = std::make_unique<Core::Texture2D>(deferred_composer_detail::load_lut<microfacet_refraction_fit>()(refraction_fit_name));
+		microfacet_transmission_fit_lut = std::make_unique<Core::Texture2DArray>(deferred_composer_detail::load_lut<microfacet_transmission_fit>()(transmission_fit_name));
+	} catch (const microfacet_fit_error &err) {
+		using namespace Text::Attributes;
+		ste_log_error() << Text::AttributedString("Can't open Microfacet LUT. Error: \"") + b(err.what()) + "\"." << std::endl;
+
+		throw err;
 	}
 
-	auto microfacet_refraction_ratio_fit_data = microfacet_refraction_ratio_fit(ifs).create_lut();
-	ifs.close();
-
-	microfacet_refraction_ratio_fit_lut = std::make_unique<Core::Texture2DArray>(microfacet_refraction_ratio_fit_data);
-
-	auto handle = microfacet_refraction_ratio_fit_lut->get_texture_handle(*Core::Sampler::SamplerNearestClamp());
-	handle.make_resident();
-	program.get().set_uniform("microfacet_refraction_ratio_fit_lut", handle);
-
-	ste_log() << Text::AttributedString("Loaded \"") + i("microfacet_ggx_refraction_ratio_fit.bin") + "\" successfully." << std::endl;
+	auto refraction_handle = microfacet_refraction_fit_lut->get_texture_handle(*Core::Sampler::SamplerNearestClamp());
+	auto transmission_handle = microfacet_transmission_fit_lut->get_texture_handle(*Core::Sampler::SamplerNearestClamp());
+	refraction_handle.make_resident();
+	transmission_handle.make_resident();
+	program.get().set_uniform("microfacet_refraction_fit_lut", refraction_handle);
+	program.get().set_uniform("microfacet_transmission_fit_lut", transmission_handle);
 }
 
 void deferred_composer::attach_handles() const {
