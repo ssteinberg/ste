@@ -8,18 +8,18 @@
  *	@param v			Outbound vector (facing away from fragment to camera)
  *	@param n			Normal
  *	@param roughness	Material roughness
- *	@param sin_critical	Sine of critical angle
+ *	@param refractive_ratio	Ratio of refractive-indices, ior2/ior1
  */
 float ggx_transmission_ratio(sampler2DArray microfacet_transmission_fit_lut,
 							 vec3 v,
 							 vec3 n,
 							 float roughness,
-							 float sin_critical) {
+							 float refractive_ratio) {
 	const float Rmin = .2;
 	const float Rmax = 3.2;
 	
 	float x = dot(v, n);
-	float ior_ratio = clamp((sin_critical - Rmin) / (Rmax - Rmin), .0f, 1.f);
+	float ior_ratio = clamp((refractive_ratio - Rmin) / (Rmax - Rmin), .0f, 1.f);
 	vec2 uv = vec2(ior_ratio, roughness);
 	
 	vec3 lut0 = texture(microfacet_transmission_fit_lut, vec3(uv, 0)).xyz;
@@ -42,18 +42,18 @@ float ggx_transmission_ratio(sampler2DArray microfacet_transmission_fit_lut,
  *	@param v			Outbound vector (facing away from fragment to camera)
  *	@param n			Normal
  *	@param roughness	Material roughness
- *	@param sin_critical	Sine of critical angle
+ *	@param refractive_ratio	Ratio of refractive-indices, ior2/ior1
  */
 vec3 ggx_refract(sampler2D microfacet_refraction_fit_lut,
 				 vec3 v,
 				 vec3 n,
 				 float roughness,
-				 float sin_critical) {
+				 float refractive_ratio) {
 	const float Rmin = .2;
 	const float Rmax = 3.2;
 	
 	float x = dot(v, n);
-	float ior_ratio = clamp((sin_critical - Rmin) / (Rmax - Rmin), .0f, 1.f);
+	float ior_ratio = clamp((refractive_ratio - Rmin) / (Rmax - Rmin), .0f, 1.f);
 	vec2 uv = vec2(ior_ratio, roughness);
 	
 	vec4 lut = texture(microfacet_refraction_fit_lut, uv);
