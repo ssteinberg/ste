@@ -12,7 +12,6 @@
 
 #include "buffer_usage.hpp"
 #include "ShaderStorageBuffer.hpp"
-#include "AtomicCounterBufferObject.hpp"
 
 #include "gl_current_context.hpp"
 
@@ -40,8 +39,6 @@ private:
 	Core::FramebufferObject backface_fbo;
 
 	gbuffer_type gbuffer;
-	Core::AtomicCounterBufferObject<> gbuffer_counter{ 1 };
-	std::unique_ptr<Core::Texture2D> gbuffer_ptrs;
 
 	glm::ivec2 size;
 	int depth_buffer_levels;
@@ -59,7 +56,7 @@ public:
 	}
 
 	void resize(glm::ivec2 size);
-	void clear(bool clear_ptrs = false) const;
+	void clear();
 
 	void bind_gbuffer() const;
 

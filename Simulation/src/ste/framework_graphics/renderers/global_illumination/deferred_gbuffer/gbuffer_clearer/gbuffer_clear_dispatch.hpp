@@ -26,11 +26,11 @@ class gbuffer_clear_dispatch : public gpu_dispatchable {
 	friend class Resource::resource_instance<gbuffer_clear_dispatch>;
 
 private:
-	const deferred_gbuffer *gbuffer;
+	mutable deferred_gbuffer *gbuffer;
 
 public:
 	gbuffer_clear_dispatch(const StEngineControl &ctx,
-						   const deferred_gbuffer *gbuffer) : gbuffer(gbuffer) {}
+						   deferred_gbuffer *gbuffer) : gbuffer(gbuffer) {}
 
 	void set_context_state() const override final {}
 	void dispatch() const override final;
