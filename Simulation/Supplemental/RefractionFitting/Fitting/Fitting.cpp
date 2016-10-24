@@ -92,7 +92,7 @@ struct refraction_ratio_fit_data {
 };
 
 struct refraction_ratio_fit {
-	static constexpr int N = 512;
+	static constexpr int N = 256;
 
 	unsigned char ndf_type[8];
 	std::uint16_t version;
@@ -143,7 +143,7 @@ void fit(fitting_future &future, Engine* &matlabEngine, refraction_ratio_fit *lu
 	for (int itry = 0; itry < 3; ++itry) {
 		double rmse;
 		if (matlab_eval(cmd, x, y, 4, matlabEngine, lut, &rmse)) {
-			std::cout << "exp2(" << x << "," << y << "): <" << lut->data[x][y].a1 << ", " << lut->data[x][y].a2 << ", " << lut->data[x][y].b1 << ", " << lut->data[x][y].b2 << ">" << std::endl;
+			std::cout << "<" << x << "," << y << ">: RMSE: " << rmse << "   - Fit: " << lut->data[x][y].a1 << "*exp(" << lut->data[x][y].a2 << "*x) + " << lut->data[x][y].b1 << "*exp(" << lut->data[x][y].b2 << "*x)" << std::endl;
 			if (rmse > .075) {
 				std::cout << "Bad fit!" << std::endl;
 			}

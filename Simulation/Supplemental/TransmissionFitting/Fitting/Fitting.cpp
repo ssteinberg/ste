@@ -145,7 +145,7 @@ void fit(fitting_future &future, Engine* &matlabEngine, transmission_fit *lut) {
 	for (int itry = 0; itry < 3; ++itry) {
 		double rmse;
 		if (matlab_eval(cmd, x, y, 5, matlabEngine, lut, &rmse)) {
-			std::cout << "Fit RMSE: " << rmse << "   - Fit: " << lut->data[x][y].m << "*((erf(" << lut->data[x][y].a << "*x - " << lut->data[x][y].b << ") + 1) + " << lut->data[x][y].c << "*x) + " << lut->data[x][y].d << std::endl;
+			std::cout << "<" << x << "," << y << ">: RMSE: " << rmse << "   - Fit: " << lut->data[x][y].m << "*((erf(" << lut->data[x][y].a << "*x - " << lut->data[x][y].b << ") + 1) + " << lut->data[x][y].c << "*x) + " << lut->data[x][y].d << std::endl;
 			if (rmse > .075) {
 				std::cout << "Bad fit!" << std::endl;
 			}
