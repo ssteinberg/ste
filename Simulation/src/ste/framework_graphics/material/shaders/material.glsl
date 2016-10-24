@@ -20,7 +20,7 @@ struct material_descriptor {
 };
 
 struct material_layer_descriptor {
-	uint32_t packed_color;
+	uint32_t packed_albedo;
 
 	uint32_t ansi_metal_pack;
 	uint32_t roughness_thickness_pack;

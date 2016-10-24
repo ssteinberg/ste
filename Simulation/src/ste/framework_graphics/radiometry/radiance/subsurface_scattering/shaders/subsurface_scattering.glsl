@@ -34,7 +34,7 @@ vec3 subsurface_scattering(material_layer_unpacked_descriptor descriptor,
 						   vec3 view_ray) {
 	const float minimal_attenuation_for_effective_thickness = epsilon;
 
-	vec3 base_color = descriptor.color.rgb;
+	vec3 albedo = descriptor.albedo.rgb;
 	vec3 attenuation_coefficient = descriptor.attenuation_coefficient;
 	float g = descriptor.phase_g;
 
@@ -65,9 +65,9 @@ vec3 subsurface_scattering(material_layer_unpacked_descriptor descriptor,
 		vec3 attenuation = exp(-path_length * attenuation_coefficient);
 		float phase = henyey_greenstein_phase_function(incident, view_ray, g);
 
-		vec3 scattering = phase * attenuation * irradiance;
+		vec3 scattering = phase * albedo * attenuation;
 
-		samples_accum += base_color * scattering;
+		samples_accum += scattering * irradiance;
 	}
 
 	return samples_accum / float(steps);
