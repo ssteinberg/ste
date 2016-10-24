@@ -88,27 +88,13 @@ public:
 
 }
 
-double transmission_fresnel(double theta_v, double theta, double phi, double r) {
-	glm::dvec3 m = { glm::sin(theta) * glm::cos(phi), glm::sin(theta) * glm::sin(phi), glm::cos(theta) };
-	glm::dvec3 l = { glm::sin(theta_v), 0, glm::cos(theta_v) };
-
-	std::complex<double> cosx = glm::dot(l, m);
-	auto sinx2 = std::complex<double>(1) - cosx * cosx;
-	auto c = std::sqrt(std::complex<double>(1) - sinx2 / (r*r));
-
-	auto Rp = std::norm((cosx - r * c) / (cosx + r * c));
-	auto Rs = std::norm((r * cosx - c) / (r * cosx + c));
-
-	return 1. - .5 * (Rp + Rs);
-}
-
 struct transmission_fit_data {
-	double a1, b1, c1;
-	double a2, b2, c2;
+	// m*((erf(a*x - b) + 1) + c*x) + d
+	double a, b, c, d, m;
 };
 
 struct transmission_fit {
-	static constexpr int N = 512;
+	static constexpr int N = 256;
 
 	unsigned char ndf_type[8];
 	std::uint16_t version;
@@ -120,10 +106,14 @@ struct transmission_fit {
 
 using fitting_future = std::future<std::tuple<std::string, int, int>>;
 
-bool matlab_eval(const std::string &cmd, int x, int y, int elements, Engine *matlabEngine, transmission_fit *lut) {
+bool matlab_eval(const std::string &cmd, int x, int y, int elements, Engine *matlabEngine, transmission_fit *lut, double *rmse) {
 	try {
 		if (engEvalString(matlabEngine, cmd.c_str()) != 0)
 			return false;
+
+		auto *rmsexp = engGetVariable(matlabEngine, "rmse");
+		*rmse = *reinterpret_cast<const double*>(mxGetData(rmsexp));
+		mxDestroyArray(rmsexp);
 
 		auto *mxp = engGetVariable(matlabEngine, "p");
 		if (mxGetNumberOfElements(mxp) != elements) {
@@ -153,9 +143,12 @@ void fit(fitting_future &future, Engine* &matlabEngine, transmission_fit *lut) {
 	int y = std::get<2>(fdata);
 
 	for (int itry = 0; itry < 3; ++itry) {
-		if (matlab_eval(cmd, x, y, 6, matlabEngine, lut)) {
-			std::cout << "gauss2(" << x << "," << y << "): <" << lut->data[x][y].a1 << ", " << lut->data[x][y].b1 << ", " << lut->data[x][y].c1 << "; " <<
-				lut->data[x][y].a2 << ", " << lut->data[x][y].b2 << ", " << lut->data[x][y].c2 << ">" << std::endl;
+		double rmse;
+		if (matlab_eval(cmd, x, y, 5, matlabEngine, lut, &rmse)) {
+			std::cout << "Fit RMSE: " << rmse << "   - Fit: " << lut->data[x][y].m << "*((erf(" << lut->data[x][y].a << "*x - " << lut->data[x][y].b << ") + 1) + " << lut->data[x][y].c << "*x) + " << lut->data[x][y].d << std::endl;
+			if (rmse > .075) {
+				std::cout << "Bad fit!" << std::endl;
+			}
 			return;
 		}
 
@@ -173,6 +166,34 @@ void fit(fitting_future &future, Engine* &matlabEngine, transmission_fit *lut) {
 	throw new std::runtime_error("Couldn't restart Matlab");
 }
 
+bool V(const glm::dvec3 &m, const glm::dvec3 &l) {
+	double cos_gamma = glm::dot(m, l);
+	return cos_gamma > 0;
+}
+
+double transmission_fresnel(const glm::dvec3 &m, const glm::dvec3 &l, double r) {
+	double cosx = glm::dot(l, m);
+
+	double sin_critical = glm::min<double>(1.0, r);
+	double cos_critical = 1. - sin_critical * sin_critical;
+	if (cosx * cosx <= cos_critical * cos_critical)
+		return .0;
+
+	auto sinx2 = std::complex<double>(1) - cosx * cosx;
+	auto c = std::sqrt(std::complex<double>(1) - sinx2 / (r*r));
+
+	auto Rp = std::norm((cosx - r * c) / (cosx + r * c));
+	auto Rs = std::norm((c - r * cosx) / (r * cosx + c));
+
+	return 1. - glm::clamp(.5 * (Rp + Rs), .0, 1.);
+}
+
+double D(double cos_theta, double roughness) {
+	double a = roughness * roughness;
+	double t = (a*a - 1.) * cos_theta*cos_theta + 1.;
+	return a*a * glm::one_over_pi<double>() / (t*t);
+}
+
 int main() {
 	constexpr double Rmin = .2;
 	constexpr double Rmax = 3.2;
@@ -185,11 +206,12 @@ int main() {
 	fitting_future futures[2];
 
 	int it = 0;
-	constexpr double cos_theta_step = 1.0 / 80.0;
+	constexpr double cos_theta_step = 1.0 / 100.;
 	for (int x = 0; x<transmission_fit::N; ++x) {
 		for (int y = 0; y<transmission_fit::N; ++y) {
 			double ior_ratio = static_cast<double>(x) / static_cast<double>(transmission_fit::N - 1) * (Rmax - Rmin) + Rmin;
 			double roughness = static_cast<double>(y) / static_cast<double>(transmission_fit::N - 1);
+			roughness = glm::max<double>(roughness, 1e-4);
 
 			double omega = glm::asin(glm::min<double>(1.0, ior_ratio));
 
@@ -197,7 +219,8 @@ int main() {
 
 			futures[it % 2] = std::async([=]() {
 				std::string strx, stry;
-				for (double cos_theta = .0; cos_theta <= 1.0;) {
+				for (double cos_theta = .0; cos_theta <= 1.0; 
+					 cos_theta = (cos_theta < 1 && cos_theta + cos_theta_step >= 1.) ? 1. : cos_theta + cos_theta_step) {
 					if (strx.length() > 0) {
 						strx += " ";
 						stry += " ";
@@ -205,49 +228,60 @@ int main() {
 
 					double theta = glm::acos(cos_theta);
 
-					auto f = [&](double x, double c, bool with_fresnel) {
-						// Dirac delta when roughness == 0
-						if (roughness == .0) {
-							auto f0 = (1 - ior_ratio) / (1 + ior_ratio);
-							return glm::abs(x-theta) < 1e-6 ? f0*f0 : .0;
-						}
+					auto f = [&](double x, bool with_fresnel) {
+						auto g = [&](double theta_v, double theta, double phi) {
+							glm::dvec3 m = { glm::sin(theta) * glm::cos(phi), glm::sin(theta) * glm::sin(phi), glm::cos(theta) };
+							glm::dvec3 l = { glm::sin(theta_v), 0, glm::cos(theta_v) };
 
-						double a = roughness * roughness;
-						double t = c * sin(glm::pi<double>() / 2 * (x - (theta - c)) / c);
-						auto intg = with_fresnel ?
-							StE::romberg_integration<9>::integrate(std::bind(transmission_fresnel, theta, x, std::placeholders::_1, ior_ratio), -t, +t) :
-							1.0;
+							if (!V(m, l))
+								return .0;
 
-						double cx = glm::cos(x);
-						double denom = cx * cx * (a*a - 1.0) + 1.0;
-						return a*a / glm::pi<double>() * .5 * glm::sin(2 * glm::abs(x)) / (denom * denom) * intg;
+							return with_fresnel ? transmission_fresnel(m, l, ior_ratio) : 1.0;
+						};
+
+						auto intg = StE::romberg_integration<10>::integrate(std::bind(g, theta, x, std::placeholders::_1), 0, glm::two_pi<double>());
+						auto c = .5 * glm::sin(2 * x) * D(glm::cos(x), roughness);
+
+						return c * intg;
 					};
 
-					double res = .0;
-					if (omega > .0) {
-						double s = glm::max(theta - omega, -glm::half_pi<double>());
-						double t = glm::min(theta + omega, glm::half_pi<double>());
-						double norm_s = glm::max(theta - glm::half_pi<double>(), -glm::half_pi<double>());
-						double norm_t = glm::min(theta + glm::half_pi<double>(), glm::half_pi<double>());
+					double s = 0.;
+					double t = glm::half_pi<double>();
 
-						double numerical_integration = StE::romberg_integration<10>::integrate(std::bind(f, std::placeholders::_1, omega, true), s, t);
-						double normalizer = StE::romberg_integration<10>::integrate(std::bind(f, std::placeholders::_1, glm::half_pi<double>(), false), 
-							norm_s, norm_t);
+					double numerical_integration = StE::romberg_integration<10>::integrate(std::bind(f, std::placeholders::_1, true), s, t);
+					double normalizer = StE::romberg_integration<10>::integrate(std::bind(f, std::placeholders::_1, false), s, t);
 
-						res = normalizer > 0 ? numerical_integration / normalizer : .0;
-						if (std::isnan(res)) {
-							std::cout << "!! nan for " << omega<<  "," << roughness << " !!" << std::endl;
-							res = 1.0;
-						}
+					double res = normalizer > 0 ? numerical_integration / normalizer : .0;
+					if (std::isnan(res)) {
+						std::cout << "!! nan for " << omega <<  "," << roughness << " !!" << std::endl;
+						res = 1.0;
 					}
 
 					strx += std::to_string(cos_theta);
 					stry += std::to_string(res);
-
-					cos_theta += cos_theta_step;
 				}
 
-				std::string cmd = "x=[" + strx + "];\ny=[" + stry + "];\nw = ones(length(x),1); w(1) = 10; w(length(x))=100;ft = fitoptions('gauss2'); ft.Weights = w; sf = fit(x.',y.', 'gauss2', ft);\np = coeffvalues(sf);";//plot(sf,x,y,'o');";
+				std::string cmd = "x=[" + strx + "];\ny=[" + stry + R"(];
+						w = ones(length(x),1); w(1) = 10; w(length(x))=100;
+
+						[xData, yData, weights] = prepareCurveData( x, y, w );
+
+						ft = fittype( 'm*((erf(a*x - b) + 1) + c*x) + d', 'independent', 'x', 'dependent', 'y' );
+						opts = fitoptions( 'Method', 'NonlinearLeastSquares' );
+						opts.Display = 'Off';
+						opts.Lower = [-Inf -Inf 0 -Inf 0];
+						opts.MaxFunEvals = 6000;
+						opts.MaxIter = 4000;
+						opts.StartPoint = [0 0 0 0 .5];
+						opts.TolFun = 1e-07;
+						opts.Upper = [Inf Inf 1 Inf 1];
+						opts.Weights = weights;
+
+						[sf, sg] = fit(xData, yData, ft, opts);
+
+						p = coeffvalues(sf);
+						rmse = sg.rmse;
+					)";
 
 				return std::make_tuple(cmd, x, y);
 			});
@@ -267,7 +301,7 @@ int main() {
 	memset(lut->ndf_type, 0, sizeof(lut->ndf_type));
 	lut->ndf_type[0] = 'G'; lut->ndf_type[1] = 'G'; lut->ndf_type[2] = 'X';
 	lut->size = transmission_fit::N;
-	lut->version = 3;
+	lut->version = 4;
 
 	boost::crc_32_type crc_computer;
 	crc_computer.process_bytes(reinterpret_cast<const std::uint8_t*>(&lut->data), sizeof(lut->data));
