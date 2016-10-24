@@ -87,32 +87,12 @@ public:
 
 }
 
-glm::dvec3 refract(const glm::dvec3 &m, const glm::dvec3 &l, double r) {
-	double t = 1 / r;
-	double c = glm::dot(l, m);
-	return -t*l + (t*c - sqrt(1 - t*t*(1 - c*c)))*m;
-}
-
-glm::dvec3 refract_clamp(double theta_v, double theta, double phi, double r) {
-	glm::dvec3 m = { glm::sin(theta) * glm::cos(phi), glm::sin(theta) * glm::sin(phi), glm::cos(theta) };
-	glm::dvec3 l = { glm::sin(theta_v), 0, glm::cos(theta_v) };
-
-	glm::dvec3 o = refract(m,l,r);
-
-	glm::dvec3 v{ 0, 0, 0 };
-	auto len = glm::length(o);
-	if (len > 0 && o.z < 0)
-		v = o / len;
-
-	return v;
-}
-
 struct refraction_ratio_fit_data {
 	double a1, a2, b1, b2;
 };
 
 struct refraction_ratio_fit {
-	static constexpr int N = 512;
+	static constexpr int N = 256;
 
 	unsigned char ndf_type[8];
 	std::uint16_t version;
@@ -124,10 +104,14 @@ struct refraction_ratio_fit {
 
 using fitting_future = std::future<std::tuple<std::string, int, int>>;
 
-bool matlab_eval(const std::string &cmd, int x, int y, int elements, Engine *matlabEngine, refraction_ratio_fit *lut) {
+bool matlab_eval(const std::string &cmd, int x, int y, int elements, Engine *matlabEngine, refraction_ratio_fit *lut, double *rmse) {
 	try {
 		if (engEvalString(matlabEngine, cmd.c_str()) != 0)
 			return false;
+
+		auto *rmsexp = engGetVariable(matlabEngine, "rmse");
+		*rmse = *reinterpret_cast<const double*>(mxGetData(rmsexp));
+		mxDestroyArray(rmsexp);
 
 		auto *mxp = engGetVariable(matlabEngine, "p");
 		if (mxGetNumberOfElements(mxp) != elements) {
@@ -157,8 +141,12 @@ void fit(fitting_future &future, Engine* &matlabEngine, refraction_ratio_fit *lu
 	int y = std::get<2>(fdata);
 
 	for (int itry = 0; itry < 3; ++itry) {
-		if (matlab_eval(cmd, x, y, 4, matlabEngine, lut)) {
-			std::cout << "exp2(" << x << "," << y << "): <" << lut->data[x][y].a1 << ", " << lut->data[x][y].a2 << ", " << lut->data[x][y].b1 << ", " << lut->data[x][y].b2 << ">" << std::endl;
+		double rmse;
+		if (matlab_eval(cmd, x, y, 4, matlabEngine, lut, &rmse)) {
+			std::cout << "<" << x << "," << y << ">: RMSE: " << rmse << "   - Fit: " << lut->data[x][y].a1 << "*exp(" << lut->data[x][y].a2 << "*x) + " << lut->data[x][y].b1 << "*exp(" << lut->data[x][y].b2 << "*x)" << std::endl;
+			if (rmse > .075) {
+				std::cout << "Bad fit!" << std::endl;
+			}
 			return;
 		}
 
@@ -174,6 +162,40 @@ void fit(fitting_future &future, Engine* &matlabEngine, refraction_ratio_fit *lu
 	}
 
 	throw new std::runtime_error("Couldn't restart Matlab");
+}
+
+bool V(const glm::dvec3 &m, const glm::dvec3 &l) {
+	double cos_gamma = glm::dot(m, l);
+	return cos_gamma > 0;
+}
+
+double D(double cos_theta, double roughness) {
+	double a = roughness * roughness;
+	double t = (a*a - 1.) * cos_theta*cos_theta + 1.;
+	return a*a * glm::one_over_pi<double>() / (t*t);
+}
+
+glm::dvec3 refract(const glm::dvec3 &m, const glm::dvec3 &l, double r) {
+	double cosx = glm::dot(l, m);
+	double sin_critical = glm::min<double>(1.0, r);
+	double cos_critical = 1. - sin_critical * sin_critical;
+	if (cosx * cosx <= cos_critical * cos_critical)
+		return glm::dvec3{ .0 };
+
+	double t = 1 / r;
+	double c = glm::dot(l, m);
+	return -t*l + (t*c - sqrt(1 - t*t*(1 - c*c)))*m;
+}
+
+glm::dvec3 refract_clamp(const glm::dvec3 &m, const glm::dvec3 &l, double r) {
+	glm::dvec3 o = refract(m, l, r);
+
+	glm::dvec3 v{ 0, 0, 0 };
+	auto len = glm::length(o);
+	if (len > 0 && o.z < 0)
+		v = o / len;
+
+	return v;
 }
 
 int main() {
@@ -224,11 +246,12 @@ int main() {
 	fitting_future futures[2];
 
 	int it = 0;
-	constexpr double cos_theta_step = 1.0 / 90.0;
+	constexpr double cos_theta_step = 1.0 / 100.0;
 	for (int x = 0; x<refraction_ratio_fit::N; ++x) {
 		for (int y = 0; y<refraction_ratio_fit::N; ++y) {
 			double ior_ratio = static_cast<double>(x) / static_cast<double>(refraction_ratio_fit::N - 1) * (Rmax - Rmin) + Rmin;
 			double roughness = static_cast<double>(y) / static_cast<double>(refraction_ratio_fit::N - 1);
+			roughness = glm::max<double>(roughness, 1e-4);
 
 			double omega = glm::asin(glm::min<double>(1.0, ior_ratio));
 
@@ -236,7 +259,8 @@ int main() {
 
 			futures[it % 2] = std::async([=]() {
 				std::string strx, stry;
-				for (double cos_theta = .0; cos_theta <= 1.0;) {
+				for (double cos_theta = .0; cos_theta <= 1.0;
+					 cos_theta = (cos_theta < 1 && cos_theta + cos_theta_step >= 1.) ? 1. : cos_theta + cos_theta_step) {
 					if (strx.length() > 0) {
 						strx += " ";
 						stry += " ";
@@ -244,42 +268,56 @@ int main() {
 
 					double theta = glm::acos(cos_theta);
 
-					auto f = [&](double x, double c) -> glm::dvec3 {
-						if (roughness == .0)
-							return glm::dvec3(.0);
+					auto f = [&](double x) {
+						auto g = [&](double theta_v, double theta, double phi) {
+							glm::dvec3 m = { glm::sin(theta) * glm::cos(phi), glm::sin(theta) * glm::sin(phi), glm::cos(theta) };
+							glm::dvec3 l = { glm::sin(theta_v), 0, glm::cos(theta_v) };
 
-						double a = roughness * roughness;
-						double t = c * sin(glm::pi<double>() / 2 * (x - (theta - c)) / c);
-						auto intg = StE::romberg_integration<9>::integrate(std::bind(refract_clamp, theta, x, std::placeholders::_1, ior_ratio), -t, +t);
+							if (!V(m, l))
+								return glm::dvec3{ .0 };
 
-						double denom = glm::cos(x) * glm::cos(x) * (a*a - 1.0) + 1.0;
-						return a*a / glm::pi<double>() * .5 * glm::sin(2 * glm::abs(x)) / (denom * denom) * intg;
+							return refract_clamp(m, l, ior_ratio);
+						};
+
+						auto intg = StE::romberg_integration<10>::integrate(std::bind(g, theta, x, std::placeholders::_1), 0, glm::two_pi<double>());
+						auto c = .5 * glm::sin(2 * x) * D(glm::cos(x), roughness);
+
+						return c * intg;
 					};
 
-					double res = .0;
-					if (omega > .0) {
-						double s = glm::max(theta - omega, -glm::half_pi<double>());
-						double t = glm::min(theta + omega,  glm::half_pi<double>());
+					double s = 0.;
+					double t = glm::half_pi<double>();
 
-						glm::dvec3 numerical_integration = StE::romberg_integration<10>::integrate(std::bind(f, std::placeholders::_1, omega), s, t);
+					glm::dvec3 numerical_integration = StE::romberg_integration<10>::integrate(std::bind(f, std::placeholders::_1), s, t);
 
-						auto intgv_len = glm::length(numerical_integration);
-						auto intgv = intgv_len > 0 ? numerical_integration / intgv_len : glm::dvec3(0);
+					auto intgv_len = glm::length(numerical_integration);
+					auto intgv = intgv_len > 0 ? numerical_integration / intgv_len : glm::dvec3(0);
 
-						res = intgv.x;
-						if (std::isnan(res)) {
-							std::cout << "!! nan for " << omega<<  "," << roughness << " !!" << std::endl;
-							res = .0;
-						}
+					double res = intgv.x;
+					if (std::isnan(res)) {
+						std::cout << "!! nan for " << omega<<  "," << roughness << " !!" << std::endl;
+						res = .0;
 					}
 
 					strx += std::to_string(cos_theta);
 					stry += std::to_string(res);
-
-					cos_theta += cos_theta_step;
 				}
 
-				std::string cmd = "x=[" + strx + "];\ny=[" + stry + "];\nw = ones(length(x),1); w(1) = 10; w(length(x))=10;ft = fitoptions('exp2'); ft.Weights = w; sf = fit(x.',y.', 'exp2', ft);\np = coeffvalues(sf)";
+				std::string cmd = "x=[" + strx + "];\ny=[" + stry + R"(];
+						w = ones(length(x),1); w(1) = 10; w(length(x))=100;
+
+						[xData, yData, weights] = prepareCurveData( x, y, w );
+
+						opts = fitoptions('exp2');
+						opts.Lower = [-1e+10 -1e+10 -1e+10 -1e+10];
+						opts.Upper = [1e+10 1e+10 1e+10 1e+10];
+						opts.Weights = weights;
+
+						[sf, sg] = fit(xData, yData, 'exp2', opts);
+
+						p = coeffvalues(sf);
+						rmse = sg.rmse;
+					)";
 
 				return std::make_tuple(cmd, x, y);
 			});
