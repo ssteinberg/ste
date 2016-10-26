@@ -153,13 +153,15 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 																   roughness, 
 																   refractive_ratio);
 		float outer_transmission_ratio = ggx_transmission_ratio_v4(microfacet_transmission_fit_lut, 
-																   refracted_l, n, 
+																   /*refracted_l*/l, n, 
 																   roughness, 
 																   1.f / refractive_ratio);
 	
 		// Compute total and outer path lengths inside current layer
-		float dotNV = max(epsilon, dot(n,refracted_v));
-		float dotNL = max(epsilon, dot(n,refracted_l));
+		//float dotNV = max(epsilon, dot(n,refracted_v));
+		//float dotNL = max(epsilon, dot(n,refracted_l));
+		float dotNV = max(epsilon, dot(n,v));
+		float dotNL = max(epsilon, dot(n,l));
 		float path_length = thickness * (1.f / dotNV + 1.f / dotNL);
 		float outer_path_length = thickness / dotNL;
 		
