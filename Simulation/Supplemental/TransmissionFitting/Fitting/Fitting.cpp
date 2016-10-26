@@ -94,14 +94,17 @@ struct transmission_fit_data {
 };
 
 struct transmission_fit {
-	static constexpr int N = 256;
+	static constexpr int N = 1024;
+	static constexpr int M = 256;
 
 	unsigned char ndf_type[8];
 	std::uint16_t version;
-	std::uint16_t size;
+	std::uint8_t  _unused;
+	std::uint32_t width;
+	std::uint32_t height;
 	std::uint32_t hash;
 
-	std::array<std::array<transmission_fit_data, N>, N> data;
+	std::array<std::array<transmission_fit_data, M>, N> data;
 };
 
 using fitting_future = std::future<std::tuple<std::string, int, int>>;
@@ -208,9 +211,9 @@ int main() {
 	int it = 0;
 	constexpr double cos_theta_step = 1.0 / 100.;
 	for (int x = 0; x<transmission_fit::N; ++x) {
-		for (int y = 0; y<transmission_fit::N; ++y) {
+		for (int y = 0; y<transmission_fit::M; ++y) {
 			double ior_ratio = static_cast<double>(x) / static_cast<double>(transmission_fit::N - 1) * (Rmax - Rmin) + Rmin;
-			double roughness = static_cast<double>(y) / static_cast<double>(transmission_fit::N - 1);
+			double roughness = static_cast<double>(y) / static_cast<double>(transmission_fit::M - 1);
 			roughness = glm::max<double>(roughness, 1e-4);
 
 			double omega = glm::asin(glm::min<double>(1.0, ior_ratio));
@@ -298,10 +301,10 @@ int main() {
 
 	engClose(matlabEngine);
 
-	memset(lut->ndf_type, 0, sizeof(lut->ndf_type));
-	lut->ndf_type[0] = 'G'; lut->ndf_type[1] = 'G'; lut->ndf_type[2] = 'X';
-	lut->size = transmission_fit::N;
-	lut->version = 4;
+	memcpy(lut->ndf_type, "GGX TRNS", 8);
+	lut->width = transmission_fit::N;
+	lut->height = transmission_fit::M;
+	lut->version = 5;
 
 	boost::crc_32_type crc_computer;
 	crc_computer.process_bytes(reinterpret_cast<const std::uint8_t*>(&lut->data), sizeof(lut->data));
