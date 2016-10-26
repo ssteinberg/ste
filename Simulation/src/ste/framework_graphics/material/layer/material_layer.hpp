@@ -28,7 +28,7 @@ class material_layer : public Core::observable_resource<material_layer_descripto
 private:
 	Core::SamplerMipmapped material_sampler;
 
-	RGB color;
+	RGB albedo;
 	
 	float thickness{ .0f };
 
@@ -70,24 +70,24 @@ public:
 	material_layer();
 
 	/**
-	*	@brief	Set material color
+	*	@brief	Set material albedo
 	*
-	*	Color of the material, defaults to { 0,0,0 }.
+	*	Albedo of the material, defaults to { 0,0,0 }.
 	*
-	* 	@param rgb	Material color
+	* 	@param rgb	Material albedo
 	*/
-	void set_color(const RGB &rgb) {
-		color = rgb;
+	void set_albedo(const RGB &rgb) {
+		albedo = rgb;
 
 		glm::vec3 v = rgb;
-		descriptor.set_color(glm::vec4{ v.r, v.g, v.b, 1.f });
+		descriptor.set_albedo(glm::vec4{ v.r, v.g, v.b, 1.f });
 		Base::notify();
 	}
 
 	/**
 	*	@brief	Set material roughness
 	*
-	*	Roughness as defines by the Micorfacet theory. Controls both diffuse and specular response. Defaults to 0.5.
+	*	Roughness as defines by the microfacet theory. Controls both diffuse and specular response. Defaults to 0.5.
 	*
 	* 	@param r	Roughness - range: [0,1]
 	*/
@@ -116,7 +116,7 @@ public:
 	*
 	*	Controls material's metal appearance. Defaults to 0.0.
 	*
-	* 	@param m	Metallicity - range: [0,1] (Usually a binary value)
+	* 	@param m	Metallicity - range: [0,1]
 	*/
 	void set_metallic(float m) {
 		metallic = m;
@@ -141,8 +141,8 @@ public:
 	*	@brief	Set material attenuation coefficient
 	*
 	*	Sets the total attenuation coefficient as per the Beer–Lambert law.
-	*	Total attenuation equals to scattering + absorption, both are wavelength dependant.
-	*	Scattering is dependent according to the material layer color. The rest is absorped light.
+	*	Total attenuation equals to scattering + absorption, both are wavelength dependent.
+	*	Scattering is dependent according to the material layer albedo. The rest is absorbed light.
 	*
 	*	Defaults to { 0, 0, 0 }
 	*
@@ -157,7 +157,7 @@ public:
 	/**
 	*	@brief	Set material Henyey-Greenstein phase function g parameter
 	*
-	*	Controls the subsurface-scattering pahse function. The parameter adjusts the relative amount of
+	*	Controls the subsurface-scattering phase function. The parameter adjusts the relative amount of
 	*	back and forward scattering with a value of 0 corresponding to purely isotropic scattering, values 
 	*	close to -1 give highly peaked back scattering and values close to +1 give highly peaked forward 
 	*	scattering.
@@ -208,7 +208,7 @@ public:
 		Base::notify();
 	}
 
-	auto get_color() const { return color; }
+	auto get_albedo() const { return albedo; }
 	auto get_roughness() const { return roughness; }
 	auto get_anisotropy() const { return anisotropy; }
 	auto get_metallic() const { return metallic; }

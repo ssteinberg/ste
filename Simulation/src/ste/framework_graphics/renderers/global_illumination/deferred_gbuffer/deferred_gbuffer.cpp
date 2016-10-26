@@ -23,6 +23,11 @@ void deferred_gbuffer::resize(glm::ivec2 size) {
 	depth_target_modified_signal.emit();
 }
 
+void deferred_gbuffer::clear() {
+	std::uint32_t zero = 0;
+	gbuffer.clear(gli::FORMAT_R32_UINT_PACK32, &zero);
+}
+
 void deferred_gbuffer::bind_gbuffer() const {
 	using namespace Core;
 

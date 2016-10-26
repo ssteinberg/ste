@@ -12,7 +12,6 @@
 
 #include "buffer_usage.hpp"
 #include "ShaderStorageBuffer.hpp"
-#include "AtomicCounterBufferObject.hpp"
 
 #include "gl_current_context.hpp"
 
@@ -57,9 +56,11 @@ public:
 	}
 
 	void resize(glm::ivec2 size);
-	auto& get_size() const { return size; }
+	void clear();
 
 	void bind_gbuffer() const;
+
+	auto& get_size() const { return size; }
 	
 	auto* get_depth_target() const { return depth_target.get(); }
 	auto* get_backface_depth_target() const { return backface_depth_target.get(); }

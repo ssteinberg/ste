@@ -27,7 +27,7 @@ void Scene::bind_buffers() const {
 
 void Scene::set_context_state() const {
 	Core::GL::gl_current_context::get()->enable_depth_test();
-	Core::GL::gl_current_context::get()->depth_func(GL_GEQUAL);
+	Core::GL::gl_current_context::get()->depth_func(GL_EQUAL);
 	Core::GL::gl_current_context::get()->color_mask(false, false, false, false);
 	Core::GL::gl_current_context::get()->depth_mask(false);
 

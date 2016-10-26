@@ -65,7 +65,7 @@ void deferred_composer::load_microfacet_fit_luts() {
 
 	try {
 		microfacet_refraction_fit_lut = std::make_unique<Core::Texture2D>(deferred_composer_detail::load_lut<microfacet_refraction_fit>()(refraction_fit_name));
-		microfacet_transmission_fit_lut = std::make_unique<Core::Texture2DArray>(deferred_composer_detail::load_lut<microfacet_transmission_fit>()(transmission_fit_name));
+		microfacet_transmission_fit_lut = std::make_unique<Core::Texture2DArray>(deferred_composer_detail::load_lut<microfacet_transmission_fit_v4>()(transmission_fit_name));
 	} catch (const microfacet_fit_error &err) {
 		using namespace Text::Attributes;
 		ste_log_error() << Text::AttributedString("Can't open Microfacet LUT. Error: \"") + b(err.what()) + "\"." << std::endl;

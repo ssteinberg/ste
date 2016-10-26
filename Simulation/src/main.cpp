@@ -28,6 +28,10 @@
 #include <imgui/imgui.h>
 #include "debug_gui.hpp"
 
+#include <random>
+
+//#define STATIC_SCENE
+
 using namespace StE::Core;
 using namespace StE::Text;
 
@@ -97,18 +101,27 @@ auto create_light_object(StE::Graphics::Scene *scene, const glm::vec3 &light_pos
 }
 
 void add_scene_lights(StE::Graphics::Scene &scene, std::vector<std::unique_ptr<StE::Graphics::light>> &lights, std::vector<std::unique_ptr<StE::Graphics::material>> &materials, std::vector<std::unique_ptr<StE::Graphics::material_layer>> &layers) {
-	for (auto &v : { glm::vec3{ -622, 645, -310},
-					 glm::vec3{  124, 645, -310},
-					 glm::vec3{  497, 645, -310},
-					 glm::vec3{ -242, 153, -310},
-					 glm::vec3{  120, 153, -310},
-					 glm::vec3{  124, 645,  552},
-					 glm::vec3{  497, 645,  552},
-					 glm::vec3{-1008, 153,  552},
+	std::random_device rd;
+	std::mt19937 gen(rd());
+
+	for (auto &v : { glm::vec3{ 491.2,226.1,-616.67 },
+					 glm::vec3{-622.67, 645,-309 },
+					 glm::vec3{  497, 645, -309},
+					 glm::vec3{ 483.376,143,-222.51 },
+					 glm::vec3{ 483.376,143,144.1 },
 					 glm::vec3{ -242, 153,  552},
 					 glm::vec3{  120, 153,  552},
 					 glm::vec3{  885, 153,  552} }) {
-		auto wall_lamp = scene.scene_properties().lights_storage().allocate_light<StE::Graphics::SphericalLight>(5000.f, StE::Graphics::Kelvin(1800), v, 2.f);
+		StE::Graphics::RGB color;
+		float lums;
+#ifdef STATIC_SCENE
+		color = StE::Graphics::Kelvin(1800);
+		lums = 6500.f;
+#else
+		color = StE::Graphics::Kelvin(std::uniform_real_distribution<>(1500,4000)(gen));
+		lums = std::uniform_real_distribution<>(5000, 9000)(gen);
+#endif
+		auto wall_lamp = scene.scene_properties().lights_storage().allocate_light<StE::Graphics::SphericalLight>(lums, color, v, 2.f);
 		create_light_object(&scene, v, wall_lamp.get(), materials, layers);
 
 		lights.push_back(std::move(wall_lamp));
@@ -244,7 +257,8 @@ int main()
 	std::vector<std::unique_ptr<StE::Graphics::material_layer>> mat_editor_layers;
 	std::vector<std::shared_ptr<StE::Graphics::Object>> mat_editor_objects;
 	loading_futures.insert(StE::Resource::ModelFactory::load_model_async(ctx,
-																		 R"(Data/models/dragon/china_dragon.obj)",
+																		 //R"(Data/models/dragon/china_dragon.obj)",
+																		 R"(Data/models/mitsuba/mitsuba-sphere.obj)",
 																		 &scene.get().object_group(),
 																		 &scene.get().scene_properties(),
 																		 2.5f,
@@ -270,8 +284,11 @@ int main()
 	renderer.get().attach_profiler(gpu_tasks_profiler.get());
 	std::unique_ptr<StE::Graphics::debug_gui> debug_gui_dispatchable = std::make_unique<StE::Graphics::debug_gui>(ctx, gpu_tasks_profiler.get(), font, &camera);
 
-	auto mat_editor_model_transform = glm::scale(glm::mat4(), glm::vec3{ 3.5f });
-	mat_editor_model_transform = glm::translate(mat_editor_model_transform, glm::vec3{ .0f, -15.f, .0f });
+	//auto mat_editor_model_transform = glm::scale(glm::mat4(), glm::vec3{ 3.5f });
+	//mat_editor_model_transform = glm::translate(mat_editor_model_transform, glm::vec3{ .0f, -15.f, .0f });
+	auto mat_editor_model_transform = glm::translate(glm::mat4(), glm::vec3{ .0f, .0f, -50.f });
+	mat_editor_model_transform = glm::scale(mat_editor_model_transform, glm::vec3{ 65.f });
+	mat_editor_model_transform = glm::rotate(mat_editor_model_transform, glm::half_pi<float>(), glm::vec3{ .0f, 1.0f, 0.f });
 	for (auto &o : mat_editor_objects)
 		o->set_model_transform(glm::mat4x3(mat_editor_model_transform));
 	
@@ -335,8 +352,8 @@ int main()
 		
 		for (int i = 0; i < layers_count; ++i) {
 			auto t = glm::u8vec3(base_color[i].R() * 255.5f, base_color[i].G() * 255.5f, base_color[i].B() * 255.5f);
-			if (layers[i]->get_color() != base_color[i])
-				layers[i]->set_color(base_color[i]);
+			if (layers[i]->get_albedo() != base_color[i])
+				layers[i]->set_albedo(base_color[i]);
 			if (layers[i]->get_roughness() != roughness[i])
 				layers[i]->set_roughness(roughness[i]);
 			if (layers[i]->get_anisotropy() != anisotropy[i])
@@ -370,7 +387,9 @@ int main()
 	auto footer_text = text_manager.get().create_renderer();
 	auto footer_text_task = StE::Graphics::make_gpu_task("footer_text", footer_text.get(), nullptr);
 
-//	renderer.get().add_gui_task(footer_text_task);
+#ifndef STATIC_SCENE
+	renderer.get().add_gui_task(footer_text_task);
+#endif
 	renderer.get().add_gui_task(StE::Graphics::make_gpu_task("debug_gui", debug_gui_dispatchable.get(), nullptr));
 
 	glm::ivec2 last_pointer_pos;
@@ -401,8 +420,12 @@ int main()
 			last_pointer_pos = pp;
 		}
 
+#ifdef STATIC_SCENE
+		glm::vec3 lp = light0_pos;
+#else
 		float angle = time * glm::pi<float>() / 2.5f;
-		glm::vec3 lp = light0_pos;// + glm::vec3(glm::sin(angle) * 3, 0, glm::cos(angle)) * 115.f;
+		glm::vec3 lp = light0_pos + glm::vec3(glm::sin(angle) * 3, 0, glm::cos(angle)) * 115.f;
+#endif
 		light0->set_position(lp);
 		light0_obj->set_model_transform(glm::mat4x3(glm::translate(glm::mat4(), lp)));
 
