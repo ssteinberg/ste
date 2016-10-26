@@ -1,4 +1,5 @@
 
+#include "common.glsl"
 #include "hdr_common.glsl"
 #include "quaternion.glsl"
 #include "dual_quaternion.glsl"
@@ -35,7 +36,7 @@ float light_attenuation_factor(light_descriptor ld, float dist) {
 
 float light_effective_range(light_descriptor ld) {
 	if (ld.type == LightTypeDirectional)
-		return +1.0f / .0f;		// Infinity
+		return inf;
 	else
 		return ld.effective_range;
 }

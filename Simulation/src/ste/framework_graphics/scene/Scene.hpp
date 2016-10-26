@@ -36,7 +36,7 @@ private:
 	static constexpr Core::BufferUsage::buffer_usage usage = static_cast<Core::BufferUsage::buffer_usage>(Core::BufferUsage::BufferUsageSparse);
 	static constexpr int pages = 8192;
 
- 	using sproj_id_to_llid_tt_buffer_type = Core::ShaderStorageBuffer<shadow_projection_instance_to_ll_idx_translation, usage>;
+	using sproj_id_to_llid_tt_buffer_type = Core::ShaderStorageBuffer<shadow_projection_instance_to_ll_idx_translation, usage>;
 
 private:
 	ObjectGroup objects;

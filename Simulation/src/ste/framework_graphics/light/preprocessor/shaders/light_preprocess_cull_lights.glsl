@@ -37,17 +37,35 @@ void main() {
 	light_descriptor ld = light_buffer[light_idx];
 
 	// Calculate cutoff
-	float minimal_light_luminance = ld.luminance * .0000075f;
-	float err = minimal_light_luminance;
-	float range = light_calculate_effective_range(ld, err);
+	float minimal_light_luminance = ld.luminance * .000005f;
+	float range;
 
-	// Transform light position/direction
-	vec3 transformed_light_pos = light_transform(view_transform_buffer.view_transform, ld);
+	bool add_light = false;
 
-	// Frustum cull based on light effective range
-	float r = range;
-	vec3 c = transformed_light_pos.xyz;
-	if (is_sphere_in_frustum(c, r)) {
+	if (ld.type == LightTypeDirectional) {
+		// For directional lights: Infinite range, no cutoff and always add
+		minimal_light_luminance = .0f;
+		range = inf;
+
+		add_light = true;
+	}
+	else {
+		// For spherical lights: Calculate acceptable cutoff and range based on cutoff. 
+		// Using those, check if cutoff sphere is in frustum.
+		minimal_light_luminance = ld.luminance * .000005f;
+		range = light_calculate_effective_range(ld, minimal_light_luminance);
+
+		// Transform light position/direction
+		vec3 transformed_light_pos = light_transform(view_transform_buffer.view_transform, ld);
+
+		// Frustum cull based on light effective range
+		float r = range;
+		vec3 c = transformed_light_pos.xyz;
+
+		add_light = is_sphere_in_frustum(c, r);
+	}
+
+	if (add_light) {
 		// Add light to active light linked list
 		uint32_t ll_idx = atomicCounterIncrement(ll_counter);
 		ll[ll_idx] = uint16_t(light_idx);

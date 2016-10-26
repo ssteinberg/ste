@@ -22,8 +22,8 @@ void scene_geo_cull_dispatch::set_context_state() const {
 	auto& draw_buffers = scene->object_group().get_draw_buffers();
 
 	0_atomic_idx = scene->get_culled_objects_counter();
- 	0_storage_idx = scene->get_idb().ssbo();
- 	1_storage_idx = scene->get_shadow_idb().ssbo();
+	0_storage_idx = scene->get_idb().ssbo();
+	1_storage_idx = scene->get_shadow_idb().ssbo();
 	8_storage_idx = scene->get_sproj_id_to_llid_tt();
 	draw_buffers.get_mesh_data_buffer().bind_range(Core::shader_storage_layout_binding(14), 0, draw_buffers.size());
 	draw_buffers.get_mesh_draw_params_buffer().bind_range(Core::shader_storage_layout_binding(15), 0, draw_buffers.size());

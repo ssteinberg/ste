@@ -46,6 +46,10 @@ void main() {
 	int face = int(gl_GlobalInvocationID.x) % 6;
 	uint16_t light_idx = ll[ll_id];
 	light_descriptor ld = light_buffer[light_idx];
+	
+	// Nothing to do for directional lights
+	if (ld.type == LightTypeDirectional)
+		return;
 
 	vec3 dir = quat_mul_vec(view_transform_buffer.view_transform.real, face_directions[face]);
 	vec3 origin = ld.transformed_position;
