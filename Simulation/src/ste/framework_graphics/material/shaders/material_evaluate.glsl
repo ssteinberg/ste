@@ -148,11 +148,11 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 										refractive_ratio);
 
 		// Evaluate total inner (downwards into material) and outer (upwards towards eye) transmission
-		float inner_transmission_ratio = ggx_transmission_ratio_v3(microfacet_transmission_fit_lut, 
+		float inner_transmission_ratio = ggx_transmission_ratio_v4(microfacet_transmission_fit_lut, 
 																   v, n, 
 																   roughness, 
 																   refractive_ratio);
-		float outer_transmission_ratio = ggx_transmission_ratio_v3(microfacet_transmission_fit_lut, 
+		float outer_transmission_ratio = ggx_transmission_ratio_v4(microfacet_transmission_fit_lut, 
 																   refracted_l, n, 
 																   roughness, 
 																   1.f / refractive_ratio);
