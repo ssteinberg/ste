@@ -51,7 +51,9 @@ public:
 		fit_data->alloc_with_size(lut_row_size);
 
 		auto lut_size = lut_row_size * lut_row_size * sizeof(DataType);
-		is.read(reinterpret_cast<char*>(fit_data->data.get()), lut_size / sizeof(char));
+		auto bytes_read = is.read(reinterpret_cast<char*>(fit_data->data.get()), lut_size / sizeof(char)).gcount();
+		if (bytes_read != lut_size)
+			throw microfacet_fit_error("Premature EOF");
 
 		boost::crc_32_type crc_computer;
 		crc_computer.process_bytes(reinterpret_cast<const std::uint8_t*>(fit_data->data.get()), lut_size);
