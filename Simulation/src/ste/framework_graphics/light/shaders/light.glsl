@@ -10,6 +10,7 @@ const int LightTypeDirectional = 1;
 const int max_active_lights_per_frame = 32;
 
 struct light_descriptor {
+	// position: Light position for spherical, direction for directional lights.
 	vec3 position;	float radius;
 	vec3 diffuse;	float luminance;
 
@@ -19,7 +20,8 @@ struct light_descriptor {
 	float minimal_luminance;
 
 	float _reserved;
-
+	
+	// transformed_position: Light position in eye space for spherical, direction in eye space for directional lights.
 	vec3 transformed_position;	float effective_range;
 };
 

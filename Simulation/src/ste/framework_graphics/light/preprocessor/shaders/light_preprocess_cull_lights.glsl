@@ -42,6 +42,9 @@ void main() {
 
 	bool add_light = false;
 
+	// Transform light position/direction
+	vec3 transformed_light_pos = light_transform(view_transform_buffer.view_transform, ld);
+
 	if (ld.type == LightTypeDirectional) {
 		// For directional lights: Infinite range, no cutoff and always add
 		minimal_light_luminance = .0f;
@@ -54,9 +57,6 @@ void main() {
 		// Using those, check if cutoff sphere is in frustum.
 		minimal_light_luminance = ld.luminance * .000005f;
 		range = light_calculate_effective_range(ld, minimal_light_luminance);
-
-		// Transform light position/direction
-		vec3 transformed_light_pos = light_transform(view_transform_buffer.view_transform, ld);
 
 		// Frustum cull based on light effective range
 		float r = range;

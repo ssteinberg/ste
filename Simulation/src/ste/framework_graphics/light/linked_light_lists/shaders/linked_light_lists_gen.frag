@@ -4,6 +4,8 @@
 #extension GL_ARB_bindless_texture : require
 #extension GL_NV_gpu_shader5 : require
 
+#include "common.glsl"
+
 #include "light.glsl"
 #include "linked_light_lists.glsl"
 #include "linked_light_lists_store.glsl"
@@ -54,11 +56,16 @@ void main() {
 		uint16_t ll_i = uint16_t(j);
 		uint16_t light_idx = ll[ll_i];
 		light_descriptor ld = light_buffer[light_idx];
-
+		
+		float depth_zmin;
+		float depth_zmax;
 		bool add_point = false;
 
 		if (ld.type == LightTypeDirectional) {
 			// For directional lights: Nothing to do, add point
+			depth_zmin = project_depth(-inf);
+			depth_zmax = project_depth(-near);
+
 			add_point = true;
 		}
 		else {
@@ -75,8 +82,8 @@ void main() {
 				float z_max = l.z * (-b - sqrt_delta) / a;
 				float z_min = l.z * (-b + sqrt_delta) / a;
 
-				float depth_zmin = clamp(project_depth(z_min), .0f, 1.f);
-				float depth_zmax = project_depth(z_max);
+				depth_zmin = clamp(project_depth(z_min), .0f, 1.f);
+				depth_zmax = project_depth(z_max);
 
 				if (z_min < -near) {
 					if (z_max >= -near) {

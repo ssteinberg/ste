@@ -79,23 +79,33 @@ vec3 deferred_shade_fragment(g_buffer_element frag, ivec2 coord,
 
 			// Compute light incident ray and range
 			vec3 incident = light_incidant_ray(ld, position);
-			float light_effective_range = ld.effective_range;
-			float dist2 = dot(incident, incident);
-			if (dist2 >= light_effective_range*light_effective_range)
-				continue;
+			float dist = 1.f;
+			if (ld.type == LightTypeSphere) {
+				float light_effective_range = ld.effective_range;
+				float dist2 = dot(incident, incident);
+				if (dist2 >= light_effective_range*light_effective_range)
+					continue;
+
+				dist = sqrt(dist2);
+			}
 
 			// Shadow map query
-			float l_radius = ld.radius;
-			vec3 shadow_v = w_pos - ld.position;
-			float shdw = shadow(shadow_depth_maps,
-								shadow_maps,
-								light_id,
-								shadow_v,
-								l_radius);
+			float shdw = 1.f;
+			if (ld.type == LightTypeSphere) {
+				float l_radius = ld.radius;
+				vec3 shadow_v = w_pos - ld.position;
+				float shdw = shadow(shadow_depth_maps,
+									shadow_maps,
+									light_id,
+									shadow_v,
+									l_radius);
+			}
+			else {
+				// TODO: Directional lights shadows
+			}
 
 			// Calculate occlusion, distance to light, normalized incident and reflection (eye) vectors
 			float occlusion = max(.0f, cavity * shdw);
-			float dist = sqrt(dist2);
 			vec3 v = normalize(-position);
 			vec3 l = incident / dist;
 			

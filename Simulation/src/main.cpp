@@ -29,6 +29,7 @@
 #include "debug_gui.hpp"
 
 #include <random>
+#include "DirectionalLight.hpp"
 
 //#define STATIC_SCENE
 
@@ -242,6 +243,8 @@ int main()
 	auto light1 = scene.get().scene_properties().lights_storage().allocate_light<StE::Graphics::SphericalLight>(20000.f, StE::Graphics::Kelvin(7000), light1_pos, 5.f);
 	auto light0_obj = create_light_object(&scene.get(), light0_pos, light0.get(), materials, material_layers);
 	auto light1_obj = create_light_object(&scene.get(), light1_pos, light1.get(), materials, material_layers);
+
+	auto sun_light = scene.get().scene_properties().lights_storage().allocate_light<StE::Graphics::DirectionalLight>(1e+8f, StE::Graphics::Kelvin(5780), glm::vec3{0, -1, 0});
 
 	add_scene_lights(scene.get(), lights, materials, material_layers);
 
