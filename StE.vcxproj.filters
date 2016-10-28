@@ -1134,5 +1134,6 @@
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\constants.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\radiometry\radiance\BxDFs\shaders\fresnel.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\erf.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\common_shaders\intersection.glsl" />
   </ItemGroup>
 </Project>
