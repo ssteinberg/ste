@@ -1,6 +1,6 @@
 
 /*
- *	Does an intersection test of a sphere with a frustum.
+ *	Does an intersection test of an open sphere with a frustum.
  *
  *	Frustum is defined by 6 planes whose equation is given, i.e. p.xyz is the plane normal and p.w the distance 
  *	from origin. Given point x and plane p: dot(p.xyz, x) == -p.w iff x lies on the plane.
@@ -33,7 +33,7 @@ bool collision_sphere_frustum(vec3 c,
 }
 
 /*
- *	Does an intersection test of a sphere with an infinite frustum.
+ *	Does an intersection test of an open sphere with an infinite frustum.
  *
  *	See collision_sphere_frustum
  *
@@ -57,4 +57,20 @@ bool collision_sphere_infinite_frustum(vec3 c,
 			dot(lp.xyz, c) + lp.w > -r &&
 			dot(tp.xyz, c) + tp.w > -r &&
 			dot(bp.xyz, c) + bp.w > -r;
+}
+
+/*
+ *	Does an intersection test of an open sphere with another open sphere.
+ *
+ *	@param c1		Sphere 1 center
+ *	@param r1		Sphere 1 radius
+ *	@param c2		Sphere 2 center
+ *	@param r2		Sphere 2 radius
+ */
+bool collision_sphere_sphere(vec3 c1, float r1,
+							 vec3 c2, float r2) {
+	vec3 v = c1 - c2;
+	float r = r1 + r2;
+
+	return dot(v,v) < r*r;
 }
