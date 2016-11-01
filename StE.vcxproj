@@ -781,7 +781,8 @@
     <None Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shaders\shadow.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shaders\shadow_cubemap.geom" />
     <None Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shaders\shadow_directional.geom" />
-    <None Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shaders\shadow_map.vert" />
+    <None Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shaders\shadowmap.vert" />
+    <None Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shaders\sssstep.frag" />
     <None Include="Simulation\src\ste\framework_graphics\volumetric_scattering\shaders\volumetric_scattering.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\volumetric_scattering\shaders\volumetric_scattering_gather.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\volumetric_scattering\shaders\volumetric_scattering_scatter.glsl" />

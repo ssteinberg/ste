@@ -8,6 +8,7 @@ layout(local_size_x = 128) in;
 #include "girenderer_transform_buffer.glsl"
 #include "indirect.glsl"
 #include "light.glsl"
+#include "intersection.glsl"
 #include "mesh_descriptor.glsl"
 #include "shadow_projection_instance_to_ll_idx_translation.glsl"
 
@@ -28,16 +29,25 @@ layout(shared, binding = 4) restrict readonly buffer ll_counter_data {
 layout(shared, binding = 5) restrict readonly buffer ll_data {
 	uint16_t ll[];
 };
+layout(shared, binding = 6) restrict readonly buffer directional_lights_cascades_data {
+	light_cascade_descriptor directional_lights_cascades[];
+};
 
 layout(binding = 0) uniform atomic_uint counter;
-layout(std430, binding = 0) restrict writeonly buffer idb_data {
+layout(std430, binding = 10) restrict writeonly buffer idb_data {
 	IndirectMultiDrawElementsCommand idb[];
 };
-layout(std430, binding = 1) restrict writeonly buffer sidb_data {
+layout(std430, binding = 0) restrict writeonly buffer sidb_data {
 	IndirectMultiDrawElementsCommand sidb[];
+};
+layout(std430, binding = 1) restrict writeonly buffer dsidb_data {
+	IndirectMultiDrawElementsCommand dsidb[];
 };
 layout(std430, binding = 8) restrict writeonly buffer shadow_projection_instance_to_ll_idx_translation_data {
 	shadow_projection_instance_to_ll_idx_translation sproj_id_to_llid_tt[];
+};
+layout(std430, binding = 9) restrict writeonly buffer directional_shadow_projection_instance_to_ll_idx_translation_data {
+	directional_shadow_projection_instance_to_ll_idx_translation dsproj_id_to_llid_tt[];
 };
 
 void main() {
@@ -49,21 +59,38 @@ void main() {
 
 	vec3 center = transform_view(transform_model(md, md.bounding_sphere.xyz));
 	float radius = md.bounding_sphere.w;
-
+	
 	uint shadow_instance_count = 0;
+	uint dir_shadow_instance_count = 0;
+
 	for (int i = 0; i < ll_counter; ++i) {
 		uint16_t light_idx = ll[i];
-
 		light_descriptor ld = light_buffer[light_idx];
+		
+		if (ld.type == LightTypeDirectional) {
+			uint32_t cascade_idx = light_get_cascade_descriptor_idx(ld);
+			light_cascade_descriptor cascade_descriptor = directional_lights_cascades[cascade_idx];
 
-		vec3 lc = ld.transformed_position;
-		float lr = ld.effective_range;
+			for (int j=0; j<directional_light_cascades; ++j) {
+				mat4 M = cascade_descriptor.cascade[j].cascade_mat;
+				vec2 recp_vp = cascade_descriptor.cascade[j].recp_viewport_size;
 
-		vec3 v = lc - center;
-		float d = lr + radius;
-		if (dot(v,v) < d*d) {
-			sproj_id_to_llid_tt[draw_id].ll_idx[shadow_instance_count] = uint16_t(i);
-			++shadow_instance_count;
+				vec4 center_in_cascade_space = M * vec4(center, 1);
+				if (any(lessThan(abs(center_in_cascade_space.xy), vec2(1.f) + radius * recp_vp))) {
+					dsproj_id_to_llid_tt[draw_id].ll_idx[dir_shadow_instance_count] = uint16_t(i);
+					++dir_shadow_instance_count;
+					break;
+				}
+			}
+		}
+		else {
+			vec3 lc = ld.transformed_position;
+			float lr = ld.effective_range;
+
+			if (collision_sphere_sphere(lc, lr, center, radius)) {
+				sproj_id_to_llid_tt[draw_id].ll_idx[shadow_instance_count] = uint16_t(i);
+				++shadow_instance_count;
+			}
 		}
 	}
 
@@ -80,7 +107,10 @@ void main() {
 
 		idb[idx] = c;
 
-		c.instance_count = shadow_instance_count;
+		c.instance_count = min(shadow_instance_count, max_active_lights_per_frame);
 		sidb[idx] = c;
+
+		c.instance_count = dir_shadow_instance_count;//min(dir_shadow_instance_count, max_active_directional_lights_per_frame);
+		dsidb[idx] = c;
 	}
 }

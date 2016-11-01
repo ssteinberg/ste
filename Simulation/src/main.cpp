@@ -29,7 +29,7 @@
 #include "debug_gui.hpp"
 
 #include <random>
-#include "DirectionalLight.hpp"
+#include "glm_print.hpp"
 
 //#define STATIC_SCENE
 
@@ -122,7 +122,7 @@ void add_scene_lights(StE::Graphics::Scene &scene, std::vector<std::unique_ptr<S
 		color = StE::Graphics::Kelvin(std::uniform_real_distribution<>(1500,4000)(gen));
 		lums = std::uniform_real_distribution<>(5000, 9000)(gen);
 #endif
-		auto wall_lamp = scene.scene_properties().lights_storage().allocate_light<StE::Graphics::SphericalLight>(lums, color, v, 2.f);
+		auto wall_lamp = scene.scene_properties().lights_storage().allocate_spherical(lums, color, v, 2.f);
 		create_light_object(&scene, v, wall_lamp.get(), materials, layers);
 
 		lights.push_back(std::move(wall_lamp));
@@ -239,12 +239,13 @@ int main()
 
 	const glm::vec3 light0_pos{ -700.6, 138, -70 };
 	const glm::vec3 light1_pos{ 200, 550, 170 };
-	auto light0 = scene.get().scene_properties().lights_storage().allocate_light<StE::Graphics::SphericalLight>(8000.f, StE::Graphics::Kelvin(2000), light0_pos, 3.f);
-	auto light1 = scene.get().scene_properties().lights_storage().allocate_light<StE::Graphics::SphericalLight>(20000.f, StE::Graphics::Kelvin(7000), light1_pos, 5.f);
+	auto light0 = scene.get().scene_properties().lights_storage().allocate_spherical(8000.f, StE::Graphics::Kelvin(2000), light0_pos, 3.f);
+	auto light1 = scene.get().scene_properties().lights_storage().allocate_spherical(20000.f, StE::Graphics::Kelvin(7000), light1_pos, 5.f);
 	auto light0_obj = create_light_object(&scene.get(), light0_pos, light0.get(), materials, material_layers);
 	auto light1_obj = create_light_object(&scene.get(), light1_pos, light1.get(), materials, material_layers);
 
-	auto sun_light = scene.get().scene_properties().lights_storage().allocate_light<StE::Graphics::DirectionalLight>(1e+8f, StE::Graphics::Kelvin(5780), glm::vec3{0, -1, 0});
+	const glm::vec3 sun_direction{ 0, -1, 0 };
+	auto sun_light = scene.get().scene_properties().lights_storage().allocate_directional(1e+7f, StE::Graphics::Kelvin(5780), 150e+6, 695e+3, sun_direction);
 
 	add_scene_lights(scene.get(), lights, materials, material_layers);
 
@@ -425,12 +426,17 @@ int main()
 
 #ifdef STATIC_SCENE
 		glm::vec3 lp = light0_pos;
+		glm::vec3 sun_dir = sun_direction;
 #else
 		float angle = time * glm::pi<float>() / 2.5f;
 		glm::vec3 lp = light0_pos + glm::vec3(glm::sin(angle) * 3, 0, glm::cos(angle)) * 115.f;
+
+		float angle2 = time * glm::pi<float>() / 10.f;
+		glm::vec3 sun_dir = glm::normalize(glm::vec3{ glm::sin(angle2), -5.f, glm::cos(angle2)});
 #endif
 		light0->set_position(lp);
 		light0_obj->set_model_transform(glm::mat4x3(glm::translate(glm::mat4(), lp)));
+		//sun_light->set_direction(sun_dir);
 
 		{
 			using namespace StE::Text::Attributes;

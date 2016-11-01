@@ -4,6 +4,7 @@
 #extension GL_ARB_shader_draw_parameters : enable
 
 #include "mesh_descriptor.glsl"
+#include "girenderer_transform_buffer.glsl"
 
 layout(location = 1) in vec3 vert;
 
@@ -20,7 +21,7 @@ void main() {
 	uint draw_id = gl_BaseInstanceARB;
 	mesh_descriptor md = mesh_descriptor_buffer[draw_id];
 
-	gl_Position = vec4(transform_model(md, vert), 1);
+	gl_Position = vec4(transform_view(transform_model(md, vert)), 1);
 	vout.instanceIdx = gl_InstanceID;
 	vout.drawIdx = draw_id;
 }

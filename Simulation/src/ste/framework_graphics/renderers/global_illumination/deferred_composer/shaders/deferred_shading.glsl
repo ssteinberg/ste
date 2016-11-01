@@ -26,6 +26,8 @@ float get_thickness(ivec2 coord,
 vec3 deferred_shade_fragment(g_buffer_element frag, ivec2 coord,
 							 samplerCubeArrayShadow shadow_depth_maps, 
 							 samplerCubeArray shadow_maps, 
+							 sampler2DArrayShadow directional_shadow_depth_maps,
+							 sampler2DArray directional_shadow_maps,
 							 sampler3D scattering_volume, 
 							 sampler2D microfacet_refraction_fit_lut, 
 							 sampler2DArray microfacet_transmission_fit_lut, 
@@ -42,7 +44,6 @@ vec3 deferred_shade_fragment(g_buffer_element frag, ivec2 coord,
 	// Calculate depth and extrapolate world position
 	float depth = gbuffer_parse_depth(frag);
 	vec3 position = unproject_screen_position(depth, gl_FragCoord.xy / vec2(backbuffer_size()));
-	vec3 w_pos = dquat_mul_vec(view_transform_buffer.inverse_view_transform, position);
 
 	// Normal map
 	vec3 n = gbuffer_parse_normal(frag);
@@ -78,36 +79,52 @@ vec3 deferred_shade_fragment(g_buffer_element frag, ivec2 coord,
 			uint light_id = uint(lll_parse_ll_idx(lll_p));
 
 			// Compute light incident ray and range
+			float l_radius = ld.radius;
+			float l_dist;
+			vec3 l;
 			vec3 incident = light_incidant_ray(ld, position);
-			float dist = 1.f;
 			if (ld.type == LightTypeSphere) {
 				float light_effective_range = ld.effective_range;
 				float dist2 = dot(incident, incident);
 				if (dist2 >= light_effective_range*light_effective_range)
 					continue;
 
-				dist = sqrt(dist2);
+				l_dist = sqrt(dist2);
+				l = incident / l_dist;
+			}
+			else {
+				l_dist = abs(ld.directional_distance);
+				l = incident;
 			}
 
 			// Shadow map query
 			float shdw = 1.f;
 			if (ld.type == LightTypeSphere) {
-				float l_radius = ld.radius;
-				vec3 shadow_v = w_pos - ld.position;
-				float shdw = shadow(shadow_depth_maps,
-									shadow_maps,
-									light_id,
-									shadow_v,
-									l_radius);
+				vec3 shadow_v = position - ld.transformed_position;
+				shdw = shadow(shadow_depth_maps,
+							  shadow_maps,
+							  light_id,
+							  shadow_v,
+							  l_radius);
 			}
 			else {
-				// TODO: Directional lights shadows
+				uint32_t cascade_idx = light_get_cascade_descriptor_idx(ld);
+				light_cascade_descriptor cascade_descriptor = directional_lights_cascades[cascade_idx];
+
+				int cascade = light_which_cascade_for_position(cascade_descriptor, position);
+				int shadowmap_idx = light_get_cascade_shadowmap_idx(ld, cascade);
+				mat4 M = cascade_descriptor.cascade[cascade].cascade_mat;
+
+				shdw = shadow_directional_fast(directional_shadow_depth_maps,
+											   shadowmap_idx,
+											   position,
+											   M,
+											   l_radius);
 			}
 
 			// Calculate occlusion, distance to light, normalized incident and reflection (eye) vectors
 			float occlusion = max(.0f, cavity * shdw);
 			vec3 v = normalize(-position);
-			vec3 l = incident / dist;
 			
 			// Evaluate material radiance for given light
 			rgb += material_texture.rgb * material_evaluate_radiance(head_layer,
@@ -119,7 +136,7 @@ vec3 deferred_shade_fragment(g_buffer_element frag, ivec2 coord,
 																	 microfacet_refraction_fit_lut,
 																	 microfacet_transmission_fit_lut,
 																	 shadow_maps, light_id,
-																	 dist,
+																	 l_dist,
 																	 occlusion);
 		}
 	}

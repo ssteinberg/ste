@@ -54,21 +54,21 @@ void main() {
 	vout.stroke_width = vin[0].stroke_width;
 
 	vout.st = vec2(0, 0);
-    gl_Position = pos + vec4(size * vec2(g.start_x, g.start_y) / fb_size, 0, 0);
-    EmitVertex();
+	gl_Position = pos + vec4(size * vec2(g.start_x, g.start_y) / fb_size, 0, 0);
+	EmitVertex();
 
 	vout.st = vec2(1, 0);
-    gl_Position = pos + vec4(size * vec2(g.start_x + g.width, g.start_y) / fb_size, 0, 0);
-    EmitVertex();
+	gl_Position = pos + vec4(size * vec2(g.start_x + g.width, g.start_y) / fb_size, 0, 0);
+	EmitVertex();
 
 	vout.st = vec2(0, 1);
-    gl_Position = pos + vec4(size * vec2(g.start_x, g.start_y + g.height) / fb_size, 0, 0);
-    EmitVertex();
+	gl_Position = pos + vec4(size * vec2(g.start_x, g.start_y + g.height) / fb_size, 0, 0);
+	EmitVertex();
 
 	vout.st = vec2(1, 1);
-    gl_Position = pos + vec4(size * vec2(g.start_x + g.width, g.start_y + g.height) / fb_size, 0, 0);
-    EmitVertex();
+	gl_Position = pos + vec4(size * vec2(g.start_x + g.width, g.start_y + g.height) / fb_size, 0, 0);
+	EmitVertex();
 
-    EndPrimitive();
+	EndPrimitive();
 }
 

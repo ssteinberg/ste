@@ -21,6 +21,9 @@ layout(binding = 4) uniform atomic_uint ll_counter;
 layout(shared, binding = 5) restrict writeonly buffer ll_data {
 	uint16_t ll[];
 };
+layout(shared, binding = 6) restrict writeonly buffer directional_lights_cascades_data {
+	light_cascade_descriptor directional_lights_cascades[];
+};
 
 uniform vec4 np, rp, lp, tp, bp;
 
@@ -38,20 +41,48 @@ void main() {
 
 	// Transform light position/direction
 	vec3 transformed_light_pos = light_transform(view_transform_buffer.view_transform, ld);
+	float range;
+
+	bool add_light = false;
 
 	if (ld.type == LightTypeDirectional) {
-		// For directional lights: Always add to lll
+		// For directional lights:
+		// Add light to active light linked list		
+		uint32_t cascade_idx = light_get_cascade_descriptor_idx(ld);
 		
-		// Add light to active light linked list
-		add_to_lll(light_idx);
+		// Compute orthonormal basis for light cascade space
+		vec3 l = transformed_light_pos;
+		vec3 x = cross(l, vec3(0,1,0));
+		if (dot(x,x) < 1e-10)
+			x = cross(l, vec3(1,0,0));
+		x = normalize(x);
+		vec3 y = normalize(cross(l,x));
 		
-		light_buffer[light_idx].transformed_position = transformed_light_pos;
+		// Write the basis to the cascade
+		directional_lights_cascades[cascade_idx].X.xyz = x;
+		directional_lights_cascades[cascade_idx].Y.xyz = y;
+
+		// Split the view frustum into cascades
+		float near = projection_near_clip();
+		float far = 1e+6;
+		float iflt = 1.f;
+		float t = 1.f / float(directional_light_cascades);
+		for (int i=0; i<directional_light_cascades; ++i,++iflt) {
+			directional_lights_cascades[cascade_idx].cascade[i].cascade_depth = 
+					mix(near + iflt * t * (far-near),
+						near * pow(far/near, iflt*t),
+						.9965f);
+		}
+		
+		add_light = true;
+		range = inf;
 	}
 	else {
-		// For spherical lights: Calculate acceptable cutoff and range based on cutoff. 
-		// Using those, check if cutoff sphere is in frustum.
-		float minimal_light_luminance = ld.luminance * .000005f;
-		float range = light_calculate_effective_range(ld, minimal_light_luminance);
+		// For spherical lights:
+		// Calculate acceptable cutoff and range based on cutoff. Using those, check if cutoff sphere is in frustum,
+		// in which case add to lll.
+		float minimal_light_luminance = light_calculate_minimal_luminance(ld);
+		range = light_calculate_effective_range(ld, minimal_light_luminance);
 
 		// Frustum cull based on light effective range
 		float r = range;
@@ -59,15 +90,18 @@ void main() {
 
 		if (collision_sphere_infinite_frustum(c, r,
 											  np, rp, lp, tp, bp)) {
-			// Add light to active light linked list
-			add_to_lll(light_idx);
+			add_light = true;
 
 			// Zero out shadow face mask. It shall be computed later.
 			light_buffer[light_idx].shadow_face_mask = 0;
-
-			light_buffer[light_idx].effective_range = range;
-			light_buffer[light_idx].transformed_position = transformed_light_pos;
-			light_buffer[light_idx].minimal_luminance = minimal_light_luminance;
 		}
+	}
+
+	if (add_light) {
+		// Add light to active light linked list
+		add_to_lll(light_idx);
+
+		light_buffer[light_idx].transformed_position = transformed_light_pos;
+		light_buffer[light_idx].effective_range = range;
 	}
 }

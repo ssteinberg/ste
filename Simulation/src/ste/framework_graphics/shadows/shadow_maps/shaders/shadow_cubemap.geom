@@ -29,12 +29,13 @@ layout(shared, binding = 5) restrict readonly buffer ll_data {
 };
 
 layout(std430, binding = 8) restrict readonly buffer shadow_projection_instance_to_ll_idx_translation_data {
-	shadow_projection_instance_to_ll_idx_translation sproj_id_to_llid_tt[shadow_proj_id_to_ll_id_table_size];
+	shadow_projection_instance_to_ll_idx_translation sproj_id_to_llid_tt[];
 };
+
+const vec2 t = vec2(1,-1);
 
 vec4 transform(int face, vec3 v, float shadow_near) {
 	vec3 u;
-	vec2 t = vec2(1,-1);
 
 	if (face == 0) u = -v.zyx;
 	else if (face == 1) u = v.zyx * t.xyx;
@@ -47,10 +48,27 @@ vec4 transform(int face, vec3 v, float shadow_near) {
 }
 
 void process(int face, uint16_t l, vec3 vertices[3], float shadow_near) {
+	// Transform to cube face and project
 	vec4 transformed_vertices[3];
-
 	for (int j = 0; j < 3; ++j)
 		transformed_vertices[j] = transform(face, vertices[j], shadow_near);
+	/*
+	// Cull triangles outside the NDC
+	vec3 W = vec3(transformed_vertices[0].w, transformed_vertices[1].w, transformed_vertices[2].w);
+	vec3 v;
+	bvec3 cull;
+
+	v = vec3(transformed_vertices[0].x, transformed_vertices[1].x, transformed_vertices[2].x);
+	cull.x = all(greaterThanEqual(v, W)) || all(lessThanEqual(v,-W));
+
+	v = vec3(transformed_vertices[0].y, transformed_vertices[1].y, transformed_vertices[2].y);
+	cull.y = all(greaterThanEqual(v, W)) || all(lessThanEqual(v,-W));
+
+	v = vec3(transformed_vertices[0].z, transformed_vertices[1].z, transformed_vertices[2].z);
+	cull.z = all(greaterThanEqual(v, W));
+	
+	if (any(cull))
+		return;*/
 
 	if ((transformed_vertices[0].x >  transformed_vertices[0].w &&
 		 transformed_vertices[1].x >  transformed_vertices[1].w &&
@@ -89,7 +107,7 @@ void main() {
 	if (face_mask == 0)
 		return;
 
-	vec3 light_pos = ld.position;
+	vec3 light_pos = ld.transformed_position;
 	float light_range = ld.effective_range;
 	float light_range2 = light_range * light_range;
 

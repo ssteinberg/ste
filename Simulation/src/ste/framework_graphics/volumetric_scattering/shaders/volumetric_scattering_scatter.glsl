@@ -27,12 +27,17 @@ layout(shared, binding = 11) restrict readonly buffer lll_data {
 	lll_element lll_buffer[];
 };
 
+layout(shared, binding = 7) restrict readonly buffer directional_lights_cascades_data {
+	light_cascade_descriptor directional_lights_cascades[];
+};
+
 layout(rgba16f, binding = 7) restrict writeonly uniform image3D volume;
 
-#include "light_load.glsl"
 #include "linked_light_lists_load.glsl"
 
 layout(bindless_sampler) uniform samplerCubeArrayShadow shadow_depth_maps;
+layout(bindless_sampler) uniform sampler2DArrayShadow directional_shadow_depth_maps;
+
 layout(bindless_sampler) uniform sampler2D depth_map;
 
 uniform float phase;
@@ -110,28 +115,59 @@ void main() {
 					
 					vec2 jitter = vec2(fract(r * 1.696f), fract(-r * 2.329f));
 					vec2 coords = slice_coords_to_fragcoords(vec2(slice_coords) + jitter);
-
 					vec3 position = unproject_screen_position_with_z(z, coords);
-					vec3 w_pos = dquat_mul_vec(view_transform_buffer.inverse_view_transform, position);
 
-					vec3 shadow_v = w_pos - ld.position;
-					float shadow = shadow_fast(shadow_depth_maps,
-											   uint(lll_parse_ll_idx(lll_p)),
-											   shadow_v,
-											   ld.radius);
+					float l_dist;
+					vec3 l;
+					vec3 incident = light_incidant_ray(ld, position);
+					if (ld.type == LightTypeSphere) {
+						float light_effective_range = ld.effective_range;
+						float dist2 = dot(incident, incident);
+						if (dist2 >= light_effective_range*light_effective_range)
+							continue;
+
+						l_dist = sqrt(dist2);
+						l = incident / l_dist;
+					}
+					else {
+						l_dist = abs(ld.directional_distance);
+						l = incident;
+					}
+
+					float shadow = 1.f;
+					if (ld.type == LightTypeSphere) {
+						vec3 shadow_v = position - ld.transformed_position;
+						shadow = shadow_fast(shadow_depth_maps,
+											 uint(lll_parse_ll_idx(lll_p)),
+											 shadow_v,
+											 ld.radius);
+					}
+					else {
+					continue;
+						uint32_t cascade_idx = light_get_cascade_descriptor_idx(ld);
+						light_cascade_descriptor cascade_descriptor = directional_lights_cascades[cascade_idx];
+
+						int cascade = light_which_cascade_for_position(cascade_descriptor, position);
+						int shadowmap_idx = light_get_cascade_shadowmap_idx(ld, cascade);
+						mat4 M = cascade_descriptor.cascade[cascade].cascade_mat;
+
+						shadow = shadow_directional_fast(directional_shadow_depth_maps,
+														 shadowmap_idx,
+														 position,
+														 M,
+														 ld.radius);
+					}
 					if (shadow <= .0f)
 						continue;
 
-					vec3 v = light_incidant_ray(ld, position);
-					float dist = length(v);
 					vec3 view_dir = normalize(position);
 
-					vec3 irradiance = light_irradiance(ld, dist) * shadow;
+					vec3 irradiance = light_irradiance(ld, l_dist) * shadow;
 
 					float scaling_size = thickness;
-					float scale = min(dist, scaling_size) / scaling_size;
+					float scale = min(l_dist, scaling_size) / scaling_size;
 
-					scatter += scale * irradiance * henyey_greenstein_phase_function(v / dist, view_dir, phase);
+					scatter += scale * irradiance * henyey_greenstein_phase_function(l, view_dir, phase);
 				}
 
 				rgb += scatter / float(samples);

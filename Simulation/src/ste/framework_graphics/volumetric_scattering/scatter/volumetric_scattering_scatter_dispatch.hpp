@@ -59,6 +59,13 @@ private:
 			shadow_map_handle.make_resident();
 			program.get().set_uniform("shadow_depth_maps", shadow_map_handle);
 		}
+
+		auto directional_shadow_depth_maps = shadows_storage->get_directional_maps();
+		if (directional_shadow_depth_maps) {
+			auto directional_shadow_depth_maps_handle = directional_shadow_depth_maps->get_texture_handle(shadows_storage->get_shadow_sampler());
+			directional_shadow_depth_maps_handle.make_resident();
+			program.get().set_uniform("directional_shadow_depth_maps", directional_shadow_depth_maps_handle);
+		}
 	}
 
 private:

@@ -36,6 +36,7 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 						 light_preprocess(ctx, &scene->scene_properties().lights_storage()),
 
 						 shadows_projector(ctx, scene, &scene->scene_properties().lights_storage(), &shadows_storage),
+						 directional_shadows_projector(ctx, scene, &scene->scene_properties().lights_storage(), &shadows_storage),
 
 						 vol_scat_scatter(ctx, &vol_scat_storage, &lll_storage, &scene->scene_properties().lights_storage(), &shadows_storage),
 						 vol_scat_gather(ctx, &vol_scat_storage)
@@ -73,6 +74,7 @@ void GIRenderer::setup_tasks() {
 	scene_geo_cull_task = make_gpu_task("geo_cull", &scene_geo_cull.get(), nullptr);
 	downsample_depth_task = make_gpu_task("downsample_depth", &downsample_depth.get(), nullptr);
 	shadow_projector_task = make_gpu_task("shdw_project", &shadows_projector.get(), nullptr);
+	directional_shadows_projector_task = make_gpu_task("dirshdw_project", &directional_shadows_projector.get(), nullptr);
 	volumetric_scattering_scatter_task = make_gpu_task("scatter", &vol_scat_scatter.get(), nullptr);
 	volumetric_scattering_gather_task = make_gpu_task("gather", &vol_scat_gather.get(), nullptr);
 	lll_gen_task = make_gpu_task("pp_ll_gen", &lll_gen_dispatch.get(), gbuffer.get_fbo());
@@ -84,6 +86,7 @@ void GIRenderer::setup_tasks() {
 	prepopulate_depth_task->add_dependency(fb_clearer_task);
 	prepopulate_depth_task->add_dependency(scene_geo_cull_task);
 	prepopulate_depth_task->add_dependency(shadow_projector_task);
+	prepopulate_depth_task->add_dependency(directional_shadows_projector_task);
 	
 	prepopulate_backface_depth_task->add_dependency(backface_fb_clearer_task);
 	prepopulate_backface_depth_task->add_dependency(scene_task);
@@ -102,9 +105,12 @@ void GIRenderer::setup_tasks() {
 
 	shadow_projector_task->add_dependency(light_preprocess.get().get_task());
 	shadow_projector_task->add_dependency(scene_geo_cull_task);
+	directional_shadows_projector_task->add_dependency(light_preprocess.get().get_task());
+	directional_shadows_projector_task->add_dependency(scene_geo_cull_task);
 
 	volumetric_scattering_scatter_task->add_dependency(light_preprocess.get().get_task());
 	volumetric_scattering_scatter_task->add_dependency(shadow_projector_task);
+	volumetric_scattering_scatter_task->add_dependency(directional_shadows_projector_task);
 	volumetric_scattering_scatter_task->add_dependency(downsample_depth_task);
 	volumetric_scattering_scatter_task->add_dependency(lll_gen_task);
 	volumetric_scattering_scatter_task->add_dependency(prepopulate_depth_task);
@@ -116,6 +122,7 @@ void GIRenderer::setup_tasks() {
 	composer_task->add_dependency(lll_gen_task);
 	composer_task->add_dependency(light_preprocess.get().get_task());
 	composer_task->add_dependency(shadow_projector_task);
+	composer_task->add_dependency(directional_shadows_projector_task);
 	composer_task->add_dependency(volumetric_scattering_gather_task);
 	composer_task->add_dependency(scene_task);
 }

@@ -1,12 +1,17 @@
 // StE
-// � Shlomi Steinberg, 2015
+// © Shlomi Steinberg, 2015-2016
 
 #pragma once
 
 #include "stdafx.hpp"
 #include "light.hpp"
+#include "light_cascade_descriptor.hpp"
+
+#include "DirectionalLight.hpp"
+#include "SphericalLight.hpp"
 
 #include "resource_storage_dynamic.hpp"
+#include "gstack_stable.hpp"
 
 #include "ShaderStorageBuffer.hpp"
 #include "AtomicCounterBufferObject.hpp"
@@ -14,11 +19,13 @@
 #include <vector>
 #include <memory>
 #include <functional>
+#include <type_traits>
 
 namespace StE {
 namespace Graphics {
 
 constexpr std::size_t max_active_lights_per_frame = 32;
+constexpr std::size_t max_active_directional_lights_per_frame = 4;
 
 class light_storage : public Core::resource_storage_dynamic<light_descriptor> {
 	using Base = Core::resource_storage_dynamic<light_descriptor>;
@@ -28,23 +35,43 @@ private:
 	static constexpr std::size_t pages = 1024;
 
 	using lights_ll_type = Core::ShaderStorageBuffer<std::uint16_t, usage>;
+	using directional_lights_cascades_storage_type = Core::gstack_stable<light_cascade_descriptor>;
 
 private:
-	lights_ll_type active_lights_ll;
 	Core::AtomicCounterBufferObject<> active_lights_ll_counter;
 
-public:
-	light_storage() : active_lights_ll(pages * std::max<std::size_t>(65536, lights_ll_type::page_size()) / 2),
-					  active_lights_ll_counter(1) {}
+	lights_ll_type active_lights_ll;
+	directional_lights_cascades_storage_type directional_lights_cascades_storage;
 
-	template <typename LightType, typename ... Ts>
-	std::unique_ptr<LightType> allocate_light(Ts&&... args) {
-		auto res = Base::allocate_resource<LightType>(std::forward<Ts>(args)...);
+public:
+	light_storage() : active_lights_ll_counter(1),
+					  active_lights_ll(pages * std::max<std::size_t>(65536, lights_ll_type::page_size()) / 2) {}
+
+	template <typename ... Ts>
+	std::unique_ptr<SphericalLight> allocate_spherical(Ts&&... args) {
+		auto res = Base::allocate_resource<SphericalLight>(std::forward<Ts>(args)...);
 		active_lights_ll.commit_range(0, Base::size());
 
-		return std::move(res);;
+		return std::move(res);
 	}
+
+	template <typename ... Ts>
+	std::unique_ptr<DirectionalLight> allocate_directional(Ts&&... args) {
+		auto res = Base::allocate_resource<DirectionalLight>(std::forward<Ts>(args)...);
+		active_lights_ll.commit_range(0, Base::size());
+
+		// For directional lights we also need to allocate the cascade storage
+		auto cascade_idx = directional_lights_cascades_storage.insert(light_cascade_descriptor());
+		res->set_cascade_idx(cascade_idx);
+
+		return std::move(res);
+	}
+
 	void erase_light(const light *l) {
+		auto cascade_idx = l->get_descriptor().cascade_idx;
+		if (cascade_idx != 0xFFFFFFFF)
+			directional_lights_cascades_storage.mark_tombstone(cascade_idx);
+
 		erase_resource(l);
 	}
 
@@ -56,6 +83,7 @@ public:
 	void bind_lights_buffer(int idx) const { Base::buffer().bind_range(Core::shader_storage_layout_binding(idx), 0, Base::size()); }
 	auto& get_active_ll_counter() const { return active_lights_ll_counter; }
 	auto& get_active_ll() const { return active_lights_ll; }
+	auto& get_directional_lights_cascades_buffer() const { return directional_lights_cascades_storage.get_buffer(); }
 };
 
 }

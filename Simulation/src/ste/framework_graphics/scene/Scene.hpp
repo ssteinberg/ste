@@ -27,16 +27,33 @@ class Scene : public gpu_dispatchable {
 	using Base = gpu_dispatchable;
 
 private:
-	static constexpr int shadow_proj_id_to_ll_id_table_size = max_active_lights_per_frame;
+	static constexpr int shadow_pltt_size = max_active_lights_per_frame;
+	static constexpr int directional_shadow_pltt_size = max_active_directional_lights_per_frame;
 
+	template <int tt_slots>
 	struct shadow_projection_instance_to_ll_idx_translation {
-		std::uint16_t ll_idx[shadow_proj_id_to_ll_id_table_size];
+		std::uint16_t ll_idx[tt_slots];
 	};
 
 	static constexpr Core::BufferUsage::buffer_usage usage = static_cast<Core::BufferUsage::buffer_usage>(Core::BufferUsage::BufferUsageSparse);
 	static constexpr int pages = 8192;
 
-	using sproj_id_to_llid_tt_buffer_type = Core::ShaderStorageBuffer<shadow_projection_instance_to_ll_idx_translation, usage>;
+	template <int tt_slots>
+	class shadow_projection_data {
+		using table = shadow_projection_instance_to_ll_idx_translation<tt_slots>;
+		using table_buffer_type = Core::ShaderStorageBuffer<table, usage>;
+
+	public:
+		shadow_projection_data() : proj_id_to_light_id_translation_table(pages * std::max<std::size_t>(65536, table_buffer_type::page_size()) / sizeof(table)) {}
+
+		object_group_indirect_command_buffer idb;
+		table_buffer_type proj_id_to_light_id_translation_table;
+
+		void commit_range(std::size_t start, std::size_t end) {
+			idb.buffer().commit_range(start, end);
+			proj_id_to_light_id_translation_table.commit_range(start, end);
+		}
+	};
 
 private:
 	ObjectGroup objects;
@@ -45,8 +62,9 @@ private:
 
 	mutable Core::AtomicCounterBufferObject<> culled_objects_counter;
 	mutable object_group_indirect_command_buffer idb;
-	mutable object_group_indirect_command_buffer shadow_idb;
-	mutable sproj_id_to_llid_tt_buffer_type sproj_id_to_llid_tt;
+
+	mutable shadow_projection_data<shadow_pltt_size> shadow_projection;
+	mutable shadow_projection_data<directional_shadow_pltt_size> directional_shadow_projection;
 
 	Resource::resource_instance<Resource::glsl_program> object_program;
 
@@ -73,14 +91,16 @@ public:
 	void clear_indirect_command_buffers() const {
 		std::uint32_t zero = 0;
 		idb.buffer().clear(gli::format::FORMAT_R32_UINT_PACK32, &zero, 0, objects.get_draw_buffers().size());
-		shadow_idb.buffer().clear(gli::format::FORMAT_R32_UINT_PACK32, &zero, 0, objects.get_draw_buffers().size());
+		shadow_projection.idb.buffer().clear(gli::format::FORMAT_R32_UINT_PACK32, &zero, 0, objects.get_draw_buffers().size());
+		directional_shadow_projection.idb.buffer().clear(gli::format::FORMAT_R32_UINT_PACK32, &zero, 0, objects.get_draw_buffers().size());
 		culled_objects_counter.clear(gli::format::FORMAT_R32_UINT_PACK32, &zero);
 	}
 
 	auto &get_idb() const { return idb; }
-	auto &get_shadow_idb() const { return shadow_idb; }
 	auto &get_culled_objects_counter() const { return culled_objects_counter; }
-	auto &get_sproj_id_to_llid_tt() const { return sproj_id_to_llid_tt; }
+
+	auto &get_shadow_projection_buffers() const { return shadow_projection; }
+	auto &get_directional_shadow_projection_buffers() const { return directional_shadow_projection; }
 
 protected:
 	void set_context_state() const override final;
