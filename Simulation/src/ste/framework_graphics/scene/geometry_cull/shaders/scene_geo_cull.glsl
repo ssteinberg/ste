@@ -7,10 +7,14 @@ layout(local_size_x = 128) in;
 
 #include "girenderer_transform_buffer.glsl"
 #include "indirect.glsl"
+
 #include "light.glsl"
-#include "intersection.glsl"
-#include "mesh_descriptor.glsl"
+#include "light_cascades.glsl"
 #include "shadow_projection_instance_to_ll_idx_translation.glsl"
+
+#include "intersection.glsl"
+
+#include "mesh_descriptor.glsl"
 
 layout(std430, binding = 14) restrict readonly buffer mesh_data {
 	mesh_descriptor mesh_descriptor_buffer[];
@@ -66,17 +70,21 @@ void main() {
 	for (int i = 0; i < ll_counter; ++i) {
 		uint16_t light_idx = ll[i];
 		light_descriptor ld = light_buffer[light_idx];
+		vec3 l = ld.transformed_position;
 		
 		if (ld.type == LightTypeDirectional) {
 			uint32_t cascade_idx = light_get_cascade_descriptor_idx(ld);
 			light_cascade_descriptor cascade_descriptor = directional_lights_cascades[cascade_idx];
 
-			for (int j=0; j<directional_light_cascades; ++j) {
-				mat4 M = cascade_descriptor.cascade[j].cascade_mat;
-				vec2 recp_vp = cascade_descriptor.cascade[j].recp_viewport_size;
-
-				vec4 center_in_cascade_space = M * vec4(center, 1);
-				if (any(lessThan(abs(center_in_cascade_space.xy), vec2(1.f) + radius * recp_vp))) {
+			for (int cascade=0; cascade<directional_light_cascades; ++cascade) {
+				vec2 z_limits;
+				float cascade_eye_dist;
+				float recp_viewport;
+				light_cascade_data(cascade_descriptor, cascade, z_limits, cascade_eye_dist, recp_viewport);
+				mat3x4 M = light_cascade_projection(cascade_descriptor, cascade, l, cascade_eye_dist, recp_viewport);
+				
+				vec3 center_in_cascade_space  = vec4(center, 1) * M;
+				if (any(lessThan(abs(center_in_cascade_space.xy), vec2(1.f + radius * recp_viewport)))) {
 					dsproj_id_to_llid_tt[draw_id].ll_idx[dir_shadow_instance_count] = uint16_t(i);
 					++dir_shadow_instance_count;
 					break;
@@ -84,10 +92,9 @@ void main() {
 			}
 		}
 		else {
-			vec3 lc = ld.transformed_position;
 			float lr = ld.effective_range;
 
-			if (collision_sphere_sphere(lc, lr, center, radius)) {
+			if (collision_sphere_sphere(l, lr, center, radius)) {
 				sproj_id_to_llid_tt[draw_id].ll_idx[shadow_instance_count] = uint16_t(i);
 				++shadow_instance_count;
 			}
@@ -107,10 +114,10 @@ void main() {
 
 		idb[idx] = c;
 
-		c.instance_count = min(shadow_instance_count, max_active_lights_per_frame);
+		c.instance_count = shadow_instance_count;
 		sidb[idx] = c;
 
-		c.instance_count = dir_shadow_instance_count;//min(dir_shadow_instance_count, max_active_directional_lights_per_frame);
+		c.instance_count = dir_shadow_instance_count;
 		dsidb[idx] = c;
 	}
 }

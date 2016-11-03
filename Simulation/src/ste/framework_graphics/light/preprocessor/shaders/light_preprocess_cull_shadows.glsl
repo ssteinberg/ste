@@ -9,9 +9,10 @@ layout(local_size_x = 128) in;
 
 #include "intersection.glsl"
 #include "quaternion.glsl"
-#include "transform.glsl"
 
+#include "shadow_common.glsl"
 #include "light.glsl"
+#include "light_cascades.glsl"
 
 layout(std430, binding = 2) restrict buffer light_data {
 	light_descriptor light_buffer[];
@@ -52,62 +53,58 @@ void main() {
 		if (cascade >= directional_light_cascades)
 			return;
 			
-		float dist = ld.directional_distance;
 		vec3 l = ld.transformed_position;
 
 		uint32_t cascade_idx = light_get_cascade_descriptor_idx(ld);
 		light_cascade_descriptor cascade_descriptor = directional_lights_cascades[cascade_idx];
-		
-		vec3 X = cascade_descriptor.X.xyz;
-		vec3 Y = cascade_descriptor.Y.xyz;
 
-		// Calculate eye frutsum portion for this cascade
+		// Calculate eye frustum portion for this cascade
 		float near = light_cascade_near(cascade_descriptor, cascade);
 		float far = light_cascade_far(cascade_descriptor, cascade);
-		vec2 t = projection_tan_half_fovy() * vec2(near, far);
-		vec2 r = t * projection_aspect();
+		vec2 top = projection_tan_half_fovy() * vec2(near, far);
+		vec2 right = top * projection_aspect();
 
 		vec4 frustum[8] = {
-			vec4( r.x,  t.x, -near, 1),
-			vec4(-r.x,  t.x, -near, 1),
-			vec4( r.x, -t.x, -near, 1),
-			vec4(-r.x, -t.x, -near, 1),
-			vec4( r.y,  t.y, -far,  1),
-			vec4(-r.y,  t.y, -far,  1),
-			vec4( r.y, -t.y, -far,  1),
-			vec4(-r.y, -t.y, -far,  1)
+			vec4( right.x,  top.x, -near, 1),
+			vec4(-right.x,  top.x, -near, 1),
+			vec4( right.x, -top.x, -near, 1),
+			vec4(-right.x, -top.x, -near, 1),
+			vec4( right.y,  top.y, -far,  1),
+			vec4(-right.y,  top.y, -far,  1),
+			vec4( right.y, -top.y, -far,  1),
+			vec4(-right.y, -top.y, -far,  1)
 		};
 
-		// Create the transform to cascade space matrix
-		vec3 center = vec3(0, 0, -mix(near,far,.5f));
-		vec3 lpos = center - dist*l;
-		mat4 M = look_at(lpos, center, Y, l, X);
+		// Create the temporary, untranslated, unprojected transform to cascade space matrix,
+		// and use it to calculate the corrected eye distance and viewport size
+		mat3x4 M = light_cascade_projection(cascade_descriptor,
+											cascade,
+											l, .0f, 1.f,
+											near, far);
 
 		// Calculate cascade viewport limits
-		vec3 viewport_and_zcutoff = vec3(.0f);
+		vec4 t = vec4(0, 0, -inf, -inf);
 		for (int i=0; i<8; ++i) {
-			vec4 transformed = M * frustum[i];
-			vec3 t = vec3(abs(transformed.xy), -transformed.z);
-			viewport_and_zcutoff = max(viewport_and_zcutoff, t);
+			vec3 transformed = frustum[i] * M;
+			t = max(t, vec4(abs(transformed.xy), -transformed.z, transformed.z));
 		}
 		
-		vec2 vp = viewport_and_zcutoff.xy;
-		float z_cutoff = -viewport_and_zcutoff.z;
-
-		float reserve = 32.f / 1024.0f;
+		// And z limits
+		float z_far = -t.z;
+		float z_near = t.w;
+		float cascade_depth = z_near - z_far;
+		float corrected_eye_distance = z_near + cascade_depth * 10.f;
+		float cascade_near = cascade_depth * 2.f;
+		float cascade_far = corrected_eye_distance - z_far;
+		
+		// Reserve a bit more pixels for shadow filtering
+		float vp = max(t.x, t.y);
+		float reserve = 40.f / shadow_dirmap_size;
 		vp *= 1.f + reserve;
-		vec2 recp_vp = 1.f / vp;
+		float recp_vp = 1.f / vp;
 		
-		M[0].xy *= recp_vp;
-		M[1].xy *= recp_vp;
-		M[2].xy *= recp_vp;
-		M[3].xy *= recp_vp;
-		mat4 cascade_proj = M;
-		
-		// Write viewport size and transform matrix to cascade data
-		directional_lights_cascades[cascade_idx].cascade[cascade].recp_viewport_size = recp_vp;
-		directional_lights_cascades[cascade_idx].cascade[cascade].z_cutoff = z_cutoff;
-		directional_lights_cascades[cascade_idx].cascade[cascade].cascade_mat = cascade_proj;
+		// Write cascade data
+		directional_lights_cascades[cascade_idx].cascades_data[cascade] = vec4(cascade_near, cascade_far, corrected_eye_distance, recp_vp);
 	}
 	else {
 		vec3 dir = quat_mul_vec(view_transform_buffer.view_transform.real, face_directions[face]);

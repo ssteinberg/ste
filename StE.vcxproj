@@ -746,6 +746,7 @@
     <None Include="Simulation\src\ste\framework_graphics\light\preprocessor\shaders\light_preprocess_cull_lights.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\light\preprocessor\shaders\light_preprocess_cull_shadows.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\light\shaders\light.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\light\shaders\light_cascades.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\material\shaders\material.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\material\shaders\material_evaluate.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\material\shaders\material_layer_unpack.glsl" />
@@ -778,11 +779,13 @@
     <None Include="Simulation\src\ste\framework_graphics\scene\shaders\object.frag" />
     <None Include="Simulation\src\ste\framework_graphics\scene\shaders\scene_transform.vert" />
     <None Include="Simulation\src\ste\framework_graphics\scene\shaders\shadow_projection_instance_to_ll_idx_translation.glsl" />
-    <None Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shaders\shadow.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\shadows\shaders\shadow.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\shadows\shaders\shadow_common.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shaders\shadow_cubemap.geom" />
     <None Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shaders\shadow_directional.geom" />
     <None Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shaders\shadowmap.vert" />
-    <None Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shaders\sssstep.frag" />
+    <None Include="Simulation\src\ste\framework_graphics\shadows\shaders\shadow_query_directional.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\shadows\shaders\shadow_query_spherical.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\volumetric_scattering\shaders\volumetric_scattering.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\volumetric_scattering\shaders\volumetric_scattering_gather.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\volumetric_scattering\shaders\volumetric_scattering_scatter.glsl" />

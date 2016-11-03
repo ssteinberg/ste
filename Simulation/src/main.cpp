@@ -261,8 +261,8 @@ int main()
 	std::vector<std::unique_ptr<StE::Graphics::material_layer>> mat_editor_layers;
 	std::vector<std::shared_ptr<StE::Graphics::Object>> mat_editor_objects;
 	loading_futures.insert(StE::Resource::ModelFactory::load_model_async(ctx,
-																		 //R"(Data/models/dragon/china_dragon.obj)",
-																		 R"(Data/models/mitsuba/mitsuba-sphere.obj)",
+																		 R"(Data/models/dragon/china_dragon.obj)",
+																		 //R"(Data/models/mitsuba/mitsuba-sphere.obj)",
 																		 &scene.get().object_group(),
 																		 &scene.get().scene_properties(),
 																		 2.5f,
@@ -288,11 +288,11 @@ int main()
 	renderer.get().attach_profiler(gpu_tasks_profiler.get());
 	std::unique_ptr<StE::Graphics::debug_gui> debug_gui_dispatchable = std::make_unique<StE::Graphics::debug_gui>(ctx, gpu_tasks_profiler.get(), font, &camera);
 
-	//auto mat_editor_model_transform = glm::scale(glm::mat4(), glm::vec3{ 3.5f });
-	//mat_editor_model_transform = glm::translate(mat_editor_model_transform, glm::vec3{ .0f, -15.f, .0f });
-	auto mat_editor_model_transform = glm::translate(glm::mat4(), glm::vec3{ .0f, .0f, -50.f });
-	mat_editor_model_transform = glm::scale(mat_editor_model_transform, glm::vec3{ 65.f });
-	mat_editor_model_transform = glm::rotate(mat_editor_model_transform, glm::half_pi<float>(), glm::vec3{ .0f, 1.0f, 0.f });
+	auto mat_editor_model_transform = glm::scale(glm::mat4(), glm::vec3{ 3.5f });
+	mat_editor_model_transform = glm::translate(mat_editor_model_transform, glm::vec3{ .0f, -15.f, .0f });
+	//auto mat_editor_model_transform = glm::translate(glm::mat4(), glm::vec3{ .0f, .0f, -50.f });
+	//mat_editor_model_transform = glm::scale(mat_editor_model_transform, glm::vec3{ 65.f });
+	//mat_editor_model_transform = glm::rotate(mat_editor_model_transform, glm::half_pi<float>(), glm::vec3{ .0f, 1.0f, 0.f });
 	for (auto &o : mat_editor_objects)
 		o->set_model_transform(glm::mat4x3(mat_editor_model_transform));
 	

@@ -1104,7 +1104,6 @@
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\quaternion.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\tangent_frame.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\transform.vert" />
-    <None Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shaders\shadow.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shaders\shadow_cubemap.geom" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\interleaved_gradient_noise.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\volumetric_scattering\shaders\volumetric_scattering.glsl" />
@@ -1144,7 +1143,11 @@
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\intersection.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\transform.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shaders\shadow_directional.geom" />
-    <None Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shaders\sssstep.frag" />
     <None Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shaders\shadowmap.vert" />
+    <None Include="Simulation\src\ste\framework_graphics\shadows\shaders\shadow.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\shadows\shaders\shadow_query_directional.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\shadows\shaders\shadow_query_spherical.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\shadows\shaders\shadow_common.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\light\shaders\light_cascades.glsl" />
   </ItemGroup>
 </Project>

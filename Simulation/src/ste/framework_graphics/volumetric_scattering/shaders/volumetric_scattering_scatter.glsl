@@ -11,6 +11,7 @@ layout(local_size_x = 32, local_size_y = 32, local_size_z = 1) in;
 #include "light_transport.glsl"
 #include "shadow.glsl"
 #include "light.glsl"
+#include "light_cascades.glsl"
 #include "linked_light_lists.glsl"
 
 #include "girenderer_transform_buffer.glsl"
@@ -142,20 +143,20 @@ void main() {
 											 shadow_v,
 											 ld.radius);
 					}
-					else {
-					continue;
+					else {continue;
 						uint32_t cascade_idx = light_get_cascade_descriptor_idx(ld);
 						light_cascade_descriptor cascade_descriptor = directional_lights_cascades[cascade_idx];
 
 						int cascade = light_which_cascade_for_position(cascade_descriptor, position);
 						int shadowmap_idx = light_get_cascade_shadowmap_idx(ld, cascade);
-						mat4 M = cascade_descriptor.cascade[cascade].cascade_mat;
+						vec2 cascade_z_limits;
+						mat3x4 M = light_cascade_projection(cascade_descriptor, cascade, l, cascade_z_limits);
 
-						shadow = shadow_directional_fast(directional_shadow_depth_maps,
-														 shadowmap_idx,
-														 position,
-														 M,
-														 ld.radius);
+						shadow = shadow_fast(directional_shadow_depth_maps,
+											 shadowmap_idx,
+											 position,
+											 M,
+											 cascade_z_limits.x);
 					}
 					if (shadow <= .0f)
 						continue;

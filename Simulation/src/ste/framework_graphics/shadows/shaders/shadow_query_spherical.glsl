@@ -1,22 +1,5 @@
 
-#include "common.glsl"
-#include "interleaved_gradient_noise.glsl"
-
-#include "project.glsl"
-
-const float shadow_map_size = 1024.f;
-const vec2 shadow_cluster_samples[8] = { vec2(-.7071f,  .7071f),
-										 vec2( .0000f,	-.8750f),
-										 vec2( .5303f,	 .5303f),
-										 vec2(-.6250f,	-.0000f),
-										 vec2( .3536f,	-.3536f),
-										 vec2(-.0000f,	 .3750f),
-										 vec2(-.1768f,	-.1768f),
-										 vec2( .1250f,	 .0000f) };
-
-float shadow_calculate_test_depth(float zf) {
-	return zf * 1.015f + 8.f * epsilon;
-}
+#include "shadow_common.glsl"
 
 vec3 shadow_cubemap_jitter_uv(vec3 norm_v, mat2x3 m, vec2 xy) {
 	vec3 u = m * xy;
@@ -26,13 +9,6 @@ vec3 shadow_cubemap_jitter_uv(vec3 norm_v, mat2x3 m, vec2 xy) {
 float shadow_blocker_search(samplerCubeArray shadow_maps, uint idx, vec3 norm_v, mat2x3 m) {
 	float d = texture(shadow_maps, vec4(norm_v, idx)).x;
 	return d;
-}
-
-float shadow_calculate_penumbra(float d_blocker, float radius, float dist_receiver) {
-	const float penumbra_scale = 1.f;
-
-	float w_penumbra = (dist_receiver - d_blocker) * radius / d_blocker;
-	return penumbra_scale * w_penumbra / dist_receiver;
 }
 
 float shadow_calculate_distance_to_receiver(vec3 shadow_v, out mat2x3 m) {
@@ -52,9 +28,9 @@ float shadow_calculate_distance_to_receiver(vec3 shadow_v, out mat2x3 m) {
  */
 float shadow(samplerCubeArrayShadow shadow_depth_maps, samplerCubeArray shadow_maps, uint idx, vec3 shadow_v, float light_radius) {
 	const float max_cluster_samples = 10.f;
-	const float max_penumbra = 80.f / shadow_map_size;
-	const float min_penumbra = 6.f / shadow_map_size;
-	const float penumbra_w_to_clusters_ratio_power = 1.4f;
+	const float max_penumbra = 80.f / shadow_cubemap_size;
+	const float min_penumbra = 6.f / shadow_cubemap_size;
+	const float penumbra_w_to_clusters_ratio_power = 1.3f;
 	float shadow_near = light_radius;
 
 	const float cutoff = .5f;
@@ -62,20 +38,22 @@ float shadow(samplerCubeArrayShadow shadow_depth_maps, samplerCubeArray shadow_m
 	mat2x3 m;
 	float dist_receiver = shadow_calculate_distance_to_receiver(shadow_v, m);
 
-	float zf = shadow_near / dist_receiver;
 	vec3 norm_v = shadow_v / dist_receiver;
-	float d_blocker = shadow_near / shadow_blocker_search(shadow_maps, idx, norm_v, m);
+	float d_blocker = project_depth(-shadow_blocker_search(shadow_maps, idx, norm_v, m), shadow_near);
 
 	// No shadowing if distance to blocker is further away from receiver
 	if (dist_receiver <= d_blocker)
 		return 1.f;
+		
+	float d = project_depth(-dist_receiver, shadow_near);//shadow_near / dist_receiver;
+	float zf = shadow_calculate_test_depth(d);
 
 	// Calculate penumbra based on distance and light radius
 	float penumbra = clamp(shadow_calculate_penumbra(d_blocker, light_radius, dist_receiver) / cutoff, min_penumbra, max_penumbra);
 
 	// Number of clusters to sample calculated heuristically using the penumbra size
 	float penumbra_ratio = pow((penumbra - min_penumbra) / (max_penumbra - min_penumbra), penumbra_w_to_clusters_ratio_power);
-	int clusters_to_sample = int(round(mix(.51f, max_cluster_samples + .49f, penumbra_ratio)));
+	int clusters_to_sample = int(round(mix(1.51f, max_cluster_samples + .49f, penumbra_ratio)));
 
 	// Interleaved gradient noise
 	float noise = two_pi * interleaved_gradient_noise(gl_FragCoord.xy);
@@ -88,7 +66,8 @@ float shadow(samplerCubeArrayShadow shadow_depth_maps, samplerCubeArray shadow_m
 		float noise_offset = two_pi * float(i) / float(clusters_to_sample);
 		float sin_noise = sin(noise + noise_offset);
 		float cos_noise = cos(noise + noise_offset);
-		mat2 sample_rotation_matrix = mat2(cos_noise, sin_noise, -sin_noise, cos_noise);
+		mat2 sample_rotation_matrix = mat2(cos_noise,  sin_noise, 
+										   -sin_noise, cos_noise);
 
 		// Constant sample pattern per cluster
 		// Calculate the offset, lookup shadowmap texture
@@ -100,12 +79,12 @@ float shadow(samplerCubeArrayShadow shadow_depth_maps, samplerCubeArray shadow_m
 			float l = length(shadow_cluster_samples[s]) * penumbra;
 			float t = exp(-l*l / (2 * gaussian * gaussian)) * one_over_pi / (2 * gaussian * gaussian);
 
-			float shadow_sample = texture(shadow_depth_maps, vec4(shadow_cubemap_jitter_uv(norm_v, m, u), idx), shadow_calculate_test_depth(zf)).x;
+			float shadow_sample = texture(shadow_depth_maps, vec4(shadow_cubemap_jitter_uv(norm_v, m, u), idx), zf).x;
 			accum += shadow_sample * t;
 			w += t;
 		}
 
-		// Stop early if first cluster is fully shadowed or unshadowed
+		// Stop early if first cluster is fully unshadowed
 		if (i == 1 && 
 			accum <= epsilon)
 			break;
@@ -129,25 +108,6 @@ float shadow_fast(samplerCubeArrayShadow shadow_depth_maps, uint idx, vec3 shado
 }
 
 /*
- *	Fast unfiltered shadow lookup
- */
-float shadow_directional_fast(sampler2DArrayShadow directional_shadow_depth_maps, 
-							  uint idx, 
-							  vec3 position, 
-							  mat4 cascade_transform,
-							  float light_radius) {
-	float shadow_near = light_radius;
-	
-	vec4 v = cascade_transform * vec4(position, 1);
-	vec2 uv = v.xy * .5f + vec2(.5f);
-	float zf = project_depth(v.z, shadow_near);
-	//zf = shadow_calculate_test_depth(zf);
-	zf = zf * 1.000000065f;// + 8.f * epsilon;
-
-	return texture(directional_shadow_depth_maps, vec4(uv, idx, zf)).x;
-}
-
-/*
  *	Lookup unfiltered depth from shadowmap
  */
 float shadow_depth(samplerCubeArray shadow_maps, uint idx, vec3 shadow_v) {
@@ -161,14 +121,15 @@ float shadow_depth(samplerCubeArray shadow_maps, uint idx, vec3 shadow_v) {
  */
 vec3 shadow_occluder(samplerCubeArray shadow_maps, uint idx, vec3 shadow_v, float light_radius) {
 	const float cutoff = .5f;
-	const float max_penumbra = 20.f / shadow_map_size;
-	const float min_penumbra = 4.f / shadow_map_size;
+	const float max_penumbra = 20.f / shadow_cubemap_size;
+	const float min_penumbra = 4.f / shadow_cubemap_size;
 	float shadow_near = light_radius;
 
 	mat2x3 m;
 	float dist_receiver = shadow_calculate_distance_to_receiver(shadow_v, m);
-
-	float zf = shadow_near / dist_receiver;
+	
+	float depth = project_depth(-dist_receiver, shadow_near);//shadow_near / dist_receiver;
+	float zf = shadow_calculate_test_depth(depth);
 	vec3 norm_v = shadow_v / dist_receiver;
 	
 	float d = shadow_blocker_search(shadow_maps, idx, norm_v, m);

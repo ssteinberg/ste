@@ -12,6 +12,7 @@ layout(local_size_x = 128) in;
 #include "intersection.glsl"
 
 #include "light.glsl"
+#include "light_cascades.glsl"
 
 layout(std430, binding = 2) restrict buffer light_data {
 	light_descriptor light_buffer[];
@@ -68,7 +69,7 @@ void main() {
 		float iflt = 1.f;
 		float t = 1.f / float(directional_light_cascades);
 		for (int i=0; i<directional_light_cascades; ++i,++iflt) {
-			directional_lights_cascades[cascade_idx].cascade[i].cascade_depth = 
+			directional_lights_cascades[cascade_idx].cascades_far[i] = 
 					mix(near + iflt * t * (far-near),
 						near * pow(far/near, iflt*t),
 						.9965f);

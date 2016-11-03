@@ -5,6 +5,7 @@
 
 #include "shadow.glsl"
 #include "light.glsl"
+#include "light_cascades.glsl"
 #include "linked_light_lists.glsl"
 
 #include "gbuffer.glsl"
@@ -113,13 +114,21 @@ vec3 deferred_shade_fragment(g_buffer_element frag, ivec2 coord,
 
 				int cascade = light_which_cascade_for_position(cascade_descriptor, position);
 				int shadowmap_idx = light_get_cascade_shadowmap_idx(ld, cascade);
-				mat4 M = cascade_descriptor.cascade[cascade].cascade_mat;
+				vec2 cascade_z_limits;
+				mat3x4 M = light_cascade_projection(cascade_descriptor, cascade, l, cascade_z_limits);
 
-				shdw = shadow_directional_fast(directional_shadow_depth_maps,
-											   shadowmap_idx,
-											   position,
-											   M,
-											   l_radius);
+				shdw = shadow(directional_shadow_depth_maps,
+							  directional_shadow_maps,
+							  shadowmap_idx,
+							  position,
+							  M,
+							  l_dist,
+							  cascade_z_limits.x,
+							  l_radius);
+
+				//? TODO: Remove!
+				// Inject some ambient, without global illumination...
+				rgb += ld.diffuse * ld.luminance * 1e-10 * (1-shdw);
 			}
 
 			// Calculate occlusion, distance to light, normalized incident and reflection (eye) vectors
