@@ -41,7 +41,7 @@ vec3 transform(vec4 v, mat3x4 M) {
 	return v * M;
 }
 
-void process(int cascade, uint32_t cascade_idx, vec3 vertices[3], vec2 cascade_z_limits) {
+void process(int cascade, uint32_t cascade_idx, vec3 vertices[3], float z_far) {
 	if ((vertices[0].x >  1 &&
 		 vertices[1].x >  1 &&
 		 vertices[2].x >  1) ||
@@ -54,17 +54,17 @@ void process(int cascade, uint32_t cascade_idx, vec3 vertices[3], vec2 cascade_z
 		(vertices[0].y < -1 &&
 		 vertices[1].y < -1 &&
 		 vertices[2].y < -1) ||
-		(vertices[0].z > -cascade_z_limits.x &&
-		 vertices[1].z > -cascade_z_limits.x &&
-		 vertices[2].z > -cascade_z_limits.x) ||
-		(vertices[0].z < -cascade_z_limits.y &&
-		 vertices[1].z < -cascade_z_limits.y &&
-		 vertices[2].z < -cascade_z_limits.y))
+		(vertices[0].z < z_far &&
+		 vertices[1].z < z_far &&
+		 vertices[2].z < z_far))
 		return;
 
 	gl_Layer = cascade + int(cascade_idx) * directional_light_cascades;
 	for (int j = 0; j < 3; ++j) {
-		gl_Position = vec4(vertices[j].xy, min(1, project_depth(vertices[j].z, cascade_z_limits.x)), 1);
+		float z = project_depth(vertices[j].z, cascade_proj_near_clip);
+
+		gl_Position.xy = vertices[j].xy;
+		gl_Position.z  = min(1, z);
 		EmitVertex();
 	}
 
@@ -89,14 +89,15 @@ void main() {
 	uint32_t cascade_idx = light_get_cascade_descriptor_idx(ld);
 	light_cascade_descriptor cascade_descriptor = directional_lights_cascades[cascade_idx];
 	
+	gl_Position.w = 1;
 	for (int cascade = 0; cascade < directional_light_cascades; ++cascade) {
-		vec2 cascade_z_limits;
-		mat3x4 M = light_cascade_projection(cascade_descriptor, cascade, l, cascade_z_limits);
+		float z_far;
+		mat3x4 M = light_cascade_projection(cascade_descriptor, cascade, l, z_far);
 
 		vec3 vertices[3];
 		for (int j = 0; j < 3; ++j)
 			vertices[j] = transform(gl_in[j].gl_Position, M);
 
-		process(cascade, cascade_idx, vertices, cascade_z_limits);
+		process(cascade, cascade_idx, vertices, z_far);
 	}
 }

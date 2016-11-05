@@ -144,7 +144,7 @@ void main() {
 											 ld.radius);
 					}
 					else {continue;
-						uint32_t cascade_idx = light_get_cascade_descriptor_idx(ld);
+						/*uint32_t cascade_idx = light_get_cascade_descriptor_idx(ld);
 						light_cascade_descriptor cascade_descriptor = directional_lights_cascades[cascade_idx];
 
 						int cascade = light_which_cascade_for_position(cascade_descriptor, position);
@@ -156,7 +156,7 @@ void main() {
 											 shadowmap_idx,
 											 position,
 											 M,
-											 cascade_z_limits.x);
+											 cascade_z_limits.x);*/
 					}
 					if (shadow <= .0f)
 						continue;

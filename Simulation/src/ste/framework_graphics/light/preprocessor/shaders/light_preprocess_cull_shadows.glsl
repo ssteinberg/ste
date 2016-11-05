@@ -64,6 +64,14 @@ void main() {
 		vec2 top = projection_tan_half_fovy() * vec2(near, far);
 		vec2 right = top * projection_aspect();
 
+		// Create the temporary, untranslated, unprojected transform to cascade space matrix,
+		// and use it to calculate the corrected eye distance and viewport size
+		mat3x4 M = light_cascade_projection(cascade_descriptor,
+											cascade,
+											l, .0f, vec2(1.f),
+											near, far);
+
+		// Frustum vertices
 		vec4 frustum[8] = {
 			vec4( right.x,  top.x, -near, 1),
 			vec4(-right.x,  top.x, -near, 1),
@@ -75,13 +83,6 @@ void main() {
 			vec4(-right.y, -top.y, -far,  1)
 		};
 
-		// Create the temporary, untranslated, unprojected transform to cascade space matrix,
-		// and use it to calculate the corrected eye distance and viewport size
-		mat3x4 M = light_cascade_projection(cascade_descriptor,
-											cascade,
-											l, .0f, 1.f,
-											near, far);
-
 		// Calculate cascade viewport limits
 		vec4 t = vec4(0, 0, -inf, -inf);
 		for (int i=0; i<8; ++i) {
@@ -89,22 +90,14 @@ void main() {
 			t = max(t, vec4(abs(transformed.xy), -transformed.z, transformed.z));
 		}
 		
-		// And z limits
-		float z_far = -t.z;
-		float z_near = t.w;
-		float cascade_depth = z_near - z_far;
-		float corrected_eye_distance = z_near + cascade_depth * 10.f;
-		float cascade_near = cascade_depth * 2.f;
-		float cascade_far = corrected_eye_distance - z_far;
+		// Viewport size
+		vec2 vp = t.xy * cascade_viewport_reserve;
+		vec2 recp_vp = 1.f / vp;
+
+		vec2 z_limits = t.zw;
 		
-		// Reserve a bit more pixels for shadow filtering
-		float vp = max(t.x, t.y);
-		float reserve = 40.f / shadow_dirmap_size;
-		vp *= 1.f + reserve;
-		float recp_vp = 1.f / vp;
-		
-		// Write cascade data
-		directional_lights_cascades[cascade_idx].cascades_data[cascade] = vec4(cascade_near, cascade_far, corrected_eye_distance, recp_vp);
+		// Write cascade data and z limits
+		directional_lights_cascades[cascade_idx].cascades_data[cascade] = vec4(recp_vp, z_limits);
 	}
 	else {
 		vec3 dir = quat_mul_vec(view_transform_buffer.view_transform.real, face_directions[face]);

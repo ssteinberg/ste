@@ -11,6 +11,20 @@ float shadow_blocker_search(samplerCubeArray shadow_maps, uint idx, vec3 norm_v,
 	return d;
 }
 
+float shadow_calculate_penumbra_cube(float d_blocker, float radius, float dist_receiver, out float penumbra_ratio) {
+	const float max_penumbra = 80.f / shadow_cubemap_size;
+	const float min_penumbra = 6.f / shadow_cubemap_size;
+
+	float w_penumbra = (dist_receiver - d_blocker) / d_blocker * radius;
+	
+	float penumbra = clamp(shadow_penumbra_scale * w_penumbra / dist_receiver / shadow_cutoff,
+						   min_penumbra,
+						   max_penumbra);
+	penumbra_ratio = (penumbra - min_penumbra) / (max_penumbra - min_penumbra);
+
+	return penumbra;
+}
+
 float shadow_calculate_distance_to_receiver(vec3 shadow_v, out mat2x3 m) {
 	vec3 v = abs(shadow_v);
 	float dist_receiver = max_element(v);
@@ -27,13 +41,9 @@ float shadow_calculate_distance_to_receiver(vec3 shadow_v, out mat2x3 m) {
  *	Filters shadow maps using samples from an interleaved gradient noise pattern, based on penumbra size.
  */
 float shadow(samplerCubeArrayShadow shadow_depth_maps, samplerCubeArray shadow_maps, uint idx, vec3 shadow_v, float light_radius) {
-	const float max_cluster_samples = 10.f;
-	const float max_penumbra = 80.f / shadow_cubemap_size;
-	const float min_penumbra = 6.f / shadow_cubemap_size;
 	const float penumbra_w_to_clusters_ratio_power = 1.3f;
+	const float max_cluster_samples = 10.f;
 	float shadow_near = light_radius;
-
-	const float cutoff = .5f;
 
 	mat2x3 m;
 	float dist_receiver = shadow_calculate_distance_to_receiver(shadow_v, m);
@@ -49,11 +59,12 @@ float shadow(samplerCubeArrayShadow shadow_depth_maps, samplerCubeArray shadow_m
 	float zf = shadow_calculate_test_depth(d);
 
 	// Calculate penumbra based on distance and light radius
-	float penumbra = clamp(shadow_calculate_penumbra(d_blocker, light_radius, dist_receiver) / cutoff, min_penumbra, max_penumbra);
+	float penumbra_ratio;
+	float penumbra = shadow_calculate_penumbra_cube(d_blocker, light_radius, dist_receiver, penumbra_ratio);
 
 	// Number of clusters to sample calculated heuristically using the penumbra size
-	float penumbra_ratio = pow((penumbra - min_penumbra) / (max_penumbra - min_penumbra), penumbra_w_to_clusters_ratio_power);
-	int clusters_to_sample = int(round(mix(1.51f, max_cluster_samples + .49f, penumbra_ratio)));
+	float clusters_ratio = pow(penumbra_ratio, penumbra_w_to_clusters_ratio_power);
+	int clusters_to_sample = int(round(mix(1.51f, max_cluster_samples + .49f, clusters_ratio)));
 
 	// Interleaved gradient noise
 	float noise = two_pi * interleaved_gradient_noise(gl_FragCoord.xy);
@@ -90,7 +101,7 @@ float shadow(samplerCubeArrayShadow shadow_depth_maps, samplerCubeArray shadow_m
 			break;
 	}
 
-	return smoothstep(.0, 1.f, min(1.f, accum / w / cutoff));
+	return smoothstep(.0, 1.f, min(1.f, accum / w / shadow_cutoff));
 }
 
 /*
@@ -120,9 +131,6 @@ float shadow_depth(samplerCubeArray shadow_maps, uint idx, vec3 shadow_v) {
  *	Filtered, like 'shadow' method but limited to a single cluster and smaller upper limit on penumbra size
  */
 vec3 shadow_occluder(samplerCubeArray shadow_maps, uint idx, vec3 shadow_v, float light_radius) {
-	const float cutoff = .5f;
-	const float max_penumbra = 20.f / shadow_cubemap_size;
-	const float min_penumbra = 4.f / shadow_cubemap_size;
 	float shadow_near = light_radius;
 
 	mat2x3 m;
@@ -136,10 +144,11 @@ vec3 shadow_occluder(samplerCubeArray shadow_maps, uint idx, vec3 shadow_v, floa
 	float d_blocker = -unproject_depth(d, shadow_near);
 
 	if (dist_receiver > d_blocker) {
-		float penumbra = min(shadow_calculate_penumbra(d_blocker, light_radius, dist_receiver) / cutoff, max_penumbra);
+		float penumbra_ratio;
+		float penumbra = shadow_calculate_penumbra_cube(d_blocker, light_radius, dist_receiver, penumbra_ratio);
 		float noise = two_pi * interleaved_gradient_noise(gl_FragCoord.xy);
 		
-		if (penumbra >= min_penumbra) {
+		if (penumbra_ratio > .0f) {
 			float accum = .0f;
 			float w = .0f;
 			for (int s=0; s<8; ++s) {

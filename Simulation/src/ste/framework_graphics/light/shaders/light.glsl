@@ -35,6 +35,9 @@ struct light_descriptor {
 	float effective_range;
 };
 
+/*
+ *	Light's attenuation coefficient for a given distance to receiver
+ */
 float light_attenuation_factor(light_descriptor ld, float dist) {
 	if (ld.type == LightTypeDirectional)
 		return 1;
@@ -46,30 +49,50 @@ float light_attenuation_factor(light_descriptor ld, float dist) {
 	}
 }
 
+/*
+ *	Returns light's effective range, i.e. range at which light radiates at least minimal luminance.
+ */
 float light_effective_range(light_descriptor ld) {
 	return ld.effective_range;
 }
 
+/*
+ *	Transforms light's position/direction based on transformation dual quaternion
+ */
 vec3 light_transform(dual_quaternion transform, light_descriptor ld) {
 	return ld.type == LightTypeSphere ?
 				dquat_mul_vec(transform, ld.position) :
 				quat_mul_vec(transform.real, ld.position);
 }
 
+/*
+ *	Calculates light's effective range given minimal luminance desired
+ */
 float light_calculate_effective_range(light_descriptor ld, float min_lum) {
 	float l = min_lum;
 	return ld.radius * (sqrt(ld.luminance / l) - 1.f);
 }
 
+/*
+ *	Calculates a suggested light's minimal luminance
+ */
 float light_calculate_minimal_luminance(light_descriptor ld) {
 	return ld.luminance * .000006f;
 }
 
+/*
+ *	Calculates the incident ray in view-space for position
+ */
 vec3 light_incidant_ray(light_descriptor ld, vec3 position) {
 	if (ld.type == LightTypeDirectional) return -ld.transformed_position;
 	else return ld.transformed_position - position;
 }
 
+/*
+ *	Calculate light irradiance at specific distance. 
+ *	This method multiplies light irradiance by attenuation coefficient, from that subtracts the light's minimal luminance so that at
+ *	distance greater than or equal to the light's effective range the value returned is 0.
+ */
 vec3 light_irradiance(light_descriptor ld, float dist) {
 	float attenuation_factor = light_attenuation_factor(ld, dist);
 	float incident_radiance = ld.luminance * attenuation_factor - light_calculate_minimal_luminance(ld);

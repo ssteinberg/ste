@@ -109,25 +109,32 @@ vec3 deferred_shade_fragment(g_buffer_element frag, ivec2 coord,
 							  l_radius);
 			}
 			else {
+				// Query cascade index, and shadowmap index and construct cascade projection matrix
 				uint32_t cascade_idx = light_get_cascade_descriptor_idx(ld);
 				light_cascade_descriptor cascade_descriptor = directional_lights_cascades[cascade_idx];
 
 				int cascade = light_which_cascade_for_position(cascade_descriptor, position);
 				int shadowmap_idx = light_get_cascade_shadowmap_idx(ld, cascade);
-				vec2 cascade_z_limits;
-				mat3x4 M = light_cascade_projection(cascade_descriptor, cascade, l, cascade_z_limits);
+
+				// Read cascade projection parameters
+				float cascade_proj_far, cascade_eye_dist;
+				vec2 cascde_recp_vp;
+				light_cascade_data(cascade_descriptor, cascade, cascade_proj_far, cascade_eye_dist, cascde_recp_vp);
+
+				// Light incident equals minus light direction for directional lights
+				mat3x4 M = light_cascade_projection(cascade_descriptor, cascade, -l, cascade_eye_dist, cascde_recp_vp);
 
 				shdw = shadow(directional_shadow_depth_maps,
 							  directional_shadow_maps,
 							  shadowmap_idx,
 							  position,
 							  M,
-							  l_dist,
-							  cascade_z_limits.x,
-							  l_radius);
+							  cascde_recp_vp,
+							  1000,//l_dist,
+							  10);//l_radius);
 
 				//? TODO: Remove!
-				// Inject some ambient, without global illumination...
+				// Inject some ambient, still without global illumination...
 				rgb += ld.diffuse * ld.luminance * 1e-10 * (1-shdw);
 			}
 

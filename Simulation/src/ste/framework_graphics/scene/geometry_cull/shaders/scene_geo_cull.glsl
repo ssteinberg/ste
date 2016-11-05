@@ -67,24 +67,31 @@ void main() {
 	uint shadow_instance_count = 0;
 	uint dir_shadow_instance_count = 0;
 
+	// Check if the geometry intersects some light's effective range
 	for (int i = 0; i < ll_counter; ++i) {
 		uint16_t light_idx = ll[i];
 		light_descriptor ld = light_buffer[light_idx];
 		vec3 l = ld.transformed_position;
 		
 		if (ld.type == LightTypeDirectional) {
+			// For directional lights check if the geometry is in one of the cascades
 			uint32_t cascade_idx = light_get_cascade_descriptor_idx(ld);
 			light_cascade_descriptor cascade_descriptor = directional_lights_cascades[cascade_idx];
 
 			for (int cascade=0; cascade<directional_light_cascades; ++cascade) {
-				vec2 z_limits;
-				float cascade_eye_dist;
-				float recp_viewport;
-				light_cascade_data(cascade_descriptor, cascade, z_limits, cascade_eye_dist, recp_viewport);
+				// Read cascade parameters
+				float cascade_proj_far, cascade_eye_dist;
+				vec2 recp_viewport;
+				light_cascade_data(cascade_descriptor, cascade, cascade_proj_far, cascade_eye_dist, recp_viewport);
+
+				// And construct projection matrix
 				mat3x4 M = light_cascade_projection(cascade_descriptor, cascade, l, cascade_eye_dist, recp_viewport);
 				
+				// Project the geometry bounding sphere into cascade-space.
+				// Check that it intersects the viewport and is in front of the far-plane of the cascade
 				vec3 center_in_cascade_space  = vec4(center, 1) * M;
-				if (any(lessThan(abs(center_in_cascade_space.xy), vec2(1.f + radius * recp_viewport)))) {
+				if (any(lessThan(abs(center_in_cascade_space.xy), vec2(1.f) + radius * recp_viewport)) &&
+					center_in_cascade_space.z > cascade_proj_far - radius) {
 					dsproj_id_to_llid_tt[draw_id].ll_idx[dir_shadow_instance_count] = uint16_t(i);
 					++dir_shadow_instance_count;
 					break;
@@ -92,6 +99,7 @@ void main() {
 			}
 		}
 		else {
+			// Check if the light effective range sphere intersects the geometry bounding sphere
 			float lr = ld.effective_range;
 
 			if (collision_sphere_sphere(l, lr, center, radius)) {
