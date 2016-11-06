@@ -16,7 +16,7 @@
 #include "ShaderStorageBuffer.hpp"
 #include "AtomicCounterBufferObject.hpp"
 
-#include <vector>
+#include <array>
 #include <memory>
 #include <functional>
 #include <type_traits>
@@ -43,9 +43,16 @@ private:
 	lights_ll_type active_lights_ll;
 	directional_lights_cascades_storage_type directional_lights_cascades_storage;
 
+	std::array<float, directional_light_cascades> cascades_depths;
+
+private:
+	void build_cascade_depth_array();
+
 public:
 	light_storage() : active_lights_ll_counter(1),
-					  active_lights_ll(pages * std::max<std::size_t>(65536, lights_ll_type::page_size()) / 2) {}
+					  active_lights_ll(pages * std::max<std::size_t>(65536, lights_ll_type::page_size()) / 2) {
+		build_cascade_depth_array();
+	}
 
 	template <typename ... Ts>
 	std::unique_ptr<SphericalLight> allocate_spherical(Ts&&... args) {
@@ -84,6 +91,8 @@ public:
 	auto& get_active_ll_counter() const { return active_lights_ll_counter; }
 	auto& get_active_ll() const { return active_lights_ll; }
 	auto& get_directional_lights_cascades_buffer() const { return directional_lights_cascades_storage.get_buffer(); }
+
+	auto& get_cascade_depths_array() const { return cascades_depths; }
 };
 
 }

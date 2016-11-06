@@ -33,7 +33,9 @@ public:
 									const shadowmap_storage *shadow_map) : scene(scene),
 																		   lights(lights),
 																		   shadow_map(shadow_map),
-																		   shadow_gen_program(ctx, std::vector<std::string>{ "shadowmap.vert", "shadow_directional.geom" }) {}
+																		   shadow_gen_program(ctx, std::vector<std::string>{ "shadowmap.vert", "shadow_directional.geom" }) {
+		shadow_gen_program.get().set_uniform("cascades_depths", scene->scene_properties().lights_storage().get_cascade_depths_array());
+	}
 
 protected:
 	void set_context_state() const override final;

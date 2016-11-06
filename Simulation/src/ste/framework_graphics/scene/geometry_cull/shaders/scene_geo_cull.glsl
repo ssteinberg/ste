@@ -54,6 +54,8 @@ layout(std430, binding = 9) restrict writeonly buffer directional_shadow_project
 	directional_shadow_projection_instance_to_ll_idx_translation dsproj_id_to_llid_tt[];
 };
 
+uniform float cascades_depths[directional_light_cascades];
+
 void main() {
 	int draw_id = int(gl_GlobalInvocationID.x);
 	if (draw_id >= mesh_descriptor_buffer.length())
@@ -85,7 +87,7 @@ void main() {
 				light_cascade_data(cascade_descriptor, cascade, cascade_proj_far, cascade_eye_dist, recp_viewport);
 
 				// And construct projection matrix
-				mat3x4 M = light_cascade_projection(cascade_descriptor, cascade, l, cascade_eye_dist, recp_viewport);
+				mat3x4 M = light_cascade_projection(cascade_descriptor, cascade, l, cascade_eye_dist, recp_viewport, cascades_depths);
 				
 				// Project the geometry bounding sphere into cascade-space.
 				// Check that it intersects the viewport and is in front of the far-plane of the cascade

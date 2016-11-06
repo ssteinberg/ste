@@ -24,6 +24,59 @@ float get_thickness(ivec2 coord,
 	return fd - bd;
 }
 
+float deferred_evaluate_shadowing(samplerCubeArrayShadow shadow_depth_maps, 
+								  samplerCubeArray shadow_maps, 
+								  sampler2DArrayShadow directional_shadow_depth_maps,
+								  sampler2DArray directional_shadow_maps,
+								  int cascade,
+								  vec3 position,
+								  vec3 normal,
+								  uint light_id,
+								  float l_dist,
+								  light_descriptor ld) {
+	float l_radius = ld.radius;
+
+	if (ld.type == LightTypeSphere) {
+		vec3 shadow_v = position - ld.transformed_position;
+		return shadow(shadow_depth_maps,
+					  shadow_maps,
+					  light_id,
+					  position,
+					  normal,
+					  shadow_v,
+					  l_radius);
+	}
+	else {
+		// Query cascade index, and shadowmap index and construct cascade projection matrix
+		uint32_t cascade_idx = light_get_cascade_descriptor_idx(ld);
+		light_cascade_descriptor cascade_descriptor = directional_lights_cascades[cascade_idx];
+		int shadowmap_idx = light_get_cascade_shadowmap_idx(ld, cascade);
+
+		// Read cascade projection parameters
+		float cascade_proj_far, cascade_eye_dist;
+		vec2 cascade_recp_vp;
+		light_cascade_data(cascade_descriptor, cascade, cascade_proj_far, cascade_eye_dist, cascade_recp_vp);
+
+		// Construct matrix to transform into cascade-space
+		mat3x4 M = light_cascade_projection(cascade_descriptor, 
+											cascade, 
+											ld.transformed_position, 
+											cascade_eye_dist, 
+											cascade_recp_vp,
+											cascades_depths);
+
+		return shadow(directional_shadow_depth_maps,
+					  directional_shadow_maps,
+					  shadowmap_idx,
+					  position,
+					  normal,
+					  M,
+					  cascade_recp_vp,
+					  l_dist,
+					  l_radius);
+	}
+}
+
 vec3 deferred_shade_fragment(g_buffer_element frag, ivec2 coord,
 							 samplerCubeArrayShadow shadow_depth_maps, 
 							 samplerCubeArray shadow_maps, 
@@ -60,6 +113,9 @@ vec3 deferred_shade_fragment(g_buffer_element frag, ivec2 coord,
 	vec4 material_texture = material_base_texture(md, uv, duvdx, duvdy);
 	float cavity = material_cavity(md, uv, duvdx, duvdy);
 
+	// Directional light cascade
+	int cascade = light_which_cascade_for_position(position, cascades_depths);
+
 	// Iterate lights in the linked-light-list structure
 	vec3 rgb = vec3(.0f);
 	ivec2 lll_coords = coord / lll_image_res_multiplier;
@@ -80,7 +136,6 @@ vec3 deferred_shade_fragment(g_buffer_element frag, ivec2 coord,
 			uint light_id = uint(lll_parse_ll_idx(lll_p));
 
 			// Compute light incident ray and range
-			float l_radius = ld.radius;
 			float l_dist;
 			vec3 l;
 			vec3 incident = light_incidant_ray(ld, position);
@@ -98,42 +153,19 @@ vec3 deferred_shade_fragment(g_buffer_element frag, ivec2 coord,
 				l = incident;
 			}
 
-			// Shadow map query
-			float shdw = 1.f;
-			if (ld.type == LightTypeSphere) {
-				vec3 shadow_v = position - ld.transformed_position;
-				shdw = shadow(shadow_depth_maps,
-							  shadow_maps,
-							  light_id,
-							  shadow_v,
-							  l_radius);
-			}
-			else {
-				// Query cascade index, and shadowmap index and construct cascade projection matrix
-				uint32_t cascade_idx = light_get_cascade_descriptor_idx(ld);
-				light_cascade_descriptor cascade_descriptor = directional_lights_cascades[cascade_idx];
-
-				int cascade = light_which_cascade_for_position(cascade_descriptor, position);
-				int shadowmap_idx = light_get_cascade_shadowmap_idx(ld, cascade);
-
-				// Read cascade projection parameters
-				float cascade_proj_far, cascade_eye_dist;
-				vec2 cascde_recp_vp;
-				light_cascade_data(cascade_descriptor, cascade, cascade_proj_far, cascade_eye_dist, cascde_recp_vp);
-
-				// Light incident equals minus light direction for directional lights
-				mat3x4 M = light_cascade_projection(cascade_descriptor, cascade, -l, cascade_eye_dist, cascde_recp_vp);
-
-				shdw = shadow(directional_shadow_depth_maps,
-							  directional_shadow_maps,
-							  shadowmap_idx,
-							  position,
-							  M,
-							  cascde_recp_vp,
-							  1000,//l_dist,
-							  10);//l_radius);
-
-				//? TODO: Remove!
+			// Shadow query
+			float shdw = deferred_evaluate_shadowing(shadow_depth_maps, 
+													 shadow_maps, 
+													 directional_shadow_depth_maps,
+													 directional_shadow_maps,
+													 cascade,
+													 position,
+													 n,
+													 light_id,
+													 l_dist,
+													 ld);
+			if (ld.type == LightTypeDirectional) {
+				//!? TODO: Remove!
 				// Inject some ambient, still without global illumination...
 				rgb += ld.diffuse * ld.luminance * 1e-10 * (1-shdw);
 			}

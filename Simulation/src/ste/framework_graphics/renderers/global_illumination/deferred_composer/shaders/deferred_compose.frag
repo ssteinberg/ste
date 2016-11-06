@@ -37,6 +37,8 @@ layout(shared, binding = 11) restrict readonly buffer lll_data {
 	lll_element lll_buffer[];
 };
 
+uniform float cascades_depths[directional_light_cascades];
+
 #include "linked_light_lists_load.glsl"
 
 #include "gbuffer_load.glsl"

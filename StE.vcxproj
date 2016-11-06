@@ -295,6 +295,7 @@
     <ClCompile Include="Simulation\src\ste\framework_graphics\gpu_dispatch\tasks\transition\gpu_state_transition.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Simulation\src\ste\framework_graphics\light\light_storage.cpp" />
     <ClCompile Include="Simulation\src\ste\framework_graphics\light\linked_light_lists\linked_light_lists.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>

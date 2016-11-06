@@ -62,18 +62,6 @@ void main() {
 		// Write the basis to the cascade
 		directional_lights_cascades[cascade_idx].X.xyz = x;
 		directional_lights_cascades[cascade_idx].Y.xyz = y;
-
-		// Split the view frustum into cascades
-		float near = projection_near_clip();
-		float far = 1e+6;
-		float iflt = 1.f;
-		float t = 1.f / float(directional_light_cascades);
-		for (int i=0; i<directional_light_cascades; ++i,++iflt) {
-			directional_lights_cascades[cascade_idx].cascades_far[i] = 
-					mix(near + iflt * t * (far-near),
-						near * pow(far/near, iflt*t),
-						.9965f);
-		}
 		
 		add_light = true;
 		range = inf;

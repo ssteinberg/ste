@@ -110,6 +110,8 @@ void deferred_composer::attach_handles() const {
 		directional_shadow_maps_handle.make_resident();
 		program.get().set_uniform("directional_shadow_maps", directional_shadow_maps_handle);
 	}
+
+	program.get().set_uniform("cascades_depths", dr->scene->scene_properties().lights_storage().get_cascade_depths_array());
 }
 
 void deferred_composer::set_context_state() const {

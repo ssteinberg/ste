@@ -66,6 +66,8 @@ private:
 			directional_shadow_depth_maps_handle.make_resident();
 			program.get().set_uniform("directional_shadow_depth_maps", directional_shadow_depth_maps_handle);
 		}
+
+		program.get().set_uniform("cascades_depths", ls->get_cascade_depths_array());
 	}
 
 private:

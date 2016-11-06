@@ -237,6 +237,9 @@
     <ClCompile Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\directional_shadowmap_projector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Simulation\src\ste\framework_graphics\light\light_storage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Simulation\src\ste\engine\cache\lru_cache.hpp">

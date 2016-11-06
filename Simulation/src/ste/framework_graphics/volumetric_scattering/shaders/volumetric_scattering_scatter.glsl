@@ -42,6 +42,7 @@ layout(bindless_sampler) uniform sampler2DArrayShadow directional_shadow_depth_m
 layout(bindless_sampler) uniform sampler2D depth_map;
 
 uniform float phase;
+uniform float cascades_depths[directional_light_cascades];
 
 const int samples = 2;
 
@@ -143,20 +144,24 @@ void main() {
 											 shadow_v,
 											 ld.radius);
 					}
-					else {continue;
-						/*uint32_t cascade_idx = light_get_cascade_descriptor_idx(ld);
+					else {
+						// Query cascade index, and shadowmap index and construct cascade projection matrix
+						uint32_t cascade_idx = light_get_cascade_descriptor_idx(ld);
 						light_cascade_descriptor cascade_descriptor = directional_lights_cascades[cascade_idx];
 
-						int cascade = light_which_cascade_for_position(cascade_descriptor, position);
+						int cascade = light_which_cascade_for_position(position, cascades_depths);
 						int shadowmap_idx = light_get_cascade_shadowmap_idx(ld, cascade);
-						vec2 cascade_z_limits;
-						mat3x4 M = light_cascade_projection(cascade_descriptor, cascade, l, cascade_z_limits);
+						
+						// Construct matrix to transform into cascade-space
+						mat3x4 M = light_cascade_projection(cascade_descriptor, 
+															cascade, 
+															ld.transformed_position,
+															cascades_depths);
 
 						shadow = shadow_fast(directional_shadow_depth_maps,
 											 shadowmap_idx,
 											 position,
-											 M,
-											 cascade_z_limits.x);*/
+											 M);
 					}
 					if (shadow <= .0f)
 						continue;

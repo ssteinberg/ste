@@ -37,6 +37,8 @@ layout(std430, binding = 8) restrict readonly buffer directional_shadow_projecti
 	directional_shadow_projection_instance_to_ll_idx_translation dsproj_id_to_llid_tt[];
 };
 
+uniform float cascades_depths[directional_light_cascades];
+
 vec3 transform(vec4 v, mat3x4 M) {
 	return v * M;
 }
@@ -92,7 +94,7 @@ void main() {
 	gl_Position.w = 1;
 	for (int cascade = 0; cascade < directional_light_cascades; ++cascade) {
 		float z_far;
-		mat3x4 M = light_cascade_projection(cascade_descriptor, cascade, l, z_far);
+		mat3x4 M = light_cascade_projection(cascade_descriptor, cascade, l, cascades_depths, z_far);
 
 		vec3 vertices[3];
 		for (int j = 0; j < 3; ++j)
