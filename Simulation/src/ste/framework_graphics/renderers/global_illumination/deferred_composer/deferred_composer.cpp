@@ -99,6 +99,19 @@ void deferred_composer::attach_handles() const {
 		shadow_maps_handle.make_resident();
 		program.get().set_uniform("shadow_maps", shadow_maps_handle);
 	}
+
+	auto directional_shadow_depth_maps = dr->shadows_storage.get_directional_maps();
+	if (directional_shadow_depth_maps) {
+		auto directional_shadow_depth_maps_handle = directional_shadow_depth_maps->get_texture_handle(dr->shadows_storage.get_shadow_sampler());
+		directional_shadow_depth_maps_handle.make_resident();
+		program.get().set_uniform("directional_shadow_depth_maps", directional_shadow_depth_maps_handle);
+
+		auto directional_shadow_maps_handle = directional_shadow_depth_maps->get_texture_handle(*Core::Sampler::SamplerLinearClamp());
+		directional_shadow_maps_handle.make_resident();
+		program.get().set_uniform("directional_shadow_maps", directional_shadow_maps_handle);
+	}
+
+	program.get().set_uniform("cascades_depths", dr->scene->scene_properties().lights_storage().get_cascade_depths_array());
 }
 
 void deferred_composer::set_context_state() const {
@@ -117,6 +130,7 @@ void deferred_composer::set_context_state() const {
 
 	ls.bind_lights_buffer(2);
 
+	7_storage_idx = dr->scene->scene_properties().lights_storage().get_directional_lights_cascades_buffer();
 	dr->lll_storage.bind_lll_buffer();
 
 	ScreenFillingQuad.vao()->bind();

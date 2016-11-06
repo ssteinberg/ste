@@ -32,6 +32,7 @@
 
 #include "shadowmap_storage.hpp"
 #include "shadowmap_projector.hpp"
+#include "directional_shadowmap_projector.hpp"
 
 #include "volumetric_scattering_storage.hpp"
 #include "volumetric_scattering_scatter_dispatch.hpp"
@@ -102,6 +103,7 @@ private:
 	Resource::resource_instance<light_preprocessor> light_preprocess;
 
 	Resource::resource_instance<shadowmap_projector> shadows_projector;
+	Resource::resource_instance<directional_shadowmap_projector> directional_shadows_projector;	
 
 	Resource::resource_instance<volumetric_scattering_scatter_dispatch> vol_scat_scatter;
 	Resource::resource_instance<volumetric_scattering_gather_dispatch> vol_scat_gather;
@@ -112,6 +114,7 @@ private:
 									fb_clearer_task,
 									backface_fb_clearer_task,
 									shadow_projector_task,
+									directional_shadows_projector_task,
 									volumetric_scattering_scatter_task,
 									volumetric_scattering_gather_task,
 									downsample_depth_task,

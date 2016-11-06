@@ -23,16 +23,16 @@ namespace Graphics {
 
 class object_group_draw_buffers {
 private:
- 	Core::VertexArrayObject vao;
+	Core::VertexArrayObject vao;
 
 	mutable Core::gstack<mesh_descriptor> mesh_data_bo;
 	mutable Core::gstack<mesh_draw_params> mesh_draw_params_bo;
- 	Core::gstack<ObjectVertexData> vbo;
+	Core::gstack<ObjectVertexData> vbo;
 	Core::gstack<std::uint32_t> indices;
 
 public:
- 	using vbo_type = Core::VertexBufferObject<ObjectVertexData, ObjectVertexData::descriptor, decltype(vbo)::usage>;
- 	using elements_type = Core::ElementBufferObject<std::uint32_t, decltype(indices)::usage>;
+	using vbo_type = Core::VertexBufferObject<ObjectVertexData, ObjectVertexData::descriptor, decltype(vbo)::usage>;
+	using elements_type = Core::ElementBufferObject<std::uint32_t, decltype(indices)::usage>;
 	using mesh_data_buffer_type = Core::ShaderStorageBuffer<mesh_descriptor, decltype(mesh_data_bo)::usage>;
 
 public:

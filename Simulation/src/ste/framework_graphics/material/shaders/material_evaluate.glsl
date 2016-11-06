@@ -226,7 +226,7 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 	has_subsurface_scattering = has_subsurface_scattering && all(lessThan(descriptor.attenuation_coefficient, vec3(inf)));
 	bool fully_attenuated = all(lessThan(sss_attenuation, vec3(epsilon)));
 
-	/*if (has_subsurface_scattering && !fully_attenuated) {
+	if (has_subsurface_scattering && !fully_attenuated) {
 		rgb += sss_attenuation * subsurface_scattering(descriptor,
 													   position,
 													   n,
@@ -234,7 +234,7 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 													   ld,
 													   shadow_maps, light,
 													   -v);
-	}*/
+	}
 
 	return rgb;
 }

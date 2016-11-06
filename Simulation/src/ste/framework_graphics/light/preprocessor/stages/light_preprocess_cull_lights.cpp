@@ -11,6 +11,7 @@ void light_preprocess_cull_lights::set_context_state() const {
 	lp->ls->bind_lights_buffer(2);
 	4_atomic_idx = lp->ls->get_active_ll_counter();
 	5_storage_idx = lp->ls->get_active_ll();
+	6_storage_idx = lp->ls->get_directional_lights_cascades_buffer();
 
 	lp->light_preprocess_cull_lights_program.get().bind();
 }

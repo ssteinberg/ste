@@ -92,7 +92,7 @@ struct refraction_ratio_fit_data {
 };
 
 struct refraction_ratio_fit {
-	static constexpr int N = 256;
+	static constexpr int N = 128;
 	static constexpr int M = 64;
 
 	unsigned char ndf_type[8];
@@ -147,7 +147,7 @@ void fit(fitting_future &future, Engine* &matlabEngine, refraction_ratio_fit *lu
 		double rmse;
 		if (matlab_eval(cmd, x, y, 4, matlabEngine, lut, &rmse)) {
 			std::cout << "<" << x << "," << y << ">: RMSE: " << rmse << "   - Fit: " << lut->data[x][y].a1 << "*exp(" << lut->data[x][y].a2 << "*x) + " << lut->data[x][y].b1 << "*exp(" << lut->data[x][y].b2 << "*x)" << std::endl;
-			if (rmse > .075) {
+			if (rmse > .05) {
 				std::cout << "Bad fit!" << std::endl;
 			}
 			return;
@@ -311,12 +311,15 @@ int main() {
 
 						[xData, yData, weights] = prepareCurveData( x, y, w );
 
-						opts = fitoptions('exp2');
-						opts.Lower = [-1e+10 -1e+10 -1e+10 -1e+10];
-						opts.Upper = [1e+10 1e+10 1e+10 1e+10];
+						ft = fittype( 'a1*exp(a2*x) + b1*exp(b2*x)', 'independent', 'x', 'dependent', 'y' );
+						opts = fitoptions( 'Method', 'NonlinearLeastSquares' );
+						opts.Display = 'Off';
+						opts.MaxFunEvals = 10000;
+						opts.MaxIter = 10000;
+						opts.StartPoint = [1 1 1 1];
 						opts.Weights = weights;
 
-						[sf, sg] = fit(xData, yData, 'exp2', opts);
+						[sf, sg] = fit(xData, yData, ft, opts);
 
 						p = coeffvalues(sf);
 						rmse = sg.rmse;

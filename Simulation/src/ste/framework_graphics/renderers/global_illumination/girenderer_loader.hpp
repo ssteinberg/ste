@@ -29,6 +29,7 @@ public:
 			object->scene_geo_cull.wait();
 			object->composer.wait();
 			object->shadows_projector.wait();
+			object->directional_shadows_projector.wait();
 			object->lll_gen_dispatch.wait();
 			object->light_preprocess.wait();
 			object->vol_scat_gather.wait();

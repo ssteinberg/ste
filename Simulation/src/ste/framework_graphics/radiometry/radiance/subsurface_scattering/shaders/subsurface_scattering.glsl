@@ -3,7 +3,7 @@
 #include "shadow.glsl"
 #include "light_transport.glsl"
 
-#include "light_load.glsl"
+#include "light.glsl"
 #include "girenderer_transform_buffer.glsl"
 
 int subsurface_scattering_calculate_steps(float thickness) {

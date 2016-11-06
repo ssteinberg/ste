@@ -13,14 +13,28 @@ class DirectionalLight : public light {
 	using Base = light;
 
 public:
-	DirectionalLight(float luminance, const RGB &diffuse, const glm::vec3 &direction) : light(luminance, 1.f, diffuse) {
+	DirectionalLight(float luminance, const RGB &diffuse, float distance, float radius, const glm::vec3 &direction) : light(luminance, radius, diffuse) {
 		descriptor.type = LightType::Directional;
 		descriptor.position = decltype(descriptor.position){ direction.x, direction.y, direction.z };
+		descriptor.directional_distance = distance;
 	}
 	virtual ~DirectionalLight() noexcept {}
 
 	void set_direction(const glm::vec3 &d) {
 		descriptor.position = decltype(descriptor.position){ d.x, d.y, d.z };
+		Base::notify();
+	}
+	void set_radius(float r) {
+		descriptor.radius = r;
+		Base::notify();
+	}
+	void set_distance(float d) {
+		descriptor.directional_distance = d;
+		Base::notify();
+	}
+
+	void set_cascade_idx(std::uint32_t idx) {
+		descriptor.cascade_idx = idx;
 		Base::notify();
 	}
 
@@ -29,6 +43,7 @@ public:
 		return { inf, inf, inf };
 	}
 	glm::vec3 get_direction() const { return { descriptor.position.x, descriptor.position.y, descriptor.position.z }; }
+	auto get_distance() const { return descriptor.directional_distance; }
 };
 
 }
