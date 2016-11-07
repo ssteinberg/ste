@@ -27,11 +27,11 @@ const vec2 shadow_cluster_samples[8] = { vec2(-.7071f,   .7071f),
  */
 float shadow_calculate_test_depth(float z, float n) {
 	float d = project_depth(z, n);
-
-	float x = -z / n - 1.f;
 	
+	// z gives a linear distance, unlike depth, use it to compute multiplier and additive component of the test depth modifier
+	float x = -z / n - 1.f;
 	float m_mixer = clamp(x / 200.f, .0f, 1.f);
-	float a_mixer = clamp(x / 100.f, .0f, 1.f);
+	float a_mixer = clamp(x / 75.f, .0f, 1.f);
 	float multiplier = mix(1.0185f, 1.000075f, m_mixer);
 	float delta_mult = mix(7.f, .0f, a_mixer);
 
