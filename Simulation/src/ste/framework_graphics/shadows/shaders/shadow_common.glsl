@@ -11,7 +11,7 @@ const float shadow_dirmap_size = 2048.f;
 const float shadow_max_clusters = 10;
 const float shadow_cutoff = .5f;
 const float shadow_penumbra_scale = 1.f;
-const float shadow_screen_penumbra_size_per_clusters = 25.f / 2.f;
+const float shadow_screen_penumbra_size_per_clusters = 30.f / 2.f;
 
 const vec2 shadow_cluster_samples[8] = { vec2(-.7071f,   .7071f),
 										 vec2( .0000f,	-.8750f),
@@ -32,7 +32,7 @@ float shadow_calculate_test_depth(float z, float n) {
 	float x = -z / n - 1.f;
 	float m_mixer = clamp(x / 200.f, .0f, 1.f);
 	float a_mixer = clamp(x / 75.f, .0f, 1.f);
-	float multiplier = mix(1.0185f, 1.000075f, m_mixer);
+	float multiplier = mix(1.0185f, 1.00015f, m_mixer);
 	float delta_mult = mix(7.f, .0f, a_mixer);
 
 	return d * multiplier + delta_mult * epsilon;

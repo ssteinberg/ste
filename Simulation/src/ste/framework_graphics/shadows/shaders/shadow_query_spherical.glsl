@@ -52,17 +52,13 @@ float shadow(samplerCubeArrayShadow shadow_depth_maps,
 	float dist_blocker = -unproject_depth(depth_blocker, shadow_near);
 
 	// Calculate penumbra based on distance and light radius
-	float penumbra = clamp(shadow_calculate_penumbra(dist_blocker, light_radius, dist_receiver),
+	float penumbra = clamp(shadow_calculate_penumbra(dist_blocker, light_radius, dist_receiver) / dist_receiver,
 						   shadow_cube_min_penumbra,
-						   shadow_cube_max_penumbra) / dist_receiver;
+						   shadow_cube_max_penumbra);
 
 	// Calculate number of sampling clusters
 	float clusters_to_sample = shadow_clusters_to_sample(penumbra * shadow_cubemap_size, position, normal);
 	clusters_to_sample = clamp(ceil(clusters_to_sample), 1.f, shadow_max_clusters);
-
-	// Avoid aliasing, samples at least a texel
-	const float minimal_texture_space_penumbra = 1.f / shadow_cubemap_size;
-	penumbra = max(penumbra, minimal_texture_space_penumbra);
 
 	// Interleaved gradient noise
 	float noise = interleaved_gradient_noise(gl_FragCoord.xy);

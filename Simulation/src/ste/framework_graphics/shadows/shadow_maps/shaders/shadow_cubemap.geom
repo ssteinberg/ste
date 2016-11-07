@@ -53,7 +53,7 @@ void process(int face, uint16_t l, vec3 vertices[3], float shadow_near) {
 	vec4 transformed_vertices[3];
 	for (int j = 0; j < 3; ++j)
 		transformed_vertices[j] = transform(face, vertices[j], shadow_near);
-	/*
+	
 	// Cull triangles outside the NDC
 	vec3 W = vec3(transformed_vertices[0].w, transformed_vertices[1].w, transformed_vertices[2].w);
 	vec3 v;
@@ -69,8 +69,8 @@ void process(int face, uint16_t l, vec3 vertices[3], float shadow_near) {
 	cull.z = all(greaterThanEqual(v, W));
 	
 	if (any(cull))
-		return;*/
-
+		return;
+		/*
 	if ((transformed_vertices[0].x >  transformed_vertices[0].w &&
 		 transformed_vertices[1].x >  transformed_vertices[1].w &&
 		 transformed_vertices[2].x >  transformed_vertices[2].w) ||
@@ -86,7 +86,7 @@ void process(int face, uint16_t l, vec3 vertices[3], float shadow_near) {
 		(transformed_vertices[0].z >  transformed_vertices[0].w &&
 		 transformed_vertices[1].z >  transformed_vertices[1].w &&
 		 transformed_vertices[2].z >  transformed_vertices[2].w))
-		return;
+		return;*/
 
 	gl_Layer = face + int(l) * 6;
 	for (int j = 0; j < 3; ++j) {
