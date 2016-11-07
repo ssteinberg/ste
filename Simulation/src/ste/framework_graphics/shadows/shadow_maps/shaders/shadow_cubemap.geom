@@ -37,6 +37,7 @@ const vec2 t = vec2(1,-1);
 vec4 transform(int face, vec3 v, float shadow_near) {
 	vec3 u;
 
+	// Transformation per face
 	if (face == 0) u = -v.zyx;
 	else if (face == 1) u = v.zyx * t.xyx;
 	else if (face == 2) u = v.xzy * t.xxy;
@@ -52,24 +53,8 @@ void process(int face, uint16_t l, vec3 vertices[3], float shadow_near) {
 	vec4 transformed_vertices[3];
 	for (int j = 0; j < 3; ++j)
 		transformed_vertices[j] = transform(face, vertices[j], shadow_near);
-	/*
+
 	// Cull triangles outside the NDC
-	vec3 W = vec3(transformed_vertices[0].w, transformed_vertices[1].w, transformed_vertices[2].w);
-	vec3 v;
-	bvec3 cull;
-
-	v = vec3(transformed_vertices[0].x, transformed_vertices[1].x, transformed_vertices[2].x);
-	cull.x = all(greaterThanEqual(v, W)) || all(lessThanEqual(v,-W));
-
-	v = vec3(transformed_vertices[0].y, transformed_vertices[1].y, transformed_vertices[2].y);
-	cull.y = all(greaterThanEqual(v, W)) || all(lessThanEqual(v,-W));
-
-	v = vec3(transformed_vertices[0].z, transformed_vertices[1].z, transformed_vertices[2].z);
-	cull.z = all(greaterThanEqual(v, W));
-	
-	if (any(cull))
-		return;*/
-
 	if ((transformed_vertices[0].x >  transformed_vertices[0].w &&
 		 transformed_vertices[1].x >  transformed_vertices[1].w &&
 		 transformed_vertices[2].x >  transformed_vertices[2].w) ||
@@ -111,6 +96,7 @@ void main() {
 	float light_range = ld.effective_range;
 	float light_range2 = light_range * light_range;
 
+	// Back face culling
 	vec3 u = gl_in[2].gl_Position.xyz - gl_in[1].gl_Position.xyz;
 	vec3 v = gl_in[0].gl_Position.xyz - gl_in[1].gl_Position.xyz;
 	vec3 N = cross(u,v);
@@ -121,6 +107,7 @@ void main() {
 
 	vec3 vertices[3];
 
+	// Range culling
 	int out_of_range = 0;
 	for (int j = 0; j < 3; ++j) {
 		vec3 P = gl_in[j].gl_Position.xyz - light_pos;
@@ -132,6 +119,7 @@ void main() {
 	if (out_of_range == 3)
 		return;
 
+	// Transform and output
 	for (int face = 0; face < 6; ++face) {
 		if ((face_mask & (1 << face)) != 0)
 			process(face, ll_id, vertices, ld.radius);

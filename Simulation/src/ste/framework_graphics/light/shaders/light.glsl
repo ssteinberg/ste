@@ -11,6 +11,8 @@ const int LightTypeDirectional = 1;
 
 const int max_active_lights_per_frame = 32;
 
+const float light_minimal_luminance_multiplier = .000006f;
+
 struct light_descriptor {
 	// position: Light position for spherical, direction for directional lights.
 	// Radius is light's radius (all light types)
@@ -77,7 +79,7 @@ float light_calculate_effective_range(light_descriptor ld, float min_lum) {
  *	Calculates a suggested light's minimal luminance
  */
 float light_calculate_minimal_luminance(light_descriptor ld) {
-	return ld.luminance * .000006f;
+	return ld.luminance * light_minimal_luminance_multiplier;
 }
 
 /*
