@@ -1,5 +1,5 @@
 // StE
-// � Shlomi Steinberg, 2015
+// © Shlomi Steinberg, 2015-2016
 
 #pragma once
 
@@ -19,7 +19,11 @@ struct light_descriptor {
 
 	LightType type;
 
-	float _internal[7];
+	float directional_distance;
+
+	std::uint32_t cascade_idx{ 0xFFFFFFFF };
+
+	float _internal[5];
 };
 
 }

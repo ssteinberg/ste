@@ -11,6 +11,7 @@ void volumetric_scattering_scatter_dispatch::set_context_state() const {
 	ls->bind_lights_buffer(2);
 
 	llls->bind_lll_buffer();
+	7_storage_idx = ls->get_directional_lights_cascades_buffer();
 
 	7_image_idx = vss->get_volume_texture()->make_image().with_access(Core::ImageAccessMode::Write);
 

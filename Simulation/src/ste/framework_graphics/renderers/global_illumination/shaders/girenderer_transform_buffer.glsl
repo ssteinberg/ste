@@ -26,6 +26,10 @@ vec3 transform_view(vec3 v) {
 	return dquat_mul_vec(view_transform_buffer.view_transform, v);
 }
 
+vec3 transform_direction_view(vec3 dir) {
+	return quat_mul_vec(view_transform_buffer.view_transform.real, dir);
+}
+
 vec4 project(vec4 v) {
 	return project(proj_transform_buffer.proj_xywz, v);
 }

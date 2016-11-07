@@ -29,6 +29,7 @@
 #include "debug_gui.hpp"
 
 #include <random>
+#include "glm_print.hpp"
 
 //#define STATIC_SCENE
 
@@ -121,7 +122,7 @@ void add_scene_lights(StE::Graphics::Scene &scene, std::vector<std::unique_ptr<S
 		color = StE::Graphics::Kelvin(std::uniform_real_distribution<>(1500,4000)(gen));
 		lums = std::uniform_real_distribution<>(5000, 9000)(gen);
 #endif
-		auto wall_lamp = scene.scene_properties().lights_storage().allocate_light<StE::Graphics::SphericalLight>(lums, color, v, 2.f);
+		auto wall_lamp = scene.scene_properties().lights_storage().allocate_spherical(lums, color, v, 2.f);
 		create_light_object(&scene, v, wall_lamp.get(), materials, layers);
 
 		lights.push_back(std::move(wall_lamp));
@@ -238,10 +239,13 @@ int main()
 
 	const glm::vec3 light0_pos{ -700.6, 138, -70 };
 	const glm::vec3 light1_pos{ 200, 550, 170 };
-	auto light0 = scene.get().scene_properties().lights_storage().allocate_light<StE::Graphics::SphericalLight>(8000.f, StE::Graphics::Kelvin(2000), light0_pos, 3.f);
-	auto light1 = scene.get().scene_properties().lights_storage().allocate_light<StE::Graphics::SphericalLight>(20000.f, StE::Graphics::Kelvin(7000), light1_pos, 5.f);
+	auto light0 = scene.get().scene_properties().lights_storage().allocate_spherical(8000.f, StE::Graphics::Kelvin(2000), light0_pos, 3.f);
+	auto light1 = scene.get().scene_properties().lights_storage().allocate_spherical(20000.f, StE::Graphics::Kelvin(7000), light1_pos, 5.f);
 	auto light0_obj = create_light_object(&scene.get(), light0_pos, light0.get(), materials, material_layers);
 	auto light1_obj = create_light_object(&scene.get(), light1_pos, light1.get(), materials, material_layers);
+
+	const glm::vec3 sun_direction = glm::normalize(glm::vec3{ 0.4, -1, 0.2 });
+	auto sun_light = scene.get().scene_properties().lights_storage().allocate_directional(2e+1f, StE::Graphics::Kelvin(5780), 384e+6, 1737e+3, sun_direction);
 
 	add_scene_lights(scene.get(), lights, materials, material_layers);
 
@@ -257,8 +261,8 @@ int main()
 	std::vector<std::unique_ptr<StE::Graphics::material_layer>> mat_editor_layers;
 	std::vector<std::shared_ptr<StE::Graphics::Object>> mat_editor_objects;
 	loading_futures.insert(StE::Resource::ModelFactory::load_model_async(ctx,
-																		 //R"(Data/models/dragon/china_dragon.obj)",
-																		 R"(Data/models/mitsuba/mitsuba-sphere.obj)",
+																		 R"(Data/models/dragon/china_dragon.obj)",
+																		 //R"(Data/models/mitsuba/mitsuba-sphere.obj)",
 																		 &scene.get().object_group(),
 																		 &scene.get().scene_properties(),
 																		 2.5f,
@@ -284,11 +288,11 @@ int main()
 	renderer.get().attach_profiler(gpu_tasks_profiler.get());
 	std::unique_ptr<StE::Graphics::debug_gui> debug_gui_dispatchable = std::make_unique<StE::Graphics::debug_gui>(ctx, gpu_tasks_profiler.get(), font, &camera);
 
-	//auto mat_editor_model_transform = glm::scale(glm::mat4(), glm::vec3{ 3.5f });
-	//mat_editor_model_transform = glm::translate(mat_editor_model_transform, glm::vec3{ .0f, -15.f, .0f });
-	auto mat_editor_model_transform = glm::translate(glm::mat4(), glm::vec3{ .0f, .0f, -50.f });
-	mat_editor_model_transform = glm::scale(mat_editor_model_transform, glm::vec3{ 65.f });
-	mat_editor_model_transform = glm::rotate(mat_editor_model_transform, glm::half_pi<float>(), glm::vec3{ .0f, 1.0f, 0.f });
+	auto mat_editor_model_transform = glm::scale(glm::mat4(), glm::vec3{ 3.5f });
+	mat_editor_model_transform = glm::translate(mat_editor_model_transform, glm::vec3{ .0f, -15.f, .0f });
+	//auto mat_editor_model_transform = glm::translate(glm::mat4(), glm::vec3{ .0f, .0f, -50.f });
+	//mat_editor_model_transform = glm::scale(mat_editor_model_transform, glm::vec3{ 65.f });
+	//mat_editor_model_transform = glm::rotate(mat_editor_model_transform, glm::half_pi<float>(), glm::vec3{ .0f, 1.0f, 0.f });
 	for (auto &o : mat_editor_objects)
 		o->set_model_transform(glm::mat4x3(mat_editor_model_transform));
 	
@@ -422,12 +426,17 @@ int main()
 
 #ifdef STATIC_SCENE
 		glm::vec3 lp = light0_pos;
+		glm::vec3 sun_dir = sun_direction;
 #else
 		float angle = time * glm::pi<float>() / 2.5f;
 		glm::vec3 lp = light0_pos + glm::vec3(glm::sin(angle) * 3, 0, glm::cos(angle)) * 115.f;
+
+		float angle2 = time * glm::pi<float>() / 10.f;
+		glm::vec3 sun_dir = glm::normalize(glm::vec3{ glm::sin(angle2), -5.f, glm::cos(angle2)});
 #endif
 		light0->set_position(lp);
 		light0_obj->set_model_transform(glm::mat4x3(glm::translate(glm::mat4(), lp)));
+		//sun_light->set_direction(sun_dir);
 
 		{
 			using namespace StE::Text::Attributes;

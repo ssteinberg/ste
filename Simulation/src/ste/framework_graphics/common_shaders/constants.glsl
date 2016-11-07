@@ -14,6 +14,9 @@ const float three_pi =		9.424777960769379f;
 const float four_pi =		12.566370614359172f;
 const float five_pi =		15.707963267948966f;
 
+const float e =				2.71828182845904523536f;
+const float one_over_e =	0.367879441171442321596f;
+
 const float epsilon =		1e-10;
 const float flt_min =		1e-32;
 const float inf =			+1.f / .0f;

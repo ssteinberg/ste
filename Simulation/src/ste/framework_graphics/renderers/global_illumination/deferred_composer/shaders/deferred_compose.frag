@@ -8,6 +8,7 @@
 
 #include "material.glsl"
 #include "light.glsl"
+#include "light_cascades.glsl"
 #include "linked_light_lists.glsl"
 
 #include "gbuffer.glsl"
@@ -27,13 +28,17 @@ layout(std430, binding = 2) restrict readonly buffer light_data {
 layout(shared, binding = 6) restrict readonly buffer gbuffer_data {
 	g_buffer_element gbuffer[];
 };
+layout(shared, binding = 7) restrict readonly buffer directional_lights_cascades_data {
+	light_cascade_descriptor directional_lights_cascades[];
+};
 
 layout(r32ui, binding = 6) restrict readonly uniform uimage2D lll_heads;
 layout(shared, binding = 11) restrict readonly buffer lll_data {
 	lll_element lll_buffer[];
 };
 
-#include "light_load.glsl"
+uniform float cascades_depths[directional_light_cascades];
+
 #include "linked_light_lists_load.glsl"
 
 #include "gbuffer_load.glsl"
@@ -45,6 +50,9 @@ layout(shared, binding = 11) restrict readonly buffer lll_data {
 
 layout(bindless_sampler) uniform samplerCubeArrayShadow shadow_depth_maps;
 layout(bindless_sampler) uniform samplerCubeArray shadow_maps;
+
+layout(bindless_sampler) uniform sampler2DArrayShadow directional_shadow_depth_maps;
+layout(bindless_sampler) uniform sampler2DArray directional_shadow_maps;
 
 layout(bindless_sampler) uniform sampler3D scattering_volume;
 
@@ -64,6 +72,8 @@ void main() {
 	vec3 shaded_fragment = deferred_shade_fragment(g_frag, coord,
 												   shadow_depth_maps, 
 												   shadow_maps, 
+												   directional_shadow_depth_maps,
+												   directional_shadow_maps,
 												   scattering_volume, 
 												   microfacet_refraction_fit_lut,
 												   microfacet_transmission_fit_lut,

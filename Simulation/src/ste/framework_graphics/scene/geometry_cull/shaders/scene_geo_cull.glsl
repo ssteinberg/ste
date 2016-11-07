@@ -7,9 +7,14 @@ layout(local_size_x = 128) in;
 
 #include "girenderer_transform_buffer.glsl"
 #include "indirect.glsl"
+
 #include "light.glsl"
-#include "mesh_descriptor.glsl"
+#include "light_cascades.glsl"
 #include "shadow_projection_instance_to_ll_idx_translation.glsl"
+
+#include "intersection.glsl"
+
+#include "mesh_descriptor.glsl"
 
 layout(std430, binding = 14) restrict readonly buffer mesh_data {
 	mesh_descriptor mesh_descriptor_buffer[];
@@ -28,17 +33,28 @@ layout(shared, binding = 4) restrict readonly buffer ll_counter_data {
 layout(shared, binding = 5) restrict readonly buffer ll_data {
 	uint16_t ll[];
 };
+layout(shared, binding = 6) restrict readonly buffer directional_lights_cascades_data {
+	light_cascade_descriptor directional_lights_cascades[];
+};
 
 layout(binding = 0) uniform atomic_uint counter;
-layout(std430, binding = 0) restrict writeonly buffer idb_data {
+layout(std430, binding = 10) restrict writeonly buffer idb_data {
 	IndirectMultiDrawElementsCommand idb[];
 };
-layout(std430, binding = 1) restrict writeonly buffer sidb_data {
+layout(std430, binding = 0) restrict writeonly buffer sidb_data {
 	IndirectMultiDrawElementsCommand sidb[];
+};
+layout(std430, binding = 1) restrict writeonly buffer dsidb_data {
+	IndirectMultiDrawElementsCommand dsidb[];
 };
 layout(std430, binding = 8) restrict writeonly buffer shadow_projection_instance_to_ll_idx_translation_data {
 	shadow_projection_instance_to_ll_idx_translation sproj_id_to_llid_tt[];
 };
+layout(std430, binding = 9) restrict writeonly buffer directional_shadow_projection_instance_to_ll_idx_translation_data {
+	directional_shadow_projection_instance_to_ll_idx_translation dsproj_id_to_llid_tt[];
+};
+
+uniform float cascades_depths[directional_light_cascades];
 
 void main() {
 	int draw_id = int(gl_GlobalInvocationID.x);
@@ -49,21 +65,49 @@ void main() {
 
 	vec3 center = transform_view(transform_model(md, md.bounding_sphere.xyz));
 	float radius = md.bounding_sphere.w;
-
+	
 	uint shadow_instance_count = 0;
+	uint dir_shadow_instance_count = 0;
+
+	// Check if the geometry intersects some light's effective range
 	for (int i = 0; i < ll_counter; ++i) {
 		uint16_t light_idx = ll[i];
-
 		light_descriptor ld = light_buffer[light_idx];
+		vec3 l = ld.transformed_position;
+		
+		if (ld.type == LightTypeDirectional) {
+			// For directional lights check if the geometry is in one of the cascades
+			uint32_t cascade_idx = light_get_cascade_descriptor_idx(ld);
+			light_cascade_descriptor cascade_descriptor = directional_lights_cascades[cascade_idx];
 
-		vec3 lc = ld.transformed_position;
-		float lr = ld.effective_range;
+			for (int cascade=0; cascade<directional_light_cascades; ++cascade) {
+				// Read cascade parameters
+				float cascade_proj_far, cascade_eye_dist;
+				vec2 recp_viewport;
+				light_cascade_data(cascade_descriptor, cascade, cascade_proj_far, cascade_eye_dist, recp_viewport);
 
-		vec3 v = lc - center;
-		float d = lr + radius;
-		if (dot(v,v) < d*d) {
-			sproj_id_to_llid_tt[draw_id].ll_idx[shadow_instance_count] = uint16_t(i);
-			++shadow_instance_count;
+				// And construct projection matrix
+				mat3x4 M = light_cascade_projection(cascade_descriptor, cascade, l, cascade_eye_dist, recp_viewport, cascades_depths);
+				
+				// Project the geometry bounding sphere into cascade-space.
+				// Check that it intersects the viewport and is in front of the far-plane of the cascade
+				vec3 center_in_cascade_space  = vec4(center, 1) * M;
+				if (any(lessThan(abs(center_in_cascade_space.xy), vec2(1.f) + radius * recp_viewport)) &&
+					center_in_cascade_space.z > cascade_proj_far - radius) {
+					dsproj_id_to_llid_tt[draw_id].ll_idx[dir_shadow_instance_count] = uint16_t(i);
+					++dir_shadow_instance_count;
+					break;
+				}
+			}
+		}
+		else {
+			// Check if the light effective range sphere intersects the geometry bounding sphere
+			float lr = ld.effective_range;
+
+			if (collision_sphere_sphere(l, lr, center, radius)) {
+				sproj_id_to_llid_tt[draw_id].ll_idx[shadow_instance_count] = uint16_t(i);
+				++shadow_instance_count;
+			}
 		}
 	}
 
@@ -82,5 +126,8 @@ void main() {
 
 		c.instance_count = shadow_instance_count;
 		sidb[idx] = c;
+
+		c.instance_count = dir_shadow_instance_count;
+		dsidb[idx] = c;
 	}
 }

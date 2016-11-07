@@ -37,7 +37,9 @@ public:
 							const Scene *scene,
 							const light_storage *ls) : scene(scene),
 													   ls(ls),
-													   program(ctx, "scene_geo_cull.glsl") {}
+													   program(ctx, "scene_geo_cull.glsl") {
+		program.get().set_uniform("cascades_depths", scene->scene_properties().lights_storage().get_cascade_depths_array());
+	}
 
 	void set_context_state() const override final;
 	void dispatch() const override final;

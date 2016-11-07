@@ -49,6 +49,9 @@ private:
 
 private:
 	void set_projection_planes() const;
+	void set_programs_cascades_depths_uniform() const {
+		light_preprocess_cull_shadows_program.get().set_uniform("cascades_depths", ls->get_cascade_depths_array());
+	}
 
 private:
 	light_preprocessor(const StEngineControl &ctx,
@@ -88,6 +91,7 @@ public:
 			object->light_preprocess_cull_shadows_program.wait();
 		}).then_on_main_thread([object]() {
 			object->set_projection_planes();
+			object->set_programs_cascades_depths_uniform();
 		});
 	}
 };
