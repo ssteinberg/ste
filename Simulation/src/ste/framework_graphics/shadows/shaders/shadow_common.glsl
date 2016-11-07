@@ -6,14 +6,14 @@
 #include "project.glsl"
 
 const float shadow_cubemap_size = 1024.f;
-const float shadow_dirmap_size = 1024.f;
+const float shadow_dirmap_size = 2048.f;
 
 const float shadow_max_clusters = 10;
 const float shadow_cutoff = .5f;
 const float shadow_penumbra_scale = 1.f;
 const float shadow_screen_penumbra_size_per_clusters = 25.f / 2.f;
 
-const vec2 shadow_cluster_samples[8] = { vec2(-.7071f,  .7071f),
+const vec2 shadow_cluster_samples[8] = { vec2(-.7071f,   .7071f),
 										 vec2( .0000f,	-.8750f),
 										 vec2( .5303f,	 .5303f),
 										 vec2(-.6250f,	-.0000f),
@@ -25,8 +25,17 @@ const vec2 shadow_cluster_samples[8] = { vec2(-.7071f,  .7071f),
 /*
  *	Creates a slightly offseted testing depth for shadowmaps lookups
  */
-float shadow_calculate_test_depth(float zf) {
-	return zf * 1.0175f + 6.f * epsilon;
+float shadow_calculate_test_depth(float z, float n) {
+	float d = project_depth(z, n);
+
+	float x = -z / n - 1.f;
+	
+	float m_mixer = clamp(x / 200.f, .0f, 1.f);
+	float a_mixer = clamp(x / 100.f, .0f, 1.f);
+	float multiplier = mix(1.0185f, 1.000075f, m_mixer);
+	float delta_mult = mix(7.f, .0f, a_mixer);
+
+	return d * multiplier + delta_mult * epsilon;
 }
 
 /*

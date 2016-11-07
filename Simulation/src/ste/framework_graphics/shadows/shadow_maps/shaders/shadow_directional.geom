@@ -66,7 +66,7 @@ void process(int cascade, uint32_t cascade_idx, vec3 vertices[3], float z_far) {
 		float z = project_depth(vertices[j].z, cascade_proj_near_clip);
 
 		gl_Position.xy = vertices[j].xy;
-		gl_Position.z  = min(1, z);
+		gl_Position.z  = min(1.f, z);
 		EmitVertex();
 	}
 
@@ -85,7 +85,7 @@ void main() {
 	vec3 v = gl_in[0].gl_Position.xyz - gl_in[1].gl_Position.xyz;
 	vec3 n = cross(u,v);
 
-	if (dot(n,l) <= 0)
+	if (dot(n,-l) <= 0)
 		return;
 		
 	uint32_t cascade_idx = light_get_cascade_descriptor_idx(ld);

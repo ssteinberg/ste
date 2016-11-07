@@ -43,8 +43,7 @@ float shadow(samplerCubeArrayShadow shadow_depth_maps,
 	vec3 norm_v = shadow_v / dist_receiver;
 
 	float depth_blocker = shadow_blocker_search(shadow_maps, idx, norm_v, m);
-	float depth_receiver = project_depth(-dist_receiver, shadow_near);
-	float dt = shadow_calculate_test_depth(depth_receiver);
+	float dt = shadow_calculate_test_depth(-dist_receiver, shadow_near);
 
 	// No shadowing if distance to blocker is further away from receiver
 	if (dt >= depth_blocker)
@@ -59,7 +58,11 @@ float shadow(samplerCubeArrayShadow shadow_depth_maps,
 
 	// Calculate number of sampling clusters
 	float clusters_to_sample = shadow_clusters_to_sample(penumbra * shadow_cubemap_size, position, normal);
-	clusters_to_sample = clamp(ceil(clusters_to_sample), 1.f, shadow_max_clusters); 
+	clusters_to_sample = clamp(ceil(clusters_to_sample), 1.f, shadow_max_clusters);
+
+	// Avoid aliasing, samples at least a texel
+	const float minimal_texture_space_penumbra = 1.f / shadow_cubemap_size;
+	penumbra = max(penumbra, minimal_texture_space_penumbra);
 
 	// Interleaved gradient noise
 	float noise = interleaved_gradient_noise(gl_FragCoord.xy);
@@ -106,13 +109,12 @@ float shadow(samplerCubeArrayShadow shadow_depth_maps,
  */
 float shadow_fast(samplerCubeArrayShadow shadow_depth_maps, uint idx, vec3 shadow_v, float light_radius) {
 	vec3 v = abs(shadow_v);
-	float m = max(v.x, max(v.y, v.z));
-
+	float m = max_element(v);
 	float shadow_near = light_radius;
 
-	float zf = shadow_near / m;
+	float dt = shadow_calculate_test_depth(-m, shadow_near);
 
-	return texture(shadow_depth_maps, vec4(shadow_v, idx), shadow_calculate_test_depth(zf)).x;
+	return texture(shadow_depth_maps, vec4(shadow_v, idx), dt).x;
 }
 
 /*
@@ -135,8 +137,7 @@ vec3 shadow_occluder(samplerCubeArray shadow_maps, uint idx, vec3 shadow_v, floa
 	vec3 norm_v = shadow_v / dist_receiver;
 
 	float depth_blocker = shadow_blocker_search(shadow_maps, idx, norm_v, m);
-	float depth_receiver = project_depth(-dist_receiver, shadow_near);
-	float dt = shadow_calculate_test_depth(depth_receiver);
+	float dt = shadow_calculate_test_depth(-dist_receiver, shadow_near);
 
 	// No shadowing if distance to blocker is further away from receiver
 	if (dt < depth_blocker) {

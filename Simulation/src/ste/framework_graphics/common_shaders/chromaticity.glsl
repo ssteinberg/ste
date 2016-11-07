@@ -1,4 +1,6 @@
 
+#include "common.glsl"
+
 mat3 conversion_matrix_rgb_ro_xyz = mat3(
 	0.412453, 0.212671, 0.019334,
 	0.357580, 0.715160, 0.119193,
@@ -34,5 +36,5 @@ vec3 xyYtoXYZ(vec3 xyY) {
 }
 
 vec3 luminance_saturate(vec3 c) {
-	return c / max(c.x, max(c.y, c.z));
+	return c / max_element(c);
 }

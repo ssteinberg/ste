@@ -7,7 +7,7 @@ using namespace StE::Graphics;
 void light_storage::build_cascade_depth_array() {
 	// The near plane is just a suggestion, the first cascade will cover the area from the real near clip plane to the end of the cascade.
 	float n = 5.f;
-	// Something very large... No directional shadows after that. 100km seems realistic enough.
+	// Something very large... No directional shadows after that. 1,000km seems realistic enough.
 	float f = 1e+6f;
 
 	// Split the view frustum into cascades
@@ -17,6 +17,6 @@ void light_storage::build_cascade_depth_array() {
 		cascades_depths[i] = //n * glm::pow(f/n, iflt*t);
 			glm::mix(n + iflt * t * (f - n),
 					 n * glm::pow(f / n, iflt*t),
-					 .997f);
+					 .9965f);
 	}
 }

@@ -28,8 +28,7 @@ float shadow(sampler2DArrayShadow directional_shadow_depth_maps,
 	float cascade_space_dist_receiver = -v.z;
 
 	float depth_blocker = shadow_blocker_search(directional_shadow_maps, idx, uv);
-	float depth_receiver = project_depth(v.z, cascade_proj_near_clip);
-	float dt = shadow_calculate_test_depth(depth_receiver);
+	float dt = shadow_calculate_test_depth(v.z, cascade_proj_near_clip);
 
 	// No shadowing if distance to blocker is further away from receiver
 	if (dt >= depth_blocker)
@@ -50,9 +49,10 @@ float shadow(sampler2DArrayShadow directional_shadow_depth_maps,
 	float clusters_to_sample = shadow_clusters_to_sample(penumbra_world_space * shadow_dirmap_size, position, normal);
 	clusters_to_sample = clamp(ceil(clusters_to_sample), 1.f, shadow_max_clusters); 
 
-	// Transform penumbra size to cascade texture space
+	// Transform penumbra size to cascade texture space (enforce at least 1 texel radius filtering to avoid aliasing)
 	vec2 to_texture_space = .25f * cascade_recp_vp;
-	vec2 penumbra = penumbra_world_space * to_texture_space;
+	const vec2 minimal_texture_space_penumbra = vec2(1.f / shadow_dirmap_size);
+	vec2 penumbra = max(penumbra_world_space * to_texture_space, minimal_texture_space_penumbra);
 	
 	// Interleaved gradient noise
 	float noise = interleaved_gradient_noise(gl_FragCoord.xy);
@@ -99,10 +99,10 @@ float shadow_fast(sampler2DArrayShadow directional_shadow_depth_maps,
 				  mat3x4 cascade_transform) {
 	vec3 v = vec4(position, 1) * cascade_transform;
 	vec2 uv = v.xy * .5f + vec2(.5f);
-	float zf = project_depth(v.z, cascade_proj_near_clip);
-	zf = shadow_calculate_test_depth(zf);
 
-	return texture(directional_shadow_depth_maps, vec4(uv, idx, zf)).x;
+	float dt = shadow_calculate_test_depth(v.z, cascade_proj_near_clip);
+
+	return texture(directional_shadow_depth_maps, vec4(uv, idx, dt)).x;
 }
 
 /*
@@ -130,8 +130,7 @@ vec3 shadow_occluder(sampler2DArray directional_shadow_maps,
 	float cascade_space_dist_receiver = -v.z;
 
 	float depth_blocker = shadow_blocker_search(directional_shadow_maps, idx, uv);
-	float depth_receiver = project_depth(v.z, cascade_proj_near_clip);
-	float dt = shadow_calculate_test_depth(depth_receiver);
+	float dt = shadow_calculate_test_depth(v.z, cascade_proj_near_clip);
 	
 	// No shadowing if distance to blocker is further away from receiver
 	if (dt < depth_blocker) {

@@ -58,6 +58,7 @@ void main() {
 			x = cross(l, vec3(1,0,0));
 		x = normalize(x);
 		vec3 y = normalize(cross(l,x));
+		x = -x;		// Keep right-handed system
 		
 		// Write the basis to the cascade
 		directional_lights_cascades[cascade_idx].X.xyz = x;

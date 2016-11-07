@@ -4,11 +4,13 @@
 
 #include "girenderer_transform_buffer.glsl"
 
-const int max_active_directional_lights_per_frame = 4;
+const int max_active_directional_lights_per_frame = 2;
 const int directional_light_cascades = 6;
 
-const float cascade_proj_near_clip = 10.f;
+const float cascade_proj_near_clip = 25.f;
 const float cascade_viewport_reserve = 1.075f;
+
+const float light_cascade_minimal_distance = 1e+4;
 
 struct light_cascade_descriptor {
 	// Tangent and up vector of all cascades, with light direction being view vector
@@ -72,7 +74,7 @@ float light_cascade_far(int cascade, float cascades_depths[directional_light_cas
  */
 float light_cascade_calculate_eye_dist(float z_far, float z_near) {
 	float cascade_depth = z_near - z_far;
-	return z_near + max(2*cascade_proj_near_clip, 2*cascade_depth);
+	return z_near + max3(2.f * cascade_proj_near_clip, 50.f * cascade_depth, light_cascade_minimal_distance);
 }
 
 /*

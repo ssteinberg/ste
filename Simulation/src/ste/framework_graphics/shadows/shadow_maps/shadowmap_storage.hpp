@@ -22,7 +22,7 @@ namespace Graphics {
 
 class shadowmap_storage {
 	static constexpr unsigned default_map_size = 1024;
-	static constexpr unsigned default_directional_map_size = 1024;
+	static constexpr unsigned default_directional_map_size = 2048;
 
 private:
 	glm::uvec2 cube_size;
