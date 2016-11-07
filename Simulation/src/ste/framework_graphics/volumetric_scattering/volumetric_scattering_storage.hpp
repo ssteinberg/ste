@@ -41,7 +41,8 @@ public:
 								  float scatter_phase_aniso_coefficient = .15f) : volume_sampler(Core::TextureFiltering::Linear, Core::TextureFiltering::Linear,
 																								 Core::TextureWrapMode::ClampToEdge, Core::TextureWrapMode::ClampToEdge, 16),
 																				  depth_sampler(Core::TextureFiltering::Nearest, Core::TextureFiltering::Nearest, Core::TextureFiltering::Nearest,
-																								Core::TextureWrapMode::ClampToEdge, Core::TextureWrapMode::ClampToEdge) {
+																								Core::TextureWrapMode::ClampToEdge, Core::TextureWrapMode::ClampToEdge),
+																				  scatter_phase_aniso_coefficient(scatter_phase_aniso_coefficient) {
 		volume_sampler.set_wrap_r(Core::TextureWrapMode::ClampToEdge);
 
 		resize(size);

@@ -44,7 +44,7 @@ layout(bindless_sampler) uniform sampler2D depth_map;
 uniform float phase;
 uniform float cascades_depths[directional_light_cascades];
 
-const int samples = 2;
+const int samples = 1;
 
 float depth3x3(vec2 uv, int lod) {
 	float d00 = textureLodOffset(depth_map, uv, lod, ivec2(-1,-1)).x;
