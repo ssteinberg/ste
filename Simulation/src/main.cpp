@@ -31,7 +31,7 @@
 #include <random>
 #include "glm_print.hpp"
 
-#define STATIC_SCENE
+//#define STATIC_SCENE
 
 using namespace StE::Core;
 using namespace StE::Text;
