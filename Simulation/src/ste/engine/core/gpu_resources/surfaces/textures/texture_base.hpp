@@ -117,11 +117,11 @@ public:
 	constexpr bool is_array_texture() const { return texture_is_array<TextureType>::value; }
 	constexpr bool is_multisampled() const { return texture_is_multisampled<TextureType>::value; }
 
-	void clear(void *data, int level = 0) {
+	void clear(const void *data, int level = 0) {
 		gli::gl::format glformat = GL::gl_utils::translate_format(format, swizzle);
 		glClearTexImage(Base::get_resource_id(), level, glformat.External, glformat.Type, data);
 	}
-	void clear(void *data, glm::i32vec3 offset, glm::u32vec3 size, int level = 0) {
+	void clear(const void *data, glm::i32vec3 offset, glm::u32vec3 size, int level = 0) {
 		gli::gl::format glformat = GL::gl_utils::translate_format(format, swizzle);
 		glClearTexSubImage(Base::get_resource_id(), level, offset.x, offset.y, offset.z, size.x, size.y, size.z, glformat.External, glformat.Type, data);
 	}

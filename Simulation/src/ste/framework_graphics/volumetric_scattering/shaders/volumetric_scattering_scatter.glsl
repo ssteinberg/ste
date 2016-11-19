@@ -76,16 +76,16 @@ void main() {
 
 	int depth_lod = 2;
 	float depth_buffer_d = depth3x3((vec2(slice_coords) + vec2(.5f)) / vec2(volume_size.xy), depth_lod);
+	int max_tile = min(int(ceil(volumetric_scattering_tile_for_depth(depth_buffer_d))) + 2, volumetric_scattering_depth_tiles);
 
 	uint32_t lll_ptr_base = imageLoad(lll_heads, slice_coords).x;
-
-	int max_tile = min(int(ceil(volumetric_scattering_tile_for_depth(depth_buffer_d))) + 2, volumetric_scattering_depth_tiles);
+		
 	float depth = volumetric_scattering_depth_for_tile(0);
 	for (int tile = 0; tile < max_tile; ++tile) {
 		ivec3 volume_coords = ivec3(slice_coords, tile);
 		vec2 fragcoords = slice_coords_to_fragcoords(vec2(slice_coords));
-
 		float depth_next_tile = volumetric_scattering_depth_for_tile(tile + 1);
+
 		float z_next = unproject_depth(depth_next_tile);
 		float z_start = unproject_depth(depth);
 		float z_center = mix(z_start, z_next, .5f);
@@ -97,91 +97,82 @@ void main() {
 		vec3 fog_diffuse = vec3(1.f);
 
 		vec3 rgb = vec3(.0f);
-
+			
 		uint32_t lll_ptr = lll_ptr_base;
 		for (;;++lll_ptr) {
 			lll_element lll_p = lll_buffer[lll_ptr];
 			if (lll_eof(lll_p))
 				break;
-
+			
 			vec2 lll_depth_range = lll_parse_depth_range(lll_p);
-			if (depth_next_tile >= lll_depth_range.x &&
-				depth <= lll_depth_range.y) {
-				uint light_idx = uint(lll_parse_light_idx(lll_p));
-				light_descriptor ld = light_buffer[light_idx];
+			if (depth_next_tile < lll_depth_range.x ||
+				depth > lll_depth_range.y)
+				continue;
+				
+			uint light_idx = uint(lll_parse_light_idx(lll_p));
+			light_descriptor ld = light_buffer[light_idx];
 
-				vec3 scatter = vec3(0.f);
-				for (int s = 0; s < samples; ++s) {
-					float r = interleaved_gradient_noise(slice_coords + vec2(light_idx + s + 1, depth));
-					float z = mix(z_start, z_next, r * .99f);
+			vec3 scatter = vec3(0.f);
+			//for (int s = 0; s < samples; ++s) {
+			int s = 0;
+				float r = interleaved_gradient_noise(slice_coords + vec2(light_idx + s + 1, depth));
+				float z = mix(z_start, z_next, r * .99f);
 					
-					vec2 jitter = vec2(fract(r * 1.696f), fract(-r * 2.329f));
-					vec2 coords = slice_coords_to_fragcoords(vec2(slice_coords) + jitter);
-					vec3 position = unproject_screen_position_with_z(z, coords);
+				vec2 jitter = vec2(fract(r * 1.696f), fract(-r * 2.329f));
+				vec2 coords = slice_coords_to_fragcoords(vec2(slice_coords) + jitter);
+				vec3 position = unproject_screen_position_with_z(z, coords);
+				
+				float shadow = 1.f;
+				float scale = 1.f;
+				float l_dist;
+				vec3 l = light_incidant_ray(ld, position);
+				if (ld.type == LightTypeDirectional) {
+					l_dist = .0f;
 
-					float l_dist;
-					vec3 l;
-					vec3 incident = light_incidant_ray(ld, position);
-					if (ld.type == LightTypeSphere) {
-						float light_effective_range = ld.effective_range;
-						float dist2 = dot(incident, incident);
-						if (dist2 >= light_effective_range*light_effective_range)
-							continue;
+					// Query cascade index, and shadowmap index and construct cascade projection matrix
+					uint32_t cascade_idx = light_get_cascade_descriptor_idx(ld);
+					light_cascade_descriptor cascade_descriptor = directional_lights_cascades[cascade_idx];
 
-						l_dist = sqrt(dist2);
-						l = incident / l_dist;
-					}
-					else {
-						l_dist = abs(ld.directional_distance);
-						l = incident;
-					}
-
-					float shadow = 1.f;
-					if (ld.type == LightTypeSphere) {
-						vec3 shadow_v = position - ld.transformed_position;
-						shadow = shadow_fast(shadow_depth_maps,
-											 uint(lll_parse_ll_idx(lll_p)),
-											 shadow_v,
-											 ld.radius);
-					}
-					else {
-						// Query cascade index, and shadowmap index and construct cascade projection matrix
-						uint32_t cascade_idx = light_get_cascade_descriptor_idx(ld);
-						light_cascade_descriptor cascade_descriptor = directional_lights_cascades[cascade_idx];
-
-						int cascade = light_which_cascade_for_position(position, cascades_depths);
-						int shadowmap_idx = light_get_cascade_shadowmap_idx(ld, cascade);
+					int cascade = light_which_cascade_for_position(position, cascades_depths);
+					int shadowmap_idx = light_get_cascade_shadowmap_idx(ld, cascade);
 						
-						// Construct matrix to transform into cascade-space
-						mat3x4 M = light_cascade_projection(cascade_descriptor, 
-															cascade, 
-															ld.transformed_position,
-															cascades_depths);
+					// Construct matrix to transform into cascade-space
+					mat3x4 M = light_cascade_projection(cascade_descriptor, 
+														cascade, 
+														ld.transformed_position,
+														cascades_depths);
 
-						shadow = shadow_fast(directional_shadow_depth_maps,
-											 shadowmap_idx,
-											 position,
-											 M);
-					}
-					if (shadow <= .0f)
-						continue;
-
-					vec3 view_dir = normalize(position);
-
-					vec3 irradiance = light_irradiance(ld, l_dist) * shadow;
+					shadow = shadow_fast(directional_shadow_depth_maps,
+										 shadowmap_idx,
+										 position,
+										 M);
+				}
+				else {
+					l_dist = length(l);
+					l /= l_dist;
+					
+					vec3 shadow_v = position - ld.transformed_position;
+					shadow = shadow_fast(shadow_depth_maps,
+										 uint(lll_parse_ll_idx(lll_p)),
+										 shadow_v,
+										 ld.radius);
 
 					float scaling_size = thickness;
-					float scale = min(l_dist, scaling_size) / scaling_size;
-
-					scatter += scale * irradiance * henyey_greenstein_phase_function(l, view_dir, phase);
+					scale = min(l_dist, scaling_size) / scaling_size;
 				}
+				if (shadow <= .0f)
+					continue;
 
-				rgb += scatter / float(samples);
-			}
+				vec3 view_dir = normalize(position);
+				vec3 irradiance = light_irradiance(ld, l_dist) * shadow;
+
+				scatter += scale * irradiance * henyey_greenstein_phase_function(l, view_dir, phase);
+			//}
+
+			rgb += scatter / float(samples);
 		}
-
+		
 		imageStore(volume, volume_coords, vec4(rgb * fog_diffuse * k_scattering, k_scattering + k_absorption));
-
 		depth = depth_next_tile;
 	}
 }
