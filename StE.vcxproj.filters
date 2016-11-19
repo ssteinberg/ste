@@ -1067,6 +1067,9 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\directional_shadowmap_projector.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\atmospherics\atmospheric_properties.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Simulation\src\ste\framework_graphics\material\shaders\material_evaluate.glsl" />
