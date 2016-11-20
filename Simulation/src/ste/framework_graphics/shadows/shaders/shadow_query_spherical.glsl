@@ -35,7 +35,8 @@ float shadow(samplerCubeArrayShadow shadow_depth_maps,
 			 vec3 position, 
 			 vec3 normal,
 			 vec3 shadow_v, 
-			 float light_radius) {
+			 float light_radius,
+			 ivec2 frag_coords) {
 	float shadow_near = light_radius;
 
 	mat2x3 m;
@@ -61,7 +62,7 @@ float shadow(samplerCubeArrayShadow shadow_depth_maps,
 	clusters_to_sample = clamp(ceil(clusters_to_sample), 1.f, shadow_max_clusters);
 
 	// Interleaved gradient noise
-	float noise = interleaved_gradient_noise(gl_FragCoord.xy);
+	float noise = interleaved_gradient_noise(vec2(frag_coords));
 	float accum = .0f;
 	float w = .0f;
 
@@ -125,7 +126,11 @@ float shadow_depth(samplerCubeArray shadow_maps, uint idx, vec3 shadow_v) {
  *	Lookup shadow occluder in shadow_v direction
  *	Filtered, like 'shadow' method but limited to a single cluster and smaller upper limit on penumbra size
  */
-vec3 shadow_occluder(samplerCubeArray shadow_maps, uint idx, vec3 shadow_v, float light_radius) {
+vec3 shadow_occluder(samplerCubeArray shadow_maps, 
+					 uint idx, 
+					 vec3 shadow_v, 
+					 float light_radius,
+					 ivec2 frag_coords) {
 	float shadow_near = light_radius;
 	
 	mat2x3 m;
@@ -140,7 +145,7 @@ vec3 shadow_occluder(samplerCubeArray shadow_maps, uint idx, vec3 shadow_v, floa
 		float dist_blocker = -unproject_depth(depth_blocker, shadow_near);
 		float penumbra = shadow_calculate_penumbra(dist_blocker, light_radius, dist_receiver);
 
-		float noise = two_pi * interleaved_gradient_noise(gl_FragCoord.xy);
+		float noise = two_pi * interleaved_gradient_noise(vec2(frag_coords));
 		float sin_noise = sin(noise);
 		float cos_noise = cos(noise);
 		mat2 sample_rotation_matrix = mat2(cos_noise,  sin_noise, 

@@ -38,20 +38,6 @@ struct light_descriptor {
 };
 
 /*
- *	Light's attenuation coefficient for a given distance to receiver
- */
-float light_attenuation_factor(light_descriptor ld, float dist) {
-	if (ld.type == LightTypeDirectional)
-		return 1;
-	else {
-		float a = max(.0f, dist / ld.radius);
-		float f = 1.f / (1.f + a*a);
-
-		return f;
-	}
-}
-
-/*
  *	Returns light's effective range, i.e. range at which light radiates at least minimal luminance.
  */
 float light_effective_range(light_descriptor ld) {
@@ -62,9 +48,9 @@ float light_effective_range(light_descriptor ld) {
  *	Transforms light's position/direction based on transformation dual quaternion
  */
 vec3 light_transform(dual_quaternion transform, light_descriptor ld) {
-	return ld.type == LightTypeSphere ?
-				dquat_mul_vec(transform, ld.position) :
-				quat_mul_vec(transform.real, ld.position);
+	return ld.type == LightTypeDirectional ?
+				quat_mul_vec(transform.real, ld.position) :
+				dquat_mul_vec(transform, ld.position);
 }
 
 /*
@@ -96,7 +82,13 @@ vec3 light_incidant_ray(light_descriptor ld, vec3 position) {
  *	distance greater than or equal to the light's effective range the value returned is 0.
  */
 vec3 light_irradiance(light_descriptor ld, float dist) {
-	float attenuation_factor = light_attenuation_factor(ld, dist);
-	float incident_radiance = ld.luminance * attenuation_factor - light_calculate_minimal_luminance(ld);
+	if (ld.type == LightTypeDirectional) {
+		return ld.diffuse * ld.luminance;
+	}
+	
+	float a = max(.0f, dist / ld.radius);
+	float f = 1.f / (1.f + a*a);
+
+	float incident_radiance = ld.luminance * f - light_calculate_minimal_luminance(ld);
 	return ld.diffuse * max(0.f, incident_radiance);
 }

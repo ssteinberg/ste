@@ -27,26 +27,17 @@ float get_thickness(ivec2 coord,
 float deferred_evaluate_shadowing(samplerCubeArrayShadow shadow_depth_maps, 
 								  samplerCubeArray shadow_maps, 
 								  sampler2DArrayShadow directional_shadow_depth_maps,
-								  sampler2DArray directional_shadow_maps,
+								  sampler2DArray directional_shadow_maps, 
 								  int cascade,
 								  vec3 position,
 								  vec3 normal,
 								  uint light_id,
 								  float l_dist,
-								  light_descriptor ld) {
+								  light_descriptor ld, 
+								  ivec2 coord) {
 	float l_radius = ld.radius;
 
-	if (ld.type == LightTypeSphere) {
-		vec3 shadow_v = position - ld.transformed_position;
-		return shadow(shadow_depth_maps,
-					  shadow_maps,
-					  light_id,
-					  position,
-					  normal,
-					  shadow_v,
-					  l_radius);
-	}
-	else {
+	if (ld.type == LightTypeDirectional) {
 		// Query cascade index, and shadowmap index and construct cascade projection matrix
 		uint32_t cascade_idx = light_get_cascade_descriptor_idx(ld);
 		light_cascade_descriptor cascade_descriptor = directional_lights_cascades[cascade_idx];
@@ -73,7 +64,19 @@ float deferred_evaluate_shadowing(samplerCubeArrayShadow shadow_depth_maps,
 					  M,
 					  cascade_recp_vp,
 					  l_dist,
-					  l_radius);
+					  l_radius,
+					  coord);
+	}
+	else {
+		vec3 shadow_v = position - ld.transformed_position;
+		return shadow(shadow_depth_maps,
+					  shadow_maps,
+					  light_id,
+					  position,
+					  normal,
+					  shadow_v,
+					  l_radius,
+					  coord);
 	}
 }
 
@@ -97,7 +100,7 @@ vec3 deferred_shade_fragment(g_buffer_element frag, ivec2 coord,
 
 	// Calculate depth and extrapolate world position
 	float depth = gbuffer_parse_depth(frag);
-	vec3 position = unproject_screen_position(depth, gl_FragCoord.xy / vec2(backbuffer_size()));
+	vec3 position = unproject_screen_position(depth, vec2(coord) / vec2(backbuffer_size()));
 
 	// Normal map
 	vec3 n = gbuffer_parse_normal(frag);
@@ -137,20 +140,18 @@ vec3 deferred_shade_fragment(g_buffer_element frag, ivec2 coord,
 
 			// Compute light incident ray and range
 			float l_dist;
-			vec3 l;
-			vec3 incident = light_incidant_ray(ld, position);
-			if (ld.type == LightTypeSphere) {
+			vec3 l = light_incidant_ray(ld, position);
+			if (ld.type == LightTypeDirectional) {
+				l_dist = abs(ld.directional_distance);
+			}
+			else {
 				float light_effective_range = ld.effective_range;
-				float dist2 = dot(incident, incident);
+				float dist2 = dot(l, l);
 				if (dist2 >= light_effective_range*light_effective_range)
 					continue;
 
 				l_dist = sqrt(dist2);
-				l = incident / l_dist;
-			}
-			else {
-				l_dist = abs(ld.directional_distance);
-				l = incident;
+				l /= l_dist;
 			}
 
 			// Shadow query
@@ -163,7 +164,8 @@ vec3 deferred_shade_fragment(g_buffer_element frag, ivec2 coord,
 													 n,
 													 light_id,
 													 l_dist,
-													 ld);
+													 ld,
+													 coord);
 			if (ld.type == LightTypeDirectional) {
 				//!? TODO: Remove!
 				// Inject some ambient, still without global illumination...
@@ -185,7 +187,8 @@ vec3 deferred_shade_fragment(g_buffer_element frag, ivec2 coord,
 																	 microfacet_transmission_fit_lut,
 																	 shadow_maps, light_id,
 																	 l_dist,
-																	 occlusion);
+																	 occlusion,
+																	 coord);
 		}
 	}
 
@@ -193,7 +196,7 @@ vec3 deferred_shade_fragment(g_buffer_element frag, ivec2 coord,
 	rgb += material_emission(md);
 
 	// Apply volumetric lighting to computed radiance
-	rgb = volumetric_scattering(scattering_volume, rgb, vec2(gl_FragCoord.xy), depth);
+	rgb = volumetric_scattering(scattering_volume, rgb, vec2(coord), depth);
 
 	return rgb;
 }

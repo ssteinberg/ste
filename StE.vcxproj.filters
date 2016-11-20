@@ -1074,7 +1074,6 @@
   <ItemGroup>
     <None Include="Simulation\src\ste\framework_graphics\material\shaders\material_evaluate.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\material\shaders\material.glsl" />
-    <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\deferred_composer\shaders\deferred_compose.frag" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\shaders\girenderer_transform_buffer.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\antialiasing\fxaa\shaders\fxaa.frag" />
     <None Include="Simulation\src\ste\framework_graphics\antialiasing\fxaa\shaders\fxaa.vert" />
@@ -1155,5 +1154,6 @@
     <None Include="Simulation\src\ste\framework_graphics\shadows\shaders\shadow_query_spherical.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\shadows\shaders\shadow_common.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\light\shaders\light_cascades.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\deferred_composer\shaders\deferred_compose.frag" />
   </ItemGroup>
 </Project>

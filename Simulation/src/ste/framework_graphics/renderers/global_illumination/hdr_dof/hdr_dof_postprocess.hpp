@@ -126,6 +126,7 @@ private:
 public:
 	~hdr_dof_postprocess() noexcept;
 
+	auto &get_input_image() const { return *hdr_final_image; }
 	auto get_input_fbo() const { return &fbo_hdr_final; }
 
 	void resize(glm::ivec2 size);
