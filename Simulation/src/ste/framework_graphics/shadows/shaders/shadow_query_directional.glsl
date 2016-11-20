@@ -22,7 +22,8 @@ float shadow(sampler2DArrayShadow directional_shadow_depth_maps,
 			 mat3x4 cascade_transform,
 			 vec2 cascade_recp_vp,
 			 float light_distance,
-			 float light_radius) {
+			 float light_radius,
+			 ivec2 frag_coords) {
 	vec3 v = vec4(position, 1) * cascade_transform;
 	vec2 uv = v.xy * .5f + vec2(.5f);
 	float cascade_space_dist_receiver = -v.z;
@@ -55,7 +56,7 @@ float shadow(sampler2DArrayShadow directional_shadow_depth_maps,
 	vec2 penumbra = max(penumbra_world_space * to_texture_space, minimal_texture_space_penumbra);
 	
 	// Interleaved gradient noise
-	float noise = interleaved_gradient_noise(gl_FragCoord.xy);
+	float noise = interleaved_gradient_noise(vec2(frag_coords));
 	float accum = .0f;
 	float w = .0f;
 
@@ -124,7 +125,8 @@ vec3 shadow_occluder(sampler2DArray directional_shadow_maps,
 					 mat3x4 cascade_transform,
 					 vec3 l,
 					 float light_distance,
-					 float light_radius) {
+					 float light_radius,
+					 ivec2 frag_coords) {
 	vec3 v = vec4(position, 1) * cascade_transform;
 	vec2 uv = v.xy * .5f + vec2(.5f);
 	float cascade_space_dist_receiver = -v.z;
@@ -138,7 +140,7 @@ vec3 shadow_occluder(sampler2DArray directional_shadow_maps,
 		float dist_blocker = -unproject_depth(depth_blocker, cascade_proj_near_clip);
 		float penumbra = shadow_calculate_penumbra(dist_blocker, light_radius, dist_receiver);
 		
-		float noise = two_pi * interleaved_gradient_noise(gl_FragCoord.xy);
+		float noise = two_pi * interleaved_gradient_noise(vec2(frag_coords));
 		float sin_noise = sin(noise);
 		float cos_noise = cos(noise);
 		mat2 sample_rotation_matrix = mat2(cos_noise,  sin_noise, 

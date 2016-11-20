@@ -147,8 +147,7 @@ void main() {
 	// Read work coordinates
 	ivec3 volume_size = imageSize(volume);
 	ivec2 slice_coords = ivec2(gl_GlobalInvocationID.xy);
-	if (slice_coords.x >= volume_size.x ||
-		slice_coords.y >= volume_size.y)
+	if (any(greaterThanEqual(slice_coords, volume_size.xy)))
 		return;
 
 	// Query depth of geometry at current work coordinates and limit end tile respectively
