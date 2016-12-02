@@ -92,7 +92,7 @@ auto inline atmospherics_earth_properties() {
 	ap.R = 8.31447f;	// J/(mol·K)
 	ap.M = 0.0289644f;	// kg/mol
 
-	ap.phase = .9f;
+	ap.phase = -.88f;
 
 	return ap;
 }

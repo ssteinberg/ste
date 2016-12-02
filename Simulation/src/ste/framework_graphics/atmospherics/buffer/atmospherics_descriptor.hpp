@@ -8,21 +8,35 @@
 namespace StE {
 namespace Graphics {
 
-class atmospherics_descriptor : private atmospherics_properties<float> {
-	using Base = atmospherics_properties<float>;
-
+class atmospherics_descriptor {
 public:
-	using Properties = Base;
+	using T = float;
+	using Properties = atmospherics_properties<T>;
 
 private:
-	float M_over_R;
-	float gM_over_RL;
+	struct precomputed_data {
+		T M_over_R;
+		T gM_over_RL;
+	};
+
+private:
+	Properties properties;
+	precomputed_data data;
+
+private:
+	// Padding
+	static constexpr int properties_elements = sizeof(Properties) / sizeof(T);
+	static constexpr int precomputed_data_elements = sizeof(precomputed_data) / sizeof(T);
+	static constexpr int padding_size = (4 - (properties_elements + precomputed_data_elements) % 4) % 4;
+	T _ununsed[padding_size];
+
+	static_assert((sizeof(Properties) / sizeof(T) + precomputed_data_elements + padding_size) % 4 == 0, "Incorrect padding");
 
 protected:
-	void set_properties(const Base &p) {
-		Base::operator=(p);
-		M_over_R = p.M / p.R;
-		gM_over_RL = p.g * M_over_R / p.L;
+	void set_properties(const Properties &p) {
+		this->properties = p;
+		data.M_over_R = p.M / p.R;
+		data.gM_over_RL = p.g * data.M_over_R / p.L;
 	}
 
 public:
@@ -31,10 +45,10 @@ public:
 	atmospherics_descriptor &operator=(atmospherics_descriptor &&) = default;
 	atmospherics_descriptor &operator=(const atmospherics_descriptor &) = default;
 
-	atmospherics_descriptor(const Base &p) {
+	atmospherics_descriptor(const Properties &p) {
 		set_properties(p);
 	}
-	atmospherics_descriptor &operator=(const Base &p) {
+	atmospherics_descriptor &operator=(const Properties &p) {
 		set_properties(p);
 		return *this;
 	}
