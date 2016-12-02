@@ -1067,7 +1067,13 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\directional_shadowmap_projector.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\atmospherics\atmospheric_properties.hpp">
+    <ClInclude Include="Simulation\src\ste\framework_graphics\atmospherics\buffer\atmospherics_buffer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\atmospherics\buffer\atmospherics_descriptor.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\atmospherics\atmospherics_properties.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

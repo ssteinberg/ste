@@ -13,10 +13,12 @@ using namespace StE::Graphics;
 
 GIRenderer::GIRenderer(const StEngineControl &ctx,
 					   const Camera *camera,
-					   Scene *scene)
+					   Scene *scene,
+					   const atmospherics_properties<float> &atmospherics_prop)
 					   : ctx(ctx),
 					   	 gbuffer(ctx.get_backbuffer_size(), gbuffer_depth_target_levels()),
 						 camera(camera),
+						 atmospheric_buffer(atmospherics_prop),
 						 scene(scene),
 
 						 lll_storage(ctx.get_backbuffer_size()),
@@ -151,6 +153,7 @@ void GIRenderer::render_queue() {
 	transform_buffers.update_view_data(*this->camera);
 	transform_buffers.bind_view_buffer(view_transform_buffer_bind_location);
 	transform_buffers.bind_proj_buffer(proj_transform_buffer_bind_location);
+	atmospheric_buffer.bind_buffer(atmospherics_buffer_bind_location);
 
 	scene->update_scene();
 

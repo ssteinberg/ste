@@ -13,6 +13,9 @@
 #include "Camera.hpp"
 #include "transforms_ring_buffers.hpp"
 
+#include "atmospherics_properties.hpp"
+#include "atmospherics_buffer.hpp"
+
 #include "gpu_dispatchable.hpp"
 #include "gpu_task.hpp"
 #include "profiler.hpp"
@@ -67,6 +70,7 @@ private:
 
 	static constexpr int view_transform_buffer_bind_location = 20;
 	static constexpr int proj_transform_buffer_bind_location = 21;
+	static constexpr int atmospherics_buffer_bind_location = 22;
 
 private:
 	const StEngineControl &ctx;
@@ -77,6 +81,7 @@ private:
 
 	const Camera *camera;
 	transforms_ring_buffers transform_buffers;
+	atmospherics_buffer atmospheric_buffer;
 	Scene *scene;
 
 private:
@@ -133,10 +138,13 @@ protected:
 private:
 	GIRenderer(const StEngineControl &ctx,
 			   const Camera *camera,
-			   Scene *scene);
+			   Scene *scene,
+			   const atmospherics_properties<float> &atmospherics_prop);
 
 public:
 	virtual ~GIRenderer() noexcept {}
+
+	void update_atmospherics_properties(const atmospherics_properties<float> &atmospherics_prop) { atmospheric_buffer.update_data(atmospherics_prop); }
 
 	void add_task(const gpu_task::TaskPtr &t);
 	void remove_task(const gpu_task::TaskPtr &t);
