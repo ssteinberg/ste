@@ -4,6 +4,7 @@
 #extension GL_ARB_bindless_texture : require
 
 #include "common.glsl"
+#include "chromaticity.glsl"
 #include "hdr_common.glsl"
 #include "fast_rand.glsl"
 
@@ -20,7 +21,7 @@ layout(bindless_sampler) uniform sampler2D hdr;
 layout(bindless_sampler) uniform sampler2D depth_texture;
 
 const int samples = 2;
-const int max_rings = 5;
+const int max_rings = 7;
 
 const float blur_coef = 1.0;
 const float threshold = 0.5f; 	// highlight threshold
@@ -32,7 +33,7 @@ const float namount = 0.0001f; 	// dither amount
 
 uniform vec2 size;
 uniform float aperture_distance = 17e-3f;	// Defaults to human eye length from retina to lens, about 17mm
-uniform float aperture_diameter = 4e-3f;	// Defaults to human eye pupil diameter which range from 2mm to 8mm
+uniform float aperture_diameter = 10e-3f;	// Defaults to human eye pupil diameter which range from 2mm to 8mm (slightly exaggerated)
 
 vec3 color(vec2 coords, vec2 blur, float max_blur) {
 	vec3 col = vec3(0.0);
@@ -42,8 +43,7 @@ vec3 color(vec2 coords, vec2 blur, float max_blur) {
 	col.g = texture(hdr, coords + vec2(-.866f, -0.5f) * jitter).g;
 	col.b = texture(hdr, coords + vec2(.866f,  -0.5f) * jitter).b;
 
-	vec3 lumcoeff = vec3(0.299f, 0.587f, 0.114f);
-	float lum = dot(col.rgb, lumcoeff);
+	float lum = luminance(col.rgb);
 	float thresh = max((lum - threshold)*gain, 0.f);
 	return col + mix(vec3(0.f), col, thresh * max_blur);
 }
@@ -54,17 +54,18 @@ vec2 coc(float z) {
 	float s = z;
 
 	// Circle of confusion diameter in world space
-	float C = aperture_diameter * abs(focal - s) / s;
-	// Circle of confusion size on the screen plane in world units
-	float c = C / focal;
+	float C = aperture_diameter * abs(focal - s) / (-s);
+	// Project onto near clip plane
+	vec4 projected = project(vec3(C,0,focal));
+	float c = projected.x / projected.w;
 
 	// Normalize to screen texture space
-	float aperture_h = 2.f * projection_tan_half_fovy();
+	float aperture_h = 2.f * projection_tan_half_fovy() * projection_near_clip();
 	float aperture_w = aperture_h * projection_aspect();
 	vec2 norm_coc = c / vec2(aperture_w, aperture_h);
 
 	// We expect radius
-	return clamp(.5f * norm_coc, vec2(0.f), vec2(1.f));
+	return .5f * norm_coc;
 }
 
 void main() {
@@ -74,14 +75,14 @@ void main() {
 	float d = texelFetch(depth_texture, ivec2(gl_FragCoord.xy), 0).x;
 	float z = unproject_depth(d);
 	vec2 blur = coc(z);
-	float max_blur = max(blur.x, blur.y);
-
-	if (max_blur > .01f) {
+	float max_blur = max_element(blur * size);
+	
+	int rings = min(int(max_blur * 20.f), max_rings);
+	if (rings > 0) {
 		vec2 noise = vec2(fast_rand(uv.x), fast_rand(uv.y)) * namount * blur;
 		vec2 wh = blur * blur_coef + noise;
 
 		float s = 1.f;
-		int rings = min(max_rings, max(2, int(max_blur * 15.f)));
 		for (int i = 1; i <= rings; ++i) {
 			int ringsamples = i * samples;
 

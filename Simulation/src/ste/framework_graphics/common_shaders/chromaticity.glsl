@@ -35,6 +35,11 @@ vec3 xyYtoXYZ(vec3 xyY) {
 	return XYZ;
 }
 
+float luminance(vec3 color) {
+	const vec3 lumcoeff = vec3(0.299f, 0.587f, 0.114f);
+	return dot(color, lumcoeff);
+}
+
 vec3 luminance_saturate(vec3 c) {
 	return c / max_element(c);
 }
