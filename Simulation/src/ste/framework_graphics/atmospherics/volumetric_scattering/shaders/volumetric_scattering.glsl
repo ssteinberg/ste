@@ -1,6 +1,7 @@
 
 #include "common.glsl"
 #include "project.glsl"
+#include "atmospherics.glsl"
 
 const int volumetric_scattering_tile_size = 8;
 const int volumetric_scattering_depth_tiles = 256;
@@ -22,16 +23,12 @@ float volumetric_scattering_zcoord_for_depth(float d) {
 	return volumetric_scattering_tile_for_depth(d) / float(volumetric_scattering_depth_tiles);
 }
 
-float volumetric_scattering_particle_density(vec3 w_pos) {
-	return .0175f;
-}
-
 float volumetric_scattering_scattering_coefficient(float density, float thickness) {
-	return 0.00055f * density * thickness;
+	return atmospherics_descriptor_data.mie_scattering_coefficient * density * thickness;
 }
 
 float volumetric_scattering_absorption_coefficient(float density, float thickness) {
-	return .0000001f * density * thickness;
+	return atmospherics_descriptor_data.mie_absorption_coefficient * density * thickness;
 }
 
 vec4 volumetric_scattering_load_inscattering_transmittance(sampler3D volume, vec2 frag_coords, float depth) {
@@ -44,5 +41,5 @@ vec3 volumetric_scattering(sampler3D volume, vec3 rgb, vec2 frag_coords, float d
 	vec4 vol_sam = volumetric_scattering_load_inscattering_transmittance(volume,
 																		 frag_coords,
 																		 depth);
-	return rgb * vol_sam.a + vol_sam.rgb;
+	return rgb + vol_sam.rgb;
 }

@@ -98,7 +98,7 @@ float shadow(samplerCubeArrayShadow shadow_depth_maps,
 			break;
 	}
 
-	return smoothstep(.0, 1.f, min(1.f, accum / w / shadow_cutoff));
+	return min(1.f, accum / w / shadow_cutoff);//smoothstep(.0, 1.f, min(1.f, accum / w / shadow_cutoff));
 }
 
 /*

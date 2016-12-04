@@ -220,11 +220,17 @@ int main()
 
 
 	/*
+	 *	Create atmospheric properties
+	 */
+	auto atmosphere = StE::Graphics::atmospherics_earth_properties();
+
+
+	/*
 	 *	Create and load scene object and GI renderer
 	 */
 
 	StE::Resource::resource_instance<StE::Graphics::Scene> scene(ctx);
-	StE::Resource::resource_instance<StE::Graphics::GIRenderer> renderer(ctx, &camera, &scene.get());
+	StE::Resource::resource_instance<StE::Graphics::GIRenderer> renderer(ctx, &camera, &scene.get(), atmosphere);
 
 
 	/*
@@ -249,13 +255,15 @@ int main()
 
 	add_scene_lights(scene.get(), lights, materials, material_layers);
 
+	std::vector<std::shared_ptr<StE::Graphics::Object>> sponza_objects;
 	loading_futures.insert(StE::Resource::ModelFactory::load_model_async(ctx,
 																		 R"(Data/models/crytek-sponza/sponza.obj)",
 																		 &scene.get().object_group(),
 																		 &scene.get().scene_properties(),
 																		 2.5f,
 																		 materials,
-																		 material_layers));
+																		 material_layers,
+																		 &sponza_objects));
 	
 	std::vector<std::unique_ptr<StE::Graphics::material>> mat_editor_materials;
 	std::vector<std::unique_ptr<StE::Graphics::material_layer>> mat_editor_layers;
@@ -299,13 +307,14 @@ int main()
 	std::unique_ptr<StE::Graphics::material_layer> layers[layers_count];
 	layers[0] = std::move(mat_editor_layers.back());
 
+	float rayleigh_scattering = 1e-6f;
+
 	bool layer_enabled[3] = { true, false, false };
 	StE::Graphics::RGB base_color[3];
 	float roughness[3];
 	float anisotropy[3];
 	float metallic[3];
 	float index_of_refraction[3];
-	float sheen_power[3];
 	float thickness[3];
 	float absorption[3];
 	float phase[3];
@@ -319,15 +328,12 @@ int main()
 		anisotropy[i] = 0;
 		metallic[i] = 0;
 		index_of_refraction[i] = 1.5f;
-		sheen_power[i] = 0;
 		thickness[i] = 0.001f;
 		absorption[i] = 1.f;
 		phase[i] = .0f;
 	}
 
 	debug_gui_dispatchable->add_custom_gui([&](const glm::ivec2 &bbsize) {
-		ImGui::SetNextWindowPos(ImVec2(20,bbsize.y - 400), ImGuiSetCond_FirstUseEver);
-		ImGui::SetNextWindowSize(ImVec2(120,400), ImGuiSetCond_FirstUseEver);
 		if (ImGui::Begin("Material Editor", nullptr)) {
 			for (int i = 0; i < layers_count; ++i) {
 				std::string layer_label = std::string("Layer ") + std::to_string(i);
@@ -379,6 +385,19 @@ int main()
 					layers[i - 1]->set_next_layer(layer_enabled[i] ? layers[i].get() : nullptr);
 			}
 		}
+
+		if (ImGui::Begin("Atmosphere", nullptr)) {
+			ImGui::SliderFloat((std::string("Sea level pressure (kPa) ##value")).data(), &atmosphere.ro0, .0f, 250.f);
+			ImGui::SliderFloat((std::string("Scattering phase ##value")).data(), &atmosphere.phase, -.99999f, .99999f);
+			ImGui::SliderFloat((std::string("Rayleigh scattering coefficient ##value")).data(), &rayleigh_scattering, .0f, 1.f, "%.8f", 6.5f);
+			ImGui::SliderFloat((std::string("Mie scattering coefficient ##value##mie1")).data(), &atmosphere.mie_scattering_coefficient, .0f, 1.f, "%.8f", 6.5f);
+			ImGui::SliderFloat((std::string("Mie absorption coefficient ##value##mie2")).data(), &atmosphere.mie_absorption_coefficient, .0f, 1.f, "%.8f", 6.5f);
+		}
+
+		ImGui::End();
+
+		atmosphere.rayleigh_scattering_coefficient = glm::vec3{ 5.8f, 13.5f, 33.1f } * rayleigh_scattering;
+		renderer.get().update_atmospherics_properties(atmosphere);
 	});
 
 

@@ -29,21 +29,18 @@ float depth3x3(vec2 uv, int lod) {
 }
 
 void write_out(ivec3 p, vec4 rgba) {
-	float scatter = exp(-rgba.a);
-	imageStore(volume, p, vec4(rgba.rgb, scatter));
+	imageStore(volume, p, vec4(rgba.rgb, .0f));
 }
 
 vec4 accumulate(vec4 front, vec4 back) {
-	float scatter = exp(-front.a);
-	vec3 l = front.rgb + clamp(scatter, .0f, 1.f) * back.rgb;
-	return vec4(l, front.a + back.a);
+	vec3 l = front.rgb + back.rgb;
+	return vec4(l, .0f);
 }
 
 void main() {
 	ivec3 volume_size = imageSize(volume);
 	ivec2 slice_coords = ivec2(gl_GlobalInvocationID.xy);
-	if (slice_coords.x >= volume_size.x ||
-		slice_coords.y >= volume_size.y)
+	if (any(greaterThan(slice_coords, volume_size.xy)))
 		return;
 
 	int depth_lod = 2;

@@ -41,10 +41,6 @@ private:
 	std::shared_ptr<connection<>> shadows_storage_connection;
 
 private:
-	void update_phase_uniforms(float g) {
-		program.get().set_uniform("phase", g);
-	}
-
 	void attach_handles() const {
 		auto depth_map = vss->get_depth_map();
 		if (depth_map) {
@@ -108,7 +104,6 @@ public:
 		return ctx.scheduler().schedule_now([object, &ctx]() {
 			object->program.wait();
 		}).then_on_main_thread([object]() {
-			object->update_phase_uniforms(object->vss->get_scattering_phase_anisotropy_coefficient());
 			object->attach_handles();
 		});
 	}

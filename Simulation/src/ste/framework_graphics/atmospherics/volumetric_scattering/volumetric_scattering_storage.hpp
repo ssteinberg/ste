@@ -30,19 +30,15 @@ private:
 	Core::Sampler volume_sampler;
 	Core::SamplerMipmapped depth_sampler;
 
-	float scatter_phase_aniso_coefficient;
-
 	glm::ivec3 size;
 
 	signal<> storage_modified_signal;
 
 public:
-	volumetric_scattering_storage(glm::ivec2 size,
-								  float scatter_phase_aniso_coefficient = .15f) : volume_sampler(Core::TextureFiltering::Linear, Core::TextureFiltering::Linear,
-																								 Core::TextureWrapMode::ClampToEdge, Core::TextureWrapMode::ClampToEdge, 16),
-																				  depth_sampler(Core::TextureFiltering::Nearest, Core::TextureFiltering::Nearest, Core::TextureFiltering::Nearest,
-																								Core::TextureWrapMode::ClampToEdge, Core::TextureWrapMode::ClampToEdge),
-																				  scatter_phase_aniso_coefficient(scatter_phase_aniso_coefficient) {
+	volumetric_scattering_storage(glm::ivec2 size) : volume_sampler(Core::TextureFiltering::Linear, Core::TextureFiltering::Linear,
+																	Core::TextureWrapMode::ClampToEdge, Core::TextureWrapMode::ClampToEdge, 16),
+													 depth_sampler(Core::TextureFiltering::Nearest, Core::TextureFiltering::Nearest, Core::TextureFiltering::Nearest,
+																   Core::TextureWrapMode::ClampToEdge, Core::TextureWrapMode::ClampToEdge) {
 		volume_sampler.set_wrap_r(Core::TextureWrapMode::ClampToEdge);
 
 		resize(size);
@@ -67,8 +63,6 @@ public:
 	}
 
 	auto& get_size() const { return size; }
-
-	auto get_scattering_phase_anisotropy_coefficient() const { return scatter_phase_aniso_coefficient; }
 
 	auto* get_volume_texture() const { return volume.get(); }
 	auto* get_depth_map() const { return depth_map; }

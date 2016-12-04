@@ -14,6 +14,17 @@ namespace Graphics {
  */
 template <typename T>
 struct atmospherics_properties {
+	// Wave length dependent scattering coefficients for the Rayleigh scattering theory (m^-1)
+	// For Rayleigh scattering extinction = scattering, i.e. no absorption by atmosphere molecules is assumed. Absorption is handled for in the Mie aerosol scattering.
+	glm::tvec3<T> rayleigh_scattering_coefficient;
+	// Scattering coefficient for the Mie scattering theory (m^-1)
+	T mie_scattering_coefficient;
+	// Absorption coefficient for the Mie scattering theory (m^-1)
+	T mie_absorption_coefficient;
+
+	// Phase coefficient for the Mie scattering phase function
+	T phase;
+
 	// Sea level athmospheric pressure, kPa
 	T ro0;
 	// Sea level temperature, Kelvin
@@ -27,9 +38,6 @@ struct atmospherics_properties {
 	T R;
 	// Molar mass of the atmospheric air, kg/mol
 	T M;
-
-	// Phase coefficient for the Mie scattering phase function
-	T phase;
 
 	/*
 	*	Returns the density given pressure and temperature
@@ -93,6 +101,9 @@ auto inline atmospherics_earth_properties() {
 	ap.M = 0.0289644f;	// kg/mol
 
 	ap.phase = -.88f;
+	ap.rayleigh_scattering_coefficient = glm::vec3{ 5.8f, 13.5f, 33.1f } * 1e-6f;
+	ap.mie_scattering_coefficient = 2e-5f;
+	ap.mie_absorption_coefficient = 2.2222e-6f;
 
 	return ap;
 }

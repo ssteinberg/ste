@@ -87,8 +87,8 @@ float shadow(sampler2DArrayShadow directional_shadow_depth_maps,
 			w += t;
 		}
 	}
-
-	return smoothstep(.0, 1.f, min(1.f, accum / w / shadow_cutoff));
+	
+	return min(1.f, accum / w / shadow_cutoff);//smoothstep(.0, 1.f, min(1.f, accum / w / shadow_cutoff));
 }
 
 /*
@@ -123,6 +123,7 @@ vec3 shadow_occluder(sampler2DArray directional_shadow_maps,
 					 uint idx, 
 					 vec3 position, 
 					 mat3x4 cascade_transform,
+					 vec2 cascade_recp_vp,
 					 vec3 l,
 					 float light_distance,
 					 float light_radius,
@@ -138,7 +139,8 @@ vec3 shadow_occluder(sampler2DArray directional_shadow_maps,
 	if (dt < depth_blocker) {
 		float dist_receiver = light_distance;
 		float dist_blocker = -unproject_depth(depth_blocker, cascade_proj_near_clip);
-		float penumbra = shadow_calculate_penumbra(dist_blocker, light_radius, dist_receiver);
+		vec2 to_texture_space = .25f * cascade_recp_vp;
+		vec2 penumbra = to_texture_space * shadow_calculate_penumbra(dist_blocker, light_radius, dist_receiver);
 		
 		float noise = two_pi * interleaved_gradient_noise(vec2(frag_coords));
 		float sin_noise = sin(noise);
@@ -146,7 +148,7 @@ vec3 shadow_occluder(sampler2DArray directional_shadow_maps,
 		mat2 sample_rotation_matrix = mat2(cos_noise,  sin_noise, 
 										   -sin_noise, cos_noise);
 		
-		if (penumbra > shadow_directional_min_penumbra) {
+		if (any(greaterThan(penumbra, vec2(shadow_directional_min_penumbra)))) {
 			penumbra = clamp(penumbra, shadow_directional_min_penumbra, shadow_directional_max_penumbra);
 
 			float accum = .0f;
@@ -154,8 +156,8 @@ vec3 shadow_occluder(sampler2DArray directional_shadow_maps,
 			for (int s=0; s<8; ++s) {
 				vec2 u = penumbra * sample_rotation_matrix * shadow_cluster_samples[s];
 			
-				float gaussian = penumbra;
-				float l = length(shadow_cluster_samples[s]) * penumbra;
+				float gaussian = mix(penumbra.x, penumbra.y, .5f);
+				float l = length(shadow_cluster_samples[s] * penumbra);
 				float t = exp(-l*l / (2 * gaussian * gaussian)) * one_over_pi / (2 * gaussian * gaussian);
 
 				float shadow_sample = texture(directional_shadow_maps, vec3(uv + u, idx)).x;

@@ -17,6 +17,7 @@ private:
 	struct precomputed_data {
 		T M_over_R;
 		T gM_over_RL;
+		T density0;
 	};
 
 private:
@@ -37,6 +38,7 @@ protected:
 		this->properties = p;
 		data.M_over_R = p.M / p.R;
 		data.gM_over_RL = p.g * data.M_over_R / p.L;
+		data.density0 = p.density_at_altitude(0);
 	}
 
 public:
