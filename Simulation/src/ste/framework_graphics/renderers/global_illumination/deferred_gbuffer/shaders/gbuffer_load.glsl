@@ -22,12 +22,12 @@ vec2 gbuffer_parse_uv(g_buffer_element frag) {
 
 vec3 gbuffer_parse_normal(g_buffer_element frag) {
 	uint Npack = floatBitsToUint(frag.data[1].z);
-	return snorm2x32_to_normal3x32(unpackSnorm2x16(Npack));
+	return snorm2x32_to_norm3x32(unpackSnorm2x16(Npack));
 }
 
 vec3 gbuffer_parse_tangent(g_buffer_element frag) {
 	uint Tpack = floatBitsToUint(frag.data[1].w);
-	return snorm2x32_to_normal3x32(unpackSnorm2x16(Tpack));
+	return snorm2x32_to_norm3x32(unpackSnorm2x16(Tpack));
 }
 
 int gbuffer_parse_material(g_buffer_element frag) {

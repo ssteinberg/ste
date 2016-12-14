@@ -19,20 +19,20 @@ vec2 unorm8x3_to_snorm12x2(uvec3 iu) {
 	return clamp(s * (1.f / 2047.f) - 1.f, vec2(-1.f), vec2(1.f));
 }
 
-vec2 OctWrap(vec2 v) {
+vec2 _norm_oct_wrap(vec2 v) {
 	return (1.0 - abs(v.yx)) * vec2(v.x >= 0.0 ? 1.0 : -1.0, v.y >= 0.0 ? 1.0 : -1.0);
 }
 
-vec2 normal3x32_to_snorm2x32(vec3 n) {
+vec2 norm3x32_to_snorm2x32(vec3 n) {
 	n /= (abs(n.x) + abs(n.y) + abs(n.z));
-	n.xy = n.z >= 0.0 ? n.xy : OctWrap(n.xy);
+	n.xy = n.z >= 0.0 ? n.xy : _norm_oct_wrap(n.xy);
 	return n.xy;
 }
 
-vec3 snorm2x32_to_normal3x32(vec2 encN) {
+vec3 snorm2x32_to_norm3x32(vec2 encN) {
 	vec3 n;
 	n.z = 1.0 - abs(encN.x) - abs(encN.y);
-	n.xy = n.z >= 0.0 ? encN.xy : OctWrap(encN.xy);
+	n.xy = n.z >= 0.0 ? encN.xy : _norm_oct_wrap(encN.xy);
 	n = normalize(n);
 	return n;
 }
