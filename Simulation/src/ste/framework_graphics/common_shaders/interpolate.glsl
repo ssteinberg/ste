@@ -1,5 +1,4 @@
 
-
 vec4 interpolate_3d_sampler(sampler3D samp, ivec3 c, int level, vec3 frac) {
 	vec4 data000 = texelFetch(samp, c + ivec3(0, 0, 0), int(level));
 	vec4 data100 = texelFetch(samp, c + ivec3(1, 0, 0), int(level));
