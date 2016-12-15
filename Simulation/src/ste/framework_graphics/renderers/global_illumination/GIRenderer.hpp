@@ -145,6 +145,7 @@ public:
 	virtual ~GIRenderer() noexcept {}
 
 	void update_atmospherics_properties(const atmospherics_properties<float> &atmospherics_prop) { atmospheric_buffer.update_data(atmospherics_prop); }
+	void set_aperture_parameters(float diameter, float distance) const { hdr.get().set_aperture_parameters(diameter, distance); }
 
 	void add_task(const gpu_task::TaskPtr &t);
 	void remove_task(const gpu_task::TaskPtr &t);

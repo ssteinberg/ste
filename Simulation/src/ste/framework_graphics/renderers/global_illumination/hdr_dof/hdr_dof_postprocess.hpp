@@ -129,6 +129,17 @@ public:
 	auto &get_input_image() const { return *hdr_final_image; }
 	auto get_input_fbo() const { return &fbo_hdr_final; }
 
+	/**
+	*	@brief	Set the camera aperture parameter. Those parameters affect the depth of field of the resulting image.
+	*
+	* 	@param diameter		Lens diameter in world units. Defaults to human eye pupil diameter which ranges from 2e-3 to 8e-3.
+	*	@param distance		Distance from receiver to lens in world units. Defaults to human eye length from retina to pupil, about 17e-3.
+	*/
+	void set_aperture_parameters(float diameter, float distance) const {
+		bokeh_blur.get().set_uniform("aperture_diameter", diameter);
+		bokeh_blur.get().set_uniform("aperture_distance", distance);
+	}
+
 	void resize(glm::ivec2 size);
 
 	std::shared_ptr<const gpu_task> get_task() const;
