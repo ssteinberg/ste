@@ -24,6 +24,7 @@ layout(shared, binding = 5) restrict readonly buffer ll_data {
 };
 
 layout(r32ui, binding = 6) restrict writeonly uniform uimage2D lll_heads;
+layout(r32ui, binding = 7) restrict writeonly uniform uimage2D lll_low_detail_heads;
 layout(shared, binding = 7) restrict buffer lll_counter_data {
 	uint32_t lll_counter;
 };
@@ -32,6 +33,42 @@ layout(shared, binding = 11) restrict writeonly buffer lll_data {
 };
 
 layout(bindless_sampler) uniform sampler2D depth_map;
+
+const int max_active_low_detail_lights_per_frame = max_active_lights_per_frame >> 2;
+
+lll_element active_lights[max_active_lights_per_frame];
+lll_element active_low_detail_lights[max_active_low_detail_lights_per_frame];
+int total_active_lights = 0;
+int total_active_low_detail_lights = 0;
+
+vec2 compute_depth_range(float delta, float a, float b, vec3 l) {
+	float near = projection_near_clip();
+
+	float sqrt_delta = sqrt(delta);
+	float z_max = min(l.z * (-b - sqrt_delta) / a, -near);
+	float z_min = min(l.z * (-b + sqrt_delta) / a, -near);
+
+	vec2 d;
+	d.x = project_depth(z_min);		// depth of z_min
+	d.y = project_depth(z_max);		// depth of z_max
+
+	return d;
+}
+
+void add_active_light(uint16_t light_idx, 
+					  uint16_t ll_i, 
+					  vec2 depth_range) {
+	active_lights[total_active_lights++] = lll_encode(light_idx, ll_i, depth_range);
+}
+
+void add_low_detail_light(uint16_t light_idx, 
+						  uint16_t ll_i, 
+						  vec2 depth_range) {
+	if (total_active_low_detail_lights >= max_active_low_detail_lights_per_frame)
+		return;
+
+	active_low_detail_lights[total_active_low_detail_lights++] = lll_encode(light_idx, ll_i, depth_range);
+}
 
 void main() {
 	ivec2 image_coord = ivec2(gl_FragCoord.xy);
@@ -49,74 +86,65 @@ void main() {
 	vec3 l = vec3(near_plane_pos, -near);
 	float a = dot(l, l);
 
-	lll_element active_lights[max_active_lights_per_frame];
-	int total_active_lights = 0;
-
 	for (int j = 0; j < ll_counter && total_active_lights < max_active_lights_per_frame; ++j) {
 		uint16_t ll_i = uint16_t(j);
 		uint16_t light_idx = ll[ll_i];
 		light_descriptor ld = light_buffer[light_idx];
-		
-		float depth_zmin;
-		float depth_zmax;
-		bool add_point = false;
 
 		if (ld.type == LightTypeDirectional) {
 			// For directional lights: Nothing to do, add point
-			depth_zmin = project_depth(-inf);
-			depth_zmax = project_depth(-near);
-
-			add_point = true;
+			vec2 depth_range = vec2(.0f, 1.f);
+			add_active_light(light_idx, ll_i, depth_range);
+			add_low_detail_light(light_idx, ll_i, depth_range);
 		}
 		else {
 			// For spherical lights: Check to see that fragment's stored depth intersects the lights cutoff sphere.
 			vec3 c = ld.transformed_position;
 			float r = ld.effective_range * 1.05f;
 
-			vec3 _c = -c;
-			float b = dot(l, _c);
+			float b = dot(l, -c);
+			float b2 = b*b;
+			float c2 = dot(c, c);
 
-			float delta = b*b - a * (dot(c, c) - r*r);
+			float delta = b2 - a * (c2 - r*r);
 			if (delta > 0) {
-				float sqrt_delta = sqrt(delta);
-				float z_max = l.z * (-b - sqrt_delta) / a;
-				float z_min = l.z * (-b + sqrt_delta) / a;
+				vec2 depth_range = compute_depth_range(delta, a, b, l);
 
-				depth_zmin = clamp(project_depth(z_min), .0f, 1.f);
-				depth_zmax = project_depth(z_max);
+				if (depth_range.x < 1.f) {
+					// Compare against depth buffer
+					vec2 uv = (vec2(image_coord) + vec2(.5f)) / textureSize(depth_map, depth_lod).xy;
+					float d = textureLod(depth_map, uv, depth_lod).x;
+					if (d <= depth_range.y) {
+						add_active_light(light_idx, ll_i, depth_range);
+						
+						// If the fragment in contained in the light effective sphere, calculate also the range for the low detail sphere. 
+						// The low detail range is used for different process light volumetric lighting.
+						float min_lum = light_calculate_minimal_luminance(ld) * lll_low_detail_min_luminance_multiplier;
+						float low_r = light_calculate_effective_range(ld, min_lum);
+						float low_delta = b2 - a * (c2 - low_r*low_r);
 
-				if (z_min < -near) {
-					if (z_max >= -near) {
-						// Origin is inside the light radius
-						depth_zmax = 1.f;
-						add_point = true;
-					}
-					else {
-						// Compare against depth buffer
-						float d = textureLod(depth_map, (vec2(image_coord) + vec2(.5f)) / textureSize(depth_map, depth_lod).xy, depth_lod).x;
-						if (d <= depth_zmax)
-							add_point = true;
+						if (low_delta > 0) {
+							vec2 low_depth_range = compute_depth_range(low_delta, a, b, l);
+							add_low_detail_light(light_idx, ll_i, depth_range);
+						}
 					}
 				}
 			}
 		}
-
-		if (add_point) {
-			active_lights[total_active_lights] = lll_encode(light_idx,
-															ll_i,
-															depth_zmin,
-															depth_zmax);
-
-			++total_active_lights;
-		}
 	}
 
 	// Add the encoded lights to the per-pixel linked-light-list
-	uint32_t next_idx = atomicAdd(lll_counter, uint(total_active_lights + 1));
-	imageStore(lll_heads, image_coord, next_idx.xxxx);
-
+	uint32_t next_active_idx = atomicAdd(lll_counter, uint(total_active_lights + total_active_low_detail_lights + 2));
+	uint32_t next_low_detail_idx = next_active_idx + total_active_lights + 1;
+	imageStore(lll_heads, image_coord, next_active_idx.xxxx);
+	imageStore(lll_low_detail_heads, image_coord, next_low_detail_idx.xxxx);
+	
+	// Copy lll elements to buffer and mark the ll end
 	for (int i = 0; i < total_active_lights; ++i)
-		lll_buffer[next_idx + i] = active_lights[i];
-	// And mark the ll end
-	lll_buffer[next_idx + total_active_lights].data.x = uintBitsToFloat(0xFFFFFFFF);
+		lll_buffer[next_active_idx + i] = active_lights[i];
+	lll_buffer[next_active_idx + total_active_lights].data.x = uintBitsToFloat(0xFFFFFFFF);
+
+	for (int i = 0; i < total_active_low_detail_lights; ++i)
+		lll_buffer[next_low_detail_idx + i] = active_low_detail_lights[i];
+	lll_buffer[next_low_detail_idx + total_active_low_detail_lights].data.x = uintBitsToFloat(0xFFFFFFFF);
 }
