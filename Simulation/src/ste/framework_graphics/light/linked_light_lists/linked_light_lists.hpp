@@ -39,6 +39,7 @@ private:
 	lll_type lll;
 	Core::ShaderStorageBuffer<std::uint32_t> lll_counter;
 	std::unique_ptr<Core::Texture2D> lll_heads;
+	std::unique_ptr<Core::Texture2D> lll_low_detail_heads;
 
 	glm::ivec2 size;
 
@@ -57,7 +58,8 @@ public:
 		lll_counter.clear(gli::FORMAT_R32_UINT_PACK32, &zero);
 	}
 
-	void bind_lll_buffer(bool readonly = true) const;
+	void bind_readwrite_lll_buffers() const;
+	void bind_lll_buffer(bool low_detail = false) const;
 };
 
 }

@@ -18,7 +18,7 @@ void linked_light_lists_gen_dispatch::set_context_state() const {
 	4_storage_idx = Core::buffer_object_cast<Core::ShaderStorageBuffer<std::uint32_t>>(ls->get_active_ll_counter());
 	5_storage_idx = ls->get_active_ll();
 
-	lll->bind_lll_buffer(false);
+	lll->bind_readwrite_lll_buffers();
 
 	ScreenFillingQuad.vao()->bind();
 

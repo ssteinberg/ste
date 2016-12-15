@@ -18,7 +18,7 @@ layout(local_size_x = 32, local_size_y = 32, local_size_z = 1) in;
 #include "girenderer_transform_buffer.glsl"
 #include "project.glsl"
 
-#include "interleaved_gradient_noise.glsl"
+#include "fast_rand.glsl"
 
 layout(std430, binding = 2) restrict readonly buffer light_data {
 	light_descriptor light_buffer[];
@@ -44,7 +44,7 @@ layout(bindless_sampler) uniform sampler2D depth_map;
 
 uniform float cascades_depths[directional_light_cascades];
 
-const int samples = 1;
+const int samples = 2;
 
 float depth3x3(vec2 uv, int lod) {
 	float d00 = textureLodOffset(depth_map, uv, lod, ivec2(-1,-1)).x;
@@ -75,10 +75,11 @@ float calculate_tile_volume(float z, float thickness, vec2 fragcoords, vec2 next
 }
 
 vec3 calculate_scattering_position(vec2 seed, vec2 slice_coords, float z_start, float z_next) {
-	float r = interleaved_gradient_noise(seed);
-	float z = mix(z_start, z_next, r * .99f);
-					
-	vec2 jitter = vec2(fract(r * 1.696f), fract(-r * 2.329f));
+	float r = fast_rand(seed);
+	float z = mix(z_start, z_next, r * .9999f);
+
+	vec2 noise = vec2(65198.0937f, -22109.32971f);
+	vec2 jitter = fract(r * noise);
 	vec2 coords = slice_coords_to_fragcoords(vec2(slice_coords) + jitter);
 	return unproject_screen_position_with_z(z, coords);
 }
@@ -104,7 +105,7 @@ vec3 scatter_spherical_light(vec2 slice_coords,
 							 uint shadowmap_idx) {
 	vec3 rgb = vec3(.0f);
 	for (int s = 0; s < samples; ++s) {
-		vec3 position = calculate_scattering_position(slice_coords + vec2(light_idx + s + 1, depth),
+		vec3 position = calculate_scattering_position(slice_coords + vec2(light_idx + s * .1f, depth),
 													  slice_coords,
 													  z_start, z_next);
 				
@@ -141,7 +142,7 @@ vec3 scatter_directional_light(vec2 slice_coords,
 							   int shadowmap_idx) {
 	vec3 rgb = vec3(.0f);
 	for (int s = 0; s < samples; ++s) {
-		vec3 position = calculate_scattering_position(slice_coords + vec2(light_idx + s + 1, depth),
+		vec3 position = calculate_scattering_position(slice_coords + vec2(light_idx + s, depth),
 													  slice_coords,
 													  z_start, z_next);
 				
