@@ -63,10 +63,6 @@ float depth3x3(vec2 uv, int lod) {
 	return min(c, d22);
 }
 
-vec2 slice_coords_to_fragcoords(vec2 v) {
-	return (v + vec2(.5f)) * 8.f / vec2(backbuffer_size());
-}
-
 float calculate_tile_volume(float z, float thickness, vec2 fragcoords, vec2 next_tile_fragcoords) {
 	vec2 eye_space_xy = unproject_screen_position_with_z(z, fragcoords).xy;
 	vec2 eye_space_next_xy = unproject_screen_position_with_z(z, next_tile_fragcoords).xy;
@@ -78,24 +74,41 @@ vec2 seed_scattering(vec2 slice_coords, uint light_idx, float s, float depth) {
 	return slice_coords + vec2(light_idx + s * .1f, depth);
 }
 
-vec3 calculate_scattering_position(vec2 seed, vec2 slice_coords, float z_start, float z_next) {
-	float r = fast_rand(seed);
-	float z = mix(z_start, z_next, r * .9999f);
+vec2 slice_coords_to_fragcoords(vec2 v) {
+	return (v + vec2(.5f)) * float(lll_image_res_multiplier) / vec2(backbuffer_size());
+}
 
-	vec2 noise = vec2(65198.0937f, -22109.32971f);
+vec3 calculate_scattering_position(vec2 seed, vec2 slice_coords, float s, float z_start, float z_next) {
+	// Generate a random number, and use it to generate a pseudo-random sampling point
+	float r = fast_rand(seed);
+
+	// Divide the depth into k slices, where k=samples.
+	// Sample uniformly from each slice
+	float sample_slice_depth = (z_next - z_start) / samples;
+	float a = z_start + sample_slice_depth * s;
+	float b = a + sample_slice_depth;
+
+	float z = mix(a, b, r * .99999f);
+
+	// Use some noise to generate 2 more pseudo-random numbers from r. Use them to generate the xy sampling coordinates.
+	vec2 noise = vec2(65198.10937f, 22109.532971f);
 	vec2 jitter = fract(r * noise);
 	vec2 coords = slice_coords_to_fragcoords(vec2(slice_coords) + jitter);
+
+	// Unproject generated coordinates into eye space
 	return unproject_screen_position_with_z(z, coords);
 }
 
-vec3 calculate_scatter(vec3 position, float tile_volume, light_descriptor ld, vec3 l, float l_dist, float shadow) {
+vec3 calculate_scatter(vec3 position, float tile_volume, light_descriptor ld, vec3 l, float l_dist, float min_lum, float shadow) {
 	float position_len = length(position);
 	vec3 view_dir = -position / position_len;
 	return scatter(ld, 
 				   position, 
 				   tile_volume, 
 				   l, l_dist, 
-				   view_dir, position_len) * shadow;
+				   view_dir, 
+				   position_len,
+				   min_lum) * shadow;
 }
 
 vec3 scatter_spherical_light(vec2 slice_coords,
@@ -106,12 +119,13 @@ vec3 scatter_spherical_light(vec2 slice_coords,
 							 float thickness,
 							 uint light_idx,
 							 light_descriptor ld,
-							 uint shadowmap_idx) {
+							 uint shadowmap_idx,
+							 float min_lum) {
 	vec3 rgb = vec3(.0f);
 	for (float s = 0; s < samples; ++s) {
 		vec3 position = calculate_scattering_position(seed_scattering(slice_coords, light_idx, s, depth),
 													  slice_coords,
-													  z_start, z_next);
+													  s, z_start, z_next);
 				
 		vec3 l = light_incidant_ray(ld, position);
 		float l_dist = length(l);
@@ -129,7 +143,7 @@ vec3 scatter_spherical_light(vec2 slice_coords,
 		if (shadow <= .0f)
 			continue;
 
-		rgb += calculate_scatter(position, tile_volume, ld, l, l_dist, shadow) * scale;
+		rgb += calculate_scatter(position, tile_volume, ld, l, l_dist, min_lum, shadow) * scale;
 	}
 
 	return rgb;
@@ -143,12 +157,13 @@ vec3 scatter_directional_light(vec2 slice_coords,
 							   uint light_idx,
 							   light_descriptor ld,
 							   mat3x4 M,
-							   int shadowmap_idx) {
+							   int shadowmap_idx,
+							   float min_lum) {
 	vec3 rgb = vec3(.0f);
 	for (float s = 0; s < samples; ++s) {
 		vec3 position = calculate_scattering_position(seed_scattering(slice_coords, light_idx, s, depth),
 													  slice_coords,
-													  z_start, z_next);
+													  s, z_start, z_next);
 				
 		vec3 l = light_incidant_ray(ld, position);					
 		float shadow = shadow_fast(directional_shadow_depth_maps,
@@ -158,7 +173,7 @@ vec3 scatter_directional_light(vec2 slice_coords,
 		if (shadow <= .0f)
 			continue;
 			
-		rgb += calculate_scatter(position, tile_volume, ld, l, .0f, shadow);
+		rgb += calculate_scatter(position, tile_volume, ld, l, .0f, min_lum, shadow);
 	}
 
 	return rgb;
@@ -189,6 +204,10 @@ void main() {
 		vec2 lll_depth_range = lll_parse_depth_range(lll_p);
 		uint light_idx = uint(lll_parse_light_idx(lll_p));
 		light_descriptor ld = light_buffer[light_idx];
+
+		// We use the low detail variation of the per-pixel linked-light-list,
+		// therefore we have a different minimal light luminance than usual lights.
+		float min_lum = lll_low_detail_light_minimal_luminance(ld);
 		
 		// Cascade data used for directional lights
 		uint32_t cascade_idx = light_get_cascade_descriptor_idx(ld);
@@ -237,7 +256,8 @@ void main() {
 													  light_idx,
 													  ld,
 													  M,
-													  shadowmap_idx);
+													  shadowmap_idx,
+													  min_lum);
 			}
 			else {
 				scattered = scatter_spherical_light(slice_coords,
@@ -248,7 +268,8 @@ void main() {
 													thickness,
 													light_idx,
 													ld,
-													uint(lll_parse_ll_idx(lll_p)));
+													uint(lll_parse_ll_idx(lll_p)),
+													min_lum);
 			}
 
 			// Read current tile value and update

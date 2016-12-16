@@ -98,7 +98,7 @@ void main() {
 		else {
 			// For spherical lights: Check to see that fragment's stored depth intersects the lights cutoff sphere.
 			vec3 c = ld.transformed_position;
-			float r = ld.effective_range * 1.05f;
+			float r = ld.effective_range * 1.01f;	// Slightly increase radius due to lll storage imprecision
 
 			float b = dot(l, -c);
 			float b2 = b*b;
@@ -117,8 +117,7 @@ void main() {
 						
 						// If the fragment in contained in the light effective sphere, calculate also the range for the low detail sphere. 
 						// The low detail range is used for different process light volumetric lighting.
-						float min_lum = light_calculate_minimal_luminance(ld) * lll_low_detail_min_luminance_multiplier;
-						float low_r = light_calculate_effective_range(ld, min_lum);
+						float low_r = lll_low_detail_light_effective_range(ld);
 						float low_delta = b2 - a * (c2 - low_r*low_r);
 
 						if (low_delta > 0) {
