@@ -16,7 +16,7 @@ void linked_light_lists::resize(glm::ivec2 size) {
 
 	this->size = size;
 
-	lll.commit_range(0, size.x * size.y * (max_active_lights_per_frame / 4 * 3));
+	lll.commit_range(0, size.x * size.y * max_active_lights_per_frame);
 	lll_heads = std::make_unique<Core::Texture2D>(gli::format::FORMAT_R32_UINT_PACK32, glm::ivec2{ size });
 	lll_low_detail_heads = std::make_unique<Core::Texture2D>(gli::format::FORMAT_R32_UINT_PACK32, glm::ivec2{ size });
 }

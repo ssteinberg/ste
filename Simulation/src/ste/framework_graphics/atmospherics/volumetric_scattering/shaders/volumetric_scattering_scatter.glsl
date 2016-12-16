@@ -44,7 +44,7 @@ layout(bindless_sampler) uniform sampler2D depth_map;
 
 uniform float cascades_depths[directional_light_cascades];
 
-const int samples = 2;
+const float samples = 2.f;
 
 float depth3x3(vec2 uv, int lod) {
 	float d00 = textureLodOffset(depth_map, uv, lod, ivec2(-1,-1)).x;
@@ -72,6 +72,10 @@ float calculate_tile_volume(float z, float thickness, vec2 fragcoords, vec2 next
 	vec2 eye_space_next_xy = unproject_screen_position_with_z(z, next_tile_fragcoords).xy;
 	vec2 l = eye_space_next_xy - eye_space_xy;
 	return thickness * l.x * l.y;
+}
+
+vec2 seed_scattering(vec2 slice_coords, uint light_idx, float s, float depth) {
+	return slice_coords + vec2(light_idx + s * .1f, depth);
 }
 
 vec3 calculate_scattering_position(vec2 seed, vec2 slice_coords, float z_start, float z_next) {
@@ -104,8 +108,8 @@ vec3 scatter_spherical_light(vec2 slice_coords,
 							 light_descriptor ld,
 							 uint shadowmap_idx) {
 	vec3 rgb = vec3(.0f);
-	for (int s = 0; s < samples; ++s) {
-		vec3 position = calculate_scattering_position(slice_coords + vec2(light_idx + s * .1f, depth),
+	for (float s = 0; s < samples; ++s) {
+		vec3 position = calculate_scattering_position(seed_scattering(slice_coords, light_idx, s, depth),
 													  slice_coords,
 													  z_start, z_next);
 				
@@ -141,8 +145,8 @@ vec3 scatter_directional_light(vec2 slice_coords,
 							   mat3x4 M,
 							   int shadowmap_idx) {
 	vec3 rgb = vec3(.0f);
-	for (int s = 0; s < samples; ++s) {
-		vec3 position = calculate_scattering_position(slice_coords + vec2(light_idx + s, depth),
+	for (float s = 0; s < samples; ++s) {
+		vec3 position = calculate_scattering_position(seed_scattering(slice_coords, light_idx, s, depth),
 													  slice_coords,
 													  z_start, z_next);
 				

@@ -34,8 +34,6 @@ layout(shared, binding = 11) restrict writeonly buffer lll_data {
 
 layout(bindless_sampler) uniform sampler2D depth_map;
 
-const int max_active_low_detail_lights_per_frame = max_active_lights_per_frame >> 2;
-
 lll_element active_lights[max_active_lights_per_frame];
 lll_element active_low_detail_lights[max_active_low_detail_lights_per_frame];
 int total_active_lights = 0;
@@ -125,7 +123,7 @@ void main() {
 
 						if (low_delta > 0) {
 							vec2 low_depth_range = compute_depth_range(low_delta, a, b, l);
-							add_low_detail_light(light_idx, ll_i, depth_range);
+							add_low_detail_light(light_idx, ll_i, low_depth_range);
 						}
 					}
 				}
@@ -142,9 +140,9 @@ void main() {
 	// Copy lll elements to buffer and mark the ll end
 	for (int i = 0; i < total_active_lights; ++i)
 		lll_buffer[next_active_idx + i] = active_lights[i];
-	lll_buffer[next_active_idx + total_active_lights].data.x = uintBitsToFloat(0xFFFFFFFF);
+	lll_mark_eof(lll_buffer[next_active_idx + total_active_lights]);
 
 	for (int i = 0; i < total_active_low_detail_lights; ++i)
 		lll_buffer[next_low_detail_idx + i] = active_low_detail_lights[i];
-	lll_buffer[next_low_detail_idx + total_active_low_detail_lights].data.x = uintBitsToFloat(0xFFFFFFFF);
+	lll_mark_eof(lll_buffer[next_low_detail_idx + total_active_low_detail_lights]);
 }

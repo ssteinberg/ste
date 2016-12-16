@@ -14,7 +14,7 @@ const int LightTypeDirectional = 1;
 
 const int max_active_lights_per_frame = 32;
 
-const float light_minimal_luminance_multiplier = .000006f;
+const float light_minimal_luminance_multiplier = 5e-6f;
 
 struct light_descriptor {
 	// position: Light position for spherical, direction for directional lights.

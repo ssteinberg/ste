@@ -24,7 +24,7 @@ namespace Graphics {
 class linked_light_lists {
 private:
 	struct lll_element {
-		glm::vec2 data;
+		glm::uvec2 data;
 	};
 
 	static constexpr Core::BufferUsage::buffer_usage usage = static_cast<Core::BufferUsage::buffer_usage>(Core::BufferUsage::BufferUsageSparse);
