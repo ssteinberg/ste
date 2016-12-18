@@ -79,7 +79,7 @@ void GIRenderer::setup_tasks() {
 	directional_shadows_projector_task = make_gpu_task("dirshdw_project", &directional_shadows_projector.get(), nullptr);
 	volumetric_scattering_scatter_task = make_gpu_task("scatter", &vol_scat_scatter.get(), nullptr);
 	volumetric_scattering_gather_task = make_gpu_task("gather", &vol_scat_gather.get(), nullptr);
-	lll_gen_task = make_gpu_task("pp_ll_gen", &lll_gen_dispatch.get(), gbuffer.get_fbo());
+	lll_gen_task = make_gpu_task("pp_ll_gen", &lll_gen_dispatch.get(), nullptr);
 
 	hdr.get().get_task()->add_dependency(composer_task);
 

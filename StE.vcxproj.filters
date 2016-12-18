@@ -1120,7 +1120,6 @@
     <None Include="Simulation\src\ste\framework_text\rendering\shaders\text_distance_map_contour.vert" />
     <None Include="Simulation\src\ste\framework_graphics\light\shaders\light.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\light\linked_light_lists\shaders\linked_light_lists.glsl" />
-    <None Include="Simulation\src\ste\framework_graphics\light\linked_light_lists\shaders\linked_light_lists_gen.frag" />
     <None Include="Simulation\src\ste\framework_graphics\light\linked_light_lists\shaders\linked_light_lists_load.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\light\linked_light_lists\shaders\linked_light_lists_store.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\light\preprocessor\shaders\light_preprocess_cull_lights.glsl" />
@@ -1134,7 +1133,6 @@
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\constants.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\radiometry\radiance\BxDFs\shaders\fresnel.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shaders\shadow_directional.geom" />
-    <None Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shaders\shadowmap.vert" />
     <None Include="Simulation\src\ste\framework_graphics\shadows\shaders\shadow.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\shadows\shaders\shadow_query_directional.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\shadows\shaders\shadow_query_spherical.glsl" />
@@ -1164,5 +1162,8 @@
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\encoding\encode.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\encoding\pack.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\interpolate.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\light\linked_light_lists\shaders\linked_light_lists_gen.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shaders\shadow_directional.vert" />
+    <None Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shaders\shadow_cubemap.vert" />
   </ItemGroup>
 </Project>

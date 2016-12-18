@@ -75,7 +75,7 @@ vec2 seed_scattering(vec2 slice_coords, uint light_idx, float s, float depth) {
 }
 
 vec2 slice_coords_to_fragcoords(vec2 v) {
-	return (v + vec2(.5f)) * float(lll_image_res_multiplier) / vec2(backbuffer_size());
+	return (v + vec2(.5f)) * float(volumetric_scattering_tile_size) / vec2(backbuffer_size());
 }
 
 vec3 calculate_scattering_position(vec2 seed, vec2 slice_coords, float s, float z_start, float z_next) {
@@ -126,22 +126,31 @@ vec3 scatter_spherical_light(vec2 slice_coords,
 		vec3 position = calculate_scattering_position(seed_scattering(slice_coords, light_idx, s, depth),
 													  slice_coords,
 													  s, z_start, z_next);
+		vec3 w_pos = transform_view_to_world_space(position);
 				
 		vec3 l = light_incidant_ray(ld, position);
 		float l_dist = length(l);
 		l /= l_dist;
 					
-		vec3 shadow_v = position - ld.transformed_position;
-		float shadow = shadow_fast(shadow_depth_maps,
+		vec3 shadow_v = w_pos- ld.position;
+		/*float shadow = shadow_fast(shadow_depth_maps,
+								   shadow_maps,
+								   shadowmap_idx,
+								   position,
+								   l,
+								   shadow_v,
+								   ld.radius,
+								   ivec2(slice_coords));*/
+		float shadow = shadow_test(shadow_depth_maps,
 								   shadowmap_idx,
 								   shadow_v,
 								   ld.radius);
 
-		float scaling_size = thickness;
-		float scale = min(l_dist, scaling_size) / scaling_size;
-
 		if (shadow <= .0f)
 			continue;
+
+		float scaling_size = thickness;
+		float scale = min(l_dist, scaling_size) / scaling_size;
 
 		rgb += calculate_scatter(position, tile_volume, ld, l, l_dist, min_lum, shadow) * scale;
 	}
@@ -158,6 +167,7 @@ vec3 scatter_directional_light(vec2 slice_coords,
 							   light_descriptor ld,
 							   mat3x4 M,
 							   int shadowmap_idx,
+							   float cascade_proj_near, float cascade_proj_far,
 							   float min_lum) {
 	vec3 rgb = vec3(.0f);
 	for (float s = 0; s < samples; ++s) {
@@ -166,10 +176,11 @@ vec3 scatter_directional_light(vec2 slice_coords,
 													  s, z_start, z_next);
 				
 		vec3 l = light_incidant_ray(ld, position);					
-		float shadow = shadow_fast(directional_shadow_depth_maps,
+		float shadow = shadow_test(directional_shadow_depth_maps,
 								   shadowmap_idx,
 								   position,
-								   M);
+								   M,
+								   cascade_proj_near, cascade_proj_far);
 		if (shadow <= .0f)
 			continue;
 			
@@ -187,7 +198,7 @@ void main() {
 		return;
 
 	// Query depth of geometry at current work coordinates and limit end tile respectively
-	int depth_lod = 2;
+	int depth_lod = lll_depth_lod;
 	float depth_buffer_d = depth3x3((vec2(slice_coords) + vec2(.5f)) / vec2(volume_size.xy), depth_lod);
 	int max_tile = min(int(ceil(volumetric_scattering_tile_for_depth(depth_buffer_d))) + 2, volumetric_scattering_depth_tiles);
 	
@@ -213,6 +224,7 @@ void main() {
 		uint32_t cascade_idx = light_get_cascade_descriptor_idx(ld);
 		light_cascade_descriptor cascade_descriptor = directional_lights_cascades[cascade_idx];
 		float current_cascade_far_clip = .0f;
+		float cascade_proj_near, cascade_proj_far;
 		int cascade = 0;
 		int shadowmap_idx;
 		mat3x4 M;
@@ -245,7 +257,8 @@ void main() {
 					M = light_cascade_projection(cascade_descriptor, 
 												 cascade, 
 												 ld.transformed_position,
-												 cascades_depths);
+												 cascades_depths,
+												 cascade_proj_near, cascade_proj_far);
 				}
 
 				scattered = scatter_directional_light(slice_coords,
@@ -257,6 +270,7 @@ void main() {
 													  ld,
 													  M,
 													  shadowmap_idx,
+													  cascade_proj_near, cascade_proj_far,
 													  min_lum);
 			}
 			else {

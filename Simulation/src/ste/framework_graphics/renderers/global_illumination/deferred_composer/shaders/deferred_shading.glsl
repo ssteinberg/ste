@@ -30,6 +30,7 @@ float deferred_evaluate_shadowing(samplerCubeArrayShadow shadow_depth_maps,
 								  sampler2DArray directional_shadow_maps, 
 								  int cascade,
 								  vec3 position,
+								  vec3 world_position,
 								  vec3 normal,
 								  uint light_id,
 								  float l_dist,
@@ -44,9 +45,9 @@ float deferred_evaluate_shadowing(samplerCubeArrayShadow shadow_depth_maps,
 		int shadowmap_idx = light_get_cascade_shadowmap_idx(ld, cascade);
 
 		// Read cascade projection parameters
-		float cascade_proj_far, cascade_eye_dist;
+		float cascade_proj_near, cascade_proj_far, cascade_eye_dist;
 		vec2 cascade_recp_vp;
-		light_cascade_data(cascade_descriptor, cascade, cascade_proj_far, cascade_eye_dist, cascade_recp_vp);
+		light_cascade_data(cascade_descriptor, cascade, cascade_proj_near, cascade_proj_far, cascade_eye_dist, cascade_recp_vp);
 
 		// Construct matrix to transform into cascade-space
 		mat3x4 M = light_cascade_projection(cascade_descriptor, 
@@ -63,12 +64,14 @@ float deferred_evaluate_shadowing(samplerCubeArrayShadow shadow_depth_maps,
 					  normal,
 					  M,
 					  cascade_recp_vp,
+					  cascade_proj_near, 
+					  cascade_proj_far,
 					  l_dist,
 					  l_radius,
 					  coord);
 	}
 	else {
-		vec3 shadow_v = position - ld.transformed_position;
+		vec3 shadow_v = world_position - ld.position;
 		return shadow(shadow_depth_maps,
 					  shadow_maps,
 					  light_id,
@@ -101,6 +104,7 @@ vec3 deferred_shade_fragment(g_buffer_element frag, ivec2 coord,
 	// Calculate depth and extrapolate world position
 	float depth = gbuffer_parse_depth(frag);
 	vec3 position = unproject_screen_position(depth, vec2(coord) / vec2(backbuffer_size()));
+	vec3 w_pos = transform_view_to_world_space(position);
 
 	// Normal map
 	vec3 n = gbuffer_parse_normal(frag);
@@ -161,15 +165,17 @@ vec3 deferred_shade_fragment(g_buffer_element frag, ivec2 coord,
 													 directional_shadow_maps,
 													 cascade,
 													 position,
+													 w_pos,
 													 n,
 													 light_id,
 													 l_dist,
 													 ld,
 													 coord);
+
 			if (ld.type == LightTypeDirectional) {
 				//!? TODO: Remove!
 				// Inject some ambient, still without global illumination...
-				rgb += ld.diffuse * ld.luminance * 1e-10 * (1-shdw);
+				rgb += ld.diffuse * ld.luminance * 1e-11 * (1-shdw);
 			}
 
 			// Calculate occlusion, distance to light, normalized incident and reflection (eye) vectors

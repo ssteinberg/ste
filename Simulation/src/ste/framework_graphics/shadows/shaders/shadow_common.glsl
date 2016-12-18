@@ -8,10 +8,12 @@
 const float shadow_cubemap_size = 1024.f;
 const float shadow_dirmap_size = 2048.f;
 
-const float shadow_max_clusters = 10;
+const float shadow_max_penumbra_fast_path_multiplier = .25f;
+
+const int shadow_max_clusters = 10;
 const float shadow_cutoff = .5f;
 const float shadow_penumbra_scale = 1.f;
-const float shadow_screen_penumbra_size_per_clusters = 30.f / 2.f;
+const float shadow_screen_penumbra_size_per_clusters = 22.5f;
 
 const vec2 shadow_cluster_samples[8] = { vec2(-.7071f,   .7071f),
 										 vec2( .0000f,	-.8750f),
@@ -21,22 +23,6 @@ const vec2 shadow_cluster_samples[8] = { vec2(-.7071f,   .7071f),
 										 vec2(-.0000f,	 .3750f),
 										 vec2(-.1768f,	-.1768f),
 										 vec2( .1250f,	 .0000f) };
-
-/*
- *	Creates a slightly offseted testing depth for shadowmaps lookups
- */
-float shadow_calculate_test_depth(float z, float n) {
-	float d = project_depth(z, n);
-	
-	// z gives a linear distance, unlike depth, use it to compute multiplier and additive component of the test depth modifier
-	float x = -z / n - 1.f;
-	float m_mixer = clamp(x / 200.f, .0f, 1.f);
-	float a_mixer = clamp(x / 75.f, .0f, 1.f);
-	float multiplier = mix(1.0185f, 1.00015f, m_mixer);
-	float delta_mult = mix(7.f, .0f, a_mixer);
-
-	return d * multiplier + delta_mult * epsilon;
-}
 
 /*
  *	Calculate shadow penumbra size

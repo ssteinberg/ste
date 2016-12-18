@@ -27,18 +27,14 @@ private:
 	linked_light_lists *lll;
 	Resource::resource_instance<Resource::glsl_program> program;
 
-	Core::SamplerMipmapped depth_sampler;
-
 public:
 	linked_light_lists_gen_dispatch(const StEngineControl &ctx,
 									light_storage *ls,
 									linked_light_lists *lll) : ls(ls), lll(lll),
-															   program(ctx, std::vector<std::string>{ "passthrough.vert", "linked_light_lists_gen.frag" }),
-															   depth_sampler(Core::TextureFiltering::Nearest, Core::TextureFiltering::Nearest, Core::TextureFiltering::Nearest,
-															   				 Core::TextureWrapMode::ClampToEdge, Core::TextureWrapMode::ClampToEdge) {}
+															   program(ctx, std::vector<std::string>{ "linked_light_lists_gen.glsl" }) {}
 
 	void set_depth_map(Core::Texture2D *depth_map) {
-		auto handle = depth_map->get_texture_handle(depth_sampler);
+		auto handle = depth_map->get_texture_handle();
 		handle.make_resident();
 		program.get().set_uniform("depth_map", handle);
 	}

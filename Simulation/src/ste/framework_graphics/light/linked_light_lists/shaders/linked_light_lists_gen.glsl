@@ -1,8 +1,10 @@
 
-#type frag
+#type compute
 #version 450
 #extension GL_ARB_bindless_texture : require
 #extension GL_NV_gpu_shader5 : require
+
+layout(local_size_x = 32, local_size_y = 32, local_size_z = 1) in;
 
 #include "common.glsl"
 
@@ -34,7 +36,7 @@ layout(shared, binding = 11) restrict writeonly buffer lll_data {
 
 layout(bindless_sampler) uniform sampler2D depth_map;
 
-lll_element active_lights[max_active_lights_per_frame];
+lll_element active_lights[total_max_active_lights_per_frame];
 lll_element active_low_detail_lights[max_active_low_detail_lights_per_frame];
 int total_active_lights = 0;
 int total_active_low_detail_lights = 0;
@@ -69,10 +71,13 @@ void add_low_detail_light(uint16_t light_idx,
 }
 
 void main() {
-	ivec2 image_coord = ivec2(gl_FragCoord.xy);
-	vec2 frag_coords = (vec2(gl_FragCoord.xy) + vec2(.5f)) / vec2(backbuffer_size()) * float(lll_image_res_multiplier);
+	ivec2 image_coord = ivec2(gl_GlobalInvocationID.xy);
+	ivec2 image_size = imageSize(lll_heads);
+	if (any(greaterThanEqual(image_coord, image_size)))
+		return;
 
-	int depth_lod = 2;
+	vec2 frag_coords = (vec2(gl_GlobalInvocationID.xy) + vec2(.5f)) * float(lll_image_res_multiplier) / vec2(backbuffer_size());
+	int depth_lod = lll_depth_lod;
 
 	float near = projection_near_clip();
 	vec2 ndc = frag_coords * 2.f - vec2(1.f);
@@ -84,7 +89,7 @@ void main() {
 	vec3 l = vec3(near_plane_pos, -near);
 	float a = dot(l, l);
 
-	for (int j = 0; j < ll_counter && total_active_lights < max_active_lights_per_frame; ++j) {
+	for (int j = 0; j < ll_counter && total_active_lights < total_max_active_lights_per_frame; ++j) {
 		uint16_t ll_i = uint16_t(j);
 		uint16_t light_idx = ll[ll_i];
 		light_descriptor ld = light_buffer[light_idx];
@@ -110,8 +115,7 @@ void main() {
 
 				if (depth_range.x < 1.f) {
 					// Compare against depth buffer
-					vec2 uv = (vec2(image_coord) + vec2(.5f)) / textureSize(depth_map, depth_lod).xy;
-					float d = textureLod(depth_map, uv, depth_lod).x;
+					float d = texelFetch(depth_map, image_coord, depth_lod).x;
 					if (d <= depth_range.y) {
 						add_active_light(light_idx, ll_i, depth_range);
 						

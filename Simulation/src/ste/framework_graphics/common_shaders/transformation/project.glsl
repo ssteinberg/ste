@@ -11,6 +11,16 @@ float unproject_depth(float d, float n) {
 	return -n / d;
 }
 
+float project_depth(float z, float n, float f) {
+	float t = 1.f/(f-n);
+	return -n*t * (f/z + 1.f);
+}
+
+float unproject_depth(float d, float n, float f) {
+	float t = f-n;
+	return -n*f / (t*d + n);
+}
+
 vec3 unproject_screen_position(float depth, vec2 norm_frag_coords, vec4 proj_xywz) {
 	norm_frag_coords *= 2.f;
 	norm_frag_coords -= vec2(1);

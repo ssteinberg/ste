@@ -4,13 +4,17 @@
 
 #include "girenderer_transform_buffer.glsl"
 
-const int max_active_directional_lights_per_frame = 2;
 const int directional_light_cascades = 6;
-
-const float cascade_proj_near_clip = 25.f;
 const float cascade_viewport_reserve = 1.075f;
 
-const float light_cascade_minimal_distance = 1e+4;
+// Select a cascade eye distance that gives enough range from the near-clip to the view frustum encompassed by the cascade
+// to capture medium distance occluders, while maintaining depth precision. Keep it constant amongst cascades to avoid shadow filtering
+// artifacts when moving between cascades.
+// The near clip distance also reflects this motivation.
+const float cascade_projection_eye_distance = 10000.f;
+const float cascade_projection_near_clip = 50.f;
+
+const float cascades_thickness_multiplier_for_eye_dist = 5.f;
 
 struct light_cascade_descriptor {
 	// Tangent and up vector of all cascades, with light direction being view vector
@@ -18,7 +22,8 @@ struct light_cascade_descriptor {
 
 	// cascade_data:
 	// xy = reciprocal of viewport size
-	// zw = cascade z limits in cascade-space
+	// z = projection eye distance
+	// w = projection far clip
 	vec4 cascades_data[directional_light_cascades];
 };
 
@@ -66,18 +71,6 @@ float light_cascade_far(int cascade, float cascades_depths[directional_light_cas
 }
 
 /*
- *	Calculates the cascade eye distance from the center of the cascade's viewing frustum segment.
- *	Chooses a cascade distance that gives enough range from the near-clip to the view frustum encompassed by the cascade
- *	to capture medium distance occluders, while maintaining depth precision.
- *
- *	Input params are the cascade z_limits
- */
-float light_cascade_calculate_eye_dist(float z_far, float z_near) {
-	float cascade_depth = z_near - z_far;
-	return z_near + max3(2.f * cascade_proj_near_clip, 50.f * cascade_depth, light_cascade_minimal_distance);
-}
-
-/*
  *	Reads cascade's data:
  *	cascade_proj_far:	Far distance in cascade-space of the encompassed viewing frustum segment
  *	cascade_eye_dist:	Distance from cascade center (viewing frustum segment center) to the cascade eye
@@ -85,20 +78,17 @@ float light_cascade_calculate_eye_dist(float z_far, float z_near) {
  */
 void light_cascade_data(light_cascade_descriptor cascade_descriptor, 
 						int cascade, 
+						out float cascade_proj_near,
 						out float cascade_proj_far,
 						out float cascade_eye_dist,
 						out vec2 recp_viewport) {
 	vec4 data = cascade_descriptor.cascades_data[cascade];
-
-	vec2 z_limits = data.zw;
-	float z_near = z_limits.x;
-	float z_far = -z_limits.y;
-	
-	cascade_eye_dist = light_cascade_calculate_eye_dist(z_far, z_near);
-	// The far end of the cascade, e.g. to cull out geometry when building cascade shadow map
-	cascade_proj_far = -(cascade_eye_dist - z_far);
 	
 	recp_viewport = data.xy;
+	cascade_eye_dist = data.z;
+	// The far and near clips of the cascades
+	cascade_proj_far = data.w;
+	cascade_proj_near = cascade_projection_near_clip;
 }
 
 /*
@@ -114,16 +104,14 @@ mat3x4 light_cascade_projection(light_cascade_descriptor cascade_descriptor,
 	vec3 center = vec3(0, 0, -mix(near,far,.5f));
 	vec3 eye = center - l * cascade_eye_dist;
 	
-	vec3 X = cascade_descriptor.X.xyz;
-	vec3 Y = cascade_descriptor.Y.xyz;
+	vec3 X = cascade_descriptor.X.xyz * recp_viewport.x;
+	vec3 Y = cascade_descriptor.Y.xyz * recp_viewport.y;
 
-	mat3x4 M;
-	M[0] = vec4(X, -dot(eye, X));
-	M[1] = vec4(Y, -dot(eye, Y));
-	M[2] = vec4(-l, dot(eye, l));
-
-	M[0] *= recp_viewport.x;
-	M[1] *= recp_viewport.y;
+	mat3x4 M = mat3x4(
+		vec4(X, -dot(eye, X)),
+		vec4(Y, -dot(eye, Y)),
+		vec4(-l, dot(eye, l))
+	);
 
 	return M;
 }
@@ -154,11 +142,13 @@ mat3x4 light_cascade_projection(light_cascade_descriptor cascade_descriptor,
 								int cascade,
 								vec3 l,
 								float cascades_depths[directional_light_cascades],
+								out float cascade_proj_near,
 								out float cascade_proj_far) {
 	float cascade_eye_dist;
 	vec2 recp_viewport;
 	light_cascade_data(cascade_descriptor, 
 					   cascade, 
+					   cascade_proj_near,
 					   cascade_proj_far, 
 					   cascade_eye_dist, 
 					   recp_viewport);
@@ -172,6 +162,6 @@ mat3x4 light_cascade_projection(light_cascade_descriptor cascade_descriptor,
 								int cascade,
 								vec3 l,
 								float cascades_depths[directional_light_cascades]) {
-	float cascade_proj_far;
-	return light_cascade_projection(cascade_descriptor, cascade, l, cascades_depths, cascade_proj_far);
+	float cascade_proj_near, cascade_proj_far;
+	return light_cascade_projection(cascade_descriptor, cascade, l, cascades_depths, cascade_proj_near, cascade_proj_far);
 }

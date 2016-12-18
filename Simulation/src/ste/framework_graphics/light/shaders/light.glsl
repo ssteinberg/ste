@@ -12,7 +12,9 @@
 const int LightTypeSphere = 0;
 const int LightTypeDirectional = 1;
 
-const int max_active_lights_per_frame = 32;
+const int max_active_lights_per_frame = 24;
+const int max_active_directional_lights_per_frame = 4;
+const int total_max_active_lights_per_frame = max_active_lights_per_frame + max_active_directional_lights_per_frame;
 
 const float light_minimal_luminance_multiplier = 5e-6f;
 
@@ -167,7 +169,7 @@ vec3 scatter(light_descriptor ld,
 			 vec3 scatter_dir, 
 			 float scatter_dist,
 			 float min_lum) {
-	vec3 irradiance = light_lux_at_distance(ld, .0f, min_lum);
+	vec3 irradiance = irradiance(ld, dist, position, min_lum);
 	float particle_density = atmospherics_air_density(position);
 	vec3 extinction_coef = atmospherics_extinction_coeffcient();
 

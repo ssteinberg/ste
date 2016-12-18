@@ -20,7 +20,7 @@ out vs_out {
 void main() {
 	uint draw_id = gl_BaseInstanceARB;
 	mesh_descriptor md = mesh_descriptor_buffer[draw_id];
-
+	
 	gl_Position = vec4(transform_view(transform_model(md, vert)), 1);
 	vout.instanceIdx = gl_InstanceID;
 	vout.drawIdx = draw_id;
