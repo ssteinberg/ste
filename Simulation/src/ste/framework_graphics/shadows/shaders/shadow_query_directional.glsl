@@ -3,7 +3,7 @@
 #include "light_cascades.glsl"
 
 const float shadow_directional_max_penumbra = 8.f / shadow_dirmap_size;
-const float shadow_directional_min_penumbra = .2f / shadow_dirmap_size;
+const float shadow_directional_min_penumbra = .0f;//1.f / shadow_dirmap_size;
 
 /*
  *	Creates a slightly offseted testing depth for shadowmaps lookups
