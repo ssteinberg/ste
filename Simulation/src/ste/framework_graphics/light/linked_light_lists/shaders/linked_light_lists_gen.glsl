@@ -25,6 +25,8 @@ layout(shared, binding = 5) restrict readonly buffer ll_data {
 	uint16_t ll[];
 };
 
+layout(r8ui,  binding = 4) restrict writeonly uniform uimage2D lll_size;
+layout(r8ui,  binding = 5) restrict writeonly uniform uimage2D lll_low_detail_size;
 layout(r32ui, binding = 6) restrict writeonly uniform uimage2D lll_heads;
 layout(r32ui, binding = 7) restrict writeonly uniform uimage2D lll_low_detail_heads;
 layout(shared, binding = 7) restrict buffer lll_counter_data {
@@ -135,17 +137,19 @@ void main() {
 	}
 
 	// Add the encoded lights to the per-pixel linked-light-list
-	uint32_t next_active_idx = atomicAdd(lll_counter, uint(total_active_lights + total_active_low_detail_lights + 2));
-	uint32_t next_low_detail_idx = next_active_idx + total_active_lights + 1;
+	uint32_t next_active_idx = atomicAdd(lll_counter, uint(total_active_lights + total_active_low_detail_lights));
+	uint32_t next_low_detail_idx = next_active_idx + total_active_lights;
 	imageStore(lll_heads, image_coord, next_active_idx.xxxx);
 	imageStore(lll_low_detail_heads, image_coord, next_low_detail_idx.xxxx);
 	
 	// Copy lll elements to buffer and mark the ll end
 	for (int i = 0; i < total_active_lights; ++i)
 		lll_buffer[next_active_idx + i] = active_lights[i];
-	lll_mark_eof(lll_buffer[next_active_idx + total_active_lights]);
 
 	for (int i = 0; i < total_active_low_detail_lights; ++i)
 		lll_buffer[next_low_detail_idx + i] = active_low_detail_lights[i];
-	lll_mark_eof(lll_buffer[next_low_detail_idx + total_active_low_detail_lights]);
+		
+	// Write linked-lists' lengths
+	imageStore(lll_size, image_coord, total_active_lights.xxxx);
+	imageStore(lll_low_detail_size, image_coord, total_active_low_detail_lights.xxxx);
 }

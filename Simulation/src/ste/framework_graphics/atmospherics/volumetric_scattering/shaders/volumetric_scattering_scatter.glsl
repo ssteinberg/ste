@@ -24,6 +24,7 @@ layout(std430, binding = 2) restrict readonly buffer light_data {
 	light_descriptor light_buffer[];
 };
 
+layout(r8ui,  binding = 5) restrict readonly uniform uimage2D lll_size;
 layout(r32ui, binding = 6) restrict readonly uniform uimage2D lll_heads;
 layout(shared, binding = 11) restrict readonly buffer lll_data {
 	lll_element lll_buffer[];
@@ -206,11 +207,10 @@ void main() {
 	vec2 next_tile_fragcoords = slice_coords_to_fragcoords(vec2(slice_coords + ivec2(1)));
 
 	// Loop through per-pixel linked-light-list
-	uint32_t lll_ptr = imageLoad(lll_heads, slice_coords).x;
-	for (;;++lll_ptr) {
+	uint32_t lll_start = imageLoad(lll_heads, slice_coords).x;
+	uint32_t lll_length = imageLoad(lll_size, slice_coords).x;
+	for (uint32_t lll_ptr = lll_start; lll_ptr != lll_start + lll_length; ++lll_ptr) {
 		lll_element lll_p = lll_buffer[lll_ptr];
-		if (lll_eof(lll_p))
-			break;
 			
 		vec2 lll_depth_range = lll_parse_depth_range(lll_p);
 		uint light_idx = uint(lll_parse_light_idx(lll_p));

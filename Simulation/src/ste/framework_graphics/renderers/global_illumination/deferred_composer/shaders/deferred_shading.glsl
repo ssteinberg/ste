@@ -126,11 +126,10 @@ vec3 deferred_shade_fragment(g_buffer_element frag, ivec2 coord,
 	// Iterate lights in the linked-light-list structure
 	vec3 rgb = vec3(.0f);
 	ivec2 lll_coords = coord / lll_image_res_multiplier;
-	uint32_t lll_ptr = imageLoad(lll_heads, lll_coords).x;
-	for (;; ++lll_ptr) {
+	uint32_t lll_start = imageLoad(lll_heads, lll_coords).x;
+	uint32_t lll_length = imageLoad(lll_size, lll_coords).x;
+	for (uint32_t lll_ptr = lll_start; lll_ptr != lll_start + lll_length; ++lll_ptr) {
 		lll_element lll_p = lll_buffer[lll_ptr];
-		if (lll_eof(lll_p))
-			break;
 
 		// Check that light is in depth range
 		vec2 lll_depth_range = lll_parse_depth_range(lll_p);

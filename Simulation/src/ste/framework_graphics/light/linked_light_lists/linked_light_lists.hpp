@@ -40,6 +40,8 @@ private:
 	Core::ShaderStorageBuffer<std::uint32_t> lll_counter;
 	std::unique_ptr<Core::Texture2D> lll_heads;
 	std::unique_ptr<Core::Texture2D> lll_low_detail_heads;
+	std::unique_ptr<Core::Texture2D> lll_size;
+	std::unique_ptr<Core::Texture2D> lll_low_detail_size;
 
 	glm::ivec2 size;
 
