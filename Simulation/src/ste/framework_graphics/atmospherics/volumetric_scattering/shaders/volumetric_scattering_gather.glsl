@@ -37,7 +37,7 @@ vec4 accumulate(vec4 front, vec4 back) {
 	return vec4(l, .0f);
 }
 
-void main() {
+void main() {return;
 	ivec3 volume_size = imageSize(volume);
 	ivec2 slice_coords = ivec2(gl_GlobalInvocationID.xy);
 	if (any(greaterThan(slice_coords, volume_size.xy)))

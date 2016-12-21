@@ -19,7 +19,3 @@ uint16_t lll_parse_ll_idx(lll_element l) {
 	uint pack = l.data.x;
 	return uint16_t(pack >> 16);
 }
-
-bool lll_eof(lll_element l) {
-	return l.data.x == lll_eof_marker;
-}

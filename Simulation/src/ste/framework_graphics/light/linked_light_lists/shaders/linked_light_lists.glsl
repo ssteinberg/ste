@@ -5,13 +5,11 @@ struct lll_element {
 	uvec2 data;
 };
 
-const uint lll_eof_marker = 0xFFFFFFFF;
-
 /*
  *	Size in pixels of a single per-pixel linked-light-list. 
  */
 const int lll_image_res_multiplier = 8;
-const int lll_depth_lod = 3;	// log2(lll_image_res_multiplier)
+const int lll_depth_lod = 2;	// = log2(lll_image_res_multiplier)-1  (Down-sampled depth starts from LOD 1)
 
 /*
  *	Minimal luminance of low detail light. Multiplier is used to adjust the default minimal luminance of a light to compute its new effective range.

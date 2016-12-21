@@ -11,7 +11,3 @@ lll_element lll_encode(uint16_t light_idx, uint16_t ll_idx, vec2 depth_range) {
 
 	return l;
 }
-
-void lll_mark_eof(out lll_element lll) {
-	lll.data.x = lll_eof_marker;
-}

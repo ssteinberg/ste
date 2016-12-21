@@ -81,13 +81,10 @@ void main() {
 			light_cascade_descriptor cascade_descriptor = directional_lights_cascades[cascade_idx];
 
 			for (int cascade=0; cascade<directional_light_cascades; ++cascade) {
-				// Read cascade parameters
-				float cascade_proj_near, cascade_proj_far, cascade_eye_dist;
+				// Read cascade parameters and construct projection matrix
+				float cascade_proj_far;
 				vec2 recp_viewport;
-				light_cascade_data(cascade_descriptor, cascade, cascade_proj_near, cascade_proj_far, cascade_eye_dist, recp_viewport);
-
-				// And construct projection matrix
-				mat3x4 M = light_cascade_projection(cascade_descriptor, cascade, l, cascade_eye_dist, recp_viewport, cascades_depths);
+				mat3x4 M = light_cascade_projection(cascade_descriptor, cascade, l, cascades_depths, recp_viewport, cascade_proj_far);
 				
 				// Project the geometry bounding sphere into cascade-space.
 				// Check that it intersects the viewport and is in front of the far-plane of the cascade

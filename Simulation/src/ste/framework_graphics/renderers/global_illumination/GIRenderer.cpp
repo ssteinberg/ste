@@ -40,8 +40,7 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 						 shadows_projector(ctx, scene, &scene->scene_properties().lights_storage(), &shadows_storage),
 						 directional_shadows_projector(ctx, scene, &scene->scene_properties().lights_storage(), &shadows_storage),
 
-						 vol_scat_scatter(ctx, &vol_scat_storage, &lll_storage, &scene->scene_properties().lights_storage(), &shadows_storage),
-						 vol_scat_gather(ctx, &vol_scat_storage)
+						 vol_scat_scatter(ctx, &vol_scat_storage, &lll_storage, &scene->scene_properties().lights_storage(), &shadows_storage)
 {
 	resize_connection = std::make_shared<ResizeSignalConnectionType>([=](const glm::i32vec2 &size) {
 		this->transform_buffers.update_proj_data(this->ctx.get_fov(), this->ctx.get_projection_aspect(), this->ctx.get_near_clip(), size);
@@ -78,7 +77,6 @@ void GIRenderer::setup_tasks() {
 	shadow_projector_task = make_gpu_task("shdw_project", &shadows_projector.get(), nullptr);
 	directional_shadows_projector_task = make_gpu_task("dirshdw_project", &directional_shadows_projector.get(), nullptr);
 	volumetric_scattering_scatter_task = make_gpu_task("scatter", &vol_scat_scatter.get(), nullptr);
-	volumetric_scattering_gather_task = make_gpu_task("gather", &vol_scat_gather.get(), nullptr);
 	lll_gen_task = make_gpu_task("pp_ll_gen", &lll_gen_dispatch.get(), nullptr);
 
 	hdr.get().get_task()->add_dependency(composer_task);
@@ -116,8 +114,6 @@ void GIRenderer::setup_tasks() {
 	volumetric_scattering_scatter_task->add_dependency(downsample_depth_task);
 	volumetric_scattering_scatter_task->add_dependency(lll_gen_task);
 	volumetric_scattering_scatter_task->add_dependency(prepopulate_depth_task);
-	volumetric_scattering_gather_task->add_dependency(volumetric_scattering_scatter_task);
-	volumetric_scattering_gather_task->add_dependency(downsample_depth_task);
 	
 	composer_task->add_dependency(fb_clearer_task);
 	composer_task->add_dependency(prepopulate_backface_depth_task);
@@ -125,7 +121,7 @@ void GIRenderer::setup_tasks() {
 	composer_task->add_dependency(light_preprocess.get().get_task());
 	composer_task->add_dependency(shadow_projector_task);
 	composer_task->add_dependency(directional_shadows_projector_task);
-	composer_task->add_dependency(volumetric_scattering_gather_task);
+	composer_task->add_dependency(volumetric_scattering_scatter_task);
 	composer_task->add_dependency(scene_task);
 }
 

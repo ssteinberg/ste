@@ -111,7 +111,6 @@ private:
 	Resource::resource_instance<directional_shadowmap_projector> directional_shadows_projector;	
 
 	Resource::resource_instance<volumetric_scattering_scatter_dispatch> vol_scat_scatter;
-	Resource::resource_instance<volumetric_scattering_gather_dispatch> vol_scat_gather;
 
 	std::shared_ptr<const gpu_task> scene_task,
 									composer_task,
@@ -121,7 +120,6 @@ private:
 									shadow_projector_task,
 									directional_shadows_projector_task,
 									volumetric_scattering_scatter_task,
-									volumetric_scattering_gather_task,
 									downsample_depth_task,
 									prepopulate_depth_task,
 									prepopulate_backface_depth_task,

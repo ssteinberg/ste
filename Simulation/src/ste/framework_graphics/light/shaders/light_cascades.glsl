@@ -78,7 +78,6 @@ float light_cascade_far(int cascade, float cascades_depths[directional_light_cas
  */
 void light_cascade_data(light_cascade_descriptor cascade_descriptor, 
 						int cascade, 
-						out float cascade_proj_near,
 						out float cascade_proj_far,
 						out float cascade_eye_dist,
 						out vec2 recp_viewport) {
@@ -88,7 +87,6 @@ void light_cascade_data(light_cascade_descriptor cascade_descriptor,
 	cascade_eye_dist = data.z;
 	// The far and near clips of the cascades
 	cascade_proj_far = data.w;
-	cascade_proj_near = cascade_projection_near_clip;
 }
 
 /*
@@ -142,18 +140,38 @@ mat3x4 light_cascade_projection(light_cascade_descriptor cascade_descriptor,
 								int cascade,
 								vec3 l,
 								float cascades_depths[directional_light_cascades],
-								out float cascade_proj_near,
+								out vec2 cascade_recp_viewport,
 								out float cascade_proj_far) {
 	float cascade_eye_dist;
-	vec2 recp_viewport;
 	light_cascade_data(cascade_descriptor, 
 					   cascade, 
-					   cascade_proj_near,
 					   cascade_proj_far, 
 					   cascade_eye_dist, 
-					   recp_viewport);
+					   cascade_recp_viewport);
 
-	return light_cascade_projection(cascade_descriptor, cascade, l, cascade_eye_dist, recp_viewport, cascades_depths);
+	return light_cascade_projection(cascade_descriptor, cascade, l, cascade_eye_dist, cascade_recp_viewport, cascades_depths);
+}
+/*
+ *	Constructs a cascade's transformation and projection matrix.
+ */
+mat3x4 light_cascade_projection(light_cascade_descriptor cascade_descriptor, 
+								int cascade,
+								vec3 l,
+								float cascades_depths[directional_light_cascades],
+								out float cascade_proj_far) {
+	vec2 cascade_recp_viewport;
+	return light_cascade_projection(cascade_descriptor, cascade, l, cascades_depths, cascade_recp_viewport, cascade_proj_far);
+}
+/*
+ *	Constructs a cascade's transformation and projection matrix.
+ */
+mat3x4 light_cascade_projection(light_cascade_descriptor cascade_descriptor, 
+								int cascade,
+								vec3 l,
+								float cascades_depths[directional_light_cascades],
+								out vec2 cascade_recp_viewport) {
+	float cascade_proj_far;
+	return light_cascade_projection(cascade_descriptor, cascade, l, cascades_depths, cascade_recp_viewport, cascade_proj_far);
 }
 /*
  *	Constructs a cascade's transformation and projection matrix.
@@ -162,6 +180,7 @@ mat3x4 light_cascade_projection(light_cascade_descriptor cascade_descriptor,
 								int cascade,
 								vec3 l,
 								float cascades_depths[directional_light_cascades]) {
-	float cascade_proj_near, cascade_proj_far;
-	return light_cascade_projection(cascade_descriptor, cascade, l, cascades_depths, cascade_proj_near, cascade_proj_far);
+	float cascade_proj_far;
+	vec2 cascade_recp_viewport;
+	return light_cascade_projection(cascade_descriptor, cascade, l, cascades_depths, cascade_recp_viewport, cascade_proj_far);
 }
