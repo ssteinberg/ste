@@ -1,8 +1,8 @@
-# Install script for directory: C:/src/git/StE/Simulation/third_party/packages/tinyobjloader
+# Install script for directory: D:/src/git/StE/Simulation/third_party/packages/tinyobjloader
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "C:/src/git/StE/Simulation/third_party")
+  set(CMAKE_INSTALL_PREFIX "../../")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -27,16 +27,17 @@ if(NOT CMAKE_INSTALL_COMPONENT)
   endif()
 endif()
 
-if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
+if("${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   if("${CMAKE_INSTALL_CONFIG_NAME}" MATCHES "^([Dd][Ee][Bb][Uu][Gg])$")
-    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "C:/src/git/StE/Simulation/third_party/build/tinyobjloader/Debug/tinyobjloader.lib")
+    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "D:/src/git/StE/Simulation/third_party/build/tinyobjloader/Debug/tinyobjloaderd.lib")
+    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "D:/src/git/StE/Simulation/third_party/build/tinyobjloader/Debug/tinyobjloaderd.pdb")
   elseif("${CMAKE_INSTALL_CONFIG_NAME}" MATCHES "^([Rr][Ee][Ll][Ee][Aa][Ss][Ee])$")
-    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "C:/src/git/StE/Simulation/third_party/build/tinyobjloader/Release/tinyobjloader.lib")
+    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "D:/src/git/StE/Simulation/third_party/build/tinyobjloader/Release/tinyobjloader.lib")
   endif()
 endif()
 
-if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include" TYPE FILE FILES "C:/src/git/StE/Simulation/third_party/packages/tinyobjloader/tiny_obj_loader.h")
+if("${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include" TYPE FILE FILES "D:/src/git/StE/Simulation/third_party/packages/tinyobjloader/tiny_obj_loader.h")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT)
@@ -47,5 +48,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "C:/src/git/StE/Simulation/third_party/build/tinyobjloader/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "D:/src/git/StE/Simulation/third_party/build/tinyobjloader/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

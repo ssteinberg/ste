@@ -1,4 +1,4 @@
-C:/src/git/StE/Simulation/third_party/build/tinyobjloader/CMakeFiles/tinyobjloader.dir
-C:/src/git/StE/Simulation/third_party/build/tinyobjloader/CMakeFiles/INSTALL.dir
-C:/src/git/StE/Simulation/third_party/build/tinyobjloader/CMakeFiles/ALL_BUILD.dir
-C:/src/git/StE/Simulation/third_party/build/tinyobjloader/CMakeFiles/ZERO_CHECK.dir
+D:/src/git/StE/Simulation/third_party/build/tinyobjloader/CMakeFiles/tinyobjloader.dir
+D:/src/git/StE/Simulation/third_party/build/tinyobjloader/CMakeFiles/INSTALL.dir
+D:/src/git/StE/Simulation/third_party/build/tinyobjloader/CMakeFiles/ALL_BUILD.dir
+D:/src/git/StE/Simulation/third_party/build/tinyobjloader/CMakeFiles/ZERO_CHECK.dir

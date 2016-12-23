@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <CustomBuild Include="C:\src\git\StE\Simulation\third_party\build\glfw\CMakeFiles\c3d0b33f60ca74381ae1a5a9165875de\INSTALL_force.rule">
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\glfw\CMakeFiles\409d3aacf080909611f2c2f1c3b61dd3\INSTALL_force.rule">
       <Filter>CMake Rules</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="CMake Rules">
-      <UniqueIdentifier>{0F7DC301-D7EE-3964-A32B-F99B1B91310D}</UniqueIdentifier>
+      <UniqueIdentifier>{9F855A30-1856-3B52-BE3D-A2AACAB2C8E0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -1,6 +1,13 @@
 
   const char features[] = {"\n"
 "CXX_FEATURE:"
+#if _MSC_FULL_VER >= 190024406
+"1"
+#else
+"0"
+#endif
+"cxx_aggregate_default_initializers\n"
+"CXX_FEATURE:"
 #if _MSC_VER >= 1800
 "1"
 #else
@@ -357,6 +364,13 @@
 "0"
 #endif
 "cxx_user_literals\n"
+"CXX_FEATURE:"
+#if _MSC_FULL_VER >= 190023918
+"1"
+#else
+"0"
+#endif
+"cxx_variable_templates\n"
 "CXX_FEATURE:"
 #if _MSC_VER >= 1600
 "1"

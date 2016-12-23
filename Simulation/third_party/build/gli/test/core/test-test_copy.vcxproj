@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGUID>{EC6D873D-EA91-35FF-9A4A-A21BD23C94A5}</ProjectGUID>
+    <ProjectGUID>{66D39357-9FCA-375B-BACD-485BA65002AB}</ProjectGUID>
     <Keyword>Win32Proj</Keyword>
     <Platform>Win32</Platform>
     <ProjectName>test-test_copy</ProjectName>
@@ -38,13 +38,13 @@
   <PropertyGroup Label="UserMacros" />
     <PropertyGroup>
       <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
-      <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\src\git\StE\Simulation\third_party\build\gli\test\core\Debug\</OutDir>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\src\git\StE\Simulation\third_party\build\gli\test\core\Debug\</OutDir>
       <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">test-test_copy.dir\Debug\</IntDir>
       <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">test-test_copy</TargetName>
       <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.exe</TargetExt>
       <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
       <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</GenerateManifest>
-      <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\src\git\StE\Simulation\third_party\build\gli\test\core\Release\</OutDir>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D:\src\git\StE\Simulation\third_party\build\gli\test\core\Release\</OutDir>
       <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">test-test_copy.dir\Release\</IntDir>
       <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">test-test_copy</TargetName>
       <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.exe</TargetExt>
@@ -53,8 +53,9 @@
     </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\src\git\StE\Simulation\third_party\packages\gli\.;C:\src\git\StE\Simulation\third_party\packages\gli\external\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\src\git\StE\Simulation\third_party\packages\gli\.;D:\src\git\StE\Simulation\third_party\packages\gli\external;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>Debug/</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <CompileAs>CompileAsCpp</CompileAs>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableLanguageExtensions>true</DisableLanguageExtensions>
@@ -65,15 +66,15 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;_CRT_SECURE_NO_WARNINGS;SOURCE_DIR="C:/src/git/StE/Simulation/third_party/packages/gli";CMAKE_INTDIR="Debug";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;_CRT_SECURE_NO_WARNINGS;SOURCE_DIR="D:/src/git/StE/Simulation/third_party/packages/gli";CMAKE_INTDIR="Debug";%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;_CRT_SECURE_NO_WARNINGS;SOURCE_DIR=\"C:/src/git/StE/Simulation/third_party/packages/gli\";CMAKE_INTDIR=\"Debug\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\src\git\StE\Simulation\third_party\packages\gli\.;C:\src\git\StE\Simulation\third_party\packages\gli\external\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;_CRT_SECURE_NO_WARNINGS;SOURCE_DIR=\"D:/src/git/StE/Simulation/third_party/packages/gli\";CMAKE_INTDIR=\"Debug\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>D:\src\git\StE\Simulation\third_party\packages\gli\.;D:\src\git\StE\Simulation\third_party\packages\gli\external;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\src\git\StE\Simulation\third_party\packages\gli\.;C:\src\git\StE\Simulation\third_party\packages\gli\external\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\src\git\StE\Simulation\third_party\packages\gli\.;D:\src\git\StE\Simulation\third_party\packages\gli\external;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -86,8 +87,8 @@
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>Debug</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>C:/src/git/StE/Simulation/third_party/build/gli/test/core/Debug/test-test_copy.lib</ImportLibrary>
-      <ProgramDataBaseFile>C:/src/git/StE/Simulation/third_party/build/gli/test/core/Debug/test-test_copy.pdb</ProgramDataBaseFile>
+      <ImportLibrary>D:/src/git/StE/Simulation/third_party/build/gli/test/core/Debug/test-test_copy.lib</ImportLibrary>
+      <ProgramDataBaseFile>D:/src/git/StE/Simulation/third_party/build/gli/test/core/Debug/test-test_copy.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
       <Version></Version>
     </Link>
@@ -97,7 +98,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\src\git\StE\Simulation\third_party\packages\gli\.;C:\src\git\StE\Simulation\third_party\packages\gli\external\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\src\git\StE\Simulation\third_party\packages\gli\.;D:\src\git\StE\Simulation\third_party\packages\gli\external;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>Release/</AssemblerListingLocation>
       <CompileAs>CompileAsCpp</CompileAs>
       <DisableLanguageExtensions>true</DisableLanguageExtensions>
@@ -108,16 +109,16 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_CRT_SECURE_NO_WARNINGS;SOURCE_DIR="C:/src/git/StE/Simulation/third_party/packages/gli";CMAKE_INTDIR="Release";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_CRT_SECURE_NO_WARNINGS;SOURCE_DIR="D:/src/git/StE/Simulation/third_party/packages/gli";CMAKE_INTDIR="Release";%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <DebugInformationFormat></DebugInformationFormat>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_CRT_SECURE_NO_WARNINGS;SOURCE_DIR=\"C:/src/git/StE/Simulation/third_party/packages/gli\";CMAKE_INTDIR=\"Release\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\src\git\StE\Simulation\third_party\packages\gli\.;C:\src\git\StE\Simulation\third_party\packages\gli\external\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_CRT_SECURE_NO_WARNINGS;SOURCE_DIR=\"D:/src/git/StE/Simulation/third_party/packages/gli\";CMAKE_INTDIR=\"Release\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>D:\src\git\StE\Simulation\third_party\packages\gli\.;D:\src\git\StE\Simulation\third_party\packages\gli\external;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\src\git\StE\Simulation\third_party\packages\gli\.;C:\src\git\StE\Simulation\third_party\packages\gli\external\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\src\git\StE\Simulation\third_party\packages\gli\.;D:\src\git\StE\Simulation\third_party\packages\gli\external;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -130,8 +131,8 @@
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>No</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>C:/src/git/StE/Simulation/third_party/build/gli/test/core/Release/test-test_copy.lib</ImportLibrary>
-      <ProgramDataBaseFile>C:/src/git/StE/Simulation/third_party/build/gli/test/core/Release/test-test_copy.pdb</ProgramDataBaseFile>
+      <ImportLibrary>D:/src/git/StE/Simulation/third_party/build/gli/test/core/Release/test-test_copy.lib</ImportLibrary>
+      <ProgramDataBaseFile>D:/src/git/StE/Simulation/third_party/build/gli/test/core/Release/test-test_copy.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
       <Version></Version>
     </Link>
@@ -140,10 +141,10 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <CustomBuild Include="C:\src\git\StE\Simulation\third_party\packages\gli\test\core\CMakeLists.txt">
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Building Custom Rule C:/src/git/StE/Simulation/third_party/packages/gli/test/core/CMakeLists.txt</Message>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\packages\gli\test\core\CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Building Custom Rule D:/src/git/StE/Simulation/third_party/packages/gli/test/core/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
-"C:\Program Files (x86)\CMake\bin\cmake.exe" -HC:/src/git/StE/Simulation/third_party/packages/gli -BC:/src/git/StE/Simulation/third_party/build/gli --check-stamp-file C:\src\git\StE\Simulation\third_party\build\gli\test\core\CMakeFiles\generate.stamp
+"C:\Program Files\CMake\bin\cmake.exe" -HD:/src/git/StE/Simulation/third_party/packages/gli -BD:/src/git/StE/Simulation/third_party/build/gli --check-stamp-file D:\src\git\StE\Simulation\third_party\build\gli\test\core\CMakeFiles\generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -151,12 +152,12 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:/src/git/StE/Simulation/third_party/packages/gli/test/core/CMakeLists.txt;C:\src\git\StE\Simulation\third_party\packages\gli\test\core\CMakeLists.txt;C:\src\git\StE\Simulation\third_party\packages\gli\test\core\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\src\git\StE\Simulation\third_party\build\gli\test\core\CMakeFiles\generate.stamp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:/src/git/StE/Simulation/third_party/packages/gli/test/core/CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\gli\test\core\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\gli\test\core\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\src\git\StE\Simulation\third_party\build\gli\test\core\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Building Custom Rule C:/src/git/StE/Simulation/third_party/packages/gli/test/core/CMakeLists.txt</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Building Custom Rule D:/src/git/StE/Simulation/third_party/packages/gli/test/core/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
-"C:\Program Files (x86)\CMake\bin\cmake.exe" -HC:/src/git/StE/Simulation/third_party/packages/gli -BC:/src/git/StE/Simulation/third_party/build/gli --check-stamp-file C:\src\git\StE\Simulation\third_party\build\gli\test\core\CMakeFiles\generate.stamp
+"C:\Program Files\CMake\bin\cmake.exe" -HD:/src/git/StE/Simulation/third_party/packages/gli -BD:/src/git/StE/Simulation/third_party/build/gli --check-stamp-file D:\src\git\StE\Simulation\third_party\build\gli\test\core\CMakeFiles\generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -164,17 +165,17 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:/src/git/StE/Simulation/third_party/packages/gli/test/core/CMakeLists.txt;C:\src\git\StE\Simulation\third_party\packages\gli\test\core\CMakeLists.txt;C:\src\git\StE\Simulation\third_party\packages\gli\test\core\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\src\git\StE\Simulation\third_party\build\gli\test\core\CMakeFiles\generate.stamp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D:/src/git/StE/Simulation/third_party/packages/gli/test/core/CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\gli\test\core\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\gli\test\core\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D:\src\git\StE\Simulation\third_party\build\gli\test\core\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\gli\test\core\test_copy.cpp"  />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\gli\test\core\test_copy.cpp"  />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/ZERO_CHECK.vcxproj">
-      <Project>485BEB21-3B4E-3F36-8F08-6EFA88F65E07</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/ZERO_CHECK.vcxproj">
+      <Project>FFBE5E61-896C-32B0-AB42-C2CF0F8D0DEB</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
