@@ -231,9 +231,6 @@
     <ClCompile Include="Simulation\src\ste\framework_graphics\light\light_storage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\atmospherics\volumetric_scattering\gather\volumetric_scattering_gather_dispatch.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_graphics\atmospherics\volumetric_scattering\scatter\volumetric_scattering_scatter_dispatch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -1067,9 +1064,6 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\atmospherics\atmospherics_properties.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\atmospherics\volumetric_scattering\gather\volumetric_scattering_gather_dispatch.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\atmospherics\volumetric_scattering\scatter\volumetric_scattering_scatter_dispatch.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1140,7 +1134,6 @@
     <None Include="Simulation\src\ste\framework_graphics\light\shaders\light_cascades.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\deferred_composer\shaders\deferred_compose.frag" />
     <None Include="Simulation\src\ste\framework_graphics\atmospherics\volumetric_scattering\shaders\volumetric_scattering.glsl" />
-    <None Include="Simulation\src\ste\framework_graphics\atmospherics\volumetric_scattering\shaders\volumetric_scattering_gather.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\atmospherics\volumetric_scattering\shaders\volumetric_scattering_scatter.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\atmospherics\buffer\shaders\atmospherics.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\atmospherics\buffer\shaders\atmospherics_descriptor.glsl" />

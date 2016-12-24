@@ -383,9 +383,6 @@
     <ClCompile Include="Simulation\src\ste\framework_graphics\utilities\profiler\profiler.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\atmospherics\volumetric_scattering\gather\volumetric_scattering_gather_dispatch.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_graphics\atmospherics\volumetric_scattering\scatter\volumetric_scattering_scatter_dispatch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
@@ -637,7 +634,6 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\utilities\profiler\profileable.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\utilities\profiler\profiler.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\utilities\texture_pools\texture_pool.hpp" />
-    <ClInclude Include="Simulation\src\ste\framework_graphics\atmospherics\volumetric_scattering\gather\volumetric_scattering_gather_dispatch.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\atmospherics\volumetric_scattering\scatter\volumetric_scattering_scatter_dispatch.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\atmospherics\volumetric_scattering\volumetric_scattering_storage.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\voxels\dense_voxelizer.hpp" />
@@ -795,7 +791,6 @@
     <None Include="Simulation\src\ste\framework_graphics\shadows\shaders\shadow_query_directional.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\shadows\shaders\shadow_query_spherical.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\atmospherics\volumetric_scattering\shaders\volumetric_scattering.glsl" />
-    <None Include="Simulation\src\ste\framework_graphics\atmospherics\volumetric_scattering\shaders\volumetric_scattering_gather.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\atmospherics\volumetric_scattering\shaders\volumetric_scattering_scatter.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shaders\shadow_directional.vert" />
     <None Include="Simulation\src\ste\framework_graphics\voxels\shaders\voxelizer.frag" />
