@@ -83,10 +83,11 @@ void directional_light(uint16_t light_idx, int cascade, light_descriptor ld) {
 	vec2 vp = t.xy * cascade_viewport_reserve;
 	vec2 recp_vp = 1.f / vp;
 
-	vec2 z_limits = t.zw;
+	float eye_dist = t.z + cascade_projection_eye_distance;
+	float far_clip = t.w + eye_dist;
 		
 	// Write cascade data and z limits
-	directional_lights_cascades[cascade_idx].cascades_data[cascade] = vec4(recp_vp, z_limits);
+	directional_lights_cascades[cascade_idx].cascades_data[cascade] = vec4(recp_vp, eye_dist, far_clip);
 }
 
 void spherical_light(uint16_t light_idx, int face, light_descriptor ld) {
@@ -98,36 +99,26 @@ void spherical_light(uint16_t light_idx, int face, light_descriptor ld) {
 	float f = max(ld.effective_range, n);
 
 	vec3 t = vec3(1,-1, 0);
-	vec3 u0, u1, u2, u3;
-	if (face == 0 || face == 1) {
-		u0 = dir + t.zxx;
-		u1 = dir + t.zxy;
-		u2 = dir + t.zyx;
-		u3 = dir + t.zyy;
+	vec3 u[4];
+
+	if ((face & 4) != 0) {
+		u[0] = dir + t.xxz;
+		u[1] = dir + t.xyz;
+		u[2] = dir + t.yxz;
+		u[3] = dir + t.yyz;
 	}
-	else if (face == 2 || face == 3) {
-		u0 = dir + t.xzx;
-		u1 = dir + t.xzy;
-		u2 = dir + t.yzx;
-		u3 = dir + t.yzy;
+	else if ((face & 2) != 0) {
+		u[0] = dir + t.xzx;
+		u[1] = dir + t.xzy;
+		u[2] = dir + t.yzx;
+		u[3] = dir + t.yzy;
 	}
 	else {
-		u0 = dir + t.xxz;
-		u1 = dir + t.xyz;
-		u2 = dir + t.yxz;
-		u3 = dir + t.yyz;
+		u[0] = dir + t.zxx;
+		u[1] = dir + t.zxy;
+		u[2] = dir + t.zyx;
+		u[3] = dir + t.zyy;
 	}
-
-	vec3 shadow_proj_frustum_vertices[8] = {
-		u0 * n,
-		u1 * n,
-		u2 * n,
-		u3 * n,
-		u0 * f,
-		u1 * f,
-		u2 * f,
-		u3 * f
-	};
 
 	// Check frustum-frustum intersection
 	bvec4 bn0, bn1;
@@ -136,22 +127,21 @@ void spherical_light(uint16_t light_idx, int face, light_descriptor ld) {
 	bvec4 bt0, bt1;
 	bvec4 bb0, bb1;
 	for (int i=0; i<4; ++i) {
-		vec3 v = origin + shadow_proj_frustum_vertices[i];
+		vec3 w = transform_direction_view(u[i]);
+		vec3 v0 = origin + w * n;
+		vec3 v1 = origin + w * f;
 			
-		bn0[i] = dot(np.xyz, v) + np.w <= 0;
-		br0[i] = dot(rp.xyz, v) + rp.w <= 0;
-		bl0[i] = dot(lp.xyz, v) + lp.w <= 0;
-		bt0[i] = dot(tp.xyz, v) + tp.w <= 0;
-		bb0[i] = dot(bp.xyz, v) + bp.w <= 0;
-	}
-	for (int i=0; i<4; ++i) {
-		vec3 v = origin + shadow_proj_frustum_vertices[i+4];
-			
-		bn1[i] = dot(np.xyz, v) + np.w <= 0;
-		br1[i] = dot(rp.xyz, v) + rp.w <= 0;
-		bl1[i] = dot(lp.xyz, v) + lp.w <= 0;
-		bt1[i] = dot(tp.xyz, v) + tp.w <= 0;
-		bb1[i] = dot(bp.xyz, v) + bp.w <= 0;
+		bn0[i] = dot(np.xyz, v0) + np.w <= 0;
+		br0[i] = dot(rp.xyz, v0) + rp.w <= 0;
+		bl0[i] = dot(lp.xyz, v0) + lp.w <= 0;
+		bt0[i] = dot(tp.xyz, v0) + tp.w <= 0;
+		bb0[i] = dot(bp.xyz, v0) + bp.w <= 0;
+
+		bn1[i] = dot(np.xyz, v1) + np.w <= 0;
+		br1[i] = dot(rp.xyz, v1) + rp.w <= 0;
+		bl1[i] = dot(lp.xyz, v1) + lp.w <= 0;
+		bt1[i] = dot(tp.xyz, v1) + tp.w <= 0;
+		bb1[i] = dot(bp.xyz, v1) + bp.w <= 0;
 	}
 		
 	bool bn = all(bn0) && all(bn1);

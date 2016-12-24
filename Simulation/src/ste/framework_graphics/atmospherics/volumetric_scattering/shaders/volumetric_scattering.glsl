@@ -2,12 +2,13 @@
 #include "common.glsl"
 #include "project.glsl"
 #include "atmospherics.glsl"
+#include "linked_light_lists.glsl"
 
-const int volumetric_scattering_tile_size = 8;
+const int volumetric_scattering_tile_size = lll_image_res_multiplier;
 const int volumetric_scattering_depth_tiles = 256;
 
-const float volumetric_scattering_ka = 0.025f;
-const float volumetric_scattering_kb = 1.06f;
+const float volumetric_scattering_ka = 0.03f;
+const float volumetric_scattering_kb = 1.07f;
 
 float volumetric_scattering_depth_for_tile(int t) {
 	float z = -volumetric_scattering_ka * pow(volumetric_scattering_kb, float(t));

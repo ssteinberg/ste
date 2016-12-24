@@ -35,7 +35,6 @@
 #endif//GLM_MESSAGES
 
 #include "./gtc/bitfield.hpp"
-#include "./gtc/color_encoding.hpp"
 #include "./gtc/color_space.hpp"
 #include "./gtc/constants.hpp"
 #include "./gtc/epsilon.hpp"

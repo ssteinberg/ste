@@ -1,7 +1,7 @@
-prefix=C:/src/git/StE/Simulation/third_party
+prefix=D:/src/git/StE/Simulation/third_party
 includedir=${prefix}/include
 
 Name: GLM
 Description: OpenGL Mathematics
-Version: 0.9.9
+Version: 0.9.8
 Cflags: -I${includedir}

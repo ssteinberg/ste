@@ -1,8 +1,8 @@
-# Install script for directory: C:/src/git/StE/Simulation/third_party/packages/zlib
+# Install script for directory: D:/src/git/StE/Simulation/third_party/packages/zlib
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "C:/src/git/StE/Simulation/third_party/")
+  set(CMAKE_INSTALL_PREFIX "../../")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -27,115 +27,45 @@ if(NOT CMAKE_INSTALL_COMPONENT)
   endif()
 endif()
 
-if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
+if("${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   if("${CMAKE_INSTALL_CONFIG_NAME}" MATCHES "^([Dd][Ee][Bb][Uu][Gg])$")
-    list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-     "C:/src/git/StE/Simulation/third_party/lib/zlibd.lib")
-    if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
-        message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
-    endif()
-    if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
-        message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
-    endif()
-file(INSTALL DESTINATION "C:/src/git/StE/Simulation/third_party/lib" TYPE STATIC_LIBRARY OPTIONAL FILES "C:/src/git/StE/Simulation/third_party/build/zlib/Debug/zlibd.lib")
+    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY OPTIONAL FILES "D:/src/git/StE/Simulation/third_party/build/zlib/Debug/zlibd.lib")
+    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY OPTIONAL FILES "D:/src/git/StE/Simulation/third_party/build/zlib/Debug/zlibd.pdb")
   elseif("${CMAKE_INSTALL_CONFIG_NAME}" MATCHES "^([Rr][Ee][Ll][Ee][Aa][Ss][Ee])$")
-    list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-     "C:/src/git/StE/Simulation/third_party/lib/zlib.lib")
-    if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
-        message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
-    endif()
-    if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
-        message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
-    endif()
-file(INSTALL DESTINATION "C:/src/git/StE/Simulation/third_party/lib" TYPE STATIC_LIBRARY OPTIONAL FILES "C:/src/git/StE/Simulation/third_party/build/zlib/Release/zlib.lib")
+    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY OPTIONAL FILES "D:/src/git/StE/Simulation/third_party/build/zlib/Release/zlib.lib")
   endif()
 endif()
 
-if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
+if("${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   if("${CMAKE_INSTALL_CONFIG_NAME}" MATCHES "^([Dd][Ee][Bb][Uu][Gg])$")
-    list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-     "C:/src/git/StE/Simulation/third_party/bin/zlibd.dll")
-    if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
-        message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
-    endif()
-    if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
-        message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
-    endif()
-file(INSTALL DESTINATION "C:/src/git/StE/Simulation/third_party/bin" TYPE SHARED_LIBRARY FILES "C:/src/git/StE/Simulation/third_party/build/zlib/Debug/zlibd.dll")
+    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE SHARED_LIBRARY FILES "D:/src/git/StE/Simulation/third_party/build/zlib/Debug/zlibd.dll")
   elseif("${CMAKE_INSTALL_CONFIG_NAME}" MATCHES "^([Rr][Ee][Ll][Ee][Aa][Ss][Ee])$")
-    list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-     "C:/src/git/StE/Simulation/third_party/bin/zlib.dll")
-    if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
-        message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
-    endif()
-    if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
-        message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
-    endif()
-file(INSTALL DESTINATION "C:/src/git/StE/Simulation/third_party/bin" TYPE SHARED_LIBRARY FILES "C:/src/git/StE/Simulation/third_party/build/zlib/Release/zlib.dll")
+    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE SHARED_LIBRARY FILES "D:/src/git/StE/Simulation/third_party/build/zlib/Release/zlib.dll")
   endif()
 endif()
 
-if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
+if("${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   if("${CMAKE_INSTALL_CONFIG_NAME}" MATCHES "^([Dd][Ee][Bb][Uu][Gg])$")
-    list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-     "C:/src/git/StE/Simulation/third_party/lib/zlibstaticd.lib")
-    if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
-        message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
-    endif()
-    if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
-        message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
-    endif()
-file(INSTALL DESTINATION "C:/src/git/StE/Simulation/third_party/lib" TYPE STATIC_LIBRARY FILES "C:/src/git/StE/Simulation/third_party/build/zlib/Debug/zlibstaticd.lib")
+    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "D:/src/git/StE/Simulation/third_party/build/zlib/Debug/zlibstaticd.lib")
+    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "D:/src/git/StE/Simulation/third_party/build/zlib/Debug/zlibstaticd.pdb")
   elseif("${CMAKE_INSTALL_CONFIG_NAME}" MATCHES "^([Rr][Ee][Ll][Ee][Aa][Ss][Ee])$")
-    list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-     "C:/src/git/StE/Simulation/third_party/lib/zlibstatic.lib")
-    if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
-        message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
-    endif()
-    if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
-        message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
-    endif()
-file(INSTALL DESTINATION "C:/src/git/StE/Simulation/third_party/lib" TYPE STATIC_LIBRARY FILES "C:/src/git/StE/Simulation/third_party/build/zlib/Release/zlibstatic.lib")
+    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "D:/src/git/StE/Simulation/third_party/build/zlib/Release/zlibstatic.lib")
   endif()
 endif()
 
-if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "C:/src/git/StE/Simulation/third_party/include/zconf.h;C:/src/git/StE/Simulation/third_party/include/zlib.h")
-  if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
-    message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
-  endif()
-  if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
-    message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
-  endif()
-file(INSTALL DESTINATION "C:/src/git/StE/Simulation/third_party/include" TYPE FILE FILES
-    "C:/src/git/StE/Simulation/third_party/build/zlib/zconf.h"
-    "C:/src/git/StE/Simulation/third_party/packages/zlib/zlib.h"
+if("${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include" TYPE FILE FILES
+    "D:/src/git/StE/Simulation/third_party/build/zlib/zconf.h"
+    "D:/src/git/StE/Simulation/third_party/packages/zlib/zlib.h"
     )
 endif()
 
-if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "C:/src/git/StE/Simulation/third_party/share/man/man3/zlib.3")
-  if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
-    message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
-  endif()
-  if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
-    message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
-  endif()
-file(INSTALL DESTINATION "C:/src/git/StE/Simulation/third_party/share/man/man3" TYPE FILE FILES "C:/src/git/StE/Simulation/third_party/packages/zlib/zlib.3")
+if("${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/man/man3" TYPE FILE FILES "D:/src/git/StE/Simulation/third_party/packages/zlib/zlib.3")
 endif()
 
-if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "C:/src/git/StE/Simulation/third_party/share/pkgconfig/zlib.pc")
-  if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
-    message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
-  endif()
-  if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
-    message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
-  endif()
-file(INSTALL DESTINATION "C:/src/git/StE/Simulation/third_party/share/pkgconfig" TYPE FILE FILES "C:/src/git/StE/Simulation/third_party/build/zlib/zlib.pc")
+if("${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/pkgconfig" TYPE FILE FILES "D:/src/git/StE/Simulation/third_party/build/zlib/zlib.pc")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT)
@@ -146,5 +76,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "C:/src/git/StE/Simulation/third_party/build/zlib/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "D:/src/git/StE/Simulation/third_party/build/zlib/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

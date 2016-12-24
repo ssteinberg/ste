@@ -241,5 +241,5 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 													   frag_coords);
 	}
 
-	return rgb;
+	return rgb * occlusion;
 }

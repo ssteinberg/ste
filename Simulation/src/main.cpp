@@ -402,6 +402,12 @@ int main()
 
 
 	/*
+	 *	Configure GI renderer
+	 */
+	renderer.get().set_aperture_parameters(35e-3, 17e-3);
+
+
+	/*
 	 *	Switch to GI renderer and start render loop
 	 */
 

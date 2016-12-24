@@ -1,84 +1,84 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\glfw\src\context.c">
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\glfw\src\context.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\glfw\src\init.c">
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\glfw\src\init.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\glfw\src\input.c">
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\glfw\src\input.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\glfw\src\monitor.c">
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\glfw\src\monitor.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\glfw\src\vulkan.c">
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\glfw\src\vulkan.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\glfw\src\window.c">
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\glfw\src\window.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\glfw\src\win32_init.c">
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\glfw\src\win32_init.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\glfw\src\win32_joystick.c">
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\glfw\src\win32_joystick.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\glfw\src\win32_monitor.c">
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\glfw\src\win32_monitor.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\glfw\src\win32_time.c">
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\glfw\src\win32_time.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\glfw\src\win32_tls.c">
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\glfw\src\win32_tls.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\glfw\src\win32_window.c">
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\glfw\src\win32_window.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\glfw\src\wgl_context.c">
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\glfw\src\wgl_context.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\glfw\src\egl_context.c">
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\glfw\src\egl_context.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\glfw\src\internal.h">
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glfw\src\internal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\build\glfw\src\glfw_config.h">
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\build\glfw\src\glfw_config.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\glfw\include\GLFW\glfw3.h">
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glfw\include\GLFW\glfw3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\glfw\include\GLFW\glfw3native.h">
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glfw\include\GLFW\glfw3native.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\glfw\src\win32_platform.h">
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glfw\src\win32_platform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\glfw\src\win32_joystick.h">
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glfw\src\win32_joystick.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\glfw\src\wgl_context.h">
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glfw\src\wgl_context.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\glfw\src\egl_context.h">
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glfw\src\egl_context.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="C:\src\git\StE\Simulation\third_party\packages\glfw\src\CMakeLists.txt" />
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\packages\glfw\src\CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>{09E3FBB7-8E09-3F8D-8F7E-2509EC06BF9B}</UniqueIdentifier>
+      <UniqueIdentifier>{85B110DA-8D6B-364B-A0E0-EF7EEF595652}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>{FB2ED43B-4DCC-3975-9687-8C5DDFE1EC83}</UniqueIdentifier>
+      <UniqueIdentifier>{8195DC2C-B542-3BC5-A61C-F2FF8FB7199D}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

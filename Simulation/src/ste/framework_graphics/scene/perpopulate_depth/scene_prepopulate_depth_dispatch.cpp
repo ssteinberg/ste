@@ -22,5 +22,7 @@ void scene_prepopulate_depth_dispatch::set_context_state() const {
 }
 
 void scene_prepopulate_depth_dispatch::dispatch() const {
+	if (front_face)
+		Core::GL::gl_current_context::get()->clear_framebuffer(false, true);
 	scene->draw_object_group();
 }

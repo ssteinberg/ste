@@ -32,6 +32,7 @@ layout(shared, binding = 7) restrict readonly buffer directional_lights_cascades
 	light_cascade_descriptor directional_lights_cascades[];
 };
 
+layout(r8ui,  binding = 5) restrict readonly uniform uimage2D lll_size;
 layout(r32ui, binding = 6) restrict readonly uniform uimage2D lll_heads;
 layout(shared, binding = 11) restrict readonly buffer lll_data {
 	lll_element lll_buffer[];
