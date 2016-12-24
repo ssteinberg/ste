@@ -116,7 +116,7 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 		return vec3(.0f);
 		
 	// Incoming irradiance
-	vec3 irradiance = light_irradiance(ld, light_dist) * occlusion;
+	vec3 irradiance = irradiance(ld, light_dist, position);
 	float top_medium_ior = external_medium_ior;
 
 	// Attenuation at current layer
@@ -241,5 +241,5 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 													   frag_coords);
 	}
 
-	return rgb;
+	return rgb * occlusion;
 }

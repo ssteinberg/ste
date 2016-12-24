@@ -1,4 +1,5 @@
 #include "../dx.hpp"
+#include "file.hpp"
 #include <cstdio>
 #include <cassert>
 
@@ -299,7 +300,7 @@ namespace detail
 
 	inline texture load_dds(char const * Filename)
 	{
-		FILE* File = std::fopen(Filename, "rb");
+		FILE* File = detail::open_file(Filename, "rb");
 		if(!File)
 			return texture();
 

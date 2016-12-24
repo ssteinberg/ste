@@ -30,6 +30,7 @@ float deferred_evaluate_shadowing(samplerCubeArrayShadow shadow_depth_maps,
 								  sampler2DArray directional_shadow_maps, 
 								  int cascade,
 								  vec3 position,
+								  vec3 world_position,
 								  vec3 normal,
 								  uint light_id,
 								  float l_dist,
@@ -43,18 +44,13 @@ float deferred_evaluate_shadowing(samplerCubeArrayShadow shadow_depth_maps,
 		light_cascade_descriptor cascade_descriptor = directional_lights_cascades[cascade_idx];
 		int shadowmap_idx = light_get_cascade_shadowmap_idx(ld, cascade);
 
-		// Read cascade projection parameters
-		float cascade_proj_far, cascade_eye_dist;
-		vec2 cascade_recp_vp;
-		light_cascade_data(cascade_descriptor, cascade, cascade_proj_far, cascade_eye_dist, cascade_recp_vp);
-
 		// Construct matrix to transform into cascade-space
+		vec2 cascade_recp_vp;
 		mat3x4 M = light_cascade_projection(cascade_descriptor, 
 											cascade, 
-											ld.transformed_position, 
-											cascade_eye_dist, 
-											cascade_recp_vp,
-											cascades_depths);
+											ld.transformed_position,
+											cascades_depths,
+											cascade_recp_vp);
 
 		return shadow(directional_shadow_depth_maps,
 					  directional_shadow_maps,
@@ -68,7 +64,7 @@ float deferred_evaluate_shadowing(samplerCubeArrayShadow shadow_depth_maps,
 					  coord);
 	}
 	else {
-		vec3 shadow_v = position - ld.transformed_position;
+		vec3 shadow_v = world_position - ld.position;
 		return shadow(shadow_depth_maps,
 					  shadow_maps,
 					  light_id,
@@ -101,6 +97,7 @@ vec3 deferred_shade_fragment(g_buffer_element frag, ivec2 coord,
 	// Calculate depth and extrapolate world position
 	float depth = gbuffer_parse_depth(frag);
 	vec3 position = unproject_screen_position(depth, vec2(coord) / vec2(backbuffer_size()));
+	vec3 w_pos = transform_view_to_world_space(position);
 
 	// Normal map
 	vec3 n = gbuffer_parse_normal(frag);
@@ -122,11 +119,10 @@ vec3 deferred_shade_fragment(g_buffer_element frag, ivec2 coord,
 	// Iterate lights in the linked-light-list structure
 	vec3 rgb = vec3(.0f);
 	ivec2 lll_coords = coord / lll_image_res_multiplier;
-	uint32_t lll_ptr = imageLoad(lll_heads, lll_coords).x;
-	for (;; ++lll_ptr) {
+	uint32_t lll_start = imageLoad(lll_heads, lll_coords).x;
+	uint32_t lll_length = imageLoad(lll_size, lll_coords).x;
+	for (uint32_t lll_ptr = lll_start; lll_ptr != lll_start + lll_length; ++lll_ptr) {
 		lll_element lll_p = lll_buffer[lll_ptr];
-		if (lll_eof(lll_p))
-			break;
 
 		// Check that light is in depth range
 		vec2 lll_depth_range = lll_parse_depth_range(lll_p);
@@ -161,15 +157,17 @@ vec3 deferred_shade_fragment(g_buffer_element frag, ivec2 coord,
 													 directional_shadow_maps,
 													 cascade,
 													 position,
+													 w_pos,
 													 n,
 													 light_id,
 													 l_dist,
 													 ld,
 													 coord);
+
 			if (ld.type == LightTypeDirectional) {
 				//!? TODO: Remove!
 				// Inject some ambient, still without global illumination...
-				rgb += ld.diffuse * ld.luminance * 1e-10 * (1-shdw);
+				rgb += ld.diffuse * ld.luminance * 1e-11 * (1-shdw);
 			}
 
 			// Calculate occlusion, distance to light, normalized incident and reflection (eye) vectors

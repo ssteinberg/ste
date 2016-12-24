@@ -41,8 +41,8 @@ void main() {
 	}
 
 	if (id == 0) {
-		float d = texelFetch(depth_texture, textureSize(depth_texture, 0) / 2, 0).x;
-		float z_lin = unproject_depth(d) / 10000.f;
+		float d = texelFetch(depth_texture, textureSize(depth_texture, 0) >> 1, 0).x;
+		float z_lin = unproject_depth(d);
 
 		params.focus = z_lin;
 	}

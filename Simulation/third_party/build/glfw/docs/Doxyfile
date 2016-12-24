@@ -32,7 +32,7 @@ PROJECT_NAME           = "GLFW"
 # This could be handy for archiving the generated documentation or
 # if some version control system is used.
 
-PROJECT_NUMBER         = 3.2.0
+PROJECT_NUMBER         = 3.2.1
 
 # Using the PROJECT_BRIEF tag one can provide an optional one line description
 # for a project that appears at the top of each page and should give viewer
@@ -52,7 +52,7 @@ PROJECT_LOGO           =
 # If a relative path is entered, it will be relative to the location
 # where doxygen was started. If left blank the current directory will be used.
 
-OUTPUT_DIRECTORY       = C:/src/git/StE/Simulation/third_party/build/glfw/docs
+OUTPUT_DIRECTORY       = D:/src/git/StE/Simulation/third_party/build/glfw/docs
 
 # If the CREATE_SUBDIRS tag is set to YES, then doxygen will create
 # 4096 sub-directories (in 2 levels) under the output directory of each output
@@ -649,7 +649,7 @@ WARN_FORMAT            = "$file:$line: $text"
 # and error messages should be written. If left blank the output is written
 # to stderr.
 
-WARN_LOGFILE           = C:/src/git/StE/Simulation/third_party/build/glfw/docs/warnings.txt
+WARN_LOGFILE           = D:/src/git/StE/Simulation/third_party/build/glfw/docs/warnings.txt
 
 #---------------------------------------------------------------------------
 # configuration options related to the input files
@@ -660,7 +660,7 @@ WARN_LOGFILE           = C:/src/git/StE/Simulation/third_party/build/glfw/docs/w
 # directories like "/usr/src/myproject". Separate the files or directories
 # with spaces.
 
-INPUT                  =  C:/src/git/StE/Simulation/third_party/packages/glfw/include/GLFW/glfw3.h C:/src/git/StE/Simulation/third_party/packages/glfw/include/GLFW/glfw3native.h C:/src/git/StE/Simulation/third_party/packages/glfw/docs/main.dox C:/src/git/StE/Simulation/third_party/packages/glfw/docs/news.dox C:/src/git/StE/Simulation/third_party/packages/glfw/docs/moving.dox C:/src/git/StE/Simulation/third_party/packages/glfw/docs/quick.dox C:/src/git/StE/Simulation/third_party/packages/glfw/docs/compile.dox C:/src/git/StE/Simulation/third_party/packages/glfw/docs/build.dox C:/src/git/StE/Simulation/third_party/packages/glfw/docs/intro.dox C:/src/git/StE/Simulation/third_party/packages/glfw/docs/context.dox C:/src/git/StE/Simulation/third_party/packages/glfw/docs/monitor.dox C:/src/git/StE/Simulation/third_party/packages/glfw/docs/window.dox C:/src/git/StE/Simulation/third_party/packages/glfw/docs/input.dox C:/src/git/StE/Simulation/third_party/packages/glfw/docs/vulkan.dox C:/src/git/StE/Simulation/third_party/packages/glfw/docs/compat.dox
+INPUT                  =  D:/src/git/StE/Simulation/third_party/packages/glfw/include/GLFW/glfw3.h D:/src/git/StE/Simulation/third_party/packages/glfw/include/GLFW/glfw3native.h D:/src/git/StE/Simulation/third_party/packages/glfw/docs/main.dox D:/src/git/StE/Simulation/third_party/packages/glfw/docs/news.dox D:/src/git/StE/Simulation/third_party/packages/glfw/docs/moving.dox D:/src/git/StE/Simulation/third_party/packages/glfw/docs/quick.dox D:/src/git/StE/Simulation/third_party/packages/glfw/docs/compile.dox D:/src/git/StE/Simulation/third_party/packages/glfw/docs/build.dox D:/src/git/StE/Simulation/third_party/packages/glfw/docs/intro.dox D:/src/git/StE/Simulation/third_party/packages/glfw/docs/context.dox D:/src/git/StE/Simulation/third_party/packages/glfw/docs/monitor.dox D:/src/git/StE/Simulation/third_party/packages/glfw/docs/window.dox D:/src/git/StE/Simulation/third_party/packages/glfw/docs/input.dox D:/src/git/StE/Simulation/third_party/packages/glfw/docs/vulkan.dox D:/src/git/StE/Simulation/third_party/packages/glfw/docs/compat.dox
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding, which is
@@ -720,7 +720,7 @@ EXCLUDE_SYMBOLS        = APIENTRY GLFWAPI
 # directories that contain example code fragments that are included (see
 # the \include command).
 
-EXAMPLE_PATH           = C:/src/git/StE/Simulation/third_party/packages/glfw/examples
+EXAMPLE_PATH           = D:/src/git/StE/Simulation/third_party/packages/glfw/examples
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the
 # EXAMPLE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp
@@ -896,13 +896,13 @@ HTML_FILE_EXTENSION    = .html
 # have to redo this when upgrading to a newer version of doxygen or when
 # changing the value of configuration settings such as GENERATE_TREEVIEW!
 
-HTML_HEADER            = C:/src/git/StE/Simulation/third_party/packages/glfw/docs/header.html
+HTML_HEADER            = D:/src/git/StE/Simulation/third_party/packages/glfw/docs/header.html
 
 # The HTML_FOOTER tag can be used to specify a personal HTML footer for
 # each generated HTML page. If it is left blank doxygen will generate a
 # standard footer.
 
-HTML_FOOTER            = C:/src/git/StE/Simulation/third_party/packages/glfw/docs/footer.html
+HTML_FOOTER            = D:/src/git/StE/Simulation/third_party/packages/glfw/docs/footer.html
 
 # The HTML_STYLESHEET tag can be used to specify a user-defined cascading
 # style sheet that is used by each HTML page. It can be used to
@@ -921,7 +921,7 @@ HTML_STYLESHEET        =
 # robust against future updates. Doxygen will copy the style sheet file to
 # the output directory.
 
-HTML_EXTRA_STYLESHEET  = C:/src/git/StE/Simulation/third_party/packages/glfw/docs/extra.css
+HTML_EXTRA_STYLESHEET  = D:/src/git/StE/Simulation/third_party/packages/glfw/docs/extra.css
 
 # The HTML_EXTRA_FILES tag can be used to specify one or more extra images or
 # other source files which should be copied to the HTML output directory. Note
@@ -930,7 +930,7 @@ HTML_EXTRA_STYLESHEET  = C:/src/git/StE/Simulation/third_party/packages/glfw/doc
 # files. In the HTML_STYLESHEET file, use the file name only. Also note that
 # the files will be copied as-is; there are no commands or markers available.
 
-HTML_EXTRA_FILES       = C:/src/git/StE/Simulation/third_party/packages/glfw/docs/spaces.svg
+HTML_EXTRA_FILES       = D:/src/git/StE/Simulation/third_party/packages/glfw/docs/spaces.svg
 
 # The HTML_COLORSTYLE_HUE tag controls the color of the HTML output.
 # Doxygen will adjust the colors in the style sheet and background images

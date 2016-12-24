@@ -4,7 +4,7 @@
 #extension GL_NV_gpu_shader5 : require
 
 layout(triangles) in;
-layout(triangle_strip, max_vertices=6) out;
+layout(triangle_strip, max_vertices=18) out;
 
 #include "light.glsl"
 #include "light_cascades.glsl"
@@ -33,7 +33,7 @@ layout(shared, binding = 6) restrict readonly buffer directional_lights_cascades
 	light_cascade_descriptor directional_lights_cascades[];
 };
 
-layout(std430, binding = 8) restrict readonly buffer directional_shadow_projection_instance_to_ll_idx_translation_data {
+layout(shared, binding = 8) restrict readonly buffer directional_shadow_projection_instance_to_ll_idx_translation_data {
 	directional_shadow_projection_instance_to_ll_idx_translation dsproj_id_to_llid_tt[];
 };
 
@@ -43,7 +43,7 @@ vec3 transform(vec4 v, mat3x4 M) {
 	return v * M;
 }
 
-void process(int cascade, uint32_t cascade_idx, vec3 vertices[3], float z_far) {
+void process(int cascade, uint32_t cascade_idx, vec3 vertices[3], float f) {
 	// Cull triangles outside the NDC
 	if ((vertices[0].x >  1 &&
 		 vertices[1].x >  1 &&
@@ -57,19 +57,20 @@ void process(int cascade, uint32_t cascade_idx, vec3 vertices[3], float z_far) {
 		(vertices[0].y < -1 &&
 		 vertices[1].y < -1 &&
 		 vertices[2].y < -1) ||
-		(vertices[0].z < z_far &&
-		 vertices[1].z < z_far &&
-		 vertices[2].z < z_far))
+		(vertices[0].z < -f &&
+		 vertices[1].z < -f &&
+		 vertices[2].z < -f))
 		return;
 
 	gl_Layer = cascade + int(cascade_idx) * directional_light_cascades;
 	for (int j = 0; j < 3; ++j) {
-		// Orthographic projection
-		float z = project_depth(vertices[j].z, cascade_proj_near_clip);
-
-		gl_Position.xy = vertices[j].xy;
 		// Clamp z values behind the near-clip to the near-clip plane, this geometry participates in directional shadows as well.
-		gl_Position.z  = min(1.f, z);
+		float z = min(-cascade_projection_near_clip, vertices[j].z);
+
+		gl_Position.z = cascade_projection_near_clip;
+		gl_Position.w = -z;
+		// Orthographic projection
+		gl_Position.xy = vertices[j].xy * gl_Position.w;
 
 		EmitVertex();
 	}
@@ -97,7 +98,6 @@ void main() {
 	uint32_t cascade_idx = light_get_cascade_descriptor_idx(ld);
 	light_cascade_descriptor cascade_descriptor = directional_lights_cascades[cascade_idx];
 	
-	gl_Position.w = 1;
 	for (int cascade = 0; cascade < directional_light_cascades; ++cascade) {
 		float z_far;
 		mat3x4 M = light_cascade_projection(cascade_descriptor, cascade, l, cascades_depths, z_far);

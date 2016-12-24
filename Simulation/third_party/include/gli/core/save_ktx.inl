@@ -1,6 +1,7 @@
 #include <cstdio>
 #include <glm/gtc/round.hpp>
 #include "../load_ktx.hpp"
+#include "file.hpp"
 
 namespace gli{
 namespace detail
@@ -93,7 +94,7 @@ namespace detail
 		if(Texture.empty())
 			return false;
 
-		FILE* File = std::fopen(Filename, "wb");
+		FILE* File = detail::open_file(Filename, "wb");
 		if(!File)
 			return false;
 

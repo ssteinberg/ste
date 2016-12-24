@@ -9,7 +9,7 @@ set(CMAKE_IMPORT_FILE_VERSION 1)
 set_property(TARGET freetype APPEND PROPERTY IMPORTED_CONFIGURATIONS DEBUG)
 set_target_properties(freetype PROPERTIES
   IMPORTED_LINK_INTERFACE_LANGUAGES_DEBUG "C"
-  IMPORTED_LINK_INTERFACE_LIBRARIES_DEBUG "C:/src/git/StE/Simulation/third_party/lib/zlibd.lib"
+  IMPORTED_LINK_INTERFACE_LIBRARIES_DEBUG "D:/src/git/StE/Simulation/third_party/lib/zlibd.lib"
   IMPORTED_LOCATION_DEBUG "${_IMPORT_PREFIX}/lib/freetyped.lib"
   )
 

@@ -24,8 +24,9 @@
 namespace StE {
 namespace Graphics {
 
-constexpr std::size_t max_active_lights_per_frame = 32;
-constexpr std::size_t max_active_directional_lights_per_frame = 2;
+constexpr std::size_t max_active_lights_per_frame = 24;
+constexpr std::size_t max_active_directional_lights_per_frame = 4;
+constexpr std::size_t total_max_active_lights_per_frame = max_active_lights_per_frame + max_active_directional_lights_per_frame;
 
 class light_storage : public Core::resource_storage_dynamic<light_descriptor> {
 	using Base = Core::resource_storage_dynamic<light_descriptor>;

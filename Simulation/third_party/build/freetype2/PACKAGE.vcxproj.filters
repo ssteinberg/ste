@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <CustomBuild Include="C:\src\git\StE\Simulation\third_party\build\freetype2\CMakeFiles\e45e4f97ee3744597f37e9e01e603bf1\PACKAGE_force.rule">
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\freetype2\CMakeFiles\537ab6a300a9e90a078761f583f9d021\PACKAGE_force.rule">
       <Filter>CMake Rules</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="CMake Rules">
-      <UniqueIdentifier>{DD5C726F-A206-3C93-B061-D81D2F9E71F1}</UniqueIdentifier>
+      <UniqueIdentifier>{DAD676C7-A074-33DA-BC2C-3DAD179C125B}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

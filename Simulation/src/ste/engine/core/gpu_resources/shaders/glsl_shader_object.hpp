@@ -52,7 +52,20 @@ public:
 };
 
 class glsl_shader_object_generic : virtual public GenericResource {
+private:
+	std::string name;
+
+protected:
+	glsl_shader_object_generic(const std::string &name) : name(name) {}
+
 public:
+	glsl_shader_object_generic(glsl_shader_object_generic &&m) = default;
+	glsl_shader_object_generic(const glsl_shader_object_generic &c) = default;
+	glsl_shader_object_generic& operator=(glsl_shader_object_generic &&m) = default;
+	glsl_shader_object_generic& operator=(const glsl_shader_object_generic &c) = default;
+
+	auto &get_name() const { return name; }
+
 	virtual std::string read_info_log() const = 0;
 	virtual bool get_status() const = 0;
 
@@ -79,7 +92,7 @@ public:
 	glsl_shader_object& operator=(glsl_shader_object &&m) = default;
 	glsl_shader_object& operator=(const glsl_shader_object &c) = delete;
 
-	glsl_shader_object(const std::string &src, const GLSLShaderProperties &properties) : properties(properties) {
+	glsl_shader_object(const std::string &name, const std::string &src, const GLSLShaderProperties &properties) : glsl_shader_object_generic(name), properties(properties) {
 		auto str = src.data();
 		glShaderSource(get_resource_id(), 1, &str, NULL);
 

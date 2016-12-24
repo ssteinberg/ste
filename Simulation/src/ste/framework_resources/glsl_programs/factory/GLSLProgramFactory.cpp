@@ -80,7 +80,7 @@ std::unique_ptr<glsl_shader_object_generic> GLSLProgramFactory::compile_from_pat
 }
 
 std::unique_ptr<glsl_shader_object_generic> GLSLProgramFactory::compile_from_source(const boost::filesystem::path &path, std::string code,
-																		  GLSLShaderProperties prop, GLSLShaderType type) {
+																					GLSLShaderProperties prop, GLSLShaderType type) {
 #ifdef _DEBUG
 	{
 		std::ofstream otemp(std::string("tmp/") + path.filename().string() + ".tmp");
@@ -88,33 +88,35 @@ std::unique_ptr<glsl_shader_object_generic> GLSLProgramFactory::compile_from_sou
 	}
 #endif
 
+	std::string name = path.filename().string();
+
 	std::unique_ptr<glsl_shader_object_generic> shader;
 	switch (type) {
-	case GLSLShaderType::VERTEX:	shader = std::make_unique<glsl_shader_object<GLSLShaderType::VERTEX>>(code, prop); break;
-	case GLSLShaderType::FRAGMENT:	shader = std::make_unique<glsl_shader_object<GLSLShaderType::FRAGMENT>>(code, prop); break;
-	case GLSLShaderType::GEOMETRY:	shader = std::make_unique<glsl_shader_object<GLSLShaderType::GEOMETRY>>(code, prop); break;
-	case GLSLShaderType::COMPUTE:	shader = std::make_unique<glsl_shader_object<GLSLShaderType::COMPUTE>>(code, prop); break;
-	case GLSLShaderType::TESS_CONTROL: shader = std::make_unique<glsl_shader_object<GLSLShaderType::TESS_CONTROL>>(code, prop); break;
-	case GLSLShaderType::TESS_EVALUATION: shader = std::make_unique<glsl_shader_object<GLSLShaderType::TESS_EVALUATION>>(code, prop); break;
+	case GLSLShaderType::VERTEX:			shader = std::make_unique<glsl_shader_object<GLSLShaderType::VERTEX>>(name, code, prop); break;
+	case GLSLShaderType::FRAGMENT:			shader = std::make_unique<glsl_shader_object<GLSLShaderType::FRAGMENT>>(name, code, prop); break;
+	case GLSLShaderType::GEOMETRY:			shader = std::make_unique<glsl_shader_object<GLSLShaderType::GEOMETRY>>(name, code, prop); break;
+	case GLSLShaderType::COMPUTE:			shader = std::make_unique<glsl_shader_object<GLSLShaderType::COMPUTE>>(name, code, prop); break;
+	case GLSLShaderType::TESS_CONTROL:		shader = std::make_unique<glsl_shader_object<GLSLShaderType::TESS_CONTROL>>(name, code, prop); break;
+	case GLSLShaderType::TESS_EVALUATION:	shader = std::make_unique<glsl_shader_object<GLSLShaderType::TESS_EVALUATION>>(name, code, prop); break;
 	default:
 		throw glsl_program_undefined_shader_error();
 	}
 
 	if (!shader->is_valid()) {
 		using namespace Attributes;
-		ste_log_error() << AttributedString("GLSL Shader ") + i(path.string()) + ": Unable to create GLSL shader program!" << std::endl;
+		ste_log_error() << AttributedString("GLSL Shader ") + i(name) + ": Unable to create GLSL shader program!" << std::endl;
 
 		throw glsl_program_shader_compilation_error();
 	}
 
 	if (!shader->get_status()) {
 		using namespace Attributes;
-		ste_log_error() << AttributedString("GLSL Shader ") + i(path.string()) + ": Compiling GLSL shader failed! Reason: " << shader->read_info_log() << std::endl;
+		ste_log_error() << AttributedString("GLSL Shader ") + i(name) + ": Compiling GLSL shader failed! Reason: " << shader->read_info_log() << std::endl;
 
 		throw glsl_program_shader_compilation_error();
 	}
 
-	ste_log() << "Successfully compiled GLSL shader" << std::endl;
+	ste_log() << "Successfully compiled GLSL shader \"" << Attributes::i(name) << "\"." << std::endl;
 
 	return std::move(shader);
 }
@@ -317,8 +319,13 @@ StE::task_future<std::unique_ptr<glsl_program_object>> GLSLProgramFactory::load_
 		std::unique_ptr<glsl_program_object> program = std::make_unique<glsl_program_object>();
 		for (auto &shader_path : data.files)
 			program->add_shader(compile_from_path(shader_path));
+
+		auto prog_name = program->generate_name();
+		ste_log() << "Linking GLSL program \"" << Text::Attributes::i(prog_name) << "\".";
 		if (!program->link())
 			throw glsl_program_linking_error();
+
+		ste_log() << "Successfully linked GLSL program \"" << Text::Attributes::i(prog_name) << "\" from source." << std::endl;
 
 		data.bin.blob = program->get_binary_represantation(&data.bin.format);
 		data.bin.set_time_point(std::chrono::system_clock::now());

@@ -56,6 +56,7 @@ private:
 	std::vector<std::unique_ptr<glsl_shader_object_generic>> shaders;
 	mutable std::unordered_map<std::string, int> uniform_map;
 
+protected:
 	int get_uniform_location(const std::string &name) const {
 		auto it = uniform_map.find(name);
 		if (it != uniform_map.end())
@@ -95,6 +96,8 @@ public:
 
 	bool link_from_binary(GenericResource::type format, const std::string &data);
 	std::string get_binary_represantation(GenericResource::type *format);
+
+	std::string generate_name() const;
 
 	void bind_attrib_location(GLuint location, const std::string &name) const { glBindAttribLocation(get_resource_id(), location, name.c_str()); }
 	void bind_frag_data_location(GLuint location, const std::string &name) const { glBindFragDataLocation(get_resource_id(), location, name.c_str()); }

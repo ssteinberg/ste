@@ -13,6 +13,9 @@
 #include "Camera.hpp"
 #include "transforms_ring_buffers.hpp"
 
+#include "atmospherics_properties.hpp"
+#include "atmospherics_buffer.hpp"
+
 #include "gpu_dispatchable.hpp"
 #include "gpu_task.hpp"
 #include "profiler.hpp"
@@ -67,6 +70,7 @@ private:
 
 	static constexpr int view_transform_buffer_bind_location = 20;
 	static constexpr int proj_transform_buffer_bind_location = 21;
+	static constexpr int atmospherics_buffer_bind_location = 22;
 
 private:
 	const StEngineControl &ctx;
@@ -77,6 +81,7 @@ private:
 
 	const Camera *camera;
 	transforms_ring_buffers transform_buffers;
+	atmospherics_buffer atmospheric_buffer;
 	Scene *scene;
 
 private:
@@ -106,7 +111,6 @@ private:
 	Resource::resource_instance<directional_shadowmap_projector> directional_shadows_projector;	
 
 	Resource::resource_instance<volumetric_scattering_scatter_dispatch> vol_scat_scatter;
-	Resource::resource_instance<volumetric_scattering_gather_dispatch> vol_scat_gather;
 
 	std::shared_ptr<const gpu_task> scene_task,
 									composer_task,
@@ -116,7 +120,6 @@ private:
 									shadow_projector_task,
 									directional_shadows_projector_task,
 									volumetric_scattering_scatter_task,
-									volumetric_scattering_gather_task,
 									downsample_depth_task,
 									prepopulate_depth_task,
 									prepopulate_backface_depth_task,
@@ -133,10 +136,14 @@ protected:
 private:
 	GIRenderer(const StEngineControl &ctx,
 			   const Camera *camera,
-			   Scene *scene);
+			   Scene *scene,
+			   const atmospherics_properties<float> &atmospherics_prop);
 
 public:
 	virtual ~GIRenderer() noexcept {}
+
+	void update_atmospherics_properties(const atmospherics_properties<float> &atmospherics_prop) { atmospheric_buffer.update_data(atmospherics_prop); }
+	void set_aperture_parameters(float diameter, float distance) const { hdr.get().set_aperture_parameters(diameter, distance); }
 
 	void add_task(const gpu_task::TaskPtr &t);
 	void remove_task(const gpu_task::TaskPtr &t);

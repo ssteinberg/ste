@@ -32,7 +32,6 @@ public:
 			object->directional_shadows_projector.wait();
 			object->lll_gen_dispatch.wait();
 			object->light_preprocess.wait();
-			object->vol_scat_gather.wait();
 			object->vol_scat_scatter.wait();
 		}).then_on_main_thread([object]() {
 			object->init();
