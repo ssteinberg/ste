@@ -103,18 +103,6 @@ vec3 calculate_scattering_position(vec2 seed, vec2 slice_coords, float s, float 
 	return unproject_screen_position_with_z(z, coords);
 }
 
-vec3 scatter_at_point(vec3 position, float tile_volume, light_descriptor ld, vec3 l, float l_dist, float min_lum, float shadow) {
-	float position_len = length(position);
-	vec3 view_dir = -position / position_len;
-	return scatter(ld, 
-				   position, 
-				   tile_volume, 
-				   l, l_dist, 
-				   view_dir, 
-				   position_len,
-				   min_lum) * shadow;
-}
-
 vec3 scatter_spherical_light(vec2 slice_coords,
 							 float tile_volume,
 							 float depth,
@@ -156,7 +144,9 @@ vec3 scatter_spherical_light(vec2 slice_coords,
 		float scaling_size = thickness;
 		float scale = min(l_dist, scaling_size) / scaling_size;
 
-		rgb += scatter_at_point(position, tile_volume, ld, l, l_dist, min_lum, shadow) * scale;
+		rgb += irradiance(ld, l_dist) * scatter(ld.position, w_pos, eye_position(),
+												normalize(-position), l,
+												tile_volume);
 	}
 
 	return rgb / float(samples);
@@ -177,6 +167,7 @@ vec3 scatter_directional_light(vec2 slice_coords,
 		vec3 position = calculate_scattering_position(seed_scattering(slice_coords, light_idx, s, depth),
 													  slice_coords,
 													  s, z_start, z_next);
+		vec3 w_pos = transform_view_to_world_space(position);
 				
 		vec3 l = light_incidant_ray(ld, position);					
 		float shadow = shadow_test(directional_shadow_depth_maps,
@@ -186,7 +177,9 @@ vec3 scatter_directional_light(vec2 slice_coords,
 		if (shadow <= .0f)
 			continue;
 			
-		rgb += scatter_at_point(position, tile_volume, ld, l, .0f, min_lum, shadow);
+		rgb += irradiance(ld, .0f) * scatter_from_infinity(w_pos, ld.position, eye_position(),
+														   normalize(-position),
+														   tile_volume);
 	}
 
 	return rgb / float(samples);

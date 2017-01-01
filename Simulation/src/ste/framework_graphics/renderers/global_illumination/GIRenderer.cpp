@@ -14,7 +14,7 @@ using namespace StE::Graphics;
 GIRenderer::GIRenderer(const StEngineControl &ctx,
 					   const Camera *camera,
 					   Scene *scene,
-					   const atmospherics_properties<float> &atmospherics_prop)
+					   const atmospherics_properties<double> &atmospherics_prop)
 					   : ctx(ctx),
 					   	 gbuffer(ctx.get_backbuffer_size(), gbuffer_depth_target_levels()),
 						 camera(camera),

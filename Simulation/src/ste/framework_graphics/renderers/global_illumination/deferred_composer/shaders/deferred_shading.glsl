@@ -133,14 +133,19 @@ vec3 deferred_shade_fragment(g_buffer_element frag, ivec2 coord,
 
 			// Light id is used for shadow map access
 			uint light_id = uint(lll_parse_ll_idx(lll_p));
-
+			
+			// Atmospheric extinction
+			vec3 atat;
 			// Compute light incident ray and range
 			float l_dist;
 			vec3 l = light_incidant_ray(ld, position);
 			if (ld.type == LightTypeDirectional) {
+				atat = extinct_from_infinity(w_pos, ld.position, eye_position());
 				l_dist = abs(ld.directional_distance);
 			}
 			else {
+				atat = extinct(ld.position, w_pos, eye_position());
+
 				float light_effective_range = ld.effective_range;
 				float dist2 = dot(l, l);
 				if (dist2 >= light_effective_range*light_effective_range)
@@ -175,18 +180,18 @@ vec3 deferred_shade_fragment(g_buffer_element frag, ivec2 coord,
 			vec3 v = normalize(-position);
 			
 			// Evaluate material radiance for given light
-			rgb += material_texture.rgb * material_evaluate_radiance(head_layer,
-																	 position,
-																	 n, t, b,
-																	 v, l,
-																	 thickness,
-																	 ld,
-																	 microfacet_refraction_fit_lut,
-																	 microfacet_transmission_fit_lut,
-																	 shadow_maps, light_id,
-																	 l_dist,
-																	 occlusion,
-																	 coord);
+			rgb += atat * material_texture.rgb * material_evaluate_radiance(head_layer,
+																			position,
+																			n, t, b,
+																			v, l,
+																			thickness,
+																			ld,
+																			microfacet_refraction_fit_lut,
+																			microfacet_transmission_fit_lut,
+																			shadow_maps, light_id,
+																			l_dist,
+																			occlusion,
+																			coord);
 		}
 	}
 

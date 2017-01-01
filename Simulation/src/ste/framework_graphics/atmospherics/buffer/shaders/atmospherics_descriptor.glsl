@@ -1,4 +1,6 @@
 
+#include "constants.glsl"
+
 struct atmospherics_descriptor {
 	// Wave length dependent scattering coefficients for the Rayleigh scattering theory (m^-1)
 	vec3 rayleigh_scattering_coefficient;
@@ -10,74 +12,110 @@ struct atmospherics_descriptor {
 	// Phase coefficient for the Mie scattering phase function
 	float phase;
 
-	// Sea level athmospheric pressure, kPa
-	float ro0;
-	// Sea level temperature, Kelvin
-	float T0;
-	// Gravitation acceleration, m/s^2
-	float g;
-	// Temperature lapse rate, https://en.wikipedia.org/wiki/Adiabatic_lapse_rate
-	// K/m
-	float L;
-	// Ideal (universal) gas constant, J/(mol·K)
-	float R;
-	// Molar mass of the atmospheric air, kg/mol
-	float M;
+	// Scale heights for Mie and Rayleigh scattering, repectively
+	float Hm;
+	float Hr;
 
-	// Precomputed values
-	float M_over_R;
-	float gM_over_RL;
-	float density0;
-
-	float _ununsed[1];
+	// Precomputations
+	float minus_one_over_Hm;
+	float minus_one_over_Hr;
 };
 
-/*
-*	Returns the density given pressure and temperature
-*
-*	@param p	Pressure, kPa 
-*	@param t	Temperature, Kelvin
-*/
-float atmospherics_descriptor_density(atmospherics_descriptor desc, float p, float t) {
-	return p * desc.M_over_R / t;
-}
 
 /*
-*	Returns the pressure given temperature
-*
-*	@param t	Temperature, Kelvin
-*/
-float atmospherics_descriptor_pressure(atmospherics_descriptor desc, float t) {
-	float e = desc.gM_over_RL;
-	return desc.ro0 * pow(t / desc.T0, e);
-}
-
-/*
-*	Returns the temperature at height h
-*	
-*	@param h	Height in meters
-*/
-float atmospherics_descriptor_temperature_at_altitude(atmospherics_descriptor desc, float h) {
-	return max(0, desc.T0 - desc.L*h);
-}
-
-/*
-*	Returns the pressure at height h
+*	Returns the pressure at h using the exponential barometric law
 *
 *	@param h	Height in meters
 */
-float atmospherics_descriptor_pressure_at_altitude(atmospherics_descriptor desc, float h) {
-	float t = atmospherics_descriptor_temperature_at_altitude(desc, h);
-	return atmospherics_descriptor_pressure(desc, t);
+float atmospherics_descriptor_pressure_rayleigh(atmospherics_descriptor desc, float h) {
+	return exp(desc.minus_one_over_Hr * h);
 }
 
 /*
-*	Returns the density at height h
+*	Returns the aerosols pressure at h using the exponential barometric law
 *
 *	@param h	Height in meters
 */
-float atmospherics_descriptor_density_at_altitude(atmospherics_descriptor desc, float h) {
-	float t = atmospherics_descriptor_temperature_at_altitude(desc, h);
-	float p = atmospherics_descriptor_pressure(desc, t);
-	return atmospherics_descriptor_density(desc, p, t);
+float atmospherics_descriptor_pressure_mie(atmospherics_descriptor desc, float h) {
+	return exp(desc.minus_one_over_Hm * h);
+}
+
+
+/*
+*	Returns the total Mie extinction coefficient in m^-1
+*/
+float atmospherics_descriptor_mie_extinction_coeffcient(atmospherics_descriptor desc) {
+	return desc.mie_scattering_coefficient + desc.mie_absorption_coefficient;
+}
+
+/*
+*	Returns the total Rayleigh extinction coefficient in m^-1
+*/
+vec3 atmospherics_descriptor_rayleigh_extinction_coeffcient(atmospherics_descriptor desc) {
+	return desc.rayleigh_scattering_coefficient;
+}
+
+/*
+*	Returns the optical length between 2 points.
+*	Optical length expresses the amount of light attenuated from point P0 to P1.
+*	Computed using an analytical solution to the integral of density_at_altitude(h) from P0 to P1.
+*
+*	@param P0	Start point
+*	@param P1	End point
+*	@param H	Scale height
+*	@param minus_one_over_H		Precomputed (-1/H)
+*/
+float atmospherics_descriptor_optical_length(vec3 P0, vec3 P1, float H, float minus_one_over_H) {
+	//! Currently the planet is flat...
+	float h0 = max(P0.y, .0f);
+	float h1 = max(P1.y, .0f);
+
+	float len = length(P1 - P0);
+	float climb = abs(h1 - h0);
+
+	if (climb < 1e-2f) {
+		float h = mix(h0, h1, .5f);
+		return len * exp(minus_one_over_H * h);
+	}
+	else {
+		float a = exp(minus_one_over_H * h0);
+		float b = exp(minus_one_over_H * h1);
+		return len / climb * H * abs(a - b);
+	}
+}
+float atmospherics_descriptor_optical_length_rayleigh(atmospherics_descriptor desc, vec3 P0, vec3 P1) {
+	return atmospherics_descriptor_optical_length(P0, P1, desc.Hr, desc.minus_one_over_Hr);
+}
+float atmospherics_descriptor_optical_length_mie(atmospherics_descriptor desc, vec3 P0, vec3 P1) {
+	return atmospherics_descriptor_optical_length(P0, P1, desc.Hm, desc.minus_one_over_Hm);
+}
+
+/*
+*	Returns the optical length of a light ray originating at infinite height in direction 
+*	V and ending at P1.
+*	For more details see atmospherics_descriptor_optical_length().
+*
+*	@param P1	End point
+*	@param V	Normalized ray direction
+*	@param H	Scale height
+*	@param minus_one_over_H		Precomputed (-1/H)
+*/
+float atmospherics_descriptor_optical_length_from_infinity(vec3 P1, vec3 V, float H, float minus_one_over_H) {
+	vec3 up = vec3(0,1,0);
+	float h1 = max(P1.y, .0f);
+
+	float delta = dot(up, -V);
+	// Ignore rays coming from below the ground
+	if (delta <= 0)
+		return +inf;
+
+	float normalizer = 1.f / delta;
+
+	return normalizer * H * exp(minus_one_over_H * h1);
+}
+float atmospherics_descriptor_optical_length_from_infinity_rayleigh(atmospherics_descriptor desc, vec3 P1, vec3 V) {
+	return atmospherics_descriptor_optical_length_from_infinity(P1, V, desc.Hr, desc.minus_one_over_Hr);
+}
+float atmospherics_descriptor_optical_length_from_infinity_mie(atmospherics_descriptor desc, vec3 P1, vec3 V) {
+	return atmospherics_descriptor_optical_length_from_infinity(P1, V, desc.Hm, desc.minus_one_over_Hm);
 }

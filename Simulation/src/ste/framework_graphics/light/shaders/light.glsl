@@ -85,8 +85,12 @@ vec3 light_incidant_ray(light_descriptor ld, vec3 position) {
  *	Calculate light irradiance at specific distance. 
  *	This method multiplies light irradiance by attenuation coefficient, from that subtracts the light's minimal luminance so that at
  *	distance greater than or equal to the light's effective range the value returned is 0.
+ *
+ *	@param ld			Light descriptor.
+ *	@param dist			Precomputed path distance, from light point to position.
+ *	@param min_lum		Minimal light luminance. Refer to light_lux_at_distance.
  */
-vec3 light_lux_at_distance(light_descriptor ld, float dist, float min_lum) {
+vec3 irradiance(light_descriptor ld, float dist, float min_lum) {
 	if (ld.type == LightTypeDirectional) {
 		return ld.diffuse * ld.luminance;
 	}
@@ -97,127 +101,13 @@ vec3 light_lux_at_distance(light_descriptor ld, float dist, float min_lum) {
 	float incident_radiance = ld.luminance * f - min_lum;
 	return ld.diffuse * max(0.f, incident_radiance);
 }
-
 /*
- *	Calculate light irradiance factoring in distance attenuation and atmospheric attenuation.
- *
- *	@param ld		Light descriptor.
- *	@param dist		Precomputed path distance, from light point to position.
- *	@param position	Transformed, eye space, position.
- *	@param min_lum	Minimal light luminance. Refer to light_lux_at_distance.
- */
-vec3 irradiance(light_descriptor ld, float dist, vec3 position, float min_lum) {
-	if (ld.type == LightTypeDirectional) {
-		//! TODO
-		return light_lux_at_distance(ld, .0f, min_lum);
-	}
-	else {
-		// Approximate atmospheric attenuation over the path by using the attenuation coefficients at the mid point
-		vec3 lp = ld.transformed_position;
-		vec3 mid = mix(lp, position, .5f);
-		vec3 att_coef = atmospherics_attenuation_coeffcient(mid);
-		vec3 att = beer_lambert(att_coef, dist);
-
-		return light_lux_at_distance(ld, dist, min_lum) * att;
-	}
-}
-/*
- *	Calculate light irradiance factoring in distance attenuation and atmospheric attenuation.
- *
- *	@param ld		Light descriptor.
- *	@param dist		Precomputed path distance, from light point to position.
- *	@param position	Transformed, eye space, position.
- */
-vec3 irradiance(light_descriptor ld, float dist, vec3 position) {
-	float min_lum = light_calculate_minimal_luminance(ld);
-	return irradiance(ld, dist, position, min_lum);
-}
-/*
- *	Calculate light irradiance factoring in distance attenuation and atmospheric attenuation.
- *
- *	@param ld		Light descriptor.
- *	@param position	Transformed, eye space, position.
- */
-vec3 irradiance(light_descriptor ld, vec3 position) {
-	if (ld.type == LightTypeDirectional) {
-		return irradiance(ld, .0f, position);
-	}
-	else {
-		vec3 i = ld.transformed_position - position;
-		float dist = sqrt(dot(i,i));
-		return irradiance(ld, dist, position);
-	}
-}
-
-/*
- *	Calculate light irradiance scattered from position factoring in distance attenuation and atmospheric attenuation.
+ *	See irradiance(ld, dist, min_lum) for more details.
  *
  *	@param ld			Light descriptor.
- *	@param position		Transformed, eye space, position.
- *	@param volume		Volume of area around position where scattering happens.
- *	@param incident		Sampling direction of light incident ray, originating from position, normalized, in eye space.
- *	@param dist			Precomputed path distance, i.e. length of incident ray.
- *	@param scatter_dir	Sampling direction of out-scatter ray, originating from position, normalized, in eye space.
- *	@param scatter_dist	Out-scatter ray length
- *	@param min_lum		Minimal light luminance. Refer to light_lux_at_distance.
+ *	@param dist			Precomputed path distance, from light point to position.
  */
-vec3 scatter(light_descriptor ld, 
-			 vec3 position, 
-			 float volume, 
-			 vec3 incident, 
-			 float dist, 
-			 vec3 scatter_dir, 
-			 float scatter_dist,
-			 float min_lum) {
-	vec3 irradiance = irradiance(ld, dist, position, min_lum);
-	float particle_density = atmospherics_air_density(position);
-	vec3 extinction_coef = atmospherics_extinction_coeffcient();
-
-	vec3 i = incident;
-	vec3 o = scatter_dir;
-	float p_mie = cornette_shanks_phase_function(i, o, atmospherics_descriptor_data.phase);
-	float p_rayleigh = rayleigh_phase_function(i, o);
-	vec3 scatter_coefficient = p_mie * atmospherics_descriptor_data.mie_scattering_coefficient.xxx + 
-							   p_rayleigh * atmospherics_descriptor_data.rayleigh_scattering_coefficient;
-	scatter_coefficient *= volume * particle_density;
-
-	vec3 att_coef = extinction_coef * particle_density;
-
-	if (ld.type == LightTypeDirectional) {
-		//! TODO
-		vec3 att = beer_lambert(att_coef, scatter_dist);
-		return irradiance * att * scatter_coefficient;
-	}
-	else {
-		vec3 att = beer_lambert(att_coef, dist + scatter_dist);
-		return irradiance * att * scatter_coefficient;
-	}
-}
-/*
- *	Calculate light irradiance scattered from position factoring in distance attenuation and atmospheric attenuation.
- *
- *	@param ld			Light descriptor.
- *	@param position		Transformed, eye space, position.
- *	@param volume		Volume of area around position where scattering happens.
- *	@param incident		Sampling direction of light incident ray, originating from position, normalized, in eye space.
- *	@param dist			Precomputed path distance, i.e. length of incident ray.
- *	@param scatter_dir	Sampling direction of out-scatter ray, originating from position, normalized, in eye space.
- *	@param scatter_dist	Out-scatter ray length
- */
-vec3 scatter(light_descriptor ld, 
-			 vec3 position, 
-			 float volume, 
-			 vec3 incident, 
-			 float dist, 
-			 vec3 scatter_dir, 
-			 float scatter_dist) {
+vec3 irradiance(light_descriptor ld, float dist) {
 	float min_lum = light_calculate_minimal_luminance(ld);
-	return scatter(ld, 
-				   position, 
-				   volume, 
-				   incident, 
-				   dist,
-				   scatter_dir, 
-				   scatter_dist, 
-				   min_lum);
+	return irradiance(ld, dist, min_lum);
 }
