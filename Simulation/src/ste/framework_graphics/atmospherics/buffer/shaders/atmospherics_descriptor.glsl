@@ -19,6 +19,8 @@ struct atmospherics_descriptor {
 	// Precomputations
 	float minus_one_over_Hm;
 	float minus_one_over_Hr;
+
+	float _unused[2];
 };
 
 

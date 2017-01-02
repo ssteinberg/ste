@@ -149,6 +149,18 @@ int main()
 
 
 	/*
+	*	Create atmospheric properties
+	*/
+	auto atmosphere = StE::Graphics::atmospherics_earth_properties();
+	auto ss = atmosphere.single_scatter<5>({ 0,100,0 }, { 0,1,0 }, { 0,-1,0 }, 1e+6);
+	auto ss0 = atmosphere.single_scatter<10>({ 0,100,0 }, { 0,1,0 }, { 0,-1,0 }, 1e+6);
+	auto ss1 = atmosphere.single_scatter<20>({ 0,100,0 }, { 0,1,0 }, { 0,-1,0 }, 1e+6);
+	auto ss2 = atmosphere.single_scatter<50>({ 0,100,0 }, { 0,1,0 }, { 0,-1,0 }, 1e+6);
+	auto ss3 = atmosphere.single_scatter<100>({ 0,100,0 }, { 0,1,0 }, { 0,-1,0 }, 1e+6);
+	auto ss4 = atmosphere.single_scatter<10000>({ 0,100,0 }, { 0,1,0 }, { 0,-1,0 }, 1e+6);
+
+
+	/*
 	 *	Create GL context and window
 	 */
 
@@ -217,12 +229,6 @@ int main()
 	StE::Graphics::Camera camera;
 	camera.set_position({ 901.4, 566.93, 112.43 });
 	camera.lookat({ 771.5, 530.9, 65.6 });
-
-
-	/*
-	*	Create atmospheric properties
-	*/
-	auto atmosphere = StE::Graphics::atmospherics_earth_properties();
 
 
 	/*

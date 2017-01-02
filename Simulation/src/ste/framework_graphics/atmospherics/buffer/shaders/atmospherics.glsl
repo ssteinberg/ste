@@ -183,18 +183,22 @@ vec3 scatter(vec3 P0,
 			 vec3 P2, 
 			 vec3 I, 
 			 vec3 L,
-			 float volume) {
-	float particle_density = atmospherics_air_density(P1);
+			 float volume) {	
+	float tr = atmospherics_optical_length_air(P0, P1) + 
+			   atmospherics_optical_length_air(P1, P2);
+	float tm = atmospherics_optical_length_aerosol(P0, P1) +
+			   atmospherics_optical_length_aerosol(P1, P2);
 
 	vec3 i = I;
 	vec3 o = L;
 	float p_mie = cornette_shanks_phase_function(i, o, atmospherics_descriptor_data.phase);
 	float p_rayleigh = rayleigh_phase_function(i, o);
-	vec3 scatter_coefficient = p_mie * atmospherics_descriptor_data.mie_scattering_coefficient.xxx + 
-							   p_rayleigh * atmospherics_descriptor_data.rayleigh_scattering_coefficient;
-	scatter_coefficient *= volume * particle_density;
+	vec3 scatter_coefficient = beer_lambert(tm) * p_mie * atmospherics_descriptor_data.mie_scattering_coefficient.xxx + 
+							   beer_lambert(tr) * p_rayleigh * atmospherics_descriptor_data.rayleigh_scattering_coefficient;
+							   
+	float particle_density = atmospherics_air_density(P1);
 
-	return extinct(P0, P1, P2) * scatter_coefficient;
+	return scatter_coefficient * volume * particle_density;
 }
 /*
 *	Calculates a single atmospheric scattering event and the total atmospheric extinction along a path.
@@ -232,15 +236,19 @@ vec3 scatter_from_infinity(vec3 P1,
 						   vec3 P2,
 						   vec3 I, 
 						   float volume) {
-	float particle_density = atmospherics_air_density(P1);
+	float tr = atmospherics_optical_length_from_infinity_air(P1, V) + 
+			   atmospherics_optical_length_air(P1, P2);
+	float tm = atmospherics_optical_length_from_infinity_aerosol(P1, V) +
+			   atmospherics_optical_length_aerosol(P1, P2);
 
 	vec3 i = I;
 	vec3 o = V;
 	float p_mie = cornette_shanks_phase_function(i, o, atmospherics_descriptor_data.phase);
 	float p_rayleigh = rayleigh_phase_function(i, o);
-	vec3 scatter_coefficient = p_mie * atmospherics_descriptor_data.mie_scattering_coefficient.xxx + 
-							   p_rayleigh * atmospherics_descriptor_data.rayleigh_scattering_coefficient;
-	scatter_coefficient *= volume * particle_density;
-
-	return extinct_from_infinity(P1, V, P2) * scatter_coefficient;
+	vec3 scatter_coefficient = beer_lambert(tm) * p_mie * atmospherics_descriptor_data.mie_scattering_coefficient.xxx + 
+							   beer_lambert(tr) * p_rayleigh * atmospherics_descriptor_data.rayleigh_scattering_coefficient;
+							   
+	float particle_density = atmospherics_air_density(P1);
+	
+	return scatter_coefficient * volume * particle_density;
 }

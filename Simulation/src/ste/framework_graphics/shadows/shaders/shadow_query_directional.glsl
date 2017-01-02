@@ -96,9 +96,9 @@ float shadow_impl(sampler2DArrayShadow directional_shadow_depth_maps,
 		}
 
 		// Stop early if fully shadowed
-		if (i == 1 && 
+		/*if (i == 1 && 
 			accum < 1e-10f)
-			break;
+			break;*/
 	}
 	return min(1.f, accum / w / shadow_cutoff);
 }
@@ -128,8 +128,8 @@ float shadow(sampler2DArrayShadow directional_shadow_depth_maps,
 					   light_radius,
 					   frag_coords,
 					   1.f,
-					   true,
-					   1);
+					   false,
+					   0);
 }
 
 /*

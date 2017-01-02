@@ -22,7 +22,7 @@ private:
 	static typename function_traits<F>::result_t trapezoid(const F &f, double h, double a, double b, std::uint64_t n) {
 		using T = typename function_traits<F>::result_t;
 
-		T t = .0;
+		T t = T(0);
 
 		for (std::uint64_t i=1; i<n; i+=2) {
 			float x = a + static_cast<double>(i) * h;
@@ -47,11 +47,11 @@ public:
 		using T = typename function_traits<F>::result_t;
 
 		if (a >= b)
-			return T(.0);
+			return T(0);
 
 		T t;
 		std::array<T, N> Tk;
-		Tk.fill(T(.0));
+		Tk.fill(T(0));
 
 		Tk[0] = .5 * (b - a) * (f(a) + f(b));
 
