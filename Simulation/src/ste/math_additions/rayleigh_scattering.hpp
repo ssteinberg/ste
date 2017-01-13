@@ -14,7 +14,7 @@ namespace StE {
 */
 template <typename T>
 T rayleigh_phase_function(const T &cosine) {
-	return static_cast<T>(3) / (16 * glm::pi<T>()) * (1 + cosine * cosine);
+	return static_cast<T>(3) / (static_cast<T>(16) * glm::pi<T>()) * (static_cast<T>(1) + cosine * cosine);
 }
 /*
 *	The Rayleigh (normalized) phase function.

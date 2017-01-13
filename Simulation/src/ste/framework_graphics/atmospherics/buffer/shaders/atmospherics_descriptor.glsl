@@ -2,6 +2,9 @@
 #include "constants.glsl"
 
 struct atmospherics_descriptor {
+	// Atmosphere center in world coordinates and radius
+	vec4 center_radius;
+
 	// Wave length dependent scattering coefficients for the Rayleigh scattering theory (m^-1)
 	vec3 rayleigh_scattering_coefficient;
 	// Scattering coefficient for the Mie scattering theory (m^-1)
@@ -20,7 +23,9 @@ struct atmospherics_descriptor {
 	float minus_one_over_Hm;
 	float minus_one_over_Hr;
 
-	float _unused[2];
+	float Hmax;
+
+	float _unused;
 };
 
 

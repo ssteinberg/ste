@@ -23,6 +23,8 @@ public:
 
 private:
 	struct descriptor_data {
+		glm::vec4 center_radius;
+
 		glm::vec3 rayleigh_scattering_coefficient;
 		float mie_scattering_coefficient;
 		float mie_absorption_coefficient;
@@ -33,6 +35,8 @@ private:
 
 		float minus_one_over_Hm;
 		float minus_one_over_Hr;
+
+		float Hmax;
 	};
 
 private:
@@ -48,6 +52,8 @@ private:
 
 protected:
 	void set_properties(const Properties &p) {
+		data.center_radius = { p.center.x, p.center.y, p.center.z, p.radius };
+
 		data.rayleigh_scattering_coefficient = p.rayleigh_scattering_coefficient * p.ro0;
 		data.mie_scattering_coefficient = p.mie_scattering_coefficient * p.ro0;
 		data.mie_absorption_coefficient = p.mie_absorption_coefficient * p.ro0;
@@ -58,6 +64,10 @@ protected:
 
 		data.minus_one_over_Hm = -1.f / data.Hm;
 		data.minus_one_over_Hr = -1.f / data.Hr;
+
+		auto Hmax_m = p.max_height(data.Hm);
+		auto Hmax_r = p.max_height(data.Hr);
+		data.Hmax = glm::max(Hmax_r, Hmax_m);
 	}
 
 public:

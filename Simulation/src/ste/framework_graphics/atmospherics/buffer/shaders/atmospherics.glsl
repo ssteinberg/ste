@@ -1,6 +1,7 @@
 
 #include "atmospherics_descriptor.glsl"
 #include "light_transport.glsl"
+#include "common.glsl"
 
 layout(std430, binding = 22) restrict readonly buffer atmospherics_descriptor_buffer {
 	atmospherics_descriptor atmospherics_descriptor_data;
@@ -251,4 +252,55 @@ vec3 scatter_from_infinity(vec3 P1,
 	float particle_density = atmospherics_air_density(P1);
 	
 	return scatter_coefficient * volume * particle_density;
+}
+
+float height_to_lut_idx(float h, float h_max) {
+	return h / h_max;
+}
+float view_zenith_to_lut_idx(float cos_phi) {
+	return (1.f + cos_phi) / 2.f;
+}
+float sun_zenith_to_lut_idx(float cos_delta) {
+	float t = -2.8f * cos_delta - .8f;
+	return (1.f - exp(t)) / (1.f - exp(-3.6f));
+}
+float sun_view_azimuth_to_lut_idx(float omega) {
+	return omega / pi;
+}
+
+vec3 atmospheric_scatter(vec3 P, vec3 L, vec3 V, 
+						 vec3 I0,
+						 sampler2DArray atmospheric_optical_length_lut,
+						 sampler3D atmospheric_scattering_lut) {
+	vec3 C = atmospherics_descriptor_data.center_radius.xyz;
+	float r = atmospherics_descriptor_data.center_radius.w;
+
+	vec3 Y = P - C;
+	float Ylen = length(Y);
+	float h = Ylen - r;
+
+	vec3 N = Y / Ylen;
+
+	/*vec3 X = vec3(1,0,0);
+	if (abs(dot(Y, X)) > .95)
+		X = vec3(0,0,1);
+	vec3 Z = cross(X, Y);
+	X = cross(Y, Z);
+
+	mat3 TBN = mat3(X, Z, Y);
+	
+	vec3 L0 = TBN * L;
+	vec3 V0 = TBN * V;
+	
+	float phi = acos(V.y);
+	float delta = acos(-L0.y);*/
+	
+	float cos_phi = dot(N, V);
+	float cos_delta = dot(N, L);
+	
+	float x = height_to_lut_idx(h, atmospherics_descriptor_data.Hmax);
+	float y = view_zenith_to_lut_idx(cos_phi);
+	float z = sun_zenith_to_lut_idx(cos_delta);
+
+	return I0 * texture(atmospheric_scattering_lut, vec3(x,y,z)).rgb;
 }

@@ -16,6 +16,7 @@
 #include "glsl_program.hpp"
 #include "Texture2D.hpp"
 #include "Texture2DArray.hpp"
+#include "Texture3D.hpp"
 
 #include <memory>
 
@@ -40,8 +41,12 @@ private:
 	std::unique_ptr<Core::Texture2D> microfacet_refraction_fit_lut;
 	std::unique_ptr<Core::Texture2DArray> microfacet_transmission_fit_lut;
 
+	std::unique_ptr<Core::Texture2DArray> atmospherics_optical_length_lut;
+	std::unique_ptr<Core::Texture3D> atmospherics_scatter_lut;
+
 private:
 	void load_microfacet_fit_luts();
+	void load_atmospherics_luts();
 	void attach_handles() const;
 
 private:
@@ -70,6 +75,7 @@ public:
 		}).then_on_main_thread([object]() {
 			object->attach_handles();
 			object->load_microfacet_fit_luts();
+			object->load_atmospherics_luts();
 		});
 	}
 };

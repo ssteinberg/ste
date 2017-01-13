@@ -17,11 +17,15 @@
 
 float get_thickness(ivec2 coord,
 					sampler2D back_face_depth, 
-					sampler2D front_face_depth) {
-	float fd = unproject_depth(texelFetch(front_face_depth, coord, 0).x);
-	float bd = unproject_depth(texelFetch(back_face_depth, coord, 0).x);
+					sampler2D front_face_depth,
+					out bool has_geometry) {
+	float fd = texelFetch(front_face_depth, coord, 0).x;
+	float fz = unproject_depth(fd);
+	float bz = unproject_depth(texelFetch(back_face_depth, coord, 0).x);
 
-	return fd - bd;
+	has_geometry = fd > .0f;
+
+	return fz - bz;
 }
 
 float deferred_evaluate_shadowing(samplerCubeArrayShadow shadow_depth_maps, 
@@ -76,6 +80,37 @@ float deferred_evaluate_shadowing(samplerCubeArrayShadow shadow_depth_maps,
 	}
 }
 
+vec3 deferred_shade_atmospheric_scattering(ivec2 coord, 
+										   sampler2DArray atmospheric_optical_length_lut,
+										   sampler3D atmospheric_scattering_lut) {
+	vec3 position = unproject_screen_position(.5f, vec2(coord) / vec2(backbuffer_size()));
+	vec3 w_pos = transform_view_to_world_space(position);
+
+	vec3 P = eye_position();
+	vec3 V = normalize(w_pos - P);
+
+	vec3 rgb = vec3(.0f);
+	ivec2 lll_coords = coord / lll_image_res_multiplier;
+	uint32_t lll_start = imageLoad(lll_heads, lll_coords).x;
+	uint32_t lll_length = imageLoad(lll_size, lll_coords).x;
+	for (uint32_t lll_ptr = lll_start; lll_ptr != lll_start + lll_length; ++lll_ptr) {
+		lll_element lll_p = lll_buffer[lll_ptr];
+		uint light_idx = uint(lll_parse_light_idx(lll_p));
+		light_descriptor ld = light_buffer[light_idx];
+		
+		if (ld.type == LightTypeDirectional) {
+			vec3 L = ld.position;
+
+			rgb += atmospheric_scatter(P, L, V, 
+									   vec3(1000,950,800),
+									   atmospheric_optical_length_lut,
+									   atmospheric_scattering_lut);
+		}
+	}
+
+	return rgb;
+}
+
 vec3 deferred_shade_fragment(g_buffer_element frag, ivec2 coord,
 							 samplerCubeArrayShadow shadow_depth_maps, 
 							 samplerCubeArray shadow_maps, 
@@ -84,8 +119,26 @@ vec3 deferred_shade_fragment(g_buffer_element frag, ivec2 coord,
 							 sampler3D scattering_volume, 
 							 sampler2D microfacet_refraction_fit_lut, 
 							 sampler2DArray microfacet_transmission_fit_lut, 
+							 sampler2DArray atmospheric_optical_length_lut,
+							 sampler3D atmospheric_scattering_lut,
 							 sampler2D back_face_depth, 
 							 sampler2D front_face_depth) {
+	// Calculate perceived object thickness in camera space (used for subsurface scattering)
+	bool has_geometry;
+	float thickness = get_thickness(coord, back_face_depth, front_face_depth, has_geometry);
+	
+	// If no geometry is present, calculate atmopsheric scattering and that's it
+	if (!has_geometry) {
+		return deferred_shade_atmospheric_scattering(coord,
+													 atmospheric_optical_length_lut,
+													 atmospheric_scattering_lut);
+	}
+
+	// Calculate depth and extrapolate world position
+	float depth = gbuffer_parse_depth(frag);
+	vec3 position = unproject_screen_position(depth, vec2(coord) / vec2(backbuffer_size()));
+	vec3 w_pos = transform_view_to_world_space(position);
+
 	// Read G-buffer data from fragment 
 	int draw_idx = gbuffer_parse_material(frag);
 	material_descriptor md = mat_descriptor[draw_idx];
@@ -94,19 +147,11 @@ vec3 deferred_shade_fragment(g_buffer_element frag, ivec2 coord,
 	vec2 duvdx = gbuffer_parse_duvdx(frag);
 	vec2 duvdy = gbuffer_parse_duvdy(frag);
 
-	// Calculate depth and extrapolate world position
-	float depth = gbuffer_parse_depth(frag);
-	vec3 position = unproject_screen_position(depth, vec2(coord) / vec2(backbuffer_size()));
-	vec3 w_pos = transform_view_to_world_space(position);
-
 	// Normal map
 	vec3 n = gbuffer_parse_normal(frag);
 	vec3 t = gbuffer_parse_tangent(frag);
 	vec3 b = cross(t, n);
 	normal_map(md, uv, duvdx, duvdy, n, t, b);
-
-	// Calculate perceived object thickness in camera space (used for subsurface scattering)
-	float thickness = get_thickness(coord, back_face_depth, front_face_depth);
 
 	// Read material data
 	material_layer_descriptor head_layer = mat_layer_descriptor[md.head_layer];
