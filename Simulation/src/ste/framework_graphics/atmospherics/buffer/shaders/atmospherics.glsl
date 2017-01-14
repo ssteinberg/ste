@@ -9,13 +9,35 @@ layout(std430, binding = 22) restrict readonly buffer atmospherics_descriptor_bu
 
 
 /*
+*	Returns the atmospheric center in world position
+*/
+vec3 atmospherics_center() {
+	return atmospherics_descriptor_data.center_radius.xyz;
+}
+
+/*
+*	Returns the atmospheric lower radius (planet radius) in world position
+*/
+float atmospherics_sea_level_radius() {
+	return atmospherics_descriptor_data.center_radius.w;
+}
+
+/*
+*	Returns the altitude of a point
+*
+*	@param w_pos	World position
+*/
+float atmospherics_altitude(vec3 w_pos) {
+	return max(.0f, length(w_pos - atmospherics_center()) - atmospherics_sea_level_radius());
+}
+
+/*
 *	Returns the atmospheric air density at world position in kg/m^3
 *
 *	@param w_pos	World position
 */
 float atmospherics_air_density(vec3 w_pos) {
-	// At the moment, just use y as height, with 0 being sea level.
-	float altitude = max(0, w_pos.y);
+	float altitude = atmospherics_altitude(w_pos);
 	return atmospherics_descriptor_pressure_rayleigh(atmospherics_descriptor_data, altitude);
 }
 
@@ -25,8 +47,7 @@ float atmospherics_air_density(vec3 w_pos) {
 *	@param w_pos	World position
 */
 float atmospherics_aerosol_density(vec3 w_pos) {
-	// At the moment, just use y as height, with 0 being sea level.
-	float altitude = max(0, w_pos.y);
+	float altitude = atmospherics_altitude(w_pos);
 	return atmospherics_descriptor_pressure_mie(atmospherics_descriptor_data, altitude);
 }
 
@@ -36,8 +57,11 @@ float atmospherics_aerosol_density(vec3 w_pos) {
 *	@param P0	Start world position
 *	@param P1	End world position
 */
-float atmospherics_optical_length_air(vec3 P0, vec3 P1) {
-	return atmospherics_descriptor_optical_length_rayleigh(atmospherics_descriptor_data, P0, P1);
+float atmospherics_optical_length_air(vec3 P0, vec3 P1, 
+									  sampler2DArray atmospheric_optical_length_lut) {
+	return atmospherics_descriptor_optical_length_rayleigh(atmospherics_descriptor_data, 
+														   P0, P1, 
+														   atmospheric_optical_length_lut);
 }
 
 /*
@@ -46,30 +70,37 @@ float atmospherics_optical_length_air(vec3 P0, vec3 P1) {
 *	@param P0	Start world position
 *	@param P1	End world position
 */
-float atmospherics_optical_length_aerosol(vec3 P0, vec3 P1) {
-	return atmospherics_descriptor_optical_length_mie(atmospherics_descriptor_data, P0, P1);
+float atmospherics_optical_length_aerosol(vec3 P0, vec3 P1, 
+										  sampler2DArray atmospheric_optical_length_lut) {
+	return atmospherics_descriptor_optical_length_mie(atmospherics_descriptor_data, 
+													  P0, P1, 
+													  atmospheric_optical_length_lut);
 }
 
 /*
-*	Returns the atmospheric air optical length for path originating at infinite height in direction 
-*	V and ending at P1.
+*	Returns the atmospheric air optical length for a ray from P0 in direction V.
 *
-*	@param P1	End world position
+*	@param P0	Start world position
 *	@param V	Normalized ray direction
 */
-float atmospherics_optical_length_from_infinity_air(vec3 P1, vec3 V) {
-	return atmospherics_descriptor_optical_length_from_infinity_rayleigh(atmospherics_descriptor_data, P1, V);
+float atmospherics_optical_length_ray_air(vec3 P0, vec3 V, 
+										  sampler2DArray atmospheric_optical_length_lut) {
+	return atmospherics_descriptor_optical_length_ray_rayleigh(atmospherics_descriptor_data, 
+															   P0, V, 
+															   atmospheric_optical_length_lut);
 }
 
 /*
-*	Returns the atmospheric aerosol optical length for path originating at infinite height in direction 
-*	V and ending at P1.
+*	Returns the atmospheric aerosol optical length for a ray from P0 in direction V.
 *
-*	@param P1	End world position
+*	@param P0	Start world position
 *	@param V	Normalized ray direction
 */
-float atmospherics_optical_length_from_infinity_aerosol(vec3 P1, vec3 V) {
-	return atmospherics_descriptor_optical_length_from_infinity_mie(atmospherics_descriptor_data, P1, V);
+float atmospherics_optical_length_ray_aerosol(vec3 P0, vec3 V, 
+											  sampler2DArray atmospheric_optical_length_lut) {
+	return atmospherics_descriptor_optical_length_ray_mie(atmospherics_descriptor_data, 
+														  P0, V, 
+														  atmospheric_optical_length_lut);
 }
 
 /*
@@ -92,9 +123,10 @@ vec3 atmospherics_rayleigh_extinction_coeffcient() {
 *	@param P0	Start world position
 *	@param P1	End world position
 */
-vec3 extinct(vec3 P0, vec3 P1) {
-	float tr = atmospherics_optical_length_air(P0, P1);
-	float tm = atmospherics_optical_length_aerosol(P0, P1);
+vec3 extinct(vec3 P0, vec3 P1, 
+			 sampler2DArray atmospheric_optical_length_lut) {
+	float tr = atmospherics_optical_length_air(P0, P1, atmospheric_optical_length_lut);
+	float tm = atmospherics_optical_length_aerosol(P0, P1, atmospheric_optical_length_lut);
 	vec3 t = atmospherics_rayleigh_extinction_coeffcient() * tr +
 			 vec3(atmospherics_mie_extinction_coeffcient()) * tm;
 	return beer_lambert(t);
@@ -107,11 +139,12 @@ vec3 extinct(vec3 P0, vec3 P1) {
 *	@param P1	World position
 *	@param P2	World position
 */
-vec3 extinct(vec3 P0, vec3 P1, vec3 P2) {
-	float tr = atmospherics_optical_length_air(P0, P1) + 
-			   atmospherics_optical_length_air(P1, P2);
-	float tm = atmospherics_optical_length_aerosol(P0, P1) +
-			   atmospherics_optical_length_aerosol(P1, P2);
+vec3 extinct(vec3 P0, vec3 P1, vec3 P2, 
+			 sampler2DArray atmospheric_optical_length_lut) {
+	float tr = atmospherics_optical_length_air(P0, P1, atmospheric_optical_length_lut) + 
+			   atmospherics_optical_length_air(P1, P2, atmospheric_optical_length_lut);
+	float tm = atmospherics_optical_length_aerosol(P0, P1, atmospheric_optical_length_lut) +
+			   atmospherics_optical_length_aerosol(P1, P2, atmospheric_optical_length_lut);
 	vec3 t = atmospherics_rayleigh_extinction_coeffcient() * tr +
 			 vec3(atmospherics_mie_extinction_coeffcient()) * tm;
 	return beer_lambert(t);
@@ -125,45 +158,48 @@ vec3 extinct(vec3 P0, vec3 P1, vec3 P2) {
 *	@param P2	World position
 *	@param P3	World position
 */
-vec3 extinct(vec3 P0, vec3 P1, vec3 P2, vec3 P3) {
-	float tr = atmospherics_optical_length_air(P0, P1) + 
-			   atmospherics_optical_length_air(P1, P2) + 
-			   atmospherics_optical_length_air(P2, P3);
-	float tm = atmospherics_optical_length_aerosol(P0, P1) +
-			   atmospherics_optical_length_aerosol(P1, P2) +
-			   atmospherics_optical_length_aerosol(P2, P3);
+vec3 extinct(vec3 P0, vec3 P1, vec3 P2, vec3 P3, 
+			 sampler2DArray atmospheric_optical_length_lut) {
+	float tr = atmospherics_optical_length_air(P0, P1, atmospheric_optical_length_lut) + 
+			   atmospherics_optical_length_air(P1, P2, atmospheric_optical_length_lut) + 
+			   atmospherics_optical_length_air(P2, P3, atmospheric_optical_length_lut);
+	float tm = atmospherics_optical_length_aerosol(P0, P1, atmospheric_optical_length_lut) +
+			   atmospherics_optical_length_aerosol(P1, P2, atmospheric_optical_length_lut) +
+			   atmospherics_optical_length_aerosol(P2, P3, atmospheric_optical_length_lut);
 	vec3 t = atmospherics_rayleigh_extinction_coeffcient() * tr +
 			 vec3(atmospherics_mie_extinction_coeffcient()) * tm;
 	return beer_lambert(t);
 }
 
 /*
-*	Calculates the total atmospheric extinction along a path orignating at infinite height.
+*	Calculates the total atmospheric extinction along a ray.
 *
-*	@param P1	End point in world coordinates
+*	@param P0	Start point in world coordinates
 *	@param V	Normalized ray direction in world coordinates
 */
-vec3 extinct_from_infinity(vec3 P1, vec3 V) {
-	float tr = atmospherics_optical_length_from_infinity_air(P1, V);
-	float tm = atmospherics_optical_length_from_infinity_aerosol(P1, V);
+vec3 extinct_ray(vec3 P0, vec3 V, 
+				 sampler2DArray atmospheric_optical_length_lut) {
+	float tr = atmospherics_optical_length_ray_air(P0, V, atmospheric_optical_length_lut);
+	float tm = atmospherics_optical_length_ray_aerosol(P0, V, atmospheric_optical_length_lut);
 	vec3 t = atmospherics_rayleigh_extinction_coeffcient() * tr +
 			 vec3(atmospherics_mie_extinction_coeffcient()) * tm;
 	return beer_lambert(t);
 }
 
 /*
-*	Calculates the total atmospheric extinction along a path orignating at infinite height.
-*	The route is the ray from infinity to P1 in direction V and the line (P1, P2).
+*	Calculates the total atmospheric extinction along a path.
+*	The path is the line (P0, P1) and then the ray from P1 in direction V.
 *
+*	@param P0	World position
 *	@param P1	World position
 *	@param V	Normalized ray direction in world coordinates
-*	@param P2	World position
 */
-vec3 extinct_from_infinity(vec3 P1, vec3 V, vec3 P2) {
-	float tr = atmospherics_optical_length_from_infinity_air(P1, V) + 
-			   atmospherics_optical_length_air(P1, P2);
-	float tm = atmospherics_optical_length_from_infinity_aerosol(P1, V) +
-			   atmospherics_optical_length_aerosol(P1, P2);
+vec3 extinct_ray(vec3 P0, vec3 P1, vec3 V, 
+				 sampler2DArray atmospheric_optical_length_lut) {
+	float tr = atmospherics_optical_length_ray_air(P1, V, atmospheric_optical_length_lut) + 
+			   atmospherics_optical_length_air(P0, P1, atmospheric_optical_length_lut);
+	float tm = atmospherics_optical_length_ray_aerosol(P1, V, atmospheric_optical_length_lut) +
+			   atmospherics_optical_length_aerosol(P0, P1, atmospheric_optical_length_lut);
 	vec3 t = atmospherics_rayleigh_extinction_coeffcient() * tr +
 			 vec3(atmospherics_mie_extinction_coeffcient()) * tm;
 	return beer_lambert(t);
@@ -177,29 +213,33 @@ vec3 extinct_from_infinity(vec3 P1, vec3 V, vec3 P2) {
 *	@param P2		End world position
 *	@param I		Precomputed direction of light incident ray, originating from P1 to P2, normalized.
 *	@param L		Precomputed direction of light incident ray, originating from P1 to P0, normalized.
-*	@param volume	Volume, in meters^3, of the scattering event area
+*	@param len		Length, in meters, of the scattering event sample
 */
 vec3 scatter(vec3 P0, 
 			 vec3 P1, 
 			 vec3 P2, 
 			 vec3 I, 
 			 vec3 L,
-			 float volume) {	
-	float tr = atmospherics_optical_length_air(P0, P1) + 
-			   atmospherics_optical_length_air(P1, P2);
-	float tm = atmospherics_optical_length_aerosol(P0, P1) +
-			   atmospherics_optical_length_aerosol(P1, P2);
+			 float len, 
+			 sampler2DArray atmospheric_optical_length_lut) {	
+	float tr = atmospherics_optical_length_air(P0, P1, atmospheric_optical_length_lut) + 
+			   atmospherics_optical_length_air(P1, P2, atmospheric_optical_length_lut);
+	float tm = atmospherics_optical_length_aerosol(P0, P1, atmospheric_optical_length_lut) +
+			   atmospherics_optical_length_aerosol(P1, P2, atmospheric_optical_length_lut);
+			   
+	vec3 Tr = tr * atmospherics_rayleigh_extinction_coeffcient();
+	vec3 Tm = vec3(tm) * atmospherics_mie_extinction_coeffcient();
 
 	vec3 i = I;
 	vec3 o = L;
 	float p_mie = cornette_shanks_phase_function(i, o, atmospherics_descriptor_data.phase);
 	float p_rayleigh = rayleigh_phase_function(i, o);
-	vec3 scatter_coefficient = beer_lambert(tm) * p_mie * atmospherics_descriptor_data.mie_scattering_coefficient.xxx + 
-							   beer_lambert(tr) * p_rayleigh * atmospherics_descriptor_data.rayleigh_scattering_coefficient;
+	vec3 scatter_coefficient = beer_lambert(Tm) * p_mie * atmospherics_descriptor_data.mie_scattering_coefficient.xxx + 
+							   beer_lambert(Tr) * p_rayleigh * atmospherics_descriptor_data.rayleigh_scattering_coefficient;
 							   
 	float particle_density = atmospherics_air_density(P1);
 
-	return scatter_coefficient * volume * particle_density;
+	return scatter_coefficient * len * particle_density;
 }
 /*
 *	Calculates a single atmospheric scattering event and the total atmospheric extinction along a path.
@@ -207,100 +247,90 @@ vec3 scatter(vec3 P0,
 *	@param P0		Start world position
 *	@param P1		Scatter point, as world position
 *	@param P2		End world position
-*	@param volume	Volume, in meters^3, of the scattering event area
+*	@param len		Length, in meters, of the scattering event sample
 */
 vec3 scatter(vec3 P0, 
 			 vec3 P1, 
 			 vec3 P2, 
-			 float volume) {
+			 float len,
+			 sampler2DArray atmospheric_optical_length_lut) {
 	vec3 I = normalize(P2 - P1);
 	vec3 L = normalize(P0 - P1);
 	return scatter(P0,
 				   P1,
 				   P2,
 				   I, L,
-				   volume);
+				   len, 
+				   atmospheric_optical_length_lut);
 }
 
 /*
-*	Calculates a single atmospheric scattering event and the total atmospheric extinction along a path orignating 
-*	at infinite height
+*	Calculates a single atmospheric scattering event and the total atmospheric extinction along a path.
+*	The path is the line (P0, P1) and then the ray from P1 in direction V.
 *
+*	@param P0		Start world position
 *	@param P1		Scatter point, as world position
 *	@param V		Normalized ray direction in world coordinates
-*	@param P2		End world position
-*	@param I		Direction of light incident ray, originating from P1 to P2, normalized.
-*	@param volume	Volume, in meters^3, of the scattering event area
+*	@param len		Length, in meters, of the scattering event sample
 */
-vec3 scatter_from_infinity(vec3 P1, 
-						   vec3 V, 
-						   vec3 P2,
-						   vec3 I, 
-						   float volume) {
-	float tr = atmospherics_optical_length_from_infinity_air(P1, V) + 
-			   atmospherics_optical_length_air(P1, P2);
-	float tm = atmospherics_optical_length_from_infinity_aerosol(P1, V) +
-			   atmospherics_optical_length_aerosol(P1, P2);
+vec3 scatter_ray(vec3 P0,
+				 vec3 P1, 
+				 vec3 V, 
+				 float len, 
+				 sampler2DArray atmospheric_optical_length_lut) {
+	float tr = atmospherics_optical_length_ray_air(P1, V, atmospheric_optical_length_lut) + 
+			   atmospherics_optical_length_air(P0, P1, atmospheric_optical_length_lut);
+	float tm = atmospherics_optical_length_ray_aerosol(P1, V, atmospheric_optical_length_lut) +
+			   atmospherics_optical_length_aerosol(P0, P1, atmospheric_optical_length_lut);
+			   
+	vec3 Tr = tr * atmospherics_rayleigh_extinction_coeffcient();
+	vec3 Tm = vec3(tm) * atmospherics_mie_extinction_coeffcient();
 
-	vec3 i = I;
+	vec3 i = normalize(P1 - P0);
 	vec3 o = V;
 	float p_mie = cornette_shanks_phase_function(i, o, atmospherics_descriptor_data.phase);
 	float p_rayleigh = rayleigh_phase_function(i, o);
-	vec3 scatter_coefficient = beer_lambert(tm) * p_mie * atmospherics_descriptor_data.mie_scattering_coefficient.xxx + 
-							   beer_lambert(tr) * p_rayleigh * atmospherics_descriptor_data.rayleigh_scattering_coefficient;
+	vec3 scatter_coefficient = beer_lambert(Tm) * p_mie * atmospherics_descriptor_data.mie_scattering_coefficient.xxx + 
+							   beer_lambert(Tr) * p_rayleigh * atmospherics_descriptor_data.rayleigh_scattering_coefficient;
 							   
 	float particle_density = atmospherics_air_density(P1);
 	
-	return scatter_coefficient * volume * particle_density;
+	return scatter_coefficient * len * particle_density;
 }
 
-float height_to_lut_idx(float h, float h_max) {
-	return h / h_max;
-}
-float view_zenith_to_lut_idx(float cos_phi) {
-	return (1.f + cos_phi) / 2.f;
-}
-float sun_zenith_to_lut_idx(float cos_delta) {
-	float t = -2.8f * cos_delta - .8f;
-	return (1.f - exp(t)) / (1.f - exp(-3.6f));
-}
-float sun_view_azimuth_to_lut_idx(float omega) {
-	return omega / pi;
-}
-
+/*
+*	Calculates the multiple-scattered irradiance reaching an obsever in the atmosphere, given viewing 
+*	direction and light source direction. 
+*	Uses a LUT for calculation.
+*
+*	@param P		Observer world position
+*	@param L		Light direction
+*	@param V		Viewing direction
+*/
 vec3 atmospheric_scatter(vec3 P, vec3 L, vec3 V, 
-						 vec3 I0,
 						 sampler2DArray atmospheric_optical_length_lut,
 						 sampler3D atmospheric_scattering_lut) {
 	vec3 C = atmospherics_descriptor_data.center_radius.xyz;
 	float r = atmospherics_descriptor_data.center_radius.w;
+	vec3 invL = -L;
 
 	vec3 Y = P - C;
 	float Ylen = length(Y);
-	float h = Ylen - r;
-
 	vec3 N = Y / Ylen;
-
-	/*vec3 X = vec3(1,0,0);
-	if (abs(dot(Y, X)) > .95)
-		X = vec3(0,0,1);
-	vec3 Z = cross(X, Y);
-	X = cross(Y, Z);
-
-	mat3 TBN = mat3(X, Z, Y);
 	
-	vec3 L0 = TBN * L;
-	vec3 V0 = TBN * V;
-	
-	float phi = acos(V.y);
-	float delta = acos(-L0.y);*/
-	
+	float h = Ylen - r;
 	float cos_phi = dot(N, V);
-	float cos_delta = dot(N, L);
+	float cos_delta = dot(N, invL);
 	
-	float x = height_to_lut_idx(h, atmospherics_descriptor_data.Hmax);
-	float y = view_zenith_to_lut_idx(cos_phi);
-	float z = sun_zenith_to_lut_idx(cos_delta);
+	float x = _atmospheric_height_to_lut_idx(h, atmospherics_descriptor_data.Hr_max);
+	float y = _atmospheric_view_zenith_to_lut_idx(cos_phi);
+	float z = _atmospheric_sun_zenith_to_lut_idx(cos_delta);
+	vec4 lut = texture(atmospheric_scattering_lut, vec3(x,y,z));
 
-	return I0 * texture(atmospheric_scattering_lut, vec3(x,y,z)).rgb;
+	float p_mie = cornette_shanks_phase_function(V, invL, atmospherics_descriptor_data.phase);
+
+	vec3 scatter = lut.rgb;
+	float m0 = p_mie * lut.a;
+
+	return scatter + m0.xxx;
 }

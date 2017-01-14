@@ -29,6 +29,7 @@ private:
 		float mie_scattering_coefficient;
 		float mie_absorption_coefficient;
 		float phase;
+		float ro0;
 
 		float Hm;
 		float Hr;
@@ -36,7 +37,8 @@ private:
 		float minus_one_over_Hm;
 		float minus_one_over_Hr;
 
-		float Hmax;
+		float Hm_max;
+		float Hr_max;
 	};
 
 private:
@@ -54,10 +56,11 @@ protected:
 	void set_properties(const Properties &p) {
 		data.center_radius = { p.center.x, p.center.y, p.center.z, p.radius };
 
-		data.rayleigh_scattering_coefficient = p.rayleigh_scattering_coefficient * p.ro0;
-		data.mie_scattering_coefficient = p.mie_scattering_coefficient * p.ro0;
-		data.mie_absorption_coefficient = p.mie_absorption_coefficient * p.ro0;
+		data.rayleigh_scattering_coefficient = p.rayleigh_scattering_coefficient;
+		data.mie_scattering_coefficient = p.mie_scattering_coefficient;
+		data.mie_absorption_coefficient = p.mie_absorption_coefficient;
 		data.phase = p.phase;
+		data.ro0 = p.ro0;
 
 		data.Hm = p.scale_height_aerosols();
 		data.Hr = p.scale_height();
@@ -65,9 +68,8 @@ protected:
 		data.minus_one_over_Hm = -1.f / data.Hm;
 		data.minus_one_over_Hr = -1.f / data.Hr;
 
-		auto Hmax_m = p.max_height(data.Hm);
-		auto Hmax_r = p.max_height(data.Hr);
-		data.Hmax = glm::max(Hmax_r, Hmax_m);
+		data.Hm_max = p.max_height(data.Hm);
+		data.Hr_max = p.max_height(data.Hr);
 	}
 
 public:

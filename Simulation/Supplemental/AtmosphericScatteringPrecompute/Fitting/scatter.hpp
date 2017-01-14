@@ -30,27 +30,29 @@ namespace _detail {
 template<typename T>
 class _atmospherics_precompute_scattering_data {
 public:
-	static constexpr int optical_length_size = 1024;
-	static constexpr int scatter_size0 = 32;
-	static constexpr int scatter_size1 = 128;
-	static constexpr int scatter_size2 = 32;
+	static constexpr int optical_length_size = 2048;
+	static constexpr int scatter_size0 = 64;
+	static constexpr int scatter_size1 = 256;
+	static constexpr int scatter_size2 = 128;
 	//static constexpr int scatter_size3 = 32;
 
 	using scatter_element = glm::tvec3<T>;
 
 	using optical_length_lut_t = T[optical_length_size][optical_length_size];
 	using scatter_lut_t = scatter_element[scatter_size0][scatter_size1][scatter_size2];// [scatter_size3];
-	using mie_single_scatter_lut_t = scatter_element[scatter_size0][scatter_size1][scatter_size2];// [scatter_size3];
+	using mie_single_scatter_lut_t = T[scatter_size0][scatter_size1][scatter_size2];// [scatter_size3];
 
 private:
 	mutable unsigned char type[8];
-	std::uint16_t version{ 1 };
-	std::uint8_t  _unused{ 0 };
+	std::uint16_t version{ 2 };
+	std::uint8_t  sizeof_scalar{ sizeof(T) };
 	std::uint32_t optical_length_dims{ optical_length_size };
 	std::uint32_t scatter_dims_0{ scatter_size0 };
 	std::uint32_t scatter_dims_1{ scatter_size1 };
 	std::uint32_t scatter_dims_2{ scatter_size2 };
 	mutable std::uint32_t hash{ 0 };
+
+	atmospherics_properties<T> ap;
 
 	struct {
 		optical_length_lut_t optical_length[2];
@@ -90,12 +92,12 @@ public:
 	}
 
 public:
-	_atmospherics_precompute_scattering_data() {}
+	_atmospherics_precompute_scattering_data(const atmospherics_properties<T> &ap) : ap(ap) {}
 
 	void write_multi_scatter_value(const glm::ivec3 &idx, const glm::tvec3<T> &ms) {
 		data.multi_scatter[idx.x][idx.y][idx.z] = ms;
 	}
-	void write_m0_scatter_value(const glm::ivec3 &idx, const glm::tvec3<T> &m0) {
+	void write_m0_scatter_value(const glm::ivec3 &idx, const T &m0) {
 		data.mie_single_scatter[idx.x][idx.y][idx.z] = m0;
 	}
 	void write_optical_length_value(int lut, const glm::ivec2 &idx, const T &value) {
@@ -153,8 +155,11 @@ class atmospherics_precompute_scattering {
 	using T = double;
 	using lut_t = _detail::_atmospherics_precompute_scattering_data<T>;
 
-	struct temp_lut {
+	struct temp_lut_t {
 		lut_t::scatter_lut_t scatter;
+	};
+	struct m0_phase_lut_t {
+		lut_t::mie_single_scatter_lut_t m0;
 	};
 
 private:
@@ -162,8 +167,9 @@ private:
 	T Hmax;
 
 	std::unique_ptr<lut_t> final_lut;
-	std::unique_ptr<temp_lut> luts0;
-	std::unique_ptr<temp_lut> luts1;
+	std::unique_ptr<m0_phase_lut_t> m0_phase_lut;
+	std::unique_ptr<temp_lut_t> luts0;
+	std::unique_ptr<temp_lut_t> luts1;
 
 	auto sample_scatter_value(const lut_t::scatter_lut_t &lut, const glm::dvec3 &idx) const {
 		auto x = glm::floor(idx * glm::dvec3{ lut_t::scatter_size0 - 1,lut_t::scatter_size1 - 1,lut_t::scatter_size2 - 1 });
@@ -378,7 +384,7 @@ private:
 				auto sample = scatter_sample(h, cos_phi, cos_delta);
 				assert(!glm::any(glm::isnan(sample)) && !glm::any(glm::isinf(sample)));
 
-				auto F = Fphase(glm::dot(-omega, V));
+				auto F = Fphase(glm::dot(omega, V));
 
 				result += F * sample;
 				++samples;
@@ -412,7 +418,9 @@ private:
 
 		glm::tvec3<T> result = r * Fr + m * Fm;
 		if (k == 1) {
-			final_lut->write_m0_scatter_value(idx, m);
+			assert(m.x == m.y && m.x == m.z);
+			final_lut->write_m0_scatter_value(idx, m.x);
+			m0_phase_lut->m0[idx.x][idx.y][idx.z] = m.x * Fm;
 		}
 		else {
 			result += luts0->scatter[idx.x][idx.y][idx.z];
@@ -423,9 +431,10 @@ private:
 
 public:
 	atmospherics_precompute_scattering(const atmospherics_properties<T> &ap) : ap(ap) {
-		final_lut = std::make_unique<lut_t>();
-		luts0 = std::make_unique<temp_lut>();
-		luts1 = std::make_unique<temp_lut>();
+		final_lut = std::make_unique<lut_t>(ap);
+		m0_phase_lut = std::make_unique<m0_phase_lut_t>();
+		luts0 = std::make_unique<temp_lut_t>();
+		luts1 = std::make_unique<temp_lut_t>();
 
 		auto Hmax_r = ap.max_height(ap.scale_height());
 		auto Hmax_m = ap.max_height(ap.scale_height_aerosols());
@@ -466,6 +475,7 @@ public:
 					scatter<>(k, { x,y,z }, h, phi, delta);
 				}
 			}
+			std::cout << "x";
 		}
 	}
 
@@ -484,10 +494,16 @@ public:
 			f3.get();
 
 			std::swap(luts0, luts1);
-			luts1 = std::make_unique<temp_lut>();
+			luts1 = std::make_unique<temp_lut_t>();
 
-			std::cout << i << std::endl;
+			std::cout << std::endl << "Scatter index " << i << " done." << std::endl;
 		}
+
+		std::cout << "Cleaning M0 scatter from LUT..." << std::endl;
+		for (int x = 0; x < lut_t::scatter_size0; ++x) 
+			for (int y = 0; y < lut_t::scatter_size1; ++y) 
+				for (int z = 0; z < lut_t::scatter_size2; ++z) 
+					luts0->scatter[x][y][z] -= m0_phase_lut->m0[x][y][z];
 
 		std::cout << "Writing final LUT..." << std::endl;
 

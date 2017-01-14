@@ -10,6 +10,8 @@
 
 #include "gbuffer.glsl"
 
+#include "intersection.glsl"
+
 #include "volumetric_scattering.glsl"
 
 #include "project.glsl"
@@ -100,11 +102,18 @@ vec3 deferred_shade_atmospheric_scattering(ivec2 coord,
 		
 		if (ld.type == LightTypeDirectional) {
 			vec3 L = ld.position;
+			vec3 I0 = irradiance(ld, .0f);
 
-			rgb += atmospheric_scatter(P, L, V, 
-									   vec3(1000,950,800),
-									   atmospheric_optical_length_lut,
-									   atmospheric_scattering_lut);
+			/*rgb += I0 * atmospheric_scatter(P, L, V, 
+											atmospheric_optical_length_lut,
+											atmospheric_scattering_lut);*/
+
+			vec3 light_position = P - ld.position * ld.directional_distance;
+			if (!isinf(intersection_ray_sphere(light_position, ld.radius,
+											   P, V))) {
+				rgb += I0*10;/* * extinct_ray(P, V,
+										atmospheric_optical_length_lut);*/
+			}
 		}
 	}
 
@@ -185,11 +194,13 @@ vec3 deferred_shade_fragment(g_buffer_element frag, ivec2 coord,
 			float l_dist;
 			vec3 l = light_incidant_ray(ld, position);
 			if (ld.type == LightTypeDirectional) {
-				atat = extinct_from_infinity(w_pos, ld.position, eye_position());
+				atat = extinct_ray(eye_position(), w_pos, -ld.position,
+								   atmospheric_optical_length_lut);
 				l_dist = abs(ld.directional_distance);
 			}
 			else {
-				atat = extinct(ld.position, w_pos, eye_position());
+				atat = extinct(ld.position, w_pos, eye_position(),
+							   atmospheric_optical_length_lut);
 
 				float light_effective_range = ld.effective_range;
 				float dist2 = dot(l, l);

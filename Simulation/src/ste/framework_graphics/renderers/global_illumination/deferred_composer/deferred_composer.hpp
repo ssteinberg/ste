@@ -20,6 +20,11 @@
 
 #include <memory>
 
+
+//! TODO: Remove hack
+#include "volumetric_scattering_scatter_dispatch.hpp"
+
+
 namespace StE {
 namespace Graphics {
 
@@ -44,13 +49,15 @@ private:
 	std::unique_ptr<Core::Texture2DArray> atmospherics_optical_length_lut;
 	std::unique_ptr<Core::Texture3D> atmospherics_scatter_lut;
 
+	Resource::resource_instance<volumetric_scattering_scatter_dispatch> *additional_scatter_program_hack;
+
 private:
 	void load_microfacet_fit_luts();
 	void load_atmospherics_luts();
 	void attach_handles() const;
 
 private:
-	deferred_composer(const StEngineControl &ctx, GIRenderer *dr);
+	deferred_composer(const StEngineControl &ctx, GIRenderer *dr, Resource::resource_instance<volumetric_scattering_scatter_dispatch> *additional_scatter_program_hack);
 
 public:
 	~deferred_composer() noexcept {}
@@ -72,6 +79,7 @@ public:
 	auto loader(const StEngineControl &ctx, R* object) {
 		return ctx.scheduler().schedule_now([object, &ctx]() {
 			object->program.wait();
+			object->additional_scatter_program_hack->wait();
 		}).then_on_main_thread([object]() {
 			object->attach_handles();
 			object->load_microfacet_fit_luts();

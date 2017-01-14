@@ -6,6 +6,8 @@
 #include "stdafx.hpp"
 #include "atmospherics_lut_error.hpp"
 
+#include "atmospherics_properties.hpp"
+
 #include "boost_filesystem.hpp"
 
 #include <memory>
@@ -19,28 +21,32 @@ namespace _detail {
 
 template<typename T>
 class _atmospherics_precompute_scattering_data {
+private:
+	static constexpr int expected_version = 2;	// Current known LUT version
+
 public:
-	static constexpr int optical_length_size = 1024;
-	static constexpr int scatter_size0 = 32;
-	static constexpr int scatter_size1 = 128;
-	static constexpr int scatter_size2 = 32;
-	//static constexpr int scatter_size3 = 32;
+	static constexpr int optical_length_size = 2048;
+	static constexpr int scatter_size0 = 64;
+	static constexpr int scatter_size1 = 256;
+	static constexpr int scatter_size2 = 128;
 
 	using scatter_element = glm::tvec3<T>;
 
 	using optical_length_lut_t = T[optical_length_size][optical_length_size];
-	using scatter_lut_t = scatter_element[scatter_size0][scatter_size1][scatter_size2];// [scatter_size3];
-	using mie_single_scatter_lut_t = scatter_element[scatter_size0][scatter_size1][scatter_size2];// [scatter_size3];
+	using scatter_lut_t = scatter_element[scatter_size0][scatter_size1][scatter_size2];
+	using mie_single_scatter_lut_t = T[scatter_size0][scatter_size1][scatter_size2];
 
 private:
 	unsigned char type[8];
 	std::uint16_t version;
-	std::uint8_t  _unused;
+	std::uint8_t  sizeof_scalar;
 	std::uint32_t optical_length_dims;
 	std::uint32_t scatter_dims_0;
 	std::uint32_t scatter_dims_1;
 	std::uint32_t scatter_dims_2;
 	std::uint32_t hash;
+
+	atmospherics_properties<T> ap;
 
 	struct {
 		optical_length_lut_t optical_length[2];
@@ -95,18 +101,22 @@ public:
 			throw atmospherics_lut_error("Can not read LUT");
 		ifs.close();
 
-		boost::crc_32_type crc_computer;
-		crc_computer.process_bytes(reinterpret_cast<const std::uint8_t*>(&data), sizeof(data));
-		if (this->hash != crc_computer.checksum())
-			throw atmospherics_lut_error("Hash mismatch");
+		if (this->sizeof_scalar != sizeof(T))
+			throw atmospherics_lut_error("Invalid scalar size");
 
-		if (this->version != 1)
+		if (this->version != expected_version)
 			throw atmospherics_lut_error("Unsupported version");
+
 		if (this->optical_length_dims != optical_length_size ||
 			this->scatter_dims_0 != scatter_size0 ||
 			this->scatter_dims_1 != scatter_size1 ||
 			this->scatter_dims_2 != scatter_size2)
 			throw atmospherics_lut_error("LUT size zero");
+
+		boost::crc_32_type crc_computer;
+		crc_computer.process_bytes(reinterpret_cast<const std::uint8_t*>(&data), sizeof(data));
+		if (this->hash != crc_computer.checksum())
+			throw atmospherics_lut_error("Hash mismatch");
 	}
 };
 
@@ -155,18 +165,22 @@ public:
 	}
 
 	gli::texture3d create_lut() const {
-		auto lut_texture = gli::texture3d(gli::format::FORMAT_RGB32_SFLOAT_PACK32,
+		auto lut_texture = gli::texture3d(gli::format::FORMAT_RGBA32_SFLOAT_PACK32,
 										  glm::ivec3{ lut_data_t::scatter_size0, lut_data_t::scatter_size1, lut_data_t::scatter_size2 });
 
-		auto *lut = reinterpret_cast<glm::vec3*>(lut_texture.data());
+		auto *lut = reinterpret_cast<glm::vec4*>(lut_texture.data());
 
 		for (int z = 0; z < lut_data_t::scatter_size2; ++z) {
 			for (int y = 0; y < lut_data_t::scatter_size1; ++y) {
 				for (int x = 0; x < lut_data_t::scatter_size0; ++x) {
 					auto &v = (*data->multi_scatter_lut())[x][y][z];
+					auto &m = (*data->m0_scatter_lut())[x][y][z];
+
 					*lut = { static_cast<float>(v.x),
-						static_cast<float>(v.y),
-						static_cast<float>(v.z) };
+							 static_cast<float>(v.y),
+							 static_cast<float>(v.z),
+							 static_cast<float>(m) 
+					};
 					++lut;
 				}
 			}

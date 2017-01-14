@@ -50,7 +50,7 @@ struct load_lut {
 }
 }
 
-deferred_composer::deferred_composer(const StEngineControl &ctx, GIRenderer *dr) : program(ctx, std::vector<std::string>{ "passthrough.vert", "deferred_compose.frag" }), dr(dr) {
+deferred_composer::deferred_composer(const StEngineControl &ctx, GIRenderer *dr, Resource::resource_instance<volumetric_scattering_scatter_dispatch> *additional_scatter_program_hack) : program(ctx, std::vector<std::string>{ "passthrough.vert", "deferred_compose.frag" }), dr(dr), additional_scatter_program_hack(additional_scatter_program_hack) {
 	vss_storage_connection = std::make_shared<connection<>>([&]() {
 		attach_handles();
 	});
@@ -100,12 +100,17 @@ void deferred_composer::load_atmospherics_luts() {
 
 	ste_log() << Text::AttributedString("Loaded \"") + Text::Attributes::i(lut_name) + "\" successfully." << std::endl;
 
-	auto optical_length_handle = atmospherics_optical_length_lut->get_texture_handle(*Core::Sampler::SamplerLinearClamp());
-	auto scatter_handle = atmospherics_scatter_lut->get_texture_handle(*Core::Sampler::SamplerLinearClamp());
+	auto optical_length_handle = atmospherics_optical_length_lut->get_texture_handle(*Core::Sampler::SamplerAnisotropicLinearClamp());
+	auto scatter_handle = atmospherics_scatter_lut->get_texture_handle(*Core::Sampler::SamplerAnisotropicLinearClamp());
 	optical_length_handle.make_resident();
 	scatter_handle.make_resident();
 	program.get().set_uniform("atmospheric_optical_length_lut", optical_length_handle);
 	program.get().set_uniform("atmospheric_scattering_lut", scatter_handle);
+
+	//! Hack
+	additional_scatter_program_hack->get().get_program()->set_uniform("atmospheric_optical_length_lut", optical_length_handle);
+	additional_scatter_program_hack->get().get_program()->set_uniform("atmospheric_scattering_lut", scatter_handle);
+	//! /Hack
 }
 
 void deferred_composer::attach_handles() const {

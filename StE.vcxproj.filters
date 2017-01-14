@@ -1061,9 +1061,6 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\atmospherics\buffer\atmospherics_buffer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\atmospherics\buffer\atmospherics_descriptor.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\atmospherics\atmospherics_properties.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1086,6 +1083,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\atmospherics\precomputed_scattering\atmospherics_lut_error.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\atmospherics\buffer\atmospherics_descriptor.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1153,8 +1153,6 @@
     <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\deferred_composer\shaders\deferred_compose.frag" />
     <None Include="Simulation\src\ste\framework_graphics\atmospherics\volumetric_scattering\shaders\volumetric_scattering.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\atmospherics\volumetric_scattering\shaders\volumetric_scattering_scatter.glsl" />
-    <None Include="Simulation\src\ste\framework_graphics\atmospherics\buffer\shaders\atmospherics.glsl" />
-    <None Include="Simulation\src\ste\framework_graphics\atmospherics\buffer\shaders\atmospherics_descriptor.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\math\dual_quaternion.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\math\erf.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\rand\interleaved_gradient_noise.glsl" />
@@ -1176,5 +1174,7 @@
     <None Include="Simulation\src\ste\framework_graphics\light\linked_light_lists\shaders\linked_light_lists_gen.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shaders\shadow_directional.vert" />
     <None Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shaders\shadow_cubemap.vert" />
+    <None Include="Simulation\src\ste\framework_graphics\atmospherics\buffer\shaders\atmospherics.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\atmospherics\buffer\shaders\atmospherics_descriptor.glsl" />
   </ItemGroup>
 </Project>

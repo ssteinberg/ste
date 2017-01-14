@@ -41,6 +41,9 @@ layout(rgba16f, binding = 7) restrict uniform image3D volume;
 layout(bindless_sampler) uniform samplerCubeArrayShadow shadow_depth_maps;
 layout(bindless_sampler) uniform sampler2DArrayShadow directional_shadow_depth_maps;
 
+layout(bindless_sampler) uniform sampler2DArray atmospheric_optical_length_lut;
+layout(bindless_sampler) uniform sampler3D atmospheric_scattering_lut;
+
 layout(bindless_sampler) uniform sampler2D depth_map;
 
 uniform float cascades_depths[directional_light_cascades];
@@ -65,13 +68,6 @@ void depth_limits_3x3(vec2 uv, int lod, out float mind, out float maxd) {
 	float maxd1 = min(min(d00.y, d10.y), min(d20.y, d01.y));
 	float maxd2 = min(min(d11.y, d21.y), min(d02.y, d12.y));
 	maxd = max3(maxd1, maxd2, d22.y);
-}
-
-float calculate_tile_volume(float z, float thickness, vec2 fragcoords, vec2 next_tile_fragcoords) {
-	vec2 eye_space_xy = unproject_screen_position_with_z(z, fragcoords).xy;
-	vec2 eye_space_next_xy = unproject_screen_position_with_z(z, next_tile_fragcoords).xy;
-	vec2 l = eye_space_next_xy - eye_space_xy;
-	return thickness * l.x * l.y;
 }
 
 vec2 seed_scattering(vec2 slice_coords, uint light_idx, float s, float depth) {
@@ -104,7 +100,6 @@ vec3 calculate_scattering_position(vec2 seed, vec2 slice_coords, float s, float 
 }
 
 vec3 scatter_spherical_light(vec2 slice_coords,
-							 float tile_volume,
 							 float depth,
 							 float z_start,
 							 float z_next,
@@ -146,17 +141,18 @@ vec3 scatter_spherical_light(vec2 slice_coords,
 
 		rgb += irradiance(ld, l_dist) * scatter(ld.position, w_pos, eye_position(),
 												normalize(-position), l,
-												tile_volume);
+												thickness,
+												atmospheric_optical_length_lut);
 	}
 
 	return rgb / float(samples);
 }
 
 vec3 scatter_directional_light(vec2 slice_coords,
-							   float tile_volume,
 							   float depth,
 							   float z_start,
 							   float z_next,
+							   float thickness,
 							   uint light_idx,
 							   light_descriptor ld,
 							   mat3x4 M,
@@ -177,9 +173,9 @@ vec3 scatter_directional_light(vec2 slice_coords,
 		if (shadow <= .0f)
 			continue;
 			
-		rgb += irradiance(ld, .0f) * scatter_from_infinity(w_pos, ld.position, eye_position(),
-														   normalize(-position),
-														   tile_volume);
+		rgb += irradiance(ld, .0f) * scatter_ray(eye_position(), w_pos, -ld.position,
+												 thickness,
+												 atmospheric_optical_length_lut);
 	}
 
 	return rgb / float(samples);
@@ -193,9 +189,6 @@ vec3 scatter(float depth, float depth_next_tile,
 	float z_start = unproject_depth(depth);
 	float z_center = mix(z_start, z_next, .5f);
 	float thickness = z_start - z_next;
-
-	// Calculate tile volume
-	float tile_volume = calculate_tile_volume(z_center, thickness, fragcoords, next_tile_fragcoords);
 
 	// Scatter
 	vec3 scattered;
@@ -212,10 +205,10 @@ vec3 scatter(float depth, float depth_next_tile,
 		}
 
 		scattered = scatter_directional_light(slice_coords,
-											  tile_volume,
 											  depth,
 											  z_start,
 											  z_next,
+											  thickness,
 											  light_idx,
 											  ld,
 											  M,
@@ -224,7 +217,6 @@ vec3 scatter(float depth, float depth_next_tile,
 	}
 	else {
 		scattered = scatter_spherical_light(slice_coords,
-											tile_volume,
 											depth,
 											z_start,
 											z_next,

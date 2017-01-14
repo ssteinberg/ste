@@ -25,7 +25,7 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 						 shadows_storage(ctx),
 						 vol_scat_storage(ctx.get_backbuffer_size()),
 
-						 composer(ctx, this),
+						 composer(ctx, this, &vol_scat_scatter),
 						 fxaa(ctx),
 						 hdr(ctx, &gbuffer),
 
