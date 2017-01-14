@@ -3,23 +3,14 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-
-#include "beer_lambert.hpp"
-#include "rayleigh_scattering.hpp"
-#include "mie_scattering.hpp"
-
-#include "RGB.hpp"
-
-#include <limits>
-#include <functional>
+#include "stdafx.h"
 
 namespace StE {
 namespace Graphics {
 
 /*
- *	Defines the properties of an atmosphere
- */
+*	Defines the properties of an atmosphere
+*/
 template <typename T>
 struct atmospherics_properties {
 	using Vec = glm::tvec3<T>;
@@ -56,7 +47,7 @@ struct atmospherics_properties {
 
 	/*
 	*	Returns the height of a point
-	*	
+	*
 	*	@param P	point in world coordinates
 	*/
 	T height(const Vec &P) const {
@@ -132,7 +123,7 @@ auto inline atmospherics_earth_properties(const glm::dvec3 &center) {
 	ap.M_aerosols = 0.203;	// kg/mol
 
 	ap.phase = -.95;
-	ap.rayleigh_scattering_coefficient = glm::dvec3{ 5.7, 13.36, 32.77 } * 1e-8;
+	ap.rayleigh_scattering_coefficient = glm::dvec3{ 5.7, 13.36, 32.77 } *1e-8;
 	ap.mie_scattering_coefficient = 2e-7;
 	ap.mie_absorption_coefficient = 2.2e-8;
 

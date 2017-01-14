@@ -21,7 +21,7 @@ layout(bindless_sampler) uniform sampler2D hdr;
 layout(bindless_sampler) uniform sampler2D depth_texture;
 
 const int samples = 4;
-const int max_rings = 9;
+const int max_rings = 7;
 const float max_blur_texels_radius = 4.f;
 
 const float blur_coef = 1.0;
@@ -79,7 +79,7 @@ void main() {
 	vec2 blur_texels = blur * size;
 	float max_blur = max_element(blur_texels);
 	
-	int rings = min(int(round(max_blur / max_blur_texels_radius * float(max_rings))), max_rings);
+	/*int rings = min(int(round(max_blur / max_blur_texels_radius * float(max_rings))), max_rings);
 	if (rings > 0) {
 		vec2 noise = vec2(fast_rand(uv.x), fast_rand(uv.y)) * namount * blur_texels;
 		vec2 wh = blur * blur_coef + noise;
@@ -99,7 +99,7 @@ void main() {
 		}
 
 		col /= s;
-	}
+	}*/
 
 	gl_FragColor = col;
 }

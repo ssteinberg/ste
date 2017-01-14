@@ -25,7 +25,7 @@ private:
 		T t = T(0);
 
 		for (std::uint64_t i=1; i<n; i+=2) {
-			float x = a + static_cast<double>(i) * h;
+			double x = a + static_cast<double>(i) * h;
 			t += f(x);
 		}
 
@@ -35,7 +35,7 @@ private:
 public:
 	/**
 	*	@brief	Evaluate definite integral
-	*	
+	*
 	*	https://en.wikipedia.org/wiki/Romberg's_method
 	*
 	* 	@param f	Function to integrate

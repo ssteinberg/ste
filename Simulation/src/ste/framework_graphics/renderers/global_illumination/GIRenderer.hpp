@@ -39,7 +39,6 @@
 
 #include "volumetric_scattering_storage.hpp"
 #include "volumetric_scattering_scatter_dispatch.hpp"
-#include "volumetric_scattering_gather_dispatch.hpp"
 
 #include "deferred_composer.hpp"
 
@@ -137,12 +136,12 @@ private:
 	GIRenderer(const StEngineControl &ctx,
 			   const Camera *camera,
 			   Scene *scene,
-			   const atmospherics_properties<float> &atmospherics_prop);
+			   const atmospherics_properties<double> &atmospherics_prop);
 
 public:
 	virtual ~GIRenderer() noexcept {}
 
-	void update_atmospherics_properties(const atmospherics_properties<float> &atmospherics_prop) { atmospheric_buffer.update_data(atmospherics_prop); }
+	void update_atmospherics_properties(const atmospherics_properties<double> &atmospherics_prop) { atmospheric_buffer.update_data(atmospherics_prop); }
 	void set_aperture_parameters(float diameter, float distance) const { hdr.get().set_aperture_parameters(diameter, distance); }
 
 	void add_task(const gpu_task::TaskPtr &t);

@@ -74,8 +74,6 @@ public:
 			}
 		}
 
-		bool generate_mipmaps = true;
-
 		using namespace StE::Text;
 		using namespace Attributes;
 

@@ -14,7 +14,7 @@ using namespace StE::Graphics;
 GIRenderer::GIRenderer(const StEngineControl &ctx,
 					   const Camera *camera,
 					   Scene *scene,
-					   const atmospherics_properties<float> &atmospherics_prop)
+					   const atmospherics_properties<double> &atmospherics_prop)
 					   : ctx(ctx),
 					   	 gbuffer(ctx.get_backbuffer_size(), gbuffer_depth_target_levels()),
 						 camera(camera),
@@ -25,7 +25,7 @@ GIRenderer::GIRenderer(const StEngineControl &ctx,
 						 shadows_storage(ctx),
 						 vol_scat_storage(ctx.get_backbuffer_size()),
 
-						 composer(ctx, this),
+						 composer(ctx, this, &vol_scat_scatter),
 						 fxaa(ctx),
 						 hdr(ctx, &gbuffer),
 

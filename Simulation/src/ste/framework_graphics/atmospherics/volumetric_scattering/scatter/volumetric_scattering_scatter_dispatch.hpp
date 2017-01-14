@@ -89,6 +89,8 @@ private:
 public:
 	void set_context_state() const override final;
 	void dispatch() const override final;
+
+	auto *get_program() { return &(program.get()); }
 };
 
 }

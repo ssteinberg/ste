@@ -1,4 +1,6 @@
 
+#include "common.glsl"
+
 /*
  *	Does an intersection test of an open sphere with a frustum.
  *
@@ -73,4 +75,31 @@ bool collision_sphere_sphere(vec3 c1, float r1,
 	float r = r1 + r2;
 
 	return dot(v,v) < r*r;
+}
+
+/*
+ *	Calculates intersection distance between a ray and a sphere. 
+ *	Returns +inf if does not intersect.
+ *
+ *	@param c		Sphere center
+ *	@param r		Sphere radius
+ *	@param o		Ray origin
+ *	@param l		Ray direction
+ */
+float intersection_ray_sphere(vec3 c, float r,
+							  vec3 o, vec3 l) {
+	vec3 t = o - c;
+	float lent = length(t);
+	float x = dot(l, t);
+	float d = x*x - lent*lent + r*r;
+	if (d < 0)
+		return +inf;
+
+	vec2 dist = -x.xx + vec2(1,-1) * sqrt(d);
+	bvec2 dist_less_then_zero = lessThan(dist, vec2(0));
+	if (all(dist_less_then_zero))
+		return +inf;
+	if (any(dist_less_then_zero))
+		return max_element(dist);
+	return min_element(dist);
 }

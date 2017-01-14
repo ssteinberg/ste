@@ -139,8 +139,7 @@ public:
 	template <class Formatter = attributed_string_htm_formatter<CharT>>
 	std::string markup() const {
 		auto str = Formatter()(*this);
-		// Undefined reference error to 'std::codecvt_utf8' on ICC
-		return std::string(str.begin(), str.end());//std::wstring_convert<std::codecvt_utf8<CharT>, CharT>().to_bytes(str);
+		return std::wstring_convert<std::codecvt_utf8<CharT>, CharT>().to_bytes(str);
 	}
 
 	char_type &operator[](std::size_t index) { return string[index]; }

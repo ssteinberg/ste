@@ -1,5 +1,4 @@
 
-
 vec3 vec_from_spherical(float theta, float phi, float r = 1.f) {
 	float sine_theta = sin(theta);
 	return vec3(r * sine_theta * cos(phi), r * sine_theta * sin(phi), r * cos(theta));
