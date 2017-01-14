@@ -88,7 +88,7 @@ struct atmospherics_properties {
 	*	Returns the height at which atmospheric density becomes negligible
 	*/
 	static T max_height(const T &H) {
-		constexpr T max_density = 1e-5;
+		constexpr T max_density = 1e-6;
 
 		auto log_density = glm::log(max_density);
 		return -H * log_density;
@@ -120,9 +120,9 @@ auto inline atmospherics_earth_properties(const glm::dvec3 &center) {
 	ap.g = 9.80665;			// m/s^2
 	ap.R = 8.31447;			// J/(mol·K)
 	ap.M = 0.0289644;		// kg/mol
-	ap.M_aerosols = 0.223;	// kg/mol
+	ap.M_aerosols = 0.203;	// kg/mol
 
-	ap.phase = -.88;
+	ap.phase = -.95;
 	ap.rayleigh_scattering_coefficient = glm::dvec3{ 5.7, 13.36, 32.77 } *1e-8;
 	ap.mie_scattering_coefficient = 2e-7;
 	ap.mie_absorption_coefficient = 2.2e-8;

@@ -13,9 +13,9 @@ int main() {
 
 	StE::Graphics::atmospherics_precompute_scattering aps(atmosphere);
 
-	aps.load("atmospheric_scatter_lut.bin");
+	//aps.load("atmospheric_scatter_lut.bin");
 
-	//aps.build_optical_length_lut();
+	aps.build_optical_length_lut();
 	aps.build_scatter_lut(8);
 
 	aps.write_out("atmospheric_scatter_lut.bin");

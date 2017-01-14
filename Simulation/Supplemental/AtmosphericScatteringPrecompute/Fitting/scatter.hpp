@@ -31,9 +31,9 @@ template<typename T>
 class _atmospherics_precompute_scattering_data {
 public:
 	static constexpr int optical_length_size = 2048;
-	static constexpr int scatter_size0 = 64;
-	static constexpr int scatter_size1 = 256;
-	static constexpr int scatter_size2 = 128;
+	static constexpr int scatter_size0 = 96;
+	static constexpr int scatter_size1 = 384;
+	static constexpr int scatter_size2 = 196;
 	//static constexpr int scatter_size3 = 32;
 
 	using scatter_element = glm::tvec3<T>;

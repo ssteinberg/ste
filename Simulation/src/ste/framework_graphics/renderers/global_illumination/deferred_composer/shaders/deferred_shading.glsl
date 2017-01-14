@@ -104,15 +104,17 @@ vec3 deferred_shade_atmospheric_scattering(ivec2 coord,
 			vec3 L = ld.position;
 			vec3 I0 = irradiance(ld, .0f);
 
-			/*rgb += I0 * atmospheric_scatter(P, L, V, 
+			rgb += I0 * atmospheric_scatter(P, L, V, 
 											atmospheric_optical_length_lut,
-											atmospheric_scattering_lut);*/
+											atmospheric_scattering_lut);
 
+			//? Draw the light source.
+			//!? TODO: Remove in future.
 			vec3 light_position = P - ld.position * ld.directional_distance;
 			if (!isinf(intersection_ray_sphere(light_position, ld.radius,
 											   P, V))) {
-				rgb += I0*10;/* * extinct_ray(P, V,
-										atmospheric_optical_length_lut);*/
+				rgb += I0 * extinct_ray(P, V,
+										atmospheric_optical_length_lut);
 			}
 		}
 	}
