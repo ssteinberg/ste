@@ -8,37 +8,68 @@
 namespace StE {
 namespace Graphics {
 
+namespace _detail {
+
+template <typename T, int padding_size>
+struct atmospherics_descriptor_padder { T pad[padding_size]; };
+template <typename T>
+struct atmospherics_descriptor_padder<T, 0> {};
+
+}
+
 class atmospherics_descriptor {
 public:
-	using T = float;
-	using Properties = atmospherics_properties<T>;
+	using Properties = atmospherics_properties<double>;
 
 private:
-	struct precomputed_data {
-		T M_over_R;
-		T gM_over_RL;
-		T density0;
+	struct descriptor_data {
+		glm::vec4 center_radius;
+
+		glm::vec3 rayleigh_scattering_coefficient;
+		float mie_scattering_coefficient;
+		float mie_absorption_coefficient;
+		float phase;
+		float ro0;
+
+		float Hm;
+		float Hr;
+
+		float minus_one_over_Hm;
+		float minus_one_over_Hr;
+
+		float Hm_max;
+		float Hr_max;
 	};
 
 private:
-	Properties properties;
-	precomputed_data data;
+	descriptor_data data;
 
 private:
 	// Padding
-	static constexpr int properties_elements = sizeof(Properties) / sizeof(T);
-	static constexpr int precomputed_data_elements = sizeof(precomputed_data) / sizeof(T);
-	static constexpr int padding_size = (4 - (properties_elements + precomputed_data_elements) % 4) % 4;
-	T _ununsed[padding_size];
+	static constexpr int properties_elements = sizeof(descriptor_data) / sizeof(float);
+	static constexpr int padding_size = (4 - (properties_elements) % 4) % 4;
+	_detail::atmospherics_descriptor_padder<float, padding_size> padder;
 
-	static_assert((sizeof(Properties) / sizeof(T) + precomputed_data_elements + padding_size) % 4 == 0, "Incorrect padding");
+	static_assert((sizeof(descriptor_data) / sizeof(float) + padding_size) % 4 == 0, "Incorrect padding");
 
 protected:
 	void set_properties(const Properties &p) {
-		this->properties = p;
-		data.M_over_R = p.M / p.R;
-		data.gM_over_RL = p.g * data.M_over_R / p.L;
-		data.density0 = p.density_at_altitude(0);
+		data.center_radius = { p.center.x, p.center.y, p.center.z, p.radius };
+
+		data.rayleigh_scattering_coefficient = p.rayleigh_scattering_coefficient;
+		data.mie_scattering_coefficient = p.mie_scattering_coefficient;
+		data.mie_absorption_coefficient = p.mie_absorption_coefficient;
+		data.phase = p.phase;
+		data.ro0 = p.ro0;
+
+		data.Hm = p.scale_height_aerosols();
+		data.Hr = p.scale_height();
+
+		data.minus_one_over_Hm = -1.f / data.Hm;
+		data.minus_one_over_Hr = -1.f / data.Hr;
+
+		data.Hm_max = p.max_height(data.Hm);
+		data.Hr_max = p.max_height(data.Hr);
 	}
 
 public:

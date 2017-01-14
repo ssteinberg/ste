@@ -116,7 +116,7 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 		return vec3(.0f);
 		
 	// Incoming irradiance
-	vec3 irradiance = irradiance(ld, light_dist, position);
+	vec3 irradiance = irradiance(ld, light_dist);
 	float top_medium_ior = external_medium_ior;
 
 	// Attenuation at current layer

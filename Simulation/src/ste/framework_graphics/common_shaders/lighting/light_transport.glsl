@@ -51,10 +51,30 @@ float rayleigh_phase_function(vec3 u, vec3 v) {
 /*
  *	The Beer-Lambert law relates the attenuation of light to the properties of the material through which the light is traveling.
  *
- *	@param att		Attenuation coefficients per channel.  [0, inf]
+ *	@param att			Attenuation coefficients per channel.  [0, inf]
  *	@param path_length	Path length.  [0, inf]
  */
-vec3 beer_lambert(vec3 att, float path_length) {
-	// Limit path_length to flt_min to avoid NaN when attenuation coefficient is infinite
+float beer_lambert(float att, float path_length) {
 	return exp(-max(flt_min, path_length) * att);
+}
+vec2 beer_lambert(vec2 att, float path_length) {
+	return exp(-max(flt_min, path_length) * att);
+}
+vec3 beer_lambert(vec3 att, float path_length) {
+	return exp(-max(flt_min, path_length) * att);
+}
+vec4 beer_lambert(vec4 att, float path_length) {
+	return exp(-max(flt_min, path_length) * att);
+}
+float beer_lambert(float att) {
+	return exp(-att);
+}
+vec2 beer_lambert(vec2 att) {
+	return exp(-att);
+}
+vec3 beer_lambert(vec3 att) {
+	return exp(-att);
+}
+vec4 beer_lambert(vec4 att) {
+	return exp(-att);
 }

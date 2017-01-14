@@ -19,6 +19,7 @@ private:
 	struct view_data {
 		glm::dualquat view_transform;
 		glm::dualquat inverse_view_transform;
+		glm::vec4 eye_position;
 	};
 	struct proj_data {
 		glm::vec4 proj_xywz;
@@ -37,9 +38,12 @@ private:
 
 public:
 	void update_view_data(const Camera &c) {
+		auto p = c.get_position();
+
 		view_data v;
 		v.view_transform = c.view_transform_dquat();
 		v.inverse_view_transform = glm::inverse(v.view_transform);
+		v.eye_position = glm::vec4{ p.x, p.y, p.z, .0f };
 
 		range<> r = view_buffer.commit(v);
 		r.start /= sizeof(view_data);

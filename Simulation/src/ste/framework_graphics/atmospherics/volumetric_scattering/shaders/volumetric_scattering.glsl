@@ -24,14 +24,6 @@ float volumetric_scattering_zcoord_for_depth(float d) {
 	return volumetric_scattering_tile_for_depth(d) / float(volumetric_scattering_depth_tiles);
 }
 
-float volumetric_scattering_scattering_coefficient(float density, float thickness) {
-	return atmospherics_descriptor_data.mie_scattering_coefficient * density * thickness;
-}
-
-float volumetric_scattering_absorption_coefficient(float density, float thickness) {
-	return atmospherics_descriptor_data.mie_absorption_coefficient * density * thickness;
-}
-
 vec4 volumetric_scattering_load_inscattering_transmittance(sampler3D volume, vec2 frag_coords, float depth) {
 	vec2 xy = frag_coords / (float(volumetric_scattering_tile_size) * textureSize(volume, 0).xy);
 	vec3 p = vec3(xy, volumetric_scattering_zcoord_for_depth(depth));
