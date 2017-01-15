@@ -140,7 +140,6 @@ vec3 scatter_spherical_light(vec2 slice_coords,
 		float scale = min(l_dist, scaling_size) / scaling_size;
 
 		rgb += irradiance(ld, l_dist) * scatter(ld.position, w_pos, eye_position(),
-												normalize(-position), l,
 												thickness,
 												atmospheric_optical_length_lut);
 	}

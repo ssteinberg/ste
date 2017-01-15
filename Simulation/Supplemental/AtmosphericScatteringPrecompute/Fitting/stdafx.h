@@ -5,6 +5,13 @@
 
 #pragma once
 
+#ifndef _DEBUG
+#define _assert(x) { if (!(x)) {std::cout << #x << std::endl << "Failed" << std::endl; throw new std::exception(#x);} }
+#else
+#define	_assert(x) assert(x)
+#endif
+
+#include <exception>
 
 #define GLM_FORCE_AVX
 #define GLM_EXT_INCLUDED

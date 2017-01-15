@@ -133,7 +133,7 @@ public:
 
 		boost::crc_32_type crc_computer;
 		crc_computer.process_bytes(reinterpret_cast<const std::uint8_t*>(&data), sizeof(data));
-		assert(this->hash == crc_computer.checksum());
+		_assert(this->hash == crc_computer.checksum());
 	}
 
 	void write_out(const std::string &path) const {
@@ -282,7 +282,8 @@ private:
 					return this->ap.pressure(hx, H);
 				};
 
-				auto val = romberg_integration<14>::integrate(lambda, 0, l);
+				auto val = romberg_integration<16>::integrate(lambda, 0, l);
+				_assert(!glm::isnan(val) && !glm::isinf(val) && val > 0);
 				final_lut->write_optical_length_value(lut, { x,y }, val);
 			}
 		}
@@ -304,7 +305,7 @@ private:
 		if ((h0 == 0 && V.y < 0) ||
 			(h0 >= Hmax - 1e-30 && V.y > 0))
 			path_length = 0;
-		assert(!glm::isnan(path_length) && !glm::isinf(path_length));
+		_assert(!glm::isnan(path_length) && !glm::isinf(path_length));
 
 		auto light_occlusion = intersect_line_sphere(ap.center, ap.radius, P0 + decltype(P0){0,1,0}, L);
 
@@ -312,7 +313,7 @@ private:
 		if (l == 0 || !glm::isinf(light_occlusion))
 			return{ 0,0,0 };
 
-		auto cos_theta = glm::dot(V, L);
+		auto cos_theta = -glm::dot(V, L);
 		F = Fphase(cos_theta);
 
 		glm::tvec3<T> gather = glm::tvec3<T>(static_cast<T>(0));
@@ -338,7 +339,7 @@ private:
 				sample *= G;
 			}
 
-			assert(!glm::any(glm::isnan(sample)) && !glm::any(glm::isinf(sample)));
+			_assert(!glm::any(glm::isnan(sample)) && !glm::any(glm::isinf(sample)));
 
 			gather += l * sample;
 		}
@@ -382,9 +383,9 @@ private:
 				auto cos_phi = glm::dot(Y, omega);
 
 				auto sample = scatter_sample(h, cos_phi, cos_delta);
-				assert(!glm::any(glm::isnan(sample)) && !glm::any(glm::isinf(sample)));
+				_assert(!glm::any(glm::isnan(sample)) && !glm::any(glm::isinf(sample)));
 
-				auto F = Fphase(glm::dot(omega, V));
+				auto F = -Fphase(glm::dot(omega, V));
 
 				result += F * sample;
 				++samples;
@@ -394,11 +395,11 @@ private:
 		return result / static_cast<T>(samples);
 	}
 
-	template <int N = 30, int M = 11>
+	template <int N = 50, int M = 15>
 	void scatter(int k, const glm::ivec3 &idx,
 				 const T &h, const T &phi, const T &delta) const {
 		static_assert(N >= 1, "Expected positive N");
-		assert(k >= 1);
+		_assert(k >= 1);
 
 		auto Hr = ap.scale_height();
 		auto Hm = ap.scale_height_aerosols();
@@ -413,12 +414,12 @@ private:
 							   Hm, 1,
 							   [this](const T &c) { return cornette_shanks_phase_function(c, this->ap.phase); }, Fm);
 
-		assert(!glm::any(glm::isnan(r)) && !glm::any(glm::isnan(m)));
-		assert(!glm::any(glm::isinf(r)) && !glm::any(glm::isinf(m)));
+		_assert(!glm::any(glm::isnan(r)) && !glm::any(glm::isnan(m)));
+		_assert(!glm::any(glm::isinf(r)) && !glm::any(glm::isinf(m)));
 
 		glm::tvec3<T> result = r * Fr + m * Fm;
 		if (k == 1) {
-			assert(m.x == m.y && m.x == m.z);
+			_assert(m.x == m.y && m.x == m.z);
 			final_lut->write_m0_scatter_value(idx, m.x);
 			m0_phase_lut->m0[idx.x][idx.y][idx.z] = m.x * Fm;
 		}
