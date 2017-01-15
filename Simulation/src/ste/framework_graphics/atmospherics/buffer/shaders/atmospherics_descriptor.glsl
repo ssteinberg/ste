@@ -7,7 +7,8 @@ const float atmospherics_optical_length_aerosols_lut_idx = 1;
 
 // Helper functions for accessing precomputed atmospherics scatter LUT
 float _atmospheric_height_to_lut_idx(float h, float h_max) {
-	return h / h_max;
+	float x = max(.0f, h / h_max);
+	return sqrt(x);
 }
 float _atmospheric_view_zenith_to_lut_idx(float cos_phi) {
 	return (1.f + cos_phi) / 2.f;

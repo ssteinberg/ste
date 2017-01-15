@@ -22,11 +22,11 @@ namespace _detail {
 template<typename T>
 class _atmospherics_precompute_scattering_data {
 private:
-	static constexpr int expected_version = 2;	// Current known LUT version
+	static constexpr int expected_version = 3;	// Current known LUT version
 
 public:
 	static constexpr int optical_length_size = 2048;
-	static constexpr int scatter_size0 = 96;
+	static constexpr int scatter_size0 = 128;
 	static constexpr int scatter_size1 = 384;
 	static constexpr int scatter_size2 = 196;
 
@@ -60,13 +60,14 @@ public:
 
 	static T height_to_lut_idx(const T &h, const T &h_max) {
 		auto t = glm::clamp(h, static_cast<T>(0), h_max);
-		return t / h_max;
+		auto x = t / h_max;
+		return glm::sqrt(x);
 	}
-	static T view_zenith_to_lut_idx(const T &phi) {
-		return (static_cast<T>(1) + glm::cos(phi)) / static_cast<T>(2);
+	static T view_zenith_to_lut_idx(const T &cos_phi) {
+		return (static_cast<T>(1) + cos_phi) / static_cast<T>(2);
 	}
-	static T sun_zenith_to_lut_idx(const T &delta) {
-		auto t = -static_cast<T>(2.8) * glm::cos(delta) - static_cast<T>(0.8);
+	static T sun_zenith_to_lut_idx(const T &cos_delta) {
+		auto t = -static_cast<T>(2.8) * cos_delta - static_cast<T>(0.8);
 		return (static_cast<T>(1) - glm::exp(t)) / (static_cast<T>(1) - glm::exp(static_cast<T>(-3.6)));
 	}
 	static T sun_view_azimuth_to_lut_idx(const T &omega) {
@@ -74,7 +75,7 @@ public:
 	}
 
 	static T height_for_lut_idx(const T &x, const T &h_max) {
-		return h_max*x;
+		return h_max*x*x;
 	}
 	static T view_zenith_for_lut_idx(const T &x) {
 		return glm::acos(static_cast<T>(2) * x - static_cast<T>(1));

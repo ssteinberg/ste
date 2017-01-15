@@ -31,7 +31,7 @@ template<typename T>
 class _atmospherics_precompute_scattering_data {
 public:
 	static constexpr int optical_length_size = 2048;
-	static constexpr int scatter_size0 = 96;
+	static constexpr int scatter_size0 = 128;
 	static constexpr int scatter_size1 = 384;
 	static constexpr int scatter_size2 = 196;
 	//static constexpr int scatter_size3 = 32;
@@ -44,7 +44,7 @@ public:
 
 private:
 	mutable unsigned char type[8];
-	std::uint16_t version{ 2 };
+	std::uint16_t version{ 3 };
 	std::uint8_t  sizeof_scalar{ sizeof(T) };
 	std::uint32_t optical_length_dims{ optical_length_size };
 	std::uint32_t scatter_dims_0{ scatter_size0 };
@@ -63,7 +63,8 @@ private:
 public:
 	static T height_to_lut_idx(const T &h, const T &h_max) {
 		auto t = glm::clamp(h, static_cast<T>(0), h_max);
-		return t / h_max;
+		auto x = t / h_max;
+		return glm::sqrt(x);
 	}
 	static T view_zenith_to_lut_idx(const T &cos_phi) {
 		return (static_cast<T>(1) + cos_phi) / static_cast<T>(2);
@@ -77,7 +78,7 @@ public:
 	}
 
 	static T height_for_lut_idx(const T &x, const T &h_max) {
-		return h_max*x;
+		return h_max*x*x;
 	}
 	static T view_zenith_for_lut_idx(const T &x) {
 		return glm::acos(static_cast<T>(2) * x - static_cast<T>(1));
@@ -259,7 +260,7 @@ private:
 		auto phi_idx = lut_t::view_zenith_to_lut_idx(cos_phi);
 		auto result = final_lut->sample_optical_length_value(lut, { h_idx, phi_idx });
 
-		return result;
+		return ap.ro0 * result;
 	}
 
 
@@ -279,13 +280,15 @@ private:
 				auto lambda = [&](double step) {
 					auto P = P0 + step * V;
 					auto hx = glm::length(P - ap.center) - ap.radius;
-					return this->ap.pressure(hx, H);
+					return glm::exp(-hx / H);// this->ap.pressure(hx, H);
 				};
 
-				auto val = romberg_integration<16>::integrate(lambda, 0, l);
+				auto val = romberg_integration<15>::integrate(lambda, 0, l);
 				_assert(!glm::isnan(val) && !glm::isinf(val) && val > 0);
 				final_lut->write_optical_length_value(lut, { x,y }, val);
 			}
+			if (x % 32 == 0)
+				std::cout << "x";
 		}
 	}
 
@@ -309,21 +312,18 @@ private:
 
 		auto light_occlusion = intersect_line_sphere(ap.center, ap.radius, P0 + decltype(P0){0,1,0}, L);
 
-		auto l = path_length / static_cast<T>(N);
-		if (l == 0 || !glm::isinf(light_occlusion))
+		if (path_length == 0 || !glm::isinf(light_occlusion))
 			return{ 0,0,0 };
 
 		auto cos_theta = -glm::dot(V, L);
 		F = Fphase(cos_theta);
 
-		glm::tvec3<T> gather = glm::tvec3<T>(static_cast<T>(0));
-		for (int i = 0; i < N; ++i) {
-			auto segment_length = (static_cast<double>(i) + .5) * l;
-			glm::tvec3<T> P = P0 + segment_length * V;
+		auto lambda = [&](double step) {
+			auto P = P0 + step * V;
 			auto h = glm::length(P - ap.center) - ap.radius;
 			auto scatter = scatter_coefficient * ap.pressure(h, H);
-
 			auto t = extinction_coefficient * optical_length(P0, P, H, optical_length_lut);
+
 			if (k == 1) {
 				// For first order scatter we need to take into account the attenuation from light source
 				auto t2 = extinction_coefficient * optical_length_from_infinity(P, L, H, optical_length_lut);
@@ -341,10 +341,13 @@ private:
 
 			_assert(!glm::any(glm::isnan(sample)) && !glm::any(glm::isinf(sample)));
 
-			gather += l * sample;
-		}
+			return sample;
+		};
 
-		return gather;
+		auto val = romberg_integration<N>::integrate(lambda, 0, path_length);
+		_assert(!glm::any(glm::isnan(val)) && !glm::any(glm::isinf(val)));
+
+		return val;
 	}
 
 	auto scatter_sample(const T &h, const T &cos_phi, const T &cos_delta) const {
@@ -368,7 +371,7 @@ private:
 
 		auto result = glm::tvec3<T>(static_cast<T>(0));
 
-		int samples = 0;
+		int w = 0;
 		for (int i = 0; i < M; ++i) {
 			T sample_theta = static_cast<T>(i) / static_cast<T>(M - 1) * glm::pi<T>();
 			T sin_theta = glm::sin(sample_theta);
@@ -388,14 +391,14 @@ private:
 				auto F = -Fphase(glm::dot(omega, V));
 
 				result += F * sample;
-				++samples;
+				++w;
 			}
 		}
 
-		return result / static_cast<T>(samples);
+		return result / static_cast<T>(w);
 	}
 
-	template <int N = 50, int M = 15>
+	template <int N = 7, int M = 13>
 	void scatter(int k, const glm::ivec3 &idx,
 				 const T &h, const T &phi, const T &delta) const {
 		static_assert(N >= 1, "Expected positive N");
@@ -458,7 +461,7 @@ public:
 		f0.get();
 		f1.get();
 
-		std::cout << "Done" << std::endl;
+		std::cout << std::endl << "Done" << std::endl;
 	}
 
 	template <int Chunks, int i>
@@ -481,7 +484,7 @@ public:
 	}
 
 	void build_scatter_lut(int k) {
-		std::cout << "Building scatter LUT..." << std::endl;
+		std::cout << std::endl << "Building scatter LUT..." << std::endl;
 
 		for (int i=1; i<=k; ++i) {
 			auto f0 = std::async([this, i]() { build_scatter_lut_worker<4, 0>(i); });
@@ -494,10 +497,18 @@ public:
 			f2.get();
 			f3.get();
 
+			std::cout << std::endl << "Scatter index " << i << " done." << std::endl;
+
+			glm::tvec3<T> max = { 0,0,0 };
+			for (int x = 0; x < lut_t::scatter_size0; ++x)
+				for (int y = 0; y < lut_t::scatter_size1; ++y)
+					for (int z = 0; z < lut_t::scatter_size2; ++z)
+						max = glm::max(max, luts1->scatter[x][y][z]);
+			std::cout.precision(17);
+			std::cout << "Max: <" << max.x << ", " << max.y << ", " << max.z << ">" << std::endl << std::endl;
+
 			std::swap(luts0, luts1);
 			luts1 = std::make_unique<temp_lut_t>();
-
-			std::cout << std::endl << "Scatter index " << i << " done." << std::endl;
 		}
 
 		std::cout << "Cleaning M0 scatter from LUT..." << std::endl;
@@ -507,19 +518,12 @@ public:
 					luts0->scatter[x][y][z] -= m0_phase_lut->m0[x][y][z];
 
 		std::cout << "Writing final LUT..." << std::endl;
-
-		glm::tvec3<T> max = { 0,0,0 };
-		for (int x = 0; x < lut_t::scatter_size0; ++x) {
-			for (int y = 0; y < lut_t::scatter_size1; ++y) {
-				for (int z = 0; z < lut_t::scatter_size2; ++z) {
-					max = glm::max(max, luts0->scatter[x][y][z]);
+		for (int x = 0; x < lut_t::scatter_size0; ++x)
+			for (int y = 0; y < lut_t::scatter_size1; ++y)
+				for (int z = 0; z < lut_t::scatter_size2; ++z) 
 					final_lut->write_multi_scatter_value({ x,y,z }, luts0->scatter[x][y][z]);
-				}
-			}
-		}
 
 		std::cout << "Done" << std::endl;
-		std::cout << "Max: <" << max.x << ", " << max.y << ", " << max.z << ">" << std::endl;
 	}
 
 	void load(const std::string &path) {
