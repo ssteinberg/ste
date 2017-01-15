@@ -25,8 +25,6 @@
 #include "future_collection.hpp"
 #include "resource_instance.hpp"
 
-#include "atmospherics_precompute_scattering.hpp"
-
 #include <imgui/imgui.h>
 #include "debug_gui.hpp"
 

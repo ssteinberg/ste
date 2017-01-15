@@ -34,7 +34,7 @@ private:
 
 public:
 	/**
-	*	@brief	Evaluate definite integral
+	*	@brief	Evaluate definite integral using O(2^N) samples.
 	*	
 	*	https://en.wikipedia.org/wiki/Romberg's_method
 	*
