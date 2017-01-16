@@ -84,7 +84,7 @@ void deferred_composer::load_microfacet_fit_luts() {
 }
 
 void deferred_composer::load_atmospherics_luts() {
-	static const char *lut_name = R"(Data/atmospheric_scatter_lut.bin)";
+	static const char *lut_name = R"(Data/atmospherics_scatter_lut.bin)";
 
 	try {
 		atmospherics_precompute_scattering lut_loader(lut_name);

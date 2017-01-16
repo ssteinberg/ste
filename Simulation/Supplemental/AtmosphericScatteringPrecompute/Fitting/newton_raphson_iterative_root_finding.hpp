@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include "stdafx.h"
 
 namespace StE {
 
@@ -21,7 +21,7 @@ struct newton_raphson_iterative_root_finding {
 	* 	@param epsilon	Acceptable approximation error constant
 	*/
 	template <int max_iterations = 1000, typename F1, typename F2>
-	static bool find_root(const F1 &f, const F2 &d, double &x0, double epsilon = 1e-10) {
+	static bool find_roots(const F1 &f, const F2 &d, double &x0, double epsilon = 1e-10) {
 		double fx;
 		for (int i=0; i<max_iterations; ++i) {
 			fx = f(x0);

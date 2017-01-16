@@ -172,8 +172,12 @@
   <ItemGroup>
     <ClInclude Include="atmospheric_properties.hpp" />
     <ClInclude Include="function_traits.hpp" />
+    <ClInclude Include="gaussian_quadrature_spherical_integration.hpp" />
+    <ClInclude Include="legendre_polynomial.hpp" />
+    <ClInclude Include="newton_raphson_iterative_root_finding.hpp" />
     <ClInclude Include="phase.hpp" />
     <ClInclude Include="romberg_integration.hpp" />
+    <ClInclude Include="sampling.hpp" />
     <ClInclude Include="scatter.hpp" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />

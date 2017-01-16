@@ -3,14 +3,16 @@
 
 #pragma once
 
-#include <array>
-
+#include "stdafx.hpp"
 #include "function_traits.hpp"
+
+#include <array>
 
 namespace StE {
 
 /**
 *	@brief	Implementation of Romberg's method for numerical integration
+*			https://en.wikipedia.org/wiki/Romberg's_method
 */
 template <unsigned N>
 class romberg_integration {
@@ -35,8 +37,6 @@ private:
 public:
 	/**
 	*	@brief	Evaluate definite integral using O(2^N) samples.
-	*	
-	*	https://en.wikipedia.org/wiki/Romberg's_method
 	*
 	* 	@param f	Function to integrate
 	* 	@param a	Interval start
@@ -70,6 +70,24 @@ public:
 		}
 
 		return Tk[N - 1];
+	}
+
+	/**
+	*	@brief	Evaluate definite unit sphere integral using O(2^(2N+1)) samples.
+	*
+	* 	@param f	Function to integrate. f takes spherical coordinates, f(theta, phi).
+	* 				theta : [0,pi] and phi : [0,2*pi].
+	*/
+	template <typename F>
+	static typename function_traits<F>::result_t integrate_sphere(const F &f) {
+		using T = typename function_traits<F>::result_t;
+
+		return integrate([&](double theta) {
+			auto sin_theta = glm::sin(theta);
+			return romberg_integration<N + 1>::integrate([&](double phi) {
+				return f(theta, phi) * sin_theta;
+			}, .0, glm::pi<double>() * 2.);
+		}, .0, glm::pi<double>());
 	}
 };
 

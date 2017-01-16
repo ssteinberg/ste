@@ -35,8 +35,6 @@ struct atmospherics_descriptor {
 	
 	// Phase coefficient for the Mie scattering phase function
 	float phase;
-	// Sea level athmospheric pressure, kPa
-	float ro0;
 
 	// Scale heights for Mie and Rayleigh scattering, repectively
 	float Hm;
@@ -48,8 +46,6 @@ struct atmospherics_descriptor {
 	
 	float Hm_max;
 	float Hr_max;
-
-	float _unused[3];
 };
 
 
@@ -59,7 +55,7 @@ struct atmospherics_descriptor {
 *	@param h	Height in meters
 */
 float atmospherics_descriptor_pressure_rayleigh(atmospherics_descriptor desc, float h) {
-	return desc.ro0 * exp(desc.minus_one_over_Hr * h);
+	return exp(desc.minus_one_over_Hr * h);
 }
 
 /*
@@ -68,7 +64,7 @@ float atmospherics_descriptor_pressure_rayleigh(atmospherics_descriptor desc, fl
 *	@param h	Height in meters
 */
 float atmospherics_descriptor_pressure_mie(atmospherics_descriptor desc, float h) {
-	return desc.ro0 * exp(desc.minus_one_over_Hm * h);
+	return exp(desc.minus_one_over_Hm * h);
 }
 
 

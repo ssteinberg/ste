@@ -8,6 +8,7 @@
 #include "phase.hpp"
 
 #include "romberg_integration.hpp"
+#include "gaussian_quadrature_spherical_integration.hpp"
 
 #include <boost/crc.hpp>
 
@@ -156,6 +157,9 @@ class atmospherics_precompute_scattering {
 	using T = double;
 	using lut_t = _detail::_atmospherics_precompute_scattering_data<T>;
 
+	static constexpr int N = 6;
+	static constexpr int M = 70;
+
 	struct temp_lut_t {
 		lut_t::scatter_lut_t scatter;
 	};
@@ -167,13 +171,16 @@ private:
 	atmospherics_properties<T> ap;
 	T Hmax;
 
+	gaussian_quadrature_spherical_integration<M>::quadrature_points quadrature_points;
+
 	std::unique_ptr<lut_t> final_lut;
 	std::unique_ptr<m0_phase_lut_t> m0_phase_lut;
 	std::unique_ptr<temp_lut_t> luts0;
 	std::unique_ptr<temp_lut_t> luts1;
 
+private:
 	auto sample_scatter_value(const lut_t::scatter_lut_t &lut, const glm::dvec3 &idx) const {
-		auto x = glm::floor(idx * glm::dvec3{ lut_t::scatter_size0 - 1,lut_t::scatter_size1 - 1,lut_t::scatter_size2 - 1 });
+		auto x = glm::floor(idx * glm::dvec3{ lut_t::scatter_size0 - 1, lut_t::scatter_size1 - 1, lut_t::scatter_size2 - 1 });
 		auto f = glm::fract(idx);
 
 		lut_t::scatter_element s[2][2][2];
@@ -260,16 +267,23 @@ private:
 		auto phi_idx = lut_t::view_zenith_to_lut_idx(cos_phi);
 		auto result = final_lut->sample_optical_length_value(lut, { h_idx, phi_idx });
 
+		_assert(result > 0);
+
 		return ap.ro0 * result;
 	}
 
 
+	template <int Chunks, int i>
 	void build_optical_length_lut(int lut, const T &H) {
+		static_assert(lut_t::optical_length_size % Chunks == 0, "");
+
+		int chunk = lut_t::optical_length_size / Chunks;
+
 		auto H_max = ap.max_height(H);
-		for (int x = 0; x<lut_t::optical_length_size; ++x) {
+		for (int x = chunk * i; x<chunk * (i + 1); ++x) {
 			for (int y = 0; y<lut_t::optical_length_size; ++y) {
-				auto h = lut_t::height_for_lut_idx(static_cast<T>(x) / static_cast<T>(lut_t::optical_length_size), H_max);
-				auto phi = lut_t::view_zenith_for_lut_idx(static_cast<T>(y) / static_cast<T>(lut_t::optical_length_size));
+				auto h = lut_t::height_for_lut_idx(static_cast<T>(x) / static_cast<T>(lut_t::optical_length_size - 1), H_max);
+				auto phi = lut_t::view_zenith_for_lut_idx(static_cast<T>(y) / static_cast<T>(lut_t::optical_length_size - 1));
 
 				glm::tvec3<T> P0 = ap.center + glm::tvec3<T>{ 0, ap.radius + h, 0 };
 				glm::tvec3<T> V = { glm::sin(phi),glm::cos(phi),0 };
@@ -287,13 +301,13 @@ private:
 				_assert(!glm::isnan(val) && !glm::isinf(val) && val > 0);
 				final_lut->write_optical_length_value(lut, { x,y }, val);
 			}
-			if (x % 32 == 0)
+			if (x % 32 == 31)
 				std::cout << "x";
 		}
 	}
 
 
-	template <int N, int  M, typename T2>
+	template <typename T2>
 	glm::tvec3<T> scatter(int k, const T &h0, const T &phi, const T &delta,
 						  const T2 &scatter_coefficient, const T2 &extinction_coefficient,
 						  const T &H, int optical_length_lut,
@@ -334,8 +348,8 @@ private:
 			// For multiple scattering we sample the gathered scatters across a 4*pi steradians at point P.
 			auto sample = glm::tvec3<T>(scatter * glm::exp(-t));
 			if (k > 1) {
-				auto G = scatter_gather<N, M>(k - 1, P, V, L,
-											  Fphase);
+				auto G = scatter_gather(k - 1, P, V, L,
+										Fphase);
 				sample *= G;
 			}
 
@@ -355,11 +369,9 @@ private:
 		return sample_scatter_value(luts0->scatter, idx);
 	}
 
-	template <int N, int M>
 	auto scatter_gather(int k, const glm::tvec3<T> &P0, const glm::tvec3<T> &V, const glm::tvec3<T> &L,
 						const std::function<T(const T &)> &Fphase) const {
 		static_assert(M > 1, "M should be positive");
-		static_assert(M % 2 == 1, "M should be odd");
 
 		//T h;
 		//auto TBN = extract_tbn(P0, h);
@@ -369,36 +381,25 @@ private:
 		Y = glm::normalize(Y);
 		auto cos_delta = glm::dot(Y, L);
 
-		auto result = glm::tvec3<T>(static_cast<T>(0));
-
-		int w = 0;
-		for (int i = 0; i < M; ++i) {
-			T sample_theta = static_cast<T>(i) / static_cast<T>(M - 1) * glm::pi<T>();
+		auto lambda = [&](double sample_theta, double sample_phi) {
 			T sin_theta = glm::sin(sample_theta);
+			glm::tvec3<T> omega = { sin_theta * glm::cos(sample_phi), sin_theta * glm::sin(sample_phi), glm::cos(sample_theta) };
 
-			int longtitude_samples = i == 0 || i == M - 1 ?
-				1 :
-				glm::max(3, static_cast<int>(glm::round(sin_theta * static_cast<T>(M << 1))));
-			for (int j = 0; j < longtitude_samples; ++j) {
-				T sample_phi = static_cast<T>(j << 1) / static_cast<T>(longtitude_samples) * glm::pi<T>();
-				glm::tvec3<T> omega = { sin_theta * glm::cos(sample_phi), sin_theta * glm::sin(sample_phi), glm::cos(sample_theta) };
+			auto cos_phi = glm::dot(Y, omega);
+			auto F = Fphase(-glm::dot(omega, V));
 
-				auto cos_phi = glm::dot(Y, omega);
+			auto sample = scatter_sample(h, cos_phi, cos_delta);
+			_assert(!glm::any(glm::isnan(sample)) && !glm::any(glm::isinf(sample)));
 
-				auto sample = scatter_sample(h, cos_phi, cos_delta);
-				_assert(!glm::any(glm::isnan(sample)) && !glm::any(glm::isinf(sample)));
+			return F * sample;
+		};
 
-				auto F = -Fphase(glm::dot(omega, V));
+		auto result = gaussian_quadrature_spherical_integration<M>::integrate(lambda, quadrature_points);
+		_assert(!glm::any(glm::isnan(result)) && !glm::any(glm::isinf(result)));
 
-				result += F * sample;
-				++w;
-			}
-		}
-
-		return result / static_cast<T>(w);
+		return result;
 	}
 
-	template <int N = 7, int M = 13>
 	void scatter(int k, const glm::ivec3 &idx,
 				 const T &h, const T &phi, const T &delta) const {
 		static_assert(N >= 1, "Expected positive N");
@@ -408,14 +409,14 @@ private:
 		auto Hm = ap.scale_height_aerosols();
 		T Fr, Fm;
 
-		auto r = scatter<N, M>(k, h, phi, delta,
-							   this->ap.rayleigh_scattering_coefficient, this->ap.rayleigh_extinction_coeffcient(),
-							   Hr, 0,
-							   [](const T &c) { return rayleigh_phase_function(c); }, Fr);
-		auto m = scatter<N, M>(k, h, phi, delta,
-							   this->ap.mie_scattering_coefficient, this->ap.mie_extinction_coeffcient(),
-							   Hm, 1,
-							   [this](const T &c) { return cornette_shanks_phase_function(c, this->ap.phase); }, Fm);
+		auto r = scatter(k, h, phi, delta,
+						 this->ap.rayleigh_scattering_coefficient, this->ap.rayleigh_extinction_coeffcient(),
+						 Hr, 0,
+						 [](const T &c) { return rayleigh_phase_function(c); }, Fr);
+		auto m = scatter(k, h, phi, delta,
+						 this->ap.mie_scattering_coefficient, this->ap.mie_extinction_coeffcient(),
+						 Hm, 1,
+						 [this](const T &c) { return cornette_shanks_phase_function(c, this->ap.phase); }, Fm);
 
 		_assert(!glm::any(glm::isnan(r)) && !glm::any(glm::isnan(m)));
 		_assert(!glm::any(glm::isinf(r)) && !glm::any(glm::isinf(m)));
@@ -443,23 +444,41 @@ public:
 		auto Hmax_r = ap.max_height(ap.scale_height());
 		auto Hmax_m = ap.max_height(ap.scale_height_aerosols());
 		Hmax = glm::max(Hmax_r, Hmax_m);
+
+		quadrature_points = gaussian_quadrature_spherical_integration<M>::generate_points();
 	}
 
 	void build_optical_length_lut_air() {
 		auto H = ap.scale_height();
-		build_optical_length_lut(0, H);
+
+		auto f0 = std::async([this, H]() { build_optical_length_lut<4, 0>(0, H); });
+		auto f1 = std::async([this, H]() { build_optical_length_lut<4, 1>(0, H); });
+		auto f2 = std::async([this, H]() { build_optical_length_lut<4, 2>(0, H); });
+		auto f3 = std::async([this, H]() { build_optical_length_lut<4, 3>(0, H); });
+
+		f0.get();
+		f1.get();
+		f2.get();
+		f3.get();
 	}
 	void build_optical_length_lut_aerosols() {
 		auto H = ap.scale_height_aerosols();
-		build_optical_length_lut(1, H);
+
+		auto f0 = std::async([this, H]() { build_optical_length_lut<4, 0>(1, H); });
+		auto f1 = std::async([this, H]() { build_optical_length_lut<4, 1>(1, H); });
+		auto f2 = std::async([this, H]() { build_optical_length_lut<4, 2>(1, H); });
+		auto f3 = std::async([this, H]() { build_optical_length_lut<4, 3>(1, H); });
+
+		f0.get();
+		f1.get();
+		f2.get();
+		f3.get();
 	}
 	void build_optical_length_lut() {
 		std::cout << "Building Optical Length LUT..." << std::endl;
 
-		auto f0 = std::async([this]() { build_optical_length_lut_air(); });
-		auto f1 = std::async([this]() { build_optical_length_lut_aerosols(); });
-		f0.get();
-		f1.get();
+		build_optical_length_lut_air();
+		build_optical_length_lut_aerosols();
 
 		std::cout << std::endl << "Done" << std::endl;
 	}
@@ -476,7 +495,7 @@ public:
 					auto phi = lut_t::view_zenith_for_lut_idx(static_cast<T>(y) / static_cast<T>(lut_t::scatter_size1 - 1));
 					auto delta = lut_t::sun_zenith_for_lut_idx(static_cast<T>(z) / static_cast<T>(lut_t::scatter_size2 - 1));
 
-					scatter<>(k, { x,y,z }, h, phi, delta);
+					scatter(k, { x,y,z }, h, phi, delta);
 				}
 			}
 			std::cout << "x";
@@ -500,10 +519,16 @@ public:
 			std::cout << std::endl << "Scatter index " << i << " done." << std::endl;
 
 			glm::tvec3<T> max = { 0,0,0 };
+			T max_len = T(0);
 			for (int x = 0; x < lut_t::scatter_size0; ++x)
 				for (int y = 0; y < lut_t::scatter_size1; ++y)
-					for (int z = 0; z < lut_t::scatter_size2; ++z)
-						max = glm::max(max, luts1->scatter[x][y][z]);
+					for (int z = 0; z < lut_t::scatter_size2; ++z) {
+						auto l = glm::length(luts1->scatter[x][y][z]);
+						if (l > max_len) {
+							max = luts1->scatter[x][y][z];
+							max_len = l;
+						}
+					}
 			std::cout.precision(17);
 			std::cout << "Max: <" << max.x << ", " << max.y << ", " << max.z << ">" << std::endl << std::endl;
 

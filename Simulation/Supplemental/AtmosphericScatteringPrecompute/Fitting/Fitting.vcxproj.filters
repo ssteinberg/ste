@@ -39,6 +39,18 @@
     <ClInclude Include="phase.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="gaussian_quadrature_spherical_integration.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="legendre_polynomial.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="newton_raphson_iterative_root_finding.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sampling.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

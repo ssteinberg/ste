@@ -3,27 +3,24 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include "stdafx.h"
 #include "newton_raphson_iterative_root_finding.hpp"
+
+#include <array>
 
 namespace StE {
 
 template <typename T, int n>
 struct legendre_polynomial {
-	static_assert(n >= 2, "n must be non-negative");
-
 	T operator()(const T &x) const {
-		T t[2];
-		t[0] = legendre_polynomial<T, 0>()(x);
-		t[1] = legendre_polynomial<T, 1>()(x);
-
-		int idx;
-		for (int i = 2; i <= n; ++i) {
-			idx = i % 2;
-			t[idx] = (static_cast<T>(2 * i - 1) * x * t[idx ^ 0x1] -
-					  static_cast<T>(i - 1) * t[idx]) / static_cast<T>(i);
-		}
-		return t[idx];
+		std::array<T, n + 1> d;
+		d[0] = legendre_polynomial<T, 0>()(x);
+		d[1] = legendre_polynomial<T, 1>()(x);
+		for (int i = 2; i <= n; ++i)
+			d[i] = (static_cast<T>(2 * i - 1) * x * d[i - 1] -
+					static_cast<T>(i - 1) * d[i - 2])
+			/ static_cast<T>(i);
+		return d[n];
 	}
 };
 
@@ -40,24 +37,16 @@ struct legendre_polynomial<T, 1> {
 
 template <typename T, int n>
 struct legendre_polynomial_derivative {
-	static_assert(n >= 2, "n must be non-negative");
-
 	T operator()(const T &x) const {
-		T t[2];
-		t[0] = legendre_polynomial<T, 0>()(x);
-		t[1] = legendre_polynomial<T, 1>()(x);
+		std::array<T, n + 1> d;
+		d[0] = legendre_polynomial<T, 0>()(x);
+		d[1] = legendre_polynomial<T, 1>()(x);
+		for (int i = 2; i <= n; ++i)
+			d[i] = (static_cast<T>(2 * i - 1) * x * d[i - 1] -
+					static_cast<T>(i - 1) * d[i - 2])
+			/ static_cast<T>(i);
 
-		int idx;
-		for (int i = 2; i <= n; ++i) {
-			idx = i % 2;
-			t[idx] = (static_cast<T>(2 * i - 1) * x * t[idx ^ 0x1] -
-					  static_cast<T>(i - 1) * t[idx]) / static_cast<T>(i);
-		}
-
-		auto Pn = t[idx];
-		auto Pn_1 = t[idx ^ 0x1];
-
-		return (x * Pn - Pn_1) * static_cast<T>(n) / (x*x - 1);
+		return (x * d[n] - d[n - 1]) * static_cast<T>(n) / (x*x - 1);
 	}
 };
 
@@ -72,22 +61,19 @@ struct legendre_polynomial_derivative<T, 1> {
 };
 
 /**
-*	@brief	Find the i-th root (node) of an n-th order legendere polynomial.
+*	@brief	Find the i-th root of an n-th order legendere polynomial.
 */
 template <int n>
 double legendre_polynomial_node(int i) {
 	static_assert(n > 0, "No roots for P0");
-	assert(i >= 0 && "i must be non-negative");
 	assert(n > i && "Pn has n roots, i must be less than n");
 
-	// Initial guess
 	auto t = (static_cast<double>(i + 1) - .25) / (static_cast<double>(n) + .5);
 	auto x0 = glm::cos(glm::pi<double>() * t);
-
-	bool res = newton_raphson_iterative_root_finding::find_root<1000000>([](double x) { return legendre_polynomial<double, n>()(x); },
-																		 [](double x) { return legendre_polynomial_derivative<double, n>()(x); },
-																		 x0,
-																		 1e-12);
+	bool res = newton_raphson_iterative_root_finding::find_roots<1000000>([](double x) { return legendre_polynomial<double, n>()(x); },
+																		  [](double x) { return legendre_polynomial_derivative<double, n>()(x); },
+																		  x0,
+																		  1e-12);
 
 	assert(res && "Root not found");
 
