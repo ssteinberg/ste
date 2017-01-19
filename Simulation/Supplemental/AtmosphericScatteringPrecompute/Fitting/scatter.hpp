@@ -26,26 +26,155 @@
 namespace StE {
 namespace Graphics {
 
+
+template<typename T>
+class double_vec3 {
+public:
+	glm::tvec3<T> v0, v1;
+
+	double_vec3() = default;
+	double_vec3(double_vec3 &&) = default;
+	double_vec3(const double_vec3 &) = default;
+	double_vec3 &operator=(double_vec3 &&) = default;
+	double_vec3 &operator=(const double_vec3 &) = default;
+
+	double_vec3(const T &t) : v0(t), v1(t) {}
+	double_vec3(const glm::tvec3<T> &t) : v0(t), v1(t) {}
+	double_vec3(const glm::tvec3<T> &t0, const glm::tvec3<T> &t1) : v0(t0), v1(t1) {}
+
+	auto& operator+=(const double_vec3<T> &rhs) {
+		v0 += rhs.v0;
+		v1 += rhs.v1;
+		return *this;
+	}
+	auto& operator-=(const double_vec3<T> &rhs) {
+		v0 -= rhs.v0;
+		v1 -= rhs.v1;
+		return *this;
+	}
+	auto& operator+=(const glm::tvec3<T> &rhs) {
+		v0 += rhs;
+		v1 += rhs;
+		return *this;
+	}
+	auto& operator-=(const glm::tvec3<T> &rhs) {
+		v0 -= rhs;
+		v1 -= rhs;
+		return *this;
+	}
+	auto& operator*=(const double_vec3<T> &rhs) {
+		v0 *= rhs.v0;
+		v1 *= rhs.v1;
+		return *this;
+	}
+	auto& operator/=(const double_vec3<T> &rhs) {
+		v0 /= rhs.v0;
+		v1 /= rhs.v1;
+		return *this;
+	}
+	auto& operator*=(const glm::tvec3<T> &rhs) {
+		v0 *= rhs;
+		v1 *= rhs;
+		return *this;
+	}
+	auto& operator/=(const glm::tvec3<T> &rhs) {
+		v0 /= rhs;
+		v1 /= rhs;
+		return *this;
+	}
+	auto& operator*=(const T &rhs) {
+		v0 *= rhs;
+		v1 *= rhs;
+		return *this;
+	}
+	auto& operator/=(const T &rhs) {
+		v0 /= rhs;
+		v1 /= rhs;
+		return *this;
+	}
+};
+
+template<typename T>
+double_vec3<T> operator+(const double_vec3<T> &lhs, const double_vec3<T> &rhs) {
+	return{ lhs.v0 + rhs.v0,
+		lhs.v1 + rhs.v1 };
+}
+template<typename T>
+double_vec3<T> operator-(const double_vec3<T> &lhs, const double_vec3<T> &rhs) {
+	return{ lhs.v0 - rhs.v0,
+		lhs.v1 - rhs.v1 };
+}
+template<typename T>
+double_vec3<T> operator+(const double_vec3<T> &lhs, const glm::tvec3<T> &rhs) {
+	return{ lhs.v0 + rhs,
+		lhs.v1 + rhs };
+}
+template<typename T>
+double_vec3<T> operator-(const double_vec3<T> &lhs, const glm::tvec3<T> &rhs) {
+	return{ lhs.v0 - rhs,
+		lhs.v1 - rhs };
+}
+template<typename T>
+double_vec3<T> operator*(const double_vec3<T> &lhs, const double_vec3<T> &rhs) {
+	return{ lhs.v0 * rhs.v0,
+		lhs.v1 * rhs.v1 };
+}
+template<typename T>
+double_vec3<T> operator/(const double_vec3<T> &lhs, const double_vec3<T> &rhs) {
+	return{ lhs.v0 / rhs.v0,
+		lhs.v1 / rhs.v1 };
+}
+template<typename T>
+double_vec3<T> operator*(const double_vec3<T> &lhs, const glm::tvec3<T> &rhs) {
+	return{ lhs.v0 * rhs,
+		lhs.v1 * rhs };
+}
+template<typename T>
+double_vec3<T> operator/(const double_vec3<T> &lhs, const glm::tvec3<T> &rhs) {
+	return{ lhs.v0 / rhs,
+		lhs.v1 / rhs };
+}
+template<typename T>
+double_vec3<T> operator*(const double_vec3<T> &lhs, const T &rhs) {
+	return{ lhs.v0 * rhs,
+		lhs.v1 * rhs };
+}
+template<typename T>
+double_vec3<T> operator/(const double_vec3<T> &lhs, const T &rhs) {
+	return{ lhs.v0 / rhs,
+		lhs.v1 / rhs };
+}
+template<typename T>
+double_vec3<T> operator*(const T &lhs, const double_vec3<T> &rhs) {
+	return{ lhs * rhs.v0,
+		lhs * rhs.v1 };
+}
+template<typename T>
+double_vec3<T> operator/(const T &lhs, const double_vec3<T> &rhs) {
+	return{ lhs / rhs.v0,
+		lhs / rhs.v2 };
+}
+
+
 namespace _detail {
 
 template<typename T>
 class _atmospherics_precompute_scattering_data {
 public:
 	static constexpr int optical_length_size = 2048;
-	static constexpr int scatter_size0 = 128;
+	static constexpr int scatter_size0 = 48;
 	static constexpr int scatter_size1 = 384;
-	static constexpr int scatter_size2 = 196;
-	//static constexpr int scatter_size3 = 32;
+	static constexpr int scatter_size2 = 384;
 
-	using scatter_element = glm::tvec3<T>;
+	using scatter_element = double_vec3<T>;
 
 	using optical_length_lut_t = T[optical_length_size][optical_length_size];
-	using scatter_lut_t = scatter_element[scatter_size0][scatter_size1][scatter_size2];// [scatter_size3];
-	using mie_single_scatter_lut_t = T[scatter_size0][scatter_size1][scatter_size2];// [scatter_size3];
+	using scatter_lut_t = scatter_element[scatter_size0][scatter_size1][scatter_size2];
 
 private:
+	// Header
 	mutable unsigned char type[8];
-	std::uint16_t version{ 3 };
+	std::uint16_t version{ 6 };
 	std::uint8_t  sizeof_scalar{ sizeof(T) };
 	std::uint32_t optical_length_dims{ optical_length_size };
 	std::uint32_t scatter_dims_0{ scatter_size0 };
@@ -53,12 +182,13 @@ private:
 	std::uint32_t scatter_dims_2{ scatter_size2 };
 	mutable std::uint32_t hash{ 0 };
 
+	// Atmosphere properties
 	atmospherics_properties<T> ap;
 
+	// Data
 	struct {
 		optical_length_lut_t optical_length[2];
-		scatter_lut_t multi_scatter;
-		mie_single_scatter_lut_t mie_single_scatter;
+		scatter_lut_t scatter;
 	} data;
 
 public:
@@ -96,18 +226,19 @@ public:
 public:
 	_atmospherics_precompute_scattering_data(const atmospherics_properties<T> &ap) : ap(ap) {}
 
-	void write_multi_scatter_value(const glm::ivec3 &idx, const glm::tvec3<T> &ms) {
-		data.multi_scatter[idx.x][idx.y][idx.z] = ms;
+	void write_scatter_value(const glm::ivec3 &idx, const double_vec3<T> &s) {
+		data.scatter[idx.x][idx.y][idx.z] = s;
 	}
-	void write_m0_scatter_value(const glm::ivec3 &idx, const T &m0) {
-		data.mie_single_scatter[idx.x][idx.y][idx.z] = m0;
+	void write_scatter_value(const glm::ivec3 &idx, const glm::tvec3<T> &s) {
+		data.scatter[idx.x][idx.y][idx.z].v0 = s;
 	}
 	void write_optical_length_value(int lut, const glm::ivec2 &idx, const T &value) {
 		data.optical_length[lut][idx.x][idx.y] = value;
 	}
 	auto sample_optical_length_value(int lut, const glm::dvec2 &idx) const {
-		auto x = glm::floor(idx * static_cast<double>(optical_length_size - 1));
-		auto f = glm::fract(idx);
+		auto coords = idx * static_cast<double>(optical_length_size - 1);
+		auto x = glm::floor(coords);
+		auto f = glm::fract(coords);
 
 		auto x0 = static_cast<int>(x.x);
 		auto y0 = static_cast<int>(x.y);
@@ -124,9 +255,42 @@ public:
 		return glm::mix(t0, t1, f.y);
 	}
 
-	auto &optical_length_lut(int lut) { return data.optical_length[lut]; }
-	auto &multi_scatter_lut() { return data.multi_scatter; }
-	auto &m0_scatter_lut() { return data.mie_single_scatter; }
+	auto sample_scatter_value(const glm::dvec3 &idx, const glm::tvec3<T> &V, const glm::tvec3<T> &L) const {
+		auto coords = idx * glm::dvec3{ scatter_size0 - 1, scatter_size1 - 1, scatter_size2 - 1 };
+		auto x = glm::floor(coords);
+		auto f = glm::fract(coords);
+
+		scatter_element s[2][2][2];
+		for (int i1 = 0; i1 < 2; ++i1)
+			for (int i2 = 0; i2 < 2; ++i2)
+				for (int i3 = 0; i3 < 2; ++i3) {
+					s[i1][i2][i3] = data.scatter[glm::min<int>(scatter_size0 - 1, static_cast<int>(x.x) + i1)]
+						[glm::min<int>(scatter_size1 - 1, static_cast<int>(x.y) + i2)]
+					[glm::min<int>(scatter_size2 - 1, static_cast<int>(x.z) + i3)];
+				}
+
+		for (int i1 = 0; i1 < 2; ++i1)
+			for (int i2 = 0; i2 < 2; ++i2) {
+				s[0][i1][i2] = { glm::mix(s[0][i1][i2].v0, s[1][i1][i2].v0, f.x),
+					glm::mix(s[0][i1][i2].v1, s[1][i1][i2].v1, f.x) };
+			}
+		for (int i1 = 0; i1 < 2; ++i1) {
+			s[0][0][i1] = { glm::mix(s[0][0][i1].v0, s[0][1][i1].v0, f.y),
+				glm::mix(s[0][0][i1].v1, s[0][1][i1].v1, f.y) };
+		}
+
+		double_vec3<T> sample = { glm::mix(s[0][0][0].v0, s[0][0][1].v0, f.z), glm::mix(s[0][0][0].v1, s[0][0][1].v1, f.z) };
+
+		auto r = sample.v0;
+		auto m0 = sample.v1;
+		auto c = glm::dot(-V, L);
+
+		return r + m0 * cornette_shanks_phase_function(c, this->ap.phase + .075);
+	}
+
+	auto &read_scatter_value(const glm::ivec3 &idx) const {
+		return data.scatter[idx.x][idx.y][idx.z];
+	}
 
 	void load(const std::string &path) {
 		std::ifstream ifs(path, std::ios::binary);
@@ -139,7 +303,7 @@ public:
 	}
 
 	void write_out(const std::string &path) const {
-		memcpy(this->type, "SCATTER  ", 8);
+		memcpy(this->type, "ATMS SCT", 8);
 
 		boost::crc_32_type crc_computer;
 		crc_computer.process_bytes(reinterpret_cast<const std::uint8_t*>(&data), sizeof(data));
@@ -157,14 +321,11 @@ class atmospherics_precompute_scattering {
 	using T = double;
 	using lut_t = _detail::_atmospherics_precompute_scattering_data<T>;
 
-	static constexpr int N = 6;
-	static constexpr int M = 70;
+	static constexpr int N = 7;
+	static constexpr int M = 24;
 
 	struct temp_lut_t {
-		lut_t::scatter_lut_t scatter;
-	};
-	struct m0_phase_lut_t {
-		lut_t::mie_single_scatter_lut_t m0;
+		glm::tvec3<T> scatter[lut_t::scatter_size0][lut_t::scatter_size1][lut_t::scatter_size2];
 	};
 
 private:
@@ -174,37 +335,9 @@ private:
 	gaussian_quadrature_spherical_integration<M>::quadrature_points quadrature_points;
 
 	std::unique_ptr<lut_t> final_lut;
-	std::unique_ptr<m0_phase_lut_t> m0_phase_lut;
-	std::unique_ptr<temp_lut_t> luts0;
-	std::unique_ptr<temp_lut_t> luts1;
+	std::unique_ptr<temp_lut_t> temp_lut;
 
 private:
-	auto sample_scatter_value(const lut_t::scatter_lut_t &lut, const glm::dvec3 &idx) const {
-		auto x = glm::floor(idx * glm::dvec3{ lut_t::scatter_size0 - 1, lut_t::scatter_size1 - 1, lut_t::scatter_size2 - 1 });
-		auto f = glm::fract(idx);
-
-		lut_t::scatter_element s[2][2][2];
-		for (int i1 = 0; i1<2; ++i1)
-			for (int i2 = 0; i2<2; ++i2)
-				for (int i3 = 0; i3 < 2; ++i3) {
-					s[i1][i2][i3] = lut[glm::min<int>(lut_t::scatter_size0 - 1, static_cast<int>(x.x) + i1)]
-					[glm::min<int>(lut_t::scatter_size1 - 1, static_cast<int>(x.y) + i2)]
-					[glm::min<int>(lut_t::scatter_size2 - 1, static_cast<int>(x.z) + i3)];
-				}
-
-		for (int i1 = 0; i1<2; ++i1)
-			for (int i2 = 0; i2 < 2; ++i2) {
-				s[0][i1][i2] = glm::mix(s[0][i1][i2], s[1][i1][i2], f.x);
-			}
-		for (int i1 = 0; i1 < 2; ++i1) {
-			s[0][0][i1] = glm::mix(s[0][0][i1], s[0][1][i1], f.y);
-		}
-
-		lut_t::scatter_element result;
-		result = glm::mix(s[0][0][0], s[0][0][1], f.z);
-		return result;
-	}
-
 	static T intersect_line_sphere(const glm::tvec3<T> &c, const T &r,
 								   const glm::tvec3<T> &o, const glm::tvec3<T> &l) {
 		auto t = o - c;
@@ -223,20 +356,6 @@ private:
 		if (l1 < 0)
 			return l0;
 		return glm::min(l0, l1);
-	}
-
-	glm::tmat3x3<T> extract_tbn(const glm::tvec3<T> &P0, T &h) const {
-		auto Y = P0 - ap.center;
-		h = glm::length(Y) - ap.radius;
-		Y = glm::normalize(Y);
-
-		auto X = glm::tvec3<T>{ 1,0,0 };
-		if (glm::abs(glm::dot(Y, X)) > .95)
-			X = { 0,0,1 };
-		auto Z = glm::cross(X, Y);
-		X = glm::cross(Y, Z);
-
-		return glm::tmat3x3<T>(X, Z, Y);
 	}
 
 	T optical_length(const glm::tvec3<T> &P0, const glm::tvec3<T> &P, const T &H, int lut) const {
@@ -258,9 +377,7 @@ private:
 		auto Y = P0 - ap.center;
 		h = glm::length(Y) - ap.radius;
 		Y = glm::normalize(Y);
-		//auto TBN = extract_tbn(P0, h);
 
-		//auto V = TBN * L;
 		auto cos_phi = glm::dot(Y, L);
 
 		auto h_idx = lut_t::height_to_lut_idx(h, H_max);
@@ -298,7 +415,6 @@ private:
 				};
 
 				auto val = romberg_integration<15>::integrate(lambda, 0, l);
-				_assert(!glm::isnan(val) && !glm::isinf(val) && val > 0);
 				final_lut->write_optical_length_value(lut, { x,y }, val);
 			}
 			if (x % 32 == 31)
@@ -307,97 +423,128 @@ private:
 	}
 
 
-	template <typename T2>
-	glm::tvec3<T> scatter(int k, const T &h0, const T &phi, const T &delta,
-						  const T2 &scatter_coefficient, const T2 &extinction_coefficient,
-						  const T &H, int optical_length_lut,
-						  const std::function<T(const T &)> &Fphase, T &F) const {
+	auto scatter_sample(const T &h, const T &cos_phi, const T &cos_delta,
+						const glm::tvec3<T> &V, const glm::tvec3<T> &L) const {
+		glm::dvec3 idx = { lut_t::height_to_lut_idx(h, Hmax), lut_t::view_zenith_to_lut_idx(cos_phi), lut_t::sun_zenith_to_lut_idx(cos_delta) };
+		return final_lut->sample_scatter_value(idx, V, L);
+	}
+
+	auto scatter_gather(int k, const glm::tvec3<T> &P0, const glm::tvec3<T> &V, const glm::tvec3<T> &L) const {
+		static_assert(M > 1, "M should be positive");
+
+		auto Y = P0 - ap.center;
+		auto h = glm::length(Y) - ap.radius;
+		Y = glm::normalize(Y);
+		auto cos_delta = glm::dot(Y, L);
+
+		glm::tvec3<T> Tangent = { 1,0,0 };
+		if (glm::abs(glm::dot(Tangent, V)) > .95) Tangent = { 0,1,0 };
+		glm::tvec3<T> U = glm::normalize(glm::cross(Tangent, V));
+		Tangent = glm::normalize(glm::cross(U, V));
+		auto TBN = glm::tmat3x3<T>{ U, V, Tangent };
+
+		auto lambda = [&](double sample_theta, double sample_phi) {
+			T sin_theta = glm::sin(sample_theta);
+			auto omega = TBN * glm::tvec3<T>{ sin_theta * glm::cos(sample_phi), sin_theta * glm::sin(sample_phi), glm::cos(sample_theta) };
+
+			auto cos_phi = glm::dot(Y, omega);
+
+			auto c = -glm::dot(omega, V);
+			auto Fr = rayleigh_phase_function(c);
+			auto Fm = cornette_shanks_phase_function(c, ap.phase + .075);
+
+			auto sample = scatter_sample(h, cos_phi, cos_delta, omega, L);
+
+			return double_vec3<T>{ Fr * sample, Fm * sample};
+		};
+		auto normalizer_lambda = [&](double sample_theta, double sample_phi) {
+			T sin_theta = glm::sin(sample_theta);
+			auto omega = TBN * glm::tvec3<T>{ sin_theta * glm::cos(sample_phi), sin_theta * glm::sin(sample_phi), glm::cos(sample_theta) };
+
+			auto c = -glm::dot(omega, V);
+			auto Fr = rayleigh_phase_function(c);
+			auto Fm = cornette_shanks_phase_function(c, ap.phase + .075);
+
+			return glm::tvec2<T>{ Fr, Fm };
+		};
+
+		auto result = gaussian_quadrature_spherical_integration<M>::integrate(lambda, quadrature_points);
+		auto normalizer = gaussian_quadrature_spherical_integration<M>::integrate(normalizer_lambda, quadrature_points);
+
+		result.v0 /= normalizer.x;
+		result.v1 /= normalizer.y;
+
+		return double_vec3<T>{ result.v0, result.v1 };
+	}
+
+	auto scatter(int k, const T &h0, const glm::tvec3<T> &V, const glm::tvec3<T> &L) const {
 		glm::tvec3<T> P0 = ap.center + glm::tvec3<T>{ 0, ap.radius + h0, 0 };
-		glm::tvec3<T> V = { glm::sin(phi),glm::cos(phi),0 };
-		glm::tvec3<T> L = glm::tvec3<T>{ glm::sin(delta),glm::cos(delta),0 };
 
 		auto l0 = intersect_line_sphere(ap.center, ap.radius + Hmax, P0 - decltype(P0){0, 0.1, 0}, V);
 		auto l1 = intersect_line_sphere(ap.center, ap.radius, P0 + decltype(P0){0, 0.1, 0}, V);
 		auto path_length = glm::min(l0, l1);
 		if ((h0 == 0 && V.y < 0) ||
 			(h0 >= Hmax - 1e-30 && V.y > 0))
-			path_length = 0;
+			return double_vec3<T>{ { 0, 0, 0 }, { 0,0,0 } };
 		_assert(!glm::isnan(path_length) && !glm::isinf(path_length));
 
-		auto light_occlusion = intersect_line_sphere(ap.center, ap.radius, P0 + decltype(P0){0,1,0}, L);
-
-		if (path_length == 0 || !glm::isinf(light_occlusion))
-			return{ 0,0,0 };
-
-		auto cos_theta = -glm::dot(V, L);
-		F = Fphase(cos_theta);
+		auto Hr = ap.scale_height();
+		auto Hm = ap.scale_height_aerosols();
 
 		auto lambda = [&](double step) {
 			auto P = P0 + step * V;
 			auto h = glm::length(P - ap.center) - ap.radius;
-			auto scatter = scatter_coefficient * ap.pressure(h, H);
-			auto t = extinction_coefficient * optical_length(P0, P, H, optical_length_lut);
+			auto t = ap.rayleigh_extinction_coeffcient() * optical_length(P0, P, Hr, 0) + 
+				ap.mie_extinction_coeffcient() * optical_length(P0, P, Hm, 1);
+
+			auto light_occlusion = intersect_line_sphere(ap.center, ap.radius, P + decltype(P){0, .1, 0}, L);
+			if (!glm::isinf(light_occlusion))
+				return double_vec3<T>{ { 0, 0, 0 }, { 0,0,0 } };
+
+			auto density_r = ap.pressure(h, Hr);
+			auto density_m = ap.pressure(h, Hm);
+			auto scatter_r = density_r * ap.rayleigh_scattering_coefficient;
+			auto scatter_m = density_m * glm::tvec3<T>(ap.mie_scattering_coefficient);
 
 			if (k == 1) {
 				// For first order scatter we need to take into account the attenuation from light source
-				auto t2 = extinction_coefficient * optical_length_from_infinity(P, L, H, optical_length_lut);
-				t += t2;
+				t += ap.rayleigh_extinction_coeffcient() * optical_length_from_infinity(P, L, Hr, 0) +
+					ap.mie_extinction_coeffcient() * optical_length_from_infinity(P, L, Hm, 1);
 			}
 
 			// For first order scatter we sample the actual amount of scattered light at point P from the light source.
 			// For multiple scattering we sample the gathered scatters across a 4*pi steradians at point P.
-			auto sample = glm::tvec3<T>(scatter * glm::exp(-t));
+			double_vec3<T> result;
+			result.v0 = scatter_r;
+			result.v1 = scatter_m;
+
 			if (k > 1) {
-				auto G = scatter_gather(k - 1, P, V, L,
-										Fphase);
-				sample *= G;
+				auto G = scatter_gather(k - 1, P, V, L);
+				result *= G;
 			}
 
-			_assert(!glm::any(glm::isnan(sample)) && !glm::any(glm::isinf(sample)));
-
-			return sample;
+			return result * glm::exp(-t);
 		};
 
-		auto val = romberg_integration<N>::integrate(lambda, 0, path_length);
-		_assert(!glm::any(glm::isnan(val)) && !glm::any(glm::isinf(val)));
+		double_vec3<T> val;
+		if (k == 1)
+			val = romberg_integration<N + 3>::integrate(lambda, 0, path_length);
+		else
+			val = romberg_integration<N>::integrate(lambda, 0, path_length);
+		_assert(!glm::any(glm::isnan(val.v0)) && !glm::any(glm::isinf(val.v0)));
+		_assert(!glm::any(glm::isnan(val.v1)) && !glm::any(glm::isinf(val.v1)));
+
+		if (k == 1) {
+			auto c = -glm::dot(L, V);
+			auto Fr = rayleigh_phase_function(c);
+
+			val.v0 = val.v0 * Fr;
+		}
+		else {
+			val.v0 = val.v0 + val.v1;
+		}
 
 		return val;
-	}
-
-	auto scatter_sample(const T &h, const T &cos_phi, const T &cos_delta) const {
-		glm::dvec3 idx = { lut_t::height_to_lut_idx(h, Hmax), lut_t::view_zenith_to_lut_idx(cos_phi), lut_t::sun_zenith_to_lut_idx(cos_delta) };
-		return sample_scatter_value(luts0->scatter, idx);
-	}
-
-	auto scatter_gather(int k, const glm::tvec3<T> &P0, const glm::tvec3<T> &V, const glm::tvec3<T> &L,
-						const std::function<T(const T &)> &Fphase) const {
-		static_assert(M > 1, "M should be positive");
-
-		//T h;
-		//auto TBN = extract_tbn(P0, h);
-		//auto Ll = TBN * L;
-		auto Y = P0 - ap.center;
-		auto h = glm::length(Y) - ap.radius;
-		Y = glm::normalize(Y);
-		auto cos_delta = glm::dot(Y, L);
-
-		auto lambda = [&](double sample_theta, double sample_phi) {
-			T sin_theta = glm::sin(sample_theta);
-			glm::tvec3<T> omega = { sin_theta * glm::cos(sample_phi), sin_theta * glm::sin(sample_phi), glm::cos(sample_theta) };
-
-			auto cos_phi = glm::dot(Y, omega);
-			auto F = Fphase(-glm::dot(omega, V));
-
-			auto sample = scatter_sample(h, cos_phi, cos_delta);
-			_assert(!glm::any(glm::isnan(sample)) && !glm::any(glm::isinf(sample)));
-
-			return F * sample;
-		};
-
-		auto result = gaussian_quadrature_spherical_integration<M>::integrate(lambda, quadrature_points);
-		_assert(!glm::any(glm::isnan(result)) && !glm::any(glm::isinf(result)));
-
-		return result;
 	}
 
 	void scatter(int k, const glm::ivec3 &idx,
@@ -405,41 +552,23 @@ private:
 		static_assert(N >= 1, "Expected positive N");
 		_assert(k >= 1);
 
-		auto Hr = ap.scale_height();
-		auto Hm = ap.scale_height_aerosols();
-		T Fr, Fm;
+		glm::tvec3<T> V = { glm::sin(phi),glm::cos(phi),0 };
+		glm::tvec3<T> L = glm::tvec3<T>{ glm::sin(delta),glm::cos(delta),0 };
 
-		auto r = scatter(k, h, phi, delta,
-						 this->ap.rayleigh_scattering_coefficient, this->ap.rayleigh_extinction_coeffcient(),
-						 Hr, 0,
-						 [](const T &c) { return rayleigh_phase_function(c); }, Fr);
-		auto m = scatter(k, h, phi, delta,
-						 this->ap.mie_scattering_coefficient, this->ap.mie_extinction_coeffcient(),
-						 Hm, 1,
-						 [this](const T &c) { return cornette_shanks_phase_function(c, this->ap.phase); }, Fm);
+		auto sample = scatter(k, h, V, L);
+		auto val = sample.v0;
+		if (k == 1)
+			final_lut->write_scatter_value(idx, { val, sample.v1 });
+		if (k > 1)
+			val += final_lut->read_scatter_value(idx).v0;
 
-		_assert(!glm::any(glm::isnan(r)) && !glm::any(glm::isnan(m)));
-		_assert(!glm::any(glm::isinf(r)) && !glm::any(glm::isinf(m)));
-
-		glm::tvec3<T> result = r * Fr + m * Fm;
-		if (k == 1) {
-			_assert(m.x == m.y && m.x == m.z);
-			final_lut->write_m0_scatter_value(idx, m.x);
-			m0_phase_lut->m0[idx.x][idx.y][idx.z] = m.x * Fm;
-		}
-		else {
-			result += luts0->scatter[idx.x][idx.y][idx.z];
-		}
-
-		luts1->scatter[idx.x][idx.y][idx.z] = result;
+		temp_lut->scatter[idx.x][idx.y][idx.z] = val;
 	}
 
 public:
 	atmospherics_precompute_scattering(const atmospherics_properties<T> &ap) : ap(ap) {
 		final_lut = std::make_unique<lut_t>(ap);
-		m0_phase_lut = std::make_unique<m0_phase_lut_t>();
-		luts0 = std::make_unique<temp_lut_t>();
-		luts1 = std::make_unique<temp_lut_t>();
+		temp_lut = std::make_unique<temp_lut_t>();
 
 		auto Hmax_r = ap.max_height(ap.scale_height());
 		auto Hmax_m = ap.max_height(ap.scale_height_aerosols());
@@ -497,15 +626,20 @@ public:
 
 					scatter(k, { x,y,z }, h, phi, delta);
 				}
+
+				if (y % (lut_t::scatter_size1>>2) == (lut_t::scatter_size1>>2) - 1)
+					std::cout << "x";
 			}
-			std::cout << "x";
 		}
 	}
 
-	void build_scatter_lut(int k) {
+	void build_scatter_lut(int k_start, int k_end, const std::string &path) {
+		assert(k_end >= k_start);
+		assert(k_start >= 1);
+
 		std::cout << std::endl << "Building scatter LUT..." << std::endl;
 
-		for (int i=1; i<=k; ++i) {
+		for (int i=k_start; i<=k_end; ++i) {
 			auto f0 = std::async([this, i]() { build_scatter_lut_worker<4, 0>(i); });
 			auto f1 = std::async([this, i]() { build_scatter_lut_worker<4, 1>(i); });
 			auto f2 = std::async([this, i]() { build_scatter_lut_worker<4, 2>(i); });
@@ -518,35 +652,29 @@ public:
 
 			std::cout << std::endl << "Scatter index " << i << " done." << std::endl;
 
-			glm::tvec3<T> max = { 0,0,0 };
+			double_vec3<T> max = { { 0,0,0 },{0,0,0} };
 			T max_len = T(0);
 			for (int x = 0; x < lut_t::scatter_size0; ++x)
 				for (int y = 0; y < lut_t::scatter_size1; ++y)
 					for (int z = 0; z < lut_t::scatter_size2; ++z) {
-						auto l = glm::length(luts1->scatter[x][y][z]);
+						auto val = temp_lut->scatter[x][y][z];
+
+						final_lut->write_scatter_value({ x,y,z }, val);
+
+						auto l = glm::length(val);
 						if (l > max_len) {
-							max = luts1->scatter[x][y][z];
+							max = { val,final_lut->read_scatter_value({x,y,z}).v1 };
 							max_len = l;
 						}
 					}
 			std::cout.precision(17);
-			std::cout << "Max: <" << max.x << ", " << max.y << ", " << max.z << ">" << std::endl << std::endl;
+			std::cout << "Max: Multiple - <" << max.v0.x << ", " << max.v0.y << ", " << max.v0.z << ">" << std::endl <<
+						 "     Mie0 - <" << max.v1.x << ", " << max.v1.y << ", " << max.v1.z << ">" << std::endl;
 
-			std::swap(luts0, luts1);
-			luts1 = std::make_unique<temp_lut_t>();
+			write_out(path);
+
+			std::cout << std::endl;
 		}
-
-		std::cout << "Cleaning M0 scatter from LUT..." << std::endl;
-		for (int x = 0; x < lut_t::scatter_size0; ++x) 
-			for (int y = 0; y < lut_t::scatter_size1; ++y) 
-				for (int z = 0; z < lut_t::scatter_size2; ++z) 
-					luts0->scatter[x][y][z] -= m0_phase_lut->m0[x][y][z];
-
-		std::cout << "Writing final LUT..." << std::endl;
-		for (int x = 0; x < lut_t::scatter_size0; ++x)
-			for (int y = 0; y < lut_t::scatter_size1; ++y)
-				for (int z = 0; z < lut_t::scatter_size2; ++z) 
-					final_lut->write_multi_scatter_value({ x,y,z }, luts0->scatter[x][y][z]);
 
 		std::cout << "Done" << std::endl;
 	}
@@ -556,6 +684,7 @@ public:
 	}
 
 	void write_out(const std::string &path) const {
+		std::cout << "Writing final LUT..." << std::endl;
 		final_lut->write_out(path);
 	}
 };

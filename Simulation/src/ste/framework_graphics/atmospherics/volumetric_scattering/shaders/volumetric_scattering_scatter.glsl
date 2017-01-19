@@ -42,7 +42,6 @@ layout(bindless_sampler) uniform samplerCubeArrayShadow shadow_depth_maps;
 layout(bindless_sampler) uniform sampler2DArrayShadow directional_shadow_depth_maps;
 
 layout(bindless_sampler) uniform sampler2DArray atmospheric_optical_length_lut;
-layout(bindless_sampler) uniform sampler3D atmospheric_scattering_lut;
 
 layout(bindless_sampler) uniform sampler2D depth_map;
 

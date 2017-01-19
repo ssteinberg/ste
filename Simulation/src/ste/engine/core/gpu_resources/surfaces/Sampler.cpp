@@ -37,20 +37,26 @@ Sampler *Sampler::SamplerAnisotropicLinear() {
 }
 
 Sampler *Sampler::SamplerNearestClamp() {
-	if (sampler_nearest_clamp.get() == nullptr)
+	if (sampler_nearest_clamp.get() == nullptr) {
 		sampler_nearest_clamp = std::make_unique<Sampler>(TextureFiltering::Nearest, TextureFiltering::Nearest, TextureWrapMode::ClampToEdge, TextureWrapMode::ClampToEdge);
+		sampler_nearest_clamp->set_wrap_r(TextureWrapMode::ClampToEdge);
+	}
 	return sampler_nearest_clamp.get();
 }
 
 Sampler *Sampler::SamplerLinearClamp() {
-	if (sampler_linear_clamp.get() == nullptr)
+	if (sampler_linear_clamp.get() == nullptr) {
 		sampler_linear_clamp = std::make_unique<Sampler>(TextureFiltering::Linear, TextureFiltering::Linear, TextureWrapMode::ClampToEdge, TextureWrapMode::ClampToEdge);
+		sampler_linear_clamp->set_wrap_r(TextureWrapMode::ClampToEdge);
+	}
 	return sampler_linear_clamp.get();
 }
 
 Sampler *Sampler::SamplerAnisotropicLinearClamp() {
-	if (sampler_anisotropic_linear_clamp.get() == nullptr)
+	if (sampler_anisotropic_linear_clamp.get() == nullptr) {
 		sampler_anisotropic_linear_clamp = std::make_unique<Sampler>(TextureFiltering::Linear, TextureFiltering::Linear, TextureWrapMode::ClampToEdge, TextureWrapMode::ClampToEdge, 16);
+		sampler_anisotropic_linear_clamp->set_wrap_r(TextureWrapMode::ClampToEdge);
+	}
 	return sampler_anisotropic_linear_clamp.get();
 }
 
@@ -83,6 +89,7 @@ SamplerMipmapped *SamplerMipmapped::MipmappedSamplerNearestClamp() {
 	if (mipmapped_sampler_nearest_clamp.get() == nullptr) {
 		mipmapped_sampler_nearest_clamp = std::make_unique<SamplerMipmapped>(TextureFiltering::Nearest, TextureFiltering::Nearest, TextureWrapMode::ClampToEdge, TextureWrapMode::ClampToEdge);
 		mipmapped_sampler_nearest_clamp->set_mipmap_filter(TextureFiltering::Nearest);
+		mipmapped_sampler_nearest_clamp->set_wrap_r(TextureWrapMode::ClampToEdge);
 	}
 	return mipmapped_sampler_nearest_clamp.get();
 }
@@ -91,6 +98,7 @@ SamplerMipmapped *SamplerMipmapped::MipmappedSamplerLinearClamp() {
 	if (mipmapped_sampler_linear_clamp.get() == nullptr) {
 		mipmapped_sampler_linear_clamp = std::make_unique<SamplerMipmapped>(TextureFiltering::Linear, TextureFiltering::Linear, TextureWrapMode::ClampToEdge, TextureWrapMode::ClampToEdge);
 		mipmapped_sampler_linear_clamp->set_mipmap_filter(TextureFiltering::Nearest);
+		mipmapped_sampler_linear_clamp->set_wrap_r(TextureWrapMode::ClampToEdge);
 	}
 	return mipmapped_sampler_linear_clamp.get();
 }
@@ -99,6 +107,7 @@ SamplerMipmapped *SamplerMipmapped::MipmappedSamplerAnisotropicLinearClamp() {
 	if (mipmapped_sampler_anisotropic_linear_clamp.get() == nullptr) {
 		mipmapped_sampler_anisotropic_linear_clamp = std::make_unique<SamplerMipmapped>(TextureFiltering::Linear, TextureFiltering::Linear, TextureWrapMode::ClampToEdge, TextureWrapMode::ClampToEdge, 16);
 		mipmapped_sampler_anisotropic_linear_clamp->set_mipmap_filter(TextureFiltering::Nearest);
+		mipmapped_sampler_anisotropic_linear_clamp->set_wrap_r(TextureWrapMode::ClampToEdge);
 	}
 	return mipmapped_sampler_anisotropic_linear_clamp.get();
 }
