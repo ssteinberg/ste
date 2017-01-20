@@ -63,6 +63,10 @@ public:
 				f.exceptions(f.exceptions() | std::ios::failbit);
 
 				f.open(path.string(), std::ios::binary | std::ios::in);
+				if (!f) {
+					ste_log_error() << "Can't open surface file: " << path.string() << std::endl;
+					throw resource_io_error();
+				}
 				if (!f.read(reinterpret_cast<char*>(magic), 4)) {
 					ste_log_error() << "Can't read surface file: " << path.string() << std::endl;
 					throw resource_io_error();

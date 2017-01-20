@@ -84,12 +84,13 @@ void deferred_composer::load_microfacet_fit_luts() {
 }
 
 void deferred_composer::load_atmospherics_luts() {
-	static const char *lut_name = R"(Data/atmospheric_scatter_lut.bin)";
+	static const char *lut_name = R"(Data/atmospherics_scatter_lut.bin)";
 
 	try {
 		atmospherics_precompute_scattering lut_loader(lut_name);
 		atmospherics_optical_length_lut = std::make_unique<Core::Texture2DArray>(lut_loader.create_optical_length_lut());
-		atmospherics_scatter_lut = std::make_unique<Core::Texture3D>(lut_loader.create_lut());
+		atmospherics_scatter_lut = std::make_unique<Core::Texture3D>(lut_loader.create_scatter_lut());
+		atmospherics_mie0_scatter_lut = std::make_unique<Core::Texture3D>(lut_loader.create_mie0_scatter_lut());
 	}
 	catch (const microfacet_fit_error &err) {
 		using namespace Text::Attributes;
@@ -100,16 +101,20 @@ void deferred_composer::load_atmospherics_luts() {
 
 	ste_log() << Text::AttributedString("Loaded \"") + Text::Attributes::i(lut_name) + "\" successfully." << std::endl;
 
-	auto optical_length_handle = atmospherics_optical_length_lut->get_texture_handle(*Core::Sampler::SamplerAnisotropicLinearClamp());
-	auto scatter_handle = atmospherics_scatter_lut->get_texture_handle(*Core::Sampler::SamplerAnisotropicLinearClamp());
+	auto optical_length_handle = atmospherics_optical_length_lut->get_texture_handle(*Core::Sampler::SamplerLinearClamp());
+	auto scatter_handle = atmospherics_scatter_lut->get_texture_handle(*Core::Sampler::SamplerLinearClamp());
+	auto mie0_scatter_handle = atmospherics_mie0_scatter_lut->get_texture_handle(*Core::Sampler::SamplerLinearClamp());
 	optical_length_handle.make_resident();
 	scatter_handle.make_resident();
+	mie0_scatter_handle.make_resident();
 	program.get().set_uniform("atmospheric_optical_length_lut", optical_length_handle);
 	program.get().set_uniform("atmospheric_scattering_lut", scatter_handle);
+	program.get().set_uniform("atmospheric_mie0_scattering_lut", mie0_scatter_handle);
 
 	//! Hack
 	additional_scatter_program_hack->get().get_program()->set_uniform("atmospheric_optical_length_lut", optical_length_handle);
 	additional_scatter_program_hack->get().get_program()->set_uniform("atmospheric_scattering_lut", scatter_handle);
+	additional_scatter_program_hack->get().get_program()->set_uniform("atmospheric_mie0_scattering_lut", mie0_scatter_handle);
 	//! /Hack
 }
 

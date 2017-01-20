@@ -62,6 +62,7 @@ layout(bindless_sampler) uniform sampler2DArray microfacet_transmission_fit_lut;
 
 layout(bindless_sampler) uniform sampler2DArray atmospheric_optical_length_lut;
 layout(bindless_sampler) uniform sampler3D atmospheric_scattering_lut;
+layout(bindless_sampler) uniform sampler3D atmospheric_mie0_scattering_lut;
 
 layout(binding = 0) uniform sampler2D back_face_depth;
 layout(binding = 1) uniform sampler2D front_face_depth;
@@ -83,6 +84,7 @@ void main() {
 												   microfacet_transmission_fit_lut,
 												   atmospheric_optical_length_lut,
 												   atmospheric_scattering_lut,
+												   atmospheric_mie0_scattering_lut,
 												   back_face_depth, 
 												   front_face_depth);
 
