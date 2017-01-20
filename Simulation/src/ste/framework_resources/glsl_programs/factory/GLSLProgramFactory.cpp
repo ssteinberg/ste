@@ -39,7 +39,7 @@ const std::unordered_map<std::string, GLSLShaderType> GLSLProgramFactory::type_m
 
 std::string GLSLProgramFactory::load_source(const boost::filesystem::path &path) {
 	std::ifstream fs(path.string(), std::ios::in);
-	if (!fs.good()) {
+	if (!fs) {
 		using namespace Attributes;
 		ste_log_error() << AttributedString("GLSL Shader ") + i(path.string()) + ": Unable to read GLSL shader program - " + std::strerror(errno) << std::endl;
 		throw resource_io_error();
@@ -57,7 +57,7 @@ std::unique_ptr<glsl_shader_object_generic> GLSLProgramFactory::compile_from_pat
 	std::vector<std::string> paths{ path.filename().string() };
 
 	std::ifstream fs(path.string(), std::ios::in);
-	if (!fs.good()) {
+	if (!fs) {
 		using namespace Attributes;
 		ste_log_error() << AttributedString("GLSL Shader ") + i(path.string()) + ": Unable to read GLSL shader program - " + std::strerror(errno) << std::endl;
 		throw resource_io_error();

@@ -29,7 +29,6 @@ private:
 		float mie_scattering_coefficient;
 		float mie_absorption_coefficient;
 		float phase;
-		float ro0;
 
 		float Hm;
 		float Hr;
@@ -56,11 +55,10 @@ protected:
 	void set_properties(const Properties &p) {
 		data.center_radius = { p.center.x, p.center.y, p.center.z, p.radius };
 
-		data.rayleigh_scattering_coefficient = p.rayleigh_scattering_coefficient;
-		data.mie_scattering_coefficient = p.mie_scattering_coefficient;
-		data.mie_absorption_coefficient = p.mie_absorption_coefficient;
+		data.rayleigh_scattering_coefficient = p.ro0 * p.rayleigh_scattering_coefficient;
+		data.mie_scattering_coefficient = p.ro0 * p.mie_scattering_coefficient;
+		data.mie_absorption_coefficient = p.ro0 * p.mie_absorption_coefficient;
 		data.phase = p.phase;
-		data.ro0 = p.ro0;
 
 		data.Hm = p.scale_height_aerosols();
 		data.Hr = p.scale_height();

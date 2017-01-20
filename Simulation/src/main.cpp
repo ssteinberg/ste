@@ -25,8 +25,6 @@
 #include "future_collection.hpp"
 #include "resource_instance.hpp"
 
-#include "atmospherics_precompute_scattering.hpp"
-
 #include <imgui/imgui.h>
 #include "debug_gui.hpp"
 
@@ -249,8 +247,8 @@ int main()
 	auto light0_obj = create_light_object(&scene.get(), light0_pos, light0.get(), materials, material_layers);
 	auto light1_obj = create_light_object(&scene.get(), light1_pos, light1.get(), materials, material_layers);
 
-	const glm::vec3 sun_direction = glm::normalize(glm::vec3{ 0.4, -1, 0.2 });
-	auto sun_light = scene.get().scene_properties().lights_storage().allocate_directional(1e+3f, StE::Graphics::Kelvin(5770), 1496e+8f, 695e+6f, sun_direction);
+	const glm::vec3 sun_direction = glm::normalize(glm::vec3{ 0.f, -1.f, 0.f });
+	auto sun_light = scene.get().scene_properties().lights_storage().allocate_directional(2e+1f, StE::Graphics::Kelvin(5770), 1496e+8f, 695e+6f, sun_direction);
 
 	add_scene_lights(scene.get(), lights, materials, material_layers);
 
@@ -306,11 +304,9 @@ int main()
 	std::unique_ptr<StE::Graphics::material_layer> layers[layers_count];
 	layers[0] = std::move(mat_editor_layers.back());
 
-	float rayleigh_scattering = 1.f;
+	float sun_zenith = .0f;
 	float mie_absorption_coefficient = 2.2f;
 	float mie_scattering_coefficient = 2e+1f;
-	float sea_level_pressure = atmosphere.ro0;
-	float mie_phase = atmosphere.phase;
 
 	bool layer_enabled[3] = { true, false, false };
 	StE::Graphics::RGB base_color[3];
@@ -390,18 +386,13 @@ int main()
 		}
 
 		if (ImGui::Begin("Atmosphere", nullptr)) {
-			ImGui::SliderFloat((std::string("Sea level pressure (kPa) ##value")).data(), &sea_level_pressure, .0f, 250.f);
-			ImGui::SliderFloat((std::string("Scattering phase ##value")).data(), &mie_phase, -.99999f, .99999f);
-			ImGui::SliderFloat((std::string("Rayleigh scattering coefficient (10^-8) ##value")).data(), &rayleigh_scattering, .0f, 100.f, "%.5f", 3.f);
+			ImGui::SliderFloat((std::string("Sun zenith angle ##value")).data(), &sun_zenith, .0f, 2 * glm::pi<float>());
 			ImGui::SliderFloat((std::string("Mie scattering coefficient (10^-8) ##value##mie1")).data(), &mie_scattering_coefficient, .0f, 100.f, "%.5f", 3.f);
 			ImGui::SliderFloat((std::string("Mie absorption coefficient (10^-8) ##value##mie2")).data(), &mie_absorption_coefficient, .0f, 100.f, "%.5f", 3.f);
 		}
 
 		ImGui::End();
 
-		atmosphere.ro0 = sea_level_pressure;
-		atmosphere.phase = mie_phase;
-		atmosphere.rayleigh_scattering_coefficient = glm::dvec3{ 5.7, 13.36, 32.77 } * 1e-8 * static_cast<double>(rayleigh_scattering);
 		atmosphere.mie_absorption_coefficient = static_cast<double>(mie_absorption_coefficient) * 1e-8;
 		atmosphere.mie_scattering_coefficient = static_cast<double>(mie_scattering_coefficient) * 1e-8;
 		renderer.get().update_atmospherics_properties(atmosphere);
@@ -463,8 +454,7 @@ int main()
 		float angle = time * glm::pi<float>() / 2.5f;
 		glm::vec3 lp = light0_pos + glm::vec3(glm::sin(angle) * 3, 0, glm::cos(angle)) * 115.f;
 
-		float angle2 = time * glm::pi<float>() / 10.f;
-		glm::vec3 sun_dir = glm::normalize(glm::vec3{ glm::sin(angle2), -5.f, glm::cos(angle2)});
+		glm::vec3 sun_dir = glm::normalize(glm::vec3{ glm::sin(sun_zenith), -glm::cos(sun_zenith), .15f});
 #endif
 		light0->set_position(lp);
 		light0_obj->set_model_transform(glm::mat4x3(glm::translate(glm::mat4(), lp)));

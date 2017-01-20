@@ -211,57 +211,29 @@ vec3 extinct_ray(vec3 P0, vec3 P1, vec3 V,
 *	@param P0		Start world position
 *	@param P1		Scatter point, as world position
 *	@param P2		End world position
-*	@param I		Precomputed direction of light incident ray, originating from P1 to P2, normalized.
-*	@param L		Precomputed direction of light incident ray, originating from P1 to P0, normalized.
 *	@param len		Length, in meters, of the scattering event sample
 */
 vec3 scatter(vec3 P0, 
 			 vec3 P1, 
 			 vec3 P2, 
-			 vec3 I, 
-			 vec3 L,
 			 float len, 
 			 sampler2DArray atmospheric_optical_length_lut) {	
-	float tr = atmospherics_optical_length_air(P0, P1, atmospheric_optical_length_lut) + 
-			   atmospherics_optical_length_air(P1, P2, atmospheric_optical_length_lut);
-	float tm = atmospherics_optical_length_aerosol(P0, P1, atmospheric_optical_length_lut) +
-			   atmospherics_optical_length_aerosol(P1, P2, atmospheric_optical_length_lut);
-			   
-	vec3 Tr = tr * atmospherics_rayleigh_extinction_coeffcient();
-	vec3 Tm = vec3(tm) * atmospherics_mie_extinction_coeffcient();
-
-	vec3 i = I;
-	vec3 o = L;
+	vec3 i = normalize(P0 - P1);
+	vec3 o = normalize(P2 - P1);
 	float p_mie = cornette_shanks_phase_function(i, o, atmospherics_descriptor_data.phase);
 	float p_rayleigh = rayleigh_phase_function(i, o);
-	vec3 scatter_coefficient = beer_lambert(Tm) * p_mie * atmospherics_descriptor_data.mie_scattering_coefficient.xxx + 
-							   beer_lambert(Tr) * p_rayleigh * atmospherics_descriptor_data.rayleigh_scattering_coefficient;
-							   
-	float particle_density = atmospherics_air_density(P1);
+	
+	float altitude = atmospherics_altitude(P1);
+	float density_m = atmospherics_descriptor_pressure_mie(atmospherics_descriptor_data, altitude);
+	float density_r = atmospherics_descriptor_pressure_rayleigh(atmospherics_descriptor_data, altitude);
 
-	return scatter_coefficient * len * particle_density;
-}
-/*
-*	Calculates a single atmospheric scattering event and the total atmospheric extinction along a path.
-*
-*	@param P0		Start world position
-*	@param P1		Scatter point, as world position
-*	@param P2		End world position
-*	@param len		Length, in meters, of the scattering event sample
-*/
-vec3 scatter(vec3 P0, 
-			 vec3 P1, 
-			 vec3 P2, 
-			 float len,
-			 sampler2DArray atmospheric_optical_length_lut) {
-	vec3 I = normalize(P2 - P1);
-	vec3 L = normalize(P0 - P1);
-	return scatter(P0,
-				   P1,
-				   P2,
-				   I, L,
-				   len, 
-				   atmospheric_optical_length_lut);
+	vec3 scatter_coefficient = density_m * p_mie * atmospherics_descriptor_data.mie_scattering_coefficient.xxx + 
+							   density_r * p_rayleigh * atmospherics_descriptor_data.rayleigh_scattering_coefficient;
+	
+	vec3 scattered_intensity = scatter_coefficient * len;
+	vec3 extinction = extinct(P0, P1, P2, atmospheric_optical_length_lut);
+
+	return scattered_intensity * extinction;
 }
 
 /*
@@ -278,24 +250,41 @@ vec3 scatter_ray(vec3 P0,
 				 vec3 V, 
 				 float len, 
 				 sampler2DArray atmospheric_optical_length_lut) {
-	float tr = atmospherics_optical_length_ray_air(P1, V, atmospheric_optical_length_lut) + 
-			   atmospherics_optical_length_air(P0, P1, atmospheric_optical_length_lut);
-	float tm = atmospherics_optical_length_ray_aerosol(P1, V, atmospheric_optical_length_lut) +
-			   atmospherics_optical_length_aerosol(P0, P1, atmospheric_optical_length_lut);
-			   
-	vec3 Tr = tr * atmospherics_rayleigh_extinction_coeffcient();
-	vec3 Tm = vec3(tm) * atmospherics_mie_extinction_coeffcient();
-
-	vec3 i = normalize(P1 - P0);
+	vec3 i = normalize(P0 - P1);
 	vec3 o = V;
 	float p_mie = cornette_shanks_phase_function(i, o, atmospherics_descriptor_data.phase);
 	float p_rayleigh = rayleigh_phase_function(i, o);
-	vec3 scatter_coefficient = beer_lambert(Tm) * p_mie * atmospherics_descriptor_data.mie_scattering_coefficient.xxx + 
-							   beer_lambert(Tr) * p_rayleigh * atmospherics_descriptor_data.rayleigh_scattering_coefficient;
-							   
-	float particle_density = atmospherics_air_density(P1);
 	
-	return scatter_coefficient * len * particle_density;
+	float altitude = atmospherics_altitude(P1);
+	float density_m = atmospherics_descriptor_pressure_mie(atmospherics_descriptor_data, altitude);
+	float density_r = atmospherics_descriptor_pressure_rayleigh(atmospherics_descriptor_data, altitude);
+
+	vec3 scatter_coefficient = density_m * p_mie * atmospherics_descriptor_data.mie_scattering_coefficient.xxx + 
+							   density_r * p_rayleigh * atmospherics_descriptor_data.rayleigh_scattering_coefficient;
+	
+	vec3 scattered_intensity = scatter_coefficient * len;
+	vec3 extinction = extinct_ray(P0, P1, V, atmospheric_optical_length_lut);
+
+	return scattered_intensity * extinction;
+}
+
+/*
+*	Returns the scattering indicatrix which relates the relative luminance of a sky element to its angular 
+*	distance from the light source.
+*	Parameters are for the "CIE Standard Clear Sky, low luminance turbidity" model.
+*	See "Spatial distribution of daylight - CIE standard general sky", CIE DS 011.2/E:2002.
+*
+*	@param x		Angular distance
+*	@param cos_x	Precomputed cosine of the angular distance
+*/
+float cie_scattering_indicatrix(float x, float cos_x) {
+	return 1.f + 10.f * (exp(-3.f * x) - exp(-3.f * pi_over_2)) + 0.45f * cos_x*cos_x;
+}
+/*
+*	Returns the normalization factor for the scattering indicatrix, i.e. the indicatrix at angular distance 0.
+*/
+float cie_scattering_indicatrix_normalizer() {
+	return cie_scattering_indicatrix(.0f, 1.0f);
 }
 
 /*
@@ -308,29 +297,39 @@ vec3 scatter_ray(vec3 P0,
 *	@param V		Viewing direction
 */
 vec3 atmospheric_scatter(vec3 P, vec3 L, vec3 V, 
-						 sampler2DArray atmospheric_optical_length_lut,
-						 sampler3D atmospheric_scattering_lut) {
+						 sampler3D atmospheric_scattering_lut,
+						 sampler3D atmospheric_mie0_scattering_lut) {
 	vec3 C = atmospherics_descriptor_data.center_radius.xyz;
 	float r = atmospherics_descriptor_data.center_radius.w;
-	vec3 invL = -L;
 
+	// Compute the up vector, i.e. the from the center of the atmosphere to viewer position
 	vec3 Y = P - C;
 	float Ylen = length(Y);
 	vec3 N = Y / Ylen;
 	
+	// Compute height in atmosphere, view-zenith angle and sun-zenith angle.
 	float h = Ylen - r;
 	float cos_phi = dot(N, V);
-	float cos_delta = dot(N, invL);
+	float cos_delta = dot(N, -L);
 	
+	// And convert those into LUT lookup indices
 	float x = _atmospheric_height_to_lut_idx(h, atmospherics_descriptor_data.Hr_max);
 	float y = _atmospheric_view_zenith_to_lut_idx(cos_phi);
 	float z = _atmospheric_sun_zenith_to_lut_idx(cos_delta);
-	vec4 lut = texture(atmospheric_scattering_lut, vec3(x,y,z));
 
-	float p_mie = cornette_shanks_phase_function(V, invL, atmospherics_descriptor_data.phase);
+	// Read multiple-scatter and Mie single-scatter lookup values
+	vec3 scatter = texture(atmospheric_scattering_lut, vec3(x,y,z)).rgb;
+	vec3 m0 = texture(atmospheric_mie0_scattering_lut, vec3(x,y,z)).rgb;
+	
+	// Finally account for light-view azimuth by using the CIE scattering indicatrix
+	float cos_gamma = dot(V, -L);
+	float gamma = acos(cos_gamma);
+	float indicatrix = cie_scattering_indicatrix(gamma, cos_gamma);
+	
+	// Finally compute multiple-scattering azimuth modulator and the high-res Mie phase function sample
+	float p = indicatrix / cie_scattering_indicatrix_normalizer();
+	float p_mie = cornette_shanks_phase_function(V, L, atmospherics_descriptor_data.phase);
 
-	vec3 scatter = lut.rgb;
-	float m0 = p_mie * lut.a;
-
-	return scatter + m0.xxx;
+	return scatter * p + 
+		   m0 * p_mie;
 }

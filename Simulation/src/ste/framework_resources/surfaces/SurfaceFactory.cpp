@@ -324,7 +324,7 @@ gli::texture2d SurfaceFactory::load_jpeg(const boost::filesystem::path &path, bo
 	std::string content;
 
 	std::ifstream fs(path.string(), std::ios::in);
-	if (!fs.good()) {
+	if (!fs) {
 		using namespace Attributes;
 		ste_log_error() << Text::AttributedString("Can't open JPEG ") + i(path.string()) + ": " + std::strerror(errno) << std::endl;
 		throw resource_io_error();
