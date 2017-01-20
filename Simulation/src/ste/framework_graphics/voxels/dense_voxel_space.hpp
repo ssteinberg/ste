@@ -4,16 +4,16 @@
 #pragma once
 
 #include "stdafx.hpp"
-#include "StEngineControl.hpp"
+#include "ste_engine_control.hpp"
 
 #include "dense_voxelizer.hpp"
-#include "Scene.hpp"
+#include "scene.hpp"
 
 #include "glsl_program.hpp"
-#include "GLSLProgramFactory.hpp"
+#include "glsl_program_factory.hpp"
 
-#include "FramebufferObject.hpp"
-#include "RenderTarget.hpp"
+#include "framebuffer_object.hpp"
+#include "render_target.hpp"
 #include "texture_sparse.hpp"
 #include "Sampler.hpp"
 
@@ -29,12 +29,12 @@ private:
 	static constexpr gli::format space_format_data = gli::format::FORMAT_RGBA16_SFLOAT_PACK16;
 	static constexpr int voxel_steps_multiplier = 8;
 
-	using ProjectionSignalConnectionType = StEngineControl::projection_change_signal_type::connection_type;
+	using ProjectionSignalConnectionType = ste_engine_control::projection_change_signal_type::connection_type;
 
 	friend class dense_voxelizer;
 
 private:
-	const StEngineControl &ctx;
+	const ste_engine_control &ctx;
 	Core::texture_sparse_3d::size_type size, tile_size;
 	int mipmaps{ 0 };
 	glm::ivec3 step_size{ 0 };
@@ -45,12 +45,12 @@ private:
 	std::unique_ptr<Core::texture_sparse_3d> space_radiance;
 	std::unique_ptr<Core::texture_sparse_3d> space_data;
 
-	Core::SamplerMipmapped sampler;
+	Core::sampler_mipmapped sampler;
 
 	std::shared_ptr<ProjectionSignalConnectionType> projection_change_connection;
 
-	Core::FramebufferObject voxelizer_fbo;
-	std::unique_ptr<Core::RenderTarget> voxelizer_output;
+	Core::framebuffer_object voxelizer_fbo;
+	std::unique_ptr<Core::render_target> voxelizer_output;
 
 protected:
 	Resource::resource_instance<Resource::glsl_program> voxelizer_program;
@@ -75,7 +75,7 @@ protected:
 	}
 
 public:
-	dense_voxel_space(const StEngineControl &ctx, std::size_t max_size = 1024, float voxel_size_factor = 1.f);
+	dense_voxel_space(const ste_engine_control &ctx, std::size_t max_size = 1024, float voxel_size_factor = 1.f);
 
 	void add_consumer_program(const Core::glsl_program_object *prg) const {
 		consumers.insert(prg);
@@ -85,7 +85,7 @@ public:
 		consumers.erase(prg);
 	}
 
-	std::unique_ptr<dense_voxelizer> voxelizer(Scene &scene) const {
+	std::unique_ptr<dense_voxelizer> voxelizer(scene &scene) const {
 		return std::make_unique<dense_voxelizer>(ctx, this, scene);
 	}
 

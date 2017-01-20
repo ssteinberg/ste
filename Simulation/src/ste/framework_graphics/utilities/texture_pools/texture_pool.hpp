@@ -4,9 +4,9 @@
 #pragma once
 
 #include "texture_sparse.hpp"
-#include "Texture2D.hpp"
+#include "texture_2d.hpp"
 
-#include "PixelBufferObject.hpp"
+#include "pixel_buffer_object.hpp"
 
 #include <vector>
 #include <unordered_map>
@@ -81,7 +81,7 @@ public:
 	texture_pool() {}
 	~texture_pool() {}
 
-	sbta_handle commit(const Core::Texture2D &tex) {
+	sbta_handle commit(const Core::texture_2d &tex) {
 		sbta_key key = { tex.get_image_size(), tex.get_format() };
 		decltype(sbta)::iterator it = sbta.find(key);
 		if (it == sbta.end()) {
@@ -100,7 +100,7 @@ public:
 		for (int l = 0; l < tex.get_levels(); ++l) {
 			v.pool.commit_tiles({ 0, 0, layer }, { key.size.x >> l, key.size.y >> l, 1 }, l);
 
-			Core::PixelBufferObject<char> pbo(tex.get_storage_size(l));
+			Core::pixel_buffer_object<char> pbo(tex.get_storage_size(l));
 			pbo.pack_from(tex, l, 0);
 			pbo.unpack_to(v.pool, l, layer);
 		}

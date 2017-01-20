@@ -4,7 +4,7 @@
 #pragma once
 
 #include "stdafx.hpp"
-#include "Font.hpp"
+#include "font.hpp"
 
 #include <functional>
 #include <typeinfo>
@@ -13,7 +13,7 @@ namespace StE {
 namespace Text {
 
 template <typename CharT>
-class attributed_string;
+class attributed_string_common;
 
 namespace Attributes {
 
@@ -36,19 +36,19 @@ public:
 	bool is_same_attrib(const attrib &rhs) const { return attrib_type() == rhs.attrib_type(); }
 
 	template<typename T>
-	attributed_string<T> operator()(const attributed_string<T> &str) const {
-		attributed_string<T> newstr = str;
+	attributed_string_common<T> operator()(const attributed_string_common<T> &str) const {
+		attributed_string_common<T> newstr = str;
 		newstr.add_attrib({ 0,newstr.length() }, *this);
 		return newstr;
 	}
-	attributed_string<char> operator()(const std::string &str) const;
-	attributed_string<char16_t> operator()(const std::u16string &str) const;
-	attributed_string<char32_t> operator()(const std::u32string &str) const;
-	attributed_string<wchar_t> operator()(const std::wstring &str) const;
-	attributed_string<char> operator()(const char* str) const;
-	attributed_string<char16_t> operator()(const char16_t* str) const;
-	attributed_string<char32_t> operator()(const char32_t* str) const;
-	attributed_string<wchar_t> operator()(const wchar_t* str) const;
+	attributed_string_common<char> operator()(const std::string &str) const;
+	attributed_string_common<char16_t> operator()(const std::u16string &str) const;
+	attributed_string_common<char32_t> operator()(const std::u32string &str) const;
+	attributed_string_common<wchar_t> operator()(const std::wstring &str) const;
+	attributed_string_common<char> operator()(const char* str) const;
+	attributed_string_common<char16_t> operator()(const char16_t* str) const;
+	attributed_string_common<char32_t> operator()(const char32_t* str) const;
+	attributed_string_common<wchar_t> operator()(const wchar_t* str) const;
 };
 
 class rgb : public attrib {
@@ -240,14 +240,14 @@ public:
 
 class font : public attrib {
 private:
-	Font f;
+	StE::Text::font f;
 
 #ifdef _DEBUG
 	const char *name{ typeid(*this).name() };
 #endif
 
 public:
-	font(const Font &f) : f(f) {}
+	font(const StE::Text::font &f) : f(f) {}
 
 	static attrib_id_t attrib_type_s() noexcept {
 		static char const type_id{};
@@ -256,9 +256,9 @@ public:
 	attrib_id_t attrib_type() const noexcept override { return attrib_type_s(); }
 	virtual font* clone() const override { return new font(*this); };
 
-	Font &get() { return f; }
-	Font get() const { return f; }
-	operator Font() const { return f; }
+	auto &get() { return f; }
+	auto get() const { return f; }
+	operator StE::Text::font() const { return f; }
 };
 
 class size : public attrib {

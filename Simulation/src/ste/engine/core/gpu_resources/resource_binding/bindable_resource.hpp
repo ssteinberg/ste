@@ -15,7 +15,7 @@ public:
 	static void unbind() {}
 };
 
-class bindable_generic_resource : virtual public GenericResource {
+class bindable_generic_resource : virtual public generic_resource {
 protected:
 	virtual ~bindable_generic_resource() noexcept {}
 

@@ -23,7 +23,7 @@ private:
 	using FbClearTask = StE::Graphics::fb_clear_dispatch<>;
 
 private:
-	const StEngineControl &ctx;
+	const ste_engine_control &ctx;
 
 	gpu_task::TaskCollection tasks;
 
@@ -31,7 +31,7 @@ private:
 	std::shared_ptr<const gpu_task> fb_clearer_task;
 
 public:
-	basic_renderer(const StEngineControl &ctx) : ctx(ctx) {
+	basic_renderer(const ste_engine_control &ctx) : ctx(ctx) {
 		fb_clearer_task = make_gpu_task("fb_clearer", &fb_clearer, &ctx.gl()->defaut_framebuffer());
 		q.add_task(fb_clearer_task);
 	}

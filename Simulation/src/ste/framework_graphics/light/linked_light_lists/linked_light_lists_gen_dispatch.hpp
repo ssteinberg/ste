@@ -4,7 +4,7 @@
 #pragma once
 
 #include "stdafx.hpp"
-#include "StEngineControl.hpp"
+#include "ste_engine_control.hpp"
 #include "gpu_dispatchable.hpp"
 
 #include "glsl_program.hpp"
@@ -13,7 +13,7 @@
 #include "light_storage.hpp"
 
 #include "glsl_program.hpp"
-#include "Texture2D.hpp"
+#include "texture_2d.hpp"
 #include "Sampler.hpp"
 
 namespace StE {
@@ -28,12 +28,12 @@ private:
 	Resource::resource_instance<Resource::glsl_program> program;
 
 public:
-	linked_light_lists_gen_dispatch(const StEngineControl &ctx,
+	linked_light_lists_gen_dispatch(const ste_engine_control &ctx,
 									light_storage *ls,
 									linked_light_lists *lll) : ls(ls), lll(lll),
 															   program(ctx, std::vector<std::string>{ "linked_light_lists_gen.glsl" }) {}
 
-	void set_depth_map(Core::Texture2D *depth_map) {
+	void set_depth_map(Core::texture_2d *depth_map) {
 		auto handle = depth_map->get_texture_handle();
 		handle.make_resident();
 		program.get().set_uniform("depth_map", handle);

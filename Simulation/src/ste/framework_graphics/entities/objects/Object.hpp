@@ -18,15 +18,15 @@
 namespace StE {
 namespace Graphics {
 
-class ObjectGroup;
+class object_group;
 
-class Object : public entity_affine {
+class object : public entity_affine {
 	using Base = entity_affine;
 
-	friend class ObjectGroup;
+	friend class object_group;
 
 public:
-	using signal_type = signal<Object*>;
+	using signal_type = signal<object*>;
 
 private:
 	signal_type model_change_signal;
@@ -37,8 +37,8 @@ protected:
 	std::unique_ptr<mesh_generic> object_mesh;
 
 public:
-	Object(std::unique_ptr<mesh_generic> &&m) : object_mesh(std::move(m)) {}
-	~Object() noexcept {}
+	object(std::unique_ptr<mesh_generic> &&m) : object_mesh(std::move(m)) {}
+	~object() noexcept {}
 
 	mesh_generic &get_mesh() { return *object_mesh; }
 	const mesh_generic &get_mesh() const { return *object_mesh; }

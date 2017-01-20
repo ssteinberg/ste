@@ -1,14 +1,14 @@
 
 #include "stdafx.hpp"
 #include "hdr_compute_histogram_sums_task.hpp"
-#include "ShaderStorageBuffer.hpp"
+#include "shader_storage_buffer.hpp"
 
 using namespace StE::Graphics;
 using namespace StE::Core;
 
 void hdr_compute_histogram_sums_task::set_context_state() const {
 	0_storage_idx = p->histogram_sums;
-	1_storage_idx = buffer_object_cast<ShaderStorageBuffer<std::uint32_t>>(p->histogram);
+	1_storage_idx = buffer_object_cast<shader_storage_buffer<std::uint32_t>>(p->histogram);
 	2_storage_idx = p->hdr_bokeh_param_buffer;
 
 	p->hdr_compute_histogram_sums.get().bind();

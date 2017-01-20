@@ -8,7 +8,7 @@ using namespace StE::Core;
 void hdr_bokeh_blur_task::set_context_state() const {
 	2_storage_idx = p->hdr_bokeh_param_buffer;
 
-	ScreenFillingQuad.vao()->bind();
+	screen_filling_quad.vao()->bind();
 	p->bokeh_blur.get().bind();
 }
 

@@ -5,8 +5,8 @@
 
 #include "stdafx.hpp"
 
-#include "ShaderStorageBuffer.hpp"
-#include "AtomicCounterBufferObject.hpp"
+#include "shader_storage_buffer.hpp"
+#include "atomic_counter_buffer_object.hpp"
 
 #include <type_traits>
 #include <vector>
@@ -26,15 +26,15 @@ protected:
 	};
 
 private:
-	using buffer_type = ShaderStorageBuffer<node>;
-	using tail_buffer_type = ShaderStorageBuffer<GLuint>;
+	using buffer_type = shader_storage_buffer<node>;
+	using tail_buffer_type = shader_storage_buffer<GLuint>;
 
 	static_assert(std::is_trivially_copyable<T>::value, "T must be trivially copyable");
 
 private:
 	buffer_type buffer;
 	tail_buffer_type tail;
-	AtomicCounterBufferObject<> head;
+	atomic_counter_buffer_object<> head;
 
 public:
 	gqueue() : buffer(Size), tail(std::vector<GLuint>({ 0 })), head(std::vector<GLuint>({ 0 })) {
@@ -45,7 +45,7 @@ public:
 	void bind_buffer(int location) const {
 		buffer.bind(buffer_type::LayoutLocationType(location));
 		tail.bind(buffer_type::LayoutLocationType(location + 1));
-		head.bind(AtomicCounterBufferObject<>::LayoutLocationType(location + 2));
+		head.bind(atomic_counter_buffer_object<>::LayoutLocationType(location + 2));
 	}
 };
 

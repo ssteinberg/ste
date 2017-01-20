@@ -10,7 +10,7 @@
 #include "observable_resource.hpp"
 
 #include "texture_handle.hpp"
-#include "RGB.hpp"
+#include "rgb.hpp"
 
 namespace StE {
 namespace Graphics {
@@ -23,7 +23,7 @@ protected:
 	light_descriptor descriptor;
 
 public:
-	light(float luminance, float radius, const RGB &diffuse) {
+	light(float luminance, float radius, const rgb &diffuse) {
 		descriptor.luminance = luminance;
 		descriptor.radius = radius;
 		descriptor.diffuse = decltype(descriptor.diffuse){ diffuse.R(), diffuse.G(), diffuse.B() };
@@ -34,7 +34,7 @@ public:
 		descriptor.luminance = l;
 		Base::notify();
 	}
-	void set_diffuse(const RGB &d) {
+	void set_diffuse(const rgb &d) {
 		descriptor.diffuse = decltype(descriptor.diffuse){ d.R(), d.G(), d.B() };
 		Base::notify();
 	}

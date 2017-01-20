@@ -8,7 +8,7 @@
 #include "resource.hpp"
 
 #include "Log.hpp"
-#include "AttributedString.hpp"
+#include "attributed_string.hpp"
 #include "attrib.hpp"
 
 namespace StE {
@@ -18,14 +18,14 @@ class generic_resource_allocator {
 public:
 	virtual ~generic_resource_allocator() {}
 
-	virtual GenericResource::type allocate() = 0;
-	static void deallocate(GenericResource::type &id) { id = 0; }
-	static bool is_valid(GenericResource::type id) { return !!id; }
+	virtual generic_resource::type allocate() = 0;
+	static void deallocate(generic_resource::type &id) { id = 0; }
+	static bool is_valid(generic_resource::type id) { return !!id; }
 };
 
 template <typename ... Ts>
 class generic_resource_immutable_storage_allocator : public generic_resource_allocator {
-	virtual void allocate_storage(GenericResource::type id, Ts... args) = 0;
+	virtual void allocate_storage(generic_resource::type id, Ts... args) = 0;
 };
 
 }

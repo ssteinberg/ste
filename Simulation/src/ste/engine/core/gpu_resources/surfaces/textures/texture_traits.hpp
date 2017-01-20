@@ -4,7 +4,7 @@
 
 #include "core_resource_type.hpp"
 
-#include "texture1D_size_type.hpp"
+#include "texture_1d_size_type.hpp"
 
 namespace StE {
 namespace Core {
@@ -46,7 +46,7 @@ template <core_resource_type type> struct texture_has_samples_or_levels { static
 template <core_resource_type type> struct texture_is_pixel_transferable { static constexpr bool value = !texture_is_multisampled<type>::value; };
 
 template <int dim> struct texture_size_type {};
-template <> struct texture_size_type<1> { using type = texture1D_size_type<int>; };
+template <> struct texture_size_type<1> { using type = texture_1d_size_type<int>; };
 template <> struct texture_size_type<2> { using type = glm::tvec2<int>; };
 template <> struct texture_size_type<3> { using type = glm::tvec3<int>; };
 

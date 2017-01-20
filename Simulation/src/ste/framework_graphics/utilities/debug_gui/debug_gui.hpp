@@ -6,13 +6,13 @@
 #include "stdafx.hpp"
 #include "gpu_dispatchable.hpp"
 
-#include "StEngineControl.hpp"
+#include "ste_engine_control.hpp"
 #include "profiler.hpp"
 
 #include "signal.hpp"
-#include "Font.hpp"
+#include "font.hpp"
 
-#include "Camera.hpp"
+#include "camera.hpp"
 
 #include <map>
 #include <vector>
@@ -27,14 +27,14 @@ class debug_gui : public gpu_dispatchable {
 	using Base = gpu_dispatchable;
 
 private:
-	using hid_pointer_button_signal_connection_type = StEngineControl::hid_pointer_button_signal_type::connection_type;
-	using hid_scroll_signal_connection_type = StEngineControl::hid_scroll_signal_type::connection_type;
-	using hid_keyboard_signal_connection_type = StEngineControl::hid_keyboard_signal_type::connection_type;
+	using hid_pointer_button_signal_connection_type = ste_engine_control::hid_pointer_button_signal_type::connection_type;
+	using hid_scroll_signal_connection_type = ste_engine_control::hid_scroll_signal_type::connection_type;
+	using hid_keyboard_signal_connection_type = ste_engine_control::hid_keyboard_signal_type::connection_type;
 
 private:
-	const StEngineControl &ctx;
+	const ste_engine_control &ctx;
 	profiler *prof;
-	const Camera *camera;
+	const camera *cam;
 
 	mutable std::map<std::string, std::vector<float>> prof_tasks_last_samples;
 
@@ -46,7 +46,7 @@ private:
 	std::vector<std::function<void(const glm::ivec2 &)>> user_guis;
 
 public:
-	debug_gui(const StEngineControl &ctx, profiler *prof, const StE::Text::Font &default_font, const Camera *camera = nullptr);
+	debug_gui(const ste_engine_control &ctx, profiler *prof, const StE::Text::font &default_font, const camera *cam = nullptr);
 	~debug_gui() noexcept;
 
 	void add_custom_gui(std::function<void(const glm::ivec2 &)> &&f) { user_guis.emplace_back(std::move(f)); }

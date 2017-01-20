@@ -79,7 +79,7 @@ private:
 	std::unordered_map<text_glyph_pair_key, int> spacing_cache;
 
 public:
-	glyph_factory_font(const Font &font, FT_Library ft_lib) {
+	glyph_factory_font(const font &font, FT_Library ft_lib) {
 		auto error = FT_New_Face(ft_lib,
 								 font.get_path().string().c_str(),
 								 0,
@@ -124,23 +124,23 @@ public:
 struct glyph_factory_impl {
 	std::mutex m;
 	glyph_factory_ft_lib lib;
-	std::unordered_map<Font, glyph_factory_font> fonts;
+	std::unordered_map<font, glyph_factory_font> fonts;
 
-	auto& get_factory_font(const Font &font) {
+	auto& get_factory_font(const font &font) {
 		auto it = fonts.find(font);
 		if (it == fonts.end())
 			it = fonts.emplace(std::make_pair(font, glyph_factory_font(font, lib.get_lib()))).first;
 		return it->second;
 	}
 
-	unsigned char *render_glyph_with(const Font&, wchar_t, int, int&, int&, int&, int&);
+	unsigned char *render_glyph_with(const font&, wchar_t, int, int&, int&, int&, int&);
 };
 
 }
 }
 
 
-unsigned char* glyph_factory_impl::render_glyph_with(const Font &font, wchar_t codepoint, int px_size, int &w, int &h, int &start_y, int &start_x) {
+unsigned char* glyph_factory_impl::render_glyph_with(const font &font, wchar_t codepoint, int px_size, int &w, int &h, int &start_y, int &start_x) {
 	std::unique_lock<std::mutex> l(m);
 
 	auto face = get_factory_font(font).get_face();
@@ -173,7 +173,7 @@ glyph_factory::glyph_factory() : pimpl(std::make_unique<glyph_factory_impl>()) {
 
 glyph_factory::~glyph_factory() {}
 
-StE::task_future<glyph> glyph_factory::create_glyph_async(task_scheduler *sched, const Font &font, wchar_t codepoint) {
+StE::task_future<glyph> glyph_factory::create_glyph_async(task_scheduler *sched, const font &font, wchar_t codepoint) {
 	return sched->schedule_now([=]() -> glyph {
 		glyph g;
 		int start_x, start_y, w, h;
@@ -193,7 +193,7 @@ StE::task_future<glyph> glyph_factory::create_glyph_async(task_scheduler *sched,
 	});
 }
 
-int glyph_factory::read_kerning(const Font &font, const std::pair<wchar_t, wchar_t> &p, int pixel_size) {
+int glyph_factory::read_kerning(const font &font, const std::pair<wchar_t, wchar_t> &p, int pixel_size) {
 	glyph_factory_font &fac_font = pimpl->get_factory_font(font);
 	int spacing;
 	if (fac_font.get_spacing(p.first, p.second, pixel_size, &spacing))

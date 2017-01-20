@@ -4,7 +4,7 @@
 #pragma once
 
 #include "stdafx.hpp"
-#include "StEngineControl.hpp"
+#include "ste_engine_control.hpp"
 
 #include "task_future.hpp"
 #include "optional.hpp"
@@ -26,7 +26,7 @@ private:
 	using resource_instance_future = task_future<void>;
 
 public:
-	optional<resource_instance_future> loader(const StEngineControl &ctx, R* res) {
+	optional<resource_instance_future> loader(const ste_engine_control &ctx, R* res) {
 		return none;
 	}
 };

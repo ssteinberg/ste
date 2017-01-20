@@ -7,9 +7,9 @@
 
 #include "signal.hpp"
 
-#include "Texture2D.hpp"
-#include "Texture3D.hpp"
-#include "Sampler.hpp"
+#include "texture_2d.hpp"
+#include "texture_3d.hpp"
+#include "sampler.hpp"
 
 #include "linked_light_lists.hpp"
 
@@ -24,22 +24,22 @@ private:
 	static constexpr int depth_tiles = 256;
 
 private:
-	Core::Texture2D *depth_map{ nullptr };
-	std::unique_ptr<Core::Texture3D> volume{ nullptr };
+	Core::texture_2d *depth_map{ nullptr };
+	std::unique_ptr<Core::texture_3d> volume{ nullptr };
 
-	Core::Sampler volume_sampler;
-	Core::SamplerMipmapped depth_sampler;
+	Core::sampler volume_sampler;
+	Core::sampler_mipmapped depth_sampler;
 
 	glm::ivec3 size;
 
 	signal<> storage_modified_signal;
 
 public:
-	volumetric_scattering_storage(glm::ivec2 size) : volume_sampler(Core::TextureFiltering::Linear, Core::TextureFiltering::Linear,
-																	Core::TextureWrapMode::ClampToEdge, Core::TextureWrapMode::ClampToEdge, 16),
-													 depth_sampler(Core::TextureFiltering::Nearest, Core::TextureFiltering::Nearest, Core::TextureFiltering::Nearest,
-																   Core::TextureWrapMode::ClampToEdge, Core::TextureWrapMode::ClampToEdge) {
-		volume_sampler.set_wrap_r(Core::TextureWrapMode::ClampToEdge);
+	volumetric_scattering_storage(glm::ivec2 size) : volume_sampler(Core::texture_filtering::Linear, Core::texture_filtering::Linear,
+																	Core::texture_wrap_mode::ClampToEdge, Core::texture_wrap_mode::ClampToEdge, 16),
+													 depth_sampler(Core::texture_filtering::Nearest, Core::texture_filtering::Nearest, Core::texture_filtering::Nearest,
+																   Core::texture_wrap_mode::ClampToEdge, Core::texture_wrap_mode::ClampToEdge) {
+		volume_sampler.set_wrap_r(Core::texture_wrap_mode::ClampToEdge);
 
 		resize(size);
 	}
@@ -52,12 +52,12 @@ public:
 						   s.y / tile_size,
 						   depth_tiles };
 
-		volume = std::make_unique<Core::Texture3D>(gli::format::FORMAT_RGBA16_SFLOAT_PACK16, size);
+		volume = std::make_unique<Core::texture_3d>(gli::format::FORMAT_RGBA16_SFLOAT_PACK16, size);
 
 		storage_modified_signal.emit();
 	}
 
-	void set_depth_map(Core::Texture2D *dm) {
+	void set_depth_map(Core::texture_2d *dm) {
 		depth_map = dm;
 		storage_modified_signal.emit();
 	}

@@ -11,7 +11,7 @@
 
 #include "profiler.hpp"
 
-#include "FramebufferObject.hpp"
+#include "framebuffer_object.hpp"
 
 #include "sequential_ordering_problem.hpp"
 

@@ -4,18 +4,18 @@
 #pragma once
 
 #include "stdafx.hpp"
-#include "StEngineControl.hpp"
+#include "ste_engine_control.hpp"
 #include "gpu_dispatchable.hpp"
 
-#include "SceneProperties.hpp"
+#include "scene_properties.hpp"
 #include "deferred_gbuffer.hpp"
 #include "object_group_indirect_command_buffer.hpp"
 
 #include "glsl_program.hpp"
-#include "AtomicCounterBufferObject.hpp"
-#include "ShaderStorageBuffer.hpp"
+#include "atomic_counter_buffer_object.hpp"
+#include "shader_storage_buffer.hpp"
 
-#include "ObjectGroup.hpp"
+#include "object_group.hpp"
 #include "light_storage.hpp"
 
 #include <memory>
@@ -23,7 +23,7 @@
 namespace StE {
 namespace Graphics {
 
-class Scene : public gpu_dispatchable {
+class scene : public gpu_dispatchable {
 	using Base = gpu_dispatchable;
 
 private:
@@ -41,7 +41,7 @@ private:
 	template <int tt_slots>
 	class shadow_projection_data {
 		using table = shadow_projection_instance_to_ll_idx_translation<tt_slots>;
-		using table_buffer_type = Core::ShaderStorageBuffer<table, usage>;
+		using table_buffer_type = Core::shader_storage_buffer<table, usage>;
 
 	public:
 		shadow_projection_data() : proj_id_to_light_id_translation_table(pages * std::max<std::size_t>(65536, table_buffer_type::page_size()) / sizeof(table)) {}
@@ -56,11 +56,11 @@ private:
 	};
 
 private:
-	ObjectGroup objects;
-	SceneProperties scene_props;
+	object_group objects;
+	scene_properties scene_props;
 	const deferred_gbuffer *gbuffer{ nullptr };
 
-	mutable Core::AtomicCounterBufferObject<> culled_objects_counter;
+	mutable Core::atomic_counter_buffer_object<> culled_objects_counter;
 	mutable object_group_indirect_command_buffer idb;
 
 	mutable shadow_projection_data<shadow_pltt_size> shadow_projection;
@@ -69,19 +69,19 @@ private:
 	Resource::resource_instance<Resource::glsl_program> object_program;
 
 public:
-	Scene(const StEngineControl &ctx);
-	~Scene() noexcept {}
+	scene(const ste_engine_control &ctx);
+	~scene() noexcept {}
 
 	void update_scene() {
 		objects.update_dirty_buffers();
 		scene_props.update();
 	}
 
-	SceneProperties &scene_properties() { return scene_props; }
-	const SceneProperties &scene_properties() const { return scene_props; }
+	scene_properties &properties() { return scene_props; }
+	const scene_properties &properties() const { return scene_props; }
 
-	ObjectGroup &object_group() { return objects; }
-	const ObjectGroup &object_group() const { return objects; }
+	object_group &get_object_group() { return objects; }
+	const object_group &get_object_group() const { return objects; }
 
 	void draw_object_group() const;
 

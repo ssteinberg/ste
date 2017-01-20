@@ -2,7 +2,7 @@
 #include "stdafx.hpp"
 #include "glsl_program_object.hpp"
 
-#include "Log.hpp"
+#include "log.hpp"
 
 #include <fstream>
 #include <iostream>

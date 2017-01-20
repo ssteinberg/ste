@@ -1,5 +1,5 @@
 
 #include "stdafx.hpp"
-#include "Log.hpp"
+#include "log.hpp"
 
-StE::Log* StE::ste_global_logger = nullptr;
+StE::log* StE::ste_global_logger = nullptr;

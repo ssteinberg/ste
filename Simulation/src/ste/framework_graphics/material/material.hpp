@@ -11,9 +11,9 @@
 #include "material_layer.hpp"
 
 #include "Sampler.hpp"
-#include "Texture2D.hpp"
+#include "texture_2d.hpp"
 
-#include "RGB.hpp"
+#include "rgb.hpp"
 
 #include <memory>
 
@@ -27,14 +27,14 @@ class material : public Core::observable_resource<material_descriptor> {
 	using Base = Core::observable_resource<material_descriptor>;
 
 private:
-	Core::SamplerMipmapped material_sampler;
+	Core::sampler_mipmapped material_sampler;
 
-	std::shared_ptr<Core::Texture2D> cavity_map{ nullptr };
-	std::shared_ptr<Core::Texture2D> normal_map{ nullptr };
-	std::shared_ptr<Core::Texture2D> mask_map{ nullptr };
-	std::shared_ptr<Core::Texture2D> texture{ nullptr };
+	std::shared_ptr<Core::texture_2d> cavity_map{ nullptr };
+	std::shared_ptr<Core::texture_2d> normal_map{ nullptr };
+	std::shared_ptr<Core::texture_2d> mask_map{ nullptr };
+	std::shared_ptr<Core::texture_2d> texture{ nullptr };
 
-	RGB emission{ 0, 0, 0 };
+	rgb emission{ 0, 0, 0 };
 
 	material_layer *head_layer;
 
@@ -48,7 +48,7 @@ private:
 	material &operator=(const material &m) = delete;
 
 private:
-	Core::texture_handle handle_for_texture(const Core::Texture2D *t) const;
+	Core::texture_handle handle_for_texture(const Core::texture_2d *t) const;
 	void set_head_layer(material_layer *head_layer);
 
 public:
@@ -76,7 +76,7 @@ public:
 	*
 	* 	@param tex	2D texture object
 	*/
-	void set_texture(const std::shared_ptr<Core::Texture2D> &tex) {
+	void set_texture(const std::shared_ptr<Core::texture_2d> &tex) {
 		texture = tex;
 		descriptor.texture_handle = handle_for_texture(texture.get());
 		Base::notify();
@@ -89,7 +89,7 @@ public:
 	*
 	* 	@param tex	2D texture object
 	*/
-	void set_cavity_map(const std::shared_ptr<Core::Texture2D> &tex) {
+	void set_cavity_map(const std::shared_ptr<Core::texture_2d> &tex) {
 		cavity_map = tex;
 		descriptor.cavity_handle = handle_for_texture(cavity_map.get());
 		Base::notify();
@@ -100,7 +100,7 @@ public:
 	*
 	* 	@param tex	2D texture object
 	*/
-	void set_normal_map(const std::shared_ptr<Core::Texture2D> &tex) {
+	void set_normal_map(const std::shared_ptr<Core::texture_2d> &tex) {
 		normal_map = tex;
 		descriptor.normal_handle = handle_for_texture(normal_map.get());
 		Base::notify();
@@ -113,7 +113,7 @@ public:
 	*
 	* 	@param tex	2D texture object
 	*/
-	void set_mask_map(const std::shared_ptr<Core::Texture2D> &tex) {
+	void set_mask_map(const std::shared_ptr<Core::texture_2d> &tex) {
 		mask_map = tex;
 		descriptor.mask_handle = handle_for_texture(mask_map.get());
 		Base::notify();
@@ -126,7 +126,7 @@ public:
 	*
 	* 	@param rgb	Emission color
 	*/
-	void set_emission(const RGB &rgb) {
+	void set_emission(const rgb &rgb) {
 		emission = rgb;
 
 		glm::vec3 v = rgb;
@@ -150,7 +150,7 @@ public:
 	auto *get_mask_map() const { return mask_map.get(); }
 	auto *get_texture() const { return texture.get(); }
 
-	RGB get_emission() const { return emission; }
+	rgb get_emission() const { return emission; }
 	
 	auto *get_head_layer() const { return head_layer; }
 

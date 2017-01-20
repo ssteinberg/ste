@@ -8,7 +8,7 @@ using namespace StE::Core;
 void hdr_tonemap_coc_task::set_context_state() const {
 	0_storage_idx = p->histogram_sums;
 	2_storage_idx = p->hdr_bokeh_param_buffer;
-	ScreenFillingQuad.vao()->bind();
+	screen_filling_quad.vao()->bind();
 
 	p->hdr_tonemap_coc.get().bind();
 }
