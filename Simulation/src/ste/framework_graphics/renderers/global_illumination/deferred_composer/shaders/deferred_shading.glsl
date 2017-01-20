@@ -92,8 +92,6 @@ vec3 deferred_shade_atmospheric_scattering(ivec2 coord,
 	vec3 P = eye_position();
 	vec3 V = normalize(w_pos - P);
 
-	if (V.y < .0) return vec3(0);
-
 	vec3 rgb = vec3(.0f);
 	ivec2 lll_coords = coord / lll_image_res_multiplier;
 	uint32_t lll_start = imageLoad(lll_heads, lll_coords).x;
@@ -114,11 +112,11 @@ vec3 deferred_shade_atmospheric_scattering(ivec2 coord,
 			//? Draw the light source.
 			//!? TODO: Remove in future.
 			vec3 light_position = P - L * ld.directional_distance;
-			/*if (!isinf(intersection_ray_sphere(light_position, ld.radius,
+			if (!isinf(intersection_ray_sphere(light_position, ld.radius,
 											   P, V))) {
 				rgb += I0 * extinct_ray(P, V,
 										atmospheric_optical_length_lut);
-			}*/
+			}
 		}
 	}
 
@@ -143,12 +141,12 @@ vec3 deferred_shade_fragment(g_buffer_element frag, ivec2 coord,
 	float thickness = get_thickness(coord, back_face_depth, front_face_depth, has_geometry);
 	
 	// If no geometry is present, calculate atmopsheric scattering and that's it
-	//if (!has_geometry) {
+	if (!has_geometry) {
 		return deferred_shade_atmospheric_scattering(coord,
 													 atmospheric_optical_length_lut,
 													 atmospheric_scattering_lut,
 													 atmospheric_mie0_scattering_lut);
-	//}
+	}
 
 	// Calculate depth and extrapolate world position
 	float depth = gbuffer_parse_depth(frag);
