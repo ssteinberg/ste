@@ -49,6 +49,7 @@ private:
 	std::unique_ptr<Core::Texture2DArray> atmospherics_optical_length_lut;
 	std::unique_ptr<Core::Texture3D> atmospherics_scatter_lut;
 	std::unique_ptr<Core::Texture3D> atmospherics_mie0_scatter_lut;
+	std::unique_ptr<Core::Texture3D> atmospherics_ambient_lut;
 
 	Resource::resource_instance<volumetric_scattering_scatter_dispatch> *additional_scatter_program_hack;
 
