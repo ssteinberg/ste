@@ -11,7 +11,7 @@
 #include "profileable.hpp"
 
 #include "gpu_dispatchable.hpp"
-#include "FramebufferObject.hpp"
+#include "framebuffer_object.hpp"
 
 #include <functional>
 #include <memory>
@@ -48,7 +48,7 @@ private:
 	std::string name;
 
 	const gpu_dispatchable *dispatchable;
-	mutable const Core::GenericFramebufferObject *fbo{ nullptr };
+	mutable const Core::framebuffer_object_generic *fbo{ nullptr };
 
 	std::vector<TaskPtr> sub_tasks;
 	mutable TaskCollection dependencies;
@@ -64,7 +64,7 @@ private:
 	}
 
 protected:
-	void set_fbo(const Core::GenericFramebufferObject *fbo) const;
+	void set_fbo(const Core::framebuffer_object_generic *fbo) const;
 
 public:
 	gpu_task(AccessToken,
@@ -73,13 +73,13 @@ public:
 	gpu_task(AccessToken,
 			 const std::string &name,
 			 const gpu_dispatchable *dispatchable,
-			 const Core::GenericFramebufferObject *fbo) : gpu_task(AccessToken(), name, dispatchable) {
+			 const Core::framebuffer_object_generic *fbo) : gpu_task(AccessToken(), name, dispatchable) {
 		this->fbo = fbo;
 	}
 	gpu_task(AccessToken,
 			 const std::string &name,
 			 const gpu_dispatchable *dispatchable,
-			 const Core::GenericFramebufferObject *fbo,
+			 const Core::framebuffer_object_generic *fbo,
 			 std::vector<TaskPtr> &&st) : gpu_task(AccessToken(), name, dispatchable, fbo) {
 		sub_tasks = std::move(st);
 		for (auto &s : sub_tasks)

@@ -4,7 +4,7 @@
 #pragma once
 
 #include "stdafx.hpp"
-#include "StEngineControl.hpp"
+#include "ste_engine_control.hpp"
 #include "gl_current_context.hpp"
 
 #include "resource_instance.hpp"
@@ -67,7 +67,7 @@ private:
 	}
 
 private:
-	volumetric_scattering_scatter_dispatch(const StEngineControl &ctx,
+	volumetric_scattering_scatter_dispatch(const ste_engine_control &ctx,
 										   const volumetric_scattering_storage *vss,
 										   const linked_light_lists *llls,
 										   const light_storage *ls,
@@ -102,7 +102,7 @@ class resource_loading_task<Graphics::volumetric_scattering_scatter_dispatch> {
 	using R = Graphics::volumetric_scattering_scatter_dispatch;
 
 public:
-	auto loader(const StEngineControl &ctx, R* object) {
+	auto loader(const ste_engine_control &ctx, R* object) {
 		return ctx.scheduler().schedule_now([object, &ctx]() {
 			object->program.wait();
 		}).then_on_main_thread([object]() {

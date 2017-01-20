@@ -1,12 +1,12 @@
 
 #include "stdafx.hpp"
-#include "Kelvin.hpp"
-#include "RGB.hpp"
+#include "kelvin.hpp"
+#include "rgb.hpp"
 
 using namespace StE::Graphics;
 
-RGB Kelvin::toRGB() const {
-	RGB ret;
+rgb kelvin::toRGB() const {
+	rgb ret;
 
 	/*
 	 *	Thanks to Tanner Helland:
@@ -57,6 +57,6 @@ RGB Kelvin::toRGB() const {
 	return ret;
 }
 
-Kelvin::operator RGB() const {
+kelvin::operator rgb() const {
 	return toRGB();
 };

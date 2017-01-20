@@ -25,7 +25,7 @@ public:
 
 protected:
 	void set_context_state() const override final {
-		ScreenFillingQuad.vao()->bind();
+		screen_filling_quad.vao()->bind();
 		p->hdr_bloom_blurx.get().bind();
 	}
 

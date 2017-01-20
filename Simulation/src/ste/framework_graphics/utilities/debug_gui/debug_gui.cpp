@@ -19,7 +19,7 @@
 
 using namespace StE::Graphics;
 
-debug_gui::debug_gui(const StEngineControl &ctx, profiler *prof, const StE::Text::Font &default_font, const Camera *camera) : ctx(ctx), prof(prof), camera(camera) {
+debug_gui::debug_gui(const ste_engine_control &ctx, profiler *prof, const StE::Text::font &default_font, const camera *cam) : ctx(ctx), prof(prof), cam(cam) {
 	assert(prof);
 
 	ImGuiIO& io = ImGui::GetIO();
@@ -87,9 +87,9 @@ void debug_gui::dispatch() const {
 		ImGui::PlotLines("Frame Times", &fts[0], fts.size(), 0, "ms", 0.f, .1f);
 
 		ImGui::SameLine(0, 75);
-		if (camera) {
+		if (cam) {
 			std::stringstream camera_pos_str;
-			print_vec(camera_pos_str, camera->get_position());
+			print_vec(camera_pos_str, cam->get_position());
 			ImGui::Text(camera_pos_str.str().data());
 		}
 		ImGui::SameLine(0, 75);

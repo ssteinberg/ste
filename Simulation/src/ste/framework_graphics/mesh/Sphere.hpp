@@ -9,12 +9,12 @@
 namespace StE {
 namespace Graphics {
 
-class Sphere : public mesh<mesh_subdivion_mode::Triangles> {
+class sphere : public mesh<mesh_subdivion_mode::Triangles> {
 public:
-	~Sphere() noexcept override {}
+	~sphere() noexcept override {}
 
-	Sphere(unsigned vert_slices, unsigned horz_slices, float theta_min = -glm::half_pi<float>(), float theta_max = glm::half_pi<float>()) {
-		std::vector<ObjectVertexData> vert;
+	sphere(unsigned vert_slices, unsigned horz_slices, float theta_min = -glm::half_pi<float>(), float theta_max = glm::half_pi<float>()) {
+		std::vector<object_vertex_data> vert;
 		std::vector<std::uint32_t> ind;
 
 		for (unsigned x = 0; x <= horz_slices; ++x) {
@@ -22,7 +22,7 @@ public:
 			for (unsigned y = 0; y < vert_slices; ++y) {
 				float theta = glm::mix(theta_min, theta_max, static_cast<float>(y) / static_cast<float>(vert_slices - 1));
 
-				ObjectVertexData v;
+				object_vertex_data v;
 				v.p.y = glm::sin(theta);
 				v.p.x = glm::cos(theta) * glm::sin(phi);
 				v.p.z = glm::cos(theta) * glm::cos(phi);

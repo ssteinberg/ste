@@ -4,7 +4,7 @@
 #pragma once
 
 #include "stdafx.hpp"
-#include "Camera.hpp"
+#include "camera.hpp"
 
 #include "ring_buffer.hpp"
 #include "range.hpp"
@@ -37,7 +37,7 @@ private:
 	range<> r{ 0, 0 };
 
 public:
-	void update_view_data(const Camera &c) {
+	void update_view_data(const camera &c) {
 		auto p = c.get_position();
 
 		view_data v;

@@ -32,9 +32,9 @@ namespace Core {
 
 #define ALLOW_BUFFER_OBJECT_CASTS	template <typename BufferTypeTo, typename BufferTypeFrom> friend BufferTypeTo buffer_object_cast(BufferTypeFrom &&s)
 
-class BufferObjectBinder {
+class buffer_object_binder {
 public:
-	static void bind(GenericResource::type id, GLenum target) {
+	static void bind(generic_resource::type id, GLenum target) {
 		GL::gl_current_context::get()->bind_buffer(target, id);
 	}
 	static void unbind(GLenum target = 0) {
@@ -43,10 +43,10 @@ public:
 };
 
 template <typename Type, BufferUsage::buffer_usage U = BufferUsage::BufferUsageNone>
-class buffer_object : public bindable_resource<buffer_object_immutable_storage_allocator<Type, U>, BufferObjectBinder, GLenum>,
+class buffer_object : public bindable_resource<buffer_object_immutable_storage_allocator<Type, U>, buffer_object_binder, GLenum>,
 					  public range_lockable {
 private:
-	using Base = bindable_resource<buffer_object_immutable_storage_allocator<Type, U>, BufferObjectBinder, GLenum>;
+	using Base = bindable_resource<buffer_object_immutable_storage_allocator<Type, U>, buffer_object_binder, GLenum>;
 
 public:
 	static constexpr BufferUsage::buffer_usage access_usage = U;
@@ -205,24 +205,24 @@ template <typename S, BufferUsage::buffer_usage U1, typename T, BufferUsage::buf
 void operator<<(buffer_object<T, U1> &lhs, const buffer_object<S, U2> &rhs) { rhs.copy_to(lhs); }
 
 template <typename BinderType>
-class BufferObjectLayoutBinder {
+class buffer_object_layout_binder {
 private:
 	using LayoutLocationType = layout_binding<BinderType>;
 	using EmptyLayoutLocationType = layout_binding_none<BinderType>;
 
 public:
-	static void bind(GenericResource::type id, const LayoutLocationType &index, GLenum target) {
+	static void bind(generic_resource::type id, const LayoutLocationType &index, GLenum target) {
 		if (index != EmptyLayoutLocationType()) GL::gl_current_context::get()->bind_buffer_base(target, index, id);
 	}
 	static void unbind(const LayoutLocationType &index, GLenum target = 0) {
 		if (index != EmptyLayoutLocationType()) GL::gl_current_context::get()->bind_buffer_base(target, index, 0);
 	}
-	static void bind_range(GenericResource::type id, const LayoutLocationType &index, GLenum target, int offset, std::size_t size) {
+	static void bind_range(generic_resource::type id, const LayoutLocationType &index, GLenum target, int offset, std::size_t size) {
 		if (index != EmptyLayoutLocationType()) GL::gl_current_context::get()->bind_buffer_range(target, index, id, offset, size);
 	}
 };
 
-template <typename Type, typename BinderType, BufferUsage::buffer_usage U = BufferUsage::BufferUsageNone, class LB = BufferObjectLayoutBinder<BinderType>>
+template <typename Type, typename BinderType, BufferUsage::buffer_usage U = BufferUsage::BufferUsageNone, class LB = buffer_object_layout_binder<BinderType>>
 class buffer_object_layout_bindable : public buffer_object<Type, U>, public shader_layout_bindable_resource<BinderType> {
 protected:
 	using Base = buffer_object<Type, U>;

@@ -1,11 +1,11 @@
 
 #include "stdafx.hpp"
 #include "XYZ.hpp"
-#include "Kelvin.hpp"
+#include "kelvin.hpp"
 
 using namespace StE::Graphics;
 
-Kelvin XYZ::toKelvin() const {
+kelvin XYZ::toKelvin() const {
 	/*
 	 *	Thanks to Bruce Lindbloom and A. R. Robertson:
 	 *	http://www.brucelindbloom.com/index.html?Eqn_XYZ_to_T.html
@@ -62,7 +62,7 @@ Kelvin XYZ::toKelvin() const {
 		{0.33724, 0.36051, -116.45}
 	};
 
-	Kelvin ret;
+	kelvin ret;
 	double xyz[3];
 	double us, vs, p, di, dm;
 	int i;

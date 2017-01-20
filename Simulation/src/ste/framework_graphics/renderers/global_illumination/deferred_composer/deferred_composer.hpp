@@ -4,7 +4,7 @@
 #pragma once
 
 #include "stdafx.hpp"
-#include "StEngineControl.hpp"
+#include "ste_engine_control.hpp"
 
 #include "signal.hpp"
 
@@ -14,9 +14,9 @@
 #include "gpu_dispatchable.hpp"
 
 #include "glsl_program.hpp"
-#include "Texture2D.hpp"
-#include "Texture2DArray.hpp"
-#include "Texture3D.hpp"
+#include "texture_2d.hpp"
+#include "texture_2d_array.hpp"
+#include "texture_3d.hpp"
 
 #include <memory>
 
@@ -28,7 +28,7 @@
 namespace StE {
 namespace Graphics {
 
-class GIRenderer;
+class gi_renderer;
 
 class deferred_composer : public gpu_dispatchable {
 	using Base = gpu_dispatchable;
@@ -38,17 +38,18 @@ class deferred_composer : public gpu_dispatchable {
 
 private:
 	Resource::resource_instance<Resource::glsl_program> program;
-	GIRenderer *dr;
+	gi_renderer *dr;
 
 	std::shared_ptr<connection<>> vss_storage_connection;
 	std::shared_ptr<connection<>> shadows_storage_connection;
 
-	std::unique_ptr<Core::Texture2D> microfacet_refraction_fit_lut;
-	std::unique_ptr<Core::Texture2DArray> microfacet_transmission_fit_lut;
+	std::unique_ptr<Core::texture_2d> microfacet_refraction_fit_lut;
+	std::unique_ptr<Core::texture_2d_array> microfacet_transmission_fit_lut;
 
-	std::unique_ptr<Core::Texture2DArray> atmospherics_optical_length_lut;
-	std::unique_ptr<Core::Texture3D> atmospherics_scatter_lut;
-	std::unique_ptr<Core::Texture3D> atmospherics_mie0_scatter_lut;
+	std::unique_ptr<Core::texture_2d_array> atmospherics_optical_length_lut;
+	std::unique_ptr<Core::texture_3d> atmospherics_scatter_lut;
+	std::unique_ptr<Core::texture_3d> atmospherics_mie0_scatter_lut;
+	std::unique_ptr<Core::texture_3d> atmospherics_ambient_lut;
 
 	Resource::resource_instance<volumetric_scattering_scatter_dispatch> *additional_scatter_program_hack;
 
@@ -58,7 +59,7 @@ private:
 	void attach_handles() const;
 
 private:
-	deferred_composer(const StEngineControl &ctx, GIRenderer *dr, Resource::resource_instance<volumetric_scattering_scatter_dispatch> *additional_scatter_program_hack);
+	deferred_composer(const ste_engine_control &ctx, gi_renderer *dr, Resource::resource_instance<volumetric_scattering_scatter_dispatch> *additional_scatter_program_hack);
 
 public:
 	~deferred_composer() noexcept {}
@@ -77,7 +78,7 @@ class resource_loading_task<Graphics::deferred_composer> {
 	using R = Graphics::deferred_composer;
 
 public:
-	auto loader(const StEngineControl &ctx, R* object) {
+	auto loader(const ste_engine_control &ctx, R* object) {
 		return ctx.scheduler().schedule_now([object, &ctx]() {
 			object->program.wait();
 			object->additional_scatter_program_hack->wait();

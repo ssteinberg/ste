@@ -4,15 +4,15 @@
 #pragma once
 
 #include "stdafx.hpp"
-#include "StEngineControl.hpp"
+#include "ste_engine_control.hpp"
 
 #include "signal.hpp"
 
-#include "FramebufferObject.hpp"
+#include "framebuffer_object.hpp"
 
-#include "TextureCubeMapArray.hpp"
-#include "Texture2DArray.hpp"
-#include "Sampler.hpp"
+#include "texture_cube_map_array.hpp"
+#include "texture_2d_array.hpp"
+#include "sampler.hpp"
 
 #include "light_storage.hpp"
 #include "light_cascade_descriptor.hpp"
@@ -26,33 +26,33 @@ class shadowmap_storage {
 
 private:
 	glm::uvec2 cube_size;
-	std::unique_ptr<Core::TextureCubeMapArray> shadow_depth_cube_maps;
-	Core::FramebufferObject shadow_depth_cube_map_fbo;
+	std::unique_ptr<Core::texture_cube_map_array> shadow_depth_cube_maps;
+	Core::framebuffer_object shadow_depth_cube_map_fbo;
 
 	glm::uvec2 directional_map_size;
-	std::unique_ptr<Core::Texture2DArray> directional_shadow_maps;
-	Core::FramebufferObject directional_shadow_maps_fbo;
+	std::unique_ptr<Core::texture_2d_array> directional_shadow_maps;
+	Core::framebuffer_object directional_shadow_maps_fbo;
 
-	Core::Sampler shadow_depth_sampler;
+	Core::sampler shadow_depth_sampler;
 
 	signal<> storage_modified_signal;
 
 public:
-	shadowmap_storage(const StEngineControl &ctx,
+	shadowmap_storage(const ste_engine_control &ctx,
 					  const glm::uvec2 &directional_map_size = glm::uvec2(default_directional_map_size),
 					  const glm::uvec2 &cube_size = glm::uvec2(default_map_size)) : cube_size(cube_size),
 																					directional_map_size(directional_map_size),
-																					shadow_depth_sampler(Core::TextureFiltering::Linear, Core::TextureFiltering::Linear,
-																										 Core::TextureWrapMode::ClampToEdge, Core::TextureWrapMode::ClampToEdge) {
+																					shadow_depth_sampler(Core::texture_filtering::Linear, Core::texture_filtering::Linear,
+																										 Core::texture_wrap_mode::ClampToEdge, Core::texture_wrap_mode::ClampToEdge) {
 		set_cube_count(max_active_lights_per_frame);
 		set_directional_maps_count(max_active_directional_lights_per_frame);
 
-		shadow_depth_sampler.set_compare_mode(Core::TextureCompareMode::CompareToTextureDepth);
-		shadow_depth_sampler.set_compare_func(Core::TextureCompareFunc::Greater);
+		shadow_depth_sampler.set_compare_mode(Core::texture_compare_mode::CompareToTextureDepth);
+		shadow_depth_sampler.set_compare_func(Core::texture_compare_func::Greater);
 	}
 
 	void set_cube_count(std::size_t size) {
-		shadow_depth_cube_maps = std::make_unique<Core::TextureCubeMapArray>(gli::format::FORMAT_D32_SFLOAT_PACK32, glm::ivec3{ cube_size.x, cube_size.y, size * 6 });
+		shadow_depth_cube_maps = std::make_unique<Core::texture_cube_map_array>(gli::format::FORMAT_D32_SFLOAT_PACK32, glm::ivec3{ cube_size.x, cube_size.y, size * 6 });
 		shadow_depth_cube_map_fbo.depth_binding_point() = *shadow_depth_cube_maps;
 
 		storage_modified_signal.emit();
@@ -60,7 +60,7 @@ public:
 	auto get_cube_count() const { return shadow_depth_cube_maps->get_layers(); }
 
 	void set_directional_maps_count(std::size_t size) {
-		directional_shadow_maps = std::make_unique<Core::Texture2DArray>(gli::format::FORMAT_D32_SFLOAT_PACK32, glm::ivec3{ directional_map_size.x, directional_map_size.y, size * directional_light_cascades });
+		directional_shadow_maps = std::make_unique<Core::texture_2d_array>(gli::format::FORMAT_D32_SFLOAT_PACK32, glm::ivec3{ directional_map_size.x, directional_map_size.y, size * directional_light_cascades });
 		directional_shadow_maps_fbo.depth_binding_point() = *directional_shadow_maps;
 
 		storage_modified_signal.emit();

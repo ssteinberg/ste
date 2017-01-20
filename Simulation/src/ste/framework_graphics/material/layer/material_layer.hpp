@@ -8,10 +8,10 @@
 #include "material_layer_descriptor.hpp"
 #include "observable_resource.hpp"
 
-#include "Texture2D.hpp"
+#include "texture_2d.hpp"
 #include "Sampler.hpp"
 
-#include "RGB.hpp"
+#include "rgb.hpp"
 
 #include <memory>
 #include <limits>
@@ -26,9 +26,9 @@ class material_layer : public Core::observable_resource<material_layer_descripto
 	using Base = Core::observable_resource<material_layer_descriptor>;
 
 private:
-	Core::SamplerMipmapped material_sampler;
+	Core::sampler_mipmapped material_sampler;
 
-	RGB albedo;
+	rgb albedo;
 	
 	float thickness{ .0f };
 
@@ -53,7 +53,7 @@ private:
 	material_layer &operator=(const material_layer &m) = delete;
 
 private:
-	Core::texture_handle handle_for_texture(const Core::Texture2D *t) const;
+	Core::texture_handle handle_for_texture(const Core::texture_2d *t) const;
 
 public:
 	/**
@@ -76,7 +76,7 @@ public:
 	*
 	* 	@param rgb	Material albedo
 	*/
-	void set_albedo(const RGB &rgb) {
+	void set_albedo(const rgb &rgb) {
 		albedo = rgb;
 
 		glm::vec3 v = rgb;
