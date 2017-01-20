@@ -12,8 +12,8 @@
 #include "bindable_resource.hpp"
 #include "layout_binding.hpp"
 
-#include "RenderTarget.hpp"
-#include "Sampler.hpp"
+#include "render_target.hpp"
+#include "sampler.hpp"
 
 #include "texture_handle.hpp"
 #include "texture_enums.hpp"
@@ -33,12 +33,12 @@ using texture_layout_binding = layout_binding<texture_layout_binding_type>;
 texture_layout_binding inline operator "" _tex_unit(unsigned long long int i) { return texture_layout_binding(i); }
 
 template <core_resource_type TextureType>
-class TextureBinder {
+class texture_binder {
 private:
 	static constexpr GLenum gl_type() { return GL::gl_utils::translate_type(TextureType); }
 
 public:
-	static void bind(GenericResource::type id, const texture_layout_binding &sampler) {
+	static void bind(generic_resource::type id, const texture_layout_binding &sampler) {
 		GL::gl_current_context::get()->bind_texture_unit(sampler.binding_index(), id);
 	}
 	static void unbind(const texture_layout_binding &sampler) {
@@ -47,10 +47,10 @@ public:
 };
 
 template <core_resource_type TextureType>
-class texture : public bindable_resource<texture_immutable_storage_allocator<TextureType>, TextureBinder<TextureType>, texture_layout_binding>,
+class texture : public bindable_resource<texture_immutable_storage_allocator<TextureType>, texture_binder<TextureType>, texture_layout_binding>,
 				virtual public shader_layout_bindable_resource<texture_layout_binding_type> {
 private:
-	using Base = bindable_resource<texture_immutable_storage_allocator<TextureType>, TextureBinder<TextureType>, texture_layout_binding>;
+	using Base = bindable_resource<texture_immutable_storage_allocator<TextureType>, texture_binder<TextureType>, texture_layout_binding>;
 
 public:
 	using size_type = typename texture_size_type<texture_dimensions<TextureType>::dimensions>::type;
@@ -155,8 +155,8 @@ public:
 	auto get_texture_handle() const {
 		return texture_handle(glGetTextureHandleARB(Base::get_resource_id()));
 	}
-	auto get_texture_handle(const Sampler &sam) const {
-		GenericResource::type sam_id = sam.get_resource_id();
+	auto get_texture_handle(const sampler &sam) const {
+		generic_resource::type sam_id = sam.get_resource_id();
 		return texture_handle(glGetTextureSamplerHandleARB(Base::get_resource_id(), sam_id));
 	}
 

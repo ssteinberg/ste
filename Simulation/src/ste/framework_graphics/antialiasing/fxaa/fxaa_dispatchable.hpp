@@ -4,7 +4,7 @@
 #pragma once
 
 #include "stdafx.hpp"
-#include "StEngineControl.hpp"
+#include "ste_engine_control.hpp"
 
 #include "resource_instance.hpp"
 #include "resource_loading_task.hpp"
@@ -14,9 +14,9 @@
 #include "gpu_dispatchable.hpp"
 
 #include "glsl_program.hpp"
-#include "Texture2D.hpp"
-#include "Sampler.hpp"
-#include "FramebufferObject.hpp"
+#include "texture_2d.hpp"
+#include "sampler.hpp"
+#include "framebuffer_object.hpp"
 
 #include <memory>
 
@@ -30,27 +30,27 @@ class fxaa_dispatchable : public gpu_dispatchable {
 	friend class Resource::resource_instance<fxaa_dispatchable>;
 
 private:
-	using ResizeSignalConnectionType = StEngineControl::framebuffer_resize_signal_type::connection_type;
+	using ResizeSignalConnectionType = ste_engine_control::framebuffer_resize_signal_type::connection_type;
 
 private:
 	Resource::resource_instance<Resource::glsl_program> program;
-	Core::FramebufferObject fbo;
-	std::unique_ptr<Core::Texture2D> input;
+	Core::framebuffer_object fbo;
+	std::unique_ptr<Core::texture_2d> input;
 
 	std::shared_ptr<ResizeSignalConnectionType> resize_connection;
 
 private:
 	void resize(const glm::ivec2 &size) {
-		input = std::make_unique<Core::Texture2D>(gli::format::FORMAT_RGB16_SFLOAT_PACK16, StE::Core::Texture2D::size_type(size), 1);
+		input = std::make_unique<Core::texture_2d>(gli::format::FORMAT_RGB16_SFLOAT_PACK16, StE::Core::texture_2d::size_type(size), 1);
 		fbo[0] = *input;
 
-		auto handle = input->get_texture_handle(*Core::Sampler::SamplerLinearClamp());
+		auto handle = input->get_texture_handle(*Core::sampler::sampler_linear_clamp());
 		handle.make_resident();
 		program.get().set_uniform("input_tex", handle);
 	}
 
 public:
-	fxaa_dispatchable(const StEngineControl &ctx) : program(ctx, std::vector<std::string>{ "fxaa.vert", "fxaa.frag" }) {
+	fxaa_dispatchable(const ste_engine_control &ctx) : program(ctx, std::vector<std::string>{ "fxaa.vert", "fxaa.frag" }) {
 		resize_connection = std::make_shared<ResizeSignalConnectionType>([=](const glm::i32vec2 &size) {
 			resize(size);
 		});
@@ -74,7 +74,7 @@ class resource_loading_task<Graphics::fxaa_dispatchable> {
 	using R = Graphics::fxaa_dispatchable;
 
 public:
-	auto loader(const StEngineControl &ctx, R* object) {
+	auto loader(const ste_engine_control &ctx, R* object) {
 		return ctx.scheduler().schedule_now([object, &ctx]() {
 			object->program.wait();
 		}).then_on_main_thread([object, &ctx]() {

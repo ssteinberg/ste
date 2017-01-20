@@ -4,22 +4,22 @@
 #pragma once
 
 #include "stdafx.hpp"
-#include "StEngineControl.hpp"
+#include "ste_engine_control.hpp"
 
 #include "resource_instance.hpp"
 #include "resource_loading_task.hpp"
 
-#include "GIRenderer.hpp"
+#include "gi_renderer.hpp"
 
 namespace StE {
 namespace Resource {
 
 template <>
-class resource_loading_task<Graphics::GIRenderer> {
-	using R = Graphics::GIRenderer;
+class resource_loading_task<Graphics::gi_renderer> {
+	using R = Graphics::gi_renderer;
 
 public:
-	auto loader(const StEngineControl &ctx, R* object) {
+	auto loader(const ste_engine_control &ctx, R* object) {
 		return ctx.scheduler().schedule_now([object, &ctx]() {
 			object->hdr.wait();
 			object->fxaa.wait();

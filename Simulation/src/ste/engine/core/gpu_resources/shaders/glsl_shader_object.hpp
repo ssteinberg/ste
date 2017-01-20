@@ -13,37 +13,37 @@
 namespace StE {
 namespace Core {
 
-enum class GLSLShaderType {
+enum class glsl_shader_type {
 	NONE,
 	VERTEX, FRAGMENT, GEOMETRY,
 	COMPUTE,
 	TESS_CONTROL, TESS_EVALUATION
 };
 
-struct GLSLShaderProperties {
+struct glsl_shader_properties {
 	int version_major, version_minor;
 };
 
 namespace _ste_glslshader_creator {
-	template <GLSLShaderType T>
-	GenericResource::type inline creator() { assert(false && "unspecialized"); return 0; }
-	template <> GenericResource::type inline creator<GLSLShaderType::NONE>() { assert(false && "ShaderType cannot be none."); return 0; }
-	template <> GenericResource::type inline creator<GLSLShaderType::VERTEX>() { return glCreateShader(GL_VERTEX_SHADER); }
-	template <> GenericResource::type inline creator<GLSLShaderType::FRAGMENT>() { return glCreateShader(GL_FRAGMENT_SHADER); }
-	template <> GenericResource::type inline creator<GLSLShaderType::GEOMETRY>() { return glCreateShader(GL_GEOMETRY_SHADER); }
-	template <> GenericResource::type inline creator<GLSLShaderType::COMPUTE>() { return glCreateShader(GL_COMPUTE_SHADER); }
-	template <> GenericResource::type inline creator<GLSLShaderType::TESS_CONTROL>() { return glCreateShader(GL_TESS_CONTROL_SHADER); }
-	template <> GenericResource::type inline creator<GLSLShaderType::TESS_EVALUATION>() { return glCreateShader(GL_TESS_EVALUATION_SHADER); }
+	template <glsl_shader_type T>
+	generic_resource::type inline creator() { assert(false && "unspecialized"); return 0; }
+	template <> generic_resource::type inline creator<glsl_shader_type::NONE>() { assert(false && "ShaderType cannot be none."); return 0; }
+	template <> generic_resource::type inline creator<glsl_shader_type::VERTEX>() { return glCreateShader(GL_VERTEX_SHADER); }
+	template <> generic_resource::type inline creator<glsl_shader_type::FRAGMENT>() { return glCreateShader(GL_FRAGMENT_SHADER); }
+	template <> generic_resource::type inline creator<glsl_shader_type::GEOMETRY>() { return glCreateShader(GL_GEOMETRY_SHADER); }
+	template <> generic_resource::type inline creator<glsl_shader_type::COMPUTE>() { return glCreateShader(GL_COMPUTE_SHADER); }
+	template <> generic_resource::type inline creator<glsl_shader_type::TESS_CONTROL>() { return glCreateShader(GL_TESS_CONTROL_SHADER); }
+	template <> generic_resource::type inline creator<glsl_shader_type::TESS_EVALUATION>() { return glCreateShader(GL_TESS_EVALUATION_SHADER); }
 };
 
-template <GLSLShaderType ShaderType>
-class GLSLShaderAllocator : public generic_resource_allocator {
+template <glsl_shader_type ShaderType>
+class glsl_shader_allocator : public generic_resource_allocator {
 public:
-	GenericResource::type allocate() override final {
-		GenericResource::type res = _ste_glslshader_creator::creator<ShaderType>();
+	generic_resource::type allocate() override final {
+		generic_resource::type res = _ste_glslshader_creator::creator<ShaderType>();
 		return res;
 	}
-	static void deallocate(GenericResource::type &id) {
+	static void deallocate(generic_resource::type &id) {
 		if (id) {
 			glDeleteShader(id);
 			id = 0;
@@ -51,7 +51,7 @@ public:
 	}
 };
 
-class glsl_shader_object_generic : virtual public GenericResource {
+class glsl_shader_object_generic : virtual public generic_resource {
 private:
 	std::string name;
 
@@ -72,11 +72,11 @@ public:
 	virtual ~glsl_shader_object_generic() noexcept {}
 };
 
-template <GLSLShaderType ShaderType>
-class glsl_shader_object : public resource<GLSLShaderAllocator<ShaderType>>, public glsl_shader_object_generic {
+template <glsl_shader_type ShaderType>
+class glsl_shader_object : public resource<glsl_shader_allocator<ShaderType>>, public glsl_shader_object_generic {
 private:
 	int status;
-	GLSLShaderProperties properties;
+	glsl_shader_properties properties;
 
 	void compile() {
 		glCompileShader(get_resource_id());
@@ -84,7 +84,7 @@ private:
 	}
 
 public:
-	static constexpr GLSLShaderType type = ShaderType;
+	static constexpr glsl_shader_type type = ShaderType;
 
 public:
 	glsl_shader_object(glsl_shader_object &&m) = default;
@@ -92,7 +92,7 @@ public:
 	glsl_shader_object& operator=(glsl_shader_object &&m) = default;
 	glsl_shader_object& operator=(const glsl_shader_object &c) = delete;
 
-	glsl_shader_object(const std::string &name, const std::string &src, const GLSLShaderProperties &properties) : glsl_shader_object_generic(name), properties(properties) {
+	glsl_shader_object(const std::string &name, const std::string &src, const glsl_shader_properties &properties) : glsl_shader_object_generic(name), properties(properties) {
 		auto str = src.data();
 		glShaderSource(get_resource_id(), 1, &str, NULL);
 
@@ -113,7 +113,7 @@ public:
 	}
 
 	bool get_status() const override final { return !!status; }
-	const GLSLShaderProperties &get_shader_properties() const { return properties; }
+	const glsl_shader_properties &get_shader_properties() const { return properties; }
 
 	core_resource_type resource_type() const override { return core_resource_type::GLSLShader; }
 };

@@ -22,7 +22,7 @@
 
 namespace StE {
 
-class StEngineControl;
+class ste_engine_control;
 
 namespace Core {
 
@@ -42,7 +42,7 @@ class gl_context : public gl_generic_context {
 	using Base = gl_generic_context;
 
 private:
-	friend class StE::StEngineControl;
+	friend class StE::ste_engine_control;
 
 	using window_type = std::unique_ptr<GLFWwindow, std::function<void(GLFWwindow*)>>;
 

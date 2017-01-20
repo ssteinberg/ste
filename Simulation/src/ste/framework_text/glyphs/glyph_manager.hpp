@@ -5,16 +5,16 @@
 
 #include "glyph.hpp"
 #include "glyph_factory.hpp"
-#include "Font.hpp"
+#include "font.hpp"
 
-#include "StEngineControl.hpp"
+#include "ste_engine_control.hpp"
 #include "task_scheduler.hpp"
 #include "optional.hpp"
 
-#include "ShaderStorageBuffer.hpp"
+#include "shader_storage_buffer.hpp"
 #include "gstack.hpp"
 
-#include "Texture2D.hpp"
+#include "texture_2d.hpp"
 
 #include <exception>
 
@@ -35,7 +35,7 @@ private:
 
 public:
 	struct glyph_descriptor {
-		std::unique_ptr<Core::Texture2D> texture;
+		std::unique_ptr<Core::texture_2d> texture;
 		glyph::glyph_metrics metrics;
 		int advance_x;
 		int buffer_index;
@@ -46,16 +46,16 @@ public:
 	};
 
 private:
-	const StEngineControl &context;
+	const ste_engine_control &context;
 	glyph_factory factory;
 
-	std::unordered_map<Font, font_storage> fonts;
+	std::unordered_map<font, font_storage> fonts;
 	Core::gstack<buffer_glyph_descriptor> buffer;
 
-	Core::Sampler text_glyph_sampler;
+	Core::sampler text_glyph_sampler;
 
 private:
-	task_future<const glyph_descriptor*> glyph_loader_async(task_scheduler *sched, const Font &font, wchar_t codepoint) {
+	task_future<const glyph_descriptor*> glyph_loader_async(task_scheduler *sched, const font &font, wchar_t codepoint) {
 		return sched->schedule_now([=]() -> glyph {
 			std::string cache_key = std::string("ttfdf") + font.get_path().string() + std::to_string(static_cast<std::uint32_t>(codepoint));
 
@@ -82,7 +82,7 @@ private:
 				return nullptr;
 
 			glyph_descriptor gd;
-			gd.texture = std::make_unique<Core::Texture2D>(*g.glyph_distance_field);
+			gd.texture = std::make_unique<Core::texture_2d>(*g.glyph_distance_field);
 			gd.metrics = g.metrics;
 			gd.buffer_index = buffer.size();
 
@@ -100,15 +100,15 @@ private:
 	}
 
 public:
-	glyph_manager(const StEngineControl &context) : context(context) {
-		text_glyph_sampler.set_min_filter(Core::TextureFiltering::Linear);
-		text_glyph_sampler.set_mag_filter(Core::TextureFiltering::Linear);
-		text_glyph_sampler.set_wrap_s(Core::TextureWrapMode::ClampToBorder);
-		text_glyph_sampler.set_wrap_t(Core::TextureWrapMode::ClampToBorder);
+	glyph_manager(const ste_engine_control &context) : context(context) {
+		text_glyph_sampler.set_min_filter(Core::texture_filtering::Linear);
+		text_glyph_sampler.set_mag_filter(Core::texture_filtering::Linear);
+		text_glyph_sampler.set_wrap_s(Core::texture_wrap_mode::ClampToBorder);
+		text_glyph_sampler.set_wrap_t(Core::texture_wrap_mode::ClampToBorder);
 		text_glyph_sampler.set_anisotropic_filter(16);
 	}
 
-	const glyph_descriptor* glyph_for_font(task_scheduler *sched, const Font &font, wchar_t codepoint) {
+	const glyph_descriptor* glyph_for_font(task_scheduler *sched, const font &font, wchar_t codepoint) {
 		auto it = this->fonts.find(font);
 		if (it == this->fonts.end())
 			it = this->fonts.emplace(std::make_pair(font, font_storage())).first;
@@ -122,11 +122,11 @@ public:
 		return &glyphit->second;
 	}
 
-	int spacing(const Font &font, const std::pair<wchar_t, wchar_t> &chars, int pixel_size) {
+	int spacing(const font &font, const std::pair<wchar_t, wchar_t> &chars, int pixel_size) {
 		return factory.read_kerning(font, chars, pixel_size);
 	}
 
-	task_future<void> preload_glyphs_async(task_scheduler *sched, const Font &font, std::vector<wchar_t> codepoints) {
+	task_future<void> preload_glyphs_async(task_scheduler *sched, const font &font, std::vector<wchar_t> codepoints) {
 		return sched->schedule_now([=]() {
 			std::vector<task_future<const glyph_descriptor*>> futures;
 			for (wchar_t codepoint : codepoints) {

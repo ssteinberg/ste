@@ -15,7 +15,7 @@
 
 #include "image_handle.hpp"
 
-#include "RenderTarget.hpp"
+#include "render_target.hpp"
 
 namespace StE {
 namespace Core {
@@ -29,39 +29,39 @@ image_layout_binding inline operator "" _image_idx(unsigned long long int i) { r
 
 class image_dummy_resource_allocator : public generic_resource_allocator {
 public:
-	static bool is_valid(GenericResource::type id) { return false; }
-	GenericResource::type allocate() override final { return 0; };
-	static void deallocate(GenericResource::type &id) { id = 0; }
+	static bool is_valid(generic_resource::type id) { return false; }
+	generic_resource::type allocate() override final { return 0; };
+	static void deallocate(generic_resource::type &id) { id = 0; }
 };
 
-class ImageBinder {
+class image_binder {
 public:
-	static void bind(GenericResource::type id, const image_layout_binding &unit, int level, bool layered, int layer, ImageAccessMode access, gli::format format) {
+	static void bind(generic_resource::type id, const image_layout_binding &unit, int level, bool layered, int layer, image_access_mode access, gli::format format) {
 		auto swizzle = swizzles_rgba;
 		GL::gl_current_context::get()->bind_image_texture(unit, id, level, layered, layer, static_cast<GLenum>(access), GL::gl_utils::translate_format(format, swizzle).Internal);
 	}
-	static void unbind(const image_layout_binding &unit, int level, bool layered, int layer, ImageAccessMode access, gli::format format) {
+	static void unbind(const image_layout_binding &unit, int level, bool layered, int layer, image_access_mode access, gli::format format) {
 		GL::gl_current_context::get()->bind_image_texture(unit, 0, 0, 0, 0, 0, 0);
 	}
 };
 
 template <core_resource_type type>
-class image_layout_bindable : protected bindable_resource<image_dummy_resource_allocator, ImageBinder, image_layout_binding, int, bool, int, ImageAccessMode, gli::format>, virtual public shader_layout_bindable_resource<image_layout_binding_type> {
+class image_layout_bindable : protected bindable_resource<image_dummy_resource_allocator, image_binder, image_layout_binding, int, bool, int, image_access_mode, gli::format>, virtual public shader_layout_bindable_resource<image_layout_binding_type> {
 public:
 	using size_type = glm::ivec2;
 
 private:
-	using Base = bindable_resource<image_dummy_resource_allocator, ImageBinder, image_layout_binding, int, bool, int, ImageAccessMode, gli::format>;
+	using Base = bindable_resource<image_dummy_resource_allocator, image_binder, image_layout_binding, int, bool, int, image_access_mode, gli::format>;
 
 protected:
 	size_type size;
 	gli::format format;
-	ImageAccessMode access;
+	image_access_mode access;
 	core_resource_type texture_type;
 	int level, layers, layer;
 
 	template <class A2>
-	image_layout_bindable(const resource<A2> &res, const size_type &size, gli::format format, ImageAccessMode access, int level, int layers, int layer) : Base(res), size(size), format(format), access(access), level(level), layers(layers), layer(layer) {}
+	image_layout_bindable(const resource<A2> &res, const size_type &size, gli::format format, image_access_mode access, int level, int layers, int layer) : Base(res), size(size), format(format), access(access), level(level), layers(layers), layer(layer) {}
 
 public:
 	image_layout_bindable(image_layout_bindable &&m) = default;
@@ -81,7 +81,7 @@ public:
 		return image_handle(glGetImageHandleARB(get_resource_id(), level, layers > 1 ? true : false, layer, GL::gl_utils::translate_format(format, swizzle).Internal), access);
 	}
 
-	void set_access(ImageAccessMode access) { this->access = access; }
+	void set_access(image_access_mode access) { this->access = access; }
 	int get_layers() const { return layers; }
 	int get_level() const { return level; }
 	virtual gli::format get_format() const { return format; }
@@ -92,7 +92,7 @@ public:
 };
 
 template <core_resource_type ImageType>
-class image : public image_layout_bindable<ImageType>, virtual public RenderTargetGeneric {
+class image : public image_layout_bindable<ImageType>, virtual public render_target_generic {
 public:
 	using size_type = glm::ivec2;
 
@@ -103,7 +103,7 @@ private:
 
 public:
 	template <class A2>
-	image(const resource<A2> &res, const size_type &size, gli::format format, ImageAccessMode access, int level, int layer) : Base(res, size, format, access, level, 1, layer) {}
+	image(const resource<A2> &res, const size_type &size, gli::format format, image_access_mode access, int level, int layer) : Base(res, size, format, access, level, 1, layer) {}
 
 	image(image &&m) = default;
 	image(const image &c) = delete;
@@ -116,7 +116,7 @@ public:
 	size_type get_image_size() const final override { return Base::size; }
 
 	image<ImageType> with_format(gli::format format) const { return image(*this, Base::size, format, Base::access, Base::level, Base::layer); }
-	image<ImageType> with_access(ImageAccessMode access) const { return image(*this, Base::size, Base::format, access, Base::level, Base::layer); }
+	image<ImageType> with_access(image_access_mode access) const { return image(*this, Base::size, Base::format, access, Base::level, Base::layer); }
 };
 
 template <core_resource_type ImageType>
@@ -129,7 +129,7 @@ private:
 
 public:
 	template <class A2>
-	image_container(const resource<A2> &res, const size_type &size, gli::format format, ImageAccessMode access, int level, int layers) : Base(res, size, format, access, level, layers, 0) {}
+	image_container(const resource<A2> &res, const size_type &size, gli::format format, image_access_mode access, int level, int layers) : Base(res, size, format, access, level, layers, 0) {}
 
 	image_container(image_container &&m) = default;
 	image_container(const image_container &c) = delete;
@@ -139,7 +139,7 @@ public:
 	image<ImageType> operator[](int layer) const { return image<ImageType>(*this, Base::size, Base::format, Base::access, Base::level, layer); }
 
 	image_container<ImageType> with_format(gli::format format) const { return image_container(*this, Base::size, format, Base::access, Base::level, Base::layers); }
-	image_container<ImageType> with_access(ImageAccessMode access) const { return image_container(*this, Base::size, Base::format, access, Base::level, Base::layers); }
+	image_container<ImageType> with_access(image_access_mode access) const { return image_container(*this, Base::size, Base::format, access, Base::level, Base::layers); }
 };
 
 }

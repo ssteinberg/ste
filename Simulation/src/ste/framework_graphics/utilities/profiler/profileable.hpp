@@ -21,8 +21,8 @@ private:
 public:
 	void query_start() const {
 		if (timer_in_use != -1) {
-			start_time = start_time_query[timer_in_use].get_query_result_u64(Core::QueryResultType::QueryResult);
-			end_time = end_time_query[timer_in_use].get_query_result_u64(Core::QueryResultType::QueryResult);
+			start_time = start_time_query[timer_in_use].get_query_result_u64(Core::query_result_type::QueryResult);
+			end_time = end_time_query[timer_in_use].get_query_result_u64(Core::query_result_type::QueryResult);
 		}
 
 		timer_in_use = (timer_in_use+1) % 2;

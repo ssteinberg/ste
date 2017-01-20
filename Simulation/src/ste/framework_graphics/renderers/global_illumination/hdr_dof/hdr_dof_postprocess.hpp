@@ -4,7 +4,7 @@
 #pragma once
 
 #include "stdafx.hpp"
-#include "StEngineControl.hpp"
+#include "ste_engine_control.hpp"
 
 #include "resource_instance.hpp"
 #include "resource_loading_task.hpp"
@@ -15,12 +15,12 @@
 #include "Quad.hpp"
 
 #include "image.hpp"
-#include "Texture1D.hpp"
-#include "Texture2D.hpp"
-#include "ShaderStorageBuffer.hpp"
-#include "PixelBufferObject.hpp"
-#include "AtomicCounterBufferObject.hpp"
-#include "FramebufferObject.hpp"
+#include "texture_1d.hpp"
+#include "texture_2d.hpp"
+#include "shader_storage_buffer.hpp"
+#include "pixel_buffer_object.hpp"
+#include "atomic_counter_buffer_object.hpp"
+#include "framebuffer_object.hpp"
 #include "glsl_program.hpp"
 
 #include "deferred_gbuffer.hpp"
@@ -55,7 +55,7 @@ private:
 	static constexpr float vision_properties_max_lum = 10.f;
 
 private:
-	using ResizeSignalConnectionType = StEngineControl::framebuffer_resize_signal_type::connection_type;
+	using ResizeSignalConnectionType = ste_engine_control::framebuffer_resize_signal_type::connection_type;
 
 	struct hdr_bokeh_parameters {
 		std::int32_t lum_min, lum_max;
@@ -64,7 +64,7 @@ private:
 
 private:
 	const deferred_gbuffer *gbuffer;
-	const StEngineControl &ctx;
+	const ste_engine_control &ctx;
 
 	std::shared_ptr<const gpu_task> task;
 
@@ -84,26 +84,26 @@ private:
 	Resource::resource_instance<Resource::glsl_program> hdr_bloom_blury;
 	Resource::resource_instance<Resource::glsl_program> bokeh_blur;
 
-	Core::Sampler hdr_vision_properties_sampler;
+	Core::sampler hdr_vision_properties_sampler;
 
-	std::unique_ptr<Core::Texture1D> hdr_vision_properties_texture;
+	std::unique_ptr<Core::texture_1d> hdr_vision_properties_texture;
 	Core::texture_handle hdr_vision_properties_texture_handle;
 
-	std::unique_ptr<Core::Texture2D> hdr_image;
-	std::unique_ptr<Core::Texture2D> hdr_final_image;
-	std::unique_ptr<Core::Texture2D> hdr_bloom_image;
-	std::unique_ptr<Core::Texture2D> hdr_bloom_blurx_image;
-	std::unique_ptr<Core::Texture2D> hdr_lums;
+	std::unique_ptr<Core::texture_2d> hdr_image;
+	std::unique_ptr<Core::texture_2d> hdr_final_image;
+	std::unique_ptr<Core::texture_2d> hdr_bloom_image;
+	std::unique_ptr<Core::texture_2d> hdr_bloom_blurx_image;
+	std::unique_ptr<Core::texture_2d> hdr_lums;
 
-	Core::FramebufferObject fbo_hdr_final;
-	Core::FramebufferObject fbo_hdr;
-	Core::FramebufferObject fbo_hdr_bloom_blurx_image;
+	Core::framebuffer_object fbo_hdr_final;
+	Core::framebuffer_object fbo_hdr;
+	Core::framebuffer_object fbo_hdr_bloom_blurx_image;
 
-	mutable Core::ShaderStorageBuffer<hdr_bokeh_parameters> hdr_bokeh_param_buffer{ 1 };
-	mutable Core::ShaderStorageBuffer<hdr_bokeh_parameters> hdr_bokeh_param_buffer_prev{ 1 };
-	mutable Core::AtomicCounterBufferObject<> histogram{ 128 };
-	mutable Core::ShaderStorageBuffer<std::uint32_t> histogram_sums{ 128 };
-	mutable std::unique_ptr<Core::PixelBufferObject<std::int32_t>> hdr_bokeh_param_buffer_eraser;
+	mutable Core::shader_storage_buffer<hdr_bokeh_parameters> hdr_bokeh_param_buffer{ 1 };
+	mutable Core::shader_storage_buffer<hdr_bokeh_parameters> hdr_bokeh_param_buffer_prev{ 1 };
+	mutable Core::atomic_counter_buffer_object<> histogram{ 128 };
+	mutable Core::shader_storage_buffer<std::uint32_t> histogram_sums{ 128 };
+	mutable std::unique_ptr<Core::pixel_buffer_object<std::int32_t>> hdr_bokeh_param_buffer_eraser;
 
 	glm::i32vec2 luminance_size;
 
@@ -121,7 +121,7 @@ private:
 	void attach_handles() const;
 
 private:
-	hdr_dof_postprocess(const StEngineControl &ctx, const deferred_gbuffer *gbuffer);
+	hdr_dof_postprocess(const ste_engine_control &ctx, const deferred_gbuffer *gbuffer);
 
 public:
 	~hdr_dof_postprocess() noexcept;
@@ -157,7 +157,7 @@ class resource_loading_task<Graphics::hdr_dof_postprocess> {
 	using R = Graphics::hdr_dof_postprocess;
 
 public:
-	auto loader(const StEngineControl &ctx, R* object) {
+	auto loader(const ste_engine_control &ctx, R* object) {
 		return ctx.scheduler().schedule_now([object, &ctx]() {
 			object->hdr_compute_minmax.wait();
 			object->hdr_create_histogram.wait();

@@ -53,7 +53,7 @@ public:
 
 	/**
 	*	@brief	Load balances thread pool and executes pending main thread tasks.
-	*			Must be called from main thread. Shouldn't be called manually, task_futures and StEngineControl
+	*			Must be called from main thread. Shouldn't be called manually, task_futures and ste_engine_control
 	*			handle it.
 	*/
 	void run_loop();
