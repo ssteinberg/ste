@@ -91,6 +91,7 @@ void deferred_composer::load_atmospherics_luts() {
 		atmospherics_optical_length_lut = std::make_unique<Core::Texture2DArray>(lut_loader.create_optical_length_lut());
 		atmospherics_scatter_lut = std::make_unique<Core::Texture3D>(lut_loader.create_scatter_lut());
 		atmospherics_mie0_scatter_lut = std::make_unique<Core::Texture3D>(lut_loader.create_mie0_scatter_lut());
+		atmospherics_ambient_lut = std::make_unique<Core::Texture3D>(lut_loader.create_ambient_lut());
 	}
 	catch (const microfacet_fit_error &err) {
 		using namespace Text::Attributes;
@@ -104,17 +105,21 @@ void deferred_composer::load_atmospherics_luts() {
 	auto optical_length_handle = atmospherics_optical_length_lut->get_texture_handle(*Core::Sampler::SamplerLinearClamp());
 	auto scatter_handle = atmospherics_scatter_lut->get_texture_handle(*Core::Sampler::SamplerLinearClamp());
 	auto mie0_scatter_handle = atmospherics_mie0_scatter_lut->get_texture_handle(*Core::Sampler::SamplerLinearClamp());
+	auto ambient_handle = atmospherics_ambient_lut->get_texture_handle(*Core::Sampler::SamplerLinearClamp());
 	optical_length_handle.make_resident();
 	scatter_handle.make_resident();
 	mie0_scatter_handle.make_resident();
+	ambient_handle.make_resident();
 	program.get().set_uniform("atmospheric_optical_length_lut", optical_length_handle);
 	program.get().set_uniform("atmospheric_scattering_lut", scatter_handle);
 	program.get().set_uniform("atmospheric_mie0_scattering_lut", mie0_scatter_handle);
+	program.get().set_uniform("atmospheric_ambient_lut", ambient_handle);
 
 	//! Hack
 	additional_scatter_program_hack->get().get_program()->set_uniform("atmospheric_optical_length_lut", optical_length_handle);
 	additional_scatter_program_hack->get().get_program()->set_uniform("atmospheric_scattering_lut", scatter_handle);
 	additional_scatter_program_hack->get().get_program()->set_uniform("atmospheric_mie0_scattering_lut", mie0_scatter_handle);
+	additional_scatter_program_hack->get().get_program()->set_uniform("atmospheric_ambient_lut", ambient_handle);
 	//! /Hack
 }
 

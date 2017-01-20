@@ -20,6 +20,9 @@ float _atmospheric_sun_zenith_to_lut_idx(float cos_delta) {
 float _atmospheric_sun_view_azimuth_to_lut_idx(float omega) {
 	return omega / pi;
 }
+float _atmospheric_ambient_NdotL_to_lut_idx(float NdotL) {
+	return (1.f + NdotL) / 2.f;
+}
 
 
 struct atmospherics_descriptor {

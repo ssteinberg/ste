@@ -134,6 +134,7 @@ vec3 deferred_shade_fragment(g_buffer_element frag, ivec2 coord,
 							 sampler2DArray atmospheric_optical_length_lut,
 							 sampler3D atmospheric_scattering_lut,
 							 sampler3D atmospheric_mie0_scattering_lut,
+							 sampler3D atmospheric_ambient_lut,
 							 sampler2D back_face_depth, 
 							 sampler2D front_face_depth) {
 	// Calculate perceived object thickness in camera space (used for subsurface scattering)
@@ -231,6 +232,9 @@ vec3 deferred_shade_fragment(g_buffer_element frag, ivec2 coord,
 													 coord);
 
 			if (ld.type == LightTypeDirectional) {
+				//return atmospheric_ambient(w_pos, dot(n, -ld.transformed_position), ld.position,
+				//						   atmospheric_ambient_lut).rgb;
+
 				//!? TODO: Remove!
 				// Inject some ambient, still without global illumination...
 				rgb += ld.diffuse * ld.luminance * 1e-11 * (1-shdw);

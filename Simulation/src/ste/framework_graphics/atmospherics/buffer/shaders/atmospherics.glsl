@@ -290,7 +290,7 @@ float cie_scattering_indicatrix_normalizer() {
 /*
 *	Calculates the multiple-scattered irradiance reaching an obsever in the atmosphere, given viewing 
 *	direction and light source direction. 
-*	Uses a LUT for calculation.
+*	Uses a precomputed LUT for calculation.
 *
 *	@param P		Observer world position
 *	@param L		Light direction
@@ -332,4 +332,34 @@ vec3 atmospheric_scatter(vec3 P, vec3 L, vec3 V,
 
 	return scatter * p + 
 		   m0 * p_mie;
+}
+
+/*
+*	Calculates the multiple-scattered ambient irradiance reaching a point.
+*	Uses a precomputed LUT for calculation.
+*
+*	@param P		Observer world position
+*	@param L		Light direction
+*	@param V		Viewing direction
+*/
+vec3 atmospheric_ambient(vec3 P, float NdotL, vec3 L, 
+						 sampler3D atmospheric_ambient_lut) {
+	vec3 C = atmospherics_descriptor_data.center_radius.xyz;
+	float r = atmospherics_descriptor_data.center_radius.w;
+
+	// Compute the up vector, i.e. the from the center of the atmosphere to viewer position
+	vec3 Y = P - C;
+	float Ylen = length(Y);
+	vec3 U = Y / Ylen;
+	
+	// Compute height in atmosphere, view-zenith angle and sun-zenith angle.
+	float h = Ylen - r;
+	float cos_delta = dot(U, -L);
+	
+	// And convert those into LUT lookup indices
+	float x = _atmospheric_height_to_lut_idx(h, atmospherics_descriptor_data.Hr_max);
+	float y = _atmospheric_sun_zenith_to_lut_idx(cos_delta);
+	float z = _atmospheric_ambient_NdotL_to_lut_idx(NdotL);
+
+	return texture(atmospheric_ambient_lut, vec3(x,y,z)).rgb;
 }
