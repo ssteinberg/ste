@@ -133,11 +133,14 @@ public:
 	*	@brief	Set the camera aperture parameter. Those parameters affect the depth of field of the resulting image.
 	*
 	* 	@param diameter		Lens diameter in world units. Defaults to human eye pupil diameter which ranges from 2e-3 to 8e-3.
-	*	@param distance		Distance from receiver to lens in world units. Defaults to human eye length from retina to pupil, about 17e-3.
+	*	@param focal_length	Focal length world units. Defaults to human eye focal length, about 23e-3.
 	*/
-	void set_aperture_parameters(float diameter, float distance) const {
+	void set_aperture_parameters(float diameter, float focal_length) const {
+		assert(diameter > .0f && "Lens diameter must be positive");
+		assert(focal_length > .0f && "Focal length must be positive");
+
 		bokeh_blur.get().set_uniform("aperture_diameter", diameter);
-		bokeh_blur.get().set_uniform("aperture_distance", distance);
+		bokeh_blur.get().set_uniform("aperture_focal_length", focal_length);
 	}
 
 	void resize(glm::ivec2 size);

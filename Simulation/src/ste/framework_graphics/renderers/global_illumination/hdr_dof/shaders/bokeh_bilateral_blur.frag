@@ -33,8 +33,8 @@ const float fringe = 1.f; 		// bokeh chromatic aberration/fringing
 const float namount = 0.0001f; 	// dither amount
 
 uniform vec2 size;
-uniform float aperture_distance = 17e-3f;	// Defaults to human eye length from retina to pupil, about 17mm
-uniform float aperture_diameter = 6e-3f;	// Defaults to human eye pupil diameter which ranges from 2mm to 8mm
+uniform float aperture_focal_length = 23e-3f;	// Defaults to human eye focal length, about 23mm
+uniform float aperture_diameter = 6e-3f;		// Defaults to human eye pupil diameter which ranges from 2mm to 8mm
 
 vec3 color(vec2 coords, vec2 blur, float max_blur) {
 	vec2 jitter = fringe * blur;
@@ -50,14 +50,29 @@ vec3 color(vec2 coords, vec2 blur, float max_blur) {
 	return col + mix(vec3(0.f), col, thresh * max_blur);
 }
 
-vec2 coc(float z) {
-	float focal = params.focus;
-	float s = z;
+/*
+*	Calculates the object plane (world space) circle-of-confusion.
+*	Uses uniforms aperture_diameter and aperture_focal_length.
+*
+*	@param s		Object distance
+*	@param focal	Camera focus distance
+*/
+vec2 coc(float s, float focal) {
+	const float dist_inf = 1e+9f;
 
+	float f = aperture_focal_length;
+	float A = aperture_diameter;
+	float s1 = clamp(-focal, f, dist_inf);
+	float s2 = min(-s, dist_inf);
+
+	if (s1 == s2)
+		return vec2(0);
+		
 	// Circle of confusion diameter in world space
-	float C = aperture_diameter * abs(focal - s) / (-s);
+	float C = A * abs(s1 - s2) / s2;
+
 	// Project onto near clip plane
-	vec4 projected = project(vec3(C,0,focal));
+	vec4 projected = project(vec3(C,0,s1));
 	float c = projected.x / projected.w;
 
 	// Normalize to screen texture space
@@ -74,8 +89,11 @@ void main() {
 
 	float d = texelFetch(depth_texture, ivec2(gl_FragCoord.xy), 0).x;
 	float z = unproject_depth(d);
+	float focal = params.focus;
+
+	vec2 coc_size = coc(z, focal);
 	
-	vec2 blur = min(coc(z), max_blur_texels_radius / size);
+	vec2 blur = min(coc_size, max_blur_texels_radius / size);
 	vec2 blur_texels = blur * size;
 	float max_blur = max_element(blur_texels);
 	

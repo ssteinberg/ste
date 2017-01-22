@@ -402,7 +402,7 @@ int main()
 	/*
 	 *	Configure GI renderer
 	 */
-	renderer.get().set_aperture_parameters(35e-3, 17e-3);
+	renderer.get().set_aperture_parameters(35e-3, 25e-3);
 
 
 	/*
