@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "FramebufferObject.hpp"
+#include "framebuffer_object.hpp"
 
 namespace StE {
 namespace Core {
@@ -40,17 +40,17 @@ public:
 
 class context_framebuffer_dummy_allocator : public generic_resource_allocator {
 public:
-	GenericResource::type allocate() override final { return 0; }
-	static void deallocate(GenericResource::type &id) {}
+	generic_resource::type allocate() override final { return 0; }
+	static void deallocate(generic_resource::type &id) {}
 };
 
-class context_framebuffer : public frame_buffer_object<context_framebuffer_dummy_allocator> {
+class context_framebuffer : public framebuffer_object_common<context_framebuffer_dummy_allocator> {
 private:
 	template<typename A, GLenum color_attachment_point>
 	friend class context_fbo_color_attachment_point;
 	friend class GL::gl_context;
 
-	using Base = frame_buffer_object<context_framebuffer_dummy_allocator>;
+	using Base = framebuffer_object_common<context_framebuffer_dummy_allocator>;
 	using front_attachment_point = context_fbo_color_attachment_point<context_framebuffer_dummy_allocator, GL_FRONT>;
 	using back_attachment_point = context_fbo_color_attachment_point<context_framebuffer_dummy_allocator, GL_BACK>;
 

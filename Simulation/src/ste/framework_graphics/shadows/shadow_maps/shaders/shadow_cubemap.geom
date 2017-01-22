@@ -28,7 +28,7 @@ layout(shared, binding = 5) restrict readonly buffer ll_data {
 	uint16_t ll[];
 };
 
-layout(std430, binding = 8) restrict readonly buffer shadow_projection_instance_to_ll_idx_translation_data {
+layout(shared, binding = 8) restrict readonly buffer shadow_projection_instance_to_ll_idx_translation_data {
 	shadow_projection_instance_to_ll_idx_translation sproj_id_to_llid_tt[];
 };
 
@@ -92,7 +92,7 @@ void main() {
 	if (face_mask == 0)
 		return;
 
-	vec3 light_pos = ld.transformed_position;
+	vec3 light_pos = ld.position;
 	float light_range = ld.effective_range;
 	float light_range2 = light_range * light_range;
 

@@ -7,14 +7,14 @@
 #include "light.hpp"
 #include "light_cascade_descriptor.hpp"
 
-#include "DirectionalLight.hpp"
-#include "SphericalLight.hpp"
+#include "directional_light.hpp"
+#include "spherical_light.hpp"
 
 #include "resource_storage_dynamic.hpp"
 #include "gstack_stable.hpp"
 
-#include "ShaderStorageBuffer.hpp"
-#include "AtomicCounterBufferObject.hpp"
+#include "shader_storage_buffer.hpp"
+#include "atomic_counter_buffer_object.hpp"
 
 #include <array>
 #include <memory>
@@ -24,8 +24,9 @@
 namespace StE {
 namespace Graphics {
 
-constexpr std::size_t max_active_lights_per_frame = 32;
-constexpr std::size_t max_active_directional_lights_per_frame = 2;
+constexpr std::size_t max_active_lights_per_frame = 24;
+constexpr std::size_t max_active_directional_lights_per_frame = 4;
+constexpr std::size_t total_max_active_lights_per_frame = max_active_lights_per_frame + max_active_directional_lights_per_frame;
 
 class light_storage : public Core::resource_storage_dynamic<light_descriptor> {
 	using Base = Core::resource_storage_dynamic<light_descriptor>;
@@ -34,11 +35,11 @@ private:
 	static constexpr Core::BufferUsage::buffer_usage usage = static_cast<Core::BufferUsage::buffer_usage>(Core::BufferUsage::BufferUsageSparse);
 	static constexpr std::size_t pages = 1024;
 
-	using lights_ll_type = Core::ShaderStorageBuffer<std::uint16_t, usage>;
+	using lights_ll_type = Core::shader_storage_buffer<std::uint16_t, usage>;
 	using directional_lights_cascades_storage_type = Core::gstack_stable<light_cascade_descriptor>;
 
 private:
-	Core::AtomicCounterBufferObject<> active_lights_ll_counter;
+	Core::atomic_counter_buffer_object<> active_lights_ll_counter;
 
 	lights_ll_type active_lights_ll;
 	directional_lights_cascades_storage_type directional_lights_cascades_storage;
@@ -55,16 +56,16 @@ public:
 	}
 
 	template <typename ... Ts>
-	std::unique_ptr<SphericalLight> allocate_spherical(Ts&&... args) {
-		auto res = Base::allocate_resource<SphericalLight>(std::forward<Ts>(args)...);
+	std::unique_ptr<spherical_light> allocate_spherical(Ts&&... args) {
+		auto res = Base::allocate_resource<spherical_light>(std::forward<Ts>(args)...);
 		active_lights_ll.commit_range(0, Base::size());
 
 		return std::move(res);
 	}
 
 	template <typename ... Ts>
-	std::unique_ptr<DirectionalLight> allocate_directional(Ts&&... args) {
-		auto res = Base::allocate_resource<DirectionalLight>(std::forward<Ts>(args)...);
+	std::unique_ptr<directional_light> allocate_directional(Ts&&... args) {
+		auto res = Base::allocate_resource<directional_light>(std::forward<Ts>(args)...);
 		active_lights_ll.commit_range(0, Base::size());
 
 		// For directional lights we also need to allocate the cascade storage

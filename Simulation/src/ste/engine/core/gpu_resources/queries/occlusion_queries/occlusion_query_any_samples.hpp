@@ -9,8 +9,8 @@
 namespace StE {
 namespace Core {
 
-class OcclusionQueryAnySamples : public query_object<core_resource_type::QueryObjectAnySamples> {};
-class OcclusionQueryAnySamplesConservative : public query_object<core_resource_type::QueryObjectAnySamplesConservative> {};
+class occlusion_query_any_samples : public query_object<core_resource_type::QueryObjectAnySamples> {};
+class occlusion_query_any_samples_conservative : public query_object<core_resource_type::QueryObjectAnySamplesConservative> {};
 
 }
 }

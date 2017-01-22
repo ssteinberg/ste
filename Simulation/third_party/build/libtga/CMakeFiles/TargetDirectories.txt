@@ -1,6 +1,6 @@
-C:/src/git/StE/Simulation/third_party/build/libtga/CMakeFiles/RUN_TESTS.dir
-C:/src/git/StE/Simulation/third_party/build/libtga/CMakeFiles/ALL_BUILD.dir
-C:/src/git/StE/Simulation/third_party/build/libtga/CMakeFiles/ZERO_CHECK.dir
-C:/src/git/StE/Simulation/third_party/build/libtga/src/CMakeFiles/tga_static.dir
-C:/src/git/StE/Simulation/third_party/build/libtga/src/CMakeFiles/tga.dir
-C:/src/git/StE/Simulation/third_party/build/libtga/src/CMakeFiles/RUN_TESTS.dir
+D:/src/git/StE/Simulation/third_party/build/libtga/CMakeFiles/RUN_TESTS.dir
+D:/src/git/StE/Simulation/third_party/build/libtga/CMakeFiles/ALL_BUILD.dir
+D:/src/git/StE/Simulation/third_party/build/libtga/CMakeFiles/ZERO_CHECK.dir
+D:/src/git/StE/Simulation/third_party/build/libtga/src/CMakeFiles/tga_static.dir
+D:/src/git/StE/Simulation/third_party/build/libtga/src/CMakeFiles/tga.dir
+D:/src/git/StE/Simulation/third_party/build/libtga/src/CMakeFiles/RUN_TESTS.dir

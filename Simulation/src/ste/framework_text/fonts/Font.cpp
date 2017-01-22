@@ -1,6 +1,6 @@
 
 #include "stdafx.hpp"
-#include "Font.hpp"
+#include "font.hpp"
 
 #include <iostream>
 #include <stdexcept>
@@ -10,7 +10,7 @@
 
 using namespace StE::Text;
 
-Font::Font(const boost::filesystem::path &path) : path(path) {
+font::font(const boost::filesystem::path &path) : path(path) {
 	FT_Library library;
 	auto error = FT_Init_FreeType(&library);
 	if (error) {

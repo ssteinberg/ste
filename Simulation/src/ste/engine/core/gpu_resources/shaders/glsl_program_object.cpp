@@ -2,7 +2,7 @@
 #include "stdafx.hpp"
 #include "glsl_program_object.hpp"
 
-#include "Log.hpp"
+#include "log.hpp"
 
 #include <fstream>
 #include <iostream>
@@ -18,9 +18,6 @@ bool glsl_program_object::link() {
 
 	for (auto &shader : shaders)
 		glAttachShader(get_resource_id(), shader->get_resource_id());
-
-	ste_log() << "Linking GLSL program";
-
 	glLinkProgram(get_resource_id());
 
 	shaders.clear();
@@ -41,7 +38,7 @@ bool glsl_program_object::link() {
 			delete[] c_log;
 		}
 
-		ste_log_error() << "Linking GLSL program failed! Reason: " << reason;
+		ste_log_error() << "Linking GLSL program failed \"" << Text::Attributes::i(this->generate_name()) << "\"! Reason: " << reason;
 
 		return false;
 	}
@@ -67,4 +64,16 @@ std::string glsl_program_object::get_binary_represantation(std::uint32_t *format
 	glGetProgramBinary(get_resource_id(), bin_len, NULL, format, &data[0]);
 
 	return data;
+}
+
+std::string glsl_program_object::generate_name() const {
+	std::string name = "[";
+	auto it = shaders.begin();
+	while (it != shaders.end()) {
+		name += (*it)->get_name();
+		++it;
+		if (it != shaders.end())
+			name += ", ";
+	}
+	return name + "]";
 }

@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <CustomBuild Include="C:\src\git\StE\Simulation\third_party\build\libjpeg-turbo\CMakeFiles\9dd52ee32484b4777d70c23dc49407e9\RUN_TESTS_force.rule">
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo\CMakeFiles\e3b51856b3093fc1fe164b59e7d14788\RUN_TESTS_force.rule">
       <Filter>CMake Rules</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="CMake Rules">
-      <UniqueIdentifier>{D2C2E754-ACA7-365C-A96C-01B1EE93D31D}</UniqueIdentifier>
+      <UniqueIdentifier>{19142F68-E544-3AEC-A6CA-935C7B566E87}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

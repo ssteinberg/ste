@@ -8,9 +8,9 @@
 namespace StE {
 namespace Graphics {
 
-class RGB;
+class rgb;
 
-class Kelvin {
+class kelvin {
 public:
 	using T = float;
 
@@ -18,21 +18,21 @@ private:
 	T t;
 
 public:
-	Kelvin() = default;
-	Kelvin(float temperature) {
+	kelvin() = default;
+	kelvin(float temperature) {
 		K() = temperature;
 	}
 
 	T &K() { return t; }
 	const T &K() const { return t; }
 
-	RGB toRGB() const;
+	rgb toRGB() const;
 
 	operator float() const { return K(); }
-	operator RGB() const;
+	operator rgb() const;
 };
 
 }
 }
 
-#include "RGB.hpp"
+#include "rgb.hpp"

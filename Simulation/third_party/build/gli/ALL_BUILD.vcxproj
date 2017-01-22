@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGUID>{2B07E8BE-74E7-3731-B925-DA7D7183ADD2}</ProjectGUID>
+    <ProjectGUID>{79C3F24E-287C-3D81-B889-74D0D25C02D9}</ProjectGUID>
     <Keyword>Win32Proj</Keyword>
     <Platform>Win32</Platform>
     <ProjectName>ALL_BUILD</ProjectName>
@@ -43,7 +43,7 @@
     </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Midl>
-      <AdditionalIncludeDirectories>C:\src\git\StE\Simulation\third_party\packages\gli\.;C:\src\git\StE\Simulation\third_party\packages\gli\external\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\src\git\StE\Simulation\third_party\packages\gli\.;D:\src\git\StE\Simulation\third_party\packages\gli\external;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -53,7 +53,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Midl>
-      <AdditionalIncludeDirectories>C:\src\git\StE\Simulation\third_party\packages\gli\.;C:\src\git\StE\Simulation\third_party\packages\gli\external\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\src\git\StE\Simulation\third_party\packages\gli\.;D:\src\git\StE\Simulation\third_party\packages\gli\external;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -62,10 +62,10 @@
     </Midl>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <CustomBuild Include="C:\src\git\StE\Simulation\third_party\packages\gli\CMakeLists.txt">
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Building Custom Rule C:/src/git/StE/Simulation/third_party/packages/gli/CMakeLists.txt</Message>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\packages\gli\CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Building Custom Rule D:/src/git/StE/Simulation/third_party/packages/gli/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
-"C:\Program Files (x86)\CMake\bin\cmake.exe" -HC:/src/git/StE/Simulation/third_party/packages/gli -BC:/src/git/StE/Simulation/third_party/build/gli --check-stamp-file C:\src\git\StE\Simulation\third_party\build\gli\CMakeFiles\generate.stamp
+"C:\Program Files\CMake\bin\cmake.exe" -HD:/src/git/StE/Simulation/third_party/packages/gli -BD:/src/git/StE/Simulation/third_party/build/gli --check-stamp-file D:\src\git\StE\Simulation\third_party\build\gli\CMakeFiles\generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -73,12 +73,12 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:/src/git/StE/Simulation/third_party/packages/gli/CMakeLists.txt;C:\src\git\StE\Simulation\third_party\packages\gli\CMakeLists.txt;C:\src\git\StE\Simulation\third_party\build\gli\CMakeFiles\3.5.2\CMakeSystem.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeSystemSpecificInitialize.cmake;C:\src\git\StE\Simulation\third_party\build\gli\CMakeFiles\3.5.2\CMakeCCompiler.cmake;C:\src\git\StE\Simulation\third_party\build\gli\CMakeFiles\3.5.2\CMakeCXXCompiler.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeGenericSystem.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Platform\Windows.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Platform\WindowsPaths.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeCInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeLanguageInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Platform\Windows-MSVC.cmake;C:\src\git\StE\Simulation\third_party\build\gli\CMakeFiles\3.5.2\CMakeRCCompiler.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeRCInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeCXXInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeLanguageInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Platform\Windows-MSVC.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeCommonLanguageInclude.cmake;C:\src\git\StE\Simulation\third_party\packages\gli\cmake\GNUInstallDirs.cmake;C:\src\git\StE\Simulation\third_party\packages\gli\cmake\CMakePackageConfigHelpers.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeParseArguments.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\WriteBasicConfigVersionFile.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeParseArguments.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\BasicConfigVersion-AnyNewerVersion.cmake.in;C:\src\git\StE\Simulation\third_party\packages\gli\cmake\gliBuildConfig.cmake.in;C:\src\git\StE\Simulation\third_party\packages\gli\cmake\gliConfig.cmake.in;C:\src\git\StE\Simulation\third_party\packages\gli\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\src\git\StE\Simulation\third_party\build\gli\CMakeFiles\generate.stamp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:/src/git/StE/Simulation/third_party/packages/gli/CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\gli\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\build\gli\CMakeFiles\3.7.1\CMakeSystem.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeSystemSpecificInitialize.cmake;D:\src\git\StE\Simulation\third_party\build\gli\CMakeFiles\3.7.1\CMakeCCompiler.cmake;D:\src\git\StE\Simulation\third_party\build\gli\CMakeFiles\3.7.1\CMakeCXXCompiler.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC.cmake;D:\src\git\StE\Simulation\third_party\build\gli\CMakeFiles\3.7.1\CMakeRCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCommonLanguageInclude.cmake;D:\src\git\StE\Simulation\third_party\packages\gli\cmake\GNUInstallDirs.cmake;D:\src\git\StE\Simulation\third_party\packages\gli\cmake\CMakePackageConfigHelpers.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\WriteBasicConfigVersionFile.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\BasicConfigVersion-AnyNewerVersion.cmake.in;D:\src\git\StE\Simulation\third_party\packages\gli\cmake\gliBuildConfig.cmake.in;D:\src\git\StE\Simulation\third_party\packages\gli\cmake\gliConfig.cmake.in;D:\src\git\StE\Simulation\third_party\packages\gli\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\src\git\StE\Simulation\third_party\build\gli\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Building Custom Rule C:/src/git/StE/Simulation/third_party/packages/gli/CMakeLists.txt</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Building Custom Rule D:/src/git/StE/Simulation/third_party/packages/gli/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
-"C:\Program Files (x86)\CMake\bin\cmake.exe" -HC:/src/git/StE/Simulation/third_party/packages/gli -BC:/src/git/StE/Simulation/third_party/build/gli --check-stamp-file C:\src\git\StE\Simulation\third_party\build\gli\CMakeFiles\generate.stamp
+"C:\Program Files\CMake\bin\cmake.exe" -HD:/src/git/StE/Simulation/third_party/packages/gli -BD:/src/git/StE/Simulation/third_party/build/gli --check-stamp-file D:\src\git\StE\Simulation\third_party\build\gli\CMakeFiles\generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -86,229 +86,229 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:/src/git/StE/Simulation/third_party/packages/gli/CMakeLists.txt;C:\src\git\StE\Simulation\third_party\packages\gli\CMakeLists.txt;C:\src\git\StE\Simulation\third_party\build\gli\CMakeFiles\3.5.2\CMakeSystem.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeSystemSpecificInitialize.cmake;C:\src\git\StE\Simulation\third_party\build\gli\CMakeFiles\3.5.2\CMakeCCompiler.cmake;C:\src\git\StE\Simulation\third_party\build\gli\CMakeFiles\3.5.2\CMakeCXXCompiler.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeGenericSystem.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Platform\Windows.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Platform\WindowsPaths.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeCInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeLanguageInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Platform\Windows-MSVC.cmake;C:\src\git\StE\Simulation\third_party\build\gli\CMakeFiles\3.5.2\CMakeRCCompiler.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeRCInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeCXXInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeLanguageInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Platform\Windows-MSVC.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeCommonLanguageInclude.cmake;C:\src\git\StE\Simulation\third_party\packages\gli\cmake\GNUInstallDirs.cmake;C:\src\git\StE\Simulation\third_party\packages\gli\cmake\CMakePackageConfigHelpers.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeParseArguments.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\WriteBasicConfigVersionFile.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeParseArguments.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\BasicConfigVersion-AnyNewerVersion.cmake.in;C:\src\git\StE\Simulation\third_party\packages\gli\cmake\gliBuildConfig.cmake.in;C:\src\git\StE\Simulation\third_party\packages\gli\cmake\gliConfig.cmake.in;C:\src\git\StE\Simulation\third_party\packages\gli\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\src\git\StE\Simulation\third_party\build\gli\CMakeFiles\generate.stamp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D:/src/git/StE/Simulation/third_party/packages/gli/CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\gli\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\build\gli\CMakeFiles\3.7.1\CMakeSystem.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeSystemSpecificInitialize.cmake;D:\src\git\StE\Simulation\third_party\build\gli\CMakeFiles\3.7.1\CMakeCCompiler.cmake;D:\src\git\StE\Simulation\third_party\build\gli\CMakeFiles\3.7.1\CMakeCXXCompiler.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC.cmake;D:\src\git\StE\Simulation\third_party\build\gli\CMakeFiles\3.7.1\CMakeRCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCommonLanguageInclude.cmake;D:\src\git\StE\Simulation\third_party\packages\gli\cmake\GNUInstallDirs.cmake;D:\src\git\StE\Simulation\third_party\packages\gli\cmake\CMakePackageConfigHelpers.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\WriteBasicConfigVersionFile.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\BasicConfigVersion-AnyNewerVersion.cmake.in;D:\src\git\StE\Simulation\third_party\packages\gli\cmake\gliBuildConfig.cmake.in;D:\src\git\StE\Simulation\third_party\packages\gli\cmake\gliConfig.cmake.in;D:\src\git\StE\Simulation\third_party\packages\gli\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D:\src\git\StE\Simulation\third_party\build\gli\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/ZERO_CHECK.vcxproj">
-      <Project>485BEB21-3B4E-3F36-8F08-6EFA88F65E07</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/ZERO_CHECK.vcxproj">
+      <Project>FFBE5E61-896C-32B0-AB42-C2CF0F8D0DEB</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/gli/gli_dummy.vcxproj">
-      <Project>14F88D0F-7CC3-3BCB-B8BD-AC1CCEA2D326</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/gli/gli_dummy.vcxproj">
+      <Project>C1FE9B3D-9674-38F8-8FF6-0BDBE355015B</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/bug/test-bug.vcxproj">
-      <Project>A8DC6ADD-7F5A-32C1-A616-FE059262D7E3</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/bug/test-bug.vcxproj">
+      <Project>25276618-3192-33C2-B0D2-3ED09D17F74D</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-convert_sampler1d.vcxproj">
-      <Project>359A7133-2BDE-38B4-BF1B-3DC11BC19AF7</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-convert_sampler1d.vcxproj">
+      <Project>9CD3A53E-BCB1-3E69-AF92-844B9EBFB351</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-convert_sampler1d_array.vcxproj">
-      <Project>16A02C13-33D2-3EE9-893B-9AB70FCCDD38</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-convert_sampler1d_array.vcxproj">
+      <Project>E9218412-B809-3E65-880E-59CA32269FA0</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-convert_sampler2d.vcxproj">
-      <Project>F5D9A7F1-7628-3CA5-A747-6193F720B815</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-convert_sampler2d.vcxproj">
+      <Project>3DDC915F-4767-375F-890F-70A4E04EC9E7</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-convert_sampler2d_array.vcxproj">
-      <Project>006FBCF2-0E3A-35E1-80A9-B5681827FC21</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-convert_sampler2d_array.vcxproj">
+      <Project>174681BA-376C-3313-A97E-4B87A2DD9E6A</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-convert_sampler3d.vcxproj">
-      <Project>61A4F54A-B9A6-341F-811F-CE9A1082EF78</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-convert_sampler3d.vcxproj">
+      <Project>BFEC79CA-E7C9-3DEC-B0E8-B2F6CA23891D</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-convert_sampler_cube.vcxproj">
-      <Project>60FB6B31-8A02-3986-B895-2367D37A1469</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-convert_sampler_cube.vcxproj">
+      <Project>D73D3ECB-AD1D-3824-9C4D-862C95F5498C</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-convert_sampler_cube_array.vcxproj">
-      <Project>641D5B01-CEB8-38CE-8A39-EB6C54EEDE51</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-convert_sampler_cube_array.vcxproj">
+      <Project>C1ED7040-1B27-33AE-B076-88D91B8E6C3D</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core.vcxproj">
-      <Project>8E133271-6C47-3DE1-8981-55EDD891784C</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core.vcxproj">
+      <Project>35AA9CA8-D5DA-399D-B845-CEEEF1C0A969</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_addressing.vcxproj">
-      <Project>BB33E2AE-FE12-3988-8303-06873B881A4F</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_addressing.vcxproj">
+      <Project>9D5EBF90-52BE-3E95-A4FE-D5E2EAB2B080</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_clear.vcxproj">
-      <Project>9C607571-69B5-381B-9F81-6F0B47A31FBB</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_clear.vcxproj">
+      <Project>42CFEB66-672A-3E0B-B38B-EC5196653188</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_comparison.vcxproj">
-      <Project>B18C4484-7024-3C5B-B2E8-70930FEB943F</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_comparison.vcxproj">
+      <Project>B8A12AD2-2F1E-3D26-92C3-C50D70A3FC5C</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_convert.vcxproj">
-      <Project>5102A1A1-1A60-3F76-B271-3D785EE2C2FB</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_convert.vcxproj">
+      <Project>B8B6BDA7-FC2A-3D9D-B6C0-491E61B430C1</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_convert_access.vcxproj">
-      <Project>806C7942-D404-300E-AA79-A17555E78EA4</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_convert_access.vcxproj">
+      <Project>9460C518-E74C-3634-A353-5BA9673DB2DA</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_fetch.vcxproj">
-      <Project>6A9DDB38-FEA9-3A08-B98C-4D902C7668AB</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_fetch.vcxproj">
+      <Project>434BC7FB-6C0E-3709-B6F2-5F86BA91E36A</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_filter_1d.vcxproj">
-      <Project>C807873E-C81B-343C-81A3-B47A84395117</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_filter_1d.vcxproj">
+      <Project>B41A7747-59EE-31BA-B915-7CB57CA0C79D</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_filter_2d.vcxproj">
-      <Project>B32D04A0-6EE3-3704-9983-47E16FA06EF1</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_filter_2d.vcxproj">
+      <Project>ADE557B8-7FBD-3B88-AD85-B411090A9203</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_filter_3d.vcxproj">
-      <Project>1055B11A-FAA8-3ED1-9595-536C96E3C6A3</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_filter_3d.vcxproj">
+      <Project>C92E1A6D-C1B1-37EC-B76C-D9C4CABEAC6F</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_flip.vcxproj">
-      <Project>972FF2C9-5D5E-38D0-8469-51F6D01540AA</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_flip.vcxproj">
+      <Project>DD366497-11D0-3C32-BC01-4C544DF7ACB7</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_format.vcxproj">
-      <Project>8DBAF22E-11DE-39F3-B412-8EE0F8FE7144</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_format.vcxproj">
+      <Project>5CA79463-B78F-3384-8E7A-1F078215CE5A</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_image.vcxproj">
-      <Project>E0178A6E-D5C9-3B29-9E41-1235C5E3EED3</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_image.vcxproj">
+      <Project>839716A8-7BC3-3B92-812F-73E7761052F1</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_load.vcxproj">
-      <Project>7E24F014-55D8-3933-97D1-5BD7223D2A58</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_load.vcxproj">
+      <Project>174541C2-D836-3B91-BAD5-2FCD48ED8482</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_load_dds.vcxproj">
-      <Project>4CB2E946-EC5F-34CA-A4D0-DC4AF76297F0</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_load_dds.vcxproj">
+      <Project>F4383116-16D1-3702-ACF2-AAF29A104310</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_load_gen_1d.vcxproj">
-      <Project>2160355F-5DA3-35E9-B176-04F6AFD15829</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_load_gen_1d.vcxproj">
+      <Project>FA4E3CEE-D134-3913-B272-A7A07A68388A</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_load_gen_1d_array.vcxproj">
-      <Project>C73EB837-C436-3937-8B82-5B3BB0065C3E</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_load_gen_1d_array.vcxproj">
+      <Project>74FA5109-0982-3133-9E30-13B86293594C</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_load_gen_2d.vcxproj">
-      <Project>CDF644A6-D096-32C2-9CBB-DEEC2A4D3185</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_load_gen_2d.vcxproj">
+      <Project>9CDE2291-F145-383C-91CC-2A2B6AA2E36E</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_load_gen_2d_array.vcxproj">
-      <Project>65F5C31A-E773-3FEF-B27B-6A36DEB0B7A5</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_load_gen_2d_array.vcxproj">
+      <Project>A0DF0786-8134-3F1B-8B17-1AC5CC213C8A</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_load_gen_3d.vcxproj">
-      <Project>D8F6E217-414A-3068-95BB-335FFE8164DC</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_load_gen_3d.vcxproj">
+      <Project>3FA9EAA8-86B6-3C0F-B735-52A1083F926B</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_load_gen_cube.vcxproj">
-      <Project>30F02772-FD92-3C93-BD11-FC420551224A</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_load_gen_cube.vcxproj">
+      <Project>7493353C-5C89-3B60-9B8D-E6C807AA13D2</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_load_gen_cube_array.vcxproj">
-      <Project>CF89A2EF-50AA-327F-B622-15158A70FFF9</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_load_gen_cube_array.vcxproj">
+      <Project>E5FA67F3-8D20-3CA0-9E3D-DA8AC75BCD6B</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_load_gen_rect.vcxproj">
-      <Project>F151A838-6D71-3E29-8C4F-E22D425E2AD3</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_load_gen_rect.vcxproj">
+      <Project>6835EF7F-5B18-3CAA-AED5-356FDEC6F984</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_load_ktx.vcxproj">
-      <Project>ED4C43DD-EEDD-3ACE-A711-84ED36B9BDF9</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_load_ktx.vcxproj">
+      <Project>90C69394-62DB-3D1C-A79F-A4269B4E69EC</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_sample.vcxproj">
-      <Project>5A9A56EB-7702-3F4D-8F7B-E79208B8A9A5</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_sample.vcxproj">
+      <Project>1A248C7C-DDED-31EA-8C7E-93240D1B6422</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_sampler_clear.vcxproj">
-      <Project>3C211FD2-8DE5-3CC0-A870-8ABCEDD5C0C9</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_sampler_clear.vcxproj">
+      <Project>4621BD43-A603-30A9-9BAB-F8EDBFC4BD07</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_sampler_texel.vcxproj">
-      <Project>82942029-4F64-31EC-862B-7A8013A1229D</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_sampler_texel.vcxproj">
+      <Project>A973AC86-8864-37E6-B0B5-582916D2A2D6</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_sampler_wrap.vcxproj">
-      <Project>62B4F656-609E-3967-9386-5B9401DC100C</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_sampler_wrap.vcxproj">
+      <Project>95EDF40E-1F37-387D-8653-00F80B708D42</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_save.vcxproj">
-      <Project>F5CE89E9-347B-3A04-92CB-42C4D3A6641D</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_save.vcxproj">
+      <Project>FF0540C3-E8C1-3371-AFF3-746357488F6C</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_storage.vcxproj">
-      <Project>0F85F927-8420-32BA-AF30-9B7980EB9CF3</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_storage.vcxproj">
+      <Project>DD27EBC4-3D21-3138-80D7-16D02F72BE68</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_swizzle.vcxproj">
-      <Project>50C54D85-4627-3D09-BCDC-58EFA8CF35C4</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_swizzle.vcxproj">
+      <Project>78F85553-B63B-3D48-94D8-65D5723710A5</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_texture.vcxproj">
-      <Project>F0B857F0-2B03-3752-A254-1CEBE7367F31</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_texture.vcxproj">
+      <Project>62B6FA47-FBFD-337C-B3F2-752275CCFF83</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_texture_1d.vcxproj">
-      <Project>10089909-69C7-3DED-8283-5BBD82ECE7A4</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_texture_1d.vcxproj">
+      <Project>15C652DC-C04E-3F14-8677-FF232CDD6A2E</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_texture_1d_array.vcxproj">
-      <Project>4C2FB00E-FDEB-32A7-8558-D6FB01B2F252</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_texture_1d_array.vcxproj">
+      <Project>224B2003-3584-361F-806E-1BA5B9404A94</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_texture_2d.vcxproj">
-      <Project>B493F9B8-AB41-3879-9A7F-B9C0AA1E33B7</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_texture_2d.vcxproj">
+      <Project>9E051A22-518E-3F2B-B3FB-A8DA9F558E3D</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_texture_2d_array.vcxproj">
-      <Project>16734509-D3EA-3086-ADFC-0A59F70A2B46</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_texture_2d_array.vcxproj">
+      <Project>32C87D0B-E9B4-3A99-839C-710CE7562B73</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_texture_3d.vcxproj">
-      <Project>F1498831-DD8B-3376-BD74-9EC5D5B75259</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_texture_3d.vcxproj">
+      <Project>F463E0E8-9AD5-3DEF-90B4-BA5D9EB4A980</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_texture_cube.vcxproj">
-      <Project>F252317C-FECB-3E1E-A58E-C4E8A120474F</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_texture_cube.vcxproj">
+      <Project>A9425C84-4986-3123-9CB1-9E159B586A15</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_texture_cube_array.vcxproj">
-      <Project>5CAA9A06-9F8C-371F-A16F-BF682C16E0C6</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-core_texture_cube_array.vcxproj">
+      <Project>19A89FD7-8E93-356A-8D85-83C86946240B</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-generate_mipmaps_sampler1d.vcxproj">
-      <Project>DC3F94D6-D709-36CE-86DB-C82B3CB6837B</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-generate_mipmaps_sampler1d.vcxproj">
+      <Project>E347099E-6245-32C8-9FF4-698BCBA44EA0</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-generate_mipmaps_sampler1d_array.vcxproj">
-      <Project>735F62E8-F5A2-32EB-AE19-6182AA671CEF</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-generate_mipmaps_sampler1d_array.vcxproj">
+      <Project>696A047C-C3E4-341B-B67B-C8B1D9BD5EF3</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-generate_mipmaps_sampler2d.vcxproj">
-      <Project>8C34D0CF-AB27-3661-AFFB-812BADEA8B2C</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-generate_mipmaps_sampler2d.vcxproj">
+      <Project>0DCA8EE6-3CD5-3619-ACA5-F994BE4CAAE9</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-generate_mipmaps_sampler2d_array.vcxproj">
-      <Project>57E2AB85-E5C4-3A16-A401-B50EA6CE479D</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-generate_mipmaps_sampler2d_array.vcxproj">
+      <Project>41075A64-0FA1-307D-AC47-DE01EDDCA467</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-generate_mipmaps_sampler3d.vcxproj">
-      <Project>4C6C9334-DB14-3003-9EA0-A67383BF91BA</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-generate_mipmaps_sampler3d.vcxproj">
+      <Project>154A0BFB-9772-355B-BE4D-0D897B40FB89</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-generate_mipmaps_sampler_cube.vcxproj">
-      <Project>A9B7A5D9-8371-34F5-B3A9-9092AAC4D3AC</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-generate_mipmaps_sampler_cube.vcxproj">
+      <Project>DF94ABD5-E99A-33C0-A687-90755980D675</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-generate_mipmaps_sampler_cube_array.vcxproj">
-      <Project>6005FF68-D330-3113-8B69-8B6544713919</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-generate_mipmaps_sampler_cube_array.vcxproj">
+      <Project>832E690C-D242-30B6-AA59-9C137F06810D</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-gl.vcxproj">
-      <Project>93C131EE-3CEB-3907-BEA8-F1EF1CD78594</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-gl.vcxproj">
+      <Project>A9397004-CB7F-3462-B845-126E08557BFF</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-reduce.vcxproj">
-      <Project>1E77CC61-FEDC-3269-80B9-63B0D383284A</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-reduce.vcxproj">
+      <Project>F632A75C-A052-308F-BE1E-B62CC0CF2FF7</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-test_copy.vcxproj">
-      <Project>EC6D873D-EA91-35FF-9A4A-A21BD23C94A5</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-test_copy.vcxproj">
+      <Project>66D39357-9FCA-375B-BACD-485BA65002AB</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-test_copy_sub.vcxproj">
-      <Project>F794D3E4-A14A-359F-ADF4-697F951BF41E</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-test_copy_sub.vcxproj">
+      <Project>F6499F8F-53ED-3B66-868A-AEBE680A56DA</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-test_duplicate.vcxproj">
-      <Project>EC3F09C2-BA71-398B-AF5C-91EC336F7C12</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-test_duplicate.vcxproj">
+      <Project>BC786A29-55D9-3744-852F-2ABA4F7C372E</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-test_make_texture.vcxproj">
-      <Project>524517A3-D63C-37AC-8E8B-0AFA8D53CA3F</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-test_make_texture.vcxproj">
+      <Project>9A617E66-13E2-3EC7-8F2A-B51DDB4A0EAE</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-test_size.vcxproj">
-      <Project>4A044796-4235-30DE-8712-323AEA9ACC30</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-test_size.vcxproj">
+      <Project>39EAC6FA-DC15-3E3C-B794-D366A6BB0CAB</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-test_view.vcxproj">
-      <Project>14E35EBB-B671-304D-B28D-355E4D3DCBBC</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-test_view.vcxproj">
+      <Project>74DF3F03-7CA5-3AB4-A1E7-B57C995C0BE2</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-texture_lod_sampler1d.vcxproj">
-      <Project>1A1CE7BD-B593-3B86-8D92-8E37E63B1752</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-texture_lod_sampler1d.vcxproj">
+      <Project>BFF12F6B-C512-3269-A618-C28080A457A9</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-texture_lod_sampler1d_array.vcxproj">
-      <Project>E7430998-CE8F-36EC-876B-E7BA3C887BAB</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-texture_lod_sampler1d_array.vcxproj">
+      <Project>AA903845-F48E-3AF3-ACB1-F07E5A6171A2</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-texture_lod_sampler2d.vcxproj">
-      <Project>7A2859EF-2556-3C05-AB01-3FD20AA7085B</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-texture_lod_sampler2d.vcxproj">
+      <Project>553C7E0F-EFEB-3145-946B-114AD6DFA7D5</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-texture_lod_sampler2d_array.vcxproj">
-      <Project>050FFECF-74F6-368A-B918-C0723A4D499F</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-texture_lod_sampler2d_array.vcxproj">
+      <Project>8176D604-DDB9-3203-915C-701B38129BF5</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-texture_lod_sampler3d.vcxproj">
-      <Project>5B1C89D9-1DB3-326D-9268-5EC0402D6953</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-texture_lod_sampler3d.vcxproj">
+      <Project>9B40E349-B846-3A91-A2A6-F6D5666CE815</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-texture_lod_sampler_cube.vcxproj">
-      <Project>43601BE1-CA6C-3BF4-9296-062D8FCDEE24</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-texture_lod_sampler_cube.vcxproj">
+      <Project>395325D2-2C86-3F23-AC3F-07BEAF14114B</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-texture_lod_sampler_cube_array.vcxproj">
-      <Project>98B06BFB-8111-3845-A208-2F0944340E0C</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-texture_lod_sampler_cube_array.vcxproj">
+      <Project>C5FC275A-A38A-3891-B1F0-9D64EB186FC9</Project>
     </ProjectReference>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/gli/test/core/test-transform.vcxproj">
-      <Project>D63B1F0F-701A-325C-9A19-ECE5F08ACD29</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/gli/test/core/test-transform.vcxproj">
+      <Project>3B139469-A414-3FB7-96B4-F5994F6EE54A</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

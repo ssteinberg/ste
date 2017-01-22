@@ -18,7 +18,7 @@ void gbuffer_downsample_depth_dispatch::dispatch() const {
 	auto size = gbuffer->get_size() / 2;
 
 	for (int i = 0; i < gbuffer->get_downsampled_depth_target()->get_levels(); ++i, size /= 2) {
-		4_image_idx = gbuffer->get_downsampled_depth_target()->make_image(i).with_access(ImageAccessMode::Write);
+		4_image_idx = gbuffer->get_downsampled_depth_target()->make_image(i).with_access(image_access_mode::Write);
 		program.get().set_uniform("lod", i);
 
 		auto s = (size + glm::ivec2(jobs - 1)) / jobs;

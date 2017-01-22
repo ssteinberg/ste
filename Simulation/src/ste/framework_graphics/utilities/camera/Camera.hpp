@@ -11,7 +11,7 @@
 namespace StE {
 namespace Graphics {
 
-class Camera {
+class camera {
 private:
 	glm::vec3 camera_position;
 	glm::vec3 camera_look_at;
@@ -24,8 +24,8 @@ private:
 	float camera_pitch_limit;
 
 public:
-	Camera();
-	virtual ~Camera() {}
+	camera();
+	virtual ~camera() {}
 
 	void set_speed(float s) { camera_speed = s; }
 	void set_pitch_limit(float rad) { camera_pitch_limit = rad; }

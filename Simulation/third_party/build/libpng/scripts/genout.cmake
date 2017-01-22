@@ -9,18 +9,18 @@
 # and license in png.h
 
 # Variables substituted from CMakeLists.txt
-set(SRCDIR "C:/src/git/StE/Simulation/third_party/packages/libpng")
-set(BINDIR "C:/src/git/StE/Simulation/third_party/build/libpng")
+set(SRCDIR "D:/src/git/StE/Simulation/third_party/packages/libpng")
+set(BINDIR "D:/src/git/StE/Simulation/third_party/build/libpng")
 
 set(AWK "AWK-NOTFOUND")
 set(CMAKE_C_COMPILER "C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/bin/cl.exe")
-set(CMAKE_C_FLAGS  /DWIN32 /D_WINDOWS /W3)
-set(INCDIR "C:/src/git/StE/Simulation/third_party/build/libpng")
+set(CMAKE_C_FLAGS /DWIN32 /D_WINDOWS /W3)
+set(INCDIR "D:/src/git/StE/Simulation/third_party/build/libpng")
 set(PNG_PREFIX "")
 set(PNGLIB_MAJOR "1")
 set(PNGLIB_MINOR "6")
 set(PNGLIB_VERSION "1.6.23")
-set(ZLIBINCDIR "C:/src/git/StE/Simulation/third_party/include")
+set(ZLIBINCDIR "../../include")
 
 set(PLATFORM_C_FLAGS)
 if(APPLE)

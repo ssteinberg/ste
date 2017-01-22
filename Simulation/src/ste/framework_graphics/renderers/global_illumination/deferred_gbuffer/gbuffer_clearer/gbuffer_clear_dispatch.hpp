@@ -6,7 +6,7 @@
 #include "stdafx.hpp"
 #include "gpu_dispatchable.hpp"
 
-#include "StEngineControl.hpp"
+#include "ste_engine_control.hpp"
 #include "gl_current_context.hpp"
 
 #include "Sampler.hpp"
@@ -29,7 +29,7 @@ private:
 	mutable deferred_gbuffer *gbuffer;
 
 public:
-	gbuffer_clear_dispatch(const StEngineControl &ctx,
+	gbuffer_clear_dispatch(const ste_engine_control &ctx,
 						   deferred_gbuffer *gbuffer) : gbuffer(gbuffer) {}
 
 	void set_context_state() const override final {}

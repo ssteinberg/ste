@@ -28,13 +28,13 @@
 namespace StE {
 namespace Core {
 
-class GLSLProgramAllocator : public generic_resource_allocator {
+class glsl_program_allocator : public generic_resource_allocator {
 public:
-	GenericResource::type allocate() override final {
-		GenericResource::type res = glCreateProgram();
+	generic_resource::type allocate() override final {
+		generic_resource::type res = glCreateProgram();
 		return res;
 	}
-	static void deallocate(GenericResource::type &id) {
+	static void deallocate(generic_resource::type &id) {
 		if (id) {
 			glDeleteProgram(id);
 			id = 0;
@@ -42,20 +42,21 @@ public:
 	}
 };
 
-class GLSLProgramBinder {
+class glsl_program_binder {
 public:
-	static void bind(GenericResource::type id) { GL::gl_current_context::get()->bind_shader_program(id); }
+	static void bind(generic_resource::type id) { GL::gl_current_context::get()->bind_shader_program(id); }
 	static void unbind() { GL::gl_current_context::get()->bind_shader_program(0); }
 };
 
-class glsl_program_object : public bindable_resource<GLSLProgramAllocator, GLSLProgramBinder> {
-	using Base = bindable_resource<GLSLProgramAllocator, GLSLProgramBinder>;
+class glsl_program_object : public bindable_resource<glsl_program_allocator, glsl_program_binder> {
+	using Base = bindable_resource<glsl_program_allocator, glsl_program_binder>;
 
 private:
 	bool linked;
 	std::vector<std::unique_ptr<glsl_shader_object_generic>> shaders;
 	mutable std::unordered_map<std::string, int> uniform_map;
 
+protected:
 	int get_uniform_location(const std::string &name) const {
 		auto it = uniform_map.find(name);
 		if (it != uniform_map.end())
@@ -93,8 +94,10 @@ public:
 	bool link();
 	bool is_linked() const { return linked; }
 
-	bool link_from_binary(GenericResource::type format, const std::string &data);
-	std::string get_binary_represantation(GenericResource::type *format);
+	bool link_from_binary(generic_resource::type format, const std::string &data);
+	std::string get_binary_represantation(generic_resource::type *format);
+
+	std::string generate_name() const;
 
 	void bind_attrib_location(GLuint location, const std::string &name) const { glBindAttribLocation(get_resource_id(), location, name.c_str()); }
 	void bind_frag_data_location(GLuint location, const std::string &name) const { glBindFragDataLocation(get_resource_id(), location, name.c_str()); }

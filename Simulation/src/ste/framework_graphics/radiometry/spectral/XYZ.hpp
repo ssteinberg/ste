@@ -10,9 +10,9 @@
 namespace StE {
 namespace Graphics {
 
-class RGB;
+class rgb;
 class xyY;
-class Kelvin;
+class kelvin;
 
 class XYZ : public spectrum<float, 3> {
 public:
@@ -34,30 +34,30 @@ public:
 	const T &Y() const { return c[1]; }
 	const T &Z() const { return c[2]; }
 
-	RGB toRGB() const;
+	rgb toRGB() const;
 	xyY to_xyY() const;
-	Kelvin toKelvin() const;
+	kelvin toKelvin() const;
 
 	T luminance() const override final { return Y(); };
 
 	operator glm::tvec3<T>() const { return glm::tvec3<T>{ X(), Y(), Z() }; }
-	operator RGB() const;
+	operator rgb() const;
 	operator xyY() const;
-	operator Kelvin() const;
+	operator kelvin() const;
 };
 
 }
 }
 
-#include "RGB.hpp"
+#include "rgb.hpp"
 #include "xyY.hpp"
-#include "Kelvin.hpp"
+#include "kelvin.hpp"
 
 namespace StE {
 namespace Graphics {
 
-inline RGB XYZ::toRGB() const {
-	RGB ret;
+inline rgb XYZ::toRGB() const {
+	rgb ret;
 	ret.R() =  3.240479f * X() - 1.537150f * Y() - 0.498535f * Z();
 	ret.G() = -0.969256f * X() + 1.875991f * Y() + 0.041556f * Z();
 	ret.B() =  0.055648f * X() - 0.204043f * Y() + 1.057311f * Z();
@@ -73,7 +73,7 @@ inline xyY XYZ::to_xyY() const {
 	return v;
 }
 
-inline XYZ::operator RGB() const {
+inline XYZ::operator rgb() const {
 	return toRGB();
 };
 
@@ -81,7 +81,7 @@ inline XYZ::operator xyY() const {
 	return to_xyY();
 };
 
-inline XYZ::operator Kelvin() const {
+inline XYZ::operator kelvin() const {
 	return toKelvin();
 };
 

@@ -15,12 +15,14 @@ void scene_prepopulate_depth_dispatch::set_context_state() const {
 	if (!front_face)
 		Core::GL::gl_current_context::get()->cull_face(GL_FRONT);
 
-	scene->get_idb().buffer().bind();
-	scene->bind_buffers();
+	s->get_idb().buffer().bind();
+	s->bind_buffers();
 
 	program.get().bind();
 }
 
 void scene_prepopulate_depth_dispatch::dispatch() const {
-	scene->draw_object_group();
+	if (front_face)
+		Core::GL::gl_current_context::get()->clear_framebuffer(false, true);
+	s->draw_object_group();
 }

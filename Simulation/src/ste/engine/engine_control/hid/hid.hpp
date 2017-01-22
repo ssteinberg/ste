@@ -26,5 +26,5 @@ static Status convert_status(int status) { return static_cast<Status>(status); }
 }
 }
 
-#include "Keyboard.hpp"
-#include "Pointer.hpp"
+#include "keyboard.hpp"
+#include "pointer.hpp"

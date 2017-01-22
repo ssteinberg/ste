@@ -5,7 +5,7 @@
 
 #include "stdafx.hpp"
 
-#include "ShaderStorageBuffer.hpp"
+#include "shader_storage_buffer.hpp"
 #include "mapped_buffer_object_unique_ptr.hpp"
 
 #include "range_lockable.hpp"
@@ -28,7 +28,7 @@ public:
 	using value_type = T;
 
 private:
-	using buffer_type = ShaderStorageBuffer<T, usage>;
+	using buffer_type = shader_storage_buffer<T, usage>;
 	using mapped_type = mapped_buffer_object_unique_ptr<T, usage>;
 
 	static_assert(std::is_trivially_copyable<T>::value, "T must be trivially copyable");

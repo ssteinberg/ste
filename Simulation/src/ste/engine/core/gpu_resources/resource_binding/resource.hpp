@@ -14,7 +14,7 @@
 namespace StE {
 namespace Core {
 
-class GenericResource {
+class generic_resource {
 public:
 	using type = std::uint32_t;
 
@@ -23,8 +23,8 @@ protected:
 
 	generic_resource_shared_type id;
 
-	GenericResource() = default;
-	virtual ~GenericResource() {}
+	generic_resource() = default;
+	virtual ~generic_resource() {}
 
 public:
 	virtual core_resource_type resource_type() const = 0;
@@ -32,10 +32,10 @@ public:
 	type get_resource_id() const { return *id; }
 	virtual bool is_valid() const = 0;
 
-	GenericResource(GenericResource &&res) {}
-	GenericResource &operator=(GenericResource &&res) { return *this; }
-	GenericResource(const GenericResource &res) = delete;
-	GenericResource &operator=(const GenericResource &res) = delete;
+	generic_resource(generic_resource &&res) {}
+	generic_resource &operator=(generic_resource &&res) { return *this; }
+	generic_resource(const generic_resource &res) = delete;
+	generic_resource &operator=(const generic_resource &res) = delete;
 };
 
 }
@@ -47,7 +47,7 @@ namespace StE {
 namespace Core {
 
 template <class Allocator>
-class resource : virtual public GenericResource {
+class resource : virtual public generic_resource {
 private:
 	static_assert(std::is_base_of<generic_resource_allocator, Allocator>::value, "Allocator must derive from generic_resource_allocator");
 
@@ -55,7 +55,7 @@ private:
 	template <class A2>
 	friend class resource;
 
-	using GenericResource::id;
+	using generic_resource::id;
 
 protected:
 	Allocator allocator;

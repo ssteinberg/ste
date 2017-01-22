@@ -6,12 +6,17 @@
 
 #include "girenderer_transform_buffer.glsl"
 
+#include "light_transport.glsl"
+#include "atmospherics.glsl"
+
 const int LightTypeSphere = 0;
 const int LightTypeDirectional = 1;
 
-const int max_active_lights_per_frame = 32;
+const int max_active_lights_per_frame = 24;
+const int max_active_directional_lights_per_frame = 4;
+const int total_max_active_lights_per_frame = max_active_lights_per_frame + max_active_directional_lights_per_frame;
 
-const float light_minimal_luminance_multiplier = .000006f;
+const float light_minimal_luminance_multiplier = 5e-6f;
 
 struct light_descriptor {
 	// position: Light position for spherical, direction for directional lights.
@@ -38,20 +43,6 @@ struct light_descriptor {
 };
 
 /*
- *	Light's attenuation coefficient for a given distance to receiver
- */
-float light_attenuation_factor(light_descriptor ld, float dist) {
-	if (ld.type == LightTypeDirectional)
-		return 1;
-	else {
-		float a = max(.0f, dist / ld.radius);
-		float f = 1.f / (1.f + a*a);
-
-		return f;
-	}
-}
-
-/*
  *	Returns light's effective range, i.e. range at which light radiates at least minimal luminance.
  */
 float light_effective_range(light_descriptor ld) {
@@ -62,9 +53,9 @@ float light_effective_range(light_descriptor ld) {
  *	Transforms light's position/direction based on transformation dual quaternion
  */
 vec3 light_transform(dual_quaternion transform, light_descriptor ld) {
-	return ld.type == LightTypeSphere ?
-				dquat_mul_vec(transform, ld.position) :
-				quat_mul_vec(transform.real, ld.position);
+	return ld.type == LightTypeDirectional ?
+				quat_mul_vec(transform.real, ld.position) :
+				dquat_mul_vec(transform, ld.position);
 }
 
 /*
@@ -83,7 +74,7 @@ float light_calculate_minimal_luminance(light_descriptor ld) {
 }
 
 /*
- *	Calculates the incident ray in view-space for position
+ *	Calculates the incident ray in eye-space from position
  */
 vec3 light_incidant_ray(light_descriptor ld, vec3 position) {
 	if (ld.type == LightTypeDirectional) return -ld.transformed_position;
@@ -94,9 +85,29 @@ vec3 light_incidant_ray(light_descriptor ld, vec3 position) {
  *	Calculate light irradiance at specific distance. 
  *	This method multiplies light irradiance by attenuation coefficient, from that subtracts the light's minimal luminance so that at
  *	distance greater than or equal to the light's effective range the value returned is 0.
+ *
+ *	@param ld			Light descriptor.
+ *	@param dist			Precomputed path distance, from light point to position.
+ *	@param min_lum		Minimal light luminance. Refer to light_lux_at_distance.
  */
-vec3 light_irradiance(light_descriptor ld, float dist) {
-	float attenuation_factor = light_attenuation_factor(ld, dist);
-	float incident_radiance = ld.luminance * attenuation_factor - light_calculate_minimal_luminance(ld);
+vec3 irradiance(light_descriptor ld, float dist, float min_lum) {
+	if (ld.type == LightTypeDirectional) {
+		return ld.diffuse * ld.luminance;
+	}
+	
+	float a = max(.0f, dist / ld.radius);
+	float f = 1.f / (1.f + a*a);
+
+	float incident_radiance = ld.luminance * f - min_lum;
 	return ld.diffuse * max(0.f, incident_radiance);
+}
+/*
+ *	See irradiance(ld, dist, min_lum) for more details.
+ *
+ *	@param ld			Light descriptor.
+ *	@param dist			Precomputed path distance, from light point to position.
+ */
+vec3 irradiance(light_descriptor ld, float dist) {
+	float min_lum = light_calculate_minimal_luminance(ld);
+	return irradiance(ld, dist, min_lum);
 }

@@ -8,7 +8,7 @@
 # and license in png.h
 
 set(TEST_OPTIONS "--tmpfile;linear-alpha-;--log")
-set(TEST_FILES "C:/src/git/StE/Simulation/third_party/packages/libpng/contrib/testpngs/gray-alpha-16-linear.png;C:/src/git/StE/Simulation/third_party/packages/libpng/contrib/testpngs/gray-alpha-8-linear.png;C:/src/git/StE/Simulation/third_party/packages/libpng/contrib/testpngs/rgb-alpha-16-linear.png;C:/src/git/StE/Simulation/third_party/packages/libpng/contrib/testpngs/rgb-alpha-8-linear.png")
+set(TEST_FILES "D:/src/git/StE/Simulation/third_party/packages/libpng/contrib/testpngs/gray-alpha-16-linear.png;D:/src/git/StE/Simulation/third_party/packages/libpng/contrib/testpngs/gray-alpha-8-linear.png;D:/src/git/StE/Simulation/third_party/packages/libpng/contrib/testpngs/rgb-alpha-16-linear.png;D:/src/git/StE/Simulation/third_party/packages/libpng/contrib/testpngs/rgb-alpha-8-linear.png")
 
 foreach(file ${TEST_FILES})
   file(TO_NATIVE_PATH "${file}" native_file)

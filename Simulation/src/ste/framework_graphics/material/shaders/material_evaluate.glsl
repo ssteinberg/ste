@@ -83,7 +83,10 @@ float material_attenuation_through_layer(float transmittance,
  *	@param ld			Light descriptor
  *	@param shadow_maps	Shadow maps
  *	@param light		Light index
- *	@param view_ray		Normalized vector from eye to position
+ *	@param light_dist	Distance from light source
+ *	@param occlusion	Light occlusion
+ *	@param frag_coords	Screen space coordinates
+ *	@param external_medium_ior	Index-of-refraction of source medium
  */
 vec3 material_evaluate_radiance(material_layer_descriptor layer,
 								vec3 position,
@@ -99,6 +102,7 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 								samplerCubeArray shadow_maps, uint light,
 								float light_dist,
 								float occlusion,
+								ivec2 frag_coords,
 								float external_medium_ior = 1.0002772f) {
 	vec3 rgb = vec3(0);
 	
@@ -112,7 +116,7 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 		return vec3(.0f);
 		
 	// Incoming irradiance
-	vec3 irradiance = light_irradiance(ld, light_dist) * occlusion;
+	vec3 irradiance = irradiance(ld, light_dist);
 	float top_medium_ior = external_medium_ior;
 
 	// Attenuation at current layer
@@ -233,8 +237,9 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 							 						   object_thickness,
 													   ld,
 													   shadow_maps, light,
-													   -v);
+													   -v,
+													   frag_coords);
 	}
 
-	return rgb;
+	return rgb * occlusion;
 }

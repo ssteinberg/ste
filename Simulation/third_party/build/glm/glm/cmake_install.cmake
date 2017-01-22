@@ -1,8 +1,8 @@
-# Install script for directory: C:/src/git/StE/Simulation/third_party/packages/glm/glm
+# Install script for directory: D:/src/git/StE/Simulation/third_party/packages/glm/glm
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "C:/src/git/StE/Simulation/third_party")
+  set(CMAKE_INSTALL_PREFIX "D:/src/git/StE/Simulation/third_party")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 

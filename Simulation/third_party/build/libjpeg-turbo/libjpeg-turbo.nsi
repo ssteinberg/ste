@@ -1,7 +1,7 @@
 !include x64.nsh
 Name "libjpeg-turbo SDK for Visual C++"
-OutFile "C:/src/git/StE/Simulation/third_party/build/libjpeg-turbo\${BUILDDIR}libjpeg-turbo-1.5.1-vc.exe"
-InstallDir C:\src\git\StE\Simulation\third_party
+OutFile "D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo\${BUILDDIR}libjpeg-turbo-1.5.2-vc.exe"
+InstallDir ..\..\
 
 SetCompressor bzip2
 
@@ -35,66 +35,66 @@ Section "libjpeg-turbo SDK for Visual C++ (required)"
 	notexists:
 	SetOutPath $SYSDIR
 !ifdef GCC
-	File "C:/src/git/StE/Simulation/third_party/build/libjpeg-turbo\libturbojpeg.dll"
+	File "D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo\libturbojpeg.dll"
 !else
-	File "C:/src/git/StE/Simulation/third_party/build/libjpeg-turbo\${BUILDDIR}turbojpeg.dll"
+	File "D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo\${BUILDDIR}turbojpeg.dll"
 !endif
 	SetOutPath $INSTDIR\bin
 !ifdef GCC
-	File "C:/src/git/StE/Simulation/third_party/build/libjpeg-turbo\libturbojpeg.dll"
+	File "D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo\libturbojpeg.dll"
 !else
-	File "C:/src/git/StE/Simulation/third_party/build/libjpeg-turbo\${BUILDDIR}turbojpeg.dll"
+	File "D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo\${BUILDDIR}turbojpeg.dll"
 !endif
 !ifdef GCC
-	File "/oname=libjpeg-62.dll" "C:/src/git/StE/Simulation/third_party/build/libjpeg-turbo\sharedlib\libjpeg-*.dll"
+	File "/oname=libjpeg-62.dll" "D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo\sharedlib\libjpeg-*.dll"
 !else
-	File "C:/src/git/StE/Simulation/third_party/build/libjpeg-turbo\sharedlib\${BUILDDIR}jpeg62.dll"
+	File "D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo\sharedlib\${BUILDDIR}jpeg62.dll"
 !endif
-	File "C:/src/git/StE/Simulation/third_party/build/libjpeg-turbo\sharedlib\${BUILDDIR}cjpeg.exe"
-	File "C:/src/git/StE/Simulation/third_party/build/libjpeg-turbo\sharedlib\${BUILDDIR}djpeg.exe"
-	File "C:/src/git/StE/Simulation/third_party/build/libjpeg-turbo\sharedlib\${BUILDDIR}jpegtran.exe"
-	File "C:/src/git/StE/Simulation/third_party/build/libjpeg-turbo\${BUILDDIR}tjbench.exe"
-	File "C:/src/git/StE/Simulation/third_party/build/libjpeg-turbo\${BUILDDIR}rdjpgcom.exe"
-	File "C:/src/git/StE/Simulation/third_party/build/libjpeg-turbo\${BUILDDIR}wrjpgcom.exe"
+	File "D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo\sharedlib\${BUILDDIR}cjpeg.exe"
+	File "D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo\sharedlib\${BUILDDIR}djpeg.exe"
+	File "D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo\sharedlib\${BUILDDIR}jpegtran.exe"
+	File "D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo\${BUILDDIR}tjbench.exe"
+	File "D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo\${BUILDDIR}rdjpgcom.exe"
+	File "D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo\${BUILDDIR}wrjpgcom.exe"
 	SetOutPath $INSTDIR\lib
 !ifdef GCC
-	File "C:/src/git/StE/Simulation/third_party/build/libjpeg-turbo\libturbojpeg.dll.a"
-	File "C:/src/git/StE/Simulation/third_party/build/libjpeg-turbo\libturbojpeg.a"
-	File "C:/src/git/StE/Simulation/third_party/build/libjpeg-turbo\sharedlib\libjpeg.dll.a"
-	File "C:/src/git/StE/Simulation/third_party/build/libjpeg-turbo\libjpeg.a"
+	File "D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo\libturbojpeg.dll.a"
+	File "D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo\libturbojpeg.a"
+	File "D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo\sharedlib\libjpeg.dll.a"
+	File "D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo\libjpeg.a"
 !else
-	File "C:/src/git/StE/Simulation/third_party/build/libjpeg-turbo\${BUILDDIR}turbojpeg.lib"
-	File "C:/src/git/StE/Simulation/third_party/build/libjpeg-turbo\${BUILDDIR}turbojpeg-static.lib"
-	File "C:/src/git/StE/Simulation/third_party/build/libjpeg-turbo\sharedlib\${BUILDDIR}jpeg.lib"
-	File "C:/src/git/StE/Simulation/third_party/build/libjpeg-turbo\${BUILDDIR}jpeg-static.lib"
+	File "D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo\${BUILDDIR}turbojpeg.lib"
+	File "D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo\${BUILDDIR}turbojpeg-static.lib"
+	File "D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo\sharedlib\${BUILDDIR}jpeg.lib"
+	File "D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo\${BUILDDIR}jpeg-static.lib"
 !endif
 !ifdef JAVA
 	SetOutPath $INSTDIR\classes
-	File "C:/src/git/StE/Simulation/third_party/build/libjpeg-turbo\java\${BUILDDIR}turbojpeg.jar"
+	File "D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo\java\${BUILDDIR}turbojpeg.jar"
 !endif
 	SetOutPath $INSTDIR\include
-	File "C:/src/git/StE/Simulation/third_party/build/libjpeg-turbo\jconfig.h"
-	File "C:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo\jerror.h"
-	File "C:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo\jmorecfg.h"
-	File "C:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo\jpeglib.h"
-	File "C:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo\turbojpeg.h"
+	File "D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo\jconfig.h"
+	File "D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo\jerror.h"
+	File "D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo\jmorecfg.h"
+	File "D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo\jpeglib.h"
+	File "D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo\turbojpeg.h"
 	SetOutPath $INSTDIR\doc
-	File "C:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo\README.ijg"
-	File "C:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo\README.md"
-	File "C:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo\LICENSE.md"
-	File "C:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo\example.c"
-	File "C:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo\libjpeg.txt"
-	File "C:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo\structure.txt"
-	File "C:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo\usage.txt"
-	File "C:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo\wizard.txt"
+	File "D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo\README.ijg"
+	File "D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo\README.md"
+	File "D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo\LICENSE.md"
+	File "D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo\example.c"
+	File "D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo\libjpeg.txt"
+	File "D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo\structure.txt"
+	File "D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo\usage.txt"
+	File "D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo\wizard.txt"
 
-	WriteRegStr HKLM "SOFTWARE\libjpeg-turbo 1.5.1" "Install_Dir" "$INSTDIR"
+	WriteRegStr HKLM "SOFTWARE\libjpeg-turbo 1.5.2" "Install_Dir" "$INSTDIR"
 
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\libjpeg-turbo 1.5.1" "DisplayName" "libjpeg-turbo SDK v1.5.1 for Visual C++"
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\libjpeg-turbo 1.5.1" "UninstallString" '"$INSTDIR\uninstall_1.5.1.exe"'
-	WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\libjpeg-turbo 1.5.1" "NoModify" 1
-	WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\libjpeg-turbo 1.5.1" "NoRepair" 1
-	WriteUninstaller "uninstall_1.5.1.exe"
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\libjpeg-turbo 1.5.2" "DisplayName" "libjpeg-turbo SDK v1.5.2 for Visual C++"
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\libjpeg-turbo 1.5.2" "UninstallString" '"$INSTDIR\uninstall_1.5.2.exe"'
+	WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\libjpeg-turbo 1.5.2" "NoModify" 1
+	WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\libjpeg-turbo 1.5.2" "NoRepair" 1
+	WriteUninstaller "uninstall_1.5.2.exe"
 SectionEnd
 
 Section "Uninstall"
@@ -106,8 +106,8 @@ Section "Uninstall"
 
 	SetShellVarContext all
 
-	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\libjpeg-turbo 1.5.1"
-	DeleteRegKey HKLM "SOFTWARE\libjpeg-turbo 1.5.1"
+	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\libjpeg-turbo 1.5.2"
+	DeleteRegKey HKLM "SOFTWARE\libjpeg-turbo 1.5.2"
 
 !ifdef GCC
 	Delete $INSTDIR\bin\libjpeg-62.dll
@@ -140,7 +140,7 @@ Section "Uninstall"
 	Delete $INSTDIR\include\jmorecfg.h"
 	Delete $INSTDIR\include\jpeglib.h"
 	Delete $INSTDIR\include\turbojpeg.h"
-	Delete $INSTDIR\uninstall_1.5.1.exe
+	Delete $INSTDIR\uninstall_1.5.2.exe
 	Delete $INSTDIR\doc\README.ijg
 	Delete $INSTDIR\doc\README.md
 	Delete $INSTDIR\doc\LICENSE.md

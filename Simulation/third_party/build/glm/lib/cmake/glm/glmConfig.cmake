@@ -1,4 +1,4 @@
-set(GLM_VERSION "0.9.9")
+set(GLM_VERSION "0.9.8")
 
 
 ####### Expanded from @PACKAGE_INIT@ by configure_package_config_file() #######

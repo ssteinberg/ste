@@ -8,7 +8,7 @@
 # and license in png.h
 
 set(TEST_OPTIONS "--strict;default=if-safe")
-set(TEST_FILES "C:/src/git/StE/Simulation/third_party/packages/libpng/pngtest.png")
+set(TEST_FILES "D:/src/git/StE/Simulation/third_party/packages/libpng/pngtest.png")
 
 foreach(file ${TEST_FILES})
   file(TO_NATIVE_PATH "${file}" native_file)
