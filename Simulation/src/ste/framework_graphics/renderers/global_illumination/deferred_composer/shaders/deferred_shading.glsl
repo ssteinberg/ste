@@ -264,7 +264,7 @@ vec3 deferred_shade_fragment(g_buffer_element frag, ivec2 coord,
 	rgb += material_emission(md);
 
 	// Apply volumetric lighting to computed radiance
-	rgb = volumetric_scattering(scattering_volume, rgb, vec2(coord), depth);
+	rgb += volumetric_scattering(scattering_volume, vec2(coord), depth);
 
 	return rgb;
 }

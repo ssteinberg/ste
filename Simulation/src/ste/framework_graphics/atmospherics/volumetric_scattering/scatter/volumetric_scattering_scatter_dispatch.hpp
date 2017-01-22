@@ -18,6 +18,8 @@
 #include "light_storage.hpp"
 #include "shadowmap_storage.hpp"
 
+#include "sampler.hpp"
+
 #include <memory>
 
 namespace StE {
@@ -44,9 +46,16 @@ private:
 	void attach_handles() const {
 		auto depth_map = vss->get_depth_map();
 		if (depth_map) {
-			auto depth_map_handle = depth_map->get_texture_handle(vss->get_depth_sampler());
+			auto depth_map_handle = depth_map->get_texture_handle(*Core::sampler::sampler_linear_clamp());
 			depth_map_handle.make_resident();
 			program.get().set_uniform("depth_map", depth_map_handle);
+		}
+
+		auto downsampled_depth_map = vss->get_downsampled_depth_map();
+		if (depth_map) {
+			auto downsampled_depth_map_handle = downsampled_depth_map->get_texture_handle(vss->get_depth_sampler());
+			downsampled_depth_map_handle.make_resident();
+			program.get().set_uniform("downsampled_depth_map", downsampled_depth_map_handle);
 		}
 
 		auto shadow_map = shadows_storage->get_cubemaps();

@@ -78,6 +78,28 @@ float atmospherics_optical_length_aerosol(vec3 P0, vec3 P1,
 }
 
 /*
+*	Returns the atmospheric air optical length
+*
+*	@param P0	Start world position
+*	@param P1	End world position
+*/
+float atmospherics_optical_length_fast_air(vec3 P0, vec3 P1) {
+	return atmospherics_descriptor_optical_length_fast_rayleigh(atmospherics_descriptor_data, 
+														   P0, P1);
+}
+
+/*
+*	Returns the atmospheric aerosol optical length
+*
+*	@param P0	Start world position
+*	@param P1	End world position
+*/
+float atmospherics_optical_length_fast_aerosol(vec3 P0, vec3 P1) {
+	return atmospherics_descriptor_optical_length_fast_mie(atmospherics_descriptor_data, 
+													  P0, P1);
+}
+
+/*
 *	Returns the atmospheric air optical length for a ray from P0 in direction V.
 *
 *	@param P0	Start world position
@@ -125,8 +147,8 @@ vec3 atmospherics_rayleigh_extinction_coeffcient() {
 */
 vec3 extinct(vec3 P0, vec3 P1, 
 			 sampler2DArray atmospheric_optical_length_lut) {
-	float tr = atmospherics_optical_length_air(P0, P1, atmospheric_optical_length_lut);
-	float tm = atmospherics_optical_length_aerosol(P0, P1, atmospheric_optical_length_lut);
+	float tr = atmospherics_optical_length_fast_air(P0, P1);
+	float tm = atmospherics_optical_length_fast_aerosol(P0, P1);
 	vec3 t = atmospherics_rayleigh_extinction_coeffcient() * tr +
 			 vec3(atmospherics_mie_extinction_coeffcient()) * tm;
 	return beer_lambert(t);
@@ -141,10 +163,10 @@ vec3 extinct(vec3 P0, vec3 P1,
 */
 vec3 extinct(vec3 P0, vec3 P1, vec3 P2, 
 			 sampler2DArray atmospheric_optical_length_lut) {
-	float tr = atmospherics_optical_length_air(P0, P1, atmospheric_optical_length_lut) + 
-			   atmospherics_optical_length_air(P1, P2, atmospheric_optical_length_lut);
-	float tm = atmospherics_optical_length_aerosol(P0, P1, atmospheric_optical_length_lut) +
-			   atmospherics_optical_length_aerosol(P1, P2, atmospheric_optical_length_lut);
+	float tr = atmospherics_optical_length_fast_air(P0, P1) + 
+			   atmospherics_optical_length_fast_air(P1, P2);
+	float tm = atmospherics_optical_length_fast_aerosol(P0, P1) +
+			   atmospherics_optical_length_fast_aerosol(P1, P2);
 	vec3 t = atmospherics_rayleigh_extinction_coeffcient() * tr +
 			 vec3(atmospherics_mie_extinction_coeffcient()) * tm;
 	return beer_lambert(t);
@@ -160,12 +182,12 @@ vec3 extinct(vec3 P0, vec3 P1, vec3 P2,
 */
 vec3 extinct(vec3 P0, vec3 P1, vec3 P2, vec3 P3, 
 			 sampler2DArray atmospheric_optical_length_lut) {
-	float tr = atmospherics_optical_length_air(P0, P1, atmospheric_optical_length_lut) + 
-			   atmospherics_optical_length_air(P1, P2, atmospheric_optical_length_lut) + 
-			   atmospherics_optical_length_air(P2, P3, atmospheric_optical_length_lut);
-	float tm = atmospherics_optical_length_aerosol(P0, P1, atmospheric_optical_length_lut) +
-			   atmospherics_optical_length_aerosol(P1, P2, atmospheric_optical_length_lut) +
-			   atmospherics_optical_length_aerosol(P2, P3, atmospheric_optical_length_lut);
+	float tr = atmospherics_optical_length_fast_air(P0, P1) + 
+			   atmospherics_optical_length_fast_air(P1, P2) + 
+			   atmospherics_optical_length_fast_air(P2, P3);
+	float tm = atmospherics_optical_length_fast_aerosol(P0, P1) +
+			   atmospherics_optical_length_fast_aerosol(P1, P2) +
+			   atmospherics_optical_length_fast_aerosol(P2, P3);
 	vec3 t = atmospherics_rayleigh_extinction_coeffcient() * tr +
 			 vec3(atmospherics_mie_extinction_coeffcient()) * tm;
 	return beer_lambert(t);
@@ -197,9 +219,9 @@ vec3 extinct_ray(vec3 P0, vec3 V,
 vec3 extinct_ray(vec3 P0, vec3 P1, vec3 V, 
 				 sampler2DArray atmospheric_optical_length_lut) {
 	float tr = atmospherics_optical_length_ray_air(P1, V, atmospheric_optical_length_lut) + 
-			   atmospherics_optical_length_air(P0, P1, atmospheric_optical_length_lut);
+			   atmospherics_optical_length_fast_air(P0, P1);
 	float tm = atmospherics_optical_length_ray_aerosol(P1, V, atmospheric_optical_length_lut) +
-			   atmospherics_optical_length_aerosol(P0, P1, atmospheric_optical_length_lut);
+			   atmospherics_optical_length_fast_aerosol(P0, P1);
 	vec3 t = atmospherics_rayleigh_extinction_coeffcient() * tr +
 			 vec3(atmospherics_mie_extinction_coeffcient()) * tm;
 	return beer_lambert(t);

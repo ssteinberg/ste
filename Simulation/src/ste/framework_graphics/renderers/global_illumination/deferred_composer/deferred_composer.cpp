@@ -94,7 +94,7 @@ void deferred_composer::load_atmospherics_luts() {
 		atmospherics_mie0_scatter_lut = std::make_unique<Core::texture_3d>(lut_loader.create_mie0_scatter_lut());
 		atmospherics_ambient_lut = std::make_unique<Core::texture_3d>(lut_loader.create_ambient_lut());
 	}
-	catch (const microfacet_fit_error &err) {
+	catch (const atmospherics_lut_error &err) {
 		using namespace Text::Attributes;
 		ste_log_error() << Text::attributed_string("Can't open Atmospherics Scatter LUT. Error: \"") + b(err.what()) + "\"." << std::endl;
 
