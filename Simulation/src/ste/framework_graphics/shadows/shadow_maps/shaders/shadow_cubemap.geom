@@ -1,7 +1,6 @@
 
 #type geometry
 #version 450
-#extension GL_NV_gpu_shader5 : require
 
 layout(triangles) in;
 layout(triangle_strip, max_vertices=15) out;
@@ -22,10 +21,10 @@ layout(std430, binding = 2) restrict readonly buffer light_data {
 };
 
 layout(shared, binding = 4) restrict readonly buffer ll_counter_data {
-	uint32_t ll_counter;
+	uint ll_counter;
 };
 layout(shared, binding = 5) restrict readonly buffer ll_data {
-	uint16_t ll[];
+	uint ll[];
 };
 
 layout(shared, binding = 8) restrict readonly buffer shadow_projection_instance_to_ll_idx_translation_data {
@@ -48,7 +47,7 @@ vec4 transform(int face, vec3 v, float shadow_near) {
 	return project(vec4(1.f, 1.f, shadow_near, -1.f), vec4(u, 1));
 }
 
-void process(int face, uint16_t l, vec3 vertices[3], float shadow_near) {
+void process(int face, uint l, vec3 vertices[3], float shadow_near) {
 	// Transform to cube face and project
 	vec4 transformed_vertices[3];
 	for (int j = 0; j < 3; ++j)
@@ -84,11 +83,11 @@ void process(int face, uint16_t l, vec3 vertices[3], float shadow_near) {
 void main() {
 	int sproj_instance_id = vin[0].instanceIdx;
 	uint draw_id = vin[0].drawIdx;
-	uint16_t ll_id = sproj_id_to_llid_tt[draw_id].ll_idx[sproj_instance_id];
+	uint ll_id = sproj_id_to_llid_tt[draw_id].ll_idx[sproj_instance_id];
 
 	light_descriptor ld = light_buffer[ll[ll_id]];
 
-	uint32_t face_mask = ld.shadow_face_mask;
+	uint face_mask = ld.shadow_face_mask;
 	if (face_mask == 0)
 		return;
 

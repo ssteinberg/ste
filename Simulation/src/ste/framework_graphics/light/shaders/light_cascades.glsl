@@ -31,7 +31,7 @@ struct light_cascade_descriptor {
  *	Reads the cascade descriptor index assigned to the light. Light must be a directional light, no checking
  *	is performed.
  */
-uint32_t light_get_cascade_descriptor_idx(light_descriptor ld) {
+uint light_get_cascade_descriptor_idx(light_descriptor ld) {
 	return ld.cascade_idx;
 }
 

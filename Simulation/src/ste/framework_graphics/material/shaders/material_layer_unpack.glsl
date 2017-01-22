@@ -13,7 +13,7 @@ struct material_layer_unpacked_descriptor {
 	float phase_g;
 	vec3 attenuation_coefficient;
 
-	uint32_t next_layer_id;
+	uint next_layer_id;
 };
 
 bool material_is_base_layer(material_layer_unpacked_descriptor desc) {

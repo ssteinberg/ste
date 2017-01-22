@@ -1,7 +1,6 @@
 
 #type compute
 #version 450
-#extension GL_NV_gpu_shader5 : require
 
 layout(local_size_x = 128) in;
 
@@ -19,10 +18,10 @@ layout(std430, binding = 2) restrict buffer light_data {
 };
 
 layout(shared, binding = 4) restrict readonly buffer ll_counter_data {
-	uint32_t ll_counter;
+	uint ll_counter;
 };
 layout(shared, binding = 5) restrict readonly buffer ll_data {
-	uint16_t ll[];
+	uint ll[];
 };
 layout(shared, binding = 6) restrict buffer directional_lights_cascades_data {
 	light_cascade_descriptor directional_lights_cascades[];
@@ -38,13 +37,13 @@ const vec3 face_directions[6] = { vec3( 1, 0, 0),
 								  vec3( 0, 0, 1),
 								  vec3( 0, 0,-1) };
 
-void directional_light(uint16_t light_idx, int cascade, light_descriptor ld) {
+void directional_light(uint light_idx, int cascade, light_descriptor ld) {
 	if (cascade >= directional_light_cascades)
 		return;
 			
 	vec3 l = ld.transformed_position;
 
-	uint32_t cascade_idx = light_get_cascade_descriptor_idx(ld);
+	uint cascade_idx = light_get_cascade_descriptor_idx(ld);
 	light_cascade_descriptor cascade_descriptor = directional_lights_cascades[cascade_idx];
 
 	// Calculate eye frustum portion for this cascade
@@ -90,7 +89,7 @@ void directional_light(uint16_t light_idx, int cascade, light_descriptor ld) {
 	directional_lights_cascades[cascade_idx].cascades_data[cascade] = vec4(recp_vp, eye_dist, far_clip);
 }
 
-void spherical_light(uint16_t light_idx, int face, light_descriptor ld) {
+void spherical_light(uint light_idx, int face, light_descriptor ld) {
 	// Calculate shadow projection face frustum
 	vec3 origin = ld.transformed_position;
 	vec3 dir = face_directions[face];
@@ -164,7 +163,7 @@ void main() {
 		return;
 
 	int face = int(gl_GlobalInvocationID.x) % 6;
-	uint16_t light_idx = ll[ll_id];
+	uint light_idx = ll[ll_id];
 	light_descriptor ld = light_buffer[light_idx];
 	
 	if (ld.type == LightTypeDirectional) {

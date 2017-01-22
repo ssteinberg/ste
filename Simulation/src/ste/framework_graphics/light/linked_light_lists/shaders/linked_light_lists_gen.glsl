@@ -2,7 +2,6 @@
 #type compute
 #version 450
 #extension GL_ARB_bindless_texture : require
-#extension GL_NV_gpu_shader5 : require
 
 layout(local_size_x = 32, local_size_y = 32, local_size_z = 1) in;
 
@@ -19,10 +18,10 @@ layout(std430, binding = 2) restrict readonly buffer light_data {
 };
 
 layout(shared, binding = 4) restrict readonly buffer ll_counter_data {
-	uint32_t ll_counter;
+	uint ll_counter;
 };
 layout(shared, binding = 5) restrict readonly buffer ll_data {
-	uint16_t ll[];
+	uint ll[];
 };
 
 layout(r8ui,  binding = 4) restrict writeonly uniform uimage2D lll_size;
@@ -30,7 +29,7 @@ layout(r8ui,  binding = 5) restrict writeonly uniform uimage2D lll_low_detail_si
 layout(r32ui, binding = 6) restrict writeonly uniform uimage2D lll_heads;
 layout(r32ui, binding = 7) restrict writeonly uniform uimage2D lll_low_detail_heads;
 layout(shared, binding = 7) restrict buffer lll_counter_data {
-	uint32_t lll_counter;
+	uint lll_counter;
 };
 layout(shared, binding = 11) restrict writeonly buffer lll_data {
 	lll_element lll_buffer[];
@@ -57,14 +56,14 @@ vec2 compute_depth_range(float delta, float a, float b, vec3 l) {
 	return d;
 }
 
-void add_active_light(uint16_t light_idx, 
-					  uint16_t ll_i, 
+void add_active_light(uint light_idx, 
+					  uint ll_i, 
 					  vec2 depth_range) {
 	active_lights[total_active_lights++] = lll_encode(light_idx, ll_i, depth_range);
 }
 
-void add_low_detail_light(uint16_t light_idx, 
-						  uint16_t ll_i, 
+void add_low_detail_light(uint light_idx, 
+						  uint ll_i, 
 						  vec2 depth_range) {
 	if (total_active_low_detail_lights >= max_active_low_detail_lights_per_frame)
 		return;
@@ -92,8 +91,8 @@ void main() {
 	float a = dot(l, l);
 
 	for (int j = 0; j < ll_counter && total_active_lights < total_max_active_lights_per_frame; ++j) {
-		uint16_t ll_i = uint16_t(j);
-		uint16_t light_idx = ll[ll_i];
+		uint ll_i = uint(j);
+		uint light_idx = ll[ll_i];
 		light_descriptor ld = light_buffer[light_idx];
 
 		if (ld.type == LightTypeDirectional) {
@@ -137,8 +136,8 @@ void main() {
 	}
 
 	// Add the encoded lights to the per-pixel linked-light-list
-	uint32_t next_active_idx = atomicAdd(lll_counter, uint(total_active_lights + total_active_low_detail_lights));
-	uint32_t next_low_detail_idx = next_active_idx + total_active_lights;
+	uint next_active_idx = atomicAdd(lll_counter, uint(total_active_lights + total_active_low_detail_lights));
+	uint next_low_detail_idx = next_active_idx + total_active_lights;
 	imageStore(lll_heads, image_coord, next_active_idx.xxxx);
 	imageStore(lll_low_detail_heads, image_coord, next_low_detail_idx.xxxx);
 	

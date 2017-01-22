@@ -79,6 +79,10 @@ public:
 	void set_texture(const std::shared_ptr<Core::texture_2d> &tex) {
 		texture = tex;
 		descriptor.texture_handle = handle_for_texture(texture.get());
+
+		if (descriptor.texture_handle)  descriptor.used_textures_mask |= material_descriptor::material_has_texture;
+		else							descriptor.used_textures_mask &= ~material_descriptor::material_has_texture;
+
 		Base::notify();
 	}
 
@@ -92,6 +96,10 @@ public:
 	void set_cavity_map(const std::shared_ptr<Core::texture_2d> &tex) {
 		cavity_map = tex;
 		descriptor.cavity_handle = handle_for_texture(cavity_map.get());
+
+		if (descriptor.cavity_handle)   descriptor.used_textures_mask |= material_descriptor::material_has_cavity_map;
+		else							descriptor.used_textures_mask &= ~material_descriptor::material_has_cavity_map;
+
 		Base::notify();
 	}
 
@@ -103,6 +111,10 @@ public:
 	void set_normal_map(const std::shared_ptr<Core::texture_2d> &tex) {
 		normal_map = tex;
 		descriptor.normal_handle = handle_for_texture(normal_map.get());
+
+		if (descriptor.normal_handle)	descriptor.used_textures_mask |= material_descriptor::material_has_normal_map;
+		else							descriptor.used_textures_mask &= ~material_descriptor::material_has_normal_map;
+
 		Base::notify();
 	}
 
@@ -116,6 +128,10 @@ public:
 	void set_mask_map(const std::shared_ptr<Core::texture_2d> &tex) {
 		mask_map = tex;
 		descriptor.mask_handle = handle_for_texture(mask_map.get());
+
+		if (descriptor.mask_handle)		descriptor.used_textures_mask |= material_descriptor::material_has_mask_map;
+		else							descriptor.used_textures_mask &= ~material_descriptor::material_has_mask_map;
+
 		Base::notify();
 	}
 

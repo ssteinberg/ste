@@ -20,10 +20,10 @@ private:
 
 public:
 	struct glyph_metrics {
-		std::int16_t width;
-		std::int16_t height;
-		std::int16_t start_y;
-		std::int16_t start_x;
+		std::int32_t width;
+		std::int32_t height;
+		std::int32_t start_y;
+		std::int32_t start_x;
 
 	private:
 		friend class boost::serialization::access;

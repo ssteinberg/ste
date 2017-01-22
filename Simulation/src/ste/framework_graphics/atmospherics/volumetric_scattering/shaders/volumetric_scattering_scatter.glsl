@@ -2,7 +2,6 @@
 #type compute
 #version 450
 #extension GL_ARB_bindless_texture : require
-#extension GL_NV_gpu_shader5 : require
 
 layout(local_size_x = 32, local_size_y = 32, local_size_z = 1) in;
 
@@ -245,9 +244,9 @@ void main() {
 	vec2 next_tile_fragcoords = slice_coords_to_fragcoords(vec2(slice_coords + ivec2(1)));
 
 	// Loop through per-pixel linked-light-list
-	uint32_t lll_start = imageLoad(lll_heads, slice_coords).x;
-	uint32_t lll_length = imageLoad(lll_size, slice_coords).x;
-	for (uint32_t lll_ptr = lll_start; lll_ptr != lll_start + lll_length; ++lll_ptr) {
+	uint lll_start = imageLoad(lll_heads, slice_coords).x;
+	uint lll_length = imageLoad(lll_size, slice_coords).x;
+	for (uint lll_ptr = lll_start; lll_ptr != lll_start + lll_length; ++lll_ptr) {
 		lll_element lll_p = lll_buffer[lll_ptr];
 			
 		vec2 lll_depth_range = lll_parse_depth_range(lll_p);
@@ -260,7 +259,7 @@ void main() {
 		float min_lum = lll_low_detail_light_minimal_luminance(ld);
 		
 		// Cascade data used for directional lights
-		uint32_t cascade_idx = light_get_cascade_descriptor_idx(ld);
+		uint cascade_idx = light_get_cascade_descriptor_idx(ld);
 		light_cascade_descriptor cascade_descriptor = directional_lights_cascades[cascade_idx];
 		float current_cascade_far_clip = .0f;
 		int cascade = 0;

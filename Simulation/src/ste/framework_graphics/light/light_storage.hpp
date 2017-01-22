@@ -35,7 +35,7 @@ private:
 	static constexpr Core::BufferUsage::buffer_usage usage = static_cast<Core::BufferUsage::buffer_usage>(Core::BufferUsage::BufferUsageSparse);
 	static constexpr std::size_t pages = 1024;
 
-	using lights_ll_type = Core::shader_storage_buffer<std::uint16_t, usage>;
+	using lights_ll_type = Core::shader_storage_buffer<std::uint32_t, usage>;
 	using directional_lights_cascades_storage_type = Core::gstack_stable<light_cascade_descriptor>;
 
 private:

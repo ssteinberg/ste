@@ -26,16 +26,16 @@ struct light_descriptor {
 	vec3 diffuse;	float luminance;
 
 	// Light type
-	uint32_t type;
+	uint type;
 	
 	// directional_distance: For directional lights only, distance from origin opposite to lights direction (i.e. -directional_distance*position)
 	float directional_distance;
-	uint32_t cascade_idx;
+	uint cascade_idx;
 	
 	//! The rest is used internally only
 
 	// shadow_face_mask: For masking (culling) shadow map cube faces (for spherical) or cascades (for directional).
-	uint32_t shadow_face_mask;
+	uint shadow_face_mask;
 	
 	// transformed_position: Light position in eye space for spherical, direction in eye space for directional lights.
 	vec3 transformed_position;
