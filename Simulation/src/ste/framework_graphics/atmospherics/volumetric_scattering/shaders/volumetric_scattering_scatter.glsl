@@ -34,7 +34,7 @@ layout(shared, binding = 7) restrict readonly buffer directional_lights_cascades
 	light_cascade_descriptor directional_lights_cascades[];
 };
 
-layout(rgba32f, binding = 7) restrict uniform image3D volume;
+layout(rgba16f, binding = 7) restrict uniform image3D volume;
 
 #include "linked_light_lists_load.glsl"
 
@@ -281,12 +281,11 @@ void main() {
 			ivec3 volume_coords = ivec3(slice_coords, int(tile + .5f));
 			float depth_next_tile = volumetric_scattering_depth_for_tile(tile + 1.f);
 
-			if (tile <= tiles_effected_by_light_end) {
+			if (tile <= tiles_effected_by_light_end)
 				accum += scatter(depth, depth_next_tile, 
 								 slice_coords, fragcoords, next_tile_fragcoords,
 								 ld, light_idx, ll_idx, min_lum,
 								 cascade_descriptor, current_cascade_far_clip, shadowmap_idx, M, cascade);
-			}
 
 			vec3 stored_rgb = imageLoad(volume, volume_coords).rgb;
 			imageStore(volume, volume_coords, vec4(stored_rgb + accum, .0f));

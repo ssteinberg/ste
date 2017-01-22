@@ -53,7 +53,7 @@ public:
 						   s.y / tile_size,
 						   depth_tiles };
 
-		volume = std::make_unique<Core::texture_3d>(gli::format::FORMAT_RGBA32_SFLOAT_PACK32, size);
+		volume = std::make_unique<Core::texture_3d>(gli::format::FORMAT_RGBA16_SFLOAT_PACK16, size);
 
 		storage_modified_signal.emit();
 	}
