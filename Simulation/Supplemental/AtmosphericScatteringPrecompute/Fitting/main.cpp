@@ -14,7 +14,7 @@ int main() {
 //	aps.load("atmospherics_scatter_lut.bin");
 
 	aps.build_optical_length_lut();
-	aps.build_scatter_lut(7);
+	aps.build_scatter_lut(9);
 	aps.build_ambient_lut();
 
 	aps.write_out("atmospherics_scatter_lut.bin");
