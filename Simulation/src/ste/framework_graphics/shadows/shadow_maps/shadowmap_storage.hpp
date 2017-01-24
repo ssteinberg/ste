@@ -52,7 +52,7 @@ public:
 	}
 
 	void set_cube_count(std::size_t size) {
-		shadow_depth_cube_maps = std::make_unique<Core::texture_cube_map_array>(gli::format::FORMAT_D32_SFLOAT_PACK32, glm::ivec3{ cube_size.x, cube_size.y, size * 6 });
+		shadow_depth_cube_maps = std::make_unique<Core::texture_cube_map_array>(gli::format::FORMAT_D16_UNORM_PACK16, glm::ivec3{ cube_size.x, cube_size.y, size * 6 });
 		shadow_depth_cube_map_fbo.depth_binding_point() = *shadow_depth_cube_maps;
 
 		storage_modified_signal.emit();

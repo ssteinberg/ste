@@ -52,11 +52,13 @@ float deferred_evaluate_shadowing(samplerCubeArrayShadow shadow_depth_maps,
 
 		// Construct matrix to transform into cascade-space
 		vec2 cascade_recp_vp;
+		float cascade_proj_far;
 		mat3x4 M = light_cascade_projection(cascade_descriptor, 
 											cascade, 
 											ld.transformed_position,
 											cascades_depths,
-											cascade_recp_vp);
+											cascade_recp_vp,
+											cascade_proj_far);
 
 		return shadow(directional_shadow_depth_maps,
 					  directional_shadow_maps,
@@ -65,6 +67,7 @@ float deferred_evaluate_shadowing(samplerCubeArrayShadow shadow_depth_maps,
 					  normal,
 					  M,
 					  cascade_recp_vp,
+					  cascade_proj_far,
 					  l_dist,
 					  l_radius,
 					  coord);
@@ -78,6 +81,7 @@ float deferred_evaluate_shadowing(samplerCubeArrayShadow shadow_depth_maps,
 					  normal,
 					  shadow_v,
 					  l_radius,
+					  ld.effective_range,
 					  coord);
 	}
 }

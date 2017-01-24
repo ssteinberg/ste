@@ -60,6 +60,7 @@ vec3 subsurface_scattering(material_layer_unpacked_descriptor descriptor,
 												 light, 
 												 shadow_v, 
 												 l_radius, 
+												 light_effective_range(ld),
 												 frag_coords);
 
 		float dist_light_to_sample = length(shadow_v);

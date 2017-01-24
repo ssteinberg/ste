@@ -100,7 +100,8 @@ vec3 scatter_spherical_light(vec2 slice_coords,
 	float shadow = shadow_test(shadow_depth_maps,
 							   shadowmap_idx,
 							   shadow_v,
-							   ld.radius);
+							   ld.radius,
+							   light_effective_range(ld));
 	if (shadow <= .0f)
 		return vec3(0);
 
@@ -118,13 +119,15 @@ vec3 scatter_directional_light(vec2 slice_coords,
 							   float thickness,
 							   light_descriptor ld,
 							   mat3x4 M,
+							   float cascade_proj_far,
 							   int shadowmap_idx,
 							   float min_lum) {
 	vec3 l = light_incidant_ray(ld, position);					
 	float shadow = shadow_test(directional_shadow_depth_maps,
 							   shadowmap_idx,
 							   position,
-							   M);
+							   M,
+							   cascade_proj_far);
 	if (shadow <= .0f)
 		return vec3(0);
 			
@@ -168,7 +171,7 @@ bool generate_sample(vec2 slice_coords, float s,
 vec3 scatter(float depth, float depth_next_tile, 
 			 ivec2 slice_coords, vec2 fragcoords, vec2 next_tile_fragcoords,
 			 light_descriptor ld, uint light_idx, uint ll_idx, float min_lum,
-			 light_cascade_descriptor cascade_descriptor, inout float current_cascade_far_clip, inout int shadowmap_idx, inout mat3x4 M, inout int cascade) {
+			 light_cascade_descriptor cascade_descriptor, inout float current_cascade_far_clip, inout int shadowmap_idx, inout mat3x4 M, inout float cascade_proj_far, inout int cascade) {
 	float z0 = unproject_depth(depth);
 	float z2 = unproject_depth(depth_next_tile);
 	float thickness = abs(z0 - z2);
@@ -186,7 +189,8 @@ vec3 scatter(float depth, float depth_next_tile,
 			M = light_cascade_projection(cascade_descriptor, 
 										 cascade, 
 										 ld.transformed_position,
-										 cascades_depths);
+										 cascades_depths,
+										 cascade_proj_far);
 		}
 		
 		for (float s = 0; s < samples; ++s) {
@@ -201,6 +205,7 @@ vec3 scatter(float depth, float depth_next_tile,
 												   thickness,
 												   ld,
 												   M,
+												   cascade_proj_far,
 												   shadowmap_idx,
 												   min_lum);
 		}
@@ -261,7 +266,7 @@ void main() {
 		// Cascade data used for directional lights
 		uint cascade_idx = light_get_cascade_descriptor_idx(ld);
 		light_cascade_descriptor cascade_descriptor = directional_lights_cascades[cascade_idx];
-		float current_cascade_far_clip = .0f;
+		float current_cascade_far_clip = .0f, cascade_proj_far;
 		int cascade = 0;
 		int shadowmap_idx;
 		mat3x4 M;
@@ -284,7 +289,7 @@ void main() {
 				accum += scatter(depth, depth_next_tile, 
 								 slice_coords, fragcoords, next_tile_fragcoords,
 								 ld, light_idx, ll_idx, min_lum,
-								 cascade_descriptor, current_cascade_far_clip, shadowmap_idx, M, cascade);
+								 cascade_descriptor, current_cascade_far_clip, shadowmap_idx, M, cascade_proj_far, cascade);
 
 			vec3 stored_rgb = imageLoad(volume, volume_coords).rgb;
 			imageStore(volume, volume_coords, vec4(stored_rgb + accum, .0f));

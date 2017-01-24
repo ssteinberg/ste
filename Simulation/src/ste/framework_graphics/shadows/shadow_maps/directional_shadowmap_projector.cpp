@@ -10,7 +10,7 @@ void directional_shadowmap_projector::set_context_state() const {
 	GL::gl_current_context::get()->enable_depth_test();
 	GL::gl_current_context::get()->color_mask(false, false, false, false);
 	GL::gl_current_context::get()->enable_state(GL::BasicStateName::CULL_FACE);
-//	GL::gl_current_context::get()->cull_face(GL_FRONT);
+	//GL::gl_current_context::get()->cull_face(GL_FRONT);
 	
 	auto size = shadow_map->get_directional_maps()->get_size();
 	GL::gl_current_context::get()->viewport(0, 0, size.x, size.y);
