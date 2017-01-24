@@ -2,7 +2,6 @@
 #type compute
 #version 450
 #extension GL_ARB_bindless_texture : require
-#extension GL_NV_gpu_shader5 : require
 
 #include "hdr_common.glsl"
 

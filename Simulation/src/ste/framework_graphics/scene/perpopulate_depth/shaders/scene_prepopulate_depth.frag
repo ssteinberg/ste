@@ -1,7 +1,7 @@
 
 #type frag
 #version 450
-#extension GL_NV_gpu_shader5 : require
+#extension GL_ARB_bindless_texture : enable
 
 #include "material.glsl"
 

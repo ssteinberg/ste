@@ -1,7 +1,6 @@
 
 #type compute
 #version 450
-#extension GL_NV_gpu_shader5 : require
 
 layout(local_size_x = 128) in;
 
@@ -20,7 +19,7 @@ layout(std430, binding = 2) restrict buffer light_data {
 
 layout(binding = 4) uniform atomic_uint ll_counter;
 layout(shared, binding = 5) restrict writeonly buffer ll_data {
-	uint16_t ll[];
+	uint ll[];
 };
 layout(shared, binding = 6) restrict writeonly buffer directional_lights_cascades_data {
 	light_cascade_descriptor directional_lights_cascades[];
@@ -29,8 +28,8 @@ layout(shared, binding = 6) restrict writeonly buffer directional_lights_cascade
 uniform vec4 np, rp, lp, tp, bp;
 
 void add_to_lll(int light_idx) {
-	uint32_t ll_idx = atomicCounterIncrement(ll_counter);
-	ll[ll_idx] = uint16_t(light_idx);
+	uint ll_idx = atomicCounterIncrement(ll_counter);
+	ll[ll_idx] = uint(light_idx);
 }
 
 void main() {
@@ -49,7 +48,7 @@ void main() {
 	if (ld.type == LightTypeDirectional) {
 		// For directional lights:
 		// Add light to active light linked list		
-		uint32_t cascade_idx = light_get_cascade_descriptor_idx(ld);
+		uint cascade_idx = light_get_cascade_descriptor_idx(ld);
 		
 		// Compute orthonormal basis for light cascade space
 		vec3 l = transformed_light_pos;

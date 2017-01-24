@@ -32,7 +32,7 @@ private:
 
 	template <int tt_slots>
 	struct shadow_projection_instance_to_ll_idx_translation {
-		std::uint16_t ll_idx[tt_slots];
+		std::uint32_t ll_idx[tt_slots];
 	};
 
 	static constexpr Core::BufferUsage::buffer_usage usage = static_cast<Core::BufferUsage::buffer_usage>(Core::BufferUsage::BufferUsageSparse);

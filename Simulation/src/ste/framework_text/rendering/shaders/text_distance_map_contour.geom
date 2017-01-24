@@ -3,14 +3,13 @@
 #version 450
 #extension GL_ARB_shader_storage_buffer_object : require
 #extension GL_ARB_bindless_texture : require
-#extension GL_NV_gpu_shader5 : require
 
 struct buffer_glyph_descriptor {
-	int16_t width;
-	int16_t height;
-	int16_t start_y;
-	int16_t start_x;
-	uint64_t tex_handler;
+	int width;
+	int height;
+	int start_y;
+	int start_x;
+	layout(bindless_sampler) sampler2D tex_handler;
 };
 
 layout (points) in;

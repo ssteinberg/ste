@@ -10,12 +10,12 @@ vec2 lll_parse_depth_range(lll_element l) {
 	return unpackUnorm2x16(zpack);
 }
 
-uint16_t lll_parse_light_idx(lll_element l) {
+uint lll_parse_light_idx(lll_element l) {
 	uint pack = l.data.x;
-	return uint16_t(pack & 0xFFFF);
+	return pack & 0xFFFF;
 }
 
-uint16_t lll_parse_ll_idx(lll_element l) {
+uint lll_parse_ll_idx(lll_element l) {
 	uint pack = l.data.x;
-	return uint16_t(pack >> 16);
+	return pack >> 16;
 }

@@ -46,7 +46,7 @@ float deferred_evaluate_shadowing(samplerCubeArrayShadow shadow_depth_maps,
 
 	if (ld.type == LightTypeDirectional) {
 		// Query cascade index, and shadowmap index and construct cascade projection matrix
-		uint32_t cascade_idx = light_get_cascade_descriptor_idx(ld);
+		uint cascade_idx = light_get_cascade_descriptor_idx(ld);
 		light_cascade_descriptor cascade_descriptor = directional_lights_cascades[cascade_idx];
 		int shadowmap_idx = light_get_cascade_shadowmap_idx(ld, cascade);
 
@@ -94,9 +94,9 @@ vec3 deferred_shade_atmospheric_scattering(ivec2 coord,
 
 	vec3 rgb = vec3(.0f);
 	ivec2 lll_coords = coord / lll_image_res_multiplier;
-	uint32_t lll_start = imageLoad(lll_heads, lll_coords).x;
-	uint32_t lll_length = imageLoad(lll_size, lll_coords).x;
-	for (uint32_t lll_ptr = lll_start; lll_ptr != lll_start + lll_length; ++lll_ptr) {
+	uint lll_start = imageLoad(lll_heads, lll_coords).x;
+	uint lll_length = imageLoad(lll_size, lll_coords).x;
+	for (uint lll_ptr = lll_start; lll_ptr != lll_start + lll_length; ++lll_ptr) {
 		lll_element lll_p = lll_buffer[lll_ptr];
 		uint light_idx = uint(lll_parse_light_idx(lll_p));
 		light_descriptor ld = light_buffer[light_idx];
@@ -179,9 +179,9 @@ vec3 deferred_shade_fragment(g_buffer_element frag, ivec2 coord,
 	// Iterate lights in the linked-light-list structure
 	vec3 rgb = vec3(.0f);
 	ivec2 lll_coords = coord / lll_image_res_multiplier;
-	uint32_t lll_start = imageLoad(lll_heads, lll_coords).x;
-	uint32_t lll_length = imageLoad(lll_size, lll_coords).x;
-	for (uint32_t lll_ptr = lll_start; lll_ptr != lll_start + lll_length; ++lll_ptr) {
+	uint lll_start = imageLoad(lll_heads, lll_coords).x;
+	uint lll_length = imageLoad(lll_size, lll_coords).x;
+	for (uint lll_ptr = lll_start; lll_ptr != lll_start + lll_length; ++lll_ptr) {
 		lll_element lll_p = lll_buffer[lll_ptr];
 
 		// Check that light is in depth range
