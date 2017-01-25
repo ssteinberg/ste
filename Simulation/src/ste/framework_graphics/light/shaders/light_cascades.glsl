@@ -5,16 +5,14 @@
 #include "girenderer_transform_buffer.glsl"
 
 const int directional_light_cascades = 6;
-const float cascade_viewport_reserve = 1.075f;
+const float cascade_viewport_reserve = 1.025f;
 
 // Select a cascade eye distance that gives enough range from the near-clip to the view frustum encompassed by the cascade
 // to capture medium distance occluders, while maintaining depth precision. Keep it constant amongst cascades to avoid shadow filtering
 // artifacts when moving between cascades.
 // The near clip distance also reflects this motivation.
-const float cascade_projection_eye_distance = 10000.f;
-const float cascade_projection_near_clip = 50.f;
-
-const float cascades_thickness_multiplier_for_eye_dist = 5.f;
+const float cascade_projection_eye_distance = 5000.f;
+const float cascade_projection_near_clip = 1000.f;
 
 struct light_cascade_descriptor {
 	// Tangent and up vector of all cascades, with light direction being view vector
@@ -31,7 +29,7 @@ struct light_cascade_descriptor {
  *	Reads the cascade descriptor index assigned to the light. Light must be a directional light, no checking
  *	is performed.
  */
-uint32_t light_get_cascade_descriptor_idx(light_descriptor ld) {
+uint light_get_cascade_descriptor_idx(light_descriptor ld) {
 	return ld.cascade_idx;
 }
 
@@ -85,7 +83,7 @@ void light_cascade_data(light_cascade_descriptor cascade_descriptor,
 	
 	recp_viewport = data.xy;
 	cascade_eye_dist = data.z;
-	// The far and near clips of the cascades
+	// The far clip of the cascade
 	cascade_proj_far = data.w;
 }
 

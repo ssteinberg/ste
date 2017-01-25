@@ -1121,7 +1121,6 @@
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\passthrough.vert" />
     <None Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shaders\shadow_cubemap.geom" />
     <None Include="Simulation\src\ste\framework_graphics\scene\shaders\object.frag" />
-    <None Include="Simulation\src\ste\framework_graphics\scene\shaders\shadow_projection_instance_to_ll_idx_translation.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\scene\perpopulate_depth\shaders\scene_prepopulate_depth.frag" />
     <None Include="Simulation\src\ste\framework_graphics\scene\geometry_cull\shaders\scene_geo_cull.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\voxels\shaders\voxelizer.frag" />
@@ -1178,5 +1177,7 @@
     <None Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shaders\shadow_cubemap.vert" />
     <None Include="Simulation\src\ste\framework_graphics\atmospherics\buffer\shaders\atmospherics.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\atmospherics\buffer\shaders\atmospherics_descriptor.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\deferred_gbuffer\downsample_depth\shaders\gbuffer_downsample_depth.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\scene\shaders\shadow_drawid_to_lightid_ttl.glsl" />
   </ItemGroup>
 </Project>

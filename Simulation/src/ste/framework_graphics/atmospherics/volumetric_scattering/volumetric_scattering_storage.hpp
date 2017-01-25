@@ -25,6 +25,7 @@ private:
 
 private:
 	Core::texture_2d *depth_map{ nullptr };
+	Core::texture_2d *downsampled_depth_map{ nullptr };
 	std::unique_ptr<Core::texture_3d> volume{ nullptr };
 
 	Core::sampler volume_sampler;
@@ -57,8 +58,9 @@ public:
 		storage_modified_signal.emit();
 	}
 
-	void set_depth_map(Core::texture_2d *dm) {
+	void set_depth_maps(Core::texture_2d *dm, Core::texture_2d *downsampled_dm) {
 		depth_map = dm;
+		downsampled_depth_map = downsampled_dm;
 		storage_modified_signal.emit();
 	}
 
@@ -66,6 +68,7 @@ public:
 
 	auto* get_volume_texture() const { return volume.get(); }
 	auto* get_depth_map() const { return depth_map; }
+	auto* get_downsampled_depth_map() const { return downsampled_depth_map; }
 
 	auto& get_volume_sampler() const { return volume_sampler; }
 	auto& get_depth_sampler() const { return depth_sampler; }

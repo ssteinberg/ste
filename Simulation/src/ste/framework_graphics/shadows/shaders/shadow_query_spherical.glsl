@@ -4,18 +4,19 @@
 const float shadow_cube_max_penumbra = 80.f / shadow_cubemap_size;
 const float shadow_cube_min_penumbra = 3.f / shadow_cubemap_size;
 
+
 /*
  *	Creates a slightly offseted testing depth for shadowmaps lookups
  */
-float shadow_calculate_test_depth(float z, float n) {	
-	float d = project_depth(z, n);
+float shadow_calculate_test_depth(float z, float n, float f) {	
+	float d = project_depth(z, n, f);
 
 	// z gives a linear distance, unlike depth, use it to compute multiplier and additive component of the test depth modifier
 	float x = -z / n - 1.f;
 	float m_mixer = clamp(x / 500.f, .0f, 1.f);
-	float a_mixer = clamp(x / 25.f, .0f, 1.f);
-	float multiplier = mix(1.015f, 1.001f, m_mixer);
-	float delta = mix(1e-8f, .0f, a_mixer);
+	float a_mixer = clamp(x / 50.f, .0f, 1.f);
+	float multiplier = mix(1.0175f, 1.0015f, m_mixer);
+	float delta = mix(15e-9f, .0, a_mixer);
 
 	return d * multiplier + delta;
 }
@@ -51,6 +52,7 @@ float shadow_impl(samplerCubeArrayShadow shadow_depth_maps,
 				  vec3 normal,
 				  vec3 shadow_v, 
 				  float light_radius,
+				  float light_effective_range,
 				  ivec2 frag_coords,
 				  float max_penumbra_multiplier,		// Modulates the maximal allowed penumbra
 				  bool override_clusters,				// Overrides the calculated clusters amount
@@ -62,13 +64,13 @@ float shadow_impl(samplerCubeArrayShadow shadow_depth_maps,
 	vec3 norm_v = shadow_v / dist_receiver;
 
 	float depth_blocker = shadow_blocker_search(shadow_maps, idx, norm_v, m);
-	float dt = shadow_calculate_test_depth(-dist_receiver, shadow_near);
+	float dt = shadow_calculate_test_depth(-dist_receiver, shadow_near, light_effective_range);
 
 	// No shadowing if distance to blocker is further away from receiver
 	if (dt >= depth_blocker)
 		return 1.f;
 
-	float dist_blocker = -unproject_depth(depth_blocker, shadow_near);
+	float dist_blocker = -unproject_depth(depth_blocker, shadow_near, light_effective_range);
 
 	// Calculate penumbra based on distance and light radius
 	float penumbra_world = shadow_calculate_penumbra(dist_blocker, light_radius, dist_receiver);
@@ -122,6 +124,7 @@ float shadow(samplerCubeArrayShadow shadow_depth_maps,
 			 vec3 normal,
 			 vec3 shadow_v, 
 			 float light_radius,
+			 float light_effective_range,
 			 ivec2 frag_coords) {
 	return shadow_impl(shadow_depth_maps,
 					   shadow_maps, 
@@ -130,6 +133,7 @@ float shadow(samplerCubeArrayShadow shadow_depth_maps,
 					   normal,
 					   shadow_v, 
 					   light_radius,
+					   light_effective_range,
 					   frag_coords,
 					   1.f,
 					   false,
@@ -148,6 +152,7 @@ float shadow_fast(samplerCubeArrayShadow shadow_depth_maps,
 				  vec3 normal,
 				  vec3 shadow_v, 
 				  float light_radius,
+				  float light_effective_range,
 				  ivec2 frag_coords) {
 	return shadow_impl(shadow_depth_maps,
 					   shadow_maps, 
@@ -156,6 +161,7 @@ float shadow_fast(samplerCubeArrayShadow shadow_depth_maps,
 					   normal,
 					   shadow_v, 
 					   light_radius,
+					   light_effective_range,
 					   frag_coords,
 					   .25f,
 					   true,
@@ -165,12 +171,13 @@ float shadow_fast(samplerCubeArrayShadow shadow_depth_maps,
 /*
  *	Fast unfiltered shadow lookup
  */
-float shadow_test(samplerCubeArrayShadow shadow_depth_maps, uint idx, vec3 shadow_v, float light_radius) {
+float shadow_test(samplerCubeArrayShadow shadow_depth_maps, uint idx, vec3 shadow_v, 
+				  float light_radius, float light_effective_range) {
 	vec3 v = abs(shadow_v);
 	float m = max_element(v);
 	float shadow_near = light_radius;
 
-	float dt = shadow_calculate_test_depth(-m, shadow_near);
+	float dt = shadow_calculate_test_depth(-m, shadow_near, light_effective_range);
 
 	return texture(shadow_depth_maps, vec4(shadow_v, idx), dt).x;
 }
@@ -191,6 +198,7 @@ vec3 shadow_occluder(samplerCubeArray shadow_maps,
 					 uint idx, 
 					 vec3 shadow_v, 
 					 float light_radius,
+					 float light_effective_range,
 					 ivec2 frag_coords) {
 	float shadow_near = light_radius;
 	
@@ -199,11 +207,11 @@ vec3 shadow_occluder(samplerCubeArray shadow_maps,
 	vec3 norm_v = shadow_v / dist_receiver;
 
 	float depth_blocker = shadow_blocker_search(shadow_maps, idx, norm_v, m);
-	float dt = shadow_calculate_test_depth(-dist_receiver, shadow_near);
+	float dt = shadow_calculate_test_depth(-dist_receiver, shadow_near, light_effective_range);
 
 	// No shadowing if distance to blocker is further away from receiver
 	if (dt < depth_blocker) {
-		float dist_blocker = -unproject_depth(depth_blocker, shadow_near);
+		float dist_blocker = -unproject_depth(depth_blocker, shadow_near, light_effective_range);
 		float penumbra = shadow_calculate_penumbra(dist_blocker, light_radius, dist_receiver) / dist_receiver;
 
 		float noise = two_pi * interleaved_gradient_noise(vec2(frag_coords));

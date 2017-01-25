@@ -3,7 +3,7 @@
 #include "pack.glsl"
 #include "girenderer_transform_buffer.glsl"
 
-bool gbuffer_eof(uint32_t ptr) {
+bool gbuffer_eof(uint ptr) {
 	return ptr == 0xFFFFFFFF;
 }
 
@@ -36,10 +36,10 @@ int gbuffer_parse_material(g_buffer_element frag) {
 
 vec2 gbuffer_parse_duvdx(g_buffer_element frag) {
 	uint duvdx16 = floatBitsToUint(frag.data[0].z);
-	return unpackFloat2x16(duvdx16);
+	return unpackHalf2x16(duvdx16);
 }
 
 vec2 gbuffer_parse_duvdy(g_buffer_element frag) {
 	uint duvdy16 = floatBitsToUint(frag.data[0].w);
-	return unpackFloat2x16(duvdy16);
+	return unpackHalf2x16(duvdy16);
 }

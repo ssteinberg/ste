@@ -50,7 +50,7 @@ gi_renderer::gi_renderer(const ste_engine_control &ctx,
 		this->vol_scat_storage.resize(size);
 
 		this->lll_gen_dispatch.get().set_depth_map(gbuffer.get_downsampled_depth_target());
-		this->vol_scat_storage.set_depth_map(gbuffer.get_downsampled_depth_target());
+		this->vol_scat_storage.set_depth_maps(gbuffer.get_depth_target(), gbuffer.get_downsampled_depth_target());
 
 		this->rebuild_task_queue();
 	});
@@ -130,7 +130,7 @@ void gi_renderer::init() {
 	rebuild_task_queue();
 
 	lll_gen_dispatch.get().set_depth_map(gbuffer.get_downsampled_depth_target());
-	vol_scat_storage.set_depth_map(gbuffer.get_downsampled_depth_target());
+	vol_scat_storage.set_depth_maps(gbuffer.get_depth_target(), gbuffer.get_downsampled_depth_target());
 	s->set_target_gbuffer(&gbuffer);
 }
 

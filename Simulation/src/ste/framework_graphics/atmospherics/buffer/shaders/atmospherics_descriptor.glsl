@@ -52,13 +52,18 @@ struct atmospherics_descriptor {
 };
 
 
+float atmospherics_descriptor_pressure(float h, float one_over_H) {
+	return exp(one_over_H * h);
+}
+
+
 /*
 *	Returns the pressure at h using the exponential barometric law
 *
 *	@param h	Height in meters
 */
 float atmospherics_descriptor_pressure_rayleigh(atmospherics_descriptor desc, float h) {
-	return exp(desc.minus_one_over_Hr * h);
+	return atmospherics_descriptor_pressure(h, desc.minus_one_over_Hr);
 }
 
 /*
@@ -67,7 +72,7 @@ float atmospherics_descriptor_pressure_rayleigh(atmospherics_descriptor desc, fl
 *	@param h	Height in meters
 */
 float atmospherics_descriptor_pressure_mie(atmospherics_descriptor desc, float h) {
-	return exp(desc.minus_one_over_Hm * h);
+	return atmospherics_descriptor_pressure(h, desc.minus_one_over_Hm);
 }
 
 
@@ -147,6 +152,54 @@ float atmospherics_descriptor_optical_length(vec3 P0, vec3 P1, float H,
 														  atmospheric_optical_length_lut);
 
 	return abs(l0 - l1);
+}
+
+/*
+*	Returns the optical length between 2 points.
+*	Optical length expresses the amount of light attenuated from point P0 to P1.
+*	Fast verion, doesn't use precomputed LUT. Accurate for small distances.
+*
+*	@param P0	Start point
+*	@param P1	End point
+*	@param C	Atmosphere's (planet) center
+*	@param r	Atmosphere's (planet) radius
+*	@param one_over_H	Scale height reciprocal
+*/
+float atmospherics_descriptor_optical_length_fast(vec3 P0, vec3 P1,
+												  vec3 C, float r,
+												  float one_over_H) {
+	vec3 P = mix(P0, P1, .5f);
+	
+	vec3 Y = P - C;
+	float Ylen = length(Y);	
+	float h = Ylen - r;
+
+	return length(P1 - P0) * atmospherics_descriptor_pressure(h, one_over_H);
+}
+
+/*
+*	Returns the optical length between 2 points for Rayleigh scattering.
+*
+*	@param P0	Start point
+*	@param P1	End point
+*/
+float atmospherics_descriptor_optical_length_fast_rayleigh(atmospherics_descriptor desc, 
+														   vec3 P0, vec3 P1) {
+	return atmospherics_descriptor_optical_length_fast(P0, P1, 
+													   desc.center_radius.xyz, desc.center_radius.w, 
+													   desc.minus_one_over_Hr);
+}
+/*
+*	Returns the optical length between 2 points for Mie scattering.
+*
+*	@param P0	Start point
+*	@param P1	End point
+*/
+float atmospherics_descriptor_optical_length_fast_mie(atmospherics_descriptor desc, 
+													  vec3 P0, vec3 P1) {
+	return atmospherics_descriptor_optical_length_fast(P0, P1, 
+													   desc.center_radius.xyz, desc.center_radius.w, 
+													   desc.minus_one_over_Hm);
 }
 
 /*
