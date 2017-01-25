@@ -11,7 +11,7 @@
 
 namespace StE {
 
-class StEngineControl;
+class ste_engine_control;
 
 namespace Graphics {
 

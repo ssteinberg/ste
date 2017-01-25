@@ -39,30 +39,6 @@
     <ClCompile Include="Simulation\src\ste\engine\core\gpu_resources\surfaces\surface_constants.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Simulation\src\ste\engine\core\gpu_resources\surfaces\textures\impl\Texture1D.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Simulation\src\ste\engine\core\gpu_resources\surfaces\textures\impl\Texture1DArray.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Simulation\src\ste\engine\core\gpu_resources\surfaces\textures\impl\Texture2D.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Simulation\src\ste\engine\core\gpu_resources\surfaces\textures\impl\Texture2DArray.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Simulation\src\ste\engine\core\gpu_resources\surfaces\textures\impl\Texture3D.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Simulation\src\ste\engine\core\gpu_resources\surfaces\textures\impl\TextureCubeMap.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Simulation\src\ste\engine\core\gpu_resources\surfaces\textures\impl\TextureCubeMapArray.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Simulation\src\ste\engine\engine_control\StEngineControl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Simulation\src\ste\engine\log\Log.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -73,9 +49,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_graphics\antialiasing\fxaa\fxaa_dispatchable.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\entities\objects\ObjectGroup.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_graphics\gpu_dispatch\tasks\dispatch_queue\gpu_task_dispatch_queue.cpp">
@@ -118,9 +91,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\deferred_gbuffer\downsample_depth\gbuffer_downsample_depth_dispatch.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\GIRenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\hdr_dof_postprocess.cpp">
@@ -168,31 +138,13 @@
     <ClCompile Include="Simulation\src\ste\framework_graphics\utilities\profiler\profiler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\volumetric_scattering\gather\volumetric_scattering_gather_dispatch.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\volumetric_scattering\scatter\volumetric_scattering_scatter_dispatch.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\volumetric_scattering\volumetric_scattering_storage.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_graphics\voxels\dense_voxelizer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_graphics\voxels\dense_voxel_space.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_resources\glsl_programs\factory\GLSLProgramFactory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_resources\models\ModelFactory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_resources\resource_instance\resource_instance.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_resources\surfaces\SurfaceFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_text\attributed_strings\attrib.cpp">
@@ -202,9 +154,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_text\glyphs\glyph_factory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_text\rendering\TextManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_text\rendering\text_renderable.cpp">
@@ -229,6 +178,63 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_graphics\material\layer\material_layer_descriptor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\deferred_gbuffer\gbuffer_clearer\gbuffer_clear_dispatch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\directional_shadowmap_projector.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Simulation\src\ste\framework_graphics\light\light_storage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Simulation\src\ste\framework_graphics\atmospherics\volumetric_scattering\scatter\volumetric_scattering_scatter_dispatch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Simulation\src\ste\framework_graphics\atmospherics\volumetric_scattering\volumetric_scattering_storage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Simulation\src\ste\engine\engine_control\ste_engine_control.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Simulation\src\ste\framework_text\rendering\text_manager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Simulation\src\ste\engine\core\gpu_resources\surfaces\textures\impl\texture_1d.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Simulation\src\ste\engine\core\gpu_resources\surfaces\textures\impl\texture_1d_array.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Simulation\src\ste\engine\core\gpu_resources\surfaces\textures\impl\texture_2d_array.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Simulation\src\ste\engine\core\gpu_resources\surfaces\textures\impl\texture_3d.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Simulation\src\ste\engine\core\gpu_resources\surfaces\textures\impl\texture_cube_map.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Simulation\src\ste\engine\core\gpu_resources\surfaces\textures\impl\texture_cube_map_array.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Simulation\src\ste\engine\core\gpu_resources\surfaces\textures\impl\texture_2d.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Simulation\src\ste\framework_graphics\entities\objects\object_group.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\gi_renderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Simulation\src\ste\framework_resources\glsl_programs\factory\glsl_program_factory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Simulation\src\ste\framework_resources\models\model_factory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Simulation\src\ste\framework_resources\surfaces\surface_factory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -293,40 +299,10 @@
     <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\buffers\buffer_usage.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\buffers\data_storage\AtomicCounterBufferObject.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\buffers\data_storage\IndirectDispatchBufferObject.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\buffers\data_storage\IndirectDrawBufferObject.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\buffers\data_storage\PixelBufferObject.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\buffers\data_storage\QueryBufferObject.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\buffers\data_storage\ShaderStorageBuffer.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\buffers\mapped_buffer_object_unique_ptr.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\buffers\sparse_buffer_commitment_data.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\buffers\vertex_storage\ElementBufferObject.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\buffers\vertex_storage\VertexArrayObject.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\buffers\vertex_storage\VertexBufferDescriptor.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\buffers\vertex_storage\VertexBufferObject.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\core_resource_type.hpp">
@@ -410,16 +386,10 @@
     <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\surfaces\fbo\context_framebuffer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\surfaces\fbo\FramebufferObject.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\surfaces\image.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\surfaces\image_handle.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\surfaces\render_target\RenderTarget.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\surfaces\render_target\render_target_allocator.hpp">
@@ -435,36 +405,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\surfaces\surface_traits.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\surfaces\textures\Texture1D.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\surfaces\textures\Texture1DArray.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\surfaces\textures\texture1D_size_type.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\surfaces\textures\Texture2D.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\surfaces\textures\Texture2DArray.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\surfaces\textures\Texture2DMS.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\surfaces\textures\Texture2DMSArray.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\surfaces\textures\Texture3D.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\surfaces\textures\TextureCubeMap.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\surfaces\textures\TextureCubeMapArray.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\surfaces\textures\texture_allocator.hpp">
@@ -495,9 +435,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\engine_control\hid\Pointer.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\engine_control\StEngineControl.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\log\Log.hpp">
@@ -533,9 +470,6 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\antialiasing\fxaa\fxaa_dispatchable.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\common\ObjectVertexData.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\entities\entity.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -549,9 +483,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\entities\objects\Object.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\entities\objects\ObjectGroup.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\gpu_dispatch\tasks\common\fb_clear_dispatch.hpp">
@@ -582,12 +513,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_descriptor.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_entities\DirectionalLight.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_entities\SphericalLight.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_storage.hpp">
@@ -662,9 +587,6 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\radiometry\radiance\BxDFs\oren_nayar_diffuse\oren_nayar_diffuse.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\radiometry\radiance\BxDFs\physical\pBRDF.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\radiometry\spectral\Kelvin.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -690,9 +612,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\deferred_gbuffer\downsample_depth\gbuffer_downsample_depth_dispatch.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\GIRenderer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\girenderer_loader.hpp">
@@ -737,9 +656,6 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\scene\Scene.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\scene\SceneProperties.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shadowmap_projector.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -767,22 +683,10 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\utilities\texture_pools\texture_pool.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\volumetric_scattering\gather\volumetric_scattering_gather_dispatch.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\volumetric_scattering\scatter\volumetric_scattering_scatter_dispatch.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\volumetric_scattering\volumetric_scattering_storage.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\voxels\dense_voxelizer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\voxels\dense_voxel_space.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_resources\glsl_programs\factory\GLSLProgramFactory.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_resources\glsl_programs\factory\glsl_program_factory_exceptions.hpp">
@@ -792,9 +696,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_resources\glsl_programs\program_binary.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_resources\models\ModelFactory.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_resources\resource_instance\resource_instance.hpp">
@@ -809,19 +710,10 @@
     <ClInclude Include="Simulation\src\ste\framework_resources\resource_instance\resource_loading_task.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_resources\surfaces\SurfaceFactory.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_resources\surfaces\surface_factory_exceptions.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_text\attributed_strings\attrib.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_text\attributed_strings\AttributedString.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_text\attributed_strings\markup_formatter\attributed_string.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_text\attributed_strings\markup_formatter\attributed_string_htm_formatter.hpp">
@@ -846,9 +738,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_text\glyphs\glyph_point.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_text\rendering\TextManager.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_text\rendering\text_renderable.hpp">
@@ -882,9 +771,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\math_additions\quaternions\dual_quaternion.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\math_additions\real_spherical_harmonics\legendre_polynomial.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\math_additions\real_spherical_harmonics\RSH.hpp">
@@ -1034,9 +920,6 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\material\material.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\math_additions\numerical\romberg_integration\romberg_integration.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\radiometry\radiance\Fittings\microfacet_fit_error.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1049,11 +932,169 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\radiometry\radiance\BxDFs\lambert_diffuse\lambert_diffuse.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\deferred_gbuffer\gbuffer_clearer\gbuffer_clear_dispatch.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_cascade_descriptor.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\directional_shadowmap_projector.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\atmospherics\buffer\atmospherics_buffer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\atmospherics\atmospherics_properties.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\atmospherics\volumetric_scattering\scatter\volumetric_scattering_scatter_dispatch.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\atmospherics\volumetric_scattering\volumetric_scattering_storage.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\atmospherics\precomputed_scattering\atmospherics_lut_error.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\atmospherics\buffer\atmospherics_descriptor.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\math_additions\numerical\newton_raphson_iterative_root_finding.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\math_additions\numerical\romberg_integration.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\math_additions\light_transport\beer_lambert.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\math_additions\light_transport\mie_scattering.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\math_additions\light_transport\rayleigh_scattering.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\math_additions\numerical\sampling.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\math_additions\numerical\gaussian_quadrature_spherical_integration.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\math_additions\numerical\legendre_polynomial.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\atmospherics\precomputed_scattering\atmospherics_precompute_scattering.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\engine_control\ste_engine_control.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\buffers\data_storage\atomic_counter_buffer_object.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\buffers\data_storage\indirect_dispatch_buffer_object.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\buffers\data_storage\indirect_draw_buffer_object.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\buffers\data_storage\pixel_buffer_object.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\buffers\data_storage\query_buffer_object.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\buffers\data_storage\shader_storage_buffer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\buffers\vertex_storage\element_buffer_object.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\buffers\vertex_storage\vertex_array_object.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\buffers\vertex_storage\vertex_buffer_object.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\buffers\vertex_storage\vertex_buffer_descriptor.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\common\object_vertex_data.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\surfaces\fbo\framebuffer_object.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\surfaces\render_target\render_target.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_text\rendering\text_manager.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\surfaces\textures\texture_1d.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\surfaces\textures\texture_1d_size_type.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\surfaces\textures\texture_1d_array.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\surfaces\textures\texture_2d_array.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\surfaces\textures\texture_2d_ms.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\surfaces\textures\texture_2d_ms_array.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\surfaces\textures\texture_3d.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\surfaces\textures\texture_cube_map.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\surfaces\textures\texture_cube_map_array.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\surfaces\textures\texture_2d.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\entities\objects\object_group.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_entities\directional_light.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_entities\spherical_light.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\gi_renderer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\scene\scene_properties.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_resources\glsl_programs\factory\glsl_program_factory.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_resources\models\model_factory.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_resources\surfaces\surface_factory.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_text\attributed_strings\attributed_string.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_text\attributed_strings\markup_formatter\attributed_string_common.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Simulation\src\ste\framework_graphics\material\shaders\material_evaluate.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\material\shaders\material.glsl" />
-    <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\deferred_composer\shaders\deferred_compose.frag" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\shaders\girenderer_transform_buffer.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\antialiasing\fxaa\shaders\fxaa.frag" />
     <None Include="Simulation\src\ste\framework_graphics\antialiasing\fxaa\shaders\fxaa.vert" />
@@ -1075,29 +1116,11 @@
     <None Include="Simulation\src\ste\framework_graphics\radiometry\radiance\BxDFs\cook_torrance_specular\shaders\microfacet.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\radiometry\radiance\BxDFs\disney_diffuse\shaders\disney_diffuse.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\radiometry\radiance\BxDFs\oren_nayar_diffuse\shaders\oren_nayar.glsl" />
-    <None Include="Simulation\src\ste\framework_graphics\radiometry\radiance\BxDFs\physical\shaders\pbrdf.glsl" />
-    <None Include="Simulation\src\ste\framework_graphics\common_shaders\utils.glsl" />
-    <None Include="Simulation\src\ste\framework_graphics\common_shaders\chromaticity.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\common.glsl" />
-    <None Include="Simulation\src\ste\framework_graphics\common_shaders\dual_quaternion.glsl" />
-    <None Include="Simulation\src\ste\framework_graphics\common_shaders\fast_rand.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\indirect.glsl" />
-    <None Include="Simulation\src\ste\framework_graphics\common_shaders\noise.glsl" />
-    <None Include="Simulation\src\ste\framework_graphics\common_shaders\pack.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\passthrough.vert" />
-    <None Include="Simulation\src\ste\framework_graphics\common_shaders\project.glsl" />
-    <None Include="Simulation\src\ste\framework_graphics\common_shaders\quaternion.glsl" />
-    <None Include="Simulation\src\ste\framework_graphics\common_shaders\tangent_frame.glsl" />
-    <None Include="Simulation\src\ste\framework_graphics\common_shaders\transform.vert" />
-    <None Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shaders\shadow.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shaders\shadow_cubemap.geom" />
-    <None Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shaders\shadow_map.vert" />
-    <None Include="Simulation\src\ste\framework_graphics\common_shaders\interleaved_gradient_noise.glsl" />
-    <None Include="Simulation\src\ste\framework_graphics\volumetric_scattering\shaders\volumetric_scattering.glsl" />
-    <None Include="Simulation\src\ste\framework_graphics\volumetric_scattering\shaders\volumetric_scattering_gather.glsl" />
-    <None Include="Simulation\src\ste\framework_graphics\volumetric_scattering\shaders\volumetric_scattering_scatter.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\scene\shaders\object.frag" />
-    <None Include="Simulation\src\ste\framework_graphics\scene\shaders\shadow_projection_instance_to_ll_idx_translation.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\scene\perpopulate_depth\shaders\scene_prepopulate_depth.frag" />
     <None Include="Simulation\src\ste\framework_graphics\scene\geometry_cull\shaders\scene_geo_cull.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\voxels\shaders\voxelizer.frag" />
@@ -1109,9 +1132,7 @@
     <None Include="Simulation\src\ste\framework_text\rendering\shaders\text_distance_map_contour.geom" />
     <None Include="Simulation\src\ste\framework_text\rendering\shaders\text_distance_map_contour.vert" />
     <None Include="Simulation\src\ste\framework_graphics\light\shaders\light.glsl" />
-    <None Include="Simulation\src\ste\framework_graphics\light\shaders\light_load.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\light\linked_light_lists\shaders\linked_light_lists.glsl" />
-    <None Include="Simulation\src\ste\framework_graphics\light\linked_light_lists\shaders\linked_light_lists_gen.frag" />
     <None Include="Simulation\src\ste\framework_graphics\light\linked_light_lists\shaders\linked_light_lists_load.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\light\linked_light_lists\shaders\linked_light_lists_store.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\light\preprocessor\shaders\light_preprocess_cull_lights.glsl" />
@@ -1120,12 +1141,43 @@
     <None Include="Simulation\src\ste\framework_graphics\scene\shaders\scene_transform.vert" />
     <None Include="Simulation\src\ste\framework_graphics\radiometry\radiance\subsurface_scattering\shaders\subsurface_scattering.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\deferred_composer\shaders\deferred_shading.glsl" />
-    <None Include="Simulation\src\ste\framework_graphics\common_shaders\light_transport.glsl" />
-    <None Include="Simulation\src\ste\framework_graphics\common_shaders\spherical.glsl" />
-    <None Include="Simulation\src\ste\framework_graphics\common_shaders\optical_geometry.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\radiometry\radiance\BxDFs\lambert_diffuse\shaders\lambert_diffuse.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\radiometry\radiance\fittings\shaders\microfacet_ggx_fitting.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\constants.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\radiometry\radiance\BxDFs\shaders\fresnel.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shaders\shadow_directional.geom" />
+    <None Include="Simulation\src\ste\framework_graphics\shadows\shaders\shadow.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\shadows\shaders\shadow_query_directional.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\shadows\shaders\shadow_query_spherical.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\shadows\shaders\shadow_common.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\light\shaders\light_cascades.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\deferred_composer\shaders\deferred_compose.frag" />
+    <None Include="Simulation\src\ste\framework_graphics\atmospherics\volumetric_scattering\shaders\volumetric_scattering.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\atmospherics\volumetric_scattering\shaders\volumetric_scattering_scatter.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\common_shaders\math\dual_quaternion.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\common_shaders\math\erf.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\common_shaders\rand\interleaved_gradient_noise.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\common_shaders\rand\noise.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\common_shaders\rand\fast_rand.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\common_shaders\math\quaternion.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\common_shaders\transformation\transform.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\common_shaders\transformation\transform.vert" />
+    <None Include="Simulation\src\ste\framework_graphics\common_shaders\transformation\project.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\common_shaders\transformation\tangent_frame.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\common_shaders\lighting\chromaticity.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\common_shaders\math\intersection.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\common_shaders\lighting\light_transport.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\common_shaders\lighting\optical_geometry.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\common_shaders\math\spherical.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\common_shaders\encoding\encode.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\common_shaders\encoding\pack.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\common_shaders\interpolate.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\light\linked_light_lists\shaders\linked_light_lists_gen.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shaders\shadow_directional.vert" />
+    <None Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shaders\shadow_cubemap.vert" />
+    <None Include="Simulation\src\ste\framework_graphics\atmospherics\buffer\shaders\atmospherics.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\atmospherics\buffer\shaders\atmospherics_descriptor.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\deferred_gbuffer\downsample_depth\shaders\gbuffer_downsample_depth.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\scene\shaders\shadow_drawid_to_lightid_ttl.glsl" />
   </ItemGroup>
 </Project>

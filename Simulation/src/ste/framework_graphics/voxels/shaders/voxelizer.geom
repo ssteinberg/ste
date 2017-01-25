@@ -5,6 +5,7 @@
 #extension GL_NV_shader_atomic_fp16_vector : require
 #extension GL_NV_gpu_shader5 : require
 
+#include "common.glsl"
 #include "material.glsl"
 #include "voxels.glsl"
 
@@ -60,8 +61,8 @@ void main() {
 
 	float voxel = voxel_size(N * dot(-U, N));
 
-	vec3 min_world_aabb = min(U, min(V, W));
-	vec3 max_world_aabb = max(U, max(V, W));
+	vec3 min_world_aabb = min3(U, V, W);
+	vec3 max_world_aabb = max3(U, V, W);
 	vec3 aabb_signs = sign(min_world_aabb) * sign(max_world_aabb);
 	if (dot(aabb_signs, vec3(1)) > -2.5f) {
 		vec3 aabb_distances = min(abs(min_world_aabb), abs(max_world_aabb));
@@ -125,8 +126,8 @@ void main() {
 	vec3 p1 = invT * pos1;
 	vec3 p2 = invT * pos2;
 
-	vec2 minv = min(min(p0.xy, p1.xy), p2.xy);
-	vout.max_aabb = max(max(p0.xy, p1.xy), p2.xy) - minv + vec2(1);
+	vec2 minv = min3(p0.xy, p1.xy, p2.xy);
+	vout.max_aabb = max3(p0.xy, p1.xy, p2.xy) - minv + vec2(1);
 
 	N = invT * N;
 	float d = dot(p0, N);
@@ -151,20 +152,20 @@ void main() {
 	vout.st = vin[0].st;
 	vout.P = U;
 	vout.N = vin[0].N;
-    gl_Position = vec4(v0, 0, 1);
-    EmitVertex();
+	gl_Position = vec4(v0, 0, 1);
+	EmitVertex();
 
 	vout.st = vin[1].st;
 	vout.P = V;
 	vout.N = vin[1].N;
-    gl_Position = vec4(v1, 0, 1);
-    EmitVertex();
+	gl_Position = vec4(v1, 0, 1);
+	EmitVertex();
 
 	vout.st = vin[2].st;
 	vout.P = W;
 	vout.N = vin[2].N;
-    gl_Position = vec4(v2, 0, 1);
-    EmitVertex();
+	gl_Position = vec4(v2, 0, 1);
+	EmitVertex();
 
-    EndPrimitive();
+	EndPrimitive();
 }

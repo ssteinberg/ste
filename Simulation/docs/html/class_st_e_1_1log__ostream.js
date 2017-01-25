@@ -1,6 +1,0 @@
-var class_st_e_1_1log__ostream =
-[
-    [ "log_ostream", "class_st_e_1_1log__ostream.html#adddade3cafd86378f98f695bc66020ae", null ],
-    [ "~log_ostream", "class_st_e_1_1log__ostream.html#a5e3601cc5002828ad7b3d6d8dfeb54df", null ],
-    [ "log_ostream", "class_st_e_1_1log__ostream.html#ac47e3437533374e98752f37421a3d9c9", null ]
-];

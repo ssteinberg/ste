@@ -7,12 +7,11 @@
 
 #include "signal.hpp"
 
-#include "Texture2D.hpp"
-#include "FramebufferObject.hpp"
+#include "texture_2d.hpp"
+#include "framebuffer_object.hpp"
 
 #include "buffer_usage.hpp"
-#include "ShaderStorageBuffer.hpp"
-#include "AtomicCounterBufferObject.hpp"
+#include "shader_storage_buffer.hpp"
 
 #include "gl_current_context.hpp"
 
@@ -30,14 +29,14 @@ private:
 	static constexpr Core::BufferUsage::buffer_usage usage = static_cast<Core::BufferUsage::buffer_usage>(Core::BufferUsage::BufferUsageSparse);
 	static constexpr std::size_t virt_size = 2147483648 / 2;
 
-	using gbuffer_type = Core::ShaderStorageBuffer<g_buffer_element, usage>;
+	using gbuffer_type = Core::shader_storage_buffer<g_buffer_element, usage>;
 
 private:
-	std::unique_ptr<Core::Texture2D> depth_target{ nullptr };
-	std::unique_ptr<Core::Texture2D> backface_depth_target{ nullptr };
-	std::unique_ptr<Core::Texture2D> downsampled_depth_target{ nullptr };
-	Core::FramebufferObject fbo;
-	Core::FramebufferObject backface_fbo;
+	std::unique_ptr<Core::texture_2d> depth_target{ nullptr };
+	std::unique_ptr<Core::texture_2d> backface_depth_target{ nullptr };
+	std::unique_ptr<Core::texture_2d> downsampled_depth_target{ nullptr };
+	Core::framebuffer_object fbo;
+	Core::framebuffer_object backface_fbo;
 
 	gbuffer_type gbuffer;
 
@@ -57,9 +56,11 @@ public:
 	}
 
 	void resize(glm::ivec2 size);
-	auto& get_size() const { return size; }
+	void clear();
 
 	void bind_gbuffer() const;
+
+	auto& get_size() const { return size; }
 	
 	auto* get_depth_target() const { return depth_target.get(); }
 	auto* get_backface_depth_target() const { return backface_depth_target.get(); }

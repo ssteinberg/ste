@@ -9,12 +9,12 @@
 namespace StE {
 namespace Graphics {
 
-class Quad : public mesh<mesh_subdivion_mode::TrianglesStrip> {
+class quad : public mesh<mesh_subdivion_mode::TrianglesStrip> {
 public:
-	~Quad() noexcept override {}
-	Quad() {
-		std::vector<ObjectVertexData> vert;
-		ObjectVertexData vd;
+	~quad() noexcept override {}
+	quad() {
+		std::vector<object_vertex_data> vert;
+		object_vertex_data vd;
 		glm::vec3 n = { 0,0,1 };
 		glm::vec3 t = { 1,0,0 };
 		glm::vec3 b = { 0,1,0 };
@@ -42,7 +42,7 @@ public:
 	}
 };
 
-extern Quad ScreenFillingQuad;
+extern quad screen_filling_quad;
 
 }
 }

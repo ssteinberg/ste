@@ -30,6 +30,8 @@ public:
 
 	operator std::uint64_t() const { return handle; }
 	std::uint64_t get_handle() const { return handle; }
+
+	operator bool() const { return handle != 0; }
 };
 
 }

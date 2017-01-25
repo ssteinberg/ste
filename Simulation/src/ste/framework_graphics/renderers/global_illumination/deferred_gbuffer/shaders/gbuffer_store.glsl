@@ -11,11 +11,11 @@ void gbuffer_store(float depth,
 				   vec3 T,
 				   int matIdx,
 				   ivec2 frag_coords) {
-	float dUVdx16 = uintBitsToFloat(packFloat2x16(f16vec2(dUVdx)));
-	float dUVdy16 = uintBitsToFloat(packFloat2x16(f16vec2(dUVdy)));
+	float dUVdx16 = uintBitsToFloat(packHalf2x16(dUVdx));
+	float dUVdy16 = uintBitsToFloat(packHalf2x16(dUVdy));
 
-	uint Npack = packSnorm2x16(normal3x32_to_snorm2x32(N));
-	uint Tpack = packSnorm2x16(normal3x32_to_snorm2x32(T));
+	uint Npack = packSnorm2x16(norm3x32_to_snorm2x32(N));
+	uint Tpack = packSnorm2x16(norm3x32_to_snorm2x32(T));
 
 	mat2x4 data;
 	data[0] = vec4(depth, uintBitsToFloat(matIdx), dUVdx16, dUVdy16);

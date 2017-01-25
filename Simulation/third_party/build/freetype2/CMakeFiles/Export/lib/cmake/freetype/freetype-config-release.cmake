@@ -9,7 +9,7 @@ set(CMAKE_IMPORT_FILE_VERSION 1)
 set_property(TARGET freetype APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
 set_target_properties(freetype PROPERTIES
   IMPORTED_LINK_INTERFACE_LANGUAGES_RELEASE "C"
-  IMPORTED_LINK_INTERFACE_LIBRARIES_RELEASE "C:/src/git/StE/Simulation/third_party/lib/zlib.lib"
+  IMPORTED_LINK_INTERFACE_LIBRARIES_RELEASE "D:/src/git/StE/Simulation/third_party/lib/zlib.lib"
   IMPORTED_LOCATION_RELEASE "${_IMPORT_PREFIX}/lib/freetype.lib"
   )
 

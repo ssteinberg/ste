@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -11,10 +11,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGUID>{25C3CFC2-A522-381E-9166-5AC97B79763D}</ProjectGUID>
+    <ProjectGUID>{5AA4AEF5-BE67-3ECB-9A7C-E66B8EFAE0DA}</ProjectGUID>
     <Keyword>Win32Proj</Keyword>
     <Platform>Win32</Platform>
     <ProjectName>freetype</ProjectName>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -36,21 +37,22 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-    <PropertyGroup>
-      <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
-      <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\src\git\StE\Simulation\third_party\build\freetype2\Debug\</OutDir>
-      <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">freetype.dir\Debug\</IntDir>
-      <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">freetyped</TargetName>
-      <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.lib</TargetExt>
-      <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\src\git\StE\Simulation\third_party\build\freetype2\Release\</OutDir>
-      <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">freetype.dir\Release\</IntDir>
-      <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">freetype</TargetName>
-      <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.lib</TargetExt>
-    </PropertyGroup>
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\src\git\StE\Simulation\third_party\build\freetype2\Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">freetype.dir\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">freetyped</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D:\src\git\StE\Simulation\third_party\build\freetype2\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">freetype.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">freetype</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.lib</TargetExt>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\src\git\StE\Simulation\third_party\build\freetype2\include;C:\src\git\StE\Simulation\third_party\packages\freetype2\include;C:\src\git\StE\Simulation\third_party\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\src\git\StE\Simulation\third_party\build\freetype2\include;D:\src\git\StE\Simulation\third_party\packages\freetype2\include;D:\src\git\StE\Simulation\third_party\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>Debug/</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <CompileAs>CompileAsC</CompileAs>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ExceptionHandling>
@@ -58,17 +60,18 @@
       <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
       <Optimization>Disabled</Optimization>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;FT2_BUILD_LIBRARY;CMAKE_INTDIR="Debug";%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(OutputPath)$(TargetName).pdb</ProgramDataBaseFileName>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;FT2_BUILD_LIBRARY;CMAKE_INTDIR=\"Debug\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\src\git\StE\Simulation\third_party\build\freetype2\include;C:\src\git\StE\Simulation\third_party\packages\freetype2\include;C:\src\git\StE\Simulation\third_party\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\src\git\StE\Simulation\third_party\build\freetype2\include;D:\src\git\StE\Simulation\third_party\packages\freetype2\include;D:\src\git\StE\Simulation\third_party\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\src\git\StE\Simulation\third_party\build\freetype2\include;C:\src\git\StE\Simulation\third_party\packages\freetype2\include;C:\src\git\StE\Simulation\third_party\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\src\git\StE\Simulation\third_party\build\freetype2\include;D:\src\git\StE\Simulation\third_party\packages\freetype2\include;D:\src\git\StE\Simulation\third_party\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -81,7 +84,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\src\git\StE\Simulation\third_party\build\freetype2\include;C:\src\git\StE\Simulation\third_party\packages\freetype2\include;C:\src\git\StE\Simulation\third_party\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\src\git\StE\Simulation\third_party\build\freetype2\include;D:\src\git\StE\Simulation\third_party\packages\freetype2\include;D:\src\git\StE\Simulation\third_party\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>Release/</AssemblerListingLocation>
       <CompileAs>CompileAsC</CompileAs>
       <ExceptionHandling>
@@ -89,18 +92,19 @@
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <Optimization>MaxSpeed</Optimization>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;FT2_BUILD_LIBRARY;CMAKE_INTDIR="Release";%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
-      <DebugInformationFormat></DebugInformationFormat>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;FT2_BUILD_LIBRARY;CMAKE_INTDIR=\"Release\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\src\git\StE\Simulation\third_party\build\freetype2\include;C:\src\git\StE\Simulation\third_party\packages\freetype2\include;C:\src\git\StE\Simulation\third_party\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\src\git\StE\Simulation\third_party\build\freetype2\include;D:\src\git\StE\Simulation\third_party\packages\freetype2\include;D:\src\git\StE\Simulation\third_party\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\src\git\StE\Simulation\third_party\build\freetype2\include;C:\src\git\StE\Simulation\third_party\packages\freetype2\include;C:\src\git\StE\Simulation\third_party\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\src\git\StE\Simulation\third_party\build\freetype2\include;D:\src\git\StE\Simulation\third_party\packages\freetype2\include;D:\src\git\StE\Simulation\third_party\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -112,10 +116,10 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <CustomBuild Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\CMakeLists.txt">
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Building Custom Rule C:/src/git/StE/Simulation/third_party/packages/freetype2/CMakeLists.txt</Message>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Building Custom Rule D:/src/git/StE/Simulation/third_party/packages/freetype2/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
-"C:\Program Files (x86)\CMake\bin\cmake.exe" -HC:/src/git/StE/Simulation/third_party/packages/freetype2 -BC:/src/git/StE/Simulation/third_party/build/freetype2 --check-stamp-file C:\src\git\StE\Simulation\third_party\build\freetype2\CMakeFiles\generate.stamp
+"C:\Program Files\CMake\bin\cmake.exe" -HD:/src/git/StE/Simulation/third_party/packages/freetype2 -BD:/src/git/StE/Simulation/third_party/build/freetype2 --check-stamp-file D:\src\git\StE\Simulation\third_party\build\freetype2\CMakeFiles\generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -123,12 +127,12 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:/src/git/StE/Simulation/third_party/packages/freetype2/CMakeLists.txt;C:\src\git\StE\Simulation\third_party\packages\freetype2\CMakeLists.txt;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CheckIncludeFile.cmake;C:\src\git\StE\Simulation\third_party\build\freetype2\CMakeFiles\3.5.2\CMakeSystem.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeSystemSpecificInitialize.cmake;C:\src\git\StE\Simulation\third_party\build\freetype2\CMakeFiles\3.5.2\CMakeCCompiler.cmake;C:\src\git\StE\Simulation\third_party\build\freetype2\CMakeFiles\3.5.2\CMakeCXXCompiler.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeGenericSystem.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Platform\Windows.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Platform\WindowsPaths.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeCInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeLanguageInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Platform\Windows-MSVC.cmake;C:\src\git\StE\Simulation\third_party\build\freetype2\CMakeFiles\3.5.2\CMakeRCCompiler.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeRCInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeCXXInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeLanguageInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Platform\Windows-MSVC.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\FindZLIB.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\SelectLibraryConfigurations.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\FindPackageMessage.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeParseArguments.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\FindBZip2.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\SelectLibraryConfigurations.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\FindPackageMessage.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeParseArguments.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\FindPNG.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\FindZLIB.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\FindPackageMessage.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeParseArguments.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\SelectLibraryConfigurations.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\FindPackageMessage.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeParseArguments.cmake;C:\src\git\StE\Simulation\third_party\packages\freetype2\builds\cmake\FindHarfBuzz.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\FindPkgConfig.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\FindPackageMessage.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeParseArguments.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\FindPackageMessage.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeParseArguments.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CPack.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CPackComponent.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Templates\CPackConfig.cmake.in;C:\Program Files (x86)\CMake\share\cmake-3.5\Templates\CPackConfig.cmake.in;C:\src\git\StE\Simulation\third_party\packages\freetype2\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\src\git\StE\Simulation\third_party\build\freetype2\CMakeFiles\generate.stamp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:/src/git/StE/Simulation/third_party/packages/freetype2/CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\freetype2\CMakeLists.txt;C:\Program Files\CMake\share\cmake-3.7\Modules\CheckIncludeFile.cmake;D:\src\git\StE\Simulation\third_party\build\freetype2\CMakeFiles\3.7.1\CMakeSystem.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeSystemSpecificInitialize.cmake;D:\src\git\StE\Simulation\third_party\build\freetype2\CMakeFiles\3.7.1\CMakeCCompiler.cmake;D:\src\git\StE\Simulation\third_party\build\freetype2\CMakeFiles\3.7.1\CMakeCXXCompiler.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC.cmake;D:\src\git\StE\Simulation\third_party\build\freetype2\CMakeFiles\3.7.1\CMakeRCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindZLIB.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\SelectLibraryConfigurations.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindBZip2.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\SelectLibraryConfigurations.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPNG.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindZLIB.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\SelectLibraryConfigurations.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\freetype2\builds\cmake\FindHarfBuzz.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPkgConfig.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CPack.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CPackComponent.cmake;C:\Program Files\CMake\share\cmake-3.7\Templates\CPackConfig.cmake.in;C:\Program Files\CMake\share\cmake-3.7\Templates\CPackConfig.cmake.in;D:\src\git\StE\Simulation\third_party\packages\freetype2\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\src\git\StE\Simulation\third_party\build\freetype2\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Building Custom Rule C:/src/git/StE/Simulation/third_party/packages/freetype2/CMakeLists.txt</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Building Custom Rule D:/src/git/StE/Simulation/third_party/packages/freetype2/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
-"C:\Program Files (x86)\CMake\bin\cmake.exe" -HC:/src/git/StE/Simulation/third_party/packages/freetype2 -BC:/src/git/StE/Simulation/third_party/build/freetype2 --check-stamp-file C:\src\git\StE\Simulation\third_party\build\freetype2\CMakeFiles\generate.stamp
+"C:\Program Files\CMake\bin\cmake.exe" -HD:/src/git/StE/Simulation/third_party/packages/freetype2 -BD:/src/git/StE/Simulation/third_party/build/freetype2 --check-stamp-file D:\src\git\StE\Simulation\third_party\build\freetype2\CMakeFiles\generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -136,129 +140,129 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:/src/git/StE/Simulation/third_party/packages/freetype2/CMakeLists.txt;C:\src\git\StE\Simulation\third_party\packages\freetype2\CMakeLists.txt;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CheckIncludeFile.cmake;C:\src\git\StE\Simulation\third_party\build\freetype2\CMakeFiles\3.5.2\CMakeSystem.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeSystemSpecificInitialize.cmake;C:\src\git\StE\Simulation\third_party\build\freetype2\CMakeFiles\3.5.2\CMakeCCompiler.cmake;C:\src\git\StE\Simulation\third_party\build\freetype2\CMakeFiles\3.5.2\CMakeCXXCompiler.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeGenericSystem.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Platform\Windows.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Platform\WindowsPaths.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeCInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeLanguageInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Platform\Windows-MSVC.cmake;C:\src\git\StE\Simulation\third_party\build\freetype2\CMakeFiles\3.5.2\CMakeRCCompiler.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeRCInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeCXXInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeLanguageInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\Platform\Windows-MSVC.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\FindZLIB.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\SelectLibraryConfigurations.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\FindPackageMessage.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeParseArguments.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\FindBZip2.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\SelectLibraryConfigurations.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\FindPackageMessage.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeParseArguments.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\FindPNG.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\FindZLIB.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\FindPackageMessage.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeParseArguments.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\SelectLibraryConfigurations.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\FindPackageMessage.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeParseArguments.cmake;C:\src\git\StE\Simulation\third_party\packages\freetype2\builds\cmake\FindHarfBuzz.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\FindPkgConfig.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\FindPackageMessage.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeParseArguments.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\FindPackageMessage.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CMakeParseArguments.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CPack.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Modules\CPackComponent.cmake;C:\Program Files (x86)\CMake\share\cmake-3.5\Templates\CPackConfig.cmake.in;C:\Program Files (x86)\CMake\share\cmake-3.5\Templates\CPackConfig.cmake.in;C:\src\git\StE\Simulation\third_party\packages\freetype2\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\src\git\StE\Simulation\third_party\build\freetype2\CMakeFiles\generate.stamp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D:/src/git/StE/Simulation/third_party/packages/freetype2/CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\freetype2\CMakeLists.txt;C:\Program Files\CMake\share\cmake-3.7\Modules\CheckIncludeFile.cmake;D:\src\git\StE\Simulation\third_party\build\freetype2\CMakeFiles\3.7.1\CMakeSystem.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeSystemSpecificInitialize.cmake;D:\src\git\StE\Simulation\third_party\build\freetype2\CMakeFiles\3.7.1\CMakeCCompiler.cmake;D:\src\git\StE\Simulation\third_party\build\freetype2\CMakeFiles\3.7.1\CMakeCXXCompiler.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC.cmake;D:\src\git\StE\Simulation\third_party\build\freetype2\CMakeFiles\3.7.1\CMakeRCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindZLIB.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\SelectLibraryConfigurations.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindBZip2.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\SelectLibraryConfigurations.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPNG.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindZLIB.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\SelectLibraryConfigurations.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\freetype2\builds\cmake\FindHarfBuzz.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPkgConfig.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CPack.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CPackComponent.cmake;C:\Program Files\CMake\share\cmake-3.7\Templates\CPackConfig.cmake.in;C:\Program Files\CMake\share\cmake-3.7\Templates\CPackConfig.cmake.in;D:\src\git\StE\Simulation\third_party\packages\freetype2\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D:\src\git\StE\Simulation\third_party\build\freetype2\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\ft2build.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\freetype.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftadvanc.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftautoh.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftbbox.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftbdf.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftbitmap.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftbzip2.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftcache.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftcffdrv.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftchapters.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftcid.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\fterrdef.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\fterrors.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftfntfmt.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftgasp.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftglyph.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftgxval.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftgzip.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftimage.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftincrem.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftlcdfil.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftlist.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftlzw.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftmac.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftmm.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftmodapi.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftmoderr.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftotval.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftoutln.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftpfr.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftrender.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftsizes.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftsnames.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftstroke.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftsynth.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftsystem.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\fttrigon.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftttdrv.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\fttypes.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftwinfnt.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\t1tables.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ttnameid.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\tttables.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\tttags.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ttunpat.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\config\ftconfig.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\config\ftheader.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\config\ftmodule.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\config\ftoption.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\config\ftstdlib.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\internal\autohint.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\internal\ftcalc.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\internal\ftdebug.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\internal\ftdriver.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\internal\ftgloadr.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\internal\fthash.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\internal\ftmemory.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\internal\ftobjs.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\internal\ftpic.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\internal\ftrfork.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\internal\ftserv.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\internal\ftstream.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\internal\fttrace.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\internal\ftvalid.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\internal\internal.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\internal\psaux.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\internal\pshints.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\internal\sfnt.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\internal\t1types.h" />
-    <ClInclude Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\internal\tttypes.h" />
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\src\autofit\autofit.c"  />
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\src\base\ftbase.c"  />
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\src\base\ftbbox.c"  />
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\src\base\ftbdf.c"  />
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\src\base\ftbitmap.c"  />
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\src\base\ftcid.c"  />
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\src\base\ftfntfmt.c"  />
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\src\base\ftfstype.c"  />
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\src\base\ftgasp.c"  />
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\src\base\ftglyph.c"  />
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\src\base\ftgxval.c"  />
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\src\base\ftinit.c"  />
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\src\base\ftlcdfil.c"  />
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\src\base\ftmm.c"  />
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\src\base\ftotval.c"  />
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\src\base\ftpatent.c"  />
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\src\base\ftpfr.c"  />
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\src\base\ftstroke.c"  />
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\src\base\ftsynth.c"  />
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\src\base\ftsystem.c"  />
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\src\base\fttype1.c"  />
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\src\base\ftwinfnt.c"  />
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\src\bdf\bdf.c"  />
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\src\bzip2\ftbzip2.c"  />
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\src\cache\ftcache.c"  />
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\src\cff\cff.c"  />
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\src\cid\type1cid.c"  />
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\src\gzip\ftgzip.c"  />
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\src\lzw\ftlzw.c"  />
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\src\pcf\pcf.c"  />
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\src\pfr\pfr.c"  />
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\src\psaux\psaux.c"  />
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\src\pshinter\pshinter.c"  />
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\src\psnames\psnames.c"  />
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\src\raster\raster.c"  />
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\src\sfnt\sfnt.c"  />
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\src\smooth\smooth.c"  />
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\src\truetype\truetype.c"  />
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\src\type1\type1.c"  />
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\src\type42\type42.c"  />
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\src\winfonts\winfnt.c"  />
-    <ClCompile Include="C:\src\git\StE\Simulation\third_party\packages\freetype2\builds\windows\ftdebug.c"  />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\ft2build.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\freetype.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftadvanc.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftautoh.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftbbox.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftbdf.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftbitmap.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftbzip2.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftcache.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftcffdrv.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftchapters.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftcid.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\fterrdef.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\fterrors.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftfntfmt.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftgasp.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftglyph.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftgxval.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftgzip.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftimage.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftincrem.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftlcdfil.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftlist.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftlzw.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftmac.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftmm.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftmodapi.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftmoderr.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftotval.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftoutln.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftpfr.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftrender.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftsizes.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftsnames.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftstroke.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftsynth.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftsystem.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\fttrigon.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftttdrv.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\fttypes.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftwinfnt.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\t1tables.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ttnameid.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\tttables.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\tttags.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ttunpat.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\config\ftconfig.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\config\ftheader.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\config\ftmodule.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\config\ftoption.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\config\ftstdlib.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\internal\autohint.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\internal\ftcalc.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\internal\ftdebug.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\internal\ftdriver.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\internal\ftgloadr.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\internal\fthash.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\internal\ftmemory.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\internal\ftobjs.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\internal\ftpic.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\internal\ftrfork.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\internal\ftserv.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\internal\ftstream.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\internal\fttrace.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\internal\ftvalid.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\internal\internal.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\internal\psaux.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\internal\pshints.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\internal\sfnt.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\internal\t1types.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\internal\tttypes.h" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\src\autofit\autofit.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\src\base\ftbase.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\src\base\ftbbox.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\src\base\ftbdf.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\src\base\ftbitmap.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\src\base\ftcid.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\src\base\ftfntfmt.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\src\base\ftfstype.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\src\base\ftgasp.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\src\base\ftglyph.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\src\base\ftgxval.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\src\base\ftinit.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\src\base\ftlcdfil.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\src\base\ftmm.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\src\base\ftotval.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\src\base\ftpatent.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\src\base\ftpfr.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\src\base\ftstroke.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\src\base\ftsynth.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\src\base\ftsystem.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\src\base\fttype1.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\src\base\ftwinfnt.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\src\bdf\bdf.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\src\bzip2\ftbzip2.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\src\cache\ftcache.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\src\cff\cff.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\src\cid\type1cid.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\src\gzip\ftgzip.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\src\lzw\ftlzw.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\src\pcf\pcf.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\src\pfr\pfr.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\src\psaux\psaux.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\src\pshinter\pshinter.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\src\psnames\psnames.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\src\raster\raster.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\src\sfnt\sfnt.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\src\smooth\smooth.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\src\truetype\truetype.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\src\type1\type1.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\src\type42\type42.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\src\winfonts\winfnt.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\builds\windows\ftdebug.c" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="C:/src/git/StE/Simulation/third_party/build/freetype2/ZERO_CHECK.vcxproj">
-      <Project>473CD3B7-DB6B-3E2E-AEBB-50F8B37B0601</Project>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/freetype2/ZERO_CHECK.vcxproj">
+      <Project>4E3BDD4A-13C6-324F-8E62-77D56C252499</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

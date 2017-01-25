@@ -4,13 +4,13 @@
 #pragma once
 
 #include "stdafx.hpp"
-#include "StEngineControl.hpp"
+#include "ste_engine_control.hpp"
 
 #include "gpu_task.hpp"
-#include "Scene.hpp"
+#include "scene.hpp"
 
 #include "glsl_program.hpp"
-#include "GLSLProgramFactory.hpp"
+#include "glsl_program_factory.hpp"
 
 namespace StE {
 namespace Graphics {
@@ -22,10 +22,10 @@ class dense_voxelizer : public gpu_dispatchable {
 
 private:
 	const dense_voxel_space *dvs;
-	Scene &scene;
+	scene &s;
 
 public:
-	dense_voxelizer(const StEngineControl &ctx, const dense_voxel_space *dvs, Scene &scene) : dvs(dvs), scene(scene) {}
+	dense_voxelizer(const ste_engine_control &ctx, const dense_voxel_space *dvs, scene &s) : dvs(dvs), s(s) {}
 
 protected:
 	void set_context_state() const override final;

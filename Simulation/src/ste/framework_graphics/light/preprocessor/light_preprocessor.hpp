@@ -4,7 +4,7 @@
 #pragma once
 
 #include "stdafx.hpp"
-#include "StEngineControl.hpp"
+#include "ste_engine_control.hpp"
 #include "gpu_task.hpp"
 
 #include "resource_instance.hpp"
@@ -29,11 +29,11 @@ class light_preprocessor {
 	friend class Resource::resource_instance<light_preprocessor>;
 
 private:
-	using ResizeSignalConnectionType = StEngineControl::framebuffer_resize_signal_type::connection_type;
-	using ProjectionSignalConnectionType = StEngineControl::projection_change_signal_type::connection_type;
+	using ResizeSignalConnectionType = ste_engine_control::framebuffer_resize_signal_type::connection_type;
+	using ProjectionSignalConnectionType = ste_engine_control::projection_change_signal_type::connection_type;
 
 private:
-	const StEngineControl &ctx;
+	const ste_engine_control &ctx;
 	light_storage *ls;
 
 	light_preprocess_cull_lights stage1;
@@ -49,9 +49,12 @@ private:
 
 private:
 	void set_projection_planes() const;
+	void set_programs_cascades_depths_uniform() const {
+		light_preprocess_cull_shadows_program.get().set_uniform("cascades_depths", ls->get_cascade_depths_array());
+	}
 
 private:
-	light_preprocessor(const StEngineControl &ctx,
+	light_preprocessor(const ste_engine_control &ctx,
 					   light_storage *ls) : ctx(ctx), ls(ls),
 											stage1(this), stage2(this),
 											light_preprocess_cull_lights_program(ctx, "light_preprocess_cull_lights.glsl"),
@@ -82,12 +85,13 @@ class resource_loading_task<Graphics::light_preprocessor> {
 	using R = Graphics::light_preprocessor;
 
 public:
-	auto loader(const StEngineControl &ctx, R* object) {
+	auto loader(const ste_engine_control &ctx, R* object) {
 		return ctx.scheduler().schedule_now([object, &ctx]() {
 			object->light_preprocess_cull_lights_program.wait();
 			object->light_preprocess_cull_shadows_program.wait();
 		}).then_on_main_thread([object]() {
 			object->set_projection_planes();
+			object->set_programs_cascades_depths_uniform();
 		});
 	}
 };

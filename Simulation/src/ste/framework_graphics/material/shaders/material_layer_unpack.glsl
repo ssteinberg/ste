@@ -2,7 +2,7 @@
 #include "material.glsl"
 
 struct material_layer_unpacked_descriptor {
-	vec4 color;
+	vec4 albedo;
 
 	float anisotropy_ratio;
 	float metallic;
@@ -13,7 +13,7 @@ struct material_layer_unpacked_descriptor {
 	float phase_g;
 	vec3 attenuation_coefficient;
 
-	uint32_t next_layer_id;
+	uint next_layer_id;
 };
 
 bool material_is_base_layer(material_layer_unpacked_descriptor desc) {
@@ -23,7 +23,7 @@ bool material_is_base_layer(material_layer_unpacked_descriptor desc) {
 material_layer_unpacked_descriptor material_layer_unpack(material_layer_descriptor l) {
 	material_layer_unpacked_descriptor d;
 
-	d.color = unpackUnorm4x8(l.packed_color);
+	d.albedo = unpackUnorm4x8(l.packed_albedo);
 	d.next_layer_id = l.next_layer_id;
 	d.attenuation_coefficient = l.attenuation_coefficient;
 

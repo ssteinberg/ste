@@ -12,6 +12,13 @@ namespace StE {
 namespace Graphics {
 
 struct material_descriptor {
+public:
+	static constexpr std::uint32_t material_has_texture = 0x1 << 0;
+	static constexpr std::uint32_t material_has_cavity_map = 0x1 << 1;
+	static constexpr std::uint32_t material_has_normal_map = 0x1 << 2;
+	static constexpr std::uint32_t material_has_mask_map = 0x1 << 3;
+
+public:
 	Core::texture_handle cavity_handle;
 	Core::texture_handle normal_handle;
 	Core::texture_handle mask_handle;
@@ -22,7 +29,7 @@ struct material_descriptor {
 
 	std::uint32_t head_layer_id{ material_layer_none };
 
-	float _unused;
+	std::uint32_t used_textures_mask{ 0 };
 
 public:
 	void set_emission(const glm::vec4 &c) {

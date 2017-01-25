@@ -18,7 +18,7 @@ extern const float material_layer_min_ansio_ratio;
 
 class material_layer_descriptor {
 private:
-	std::uint32_t packed_color{ 0xFFFFFFFF };
+	std::uint32_t packed_albedo{ 0xFFFFFFFF };
 
 	std::uint32_t ansi_metal_pack{ 0 };
 	std::uint32_t roughness_thickness_pack{ 0 };
@@ -36,8 +36,8 @@ public:
 	material_layer_descriptor &operator=(material_layer_descriptor &&) = default;
 	material_layer_descriptor &operator=(const material_layer_descriptor &) = default;
 
-	void set_color(const glm::vec4 &c) {
-		packed_color = glm::packUnorm4x8(c);
+	void set_albedo(const glm::vec4 &c) {
+		packed_albedo = glm::packUnorm4x8(c);
 	}
 	
 	void set_anisotropy_and_metallicity(float ansio_ratio, float metallic) {

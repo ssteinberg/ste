@@ -7,11 +7,11 @@
 
 #include "resource.hpp"
 
-#include "Texture2D.hpp"
+#include "texture_2d.hpp"
 
 #include "buffer_usage.hpp"
-#include "ShaderStorageBuffer.hpp"
-#include "AtomicCounterBufferObject.hpp"
+#include "shader_storage_buffer.hpp"
+#include "atomic_counter_buffer_object.hpp"
 
 #include "gl_current_context.hpp"
 
@@ -24,21 +24,24 @@ namespace Graphics {
 class linked_light_lists {
 private:
 	struct lll_element {
-		glm::vec2 data;
+		glm::uvec2 data;
 	};
 
 	static constexpr Core::BufferUsage::buffer_usage usage = static_cast<Core::BufferUsage::buffer_usage>(Core::BufferUsage::BufferUsageSparse);
 	static constexpr std::size_t virt_size = 2147483648 / 2;
 
-	using lll_type = Core::ShaderStorageBuffer<lll_element, usage>;
+	using lll_type = Core::shader_storage_buffer<lll_element, usage>;
 
 public:
 	static constexpr int lll_image_res_multiplier = 8;
 
 private:
 	lll_type lll;
-	Core::ShaderStorageBuffer<std::uint32_t> lll_counter;
-	std::unique_ptr<Core::Texture2D> lll_heads;
+	Core::shader_storage_buffer<std::uint32_t> lll_counter;
+	std::unique_ptr<Core::texture_2d> lll_heads;
+	std::unique_ptr<Core::texture_2d> lll_low_detail_heads;
+	std::unique_ptr<Core::texture_2d> lll_size;
+	std::unique_ptr<Core::texture_2d> lll_low_detail_size;
 
 	glm::ivec2 size;
 
@@ -57,7 +60,8 @@ public:
 		lll_counter.clear(gli::FORMAT_R32_UINT_PACK32, &zero);
 	}
 
-	void bind_lll_buffer(bool readonly = true) const;
+	void bind_readwrite_lll_buffers() const;
+	void bind_lll_buffer(bool low_detail = false) const;
 };
 
 }

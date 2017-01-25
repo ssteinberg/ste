@@ -13,14 +13,14 @@
 #include "ring_buffer.hpp"
 #include "range.hpp"
 
-#include "VertexArrayObject.hpp"
-#include "VertexBufferObject.hpp"
-#include "ShaderStorageBuffer.hpp"
+#include "vertex_array_object.hpp"
+#include "vertex_buffer_object.hpp"
+#include "shader_storage_buffer.hpp"
 
 namespace StE {
 namespace Text {
 
-class TextManager;
+class text_manager;
 
 class text_renderable : public Graphics::gpu_dispatchable {
 	using Base = Graphics::gpu_task;
@@ -30,20 +30,20 @@ class text_renderable : public Graphics::gpu_dispatchable {
 	using ring_buffer_type = Core::ring_buffer<glyph_point, ringbuffer_max_size>;
 
 private:
-	mutable TextManager *tr;
+	mutable text_manager *tr;
 	std::vector<glyph_point> points;
 
 	ring_buffer_type vbo;
-	Core::VertexArrayObject vao;
+	Core::vertex_array_object vao;
 
-	using vbo_type = Core::VertexBufferObject<glyph_point, glyph_point::descriptor, decltype(vbo)::usage>;
+	using vbo_type = Core::vertex_buffer_object<glyph_point, glyph_point::descriptor, decltype(vbo)::usage>;
 
 	mutable range<> range_in_use{ 0, 0 };
 
 public:
-	text_renderable(TextManager *tr);
+	text_renderable(text_manager *tr);
 
-	void set_text(const glm::vec2 &ortho_pos, const AttributedWString &wstr);
+	void set_text(const glm::vec2 &ortho_pos, const attributed_wstring &wstr);
 
 protected:
 	void set_context_state() const override final;

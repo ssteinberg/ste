@@ -4,7 +4,7 @@
 #pragma once
 
 #include "glyph.hpp"
-#include "Font.hpp"
+#include "font.hpp"
 
 #include "task_scheduler.hpp"
 
@@ -24,9 +24,9 @@ public:
 	glyph_factory();
 	~glyph_factory();
 
-	task_future<glyph> create_glyph_async(task_scheduler *sched, const Font &font, wchar_t codepoint);
+	task_future<glyph> create_glyph_async(task_scheduler *sched, const font &font, wchar_t codepoint);
 
-	int read_kerning(const Font &font, const std::pair<wchar_t, wchar_t> &p, int pixel_size);
+	int read_kerning(const font &font, const std::pair<wchar_t, wchar_t> &p, int pixel_size);
 };
 
 }

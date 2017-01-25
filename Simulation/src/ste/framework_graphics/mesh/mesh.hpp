@@ -5,10 +5,10 @@
 
 #include "stdafx.hpp"
 
-#include "ObjectVertexData.hpp"
-#include "VertexBufferObject.hpp"
-#include "VertexArrayObject.hpp"
-#include "ElementBufferObject.hpp"
+#include "object_vertex_data.hpp"
+#include "vertex_buffer_object.hpp"
+#include "vertex_array_object.hpp"
+#include "element_buffer_object.hpp"
 
 #include "mesh_aabb.hpp"
 #include "mesh_bounding_sphere.hpp"
@@ -26,7 +26,7 @@ class mesh_generic {
 public:
 	virtual ~mesh_generic() noexcept {};
 
-	virtual const std::vector<ObjectVertexData> &get_vertices() const = 0;
+	virtual const std::vector<object_vertex_data> &get_vertices() const = 0;
 	virtual const std::vector<std::uint32_t> &get_indices() const = 0;
 	virtual const mesh_bounding_sphere &bounding_sphere() const = 0;
 };
@@ -40,16 +40,16 @@ enum class mesh_subdivion_mode {
 template<mesh_subdivion_mode Mode>
 class mesh : public mesh_generic {
 public:
-	using vbo_type = StE::Core::VertexBufferObject<StE::Graphics::ObjectVertexData, StE::Graphics::ObjectVertexData::descriptor>;
-	using ebo_type = StE::Core::ElementBufferObject<std::uint32_t>;
+	using vbo_type = StE::Core::vertex_buffer_object<StE::Graphics::object_vertex_data, StE::Graphics::object_vertex_data::descriptor>;
+	using ebo_type = StE::Core::element_buffer_object<std::uint32_t>;
 
 private:
-	std::vector<ObjectVertexData> vertices;
+	std::vector<object_vertex_data> vertices;
 	std::vector<ebo_type::T> indices;
 
 	std::unique_ptr<vbo_type> mesh_vbo;
 	std::unique_ptr<ebo_type> mesh_ebo;
-	std::unique_ptr<StE::Core::VertexArrayObject> mesh_vao;
+	std::unique_ptr<StE::Core::vertex_array_object> mesh_vao;
 
 protected:
 	mesh_bounding_sphere sphere;
@@ -81,7 +81,7 @@ public:
 public:
 	virtual ~mesh() noexcept {};
 
-	const std::vector<ObjectVertexData> &get_vertices() const override final { return vertices; }
+	const std::vector<object_vertex_data> &get_vertices() const override final { return vertices; }
 	const std::vector<ebo_type::T> &get_indices() const override final { return indices; }
 	const mesh_bounding_sphere &bounding_sphere() const override final { return sphere; };
 
@@ -134,20 +134,20 @@ public:
 		return (mesh_vbo = std::make_unique<vbo_type>(get_vertices())).get();
 	}
 
-	const StE::Core::ElementBufferObject<> *ebo() {
+	const StE::Core::element_buffer_object<> *ebo() {
 		if (mesh_ebo != nullptr)
 			return mesh_ebo.get();
 
-		return (mesh_ebo = std::make_unique<StE::Core::ElementBufferObject<>>(get_indices())).get();
+		return (mesh_ebo = std::make_unique<StE::Core::element_buffer_object<>>(get_indices())).get();
 	}
 
-	const StE::Core::VertexArrayObject *vao() {
+	const StE::Core::vertex_array_object *vao() {
 		if (mesh_vao != nullptr)
 			return mesh_vao.get();
 
 		vbo();
 
-		mesh_vao = std::make_unique<StE::Core::VertexArrayObject>();
+		mesh_vao = std::make_unique<StE::Core::vertex_array_object>();
 		(*mesh_vao)[0] = (*mesh_vbo)[0];
 		(*mesh_vao)[1] = (*mesh_vbo)[1];
 		(*mesh_vao)[2] = (*mesh_vbo)[2];

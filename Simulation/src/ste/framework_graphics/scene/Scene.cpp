@@ -1,6 +1,6 @@
 
 #include "stdafx.hpp"
-#include "Scene.hpp"
+#include "scene.hpp"
 
 #include "resource_instance.hpp"
 #include "resource_loading_task.hpp"
@@ -12,22 +12,22 @@
 
 using namespace StE::Graphics;
 
-constexpr int Scene::shadow_proj_id_to_ll_id_table_size;
+constexpr int scene::shadow_pltt_size;
+constexpr int scene::directional_shadow_pltt_size;
 
-Scene::Scene(const StEngineControl &ctx) : culled_objects_counter(1),
-										   sproj_id_to_llid_tt(pages * std::max<std::size_t>(65536, sproj_id_to_llid_tt_buffer_type::page_size()) / sizeof(shadow_projection_instance_to_ll_idx_translation)),
+scene::scene(const ste_engine_control &ctx) : culled_objects_counter(1),
 										   object_program(ctx, std::vector<std::string>{ "scene_transform.vert", "object.frag" }) {}
 
-void Scene::bind_buffers() const {
+void scene::bind_buffers() const {
 	using namespace Core;
 
 	13_storage_idx = scene_props.materials_storage().buffer();
 	objects.get_draw_buffers().bind_buffers(14);
 }
 
-void Scene::set_context_state() const {
+void scene::set_context_state() const {
 	Core::GL::gl_current_context::get()->enable_depth_test();
-	Core::GL::gl_current_context::get()->depth_func(GL_GEQUAL);
+	Core::GL::gl_current_context::get()->depth_func(GL_EQUAL);
 	Core::GL::gl_current_context::get()->color_mask(false, false, false, false);
 	Core::GL::gl_current_context::get()->depth_mask(false);
 
@@ -40,11 +40,11 @@ void Scene::set_context_state() const {
 	object_program.get().bind();
 }
 
-void Scene::draw_object_group() const {
+void scene::draw_object_group() const {
 	Core::GL::gl_current_context::get()->memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_COMMAND_BARRIER_BIT);
 	Core::GL::gl_current_context::get()->draw_multi_elements_indirect<object_group_draw_buffers::elements_type::T>(GL_TRIANGLES, 0, objects.get_draw_buffers().size(), 0);
 }
 
-void Scene::dispatch() const {
+void scene::dispatch() const {
 	draw_object_group();
 }

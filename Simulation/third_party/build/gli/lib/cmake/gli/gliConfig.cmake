@@ -1,4 +1,4 @@
-set(GLI_VERSION "0.8.1")
+set(GLI_VERSION "0.8.2")
 
 
 ####### Expanded from @PACKAGE_INIT@ by configure_package_config_file() #######

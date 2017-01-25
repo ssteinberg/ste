@@ -12,6 +12,8 @@
 
 #include "fresnel.glsl"
 
+#include "light_transport.glsl"
+
 #include "common.glsl"
 
 vec3 material_evaluate_layer_radiance(material_layer_unpacked_descriptor descriptor,
@@ -21,9 +23,10 @@ vec3 material_evaluate_layer_radiance(material_layer_unpacked_descriptor descrip
 									  vec3 v,
 									  vec3 l,
 									  vec3 h,
-									  float cos_critical, float sin_critical,
+									  float cos_critical, 
+									  float refractive_ratio,
 									  vec3 irradiance,
-									  vec3 base_color,
+									  vec3 albedo,
 									  vec3 diffuse_color,
 									  out float D,
 									  out float Gmask,
@@ -38,13 +41,14 @@ vec3 material_evaluate_layer_radiance(material_layer_unpacked_descriptor descrip
 	
 	// Specular color
 	vec3 specular_tint = vec3(1);
-	vec3 c_spec = mix(specular_tint, base_color, descriptor.metallic);
+	vec3 c_spec = mix(specular_tint, albedo, descriptor.metallic);
 
 	// Specular
 	vec3 Specular = cook_torrance_ansi_brdf(n, t, b, 
 											v, l, h,
 											rx, ry,
-											cos_critical, sin_critical,
+											cos_critical, 
+											refractive_ratio,
 											c_spec,
 											D, Gmask, Gshadow, F);
 
@@ -54,19 +58,15 @@ vec3 material_evaluate_layer_radiance(material_layer_unpacked_descriptor descrip
 
 	// Evaluate BRDF
 	vec3 brdf = Specular + (1.f - descriptor.metallic) * Diffuse;
+
 	return brdf * irradiance * dotNL;
 }
 
-float material_attenuation_through_layer(float fresnel,
+float material_attenuation_through_layer(float transmittance,
 										 float metallic,
 										 float masking) {
 	float passthrough = 1.f - metallic;
-	return fresnel * masking * passthrough;
-}
-
-vec3 material_beer_lambert(vec3 att, float path_length) {
-	// Limit thickness to flt_min to avoid NaN when attenuation coefficient is infinite
-	return exp(-max(flt_min, path_length) * att);
+	return transmittance * masking * passthrough;
 }
 
 /*
@@ -83,7 +83,10 @@ vec3 material_beer_lambert(vec3 att, float path_length) {
  *	@param ld			Light descriptor
  *	@param shadow_maps	Shadow maps
  *	@param light		Light index
- *	@param view_ray		Normalized vector from eye to position
+ *	@param light_dist	Distance from light source
+ *	@param occlusion	Light occlusion
+ *	@param frag_coords	Screen space coordinates
+ *	@param external_medium_ior	Index-of-refraction of source medium
  */
 vec3 material_evaluate_radiance(material_layer_descriptor layer,
 								vec3 position,
@@ -99,11 +102,8 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 								samplerCubeArray shadow_maps, uint light,
 								float light_dist,
 								float occlusion,
+								ivec2 frag_coords,
 								float external_medium_ior = 1.0002772f) {
-	float D;
-	float Gmask;
-	float Gshadow;
-	float F;
 	vec3 rgb = vec3(0);
 	
 	material_layer_unpacked_descriptor descriptor = material_layer_unpack(layer);
@@ -116,17 +116,17 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 		return vec3(.0f);
 		
 	// Incoming irradiance
-	vec3 irradiance = light_irradiance(ld, light_dist) * occlusion;
+	vec3 irradiance = irradiance(ld, light_dist);
 	float top_medium_ior = external_medium_ior;
 
 	// Attenuation at current layer
 	vec3 attenuation = vec3(1.f);
-	// Attenuation of outgoing radiance, used for sub-surface scattering
+	// Attenuation of outgoing radiance, for sub-surface scattering
 	vec3 sss_attenuation = vec3(1.f);
 
 	while (true) {
 		// Read layer properties
-		vec3 base_color = descriptor.color.rgb;
+		vec3 albedo = descriptor.albedo.rgb;
 		float thickness = material_is_base_layer(descriptor) ? object_thickness : descriptor.thickness;
 		float metallic = descriptor.metallic;
 		float roughness = descriptor.roughness;
@@ -134,84 +134,92 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 		float bottom_medium_ior = descriptor.ior;
 		
 		// Compute sine and cosine of critical angle
-		float sin_critical = bottom_medium_ior / top_medium_ior;
-		float cos_critical = sin_critical < 1.f ? 
-								sqrt(1.f - sin_critical * sin_critical) :
+		float refractive_ratio = bottom_medium_ior / top_medium_ior;
+		float cos_critical = refractive_ratio < 1.f ? 
+								sqrt(1.f - refractive_ratio * refractive_ratio) :
 								.0f;
-		// Compute fresnel reflection at 0 angle incidence
-		float F0 = fresnel_F0(sin_critical);
-
-		// Evaluate total inner (downwards into material) and outer (upwards towards eye) transmission
-		float inner_transmission_ratio = ggx_transmission_ratio(microfacet_transmission_fit_lut, 
-																v, n, 
-																roughness, 
-																sin_critical);
-		float outer_transmission_ratio = ggx_transmission_ratio(microfacet_transmission_fit_lut, 
-																l, n, 
-																roughness, 
-																1.f / sin_critical);
-
-		// Half vector
-		vec3 h = normalize(v + l);
+		// Compute Fresnel reflection at parallel incidence
+		float F0 = fresnel_F0(refractive_ratio);
 
 		// Evaluate refracted vectors
 		vec3 refracted_v = -ggx_refract(microfacet_refraction_fit_lut,
 										v, n,
 										roughness,
-										sin_critical);
+										refractive_ratio);
 		vec3 refracted_l = -ggx_refract(microfacet_refraction_fit_lut,
 										l, n,
 										roughness,
-										sin_critical);
+										refractive_ratio);
+
+		// Evaluate total inner (downwards into material) and outer (upwards towards eye) transmission
+		float inner_transmission_ratio = ggx_transmission_ratio_v4(microfacet_transmission_fit_lut, 
+																   v, n, 
+																   roughness, 
+																   refractive_ratio);
+		float outer_transmission_ratio = ggx_transmission_ratio_v4(microfacet_transmission_fit_lut, 
+																   /*refracted_l*/l, n, 
+																   roughness, 
+																   1.f / refractive_ratio);
 	
 		// Compute total and outer path lengths inside current layer
-		float dotNV = max(epsilon, dot(n,refracted_v));
-		float dotNL = max(epsilon, dot(n,refracted_l));
+		//float dotNV = max(epsilon, dot(n,refracted_v));
+		//float dotNL = max(epsilon, dot(n,refracted_l));
+		float dotNV = max(epsilon, dot(n,v));
+		float dotNL = max(epsilon, dot(n,l));
 		float path_length = thickness * (1.f / dotNV + 1.f / dotNL);
 		float outer_path_length = thickness / dotNL;
 		
-		// Compute light extinction in layer
-		vec3 extinction = material_beer_lambert(attenuation_coefficient, path_length);
-		vec3 outer_extinction = material_beer_lambert(attenuation_coefficient, outer_path_length);
-		// Diffuse light is scattered light inside layer, unattenuated light doesn't contribute to diffuse
-		vec3 scattering = inner_transmission_ratio * (vec3(1.f) - extinction) * base_color;
+		// Compute light attenuation in layer
+		vec3 k = beer_lambert(attenuation_coefficient, path_length);
+		// Compute light attenuation in layer on outgoing direction only
+		vec3 sss_outer_extinction = beer_lambert(attenuation_coefficient, outer_path_length);
 
+		// Diffused light is a portion of the energy scattered inside layer (based on albedo), unattenuated light doesn't contribute to diffuse
+		vec3 scattering = inner_transmission_ratio * outer_transmission_ratio * (vec3(1.f) - k) * albedo;
+
+		// Half vector
+		vec3 h = normalize(v + l);
 		// Evaluate layer BRDF
+		float D;
+		float Gmask;
+		float Gshadow;
+		float F;
 		rgb += attenuation * material_evaluate_layer_radiance(descriptor,
 															  n, t, b,
 															  v, l, h,
-															  cos_critical, sin_critical,
+															  cos_critical, 
+															  refractive_ratio,
 															  irradiance,
-															  base_color,
+															  albedo,
 															  scattering,
 															  D, Gmask, Gshadow, F);
 							
 		// Update incident and outgoing vectors to refracted ones before continuing to next layer
-		v = refracted_v;
-		l = refracted_l;
+		//v = refracted_v;
+		//l = refracted_l;
 	
-		// Compute attenuated light due to Fresnel, microfacet masking-shadowing and metallicity
+		// Compute attenuated light due to Fresnel transmittance, microfacet masking-shadowing and metallicity
 		float layer_surface_inner_attenuation = material_attenuation_through_layer(inner_transmission_ratio, 
 																				   metallic,
-																				   Gshadow);
+																				   1/*Gshadow*/);
 		float layer_surface_outer_attenuation = material_attenuation_through_layer(outer_transmission_ratio, 
 																				   metallic,
-																				   Gmask);
+																				   1/*Gmask*/);
 		float total_layer_surface_attenuation = layer_surface_inner_attenuation * layer_surface_outer_attenuation;
 
 		// Update attenuation at layer surface
 		attenuation *= total_layer_surface_attenuation;
 		// For sub-surface scattering we assume normal incidence of light, and we attenuated on (presumed) incident and outgoing sides
-		sss_attenuation *= layer_surface_outer_attenuation * base_color * 
-						   material_attenuation_through_layer(1.f - F0, metallic, 1.f) * base_color;
+		sss_attenuation *= layer_surface_outer_attenuation * material_attenuation_through_layer(1.f - F0, metallic, 1.f);
 
 		// If this is the base layer, stop
 		if (material_is_base_layer(descriptor))
 			break;
 
 		// Otherwise, update attenuation with attenuated (absorbed and scattered) light
-		attenuation *= extinction;
-		sss_attenuation *= outer_extinction * material_beer_lambert(attenuation_coefficient, thickness);
+		attenuation *= k;
+		// Update sss attenuation with attenuation on the way out and attenuation on the way in with parallel incident
+		sss_attenuation *= sss_outer_extinction * beer_lambert(attenuation_coefficient, thickness);
 
 		// Update ior and descriptor for next layer
 		top_medium_ior = bottom_medium_ior;
@@ -229,8 +237,9 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 							 						   object_thickness,
 													   ld,
 													   shadow_maps, light,
-													   -v);
+													   -v,
+													   frag_coords);
 	}
 
-	return rgb;
+	return rgb * occlusion;
 }

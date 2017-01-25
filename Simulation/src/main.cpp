@@ -2,24 +2,24 @@
 #include "stdafx.hpp"
 
 #include "gl_utils.hpp"
-#include "Log.hpp"
-#include "Keyboard.hpp"
-#include "Pointer.hpp"
-#include "StEngineControl.hpp"
-#include "GIRenderer.hpp"
+#include "log.hpp"
+#include "keyboard.hpp"
+#include "pointer.hpp"
+#include "ste_engine_control.hpp"
+#include "gi_renderer.hpp"
 #include "basic_renderer.hpp"
-#include "SphericalLight.hpp"
-#include "ModelFactory.hpp"
-#include "Camera.hpp"
-#include "SurfaceFactory.hpp"
-#include "Texture2D.hpp"
-#include "Scene.hpp"
-#include "Object.hpp"
-#include "TextManager.hpp"
-#include "AttributedString.hpp"
-#include "RGB.hpp"
-#include "Kelvin.hpp"
-#include "Sphere.hpp"
+#include "spherical_light.hpp"
+#include "model_factory.hpp"
+#include "camera.hpp"
+#include "surface_factory.hpp"
+#include "texture_2d.hpp"
+#include "scene.hpp"
+#include "object.hpp"
+#include "text_manager.hpp"
+#include "attributed_string.hpp"
+#include "rgb.hpp"
+#include "kelvin.hpp"
+#include "sphere.hpp"
 #include "gpu_task.hpp"
 #include "profiler.hpp"
 #include "future_collection.hpp"
@@ -28,10 +28,12 @@
 #include <imgui/imgui.h>
 #include "debug_gui.hpp"
 
+//#define STATIC_SCENE
+
 using namespace StE::Core;
 using namespace StE::Text;
 
-void display_loading_screen_until(StE::StEngineControl &ctx, StE::Text::TextManager *text_manager, int *w, int *h, std::function<bool()> &&lambda) {
+void display_loading_screen_until(StE::ste_engine_control &ctx, StE::Text::text_manager *text_manager, int *w, int *h, std::function<bool()> &&lambda) {
 	StE::Graphics::basic_renderer basic_renderer(ctx);
 
 	auto footer_text = text_manager->create_renderer();
@@ -47,7 +49,7 @@ void display_loading_screen_until(StE::StEngineControl &ctx, StE::Text::TextMana
 	while (true) {
 		using namespace StE::Text::Attributes;
 
-		AttributedWString str = center(stroke(blue_violet, 2)(purple(vvlarge(b(L"Global Illumination\n")))) +
+		attributed_wstring str = center(stroke(blue_violet, 2)(purple(vvlarge(b(L"Global Illumination\n")))) +
 									azure(large(L"Loading...\n")) +
 									orange(regular(L"By Shlomi Steinberg")));
 		auto total_vram = std::to_wstring(ctx.gl()->meminfo_total_available_vram() / 1024);
@@ -70,10 +72,10 @@ void display_loading_screen_until(StE::StEngineControl &ctx, StE::Text::TextMana
 	}
 }
 
-auto create_light_object(StE::Graphics::Scene *scene, const glm::vec3 &light_pos, StE::Graphics::SphericalLight *light, std::vector<std::unique_ptr<StE::Graphics::material>> &materials, std::vector<std::unique_ptr<StE::Graphics::material_layer>> &layers) {
-	std::unique_ptr<StE::Graphics::Sphere> sphere = std::make_unique<StE::Graphics::Sphere>(20, 20);
+auto create_light_object(StE::Graphics::scene *scene, const glm::vec3 &light_pos, StE::Graphics::spherical_light *light, std::vector<std::unique_ptr<StE::Graphics::material>> &materials, std::vector<std::unique_ptr<StE::Graphics::material_layer>> &layers) {
+	std::unique_ptr<StE::Graphics::sphere> sphere = std::make_unique<StE::Graphics::sphere>(20, 20);
 	(*sphere) *= light->get_radius();
-	auto light_obj = std::make_shared<StE::Graphics::Object>(std::move(sphere));
+	auto light_obj = std::make_shared<StE::Graphics::object>(std::move(sphere));
 
 	light_obj->set_model_transform(glm::mat4x3(glm::translate(glm::mat4(), light_pos)));
 
@@ -81,14 +83,14 @@ auto create_light_object(StE::Graphics::Scene *scene, const glm::vec3 &light_pos
 	auto c = light->get_diffuse();
 	*reinterpret_cast<glm::u8vec3*>(light_color_tex.data()) = glm::u8vec3(c.r * 255.5f, c.g * 255.5f, c.b * 255.5f);
 	
-	auto layer = scene->scene_properties().material_layers_storage().allocate_layer();
-	auto mat = scene->scene_properties().materials_storage().allocate_material(layer.get());
-	mat->set_texture(std::make_unique<StE::Core::Texture2D>(light_color_tex, false));
+	auto layer = scene->properties().material_layers_storage().allocate_layer();
+	auto mat = scene->properties().materials_storage().allocate_material(layer.get());
+	mat->set_texture(std::make_unique<StE::Core::texture_2d>(light_color_tex, false));
 	mat->set_emission(c * light->get_luminance());
 
 	light_obj->set_material(mat.get());
 
-	scene->object_group().add_object(light_obj);
+	scene->get_object_group().add_object(light_obj);
 
 	materials.push_back(std::move(mat));
 	layers.push_back(std::move(layer));
@@ -96,19 +98,28 @@ auto create_light_object(StE::Graphics::Scene *scene, const glm::vec3 &light_pos
 	return light_obj;
 }
 
-void add_scene_lights(StE::Graphics::Scene &scene, std::vector<std::unique_ptr<StE::Graphics::light>> &lights, std::vector<std::unique_ptr<StE::Graphics::material>> &materials, std::vector<std::unique_ptr<StE::Graphics::material_layer>> &layers) {
-	for (auto &v : { glm::vec3{ -622, 645, -310},
-					 glm::vec3{  124, 645, -310},
-					 glm::vec3{  497, 645, -310},
-					 glm::vec3{ -242, 153, -310},
-					 glm::vec3{  120, 153, -310},
-					 glm::vec3{  124, 645,  552},
-					 glm::vec3{  497, 645,  552},
-					 glm::vec3{-1008, 153,  552},
+void add_scene_lights(StE::Graphics::scene &scene, std::vector<std::unique_ptr<StE::Graphics::light>> &lights, std::vector<std::unique_ptr<StE::Graphics::material>> &materials, std::vector<std::unique_ptr<StE::Graphics::material_layer>> &layers) {
+	std::random_device rd;
+	std::mt19937 gen(rd());
+
+	for (auto &v : { glm::vec3{ 491.2,226.1,-616.67 },
+					 glm::vec3{-622.67, 645,-309 },
+					 glm::vec3{  497, 645, -309},
+					 glm::vec3{ 483.376,143,-222.51 },
+					 glm::vec3{ 483.376,143,144.1 },
 					 glm::vec3{ -242, 153,  552},
 					 glm::vec3{  120, 153,  552},
 					 glm::vec3{  885, 153,  552} }) {
-		auto wall_lamp = scene.scene_properties().lights_storage().allocate_light<StE::Graphics::SphericalLight>(5000.f, StE::Graphics::Kelvin(1800), v, 2.f);
+		StE::Graphics::rgb color;
+		float lums;
+#ifdef STATIC_SCENE
+		color = StE::Graphics::kelvin(1800);
+		lums = 6500.f;
+#else
+		color = StE::Graphics::kelvin(std::uniform_real_distribution<>(1500,4000)(gen));
+		lums = std::uniform_real_distribution<>(5000, 9000)(gen);
+#endif
+		auto wall_lamp = scene.properties().lights_storage().allocate_spherical(lums, color, v, 2.f);
 		create_light_object(&scene, v, wall_lamp.get(), materials, layers);
 
 		lights.push_back(std::move(wall_lamp));
@@ -128,7 +139,7 @@ int main()
 	 *	Create logger
 	 */
 
-	StE::Log logger("Global Illumination");
+	StE::log logger("Global Illumination");
 	logger.redirect_std_outputs();
 	ste_log_set_global_logger(&logger);
 	ste_log() << "Simulation is running";
@@ -146,11 +157,11 @@ int main()
 	GL::gl_context::context_settings settings;
 	settings.vsync = false;
 	settings.fs = false;
-	StE::StEngineControl ctx(std::make_unique<GL::gl_context>(settings, "Shlomi Steinberg - Global Illumination", glm::i32vec2{ w, h }));// , gli::FORMAT_RGBA8_UNORM));
+	StE::ste_engine_control ctx(std::make_unique<GL::gl_context>(settings, "Shlomi Steinberg - Global Illumination", glm::i32vec2{ w, h }));// , gli::FORMAT_RGBA8_UNORM));
 	ctx.set_clipping_planes(clip_near);
 	ctx.set_fov(fovy);
 
-	using ResizeSignalConnectionType = StE::StEngineControl::framebuffer_resize_signal_type::connection_type;
+	using ResizeSignalConnectionType = StE::ste_engine_control::framebuffer_resize_signal_type::connection_type;
 	std::shared_ptr<ResizeSignalConnectionType> resize_connection;
 	resize_connection = std::make_shared<ResizeSignalConnectionType>([&](const glm::i32vec2 &size) {
 		w = size.x;
@@ -192,25 +203,31 @@ int main()
 	 *	Create text manager and choose default font
 	 */
 
-	auto font = StE::Text::Font("Data/ArchitectsDaughter.ttf");
-	StE::Resource::resource_instance<StE::Text::TextManager> text_manager(ctx, font);
+	auto font = StE::Text::font("Data/ArchitectsDaughter.ttf");
+	StE::Resource::resource_instance<StE::Text::text_manager> text_manager(ctx, font);
 
 
 	/*
 	 *	Create camera
 	 */
 
-	StE::Graphics::Camera camera;
+	StE::Graphics::camera camera;
 	camera.set_position({ 901.4, 566.93, 112.43 });
 	camera.lookat({ 771.5, 530.9, 65.6 });
+
+
+	/*
+	*	Create atmospheric properties
+	*/
+	auto atmosphere = StE::Graphics::atmospherics_earth_properties({ 0,-6.371e+6,0 });
 
 
 	/*
 	 *	Create and load scene object and GI renderer
 	 */
 
-	StE::Resource::resource_instance<StE::Graphics::Scene> scene(ctx);
-	StE::Resource::resource_instance<StE::Graphics::GIRenderer> renderer(ctx, &camera, &scene.get());
+	StE::Resource::resource_instance<StE::Graphics::scene> scene(ctx);
+	StE::Resource::resource_instance<StE::Graphics::gi_renderer> renderer(ctx, &camera, &scene.get(), atmosphere);
 
 
 	/*
@@ -225,28 +242,34 @@ int main()
 
 	const glm::vec3 light0_pos{ -700.6, 138, -70 };
 	const glm::vec3 light1_pos{ 200, 550, 170 };
-	auto light0 = scene.get().scene_properties().lights_storage().allocate_light<StE::Graphics::SphericalLight>(8000.f, StE::Graphics::Kelvin(2000), light0_pos, 3.f);
-	auto light1 = scene.get().scene_properties().lights_storage().allocate_light<StE::Graphics::SphericalLight>(20000.f, StE::Graphics::Kelvin(7000), light1_pos, 5.f);
+	auto light0 = scene.get().properties().lights_storage().allocate_spherical(8000.f, StE::Graphics::kelvin(2000), light0_pos, 3.f);
+	auto light1 = scene.get().properties().lights_storage().allocate_spherical(20000.f, StE::Graphics::kelvin(7000), light1_pos, 5.f);
 	auto light0_obj = create_light_object(&scene.get(), light0_pos, light0.get(), materials, material_layers);
 	auto light1_obj = create_light_object(&scene.get(), light1_pos, light1.get(), materials, material_layers);
 
+	const glm::vec3 sun_direction = glm::normalize(glm::vec3{ 0.f, -1.f, 0.f });
+	auto sun_light = scene.get().properties().lights_storage().allocate_directional(2e+1f, StE::Graphics::kelvin(5770), 1496e+8f, 695e+6f, sun_direction);
+
 	add_scene_lights(scene.get(), lights, materials, material_layers);
 
-	loading_futures.insert(StE::Resource::ModelFactory::load_model_async(ctx,
+	std::vector<std::shared_ptr<StE::Graphics::object>> sponza_objects;
+	loading_futures.insert(StE::Resource::model_factory::load_model_async(ctx,
 																		 R"(Data/models/crytek-sponza/sponza.obj)",
-																		 &scene.get().object_group(),
-																		 &scene.get().scene_properties(),
+																		 &scene.get().get_object_group(),
+																		 &scene.get().properties(),
 																		 2.5f,
 																		 materials,
-																		 material_layers));
+																		 material_layers,
+																		 &sponza_objects));
 	
 	std::vector<std::unique_ptr<StE::Graphics::material>> mat_editor_materials;
 	std::vector<std::unique_ptr<StE::Graphics::material_layer>> mat_editor_layers;
-	std::vector<std::shared_ptr<StE::Graphics::Object>> mat_editor_objects;
-	loading_futures.insert(StE::Resource::ModelFactory::load_model_async(ctx,
+	std::vector<std::shared_ptr<StE::Graphics::object>> mat_editor_objects;
+	loading_futures.insert(StE::Resource::model_factory::load_model_async(ctx,
 																		 R"(Data/models/dragon/china_dragon.obj)",
-																		 &scene.get().object_group(),
-																		 &scene.get().scene_properties(),
+																		 //R"(Data/models/mitsuba/mitsuba-sphere.obj)",
+																		 &scene.get().get_object_group(),
+																		 &scene.get().properties(),
 																		 2.5f,
 																		 mat_editor_materials,
 																		 mat_editor_layers,
@@ -272,41 +295,44 @@ int main()
 
 	auto mat_editor_model_transform = glm::scale(glm::mat4(), glm::vec3{ 3.5f });
 	mat_editor_model_transform = glm::translate(mat_editor_model_transform, glm::vec3{ .0f, -15.f, .0f });
+	//auto mat_editor_model_transform = glm::translate(glm::mat4(), glm::vec3{ .0f, .0f, -50.f });
+	//mat_editor_model_transform = glm::scale(mat_editor_model_transform, glm::vec3{ 65.f });
+	//mat_editor_model_transform = glm::rotate(mat_editor_model_transform, glm::half_pi<float>(), glm::vec3{ .0f, 1.0f, 0.f });
 	for (auto &o : mat_editor_objects)
 		o->set_model_transform(glm::mat4x3(mat_editor_model_transform));
 	
 	std::unique_ptr<StE::Graphics::material_layer> layers[layers_count];
 	layers[0] = std::move(mat_editor_layers.back());
 
+	float sun_zenith = .0f;
+	float mie_absorption_coefficient = 2.2f;
+	float mie_scattering_coefficient = 2e+1f;
+
 	bool layer_enabled[3] = { true, false, false };
-	StE::Graphics::RGB base_color[3];
+	StE::Graphics::rgb base_color[3];
 	float roughness[3];
 	float anisotropy[3];
 	float metallic[3];
 	float index_of_refraction[3];
-	float sheen_power[3];
 	float thickness[3];
 	float absorption[3];
 	float phase[3];
 
 	for (int i = 0; i < layers_count; ++i) {
 		if (i > 0)
-			layers[i] = scene.get().scene_properties().material_layers_storage().allocate_layer();
+			layers[i] = scene.get().properties().material_layers_storage().allocate_layer();
 
 		base_color[i] = { 1,1,1 };
 		roughness[i] = .5f;
 		anisotropy[i] = 0;
 		metallic[i] = 0;
 		index_of_refraction[i] = 1.5f;
-		sheen_power[i] = 0;
 		thickness[i] = 0.001f;
 		absorption[i] = 1.f;
 		phase[i] = .0f;
 	}
 
 	debug_gui_dispatchable->add_custom_gui([&](const glm::ivec2 &bbsize) {
-		ImGui::SetNextWindowPos(ImVec2(20,bbsize.y - 400), ImGuiSetCond_FirstUseEver);
-		ImGui::SetNextWindowSize(ImVec2(120,400), ImGuiSetCond_FirstUseEver);
 		if (ImGui::Begin("Material Editor", nullptr)) {
 			for (int i = 0; i < layers_count; ++i) {
 				std::string layer_label = std::string("Layer ") + std::to_string(i);
@@ -335,8 +361,8 @@ int main()
 		
 		for (int i = 0; i < layers_count; ++i) {
 			auto t = glm::u8vec3(base_color[i].R() * 255.5f, base_color[i].G() * 255.5f, base_color[i].B() * 255.5f);
-			if (layers[i]->get_color() != base_color[i])
-				layers[i]->set_color(base_color[i]);
+			if (layers[i]->get_albedo() != base_color[i])
+				layers[i]->set_albedo(base_color[i]);
 			if (layers[i]->get_roughness() != roughness[i])
 				layers[i]->set_roughness(roughness[i]);
 			if (layers[i]->get_anisotropy() != anisotropy[i])
@@ -358,7 +384,25 @@ int main()
 					layers[i - 1]->set_next_layer(layer_enabled[i] ? layers[i].get() : nullptr);
 			}
 		}
+
+		if (ImGui::Begin("Atmosphere", nullptr)) {
+			ImGui::SliderFloat((std::string("Sun zenith angle ##value")).data(), &sun_zenith, .0f, 2 * glm::pi<float>());
+			ImGui::SliderFloat((std::string("Mie scattering coefficient (10^-8) ##value##mie1")).data(), &mie_scattering_coefficient, .0f, 100.f, "%.5f", 3.f);
+			ImGui::SliderFloat((std::string("Mie absorption coefficient (10^-8) ##value##mie2")).data(), &mie_absorption_coefficient, .0f, 100.f, "%.5f", 3.f);
+		}
+
+		ImGui::End();
+
+		atmosphere.mie_absorption_coefficient = static_cast<double>(mie_absorption_coefficient) * 1e-8;
+		atmosphere.mie_scattering_coefficient = static_cast<double>(mie_scattering_coefficient) * 1e-8;
+		renderer.get().update_atmospherics_properties(atmosphere);
 	});
+
+
+	/*
+	 *	Configure GI renderer
+	 */
+	renderer.get().set_aperture_parameters(35e-3, 25e-3);
 
 
 	/*
@@ -370,7 +414,9 @@ int main()
 	auto footer_text = text_manager.get().create_renderer();
 	auto footer_text_task = StE::Graphics::make_gpu_task("footer_text", footer_text.get(), nullptr);
 
-//	renderer.get().add_gui_task(footer_text_task);
+#ifndef STATIC_SCENE
+	renderer.get().add_gui_task(footer_text_task);
+#endif
 	renderer.get().add_gui_task(StE::Graphics::make_gpu_task("debug_gui", debug_gui_dispatchable.get(), nullptr));
 
 	glm::ivec2 last_pointer_pos;
@@ -401,10 +447,18 @@ int main()
 			last_pointer_pos = pp;
 		}
 
+#ifdef STATIC_SCENE
+		glm::vec3 lp = light0_pos;
+		glm::vec3 sun_dir = sun_direction;
+#else
 		float angle = time * glm::pi<float>() / 2.5f;
-		glm::vec3 lp = light0_pos;// + glm::vec3(glm::sin(angle) * 3, 0, glm::cos(angle)) * 115.f;
+		glm::vec3 lp = light0_pos + glm::vec3(glm::sin(angle) * 3, 0, glm::cos(angle)) * 115.f;
+
+		glm::vec3 sun_dir = glm::normalize(glm::vec3{ glm::sin(sun_zenith), -glm::cos(sun_zenith), .15f});
+#endif
 		light0->set_position(lp);
 		light0_obj->set_model_transform(glm::mat4x3(glm::translate(glm::mat4(), lp)));
+		sun_light->set_direction(sun_dir);
 
 		{
 			using namespace StE::Text::Attributes;

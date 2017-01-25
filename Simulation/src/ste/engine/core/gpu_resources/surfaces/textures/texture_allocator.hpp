@@ -12,22 +12,22 @@ namespace Core {
 
 namespace _texture_storage {
 
-template <int dim, bool ms> void inline create_gl_texture_storage(GenericResource::type id, int levels, int samples, const gli::gl::format &format, const typename texture_size_type<dim>::type &size) {
+template <int dim, bool ms> void inline create_gl_texture_storage(generic_resource::type id, int levels, int samples, const gli::gl::format &format, const typename texture_size_type<dim>::type &size) {
 	assert(false && "Unspecialized");
 }
-template <> void inline create_gl_texture_storage<1, false>(GenericResource::type id, int levels, int samples, const gli::gl::format &format, const typename texture_size_type<1>::type &size) {
+template <> void inline create_gl_texture_storage<1, false>(generic_resource::type id, int levels, int samples, const gli::gl::format &format, const typename texture_size_type<1>::type &size) {
 	glTextureStorage1D(id, levels, format.Internal, size);
 }
-template <> void inline create_gl_texture_storage<2, false>(GenericResource::type id, int levels, int samples, const gli::gl::format &format, const typename texture_size_type<2>::type &size) {
+template <> void inline create_gl_texture_storage<2, false>(generic_resource::type id, int levels, int samples, const gli::gl::format &format, const typename texture_size_type<2>::type &size) {
 	glTextureStorage2D(id, levels, format.Internal, size[0], size[1]);
 }
-template <> void inline create_gl_texture_storage<3, false>(GenericResource::type id, int levels, int samples, const gli::gl::format &format, const typename texture_size_type<3>::type &size) {
+template <> void inline create_gl_texture_storage<3, false>(generic_resource::type id, int levels, int samples, const gli::gl::format &format, const typename texture_size_type<3>::type &size) {
 	glTextureStorage3D(id, levels, format.Internal, size[0], size[1], size[2]);
 }
-template <> void inline create_gl_texture_storage<2, true>(GenericResource::type id, int levels, int samples, const gli::gl::format &format, const typename texture_size_type<2>::type &size) {
+template <> void inline create_gl_texture_storage<2, true>(generic_resource::type id, int levels, int samples, const gli::gl::format &format, const typename texture_size_type<2>::type &size) {
 	glTextureStorage2DMultisample(id, samples, format.Internal, size[0], size[1], false);
 }
-template <> void inline create_gl_texture_storage<3, true>(GenericResource::type id, int levels, int samples, const gli::gl::format &format, const typename texture_size_type<3>::type &size) {
+template <> void inline create_gl_texture_storage<3, true>(generic_resource::type id, int levels, int samples, const gli::gl::format &format, const typename texture_size_type<3>::type &size) {
 	glTextureStorage3DMultisample(id, samples, format.Internal, size[0], size[1], size[2], false);
 }
 
@@ -42,20 +42,20 @@ private:
 	static constexpr bool multisampled = texture_is_multisampled<tex_type>::value;
 
 public:
-	GenericResource::type allocate() override final {
+	generic_resource::type allocate() override final {
 		GLuint id;
 		glCreateTextures(GL::gl_utils::translate_type(tex_type), 1, &id);
 		return id;
 	}
 
-	static void deallocate(GenericResource::type &id) {
+	static void deallocate(generic_resource::type &id) {
 		if (id) {
 			glDeleteTextures(1, &id);
 			id = 0;
 		}
 	}
 
-	void allocate_storage(GenericResource::type id, int levels, int samples, const gli::gl::format &format, const typename texture_size_type<dimensions>::type &size, std::size_t bytes) override final {
+	void allocate_storage(generic_resource::type id, int levels, int samples, const gli::gl::format &format, const typename texture_size_type<dimensions>::type &size, std::size_t bytes) override final {
 		_texture_storage::create_gl_texture_storage<dimensions, multisampled>(id, levels, samples, format, size);
 	}
 };

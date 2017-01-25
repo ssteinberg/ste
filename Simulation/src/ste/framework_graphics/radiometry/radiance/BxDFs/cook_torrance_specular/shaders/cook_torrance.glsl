@@ -12,7 +12,7 @@
  *	@param h			Half vector
  *	@param roughness	Material roughness
  *	@param cos_critical	Cosine of critical angle
- *	@param sin_critical	Sine of critical angle
+ *	@param refractive_ratio	Ratio of refractive-indices, ior2/ior1
  *	@param c_spec		Specular color
  *	@param D			Outputs microfacet NDF value
  *	@param Gmask		Outputs microfacet G1 masking value
@@ -24,7 +24,8 @@ vec3 cook_torrance_iso_brdf(vec3 n,
 							vec3 l,
 							vec3 h,
 							float roughness,
-							float cos_critical, float sin_critical,
+							float cos_critical, 
+							float refractive_ratio,
 							vec3 c_spec,
 							out float D,
 							out float Gmask,
@@ -36,24 +37,24 @@ vec3 cook_torrance_iso_brdf(vec3 n,
 
 	D = ndf_ggx_isotropic(roughness, dot(n,h));
 	float G = gaf_schlick_ggx(roughness, clamped_dotNL, clamped_dotNV, Gmask, Gshadow);
-	F = fresnel(dot(l,h), cos_critical, sin_critical);
+	F = fresnel(dot(l,h), cos_critical, refractive_ratio);
 
 	return c_spec * max(.0f, D * G * F / 4.f);
 }
 
 /*
- *	Cook-Torrance ansiotropic BRDF
+ *	Cook-Torrance anisotropic BRDF
  *
  *	@param n			Normal
  *	@param t			Tangent
- *	@param b			Bitangent
+ *	@param b			Bi-tangent
  *	@param v			Outbound vector (facing away from fragment to camera)
  *	@param l			Incident vector (facing away from fragment to light)
  *	@param h			Half vector
  *	@param roughness_x	Material roughness in tangent direction
- *	@param roughness_y	Material roughness in bitangent direction
+ *	@param roughness_y	Material roughness in bi-tangent direction
  *	@param cos_critical	Cosine of critical angle
- *	@param sin_critical	Sine of critical angle
+ *	@param refractive_ratio	Ratio of refractive-indices, ior2/ior1
  *	@param c_spec		Specular color
  *	@param D			Outputs microfacet NDF value
  *	@param Gmask		Outputs microfacet G1 masking value
@@ -68,7 +69,8 @@ vec3 cook_torrance_ansi_brdf(vec3 n,
 							 vec3 h,
 							 float roughness_x,
 							 float roughness_y,
-							 float cos_critical, float sin_critical,
+							 float cos_critical, 
+							 float refractive_ratio,
 							 vec3 c_spec,
 							 out float D,
 							 out float Gmask,
@@ -83,7 +85,7 @@ vec3 cook_torrance_ansi_brdf(vec3 n,
 
 	D = ndf_ggx_ansiotropic(t, b, h, roughness_x, roughness_y, dot(n,h));
 	float G = gaf_schlick_ggx(roughness, clamped_dotNL, clamped_dotNV, Gmask, Gshadow);
-	F = fresnel(dot(l,h), cos_critical, sin_critical);
+	F = fresnel(dot(l,h), cos_critical, refractive_ratio);
 
 	return c_spec * max(.0f, D * G * F / 4.f);
 }

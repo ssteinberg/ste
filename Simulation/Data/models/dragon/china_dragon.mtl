@@ -1,7 +1,7 @@
-# Blender MTL File: 'None'
+# Blender MTL File: 'china_dragon.FBX'
 # Material Count: 2
 
-newmtl dragon.002
+newmtl dragon
 Ns 19.607843
 Ka 1.000000 1.000000 1.000000
 Kd 0.470400 0.470400 0.470400
@@ -13,7 +13,7 @@ illum 1
 bump drago_normals.tga
 map_Kd dragon_texture.png
 
-newmtl postament.002
+newmtl postament
 Ns 19.607843
 Ka 1.000000 1.000000 1.000000
 Kd 0.470400 0.470400 0.470400

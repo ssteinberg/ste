@@ -9,8 +9,8 @@
 # and license in png.h
 
 # Variables substituted from CMakeLists.txt
-set(SRCDIR "C:/src/git/StE/Simulation/third_party/packages/libpng")
-set(BINDIR "C:/src/git/StE/Simulation/third_party/build/libpng")
+set(SRCDIR "D:/src/git/StE/Simulation/third_party/packages/libpng")
+set(BINDIR "D:/src/git/StE/Simulation/third_party/build/libpng")
 
 set(AWK "AWK-NOTFOUND")
 set(DFA_XTRA "")

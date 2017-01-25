@@ -2,7 +2,7 @@
 #include "stdafx.hpp"
 #include "gpu_task_dispatch_queue.hpp"
 
-#include "AttributedString.hpp"
+#include "attributed_string.hpp"
 #include "Log.hpp"
 
 #include "tuple_call.hpp"
@@ -64,7 +64,7 @@ void gpu_task_dispatch_queue::erase_task(const TaskPtr &task, bool force) {
 	if (!force && task->requisite_for.size()) {
 		using namespace StE::Text::Attributes;
 
-		std::cout << Text::AttributedString("Attempting to remove task from GPU dispatch queue, however task ") + i(task->get_name()) + " is a requisite for " + i((*task->requisite_for.begin())->get_name()) + "." << std::endl;
+		std::cout << Text::attributed_string("Attempting to remove task from GPU dispatch queue, however task ") + i(task->get_name()) + " is a requisite for " + i((*task->requisite_for.begin())->get_name()) + "." << std::endl;
 		ste_log_fatal() << "task " << task->get_name() << " is a requisite for " << (*task->requisite_for.begin())->get_name() << std::endl;
 		assert(false && "Task is a requisite!");
 		return;

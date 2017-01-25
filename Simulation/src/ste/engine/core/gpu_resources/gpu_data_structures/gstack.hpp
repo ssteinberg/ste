@@ -5,7 +5,7 @@
 
 #include "stdafx.hpp"
 
-#include "ShaderStorageBuffer.hpp"
+#include "shader_storage_buffer.hpp"
 
 #include <vector>
 #include <functional>
@@ -23,7 +23,7 @@ public:
 private:
 	static constexpr int pages = 8192;
 
-	using buffer_type = ShaderStorageBuffer<T, usage>;
+	using buffer_type = shader_storage_buffer<T, usage>;
 
 	static_assert(std::is_trivially_copyable<T>::value, "T must be trivially copyable");
 

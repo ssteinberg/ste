@@ -2,7 +2,7 @@
 #include "stdafx.hpp"
 #include "dense_voxel_space.hpp"
 
-#include "GLSLProgramFactory.hpp"
+#include "glsl_program_factory.hpp"
 
 using namespace StE::Graphics;
 
@@ -10,7 +10,7 @@ constexpr gli::format dense_voxel_space::space_format_radiance;
 constexpr gli::format dense_voxel_space::space_format_data;
 constexpr int dense_voxel_space::voxel_steps_multiplier;
 
-dense_voxel_space::dense_voxel_space(const StEngineControl &ctx,
+dense_voxel_space::dense_voxel_space(const ste_engine_control &ctx,
 									 std::size_t max_size,
 									 float voxel_size_factor) : ctx(ctx),
 																voxelizer_program(ctx, std::vector<std::string>{ "voxelizer.vert", "voxelizer.frag", "voxelizer.geom" }),
@@ -20,15 +20,15 @@ dense_voxel_space::dense_voxel_space(const StEngineControl &ctx,
 	size = static_cast<decltype(size)>(glm::min<int>(Core::texture_sparse_3d::max_size(), max_size));
 	tile_size = static_cast<decltype(tile_size)>(glm::max(ts.x, glm::max(ts.y, ts.z)));
 
-	voxelizer_output = std::make_unique<Core::RenderTarget>(gli::format::FORMAT_R8_UNORM_PACK8, glm::ivec2{ size.x, size.y });
+	voxelizer_output = std::make_unique<Core::render_target>(gli::format::FORMAT_R8_UNORM_PACK8, glm::ivec2{ size.x, size.y });
 	voxelizer_fbo[0] = *voxelizer_output;
 
-	sampler.set_min_filter(Core::TextureFiltering::Linear);
-	sampler.set_mag_filter(Core::TextureFiltering::Linear);
-	sampler.set_mipmap_filter(Core::TextureFiltering::Nearest);
-	sampler.set_wrap_s(Core::TextureWrapMode::ClampToBorder);
-	sampler.set_wrap_t(Core::TextureWrapMode::ClampToBorder);
-	sampler.set_wrap_r(Core::TextureWrapMode::ClampToBorder);
+	sampler.set_min_filter(Core::texture_filtering::Linear);
+	sampler.set_mag_filter(Core::texture_filtering::Linear);
+	sampler.set_mipmap_filter(Core::texture_filtering::Nearest);
+	sampler.set_wrap_s(Core::texture_wrap_mode::ClampToBorder);
+	sampler.set_wrap_t(Core::texture_wrap_mode::ClampToBorder);
+	sampler.set_wrap_r(Core::texture_wrap_mode::ClampToBorder);
 
 	create_dense_voxel_space(voxel_size_factor);
 	projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([=](float, float, float) {

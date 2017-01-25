@@ -9,10 +9,10 @@
 
 #include "mesh_descriptor.hpp"
 
-#include "ElementBufferObject.hpp"
-#include "VertexBufferObject.hpp"
-#include "VertexArrayObject.hpp"
-#include "ShaderStorageBuffer.hpp"
+#include "element_buffer_object.hpp"
+#include "vertex_buffer_object.hpp"
+#include "vertex_array_object.hpp"
+#include "shader_storage_buffer.hpp"
 
 #include "gstack.hpp"
 
@@ -23,17 +23,17 @@ namespace Graphics {
 
 class object_group_draw_buffers {
 private:
- 	Core::VertexArrayObject vao;
+	Core::vertex_array_object vao;
 
 	mutable Core::gstack<mesh_descriptor> mesh_data_bo;
 	mutable Core::gstack<mesh_draw_params> mesh_draw_params_bo;
- 	Core::gstack<ObjectVertexData> vbo;
+	Core::gstack<object_vertex_data> vbo;
 	Core::gstack<std::uint32_t> indices;
 
 public:
- 	using vbo_type = Core::VertexBufferObject<ObjectVertexData, ObjectVertexData::descriptor, decltype(vbo)::usage>;
- 	using elements_type = Core::ElementBufferObject<std::uint32_t, decltype(indices)::usage>;
-	using mesh_data_buffer_type = Core::ShaderStorageBuffer<mesh_descriptor, decltype(mesh_data_bo)::usage>;
+	using vbo_type = Core::vertex_buffer_object<object_vertex_data, object_vertex_data::descriptor, decltype(vbo)::usage>;
+	using elements_type = Core::element_buffer_object<std::uint32_t, decltype(indices)::usage>;
+	using mesh_data_buffer_type = Core::shader_storage_buffer<mesh_descriptor, decltype(mesh_data_bo)::usage>;
 
 public:
 	object_group_draw_buffers() {

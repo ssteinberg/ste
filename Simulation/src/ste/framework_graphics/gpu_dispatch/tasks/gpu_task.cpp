@@ -32,7 +32,7 @@ void gpu_task::remove_dependency(const TaskPtr &task) const {
 		s->remove_dependency(task);
 }
 
-void gpu_task::set_fbo(const Core::GenericFramebufferObject *fbo) const {
+void gpu_task::set_fbo(const Core::framebuffer_object_generic *fbo) const {
 	this->fbo = fbo;
 
 	if (parent_queue)

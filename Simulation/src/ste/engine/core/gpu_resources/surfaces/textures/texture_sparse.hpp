@@ -100,7 +100,7 @@ public:
 	}
 
 	image<T> operator[](int level) const {
-		return image<T>(*this, Base::get_image_container_size(), Base::format, ImageAccessMode::ReadWrite, level, 0);
+		return image<T>(*this, Base::get_image_container_size(), Base::format, image_access_mode::ReadWrite, level, 0);
 	}
 };
 
@@ -121,7 +121,7 @@ public:
 	}
 
 	image_container<T> operator[](int level) const {
-		return image_container<T>(*this, Base::get_image_container_size(), Base::format, ImageAccessMode::ReadWrite, level, Base::get_image_container_dimensions());
+		return image_container<T>(*this, Base::get_image_container_size(), Base::format, image_access_mode::ReadWrite, level, Base::get_image_container_dimensions());
 	}
 };
 
@@ -142,7 +142,7 @@ public:
 	}
 
 	image_container<T> operator[](int level) const {
-		return image_container<T>(*this, Base::get_image_container_size(), Base::format, ImageAccessMode::ReadWrite, level, Base::get_image_container_dimensions());
+		return image_container<T>(*this, Base::get_image_container_size(), Base::format, image_access_mode::ReadWrite, level, Base::get_image_container_dimensions());
 	}
 };
 

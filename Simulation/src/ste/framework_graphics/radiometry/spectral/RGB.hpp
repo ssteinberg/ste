@@ -10,19 +10,19 @@ namespace Graphics {
 
 class XYZ;
 
-class RGB : public spectrum<float, 3> {
+class rgb : public spectrum<float, 3> {
 public:
 	using T = float;
 
 public:
 	using spectrum<float, 3>::spectrum;
-	RGB() = default;
-	RGB(const glm::tvec3<T> &vec) {
+	rgb() = default;
+	rgb(const glm::tvec3<T> &vec) {
 		R() = vec.r;
 		G() = vec.g;
 		B() = vec.b;
 	}
-	RGB(const T &r, const T &g, const T &b) {
+	rgb(const T &r, const T &g, const T &b) {
 		R() = r;
 		G() = g;
 		B() = b;
@@ -51,7 +51,7 @@ public:
 namespace StE {
 namespace Graphics {
 
-inline XYZ RGB::toXYZ() const {
+inline XYZ rgb::toXYZ() const {
 	XYZ ret;
 	ret.X() = 0.412453f * R() + 0.357580f * G() + 0.180423f * B();
 	ret.Y() = 0.212671f * R() + 0.715160f * G() + 0.072169f * B();
@@ -59,11 +59,11 @@ inline XYZ RGB::toXYZ() const {
 	return ret;
 }
 
-inline RGB::T RGB::luminance() const {
+inline rgb::T rgb::luminance() const {
 	return toXYZ().Y();
 }
 
-inline RGB::operator XYZ() const {
+inline rgb::operator XYZ() const {
 	return toXYZ();
 };
 

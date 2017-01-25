@@ -23,22 +23,22 @@
 
 namespace StE {
 
-class Logger {
+class _logger {
 private:
-	friend class Log;
+	friend class log;
 
 private:
-	Logger(std::unique_ptr<log_sink> &&sink, bool force_flush = false) : stream(std::move(sink), force_flush) {}
-	Logger(Logger &&) = default;
+	_logger(std::unique_ptr<log_sink> &&sink, bool force_flush = false) : stream(std::move(sink), force_flush) {}
+	_logger(_logger &&) = default;
 
 	log_ostream stream;
 
 public:
 	log_ostream &logger() { return stream; }
-	~Logger() {}
+	~_logger() {}
 };
 
-class Log {
+class log {
 private:
 	using queue_type = concurrent_queue<log_entry>;
 
@@ -91,11 +91,11 @@ private:
 
 	std::streambuf *cout_strm_buffer;
 	std::streambuf *cerr_strm_buffer;
-	std::unique_ptr<Logger> cout_logger;
-	std::unique_ptr<Logger> cerr_logger;
+	std::unique_ptr<_logger> cout_logger;
+	std::unique_ptr<_logger> cerr_logger;
 
 public:
-	Log(const std::string &title, const std::string path_prefix = R"(Log/)", const std::string path_extension = ".html") :
+	log(const std::string &title, const std::string path_prefix = R"(Log/)", const std::string path_extension = ".html") :
 			formatter(title),
 			notifier(std::make_shared<std::condition_variable>()),
 			queue(std::make_shared<queue_type>()),
@@ -120,7 +120,7 @@ public:
 		});
 	}
 
-	~Log() {
+	~log() {
 		std::unique_lock<std::mutex> ul(m);
 
 		if (cout_logger != nullptr) cout_logger->stream.flush();
@@ -147,32 +147,32 @@ public:
 	void redirect_std_outputs() {
 		cout_strm_buffer = std::cout.rdbuf();
 		cerr_strm_buffer = std::cerr.rdbuf();
-		cout_logger = std::unique_ptr<Logger>(new Logger(std::make_unique<log_sink>(log_entry_data("std", "std::cout", 0, log_class::info_class_log), notifier, queue)));
-		cerr_logger = std::unique_ptr<Logger>(new Logger(std::make_unique<log_sink>(log_entry_data("std", "std::cerr", 0, log_class::err_class_log), notifier, queue), true));
+		cout_logger = std::unique_ptr<_logger>(new _logger(std::make_unique<log_sink>(log_entry_data("std", "std::cout", 0, log_class::info_class_log), notifier, queue)));
+		cerr_logger = std::unique_ptr<_logger>(new _logger(std::make_unique<log_sink>(log_entry_data("std", "std::cerr", 0, log_class::err_class_log), notifier, queue), true));
 
 		std::cout.rdbuf(cout_logger->logger().rdbuf());
 		std::cerr.rdbuf(cerr_logger->logger().rdbuf());
 	}
 
-	Logger log_info(const char *file, const char *func, int line) {
-		return Logger(std::make_unique<log_sink>(log_entry_data(file, func, line, log_class::info_class_log), notifier, queue));
+	_logger log_info(const char *file, const char *func, int line) {
+		return _logger(std::make_unique<log_sink>(log_entry_data(file, func, line, log_class::info_class_log), notifier, queue));
 	}
-	Logger log_warn(const char *file, const char *func, int line) {
-		return Logger(std::make_unique<log_sink>(log_entry_data(file, func, line, log_class::warn_class_log), notifier, queue));
+	_logger log_warn(const char *file, const char *func, int line) {
+		return _logger(std::make_unique<log_sink>(log_entry_data(file, func, line, log_class::warn_class_log), notifier, queue));
 	}
-	Logger log_err(const char *file, const char *func, int line) {
-		return Logger(std::make_unique<log_sink>(log_entry_data(file, func, line, log_class::err_class_log), notifier, queue), true);
+	_logger log_err(const char *file, const char *func, int line) {
+		return _logger(std::make_unique<log_sink>(log_entry_data(file, func, line, log_class::err_class_log), notifier, queue), true);
 	}
-	Logger log_fatal(const char *file, const char *func, int line) {
-		return Logger(std::make_unique<log_sink>(log_entry_data(file, func, line, log_class::fatal_class_log), notifier, queue), true);
+	_logger log_fatal(const char *file, const char *func, int line) {
+		return _logger(std::make_unique<log_sink>(log_entry_data(file, func, line, log_class::fatal_class_log), notifier, queue), true);
 	}
 };
 
-extern Log *ste_global_logger;
+extern log *ste_global_logger;
 
 }
 
-void inline ste_log_set_global_logger(StE::Log *ptr) {
+void inline ste_log_set_global_logger(StE::log *ptr) {
 	StE::ste_global_logger = ptr;
 }
 

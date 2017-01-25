@@ -4,7 +4,7 @@
 #pragma once
 
 #include "stdafx.hpp"
-#include "StEngineControl.hpp"
+#include "ste_engine_control.hpp"
 
 #include "resource_loading_task.hpp"
 #include "resource_instance_getter.hpp"
@@ -81,7 +81,7 @@ public:
 	*	@param args	Will be perfectly forwarded to resource ctor
 	*/
 	template <typename ... Ts>
-	resource_instance(const StEngineControl &ctx, Ts&&... args) : resource_instance_base(),
+	resource_instance(const ste_engine_control &ctx, Ts&&... args) : resource_instance_base(),
 																  loading_data(std::make_unique<loading_struct>()),
 																  resource(ctx, std::forward<Ts>(args)...) {
 		resource_instance_base::pop_ctor_stack();
