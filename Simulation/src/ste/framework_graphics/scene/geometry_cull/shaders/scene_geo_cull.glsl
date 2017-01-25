@@ -9,7 +9,7 @@ layout(local_size_x = 128) in;
 
 #include "light.glsl"
 #include "light_cascades.glsl"
-#include "shadow_projection_instance_to_ll_idx_translation.glsl"
+#include "shadow_drawid_to_lightid_ttl.glsl"
 
 #include "intersection.glsl"
 
@@ -46,11 +46,11 @@ layout(std430, binding = 0) restrict writeonly buffer sidb_data {
 layout(std430, binding = 1) restrict writeonly buffer dsidb_data {
 	IndirectMultiDrawElementsCommand dsidb[];
 };
-layout(shared, binding = 8) restrict writeonly buffer shadow_projection_instance_to_ll_idx_translation_data {
-	shadow_projection_instance_to_ll_idx_translation sproj_id_to_llid_tt[];
+layout(shared, binding = 8) restrict writeonly buffer drawid_to_lightid_ttl_data {
+	drawid_to_lightid_ttl ttl[];
 };
-layout(shared, binding = 9) restrict writeonly buffer directional_shadow_projection_instance_to_ll_idx_translation_data {
-	directional_shadow_projection_instance_to_ll_idx_translation dsproj_id_to_llid_tt[];
+layout(shared, binding = 9) restrict writeonly buffer d_drawid_to_lightid_ttl_data {
+	d_drawid_to_lightid_ttl d_ttl[];
 };
 
 uniform float cascades_depths[directional_light_cascades];
@@ -62,7 +62,8 @@ void main() {
 
 	mesh_descriptor md = mesh_descriptor_buffer[draw_id];
 
-	vec3 center = transform_view(transform_model(md, md.bounding_sphere.xyz));
+	vec3 center_world = transform_model(md, md.bounding_sphere.xyz);
+	vec3 center = transform_view(center_world);
 	float radius = md.bounding_sphere.w;
 	
 	uint shadow_instance_count = 0;
@@ -90,7 +91,7 @@ void main() {
 				vec3 center_in_cascade_space  = vec4(center, 1) * M;
 				if (any(lessThan(abs(center_in_cascade_space.xy), vec2(1.f) + radius * recp_viewport)) &&
 					center_in_cascade_space.z > -cascade_proj_far - radius) {
-					dsproj_id_to_llid_tt[draw_id].ll_idx[dir_shadow_instance_count] = uint(i);
+					d_ttl[draw_id].entries[dir_shadow_instance_count] = create_drawid_ttl_entry(uint(i), light_idx);
 					++dir_shadow_instance_count;
 					break;
 				}
@@ -101,7 +102,7 @@ void main() {
 			float lr = ld.effective_range;
 
 			if (collision_sphere_sphere(l, lr, center, radius)) {
-				sproj_id_to_llid_tt[draw_id].ll_idx[shadow_instance_count] = uint(i);
+				ttl[draw_id].entries[shadow_instance_count] = create_drawid_ttl_entry(uint(i), light_idx);
 				++shadow_instance_count;
 			}
 		}

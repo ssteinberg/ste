@@ -7,7 +7,7 @@ layout(triangle_strip, max_vertices=18) out;
 
 #include "light.glsl"
 #include "shadow.glsl"
-#include "shadow_projection_instance_to_ll_idx_translation.glsl"
+#include "shadow_drawid_to_lightid_ttl.glsl"
 
 #include "project.glsl"
 
@@ -20,15 +20,8 @@ layout(std430, binding = 2) restrict readonly buffer light_data {
 	light_descriptor light_buffer[];
 };
 
-layout(shared, binding = 4) restrict readonly buffer ll_counter_data {
-	uint ll_counter;
-};
-layout(shared, binding = 5) restrict readonly buffer ll_data {
-	uint ll[];
-};
-
-layout(shared, binding = 8) restrict readonly buffer shadow_projection_instance_to_ll_idx_translation_data {
-	shadow_projection_instance_to_ll_idx_translation sproj_id_to_llid_tt[];
+layout(shared, binding = 8) restrict readonly buffer drawid_to_lightid_ttl_data {
+	drawid_to_lightid_ttl ttl[];
 };
 
 const vec2 t = vec2(1,-1);
@@ -89,9 +82,12 @@ void process(int face, uint l, vec3 vertices[3], float shadow_near, float f) {
 void main() {
 	int sproj_instance_id = vin[0].instanceIdx;
 	uint draw_id = vin[0].drawIdx;
-	uint ll_id = sproj_id_to_llid_tt[draw_id].ll_idx[sproj_instance_id];
 
-	light_descriptor ld = light_buffer[ll[ll_id]];
+	drawid_to_lightid_ttl_entry ttl_entry = ttl[draw_id].entries[sproj_instance_id];
+	uint ll_idx = translate_drawid_to_ll_idx(ttl_entry);
+	uint light_idx = translate_drawid_to_light_idx(ttl_entry);
+
+	light_descriptor ld = light_buffer[light_idx];
 
 	uint face_mask = ld.shadow_face_mask;
 	if (face_mask == 0)
@@ -127,6 +123,6 @@ void main() {
 	// Transform and output
 	for (int face = 0; face < 6; ++face) {
 		if ((face_mask & (1 << face)) != 0)
-			process(face, ll_id, vertices, ld.radius, light_range);
+			process(face, ll_idx, vertices, ld.radius, light_range);
 	}
 }

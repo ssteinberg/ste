@@ -11,7 +11,7 @@ layout(triangle_strip, max_vertices=18) out;
 #include "project.glsl"
 
 #include "shadow.glsl"
-#include "shadow_projection_instance_to_ll_idx_translation.glsl"
+#include "shadow_drawid_to_lightid_ttl.glsl"
 
 in vs_out {
 	flat int instanceIdx;
@@ -22,18 +22,12 @@ layout(std430, binding = 2) restrict readonly buffer light_data {
 	light_descriptor light_buffer[];
 };
 
-layout(shared, binding = 4) restrict readonly buffer ll_counter_data {
-	uint ll_counter;
-};
-layout(shared, binding = 5) restrict readonly buffer ll_data {
-	uint ll[];
-};
 layout(shared, binding = 6) restrict readonly buffer directional_lights_cascades_data {
 	light_cascade_descriptor directional_lights_cascades[];
 };
 
-layout(shared, binding = 8) restrict readonly buffer directional_shadow_projection_instance_to_ll_idx_translation_data {
-	directional_shadow_projection_instance_to_ll_idx_translation dsproj_id_to_llid_tt[];
+layout(shared, binding = 8) restrict readonly buffer d_drawid_to_lightid_ttl_data {
+	d_drawid_to_lightid_ttl ttl[];
 };
 
 uniform float cascades_depths[directional_light_cascades];
@@ -82,9 +76,9 @@ void process(int cascade, uint cascade_idx, vec3 vertices[3], float f) {
 void main() {
 	int sproj_instance_id = vin[0].instanceIdx;
 	uint draw_id = vin[0].drawIdx;
-	uint ll_id = dsproj_id_to_llid_tt[draw_id].ll_idx[sproj_instance_id];
+	uint light_idx = translate_drawid_to_light_idx(ttl[draw_id].entries[sproj_instance_id]);
 
-	light_descriptor ld = light_buffer[ll[ll_id]];
+	light_descriptor ld = light_buffer[light_idx];
 
 	// Calculate normal and cull back faces
 	vec3 l = ld.transformed_position;

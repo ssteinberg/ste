@@ -31,8 +31,8 @@ private:
 	static constexpr int directional_shadow_pltt_size = max_active_directional_lights_per_frame;
 
 	template <int tt_slots>
-	struct shadow_projection_instance_to_ll_idx_translation {
-		std::uint32_t ll_idx[tt_slots];
+	struct shadow_drawid_to_lightid_ttl {
+		std::uint32_t entries[tt_slots];
 	};
 
 	static constexpr Core::BufferUsage::buffer_usage usage = static_cast<Core::BufferUsage::buffer_usage>(Core::BufferUsage::BufferUsageSparse);
@@ -40,7 +40,7 @@ private:
 
 	template <int tt_slots>
 	class shadow_projection_data {
-		using table = shadow_projection_instance_to_ll_idx_translation<tt_slots>;
+		using table = shadow_drawid_to_lightid_ttl<tt_slots>;
 		using table_buffer_type = Core::shader_storage_buffer<table, usage>;
 
 	public:

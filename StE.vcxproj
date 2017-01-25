@@ -789,7 +789,7 @@
     <None Include="Simulation\src\ste\framework_graphics\scene\perpopulate_depth\shaders\scene_prepopulate_depth.frag" />
     <None Include="Simulation\src\ste\framework_graphics\scene\shaders\object.frag" />
     <None Include="Simulation\src\ste\framework_graphics\scene\shaders\scene_transform.vert" />
-    <None Include="Simulation\src\ste\framework_graphics\scene\shaders\shadow_projection_instance_to_ll_idx_translation.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\scene\shaders\shadow_drawid_to_lightid_ttl.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\shadows\shaders\shadow.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\shadows\shaders\shadow_common.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shaders\shadow_cubemap.geom" />
