@@ -1,0 +1,4 @@
+var class_st_e_1_1_resource_1_1resource__loading__task_3_01_graphics_1_1volumetric__scattering__scatter__dispatch_01_4 =
+[
+    [ "loader", "class_st_e_1_1_resource_1_1resource__loading__task_3_01_graphics_1_1volumetric__scattering__scatter__dispatch_01_4.html#ae1d1ea3c35af77371148d8b2002e4031", null ]
+];

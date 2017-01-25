@@ -1,0 +1,4 @@
+var class_st_e_1_1__rsh__utils_1_1legendre__polynomial_3_01m_00_01l_00_01typename_01std_1_1enable__i36ffda69c5e530d5d81461345b22e965 =
+[
+    [ "operator()", "class_st_e_1_1__rsh__utils_1_1legendre__polynomial_3_01m_00_01l_00_01typename_01std_1_1enable__i36ffda69c5e530d5d81461345b22e965.html#abb6a801f7c89aae75f9848e629638887", null ]
+];

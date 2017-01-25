@@ -1,0 +1,4 @@
+var struct_st_e_1_1_core_1_1surface__element__type_3_01gli_1_1format_1_1_f_o_r_m_a_t___l_a8___u_n_o_r_m___p_a_c_k8_01_4 =
+[
+    [ "type", "struct_st_e_1_1_core_1_1surface__element__type_3_01gli_1_1format_1_1_f_o_r_m_a_t___l_a8___u_n_o_r_m___p_a_c_k8_01_4.html#a0f9835e028dc3e1d64e9ccb434a6f142", null ]
+];
