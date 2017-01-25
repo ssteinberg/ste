@@ -12,6 +12,7 @@
 
 #include "intersection.glsl"
 
+#include "atmospherics.glsl"
 #include "volumetric_scattering.glsl"
 
 #include "project.glsl"

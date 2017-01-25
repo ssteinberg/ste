@@ -11,8 +11,8 @@ const float cascade_viewport_reserve = 1.025f;
 // to capture medium distance occluders, while maintaining depth precision. Keep it constant amongst cascades to avoid shadow filtering
 // artifacts when moving between cascades.
 // The near clip distance also reflects this motivation.
-const float cascade_projection_eye_distance = 1000.f;
-const float cascade_projection_near_clip = 1.f;
+const float cascade_projection_eye_distance = 5000.f;
+const float cascade_projection_near_clip = 1000.f;
 
 struct light_cascade_descriptor {
 	// Tangent and up vector of all cascades, with light direction being view vector

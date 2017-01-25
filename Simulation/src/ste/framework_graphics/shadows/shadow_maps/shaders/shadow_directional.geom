@@ -43,6 +43,8 @@ vec3 transform(vec4 v, mat3x4 M) {
 }
 
 void process(int cascade, uint cascade_idx, vec3 vertices[3], float f) {
+	float n = cascade_projection_near_clip;
+
 	// Cull triangles outside the NDC
 	if ((vertices[0].x >  1 &&
 		 vertices[1].x >  1 &&
@@ -63,13 +65,13 @@ void process(int cascade, uint cascade_idx, vec3 vertices[3], float f) {
 
 	gl_Layer = cascade + int(cascade_idx) * directional_light_cascades;
 	for (int j = 0; j < 3; ++j) {
-		// Clamp z values behind the near-clip to the near-clip plane, this geometry participates in directional shadows as well.
-		float z = min(-cascade_projection_near_clip, vertices[j].z);
-
-		gl_Position.z = cascade_projection_near_clip;
-		gl_Position.w = -z;
+		// Clamp z values behind the near-clip plane to the near-clip distance, this geometry participates in directional shadows as well.
+		float z = min(-n - 1e-8f, vertices[j].z);
+		
 		// Orthographic projection
-		gl_Position.xy = vertices[j].xy * gl_Position.w;
+		gl_Position.xy = vertices[j].xy;
+		gl_Position.z = project_depth_linear(z, n, f);
+		gl_Position.w = 1.f;
 
 		EmitVertex();
 	}

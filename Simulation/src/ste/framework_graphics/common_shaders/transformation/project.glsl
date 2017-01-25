@@ -40,7 +40,7 @@ float unproject_depth(float d, float n, float f) {
  *	Linearly projects a z value to a depth value
  */
 float project_depth_linear(float z, float n, float f) {
-	return 1.f + (z + n) / (f - n);
+	return (f + z) / (f - n);
 }
 
 /*

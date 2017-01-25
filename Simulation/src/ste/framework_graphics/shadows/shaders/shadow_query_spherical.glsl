@@ -4,9 +4,6 @@
 const float shadow_cube_max_penumbra = 80.f / shadow_cubemap_size;
 const float shadow_cube_min_penumbra = 3.f / shadow_cubemap_size;
 
-uniform float a1;
-uniform float a2;
-uniform float a3;
 
 /*
  *	Creates a slightly offseted testing depth for shadowmaps lookups

@@ -75,7 +75,7 @@ void directional_light(uint light_idx, int cascade, light_descriptor ld) {
 	vec4 t = vec4(0, 0, -inf, -inf);
 	for (int i=0; i<8; ++i) {
 		vec3 transformed = frustum[i] * M;
-		t = max(t, vec4(abs(transformed.xy), -transformed.z, transformed.z));
+		t = max(t, vec4(abs(transformed.xy), transformed.z, -transformed.z));
 	}
 		
 	// Viewport size
