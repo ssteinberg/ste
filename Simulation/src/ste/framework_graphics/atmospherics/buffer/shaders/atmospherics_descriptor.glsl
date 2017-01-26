@@ -29,13 +29,11 @@ struct atmospherics_descriptor {
 	// Atmosphere center in world coordinates and radius
 	vec4 center_radius;
 
-	// Wave length dependent scattering coefficients for the Rayleigh scattering theory (m^-1)
-	vec3 rayleigh_scattering_coefficient;
-	// Scattering coefficient for the Mie scattering theory (m^-1)
-	float mie_scattering_coefficient;
+	// xyz: Wave length dependent scattering coefficients for the Rayleigh scattering theory (m^-1)
+	// w: Scattering coefficient for the Mie scattering theory (m^-1)
+	vec4 scattering_coefficients;
 	// Absorption coefficient for the Mie scattering theory (m^-1)
 	float mie_absorption_coefficient;
-	
 	// Phase coefficient for the Mie scattering phase function
 	float phase;
 
@@ -51,6 +49,18 @@ struct atmospherics_descriptor {
 	float Hr_max;
 };
 
+
+float atmospherics_mie_scattering(atmospherics_descriptor desc) {
+	return desc.scattering_coefficients.w;
+}
+
+float atmospherics_mie_absorption(atmospherics_descriptor desc) {
+	return desc.mie_absorption_coefficient;
+}
+
+vec3 atmospherics_rayleigh_scattering(atmospherics_descriptor desc) {
+	return desc.scattering_coefficients.xyz;
+}
 
 float atmospherics_descriptor_pressure(float h, float one_over_H) {
 	return exp(one_over_H * h);
@@ -80,14 +90,14 @@ float atmospherics_descriptor_pressure_mie(atmospherics_descriptor desc, float h
 *	Returns the total Mie extinction coefficient in m^-1
 */
 float atmospherics_descriptor_mie_extinction_coeffcient(atmospherics_descriptor desc) {
-	return desc.mie_scattering_coefficient + desc.mie_absorption_coefficient;
+	return atmospherics_mie_scattering(desc) + atmospherics_mie_absorption(desc);
 }
 
 /*
 *	Returns the total Rayleigh extinction coefficient in m^-1
 */
 vec3 atmospherics_descriptor_rayleigh_extinction_coeffcient(atmospherics_descriptor desc) {
-	return desc.rayleigh_scattering_coefficient;
+	return atmospherics_rayleigh_scattering(desc);
 }
 
 /*

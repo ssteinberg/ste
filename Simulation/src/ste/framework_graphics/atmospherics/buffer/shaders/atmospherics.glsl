@@ -129,14 +129,14 @@ float atmospherics_optical_length_ray_aerosol(vec3 P0, vec3 V,
 *	Returns the Mie extinction coefficient in m^-1
 */
 float atmospherics_mie_extinction_coeffcient() {
-	return atmospherics_descriptor_data.mie_scattering_coefficient + atmospherics_descriptor_data.mie_absorption_coefficient;
+	return atmospherics_mie_scattering(atmospherics_descriptor_data) + atmospherics_mie_absorption(atmospherics_descriptor_data);
 }
 
 /*
-*	Returns the Mie extinction coefficient in m^-1
+*	Returns the Rayleigh extinction coefficient in m^-1
 */
 vec3 atmospherics_rayleigh_extinction_coeffcient() {
-	return atmospherics_descriptor_data.rayleigh_scattering_coefficient;
+	return atmospherics_rayleigh_scattering(atmospherics_descriptor_data);
 }
 
 /*
@@ -249,8 +249,8 @@ vec3 scatter(vec3 P0,
 	float density_m = atmospherics_descriptor_pressure_mie(atmospherics_descriptor_data, altitude);
 	float density_r = atmospherics_descriptor_pressure_rayleigh(atmospherics_descriptor_data, altitude);
 
-	vec3 scatter_coefficient = density_m * p_mie * atmospherics_descriptor_data.mie_scattering_coefficient.xxx + 
-							   density_r * p_rayleigh * atmospherics_descriptor_data.rayleigh_scattering_coefficient;
+	vec3 scatter_coefficient = density_m * p_mie * atmospherics_mie_scattering(atmospherics_descriptor_data).xxx + 
+							   density_r * p_rayleigh * atmospherics_rayleigh_scattering(atmospherics_descriptor_data);
 	
 	vec3 scattered_intensity = scatter_coefficient * len;
 	vec3 extinction = extinct(P0, P1, P2, atmospheric_optical_length_lut);
@@ -281,8 +281,8 @@ vec3 scatter_ray(vec3 P0,
 	float density_m = atmospherics_descriptor_pressure_mie(atmospherics_descriptor_data, altitude);
 	float density_r = atmospherics_descriptor_pressure_rayleigh(atmospherics_descriptor_data, altitude);
 
-	vec3 scatter_coefficient = density_m * p_mie * atmospherics_descriptor_data.mie_scattering_coefficient.xxx + 
-							   density_r * p_rayleigh * atmospherics_descriptor_data.rayleigh_scattering_coefficient;
+	vec3 scatter_coefficient = density_m * p_mie * atmospherics_mie_scattering(atmospherics_descriptor_data).xxx + 
+							   density_r * p_rayleigh * atmospherics_rayleigh_scattering(atmospherics_descriptor_data);
 	
 	vec3 scattered_intensity = scatter_coefficient * len;
 	vec3 extinction = extinct_ray(P0, P1, V, atmospheric_optical_length_lut);

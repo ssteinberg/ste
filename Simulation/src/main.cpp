@@ -248,7 +248,7 @@ int main()
 	auto light1_obj = create_light_object(&scene.get(), light1_pos, light1.get(), materials, material_layers);
 
 	const glm::vec3 sun_direction = glm::normalize(glm::vec3{ 0.f, -1.f, 0.f });
-	auto sun_light = scene.get().properties().lights_storage().allocate_directional(2e+1f, StE::Graphics::kelvin(5770), 1496e+8f, 695e+6f, sun_direction);
+	auto sun_light = scene.get().properties().lights_storage().allocate_directional(1e+2f, StE::Graphics::kelvin(5770), 1496e+8f, 695e+6f, sun_direction);
 
 	add_scene_lights(scene.get(), lights, materials, material_layers);
 
