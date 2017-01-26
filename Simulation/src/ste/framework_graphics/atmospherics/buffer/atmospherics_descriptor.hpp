@@ -25,8 +25,7 @@ private:
 	struct descriptor_data {
 		glm::vec4 center_radius;
 
-		glm::vec3 rayleigh_scattering_coefficient;
-		float mie_scattering_coefficient;
+		glm::vec4 scattering_coefficients;
 		float mie_absorption_coefficient;
 		float phase;
 
@@ -55,8 +54,12 @@ protected:
 	void set_properties(const Properties &p) {
 		data.center_radius = { p.center.x, p.center.y, p.center.z, p.radius };
 
-		data.rayleigh_scattering_coefficient = p.ro0 * p.rayleigh_scattering_coefficient;
-		data.mie_scattering_coefficient = p.ro0 * p.mie_scattering_coefficient;
+		auto scatter = p.ro0 * glm::dvec4{
+			p.rayleigh_scattering_coefficient.x,
+			p.rayleigh_scattering_coefficient.y,
+			p.rayleigh_scattering_coefficient.z,
+			p.mie_scattering_coefficient };
+		data.scattering_coefficients = scatter;
 		data.mie_absorption_coefficient = p.ro0 * p.mie_absorption_coefficient;
 		data.phase = p.phase;
 
