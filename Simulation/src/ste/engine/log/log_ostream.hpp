@@ -23,9 +23,9 @@ public:
 	log_ostream(std::unique_ptr<sink_type> &&sink, bool force_flush) : std::ostream(&lsb), lsb(std::move(sink), force_flush) {}
 	~log_ostream() noexcept { flush(); }
 
-	log_ostream(log_ostream &&other) : std::basic_ios<char, std::char_traits<char>>(),
-        							   std::ostream(std::move(other)),
-									   lsb(std::move(other.lsb)) {}
+	log_ostream(log_ostream &&other) noexcept : std::basic_ios<char, std::char_traits<char>>(),
+												std::ostream(std::move(other)),
+												lsb(std::move(other.lsb)) {}
 };
 
 }

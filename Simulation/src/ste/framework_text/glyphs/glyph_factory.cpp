@@ -71,6 +71,7 @@ public:
 	glyph_factory_ft_lib &operator=(glyph_factory_ft_lib &&) = default;
 
 	FT_Library get_lib() { return library; }
+	FT_Library get_lib() const { return library; }
 };
 
 class glyph_factory_font {
@@ -95,10 +96,10 @@ public:
 		if (face)
 			FT_Done_Face(face);
 	}
-	glyph_factory_font(glyph_factory_font &&f) : face(f.face), spacing_cache(std::move(f.spacing_cache)) {
+	glyph_factory_font(glyph_factory_font &&f) noexcept : face(f.face), spacing_cache(std::move(f.spacing_cache)) {
 		f.face = nullptr;
 	}
-	glyph_factory_font &operator=(glyph_factory_font &&f) {
+	glyph_factory_font &operator=(glyph_factory_font &&f) noexcept {
 		face = f.face;
 		spacing_cache = std::move(f.spacing_cache);
 		f.face = nullptr;
@@ -107,6 +108,7 @@ public:
 	}
 
 	FT_Face get_face() { return face; }
+	FT_Face get_face() const { return face; }
 
 	bool get_spacing(wchar_t left, wchar_t right, int pixel_size, int *spacing) const {
 		auto it = spacing_cache.find(text_glyph_pair_key{ left, right, pixel_size });

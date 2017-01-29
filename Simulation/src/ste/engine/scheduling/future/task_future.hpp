@@ -267,8 +267,10 @@ public:
 	*
 	*	@param other	Future to move.
 	*/
-	task_future_impl(task_future_impl &&other) : task_future_impl(future_lock_guard<write_lock_type>(other.mutex, other.chain_mutex, other.chain),
-																  std::move(other)) {}
+	task_future_impl(task_future_impl &&other) noexcept : task_future_impl(future_lock_guard<write_lock_type>(other.mutex, 
+																											  other.chain_mutex, 
+																											  other.chain),
+																		   std::move(other)) {}
 	/**
 	*	@brief	Copy ctor.
 	*
@@ -288,7 +290,7 @@ public:
 	*
 	*	@param other	Future to move.
 	*/
-	task_future_impl &operator=(task_future_impl &&other) {
+	task_future_impl &operator=(task_future_impl &&other) noexcept {
 		future_lock_guard<write_lock_type>(mutex, chain_mutex, chain);
 		future_lock_guard<write_lock_type>(other.mutex, other.chain_mutex, other.chain);
 

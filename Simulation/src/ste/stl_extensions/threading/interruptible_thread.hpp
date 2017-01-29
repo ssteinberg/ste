@@ -56,14 +56,14 @@ public:
 		}
 	}
 
-	interruptible_thread(interruptible_thread &&other) : flag(std::move(other.flag)),
-														 promise(std::move(other.promise)),
-														 future(std::move(other.future)),
-														 t(std::move(other.t)) {
+	interruptible_thread(interruptible_thread &&other)  noexcept : flag(std::move(other.flag)),
+																   promise(std::move(other.promise)),
+																   future(std::move(other.future)),
+																   t(std::move(other.t)) {
 		other.flag = nullptr;
 	}
 
-	interruptible_thread &operator=(interruptible_thread &&other) {
+	interruptible_thread &operator=(interruptible_thread &&other) noexcept {
 		flag = std::move(other.flag);
 		promise = std::move(other.promise);
 		future = std::move(other.future);

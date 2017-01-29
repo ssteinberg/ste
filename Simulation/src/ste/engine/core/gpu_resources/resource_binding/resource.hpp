@@ -32,8 +32,8 @@ public:
 	type get_resource_id() const { return *id; }
 	virtual bool is_valid() const = 0;
 
-	generic_resource(generic_resource &&res) {}
-	generic_resource &operator=(generic_resource &&res) { return *this; }
+	generic_resource(generic_resource &&res) noexcept {}
+	generic_resource &operator=(generic_resource &&res) noexcept { return *this; }
 	generic_resource(const generic_resource &res) = delete;
 	generic_resource &operator=(const generic_resource &res) = delete;
 };
@@ -77,8 +77,8 @@ protected:
 	}
 
 public:
-	resource(resource &&m) { id = std::move(m.id); }
-	resource& operator=(resource &&m) {
+	resource(resource &&m) noexcept { id = std::move(m.id); }
+	resource& operator=(resource &&m) noexcept {
 		id = std::move(m.id);
 		return *this;
 	}

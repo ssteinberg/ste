@@ -17,7 +17,7 @@ class data_factory;
 template <typename data_t>
 class data_factory<data_t, false> {
 public:
-	void release(data_t *ptr) { delete ptr; }
+	static void release(data_t *ptr) { delete ptr; }
 	template <typename ... Ts>
 	data_t* claim(Ts&&... args) { return new data_t(std::forward<Ts>(args)...); }
 };
@@ -32,7 +32,7 @@ public:
 
 	template <typename ... Ts>
 	data(Ts&&... args) : internal_counter(0), object(std::forward<Ts>(args)...) {}
-	data& operator=(data &&d) {
+	data& operator=(data &&d) noexcept {
 		internal_counter.store(0);
 		object = std::move(d.object);
 		return *this;
@@ -82,11 +82,11 @@ public:
 		data_guard(data_t *ptr) : ptr(ptr) { }
 		data_guard(const data_guard &d) = delete;
 		data_guard &operator=(const data_guard &d) = delete;
-		data_guard(data_guard &&d) {
+		data_guard(data_guard &&d) noexcept {
 			ptr = d.ptr;
 			d.ptr = 0;
 		}
-		data_guard &operator=(data_guard &&d) {
+		data_guard &operator=(data_guard &&d) noexcept {
 			if (ptr) ptr->release_ref();
 			ptr = d.ptr;
 			d.ptr = 0;

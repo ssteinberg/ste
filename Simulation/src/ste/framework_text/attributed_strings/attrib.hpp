@@ -25,9 +25,9 @@ public:
 	virtual ~attrib() noexcept {}
 
 	attrib() = default;
-	attrib(attrib &&) {};
+	attrib(attrib &&) noexcept {};
 	attrib(const attrib &) {}
-	virtual attrib &operator=(attrib &&) { return *this; };
+	virtual attrib &operator=(attrib &&) noexcept { return *this; };
 	virtual attrib &operator=(const attrib &) { return *this; };
 
 	virtual attrib* clone() const = 0;
