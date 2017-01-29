@@ -8,7 +8,7 @@
 namespace StE {
 
 template <typename T>
-T hash_combine(const T &h1, const T &h2) { assert(false); }
+T hash_combine(const T &h1, const T &h2) { static_assert(false, "Unimplemented"); }
 
 template<>
 std::size_t inline hash_combine<std::size_t>(const std::size_t &h1, const std::size_t &h2) {

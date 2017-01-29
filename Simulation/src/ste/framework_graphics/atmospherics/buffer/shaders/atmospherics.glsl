@@ -343,17 +343,17 @@ vec3 atmospheric_scatter(vec3 P, vec3 L, vec3 V,
 	vec3 scatter = texture(atmospheric_scattering_lut, vec3(x,y,z)).rgb;
 	vec3 m0 = texture(atmospheric_mie0_scattering_lut, vec3(x,y,z)).rgb;
 	
-	// Finally account for light-view azimuth by using the CIE scattering indicatrix
+	// Finally account for attenuation due to the light source<->view azimuth angle.
+	// Approximate using the CIE scattering indicatrix.
 	float cos_gamma = dot(V, -L);
 	float gamma = acos(cos_gamma);
 	float indicatrix = cie_scattering_indicatrix(gamma, cos_gamma);
 	
-	// Finally compute multiple-scattering azimuth modulator and the high-res Mie phase function sample
+	// Compute multiple-scattering azimuth modulator and the high-res Mie phase function sample
 	float p = indicatrix / cie_scattering_indicatrix_normalizer();
 	float p_mie = cornette_shanks_phase_function(V, L, atmospherics_descriptor_data.phase);
 
-	return scatter * p + 
-		   m0 * p_mie;
+	return p * (scatter + m0 * p_mie);
 }
 
 /*

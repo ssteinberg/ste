@@ -13,13 +13,15 @@ namespace Core {
 
 class vertex_buffer_descriptor {
 public:
-	std::size_t offset_to_attrib(int attrib) const noexcept{
+	std::size_t offset_to_attrib(int attrib) const noexcept {
 		int offset, i;
-		for (offset = i = 0; i < attrib; offset += attrib_size(i), ++i);
+		for (offset = i = 0; i < attrib; offset += attrib_size(i), ++i) {}
 		return offset;
 	}
 
 public:
+	virtual ~vertex_buffer_descriptor() noexcept {}
+
 	virtual std::size_t attrib_count() const noexcept = 0;
 	virtual std::size_t attrib_size(int attrib) const noexcept = 0;
 	virtual std::size_t attrib_element_count(int attrib) const noexcept = 0;
@@ -54,6 +56,8 @@ private:
 		using elements_arr = typename generate_array<sizeof...(Ts), elements_count_populator>::result;
 		using element_type_names_arr = typename generate_array<sizeof...(Ts), elements_type_name_populator>::result;
 	public:
+		virtual ~_descriptor() noexcept {}
+
 		std::size_t attrib_count() const noexcept override{ return sizeof...(Ts); };
 		std::size_t attrib_size(int attrib) const noexcept override{ return sizes_arr::data[attrib]; };
 		std::size_t attrib_element_count(int attrib) const noexcept override{ return elements_arr::data[attrib]; };

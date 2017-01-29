@@ -156,7 +156,6 @@ gl_context::window_type gl_context::create_window(const char * title, const glm:
 	if (win == nullptr) {
 		ste_log_fatal() << "Window creation failed!" << std::endl;
 		throw std::runtime_error("Couldn't create window.");
-		return nullptr;
 	}
 
 	return win;

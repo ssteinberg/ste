@@ -50,7 +50,7 @@ private:
 	std::shared_ptr<ResizeSignalConnectionType> resize_connection;
 
 private:
-	void adjust_line(std::vector<glyph_point> &, const attributed_wstring &, unsigned, float , float , const glm::vec2 &);
+	static void adjust_line(std::vector<glyph_point> &, const attributed_wstring &, unsigned, float , float , const glm::vec2 &);
 	std::vector<glyph_point> create_points(glm::vec2, const attributed_wstring &);
 
 private:

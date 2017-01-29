@@ -71,7 +71,7 @@ public:
 	}
 
 	const auto &get_buffer() const { return storage.get_buffer(); }
-	const auto size() const { return storage.size(); }
+	auto size() const { return storage.size(); }
 };
 
 }

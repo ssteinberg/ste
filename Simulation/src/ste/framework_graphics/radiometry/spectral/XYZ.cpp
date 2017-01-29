@@ -13,9 +13,9 @@ kelvin XYZ::toKelvin() const {
 	 *	Copyright © 2003 Bruce Justin Lindbloom.
 	*/
 	typedef struct UVT {
-        double  u;
-        double  v;
-        double  t;
+		double  u;
+		double  v;
+		double  t;
 	} UVT;
 
 	double rt[31] = {       /* reciprocal temperature (K) */

@@ -15,7 +15,7 @@ PFNGLNAMEDBUFFERPAGECOMMITMENTEXT glNamedBufferPageCommitmentEXT = nullptr;
 #endif
 
 bool init_glext() {
-	glNamedBufferPageCommitmentEXT = (PFNGLNAMEDBUFFERPAGECOMMITMENTEXT)glfwGetProcAddress("glNamedBufferPageCommitmentEXT");
+	glNamedBufferPageCommitmentEXT = reinterpret_cast<PFNGLNAMEDBUFFERPAGECOMMITMENTEXT>(glfwGetProcAddress("glNamedBufferPageCommitmentEXT"));
 	
 	return true;
 }

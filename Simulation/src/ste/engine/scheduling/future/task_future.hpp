@@ -205,7 +205,7 @@ private:
 	template <bool b = is_shared>
 	task_future_impl(const typename task_future_impl<R, true>::future_type &f,
 					 task_scheduler *sched,
-					 typename std::enable_if_t<b>* = nullptr) : sched(sched), future(f) {}
+					 std::enable_if_t<b>* = nullptr) : sched(sched), future(f) {}
 
 	template <bool b>
 	task_future_impl(write_lock_type &&wl,
@@ -267,8 +267,10 @@ public:
 	*
 	*	@param other	Future to move.
 	*/
-	task_future_impl(task_future_impl &&other) : task_future_impl(future_lock_guard<write_lock_type>(other.mutex, other.chain_mutex, other.chain),
-																  std::move(other)) {}
+	task_future_impl(task_future_impl &&other) noexcept : task_future_impl(future_lock_guard<write_lock_type>(other.mutex, 
+																											  other.chain_mutex, 
+																											  other.chain),
+																		   std::move(other)) {}
 	/**
 	*	@brief	Copy ctor.
 	*
@@ -288,7 +290,7 @@ public:
 	*
 	*	@param other	Future to move.
 	*/
-	task_future_impl &operator=(task_future_impl &&other) {
+	task_future_impl &operator=(task_future_impl &&other) noexcept {
 		future_lock_guard<write_lock_type>(mutex, chain_mutex, chain);
 		future_lock_guard<write_lock_type>(other.mutex, other.chain_mutex, other.chain);
 

@@ -149,8 +149,8 @@ double inline distaa3(double *img, double *gximg, double *gyimg, int w, int c, i
 	if (a < 0.0) a = 0.0; // Clip grayscale values outside the range [0,1]
 	if (a == 0.0) return 1000000.0; // Not an object pixel, return "very far" ("don't know yet")
 
-	dx = (double)xi;
-	dy = (double)yi;
+	dx = static_cast<double>(xi);
+	dy = static_cast<double>(yi);
 	di = sqrt(dx*dx + dy*dy); // Length of integer vector, like a traditional EDT
 	if (di == 0) { // Use local gradient only at edges
 				   // Estimate based on local gradient only

@@ -22,7 +22,7 @@ public:
 private:
 	bool force_flush;
 
-	int_type overflow(int_type ch) {
+	int_type overflow(int_type ch) override {
 		sync();
 		if (ch != traits_type::eof()) {
 			*pptr() = ch;
@@ -32,7 +32,7 @@ private:
 		return traits_type::eof();
 	}
 
-	int sync() {
+	int sync() override {
 		char *p, *e;
 		char *s = pbase();
 		for (p = pbase(), e = pptr(); p != e; ++p) {
@@ -70,10 +70,10 @@ public:
 		char *base = &buffer.front();
 		setp(base, base + buffer.size());
 	}
-	log_streambuf(log_streambuf &&other) : std::streambuf(std::move(other)),
-										   force_flush(other.force_flush),
-										   sink(std::move(other.sink)),
-										   buffer(std::move(other.buffer)) {}
+	log_streambuf(log_streambuf &&other) noexcept : std::streambuf(std::move(other)),
+													force_flush(other.force_flush),
+													sink(std::move(other.sink)),
+													buffer(std::move(other.buffer)) {}
 };
 
 }
