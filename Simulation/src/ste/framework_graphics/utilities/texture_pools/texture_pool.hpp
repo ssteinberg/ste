@@ -121,7 +121,7 @@ public:
 			++free_it;
 			while (next_free_it != v.unclaimed_layers.end() && *next_free_it < handle.layer) {
 				free_it = next_free_it;
-				next_free_it++;
+				++next_free_it;
 			}
 			v.unclaimed_layers.insert_after(free_it, handle.layer);
 		}

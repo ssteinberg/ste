@@ -53,7 +53,7 @@ private:
 
 	std::string file_path;
 
-	std::string file_name(const std::string &title) {
+	static std::string file_name(const std::string &title) {
 		time_t rawtime;
 		struct tm * timeinfo;
 		char buffer[256];

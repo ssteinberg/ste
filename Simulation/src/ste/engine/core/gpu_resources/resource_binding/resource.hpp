@@ -84,7 +84,7 @@ public:
 	}
 	resource& operator=(const resource &c) = delete;
 
-	bool is_valid() const { return Allocator::is_valid(*id); }
+	bool is_valid() const override { return Allocator::is_valid(*id); }
 };
 
 }

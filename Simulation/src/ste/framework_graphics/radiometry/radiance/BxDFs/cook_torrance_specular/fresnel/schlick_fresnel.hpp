@@ -11,7 +11,7 @@ namespace Graphics {
 template <typename T>
 class schlick_fresnel {
 public:
-	float fresnel_k(float d) {
+	static float fresnel_k(float d) {
 		auto p = static_cast<T>(1) - d;
 		auto p2 = p*p;
 		return p * p2 * p2;

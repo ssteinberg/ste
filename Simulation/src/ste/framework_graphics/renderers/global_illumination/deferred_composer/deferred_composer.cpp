@@ -73,7 +73,7 @@ void deferred_composer::load_microfacet_fit_luts() {
 		using namespace Text::Attributes;
 		ste_log_error() << Text::attributed_string("Can't open Microfacet LUT. Error: \"") + b(err.what()) + "\"." << std::endl;
 
-		throw err;
+		throw;
 	}
 
 	auto refraction_handle = microfacet_refraction_fit_lut->get_texture_handle(*Core::sampler::sampler_nearest_clamp());
@@ -98,7 +98,7 @@ void deferred_composer::load_atmospherics_luts() {
 		using namespace Text::Attributes;
 		ste_log_error() << Text::attributed_string("Can't open Atmospherics Scatter LUT. Error: \"") + b(err.what()) + "\"." << std::endl;
 
-		throw err;
+		throw;
 	}
 
 	ste_log() << Text::attributed_string("Loaded \"") + Text::Attributes::i(lut_name) + "\" successfully." << std::endl;

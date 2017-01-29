@@ -25,7 +25,7 @@ void surface_factory::write_png(const boost::filesystem::path &file_name, const 
 		throw resource_io_error();
 	}
 
-	png_structp png = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+	png_structp png = png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
 	if (!png) {
 		ste_log_error() << file_name << " png_create_write_struct failed";
 		fclose(fp);
@@ -45,8 +45,8 @@ void surface_factory::write_png(const boost::filesystem::path &file_name, const 
 		throw surface_error();
 	}
 
-	png_byte ** const row_pointers = (png_byte **)malloc(height * sizeof(png_byte *));
-	if (row_pointers == NULL) {
+	png_byte ** const row_pointers = reinterpret_cast<png_byte **>(malloc(height * sizeof(png_byte *)));
+	if (row_pointers == nullptr) {
 		ste_log_error() << file_name << " could not allocate memory for PNG row pointers";
 		fclose(fp);
 		throw surface_error();
@@ -78,7 +78,7 @@ void surface_factory::write_png(const boost::filesystem::path &file_name, const 
 	png_write_info(png, info);
 
 	png_write_image(png, row_pointers);
-	png_write_end(png, NULL);
+	png_write_end(png, nullptr);
 
 	free(row_pointers);
 
@@ -92,7 +92,7 @@ gli::texture2d surface_factory::load_tga(const boost::filesystem::path &file_nam
 		tga = TGAOpen(const_cast<char*>(file_name.string().data()), const_cast<char*>("rb"));
 		TGAReadHeader(tga);
 	}
-	catch (const std::exception &ex) {
+	catch (const std::exception &) {
 		ste_log_error() << file_name << " is not a valid 24-bit TGA" << std::endl;
 		throw resource_io_error();
 	}
@@ -134,7 +134,6 @@ gli::texture2d surface_factory::load_tga(const boost::filesystem::path &file_nam
 	}
 
 	unsigned rowbytes = w * components;
-	int rowsize = rowbytes;
 	if (3 - ((rowbytes - 1) % 4))
 		ste_log_warn() << file_name << " image row not 4byte aligned!";
 	rowbytes += 3 - ((rowbytes - 1) % 4);
@@ -152,7 +151,7 @@ gli::texture2d surface_factory::load_tga(const boost::filesystem::path &file_nam
 	try {
 		TGAReadScanlines(tga, image_data, 0, h, TGA_BGR);
 	}
-	catch (const std::exception &ex) {
+	catch (const std::exception &) {
 		ste_log_error() << file_name << " is not a valid 24-bit TGA" << std::endl;
 		throw surface_unsupported_format_error("Not a valid 24-bit TGA");
 	}
@@ -166,7 +165,7 @@ gli::texture2d surface_factory::load_png(const boost::filesystem::path &file_nam
 	png_byte header[8];
 
 	FILE *fp = fopen(file_name.string().data(), "rb");
-	if (fp == 0) {
+	if (!fp) {
 		throw resource_io_error();
 	}
 
@@ -179,7 +178,7 @@ gli::texture2d surface_factory::load_png(const boost::filesystem::path &file_nam
 		throw surface_unsupported_format_error("Not a valid PNG");
 	}
 
-	png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+	png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
 	if (!png_ptr) {
 		ste_log_error() << file_name << " png_create_read_struct returned 0";
 		fclose(fp);
@@ -190,7 +189,7 @@ gli::texture2d surface_factory::load_png(const boost::filesystem::path &file_nam
 	png_infop info_ptr = png_create_info_struct(png_ptr);
 	if (!info_ptr) {
 		ste_log_error() << file_name << " png_create_info_struct returned 0";
-		png_destroy_read_struct(&png_ptr, (png_infopp)NULL, (png_infopp)NULL);
+		png_destroy_read_struct(&png_ptr, nullptr, nullptr);
 		fclose(fp);
 		throw surface_unsupported_format_error("Not a valid PNG");
 	}
@@ -199,7 +198,7 @@ gli::texture2d surface_factory::load_png(const boost::filesystem::path &file_nam
 	png_infop end_info = png_create_info_struct(png_ptr);
 	if (!end_info) {
 		ste_log_error() << file_name << " png_create_info_struct returned 0";
-		png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
+		png_destroy_read_struct(&png_ptr, &info_ptr, nullptr);
 		fclose(fp);
 		throw surface_unsupported_format_error("Not a valid PNG");
 	}
@@ -227,7 +226,7 @@ gli::texture2d surface_factory::load_png(const boost::filesystem::path &file_nam
 
 	// get info about png
 	png_get_IHDR(png_ptr, info_ptr, &temp_width, &temp_height, &bit_depth, &color_type,
-		NULL, NULL, NULL);
+				 nullptr, nullptr, nullptr);
 
 	//printf("%s: %lux%lu %d\n", file_name, temp_width, temp_height, color_type);
 
@@ -283,7 +282,7 @@ gli::texture2d surface_factory::load_png(const boost::filesystem::path &file_nam
 	}
 
 	// row_pointers is for pointing to image_data for reading the png with libpng
-	png_byte ** row_pointers = (png_byte **)malloc(temp_height * sizeof(png_byte *));
+	png_byte ** row_pointers = reinterpret_cast<png_byte **>(malloc(temp_height * sizeof(png_byte *)));
 	if (bit_depth == 8) {
 		// set the individual row_pointers to point at the correct offsets of image_data
 		for (unsigned int i = 0; i < temp_height; i++)

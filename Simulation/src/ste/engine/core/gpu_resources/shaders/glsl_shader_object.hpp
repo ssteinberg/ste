@@ -94,7 +94,7 @@ public:
 
 	glsl_shader_object(const std::string &name, const std::string &src, const glsl_shader_properties &properties) : glsl_shader_object_generic(name), properties(properties) {
 		auto str = src.data();
-		glShaderSource(get_resource_id(), 1, &str, NULL);
+		glShaderSource(get_resource_id(), 1, &str, nullptr);
 
 		compile();
 	}

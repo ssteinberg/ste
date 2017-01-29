@@ -152,7 +152,7 @@ public:
 		data_t *new_data = data_t::claim(std::forward<Ts>(args)...);
 		data_ptr new_data_ptr{ 2, new_data };
 		data_ptr old_data_ptr = guard.load(std::memory_order_relaxed);
-		while (!guard.compare_exchange_weak(old_data_ptr, new_data_ptr, order, std::memory_order_relaxed));
+		while (!guard.compare_exchange_weak(old_data_ptr, new_data_ptr, order, std::memory_order_relaxed)) {}
 
 		release(old_data_ptr);
 
@@ -164,7 +164,7 @@ public:
 		data_t *new_data = data_t::claim(std::forward<Ts>(args)...);
 		data_ptr new_data_ptr{ 1, new_data };
 		data_ptr old_data_ptr = guard.load(std::memory_order_relaxed);
-		while (!guard.compare_exchange_weak(old_data_ptr, new_data_ptr, order, std::memory_order_relaxed));
+		while (!guard.compare_exchange_weak(old_data_ptr, new_data_ptr, order, std::memory_order_relaxed)) {}
 
 		release(old_data_ptr);
 	}
@@ -189,7 +189,8 @@ public:
 		data_ptr old_data_ptr = guard.load(std::memory_order_relaxed);
 
 		bool success = false;
-		while (old_data_ptr.ptr == old_data.ptr && !(success = guard.compare_exchange_weak(old_data_ptr, new_data_ptr, order, std::memory_order_relaxed)));
+		while (old_data_ptr.ptr == old_data.ptr && 
+			   !(success = guard.compare_exchange_weak(old_data_ptr, new_data_ptr, order, std::memory_order_relaxed))) {}
 		if (success)
 			release(old_data_ptr);
 		else
@@ -205,7 +206,7 @@ public:
 	void drop() {
 		data_ptr new_data_ptr{ 0 };
 		data_ptr old_data_ptr = guard.load(std::memory_order_relaxed);
-		while (!guard.compare_exchange_weak(old_data_ptr, new_data_ptr, std::memory_order_acq_rel, std::memory_order_relaxed));
+		while (!guard.compare_exchange_weak(old_data_ptr, new_data_ptr, std::memory_order_acq_rel, std::memory_order_relaxed)) {}
 
 		release(old_data_ptr);
 	}

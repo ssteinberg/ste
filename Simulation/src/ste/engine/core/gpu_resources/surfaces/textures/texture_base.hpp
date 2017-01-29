@@ -253,7 +253,7 @@ public:
 		for (int i = 0; i < texture_layer_dimensions<TextureType>::dimensions; ++i) {
 			int l;
 			auto x = size[i];
-			for (l = 0; x >> l > 1; ++l);
+			for (l = 0; x >> l > 1; ++l) {}
 			levels = std::max(l, levels);
 		}
 		return levels;

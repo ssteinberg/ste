@@ -85,7 +85,7 @@ private:
 			constexpr auto bits = sizeof(std::size_t) * 8;
 
 			std::bitset<bits> mask(0);
-			mask[schedule_on_cpu] = 1;
+			mask[schedule_on_cpu] = true;
 			thread_set_affinity<bits>(t, mask);
 		}
 	}
@@ -147,14 +147,14 @@ public:
 	balanced_thread_pool &operator=(balanced_thread_pool &&) = delete;
 	balanced_thread_pool &operator=(const balanced_thread_pool &) = delete;
 
- 	template <typename R>
- 	std::future<R> enqueue(unique_thread_pool_task<R> &&f) {
- 		auto future = f.get_future();
- 		task_queue.push(std::move(f));
+	template <typename R>
+	std::future<R> enqueue(unique_thread_pool_task<R> &&f) {
+		auto future = f.get_future();
+		task_queue.push(std::move(f));
 
 		notify_workers_on_enqueue();
 
- 		return future;
+		return future;
 	}
 
 	void load_balance() {
@@ -200,8 +200,8 @@ public:
 		}
 		else if (workers.size() > min_threads &&
 					(kernel_frac > kernel_time_thershold_for_despawn_extra_worker ||
-				  	 (req == 0 && idle_frac > idle_time_threshold_for_despawn_surplus_worker) ||
-				  	 threads_sleeping > 1)) {
+					 (req == 0 && idle_frac > idle_time_threshold_for_despawn_surplus_worker) ||
+					 threads_sleeping > 1)) {
 			despawn_worker();
 		}
 	}

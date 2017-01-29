@@ -26,7 +26,7 @@ public:
 	}
 
 	void release(T *ptr) {
-		T* null = 0;
+		T* null = nullptr;
 		for (auto &slot : pointers)
 			if (slot.compare_exchange_strong(null, ptr, std::memory_order_relaxed)) {
 				return;

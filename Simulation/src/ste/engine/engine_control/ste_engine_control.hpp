@@ -174,7 +174,7 @@ public:
 	float get_projection_aspect() const;
 
 public:
-	glm::i32vec2 get_pointer_position() {
+	glm::i32vec2 get_pointer_position() const {
 		glm::dvec2 pos;
 		glfwGetCursorPos(context->window.get(), &pos.x, &pos.y);
 		pos.y = get_window_size().y - pos.y;
@@ -184,8 +184,8 @@ public:
 		glfwSetCursorPos(context->window.get(), pos.x, get_window_size().y - pos.y);
 	}
 	void set_pointer_hidden(bool hidden) { glfwSetInputMode(context->window.get(), GLFW_CURSOR, hidden ? GLFW_CURSOR_HIDDEN : GLFW_CURSOR_NORMAL); }
-	HID::Status get_key_status(HID::keyboard::K k) { return HID::keyboard::key_status(context->window.get(), k); }
-	HID::Status get_pointer_button_status(HID::pointer::B b) { return HID::pointer::button_status(context->window.get(), b); }
+	HID::Status get_key_status(HID::keyboard::K k) const { return HID::keyboard::key_status(context->window.get(), k); }
+	HID::Status get_pointer_button_status(HID::pointer::B b) const { return HID::pointer::button_status(context->window.get(), b); }
 };
 
 }

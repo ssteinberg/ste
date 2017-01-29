@@ -56,12 +56,12 @@ bool glsl_program_object::link_from_binary(std::uint32_t format, const std::stri
 	return success;
 }
 
-std::string glsl_program_object::get_binary_represantation(std::uint32_t *format) {
+std::string glsl_program_object::get_binary_representation(std::uint32_t *format) const {
 	int bin_len = 0;
 	glGetProgramiv(get_resource_id(), GL_PROGRAM_BINARY_LENGTH, &bin_len);
 	std::string data;
 	data.resize(bin_len);
-	glGetProgramBinary(get_resource_id(), bin_len, NULL, format, &data[0]);
+	glGetProgramBinary(get_resource_id(), bin_len, nullptr, format, &data[0]);
 
 	return data;
 }

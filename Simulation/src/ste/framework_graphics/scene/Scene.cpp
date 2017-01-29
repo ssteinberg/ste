@@ -42,7 +42,10 @@ void scene::set_context_state() const {
 
 void scene::draw_object_group() const {
 	Core::GL::gl_current_context::get()->memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_COMMAND_BARRIER_BIT);
-	Core::GL::gl_current_context::get()->draw_multi_elements_indirect<object_group_draw_buffers::elements_type::T>(GL_TRIANGLES, 0, objects.get_draw_buffers().size(), 0);
+	Core::GL::gl_current_context::get()->draw_multi_elements_indirect<object_group_draw_buffers::elements_type::T>(GL_TRIANGLES, 
+																												   nullptr, 
+																												   objects.get_draw_buffers().size(), 
+																												   0);
 }
 
 void scene::dispatch() const {
