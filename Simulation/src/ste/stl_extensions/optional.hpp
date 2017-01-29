@@ -60,14 +60,14 @@ public:
 
 	template <typename S, typename = 
 		typename std::enable_if_t<std::is_pointer<T>::value && std::is_pointer<S>::value && std::is_base_of<std::remove_pointer_t<S>, std::remove_pointer_t<T>>::value>>
-	optional(optional<S> &&other) : has_val(other.has_val), val(other.has_val ? dynamic_cast<T>(other.val) : T()) {
+	optional(optional<S> &&other) noexcept : has_val(other.has_val), val(other.has_val ? dynamic_cast<T>(other.val) : T()) {
 		other.has_val = false;
 	}
 	template <typename S, typename =
 		typename std::enable_if_t<std::is_pointer<T>::value && std::is_pointer<S>::value && std::is_base_of<std::remove_pointer_t<S>, std::remove_pointer_t<T>>::value>>
 	optional(const optional<S> &other) : has_val(other.has_val), val(other.has_val ? dynamic_cast<T>(other.val) : T()) {}
 
-	optional(optional<T> &&other) : has_val(other.has_val), val(std::move(other.val)) { 
+	optional(optional<T> &&other) noexcept : has_val(other.has_val), val(std::move(other.val)) {
 		other.has_val = false;
 	}
 	optional(const optional<T> &other) : has_val(other.has_val), val(other.val) {}
@@ -78,7 +78,7 @@ public:
 
 	template <typename S, typename =
 		typename std::enable_if_t < std::is_pointer<T>::value && std::is_pointer<S>::value && std::is_base_of<std::remove_pointer_t<S>, std::remove_pointer_t<T>>::value >>
-	optional &operator=(optional<S> &&other) {
+	optional &operator=(optional<S> &&other) noexcept {
 		has_val = other.has_val;
 		val = has_val ? dynamic_cast<T>(other.val) : T();
 		other.has_val = false;
@@ -99,7 +99,7 @@ public:
 		return *this;
 	}
 
-	optional &operator=(optional<T> &&other) {
+	optional &operator=(optional<T> &&other) noexcept {
 		has_val = other.has_val;
 		val = std::move(other.val);
 		other.has_val = false;

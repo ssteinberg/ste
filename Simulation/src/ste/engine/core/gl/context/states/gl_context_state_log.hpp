@@ -97,7 +97,7 @@ public:
 	auto &get_resources() const { return resources; }
 	auto &get_resources() { return resources; }
 
-	void swap(gl_context_state_log &l) {
+	void swap(gl_context_state_log &l) noexcept {
 		std::swap(l.basic_states, basic_states);
 		std::swap(l.states, states);
 		std::swap(l.resources, resources);
@@ -112,7 +112,7 @@ public:
 
 namespace std {
 	template<>
-	void inline swap(StE::Core::GL::gl_context_state_log& lhs, StE::Core::GL::gl_context_state_log& rhs) {
+	void inline swap(StE::Core::GL::gl_context_state_log& lhs, StE::Core::GL::gl_context_state_log& rhs) noexcept {
 		lhs.swap(rhs);
 	}
 }

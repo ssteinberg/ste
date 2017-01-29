@@ -18,10 +18,10 @@ public:
 	texture_1d_array(texture_1d_array &&m) = default;
 	texture_1d_array& operator=(texture_1d_array &&m) = default;
 
-	texture_1d_array(gli::format format, const typename Base::size_type &size, int levels = 1) : texture_mipmapped(format, size, levels) {}
+	texture_1d_array(gli::format format, const Base::size_type &size, int levels = 1) : texture_mipmapped(format, size, levels) {}
 	texture_1d_array(const gli::texture1d_array &t, bool generate_mipmaps = false)
-		: texture_mipmapped(t.format(), typename Base::size_type({ t.extent().x, t.layers() }),
-							generate_mipmaps ? calculate_mipmap_max_level(typename texture_size_type<1>::type{ t.extent().x }) + 1 : t.levels(),
+		: texture_mipmapped(t.format(), Base::size_type({ t.extent().x, t.layers() }),
+							generate_mipmaps ? calculate_mipmap_max_level(texture_size_type<1>::type{ t.extent().x }) + 1 : t.levels(),
 							t.swizzles()) {
 		upload(t, generate_mipmaps);
 	}

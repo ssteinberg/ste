@@ -60,11 +60,11 @@ struct sampler_descriptor {
 	texture_compare_func compare_func;
 	float anisotropy{ 1.f };
 
-	GLenum min_mipmapping_filter() {
+	GLenum min_mipmapping_filter() const {
 		if (mipmap_filter == texture_filtering::None) return static_cast<GLenum>(min_filter);
 		if (mipmap_filter == texture_filtering::Nearest && min_filter == texture_filtering::Nearest)	return GL_NEAREST_MIPMAP_NEAREST;
-		if (mipmap_filter == texture_filtering::Linear && min_filter == texture_filtering::Nearest)	return GL_NEAREST_MIPMAP_LINEAR;
-		if (mipmap_filter == texture_filtering::Nearest && min_filter == texture_filtering::Linear)	return GL_LINEAR_MIPMAP_NEAREST;
+		if (mipmap_filter == texture_filtering::Linear && min_filter == texture_filtering::Nearest)		return GL_NEAREST_MIPMAP_LINEAR;
+		if (mipmap_filter == texture_filtering::Nearest && min_filter == texture_filtering::Linear)		return GL_LINEAR_MIPMAP_NEAREST;
 		return GL_LINEAR_MIPMAP_LINEAR;
 	}
 

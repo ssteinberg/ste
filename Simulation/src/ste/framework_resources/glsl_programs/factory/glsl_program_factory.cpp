@@ -302,7 +302,7 @@ StE::task_future<std::unique_ptr<glsl_program_object>> glsl_program_factory::loa
 			if (opt && opt->get_time_point() > modification_time)
 				data.bin = opt.get();
 		}
-		catch (const std::exception &ex) {
+		catch (const std::exception &) {
 			data.bin = program_binary();
 		}
 
@@ -327,7 +327,7 @@ StE::task_future<std::unique_ptr<glsl_program_object>> glsl_program_factory::loa
 
 		ste_log() << "Successfully linked GLSL program \"" << Text::Attributes::i(prog_name) << "\" from source." << std::endl;
 
-		data.bin.blob = program->get_binary_represantation(&data.bin.format);
+		data.bin.blob = program->get_binary_representation(&data.bin.format);
 		data.bin.set_time_point(std::chrono::system_clock::now());
 
 		context.cache().insert(data.cache_key, std::move(data.bin));

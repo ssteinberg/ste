@@ -110,7 +110,7 @@ public:
 	}
 
 	const auto &get_buffer() const { return buffer; }
-	const auto size() const { return len; }
+	auto size() const { return len; }
 };
 
 }

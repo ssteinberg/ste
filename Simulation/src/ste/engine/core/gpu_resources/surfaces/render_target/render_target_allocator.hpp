@@ -25,7 +25,7 @@ public:
 		}
 	}
 
-	void allocate_storage(generic_resource::type id, int samples, const gli::gl::format &format, const glm::ivec2 &size, std::size_t bytes) {
+	void allocate_storage(generic_resource::type id, int samples, const gli::gl::format &format, const glm::ivec2 &size, std::size_t bytes) override {
 		glNamedRenderbufferStorageMultisample(id, samples, format.Internal, size.x, size.y);
 	}
 };

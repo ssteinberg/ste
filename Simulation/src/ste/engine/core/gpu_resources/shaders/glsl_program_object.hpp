@@ -95,7 +95,7 @@ public:
 	bool is_linked() const { return linked; }
 
 	bool link_from_binary(generic_resource::type format, const std::string &data);
-	std::string get_binary_represantation(generic_resource::type *format);
+	std::string get_binary_representation(generic_resource::type *format) const;
 
 	std::string generate_name() const;
 

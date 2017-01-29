@@ -15,8 +15,8 @@ public:
 	gpu_sync() : sync(nullptr) {}
 	~gpu_sync() { destroy(); }
 
-	gpu_sync(gpu_sync &&bl) : sync(bl.sync) { bl.sync = nullptr; }
-	gpu_sync &operator=(gpu_sync &&bl) {
+	gpu_sync(gpu_sync &&bl) noexcept : sync(bl.sync) { bl.sync = nullptr; }
+	gpu_sync &operator=(gpu_sync &&bl) noexcept {
 		destroy();
 		sync = bl.sync;
 		bl.sync = nullptr;

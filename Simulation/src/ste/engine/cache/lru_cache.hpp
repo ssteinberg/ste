@@ -153,7 +153,7 @@ public:
 		total_size.fetch_add(item_size, std::memory_order_relaxed);
 		item_accessed(std::move(val_guard));
 
-		ops++;
+		++ops;
 	}
 
 	/**

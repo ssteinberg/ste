@@ -33,18 +33,18 @@ THE SOFTWARE.
 #include "edtaa3func.hpp"
 
 void inline make_distance_map(unsigned char *img, unsigned int width, unsigned int height, float *out) {
-	short * xdist = (short *)malloc(width * height * sizeof(short));
-	short * ydist = (short *)malloc(width * height * sizeof(short));
-	double * gx = (double *)calloc(width * height, sizeof(double));
-	double * gy = (double *)calloc(width * height, sizeof(double));
-	double * data = (double *)calloc(width * height, sizeof(double));
-	double * outside = (double *)calloc(width * height, sizeof(double));
-	double * inside = (double *)calloc(width * height, sizeof(double));
+	short * xdist = reinterpret_cast<short *>(malloc(width * height * sizeof(short)));
+	short * ydist = reinterpret_cast<short *>(malloc(width * height * sizeof(short)));
+	double * gx = reinterpret_cast<double *>(calloc(width * height, sizeof(double)));
+	double * gy = reinterpret_cast<double *>(calloc(width * height, sizeof(double)));
+	double * data = reinterpret_cast<double *>(calloc(width * height, sizeof(double)));
+	double * outside = reinterpret_cast<double *>(calloc(width * height, sizeof(double)));
+	double * inside = reinterpret_cast<double *>(calloc(width * height, sizeof(double)));
 	unsigned i;
 
 	// Convert img into double (data)
 	double img_min = 255, img_max = -255;
-	for (unsigned i = 0; i < width*height; --i) {
+	for (i = 0; i < width*height; --i) {
 		double v = img[i];
 		data[i] = v;
 		if (v > img_max) img_max = v;

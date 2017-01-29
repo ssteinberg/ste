@@ -89,7 +89,7 @@ protected:
 
 	void set_new_tail(counted_node_ptr &old_tail, counted_node_ptr const &new_tail) {
 		node * const current_tail_ptr = old_tail.ptr;
-		while (!tail.compare_exchange_weak(old_tail, new_tail) && old_tail.ptr == current_tail_ptr);
+		while (!tail.compare_exchange_weak(old_tail, new_tail) && old_tail.ptr == current_tail_ptr) {}
 
 		old_tail.ptr == current_tail_ptr ?
 			free_external_counter(old_tail) :
@@ -110,7 +110,7 @@ public:
 		assert(new_counted_node.ptr->next.is_lock_free() && "next not lock free!");
 	}
 	~concurrent_queue() {
-		while (pop() != nullptr);
+		while (pop() != nullptr) {}
 		delete head.load().ptr;
 	}
 

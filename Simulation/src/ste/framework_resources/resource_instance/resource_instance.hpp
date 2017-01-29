@@ -24,6 +24,8 @@ private:
 	static thread_local std::stack<const resource_instance_base*> resources_being_ctored_stack;
 
 protected:
+	virtual ~resource_instance_base() noexcept {}
+
 	resource_instance_base() {
 		if (!resources_being_ctored_stack.empty()) {
 			auto parent = resources_being_ctored_stack.top();
@@ -32,7 +34,7 @@ protected:
 		resources_being_ctored_stack.push(this);
 	}
 
-	void pop_ctor_stack() { resources_being_ctored_stack.pop(); }
+	static void pop_ctor_stack() { resources_being_ctored_stack.pop(); }
 
 	virtual void add_child_resource(const resource_instance_base *child) const = 0;
 

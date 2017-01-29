@@ -88,7 +88,7 @@ private:
 	using Base = texture_sparse_mipmapped<core_resource_type::Texture2D>;
 
 public:
-	texture_sparse_2d(gli::format format, const typename Base::size_type &size, int levels, const typename Base::size_type &tile_size, int virtual_page_idx) : Base(format, size, levels, tile_size, virtual_page_idx) {}
+	texture_sparse_2d(gli::format format, const Base::size_type &size, int levels, const Base::size_type &tile_size, int virtual_page_idx) : Base(format, size, levels, tile_size, virtual_page_idx) {}
 
 	texture_sparse_2d(texture_sparse_2d &&m) = default;
 	texture_sparse_2d& operator=(texture_sparse_2d &&m) = default;
@@ -109,7 +109,7 @@ private:
 	using Base = texture_sparse_mipmapped<core_resource_type::Texture3D>;
 
 public:
-	texture_sparse_3d(gli::format format, const typename Base::size_type &size, int levels, const typename Base::size_type &tile_size, int virtual_page_idx) : Base(format, size, levels, tile_size, virtual_page_idx) {}
+	texture_sparse_3d(gli::format format, const Base::size_type &size, int levels, const Base::size_type &tile_size, int virtual_page_idx) : Base(format, size, levels, tile_size, virtual_page_idx) {}
 
 	texture_sparse_3d(texture_sparse_3d &&m) = default;
 	texture_sparse_3d& operator=(texture_sparse_3d &&m) = default;
@@ -130,7 +130,7 @@ private:
 	using Base = texture_sparse_mipmapped<core_resource_type::Texture2DArray>;
 
 public:
-	texture_sparse_2d_array(gli::format format, const typename Base::size_type &size, int levels, const typename Base::size_type &tile_size, int virtual_page_idx) : Base(format, size, levels, tile_size, virtual_page_idx) {}
+	texture_sparse_2d_array(gli::format format, const Base::size_type &size, int levels, const Base::size_type &tile_size, int virtual_page_idx) : Base(format, size, levels, tile_size, virtual_page_idx) {}
 
 	texture_sparse_2d_array(texture_sparse_2d_array &&m) = default;
 	texture_sparse_2d_array& operator=(texture_sparse_2d_array &&m) = default;

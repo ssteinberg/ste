@@ -32,7 +32,7 @@ private:
 	mutable storage_type *storage_ptr{ nullptr };
 
 public:
-	virtual ~observable_resource() {
+	virtual ~observable_resource() noexcept {
 		dealloc();
 	}
 	virtual const resource_descriptor_type &get_descriptor() const = 0;

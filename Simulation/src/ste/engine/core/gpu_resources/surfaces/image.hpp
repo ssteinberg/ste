@@ -41,7 +41,7 @@ public:
 		GL::gl_current_context::get()->bind_image_texture(unit, id, level, layered, layer, static_cast<GLenum>(access), GL::gl_utils::translate_format(format, swizzle).Internal);
 	}
 	static void unbind(const image_layout_binding &unit, int level, bool layered, int layer, image_access_mode access, gli::format format) {
-		GL::gl_current_context::get()->bind_image_texture(unit, 0, 0, 0, 0, 0, 0);
+		GL::gl_current_context::get()->bind_image_texture(unit, 0, 0, false, 0, 0, 0);
 	}
 };
 

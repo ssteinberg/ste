@@ -243,9 +243,9 @@ protected:
 	}
 
 	void bind_draw() const { GL::gl_current_context::get()->bind_framebuffer(GL_DRAW_FRAMEBUFFER, Base::get_resource_id()); }
-	void unbind_draw() const { GL::gl_current_context::get()->bind_framebuffer(GL_DRAW_FRAMEBUFFER, 0); }
+	static void unbind_draw() { GL::gl_current_context::get()->bind_framebuffer(GL_DRAW_FRAMEBUFFER, 0); }
 	void bind_read() const { GL::gl_current_context::get()->bind_framebuffer(GL_READ_FRAMEBUFFER, Base::get_resource_id()); }
-	void unbind_read() const { GL::gl_current_context::get()->bind_framebuffer(GL_READ_FRAMEBUFFER, 0); }
+	static void unbind_read() { GL::gl_current_context::get()->bind_framebuffer(GL_READ_FRAMEBUFFER, 0); }
 
 public:
 	virtual ~framebuffer_object_common() noexcept {}

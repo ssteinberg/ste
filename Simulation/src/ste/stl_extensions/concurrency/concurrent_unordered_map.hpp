@@ -71,9 +71,11 @@ private:
 			std::fill(std::begin(buckets), std::end(buckets), nullptr);
 		}
 		~concurrent_map_virtual_bucket() {
-			auto ptr = next.load();
-			if (ptr)
-				delete ptr;
+			{
+				auto ptr = next.load();
+				if (ptr)
+					delete ptr;
+			}
 			for (auto &b : buckets) {
 				auto ptr = b.load();
 				if (ptr) delete ptr;
@@ -102,7 +104,7 @@ private:
 
 	struct buckets_ptr {
 		unsigned size;
-		hash_table_type buckets{ 0 };
+		hash_table_type buckets{ nullptr };
 		shared_double_reference_guard<resize_data_struct<buckets_ptr>, false> resize_ptr;
 
 		static hash_table_type alloc(unsigned size) {
@@ -201,8 +203,8 @@ private:
 		}
 
 		hash_type mask = resize_guard->size - 1;
-		hash_type i = hash & mask;
-		auto &virtual_bucket = resize_guard->buckets[i];
+		hash_type j = hash & mask;
+		auto &virtual_bucket = resize_guard->buckets[j];
 		!delete_item ?
 			insert_update_into_virtual_bucket(virtual_bucket, hash, key, .0f, true, 1, std::forward<Ts>(val_args)...) :
 			remove_from_virtual_bucket(virtual_bucket, hash, key);
