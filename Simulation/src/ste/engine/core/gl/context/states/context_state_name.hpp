@@ -75,14 +75,14 @@ namespace std {
 
 template <> struct hash<StE::Core::GL::BasicStateName> {
 	size_t inline operator()(const StE::Core::GL::BasicStateName &x) const {
-		using T = typename std::underlying_type<typename std::decay<decltype(x)>::type>::type;
+		using T = std::underlying_type<std::decay<decltype(x)>::type>::type;
 		return std::hash<T>()(static_cast<T>(x));
 	}
 };
 
 template <> struct hash<StE::Core::GL::StateName> {
 	size_t inline operator()(const StE::Core::GL::StateName &x) const {
-		using T = typename std::underlying_type<typename std::decay<decltype(x)>::type>::type;
+		using T = std::underlying_type<std::decay<decltype(x)>::type>::type;
 		return std::hash<T>()(static_cast<T>(x));
 	}
 };

@@ -42,7 +42,6 @@ public:
 		else {
 			ste_log_error() << "Can't write surface file: " << path.string() << std::endl;
 			throw surface_unsupported_format_error();
-			return;
 		}
 
 		write_png(path, reinterpret_cast<const char*>(surface.data()), components, surface.extent().x, surface.extent().y);

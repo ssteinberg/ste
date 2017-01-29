@@ -18,7 +18,7 @@ public:
 	texture_3d(texture_3d &&m) = default;
 	texture_3d& operator=(texture_3d &&m) = default;
 
-	texture_3d(gli::format format, const typename Base::size_type &size, int levels = 1) : texture_mipmapped(format, size, levels) {}
+	texture_3d(gli::format format, const Base::size_type &size, int levels = 1) : texture_mipmapped(format, size, levels) {}
 	texture_3d(const gli::texture3d &t, bool generate_mipmaps = false)
 			: texture_mipmapped(t.format(),
 								t.extent(),

@@ -20,7 +20,7 @@ public:
 	texture_cube_map(texture_cube_map &&m) = default;
 	texture_cube_map& operator=(texture_cube_map &&m) = default;
 
-	texture_cube_map(gli::format format, const typename Base::size_type &size, int levels = 1) : texture_mipmapped(format, size, levels) {}
+	texture_cube_map(gli::format format, const Base::size_type &size, int levels = 1) : texture_mipmapped(format, size, levels) {}
 	texture_cube_map(const gli::texture_cube &t, bool generate_mipmaps = false) :
 						texture_mipmapped(t.format(),
 										  t.extent(),

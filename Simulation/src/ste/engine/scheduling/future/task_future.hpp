@@ -205,7 +205,7 @@ private:
 	template <bool b = is_shared>
 	task_future_impl(const typename task_future_impl<R, true>::future_type &f,
 					 task_scheduler *sched,
-					 typename std::enable_if_t<b>* = nullptr) : sched(sched), future(f) {}
+					 std::enable_if_t<b>* = nullptr) : sched(sched), future(f) {}
 
 	template <bool b>
 	task_future_impl(write_lock_type &&wl,
