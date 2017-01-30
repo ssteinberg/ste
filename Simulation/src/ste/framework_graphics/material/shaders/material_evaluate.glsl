@@ -14,6 +14,7 @@
 
 #include "light_transport.glsl"
 
+#include "deferred_shading_common.glsl"
 #include "common.glsl"
 
 vec3 material_evaluate_layer_radiance(material_layer_unpacked_descriptor descriptor,
@@ -73,38 +74,29 @@ float material_attenuation_through_layer(float transmittance,
  *	Evaluate radiance of material at fragment
  *
  *	@param layer		Material layer
- *	@param position		Eye space position
- *	@param n			Normal
- *	@param t			Tangent
- *	@param b			Bitangent
- *	@param v			Outbound vector (facing away from fragment to camera)
- *	@param l			Incident vector (facing away from fragment to light)
+ *	@param frag			Fragment shading parameters
+ *	@param light		Light shading parameters
  *	@param object_thickness	Object thickness at shaded fragment
- *	@param light_irradiance	Light irradiance arriving at sahded point
- *	@param ld			Light descriptor
+ *	@param material_microfacet_luts	Microfacet GGX fitting LUTs
  *	@param shadow_maps	Shadow maps
- *	@param light		Light index
  *	@param occlusion	Light occlusion
- *	@param frag_coords	Screen space coordinates
  *	@param external_medium_ior	Index-of-refraction of source medium
  */
 vec3 material_evaluate_radiance(material_layer_descriptor layer,
-								vec3 position,
-								vec3 n,
-								vec3 t,
-								vec3 b,
-								vec3 v,
-								vec3 l,
+								fragment_shading_parameters frag,
+								light_shading_parameters light,
 								float object_thickness,
-								vec3 light_irradiance,
-								light_descriptor ld,
-								sampler2D microfacet_refraction_fit_lut, 
-								sampler2DArray microfacet_transmission_fit_lut, 
-								samplerCubeArray shadow_maps, uint light,
+								deferred_material_microfacet_luts material_microfacet_luts, 
+								deferred_shading_shadow_maps shadow_maps,
 								float occlusion,
-								ivec2 frag_coords,
 								float external_medium_ior = 1.0002772f) {
 	vec3 rgb = vec3(0);
+
+	vec3 n = frag.n;
+	vec3 t = frag.t;
+	vec3 b = frag.b;
+	vec3 position = frag.p;
+	ivec2 frag_coords = frag.coords;
 	
 	material_layer_unpacked_descriptor descriptor = material_layer_unpack(layer);
 	
@@ -115,6 +107,8 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 	if (occlusion <= .0f && !has_subsurface_scattering)
 		return vec3(.0f);
 		
+	vec3 l = light.l;
+	vec3 v = normalize(-position);
 	float top_medium_ior = external_medium_ior;
 
 	// Attenuation at current layer
@@ -140,21 +134,21 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 		float F0 = fresnel_F0(refractive_ratio);
 
 		// Evaluate refracted vectors
-		vec3 refracted_v = -ggx_refract(microfacet_refraction_fit_lut,
+		vec3 refracted_v = -ggx_refract(material_microfacet_luts.microfacet_refraction_fit_lut,
 										v, n,
 										roughness,
 										refractive_ratio);
-		vec3 refracted_l = -ggx_refract(microfacet_refraction_fit_lut,
+		vec3 refracted_l = -ggx_refract(material_microfacet_luts.microfacet_refraction_fit_lut,
 										l, n,
 										roughness,
 										refractive_ratio);
 
 		// Evaluate total inner (downwards into material) and outer (upwards towards eye) transmission
-		float inner_transmission_ratio = ggx_transmission_ratio_v4(microfacet_transmission_fit_lut, 
+		float inner_transmission_ratio = ggx_transmission_ratio_v4(material_microfacet_luts.microfacet_transmission_fit_lut, 
 																   v, n, 
 																   roughness, 
 																   refractive_ratio);
-		float outer_transmission_ratio = ggx_transmission_ratio_v4(microfacet_transmission_fit_lut, 
+		float outer_transmission_ratio = ggx_transmission_ratio_v4(material_microfacet_luts.microfacet_transmission_fit_lut, 
 																   /*refracted_l*/l, n, 
 																   roughness, 
 																   1.f / refractive_ratio);
@@ -187,7 +181,7 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 															  v, l, h,
 															  cos_critical, 
 															  refractive_ratio,
-															  light_irradiance,
+															  light.lux,
 															  albedo,
 															  scattering,
 															  D, Gmask, Gshadow, F);
@@ -233,8 +227,8 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 													   position,
 													   n,
 							 						   object_thickness,
-													   ld,
-													   shadow_maps, light,
+													   light.ld,
+													   shadow_maps.shadow_maps, light.ll_id,
 													   -v,
 													   frag_coords);
 	}

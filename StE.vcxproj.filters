@@ -1179,5 +1179,6 @@
     <None Include="Simulation\src\ste\framework_graphics\atmospherics\buffer\shaders\atmospherics_descriptor.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\deferred_gbuffer\downsample_depth\shaders\gbuffer_downsample_depth.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\scene\shaders\shadow_drawid_to_lightid_ttl.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\shaders\deferred_shading_common.glsl" />
   </ItemGroup>
 </Project>

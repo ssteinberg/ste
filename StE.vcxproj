@@ -784,6 +784,7 @@
     <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\shaders\hdr_compute_minmax.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\shaders\hdr_create_histogram.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\shaders\hdr_tonemap_coc.frag" />
+    <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\shaders\deferred_shading_common.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\shaders\girenderer_transform_buffer.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\scene\geometry_cull\shaders\scene_geo_cull.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\scene\perpopulate_depth\shaders\scene_prepopulate_depth.frag" />
