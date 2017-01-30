@@ -74,18 +74,27 @@ void main() {
 
 	g_buffer_element g_frag = gbuffer_load(coord);
 
+	deferred_shading_shadow_maps shadow_maps_struct;
+	shadow_maps_struct.shadow_depth_maps = shadow_depth_maps;
+	shadow_maps_struct.shadow_maps = shadow_maps;
+	shadow_maps_struct.directional_shadow_depth_maps = directional_shadow_depth_maps;
+	shadow_maps_struct.directional_shadow_maps = directional_shadow_maps;
+
+	deferred_material_microfacet_luts material_microfacet_luts;
+	material_microfacet_luts.microfacet_refraction_fit_lut = microfacet_refraction_fit_lut;
+	material_microfacet_luts.microfacet_transmission_fit_lut = microfacet_transmission_fit_lut;
+
+	deferred_atmospherics_luts atmospherics_luts;
+	atmospherics_luts.atmospheric_optical_length_lut = atmospheric_optical_length_lut;
+	atmospherics_luts.atmospheric_scattering_lut = atmospheric_scattering_lut;
+	atmospherics_luts.atmospheric_mie0_scattering_lut = atmospheric_mie0_scattering_lut;
+	atmospherics_luts.atmospheric_ambient_lut = atmospheric_ambient_lut;
+
 	vec3 shaded_fragment = deferred_shade_fragment(g_frag, coord,
-												   shadow_depth_maps, 
-												   shadow_maps, 
-												   directional_shadow_depth_maps,
-												   directional_shadow_maps,
+												   shadow_maps_struct,
 												   scattering_volume, 
-												   microfacet_refraction_fit_lut,
-												   microfacet_transmission_fit_lut,
-												   atmospheric_optical_length_lut,
-												   atmospheric_scattering_lut,
-												   atmospheric_mie0_scattering_lut,
-												   atmospheric_ambient_lut,
+												   material_microfacet_luts,
+												   atmospherics_luts,
 												   back_face_depth, 
 												   front_face_depth);
 
