@@ -199,15 +199,20 @@ vec3 deferred_shade_fragment(g_buffer_element frag, ivec2 coord,
 			// Light id is used for shadow map access
 			uint light_id = uint(lll_parse_ll_idx(lll_p));
 			
-			// Atmospheric extinction
-			vec3 atat;
-			// Compute light incident ray and range
-			float l_dist;
-			vec3 l = light_incidant_ray(ld, position);
+			// Compute light properties
+			vec3 atat;										// Atmospheric extinction
+			vec3 light_irradiance;							// Light irradiance, unshadowed, unoccluded, unshaded.
+			float l_dist;									// Light distance
+			vec3 l = light_incidant_ray(ld, position);		// Light incident ray
 			if (ld.type == LightTypeDirectional) {
 				atat = extinct_ray(eye_position(), w_pos, -ld.position,
 								   atmospheric_optical_length_lut);
 				l_dist = abs(ld.directional_distance);
+
+				//! Atmospheric ambient light (TODO: Ambient occlusion)
+				light_irradiance = irradiance(ld, l_dist);
+				light_irradiance += atmospheric_ambient(w_pos, dot(n, -ld.transformed_position), ld.position,
+												  atmospheric_ambient_lut);
 			}
 			else {
 				atat = extinct(ld.position, w_pos, eye_position(),
@@ -220,6 +225,8 @@ vec3 deferred_shade_fragment(g_buffer_element frag, ivec2 coord,
 
 				l_dist = sqrt(dist2);
 				l /= l_dist;
+
+				light_irradiance = irradiance(ld, l_dist);
 			}
 
 			// Shadow query
@@ -237,9 +244,6 @@ vec3 deferred_shade_fragment(g_buffer_element frag, ivec2 coord,
 													 coord);
 
 			if (ld.type == LightTypeDirectional) {
-				//return atmospheric_ambient(w_pos, dot(n, -ld.transformed_position), ld.position,
-				//						   atmospheric_ambient_lut).rgb;
-
 				//!? TODO: Remove!
 				// Inject some ambient, still without global illumination...
 				rgb += ld.diffuse * ld.luminance * 1e-11 * (1-shdw);
@@ -255,11 +259,11 @@ vec3 deferred_shade_fragment(g_buffer_element frag, ivec2 coord,
 																			n, t, b,
 																			v, l,
 																			thickness,
+																			light_irradiance,
 																			ld,
 																			microfacet_refraction_fit_lut,
 																			microfacet_transmission_fit_lut,
 																			shadow_maps, light_id,
-																			l_dist,
 																			occlusion,
 																			coord);
 		}

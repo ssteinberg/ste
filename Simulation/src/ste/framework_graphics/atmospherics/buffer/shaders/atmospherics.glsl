@@ -357,12 +357,12 @@ vec3 atmospheric_scatter(vec3 P, vec3 L, vec3 V,
 }
 
 /*
-*	Calculates the multiple-scattered ambient irradiance reaching a point.
+*	Approximates the multiple-scattered ambient irradiance reaching a point.
 *	Uses a precomputed LUT for calculation.
 *
 *	@param P		Observer world position
+*	@param NdotL	Cosine of surface normal and light direction
 *	@param L		Light direction
-*	@param V		Viewing direction
 */
 vec3 atmospheric_ambient(vec3 P, float NdotL, vec3 L, 
 						 sampler3D atmospheric_ambient_lut) {
@@ -377,6 +377,8 @@ vec3 atmospheric_ambient(vec3 P, float NdotL, vec3 L,
 	// Compute height in atmosphere, view-zenith angle and sun-zenith angle.
 	float h = Ylen - r;
 	float cos_delta = dot(U, -L);
+
+	NdotL = max(.0f, NdotL);
 	
 	// And convert those into LUT lookup indices
 	float x = _atmospheric_height_to_lut_idx(h, atmospherics_descriptor_data.Hr_max);
