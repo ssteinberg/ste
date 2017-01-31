@@ -36,9 +36,11 @@ float shadow_calculate_penumbra(float d_blocker, float radius, float dist_receiv
  *	Calculate the screen-space anisotropic penumbra and based on that returns the number of clusters to sample
  */
 float shadow_clusters_to_sample(float penumbra, vec3 position, vec3 normal) {
-	// Project penumbra to NDC
-	vec2 ansi = vec2(1) - abs(normal.xy);
-	vec2 ansi_penumbra = ansi * penumbra;
+	// Anisotropically project penumbra to NDC, resulting in a screen-space ellipsis
+	float ansi = abs(normal.z);
+	float long_radius = penumbra;
+	float short_radius = ansi * penumbra;
+	vec2 ansi_penumbra = vec2(long_radius, short_radius);
 	vec4 penumbra_ndc = project(vec3(ansi_penumbra, position.z));
 
 	// Convert penumbra xy from NDC size to screen pixels
