@@ -1,5 +1,8 @@
-// fitLTC.cpp : Defines the entry point for the console application.
-//
+/*
+ *
+ *	Taken from Eric Heitz's supplmental material for paper "Real-Time Polygonal-Light Shading with Linearly Transformed Cosine".
+ *
+ */
 
 #include "stdafx.h"
 
