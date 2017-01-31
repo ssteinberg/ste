@@ -74,7 +74,7 @@ struct LTC {
 		float l = length(L_);
 		float Jacobian = detM / (l*l*l);
 
-		float D = 1.0f / 3.14159f * glm::max<float>(0.0f, Loriginal.z); 
+		float D = 1.0f / pi<float>() * glm::max<float>(0.0f, Loriginal.z);
 		
 		float res = amplitude * D / Jacobian;
 		return res;
@@ -83,7 +83,7 @@ struct LTC {
 	vec3 sample(const float U1, const float U2) const
 	{
 		const float theta = acosf(sqrtf(U1));
-		const float phi = 2.0f*3.14159f * U2;
+		const float phi = 2.0f*pi<float>() * U2;
 		const vec3 L = normalize(M * vec3(sinf(theta)*cosf(phi), sinf(theta)*sinf(phi), cosf(theta)));
 		return L;
 	}
@@ -93,8 +93,8 @@ struct LTC {
 		double sum = 0;
 		float dtheta = 0.005f;
 		float dphi = 0.005f;
-		for(float theta = 0.0f ; theta <= 3.14159f ; theta+=dtheta)
-		for(float phi = 0.0f ; phi <= 2.0f * 3.14159f ; phi+=dphi)
+		for(float theta = 0.0f ; theta <= pi<float>(); theta+=dtheta)
+		for(float phi = 0.0f ; phi <= 2.0f * pi<float>(); phi+=dphi)
 		{
 			vec3 L(cosf(phi)*sinf(theta), sinf(phi)*sinf(theta), cosf(theta));
 

@@ -37,7 +37,7 @@ public:
 		const float slopey = H.y/H.z;
 		float D = 1.0f / (1.0f + (slopex*slopex+slopey*slopey)/alpha/alpha);
 		D = D*D;
-		D = D / (3.14159f * alpha * alpha * H.z*H.z*H.z*H.z);
+		D = D / (pi<float>() * alpha * alpha * H.z*H.z*H.z*H.z);
 
 		pdf = fabsf(D * H.z / 4.0f / dot(V,H));
 		float res = D * G2 / 4.0f / V.z;
@@ -47,7 +47,7 @@ public:
 
 	virtual vec3 sample(const vec3& V, const float alpha, const float U1, const float U2) const
 	{
-		const float phi = 2.0f*3.14159f * U1;
+		const float phi = 2.0f*pi<float>() * U1;
 		const float r = alpha*sqrtf(U2/(1.0f-U2));
 		const vec3 N = normalize(vec3(r*cosf(phi), r*sinf(phi), 1.0f));
 		const vec3 L = -V + 2.0f * N * dot(N, V);

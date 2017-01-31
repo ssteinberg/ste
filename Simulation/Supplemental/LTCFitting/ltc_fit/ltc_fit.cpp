@@ -7,6 +7,7 @@
 #include "stdafx.h"
 
 #include <glm/glm.hpp>
+#include <glm/gtc/constants.inl>
 using namespace glm;
 
 #include <algorithm>
@@ -29,7 +30,7 @@ using namespace glm;
 // size of precomputed table (theta, alpha)
 const int N = 256;
 // number of samples used to compute the error during fitting
-const int Nsample = 75;
+const int Nsample = 100;
 // minimal roughness (avoid singularities)
 const float MIN_ALPHA = 0.0001f;
 
@@ -203,7 +204,7 @@ void fitTab(mat3 * tab, vec2 * tabAmplitude, const int N, const Brdf& brdf)
 	for (int a = N - 1; a >= 0; --a)
 		for (int t = 0; t <= N - 1; ++t)
 		{
-			float theta = std::min<float>(1.57f, t / float(N - 1) * 1.57079f);
+			float theta = std::min<float>(1.57f, t / float(N - 1) * half_pi<float>());
 			const vec3 V = vec3(sinf(theta), 0, cosf(theta));
 
 			// alpha = roughness^2
