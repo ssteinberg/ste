@@ -108,7 +108,7 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 		return vec3(.0f);
 		
 	vec3 l = light.l;
-	vec3 v = normalize(-position);
+	vec3 v = frag.o;
 	float top_medium_ior = external_medium_ior;
 
 	// Attenuation at current layer

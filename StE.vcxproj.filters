@@ -1180,5 +1180,6 @@
     <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\deferred_gbuffer\downsample_depth\shaders\gbuffer_downsample_depth.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\scene\shaders\shadow_drawid_to_lightid_ttl.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\shaders\deferred_shading_common.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\light\polygonal_lights\shaders\linearly_transformed_cosines.glsl" />
   </ItemGroup>
 </Project>

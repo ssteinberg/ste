@@ -754,6 +754,7 @@
     <None Include="Simulation\src\ste\framework_graphics\light\linked_light_lists\shaders\linked_light_lists_gen.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\light\linked_light_lists\shaders\linked_light_lists_load.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\light\linked_light_lists\shaders\linked_light_lists_store.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\light\polygonal_lights\shaders\linearly_transformed_cosines.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\light\preprocessor\shaders\light_preprocess_cull_lights.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\light\preprocessor\shaders\light_preprocess_cull_shadows.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\light\shaders\light.glsl" />

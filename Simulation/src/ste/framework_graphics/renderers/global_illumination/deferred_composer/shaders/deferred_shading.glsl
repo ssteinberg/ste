@@ -20,6 +20,8 @@
 #include "project.glsl"
 #include "girenderer_transform_buffer.glsl"
 
+#include "linearly_transformed_cosines.glsl"
+
 float get_thickness(ivec2 coord,
 					sampler2D back_face_depth, 
 					sampler2D front_face_depth,
@@ -124,10 +126,11 @@ vec3 deferred_compute_attenuation_from_fragment_to_eye(fragment_shading_paramete
 }
 
 bool deferred_generate_light_shading_parameters(fragment_shading_parameters frag,
-																	light_descriptor ld,
-																	uint light_id, uint ll_id,
-																	deferred_atmospherics_luts atmospherics_luts,
-																	out light_shading_parameters light) {
+												light_descriptor ld,
+												uint light_id, uint ll_id,
+												deferred_atmospherics_luts atmospherics_luts,
+												deferred_material_ltc_luts ltc_luts,
+												out light_shading_parameters light) {
 	light.ld = ld;
 	light.light_id = light_id;
 	light.ll_id = ll_id;
@@ -162,7 +165,23 @@ bool deferred_generate_light_shading_parameters(fragment_shading_parameters frag
 		light.l_dist = sqrt(dist2);
 		l /= light.l_dist;
 
-		lux = irradiance(ld, light.l_dist) * atat;
+		if (light_id == 0) {
+			vec3 u_quadPoints[4] = {
+				transform_view(vec3(-700.6, 138, 100)),
+				transform_view(vec3(-600.6, 138, -120)),
+				transform_view(vec3(-600.6, 438, -120)),
+				transform_view(vec3(-700.6, 438, 100)),
+			};
+
+			vec2 coords = LTC_Coords(dot(frag.n, frag.o), .25f);
+			mat3 Minv   = LTC_Matrix(ltc_luts.ltc_ggx_fit, coords);
+			vec3 Lo_i   = LTC_Evaluate(frag.n, frag.o, frag.p, Minv, u_quadPoints, true);
+
+			lux = irradiance(ld, light.l_dist) * atat * Lo_i;
+		}else
+		lux = vec3(0);
+
+		//lux = irradiance(ld, light.l_dist) * atat;
 	}
 
 	light.l = l;
@@ -173,8 +192,9 @@ bool deferred_generate_light_shading_parameters(fragment_shading_parameters frag
 
 vec3 deferred_shade_fragment(g_buffer_element gbuffer_frag, ivec2 coord,
 							 deferred_shading_shadow_maps shadow_maps,
-							 sampler3D scattering_volume, 
 							 deferred_material_microfacet_luts material_microfacet_luts, 
+							 deferred_material_ltc_luts ltc_luts,
+							 sampler3D scattering_volume, 
 							 deferred_atmospherics_luts atmospherics_luts,
 							 sampler2D back_face_depth, 
 							 sampler2D front_face_depth) {
@@ -194,7 +214,6 @@ vec3 deferred_shade_fragment(g_buffer_element gbuffer_frag, ivec2 coord,
 	float depth = gbuffer_parse_depth(gbuffer_frag);
 	frag.p = unproject_screen_position(depth, vec2(coord) / vec2(backbuffer_size()));
 	frag.world_position = transform_view_to_world_space(frag.p);
-	frag.coords = coord;
 
 	// Read G-buffer data from fragment 
 	int draw_idx = gbuffer_parse_material(gbuffer_frag);
@@ -209,6 +228,10 @@ vec3 deferred_shade_fragment(g_buffer_element gbuffer_frag, ivec2 coord,
 	frag.t = gbuffer_parse_tangent(gbuffer_frag);
 	frag.b = cross(frag.t, frag.n);
 	normal_map(md, uv, duvdx, duvdy, frag.n, frag.t, frag.b);
+
+	// Fill in the rest of shaded fragment properties
+	frag.coords = coord;
+	frag.o = normalize(-frag.p);
 
 	// Read material data
 	material_layer_descriptor head_layer = mat_layer_descriptor[md.head_layer];
@@ -243,6 +266,7 @@ vec3 deferred_shade_fragment(g_buffer_element gbuffer_frag, ivec2 coord,
 		if (!deferred_generate_light_shading_parameters(frag,
 														ld, light_idx, ll_idx,
 														atmospherics_luts,
+														ltc_luts,
 														light))
 			continue;
 
