@@ -303,7 +303,7 @@ int main()
 	writeDDS(tab, tabAmplitude, N);
 
 	// spherical plots
-	make_spherical_plots(brdf, tab, N);
+	//make_spherical_plots(brdf, tab, N);
 
 	// delete data
 	delete[] tab;
