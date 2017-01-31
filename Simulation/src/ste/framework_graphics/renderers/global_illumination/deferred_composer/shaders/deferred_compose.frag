@@ -50,14 +50,16 @@ uniform float cascades_depths[directional_light_cascades];
 
 layout(bindless_sampler) uniform samplerCubeArrayShadow shadow_depth_maps;
 layout(bindless_sampler) uniform samplerCubeArray shadow_maps;
-
 layout(bindless_sampler) uniform sampler2DArrayShadow directional_shadow_depth_maps;
 layout(bindless_sampler) uniform sampler2DArray directional_shadow_maps;
 
-layout(bindless_sampler) uniform sampler3D scattering_volume;
-
 layout(bindless_sampler) uniform sampler2D microfacet_refraction_fit_lut;
 layout(bindless_sampler) uniform sampler2DArray microfacet_transmission_fit_lut;
+
+layout(bindless_sampler) uniform sampler2D ltc_ggx_fit;
+layout(bindless_sampler) uniform sampler2D ltc_ggx_amplitude;
+
+layout(bindless_sampler) uniform sampler3D scattering_volume;
 
 layout(bindless_sampler) uniform sampler2DArray atmospheric_optical_length_lut;
 layout(bindless_sampler) uniform sampler3D atmospheric_scattering_lut;
@@ -84,6 +86,10 @@ void main() {
 	material_microfacet_luts.microfacet_refraction_fit_lut = microfacet_refraction_fit_lut;
 	material_microfacet_luts.microfacet_transmission_fit_lut = microfacet_transmission_fit_lut;
 
+	deferred_material_ltc_luts ltc_luts;
+	ltc_luts.ltc_ggx_fit = ltc_ggx_fit;
+	ltc_luts.ltc_ggx_amplitude = ltc_ggx_amplitude;
+
 	deferred_atmospherics_luts atmospherics_luts;
 	atmospherics_luts.atmospheric_optical_length_lut = atmospheric_optical_length_lut;
 	atmospherics_luts.atmospheric_scattering_lut = atmospheric_scattering_lut;
@@ -92,8 +98,9 @@ void main() {
 
 	vec3 shaded_fragment = deferred_shade_fragment(g_frag, coord,
 												   shadow_maps_struct,
-												   scattering_volume, 
 												   material_microfacet_luts,
+												   ltc_luts,
+												   scattering_volume, 
 												   atmospherics_luts,
 												   back_face_depth, 
 												   front_face_depth);
