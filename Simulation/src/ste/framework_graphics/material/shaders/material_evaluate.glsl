@@ -20,7 +20,7 @@
 
 vec3 material_evaluate_layer_radiance(material_layer_unpacked_descriptor descriptor,
 									  deferred_material_ltc_luts ltc_luts, 
-									  vec3 light_polygon[4],
+									  vec3 light_polygon[9],
 									  vec3 wp,
 									  vec3 wn,
 									  vec3 wv,
@@ -56,7 +56,7 @@ vec3 material_evaluate_layer_radiance(material_layer_unpacked_descriptor descrip
 	vec3 Diffuse = diffuse_illuminance * diffuse_irradiance;
 
 	// Evaluate BRDF
-	vec3 brdf = Specular * F + (1.f - descriptor.metallic) * Diffuse;
+	vec3 brdf = Specular * F;// + (1.f - descriptor.metallic) * Diffuse;
 
 	return brdf * irradiance;
 }
@@ -172,11 +172,16 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 		vec3 h = normalize(v + l);
 		// Evaluate layer BRDF
 
-	vec3 u_quadPoints[4] = {
-		light.ld.position + vec3(-45,0 ,-30),
-		light.ld.position + vec3(-25,30,+30),
-		light.ld.position + vec3(+25,30,+40),
-		light.ld.position + vec3(+25,0 ,-30),
+	vec3 u_quadPoints[9] = {
+		light.ld.position,
+		light.ld.position + vec3(50,0, 0).zyx,
+		light.ld.position + vec3(20,20,0).zyx,
+		light.ld.position,
+		light.ld.position + vec3(40,40, 0).zyx,
+		light.ld.position + vec3(-20,20,0).zyx,
+		light.ld.position,
+		light.ld.position + vec3(-40,30, 0).zyx,
+		light.ld.position + vec3(-5,-5,0).zyx,
 	};
 		rgb += attenuation * material_evaluate_layer_radiance(descriptor,
 															  ltc_luts,
