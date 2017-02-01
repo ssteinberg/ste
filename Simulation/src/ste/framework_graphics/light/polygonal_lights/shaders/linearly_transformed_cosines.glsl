@@ -1,12 +1,12 @@
 
-vec2 LTC_Coords(float cosTheta, float roughness)
+vec2 LTC_Coords(sampler2D texLSDMat, float cosTheta, float roughness)
 {
     float theta = acos(cosTheta);
     vec2 coords = vec2(roughness, theta/(0.5*3.14159));
 
-    const float LUT_SIZE = 32.0;
+    vec2 size = textureSize(texLSDMat, 0);
     // scale and bias coordinates, for correct filtered lookup
-    coords = coords*(LUT_SIZE - 1.0)/LUT_SIZE + 0.5/LUT_SIZE;
+    coords = coords*(size - vec2(1.f))/size + .5f/size;
 
     return coords;
 }
@@ -14,7 +14,7 @@ vec2 LTC_Coords(float cosTheta, float roughness)
 mat3 LTC_Matrix(sampler2D texLSDMat, vec2 coord)
 {
     // load inverse matrix
-    vec4 t = texture2D(texLSDMat, coord);
+    vec4 t = texture(texLSDMat, coord);
     mat3 Minv = mat3(
         vec3(1,     0, t.y),
         vec3(  0, t.z,   0),
@@ -202,5 +202,5 @@ vec3 LTC_Evaluate(
     // scale by filtered light color
     Lo_i *= textureLight;
 
-    return Lo_i;
+    return Lo_i / two_pi;
 }

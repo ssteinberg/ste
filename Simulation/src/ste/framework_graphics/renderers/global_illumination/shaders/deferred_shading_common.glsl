@@ -49,8 +49,10 @@ struct fragment_shading_parameters {
 	vec3 b;
 
 	// Normalized ray from fragment to eye, view space
-	vec3 o;
+	vec3 v;
 
-	// World space position
+	// World space position, normal
 	vec3 world_position;
+	vec3 world_normal;
+	vec3 world_v;
 };

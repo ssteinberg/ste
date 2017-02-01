@@ -63,7 +63,7 @@ vec3 light_transform(dual_quaternion transform, light_descriptor ld) {
  */
 float light_calculate_effective_range(light_descriptor ld, float min_lum) {
 	float l = min_lum;
-	return ld.radius * (sqrt(ld.luminance / l) - 1.f);
+	return ld.radius * (sqrt(ld.luminance / l - 1.f) + 1.f);
 }
 
 /*
@@ -82,6 +82,18 @@ vec3 light_incidant_ray(light_descriptor ld, vec3 position) {
 }
 
 /*
+ *	Calculate light irradiance illuminating from light source at 0 distance. 
+ *
+ *	@param ld			Light descriptor.
+ */
+vec3 irradiance(light_descriptor ld) {
+	float min_lum = ld.type == LightTypeDirectional ? 
+		.0f : 
+		light_calculate_minimal_luminance(ld);
+	return ld.diffuse * ld.luminance - min_lum;
+}
+
+/*
  *	Calculate light irradiance at specific distance. 
  *	This method multiplies light irradiance by attenuation coefficient, from that subtracts the light's minimal luminance so that at
  *	distance greater than or equal to the light's effective range the value returned is 0.
@@ -92,14 +104,14 @@ vec3 light_incidant_ray(light_descriptor ld, vec3 position) {
  */
 vec3 irradiance(light_descriptor ld, float dist, float min_lum) {
 	if (ld.type == LightTypeDirectional) {
-		return ld.diffuse * ld.luminance;
+		return irradiance(ld);
 	}
 	
-	float a = max(.0f, dist / ld.radius);
+	float a = max(.0f, dist / ld.radius - 1.f);
 	float f = 1.f / (1.f + a*a);
 
-	float incident_radiance = ld.luminance * f - min_lum;
-	return ld.diffuse * max(0.f, incident_radiance);
+	float illuminance = max(0.f, ld.luminance * f - min_lum);
+	return ld.diffuse * illuminance;
 }
 /*
  *	See irradiance(ld, dist, min_lum) for more details.

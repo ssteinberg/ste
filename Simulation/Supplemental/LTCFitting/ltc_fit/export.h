@@ -101,7 +101,7 @@ void writeTabMatlab(mat3 * tab, vec2 * tabAmplitude, int N)
 // export data in dds
 #include "dds.h"
 
-void writeDDS(mat3 * tab, vec2 * tabAmplitude, int N)
+void writeDDS(mat3 * tab, float * tabAmplitude, int N)
 {
 	float * data = new float[N*N*4];
 
@@ -128,7 +128,7 @@ void writeDDS(mat3 * tab, vec2 * tabAmplitude, int N)
 	}
 
 	SaveDDS("results/ltc_mat.dds", DDS_FORMAT_R32G32B32A32_FLOAT, sizeof(float)*4, N, N, data);
-	SaveDDS("results/ltc_amp.dds", DDS_FORMAT_R32G32_FLOAT,       sizeof(float)*2, N, N, tabAmplitude);
+	SaveDDS("results/ltc_amp.dds", DDS_FORMAT_R32_FLOAT,		  sizeof(float)  , N, N, tabAmplitude);
 
 	delete [] data;
 }

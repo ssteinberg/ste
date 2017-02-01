@@ -110,7 +110,7 @@ float computeError(const LTC& ltc, const Brdf& brdf, const vec3& V, const float 
 				float eval_brdf = brdf.eval(V, L, alpha, pdf_brdf);
 				float eval_ltc = ltc.eval(L);
 				float pdf_ltc = eval_ltc / ltc.amplitude;
-				double error_ = fabsf(eval_brdf - eval_ltc);
+				double error_ = abs(eval_brdf - eval_ltc);
 				error_ = error_*error_*error_;
 				error += error_ / (pdf_ltc + pdf_brdf);
 			}
@@ -125,7 +125,7 @@ float computeError(const LTC& ltc, const Brdf& brdf, const vec3& V, const float 
 				float eval_brdf = brdf.eval(V, L, alpha, pdf_brdf);
 				float eval_ltc = ltc.eval(L);
 				float pdf_ltc = eval_ltc / ltc.amplitude;
-				double error_ = fabsf(eval_brdf - eval_ltc);
+				double error_ = abs(eval_brdf - eval_ltc);
 				error_ = error_*error_*error_;
 				error += error_ / (pdf_ltc + pdf_brdf);
 			}
@@ -196,7 +196,7 @@ void fit(LTC& ltc, const Brdf& brdf, const vec3& V, const float alpha, const flo
 }
 
 // fit data
-void fitTab(mat3 * tab, vec2 * tabAmplitude, const int N, const Brdf& brdf)
+void fitTab(mat3 * tab, float * tabAmplitude, const int N, const Brdf& brdf)
 {
 	LTC ltc;
 
@@ -205,7 +205,7 @@ void fitTab(mat3 * tab, vec2 * tabAmplitude, const int N, const Brdf& brdf)
 		for (int t = 0; t <= N - 1; ++t)
 		{
 			float theta = std::min<float>(1.57f, t / float(N - 1) * half_pi<float>());
-			const vec3 V = vec3(sinf(theta), 0, cosf(theta));
+			const vec3 V = vec3(sin(theta), 0, cos(theta));
 
 			// alpha = roughness^2
 			float roughness = a / float(N - 1);
@@ -266,8 +266,7 @@ void fitTab(mat3 * tab, vec2 * tabAmplitude, const int N, const Brdf& brdf)
 
 			// copy data
 			tab[a + t*N] = ltc.M;
-			tabAmplitude[a + t*N][0] = ltc.amplitude;
-			tabAmplitude[a + t*N][1] = 0;
+			tabAmplitude[a + t*N] = ltc.amplitude;
 
 			// kill useless coefs in matrix and normalize
 			tab[a + t*N][0][1] = 0;
@@ -293,14 +292,14 @@ int main()
 
 	// allocate data
 	mat3 * tab = new mat3[N*N];
-	vec2 * tabAmplitude = new vec2[N*N];
+	float * tabAmplitude = new float[N*N];
 
 	// fit
 	fitTab(tab, tabAmplitude, N, brdf);
 
 	// export in C, matlab and DDS
-	writeTabMatlab(tab, tabAmplitude, N);
-	writeTabC(tab, tabAmplitude, N);
+	//writeTabMatlab(tab, tabAmplitude, N);
+	//writeTabC(tab, tabAmplitude, N);
 	writeDDS(tab, tabAmplitude, N);
 
 	// spherical plots

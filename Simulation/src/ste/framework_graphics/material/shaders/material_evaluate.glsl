@@ -4,6 +4,7 @@
 
 #include "subsurface_scattering.glsl"
 
+#include "linearly_transformed_cosines.glsl"
 #include "microfacet_ggx_fitting.glsl"
 
 #include "cook_torrance.glsl"
@@ -18,49 +19,46 @@
 #include "common.glsl"
 
 vec3 material_evaluate_layer_radiance(material_layer_unpacked_descriptor descriptor,
-									  vec3 n,
-									  vec3 t,
-									  vec3 b,
-									  vec3 v,
+									  deferred_material_ltc_luts ltc_luts, 
+									  vec3 light_polygon[4],
+									  vec3 wp,
+									  vec3 wn,
+									  vec3 wv,
 									  vec3 l,
 									  vec3 h,
 									  float cos_critical, 
 									  float refractive_ratio,
 									  vec3 irradiance,
 									  vec3 albedo,
-									  vec3 diffuse_color,
-									  out float D,
-									  out float Gmask,
-									  out float Gshadow,
-									  out float F) {
-	float dotLH = max(dot(l, h), .0f);
-	float dotNL = max(dot(n, l), .0f);
-	
+									  vec3 diffuse_illuminance) {
 	// Anisotropic roughness
-	float rx = descriptor.roughness * descriptor.anisotropy_ratio;
-	float ry = descriptor.roughness / descriptor.anisotropy_ratio;
+	//float rx = descriptor.roughness * descriptor.anisotropy_ratio;
+	//float ry = descriptor.roughness / descriptor.anisotropy_ratio;
 	
 	// Specular color
 	vec3 specular_tint = vec3(1);
 	vec3 c_spec = mix(specular_tint, albedo, descriptor.metallic);
 
+	// Claculate polygonal light irradiance using linearly transformed cosines
+	vec2 ltccoords = LTC_Coords(ltc_luts.ltc_ggx_fit, dot(wn, wv), descriptor.roughness);
+	mat3 ltc_M_inv = LTC_Matrix(ltc_luts.ltc_ggx_fit, ltccoords);
+	float ltc_ampl = texture(ltc_luts.ltc_ggx_amplitude, ltccoords).x;
+	
+	vec3 specular_irradiance = LTC_Evaluate(wn, wv, wp, ltc_M_inv, light_polygon, true) * ltc_ampl;
+	vec3 diffuse_irradiance  = LTC_Evaluate(wn, wv, wp, mat3(1), light_polygon, true);
+	
 	// Specular
-	vec3 Specular = cook_torrance_ansi_brdf(n, t, b, 
-											v, l, h,
-											rx, ry,
-											cos_critical, 
-											refractive_ratio,
-											c_spec,
-											D, Gmask, Gshadow, F);
+	vec3 Specular = c_spec * specular_irradiance;
+	float F = fresnel(dot(l, h), cos_critical, refractive_ratio);
 
 	// Diffuse
-	//vec3 Diffuse = diffuse_color * disney_diffuse_brdf(n, v, l, h, descriptor.roughness);
-	vec3 Diffuse = diffuse_color * lambert_diffuse_brdf();
+	//vec3 Diffuse = diffuse_illuminance * disney_diffuse_brdf(n, v, l, h, descriptor.roughness);
+	vec3 Diffuse = diffuse_illuminance * diffuse_irradiance;
 
 	// Evaluate BRDF
-	vec3 brdf = Specular + (1.f - descriptor.metallic) * Diffuse;
+	vec3 brdf = Specular * F + (1.f - descriptor.metallic) * Diffuse;
 
-	return brdf * irradiance * dotNL;
+	return brdf * irradiance;
 }
 
 float material_attenuation_through_layer(float transmittance,
@@ -86,7 +84,8 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 								fragment_shading_parameters frag,
 								light_shading_parameters light,
 								float object_thickness,
-								deferred_material_microfacet_luts material_microfacet_luts, 
+								deferred_material_microfacet_luts material_microfacet_luts,
+								deferred_material_ltc_luts ltc_luts, 
 								deferred_shading_shadow_maps shadow_maps,
 								float occlusion,
 								float external_medium_ior = 1.0002772f) {
@@ -108,7 +107,7 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 		return vec3(.0f);
 		
 	vec3 l = light.l;
-	vec3 v = frag.o;
+	vec3 v = frag.v;
 	float top_medium_ior = external_medium_ior;
 
 	// Attenuation at current layer
@@ -172,19 +171,25 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 		// Half vector
 		vec3 h = normalize(v + l);
 		// Evaluate layer BRDF
-		float D;
-		float Gmask;
-		float Gshadow;
-		float F;
+
+	vec3 u_quadPoints[4] = {
+		light.ld.position + vec3(-45,0 ,-30),
+		light.ld.position + vec3(-25,30,+30),
+		light.ld.position + vec3(+25,30,+40),
+		light.ld.position + vec3(+25,0 ,-30),
+	};
 		rgb += attenuation * material_evaluate_layer_radiance(descriptor,
-															  n, t, b,
-															  v, l, h,
+															  ltc_luts,
+															  u_quadPoints,
+															  frag.world_position,
+															  frag.world_normal,
+															  frag.world_v, 
+															  l, h,
 															  cos_critical, 
 															  refractive_ratio,
 															  light.lux,
 															  albedo,
-															  scattering,
-															  D, Gmask, Gshadow, F);
+															  scattering);
 							
 		// Update incident and outgoing vectors to refracted ones before continuing to next layer
 		//v = refracted_v;

@@ -88,11 +88,16 @@ void deferred_composer::load_microfacet_fit_luts() {
 
 	//? TODO: RELOCATE
 	auto ltc_ggx_tab = Resource::surface_factory::load_surface_2d(R"(Data/ltc_ggx_fit.dds)", false);
+	auto ltc_ggx_amp = Resource::surface_factory::load_surface_2d(R"(Data/ltc_ggx_amplitude.dds)", false);
 	ltc_ggx_fit = std::make_unique<Core::texture_2d>(ltc_ggx_tab);
+	ltc_ggx_amplitude = std::make_unique<Core::texture_2d>(ltc_ggx_amp);
 
 	auto ltc_ggx_fit_handle = ltc_ggx_fit->get_texture_handle(*Core::sampler::sampler_linear_clamp());
+	auto ltc_ggx_amplitude_handle = ltc_ggx_amplitude->get_texture_handle(*Core::sampler::sampler_linear_clamp());
 	ltc_ggx_fit_handle.make_resident();
+	ltc_ggx_amplitude_handle.make_resident();
 	program.get().set_uniform("ltc_ggx_fit", ltc_ggx_fit_handle);
+	program.get().set_uniform("ltc_ggx_amplitude", ltc_ggx_amplitude_handle);
 }
 
 void deferred_composer::load_atmospherics_luts() {

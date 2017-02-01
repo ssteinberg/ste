@@ -105,9 +105,6 @@ vec3 scatter_spherical_light(vec2 slice_coords,
 	if (shadow <= .0f)
 		return vec3(0);
 
-	float scaling_size = thickness;
-	float scale = 1.f;//min(l_dist, scaling_size) / scaling_size;
-
 	return irradiance(ld, l_dist) * scatter(ld.position, w_pos, eye_position(),
 											thickness,
 											atmospheric_optical_length_lut);
