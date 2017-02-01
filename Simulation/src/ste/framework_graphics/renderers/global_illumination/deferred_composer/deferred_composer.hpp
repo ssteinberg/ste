@@ -51,7 +51,7 @@ private:
 	std::unique_ptr<Core::texture_3d> atmospherics_mie0_scatter_lut;
 	std::unique_ptr<Core::texture_3d> atmospherics_ambient_lut;
 
-	std::unique_ptr<Core::texture_2d> ltc_ggx_fit, ltc_ggx_amplitude;
+	std::unique_ptr<Core::texture_2d> ltc_ggx_fit;
 
 	Resource::resource_instance<volumetric_scattering_scatter_dispatch> *additional_scatter_program_hack;
 
