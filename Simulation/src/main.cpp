@@ -304,6 +304,8 @@ int main()
 	std::unique_ptr<StE::Graphics::material_layer> layers[layers_count];
 	layers[0] = std::move(mat_editor_layers.back());
 
+	float dummy = .0f;
+
 	float sun_zenith = .0f;
 	float mie_absorption_coefficient = 2.2f;
 	float mie_scattering_coefficient = 2e+1f;
@@ -389,6 +391,7 @@ int main()
 			ImGui::SliderFloat((std::string("Sun zenith angle ##value")).data(), &sun_zenith, .0f, 2 * glm::pi<float>());
 			ImGui::SliderFloat((std::string("Mie scattering coefficient (10^-8) ##value##mie1")).data(), &mie_scattering_coefficient, .0f, 100.f, "%.5f", 3.f);
 			ImGui::SliderFloat((std::string("Mie absorption coefficient (10^-8) ##value##mie2")).data(), &mie_absorption_coefficient, .0f, 100.f, "%.5f", 3.f);
+			ImGui::SliderFloat((std::string("Debug dummy variable")).data(), &dummy, .0f, 1.f);
 		}
 
 		ImGui::End();
@@ -396,6 +399,8 @@ int main()
 		atmosphere.mie_absorption_coefficient = static_cast<double>(mie_absorption_coefficient) * 1e-8;
 		atmosphere.mie_scattering_coefficient = static_cast<double>(mie_scattering_coefficient) * 1e-8;
 		renderer.get().update_atmospherics_properties(atmosphere);
+
+		renderer.get().get_composer_program().set_uniform("dummy", dummy);
 	});
 
 
@@ -454,7 +459,9 @@ int main()
 		float angle = time * glm::pi<float>() / 2.5f;
 		glm::vec3 lp = light0_pos + glm::vec3(glm::sin(angle) * 3, 0, glm::cos(angle)) * 115.f;
 
-		glm::vec3 sun_dir = glm::normalize(glm::vec3{ glm::sin(sun_zenith), -glm::cos(sun_zenith), .15f});
+		glm::vec3 sun_dir = glm::normalize(glm::vec3{ glm::sin(sun_zenith + glm::pi<float>()), 
+													  -glm::cos(sun_zenith + glm::pi<float>()), 
+													  .15f});
 #endif
 		light0->set_position(lp);
 		light0_obj->set_model_transform(glm::mat4x3(glm::translate(glm::mat4(), lp)));

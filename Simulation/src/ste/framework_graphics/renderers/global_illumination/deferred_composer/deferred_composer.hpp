@@ -66,6 +66,8 @@ private:
 public:
 	~deferred_composer() noexcept {}
 
+	auto& get_program() { return program.get(); }
+
 protected:
 	void set_context_state() const override final;
 	void dispatch() const override final;
