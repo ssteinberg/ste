@@ -162,7 +162,7 @@ bool deferred_generate_light_shading_parameters(fragment_shading_parameters frag
 		light.l_dist = sqrt(dist2);
 		l /= light.l_dist;
 
-		lux = light_id == 0 ? irradiance(ld) * atat : vec3(0);
+		lux = irradiance(ld) * atat;
 	}
 
 	light.l = l;

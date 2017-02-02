@@ -1,4 +1,6 @@
 
+#include "common.glsl"
+
 vec2 LTC_Coords(sampler2D texLSDMat, float cosTheta, float roughness)
 {
 	float theta = acos(cosTheta);
@@ -322,4 +324,52 @@ vec3 LTC_Evaluate(
 	vec3 Lo_i = vec3(accum);
 
 	return Lo_i / two_pi;
+}
+
+vec3 LTC_Evaluate(
+	vec3 N, vec3 V, vec3 P, mat3 Minv, vec3 L, float r)
+{
+	const float points_per_solid_angle = 50.f;
+
+	// construct orthonormal basis around N
+	vec3 T1, T2;
+	T1 = normalize(V - N*dot(V, N));
+	T2 = cross(N, T1);
+
+	// rotate area light in (T1, T2, R) basis
+	Minv = Minv * transpose(mat3(T1, T2, N));
+
+	float sum = .0f;
+	vec3 l = L - P;
+
+	vec3 t = cross(vec3(1,0,0), l);
+	if (dot(t,t) < 1e-5f)
+		t = cross(vec3(0,0,1), l);
+	t = r * normalize(t);
+	vec3 b = r * normalize(cross(l, t));
+	
+	float solid_angle = clamp(r / length(l), epsilon, 2);
+	float total_points = 2.f + solid_angle * points_per_solid_angle;
+	
+	vec3 start_point = Minv * (l + t);
+	start_point.z = max(.0f, start_point.z);
+	start_point = normalize(start_point);
+
+	vec3 p0 = start_point;
+	for (float i=1; i<total_points; ++i) {
+		float x = two_pi * i / total_points;
+
+		vec3 p1 = l + cos(x) * t + sin(x) * b;
+		p1 = Minv * p1;
+		p1.z = max(.0f, p1.z);
+		p1 = normalize(p1);
+		
+		sum += IntegrateEdge(p0, p1);
+
+		p0 = p1;
+	}
+	
+	sum += IntegrateEdge(p0, start_point);
+
+	return abs(sum).xxx;
 }

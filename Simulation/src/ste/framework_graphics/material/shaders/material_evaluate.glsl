@@ -20,7 +20,7 @@
 
 vec3 material_evaluate_layer_radiance(material_layer_unpacked_descriptor descriptor,
 									  deferred_material_ltc_luts ltc_luts, 
-									  vec3 light_polygon[9],
+									  vec3 L, float r,
 									  vec3 wp,
 									  vec3 wn,
 									  vec3 wv,
@@ -44,19 +44,18 @@ vec3 material_evaluate_layer_radiance(material_layer_unpacked_descriptor descrip
 	mat3 ltc_M_inv = LTC_Matrix(ltc_luts.ltc_ggx_fit, ltccoords);
 	float ltc_ampl = texture(ltc_luts.ltc_ggx_amplitude, ltccoords).x;
 	
-	vec3 specular_irradiance = LTC_Evaluate(wn, wv, wp, ltc_M_inv, light_polygon, true) * ltc_ampl;
-	vec3 diffuse_irradiance  = LTC_Evaluate(wn, wv, wp, mat3(1), light_polygon, true);
+	vec3 specular_irradiance = LTC_Evaluate(wn, wv, wp, ltc_M_inv, L, r) * ltc_ampl;
+	vec3 diffuse_irradiance  = LTC_Evaluate(wn, wv, wp, mat3(1), L, r);
 	
 	// Specular
 	vec3 Specular = c_spec * specular_irradiance;
 	float F = fresnel(dot(l, h), cos_critical, refractive_ratio);
 
 	// Diffuse
-	//vec3 Diffuse = diffuse_illuminance * disney_diffuse_brdf(n, v, l, h, descriptor.roughness);
 	vec3 Diffuse = diffuse_illuminance * diffuse_irradiance;
 
 	// Evaluate BRDF
-	vec3 brdf = Specular * F;// + (1.f - descriptor.metallic) * Diffuse;
+	vec3 brdf = Specular * F;// + Diffuse;
 
 	return brdf * irradiance;
 }
@@ -167,25 +166,14 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 
 		// Diffused light is a portion of the energy scattered inside layer (based on albedo), unattenuated light doesn't contribute to diffuse
 		vec3 scattering = inner_transmission_ratio * outer_transmission_ratio * (vec3(1.f) - k) * albedo;
+		vec3 diffuse_illuminance = scattering * (1.f - descriptor.metallic);
 
 		// Half vector
 		vec3 h = normalize(v + l);
 		// Evaluate layer BRDF
-
-	vec3 u_quadPoints[9] = {
-		light.ld.position,
-		light.ld.position + vec3(50,0, 0).zyx,
-		light.ld.position + vec3(20,20,0).zyx,
-		light.ld.position,
-		light.ld.position + vec3(40,40, 0).zyx,
-		light.ld.position + vec3(-20,20,0).zyx,
-		light.ld.position,
-		light.ld.position + vec3(-40,30, 0).zyx,
-		light.ld.position + vec3(-5,-5,0).zyx,
-	};
 		rgb += attenuation * material_evaluate_layer_radiance(descriptor,
 															  ltc_luts,
-															  u_quadPoints,
+															  light.ld.position, light.ld.radius,
 															  frag.world_position,
 															  frag.world_normal,
 															  frag.world_v, 
@@ -194,7 +182,7 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 															  refractive_ratio,
 															  light.lux,
 															  albedo,
-															  scattering);
+															  diffuse_illuminance);
 							
 		// Update incident and outgoing vectors to refracted ones before continuing to next layer
 		//v = refracted_v;
