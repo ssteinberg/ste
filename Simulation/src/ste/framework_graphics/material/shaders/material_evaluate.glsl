@@ -42,10 +42,6 @@ vec3 material_evaluate_layer_radiance(material_layer_unpacked_descriptor descrip
 	// Shading type
 	bool ltc = light_type_is_shaped(ld.type);
 
-	// Final specular and diffuse luminance values
-	vec3 Specular;
-	vec3 Diffuse;
-
 	if (ltc) {
 		// Calculate polygonal light irradiance using linearly transformed cosines
 		vec2 ltccoords = ltc_lut_coords(ltc_luts.ltc_ggx_fit, dot(wn, wv), descriptor.roughness);
@@ -69,27 +65,28 @@ vec3 material_evaluate_layer_radiance(material_layer_unpacked_descriptor descrip
 		float F = fresnel(dot(l, h), cos_critical, refractive_ratio);
 		
 		// And finalize
-		Specular = F * c_spec * specular_irradiance;
-		Diffuse = diffuse_illuminance * diffuse_irradiance;
+		vec3 Specular = F * c_spec * specular_irradiance;
+		vec3 Diffuse = diffuse_illuminance * diffuse_irradiance;
+
+		return irradiance * (Specular + Diffuse);
 	}
 	else {
-		// Point light or directional light
-		// For point lights we need to factor light attenuation manually, for directional there is 
-		// no distance-based attenuation.
+		// For non-integrated lights we need to factor light attenuation manually.
 		float attenuation = light_attenuation(ld, l_dist);
+		float cutoff = light_calculate_minimal_luminance(ld);
 
 		// Evaluate BRDFs
-		Specular = attenuation * cook_torrance_ansi_brdf(n, t, b,  
-															v, l, h, 
-															rx, ry, 
-															cos_critical,  
-															refractive_ratio, 
-															c_spec);
-		Diffuse = attenuation * diffuse_illuminance * lambert_diffuse_brdf();
+		vec3 Specular = cook_torrance_ansi_brdf(n, t, b,  
+												v, l, h, 
+												rx, ry, 
+												cos_critical,  
+												refractive_ratio, 
+												c_spec);
+		vec3 Diffuse = diffuse_illuminance * lambert_diffuse_brdf();
+		
+		vec3 brdf = irradiance * (Specular + Diffuse);
+		return max(vec3(.0f), attenuation * brdf - vec3(cutoff));
 	}
-
-	vec3 brdf = Specular + Diffuse;
-	return brdf * irradiance;
 }
 
 float material_attenuation_through_layer(float transmittance,
@@ -100,8 +97,76 @@ float material_attenuation_through_layer(float transmittance,
 }
 
 /*
+ *	Evaluate radiance of material at fragment. Simple single-layered materials without subsurface scattering.
+ *
+ *	@param layer		Material layer
+ *	@param frag			Fragment shading parameters
+ *	@param light		Light shading parameters
+ *	@param material_microfacet_luts	Microfacet GGX fitting LUTs
+ *	@param occlusion	Light occlusion
+ *	@param external_medium_ior	Index-of-refraction of source medium
+ */
+vec3 material_evaluate_radiance_simple(material_layer_unpacked_descriptor descriptor,
+									   fragment_shading_parameters frag,
+									   light_shading_parameters light,
+									   deferred_material_microfacet_luts material_microfacet_luts,
+									   deferred_material_ltc_luts ltc_luts, 
+									   float occlusion,
+									   float external_medium_ior = 1.0002772f) {		
+	// Compute sine and cosine of critical angle
+	float refractive_ratio = descriptor.ior / external_medium_ior;
+	float cos_critical = refractive_ratio < 1.f ? 
+							sqrt(1.f - refractive_ratio * refractive_ratio) :
+							.0f;
+
+	// Evaluate refracted vectors
+	/*vec3 refracted_v = -ggx_refract(material_microfacet_luts.microfacet_refraction_fit_lut,
+									frag.v, frag.n,
+									descriptor.roughness,
+									refractive_ratio);
+	vec3 refracted_l = -ggx_refract(material_microfacet_luts.microfacet_refraction_fit_lut,
+									light.l, frag.n,
+									descriptor.roughness,
+									refractive_ratio);*/
+
+	// Evaluate total inner (downwards into material) and outer (upwards towards eye) transmission
+	float inner_transmission_ratio = ggx_transmission_ratio_v4(material_microfacet_luts.microfacet_transmission_fit_lut, 
+																frag.v, frag.n, 
+																descriptor.roughness, 
+																refractive_ratio);
+	float outer_transmission_ratio = ggx_transmission_ratio_v4(material_microfacet_luts.microfacet_transmission_fit_lut, 
+																/*refracted_l*/light.l, frag.n, 
+																descriptor.roughness, 
+																1.f / refractive_ratio);
+
+	vec3 scattering = inner_transmission_ratio * outer_transmission_ratio * descriptor.albedo.rgb;
+	vec3 diffuse_illuminance = descriptor.albedo.rgb * (1.f - descriptor.metallic);
+
+	// Half vector
+	vec3 h = normalize(frag.v + light.l);
+	// Evaluate layer BRDF
+	vec3 rgb = material_evaluate_layer_radiance(descriptor,
+												light.ld,
+												light.l_dist,
+												frag.world_position,
+												frag.world_normal,
+												frag.world_v, 
+												frag.n, frag.t, frag.b,
+												frag.v, light.l, h,
+												cos_critical, 
+												refractive_ratio,
+												light.lux,
+												descriptor.albedo.rgb,
+												diffuse_illuminance,
+												ltc_luts);
+
+	return rgb * occlusion;
+}
+
+/*
  *	Evaluate radiance of material at fragment
  *
+ *	@param md			Material descriptor
  *	@param layer		Material layer
  *	@param frag			Fragment shading parameters
  *	@param light		Light shading parameters
@@ -111,7 +176,8 @@ float material_attenuation_through_layer(float transmittance,
  *	@param occlusion	Light occlusion
  *	@param external_medium_ior	Index-of-refraction of source medium
  */
-vec3 material_evaluate_radiance(material_layer_descriptor layer,
+vec3 material_evaluate_radiance(material_descriptor md,
+								material_layer_descriptor layer,
 								fragment_shading_parameters frag,
 								light_shading_parameters light,
 								float object_thickness,
@@ -120,6 +186,21 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 								deferred_shading_shadow_maps shadow_maps,
 								float occlusion,
 								float external_medium_ior = 1.0002772f) {
+	material_layer_unpacked_descriptor descriptor = material_layer_unpack(layer);
+
+	// A simple material is a material without subsurface scattering and a single layer.
+	// Use a faster codepath in that case.
+	bool simple_material = material_is_simple(md, layer);
+	if (simple_material) {
+		return material_evaluate_radiance_simple(descriptor,
+												 frag,
+												 light,
+												 material_microfacet_luts,
+												 ltc_luts,
+												 occlusion,
+												 external_medium_ior);
+	}
+
 	vec3 rgb = vec3(0);
 
 	vec3 n = frag.n;
@@ -127,15 +208,6 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 	vec3 b = frag.b;
 	vec3 position = frag.p;
 	ivec2 frag_coords = frag.coords;
-	
-	material_layer_unpacked_descriptor descriptor = material_layer_unpack(layer);
-	
-	// We have subsurface scattering if all layers have an attenuation of less than infinity
-	bool has_subsurface_scattering = object_thickness > .0f && all(lessThan(descriptor.attenuation_coefficient, vec3(inf)));
-
-	// Early bail
-	if (occlusion <= .0f && !has_subsurface_scattering)
-		return vec3(.0f);
 		
 	vec3 l = light.l;
 	vec3 v = frag.v;
@@ -164,14 +236,14 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 		float F0 = fresnel_F0(refractive_ratio);
 
 		// Evaluate refracted vectors
-		vec3 refracted_v = -ggx_refract(material_microfacet_luts.microfacet_refraction_fit_lut,
+		/*vec3 refracted_v = -ggx_refract(material_microfacet_luts.microfacet_refraction_fit_lut,
 										v, n,
 										roughness,
 										refractive_ratio);
 		vec3 refracted_l = -ggx_refract(material_microfacet_luts.microfacet_refraction_fit_lut,
 										l, n,
 										roughness,
-										refractive_ratio);
+										refractive_ratio);*/
 
 		// Evaluate total inner (downwards into material) and outer (upwards towards eye) transmission
 		float inner_transmission_ratio = ggx_transmission_ratio_v4(material_microfacet_luts.microfacet_transmission_fit_lut, 
@@ -198,7 +270,7 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 
 		// Diffused light is a portion of the energy scattered inside layer (based on albedo), unattenuated light doesn't contribute to diffuse
 		vec3 scattering = inner_transmission_ratio * outer_transmission_ratio * (vec3(1.f) - k) * albedo;
-		vec3 diffuse_illuminance = scattering * (1.f - descriptor.metallic);
+		vec3 diffuse_illuminance = scattering * (1.f - metallic);
 
 		// Half vector
 		vec3 h = normalize(v + l);
@@ -249,12 +321,13 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 		top_medium_ior = bottom_medium_ior;
 		descriptor = material_layer_unpack(mat_layer_descriptor[descriptor.next_layer_id]);
 	}
+
+	// Apply occlusion
+	rgb *= occlusion;
 	
 	// Sub-surface scattering
-	has_subsurface_scattering = has_subsurface_scattering && all(lessThan(descriptor.attenuation_coefficient, vec3(inf)));
 	bool fully_attenuated = all(lessThan(sss_attenuation, vec3(epsilon)));
-
-	if (has_subsurface_scattering && !fully_attenuated) {
+	if (!fully_attenuated) {
 		rgb += sss_attenuation * subsurface_scattering(descriptor,
 													   position,
 													   n,
@@ -265,5 +338,5 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 													   frag_coords);
 	}
 
-	return rgb * occlusion;
+	return rgb;
 }

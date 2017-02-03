@@ -171,6 +171,24 @@ bool deferred_generate_light_shading_parameters(fragment_shading_parameters frag
 	return true;
 }
 
+
+bool fragment_facing_light_source(fragment_shading_parameters frag, 
+								  light_shading_parameters light) {
+	float N_dot_L = dot(frag.n, light.l);
+	if (!light_type_is_shaped(light.ld.type)) {
+		if (N_dot_L <= .0f)
+			return false;
+	}
+	else {
+		float theta = acos(N_dot_L);
+		float x = atan(light.ld.radius / light.l_dist);
+		if (theta - x >= half_pi)
+			return false;
+	}
+
+	return true;
+}
+
 vec3 deferred_shade_fragment(g_buffer_element gbuffer_frag, ivec2 coord,
 							 deferred_shading_shadow_maps shadow_maps,
 							 deferred_material_microfacet_luts material_microfacet_luts, 
@@ -204,6 +222,7 @@ vec3 deferred_shade_fragment(g_buffer_element gbuffer_frag, ivec2 coord,
 	material_layer_descriptor head_layer = mat_layer_descriptor[md.head_layer];
 	vec3 material_texture = material_base_texture(md, frag_info.uv, frag_info.duvdx, frag_info.duvdy).rgb;
 	float cavity = material_cavity(md, frag_info.uv, frag_info.duvdx, frag_info.duvdy);
+	bool material_has_sss = material_has_subsurface_scattering(md);
 
 	// Normal map
 	frag.n = frag_info.n;
@@ -243,7 +262,7 @@ vec3 deferred_shade_fragment(g_buffer_element gbuffer_frag, ivec2 coord,
 		uint ll_idx = uint(lll_parse_ll_idx(lll_p));
 		light_descriptor ld = light_buffer[light_idx];
 
-		// Compute light properties
+		// Compute light properties, bail if fragment is unaffected by light
 		light_shading_parameters light;
 		if (!deferred_generate_light_shading_parameters(frag,
 														ld, light_idx, ll_idx,
@@ -251,22 +270,24 @@ vec3 deferred_shade_fragment(g_buffer_element gbuffer_frag, ivec2 coord,
 														light))
 			continue;
 
+		// For simple materials, bail if fragment is not facing light
+		if (!material_has_sss && !fragment_facing_light_source(frag, light))
+			continue;
+
 		// Shadow query
 		float shdw = deferred_evaluate_shadowing(shadow_maps,
 												 frag,
 												 light,
 												 cascade);
-
-		if (light_type_is_directional(ld.type)) {
-			//!? TODO: Remove!
-			// Inject some ambient, still without global illumination...
-			accum_luminance += ld.diffuse * ld.luminance * 1e-11 * (1-shdw);
-		}
-
 		float occlusion = max(.0f, cavity * shdw);
+
+		// For simple materials, bail is fully shadowed
+		if (!material_has_sss && occlusion == .0f)
+			continue;
 			
 		// Evaluate material luminance for given light
-		vec3 luminance = material_evaluate_radiance(head_layer,
+		vec3 luminance = material_evaluate_radiance(md,
+													head_layer,
 													frag,
 													light,
 													thickness,
@@ -275,6 +296,12 @@ vec3 deferred_shade_fragment(g_buffer_element gbuffer_frag, ivec2 coord,
 													shadow_maps, 
 													occlusion);
 		accum_luminance += material_texture.rgb * luminance;
+
+		
+		//!? TODO: Remove!
+		// Inject some ambient, still without global illumination...
+		if (light_type_is_directional(ld.type))
+			accum_luminance += ld.diffuse * ld.luminance * 1e-11 * (1-shdw);
 	}
 
 	// Volumetric scattered light

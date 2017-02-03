@@ -36,6 +36,8 @@ private:
 
 	rgb emission{ 0, 0, 0 };
 
+	bool sss{ false };
+
 	material_layer *head_layer;
 
 private:
@@ -80,8 +82,8 @@ public:
 		texture = tex;
 		descriptor.texture_handle = handle_for_texture(texture.get());
 
-		if (descriptor.texture_handle)  descriptor.used_textures_mask |= material_descriptor::material_has_texture;
-		else							descriptor.used_textures_mask &= ~material_descriptor::material_has_texture;
+		if (descriptor.texture_handle)  descriptor.material_flags |= material_descriptor::material_has_texture_bit;
+		else							descriptor.material_flags &= ~material_descriptor::material_has_texture_bit;
 
 		Base::notify();
 	}
@@ -97,8 +99,8 @@ public:
 		cavity_map = tex;
 		descriptor.cavity_handle = handle_for_texture(cavity_map.get());
 
-		if (descriptor.cavity_handle)   descriptor.used_textures_mask |= material_descriptor::material_has_cavity_map;
-		else							descriptor.used_textures_mask &= ~material_descriptor::material_has_cavity_map;
+		if (descriptor.cavity_handle)   descriptor.material_flags |= material_descriptor::material_has_cavity_map_bit;
+		else							descriptor.material_flags &= ~material_descriptor::material_has_cavity_map_bit;
 
 		Base::notify();
 	}
@@ -112,8 +114,8 @@ public:
 		normal_map = tex;
 		descriptor.normal_handle = handle_for_texture(normal_map.get());
 
-		if (descriptor.normal_handle)	descriptor.used_textures_mask |= material_descriptor::material_has_normal_map;
-		else							descriptor.used_textures_mask &= ~material_descriptor::material_has_normal_map;
+		if (descriptor.normal_handle)	descriptor.material_flags |= material_descriptor::material_has_normal_map_bit;
+		else							descriptor.material_flags &= ~material_descriptor::material_has_normal_map_bit;
 
 		Base::notify();
 	}
@@ -129,8 +131,8 @@ public:
 		mask_map = tex;
 		descriptor.mask_handle = handle_for_texture(mask_map.get());
 
-		if (descriptor.mask_handle)		descriptor.used_textures_mask |= material_descriptor::material_has_mask_map;
-		else							descriptor.used_textures_mask &= ~material_descriptor::material_has_mask_map;
+		if (descriptor.mask_handle)		descriptor.material_flags |= material_descriptor::material_has_mask_map_bit;
+		else							descriptor.material_flags &= ~material_descriptor::material_has_mask_map_bit;
 
 		Base::notify();
 	}
@@ -147,6 +149,23 @@ public:
 
 		glm::vec3 v = rgb;
 		descriptor.set_emission(glm::vec4{ v.r, v.g, v.b, 1.f });
+		Base::notify();
+	}
+
+	/**
+	*	@brief	Enable/disable subsurface-scattering.
+	*
+	*	Due to the increased cost of the subsurface scattering path (even when all layers' attenuation is +infinity),
+	*	subsurface-scattering has to be explicitly enabled.
+	*
+	* 	@param enable	Toggles subsurface scattering
+	*/
+	void enable_subsurface_scattering(bool enable) {
+		sss = enable;
+
+		if (enable)						descriptor.material_flags |= material_descriptor::material_has_subsurface_scattering_bit;
+		else							descriptor.material_flags &= ~material_descriptor::material_has_subsurface_scattering_bit;
+
 		Base::notify();
 	}
 	
@@ -167,6 +186,8 @@ public:
 	auto *get_texture() const { return texture.get(); }
 
 	rgb get_emission() const { return emission; }
+
+	auto is_subsurface_scattering_enabled() const { return sss; }
 	
 	auto *get_head_layer() const { return head_layer; }
 

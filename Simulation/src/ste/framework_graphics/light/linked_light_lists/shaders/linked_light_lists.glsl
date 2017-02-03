@@ -14,7 +14,7 @@ const int lll_depth_lod = 2;	// = log2(lll_image_res_multiplier)-1  (Down-sample
 /*
  *	Minimal luminance of low detail light. Multiplier is used to adjust the default minimal luminance of a light to compute its new effective range.
  */
-const float lll_low_detail_min_luminance_multiplier = 6.f;
+const float lll_low_detail_min_luminance_multiplier = 35.f;
 
 /*
  *	Maximum amount of low detail lights in a linked-list, per pixel. 

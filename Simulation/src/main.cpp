@@ -304,6 +304,7 @@ int main()
 	
 	std::unique_ptr<StE::Graphics::material_layer> layers[layers_count];
 	layers[0] = std::move(mat_editor_layers.back());
+	mat_editor_materials.back()->enable_subsurface_scattering(true);
 
 	float dummy = .0f;
 
