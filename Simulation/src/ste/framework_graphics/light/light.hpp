@@ -1,10 +1,12 @@
 // StE
-// © Shlomi Steinberg, 2015-2016
+// © Shlomi Steinberg, 2015-2017
 
 #pragma once
 
 #include "stdafx.hpp"
 #include "entity.hpp"
+
+#include "light_type.hpp"
 #include "light_descriptor.hpp"
 
 #include "observable_resource.hpp"

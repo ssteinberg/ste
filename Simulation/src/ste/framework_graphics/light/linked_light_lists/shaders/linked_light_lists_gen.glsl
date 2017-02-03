@@ -95,7 +95,7 @@ void main() {
 		uint light_idx = ll[ll_i];
 		light_descriptor ld = light_buffer[light_idx];
 
-		if (ld.type == LightTypeDirectional) {
+		if (light_type_is_directional(ld.type)) {
 			// For directional lights: Nothing to do, add point
 			vec2 depth_range = vec2(.0f, 1.f);
 			add_active_light(light_idx, ll_i, depth_range);

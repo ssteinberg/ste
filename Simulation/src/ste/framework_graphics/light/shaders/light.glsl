@@ -1,4 +1,6 @@
 
+#include "light_type.glsl"
+
 #include "common.glsl"
 
 #include "quaternion.glsl"
@@ -9,14 +11,11 @@
 #include "light_transport.glsl"
 #include "atmospherics.glsl"
 
-const int LightTypeSphere = 0;
-const int LightTypeDirectional = 1;
-
 const int max_active_lights_per_frame = 24;
 const int max_active_directional_lights_per_frame = 4;
 const int total_max_active_lights_per_frame = max_active_lights_per_frame + max_active_directional_lights_per_frame;
 
-const float light_minimal_luminance_multiplier = 5e-6f;
+const float light_minimal_luminance_multiplier = 1e-6f;
 
 struct light_descriptor {
 	// position: Light position for spherical, direction for directional lights.
@@ -53,13 +52,13 @@ float light_effective_range(light_descriptor ld) {
  *	Transforms light's position/direction based on transformation dual quaternion
  */
 vec3 light_transform(dual_quaternion transform, light_descriptor ld) {
-	return ld.type == LightTypeDirectional ?
+	return light_type_is_directional(ld.type) ?
 				quat_mul_vec(transform.real, ld.position) :
 				dquat_mul_vec(transform, ld.position);
 }
 
 /*
- *	Calculates light's effective range given minimal luminance desired
+ *	Calculates light's effective range given desired minimal luminance
  */
 float light_calculate_effective_range(light_descriptor ld, float min_lum) {
 	float l = min_lum;
@@ -70,14 +69,16 @@ float light_calculate_effective_range(light_descriptor ld, float min_lum) {
  *	Calculates a suggested light's minimal luminance
  */
 float light_calculate_minimal_luminance(light_descriptor ld) {
-	return ld.luminance * light_minimal_luminance_multiplier;
+	return light_type_is_directional(ld.type) ? 
+				.0f : 
+				ld.luminance * light_minimal_luminance_multiplier;
 }
 
 /*
- *	Calculates the incident ray in eye-space from position
+ *	Calculates the incident ray in eye-space for sampling position
  */
 vec3 light_incidant_ray(light_descriptor ld, vec3 position) {
-	if (ld.type == LightTypeDirectional) return -ld.transformed_position;
+	if (light_type_is_directional(ld.type)) return -ld.transformed_position;
 	else return ld.transformed_position - position;
 }
 
@@ -87,10 +88,21 @@ vec3 light_incidant_ray(light_descriptor ld, vec3 position) {
  *	@param ld			Light descriptor.
  */
 vec3 irradiance(light_descriptor ld) {
-	float min_lum = ld.type == LightTypeDirectional ? 
-		.0f : 
-		light_calculate_minimal_luminance(ld);
-	return ld.diffuse * ld.luminance - min_lum;
+	float min_lum = light_calculate_minimal_luminance(ld);
+	return ld.diffuse * ld.luminance;
+}
+/*
+ *	Calculate light attenuation at specified distance. 
+ *
+ *	@param ld			Light descriptor.
+ *	@param dist			Distance.
+ */
+float light_attenuation(light_descriptor ld, float dist) {
+	if (light_type_is_directional(ld.type))
+		return 1.f;
+	
+	float a = max(.0f, dist / ld.radius - 1.f);
+	return 1.f / (1.f + a*a);
 }
 
 /*
@@ -103,12 +115,7 @@ vec3 irradiance(light_descriptor ld) {
  *	@param min_lum		Minimal light luminance. Refer to light_lux_at_distance.
  */
 vec3 irradiance(light_descriptor ld, float dist, float min_lum) {
-	if (ld.type == LightTypeDirectional) {
-		return irradiance(ld);
-	}
-	
-	float a = max(.0f, dist / ld.radius - 1.f);
-	float f = 1.f / (1.f + a*a);
+	float f = light_attenuation(ld, dist);
 
 	float illuminance = max(0.f, ld.luminance * f - min_lum);
 	return ld.diffuse * illuminance;

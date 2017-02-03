@@ -166,7 +166,7 @@ void main() {
 	uint light_idx = ll[ll_id];
 	light_descriptor ld = light_buffer[light_idx];
 	
-	if (ld.type == LightTypeDirectional) {
+	if (light_type_is_directional(ld.type)) {
 		directional_light(light_idx, face, ld);
 	}
 	else {

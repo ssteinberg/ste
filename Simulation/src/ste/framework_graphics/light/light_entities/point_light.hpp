@@ -9,15 +9,15 @@
 namespace StE {
 namespace Graphics {
 
-class spherical_light : public light {
+class point_light : public light {
 	using Base = light;
 
 public:
-	spherical_light(float luminance, const rgb &diffuse, const glm::vec3 &position, float radius) : light(luminance, radius, diffuse) {
-		descriptor.type = LightType::Sphere;
+	point_light(float luminance, const rgb &diffuse, const glm::vec3 &position, float radius) : light(luminance, radius, diffuse) {
+		descriptor.type = LightType::Point;
 		descriptor.position = decltype(descriptor.position){ position.x, position.y, position.z };
 	}
-	virtual ~spherical_light() noexcept {}
+	virtual ~point_light() noexcept {}
 
 	void set_position(const glm::vec3 &p) {
 		descriptor.position = decltype(descriptor.position){ p.x, p.y, p.z };

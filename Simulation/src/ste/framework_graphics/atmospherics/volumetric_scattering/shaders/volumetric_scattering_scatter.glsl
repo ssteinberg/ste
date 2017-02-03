@@ -177,7 +177,7 @@ vec3 scatter(float depth, float depth_next_tile,
 
 	// Scatter
 	vec3 scattered = vec3(0);
-	if (ld.type == LightTypeDirectional) {
+	if (light_type_is_directional(ld.type)) {
 		// For directional lights, first update cascade if needed
 		if (-z0 >= current_cascade_far_clip) {
 			++cascade;

@@ -4,59 +4,91 @@
 
 #include "subsurface_scattering.glsl"
 
-#include "linearly_transformed_cosines.glsl"
-#include "microfacet_ggx_fitting.glsl"
-
-#include "cook_torrance.glsl"
-#include "lambert_diffuse.glsl"
-#include "disney_diffuse.glsl"
-
-#include "fresnel.glsl"
-
-#include "light_transport.glsl"
-
 #include "deferred_shading_common.glsl"
 #include "common.glsl"
 
+#include "light.glsl"
+#include "light_transport.glsl"
+
+#include "linearly_transformed_cosines.glsl"
+#include "microfacet_ggx_fitting.glsl"
+#include "cook_torrance.glsl"
+#include "lambert_diffuse.glsl"
+#include "disney_diffuse.glsl"
+#include "fresnel.glsl"
+
 vec3 material_evaluate_layer_radiance(material_layer_unpacked_descriptor descriptor,
-									  deferred_material_ltc_luts ltc_luts, 
-									  vec3 L, float r,
+									  light_descriptor ld,
+									  float l_dist,
 									  vec3 wp,
 									  vec3 wn,
 									  vec3 wv,
-									  vec3 l,
-									  vec3 h,
+									  vec3 n, vec3 t, vec3 b,
+									  vec3 v, vec3 l, vec3 h,
 									  float cos_critical, 
 									  float refractive_ratio,
 									  vec3 irradiance,
 									  vec3 albedo,
-									  vec3 diffuse_illuminance) {
+									  vec3 diffuse_illuminance,
+									  deferred_material_ltc_luts ltc_luts) {
 	// Anisotropic roughness
-	//float rx = descriptor.roughness * descriptor.anisotropy_ratio;
-	//float ry = descriptor.roughness / descriptor.anisotropy_ratio;
+	float rx = descriptor.roughness * descriptor.anisotropy_ratio;
+	float ry = descriptor.roughness / descriptor.anisotropy_ratio;
 	
 	// Specular color
 	vec3 specular_tint = vec3(1);
 	vec3 c_spec = mix(specular_tint, albedo, descriptor.metallic);
 
-	// Claculate polygonal light irradiance using linearly transformed cosines
-	vec2 ltccoords = LTC_Coords(ltc_luts.ltc_ggx_fit, dot(wn, wv), descriptor.roughness);
-	mat3 ltc_M_inv = LTC_Matrix(ltc_luts.ltc_ggx_fit, ltccoords);
-	float ltc_ampl = texture(ltc_luts.ltc_ggx_amplitude, ltccoords).x;
+	// Shading type
+	bool ltc = light_type_is_shaped(ld.type);
+
+	// Final specular and diffuse luminance values
+	vec3 Specular;
+	vec3 Diffuse;
+
+	if (ltc) {
+		// Calculate polygonal light irradiance using linearly transformed cosines
+		vec2 ltccoords = ltc_lut_coords(ltc_luts.ltc_ggx_fit, dot(wn, wv), descriptor.roughness);
+		mat3 ltc_M_inv = ltc_inv_matrix(ltc_luts.ltc_ggx_fit, ltccoords);
+		float ltc_ampl = texture(ltc_luts.ltc_ggx_amplitude, ltccoords).x;
+		
+		// The integration type depends on shape
+		bool shape_sphere = light_shape_is_sphere(ld.type);
 	
-	vec3 specular_irradiance = LTC_Evaluate(wn, wv, wp, ltc_M_inv, L, r) * ltc_ampl;
-	vec3 diffuse_irradiance  = LTC_Evaluate(wn, wv, wp, mat3(1), L, r);
-	
-	// Specular
-	vec3 Specular = c_spec * specular_irradiance;
-	float F = fresnel(dot(l, h), cos_critical, refractive_ratio);
+		vec3 specular_irradiance;
+		vec3 diffuse_irradiance;
+		if (shape_sphere) {
+			vec3 L = ld.position;
+			float r = ld.radius;
 
-	// Diffuse
-	vec3 Diffuse = diffuse_illuminance * diffuse_irradiance;
+			specular_irradiance = ltc_evaluate(wn, wv, wp, ltc_M_inv, L, r) * ltc_ampl;
+			diffuse_irradiance  = ltc_evaluate(wn, wv, wp, mat3(1), L, r);
+		}
+		
+		// Compute fresnel term
+		float F = fresnel(dot(l, h), cos_critical, refractive_ratio);
+		
+		// And finalize
+		Specular = F * c_spec * specular_irradiance;
+		Diffuse = diffuse_illuminance * diffuse_irradiance;
+	}
+	else {
+		// Point light or directional light
+		// For point lights we need to factor light attenuation manually, for directional there is 
+		// no distance-based attenuation.
+		float attenuation = light_attenuation(ld, l_dist);
 
-	// Evaluate BRDF
-	vec3 brdf = Specular * F;// + Diffuse;
+		// Evaluate BRDFs
+		Specular = attenuation * cook_torrance_ansi_brdf(n, t, b,  
+															v, l, h, 
+															rx, ry, 
+															cos_critical,  
+															refractive_ratio, 
+															c_spec);
+		Diffuse = attenuation * diffuse_illuminance * lambert_diffuse_brdf();
+	}
 
+	vec3 brdf = Specular + Diffuse;
 	return brdf * irradiance;
 }
 
@@ -172,46 +204,48 @@ vec3 material_evaluate_radiance(material_layer_descriptor layer,
 		vec3 h = normalize(v + l);
 		// Evaluate layer BRDF
 		rgb += attenuation * material_evaluate_layer_radiance(descriptor,
-															  ltc_luts,
-															  light.ld.position, light.ld.radius,
+															  light.ld,
+															  light.l_dist,
 															  frag.world_position,
 															  frag.world_normal,
 															  frag.world_v, 
-															  l, h,
+															  n, t, b,
+															  v, l, h,
 															  cos_critical, 
 															  refractive_ratio,
 															  light.lux,
 															  albedo,
-															  diffuse_illuminance);
+															  diffuse_illuminance,
+															  ltc_luts);
 							
 		// Update incident and outgoing vectors to refracted ones before continuing to next layer
 		//v = refracted_v;
 		//l = refracted_l;
 	
 		// Compute attenuated light due to Fresnel transmittance, microfacet masking-shadowing and metallicity
-		float layer_surface_inner_attenuation = material_attenuation_through_layer(inner_transmission_ratio, 
-																				   metallic,
-																				   1/*Gshadow*/);
 		float layer_surface_outer_attenuation = material_attenuation_through_layer(outer_transmission_ratio, 
 																				   metallic,
 																				   1/*Gmask*/);
-		float total_layer_surface_attenuation = layer_surface_inner_attenuation * layer_surface_outer_attenuation;
 
-		// Update attenuation at layer surface
-		attenuation *= total_layer_surface_attenuation;
-		// For sub-surface scattering we assume normal incidence of light, and we attenuated on (presumed) incident and outgoing sides
+		// For sub-surface scattering we assume normal incidence of light, and we attenuate based on (presumed) incident and outgoing sides
 		sss_attenuation *= layer_surface_outer_attenuation * material_attenuation_through_layer(1.f - F0, metallic, 1.f);
 
 		// If this is the base layer, stop
 		if (material_is_base_layer(descriptor))
 			break;
 
-		// Otherwise, update attenuation with attenuated (absorbed and scattered) light
-		attenuation *= k;
+		// Otherwise, update attenuation with attenuation at layer surface and with attenuated (absorbed and scattered) light
+					
+		float layer_surface_inner_attenuation = material_attenuation_through_layer(inner_transmission_ratio, 
+																				   metallic,
+																				   1/*Gshadow*/);
+		float total_layer_surface_attenuation = layer_surface_inner_attenuation * layer_surface_outer_attenuation;
+
+		attenuation *= total_layer_surface_attenuation * k;
 		// Update sss attenuation with attenuation on the way out and attenuation on the way in with parallel incident
 		sss_attenuation *= sss_outer_extinction * beer_lambert(attenuation_coefficient, thickness);
 
-		// Update ior and descriptor for next layer
+		// Set ior and descriptor for next layer
 		top_medium_ior = bottom_medium_ior;
 		descriptor = material_layer_unpack(mat_layer_descriptor[descriptor.next_layer_id]);
 	}

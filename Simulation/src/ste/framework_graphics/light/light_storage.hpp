@@ -8,7 +8,8 @@
 #include "light_cascade_descriptor.hpp"
 
 #include "directional_light.hpp"
-#include "spherical_light.hpp"
+#include "point_light.hpp"
+#include "shaped_light.hpp"
 
 #include "resource_storage_dynamic.hpp"
 #include "gstack_stable.hpp"
@@ -18,7 +19,6 @@
 
 #include <array>
 #include <memory>
-#include <functional>
 #include <type_traits>
 
 namespace StE {
@@ -56,15 +56,27 @@ public:
 	}
 
 	template <typename ... Ts>
-	std::unique_ptr<spherical_light> allocate_spherical(Ts&&... args) {
-		auto res = Base::allocate_resource<spherical_light>(std::forward<Ts>(args)...);
+	auto allocate_point_light(Ts&&... args) {
+		auto res = Base::allocate_resource<point_light>(std::forward<Ts>(args)...);
 		active_lights_ll.commit_range(0, Base::size());
 
 		return std::move(res);
 	}
 
+	template <typename Light, typename ... Ts>
+	auto allocate_shaped_light(Ts&&... args) {
+		static_assert(std::is_base_of<shaped_light, Light>::value, "Light must be a shaped_light derived type");
+
+		auto res = Base::allocate_resource<Light>(std::forward<Ts>(args)...);
+		active_lights_ll.commit_range(0, Base::size());
+
+		// For shaped light need to allocate space for light vertices
+
+		return std::move(res);
+	}
+
 	template <typename ... Ts>
-	std::unique_ptr<directional_light> allocate_directional(Ts&&... args) {
+	auto allocate_directional_light(Ts&&... args) {
 		auto res = Base::allocate_resource<directional_light>(std::forward<Ts>(args)...);
 		active_lights_ll.commit_range(0, Base::size());
 

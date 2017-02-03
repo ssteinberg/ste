@@ -39,7 +39,7 @@ float deferred_evaluate_shadowing(deferred_shading_shadow_maps shadow_maps,
 								  int cascade) {
 	float l_radius = light.ld.radius;
 
-	if (light.ld.type == LightTypeDirectional) {
+	if (light_type_is_directional(light.ld.type)) {
 		// Query cascade index, and shadowmap index and construct cascade projection matrix
 		uint cascade_idx = light_get_cascade_descriptor_idx(light.ld);
 		light_cascade_descriptor cascade_descriptor = directional_lights_cascades[cascade_idx];
@@ -95,7 +95,7 @@ vec3 deferred_shade_atmospheric_scattering(ivec2 coord, deferred_atmospherics_lu
 		uint light_idx = uint(lll_parse_light_idx(lll_p));
 		light_descriptor ld = light_buffer[light_idx];
 		
-		if (ld.type == LightTypeDirectional) {
+		if (light_type_is_directional(ld.type)) {
 			vec3 L = ld.position;
 			vec3 I0 = irradiance(ld, .0f);
 
@@ -134,7 +134,7 @@ bool deferred_generate_light_shading_parameters(fragment_shading_parameters frag
 
 	vec3 lux;										// Light illuminance reaching fragment
 	vec3 l = light_incidant_ray(ld, frag.p);		// Light incident ray
-	if (ld.type == LightTypeDirectional) {
+	if (light_type_is_directional(ld.type)) {
 		light.l_dist = abs(ld.directional_distance);
 		
 		// Atmopsheric attenuation
@@ -252,12 +252,12 @@ vec3 deferred_shade_fragment(g_buffer_element gbuffer_frag, ivec2 coord,
 			continue;
 
 		// Shadow query
-		float shdw = 1.f;/*deferred_evaluate_shadowing(shadow_maps,
+		float shdw = deferred_evaluate_shadowing(shadow_maps,
 												 frag,
 												 light,
 												 cascade);
-												 */
-		if (ld.type == LightTypeDirectional) {
+
+		if (light_type_is_directional(ld.type)) {
 			//!? TODO: Remove!
 			// Inject some ambient, still without global illumination...
 			accum_luminance += ld.diffuse * ld.luminance * 1e-11 * (1-shdw);
