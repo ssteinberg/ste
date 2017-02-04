@@ -31,12 +31,8 @@ vec3 cook_torrance_iso_brdf(vec3 n,
 							out float Gmask,
 							out float Gshadow,
 							out float F) {
-	float N_dot_L = dot(n,l);
-	if (N_dot_L <= .0f)
-		return vec3(.0f);
-
 	// Singularity at "grazing-angles", i.e. dot(n,v) == 0
-	float clamped_dotNL = max(epsilon, N_dot_L);
+	float clamped_dotNL = max(epsilon, dot(n,l));
 	float clamped_dotNV = max(epsilon, dot(n,v));
 
 	D = ndf_ggx_isotropic(roughness, dot(n,h));
@@ -108,12 +104,8 @@ vec3 cook_torrance_ansi_brdf(vec3 n,
 							 out float Gmask,
 							 out float Gshadow,
 							 out float F) {
-	float N_dot_L = dot(n,l);
-	if (N_dot_L <= .0f)
-		return vec3(.0f);
-
 	// Like the isotropic case
-	float clamped_dotNL = max(epsilon, N_dot_L);
+	float clamped_dotNL = max(epsilon, dot(n,l));
 	float clamped_dotNV = max(epsilon, dot(n,v));
 
 	float ansi_ratio = clamp(dot(t,h) / (dot(t,h) + dot(b,h)), .0f, 1.f);

@@ -30,6 +30,9 @@ layout(shared, binding = 6) restrict readonly buffer gbuffer_data {
 layout(shared, binding = 7) restrict readonly buffer directional_lights_cascades_data {
 	light_cascade_descriptor directional_lights_cascades[];
 };
+layout(shared, binding = 8) restrict readonly buffer shaped_lights_points_data {
+	vec3 ltc_points[];
+};
 
 layout(r8ui,  binding = 5) restrict readonly uniform uimage2D lll_size;
 layout(r32ui, binding = 6) restrict readonly uniform uimage2D lll_heads;

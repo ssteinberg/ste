@@ -9,7 +9,7 @@
 #include "gi_renderer.hpp"
 #include "basic_renderer.hpp"
 #include "sphere_light.hpp"
-#include "directional_light.hpp"
+#include "quad_light.hpp"
 #include "model_factory.hpp"
 #include "camera.hpp"
 #include "surface_factory.hpp"
@@ -81,13 +81,15 @@ auto create_sphere_light_object(StE::Graphics::scene *scene, const glm::vec3 &li
 	light_obj->set_model_transform(glm::mat4x3(glm::translate(glm::mat4(), light_pos)));
 
 	gli::texture2d light_color_tex{ gli::format::FORMAT_RGB8_UNORM_PACK8, { 1, 1 }, 1 };
-	auto c = light->get_diffuse();
+	auto c = light->get_luminance();
+	auto luminance = glm::length(c);
+	c /= luminance;
 	*reinterpret_cast<glm::u8vec3*>(light_color_tex.data()) = glm::u8vec3(c.r * 255.5f, c.g * 255.5f, c.b * 255.5f);
 	
 	auto layer = scene->properties().material_layers_storage().allocate_layer();
 	auto mat = scene->properties().materials_storage().allocate_material(layer.get());
 	mat->set_texture(std::make_unique<StE::Core::texture_2d>(light_color_tex, false));
-	mat->set_emission(c * light->get_luminance());
+	mat->set_emission(c * luminance);
 
 	light_obj->set_material(mat.get());
 
@@ -120,7 +122,7 @@ void add_scene_lights(StE::Graphics::scene &scene, std::vector<std::unique_ptr<S
 		color = StE::Graphics::kelvin(std::uniform_real_distribution<>(1500,4000)(gen));
 		lums = std::uniform_real_distribution<>(5000, 9000)(gen);
 #endif
-		auto wall_lamp = scene.properties().lights_storage().allocate_shaped_light<StE::Graphics::sphere_light>(lums, color, v, 2.f);
+		auto wall_lamp = scene.properties().lights_storage().allocate_sphere_light(color, lums, v, 2.f);
 		create_sphere_light_object(&scene, v, wall_lamp.get(), materials, layers);
 
 		lights.push_back(std::move(wall_lamp));
@@ -243,13 +245,14 @@ int main()
 
 	const glm::vec3 light0_pos{ -700.6, 138, -70 };
 	const glm::vec3 light1_pos{ 200, 550, 170 };
-	auto light0 = scene.get().properties().lights_storage().allocate_shaped_light<StE::Graphics::sphere_light>(8000.f, StE::Graphics::kelvin(2000), light0_pos, 3.f);
-	auto light1 = scene.get().properties().lights_storage().allocate_shaped_light<StE::Graphics::sphere_light>(20000.f, StE::Graphics::kelvin(7000), light1_pos, 5.f);
-	auto light0_obj = create_sphere_light_object(&scene.get(), light0_pos, light0.get(), materials, material_layers);
+	auto light0 = scene.get().properties().lights_storage().allocate_shaped_light<StE::Graphics::quad_light_onesided>(StE::Graphics::kelvin(2000), 8000.f, light0_pos);
+	light0->set_points({glm::vec3{-4,-4,-4},{4,-4,4},{4,4,4},{-4,4,-4}});
+	auto light1 = scene.get().properties().lights_storage().allocate_sphere_light(StE::Graphics::kelvin(7000), 20000.f, light1_pos, 5.f);
+	//auto light0_obj = create_sphere_light_object(&scene.get(), light0_pos, light0.get(), materials, material_layers);
 	auto light1_obj = create_sphere_light_object(&scene.get(), light1_pos, light1.get(), materials, material_layers);
 
 	const glm::vec3 sun_direction = glm::normalize(glm::vec3{ 0.f, -1.f, 0.f });
-	auto sun_light = scene.get().properties().lights_storage().allocate_directional_light(1e+2f, StE::Graphics::kelvin(5770), 1496e+8f, 695e+6f, sun_direction);
+	auto sun_light = scene.get().properties().lights_storage().allocate_directional_light(1e+1f, StE::Graphics::kelvin(5770), 1496e+8f, 695e+6f, sun_direction);
 
 	add_scene_lights(scene.get(), lights, materials, material_layers);
 
@@ -466,7 +469,7 @@ int main()
 													  .15f});
 #endif
 		light0->set_position(lp);
-		light0_obj->set_model_transform(glm::mat4x3(glm::translate(glm::mat4(), lp)));
+		//light0_obj->set_model_transform(glm::mat4x3(glm::translate(glm::mat4(), lp)));
 		sun_light->set_direction(sun_dir);
 
 		{

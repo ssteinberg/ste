@@ -180,9 +180,13 @@ bool fragment_facing_light_source(fragment_shading_parameters frag,
 			return false;
 	}
 	else {
-		float theta = acos(N_dot_L);
-		float x = atan(light.ld.radius / light.l_dist);
-		if (theta - x >= half_pi)
+		if (N_dot_L > .0f)
+			return true;
+
+		float tan_theta = light.ld.radius / light.l_dist;
+		float tan_theta2 = sqr(tan_theta);
+		float sin_theta2 = tan_theta2 / (1.f + tan_theta2);
+		if (sqr(N_dot_L) >= sin_theta2)
 			return false;
 	}
 
@@ -296,12 +300,6 @@ vec3 deferred_shade_fragment(g_buffer_element gbuffer_frag, ivec2 coord,
 													shadow_maps, 
 													occlusion);
 		accum_luminance += material_texture.rgb * luminance;
-
-		
-		//!? TODO: Remove!
-		// Inject some ambient, still without global illumination...
-		if (light_type_is_directional(ld.type))
-			accum_luminance += ld.diffuse * ld.luminance * 1e-11 * (1-shdw);
 	}
 
 	// Volumetric scattered light

@@ -13,7 +13,10 @@ class point_light : public light {
 	using Base = light;
 
 public:
-	point_light(float luminance, const rgb &diffuse, const glm::vec3 &position, float radius) : light(luminance, radius, diffuse) {
+	point_light(const rgb &color,
+				float intensity, 
+				const glm::vec3 &position, 
+				float radius) : light(color, intensity, radius) {
 		descriptor.type = LightType::Point;
 		descriptor.position = decltype(descriptor.position){ position.x, position.y, position.z };
 	}

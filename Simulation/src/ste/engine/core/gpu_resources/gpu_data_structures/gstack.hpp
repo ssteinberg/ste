@@ -54,11 +54,14 @@ public:
 		++len;
 	}
 
-	void push_back(const std::vector<T> &t) {
-		buffer.commit_range(len, t.size());
-		buffer.upload(len, t.size(), &t[0]);
+	void push_back(const T *t, std::size_t size) {
+		buffer.commit_range(len, size);
+		buffer.upload(len, size, t);
 
-		len += t.size();
+		len += size;
+	}
+	void push_back(const std::vector<T> &t) {
+		push_back(&t[0], t.size());
 	}
 
 	void pop_back(std::size_t n = 1) {
@@ -73,14 +76,17 @@ public:
 		buffer.upload(n, 1, &t);
 	}
 
-	void overwrite(std::size_t n, const std::vector<T> &t) {
+	void overwrite(std::size_t n, const T *t, std::size_t size) {
 		assert(n < len && "Subscript out of range.");
 
-		if (n + t.size() > len) {
-			buffer.commit_range(len, n + t.size() - len);
-			len = n + t.size();
+		if (n + size > len) {
+			buffer.commit_range(len, n + size - len);
+			len = n + size;
 		}
-		buffer.upload(n, t.size(), &t[0]);
+		buffer.upload(n, size, t);
+	}
+	void overwrite(std::size_t n, const std::vector<T> &t) {
+		overwrite(n, &t[0], t.size());
 	}
 
 	void erase_and_shift(std::size_t n, std::size_t count = 1) {

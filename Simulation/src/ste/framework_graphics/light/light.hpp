@@ -11,7 +11,6 @@
 
 #include "observable_resource.hpp"
 
-#include "texture_handle.hpp"
 #include "rgb.hpp"
 
 namespace StE {
@@ -24,26 +23,30 @@ class light : public Core::observable_resource<light_descriptor>,
 protected:
 	light_descriptor descriptor;
 
-public:
-	light(float luminance, float radius, const rgb &diffuse) {
-		descriptor.luminance = luminance;
+protected:
+	light(const rgb &color, float intensity, float radius) {
+		auto lum = color.luminance();
+		auto c = static_cast<decltype(descriptor.emittance)>(color);
+		c = lum > 0 ? c / lum : c;
+
 		descriptor.radius = radius;
-		descriptor.diffuse = decltype(descriptor.diffuse){ diffuse.R(), diffuse.G(), diffuse.B() };
+		descriptor.emittance = c * intensity;
 	}
+
+public:
 	virtual ~light() noexcept {};
 
-	void set_luminance(float l) {
-		descriptor.luminance = l;
-		Base::notify();
-	}
-	void set_diffuse(const rgb &d) {
-		descriptor.diffuse = decltype(descriptor.diffuse){ d.R(), d.G(), d.B() };
+	void set_luminance(const rgb &color, float intensity = 1.f) {
+		auto lum = color.luminance();
+		auto c = static_cast<decltype(descriptor.emittance)>(color);
+		c = lum > 0 ? c / lum : c;
+
+		descriptor.emittance = c * intensity;
 		Base::notify();
 	}
 
-	float get_luminance() const { return descriptor.luminance; }
+	auto &get_luminance() const { return descriptor.emittance; }
 	float get_radius() const { return descriptor.radius; }
-	auto& get_diffuse() const { return descriptor.diffuse; }
 
 	const light_descriptor& get_descriptor() const override final { return descriptor; }
 };

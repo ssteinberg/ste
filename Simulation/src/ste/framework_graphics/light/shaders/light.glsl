@@ -2,6 +2,7 @@
 #include "light_type.glsl"
 
 #include "common.glsl"
+#include "chromaticity.glsl"
 
 #include "quaternion.glsl"
 #include "dual_quaternion.glsl"
@@ -20,9 +21,10 @@ const float light_minimal_luminance_multiplier = 1e-6f;
 struct light_descriptor {
 	// position: Light position for spherical, direction for directional lights.
 	// Radius is light's radius (all light types)
-	// Diffuse is radiance color and luminance is intensity (all light types)
+	// Emittance is the emitted luminance (all light types)
+	// polygonal_light_points_and_offset specifies the number of points and offset into the buffer (polygonal lights only)
 	vec3 position;	float radius;
-	vec3 diffuse;	float luminance;
+	vec3 emittance;	uint polygonal_light_points_and_offset;
 
 	// Light type
 	uint type;
@@ -61,8 +63,8 @@ vec3 light_transform(dual_quaternion transform, light_descriptor ld) {
  *	Calculates light's effective range given desired minimal luminance
  */
 float light_calculate_effective_range(light_descriptor ld, float min_lum) {
-	float l = min_lum;
-	return ld.radius * (sqrt(ld.luminance / l - 1.f) + 1.f);
+	float lum = luminance(ld.emittance);
+	return ld.radius * (sqrt(lum / min_lum - 1.f) + 1.f);
 }
 
 /*
@@ -71,7 +73,7 @@ float light_calculate_effective_range(light_descriptor ld, float min_lum) {
 float light_calculate_minimal_luminance(light_descriptor ld) {
 	return light_type_is_directional(ld.type) ? 
 				.0f : 
-				ld.luminance * light_minimal_luminance_multiplier;
+				luminance(ld.emittance) * light_minimal_luminance_multiplier;
 }
 
 /*
@@ -83,13 +85,12 @@ vec3 light_incidant_ray(light_descriptor ld, vec3 position) {
 }
 
 /*
- *	Calculate light irradiance illuminating from light source at 0 distance. 
+ *	Returns the light irradiance illuminating from light source at 0 distance. 
  *
  *	@param ld			Light descriptor.
  */
 vec3 irradiance(light_descriptor ld) {
-	float min_lum = light_calculate_minimal_luminance(ld);
-	return ld.diffuse * ld.luminance;
+	return ld.emittance;
 }
 /*
  *	Calculate light attenuation at specified distance. 
@@ -116,9 +117,7 @@ float light_attenuation(light_descriptor ld, float dist) {
  */
 vec3 irradiance(light_descriptor ld, float dist, float min_lum) {
 	float f = light_attenuation(ld, dist);
-
-	float illuminance = max(0.f, ld.luminance * f - min_lum);
-	return ld.diffuse * illuminance;
+	return max(vec3(.0f), ld.emittance * f - vec3(min_lum));
 }
 /*
  *	See irradiance(ld, dist, min_lum) for more details.
@@ -129,4 +128,22 @@ vec3 irradiance(light_descriptor ld, float dist, float min_lum) {
 vec3 irradiance(light_descriptor ld, float dist) {
 	float min_lum = light_calculate_minimal_luminance(ld);
 	return irradiance(ld, dist, min_lum);
+}
+
+/*
+ *	Get polygonal light points count
+ *
+ *	@param ld			Light descriptor.
+ */
+uint light_get_polygon_point_counts(light_descriptor ld) {
+	return ld.polygonal_light_points_and_offset >> 24;
+}
+
+/*
+ *	Get polygonal light offset into points buffer
+ *
+ *	@param ld			Light descriptor.
+ */
+uint light_get_polygon_point_offset(light_descriptor ld) {
+	return ld.polygonal_light_points_and_offset & 0x00FFFFFF;
 }

@@ -180,7 +180,7 @@ void ltc_clip_triangle(inout vec3 L[4], out int n) {
 		L[3] = L[0];
 }
 
-vec3 ltc_evaluate(vec3 N, vec3 V, vec3 P, mat3 Minv, vec3 points[4], bool two_sided) {//, sampler2D texFilteredMap) 
+vec3 ltc_evaluate_quad(vec3 N, vec3 V, vec3 P, mat3 Minv, vec3 light_pos, uint offset, bool two_sided) {//, sampler2D texFilteredMap) 
 	// construct orthonormal basis around N
 	vec3 T1, T2;
 	T1 = normalize(V - N*dot(V, N));
@@ -191,10 +191,10 @@ vec3 ltc_evaluate(vec3 N, vec3 V, vec3 P, mat3 Minv, vec3 points[4], bool two_si
 
 	// polygon (allocate 5 vertices for clipping)
 	vec3 L[5];
-	L[0] = Minv * (points[0].xyz - P);
-	L[1] = Minv * (points[1].xyz - P);
-	L[2] = Minv * (points[2].xyz - P);
-	L[3] = Minv * (points[3].xyz - P);
+	L[0] = Minv * (light_pos + ltc_points[offset + 0].xyz - P);
+	L[1] = Minv * (light_pos + ltc_points[offset + 1].xyz - P);
+	L[2] = Minv * (light_pos + ltc_points[offset + 2].xyz - P);
+	L[3] = Minv * (light_pos + ltc_points[offset + 3].xyz - P);
 
 	vec3 textureLight = vec3(1, 1, 1);
 #if LTC_TEXTURED
@@ -224,7 +224,9 @@ vec3 ltc_evaluate(vec3 N, vec3 V, vec3 P, mat3 Minv, vec3 points[4], bool two_si
 	if (n == 5)
 		sum += ltc_integrate_edge(L[4], L[0]);
 
-	sum = two_sided ? abs(sum) : max(.0f, -sum);
+	sum = two_sided ? 
+			abs(sum) : 
+			max(.0f, -sum);
 
 	vec3 Lo_i = vec3(sum);
 
@@ -234,7 +236,7 @@ vec3 ltc_evaluate(vec3 N, vec3 V, vec3 P, mat3 Minv, vec3 points[4], bool two_si
 	return Lo_i / two_pi;
 }
 
-vec3 ltc_evaluate(vec3 N, vec3 V, vec3 P, mat3 Minv, vec3 points[9], bool two_sided) {//, sampler2D texFilteredMap)
+vec3 ltc_evaluate_polygon(vec3 N, vec3 V, vec3 P, mat3 Minv, vec3 light_pos, uint primitives, uint offset, bool two_sided) {//, sampler2D texFilteredMap)
 	// construct orthonormal basis around N
 	vec3 T1, T2;
 	T1 = normalize(V - N*dot(V, N));
@@ -244,13 +246,12 @@ vec3 ltc_evaluate(vec3 N, vec3 V, vec3 P, mat3 Minv, vec3 points[9], bool two_si
 	Minv = Minv * transpose(mat3(T1, T2, N));
 
 	vec3 accum = vec3(.0f);
-	for (int t=0; t<3; ++t) {
+	for (int t=0; t<primitives; ++t) {
 		// polygon (allocate 4 vertices for clipping)
 		vec3 L[4];
-		L[0] = Minv * (points[0 + t*3].xyz - P);
-		L[1] = Minv * (points[1 + t*3].xyz - P);
-		L[2] = Minv * (points[2 + t*3].xyz - P);
-		L[3] = L[2]; // avoid warning
+		L[0] = Minv * (light_pos + ltc_points[offset + 3*t + 0].xyz - P);
+		L[1] = Minv * (light_pos + ltc_points[offset + 3*t + 1].xyz - P);
+		L[2] = Minv * (light_pos + ltc_points[offset + 3*t + 2].xyz - P);
 
 		vec3 textureLight = vec3(1, 1, 1);
 	#if LTC_TEXTURED
@@ -258,7 +259,7 @@ vec3 ltc_evaluate(vec3 N, vec3 V, vec3 P, mat3 Minv, vec3 points[9], bool two_si
 	#endif
 
 		int n=3;
-		//ltc_clip_triangle(L, n);
+		ltc_clip_triangle(L, n);
 	
 		if (n == 0)
 			return vec3(0, 0, 0);
@@ -279,7 +280,9 @@ vec3 ltc_evaluate(vec3 N, vec3 V, vec3 P, mat3 Minv, vec3 points[9], bool two_si
 			sum += ltc_integrate_edge(L[3], L[0]);
 
 		// note: negated due to winding order
-		sum = two_sided ? abs(sum) : max(.0f, -sum);
+		sum = two_sided ? 
+				abs(sum) : 
+				max(.0f, -sum);
 
 		// scale by filtered light color
 		accum += sum * textureLight;
@@ -290,7 +293,7 @@ vec3 ltc_evaluate(vec3 N, vec3 V, vec3 P, mat3 Minv, vec3 points[9], bool two_si
 	return Lo_i / two_pi;
 }
 
-vec3 ltc_evaluate(vec3 N, vec3 V, vec3 P, mat3 Minv, vec3 L, float r) {
+vec3 ltc_evaluate_sphere(vec3 N, vec3 V, vec3 P, mat3 Minv, vec3 light_pos, float r) {
 	const float points_per_solid_angle = 45.f;
 
 	// construct orthonormal basis around N
@@ -302,7 +305,7 @@ vec3 ltc_evaluate(vec3 N, vec3 V, vec3 P, mat3 Minv, vec3 L, float r) {
 	Minv = Minv * transpose(mat3(T1, T2, N));
 
 	float sum = .0f;
-	vec3 l = L - P;
+	vec3 l = light_pos - P;
 	
 	// Compute solid angle, and use it to select amount of circle integration points
 	float solid_angle = clamp(r / length(l), epsilon, 2);

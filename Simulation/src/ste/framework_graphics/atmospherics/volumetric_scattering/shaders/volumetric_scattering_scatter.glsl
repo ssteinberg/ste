@@ -90,7 +90,6 @@ vec3 scatter_spherical_light(vec2 slice_coords,
 					
 	vec3 shadow_v = w_pos - ld.position;
 	/*float shadow = shadow_fast(shadow_depth_maps,
-								shadow_maps,
 								shadowmap_idx,
 								position,
 								l,
@@ -105,9 +104,10 @@ vec3 scatter_spherical_light(vec2 slice_coords,
 	if (shadow <= .0f)
 		return vec3(0);
 
-	return irradiance(ld, l_dist) * scatter(ld.position, w_pos, eye_position(),
-											thickness,
-											atmospheric_optical_length_lut);
+	l_dist = max(ld.radius * 2.f, l_dist);
+	return shadow * irradiance(ld, l_dist) * scatter(ld.position, w_pos, eye_position(),
+													 thickness,
+													 atmospheric_optical_length_lut);
 }
 
 vec3 scatter_directional_light(vec2 slice_coords,
@@ -128,9 +128,9 @@ vec3 scatter_directional_light(vec2 slice_coords,
 	if (shadow <= .0f)
 		return vec3(0);
 			
-	return irradiance(ld, .0f) * scatter_ray(eye_position(), w_pos, -ld.position,
-											 thickness,
-											 atmospheric_optical_length_lut);
+	return shadow * irradiance(ld) * scatter_ray(eye_position(), w_pos, -ld.position,
+												 thickness,
+												 atmospheric_optical_length_lut);
 }
 
 bool generate_sample(vec2 slice_coords, float s, 

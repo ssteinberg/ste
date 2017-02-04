@@ -4,23 +4,34 @@
 #pragma once
 
 #include "stdafx.hpp"
-#include "shaped_light.hpp"
+#include "light.hpp"
 
 namespace StE {
 namespace Graphics {
 
-class sphere_light : public shaped_light {
-	using Base = shaped_light;
+class sphere_light : public light {
+	using Base = light;
 
 public:
-	sphere_light(float luminance, const rgb &diffuse, const glm::vec3 &position, float radius) : shaped_light(LightType::Sphere,
-																											  luminance, 
-																											  diffuse,
-																											  position,
-																											  radius) {}
+	sphere_light(const rgb &color,
+				 float intensity,
+				 const glm::vec3 &position,
+				 float radius) : light(color, intensity, radius) {
+		descriptor.type = LightType::Sphere;
+		descriptor.position = decltype(descriptor.position){ position.x, position.y, position.z };
+	}
 	virtual ~sphere_light() noexcept {}
 
-	using Base::set_radius;
+	void set_position(const glm::vec3 &p) {
+		descriptor.position = decltype(descriptor.position){ p.x, p.y, p.z };
+		Base::notify();
+	}
+	void set_radius(float r) {
+		descriptor.radius = r;
+		Base::notify();
+	}
+
+	glm::vec3 get_position() const override { return{ descriptor.position.x, descriptor.position.y, descriptor.position.z }; }
 };
 
 }

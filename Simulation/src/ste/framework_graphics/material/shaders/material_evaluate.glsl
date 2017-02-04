@@ -44,21 +44,46 @@ vec3 material_evaluate_layer_radiance(material_layer_unpacked_descriptor descrip
 
 	if (ltc) {
 		// Calculate polygonal light irradiance using linearly transformed cosines
-		vec2 ltccoords = ltc_lut_coords(ltc_luts.ltc_ggx_fit, dot(wn, wv), descriptor.roughness);
+		vec2 ltccoords = ltc_lut_coords(ltc_luts.ltc_ggx_fit, dot(n, v), descriptor.roughness);
 		mat3 ltc_M_inv = ltc_inv_matrix(ltc_luts.ltc_ggx_fit, ltccoords);
 		float ltc_ampl = texture(ltc_luts.ltc_ggx_amplitude, ltccoords).x;
 		
-		// The integration type depends on shape
+		// Read light shape
 		bool shape_sphere = light_shape_is_sphere(ld.type);
+		bool shape_quad = light_shape_is_quad(ld.type);
+		bool shape_polygon = light_shape_is_polygon(ld.type);
+		
+		// And properties
+		bool two_sided = light_type_is_two_sided(ld.type);
+		bool textured = light_type_is_textured(ld.type);
+
+		// Points count and offset into points buffer
+		uint points_count = light_get_polygon_point_counts(ld);
+		uint points_offset = light_get_polygon_point_offset(ld);
+		
+		vec3 L = ld.position;
 	
+		// The integration type depends on shape
 		vec3 specular_irradiance;
 		vec3 diffuse_irradiance;
 		if (shape_sphere) {
-			vec3 L = ld.position;
+			// No points needed for spherical light
 			float r = ld.radius;
 
-			specular_irradiance = ltc_evaluate(wn, wv, wp, ltc_M_inv, L, r) * ltc_ampl;
-			diffuse_irradiance  = ltc_evaluate(wn, wv, wp, mat3(1), L, r);
+			specular_irradiance = ltc_evaluate_sphere(wn, wv, wp, ltc_M_inv, L, r) * ltc_ampl;
+			diffuse_irradiance  = ltc_evaluate_sphere(wn, wv, wp, mat3(1),   L, r);
+		}
+		else if (shape_quad) {
+			// Quad. Always 4 points.
+			specular_irradiance = ltc_evaluate_quad(wn, wv, wp, ltc_M_inv, L, points_offset, two_sided) * ltc_ampl;
+			diffuse_irradiance  = ltc_evaluate_quad(wn, wv, wp, mat3(1),   L, points_offset, two_sided);
+		}
+		else { //shape_polygon
+			// Polygon/Polyhedron light. Primitives are always triangles.
+			uint primitives = points_count / 3;
+
+			specular_irradiance = ltc_evaluate_polygon(wn, wv, wp, ltc_M_inv, L, primitives, points_offset, two_sided) * ltc_ampl;
+			diffuse_irradiance  = ltc_evaluate_polygon(wn, wv, wp, mat3(1),   L, primitives, points_offset, two_sided);
 		}
 		
 		// Compute fresnel term
@@ -84,7 +109,7 @@ vec3 material_evaluate_layer_radiance(material_layer_unpacked_descriptor descrip
 												c_spec);
 		vec3 Diffuse = diffuse_illuminance * lambert_diffuse_brdf();
 		
-		vec3 brdf = irradiance * (Specular + Diffuse);
+		vec3 brdf = irradiance * dot(n, l) * (Specular + Diffuse);
 		return max(vec3(.0f), attenuation * brdf - vec3(cutoff));
 	}
 }

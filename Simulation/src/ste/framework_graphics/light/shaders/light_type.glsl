@@ -4,6 +4,7 @@ const uint light_type_shape_bit = 1 << 1;
 const uint light_type_two_sided_bit = 1 << 2;
 const uint light_type_textured_bit = 1 << 3;
 
+const uint light_shape_mask = 7 << 4;
 const uint light_shape_sphere = (0 & 7) << 4;
 const uint light_shape_quad = (1 & 7) << 4;
 const uint light_shape_polygon = (2 & 7) << 4;
@@ -45,17 +46,17 @@ bool light_type_is_textured(uint type) {
 }
 
 bool light_shape_is_sphere(uint type) {
-	return (type & light_shape_sphere) == light_shape_sphere;
+	return (type & light_shape_mask) == light_shape_sphere;
 }
 
 bool light_shape_is_quad(uint type) {
-	return (type & light_shape_quad) == light_shape_quad;
+	return (type & light_shape_mask) == light_shape_quad;
 }
 
 bool light_shape_is_polygon(uint type) {
-	return (type & light_shape_polygon) == light_shape_polygon;
+	return (type & light_shape_mask) == light_shape_polygon;
 }
 
 bool light_shape_is_convex_polyhedron(uint type) {
-	return (type & light_shape_convex_polyhedron) == light_shape_convex_polyhedron;
+	return (type & light_shape_mask) == light_shape_convex_polyhedron;
 }

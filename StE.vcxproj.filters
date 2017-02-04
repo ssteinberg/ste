@@ -1088,16 +1088,22 @@
     <ClInclude Include="Simulation\src\ste\framework_text\attributed_strings\markup_formatter\attributed_string_common.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_entities\shaped_light.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_type.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_entities\point_light.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_entities\polygonal_lights\quad_light.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_entities\polygonal_lights\polygonal_light.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_entities\polygonal_lights\sphere_light.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_entities\polygonal_lights\shaped_light.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
