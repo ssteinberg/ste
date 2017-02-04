@@ -3,6 +3,16 @@
 #include "pack.glsl"
 #include "girenderer_transform_buffer.glsl"
 
+struct gbuffer_fragment_information {
+	float depth;
+	vec2 uv;
+	vec2 duvdx, duvdy;
+	vec3 n;
+	vec3 t;
+	vec3 b;
+	int mat;
+};
+
 bool gbuffer_eof(uint ptr) {
 	return ptr == 0xFFFFFFFF;
 }
@@ -42,4 +52,18 @@ vec2 gbuffer_parse_duvdx(g_buffer_element frag) {
 vec2 gbuffer_parse_duvdy(g_buffer_element frag) {
 	uint duvdy16 = floatBitsToUint(frag.data[0].w);
 	return unpackHalf2x16(duvdy16);
+}
+
+gbuffer_fragment_information gbuffer_parse_fragment_information(g_buffer_element frag) {
+	gbuffer_fragment_information info;
+	info.depth = gbuffer_parse_depth(frag);
+	info.uv = gbuffer_parse_uv(frag);
+	info.duvdx = gbuffer_parse_duvdx(frag);
+	info.duvdy = gbuffer_parse_duvdy(frag);
+	info.n = gbuffer_parse_normal(frag);
+	info.t = gbuffer_parse_tangent(frag);
+	info.b = cross(info.t, info.n);
+	info.mat = gbuffer_parse_material(frag);
+
+	return info;
 }

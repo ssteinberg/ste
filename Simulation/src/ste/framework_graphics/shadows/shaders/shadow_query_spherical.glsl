@@ -5,7 +5,6 @@
 const float shadow_cube_max_penumbra = 80.f / shadow_cubemap_size;
 const float shadow_cube_min_penumbra = 3.f / shadow_cubemap_size;
 
-
 /*
  *	Creates a slightly offseted testing depth for shadowmaps lookups
  */
@@ -14,10 +13,9 @@ float shadow_calculate_test_depth(float z, float n, float f) {
 
 	// z gives a linear distance, unlike depth, use it to compute multiplier and additive component of the test depth modifier
 	float x = -z / n - 1.f;
-	float m_mixer = clamp(x / 500.f, .0f, 1.f);
 	float a_mixer = clamp(x / 50.f, .0f, 1.f);
-	float multiplier = mix(1.0175f, 1.0015f, m_mixer);
-	float delta = mix(15e-9f, .0, a_mixer);
+	float multiplier = 1.04f;
+	float delta = mix(5e-9f, .0f, a_mixer);
 
 	return d * multiplier + delta;
 }

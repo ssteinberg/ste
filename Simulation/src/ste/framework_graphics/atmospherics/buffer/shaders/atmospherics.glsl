@@ -300,7 +300,7 @@ vec3 scatter_ray(vec3 P0,
 *	@param cos_x	Precomputed cosine of the angular distance
 */
 float cie_scattering_indicatrix(float x, float cos_x) {
-	return 1.f + 10.f * (exp(-3.f * x) - exp(-3.f * pi_over_2)) + 0.45f * cos_x*cos_x;
+	return 1.f + 10.f * (exp(-3.f * x) - exp(-3.f * half_pi)) + 0.45f * cos_x*cos_x;
 }
 /*
 *	Returns the normalization factor for the scattering indicatrix, i.e. the indicatrix at angular distance 0.

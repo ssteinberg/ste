@@ -45,7 +45,7 @@ void main() {
 
 	bool add_light = false;
 
-	if (ld.type == LightTypeDirectional) {
+	if (light_type_is_directional(ld.type)) {
 		// For directional lights:
 		// Add light to active light linked list		
 		uint cascade_idx = light_get_cascade_descriptor_idx(ld);

@@ -1,5 +1,5 @@
 // StE
-// Â© Shlomi Steinberg, 2015-2016
+// © Shlomi Steinberg, 2015-2017
 
 #pragma once
 
@@ -9,15 +9,18 @@
 namespace StE {
 namespace Graphics {
 
-class spherical_light : public light {
+class sphere_light : public light {
 	using Base = light;
 
 public:
-	spherical_light(float luminance, const rgb &diffuse, const glm::vec3 &position, float radius) : light(luminance, radius, diffuse) {
+	sphere_light(const rgb &color,
+				 float intensity,
+				 const glm::vec3 &position,
+				 float radius) : light(color, intensity, radius) {
 		descriptor.type = LightType::Sphere;
 		descriptor.position = decltype(descriptor.position){ position.x, position.y, position.z };
 	}
-	virtual ~spherical_light() noexcept {}
+	virtual ~sphere_light() noexcept {}
 
 	void set_position(const glm::vec3 &p) {
 		descriptor.position = decltype(descriptor.position){ p.x, p.y, p.z };
@@ -28,7 +31,7 @@ public:
 		Base::notify();
 	}
 
-	glm::vec3 get_position() const override { return { descriptor.position.x, descriptor.position.y, descriptor.position.z }; }
+	glm::vec3 get_position() const override { return{ descriptor.position.x, descriptor.position.y, descriptor.position.z }; }
 };
 
 }

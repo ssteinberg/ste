@@ -75,7 +75,7 @@ void main() {
 		light_descriptor ld = light_buffer[light_idx];
 		vec3 l = ld.transformed_position;
 		
-		if (ld.type == LightTypeDirectional) {
+		if (light_type_is_directional(ld.type)) {
 			// For directional lights check if the geometry is in one of the cascades
 			uint cascade_idx = light_get_cascade_descriptor_idx(ld);
 			light_cascade_descriptor cascade_descriptor = directional_lights_cascades[cascade_idx];

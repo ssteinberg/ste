@@ -157,6 +157,8 @@ public:
 	void attach_profiler(profiler *p) { q.attach_profiler(p); }
 
 	virtual std::string rendering_system_name() const override { return "gi_renderer"; };
+
+	auto& get_composer_program() { return composer.get().get_program(); }
 };
 
 }

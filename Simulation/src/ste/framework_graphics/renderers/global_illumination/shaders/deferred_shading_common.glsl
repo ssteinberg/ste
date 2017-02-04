@@ -13,6 +13,11 @@ struct deferred_material_microfacet_luts {
 	sampler2DArray microfacet_transmission_fit_lut;
 };
 
+struct deferred_material_ltc_luts { 
+	sampler2D ltc_ggx_fit;
+	sampler2D ltc_ggx_amplitude;
+};
+
 struct deferred_atmospherics_luts { 
 	sampler2DArray atmospheric_optical_length_lut;
 	sampler3D atmospheric_scattering_lut;
@@ -43,6 +48,11 @@ struct fragment_shading_parameters {
 	vec3 t;
 	vec3 b;
 
-	// World space position
+	// Normalized ray from fragment to eye, view space
+	vec3 v;
+
+	// World space position, normal
 	vec3 world_position;
+	vec3 world_normal;
+	vec3 world_v;
 };

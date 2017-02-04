@@ -5,10 +5,12 @@ struct material_texture_descriptor {
 	layout(bindless_sampler) sampler2D tex_handler;
 };
 
-const uint material_has_texture = 0x1 << 0;
-const uint material_has_cavity_map = 0x1 << 1;
-const uint material_has_normal_map = 0x1 << 2;
-const uint material_has_mask_map = 0x1 << 3;
+const uint material_has_texture_bit = 0x1 << 0;
+const uint material_has_cavity_map_bit = 0x1 << 1;
+const uint material_has_normal_map_bit = 0x1 << 2;
+const uint material_has_mask_map_bit = 0x1 << 3;
+
+const uint material_has_subsurface_scattering_bit = 0x1 << 31;
 
 struct material_descriptor {
 	material_texture_descriptor cavity_map;
@@ -21,7 +23,7 @@ struct material_descriptor {
 	
 	uint head_layer;
 
-	uint used_textures_mask;
+	uint material_flags;
 };
 
 struct material_layer_descriptor {
@@ -58,40 +60,49 @@ vec3 material_emission(material_descriptor md) {
 }
 
 vec4 material_base_texture(material_descriptor md, vec2 uv, vec2 duvdx, vec2 duvdy) {
-	if ((md.used_textures_mask & material_has_texture) != 0)
+	if ((md.material_flags & material_has_texture_bit) != 0)
 		return textureGrad(md.texture.tex_handler, uv, duvdx, duvdy);
 	return vec4(1.f);
 }
 vec4 material_base_texture(material_descriptor md, vec2 uv) {
-	if ((md.used_textures_mask & material_has_texture) != 0)
+	if ((md.material_flags & material_has_texture_bit) != 0)
 		return texture(md.texture.tex_handler, uv);
 	return vec4(1.f);
 }
 
 float material_cavity(material_descriptor md, vec2 uv, vec2 duvdx, vec2 duvdy) {
-	if ((md.used_textures_mask & material_has_cavity_map) != 0)
+	if ((md.material_flags & material_has_cavity_map_bit) != 0)
 		return mix(material_cavity_min, material_cavity_max, textureGrad(md.cavity_map.tex_handler, uv, duvdx, duvdx).x);
 	return 1.f;
 }
 float material_cavity(material_descriptor md, vec2 uv) {
-	if ((md.used_textures_mask & material_has_cavity_map) != 0)
+	if ((md.material_flags & material_has_cavity_map_bit) != 0)
 		return mix(material_cavity_min, material_cavity_max, texture(md.cavity_map.tex_handler, uv).x);
 	return 1.f;
 }
 
 bool material_is_masked(material_descriptor md, vec2 uv, vec2 duvdx, vec2 duvdy) {
-	if ((md.used_textures_mask & material_has_mask_map) != 0)
+	if ((md.material_flags & material_has_mask_map_bit) != 0)
 		return textureGrad(md.mask_map.tex_handler, uv, duvdx, duvdy).x < material_alpha_discard_threshold;
 	return false;
 }
 bool material_is_masked(material_descriptor md, vec2 uv) {
-	if ((md.used_textures_mask & material_has_mask_map) != 0)
+	if ((md.material_flags & material_has_mask_map_bit) != 0)
 		return texture(md.mask_map.tex_handler, uv).x < material_alpha_discard_threshold;
 	return false;
 }
 
+bool material_has_subsurface_scattering(material_descriptor md) {
+	return (md.material_flags & material_has_subsurface_scattering_bit) != 0;
+}
+
+bool material_is_simple(material_descriptor md, material_layer_descriptor head_layer) {
+	return !material_has_subsurface_scattering(md) && 
+			head_layer.next_layer_id == material_none;
+}
+
 void normal_map(material_descriptor md, vec2 uv, vec2 duvdx, vec2 duvdy, inout vec3 n, inout vec3 t, inout vec3 b) {
-	if ((md.used_textures_mask & material_has_normal_map) != 0) {
+	if ((md.material_flags & material_has_normal_map_bit) != 0) {
 		mat3 tbn = mat3(t, b, n);
 
 		vec3 nm = textureGrad(md.normal_map.tex_handler, uv, duvdx, duvdy).xyz;
