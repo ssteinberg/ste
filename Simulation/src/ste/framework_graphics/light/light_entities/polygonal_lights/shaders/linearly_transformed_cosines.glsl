@@ -155,7 +155,27 @@ void ltc_clip_triangle(inout vec3 L[4], out int n) {
 		L[3] = L[0];
 }
 
-vec3 ltc_evaluate_quad(vec3 N, vec3 V, vec3 P, mat3 Minv, vec3 light_pos, uint offset, bool two_sided) {//, sampler2D texFilteredMap) 
+/*
+ *	Integrates irradiance of a quad projected onto a sphere with clamped cosine distribution.
+ *	
+ *	The input is a quad, which is then clipped to the upper hemisphere of point P with normal N.
+ *	Input is read from storage buffer ltc_points.
+ *
+ *	@param N			Normal, world coordinates.
+ *	@param V			Position to eye vector, normalized.
+ *	@param P			Position, world coordinates.
+ *	@param Minv			Inverse of M, linear transformation matrix from clamped cosine distribution.
+ *	@param light_pos	Light position, world coordinates.
+ *	@param offset		Offset into point buffer (ltc_points).
+ *	@param two_sided	Single or two-sided shape. Must be false for polyhedrons.
+ */
+vec3 ltc_evaluate_quad(vec3 N, 
+					   vec3 V, 
+					   vec3 P, 
+					   mat3 Minv, 
+					   vec3 light_pos, 
+					   uint offset, 
+					   bool two_sided) {//, sampler2D texFilteredMap) 
 	// construct orthonormal basis around N
 	vec3 T1, T2;
 	T1 = normalize(V - N*dot(V, N));
@@ -173,9 +193,7 @@ vec3 ltc_evaluate_quad(vec3 N, vec3 V, vec3 P, mat3 Minv, vec3 light_pos, uint o
 	L[4] = L[0];
 
 	vec3 textureLight = vec3(1, 1, 1);
-#if LTC_TEXTURED
 	//textureLight = FetchDiffuseFilteredTexture(texFilteredMap, L[0], L[1], L[2], L[3]);
-#endif
 
 	vec4 zs = vec4(L[0].z, L[1].z, L[2].z, L[3].z);
 	bool all_below_horizon = all(lessThanEqual(zs, vec4(0)));
@@ -218,7 +236,30 @@ vec3 ltc_evaluate_quad(vec3 N, vec3 V, vec3 P, mat3 Minv, vec3 light_pos, uint o
 	return Lo_i / two_pi;
 }
 
-vec3 ltc_evaluate_polygon(vec3 N, vec3 V, vec3 P, mat3 Minv, vec3 light_pos, uint primitives, uint offset, bool two_sided) {//, sampler2D texFilteredMap)
+/*
+ *	Integrates polygonal irradiance projected onto a sphere with clamped cosine distribution.
+ *	
+ *	The input is an arbitary polygon or a convex polyhedron, constructed from triangles. In the latter 
+ *	case the light can not be two-sided. The input is clipped to the upper hemisphere of point P with normal N.
+ *	Input is read from storage buffer ltc_points.
+ *
+ *	@param N			Normal, world coordinates.
+ *	@param V			Position to eye vector, normalized.
+ *	@param P			Position, world coordinates.
+ *	@param Minv			Inverse of M, linear transformation matrix from clamped cosine distribution.
+ *	@param light_pos	Light position, world coordinates.
+ *	@param primitives	Primitives (triangles) count.
+ *	@param offset		Offset into point buffer (ltc_points).
+ *	@param two_sided	Single or two-sided shape. Must be false for polyhedrons.
+ */
+vec3 ltc_evaluate_polygon(vec3 N, 
+						  vec3 V, 
+						  vec3 P, 
+						  mat3 Minv, 
+						  vec3 light_pos, 
+						  uint primitives, 
+						  uint offset, 
+						  bool two_sided) {//, sampler2D texFilteredMap)
 	// construct orthonormal basis around N
 	vec3 T1, T2;
 	T1 = normalize(V - N*dot(V, N));
@@ -236,9 +277,7 @@ vec3 ltc_evaluate_polygon(vec3 N, vec3 V, vec3 P, mat3 Minv, vec3 light_pos, uin
 		L[2] = Minv * (light_pos + ltc_points[offset + 3*t + 2].xyz - P);
 
 		vec3 textureLight = vec3(1, 1, 1);
-	#if LTC_TEXTURED
 		//textureLight = FetchDiffuseFilteredTexture(texFilteredMap, L[0], L[1], L[2], L[3]);
-	#endif
 	
 		vec3 zs = vec3(L[0].z, L[1].z, L[2].z);
 		bool all_below_horizon = all(lessThanEqual(zs, vec3(.0f)));
@@ -281,7 +320,24 @@ vec3 ltc_evaluate_polygon(vec3 N, vec3 V, vec3 P, mat3 Minv, vec3 light_pos, uin
 	return Lo_i / two_pi;
 }
 
-vec3 ltc_evaluate_sphere(vec3 N, vec3 V, vec3 P, mat3 Minv, vec3 light_pos, float r) {
+/*
+ *	Integrates irradiance of a sphere projected onto a sphere with clamped cosine distribution.
+ *	
+ *	The input is a sphere, which is then clipped to the upper hemisphere of point P with normal N.
+ *
+ *	@param N			Normal, world coordinates.
+ *	@param V			Position to eye vector, normalized.
+ *	@param P			Position, world coordinates.
+ *	@param Minv			Inverse of M, linear transformation matrix from clamped cosine distribution.
+ *	@param light_pos	Light position, world coordinates.
+ *	@param r			Sphere radius.
+ */
+vec3 ltc_evaluate_sphere(vec3 N, 
+						 vec3 V, 
+						 vec3 P, 
+						 mat3 Minv, 
+						 vec3 light_pos, 
+						 float r) {
 	const float points_per_solid_angle = 45.f;
 
 	// construct orthonormal basis around N
