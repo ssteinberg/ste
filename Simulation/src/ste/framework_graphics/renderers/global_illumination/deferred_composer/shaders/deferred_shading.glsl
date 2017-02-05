@@ -10,8 +10,6 @@
 #include "light_cascades.glsl"
 #include "linked_light_lists.glsl"
 
-#include "gbuffer.glsl"
-
 #include "intersection.glsl"
 
 #include "atmospherics.glsl"

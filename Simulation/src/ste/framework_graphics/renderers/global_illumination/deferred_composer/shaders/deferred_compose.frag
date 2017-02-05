@@ -10,7 +10,7 @@
 #include "light_cascades.glsl"
 #include "linked_light_lists.glsl"
 
-#include "gbuffer.glsl"
+#include "gbuffer_load.glsl"
 
 layout(std430, binding = 0) restrict readonly buffer material_data {
 	material_descriptor mat_descriptor[];
@@ -24,9 +24,6 @@ layout(std430, binding = 2) restrict readonly buffer light_data {
 	light_descriptor light_buffer[];
 };
 
-layout(shared, binding = 6) restrict readonly buffer gbuffer_data {
-	g_buffer_element gbuffer[];
-};
 layout(shared, binding = 7) restrict readonly buffer directional_lights_cascades_data {
 	light_cascade_descriptor directional_lights_cascades[];
 };
@@ -43,8 +40,6 @@ layout(shared, binding = 11) restrict readonly buffer lll_data {
 uniform float cascades_depths[directional_light_cascades];
 
 #include "linked_light_lists_load.glsl"
-
-#include "gbuffer_load.glsl"
 
 #include "material_evaluate.glsl"
 
@@ -71,13 +66,23 @@ layout(bindless_sampler) uniform sampler3D atmospheric_ambient_lut;
 
 layout(binding = 0) uniform sampler2D back_face_depth;
 layout(binding = 1) uniform sampler2D front_face_depth;
+layout(binding = 2) uniform sampler2DArray gbuffer;
 
 out vec4 gl_FragColor;
+
+g_buffer_element read_gbuffer(ivec2 coords) {
+	g_buffer_element g_frag;
+
+	g_frag.data[0] = texelFetch(gbuffer, ivec3(coords, 0), 0);
+	g_frag.data[1] = texelFetch(gbuffer, ivec3(coords, 1), 0);
+	
+	return g_frag;
+}
 
 void main() {
 	ivec2 coord = ivec2(gl_FragCoord.xy);
 
-	g_buffer_element g_frag = gbuffer_load(coord);
+	g_buffer_element g_frag = read_gbuffer(coord);
 
 	deferred_shading_shadow_maps shadow_maps_struct;
 	shadow_maps_struct.shadow_depth_maps = shadow_depth_maps;

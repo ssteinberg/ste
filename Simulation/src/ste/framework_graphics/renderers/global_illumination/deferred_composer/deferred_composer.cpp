@@ -182,8 +182,8 @@ void deferred_composer::set_context_state() const {
 	
 	0_tex_unit = *dr->gbuffer.get_backface_depth_target();
 	1_tex_unit = *dr->gbuffer.get_depth_target();
+	2_tex_unit = *dr->gbuffer.get_gbuffer();
 
-	dr->gbuffer.bind_gbuffer();
 	0_storage_idx = dr->s->properties().materials_storage().buffer();
 	1_storage_idx = dr->s->properties().material_layers_storage().buffer();
 

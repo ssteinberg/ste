@@ -28,12 +28,10 @@ void scene::bind_buffers() const {
 void scene::set_context_state() const {
 	Core::GL::gl_current_context::get()->enable_depth_test();
 	Core::GL::gl_current_context::get()->depth_func(GL_EQUAL);
-	Core::GL::gl_current_context::get()->color_mask(false, false, false, false);
 	Core::GL::gl_current_context::get()->depth_mask(false);
 
 	Core::GL::gl_current_context::get()->enable_state(Core::GL::BasicStateName::CULL_FACE);
 
-	gbuffer->bind_gbuffer();
 	idb.buffer().bind();
 	bind_buffers();
 

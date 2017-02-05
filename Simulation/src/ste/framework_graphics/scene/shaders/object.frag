@@ -3,20 +3,15 @@
 #version 450
 #extension GL_ARB_bindless_texture : require
 
-layout(early_fragment_tests) in;
-
 #include "material.glsl"
-#include "gbuffer.glsl"
+#include "gbuffer_store.glsl"
+
+layout(location = 0) out vec4 gbuffer0;
+layout(location = 1) out vec4 gbuffer1;
 
 layout(std430, binding = 13) restrict readonly buffer material_data {
 	material_descriptor mat_descriptor[];
 };
-
-layout(shared, binding = 6) restrict writeonly buffer gbuffer_data {
-	g_buffer_element gbuffer[];
-};
-
-#include "gbuffer_store.glsl"
 
 in scene_transform {
 	vec3 frag_position;
@@ -30,8 +25,10 @@ void main() {
 	vec2 uv = vin.frag_texcoords;
 	material_descriptor md = mat_descriptor[vin.matIdx];
 
-	if (material_is_masked(md, uv))
+	if (material_is_masked(md, uv)) {
+		discard;
 		return;
+	}
 
 	vec3 P = vin.frag_position;
 	vec3 n = normalize(vin.frag_normal);
@@ -39,12 +36,13 @@ void main() {
 
 	int material = vin.matIdx;
 
-	gbuffer_store(gl_FragCoord.z,
-				  uv,
-				  dFdx(uv),
-				  dFdy(uv),
-				  n,
-				  t,
-				  material,
-				  ivec2(gl_FragCoord.xy));
+	g_buffer_element gbuffer_element = gbuffer_encode(gl_FragCoord.z,
+													  uv,
+													  dFdx(uv),
+													  dFdy(uv),
+													  n,
+													  t,
+													  material);
+	gbuffer0 = gbuffer_element.data[0];
+	gbuffer1 = gbuffer_element.data[1];
 }
