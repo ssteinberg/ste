@@ -10,7 +10,7 @@
 #include "light.glsl"
 #include "light_transport.glsl"
 
-#include "linearly_transformed_cosines.glsl"
+#include "linearly_transformed_cosines_light_integration.glsl"
 #include "microfacet_ggx_fitting.glsl"
 #include "cook_torrance.glsl"
 #include "lambert_diffuse.glsl"

@@ -8,7 +8,7 @@
 #include "light_cascade_descriptor.hpp"
 
 #include "directional_light.hpp"
-#include "point_light.hpp"
+#include "virtual_light.hpp"
 #include "sphere_light.hpp"
 #include "shaped_light.hpp"
 
@@ -62,8 +62,8 @@ public:
 	}
 
 	template <typename ... Ts>
-	auto allocate_point_light(Ts&&... args) {
-		auto res = Base::allocate_resource<point_light>(std::forward<Ts>(args)...);
+	auto allocate_virtual_light(Ts&&... args) {
+		auto res = Base::allocate_resource<virtual_light>(std::forward<Ts>(args)...);
 		active_lights_ll.commit_range(0, Base::size());
 
 		return std::move(res);
