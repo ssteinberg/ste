@@ -113,7 +113,7 @@ float light_attenuation(light_descriptor ld, float dist) {
  *
  *	@param ld			Light descriptor.
  *	@param dist			Precomputed path distance, from light point to position.
- *	@param min_lum		Minimal light luminance. Refer to light_lux_at_distance.
+ *	@param min_lum		Minimal light luminance. 
  */
 vec3 irradiance(light_descriptor ld, float dist, float min_lum) {
 	float f = light_attenuation(ld, dist);

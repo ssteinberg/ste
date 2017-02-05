@@ -185,7 +185,7 @@ vec3 material_evaluate_radiance_simple(material_layer_unpacked_descriptor descri
 												frag.v, light.l, h,
 												cos_critical, 
 												refractive_ratio,
-												light.lux,
+												light.cd_m2,
 												descriptor.albedo.rgb,
 												diffused_light,
 												ltc_luts);
@@ -315,7 +315,7 @@ vec3 material_evaluate_radiance(material_descriptor md,
 															  v, l, h,
 															  cos_critical, 
 															  refractive_ratio,
-															  light.lux,
+															  light.cd_m2,
 															  albedo,
 															  diffused_light,
 															  ltc_luts);

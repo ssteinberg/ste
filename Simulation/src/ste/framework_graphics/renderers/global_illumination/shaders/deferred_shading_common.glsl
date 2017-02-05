@@ -35,7 +35,7 @@ struct light_shading_parameters {
 	vec3 l;
 
 	// Light illuminance arriving at shaded sample
-	vec3 lux;
+	vec3 cd_m2;
 };
 
 struct fragment_shading_parameters {
