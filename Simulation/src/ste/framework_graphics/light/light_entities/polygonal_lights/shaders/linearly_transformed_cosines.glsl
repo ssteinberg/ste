@@ -364,8 +364,11 @@ vec3 ltc_evaluate_sphere(vec3 N,
 	vec3 t = cross(vec3(1,0,0), l);
 	if (dot(t,t) < 1e-5f)
 		t = cross(vec3(0,0,1), l);
-	t = r * normalize(t);
-	vec3 b = r * normalize(cross(l, t));
+	t = normalize(t);
+	vec3 b = normalize(cross(l, t));
+
+	t *= r;
+	b *= r;
 	
 	// Integrate
 	vec3 start_point = Minv * (l + t);
