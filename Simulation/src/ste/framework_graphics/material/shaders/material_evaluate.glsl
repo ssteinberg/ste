@@ -29,20 +29,17 @@ vec3 material_evaluate_layer_radiance(material_layer_unpacked_descriptor descrip
 									  float refractive_ratio,
 									  vec3 irradiance,
 									  vec3 albedo,
-									  vec3 diffuse_illuminance,
-									  deferred_material_ltc_luts ltc_luts) {
-	// Anisotropic roughness
-	float rx = descriptor.roughness * descriptor.anisotropy_ratio;
-	float ry = descriptor.roughness / descriptor.anisotropy_ratio;
-	
+									  vec3 diffused_light,
+									  deferred_material_ltc_luts ltc_luts) {	
 	// Specular color
 	vec3 specular_tint = vec3(1);
 	vec3 c_spec = mix(specular_tint, albedo, descriptor.metallic);
 
 	// Shading type
-	bool ltc = light_type_is_shaped(ld.type);
+	bool is_directional = light_type_is_directional(ld.type);
+	bool ltc_integration = light_type_is_shaped(ld.type) || is_directional;
 
-	if (ltc) {
+	if (ltc_integration) {
 		// Calculate polygonal light irradiance using linearly transformed cosines
 		vec2 ltccoords = ltc_lut_coords(ltc_luts.ltc_ggx_fit, dot(n, v), descriptor.roughness);
 		mat3 ltc_M_inv = ltc_inv_matrix(ltc_luts.ltc_ggx_fit, ltccoords);
@@ -61,13 +58,17 @@ vec3 material_evaluate_layer_radiance(material_layer_unpacked_descriptor descrip
 		uint points_count = light_get_polygon_point_counts(ld);
 		uint points_offset = light_get_polygon_point_offset(ld);
 		
-		vec3 L = ld.position;
+		// Light position
+		vec3 L = is_directional ? 
+					wp - ld.position * ld.directional_distance : 
+					ld.position;
 	
 		// The integration type depends on shape
 		vec3 specular_irradiance;
 		vec3 diffuse_irradiance;
-		if (shape_sphere) {
+		if (shape_sphere || is_directional) {
 			// No points needed for spherical light
+			// Directional lights are (very far) sphere lights. Treat them identically.
 			float r = ld.radius;
 
 			specular_irradiance = ltc_evaluate_sphere(wn, wv, wp, ltc_M_inv, L, r) * ltc_ampl;
@@ -78,7 +79,7 @@ vec3 material_evaluate_layer_radiance(material_layer_unpacked_descriptor descrip
 			specular_irradiance = ltc_evaluate_quad(wn, wv, wp, ltc_M_inv, L, points_offset, two_sided) * ltc_ampl;
 			diffuse_irradiance  = ltc_evaluate_quad(wn, wv, wp, mat3(1),   L, points_offset, two_sided);
 		}
-		else { //shape_polygon
+		else /*if (shape_polygon)*/ {
 			// Polygon/Polyhedron light. Primitives are always triangles.
 			uint primitives = points_count / 3;
 
@@ -91,14 +92,18 @@ vec3 material_evaluate_layer_radiance(material_layer_unpacked_descriptor descrip
 		
 		// And finalize
 		vec3 Specular = F * c_spec * specular_irradiance;
-		vec3 Diffuse = diffuse_illuminance * diffuse_irradiance;
+		vec3 Diffuse = diffused_light * diffuse_irradiance;
 
 		return irradiance * (Specular + Diffuse);
 	}
-	else {
+	else {	// Virtual light
 		// For non-integrated lights we need to factor light attenuation manually.
 		float attenuation = light_attenuation(ld, l_dist);
 		float cutoff = light_calculate_minimal_luminance(ld);
+
+		// Anisotropic roughness
+		float rx = descriptor.roughness * descriptor.anisotropy_ratio;
+		float ry = descriptor.roughness / descriptor.anisotropy_ratio;
 
 		// Evaluate BRDFs
 		vec3 Specular = cook_torrance_ansi_brdf(n, t, b,  
@@ -107,7 +112,7 @@ vec3 material_evaluate_layer_radiance(material_layer_unpacked_descriptor descrip
 												cos_critical,  
 												refractive_ratio, 
 												c_spec);
-		vec3 Diffuse = diffuse_illuminance * lambert_diffuse_brdf();
+		vec3 Diffuse = diffused_light * lambert_diffuse_brdf();
 		
 		vec3 brdf = irradiance * dot(n, l) * (Specular + Diffuse);
 		return max(vec3(.0f), attenuation * brdf - vec3(cutoff));
@@ -165,7 +170,7 @@ vec3 material_evaluate_radiance_simple(material_layer_unpacked_descriptor descri
 																1.f / refractive_ratio);
 
 	vec3 scattering = inner_transmission_ratio * outer_transmission_ratio * descriptor.albedo.rgb;
-	vec3 diffuse_illuminance = descriptor.albedo.rgb * (1.f - descriptor.metallic);
+	vec3 diffused_light = descriptor.albedo.rgb * (1.f - descriptor.metallic);
 
 	// Half vector
 	vec3 h = normalize(frag.v + light.l);
@@ -182,7 +187,7 @@ vec3 material_evaluate_radiance_simple(material_layer_unpacked_descriptor descri
 												refractive_ratio,
 												light.lux,
 												descriptor.albedo.rgb,
-												diffuse_illuminance,
+												diffused_light,
 												ltc_luts);
 
 	return rgb * occlusion;
@@ -295,7 +300,7 @@ vec3 material_evaluate_radiance(material_descriptor md,
 
 		// Diffused light is a portion of the energy scattered inside layer (based on albedo), unattenuated light doesn't contribute to diffuse
 		vec3 scattering = inner_transmission_ratio * outer_transmission_ratio * (vec3(1.f) - k) * albedo;
-		vec3 diffuse_illuminance = scattering * (1.f - metallic);
+		vec3 diffused_light = scattering * (1.f - metallic);
 
 		// Half vector
 		vec3 h = normalize(v + l);
@@ -312,7 +317,7 @@ vec3 material_evaluate_radiance(material_descriptor md,
 															  refractive_ratio,
 															  light.lux,
 															  albedo,
-															  diffuse_illuminance,
+															  diffused_light,
 															  ltc_luts);
 							
 		// Update incident and outgoing vectors to refracted ones before continuing to next layer

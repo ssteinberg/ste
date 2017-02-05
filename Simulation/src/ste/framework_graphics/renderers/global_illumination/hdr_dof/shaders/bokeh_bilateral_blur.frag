@@ -8,7 +8,6 @@
 #include "hdr_common.glsl"
 #include "fast_rand.glsl"
 
-#include "gbuffer.glsl"
 #include "girenderer_transform_buffer.glsl"
 
 out vec3 gl_FragColor;

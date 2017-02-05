@@ -13,15 +13,6 @@ struct gbuffer_fragment_information {
 	int mat;
 };
 
-bool gbuffer_eof(uint ptr) {
-	return ptr == 0xFFFFFFFF;
-}
-
-g_buffer_element gbuffer_load(ivec2 frag_coords) {
-	uint idx = frag_coords.y * backbuffer_size().x + frag_coords.x;
-	return gbuffer[idx];
-}
-
 float gbuffer_parse_depth(g_buffer_element frag) {
 	return frag.data[0].x;
 }

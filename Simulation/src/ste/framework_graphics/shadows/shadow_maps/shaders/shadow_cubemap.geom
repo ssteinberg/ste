@@ -70,8 +70,8 @@ void process(int face, uint l, vec3 vertices[3], float shadow_near, float f) {
 		 transformed_vertices[2].z < -transformed_vertices[2].w))
 	return;
 
-	gl_Layer = face + int(l) * 6;
 	for (int j = 0; j < 3; ++j) {
+		gl_Layer = face + int(l) * 6;
 		gl_Position = transformed_vertices[j];
 		EmitVertex();
 	}

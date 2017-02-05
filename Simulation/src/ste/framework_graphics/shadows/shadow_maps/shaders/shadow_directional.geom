@@ -57,8 +57,9 @@ void process(int cascade, uint cascade_idx, vec3 vertices[3], float f) {
 		 vertices[2].z < -f))
 		return;
 
-	gl_Layer = cascade + int(cascade_idx) * directional_light_cascades;
 	for (int j = 0; j < 3; ++j) {
+		gl_Layer = cascade + int(cascade_idx) * directional_light_cascades;
+
 		// Clamp z values behind the near-clip plane to the near-clip distance, this geometry participates in directional shadows as well.
 		float z = min(-n - 1e-8f, vertices[j].z);
 		

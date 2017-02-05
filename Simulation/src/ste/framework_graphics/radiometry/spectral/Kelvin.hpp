@@ -28,7 +28,6 @@ public:
 
 	rgb toRGB() const;
 
-	operator float() const { return K(); }
 	operator rgb() const;
 };
 
