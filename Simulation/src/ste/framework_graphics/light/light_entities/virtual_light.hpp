@@ -9,18 +9,18 @@
 namespace StE {
 namespace Graphics {
 
-class point_light : public light {
+class virtual_light : public light {
 	using Base = light;
 
 public:
-	point_light(const rgb &color,
+	virtual_light(const rgb &color,
 				float intensity, 
 				const glm::vec3 &position, 
 				float radius) : light(color, intensity, radius) {
 		descriptor.type = LightType::Point;
 		descriptor.position = decltype(descriptor.position){ position.x, position.y, position.z };
 	}
-	virtual ~point_light() noexcept {}
+	virtual ~virtual_light() noexcept {}
 
 	void set_position(const glm::vec3 &p) {
 		descriptor.position = decltype(descriptor.position){ p.x, p.y, p.z };

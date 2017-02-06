@@ -10,7 +10,7 @@
 #include "light.glsl"
 #include "light_transport.glsl"
 
-#include "linearly_transformed_cosines.glsl"
+#include "clamped_cosine_distribution_integration.glsl"
 #include "microfacet_ggx_fitting.glsl"
 #include "cook_torrance.glsl"
 #include "lambert_diffuse.glsl"
@@ -185,7 +185,7 @@ vec3 material_evaluate_radiance_simple(material_layer_unpacked_descriptor descri
 												frag.v, light.l, h,
 												cos_critical, 
 												refractive_ratio,
-												light.lux,
+												light.cd_m2,
 												descriptor.albedo.rgb,
 												diffused_light,
 												ltc_luts);
@@ -315,7 +315,7 @@ vec3 material_evaluate_radiance(material_descriptor md,
 															  v, l, h,
 															  cos_critical, 
 															  refractive_ratio,
-															  light.lux,
+															  light.cd_m2,
 															  albedo,
 															  diffused_light,
 															  ltc_luts);

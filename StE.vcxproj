@@ -570,7 +570,7 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_entities\polygonal_lights\quad_light.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_entities\polygonal_lights\sphere_light.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_entities\polygonal_lights\shaped_light.hpp" />
-    <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_entities\point_light.hpp" />
+    <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_entities\virtual_light.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_storage.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_type.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\light\linked_light_lists\linked_light_lists.hpp" />
@@ -755,6 +755,8 @@
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\transformation\transform.vert" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\interpolate.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\entities\objects\shaders\mesh_descriptor.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\light\light_entities\polygonal_lights\shaders\clamped_cosine_distribution_integration.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\light\light_entities\polygonal_lights\shaders\cosine_distribution_integration.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\light\linked_light_lists\shaders\linked_light_lists.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\light\linked_light_lists\shaders\linked_light_lists_gen.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\light\linked_light_lists\shaders\linked_light_lists_load.glsl" />

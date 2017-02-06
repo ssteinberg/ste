@@ -130,7 +130,7 @@ bool deferred_generate_light_shading_parameters(fragment_shading_parameters frag
 	light.light_id = light_id;
 	light.ll_id = ll_id;
 
-	vec3 lux;										// Light illuminance reaching fragment
+	vec3 cd_m2;										// Light illuminance reaching fragment
 	vec3 l = light_incidant_ray(ld, frag.p);		// Light incident ray
 	if (light_type_is_directional(ld.type)) {
 		light.l_dist = abs(ld.directional_distance);
@@ -139,17 +139,17 @@ bool deferred_generate_light_shading_parameters(fragment_shading_parameters frag
 		vec3 atat = extinct_ray(frag.world_position, -ld.position,
 								atmospherics_luts.atmospheric_optical_length_lut);
 
-		lux = irradiance(ld) * atat;
+		cd_m2 = irradiance(ld) * atat;
 		
 		//! Atmospheric ambient light (TODO: Ambient occlusion)
-		lux += atmospheric_ambient(frag.world_position, dot(frag.n, -ld.transformed_position), ld.position,
+		cd_m2 += atmospheric_ambient(frag.world_position, dot(frag.n, -ld.transformed_position), ld.position,
 								   atmospherics_luts.atmospheric_ambient_lut);
 	}
 	else {
 		float dist2 = dot(l, l);
 		if (dist2 >= sqr(ld.effective_range)) {
 			// Bail out
-			light.lux = vec3(.0f);
+			light.cd_m2 = vec3(.0f);
 			return false;
 		}
 		
@@ -160,11 +160,11 @@ bool deferred_generate_light_shading_parameters(fragment_shading_parameters frag
 		light.l_dist = sqrt(dist2);
 		l /= light.l_dist;
 
-		lux = irradiance(ld) * atat;
+		cd_m2 = irradiance(ld) * atat;
 	}
 
 	light.l = l;
-	light.lux = lux;
+	light.cd_m2 = cd_m2;
 
 	return true;
 }
@@ -302,7 +302,7 @@ vec3 deferred_shade_fragment(g_buffer_element gbuffer_frag, ivec2 coord,
 
 	// Volumetric scattered light
 	// Volumetric scattering has atmospheric attenuation precomputed
-	vec3 scattered_incoming_luminance = vec3(0);//volumetric_scattering(scattering_volume, vec2(coord), depth);
+	vec3 scattered_incoming_luminance = volumetric_scattering(scattering_volume, vec2(coord), depth);
 
 	// Apply atmospheric attenuation
 	vec3 final = accum_luminance * atmospheric_attenuation + scattered_incoming_luminance;
