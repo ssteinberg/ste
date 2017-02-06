@@ -62,8 +62,8 @@ vec3 atmospherics_rayleigh_scattering(atmospherics_descriptor desc) {
 	return desc.scattering_coefficients.xyz;
 }
 
-float atmospherics_descriptor_pressure(float h, float one_over_H) {
-	return exp(one_over_H * h);
+float atmospherics_descriptor_pressure(float h, float minus_one_over_H) {
+	return exp(minus_one_over_H * h);
 }
 
 

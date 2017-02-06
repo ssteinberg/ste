@@ -1103,9 +1103,6 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_entities\polygonal_lights\shaped_light.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_entities\polygonal_lights\shaders\uniform_distribution_light_integration.glsl">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_entities\virtual_light.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1199,6 +1196,8 @@
     <None Include="Simulation\src\ste\framework_graphics\scene\shaders\shadow_drawid_to_lightid_ttl.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\shaders\deferred_shading_common.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\light\shaders\light_type.glsl" />
-    <None Include="Simulation\src\ste\framework_graphics\light\light_entities\polygonal_lights\shaders\linearly_transformed_cosines_light_integration.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\light\light_entities\polygonal_lights\shaders\linearly_transformed_cosines.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\light\light_entities\polygonal_lights\shaders\cosine_distribution_integration.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\light\light_entities\polygonal_lights\shaders\clamped_cosine_distribution_integration.glsl" />
   </ItemGroup>
 </Project>

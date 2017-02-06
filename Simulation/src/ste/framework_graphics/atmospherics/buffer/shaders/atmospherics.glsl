@@ -243,15 +243,12 @@ vec3 scatter(vec3 P0,
 	vec3 i = normalize(P0 - P1);
 	vec3 o = normalize(P2 - P1);
 	float p_mie = cornette_shanks_phase_function(i, o, atmospherics_descriptor_data.phase);
-	float p_rayleigh = rayleigh_phase_function(i, o);
 	
 	float altitude = atmospherics_altitude(P1);
 	float density_m = atmospherics_descriptor_pressure_mie(atmospherics_descriptor_data, altitude);
-	float density_r = atmospherics_descriptor_pressure_rayleigh(atmospherics_descriptor_data, altitude);
 
-	vec3 scatter_coefficient = density_m * p_mie * atmospherics_mie_scattering(atmospherics_descriptor_data).xxx + 
-							   density_r * p_rayleigh * atmospherics_rayleigh_scattering(atmospherics_descriptor_data);
-	
+	vec3 scatter_coefficient = density_m * p_mie * atmospherics_mie_scattering(atmospherics_descriptor_data).xxx;
+		
 	vec3 scattered_intensity = scatter_coefficient * len;
 	vec3 extinction = extinct(P0, P1, P2, atmospheric_optical_length_lut);
 
@@ -275,14 +272,11 @@ vec3 scatter_ray(vec3 P0,
 	vec3 i = normalize(P0 - P1);
 	vec3 o = V;
 	float p_mie = cornette_shanks_phase_function(i, o, atmospherics_descriptor_data.phase);
-	float p_rayleigh = rayleigh_phase_function(i, o);
 	
 	float altitude = atmospherics_altitude(P1);
 	float density_m = atmospherics_descriptor_pressure_mie(atmospherics_descriptor_data, altitude);
-	float density_r = atmospherics_descriptor_pressure_rayleigh(atmospherics_descriptor_data, altitude);
 
-	vec3 scatter_coefficient = density_m * p_mie * atmospherics_mie_scattering(atmospherics_descriptor_data).xxx + 
-							   density_r * p_rayleigh * atmospherics_rayleigh_scattering(atmospherics_descriptor_data);
+	vec3 scatter_coefficient = density_m * p_mie * atmospherics_mie_scattering(atmospherics_descriptor_data).xxx;
 	
 	vec3 scattered_intensity = scatter_coefficient * len;
 	vec3 extinction = extinct_ray(P0, P1, V, atmospheric_optical_length_lut);

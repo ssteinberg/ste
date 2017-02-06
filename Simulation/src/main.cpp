@@ -246,8 +246,8 @@ int main()
 	const glm::vec3 light0_pos{ -700.6, 138, -70 };
 	const glm::vec3 light1_pos{ 200, 550, 170 };
 	auto light0 = scene.get().properties().lights_storage().allocate_shaped_light<StE::Graphics::quad_light_onesided>(StE::Graphics::kelvin(2000), 
-																													  8000.f, light0_pos);
-	light0->set_points({glm::vec3{-4,-4,-4},{4,-4,4},{4,4,4},{-4,4,-4}});
+																													  40000.f, light0_pos);
+	light0->set_points({glm::vec3{-6,-6,-6},{6,-6,6},{6,6,6},{-6,6,-6}});
 	auto light1 = scene.get().properties().lights_storage().allocate_sphere_light(StE::Graphics::kelvin(7000), 
 																				  20000.f, light1_pos, 5.f);
 	//auto light0_obj = create_sphere_light_object(&scene.get(), light0_pos, light0.get(), materials, material_layers);
@@ -315,8 +315,8 @@ int main()
 	float dummy = .0f;
 
 	float sun_zenith = .0f;
-	float mie_absorption_coefficient = 2.2f;
-	float mie_scattering_coefficient = 2e+1f;
+	float mie_absorption_coefficient = 2.5f;
+	float mie_scattering_coefficient = 1.5e+1f;
 
 	bool layer_enabled[3] = { true, false, false };
 	StE::Graphics::rgb base_color[3];

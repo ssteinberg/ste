@@ -568,7 +568,6 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_entities\directional_light.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_entities\polygonal_lights\polygonal_light.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_entities\polygonal_lights\quad_light.hpp" />
-    <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_entities\polygonal_lights\shaders\uniform_distribution_light_integration.glsl" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_entities\polygonal_lights\sphere_light.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_entities\polygonal_lights\shaped_light.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_entities\virtual_light.hpp" />
@@ -756,11 +755,13 @@
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\transformation\transform.vert" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\interpolate.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\entities\objects\shaders\mesh_descriptor.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\light\light_entities\polygonal_lights\shaders\clamped_cosine_distribution_integration.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\light\light_entities\polygonal_lights\shaders\cosine_distribution_integration.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\light\linked_light_lists\shaders\linked_light_lists.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\light\linked_light_lists\shaders\linked_light_lists_gen.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\light\linked_light_lists\shaders\linked_light_lists_load.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\light\linked_light_lists\shaders\linked_light_lists_store.glsl" />
-    <None Include="Simulation\src\ste\framework_graphics\light\light_entities\polygonal_lights\shaders\linearly_transformed_cosines_light_integration.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\light\light_entities\polygonal_lights\shaders\linearly_transformed_cosines.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\light\preprocessor\shaders\light_preprocess_cull_lights.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\light\preprocessor\shaders\light_preprocess_cull_shadows.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\light\shaders\light.glsl" />

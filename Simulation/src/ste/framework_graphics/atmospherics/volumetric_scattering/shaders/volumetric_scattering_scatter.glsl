@@ -33,11 +33,17 @@ layout(shared, binding = 7) restrict readonly buffer directional_lights_cascades
 	light_cascade_descriptor directional_lights_cascades[];
 };
 
+layout(shared, binding = 8) restrict readonly buffer shaped_lights_points_data {
+	vec3 ltc_points[];
+};
+
 layout(rgba16f, binding = 7) restrict uniform image3D volume;
 
 #include "linked_light_lists_load.glsl"
+#include "cosine_distribution_integration.glsl"
 
 layout(bindless_sampler) uniform samplerCubeArrayShadow shadow_depth_maps;
+layout(bindless_sampler) uniform samplerCubeArray shadow_maps;
 layout(bindless_sampler) uniform sampler2DArrayShadow directional_shadow_depth_maps;
 
 layout(bindless_sampler) uniform sampler2DArray atmospheric_optical_length_lut;
@@ -77,37 +83,66 @@ vec2 slice_coords_to_fragcoords(vec2 v) {
 	return (v + vec2(.5f)) * float(volumetric_scattering_tile_size) / vec2(backbuffer_size());
 }
 
-vec3 scatter_spherical_light(vec2 slice_coords,
-							 vec3 position,
-							 vec3 w_pos,
-							 float thickness,
-							 light_descriptor ld,
-							 uint shadowmap_idx,
-							 float min_lum) {
-	vec3 l = light_incidant_ray(ld, position);
-	float l_dist = length(l);
-	l /= l_dist;
-					
+vec3 integrate_light_cross_section(light_descriptor ld, vec3 w_pos) {
+	// Check light type and shape
+	bool virtual_light = light_type_is_point(ld.type);
+	bool shape_sphere = light_shape_is_sphere(ld.type);
+	bool shape_quad = light_shape_is_quad(ld.type);
+	bool shape_polygon = light_shape_is_polygon(ld.type);
+		
+	// And properties
+	bool two_sided = light_type_is_two_sided(ld.type);
+	bool textured = light_type_is_textured(ld.type);
+
+	// Points count and offset into points buffer
+	uint points_count = light_get_polygon_point_counts(ld);
+	uint points_offset = light_get_polygon_point_offset(ld);
+
+	vec3 l = ld.position - w_pos;
+	
+	if (virtual_light)
+		return light_attenuation(ld, length(l)).xxx;
+	else if (shape_sphere) 
+		return integrate_cosine_distribution_sphere_cross_section(length(l), ld.radius).xxx;
+	else if (shape_quad)
+		return integrate_cosine_distribution_quad(w_pos, normalize(l), ld.position, points_offset, two_sided);
+	else /*if (shape_polygon)*/ {
+		uint primitives = points_count / 3;
+		return ltc_evaluate_polygon(w_pos, normalize(l), ld.position, primitives, points_offset, two_sided);
+	}
+}
+
+vec3 scatter_light(vec2 slice_coords,
+				   vec3 position,
+				   vec3 w_pos,
+				   float thickness,
+				   light_descriptor ld,
+				   uint shadowmap_idx,
+				   float min_lum) {
 	vec3 shadow_v = w_pos - ld.position;
-	/*float shadow = shadow_fast(shadow_depth_maps,
-								shadowmap_idx,
-								position,
-								l,
-								shadow_v,
-								ld.radius,
-								ivec2(slice_coords));*/
-	float shadow = shadow_test(shadow_depth_maps,
+
+	deferred_shading_shadow_maps maps;
+	maps.shadow_depth_maps = shadow_depth_maps;
+	maps.shadow_maps = shadow_maps;
+	float shadow = shadow_fast(maps,
+							   shadowmap_idx,
+							   position,
+							   shadow_v,
+							   ld.radius,
+							   ld.effective_range,
+							   ivec2(slice_coords));
+	/*float shadow = shadow_test(shadow_depth_maps,
 							   shadowmap_idx,
 							   shadow_v,
 							   ld.radius,
-							   light_effective_range(ld));
+							   light_effective_range(ld));*/
 	if (shadow <= .0f)
 		return vec3(0);
-
-	l_dist = max(ld.radius * 2.f, l_dist);
-	return shadow * irradiance(ld, l_dist) * scatter(ld.position, w_pos, eye_position(),
-													 thickness,
-													 atmospheric_optical_length_lut);
+	
+	vec3 lux = irradiance(ld) * integrate_light_cross_section(ld, w_pos);
+	return shadow * lux * scatter(ld.position, w_pos, eye_position(),
+								  thickness,
+								  atmospheric_optical_length_lut);
 }
 
 vec3 scatter_directional_light(vec2 slice_coords,
@@ -127,10 +162,11 @@ vec3 scatter_directional_light(vec2 slice_coords,
 							   cascade_proj_far);
 	if (shadow <= .0f)
 		return vec3(0);
-			
-	return shadow * irradiance(ld) * scatter_ray(eye_position(), w_pos, -ld.position,
-												 thickness,
-												 atmospheric_optical_length_lut);
+	
+	vec3 lux = irradiance(ld) * integrate_cosine_distribution_sphere_cross_section(ld.directional_distance, ld.radius);
+	return shadow * lux * scatter_ray(eye_position(), w_pos, -ld.position,
+									  thickness,
+									  atmospheric_optical_length_lut);
 }
 
 bool generate_sample(vec2 slice_coords, float s, 
@@ -146,7 +182,7 @@ bool generate_sample(vec2 slice_coords, float s,
 	// Use some noise to generate 2 more pseudo-random numbers from r. Use them to generate the xy sampling coordinates.
 	vec2 noise = vec2(65198.10937f, 22109.532971f);
 	vec2 jitter = fract(r * noise);
-	vec2 coords = slice_coords_to_fragcoords(vec2(slice_coords) + jitter);
+	vec2 coords = slice_coords_to_fragcoords(vec2(slice_coords) + jitter - vec2(.5f));
 
 	// Check depth buffer
 	float d = texture(depth_map, coords).x;
@@ -214,13 +250,13 @@ vec3 scatter(float depth, float depth_next_tile,
 							light_idx,
 							position, w_pos);
 
-			scattered += scatter_spherical_light(slice_coords,
-												 position,
-												 w_pos,
-												 thickness,
-												 ld,
-												 ll_idx,
-												 min_lum);
+			scattered += scatter_light(slice_coords,
+									   position,
+									   w_pos,
+									   thickness,
+									   ld,
+									   ll_idx,
+									   min_lum);
 		}
 	}
 

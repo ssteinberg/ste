@@ -302,7 +302,7 @@ vec3 deferred_shade_fragment(g_buffer_element gbuffer_frag, ivec2 coord,
 
 	// Volumetric scattered light
 	// Volumetric scattering has atmospheric attenuation precomputed
-	vec3 scattered_incoming_luminance = vec3(0);//volumetric_scattering(scattering_volume, vec2(coord), depth);
+	vec3 scattered_incoming_luminance = volumetric_scattering(scattering_volume, vec2(coord), depth);
 
 	// Apply atmospheric attenuation
 	vec3 final = accum_luminance * atmospheric_attenuation + scattered_incoming_luminance;
