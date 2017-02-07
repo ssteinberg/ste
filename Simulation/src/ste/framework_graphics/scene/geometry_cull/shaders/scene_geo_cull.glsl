@@ -109,7 +109,7 @@ void main() {
 	}
 
 	// Write to scene and shadows indirect draw buffers
-	if (shadow_instance_count > 0) {
+	if (shadow_instance_count > 0 || dir_shadow_instance_count > 0) {
 		uint idx = atomicCounterIncrement(counter);
 
 		IndirectMultiDrawElementsCommand c;
@@ -121,10 +121,14 @@ void main() {
 
 		idb[idx] = c;
 
-		c.instance_count = shadow_instance_count;
-		sidb[idx] = c;
+		if (shadow_instance_count > 0) {
+			c.instance_count = shadow_instance_count;
+			sidb[idx] = c;
+		}
 
-		c.instance_count = dir_shadow_instance_count;
-		dsidb[idx] = c;
+		if (dir_shadow_instance_count > 0) {
+			c.instance_count = dir_shadow_instance_count;
+			dsidb[idx] = c;
+		}
 	}
 }

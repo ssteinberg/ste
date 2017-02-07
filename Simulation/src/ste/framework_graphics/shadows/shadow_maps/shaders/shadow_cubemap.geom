@@ -39,7 +39,7 @@ vec4 transform(int face, vec3 v, float n, float f) {
 	
 	// Inverse projection with near and far clips
 	u.w = -u.z;
-	u.z = (u.z + f) * n / (f-n);
+	u.z = n;//project_depth_linear(u.z, n, f) * u.w;//(u.z + f) * n / (f-n);
 	return u;
 }
 
@@ -90,9 +90,6 @@ void main() {
 	light_descriptor ld = light_buffer[light_idx];
 
 	uint face_mask = ld.shadow_face_mask;
-	if (face_mask == 0)
-		return;
-
 	vec3 light_pos = ld.position;
 	float light_range = ld.effective_range;
 	float light_range2 = light_range * light_range;
@@ -102,7 +99,7 @@ void main() {
 	vec3 v = gl_in[0].gl_Position.xyz - gl_in[1].gl_Position.xyz;
 	vec3 N = cross(u,v);
 	vec3 V = light_pos.xyz - gl_in[1].gl_Position.xyz;
-
+	
 	if (dot(N,V) <= 0)
 		return;
 
@@ -122,7 +119,7 @@ void main() {
 
 	// Transform and output
 	for (int face = 0; face < 6; ++face) {
-		if ((face_mask & (1 << face)) != 0)
-			process(face, ll_idx, vertices, ld.radius, light_range);
+		//if ((face_mask & (1 << face)) != 0)
+			process(face, ll_idx, vertices, ld.radius*2, light_range);
 	}
 }

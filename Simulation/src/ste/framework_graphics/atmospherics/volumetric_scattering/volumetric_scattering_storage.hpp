@@ -21,7 +21,7 @@ namespace Graphics {
 class volumetric_scattering_storage {
 private:
 	static constexpr int tile_size = linked_light_lists::lll_image_res_multiplier;
-	static constexpr int depth_tiles = 256;
+	static constexpr int depth_tiles = 128;
 
 private:
 	Core::texture_2d *depth_map{ nullptr };
@@ -53,7 +53,7 @@ public:
 						   s.y / tile_size,
 						   depth_tiles };
 
-		volume = std::make_unique<Core::texture_3d>(gli::format::FORMAT_RGBA16_SFLOAT_PACK16, size);
+		volume = std::make_unique<Core::texture_3d>(gli::format::FORMAT_RGBA32_SFLOAT_PACK32, size);
 
 		storage_modified_signal.emit();
 	}

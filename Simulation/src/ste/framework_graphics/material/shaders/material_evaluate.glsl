@@ -363,7 +363,8 @@ vec3 material_evaluate_radiance(material_descriptor md,
 													   n,
 							 						   object_thickness,
 													   light.ld,
-													   shadow_maps.shadow_maps, light.ll_id,
+													   shadow_maps, 
+													   light,
 													   -v,
 													   frag_coords);
 	}

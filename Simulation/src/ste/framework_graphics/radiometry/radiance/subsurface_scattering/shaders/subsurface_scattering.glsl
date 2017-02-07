@@ -31,7 +31,8 @@ vec3 subsurface_scattering(material_layer_unpacked_descriptor descriptor,
 						   vec3 n,
 						   float thickness,
 						   light_descriptor ld,
-						   samplerCubeArray shadow_maps, uint light,
+						   deferred_shading_shadow_maps shadow_maps, 
+						   light_shading_parameters light,
 						   vec3 view_ray,
 						   ivec2 frag_coords) {
 	const float minimal_attenuation_for_effective_thickness = epsilon;
@@ -56,12 +57,13 @@ vec3 subsurface_scattering(material_layer_unpacked_descriptor descriptor,
 		vec3 w_pos = dquat_mul_vec(view_transform_buffer.inverse_view_transform, p);
 		vec3 shadow_v = w_pos - l_pos;
 
-		vec3 shadow_occluder_v = shadow_occluder(shadow_maps, 
+		vec3 shadow_occluder_v = vec3(.0f);/*shadow_occluder(shadow_maps, 
 												 light, 
 												 shadow_v, 
+												 vec3(0,1,0), vec3(0,1,0),
 												 l_radius, 
 												 light_effective_range(ld),
-												 frag_coords);
+												 frag_coords);*/
 
 		float dist_light_to_sample = length(shadow_v);
 		float dist_light_to_object = min(length(shadow_occluder_v), dist_light_to_sample);

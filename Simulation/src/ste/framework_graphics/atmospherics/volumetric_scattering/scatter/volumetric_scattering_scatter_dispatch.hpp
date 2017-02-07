@@ -63,10 +63,6 @@ private:
 			auto shadow_map_handle = shadow_map->get_texture_handle(shadows_storage->get_shadow_sampler());
 			shadow_map_handle.make_resident();
 			program.get().set_uniform("shadow_depth_maps", shadow_map_handle);
-
-			auto shadow_maps_handle = shadow_map->get_texture_handle(*Core::sampler::sampler_linear_clamp());
-			shadow_maps_handle.make_resident();
-			program.get().set_uniform("shadow_maps", shadow_maps_handle);
 		}
 
 		auto directional_shadow_depth_maps = shadows_storage->get_directional_maps();

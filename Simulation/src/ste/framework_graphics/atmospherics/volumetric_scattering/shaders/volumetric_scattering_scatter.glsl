@@ -37,13 +37,12 @@ layout(shared, binding = 8) restrict readonly buffer shaped_lights_points_data {
 	vec3 ltc_points[];
 };
 
-layout(rgba16f, binding = 7) restrict uniform image3D volume;
+layout(rgba32f, binding = 7) restrict uniform image3D volume;
 
 #include "linked_light_lists_load.glsl"
 #include "cosine_distribution_integration.glsl"
 
 layout(bindless_sampler) uniform samplerCubeArrayShadow shadow_depth_maps;
-layout(bindless_sampler) uniform samplerCubeArray shadow_maps;
 layout(bindless_sampler) uniform sampler2DArrayShadow directional_shadow_depth_maps;
 
 layout(bindless_sampler) uniform sampler2DArray atmospheric_optical_length_lut;
@@ -98,7 +97,7 @@ vec3 integrate_light_cross_section(light_descriptor ld, vec3 w_pos) {
 	uint points_count = light_get_polygon_point_counts(ld);
 	uint points_offset = light_get_polygon_point_offset(ld);
 
-	vec3 l = ld.position - w_pos;
+	vec3 l = w_pos - ld.position;
 	
 	if (virtual_light)
 		return light_attenuation(ld, length(l)).xxx;
@@ -121,21 +120,12 @@ vec3 scatter_light(vec2 slice_coords,
 				   float min_lum) {
 	vec3 shadow_v = w_pos - ld.position;
 
-	deferred_shading_shadow_maps maps;
-	maps.shadow_depth_maps = shadow_depth_maps;
-	maps.shadow_maps = shadow_maps;
-	float shadow = shadow_fast(maps,
-							   shadowmap_idx,
-							   position,
-							   shadow_v,
-							   ld.radius,
-							   ld.effective_range,
-							   ivec2(slice_coords));
-	/*float shadow = shadow_test(shadow_depth_maps,
+	float shadow = shadow_test(shadow_depth_maps,
 							   shadowmap_idx,
 							   shadow_v,
+							   vec3(0,1,0), vec3(0,1,0),
 							   ld.radius,
-							   light_effective_range(ld));*/
+							   light_effective_range(ld));
 	if (shadow <= .0f)
 		return vec3(0);
 	
@@ -151,13 +141,16 @@ vec3 scatter_directional_light(vec2 slice_coords,
 							   float thickness,
 							   light_descriptor ld,
 							   mat3x4 M,
+							   vec2 cascade_recp_vp,
 							   float cascade_proj_far,
 							   int shadowmap_idx,
 							   float min_lum) {
-	vec3 l = light_incidant_ray(ld, position);					
+	vec3 l = light_incidant_ray(ld, position);
+	
 	float shadow = shadow_test(directional_shadow_depth_maps,
 							   shadowmap_idx,
 							   position,
+							   vec3(0,1,0), vec3(0,1,0),
 							   M,
 							   cascade_proj_far);
 	if (shadow <= .0f)
@@ -204,7 +197,7 @@ bool generate_sample(vec2 slice_coords, float s,
 vec3 scatter(float depth, float depth_next_tile, 
 			 ivec2 slice_coords, vec2 fragcoords, vec2 next_tile_fragcoords,
 			 light_descriptor ld, uint light_idx, uint ll_idx, float min_lum,
-			 light_cascade_descriptor cascade_descriptor, inout float current_cascade_far_clip, inout int shadowmap_idx, inout mat3x4 M, inout float cascade_proj_far, inout int cascade) {
+			 light_cascade_descriptor cascade_descriptor, inout float current_cascade_far_clip, inout int shadowmap_idx, inout mat3x4 M, inout float cascade_proj_far, inout vec2 cascade_recp_vp, inout int cascade) {
 	float z0 = unproject_depth(depth);
 	float z2 = unproject_depth(depth_next_tile);
 	float thickness = abs(z0 - z2);
@@ -223,6 +216,7 @@ vec3 scatter(float depth, float depth_next_tile,
 										 cascade, 
 										 ld.transformed_position,
 										 cascades_depths,
+										 cascade_recp_vp,
 										 cascade_proj_far);
 		}
 		
@@ -238,6 +232,7 @@ vec3 scatter(float depth, float depth_next_tile,
 												   thickness,
 												   ld,
 												   M,
+												   cascade_recp_vp,
 												   cascade_proj_far,
 												   shadowmap_idx,
 												   min_lum);
@@ -300,6 +295,7 @@ void main() {
 		uint cascade_idx = light_get_cascade_descriptor_idx(ld);
 		light_cascade_descriptor cascade_descriptor = directional_lights_cascades[cascade_idx];
 		float current_cascade_far_clip = .0f, cascade_proj_far;
+		vec2 cascade_recp_vp;
 		int cascade = 0;
 		int shadowmap_idx;
 		mat3x4 M;
@@ -322,7 +318,7 @@ void main() {
 				accum += scatter(depth, depth_next_tile, 
 								 slice_coords, fragcoords, next_tile_fragcoords,
 								 ld, light_idx, ll_idx, min_lum,
-								 cascade_descriptor, current_cascade_far_clip, shadowmap_idx, M, cascade_proj_far, cascade);
+								 cascade_descriptor, current_cascade_far_clip, shadowmap_idx, M, cascade_proj_far, cascade_recp_vp, cascade);
 
 			vec3 stored_rgb = imageLoad(volume, volume_coords).rgb;
 			imageStore(volume, volume_coords, vec4(stored_rgb + accum, .0f));
