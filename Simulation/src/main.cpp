@@ -8,7 +8,6 @@
 #include "ste_engine_control.hpp"
 #include "gi_renderer.hpp"
 #include "basic_renderer.hpp"
-#include "sphere_light.hpp"
 #include "quad_light.hpp"
 #include "model_factory.hpp"
 #include "camera.hpp"
@@ -28,6 +27,7 @@
 
 #include <imgui/imgui.h>
 #include "debug_gui.hpp"
+#include "polygonal_light.hpp"
 
 //#define STATIC_SCENE
 
@@ -73,23 +73,29 @@ void display_loading_screen_until(StE::ste_engine_control &ctx, StE::Text::text_
 	}
 }
 
-auto create_sphere_light_object(StE::Graphics::scene *scene, const glm::vec3 &light_pos, StE::Graphics::sphere_light *light, std::vector<std::unique_ptr<StE::Graphics::material>> &materials, std::vector<std::unique_ptr<StE::Graphics::material_layer>> &layers) {
-	std::unique_ptr<StE::Graphics::sphere> sphere = std::make_unique<StE::Graphics::sphere>(20, 20);
+auto create_sphere_light_object(StE::Graphics::scene *scene,
+								const StE::Graphics::rgb &color,
+								float intensity,
+								float radius,
+								const glm::vec3 &light_pos,
+								std::vector<std::unique_ptr<StE::Graphics::material>> &materials,
+								std::vector<std::unique_ptr<StE::Graphics::material_layer>> &layers) {
+	auto light = scene->properties().lights_storage().allocate_sphere_light(color, intensity, light_pos, radius);
+
+	std::unique_ptr<StE::Graphics::sphere> sphere = std::make_unique<StE::Graphics::sphere>(10, 10);
 	(*sphere) *= light->get_radius();
 	auto light_obj = std::make_shared<StE::Graphics::object>(std::move(sphere));
 
 	light_obj->set_model_transform(glm::mat4x3(glm::translate(glm::mat4(), light_pos)));
 
-	gli::texture2d light_color_tex{ gli::format::FORMAT_RGB8_UNORM_PACK8, { 1, 1 }, 1 };
-	auto c = light->get_luminance();
-	auto luminance = glm::length(c);
-	c /= luminance;
+	gli::texture2d light_color_tex{ gli::format::FORMAT_RGB8_UNORM_PACK8,{ 1, 1 }, 1 };
+	auto c = static_cast<glm::vec3>(color) / color.luminance();
 	*reinterpret_cast<glm::u8vec3*>(light_color_tex.data()) = glm::u8vec3(c.r * 255.5f, c.g * 255.5f, c.b * 255.5f);
-	
+
 	auto layer = scene->properties().material_layers_storage().allocate_layer();
 	auto mat = scene->properties().materials_storage().allocate_material(layer.get());
 	mat->set_texture(std::make_unique<StE::Core::texture_2d>(light_color_tex, false));
-	mat->set_emission(c * luminance);
+	mat->set_emission(static_cast<glm::vec3>(color) * intensity);
 
 	light_obj->set_material(mat.get());
 
@@ -98,7 +104,50 @@ auto create_sphere_light_object(StE::Graphics::scene *scene, const glm::vec3 &li
 	materials.push_back(std::move(mat));
 	layers.push_back(std::move(layer));
 
-	return light_obj;
+	return std::make_pair(std::move(light), light_obj);
+}
+
+auto create_quad_light_object(StE::Graphics::scene *scene,
+							  const StE::Graphics::rgb &color,
+							  float intensity,
+							  const glm::vec3 &light_pos,
+							  const glm::vec3 &n, const glm::vec3 &t,
+							  const glm::vec3 points[4],
+							  std::vector<std::unique_ptr<StE::Graphics::material>> &materials,
+							  std::vector<std::unique_ptr<StE::Graphics::material_layer>> &layers) {
+	auto light = scene->properties().lights_storage().allocate_shaped_light<StE::Graphics::quad_light_onesided>(color, intensity, light_pos);
+	light->set_points(points);
+
+	auto quad = std::make_unique<StE::Graphics::mesh<StE::Graphics::mesh_subdivion_mode::Triangles>>();
+	std::uint32_t ind[6] = { 0,1,2,0,2,3 };
+	StE::Graphics::object_vertex_data vertices[4];
+	vertices[0].p = points[0]; vertices[1].p = points[1]; vertices[2].p = points[2]; vertices[3].p = points[3];
+	glm::vec3 b = glm::cross(t, n);
+	for (auto &v : vertices)
+		v.tangent_frame_from_tbn(t, b, n);
+	quad->set_vertices(vertices, 4);
+	quad->set_indices(ind, 6);
+	auto light_obj = std::make_shared<StE::Graphics::object>(std::move(quad));
+
+	light_obj->set_model_transform(glm::mat4x3(glm::translate(glm::mat4(), light_pos)));
+
+	gli::texture2d light_color_tex{ gli::format::FORMAT_RGB8_UNORM_PACK8,{ 1, 1 }, 1 };
+	auto c = static_cast<glm::vec3>(color) / color.luminance();
+	*reinterpret_cast<glm::u8vec3*>(light_color_tex.data()) = glm::u8vec3(c.r * 255.5f, c.g * 255.5f, c.b * 255.5f);
+
+	auto layer = scene->properties().material_layers_storage().allocate_layer();
+	auto mat = scene->properties().materials_storage().allocate_material(layer.get());
+	mat->set_texture(std::make_unique<StE::Core::texture_2d>(light_color_tex, false));
+	mat->set_emission(static_cast<glm::vec3>(color) * intensity);
+
+	light_obj->set_material(mat.get());
+
+	scene->get_object_group().add_object(light_obj);
+
+	materials.push_back(std::move(mat));
+	layers.push_back(std::move(layer));
+
+	return std::make_pair(std::move(light), light_obj);
 }
 
 void add_scene_lights(StE::Graphics::scene &scene, std::vector<std::unique_ptr<StE::Graphics::light>> &lights, std::vector<std::unique_ptr<StE::Graphics::material>> &materials, std::vector<std::unique_ptr<StE::Graphics::material_layer>> &layers) {
@@ -106,12 +155,9 @@ void add_scene_lights(StE::Graphics::scene &scene, std::vector<std::unique_ptr<S
 	std::mt19937 gen(rd());
 
 	for (auto &v : { glm::vec3{ 491.2,226.1,-616.67 },
-					 glm::vec3{-622.67, 645,-309 },
-					 glm::vec3{  497, 645, -309},
 					 glm::vec3{ 483.376,143,-222.51 },
 					 glm::vec3{ 483.376,143,144.1 },
 					 glm::vec3{ -242, 153,  552},
-					 glm::vec3{  120, 153,  552},
 					 glm::vec3{  885, 153,  552} }) {
 		StE::Graphics::rgb color;
 		float lums;
@@ -119,15 +165,21 @@ void add_scene_lights(StE::Graphics::scene &scene, std::vector<std::unique_ptr<S
 		color = StE::Graphics::kelvin(1800);
 		lums = 6500.f;
 #else
-		color = StE::Graphics::kelvin(std::uniform_real_distribution<>(1500,4000)(gen));
-		lums = std::uniform_real_distribution<>(5000, 9000)(gen);
+		color = StE::Graphics::kelvin(std::uniform_real_distribution<>(1300,4500)(gen));
+		lums = std::uniform_real_distribution<>(1200, 3000)(gen) / color.luminance();
 #endif
-		auto wall_lamp = scene.properties().lights_storage().allocate_sphere_light(color, lums, v, 2.f);
-		create_sphere_light_object(&scene, v, wall_lamp.get(), materials, layers);
+		auto wall_lamp = create_sphere_light_object(&scene, color, lums, 1.f, v, materials, layers);
 
-		lights.push_back(std::move(wall_lamp));
+		lights.push_back(std::move(wall_lamp.first));
 	}
+
+	glm::vec3 points[4] = { { -8,8,-8 },{ 8,8,-8 },{ 8,-8,-8 },{ -8,-8,-8 } };
+	auto lamp = create_quad_light_object(&scene, StE::Graphics::kelvin(8000), 3500, glm::vec3{ 120, 153, 555 }, 
+										 glm::vec3{ 0,0,-1 }, glm::vec3{ 1,0,0 }, points, materials, layers);
+
+	lights.push_back(std::move(lamp.first));
 }
+
 
 #ifdef _MSC_VER
 int CALLBACK WinMain(HINSTANCE hInstance,
@@ -245,17 +297,19 @@ int main()
 
 	const glm::vec3 light0_pos{ -700.6, 138, -70 };
 	const glm::vec3 light1_pos{ 200, 550, 170 };
-	auto light0 = scene.get().properties().lights_storage().allocate_shaped_light<StE::Graphics::quad_light_onesided>(StE::Graphics::kelvin(2000), 
-																													  40000.f, light0_pos);
-	light0->set_points({glm::vec3{-6,-6,-6},{6,-6,6},{6,6,6},{-6,6,-6}});
-	auto light1 = scene.get().properties().lights_storage().allocate_sphere_light(StE::Graphics::kelvin(7000), 
-																				  20000.f, light1_pos, 5.f);
-	//auto light0_obj = create_sphere_light_object(&scene.get(), light0_pos, light0.get(), materials, material_layers);
-	auto light1_obj = create_sphere_light_object(&scene.get(), light1_pos, light1.get(), materials, material_layers);
+	auto light0 = create_sphere_light_object(&scene.get(), StE::Graphics::kelvin(2000), 2000.f, 2.f, light0_pos, materials, material_layers);
+	auto light1 = create_sphere_light_object(&scene.get(), StE::Graphics::kelvin(7000), 17500.f, 4.f, light1_pos, materials, material_layers);
 
 	const glm::vec3 sun_direction = glm::normalize(glm::vec3{ 0.f, -1.f, 0.f });
-	auto sun_light = scene.get().properties().lights_storage().allocate_directional_light(StE::Graphics::kelvin(5770), 
+	auto sun_light = scene.get().properties().lights_storage().allocate_directional_light(StE::Graphics::kelvin(5770),
 																						  1.88e+9f, 1496e+8f, 695e+6f, sun_direction);
+
+
+	auto star = scene.get().properties().lights_storage().allocate_shaped_light<StE::Graphics::polygonal_light_twosided>(StE::Graphics::kelvin(13000),
+																														 4000.f, glm::vec3{ 400, 110, -40 });
+	star->set_points({glm::vec3{0,0,-40}, {0,-15,-15}, {0,-40,-22}, {0,-35,0}, {0,-40,22}, {0,-15,15}, {0,0,40},
+	{0,13,20}, {0,40,0}, {0,13,-20}});
+
 
 	add_scene_lights(scene.get(), lights, materials, material_layers);
 
@@ -470,10 +524,11 @@ int main()
 		glm::vec3 sun_dir = glm::normalize(glm::vec3{ glm::sin(sun_zenith + glm::pi<float>()), 
 													  -glm::cos(sun_zenith + glm::pi<float>()), 
 													  .15f});
-#endif
-		light0->set_position(lp);
-		//light0_obj->set_model_transform(glm::mat4x3(glm::translate(glm::mat4(), lp)));
+
+		light0.first->set_position(lp);
+		light0.second->set_model_transform(glm::mat4x3(glm::translate(glm::mat4(), lp)));
 		sun_light->set_direction(sun_dir);
+#endif
 
 		{
 			using namespace StE::Text::Attributes;

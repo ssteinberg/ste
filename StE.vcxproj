@@ -566,6 +566,7 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_cascade_descriptor.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_descriptor.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_entities\directional_light.hpp" />
+    <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_entities\polygonal_lights\convex_polyhedron_light.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_entities\polygonal_lights\polygonal_light.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_entities\polygonal_lights\quad_light.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_entities\polygonal_lights\sphere_light.hpp" />

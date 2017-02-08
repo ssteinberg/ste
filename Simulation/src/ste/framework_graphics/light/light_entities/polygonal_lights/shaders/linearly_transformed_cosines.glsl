@@ -1,6 +1,15 @@
 
 #include "common.glsl"
 
+struct ltc_element {
+	uvec2 data;
+};
+
+vec3 ltc_point(ltc_element e) {
+	vec3 p = vec3(unpackHalf2x16(e.data.x), unpackHalf2x16(e.data.y).x);
+	return p;
+}
+
 vec2 ltc_lut_coords(sampler2D ltc_lut, float cos_theta, float roughness) {
 	float theta = acos(cos_theta);
 	vec2 coords = vec2(roughness, theta / half_pi);

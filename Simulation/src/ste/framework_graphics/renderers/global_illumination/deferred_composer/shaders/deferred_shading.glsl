@@ -18,6 +18,8 @@
 #include "project.glsl"
 #include "girenderer_transform_buffer.glsl"
 
+#include "cosine_distribution_integration.glsl"
+
 float get_thickness(ivec2 coord,
 					sampler2D back_face_depth, 
 					sampler2D front_face_depth,
@@ -97,7 +99,7 @@ vec3 deferred_shade_atmospheric_scattering(ivec2 coord, deferred_atmospherics_lu
 		
 		if (light_type_is_directional(ld.type)) {
 			vec3 L = ld.position;
-			vec3 I0 = irradiance(ld, .0f);
+			vec3 I0 = irradiance(ld, .0f) * integrate_cosine_distribution_sphere_cross_section(ld.directional_distance, ld.radius);
 
 			rgb += I0 * atmospheric_scatter(P, L, V, 
 											atmospherics_luts.atmospheric_scattering_lut,

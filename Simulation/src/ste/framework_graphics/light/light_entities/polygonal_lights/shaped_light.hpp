@@ -15,29 +15,13 @@ class shaped_light : public light {
 	using Base = light;
 
 public:
-	using shaped_light_point_type = glm::vec3;
+	using shaped_light_point_type = glm::uvec2;
 	struct shaped_light_points_storage_info {
 		Core::gstack_stable<shaped_light_point_type> *storage;
 	};
 
 protected:
 	shaped_light_points_storage_info storage_info;
-
-private:
-	static auto points_radius(const glm::vec3 *points, std::size_t size) {
-		float r = 0;
-		for (auto *p = points; p != points+size; ++p)
-			r = glm::max(r, glm::length(*p));
-		return r;
-	}
-	static void center_points(glm::vec3 *points, std::size_t size) {
-		glm::vec3 center = { 0,0,0 };
-		for (auto *p = points; p != points+size; ++p)
-			center += *p;
-		center /= size;
-		for (auto *p = points; p != points+size; ++p)
-			*p -= center;
-	}
 
 protected:
 	shaped_light(LightType type,
@@ -54,11 +38,26 @@ protected:
 	}
 
 	void set_points(const glm::vec3 *points, std::size_t size) {
-		// Center points
+		std::vector<shaped_light_point_type> points_copy;
+		float r = .0f;
+
 		if (size > 0) {
-			std::vector<glm::vec3> points_copy(points, points + size);
-			center_points(&points_copy[0], size);
-			points = &points_copy[0];
+			points_copy.reserve(size);
+
+			// Center points and compute radius
+			glm::vec3 center = { 0,0,0 };
+			for (auto *p = points; p != points + size; ++p)
+				center += glm::vec3{ p->x, p->y, p->z } / static_cast<float>(size);
+			for (auto *p = points; p != points + size; ++p)
+				r = glm::max(r, glm::length(*p - center));
+
+			for (auto *p = points; p != points + size; ++p) {
+				auto t = *p - center;
+
+				// Encode
+				points_copy.push_back({ glm::packHalf2x16({t.x, t.y}),
+									    glm::packHalf2x16({t.z, .0f}) });
+			}
 		}
 
 		// Add to buffer
@@ -68,12 +67,12 @@ protected:
 			if (current_count < size) {
 				// Erase old points and insert new
 				storage_info.storage->mark_tombstone(idx, current_count);
-				idx = storage_info.storage->insert(points, size);
+				idx = storage_info.storage->insert(points_copy);
 			}
 			else {
 				// Overwrite
 				if (size > 0)
-					storage_info.storage->overwrite(idx, points, size);
+					storage_info.storage->overwrite(idx, points_copy);
 
 				// Erase tail
 				if (current_count > size)
@@ -81,12 +80,12 @@ protected:
 			}
 		}
 		else {
-			idx = storage_info.storage->insert(points, size);
+			idx = storage_info.storage->insert(points_copy);
 		}
 
 		// Update descriptor
 		descriptor.set_polygonal_light_points(size, idx);
-		descriptor.radius = points_radius(points, size);
+		descriptor.radius = r;
 		Base::notify();
 	}
 

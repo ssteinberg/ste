@@ -33,10 +33,10 @@ vec3 ltc_evaluate_quad(vec3 N,
 
 	// polygon (allocate 5 vertices for clipping)
 	vec3 v[5];
-	v[0] = Minv * (light_pos + ltc_points[offset + 0].xyz - P);
-	v[1] = Minv * (light_pos + ltc_points[offset + 1].xyz - P);
-	v[2] = Minv * (light_pos + ltc_points[offset + 2].xyz - P);
-	v[3] = Minv * (light_pos + ltc_points[offset + 3].xyz - P);
+	v[0] = Minv * (light_pos + ltc_point(ltc_points[offset + 0]) - P);
+	v[1] = Minv * (light_pos + ltc_point(ltc_points[offset + 1]) - P);
+	v[2] = Minv * (light_pos + ltc_point(ltc_points[offset + 2]) - P);
+	v[3] = Minv * (light_pos + ltc_point(ltc_points[offset + 3]) - P);
 	v[4] = v[0];
 
 	//vec3 textureLight = FetchDiffuseFilteredTexture(texFilteredMap, v[0], v[1], v[2], v[3]);
@@ -80,10 +80,108 @@ vec3 ltc_evaluate_quad(vec3 N,
 }
 
 /*
- *	Integrates spherical clamped cosine distribution of a projected polygon or convex polyhedron cross section.
+ *	Integrates spherical clamped cosine distribution of a projected polygon cross section.
  *	
- *	The input is an arbitary polygon or a convex polyhedron, constructed from triangles. In the latter 
- *	case the light can not be two-sided. The input is clipped to the upper hemisphere of point P with normal N.
+ *	The input is an arbitary (planar) polygon. The input is clipped to the upper hemisphere of point P with normal N.
+ *	Input is read from storage buffer ltc_points.
+ *
+ *	@param N			Normal, world coordinates.
+ *	@param V			Position to eye vector, normalized.
+ *	@param P			Position, world coordinates.
+ *	@param Minv			Inverse of M, linear transformation matrix from clamped cosine distribution.
+ *	@param light_pos	Light position, world coordinates.
+ *	@param points		Point count. Must be >2.
+ *	@param offset		Offset into point buffer (ltc_points).
+ *	@param two_sided	Single or two-sided shape. Must be false for polyhedrons.
+ */
+vec3 ltc_evaluate_polygon(vec3 N, 
+						  vec3 V, 
+						  vec3 P, 
+						  mat3 Minv, 
+						  vec3 light_pos, 
+						  uint points, 
+						  uint offset, 
+						  bool two_sided) {
+	// construct orthonormal basis around N
+	vec3 T1, T2;
+	T1 = normalize(V - N*dot(V, N));
+	T2 = cross(N, T1);
+
+	// rotate area light in (T1, T2, R) basis
+	Minv = Minv * transpose(mat3(T1, T2, N));
+
+	uint t=0;
+	vec3 start = Minv * (light_pos + ltc_point(ltc_points[offset]) - P);
+	vec3 p0,p1,p2;
+	if (start.z < .0f) {
+		vec3 next = Minv * (light_pos + ltc_point(ltc_points[offset + 1]) - P);
+		for (t=0; t<points-1 && next.z<.0f; ++t) {
+			start = next;
+			next = Minv * (light_pos + ltc_point(ltc_points[offset + (t + 2) % points]) - P);
+		}
+		if (next.z < .0f)
+			return vec3(0);
+
+		start = -start.z * next + next.z * start;
+		start.z = .0f;
+		p1 = next;
+	}
+	else
+		p1 = Minv * (light_pos + ltc_point(ltc_points[offset + 1]) - P);
+	
+	start = normalize(start);
+
+	p0 = start;
+	p1 = normalize(p1);
+	p2 = normalize(Minv * (light_pos + ltc_point(ltc_points[offset + (t + 2) % points]) - P));
+
+	// Integrate
+	float sum = .0f;
+	for (; t<points; ++t) {
+		if (p0.z >= 0 && p1.z >= 0) {
+			sum += ltc_integrate_edge(p0, p1);
+		}
+		else if (p1.z >= 0) {
+			// Clip p0
+			vec3 v0 = normalize(-p0.z * p1 + p1.z * p0);
+			v0.z = .0f;
+			sum += ltc_integrate_edge(v0, p1);
+		}
+		else {
+			// Clip p1
+			vec3 v1 = normalize(-p1.z * p0 + p0.z * p1);
+			v1.z = .0f;
+			sum += ltc_integrate_edge(p0, v1);
+
+			if (p2.z >= 0) {
+				vec3 v2 = normalize(-p1.z * p2 + p2.z * p1);
+				v2.z = .0f;
+				sum += ltc_integrate_edge(v1, v2);
+
+				p1 = v2;
+			}
+			else {
+				p1 = v1;
+			}
+		}
+
+		uint next_idx = t + 3;
+		p0 = p1;
+		p1 = p2;
+		p2 = next_idx < points ? normalize(Minv * (light_pos + ltc_point(ltc_points[offset + next_idx]) - P)) : start;
+	}
+	
+	sum = two_sided ? 
+			abs(sum) : 
+			max(.0f, -sum);
+
+	return vec3(sum) / two_pi;
+}
+
+/*
+ *	Integrates spherical clamped cosine distribution of a projected convex polyhedron cross section.
+ *	
+ *	The input is a convex polyhedron, constructed from triangles. The input is clipped to the upper hemisphere of point P with normal N.
  *	Input is read from storage buffer ltc_points.
  *
  *	@param N			Normal, world coordinates.
@@ -93,16 +191,14 @@ vec3 ltc_evaluate_quad(vec3 N,
  *	@param light_pos	Light position, world coordinates.
  *	@param primitives	Primitives (triangles) count.
  *	@param offset		Offset into point buffer (ltc_points).
- *	@param two_sided	Single or two-sided shape. Must be false for polyhedrons.
  */
-vec3 ltc_evaluate_polygon(vec3 N, 
-						  vec3 V, 
-						  vec3 P, 
-						  mat3 Minv, 
-						  vec3 light_pos, 
-						  uint primitives, 
-						  uint offset, 
-						  bool two_sided) {//, sampler2D texFilteredMap)
+vec3 ltc_evaluate_convex_polyhedron(vec3 N, 
+									vec3 V, 
+									vec3 P, 
+									mat3 Minv, 
+									vec3 light_pos, 
+									uint primitives, 
+									uint offset) {
 	// construct orthonormal basis around N
 	vec3 T1, T2;
 	T1 = normalize(V - N*dot(V, N));
@@ -112,14 +208,12 @@ vec3 ltc_evaluate_polygon(vec3 N,
 	Minv = Minv * transpose(mat3(T1, T2, N));
 
 	vec3 accum = vec3(.0f);
-	for (int t=0; t<primitives; ++t) {
+	for (uint t=0; t<primitives; ++t) {
 		// polygon (allocate 4 vertices for clipping)
 		vec3 v[4];
-		v[0] = Minv * (light_pos + ltc_points[offset + 3*t + 0].xyz - P);
-		v[1] = Minv * (light_pos + ltc_points[offset + 3*t + 1].xyz - P);
-		v[2] = Minv * (light_pos + ltc_points[offset + 3*t + 2].xyz - P);
-
-		//vec3 textureLight = FetchDiffuseFilteredTexture(texFilteredMap, v[0], v[1], v[2], v[3]);
+		v[0] = Minv * (light_pos + ltc_point(ltc_points[offset + 3*t + 0]) - P);
+		v[1] = Minv * (light_pos + ltc_point(ltc_points[offset + 3*t + 1]) - P);
+		v[2] = Minv * (light_pos + ltc_point(ltc_points[offset + 3*t + 2]) - P);
 	
 		vec3 zs = vec3(v[0].z, v[1].z, v[2].z);
 		bool all_below_horizon = all(lessThanEqual(zs, vec3(.0f)));
@@ -148,12 +242,7 @@ vec3 ltc_evaluate_polygon(vec3 N,
 		if (n == 4)
 			sum += ltc_integrate_edge(v[3], v[0]);
 
-		// note: negated due to winding order
-		sum = two_sided ? 
-				abs(sum) : 
-				max(.0f, -sum);
-
-		accum += sum;
+		accum += max(.0f, -sum);
 	}
 
 	return vec3(accum) / two_pi;

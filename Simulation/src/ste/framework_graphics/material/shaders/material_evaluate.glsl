@@ -49,6 +49,7 @@ vec3 material_evaluate_layer_radiance(material_layer_unpacked_descriptor descrip
 		bool shape_sphere = light_shape_is_sphere(ld.type);
 		bool shape_quad = light_shape_is_quad(ld.type);
 		bool shape_polygon = light_shape_is_polygon(ld.type);
+		bool shape_polyhedron = light_shape_is_convex_polyhedron(ld.type);
 		
 		// And properties
 		bool two_sided = light_type_is_two_sided(ld.type);
@@ -60,7 +61,7 @@ vec3 material_evaluate_layer_radiance(material_layer_unpacked_descriptor descrip
 		
 		// Light position
 		vec3 L = is_directional ? 
-					wp - ld.position * ld.directional_distance : 
+					wp + l * ld.directional_distance : 
 					ld.position;
 	
 		// The integration type depends on shape
@@ -79,12 +80,16 @@ vec3 material_evaluate_layer_radiance(material_layer_unpacked_descriptor descrip
 			specular_irradiance = ltc_evaluate_quad(wn, wv, wp, ltc_M_inv, L, points_offset, two_sided) * ltc_ampl;
 			diffuse_irradiance  = ltc_evaluate_quad(wn, wv, wp, mat3(1),   L, points_offset, two_sided);
 		}
-		else /*if (shape_polygon)*/ {
-			// Polygon/Polyhedron light. Primitives are always triangles.
+		else if (shape_polygon) {
+			specular_irradiance = ltc_evaluate_polygon(wn, wv, wp, ltc_M_inv, L, points_count, points_offset, two_sided) * ltc_ampl;
+			diffuse_irradiance  = ltc_evaluate_polygon(wn, wv, wp, mat3(1),   L, points_count, points_offset, two_sided);
+		}
+		else /*if (shape_polyhedron)*/ {
+			// Polyhedron light. Primitives are always triangles.
 			uint primitives = points_count / 3;
 
-			specular_irradiance = ltc_evaluate_polygon(wn, wv, wp, ltc_M_inv, L, primitives, points_offset, two_sided) * ltc_ampl;
-			diffuse_irradiance  = ltc_evaluate_polygon(wn, wv, wp, mat3(1),   L, primitives, points_offset, two_sided);
+			specular_irradiance = ltc_evaluate_convex_polyhedron(wn, wv, wp, ltc_M_inv, L, primitives, points_offset) * ltc_ampl;
+			diffuse_irradiance  = ltc_evaluate_convex_polyhedron(wn, wv, wp, mat3(1),   L, primitives, points_offset);
 		}
 		
 		// Compute fresnel term

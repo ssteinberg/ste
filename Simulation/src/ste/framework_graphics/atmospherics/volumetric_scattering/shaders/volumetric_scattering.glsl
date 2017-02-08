@@ -8,10 +8,10 @@
 #include "linked_light_lists.glsl"
 
 const int volumetric_scattering_tile_size = lll_image_res_multiplier;
-const int volumetric_scattering_depth_tiles = 128;
+const int volumetric_scattering_depth_tiles = 256;
 
-const float volumetric_scattering_ka = 50.f;
-const float volumetric_scattering_kb = 4.1f;
+const float volumetric_scattering_ka = 54.f;
+const float volumetric_scattering_kb = 4.f;
 
 float volumetric_scattering_depth_for_tile(float t) {
 	float x = t / float(volumetric_scattering_depth_tiles);

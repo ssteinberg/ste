@@ -29,7 +29,7 @@ protected:
 public:
 	virtual ~quad_light() noexcept {}
 
-	void set_points(glm::vec3 *quad_points) { Base::set_points(&quad_points[0], 4); }
+	void set_points(const glm::vec3 *quad_points) { Base::set_points(&quad_points[0], 4); }
 	void set_points(const std::array<glm::vec3, 4> &quad_points) { Base::set_points(&quad_points[0], quad_points.size()); }
 };
 

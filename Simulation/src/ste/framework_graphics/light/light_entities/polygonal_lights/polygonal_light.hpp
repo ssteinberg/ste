@@ -25,8 +25,7 @@ protected:
 																				  intensity,
 																				  position,
 																				  storage_info) {
-		assert(((static_cast<std::uint32_t>(type) & light_shape_polygon) == light_shape_polygon ||
-				(static_cast<std::uint32_t>(type) & light_shape_convex_polyhedron) == light_shape_convex_polyhedron)
+		assert((static_cast<std::uint32_t>(type) & light_shape_polygon) == light_shape_polygon
 			   && "Type is not a polygonal light!");
 	}
 
@@ -59,17 +58,6 @@ public:
 																							  color, intensity, position,
 																							  storage_info) {}
 	virtual ~polygonal_light_twosided() noexcept {}
-};
-
-class convex_polyhedron_light : public polygonal_light {
-public:
-	convex_polyhedron_light(const rgb &color,
-							float intensity,
-							const glm::vec3 &position,
-							shaped_light_points_storage_info storage_info) : polygonal_light(LightType::ConvexPolyhedron,
-																							 color, intensity, position,
-																							 storage_info) {}
-	virtual ~convex_polyhedron_light() noexcept {}
 };
 
 }

@@ -13,10 +13,10 @@ layout(local_size_x = 32, local_size_y = 32, local_size_z = 1) in;
 #include "light.glsl"
 #include "light_cascades.glsl"
 #include "linked_light_lists.glsl"
+#include "linearly_transformed_cosines.glsl"
 
 #include "girenderer_transform_buffer.glsl"
 #include "project.glsl"
-
 #include "fast_rand.glsl"
 
 layout(std430, binding = 2) restrict readonly buffer light_data {
@@ -33,11 +33,11 @@ layout(shared, binding = 7) restrict readonly buffer directional_lights_cascades
 	light_cascade_descriptor directional_lights_cascades[];
 };
 
-layout(shared, binding = 8) restrict readonly buffer shaped_lights_points_data {
-	vec3 ltc_points[];
+layout(std430, binding = 8) restrict readonly buffer shaped_lights_points_data {
+	ltc_element ltc_points[];
 };
 
-layout(rgba32f, binding = 7) restrict uniform image3D volume;
+layout(rgba16f, binding = 7) restrict uniform image3D volume;
 
 #include "linked_light_lists_load.glsl"
 #include "cosine_distribution_integration.glsl"
@@ -105,10 +105,10 @@ vec3 integrate_light_cross_section(light_descriptor ld, vec3 w_pos) {
 		return integrate_cosine_distribution_sphere_cross_section(length(l), ld.radius).xxx;
 	else if (shape_quad)
 		return integrate_cosine_distribution_quad(w_pos, normalize(l), ld.position, points_offset, two_sided);
-	else /*if (shape_polygon)*/ {
+	/*else {
 		uint primitives = points_count / 3;
 		return ltc_evaluate_polygon(w_pos, normalize(l), ld.position, primitives, points_offset, two_sided);
-	}
+	}*/return vec3(0);
 }
 
 vec3 scatter_light(vec2 slice_coords,

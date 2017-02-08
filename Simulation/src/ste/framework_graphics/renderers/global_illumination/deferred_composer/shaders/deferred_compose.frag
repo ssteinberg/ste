@@ -9,6 +9,7 @@
 #include "light.glsl"
 #include "light_cascades.glsl"
 #include "linked_light_lists.glsl"
+#include "linearly_transformed_cosines.glsl"
 
 #include "gbuffer_load.glsl"
 
@@ -27,8 +28,8 @@ layout(std430, binding = 2) restrict readonly buffer light_data {
 layout(shared, binding = 7) restrict readonly buffer directional_lights_cascades_data {
 	light_cascade_descriptor directional_lights_cascades[];
 };
-layout(shared, binding = 8) restrict readonly buffer shaped_lights_points_data {
-	vec3 ltc_points[];
+layout(std430, binding = 8) restrict readonly buffer shaped_lights_points_data {
+	ltc_element ltc_points[];
 };
 
 layout(r8ui,  binding = 5) restrict readonly uniform uimage2D lll_size;

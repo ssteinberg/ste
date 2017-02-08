@@ -85,6 +85,16 @@ public:
 	const std::vector<ebo_type::T> &get_indices() const override final { return indices; }
 	const mesh_bounding_sphere &bounding_sphere() const override final { return sphere; };
 
+	void set_vertices(const object_vertex_data *vert, int size) {
+		vertices = decltype(vertices)(vert, vert + size);
+		mesh_vbo = nullptr;
+		calc_sphere();
+	}
+	void set_indices(const ebo_type::T *ind, int size) {
+		indices = decltype(indices)(ind, ind + size);
+		mesh_vbo = nullptr;
+		calc_sphere();
+	}
 	template <typename T>
 	void set_vertices(T &&vert) {
 		vertices = decltype(vertices)(std::forward<T>(vert));
