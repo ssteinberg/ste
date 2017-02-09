@@ -10,6 +10,7 @@
 #include "light.glsl"
 #include "light_transport.glsl"
 
+#include "cosine_distribution_integration.glsl"
 #include "clamped_cosine_distribution_integration.glsl"
 #include "microfacet_ggx_fitting.glsl"
 #include "cook_torrance.glsl"
@@ -63,6 +64,7 @@ vec3 material_evaluate_layer_radiance(material_layer_unpacked_descriptor descrip
 		vec3 L = is_directional ? 
 					wp + l * ld.directional_distance : 
 					ld.position;
+		vec3 wl = (L - wp) / l_dist;
 	
 		// The integration type depends on shape
 		vec3 specular_irradiance;
@@ -73,16 +75,16 @@ vec3 material_evaluate_layer_radiance(material_layer_unpacked_descriptor descrip
 			float r = ld.radius;
 
 			specular_irradiance = ltc_evaluate_sphere(wn, wv, wp, ltc_M_inv, L, r) * ltc_ampl;
-			diffuse_irradiance  = ltc_evaluate_sphere(wn, wv, wp, mat3(1),   L, r);
+			diffuse_irradiance  = integrate_cosine_distribution_sphere_cross_section(l_dist, r).xxx;//ltc_evaluate_sphere(wn, wv, wp, mat3(1),   L, r);
 		}
 		else if (shape_quad) {
 			// Quad. Always 4 points.
 			specular_irradiance = ltc_evaluate_quad(wn, wv, wp, ltc_M_inv, L, points_offset, two_sided) * ltc_ampl;
-			diffuse_irradiance  = ltc_evaluate_quad(wn, wv, wp, mat3(1),   L, points_offset, two_sided);
+			diffuse_irradiance  = shaped_light_attenuation(ld, l_dist, wl).xxx;//ltc_evaluate_quad(wn, wv, wp, mat3(1),   L, points_offset, two_sided);
 		}
 		else if (shape_polygon) {
 			specular_irradiance = ltc_evaluate_polygon(wn, wv, wp, ltc_M_inv, L, points_count, points_offset, two_sided) * ltc_ampl;
-			diffuse_irradiance  = ltc_evaluate_polygon(wn, wv, wp, mat3(1),   L, points_count, points_offset, two_sided);
+			diffuse_irradiance  = shaped_light_attenuation(ld, l_dist, wl).xxx;//ltc_evaluate_polygon(wn, wv, wp, mat3(1),   L, points_count, points_offset, two_sided);
 		}
 		else /*if (shape_polyhedron)*/ {
 			// Polyhedron light. Primitives are always triangles.
@@ -103,8 +105,7 @@ vec3 material_evaluate_layer_radiance(material_layer_unpacked_descriptor descrip
 	}
 	else {	// Virtual light
 		// For non-integrated lights we need to factor light attenuation manually.
-		float attenuation = light_attenuation(ld, l_dist);
-		float cutoff = light_calculate_minimal_luminance(ld);
+		float attenuation = virtual_light_attenuation(ld, l_dist);
 
 		// Anisotropic roughness
 		float rx = descriptor.roughness * descriptor.anisotropy_ratio;
@@ -120,7 +121,7 @@ vec3 material_evaluate_layer_radiance(material_layer_unpacked_descriptor descrip
 		vec3 Diffuse = diffused_light * lambert_diffuse_brdf();
 		
 		vec3 brdf = irradiance * dot(n, l) * (Specular + Diffuse);
-		return max(vec3(.0f), attenuation * brdf - vec3(cutoff));
+		return max(vec3(.0f), attenuation * brdf);
 	}
 }
 

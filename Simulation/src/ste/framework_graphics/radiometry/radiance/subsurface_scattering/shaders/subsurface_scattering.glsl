@@ -62,7 +62,7 @@ vec3 subsurface_scattering(material_layer_unpacked_descriptor descriptor,
 												 shadow_v, 
 												 vec3(0,1,0), vec3(0,1,0),
 												 l_radius, 
-												 light_effective_range(ld),
+												 ld.effective_range,
 												 frag_coords);*/
 
 		float dist_light_to_sample = length(shadow_v);
@@ -70,8 +70,8 @@ vec3 subsurface_scattering(material_layer_unpacked_descriptor descriptor,
 		float path_length = dist0 + (dist_light_to_sample - dist_light_to_object);
 		
 		vec3 incident = light_incidant_ray(ld, p) / dist_light_to_sample;
-		vec3 irradiance = irradiance(ld, dist_light_to_object);
-		vec3 attenuation = exp(-path_length * attenuation_coefficient);
+		vec3 irradiance = irradiance(ld);
+		vec3 attenuation = exp(-path_length * attenuation_coefficient) * virtual_light_attenuation(ld, dist_light_to_object);
 		float phase = henyey_greenstein_phase_function(incident, view_ray, g);
 
 		vec3 scattering = phase * albedo * attenuation;

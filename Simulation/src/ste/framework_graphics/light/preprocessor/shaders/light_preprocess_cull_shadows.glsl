@@ -2,6 +2,8 @@
 #type compute
 #version 450
 
+#extension GL_ARB_bindless_texture : enable
+
 layout(local_size_x = 128) in;
 
 #include "girenderer_transform_buffer.glsl"

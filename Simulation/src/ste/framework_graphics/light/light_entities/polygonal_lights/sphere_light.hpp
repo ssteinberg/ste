@@ -28,6 +28,7 @@ public:
 	}
 	void set_radius(float r) {
 		descriptor.radius = r;
+		update_effective_range();
 		Base::notify();
 	}
 

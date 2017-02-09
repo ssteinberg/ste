@@ -2,6 +2,8 @@
 #type compute
 #version 450
 
+#extension GL_ARB_bindless_texture : enable
+
 layout(local_size_x = 128) in;
 
 #include "girenderer_transform_buffer.glsl"
@@ -41,7 +43,6 @@ void main() {
 
 	// Transform light position/direction
 	vec3 transformed_light_pos = light_transform(view_transform_buffer.view_transform, ld);
-	float range;
 
 	bool add_light = false;
 
@@ -64,17 +65,11 @@ void main() {
 		directional_lights_cascades[cascade_idx].Y.xyz = y;
 		
 		add_light = true;
-		range = inf;
 	}
 	else {
 		// For spherical lights:
-		// Calculate acceptable cutoff and range based on cutoff. Using those, check if cutoff sphere is in frustum,
-		// in which case add to lll.
-		float minimal_light_luminance = light_calculate_minimal_luminance(ld);
-		range = light_calculate_effective_range(ld, minimal_light_luminance);
-
 		// Frustum cull based on light effective range
-		float r = range;
+		float r = ld.effective_range;
 		vec3 c = transformed_light_pos.xyz;
 
 		if (collision_sphere_infinite_frustum(c, r,
@@ -91,6 +86,5 @@ void main() {
 		add_to_lll(light_idx);
 
 		light_buffer[light_idx].transformed_position = transformed_light_pos;
-		light_buffer[light_idx].effective_range = range;
 	}
 }

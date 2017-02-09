@@ -562,7 +562,7 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\gpu_dispatch\tasks\gpu_task.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\gpu_dispatch\tasks\gpu_task_factory.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\gpu_dispatch\tasks\transition\gpu_state_transition.hpp" />
-    <ClInclude Include="Simulation\src\ste\framework_graphics\light\light.hpp" />
+    <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_entities\light.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_cascade_descriptor.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_descriptor.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_entities\directional_light.hpp" />

@@ -13,7 +13,6 @@ layout(local_size_x = 32, local_size_y = 32, local_size_z = 1) in;
 #include "light.glsl"
 #include "light_cascades.glsl"
 #include "linked_light_lists.glsl"
-#include "linearly_transformed_cosines.glsl"
 
 #include "girenderer_transform_buffer.glsl"
 #include "project.glsl"
@@ -33,14 +32,9 @@ layout(shared, binding = 7) restrict readonly buffer directional_lights_cascades
 	light_cascade_descriptor directional_lights_cascades[];
 };
 
-layout(std430, binding = 8) restrict readonly buffer shaped_lights_points_data {
-	ltc_element ltc_points[];
-};
-
 layout(rgba16f, binding = 7) restrict uniform image3D volume;
 
 #include "linked_light_lists_load.glsl"
-#include "cosine_distribution_integration.glsl"
 
 layout(bindless_sampler) uniform samplerCubeArrayShadow shadow_depth_maps;
 layout(bindless_sampler) uniform sampler2DArrayShadow directional_shadow_depth_maps;
@@ -82,33 +76,11 @@ vec2 slice_coords_to_fragcoords(vec2 v) {
 	return (v + vec2(.5f)) * float(volumetric_scattering_tile_size) / vec2(backbuffer_size());
 }
 
-vec3 integrate_light_cross_section(light_descriptor ld, vec3 w_pos) {
-	// Check light type and shape
-	bool virtual_light = light_type_is_point(ld.type);
-	bool shape_sphere = light_shape_is_sphere(ld.type);
-	bool shape_quad = light_shape_is_quad(ld.type);
-	bool shape_polygon = light_shape_is_polygon(ld.type);
-		
-	// And properties
-	bool two_sided = light_type_is_two_sided(ld.type);
-	bool textured = light_type_is_textured(ld.type);
-
-	// Points count and offset into points buffer
-	uint points_count = light_get_polygon_point_counts(ld);
-	uint points_offset = light_get_polygon_point_offset(ld);
-
-	vec3 l = w_pos - ld.position;
-	
-	if (virtual_light)
-		return light_attenuation(ld, length(l)).xxx;
-	else if (shape_sphere) 
-		return integrate_cosine_distribution_sphere_cross_section(length(l), ld.radius).xxx;
-	else if (shape_quad)
-		return integrate_cosine_distribution_quad(w_pos, normalize(l), ld.position, points_offset, two_sided);
-	/*else {
-		uint primitives = points_count / 3;
-		return ltc_evaluate_polygon(w_pos, normalize(l), ld.position, primitives, points_offset, two_sided);
-	}*/return vec3(0);
+float scatter_light_attenuation(light_descriptor ld, float dist, vec3 wl) {
+	if (light_type_is_point(ld.type) || light_shape_is_convex_polyhedron(ld.type))
+		return virtual_light_attenuation(ld, dist);
+	else
+		return shaped_light_attenuation(ld, dist, wl);
 }
 
 vec3 scatter_light(vec2 slice_coords,
@@ -116,20 +88,23 @@ vec3 scatter_light(vec2 slice_coords,
 				   vec3 w_pos,
 				   float thickness,
 				   light_descriptor ld,
-				   uint shadowmap_idx,
-				   float min_lum) {
-	vec3 shadow_v = w_pos - ld.position;
-
+				   uint shadowmap_idx) {
+	vec3 l = w_pos - ld.position;
 	float shadow = shadow_test(shadow_depth_maps,
 							   shadowmap_idx,
-							   shadow_v,
+							   l,
 							   vec3(0,1,0), vec3(0,1,0),
 							   ld.radius,
-							   light_effective_range(ld));
+							   ld.effective_range);
 	if (shadow <= .0f)
 		return vec3(0);
+
+	float l_dist = length(l);
+	float atten = scatter_light_attenuation(ld, l_dist, -l/l_dist); 
+	if (atten <= .0f)
+		return vec3(0);
 	
-	vec3 lux = irradiance(ld) * integrate_light_cross_section(ld, w_pos);
+	vec3 lux = irradiance(ld) * atten;
 	return shadow * lux * scatter(ld.position, w_pos, eye_position(),
 								  thickness,
 								  atmospheric_optical_length_lut);
@@ -143,10 +118,7 @@ vec3 scatter_directional_light(vec2 slice_coords,
 							   mat3x4 M,
 							   vec2 cascade_recp_vp,
 							   float cascade_proj_far,
-							   int shadowmap_idx,
-							   float min_lum) {
-	vec3 l = light_incidant_ray(ld, position);
-	
+							   int shadowmap_idx) {	
 	float shadow = shadow_test(directional_shadow_depth_maps,
 							   shadowmap_idx,
 							   position,
@@ -155,8 +127,11 @@ vec3 scatter_directional_light(vec2 slice_coords,
 							   cascade_proj_far);
 	if (shadow <= .0f)
 		return vec3(0);
+
+	vec3 l = ld.position;
+	float atten = shaped_light_attenuation(ld, ld.directional_distance, l);
 	
-	vec3 lux = irradiance(ld) * integrate_cosine_distribution_sphere_cross_section(ld.directional_distance, ld.radius);
+	vec3 lux = irradiance(ld) * atten;
 	return shadow * lux * scatter_ray(eye_position(), w_pos, -ld.position,
 									  thickness,
 									  atmospheric_optical_length_lut);
@@ -196,7 +171,7 @@ bool generate_sample(vec2 slice_coords, float s,
 
 vec3 scatter(float depth, float depth_next_tile, 
 			 ivec2 slice_coords, vec2 fragcoords, vec2 next_tile_fragcoords,
-			 light_descriptor ld, uint light_idx, uint ll_idx, float min_lum,
+			 light_descriptor ld, uint light_idx, uint ll_idx,
 			 light_cascade_descriptor cascade_descriptor, inout float current_cascade_far_clip, inout int shadowmap_idx, inout mat3x4 M, inout float cascade_proj_far, inout vec2 cascade_recp_vp, inout int cascade) {
 	float z0 = unproject_depth(depth);
 	float z2 = unproject_depth(depth_next_tile);
@@ -234,8 +209,7 @@ vec3 scatter(float depth, float depth_next_tile,
 												   M,
 												   cascade_recp_vp,
 												   cascade_proj_far,
-												   shadowmap_idx,
-												   min_lum);
+												   shadowmap_idx);
 		}
 	}
 	else {
@@ -250,8 +224,7 @@ vec3 scatter(float depth, float depth_next_tile,
 									   w_pos,
 									   thickness,
 									   ld,
-									   ll_idx,
-									   min_lum);
+									   ll_idx);
 		}
 	}
 
@@ -286,10 +259,6 @@ void main() {
 		uint light_idx = uint(lll_parse_light_idx(lll_p));
 		uint ll_idx = uint(lll_parse_ll_idx(lll_p));
 		light_descriptor ld = light_buffer[light_idx];
-
-		// We use the low detail variation of the per-pixel linked-light-list,
-		// therefore we have a different minimal light luminance than usual lights.
-		float min_lum = lll_low_detail_light_minimal_luminance(ld);
 		
 		// Cascade data used for directional lights
 		uint cascade_idx = light_get_cascade_descriptor_idx(ld);
@@ -317,7 +286,7 @@ void main() {
 			if (tile <= tiles_effected_by_light_end)
 				accum += scatter(depth, depth_next_tile, 
 								 slice_coords, fragcoords, next_tile_fragcoords,
-								 ld, light_idx, ll_idx, min_lum,
+								 ld, light_idx, ll_idx, 
 								 cascade_descriptor, current_cascade_far_clip, shadowmap_idx, M, cascade_proj_far, cascade_recp_vp, cascade);
 
 			vec3 stored_rgb = imageLoad(volume, volume_coords).rgb;

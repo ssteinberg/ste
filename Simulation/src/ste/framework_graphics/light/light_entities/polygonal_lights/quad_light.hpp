@@ -29,8 +29,13 @@ protected:
 public:
 	virtual ~quad_light() noexcept {}
 
-	void set_points(const glm::vec3 *quad_points) { Base::set_points(&quad_points[0], 4); }
-	void set_points(const std::array<glm::vec3, 4> &quad_points) { Base::set_points(&quad_points[0], quad_points.size()); }
+	void set_points(const glm::vec3 *quad_points) {
+		glm::vec3 n = glm::cross(quad_points[1] - quad_points[0], quad_points[3] - quad_points[0]);
+		float area = glm::length(n);
+
+		Base::set_points(quad_points, 4, area, n / area);
+	}
+	void set_points(const std::array<glm::vec3, 4> &quad_points) { set_points(&quad_points[0]); }
 };
 
 class quad_light_onesided : public quad_light {

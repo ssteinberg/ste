@@ -2,6 +2,8 @@
 #type geometry
 #version 450
 
+#extension GL_ARB_bindless_texture : enable
+
 layout(triangles) in;
 layout(triangle_strip, max_vertices=18) out;
 

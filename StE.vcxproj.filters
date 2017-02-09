@@ -509,9 +509,6 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\gpu_dispatch\tasks\transition\gpu_state_transition.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\light\light.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_descriptor.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1107,6 +1104,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_entities\polygonal_lights\convex_polyhedron_light.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_entities\light.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

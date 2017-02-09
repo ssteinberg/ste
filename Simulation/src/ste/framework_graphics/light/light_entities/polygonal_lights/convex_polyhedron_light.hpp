@@ -28,10 +28,10 @@ protected:
 public:
 	virtual ~convex_polyhedron_light() noexcept {}
 
-	using Base::set_points;
-	void set_points(const std::vector<glm::vec3> &points) { Base::set_points(&points[0], points.size()); }
+	void set_points(const glm::vec3 *points, std::size_t size) { Base::set_points(points, size, 0, {0,0,0}); }
+	void set_points(const std::vector<glm::vec3> &points) { set_points(&points[0], points.size()); }
 	template <int N>
-	void set_points(const std::array<glm::vec3, N> &points) { Base::set_points(&points[0], points.size()); }
+	void set_points(const std::array<glm::vec3, N> &points) { set_points(&points[0], points.size()); }
 };
 
 }

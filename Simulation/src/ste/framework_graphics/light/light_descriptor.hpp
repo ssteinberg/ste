@@ -6,20 +6,25 @@
 #include "stdafx.hpp"
 #include "light_type.hpp"
 
+#include "texture_handle.hpp"
+
 namespace StE {
 namespace Graphics {
 
 struct light_descriptor {
-	glm::vec3 position;		float radius{ .0f };
-	glm::vec3 emittance;	std::uint32_t polygonal_light_points_and_offset{ 0 };
+	glm::vec3		position;		float radius{ .0f };
+	glm::vec3		emittance;		LightType type;
+	float			effective_range{ .0f };
+	std::uint32_t	normal_pack;
+	float			sqrt_surface_area{ .0f };
+	std::uint32_t	polygonal_light_points_and_offset{ 0 };
 
-	LightType type;
+	Core::texture_handle texture;
 
 	float directional_distance;
-
 	std::uint32_t cascade_idx{ 0xFFFFFFFF };
 
-	float _internal[5];
+	float _internal[4];
 
 public:
 	void set_polygonal_light_points(std::uint8_t points, std::uint32_t offset) {

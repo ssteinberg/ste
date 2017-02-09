@@ -219,8 +219,8 @@ float integrate_cosine_distribution_sphere_cross_section(float d, float r) {
 	if (d <= r)
 		return 1.f;
 
-	float d_over_r = d / r;
-	float sin2_theta = 1 / (sqr(d_over_r) - 1.f);
+	float r_over_d = r / d;
+	float sin2_theta = sqr(r_over_d);
 
 	return sin2_theta;
 }

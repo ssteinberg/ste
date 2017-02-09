@@ -29,13 +29,32 @@ protected:
 			   && "Type is not a polygonal light!");
 	}
 
+	static float calculate_area(const glm::vec3 *points, std::size_t size, const glm::vec3 &n) {
+		glm::vec3 res = { 0,0,0 };
+		for (unsigned i=0; i<size; ++i) {
+			glm::vec3 v0 = points[i];
+			glm::vec3 v1 = points[i + 1 == size ? 0 : i + 1];
+			res += glm::cross(v0, v1);
+		}
+
+		return .5f * glm::abs(glm::dot(n, res));
+	}
+
 public:
 	virtual ~polygonal_light() noexcept {}
 
-	using Base::set_points;
-	void set_points(const std::vector<glm::vec3> &points) { Base::set_points(&points[0], points.size()); }
+	void set_points(const glm::vec3 *points, std::size_t size) {
+		glm::vec3 n = { 0,0,0 };
+		float area = .0f;
+		if (size > 2) {
+			n = glm::normalize(glm::cross(points[1] - points[0], points[2] - points[0]));
+			area = calculate_area(points, size, n);
+		}
+		Base::set_points(points, size, area, n);
+	}
+	void set_points(const std::vector<glm::vec3> &points) { set_points(&points[0], points.size()); }
 	template <int N>
-	void set_points(const std::array<glm::vec3, N> &points) { Base::set_points(&points[0], points.size()); }
+	void set_points(const std::array<glm::vec3, N> &points) { set_points(&points[0], points.size()); }
 };
 
 class polygonal_light_onesided : public polygonal_light {

@@ -173,8 +173,8 @@ void add_scene_lights(StE::Graphics::scene &scene, std::vector<std::unique_ptr<S
 		lights.push_back(std::move(wall_lamp.first));
 	}
 
-	glm::vec3 points[4] = { { -8,8,-8 },{ 8,8,-8 },{ 8,-8,-8 },{ -8,-8,-8 } };
-	auto lamp = create_quad_light_object(&scene, StE::Graphics::kelvin(8000), 3500, glm::vec3{ 120, 153, 555 }, 
+	glm::vec3 points[4] = { { -12,12,-12 },{ 12,12,-12 },{ 12,-12,-12 },{ -12,-12,-12 } };
+	auto lamp = create_quad_light_object(&scene, StE::Graphics::kelvin(10000), 4000, glm::vec3{ 120, 153, 570 }, 
 										 glm::vec3{ 0,0,-1 }, glm::vec3{ 1,0,0 }, points, materials, layers);
 
 	lights.push_back(std::move(lamp.first));
@@ -303,13 +303,6 @@ int main()
 	const glm::vec3 sun_direction = glm::normalize(glm::vec3{ 0.f, -1.f, 0.f });
 	auto sun_light = scene.get().properties().lights_storage().allocate_directional_light(StE::Graphics::kelvin(5770),
 																						  1.88e+9f, 1496e+8f, 695e+6f, sun_direction);
-
-
-	auto star = scene.get().properties().lights_storage().allocate_shaped_light<StE::Graphics::polygonal_light_twosided>(StE::Graphics::kelvin(13000),
-																														 4000.f, glm::vec3{ 400, 110, -40 });
-	star->set_points({glm::vec3{0,0,-40}, {0,-15,-15}, {0,-40,-22}, {0,-35,0}, {0,-40,22}, {0,-15,15}, {0,0,40},
-	{0,13,20}, {0,40,0}, {0,13,-20}});
-
 
 	add_scene_lights(scene.get(), lights, materials, material_layers);
 
