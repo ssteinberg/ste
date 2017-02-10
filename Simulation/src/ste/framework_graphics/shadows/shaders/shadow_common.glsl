@@ -13,7 +13,7 @@ const float shadow_max_penumbra_fast_path_multiplier = .25f;
 const int shadow_max_clusters = 10;
 const float shadow_cutoff = .5f;
 const float shadow_penumbra_scale = 1.f;
-const float shadow_screen_penumbra_clusters_per_pixel_squared = 4e-4f;
+const float shadow_screen_penumbra_clusters_per_pixel_squared = 2e-3f;
 
 const vec2 shadow_cluster_samples[8] = { vec2(-.7071f,   .7071f),
 										 vec2( .0000f,	-.8750f),

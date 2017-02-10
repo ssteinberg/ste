@@ -91,74 +91,6 @@ void directional_light(uint light_idx, int cascade, light_descriptor ld) {
 	directional_lights_cascades[cascade_idx].cascades_data[cascade] = vec4(recp_vp, eye_dist, far_clip);
 }
 
-void spherical_light(uint light_idx, int face, light_descriptor ld) {
-	// Calculate shadow projection face frustum
-	vec3 origin = ld.transformed_position;
-	vec3 dir = face_directions[face];
-
-	float n = ld.radius;
-	float f = max(ld.effective_range, n);
-
-	vec3 t = vec3(1,-1, 0);
-	vec3 u[4];
-
-	if ((face & 4) != 0) {
-		u[0] = dir + t.xxz;
-		u[1] = dir + t.xyz;
-		u[2] = dir + t.yxz;
-		u[3] = dir + t.yyz;
-	}
-	else if ((face & 2) != 0) {
-		u[0] = dir + t.xzx;
-		u[1] = dir + t.xzy;
-		u[2] = dir + t.yzx;
-		u[3] = dir + t.yzy;
-	}
-	else {
-		u[0] = dir + t.zxx;
-		u[1] = dir + t.zxy;
-		u[2] = dir + t.zyx;
-		u[3] = dir + t.zyy;
-	}
-
-	// Check frustum-frustum intersection
-	bvec4 bn0, bn1;
-	bvec4 br0, br1;
-	bvec4 bl0, bl1;
-	bvec4 bt0, bt1;
-	bvec4 bb0, bb1;
-	for (int i=0; i<4; ++i) {
-		vec3 w = transform_direction_view(u[i]);
-		vec3 v0 = origin + w * n;
-		vec3 v1 = origin + w * f;
-			
-		bn0[i] = dot(np.xyz, v0) + np.w <= 0;
-		br0[i] = dot(rp.xyz, v0) + rp.w <= 0;
-		bl0[i] = dot(lp.xyz, v0) + lp.w <= 0;
-		bt0[i] = dot(tp.xyz, v0) + tp.w <= 0;
-		bb0[i] = dot(bp.xyz, v0) + bp.w <= 0;
-
-		bn1[i] = dot(np.xyz, v1) + np.w <= 0;
-		br1[i] = dot(rp.xyz, v1) + rp.w <= 0;
-		bl1[i] = dot(lp.xyz, v1) + lp.w <= 0;
-		bt1[i] = dot(tp.xyz, v1) + tp.w <= 0;
-		bb1[i] = dot(bp.xyz, v1) + bp.w <= 0;
-	}
-		
-	bool bn = all(bn0) && all(bn1);
-	bool br = all(br0) && all(br1);
-	bool bl = all(bl0) && all(bl1);
-	bool bt = all(bt0) && all(bt1);
-	bool bb = all(bb0) && all(bb1);
-
-	// If exists a plane such that all face frustum vertices are behind it, reject
-	if (bn || br || bl || bt || bb)
-		return;
-
-	int mask = 1 << face;
-	atomicAdd(light_buffer[light_idx].shadow_face_mask, mask);
-}
-
 void main() {
 	int ll_id = int(gl_GlobalInvocationID.x) / 6;
 	if (ll_id >= ll_counter)
@@ -170,8 +102,5 @@ void main() {
 	
 	if (light_type_is_directional(ld.type)) {
 		directional_light(light_idx, face, ld);
-	}
-	else {
-		spherical_light(light_idx, face, ld);
 	}
 }

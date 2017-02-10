@@ -44,8 +44,7 @@ struct light_descriptor {
 	// transformed_position: Light position in eye space for spherical, direction in eye space for directional lights.
 	vec3 transformed_position;
 
-	// shadow_face_mask: For masking (culling) shadow map cube faces (for spherical) or cascades (for directional).
-	uint shadow_face_mask;
+	float _unused;
 };
 
 /*

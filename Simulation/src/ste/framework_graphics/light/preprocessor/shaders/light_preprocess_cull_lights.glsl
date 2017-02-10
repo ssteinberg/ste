@@ -73,12 +73,8 @@ void main() {
 		vec3 c = transformed_light_pos.xyz;
 
 		if (collision_sphere_infinite_frustum(c, r,
-											  np, rp, lp, tp, bp)) {
+											  np, rp, lp, tp, bp))
 			add_light = true;
-
-			// Zero out shadow face mask. It shall be computed later.
-			light_buffer[light_idx].shadow_face_mask = 0;
-		}
 	}
 
 	if (add_light) {

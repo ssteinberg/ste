@@ -173,8 +173,8 @@ void add_scene_lights(StE::Graphics::scene &scene, std::vector<std::unique_ptr<S
 		lights.push_back(std::move(wall_lamp.first));
 	}
 
-	glm::vec3 points[4] = { { -12,12,-12 },{ 12,12,-12 },{ 12,-12,-12 },{ -12,-12,-12 } };
-	auto lamp = create_quad_light_object(&scene, StE::Graphics::kelvin(10000), 4000, glm::vec3{ 120, 153, 570 }, 
+	glm::vec3 points[4] = { { -18,18,0 },{ 18,18,0 },{ 18,-18,0 },{ -18,-18,0 } };
+	auto lamp = create_quad_light_object(&scene, StE::Graphics::kelvin(12000), 3000, glm::vec3{ 120, 153, 565 }, 
 										 glm::vec3{ 0,0,-1 }, glm::vec3{ 1,0,0 }, points, materials, layers);
 
 	lights.push_back(std::move(lamp.first));
@@ -207,7 +207,7 @@ int main()
 	int w = 1920;
 	int h = w * 9 / 16;
 	constexpr float clip_near = 1.f;
-	float fovy = glm::pi<float>() * .225f;
+	float fovy = glm::pi<float>() * .2f;
 
 	GL::gl_context::context_settings settings;
 	settings.vsync = false;

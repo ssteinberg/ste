@@ -169,10 +169,10 @@ bool generate_sample(vec2 slice_coords, float s,
 	return true;
 }
 
-vec3 scatter(float depth, float depth_next_tile, 
-			 ivec2 slice_coords, vec2 fragcoords, vec2 next_tile_fragcoords,
+vec3 scatter(float depth, float depth_next_tile, ivec2 slice_coords,
 			 light_descriptor ld, uint light_idx, uint ll_idx,
-			 light_cascade_descriptor cascade_descriptor, inout float current_cascade_far_clip, inout int shadowmap_idx, inout mat3x4 M, inout float cascade_proj_far, inout vec2 cascade_recp_vp, inout int cascade) {
+			 light_cascade_descriptor cascade_descriptor, inout float current_cascade_far_clip, inout int shadowmap_idx, 
+			 inout mat3x4 M, inout float cascade_proj_far, inout vec2 cascade_recp_vp, inout int cascade) {
 	float z0 = unproject_depth(depth);
 	float z2 = unproject_depth(depth_next_tile);
 	float thickness = abs(z0 - z2);
@@ -246,9 +246,6 @@ void main() {
 	float effective_tiles_start = max(volumetric_scattering_tile_for_depth(depth_buffer_d_max) - 2.f, 0.f);
 	float effective_tiles_end = min(volumetric_scattering_tile_for_depth(depth_buffer_d_min) + 1.f, float(volumetric_scattering_depth_tiles));
 	
-	vec2 fragcoords = slice_coords_to_fragcoords(vec2(slice_coords));
-	vec2 next_tile_fragcoords = slice_coords_to_fragcoords(vec2(slice_coords + ivec2(1)));
-
 	// Loop through per-pixel linked-light-list
 	uint lll_start = imageLoad(lll_heads, slice_coords).x;
 	uint lll_length = imageLoad(lll_size, slice_coords).x;
@@ -284,8 +281,7 @@ void main() {
 			float depth_next_tile = volumetric_scattering_depth_for_tile(tile + 1.f);
 
 			if (tile <= tiles_effected_by_light_end)
-				accum += scatter(depth, depth_next_tile, 
-								 slice_coords, fragcoords, next_tile_fragcoords,
+				accum += scatter(depth, depth_next_tile, slice_coords, 
 								 ld, light_idx, ll_idx, 
 								 cascade_descriptor, current_cascade_far_clip, shadowmap_idx, M, cascade_proj_far, cascade_recp_vp, cascade);
 

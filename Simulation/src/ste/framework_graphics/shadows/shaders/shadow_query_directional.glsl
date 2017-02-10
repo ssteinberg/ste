@@ -13,11 +13,13 @@ const float shadow_directional_min_penumbra = .0f;//1.f / shadow_dirmap_size;
  */
 float shadow_calculate_test_depth_dir(float z, float near, float far, vec3 n, vec3 l) {	
 	float d = project_depth_linear(z, near, far);
-	float t = 1.f / (far - near);
 
 	float slope = 1.f - abs(dot(l,n));
+	
+	float df_dx = 1.f / (far - near);
+	float delta = df_dx * 1.1f * (1.f + slope * 2.5f);
 
-	return d * 1.00025f + t * 1.175f * mix(1.f, 3.5f, slope);
+	return d + delta;
 }
 
 float shadow_blocker_search(sampler2DArray directional_shadow_maps, uint idx, vec2 uv) {
@@ -62,7 +64,7 @@ float shadow_impl(deferred_shading_shadow_maps shadow_maps,
 	// Calculate penumbra based on distance and light radius
 	float penumbra_world = shadow_calculate_penumbra(d_blocker, light_radius, dist_receiver);
 	// Transform penumbra size to cascade texture space
-	vec2 to_texture_space = .5f * cascade_recp_vp;
+	vec2 to_texture_space = .25f * cascade_recp_vp;
 	vec2 penumbra = clamp(penumbra_world * to_texture_space, 
 						  shadow_directional_min_penumbra, 
 						  shadow_directional_max_penumbra * max_penumbra_multiplier);
