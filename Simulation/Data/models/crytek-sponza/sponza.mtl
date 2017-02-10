@@ -15,8 +15,8 @@ newmtl leaf
 	map_metallic images/Dielectric_metallic.png
 	map_Kd images/Sponza_Thorn_diffuse.png
 	map_d images/sponza_thorn_mask.tga
-	map_bump images/Sponza_Thorn_normal.png
-	bump images/Sponza_Thorn_normal.png
+	map_bump images/Sponza_Thorn_normalmap.png
+	bump images/Sponza_Thorn_normalmap.png
 	map_roughness images/Sponza_Thorn_roughness.png
 
 newmtl vase_round
@@ -32,8 +32,8 @@ newmtl vase_round
 	Ke 0.0000 0.0000 0.0000
 	map_metallic images/Dielectric_metallic.png
 	map_Kd images/VaseRound_diffuse.png
-	map_bump images/VaseRound_normal.png
-	bump images/VaseRound_normal.png
+	map_bump images/VaseRound_normalmap.png
+	bump images/VaseRound_normalmap.png
 	map_roughness images/VaseRound_roughness.png
 
 newmtl Material__57
@@ -49,8 +49,8 @@ newmtl Material__57
 	Ke 0.0000 0.0000 0.0000
 	map_metallic images/Dielectric_metallic.png
 	map_Kd images/VasePlant_diffuse.png
-	map_bump images/VasePlant_normal.png
-	bump images/VasePlant_normal.png
+	map_bump images/VasePlant_normalmap.png
+	bump images/VasePlant_normalmap.png
 	map_roughness images/VasePlant_roughness.png
 	map_d images/vase_plant_mask.tga
 
@@ -67,8 +67,8 @@ newmtl Material__298
 	Ke 0.0000 0.0000 0.0000
 	map_metallic images/Dielectric_metallic.png
 	map_Kd images/Background_Albedo.png
-	map_bump images/Background_Normal.png
-	bump images/Background_Normal.png
+	map_bump images/Background_Normalmap.png
+	bump images/Background_Normalmap.png
 	map_NS images/Background_roughness.png
 
 newmtl bricks
@@ -84,9 +84,9 @@ newmtl bricks
 	Ke 0.0000 0.0000 0.0000
 	map_metallic images/Dielectric_metallic.png
 	map_Kd images/Sponza_Bricks_a_Albedo.png
-	map_bump images/Sponza_Bricks_a_Normal.png
+	map_bump images/Sponza_Bricks_a_Normalmap.png
 	map_roughness images/Sponza_Bricks_a_Roughness.png
-	bump images/Sponza_Bricks_a_Normal.png
+	bump images/Sponza_Bricks_a_Normalmap.png
 
 newmtl arch
 	Ns 10.0000
@@ -102,8 +102,8 @@ newmtl arch
 	map_metallic images/Dielectric_metallic.png
 	map_Kd images/Sponza_Arch_diffuse.png
 	map_roughness images/Sponza_Arch_roughness.png
-	map_bump images/Sponza_Arch_normal.png
-	bump images/Sponza_Arch_normal.png
+	map_bump images/Sponza_Arch_normalmap.png
+	bump images/Sponza_Arch_normalmap.png
 
 newmtl ceiling
 	Ns 10.0000
@@ -119,8 +119,8 @@ newmtl ceiling
 	map_metallic images/Dielectric_metallic.png
 	map_Kd images/Sponza_Ceiling_diffuse.png
 	map_roughness images/Sponza_Ceiling_roughness.png
-	map_bump images/Sponza_Ceiling_normal.png
-	bump images/Sponza_Ceiling_normal.png
+	map_bump images/Sponza_Ceiling_normalmap.png
+	bump images/Sponza_Ceiling_normalmap.png
 
 newmtl column_a
 	Ns 10.0000
@@ -135,8 +135,8 @@ newmtl column_a
 	Ke 0.0000 0.0000 0.0000
 	map_metallic images/Dielectric_metallic.png
 	map_Kd images/Sponza_Column_a_diffuse.png
-	map_bump images/Sponza_Column_a_normal.png
-	bump images/Sponza_Column_a_normal.png
+	map_bump images/Sponza_Column_a_normalmap.png
+	bump images/Sponza_Column_a_normalmap.png
 	map_roughness images/Sponza_Column_a_roughness.png
 
 newmtl floor
@@ -152,8 +152,8 @@ newmtl floor
 	Ke 0.0000 0.0000 0.0000
 	map_metallic images/Dielectric_metallic.png
 	map_Kd images/Sponza_Floor_diffuse.png
-	map_bump images/Sponza_Floor_normal.png
-	bump images/Sponza_Floor_normal.png
+	map_bump images/Sponza_Floor_normalmap.png
+	bump images/Sponza_Floor_normalmap.png
 	map_roughness images/Sponza_Floor_roughness.png
 
 newmtl column_c
@@ -169,8 +169,8 @@ newmtl column_c
 	Ke 0.0000 0.0000 0.0000
 	map_metallic images/Dielectric_metallic.png
 	map_Kd images/Sponza_Column_c_diffuse.png
-	map_bump images/Sponza_Column_c_normal.png
-	bump images/Sponza_Column_c_normal.png
+	map_bump images/Sponza_Column_c_normalmap.png
+	bump images/Sponza_Column_c_normalmap.png
 	map_roughness images/Sponza_Column_c_roughness.png
 
 newmtl details
@@ -186,8 +186,8 @@ newmtl details
 	Ke 0.0000 0.0000 0.0000
 	map_metallic images/Sponza_Details_metallic.png
 	map_Kd images/Sponza_Details_diffuse.png
-	map_bump images/Sponza_Details_normal.png
-	bump images/Sponza_Details_normal.png
+	map_bump images/Sponza_Details_normalmap.png
+	bump images/Sponza_Details_normalmap.png
 	map_roughness images/Sponza_Details_roughness.png
 
 newmtl column_b
@@ -203,8 +203,8 @@ newmtl column_b
 	Ke 0.0000 0.0000 0.0000
 	map_metallic images/Dielectric_metallic.png
 	map_Kd images/Sponza_Column_b_diffuse.png
-	map_bump images/Sponza_Column_b_normal.png
-	bump images/Sponza_Column_b_normal.png
+	map_bump images/Sponza_Column_b_normalmap.png
+	bump images/Sponza_Column_b_normalmap.png
 	map_roughness images/Sponza_Column_b_roughness.png
 
 newmtl flagpole
@@ -220,8 +220,8 @@ newmtl flagpole
 	Ke 0.0000 0.0000 0.0000
 	map_metallic images/Metallic_metallic.png
 	map_Kd images/Sponza_FlagPole_diffuse.png
-	map_bump images/Sponza_FlagPole_normal.png
-	bump images/Sponza_FlagPole_normal.png
+	map_bump images/Sponza_FlagPole_normalmap.png
+	bump images/Sponza_FlagPole_normalmap.png
 	map_roughness images/Sponza_FlagPole_roughness.png
 
 newmtl fabric_e
@@ -237,8 +237,8 @@ newmtl fabric_e
 	Ke 0.0000 0.0000 0.0000
 	map_metallic images/Sponza_Fabric_metallic.png
 	map_Kd images/Sponza_Fabric_Green_diffuse.png
-	map_bump images/Sponza_Fabric_Green_normal.png
-	bump images/Sponza_Fabric_Green_normal.png
+	map_bump images/Sponza_Fabric_Green_normalmap.png
+	bump images/Sponza_Fabric_Green_normalmap.png
 	map_roughness images/Sponza_Fabric_roughness.png
 
 newmtl fabric_d
@@ -254,8 +254,8 @@ newmtl fabric_d
 	Ke 0.0000 0.0000 0.0000
 	map_metallic images/Sponza_Fabric_metallic.png
 	map_Kd images/Sponza_Fabric_Blue_diffuse.png
-	map_bump images/Sponza_Fabric_Blue_normal.png
-	bump images/Sponza_Fabric_Blue_normal.png
+	map_bump images/Sponza_Fabric_Blue_normalmap.png
+	bump images/Sponza_Fabric_Blue_normalmap.png
 	map_roughness images/Sponza_Fabric_roughness.png
 
 newmtl fabric_a
@@ -271,8 +271,8 @@ newmtl fabric_a
 	Ke 0.0000 0.0000 0.0000
 	map_metallic images/Sponza_Fabric_metallic.png
 	map_Kd images/Sponza_Fabric_Red_diffuse.png
-	map_bump images/Sponza_Fabric_Red_normal.png
-	bump images/Sponza_Fabric_Red_normal.png
+	map_bump images/Sponza_Fabric_Red_normalmap.png
+	bump images/Sponza_Fabric_Red_normalmap.png
 	map_roughness images/Sponza_Fabric_roughness.png
 
 newmtl fabric_g
@@ -288,8 +288,8 @@ newmtl fabric_g
 	Ke 0.0000 0.0000 0.0000
 	map_metallic images/Sponza_Curtain_metallic.png
 	map_Kd images/Sponza_Curtain_Blue_diffuse.png
-	map_bump images/Sponza_Curtain_Blue_normal.png
-	bump images/Sponza_Curtain_Blue_normal.png
+	map_bump images/Sponza_Curtain_Blue_normalmap.png
+	bump images/Sponza_Curtain_Blue_normalmap.png
 	map_roughness images/Sponza_Curtain_roughness.png
 
 newmtl fabric_c
@@ -305,8 +305,8 @@ newmtl fabric_c
 	Ke 0.0000 0.0000 0.0000
 	map_metallic images/Sponza_Curtain_metallic.png
 	map_Kd images/Sponza_Curtain_Red_diffuse.png
-	map_bump images/Sponza_Curtain_Red_normal.png
-	bump images/Sponza_Curtain_Red_normal.png
+	map_bump images/Sponza_Curtain_Red_normalmap.png
+	bump images/Sponza_Curtain_Red_normalmap.png
 	map_roughness images/Sponza_Curtain_roughness.png
 
 newmtl fabric_f
@@ -322,8 +322,8 @@ newmtl fabric_f
 	Ke 0.0000 0.0000 0.0000
 	map_metallic images/Sponza_Curtain_metallic.png
 	map_Kd images/Sponza_Curtain_Green_diffuse.png
-	map_bump images/Sponza_Curtain_Green_normal.png
-	bump images/Sponza_Curtain_Green_normal.png
+	map_bump images/Sponza_Curtain_Green_normalmap.png
+	bump images/Sponza_Curtain_Green_normalmap.png
 	map_roughness images/Sponza_Curtain_roughness.png
 
 newmtl chain
@@ -340,8 +340,8 @@ newmtl chain
 	map_metallic images/ChainTexture_Metallic.png
 	map_Kd images/ChainTexture_Albedo.png
 	map_d images/chain_texture_mask.tga
-	map_bump images/ChainTexture_Normal.png
-	bump images/ChainTexture_Normal.png
+	map_bump images/ChainTexture_Normalmap.png
+	bump images/ChainTexture_Normalmap.png
 	map_roughness images/ChainTexture_Roughness.png
 
 newmtl vase_hanging
@@ -357,8 +357,8 @@ newmtl vase_hanging
 	Ke 0.0000 0.0000 0.0000
 	map_metallic images/Metallic_metallic.png
 	map_Kd images/VaseHanging_diffuse.png
-	map_bump images/VaseHanging_normal.png
-	bump images/VaseHanging_normal.png
+	map_bump images/VaseHanging_normalmap.png
+	bump images/VaseHanging_normalmap.png
 	map_roughness images/VaseHanging_roughness.png
 
 newmtl vase
@@ -374,8 +374,8 @@ newmtl vase
 	Ke 0.0000 0.0000 0.0000
 	map_metallic images/Dielectric_metallic.png
 	map_Kd images/Vase_diffuse.png
-	map_bump images/Vase_normal.png
-	bump images/Vase_normal.png
+	map_bump images/Vase_normalmap.png
+	bump images/Vase_normalmap.png
 	map_roughness images/Vase_roughness.png
 
 newmtl Material__25
@@ -391,8 +391,8 @@ newmtl Material__25
 	Ke 0.0000 0.0000 0.0000
 	map_metallic images/Dielectric_metallic.png
 	map_Kd images/Lion_Albedo.png
-	map_bump images/Lion_Normal.png
-	bump images/Lion_Normal.png
+	map_bump images/Lion_Normalmap.png
+	bump images/Lion_Normalmap.png
 	map_roughness images/Lion_Roughness.png
 
 newmtl roof
@@ -408,6 +408,6 @@ newmtl roof
 	Ke 0.0000 0.0000 0.0000
 	map_metallic images/Dielectric_metallic.png
 	map_Kd images/Sponza_Roof_diffuse.png
-	map_bump images/Sponza_Roof_normal.png
-	bump images/Sponza_Roof_normal.png
+	map_bump images/Sponza_Roof_normalmap.png
+	bump images/Sponza_Roof_normalmap.png
 	map_roughness images/Sponza_Roof_roughness.png
