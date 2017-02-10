@@ -12,14 +12,12 @@ newmtl leaf
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka textures\sponza_thorn_diff.tga
-	map_Kd textures\sponza_thorn_diff.tga
-	map_Ks textures\sponza_thorn_spec.tga
-	map_d textures\sponza_thorn_mask.tga
-	disp textures\sponza_thorn_bump.png
-	roughness 0.33
-	metallic 0.0
-	anisotropy 0.0
+	map_metallic images/Dielectric_metallic.png
+	map_Kd images/Sponza_Thorn_diffuse.png
+	map_d images/sponza_thorn_mask.tga
+	map_bump images/Sponza_Thorn_normal.png
+	bump images/Sponza_Thorn_normal.png
+	map_roughness images/Sponza_Thorn_roughness.png
 
 newmtl vase_round
 	Ns 10.0000
@@ -32,13 +30,11 @@ newmtl vase_round
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka textures\vase_round.tga
-	map_Kd textures\vase_round.tga
-	map_Ks textures\vase_round_spec.tga
-	disp textures\vase_round_bump.png
-	roughness 0.44
-	metallic 0.0
-	anisotropy 0.0
+	map_metallic images/Dielectric_metallic.png
+	map_Kd images/VaseRound_diffuse.png
+	map_bump images/VaseRound_normal.png
+	bump images/VaseRound_normal.png
+	map_roughness images/VaseRound_roughness.png
 
 newmtl Material__57
 	Ns 10.0000
@@ -51,13 +47,12 @@ newmtl Material__57
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka textures\vase_plant.tga
-	map_Kd textures\vase_plant.tga
-	map_Ks textures\vase_plant_spec.tga
-	map_d textures\vase_plant_mask.tga
-	roughness 0.33
-	metallic 0.0
-	anisotropy 0.0
+	map_metallic images/Dielectric_metallic.png
+	map_Kd images/VasePlant_diffuse.png
+	map_bump images/VasePlant_normal.png
+	bump images/VasePlant_normal.png
+	map_roughness images/VasePlant_roughness.png
+	map_d images/vase_plant_mask.tga
 
 newmtl Material__298
 	Ns 10.0000
@@ -70,29 +65,11 @@ newmtl Material__298
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka textures\background.tga
-	map_Kd textures\background.tga
-	disp textures\background_bump.png
-	roughness 0.36
-	metallic 0.0
-	anisotropy 0.0
-
-newmtl 16___Default
-	Ns 10.0000
-	Ni 1.5000
-	d 1.0000
-	Tr 0.0000
-	Tf 1.0000 1.0000 1.0000 
-	illum 2
-	Ka 0.5880 0.5880 0.5880
-	Kd 0.5880 0.5880 0.5880
-	Ks 0.0000 0.0000 0.0000
-	Ke 0.0000 0.0000 0.0000
-	map_Ka textures\gi_flag.tga
-	map_Kd textures\gi_flag.tga
-	roughness 0.75
-	metallic 0.0
-	anisotropy 0.8
+	map_metallic images/Dielectric_metallic.png
+	map_Kd images/Background_Albedo.png
+	map_bump images/Background_Normal.png
+	bump images/Background_Normal.png
+	map_NS images/Background_roughness.png
 
 newmtl bricks
 	Ns 10.0000
@@ -105,13 +82,11 @@ newmtl bricks
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka textures\spnza_bricks_a_diff.tga
-	map_Kd textures\spnza_bricks_a_diff.tga
-	map_Ks textures\spnza_bricks_a_spec.tga
-	disp textures\spnza_bricks_a_bump.png
-	roughness 0.26
-	metallic 0.0
-	anisotropy 0.0
+	map_metallic images/Dielectric_metallic.png
+	map_Kd images/Sponza_Bricks_a_Albedo.png
+	map_bump images/Sponza_Bricks_a_Normal.png
+	map_roughness images/Sponza_Bricks_a_Roughness.png
+	bump images/Sponza_Bricks_a_Normal.png
 
 newmtl arch
 	Ns 10.0000
@@ -124,12 +99,11 @@ newmtl arch
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka textures\sponza_arch_diff.tga
-	map_Kd textures\sponza_arch_diff.tga
-	map_Ks textures\sponza_arch_spec.tga
-	roughness 0.4
-	metallic 0.0
-	anisotropy 0.0
+	map_metallic images/Dielectric_metallic.png
+	map_Kd images/Sponza_Arch_diffuse.png
+	map_roughness images/Sponza_Arch_roughness.png
+	map_bump images/Sponza_Arch_normal.png
+	bump images/Sponza_Arch_normal.png
 
 newmtl ceiling
 	Ns 10.0000
@@ -142,12 +116,11 @@ newmtl ceiling
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka textures\sponza_ceiling_a_diff.tga
-	map_Kd textures\sponza_ceiling_a_diff.tga
-	map_Ks textures\sponza_ceiling_a_spec.tga
-	roughness 0.4
-	metallic 0.0
-	anisotropy 0.0
+	map_metallic images/Dielectric_metallic.png
+	map_Kd images/Sponza_Ceiling_diffuse.png
+	map_roughness images/Sponza_Ceiling_roughness.png
+	map_bump images/Sponza_Ceiling_normal.png
+	bump images/Sponza_Ceiling_normal.png
 
 newmtl column_a
 	Ns 10.0000
@@ -160,13 +133,11 @@ newmtl column_a
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka textures\sponza_column_a_diff.tga
-	map_Kd textures\sponza_column_a_diff.tga
-	map_Ks textures\sponza_column_a_spec.tga
-	disp textures\sponza_column_a_bump.png
-	roughness 0.4
-	metallic 0.0
-	anisotropy 0.0
+	map_metallic images/Dielectric_metallic.png
+	map_Kd images/Sponza_Column_a_diffuse.png
+	map_bump images/Sponza_Column_a_normal.png
+	bump images/Sponza_Column_a_normal.png
+	map_roughness images/Sponza_Column_a_roughness.png
 
 newmtl floor
 	Ns 10.0000
@@ -179,13 +150,11 @@ newmtl floor
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka textures\sponza_floor_a_diff.tga
-	map_Kd textures\sponza_floor_a_diff.tga
-	map_Ks textures\sponza_floor_a_spec.tga
-	disp textures\sponza_floor_a_bump.png
-	roughness 0.28
-	metallic 0.0
-	anisotropy 0.1
+	map_metallic images/Dielectric_metallic.png
+	map_Kd images/Sponza_Floor_diffuse.png
+	map_bump images/Sponza_Floor_normal.png
+	bump images/Sponza_Floor_normal.png
+	map_roughness images/Sponza_Floor_roughness.png
 
 newmtl column_c
 	Ns 10.0000
@@ -198,13 +167,11 @@ newmtl column_c
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka textures\sponza_column_c_diff.tga
-	map_Kd textures\sponza_column_c_diff.tga
-	map_Ks textures\sponza_column_c_spec.tga
-	disp textures\sponza_column_c_bump.png
-	roughness 0.4
-	metallic 0.0
-	anisotropy 0.0
+	map_metallic images/Dielectric_metallic.png
+	map_Kd images/Sponza_Column_c_diffuse.png
+	map_bump images/Sponza_Column_c_normal.png
+	bump images/Sponza_Column_c_normal.png
+	map_roughness images/Sponza_Column_c_roughness.png
 
 newmtl details
 	Ns 10.0000
@@ -217,12 +184,11 @@ newmtl details
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka textures\sponza_details_diff.tga
-	map_Kd textures\sponza_details_diff.tga
-	map_Ks textures\sponza_details_spec.tga
-	roughness 0.4
-	metallic 0.0
-	anisotropy 0.0
+	map_metallic images/Sponza_Details_metallic.png
+	map_Kd images/Sponza_Details_diffuse.png
+	map_bump images/Sponza_Details_normal.png
+	bump images/Sponza_Details_normal.png
+	map_roughness images/Sponza_Details_roughness.png
 
 newmtl column_b
 	Ns 10.0000
@@ -235,28 +201,11 @@ newmtl column_b
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka textures\sponza_column_b_diff.tga
-	map_Kd textures\sponza_column_b_diff.tga
-	map_Ks textures\sponza_column_b_spec.tga
-	disp textures\sponza_column_b_bump.png
-	roughness 0.4
-	metallic 0.0
-	anisotropy 0.0
-
-newmtl Material__47
-	Ns 10.0000
-	Ni 1.5000
-	d 1.0000
-	Tr 0.0000
-	Tf 1.0000 1.0000 1.0000 
-	illum 2
-	Ka 0.5880 0.5880 0.5880
-	Kd 0.5880 0.5880 0.5880
-	Ks 0.0000 0.0000 0.0000
-	Ke 0.0000 0.0000 0.0000
-	roughness 0.28
-	metallic 0.0
-	anisotropy 0.0
+	map_metallic images/Dielectric_metallic.png
+	map_Kd images/Sponza_Column_b_diffuse.png
+	map_bump images/Sponza_Column_b_normal.png
+	bump images/Sponza_Column_b_normal.png
+	map_roughness images/Sponza_Column_b_roughness.png
 
 newmtl flagpole
 	Ns 10.0000
@@ -269,13 +218,11 @@ newmtl flagpole
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka textures\sponza_flagpole_diff.tga
-	map_Kd textures\sponza_flagpole_diff.tga
-	map_Ks textures\sponza_flagpole_spec.tga
-	roughness 0.58
-	metallic 1.0
-	anisotropy 0.8
-	ior 5
+	map_metallic images/Metallic_metallic.png
+	map_Kd images/Sponza_FlagPole_diffuse.png
+	map_bump images/Sponza_FlagPole_normal.png
+	bump images/Sponza_FlagPole_normal.png
+	map_roughness images/Sponza_FlagPole_roughness.png
 
 newmtl fabric_e
 	Ns 10.0000
@@ -288,13 +235,11 @@ newmtl fabric_e
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka textures\sponza_fabric_green_diff.tga
-	map_Kd textures\sponza_fabric_green_diff.tga
-	map_Ks textures\sponza_fabric_spec.tga
-	roughness 0.75
-	metallic 0.0
-	anisotropy 0.5
-	sheen 1.0
+	map_metallic images/Sponza_Fabric_metallic.png
+	map_Kd images/Sponza_Fabric_Green_diffuse.png
+	map_bump images/Sponza_Fabric_Green_normal.png
+	bump images/Sponza_Fabric_Green_normal.png
+	map_roughness images/Sponza_Fabric_roughness.png
 
 newmtl fabric_d
 	Ns 10.0000
@@ -307,13 +252,11 @@ newmtl fabric_d
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka textures\sponza_fabric_blue_diff.tga
-	map_Kd textures\sponza_fabric_blue_diff.tga
-	map_Ks textures\sponza_fabric_spec.tga
-	roughness 0.75
-	metallic 0.0
-	anisotropy 0.5
-	sheen 1.0
+	map_metallic images/Sponza_Fabric_metallic.png
+	map_Kd images/Sponza_Fabric_Blue_diffuse.png
+	map_bump images/Sponza_Fabric_Blue_normal.png
+	bump images/Sponza_Fabric_Blue_normal.png
+	map_roughness images/Sponza_Fabric_roughness.png
 
 newmtl fabric_a
 	Ns 10.0000
@@ -326,13 +269,11 @@ newmtl fabric_a
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka textures\sponza_fabric_diff.tga
-	map_Kd textures\sponza_fabric_diff.tga
-	map_Ks textures\sponza_fabric_spec.tga
-	roughness 0.75
-	metallic 0.0
-	anisotropy 0.5
-	sheen 1.0
+	map_metallic images/Sponza_Fabric_metallic.png
+	map_Kd images/Sponza_Fabric_Red_diffuse.png
+	map_bump images/Sponza_Fabric_Red_normal.png
+	bump images/Sponza_Fabric_Red_normal.png
+	map_roughness images/Sponza_Fabric_roughness.png
 
 newmtl fabric_g
 	Ns 10.0000
@@ -345,12 +286,11 @@ newmtl fabric_g
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka textures\sponza_curtain_blue_diff.tga
-	map_Kd textures\sponza_curtain_blue_diff.tga
-	roughness 0.85
-	metallic 0.0
-	anisotropy 0.5
-	sheen 1.0
+	map_metallic images/Sponza_Curtain_metallic.png
+	map_Kd images/Sponza_Curtain_Blue_diffuse.png
+	map_bump images/Sponza_Curtain_Blue_normal.png
+	bump images/Sponza_Curtain_Blue_normal.png
+	map_roughness images/Sponza_Curtain_roughness.png
 
 newmtl fabric_c
 	Ns 10.0000
@@ -363,12 +303,11 @@ newmtl fabric_c
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka textures\sponza_curtain_diff.tga
-	map_Kd textures\sponza_curtain_diff.tga
-	roughness 0.85
-	metallic 0.0
-	anisotropy 0.5
-	sheen 1.0
+	map_metallic images/Sponza_Curtain_metallic.png
+	map_Kd images/Sponza_Curtain_Red_diffuse.png
+	map_bump images/Sponza_Curtain_Red_normal.png
+	bump images/Sponza_Curtain_Red_normal.png
+	map_roughness images/Sponza_Curtain_roughness.png
 
 newmtl fabric_f
 	Ns 10.0000
@@ -381,12 +320,11 @@ newmtl fabric_f
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka textures\sponza_curtain_green_diff.tga
-	map_Kd textures\sponza_curtain_green_diff.tga
-	roughness 0.85
-	metallic 0.0
-	anisotropy 0.5
-	sheen 1.0
+	map_metallic images/Sponza_Curtain_metallic.png
+	map_Kd images/Sponza_Curtain_Green_diffuse.png
+	map_bump images/Sponza_Curtain_Green_normal.png
+	bump images/Sponza_Curtain_Green_normal.png
+	map_roughness images/Sponza_Curtain_roughness.png
 
 newmtl chain
 	Ns 10.0000
@@ -399,14 +337,12 @@ newmtl chain
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka textures\chain_texture.tga
-	map_Kd textures\chain_texture.tga
-	map_d textures\chain_texture_mask.tga
-	disp textures\chain_texture_bump.png
-	roughness 0.32
-	metallic 1.0
-	anisotropy 0.2
-	ior 5
+	map_metallic images/ChainTexture_Metallic.png
+	map_Kd images/ChainTexture_Albedo.png
+	map_d images/chain_texture_mask.tga
+	map_bump images/ChainTexture_Normal.png
+	bump images/ChainTexture_Normal.png
+	map_roughness images/ChainTexture_Roughness.png
 
 newmtl vase_hanging
 	Ns 10.0000
@@ -419,12 +355,11 @@ newmtl vase_hanging
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka textures\vase_hanging.tga
-	map_Kd textures\vase_hanging.tga
-	roughness 0.28
-	metallic 1.0
-	anisotropy 0.4
-	ior 5
+	map_metallic images/Metallic_metallic.png
+	map_Kd images/VaseHanging_diffuse.png
+	map_bump images/VaseHanging_normal.png
+	bump images/VaseHanging_normal.png
+	map_roughness images/VaseHanging_roughness.png
 
 newmtl vase
 	Ns 10.0000
@@ -437,12 +372,11 @@ newmtl vase
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka textures\vase_dif.tga
-	map_Kd textures\vase_dif.tga
-	disp textures\vase_bump.png
-	roughness 0.44
-	metallic 0.0
-	anisotropy 0.0
+	map_metallic images/Dielectric_metallic.png
+	map_Kd images/Vase_diffuse.png
+	map_bump images/Vase_normal.png
+	bump images/Vase_normal.png
+	map_roughness images/Vase_roughness.png
 
 newmtl Material__25
 	Ns 10.0000
@@ -455,12 +389,11 @@ newmtl Material__25
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka textures\lion.tga
-	map_Kd textures\lion.tga
-	disp textures\lion_bump.png
-	roughness 0.32
-	metallic 0.0
-	anisotropy 0.0
+	map_metallic images/Dielectric_metallic.png
+	map_Kd images/Lion_Albedo.png
+	map_bump images/Lion_Normal.png
+	bump images/Lion_Normal.png
+	map_roughness images/Lion_Roughness.png
 
 newmtl roof
 	Ns 10.0000
@@ -473,8 +406,8 @@ newmtl roof
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka textures\sponza_roof_diff.tga
-	map_Kd textures\sponza_roof_diff.tga
-	roughness 0.44
-	metallic 0.0
-	anisotropy 0.0
+	map_metallic images/Dielectric_metallic.png
+	map_Kd images/Sponza_Roof_diffuse.png
+	map_bump images/Sponza_Roof_normal.png
+	bump images/Sponza_Roof_normal.png
+	map_roughness images/Sponza_Roof_roughness.png
