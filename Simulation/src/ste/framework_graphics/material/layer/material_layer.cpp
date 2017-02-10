@@ -14,10 +14,20 @@ material_layer::material_layer() {
 	material_sampler.set_anisotropic_filter(16);
 	
 	// Write default values
-	descriptor.set_roughness_and_thickness(roughness, thickness);
-	descriptor.set_anisotropy_and_metallicity(aniso_ratio, metallic);
 	descriptor.set_ior_phase(index_of_refraction, phase_g);
 	descriptor.set_attenuation_coefficient(attenuation_coefficient);
+
+	write_scalar_map<&material_layer::roughness_map>(.5f);
+	descriptor.set_roughness_map_handle(handle_for_texture(roughness_map.get()));
+
+//	write_scalar_map<&material_layer::anisotropy_map>(.0f);
+//	descriptor.set_anisotropy_map_handle(handle_for_texture(anisotropy_map.get()));
+
+	write_scalar_map<&material_layer::metallicity_map>(.0f);
+	descriptor.set_metallicity_map_handle(handle_for_texture(metallicity_map.get()));
+
+	write_scalar_map<&material_layer::thickness_map>(.0f);
+	descriptor.set_thickness_map_handle(handle_for_texture(thickness_map.get()));
 }
 
 StE::Core::texture_handle material_layer::handle_for_texture(const Core::texture_2d *t) const {

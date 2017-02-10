@@ -27,11 +27,11 @@ struct material_descriptor {
 };
 
 struct material_layer_descriptor {
-	uint packed_albedo;
+	layout(bindless_sampler) sampler2D roughness_map;
+	layout(bindless_sampler) sampler2D metallicity_map;
+	layout(bindless_sampler) sampler2D thickness_map;
 
-	uint ansi_metal_pack;
-	uint roughness_thickness_pack;
-	
+	uint packed_albedo;	
 	uint next_layer_id;
 	
 	vec3 attenuation_coefficient;
@@ -103,12 +103,14 @@ bool material_is_simple(material_descriptor md, material_layer_descriptor head_l
 
 void normal_map(material_descriptor md, vec2 uv, vec2 duvdx, vec2 duvdy, inout vec3 n, inout vec3 t, inout vec3 b) {
 	if ((md.material_flags & material_has_normal_map_bit) != 0) {
-		mat3 tbn = mat3(t, b, n);
+		mat3 transform = mat3(t, b, n);
 
-		vec3 nm = textureGrad(md.normal_map.tex_handler, uv, duvdx, duvdy).xyz;
-		n = tbn * normalize(nm);
-
-		b = cross(t, n);
+		vec3 nm;
+		nm.xy = textureGrad(md.normal_map.tex_handler, uv, duvdx, duvdy).wy * 2.f - 1.f;
+		nm.z = sqrt(1.f - clamp(dot(nm.xy,nm.xy), .0f, 1.f));
+		
+		n = transform * normalize(nm);
+		b = normalize(cross(t, n));
 		t = cross(n, b);
 	}
 }

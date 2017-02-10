@@ -368,7 +368,7 @@ int main()
 	bool layer_enabled[3] = { true, false, false };
 	StE::Graphics::rgb base_color[3];
 	float roughness[3];
-	float anisotropy[3];
+//	float anisotropy[3];
 	float metallic[3];
 	float index_of_refraction[3];
 	float thickness[3];
@@ -381,7 +381,7 @@ int main()
 
 		base_color[i] = { 1,1,1 };
 		roughness[i] = .5f;
-		anisotropy[i] = 0;
+//		anisotropy[i] = 0;
 		metallic[i] = 0;
 		index_of_refraction[i] = 1.5f;
 		thickness[i] = 0.001f;
@@ -403,7 +403,7 @@ int main()
 					ImGui::SliderFloat((std::string("G ##value") +		" ##" + layer_label).data(), &base_color[i].G(),	 .0f, 1.f);
 					ImGui::SliderFloat((std::string("B ##value") +		" ##" + layer_label).data(), &base_color[i].B(),	 .0f, 1.f);
 					ImGui::SliderFloat((std::string("Rghn ##value") +	" ##" + layer_label).data(), &roughness[i],			 .0f, 1.f);
-					ImGui::SliderFloat((std::string("Aniso ##value") +	" ##" + layer_label).data(), &anisotropy[i],		-1.f, 1.f, "%.3f", 2.f);
+//					ImGui::SliderFloat((std::string("Aniso ##value") +	" ##" + layer_label).data(), &anisotropy[i],		-1.f, 1.f, "%.3f", 2.f);
 					ImGui::SliderFloat((std::string("Metal ##value") +	" ##" + layer_label).data(), &metallic[i],			 .0f, 1.f);
 					ImGui::SliderFloat((std::string("IOR ##value") +	" ##" + layer_label).data(), &index_of_refraction[i],1.f, 4.f, "%.5f", 3.f);
 					if (i < layers_count - 1 && layer_enabled[i + 1])
@@ -420,16 +420,12 @@ int main()
 			auto t = glm::u8vec3(base_color[i].R() * 255.5f, base_color[i].G() * 255.5f, base_color[i].B() * 255.5f);
 			if (layers[i]->get_albedo() != base_color[i])
 				layers[i]->set_albedo(base_color[i]);
-			if (layers[i]->get_roughness() != roughness[i])
-				layers[i]->set_roughness(roughness[i]);
-			if (layers[i]->get_anisotropy() != anisotropy[i])
-				layers[i]->set_anisotropy(anisotropy[i]);
-			if (layers[i]->get_metallic() != metallic[i])
-				layers[i]->set_metallic(metallic[i]);
+			layers[i]->set_roughness(roughness[i]);
+//			layers[i]->set_anisotropy(anisotropy[i]);
+			layers[i]->set_metallic(metallic[i]);
+			layers[i]->set_layer_thickness(thickness[i]);
 			if (layers[i]->get_index_of_refraction() != index_of_refraction[i])
 				layers[i]->set_index_of_refraction(index_of_refraction[i]);
-			if (layers[i]->get_layer_thickness() != thickness[i])
-				layers[i]->set_layer_thickness(thickness[i]);
 			if (layers[i]->get_attenuation_coefficient().x != absorption[i])
 				layers[i]->set_attenuation_coefficient(glm::vec3{ absorption[i] });
 			if (layers[i]->get_scattering_phase_parameter() != phase[i])
