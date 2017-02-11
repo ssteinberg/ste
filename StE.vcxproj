@@ -284,6 +284,7 @@
     <ClCompile Include="Simulation\src\ste\framework_graphics\antialiasing\fxaa\fxaa_dispatchable.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
+    <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\buffers\data_storage\uniform_buffer_object.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\atmospherics\precomputed_scattering\atmospherics_precompute_scattering.hpp" />
     <ClCompile Include="Simulation\src\ste\framework_graphics\entities\objects\object_group.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>

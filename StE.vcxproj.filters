@@ -1109,6 +1109,9 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_entities\light.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\buffers\data_storage\uniform_buffer_object.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Simulation\src\ste\framework_graphics\material\shaders\material_evaluate.glsl" />

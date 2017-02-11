@@ -48,7 +48,7 @@ bool glsl_program_object::link() {
 	}
 }
 
-bool glsl_program_object::link_from_binary(std::uint32_t format, const std::string &data) {
+bool glsl_program_object::link_from_binary(generic_resource::type format, const std::string &data) {
 	glProgramBinary(get_resource_id(), format, data.data(), data.length());
 	int success = 0;
 	glGetProgramiv(get_resource_id(), GL_LINK_STATUS, &success);
@@ -56,7 +56,7 @@ bool glsl_program_object::link_from_binary(std::uint32_t format, const std::stri
 	return success;
 }
 
-std::string glsl_program_object::get_binary_representation(std::uint32_t *format) const {
+std::string glsl_program_object::get_binary_representation(generic_resource::type *format) const {
 	int bin_len = 0;
 	glGetProgramiv(get_resource_id(), GL_PROGRAM_BINARY_LENGTH, &bin_len);
 	std::string data;

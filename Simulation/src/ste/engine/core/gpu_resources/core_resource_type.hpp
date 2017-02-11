@@ -29,6 +29,7 @@ enum class core_resource_type {
 	ElementBufferObject,
 	PixelBufferObject,
 	ShaderStorageBufferObject,
+	UniformBufferObject,
 	IndirectDrawBufferObject,
 	IndirectDispatchBufferObject,
 	AtomicCounterBufferObject,
