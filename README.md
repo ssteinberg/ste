@@ -3,7 +3,8 @@
 docs: https://rawgit.com/ssteinberg/ste/docs/Simulation/docs/html/index.html
 
 <p align="center">
-  <a href="https://raw.githubusercontent.com/ssteinberg/ste/master/Simulation/Screenshots/hist/cascaded_shadows.png"><img src="Simulation/Screenshots/hist/cascaded_shadows.png"/></a><br/>
+  <a href="https://raw.githubusercontent.com/ssteinberg/ste/master/Simulation/Screenshots/hist/sponza.png"><img src="Simulation/Screenshots/hist/sponza.png"/></a><br/>
+  <a href="https://raw.githubusercontent.com/ssteinberg/ste/master/Simulation/Screenshots/hist/sponza.png"><img src="Simulation/Screenshots/hist/sponza.png"/></a><br/>
   
   <p>Multi-layered microfacet materials<br/>
   <a href="https://raw.githubusercontent.com/ssteinberg/ste/master/Simulation/Screenshots/hist/multi_layered_materials.png"><img src="Simulation/Screenshots/hist/multi_layered_materials.png"/></a></p>
