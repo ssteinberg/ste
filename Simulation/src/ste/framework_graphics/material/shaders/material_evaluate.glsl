@@ -75,16 +75,16 @@ vec3 material_evaluate_layer_radiance(material_layer_unpacked_descriptor descrip
 			float r = ld.radius;
 
 			specular_irradiance = ltc_evaluate_sphere(wn, wv, wp, ltc_M_inv, L, r) * ltc_ampl;
-			diffuse_irradiance  = integrate_cosine_distribution_sphere_cross_section(l_dist, r).xxx;//ltc_evaluate_sphere(wn, wv, wp, mat3(1),   L, r);
+			diffuse_irradiance  = ltc_evaluate_sphere(wn, wv, wp, mat3(1),   L, r);
 		}
 		else if (shape_quad) {
 			// Quad. Always 4 points.
 			specular_irradiance = ltc_evaluate_quad(wn, wv, wp, ltc_M_inv, L, points_offset, two_sided) * ltc_ampl;
-			diffuse_irradiance  = shaped_light_attenuation(ld, l_dist, wl).xxx;//ltc_evaluate_quad(wn, wv, wp, mat3(1),   L, points_offset, two_sided);
+			diffuse_irradiance  = ltc_evaluate_quad(wn, wv, wp, mat3(1),   L, points_offset, two_sided);
 		}
 		else if (shape_polygon) {
 			specular_irradiance = ltc_evaluate_polygon(wn, wv, wp, ltc_M_inv, L, points_count, points_offset, two_sided) * ltc_ampl;
-			diffuse_irradiance  = shaped_light_attenuation(ld, l_dist, wl).xxx;//ltc_evaluate_polygon(wn, wv, wp, mat3(1),   L, points_count, points_offset, two_sided);
+			diffuse_irradiance  = ltc_evaluate_polygon(wn, wv, wp, mat3(1),   L, points_count, points_offset, two_sided);
 		}
 		else /*if (shape_polyhedron)*/ {
 			// Polyhedron light. Primitives are always triangles.

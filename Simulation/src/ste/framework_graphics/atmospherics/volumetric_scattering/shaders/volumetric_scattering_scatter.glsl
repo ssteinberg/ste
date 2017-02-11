@@ -13,6 +13,7 @@ layout(local_size_x = 32, local_size_y = 32, local_size_z = 1) in;
 #include "light.glsl"
 #include "light_cascades.glsl"
 #include "linked_light_lists.glsl"
+#include "linearly_transformed_cosines.glsl"
 
 #include "girenderer_transform_buffer.glsl"
 #include "project.glsl"
@@ -28,9 +29,14 @@ layout(shared, binding = 11) restrict readonly buffer lll_data {
 	lll_element lll_buffer[];
 };
 
+layout(std430, binding = 8) restrict readonly buffer shaped_lights_points_data {
+	ltc_element ltc_points[];
+};
+
 layout(rgba16f, binding = 7) restrict uniform image3D volume;
 
 #include "linked_light_lists_load.glsl"
+#include "cosine_distribution_integration.glsl"
 
 layout(bindless_sampler) uniform samplerCubeArrayShadow shadow_depth_maps;
 layout(bindless_sampler) uniform sampler2DArrayShadow directional_shadow_depth_maps;
@@ -70,11 +76,44 @@ vec2 slice_coords_to_fragcoords(vec2 v) {
 	return (v + vec2(.5f)) * float(volumetric_scattering_tile_size) / vec2(backbuffer_size());
 }
 
-float scatter_light_attenuation(light_descriptor ld, float dist, vec3 wl) {
-	if (light_type_is_point(ld.type) || light_shape_is_convex_polyhedron(ld.type))
-		return virtual_light_attenuation(ld, dist);
-	else
-		return shaped_light_attenuation(ld, dist, wl);
+vec3 scatter_light_attenuation(vec3 wp, light_descriptor ld, float dist, vec3 wl) {
+	if (light_type_is_point(ld.type))
+		return virtual_light_attenuation(ld, dist).xxx;
+
+	// Read light shape
+	bool shape_sphere = light_shape_is_sphere(ld.type);
+	bool shape_quad = light_shape_is_quad(ld.type);
+	bool shape_polygon = light_shape_is_polygon(ld.type);
+	bool shape_polyhedron = light_shape_is_convex_polyhedron(ld.type);
+		
+	// And properties
+	bool two_sided = light_type_is_two_sided(ld.type);
+	bool textured = light_type_is_textured(ld.type);
+
+	// Points count and offset into points buffer
+	uint points_count = light_get_polygon_point_counts(ld);
+	uint points_offset = light_get_polygon_point_offset(ld);
+		
+	// Light position
+	vec3 L = ld.position;
+	
+	vec3 specular_irradiance;
+	vec3 diffuse_irradiance;
+	if (shape_sphere) {
+		float r = ld.radius;
+		return integrate_cosine_distribution_sphere_cross_section(dist, r).xxx;
+	}
+	else if (shape_quad) {
+		return integrate_cosine_distribution_quad(wp, wl, L, points_offset, two_sided);
+	}
+	else if (shape_polygon) {
+		return integrate_cosine_distribution_polygon(wp, wl, L, points_count, points_offset, two_sided);
+	}
+	else /*if (shape_polyhedron)*/ {
+		// Polyhedron light. Primitives are always triangles.
+		uint primitives = points_count / 3;
+		return integrate_cosine_distribution_convex_polyhedron(wp, wl, L, primitives, points_offset);
+	}
 }
 
 vec3 scatter_light(vec2 slice_coords,
@@ -94,9 +133,9 @@ vec3 scatter_light(vec2 slice_coords,
 		return vec3(0);
 
 	float l_dist = length(l);
-	float atten = scatter_light_attenuation(ld, l_dist, -l/l_dist); 
-	if (atten <= .0f)
-		return vec3(0);
+	vec3 atten = scatter_light_attenuation(w_pos, ld, l_dist, l/l_dist); 
+	if (all(lessThanEqual(atten, vec3(.0f))))
+		return vec3(.0f);
 	
 	vec3 lux = irradiance(ld) * atten;
 	return shadow * lux * scatter(ld.position, w_pos, eye_position(),
@@ -119,9 +158,7 @@ vec3 scatter_directional_light(vec2 slice_coords,
 	if (shadow <= .0f)
 		return vec3(0);
 
-	vec3 l = ld.position;
-	float atten = shaped_light_attenuation(ld, ld.directional_distance, l);
-	
+	float atten = integrate_cosine_distribution_sphere_cross_section(ld.directional_distance, ld.radius);
 	vec3 lux = irradiance(ld) * atten;
 	return shadow * lux * scatter_ray(eye_position(), w_pos, -ld.position,
 									  thickness,
