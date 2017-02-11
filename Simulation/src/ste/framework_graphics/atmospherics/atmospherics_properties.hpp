@@ -131,10 +131,10 @@ auto inline atmospherics_earth_properties(const glm::dvec3 &center) {
 	ap.M = 0.0289644;		// kg/mol
 	ap.M_aerosols = 0.203;	// kg/mol
 
-	ap.phase = -.95;
+	ap.phase = -.8;
 	ap.rayleigh_scattering_coefficient = glm::dvec3{ 5.7, 13.36, 32.77 } * 1e-8;
-	ap.mie_scattering_coefficient = 2e-7;
-	ap.mie_absorption_coefficient = 2.2e-8;
+	ap.mie_scattering_coefficient = 1.5e-7;
+	ap.mie_absorption_coefficient = 2.5e-8;
 
 	return ap;
 }

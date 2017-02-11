@@ -1,20 +1,20 @@
 
 #include "common.glsl"
 
-mat3 conversion_matrix_rgb_ro_xyz = mat3(
-	0.412453, 0.212671, 0.019334,
-	0.357580, 0.715160, 0.119193,
-	0.180423, 0.072169, 0.950227
+mat3 conversion_matrix_rgb_to_xyz = mat3(
+	vec3(0.412453f, 0.357580f, 0.180423f),
+	vec3(0.212671f, 0.715160f, 0.072169f),
+	vec3(0.019334f, 0.119193f, 0.950227f)
 );
 
-mat3 conversion_matrix_xyz_ro_rgb = mat3(
-	+3.240479, -0.969256, +0.055648,
-	-1.537150, +1.875991, -0.204043,
-	-0.498535, +0.041556, +1.057311
+mat3 conversion_matrix_xyz_to_rgb = mat3(
+	vec3( 3.24048114,  -1.53715146, -0.498536319),
+	vec3(-0.969254911,  1.87598991,  0.0415559262),
+	vec3( 0.0556466356,-0.204041332, 1.05731094)
 );
 
 vec3 RGBtoXYZ(vec3 rgb) {
-	return conversion_matrix_rgb_ro_xyz * rgb;
+	return rgb * conversion_matrix_rgb_to_xyz;
 }
 
 vec3 XYZtoxyY(vec3 XYZ) {
@@ -23,7 +23,7 @@ vec3 XYZtoxyY(vec3 XYZ) {
 }
 
 vec3 XYZtoRGB(vec3 xyz) {
-	return conversion_matrix_xyz_ro_rgb * xyz;
+	return xyz * conversion_matrix_xyz_to_rgb;
 }
 
 vec3 xyYtoXYZ(vec3 xyY) {
@@ -36,7 +36,7 @@ vec3 xyYtoXYZ(vec3 xyY) {
 }
 
 float luminance(vec3 color) {
-	const vec3 lumcoeff = vec3(0.299f, 0.587f, 0.114f);
+	const vec3 lumcoeff = vec3(0.212671f, 0.715160f, 0.072169f);
 	return dot(color, lumcoeff);
 }
 

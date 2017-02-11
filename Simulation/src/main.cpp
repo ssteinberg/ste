@@ -8,7 +8,7 @@
 #include "ste_engine_control.hpp"
 #include "gi_renderer.hpp"
 #include "basic_renderer.hpp"
-#include "spherical_light.hpp"
+#include "quad_light.hpp"
 #include "model_factory.hpp"
 #include "camera.hpp"
 #include "surface_factory.hpp"
@@ -27,6 +27,7 @@
 
 #include <imgui/imgui.h>
 #include "debug_gui.hpp"
+#include "polygonal_light.hpp"
 
 //#define STATIC_SCENE
 
@@ -72,21 +73,29 @@ void display_loading_screen_until(StE::ste_engine_control &ctx, StE::Text::text_
 	}
 }
 
-auto create_light_object(StE::Graphics::scene *scene, const glm::vec3 &light_pos, StE::Graphics::spherical_light *light, std::vector<std::unique_ptr<StE::Graphics::material>> &materials, std::vector<std::unique_ptr<StE::Graphics::material_layer>> &layers) {
-	std::unique_ptr<StE::Graphics::sphere> sphere = std::make_unique<StE::Graphics::sphere>(20, 20);
+auto create_sphere_light_object(StE::Graphics::scene *scene,
+								const StE::Graphics::rgb &color,
+								float intensity,
+								float radius,
+								const glm::vec3 &light_pos,
+								std::vector<std::unique_ptr<StE::Graphics::material>> &materials,
+								std::vector<std::unique_ptr<StE::Graphics::material_layer>> &layers) {
+	auto light = scene->properties().lights_storage().allocate_sphere_light(color, intensity, light_pos, radius);
+
+	std::unique_ptr<StE::Graphics::sphere> sphere = std::make_unique<StE::Graphics::sphere>(10, 10);
 	(*sphere) *= light->get_radius();
 	auto light_obj = std::make_shared<StE::Graphics::object>(std::move(sphere));
 
 	light_obj->set_model_transform(glm::mat4x3(glm::translate(glm::mat4(), light_pos)));
 
-	gli::texture2d light_color_tex{ gli::format::FORMAT_RGB8_UNORM_PACK8, { 1, 1 }, 1 };
-	auto c = light->get_diffuse();
+	gli::texture2d light_color_tex{ gli::format::FORMAT_RGB8_UNORM_PACK8,{ 1, 1 }, 1 };
+	auto c = static_cast<glm::vec3>(color) / color.luminance();
 	*reinterpret_cast<glm::u8vec3*>(light_color_tex.data()) = glm::u8vec3(c.r * 255.5f, c.g * 255.5f, c.b * 255.5f);
-	
+
 	auto layer = scene->properties().material_layers_storage().allocate_layer();
 	auto mat = scene->properties().materials_storage().allocate_material(layer.get());
 	mat->set_texture(std::make_unique<StE::Core::texture_2d>(light_color_tex, false));
-	mat->set_emission(c * light->get_luminance());
+	mat->set_emission(static_cast<glm::vec3>(color) * intensity);
 
 	light_obj->set_material(mat.get());
 
@@ -95,7 +104,50 @@ auto create_light_object(StE::Graphics::scene *scene, const glm::vec3 &light_pos
 	materials.push_back(std::move(mat));
 	layers.push_back(std::move(layer));
 
-	return light_obj;
+	return std::make_pair(std::move(light), light_obj);
+}
+
+auto create_quad_light_object(StE::Graphics::scene *scene,
+							  const StE::Graphics::rgb &color,
+							  float intensity,
+							  const glm::vec3 &light_pos,
+							  const glm::vec3 &n, const glm::vec3 &t,
+							  const glm::vec3 points[4],
+							  std::vector<std::unique_ptr<StE::Graphics::material>> &materials,
+							  std::vector<std::unique_ptr<StE::Graphics::material_layer>> &layers) {
+	auto light = scene->properties().lights_storage().allocate_shaped_light<StE::Graphics::quad_light_onesided>(color, intensity, light_pos);
+	light->set_points(points);
+
+	auto quad = std::make_unique<StE::Graphics::mesh<StE::Graphics::mesh_subdivion_mode::Triangles>>();
+	std::uint32_t ind[6] = { 0,1,2,0,2,3 };
+	StE::Graphics::object_vertex_data vertices[4];
+	vertices[0].p = points[0]; vertices[1].p = points[1]; vertices[2].p = points[2]; vertices[3].p = points[3];
+	glm::vec3 b = glm::cross(t, n);
+	for (auto &v : vertices)
+		v.tangent_frame_from_tbn(t, b, n);
+	quad->set_vertices(vertices, 4);
+	quad->set_indices(ind, 6);
+	auto light_obj = std::make_shared<StE::Graphics::object>(std::move(quad));
+
+	light_obj->set_model_transform(glm::mat4x3(glm::translate(glm::mat4(), light_pos)));
+
+	gli::texture2d light_color_tex{ gli::format::FORMAT_RGB8_UNORM_PACK8,{ 1, 1 }, 1 };
+	auto c = static_cast<glm::vec3>(color) / color.luminance();
+	*reinterpret_cast<glm::u8vec3*>(light_color_tex.data()) = glm::u8vec3(c.r * 255.5f, c.g * 255.5f, c.b * 255.5f);
+
+	auto layer = scene->properties().material_layers_storage().allocate_layer();
+	auto mat = scene->properties().materials_storage().allocate_material(layer.get());
+	mat->set_texture(std::make_unique<StE::Core::texture_2d>(light_color_tex, false));
+	mat->set_emission(static_cast<glm::vec3>(color) * intensity);
+
+	light_obj->set_material(mat.get());
+
+	scene->get_object_group().add_object(light_obj);
+
+	materials.push_back(std::move(mat));
+	layers.push_back(std::move(layer));
+
+	return std::make_pair(std::move(light), light_obj);
 }
 
 void add_scene_lights(StE::Graphics::scene &scene, std::vector<std::unique_ptr<StE::Graphics::light>> &lights, std::vector<std::unique_ptr<StE::Graphics::material>> &materials, std::vector<std::unique_ptr<StE::Graphics::material_layer>> &layers) {
@@ -103,12 +155,9 @@ void add_scene_lights(StE::Graphics::scene &scene, std::vector<std::unique_ptr<S
 	std::mt19937 gen(rd());
 
 	for (auto &v : { glm::vec3{ 491.2,226.1,-616.67 },
-					 glm::vec3{-622.67, 645,-309 },
-					 glm::vec3{  497, 645, -309},
 					 glm::vec3{ 483.376,143,-222.51 },
 					 glm::vec3{ 483.376,143,144.1 },
 					 glm::vec3{ -242, 153,  552},
-					 glm::vec3{  120, 153,  552},
 					 glm::vec3{  885, 153,  552} }) {
 		StE::Graphics::rgb color;
 		float lums;
@@ -116,15 +165,21 @@ void add_scene_lights(StE::Graphics::scene &scene, std::vector<std::unique_ptr<S
 		color = StE::Graphics::kelvin(1800);
 		lums = 6500.f;
 #else
-		color = StE::Graphics::kelvin(std::uniform_real_distribution<>(1500,4000)(gen));
-		lums = std::uniform_real_distribution<>(5000, 9000)(gen);
+		color = StE::Graphics::kelvin(std::uniform_real_distribution<>(1300,4500)(gen));
+		lums = std::uniform_real_distribution<>(1200, 3000)(gen) / color.luminance();
 #endif
-		auto wall_lamp = scene.properties().lights_storage().allocate_spherical(lums, color, v, 2.f);
-		create_light_object(&scene, v, wall_lamp.get(), materials, layers);
+		auto wall_lamp = create_sphere_light_object(&scene, color, lums, 1.f, v, materials, layers);
 
-		lights.push_back(std::move(wall_lamp));
+		lights.push_back(std::move(wall_lamp.first));
 	}
+
+	glm::vec3 points[4] = { { -18,18,0 },{ 18,18,0 },{ 18,-18,0 },{ -18,-18,0 } };
+	auto lamp = create_quad_light_object(&scene, StE::Graphics::kelvin(12000), 3000, glm::vec3{ 120, 153, 565 }, 
+										 glm::vec3{ 0,0,-1 }, glm::vec3{ 1,0,0 }, points, materials, layers);
+
+	lights.push_back(std::move(lamp.first));
 }
+
 
 #ifdef _MSC_VER
 int CALLBACK WinMain(HINSTANCE hInstance,
@@ -152,7 +207,7 @@ int main()
 	int w = 1920;
 	int h = w * 9 / 16;
 	constexpr float clip_near = 1.f;
-	float fovy = glm::pi<float>() * .225f;
+	float fovy = glm::pi<float>() * .2f;
 
 	GL::gl_context::context_settings settings;
 	settings.vsync = false;
@@ -242,13 +297,12 @@ int main()
 
 	const glm::vec3 light0_pos{ -700.6, 138, -70 };
 	const glm::vec3 light1_pos{ 200, 550, 170 };
-	auto light0 = scene.get().properties().lights_storage().allocate_spherical(8000.f, StE::Graphics::kelvin(2000), light0_pos, 3.f);
-	auto light1 = scene.get().properties().lights_storage().allocate_spherical(20000.f, StE::Graphics::kelvin(7000), light1_pos, 5.f);
-	auto light0_obj = create_light_object(&scene.get(), light0_pos, light0.get(), materials, material_layers);
-	auto light1_obj = create_light_object(&scene.get(), light1_pos, light1.get(), materials, material_layers);
+	auto light0 = create_sphere_light_object(&scene.get(), StE::Graphics::kelvin(2000), 2000.f, 2.f, light0_pos, materials, material_layers);
+	auto light1 = create_sphere_light_object(&scene.get(), StE::Graphics::kelvin(7000), 17500.f, 4.f, light1_pos, materials, material_layers);
 
 	const glm::vec3 sun_direction = glm::normalize(glm::vec3{ 0.f, -1.f, 0.f });
-	auto sun_light = scene.get().properties().lights_storage().allocate_directional(1e+2f, StE::Graphics::kelvin(5770), 1496e+8f, 695e+6f, sun_direction);
+	auto sun_light = scene.get().properties().lights_storage().allocate_directional_light(StE::Graphics::kelvin(5770),
+																						  1.88e+9f, 1496e+8f, 695e+6f, sun_direction);
 
 	add_scene_lights(scene.get(), lights, materials, material_layers);
 
@@ -303,15 +357,18 @@ int main()
 	
 	std::unique_ptr<StE::Graphics::material_layer> layers[layers_count];
 	layers[0] = std::move(mat_editor_layers.back());
+	mat_editor_materials.back()->enable_subsurface_scattering(true);
+
+	float dummy = .0f;
 
 	float sun_zenith = .0f;
-	float mie_absorption_coefficient = 2.2f;
-	float mie_scattering_coefficient = 2e+1f;
+	float mie_absorption_coefficient = 2.5f;
+	float mie_scattering_coefficient = 1.5e+1f;
 
 	bool layer_enabled[3] = { true, false, false };
 	StE::Graphics::rgb base_color[3];
 	float roughness[3];
-	float anisotropy[3];
+//	float anisotropy[3];
 	float metallic[3];
 	float index_of_refraction[3];
 	float thickness[3];
@@ -324,7 +381,7 @@ int main()
 
 		base_color[i] = { 1,1,1 };
 		roughness[i] = .5f;
-		anisotropy[i] = 0;
+//		anisotropy[i] = 0;
 		metallic[i] = 0;
 		index_of_refraction[i] = 1.5f;
 		thickness[i] = 0.001f;
@@ -346,7 +403,7 @@ int main()
 					ImGui::SliderFloat((std::string("G ##value") +		" ##" + layer_label).data(), &base_color[i].G(),	 .0f, 1.f);
 					ImGui::SliderFloat((std::string("B ##value") +		" ##" + layer_label).data(), &base_color[i].B(),	 .0f, 1.f);
 					ImGui::SliderFloat((std::string("Rghn ##value") +	" ##" + layer_label).data(), &roughness[i],			 .0f, 1.f);
-					ImGui::SliderFloat((std::string("Aniso ##value") +	" ##" + layer_label).data(), &anisotropy[i],		-1.f, 1.f, "%.3f", 2.f);
+//					ImGui::SliderFloat((std::string("Aniso ##value") +	" ##" + layer_label).data(), &anisotropy[i],		-1.f, 1.f, "%.3f", 2.f);
 					ImGui::SliderFloat((std::string("Metal ##value") +	" ##" + layer_label).data(), &metallic[i],			 .0f, 1.f);
 					ImGui::SliderFloat((std::string("IOR ##value") +	" ##" + layer_label).data(), &index_of_refraction[i],1.f, 4.f, "%.5f", 3.f);
 					if (i < layers_count - 1 && layer_enabled[i + 1])
@@ -363,16 +420,12 @@ int main()
 			auto t = glm::u8vec3(base_color[i].R() * 255.5f, base_color[i].G() * 255.5f, base_color[i].B() * 255.5f);
 			if (layers[i]->get_albedo() != base_color[i])
 				layers[i]->set_albedo(base_color[i]);
-			if (layers[i]->get_roughness() != roughness[i])
-				layers[i]->set_roughness(roughness[i]);
-			if (layers[i]->get_anisotropy() != anisotropy[i])
-				layers[i]->set_anisotropy(anisotropy[i]);
-			if (layers[i]->get_metallic() != metallic[i])
-				layers[i]->set_metallic(metallic[i]);
+			layers[i]->set_roughness(roughness[i]);
+//			layers[i]->set_anisotropy(anisotropy[i]);
+			layers[i]->set_metallic(metallic[i]);
+			layers[i]->set_layer_thickness(thickness[i]);
 			if (layers[i]->get_index_of_refraction() != index_of_refraction[i])
 				layers[i]->set_index_of_refraction(index_of_refraction[i]);
-			if (layers[i]->get_layer_thickness() != thickness[i])
-				layers[i]->set_layer_thickness(thickness[i]);
 			if (layers[i]->get_attenuation_coefficient().x != absorption[i])
 				layers[i]->set_attenuation_coefficient(glm::vec3{ absorption[i] });
 			if (layers[i]->get_scattering_phase_parameter() != phase[i])
@@ -389,6 +442,7 @@ int main()
 			ImGui::SliderFloat((std::string("Sun zenith angle ##value")).data(), &sun_zenith, .0f, 2 * glm::pi<float>());
 			ImGui::SliderFloat((std::string("Mie scattering coefficient (10^-8) ##value##mie1")).data(), &mie_scattering_coefficient, .0f, 100.f, "%.5f", 3.f);
 			ImGui::SliderFloat((std::string("Mie absorption coefficient (10^-8) ##value##mie2")).data(), &mie_absorption_coefficient, .0f, 100.f, "%.5f", 3.f);
+			ImGui::SliderFloat((std::string("Debug dummy variable")).data(), &dummy, .0f, 1.f);
 		}
 
 		ImGui::End();
@@ -396,6 +450,8 @@ int main()
 		atmosphere.mie_absorption_coefficient = static_cast<double>(mie_absorption_coefficient) * 1e-8;
 		atmosphere.mie_scattering_coefficient = static_cast<double>(mie_scattering_coefficient) * 1e-8;
 		renderer.get().update_atmospherics_properties(atmosphere);
+
+		renderer.get().get_composer_program().set_uniform("dummy", dummy);
 	});
 
 
@@ -454,11 +510,14 @@ int main()
 		float angle = time * glm::pi<float>() / 2.5f;
 		glm::vec3 lp = light0_pos + glm::vec3(glm::sin(angle) * 3, 0, glm::cos(angle)) * 115.f;
 
-		glm::vec3 sun_dir = glm::normalize(glm::vec3{ glm::sin(sun_zenith), -glm::cos(sun_zenith), .15f});
-#endif
-		light0->set_position(lp);
-		light0_obj->set_model_transform(glm::mat4x3(glm::translate(glm::mat4(), lp)));
+		glm::vec3 sun_dir = glm::normalize(glm::vec3{ glm::sin(sun_zenith + glm::pi<float>()), 
+													  -glm::cos(sun_zenith + glm::pi<float>()), 
+													  .15f});
+
+		light0.first->set_position(lp);
+		light0.second->set_model_transform(glm::mat4x3(glm::translate(glm::mat4(), lp)));
 		sun_light->set_direction(sun_dir);
+#endif
 
 		{
 			using namespace StE::Text::Attributes;

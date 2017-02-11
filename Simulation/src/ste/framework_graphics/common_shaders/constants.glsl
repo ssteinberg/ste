@@ -1,6 +1,6 @@
 
 const float pi =			3.141592653589793f;
-const float pi_over_2 =		1.570796326794897f;
+const float half_pi =		1.570796326794897f;
 const float pi_over_3 =		1.047197551196598f;
 const float pi_over_4 =		0.785398163397448f;
 const float pi_over_5 =		0.628318530717959f;

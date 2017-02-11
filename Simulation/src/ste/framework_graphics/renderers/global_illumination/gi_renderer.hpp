@@ -123,7 +123,8 @@ private:
 									prepopulate_depth_task,
 									prepopulate_backface_depth_task,
 									scene_geo_cull_task,
-									lll_gen_task;
+									lll_gen_task,
+									light_preprocess_task;
 
 protected:
 	void init();
@@ -157,6 +158,8 @@ public:
 	void attach_profiler(profiler *p) { q.attach_profiler(p); }
 
 	virtual std::string rendering_system_name() const override { return "gi_renderer"; };
+
+	auto& get_composer_program() { return composer.get().get_program(); }
 };
 
 }

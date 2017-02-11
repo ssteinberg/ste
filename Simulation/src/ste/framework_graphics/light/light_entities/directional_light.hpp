@@ -13,8 +13,12 @@ class directional_light : public light {
 	using Base = light;
 
 public:
-	directional_light(float luminance, const rgb &diffuse, float distance, float radius, const glm::vec3 &direction) : light(luminance, radius, diffuse) {
-		descriptor.type = LightType::Directional;
+	directional_light(const rgb &color,
+					  float intensity,
+					  float distance, 
+					  float radius, 
+					  const glm::vec3 &direction) : light(color, intensity, radius) {
+		descriptor.type = LightType::Direction;
 		descriptor.position = decltype(descriptor.position){ direction.x, direction.y, direction.z };
 		descriptor.directional_distance = distance;
 	}
@@ -26,6 +30,7 @@ public:
 	}
 	void set_radius(float r) {
 		descriptor.radius = r;
+		update_effective_range();
 		Base::notify();
 	}
 	void set_distance(float d) {

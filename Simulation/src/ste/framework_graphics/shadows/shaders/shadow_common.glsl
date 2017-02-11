@@ -13,7 +13,7 @@ const float shadow_max_penumbra_fast_path_multiplier = .25f;
 const int shadow_max_clusters = 10;
 const float shadow_cutoff = .5f;
 const float shadow_penumbra_scale = 1.f;
-const float shadow_screen_penumbra_clusters_per_pixel_squared = 1e-3f;
+const float shadow_screen_penumbra_clusters_per_pixel_squared = 2e-3f;
 
 const vec2 shadow_cluster_samples[8] = { vec2(-.7071f,   .7071f),
 										 vec2( .0000f,	-.8750f),
@@ -35,10 +35,12 @@ float shadow_calculate_penumbra(float d_blocker, float radius, float dist_receiv
 /*
  *	Calculate the screen-space anisotropic penumbra and based on that returns the number of clusters to sample
  */
-float shadow_clusters_to_sample(float penumbra, vec3 position, vec3 normal) {
-	// Project penumbra to NDC
-	vec2 ansi = vec2(1) - abs(normal.xy);
-	vec2 ansi_penumbra = ansi * penumbra;
+float shadow_clusters_to_sample(float penumbra, vec3 position, vec3 normal, vec3 l) {
+	// Anisotropically project penumbra to NDC, resulting in a screen-space ellipsis
+	float ansi = abs(normal.z);
+	float long_radius = penumbra;
+	float short_radius = ansi * penumbra;
+	vec2 ansi_penumbra = vec2(long_radius, short_radius);
 	vec4 penumbra_ndc = project(vec3(ansi_penumbra, position.z));
 
 	// Convert penumbra xy from NDC size to screen pixels
@@ -48,5 +50,8 @@ float shadow_clusters_to_sample(float penumbra, vec3 position, vec3 normal) {
 	// Calculate the ellipsis area
 	float pixels = pi * screen_space_penumbra_pixels.x * screen_space_penumbra_pixels.y;
 
-	return pixels * shadow_screen_penumbra_clusters_per_pixel_squared;
+	float slope = 1.f - abs(dot(l,normal));
+	float slope_multiplier = mix(1.f, 2.f, sqr(slope));
+
+	return pixels * slope_multiplier * shadow_screen_penumbra_clusters_per_pixel_squared;
 }

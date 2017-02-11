@@ -26,6 +26,9 @@ void object_group::add_object(const std::shared_ptr<object> &obj) {
 	auto &ind = obj->get_mesh().get_indices();
 	auto &vertices = obj->get_mesh().get_vertices();
 
+	assert(ind.size() && "Indices empty!");
+	assert(vertices.size() && "Vertices empty!");
+
 	objects.insert(std::make_pair(obj,
 								  object_information{ objects.size(), connection }));
 
@@ -43,17 +46,17 @@ void object_group::add_object(const std::shared_ptr<object> &obj) {
 	assert(md.mat_idx >= 0);
 
 	mesh_draw_params mdp;
- 	mdp.count = ind.size();
- 	mdp.first_index = total_indices;
- 	mdp.base_vertex = total_vertices;
+	mdp.count = ind.size();
+	mdp.first_index = total_indices;
+	mdp.base_vertex = total_vertices;
 
 	obj->md = md;
 
 	draw_buffers.get_mesh_data_stack().push_back(std::move(md));
 	draw_buffers.get_mesh_draw_params_stack().push_back(std::move(mdp));
 
- 	total_vertices += vertices.size();
- 	total_indices += ind.size();
+	total_vertices += vertices.size();
+	total_indices += ind.size();
 }
 
 void object_group::remove_all() {

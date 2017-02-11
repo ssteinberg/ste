@@ -4,6 +4,7 @@
 #pragma once
 
 #include "stdafx.hpp"
+#include "texture_handle.hpp"
 
 namespace StE {
 namespace Graphics {
@@ -18,11 +19,11 @@ extern const float material_layer_min_ansio_ratio;
 
 class material_layer_descriptor {
 private:
+	Core::texture_handle roughness_map;
+	Core::texture_handle metallicity_map;
+	Core::texture_handle thickness_map;
+
 	std::uint32_t packed_albedo{ 0xFFFFFFFF };
-
-	std::uint32_t ansi_metal_pack{ 0 };
-	std::uint32_t roughness_thickness_pack{ 0 };
-
 	std::uint32_t next_layer_id{ material_layer_none };
 
 	glm::vec3 attenuation_coefficient{ .0f };
@@ -39,18 +40,17 @@ public:
 	void set_albedo(const glm::vec4 &c) {
 		packed_albedo = glm::packUnorm4x8(c);
 	}
-	
-	void set_anisotropy_and_metallicity(float ansio_ratio, float metallic) {
-		ansio_ratio = (ansio_ratio - material_layer_min_ansio_ratio) / (material_layer_max_ansio_ratio - material_layer_min_ansio_ratio);
-		ansio_ratio = glm::clamp(ansio_ratio, .0f, 1.f);
-		metallic = glm::clamp(metallic, .0f, 1.f);
-		ansi_metal_pack = glm::packUnorm2x16({ ansio_ratio, metallic });
+
+	void set_roughness_map_handle(const Core::texture_handle &handle) {
+		roughness_map = handle;
 	}
-	
-	void set_roughness_and_thickness(float roughness, float thickness) {
-		roughness = glm::clamp(roughness, .0f, 1.f);
-		thickness = glm::clamp(thickness / material_layer_max_thickness, .0f, 1.f);
-		roughness_thickness_pack = glm::packUnorm2x16({ roughness, thickness });
+
+	void set_metallicity_map_handle(const Core::texture_handle &handle) {
+		metallicity_map = handle;
+	}
+
+	void set_thickness_map_handle(const Core::texture_handle &handle) {
+		thickness_map = handle;
 	}
 
 	void set_ior_phase(float ior, float phase) {

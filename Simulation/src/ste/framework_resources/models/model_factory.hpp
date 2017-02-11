@@ -39,6 +39,11 @@ private:
 	using shapes_type = std::vector<tinyobj::shape_t>;
 	using materials_type = std::vector<tinyobj::material_t>;
 
+	constexpr static char roughness_map_key[] = "map_roughness";
+	constexpr static char metallic_map_key[] = "map_metallic";
+	constexpr static char anisotropy_map_key[] = "map_anisotropy";
+	constexpr static char thickness_map_key[] = "map_thickness";
+
 private:
 	static tinyobj::material_t empty_mat;
 

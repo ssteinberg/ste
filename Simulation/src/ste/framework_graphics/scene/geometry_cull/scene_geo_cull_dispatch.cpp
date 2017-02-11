@@ -37,7 +37,7 @@ void scene_geo_cull_dispatch::set_context_state() const {
 	ls->bind_lights_buffer(2);
 	4_storage_idx = Core::buffer_object_cast<Core::shader_storage_buffer<std::uint32_t>>(ls->get_active_ll_counter());
 	5_storage_idx = ls->get_active_ll();
-	6_storage_idx = ls->get_directional_lights_cascades_buffer();
+	0_uniform_idx = ls->get_directional_lights_cascades_buffer();
 
 	program.get().bind();
 }

@@ -31,7 +31,8 @@ vec3 subsurface_scattering(material_layer_unpacked_descriptor descriptor,
 						   vec3 n,
 						   float thickness,
 						   light_descriptor ld,
-						   samplerCubeArray shadow_maps, uint light,
+						   deferred_shading_shadow_maps shadow_maps, 
+						   light_shading_parameters light,
 						   vec3 view_ray,
 						   ivec2 frag_coords) {
 	const float minimal_attenuation_for_effective_thickness = epsilon;
@@ -56,20 +57,21 @@ vec3 subsurface_scattering(material_layer_unpacked_descriptor descriptor,
 		vec3 w_pos = dquat_mul_vec(view_transform_buffer.inverse_view_transform, p);
 		vec3 shadow_v = w_pos - l_pos;
 
-		vec3 shadow_occluder_v = shadow_occluder(shadow_maps, 
+		vec3 shadow_occluder_v = vec3(.0f);/*shadow_occluder(shadow_maps, 
 												 light, 
 												 shadow_v, 
+												 vec3(0,1,0), vec3(0,1,0),
 												 l_radius, 
-												 light_effective_range(ld),
-												 frag_coords);
+												 ld.effective_range,
+												 frag_coords);*/
 
 		float dist_light_to_sample = length(shadow_v);
 		float dist_light_to_object = min(length(shadow_occluder_v), dist_light_to_sample);
 		float path_length = dist0 + (dist_light_to_sample - dist_light_to_object);
 		
 		vec3 incident = light_incidant_ray(ld, p) / dist_light_to_sample;
-		vec3 irradiance = irradiance(ld, dist_light_to_object);
-		vec3 attenuation = exp(-path_length * attenuation_coefficient);
+		vec3 irradiance = irradiance(ld);
+		vec3 attenuation = exp(-path_length * attenuation_coefficient) * virtual_light_attenuation(ld, dist_light_to_object);
 		float phase = henyey_greenstein_phase_function(incident, view_ray, g);
 
 		vec3 scattering = phase * albedo * attenuation;

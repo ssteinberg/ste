@@ -56,3 +56,27 @@ vec3 min3(vec3 x, vec3 y, vec3 z) {
 vec4 min3(vec4 x, vec4 y, vec4 z) {
 	return min(min(x,y),z);
 }
+
+float sqr(float x) {
+	return x*x;
+}
+
+int sqr(int x) {
+	return x*x;
+}
+
+uint sqr(uint x) {
+	return x*x;
+}
+
+vec2 sqr(vec2 x) {
+	return x*x;
+}
+
+vec3 sqr(vec3 x) {
+	return x*x;
+}
+
+vec4 sqr(vec4 x) {
+	return x*x;
+}

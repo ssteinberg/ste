@@ -1,20 +1,25 @@
 
 #include "shadow_common.glsl"
+
+#include "deferred_shading_common.glsl"
 #include "light_cascades.glsl"
 #include "project.glsl"
 
 const float shadow_directional_max_penumbra = 8.f / shadow_dirmap_size;
 const float shadow_directional_min_penumbra = .0f;//1.f / shadow_dirmap_size;
 
-
 /*
  *	Creates a slightly offseted testing depth for shadowmaps lookups
  */
-float shadow_calculate_test_depth_dir(float z, float n, float f) {	
-	float d = project_depth_linear(z, n, f);
-	float t = 1.f / (f - n);
+float shadow_calculate_test_depth_dir(float z, float near, float far, vec3 n, vec3 l) {	
+	float d = project_depth_linear(z, near, far);
 
-	return d * 1.0006f + t * 1.25f;
+	float slope = 1.f - abs(dot(l,n));
+	
+	float df_dx = 1.f / (far - near);
+	float delta = df_dx * 1.1f * (1.f + slope * 2.5f);
+
+	return d + delta;
 }
 
 float shadow_blocker_search(sampler2DArray directional_shadow_maps, uint idx, vec2 uv) {
@@ -25,32 +30,30 @@ float shadow_blocker_search(sampler2DArray directional_shadow_maps, uint idx, ve
 /*
  *	Shadow lookup and filtering implementation for directional lights.
  */
-float shadow_impl(sampler2DArrayShadow directional_shadow_depth_maps,
-				  sampler2DArray directional_shadow_maps,
+float shadow_impl(deferred_shading_shadow_maps shadow_maps,
 				  uint idx,
 				  vec3 position,
+				  vec3 l,
 				  vec3 normal,
-				  mat3x4 cascade_transform,
-				  vec2 cascade_recp_vp,
-				  float cascade_proj_far,
+				  light_cascade_data cascade_data,
 				  float light_distance,
 				  float light_radius,
 				  ivec2 frag_coords,
 				  float max_penumbra_multiplier,		// Modulates the maximal allowed penumbra
 				  bool override_clusters,				// Overrides the calculated clusters amount
 				  int override_clusters_amount) {
-	vec3 v = vec4(position, 1) * cascade_transform;
+	vec3 v = vec4(position, 1) * cascade_data.M;
 	vec2 uv = v.xy * .5f + vec2(.5f);
 
-	float depth_blocker = shadow_blocker_search(directional_shadow_maps, idx, uv);
-	float dt = shadow_calculate_test_depth_dir(v.z, cascade_projection_near_clip, cascade_proj_far);
+	float depth_blocker = shadow_blocker_search(shadow_maps.directional_shadow_maps, idx, uv);
+	float dt = shadow_calculate_test_depth_dir(v.z, cascade_projection_near_clip, cascade_data.proj_far_clip, normal, l);
 
 	// No shadowing if distance to blocker is further away from receiver
 	if (dt >= depth_blocker)
 		return 1.f;
 		
 	float cascade_space_dist_receiver = -v.z;
-	float cascade_space_d_blocker = -unproject_depth_linear(depth_blocker, cascade_projection_near_clip, cascade_proj_far);
+	float cascade_space_d_blocker = -unproject_depth_linear(depth_blocker, cascade_projection_near_clip, cascade_data.proj_far_clip);
 
 	// For directional lights, the distance to the receiver is constant. Based on that, adjust the blocker distance.
 	float dist_receiver = light_distance;
@@ -59,13 +62,13 @@ float shadow_impl(sampler2DArrayShadow directional_shadow_depth_maps,
 	// Calculate penumbra based on distance and light radius
 	float penumbra_world = shadow_calculate_penumbra(d_blocker, light_radius, dist_receiver);
 	// Transform penumbra size to cascade texture space
-	vec2 to_texture_space = .5f * cascade_recp_vp;
+	vec2 to_texture_space = .25f * cascade_data.recp_vp;
 	vec2 penumbra = clamp(penumbra_world * to_texture_space, 
 						  shadow_directional_min_penumbra, 
 						  shadow_directional_max_penumbra * max_penumbra_multiplier);
 	
 	// Calculate number of sampling clusters anisotropically
-	float clusters = shadow_clusters_to_sample(penumbra_world, position, normal);
+	float clusters = shadow_clusters_to_sample(penumbra_world, position, normal, l);
 	int clusters_to_sample = min(int(ceil(clusters)), shadow_max_clusters);
 	if (override_clusters)
 		clusters_to_sample = override_clusters_amount;
@@ -74,7 +77,7 @@ float shadow_impl(sampler2DArrayShadow directional_shadow_depth_maps,
 	float noise = interleaved_gradient_noise(vec2(frag_coords));
 	float rcp = 1.f / float(clusters_to_sample);
 	
-	float accum = texture(directional_shadow_depth_maps, vec4(uv, idx, dt)).x;
+	float accum = texture(shadow_maps.directional_shadow_depth_maps, vec4(uv, idx, dt)).x;
 	float w = float(clusters_to_sample) * 8.f + 1.f;
 
 	// Accumulate samples
@@ -91,7 +94,7 @@ float shadow_impl(sampler2DArrayShadow directional_shadow_depth_maps,
 		// Calculate the offset, lookup shadowmap texture
 		for (int s=0; s<8; ++s) {
 			vec2 u = penumbra * (sample_rotation_matrix * shadow_cluster_samples[s]);
-			accum += texture(directional_shadow_depth_maps, vec4(uv + u, idx, dt)).x;
+			accum += texture(shadow_maps.directional_shadow_depth_maps, vec4(uv + u, idx, dt)).x;
 		}
 
 		// Stop early if fully shadowed
@@ -106,25 +109,21 @@ float shadow_impl(sampler2DArrayShadow directional_shadow_depth_maps,
  *	Calculate percentage of unshadowed light irradiating in direction and distance given by 'shadow_v' from light.
  *	Filters shadow maps using samples from an interleaved gradient noise pattern, based on penumbra size.
  */
-float shadow(sampler2DArrayShadow directional_shadow_depth_maps,
-			 sampler2DArray directional_shadow_maps,
+float shadow(deferred_shading_shadow_maps shadow_maps,
 			 uint idx,
 			 vec3 position,
+			 vec3 l,
 			 vec3 normal,
-			 mat3x4 cascade_transform,
-			 vec2 cascade_recp_vp,
-			 float cascade_proj_far,
+			 light_cascade_data cascade_data,
 			 float light_distance,
 			 float light_radius,
 			 ivec2 frag_coords) {
-	return shadow_impl(directional_shadow_depth_maps,
-					   directional_shadow_maps,
+	return shadow_impl(shadow_maps,
 					   idx,
 					   position,
+					   l,
 					   normal,
-					   cascade_transform,
-					   cascade_recp_vp,
-					   cascade_proj_far,
+					   cascade_data,
 					   light_distance,
 					   light_radius,
 					   frag_coords,
@@ -138,25 +137,21 @@ float shadow(sampler2DArrayShadow directional_shadow_depth_maps,
  *	Filters shadow maps using samples from an interleaved gradient noise pattern, based on penumbra size.
  *	Fast version, filtering is limited to a single cluster with reduced penumbras.
  */
-float shadow_fast(sampler2DArrayShadow directional_shadow_depth_maps,
-				  sampler2DArray directional_shadow_maps,
+float shadow_fast(deferred_shading_shadow_maps shadow_maps,
 				  uint idx,
 				  vec3 position,
+				  vec3 l,
 				  vec3 normal,
-				  mat3x4 cascade_transform,
-				  vec2 cascade_recp_vp,
-				  float cascade_proj_far,
+				  light_cascade_data cascade_data,
 				  float light_distance,
 				  float light_radius,
 				  ivec2 frag_coords) {
-	return shadow_impl(directional_shadow_depth_maps,
-					   directional_shadow_maps,
+	return shadow_impl(shadow_maps,
 					   idx,
 					   position,
-					   normal,
-					   cascade_transform,
-					   cascade_recp_vp,
-					   cascade_proj_far,
+					   vec3(0,1,0),
+					   vec3(0,1,0),
+					   cascade_data,
 					   light_distance,
 					   light_radius,
 					   frag_coords,
@@ -171,12 +166,13 @@ float shadow_fast(sampler2DArrayShadow directional_shadow_depth_maps,
 float shadow_test(sampler2DArrayShadow directional_shadow_depth_maps, 
 				  uint idx, 
 				  vec3 position, 
-				  mat3x4 cascade_transform,
-				  float cascade_proj_far) {
-	vec3 v = vec4(position, 1) * cascade_transform;
+				  vec3 l,
+				  vec3 normal,
+				  light_cascade_data cascade_data) {
+	vec3 v = vec4(position, 1) * cascade_data.M;
 	vec2 uv = v.xy * .5f + vec2(.5f);
 	
-	float dt = shadow_calculate_test_depth_dir(v.z, cascade_projection_near_clip, cascade_proj_far);
+	float dt = shadow_calculate_test_depth_dir(v.z, cascade_projection_near_clip, cascade_data.proj_far_clip, normal, l);
 
 	return texture(directional_shadow_depth_maps, vec4(uv, idx, dt)).x;
 }
@@ -184,8 +180,8 @@ float shadow_test(sampler2DArrayShadow directional_shadow_depth_maps,
 /*
  *	Lookup unfiltered depth from shadowmap
  */
-float shadow_depth(sampler2DArray directional_shadow_maps, uint idx, vec3 position, mat3x4 cascade_transform) {
-	vec3 v = vec4(position, 1) * cascade_transform;
+float shadow_depth(sampler2DArray directional_shadow_maps, uint idx, vec3 position, light_cascade_data cascade_data) {
+	vec3 v = vec4(position, 1) * cascade_data.M;
 	vec2 uv = v.xy * .5f + vec2(.5f);
 	return texture(directional_shadow_maps, vec3(uv, idx)).x;
 }
@@ -197,25 +193,24 @@ float shadow_depth(sampler2DArray directional_shadow_maps, uint idx, vec3 positi
 vec3 shadow_occluder(sampler2DArray directional_shadow_maps, 
 					 uint idx, 
 					 vec3 position, 
-					 mat3x4 cascade_transform,
-					 vec2 cascade_recp_vp,
-					 float cascade_proj_far,
 					 vec3 l,
+					 vec3 normal,
+					 light_cascade_data cascade_data,
 					 float light_distance,
 					 float light_radius,
 					 ivec2 frag_coords) {
-	vec3 v = vec4(position, 1) * cascade_transform;
+	vec3 v = vec4(position, 1) * cascade_data.M;
 	vec2 uv = v.xy * .5f + vec2(.5f);
 	float cascade_space_dist_receiver = -v.z;
 
 	float depth_blocker = shadow_blocker_search(directional_shadow_maps, idx, uv);
-	float dt = shadow_calculate_test_depth_dir(v.z, cascade_projection_near_clip, cascade_proj_far);
+	float dt = shadow_calculate_test_depth_dir(v.z, cascade_projection_near_clip, cascade_data.proj_far_clip, normal, l);
 	
 	// No shadowing if distance to blocker is further away from receiver
 	if (dt < depth_blocker) {
 		float dist_receiver = light_distance;
-		float dist_blocker = -unproject_depth_linear(depth_blocker, cascade_projection_near_clip, cascade_proj_far);
-		vec2 to_texture_space = .5f * cascade_recp_vp;
+		float dist_blocker = -unproject_depth_linear(depth_blocker, cascade_projection_near_clip, cascade_data.proj_far_clip);
+		vec2 to_texture_space = .5f * cascade_data.recp_vp;
 		vec2 penumbra = to_texture_space * shadow_calculate_penumbra(dist_blocker, light_radius, dist_receiver);
 		
 		float noise = two_pi * interleaved_gradient_noise(vec2(frag_coords));

@@ -243,15 +243,12 @@ vec3 scatter(vec3 P0,
 	vec3 i = normalize(P0 - P1);
 	vec3 o = normalize(P2 - P1);
 	float p_mie = cornette_shanks_phase_function(i, o, atmospherics_descriptor_data.phase);
-	float p_rayleigh = rayleigh_phase_function(i, o);
 	
 	float altitude = atmospherics_altitude(P1);
 	float density_m = atmospherics_descriptor_pressure_mie(atmospherics_descriptor_data, altitude);
-	float density_r = atmospherics_descriptor_pressure_rayleigh(atmospherics_descriptor_data, altitude);
 
-	vec3 scatter_coefficient = density_m * p_mie * atmospherics_mie_scattering(atmospherics_descriptor_data).xxx + 
-							   density_r * p_rayleigh * atmospherics_rayleigh_scattering(atmospherics_descriptor_data);
-	
+	vec3 scatter_coefficient = density_m * p_mie * atmospherics_mie_scattering(atmospherics_descriptor_data).xxx;
+		
 	vec3 scattered_intensity = scatter_coefficient * len;
 	vec3 extinction = extinct(P0, P1, P2, atmospheric_optical_length_lut);
 
@@ -275,14 +272,11 @@ vec3 scatter_ray(vec3 P0,
 	vec3 i = normalize(P0 - P1);
 	vec3 o = V;
 	float p_mie = cornette_shanks_phase_function(i, o, atmospherics_descriptor_data.phase);
-	float p_rayleigh = rayleigh_phase_function(i, o);
 	
 	float altitude = atmospherics_altitude(P1);
 	float density_m = atmospherics_descriptor_pressure_mie(atmospherics_descriptor_data, altitude);
-	float density_r = atmospherics_descriptor_pressure_rayleigh(atmospherics_descriptor_data, altitude);
 
-	vec3 scatter_coefficient = density_m * p_mie * atmospherics_mie_scattering(atmospherics_descriptor_data).xxx + 
-							   density_r * p_rayleigh * atmospherics_rayleigh_scattering(atmospherics_descriptor_data);
+	vec3 scatter_coefficient = density_m * p_mie * atmospherics_mie_scattering(atmospherics_descriptor_data).xxx;
 	
 	vec3 scattered_intensity = scatter_coefficient * len;
 	vec3 extinction = extinct_ray(P0, P1, V, atmospheric_optical_length_lut);
@@ -300,7 +294,7 @@ vec3 scatter_ray(vec3 P0,
 *	@param cos_x	Precomputed cosine of the angular distance
 */
 float cie_scattering_indicatrix(float x, float cos_x) {
-	return 1.f + 10.f * (exp(-3.f * x) - exp(-3.f * pi_over_2)) + 0.45f * cos_x*cos_x;
+	return 1.f + 10.f * (exp(-3.f * x) - exp(-3.f * half_pi)) + 0.45f * cos_x*cos_x;
 }
 /*
 *	Returns the normalization factor for the scattering indicatrix, i.e. the indicatrix at angular distance 0.
@@ -357,12 +351,12 @@ vec3 atmospheric_scatter(vec3 P, vec3 L, vec3 V,
 }
 
 /*
-*	Calculates the multiple-scattered ambient irradiance reaching a point.
+*	Approximates the multiple-scattered ambient irradiance reaching a point.
 *	Uses a precomputed LUT for calculation.
 *
 *	@param P		Observer world position
+*	@param NdotL	Cosine of surface normal and light direction
 *	@param L		Light direction
-*	@param V		Viewing direction
 */
 vec3 atmospheric_ambient(vec3 P, float NdotL, vec3 L, 
 						 sampler3D atmospheric_ambient_lut) {
@@ -377,6 +371,8 @@ vec3 atmospheric_ambient(vec3 P, float NdotL, vec3 L,
 	// Compute height in atmosphere, view-zenith angle and sun-zenith angle.
 	float h = Ylen - r;
 	float cos_delta = dot(U, -L);
+
+	NdotL = max(.0f, NdotL);
 	
 	// And convert those into LUT lookup indices
 	float x = _atmospheric_height_to_lut_idx(h, atmospherics_descriptor_data.Hr_max);

@@ -13,10 +13,12 @@ namespace Graphics {
 
 struct material_descriptor {
 public:
-	static constexpr std::uint32_t material_has_texture = 0x1 << 0;
-	static constexpr std::uint32_t material_has_cavity_map = 0x1 << 1;
-	static constexpr std::uint32_t material_has_normal_map = 0x1 << 2;
-	static constexpr std::uint32_t material_has_mask_map = 0x1 << 3;
+	static constexpr std::uint32_t material_has_texture_bit = 0x1 << 0;
+	static constexpr std::uint32_t material_has_cavity_map_bit = 0x1 << 1;
+	static constexpr std::uint32_t material_has_normal_map_bit = 0x1 << 2;
+	static constexpr std::uint32_t material_has_mask_map_bit = 0x1 << 3;
+
+	static constexpr std::uint32_t material_has_subsurface_scattering_bit = 0x1 << 31;
 
 public:
 	Core::texture_handle cavity_handle;
@@ -29,7 +31,7 @@ public:
 
 	std::uint32_t head_layer_id{ material_layer_none };
 
-	std::uint32_t used_textures_mask{ 0 };
+	std::uint32_t material_flags{ 0 };
 
 public:
 	void set_emission(const glm::vec4 &c) {

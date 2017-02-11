@@ -21,6 +21,8 @@
 
 #include <fstream>
 
+#include "surface_factory.hpp"
+
 using namespace StE::Graphics;
 
 namespace StE {
@@ -69,7 +71,7 @@ void deferred_composer::load_microfacet_fit_luts() {
 	try {
 		microfacet_refraction_fit_lut = std::make_unique<Core::texture_2d>(deferred_composer_detail::load_lut<microfacet_refraction_fit>()(refraction_fit_name));
 		microfacet_transmission_fit_lut = std::make_unique<Core::texture_2d_array>(deferred_composer_detail::load_lut<microfacet_transmission_fit_v4>()(transmission_fit_name));
-	} catch (const microfacet_fit_error &err) {
+	} catch (const std::exception &err) {
 		using namespace Text::Attributes;
 		ste_log_error() << Text::attributed_string("Can't open Microfacet LUT. Error: \"") + b(err.what()) + "\"." << std::endl;
 
@@ -82,10 +84,24 @@ void deferred_composer::load_microfacet_fit_luts() {
 	transmission_handle.make_resident();
 	program.get().set_uniform("microfacet_refraction_fit_lut", refraction_handle);
 	program.get().set_uniform("microfacet_transmission_fit_lut", transmission_handle);
+
+
+	//? TODO: RELOCATE
+	auto ltc_ggx_tab = Resource::surface_factory::load_surface_2d(R"(Data/ltc_ggx_fit.dds)", false);
+	auto ltc_ggx_amp = Resource::surface_factory::load_surface_2d(R"(Data/ltc_ggx_amplitude.dds)", false);
+	ltc_ggx_fit = std::make_unique<Core::texture_2d>(ltc_ggx_tab);
+	ltc_ggx_amplitude = std::make_unique<Core::texture_2d>(ltc_ggx_amp);
+
+	auto ltc_ggx_fit_handle = ltc_ggx_fit->get_texture_handle(*Core::sampler::sampler_linear_clamp());
+	auto ltc_ggx_amplitude_handle = ltc_ggx_amplitude->get_texture_handle(*Core::sampler::sampler_linear_clamp());
+	ltc_ggx_fit_handle.make_resident();
+	ltc_ggx_amplitude_handle.make_resident();
+	program.get().set_uniform("ltc_ggx_fit", ltc_ggx_fit_handle);
+	program.get().set_uniform("ltc_ggx_amplitude", ltc_ggx_amplitude_handle);
 }
 
 void deferred_composer::load_atmospherics_luts() {
-	static const char *lut_name = R"(Data/atmospherics_scatter_lut.bin)";
+	static const char *lut_name = R"(Data/atmospherics_lut.bin)";
 
 	try {
 		atmospherics_precompute_scattering lut_loader(lut_name);
@@ -94,7 +110,7 @@ void deferred_composer::load_atmospherics_luts() {
 		atmospherics_mie0_scatter_lut = std::make_unique<Core::texture_3d>(lut_loader.create_mie0_scatter_lut());
 		atmospherics_ambient_lut = std::make_unique<Core::texture_3d>(lut_loader.create_ambient_lut());
 	}
-	catch (const atmospherics_lut_error &err) {
+	catch (const std::exception &err) {
 		using namespace Text::Attributes;
 		ste_log_error() << Text::attributed_string("Can't open Atmospherics Scatter LUT. Error: \"") + b(err.what()) + "\"." << std::endl;
 
@@ -166,14 +182,15 @@ void deferred_composer::set_context_state() const {
 	
 	0_tex_unit = *dr->gbuffer.get_backface_depth_target();
 	1_tex_unit = *dr->gbuffer.get_depth_target();
+	2_tex_unit = *dr->gbuffer.get_gbuffer();
 
-	dr->gbuffer.bind_gbuffer();
 	0_storage_idx = dr->s->properties().materials_storage().buffer();
 	1_storage_idx = dr->s->properties().material_layers_storage().buffer();
 
 	ls.bind_lights_buffer(2);
 
-	7_storage_idx = dr->s->properties().lights_storage().get_directional_lights_cascades_buffer();
+	0_uniform_idx = dr->s->properties().lights_storage().get_directional_lights_cascades_buffer();
+	8_storage_idx = dr->s->properties().lights_storage().get_shaped_lights_points_buffer();
 	dr->lll_storage.bind_lll_buffer();
 
 	screen_filling_quad.vao()->bind();

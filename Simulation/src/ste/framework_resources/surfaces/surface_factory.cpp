@@ -228,8 +228,6 @@ gli::texture2d surface_factory::load_png(const boost::filesystem::path &file_nam
 	png_get_IHDR(png_ptr, info_ptr, &temp_width, &temp_height, &bit_depth, &color_type,
 				 nullptr, nullptr, nullptr);
 
-	//printf("%s: %lux%lu %d\n", file_name, temp_width, temp_height, color_type);
-
 	if (bit_depth != 8 && (bit_depth != 1 || color_type != PNG_COLOR_TYPE_GRAY)) {
 		ste_log_error() << file_name << " Unsupported bit depth " << bit_depth << ".  Must be 8";
 		throw surface_unsupported_format_error("Unsupported bit depth");

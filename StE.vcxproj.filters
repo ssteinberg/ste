@@ -69,12 +69,6 @@
     <ClCompile Include="Simulation\src\ste\framework_graphics\light\preprocessor\light_preprocessor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\light\preprocessor\stages\light_preprocess_cull_lights.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\light\preprocessor\stages\light_preprocess_cull_shadows.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_graphics\mesh\Quad.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -509,9 +503,6 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\gpu_dispatch\tasks\transition\gpu_state_transition.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\light\light.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_descriptor.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -525,12 +516,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\light\preprocessor\light_preprocessor.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\light\preprocessor\stages\light_preprocess_cull_lights.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\light\preprocessor\stages\light_preprocess_cull_shadows.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\material\material_descriptor.hpp">
@@ -1067,9 +1052,6 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_entities\directional_light.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_entities\spherical_light.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\gi_renderer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1089,6 +1071,33 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_text\attributed_strings\markup_formatter\attributed_string_common.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_type.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_entities\polygonal_lights\quad_light.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_entities\polygonal_lights\polygonal_light.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_entities\polygonal_lights\sphere_light.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_entities\polygonal_lights\shaped_light.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_entities\virtual_light.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_entities\polygonal_lights\convex_polyhedron_light.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_entities\light.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\core\gpu_resources\buffers\data_storage\uniform_buffer_object.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1136,7 +1145,6 @@
     <None Include="Simulation\src\ste\framework_graphics\light\linked_light_lists\shaders\linked_light_lists_load.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\light\linked_light_lists\shaders\linked_light_lists_store.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\light\preprocessor\shaders\light_preprocess_cull_lights.glsl" />
-    <None Include="Simulation\src\ste\framework_graphics\light\preprocessor\shaders\light_preprocess_cull_shadows.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\entities\objects\shaders\mesh_descriptor.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\scene\shaders\scene_transform.vert" />
     <None Include="Simulation\src\ste\framework_graphics\radiometry\radiance\subsurface_scattering\shaders\subsurface_scattering.glsl" />
@@ -1179,5 +1187,10 @@
     <None Include="Simulation\src\ste\framework_graphics\atmospherics\buffer\shaders\atmospherics_descriptor.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\deferred_gbuffer\downsample_depth\shaders\gbuffer_downsample_depth.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\scene\shaders\shadow_drawid_to_lightid_ttl.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\shaders\deferred_shading_common.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\light\shaders\light_type.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\light\light_entities\polygonal_lights\shaders\linearly_transformed_cosines.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\light\light_entities\polygonal_lights\shaders\cosine_distribution_integration.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\light\light_entities\polygonal_lights\shaders\clamped_cosine_distribution_integration.glsl" />
   </ItemGroup>
 </Project>

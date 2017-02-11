@@ -78,6 +78,7 @@ void gi_renderer::setup_tasks() {
 	directional_shadows_projector_task = make_gpu_task("dirshdw_project", &directional_shadows_projector.get(), nullptr);
 	volumetric_scattering_scatter_task = make_gpu_task("scatter", &vol_scat_scatter.get(), nullptr);
 	lll_gen_task = make_gpu_task("pp_ll_gen", &lll_gen_dispatch.get(), nullptr);
+	light_preprocess_task = make_gpu_task("lpre", &light_preprocess.get(), nullptr);
 
 	hdr.get().get_task()->add_dependency(composer_task);
 
@@ -97,18 +98,18 @@ void gi_renderer::setup_tasks() {
 	scene_task->add_dependency(scene_geo_cull_task);
 	scene_task->add_dependency(downsample_depth_task);
 
-	scene_geo_cull_task->add_dependency(light_preprocess.get().get_task());
+	scene_geo_cull_task->add_dependency(light_preprocess_task);
 
-	lll_gen_task->add_dependency(light_preprocess.get().get_task());
+	lll_gen_task->add_dependency(light_preprocess_task);
 	lll_gen_task->add_dependency(prepopulate_depth_task);
 	lll_gen_task->add_dependency(downsample_depth_task);
 
-	shadow_projector_task->add_dependency(light_preprocess.get().get_task());
+	shadow_projector_task->add_dependency(light_preprocess_task);
 	shadow_projector_task->add_dependency(scene_geo_cull_task);
-	directional_shadows_projector_task->add_dependency(light_preprocess.get().get_task());
+	directional_shadows_projector_task->add_dependency(light_preprocess_task);
 	directional_shadows_projector_task->add_dependency(scene_geo_cull_task);
 
-	volumetric_scattering_scatter_task->add_dependency(light_preprocess.get().get_task());
+	volumetric_scattering_scatter_task->add_dependency(light_preprocess_task);
 	volumetric_scattering_scatter_task->add_dependency(shadow_projector_task);
 	volumetric_scattering_scatter_task->add_dependency(directional_shadows_projector_task);
 	volumetric_scattering_scatter_task->add_dependency(downsample_depth_task);
@@ -118,7 +119,7 @@ void gi_renderer::setup_tasks() {
 	composer_task->add_dependency(fb_clearer_task);
 	composer_task->add_dependency(prepopulate_backface_depth_task);
 	composer_task->add_dependency(lll_gen_task);
-	composer_task->add_dependency(light_preprocess.get().get_task());
+	composer_task->add_dependency(light_preprocess_task);
 	composer_task->add_dependency(shadow_projector_task);
 	composer_task->add_dependency(directional_shadows_projector_task);
 	composer_task->add_dependency(volumetric_scattering_scatter_task);
@@ -149,6 +150,10 @@ void gi_renderer::render_queue() {
 	transform_buffers.update_view_data(*this->cam);
 	transform_buffers.bind_view_buffer(view_transform_buffer_bind_location);
 	transform_buffers.bind_proj_buffer(proj_transform_buffer_bind_location);
+
+	s->properties().lights_storage().update_directional_lights_cascades_buffer(*this->cam,
+																			   this->ctx.get_fov(), this->ctx.get_projection_aspect(), this->ctx.get_near_clip());
+
 	atmospheric_buffer.bind_buffer(atmospherics_buffer_bind_location);
 
 	s->update_scene();

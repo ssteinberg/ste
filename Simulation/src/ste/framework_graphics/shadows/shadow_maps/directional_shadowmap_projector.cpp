@@ -19,7 +19,7 @@ void directional_shadowmap_projector::set_context_state() const {
 	s->bind_buffers();
 	lights->bind_lights_buffer(2);
 
-	6_storage_idx = lights->get_directional_lights_cascades_buffer();
+	0_uniform_idx = lights->get_directional_lights_cascades_buffer();
 	8_storage_idx = s->get_directional_shadow_projection_buffers().proj_id_to_light_id_translation_table;
 
 	shadow_gen_program.get().bind();

@@ -57,6 +57,10 @@ float gaf_schlick_ggx(float roughness, float dotNL, float dotNV, out float g_mas
 
 	return g_mask * g_shadow;
 }
+float gaf_schlick_ggx(float roughness, float dotNL, float dotNV) {
+	float g_mask, g_shadow;
+	return gaf_schlick_ggx(roughness, dotNL, dotNV, g_mask, g_shadow);
+}
 
 vec3 fresnel_cook_torrance(float dotLH, vec3 F0) {
 	vec3 sqrtF0 = sqrt(F0);
