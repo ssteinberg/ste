@@ -12,6 +12,7 @@ layout(local_size_x = 128) in;
 #include "hdr_common.glsl"
 #include "intersection.glsl"
 
+#include "atmospherics.glsl"
 #include "light.glsl"
 
 layout(std430, binding = 2) restrict buffer light_data {
@@ -44,8 +45,14 @@ void main() {
 
 	if (light_type_is_directional(ld.type)) {
 		// For directional lights:
-		
-		add_light = true;
+		// Cull based on intersection with planet
+		vec3 c = atmospherics_center();
+		float r = atmospherics_sea_level_radius();
+		vec3 P = eye_position();
+
+		float x = intersection_ray_sphere(c, r, P, -ld.position);
+		if (isinf(x))
+			add_light = true;
 	}
 	else {
 		// For spherical lights:
