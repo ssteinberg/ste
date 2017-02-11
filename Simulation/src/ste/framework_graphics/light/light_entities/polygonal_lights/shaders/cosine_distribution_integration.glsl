@@ -68,12 +68,12 @@ vec3 integrate_cosine_distribution_quad(vec3 P,
  *	@param offset		Offset into point buffer (ltc_points).
  *	@param two_sided	Single or two-sided shape. Must be false for polyhedrons.
  */
-vec3 ltc_evaluate_polygon(vec3 P, 
-						  vec3 L, 
-						  vec3 light_pos, 
-						  uint points, 
-						  uint offset, 
-						  bool two_sided) {
+vec3 integrate_cosine_distribution_polygon(vec3 P, 
+										   vec3 L, 
+										   vec3 light_pos, 
+										   uint points, 
+										   uint offset, 
+										   bool two_sided) {
 	// construct orthonormal basis around L
 	vec3 T1 = vec3(1,0,0);
 	if (dot(T1, L) > 0.99)
@@ -164,11 +164,11 @@ vec3 ltc_evaluate_polygon(vec3 P,
  *	@param primitives	Primitives (triangles) count.
  *	@param offset		Offset into point buffer (ltc_points).
  */
-vec3 ltc_evaluate_convex_polyhedron(vec3 P, 
-									vec3 L, 
-									vec3 light_pos, 
-									uint primitives, 
-									uint offset) {
+vec3 integrate_cosine_distribution_convex_polyhedron(vec3 P, 
+													 vec3 L, 
+													 vec3 light_pos, 
+													 uint primitives, 
+													 uint offset) {
 	// construct orthonormal basis around L
 	vec3 T1 = vec3(1,0,0);
 	if (dot(T1, L) > 0.99)

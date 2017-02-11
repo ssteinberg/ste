@@ -33,6 +33,7 @@ class resource_storage : public resource_storage_base<Descriptor> {
 
 	friend Specialization;
 
+protected:
 	using resource_type = typename Base::resource_type;
 	using descriptor_type = typename Base::descriptor_type;
 	using storage_type = Storage<descriptor_type>;
@@ -82,7 +83,7 @@ protected:
 	/**
 	*	@brief	Erase the resource, freeing a slot.
 	*/
-	void erase_resource(const resource_type *res) override final {
+	virtual void erase_resource(const resource_type *res) override {
 		assert(res);
 
 		deallocate_identifier(res->resource_storage_identifier);

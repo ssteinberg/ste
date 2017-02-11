@@ -75,16 +75,16 @@ vec3 material_evaluate_layer_radiance(material_layer_unpacked_descriptor descrip
 			float r = ld.radius;
 
 			specular_irradiance = ltc_evaluate_sphere(wn, wv, wp, ltc_M_inv, L, r) * ltc_ampl;
-			diffuse_irradiance  = integrate_cosine_distribution_sphere_cross_section(l_dist, r).xxx;//ltc_evaluate_sphere(wn, wv, wp, mat3(1),   L, r);
+			diffuse_irradiance  = ltc_evaluate_sphere(wn, wv, wp, mat3(1),   L, r);
 		}
 		else if (shape_quad) {
 			// Quad. Always 4 points.
 			specular_irradiance = ltc_evaluate_quad(wn, wv, wp, ltc_M_inv, L, points_offset, two_sided) * ltc_ampl;
-			diffuse_irradiance  = shaped_light_attenuation(ld, l_dist, wl).xxx;//ltc_evaluate_quad(wn, wv, wp, mat3(1),   L, points_offset, two_sided);
+			diffuse_irradiance  = ltc_evaluate_quad(wn, wv, wp, mat3(1),   L, points_offset, two_sided);
 		}
 		else if (shape_polygon) {
 			specular_irradiance = ltc_evaluate_polygon(wn, wv, wp, ltc_M_inv, L, points_count, points_offset, two_sided) * ltc_ampl;
-			diffuse_irradiance  = shaped_light_attenuation(ld, l_dist, wl).xxx;//ltc_evaluate_polygon(wn, wv, wp, mat3(1),   L, points_count, points_offset, two_sided);
+			diffuse_irradiance  = ltc_evaluate_polygon(wn, wv, wp, mat3(1),   L, points_count, points_offset, two_sided);
 		}
 		else /*if (shape_polyhedron)*/ {
 			// Polyhedron light. Primitives are always triangles.
@@ -108,16 +108,16 @@ vec3 material_evaluate_layer_radiance(material_layer_unpacked_descriptor descrip
 		float attenuation = virtual_light_attenuation(ld, l_dist);
 
 		// Anisotropic roughness
-		float rx = descriptor.roughness * descriptor.anisotropy_ratio;
-		float ry = descriptor.roughness / descriptor.anisotropy_ratio;
+		//float rx = descriptor.roughness * descriptor.anisotropy_ratio;
+		//float ry = descriptor.roughness / descriptor.anisotropy_ratio;
 
 		// Evaluate BRDFs
-		vec3 Specular = cook_torrance_ansi_brdf(n, t, b,  
-												v, l, h, 
-												rx, ry, 
-												cos_critical,  
-												refractive_ratio, 
-												c_spec);
+		vec3 Specular = cook_torrance_iso_brdf(n,
+											   v, l, h, 
+											   descriptor.roughness,
+											   cos_critical,  
+											   refractive_ratio, 
+											   c_spec);
 		vec3 Diffuse = diffused_light * lambert_diffuse_brdf();
 		
 		vec3 brdf = irradiance * dot(n, l) * (Specular + Diffuse);
@@ -206,6 +206,9 @@ vec3 material_evaluate_radiance_simple(material_layer_unpacked_descriptor descri
  *	@param layer		Material layer
  *	@param frag			Fragment shading parameters
  *	@param light		Light shading parameters
+ *	@param uv			Material texture coordinates at sample point. Used for material layer unpacking.
+ *	@param duvdx		Material texture coordinates d/dx partial derivative at sample point. Used for material layer unpacking.
+ *	@param duvdy		Material texture coordinates d/dy partial derivative at sample point. Used for material layer unpacking.
  *	@param object_thickness	Object thickness at shaded fragment
  *	@param material_microfacet_luts	Microfacet GGX fitting LUTs
  *	@param shadow_maps	Shadow maps
@@ -216,13 +219,14 @@ vec3 material_evaluate_radiance(material_descriptor md,
 								material_layer_descriptor layer,
 								fragment_shading_parameters frag,
 								light_shading_parameters light,
+								vec2 uv, vec2 duvdx, vec2 duvdy,
 								float object_thickness,
 								deferred_material_microfacet_luts material_microfacet_luts,
 								deferred_material_ltc_luts ltc_luts, 
 								deferred_shading_shadow_maps shadow_maps,
 								float occlusion,
 								float external_medium_ior = 1.0002772f) {
-	material_layer_unpacked_descriptor descriptor = material_layer_unpack(layer);
+	material_layer_unpacked_descriptor descriptor = material_layer_unpack(layer, uv, duvdx, duvdy);
 
 	// A simple material is a material without subsurface scattering and a single layer.
 	// Use a faster codepath in that case.
@@ -355,7 +359,7 @@ vec3 material_evaluate_radiance(material_descriptor md,
 
 		// Set ior and descriptor for next layer
 		top_medium_ior = bottom_medium_ior;
-		descriptor = material_layer_unpack(mat_layer_descriptor[descriptor.next_layer_id]);
+		descriptor = material_layer_unpack(mat_layer_descriptor[descriptor.next_layer_id], uv, duvdx, duvdy);
 	}
 
 	// Apply occlusion

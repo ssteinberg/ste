@@ -24,15 +24,9 @@ layout(std430, binding = 2) restrict readonly buffer light_data {
 	light_descriptor light_buffer[];
 };
 
-layout(shared, binding = 6) restrict readonly buffer directional_lights_cascades_data {
-	light_cascade_descriptor directional_lights_cascades[];
-};
-
 layout(shared, binding = 8) restrict readonly buffer d_drawid_to_lightid_ttl_data {
 	d_drawid_to_lightid_ttl ttl[];
 };
-
-uniform float cascades_depths[directional_light_cascades];
 
 vec3 transform(vec4 v, mat3x4 M) {
 	return v * M;
@@ -92,13 +86,12 @@ void main() {
 	if (dot(n,-l) <= 0)
 		return;
 		
-	// Read cascade descriptor and per cascade build the transformation matrix, transform vertices and output
+	// Read cascade descriptor and per cascade transformation matrix, transform vertices and output
 	uint cascade_idx = light_get_cascade_descriptor_idx(ld);
-	light_cascade_descriptor cascade_descriptor = directional_lights_cascades[cascade_idx];
 	
 	for (int cascade = 0; cascade < directional_light_cascades; ++cascade) {
-		float z_far;
-		mat3x4 M = light_cascade_projection(cascade_descriptor, cascade, l, cascades_depths, z_far);
+		float z_far = light_cascades[cascade_idx].cascades[cascade].proj_far_clip;
+		mat3x4 M = light_cascades[cascade_idx].cascades[cascade].M;
 
 		vec3 vertices[3];
 		for (int j = 0; j < 3; ++j)

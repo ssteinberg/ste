@@ -10,13 +10,12 @@ const float shadow_cube_min_penumbra = 3.f / shadow_cubemap_size;
  */
 float shadow_calculate_test_depth(float z, float near, float far, vec3 n, vec3 l) {
 	float d = project_depth(z, near);//project_depth_linear(z, near, far);
-	
-	float slope = 1.f - abs(dot(l,n));
-	
-	float multiplier = 1.f + .0015f * (1.f + slope*2);
-	float delta = mix(1e-4f, .0, 1.f - d) * (1.f + slope*2);
 
-	return d * multiplier + delta;
+	float slope = 1.f - abs(dot(l,n));
+
+	float df_dx = near / sqr(z);
+	float delta = df_dx * 1.1f * (1.f + slope * 2.5f);
+	return d + delta;
 }
 
 vec3 shadow_cubemap_jitter_uv(vec3 norm_v, mat2x3 m, vec2 xy) {

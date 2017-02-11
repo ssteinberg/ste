@@ -25,9 +25,6 @@ layout(std430, binding = 2) restrict readonly buffer light_data {
 	light_descriptor light_buffer[];
 };
 
-layout(shared, binding = 7) restrict readonly buffer directional_lights_cascades_data {
-	light_cascade_descriptor directional_lights_cascades[];
-};
 layout(std430, binding = 8) restrict readonly buffer shaped_lights_points_data {
 	ltc_element ltc_points[];
 };
@@ -37,8 +34,6 @@ layout(r32ui, binding = 6) restrict readonly uniform uimage2D lll_heads;
 layout(shared, binding = 11) restrict readonly buffer lll_data {
 	lll_element lll_buffer[];
 };
-
-uniform float cascades_depths[directional_light_cascades];
 
 #include "linked_light_lists_load.glsl"
 

@@ -71,7 +71,7 @@ void deferred_composer::load_microfacet_fit_luts() {
 	try {
 		microfacet_refraction_fit_lut = std::make_unique<Core::texture_2d>(deferred_composer_detail::load_lut<microfacet_refraction_fit>()(refraction_fit_name));
 		microfacet_transmission_fit_lut = std::make_unique<Core::texture_2d_array>(deferred_composer_detail::load_lut<microfacet_transmission_fit_v4>()(transmission_fit_name));
-	} catch (const microfacet_fit_error &err) {
+	} catch (const std::exception &err) {
 		using namespace Text::Attributes;
 		ste_log_error() << Text::attributed_string("Can't open Microfacet LUT. Error: \"") + b(err.what()) + "\"." << std::endl;
 
@@ -101,7 +101,7 @@ void deferred_composer::load_microfacet_fit_luts() {
 }
 
 void deferred_composer::load_atmospherics_luts() {
-	static const char *lut_name = R"(Data/atmospherics_lut.bin.bin)";
+	static const char *lut_name = R"(Data/atmospherics_lut.bin)";
 
 	try {
 		atmospherics_precompute_scattering lut_loader(lut_name);
@@ -110,7 +110,7 @@ void deferred_composer::load_atmospherics_luts() {
 		atmospherics_mie0_scatter_lut = std::make_unique<Core::texture_3d>(lut_loader.create_mie0_scatter_lut());
 		atmospherics_ambient_lut = std::make_unique<Core::texture_3d>(lut_loader.create_ambient_lut());
 	}
-	catch (const atmospherics_lut_error &err) {
+	catch (const std::exception &err) {
 		using namespace Text::Attributes;
 		ste_log_error() << Text::attributed_string("Can't open Atmospherics Scatter LUT. Error: \"") + b(err.what()) + "\"." << std::endl;
 
@@ -189,7 +189,7 @@ void deferred_composer::set_context_state() const {
 
 	ls.bind_lights_buffer(2);
 
-	7_storage_idx = dr->s->properties().lights_storage().get_directional_lights_cascades_buffer();
+	0_uniform_idx = dr->s->properties().lights_storage().get_directional_lights_cascades_buffer();
 	8_storage_idx = dr->s->properties().lights_storage().get_shaped_lights_points_buffer();
 	dr->lll_storage.bind_lll_buffer();
 

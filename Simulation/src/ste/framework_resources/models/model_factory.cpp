@@ -112,29 +112,28 @@ StE::task_future<void> model_factory::process_model_mesh(task_scheduler* sched,
 
 	auto &material = mat_idx >= 0 ? materials[mat_idx] : empty_mat;
 
-	auto roughness_it = material.unknown_parameter.find("roughness");
-	auto metallic_it = material.unknown_parameter.find("metallic");
-	auto ior_it = material.unknown_parameter.find("ior");
-	auto anisotropy_it = material.unknown_parameter.find("anisotropy");
-
 	return sched->schedule_now_on_main_thread([=, vbo_data = std::move(vbo_data), vbo_indices = std::move(vbo_indices), &loaded_materials, &loaded_material_layers, &textures, &material]() {
 		std::shared_ptr<Core::texture_2d> diff_map = mat_idx >= 0 ? textures[material.diffuse_texname] : nullptr;
 		std::shared_ptr<Core::texture_2d> opacity_map = mat_idx >= 0 ? textures[material.alpha_texname] : nullptr;
 		std::shared_ptr<Core::texture_2d> specular_map = mat_idx >= 0 ? textures[material.specular_texname] : nullptr;
 		std::shared_ptr<Core::texture_2d> normalmap = mat_idx >= 0 ? textures[material.bump_texname] : nullptr;
+		std::shared_ptr<Core::texture_2d> roughness_map = mat_idx >= 0 ? textures[material.unknown_parameter[roughness_map_key]] : nullptr;
+		std::shared_ptr<Core::texture_2d> metallic_map = mat_idx >= 0 ? textures[material.unknown_parameter[metallic_map_key]] : nullptr;
+		std::shared_ptr<Core::texture_2d> anisotropy_map = mat_idx >= 0 ? textures[material.unknown_parameter[anisotropy_map_key]] : nullptr;
+		std::shared_ptr<Core::texture_2d> thickness_map = mat_idx >= 0 ? textures[material.unknown_parameter[thickness_map_key]] : nullptr;
 		
 		auto layer = scene_properties->material_layers_storage().allocate_layer();
 		auto mat = scene_properties->materials_storage().allocate_material(layer.get());
 
-		if (diff_map != nullptr) mat->set_texture(diff_map);
-		if (specular_map != nullptr) mat->set_cavity_map(specular_map);
-		if (normalmap != nullptr) mat->set_normal_map(normalmap);
-		if (opacity_map != nullptr) mat->set_mask_map(opacity_map);
+		if (diff_map != nullptr)		mat->set_texture(diff_map);
+		if (specular_map != nullptr)	mat->set_cavity_map(specular_map);
+		if (normalmap != nullptr)		mat->set_normal_map(normalmap);
+		if (opacity_map != nullptr)		mat->set_mask_map(opacity_map);
 
-		if (roughness_it != material.unknown_parameter.end()) layer->set_roughness(std::stof(roughness_it->second));
-		if (metallic_it != material.unknown_parameter.end()) layer->set_metallic(std::stof(metallic_it->second));
-		if (ior_it != material.unknown_parameter.end()) layer->set_index_of_refraction(std::stof(ior_it->second));
-		if (anisotropy_it != material.unknown_parameter.end()) layer->set_anisotropy(std::stof(anisotropy_it->second));
+		if (roughness_map != nullptr)	layer->set_roughness(roughness_map);
+		if (metallic_map != nullptr)	layer->set_metallic(metallic_map);
+//		if (anisotropy_map != nullptr)	layer->set_anisotropy(anisotropy_map);
+		if (thickness_map != nullptr)	layer->set_layer_thickness(thickness_map);
 
 		std::unique_ptr<Graphics::mesh<Graphics::mesh_subdivion_mode::Triangles>> m = std::make_unique<Graphics::mesh<Graphics::mesh_subdivion_mode::Triangles>>();
 		m->set_indices(std::move(vbo_indices));
@@ -214,7 +213,11 @@ std::vector<StE::task_future<void>> model_factory::load_textures(task_scheduler*
 						   materials[mat_idx].bump_texname,
 						   materials[mat_idx].displacement_texname,
 						   materials[mat_idx].alpha_texname,
-						   materials[mat_idx].specular_texname })
+						   materials[mat_idx].specular_texname,
+						   materials[mat_idx].unknown_parameter[roughness_map_key],
+						   materials[mat_idx].unknown_parameter[metallic_map_key],
+						   materials[mat_idx].unknown_parameter[anisotropy_map_key],
+						   materials[mat_idx].unknown_parameter[thickness_map_key] })
 			if (str.length() && tex_map.find(str) == tex_map.end()) {
 				bool srgb = str == materials[mat_idx].diffuse_texname;
 				bool displacement = str == materials[mat_idx].displacement_texname;

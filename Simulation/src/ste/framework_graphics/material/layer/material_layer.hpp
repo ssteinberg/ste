@@ -30,12 +30,10 @@ private:
 
 	rgb albedo;
 	
-	float thickness{ .0f };
-
-	float roughness{ .5f };
-	float anisotropy{ .0f };
-	float aniso_ratio{ 1.f };
-	float metallic{ .0f };
+	std::shared_ptr<Core::texture_2d> roughness_map{ nullptr };
+	std::shared_ptr<Core::texture_2d> metallicity_map{ nullptr };
+	std::shared_ptr<Core::texture_2d> thickness_map{ nullptr };
+	//std::shared_ptr<Core::texture_2d> anisotropy_map{ nullptr };
 
 	float index_of_refraction{ 1.5f };
 	glm::vec3 attenuation_coefficient{ std::numeric_limits<float>::infinity() };
@@ -54,6 +52,17 @@ private:
 
 private:
 	Core::texture_handle handle_for_texture(const Core::texture_2d *t) const;
+
+	template <std::shared_ptr<Core::texture_2d> material_layer::*map>
+	void write_scalar_map(float scalar) {
+		if (this->*map == nullptr || (this->*map)->get_size() != glm::ivec2{ 1, 1 }) {
+			auto surface = gli::texture2d(gli::format::FORMAT_R32_SFLOAT_PACK32, { 1, 1 }, 1);
+			*reinterpret_cast<float*>(surface.data()) = scalar;
+			this->*map = std::make_shared<StE::Core::texture_2d>(surface, false);
+		}
+		else
+			(this->*map)->clear(&scalar);
+	}
 
 public:
 	/**
@@ -92,8 +101,22 @@ public:
 	* 	@param r	Roughness - range: [0,1]
 	*/
 	void set_roughness(float r) {
-		roughness = r;
-		descriptor.set_roughness_and_thickness(roughness, thickness);
+		write_scalar_map<&material_layer::roughness_map>(r);
+		descriptor.set_roughness_map_handle(handle_for_texture(roughness_map.get()));
+
+		Base::notify();
+	}
+	/**
+	*	@brief	Set material roughness map
+	*
+	*	Roughness as defines by the microfacet theory. Controls both diffuse and specular response. Defaults to 0.5.
+	*
+	* 	@param map	Roughness map
+	*/
+	void set_roughness(const std::shared_ptr<Core::texture_2d> &map) {
+		this->roughness_map = map;
+		descriptor.set_roughness_map_handle(handle_for_texture(roughness_map.get()));
+
 		Base::notify();
 	}
 
@@ -104,23 +127,49 @@ public:
 	*
 	* 	@param a	Anisotropy - range: [0,1] (May take negative values which invert X, Y anisotropy)
 	*/
-	void set_anisotropy(float a) {
-		anisotropy = a;
-		aniso_ratio = convert_anisotropy_to_ratio(anisotropy);
-		descriptor.set_anisotropy_and_metallicity(aniso_ratio, metallic);
+//	void set_anisotropy(float a) {
+//		write_scalar_map<&material_layer::anisotropy_map>(a);
+//		descriptor.set_anisotropy_map_handle(handle_for_texture(anisotropy_map.get()));
+//
+//		Base::notify();
+//	}
+	/**
+	*	@brief	Set material anisotropy map
+	*
+	*	Anisotropy modifies material's anisotropic roughness
+	*
+	* 	@param map	Anisotropy map
+	*/
+//	void set_anisotropy(const std::shared_ptr<Core::texture_2d> &map) {
+//		this->anisotropy_map = map;
+//		descriptor.set_anisotropy_map_handle(handle_for_texture(anisotropy_map.get()));
+//
+//		Base::notify();
+//	}
+
+/**
+*	@brief	Set material metallicity
+*
+*	Controls material's metal appearance. Defaults to 0.0.
+*
+* 	@param m	Metallicity - range: [0,1]
+*/
+	void set_metallic(float m) {
+		write_scalar_map<&material_layer::metallicity_map>(m);
+		descriptor.set_metallicity_map_handle(handle_for_texture(metallicity_map.get()));
+
 		Base::notify();
 	}
-
 	/**
-	*	@brief	Set material metallicity
+	*	@brief	Set material metallicity map
 	*
 	*	Controls material's metal appearance. Defaults to 0.0.
 	*
-	* 	@param m	Metallicity - range: [0,1]
+	* 	@param map	Metallicity map
 	*/
-	void set_metallic(float m) {
-		metallic = m;
-		descriptor.set_anisotropy_and_metallicity(aniso_ratio, metallic);
+	void set_metallic(const std::shared_ptr<Core::texture_2d> &map) {
+		metallicity_map = map;
+		descriptor.set_metallicity_map_handle(handle_for_texture(metallicity_map.get()));
 		Base::notify();
 	}
 
@@ -180,8 +229,21 @@ public:
 	* 	@param t	Thickness in standard units	- range: (0,material_layer_max_thickness)
 	*/
 	void set_layer_thickness(float t) {
-		thickness = t;
-		descriptor.set_roughness_and_thickness(roughness, thickness);
+		write_scalar_map<&material_layer::thickness_map>(t);
+		descriptor.set_thickness_map_handle(handle_for_texture(thickness_map.get()));
+
+		Base::notify();
+	}
+	/**
+	*	@brief	Set material layer thickness map
+	*
+	*	Controls the material layer thickness. Ignored for base layers.
+	*
+	* 	@param map	Thickness map in standard units	- range: (0,material_layer_max_thickness)
+	*/
+	void set_layer_thickness(const std::shared_ptr<Core::texture_2d> &map) {
+		thickness_map = map;
+		descriptor.set_thickness_map_handle(handle_for_texture(thickness_map.get()));
 		Base::notify();
 	}
 	
@@ -209,11 +271,7 @@ public:
 	}
 
 	auto get_albedo() const { return albedo; }
-	auto get_roughness() const { return roughness; }
-	auto get_anisotropy() const { return anisotropy; }
-	auto get_metallic() const { return metallic; }
 	auto get_index_of_refraction() const { return index_of_refraction; }
-	auto get_layer_thickness() const { return thickness; }
 	auto get_attenuation_coefficient() const { return attenuation_coefficient; }
 	float get_scattering_phase_parameter() const { return phase_g; }
 

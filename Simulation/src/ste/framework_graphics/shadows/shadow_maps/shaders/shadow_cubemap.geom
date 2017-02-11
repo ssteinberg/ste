@@ -64,12 +64,12 @@ void process(int face, uint l, vec3 vertices[3], float shadow_near, float f) {
 		(transformed_vertices[0].y < -transformed_vertices[0].w && 
 		 transformed_vertices[1].y < -transformed_vertices[1].w && 
 		 transformed_vertices[2].y < -transformed_vertices[2].w) || 
-		(transformed_vertices[0].z >  transformed_vertices[0].w && 
-		 transformed_vertices[1].z >  transformed_vertices[1].w && 
-		 transformed_vertices[2].z >  transformed_vertices[2].w) || 
 		(transformed_vertices[0].z < -transformed_vertices[0].w && 
 		 transformed_vertices[1].z < -transformed_vertices[1].w && 
-		 transformed_vertices[2].z < -transformed_vertices[2].w))
+		 transformed_vertices[2].z < -transformed_vertices[2].w) || 
+		(transformed_vertices[0].w >  f && 
+		 transformed_vertices[1].w >  f && 
+		 transformed_vertices[2].w >  f))
 	return;
 
 	for (int j = 0; j < 3; ++j) {
@@ -91,7 +91,7 @@ void main() {
 
 	light_descriptor ld = light_buffer[light_idx];
 
-	uint face_mask = ld.shadow_face_mask;
+	float near_clip = ld.radius * 2.f;
 	vec3 light_pos = ld.position;
 	float light_range = ld.effective_range;
 	float light_range2 = light_range * light_range;
@@ -120,8 +120,6 @@ void main() {
 		return;
 
 	// Transform and output
-	for (int face = 0; face < 6; ++face) {
-		//if ((face_mask & (1 << face)) != 0)
-			process(face, ll_idx, vertices, ld.radius*2, light_range);
-	}
+	for (int face = 0; face < 6; ++face) 
+		process(face, ll_idx, vertices, near_clip, light_range);
 }

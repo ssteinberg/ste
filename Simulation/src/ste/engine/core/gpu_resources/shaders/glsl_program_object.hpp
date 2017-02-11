@@ -72,6 +72,21 @@ protected:
 		return ret;
 	}
 
+	int get_uniform_block_index(const std::string &name) const {
+		auto it = uniform_map.find(name);
+		if (it != uniform_map.end())
+			return it->second;
+
+		auto ret = (uniform_map[name] = glGetUniformBlockIndex(get_resource_id(), name.c_str()));
+#ifdef _DEBUG
+		if (ret == -1) {
+			ste_log_warn() << "Uniform block \"" << name << "\" not found\n";
+		}
+#endif
+
+		return ret;
+	}
+
 public:
 	glsl_program_object(glsl_program_object &&m) = default;
 	glsl_program_object(const glsl_program_object &c) = delete;
@@ -374,6 +389,12 @@ public:
 	void set_uniform(const std::string &name, const T (&arr)[N], Params&&... p) const {
 		std::vector<T> v(std::begin(arr), std::end(arr));
 		set_uniform(name, v, std::forward<Params>(p)...);
+	}
+
+	void set_uniform_block_binding(const std::string &name, int binding) const {
+		auto idx = get_uniform_block_index(name);
+		if (idx >= 0)
+			glUniformBlockBinding(get_resource_id(), idx, binding);
 	}
 
 
