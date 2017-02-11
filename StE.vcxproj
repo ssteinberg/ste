@@ -180,7 +180,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>opengl32.lib;glu32.lib;libboost_system-vc140-mt-1_62.lib;libboost_filesystem-vc140-mt-1_62.lib;libboost_serialization-vc140-mt-1_62.lib;zlib.lib;freetype.lib;libglew32.lib;glfw3.lib;turbojpeg-static.lib;libpng16_static.lib;tga_static.lib;tinyobjloader.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)..\..\boost_1_62_0\stage\lib32;$(SolutionDir)Simulation\third_party\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalOptions> /FORCE:MULTIPLE %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
@@ -306,12 +306,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_graphics\light\preprocessor\light_preprocessor.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\light\preprocessor\stages\light_preprocess_cull_lights.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\light\preprocessor\stages\light_preprocess_cull_shadows.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_graphics\material\layer\material_layer.cpp" />
@@ -578,8 +572,6 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\light\linked_light_lists\linked_light_lists.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\light\linked_light_lists\linked_light_lists_gen_dispatch.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\light\preprocessor\light_preprocessor.hpp" />
-    <ClInclude Include="Simulation\src\ste\framework_graphics\light\preprocessor\stages\light_preprocess_cull_lights.hpp" />
-    <ClInclude Include="Simulation\src\ste\framework_graphics\light\preprocessor\stages\light_preprocess_cull_shadows.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\material\layer\material_layer.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\material\layer\material_layer_descriptor.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\material\layer\material_layer_storage.hpp" />
@@ -765,7 +757,6 @@
     <None Include="Simulation\src\ste\framework_graphics\light\linked_light_lists\shaders\linked_light_lists_store.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\light\light_entities\polygonal_lights\shaders\linearly_transformed_cosines.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\light\preprocessor\shaders\light_preprocess_cull_lights.glsl" />
-    <None Include="Simulation\src\ste\framework_graphics\light\preprocessor\shaders\light_preprocess_cull_shadows.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\light\shaders\light.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\light\shaders\light_cascades.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\light\shaders\light_type.glsl" />

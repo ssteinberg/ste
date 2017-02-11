@@ -34,9 +34,6 @@ layout(shared, binding = 4) restrict readonly buffer ll_counter_data {
 layout(shared, binding = 5) restrict readonly buffer ll_data {
 	uint ll[];
 };
-layout(shared, binding = 6) restrict readonly buffer directional_lights_cascades_data {
-	light_cascade_descriptor directional_lights_cascades[];
-};
 
 layout(binding = 0) uniform atomic_uint counter;
 layout(std430, binding = 10) restrict writeonly buffer idb_data {
@@ -54,8 +51,6 @@ layout(shared, binding = 8) restrict writeonly buffer drawid_to_lightid_ttl_data
 layout(shared, binding = 9) restrict writeonly buffer d_drawid_to_lightid_ttl_data {
 	d_drawid_to_lightid_ttl d_ttl[];
 };
-
-uniform float cascades_depths[directional_light_cascades];
 
 void main() {
 	int draw_id = int(gl_GlobalInvocationID.x);
@@ -80,13 +75,12 @@ void main() {
 		if (light_type_is_directional(ld.type)) {
 			// For directional lights check if the geometry is in one of the cascades
 			uint cascade_idx = light_get_cascade_descriptor_idx(ld);
-			light_cascade_descriptor cascade_descriptor = directional_lights_cascades[cascade_idx];
 
 			for (int cascade=0; cascade<directional_light_cascades; ++cascade) {
 				// Read cascade parameters and construct projection matrix
-				float cascade_proj_far;
-				vec2 recp_viewport;
-				mat3x4 M = light_cascade_projection(cascade_descriptor, cascade, l, cascades_depths, recp_viewport, cascade_proj_far);
+				float cascade_proj_far = light_cascades[cascade_idx].cascades[cascade].proj_far_clip;
+				vec2 recp_viewport = light_cascades[cascade_idx].cascades[cascade].recp_vp;
+				mat3x4 M = light_cascades[cascade_idx].cascades[cascade].M;
 				
 				// Project the geometry bounding sphere into cascade-space.
 				// Check that it intersects the viewport and is in front of the far-plane of the cascade

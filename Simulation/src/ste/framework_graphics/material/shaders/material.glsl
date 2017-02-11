@@ -106,7 +106,7 @@ void normal_map(material_descriptor md, vec2 uv, vec2 duvdx, vec2 duvdy, inout v
 		mat3 transform = mat3(t, b, n);
 
 		vec3 nm;
-		nm.xy = textureGrad(md.normal_map.tex_handler, uv, duvdx, duvdy).wy * 2.f - 1.f;
+		nm.xy = textureGrad(md.normal_map.tex_handler, uv, duvdx, duvdy).xy * 2.f - 1.f;
 		nm.z = sqrt(1.f - clamp(dot(nm.xy,nm.xy), .0f, 1.f));
 		
 		n = transform * normalize(nm);

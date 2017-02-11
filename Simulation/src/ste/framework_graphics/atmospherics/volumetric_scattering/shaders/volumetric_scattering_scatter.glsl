@@ -28,10 +28,6 @@ layout(shared, binding = 11) restrict readonly buffer lll_data {
 	lll_element lll_buffer[];
 };
 
-layout(shared, binding = 7) restrict readonly buffer directional_lights_cascades_data {
-	light_cascade_descriptor directional_lights_cascades[];
-};
-
 layout(rgba16f, binding = 7) restrict uniform image3D volume;
 
 #include "linked_light_lists_load.glsl"
@@ -43,8 +39,6 @@ layout(bindless_sampler) uniform sampler2DArray atmospheric_optical_length_lut;
 
 layout(bindless_sampler) uniform sampler2D downsampled_depth_map;
 layout(bindless_sampler) uniform sampler2D depth_map;
-
-uniform float cascades_depths[directional_light_cascades];
 
 const float samples = 2.f;
 
@@ -115,16 +109,13 @@ vec3 scatter_directional_light(vec2 slice_coords,
 							   vec3 w_pos,
 							   float thickness,
 							   light_descriptor ld,
-							   mat3x4 M,
-							   vec2 cascade_recp_vp,
-							   float cascade_proj_far,
+							   light_cascade_data cascade_data,
 							   int shadowmap_idx) {	
 	float shadow = shadow_test(directional_shadow_depth_maps,
 							   shadowmap_idx,
 							   position,
 							   vec3(0,1,0), vec3(0,1,0),
-							   M,
-							   cascade_proj_far);
+							   cascade_data);
 	if (shadow <= .0f)
 		return vec3(0);
 
@@ -171,8 +162,7 @@ bool generate_sample(vec2 slice_coords, float s,
 
 vec3 scatter(float depth, float depth_next_tile, ivec2 slice_coords,
 			 light_descriptor ld, uint light_idx, uint ll_idx,
-			 light_cascade_descriptor cascade_descriptor, inout float current_cascade_far_clip, inout int shadowmap_idx, 
-			 inout mat3x4 M, inout float cascade_proj_far, inout vec2 cascade_recp_vp, inout int cascade) {
+			 uint cascade_idx, inout int cascade, inout float current_cascade_far_clip) {
 	float z0 = unproject_depth(depth);
 	float z2 = unproject_depth(depth_next_tile);
 	float thickness = abs(z0 - z2);
@@ -186,13 +176,6 @@ vec3 scatter(float depth, float depth_next_tile, ivec2 slice_coords,
 		if (-z0 >= current_cascade_far_clip) {
 			++cascade;
 			current_cascade_far_clip = cascades_depths[cascade];
-			shadowmap_idx = light_get_cascade_shadowmap_idx(ld, cascade);
-			M = light_cascade_projection(cascade_descriptor, 
-										 cascade, 
-										 ld.transformed_position,
-										 cascades_depths,
-										 cascade_recp_vp,
-										 cascade_proj_far);
 		}
 		
 		for (float s = 0; s < samples; ++s) {
@@ -206,10 +189,8 @@ vec3 scatter(float depth, float depth_next_tile, ivec2 slice_coords,
 												   w_pos,
 												   thickness,
 												   ld,
-												   M,
-												   cascade_recp_vp,
-												   cascade_proj_far,
-												   shadowmap_idx);
+												   light_cascades[cascade_idx].cascades[cascade],
+												   light_get_cascade_shadowmap_idx(ld, cascade));
 		}
 	}
 	else {
@@ -259,12 +240,8 @@ void main() {
 		
 		// Cascade data used for directional lights
 		uint cascade_idx = light_get_cascade_descriptor_idx(ld);
-		light_cascade_descriptor cascade_descriptor = directional_lights_cascades[cascade_idx];
-		float current_cascade_far_clip = .0f, cascade_proj_far;
-		vec2 cascade_recp_vp;
 		int cascade = 0;
-		int shadowmap_idx;
-		mat3x4 M;
+		float current_cascade_far_clip = cascades_depths[0];
 		
 		// Compute tight limits on tiles to sample based on pp-lll depth ranges
 		float tiles_effected_by_light_start = volumetric_scattering_tile_for_depth(lll_depth_range.y);
@@ -283,7 +260,7 @@ void main() {
 			if (tile <= tiles_effected_by_light_end)
 				accum += scatter(depth, depth_next_tile, slice_coords, 
 								 ld, light_idx, ll_idx, 
-								 cascade_descriptor, current_cascade_far_clip, shadowmap_idx, M, cascade_proj_far, cascade_recp_vp, cascade);
+								 cascade_idx, cascade, current_cascade_far_clip);
 
 			vec3 stored_rgb = imageLoad(volume, volume_coords).rgb;
 			imageStore(volume, volume_coords, vec4(stored_rgb + accum, .0f));

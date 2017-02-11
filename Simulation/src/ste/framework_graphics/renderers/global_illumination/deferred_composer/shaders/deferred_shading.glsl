@@ -42,27 +42,14 @@ float deferred_evaluate_shadowing(deferred_shading_shadow_maps shadow_maps,
 	if (light_type_is_directional(light.ld.type)) {
 		// Query cascade index, and shadowmap index and construct cascade projection matrix
 		uint cascade_idx = light_get_cascade_descriptor_idx(light.ld);
-		light_cascade_descriptor cascade_descriptor = directional_lights_cascades[cascade_idx];
 		int shadowmap_idx = light_get_cascade_shadowmap_idx(light.ld, cascade);
-
-		// Construct matrix to transform into cascade-space
-		vec2 cascade_recp_vp;
-		float cascade_proj_far;
-		mat3x4 M = light_cascade_projection(cascade_descriptor, 
-											cascade, 
-											light.ld.transformed_position,
-											cascades_depths,
-											cascade_recp_vp,
-											cascade_proj_far);
 
 		return shadow(shadow_maps,
 					  shadowmap_idx,
 					  frag.p,
 					  light.l,
 					  frag.n,
-					  M,
-					  cascade_recp_vp,
-					  cascade_proj_far,
+					  light_cascades[cascade_idx].cascades[cascade],
 					  light.l_dist,
 					  l_radius,
 					  frag.coords);
@@ -246,7 +233,7 @@ vec3 deferred_shade_fragment(g_buffer_element gbuffer_frag, ivec2 coord,
 	vec3 atmospheric_attenuation = deferred_compute_attenuation_from_fragment_to_eye(frag, atmospherics_luts);
 
 	// Directional light cascade
-	int cascade = light_which_cascade_for_position(frag.p, cascades_depths);
+	int cascade = light_which_cascade_for_position(frag.p);
 	
 	// Add material emission
 	accum_luminance += material_emission(md);

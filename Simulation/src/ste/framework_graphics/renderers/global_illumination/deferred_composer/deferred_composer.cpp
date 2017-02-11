@@ -189,7 +189,7 @@ void deferred_composer::set_context_state() const {
 
 	ls.bind_lights_buffer(2);
 
-	7_storage_idx = dr->s->properties().lights_storage().get_directional_lights_cascades_buffer();
+	0_uniform_idx = dr->s->properties().lights_storage().get_directional_lights_cascades_buffer();
 	8_storage_idx = dr->s->properties().lights_storage().get_shaped_lights_points_buffer();
 	dr->lll_storage.bind_lll_buffer();
 

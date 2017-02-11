@@ -17,6 +17,9 @@
 
 #include "shader_storage_buffer.hpp"
 #include "atomic_counter_buffer_object.hpp"
+#include "uniform_buffer_object.hpp"
+
+#include "Camera.hpp"
 
 #include <array>
 #include <memory>
@@ -40,16 +43,17 @@ private:
 	static constexpr std::size_t pages = 1024;
 
 	using lights_ll_type = Core::shader_storage_buffer<std::uint32_t, usage>;
-	using directional_lights_cascades_storage_type = Core::gstack_stable<light_cascade_descriptor>;
+	using directional_lights_cascades_type = Core::uniform_buffer_object<light_cascades_descriptor, Core::BufferUsage::BufferUsageDynamic>;
 	using shaped_lights_points_storage_type = Core::gstack_stable<shaped_light_point>;
 
 private:
 	Core::atomic_counter_buffer_object<> active_lights_ll_counter;
 
 	lights_ll_type active_lights_ll;
-	directional_lights_cascades_storage_type directional_lights_cascades_storage;
+	directional_lights_cascades_type directional_lights_cascades_buffer;
 	shaped_lights_points_storage_type shaped_lights_points_storage;
 
+	std::array<directional_light*, directional_light_cascades> active_directional_lights;
 	std::array<float, directional_light_cascades> cascades_depths;
 
 private:
@@ -57,8 +61,12 @@ private:
 
 public:
 	light_storage() : active_lights_ll_counter(1),
-					  active_lights_ll(pages * std::max<std::size_t>(65536, lights_ll_type::page_size()) / 2) {
+					  active_lights_ll(pages * std::max<std::size_t>(65536, lights_ll_type::page_size()) / 2),
+					  directional_lights_cascades_buffer(max_active_directional_lights_per_frame) {
 		build_cascade_depth_array();
+
+		for (auto &val : active_directional_lights)
+			val = nullptr;
 	}
 
 	template <typename ... Ts>
@@ -79,11 +87,17 @@ public:
 
 	template <typename ... Ts>
 	auto allocate_directional_light(Ts&&... args) {
+		int cascade_idx;
+		for (cascade_idx = 0; cascade_idx < active_directional_lights.size() && active_directional_lights[cascade_idx] != nullptr; ++cascade_idx) {}
+		if (cascade_idx == max_active_directional_lights_per_frame) {
+			assert(false && "Can not create any more directional lights");
+			return std::unique_ptr<directional_light>(nullptr);
+		}
+
 		auto res = Base::allocate_resource<directional_light>(std::forward<Ts>(args)...);
 		active_lights_ll.commit_range(0, Base::size());
 
-		// For directional lights we also need to allocate the cascade storage
-		auto cascade_idx = directional_lights_cascades_storage.insert(light_cascade_descriptor());
+		active_directional_lights[cascade_idx] = res.get();
 		res->set_cascade_idx(cascade_idx);
 
 		return std::move(res);
@@ -102,11 +116,17 @@ public:
 		return std::move(res);
 	}
 
-	void erase_light(const light *l) {
-		auto cascade_idx = l->get_descriptor().cascade_idx;
-		if (cascade_idx != 0xFFFFFFFF)
-			directional_lights_cascades_storage.mark_tombstone(cascade_idx);
+	virtual void erase_resource(const Base::resource_type *res) override {
+		for (auto &val : active_directional_lights)
+			if (val == res) {
+				val = nullptr;
+				break;
+			}
+	
+		Base::erase_resource(res);
+	}
 
+	void erase_light(const light *l) {
 		erase_resource(l);
 	}
 
@@ -115,11 +135,13 @@ public:
 		active_lights_ll_counter.clear(gli::FORMAT_R32_UINT_PACK32, &zero);
 	}
 
+	void update_directional_lights_cascades_buffer(const camera &cam, float projection_near, float projection_fovy, float projection_aspect);
+
 	void bind_lights_buffer(int idx) const { Base::buffer().bind_range(Core::shader_storage_layout_binding(idx), 0, Base::size()); }
 	auto& get_active_ll_counter() const { return active_lights_ll_counter; }
 	auto& get_active_ll() const { return active_lights_ll; }
 
-	auto& get_directional_lights_cascades_buffer() const { return directional_lights_cascades_storage.get_buffer(); }
+	auto& get_directional_lights_cascades_buffer() const { return directional_lights_cascades_buffer; }
 	auto& get_shaped_lights_points_buffer() const { return shaped_lights_points_storage.get_buffer(); }
 
 	auto& get_cascade_depths_array() const { return cascades_depths; }

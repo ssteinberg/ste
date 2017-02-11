@@ -13,7 +13,6 @@ layout(local_size_x = 128) in;
 #include "intersection.glsl"
 
 #include "light.glsl"
-#include "light_cascades.glsl"
 
 layout(std430, binding = 2) restrict buffer light_data {
 	light_descriptor light_buffer[];
@@ -22,9 +21,6 @@ layout(std430, binding = 2) restrict buffer light_data {
 layout(binding = 4) uniform atomic_uint ll_counter;
 layout(shared, binding = 5) restrict writeonly buffer ll_data {
 	uint ll[];
-};
-layout(shared, binding = 6) restrict writeonly buffer directional_lights_cascades_data {
-	light_cascade_descriptor directional_lights_cascades[];
 };
 
 uniform vec4 np, rp, lp, tp, bp;
@@ -48,21 +44,6 @@ void main() {
 
 	if (light_type_is_directional(ld.type)) {
 		// For directional lights:
-		// Add light to active light linked list		
-		uint cascade_idx = light_get_cascade_descriptor_idx(ld);
-		
-		// Compute orthonormal basis for light cascade space
-		vec3 l = transformed_light_pos;
-		vec3 x = cross(l, vec3(0,1,0));
-		if (dot(x,x) < 1e-10)
-			x = cross(l, vec3(1,0,0));
-		x = normalize(x);
-		vec3 y = normalize(cross(l,x));
-		x = -x;		// Keep right-handed system
-		
-		// Write the basis to the cascade
-		directional_lights_cascades[cascade_idx].X.xyz = x;
-		directional_lights_cascades[cascade_idx].Y.xyz = y;
 		
 		add_light = true;
 	}
