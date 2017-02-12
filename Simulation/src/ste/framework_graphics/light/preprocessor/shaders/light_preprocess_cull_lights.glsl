@@ -57,7 +57,7 @@ void main() {
 	else {
 		// For spherical lights:
 		// Frustum cull based on light effective range
-		float r = ld.effective_range;
+		float r = light_effective_range(ld);
 		vec3 c = transformed_light_pos.xyz;
 
 		if (collision_sphere_infinite_frustum(c, r,

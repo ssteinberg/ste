@@ -63,7 +63,7 @@ float deferred_evaluate_shadowing(deferred_shading_shadow_maps shadow_maps,
 					  frag.n,
 					  shadow_v,
 					  l_radius,
-					  light.ld.effective_range,
+					  light_effective_range(light.ld),
 					  frag.coords);
 	}
 }
@@ -86,7 +86,7 @@ vec3 deferred_shade_atmospheric_scattering(ivec2 coord, deferred_atmospherics_lu
 		
 		if (light_type_is_directional(ld.type)) {
 			vec3 L = ld.position;
-			vec3 I0 = irradiance(ld) * integrate_cosine_distribution_sphere_cross_section(ld.directional_distance, ld.radius);
+			vec3 I0 = irradiance(ld) * integrate_cosine_distribution_sphere_cross_section(light_directional_distance(ld), ld.radius);
 
 			rgb += I0 * atmospheric_scatter(P, L, V, 
 											atmospherics_luts.atmospheric_scattering_lut,
@@ -94,7 +94,7 @@ vec3 deferred_shade_atmospheric_scattering(ivec2 coord, deferred_atmospherics_lu
 
 			//? Draw the light source.
 			//!? TODO: Remove in future.
-			vec3 light_position = P - L * ld.directional_distance;
+			vec3 light_position = P - L * light_directional_distance(ld);
 			if (!isinf(intersection_ray_sphere(light_position, ld.radius,
 											   P, V))) {
 				rgb += I0 * extinct_ray(P, V,
@@ -124,7 +124,7 @@ bool deferred_generate_light_shading_parameters(fragment_shading_parameters frag
 	vec3 cd_m2;										// Light illuminance reaching fragment
 	vec3 l = light_incidant_ray(ld, frag.p);		// Light incident ray
 	if (light_type_is_directional(ld.type)) {
-		light.l_dist = abs(ld.directional_distance);
+		light.l_dist = light_directional_distance(ld);
 		
 		// Atmopsheric attenuation
 		vec3 atat = extinct_ray(frag.world_position, -ld.position,
@@ -138,7 +138,7 @@ bool deferred_generate_light_shading_parameters(fragment_shading_parameters frag
 	}
 	else {
 		float dist2 = dot(l, l);
-		if (dist2 >= sqr(ld.effective_range)) {
+		if (dist2 >= sqr(light_effective_range(ld))) {
 			// Bail out
 			light.cd_m2 = vec3(.0f);
 			return false;

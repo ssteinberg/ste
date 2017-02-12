@@ -41,14 +41,14 @@ protected:
 		update_effective_range();
 	}
 
-	void update_effective_range(float sqrtA) {
+	virtual void update_effective_range(float sqrtA) {
 		sqrt_surface_area = sqrtA;
 
 		rgb emittance = descriptor.emittance;
 		float I0 = emittance.luminance();
 		float I = light_minimal_luminance_multiplier * I0;
 
-		descriptor.effective_range = sqrtA * glm::sqrt(I0 / I);
+		descriptor.effective_range_or_directional_distance = sqrtA * glm::sqrt(I0 / I);
 	}
 	void update_effective_range() {
 		update_effective_range(sqrt_surface_area);

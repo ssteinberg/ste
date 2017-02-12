@@ -27,5 +27,5 @@ enum class LightType : std::uint32_t {
 	QuadTexturedTwosided = light_type_shape_bit | light_shape_quad | light_type_textured_bit | light_type_two_sided_bit,
 	PolygonOnesided = light_type_shape_bit | light_shape_polygon,
 	PolygonTwosided = light_type_shape_bit | light_shape_polygon | light_type_two_sided_bit,
-	ConvexPolyhedron = light_type_shape_bit | light_shape_convex_polyhedron,
+	ConvexPolyhedron = light_type_shape_bit | light_shape_convex_polyhedron | light_type_two_sided_bit,
 };

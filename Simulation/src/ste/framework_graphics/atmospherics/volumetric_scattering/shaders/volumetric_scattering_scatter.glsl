@@ -128,7 +128,7 @@ vec3 scatter_light(vec2 slice_coords,
 							   l,
 							   vec3(0,1,0), vec3(0,1,0),
 							   ld.radius,
-							   ld.effective_range);
+							   light_effective_range(ld));
 	if (shadow <= .0f)
 		return vec3(0);
 
@@ -158,7 +158,7 @@ vec3 scatter_directional_light(vec2 slice_coords,
 	if (shadow <= .0f)
 		return vec3(0);
 
-	float atten = integrate_cosine_distribution_sphere_cross_section(ld.directional_distance, ld.radius);
+	float atten = integrate_cosine_distribution_sphere_cross_section(light_directional_distance(ld), ld.radius);
 	vec3 lux = irradiance(ld) * atten;
 	return shadow * lux * scatter_ray(eye_position(), w_pos, -ld.position,
 									  thickness,

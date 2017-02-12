@@ -22,7 +22,7 @@ const uint LightTypeQuadTexturedOnesided = light_type_shape_bit | light_shape_qu
 const uint LightTypeQuadTexturedTwosided = light_type_shape_bit | light_shape_quad | light_type_textured_bit | light_type_two_sided_bit;
 const uint LightTypePolygonOnesided = light_type_shape_bit | light_shape_polygon;
 const uint LightTypePolygonTwosided = light_type_shape_bit | light_shape_polygon | light_type_two_sided_bit;
-const uint LightTypeConvexPolyhedron = light_type_shape_bit | light_shape_convex_polyhedron;
+const uint LightTypeConvexPolyhedron = light_type_shape_bit | light_shape_convex_polyhedron | light_type_two_sided_bit;
 
 // Light type queries
 bool light_type_is_point(uint type) {

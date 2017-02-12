@@ -62,7 +62,7 @@ vec3 material_evaluate_layer_radiance(material_layer_unpacked_descriptor descrip
 		
 		// Light position
 		vec3 L = is_directional ? 
-					wp + l * ld.directional_distance : 
+					wp + l * light_directional_distance(ld) : 
 					ld.position;
 		vec3 wl = (L - wp) / l_dist;
 	

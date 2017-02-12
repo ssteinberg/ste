@@ -93,7 +93,7 @@ void main() {
 
 	float near_clip = ld.radius * 2.f;
 	vec3 light_pos = ld.position;
-	float light_range = ld.effective_range;
+	float light_range = light_effective_range(ld);
 	float light_range2 = light_range * light_range;
 
 	// Back face culling

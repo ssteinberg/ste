@@ -95,7 +95,7 @@ void main() {
 		}
 		else {
 			// Check if the light effective range sphere intersects the geometry bounding sphere
-			float lr = ld.effective_range;
+			float lr = light_effective_range(ld);
 
 			if (collision_sphere_sphere(l, lr, center, radius)) {
 				ttl[draw_id].entries[shadow_instance_count] = create_drawid_ttl_entry(uint(i), light_idx);
