@@ -25,19 +25,16 @@ struct light_descriptor {
 	vec3 emittance;	uint type;
 	// Light effective range
 	float effective_range;
+	// directional_distance: For directional lights only, distance from origin opposite to lights direction (i.e. -directional_distance*position)
+	float directional_distance;
 	// Normal
 	uint normal_pack;
-	// Surface area
-	float sqrt_surface_area;
 	// polygonal_light_points_and_offset specifies the number of points and offset into the buffer (polygonal lights only)
-	uint polygonal_light_points_and_offset;
+	uint polygonal_light_points_and_offset_or_cascade_idx;
 	
 	// Texture
 	layout(bindless_sampler) sampler2D texture;
-	
-	// directional_distance: For directional lights only, distance from origin opposite to lights direction (i.e. -directional_distance*position)
-	float directional_distance;
-	uint cascade_idx;
+	float _unsued0[2];
 	
 	//! The rest is used internally only
 	
@@ -76,28 +73,6 @@ float virtual_light_attenuation(light_descriptor ld, float dist) {
 }
 
 /*
- *	Calculate light attenuation at specified distance. Applicable for spherical/directional, polygonal and quad lights.
- *
- *	@param ld			Light descriptor.
- *	@param dist			Distance.
- *	@param wl			Point to light vector, world coordinates.
- */
-float shaped_light_attenuation(light_descriptor ld, float dist, vec3 wl) {
-	bool two_sided = light_type_is_two_sided(ld.type);
-	bool sphere = !light_type_is_shaped(ld.type) || light_shape_is_sphere(ld.type);
-	vec3 n = snorm2x32_to_norm3x32(unpackSnorm2x16(ld.normal_pack));
-	float sqrtA = ld.sqrt_surface_area;
-
-	float d = sphere ? 
-					1.f : 
-					-dot(wl, n);
-	if (two_sided)
-		d = abs(d);
-	
-	return max(.0f, d) * sqr(sqrtA / dist);
-}
-
-/*
  *	Returns the light irradiance illuminating from light source at 0 distance. 
  *
  *	@param ld			Light descriptor.
@@ -112,7 +87,7 @@ vec3 irradiance(light_descriptor ld) {
  *	@param ld			Light descriptor.
  */
 uint light_get_polygon_point_counts(light_descriptor ld) {
-	return ld.polygonal_light_points_and_offset >> 24;
+	return ld.polygonal_light_points_and_offset_or_cascade_idx >> 24;
 }
 
 /*
@@ -121,5 +96,5 @@ uint light_get_polygon_point_counts(light_descriptor ld) {
  *	@param ld			Light descriptor.
  */
 uint light_get_polygon_point_offset(light_descriptor ld) {
-	return ld.polygonal_light_points_and_offset & 0x00FFFFFF;
+	return ld.polygonal_light_points_and_offset_or_cascade_idx & 0x00FFFFFF;
 }

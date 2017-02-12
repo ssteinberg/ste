@@ -93,12 +93,13 @@ protected:
 			idx = storage_info.storage->insert(points_copy);
 		}
 
+		float sqrt_surface_area = glm::sqrt(surface_area);
+
 		// Update descriptor
 		descriptor.set_polygonal_light_points(size, idx);
 		descriptor.radius = r;
-		descriptor.sqrt_surface_area = glm::sqrt(surface_area);
 		descriptor.normal_pack = glm::packSnorm2x16(norm3x32_to_snorm2x32(n));
-		update_effective_range();
+		update_effective_range(sqrt_surface_area);
 		Base::notify();
 	}
 
