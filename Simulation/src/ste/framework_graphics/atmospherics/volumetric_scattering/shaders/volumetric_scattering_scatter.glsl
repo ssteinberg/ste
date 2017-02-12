@@ -76,7 +76,7 @@ vec2 slice_coords_to_fragcoords(vec2 v) {
 	return (v + vec2(.5f)) * float(volumetric_scattering_tile_size) / vec2(backbuffer_size());
 }
 
-vec3 scatter_light_attenuation(vec3 wp, light_descriptor ld, float dist, vec3 wl) {
+vec3 integrate_light_cross_section(vec3 wp, light_descriptor ld, float dist, vec3 wl) {
 	if (light_type_is_point(ld.type))
 		return virtual_light_attenuation(ld, dist).xxx;
 
@@ -133,7 +133,7 @@ vec3 scatter_light(vec2 slice_coords,
 		return vec3(0);
 
 	float l_dist = length(l);
-	vec3 atten = scatter_light_attenuation(w_pos, ld, l_dist, l/l_dist); 
+	vec3 atten = integrate_light_cross_section(w_pos, ld, l_dist, l/l_dist); 
 	if (all(lessThanEqual(atten, vec3(.0f))))
 		return vec3(.0f);
 	

@@ -25,25 +25,33 @@ class light : public Core::observable_resource<light_descriptor>,
 protected:
 	light_descriptor descriptor;
 
+private:
+	float sqrt_surface_area;
+
 protected:
 	light(const rgb &color, float intensity, float radius) {
 		auto lum = color.luminance();
 		auto c = static_cast<decltype(descriptor.emittance)>(color);
 		c = lum > 0 ? c / lum : c;
 
+		sqrt_surface_area = radius;
+
 		descriptor.radius = radius;
 		descriptor.emittance = c * intensity;
-		descriptor.sqrt_surface_area = radius;
 		update_effective_range();
 	}
 
-	void update_effective_range() {
+	void update_effective_range(float sqrtA) {
+		sqrt_surface_area = sqrtA;
+
 		rgb emittance = descriptor.emittance;
-		float sqrtA = descriptor.sqrt_surface_area;
 		float I0 = emittance.luminance();
 		float I = light_minimal_luminance_multiplier * I0;
 
 		descriptor.effective_range = sqrtA * glm::sqrt(I0 / I);
+	}
+	void update_effective_range() {
+		update_effective_range(sqrt_surface_area);
 	}
 
 public:

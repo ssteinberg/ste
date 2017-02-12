@@ -42,14 +42,14 @@ int light_which_cascade_for_position(vec3 position) {
  *	is performed.
  */
 uint light_get_cascade_descriptor_idx(light_descriptor ld) {
-	return ld.cascade_idx;
+	return ld.polygonal_light_points_and_offset_or_cascade_idx;
 }
 
 /*
  *	Returns the shadowmap index for the specific light and cascade. Light must be a directional light.
  */
 int light_get_cascade_shadowmap_idx(light_descriptor ld, int cascade) {
-	return int(ld.cascade_idx) * directional_light_cascades + cascade;
+	return int(light_get_cascade_descriptor_idx(ld)) * directional_light_cascades + cascade;
 }
 
 /*

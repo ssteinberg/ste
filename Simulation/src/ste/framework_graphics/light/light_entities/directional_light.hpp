@@ -21,6 +21,7 @@ public:
 		descriptor.type = LightType::Direction;
 		descriptor.position = decltype(descriptor.position){ direction.x, direction.y, direction.z };
 		descriptor.directional_distance = distance;
+		descriptor.polygonal_light_points_and_offset_or_cascade_idx = 0xFFFFFFFF;
 	}
 	virtual ~directional_light() noexcept {}
 
@@ -39,7 +40,7 @@ public:
 	}
 
 	void set_cascade_idx(std::uint32_t idx) {
-		descriptor.cascade_idx = idx;
+		descriptor.polygonal_light_points_and_offset_or_cascade_idx = idx;
 		Base::notify();
 	}
 
