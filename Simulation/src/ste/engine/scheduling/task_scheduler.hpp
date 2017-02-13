@@ -56,7 +56,7 @@ public:
 	*			Must be called from main thread. Shouldn't be called manually, task_futures and ste_engine_control
 	*			handle it.
 	*/
-	void run_loop();
+	void tick();
 
 	/**
 	*	@brief	Schedule task in background for execution as soon as a worker is free.

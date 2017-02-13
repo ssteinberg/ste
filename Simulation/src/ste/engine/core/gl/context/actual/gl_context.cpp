@@ -74,10 +74,6 @@ gl_context::gl_context(const context_settings &settings, const char *title, cons
 		ste_log_fatal() << "Mandatory extension \"GL_ARB_shader_storage_buffer_object\" missing." << std::endl;
 		throw std::runtime_error("Mandatory extension \"GL_ARB_shader_storage_buffer_object\" missing.");
 	}
-	if (!this->is_extension_supported("GL_NV_gpu_shader5")) {
-		ste_log_fatal() << "Mandatory extension \"GL_NV_gpu_shader5\" missing." << std::endl;
-		throw std::runtime_error("Mandatory extension \"GL_NV_gpu_shader5\" missing.");
-	}
 	if (!this->is_extension_supported("GL_EXT_texture_filter_anisotropic")) {
 		ste_log_fatal() << "Mandatory extension \"GL_EXT_texture_filter_anisotropic\" missing." << std::endl;
 		throw std::runtime_error("Mandatory extension \"GL_EXT_texture_filter_anisotropic\" missing.");
