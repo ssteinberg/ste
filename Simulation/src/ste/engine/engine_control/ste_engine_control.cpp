@@ -100,7 +100,7 @@ void ste_engine_control::update_tpf() {
 	}
 }
 
-bool ste_engine_control::run_loop() {
+bool ste_engine_control::tick() {
 	update_tpf();
 
 	global_scheduler.tick();
