@@ -22,5 +22,5 @@ const float lll_low_detail_min_luminance_multiplier = 55.f;
 const int max_active_low_detail_lights_per_frame = total_max_active_lights_per_frame >> 1;
 
 float lll_low_detail_light_effective_range(light_descriptor ld) {
-	return ld.effective_range / sqrt(lll_low_detail_min_luminance_multiplier);
+	return light_effective_range(ld) / sqrt(lll_low_detail_min_luminance_multiplier);
 }

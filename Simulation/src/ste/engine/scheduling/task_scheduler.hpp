@@ -56,7 +56,7 @@ public:
 	*			Must be called from main thread. Shouldn't be called manually, task_futures and ste_engine_control
 	*			handle it.
 	*/
-	void run_loop();
+	void tick();
 
 	/**
 	*	@brief	Schedule task in background for execution as soon as a worker is free.
@@ -107,7 +107,7 @@ public:
 	}
 
 	/**
-	*	@brief	Schedule task on main thread for execution at next run_loop iteration.
+	*	@brief	Schedule task on main thread for execution at next tick iteration.
 	*
 	*	@param f		Lambda to schedule
 	*	@param shared	If true returns a task_shared_future, otherwise a task_future.
@@ -156,7 +156,7 @@ public:
 		return schedule_after<false>(after, std::forward<F>(f));
 	}
 	/**
-	*	@brief	Schedule task on main thread for execution at next run_loop iteration.
+	*	@brief	Schedule task on main thread for execution at next tick iteration.
 	*
 	*	@param f		Lambda to schedule
 	*/

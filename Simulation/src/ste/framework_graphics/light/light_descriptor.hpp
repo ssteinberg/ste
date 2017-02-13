@@ -15,13 +15,9 @@ struct light_descriptor {
 	glm::vec3		position;		float radius{ .0f };
 	glm::vec3		emittance;		LightType type;
 
-	float			effective_range{ .0f };
-	float			directional_distance;
-	std::uint32_t	normal_pack;
-	std::uint32_t	polygonal_light_points_and_offset_or_cascade_idx{ 0 };
-
 	Core::texture_handle texture;
-	float _unsued0[2];
+	float			effective_range_or_directional_distance{ .0f };
+	std::uint32_t	polygonal_light_points_and_offset_or_cascade_idx{ 0 };
 
 	float _internal[4];
 

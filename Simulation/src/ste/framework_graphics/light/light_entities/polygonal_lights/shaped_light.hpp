@@ -23,16 +23,6 @@ public:
 protected:
 	shaped_light_points_storage_info storage_info;
 
-private:
-	static glm::vec2 _norm_oct_wrap(const glm::vec2 &v) {
-		return (glm::vec2(1.f) - abs(glm::vec2{ v.y, v.x })) * glm::vec2(v.x >= 0.0 ? 1.0 : -1.0, v.y >= 0.0 ? 1.0 : -1.0);
-	}
-	static glm::vec2 norm3x32_to_snorm2x32(glm::vec3 n) {
-		n /= (abs(n.x) + abs(n.y) + abs(n.z));
-		glm::vec2 xy = n.z >= 0.0 ? glm::vec2{ n.x, n.y } : _norm_oct_wrap(glm::vec2{ n.x, n.y });
-		return xy;
-	}
-
 protected:
 	shaped_light(LightType type,
 				 const rgb &color,
@@ -98,7 +88,6 @@ protected:
 		// Update descriptor
 		descriptor.set_polygonal_light_points(size, idx);
 		descriptor.radius = r;
-		descriptor.normal_pack = glm::packSnorm2x16(norm3x32_to_snorm2x32(n));
 		update_effective_range(sqrt_surface_area);
 		Base::notify();
 	}

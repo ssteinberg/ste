@@ -104,7 +104,7 @@ void main() {
 		else {
 			// For spherical lights: Check to see that fragment's stored depth intersects the lights cutoff sphere.
 			vec3 c = ld.transformed_position;
-			float r = ld.effective_range * 1.01f;	// Slightly increase radius due to lll storage imprecision
+			float r = light_effective_range(ld) * 1.01f;	// Slightly increase radius due to lll storage imprecision
 
 			float b = dot(l, -c);
 			float b2 = b*b;

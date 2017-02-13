@@ -100,14 +100,13 @@ void ste_engine_control::update_tpf() {
 	}
 }
 
-bool ste_engine_control::run_loop() {
+bool ste_engine_control::tick() {
 	update_tpf();
 
-	global_scheduler.run_loop();
+	global_scheduler.tick();
 	glfwPollEvents();
 
 	glfwSwapBuffers(context->window.get());
-	glFinish();
 	global_renderer->render_queue();
 
 	return !glfwWindowShouldClose(context->window.get());
@@ -120,6 +119,7 @@ void ste_engine_control::capture_screenshot() const {
 	StE::Core::texture_2d fbo_tex(gli::format::FORMAT_RGBA8_UNORM_PACK8, size, 1);
 	(*fbo)[0] = fbo_tex[0];
 
+	glFinish();
 	gl()->defaut_framebuffer().blit_to(*fbo, size, size);
 	gli::texture2d tex(gli::FORMAT_RGBA8_UNORM_PACK8, size);
 	(*fbo)[0].read_pixels(tex.data(), 4 * size.x * size.y);

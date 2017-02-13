@@ -20,10 +20,12 @@ public:
 					  const glm::vec3 &direction) : light(color, intensity, radius) {
 		descriptor.type = LightType::Direction;
 		descriptor.position = decltype(descriptor.position){ direction.x, direction.y, direction.z };
-		descriptor.directional_distance = distance;
+		descriptor.effective_range_or_directional_distance = distance;
 		descriptor.polygonal_light_points_and_offset_or_cascade_idx = 0xFFFFFFFF;
 	}
 	virtual ~directional_light() noexcept {}
+
+	void update_effective_range(float sqrtA) final override {}
 
 	void set_direction(const glm::vec3 &d) {
 		descriptor.position = decltype(descriptor.position){ d.x, d.y, d.z };
@@ -31,11 +33,10 @@ public:
 	}
 	void set_radius(float r) {
 		descriptor.radius = r;
-		update_effective_range();
 		Base::notify();
 	}
 	void set_distance(float d) {
-		descriptor.directional_distance = d;
+		descriptor.effective_range_or_directional_distance = d;
 		Base::notify();
 	}
 
@@ -49,7 +50,7 @@ public:
 		return { inf, inf, inf };
 	}
 	glm::vec3 get_direction() const { return { descriptor.position.x, descriptor.position.y, descriptor.position.z }; }
-	auto get_distance() const { return descriptor.directional_distance; }
+	auto get_distance() const { return descriptor.effective_range_or_directional_distance; }
 };
 
 }

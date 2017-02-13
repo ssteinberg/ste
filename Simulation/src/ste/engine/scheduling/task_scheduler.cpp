@@ -24,7 +24,7 @@ void task_scheduler::enqueue_delayed() {
 	}
 }
 
-void task_scheduler::run_loop() {
+void task_scheduler::tick() {
 	assert(is_main_thread());
 
 	std::unique_ptr<unique_thread_pool_type_erased_task> task;

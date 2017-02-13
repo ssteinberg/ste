@@ -23,18 +23,13 @@ struct light_descriptor {
 	// Emittance is the emitted luminance (all light types)
 	vec3 position;	float radius;
 	vec3 emittance;	uint type;
-	// Light effective range
-	float effective_range;
-	// directional_distance: For directional lights only, distance from origin opposite to lights direction (i.e. -directional_distance*position)
-	float directional_distance;
-	// Normal
-	uint normal_pack;
-	// polygonal_light_points_and_offset specifies the number of points and offset into the buffer (polygonal lights only)
-	uint polygonal_light_points_and_offset_or_cascade_idx;
-	
 	// Texture
 	layout(bindless_sampler) sampler2D texture;
-	float _unsued0[2];
+	// Light effective range.
+	// For directional lights: distance from origin opposite to lights direction (i.e. -directional_distance*position)
+	float effective_range_or_directional_distance;
+	// polygonal_light_points_and_offset specifies the number of points and offset into the buffer (polygonal lights only)
+	uint polygonal_light_points_and_offset_or_cascade_idx;
 	
 	//! The rest is used internally only
 	
@@ -51,6 +46,21 @@ vec3 light_transform(dual_quaternion transform, light_descriptor ld) {
 	return light_type_is_directional(ld.type) ?
 				quat_mul_vec(transform.real, ld.position) :
 				dquat_mul_vec(transform, ld.position);
+}
+
+/*
+ *	Returns the light effective range
+ */
+float light_effective_range(light_descriptor ld) {
+	if (light_type_is_directional(ld.type)) return +inf;
+	else return ld.effective_range_or_directional_distance;
+}
+
+/*
+ *	Returns the light directional distance, applicable for directional lights only
+ */
+float light_directional_distance(light_descriptor ld) {
+	return ld.effective_range_or_directional_distance;
 }
 
 /*

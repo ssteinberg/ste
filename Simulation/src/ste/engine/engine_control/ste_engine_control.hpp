@@ -91,7 +91,7 @@ public:
 
 	/**
 	*	@brief	Sets the current system renderer.
-	*	e.g. the renderer will be used when calling run_loop().
+	*	e.g. the renderer will be used when calling tick().
 	*
 	*  @param r	Renderer to use
 	*/
@@ -137,7 +137,7 @@ public:
 	/**
 	*	@brief	Dispatch rendering tasks, swap buffers, handle input and window system events.
 	*/
-	bool run_loop();
+	bool tick();
 
 	/**
 	*	@brief	Capture framebuffer and saves it to Screenshots/ directory
