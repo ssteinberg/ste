@@ -68,7 +68,7 @@ void display_loading_screen_until(StE::ste_engine_control &ctx, StE::Text::text_
 													olive(std::to_wstring(workers_sleep)) + 	L" sleeping | " +
 													orange(std::to_wstring(pending_requests) +	L" pending requests"))));
 
-		if (!ctx.run_loop() || !lambda())
+		if (!ctx.tick() || !lambda())
 			break;
 	}
 }
@@ -540,7 +540,7 @@ int main()
 		}
 
 		time += ctx.time_per_frame().count();
-		if (!ctx.run_loop()) break;
+		if (!ctx.tick()) break;
 	}
 
 	return 0;
