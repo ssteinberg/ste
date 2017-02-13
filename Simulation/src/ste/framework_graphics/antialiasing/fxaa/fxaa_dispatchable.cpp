@@ -11,7 +11,8 @@ using namespace StE::Graphics;
 void fxaa_dispatchable::set_context_state() const {
 	using namespace Core;
 
-	screen_filling_quad.vao()->bind();
+	// TODO: Fix
+//	screen_filling_quad.vao()->bind();
 
 	program.get().bind();
 }

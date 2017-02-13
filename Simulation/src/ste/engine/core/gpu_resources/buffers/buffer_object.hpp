@@ -176,8 +176,9 @@ public:
 		std::size_t start_page = ps * (offset * sizeof(T) / ps);
 		std::size_t pages = ps * (((offset + size) * sizeof(T) + ps - 1) / ps) - start_page;
 
-		if (commitment_data.commit({ start_page / ps, (pages + ps - 1) / ps }))
-			glNamedBufferPageCommitmentEXT(Base::get_resource_id(), start_page, pages, true);
+		// TODO: FIX!
+//		if (commitment_data.commit({ start_page / ps, (pages + ps - 1) / ps }))
+//			glNamedBufferPageCommitmentEXT(Base::get_resource_id(), start_page, pages, true);
 	}
 	template <bool b = sparse_buffer>
 	void uncommit_range(int offset, std::size_t size, std::enable_if_t<b>* = nullptr) {
@@ -187,8 +188,9 @@ public:
 		std::size_t start_page = ps * (offset * sizeof(T) / ps);
 		std::size_t pages = ps * (((offset + size) * sizeof(T) + ps - 1) / ps) - start_page;
 
-		if (commitment_data.uncommit({ start_page / ps, (pages + ps - 1) / ps }))
-			glNamedBufferPageCommitmentEXT(Base::get_resource_id(), start_page, pages, false);
+		// TODO: FIX!
+//		if (commitment_data.uncommit({ start_page / ps, (pages + ps - 1) / ps }))
+//			glNamedBufferPageCommitmentEXT(Base::get_resource_id(), start_page, pages, false);
 	}
 
 	static std::size_t page_size() {

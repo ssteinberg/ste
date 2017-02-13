@@ -24,9 +24,6 @@
     <ClCompile Include="Simulation\src\ste\engine\core\gl\context\gl_current_context.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Simulation\src\ste\engine\core\gl\extensions\gl_extensions.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Simulation\src\ste\engine\core\gl\gl_utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -67,9 +64,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_graphics\light\preprocessor\light_preprocessor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\mesh\Quad.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_graphics\radiometry\spectral\Kelvin.cpp">
@@ -245,9 +239,6 @@
     <ClInclude Include="Simulation\src\ste\engine\core\gl\context\actual\gl_context.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core\gl\context\gl.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\core\gl\context\gl_current_context.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -270,9 +261,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\core\gl\context\states\gl_context_state_log.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core\gl\extensions\gl_extensions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\core\gl\gl_utils.hpp">

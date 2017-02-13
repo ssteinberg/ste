@@ -2,7 +2,7 @@
 #include "stdafx.hpp"
 #include <GL/glew.h>
 
-#include "gl_extensions.h"
+//#include "gl_extensions.h"
 
 #include "gl_context.hpp"
 #include "gl_current_context.hpp"
@@ -26,10 +26,11 @@ public:
 	std::atomic<bool> initialized{ false };
 	bool init_extensions() {
 		bool f = false;
-		if (initialized.compare_exchange_strong(f, true)) {
-			glewExperimental = true;
-			return glewInit() == GLEW_OK && init_glext();
-		}
+		// TODO: FIX!
+//		if (initialized.compare_exchange_strong(f, true)) {
+//			glewExperimental = true;
+//			return glewInit() == GLEW_OK && init_glext();
+//		}
 		return true;
 	}
 

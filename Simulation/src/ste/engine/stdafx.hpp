@@ -12,7 +12,9 @@
 #ifdef _MSC_VER
 #include "windows.hpp"
 #endif
-#include "gl.hpp"
+#include <vulkan/vulkan.h>
+
+#include <gl/glew.h>
 
 #pragma warning push
 #pragma warning(disable:186)
@@ -21,6 +23,7 @@
 
 #define GLM_FORCE_AVX
 #define GLM_EXT_INCLUDED
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
 #include <glm/gtx/bit.hpp>
 

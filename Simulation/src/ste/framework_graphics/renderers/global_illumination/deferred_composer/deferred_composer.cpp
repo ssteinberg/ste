@@ -193,7 +193,8 @@ void deferred_composer::set_context_state() const {
 	8_storage_idx = dr->s->properties().lights_storage().get_shaped_lights_points_buffer();
 	dr->lll_storage.bind_lll_buffer();
 
-	screen_filling_quad.vao()->bind();
+	// TODO: Fix
+//	screen_filling_quad.vao()->bind();
 
 	program.get().bind();
 }
