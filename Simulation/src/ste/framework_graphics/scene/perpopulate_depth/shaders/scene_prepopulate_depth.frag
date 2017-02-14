@@ -3,7 +3,7 @@
 #version 450
 #extension GL_ARB_bindless_texture : enable
 
-#include "material.glsl"
+#include <material.glsl>
 
 layout(std430, binding = 13) restrict readonly buffer material_data {
 	material_descriptor mat_descriptor[];

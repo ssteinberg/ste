@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "shaped_light.hpp"
+#include <stdafx.hpp>
+#include <shaped_light.hpp>
 
 #include <vector>
 #include <array>

@@ -1,9 +1,9 @@
 
-#include "stdafx.hpp"
-#include "dense_voxelizer.hpp"
-#include "dense_voxel_space.hpp"
+#include <stdafx.hpp>
+#include <dense_voxelizer.hpp>
+#include <dense_voxel_space.hpp>
 
-#include "gl_current_context.hpp"
+#include <gl_current_context.hpp>
 
 using namespace StE::Graphics;
 

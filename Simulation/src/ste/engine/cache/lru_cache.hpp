@@ -9,19 +9,15 @@
 
 #pragma once
 
-#include "lru_cache_cacheable.hpp"
-#include "lru_cache_index.hpp"
+#include <lru_cache_cacheable.hpp>
+#include <lru_cache_index.hpp>
 
-#include "concurrent_queue.hpp"
-#include "interruptible_thread.hpp"
+#include <concurrent_queue.hpp>
+#include <interruptible_thread.hpp>
 
-#include <string>
-
+#include <condition_variable>
 #include <atomic>
 #include <mutex>
-#include <condition_variable>
-
-#include <memory>
 
 namespace StE {
 

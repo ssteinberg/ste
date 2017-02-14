@@ -1,6 +1,6 @@
 
-#include "stdafx.hpp"
-#include "volumetric_scattering_storage.hpp"
+#include <stdafx.hpp>
+#include <volumetric_scattering_storage.hpp>
 
 using namespace StE::Graphics;
 

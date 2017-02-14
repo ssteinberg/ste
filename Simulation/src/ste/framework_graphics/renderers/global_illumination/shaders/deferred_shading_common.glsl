@@ -1,5 +1,5 @@
 
-#include "light.glsl"
+#include <light.glsl>
 
 struct deferred_shading_shadow_maps {
 	samplerCubeArrayShadow shadow_depth_maps;

@@ -3,12 +3,12 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
-#include "gpu_task.hpp"
-#include "sop_edge.hpp"
+#include <gpu_task.hpp>
+#include <sop_edge.hpp>
 
-#include "gl_context_state_log.hpp"
+#include <gl_context_state_log.hpp>
 
 #include <functional>
 #include <vector>

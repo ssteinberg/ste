@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "BxDF.hpp"
+#include <stdafx.hpp>
+#include <BxDF.hpp>
 
 namespace StE {
 namespace Graphics {

@@ -3,13 +3,13 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "gpu_dispatchable.hpp"
+#include <stdafx.hpp>
+#include <gpu_dispatchable.hpp>
 
-#include "ste_engine_control.hpp"
+#include <ste_engine_control.hpp>
 
-#include "glsl_program.hpp"
-#include "scene.hpp"
+#include <glsl_program.hpp>
+#include <scene.hpp>
 
 #include <memory>
 

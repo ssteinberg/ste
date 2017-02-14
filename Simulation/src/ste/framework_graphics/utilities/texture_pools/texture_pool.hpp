@@ -3,10 +3,10 @@
 
 #pragma once
 
-#include "texture_sparse.hpp"
-#include "texture_2d.hpp"
+#include <texture_sparse.hpp>
+#include <texture_2d.hpp>
 
-#include "pixel_buffer_object.hpp"
+#include <pixel_buffer_object.hpp>
 
 #include <vector>
 #include <unordered_map>

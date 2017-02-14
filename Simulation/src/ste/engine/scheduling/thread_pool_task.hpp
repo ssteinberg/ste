@@ -7,8 +7,8 @@
 #include <functional>
 #include <exception>
 
-#include "function_wrapper.hpp"
-#include "function_traits.hpp"
+#include <function_wrapper.hpp>
+#include <function_traits.hpp>
 
 namespace StE {
 

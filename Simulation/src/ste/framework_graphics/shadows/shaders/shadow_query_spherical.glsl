@@ -1,6 +1,6 @@
 
-#include "shadow_common.glsl"
-#include "deferred_shading_common.glsl"
+#include <shadow_common.glsl>
+#include <deferred_shading_common.glsl>
 
 const float shadow_cube_max_penumbra = 80.f / shadow_cubemap_size;
 const float shadow_cube_min_penumbra = 3.f / shadow_cubemap_size;

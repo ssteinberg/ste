@@ -5,8 +5,8 @@
 
 #include <array>
 
-#include "legendre_polynomial.hpp"
-#include "function_traits.hpp"
+#include <legendre_polynomial.hpp>
+#include <function_traits.hpp>
 
 namespace StE {
 

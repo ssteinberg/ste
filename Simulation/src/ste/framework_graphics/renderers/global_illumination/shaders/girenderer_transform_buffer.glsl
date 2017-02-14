@@ -1,6 +1,6 @@
 
-#include "project.glsl"
-#include "dual_quaternion.glsl"
+#include <project.glsl>
+#include <dual_quaternion.glsl>
 
 struct view_transform_buffer_struct {
 	dual_quaternion view_transform;

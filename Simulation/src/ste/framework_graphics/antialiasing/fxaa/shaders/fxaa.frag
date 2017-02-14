@@ -5,7 +5,7 @@
 
 #define FXAA_PRESET 3
 #define FXAA_GLSL_130
-#include "nvidia_fxaa.glsl"
+#include <nvidia_fxaa.glsl>
 
 in v_out {
 	vec2 uv;

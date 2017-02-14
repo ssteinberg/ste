@@ -3,15 +3,15 @@
 #version 450
 #extension GL_ARB_bindless_texture : require
 
-#include "chromaticity.glsl"
+#include <chromaticity.glsl>
 
-#include "material.glsl"
-#include "light.glsl"
-#include "light_cascades.glsl"
-#include "linked_light_lists.glsl"
-#include "linearly_transformed_cosines.glsl"
+#include <material.glsl>
+#include <light.glsl>
+#include <light_cascades.glsl>
+#include <linked_light_lists.glsl>
+#include <linearly_transformed_cosines.glsl>
 
-#include "gbuffer_load.glsl"
+#include <gbuffer_load.glsl>
 
 layout(std430, binding = 0) restrict readonly buffer material_data {
 	material_descriptor mat_descriptor[];
@@ -35,11 +35,11 @@ layout(shared, binding = 11) restrict readonly buffer lll_data {
 	lll_element lll_buffer[];
 };
 
-#include "linked_light_lists_load.glsl"
+#include <linked_light_lists_load.glsl>
 
-#include "material_evaluate.glsl"
+#include <material_evaluate.glsl>
 
-#include "deferred_shading.glsl"
+#include <deferred_shading.glsl>
 
 
 layout(bindless_sampler) uniform samplerCubeArrayShadow shadow_depth_maps;

@@ -1,7 +1,7 @@
 
-#include "atmospherics_descriptor.glsl"
-#include "light_transport.glsl"
-#include "common.glsl"
+#include <atmospherics_descriptor.glsl>
+#include <light_transport.glsl>
+#include <common.glsl>
 
 layout(std430, binding = 22) restrict readonly buffer atmospherics_descriptor_buffer {
 	atmospherics_descriptor atmospherics_descriptor_data;

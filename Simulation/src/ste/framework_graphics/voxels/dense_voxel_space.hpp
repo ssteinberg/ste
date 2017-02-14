@@ -3,19 +3,19 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "ste_engine_control.hpp"
+#include <stdafx.hpp>
+#include <ste_engine_control.hpp>
 
-#include "dense_voxelizer.hpp"
-#include "scene.hpp"
+#include <dense_voxelizer.hpp>
+#include <scene.hpp>
 
-#include "glsl_program.hpp"
-#include "glsl_program_factory.hpp"
+#include <glsl_program.hpp>
+#include <glsl_program_factory.hpp>
 
-#include "framebuffer_object.hpp"
-#include "render_target.hpp"
-#include "texture_sparse.hpp"
-#include "Sampler.hpp"
+#include <framebuffer_object.hpp>
+#include <render_target.hpp>
+#include <texture_sparse.hpp>
+#include <Sampler.hpp>
 
 #include <memory>
 #include <unordered_set>

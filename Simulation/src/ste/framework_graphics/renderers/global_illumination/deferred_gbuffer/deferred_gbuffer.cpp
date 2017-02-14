@@ -1,6 +1,6 @@
 
-#include "stdafx.hpp"
-#include "deferred_gbuffer.hpp"
+#include <stdafx.hpp>
+#include <deferred_gbuffer.hpp>
 
 using namespace StE::Graphics;
 using namespace StE::Core;

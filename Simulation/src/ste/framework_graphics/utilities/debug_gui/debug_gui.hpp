@@ -3,16 +3,16 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "gpu_dispatchable.hpp"
+#include <stdafx.hpp>
+#include <gpu_dispatchable.hpp>
 
-#include "ste_engine_control.hpp"
-#include "profiler.hpp"
+#include <ste_engine_control.hpp>
+#include <profiler.hpp>
 
-#include "signal.hpp"
-#include "font.hpp"
+#include <signal.hpp>
+#include <font.hpp>
 
-#include "camera.hpp"
+#include <camera.hpp>
 
 #include <map>
 #include <vector>

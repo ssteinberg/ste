@@ -1,8 +1,8 @@
 
-#include "common.glsl"
-#include "light.glsl"
+#include <common.glsl>
+#include <light.glsl>
 
-#include "girenderer_transform_buffer.glsl"
+#include <girenderer_transform_buffer.glsl>
 
 const int directional_light_cascades = 6;
 const float cascade_projection_eye_distance = 5000.f;

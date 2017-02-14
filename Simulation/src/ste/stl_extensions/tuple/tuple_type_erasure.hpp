@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "typelist.hpp"
+#include <stdafx.hpp>
+#include <typelist.hpp>
 
 #include <cstring>
 #include <vector>

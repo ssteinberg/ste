@@ -1,8 +1,8 @@
 
-#include "stdafx.hpp"
-#include "linked_light_lists.hpp"
+#include <stdafx.hpp>
+#include <linked_light_lists.hpp>
 
-#include "light_storage.hpp"
+#include <light_storage.hpp>
 
 using namespace StE::Graphics;
 

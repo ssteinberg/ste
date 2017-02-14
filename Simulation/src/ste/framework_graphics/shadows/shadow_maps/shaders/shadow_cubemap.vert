@@ -3,8 +3,8 @@
 #version 450
 #extension GL_ARB_shader_draw_parameters : enable
 
-#include "mesh_descriptor.glsl"
-#include "girenderer_transform_buffer.glsl"
+#include <mesh_descriptor.glsl>
+#include <girenderer_transform_buffer.glsl>
 
 layout(location = 1) in vec3 vert;
 

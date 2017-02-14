@@ -3,23 +3,23 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "light.hpp"
-#include "light_cascade_descriptor.hpp"
+#include <stdafx.hpp>
+#include <light.hpp>
+#include <light_cascade_descriptor.hpp>
 
-#include "directional_light.hpp"
-#include "virtual_light.hpp"
-#include "sphere_light.hpp"
-#include "shaped_light.hpp"
+#include <directional_light.hpp>
+#include <virtual_light.hpp>
+#include <sphere_light.hpp>
+#include <shaped_light.hpp>
 
-#include "resource_storage_dynamic.hpp"
-#include "gstack_stable.hpp"
+#include <resource_storage_dynamic.hpp>
+#include <gstack_stable.hpp>
 
-#include "shader_storage_buffer.hpp"
-#include "atomic_counter_buffer_object.hpp"
-#include "uniform_buffer_object.hpp"
+#include <shader_storage_buffer.hpp>
+#include <atomic_counter_buffer_object.hpp>
+#include <uniform_buffer_object.hpp>
 
-#include "Camera.hpp"
+#include <Camera.hpp>
 
 #include <array>
 #include <memory>

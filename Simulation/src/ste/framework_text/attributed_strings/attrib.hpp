@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "font.hpp"
+#include <stdafx.hpp>
+#include <font.hpp>
 
 #include <functional>
 #include <typeinfo>

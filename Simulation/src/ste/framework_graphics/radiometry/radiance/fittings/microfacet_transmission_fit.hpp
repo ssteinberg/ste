@@ -3,9 +3,9 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
-#include "microfacet_fit_error.hpp"
+#include <microfacet_fit_error.hpp>
 
 #include <memory>
 #include <istream>

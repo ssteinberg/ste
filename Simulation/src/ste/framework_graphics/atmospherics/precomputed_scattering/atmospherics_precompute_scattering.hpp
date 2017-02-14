@@ -3,12 +3,12 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "atmospherics_lut_error.hpp"
+#include <stdafx.hpp>
+#include <atmospherics_lut_error.hpp>
 
-#include "atmospherics_properties.hpp"
+#include <atmospherics_properties.hpp>
 
-#include "boost_filesystem.hpp"
+#include <boost_filesystem.hpp>
 
 #include <memory>
 #include <fstream>

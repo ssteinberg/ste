@@ -6,7 +6,7 @@
 #include <atomic>
 #include <iostream>
 
-#include "concurrent_pointer_recycler.hpp"
+#include <concurrent_pointer_recycler.hpp>
 
 namespace StE {
 

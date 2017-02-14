@@ -3,12 +3,12 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "graph.hpp"
-#include "sop_vertex.hpp"
-#include "sop_edge.hpp"
+#include <stdafx.hpp>
+#include <graph.hpp>
+#include <sop_vertex.hpp>
+#include <sop_edge.hpp>
 
-#include "is_base_of.hpp"
+#include <is_base_of.hpp>
 #include <functional>
 
 // #include <graphviz/cgraph.h>

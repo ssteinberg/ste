@@ -6,7 +6,7 @@
 #include <memory>
 #include <functional>
 
-#include "signal.hpp"
+#include <signal.hpp>
 
 namespace StE {
 

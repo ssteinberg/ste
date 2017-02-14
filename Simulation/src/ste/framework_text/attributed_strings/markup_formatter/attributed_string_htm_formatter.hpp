@@ -3,10 +3,10 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
-#include "attrib.hpp"
-#include "attributed_string_common.hpp"
+#include <attrib.hpp>
+#include <attributed_string_common.hpp>
 
 namespace StE {
 namespace Text {

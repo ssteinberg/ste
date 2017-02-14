@@ -1,6 +1,6 @@
 
-#include "stdafx.hpp"
-#include "gbuffer_downsample_depth_dispatch.hpp"
+#include <stdafx.hpp>
+#include <gbuffer_downsample_depth_dispatch.hpp>
 
 using namespace StE::Graphics;
 

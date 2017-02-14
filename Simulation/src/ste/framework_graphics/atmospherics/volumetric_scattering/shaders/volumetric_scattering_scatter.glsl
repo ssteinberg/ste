@@ -5,19 +5,19 @@
 
 layout(local_size_x = 32, local_size_y = 32, local_size_z = 1) in;
 
-#include "volumetric_scattering.glsl"
-#include "atmospherics.glsl"
+#include <volumetric_scattering.glsl>
+#include <atmospherics.glsl>
 
-#include "light_transport.glsl"
-#include "shadow.glsl"
-#include "light.glsl"
-#include "light_cascades.glsl"
-#include "linked_light_lists.glsl"
-#include "linearly_transformed_cosines.glsl"
+#include <light_transport.glsl>
+#include <shadow.glsl>
+#include <light.glsl>
+#include <light_cascades.glsl>
+#include <linked_light_lists.glsl>
+#include <linearly_transformed_cosines.glsl>
 
-#include "girenderer_transform_buffer.glsl"
-#include "project.glsl"
-#include "fast_rand.glsl"
+#include <girenderer_transform_buffer.glsl>
+#include <project.glsl>
+#include <fast_rand.glsl>
 
 layout(std430, binding = 2) restrict readonly buffer light_data {
 	light_descriptor light_buffer[];
@@ -35,8 +35,8 @@ layout(std430, binding = 8) restrict readonly buffer shaped_lights_points_data {
 
 layout(rgba16f, binding = 7) restrict uniform image3D volume;
 
-#include "linked_light_lists_load.glsl"
-#include "cosine_distribution_integration.glsl"
+#include <linked_light_lists_load.glsl>
+#include <cosine_distribution_integration.glsl>
 
 layout(bindless_sampler) uniform samplerCubeArrayShadow shadow_depth_maps;
 layout(bindless_sampler) uniform sampler2DArrayShadow directional_shadow_depth_maps;

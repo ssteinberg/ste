@@ -3,16 +3,16 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "ste_engine_control.hpp"
+#include <stdafx.hpp>
+#include <ste_engine_control.hpp>
 
-#include "glsl_program_factory.hpp"
+#include <glsl_program_factory.hpp>
 
-#include "resource_instance.hpp"
-#include "resource_loading_task.hpp"
-#include "resource_instance_getter.hpp"
+#include <resource_instance.hpp>
+#include <resource_loading_task.hpp>
+#include <resource_instance_getter.hpp>
 
-#include "glsl_program_object.hpp"
+#include <glsl_program_object.hpp>
 
 #include <memory>
 

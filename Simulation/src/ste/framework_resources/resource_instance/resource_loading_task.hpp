@@ -3,11 +3,11 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "ste_engine_control.hpp"
+#include <stdafx.hpp>
+#include <ste_engine_control.hpp>
 
-#include "task_future.hpp"
-#include "optional.hpp"
+#include <task_future.hpp>
+#include <optional.hpp>
 
 namespace StE {
 namespace Resource {

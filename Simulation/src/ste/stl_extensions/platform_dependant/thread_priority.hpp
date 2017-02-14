@@ -4,9 +4,9 @@
 #pragma once
 
 #ifdef _MSC_VER
-#include "windows.hpp"
+#include <windows.hpp>
 #elif defined _linux
-#include "optional.hpp"
+#include <optional.hpp>
 #include <pthread.h>
 #else
 #error Unsupported OS

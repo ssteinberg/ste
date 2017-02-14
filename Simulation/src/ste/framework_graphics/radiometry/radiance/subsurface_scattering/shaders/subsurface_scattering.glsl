@@ -1,10 +1,10 @@
 
-#include "common.glsl"
-#include "shadow.glsl"
-#include "light_transport.glsl"
+#include <common.glsl>
+#include <shadow.glsl>
+#include <light_transport.glsl>
 
-#include "light.glsl"
-#include "girenderer_transform_buffer.glsl"
+#include <light.glsl>
+#include <girenderer_transform_buffer.glsl>
 
 int subsurface_scattering_calculate_steps(float thickness) {
 	const int max_samples = 4;

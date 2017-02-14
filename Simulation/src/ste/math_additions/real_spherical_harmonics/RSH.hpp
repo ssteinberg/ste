@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "legendre_polynomial.hpp"
+#include <stdafx.hpp>
+#include <legendre_polynomial.hpp>
 
 #include <functional>
 

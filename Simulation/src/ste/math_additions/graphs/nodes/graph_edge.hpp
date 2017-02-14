@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "graph_vertex.hpp"
+#include <stdafx.hpp>
+#include <graph_vertex.hpp>
 
 #include <functional>
 

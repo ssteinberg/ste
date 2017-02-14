@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
 #include <glm/gtx/dual_quaternion.hpp>
 

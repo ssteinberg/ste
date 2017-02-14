@@ -1,6 +1,6 @@
 
-#include "stdafx.hpp"
-#include "directional_shadowmap_projector.hpp"
+#include <stdafx.hpp>
+#include <directional_shadowmap_projector.hpp>
 
 using namespace StE::Graphics;
 

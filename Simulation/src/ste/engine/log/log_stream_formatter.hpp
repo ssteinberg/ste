@@ -14,8 +14,8 @@
 
 #include <time.h>
 
-#include "log_class.hpp"
-#include "log_entry.hpp"
+#include <log_class.hpp>
+#include <log_entry.hpp>
 
 namespace StE {
 

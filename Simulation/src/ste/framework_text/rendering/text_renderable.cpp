@@ -1,10 +1,10 @@
 
-#include "stdafx.hpp"
-#include "text_renderable.hpp"
-#include "text_manager.hpp"
+#include <stdafx.hpp>
+#include <text_renderable.hpp>
+#include <text_manager.hpp>
 
-#include "attributed_string.hpp"
-#include "gl_current_context.hpp"
+#include <attributed_string.hpp>
+#include <gl_current_context.hpp>
 
 using namespace StE::Text;
 using namespace StE::Core;

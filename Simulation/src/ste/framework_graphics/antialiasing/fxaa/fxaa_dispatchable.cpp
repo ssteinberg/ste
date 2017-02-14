@@ -1,10 +1,10 @@
 
-#include "stdafx.hpp"
-#include "fxaa_dispatchable.hpp"
+#include <stdafx.hpp>
+#include <fxaa_dispatchable.hpp>
 
-#include "Quad.hpp"
+#include <Quad.hpp>
 
-#include "gl_current_context.hpp"
+#include <gl_current_context.hpp>
 
 using namespace StE::Graphics;
 

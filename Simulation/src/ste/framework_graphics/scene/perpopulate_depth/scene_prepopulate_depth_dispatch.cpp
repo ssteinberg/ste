@@ -1,10 +1,10 @@
 
-#include "stdafx.hpp"
-#include "scene_prepopulate_depth_dispatch.hpp"
+#include <stdafx.hpp>
+#include <scene_prepopulate_depth_dispatch.hpp>
 
-#include "gl_current_context.hpp"
+#include <gl_current_context.hpp>
 
-#include "Scene.hpp"
+#include <Scene.hpp>
 
 using namespace StE::Graphics;
 

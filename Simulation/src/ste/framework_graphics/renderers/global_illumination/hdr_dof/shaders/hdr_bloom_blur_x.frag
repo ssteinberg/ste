@@ -5,7 +5,7 @@
 
 const int blur_samples_count = 8;
 
-#include "hdr_blur.glsl"
+#include <hdr_blur.glsl>
 
 out vec4 gl_FragColor;
 

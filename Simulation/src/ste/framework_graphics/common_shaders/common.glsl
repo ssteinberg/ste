@@ -1,5 +1,5 @@
 
-#include "constants.glsl"
+#include <constants.glsl>
 
 float max_element(vec2 v) {
 	return max(v.x, v.y);

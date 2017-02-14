@@ -1,7 +1,7 @@
 
-#include "common.glsl"
-#include "fresnel.glsl"
-#include "microfacet.glsl"
+#include <common.glsl>
+#include <fresnel.glsl>
+#include <microfacet.glsl>
 
 float disney_diffuse_brdf(vec3 n,
 						  vec3 v,

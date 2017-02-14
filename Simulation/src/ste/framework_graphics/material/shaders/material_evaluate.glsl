@@ -1,22 +1,22 @@
 
-#include "material.glsl"
-#include "material_layer_unpack.glsl"
+#include <material.glsl>
+#include <material_layer_unpack.glsl>
 
-#include "subsurface_scattering.glsl"
+#include <subsurface_scattering.glsl>
 
-#include "deferred_shading_common.glsl"
-#include "common.glsl"
+#include <deferred_shading_common.glsl>
+#include <common.glsl>
 
-#include "light.glsl"
-#include "light_transport.glsl"
+#include <light.glsl>
+#include <light_transport.glsl>
 
-#include "cosine_distribution_integration.glsl"
-#include "clamped_cosine_distribution_integration.glsl"
-#include "microfacet_ggx_fitting.glsl"
-#include "cook_torrance.glsl"
-#include "lambert_diffuse.glsl"
-#include "disney_diffuse.glsl"
-#include "fresnel.glsl"
+#include <cosine_distribution_integration.glsl>
+#include <clamped_cosine_distribution_integration.glsl>
+#include <microfacet_ggx_fitting.glsl>
+#include <cook_torrance.glsl>
+#include <lambert_diffuse.glsl>
+#include <disney_diffuse.glsl>
+#include <fresnel.glsl>
 
 vec3 material_evaluate_layer_radiance(material_layer_unpacked_descriptor descriptor,
 									  light_descriptor ld,

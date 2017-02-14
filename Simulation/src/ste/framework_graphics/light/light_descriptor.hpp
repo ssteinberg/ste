@@ -3,10 +3,10 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "light_type.hpp"
+#include <stdafx.hpp>
+#include <light_type.hpp>
 
-#include "texture_handle.hpp"
+#include <texture_handle.hpp>
 
 namespace StE {
 namespace Graphics {

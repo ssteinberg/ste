@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
 constexpr std::uint32_t light_type_directional_bit = 1 << 0;
 constexpr std::uint32_t light_type_shape_bit = 1 << 1;

@@ -1,7 +1,7 @@
 
-#include "stdafx.hpp"
-#include "hdr_compute_histogram_sums_task.hpp"
-#include "shader_storage_buffer.hpp"
+#include <stdafx.hpp>
+#include <hdr_compute_histogram_sums_task.hpp>
+#include <shader_storage_buffer.hpp>
 
 using namespace StE::Graphics;
 using namespace StE::Core;

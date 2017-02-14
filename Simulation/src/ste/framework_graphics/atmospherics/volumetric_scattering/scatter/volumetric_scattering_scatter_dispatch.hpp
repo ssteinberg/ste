@@ -3,22 +3,22 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "ste_engine_control.hpp"
-#include "gl_current_context.hpp"
+#include <stdafx.hpp>
+#include <ste_engine_control.hpp>
+#include <gl_current_context.hpp>
 
-#include "resource_instance.hpp"
-#include "resource_loading_task.hpp"
+#include <resource_instance.hpp>
+#include <resource_loading_task.hpp>
 
-#include "glsl_program.hpp"
-#include "gpu_dispatchable.hpp"
+#include <glsl_program.hpp>
+#include <gpu_dispatchable.hpp>
 
-#include "volumetric_scattering_storage.hpp"
-#include "linked_light_lists.hpp"
-#include "light_storage.hpp"
-#include "shadowmap_storage.hpp"
+#include <volumetric_scattering_storage.hpp>
+#include <linked_light_lists.hpp>
+#include <light_storage.hpp>
+#include <shadowmap_storage.hpp>
 
-#include "sampler.hpp"
+#include <sampler.hpp>
 
 #include <memory>
 

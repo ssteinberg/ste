@@ -1,6 +1,6 @@
 
-#include "stdafx.hpp"
-#include "profiler.hpp"
+#include <stdafx.hpp>
+#include <profiler.hpp>
 
 #include <functional>
 #include <fstream>

@@ -2,7 +2,7 @@
 #type compute
 #version 450
 
-#include "hdr_common.glsl"
+#include <hdr_common.glsl>
 
 layout(local_size_x = 32, local_size_y = 32) in;
 

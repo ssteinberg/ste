@@ -1,6 +1,6 @@
 
-#include "stdafx.hpp"
-#include "material.hpp"
+#include <stdafx.hpp>
+#include <material.hpp>
 
 using namespace StE::Graphics;
 

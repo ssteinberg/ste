@@ -3,12 +3,12 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "graph_vertex.hpp"
+#include <stdafx.hpp>
+#include <graph_vertex.hpp>
 
-#include "optional.hpp"
+#include <optional.hpp>
 
-#include "boost_flatset.hpp"
+#include <boost_flatset.hpp>
 
 namespace StE {
 namespace Algorithm {

@@ -1,13 +1,13 @@
 
-#include "stdafx.hpp"
-#include "gi_renderer.hpp"
+#include <stdafx.hpp>
+#include <gi_renderer.hpp>
 
-#include "Quad.hpp"
-#include "Sampler.hpp"
+#include <Quad.hpp>
+#include <Sampler.hpp>
 
-#include "shader_storage_buffer.hpp"
+#include <shader_storage_buffer.hpp>
 
-#include "gl_current_context.hpp"
+#include <gl_current_context.hpp>
 
 using namespace StE::Graphics;
 

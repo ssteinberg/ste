@@ -6,7 +6,7 @@
 #include <string>
 #include <memory>
 
-#include "log_class.hpp"
+#include <log_class.hpp>
 
 namespace StE {
 

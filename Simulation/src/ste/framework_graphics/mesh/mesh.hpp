@@ -3,10 +3,10 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
-#include "object_vertex_data.hpp"
-#include "mesh_bounding_sphere.hpp"
+#include <object_vertex_data.hpp>
+#include <mesh_bounding_sphere.hpp>
 
 #include <vector>
 #include <type_traits>

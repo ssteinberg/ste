@@ -3,15 +3,15 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
-#include "material.hpp"
-#include "mesh.hpp"
-#include "entity.hpp"
+#include <material.hpp>
+#include <mesh.hpp>
+#include <entity.hpp>
 
-#include "signal.hpp"
+#include <signal.hpp>
 
-#include "mesh_descriptor.hpp"
+#include <mesh_descriptor.hpp>
 
 #include <memory>
 

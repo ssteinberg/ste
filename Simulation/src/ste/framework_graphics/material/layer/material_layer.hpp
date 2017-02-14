@@ -3,15 +3,15 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
-#include "material_layer_descriptor.hpp"
-#include "observable_resource.hpp"
+#include <material_layer_descriptor.hpp>
+#include <observable_resource.hpp>
 
-#include "texture_2d.hpp"
-#include "Sampler.hpp"
+#include <texture_2d.hpp>
+#include <Sampler.hpp>
 
-#include "rgb.hpp"
+#include <rgb.hpp>
 
 #include <memory>
 #include <limits>

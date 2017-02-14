@@ -3,10 +3,10 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "hdr_dof_postprocess.hpp"
+#include <stdafx.hpp>
+#include <hdr_dof_postprocess.hpp>
 
-#include "gl_current_context.hpp"
+#include <gl_current_context.hpp>
 
 namespace StE {
 namespace Graphics {

@@ -3,14 +3,14 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
-#include "glsl_shader_object.hpp"
-#include "glsl_program_object.hpp"
+#include <glsl_shader_object.hpp>
+#include <glsl_program_object.hpp>
 
-#include "program_binary.hpp"
+#include <program_binary.hpp>
 
-#include "task_future.hpp"
+#include <task_future.hpp>
 
 #include <memory>
 
@@ -18,11 +18,11 @@
 #include <list>
 #include <map>
 
-#include "ste_engine_control.hpp"
+#include <ste_engine_control.hpp>
 
-#include "optional.hpp"
+#include <optional.hpp>
 
-#include "boost_filesystem.hpp"
+#include <boost_filesystem.hpp>
 
 namespace StE {
 namespace Resource {

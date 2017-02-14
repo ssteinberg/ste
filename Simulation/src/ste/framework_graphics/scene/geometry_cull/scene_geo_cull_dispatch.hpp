@@ -3,15 +3,15 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "ste_engine_control.hpp"
-#include "gl_current_context.hpp"
+#include <stdafx.hpp>
+#include <ste_engine_control.hpp>
+#include <gl_current_context.hpp>
 
-#include "glsl_program.hpp"
-#include "gpu_dispatchable.hpp"
+#include <glsl_program.hpp>
+#include <gpu_dispatchable.hpp>
 
-#include "scene.hpp"
-#include "light_storage.hpp"
+#include <scene.hpp>
+#include <light_storage.hpp>
 
 #include <memory>
 

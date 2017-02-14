@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "dual_quaternion.hpp"
+#include <stdafx.hpp>
+#include <dual_quaternion.hpp>
 
 #include <glm/gtc/matrix_transform.hpp>
 

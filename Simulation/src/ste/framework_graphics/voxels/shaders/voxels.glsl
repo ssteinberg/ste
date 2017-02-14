@@ -6,7 +6,7 @@ uniform uint voxels_texture_size;
 uniform vec3 voxels_world_translation;
 uniform float voxels_world_size;
 
-#include "material.glsl"
+#include <material.glsl>
 
 layout(bindless_sampler) uniform sampler3D voxel_space_radiance;
 layout(bindless_sampler) uniform sampler3D voxel_space_data;

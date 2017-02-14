@@ -3,19 +3,19 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "gpu_task.hpp"
-#include "gpu_task_root.hpp"
-#include "gpu_state_transition.hpp"
-#include "sop_graph.hpp"
+#include <stdafx.hpp>
+#include <gpu_task.hpp>
+#include <gpu_task_root.hpp>
+#include <gpu_state_transition.hpp>
+#include <sop_graph.hpp>
 
-#include "profiler.hpp"
+#include <profiler.hpp>
 
-#include "framebuffer_object.hpp"
+#include <framebuffer_object.hpp>
 
-#include "sequential_ordering_problem.hpp"
+#include <sequential_ordering_problem.hpp>
 
-#include "concurrent_queue.hpp"
+#include <concurrent_queue.hpp>
 
 #include <functional>
 #include <memory>

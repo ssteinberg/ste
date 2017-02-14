@@ -3,11 +3,11 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "atmospherics_descriptor.hpp"
+#include <stdafx.hpp>
+#include <atmospherics_descriptor.hpp>
 
-#include "ring_buffer.hpp"
-#include "range.hpp"
+#include <ring_buffer.hpp>
+#include <range.hpp>
 
 namespace StE {
 namespace Graphics {

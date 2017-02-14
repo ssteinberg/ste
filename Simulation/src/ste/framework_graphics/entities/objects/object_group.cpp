@@ -1,11 +1,11 @@
 
-#include "stdafx.hpp"
-#include "object_group.hpp"
+#include <stdafx.hpp>
+#include <object_group.hpp>
 
-#include "mesh_descriptor.hpp"
-#include "material.hpp"
+#include <mesh_descriptor.hpp>
+#include <material.hpp>
 
-#include "gl_current_context.hpp"
+#include <gl_current_context.hpp>
 
 #include <algorithm>
 

@@ -1,8 +1,8 @@
 
-#include "stdafx.hpp"
-#include "text_manager.hpp"
+#include <stdafx.hpp>
+#include <text_manager.hpp>
 
-#include "gl_current_context.hpp"
+#include <gl_current_context.hpp>
 
 using namespace StE::Text;
 using namespace StE::Core;

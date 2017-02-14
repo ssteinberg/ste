@@ -3,9 +3,9 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "gpu_dummy_dispatchable.hpp"
-#include "gpu_task.hpp"
+#include <stdafx.hpp>
+#include <gpu_dummy_dispatchable.hpp>
+#include <gpu_task.hpp>
 
 namespace StE {
 namespace Graphics {

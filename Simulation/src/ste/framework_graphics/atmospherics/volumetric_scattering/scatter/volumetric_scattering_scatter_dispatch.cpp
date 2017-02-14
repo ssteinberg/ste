@@ -1,6 +1,6 @@
 
-#include "stdafx.hpp"
-#include "volumetric_scattering_scatter_dispatch.hpp"
+#include <stdafx.hpp>
+#include <volumetric_scattering_scatter_dispatch.hpp>
 
 using namespace StE::Graphics;
 using namespace StE::Core;

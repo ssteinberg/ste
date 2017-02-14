@@ -3,10 +3,10 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "sequential_ordering_problem.hpp"
+#include <stdafx.hpp>
+#include <sequential_ordering_problem.hpp>
 
-#include "Log.hpp"
+#include <Log.hpp>
 
 #include <vector>
 #include <algorithm>

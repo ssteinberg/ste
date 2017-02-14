@@ -3,20 +3,20 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
-#include "task_future.hpp"
+#include <task_future.hpp>
 
-#include "object.hpp"
-#include "object_group.hpp"
-#include "scene_properties.hpp"
-#include "texture_2d.hpp"
-#include "material.hpp"
-#include "material_layer.hpp"
+#include <object.hpp>
+#include <object_group.hpp>
+#include <scene_properties.hpp>
+#include <texture_2d.hpp>
+#include <material.hpp>
+#include <material_layer.hpp>
 
-#include "ste_engine_control.hpp"
+#include <ste_engine_control.hpp>
 
-#include "boost_filesystem.hpp"
+#include <boost_filesystem.hpp>
 
 #include <memory>
 #include <unordered_map>

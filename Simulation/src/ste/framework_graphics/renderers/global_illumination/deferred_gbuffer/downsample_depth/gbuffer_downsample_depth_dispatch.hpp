@@ -3,16 +3,16 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "gpu_dispatchable.hpp"
+#include <stdafx.hpp>
+#include <gpu_dispatchable.hpp>
 
-#include "ste_engine_control.hpp"
-#include "gl_current_context.hpp"
+#include <ste_engine_control.hpp>
+#include <gl_current_context.hpp>
 
-#include "sampler.hpp"
+#include <sampler.hpp>
 
-#include "glsl_program.hpp"
-#include "deferred_gbuffer.hpp"
+#include <glsl_program.hpp>
+#include <deferred_gbuffer.hpp>
 
 #include <memory>
 

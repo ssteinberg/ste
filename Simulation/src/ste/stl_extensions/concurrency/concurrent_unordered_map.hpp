@@ -17,7 +17,7 @@
 
 #include <immintrin.h>
 
-#include "shared_double_reference_guard.hpp"
+#include <shared_double_reference_guard.hpp>
 
 namespace StE {
 

@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "gl_context_state_log.hpp"
+#include <stdafx.hpp>
+#include <gl_context_state_log.hpp>
 
 namespace StE {
 namespace Graphics {

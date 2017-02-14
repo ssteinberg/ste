@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "atmospherics_properties.hpp"
+#include <atmospherics_properties.hpp>
 
 namespace StE {
 namespace Graphics {

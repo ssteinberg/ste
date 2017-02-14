@@ -1,7 +1,7 @@
-#include "stdafx.hpp"
-#include "attrib.hpp"
+#include <stdafx.hpp>
+#include <attrib.hpp>
 
-#include "attributed_string_common.hpp"
+#include <attributed_string_common.hpp>
 
 using namespace StE::Text;
 using namespace StE::Text::Attributes;

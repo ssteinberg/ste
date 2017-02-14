@@ -1,24 +1,24 @@
 
-#include "common.glsl"
-#include "deferred_shading_common.glsl"
+#include <common.glsl>
+#include <deferred_shading_common.glsl>
 
-#include "chromaticity.glsl"
-#include "material.glsl"
+#include <chromaticity.glsl>
+#include <material.glsl>
 
-#include "shadow.glsl"
-#include "light.glsl"
-#include "light_cascades.glsl"
-#include "linked_light_lists.glsl"
+#include <shadow.glsl>
+#include <light.glsl>
+#include <light_cascades.glsl>
+#include <linked_light_lists.glsl>
 
-#include "intersection.glsl"
+#include <intersection.glsl>
 
-#include "atmospherics.glsl"
-#include "volumetric_scattering.glsl"
+#include <atmospherics.glsl>
+#include <volumetric_scattering.glsl>
 
-#include "project.glsl"
-#include "girenderer_transform_buffer.glsl"
+#include <project.glsl>
+#include <girenderer_transform_buffer.glsl>
 
-#include "cosine_distribution_integration.glsl"
+#include <cosine_distribution_integration.glsl>
 
 float get_thickness(ivec2 coord,
 					sampler2D back_face_depth, 

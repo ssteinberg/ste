@@ -6,16 +6,16 @@
 
 layout(local_size_x = 128) in;
 
-#include "girenderer_transform_buffer.glsl"
-#include "indirect.glsl"
+#include <girenderer_transform_buffer.glsl>
+#include <indirect.glsl>
 
-#include "light.glsl"
-#include "light_cascades.glsl"
-#include "shadow_drawid_to_lightid_ttl.glsl"
+#include <light.glsl>
+#include <light_cascades.glsl>
+#include <shadow_drawid_to_lightid_ttl.glsl>
 
-#include "intersection.glsl"
+#include <intersection.glsl>
 
-#include "mesh_descriptor.glsl"
+#include <mesh_descriptor.glsl>
 
 layout(std430, binding = 14) restrict readonly buffer mesh_data {
 	mesh_descriptor mesh_descriptor_buffer[];

@@ -3,23 +3,23 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "ste_engine_control.hpp"
+#include <stdafx.hpp>
+#include <ste_engine_control.hpp>
 
-#include "font.hpp"
-#include "glyph_point.hpp"
-#include "glyph_manager.hpp"
+#include <font.hpp>
+#include <glyph_point.hpp>
+#include <glyph_manager.hpp>
 
-#include "resource_instance.hpp"
-#include "resource_loading_task.hpp"
+#include <resource_instance.hpp>
+#include <resource_loading_task.hpp>
 
-#include "attributed_string.hpp"
+#include <attributed_string.hpp>
 
-#include "vertex_array_object.hpp"
-#include "vertex_buffer_object.hpp"
-#include "glsl_program.hpp"
+#include <vertex_array_object.hpp>
+#include <vertex_buffer_object.hpp>
+#include <glsl_program.hpp>
 
-#include "text_renderable.hpp"
+#include <text_renderable.hpp>
 
 #include <memory>
 #include <string>

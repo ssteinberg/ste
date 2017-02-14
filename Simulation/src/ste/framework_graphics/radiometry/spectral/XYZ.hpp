@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "spectrum.hpp"
+#include <spectrum.hpp>
 
 #include <limits>
 
@@ -49,9 +49,9 @@ public:
 }
 }
 
-#include "rgb.hpp"
-#include "xyY.hpp"
-#include "kelvin.hpp"
+#include <rgb.hpp>
+#include <xyY.hpp>
+#include <kelvin.hpp>
 
 namespace StE {
 namespace Graphics {

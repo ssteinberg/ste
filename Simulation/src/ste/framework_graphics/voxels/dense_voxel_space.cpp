@@ -1,8 +1,8 @@
 
-#include "stdafx.hpp"
-#include "dense_voxel_space.hpp"
+#include <stdafx.hpp>
+#include <dense_voxel_space.hpp>
 
-#include "glsl_program_factory.hpp"
+#include <glsl_program_factory.hpp>
 
 using namespace StE::Graphics;
 

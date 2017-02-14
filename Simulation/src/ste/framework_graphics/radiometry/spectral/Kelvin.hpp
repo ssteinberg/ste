@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "spectrum.hpp"
+#include <spectrum.hpp>
 
 namespace StE {
 namespace Graphics {
@@ -34,4 +34,4 @@ public:
 }
 }
 
-#include "rgb.hpp"
+#include <rgb.hpp>

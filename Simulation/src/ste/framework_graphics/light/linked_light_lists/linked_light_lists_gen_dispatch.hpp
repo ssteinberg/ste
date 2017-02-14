@@ -3,18 +3,18 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "ste_engine_control.hpp"
-#include "gpu_dispatchable.hpp"
+#include <stdafx.hpp>
+#include <ste_engine_control.hpp>
+#include <gpu_dispatchable.hpp>
 
-#include "glsl_program.hpp"
+#include <glsl_program.hpp>
 
-#include "linked_light_lists.hpp"
-#include "light_storage.hpp"
+#include <linked_light_lists.hpp>
+#include <light_storage.hpp>
 
-#include "glsl_program.hpp"
-#include "texture_2d.hpp"
-#include "Sampler.hpp"
+#include <glsl_program.hpp>
+#include <texture_2d.hpp>
+#include <Sampler.hpp>
 
 namespace StE {
 namespace Graphics {

@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "function_traits.hpp"
+#include <stdafx.hpp>
+#include <function_traits.hpp>
 
 #include <array>
 

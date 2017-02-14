@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "graph.hpp"
+#include <stdafx.hpp>
+#include <graph.hpp>
 
 // #include <graphviz/cgraph.h>
 // #include <graphviz/gvc.h>

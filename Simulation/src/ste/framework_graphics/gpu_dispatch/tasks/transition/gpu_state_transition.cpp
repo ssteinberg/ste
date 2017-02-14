@@ -1,11 +1,11 @@
 
-#include "stdafx.hpp"
-#include "gpu_state_transition.hpp"
+#include <stdafx.hpp>
+#include <gpu_state_transition.hpp>
 
-#include "gpu_dispatchable.hpp"
+#include <gpu_dispatchable.hpp>
 
-#include "gl_context_state_log.hpp"
-#include "gl_current_context.hpp"
+#include <gl_context_state_log.hpp>
+#include <gl_current_context.hpp>
 
 #include <algorithm>
 

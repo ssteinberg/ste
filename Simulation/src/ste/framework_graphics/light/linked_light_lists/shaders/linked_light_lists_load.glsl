@@ -1,5 +1,5 @@
 
-#include "linked_light_lists.glsl"
+#include <linked_light_lists.glsl>
 
 ivec2 lll_get_size(layout(r32ui) restrict readonly uimage2D lll_heads) {
 	return imageSize(lll_heads);

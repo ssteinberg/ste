@@ -3,7 +3,7 @@
 #version 450
 #extension GL_ARB_bindless_texture : require
 
-#include "hdr_common.glsl"
+#include <hdr_common.glsl>
 
 layout(local_size_x = 32, local_size_y = 32) in;
 

@@ -1,9 +1,9 @@
 
-#include "stdafx.hpp"
-#include "scene_geo_cull_dispatch.hpp"
+#include <stdafx.hpp>
+#include <scene_geo_cull_dispatch.hpp>
 
-#include "Scene.hpp"
-#include "extract_projection_planes.hpp"
+#include <Scene.hpp>
+#include <extract_projection_planes.hpp>
 
 using namespace StE::Graphics;
 using namespace StE::Core;

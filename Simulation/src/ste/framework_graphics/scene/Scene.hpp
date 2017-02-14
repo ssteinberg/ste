@@ -3,20 +3,20 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "ste_engine_control.hpp"
-#include "gpu_dispatchable.hpp"
+#include <stdafx.hpp>
+#include <ste_engine_control.hpp>
+#include <gpu_dispatchable.hpp>
 
-#include "scene_properties.hpp"
-#include "deferred_gbuffer.hpp"
-#include "object_group_indirect_command_buffer.hpp"
+#include <scene_properties.hpp>
+#include <deferred_gbuffer.hpp>
+#include <object_group_indirect_command_buffer.hpp>
 
-#include "glsl_program.hpp"
-#include "atomic_counter_buffer_object.hpp"
-#include "shader_storage_buffer.hpp"
+#include <glsl_program.hpp>
+#include <atomic_counter_buffer_object.hpp>
+#include <shader_storage_buffer.hpp>
 
-#include "object_group.hpp"
-#include "light_storage.hpp"
+#include <object_group.hpp>
+#include <light_storage.hpp>
 
 #include <memory>
 

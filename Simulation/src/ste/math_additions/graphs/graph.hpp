@@ -3,15 +3,15 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "graph_vertex.hpp"
-#include "graph_edge.hpp"
+#include <stdafx.hpp>
+#include <graph_vertex.hpp>
+#include <graph_edge.hpp>
 
 #include <algorithm>
 #include <functional>
 
-#include "boost_filesystem.hpp"
-#include "boost_flatset.hpp"
+#include <boost_filesystem.hpp>
+#include <boost_flatset.hpp>
 
 namespace StE {
 namespace Graph {

@@ -3,11 +3,11 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "camera.hpp"
+#include <stdafx.hpp>
+#include <camera.hpp>
 
-#include "ring_buffer.hpp"
-#include "range.hpp"
+#include <ring_buffer.hpp>
+#include <range.hpp>
 
 #include <glm/gtx/dual_quaternion.hpp>
 

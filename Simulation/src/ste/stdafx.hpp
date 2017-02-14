@@ -10,7 +10,7 @@
 #include <cstdint>
 
 #ifdef _MSC_VER
-#include "windows.hpp"
+#include <windows.hpp>
 #endif
 #include <vulkan/vulkan.h>
 

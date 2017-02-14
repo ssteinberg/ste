@@ -1,5 +1,5 @@
 
-#include "linked_light_lists.glsl"
+#include <linked_light_lists.glsl>
 
 lll_element lll_encode(uint light_idx, uint ll_idx, vec2 depth_range) {
 	lll_element l;

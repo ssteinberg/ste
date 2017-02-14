@@ -1,5 +1,5 @@
 
-#include "material.glsl"
+#include <material.glsl>
 
 struct material_layer_unpacked_descriptor {
 	vec4 albedo;

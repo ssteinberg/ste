@@ -3,11 +3,11 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "ste_engine_control.hpp"
+#include <stdafx.hpp>
+#include <ste_engine_control.hpp>
 
-#include "resource_loading_task.hpp"
-#include "resource_instance_getter.hpp"
+#include <resource_loading_task.hpp>
+#include <resource_instance_getter.hpp>
 
 #include <memory>
 #include <mutex>

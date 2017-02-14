@@ -3,12 +3,12 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "sop_graph.hpp"
+#include <stdafx.hpp>
+#include <sop_graph.hpp>
 
-#include "optional.hpp"
+#include <optional.hpp>
 
-#include "is_base_of.hpp"
+#include <is_base_of.hpp>
 
 #include <vector>
 
@@ -116,7 +116,7 @@ public:
 }
 }
 
-#include "sop_optimizer.hpp"
+#include <sop_optimizer.hpp>
 
 namespace StE {
 namespace Algorithm {

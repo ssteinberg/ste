@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "resource_loading_exception.hpp"
+#include <resource_loading_exception.hpp>
 
 namespace StE {
 namespace Resource {

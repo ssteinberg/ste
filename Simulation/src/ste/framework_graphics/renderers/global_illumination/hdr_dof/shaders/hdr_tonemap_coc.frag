@@ -3,10 +3,10 @@
 #version 450
 #extension GL_ARB_bindless_texture : require
 
-#include "chromaticity.glsl"
-#include "hdr_common.glsl"
+#include <chromaticity.glsl>
+#include <hdr_common.glsl>
 
-#include "girenderer_transform_buffer.glsl"
+#include <girenderer_transform_buffer.glsl>
 
 layout(location = 0) out vec4 rgbout;
 layout(location = 1) out vec4 bloomout;

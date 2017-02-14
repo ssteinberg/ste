@@ -3,13 +3,13 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
-#include "entity.hpp"
-#include "object.hpp"
-#include "gpu_dispatchable.hpp"
+#include <entity.hpp>
+#include <object.hpp>
+#include <gpu_dispatchable.hpp>
 
-#include "object_group_draw_buffers.hpp"
+#include <object_group_draw_buffers.hpp>
 
 #include <unordered_map>
 #include <memory>

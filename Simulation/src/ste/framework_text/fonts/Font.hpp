@@ -5,7 +5,7 @@
 
 #include <string>
 
-#include "boost_filesystem.hpp"
+#include <boost_filesystem.hpp>
 
 namespace StE {
 namespace Text {

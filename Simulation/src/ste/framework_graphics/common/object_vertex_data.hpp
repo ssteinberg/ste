@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "vertex_buffer_descriptor.hpp"
-#include "quaternion_tangent_frame.hpp"
+#include <vertex_buffer_descriptor.hpp>
+#include <quaternion_tangent_frame.hpp>
 
 namespace StE {
 namespace Graphics {

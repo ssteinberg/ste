@@ -1,6 +1,6 @@
 
-#include "stdafx.hpp"
-#include "material_layer_descriptor.hpp"
+#include <stdafx.hpp>
+#include <material_layer_descriptor.hpp>
 
 using namespace StE::Graphics;
 

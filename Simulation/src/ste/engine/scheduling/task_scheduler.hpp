@@ -11,13 +11,13 @@
 
 #include <type_traits>
 
-#include "task_future.hpp"
-#include "thread_pool_task.hpp"
+#include <task_future.hpp>
+#include <thread_pool_task.hpp>
 
-#include "balanced_thread_pool.hpp"
-#include "concurrent_queue.hpp"
-#include "function_traits.hpp"
-#include "thread_constants.hpp"
+#include <balanced_thread_pool.hpp>
+#include <concurrent_queue.hpp>
+#include <function_traits.hpp>
+#include <thread_constants.hpp>
 
 namespace StE {
 
@@ -170,4 +170,4 @@ public:
 
 }
 
-#include "task_future_impl.hpp"
+#include <task_future_impl.hpp>

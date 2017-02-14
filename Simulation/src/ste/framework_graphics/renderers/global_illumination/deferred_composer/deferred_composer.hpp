@@ -3,26 +3,26 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "ste_engine_control.hpp"
+#include <stdafx.hpp>
+#include <ste_engine_control.hpp>
 
-#include "signal.hpp"
+#include <signal.hpp>
 
-#include "resource_instance.hpp"
-#include "resource_loading_task.hpp"
+#include <resource_instance.hpp>
+#include <resource_loading_task.hpp>
 
-#include "gpu_dispatchable.hpp"
+#include <gpu_dispatchable.hpp>
 
-#include "glsl_program.hpp"
-#include "texture_2d.hpp"
-#include "texture_2d_array.hpp"
-#include "texture_3d.hpp"
+#include <glsl_program.hpp>
+#include <texture_2d.hpp>
+#include <texture_2d_array.hpp>
+#include <texture_3d.hpp>
 
 #include <memory>
 
 
 //! TODO: Remove hack
-#include "volumetric_scattering_scatter_dispatch.hpp"
+#include <volumetric_scattering_scatter_dispatch.hpp>
 
 
 namespace StE {

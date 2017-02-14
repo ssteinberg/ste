@@ -1,14 +1,14 @@
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
-#include "glsl_program_factory.hpp"
-#include "glsl_program_factory_exceptions.hpp"
+#include <glsl_program_factory.hpp>
+#include <glsl_program_factory_exceptions.hpp>
 
-#include "lru_cache.hpp"
-#include "Log.hpp"
+#include <lru_cache.hpp>
+#include <Log.hpp>
 
-#include "attributed_string.hpp"
-#include "attrib.hpp"
+#include <attributed_string.hpp>
+#include <attrib.hpp>
 
 #include <exception>
 

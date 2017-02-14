@@ -1,11 +1,11 @@
 
-#include "stdafx.hpp"
-#include "gpu_task_dispatch_queue.hpp"
+#include <stdafx.hpp>
+#include <gpu_task_dispatch_queue.hpp>
 
-#include "attributed_string.hpp"
-#include "Log.hpp"
+#include <attributed_string.hpp>
+#include <Log.hpp>
 
-#include "tuple_call.hpp"
+#include <tuple_call.hpp>
 
 #include <iostream>
 #include <algorithm>

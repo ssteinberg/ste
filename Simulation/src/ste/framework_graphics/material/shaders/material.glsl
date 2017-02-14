@@ -1,5 +1,5 @@
 
-#include "common.glsl"
+#include <common.glsl>
 
 struct material_texture_descriptor {
 	layout(bindless_sampler) sampler2D tex_handler;

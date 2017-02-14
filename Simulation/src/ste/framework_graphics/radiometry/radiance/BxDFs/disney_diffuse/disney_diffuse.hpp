@@ -3,10 +3,10 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "BxDF.hpp"
+#include <stdafx.hpp>
+#include <BxDF.hpp>
 
-#include "schlick_fresnel.hpp"
+#include <schlick_fresnel.hpp>
 
 namespace StE {
 namespace Graphics {

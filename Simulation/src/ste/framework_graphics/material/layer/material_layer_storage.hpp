@@ -3,10 +3,10 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
-#include "material_layer.hpp"
-#include "resource_storage_stable.hpp"
+#include <material_layer.hpp>
+#include <resource_storage_stable.hpp>
 
 #include <memory>
 

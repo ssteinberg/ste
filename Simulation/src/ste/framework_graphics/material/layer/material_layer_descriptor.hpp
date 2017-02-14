@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "texture_handle.hpp"
+#include <stdafx.hpp>
+#include <texture_handle.hpp>
 
 namespace StE {
 namespace Graphics {

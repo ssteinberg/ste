@@ -6,14 +6,14 @@
 
 layout(local_size_x = 128) in;
 
-#include "girenderer_transform_buffer.glsl"
+#include <girenderer_transform_buffer.glsl>
 
-#include "common.glsl"
-#include "hdr_common.glsl"
-#include "intersection.glsl"
+#include <common.glsl>
+#include <hdr_common.glsl>
+#include <intersection.glsl>
 
-#include "atmospherics.glsl"
-#include "light.glsl"
+#include <atmospherics.glsl>
+#include <light.glsl>
 
 layout(std430, binding = 2) restrict buffer light_data {
 	light_descriptor light_buffer[];

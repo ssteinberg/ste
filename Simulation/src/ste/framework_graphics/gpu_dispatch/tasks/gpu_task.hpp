@@ -3,22 +3,22 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
-#include "sop_vertex.hpp"
-#include "sop_edge.hpp"
+#include <sop_vertex.hpp>
+#include <sop_edge.hpp>
 
-#include "profileable.hpp"
+#include <profileable.hpp>
 
-#include "gpu_dispatchable.hpp"
-#include "framebuffer_object.hpp"
+#include <gpu_dispatchable.hpp>
+#include <framebuffer_object.hpp>
 
 #include <functional>
 #include <memory>
 #include <algorithm>
 #include <string>
 
-#include "boost_flatset.hpp"
+#include <boost_flatset.hpp>
 
 namespace StE {
 namespace Graphics {
@@ -116,4 +116,4 @@ private:
 }
 }
 
-#include "gpu_task_factory.hpp"
+#include <gpu_task_factory.hpp>

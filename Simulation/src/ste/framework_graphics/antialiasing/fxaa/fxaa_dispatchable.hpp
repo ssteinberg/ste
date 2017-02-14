@@ -3,20 +3,20 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "ste_engine_control.hpp"
+#include <stdafx.hpp>
+#include <ste_engine_control.hpp>
 
-#include "resource_instance.hpp"
-#include "resource_loading_task.hpp"
+#include <resource_instance.hpp>
+#include <resource_loading_task.hpp>
 
-#include "signal.hpp"
+#include <signal.hpp>
 
-#include "gpu_dispatchable.hpp"
+#include <gpu_dispatchable.hpp>
 
-#include "glsl_program.hpp"
-#include "texture_2d.hpp"
-#include "sampler.hpp"
-#include "framebuffer_object.hpp"
+#include <glsl_program.hpp>
+#include <texture_2d.hpp>
+#include <sampler.hpp>
+#include <framebuffer_object.hpp>
 
 #include <memory>
 

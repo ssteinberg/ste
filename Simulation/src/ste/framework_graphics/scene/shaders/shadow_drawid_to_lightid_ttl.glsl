@@ -1,6 +1,6 @@
 
-#include "light.glsl"
-#include "light_cascades.glsl"
+#include <light.glsl>
+#include <light_cascades.glsl>
 
 struct drawid_to_lightid_ttl_entry {
 	uint data;

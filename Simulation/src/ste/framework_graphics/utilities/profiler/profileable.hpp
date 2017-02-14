@@ -3,9 +3,9 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
-#include "timestamp_query.hpp"
+#include <timestamp_query.hpp>
 
 namespace StE {
 namespace Graphics {

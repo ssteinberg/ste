@@ -1,6 +1,6 @@
 
-#include "stdafx.hpp"
-#include "resource_instance.hpp"
+#include <stdafx.hpp>
+#include <resource_instance.hpp>
 
 using namespace StE::Resource;
 

@@ -1,20 +1,20 @@
 
-#include "stdafx.hpp"
-#include "hdr_dof_postprocess.hpp"
+#include <stdafx.hpp>
+#include <hdr_dof_postprocess.hpp>
 
-#include "glsl_program_factory.hpp"
+#include <glsl_program_factory.hpp>
 
-#include "human_vision_properties.hpp"
+#include <human_vision_properties.hpp>
 
-#include "hdr_compute_minmax_task.hpp"
-#include "hdr_create_histogram_task.hpp"
-#include "hdr_compute_histogram_sums_task.hpp"
-#include "hdr_tonemap_coc_task.hpp"
-#include "hdr_bloom_blurx_task.hpp"
-#include "hdr_bloom_blury_task.hpp"
-#include "hdr_bokeh_blur_task.hpp"
+#include <hdr_compute_minmax_task.hpp>
+#include <hdr_create_histogram_task.hpp>
+#include <hdr_compute_histogram_sums_task.hpp>
+#include <hdr_tonemap_coc_task.hpp>
+#include <hdr_bloom_blurx_task.hpp>
+#include <hdr_bloom_blury_task.hpp>
+#include <hdr_bokeh_blur_task.hpp>
 
-#include "sampler.hpp"
+#include <sampler.hpp>
 
 using namespace StE::Graphics;
 

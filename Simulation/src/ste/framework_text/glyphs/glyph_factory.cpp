@@ -1,11 +1,11 @@
 
-#include "stdafx.hpp"
-#include "glyph_factory.hpp"
+#include <stdafx.hpp>
+#include <glyph_factory.hpp>
 
-#include "make_distance_map.hpp"
+#include <make_distance_map.hpp>
 
-#include "thread_constants.hpp"
-#include "hash_combine.hpp"
+#include <thread_constants.hpp>
+#include <hash_combine.hpp>
 
 #include <unordered_map>
 #include <functional>

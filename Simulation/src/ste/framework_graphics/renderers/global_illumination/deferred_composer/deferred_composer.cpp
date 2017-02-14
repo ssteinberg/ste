@@ -1,27 +1,27 @@
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
-#include "deferred_composer.hpp"
-#include "gi_renderer.hpp"
+#include <deferred_composer.hpp>
+#include <gi_renderer.hpp>
 
-#include "microfacet_refraction_fit.hpp"
-#include "microfacet_transmission_fit.hpp"
+#include <microfacet_refraction_fit.hpp>
+#include <microfacet_transmission_fit.hpp>
 
-#include "atmospherics_precompute_scattering.hpp"
+#include <atmospherics_precompute_scattering.hpp>
 
-#include "Quad.hpp"
+#include <Quad.hpp>
 
-#include "sampler.hpp"
+#include <sampler.hpp>
 
-#include "gl_current_context.hpp"
+#include <gl_current_context.hpp>
 
-#include "Log.hpp"
-#include "attributed_string.hpp"
-#include "attrib.hpp"
+#include <Log.hpp>
+#include <attributed_string.hpp>
+#include <attrib.hpp>
 
 #include <fstream>
 
-#include "surface_factory.hpp"
+#include <surface_factory.hpp>
 
 using namespace StE::Graphics;
 

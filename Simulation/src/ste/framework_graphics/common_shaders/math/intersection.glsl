@@ -1,5 +1,5 @@
 
-#include "common.glsl"
+#include <common.glsl>
 
 /*
  *	Does an intersection test of an open sphere with a frustum.

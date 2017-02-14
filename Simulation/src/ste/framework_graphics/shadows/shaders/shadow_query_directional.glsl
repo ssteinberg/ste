@@ -1,9 +1,9 @@
 
-#include "shadow_common.glsl"
+#include <shadow_common.glsl>
 
-#include "deferred_shading_common.glsl"
-#include "light_cascades.glsl"
-#include "project.glsl"
+#include <deferred_shading_common.glsl>
+#include <light_cascades.glsl>
+#include <project.glsl>
 
 const float shadow_directional_max_penumbra = 8.f / shadow_dirmap_size;
 const float shadow_directional_min_penumbra = .0f;//1.f / shadow_dirmap_size;

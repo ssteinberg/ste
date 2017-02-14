@@ -3,10 +3,10 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "texture_handle.hpp"
+#include <stdafx.hpp>
+#include <texture_handle.hpp>
 
-#include "material_layer_descriptor.hpp"
+#include <material_layer_descriptor.hpp>
 
 namespace StE {
 namespace Graphics {

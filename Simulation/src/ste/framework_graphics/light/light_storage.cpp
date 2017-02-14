@@ -1,6 +1,6 @@
 
-#include "stdafx.hpp"
-#include "light_storage.hpp"
+#include <stdafx.hpp>
+#include <light_storage.hpp>
 
 #include <limits>
 

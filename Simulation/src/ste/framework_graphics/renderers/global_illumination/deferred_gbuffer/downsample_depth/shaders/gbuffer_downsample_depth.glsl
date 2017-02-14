@@ -5,7 +5,7 @@
 
 layout(local_size_x = 32, local_size_y = 32) in;
 
-#include "common.glsl"
+#include <common.glsl>
 
 layout(bindless_sampler) uniform sampler2D depth_target;
 layout(bindless_sampler) uniform sampler2D downsampled_depth_target;

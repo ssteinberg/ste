@@ -10,7 +10,7 @@
 #include <memory>
 #include <array>
 
-#include "log_sink.hpp"
+#include <log_sink.hpp>
 
 namespace StE {
 

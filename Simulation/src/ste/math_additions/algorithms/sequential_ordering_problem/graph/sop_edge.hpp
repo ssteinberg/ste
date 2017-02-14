@@ -3,9 +3,9 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "graph_vertex.hpp"
-#include "graph_edge.hpp"
+#include <stdafx.hpp>
+#include <graph_vertex.hpp>
+#include <graph_edge.hpp>
 
 namespace StE {
 namespace Algorithm {

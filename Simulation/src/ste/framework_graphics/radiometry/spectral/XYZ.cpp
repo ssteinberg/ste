@@ -1,7 +1,7 @@
 
-#include "stdafx.hpp"
-#include "XYZ.hpp"
-#include "kelvin.hpp"
+#include <stdafx.hpp>
+#include <XYZ.hpp>
+#include <kelvin.hpp>
 
 using namespace StE::Graphics;
 

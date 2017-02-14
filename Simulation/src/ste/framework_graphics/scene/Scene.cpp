@@ -1,14 +1,14 @@
 
-#include "stdafx.hpp"
-#include "scene.hpp"
+#include <stdafx.hpp>
+#include <scene.hpp>
 
-#include "resource_instance.hpp"
-#include "resource_loading_task.hpp"
-#include "glsl_program.hpp"
+#include <resource_instance.hpp>
+#include <resource_loading_task.hpp>
+#include <glsl_program.hpp>
 
-#include "gl_current_context.hpp"
+#include <gl_current_context.hpp>
 
-#include "object_group_draw_buffers.hpp"
+#include <object_group_draw_buffers.hpp>
 
 using namespace StE::Graphics;
 

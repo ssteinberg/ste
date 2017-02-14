@@ -5,13 +5,13 @@
 
 layout(local_size_x = 32, local_size_y = 32, local_size_z = 1) in;
 
-#include "common.glsl"
+#include <common.glsl>
 
-#include "light.glsl"
-#include "linked_light_lists.glsl"
-#include "linked_light_lists_store.glsl"
+#include <light.glsl>
+#include <linked_light_lists.glsl>
+#include <linked_light_lists_store.glsl>
 
-#include "girenderer_transform_buffer.glsl"
+#include <girenderer_transform_buffer.glsl>
 
 layout(std430, binding = 2) restrict readonly buffer light_data {
 	light_descriptor light_buffer[];

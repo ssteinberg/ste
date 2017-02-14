@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "spectrum.hpp"
+#include <spectrum.hpp>
 
 namespace StE {
 namespace Graphics {
@@ -46,7 +46,7 @@ public:
 }
 }
 
-#include "XYZ.hpp"
+#include <XYZ.hpp>
 
 namespace StE {
 namespace Graphics {

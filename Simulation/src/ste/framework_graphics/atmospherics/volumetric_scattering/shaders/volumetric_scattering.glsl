@@ -1,11 +1,11 @@
 
-#include "common.glsl"
+#include <common.glsl>
 
-#include "girenderer_transform_buffer.glsl"
-#include "project.glsl"
+#include <girenderer_transform_buffer.glsl>
+#include <project.glsl>
 
-#include "atmospherics.glsl"
-#include "linked_light_lists.glsl"
+#include <atmospherics.glsl>
+#include <linked_light_lists.glsl>
 
 const int volumetric_scattering_tile_size = lll_image_res_multiplier;
 const int volumetric_scattering_depth_tiles = 256;

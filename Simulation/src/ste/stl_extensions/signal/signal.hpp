@@ -6,7 +6,7 @@
 #include <memory>
 #include <unordered_map>
 
-#include "connection.hpp"
+#include <connection.hpp>
 
 namespace StE {
 

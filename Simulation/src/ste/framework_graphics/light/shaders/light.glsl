@@ -1,17 +1,17 @@
 
-#include "light_type.glsl"
+#include <light_type.glsl>
 
-#include "common.glsl"
-#include "pack.glsl"
-#include "chromaticity.glsl"
+#include <common.glsl>
+#include <pack.glsl>
+#include <chromaticity.glsl>
 
-#include "quaternion.glsl"
-#include "dual_quaternion.glsl"
+#include <quaternion.glsl>
+#include <dual_quaternion.glsl>
 
-#include "girenderer_transform_buffer.glsl"
+#include <girenderer_transform_buffer.glsl>
 
-#include "light_transport.glsl"
-#include "atmospherics.glsl"
+#include <light_transport.glsl>
+#include <atmospherics.glsl>
 
 const int max_active_lights_per_frame = 24;
 const int max_active_directional_lights_per_frame = 4;

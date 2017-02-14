@@ -7,11 +7,11 @@
 layout(triangles) in;
 layout(triangle_strip, max_vertices=18) out;
 
-#include "light.glsl"
-#include "shadow.glsl"
-#include "shadow_drawid_to_lightid_ttl.glsl"
+#include <light.glsl>
+#include <shadow.glsl>
+#include <shadow_drawid_to_lightid_ttl.glsl>
 
-#include "project.glsl"
+#include <project.glsl>
 
 in vs_out {
 	flat int instanceIdx;

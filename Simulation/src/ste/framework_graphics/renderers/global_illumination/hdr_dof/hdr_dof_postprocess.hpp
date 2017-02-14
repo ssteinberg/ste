@@ -3,27 +3,27 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "ste_engine_control.hpp"
+#include <stdafx.hpp>
+#include <ste_engine_control.hpp>
 
-#include "resource_instance.hpp"
-#include "resource_loading_task.hpp"
+#include <resource_instance.hpp>
+#include <resource_loading_task.hpp>
 
-#include "signal.hpp"
+#include <signal.hpp>
 
-#include "gpu_task.hpp"
-#include "Quad.hpp"
+#include <gpu_task.hpp>
+#include <Quad.hpp>
 
-#include "image.hpp"
-#include "texture_1d.hpp"
-#include "texture_2d.hpp"
-#include "shader_storage_buffer.hpp"
-#include "pixel_buffer_object.hpp"
-#include "atomic_counter_buffer_object.hpp"
-#include "framebuffer_object.hpp"
-#include "glsl_program.hpp"
+#include <image.hpp>
+#include <texture_1d.hpp>
+#include <texture_2d.hpp>
+#include <shader_storage_buffer.hpp>
+#include <pixel_buffer_object.hpp>
+#include <atomic_counter_buffer_object.hpp>
+#include <framebuffer_object.hpp>
+#include <glsl_program.hpp>
 
-#include "deferred_gbuffer.hpp"
+#include <deferred_gbuffer.hpp>
 
 #include <memory>
 #include <array>

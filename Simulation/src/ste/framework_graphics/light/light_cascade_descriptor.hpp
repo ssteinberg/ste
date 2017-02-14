@@ -3,9 +3,9 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
-#include "observable_resource.hpp"
+#include <observable_resource.hpp>
 
 namespace StE {
 namespace Graphics {

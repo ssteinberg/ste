@@ -3,52 +3,52 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "ste_engine_control.hpp"
-#include "rendering_system.hpp"
+#include <stdafx.hpp>
+#include <ste_engine_control.hpp>
+#include <rendering_system.hpp>
 
-#include "resource_instance.hpp"
-#include "resource_loading_task.hpp"
+#include <resource_instance.hpp>
+#include <resource_loading_task.hpp>
 
-#include "camera.hpp"
-#include "transforms_ring_buffers.hpp"
+#include <camera.hpp>
+#include <transforms_ring_buffers.hpp>
 
-#include "atmospherics_properties.hpp"
-#include "atmospherics_buffer.hpp"
+#include <atmospherics_properties.hpp>
+#include <atmospherics_buffer.hpp>
 
-#include "gpu_dispatchable.hpp"
-#include "gpu_task.hpp"
-#include "profiler.hpp"
+#include <gpu_dispatchable.hpp>
+#include <gpu_task.hpp>
+#include <profiler.hpp>
 
-#include "scene.hpp"
-#include "scene_prepopulate_depth_dispatch.hpp"
-#include "scene_geo_cull_dispatch.hpp"
+#include <scene.hpp>
+#include <scene_prepopulate_depth_dispatch.hpp>
+#include <scene_geo_cull_dispatch.hpp>
 
-#include "light.hpp"
-#include "light_preprocessor.hpp"
-#include "linked_light_lists.hpp"
-#include "linked_light_lists_gen_dispatch.hpp"
+#include <light.hpp>
+#include <light_preprocessor.hpp>
+#include <linked_light_lists.hpp>
+#include <linked_light_lists_gen_dispatch.hpp>
 
-#include "hdr_dof_postprocess.hpp"
+#include <hdr_dof_postprocess.hpp>
 
-#include "fxaa_dispatchable.hpp"
+#include <fxaa_dispatchable.hpp>
 
-#include "shadowmap_storage.hpp"
-#include "shadowmap_projector.hpp"
-#include "directional_shadowmap_projector.hpp"
+#include <shadowmap_storage.hpp>
+#include <shadowmap_projector.hpp>
+#include <directional_shadowmap_projector.hpp>
 
-#include "volumetric_scattering_storage.hpp"
-#include "volumetric_scattering_scatter_dispatch.hpp"
+#include <volumetric_scattering_storage.hpp>
+#include <volumetric_scattering_scatter_dispatch.hpp>
 
-#include "deferred_composer.hpp"
+#include <deferred_composer.hpp>
 
-#include "deferred_gbuffer.hpp"
-#include "gbuffer_downsample_depth_dispatch.hpp"
+#include <deferred_gbuffer.hpp>
+#include <gbuffer_downsample_depth_dispatch.hpp>
 
-#include "dense_voxel_space.hpp"
-#include "fb_clear_dispatch.hpp"
+#include <dense_voxel_space.hpp>
+#include <fb_clear_dispatch.hpp>
 
-#include "glsl_program.hpp"
+#include <glsl_program.hpp>
 
 #include <memory>
 
@@ -165,4 +165,4 @@ public:
 }
 }
 
-#include "girenderer_loader.hpp"
+#include <girenderer_loader.hpp>

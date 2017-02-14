@@ -1,5 +1,5 @@
 
-#include "constants.glsl"
+#include <constants.glsl>
 
 const float atmospherics_optical_length_air_lut_idx = 0;
 const float atmospherics_optical_length_aerosols_lut_idx = 1;

@@ -5,9 +5,9 @@
 #extension GL_NV_shader_atomic_fp16_vector : require
 #extension GL_NV_gpu_shader5 : require
 
-#include "common.glsl"
-#include "material.glsl"
-#include "voxels.glsl"
+#include <common.glsl>
+#include <material.glsl>
+#include <voxels.glsl>
 
 layout(std430, binding = 0) restrict readonly buffer material_data {
 	material_descriptor mat_descriptor[];

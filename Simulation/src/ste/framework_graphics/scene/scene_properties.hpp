@@ -3,9 +3,9 @@
 
 #pragma once
 
-#include "material_storage.hpp"
-#include "material_layer_storage.hpp"
-#include "light_storage.hpp"
+#include <material_storage.hpp>
+#include <material_layer_storage.hpp>
+#include <light_storage.hpp>
 
 namespace StE {
 namespace Graphics {

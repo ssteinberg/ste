@@ -3,12 +3,12 @@
 #version 450
 #extension GL_ARB_bindless_texture : require
 
-#include "common.glsl"
-#include "chromaticity.glsl"
-#include "hdr_common.glsl"
-#include "fast_rand.glsl"
+#include <common.glsl>
+#include <chromaticity.glsl>
+#include <hdr_common.glsl>
+#include <fast_rand.glsl>
 
-#include "girenderer_transform_buffer.glsl"
+#include <girenderer_transform_buffer.glsl>
 
 out vec3 gl_FragColor;
 

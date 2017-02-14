@@ -30,7 +30,7 @@ THE SOFTWARE.
 #include <cstdlib>
 #include <cstring>
 
-#include "edtaa3func.hpp"
+#include <edtaa3func.hpp>
 
 void inline make_distance_map(unsigned char *img, unsigned int width, unsigned int height, float *out) {
 	short * xdist = reinterpret_cast<short *>(malloc(width * height * sizeof(short)));

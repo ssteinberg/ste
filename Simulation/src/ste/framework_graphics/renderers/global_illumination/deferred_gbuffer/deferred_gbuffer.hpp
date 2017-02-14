@@ -3,13 +3,13 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
-#include "signal.hpp"
+#include <signal.hpp>
 
-#include "texture_2d.hpp"
-#include "texture_2d_array.hpp"
-#include "framebuffer_object.hpp"
+#include <texture_2d.hpp>
+#include <texture_2d_array.hpp>
+#include <framebuffer_object.hpp>
 
 #include <memory>
 

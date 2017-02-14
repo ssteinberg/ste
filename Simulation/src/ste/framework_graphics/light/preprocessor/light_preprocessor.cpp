@@ -1,8 +1,8 @@
 
-#include "stdafx.hpp"
-#include "light_preprocessor.hpp"
+#include <stdafx.hpp>
+#include <light_preprocessor.hpp>
 
-#include "extract_projection_planes.hpp"
+#include <extract_projection_planes.hpp>
 
 using namespace StE::Graphics;
 using namespace StE::Core;

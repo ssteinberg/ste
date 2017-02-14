@@ -3,9 +3,9 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
-#include "vertex_buffer_object.hpp"
+#include <vertex_buffer_object.hpp>
 
 namespace StE {
 namespace Text {

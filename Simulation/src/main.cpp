@@ -1,8 +1,11 @@
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
 #include <ste.hpp>
+#include <vk_instance.hpp>
+#include <vk_logical_device.hpp>
 
+using namespace StE::GL;
 
 #ifdef _MSC_VER
 int CALLBACK WinMain(HINSTANCE hInstance,
@@ -98,33 +101,33 @@ int main()
 	return 0;
 }
 
-//#include "gl_utils.hpp"
-//#include "log.hpp"
-//#include "keyboard.hpp"
-//#include "pointer.hpp"
-//#include "ste_engine_control.hpp"
-//#include "gi_renderer.hpp"
-//#include "basic_renderer.hpp"
-//#include "quad_light.hpp"
-//#include "model_factory.hpp"
-//#include "camera.hpp"
-//#include "surface_factory.hpp"
-//#include "texture_2d.hpp"
-//#include "scene.hpp"
-//#include "object.hpp"
-//#include "text_manager.hpp"
-//#include "attributed_string.hpp"
-//#include "rgb.hpp"
-//#include "kelvin.hpp"
-//#include "sphere.hpp"
-//#include "gpu_task.hpp"
-//#include "profiler.hpp"
-//#include "future_collection.hpp"
-//#include "resource_instance.hpp"
+//#include <gl_utils.hpp>
+//#include <log.hpp>
+//#include <keyboard.hpp>
+//#include <pointer.hpp>
+//#include <ste_engine_control.hpp>
+//#include <gi_renderer.hpp>
+//#include <basic_renderer.hpp>
+//#include <quad_light.hpp>
+//#include <model_factory.hpp>
+//#include <camera.hpp>
+//#include <surface_factory.hpp>
+//#include <texture_2d.hpp>
+//#include <scene.hpp>
+//#include <object.hpp>
+//#include <text_manager.hpp>
+//#include <attributed_string.hpp>
+//#include <rgb.hpp>
+//#include <kelvin.hpp>
+//#include <sphere.hpp>
+//#include <gpu_task.hpp>
+//#include <profiler.hpp>
+//#include <future_collection.hpp>
+//#include <resource_instance.hpp>
 //
 //#include <imgui/imgui.h>
-//#include "debug_gui.hpp"
-//#include "polygonal_light.hpp"
+//#include <debug_gui.hpp>
+//#include <polygonal_light.hpp>
 
 //#define STATIC_SCENE
 

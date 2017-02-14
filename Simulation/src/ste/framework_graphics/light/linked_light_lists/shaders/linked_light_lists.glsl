@@ -1,5 +1,5 @@
 
-#include "light.glsl"
+#include <light.glsl>
 
 struct lll_element {
 	uvec2 data;

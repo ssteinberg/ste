@@ -1,7 +1,7 @@
 
-#include "stdafx.hpp"
-#include "kelvin.hpp"
-#include "rgb.hpp"
+#include <stdafx.hpp>
+#include <kelvin.hpp>
+#include <rgb.hpp>
 
 using namespace StE::Graphics;
 

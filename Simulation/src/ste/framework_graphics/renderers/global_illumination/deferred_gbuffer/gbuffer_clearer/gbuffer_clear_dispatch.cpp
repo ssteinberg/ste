@@ -1,6 +1,6 @@
 
-#include "stdafx.hpp"
-#include "gbuffer_clear_dispatch.hpp"
+#include <stdafx.hpp>
+#include <gbuffer_clear_dispatch.hpp>
 
 using namespace StE::Graphics;
 

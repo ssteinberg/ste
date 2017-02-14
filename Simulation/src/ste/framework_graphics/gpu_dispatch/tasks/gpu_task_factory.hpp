@@ -3,11 +3,11 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
-#include "gpu_task.hpp"
+#include <gpu_task.hpp>
 
-#include "framebuffer_object.hpp"
+#include <framebuffer_object.hpp>
 
 #include <functional>
 #include <memory>

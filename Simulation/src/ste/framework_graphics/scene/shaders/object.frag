@@ -3,8 +3,8 @@
 #version 450
 #extension GL_ARB_bindless_texture : require
 
-#include "material.glsl"
-#include "gbuffer_store.glsl"
+#include <material.glsl>
+#include <gbuffer_store.glsl>
 
 layout(location = 0) out vec4 gbuffer0;
 layout(location = 1) out vec4 gbuffer1;

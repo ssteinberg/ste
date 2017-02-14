@@ -3,16 +3,16 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
-#include "trace.hpp"
+#include <trace.hpp>
 
 #include <string>
 #include <condition_variable>
 
 #include <iostream>
 
-#include "log_entry.hpp"
+#include <log_entry.hpp>
 
 namespace StE {
 

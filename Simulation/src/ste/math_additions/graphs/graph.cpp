@@ -1,8 +1,8 @@
 
-#include "stdafx.hpp"
-#include "graph.hpp"
+#include <stdafx.hpp>
+#include <graph.hpp>
 
-#include "graph_detail.hpp"
+#include <graph_detail.hpp>
 
 // #include <graphviz/cgraph.h>
 // #include <graphviz/gvc.h>

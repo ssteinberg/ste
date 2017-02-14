@@ -1,6 +1,6 @@
 
-#include "stdafx.hpp"
-#include "shadowmap_storage.hpp"
+#include <stdafx.hpp>
+#include <shadowmap_storage.hpp>
 
 using namespace StE::Graphics;
 

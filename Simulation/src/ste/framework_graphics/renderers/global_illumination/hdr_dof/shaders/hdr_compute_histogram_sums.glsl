@@ -3,9 +3,9 @@
 #version 450
 #extension GL_ARB_bindless_texture : require
 
-#include "hdr_common.glsl"
+#include <hdr_common.glsl>
 
-#include "girenderer_transform_buffer.glsl"
+#include <girenderer_transform_buffer.glsl>
 
 layout(local_size_x = bins / 2, local_size_y = 1) in;
 

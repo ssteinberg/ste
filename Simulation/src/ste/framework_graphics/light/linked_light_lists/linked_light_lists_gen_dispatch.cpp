@@ -1,6 +1,6 @@
 
-#include "stdafx.hpp"
-#include "linked_light_lists_gen_dispatch.hpp"
+#include <stdafx.hpp>
+#include <linked_light_lists_gen_dispatch.hpp>
 
 using namespace StE::Graphics;
 using namespace StE::Core;

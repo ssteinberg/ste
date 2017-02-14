@@ -3,12 +3,12 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
-#include "function_traits.hpp"
-#include "thread_constants.hpp"
+#include <function_traits.hpp>
+#include <thread_constants.hpp>
 
-#include "future_collection.hpp"
+#include <future_collection.hpp>
 
 #include <functional>
 #include <memory>
@@ -29,8 +29,7 @@ class task_scheduler;
 class task_future_chaining_construct {};
 
 /**
- *	@brief	Thread-safe wrapper around std::future. Used by StE::task_scheduler, allows future chaining as well
- *			as chaining on main thread.
+ *	@brief	Thread-safe wrapper around std::future. Used by StE::task_scheduler.
  *			For thread safety task_future employs finely-grained read-write locks
  *
  *	@param R			Future return type

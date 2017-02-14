@@ -4,7 +4,7 @@
 #pragma once
 
 #ifdef _MSC_VER
-#include "windows.hpp"
+#include <windows.hpp>
 #elif defined _linux
 #include <cstdio>
 #else

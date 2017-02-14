@@ -3,17 +3,17 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
-#include "concurrent_queue.hpp"
-#include "interruptible_thread.hpp"
-#include "thread_pool_task.hpp"
+#include <concurrent_queue.hpp>
+#include <interruptible_thread.hpp>
+#include <thread_pool_task.hpp>
 
-#include "thread_constants.hpp"
-#include "thread_priority.hpp"
-#include "thread_affinity.hpp"
+#include <thread_constants.hpp>
+#include <thread_priority.hpp>
+#include <thread_affinity.hpp>
 
-#include "system_times.hpp"
+#include <system_times.hpp>
 
 #include <atomic>
 #include <mutex>

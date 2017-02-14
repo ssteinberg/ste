@@ -3,15 +3,15 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "ste_engine_control.hpp"
+#include <stdafx.hpp>
+#include <ste_engine_control.hpp>
 
-#include "glsl_program.hpp"
-#include "gpu_dispatchable.hpp"
+#include <glsl_program.hpp>
+#include <gpu_dispatchable.hpp>
 
-#include "light_storage.hpp"
-#include "scene.hpp"
-#include "shadowmap_storage.hpp"
+#include <light_storage.hpp>
+#include <scene.hpp>
+#include <shadowmap_storage.hpp>
 
 namespace StE {
 namespace Graphics {
