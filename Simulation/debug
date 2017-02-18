@@ -1,2 +1,0 @@
-primusrun ./bin/simulation_debug.elf
-primusrun sleep 10 &

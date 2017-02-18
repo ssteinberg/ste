@@ -26,8 +26,8 @@ private:
 public:
 	vk_logical_device(const vk_physical_device_descriptor &physical_device,
 					  const VkPhysicalDeviceFeatures &requested_features,
-					  const std::vector<VkDeviceQueueCreateInfo> requested_queues,
-					  const std::vector<const char*> device_extensions)
+					  const std::vector<VkDeviceQueueCreateInfo> &requested_queues,
+					  const std::vector<const char*> &device_extensions)
 		: physical_device(physical_device), requested_features(requested_features),
 		requested_queues(requested_queues), enabled_extensions(device_extensions)
 	{
@@ -43,10 +43,13 @@ public:
 		device_info.pQueueCreateInfos = &requested_queues[0];
 		device_info.pEnabledFeatures = &requested_features;
 
-		vk_result res = vkCreateDevice(physical_device.device, &device_info, nullptr, &logical_device);
+		VkDevice device;
+		vk_result res = vkCreateDevice(physical_device.device, &device_info, nullptr, &device);
 		if (!res) {
 			throw vk_exception(res);
 		}
+
+		this->logical_device = device;
 	}
 
 	~vk_logical_device() noexcept {
@@ -57,11 +60,32 @@ public:
 		logical_device = nullptr;
 	}
 
-	vk_logical_device(vk_logical_device &&) = default;
+	vk_logical_device(vk_logical_device &&s) noexcept
+		: physical_device(s.physical_device), logical_device(s.logical_device), requested_features(s.requested_features),
+		requested_queues(s.requested_queues), enabled_extensions(s.enabled_extensions)
+	{
+		s.logical_device = nullptr;
+	}
+	vk_logical_device &operator=(vk_logical_device &&s) noexcept {
+		physical_device = s.physical_device;
+		logical_device = s.logical_device;
+		requested_features = s.requested_features;
+		requested_queues = s.requested_queues;
+		enabled_extensions = s.enabled_extensions;
+
+		s.logical_device = nullptr;
+
+		return *this;
+	}
+
+	vk_logical_device(const vk_logical_device &) = delete;
+	vk_logical_device &operator=(const vk_logical_device &) = delete;
 
 	auto &get_physical_device_descriptor() const { return physical_device; }
 	auto &get_device() const { return logical_device; }
 	auto &get_requested_features() const { return requested_features; }
+
+	operator VkDevice() const { return get_device(); }
 };
 
 }

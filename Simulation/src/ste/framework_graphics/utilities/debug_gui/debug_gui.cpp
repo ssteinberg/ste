@@ -5,7 +5,7 @@
 #include <gl_current_context.hpp>
 
 #include <imgui/imgui.h>
-#include <imgui_impl_glfw_gl3.h>
+#include "imgui_glfw_integration/imgui_impl_glfw_gl3.h"
 #include <imgui_timeline.hpp>
 
 #include <gl_utils.hpp>

@@ -10,7 +10,7 @@ namespace StE {
 namespace GL {
 
 struct vk_physical_device_descriptor {
-	VkPhysicalDevice device;
+	VkPhysicalDevice device{ nullptr };
 
 	VkPhysicalDeviceProperties properties;
 	VkPhysicalDeviceFeatures features;

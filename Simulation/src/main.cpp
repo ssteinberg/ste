@@ -2,10 +2,27 @@
 #include <stdafx.hpp>
 
 #include <ste.hpp>
-#include <vk_instance.hpp>
-#include <vk_logical_device.hpp>
+#include <ste_presentation_device.hpp>
 
 using namespace StE::GL;
+
+auto requested_device_features() {
+	VkPhysicalDeviceFeatures requested_features;
+	memset(&requested_features, 0, sizeof(requested_features));
+	requested_features.drawIndirectFirstInstance = VK_TRUE;
+	requested_features.fragmentStoresAndAtomics = VK_TRUE;
+	requested_features.geometryShader = VK_TRUE;
+	requested_features.imageCubeArray = VK_TRUE;
+	requested_features.multiDrawIndirect = VK_TRUE;
+	requested_features.samplerAnisotropy = VK_TRUE;
+	requested_features.shaderImageGatherExtended = VK_TRUE;
+	requested_features.sparseBinding = VK_TRUE;
+	requested_features.sparseResidencyBuffer = VK_TRUE;
+	requested_features.sparseResidencyImage2D = VK_TRUE;
+	requested_features.sparseResidencyImage3D = VK_TRUE;
+
+	return requested_features;
+}
 
 #ifdef _MSC_VER
 int CALLBACK WinMain(HINSTANCE hInstance,
@@ -25,78 +42,49 @@ int main()
 	ste_log_set_global_logger(&logger);
 	ste_log() << "Simulation is running";
 
-	glfwInit();
-	if (!glfwVulkanSupported()) {
-		std::cout << "unknown error\n";
-		return 1;
-	}
 
-	VkPhysicalDeviceFeatures requested_features;
-	memset(&requested_features, 0, sizeof(requested_features));
-	requested_features.imageCubeArray = VK_TRUE;
-	requested_features.geometryShader = VK_TRUE;
-	requested_features.multiDrawIndirect = VK_TRUE;
-	requested_features.drawIndirectFirstInstance = VK_TRUE;
-	requested_features.samplerAnisotropy = VK_TRUE;
-	requested_features.fragmentStoresAndAtomics = VK_TRUE;
-	requested_features.shaderImageGatherExtended = VK_TRUE;
-	requested_features.sparseBinding = VK_TRUE;
-	requested_features.sparseResidencyBuffer = VK_TRUE;
-	requested_features.sparseResidencyImage2D = VK_TRUE;
-	requested_features.sparseResidencyImage3D = VK_TRUE;
+	/*
+	*	Create window
+	*/
+	StE::ste_window window("StE - Simulation", { 1920, 1080 });
+	auto& window_signals = window.get_signals();
 
-	std::unique_ptr<vk_instance> instance;
-	{
-		std::vector<const char*> instance_extensions;
-		std::vector<const char*> instance_validation_layers;
 
-		{
-			std::uint32_t count;
-			const char** extensions = glfwGetRequiredInstanceExtensions(&count);
-			for (unsigned i=0;i<count;++i)
-				instance_extensions.push_back(extensions[i]);
-		}
+	/*
+	*	Create gl context and query physical devices
+	*/
+	StE::GL::ste_gl_context_creation_parameters gl_params;
+	gl_params.client_name = "Simulation";
+	gl_params.client_version = 1;
+	gl_params.debug_context = false;
+#ifdef DEBUG
+	gl_params.debug_context = true;
+#endif
 
-		instance_extensions.push_back("VK_EXT_debug_report");
-		instance_validation_layers.push_back("VK_LAYER_LUNARG_standard_validation");
+	ste_gl_context gl_ctx(gl_params);
 
-		instance = std::make_unique<vk_instance>("app_name", 1, instance_extensions, instance_validation_layers);
-	}
+	auto features = requested_device_features();
+	auto available_devices = gl_ctx.enumerate_physical_devices(features, 4000ul * 1024 * 1024);
+	auto physical_device = available_devices[0];
 
-	auto devices = instance->enumerate_physical_devices(requested_features, 4000ul * 1024 * 1024);
 
-	std::unique_ptr<vk_logical_device> logical_device;
-	{
-		VkDeviceQueueCreateInfo device_queue_info;
-		device_queue_info.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-		device_queue_info.pNext = nullptr;
-		device_queue_info.flags = 0;
-		device_queue_info.pQueuePriorities = nullptr;
-		device_queue_info.queueCount = 1;
-		device_queue_info.queueFamilyIndex = 0;
+	/*
+	*	Select a physical device, and create a presentation device
+	*/
+	ste_gl_presentation_device_creation_parameters device_params;
+	device_params.physical_device = physical_device;
+	device_params.requested_device_features = features;
+	device_params.vsync = ste_presentation_device_vsync::mailbox;
+	device_params.additional_device_extensions = { "VK_KHR_shader_draw_parameters" };
 
-		logical_device = std::make_unique<vk_logical_device>(devices[0],
-															  requested_features, 
-															  std::vector<VkDeviceQueueCreateInfo>{ device_queue_info },
-															  std::vector<const char*>{ "VK_KHR_shader_draw_parameters" });
-	}
+	StE::ste_engine::gl_device_t device(device_params, gl_ctx, window);
 
-	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-	auto win = glfwCreateWindow(500, 500, "vk test", nullptr, nullptr);
 
-	VkSurfaceKHR surface;
-	{
-		auto res = glfwCreateWindowSurface(instance->get_instance(), win, nullptr, &surface);
-		if (res) {
-			std::cout << "unknown error\n";
-			return 1;
-		}
-	}
+	/*
+	*	Create StE engine instance
+	*/
+	StE::ste_engine engine(gl_ctx, device);
 
-	glfwDestroyWindow(win);
-	vkDestroySurfaceKHR(instance->get_instance(), surface, nullptr);
-
-	glfwTerminate();
 
 	return 0;
 }
@@ -316,7 +304,7 @@ int main()
 //	ctx.set_clipping_planes(clip_near);
 //	ctx.set_fov(fovy);
 //
-//	using ResizeSignalConnectionType = StE::ste_engine_control::framebuffer_resize_signal_type::connection_type;
+//	using ResizeSignalConnectionType = StE::ste_engine_control::window_resize_signal_type::connection_type;
 //	std::shared_ptr<ResizeSignalConnectionType> resize_connection;
 //	resize_connection = std::make_shared<ResizeSignalConnectionType>([&](const glm::i32vec2 &size) {
 //		w = size.x;

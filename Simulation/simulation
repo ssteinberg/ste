@@ -1,2 +1,0 @@
-primusrun ./bin/simulation_release.elf
-primusrun sleep 10 &
