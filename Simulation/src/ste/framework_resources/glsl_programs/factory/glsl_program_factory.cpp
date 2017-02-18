@@ -307,7 +307,8 @@ StE::task_future<std::unique_ptr<glsl_program_object>> glsl_program_factory::loa
 		}
 
 		return data;
-	}).then_on_main_thread([=, &context](loader_data data) -> std::unique_ptr<glsl_program_object> {
+		// TODO: Fix
+	}).then/*_on_main_thread*/([=, &context](loader_data data) -> std::unique_ptr<glsl_program_object> {
 		if (data.bin.blob.length()) {
 			std::unique_ptr<glsl_program_object> program = std::make_unique<glsl_program_object>();
 			if (program->link_from_binary(data.bin.format, data.bin.blob)) {

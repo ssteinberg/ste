@@ -77,7 +77,8 @@ private:
 			context.cache().insert<glyph>(cache_key, std::move(g));
 
 			return std::move(retg);
-		}).then_on_main_thread([=](glyph &&g) -> const glyph_descriptor* {
+			// TODO: Fix
+		}).then/*_on_main_thread*/([=](glyph &&g) -> const glyph_descriptor* {
 			if (g.empty())
 				return nullptr;
 

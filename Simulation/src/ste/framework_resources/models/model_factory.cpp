@@ -112,7 +112,8 @@ StE::task_future<void> model_factory::process_model_mesh(task_scheduler* sched,
 
 	auto &material = mat_idx >= 0 ? materials[mat_idx] : empty_mat;
 
-	return sched->schedule_now_on_main_thread([=, vbo_data = std::move(vbo_data), vbo_indices = std::move(vbo_indices), &loaded_materials, &loaded_material_layers, &textures, &material]() {
+	// TODO: Fix
+	return sched->schedule_now/*_on_main_thread*/([=, vbo_data = std::move(vbo_data), vbo_indices = std::move(vbo_indices), &loaded_materials, &loaded_material_layers, &textures, &material]() {
 		std::shared_ptr<Core::texture_2d> diff_map = mat_idx >= 0 ? textures[material.diffuse_texname] : nullptr;
 		std::shared_ptr<Core::texture_2d> opacity_map = mat_idx >= 0 ? textures[material.alpha_texname] : nullptr;
 		std::shared_ptr<Core::texture_2d> specular_map = mat_idx >= 0 ? textures[material.specular_texname] : nullptr;
@@ -167,7 +168,8 @@ StE::task_future<void> model_factory::load_texture(task_scheduler* sched,
 			ste_log_warn() << "Couldn't load texture " << full_path.string() << std::endl;
 
 		return std::make_unique<gli::texture2d>(std::move(tex));
-	}).then_on_main_thread([=](std::unique_ptr<gli::texture2d> &&tex) {
+		// TODO: Fix
+	}).then/*_on_main_thread*/([=](std::unique_ptr<gli::texture2d> &&tex) {
 		bool is_displacement_map = displacement;
 
 		if (tex->empty()) {
@@ -290,7 +292,7 @@ StE::task_future<void> model_factory::load_model_async(const ste_engine_control 
 		}
 
 		return textures;
-	}).then_on_main_thread([](std::unique_ptr<texture_map_type> &&textures) {
+	}).then/*_on_main_thread*/([](std::unique_ptr<texture_map_type> &&textures) {
 		textures = nullptr;
 	});
 }

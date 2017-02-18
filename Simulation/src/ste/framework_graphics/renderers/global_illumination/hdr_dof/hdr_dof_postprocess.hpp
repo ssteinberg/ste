@@ -169,7 +169,8 @@ public:
 			object->hdr_bloom_blurx.wait();
 			object->hdr_bloom_blury.wait();
 			object->bokeh_blur.wait();
-		}).then_on_main_thread([object, &ctx]() {
+			// TODO: Fix
+		}).then/*_on_main_thread*/([object, &ctx]() {
 			auto vision_handle = object->hdr_vision_properties_texture->get_texture_handle(object->hdr_vision_properties_sampler);
 			vision_handle.make_resident();
 

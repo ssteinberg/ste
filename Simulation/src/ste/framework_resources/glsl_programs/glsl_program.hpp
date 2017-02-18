@@ -40,7 +40,8 @@ class resource_loading_task<glsl_program> {
 public:
 	auto loader(const ste_engine_control &ctx, R* object) {
 		return glsl_program_factory::load_program_async(ctx, object->names)
-				.then_on_main_thread([object](std::unique_ptr<Core::glsl_program_object> &&program) {
+		// TODO: Fix
+				.then/*_on_main_thread*/([object](std::unique_ptr<Core::glsl_program_object> &&program) {
 					object->program = std::move(program);
 					object->names.clear();
 				});

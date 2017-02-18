@@ -73,7 +73,8 @@ public:
 	auto loader(const ste_engine_control &ctx, R* object) {
 		return ctx.scheduler().schedule_now([object, &ctx]() {
 			object->light_preprocess_cull_lights_program.wait();
-		}).then_on_main_thread([object]() {
+			// TODO: Fix
+		}).then/*_on_main_thread*/([object]() {
 			object->set_projection_planes();
 		});
 	}

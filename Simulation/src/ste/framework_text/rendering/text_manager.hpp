@@ -78,7 +78,8 @@ public:
 	auto loader(const ste_engine_control &ctx, R* object) {
 		return ctx.scheduler().schedule_now([object, &ctx]() {
 			object->text_distance_mapping.wait();
-		}).then_on_main_thread([object, &ctx]() {
+			// TODO: Fix
+		}).then/*_on_main_thread*/([object, &ctx]() {
 			auto size = ctx.get_backbuffer_size();
 			object->text_distance_mapping.get().set_uniform("proj", glm::ortho<float>(0, size.x, 0, size.y, -1, 1));
 			object->text_distance_mapping.get().set_uniform("fb_size", glm::vec2(size));

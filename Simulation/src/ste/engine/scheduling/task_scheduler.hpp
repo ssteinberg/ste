@@ -3,10 +3,8 @@
 
 #pragma once
 
-#include <memory>
 #include <chrono>
 #include <future>
-#include <thread>
 #include <list>
 
 #include <type_traits>
@@ -17,18 +15,16 @@
 #include <balanced_thread_pool.hpp>
 #include <concurrent_queue.hpp>
 #include <function_traits.hpp>
-#include <thread_constants.hpp>
 
 namespace StE {
 
 /**
- *	@brief	Thread-safe task scheduler. Can schedule into a background thread pool or on the main thread.
- * 			Uses a load balancing thread pool. Returns task_futures that natively interruct with task_scheduler
- *			and can be chained.
-*/
+ *	@brief	Thread-safe concurrent, wait-free task scheduler. 
+ * 			Uses a load balancing thread pool. Returns task_futures that natively interruct with task_scheduler.
+ */
 class task_scheduler {
 private:
-	using LoadBalancingPool = balanced_thread_pool;
+	using pool_t = balanced_thread_pool;
 
 	struct delayed_task {
 		std::chrono::high_resolution_clock::time_point run_at;
@@ -36,9 +32,8 @@ private:
 	};
 
 private:
-	LoadBalancingPool pool;
+	pool_t pool;
 
-	concurrent_queue<unique_thread_pool_type_erased_task> main_thread_task_queue;
 	concurrent_queue<delayed_task> delayed_tasks_queue;
 	std::list<delayed_task> delayed_tasks_list;
 
@@ -52,11 +47,12 @@ public:
 	task_scheduler &operator=(task_scheduler &&) = delete;
 
 	/**
-	*	@brief	Load balances thread pool and executes pending main thread tasks.
-	*			Must be called from main thread. Shouldn't be called manually, task_futures and ste_engine_control
-	*			handle it.
+	*	@brief	Load balances thread pool and enqueues delayed tasks
 	*/
-	void tick();
+	void tick() {
+		pool.load_balance();
+		enqueue_delayed();
+	}
 
 	/**
 	*	@brief	Schedule task in background for execution as soon as a worker is free.
@@ -107,26 +103,6 @@ public:
 	}
 
 	/**
-	*	@brief	Schedule task on main thread for execution at next tick iteration.
-	*
-	*	@param f		Lambda to schedule
-	*	@param shared	If true returns a task_shared_future, otherwise a task_future.
-	*/
-	template <bool shared, typename F>
-	task_future_impl<typename function_traits<F>::result_t, shared> schedule_now_on_main_thread(F &&f) {
-		unique_thread_pool_task<typename function_traits<F>::result_t> task(std::forward<F>(f));
-		auto future = task.get_future();
-
-		if (is_main_thread()) {
-			task();
-			return { std::move(future), this };
-		}
-
-		main_thread_task_queue.push(std::move(task));
-		return { std::move(future), this };
-	}
-
-	/**
 	*	@brief	Schedule task in background for execution as soon as a worker is free.
 	*
 	*	@param f		Lambda to schedule
@@ -135,6 +111,7 @@ public:
 	auto schedule_now(F &&f) {
 		return schedule_now<false>(std::forward<F>(f));
 	}
+
 	/**
 	*	@brief	Schedule task in background for execution at a specifed timepoint.
 	*
@@ -145,6 +122,7 @@ public:
 	auto schedule_at(const std::chrono::high_resolution_clock::time_point &at, F &&f) {
 		return schedule_at<false>(at, std::forward<F>(f));
 	}
+
 	/**
 	*	@brief	Schedule task in background for execution after specified duration.
 	*
@@ -154,15 +132,6 @@ public:
 	template <typename F, class Rep, class Period>
 	auto schedule_after(const std::chrono::duration<Rep, Period> &after, F &&f) {
 		return schedule_after<false>(after, std::forward<F>(f));
-	}
-	/**
-	*	@brief	Schedule task on main thread for execution at next tick iteration.
-	*
-	*	@param f		Lambda to schedule
-	*/
-	template <typename F>
-	auto schedule_now_on_main_thread(F &&f) {
-		return schedule_now_on_main_thread<false>(std::forward<F>(f));
 	}
 
 	const balanced_thread_pool *get_thread_pool() const { return &pool; }

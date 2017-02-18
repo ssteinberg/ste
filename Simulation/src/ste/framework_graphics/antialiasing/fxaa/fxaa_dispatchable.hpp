@@ -77,7 +77,8 @@ public:
 	auto loader(const ste_engine_control &ctx, R* object) {
 		return ctx.scheduler().schedule_now([object, &ctx]() {
 			object->program.wait();
-		}).then_on_main_thread([object, &ctx]() {
+			// TODO: Fix
+		}).then/*_on_main_thread*/([object, &ctx]() {
 			object->resize(ctx.get_backbuffer_size());
 		});;
 	}

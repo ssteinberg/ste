@@ -141,7 +141,8 @@ public:
 
 	static auto load_texture_2d_async(task_scheduler &sched, const boost::filesystem::path &path, bool srgb) {
 		return load_surface_2d_async(sched, path, srgb)
-				.then_on_main_thread([](std::unique_ptr<gli::texture2d> &&surface) {
+			// TODO: Fix
+				.then/*_on_main_thread*/([](std::unique_ptr<gli::texture2d> &&surface) {
 					bool mipmap = surface->levels() == 1;
 					return std::make_unique<Core::texture_2d>(*surface, mipmap);
 				});

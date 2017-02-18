@@ -86,7 +86,8 @@ public:
 		return ctx.scheduler().schedule_now([object, &ctx]() {
 			object->program.wait();
 			object->additional_scatter_program_hack->wait();
-		}).then_on_main_thread([object]() {
+			// TODO: Fix
+		}).then/*_on_main_thread*/([object]() {
 			object->attach_handles();
 			object->load_microfacet_fit_luts();
 			object->load_atmospherics_luts();

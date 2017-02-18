@@ -23,14 +23,3 @@ void task_scheduler::enqueue_delayed() {
 			delayed_tasks_list.push_front(std::move(*task));
 	}
 }
-
-void task_scheduler::tick() {
-	assert(is_main_thread());
-
-	std::unique_ptr<unique_thread_pool_type_erased_task> task;
-	while ((task = main_thread_task_queue.pop()) != nullptr)
-		(*task)();
-
-	pool.load_balance();
-	enqueue_delayed();
-}
