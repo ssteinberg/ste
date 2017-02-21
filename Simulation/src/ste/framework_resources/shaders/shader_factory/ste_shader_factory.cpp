@@ -33,6 +33,8 @@ std::string ste_shader_factory::load_source(const boost::filesystem::path &path)
 std::string ste_shader_factory::compile_from_path(const boost::filesystem::path &path,
 												  const boost::filesystem::path &source_path,
 												  ste_shader_type *type) {
+	static const std::vector<std::string> inject_extenions = { "#extension GL_GOOGLE_cpp_style_line_directive : enable" };
+
 	std::string line;
 	std::string src;
 	ste_shader_properties prop{ 0,0 };
@@ -50,7 +52,13 @@ std::string ste_shader_factory::compile_from_path(const boost::filesystem::path 
 		if (line[0] == '#') {
 			if (parse_type(line, *type))
 				line = "";
-			parse_parameters(line, prop);
+			if (parse_parameters(line, prop)) {
+				line += "\n";
+				for (auto &ext : inject_extenions)
+					line += ext + "\n";
+				line += std::string("#line ") + std::to_string(i) + " \"" + path.string() + "\"";
+			}
+
 			parse_include(path, i, line, paths, source_path);
 		}
 	}
@@ -61,8 +69,6 @@ std::string ste_shader_factory::compile_from_path(const boost::filesystem::path 
 		ste_log_error() << path.string() << ": Unknown type or version" << std::endl;
 		throw ste_shader_factory_exception("Unkown shader type or version");
 	}
-
-	src = "#extension GL_GOOGLE_cpp_style_line_directive : enable\n" + src;
 
 	return src;
 }
@@ -117,9 +123,9 @@ std::vector<std::string> ste_shader_factory::find_includes(const boost::filesyst
 	std::string::size_type it = 0, end;
 	std::string name;
 	while ((name = parse_directive(src, "#include", it, end)).length()) {
-		if (name[0] != '"')
+		if (name[0] != '<')
 			break;
-		auto name_len = name.find('"', 1);
+		auto name_len = name.find('>', 1);
 		if (name_len == std::string::npos)
 			break;
 
@@ -284,7 +290,7 @@ bool ste_shader_factory::compile_shader(const boost::filesystem::path &path,
 	}
 
 	// GLSL -> SPIR-v
-	std::string cmd = glslang_path.string() + " -G -o \"" + out_path.string() + "\" \"" + temp_file_path.string() + "\"";
+	std::string cmd = glslang_path.string() + " -V -o \"" + out_path.string() + "\" \"" + temp_file_path.string() + "\"";
 	auto ret = system(cmd.c_str());
 
 	return ret == 0;
