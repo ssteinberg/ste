@@ -1145,12 +1145,6 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\ste_gl_context_creation_parameters.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\ste_presentation_device.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\ste_presentation_surface.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\ste_gl_context.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1166,9 +1160,6 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\command\vk_queue.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\ste_gl_device_queue.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_resources\shaders\ste_shader_properties.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1179,6 +1170,24 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_resources\shaders\shader_factory\ste_shader_factory_exception.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\presentation_device\ste_gl_device_queue.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\presentation_device\ste_presentation_device.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\presentation_device\ste_presentation_surface.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\shader\vk_shader.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\command\vk_command_pool.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\command\vk_command_buffers.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

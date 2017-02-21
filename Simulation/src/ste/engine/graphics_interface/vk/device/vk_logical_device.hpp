@@ -54,7 +54,7 @@ public:
 
 	~vk_logical_device() noexcept {
 		if (logical_device != nullptr) {
-			vkDeviceWaitIdle(logical_device);
+			wait_idle();
 			vkDestroyDevice(logical_device, nullptr);
 		}
 		logical_device = nullptr;
@@ -80,6 +80,10 @@ public:
 
 	vk_logical_device(const vk_logical_device &) = delete;
 	vk_logical_device &operator=(const vk_logical_device &) = delete;
+
+	void wait_idle() const {
+		vkDeviceWaitIdle(*this);
+	}
 
 	auto &get_physical_device_descriptor() const { return physical_device; }
 	auto &get_device() const { return logical_device; }
