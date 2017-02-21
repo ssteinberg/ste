@@ -51,7 +51,7 @@ private:
 public:
 	gbuffer_downsample_depth_dispatch(const ste_engine_control &ctx,
 									  const deferred_gbuffer *gbuffer) : gbuffer(gbuffer),
-									  									 program(ctx, "gbuffer_downsample_depth.glsl") {
+									  									 program(ctx, "gbuffer_downsample_depth.comp") {
 		gbuffer_depth_target_connection = std::make_shared<connection<>>([&]() {
 			attach_handles();
 		});

@@ -45,7 +45,7 @@ private:
 private:
 	light_preprocessor(const ste_engine_control &ctx,
 					   light_storage *ls) : ctx(ctx), ls(ls),
-											light_preprocess_cull_lights_program(ctx, "light_preprocess_cull_lights.glsl") {
+											light_preprocess_cull_lights_program(ctx, "light_preprocess_cull_lights.comp") {
 		resize_connection = std::make_shared<ResizeSignalConnectionType>([=](const glm::i32vec2 &size) {
 			set_projection_planes();
 		});

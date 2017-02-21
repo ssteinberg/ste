@@ -1,18 +1,15 @@
 
 #type frag
 #version 450
-#extension GL_ARB_shader_storage_buffer_object : require
-#extension GL_ARB_bindless_texture : require
 
 struct buffer_glyph_descriptor {
 	int width;
 	int height;
 	int start_y;
 	int start_x;
-	layout(bindless_sampler) sampler2D tex_handler;
+	//layout(bindless_sampler) sampler2D tex_handler;
+	int sampler_idx;
 };
-
-out vec4 gl_FragColor;
 
 in geo_out {
 	vec4 color;
@@ -22,6 +19,8 @@ in geo_out {
 	vec2 st;
 	flat int drawId;
 } vin;
+
+out vec4 frag_color;
 
 layout(std430, binding = 0) restrict readonly buffer glyph_data {
 	buffer_glyph_descriptor glyphs[];
@@ -37,7 +36,7 @@ void main( void ) {
 
 	vec2 uv = vin.st;
 
-	float D = textureLod(glyph.tex_handler, uv, 0).x;
+	float D = 0;//textureLod(glyph.tex_handler, uv, 0).x;
 
 	D -= vin.weight;
 
@@ -52,5 +51,5 @@ void main( void ) {
 	if (vin.stroke_width > 0)
 		c = mix(vin.stroke_color, vin.color, clamp((- D - vin.stroke_width * .9f) / (vin.stroke_width * .2f), 0, 1));
 
-	gl_FragColor = c * vec4(1, 1, 1, g);
+	frag_color = c * vec4(1, 1, 1, g);
 }

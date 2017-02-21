@@ -37,7 +37,7 @@ public:
 							const scene *s,
 							const light_storage *ls) : s(s),
 													   ls(ls),
-													   program(ctx, "scene_geo_cull.glsl") {
+													   program(ctx, "scene_geo_cull.comp") {
 		program.get().set_uniform("cascades_depths", s->properties().lights_storage().get_cascade_depths_array());
 	}
 

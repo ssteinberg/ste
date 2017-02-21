@@ -2,8 +2,6 @@
 #type compute
 #version 450
 
-#extension GL_ARB_bindless_texture : enable
-
 layout(local_size_x = 128) in;
 
 #include <girenderer_transform_buffer.glsl>
@@ -28,14 +26,18 @@ layout(std430, binding = 2) restrict readonly buffer light_data {
 	light_descriptor light_buffer[];
 };
 
-layout(shared, binding = 4) restrict readonly buffer ll_counter_data {
+layout(std430, binding = 4) restrict readonly buffer ll_counter_data {
 	uint ll_counter;
 };
-layout(shared, binding = 5) restrict readonly buffer ll_data {
+layout(std430, binding = 5) restrict readonly buffer ll_data {
 	uint ll[];
 };
 
-layout(binding = 0) uniform atomic_uint counter;
+// TODO: Changed from atomic variable
+layout(std430, binding = 10) restrict buffer counter_data {
+	uint counter;
+};
+
 layout(std430, binding = 10) restrict writeonly buffer idb_data {
 	IndirectMultiDrawElementsCommand idb[];
 };
@@ -45,10 +47,10 @@ layout(std430, binding = 0) restrict writeonly buffer sidb_data {
 layout(std430, binding = 1) restrict writeonly buffer dsidb_data {
 	IndirectMultiDrawElementsCommand dsidb[];
 };
-layout(shared, binding = 8) restrict writeonly buffer drawid_to_lightid_ttl_data {
+layout(std430, binding = 8) restrict writeonly buffer drawid_to_lightid_ttl_data {
 	drawid_to_lightid_ttl ttl[];
 };
-layout(shared, binding = 9) restrict writeonly buffer d_drawid_to_lightid_ttl_data {
+layout(std430, binding = 9) restrict writeonly buffer d_drawid_to_lightid_ttl_data {
 	d_drawid_to_lightid_ttl d_ttl[];
 };
 
@@ -106,7 +108,7 @@ void main() {
 
 	// Write to scene and shadows indirect draw buffers
 	if (shadow_instance_count > 0 || dir_shadow_instance_count > 0) {
-		uint idx = atomicCounterIncrement(counter);
+		uint idx = atomicAdd(counter, 1);
 
 		IndirectMultiDrawElementsCommand c;
 		c.count = mesh_draw_params_buffer[draw_id].count;

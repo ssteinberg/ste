@@ -84,7 +84,7 @@ private:
 										   											   llls(llls),
 																					   ls(ls),
 																					   shadows_storage(shadows_storage),
-																					   program(ctx, "volumetric_scattering_scatter.glsl") {
+																					   program(ctx, "volumetric_scattering_scatter.comp") {
 		vss_storage_connection = std::make_shared<connection<>>([&]() {
 			attach_handles();
 		});

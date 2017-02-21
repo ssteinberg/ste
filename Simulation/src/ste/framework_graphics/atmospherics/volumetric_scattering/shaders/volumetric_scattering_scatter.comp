@@ -1,7 +1,6 @@
 
 #type compute
 #version 450
-#extension GL_ARB_bindless_texture : require
 
 layout(local_size_x = 32, local_size_y = 32, local_size_z = 1) in;
 
@@ -9,7 +8,6 @@ layout(local_size_x = 32, local_size_y = 32, local_size_z = 1) in;
 #include <atmospherics.glsl>
 
 #include <light_transport.glsl>
-#include <shadow.glsl>
 #include <light.glsl>
 #include <light_cascades.glsl>
 #include <linked_light_lists.glsl>
@@ -25,7 +23,7 @@ layout(std430, binding = 2) restrict readonly buffer light_data {
 
 layout(r8ui,  binding = 5) restrict readonly uniform uimage2D lll_size;
 layout(r32ui, binding = 6) restrict readonly uniform uimage2D lll_heads;
-layout(shared, binding = 11) restrict readonly buffer lll_data {
+layout(std430, binding = 11) restrict readonly buffer lll_data {
 	lll_element lll_buffer[];
 };
 
@@ -38,13 +36,17 @@ layout(rgba16f, binding = 7) restrict uniform image3D volume;
 #include <linked_light_lists_load.glsl>
 #include <cosine_distribution_integration.glsl>
 
-layout(bindless_sampler) uniform samplerCubeArrayShadow shadow_depth_maps;
-layout(bindless_sampler) uniform sampler2DArrayShadow directional_shadow_depth_maps;
+layout(location = 0) uniform samplerCubeArrayShadow shadow_depth_maps;
+layout(location = 1) uniform sampler2DArrayShadow directional_shadow_depth_maps;
+uniform samplerCubeArray shadow_maps;
+uniform sampler2DArray directional_shadow_maps;
 
-layout(bindless_sampler) uniform sampler2DArray atmospheric_optical_length_lut;
+layout(location = 2) uniform sampler2DArray atmospheric_optical_length_lut;
 
-layout(bindless_sampler) uniform sampler2D downsampled_depth_map;
-layout(bindless_sampler) uniform sampler2D depth_map;
+layout(location = 3) uniform sampler2D downsampled_depth_map;
+layout(location = 4) uniform sampler2D depth_map;
+
+#include <shadow.glsl>
 
 const float samples = 2.f;
 
@@ -61,11 +63,11 @@ void depth_limits_3x3(vec2 uv, int lod, out float mind, out float maxd) {
 	
 	float mind1 = min(min(d00.x, d10.x), min(d20.x, d01.x));
 	float mind2 = min(min(d11.x, d21.x), min(d02.x, d12.x));
-	mind = min3(mind1, mind2, d22.x);
-
+	mind = min(mind1, mind2, d22.x);
+	
 	float maxd1 = min(min(d00.y, d10.y), min(d20.y, d01.y));
 	float maxd2 = min(min(d11.y, d21.y), min(d02.y, d12.y));
-	maxd = max3(maxd1, maxd2, d22.y);
+	maxd = max(maxd1, maxd2, d22.y);
 }
 
 vec2 seed_scattering(vec2 slice_coords, uint light_idx, float s, float depth) {

@@ -2,7 +2,8 @@
 #include <common.glsl>
 
 struct material_texture_descriptor {
-	layout(bindless_sampler) sampler2D tex_handler;
+	//layout(bindless_sampler) sampler2D sampler_idx;
+	uint sampler_idx;
 };
 
 const uint material_has_texture_bit = 0x1 << 0;
@@ -27,9 +28,12 @@ struct material_descriptor {
 };
 
 struct material_layer_descriptor {
-	layout(bindless_sampler) sampler2D roughness_map;
-	layout(bindless_sampler) sampler2D metallicity_map;
-	layout(bindless_sampler) sampler2D thickness_map;
+	//layout(bindless_sampler) sampler2D roughness_map;
+	//layout(bindless_sampler) sampler2D metallicity_map;
+	//layout(bindless_sampler) sampler2D thickness_map;
+	uint roughness_sampler_idx;
+	uint metallicity_sampler_idx;
+	uint thickness_sampler_idx;
 
 	uint packed_albedo;	
 	uint next_layer_id;
@@ -37,6 +41,8 @@ struct material_layer_descriptor {
 	vec3 attenuation_coefficient;
 	uint ior_phase_pack;
 };
+
+layout(location = 20) uniform sampler2D material_samplers[100000];
 
 const int material_none = 0xFFFFFFFF;
 
@@ -61,34 +67,34 @@ vec3 material_emission(material_descriptor md) {
 
 vec4 material_base_texture(material_descriptor md, vec2 uv, vec2 duvdx, vec2 duvdy) {
 	if ((md.material_flags & material_has_texture_bit) != 0)
-		return textureGrad(md.texture.tex_handler, uv, duvdx, duvdy);
+		return textureGrad(material_samplers[md.texture.sampler_idx], uv, duvdx, duvdy);
 	return vec4(1.f);
 }
 vec4 material_base_texture(material_descriptor md, vec2 uv) {
 	if ((md.material_flags & material_has_texture_bit) != 0)
-		return texture(md.texture.tex_handler, uv);
+		return texture(material_samplers[md.texture.sampler_idx], uv);
 	return vec4(1.f);
 }
 
 float material_cavity(material_descriptor md, vec2 uv, vec2 duvdx, vec2 duvdy) {
 	if ((md.material_flags & material_has_cavity_map_bit) != 0)
-		return mix(material_cavity_min, material_cavity_max, textureGrad(md.cavity_map.tex_handler, uv, duvdx, duvdx).x);
+		return mix(material_cavity_min, material_cavity_max, textureGrad(material_samplers[md.cavity_map.sampler_idx], uv, duvdx, duvdx).x);
 	return 1.f;
 }
 float material_cavity(material_descriptor md, vec2 uv) {
 	if ((md.material_flags & material_has_cavity_map_bit) != 0)
-		return mix(material_cavity_min, material_cavity_max, texture(md.cavity_map.tex_handler, uv).x);
+		return mix(material_cavity_min, material_cavity_max, texture(material_samplers[md.cavity_map.sampler_idx], uv).x);
 	return 1.f;
 }
 
 bool material_is_masked(material_descriptor md, vec2 uv, vec2 duvdx, vec2 duvdy) {
 	if ((md.material_flags & material_has_mask_map_bit) != 0)
-		return textureGrad(md.mask_map.tex_handler, uv, duvdx, duvdy).x < material_alpha_discard_threshold;
+		return textureGrad(material_samplers[md.mask_map.sampler_idx], uv, duvdx, duvdy).x < material_alpha_discard_threshold;
 	return false;
 }
 bool material_is_masked(material_descriptor md, vec2 uv) {
 	if ((md.material_flags & material_has_mask_map_bit) != 0)
-		return texture(md.mask_map.tex_handler, uv).x < material_alpha_discard_threshold;
+		return texture(material_samplers[md.mask_map.sampler_idx], uv).x < material_alpha_discard_threshold;
 	return false;
 }
 
@@ -106,7 +112,7 @@ void normal_map(material_descriptor md, vec2 uv, vec2 duvdx, vec2 duvdy, inout v
 		mat3 transform = mat3(t, b, n);
 
 		vec3 nm;
-		nm.xy = textureGrad(md.normal_map.tex_handler, uv, duvdx, duvdy).xy * 2.f - 1.f;
+		nm.xy = textureGrad(material_samplers[md.normal_map.sampler_idx], uv, duvdx, duvdy).xy * 2.f - 1.f;
 		nm.z = sqrt(1.f - clamp(dot(nm.xy,nm.xy), .0f, 1.f));
 		
 		n = transform * normalize(nm);

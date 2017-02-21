@@ -1,21 +1,18 @@
 
 #type geometry
 #version 450
-#extension GL_ARB_shader_storage_buffer_object : require
-#extension GL_ARB_bindless_texture : require
+
+layout (points) in;
+layout (triangle_strip, max_vertices = 4) out;
 
 struct buffer_glyph_descriptor {
 	int width;
 	int height;
 	int start_y;
 	int start_x;
-	layout(bindless_sampler) sampler2D tex_handler;
+	//layout(bindless_sampler) sampler2D tex_handler;
+	int sampler_idx;
 };
-
-layout (points) in;
-uniform vec2 fb_size;
-
-layout (triangle_strip, max_vertices = 4) out;
 
 in vs_out {
 	vec4 color;
@@ -37,6 +34,10 @@ out geo_out {
 
 layout(std430, binding = 0) restrict readonly buffer glyph_data {
 	buffer_glyph_descriptor glyphs[];
+};
+
+uniform fb_size_uniform_t {
+	vec2 fb_size;
 };
 
 void main() {

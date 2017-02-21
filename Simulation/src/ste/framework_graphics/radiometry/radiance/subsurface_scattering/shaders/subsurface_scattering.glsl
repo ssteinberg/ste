@@ -31,7 +31,6 @@ vec3 subsurface_scattering(material_layer_unpacked_descriptor descriptor,
 						   vec3 n,
 						   float thickness,
 						   light_descriptor ld,
-						   deferred_shading_shadow_maps shadow_maps, 
 						   light_shading_parameters light,
 						   vec3 view_ray,
 						   ivec2 frag_coords) {
@@ -57,8 +56,7 @@ vec3 subsurface_scattering(material_layer_unpacked_descriptor descriptor,
 		vec3 w_pos = dquat_mul_vec(view_transform_buffer.inverse_view_transform, p);
 		vec3 shadow_v = w_pos - l_pos;
 
-		vec3 shadow_occluder_v = vec3(.0f);/*shadow_occluder(shadow_maps, 
-												 light, 
+		vec3 shadow_occluder_v = vec3(.0f);/*shadow_occluder(light, 
 												 shadow_v, 
 												 vec3(0,1,0), vec3(0,1,0),
 												 l_radius, 

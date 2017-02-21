@@ -2,8 +2,6 @@
 #type geometry
 #version 450
 
-#extension GL_ARB_bindless_texture : enable
-
 layout(triangles) in;
 layout(triangle_strip, max_vertices=18) out;
 
@@ -12,7 +10,6 @@ layout(triangle_strip, max_vertices=18) out;
 
 #include <project.glsl>
 
-#include <shadow.glsl>
 #include <shadow_drawid_to_lightid_ttl.glsl>
 
 in vs_out {
@@ -24,7 +21,7 @@ layout(std430, binding = 2) restrict readonly buffer light_data {
 	light_descriptor light_buffer[];
 };
 
-layout(shared, binding = 8) restrict readonly buffer d_drawid_to_lightid_ttl_data {
+layout(std430, binding = 8) restrict readonly buffer d_drawid_to_lightid_ttl_data {
 	d_drawid_to_lightid_ttl ttl[];
 };
 

@@ -1,7 +1,6 @@
 
 #type compute
 #version 450
-#extension GL_ARB_bindless_texture : require
 
 layout(local_size_x = 32, local_size_y = 32, local_size_z = 1) in;
 
@@ -17,10 +16,10 @@ layout(std430, binding = 2) restrict readonly buffer light_data {
 	light_descriptor light_buffer[];
 };
 
-layout(shared, binding = 4) restrict readonly buffer ll_counter_data {
+layout(std430, binding = 4) restrict readonly buffer ll_counter_data {
 	uint ll_counter;
 };
-layout(shared, binding = 5) restrict readonly buffer ll_data {
+layout(std430, binding = 5) restrict readonly buffer ll_data {
 	uint ll[];
 };
 
@@ -28,14 +27,14 @@ layout(r8ui,  binding = 4) restrict writeonly uniform uimage2D lll_size;
 layout(r8ui,  binding = 5) restrict writeonly uniform uimage2D lll_low_detail_size;
 layout(r32ui, binding = 6) restrict writeonly uniform uimage2D lll_heads;
 layout(r32ui, binding = 7) restrict writeonly uniform uimage2D lll_low_detail_heads;
-layout(shared, binding = 7) restrict buffer lll_counter_data {
+layout(std430, binding = 7) restrict buffer lll_counter_data {
 	uint lll_counter;
 };
-layout(shared, binding = 11) restrict writeonly buffer lll_data {
+layout(std430, binding = 11) restrict writeonly buffer lll_data {
 	lll_element lll_buffer[];
 };
 
-layout(bindless_sampler) uniform sampler2D depth_map;
+layout(location = 0) uniform sampler2D depth_map;
 
 lll_element active_lights[total_max_active_lights_per_frame];
 lll_element active_low_detail_lights[max_active_low_detail_lights_per_frame];

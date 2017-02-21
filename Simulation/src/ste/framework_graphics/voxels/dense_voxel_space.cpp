@@ -14,7 +14,7 @@ dense_voxel_space::dense_voxel_space(const ste_engine_control &ctx,
 									 std::size_t max_size,
 									 float voxel_size_factor) : ctx(ctx),
 																voxelizer_program(ctx, std::vector<std::string>{ "voxelizer.vert", "voxelizer.frag", "voxelizer.geom" }),
-																voxelizer_upsampler_program(ctx, "voxelizer_upsampler.glsl") {
+																voxelizer_upsampler_program(ctx, "voxelizer_upsampler.comp") {
 	auto ts = Core::texture_sparse_3d::page_sizes(space_format_radiance)[0];
 
 	size = static_cast<decltype(size)>(glm::min<int>(Core::texture_sparse_3d::max_size(), max_size));

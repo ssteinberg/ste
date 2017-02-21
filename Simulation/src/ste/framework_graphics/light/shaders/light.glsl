@@ -24,7 +24,8 @@ struct light_descriptor {
 	vec3 position;	float radius;
 	vec3 emittance;	uint type;
 	// Texture
-	layout(bindless_sampler) sampler2D texture;
+	//layout(bindless_sampler) sampler2D texture;
+	uint sampler_idx;
 	// Light effective range.
 	// For directional lights: distance from origin opposite to lights direction (i.e. -directional_distance*position)
 	float effective_range_or_directional_distance;

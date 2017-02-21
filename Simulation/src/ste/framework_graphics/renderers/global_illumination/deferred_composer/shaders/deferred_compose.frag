@@ -1,7 +1,6 @@
 
 #type frag
 #version 450
-#extension GL_ARB_bindless_texture : require
 
 #include <chromaticity.glsl>
 
@@ -31,40 +30,39 @@ layout(std430, binding = 8) restrict readonly buffer shaped_lights_points_data {
 
 layout(r8ui,  binding = 5) restrict readonly uniform uimage2D lll_size;
 layout(r32ui, binding = 6) restrict readonly uniform uimage2D lll_heads;
-layout(shared, binding = 11) restrict readonly buffer lll_data {
+layout(std430, binding = 11) restrict readonly buffer lll_data {
 	lll_element lll_buffer[];
 };
 
 #include <linked_light_lists_load.glsl>
 
-#include <material_evaluate.glsl>
 
-#include <deferred_shading.glsl>
+layout(location = 3) uniform samplerCubeArrayShadow shadow_depth_maps;
+layout(location = 4) uniform samplerCubeArray shadow_maps;
+layout(location = 5) uniform sampler2DArrayShadow directional_shadow_depth_maps;
+layout(location = 6) uniform sampler2DArray directional_shadow_maps;
 
+layout(location = 7) uniform sampler2D microfacet_refraction_fit_lut;
+layout(location = 8) uniform sampler2DArray microfacet_transmission_fit_lut;
 
-layout(bindless_sampler) uniform samplerCubeArrayShadow shadow_depth_maps;
-layout(bindless_sampler) uniform samplerCubeArray shadow_maps;
-layout(bindless_sampler) uniform sampler2DArrayShadow directional_shadow_depth_maps;
-layout(bindless_sampler) uniform sampler2DArray directional_shadow_maps;
+layout(location = 9) uniform sampler2D ltc_ggx_fit;
+layout(location = 10) uniform sampler2D ltc_ggx_amplitude;
 
-layout(bindless_sampler) uniform sampler2D microfacet_refraction_fit_lut;
-layout(bindless_sampler) uniform sampler2DArray microfacet_transmission_fit_lut;
+layout(location = 11) uniform sampler3D scattering_volume;
 
-layout(bindless_sampler) uniform sampler2D ltc_ggx_fit;
-layout(bindless_sampler) uniform sampler2D ltc_ggx_amplitude;
-
-layout(bindless_sampler) uniform sampler3D scattering_volume;
-
-layout(bindless_sampler) uniform sampler2DArray atmospheric_optical_length_lut;
-layout(bindless_sampler) uniform sampler3D atmospheric_scattering_lut;
-layout(bindless_sampler) uniform sampler3D atmospheric_mie0_scattering_lut;
-layout(bindless_sampler) uniform sampler3D atmospheric_ambient_lut;
+layout(location = 12) uniform sampler2DArray atmospheric_optical_length_lut;
+layout(location = 13) uniform sampler3D atmospheric_scattering_lut;
+layout(location = 14) uniform sampler3D atmospheric_mie0_scattering_lut;
+layout(location = 15) uniform sampler3D atmospheric_ambient_lut;
 
 layout(binding = 0) uniform sampler2D back_face_depth;
 layout(binding = 1) uniform sampler2D front_face_depth;
 layout(binding = 2) uniform sampler2DArray gbuffer;
 
-out vec4 gl_FragColor;
+#include <material_evaluate.glsl>
+#include <deferred_shading.glsl>
+
+out vec4 frag_color;
 
 g_buffer_element read_gbuffer(ivec2 coords) {
 	g_buffer_element g_frag;
@@ -80,36 +78,9 @@ void main() {
 
 	g_buffer_element g_frag = read_gbuffer(coord);
 
-	deferred_shading_shadow_maps shadow_maps_struct;
-	shadow_maps_struct.shadow_depth_maps = shadow_depth_maps;
-	shadow_maps_struct.shadow_maps = shadow_maps;
-	shadow_maps_struct.directional_shadow_depth_maps = directional_shadow_depth_maps;
-	shadow_maps_struct.directional_shadow_maps = directional_shadow_maps;
-
-	deferred_material_microfacet_luts material_microfacet_luts;
-	material_microfacet_luts.microfacet_refraction_fit_lut = microfacet_refraction_fit_lut;
-	material_microfacet_luts.microfacet_transmission_fit_lut = microfacet_transmission_fit_lut;
-
-	deferred_material_ltc_luts ltc_luts;
-	ltc_luts.ltc_ggx_fit = ltc_ggx_fit;
-	ltc_luts.ltc_ggx_amplitude = ltc_ggx_amplitude;
-
-	deferred_atmospherics_luts atmospherics_luts;
-	atmospherics_luts.atmospheric_optical_length_lut = atmospheric_optical_length_lut;
-	atmospherics_luts.atmospheric_scattering_lut = atmospheric_scattering_lut;
-	atmospherics_luts.atmospheric_mie0_scattering_lut = atmospheric_mie0_scattering_lut;
-	atmospherics_luts.atmospheric_ambient_lut = atmospheric_ambient_lut;
-
-	vec3 shaded_fragment = deferred_shade_fragment(g_frag, coord,
-												   shadow_maps_struct,
-												   material_microfacet_luts,
-												   ltc_luts,
-												   scattering_volume, 
-												   atmospherics_luts,
-												   back_face_depth, 
-												   front_face_depth);
+	vec3 shaded_fragment = deferred_shade_fragment(g_frag, coord);
 
 	vec3 xyY = XYZtoxyY(RGBtoXYZ(shaded_fragment));
 
-	gl_FragColor = vec4(xyY, 1);
+	frag_color = vec4(xyY, 1);
 }

@@ -20,9 +20,9 @@ using namespace StE::Graphics;
 
 hdr_dof_postprocess::hdr_dof_postprocess(const ste_engine_control &context,
 										 const deferred_gbuffer *gbuffer) : gbuffer(gbuffer), ctx(context),
-																			hdr_compute_minmax(ctx, "hdr_compute_minmax.glsl"),
-																			hdr_create_histogram(ctx, "hdr_create_histogram.glsl"),
-																			hdr_compute_histogram_sums(ctx, "hdr_compute_histogram_sums.glsl"),
+																			hdr_compute_minmax(ctx, "hdr_compute_minmax.comp"),
+																			hdr_create_histogram(ctx, "hdr_create_histogram.comp"),
+																			hdr_compute_histogram_sums(ctx, "hdr_compute_histogram_sums.comp"),
 																			hdr_tonemap_coc(ctx, std::vector<std::string>{ "passthrough.vert", "hdr_tonemap_coc.frag" }),
 																			hdr_bloom_blurx(ctx, std::vector<std::string>{ "passthrough.vert", "hdr_bloom_blur_x.frag" }),
 																			hdr_bloom_blury(ctx, std::vector<std::string>{ "passthrough.vert", "hdr_bloom_blur_y.frag" }),

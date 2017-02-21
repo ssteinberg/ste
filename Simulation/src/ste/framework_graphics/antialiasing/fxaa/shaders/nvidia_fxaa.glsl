@@ -41,10 +41,6 @@ float4 FxaaTexLod0(FxaaTex tex, float2 pos) {
 float4 FxaaTexGrad(FxaaTex tex, float2 pos, float2 grad) {
     return textureGrad(tex, pos.xy, grad, grad);
 }
-/*--------------------------------------------------------------------------*/
-float4 FxaaTexOff(FxaaTex tex, float2 pos, int2 off, float2 rcpFrame) {
-    return textureLodOffset(tex, pos.xy, 0.0, off.xy);
-}
 
 /*============================================================================
                                  SRGB KNOBS
@@ -256,11 +252,11 @@ then the shader early exits (no visible aliasing).
 This threshold is clamped at a minimum value ("FXAA_EDGE_THRESHOLD_MIN")
 to avoid processing in really dark areas.
 ----------------------------------------------------------------------------*/
-    float3 rgbN = FxaaTexOff(tex, pos.xy, FxaaInt2( 0,-1), rcpFrame).xyz;
-    float3 rgbW = FxaaTexOff(tex, pos.xy, FxaaInt2(-1, 0), rcpFrame).xyz;
-    float3 rgbM = FxaaTexOff(tex, pos.xy, FxaaInt2( 0, 0), rcpFrame).xyz;
-    float3 rgbE = FxaaTexOff(tex, pos.xy, FxaaInt2( 1, 0), rcpFrame).xyz;
-    float3 rgbS = FxaaTexOff(tex, pos.xy, FxaaInt2( 0, 1), rcpFrame).xyz;
+    float3 rgbN = textureLodOffset(tex, pos.xy, 0, FxaaInt2( 0,-1)).xyz;
+    float3 rgbW = textureLodOffset(tex, pos.xy, 0, FxaaInt2(-1, 0)).xyz;
+    float3 rgbM = textureLodOffset(tex, pos.xy, 0, FxaaInt2( 0, 0)).xyz;
+    float3 rgbE = textureLodOffset(tex, pos.xy, 0, FxaaInt2( 1, 0)).xyz;
+    float3 rgbS = textureLodOffset(tex, pos.xy, 0, FxaaInt2( 0, 1)).xyz;
     float lumaN = FxaaLuma(rgbN);
     float lumaW = FxaaLuma(rgbW);
     float lumaM = FxaaLuma(rgbM);
@@ -341,10 +337,10 @@ This full box pattern has higher quality than other options.
 Note following this block, both vertical and horizontal cases
 flow in parallel (reusing the horizontal variables).
 ----------------------------------------------------------------------------*/
-    float3 rgbNW = FxaaTexOff(tex, pos.xy, FxaaInt2(-1,-1), rcpFrame).xyz;
-    float3 rgbNE = FxaaTexOff(tex, pos.xy, FxaaInt2( 1,-1), rcpFrame).xyz;
-    float3 rgbSW = FxaaTexOff(tex, pos.xy, FxaaInt2(-1, 1), rcpFrame).xyz;
-    float3 rgbSE = FxaaTexOff(tex, pos.xy, FxaaInt2( 1, 1), rcpFrame).xyz;
+    float3 rgbNW = textureLodOffset(tex, pos.xy, 0, FxaaInt2(-1,-1)).xyz;
+    float3 rgbNE = textureLodOffset(tex, pos.xy, 0, FxaaInt2( 1,-1)).xyz;
+    float3 rgbSW = textureLodOffset(tex, pos.xy, 0, FxaaInt2(-1, 1)).xyz;
+    float3 rgbSE = textureLodOffset(tex, pos.xy, 0, FxaaInt2( 1, 1)).xyz;
     #if (FXAA_SUBPIX_FASTER == 0) && (FXAA_SUBPIX > 0)
         rgbL += (rgbNW + rgbNE + rgbSW + rgbSE);
         rgbL *= FxaaToFloat3(1.0/9.0);

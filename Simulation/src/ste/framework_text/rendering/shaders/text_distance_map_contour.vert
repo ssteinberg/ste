@@ -8,7 +8,9 @@ layout(location = 2) in vec4 stroke_col;
 layout(location = 3) in float stroke_width;
 layout(location = 4) in float weight;
 
-uniform mat4 proj;
+uniform proj_uniform_t {
+	mat4 proj;
+};
 
 out vs_out {
 	vec4 color;
@@ -27,5 +29,5 @@ void main() {
 	vout.stroke_color = stroke_col;
 	vout.stroke_width = stroke_width;
 
-    gl_Position = proj * vec4(vert_glyph_size.xy, 0, 1);
+	gl_Position = proj * vec4(vert_glyph_size.xy, 0, 1);
 }

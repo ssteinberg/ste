@@ -18,6 +18,8 @@
 #include <disney_diffuse.glsl>
 #include <fresnel.glsl>
 
+const float air_ior = 1.0002772f;
+
 vec3 material_evaluate_layer_radiance(material_layer_unpacked_descriptor descriptor,
 									  light_descriptor ld,
 									  float l_dist,
@@ -30,8 +32,7 @@ vec3 material_evaluate_layer_radiance(material_layer_unpacked_descriptor descrip
 									  float refractive_ratio,
 									  vec3 irradiance,
 									  vec3 albedo,
-									  vec3 diffused_light,
-									  deferred_material_ltc_luts ltc_luts) {	
+									  vec3 diffused_light) {	
 	// Specular color
 	vec3 specular_tint = vec3(1);
 	vec3 c_spec = mix(specular_tint, albedo, descriptor.metallic);
@@ -42,9 +43,9 @@ vec3 material_evaluate_layer_radiance(material_layer_unpacked_descriptor descrip
 
 	if (ltc_integration) {
 		// Calculate polygonal light irradiance using linearly transformed cosines
-		vec2 ltccoords = ltc_lut_coords(ltc_luts.ltc_ggx_fit, dot(n, v), descriptor.roughness);
-		mat3 ltc_M_inv = ltc_inv_matrix(ltc_luts.ltc_ggx_fit, ltccoords);
-		float ltc_ampl = texture(ltc_luts.ltc_ggx_amplitude, ltccoords).x;
+		vec2 ltccoords = ltc_lut_coords(ltc_ggx_fit, dot(n, v), descriptor.roughness);
+		mat3 ltc_M_inv = ltc_inv_matrix(ltc_ggx_fit, ltccoords);
+		float ltc_ampl = texture(ltc_ggx_amplitude, ltccoords).x;
 		
 		// Read light shape
 		bool shape_sphere = light_shape_is_sphere(ld.type);
@@ -145,10 +146,8 @@ float material_attenuation_through_layer(float transmittance,
 vec3 material_evaluate_radiance_simple(material_layer_unpacked_descriptor descriptor,
 									   fragment_shading_parameters frag,
 									   light_shading_parameters light,
-									   deferred_material_microfacet_luts material_microfacet_luts,
-									   deferred_material_ltc_luts ltc_luts, 
 									   float occlusion,
-									   float external_medium_ior = 1.0002772f) {		
+									   float external_medium_ior) {		
 	// Compute sine and cosine of critical angle
 	float refractive_ratio = descriptor.ior / external_medium_ior;
 	float cos_critical = refractive_ratio < 1.f ? 
@@ -156,21 +155,21 @@ vec3 material_evaluate_radiance_simple(material_layer_unpacked_descriptor descri
 							.0f;
 
 	// Evaluate refracted vectors
-	/*vec3 refracted_v = -ggx_refract(material_microfacet_luts.microfacet_refraction_fit_lut,
+	/*vec3 refracted_v = -ggx_refract(microfacet_refraction_fit_lut,
 									frag.v, frag.n,
 									descriptor.roughness,
 									refractive_ratio);
-	vec3 refracted_l = -ggx_refract(material_microfacet_luts.microfacet_refraction_fit_lut,
+	vec3 refracted_l = -ggx_refract(microfacet_refraction_fit_lut,
 									light.l, frag.n,
 									descriptor.roughness,
 									refractive_ratio);*/
 
 	// Evaluate total inner (downwards into material) and outer (upwards towards eye) transmission
-	float inner_transmission_ratio = ggx_transmission_ratio_v4(material_microfacet_luts.microfacet_transmission_fit_lut, 
+	float inner_transmission_ratio = ggx_transmission_ratio_v4(microfacet_transmission_fit_lut, 
 																frag.v, frag.n, 
 																descriptor.roughness, 
 																refractive_ratio);
-	float outer_transmission_ratio = ggx_transmission_ratio_v4(material_microfacet_luts.microfacet_transmission_fit_lut, 
+	float outer_transmission_ratio = ggx_transmission_ratio_v4(microfacet_transmission_fit_lut, 
 																/*refracted_l*/light.l, frag.n, 
 																descriptor.roughness, 
 																1.f / refractive_ratio);
@@ -193,8 +192,7 @@ vec3 material_evaluate_radiance_simple(material_layer_unpacked_descriptor descri
 												refractive_ratio,
 												light.cd_m2,
 												descriptor.albedo.rgb,
-												diffused_light,
-												ltc_luts);
+												diffused_light);
 
 	return rgb * occlusion;
 }
@@ -221,11 +219,8 @@ vec3 material_evaluate_radiance(material_descriptor md,
 								light_shading_parameters light,
 								vec2 uv, vec2 duvdx, vec2 duvdy,
 								float object_thickness,
-								deferred_material_microfacet_luts material_microfacet_luts,
-								deferred_material_ltc_luts ltc_luts, 
-								deferred_shading_shadow_maps shadow_maps,
 								float occlusion,
-								float external_medium_ior = 1.0002772f) {
+								float external_medium_ior) {
 	material_layer_unpacked_descriptor descriptor = material_layer_unpack(layer, uv, duvdx, duvdy);
 
 	// A simple material is a material without subsurface scattering and a single layer.
@@ -235,8 +230,6 @@ vec3 material_evaluate_radiance(material_descriptor md,
 		return material_evaluate_radiance_simple(descriptor,
 												 frag,
 												 light,
-												 material_microfacet_luts,
-												 ltc_luts,
 												 occlusion,
 												 external_medium_ior);
 	}
@@ -276,21 +269,21 @@ vec3 material_evaluate_radiance(material_descriptor md,
 		float F0 = fresnel_F0(refractive_ratio);
 
 		// Evaluate refracted vectors
-		/*vec3 refracted_v = -ggx_refract(material_microfacet_luts.microfacet_refraction_fit_lut,
+		/*vec3 refracted_v = -ggx_refract(microfacet_refraction_fit_lut,
 										v, n,
 										roughness,
 										refractive_ratio);
-		vec3 refracted_l = -ggx_refract(material_microfacet_luts.microfacet_refraction_fit_lut,
+		vec3 refracted_l = -ggx_refract(microfacet_refraction_fit_lut,
 										l, n,
 										roughness,
 										refractive_ratio);*/
 
 		// Evaluate total inner (downwards into material) and outer (upwards towards eye) transmission
-		float inner_transmission_ratio = ggx_transmission_ratio_v4(material_microfacet_luts.microfacet_transmission_fit_lut, 
+		float inner_transmission_ratio = ggx_transmission_ratio_v4(microfacet_transmission_fit_lut, 
 																   v, n, 
 																   roughness, 
 																   refractive_ratio);
-		float outer_transmission_ratio = ggx_transmission_ratio_v4(material_microfacet_luts.microfacet_transmission_fit_lut, 
+		float outer_transmission_ratio = ggx_transmission_ratio_v4(microfacet_transmission_fit_lut, 
 																   /*refracted_l*/l, n, 
 																   roughness, 
 																   1.f / refractive_ratio);
@@ -327,8 +320,7 @@ vec3 material_evaluate_radiance(material_descriptor md,
 															  refractive_ratio,
 															  light.cd_m2,
 															  albedo,
-															  diffused_light,
-															  ltc_luts);
+															  diffused_light);
 							
 		// Update incident and outgoing vectors to refracted ones before continuing to next layer
 		//v = refracted_v;
@@ -373,7 +365,6 @@ vec3 material_evaluate_radiance(material_descriptor md,
 													   n,
 							 						   object_thickness,
 													   light.ld,
-													   shadow_maps, 
 													   light,
 													   -v,
 													   frag_coords);

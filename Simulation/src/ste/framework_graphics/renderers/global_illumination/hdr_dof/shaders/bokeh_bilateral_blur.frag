@@ -1,7 +1,6 @@
 
 #type frag
 #version 450
-#extension GL_ARB_bindless_texture : require
 
 #include <common.glsl>
 #include <chromaticity.glsl>
@@ -10,14 +9,14 @@
 
 #include <girenderer_transform_buffer.glsl>
 
-out vec3 gl_FragColor;
-
 layout(std430, binding = 2) restrict readonly buffer hdr_bokeh_parameters_buffer {
 	hdr_bokeh_parameters params;
 };
 
-layout(bindless_sampler) uniform sampler2D hdr;
-layout(bindless_sampler) uniform sampler2D depth_texture;
+layout(location = 0) uniform sampler2D hdr;
+layout(location = 1) uniform sampler2D depth_texture;
+
+out vec3 frag_color;
 
 const int samples = 4;
 const int max_rings = 7;
@@ -31,9 +30,15 @@ const float bias = 0.5f; 		// bokeh edge bias
 const float fringe = 1.f; 		// bokeh chromatic aberration/fringing
 const float namount = 0.0001f; 	// dither amount
 
-uniform vec2 size;
-uniform float aperture_focal_length = 23e-3f;	// Defaults to human eye focal length, about 23mm
-uniform float aperture_diameter = 6e-3f;		// Defaults to human eye pupil diameter which ranges from 2mm to 8mm
+uniform size_t {
+	vec2 size;
+};
+uniform aperture_focal_length_t {
+	float aperture_focal_length;
+};
+uniform aperture_diameter_t {
+	float aperture_diameter;
+};
 
 vec3 color(vec2 coords, vec2 blur, float max_blur) {
 	vec2 jitter = fringe * blur;
@@ -118,5 +123,5 @@ void main() {
 		col /= s;
 	}
 
-	gl_FragColor = col;
+	frag_color = col;
 }

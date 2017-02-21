@@ -1,13 +1,12 @@
 
 #type compute
 #version 450
-#extension GL_ARB_bindless_texture : require
 
 #include <hdr_common.glsl>
 
 layout(local_size_x = 32, local_size_y = 32) in;
 
-layout(bindless_sampler) uniform sampler2D hdr;
+layout(location = 0) uniform sampler2D hdr;
 
 layout(r32f, binding = 0) restrict writeonly uniform image2D hdr_lums;
 layout(std430, binding = 2) restrict buffer hdr_bokeh_parameters_buffer {
@@ -17,7 +16,9 @@ layout(std430, binding = 3) restrict readonly buffer hdr_bokeh_parameters_prev_b
 	hdr_bokeh_parameters prev_params;
 };
 
-uniform float time;
+uniform time_t {
+	float time;
+};
 
 void main() {
 	vec2 ts = textureSize(hdr, 0);

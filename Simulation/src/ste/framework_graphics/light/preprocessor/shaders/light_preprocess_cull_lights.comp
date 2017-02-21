@@ -2,8 +2,6 @@
 #type compute
 #version 450
 
-#extension GL_ARB_bindless_texture : enable
-
 layout(local_size_x = 128) in;
 
 #include <girenderer_transform_buffer.glsl>
@@ -19,15 +17,21 @@ layout(std430, binding = 2) restrict buffer light_data {
 	light_descriptor light_buffer[];
 };
 
-layout(binding = 4) uniform atomic_uint ll_counter;
-layout(shared, binding = 5) restrict writeonly buffer ll_data {
+// TODO: Binding changed
+layout(binding = 0) restrict buffer ll_counter_data {
+	uint ll_counter;
+};
+
+layout(std430, binding = 5) restrict writeonly buffer ll_data {
 	uint ll[];
 };
 
-uniform vec4 np, rp, lp, tp, bp;
+uniform clip_planes {
+	vec4 np, rp, lp, tp, bp;
+};
 
 void add_to_lll(int light_idx) {
-	uint ll_idx = atomicCounterIncrement(ll_counter);
+	uint ll_idx = atomicAdd(ll_counter, 1);
 	ll[ll_idx] = uint(light_idx);
 }
 

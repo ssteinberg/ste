@@ -12,8 +12,6 @@ out v_out {
 	vec2 rcp_frame;
 } vout;
 
-out vec4 gl_Position;
-
 const float FXAA_SUBPIX_SHIFT = 1.0f / 4.0f;
 
 void main() {

@@ -31,7 +31,7 @@ public:
 	linked_light_lists_gen_dispatch(const ste_engine_control &ctx,
 									light_storage *ls,
 									linked_light_lists *lll) : ls(ls), lll(lll),
-															   program(ctx, std::vector<std::string>{ "linked_light_lists_gen.glsl" }) {}
+															   program(ctx, std::vector<std::string>{ "linked_light_lists_gen.comp" }) {}
 
 	void set_depth_map(Core::texture_2d *depth_map) {
 		auto handle = depth_map->get_texture_handle();
