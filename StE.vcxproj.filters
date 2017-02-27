@@ -1190,6 +1190,24 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\command\vk_command_buffers.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\resource\vk_buffer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\resource\vk_image.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\resource\vk_image_type.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\resource\vk_buffer_view.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\resource\vk_image_view.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\resource\vk_image_view_swizzle.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Simulation\src\ste\framework_graphics\material\shaders\material_evaluate.glsl" />

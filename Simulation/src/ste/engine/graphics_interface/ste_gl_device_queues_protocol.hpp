@@ -102,6 +102,20 @@ public:
 				v.push_back(desc);
 		}
 
+		// Ensure we have one queue for each type
+		auto main_idx = std::find_if(v.begin(), v.end(),
+						 [](const ste_gl_queue_descriptor &q) { return q.usage == ste_gl_queue_usage::main_queue; }) - v.begin();
+		assert(main_idx < v.size() && "No main queue created!");
+		if (main_idx == v.size())
+			throw ste_engine_exception("Device doesn't expose a queue with sufficient capabilities!");
+
+		if (std::find_if(v.begin(), v.end(),
+						 [](const ste_gl_queue_descriptor &q) { return q.usage == ste_gl_queue_usage::compute_queue; }) == v.end())
+			v.push_back(v[main_idx]);
+		if (std::find_if(v.begin(), v.end(),
+						 [](const ste_gl_queue_descriptor &q) { return q.usage == ste_gl_queue_usage::data_transfer_queue; }) == v.end())
+			v.push_back(v[main_idx]);
+
 		return v;
 	}
 };

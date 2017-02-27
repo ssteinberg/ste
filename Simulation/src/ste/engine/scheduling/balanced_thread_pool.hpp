@@ -49,11 +49,10 @@ private:
 private:
 	void spawn_worker(int schedule_on_cpu = -1) {
 		workers.emplace_back([this]() {
-			std::unique_ptr<unique_thread_pool_type_erased_task> task;
-
 			for (;;) {
 				if (interruptible_thread::is_interruption_flag_set()) return;
 
+				std::unique_ptr<unique_thread_pool_type_erased_task> task;
 				{
 					std::unique_lock<std::mutex> l(this->m);
 
