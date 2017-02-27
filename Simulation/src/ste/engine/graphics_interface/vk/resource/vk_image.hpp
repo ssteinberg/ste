@@ -9,6 +9,7 @@
 #include <vk_logical_device.hpp>
 #include <vk_result.hpp>
 #include <vk_exception.hpp>
+#include <vk_device_memory.hpp>
 
 #include <vk_image_type.hpp>
 
@@ -48,9 +49,9 @@ public:
 	vk_image(const vk_logical_device &device,
 			 const VkFormat &format,
 			 const size_type &size,
-			 std::uint32_t mips,
-			 std::uint32_t layers,
 			 const VkImageUsageFlags &usage,
+			 std::uint32_t mips = 1,
+			 std::uint32_t layers = 1,
 			 const VkImageLayout &initial_layout = VK_IMAGE_LAYOUT_UNDEFINED,
 			 bool sparse = false)
 		: device(device), format(format), size(size), mips(mips), layers(layers), usage(usage), sparse(sparse)
@@ -105,6 +106,20 @@ public:
 			vkDestroyImage(device, image, nullptr);
 			image = VK_NULL_HANDLE;
 		}
+	}
+
+	void bind_memory(const vk_device_memory &memory, std::uint64_t offset) {
+		vk_result res = vkBindImageMemory(device, image, memory, offset);
+		if (!res) {
+			throw vk_exception(res);
+		}
+	}
+
+	auto get_memory_requirements() const {
+		VkMemoryRequirements req;
+		vkGetImageMemoryRequirements(device, image, &req);
+
+		return req;
 	}
 
 	auto& get_image() const { return image; }

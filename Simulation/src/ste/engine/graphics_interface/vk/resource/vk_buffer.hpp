@@ -9,6 +9,7 @@
 #include <vk_logical_device.hpp>
 #include <vk_result.hpp>
 #include <vk_exception.hpp>
+#include <vk_device_memory.hpp>
 
 namespace StE {
 namespace GL {
@@ -64,6 +65,20 @@ public:
 			vkDestroyBuffer(device, buffer, nullptr);
 			buffer = VK_NULL_HANDLE;
 		}
+	}
+
+	void bind_memory(const vk_device_memory &memory, std::uint64_t offset) {
+		vk_result res = vkBindBufferMemory(device, buffer, memory, offset);
+		if (!res) {
+			throw vk_exception(res);
+		}
+	}
+
+	auto get_memory_requirements() const {
+		VkMemoryRequirements req;
+		vkGetBufferMemoryRequirements(device, buffer, &req);
+
+		return req;
 	}
 
 	auto& get_buffer() const { return buffer; }

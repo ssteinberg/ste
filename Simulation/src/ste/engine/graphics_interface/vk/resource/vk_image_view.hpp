@@ -13,11 +13,16 @@
 #include <vk_image_type.hpp>
 #include <vk_image_view_swizzle.hpp>
 
+#include <limits>
+
 namespace StE {
 namespace GL {
 
 template <vk_image_type type>
 class vk_image_view {
+private:
+	static constexpr int ctor_array_layers_multiplier = vk_image_is_cubemap<type>::value ? 6 : 1;
+
 private:
 	VkImageView view{ VK_NULL_HANDLE };
 	const vk_logical_device &device;
@@ -63,16 +68,100 @@ protected:
 	}
 
 public:
+	// Non-cubemaps
+	template <typename T>
+	vk_image_view(const vk_image<T> &parent,
+				  VkFormat format,
+				  std::uint32_t base_layer,
+				  std::uint32_t base_mip,
+				  std::uint32_t mips,
+				  bool depth_aspect = false,
+				  const vk_image_view_swizzle &swizzle = vk_image_view_swizzle(),
+				  std::enable_if_t<!vk_image_has_arrays<type>::value>* = nullptr)
+		: vk_image_view(parent,
+						format,
+						base_mip,
+						mips,
+						base_layer,
+						1 * ctor_array_layers_multiplier,
+						depth_aspect,
+						swizzle) {}
+	template <typename T>
+	vk_image_view(const vk_image<T> &parent,
+				  VkFormat format,
+				  std::uint32_t base_layer,
+				  std::uint32_t mips = std::numeric_limits<std::uint32_t>::max(),
+				  bool depth_aspect = false,
+				  const vk_image_view_swizzle &swizzle = vk_image_view_swizzle(),
+				  std::enable_if_t<!vk_image_has_arrays<type>::value>* = nullptr)
+		: vk_image_view(parent,
+						format,
+						0,
+						glm::min(parent.get_mips(), mips),
+						base_layer,
+						1 * ctor_array_layers_multiplier,
+						depth_aspect,
+						swizzle) {}
 	template <typename T>
 	vk_image_view(const vk_image<T> &parent,
 				  VkFormat format,
 				  bool depth_aspect = false,
-				  const vk_image_view_swizzle &swizzle = vk_image_view_swizzle())
+				  const vk_image_view_swizzle &swizzle = vk_image_view_swizzle(),
+				  std::enable_if_t<!vk_image_has_arrays<type>::value>* = nullptr)
 		: vk_image_view(parent,
 						format,
-						,
+						0) {}
+
+	// Arrays
+	template <typename T>
+	vk_image_view(const vk_image<T> &parent,
+				  VkFormat format,
+				  std::uint32_t base_layer,
+				  std::uint32_t layers,
+				  std::uint32_t base_mip,
+				  std::uint32_t mips,
+				  bool depth_aspect = false,
+				  const vk_image_view_swizzle &swizzle = vk_image_view_swizzle(),
+				  std::enable_if_t<!vk_image_has_arrays<type>::value>* = nullptr)
+		: vk_image_view(parent,
+						format,
+						base_mip,
+						mips,
+						base_layer,
+						layers * ctor_array_layers_multiplier,
 						depth_aspect,
 						swizzle) {}
+	template <typename T>
+	vk_image_view(const vk_image<T> &parent,
+				  VkFormat format,
+				  std::uint32_t base_layer,
+				  std::uint32_t layers,
+				  std::uint32_t mips = std::numeric_limits<std::uint32_t>::max(),
+				  bool depth_aspect = false,
+				  const vk_image_view_swizzle &swizzle = vk_image_view_swizzle(),
+				  std::enable_if_t<vk_image_has_arrays<type>::value>* = nullptr)
+		: vk_image_view(parent,
+						format,
+						0,
+						glm::min(parent.get_mips(), mips),
+						base_layer,
+						layers * ctor_array_layers_multiplier,
+						depth_aspect,
+						swizzle) {}
+	template <typename T>
+	vk_image_view(const vk_image<T> &parent,
+				  VkFormat format,
+				  std::uint32_t layers,
+				  bool depth_aspect = false,
+				  const vk_image_view_swizzle &swizzle = vk_image_view_swizzle(),
+				  std::enable_if_t<vk_image_has_arrays<type>::value>* = nullptr)
+		: vk_image_view(parent,
+						format,
+						layers,
+						0,
+						depth_aspect,
+						swizzle) {}
+
 	~vk_image_view() noexcept { destroy_view(); }
 
 	vk_image_view(vk_image_view &&) = default;
