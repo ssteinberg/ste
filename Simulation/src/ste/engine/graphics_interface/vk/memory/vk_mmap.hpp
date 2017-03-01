@@ -76,22 +76,5 @@ public:
 	operator map_pointer() const { return get_mapped_ptr(); }
 };
 
-class vk_mmap_type_eraser {
-private:
-	std::function<void()> unmapper;
-
-public:
-	template <typename T>
-	vk_mmap_type_eraser(const vk_mmap<T> *m) : unmapper([m]() {
-		m->munmap();
-	}) {}
-	~vk_mmap_type_eraser() noexcept { unmapper(); }
-
-	vk_mmap_type_eraser(vk_mmap_type_eraser &&) = default;
-	vk_mmap_type_eraser&operator=(vk_mmap_type_eraser &&) = default;
-	vk_mmap_type_eraser(const vk_mmap_type_eraser &) = delete;
-	vk_mmap_type_eraser&operator=(const vk_mmap_type_eraser &) = delete;
-};
-
 }
 }

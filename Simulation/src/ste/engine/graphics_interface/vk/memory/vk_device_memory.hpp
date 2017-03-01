@@ -9,12 +9,31 @@
 #include <vk_physical_device_descriptor.hpp>
 #include <vk_logical_device.hpp>
 #include <vk_memory_exception.hpp>
-#include <vk_mmap.hpp>
 
 #include <memory>
 
 namespace StE {
 namespace GL {
+
+template <typename T>
+class vk_mmap;
+
+class vk_mmap_type_eraser {
+private:
+	std::function<void()> unmapper;
+
+public:
+	template <typename T>
+	vk_mmap_type_eraser(const vk_mmap<T> *m) : unmapper([m]() {
+		m->munmap();
+	}) {}
+	~vk_mmap_type_eraser() noexcept { unmapper(); }
+
+	vk_mmap_type_eraser(vk_mmap_type_eraser &&) = default;
+	vk_mmap_type_eraser&operator=(vk_mmap_type_eraser &&) = default;
+	vk_mmap_type_eraser(const vk_mmap_type_eraser &) = delete;
+	vk_mmap_type_eraser&operator=(const vk_mmap_type_eraser &) = delete;
+};
 
 class vk_device_memory {
 private:
@@ -23,67 +42,6 @@ private:
 	std::uint64_t size;
 
 	std::unique_ptr<vk_mmap_type_eraser> mapped_memory{ nullptr };
-
-public:
-	static auto allocate_memory(const vk_logical_device &device, 
-								std::uint64_t size, 
-								const VkMemoryPropertyFlags &required_flags) {
-		const vk_physical_device_descriptor &physical_device = device.get_physical_device_descriptor();
-
-		// Try to find a heap that matches exactly
-		for (int i=0; i<physical_device.memory_properties.memoryTypeCount; ++i) {
-			auto &heap = physical_device.memory_properties.memoryTypes[i];
-			if (heap.propertyFlags == required_flags)
-				return vk_device_memory(device, size, heap.heapIndex);
-		}
-
-		// Otherwise try to find a heap that satisfies all flags
-		for (int i = 0; i<physical_device.memory_properties.memoryTypeCount; ++i) {
-			auto &heap = physical_device.memory_properties.memoryTypes[i];
-			if ((heap.propertyFlags & required_flags) == required_flags)
-				return vk_device_memory(device, size, heap.heapIndex);
-		}
-
-		// No heap with requested flags found
-		throw vk_memory_no_supported_heap_exception();
-	}
-
-	static auto allocate_memory(const vk_logical_device &device,
-								std::uint64_t size,
-								const VkMemoryRequirements &memory_requirements,
-								const VkMemoryPropertyFlags &required_flags,
-								const VkMemoryPropertyFlags &preffered_flags) {
-		const vk_physical_device_descriptor &physical_device = device.get_physical_device_descriptor();
-		int fallback_heap_index = -1;
-		size = glm::max(size, memory_requirements.size);
-
-		// Try to find a heap matching the memory requirments and preffered flags.
-		// If none found fallback to a heap matching the requirements and the required flags.
-		for (int type = 0; type < 32; ++type) {
-			if (!(memory_requirements.memoryTypeBits & (1 << type)))
-				continue;
-
-			auto &heap = physical_device.memory_properties.memoryTypes[type];
-			if ((heap.propertyFlags & preffered_flags) == preffered_flags)
-				return vk_device_memory(device, size, heap.heapIndex);
-			if (fallback_heap_index == -1 &&
-				(heap.propertyFlags & required_flags) == required_flags)
-				fallback_heap_index = heap.heapIndex;
-		}
-
-		if (fallback_heap_index != -1)
-			return vk_device_memory(device, size, fallback_heap_index);
-
-		// No heap with requested flags found
-		throw vk_memory_no_supported_heap_exception();
-	}
-
-	static auto allocate_device_physical_memory(const vk_logical_device &device, std::uint64_t size) {
-		return allocate_memory(device, size, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-	}
-	static auto allocate_host_visible_memory(const vk_logical_device &device, std::uint64_t size) {
-		return allocate_memory(device, size, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
-	}
 
 public:
 	vk_device_memory(const vk_logical_device &device, std::uint64_t size, int memory_type_index)
@@ -112,6 +70,8 @@ public:
 
 	void free() {
 		if (memory != VK_NULL_HANDLE) {
+			munmap();
+
 			vkFreeMemory(device, memory, nullptr);
 			memory = VK_NULL_HANDLE;
 		}

@@ -1,0 +1,54 @@
+//	StE
+// © Shlomi Steinberg 2015-2016
+
+#pragma once
+
+#include <stdafx.hpp>
+
+namespace StE {
+namespace GL {
+
+template <typename Heap, typename Ptr>
+class unique_device_ptr {
+public:
+	using heap_type = Heap;
+	using ptr_type = Ptr;
+
+private:
+	heap_type *heap{ nullptr };
+	ptr_type ptr;
+
+public:
+	unique_device_ptr() = default;
+	unique_device_ptr(heap_type *heap,
+					  ptr_type &&ptr)
+		: heap(heap), ptr(std::move(ptr)) {}
+	~unique_device_ptr() noexcept { free();  }
+
+	unique_device_ptr(unique_device_ptr &&) = default;
+	unique_device_ptr(const unique_device_ptr &) = delete;
+	unique_device_ptr &operator=(unique_device_ptr &&) = default;
+	unique_device_ptr &operator=(const unique_device_ptr &) = delete;
+
+	void free() {
+		if (heap) {
+			heap->deallocate(*this);
+			heap = nullptr;
+		}
+	}
+
+	auto& get() { return ptr; }
+	auto& get() const { return ptr; }
+	auto& operator->() { return *ptr; }
+	auto& operator->() const { return *ptr; }
+	auto& operator*() { return *ptr; }
+	auto& operator*() const { return *ptr; }
+
+	auto& get_heap() const { return heap; }
+
+	operator bool() const { return heap != nullptr; }
+	bool operator!() const { return heap == nullptr; }
+};
+
+}
+}

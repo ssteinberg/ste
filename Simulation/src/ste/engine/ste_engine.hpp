@@ -12,6 +12,7 @@
 #include <ste_presentation_device.hpp>
 #include <ste_gl_context.hpp>
 #include <ste_gl_device_queues_protocol.hpp>
+#include <ste_gl_device_memory_allocator.hpp>
 
 #include <ste_engine_exceptions.hpp>
 
@@ -22,6 +23,7 @@ struct ste_engine_types {
 	using cache_t = lru_cache<std::string>;
 
 	using storage_protocol = ste_engine_storage_protocol;
+	using gl_device_memory_allocator = GL::ste_gl_device_memory_allocator;
 	using gl_queues_protocol = GL::ste_gl_device_queues_protocol;
 };
 
@@ -40,13 +42,15 @@ private:
 
 	const gl_context_t &gl_context;
 	const gl_device_t &gl_device;
+	typename engine_types::gl_device_memory_allocator engine_device_memory_allocator;
 
 public:
 	ste_engine_impl(const gl_context_t &gl_ctx,
 					const gl_device_t &device)
 		: engine_cache(storage::cache_dir_path(), 1024 * 1024 * 256),
 		gl_context(gl_ctx),
-		gl_device(device)
+		gl_device(device),
+		engine_device_memory_allocator(device.device())
 	{}
 	
 	~ste_engine_impl() noexcept {}
@@ -62,6 +66,7 @@ public:
 	auto &cache() const { return engine_cache; }
 	auto &gl() const { return gl_context; }
 	auto &device() const { return gl_device; }
+	auto &device_memory_allocator() const { return engine_device_memory_allocator; }
 };
 
 using ste_engine = ste_engine_impl<
