@@ -339,6 +339,7 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\resource\vk_image_type.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\resource\vk_image_view.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\resource\vk_image_view_swizzle.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\resource\vk_resource.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\shader\vk_shader.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\ste_glfw_handle.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\window\ste_window_signals.hpp" />

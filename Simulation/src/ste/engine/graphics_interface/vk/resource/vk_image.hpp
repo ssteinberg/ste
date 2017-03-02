@@ -6,6 +6,8 @@
 #include <ste.hpp>
 
 #include <vulkan/vulkan.h>
+#include <vk_resource.hpp>
+
 #include <vk_logical_device.hpp>
 #include <vk_result.hpp>
 #include <vk_exception.hpp>
@@ -17,13 +19,12 @@ namespace StE {
 namespace GL {
 
 template <int dimensions>
-class vk_image {
+class vk_image : public vk_resource {
 public:
 	using size_type = typename vk_image_extent_type<dimensions>::extent_type;
 
 private:
 	VkImage image{ VK_NULL_HANDLE };
-	const vk_logical_device &device;
 	VkFormat format;
 	size_type size;
 	std::uint32_t mips;
@@ -45,6 +46,14 @@ private:
 		}
 	}
 
+protected:
+	void bind_resource_underlying_memory(const vk_device_memory &memory, std::uint64_t offset) override {
+		vk_result res = vkBindImageMemory(device, image, memory, offset);
+		if (!res) {
+			throw vk_exception(res);
+		}
+	}
+
 public:
 	vk_image(const vk_logical_device &device,
 			 const VkFormat &format,
@@ -54,7 +63,7 @@ public:
 			 std::uint32_t layers = 1,
 			 const VkImageLayout &initial_layout = VK_IMAGE_LAYOUT_UNDEFINED,
 			 bool sparse = false)
-		: device(device), format(format), size(size), mips(mips), layers(layers), usage(usage), sparse(sparse)
+		: vk_resource(device), format(format), size(size), mips(mips), layers(layers), usage(usage), sparse(sparse)
 	{
 		assert(mips > 0 && "Non-positive mipmap level count");
 		assert(layers > 0 && "Non-positive array layers count");
@@ -108,14 +117,7 @@ public:
 		}
 	}
 
-	void bind_memory(const vk_device_memory &memory, std::uint64_t offset) {
-		vk_result res = vkBindImageMemory(device, image, memory, offset);
-		if (!res) {
-			throw vk_exception(res);
-		}
-	}
-
-	auto get_memory_requirements() const {
+	auto get_memory_requirements() const override {
 		VkMemoryRequirements req;
 		vkGetImageMemoryRequirements(device, image, &req);
 
@@ -124,7 +126,6 @@ public:
 
 	auto& get_image() const { return image; }
 
-	auto& get_creating_device() const { return device; }
 	auto& get_format() const { return format; };
 	auto& get_size() const{ return size; };
 	auto& get_mips() const{ return mips; };

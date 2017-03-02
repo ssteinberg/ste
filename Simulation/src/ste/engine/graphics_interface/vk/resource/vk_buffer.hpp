@@ -6,6 +6,8 @@
 #include <ste.hpp>
 
 #include <vulkan/vulkan.h>
+#include <vk_resource.hpp>
+
 #include <vk_logical_device.hpp>
 #include <vk_result.hpp>
 #include <vk_exception.hpp>
@@ -15,20 +17,27 @@ namespace StE {
 namespace GL {
 
 template <typename T>
-class vk_buffer {
+class vk_buffer : public vk_resource {
 private:
 	VkBuffer buffer{ VK_NULL_HANDLE };
-	const vk_logical_device &device;
 	std::uint64_t size;
 	VkBufferUsageFlags usage;
 	bool sparse;
+
+protected:
+	void bind_resource_underlying_memory(const vk_device_memory &memory, std::uint64_t offset) override {
+		vk_result res = vkBindBufferMemory(device, buffer, memory, offset);
+		if (!res) {
+			throw vk_exception(res);
+		}
+	}
 
 public:
 	vk_buffer(const vk_logical_device &device,
 			  std::uint64_t size,
 			  const VkBufferUsageFlags &usage,
 			  bool sparse = false) 
-		: device(device), size(size), usage(usage), sparse(sparse)
+		: vk_resource(device), size(size), usage(usage), sparse(sparse)
 	{
 		VkBuffer buffer;
 
@@ -67,14 +76,7 @@ public:
 		}
 	}
 
-	void bind_memory(const vk_device_memory &memory, std::uint64_t offset) {
-		vk_result res = vkBindBufferMemory(device, buffer, memory, offset);
-		if (!res) {
-			throw vk_exception(res);
-		}
-	}
-
-	auto get_memory_requirements() const {
+	auto get_memory_requirements() const override {
 		VkMemoryRequirements req;
 		vkGetBufferMemoryRequirements(device, buffer, &req);
 
@@ -83,7 +85,6 @@ public:
 
 	auto& get_buffer() const { return buffer; }
 
-	auto& get_creating_device() const { return device; }
 	auto& get_size() const { return size; }
 	auto& get_usage() const { return usage; }
 	auto is_sparse() const { return sparse; }

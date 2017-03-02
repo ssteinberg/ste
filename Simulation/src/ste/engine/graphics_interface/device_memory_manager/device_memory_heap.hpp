@@ -23,6 +23,9 @@ public:
 	using blocks_list_t = std::list<block_type>;
 	using allocation_type = unique_device_ptr<device_memory_heap, blocks_list_t::const_iterator>;
 
+	// Natively align allocations on vec4 boundaries
+	static constexpr size_type base_alignment = 128;
+
 private:
 	friend class allocation_type;
 
@@ -32,6 +35,16 @@ private:
 	size_type total_used_size{ 0 };
 
 	std::mutex m;
+
+public:
+	static auto align_offset(size_type offset, size_type alignment) {
+		alignment = std::max(alignment, base_alignment);
+		return (offset / alignment) * alignment;
+	}
+	static auto align_size(size_type size, size_type alignment) {
+		alignment = std::max(alignment, base_alignment);
+		return ((size + alignment - 1) / alignment) * alignment;
+	}
 
 private:
 	void deallocate(const allocation_type &ptr) {
@@ -61,7 +74,7 @@ public:
 	*
 	*  @param size	Allocation size in bytes
 	*/
-	allocation_type allocate(size_type size) {
+	allocation_type allocate(size_type size, size_type alignment) {
 		if (get_size() < size) {
 			// Heap too small
 			return allocation_type();
@@ -91,7 +104,7 @@ public:
 				auto block_it = blocks.insert(it, block);
 				total_used_size += size;
 
-				return allocation_type(this, std::move(block_it));
+				return allocation_type(&memory, this, std::move(block_it));
 			}
 
 			if (last)

@@ -4,6 +4,7 @@
 #pragma once
 
 #include <stdafx.hpp>
+#include <vk_device_memory.hpp>
 
 namespace StE {
 namespace GL {
@@ -15,14 +16,16 @@ public:
 	using ptr_type = Ptr;
 
 private:
+	const vk_device_memory *memory;
 	heap_type *heap{ nullptr };
 	ptr_type ptr;
 
 public:
 	unique_device_ptr() = default;
-	unique_device_ptr(heap_type *heap,
+	unique_device_ptr(const vk_device_memory *memory,
+					  heap_type *heap,
 					  ptr_type &&ptr)
-		: heap(heap), ptr(std::move(ptr)) {}
+		: memory(memory), heap(heap), ptr(std::move(ptr)) {}
 	~unique_device_ptr() noexcept { free();  }
 
 	unique_device_ptr(unique_device_ptr &&) = default;
@@ -44,6 +47,7 @@ public:
 	auto& operator*() { return *ptr; }
 	auto& operator*() const { return *ptr; }
 
+	auto& get_memory() const { return memory; }
 	auto& get_heap() const { return heap; }
 
 	operator bool() const { return heap != nullptr; }
