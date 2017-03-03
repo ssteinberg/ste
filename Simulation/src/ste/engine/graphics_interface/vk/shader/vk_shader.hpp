@@ -41,8 +41,8 @@ public:
 
 	vk_shader(vk_shader &&) = default;
 	vk_shader &operator=(vk_shader &&) = default;
-	vk_shader(const vk_shader &) = default;
-	vk_shader &operator=(const vk_shader &) = default;
+	vk_shader(const vk_shader &) = delete;
+	vk_shader &operator=(const vk_shader &) = delete;
 
 	void destroy_shader_module() {
 		if (module) {

@@ -7,6 +7,7 @@
 
 #include <vulkan/vulkan.h>
 #include <vk_resource.hpp>
+#include <vk_image_base.hpp>
 
 #include <vk_logical_device.hpp>
 #include <vk_result.hpp>
@@ -19,16 +20,11 @@ namespace StE {
 namespace GL {
 
 template <int dimensions>
-class vk_image : public vk_resource {
+class vk_image : public vk_image_base<dimensions>, public vk_resource {
 public:
-	using size_type = typename vk_image_extent_type<dimensions>::extent_type;
+	using vk_image_base<dimensions>::size_type;
 
 private:
-	VkImage image{ VK_NULL_HANDLE };
-	VkFormat format;
-	size_type size;
-	std::uint32_t mips;
-	std::uint32_t layers;
 	VkImageUsageFlags usage;
 	bool sparse;
 
@@ -48,7 +44,7 @@ private:
 
 protected:
 	void bind_resource_underlying_memory(const vk_device_memory &memory, std::uint64_t offset) override {
-		vk_result res = vkBindImageMemory(device, image, memory, offset);
+		vk_result res = vkBindImageMemory(this->device, *this, memory, offset);
 		if (!res) {
 			throw vk_exception(res);
 		}
@@ -63,11 +59,8 @@ public:
 			 std::uint32_t layers = 1,
 			 const VkImageLayout &initial_layout = VK_IMAGE_LAYOUT_UNDEFINED,
 			 bool sparse = false)
-		: vk_resource(device), format(format), size(size), mips(mips), layers(layers), usage(usage), sparse(sparse)
+		: vk_image_base(device, format, size, mips, layers), usage(usage), sparse(sparse)
 	{
-		assert(mips > 0 && "Non-positive mipmap level count");
-		assert(layers > 0 && "Non-positive array layers count");
-
 		VkImage image;
 
 		glm::u32vec3 extent(0);
@@ -111,29 +104,23 @@ public:
 	vk_image& operator=(const vk_image &) = delete;
 
 	void destroy_image() {
-		if (image != VK_NULL_HANDLE) {
-			vkDestroyImage(device, image, nullptr);
-			image = VK_NULL_HANDLE;
+		if (this->image != VK_NULL_HANDLE) {
+			vkDestroyImage(this->device, this->image, nullptr);
+			this->image = VK_NULL_HANDLE;
 		}
 	}
 
 	auto get_memory_requirements() const override {
 		VkMemoryRequirements req;
-		vkGetImageMemoryRequirements(device, image, &req);
+		vkGetImageMemoryRequirements(this->device, 
+									 this->image, 
+									 &req);
 
 		return req;
 	}
 
-	auto& get_image() const { return image; }
-
-	auto& get_format() const { return format; };
-	auto& get_size() const{ return size; };
-	auto& get_mips() const{ return mips; };
-	auto& get_layers() const{ return layers; };
 	auto& get_usage() const{ return usage; };
 	auto is_sparse() const{ return sparse; };
-
-	operator VkImage() const { return get_image(); }
 };
 
 }

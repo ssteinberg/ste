@@ -6,7 +6,7 @@
 #include <ste.hpp>
 
 #include <vulkan/vulkan.h>
-#include <vk_image.hpp>
+#include <vk_image_base.hpp>
 #include <vk_result.hpp>
 #include <vk_exception.hpp>
 
@@ -23,21 +23,27 @@ class vk_image_view {
 private:
 	static constexpr int ctor_array_layers_multiplier = vk_image_is_cubemap<type>::value ? 6 : 1;
 
+	struct ctor {};
+
+public:
+	static constexpr int all_mip_levels = std::numeric_limits<std::uint32_t>::max();
+
 private:
 	VkImageView view{ VK_NULL_HANDLE };
 	const vk_logical_device &device;
 	VkFormat format;
 
 protected:
-	template <typename T>
-	vk_image_view(const vk_image<T> &parent,
+	template <int dimensions>
+	vk_image_view(const vk_image_base<dimensions> &parent,
 				  VkFormat format,
 				  std::uint32_t base_mip,
 				  std::uint32_t mips,
 				  std::uint32_t base_layer,
 				  std::uint32_t layers,
-				  bool depth_aspect = false,
-				  const vk_image_view_swizzle &swizzle = vk_image_view_swizzle())
+				  bool depth_aspect,
+				  const vk_image_view_swizzle &swizzle,
+				  const ctor&)
 		: device(parent.get_creating_device()), format(format)
 	{
 		VkImageView view;
@@ -68,99 +74,181 @@ protected:
 	}
 
 public:
-	// Non-cubemaps
-	template <typename T>
-	vk_image_view(const vk_image<T> &parent,
+	/**
+	*	@brief	Ctor for non-array image view.
+	*
+	*	@param parent		Parent image object
+	*	@param format		View format
+	*	@param base_layer	View base array layer. (Internally multiplied by six for cubemaps)
+	*	@param base_mip		View base mipmap level
+	*	@param mips			View mipmap levels. Use all_mip_levels for remaining levels.
+	*	@param depth_aspect	True for depth parent images, false for color images.
+	*	@param swizzle		View component swizzling
+	*/
+	template <int dimensions, bool sfinae = vk_image_has_arrays<type>::value>
+	vk_image_view(const vk_image_base<dimensions> &parent,
 				  VkFormat format,
 				  std::uint32_t base_layer,
 				  std::uint32_t base_mip,
-				  std::uint32_t mips,
+				  std::uint32_t mips = all_mip_levels,
 				  bool depth_aspect = false,
 				  const vk_image_view_swizzle &swizzle = vk_image_view_swizzle(),
-				  std::enable_if_t<!vk_image_has_arrays<type>::value>* = nullptr)
+				  std::enable_if_t<!sfinae>* = nullptr)
 		: vk_image_view(parent,
 						format,
 						base_mip,
-						mips,
-						base_layer,
+						glm::min(parent.get_mips() - base_mip, mips),
+						base_layer * ctor_array_layers_multiplier,
 						1 * ctor_array_layers_multiplier,
 						depth_aspect,
-						swizzle) {}
-	template <typename T>
-	vk_image_view(const vk_image<T> &parent,
+						swizzle,
+						ctor()) {}
+	/**
+	*	@brief	Ctor for non-array image view.
+	*
+	*	@param parent		Parent image object
+	*	@param format		View format
+	*	@param base_layer	View base array layer. (Internally multiplied by six for cubemaps)
+	*	@param mips			View mipmap levels. Use all_mip_levels for remaining levels.
+	*	@param depth_aspect	True for depth parent images, false for color images.
+	*	@param swizzle		View component swizzling
+	*/
+	template <int dimensions, bool sfinae = vk_image_has_arrays<type>::value>
+	vk_image_view(const vk_image_base<dimensions> &parent,
 				  VkFormat format,
 				  std::uint32_t base_layer,
-				  std::uint32_t mips = std::numeric_limits<std::uint32_t>::max(),
+				  std::uint32_t mips = all_mip_levels,
 				  bool depth_aspect = false,
 				  const vk_image_view_swizzle &swizzle = vk_image_view_swizzle(),
-				  std::enable_if_t<!vk_image_has_arrays<type>::value>* = nullptr)
+				  std::enable_if_t<!sfinae>* = nullptr)
+		: vk_image_view(parent,
+						format,
+						base_layer,
+						0,
+						glm::min(parent.get_mips(), mips),
+						depth_aspect,
+						swizzle) {}
+	/**
+	*	@brief	Ctor for non-array image view.
+	*
+	*	@param parent		Parent image object
+	*	@param format		View format
+	*	@param depth_aspect	True for depth parent images, false for color images.
+	*	@param swizzle		View component swizzling
+	*/
+	template <int dimensions, bool sfinae = vk_image_has_arrays<type>::value>
+	vk_image_view(const vk_image_base<dimensions> &parent,
+				  VkFormat format,
+				  bool depth_aspect = false,
+				  const vk_image_view_swizzle &swizzle = vk_image_view_swizzle(),
+				  std::enable_if_t<!sfinae>* = nullptr)
 		: vk_image_view(parent,
 						format,
 						0,
-						glm::min(parent.get_mips(), mips),
-						base_layer,
-						1 * ctor_array_layers_multiplier,
+						all_mip_levels,
 						depth_aspect,
 						swizzle) {}
-	template <typename T>
-	vk_image_view(const vk_image<T> &parent,
-				  VkFormat format,
-				  bool depth_aspect = false,
-				  const vk_image_view_swizzle &swizzle = vk_image_view_swizzle(),
-				  std::enable_if_t<!vk_image_has_arrays<type>::value>* = nullptr)
-		: vk_image_view(parent,
-						format,
-						0) {}
 
-	// Arrays
-	template <typename T>
-	vk_image_view(const vk_image<T> &parent,
+	/**
+	*	@brief	Ctor for array image view.
+	*
+	*	@param parent		Parent image object
+	*	@param format		View format
+	*	@param base_layer	View base array layer. (Internally multiplied by six for cubemaps)
+	*	@param base_mip		View base mipmap level
+	*	@param layers		View array layers. (Internally multiplied by six for cubemaps)
+	*	@param mips			View mipmap levels. Use all_mip_levels for remaining levels.
+	*	@param depth_aspect	True for depth parent images, false for color images.
+	*	@param swizzle		View component swizzling
+	*/
+	template <int dimensions, bool sfinae = vk_image_has_arrays<type>::value>
+	vk_image_view(const vk_image_base<dimensions> &parent,
 				  VkFormat format,
 				  std::uint32_t base_layer,
-				  std::uint32_t layers,
 				  std::uint32_t base_mip,
-				  std::uint32_t mips,
+				  std::uint32_t layers,
+				  std::uint32_t mips = all_mip_levels,
 				  bool depth_aspect = false,
 				  const vk_image_view_swizzle &swizzle = vk_image_view_swizzle(),
-				  std::enable_if_t<!vk_image_has_arrays<type>::value>* = nullptr)
+				  std::enable_if_t<sfinae>* = nullptr)
 		: vk_image_view(parent,
 						format,
 						base_mip,
-						mips,
-						base_layer,
+						glm::min(parent.get_mips() - base_mip, mips),
+						base_layer * ctor_array_layers_multiplier,
 						layers * ctor_array_layers_multiplier,
 						depth_aspect,
-						swizzle) {}
-	template <typename T>
-	vk_image_view(const vk_image<T> &parent,
+						swizzle,
+						ctor()) {}
+	/**
+	*	@brief	Ctor for array image view.
+	*
+	*	@param parent		Parent image object
+	*	@param format		View format
+	*	@param base_layer	View base array layer. (Internally multiplied by six for cubemaps)
+	*	@param layers		View array layers. (Internally multiplied by six for cubemaps)
+	*	@param depth_aspect	True for depth parent images, false for color images.
+	*	@param swizzle		View component swizzling
+	*/
+	template <int dimensions, bool sfinae = vk_image_has_arrays<type>::value>
+	vk_image_view(const vk_image_base<dimensions> &parent,
 				  VkFormat format,
 				  std::uint32_t base_layer,
 				  std::uint32_t layers,
-				  std::uint32_t mips = std::numeric_limits<std::uint32_t>::max(),
 				  bool depth_aspect = false,
 				  const vk_image_view_swizzle &swizzle = vk_image_view_swizzle(),
-				  std::enable_if_t<vk_image_has_arrays<type>::value>* = nullptr)
+				  std::enable_if_t<sfinae>* = nullptr)
 		: vk_image_view(parent,
 						format,
-						0,
-						glm::min(parent.get_mips(), mips),
 						base_layer,
-						layers * ctor_array_layers_multiplier,
+						0,
+						layers,
+						all_mip_levels,
 						depth_aspect,
 						swizzle) {}
-	template <typename T>
-	vk_image_view(const vk_image<T> &parent,
+	/**
+	*	@brief	Ctor for array image view.
+	*
+	*	@param parent		Parent image object
+	*	@param format		View format
+	*	@param layers		View array layers. (Internally multiplied by six for cubemaps)
+	*	@param depth_aspect	True for depth parent images, false for color images.
+	*	@param swizzle		View component swizzling
+	*/
+	template <int dimensions, bool sfinae = vk_image_has_arrays<type>::value>
+	vk_image_view(const vk_image_base<dimensions> &parent,
 				  VkFormat format,
 				  std::uint32_t layers,
 				  bool depth_aspect = false,
 				  const vk_image_view_swizzle &swizzle = vk_image_view_swizzle(),
-				  std::enable_if_t<vk_image_has_arrays<type>::value>* = nullptr)
+				  std::enable_if_t<sfinae>* = nullptr)
 		: vk_image_view(parent,
 						format,
-						layers,
 						0,
+						layers,
 						depth_aspect,
 						swizzle) {}
+
+	/**
+	*	@brief	Ctor for image view. Creates a view of the entire mipmap chain and array layers, with identical format to parent.
+	*
+	*	@param parent		Parent image object
+	*	@param depth_aspect	True for depth parent images, false for color images.
+	*	@param swizzle		View component swizzling
+	*/
+	template <int dimensions>
+	vk_image_view(const vk_image_base<dimensions> &parent,
+				  bool depth_aspect = false,
+				  const vk_image_view_swizzle &swizzle = vk_image_view_swizzle())
+		: vk_image_view(parent,
+						parent.get_format(),
+						0,
+						parent.get_mips(),
+						0,
+						parent.get_layers(),
+						depth_aspect,
+						swizzle,
+						ctor()) {}
 
 	~vk_image_view() noexcept { destroy_view(); }
 

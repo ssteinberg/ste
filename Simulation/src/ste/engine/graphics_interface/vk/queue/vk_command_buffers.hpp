@@ -19,12 +19,12 @@ private:
 	VkCommandBuffer buffer{ VK_NULL_HANDLE };
 
 public:
-	void begin() {
+	void begin(const VkCommandBufferUsageFlags &flags = 0) {
 		VkCommandBufferBeginInfo begin_info;
 		begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 		begin_info.pNext = nullptr;
 		begin_info.pInheritanceInfo = nullptr;
-		begin_info.flags = 0;
+		begin_info.flags = flags;
 
 		vkBeginCommandBuffer(*this, &begin_info);
 	}
@@ -90,6 +90,11 @@ public:
 
 	auto& operator[](std::size_t n) { return buffers[n]; }
 	auto& operator[](std::size_t n) const { return buffers[n]; }
+
+	auto begin() const { return buffers.begin(); }
+	auto begin() { return buffers.begin(); }
+	auto end() const { return buffers.end(); }
+	auto end() { return buffers.end(); }
 };
 
 }

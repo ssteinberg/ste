@@ -72,7 +72,7 @@ public:
 	*	@brief	Attempts to allocate memory. Returns an empty allocation on error.
 	*			Thread safe.
 	*
-	*  @param size	Allocation size in bytes
+	*	@param size	Allocation size in bytes
 	*/
 	allocation_type allocate(size_type size, size_type alignment) {
 		if (get_size() < size) {

@@ -19,6 +19,7 @@ namespace GL {
 template <typename T>
 class vk_buffer : public vk_resource {
 private:
+	const vk_logical_device &device;
 	VkBuffer buffer{ VK_NULL_HANDLE };
 	std::uint64_t size;
 	VkBufferUsageFlags usage;
@@ -37,7 +38,7 @@ public:
 			  std::uint64_t size,
 			  const VkBufferUsageFlags &usage,
 			  bool sparse = false) 
-		: vk_resource(device), size(size), usage(usage), sparse(sparse)
+		: device(device), size(size), usage(usage), sparse(sparse)
 	{
 		VkBuffer buffer;
 
@@ -83,6 +84,7 @@ public:
 		return req;
 	}
 
+	auto& get_creating_device() const { return device; }
 	auto& get_buffer() const { return buffer; }
 
 	auto& get_size() const { return size; }

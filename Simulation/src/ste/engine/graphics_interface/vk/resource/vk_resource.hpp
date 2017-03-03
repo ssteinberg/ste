@@ -17,16 +17,13 @@ private:
 	bool private_underlying_memory{ false };
 
 protected:
-	const vk_logical_device &device;
-
-protected:
 	virtual void bind_resource_underlying_memory(const vk_device_memory &memory, std::uint64_t offset) = 0;
 
 public:
 	virtual VkMemoryRequirements get_memory_requirements() const = 0;
 
 public:
-	vk_resource(const vk_logical_device &device) : device(device) {}
+	vk_resource() = default;
 	virtual ~vk_resource() noexcept {}
 
 	vk_resource(vk_resource &&) = default;
@@ -40,7 +37,6 @@ public:
 		this->bind_resource_underlying_memory(*memory, offset);
 	}
 
-	auto& get_creating_device() const { return device; }
 	auto& get_underlying_memory() const { return memory; }
 	auto has_bounded_underlying_memory() const { return !!memory; }
 	auto has_private_underlying_memory() const { return private_underlying_memory; }

@@ -12,6 +12,8 @@
 #include <ste_engine_exceptions.hpp>
 #include <vk_logical_device.hpp>
 #include <vk_swapchain.hpp>
+#include <vk_swapchain_image.hpp>
+#include <vk_image_view.hpp>
 
 #include <memory>
 #include <vector>
@@ -26,6 +28,12 @@ class ste_presentation_surface {
 private:
 	using resize_signal_connection_t = ste_window_signals::window_resize_signal_type::connection_type;
 
+	using swap_chain_image_view_t = vk_image_view<vk_image_type::image_2d>;
+	struct swap_chain_image_t {
+		vk_swapchain_image image;
+		swap_chain_image_view_t view;
+	};
+
 private:
 	const ste_gl_presentation_device_creation_parameters parameters;
 	const vk_logical_device *presentation_device;
@@ -35,7 +43,7 @@ private:
 
 	VkSurfaceCapabilitiesKHR surface_presentation_caps;
 	std::unique_ptr<vk_swapchain> swap_chain{ nullptr };
-	std::vector<VkImage> swap_chain_images;
+	std::vector<swap_chain_image_t> swap_chain_images;
 
 	std::shared_ptr<resize_signal_connection_t> resize_signal_connection;
 
@@ -154,9 +162,13 @@ private:
 		}
 		
 		auto size = get_surface_extent();
+		std::uint32_t layers = 1;
+		std::uint32_t max_image_count = surface_presentation_caps.maxImageCount > 0 ?
+			surface_presentation_caps.maxImageCount :
+			std::numeric_limits<std::uint32_t>::max();
 		auto min_image_count = glm::clamp<unsigned>(3,
 													surface_presentation_caps.minImageCount,
-													surface_presentation_caps.maxImageCount);
+													max_image_count);
 		auto format = get_surface_format();
 		auto transform = get_transform();
 		auto composite = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
@@ -168,23 +180,34 @@ private:
 														  format.format,
 														  format.colorSpace,
 														  size,
-														  1,
+														  layers,
 														  transform,
 														  composite,
 														  present_mode);
 
 		// Aquire swap chain images
+		std::vector<VkImage> swapchain_vk_image_objects;
 		std::uint32_t chain_image_count;
 		vk_result res = vkGetSwapchainImagesKHR(*presentation_device, *swap_chain, &chain_image_count, nullptr);
 		if (!res) {
 			this->swap_chain = nullptr;
 			throw vk_exception(res);
 		}
-		swap_chain_images.resize(chain_image_count);
-		res = vkGetSwapchainImagesKHR(*presentation_device, *swap_chain, &chain_image_count, &swap_chain_images[0]);
+		swapchain_vk_image_objects.resize(chain_image_count);
+		res = vkGetSwapchainImagesKHR(*presentation_device, *swap_chain, &chain_image_count, &swapchain_vk_image_objects[0]);
 		if (!res) {
 			this->swap_chain = nullptr;
 			throw vk_exception(res);
+		}
+
+		for (auto& img : swapchain_vk_image_objects) {
+			auto image = vk_swapchain_image(*presentation_device,
+											img,
+											format.format,
+											vk_swapchain_image::size_type(size),
+											layers);
+			auto view = swap_chain_image_view_t(image);
+			this->swap_chain_images.push_back({ std::move(image), std::move(view) });
 		}
 	}
 
@@ -240,6 +263,8 @@ public:
 		setup_framebuffer();
 		setup_signals();
 	}
+
+	auto& get_swapchain_images() const { return swap_chain_images;  }
 };
 
 }
