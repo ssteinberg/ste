@@ -3,6 +3,7 @@
 
 #include <ste.hpp>
 #include <ste_presentation_device.hpp>
+#include "vk_unique_descriptor_set.hpp"
 
 using namespace StE::GL;
 
@@ -84,7 +85,6 @@ int main()
 	*	Create StE engine instance
 	*/
 	StE::ste_engine engine(gl_ctx, device);
-
 
 	return 0;
 }

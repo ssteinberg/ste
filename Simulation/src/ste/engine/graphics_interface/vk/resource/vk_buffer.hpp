@@ -13,6 +13,8 @@
 #include <vk_exception.hpp>
 #include <vk_device_memory.hpp>
 
+#include <optional.hpp>
+
 namespace StE {
 namespace GL {
 
@@ -20,14 +22,14 @@ template <typename T>
 class vk_buffer : public vk_resource {
 private:
 	const vk_logical_device &device;
-	VkBuffer buffer{ VK_NULL_HANDLE };
+	optional<VkBuffer> buffer;
 	std::uint64_t size;
 	VkBufferUsageFlags usage;
 	bool sparse;
 
 protected:
 	void bind_resource_underlying_memory(const vk_device_memory &memory, std::uint64_t offset) override {
-		vk_result res = vkBindBufferMemory(device, buffer, memory, offset);
+		vk_result res = vkBindBufferMemory(device, *this, memory, offset);
 		if (!res) {
 			throw vk_exception(res);
 		}
@@ -44,7 +46,7 @@ public:
 
 		auto bytes = size * sizeof(T);
 
-		VkBufferCreateInfo create_info;
+		VkBufferCreateInfo create_info = {};
 		create_info.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
 		create_info.pNext = nullptr;
 		create_info.flags = sparse ?
@@ -71,21 +73,21 @@ public:
 	vk_buffer& operator=(const vk_buffer &) = delete;
 
 	void destroy_buffer() {
-		if (buffer != VK_NULL_HANDLE) {
-			vkDestroyBuffer(device, buffer, nullptr);
-			buffer = VK_NULL_HANDLE;
+		if (buffer) {
+			vkDestroyBuffer(device, *this, nullptr);
+			buffer = none;
 		}
 	}
 
-	auto get_memory_requirements() const override {
+	VkMemoryRequirements get_memory_requirements() const override {
 		VkMemoryRequirements req;
-		vkGetBufferMemoryRequirements(device, buffer, &req);
+		vkGetBufferMemoryRequirements(device, *this, &req);
 
 		return req;
 	}
 
 	auto& get_creating_device() const { return device; }
-	auto& get_buffer() const { return buffer; }
+	auto& get_buffer() const { return buffer.get(); }
 
 	auto& get_size() const { return size; }
 	auto& get_usage() const { return usage; }

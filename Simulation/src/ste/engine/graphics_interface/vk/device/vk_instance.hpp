@@ -32,7 +32,7 @@ public:
 				const std::vector<const char*> &instance_layers) 
 		: instance_extensions(instance_extensions), instance_layers(instance_layers)
 	{
-		VkApplicationInfo vk_app_info;
+		VkApplicationInfo vk_app_info = {};
 		vk_app_info.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
 		vk_app_info.pNext = nullptr;
 		vk_app_info.pApplicationName = app_name;
@@ -41,7 +41,7 @@ public:
 		vk_app_info.engineVersion = (ste_version_major << 16) + ste_version_minor;
 		vk_app_info.apiVersion = vk_api_version;
 
-		VkInstanceCreateInfo inst_info;
+		VkInstanceCreateInfo inst_info = {};
 		inst_info.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 		inst_info.pNext = nullptr;
 		inst_info.flags = 0;

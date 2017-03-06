@@ -3,11 +3,8 @@
 
 #pragma once
 
-#include <ste.hpp>
-
 #include <vulkan/vulkan.h>
 #include <vk_logical_device.hpp>
-#include <vk_command_pool.hpp>
 
 #include <vector>
 
@@ -20,7 +17,7 @@ private:
 
 public:
 	void begin(const VkCommandBufferUsageFlags &flags = 0) {
-		VkCommandBufferBeginInfo begin_info;
+		VkCommandBufferBeginInfo begin_info = {};
 		begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 		begin_info.pNext = nullptr;
 		begin_info.pInheritanceInfo = nullptr;
@@ -43,35 +40,21 @@ public:
 };
 
 class vk_command_buffers {
+	friend class vk_command_pool;
+
 private:
 	std::vector<vk_command_buffer> buffers;
 	const vk_command_pool &pool;
 	const vk_logical_device &device;
 
-public:
-	vk_command_buffers(int count,
+private:
+	vk_command_buffers(std::vector<vk_command_buffer> &&buffers,
 					   const vk_logical_device &device,
 					   const vk_command_pool &pool)
-		: pool(pool), device(device)
-	{
-		assert(count > 0);
+		: buffers(std::move(buffers)), pool(pool), device(device)
+	{}
 
-		VkCommandBufferAllocateInfo create_info;
-		create_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-		create_info.pNext = nullptr;
-		create_info.commandPool = pool;
-		create_info.commandBufferCount = count;
-		create_info.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-
-		std::vector<vk_command_buffer> buffers;
-		buffers.resize(count);
-		vk_result res = vkAllocateCommandBuffers(device, &create_info, reinterpret_cast<VkCommandBuffer*>(&buffers[0]));
-		if (!res) {
-			throw vk_exception(res);
-		}
-
-		this->buffers = buffers;
-	}
+public:
 	~vk_command_buffers() noexcept {
 		free();
 	}
@@ -81,12 +64,7 @@ public:
 	vk_command_buffers(const vk_command_buffers &) = default;
 	vk_command_buffers &operator=(const vk_command_buffers &) = default;
 
-	void free() {
-		if (buffers.size()) {
-			vkFreeCommandBuffers(device, pool, buffers.size(), reinterpret_cast<VkCommandBuffer*>(&buffers[0]));
-			buffers.clear();
-		}
-	}
+	void free();
 
 	auto& operator[](std::size_t n) { return buffers[n]; }
 	auto& operator[](std::size_t n) const { return buffers[n]; }

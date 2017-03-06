@@ -8,6 +8,8 @@
 #include <vulkan/vulkan.h>
 #include <vk_logical_device.hpp>
 
+#include <optional.hpp>
+
 #include <string>
 
 namespace StE {
@@ -15,12 +17,12 @@ namespace GL {
 
 class vk_shader {
 private:
-	VkShaderModule module{ VK_NULL_HANDLE };
+	optional<VkShaderModule> module;
 	const vk_logical_device &device;
 
 public:
 	vk_shader(const vk_logical_device &device, const std::string &code) : device(device) {
-		VkShaderModuleCreateInfo create_info;
+		VkShaderModuleCreateInfo create_info = {};
 		create_info.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
 		create_info.pNext = nullptr;
 		create_info.flags = 0;
@@ -47,11 +49,24 @@ public:
 	void destroy_shader_module() {
 		if (module) {
 			vkDestroyShaderModule(device, *this, nullptr);
-			module = VK_NULL_HANDLE;
+			module = none;
 		}
 	}
 
-	auto& get_shader_module() const { return module; }
+	auto shader_stage_create_info(const VkShaderStageFlagBits &stage) const {
+		VkPipelineShaderStageCreateInfo stage_info = {};
+		stage_info.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+		stage_info.pNext = nullptr;
+		stage_info.flags = 0;
+		stage_info.module = *this;
+		stage_info.pName = "main";
+		stage_info.stage = stage;
+		stage_info.pSpecializationInfo = nullptr;
+
+		return stage_info;
+	}
+
+	auto& get_shader_module() const { return module.get(); }
 
 	operator VkShaderModule() const { return get_shader_module(); }
 };

@@ -29,7 +29,7 @@ struct ste_gl_queue_descriptor {
 	float priority{ .0f };
 
 	auto create_device_queue_create_info() const {
-		VkDeviceQueueCreateInfo device_queue_info;
+		VkDeviceQueueCreateInfo device_queue_info = {};
 		device_queue_info.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
 		device_queue_info.pNext = nullptr;
 		device_queue_info.flags = 0;

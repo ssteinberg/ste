@@ -18,6 +18,7 @@
 #include <memory>
 #include <vector>
 #include <algorithm>
+#include <functional>
 
 #include <connection.hpp>
 
@@ -29,10 +30,7 @@ private:
 	using resize_signal_connection_t = ste_window_signals::window_resize_signal_type::connection_type;
 
 	using swap_chain_image_view_t = vk_image_view<vk_image_type::image_2d>;
-	struct swap_chain_image_t {
-		vk_swapchain_image image;
-		swap_chain_image_view_t view;
-	};
+	using swap_chain_image_t = std::pair<vk_swapchain_image, swap_chain_image_view_t>;
 
 private:
 	const ste_gl_presentation_device_creation_parameters parameters;
@@ -207,7 +205,7 @@ private:
 											vk_swapchain_image::size_type(size),
 											layers);
 			auto view = swap_chain_image_view_t(image);
-			this->swap_chain_images.push_back({ std::move(image), std::move(view) });
+			this->swap_chain_images.push_back(std::make_pair(std::move(image), std::move(view)));
 		}
 	}
 

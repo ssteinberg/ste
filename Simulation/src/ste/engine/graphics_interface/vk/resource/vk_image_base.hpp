@@ -7,6 +7,8 @@
 #include <vk_image_type.hpp>
 #include <vk_logical_device.hpp>
 
+#include <optional.hpp>
+
 namespace StE {
 namespace GL {
 
@@ -18,7 +20,7 @@ public:
 
 protected:
 	const vk_logical_device &device;
-	VkImage image{ VK_NULL_HANDLE };
+	optional<VkImage> image;
 
 private:
 	VkFormat format;
@@ -56,7 +58,7 @@ public:
 	vk_image_base& operator=(const vk_image_base &) = delete;
 
 	auto& get_creating_device() const { return device; }
-	auto& get_image() const { return image; }
+	auto& get_image() const { return image.get(); }
 
 	auto& get_format() const { return format; };
 	auto& get_size() const { return size; };

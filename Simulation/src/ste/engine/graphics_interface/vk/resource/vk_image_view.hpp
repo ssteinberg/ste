@@ -10,6 +10,8 @@
 #include <vk_result.hpp>
 #include <vk_exception.hpp>
 
+#include <optional.hpp>
+
 #include <vk_image_type.hpp>
 #include <vk_image_view_swizzle.hpp>
 
@@ -29,7 +31,7 @@ public:
 	static constexpr int all_mip_levels = std::numeric_limits<std::uint32_t>::max();
 
 private:
-	VkImageView view{ VK_NULL_HANDLE };
+	optional<VkImageView> view;
 	const vk_logical_device &device;
 	VkFormat format;
 
@@ -48,14 +50,14 @@ protected:
 	{
 		VkImageView view;
 
-		VkImageSubresourceRange range;
+		VkImageSubresourceRange range = {};
 		range.baseArrayLayer = base_layer;
 		range.layerCount = layers;
 		range.baseMipLevel = base_mip;
 		range.levelCount = mips;
 		range.aspectMask = depth_aspect ? VK_IMAGE_ASPECT_DEPTH_BIT : VK_IMAGE_ASPECT_COLOR_BIT;
 
-		VkImageViewCreateInfo create_info;
+		VkImageViewCreateInfo create_info = {};
 		create_info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
 		create_info.pNext = nullptr;
 		create_info.flags = 0;
@@ -258,13 +260,13 @@ public:
 	vk_image_view& operator=(const vk_image_view &) = delete;
 
 	void destroy_view() {
-		if (view != VK_NULL_HANDLE) {
-			vkDestroyImageView(device, view, nullptr);
-			view = VK_NULL_HANDLE;
+		if (view) {
+			vkDestroyImageView(device, *this, nullptr);
+			view = none;
 		}
 	}
 
-	auto& get_view() const { return view; }
+	auto& get_view() const { return view.get(); }
 	auto& get_format() const { return format; }
 
 	operator VkImageView() const { return get_view(); }

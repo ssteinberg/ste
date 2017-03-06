@@ -8,12 +8,14 @@
 #include <vulkan/vulkan.h>
 #include <vk_logical_device.hpp>
 
+#include <optional.hpp>
+
 namespace StE {
 namespace GL {
 
 class vk_queue {
 private:
-	VkQueue queue{ VK_NULL_HANDLE };
+	optional<VkQueue> queue;
 	std::uint32_t queue_family;
 
 public:
@@ -36,7 +38,7 @@ public:
 		vkQueueWaitIdle(*this);
 	}
 
-	auto& get_queue() const { return queue; }
+	auto& get_queue() const { return queue.get(); }
 	auto get_queue_family_index() const { return queue_family; }
 
 	operator VkQueue() const { return get_queue(); }

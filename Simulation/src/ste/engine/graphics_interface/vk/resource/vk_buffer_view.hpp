@@ -10,12 +10,14 @@
 #include <vk_result.hpp>
 #include <vk_exception.hpp>
 
+#include <optional.hpp>
+
 namespace StE {
 namespace GL {
 
 class vk_buffer_view {
 private:
-	VkBufferView view{ VK_NULL_HANDLE };
+	optional<VkBufferView> view;
 	const vk_logical_device &device;
 	std::uint64_t size_bytes;
 	VkFormat format;
@@ -30,7 +32,7 @@ public:
 	{
 		VkBufferView view;
 
-		VkBufferViewCreateInfo create_info;
+		VkBufferViewCreateInfo create_info = {};
 		create_info.sType = VK_STRUCTURE_TYPE_BUFFER_VIEW_CREATE_INFO;
 		create_info.pNext = nullptr;
 		create_info.flags = 0;
@@ -60,13 +62,13 @@ public:
 	vk_buffer_view& operator=(const vk_buffer_view &) = delete;
 
 	void destroy_view() {
-		if (view != VK_NULL_HANDLE) {
-			vkDestroyBufferView(device, view, nullptr);
-			view = VK_NULL_HANDLE;
+		if (view) {
+			vkDestroyBufferView(device, view.get(), nullptr);
+			view = none;
 		}
 	}
 
-	auto& get_view() const { return view; }
+	auto& get_view() const { return view.get(); }
 	auto& get_size_bytes() const { return size_bytes; }
 	auto& get_format() const { return format; }
 

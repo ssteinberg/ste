@@ -10,6 +10,8 @@
 #include <vk_logical_device.hpp>
 #include <vk_memory_exception.hpp>
 
+#include <optional.hpp>
+
 #include <memory>
 
 namespace StE {
@@ -37,7 +39,7 @@ public:
 
 class vk_device_memory {
 private:
-	VkDeviceMemory memory{ VK_NULL_HANDLE };
+	optional<VkDeviceMemory> memory;
 	const vk_logical_device &device;
 	std::uint64_t size;
 
@@ -49,7 +51,7 @@ public:
 	{
 		VkDeviceMemory memory;
 
-		VkMemoryAllocateInfo info;
+		VkMemoryAllocateInfo info = {};
 		info.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 		info.pNext = nullptr;
 		info.allocationSize = size;
@@ -69,17 +71,17 @@ public:
 	vk_device_memory &operator=(const vk_device_memory &) = delete;
 
 	void free() {
-		if (memory != VK_NULL_HANDLE) {
+		if (memory) {
 			munmap();
 
-			vkFreeMemory(device, memory, nullptr);
-			memory = VK_NULL_HANDLE;
+			vkFreeMemory(device, *this, nullptr);
+			memory = none;
 		}
 	}
 
 	auto get_allocation_memory_commitment() const {
 		std::uint64_t committed_bytes;
-		vkGetDeviceMemoryCommitment(device, memory, &committed_bytes);
+		vkGetDeviceMemoryCommitment(device, *this, &committed_bytes);
 		return committed_bytes;
 	}
 
@@ -88,7 +90,7 @@ public:
 		munmap();
 
 		void *pdata = nullptr;
-		vk_result res = vkMapMemory(device, memory, offset * sizeof(T), count * sizeof(T), 0, &pdata);
+		vk_result res = vkMapMemory(device, *this, offset * sizeof(T), count * sizeof(T), 0, &pdata);
 		if (!res) {
 			throw vk_exception(res);
 		}
@@ -100,13 +102,13 @@ public:
 	}
 	void munmap() {
 		if (mapped_memory != nullptr) {
-			vkUnmapMemory(device, memory);
+			vkUnmapMemory(device, *this);
 			mapped_memory = nullptr;
 		}
 	}
 
 	auto& get_creating_device() const { return device; }
-	auto& get_device_memory() const { return memory; }
+	auto& get_device_memory() const { return memory.get(); }
 	auto get_size() const { return size; }
 
 	operator VkDeviceMemory() const { return get_device_memory(); }

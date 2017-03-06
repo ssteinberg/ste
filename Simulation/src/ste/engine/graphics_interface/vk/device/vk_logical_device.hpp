@@ -31,7 +31,7 @@ public:
 		: physical_device(physical_device), requested_features(requested_features),
 		requested_queues(requested_queues), enabled_extensions(device_extensions)
 	{
-		VkDeviceCreateInfo device_info;
+		VkDeviceCreateInfo device_info = {};
 		device_info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 		device_info.pNext = nullptr;
 		device_info.flags = 0;

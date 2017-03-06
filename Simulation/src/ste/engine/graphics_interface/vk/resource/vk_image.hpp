@@ -72,7 +72,7 @@ public:
 			0;
 		flags |= VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT | VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
 
-		VkImageCreateInfo create_info;
+		VkImageCreateInfo create_info = {};
 		create_info.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
 		create_info.pNext = nullptr;
 		create_info.flags = flags;
@@ -104,13 +104,13 @@ public:
 	vk_image& operator=(const vk_image &) = delete;
 
 	void destroy_image() {
-		if (this->image != VK_NULL_HANDLE) {
-			vkDestroyImage(this->device, this->image, nullptr);
-			this->image = VK_NULL_HANDLE;
+		if (this->image) {
+			vkDestroyImage(this->device, *this, nullptr);
+			this->image = none;
 		}
 	}
 
-	auto get_memory_requirements() const override {
+	VkMemoryRequirements get_memory_requirements() const override {
 		VkMemoryRequirements req;
 		vkGetImageMemoryRequirements(this->device, 
 									 this->image, 

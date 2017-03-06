@@ -23,7 +23,7 @@ public:
 	vk_debug_report_callback(const vk_instance &instance,
 							 void *user_data,
 							 PFN_vkDebugReportCallbackEXT callback) : instance(instance) {
-		VkDebugReportCallbackCreateInfoEXT debug_info;
+		VkDebugReportCallbackCreateInfoEXT debug_info = {};
 		debug_info.sType = VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT;
 		debug_info.flags = VK_DEBUG_REPORT_WARNING_BIT_EXT |
 						   VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT |
