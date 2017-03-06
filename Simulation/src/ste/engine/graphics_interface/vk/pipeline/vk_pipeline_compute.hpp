@@ -16,13 +16,13 @@
 namespace StE {
 namespace GL {
 
-class vk_compute_pipeline {
+class vk_pipeline_compute {
 private:
 	optional<VkPipeline> pipeline;
 	const vk_logical_device &device;
 
 public:
-	vk_compute_pipeline(const vk_logical_device &device,
+	vk_pipeline_compute(const vk_logical_device &device,
 						const vk_shader &shader_module,
 						const vk_pipeline_layout &layout,
 						const optional<vk_pipeline_cache> &cache = none) : device(device) {
@@ -50,14 +50,14 @@ public:
 
 		this->pipeline = pipeline;
 	}
-	~vk_compute_pipeline() noexcept {
+	~vk_pipeline_compute() noexcept {
 		destroy_pipeline();
 	}
 
-	vk_compute_pipeline(vk_compute_pipeline &&) = default;
-	vk_compute_pipeline &operator=(vk_compute_pipeline &&) = default;
-	vk_compute_pipeline(const vk_compute_pipeline &) = delete;
-	vk_compute_pipeline &operator=(const vk_compute_pipeline &) = delete;
+	vk_pipeline_compute(vk_pipeline_compute &&) = default;
+	vk_pipeline_compute &operator=(vk_pipeline_compute &&) = default;
+	vk_pipeline_compute(const vk_pipeline_compute &) = delete;
+	vk_pipeline_compute &operator=(const vk_pipeline_compute &) = delete;
 
 	void destroy_pipeline() {
 		if (pipeline) {

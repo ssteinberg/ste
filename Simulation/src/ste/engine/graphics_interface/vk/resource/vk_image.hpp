@@ -14,8 +14,6 @@
 #include <vk_exception.hpp>
 #include <vk_device_memory.hpp>
 
-#include <vk_image_type.hpp>
-
 namespace StE {
 namespace GL {
 

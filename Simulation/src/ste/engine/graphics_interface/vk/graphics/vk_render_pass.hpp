@@ -9,8 +9,13 @@
 #include <vk_logical_device.hpp>
 #include <vk_result.hpp>
 #include <vk_exception.hpp>
+#include <vk_render_pass_attachment.hpp>
+#include <vk_render_pass_subpass_descriptor.hpp>
+#include <vk_render_pass_subpass_dependency.hpp>
 
 #include <optional.hpp>
+
+#include <vector>
 
 namespace StE {
 namespace GL {
@@ -21,21 +26,58 @@ private:
 	const vk_logical_device &device;
 
 public:
-	vk_render_pass(const vk_logical_device &device) : device(device) {
-		VkRenderPass fb;
+	vk_render_pass(const vk_logical_device &device,
+				   const std::vector<vk_render_pass_attachment> &attachments,
+				   const std::vector<vk_render_pass_subpass_descriptor> &subpasses,
+				   const std::vector<vk_render_pass_subpass_dependency> &subpass_dependencies = {}) : device(device) {
+		std::vector<VkAttachmentDescription> attachment_descriptors;
+		attachment_descriptors.resize(attachments.size());
+		for (int i = 0; i < attachments.size(); ++i)
+			attachment_descriptors[i] = *(attachments.begin() + i);
+
+		std::vector<VkSubpassDependency> dependency_descriptors;
+		dependency_descriptors.resize(subpass_dependencies.size());
+		for (int i = 0; i < subpass_dependencies.size(); ++i)
+			dependency_descriptors[i] = *(subpass_dependencies.begin() + i);
+
+		std::vector<VkSubpassDescription> subpass_descriptors;
+		subpass_descriptors.resize(subpasses.size());
+		for (int i = 0; i < subpasses.size(); ++i) {
+			const auto &s = *(subpasses.begin() + i);
+
+			VkSubpassDescription subpass = {};
+			subpass.flags = 0;
+			subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+			subpass.colorAttachmentCount = s.color.size();
+			subpass.pColorAttachments = s.color.data();
+			subpass.inputAttachmentCount = s.input.size();
+			subpass.pInputAttachments = s.input.data();
+			subpass.preserveAttachmentCount = s.preserve.size();
+			subpass.pPreserveAttachments = s.preserve.data();
+			subpass.pDepthStencilAttachment = s.depth ? &s.depth.get() : nullptr;
+			subpass.pResolveAttachments = nullptr;
+
+			subpass_descriptors[i] = subpass;
+		}
 
 		VkRenderPassCreateInfo create_info = {};
 		create_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
 		create_info.pNext = nullptr;
 		create_info.flags = 0;
-//		create_info.
+		create_info.attachmentCount = attachment_descriptors.size();
+		create_info.pAttachments = attachment_descriptors.data();
+		create_info.subpassCount = subpass_descriptors.size();
+		create_info.pSubpasses = subpass_descriptors.data();
+		create_info.dependencyCount = dependency_descriptors.size();
+		create_info.pDependencies = dependency_descriptors.data();
 
-		vk_result res = vkCreateRenderPass(device, &create_info, nullptr, &fb);
+		VkRenderPass renderpass;
+		vk_result res = vkCreateRenderPass(device, &create_info, nullptr, &renderpass);
 		if (!res) {
 			throw vk_exception(res);
 		}
 
-		this->render_pass = fb;
+		this->render_pass = renderpass;
 	}
 	~vk_render_pass() noexcept { destroy_render_pass(); }
 

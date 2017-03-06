@@ -6,12 +6,14 @@
 #include <ste.hpp>
 
 #include <vulkan/vulkan.h>
-#include <vk_render_pass.hpp>
 #include <vk_logical_device.hpp>
 #include <vk_result.hpp>
 #include <vk_exception.hpp>
+#include <vk_render_pass.hpp>
 
 #include <optional.hpp>
+
+#include <vector>
 
 namespace StE {
 namespace GL {
@@ -20,10 +22,13 @@ class vk_framebuffer {
 private:
 	optional<VkFramebuffer> framebuffer;
 	const vk_logical_device &device;
+	glm::u32vec2 extent;
 
 public:
 	vk_framebuffer(const vk_logical_device &device,
-				   const vk_render_pass &render_pass) : device(device) {
+				   const vk_render_pass &render_pass,
+				   const std::vector<VkImageView> &attachments,
+				   const glm::u32vec2 &extent) : device(device), extent(extent) {
 		VkFramebuffer fb;
 
 		VkFramebufferCreateInfo create_info = {};
@@ -31,6 +36,11 @@ public:
 		create_info.pNext = nullptr;
 		create_info.flags = 0;
 		create_info.renderPass = render_pass;
+		create_info.attachmentCount = attachments.size();
+		create_info.pAttachments = attachments.data();
+		create_info.width = extent.x;
+		create_info.height = extent.y;
+		create_info.layers = 1;
 
 		vk_result res = vkCreateFramebuffer(device, &create_info, nullptr, &fb);
 		if (!res) {

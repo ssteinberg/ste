@@ -13,6 +13,7 @@
 #include <optional.hpp>
 
 #include <vk_image_type.hpp>
+#include <vk_image_type_traits.hpp>
 #include <vk_image_view_swizzle.hpp>
 
 #include <limits>

@@ -5,7 +5,8 @@
 
 #include <vulkan/vulkan.h>
 #include <vk_command.hpp>
-#include <vk_compute_pipeline.hpp>
+#include <vk_pipeline_compute.hpp>
+#include <vk_pipeline_graphics.hpp>
 
 namespace StE {
 namespace GL {
@@ -16,10 +17,10 @@ private:
 	VkPipelineBindPoint bind_point;
 
 public:
-	vk_cmd_bind_pipeline(const vk_compute_pipeline &pipeline) : pipeline(pipeline), bind_point(VK_PIPELINE_BIND_POINT_COMPUTE)
+	vk_cmd_bind_pipeline(const vk_pipeline_compute &pipeline) : pipeline(pipeline), bind_point(VK_PIPELINE_BIND_POINT_COMPUTE)
 	{}
-//	vk_cmd_bind_pipeline(const vk_graphics_pipeline &pipeline) : pipeline(pipeline), bind_point(VK_PIPELINE_BIND_POINT_GRAPHICS)
-//	{}
+	vk_cmd_bind_pipeline(const vk_pipeline_graphics &pipeline) : pipeline(pipeline), bind_point(VK_PIPELINE_BIND_POINT_GRAPHICS)
+	{}
 	virtual ~vk_cmd_bind_pipeline() noexcept {}
 
 private:
