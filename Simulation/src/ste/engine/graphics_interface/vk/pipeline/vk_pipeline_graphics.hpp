@@ -14,6 +14,7 @@
 
 #include <vk_vertex_input_attributes.hpp>
 #include <vk_depth_op_descriptor.hpp>
+#include <vk_blend_op_descriptor.hpp>
 
 #include <optional.hpp>
 
@@ -46,11 +47,13 @@ public:
 						 const vk_render_pass &render_pass,
 						 std::uint32_t subpass,
 						 const VkViewport &viewport,
-						 const vk_depth_op_descriptor &depth_op,
 						 const std::vector<vertex_input_descriptor> &vertex_attributes,
 						 VkPrimitiveTopology topology,
 						 VkCullModeFlags cull_mode,
 						 VkFrontFace front_face,
+						 const vk_depth_op_descriptor &depth_op,
+						 const std::vector<vk_blend_op_descriptor> &attachment_blend_op,
+						 const glm::vec4 blend_constants,
 						 const optional<vk_pipeline_cache> &cache = none) : device(device) {
 		// Shader modules stages
 		std::vector<VkPipelineShaderStageCreateInfo> stages(shader_modules.size());
@@ -134,6 +137,23 @@ public:
 		depth_stencil_state_create.depthTestEnable = depth_op.depth_test_enable;
 		depth_stencil_state_create.depthWriteEnable = depth_op.depth_write_enable;
 
+		// Blend
+		std::vector<VkPipelineColorBlendAttachmentState> blend_attachment_states(attachment_blend_op.size());
+		for (int i = 0; i < attachment_blend_op.size(); ++i)
+			blend_attachment_states[i] = *(attachment_blend_op.begin() + i);
+
+		VkPipelineColorBlendStateCreateInfo blend_state_create = {};
+		blend_state_create.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+		blend_state_create.pNext = nullptr;
+		blend_state_create.flags = 0;
+		blend_state_create.logicOpEnable = false;
+		blend_state_create.attachmentCount = blend_attachment_states.size();
+		blend_state_create.pAttachments = blend_attachment_states.data();
+		blend_state_create.blendConstants[0] = blend_constants.r;
+		blend_state_create.blendConstants[1] = blend_constants.g;
+		blend_state_create.blendConstants[2] = blend_constants.b;
+		blend_state_create.blendConstants[3] = blend_constants.a;
+
 		VkGraphicsPipelineCreateInfo create_info = {};
 		create_info.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
 		create_info.pNext = nullptr;
@@ -151,8 +171,9 @@ public:
 		create_info.pMultisampleState = nullptr;
 		create_info.pRasterizationState = &rasterization_state_create;
 		create_info.pViewportState = &viewport_state_create;
-		create_info.pColorBlendState = nullptr;
+		create_info.pColorBlendState = &blend_state_create;
 		create_info.pDepthStencilState = &depth_stencil_state_create;
+		create_info.pDynamicState = nullptr;
 
 		VkPipeline pipeline;
 		vk_result res = vkCreateGraphicsPipelines(device,
