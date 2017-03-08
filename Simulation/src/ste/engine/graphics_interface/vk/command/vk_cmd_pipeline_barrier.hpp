@@ -5,32 +5,22 @@
 
 #include <vulkan/vulkan.h>
 #include <vk_command.hpp>
-#include <vk_event.hpp>
 #include <vk_pipeline_barrier.hpp>
 
 #include <vector>
-#include <initializer_list>
 
 namespace StE {
 namespace GL {
 
-class vk_cmd_wait_events : public vk_command {
+class vk_cmd_pipeline_barrier : public vk_command {
 private:
-	std::vector<VkEvent> events;
 	const vk_pipeline_barrier &barrier;
 	std::vector<VkMemoryBarrier> memory_barriers;
 	std::vector<VkBufferMemoryBarrier> buffer_barriers;
 	std::vector<VkImageMemoryBarrier> image_barriers;
 
 public:
-	vk_cmd_wait_events(const std::initializer_list<const vk_event&> &events,
-					   const vk_pipeline_barrier &barrier)
-		: barrier(barrier)
-	{
-		this->events.reserve(events.size());
-		for (auto &e : events)
-			this->events.push_back(e);
-
+	vk_cmd_pipeline_barrier(const vk_pipeline_barrier &barrier) : barrier(barrier) {
 		const auto &global = barrier.get_global_memory_barriers();
 		const auto &buffer = barrier.get_buffer_barriers();
 		const auto &image = barrier.get_image_barriers();
@@ -47,16 +37,17 @@ public:
 		for (auto &e : image)
 			image_barriers.push_back(e);
 	}
-	virtual ~vk_cmd_wait_events() noexcept {}
+	virtual ~vk_cmd_pipeline_barrier() noexcept {}
 
 private:
 	void operator()(const vk_command_buffer &command_buffer) const override final {
-		vkCmdWaitEvents(command_buffer, events.size(), events.data(),
-						barrier.get_src_stage(),
-						barrier.get_dst_stage(),
-						memory_barriers.size(), memory_barriers.data(),
-						buffer_barriers.size(), buffer_barriers.data(),
-						image_barriers.size(), image_barriers.data());
+		vkCmdPipelineBarrier(command_buffer,
+							 barrier.get_src_stage(),
+							 barrier.get_dst_stage(),
+							 0,
+							 memory_barriers.size(), memory_barriers.data(),
+							 buffer_barriers.size(), buffer_barriers.data(),
+							 image_barriers.size(), image_barriers.data());
 	}
 };
 

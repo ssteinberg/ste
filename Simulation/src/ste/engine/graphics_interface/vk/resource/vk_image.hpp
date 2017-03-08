@@ -56,6 +56,7 @@ public:
 			 std::uint32_t mips = 1,
 			 std::uint32_t layers = 1,
 			 const VkImageLayout &initial_layout = VK_IMAGE_LAYOUT_UNDEFINED,
+			 bool optimal_tiling = true,
 			 bool sparse = false)
 		: vk_image_base(device, format, size, mips, layers), usage(usage), sparse(sparse)
 	{
@@ -80,7 +81,7 @@ public:
 		create_info.mipLevels = mips;
 		create_info.arrayLayers = layers;
 		create_info.samples = VK_SAMPLE_COUNT_1_BIT;
-		create_info.tiling = VK_IMAGE_TILING_OPTIMAL;
+		create_info.tiling = optimal_tiling ? VK_IMAGE_TILING_OPTIMAL : VK_IMAGE_TILING_LINEAR;
 		create_info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 		create_info.usage = usage;
 		create_info.initialLayout = initial_layout;
