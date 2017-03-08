@@ -240,6 +240,9 @@
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\vk\pipeline\descriptor_set\vk_descriptor_set.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Simulation\src\ste\engine\graphics_interface\vk\query\vk_query.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Simulation\src\ste\engine\cache\lru_cache.hpp">
@@ -1184,9 +1187,6 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\presentation_device\ste_presentation_surface.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\shader\vk_shader.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\resource\vk_buffer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1355,9 +1355,6 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\graphics\vk_blend_op_descriptor.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\command\vk_cmd_begin_render_pass.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\command\vk_cmd_end_render_pass.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1365,6 +1362,51 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\command\vk_cmd_bind_index_buffer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\synchronization\vk_fence.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\pipeline\vk_shader.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\synchronization\vk_event.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\command\vk_cmd_begin_render_pass.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\command\vk_cmd_set_event.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\command\vk_cmd_reset_event.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\command\vk_cmd_wait_events.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\synchronization\vk_semaphore.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\query\vk_query.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\query\vk_query_pool.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\command\vk_cmd_begin_query.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\command\vk_cmd_end_query.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\command\vk_cmd_reset_query_pool.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\command\vk_cmd_copy_query_pool_results.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\command\vk_cmd_write_timestamp.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
