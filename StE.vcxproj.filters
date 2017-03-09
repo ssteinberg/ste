@@ -1451,6 +1451,9 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\command\vk_cmd_blit_image.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\ste_context.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Simulation\src\ste\framework_graphics\material\shaders\material_evaluate.glsl" />

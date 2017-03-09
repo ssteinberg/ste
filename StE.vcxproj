@@ -411,6 +411,7 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\synchronization\vk_fence.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\synchronization\vk_semaphore.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\vk_format_type_traits.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\ste_context.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\ste_glfw_handle.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\ste_type_traits.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\window\ste_window_signals.hpp" />

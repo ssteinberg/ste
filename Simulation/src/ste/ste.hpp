@@ -8,3 +8,4 @@ static constexpr unsigned ste_version_major = 2;
 static constexpr unsigned ste_version_minor = 0;
 
 #include <ste_engine.hpp>
+#include <ste_context.hpp>
