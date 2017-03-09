@@ -25,10 +25,11 @@ namespace StE {
 class task_scheduler {
 private:
 	using pool_t = balanced_thread_pool;
+	using task_t = pool_t::task_t;
 
 	struct delayed_task {
 		std::chrono::high_resolution_clock::time_point run_at;
-		unique_thread_pool_type_erased_task f;
+		task_t f;
 	};
 
 private:

@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include <ste.hpp>
+#include <stdafx.hpp>
 
 #include <vk_exception.hpp>
 #include <vk_device_memory.hpp>

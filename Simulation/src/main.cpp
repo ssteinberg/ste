@@ -86,6 +86,18 @@ int main()
 	*/
 	StE::ste_engine engine(gl_ctx, device);
 
+
+	/*
+	 *	Main loop
+	 */
+	for (;;) {
+		if (window.should_close()) {
+			break;
+		}
+
+		engine.tick();
+	}
+
 	return 0;
 }
 

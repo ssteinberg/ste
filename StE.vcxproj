@@ -294,6 +294,7 @@
     <ClCompile Include="Simulation\src\ste\engine\engine_control_old\ste_engine_control.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Simulation\src\ste\engine\graphics_interface\presentation_device\ste_gl_device_queue.cpp" />
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\vk\pipeline\descriptor_set\vk_descriptor_set.cpp" />
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\vk\query\vk_query.cpp" />
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\vk\queue\vk_command_buffers.cpp" />

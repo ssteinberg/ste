@@ -41,12 +41,12 @@ private:
 	typename engine_types::cache_t engine_cache;
 
 	const gl_context_t &gl_context;
-	const gl_device_t &gl_device;
+	gl_device_t &gl_device;
 	typename engine_types::gl_device_memory_allocator engine_device_memory_allocator;
 
 public:
 	ste_engine_impl(const gl_context_t &gl_ctx,
-					const gl_device_t &device)
+					gl_device_t &device)
 		: engine_cache(storage::cache_dir_path(), 1024 * 1024 * 256),
 		gl_context(gl_ctx),
 		gl_device(device),
@@ -56,9 +56,14 @@ public:
 	~ste_engine_impl() noexcept {}
 
 	ste_engine_impl(ste_engine_impl &&) = default;
-	ste_engine_impl(const ste_engine_impl &) = default;
+	ste_engine_impl(const ste_engine_impl &) = delete;
 	ste_engine_impl &operator=(ste_engine_impl &&) = default;
-	ste_engine_impl &operator=(const ste_engine_impl &) = default;
+	ste_engine_impl &operator=(const ste_engine_impl &) = delete;
+
+	void tick() {
+		engine_task_scheduler.tick();
+		gl_device.tick();
+	}
 
 	auto &task_scheduler() { return engine_task_scheduler; }
 	auto &task_scheduler() const { return engine_task_scheduler; }

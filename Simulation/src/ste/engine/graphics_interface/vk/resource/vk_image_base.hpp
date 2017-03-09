@@ -5,6 +5,7 @@
 
 #include <vulkan/vulkan.h>
 #include <vk_image_type.hpp>
+#include <vk_image_type_traits.hpp>
 #include <vk_logical_device.hpp>
 
 #include <optional.hpp>

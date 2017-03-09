@@ -243,6 +243,9 @@
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\vk\query\vk_query.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Simulation\src\ste\engine\graphics_interface\presentation_device\ste_gl_device_queue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Simulation\src\ste\engine\cache\lru_cache.hpp">

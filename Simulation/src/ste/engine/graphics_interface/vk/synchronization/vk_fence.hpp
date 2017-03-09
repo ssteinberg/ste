@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include <ste.hpp>
+#include <stdafx.hpp>
 
 #include <vulkan/vulkan.h>
 #include <vk_logical_device.hpp>
@@ -12,6 +12,7 @@
 
 #include <chrono>
 #include <vector>
+#include <limits>
 
 namespace StE {
 namespace GL {
@@ -81,8 +82,8 @@ public:
 	*	
 	*	@return	Returns true if signaled, false on timeout.
 	*/
-	template <class Rep, class Period>
-	bool wait_idle(const std::chrono::duration<Rep, Period> &timeout) const {
+	template <class Rep = std::chrono::nanoseconds::rep, class Period = std::chrono::nanoseconds::period>
+	bool wait_idle(const std::chrono::duration<Rep, Period> &timeout = std::chrono::nanoseconds(std::numeric_limits<uint64_t>::max())) const {
 		std::uint64_t timeout_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(timeout).count();
 		return vkWaitForFences(device,
 							   1,
@@ -105,9 +106,9 @@ public:
 *	
 *	@return	Returns true if signaled, false on timeout.
 */
-template <class Rep, class Period>
+template <class Rep = std::chrono::nanoseconds::rep, class Period = std::chrono::nanoseconds::period>
 bool inline vk_fence_wait_all(const std::vector<vk_fence*> &fences,
-							  const std::chrono::duration<Rep, Period> &timeout) {
+							  const std::chrono::duration<Rep, Period> &timeout = std::chrono::nanoseconds(std::numeric_limits<uint64_t>::max())) {
 	assert(fences.size());
 
 	std::uint64_t timeout_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(timeout).count();
@@ -130,9 +131,9 @@ bool inline vk_fence_wait_all(const std::vector<vk_fence*> &fences,
 *
 *	@return	Returns true if signaled, false on timeout.
 */
-template <class Rep, class Period>
+template <class Rep = std::chrono::nanoseconds::rep, class Period = std::chrono::nanoseconds::period>
 bool inline vk_fence_wait_any(const std::vector<vk_fence*> &fences,
-							  const std::chrono::duration<Rep, Period> &timeout) {
+							  const std::chrono::duration<Rep, Period> &timeout = std::chrono::nanoseconds(std::numeric_limits<uint64_t>::max())) {
 	assert(fences.size());
 
 	std::uint64_t timeout_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(timeout).count();

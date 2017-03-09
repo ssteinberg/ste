@@ -5,6 +5,8 @@
 
 #include <stdafx.hpp>
 
+#include <ste_engine_exceptions.hpp>
+
 #include <vk_physical_device_descriptor.hpp>
 
 #include <algorithm>

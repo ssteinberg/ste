@@ -14,13 +14,18 @@
 #include <vk_swapchain.hpp>
 #include <vk_swapchain_image.hpp>
 #include <vk_image_view.hpp>
+#include <vk_semaphore.hpp>
+#include <vk_queue.hpp>
 
+#include <connection.hpp>
+
+#include <atomic>
 #include <memory>
 #include <vector>
 #include <algorithm>
 #include <functional>
-
-#include <connection.hpp>
+#include <chrono>
+#include <limits>
 
 namespace StE {
 namespace GL {
@@ -29,8 +34,14 @@ class ste_presentation_surface {
 private:
 	using resize_signal_connection_t = ste_window_signals::window_resize_signal_type::connection_type;
 
+public:
 	using swap_chain_image_view_t = vk_image_view<vk_image_type::image_2d>;
 	using swap_chain_image_t = std::pair<vk_swapchain_image, swap_chain_image_view_t>;
+	struct acquire_next_image_return_t {
+		const swap_chain_image_t *image{ nullptr };
+		std::uint32_t image_index{ 0 };
+		bool sub_optimal{ false };
+	};
 
 private:
 	const ste_gl_presentation_device_creation_parameters parameters;
@@ -38,16 +49,16 @@ private:
 	const ste_window &presentation_window;
 
 	vk_surface presentation_surface;
-
 	VkSurfaceCapabilitiesKHR surface_presentation_caps;
 	std::unique_ptr<vk_swapchain> swap_chain{ nullptr };
 	std::vector<swap_chain_image_t> swap_chain_images;
 
 	std::shared_ptr<resize_signal_connection_t> resize_signal_connection;
+	mutable std::atomic_flag swap_chain_optimal_flag = ATOMIC_FLAG_INIT;
 
 private:
 	auto get_surface_extent() const {
-		auto extent = presentation_window.get_framebuffer_size();
+		auto extent = presentation_window.get_window_client_area_size();
 		glm::i32vec2 min_extent = { surface_presentation_caps.minImageExtent.width, surface_presentation_caps.minImageExtent.height };
 		glm::i32vec2 max_extent = { surface_presentation_caps.maxImageExtent.width, surface_presentation_caps.maxImageExtent.height };
 
@@ -153,35 +164,10 @@ private:
 		throw ste_engine_exception("Identity and inherit presentation transforms not supported");
 	}
 
-	void setup_framebuffer() {
-		// Create swap chain based on passed parameters and available device capabilities
-		if (!(surface_presentation_caps.supportedUsageFlags & VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT)) {
-			throw ste_engine_exception("VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT unsupported for swapchain");
-		}
-		
-		auto size = get_surface_extent();
-		std::uint32_t layers = 1;
-		std::uint32_t max_image_count = surface_presentation_caps.maxImageCount > 0 ?
-			surface_presentation_caps.maxImageCount :
-			std::numeric_limits<std::uint32_t>::max();
-		auto min_image_count = glm::clamp<unsigned>(3,
-													surface_presentation_caps.minImageCount,
-													max_image_count);
-		auto format = get_surface_format();
-		auto transform = get_transform();
-		auto composite = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-		auto present_mode = get_surface_presentation_mode();
-
-		this->swap_chain = std::make_unique<vk_swapchain>(*presentation_device,
-														  presentation_surface,
-														  min_image_count,
-														  format.format,
-														  format.colorSpace,
-														  size,
-														  layers,
-														  transform,
-														  composite,
-														  present_mode);
+	void acquire_swap_chain_images() {
+		auto format = this->swap_chain->get_format();
+		auto layers = this->swap_chain->get_layers();
+		auto size = this->swap_chain->get_size();
 
 		// Aquire swap chain images
 		std::vector<VkImage> swapchain_vk_image_objects;
@@ -198,28 +184,65 @@ private:
 			throw vk_exception(res);
 		}
 
+		std::vector<swap_chain_image_t> images;
+		images.reserve(swapchain_vk_image_objects.size());
 		for (auto& img : swapchain_vk_image_objects) {
 			auto image = vk_swapchain_image(*presentation_device,
 											img,
-											format.format,
+											format,
 											vk_swapchain_image::size_type(size),
 											layers);
 			auto view = swap_chain_image_view_t(image);
-			this->swap_chain_images.push_back(std::make_pair(std::move(image), std::move(view)));
+			images.push_back(std::make_pair(std::move(image), std::move(view)));
 		}
+
+		this->swap_chain_images = std::move(images);
 	}
 
-	void resize_framebuffer(const glm::i32vec2 &size) {
-		this->swap_chain->resize(size);
+	void create_swap_chain() {
+		// Create swap chain based on passed parameters and available device capabilities
+		if (!(surface_presentation_caps.supportedUsageFlags & VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT)) {
+			throw ste_engine_exception("VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT unsupported for swapchain");
+		}
+		
+		// Swap chain properties
+		auto size = get_surface_extent();
+		std::uint32_t layers = 1;
+		std::uint32_t max_image_count = surface_presentation_caps.maxImageCount > 0 ?
+			surface_presentation_caps.maxImageCount :
+			std::numeric_limits<std::uint32_t>::max();
+		auto min_image_count = glm::clamp<unsigned>(3,
+													surface_presentation_caps.minImageCount,
+													max_image_count);
+		auto format = get_surface_format();
+		auto transform = get_transform();
+		auto composite = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+		auto present_mode = get_surface_presentation_mode();
+
+		// Create the swap chain
+		this->swap_chain = std::make_unique<vk_swapchain>(*presentation_device,
+														  presentation_surface,
+														  min_image_count,
+														  format.format,
+														  format.colorSpace,
+														  size,
+														  layers,
+														  transform,
+														  composite,
+														  present_mode,
+														  this->swap_chain.get());
+
+		// And acquire the chain's presentation images
+		acquire_swap_chain_images();
 	}
 
-	void setup_signals() {
+	void connect_signals() {
 		// Connect resize signal to window signals
 		auto &resize_signal = presentation_window.get_signals().signal_window_resize();
 
 		resize_signal_connection = std::make_shared<resize_signal_connection_t>([this](const glm::i32vec2 &size) {
-			// Recreate swap chain
-			this->resize_framebuffer(size);
+			// Raise flag to recreate swap chain
+			swap_chain_optimal_flag.clear(std::memory_order_release);
 		});
 		resize_signal.connect(resize_signal_connection);
 	}
@@ -257,12 +280,114 @@ public:
 			throw ste_engine_exception("No device queues support presentation for choosen surface");
 		}
 
-		// Create swap chain and connect signals
-		setup_framebuffer();
-		setup_signals();
+		// Create swap chain
+		create_swap_chain();
+
+		// Connect required windowing system signals
+		connect_signals();
 	}
 
-	auto& get_swapchain_images() const { return swap_chain_images;  }
+	/**
+	*	@brief	Acquires the next swap chain presentation image.
+	*			Call result might be success, suboptimal, out-of-date, timeout or error.
+	*			In case of success or suboptimal returns the next swap image.
+	*			In case of suboptimal or out-of-date raises the 'sub_optimal' flag.
+	*			In case of timeout or error, throws vk_exception.
+	*			
+	*			Should be externally synchronized other presentation methods.
+	*
+	*	@param presentation_image_ready_semaphore	Semaphore to be signaled when returned image is ready to be drawn to.
+	*	@param timeout								Timeout to wait for next image.
+	*	
+	*	@return Returns a struct with a pointer to the pair swap_chain_image_t, index of the image and a 'sub_optimal' flag.
+	*			The returned image might be nullptr.
+	*			If the 'sub_optimal' flag is raised, the swap chain should be recreated by calling recreate_swap_chain.
+	*/
+	template <class Rep = std::chrono::nanoseconds::rep, class Period = std::chrono::nanoseconds::period>
+	acquire_next_image_return_t acquire_next_swapchain_image(
+		const vk_semaphore &presentation_image_ready_semaphore,
+		const std::chrono::duration<Rep, Period> &timeout = std::chrono::nanoseconds(std::numeric_limits<uint64_t>::max())) const
+	{
+		std::uint64_t timeout_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(timeout).count();
+
+		acquire_next_image_return_t ret;
+		vk_result res = vkAcquireNextImageKHR(presentation_device->get_device(),
+											  *swap_chain,
+											  timeout_ns,
+											  presentation_image_ready_semaphore,
+											  VK_NULL_HANDLE,
+											  &ret.image_index);
+
+		switch (res.get()) {
+		case VK_SUBOPTIMAL_KHR:
+			ret.sub_optimal = true;
+		case VK_SUCCESS:
+			ret.image = &swap_chain_images[ret.image_index];
+			break;
+		case VK_ERROR_OUT_OF_DATE_KHR:
+			ret.sub_optimal = true;
+			break;
+		default:
+			throw vk_exception(res);
+		}
+
+		// Furthermore raise flag to recreate swap chain
+		if (res != VK_SUCCESS)
+			swap_chain_optimal_flag.clear(std::memory_order_release);
+
+		return ret;
+	}
+
+	/**
+	*	@brief	Recreates the swap chain. Possible following a surface resize or a suboptimial image.
+	*			It is the callers responsibility to manually synchronize access to the old swap chain.
+	*			
+	*			Should be externally synchronized other presentation methods.
+	*/
+	void recreate_swap_chain() {
+		create_swap_chain();
+	}
+
+	/**
+	*	@brief	Presents the presentation image specifided by the index.
+	*			
+	*			Should be externally synchronized other presentation methods.
+	*	
+	*	@param	image_index			Index of the presentation image in the swap chain
+	*	@param	presentation_queue	Device queue on which to present
+	*	@param	wait_semaphore		Semaphore that signals that rendering to the presentation image is complete
+	*/
+	void present(std::uint32_t image_index,
+				 const vk_queue &presentation_queue,
+				 const vk_semaphore &wait_semaphore) {
+		VkSemaphore semaphore = wait_semaphore;
+		VkSwapchainKHR swapchain = *swap_chain;
+
+		VkPresentInfoKHR info = {};
+		info.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+		info.pNext = nullptr;
+		info.waitSemaphoreCount = 1;
+		info.pWaitSemaphores = &semaphore;
+		info.swapchainCount = 1;
+		info.pSwapchains = &swapchain;
+		info.pImageIndices = &image_index;
+		info.pResults = nullptr;
+
+		vk_result res = vkQueuePresentKHR(presentation_queue, &info);
+
+		// Raise flag to recreate swap chain
+		if (res != VK_SUCCESS)
+			swap_chain_optimal_flag.clear(std::memory_order_release);
+		if (res != VK_SUCCESS && res != VK_SUBOPTIMAL_KHR && res != VK_ERROR_OUT_OF_DATE_KHR) {
+			throw vk_exception(res);
+		}
+	}
+
+	auto swap_chain_images_count() const { return swap_chain_images.size(); }
+	bool test_and_clear_recreate_flag() const {
+		return !swap_chain_optimal_flag.test_and_set(std::memory_order_acquire);
+	}
+	auto& get_presentation_window() const { return presentation_window;	}
 };
 
 }

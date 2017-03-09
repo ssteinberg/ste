@@ -28,13 +28,16 @@
 namespace StE {
 
 class balanced_thread_pool {
+public:
+	using task_t = unique_thread_pool_type_erased_task<>;
+
 private:
 	mutable std::mutex m;
 	std::condition_variable notifier;
 	std::vector<interruptible_thread> workers;
 	std::vector<interruptible_thread> despawned_workers;
 
-	concurrent_queue<unique_thread_pool_type_erased_task> task_queue;
+	concurrent_queue<task_t> task_queue;
 
 	system_times sys_times;
 	std::chrono::high_resolution_clock::time_point last_pool_balance;
@@ -52,9 +55,10 @@ private:
 			for (;;) {
 				if (interruptible_thread::is_interruption_flag_set()) return;
 
-				std::unique_ptr<unique_thread_pool_type_erased_task> task;
+				std::unique_ptr<task_t> task;
 				{
 					std::unique_lock<std::mutex> l(this->m);
+					if (interruptible_thread::is_interruption_flag_set()) return;
 
 					++threads_sleeping;
 					this->notifier.wait(l, [&]() {
@@ -108,7 +112,7 @@ private:
 			notifier.notify_all();
 	}
 
-	void run_task(unique_thread_pool_type_erased_task &&task) {
+	void run_task(task_t &&task) {
 		requests_pending.fetch_add(-1, std::memory_order_release);
 		task();
 	}

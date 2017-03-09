@@ -60,7 +60,8 @@ public:
 	void set_position(const glm::i32vec2 &p) {
 		glfwSetWindowPos(window, p.x, p.y);
 	}
-	glm::i32vec2 get_size() const {
+
+	glm::i32vec2 get_window_client_area_size() const {
 		glm::i32vec2 ret;
 		glfwGetWindowSize(window, &ret.x, &ret.y);
 		return ret;
@@ -69,16 +70,14 @@ public:
 		glfwSetWindowSize(window, size.x, size.y);
 	}
 
-	glm::i32vec2 get_framebuffer_size() const {
-		glm::i32vec2 ret;
-		glfwGetFramebufferSize(window, &ret.x, &ret.y);
-		return ret;
-	}
-
 	/**
 	*	@brief	Returns true if the window is focused, false otherwise
 	*/
-	bool window_active() const { return !!glfwGetWindowAttrib(window, GLFW_FOCUSED); }
+	bool is_window_focused() const { return !!glfwGetWindowAttrib(window, GLFW_FOCUSED); }
+	/**
+	*	@brief	Returns true if the window is requesting to close
+	*/
+	bool should_close() const { return !!glfwWindowShouldClose(window); }
 
 	auto get_window_handle() const { return window; }
 	auto& get_signals() const { return *signals; }
