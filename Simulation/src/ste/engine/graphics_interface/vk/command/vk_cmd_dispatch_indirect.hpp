@@ -5,7 +5,7 @@
 
 #include <vulkan/vulkan.h>
 #include <vk_command.hpp>
-#include <vk_buffer.hpp>
+#include <vk_buffer_base.hpp>
 
 namespace StE {
 namespace GL {
@@ -16,8 +16,7 @@ private:
 	std::uint32_t offset;
 
 public:
-	template <typename T>
-	vk_cmd_dispatch(const vk_buffer<T> &buffer,
+	vk_cmd_dispatch(const vk_buffer_base &buffer,
 					std::uint32_t offset = 0) : buffer(buffer), offset(offset)
 	{}
 	virtual ~vk_cmd_dispatch() noexcept {}

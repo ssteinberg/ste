@@ -6,7 +6,7 @@
 #include <stdafx.hpp>
 
 #include <vulkan/vulkan.h>
-#include <vk_buffer.hpp>
+#include <vk_buffer_base.hpp>
 
 namespace StE {
 namespace GL {
@@ -22,14 +22,12 @@ private:
 	std::uint64_t size{ VK_WHOLE_SIZE };
 
 public:
-	template <typename T>
-	vk_buffer_memory_barrier(const vk_buffer<T> &buffer,
+	vk_buffer_memory_barrier(const vk_buffer_base &buffer,
 							 const VkAccessFlags &src_access,
 							 const VkAccessFlags &dst_access)
 		: src(src_access), dst(dst_access), buffer(buffer)
 	{}
-	template <typename T>
-	vk_buffer_memory_barrier(const vk_buffer<T> &buffer,
+	vk_buffer_memory_barrier(const vk_buffer_base &buffer,
 							 const VkAccessFlags &src_access,
 							 const VkAccessFlags &dst_access,
 							 std::uint64_t size,
@@ -37,8 +35,7 @@ public:
 		: src(src_access), dst(dst_access), 
 		buffer(buffer), offset(offset), size(size)
 	{}
-	template <typename T>
-	vk_buffer_memory_barrier(const vk_buffer<T> &buffer,
+	vk_buffer_memory_barrier(const vk_buffer_base &buffer,
 							 const VkAccessFlags &src_access,
 							 const VkAccessFlags &dst_access,
 							 std::uint32_t src_queue_index,

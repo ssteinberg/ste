@@ -3,6 +3,7 @@
 
 #include <ste.hpp>
 #include <ste_presentation_device.hpp>
+#include <vk_buffer.hpp>
 
 using namespace StE::GL;
 
@@ -77,7 +78,10 @@ int main()
 	device_params.vsync = ste_presentation_device_vsync::mailbox;
 	device_params.additional_device_extensions = { "VK_KHR_shader_draw_parameters" };
 
-	StE::ste_engine::gl_device_t device(device_params, gl_ctx, window);
+	StE::ste_engine::gl_device_t device(device_params, 
+										StE::GL::ste_gl_device_queues_protocol::queues_for_physical_device(physical_device),
+										gl_ctx, 
+										window);
 
 
 	/*
@@ -85,6 +89,11 @@ int main()
 	*/
 	StE::ste_engine engine;
 	StE::ste_context ctx(engine, gl_ctx, device);
+
+	StE::GL::vk_buffer<float, true> buf(device.device(), 10, VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT);
+	auto mem_req = buf.get_memory_requirements();
+	auto allocation = ctx.device_memory_allocator().allocate_device_physical_memory(5, mem_req);
+	buf.bind_memory(device.get_queue(0).device_queue(), { {&allocation, 0} }, {}, {});
 
 
 	/*

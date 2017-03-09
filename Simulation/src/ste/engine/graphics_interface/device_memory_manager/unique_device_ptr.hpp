@@ -6,6 +6,8 @@
 #include <stdafx.hpp>
 #include <vk_device_memory.hpp>
 
+#include <optional.hpp>
+
 namespace StE {
 namespace GL {
 
@@ -17,7 +19,7 @@ public:
 
 private:
 	const vk_device_memory *memory;
-	heap_type *heap{ nullptr };
+	optional<heap_type*> heap;
 	ptr_type ptr;
 
 public:
@@ -35,8 +37,8 @@ public:
 
 	void free() {
 		if (heap) {
-			heap->deallocate(*this);
-			heap = nullptr;
+			heap.get()->deallocate(*this);
+			heap = none;
 		}
 	}
 
@@ -48,10 +50,10 @@ public:
 	auto& operator*() const { return *ptr; }
 
 	auto& get_memory() const { return memory; }
-	auto& get_heap() const { return heap; }
+	auto& get_heap() const { return heap.get(); }
 
-	operator bool() const { return heap != nullptr; }
-	bool operator!() const { return heap == nullptr; }
+	operator bool() const { return !!heap; }
+	bool operator!() const { return !heap; }
 };
 
 }

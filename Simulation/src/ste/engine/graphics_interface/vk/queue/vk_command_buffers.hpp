@@ -69,6 +69,8 @@ public:
 	auto& operator[](std::size_t n) { return buffers[n]; }
 	auto& operator[](std::size_t n) const { return buffers[n]; }
 
+	auto size() const { return buffers.size(); }
+
 	auto begin() const { return buffers.begin(); }
 	auto begin() { return buffers.begin(); }
 	auto end() const { return buffers.end(); }

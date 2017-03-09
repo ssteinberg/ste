@@ -23,8 +23,7 @@ private:
 	VkFormat format;
 
 public:
-	template <typename T>
-	vk_buffer_view(const vk_buffer<T> &parent,
+	vk_buffer_view(const vk_buffer_base &parent,
 				   const VkFormat &format,
 				   std::uint64_t offset_bytes,
 				   std::uint64_t size_bytes)
@@ -48,11 +47,10 @@ public:
 
 		this->view = view;
 	}
-	template <typename T>
-	vk_buffer_view(const vk_buffer<T> &parent,
+	vk_buffer_view(const vk_buffer_base &parent,
 				   const VkFormat &format,
 				   std::uint64_t offset_bytes = 0) 
-		: vk_buffer_view(parent, format, offset_bytes, parent.get_size() * sizeof(T) - offset_bytes)
+		: vk_buffer_view(parent, format, offset_bytes, parent.get_size_bytes() - offset_bytes)
 	{}
 	~vk_buffer_view() noexcept { destroy_view(); }
 

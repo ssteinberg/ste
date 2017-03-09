@@ -22,8 +22,8 @@ private:
 	std::vector<VkBufferImageCopy> ranges;
 
 public:
-	template <typename T, int d>
-	vk_cmd_copy_buffer_to_image(const vk_buffer<T> &src_buffer,
+	template <typename T, bool sparse, int d>
+	vk_cmd_copy_buffer_to_image(const vk_buffer<T, sparse> &src_buffer,
 								const vk_image<d> &dst_image,
 								const VkImageLayout &image_layout,
 								const std::vector<VkBufferImageCopy> &ranges = {})

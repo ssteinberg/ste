@@ -5,7 +5,7 @@
 
 #include <vulkan/vulkan.h>
 #include <vk_command.hpp>
-#include <vk_buffer.hpp>
+#include <vk_buffer_base.hpp>
 
 namespace StE {
 namespace GL {
@@ -18,23 +18,19 @@ private:
 	std::uint32_t data;
 
 public:
-	template <typename T>
-	vk_cmd_fill_buffer(const vk_buffer<T> &buffer,
+	vk_cmd_fill_buffer(const vk_buffer_base &buffer,
 					   std::uint32_t data) : buffer(buffer), data(data)
 	{}
-	template <typename T>
-	vk_cmd_fill_buffer(const vk_buffer<T> &buffer,
+	vk_cmd_fill_buffer(const vk_buffer_base &buffer,
 					   float data) : buffer(buffer), data(*reinterpret_cast<std::uint32_t*>(&data))
 	{}
-	template <typename T>
-	vk_cmd_fill_buffer(const vk_buffer<T> &buffer,
+	vk_cmd_fill_buffer(const vk_buffer_base &buffer,
 					   std::uint32_t data,
 					   std::uint64_t size,
 					   std::uint64_t offset = 0)
 		: buffer(buffer), offset(offset), size(size), data(data)
 	{}
-	template <typename T>
-	vk_cmd_fill_buffer(const vk_buffer<T> &buffer,
+	vk_cmd_fill_buffer(const vk_buffer_base &buffer,
 					   float data,
 					   std::uint64_t size,
 					   std::uint64_t offset = 0)

@@ -14,29 +14,30 @@
 #include <ste_gl_context.hpp>
 #include <ste_gl_device_queue.hpp>
 
+#include <signal.hpp>
+
 #include <memory>
 #include <vector>
-#include <atomic>
 
 namespace StE {
 namespace GL {
 
-template <typename QueueProtocol>
 class ste_presentation_device {
+public:
+	using queues_and_surface_recreate_signal_type = signal<const ste_presentation_device*>;
+
 private:
 	using queue_t = std::unique_ptr<ste_gl_device_queue>;
 
 private:
 	const ste_gl_presentation_device_creation_parameters parameters;
+	const std::vector<ste_gl_queue_descriptor> queue_descriptors;
 	vk_logical_device presentation_device;
 	ste_presentation_surface presentation_surface;
 
-	std::uint32_t tick_count{ 0 };
-	std::vector<ste_gl_queue_descriptor> queue_descriptors;
 	std::vector<queue_t> device_queues;
-	unsigned main_queue_idx{ 0 };
-	unsigned compute_queue_idx{ 0 };
-	unsigned transfer_queue_idx{ 0 };
+
+	queues_and_surface_recreate_signal_type queues_and_surface_recreate_signal;
 
 private:
 	static thread_local ste_presentation_surface::acquire_next_image_return_t acquired_presentation_image;
@@ -47,13 +48,13 @@ public:
 private:
 	static auto create_vk_virtual_device(const GL::vk_physical_device_descriptor &physical_device,
 										 const VkPhysicalDeviceFeatures &requested_features,
+										 const std::vector<ste_gl_queue_descriptor> &queue_descriptors,
 										 std::vector<const char*> device_extensions = {}) {
 		// Add required extensions
 		device_extensions.push_back("VK_KHR_swapchain");
 
 		// Request queues based on supplied protocol
 		std::vector<VkDeviceQueueCreateInfo> queues_create_infos;
-		auto queue_descriptors = QueueProtocol::queues_for_physical_device(physical_device);
 		queues_create_infos.resize(queue_descriptors.size());
 		for (int i = 0; i < queue_descriptors.size(); ++i)
 			queues_create_infos[i] = queue_descriptors[i].create_device_queue_create_info();
@@ -67,26 +68,27 @@ private:
 		return device;
 	}
 
-	void setup_queues_indices(const std::vector<ste_gl_queue_descriptor> &queues) {
-		main_queue_idx =
-			std::find_if(queues.begin(), queues.end(),
-						 [](const ste_gl_queue_descriptor &q) { return q.usage == ste_gl_queue_usage::main_queue; }) - queues.begin();
-		assert(main_queue_idx < queues.size());
-
-		compute_queue_idx =
-			std::find_if(queues.begin(), queues.end(),
-						 [](const ste_gl_queue_descriptor &q) { return q.usage == ste_gl_queue_usage::compute_queue; }) - queues.begin();
-		transfer_queue_idx =
-			std::find_if(queues.begin(), queues.end(),
-						 [](const ste_gl_queue_descriptor &q) { return q.usage == ste_gl_queue_usage::data_transfer_queue; }) - queues.begin();
-
-		if (compute_queue_idx == queues.size())
-			compute_queue_idx = std::find_if(queues.begin(), queues.end(),
-											 [](const ste_gl_queue_descriptor &q) { return q.usage == ste_gl_queue_usage::main_queue; }) - queues.begin();
-		if (transfer_queue_idx == queues.size())
-			transfer_queue_idx = std::find_if(queues.begin(), queues.end(),
-											  [](const ste_gl_queue_descriptor &q) { return q.usage == ste_gl_queue_usage::main_queue; }) - queues.begin();
-	}
+//	void setup_queues_indices(const std::vector<ste_gl_queue_descriptor> &queues) {
+//		main_queue_idx =
+//			std::find_if(queues.begin(), queues.end(),
+//						 [](const ste_gl_queue_descriptor &q) { return q.usage == ste_gl_queue_usage::main_queue; }) - queues.begin();
+//		if (main_queue_idx == queues.size())
+//			throw ste_engine_exception("No main queue specified in queue descriptors.");
+//
+//		compute_queue_idx =
+//			std::find_if(queues.begin(), queues.end(),
+//						 [](const ste_gl_queue_descriptor &q) { return q.usage == ste_gl_queue_usage::compute_queue; }) - queues.begin();
+//		transfer_queue_idx =
+//			std::find_if(queues.begin(), queues.end(),
+//						 [](const ste_gl_queue_descriptor &q) { return q.usage == ste_gl_queue_usage::data_transfer_queue; }) - queues.begin();
+//
+//		if (compute_queue_idx == queues.size())
+//			compute_queue_idx = std::find_if(queues.begin(), queues.end(),
+//											 [](const ste_gl_queue_descriptor &q) { return q.usage == ste_gl_queue_usage::main_queue; }) - queues.begin();
+//		if (transfer_queue_idx == queues.size())
+//			transfer_queue_idx = std::find_if(queues.begin(), queues.end(),
+//											  [](const ste_gl_queue_descriptor &q) { return q.usage == ste_gl_queue_usage::main_queue; }) - queues.begin();
+//	}
 
 	void create_queues() {
 		std::vector<queue_t> q;
@@ -108,27 +110,29 @@ private:
 		presentation_surface.recreate_swap_chain();
 		// And queues
 		create_queues();
-	}
 
-	auto get_current_tick_command_buffer_index() const {
-		return tick_count % get_command_buffers_count();
+		// Signal
+		queues_and_surface_recreate_signal.emit(this);
 	}
 
 public:
+	/**
+	*	@brief	Creates the presentation device.
+	*
+	*	@param parameters		Device creation parameters
+	*/
 	ste_presentation_device(const ste_gl_presentation_device_creation_parameters &parameters,
+							const std::vector<ste_gl_queue_descriptor> &queue_descriptors,
 							const ste_gl_context &gl_ctx,
 							const ste_window &presentation_window)
 		: parameters(parameters),
+		queue_descriptors(queue_descriptors),
 		presentation_device(create_vk_virtual_device(parameters.physical_device,
 													 parameters.requested_device_features,
+													 queue_descriptors,
 													 parameters.additional_device_extensions)),
 		presentation_surface(parameters, &presentation_device, presentation_window, gl_ctx.instance())
 	{
-		// Read queue descriptors as generated by the supplied protocol
-		queue_descriptors = QueueProtocol::queues_for_physical_device(parameters.physical_device);
-		// Read indices of our queues
-		setup_queues_indices(queue_descriptors);
-
 		// Create queues
 		create_queues();
 	}
@@ -149,17 +153,6 @@ public:
 			// Recreate swap chain and queues
 			recreate_swap_chain();
 		}
-
-		// Increase tick count
-		++tick_count;
-
-		// And reset the appropriate command buffers
-		auto buffer_idx = get_current_tick_command_buffer_index();
-		for (auto &q : device_queues) {
-			// Once in a while release command buffer resources to avoid command buffers growing indefinitely
-			bool release = (tick_count + buffer_idx*100) % 1000 == 0;
-			q->reset(buffer_idx, release);
-		}
 	}
 
 	/**
@@ -167,10 +160,12 @@ public:
 	*			The task will save the presentation image information in the thread_local variable, which will be consumed on 
 	*			next call to present.
 	*
+	*	@param queue						The queue to use for presenatation
 	*	@param presentation_image_ready_semaphore	Semaphore to be signaled when next presentation image is ready to be drawn to.
 	*/
-	void acquire_presentation_image(const vk_semaphore &presentation_image_ready_semaphore) {
-		enqueue_main([this, presentation_image_ready_semaphore](std::uint32_t index) {
+	void acquire_presentation_image(const queue_t &queue,
+									const vk_semaphore &presentation_image_ready_semaphore) {
+		queue->enqueue<void>([this, &presentation_image_ready_semaphore](std::uint32_t index) {
 			// Acquire next presenation image
 			acquired_presentation_image = presentation_surface.acquire_next_swapchain_image(presentation_image_ready_semaphore);
 		});
@@ -179,98 +174,28 @@ public:
 	/**
 	*	@brief	Presents the presentation image.
 	*
+	*	@param queue						The queue to use for presenatation
 	*	@param rendering_ready_semaphore	Semaphore to be signaled when rendering to the presentation image is complete.
 	*/
-	void present(const vk_semaphore &rendering_ready_semaphore) {
-		enqueue_main([this, rendering_ready_semaphore](std::uint32_t index) {
+	void present(const queue_t &queue,
+				 const vk_semaphore &rendering_ready_semaphore) {
+		queue->enqueue<void>([this, &queue, &rendering_ready_semaphore](std::uint32_t index) {
 			if (acquired_presentation_image.image != nullptr) {
 				this->presentation_surface.present(acquired_presentation_image.image_index,
-												   *device_queues[main_queue_idx],
+												   queue->device_queue(),
 												   rendering_ready_semaphore);
+				acquired_presentation_image = {};
 			}
 		});
 	}
 
-	/**
-	*	@brief	Enqueues submission of the command buffer of the main queue
-	*
-	*	@param	wait_semaphores		See vk_queue::submit
-	*	@param	signal_semaphores	See vk_queue::submit
-	*/
-	template <typename R>
-	std::future<R> submit_main_command_buffer(const std::vector<std::pair<vk_semaphore*, VkPipelineStageFlags>> &wait_semaphores,
-											  const std::vector<vk_semaphore*> &signal_semaphores) const {
-		return device_queues[main_queue_idx]->submit(get_current_tick_command_buffer_index(),
-													 wait_semaphores,
-													 signal_semaphores);
-	}
-	/**
-	*	@brief	Enqueues submission of the command buffer of the compute queue
-	*
-	*	@param	wait_semaphores		See vk_queue::submit
-	*	@param	signal_semaphores	See vk_queue::submit
-	*/
-	template <typename R>
-	std::future<R> submit_compute_command_buffer(const std::vector<std::pair<vk_semaphore*, VkPipelineStageFlags>> &wait_semaphores,
-												 const std::vector<vk_semaphore*> &signal_semaphores) const {
-		return device_queues[compute_queue_idx]->submit(get_current_tick_command_buffer_index(),
-														wait_semaphores,
-														signal_semaphores);
-	}
-	/**
-	*	@brief	Enqueues submission of the command buffer of the data transfer queue
-	*
-	*	@param	wait_semaphores		See vk_queue::submit
-	*	@param	signal_semaphores	See vk_queue::submit
-	*/
-	template <typename R>
-	std::future<R> submit_transfer_command_buffer(const std::vector<std::pair<vk_semaphore*, VkPipelineStageFlags>> &wait_semaphores,
-												  const std::vector<vk_semaphore*> &signal_semaphores) const {
-		return device_queues[transfer_queue_idx]->submit(get_current_tick_command_buffer_index(),
-														 wait_semaphores,
-														 signal_semaphores);
-	}
+	auto& get_queues_and_surface_recreate_signal() const { return queues_and_surface_recreate_signal; }
 
-	/**
-	*	@brief	Enqueues a task on the main queue. The task will be scheduled with a FIFO policy on the
-	*			queue's thread.
-	*
-	*	@param f	Task to enqueue. Must take a single parameter of type 'const vk_command_buffer&', which is the
-	*				command buffer on which the task should record device commands.
-	*/
-	template <typename R>
-	std::future<R> enqueue_main(ste_gl_device_queue::enqueue_task_t<R> &&f) const {
-		return device_queues[main_queue_idx]->enqueue_with_buffer_idx(std::move(f), 
-																	  get_current_tick_command_buffer_index());
-	}
-	/**
-	*	@brief	Enqueues a task on the compute queue. The task will be scheduled with a FIFO policy on the
-	*			queue's thread.
-	*
-	*	@param f	Task to enqueue. Must take a single parameter of type 'const vk_command_buffer&', which is the
-	*				command buffer on which the task should record device commands.
-	*/
-	template <typename R>
-	std::future<R> enqueue_compute(ste_gl_device_queue::enqueue_task_t<R> &&f) const {
-		return device_queues[compute_queue_idx]->enqueue_with_buffer_idx(std::move(f), 
-																		 get_current_tick_command_buffer_index());
-	}
-	/**
-	*	@brief	Enqueues a task on the data transfer queue. The task will be scheduled with a FIFO policy on the
-	*			queue's thread.
-	*
-	*	@param f	Task to enqueue. Must take a single parameter of type 'const vk_command_buffer&', which is the
-	*				command buffer on which the task should record device commands.
-	*/
-	template <typename R>
-	std::future<R> enqueue_transfer(ste_gl_device_queue::enqueue_task_t<R> &&f) const {
-		return device_queues[transfer_queue_idx]->enqueue_with_buffer_idx(std::move(f), 
-																		  get_current_tick_command_buffer_index());
-	}
+	auto& get_queue(int idx) const { return *device_queues[idx]; }
+	auto& get_queue_descriptors() const { return queue_descriptors; }
 
-	auto get_command_buffers_count() const {
-		return presentation_surface.swap_chain_images_count();
-	}
+	std::uint32_t get_command_buffers_count() const { return presentation_surface.swap_chain_images_count(); }
+
 	auto& device() const { return presentation_device; }
 };
 

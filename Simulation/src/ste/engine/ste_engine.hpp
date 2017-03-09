@@ -24,7 +24,6 @@ struct ste_engine_types {
 
 	using storage_protocol = ste_engine_storage_protocol;
 	using gl_device_memory_allocator = GL::ste_gl_device_memory_allocator;
-	using gl_queues_protocol = GL::ste_gl_device_queues_protocol;
 };
 
 template <typename Types>
@@ -32,7 +31,7 @@ class ste_engine_impl {
 public:
 	using engine_types = Types;
 
-	using gl_device_t = GL::ste_presentation_device<typename context_types::gl_queues_protocol>;
+	using gl_device_t = GL::ste_presentation_device;
 	using gl_context_t = GL::ste_gl_context;
 	using storage = typename engine_types::storage_protocol;
 

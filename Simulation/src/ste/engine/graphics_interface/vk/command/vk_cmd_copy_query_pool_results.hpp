@@ -6,7 +6,7 @@
 #include <vulkan/vulkan.h>
 #include <vk_command.hpp>
 #include <vk_query_pool.hpp>
-#include <vk_buffer.hpp>
+#include <vk_buffer_base.hpp>
 
 namespace StE {
 namespace GL {
@@ -22,9 +22,8 @@ private:
 	VkQueryResultFlags flags;
 
 public:
-	template <typename T>
 	vk_cmd_copy_query_pool_results(const vk_query_pool &pool,
-								   const vk_buffer<T> &buffer,
+								   const vk_buffer_base &buffer,
 								   std::uint32_t first_query,
 								   std::uint32_t queries_count,
 								   std::uint64_t buffer_offset,

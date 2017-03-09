@@ -21,7 +21,7 @@ public:
 	using size_type = std::uint64_t;
 	using block_type = device_memory_block;
 	using blocks_list_t = std::list<block_type>;
-	using allocation_type = unique_device_ptr<device_memory_heap, blocks_list_t::const_iterator>;
+	using allocation_type = unique_device_ptr<device_memory_heap, blocks_list_t::iterator>;
 
 	// Natively align allocations on vec4 boundaries
 	static constexpr size_type base_alignment = 128;
@@ -37,11 +37,11 @@ private:
 	std::mutex m;
 
 public:
-	static auto align_offset(size_type offset, size_type alignment) {
+	static auto align_round_down(size_type offset, size_type alignment) {
 		alignment = std::max(alignment, base_alignment);
 		return (offset / alignment) * alignment;
 	}
-	static auto align_size(size_type size, size_type alignment) {
+	static auto align(size_type size, size_type alignment) {
 		alignment = std::max(alignment, base_alignment);
 		return ((size + alignment - 1) / alignment) * alignment;
 	}
@@ -75,6 +75,8 @@ public:
 	*	@param size	Allocation size in bytes
 	*/
 	allocation_type allocate(size_type size, size_type alignment) {
+		size = align(size, alignment);
+
 		if (get_size() < size) {
 			// Heap too small
 			return allocation_type();
@@ -95,9 +97,9 @@ public:
 				++it;
 			}
 
-			assert(end >= start);
-
-			if (end - start >= size) {
+			start = align(start, alignment);
+			if (end > start &&
+				end - start >= size) {
 				// Allocate
 				device_memory_block block(start, size);
 

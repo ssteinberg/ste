@@ -398,6 +398,7 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\present\vk_surface.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\present\vk_swapchain.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\resource\vk_buffer.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\resource\vk_buffer_base.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\resource\vk_buffer_view.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\resource\vk_image.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\resource\vk_image_base.hpp" />
@@ -407,6 +408,7 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\resource\vk_image_view_swizzle.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\resource\vk_resource.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\pipeline\vk_shader.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\resource\vk_buffer_sparse_impl.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\synchronization\vk_event.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\synchronization\vk_fence.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\synchronization\vk_semaphore.hpp" />

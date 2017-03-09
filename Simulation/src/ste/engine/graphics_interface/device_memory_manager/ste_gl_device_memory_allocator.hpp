@@ -22,12 +22,9 @@ namespace GL {
 
 class ste_gl_device_memory_allocator {
 private:
-	static constexpr std::uint64_t minimal_allocation_size_bytes = 128 * 1024 * 1024;
-
 	using chunk_t = device_memory_heap;
 	using chunks_t = std::vector<std::unique_ptr<chunk_t>>;
-	using allocation_t = chunk_t::allocation_type;
-	using heap_index_t = std::uint32_t;
+	using memory_type_t = std::uint32_t;
 
 	struct heap_t {
 		chunks_t chunks;
@@ -35,39 +32,21 @@ private:
 		std::mutex m;
 	};
 
+public:
+	static constexpr std::uint64_t minimal_allocation_size_bytes = 128 * 1024 * 1024;
+	using allocation_t = chunk_t::allocation_type;
+
 private:
 	const vk_logical_device &device;
-	mutable std::unordered_map<heap_index_t, heap_t> heaps;
+	mutable std::unordered_map<memory_type_t, heap_t> heaps;
 
 private:
-	static heap_index_t find_heap_index_for(const vk_logical_device &device,
-											const VkMemoryPropertyFlags &required_flags) {
+	static memory_type_t find_memory_type_for(const vk_logical_device &device,
+											  const VkMemoryRequirements &memory_requirements,
+											  const VkMemoryPropertyFlags &required_flags,
+											  const VkMemoryPropertyFlags &preferred_flags) {
 		const vk_physical_device_descriptor &physical_device = device.get_physical_device_descriptor();
-
-		// Try to find a heap that matches exactly
-		for (int i = 0; i < physical_device.memory_properties.memoryTypeCount; ++i) {
-			auto &heap = physical_device.memory_properties.memoryTypes[i];
-			if (heap.propertyFlags == required_flags)
-				return heap.heapIndex;
-		}
-
-		// Otherwise try to find a heap that satisfies all flags
-		for (int i = 0; i < physical_device.memory_properties.memoryTypeCount; ++i) {
-			auto &heap = physical_device.memory_properties.memoryTypes[i];
-			if ((heap.propertyFlags & required_flags) == required_flags)
-				return heap.heapIndex;
-		}
-
-		// No heap with requested flags found
-		throw vk_memory_no_supported_heap_exception();
-	}
-
-	static heap_index_t find_heap_index_for(const vk_logical_device &device,
-											const VkMemoryRequirements &memory_requirements,
-											const VkMemoryPropertyFlags &required_flags,
-											const VkMemoryPropertyFlags &preferred_flags) {
-		const vk_physical_device_descriptor &physical_device = device.get_physical_device_descriptor();
-		int fallback_heap_index = -1;
+		int fallback_memory_type = -1;
 
 		// Try to find a heap matching the memory requirments and preffered flags.
 		// If none found fallback to a heap matching the requirements and the required flags.
@@ -77,14 +56,14 @@ private:
 
 			auto &heap = physical_device.memory_properties.memoryTypes[type];
 			if ((heap.propertyFlags & preferred_flags) == preferred_flags)
-				return heap.heapIndex;
-			if (fallback_heap_index == -1 &&
+				return type;
+			if (fallback_memory_type == -1 &&
 				(heap.propertyFlags & required_flags) == required_flags)
-				fallback_heap_index = heap.heapIndex;
+				fallback_memory_type = type;
 		}
 
-		if (fallback_heap_index != -1)
-			return fallback_heap_index;
+		if (fallback_memory_type != -1)
+			return fallback_memory_type;
 
 		// No heap with requested flags found
 		throw vk_memory_no_supported_heap_exception();
@@ -120,30 +99,31 @@ private:
 		return allocation;
 	}
 
-	auto create_chunk_for_heap_index(const heap_index_t &heap_idx,
-									 std::uint64_t minimal_size,
-									 bool private_memory) const {
+	auto create_chunk_for_memory_type(const memory_type_t &memory_type,
+									  std::uint64_t minimal_size,
+									  std::uint64_t alignment,
+									  bool private_memory) const {
 		// Calculate chunk size
 		auto chunk_size = private_memory ?
 			minimal_size :
 			std::max(minimal_size, minimal_allocation_size_bytes);
 		// Align it
-		chunk_size = device_memory_heap::align_size(chunk_size, 0);
+		chunk_size = device_memory_heap::align(chunk_size, alignment);
 
 		// Create the device memory object
-		auto memory = vk_device_memory(device, chunk_size, heap_idx);
+		auto memory = vk_device_memory(device, chunk_size, memory_type);
 		// And use it to create the chunk
 		return std::make_unique<chunk_t>(std::move(memory));
 	}
 
-	auto allocate_device_memory(const VkMemoryRequirements &memory_requirements,
-								const VkMemoryPropertyFlags &required_flags,
-								const VkMemoryPropertyFlags &preferred_flags,
-								bool private_memory = false) const {
-		auto heap_idx = find_heap_index_for(device, memory_requirements, required_flags, preferred_flags | required_flags);
-		auto& heap = heaps[heap_idx];
+	auto allocate(std::uint64_t size,
+				  const VkMemoryRequirements &memory_requirements,
+				  const VkMemoryPropertyFlags &required_flags,
+				  const VkMemoryPropertyFlags &preferred_flags,
+				  bool private_memory = false) const {
+		auto memory_type = find_memory_type_for(device, memory_requirements, required_flags, preferred_flags | required_flags);
+		auto& heap = heaps[memory_type];
 
-		auto size = memory_requirements.size;
 		auto alignment = memory_requirements.alignment;
 
 		std::unique_lock<std::mutex> lock(heap.m);
@@ -156,7 +136,7 @@ private:
 		}
 
 		// Need to create a new chunk
-		auto chunk = create_chunk_for_heap_index(heap_idx, memory_requirements.size, private_memory);
+		auto chunk = create_chunk_for_memory_type(memory_type, size, alignment, private_memory);
 		auto allocation = chunk->allocate(size, alignment);
 		if (private_memory)
 			heap.private_chunks.push_back(std::move(chunk));
@@ -174,11 +154,71 @@ public:
 	ste_gl_device_memory_allocator(const vk_logical_device &device) : device(device) {}
 
 	/**
+	*	@brief	Attempts to allocate memory.
+	*			Thread safe.
+	*
+	*	@param size				Size in bytes
+	*	@param memory_requirements	Allocation memory requirements
+	*	@param required_flags	Required memory flags.
+	*							If some of the bits can't be satisfied, allocation will throw vk_memory_no_supported_heap_exception.
+	*	@param preferred_flags	Nice to have flags.
+	*/
+	auto allocate_device_memory(std::uint64_t size,
+								const VkMemoryRequirements &memory_requirements,
+								const VkMemoryPropertyFlags &required_flags,
+								const VkMemoryPropertyFlags &preferred_flags) {
+		return allocate(size,
+						memory_requirements,
+						required_flags,
+						preferred_flags,
+						false);
+	}
+
+	/**
+	*	@brief	Attempts to allocate device local memory.
+	*			Thread safe.
+	*
+	*	@param size				Size in bytes
+	*	@param memory_requirements	Allocation memory requirements
+	*	@param required_flags	Required memory flags.
+	*							If some of the bits can't be satisfied, allocation will throw vk_memory_no_supported_heap_exception.
+	*/
+	auto allocate_device_physical_memory(std::uint64_t size,
+										 const VkMemoryRequirements &memory_requirements,
+										 const VkMemoryPropertyFlags &required_flags = 0,
+										 bool private_memory = false) const {
+		VkMemoryPropertyFlags preferred_flags = required_flags | VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+		return allocate(size,
+						memory_requirements,
+						required_flags,
+						preferred_flags);
+	}
+
+	/**
+	*	@brief	Attempts to allocate host visible memory.
+	*			Thread safe.
+	*
+	*	@param size				Size in bytes
+	*	@param memory_requirements	Allocation memory requirements
+	*	@param required_flags	Required memory flags.
+	*							If some of the bits can't be satisfied, allocation will throw vk_memory_no_supported_heap_exception.
+	*/
+	auto allocate_host_visible_memory(std::uint64_t size,
+									  const VkMemoryRequirements &memory_requirements,
+									  const VkMemoryPropertyFlags &required_flags = 0) const {
+		VkMemoryPropertyFlags preferred_flags = required_flags | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
+		return allocate(size,
+						memory_requirements,
+						required_flags,
+						preferred_flags);
+	}
+
+	/**
 	*	@brief	Attempts to allocate memory and bind that memory to the resource.
 	*			Thread safe.
 	*
 	*	@param resource			The resource
-	*	@param required_flags	Required memory flags. 
+	*	@param required_flags	Required memory flags.
 	*							If some of the bits can't be satisfied, allocation will throw vk_memory_no_supported_heap_exception.
 	*	@param preferred_flags	Nice to have flags.
 	*	@param private_memory	If set to true, the allocation will create a pivate chunk only for this resource, i.e. this chunk will not
@@ -189,10 +229,11 @@ public:
 											 const VkMemoryPropertyFlags &preferred_flags,
 											 bool private_memory = false) const {
 		auto memory_requirements = resource.get_memory_requirements();
-		auto allocation = allocate_device_memory(memory_requirements,
-												 required_flags,
-												 preferred_flags,
-												 private_memory);
+		auto allocation = allocate(memory_requirements.size,
+								   memory_requirements,
+								   required_flags,
+								   preferred_flags,
+								   private_memory);
 
 		if (!allocation) {
 			throw device_memory_allocation_failed();

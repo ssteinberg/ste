@@ -45,11 +45,38 @@ private:
 
 	concurrent_queue<task_pair_t> task_queue;
 
+	std::uint32_t tick_count{ 0 };
+
 private:
 	static thread_local vk_command_buffers *command_buffers;
 
 public:
 	static auto& thread_command_buffers() { return *command_buffers; }
+
+private:
+	std::uint32_t buffer_index() const {
+		return tick_count % buffers.size();
+	}
+
+	/**
+	*	@brief	Resets the command buffer
+	*			Might stall if command buffer is still executing on the device
+	*
+	*	@param	release				Release command buffer resources in addition to reset
+	*/
+	void reset(bool release = false) {
+		auto &fence = fences[buffer_index()];
+		auto &buffer = buffers[buffer_index()];
+
+		if (!fence.is_signaled())
+			fence.wait_idle();
+		fence.reset();
+
+		if (!release)
+			buffer.reset();
+		else
+			buffer.reset_release();
+	}
 
 public:
 	ste_gl_device_queue(const vk_logical_device &device, 
@@ -109,53 +136,42 @@ public:
 	ste_gl_device_queue &operator=(const ste_gl_device_queue &) = delete;
 
 	/**
+	*	@brief	Prepares the next command buffer
+	*/
+	void acquire_next_command_buffer() {
+		// Increase tick count
+		++tick_count;
+
+		// Reset current command buffer
+		// Once in a while release command buffer resources to avoid command buffers growing indefinitely
+		bool release = tick_count % 1000 == 0;
+		reset(release);
+	}
+
+	/**
 	*	@brief	Enqueues a task on the queue's thread
 	*
 	*	@param	f					Lambda expression
-	*	@param	buffer_index		Index of the command buffer to pass to the task
 	*/
 	template <typename R>
-	std::future<R> enqueue_with_buffer_idx(enqueue_task_t<R> &&f, std::uint32_t buffer_index) {
+	std::future<R> enqueue(enqueue_task_t<R> &&f) {
 		auto future = f.get_future();
 
-		task_queue.push(std::make_pair(std::move(f), buffer_index));
+		task_queue.push(std::make_pair(std::move(f), buffer_index()));
 		notifier.notify_one();
 
 		return future;
 	}
 
 	/**
-	*	@brief	Resets the command buffer
-	*			Might stall if command buffer is still executing on the device
-	*
-	*	@param	buffer_index		Index of the command buffer to reset
-	*	@param	release				Release command buffer resources in addition to reset
-	*/
-	void reset(std::uint32_t buffer_index, bool release = false) {
-		auto &fence = fences[buffer_index];
-		auto &buffer = buffers[buffer_index];
-
-		if (!fence.is_signaled())
-			fence.wait_idle();
-		fence.reset();
-
-		if (!release)
-			buffer.reset();
-		else
-			buffer.reset_release();
-	}
-
-	/**
 	*	@brief	Enqueues a submit task that submits the command buffer to the queue
 	*
-	*	@param	buffer_index		Index of the command buffer to submit
 	*	@param	wait_semaphores		See vk_queue::submit
 	*	@param	signal_semaphores	See vk_queue::submit
 	*/
-	auto submit(std::uint32_t buffer_index,
-				const std::vector<std::pair<vk_semaphore*, VkPipelineStageFlags>> &wait_semaphores,
+	auto submit(const std::vector<std::pair<vk_semaphore*, VkPipelineStageFlags>> &wait_semaphores,
 				const std::vector<vk_semaphore*> &signal_semaphores) {
-		return enqueue_with_buffer_idx<void>([=](std::uint32_t idx) -> void {
+		return enqueue<void>([=](std::uint32_t idx) -> void {
 			auto &fence = fences[idx];
 			auto &buffer = buffers[idx];
 
@@ -163,7 +179,7 @@ public:
 						 wait_semaphores,
 						 signal_semaphores,
 						 &fence);
-		}, buffer_index);
+		});
 	}
 
 	auto &device_queue() const { return queue; }

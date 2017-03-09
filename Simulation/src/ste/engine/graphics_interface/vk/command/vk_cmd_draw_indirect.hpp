@@ -5,24 +5,23 @@
 
 #include <vulkan/vulkan.h>
 #include <vk_command.hpp>
-#include <vk_buffer.hpp>
+#include <vk_buffer_base.hpp>
 
 namespace StE {
 namespace GL {
 
-template <typename T>
 class vk_cmd_draw_indirect : public vk_command {
 private:
-	const vk_buffer<T> &buffer;
+	const vk_buffer_base &buffer;
 	std::uint32_t offset;
 	std::uint32_t draw_count;
 	std::uint32_t stride;
 
 public:
-	vk_cmd_draw_indirect(const vk_buffer<T> &buffer,
+	vk_cmd_draw_indirect(const vk_buffer_base &buffer,
 						 std::uint32_t offset,
 						 std::uint32_t draw_count,
-						 std::uint32_t stride = sizeof(T))
+						 std::uint32_t stride)
 		: buffer(buffer),
 		offset(offset),
 		draw_count(draw_count),

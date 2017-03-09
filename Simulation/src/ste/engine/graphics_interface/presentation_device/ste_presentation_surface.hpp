@@ -284,6 +284,7 @@ public:
 		create_swap_chain();
 
 		// Connect required windowing system signals
+		swap_chain_optimal_flag.test_and_set();
 		connect_signals();
 	}
 
