@@ -59,25 +59,33 @@ private:
 		: memory(std::move(o->memory)),
 		blocks(std::move(o->blocks)),
 		total_used_size(o->total_used_size)
-	{}
+	{
+		o->total_used_size = 0;
+	}
 
 public:
 	device_memory_heap(vk_device_memory &&m) : memory(std::move(m)) {}
 
+	// Move contrsuctor. Lock moved heaap's mutex before moving.
 	device_memory_heap(device_memory_heap &&o) noexcept
 		: device_memory_heap(std::unique_lock<std::mutex>(o.m), &o)
 	{}
+
+	device_memory_heap &operator=(device_memory_heap &&) = delete;
 
 	/**
 	*	@brief	Attempts to allocate memory. Returns an empty allocation on error.
 	*			Thread safe.
 	*
-	*	@param size	Allocation size in bytes
+	*	@param size			Allocation size in bytes
+	*	@param alignment	Allocation alignment
+	*	
+	*	@return	Returns the allocation object
 	*/
 	allocation_type allocate(size_type size, size_type alignment) {
 		size = align(size, alignment);
 
-		if (get_size() < size) {
+		if (get_heap_size() < size) {
 			// Heap too small
 			return allocation_type();
 		}
@@ -119,8 +127,15 @@ public:
 	}
 
 	auto& get_device_memory() const { return memory; }
-	size_type get_total_allocated_size() const { return total_used_size; }
-	size_type get_size() const { return memory.get_size(); }
+
+	/**
+	*	@brief	Returns the amount of allocated memory, in bytes, from this heap.
+	*/
+	size_type get_allocated_bytes() const { return total_used_size; }
+	/**
+	*	@brief	Returns the heap size, in bytes.
+	*/
+	size_type get_heap_size() const { return memory.get_size(); }
 };
 
 }

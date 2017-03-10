@@ -90,10 +90,22 @@ int main()
 	StE::ste_engine engine;
 	StE::ste_context ctx(engine, gl_ctx, device);
 
-	StE::GL::vk_buffer<float, true> buf(device.device(), 10, VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT);
-	auto mem_req = buf.get_memory_requirements();
-	auto allocation = ctx.device_memory_allocator().allocate_device_physical_memory(5, mem_req);
-	buf.bind_memory(device.get_queue(0).device_queue(), { {&allocation, 0} }, {}, {});
+	auto total_mem = ctx.device_memory_allocator().get_total_device_memory();
+	auto commited_mem = ctx.device_memory_allocator().get_total_commited_memory();
+	auto allocated_mem = ctx.device_memory_allocator().get_total_allocated_memory();
+
+	StE::GL::vk_buffer<float, true> buf(device.device(), 100000, VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT);
+	{
+		auto mem_req = buf.get_memory_requirements();
+		auto allocation = ctx.device_memory_allocator().allocate_device_physical_memory(100, mem_req);
+		std::vector<vk_sparse_memory_bind> binds;
+		binds.emplace_back(std::move(allocation), 0);
+		buf.bind_memory(device.get_queue(0).device_queue(), std::move(binds), {}, {});
+		auto allocation2 = ctx.device_memory_allocator().allocate_device_physical_memory(100000, mem_req);
+		std::vector<vk_sparse_memory_bind> binds2;
+		binds2.emplace_back(std::move(allocation2), mem_req.alignment);
+		buf.bind_memory(device.get_queue(0).device_queue(), std::move(binds2), {}, {});
+	}
 
 
 	/*

@@ -12,15 +12,10 @@
 #include <vk_queue.hpp>
 #include <vk_fence.hpp>
 
-#include <ste_gl_device_memory_allocator.hpp>
+#include <vk_sparse_memory_bind.hpp>
 
 namespace StE {
 namespace GL {
-
-struct sparse_memory_bind_t {
-	const ste_gl_device_memory_allocator::allocation_t *allocation;
-	std::uint64_t resource_offset;
-};
 
 template <typename T>
 class vk_buffer_sparse_impl : public vk_buffer_base {
@@ -28,6 +23,7 @@ class vk_buffer_sparse_impl : public vk_buffer_base {
 
 private:
 	std::uint64_t count;
+	std::vector<vk_sparse_memory_bind> memory_binds;
 
 public:
 	vk_buffer_sparse_impl(const vk_logical_device &device,
@@ -43,7 +39,7 @@ public:
 	vk_buffer_sparse_impl& operator=(const vk_buffer_sparse_impl &) = delete;
 
 	void bind_memory(const vk_queue &queue,
-					 const std::vector<sparse_memory_bind_t> &memory_binds,
+					 std::vector<vk_sparse_memory_bind> &&memory_binds,
 					 const std::vector<vk_semaphore*> &wait_semaphores,
 					 const std::vector<vk_semaphore*> &signal_semaphores,
 					 const vk_fence *fence = nullptr) {
@@ -67,9 +63,9 @@ public:
 		for (auto &e : memory_binds) {
 			VkSparseMemoryBind b = {};
 			b.resourceOffset = e.resource_offset;
-			b.memory = *e.allocation->get_memory();
-			b.size = (**e.allocation).get_bytes();
-			b.memoryOffset = (**e.allocation).get_offset();
+			b.memory = *e.allocation.get_memory();
+			b.size = (*e.allocation).get_bytes();
+			b.memoryOffset = (*e.allocation).get_offset();
 			binds.push_back(b);
 		}
 
@@ -98,6 +94,8 @@ public:
 		if (!res) {
 			throw vk_exception(res);
 		}
+
+		this->memory_binds = std::move(memory_binds);
 	}
 
 	VkMemoryRequirements get_memory_requirements() const {
