@@ -46,7 +46,7 @@ public:
 
 	auto &engine() const { return engine_reference; }
 	auto &gl() const { return gl_context; }
-	auto &device() const { return gl_device; }
+	auto &presentation_device() const { return gl_device; }
 	auto &device_memory_allocator() const { return engine_device_memory_allocator; }
 };
 

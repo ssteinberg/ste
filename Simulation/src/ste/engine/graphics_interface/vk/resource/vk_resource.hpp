@@ -15,10 +15,6 @@ class vk_resource {
 public:
 	using allocation_t = device_memory_heap::allocation_type;
 
-private:
-	allocation_t allocation;
-	bool private_underlying_memory{ false };
-
 protected:
 	virtual void bind_resource_underlying_memory(const vk_device_memory &memory, std::uint64_t offset) = 0;
 
@@ -34,16 +30,9 @@ public:
 	vk_resource(const vk_resource &) = delete;
 	vk_resource& operator=(const vk_resource &) = delete;
 
-	auto& get_underlying_memory() const { return *this->allocation.get_memory(); }
-	bool has_bounded_underlying_memory() const { return allocation; }
-	bool has_private_underlying_memory() const { return private_underlying_memory; }
-
-	void bind_memory(allocation_t &&allocation,
-					 bool private_memory) {
-		this->private_underlying_memory = private_memory;
-		this->allocation = std::move(allocation);
-		this->bind_resource_underlying_memory(get_underlying_memory(),
-											  this->allocation.get()->get_offset());
+	void bind_memory(const allocation_t &allocation) {
+		this->bind_resource_underlying_memory(*allocation.get_memory(),
+											  allocation.get()->get_offset());
 	}
 };
 

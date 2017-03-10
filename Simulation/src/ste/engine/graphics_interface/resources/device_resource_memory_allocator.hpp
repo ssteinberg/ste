@@ -1,0 +1,51 @@
+//	StE
+// © Shlomi Steinberg 2015-2017
+
+#pragma once
+
+#include <vulkan/vulkan.h>
+#include <type_traits>
+
+#include <device_resource_allocation_policy.hpp>
+#include <ste_gl_device_memory_allocator.hpp>
+#include <vk_resource.hpp>
+
+namespace StE {
+namespace GL {
+
+template <class allocation_policy>
+struct device_resource_memory_allocator {
+	static_assert(std::is_base_of<device_resource_allocation_policy, allocation_policy>::value &&
+				  !std::is_same<device_resource_allocation_policy, allocation_policy>::value,
+				  "allocation_policy must be derived from device_resource_allocation_policy");
+
+	auto operator()(const ste_gl_device_memory_allocator &allocator,
+					vk_resource &resource) const {
+		auto memory_requirements = resource.get_memory_requirements();
+		auto allocation = allocator.allocate_device_memory_for_resource(memory_requirements,
+																		allocation_policy().required_flags(),
+																		allocation_policy().preferred_flags(),
+																		allocation_policy().private_allocation());
+		assert(allocation);
+
+		resource.bind_memory(allocation);
+
+		return allocation;
+	}
+
+	auto operator()(const ste_gl_device_memory_allocator &allocator,
+					std::uint64_t size,
+					const VkMemoryRequirements &memory_requirements) const {
+		auto allocation = allocator.allocate_device_memory(size,
+														   memory_requirements,
+														   allocation_policy().required_flags(),
+														   allocation_policy().preferred_flags(),
+														   allocation_policy().private_allocation());
+		assert(allocation);
+
+		return allocation;
+	}
+};
+
+}
+}

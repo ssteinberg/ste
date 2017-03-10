@@ -38,7 +38,7 @@ public:
 	vk_buffer_impl(const vk_logical_device &device,
 				   std::uint64_t count,
 				   const VkBufferUsageFlags &usage)
-		: Base(device, count * sizeof(T), usage, false), count(count)
+		: Base(device, count * sizeof(T), usage, false), vk_resource(), count(count)
 	{}
 	~vk_buffer_impl() noexcept {}
 

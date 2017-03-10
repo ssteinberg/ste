@@ -5,8 +5,6 @@
 
 #include <stdafx.hpp>
 
-#include <vk_resource.hpp>
-
 #include <vk_memory_exception.hpp>
 #include <vk_logical_device.hpp>
 #include <vk_device_memory.hpp>
@@ -59,7 +57,7 @@ private:
 
 	static bool memory_type_matches_requirements(const memory_type_t &type,
 												 const VkMemoryRequirements &memory_requirements) {
-		return (memory_requirements.memoryTypeBits & (1 << type)) == memory_requirements.memoryTypeBits;
+		return !!(memory_requirements.memoryTypeBits & (1 << type));
 	}
 
 	static memory_type_t find_memory_type_for(const vk_logical_device &device,
@@ -113,10 +111,13 @@ private:
 		prune_chunks(heap.private_chunks);
 	}
 
-	static auto allocate_from_heap(heap_t &heap, std::uint64_t size, std::uint64_t alignment) {
+	static auto allocate_from_heap(heap_t &heap, 
+								   std::uint64_t size, 
+								   std::uint64_t alignment,
+								   bool private_memory) {
 		allocation_t allocation;
 		for (auto &h : heap.chunks) {
-			allocation = h->allocate(size, alignment);
+			allocation = h->allocate(size, alignment, private_memory);
 			if (allocation) {
 				// On successful allocation, prune the heap
 				prune_heap(heap);
@@ -159,7 +160,10 @@ private:
 
 			if (!heap.chunks.empty()) {
 				// Try to allocate memory on one of the existing chunks
-				allocation = allocate_from_heap(heap, size, alignment);
+				allocation = allocate_from_heap(heap, 
+												size, 
+												alignment, 
+												private_memory);
 			}
 
 			// If failed allocating on existing chunks, or no existing chunks available,
@@ -170,12 +174,15 @@ private:
 					heap.chunks;
 
 				// Commit device memory
-				auto memory_object = commit_device_memory_heap_for_memory_type(memory_type, size, alignment, private_memory);
+				auto memory_object = commit_device_memory_heap_for_memory_type(memory_type, 
+																			   size, 
+																			   alignment, 
+																			   private_memory);
 				// And use it to create a new chunk
 				auto chunk = std::make_unique<chunk_t>(std::move(memory_object));
 
 				// Allocate from that chunk
-				allocation = chunk->allocate(size, alignment);
+				allocation = chunk->allocate(size, alignment, private_memory);
 
 				chunks.push_front(std::move(chunk));
 
@@ -209,7 +216,8 @@ public:
 	auto allocate_device_memory(std::uint64_t size,
 								const VkMemoryRequirements &memory_requirements,
 								const VkMemoryPropertyFlags &required_flags,
-								const VkMemoryPropertyFlags &preferred_flags) {
+								const VkMemoryPropertyFlags &preferred_flags,
+								bool private_memory = false) const {
 		return allocate(size,
 						memory_requirements,
 						required_flags,
@@ -225,6 +233,8 @@ public:
 	*	@param memory_requirements	Allocation memory requirements
 	*	@param required_flags	Required memory flags.
 	*							If some of the bits can't be satisfied, allocation will throw vk_memory_no_supported_heap_exception.
+	*	@param private_memory	If set to true, the allocation will create a pivate chunk only for this allocation, i.e. this chunk will not
+	*							be shared with other alocation.
 	*/
 	auto allocate_device_physical_memory(std::uint64_t size,
 										 const VkMemoryRequirements &memory_requirements,
@@ -234,7 +244,8 @@ public:
 		return allocate(size,
 						memory_requirements,
 						required_flags,
-						preferred_flags);
+						preferred_flags,
+						private_memory);
 	}
 
 	/**
@@ -245,33 +256,36 @@ public:
 	*	@param memory_requirements	Allocation memory requirements
 	*	@param required_flags	Required memory flags.
 	*							If some of the bits can't be satisfied, allocation will throw vk_memory_no_supported_heap_exception.
+	*	@param private_memory	If set to true, the allocation will create a pivate chunk only for this allocation, i.e. this chunk will not
+	*							be shared with other alocation.
 	*/
 	auto allocate_host_visible_memory(std::uint64_t size,
 									  const VkMemoryRequirements &memory_requirements,
-									  const VkMemoryPropertyFlags &required_flags = 0) const {
+									  const VkMemoryPropertyFlags &required_flags = 0,
+									  bool private_memory = false) const {
 		VkMemoryPropertyFlags preferred_flags = required_flags | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
 		return allocate(size,
 						memory_requirements,
 						required_flags,
-						preferred_flags);
+						preferred_flags,
+						private_memory);
 	}
 
 	/**
-	*	@brief	Attempts to allocate memory and bind that memory to the resource.
+	*	@brief	Attempts to allocate memory based on vk resource memory requirements. 
 	*			Thread safe.
 	*
-	*	@param resource			The resource
+	*	@param memory_requirements	Memory requirements
 	*	@param required_flags	Required memory flags.
 	*							If some of the bits can't be satisfied, allocation will throw vk_memory_no_supported_heap_exception.
 	*	@param preferred_flags	Nice to have flags.
-	*	@param private_memory	If set to true, the allocation will create a pivate chunk only for this resource, i.e. this chunk will not
-	*							be shared with other resources. Useful for resources whose underlying memory might need to be host mapped.
+	*	@param private_memory	If set to true, the allocation will create a pivate chunk only for this allocation, i.e. this chunk will not
+	*							be shared with other alocation.
 	*/
-	void allocate_device_memory_for_resource(vk_resource &resource,
-											 const VkMemoryPropertyFlags &required_flags,
-											 const VkMemoryPropertyFlags &preferred_flags,
-											 bool private_memory = false) const {
-		auto memory_requirements = resource.get_memory_requirements();
+	auto allocate_device_memory_for_resource(const VkMemoryRequirements &memory_requirements,
+												 const VkMemoryPropertyFlags &required_flags,
+												 const VkMemoryPropertyFlags &preferred_flags,
+												 bool private_memory = false) const {
 		auto allocation = allocate(memory_requirements.size,
 								   memory_requirements,
 								   required_flags,
@@ -282,41 +296,41 @@ public:
 			throw device_memory_allocation_failed();
 		}
 
-		resource.bind_memory(std::move(allocation), private_memory);
+		return allocation;
 	}
 
 	/**
 	*	@brief	Attempts to allocate device local memory and bind that memory to the resource.
 	*			Thread safe.
 	*
-	*	@param resource			The resource
+	*	@param memory_requirements	Memory requirements
 	*	@param required_flags	Required memory flags.
 	*							If some of the bits can't be satisfied, allocation will throw vk_memory_no_supported_heap_exception.
-	*	@param private_memory	If set to true, the allocation will create a pivate chunk only for this resource, i.e. this chunk will not
-	*							be shared with other resources. Useful for resources whose underlying memory might need to be host mapped.
+	*	@param private_memory	If set to true, the allocation will create a pivate chunk only for this allocation, i.e. this chunk will not
+	*							be shared with other alocation.
 	*/
-	void allocate_device_physical_memory_for_resource(vk_resource &resource,
+	auto allocate_device_physical_memory_for_resource(const VkMemoryRequirements &memory_requirements,
 													  const VkMemoryPropertyFlags &required_flags = 0,
 													  bool private_memory = false) const {
 		VkMemoryPropertyFlags preferred_flags = required_flags | VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
-		allocate_device_memory_for_resource(resource, required_flags, preferred_flags, private_memory);
+		return allocate_device_memory_for_resource(memory_requirements, required_flags, preferred_flags, private_memory);
 	}
 
 	/**
 	*	@brief	Attempts to allocate host visible memory and bind that memory to the resource.
 	*			Thread safe.
 	*
-	*	@param resource			The resource
+	*	@param memory_requirements	Memory requirements
 	*	@param required_flags	Required memory flags.
 	*							If some of the bits can't be satisfied, allocation will throw vk_memory_no_supported_heap_exception.
-	*	@param private_memory	If set to true, the allocation will create a pivate chunk only for this resource, i.e. this chunk will not
-	*							be shared with other resources. Useful for resources whose underlying memory might need to be host mapped.
+	*	@param private_memory	If set to true, the allocation will create a pivate chunk only for this allocation, i.e. this chunk will not
+	*							be shared with other alocation.
 	*/
-	void allocate_host_visible_memory_for_resource(vk_resource &resource,
+	auto allocate_host_visible_memory_for_resource(const VkMemoryRequirements &memory_requirements,
 												   const VkMemoryPropertyFlags &required_flags = 0,
 												   bool private_memory = false) const {
 		VkMemoryPropertyFlags preferred_flags = required_flags | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
-		allocate_device_memory_for_resource(resource, required_flags, preferred_flags, private_memory);
+		return allocate_device_memory_for_resource(memory_requirements, required_flags, preferred_flags, private_memory);
 	}
 
 	/**

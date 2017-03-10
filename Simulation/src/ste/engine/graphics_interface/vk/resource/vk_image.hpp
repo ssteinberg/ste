@@ -19,8 +19,7 @@ namespace GL {
 
 template <int dimensions>
 class vk_image : public vk_image_base<dimensions>, public vk_resource {
-public:
-	using vk_image_base<dimensions>::size_type;
+	using Base = vk_image_base<dimensions>;
 
 private:
 	VkImageUsageFlags usage;
@@ -51,14 +50,14 @@ protected:
 public:
 	vk_image(const vk_logical_device &device,
 			 const VkFormat &format,
-			 const size_type &size,
+			 const typename Base::size_type &size,
 			 const VkImageUsageFlags &usage,
 			 std::uint32_t mips = 1,
 			 std::uint32_t layers = 1,
 			 const VkImageLayout &initial_layout = VK_IMAGE_LAYOUT_UNDEFINED,
 			 bool optimal_tiling = true,
 			 bool sparse = false)
-		: vk_image_base(device, format, size, mips, layers), usage(usage), sparse(sparse)
+		: Base(device, format, size, mips, layers), usage(usage), sparse(sparse)
 	{
 		VkImage image;
 

@@ -79,12 +79,34 @@ public:
 		}
 	}
 
+	/**
+	*	@brief	Returns the amount, in bytes, of the device commited memory of lazily-allocated 
+	*			(VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT) memory. 
+	*			
+	*			It is the callers responsibility to ensure that this memory object was allocated with a lazily-allocated
+	*			memory type, otherwise the return value is undefined.
+	*/
 	auto get_allocation_memory_commitment() const {
 		std::uint64_t committed_bytes;
 		vkGetDeviceMemoryCommitment(device, *this, &committed_bytes);
 		return committed_bytes;
 	}
 
+	/**
+	*	@brief	Maps the memory object and returns the host addressable virtual address pointer to the mapped region.
+	*			Only one region can be mapped at a time.
+	*			Unmaps a previously mapped region, if any.
+	*			
+	*			It is the caller responsibility to ensure correct memory type and alignment:
+	*			Device memory must be allocated on a host visible heap (VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT), otherwise 
+	*			call will fail and throw.
+	*			If the device memory is non-coherent (VK_MEMORY_PROPERTY_HOST_COHERENT_BIT), the mapped region start 
+	*			offset and size in bytes should be aligned to non-coherent atom size bounderies (retrieveable 
+	*			via get_non_coherent_atom_size()), otherwise call will fail and throw.
+	*
+	*	@param	offset	Mapped region start offset
+	*	@param	count	Mapped region size expressed in count of elements of type T
+	*/
 	template <typename T>
 	std::unique_ptr<vk_mmap<T>> mmap(std::uint64_t offset, std::uint64_t count) {
 		munmap();
@@ -100,11 +122,22 @@ public:
 
 		return std::move(mmap);
 	}
+	/**
+	*	@brief	Unmap the previously mmaped region. If no region is mapped, call will silently fail.
+	*/
 	void munmap() {
 		if (mapped_memory != nullptr) {
 			vkUnmapMemory(device, *this);
 			mapped_memory = nullptr;
 		}
+	}
+
+	/**
+	*	@brief	Returns the non-coherent atom size. See mmap().
+	*			Guaranteed by the specification to be 256 bytes at most.
+	*/
+	auto get_non_coherent_atom_size() const { 
+		return device.get_physical_device_descriptor().properties.limits.nonCoherentAtomSize;
 	}
 
 	auto& get_creating_device() const { return device; }
@@ -116,3 +149,5 @@ public:
 
 }
 }
+
+#include <vk_mmap.hpp>

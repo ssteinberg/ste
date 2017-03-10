@@ -3,7 +3,9 @@
 
 #include <ste.hpp>
 #include <ste_presentation_device.hpp>
-#include <vk_buffer.hpp>
+#include <device_buffer.hpp>
+#include <device_buffer_sparse.hpp>
+#include <device_image.hpp>
 
 using namespace StE::GL;
 
@@ -19,8 +21,6 @@ auto requested_device_features() {
 	requested_features.shaderImageGatherExtended = VK_TRUE;
 	requested_features.sparseBinding = VK_TRUE;
 	requested_features.sparseResidencyBuffer = VK_TRUE;
-	requested_features.sparseResidencyImage2D = VK_TRUE;
-	requested_features.sparseResidencyImage3D = VK_TRUE;
 
 	return requested_features;
 }
@@ -94,17 +94,21 @@ int main()
 	auto commited_mem = ctx.device_memory_allocator().get_total_commited_memory();
 	auto allocated_mem = ctx.device_memory_allocator().get_total_allocated_memory();
 
-	StE::GL::vk_buffer<float, true> buf(device.device(), 100000, VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT);
+	StE::GL::device_buffer_sparse<float> buf(ctx, 100000, VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT);
 	{
-		auto mem_req = buf.get_memory_requirements();
-		auto allocation = ctx.device_memory_allocator().allocate_device_physical_memory(100, mem_req);
-		std::vector<vk_sparse_memory_bind> binds;
-		binds.emplace_back(std::move(allocation), 0);
-		buf.bind_memory(device.get_queue(0).device_queue(), std::move(binds), {}, {});
-		auto allocation2 = ctx.device_memory_allocator().allocate_device_physical_memory(100000, mem_req);
-		std::vector<vk_sparse_memory_bind> binds2;
-		binds2.emplace_back(std::move(allocation2), mem_req.alignment);
-		buf.bind_memory(device.get_queue(0).device_queue(), std::move(binds2), {}, {});
+		buf.cmd_bind_sparse_memory(device.get_queue(0).device_queue(), {},
+								   { StE::range<std::uint32_t>(20000, 40000) },
+								   {},
+								   {},
+								   nullptr);
+	}
+
+	StE::GL::device_buffer<glm::vec4, device_resource_allocation_policy_mmap> 
+		buf2(ctx, 100000, VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
+	{
+		auto mmap = buf2.get_underlying_memory().mmap<glm::vec4>(0, 12);
+		(*mmap)[0] = { 1,2,3,4 };
+		mmap->flush_ranges({{0,2}});
 	}
 
 

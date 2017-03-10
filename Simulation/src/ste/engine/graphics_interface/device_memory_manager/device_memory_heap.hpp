@@ -82,7 +82,7 @@ public:
 	*	
 	*	@return	Returns the allocation object
 	*/
-	allocation_type allocate(size_type size, size_type alignment) {
+	allocation_type allocate(size_type size, size_type alignment, bool private_allocation) {
 		size = align(size, alignment);
 
 		if (get_heap_size() < size) {
@@ -114,7 +114,10 @@ public:
 				auto block_it = blocks.insert(it, block);
 				total_used_size += size;
 
-				return allocation_type(&memory, this, std::move(block_it));
+				return allocation_type(&memory, 
+									   this, 
+									   std::move(block_it), 
+									   private_allocation);
 			}
 
 			if (last)

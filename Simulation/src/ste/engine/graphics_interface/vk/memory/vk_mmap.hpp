@@ -7,6 +7,7 @@
 
 #include <vk_exception.hpp>
 #include <vk_device_memory.hpp>
+#include <vk_mapped_memory_range.hpp>
 
 #include <functional>
 #include <vector>
@@ -19,17 +20,31 @@ class vk_mmap {
 private:
 	using map_pointer = T*;
 
-public:
-	struct memory_range {
-		std::uint64_t offset_bytes;
-		std::uint64_t size_bytes;
-	};
-
 private:
 	vk_device_memory &memory;
 	map_pointer ptr;
 	std::uint64_t offset;
 	std::uint64_t count;
+
+private:
+	auto vk_mapped_memory_ranges(const std::vector<vk_mapped_memory_range> &ranges) const {
+		std::vector<VkMappedMemoryRange> mapped_ranges;
+		mapped_ranges.resize(ranges.size());
+		for (int i = 0; i < ranges.size(); ++i) {
+			auto &r = ranges[i];
+
+			VkMappedMemoryRange s = {};
+			s.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
+			s.pNext = nullptr;
+			s.size = r.size_elements * sizeof(T);
+			s.offset = r.offset_elements * sizeof(T);
+			s.memory = memory;
+
+			mapped_ranges[i] = s;
+		}
+
+		return mapped_ranges;
+	}
 
 public:
 	vk_mmap(vk_device_memory &memory, std::uint64_t offset, std::uint64_t count, map_pointer ptr)
@@ -45,17 +60,29 @@ public:
 		memory.munmap();
 	}
 
-	// flush mapped memory regions to make writes performed by the host visible to the device
-	void flush_ranges(const std::vector<memory_range> &ranges) const {
-		vk_result res = vkFlushMappedMemoryRanges(memory.get_creating_device(), ranges.size(), &ranges[0]);
+	/**
+	 *	@brief	Flushes mapped memory regions to make writes performed by the host visible to the device
+	 */
+	void flush_ranges(const std::vector<vk_mapped_memory_range> &ranges) const {
+		std::vector<VkMappedMemoryRange> mapped_ranges = vk_mapped_memory_ranges(ranges);
+
+		vk_result res = vkFlushMappedMemoryRanges(memory.get_creating_device(), 
+												  mapped_ranges.size(),
+												  mapped_ranges.data());
 		if (!res) {
 			throw vk_exception(res);
 		}
 	}
 
-	// Invalidate mapped memory ranges to make changes done by the device visible to the host
-	void invalidate_ranges(const std::vector<memory_range> &ranges) const {
-		vk_result res = vkInvalidateMappedMemoryRanges(memory.get_creating_device(), ranges.size(), &ranges[0]);
+	/**
+	*	@brief	Invalidates mapped memory ranges to make changes done by the device visible to the host
+	*/
+	void invalidate_ranges(const std::vector<vk_mapped_memory_range> &ranges) const {
+		std::vector<VkMappedMemoryRange> mapped_ranges = vk_mapped_memory_ranges(ranges);
+
+		vk_result res = vkInvalidateMappedMemoryRanges(memory.get_creating_device(),
+													   mapped_ranges.size(),
+													   mapped_ranges.data());
 		if (!res) {
 			throw vk_exception(res);
 		}

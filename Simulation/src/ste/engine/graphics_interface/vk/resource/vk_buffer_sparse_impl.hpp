@@ -23,7 +23,6 @@ class vk_buffer_sparse_impl : public vk_buffer_base {
 
 private:
 	std::uint64_t count;
-	std::vector<vk_sparse_memory_bind> memory_binds;
 
 public:
 	vk_buffer_sparse_impl(const vk_logical_device &device,
@@ -38,11 +37,20 @@ public:
 	vk_buffer_sparse_impl(const vk_buffer_sparse_impl &) = delete;
 	vk_buffer_sparse_impl& operator=(const vk_buffer_sparse_impl &) = delete;
 
-	void bind_memory(const vk_queue &queue,
-					 std::vector<vk_sparse_memory_bind> &&memory_binds,
-					 const std::vector<vk_semaphore*> &wait_semaphores,
-					 const std::vector<vk_semaphore*> &signal_semaphores,
-					 const vk_fence *fence = nullptr) {
+	/**
+	*	@brief	Queues a bind sparse memory command on the queue
+	*
+	*	@param	queue				Queue to use
+	*	@param	memory_binds		Sparse memory (un)bindings opeartions to perform
+	*	@param	wait_semaphores		Array of pairs of semaphores upon which to wait before execution
+	*	@param	signal_semaphores	Sempahores to signal once the command has completed execution
+	*	@param	fence				Optional fence, to be signaled when the command has completed execution
+	*/
+	void cmd_bind_sparse_memory(const vk_queue &queue,
+								const std::vector<vk_sparse_memory_bind> &memory_binds,
+								const std::vector<vk_semaphore*> &wait_semaphores,
+								const std::vector<vk_semaphore*> &signal_semaphores,
+								const vk_fence *fence = nullptr) {
 		std::vector<VkSemaphore> wait;
 		std::vector<VkSemaphore> signal;
 		std::vector<VkSparseMemoryBind> binds;
@@ -62,10 +70,21 @@ public:
 		binds.reserve(memory_binds.size());
 		for (auto &e : memory_binds) {
 			VkSparseMemoryBind b = {};
-			b.resourceOffset = e.resource_offset;
-			b.memory = *e.allocation.get_memory();
-			b.size = (*e.allocation).get_bytes();
-			b.memoryOffset = (*e.allocation).get_offset();
+
+			b.resourceOffset = e.resource_offset_bytes;
+			b.size = e.size_bytes;
+
+			if (e.allocation != nullptr) {
+				// Bind
+				assert(*e.allocation);
+				b.memory = *e.allocation->get_memory();
+				b.memoryOffset = (**e.allocation).get_offset();
+			}
+			else {
+				// Unbind
+				b.memory = VK_NULL_HANDLE;
+			}
+
 			binds.push_back(b);
 		}
 
@@ -94,8 +113,6 @@ public:
 		if (!res) {
 			throw vk_exception(res);
 		}
-
-		this->memory_binds = std::move(memory_binds);
 	}
 
 	VkMemoryRequirements get_memory_requirements() const {
