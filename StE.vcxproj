@@ -77,18 +77,22 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)Simulation\bin\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)Simulation\build\$(Configuration)\</IntDir>
+    <CustomBuildBeforeTargets>Build</CustomBuildBeforeTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)Simulation\bin\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)Simulation\build\$(Configuration)\</IntDir>
+    <CustomBuildBeforeTargets>Build</CustomBuildBeforeTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)Simulation\bin\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)Simulation\build\$(Configuration)\</IntDir>
+    <CustomBuildBeforeTargets>Build</CustomBuildBeforeTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)Simulation\bin\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)Simulation\build\$(Configuration)\</IntDir>
+    <CustomBuildBeforeTargets>Build</CustomBuildBeforeTargets>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -118,11 +122,25 @@
       <InterproceduralOptimization>false</InterproceduralOptimization>
     </Link>
     <PreBuildEvent>
-      <Command>powershell.exe $(SolutionDir)compile_shaders.ps1 -d: "$(SolutionDir)Simulation"</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
     <PreBuildEvent>
-      <Message>Compile shaders</Message>
+      <Message>
+      </Message>
     </PreBuildEvent>
+    <CustomBuildStep>
+      <Command>powershell.exe $(SolutionDir)Simulation\compile_shaders.ps1 -d: "$(SolutionDir)Simulation"</Command>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Message>Compile shaders</Message>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <TreatOutputAsContent>false</TreatOutputAsContent>
+      <Outputs>dummy.fake.file</Outputs>
+      <Inputs>
+      </Inputs>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -152,11 +170,25 @@
       <AdditionalOptions>/NODEFAULTLIB:"libcmpt.lib" %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <PreBuildEvent>
-      <Command>powershell.exe $(SolutionDir)compile_shaders.ps1 -d: "$(SolutionDir)Simulation"</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
     <PreBuildEvent>
-      <Message>Compile shaders</Message>
+      <Message>
+      </Message>
     </PreBuildEvent>
+    <CustomBuildStep>
+      <Command>powershell.exe $(SolutionDir)Simulation\compile_shaders.ps1 -d: "$(SolutionDir)Simulation"</Command>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Message>Compile shaders</Message>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <TreatOutputAsContent>false</TreatOutputAsContent>
+      <Outputs>dummy.fake.file</Outputs>
+      <Inputs>
+      </Inputs>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -200,11 +232,25 @@
       <AdditionalOptions> /FORCE:MULTIPLE %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <PreBuildEvent>
-      <Command>powershell.exe $(SolutionDir)compile_shaders.ps1 -d: "$(SolutionDir)Simulation"</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
     <PreBuildEvent>
-      <Message>Compile shaders</Message>
+      <Message>
+      </Message>
     </PreBuildEvent>
+    <CustomBuildStep>
+      <Command>powershell.exe $(SolutionDir)Simulation\compile_shaders.ps1 -d: "$(SolutionDir)Simulation"</Command>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Message>Compile shaders</Message>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <TreatOutputAsContent>false</TreatOutputAsContent>
+      <Outputs>dummy.fake.file</Outputs>
+      <Inputs>
+      </Inputs>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -242,11 +288,25 @@
       <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
     </Link>
     <PreBuildEvent>
-      <Command>powershell.exe $(SolutionDir)compile_shaders.ps1 -d: "$(SolutionDir)Simulation"</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
     <PreBuildEvent>
-      <Message>Compile shaders</Message>
+      <Message>
+      </Message>
     </PreBuildEvent>
+    <CustomBuildStep>
+      <Command>powershell.exe $(SolutionDir)Simulation\compile_shaders.ps1 -d: "$(SolutionDir)Simulation"</Command>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Message>Compile shaders</Message>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <TreatOutputAsContent>false</TreatOutputAsContent>
+      <Outputs>dummy.fake.file</Outputs>
+      <Inputs>
+      </Inputs>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Simulation\src\main.cpp">
