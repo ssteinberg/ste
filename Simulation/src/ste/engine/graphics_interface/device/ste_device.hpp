@@ -30,9 +30,9 @@ private:
 	using queue_t = std::unique_ptr<ste_gl_device_queue>;
 
 private:
-	const ste_gl_presentation_device_creation_parameters parameters;
+	const ste_gl_device_creation_parameters parameters;
 	const std::vector<ste_gl_queue_descriptor> queue_descriptors;
-	vk_logical_device logical_device;
+	vk_logical_device device;
 	const std::unique_ptr<ste_presentation_surface> presentation_surface{ nullptr };
 
 	std::uint32_t command_buffers_count{ 0 };
@@ -73,27 +73,27 @@ private:
 		return device;
 	}
 
-//	void setup_queues_indices(const std::vector<ste_gl_queue_descriptor> &queues) {
-//		main_queue_idx =
-//			std::find_if(queues.begin(), queues.end(),
-//						 [](const ste_gl_queue_descriptor &q) { return q.usage == ste_gl_queue_usage::main_queue; }) - queues.begin();
-//		if (main_queue_idx == queues.size())
-//			throw ste_engine_exception("No main queue specified in queue descriptors.");
-//
-//		compute_queue_idx =
-//			std::find_if(queues.begin(), queues.end(),
-//						 [](const ste_gl_queue_descriptor &q) { return q.usage == ste_gl_queue_usage::compute_queue; }) - queues.begin();
-//		transfer_queue_idx =
-//			std::find_if(queues.begin(), queues.end(),
-//						 [](const ste_gl_queue_descriptor &q) { return q.usage == ste_gl_queue_usage::data_transfer_queue; }) - queues.begin();
-//
-//		if (compute_queue_idx == queues.size())
-//			compute_queue_idx = std::find_if(queues.begin(), queues.end(),
-//											 [](const ste_gl_queue_descriptor &q) { return q.usage == ste_gl_queue_usage::main_queue; }) - queues.begin();
-//		if (transfer_queue_idx == queues.size())
-//			transfer_queue_idx = std::find_if(queues.begin(), queues.end(),
-//											  [](const ste_gl_queue_descriptor &q) { return q.usage == ste_gl_queue_usage::main_queue; }) - queues.begin();
-//	}
+	//	void setup_queues_indices(const std::vector<ste_gl_queue_descriptor> &queues) {
+	//		main_queue_idx =
+	//			std::find_if(queues.begin(), queues.end(),
+	//						 [](const ste_gl_queue_descriptor &q) { return q.usage == ste_gl_queue_usage::main_queue; }) - queues.begin();
+	//		if (main_queue_idx == queues.size())
+	//			throw ste_engine_exception("No main queue specified in queue descriptors.");
+	//
+	//		compute_queue_idx =
+	//			std::find_if(queues.begin(), queues.end(),
+	//						 [](const ste_gl_queue_descriptor &q) { return q.usage == ste_gl_queue_usage::compute_queue; }) - queues.begin();
+	//		transfer_queue_idx =
+	//			std::find_if(queues.begin(), queues.end(),
+	//						 [](const ste_gl_queue_descriptor &q) { return q.usage == ste_gl_queue_usage::data_transfer_queue; }) - queues.begin();
+	//
+	//		if (compute_queue_idx == queues.size())
+	//			compute_queue_idx = std::find_if(queues.begin(), queues.end(),
+	//											 [](const ste_gl_queue_descriptor &q) { return q.usage == ste_gl_queue_usage::main_queue; }) - queues.begin();
+	//		if (transfer_queue_idx == queues.size())
+	//			transfer_queue_idx = std::find_if(queues.begin(), queues.end(),
+	//											  [](const ste_gl_queue_descriptor &q) { return q.usage == ste_gl_queue_usage::main_queue; }) - queues.begin();
+	//	}
 
 	void create_queues() {
 		if (presentation_surface != nullptr) {
@@ -106,8 +106,8 @@ private:
 		std::vector<queue_t> q;
 		q.reserve(queue_descriptors.size());
 		for (auto &d : queue_descriptors)
-			q.push_back(std::make_unique<queue_t::element_type>(logical_device, 
-																d, 
+			q.push_back(std::make_unique<queue_t::element_type>(device,
+																d,
 																get_command_buffers_count()));
 
 		device_queues = std::move(q);
@@ -131,23 +131,26 @@ public:
 	/**
 	*	@brief	Creates the device with presentation surface and capabilities
 	*
+	*	@throws ste_engine_exception	If creation parameters are erroneous or incompatible
+	*	@throws vk_exception	On Vulkan error
+	*
 	*	@param parameters			Device creation parameters
 	*	@param queue_descriptors	Queues descriptors. Influences amount and families of created device queues.
 	*	@param gl_ctx				Context
 	*	@param presentation_window	Presentation window used for rendering
 	*/
-	ste_device(const ste_gl_presentation_device_creation_parameters &parameters,
+	ste_device(const ste_gl_device_creation_parameters &parameters,
 			   const std::vector<ste_gl_queue_descriptor> &queue_descriptors,
 			   const ste_gl_context &gl_ctx,
 			   const ste_window &presentation_window)
 		: parameters(parameters),
 		queue_descriptors(queue_descriptors),
-		logical_device(create_vk_virtual_device(parameters.physical_device,
-												parameters.requested_device_features,
-												queue_descriptors,
-												parameters.additional_device_extensions)),
+		device(create_vk_virtual_device(parameters.physical_device,
+										parameters.requested_device_features,
+										queue_descriptors,
+										parameters.additional_device_extensions)),
 		presentation_surface(std::make_unique<ste_presentation_surface>(parameters,
-																		&logical_device,
+																		&device,
 																		presentation_window,
 																		gl_ctx.instance()))
 	{
@@ -157,21 +160,24 @@ public:
 	/**
 	*	@brief	Creates the device without presentation capabilities ("compute-only" device)
 	*
+	*	@throws ste_engine_exception	If creation parameters are erroneous or incompatible
+	*	@throws vk_exception	On Vulkan error
+	*
 	*	@param parameters			Device creation parameters
 	*	@param queue_descriptors	Queues descriptors. Influences amount and families of created device queues.
 	*	@param gl_ctx				Context
 	*	@param command_buffers_count Count of command buffers to create in each queue
 	*/
-	ste_device(const ste_gl_presentation_device_creation_parameters &parameters,
+	ste_device(const ste_gl_device_creation_parameters &parameters,
 			   const std::vector<ste_gl_queue_descriptor> &queue_descriptors,
 			   const ste_gl_context &gl_ctx,
 			   std::uint32_t command_buffers_count = 1)
 		: parameters(parameters),
 		queue_descriptors(queue_descriptors),
-		logical_device(create_vk_virtual_device(parameters.physical_device,
-												parameters.requested_device_features,
-												queue_descriptors,
-												parameters.additional_device_extensions)),
+		device(create_vk_virtual_device(parameters.physical_device,
+										parameters.requested_device_features,
+										queue_descriptors,
+										parameters.additional_device_extensions)),
 		command_buffers_count(command_buffers_count)
 	{
 		if (command_buffers_count == 0) {
@@ -188,9 +194,9 @@ public:
 
 	/**
 	*	@brief	Enqueues a task on the main queue to acquire next presentation image and resize/recreate swap chain if necessary.
-	*			The task will save the presentation image information in the thread_local variable, which will be consumed on 
+	*			The task will save the presentation image information in the thread_local variable, which will be consumed on
 	*			next call to present.
-	*			
+	*
 	*			Only available for presentation-capable devices.
 	*
 	*	@param queue						The device queue to use for presenatation
@@ -207,8 +213,10 @@ public:
 	/**
 	*	@brief	Presents the presentation image.
 	*			Might stall if swap chain recreation is required.
-	*			
+	*
 	*			Only available for presentation-capable devices.
+	*
+	*	@throws vk_exception	On Vulkan error during swap chain recreation
 	*
 	*	@param queue						The device queue to use for presenatation
 	*	@param rendering_ready_semaphore	Semaphore to be signaled when rendering to the presentation image is complete.
@@ -237,7 +245,7 @@ public:
 
 	std::uint32_t get_command_buffers_count() const { return command_buffers_count; }
 
-	auto& device() const { return logical_device; }
+	auto& logical_device() const { return device; }
 };
 
 }

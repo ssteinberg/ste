@@ -231,9 +231,6 @@
     <ClCompile Include="Simulation\src\ste\engine\window\ste_window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_resources\shaders\shader_factory\ste_shader_factory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\vk\queue\vk_command_buffers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -243,7 +240,7 @@
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\vk\query\vk_query.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Simulation\src\ste\engine\graphics_interface\presentation_device\ste_gl_device_queue.cpp">
+    <ClCompile Include="Simulation\src\ste\engine\graphics_interface\device\ste_gl_device_queue.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1169,24 +1166,6 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\ste_gl_device_queues_protocol.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_resources\shaders\ste_shader_properties.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_resources\shaders\ste_shader_type.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_resources\shaders\shader_factory\ste_shader_factory.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_resources\shaders\shader_factory\ste_shader_factory_exception.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\presentation_device\ste_gl_device_queue.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\presentation_device\ste_presentation_surface.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\resource\vk_buffer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1481,10 +1460,28 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resources\device_buffer_sparse.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resources\device_shader_module.hpp">
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device\ste_device.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\presentation_device\ste_device.hpp">
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device\ste_gl_device_queue.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device\ste_presentation_surface.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\shader\device_pipeline_shader_stage.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\shader\ste_shader_stage.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\shader\ste_shader_blob_header.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\shader\ste_shader_load_exceptions.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\shader\ste_pipeline_shader_stage_cache.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

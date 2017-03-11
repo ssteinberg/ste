@@ -69,7 +69,7 @@ public:
 	template <typename ... Args>
 	device_buffer_sparse(const ste_context &ctx,
 						 Args&&... args)
-		: device_buffer_sparse(ctor(), ctx, resource_t(ctx.presentation_device().device(), std::forward<Args>(args)...))
+		: device_buffer_sparse(ctor(), ctx, resource_t(ctx.device().logical_device(), std::forward<Args>(args)...))
 	{}
 	~device_buffer_sparse() noexcept {}
 
@@ -141,8 +141,8 @@ public:
 										fence);
 	}
 
-	operator resource_t() { return resource; }
-	operator resource_t() const { return resource; }
+	operator resource_t&() { return get(); }
+	operator const resource_t&() const { return get(); }
 
 	resource_t& get() { return resource; }
 	resource_t& get() const { return resource; }

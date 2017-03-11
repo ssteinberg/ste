@@ -85,7 +85,7 @@ private:
 			return fallback_memory_type;
 
 		// No heap with requested flags found
-		throw vk_memory_no_supported_heap_exception();
+		throw device_memory_no_supported_heap_exception();
 	}
 
 	static void prune_chunks(chunks_t &chunks) {
@@ -206,11 +206,15 @@ public:
 	/**
 	*	@brief	Attempts to allocate memory.
 	*			Thread safe.
+	*			
+	*	@throws device_memory_exception	On heap allocation failure
+	*	@throws device_memory_no_supported_heap_exception	If no device heap conforming to requirements and flags found
+	*	@throws vk_memory_allocation_failed_exception	On device memory allocation failure
+	*	@throws vk_exception			On other Vulkan errors
 	*
 	*	@param size				Size in bytes
 	*	@param memory_requirements	Allocation memory requirements
 	*	@param required_flags	Required memory flags.
-	*							If some of the bits can't be satisfied, allocation will throw vk_memory_no_supported_heap_exception.
 	*	@param preferred_flags	Nice to have flags.
 	*/
 	auto allocate_device_memory(std::uint64_t size,
@@ -228,11 +232,15 @@ public:
 	/**
 	*	@brief	Attempts to allocate device local memory.
 	*			Thread safe.
+	*			
+	*	@throws device_memory_exception	On heap allocation failure
+	*	@throws device_memory_no_supported_heap_exception	If no device heap conforming to requirements and flags found
+	*	@throws vk_memory_allocation_failed_exception	On device memory allocation failure
+	*	@throws vk_exception			On other Vulkan errors
 	*
 	*	@param size				Size in bytes
 	*	@param memory_requirements	Allocation memory requirements
 	*	@param required_flags	Required memory flags.
-	*							If some of the bits can't be satisfied, allocation will throw vk_memory_no_supported_heap_exception.
 	*	@param private_memory	If set to true, the allocation will create a pivate chunk only for this allocation, i.e. this chunk will not
 	*							be shared with other alocation.
 	*/
@@ -251,11 +259,15 @@ public:
 	/**
 	*	@brief	Attempts to allocate host visible memory.
 	*			Thread safe.
+	*			
+	*	@throws device_memory_exception	On heap allocation failure
+	*	@throws device_memory_no_supported_heap_exception	If no device heap conforming to requirements and flags found
+	*	@throws vk_memory_allocation_failed_exception	On device memory allocation failure
+	*	@throws vk_exception			On other Vulkan errors
 	*
 	*	@param size				Size in bytes
 	*	@param memory_requirements	Allocation memory requirements
 	*	@param required_flags	Required memory flags.
-	*							If some of the bits can't be satisfied, allocation will throw vk_memory_no_supported_heap_exception.
 	*	@param private_memory	If set to true, the allocation will create a pivate chunk only for this allocation, i.e. this chunk will not
 	*							be shared with other alocation.
 	*/
@@ -274,10 +286,14 @@ public:
 	/**
 	*	@brief	Attempts to allocate memory based on vk resource memory requirements. 
 	*			Thread safe.
+	*			
+	*	@throws device_memory_exception	On heap allocation failure
+	*	@throws device_memory_no_supported_heap_exception	If no device heap conforming to requirements and flags found
+	*	@throws vk_memory_allocation_failed_exception	On device memory allocation failure
+	*	@throws vk_exception			On other Vulkan errors
 	*
 	*	@param memory_requirements	Memory requirements
 	*	@param required_flags	Required memory flags.
-	*							If some of the bits can't be satisfied, allocation will throw vk_memory_no_supported_heap_exception.
 	*	@param preferred_flags	Nice to have flags.
 	*	@param private_memory	If set to true, the allocation will create a pivate chunk only for this allocation, i.e. this chunk will not
 	*							be shared with other alocation.
@@ -302,10 +318,14 @@ public:
 	/**
 	*	@brief	Attempts to allocate device local memory and bind that memory to the resource.
 	*			Thread safe.
+	*			
+	*	@throws device_memory_exception	On heap allocation failure
+	*	@throws device_memory_no_supported_heap_exception	If no device heap conforming to requirements and flags found
+	*	@throws vk_memory_allocation_failed_exception	On device memory allocation failure
+	*	@throws vk_exception			On other Vulkan errors
 	*
 	*	@param memory_requirements	Memory requirements
 	*	@param required_flags	Required memory flags.
-	*							If some of the bits can't be satisfied, allocation will throw vk_memory_no_supported_heap_exception.
 	*	@param private_memory	If set to true, the allocation will create a pivate chunk only for this allocation, i.e. this chunk will not
 	*							be shared with other alocation.
 	*/
@@ -319,10 +339,14 @@ public:
 	/**
 	*	@brief	Attempts to allocate host visible memory and bind that memory to the resource.
 	*			Thread safe.
+	*			
+	*	@throws device_memory_exception	On heap allocation failure
+	*	@throws device_memory_no_supported_heap_exception	If no device heap conforming to requirements and flags found
+	*	@throws vk_memory_allocation_failed_exception	On device memory allocation failure
+	*	@throws vk_exception			On other Vulkan errors
 	*
 	*	@param memory_requirements	Memory requirements
 	*	@param required_flags	Required memory flags.
-	*							If some of the bits can't be satisfied, allocation will throw vk_memory_no_supported_heap_exception.
 	*	@param private_memory	If set to true, the allocation will create a pivate chunk only for this allocation, i.e. this chunk will not
 	*							be shared with other alocation.
 	*/
@@ -335,6 +359,7 @@ public:
 
 	/**
 	*	@brief	Returns total memory, of type conforming to provided flags, available to device.
+	*			Thread safe.
 	*	
 	*	@param	flags	Memory type flags
 	*/
@@ -357,6 +382,7 @@ public:
 
 	/**
 	*	@brief	Returns the total commited device memory of specified type.
+	*			Thread safe.
 	*
 	*	@param	type	Memory type
 	*/
@@ -379,6 +405,7 @@ public:
 
 	/**
 	*	@brief	Returns the total commited device memory, by all heaps of type conforming to provided flags.
+	*			Thread safe.
 	*
 	*	@param	flags	Memory type flags
 	*/
@@ -397,6 +424,7 @@ public:
 
 	/**
 	*	@brief	Returns the total allocated device memory of specified type.
+	*			Thread safe.
 	*
 	*	@param	type	Memory type
 	*/
@@ -419,6 +447,7 @@ public:
 
 	/**
 	*	@brief	Returns the total allocated device memory, by all heaps of type conforming to provided flags.
+	*			Thread safe.
 	*
 	*	@param	flags	Memory type flags
 	*/

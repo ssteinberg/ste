@@ -4,7 +4,7 @@
 #include <ste.hpp>
 #include <device_buffer.hpp>
 #include <device_buffer_sparse.hpp>
-#include <device_image.hpp>
+#include <device_pipeline_shader_stage.hpp>
 
 using namespace StE::GL;
 
@@ -71,7 +71,7 @@ int main()
 	/*
 	*	Select a physical device, and create a presentation device
 	*/
-	ste_gl_presentation_device_creation_parameters device_params;
+	ste_gl_device_creation_parameters device_params;
 	device_params.physical_device = physical_device;
 	device_params.requested_device_features = features;
 	device_params.vsync = ste_presentation_device_vsync::mailbox;
@@ -109,6 +109,13 @@ int main()
 		(*mmap)[0] = { 1,2,3,4 };
 		mmap->flush_ranges({{0,2}});
 	}
+
+	StE::GL::device_pipeline_shader_stage stage(ctx, "fxaa.frag");
+	StE::GL::device_pipeline_shader_stage(ctx, "text_distance_map_contour.geom");
+	StE::GL::device_pipeline_shader_stage(ctx, "deferred_compose.frag");
+	StE::GL::device_pipeline_shader_stage(ctx, "shadow_cubemap.geom");
+	StE::GL::device_pipeline_shader_stage(ctx, "shadow_directional.geom");
+	StE::GL::device_pipeline_shader_stage(ctx, "volumetric_scattering_scatter.comp");
 
 
 	/*

@@ -31,7 +31,7 @@ public:
 		: engine_reference(engine),
 		gl_context(gl_ctx),
 		gl_device(device),
-		engine_device_memory_allocator(device.device())
+		engine_device_memory_allocator(device.logical_device())
 	{}
 	~ste_context_impl() noexcept {}
 
@@ -42,7 +42,7 @@ public:
 
 	auto &engine() const { return engine_reference; }
 	auto &gl() const { return gl_context; }
-	auto &presentation_device() const { return gl_device; }
+	auto &device() const { return gl_device; }
 	auto &device_memory_allocator() const { return engine_device_memory_allocator; }
 };
 

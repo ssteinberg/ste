@@ -12,7 +12,7 @@
 int main(int argc,
 		 char *argv[],
 		 char *envp[]) {
-	boost::filesystem::path path = R"(D:\src\git\StE\Simulation\src\ste\framework_graphics\renderers\global_illumination\deferred_composer\shaders\deferred_compose.frag)";
+	boost::filesystem::path path = R"(D:\src\git\StE\Simulation\src\ste\framework_graphics\antialiasing\fxaa\shaders\fxaa.frag)";
 	boost::filesystem::path source_path = R"(D:\src\git\StE\Simulation\src)";
 	boost::filesystem::path glslang_path = R"(D:\src\git\glslang\glslang\install\bin\glslangValidator.exe)";
 	boost::filesystem::path shader_binary_output_path = R"(D:\src\git\StE\Simulation\Data\programs)";
@@ -33,6 +33,7 @@ int main(int argc,
 			return 2;
 		}
 
+		auto spirv_temp_output = temp_path / (std::string("compiled_blob_") + path.filename().string());
 		auto output = shader_binary_output_path / path.filename();
 
 //#ifndef _DEBUG
@@ -45,12 +46,32 @@ int main(int argc,
 		}
 //#endif
 
+		StE::shader_blob_header header;
 		if (!StE::ste_shader_factory::compile_shader(path,
 													 source_path,
 													 glslang_path,
-													 output,
-													 temp_path)) {
+													 spirv_temp_output,
+													 temp_path,
+													 header)) {
 			throw std::exception("Compile failed");
+		}
+
+
+		std::string blob;
+		{
+			std::ifstream fs;
+			fs.exceptions(fs.exceptions() | std::ios::failbit | std::ifstream::badbit);
+			fs.open(spirv_temp_output.string(), std::ios::in | std::ios::binary);
+			blob = std::string((std::istreambuf_iterator<char>(fs)), std::istreambuf_iterator<char>());
+		}
+		boost::filesystem::remove(spirv_temp_output);
+
+		{
+			std::ofstream of;
+			of.exceptions(of.exceptions() | std::ios::failbit | std::ifstream::badbit);
+			of.open(output.string(), std::ios::out | std::ios::binary);
+			of.write(reinterpret_cast<const char*>(&header), sizeof(header));
+			of.write(blob.data(), blob.size());
 		}
 	}
 	catch (std::exception e) {

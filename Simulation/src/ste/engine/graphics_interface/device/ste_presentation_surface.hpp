@@ -44,7 +44,7 @@ public:
 	};
 
 private:
-	const ste_gl_presentation_device_creation_parameters parameters;
+	const ste_gl_device_creation_parameters parameters;
 	const vk_logical_device *presentation_device;
 	const ste_window &presentation_window;
 
@@ -83,8 +83,8 @@ private:
 
 		// Choose a presentation mode
 		if (!parameters.vsync) {
-			if (std::find(supported_present_modes.begin(), 
-						  supported_present_modes.end(), 
+			if (std::find(supported_present_modes.begin(),
+						  supported_present_modes.end(),
 						  default_presentation_mode) != supported_present_modes.end())
 				return default_presentation_mode;
 		}
@@ -204,7 +204,7 @@ private:
 		if (!(surface_presentation_caps.supportedUsageFlags & VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT)) {
 			throw ste_engine_exception("VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT unsupported for swapchain");
 		}
-		
+
 		// Swap chain properties
 		auto size = get_surface_extent();
 		std::uint32_t layers = 1;
@@ -248,7 +248,19 @@ private:
 	}
 
 public:
-	ste_presentation_surface(const ste_gl_presentation_device_creation_parameters parameters,
+	/**
+	*	@brief	Creates the presentation surface
+	*
+	*	@throws ste_engine_exception	If creation parameters are erroneous or incompatible
+	*	@throws ste_engine_presentation_unsupported_exception	If presentation is not supported with supplied parameters
+	*	@throws vk_exception	On Vulkan error
+	*
+	*	@param parameters			Device creation parameters
+	*	@param presentation_device	The logical device that owns the surface
+	*	@param presentation_window	Window to present to
+	*	@param instance				Vulkan instance that owns the presentation device
+	*/
+	ste_presentation_surface(const ste_gl_device_creation_parameters parameters,
 							 const vk_logical_device *presentation_device,
 							 const ste_window &presentation_window,
 							 const vk_instance &instance)
@@ -277,7 +289,7 @@ public:
 				break;
 		}
 		if (!has_present_support) {
-			throw ste_engine_exception("No device queues support presentation for choosen surface");
+			throw ste_engine_presentation_unsupported_exception("No device queues support presentation for choosen surface");
 		}
 
 		// Create swap chain
@@ -287,6 +299,12 @@ public:
 		swap_chain_optimal_flag.test_and_set();
 		connect_signals();
 	}
+	~ste_presentation_surface() noexcept {}
+
+	ste_presentation_surface(ste_presentation_surface &&) = default;
+	ste_presentation_surface &operator=(ste_presentation_surface &&) = default;
+	ste_presentation_surface(const ste_presentation_surface &) = delete;
+	ste_presentation_surface &operator=(const ste_presentation_surface &) = delete;
 
 	/**
 	*	@brief	Acquires the next swap chain presentation image.
@@ -294,12 +312,14 @@ public:
 	*			In case of success or suboptimal returns the next swap image.
 	*			In case of suboptimal or out-of-date raises the 'sub_optimal' flag.
 	*			In case of timeout or error, throws vk_exception.
-	*			
+	*
 	*			Should be externally synchronized other presentation methods.
+	*
+	*	@throws vk_exception	On timeout or Vulkan error
 	*
 	*	@param presentation_image_ready_semaphore	Semaphore to be signaled when returned image is ready to be drawn to.
 	*	@param timeout								Timeout to wait for next image.
-	*	
+	*
 	*	@return Returns a struct with a pointer to the pair swap_chain_image_t, index of the image and a 'sub_optimal' flag.
 	*			The returned image might be nullptr.
 	*			If the 'sub_optimal' flag is raised, the swap chain should be recreated by calling recreate_swap_chain.
@@ -342,7 +362,7 @@ public:
 	/**
 	*	@brief	Recreates the swap chain. Possible following a surface resize or a suboptimial image.
 	*			It is the callers responsibility to manually synchronize access to the old swap chain.
-	*			
+	*
 	*			Should be externally synchronized other presentation methods.
 	*/
 	void recreate_swap_chain() {
@@ -351,9 +371,11 @@ public:
 
 	/**
 	*	@brief	Presents the presentation image specifided by the index.
-	*			
+	*
 	*			Should be externally synchronized other presentation methods.
-	*	
+	*
+	*	@throws vk_exception	On Vulkan error
+	*
 	*	@param	image_index			Index of the presentation image in the swap chain
 	*	@param	presentation_queue	Device queue on which to present
 	*	@param	wait_semaphore		Semaphore that signals that rendering to the presentation image is complete
@@ -388,7 +410,7 @@ public:
 	bool test_and_clear_recreate_flag() const {
 		return !swap_chain_optimal_flag.test_and_set(std::memory_order_acquire);
 	}
-	auto& get_presentation_window() const { return presentation_window;	}
+	auto& get_presentation_window() const { return presentation_window; }
 };
 
 }

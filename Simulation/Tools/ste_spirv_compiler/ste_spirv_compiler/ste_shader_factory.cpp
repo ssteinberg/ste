@@ -35,13 +35,12 @@ std::string ste_shader_factory::load_source(const boost::filesystem::path &path)
 
 std::string ste_shader_factory::compile_from_path(const boost::filesystem::path &path,
 												  const boost::filesystem::path &source_path,
-												  ste_shader_type *type) {
+												  shader_blob_header &header) {
 	static const std::vector<std::string> inject_extenions = { "#extension GL_GOOGLE_cpp_style_line_directive : enable" };
 
 	std::string line;
 	std::string src;
-	ste_shader_properties prop{ 0,0 };
-	*type = ste_shader_type::none;
+	header.type = ste_shader_type::none;
 
 	std::vector<std::string> paths{ path.filename().string() };
 
@@ -53,9 +52,9 @@ std::string ste_shader_factory::compile_from_path(const boost::filesystem::path 
 
 	for (int i = 1; std::getline(fs, line); ++i, src += line + "\n") {
 		if (line[0] == '#') {
-			if (parse_type(line, *type))
+			if (parse_type(line, header))
 				line = "";
-			if (parse_parameters(line, prop)) {
+			if (parse_parameters(line, header)) {
 				line += "\n";
 				for (auto &ext : inject_extenions)
 					line += ext + "\n";
@@ -68,7 +67,7 @@ std::string ste_shader_factory::compile_from_path(const boost::filesystem::path 
 
 	fs.close();
 
-	if (*type == ste_shader_type::none || prop.version_major == 0) {
+	if (header.type == ste_shader_type::none || header.properties.version_major == 0) {
 		std::cerr << path.string() << ": Unknown type or version" << std::endl;
 		throw std::exception((std::string(__FILE__) + ":" + std::to_string(__LINE__)).c_str());
 	}
@@ -91,27 +90,27 @@ std::string ste_shader_factory::parse_directive(const std::string &source, const
 	return source.substr(it, end - it);
 }
 
-bool ste_shader_factory::parse_type(std::string &line, ste_shader_type &type) {
+bool ste_shader_factory::parse_type(std::string &line, shader_blob_header &header) {
 	std::string::size_type it = 0, end;
 
 	std::string type_name = parse_directive(line, "#type", it, end);
 	ste_shader_type t;
 	if ((t = shader_type_from_type_string(type_name)) != ste_shader_type::none) {
-		type = t;
+		header.type = t;
 		return true;
 	}
 
 	return false;
 }
 
-bool ste_shader_factory::parse_parameters(std::string &line, ste_shader_properties &prop) {
+bool ste_shader_factory::parse_parameters(std::string &line, shader_blob_header &header) {
 	std::string::size_type it = 0, end;
 
 	std::string version = parse_directive(line, "#version", it, end);
 	if (version.length() >= 3) {
 		long lver = std::strtol(version.c_str(), nullptr, 10);
-		prop.version_major = lver / 100;
-		prop.version_minor = (lver - prop.version_major * 100) / 10;
+		header.properties.version_major = lver / 100;
+		header.properties.version_minor = (lver - header.properties.version_major * 100) / 10;
 
 		return true;
 	}
@@ -248,14 +247,16 @@ bool ste_shader_factory::compile_shader(const boost::filesystem::path &path,
 										const boost::filesystem::path &source_path,
 										const boost::filesystem::path &glslang_path,
 										const boost::filesystem::path &shader_binary_output_path,
-										const boost::filesystem::path &temp_path) {
-	ste_shader_type type;
+										const boost::filesystem::path &temp_path,
+										shader_blob_header &out) {
+	out = {};
+	out.magic = shader_blob_header().magic;
 
 	auto shader_name = path.stem();
-	auto src = compile_from_path(path, source_path, &type);
+	auto src = compile_from_path(path, source_path, out);
 	std::string temp_extension;
 
-	switch (type) {
+	switch (out.type) {
 	case ste_shader_type::compute_program:
 		temp_extension = ".comp";
 		break;
@@ -293,8 +294,11 @@ bool ste_shader_factory::compile_shader(const boost::filesystem::path &path,
 	}
 
 	// GLSL -> SPIR-v
-	std::string cmd = glslang_path.string() + " -V -o \"" + out_path.string() + "\" \"" + temp_file_path.string() + "\"";
+	std::string cmd = glslang_path.string() + " -V -t -o \"" + 
+		out_path.string() + "\" \"" + temp_file_path.string() + "\"";
 	auto ret = system(cmd.c_str());
+
+	boost::filesystem::remove(temp_file_path);
 
 	return ret == 0;
 }

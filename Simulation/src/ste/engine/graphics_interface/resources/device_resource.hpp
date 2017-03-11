@@ -44,7 +44,7 @@ public:
 	template <typename ... Args>
 	device_resource(const ste_context &ctx,
 					Args&&... args)
-		: device_resource(ctor(), ctx, T(ctx.presentation_device().device(), std::forward<Args>(args)...))
+		: device_resource(ctor(), ctx, T(ctx.device().logical_device(), std::forward<Args>(args)...))
 	{}
 	~device_resource() noexcept {}
 
@@ -52,8 +52,8 @@ public:
 	auto& get_underlying_memory() const { return *this->allocation.get_memory(); }
 	bool has_private_underlying_memory() const { return allocation.is_private_allocation(); }
 
-	operator T() { return resource; }
-	operator T() const { return resource; }
+	operator T&() { return get(); }
+	operator const T&() const { return get(); }
 
 	T& get() { return resource; }
 	T& get() const { return resource; }

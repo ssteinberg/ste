@@ -25,5 +25,13 @@ public:
 	device_memory_allocation_failed() : Base("") {}
 };
 
+class device_memory_no_supported_heap_exception : public device_memory_exception {
+	using Base = device_memory_exception;
+
+public:
+	using Base::Base;
+	device_memory_no_supported_heap_exception() : Base("") {}
+};
+
 }
 }

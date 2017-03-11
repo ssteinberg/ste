@@ -33,7 +33,9 @@ public:
 
 	using gl_device_t = GL::ste_device;
 	using gl_context_t = GL::ste_gl_context;
-	using storage = typename engine_types::storage_protocol;
+	using storage_protocol = typename engine_types::storage_protocol;
+
+	static constexpr std::size_t cache_quota_size_bytes = 1024 * 1024 * 256;
 
 private:
 	typename engine_types::task_scheduler_t engine_task_scheduler;
@@ -41,7 +43,7 @@ private:
 
 public:
 	ste_engine_impl()
-		: engine_cache(storage::cache_dir_path(), 1024 * 1024 * 256)
+		: engine_cache(storage().cache_dir_path(), cache_quota_size_bytes)
 	{}
 	~ste_engine_impl() noexcept {}
 
@@ -58,6 +60,7 @@ public:
 	auto &task_scheduler() const { return engine_task_scheduler; }
 	auto &cache() { return engine_cache; }
 	auto &cache() const { return engine_cache; }
+	storage_protocol storage() const { return storage_protocol(); }
 };
 
 using ste_engine = ste_engine_impl<

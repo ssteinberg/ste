@@ -29,7 +29,7 @@ struct ste_gl_context_creation_parameters {
 	std::vector<const char*> additional_instance_layers;
 };
 
-struct ste_gl_presentation_device_creation_parameters {
+struct ste_gl_device_creation_parameters {
 	vk_physical_device_descriptor physical_device;
 	VkPhysicalDeviceFeatures requested_device_features{ 0 };
 	std::vector<const char*> additional_device_extensions;
