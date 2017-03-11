@@ -51,21 +51,55 @@ public:
 	ste_window(ste_window &&) = default;
 	ste_window &operator=(ste_window &&) = default;
 
+	/**
+	*	@brief	Polls windowing system events.
+	*			Note this method polls events for ALL application windows.
+	*/
+	static void poll_events() {
+		glfwPollEvents();
+	}
+
+	/**
+	*	@brief	Sets window title
+	*	
+	*	@param title	nul-termianted new window title
+	*/
 	void set_title(const char * title) { glfwSetWindowTitle(window, title); }
+
+	/**
+	*	@brief	Returns window position, in screen coordinates.
+	*	
+	*	@return Distance to the upper-left corner of the client area
+	*/
 	glm::i32vec2 get_window_position() const {
 		glm::i32vec2 ret;
 		glfwGetWindowPos(window, &ret.x, &ret.y);
 		return ret;
 	}
+
+	/**
+	*	@brief	Set window position, in screen coordinates.
+	*	
+	*	@param p	Point to move window's upper-left corner of client area to
+	*/
 	void set_position(const glm::i32vec2 &p) {
 		glfwSetWindowPos(window, p.x, p.y);
 	}
 
+	/**
+	*	@brief	Returns the client area size of the window, in screen coordinates
+	*/
 	glm::i32vec2 get_window_client_area_size() const {
 		glm::i32vec2 ret;
 		glfwGetWindowSize(window, &ret.x, &ret.y);
 		return ret;
 	}
+
+	/**
+	*	@brief	Set window client are size
+	*	
+	*	@param size	Size of the client area in screen coordinates
+	*/
 	void set_size(const glm::i32vec2 &size) {
 		glfwSetWindowSize(window, size.x, size.y);
 	}

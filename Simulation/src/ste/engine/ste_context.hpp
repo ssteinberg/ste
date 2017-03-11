@@ -40,10 +40,6 @@ public:
 	ste_context_impl &operator=(ste_context_impl &&) = default;
 	ste_context_impl &operator=(const ste_context_impl &) = delete;
 
-	void tick() {
-		gl_device.tick();
-	}
-
 	auto &engine() const { return engine_reference; }
 	auto &gl() const { return gl_context; }
 	auto &presentation_device() const { return gl_device; }

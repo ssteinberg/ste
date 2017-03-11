@@ -2,7 +2,6 @@
 #include <stdafx.hpp>
 
 #include <ste.hpp>
-#include <ste_presentation_device.hpp>
 #include <device_buffer.hpp>
 #include <device_buffer_sparse.hpp>
 #include <device_image.hpp>
@@ -116,12 +115,12 @@ int main()
 	 *	Main loop
 	 */
 	for (;;) {
+		engine.tick();
+		window.poll_events();
+
 		if (window.should_close()) {
 			break;
 		}
-
-		engine.tick();
-		ctx.tick();
 	}
 
 	return 0;

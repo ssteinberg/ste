@@ -9,7 +9,7 @@
 #include <lru_cache.hpp>
 #include <ste_engine_storage_protocol.hpp>
 
-#include <ste_presentation_device.hpp>
+#include <ste_device.hpp>
 #include <ste_gl_context.hpp>
 #include <ste_gl_device_queues_protocol.hpp>
 #include <ste_gl_device_memory_allocator.hpp>
@@ -31,7 +31,7 @@ class ste_engine_impl {
 public:
 	using engine_types = Types;
 
-	using gl_device_t = GL::ste_presentation_device;
+	using gl_device_t = GL::ste_device;
 	using gl_context_t = GL::ste_gl_context;
 	using storage = typename engine_types::storage_protocol;
 

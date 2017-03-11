@@ -387,6 +387,7 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resources\device_resource.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resources\device_resource_allocation_policy.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resources\device_resource_memory_allocator.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resources\device_shader_module.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\ste_gl_context_creation_parameters.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\ste_gl_context.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\ste_gl_debug_callback.hpp" />
@@ -897,7 +898,7 @@
     <ClInclude Include="Simulation\src\ste\math_additions\transformations\quaternion_tangent_frame.hpp" />
     <ClInclude Include="Simulation\src\ste\math_additions\transformations\reversed_perspective.hpp" />
     <ClInclude Include="Simulation\src\ste\ste.hpp" />
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\presentation_device\ste_presentation_device.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\presentation_device\ste_device.hpp" />
     <ClInclude Include="Simulation\src\ste\stl_extensions\concurrency\concurrent_pointer_recycler.hpp" />
     <ClInclude Include="Simulation\src\ste\stl_extensions\concurrency\concurrent_queue.hpp" />
     <ClInclude Include="Simulation\src\ste\stl_extensions\concurrency\concurrent_unordered_map.hpp" />

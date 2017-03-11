@@ -22,9 +22,9 @@
 namespace StE {
 namespace GL {
 
-class ste_presentation_device {
+class ste_device {
 public:
-	using queues_and_surface_recreate_signal_type = signal<const ste_presentation_device*>;
+	using queues_and_surface_recreate_signal_type = signal<const ste_device*>;
 
 private:
 	using queue_t = std::unique_ptr<ste_gl_device_queue>;
@@ -32,9 +32,10 @@ private:
 private:
 	const ste_gl_presentation_device_creation_parameters parameters;
 	const std::vector<ste_gl_queue_descriptor> queue_descriptors;
-	vk_logical_device presentation_device;
-	ste_presentation_surface presentation_surface;
+	vk_logical_device logical_device;
+	const std::unique_ptr<ste_presentation_surface> presentation_surface{ nullptr };
 
+	std::uint32_t command_buffers_count{ 0 };
 	std::vector<queue_t> device_queues;
 
 	queues_and_surface_recreate_signal_type queues_and_surface_recreate_signal;
@@ -50,6 +51,10 @@ private:
 										 const VkPhysicalDeviceFeatures &requested_features,
 										 const std::vector<ste_gl_queue_descriptor> &queue_descriptors,
 										 std::vector<const char*> device_extensions = {}) {
+		if (queue_descriptors.size() == 0) {
+			throw ste_engine_exception("queue_descriptors is empty");
+		}
+
 		// Add required extensions
 		device_extensions.push_back("VK_KHR_swapchain");
 
@@ -91,10 +96,17 @@ private:
 //	}
 
 	void create_queues() {
+		if (presentation_surface != nullptr) {
+			// For devices with a presentation surface, command buffers count is exactly the amount of swap chain images.
+			// For compute only devices, command buffers count is selected by the consumer.
+			command_buffers_count = presentation_surface->swap_chain_images_count();
+			assert(command_buffers_count);
+		}
+
 		std::vector<queue_t> q;
 		q.reserve(queue_descriptors.size());
 		for (auto &d : queue_descriptors)
-			q.push_back(std::make_unique<queue_t::element_type>(presentation_device, 
+			q.push_back(std::make_unique<queue_t::element_type>(logical_device, 
 																d, 
 																get_command_buffers_count()));
 
@@ -107,7 +119,7 @@ private:
 		device_queues.clear();
 
 		// Recreate swap chain
-		presentation_surface.recreate_swap_chain();
+		presentation_surface->recreate_swap_chain();
 		// And queues
 		create_queues();
 
@@ -117,76 +129,105 @@ private:
 
 public:
 	/**
-	*	@brief	Creates the presentation device.
+	*	@brief	Creates the device with presentation surface and capabilities
 	*
-	*	@param parameters		Device creation parameters
+	*	@param parameters			Device creation parameters
+	*	@param queue_descriptors	Queues descriptors. Influences amount and families of created device queues.
+	*	@param gl_ctx				Context
+	*	@param presentation_window	Presentation window used for rendering
 	*/
-	ste_presentation_device(const ste_gl_presentation_device_creation_parameters &parameters,
-							const std::vector<ste_gl_queue_descriptor> &queue_descriptors,
-							const ste_gl_context &gl_ctx,
-							const ste_window &presentation_window)
+	ste_device(const ste_gl_presentation_device_creation_parameters &parameters,
+			   const std::vector<ste_gl_queue_descriptor> &queue_descriptors,
+			   const ste_gl_context &gl_ctx,
+			   const ste_window &presentation_window)
 		: parameters(parameters),
 		queue_descriptors(queue_descriptors),
-		presentation_device(create_vk_virtual_device(parameters.physical_device,
-													 parameters.requested_device_features,
-													 queue_descriptors,
-													 parameters.additional_device_extensions)),
-		presentation_surface(parameters, &presentation_device, presentation_window, gl_ctx.instance())
+		logical_device(create_vk_virtual_device(parameters.physical_device,
+												parameters.requested_device_features,
+												queue_descriptors,
+												parameters.additional_device_extensions)),
+		presentation_surface(std::make_unique<ste_presentation_surface>(parameters,
+																		&logical_device,
+																		presentation_window,
+																		gl_ctx.instance()))
 	{
 		// Create queues
 		create_queues();
 	}
-	~ste_presentation_device() noexcept {}
-
-	ste_presentation_device(ste_presentation_device &&) = default;
-	ste_presentation_device &operator=(ste_presentation_device &&) = default;
-
 	/**
-	*	@brief	Polls windowing system events. Will resize/recreate swap chain if necessary.
-	*			Might stall till a command buffer becomes available.
+	*	@brief	Creates the device without presentation capabilities ("compute-only" device)
+	*
+	*	@param parameters			Device creation parameters
+	*	@param queue_descriptors	Queues descriptors. Influences amount and families of created device queues.
+	*	@param gl_ctx				Context
+	*	@param command_buffers_count Count of command buffers to create in each queue
 	*/
-	void tick() {
-		glfwPollEvents();
-
-		bool recreate = presentation_surface.test_and_clear_recreate_flag();
-		if (recreate) {
-			// Recreate swap chain and queues
-			recreate_swap_chain();
+	ste_device(const ste_gl_presentation_device_creation_parameters &parameters,
+			   const std::vector<ste_gl_queue_descriptor> &queue_descriptors,
+			   const ste_gl_context &gl_ctx,
+			   std::uint32_t command_buffers_count = 1)
+		: parameters(parameters),
+		queue_descriptors(queue_descriptors),
+		logical_device(create_vk_virtual_device(parameters.physical_device,
+												parameters.requested_device_features,
+												queue_descriptors,
+												parameters.additional_device_extensions)),
+		command_buffers_count(command_buffers_count)
+	{
+		if (command_buffers_count == 0) {
+			throw ste_engine_exception("command_buffers_count is zero");
 		}
+
+		// Create queues
+		create_queues();
 	}
+	~ste_device() noexcept {}
+
+	ste_device(ste_device &&) = default;
+	ste_device &operator=(ste_device &&) = default;
 
 	/**
 	*	@brief	Enqueues a task on the main queue to acquire next presentation image and resize/recreate swap chain if necessary.
 	*			The task will save the presentation image information in the thread_local variable, which will be consumed on 
 	*			next call to present.
+	*			
+	*			Only available for presentation-capable devices.
 	*
-	*	@param queue						The queue to use for presenatation
+	*	@param queue						The device queue to use for presenatation
 	*	@param presentation_image_ready_semaphore	Semaphore to be signaled when next presentation image is ready to be drawn to.
 	*/
 	void acquire_presentation_image(const queue_t &queue,
 									const vk_semaphore &presentation_image_ready_semaphore) {
 		queue->enqueue<void>([this, &presentation_image_ready_semaphore](std::uint32_t index) {
 			// Acquire next presenation image
-			acquired_presentation_image = presentation_surface.acquire_next_swapchain_image(presentation_image_ready_semaphore);
+			acquired_presentation_image = presentation_surface->acquire_next_swapchain_image(presentation_image_ready_semaphore);
 		});
 	}
 
 	/**
 	*	@brief	Presents the presentation image.
+	*			Might stall if swap chain recreation is required.
+	*			
+	*			Only available for presentation-capable devices.
 	*
-	*	@param queue						The queue to use for presenatation
+	*	@param queue						The device queue to use for presenatation
 	*	@param rendering_ready_semaphore	Semaphore to be signaled when rendering to the presentation image is complete.
 	*/
 	void present(const queue_t &queue,
 				 const vk_semaphore &rendering_ready_semaphore) {
 		queue->enqueue<void>([this, &queue, &rendering_ready_semaphore](std::uint32_t index) {
 			if (acquired_presentation_image.image != nullptr) {
-				this->presentation_surface.present(acquired_presentation_image.image_index,
-												   queue->device_queue(),
-												   rendering_ready_semaphore);
+				this->presentation_surface->present(acquired_presentation_image.image_index,
+													queue->device_queue(),
+													rendering_ready_semaphore);
 				acquired_presentation_image = {};
 			}
 		});
+
+		if (presentation_surface->test_and_clear_recreate_flag()) {
+			// Recreate swap chain and queues
+			recreate_swap_chain();
+		}
 	}
 
 	auto& get_queues_and_surface_recreate_signal() const { return queues_and_surface_recreate_signal; }
@@ -194,9 +235,9 @@ public:
 	auto& get_queue(int idx) const { return *device_queues[idx]; }
 	auto& get_queue_descriptors() const { return queue_descriptors; }
 
-	std::uint32_t get_command_buffers_count() const { return presentation_surface.swap_chain_images_count(); }
+	std::uint32_t get_command_buffers_count() const { return command_buffers_count; }
 
-	auto& device() const { return presentation_device; }
+	auto& device() const { return logical_device; }
 };
 
 }
