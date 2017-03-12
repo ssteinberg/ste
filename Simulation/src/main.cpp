@@ -112,7 +112,7 @@ int main()
 		mmap->flush_ranges({{0,2}});
 	}
 
-	ste_resource<StE::GL::device_pipeline_shader_stage> stage(ctx, std::string("fxaa.frag"));
+	ste_resource<StE::GL::device_pipeline_shader_stage> stage(ste_resource_dont_defer(), ctx, std::string("fxaa.frag"));
 	StE::GL::device_pipeline_shader_stage(ctx, std::string("text_distance_map_contour.geom"));
 	StE::GL::device_pipeline_shader_stage(ctx, std::string("deferred_compose.frag"));
 	StE::GL::device_pipeline_shader_stage(ctx, std::string("shadow_cubemap.geom"));

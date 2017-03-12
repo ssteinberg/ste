@@ -484,6 +484,7 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\synchronization\vk_semaphore.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\vk_format_type_traits.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\resource\ste_resource.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\resource\ste_resource_creation_policy.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\resource\ste_resource_creator.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\resource\ste_resource_impl.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\resource\ste_resource_traits.hpp" />

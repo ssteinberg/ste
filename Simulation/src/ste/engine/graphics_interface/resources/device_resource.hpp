@@ -16,7 +16,7 @@ namespace StE {
 namespace GL {
 
 template <typename T, class allocation_policy>
-class device_resource : ste_resource_load_async_trait {
+class device_resource : ste_resource_deferred_create_trait {
 	static_assert(std::is_base_of<vk_resource, T>::value,
 				  "T must be a vk_resource derived type");
 
