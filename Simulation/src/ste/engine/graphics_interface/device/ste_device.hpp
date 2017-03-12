@@ -18,6 +18,8 @@
 
 #include <memory>
 #include <vector>
+#include <functional>
+#include <function_traits.hpp>
 
 namespace StE {
 namespace GL {
@@ -99,16 +101,17 @@ private:
 		if (presentation_surface != nullptr) {
 			// For devices with a presentation surface, command buffers count is exactly the amount of swap chain images.
 			// For compute only devices, command buffers count is selected by the consumer.
-			command_buffers_count = presentation_surface->swap_chain_images_count();
+			command_buffers_count = presentation_surface->get_swap_chain_images().size();
 			assert(command_buffers_count);
 		}
 
 		std::vector<queue_t> q;
 		q.reserve(queue_descriptors.size());
-		for (auto &d : queue_descriptors)
+		for (int idx=0; idx<queue_descriptors.size(); ++idx)
 			q.push_back(std::make_unique<queue_t::element_type>(device,
-																d,
-																get_command_buffers_count()));
+																queue_descriptors[idx],
+																get_command_buffers_count(),
+																idx));
 
 		device_queues = std::move(q);
 	}
@@ -117,6 +120,7 @@ private:
 		// Destroy queues, this will wait for all queue threads and then wait for all queues to finish processing,
 		// allowing us to recreate the swap chain and queue safely.
 		device_queues.clear();
+		device.wait_idle();
 
 		// Recreate swap chain
 		presentation_surface->recreate_swap_chain();
@@ -193,21 +197,62 @@ public:
 	ste_device &operator=(ste_device &&) = default;
 
 	/**
+	*	@brief	Prepares the next command buffer
+	*
+	*	@throws vk_exception	On Vulkan error
+	*	
+	*	@param queue_idx		The device queue index to use for presenatation
+	*/
+	void acquire_next_command_buffer(int queue_idx) {
+		const auto& queue = device_queues[queue_idx];
+		queue->acquire_next_command_buffer();
+	}
+
+	/**
 	*	@brief	Enqueues a task on the main queue to acquire next presentation image and resize/recreate swap chain if necessary.
 	*			The task will save the presentation image information in the thread_local variable, which will be consumed on
 	*			next call to present.
 	*
 	*			Only available for presentation-capable devices.
 	*
-	*	@param queue						The device queue to use for presenatation
+	*	@param queue_idx		The device queue index to use for presenatation
 	*	@param presentation_image_ready_semaphore	Semaphore to be signaled when next presentation image is ready to be drawn to.
 	*/
-	void acquire_presentation_image(const queue_t &queue,
-									const vk_semaphore &presentation_image_ready_semaphore) {
+	void acquire_presentation_image(int queue_idx,
+									const vk_semaphore &presentation_image_ready_semaphore) const {
+		const auto& queue = device_queues[queue_idx];
 		queue->enqueue<void>([this, &presentation_image_ready_semaphore](std::uint32_t index) {
 			// Acquire next presenation image
 			acquired_presentation_image = presentation_surface->acquire_next_swapchain_image(presentation_image_ready_semaphore);
 		});
+	}
+
+	/**
+	*	@brief	Enqueues a task on the queue's thread
+	*
+	*	@param	lambda	Lambda expression
+	*/
+	template <typename L>
+	auto enqueue(int queue_idx, L &&lambda) {
+		using lambda_result_t = typename function_traits<L>::result_t;
+
+		const auto& queue = device_queues[queue_idx];
+		return queue->enqueue<lambda_result_t>(std::forward<L>(lambda));
+	}
+
+	/**
+	*	@brief	Enqueues a submit task that submits the acquired command buffer to the queue
+	*
+	*	@param queue_idx		The device queue index to use for presenatation
+	*	@param wait_semaphores		See vk_queue::submit
+	*	@param signal_semaphores	See vk_queue::submit
+	*/
+	auto submit(int queue_idx,
+				const std::vector<std::pair<vk_semaphore*, VkPipelineStageFlags>> &wait_semaphores,
+				const std::vector<vk_semaphore*> &signal_semaphores) {
+		const auto& queue = device_queues[queue_idx];
+		return queue->submit(wait_semaphores,
+							 signal_semaphores);
 	}
 
 	/**
@@ -217,16 +262,17 @@ public:
 	*			Only available for presentation-capable devices.
 	*
 	*	@throws vk_exception	On Vulkan error during swap chain recreation
+	*	@throws ste_engine_exception	On internal error during swap chain recreation
 	*
-	*	@param queue						The device queue to use for presenatation
+	*	@param queue_idx		The device queue index to use for presenatation
 	*	@param rendering_ready_semaphore	Semaphore to be signaled when rendering to the presentation image is complete.
 	*/
-	void present(const queue_t &queue,
+	void present(int queue_idx,
 				 const vk_semaphore &rendering_ready_semaphore) {
-		queue->enqueue<void>([this, &queue, &rendering_ready_semaphore](std::uint32_t index) {
+		this->enqueue(queue_idx, [this, &rendering_ready_semaphore](std::uint32_t index) {
 			if (acquired_presentation_image.image != nullptr) {
 				this->presentation_surface->present(acquired_presentation_image.image_index,
-													queue->device_queue(),
+													ste_gl_device_queue::thread_queue(),
 													rendering_ready_semaphore);
 				acquired_presentation_image = {};
 			}
@@ -240,6 +286,7 @@ public:
 
 	auto& get_queues_and_surface_recreate_signal() const { return queues_and_surface_recreate_signal; }
 
+	auto& get_surface() const { return *presentation_surface; }
 	auto& get_queue(int idx) const { return *device_queues[idx]; }
 	auto& get_queue_descriptors() const { return queue_descriptors; }
 

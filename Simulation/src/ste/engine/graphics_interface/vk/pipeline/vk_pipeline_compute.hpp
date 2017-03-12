@@ -25,7 +25,7 @@ public:
 	vk_pipeline_compute(const vk_logical_device &device,
 						const vk_shader &shader_module,
 						const vk_pipeline_layout &layout,
-						const optional<vk_pipeline_cache> &cache = none) : device(device) {
+						const vk_pipeline_cache *cache = nullptr) : device(device) {
 		auto stage_info = shader_module.shader_stage_create_info(VK_SHADER_STAGE_COMPUTE_BIT);
 
 		VkComputePipelineCreateInfo create_info = {};
@@ -39,7 +39,7 @@ public:
 
 		VkPipeline pipeline;
 		vk_result res = vkCreateComputePipelines(device, 
-												 cache ? cache.get().get_pipeline_cache() : VK_NULL_HANDLE, 
+												 cache!=nullptr ? cache->get_pipeline_cache() : VK_NULL_HANDLE, 
 												 1, 
 												 &create_info, 
 												 nullptr, 

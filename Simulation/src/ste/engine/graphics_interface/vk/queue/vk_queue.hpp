@@ -63,20 +63,20 @@ public:
 		std::vector<VkPipelineStageFlags> stages;
 		std::vector<VkSemaphore> signal;
 
-		cb.reserve(command_buffers.size());
-		for (auto &e : command_buffers)
-			cb.push_back(*e);
+		cb.resize(command_buffers.size());
+		for (int i=0;i<command_buffers.size();++i)
+			cb[i] = *command_buffers[i];
 
-		wait.reserve(wait_semaphores.size());
-		stages.reserve(wait_semaphores.size());
-		for (auto &e : wait_semaphores) {
-			wait.push_back(*e.first);
-			stages.push_back(e.second);
+		wait.resize(wait_semaphores.size());
+		stages.resize(wait_semaphores.size());
+		for (int i = 0; i<wait_semaphores.size(); ++i) {
+			wait[i] = *wait_semaphores[i].first;
+			stages[i] = wait_semaphores[i].second;
 		}
 
-		signal.reserve(signal_semaphores.size());
-		for (auto &e : signal_semaphores)
-			signal.push_back(*e);
+		signal.resize(signal_semaphores.size());
+		for (int i = 0; i<signal_semaphores.size(); ++i)
+			signal[i] = *signal_semaphores[i];
 
 		VkSubmitInfo info = {};
 		info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;

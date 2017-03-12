@@ -5,6 +5,15 @@
 #include <device_buffer.hpp>
 #include <device_buffer_sparse.hpp>
 #include <device_pipeline_shader_stage.hpp>
+
+#include <vk_pipeline_graphics.hpp>
+#include <vk_framebuffer.hpp>
+#include <vk_command_recorder.hpp>
+#include <vk_cmd_begin_render_pass.hpp>
+#include <vk_cmd_end_render_pass.hpp>
+#include <vk_cmd_bind_pipeline.hpp>
+#include <vk_cmd_draw.hpp>
+
 #include <ste_resource.hpp>
 
 using namespace StE;
@@ -112,18 +121,103 @@ int main()
 		mmap->flush_ranges({{0,2}});
 	}
 
-	ste_resource<StE::GL::device_pipeline_shader_stage> stage(ste_resource_dont_defer(), ctx, std::string("fxaa.frag"));
-	StE::GL::device_pipeline_shader_stage(ctx, std::string("text_distance_map_contour.geom"));
-	StE::GL::device_pipeline_shader_stage(ctx, std::string("deferred_compose.frag"));
-	StE::GL::device_pipeline_shader_stage(ctx, std::string("shadow_cubemap.geom"));
-	StE::GL::device_pipeline_shader_stage(ctx, std::string("shadow_directional.geom"));
-	StE::GL::device_pipeline_shader_stage(ctx, std::string("volumetric_scattering_scatter.comp"));
-	stage.get();
+	auto swapchain_images_count = device.get_surface().get_swap_chain_images().size();
+
+	// Shader stages
+	ste_resource<StE::GL::device_pipeline_shader_stage> vert_shader_stage(ctx, std::string("temp.vert"));
+	ste_resource<StE::GL::device_pipeline_shader_stage> frag_shader_stage(ctx, std::string("temp.frag"));
+
+	// Viewport
+	glm::u32vec2 swapchain_size = device.get_surface().size();
+	VkViewport viewport = { 0, 0,
+		static_cast<float>(swapchain_size.x), static_cast<float>(swapchain_size.y),
+		1.f, 0.f };
+	VkRect2D scissor = { { 0,0 },{ swapchain_size.x, swapchain_size.y } };
+
+	// Swapchain attachment
+	GL::vk_render_pass_attachment swapchain_attachment = GL::vk_render_pass_attachment::clear_and_store(device.get_surface().format(),
+																										VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+	VkClearValue swapchain_attachment_clear_value = {};
+	GL::vk_blend_op_descriptor attachment0_blend_op = GL::vk_blend_op_descriptor();
+
+	// Renderpass
+	GL::vk_render_pass_subpass_descriptor presentation_subpass0({ VkAttachmentReference{ 0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } });
+	GL::vk_render_pass_subpass_dependency presentation_subpass0_dependency(VK_SUBPASS_EXTERNAL,
+																		   VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+																		   0,
+																		   0,
+																		   VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+																		   VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT);
+	GL::vk_render_pass presentation_renderpass(device.logical_device(),
+	{ swapchain_attachment },
+	{ presentation_subpass0 },
+	{ presentation_subpass0_dependency });
+
+	// Swapchain presentation framebuffers
+	std::vector<GL::vk_framebuffer> presentation_framebuffers;
+	std::vector<GL::vk_semaphore> swapchain_image_ready_semaphore;
+	std::vector<GL::vk_semaphore> rendering_finished_semaphore;
+	swapchain_image_ready_semaphore.reserve(swapchain_images_count);
+	rendering_finished_semaphore.reserve(swapchain_images_count);
+	presentation_framebuffers.reserve(swapchain_images_count);
+	for (auto i = 0; i < swapchain_images_count; ++i) {
+		presentation_framebuffers.emplace_back(device.logical_device(),
+											   presentation_renderpass,
+											   std::vector<VkImageView>{ device.get_surface().get_swap_chain_images()[i].view },
+											   swapchain_size);
+		swapchain_image_ready_semaphore.emplace_back(device.logical_device());
+		rendering_finished_semaphore.emplace_back(device.logical_device());
+	}
+
+	auto recreate_queues_connection = std::make_shared<GL::ste_device::queues_and_surface_recreate_signal_type::connection_type>([&](const GL::ste_device*) {
+		swapchain_images_count = device.get_surface().get_swap_chain_images().size();
+
+		swapchain_image_ready_semaphore.reserve(swapchain_images_count);
+		rendering_finished_semaphore.reserve(swapchain_images_count);
+		presentation_framebuffers.reserve(swapchain_images_count);
+		for (auto i = 0; i < swapchain_images_count; ++i) {
+			presentation_framebuffers.emplace_back(device.logical_device(),
+												   presentation_renderpass,
+												   std::vector<VkImageView>{ device.get_surface().get_swap_chain_images()[i].view },
+												   swapchain_size);
+			swapchain_image_ready_semaphore.emplace_back(device.logical_device());
+			rendering_finished_semaphore.emplace_back(device.logical_device());
+		}
+	});
+	device.get_queues_and_surface_recreate_signal().connect(recreate_queues_connection);
+
+	// Pipeline layout
+	GL::vk_pipeline_layout pipeline_layout(device.logical_device(), {}, {});
+
+	// Graphics pipeline
+	GL::vk_pipeline_graphics pipeline(device.logical_device(), 
+									  { vert_shader_stage->graphics_pipeline_stage_descriptor(), 
+									  	frag_shader_stage->graphics_pipeline_stage_descriptor() },
+									  pipeline_layout,
+									  presentation_renderpass,
+									  0,
+									  viewport,
+									  scissor,
+									  {},
+									  VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
+									  GL::vk_rasterizer_op_descriptor(VK_CULL_MODE_NONE, VK_FRONT_FACE_COUNTER_CLOCKWISE),
+	                                  GL::vk_depth_op_descriptor(VK_COMPARE_OP_GREATER, false),
+									  { attachment0_blend_op },
+									  glm::vec4{ .0f });
+
+//	ste_resource<StE::GL::device_pipeline_shader_stage> stage(ste_resource_dont_defer(), ctx, std::string("fxaa.frag"));
+//	StE::GL::device_pipeline_shader_stage(ctx, std::string("text_distance_map_contour.geom"));
+//	StE::GL::device_pipeline_shader_stage(ctx, std::string("deferred_compose.frag"));
+//	StE::GL::device_pipeline_shader_stage(ctx, std::string("shadow_cubemap.geom"));
+//	StE::GL::device_pipeline_shader_stage(ctx, std::string("shadow_directional.geom"));
+//	StE::GL::device_pipeline_shader_stage(ctx, std::string("volumetric_scattering_scatter.comp"));
+//	stage.get();
 
 
 	/*
 	 *	Main loop
 	 */
+	int tick = 0;
 	for (;;) {
 		engine.tick();
 		window.poll_events();
@@ -131,7 +225,44 @@ int main()
 		if (window.should_close()) {
 			break;
 		}
+
+		// Acquire a command buffer for this frame
+		device.acquire_next_command_buffer(0);
+		// Acquire next presentation image
+		device.acquire_presentation_image(0, swapchain_image_ready_semaphore[tick % swapchain_images_count]);
+
+		// Record the command buffer
+		device.enqueue(0, [&](std::uint32_t buffer_idx) {
+			auto& command_buffer = GL::ste_gl_device_queue::thread_command_buffers()[buffer_idx];
+			auto& presentation_image = GL::ste_device::next_presentation_image();
+			assert(presentation_image.image != nullptr);
+
+			{
+				GL::vk_command_recorder recorder(command_buffer);
+
+				recorder
+					<< GL::vk_cmd_begin_render_pass(presentation_framebuffers[presentation_image.image_index],
+													presentation_renderpass,
+													{ 0,0 },
+													swapchain_size,
+													{ swapchain_attachment_clear_value })
+					<< GL::vk_cmd_bind_pipeline(pipeline)
+					<< GL::vk_cmd_draw(3, 1)
+					<< GL::vk_cmd_end_render_pass();
+			}
+		});
+
+		// Submit command buffer
+		device.submit(0, 
+		{ std::make_pair(&swapchain_image_ready_semaphore[tick % swapchain_images_count], VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT) },
+		{ &rendering_finished_semaphore[tick % swapchain_images_count] });
+		// Present
+		device.present(0, rendering_finished_semaphore[tick % swapchain_images_count]);
+
+		++tick;
 	}
+
+	device.logical_device().wait_idle();
 
 	return 0;
 }

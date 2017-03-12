@@ -116,8 +116,8 @@ private:
 								   std::uint64_t alignment,
 								   bool private_memory) {
 		allocation_t allocation;
-		for (auto &h : heap.chunks) {
-			allocation = h->allocate(size, alignment, private_memory);
+		for (auto it = heap.chunks.begin(); it != heap.chunks.end(); ++it) {
+			allocation = (*it)->allocate(size, alignment, private_memory);
 			if (allocation) {
 				// On successful allocation, prune the heap
 				prune_heap(heap);
@@ -394,10 +394,11 @@ public:
 
 		{
 			std::unique_lock<std::mutex> lock(heap.m);
-			for (auto &chunk : heap.chunks)
-				total_commited_memory += chunk->get_heap_size();
-			for (auto &chunk : heap.private_chunks)
-				total_commited_memory += chunk->get_heap_size();
+
+			for (auto it = heap.chunks.begin(); it != heap.chunks.end(); ++it)
+				total_commited_memory += (*it)->get_heap_size();
+			for (auto it = heap.private_chunks.begin(); it != heap.private_chunks.end(); ++it)
+				total_commited_memory += (*it)->get_heap_size();
 		}
 
 		return total_commited_memory;
@@ -436,10 +437,11 @@ public:
 
 		{
 			std::unique_lock<std::mutex> lock(heap.m);
-			for (auto &chunk : heap.chunks)
-				total_allocated_memory += chunk->get_allocated_bytes();
-			for (auto &chunk : heap.private_chunks)
-				total_allocated_memory += chunk->get_allocated_bytes();
+
+			for (auto it = heap.chunks.begin(); it != heap.chunks.end(); ++it)
+				total_allocated_memory += (*it)->get_allocated_bytes();
+			for (auto it = heap.private_chunks.begin(); it != heap.private_chunks.end(); ++it)
+				total_allocated_memory += (*it)->get_allocated_bytes();
 		}
 
 		return total_allocated_memory;

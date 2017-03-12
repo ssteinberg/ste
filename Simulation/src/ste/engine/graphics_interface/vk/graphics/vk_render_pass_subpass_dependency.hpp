@@ -21,12 +21,12 @@ private:
 
 public:
 	vk_render_pass_subpass_dependency(std::uint32_t src,
-									  std::uint32_t dst,
 									  VkPipelineStageFlags src_stage,
-									  VkPipelineStageFlags dst_stage,
 									  VkAccessFlags src_access,
+									  std::uint32_t dst,
+									  VkPipelineStageFlags dst_stage,
 									  VkAccessFlags dst_access,
-									  VkDependencyFlags flags)
+									  VkDependencyFlags flags = 0)
 		: src(src),
 		dst(dst),
 		src_stage(src_stage),

@@ -4,6 +4,7 @@
 #pragma once
 
 #include <stdafx.hpp>
+#include <ste_version.hpp>
 
 #include <vk_physical_device_descriptor.hpp>
 #include <vk_result.hpp>

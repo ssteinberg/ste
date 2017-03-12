@@ -107,12 +107,12 @@ public:
 		create(create_info);
 	}
 	vk_pipeline_cache(const vk_logical_device &device, 
-					  const std::vector<const vk_pipeline_cache&> &src) : vk_pipeline_cache(device) {
+					  const std::vector<std::reference_wrapper<const vk_pipeline_cache>> &src) : vk_pipeline_cache(device) {
 		assert(src.size() && "Must provide at least a single source cache");
 
 		std::vector<VkPipelineCache> ids;
 		for (auto &c : src)
-			ids.push_back(c);
+			ids.push_back(c.get());
 		vkMergePipelineCaches(device, *this, ids.size(), &ids[0]);
 	}
 	vk_pipeline_cache(const vk_logical_device &device) : vk_pipeline_cache(device, std::string()) {}
@@ -161,17 +161,17 @@ public:
 	operator VkPipelineCache() const { return get_pipeline_cache(); }
 
 	friend std::ostream& operator<<(std::ostream &stream, const vk_pipeline_cache& cache) {
-		vk_physical_device_descriptor &device_descriptor = cache.device.get_physical_device_descriptor();
+		const vk_physical_device_descriptor &device_descriptor = cache.device.get_physical_device_descriptor();
 
 		// Write header
 		vk_pipeline_cache_header header;
 		header.device_id = device_descriptor.properties.deviceID;
 		header.vendor_id = device_descriptor.properties.vendorID;
 		memcpy(header.pipeline_cache_uuid, device_descriptor.properties.pipelineCacheUUID, header_uuid_size);
-		stream.write(reinterpret_cast<void char*>(&header), sizeof(header));
+		stream.write(reinterpret_cast<const char*>(&header), sizeof(header));
 
 		// Write cache data
-		std::string data = read_raw_cache_data;
+		std::string data = cache.read_raw_cache_data();
 		stream.write(data.data(), data.length());
 
 		return stream;

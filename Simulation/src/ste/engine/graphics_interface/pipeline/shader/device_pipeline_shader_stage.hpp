@@ -16,6 +16,7 @@
 
 #include <string>
 #include <istream>
+#include "vk_pipeline_graphics.hpp"
 
 namespace StE {
 namespace GL {
@@ -128,6 +129,15 @@ public:
 	*/
 	auto vk_shader_stage_create_info() const {
 		return shader.shader_stage_create_info(vk_shader_stage_flag());
+	}
+	/**
+	*	@brief	Retrieve the Vulkan pipeline stage create info for the shader module
+	*/
+	auto graphics_pipeline_stage_descriptor() const {
+		vk_graphics_shader_descriptor desc;
+		desc.stage = vk_shader_stage_flag();
+		desc.shader = &shader;
+		return desc;
 	}
 
 	operator vk_shader&() { return get(); }

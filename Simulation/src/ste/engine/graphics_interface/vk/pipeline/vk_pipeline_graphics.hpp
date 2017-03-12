@@ -15,6 +15,7 @@
 #include <vk_vertex_input_attributes.hpp>
 #include <vk_depth_op_descriptor.hpp>
 #include <vk_blend_op_descriptor.hpp>
+#include <vk_rasterizer_op_descriptor.hpp>
 
 #include <optional.hpp>
 
@@ -47,14 +48,14 @@ public:
 						 const vk_render_pass &render_pass,
 						 std::uint32_t subpass,
 						 const VkViewport &viewport,
+						 const VkRect2D &scissor,
 						 const std::vector<vertex_input_descriptor> &vertex_attributes,
 						 VkPrimitiveTopology topology,
-						 VkCullModeFlags cull_mode,
-						 VkFrontFace front_face,
+						 const vk_rasterizer_op_descriptor &rasterizer_op,
 						 const vk_depth_op_descriptor &depth_op,
 						 const std::vector<vk_blend_op_descriptor> &attachment_blend_op,
 						 const glm::vec4 blend_constants,
-						 const optional<vk_pipeline_cache> &cache = none) : device(device) {
+						 const vk_pipeline_cache *cache = nullptr) : device(device) {
 		// Shader modules stages
 		std::vector<VkPipelineShaderStageCreateInfo> stages(shader_modules.size());
 		for (int i = 0; i < shader_modules.size(); ++i) {
@@ -114,8 +115,24 @@ public:
 		rasterization_state_create.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
 		rasterization_state_create.pNext = nullptr;
 		rasterization_state_create.flags = 0;
-		rasterization_state_create.cullMode = cull_mode;
-		rasterization_state_create.frontFace = front_face;
+		rasterization_state_create.cullMode = rasterizer_op.cull_mode;
+		rasterization_state_create.frontFace = rasterizer_op.front_face;
+		rasterization_state_create.lineWidth = 1.f;
+		rasterization_state_create.depthBiasEnable = rasterizer_op.depth_bias_enable;
+		rasterization_state_create.depthBiasConstantFactor = rasterizer_op.depth_bias_const_factor;
+		rasterization_state_create.depthBiasSlopeFactor = rasterizer_op.depth_bias_slope_factor;
+		rasterization_state_create.depthClampEnable = false;
+		rasterization_state_create.rasterizerDiscardEnable = rasterizer_op.discard_enable;
+
+		// Multisample
+		VkPipelineMultisampleStateCreateInfo multisample_state_create = {};
+		multisample_state_create.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+		multisample_state_create.sampleShadingEnable = false;
+		multisample_state_create.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+		multisample_state_create.minSampleShading = 1.0f;
+		multisample_state_create.pSampleMask = nullptr;
+		multisample_state_create.alphaToCoverageEnable = false;
+		multisample_state_create.alphaToOneEnable = false;
 
 		// Viewport
 		VkPipelineViewportStateCreateInfo viewport_state_create = {};
@@ -124,6 +141,8 @@ public:
 		viewport_state_create.flags = 0;
 		viewport_state_create.viewportCount = 1;
 		viewport_state_create.pViewports = &viewport;
+		viewport_state_create.scissorCount = 1;
+		viewport_state_create.pScissors = &scissor;
 
 		// Depth
 		VkPipelineDepthStencilStateCreateInfo depth_stencil_state_create = {};
@@ -168,7 +187,7 @@ public:
 		create_info.pVertexInputState = &vertex_input_state_create;
 		create_info.pInputAssemblyState = &input_assembly_state_create;
 		create_info.pTessellationState = nullptr;
-		create_info.pMultisampleState = nullptr;
+		create_info.pMultisampleState = &multisample_state_create;
 		create_info.pRasterizationState = &rasterization_state_create;
 		create_info.pViewportState = &viewport_state_create;
 		create_info.pColorBlendState = &blend_state_create;
@@ -177,7 +196,7 @@ public:
 
 		VkPipeline pipeline;
 		vk_result res = vkCreateGraphicsPipelines(device,
-												  cache ? cache.get().get_pipeline_cache() : VK_NULL_HANDLE,
+												  cache!=nullptr ? cache->get_pipeline_cache() : VK_NULL_HANDLE,
 												  1,
 												  &create_info,
 												  nullptr,

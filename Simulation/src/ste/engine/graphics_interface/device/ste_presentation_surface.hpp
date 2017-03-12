@@ -36,7 +36,12 @@ private:
 
 public:
 	using swap_chain_image_view_t = vk_image_view<vk_image_type::image_2d>;
-	using swap_chain_image_t = std::pair<vk_swapchain_image, swap_chain_image_view_t>;
+	struct swap_chain_image_t {
+		vk_swapchain_image image;
+		swap_chain_image_view_t view;
+
+		swap_chain_image_t() = delete;
+	};
 	struct acquire_next_image_return_t {
 		const swap_chain_image_t *image{ nullptr };
 		std::uint32_t image_index{ 0 };
@@ -58,11 +63,11 @@ private:
 
 private:
 	auto get_surface_extent() const {
-		auto extent = presentation_window.get_window_client_area_size();
-		glm::i32vec2 min_extent = { surface_presentation_caps.minImageExtent.width, surface_presentation_caps.minImageExtent.height };
-		glm::i32vec2 max_extent = { surface_presentation_caps.maxImageExtent.width, surface_presentation_caps.maxImageExtent.height };
+		glm::u32vec2 extent = { surface_presentation_caps.currentExtent.width, surface_presentation_caps.currentExtent.height };
+		glm::u32vec2 min_extent = { surface_presentation_caps.minImageExtent.width, surface_presentation_caps.minImageExtent.height };
+		glm::u32vec2 max_extent = { surface_presentation_caps.maxImageExtent.width, surface_presentation_caps.maxImageExtent.height };
 
-		return glm::clamp<glm::i32vec2>(extent, min_extent, max_extent);
+		return glm::clamp(extent, min_extent, max_extent);
 	}
 
 	auto get_surface_presentation_mode() const {
@@ -193,10 +198,21 @@ private:
 											vk_swapchain_image::size_type(size),
 											layers);
 			auto view = swap_chain_image_view_t(image);
-			images.push_back(std::make_pair(std::move(image), std::move(view)));
+
+			images.push_back({ std::move(image), std::move(view) });
 		}
 
 		this->swap_chain_images = std::move(images);
+	}
+
+	void read_device_caps() {
+		// Read device capabilities
+		vk_result res = vkGetPhysicalDeviceSurfaceCapabilitiesKHR(presentation_device->get_physical_device_descriptor().device,
+																  presentation_surface,
+																  &surface_presentation_caps);
+		if (!res) {
+			throw vk_exception(res);
+		}
 	}
 
 	void create_swap_chain() {
@@ -271,14 +287,6 @@ public:
 	{
 		assert(presentation_device && "Can not be null");
 
-		// Read device capabilities
-		vk_result res = vkGetPhysicalDeviceSurfaceCapabilitiesKHR(presentation_device->get_physical_device_descriptor().device,
-																  presentation_surface,
-																  &surface_presentation_caps);
-		if (!res) {
-			throw vk_exception(res);
-		}
-
 		// Check surface support
 		bool has_present_support = false;
 		for (unsigned i = 0; i < parameters.physical_device.queue_family_properties.size(); ++i) {
@@ -293,6 +301,7 @@ public:
 		}
 
 		// Create swap chain
+		read_device_caps();
 		create_swap_chain();
 
 		// Connect required windowing system signals
@@ -313,7 +322,7 @@ public:
 	*			In case of suboptimal or out-of-date raises the 'sub_optimal' flag.
 	*			In case of timeout or error, throws vk_exception.
 	*
-	*			Should be externally synchronized other presentation methods.
+	*			Should be externally synchronized with other presentation methods.
 	*
 	*	@throws vk_exception	On timeout or Vulkan error
 	*
@@ -327,8 +336,8 @@ public:
 	template <class Rep = std::chrono::nanoseconds::rep, class Period = std::chrono::nanoseconds::period>
 	acquire_next_image_return_t acquire_next_swapchain_image(
 		const vk_semaphore &presentation_image_ready_semaphore,
-		const std::chrono::duration<Rep, Period> &timeout = std::chrono::nanoseconds(std::numeric_limits<uint64_t>::max())) const
-	{
+		const std::chrono::duration<Rep, Period> &timeout = std::chrono::nanoseconds(std::numeric_limits<uint64_t>::max())
+	) const {
 		std::uint64_t timeout_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(timeout).count();
 
 		acquire_next_image_return_t ret;
@@ -363,16 +372,21 @@ public:
 	*	@brief	Recreates the swap chain. Possible following a surface resize or a suboptimial image.
 	*			It is the callers responsibility to manually synchronize access to the old swap chain.
 	*
-	*			Should be externally synchronized other presentation methods.
+	*			Should be externally synchronized with other presentation methods.
+	*
+	*	@throws vk_exception	On Vulkan error during swap chain recreation
+	*	@throws ste_engine_exception	On internal error during swap chain recreation
 	*/
 	void recreate_swap_chain() {
+		this->swap_chain_images.clear();
+		read_device_caps();
 		create_swap_chain();
 	}
 
 	/**
 	*	@brief	Presents the presentation image specifided by the index.
 	*
-	*			Should be externally synchronized other presentation methods.
+	*			Should be externally synchronized with other presentation methods.
 	*
 	*	@throws vk_exception	On Vulkan error
 	*
@@ -406,11 +420,16 @@ public:
 		}
 	}
 
-	auto swap_chain_images_count() const { return swap_chain_images.size(); }
 	bool test_and_clear_recreate_flag() const {
 		return !swap_chain_optimal_flag.test_and_set(std::memory_order_acquire);
 	}
+
+	auto& get_swap_chain_images() const { return swap_chain_images; }
 	auto& get_presentation_window() const { return presentation_window; }
+
+	auto size() const { return swap_chain->get_size(); }
+	auto format() const { return swap_chain->get_format(); }
+	auto colorspace() const { return swap_chain->get_colorspace(); }
 };
 
 }

@@ -354,6 +354,7 @@
     <ClCompile Include="Simulation\src\ste\engine\engine_control_old\ste_engine_control.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Simulation\src\ste\engine\graphics_interface\device\ste_device.cpp" />
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\device\ste_gl_device_queue.cpp" />
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\vk\pipeline\descriptor_set\vk_descriptor_set.cpp" />
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\vk\query\vk_query.cpp" />
@@ -429,6 +430,7 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\command\vk_cmd_draw.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\graphics\vk_blend_op_descriptor.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\graphics\vk_depth_op_descriptor.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\graphics\vk_rasterizer_op_descriptor.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\graphics\vk_render_pass_subpass_dependency.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\graphics\vk_render_pass_subpass_descriptor.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\graphics\vk_sampler.hpp" />
@@ -903,6 +905,7 @@
     <ClInclude Include="Simulation\src\ste\math_additions\transformations\reversed_perspective.hpp" />
     <ClInclude Include="Simulation\src\ste\ste.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device\ste_device.hpp" />
+    <ClInclude Include="Simulation\src\ste\ste_version.hpp" />
     <ClInclude Include="Simulation\src\ste\stl_extensions\apply.hpp" />
     <ClInclude Include="Simulation\src\ste\stl_extensions\concurrency\concurrent_pointer_recycler.hpp" />
     <ClInclude Include="Simulation\src\ste\stl_extensions\concurrency\concurrent_queue.hpp" />
@@ -1031,6 +1034,8 @@
     <None Include="Simulation\src\ste\framework_text\rendering\shaders\text_distance_map_contour.frag" />
     <None Include="Simulation\src\ste\framework_text\rendering\shaders\text_distance_map_contour.geom" />
     <None Include="Simulation\src\ste\framework_text\rendering\shaders\text_distance_map_contour.vert" />
+    <None Include="Simulation\src\temp.frag" />
+    <None Include="Simulation\src\temp.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

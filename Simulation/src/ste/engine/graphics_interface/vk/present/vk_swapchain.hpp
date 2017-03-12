@@ -73,18 +73,13 @@ public:
 		swapchain_create_info.clipped = VK_TRUE;
 		swapchain_create_info.oldSwapchain = old_chain ? *old_chain : VK_NULL_HANDLE;
 
-		// Move out of old chain
-		if (old_chain != nullptr) {
-			old_chain->swapchain = none;
-			old_chain->swapchain_create_info = {};
-		}
-
 		vk_result res = vkCreateSwapchainKHR(device, &swapchain_create_info, nullptr, &swapchain);
 		if (!res) {
 			throw vk_exception(res);
 		}
 
 		this->swapchain = swapchain;
+		swapchain_create_info.oldSwapchain = VK_NULL_HANDLE;
 	}
 	~vk_swapchain() noexcept { destroy_swapchain(); }
 
@@ -103,9 +98,10 @@ public:
 	auto& get_swapchain() const { return swapchain.get(); }
 	auto get_format() const { return swapchain_create_info.imageFormat; }
 	auto get_colorspace() const { return swapchain_create_info.imageColorSpace; }
+	auto get_present_mode() const { return swapchain_create_info.presentMode; }
 	auto get_layers() const { return swapchain_create_info.imageArrayLayers; }
 	auto get_size() const {
-		return glm::i32vec2{ swapchain_create_info.imageExtent.width, swapchain_create_info.imageExtent.height };
+		return glm::u32vec2{ swapchain_create_info.imageExtent.width, swapchain_create_info.imageExtent.height };
 	}
 	auto get_creation_parameters() const { return swapchain_create_info; }
 

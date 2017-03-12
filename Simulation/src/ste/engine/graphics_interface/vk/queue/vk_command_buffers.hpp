@@ -23,17 +23,29 @@ public:
 		begin_info.pInheritanceInfo = nullptr;
 		begin_info.flags = flags;
 
-		vkBeginCommandBuffer(*this, &begin_info);
+		vk_result res = vkBeginCommandBuffer(*this, &begin_info);
+		if (!res) {
+			throw vk_exception(res);
+		}
 	}
 	void end() {
-		vkEndCommandBuffer(*this);
+		vk_result res = vkEndCommandBuffer(*this);
+		if (!res) {
+			throw vk_exception(res);
+		}
 	}
 
 	void reset() {
-		vkResetCommandBuffer(*this, 0);
+		vk_result res = vkResetCommandBuffer(*this, 0);
+		if (!res) {
+			throw vk_exception(res);
+		}
 	}
 	void reset_release() {
-		vkResetCommandBuffer(*this, VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
+		vk_result res = vkResetCommandBuffer(*this, VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
+		if (!res) {
+			throw vk_exception(res);
+		}
 	}
 
 	operator VkCommandBuffer() const { return buffer; }

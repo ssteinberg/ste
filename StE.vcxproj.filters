@@ -243,6 +243,9 @@
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\device\ste_gl_device_queue.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Simulation\src\ste\engine\graphics_interface\device\ste_device.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Simulation\src\ste\engine\cache\lru_cache.hpp">
@@ -1508,6 +1511,12 @@
     <ClInclude Include="Simulation\src\ste\engine\resource\ste_resource_creation_policy.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\graphics\vk_rasterizer_op_descriptor.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\ste_version.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Simulation\src\ste\framework_graphics\material\shaders\material_evaluate.glsl" />
@@ -1600,5 +1609,7 @@
     <None Include="Simulation\src\ste\framework_graphics\voxels\shaders\voxelizer.geom_old" />
     <None Include="Simulation\src\ste\framework_graphics\voxels\shaders\voxelizer.vert_old" />
     <None Include="Simulation\src\ste\framework_graphics\voxels\shaders\voxelizer_upsampler.comp_old" />
+    <None Include="Simulation\src\temp.vert" />
+    <None Include="Simulation\src\temp.frag" />
   </ItemGroup>
 </Project>

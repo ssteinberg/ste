@@ -15,6 +15,7 @@
 #include <concurrent_queue.hpp>
 
 #include <mutex>
+#include <future>
 #include <condition_variable>
 #include <functional>
 #include <interruptible_thread.hpp>
@@ -48,10 +49,14 @@ private:
 	std::uint32_t tick_count{ 0 };
 
 private:
-	static thread_local vk_command_buffers *command_buffers;
+	static thread_local vk_command_buffers *static_command_buffers_ptr;
+	static thread_local vk_queue *static_queue_ptr;
+	static thread_local std::uint32_t static_queue_index;
 
 public:
-	static auto& thread_command_buffers() { return *command_buffers; }
+	static auto& thread_command_buffers() { return *static_command_buffers_ptr; }
+	static auto& thread_queue() { return *static_queue_ptr; }
+	static auto thread_queue_index() { return static_queue_index; }
 
 private:
 	std::uint32_t buffer_index() const {
@@ -62,26 +67,37 @@ private:
 	*	@brief	Resets the command buffer
 	*			Might stall if command buffer is still executing on the device
 	*
-	*	@param	release				Release command buffer resources in addition to reset
+	*	@param	release		Release command buffer resources in addition to reset
 	*/
 	void reset(bool release = false) {
-		auto &fence = fences[buffer_index()];
-		auto &buffer = buffers[buffer_index()];
+		std::promise<void> buffer_available_promise;
+		auto future = buffer_available_promise.get_future();
 
-		if (!fence.is_signaled())
+		enqueue<void>([this, release, &buffer_available_promise](std::uint32_t idx) -> void {
+			auto &fence = fences[idx];
+			auto &buffer = buffers[idx];
+
+			// Wait for fence and signal buffer available
 			fence.wait_idle();
-		fence.reset();
+			buffer_available_promise.set_value();
 
-		if (!release)
-			buffer.reset();
-		else
-			buffer.reset_release();
+			// Reset fence and buffer
+			fence.reset();
+			if (!release)
+				buffer.reset();
+			else
+				buffer.reset_release();
+		});
+
+		// Wait for buffer to become available before returning
+		future.wait();
 	}
 
 public:
 	ste_gl_device_queue(const vk_logical_device &device, 
 						ste_gl_queue_descriptor descriptor,
-						std::uint32_t buffers_count)
+						std::uint32_t buffers_count,
+						std::uint32_t queue_index)
 		: queue(device, descriptor.family, 0),
 		descriptor(descriptor), 
 		pool(device, descriptor.family),
@@ -92,9 +108,11 @@ public:
 			fences.emplace_back(device, true);
 
 		// Create the queue worker thread
-		thread = std::make_unique<interruptible_thread>([this]() {
+		thread = std::make_unique<interruptible_thread>([this, queue_index]() {
 			// Set the thread_local global to this thread's parameters
-			ste_gl_device_queue::command_buffers = &this->buffers;
+			ste_gl_device_queue::static_command_buffers_ptr = &this->buffers;
+			ste_gl_device_queue::static_queue_ptr = &this->queue;
+			ste_gl_device_queue::static_queue_index = queue_index;
 
 			for (;;) {
 				if (interruptible_thread::is_interruption_flag_set()) return;
@@ -128,6 +146,7 @@ public:
 		m.unlock();
 
 		thread->join();
+		queue.wait_idle();
 	}
 
 	ste_gl_device_queue(ste_gl_device_queue &&q) = delete;
@@ -151,7 +170,7 @@ public:
 	/**
 	*	@brief	Enqueues a task on the queue's thread
 	*
-	*	@param	f					Lambda expression
+	*	@param	f		Lambda expression
 	*/
 	template <typename R>
 	std::future<R> enqueue(enqueue_task_t<R> &&f) {
