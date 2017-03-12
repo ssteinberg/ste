@@ -59,7 +59,7 @@ struct ste_gl_queue_descriptor {
 
 class ste_gl_device_queues_protocol {
 public:
-	static std::vector<ste_gl_queue_descriptor> queues_for_physical_device(const GL::vk_physical_device_descriptor &physical_device) {
+	static std::vector<ste_gl_queue_descriptor> queue_descriptors_for_physical_device(const GL::vk_physical_device_descriptor &physical_device) {
 		std::vector<ste_gl_queue_descriptor> v;
 
 		for (unsigned i = 0; i < physical_device.queue_family_properties.size(); ++i) {

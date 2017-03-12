@@ -17,6 +17,7 @@
 
 using namespace StE::Core::GL;
 
+namespace StE {
 namespace _detail {
 
 class ste_context_intializer {
@@ -40,6 +41,7 @@ public:
 	}
 };
 
+}
 }
 
 gl_context::gl_context(const context_settings &settings, const char *title, const glm::i32vec2 &size, gli::format format, gli::format depth_format) : ctx_settings(settings) {

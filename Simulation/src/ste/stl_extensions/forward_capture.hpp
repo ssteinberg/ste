@@ -19,9 +19,9 @@ public:
 	template <typename S>
 	forward_capture_impl_by_value(S&& val) : val(std::forward<S>(val)) {}
 
-	auto& get() & { return val; }
-	auto&& get() && { return std::move(val); }
-	auto& get() const& { return val; }
+	decltype(auto) get() & { return val; }
+	decltype(auto) get() && { return std::move(val); }
+	decltype(auto) get() const& { return val; }
 };
 
 template <typename T>
@@ -32,9 +32,9 @@ private:
 public:
 	forward_capture_impl_by_ref(T& val) : ref(val) {}
 
-	auto& get() & { return ref.get(); }
-	auto&& get() && { return std::move(ref.get()); }
-	auto& get() const& { return ref.get(); }
+	decltype(auto) get() & { return ref.get(); }
+	decltype(auto) get() && { return std::move(ref).get(); }
+	decltype(auto) get() const& { return ref.get(); }
 };
 
 template <typename T>

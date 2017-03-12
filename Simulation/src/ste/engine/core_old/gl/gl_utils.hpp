@@ -4,7 +4,7 @@
 #pragma once
 
 #include <stdafx.hpp>
-#include <resource.hpp>
+#include <resource_old.hpp>
 
 #include <string>
 #include <thread>

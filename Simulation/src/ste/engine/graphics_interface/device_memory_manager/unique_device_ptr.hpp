@@ -50,8 +50,8 @@ public:
 
 	auto& get() { return ptr; }
 	auto& get() const { return ptr; }
-	auto& operator->() { return *ptr; }
-	auto& operator->() const { return *ptr; }
+	auto& operator->() { return ptr; }
+	auto& operator->() const { return ptr; }
 	auto& operator*() { return *ptr; }
 	auto& operator*() const { return *ptr; }
 

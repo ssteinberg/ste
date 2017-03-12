@@ -8,7 +8,7 @@
 #include <string>
 #include <glm/glm.hpp>
 
-#include <resource.hpp>
+#include <resource_old.hpp>
 
 namespace StE {
 namespace Core {

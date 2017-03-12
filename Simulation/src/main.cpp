@@ -5,8 +5,9 @@
 #include <device_buffer.hpp>
 #include <device_buffer_sparse.hpp>
 #include <device_pipeline_shader_stage.hpp>
+#include <ste_resource.hpp>
 
-using namespace StE::GL;
+using namespace StE;
 
 auto requested_device_features() {
 	VkPhysicalDeviceFeatures requested_features;
@@ -61,7 +62,7 @@ int main()
 	gl_params.debug_context = true;
 #endif
 
-	ste_gl_context gl_ctx(gl_params);
+	GL::ste_gl_context gl_ctx(gl_params);
 
 	auto features = requested_device_features();
 	auto available_devices = gl_ctx.enumerate_physical_devices(features, 4000ul * 1024 * 1024);
@@ -71,14 +72,14 @@ int main()
 	/*
 	*	Select a physical device, and create a presentation device
 	*/
-	ste_gl_device_creation_parameters device_params;
+	GL::ste_gl_device_creation_parameters device_params;
 	device_params.physical_device = physical_device;
 	device_params.requested_device_features = features;
-	device_params.vsync = ste_presentation_device_vsync::mailbox;
+	device_params.vsync = GL::ste_presentation_device_vsync::mailbox;
 	device_params.additional_device_extensions = { "VK_KHR_shader_draw_parameters" };
 
 	StE::ste_engine::gl_device_t device(device_params, 
-										StE::GL::ste_gl_device_queues_protocol::queues_for_physical_device(physical_device),
+										StE::GL::ste_gl_device_queues_protocol::queue_descriptors_for_physical_device(physical_device),
 										gl_ctx, 
 										window);
 
@@ -88,6 +89,7 @@ int main()
 	*/
 	StE::ste_engine engine;
 	StE::ste_context ctx(engine, gl_ctx, device);
+
 
 	auto total_mem = ctx.device_memory_allocator().get_total_device_memory();
 	auto commited_mem = ctx.device_memory_allocator().get_total_commited_memory();
@@ -102,7 +104,7 @@ int main()
 								   nullptr);
 	}
 
-	StE::GL::device_buffer<glm::vec4, device_resource_allocation_policy_mmap> 
+	StE::GL::device_buffer<glm::vec4, GL::device_resource_allocation_policy_mmap> 
 		buf2(ctx, 100000, VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
 	{
 		auto mmap = buf2.get_underlying_memory().mmap<glm::vec4>(0, 12);
@@ -110,12 +112,13 @@ int main()
 		mmap->flush_ranges({{0,2}});
 	}
 
-	StE::GL::device_pipeline_shader_stage stage(ctx, "fxaa.frag");
-	StE::GL::device_pipeline_shader_stage(ctx, "text_distance_map_contour.geom");
-	StE::GL::device_pipeline_shader_stage(ctx, "deferred_compose.frag");
-	StE::GL::device_pipeline_shader_stage(ctx, "shadow_cubemap.geom");
-	StE::GL::device_pipeline_shader_stage(ctx, "shadow_directional.geom");
-	StE::GL::device_pipeline_shader_stage(ctx, "volumetric_scattering_scatter.comp");
+	ste_resource<StE::GL::device_pipeline_shader_stage> stage(ctx, std::string("fxaa.frag"));
+	StE::GL::device_pipeline_shader_stage(ctx, std::string("text_distance_map_contour.geom"));
+	StE::GL::device_pipeline_shader_stage(ctx, std::string("deferred_compose.frag"));
+	StE::GL::device_pipeline_shader_stage(ctx, std::string("shadow_cubemap.geom"));
+	StE::GL::device_pipeline_shader_stage(ctx, std::string("shadow_directional.geom"));
+	StE::GL::device_pipeline_shader_stage(ctx, std::string("volumetric_scattering_scatter.comp"));
+	stage.get();
 
 
 	/*

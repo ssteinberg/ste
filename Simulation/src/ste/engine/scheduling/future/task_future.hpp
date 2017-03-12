@@ -203,6 +203,16 @@ public:
 	*	@brief	Moves this future into a shared future.
 	*/
 	task_future_impl<R, true> shared() &&;
+
+	/**
+	 *	@brief	Moves into a std::future
+	 */
+	auto get_future() && {
+		write_lock_type l(mutex);
+
+		sched = nullptr;
+		return std::move(future);
+	}
 };
 
 template <typename R>

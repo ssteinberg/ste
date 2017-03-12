@@ -5,6 +5,8 @@
 
 #include <stdafx.hpp>
 #include <ste_context.hpp>
+#include <ste_resource_traits.hpp>
+
 #include <vulkan/vulkan.h>
 #include <vk_shader.hpp>
 
@@ -18,7 +20,7 @@
 namespace StE {
 namespace GL {
 
-class device_pipeline_shader_stage {
+class device_pipeline_shader_stage : ste_resource_load_async_trait {
 private:
 	ste_shader_stage stage{ ste_shader_stage::none };
 	vk_shader shader;

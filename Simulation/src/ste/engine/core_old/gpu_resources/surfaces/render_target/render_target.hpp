@@ -7,7 +7,7 @@
 #include <gl_utils.hpp>
 #include <surface_constants.hpp>
 
-#include <resource.hpp>
+#include <resource_old.hpp>
 #include <render_target_allocator.hpp>
 
 namespace StE {

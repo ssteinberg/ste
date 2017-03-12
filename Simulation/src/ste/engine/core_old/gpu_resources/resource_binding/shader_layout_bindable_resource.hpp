@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include <resource.hpp>
+#include <resource_old.hpp>
 #include <layout_binding.hpp>
 
 namespace StE {

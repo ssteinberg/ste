@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include <resource.hpp>
+#include <resource_old.hpp>
 #include <shader_layout_bindable_resource.hpp>
 
 namespace StE {

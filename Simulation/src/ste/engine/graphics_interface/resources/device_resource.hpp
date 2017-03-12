@@ -4,10 +4,10 @@
 #pragma once
 
 #include <stdafx.hpp>
+#include <ste_context.hpp>
+#include <ste_resource_traits.hpp>
 
 #include <vk_resource.hpp>
-#include <ste_context.hpp>
-
 #include <device_resource_memory_allocator.hpp>
 
 #include <functional>
@@ -16,7 +16,7 @@ namespace StE {
 namespace GL {
 
 template <typename T, class allocation_policy>
-class device_resource {
+class device_resource : ste_resource_load_async_trait {
 	static_assert(std::is_base_of<vk_resource, T>::value,
 				  "T must be a vk_resource derived type");
 

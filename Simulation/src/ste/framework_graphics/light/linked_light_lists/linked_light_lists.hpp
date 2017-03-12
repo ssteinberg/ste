@@ -5,7 +5,7 @@
 
 #include <stdafx.hpp>
 
-#include <resource.hpp>
+#include <resource_old.hpp>
 
 #include <texture_2d.hpp>
 

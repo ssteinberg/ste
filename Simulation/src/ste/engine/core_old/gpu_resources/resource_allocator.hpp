@@ -5,7 +5,7 @@
 
 #include <string>
 
-#include <resource.hpp>
+#include <resource_old.hpp>
 
 #include <Log.hpp>
 #include <attributed_string.hpp>

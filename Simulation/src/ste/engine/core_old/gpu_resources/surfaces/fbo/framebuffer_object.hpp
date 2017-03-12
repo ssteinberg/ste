@@ -7,7 +7,7 @@
 #include <gl_utils.hpp>
 #include <gl_current_context.hpp>
 
-#include <resource.hpp>
+#include <resource_old.hpp>
 #include <resource_traits.hpp>
 #include <bindable_resource.hpp>
 #include <layout_binding.hpp>
