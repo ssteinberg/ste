@@ -25,8 +25,6 @@ private:
 	const signal<Ts...>* sig{ nullptr };
 	lambda l;
 
-	void operator()(const Ts&...args) { l(args...); }
-
 public:
 	connection(const connection &s) = delete;
 	connection& operator=(const connection &s) = delete;
@@ -42,6 +40,8 @@ public:
 
 	void break_connection() { sig = nullptr; }
 	bool connected() const { return sig != nullptr; }
+
+	void operator()(const Ts&...args) { l(args...); }
 };
 
 }

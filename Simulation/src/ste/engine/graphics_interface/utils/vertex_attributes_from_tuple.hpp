@@ -20,10 +20,12 @@ class vertex_attributes_from_tuple {
 private:
 	using size_type = std::size_t;
 
-	template<typename T, typename... Tail> struct stride_counter {
+	template<typename T, typename... Tail> 
+	struct stride_counter {
 		static constexpr size_type value = sizeof(T) + stride_counter<Tail...>::value;
 	};
-	template<typename T> struct stride_counter {
+	template<typename T> 
+	struct stride_counter<T>  {
 		static constexpr size_type value = sizeof(T);
 	};
 
@@ -34,7 +36,7 @@ private:
 	template<int index> struct elements_format_populator {
 		using T = VkFormat;
 		using ValT = typename typelist_type_at<index, Ts...>::type;
-		static constexpr T value = vk_format_for_type<ValT>::gl_enum;
+		static constexpr T value = vk_format_for_type<ValT>::format;
 		static_assert(value != 0, "ValT is NOT a valid type");
 	};
 
@@ -44,10 +46,10 @@ private:
 	public:
 		virtual ~_descriptor() noexcept {}
 
-		constexpr size_type attrib_count() const noexcept override { return sizeof...(Ts); };
-		constexpr size_type stride() const noexcept override { return stride_counter<Ts...>::value; };
-		constexpr size_type attrib_size(int attrib) const noexcept override { return sizes_arr::data[attrib]; };
-		constexpr VkFormat attrib_format(int attrib) const noexcept override { return element_type_names_arr::data[attrib]; };
+		size_type attrib_count() const noexcept override { return sizeof...(Ts); };
+		size_type stride() const noexcept override { return stride_counter<Ts...>::value; };
+		size_type attrib_size(int attrib) const noexcept override { return sizes_arr::data[attrib]; };
+		VkFormat attrib_format(int attrib) const noexcept override { return element_type_names_arr::data[attrib]; };
 	};
 public:
 	using descriptor = _descriptor;

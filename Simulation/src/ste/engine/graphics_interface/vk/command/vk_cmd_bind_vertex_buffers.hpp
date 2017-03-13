@@ -5,6 +5,7 @@
 
 #include <vulkan/vulkan.h>
 #include <vk_command.hpp>
+#include <vk_buffer.hpp>
 #include <cassert>
 
 #include <vector>
@@ -19,9 +20,16 @@ private:
 	std::vector<std::uint64_t> offsets;
 
 public:
-	vk_cmd_bind_vertex_buffers(std::uint32_t first,
+	template <typename T>
+	vk_cmd_bind_vertex_buffers(std::uint32_t first_binding_index,
+							   const vk_buffer<T> &buffer,
+							   std::uint64_t offset = 0)
+		: first(first_binding_index), buffers({ buffer }), offsets({ offset })
+	{}
+	vk_cmd_bind_vertex_buffers(std::uint32_t first_binding_index,
 							   const std::vector<VkBuffer> &buffers,
-							   const std::vector<std::uint64_t> &offsets) : first(first), buffers(buffers), offsets(offsets)
+							   const std::vector<std::uint64_t> &offsets) 
+		: first(first_binding_index), buffers(buffers), offsets(offsets)
 	{
 		assert(buffers.size() == offsets.size());
 	}

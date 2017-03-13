@@ -39,7 +39,7 @@ private:
 
 	std::uint32_t command_buffers_count{ 0 };
 	std::vector<queue_t> device_queues;
-
+	
 	queues_and_surface_recreate_signal_type queues_and_surface_recreate_signal;
 
 private:
@@ -165,7 +165,7 @@ public:
 	*	@brief	Creates the device without presentation capabilities ("compute-only" device)
 	*
 	*	@throws ste_engine_exception	If creation parameters are erroneous or incompatible
-	*	@throws vk_exception	On Vulkan error
+	*	@throws vk_exception		On Vulkan error
 	*
 	*	@param parameters			Device creation parameters
 	*	@param queue_descriptors	Queues descriptors. Influences amount and families of created device queues.

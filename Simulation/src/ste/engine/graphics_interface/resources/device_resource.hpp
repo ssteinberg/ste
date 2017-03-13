@@ -48,6 +48,9 @@ public:
 	{}
 	~device_resource() noexcept {}
 
+	device_resource(device_resource&&) = default;
+	device_resource &operator=(device_resource&&) = default;
+
 	auto& get_underlying_memory() { return *this->allocation.get_memory(); }
 	auto& get_underlying_memory() const { return *this->allocation.get_memory(); }
 	bool has_private_underlying_memory() const { return allocation.is_private_allocation(); }

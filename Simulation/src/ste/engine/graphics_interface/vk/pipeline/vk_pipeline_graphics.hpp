@@ -37,8 +37,10 @@ private:
 public:
 	struct vertex_input_descriptor {
 		std::uint32_t binding_index;
-		vk_vertex_input_attributes* attributes;
+		const vk_vertex_input_attributes& attributes;
 //		VkVertexInputRate input_rate;
+
+		vertex_input_descriptor() = delete;
 	};
 
 public:
@@ -72,23 +74,23 @@ public:
 			VkVertexInputBindingDescription desc = {};
 			desc.binding = vert.binding_index;
 			desc.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;// vert.input_rate;
-			desc.stride = vert.attributes->stride();
+			desc.stride = vert.attributes.stride();
 
 			vertex_input_binding_descriptors[i] = desc;
 
-			vertex_attributes_count += vert.attributes->attrib_count();
+			vertex_attributes_count += vert.attributes.attrib_count();
 		}
 		std::vector<VkVertexInputAttributeDescription> vertex_input_attribute_descriptors;
 		vertex_input_attribute_descriptors.reserve(vertex_attributes_count);
 		for (int i = 0; i < vertex_attributes.size(); ++i) {
 			const auto &vert = vertex_attributes[i];
 
-			for (int j = 0; j < vert.attributes->attrib_count(); ++j) {
+			for (int j = 0; j < vert.attributes.attrib_count(); ++j) {
 				VkVertexInputAttributeDescription desc = {};
 				desc.location = j;
 				desc.binding = vert.binding_index;
-				desc.format = vert.attributes->attrib_format(j);
-				desc.offset = vert.attributes->offset_to_attrib(j);
+				desc.format = vert.attributes.attrib_format(j);
+				desc.offset = vert.attributes.offset_to_attrib(j);
 
 				vertex_input_attribute_descriptors.push_back(desc);
 			}

@@ -40,7 +40,7 @@ struct device_resource_allocation_policy_lazy : public device_resource_allocatio
 *			Require host-visible allocation, and prefer a host cached (faster) memory type.
 *			Private allocation as the mmaped allocation can't be shared.
 */
-struct device_resource_allocation_policy_mmap : public device_resource_allocation_policy {
+struct device_resource_allocation_policy_host_visible : public device_resource_allocation_policy {
 	VkMemoryPropertyFlags required_flags() const override final { return VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT; }
 	VkMemoryPropertyFlags preferred_flags() const override final { return VK_MEMORY_PROPERTY_HOST_CACHED_BIT; }
 	bool private_allocation() const override final { return true; }
@@ -51,7 +51,7 @@ struct device_resource_allocation_policy_mmap : public device_resource_allocatio
 *			memory to a host visible virtual address.
 *			Similar to device_resource_allocation_policy_mmap.
 */
-struct device_resource_allocation_policy_mmap_coherent : public device_resource_allocation_policy {
+struct device_resource_allocation_policy_host_visible_coherent : public device_resource_allocation_policy {
 	VkMemoryPropertyFlags required_flags() const override final { return VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT; }
 	VkMemoryPropertyFlags preferred_flags() const override final { return 0; }
 	bool private_allocation() const override final { return true; }

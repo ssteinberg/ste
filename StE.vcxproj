@@ -399,6 +399,7 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device\ste_presentation_surface.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\utils\vertex_attributes_from_tuple.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\command\vk_cmd_blit_image.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\command\vk_cmd_copy_buffer.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\command\vk_cmd_copy_buffer_to_image.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\command\vk_cmd_begin_query.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\command\vk_cmd_clear_color_image.hpp" />

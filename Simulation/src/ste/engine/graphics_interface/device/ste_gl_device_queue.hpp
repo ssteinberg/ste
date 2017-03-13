@@ -146,7 +146,7 @@ public:
 		m.unlock();
 
 		thread->join();
-		queue.wait_idle();
+		wait_idle();
 	}
 
 	ste_gl_device_queue(ste_gl_device_queue &&q) = delete;
@@ -199,6 +199,13 @@ public:
 						 signal_semaphores,
 						 &fence);
 		});
+	}
+
+	/**
+	*	@brief	Waits idly for the queue to finish processing
+	*/
+	void wait_idle() const {
+		queue.wait_idle();
 	}
 
 	auto &device_queue() const { return queue; }

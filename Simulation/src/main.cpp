@@ -6,13 +6,16 @@
 #include <device_buffer_sparse.hpp>
 #include <device_pipeline_shader_stage.hpp>
 
+#include <vertex_attributes_from_tuple.hpp>
 #include <vk_pipeline_graphics.hpp>
 #include <vk_framebuffer.hpp>
 #include <vk_command_recorder.hpp>
 #include <vk_cmd_begin_render_pass.hpp>
 #include <vk_cmd_end_render_pass.hpp>
 #include <vk_cmd_bind_pipeline.hpp>
+#include <vk_cmd_bind_vertex_buffers.hpp>
 #include <vk_cmd_draw.hpp>
+#include <vk_cmd_copy_buffer.hpp>
 
 #include <ste_resource.hpp>
 
@@ -100,10 +103,6 @@ int main()
 	StE::ste_context ctx(engine, gl_ctx, device);
 
 
-	auto total_mem = ctx.device_memory_allocator().get_total_device_memory();
-	auto commited_mem = ctx.device_memory_allocator().get_total_commited_memory();
-	auto allocated_mem = ctx.device_memory_allocator().get_total_allocated_memory();
-
 	StE::GL::device_buffer_sparse<float> buf(ctx, 100000, VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT);
 	{
 		buf.cmd_bind_sparse_memory(device.get_queue(0).device_queue(), {},
@@ -113,19 +112,36 @@ int main()
 								   nullptr);
 	}
 
-	StE::GL::device_buffer<glm::vec4, GL::device_resource_allocation_policy_mmap> 
-		buf2(ctx, 100000, VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
-	{
-		auto mmap = buf2.get_underlying_memory().mmap<glm::vec4>(0, 12);
-		(*mmap)[0] = { 1,2,3,4 };
-		mmap->flush_ranges({{0,2}});
-	}
 
 	auto swapchain_images_count = device.get_surface().get_swap_chain_images().size();
 
 	// Shader stages
 	ste_resource<StE::GL::device_pipeline_shader_stage> vert_shader_stage(ctx, std::string("temp.vert"));
 	ste_resource<StE::GL::device_pipeline_shader_stage> frag_shader_stage(ctx, std::string("temp.frag"));
+
+	// Vertex buffer
+	struct vertex {
+		glm::vec2 pos;
+		glm::vec3 color;
+
+		using descriptor = GL::vertex_attributes_from_tuple<glm::vec2, glm::vec3>::descriptor;
+	};
+	const std::vector<vertex> vertices = {
+		{ { 0.0f, -0.5f }, { 1.0f, 0.0f, 0.0f } },
+		{ { 0.5f,  0.5f }, { 0.0f, 1.0f, 0.0f } },
+		{ { -0.5f, 0.5f }, { 0.0f, 0.0f, 1.0f } }
+	};
+
+	ste_resource<GL::device_buffer<vertex>> vertex_buffer(ctx, vertices.size(),
+														  VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
+	GL::device_buffer<vertex, GL::device_resource_allocation_policy_host_visible_coherent>
+		staging_buffer(ctx, vertices.size(), VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+
+	{
+		auto vertex_buffer_ptr = staging_buffer.get_underlying_memory().mmap<vertex>(0, vertices.size());
+		for (int i=0;i<vertices.size();++i)
+			(*vertex_buffer_ptr)[i] = vertices[i];
+	}
 
 	// Viewport
 	glm::u32vec2 swapchain_size = device.get_surface().size();
@@ -157,17 +173,6 @@ int main()
 	std::vector<GL::vk_framebuffer> presentation_framebuffers;
 	std::vector<GL::vk_semaphore> swapchain_image_ready_semaphore;
 	std::vector<GL::vk_semaphore> rendering_finished_semaphore;
-	swapchain_image_ready_semaphore.reserve(swapchain_images_count);
-	rendering_finished_semaphore.reserve(swapchain_images_count);
-	presentation_framebuffers.reserve(swapchain_images_count);
-	for (auto i = 0; i < swapchain_images_count; ++i) {
-		presentation_framebuffers.emplace_back(device.logical_device(),
-											   presentation_renderpass,
-											   std::vector<VkImageView>{ device.get_surface().get_swap_chain_images()[i].view },
-											   swapchain_size);
-		swapchain_image_ready_semaphore.emplace_back(device.logical_device());
-		rendering_finished_semaphore.emplace_back(device.logical_device());
-	}
 
 	auto recreate_queues_connection = std::make_shared<GL::ste_device::queues_and_surface_recreate_signal_type::connection_type>([&](const GL::ste_device*) {
 		swapchain_images_count = device.get_surface().get_swap_chain_images().size();
@@ -184,6 +189,8 @@ int main()
 			rendering_finished_semaphore.emplace_back(device.logical_device());
 		}
 	});
+
+	(*recreate_queues_connection)(&device);
 	device.get_queues_and_surface_recreate_signal().connect(recreate_queues_connection);
 
 	// Pipeline layout
@@ -198,7 +205,7 @@ int main()
 									  0,
 									  viewport,
 									  scissor,
-									  {},
+									  { { 0, vertex::descriptor() } },
 									  VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
 									  GL::vk_rasterizer_op_descriptor(VK_CULL_MODE_NONE, VK_FRONT_FACE_COUNTER_CLOCKWISE),
 	                                  GL::vk_depth_op_descriptor(VK_COMPARE_OP_GREATER, false),
@@ -212,6 +219,17 @@ int main()
 //	StE::GL::device_pipeline_shader_stage(ctx, std::string("shadow_directional.geom"));
 //	StE::GL::device_pipeline_shader_stage(ctx, std::string("volumetric_scattering_scatter.comp"));
 //	stage.get();
+
+
+	device.acquire_next_command_buffer(2);
+	device.enqueue(2, [&](std::uint32_t buffer_idx) {
+		auto& command_buffer = GL::ste_gl_device_queue::thread_command_buffers()[buffer_idx];
+
+		GL::vk_command_recorder recorder(command_buffer);
+		recorder << GL::vk_cmd_copy_buffer(staging_buffer.get(), vertex_buffer->get());
+	});
+	device.submit(2, {}, {});
+	device.get_queue(2).wait_idle();
 
 
 	/*
@@ -247,6 +265,7 @@ int main()
 													swapchain_size,
 													{ swapchain_attachment_clear_value })
 					<< GL::vk_cmd_bind_pipeline(pipeline)
+					<< GL::vk_cmd_bind_vertex_buffers(0, vertex_buffer->get())
 					<< GL::vk_cmd_draw(3, 1)
 					<< GL::vk_cmd_end_render_pass();
 			}
