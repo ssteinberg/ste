@@ -54,9 +54,9 @@ public:
 	*	@param	signal_semaphores	Sempahores to signal once the commands have completed execution
 	*	@param	fence				Optional fence, to be signaled when the commands have completed execution
 	*/
-	void submit(const std::vector<vk_command_buffer*> &command_buffers,
-				const std::vector<std::pair<vk_semaphore*, VkPipelineStageFlags>> &wait_semaphores,
-				const std::vector<vk_semaphore*> &signal_semaphores,
+	void submit(const std::vector<const vk_command_buffer*> &command_buffers,
+				const std::vector<std::pair<const vk_semaphore*, VkPipelineStageFlags>> &wait_semaphores,
+				const std::vector<const vk_semaphore*> &signal_semaphores,
 				const vk_fence *fence = nullptr) const {
 		std::vector<VkCommandBuffer> cb;
 		std::vector<VkSemaphore> wait;
@@ -95,6 +95,17 @@ public:
 		if (!res) {
 			throw vk_exception(res);
 		}
+	}
+
+	/**
+	*	@brief	Submits a command buffer for execution on the queue
+	*
+	*	@param	command_buffer		Command buffer to submit
+	*	@param	fence				Optional fence, to be signaled when the commands have completed execution
+	*/
+	void submit(const vk_command_buffer* command_buffer,
+				const vk_fence *fence = nullptr) const {
+		return submit({ command_buffer }, {}, {}, fence);
 	}
 
 	auto& get_queue() const { return queue.get(); }

@@ -356,6 +356,7 @@
     </ClCompile>
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\device\ste_device.cpp" />
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\device\ste_gl_device_queue.cpp" />
+    <ClCompile Include="Simulation\src\ste\engine\graphics_interface\device\ste_gl_device_queue_descriptors.cpp" />
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\vk\pipeline\descriptor_set\vk_descriptor_set.cpp" />
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\vk\query\vk_query.cpp" />
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\vk\queue\vk_command_buffers.cpp" />
@@ -377,6 +378,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
     <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\buffers\data_storage\uniform_buffer_object.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device\ste_gl_device_queue_descriptors.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device_memory_manager\device_memory_block.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device_memory_manager\device_memory_exceptions.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device_memory_manager\device_memory_heap.hpp" />
@@ -395,7 +397,7 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\ste_gl_debug_callback.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device\ste_gl_device_queue.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device_memory_manager\ste_gl_device_memory_allocator.hpp" />
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\ste_gl_device_queues_protocol.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device\ste_gl_device_queues_protocol.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device\ste_presentation_surface.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\utils\vertex_attributes_from_tuple.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\command\vk_cmd_blit_image.hpp" />

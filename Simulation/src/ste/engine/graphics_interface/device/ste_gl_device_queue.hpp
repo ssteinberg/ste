@@ -12,33 +12,46 @@
 #include <vk_command_buffers.hpp>
 #include <vk_fence.hpp>
 
-#include <concurrent_queue.hpp>
-
+#include <condition_variable>
 #include <mutex>
 #include <future>
-#include <condition_variable>
-#include <functional>
+#include <utility>
+
+#include <concurrent_queue.hpp>
 #include <interruptible_thread.hpp>
 #include <thread_pool_task.hpp>
+
+#include <function_traits.hpp>
+#include <type_traits>
 
 namespace StE {
 namespace GL {
 
 class ste_gl_device_queue {
 public:
-	using task_t = unique_thread_pool_type_erased_task<const std::uint32_t&>;
+	using task_arg_t = std::uint32_t;
+	using task_t = unique_thread_pool_type_erased_task<const task_arg_t&>;
 	template <typename R>
-	using enqueue_task_t = unique_thread_pool_task<R, const std::uint32_t&>;
+	using enqueue_task_t = unique_thread_pool_task<R, const task_arg_t&>;
 
 private:
 	using task_pair_t = std::pair<task_t, std::uint32_t>;
+	struct sync_primitives_t {
+		mutable vk_fence buffer_fence;
+		mutable std::promise<void> buffer_ready_promise;
+		mutable std::future<void> buffer_ready_future;
+
+		sync_primitives_t() = delete;
+	};
 
 private:
-	vk_queue queue;
-	ste_gl_queue_descriptor descriptor;
-	vk_command_pool pool;
+	const vk_queue queue;
+	const ste_gl_queue_descriptor descriptor;
+
+	const vk_command_pool pool;
+	const vk_command_pool pool_transient;
 	vk_command_buffers buffers;
-	std::vector<vk_fence> fences;
+	const std::vector<sync_primitives_t> sync_primitives;
 
 	mutable std::mutex m;
 	std::condition_variable notifier;
@@ -49,67 +62,134 @@ private:
 	std::uint32_t tick_count{ 0 };
 
 private:
+	static thread_local ste_gl_device_queue *static_device_queue_ptr;
+	static thread_local const vk_command_pool *static_command_pool_ptr;
+	static thread_local const vk_command_pool *static_command_pool_transient_ptr;
 	static thread_local vk_command_buffers *static_command_buffers_ptr;
-	static thread_local vk_queue *static_queue_ptr;
+	static thread_local const vk_queue *static_queue_ptr;
 	static thread_local std::uint32_t static_queue_index;
 
 public:
+	/**
+	*	@brief	Returns the device queue (ste_gl_device_queue) for the current thread
+	*			Must be called from an enqueued task.
+	*/
+	static auto& thread_device_queue() { return *static_device_queue_ptr; }
+	/**
+	*	@brief	Returns the command pool for the current thread
+	*			Must be called from an enqueued task.
+	*/
+	static auto& thread_command_pool() { return *static_command_pool_ptr; }
+	/**
+	*	@brief	Returns the transient command pool for the current thread
+	*			Must be called from an enqueued task.
+	*/
+	static auto& thread_command_pool_transient() { return *static_command_pool_transient_ptr; }
+	/**
+	*	@brief	Returns the primary command buffers for the current thread
+	*			Must be called from an enqueued task.
+	*/
 	static auto& thread_command_buffers() { return *static_command_buffers_ptr; }
+	/**
+	*	@brief	Returns the Vulkan queue handle for the current thread
+	*			Must be called from an enqueued task.
+	*/
 	static auto& thread_queue() { return *static_queue_ptr; }
+	/**
+	*	@brief	Returns the reported queue index for the current thread
+	*			Must be called from an enqueued task.
+	*/
 	static auto thread_queue_index() { return static_queue_index; }
+
+	/**
+	*	@brief	Submits the command buffer to the queue
+	*			Must be called from an enqueued task.
+	*
+	*	@param	wait_semaphores		See vk_queue::submit
+	*	@param	signal_semaphores	See vk_queue::submit
+	*/
+	static void submit_current_queue(const task_arg_t &buffer_idx,
+									 const std::vector<std::pair<const vk_semaphore*, VkPipelineStageFlags>> &wait_semaphores,
+									 const std::vector<const vk_semaphore*> &signal_semaphores) {
+		auto &sync = thread_device_queue().sync_primitives[buffer_idx];
+		auto &buffer = thread_device_queue().buffers[buffer_idx];
+
+		thread_queue().submit({ &buffer },
+							  wait_semaphores,
+							  signal_semaphores,
+							  &sync.buffer_fence);
+
+		// Wait for fence and signal buffer available
+		sync.buffer_fence.wait_idle();
+		sync.buffer_ready_promise.set_value();
+
+		// Reset current command buffer and fence
+		// Once in a while release command buffer resources to avoid command buffers growing indefinitely
+		bool release = thread_device_queue().tick_count % 1000 == 0;
+		thread_device_queue().reset(buffer_idx, release);
+	}
 
 private:
 	std::uint32_t buffer_index() const {
 		return tick_count % buffers.size();
 	}
 
+	static auto create_buffer_sync_primitives(const vk_logical_device &device, 
+											  std::uint32_t buffers_count) {
+		// Create buffer synchronization primitives
+		std::vector<sync_primitives_t> v;
+
+		v.reserve(buffers_count);
+		for (int i = 0; i < buffers_count; ++i) {
+			// Create the fences in unsignaled state
+			sync_primitives_t sync = { vk_fence(device, false) };
+			// Create buffer ready promise-future in a ready state
+			sync.buffer_ready_future = sync.buffer_ready_promise.get_future();
+			sync.buffer_ready_promise.set_value();
+
+			v.push_back(std::move(sync));
+		}
+
+		return v;
+	}
+
 	/**
 	*	@brief	Resets the command buffer
-	*			Might stall if command buffer is still executing on the device
 	*
+	*	@param	idx			Index of command buffer
 	*	@param	release		Release command buffer resources in addition to reset
 	*/
-	void reset(bool release = false) {
-		std::promise<void> buffer_available_promise;
-		auto future = buffer_available_promise.get_future();
+	void reset(const task_arg_t &idx, 
+			   bool release = false) {
+		auto &sync = sync_primitives[idx];
+		auto &buffer = buffers[idx];
 
-		enqueue<void>([this, release, &buffer_available_promise](std::uint32_t idx) -> void {
-			auto &fence = fences[idx];
-			auto &buffer = buffers[idx];
-
-			// Wait for fence and signal buffer available
-			fence.wait_idle();
-			buffer_available_promise.set_value();
-
-			// Reset fence and buffer
-			fence.reset();
-			if (!release)
-				buffer.reset();
-			else
-				buffer.reset_release();
-		});
-
-		// Wait for buffer to become available before returning
-		future.wait();
+		sync.buffer_fence.reset();
+		if (!release)
+			buffer.reset();
+		else
+			buffer.reset_release();
 	}
 
 public:
 	ste_gl_device_queue(const vk_logical_device &device, 
+						std::uint32_t device_family_index,
 						ste_gl_queue_descriptor descriptor,
 						std::uint32_t buffers_count,
 						std::uint32_t queue_index)
-		: queue(device, descriptor.family, 0),
+		: queue(device, descriptor.family, device_family_index),
 		descriptor(descriptor), 
 		pool(device, descriptor.family),
-		buffers(pool.allocate_buffers(buffers_count))
+		pool_transient(device, descriptor.family, true),
+		buffers(pool.allocate_buffers(buffers_count)),
+		sync_primitives(create_buffer_sync_primitives(device, buffers_count))
 	{
-		// Create the fences in signaled state
-		for (int i = 0; i < buffers_count; ++i)
-			fences.emplace_back(device, true);
-
 		// Create the queue worker thread
 		thread = std::make_unique<interruptible_thread>([this, queue_index]() {
-			// Set the thread_local global to this thread's parameters
+			// Set the thread_local globals to this thread's parameters
+			ste_gl_device_queue::static_device_queue_ptr = this;
+			ste_gl_device_queue::static_command_pool_ptr = &this->pool;
+			ste_gl_device_queue::static_command_pool_transient_ptr = &this->pool_transient;
 			ste_gl_device_queue::static_command_buffers_ptr = &this->buffers;
 			ste_gl_device_queue::static_queue_ptr = &this->queue;
 			ste_gl_device_queue::static_queue_index = queue_index;
@@ -161,19 +241,30 @@ public:
 		// Increase tick count
 		++tick_count;
 
-		// Reset current command buffer
-		// Once in a while release command buffer resources to avoid command buffers growing indefinitely
-		bool release = tick_count % 1000 == 0;
-		reset(release);
+		// Wait for buffer ready
+		auto &sync = sync_primitives[buffer_index()];
+		sync.buffer_ready_future.get();
+
+		// Create buffer promise-future for this iteration
+		sync.buffer_ready_promise = std::promise<void>();
+		sync.buffer_ready_future = sync.buffer_ready_promise.get_future();
 	}
 
 	/**
 	*	@brief	Enqueues a task on the queue's thread
 	*
-	*	@param	f		Lambda expression
+	*	@param	task	Task to enqueue
 	*/
-	template <typename R>
-	std::future<R> enqueue(enqueue_task_t<R> &&f) {
+	template <typename L>
+	std::future<typename function_traits<L>::result_t> enqueue(L &&task,
+															   typename std::enable_if<function_traits<L>::arity == 1>::type* = nullptr) {
+		using R = typename function_traits<L>::result_t;
+
+		static_assert(function_traits<L>::arity == 1 &&
+					  std::is_convertible<typename function_traits<L>::template arg<0>::t, const task_arg_t&>::value,
+					  "task must take none or a single buffer index parameter");
+
+		enqueue_task_t<R> f(std::forward<L>(task));
 		auto future = f.get_future();
 
 		task_queue.push(std::make_pair(std::move(f), buffer_index()));
@@ -181,24 +272,17 @@ public:
 
 		return future;
 	}
-
 	/**
-	*	@brief	Enqueues a submit task that submits the command buffer to the queue
+	*	@brief	Enqueues a task on the queue's thread
 	*
-	*	@param	wait_semaphores		See vk_queue::submit
-	*	@param	signal_semaphores	See vk_queue::submit
+	*	@param	task	Task to enqueue
 	*/
-	auto submit(const std::vector<std::pair<vk_semaphore*, VkPipelineStageFlags>> &wait_semaphores,
-				const std::vector<vk_semaphore*> &signal_semaphores) {
-		return enqueue<void>([=](std::uint32_t idx) -> void {
-			auto &fence = fences[idx];
-			auto &buffer = buffers[idx];
-
-			queue.submit({ &buffer },
-						 wait_semaphores,
-						 signal_semaphores,
-						 &fence);
-		});
+	template <typename L>
+	std::future<typename function_traits<L>::result_t> enqueue(L &&task,
+															   typename std::enable_if<function_traits<L>::arity != 1>::type* = nullptr) {
+		static_assert(function_traits<L>::arity == 0,
+					  "task must take none or a single buffer index parameter");
+		return enqueue([task = std::forward<L>(task)](const task_arg_t&) { return task(); });
 	}
 
 	/**
@@ -210,6 +294,8 @@ public:
 
 	auto &device_queue() const { return queue; }
 	auto &queue_descriptor() const { return descriptor; }
+	auto &get_command_pool() const { return pool; }
+	auto &get_command_pool_transient() const { return pool_transient; }
 	auto &get_command_buffers() const { return buffers; }
 };
 

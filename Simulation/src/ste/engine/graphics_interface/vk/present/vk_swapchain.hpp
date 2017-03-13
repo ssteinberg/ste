@@ -23,11 +23,11 @@ private:
 
 public:
 	/**
-	*	@brief	Creates a swap chain.
+	*	@brief	Creates a swap-chain.
 	*
-	*	@param device		The device that owns the swap chain
-	*	@param surface		Surface on which the swap chain will be used for presentation
-	*	@param min_image_count	Minimal requested swap chain images
+	*	@param device		The device that owns the swap-chain
+	*	@param surface		Surface on which the swap-chain will be used for presentation
+	*	@param min_image_count	Minimal requested swap-chain images
 	*	@param image_format	Images' format
 	*	@param image_colorspace	Images' colorspace
 	*	@param size			Images' size, should match surface extent
@@ -36,7 +36,7 @@ public:
 	*	@param composite_flags	Composition flags
 	*	@param present_mode	Presentation mode
 	*	@param old_chain	If non-nullptr, the new chain will be recreated from old_chain, at which point 'old_chain'
-	*						will be moved from and no longer a valid swap chain object
+	*						will be moved from and no longer a valid swap-chain object
 	*
 	*	@return Returns a struct with a pointer to the pair swap_chain_image_t and a 'sub_optimal' flag.
 	*/

@@ -14,7 +14,8 @@
 #include <vk_cmd_end_render_pass.hpp>
 #include <vk_cmd_bind_pipeline.hpp>
 #include <vk_cmd_bind_vertex_buffers.hpp>
-#include <vk_cmd_draw.hpp>
+#include <vk_cmd_bind_index_buffer.hpp>
+#include <vk_cmd_draw_indexed.hpp>
 #include <vk_cmd_copy_buffer.hpp>
 
 #include <ste_resource.hpp>
@@ -105,7 +106,7 @@ int main()
 
 	StE::GL::device_buffer_sparse<float> buf(ctx, 100000, VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT);
 	{
-		buf.cmd_bind_sparse_memory(device.get_queue(0).device_queue(), {},
+		buf.cmd_bind_sparse_memory(device.select_queue(GL::ste_gl_queue_type::sparse_binding_queue)->device_queue(), {},
 								   { StE::range<std::uint32_t>(20000, 40000) },
 								   {},
 								   {},
@@ -129,19 +130,55 @@ int main()
 	const std::vector<vertex> vertices = {
 		{ { 0.0f, -0.5f }, { 1.0f, 0.0f, 0.0f } },
 		{ { 0.5f,  0.5f }, { 0.0f, 1.0f, 0.0f } },
-		{ { -0.5f, 0.5f }, { 0.0f, 0.0f, 1.0f } }
+		{ { -0.5f, 0.5f }, { 0.0f, 0.0f, 1.0f } },
+		{ { 1.0f,  -0.5f }, { 1.0f, 0.0f, 1.0f } }
 	};
+
+	auto& transfer_queue = *device.select_queue(GL::ste_gl_queue_type::data_transfer_queue);
 
 	ste_resource<GL::device_buffer<vertex>> vertex_buffer(ctx, vertices.size(),
 														  VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
 	GL::device_buffer<vertex, GL::device_resource_allocation_policy_host_visible_coherent>
-		staging_buffer(ctx, vertices.size(), VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
-
+		staging_vertex_buffer(ctx, vertices.size(), VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+	GL::vk_fence vertex_transfer_fence(device.logical_device());
+	std::future<void> vertex_transfer_future;
+	auto vertex_transfer_command_buffer = transfer_queue.get_command_pool_transient().allocate_buffers(1);
 	{
-		auto vertex_buffer_ptr = staging_buffer.get_underlying_memory().mmap<vertex>(0, vertices.size());
+		auto vertex_buffer_ptr = staging_vertex_buffer.get_underlying_memory().mmap<vertex>(0, vertices.size());
 		for (int i=0;i<vertices.size();++i)
 			(*vertex_buffer_ptr)[i] = vertices[i];
 	}
+	vertex_transfer_future = transfer_queue.enqueue([&]() {
+		// Record and submit a one-time command buffer
+		{
+			GL::vk_command_recorder recorder(vertex_transfer_command_buffer[0], VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
+			recorder << GL::vk_cmd_copy_buffer(staging_vertex_buffer.get(), vertex_buffer->get());
+		}
+		GL::ste_gl_device_queue::thread_queue().submit(&vertex_transfer_command_buffer[0], &vertex_transfer_fence);
+	});
+
+	// Index buffer
+	std::vector<std::uint32_t> indices = { 0,2,1,0,1,3 };
+	ste_resource<GL::device_buffer<std::uint32_t>> index_buffer(ctx, indices.size(),
+																VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
+	GL::device_buffer<std::uint32_t, GL::device_resource_allocation_policy_host_visible_coherent>
+		staging_index_buffer(ctx, indices.size(), VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+	GL::vk_fence index_transfer_fence(device.logical_device());
+	std::future<void> index_transfer_future;
+	auto index_transfer_command_buffer = transfer_queue.get_command_pool_transient().allocate_buffers(1);
+	{
+		auto index_buffer_ptr = staging_index_buffer.get_underlying_memory().mmap<std::uint32_t>(0, vertices.size());
+		for (int i = 0; i<indices.size(); ++i)
+			(*index_buffer_ptr)[i] = indices[i];
+	}
+	index_transfer_future = transfer_queue.enqueue([&]() {
+		// Record and submit a one-time command buffer
+		{
+			GL::vk_command_recorder recorder(index_transfer_command_buffer[0], VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
+			recorder << GL::vk_cmd_copy_buffer(staging_index_buffer.get(), index_buffer->get());
+		}
+		GL::ste_gl_device_queue::thread_queue().submit(&index_transfer_command_buffer[0], &index_transfer_fence);
+	});
 
 	// Viewport
 	glm::u32vec2 swapchain_size = device.get_surface().size();
@@ -171,23 +208,15 @@ int main()
 
 	// Swapchain presentation framebuffers
 	std::vector<GL::vk_framebuffer> presentation_framebuffers;
-	std::vector<GL::vk_semaphore> swapchain_image_ready_semaphore;
-	std::vector<GL::vk_semaphore> rendering_finished_semaphore;
-
 	auto recreate_queues_connection = std::make_shared<GL::ste_device::queues_and_surface_recreate_signal_type::connection_type>([&](const GL::ste_device*) {
 		swapchain_images_count = device.get_surface().get_swap_chain_images().size();
 
-		swapchain_image_ready_semaphore.reserve(swapchain_images_count);
-		rendering_finished_semaphore.reserve(swapchain_images_count);
 		presentation_framebuffers.reserve(swapchain_images_count);
-		for (auto i = 0; i < swapchain_images_count; ++i) {
+		for (auto i = 0; i < swapchain_images_count; ++i)
 			presentation_framebuffers.emplace_back(device.logical_device(),
 												   presentation_renderpass,
 												   std::vector<VkImageView>{ device.get_surface().get_swap_chain_images()[i].view },
 												   swapchain_size);
-			swapchain_image_ready_semaphore.emplace_back(device.logical_device());
-			rendering_finished_semaphore.emplace_back(device.logical_device());
-		}
 	});
 
 	(*recreate_queues_connection)(&device);
@@ -207,7 +236,7 @@ int main()
 									  scissor,
 									  { { 0, vertex::descriptor() } },
 									  VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
-									  GL::vk_rasterizer_op_descriptor(VK_CULL_MODE_NONE, VK_FRONT_FACE_COUNTER_CLOCKWISE),
+									  GL::vk_rasterizer_op_descriptor(),
 	                                  GL::vk_depth_op_descriptor(VK_COMPARE_OP_GREATER, false),
 									  { attachment0_blend_op },
 									  glm::vec4{ .0f });
@@ -221,21 +250,18 @@ int main()
 //	stage.get();
 
 
-	device.acquire_next_command_buffer(2);
-	device.enqueue(2, [&](std::uint32_t buffer_idx) {
-		auto& command_buffer = GL::ste_gl_device_queue::thread_command_buffers()[buffer_idx];
-
-		GL::vk_command_recorder recorder(command_buffer);
-		recorder << GL::vk_cmd_copy_buffer(staging_buffer.get(), vertex_buffer->get());
-	});
-	device.submit(2, {}, {});
-	device.get_queue(2).wait_idle();
+	vertex_transfer_future.wait();
+	index_transfer_future.wait();
+	vertex_transfer_fence.wait_idle();
+	index_transfer_fence.wait_idle();
+	vertex_transfer_command_buffer.free();
+	index_transfer_command_buffer.free();
 
 
 	/*
 	 *	Main loop
 	 */
-	int tick = 0;
+
 	for (;;) {
 		engine.tick();
 		window.poll_events();
@@ -245,12 +271,12 @@ int main()
 		}
 
 		// Acquire a command buffer for this frame
-		device.acquire_next_command_buffer(0);
+		device.acquire_next_command_buffer(GL::ste_gl_queue_type::primary_queue);
 		// Acquire next presentation image
-		device.acquire_presentation_image(0, swapchain_image_ready_semaphore[tick % swapchain_images_count]);
+		device.acquire_presentation_image(GL::ste_gl_queue_type::primary_queue);
 
 		// Record the command buffer
-		device.enqueue(0, [&](std::uint32_t buffer_idx) {
+		device.enqueue(GL::ste_gl_queue_type::primary_queue, [&](std::uint32_t buffer_idx) {
 			auto& command_buffer = GL::ste_gl_device_queue::thread_command_buffers()[buffer_idx];
 			auto& presentation_image = GL::ste_device::next_presentation_image();
 			assert(presentation_image.image != nullptr);
@@ -266,19 +292,14 @@ int main()
 													{ swapchain_attachment_clear_value })
 					<< GL::vk_cmd_bind_pipeline(pipeline)
 					<< GL::vk_cmd_bind_vertex_buffers(0, vertex_buffer->get())
-					<< GL::vk_cmd_draw(3, 1)
+					<< GL::vk_cmd_bind_index_buffer(index_buffer->get())
+					<< GL::vk_cmd_draw_indexed(indices.size(), 1)
 					<< GL::vk_cmd_end_render_pass();
 			}
 		});
 
-		// Submit command buffer
-		device.submit(0, 
-		{ std::make_pair(&swapchain_image_ready_semaphore[tick % swapchain_images_count], VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT) },
-		{ &rendering_finished_semaphore[tick % swapchain_images_count] });
-		// Present
-		device.present(0, rendering_finished_semaphore[tick % swapchain_images_count]);
-
-		++tick;
+		// Submit command buffer and present
+		device.submit_and_present(GL::ste_gl_queue_type::primary_queue, {}, {});
 	}
 
 	device.logical_device().wait_idle();

@@ -86,8 +86,8 @@ public:
 	void cmd_bind_sparse_memory(const vk_queue &queue,
 								const std::vector<bind_range_t> &unbind_regions,
 								const std::vector<bind_range_t> &bind_regions,
-								const std::vector<vk_semaphore*> &wait_semaphores,
-								const std::vector<vk_semaphore*> &signal_semaphores,
+								const std::vector<const vk_semaphore*> &wait_semaphores,
+								const std::vector<const vk_semaphore*> &signal_semaphores,
 								const vk_fence *fence = nullptr) {
 		std::vector<vk_sparse_memory_bind> memory_binds;
 		auto size = atom_size();

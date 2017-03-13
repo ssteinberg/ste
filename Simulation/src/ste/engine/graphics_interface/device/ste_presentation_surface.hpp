@@ -174,7 +174,7 @@ private:
 		auto layers = this->swap_chain->get_layers();
 		auto size = this->swap_chain->get_size();
 
-		// Aquire swap chain images
+		// Aquire swap-chain images
 		std::vector<VkImage> swapchain_vk_image_objects;
 		std::uint32_t chain_image_count;
 		vk_result res = vkGetSwapchainImagesKHR(*presentation_device, *swap_chain, &chain_image_count, nullptr);
@@ -216,7 +216,7 @@ private:
 	}
 
 	void create_swap_chain() {
-		// Create swap chain based on passed parameters and available device capabilities
+		// Create swap-chain based on passed parameters and available device capabilities
 		if (!(surface_presentation_caps.supportedUsageFlags & VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT)) {
 			throw ste_engine_exception("VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT unsupported for swapchain");
 		}
@@ -235,7 +235,7 @@ private:
 		auto composite = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
 		auto present_mode = get_surface_presentation_mode();
 
-		// Create the swap chain
+		// Create the swap-chain
 		this->swap_chain = std::make_unique<vk_swapchain>(*presentation_device,
 														  presentation_surface,
 														  min_image_count,
@@ -257,7 +257,7 @@ private:
 		auto &resize_signal = presentation_window.get_signals().signal_window_resize();
 
 		resize_signal_connection = std::make_shared<resize_signal_connection_t>([this](const glm::i32vec2 &size) {
-			// Raise flag to recreate swap chain
+			// Raise flag to recreate swap-chain
 			swap_chain_optimal_flag.clear(std::memory_order_release);
 		});
 		resize_signal.connect(resize_signal_connection);
@@ -300,7 +300,7 @@ public:
 			throw ste_engine_presentation_unsupported_exception("No device queues support presentation for choosen surface");
 		}
 
-		// Create swap chain
+		// Create swap-chain
 		read_device_caps();
 		create_swap_chain();
 
@@ -316,7 +316,7 @@ public:
 	ste_presentation_surface &operator=(const ste_presentation_surface &) = delete;
 
 	/**
-	*	@brief	Acquires the next swap chain presentation image.
+	*	@brief	Acquires the next swap-chain presentation image.
 	*			Call result might be success, suboptimal, out-of-date, timeout or error.
 	*			In case of success or suboptimal returns the next swap image.
 	*			In case of suboptimal or out-of-date raises the 'sub_optimal' flag.
@@ -331,7 +331,7 @@ public:
 	*
 	*	@return Returns a struct with a pointer to the pair swap_chain_image_t, index of the image and a 'sub_optimal' flag.
 	*			The returned image might be nullptr.
-	*			If the 'sub_optimal' flag is raised, the swap chain should be recreated by calling recreate_swap_chain.
+	*			If the 'sub_optimal' flag is raised, the swap-chain should be recreated by calling recreate_swap_chain.
 	*/
 	template <class Rep = std::chrono::nanoseconds::rep, class Period = std::chrono::nanoseconds::period>
 	acquire_next_image_return_t acquire_next_swapchain_image(
@@ -361,7 +361,7 @@ public:
 			throw vk_exception(res);
 		}
 
-		// Furthermore raise flag to recreate swap chain
+		// Furthermore raise flag to recreate swap-chain
 		if (res != VK_SUCCESS)
 			swap_chain_optimal_flag.clear(std::memory_order_release);
 
@@ -369,13 +369,13 @@ public:
 	}
 
 	/**
-	*	@brief	Recreates the swap chain. Possible following a surface resize or a suboptimial image.
-	*			It is the callers responsibility to manually synchronize access to the old swap chain.
+	*	@brief	Recreates the swap-chain. Possible following a surface resize or a suboptimial image.
+	*			It is the callers responsibility to manually synchronize access to the old swap-chain.
 	*
 	*			Should be externally synchronized with other presentation methods.
 	*
-	*	@throws vk_exception	On Vulkan error during swap chain recreation
-	*	@throws ste_engine_exception	On internal error during swap chain recreation
+	*	@throws vk_exception	On Vulkan error during swap-chain recreation
+	*	@throws ste_engine_exception	On internal error during swap-chain recreation
 	*/
 	void recreate_swap_chain() {
 		this->swap_chain_images.clear();
@@ -390,7 +390,7 @@ public:
 	*
 	*	@throws vk_exception	On Vulkan error
 	*
-	*	@param	image_index			Index of the presentation image in the swap chain
+	*	@param	image_index			Index of the presentation image in the swap-chain
 	*	@param	presentation_queue	Device queue on which to present
 	*	@param	wait_semaphore		Semaphore that signals that rendering to the presentation image is complete
 	*/
@@ -412,7 +412,7 @@ public:
 
 		vk_result res = vkQueuePresentKHR(presentation_queue, &info);
 
-		// Raise flag to recreate swap chain
+		// Raise flag to recreate swap-chain
 		if (res != VK_SUCCESS)
 			swap_chain_optimal_flag.clear(std::memory_order_release);
 		if (res != VK_SUCCESS && res != VK_SUBOPTIMAL_KHR && res != VK_ERROR_OUT_OF_DATE_KHR) {

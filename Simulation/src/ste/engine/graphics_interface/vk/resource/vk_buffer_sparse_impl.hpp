@@ -48,8 +48,8 @@ public:
 	*/
 	void cmd_bind_sparse_memory(const vk_queue &queue,
 								const std::vector<vk_sparse_memory_bind> &memory_binds,
-								const std::vector<vk_semaphore*> &wait_semaphores,
-								const std::vector<vk_semaphore*> &signal_semaphores,
+								const std::vector<const vk_semaphore*> &wait_semaphores,
+								const std::vector<const vk_semaphore*> &signal_semaphores,
 								const vk_fence *fence = nullptr) {
 		std::vector<VkSemaphore> wait;
 		std::vector<VkSemaphore> signal;
