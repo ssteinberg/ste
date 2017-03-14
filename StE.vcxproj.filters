@@ -240,13 +240,13 @@
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\vk\query\vk_query.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Simulation\src\ste\engine\graphics_interface\device\ste_gl_device_queue.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\device\ste_device.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Simulation\src\ste\engine\graphics_interface\device\ste_gl_device_queue_descriptors.cpp">
+    <ClCompile Include="Simulation\src\ste\engine\graphics_interface\device\ste_device_queue_selector_cache.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Simulation\src\ste\engine\graphics_interface\device\queue\ste_device_queue.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1463,9 +1463,6 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device\ste_device.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device\ste_gl_device_queue.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device\ste_presentation_surface.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1520,10 +1517,25 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\command\vk_cmd_copy_buffer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device\ste_gl_device_queues_protocol.hpp">
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device\ste_device_queue_selector_cache.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device\ste_gl_device_queue_descriptors.hpp">
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device\queue\ste_device_queue.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device\queue\ste_device_queue_descriptors.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device\queue\ste_device_queues_protocol.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device\queue\ste_queue_selector.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device\queue\ste_queue_selector_policy.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device\queue\ste_queue_type.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -7,13 +7,17 @@
 
 #include <ste_window.hpp>
 #include <vk_physical_device_descriptor.hpp>
-#include <ste_gl_device_queue_descriptors.hpp>
+#include <ste_device_queue_descriptors.hpp>
+#include <ste_device_queue_selector_cache.hpp>
+#include <ste_queue_selector.hpp>
 
 #include <ste_engine_exceptions.hpp>
 #include <ste_gl_context_creation_parameters.hpp>
 #include <ste_presentation_surface.hpp>
 #include <ste_gl_context.hpp>
-#include <ste_gl_device_queue.hpp>
+#include <ste_device_queue.hpp>
+
+#include <vk_semaphore.hpp>
 
 #include <signal.hpp>
 
@@ -29,7 +33,7 @@ public:
 	using queues_and_surface_recreate_signal_type = signal<const ste_device*>;
 
 private:
-	using queue_t = std::unique_ptr<ste_gl_device_queue>;
+	using queue_t = std::unique_ptr<ste_device_queue>;
 	struct presentation_sync_primitives_t {
 		vk_semaphore swapchain_image_ready_semaphore;
 		vk_semaphore rendering_finished_semaphore;
@@ -48,13 +52,15 @@ private:
 
 private:
 	const ste_gl_device_creation_parameters parameters;
-	const ste_gl_queue_descriptors queue_descriptors;
+	const ste_queue_descriptors queue_descriptors;
 	const vk_logical_device device;
 	const std::unique_ptr<ste_presentation_surface> presentation_surface{ nullptr };
 
 	const std::uint32_t minimal_command_buffers_count{ 0 };
 	std::uint32_t command_buffers_count{ 0 };
 	std::vector<presentation_sync_primitives_t> presentation_sync_primitives;
+
+	ste_device_queue_selector_cache queue_selector_cache;
 	std::vector<queue_t> device_queues;
 	
 	queues_and_surface_recreate_signal_type queues_and_surface_recreate_signal;
@@ -68,7 +74,7 @@ public:
 private:
 	static auto create_vk_virtual_device(const GL::vk_physical_device_descriptor &physical_device,
 										 const VkPhysicalDeviceFeatures &requested_features,
-										 const ste_gl_queue_descriptors &queue_descriptors,
+										 const ste_queue_descriptors &queue_descriptors,
 										 std::vector<const char*> device_extensions = {}) {
 		if (queue_descriptors.size() == 0) {
 			throw ste_engine_exception("queue_descriptors is empty");
@@ -111,6 +117,9 @@ private:
 		}
 
 		device_queues = std::move(q);
+
+		// And reset the queue selector cache
+		queue_selector_cache = ste_device_queue_selector_cache();
 	}
 
 	void update_command_buffers_count() {
@@ -163,7 +172,7 @@ public:
 	*	@param minimal_command_buffers_count Minimal amount of command buffers to create
 	*/
 	ste_device(const ste_gl_device_creation_parameters &parameters,
-			   const ste_gl_queue_descriptors &queue_descriptors,
+			   const ste_queue_descriptors &queue_descriptors,
 			   const ste_gl_context &gl_ctx,
 			   const ste_window &presentation_window,
 			   std::uint32_t minimal_command_buffers_count = 1)
@@ -196,7 +205,7 @@ public:
 	*	@param command_buffers_count Count of command buffers to create in each queue
 	*/
 	ste_device(const ste_gl_device_creation_parameters &parameters,
-			   const ste_gl_queue_descriptors &queue_descriptors,
+			   const ste_queue_descriptors &queue_descriptors,
 			   const ste_gl_context &gl_ctx,
 			   std::uint32_t command_buffers_count = 1)
 		: parameters(parameters),
@@ -227,7 +236,8 @@ public:
 	*	
 	*	@param queue_selector		The device queue selector used to select the device queue to use
 	*/
-	void acquire_next_command_buffer(const ste_gl_queue_selector &queue_selector) {
+	template <typename selector_policy = ste_queue_selector_default_policy>
+	void acquire_next_command_buffer(const ste_queue_selector<selector_policy> &queue_selector) {
 		auto& queue = select_queue(queue_selector);
 		queue->acquire_next_command_buffer();
 	}
@@ -243,7 +253,8 @@ public:
 	*
 	*	@param queue_selector		The device queue selector used to select the device queue to use
 	*/
-	void acquire_presentation_image(const ste_gl_queue_selector &queue_selector) {
+	template <typename selector_policy = ste_queue_selector_default_policy>
+	void acquire_presentation_image(const ste_queue_selector<selector_policy> &queue_selector) {
 		auto& queue = select_queue(queue_selector);
 
 		queue->enqueue([this](std::uint32_t index) {
@@ -268,8 +279,8 @@ public:
 	*	@param	queue_selector		The device queue selector used to select the device queue to use
 	*	@param	task	Task to enqueue
 	*/
-	template <typename L>
-	auto enqueue(const ste_gl_queue_selector &queue_selector, L &&task) {
+	template <typename L, typename selector_policy = ste_queue_selector_default_policy>
+	auto enqueue(const ste_queue_selector<selector_policy> &queue_selector, L &&task) {
 		auto& queue = select_queue(queue_selector);
 		return queue->enqueue(std::forward<L>(task));
 	}
@@ -283,11 +294,12 @@ public:
 	*	@param wait_semaphores		See vk_queue::submit
 	*	@param signal_semaphores	See vk_queue::submit
 	*/
-	auto submit(const ste_gl_queue_selector &queue_selector,
+	template <typename selector_policy = ste_queue_selector_default_policy>
+	auto submit(const ste_queue_selector<selector_policy> &queue_selector,
 				const std::vector<std::pair<const vk_semaphore*, VkPipelineStageFlags>> &wait_semaphores,
 				const std::vector<const vk_semaphore*> &signal_semaphores) {
 		return this->enqueue(queue_selector, [=](std::uint32_t index) {
-			ste_gl_device_queue::submit_current_queue(index,
+			ste_device_queue::submit_current_queue(index,
 													  wait_semaphores,
 													  signal_semaphores);
 		});
@@ -308,7 +320,8 @@ public:
 	*	@param wait_semaphores		See vk_queue::submit
 	*	@param signal_semaphores	See vk_queue::submit
 	*/
-	void submit_and_present(const ste_gl_queue_selector &queue_selector,
+	template <typename selector_policy = ste_queue_selector_default_policy>
+	void submit_and_present(const ste_queue_selector<selector_policy> &queue_selector,
 							const std::vector<std::pair<const vk_semaphore*, VkPipelineStageFlags>> &wait_semaphores,
 							const std::vector<const vk_semaphore*> &signal_semaphores) {
 		this->enqueue(queue_selector, [this, signal_semaphores, wait_semaphores](std::uint32_t index) mutable {
@@ -322,14 +335,14 @@ public:
 			signal.push_back(&sync->rendering_finished_semaphore);
 
 			// Submit
-			ste_gl_device_queue::submit_current_queue(index,
+			ste_device_queue::submit_current_queue(index,
 													  wait,
 													  signal);
 
 			// Present
 			if (acquired_presentation_image.next_image.image != nullptr) {
 				this->presentation_surface->present(acquired_presentation_image.next_image.image_index,
-													ste_gl_device_queue::thread_queue(),
+													ste_device_queue::thread_queue(),
 													sync->rendering_finished_semaphore);
 				acquired_presentation_image = {};
 			}
@@ -348,8 +361,9 @@ public:
 	*
 	*	@param queue_selector		The device queue selector used to select the device queue
 	*/
-	const queue_t& select_queue(const ste_gl_queue_selector &queue_selector) const {
-		auto idx = queue_descriptors.queue_idx(queue_selector);
+	template <typename selector_policy = ste_queue_selector_default_policy>
+	const queue_t& select_queue(const ste_queue_selector<selector_policy> &queue_selector) const {
+		auto idx = queue_selector_cache(queue_selector, queue_descriptors);
 		return device_queues[idx];
 	}
 

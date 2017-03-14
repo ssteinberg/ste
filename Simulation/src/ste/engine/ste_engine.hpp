@@ -11,7 +11,6 @@
 
 #include <ste_device.hpp>
 #include <ste_gl_context.hpp>
-#include <ste_gl_device_queues_protocol.hpp>
 #include <ste_gl_device_memory_allocator.hpp>
 
 #include <ste_engine_exceptions.hpp>

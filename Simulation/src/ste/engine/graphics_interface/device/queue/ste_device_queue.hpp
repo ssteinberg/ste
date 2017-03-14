@@ -4,7 +4,7 @@
 #pragma once
 
 #include <stdafx.hpp>
-#include <ste_gl_device_queues_protocol.hpp>
+#include <ste_device_queues_protocol.hpp>
 
 #include <vk_queue.hpp>
 #include <vk_logical_device.hpp>
@@ -27,7 +27,7 @@
 namespace StE {
 namespace GL {
 
-class ste_gl_device_queue {
+class ste_device_queue {
 public:
 	using task_arg_t = std::uint32_t;
 	using task_t = unique_thread_pool_type_erased_task<const task_arg_t&>;
@@ -46,7 +46,7 @@ private:
 
 private:
 	const vk_queue queue;
-	const ste_gl_queue_descriptor descriptor;
+	const ste_queue_descriptor descriptor;
 
 	const vk_command_pool pool;
 	const vk_command_pool pool_transient;
@@ -62,7 +62,7 @@ private:
 	std::uint32_t tick_count{ 0 };
 
 private:
-	static thread_local ste_gl_device_queue *static_device_queue_ptr;
+	static thread_local ste_device_queue *static_device_queue_ptr;
 	static thread_local const vk_command_pool *static_command_pool_ptr;
 	static thread_local const vk_command_pool *static_command_pool_transient_ptr;
 	static thread_local vk_command_buffers *static_command_buffers_ptr;
@@ -71,7 +71,7 @@ private:
 
 public:
 	/**
-	*	@brief	Returns the device queue (ste_gl_device_queue) for the current thread
+	*	@brief	Returns the device queue (ste_device_queue) for the current thread
 	*			Must be called from an enqueued task.
 	*/
 	static auto& thread_device_queue() { return *static_device_queue_ptr; }
@@ -172,9 +172,9 @@ private:
 	}
 
 public:
-	ste_gl_device_queue(const vk_logical_device &device, 
+	ste_device_queue(const vk_logical_device &device, 
 						std::uint32_t device_family_index,
-						ste_gl_queue_descriptor descriptor,
+						ste_queue_descriptor descriptor,
 						std::uint32_t buffers_count,
 						std::uint32_t queue_index)
 		: queue(device, descriptor.family, device_family_index),
@@ -187,12 +187,12 @@ public:
 		// Create the queue worker thread
 		thread = std::make_unique<interruptible_thread>([this, queue_index]() {
 			// Set the thread_local globals to this thread's parameters
-			ste_gl_device_queue::static_device_queue_ptr = this;
-			ste_gl_device_queue::static_command_pool_ptr = &this->pool;
-			ste_gl_device_queue::static_command_pool_transient_ptr = &this->pool_transient;
-			ste_gl_device_queue::static_command_buffers_ptr = &this->buffers;
-			ste_gl_device_queue::static_queue_ptr = &this->queue;
-			ste_gl_device_queue::static_queue_index = queue_index;
+			ste_device_queue::static_device_queue_ptr = this;
+			ste_device_queue::static_command_pool_ptr = &this->pool;
+			ste_device_queue::static_command_pool_transient_ptr = &this->pool_transient;
+			ste_device_queue::static_command_buffers_ptr = &this->buffers;
+			ste_device_queue::static_queue_ptr = &this->queue;
+			ste_device_queue::static_queue_index = queue_index;
 
 			for (;;) {
 				if (interruptible_thread::is_interruption_flag_set()) return;
@@ -219,7 +219,7 @@ public:
 			}
 		});
 	}
-	~ste_gl_device_queue() noexcept {
+	~ste_device_queue() noexcept {
 		thread->interrupt();
 
 		do { notifier.notify_all(); } while (!m.try_lock());
@@ -229,10 +229,10 @@ public:
 		wait_idle();
 	}
 
-	ste_gl_device_queue(ste_gl_device_queue &&q) = delete;
-	ste_gl_device_queue &operator=(ste_gl_device_queue &&) = delete;
-	ste_gl_device_queue(const ste_gl_device_queue &) = delete;
-	ste_gl_device_queue &operator=(const ste_gl_device_queue &) = delete;
+	ste_device_queue(ste_device_queue &&q) = delete;
+	ste_device_queue &operator=(ste_device_queue &&) = delete;
+	ste_device_queue(const ste_device_queue &) = delete;
+	ste_device_queue &operator=(const ste_device_queue &) = delete;
 
 	/**
 	*	@brief	Prepares the next command buffer

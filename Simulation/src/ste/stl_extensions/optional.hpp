@@ -15,11 +15,13 @@ namespace StE {
 
 template <typename T>
 class optional {
+public:
+	using type = std::remove_reference_t<std::remove_pointer_t<T>>;
+
 private:
 	template <typename S>
 	friend class optional;
 
-	using type = std::remove_reference_t<std::remove_pointer_t<T>>;
 	using reference = type&;
 	using pointer = type*;
 	using const_pointer = type const*;

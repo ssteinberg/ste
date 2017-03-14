@@ -92,7 +92,7 @@ int main()
 	device_params.additional_device_extensions = { "VK_KHR_shader_draw_parameters" };
 
 	StE::ste_engine::gl_device_t device(device_params, 
-										StE::GL::ste_gl_device_queues_protocol::queue_descriptors_for_physical_device(physical_device),
+										StE::GL::ste_device_queues_protocol::queue_descriptors_for_physical_device(physical_device),
 										gl_ctx, 
 										window);
 
@@ -106,7 +106,7 @@ int main()
 
 	StE::GL::device_buffer_sparse<float> buf(ctx, 100000, VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT);
 	{
-		buf.cmd_bind_sparse_memory(device.select_queue(GL::ste_gl_queue_type::sparse_binding_queue)->device_queue(), {},
+		buf.cmd_bind_sparse_memory(device.select_queue(GL::make_queue_selector(GL::ste_queue_type::sparse_binding_queue))->device_queue(), {},
 								   { StE::range<std::uint32_t>(20000, 40000) },
 								   {},
 								   {},
@@ -134,7 +134,7 @@ int main()
 		{ { 1.0f,  -0.5f }, { 1.0f, 0.0f, 1.0f } }
 	};
 
-	auto& transfer_queue = *device.select_queue(GL::ste_gl_queue_type::data_transfer_queue);
+	auto& transfer_queue = *device.select_queue(GL::make_queue_selector(GL::ste_queue_type::data_transfer_queue));
 
 	ste_resource<GL::device_buffer<vertex>> vertex_buffer(ctx, vertices.size(),
 														  VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
@@ -154,7 +154,7 @@ int main()
 			GL::vk_command_recorder recorder(vertex_transfer_command_buffer[0], VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
 			recorder << GL::vk_cmd_copy_buffer(staging_vertex_buffer.get(), vertex_buffer->get());
 		}
-		GL::ste_gl_device_queue::thread_queue().submit(&vertex_transfer_command_buffer[0], &vertex_transfer_fence);
+		GL::ste_device_queue::thread_queue().submit(&vertex_transfer_command_buffer[0], &vertex_transfer_fence);
 	});
 
 	// Index buffer
@@ -177,7 +177,7 @@ int main()
 			GL::vk_command_recorder recorder(index_transfer_command_buffer[0], VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
 			recorder << GL::vk_cmd_copy_buffer(staging_index_buffer.get(), index_buffer->get());
 		}
-		GL::ste_gl_device_queue::thread_queue().submit(&index_transfer_command_buffer[0], &index_transfer_fence);
+		GL::ste_device_queue::thread_queue().submit(&index_transfer_command_buffer[0], &index_transfer_fence);
 	});
 
 	// Viewport
@@ -271,13 +271,13 @@ int main()
 		}
 
 		// Acquire a command buffer for this frame
-		device.acquire_next_command_buffer(GL::ste_gl_queue_type::primary_queue);
+		device.acquire_next_command_buffer(GL::make_queue_selector(GL::ste_queue_type::primary_queue));
 		// Acquire next presentation image
-		device.acquire_presentation_image(GL::ste_gl_queue_type::primary_queue);
+		device.acquire_presentation_image(GL::make_queue_selector(GL::ste_queue_type::primary_queue));
 
 		// Record the command buffer
-		device.enqueue(GL::ste_gl_queue_type::primary_queue, [&](std::uint32_t buffer_idx) {
-			auto& command_buffer = GL::ste_gl_device_queue::thread_command_buffers()[buffer_idx];
+		device.enqueue(GL::make_queue_selector(GL::ste_queue_type::primary_queue), [&](std::uint32_t buffer_idx) {
+			auto& command_buffer = GL::ste_device_queue::thread_command_buffers()[buffer_idx];
 			auto& presentation_image = GL::ste_device::next_presentation_image();
 			assert(presentation_image.image != nullptr);
 
@@ -299,7 +299,7 @@ int main()
 		});
 
 		// Submit command buffer and present
-		device.submit_and_present(GL::ste_gl_queue_type::primary_queue, {}, {});
+		device.submit_and_present(GL::make_queue_selector(GL::ste_queue_type::primary_queue), {}, {});
 	}
 
 	device.logical_device().wait_idle();
