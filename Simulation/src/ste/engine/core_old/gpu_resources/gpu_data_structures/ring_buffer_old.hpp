@@ -15,7 +15,7 @@ namespace StE {
 namespace Core {
 
 template <typename T, std::size_t max_size = 4096>
-class ring_buffer {
+class ring_buffer_old {
 public:
 	using value_type = T;
 	using storage_type = gstack<T>;
@@ -29,9 +29,9 @@ private:
 	std::size_t offset{ 0 };
 
 public:
-	ring_buffer() : ring_buffer(std::min<std::size_t>(8, max_size), nullptr) {}
-	ring_buffer(const std::vector<T> &data) : ring_buffer(data.size(), &data[0]) { assert(data.size() < max_size); }
-	ring_buffer(std::size_t size, const T *data) : storage(size, data) {
+	ring_buffer_old() : ring_buffer_old(std::min<std::size_t>(8, max_size), nullptr) {}
+	ring_buffer_old(const std::vector<T> &data) : ring_buffer_old(data.size(), &data[0]) { assert(data.size() < max_size); }
+	ring_buffer_old(std::size_t size, const T *data) : storage(size, data) {
 		if (storage.size() == 0)
 			storage.reserve(1);
 		assert(size <= max_size);

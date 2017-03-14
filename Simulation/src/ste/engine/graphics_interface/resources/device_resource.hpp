@@ -59,12 +59,12 @@ public:
 	operator const T&() const { return get(); }
 
 	T& get() { return resource; }
-	T& get() const { return resource; }
+	const T& get() const { return resource; }
 
 	T& operator->() { return get(); }
-	T& operator->() const { return get(); }
+	const T& operator->() const { return get(); }
 	T& operator*() { return get(); }
-	T& operator*() const { return get(); }
+	const T& operator*() const { return get(); }
 };
 
 }

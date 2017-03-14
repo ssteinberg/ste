@@ -82,12 +82,12 @@ public:
 	{}
 
 	template<class U = T, typename = std::enable_if_t<std::is_move_constructible<U>::value>>
-	ste_resource_base_deferred(ste_resource_base_deferred &&o)
-		: res(std::move(o)),
-		wait_func_ptr(std::move(o.wait_func_ptr)),
+	ste_resource_base_deferred(ste_resource_base_deferred &&o) noexcept
+		: res(std::move(o.res)),
+		wait_func_ptr(o.wait_func_ptr.load(std::memory_order_acquire)),
 		policy(std::move(o.policy)) {}
 	template<class U = T, typename = std::enable_if_t<std::is_move_assignable<U>::value>>
-	ste_resource_base_deferred &operator=(ste_resource_base_deferred &&o) {
+	ste_resource_base_deferred &operator=(ste_resource_base_deferred &&o) noexcept {
 		res = std::move(o.res);
 		wait_func_ptr = o.wait_func_ptr;
 		policy = std::move(o.policy);
@@ -125,6 +125,9 @@ public:
 		: res(ste_resource_dont_defer(),
 			  std::forward<Params>(params)...)
 	{}
+
+	ste_resource_wrapper(ste_resource_wrapper&&) = default;
+	ste_resource_wrapper &operator=(ste_resource_wrapper&&) = default;
 
 	auto& get() & { return res; }
 	auto&& get() && { return std::move(res); }
@@ -233,6 +236,9 @@ public:
 			   std::forward<Params>(params)...)
 	{}
 
+	ste_resource_deferred_move_assignable_default_constructible(ste_resource_deferred_move_assignable_default_constructible&&) = default;
+	ste_resource_deferred_move_assignable_default_constructible &operator=(ste_resource_deferred_move_assignable_default_constructible&&) = default;
+
 	auto& get() & { return Base::get_resource(); }
 	auto&& get() && { return std::move(Base::get_resource()); }
 	auto& get() const& { return Base::get_resource(); }
@@ -338,6 +344,9 @@ public:
 		: Base(ste_resource_dont_defer(),
 			   std::make_unique<T>(std::forward<Params>(params)...))
 	{}
+
+	ste_resource_deferred_ptr_wrap(ste_resource_deferred_ptr_wrap&&) = default;
+	ste_resource_deferred_ptr_wrap&operator=(ste_resource_deferred_ptr_wrap&&) = default;
 
 	auto& get() & { return *Base::get_resource(); }
 	auto&& get() && { return std::move(*Base::get_resource()); }

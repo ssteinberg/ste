@@ -10,7 +10,7 @@
 #include <gpu_dispatchable.hpp>
 #include <gl_current_context.hpp>
 
-#include <ring_buffer.hpp>
+#include <ring_buffer_old.hpp>
 #include <range.hpp>
 
 #include <vertex_array_object.hpp>
@@ -27,7 +27,7 @@ class text_renderable : public Graphics::gpu_dispatchable {
 
 	static constexpr std::size_t ringbuffer_max_size = 4096;
 
-	using ring_buffer_type = Core::ring_buffer<glyph_point, ringbuffer_max_size>;
+	using ring_buffer_type = Core::ring_buffer_old<glyph_point, ringbuffer_max_size>;
 
 private:
 	mutable text_manager *tr;

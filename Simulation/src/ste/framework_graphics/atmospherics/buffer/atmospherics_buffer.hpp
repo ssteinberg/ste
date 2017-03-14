@@ -6,7 +6,7 @@
 #include <stdafx.hpp>
 #include <atmospherics_descriptor.hpp>
 
-#include <ring_buffer.hpp>
+#include <ring_buffer_old.hpp>
 #include <range.hpp>
 
 namespace StE {
@@ -15,7 +15,7 @@ namespace Graphics {
 class atmospherics_buffer {
 private:
 	using descriptor = atmospherics_descriptor;
-	using buffer_type = Core::ring_buffer<descriptor, 3>;
+	using buffer_type = Core::ring_buffer_old<descriptor, 3>;
 
 private:
 	buffer_type buffer;

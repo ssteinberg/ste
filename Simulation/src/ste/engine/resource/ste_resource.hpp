@@ -85,6 +85,9 @@ public:
 
 	~ste_resource() noexcept {}
 
+	ste_resource(ste_resource&&) = default;
+	ste_resource &operator=(ste_resource&&) = default;
+
 	// For intellisense
 	T& get() & { return Base::get(); }
 	T&& get() && { return std::move(Base::get()); }

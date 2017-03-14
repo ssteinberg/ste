@@ -6,7 +6,7 @@
 #include <stdafx.hpp>
 #include <camera.hpp>
 
-#include <ring_buffer.hpp>
+#include <ring_buffer_old.hpp>
 #include <range.hpp>
 
 #include <glm/gtx/dual_quaternion.hpp>
@@ -28,8 +28,8 @@ private:
 		float aspect;
 	};
 
-	using view_ring_buffer_type = Core::ring_buffer<view_data, 3>;
-	using proj_ring_buffer_type = Core::ring_buffer<proj_data, 1>;
+	using view_ring_buffer_type = Core::ring_buffer_old<view_data, 3>;
+	using proj_ring_buffer_type = Core::ring_buffer_old<proj_data, 1>;
 
 private:
 	view_ring_buffer_type view_buffer;

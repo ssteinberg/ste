@@ -956,9 +956,6 @@
     <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\gpu_data_structures\gvector_pinned.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\gpu_data_structures\ring_buffer.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\locks\gpu_sync.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1536,6 +1533,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device\queue\ste_queue_type.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\data_structure\array.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\data_structure\ring_buffer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\gpu_data_structures\ring_buffer_old.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -2,7 +2,7 @@
 #include <stdafx.hpp>
 
 #include <ste.hpp>
-#include <device_buffer.hpp>
+#include <array.hpp>
 #include <device_buffer_sparse.hpp>
 #include <device_pipeline_shader_stage.hpp>
 
@@ -16,7 +16,6 @@
 #include <vk_cmd_bind_vertex_buffers.hpp>
 #include <vk_cmd_bind_index_buffer.hpp>
 #include <vk_cmd_draw_indexed.hpp>
-#include <vk_cmd_copy_buffer.hpp>
 
 #include <ste_resource.hpp>
 
@@ -133,52 +132,11 @@ int main()
 		{ { -0.5f, 0.5f }, { 0.0f, 0.0f, 1.0f } },
 		{ { 1.0f,  -0.5f }, { 1.0f, 0.0f, 1.0f } }
 	};
-
-	auto& transfer_queue = *device.select_queue(GL::make_queue_selector(GL::ste_queue_type::data_transfer_queue));
-
-	ste_resource<GL::device_buffer<vertex>> vertex_buffer(ctx, vertices.size(),
-														  VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
-	GL::device_buffer<vertex, GL::device_resource_allocation_policy_host_visible_coherent>
-		staging_vertex_buffer(ctx, vertices.size(), VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
-	GL::vk_fence vertex_transfer_fence(device.logical_device());
-	std::future<void> vertex_transfer_future;
-	auto vertex_transfer_command_buffer = transfer_queue.get_command_pool_transient().allocate_buffers(1);
-	{
-		auto vertex_buffer_ptr = staging_vertex_buffer.get_underlying_memory().mmap<vertex>(0, vertices.size());
-		for (int i=0;i<vertices.size();++i)
-			(*vertex_buffer_ptr)[i] = vertices[i];
-	}
-	vertex_transfer_future = transfer_queue.enqueue([&]() {
-		// Record and submit a one-time command buffer
-		{
-			GL::vk_command_recorder recorder(vertex_transfer_command_buffer[0], VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
-			recorder << GL::vk_cmd_copy_buffer(staging_vertex_buffer.get(), vertex_buffer->get());
-		}
-		GL::ste_device_queue::thread_queue().submit(&vertex_transfer_command_buffer[0], &vertex_transfer_fence);
-	});
+	ste_resource<GL::array<vertex>> vertex_buffer(ctx, vertices, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
 
 	// Index buffer
 	std::vector<std::uint32_t> indices = { 0,2,1,0,1,3 };
-	ste_resource<GL::device_buffer<std::uint32_t>> index_buffer(ctx, indices.size(),
-																VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
-	GL::device_buffer<std::uint32_t, GL::device_resource_allocation_policy_host_visible_coherent>
-		staging_index_buffer(ctx, indices.size(), VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
-	GL::vk_fence index_transfer_fence(device.logical_device());
-	std::future<void> index_transfer_future;
-	auto index_transfer_command_buffer = transfer_queue.get_command_pool_transient().allocate_buffers(1);
-	{
-		auto index_buffer_ptr = staging_index_buffer.get_underlying_memory().mmap<std::uint32_t>(0, vertices.size());
-		for (int i = 0; i<indices.size(); ++i)
-			(*index_buffer_ptr)[i] = indices[i];
-	}
-	index_transfer_future = transfer_queue.enqueue([&]() {
-		// Record and submit a one-time command buffer
-		{
-			GL::vk_command_recorder recorder(index_transfer_command_buffer[0], VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
-			recorder << GL::vk_cmd_copy_buffer(staging_index_buffer.get(), index_buffer->get());
-		}
-		GL::ste_device_queue::thread_queue().submit(&index_transfer_command_buffer[0], &index_transfer_fence);
-	});
+	ste_resource<GL::array<std::uint32_t>> index_buffer(ctx, indices, VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
 
 	// Viewport
 	glm::u32vec2 swapchain_size = device.get_surface().size();
@@ -248,14 +206,6 @@ int main()
 //	StE::GL::device_pipeline_shader_stage(ctx, std::string("shadow_directional.geom"));
 //	StE::GL::device_pipeline_shader_stage(ctx, std::string("volumetric_scattering_scatter.comp"));
 //	stage.get();
-
-
-	vertex_transfer_future.wait();
-	index_transfer_future.wait();
-	vertex_transfer_fence.wait_idle();
-	index_transfer_fence.wait_idle();
-	vertex_transfer_command_buffer.free();
-	index_transfer_command_buffer.free();
 
 
 	/*
