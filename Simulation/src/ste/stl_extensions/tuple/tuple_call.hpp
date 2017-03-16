@@ -16,6 +16,8 @@ namespace _tuple_call_detail {
 	template <typename T>
 	decltype(auto) tuple_call_forward(forward_capture_t<T>&& t) { return std::move(t).get(); }
 	template <typename T>
+	decltype(auto) tuple_call_forward(const forward_capture_t<T>& t) { return t.get(); }
+	template <typename T>
 	decltype(auto) tuple_call_forward(T&& t) { return std::forward<T>(t); }
 
 	template <typename F, typename Tuple, bool Done, int Total, int... N>

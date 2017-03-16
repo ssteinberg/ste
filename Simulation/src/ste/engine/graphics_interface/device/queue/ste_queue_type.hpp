@@ -14,8 +14,8 @@ enum class ste_queue_type {
 	primary_queue,
 	graphics_queue,
 	compute_queue,
+	data_transfer_sparse_queue,
 	data_transfer_queue,
-	sparse_binding_queue,
 	none
 };
 
@@ -39,11 +39,12 @@ auto inline ste_queue_type_for_flags(const VkQueueFlags &flags) {
 	if (flags & VK_QUEUE_COMPUTE_BIT)
 		return ste_queue_type::compute_queue;
 
+	if (flags & VK_QUEUE_TRANSFER_BIT &&
+		flags & VK_QUEUE_SPARSE_BINDING_BIT)
+		return ste_queue_type::data_transfer_sparse_queue;
+
 	if (flags & VK_QUEUE_TRANSFER_BIT)
 		return ste_queue_type::data_transfer_queue;
-
-	if (flags & VK_QUEUE_SPARSE_BINDING_BIT)
-		return ste_queue_type::sparse_binding_queue;
 
 	return ste_queue_type::none;
 }
@@ -58,7 +59,7 @@ ste_queue_type inline ste_decay_queue_type(const ste_queue_type &type) {
 	case ste_queue_type::compute_queue:
 		return ste_queue_type::primary_queue;
 	case ste_queue_type::data_transfer_queue:
-		return ste_queue_type::graphics_queue;
+		return ste_queue_type::data_transfer_sparse_queue;
 	default:
 		return ste_queue_type::all;
 	}

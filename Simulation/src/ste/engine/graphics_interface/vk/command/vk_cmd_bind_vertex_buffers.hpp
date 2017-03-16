@@ -20,9 +20,9 @@ private:
 	std::vector<std::uint64_t> offsets;
 
 public:
-	template <typename T>
+	template <typename T, bool sparse>
 	vk_cmd_bind_vertex_buffers(std::uint32_t first_binding_index,
-							   const vk_buffer<T> &buffer,
+							   const vk_buffer<T, sparse> &buffer,
 							   std::uint64_t offset = 0)
 		: first(first_binding_index), buffers({ buffer }), offsets({ offset })
 	{}

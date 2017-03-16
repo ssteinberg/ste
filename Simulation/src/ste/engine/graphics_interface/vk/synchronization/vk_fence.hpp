@@ -8,6 +8,8 @@
 #include <vulkan/vulkan.h>
 #include <vk_logical_device.hpp>
 
+#include <ste_resource_pool_traits.hpp>
+
 #include <optional.hpp>
 
 #include <chrono>
@@ -17,7 +19,7 @@
 namespace StE {
 namespace GL {
 
-class vk_fence {
+class vk_fence : ste_resource_pool_resetable_trait {
 private:
 	optional<VkFence> fence;
 	const vk_logical_device &device;
@@ -69,7 +71,7 @@ public:
 	/**
 	*	@brief	Resets the fence, setting its status to unsignaled
 	*/
-	void reset() const {
+	void reset() override {
 		vk_result res = vkResetFences(device, 1, &fence.get());
 		if (!res) {
 			throw vk_exception(res);

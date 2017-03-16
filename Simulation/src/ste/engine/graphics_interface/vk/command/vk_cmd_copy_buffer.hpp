@@ -9,6 +9,7 @@
 #include <vk_image.hpp>
 
 #include <vector>
+#include <functional>
 
 namespace StE {
 namespace GL {
@@ -21,9 +22,9 @@ private:
 	std::vector<VkBufferCopy> ranges;
 
 public:
-	template <typename T1, bool sparse1, typename T2, bool sparse2>
-	vk_cmd_copy_buffer(const vk_buffer<T1, sparse1> &src_buffer,
-					   const vk_buffer<T2, sparse2> &dst_buffer,
+	template <typename T1, typename T2>
+	vk_cmd_copy_buffer(const vk_buffer<T1> &src_buffer,
+					   const vk_buffer<T2> &dst_buffer,
 					   const std::vector<VkBufferCopy> &ranges = {})
 		: src_buffer(src_buffer), dst_buffer(dst_buffer), ranges(ranges)
 	{
@@ -34,6 +35,15 @@ public:
 			};
 			this->ranges.push_back(c);
 		}
+	}
+	template <typename T1, bool sparse1, typename T2, bool sparse2>
+	vk_cmd_copy_buffer(const vk_buffer<T1, sparse1> &src_buffer,
+					   const vk_buffer<T2, sparse2> &dst_buffer,
+					   const std::vector<VkBufferCopy> &ranges,
+					   typename std::enable_if<sparse1 || sparse2>::type* = nullptr)
+		: src_buffer(src_buffer), dst_buffer(dst_buffer), ranges(ranges)
+	{
+		assert(this->ranges.size());
 	}
 	virtual ~vk_cmd_copy_buffer() noexcept {}
 

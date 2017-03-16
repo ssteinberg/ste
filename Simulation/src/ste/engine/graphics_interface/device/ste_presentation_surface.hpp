@@ -9,7 +9,7 @@
 
 #include <ste_gl_context.hpp>
 #include <vk_result.hpp>
-#include <ste_engine_exceptions.hpp>
+#include <ste_device_exceptions.hpp>
 #include <vk_logical_device.hpp>
 #include <vk_swapchain.hpp>
 #include <vk_swapchain_image.hpp>
@@ -83,7 +83,7 @@ private:
 												  presentation_surface, &present_mode_count, &supported_present_modes[0]);
 
 		if (!present_mode_count) {
-			throw ste_engine_exception("No supported presentation modes");
+			throw ste_device_exception("No supported presentation modes");
 		}
 
 		// Choose a presentation mode
@@ -129,7 +129,7 @@ private:
 											 presentation_surface, &format_count, &supported_formats[0]);
 
 		if (!format_count) {
-			throw ste_engine_exception("No supported presentation image formats");
+			throw ste_device_exception("No supported presentation image formats");
 		}
 
 		// Choose format
@@ -166,7 +166,7 @@ private:
 		if (surface_presentation_caps.supportedTransforms & VK_SURFACE_TRANSFORM_INHERIT_BIT_KHR)
 			return VK_SURFACE_TRANSFORM_INHERIT_BIT_KHR;
 
-		throw ste_engine_exception("Identity and inherit presentation transforms not supported");
+		throw ste_device_exception("Identity transform and inherit presentation transforms not supported");
 	}
 
 	void acquire_swap_chain_images() {
@@ -218,7 +218,7 @@ private:
 	void create_swap_chain() {
 		// Create swap-chain based on passed parameters and available device capabilities
 		if (!(surface_presentation_caps.supportedUsageFlags & VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT)) {
-			throw ste_engine_exception("VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT unsupported for swapchain");
+			throw ste_device_exception("VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT unsupported for swapchain");
 		}
 
 		// Swap chain properties
@@ -267,8 +267,8 @@ public:
 	/**
 	*	@brief	Creates the presentation surface
 	*
-	*	@throws ste_engine_exception	If creation parameters are erroneous or incompatible
-	*	@throws ste_engine_presentation_unsupported_exception	If presentation is not supported with supplied parameters
+	*	@throws ste_device_exception	If creation parameters are erroneous or incompatible
+	*	@throws ste_device_presentation_unsupported_exception	If presentation is not supported with supplied parameters
 	*	@throws vk_exception	On Vulkan error
 	*
 	*	@param parameters			Device creation parameters
@@ -297,7 +297,7 @@ public:
 				break;
 		}
 		if (!has_present_support) {
-			throw ste_engine_presentation_unsupported_exception("No device queues support presentation for choosen surface");
+			throw ste_device_presentation_unsupported_exception("No device queues support presentation for choosen surface");
 		}
 
 		// Create swap-chain
@@ -375,7 +375,7 @@ public:
 	*			Should be externally synchronized with other presentation methods.
 	*
 	*	@throws vk_exception	On Vulkan error during swap-chain recreation
-	*	@throws ste_engine_exception	On internal error during swap-chain recreation
+	*	@throws ste_device_exception	On internal error during swap-chain recreation
 	*/
 	void recreate_swap_chain() {
 		this->swap_chain_images.clear();

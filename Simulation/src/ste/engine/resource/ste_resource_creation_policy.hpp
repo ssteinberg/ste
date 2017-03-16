@@ -38,14 +38,19 @@ template <class async_policy>
 class ste_resource_deferred_creation_policy_async {
 	using lambda_t = std::function<void(void)>;
 	struct creator_t {
+		std::mutex m;
 		std::future<void> future;
+
+		creator_t() = default;
+		creator_t(std::future<void> &&f) : future(std::move(f)) {}
 	};
 
 	creator_t creator;
 
 public:
 	void consume() {
-		creator.future.wait();
+		std::unique_lock<std::mutex> l(creator.m);
+		creator.future.get();
 	}
 
 	ste_resource_deferred_creation_policy_async() = default;

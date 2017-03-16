@@ -93,8 +93,8 @@ public:
 	auto get_size_bytes() const { return count * sizeof(T); }
 	auto get_offset() const { return offset; }
 
-	auto& operator->() { return *ptr; }
-	auto& operator->() const { return *ptr; }
+	auto* operator->() { return ptr; }
+	auto* operator->() const { return ptr; }
 	auto& operator*() { return *ptr; }
 	auto& operator*() const { return *ptr; }
 	auto& operator[](int idx) { return ptr[idx]; }

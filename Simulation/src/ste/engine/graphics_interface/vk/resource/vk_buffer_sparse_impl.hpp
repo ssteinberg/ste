@@ -21,14 +21,11 @@ template <typename T>
 class vk_buffer_sparse_impl : public vk_buffer_base {
 	using Base = vk_buffer_base;
 
-private:
-	std::uint64_t count;
-
 public:
 	vk_buffer_sparse_impl(const vk_logical_device &device,
 						  std::uint64_t count,
 						  const VkBufferUsageFlags &usage)
-		: Base(device, count * sizeof(T), usage, true), count(count)
+		: Base(device, count * sizeof(T), usage, true)
 	{}
 	~vk_buffer_sparse_impl() noexcept {}
 
@@ -121,8 +118,6 @@ public:
 
 		return req;
 	}
-
-	auto& get_elements_count() const { return count; }
 };
 
 }

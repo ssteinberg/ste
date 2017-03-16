@@ -8,12 +8,14 @@
 #include <vulkan/vulkan.h>
 #include <vk_logical_device.hpp>
 
+#include <ste_resource_pool_traits.hpp>
+
 #include <optional.hpp>
 
 namespace StE {
 namespace GL {
 
-class vk_event {
+class vk_event : ste_resource_pool_resetable_trait {
 private:
 	optional<VkEvent> event;
 	const vk_logical_device &device;
@@ -73,7 +75,7 @@ public:
 	/**
 	*	@brief	Resets the event, setting its status to unsignaled
 	*/
-	void reset() const {
+	void reset() override {
 		vk_result res = vkResetEvent(device, *this);
 		if (!res) {
 			throw vk_exception(res);

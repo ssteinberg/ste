@@ -29,14 +29,17 @@ private:
 private:
 	static auto default_queue_create_parameters(const GL::vk_physical_device_descriptor &physical_device) {
 		queue_create_info_t params;
-		// By default attempt to create a single high-priority primary queue, a low-priority compute and a 
-		// low-priority data transfer queues.
+		// By default attempt to create a single high-priority primary queue and a low-priority compute queue
 		params[ste_queue_type::primary_queue] = { 1, 1.f };
 		params[ste_queue_type::compute_queue] = { 1, .0f };
-		params[ste_queue_type::data_transfer_queue] = { 1, .0f };
+
+		// Furthermore, create a low-priority data transfer queue
 		if (physical_device.features.sparseBinding) {
-			// If sparse binding is supported, also create a sparse bind queue
-			params[ste_queue_type::sparse_binding_queue] = { 1, .0f };
+			// If sparse binding is supported, make sparse bind and data trasfer queue
+			params[ste_queue_type::data_transfer_sparse_queue] = { 1, .0f };
+		}
+		else {
+			params[ste_queue_type::data_transfer_queue] = { 1, .0f };
 		}
 
 		return params;

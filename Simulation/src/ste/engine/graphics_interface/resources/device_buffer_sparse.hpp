@@ -6,7 +6,7 @@
 #include <stdafx.hpp>
 
 #include <ste_context.hpp>
-#include <vk_buffer_sparse_impl.hpp>
+#include <vk_buffer.hpp>
 #include <vk_queue.hpp>
 
 #include <device_resource_memory_allocator.hpp>
@@ -31,7 +31,7 @@ public:
 	using bind_range_t = range<atom_address_t>;
 
 private:
-	using resource_t = vk_buffer_sparse_impl<T>;
+	using resource_t = vk_buffer<T, true>;
 	using atom_t = device_memory_heap::allocation_type;
 	using bind_map_t = std::vector<atom_t>;
 
@@ -73,6 +73,9 @@ public:
 	{}
 	~device_buffer_sparse() noexcept {}
 
+	device_buffer_sparse(device_buffer_sparse &&) = default;
+	device_buffer_sparse &operator=(device_buffer_sparse &&) = default;
+
 	/**
 	*	@brief	Queues a bind sparse memory command on the queue. Unbind and bind regions should not overlap.
 	*
@@ -82,8 +85,10 @@ public:
 	*	@param	wait_semaphores		Array of pairs of semaphores upon which to wait before execution
 	*	@param	signal_semaphores	Sempahores to signal once the command has completed execution
 	*	@param	fence				Optional fence, to be signaled when the command has completed execution
+	*	
+	*	@return	True if bound atoms need to be changed a sparse binding command was queued, false otherwise.
 	*/
-	void cmd_bind_sparse_memory(const vk_queue &queue,
+	bool cmd_bind_sparse_memory(const vk_queue &queue,
 								const std::vector<bind_range_t> &unbind_regions,
 								const std::vector<bind_range_t> &bind_regions,
 								const std::vector<const vk_semaphore*> &wait_semaphores,
@@ -134,23 +139,29 @@ public:
 			}
 		}
 
+		// Nothing to bind/unbind
+		if (!memory_binds.size())
+			return false;
+
+		// Queue sparse binding command
 		resource.cmd_bind_sparse_memory(queue,
 										memory_binds,
 										wait_semaphores,
 										signal_semaphores,
 										fence);
+		return true;
 	}
 
 	operator resource_t&() { return get(); }
 	operator const resource_t&() const { return get(); }
 
 	resource_t& get() { return resource; }
-	resource_t& get() const { return resource; }
+	const resource_t& get() const { return resource; }
 
-	resource_t& operator->() { return get(); }
-	resource_t& operator->() const { return get(); }
+	resource_t* operator->() { return &get(); }
+	const resource_t* operator->() const { return &get(); }
 	resource_t& operator*() { return get(); }
-	resource_t& operator*() const { return get(); }
+	const resource_t& operator*() const { return get(); }
 };
 
 }

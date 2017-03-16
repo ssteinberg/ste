@@ -9,7 +9,7 @@
 namespace StE {
 
 /*
-*	From Anthony William's "C++ Concurrency in Action"
+*	Based on Anthony William's "C++ Concurrency in Action"
 */
 
 template <typename T>
@@ -138,6 +138,10 @@ public:
 
 	void push(T &&new_value) {
 		std::unique_ptr<T> new_data(new T(std::move(new_value)));
+		push(std::move(new_data));
+	}
+
+	void push(std::unique_ptr<T> &&new_data) {
 		counted_node_ptr new_next;
 		new_next.ptr = new node;
 		new_next.ref_count = 1;

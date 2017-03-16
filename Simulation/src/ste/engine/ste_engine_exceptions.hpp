@@ -28,11 +28,4 @@ public:
 	using Base::Base;
 };
 
-class ste_engine_presentation_unsupported_exception : public ste_engine_exception {
-	using Base = ste_engine_exception;
-
-public:
-	using Base::Base;
-};
-
 }

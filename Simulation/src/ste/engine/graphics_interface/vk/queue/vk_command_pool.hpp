@@ -7,14 +7,15 @@
 #include <vk_logical_device.hpp>
 #include <vk_command_buffers.hpp>
 
-#include <optional.hpp>
+#include <ste_resource_pool.hpp>
 
+#include <optional.hpp>
 #include <vector>
 
 namespace StE {
 namespace GL {
 
-class vk_command_pool {
+class vk_command_pool : ste_resource_pool_resetable_trait {
 private:
 	optional<VkCommandPool> pool;
 	const vk_logical_device &device;
@@ -22,15 +23,12 @@ private:
 public:
 	vk_command_pool(const vk_logical_device &device, 
 					std::uint32_t queue_family,
-					bool transient = false) : device(device) {
+					VkCommandPoolCreateFlags flags = 0) : device(device) {
 		VkCommandPoolCreateInfo create_info = {};
 		create_info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 		create_info.pNext = nullptr;
-		create_info.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+		create_info.flags = flags;
 		create_info.queueFamilyIndex = queue_family;
-
-		if (transient)
-			create_info.flags |= VK_COMMAND_POOL_CREATE_TRANSIENT_BIT;
 
 		VkCommandPool pool;
 		vk_result res = vkCreateCommandPool(device, &create_info, nullptr, &pool);
@@ -56,7 +54,8 @@ public:
 		}
 	}
 
-	auto allocate_buffers(std::uint32_t count) const {
+	auto allocate_buffers(std::uint32_t count,
+						  const vk_command_buffer_type &type) const {
 		assert(count > 0);
 
 		VkCommandBufferAllocateInfo create_info = {};
@@ -64,7 +63,9 @@ public:
 		create_info.pNext = nullptr;
 		create_info.commandPool = *this;
 		create_info.commandBufferCount = count;
-		create_info.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+		type == vk_command_buffer_type::primary ?
+			create_info.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY :
+			create_info.level = VK_COMMAND_BUFFER_LEVEL_SECONDARY;
 
 		std::vector<vk_command_buffer> buffers;
 		buffers.resize(count);
@@ -73,7 +74,21 @@ public:
 			throw vk_exception(res);
 		}
 
-		return vk_command_buffers(std::move(buffers), device, *this);
+		return vk_command_buffers(std::move(buffers), device, *this, type);
+	}
+
+	void reset() override {
+		vk_result res = vkResetCommandPool(device, *this, 0);
+		if (!res) {
+			throw vk_exception(res);
+		}
+	}
+
+	void reset_release() {
+		vk_result res = vkResetCommandPool(device, *this, VK_COMMAND_POOL_RESET_RELEASE_RESOURCES_BIT);
+		if (!res) {
+			throw vk_exception(res);
+		}
 	}
 
 	auto& get_command_pool() const { return pool.get(); }

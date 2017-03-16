@@ -54,7 +54,7 @@ public:
 	*	@param	signal_semaphores	Sempahores to signal once the commands have completed execution
 	*	@param	fence				Optional fence, to be signaled when the commands have completed execution
 	*/
-	void submit(const std::vector<const vk_command_buffer*> &command_buffers,
+	void submit(const std::vector<vk_command_buffer> &command_buffers,
 				const std::vector<std::pair<const vk_semaphore*, VkPipelineStageFlags>> &wait_semaphores,
 				const std::vector<const vk_semaphore*> &signal_semaphores,
 				const vk_fence *fence = nullptr) const {
@@ -65,7 +65,7 @@ public:
 
 		cb.resize(command_buffers.size());
 		for (int i=0;i<command_buffers.size();++i)
-			cb[i] = *command_buffers[i];
+			cb[i] = command_buffers[i];
 
 		wait.resize(wait_semaphores.size());
 		stages.resize(wait_semaphores.size());
@@ -103,7 +103,7 @@ public:
 	*	@param	command_buffer		Command buffer to submit
 	*	@param	fence				Optional fence, to be signaled when the commands have completed execution
 	*/
-	void submit(const vk_command_buffer* command_buffer,
+	void submit(const vk_command_buffer &command_buffer,
 				const vk_fence *fence = nullptr) const {
 		return submit({ command_buffer }, {}, {}, fence);
 	}

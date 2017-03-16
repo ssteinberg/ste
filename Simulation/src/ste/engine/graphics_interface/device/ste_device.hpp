@@ -11,13 +11,16 @@
 #include <ste_device_queue_selector_cache.hpp>
 #include <ste_queue_selector.hpp>
 
-#include <ste_engine_exceptions.hpp>
+#include <ste_device_exceptions.hpp>
 #include <ste_gl_context_creation_parameters.hpp>
 #include <ste_presentation_surface.hpp>
 #include <ste_gl_context.hpp>
 #include <ste_device_queue.hpp>
 
+#include <fence.hpp>
+#include <vk_event.hpp>
 #include <vk_semaphore.hpp>
+#include <ste_resource_pool.hpp>
 
 #include <signal.hpp>
 
@@ -38,6 +41,8 @@ private:
 		vk_semaphore swapchain_image_ready_semaphore;
 		vk_semaphore rendering_finished_semaphore;
 
+		std::weak_ptr<ste_resource_pool<fence<void>>::resource_t> fence_weak;
+
 		presentation_sync_primitives_t() = delete;
 		presentation_sync_primitives_t(const vk_logical_device &device)
 			: swapchain_image_ready_semaphore(device), rendering_finished_semaphore(device)
@@ -47,7 +52,7 @@ private:
 	};
 	struct presentation_next_image_t {
 		ste_presentation_surface::acquire_next_image_return_t next_image;
-		const presentation_sync_primitives_t *sync{ nullptr };
+		presentation_sync_primitives_t *sync{ nullptr };
 	};
 
 private:
@@ -55,15 +60,19 @@ private:
 	const ste_queue_descriptors queue_descriptors;
 	const vk_logical_device device;
 	const std::unique_ptr<ste_presentation_surface> presentation_surface{ nullptr };
-
-	const std::uint32_t minimal_command_buffers_count{ 0 };
-	std::uint32_t command_buffers_count{ 0 };
 	std::vector<presentation_sync_primitives_t> presentation_sync_primitives;
+	
+	// Synchronization primitive pools
+	mutable ste_resource_pool<fence<void>> fence_pool;
+	mutable ste_resource_pool<vk_event> event_pool;
+	mutable ste_resource_pool<vk_semaphore> semaphore_pool;
 
 	ste_device_queue_selector_cache queue_selector_cache;
 	std::vector<queue_t> device_queues;
 	
 	queues_and_surface_recreate_signal_type queues_and_surface_recreate_signal;
+
+	std::uint32_t tick_count{ 0 };
 
 private:
 	static thread_local presentation_next_image_t acquired_presentation_image;
@@ -77,7 +86,7 @@ private:
 										 const ste_queue_descriptors &queue_descriptors,
 										 std::vector<const char*> device_extensions = {}) {
 		if (queue_descriptors.size() == 0) {
-			throw ste_engine_exception("queue_descriptors is empty");
+			throw ste_device_creation_exception("queue_descriptors is empty");
 		}
 
 		// Add required extensions
@@ -112,8 +121,8 @@ private:
 			q.push_back(std::make_unique<queue_t::element_type>(device,
 																family_index,
 																descriptor,
-																get_command_buffers_count(),
-																idx));
+																idx,
+																&fence_pool));
 		}
 
 		device_queues = std::move(q);
@@ -122,17 +131,13 @@ private:
 		queue_selector_cache = ste_device_queue_selector_cache();
 	}
 
-	void update_command_buffers_count() {
-		// For devices with a presentation surface: Try to create a command buffer per swap-chain image
-		// For compute only devices, command buffers count is static.
-		command_buffers_count = std::max(presentation_surface->get_swap_chain_images().size(),
-										 minimal_command_buffers_count);
-		assert(command_buffers_count);
+	void create_presentation_sync_primitives() {
+		auto images_count = presentation_surface->get_swap_chain_images().size();
 
 		// Create synchronization primitives
 		std::vector<presentation_sync_primitives_t> v;
-		v.reserve(command_buffers_count);
-		for (int i=0; i<command_buffers_count; ++i)
+		v.reserve(images_count);
+		for (int i = 0; i<images_count; ++i)
 			v.emplace_back(device);
 		presentation_sync_primitives = std::move(v);
 	}
@@ -147,10 +152,8 @@ private:
 
 		// Recreate swap-chain
 		presentation_surface->recreate_swap_chain();
+		create_presentation_sync_primitives();
 
-		// Update command buffers count based on new swap-chain
-		// This will also recreate the synchronization primitives
-		update_command_buffers_count();
 		// And queues
 		create_queues();
 
@@ -162,20 +165,18 @@ public:
 	/**
 	*	@brief	Creates the device with presentation surface and capabilities
 	*
-	*	@throws ste_engine_exception	If creation parameters are erroneous or incompatible
+	*	@throws ste_device_creation_exception	If creation parameters are erroneous or incompatible or creation failed for any reason
 	*	@throws vk_exception	On Vulkan error
 	*
 	*	@param parameters			Device creation parameters
 	*	@param queue_descriptors	Queues descriptors. Influences amount and families of created device queues.
 	*	@param gl_ctx				Context
 	*	@param presentation_window	Presentation window used for rendering
-	*	@param minimal_command_buffers_count Minimal amount of command buffers to create
 	*/
 	ste_device(const ste_gl_device_creation_parameters &parameters,
 			   const ste_queue_descriptors &queue_descriptors,
 			   const ste_gl_context &gl_ctx,
-			   const ste_window &presentation_window,
-			   std::uint32_t minimal_command_buffers_count = 1)
+			   const ste_window &presentation_window)
 		: parameters(parameters),
 		queue_descriptors(queue_descriptors),
 		device(create_vk_virtual_device(parameters.physical_device,
@@ -186,40 +187,38 @@ public:
 																		&device,
 																		presentation_window,
 																		gl_ctx.instance())),
-		minimal_command_buffers_count(minimal_command_buffers_count)
+		fence_pool(device),
+		event_pool(device),
+		semaphore_pool(device)
 	{
-		// Choose command buffers count based on the created swap-chain
-		update_command_buffers_count();
+		create_presentation_sync_primitives();
+
 		// Create queues
 		create_queues();
 	}
 	/**
 	*	@brief	Creates the device without presentation capabilities ("compute-only" device)
 	*
-	*	@throws ste_engine_exception	If creation parameters are erroneous or incompatible
+	*	@throws ste_device_creation_exception	If creation parameters are erroneous or incompatible or creation failed for any reason
 	*	@throws vk_exception		On Vulkan error
 	*
 	*	@param parameters			Device creation parameters
 	*	@param queue_descriptors	Queues descriptors. Influences amount and families of created device queues.
 	*	@param gl_ctx				Context
-	*	@param command_buffers_count Count of command buffers to create in each queue
 	*/
 	ste_device(const ste_gl_device_creation_parameters &parameters,
 			   const ste_queue_descriptors &queue_descriptors,
-			   const ste_gl_context &gl_ctx,
-			   std::uint32_t command_buffers_count = 1)
+			   const ste_gl_context &gl_ctx)
 		: parameters(parameters),
 		queue_descriptors(queue_descriptors),
 		device(create_vk_virtual_device(parameters.physical_device,
 										parameters.requested_device_features,
 										queue_descriptors,
 										parameters.additional_device_extensions)),
-		command_buffers_count(command_buffers_count)
+		fence_pool(device),
+		event_pool(device),
+		semaphore_pool(device)
 	{
-		if (command_buffers_count == 0) {
-			throw ste_engine_exception("command_buffers_count is zero");
-		}
-
 		// Create queues
 		create_queues();
 	}
@@ -229,17 +228,26 @@ public:
 	ste_device &operator=(ste_device &&) = default;
 
 	/**
-	*	@brief	Prepares the next command buffer
-	*
-	*	@throws vk_exception	On Vulkan error
-	*	@throws ste_engine_exception	If no compatible queue can be found
-	*	
-	*	@param queue_selector		The device queue selector used to select the device queue to use
+	*	@brief	Performs schedules work, cleans up resources, etc.
+	*			Might stall if swap-chain recreation is required.
+	*			
+	*	@throws ste_device_exception	On internal error during swap-chain recreation
+	*	@throws vk_exception			On Vulkan error during swap-chain recreation
 	*/
-	template <typename selector_policy = ste_queue_selector_default_policy>
-	void acquire_next_command_buffer(const ste_queue_selector<selector_policy> &queue_selector) {
-		auto& queue = select_queue(queue_selector);
-		queue->acquire_next_command_buffer();
+	void tick() {
+		if (presentation_surface->test_and_clear_recreate_flag()) {
+			// Recreate swap-chain and queues
+			recreate_swap_chain();
+		}
+
+		auto index = tick_count++ % get_swap_chain_images_count();
+		auto& sync = presentation_sync_primitives[index];
+		if (auto fence_ptr = sync.fence_weak.lock())
+			(**fence_ptr).wait_idle();
+
+		// Tick queues
+		for (auto &q : device_queues)
+			q->tick();
 	}
 
 	/**
@@ -257,12 +265,15 @@ public:
 	void acquire_presentation_image(const ste_queue_selector<selector_policy> &queue_selector) {
 		auto& queue = select_queue(queue_selector);
 
-		queue->enqueue([this](std::uint32_t index) {
-			const auto* sync = &presentation_sync_primitives[index];
+		// Choose index of next sync primitives
+		auto index = tick_count % get_swap_chain_images_count();
+
+		queue->enqueue([this, index]() {
+			auto* sync = &presentation_sync_primitives[index];
 
 			assert(acquired_presentation_image.sync == nullptr && "Last acquired image was not presented!");
 
-			// Acquire next presenation image
+			// Acquire next presentation image
 			presentation_next_image_t next_image_descriptor;
 			next_image_descriptor.next_image = presentation_surface->acquire_next_swapchain_image(sync->swapchain_image_ready_semaphore);
 			next_image_descriptor.sync = sync;
@@ -286,71 +297,47 @@ public:
 	}
 
 	/**
-	*	@brief	Enqueues a submit task that submits the acquired command buffer to the queue
-	*	
-	*	@throws ste_engine_exception	If no compatible queue can be found
-	*
-	*	@param queue_selector		The device queue selector used to select the device queue to use
-	*	@param wait_semaphores		See vk_queue::submit
-	*	@param signal_semaphores	See vk_queue::submit
-	*/
-	template <typename selector_policy = ste_queue_selector_default_policy>
-	auto submit(const ste_queue_selector<selector_policy> &queue_selector,
-				const std::vector<std::pair<const vk_semaphore*, VkPipelineStageFlags>> &wait_semaphores,
-				const std::vector<const vk_semaphore*> &signal_semaphores) {
-		return this->enqueue(queue_selector, [=](std::uint32_t index) {
-			ste_device_queue::submit_current_queue(index,
-													  wait_semaphores,
-													  signal_semaphores);
-		});
-	}
-
-	/**
-	*	@brief	Enqueues a submission and presentation task that submits the acquired command buffer
-	*			and then presents the acquired presentation image.
-	*			Might stall if swap-chain recreation is required.
+	*	@brief	Submits a presentation batch and presents the acquired presentation image.
+	*			Must be called from an enqueued task.
 	*
 	*			Only available for presentation-capable devices.
 	*
-	*	@throws vk_exception	On Vulkan error during swap-chain recreation
-	*	@throws ste_engine_exception	On internal error during swap-chain recreation
-	*	@throws ste_engine_exception	If no compatible queue can be found
+	*	@throws	ste_device_not_queue_thread_exception	If thread not a queue thread
 	*
-	*	@param queue_selector		The device queue selector used to select the device queue to use
+	*	@param presentation_batch	Command batch which does the rendering to the acquired image
 	*	@param wait_semaphores		See vk_queue::submit
 	*	@param signal_semaphores	See vk_queue::submit
 	*/
-	template <typename selector_policy = ste_queue_selector_default_policy>
-	void submit_and_present(const ste_queue_selector<selector_policy> &queue_selector,
+	void submit_and_present(ste_device_queue_batch &&presentation_batch,
 							const std::vector<std::pair<const vk_semaphore*, VkPipelineStageFlags>> &wait_semaphores,
 							const std::vector<const vk_semaphore*> &signal_semaphores) {
-		this->enqueue(queue_selector, [this, signal_semaphores, wait_semaphores](std::uint32_t index) mutable {
-			const auto* sync = acquired_presentation_image.sync;
-			assert(acquired_presentation_image.sync != nullptr && "Present called without acquire!");
+		if (!ste_device_queue::is_queue_thread()) {
+			throw ste_device_not_queue_thread_exception();
+		}
 
-			// Synchronize submission with presentation
-			auto wait = wait_semaphores;
-			auto signal = signal_semaphores;
-			wait.push_back(std::make_pair(&sync->swapchain_image_ready_semaphore, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT));
-			signal.push_back(&sync->rendering_finished_semaphore);
+		auto* sync = acquired_presentation_image.sync;
+		assert(acquired_presentation_image.sync != nullptr && "Present called without acquire!");
 
-			// Submit
-			ste_device_queue::submit_current_queue(index,
-													  wait,
-													  signal);
+		// Use the presentation batch's fence for host synchronization
+		sync->fence_weak = presentation_batch.get_fence();
 
-			// Present
-			if (acquired_presentation_image.next_image.image != nullptr) {
-				this->presentation_surface->present(acquired_presentation_image.next_image.image_index,
-													ste_device_queue::thread_queue(),
-													sync->rendering_finished_semaphore);
-				acquired_presentation_image = {};
-			}
-		});
+		// Synchronize submission with presentation
+		auto wait = wait_semaphores;
+		auto signal = signal_semaphores;
+		wait.push_back(std::make_pair(&sync->swapchain_image_ready_semaphore, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT));
+		signal.push_back(&sync->rendering_finished_semaphore);
 
-		if (presentation_surface->test_and_clear_recreate_flag()) {
-			// Recreate swap-chain and queues
-			recreate_swap_chain();
+		// Submit
+		ste_device_queue::submit_batch(std::move(presentation_batch),
+									   wait,
+									   signal);
+
+		// Present
+		if (acquired_presentation_image.next_image.image != nullptr) {
+			this->presentation_surface->present(acquired_presentation_image.next_image.image_index,
+												ste_device_queue::thread_queue(),
+												sync->rendering_finished_semaphore);
+			acquired_presentation_image = {};
 		}
 	}
 
@@ -367,12 +354,35 @@ public:
 		return device_queues[idx];
 	}
 
+	/**
+	*	@brief	Waits idly for all the queues and the device to finish processing
+	*/
+	void wait_idle() const {
+		for (auto &q : device_queues) {
+			q->wait_idle();
+		}
+		device.wait_idle();
+	}
+
+	/**
+	*	@brief	Thread-safe fence pool
+	*/
+	auto& get_fence_pool() const { return fence_pool; }
+	/**
+	*	@brief	Thread-safe event pool
+	*/
+	auto& get_event_pool() const { return event_pool; }
+	/**
+	*	@brief	Thread-safe semaphore pool
+	*/
+	auto& get_semaphore_pool() const { return semaphore_pool; }
+
 	auto& get_queues_and_surface_recreate_signal() const { return queues_and_surface_recreate_signal; }
 
 	auto& get_surface() const { return *presentation_surface; }
 	auto& get_queue_descriptors() const { return queue_descriptors; }
 
-	std::uint32_t get_command_buffers_count() const { return command_buffers_count; }
+	std::uint32_t get_swap_chain_images_count() const { return presentation_surface->get_swap_chain_images().size(); }
 
 	auto& logical_device() const { return device; }
 };

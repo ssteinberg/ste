@@ -14,24 +14,29 @@ namespace GL {
 
 class vk_command_recorder {
 private:
-	vk_command_buffer &buffer;
+	vk_command_buffer *buffer{ nullptr };
 
 public:
 	vk_command_recorder(vk_command_buffer &buffer,
-						const VkCommandBufferUsageFlags &flags = 0) : buffer(buffer) {
+						const VkCommandBufferUsageFlags &flags = 0) : buffer(&buffer) {
 		buffer.begin(flags);
 	}
 	~vk_command_recorder() noexcept {
-		buffer.end();
+		if (buffer)
+			buffer->end();
 	}
 
-	vk_command_recorder(vk_command_recorder &&) = default;
-	vk_command_recorder &operator=(vk_command_recorder &&) = default;
+	vk_command_recorder(vk_command_recorder &&o) noexcept : buffer(o.buffer) { o.buffer = nullptr; }
+	vk_command_recorder &operator=(vk_command_recorder &&o) noexcept {
+		buffer = o.buffer;
+		o.buffer = nullptr;
+		return *this;
+	}
 	vk_command_recorder(const vk_command_recorder &) = delete;
 	vk_command_recorder &operator=(const vk_command_recorder &) = delete;
 
 	auto& operator<<(const vk_command &cmd) {
-		cmd(buffer);
+		cmd(*buffer);
 		return *this;
 	}
 };

@@ -9,7 +9,7 @@
 
 #include <algorithm>
 #include <utility>
-#include <boost_flatmap.hpp>
+#include <boost/container/flat_map.hpp>
 
 namespace StE {
 namespace GL {

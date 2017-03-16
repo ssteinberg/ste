@@ -17,11 +17,13 @@ private:
 	VkIndexType index_type;
 
 public:
-	vk_cmd_bind_index_buffer(const vk_buffer<std::uint32_t> &buffer,
+	template <bool sparse>
+	vk_cmd_bind_index_buffer(const vk_buffer<std::uint32_t, sparse> &buffer,
 							 std::uint64_t offset = 0)
 		: buffer(buffer), offset(offset), index_type(VK_INDEX_TYPE_UINT32)
 	{}
-	vk_cmd_bind_index_buffer(const vk_buffer<std::uint16_t> &buffer,
+	template <bool sparse>
+	vk_cmd_bind_index_buffer(const vk_buffer<std::uint16_t, sparse> &buffer,
 							 std::uint64_t offset = 0)
 		: buffer(buffer), offset(offset), index_type(VK_INDEX_TYPE_UINT16)
 	{}

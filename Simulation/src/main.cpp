@@ -3,12 +3,14 @@
 
 #include <ste.hpp>
 #include <array.hpp>
+#include <stable_vector.hpp>
 #include <device_buffer_sparse.hpp>
 #include <device_pipeline_shader_stage.hpp>
 
 #include <vertex_attributes_from_tuple.hpp>
 #include <vk_pipeline_graphics.hpp>
 #include <vk_framebuffer.hpp>
+
 #include <vk_command_recorder.hpp>
 #include <vk_cmd_begin_render_pass.hpp>
 #include <vk_cmd_end_render_pass.hpp>
@@ -103,40 +105,31 @@ int main()
 	StE::ste_context ctx(engine, gl_ctx, device);
 
 
-	StE::GL::device_buffer_sparse<float> buf(ctx, 100000, VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT);
-	{
-		buf.cmd_bind_sparse_memory(device.select_queue(GL::make_queue_selector(GL::ste_queue_type::sparse_binding_queue))->device_queue(), {},
-								   { StE::range<std::uint32_t>(20000, 40000) },
-								   {},
-								   {},
-								   nullptr);
-	}
-
-
 	auto swapchain_images_count = device.get_surface().get_swap_chain_images().size();
 
 	// Shader stages
 	ste_resource<StE::GL::device_pipeline_shader_stage> vert_shader_stage(ctx, std::string("temp.vert"));
 	ste_resource<StE::GL::device_pipeline_shader_stage> frag_shader_stage(ctx, std::string("temp.frag"));
 
-	// Vertex buffer
+	// Vertex and index buffer
 	struct vertex {
 		glm::vec2 pos;
 		glm::vec3 color;
 
 		using descriptor = GL::vertex_attributes_from_tuple<glm::vec2, glm::vec3>::descriptor;
 	};
-	const std::vector<vertex> vertices = {
+	std::vector<vertex> vertices = {
 		{ { 0.0f, -0.5f }, { 1.0f, 0.0f, 0.0f } },
 		{ { 0.5f,  0.5f }, { 0.0f, 1.0f, 0.0f } },
 		{ { -0.5f, 0.5f }, { 0.0f, 0.0f, 1.0f } },
 		{ { 1.0f,  -0.5f }, { 1.0f, 0.0f, 1.0f } }
 	};
-	ste_resource<GL::array<vertex>> vertex_buffer(ctx, vertices, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
-
-	// Index buffer
 	std::vector<std::uint32_t> indices = { 0,2,1,0,1,3 };
+
 	ste_resource<GL::array<std::uint32_t>> index_buffer(ctx, indices, VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
+	index_buffer.get();
+	ste_resource<GL::stable_vector<vertex>> vertex_buffer(ctx, vertices, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
+	vertex_buffer.get();
 
 	// Viewport
 	glm::u32vec2 swapchain_size = device.get_surface().size();
@@ -207,11 +200,10 @@ int main()
 //	StE::GL::device_pipeline_shader_stage(ctx, std::string("volumetric_scattering_scatter.comp"));
 //	stage.get();
 
-
 	/*
 	 *	Main loop
 	 */
-
+	float f = .0f;
 	for (;;) {
 		engine.tick();
 		window.poll_events();
@@ -220,39 +212,44 @@ int main()
 			break;
 		}
 
-		// Acquire a command buffer for this frame
-		device.acquire_next_command_buffer(GL::make_queue_selector(GL::ste_queue_type::primary_queue));
-		// Acquire next presentation image
-		device.acquire_presentation_image(GL::make_queue_selector(GL::ste_queue_type::primary_queue));
+		f += 1/1000.f;
+		vertices[0].pos.x = f;
 
-		// Record the command buffer
-		device.enqueue(GL::make_queue_selector(GL::ste_queue_type::primary_queue), [&](std::uint32_t buffer_idx) {
-			auto& command_buffer = GL::ste_device_queue::thread_command_buffers()[buffer_idx];
+		auto selector = GL::make_queue_selector(GL::ste_queue_type::primary_queue);
+		
+		// Acquire next presentation image
+		device.acquire_presentation_image(selector);
+
+		// Record and submit a batch
+		device.enqueue(selector, [&]() {
 			auto& presentation_image = GL::ste_device::next_presentation_image();
 			assert(presentation_image.image != nullptr);
 
+			auto batch = GL::ste_device_queue::thread_allocate_batch();
+			auto& command_buffer = batch.acquire_command_buffer();
 			{
-				GL::vk_command_recorder recorder(command_buffer);
+				auto recorder = command_buffer.record();
 
 				recorder
+					<< vertex_buffer->update_cmd(vertices, 0)
 					<< GL::vk_cmd_begin_render_pass(presentation_framebuffers[presentation_image.image_index],
 													presentation_renderpass,
 													{ 0,0 },
 													swapchain_size,
 													{ swapchain_attachment_clear_value })
 					<< GL::vk_cmd_bind_pipeline(pipeline)
-					<< GL::vk_cmd_bind_vertex_buffers(0, vertex_buffer->get())
-					<< GL::vk_cmd_bind_index_buffer(index_buffer->get())
+					<< GL::vk_cmd_bind_vertex_buffers(0, vertex_buffer->get_buffer())
+					<< GL::vk_cmd_bind_index_buffer(index_buffer->get_buffer())
 					<< GL::vk_cmd_draw_indexed(indices.size(), 1)
 					<< GL::vk_cmd_end_render_pass();
 			}
-		});
 
-		// Submit command buffer and present
-		device.submit_and_present(GL::make_queue_selector(GL::ste_queue_type::primary_queue), {}, {});
+			// Submit command buffer and present
+			device.submit_and_present(std::move(batch), {}, {});
+		});
 	}
 
-	device.logical_device().wait_idle();
+	device.wait_idle();
 
 	return 0;
 }

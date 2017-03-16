@@ -61,8 +61,8 @@ public:
 	T& get() { return resource; }
 	const T& get() const { return resource; }
 
-	T& operator->() { return get(); }
-	const T& operator->() const { return get(); }
+	T* operator->() { return &get(); }
+	const T* operator->() const { return &get(); }
 	T& operator*() { return get(); }
 	const T& operator*() const { return get(); }
 };
