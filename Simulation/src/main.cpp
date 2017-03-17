@@ -104,6 +104,14 @@ int main()
 	StE::ste_engine engine;
 	StE::ste_context ctx(engine, gl_ctx, device);
 
+	{
+		auto queue_selector = GL::ste_queue_selector<GL::ste_queue_selector_policy_flexible>(GL::ste_queue_type::data_transfer_sparse_queue);
+		auto batch = ctx.device().select_queue(queue_selector)->allocate_batch();
+		batch = ctx.device().select_queue(queue_selector)->allocate_batch();
+		batch = ctx.device().select_queue(queue_selector)->allocate_batch();
+		batch = ctx.device().select_queue(queue_selector)->allocate_batch();
+	}
+
 
 	auto swapchain_images_count = device.get_surface().get_swap_chain_images().size();
 
@@ -205,8 +213,8 @@ int main()
 	 */
 	float f = .0f;
 	for (;;) {
-		engine.tick();
-		window.poll_events();
+		ctx.tick();
+		ste_window::poll_events();
 
 		if (window.should_close()) {
 			break;
@@ -216,23 +224,20 @@ int main()
 		vertices[0].pos.x = f;
 
 		auto selector = GL::make_queue_selector(GL::ste_queue_type::primary_queue);
-		
-		// Acquire next presentation image
-		device.acquire_presentation_image(selector);
+
+		// Acquire presentation comand batch
+		auto batch = device.allocate_presentation_command_batch(selector);
 
 		// Record and submit a batch
-		device.enqueue(selector, [&]() {
-			auto& presentation_image = GL::ste_device::next_presentation_image();
-			assert(presentation_image.image != nullptr);
+		device.enqueue(selector, [&, batch = std::move(batch)]() mutable {
 
-			auto batch = GL::ste_device_queue::thread_allocate_batch();
-			auto& command_buffer = batch.acquire_command_buffer();
+			auto& command_buffer = batch->acquire_command_buffer();
 			{
 				auto recorder = command_buffer.record();
 
 				recorder
 					<< vertex_buffer->update_cmd(vertices, 0)
-					<< GL::vk_cmd_begin_render_pass(presentation_framebuffers[presentation_image.image_index],
+					<< GL::vk_cmd_begin_render_pass(presentation_framebuffers[batch->presentation_image_index()],
 													presentation_renderpass,
 													{ 0,0 },
 													swapchain_size,

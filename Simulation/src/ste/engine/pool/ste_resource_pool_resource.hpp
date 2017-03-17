@@ -10,31 +10,39 @@
 namespace StE {
 namespace GL {
 
-template <class Pool, template<typename> class resource_reclamation_policy>
+template <class Pool, template<class> class resource_reclamation_policy>
 class ste_resource_pool_resource {
 	friend Pool;
 
 private:
 	using resource_t = typename Pool::value_type;
+	using pool_ptr_t = typename Pool::pool_ptr_t;
 	using pointer = resource_t*;
 	using const_pointer = const resource_t*;
 	using reference = resource_t&;
 
 private:
 	std::unique_ptr<resource_t> resource;
-	Pool *pool;
+	pool_ptr_t pool_ptr;
 
-	ste_resource_pool_resource(Pool *pool, std::unique_ptr<resource_t> &&resource)
-		: resource(std::move(resource)), pool(pool)
+	ste_resource_pool_resource(const pool_ptr_t &pool_ptr, std::unique_ptr<resource_t> &&resource)
+		: resource(std::move(resource)), pool_ptr(pool_ptr)
 	{}
 
 public:
 	~ste_resource_pool_resource() noexcept {
-		pool->release_to_pool(std::move(resource));
+		release();
 	}
 
 	ste_resource_pool_resource(ste_resource_pool_resource&&) = default;
 	ste_resource_pool_resource &operator=(ste_resource_pool_resource&&) = default;
+
+	void release() {
+		if (resource != nullptr) {
+			pool_ptr->push(std::move(resource));
+			resource = nullptr;
+		}
+	}
 
 	template <typename S = resource_t>
 	typename std::enable_if<resource_reclamation_policy<S>::allow_non_const_resource, reference>::type get() {

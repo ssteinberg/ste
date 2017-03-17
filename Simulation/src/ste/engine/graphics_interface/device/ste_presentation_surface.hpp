@@ -26,6 +26,7 @@
 #include <functional>
 #include <chrono>
 #include <limits>
+#include <mutex>
 
 namespace StE {
 namespace GL {
@@ -57,6 +58,8 @@ private:
 	VkSurfaceCapabilitiesKHR surface_presentation_caps;
 	std::unique_ptr<vk_swapchain> swap_chain{ nullptr };
 	std::vector<swap_chain_image_t> swap_chain_images;
+
+	mutable std::mutex swap_chain_guard;
 
 	std::shared_ptr<resize_signal_connection_t> resize_signal_connection;
 	mutable std::atomic_flag swap_chain_optimal_flag = ATOMIC_FLAG_INIT;
@@ -227,7 +230,7 @@ private:
 		std::uint32_t max_image_count = surface_presentation_caps.maxImageCount > 0 ?
 			surface_presentation_caps.maxImageCount :
 			std::numeric_limits<std::uint32_t>::max();
-		auto min_image_count = glm::clamp<unsigned>(3,
+		auto min_image_count = glm::clamp<unsigned>(4,
 													surface_presentation_caps.minImageCount,
 													max_image_count);
 		auto format = get_surface_format();
@@ -261,6 +264,42 @@ private:
 			swap_chain_optimal_flag.clear(std::memory_order_release);
 		});
 		resize_signal.connect(resize_signal_connection);
+	}
+
+private:
+	auto acquire_swapchain_image_impl(std::uint64_t timeout_ns,
+									  const vk_semaphore *presentation_image_ready_semaphore,
+									  const vk_fence *presentation_image_ready_fence) const {
+		acquire_next_image_return_t ret;
+		vk_result res;
+		{
+			std::unique_lock<std::mutex> l(swap_chain_guard);
+			res = vkAcquireNextImageKHR(presentation_device->get_device(),
+										*swap_chain,
+										timeout_ns,
+										presentation_image_ready_semaphore ? *presentation_image_ready_semaphore : VK_NULL_HANDLE,
+										presentation_image_ready_fence ? *presentation_image_ready_fence : VK_NULL_HANDLE,
+										&ret.image_index);
+		}
+
+		switch (res.get()) {
+		case VK_SUBOPTIMAL_KHR:
+			ret.sub_optimal = true;
+		case VK_SUCCESS:
+			ret.image = &swap_chain_images[ret.image_index];
+			break;
+		case VK_ERROR_OUT_OF_DATE_KHR:
+			ret.sub_optimal = true;
+			break;
+		default:
+			throw vk_exception(res);
+		}
+
+		// Furthermore raise flag to recreate swap-chain
+		if (res != VK_SUCCESS)
+			swap_chain_optimal_flag.clear(std::memory_order_release);
+
+		return ret;
 	}
 
 public:
@@ -339,33 +378,37 @@ public:
 		const std::chrono::duration<Rep, Period> &timeout = std::chrono::nanoseconds(std::numeric_limits<uint64_t>::max())
 	) const {
 		std::uint64_t timeout_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(timeout).count();
-
-		acquire_next_image_return_t ret;
-		vk_result res = vkAcquireNextImageKHR(presentation_device->get_device(),
-											  *swap_chain,
-											  timeout_ns,
-											  presentation_image_ready_semaphore,
-											  VK_NULL_HANDLE,
-											  &ret.image_index);
-
-		switch (res.get()) {
-		case VK_SUBOPTIMAL_KHR:
-			ret.sub_optimal = true;
-		case VK_SUCCESS:
-			ret.image = &swap_chain_images[ret.image_index];
-			break;
-		case VK_ERROR_OUT_OF_DATE_KHR:
-			ret.sub_optimal = true;
-			break;
-		default:
-			throw vk_exception(res);
-		}
-
-		// Furthermore raise flag to recreate swap-chain
-		if (res != VK_SUCCESS)
-			swap_chain_optimal_flag.clear(std::memory_order_release);
-
-		return ret;
+		return acquire_swapchain_image_impl(timeout_ns,
+											&presentation_image_ready_semaphore,
+											nullptr);
+	}
+	/**
+	*	@brief	Acquires the next swap-chain presentation image.
+	*			Call result might be success, suboptimal, out-of-date, timeout or error.
+	*			In case of success or suboptimal returns the next swap image.
+	*			In case of suboptimal or out-of-date raises the 'sub_optimal' flag.
+	*			In case of timeout or error, throws vk_exception.
+	*
+	*			Should be externally synchronized with other presentation methods.
+	*
+	*	@throws vk_exception	On timeout or Vulkan error
+	*
+	*	@param presentation_image_ready_fence		Fence to be signaled when returned image is ready to be drawn to.
+	*	@param timeout								Timeout to wait for next image.
+	*
+	*	@return Returns a struct with a pointer to the pair swap_chain_image_t, index of the image and a 'sub_optimal' flag.
+	*			The returned image might be nullptr.
+	*			If the 'sub_optimal' flag is raised, the swap-chain should be recreated by calling recreate_swap_chain.
+	*/
+	template <class Rep = std::chrono::nanoseconds::rep, class Period = std::chrono::nanoseconds::period>
+	acquire_next_image_return_t acquire_next_swapchain_image(
+		const vk_fence &presentation_image_ready_fence,
+		const std::chrono::duration<Rep, Period> &timeout = std::chrono::nanoseconds(std::numeric_limits<uint64_t>::max())
+	) const {
+		std::uint64_t timeout_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(timeout).count();
+		return acquire_swapchain_image_impl(timeout_ns,
+											nullptr,
+											&presentation_image_ready_fence);
 	}
 
 	/**
@@ -410,7 +453,11 @@ public:
 		info.pImageIndices = &image_index;
 		info.pResults = nullptr;
 
-		vk_result res = vkQueuePresentKHR(presentation_queue, &info);
+		vk_result res;
+		{
+			std::unique_lock<std::mutex> l(swap_chain_guard);
+			res = vkQueuePresentKHR(presentation_queue, &info);
+		}
 
 		// Raise flag to recreate swap-chain
 		if (res != VK_SUCCESS)

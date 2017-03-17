@@ -9,7 +9,7 @@
 #include <ste_device_queue.hpp>
 #include <range.hpp>
 
-#include <fence.hpp>
+#include <unique_fence.hpp>
 #include <device_buffer.hpp>
 #include <device_resource_allocation_policy.hpp>
 
@@ -24,7 +24,7 @@ class ring_buffer : ste_resource_deferred_create_trait {
 private:
 	using buffer_t = device_buffer<Segment, device_resource_allocation_policy_device>;
 	using mmap_ptr_t = std::unique_ptr<vk_mmap<Segment>>;
-	using lock_t = const fence<void>*;
+	using lock_t = const unique_fence<void>*;
 	static constexpr VkBufferUsageFlags buffer_usage_additional_flags = VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 
 private:

@@ -13,7 +13,7 @@
 #include <ste_device_queue_command_pool.hpp>
 #include <vk_command_buffers.hpp>
 #include <ste_resource_pool.hpp>
-#include <fence.hpp>
+#include <ste_device_sync_primitives_pools.hpp>
 
 #include <condition_variable>
 #include <mutex>
@@ -39,17 +39,16 @@ public:
 	using task_t = unique_thread_pool_type_erased_task<>;
 	template <typename R>
 	using enqueue_task_t = unique_thread_pool_task<R>;
-	using fence_t = fence<void>;
 
 private:
 	std::uint32_t queue_index;
 	const vk_queue queue;
 	const ste_queue_descriptor descriptor;
 
-	ste_resource_pool<fence<void>> *fence_pool;
+	ste_device_sync_primitives_pools::shared_fence_pool_t *shared_fence_pool;
 
 	ste_resource_pool<ste_device_queue_command_pool> pool;
-	std::list<ste_device_queue_batch> submitted_batches;
+	std::list<std::unique_ptr<ste_device_queue_batch>> submitted_batches;
 
 	mutable std::mutex m;
 	mutable std::condition_variable notifier;
@@ -86,9 +85,19 @@ public:
 	*			Must be called from an enqueued task.
 	*/
 	static auto thread_allocate_batch() {
-		return ste_device_queue_batch(thread_queue_index(),
-									  thread_device_queue().pool.claim(),
-									  thread_device_queue().fence_pool->claim());
+		return std::make_unique<ste_device_queue_batch>(thread_queue_index(),
+														thread_device_queue().pool.claim(),
+														std::make_shared<ste_device_queue_batch::fence_t>(thread_device_queue().shared_fence_pool->claim()));
+	}
+	/**
+	*	@brief	Allocates a new command batch.
+	*			Must be called from an enqueued task.
+	*/
+	template <typename Batch>
+	static auto thread_allocate_batch(const std::shared_ptr<typename Batch::fence_t> &f) {
+		return std::make_unique<Batch>(thread_queue_index(),
+									   thread_device_queue().pool.claim(),
+									   f);
 	}
 
 	/**
@@ -96,40 +105,44 @@ public:
 	*			Must be called from an enqueued task.
 	*			
 	*	@throws	ste_device_not_queue_thread_exception	If thread not a queue thread
-	*	@throws	ste_device_exception	If batch was not created on this queue, batch's fence will be set to a ste_engine_exception.
+	*	@throws	ste_device_exception	If batch was not created on this queue, batch's fence will be set to a ste_device_exception.
 	*
 	*	@param	batch				Command batch to submit
 	*	@param	wait_semaphores		See vk_queue::submit
 	*	@param	signal_semaphores	See vk_queue::submit
 	*/
-	static void submit_batch(ste_device_queue_batch &&batch,
+	template <typename Batch>
+	static void submit_batch(std::unique_ptr<Batch> &&batch,
 							 const std::vector<std::pair<const vk_semaphore*, VkPipelineStageFlags>> &wait_semaphores = {},
 							 const std::vector<const vk_semaphore*> &signal_semaphores = {}) {
 		if (!is_queue_thread()) {
 			throw ste_device_not_queue_thread_exception();
 		}
 
+		auto* batch_accessible = dynamic_cast<ste_device_queue_batch*>(batch.get());
+		assert(batch_accessible);
+
 		// Copy command buffers' handle for submission
 		std::vector<vk_command_buffer> command_buffers;
-		command_buffers.reserve(batch.command_buffers.size());
-		for (auto &b : batch)
+		command_buffers.reserve(batch_accessible->command_buffers.size());
+		for (auto &b : *batch_accessible)
 			command_buffers.push_back(static_cast<vk_command_buffer>(b));
 
-		auto& fence = (*batch.get_fence());
+		auto& fence = batch->get_fence();
 
 		try {
-			// Hold onto the batch, release resources only once the device is done with it
-			thread_device_queue().submitted_batches.push_back(std::move(batch));
-
-			if (batch.queue_index == thread_queue_index()) {
+			if (batch->queue_index == thread_queue_index()) {
 				// Submit finalized buffers
 				thread_queue().submit(command_buffers,
 									  wait_semaphores,
 									  signal_semaphores,
-									  &fence->get_fence());
+									  &fence.get_fence());
 
 				// And signal fence future
-				fence->signal();
+				fence.signal();
+
+				// Hold onto the batch, release resources only once the device is done with it
+				thread_device_queue().submitted_batches.emplace_back(std::move(batch));
 			}
 			else {
 				assert(false && "Batch created on a different queue");
@@ -137,7 +150,7 @@ public:
 			}
 		}
 		catch (...) {
-			fence->set_exception(std::current_exception());
+			fence.set_exception(std::current_exception());
 		}
 	}
 
@@ -180,11 +193,8 @@ private:
 		// Remove submitted batches from front of the list if they are finished
 		decltype(submitted_batches)::iterator it;
 		while ((it = submitted_batches.begin()) != submitted_batches.end()) {
-			auto& f = *it->get_fence();
-			if (!f->is_signaled())
+			if (!(*it)->is_batch_complete())
 				break;
-
-			f.get();
 
 			submitted_batches.pop_front();
 		}
@@ -216,12 +226,12 @@ public:
 					 std::uint32_t device_family_index,
 					 ste_queue_descriptor descriptor,
 					 std::uint32_t queue_index,
-					 ste_resource_pool<fence<void>> *fence_pool)
+					 ste_device_sync_primitives_pools::shared_fence_pool_t *shared_fence_pool)
 		: queue_index(queue_index),
 		queue(device, descriptor.family, device_family_index),
 		descriptor(descriptor),
-		fence_pool(fence_pool),
-		pool(device, descriptor.family)
+		shared_fence_pool(shared_fence_pool),
+		pool(device, descriptor.family, 0)
 	{
 		// Create the queue worker thread
 		create_worker();
@@ -252,12 +262,20 @@ public:
 
 	/**
 	*	@brief	Allocates a new command batch.
-	*			Must be called from an enqueued task.
 	*/
 	auto allocate_batch() {
-		return ste_device_queue_batch(queue_index,
-									  pool.claim(),
-									  fence_pool->claim());
+		return std::make_unique<ste_device_queue_batch>(queue_index,
+														pool.claim(),
+														std::make_shared<ste_device_queue_batch::fence_t>(shared_fence_pool->claim()));
+	}
+	/**
+	*	@brief	Allocates a new command batch.
+	*/
+	template <typename Batch>
+	auto allocate_batch(const std::shared_ptr<typename Batch::fence_t> &f) {
+		return std::make_unique<Batch>(queue_index,
+									   pool.claim(),
+									   f);
 	}
 
 	/**

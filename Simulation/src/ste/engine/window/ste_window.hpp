@@ -5,6 +5,7 @@
 
 #include <stdafx.hpp>
 
+#include <ste_engine_exceptions.hpp>
 #include <ste_glfw_handle.hpp>
 
 #include <optional.hpp>
@@ -54,6 +55,8 @@ public:
 	/**
 	*	@brief	Polls windowing system events.
 	*			Note this method polls events for ALL application windows.
+	*			
+	*	@throws ste_engine_glfw_exception	On windowing system error
 	*/
 	static void poll_events() {
 		glfwPollEvents();

@@ -15,7 +15,7 @@
 namespace StE {
 namespace GL {
 
-class vk_command_pool : ste_resource_pool_resetable_trait {
+class vk_command_pool : public ste_resource_pool_resetable_trait<const vk_logical_device &, std::uint32_t, VkCommandPoolCreateFlags> {
 private:
 	optional<VkCommandPool> pool;
 	const vk_logical_device &device;
@@ -24,6 +24,8 @@ public:
 	vk_command_pool(const vk_logical_device &device, 
 					std::uint32_t queue_family,
 					VkCommandPoolCreateFlags flags = 0) : device(device) {
+		assert(queue_family == 0);
+
 		VkCommandPoolCreateInfo create_info = {};
 		create_info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 		create_info.pNext = nullptr;

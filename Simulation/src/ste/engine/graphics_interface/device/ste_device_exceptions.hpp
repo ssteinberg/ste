@@ -6,6 +6,7 @@
 #include <stdexcept>
 
 namespace StE {
+namespace GL {
 
 class ste_device_exception : public std::runtime_error {
 	using Base = std::runtime_error;
@@ -36,4 +37,5 @@ public:
 	using Base::Base;
 };
 
+}
 }

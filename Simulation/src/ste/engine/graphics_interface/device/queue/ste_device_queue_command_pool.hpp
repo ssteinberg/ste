@@ -10,9 +10,9 @@
 namespace StE {
 namespace GL {
 
-class ste_device_queue_command_pool : ste_resource_pool_resetable_trait {
+class ste_device_queue_command_pool : public ste_resource_pool_resetable_trait<const vk_logical_device &, std::uint32_t, VkCommandPoolCreateFlags>{
 private:
-	static constexpr int releases_resource_every = 1000;
+	static constexpr int releases_resource_every = 100;
 
 	vk_command_pool pool;
 	std::uint32_t counter{ 0 };

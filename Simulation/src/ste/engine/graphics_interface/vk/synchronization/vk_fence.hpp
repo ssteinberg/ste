@@ -19,7 +19,7 @@
 namespace StE {
 namespace GL {
 
-class vk_fence : ste_resource_pool_resetable_trait {
+class vk_fence : public ste_resource_pool_resetable_trait<const vk_logical_device &, bool> {
 private:
 	optional<VkFence> fence;
 	const vk_logical_device &device;

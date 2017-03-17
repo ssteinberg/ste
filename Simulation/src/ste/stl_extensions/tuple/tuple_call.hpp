@@ -18,6 +18,8 @@ namespace _tuple_call_detail {
 	template <typename T>
 	decltype(auto) tuple_call_forward(const forward_capture_t<T>& t) { return t.get(); }
 	template <typename T>
+	decltype(auto) tuple_call_forward(forward_capture_t<T>& t) { return t.get(); }
+	template <typename T>
 	decltype(auto) tuple_call_forward(T&& t) { return std::forward<T>(t); }
 
 	template <typename F, typename Tuple, bool Done, int Total, int... N>
@@ -51,14 +53,38 @@ namespace _tuple_call_detail {
 
 template <typename F, typename Tuple>
 auto tuple_call(F f, Tuple &&t) {
-	using T = typename std::decay<Tuple>::type;
-	return _tuple_call_detail::call_impl<F, Tuple, 0 == std::tuple_size<T>::value, std::tuple_size<T>::value>::call(f, std::forward<Tuple>(t));
+	using T = Tuple;
+	using decayed = typename std::decay<Tuple>::type;
+	static constexpr int size = std::tuple_size<decayed>::value;
+
+	using C = _tuple_call_detail::call_impl<
+		F,
+		Tuple,
+		0 == size,
+		size
+	>;
+
+	return C::call(f,
+				   std::forward<Tuple>(t));
 }
 
 template <typename B, typename F, typename Tuple>
 auto tuple_call(B &&b, F f, Tuple &&t) {
-	using T = typename std::decay<Tuple>::type;
-	return _tuple_call_detail::call_impl_ex<B, F, Tuple, 0 == std::tuple_size<T>::value, std::tuple_size<T>::value>::call(std::forward<B>(b), f, std::forward<Tuple>(t));
+	using T = Tuple;
+	using decayed = typename std::decay<Tuple>::type;
+	static constexpr int size = std::tuple_size<decayed>::value;
+
+	using C = _tuple_call_detail::call_impl_ex<
+		B,
+		F,
+		Tuple,
+		0 == size,
+		size
+	>;
+
+	return C::call(std::forward<B>(b),
+				   f,
+				   std::forward<Tuple>(t));
 }
 
 }

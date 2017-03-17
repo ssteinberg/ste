@@ -6,7 +6,7 @@
 #include <stdafx.hpp>
 #include <ste_context.hpp>
 
-#include <fence.hpp>
+#include <unique_fence.hpp>
 #include <device_buffer.hpp>
 #include <device_buffer_sparse.hpp>
 #include <device_resource_allocation_policy.hpp>
@@ -40,8 +40,8 @@ void copy_initial_data(const ste_context &ctx,
 
 	// Create a batch
 	auto batch = ctx.device().select_queue(queue_selector)->allocate_batch();
-	auto& command_buffer = batch.acquire_command_buffer();
-	auto fence = batch.get_fence();
+	auto& command_buffer = batch->acquire_command_buffer();
+	auto& fence = batch->get_fence();
 
 	// Enqueue on a transfer queue
 	ctx.device().enqueue(queue_selector, [&]() {
@@ -56,7 +56,7 @@ void copy_initial_data(const ste_context &ctx,
 	});
 
 	// Wait for completion
-	(**fence).get();
+	fence.get();
 }
 
 template <typename T, int atom_size, class policy>
@@ -80,8 +80,8 @@ void copy_initial_data(const ste_context &ctx,
 
 	// Create a batch
 	auto batch = ctx.device().select_queue(queue_selector)->allocate_batch();
-	auto& command_buffer = batch.acquire_command_buffer();
-	auto fence = batch.get_fence();
+	auto& command_buffer = batch->acquire_command_buffer();
+	auto& fence = batch->get_fence();
 
 	// Enqueue on a transfer queue
 	ctx.device().enqueue(queue_selector, [&]() {
@@ -102,7 +102,7 @@ void copy_initial_data(const ste_context &ctx,
 	});
 
 	// Wait for completion
-	(**fence).get();
+	fence.get();
 }
 
 }

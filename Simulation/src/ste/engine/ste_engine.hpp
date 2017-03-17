@@ -51,6 +51,9 @@ public:
 	ste_engine_impl &operator=(ste_engine_impl &&) = default;
 	ste_engine_impl &operator=(const ste_engine_impl &) = delete;
 
+	/**
+	*	@brief	Performs schedules work.
+	*/
 	void tick() {
 		engine_task_scheduler.tick();
 	}

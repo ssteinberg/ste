@@ -11,9 +11,10 @@ namespace GL {
 
 class vk_result {
 private:
-	VkResult code;
+	VkResult code{ VK_SUCCESS };
 
 public:
+	vk_result() = default;
 	vk_result(const VkResult &res) : code(res) {}
 
 	vk_result(vk_result&&) = default;

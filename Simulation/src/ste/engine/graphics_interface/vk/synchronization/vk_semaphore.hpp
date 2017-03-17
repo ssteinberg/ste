@@ -7,13 +7,14 @@
 
 #include <vulkan/vulkan.h>
 #include <vk_logical_device.hpp>
+#include <ste_resource_pool.hpp>
 
 #include <optional.hpp>
 
 namespace StE {
 namespace GL {
 
-class vk_semaphore {
+class vk_semaphore : public ste_resource_pool_const_trait<const vk_logical_device &> {
 private:
 	optional<VkSemaphore> semaphore;
 	const vk_logical_device &device;

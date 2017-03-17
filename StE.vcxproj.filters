@@ -240,9 +240,6 @@
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\vk\query\vk_query.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Simulation\src\ste\engine\graphics_interface\device\ste_device.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\device\ste_device_queue_selector_cache.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -1544,9 +1541,6 @@
     <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\gpu_data_structures\ring_buffer_old.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\synchronization\fence.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\data_structure\stable_vector.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1581,6 +1575,21 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device\ste_device_exceptions.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\synchronization\shared_fence.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\synchronization\unique_fence.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device\ste_device_sync_primitives_pools.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device\ste_device_queue_presentation_batch.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device\ste_device_presentation_sync_semaphores.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

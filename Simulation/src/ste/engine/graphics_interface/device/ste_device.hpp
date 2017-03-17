@@ -9,24 +9,25 @@
 #include <vk_physical_device_descriptor.hpp>
 #include <ste_device_queue_descriptors.hpp>
 #include <ste_device_queue_selector_cache.hpp>
+#include <ste_device_sync_primitives_pools.hpp>
+#include <ste_device_presentation_sync_semaphores.hpp>
 #include <ste_queue_selector.hpp>
 
 #include <ste_device_exceptions.hpp>
 #include <ste_gl_context_creation_parameters.hpp>
+#include <ste_device_queue_presentation_batch.hpp>
 #include <ste_presentation_surface.hpp>
 #include <ste_gl_context.hpp>
 #include <ste_device_queue.hpp>
-
-#include <fence.hpp>
-#include <vk_event.hpp>
-#include <vk_semaphore.hpp>
-#include <ste_resource_pool.hpp>
 
 #include <signal.hpp>
 
 #include <memory>
 #include <vector>
 #include <functional>
+#include <condition_variable>
+#include <mutex>
+#include <atomic>
 
 namespace StE {
 namespace GL {
@@ -37,48 +38,34 @@ public:
 
 private:
 	using queue_t = std::unique_ptr<ste_device_queue>;
-	struct presentation_sync_primitives_t {
-		vk_semaphore swapchain_image_ready_semaphore;
-		vk_semaphore rendering_finished_semaphore;
+	using batch_fence_ptr_t = ste_device_queue_presentation_batch::fence_ptr_strong_t;
 
-		std::weak_ptr<ste_resource_pool<fence<void>>::resource_t> fence_weak;
-
-		presentation_sync_primitives_t() = delete;
-		presentation_sync_primitives_t(const vk_logical_device &device)
-			: swapchain_image_ready_semaphore(device), rendering_finished_semaphore(device)
-		{}
-		presentation_sync_primitives_t(presentation_sync_primitives_t &&) = default;
-		presentation_sync_primitives_t &operator=(presentation_sync_primitives_t &&) = default;
-	};
-	struct presentation_next_image_t {
-		ste_presentation_surface::acquire_next_image_return_t next_image;
-		presentation_sync_primitives_t *sync{ nullptr };
+	struct image_presentation_sync_t {
+		batch_fence_ptr_t fence_ptr;
+		ste_device_presentation_sync_semaphores semaphores;
 	};
 
 private:
 	const ste_gl_device_creation_parameters parameters;
 	const ste_queue_descriptors queue_descriptors;
 	const vk_logical_device device;
-	const std::unique_ptr<ste_presentation_surface> presentation_surface{ nullptr };
-	std::vector<presentation_sync_primitives_t> presentation_sync_primitives;
-	
-	// Synchronization primitive pools
-	mutable ste_resource_pool<fence<void>> fence_pool;
-	mutable ste_resource_pool<vk_event> event_pool;
-	mutable ste_resource_pool<vk_semaphore> semaphore_pool;
 
+	// Synchronization primitive pools
+	ste_device_sync_primitives_pools sync_primitives_pools;
+
+	// Presentation surface
+	const std::unique_ptr<ste_presentation_surface> presentation_surface{ nullptr };
+	// And synchronization primitives
+	std::vector<image_presentation_sync_t> presentation_sync_primitives;
+	std::atomic<std::uint32_t> acquired_images{ 0 };
+	std::mutex acquire_mutex;
+	std::condition_variable acquire_cv;
+
+	// Queues
 	ste_device_queue_selector_cache queue_selector_cache;
 	std::vector<queue_t> device_queues;
-	
+
 	queues_and_surface_recreate_signal_type queues_and_surface_recreate_signal;
-
-	std::uint32_t tick_count{ 0 };
-
-private:
-	static thread_local presentation_next_image_t acquired_presentation_image;
-
-public:
-	static auto &next_presentation_image() { return acquired_presentation_image.next_image; }
 
 private:
 	static auto create_vk_virtual_device(const GL::vk_physical_device_descriptor &physical_device,
@@ -102,6 +89,17 @@ private:
 									 device_extensions);
 	}
 
+	void create_presentation_fences_storage() {
+		std::vector<image_presentation_sync_t> v;
+		v.reserve(get_swap_chain_images_count());
+		for (int i = 0; i < get_swap_chain_images_count(); ++i)
+			v.push_back(image_presentation_sync_t{ nullptr,
+			{ sync_primitives_pools.semaphores().claim(),
+						sync_primitives_pools.semaphores().claim() } });
+
+		this->presentation_sync_primitives = std::move(v);
+	}
+
 	void create_queues() {
 		std::vector<queue_t> q;
 		q.reserve(queue_descriptors.size());
@@ -122,7 +120,7 @@ private:
 																family_index,
 																descriptor,
 																idx,
-																&fence_pool));
+																&sync_primitives_pools.shared_fences()));
 		}
 
 		device_queues = std::move(q);
@@ -131,28 +129,16 @@ private:
 		queue_selector_cache = ste_device_queue_selector_cache();
 	}
 
-	void create_presentation_sync_primitives() {
-		auto images_count = presentation_surface->get_swap_chain_images().size();
-
-		// Create synchronization primitives
-		std::vector<presentation_sync_primitives_t> v;
-		v.reserve(images_count);
-		for (int i = 0; i<images_count; ++i)
-			v.emplace_back(device);
-		presentation_sync_primitives = std::move(v);
-	}
-
 	void recreate_swap_chain() {
 		// Destroy queues, this will wait for all queue threads and then wait for all queues to finish processing,
 		// allowing us to recreate the swap-chain and queue safely.
 		device_queues.clear();
 		device.wait_idle();
-		// Free synchronization primitives
-		presentation_sync_primitives.clear();
+		this->presentation_sync_primitives.clear();
 
 		// Recreate swap-chain
 		presentation_surface->recreate_swap_chain();
-		create_presentation_sync_primitives();
+		create_presentation_fences_storage();
 
 		// And queues
 		create_queues();
@@ -183,15 +169,13 @@ public:
 										parameters.requested_device_features,
 										queue_descriptors,
 										parameters.additional_device_extensions)),
+		sync_primitives_pools(device),
 		presentation_surface(std::make_unique<ste_presentation_surface>(parameters,
 																		&device,
 																		presentation_window,
-																		gl_ctx.instance())),
-		fence_pool(device),
-		event_pool(device),
-		semaphore_pool(device)
+																		gl_ctx.instance()))
 	{
-		create_presentation_sync_primitives();
+		create_presentation_fences_storage();
 
 		// Create queues
 		create_queues();
@@ -215,9 +199,7 @@ public:
 										parameters.requested_device_features,
 										queue_descriptors,
 										parameters.additional_device_extensions)),
-		fence_pool(device),
-		event_pool(device),
-		semaphore_pool(device)
+		sync_primitives_pools(device)
 	{
 		// Create queues
 		create_queues();
@@ -233,6 +215,7 @@ public:
 	*			
 	*	@throws ste_device_exception	On internal error during swap-chain recreation
 	*	@throws vk_exception			On Vulkan error during swap-chain recreation
+	*	@throws ste_engine_glfw_exception	On windowing system error
 	*/
 	void tick() {
 		if (presentation_surface->test_and_clear_recreate_flag()) {
@@ -240,46 +223,68 @@ public:
 			recreate_swap_chain();
 		}
 
-		auto index = tick_count++ % get_swap_chain_images_count();
-		auto& sync = presentation_sync_primitives[index];
-		if (auto fence_ptr = sync.fence_weak.lock())
-			(**fence_ptr).wait_idle();
-
 		// Tick queues
 		for (auto &q : device_queues)
 			q->tick();
 	}
 
 	/**
-	*	@brief	Enqueues a task on the main queue to acquire next presentation image and resize/recreate swap-chain if necessary.
-	*			The task will save the presentation image information in the thread_local variable, which will be consumed on
-	*			next call to present.
+	*	@brief	Acquires the next presentation image information and allocates a coomand batch that will be used for presentation.
+	*			Must be called from main thread.
+	*			The command batch shall be consumed with a call to submit_and_present().
 	*
 	*			Only available for presentation-capable devices.
-	*			
-	*	@throws ste_engine_exception	If no compatible queue can be found
 	*
-	*	@param queue_selector		The device queue selector used to select the device queue to use
+	*	@throws ste_engine_exception	If no compatible queue can be found
+	*	@throws ste_device_exception	If called form a queue thread
+	*	@throws vk_exception			On Vulkan error
+	*
+	*	@param	queue_selector		The device queue selector used to select the device queue to use
 	*/
 	template <typename selector_policy = ste_queue_selector_default_policy>
-	void acquire_presentation_image(const ste_queue_selector<selector_policy> &queue_selector) {
+	auto allocate_presentation_command_batch(const ste_queue_selector<selector_policy> &queue_selector) {
+		if (ste_device_queue::is_queue_thread()) {
+			throw ste_device_exception("Should be called from a main thread");
+		}
+
 		auto& queue = select_queue(queue_selector);
 
-		// Choose index of next sync primitives
-		auto index = tick_count % get_swap_chain_images_count();
+		// Acquire a couple of semaphores
+		auto semaphores = ste_device_presentation_sync_semaphores(sync_primitives_pools.semaphores().claim(),
+																  sync_primitives_pools.semaphores().claim());
+		auto fence = std::make_shared<batch_fence_ptr_t::element_type>(sync_primitives_pools.shared_fences().claim());
 
-		queue->enqueue([this, index]() {
-			auto* sync = &presentation_sync_primitives[index];
+		// Wait for images to become available
+		if (acquired_images.load(std::memory_order_acquire) >= get_swap_chain_images_count() - 1) {
+			// Must present before we can acquire another image. Wait.
+			std::unique_lock<std::mutex> lk(acquire_mutex);
+			acquire_cv.wait(lk, [this]{
+				return acquired_images.load(std::memory_order_acquire) < get_swap_chain_images_count() - 1;
+			});
+		}
 
-			assert(acquired_presentation_image.sync == nullptr && "Last acquired image was not presented!");
+		// Acquire next presentation image
+		auto next_image_descriptor =
+			presentation_surface->acquire_next_swapchain_image(*semaphores.swapchain_image_ready_semaphore);
+		acquired_images.fetch_add(1, std::memory_order_relaxed);
 
-			// Acquire next presentation image
-			presentation_next_image_t next_image_descriptor;
-			next_image_descriptor.next_image = presentation_surface->acquire_next_swapchain_image(sync->swapchain_image_ready_semaphore);
-			next_image_descriptor.sync = sync;
+		// Wait for previous presentation to this image index to end
+		auto& sync = presentation_sync_primitives[next_image_descriptor.image_index];
+		if (sync.fence_ptr != nullptr)
+			(*sync.fence_ptr)->get();
 
-			acquired_presentation_image = next_image_descriptor;
-		});
+		// Hold onto new presentation semaphores, and fence. Releasing old.
+		sync.semaphores = std::move(semaphores);
+		sync.fence_ptr = std::move(fence);
+
+		// Allocate batch
+		auto batch = queue->template allocate_batch<ste_device_queue_presentation_batch>(sync.fence_ptr);
+
+		// And save next presentation image information
+		batch->image_to_present = next_image_descriptor;
+		batch->semaphores = &sync.semaphores;
+
+		return batch;
 	}
 
 	/**
@@ -297,35 +302,34 @@ public:
 	}
 
 	/**
-	*	@brief	Submits a presentation batch and presents the acquired presentation image.
-	*			Must be called from an enqueued task.
+	*	@brief	Enqueues a batch submission and presention of the acquired presentation image tasks.
+	*			Must be called from a queue thread.
 	*
 	*			Only available for presentation-capable devices.
 	*
-	*	@throws	ste_device_not_queue_thread_exception	If thread not a queue thread
+	*	@throws ste_engine_exception	If no compatible queue can be found
+	*	@throws ste_device_not_queue_thread_exception	If not called form a queue thread
 	*
 	*	@param presentation_batch	Command batch which does the rendering to the acquired image
 	*	@param wait_semaphores		See vk_queue::submit
 	*	@param signal_semaphores	See vk_queue::submit
 	*/
-	void submit_and_present(ste_device_queue_batch &&presentation_batch,
+	void submit_and_present(std::unique_ptr<ste_device_queue_presentation_batch> &&presentation_batch,
 							const std::vector<std::pair<const vk_semaphore*, VkPipelineStageFlags>> &wait_semaphores,
 							const std::vector<const vk_semaphore*> &signal_semaphores) {
 		if (!ste_device_queue::is_queue_thread()) {
 			throw ste_device_not_queue_thread_exception();
 		}
 
-		auto* sync = acquired_presentation_image.sync;
-		assert(acquired_presentation_image.sync != nullptr && "Present called without acquire!");
-
-		// Use the presentation batch's fence for host synchronization
-		sync->fence_weak = presentation_batch.get_fence();
+		auto acquired_presentation_image = presentation_batch->image_to_present;
+		auto presentation_semaphores = presentation_batch->semaphores;
 
 		// Synchronize submission with presentation
 		auto wait = wait_semaphores;
 		auto signal = signal_semaphores;
-		wait.push_back(std::make_pair(&sync->swapchain_image_ready_semaphore, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT));
-		signal.push_back(&sync->rendering_finished_semaphore);
+		wait.push_back(std::make_pair(&*presentation_semaphores->swapchain_image_ready_semaphore,
+									  VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT));
+		signal.push_back(&*presentation_semaphores->rendering_finished_semaphore);
 
 		// Submit
 		ste_device_queue::submit_batch(std::move(presentation_batch),
@@ -333,11 +337,14 @@ public:
 									   signal);
 
 		// Present
-		if (acquired_presentation_image.next_image.image != nullptr) {
-			this->presentation_surface->present(acquired_presentation_image.next_image.image_index,
+		if (acquired_presentation_image.image != nullptr) {
+			this->presentation_surface->present(acquired_presentation_image.image_index,
 												ste_device_queue::thread_queue(),
-												sync->rendering_finished_semaphore);
-			acquired_presentation_image = {};
+												*presentation_semaphores->rendering_finished_semaphore);
+
+			// Notify any waiting for present
+			acquired_images.fetch_add(-1, std::memory_order_release);
+			acquire_cv.notify_one();
 		}
 	}
 
@@ -365,17 +372,9 @@ public:
 	}
 
 	/**
-	*	@brief	Thread-safe fence pool
+	*	@brief	Thread-safe pools for device synchronization primitives
 	*/
-	auto& get_fence_pool() const { return fence_pool; }
-	/**
-	*	@brief	Thread-safe event pool
-	*/
-	auto& get_event_pool() const { return event_pool; }
-	/**
-	*	@brief	Thread-safe semaphore pool
-	*/
-	auto& get_semaphore_pool() const { return semaphore_pool; }
+	auto& get_sync_primitives_pools() const { return sync_primitives_pools; }
 
 	auto& get_queues_and_surface_recreate_signal() const { return queues_and_surface_recreate_signal; }
 

@@ -7,6 +7,7 @@
 
 #include <ste_gl_context.hpp>
 #include <ste_engine.hpp>
+#include <vk_exception.hpp>
 
 namespace StE {
 
@@ -34,6 +35,19 @@ public:
 		engine_device_memory_allocator(device.logical_device())
 	{}
 	~ste_context_impl() noexcept {}
+
+	/**
+	*	@brief	Performs schedules work.
+	*
+	*	@throws ste_engine_exception	On internal error
+	*	@throws ste_device_exception	On internal device error
+	*	@throws vk_exception			On Vulkan device error
+	*	@throws ste_engine_glfw_exception	On windowing system error
+	*/
+	void tick() {
+		engine_reference.tick();
+		gl_device.tick();
+	}
 
 	ste_context_impl(ste_context_impl &&) = default;
 	ste_context_impl(const ste_context_impl &) = delete;

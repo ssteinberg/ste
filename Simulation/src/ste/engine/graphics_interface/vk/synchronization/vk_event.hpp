@@ -15,7 +15,7 @@
 namespace StE {
 namespace GL {
 
-class vk_event : ste_resource_pool_resetable_trait {
+class vk_event : public ste_resource_pool_resetable_trait<const vk_logical_device &> {
 private:
 	optional<VkEvent> event;
 	const vk_logical_device &device;

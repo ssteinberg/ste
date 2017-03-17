@@ -18,28 +18,28 @@ namespace StE {
 namespace GL {
 
 template <typename R>
-class fence : ste_resource_pool_resetable_trait {
+class shared_fence : public ste_resource_pool_resetable_trait<const vk_logical_device &> {
 private:
 	vk_fence f;
 	std::promise<R> promise;
-	std::future<R> future;
+	std::shared_future<R> future;
 
 public:
 	/**
 	*	@brief	Construct a fence object in unsignaled state
 	*/
-	fence(const vk_logical_device &device)
-		: f(device, false), future(promise.get_future())
+	shared_fence(const vk_logical_device &device)
+		: f(device, false), future(promise.get_future().share())
 	{}
 	/**
 	*	@brief	Construct a fence object in signaled state holding value 'val'
-	*	
+	*
 	*	@param	val		Initial value of fence
 	*/
 	template <typename T, typename S = R>
-	fence(const vk_logical_device &device, T &&val,
-		  typename std::enable_if<!std::is_void<S>::value>::type* = nullptr)
-		: f(device, true), future(promise.get_future())
+	shared_fence(const vk_logical_device &device, T &&val,
+				 typename std::enable_if<!std::is_void<S>::value>::type* = nullptr)
+		: f(device, true), future(promise.get_future().share())
 	{
 		promise.set_value(std::forward<T>(val));
 	}
@@ -49,17 +49,17 @@ public:
 	*	@param	signaled	Initial state of the fence
 	*/
 	template <typename S = R>
-	fence(const vk_logical_device &device, bool signaled,
-		  typename std::enable_if<std::is_void<S>::value>::type* = nullptr)
-		: f(device, signaled), future(promise.get_future())
+	shared_fence(const vk_logical_device &device, bool signaled,
+				 typename std::enable_if<std::is_void<S>::value>::type* = nullptr)
+		: f(device, signaled), future(promise.get_future().share())
 	{
 		if (signaled)
 			promise.set_value();
 	}
-	~fence() noexcept {}
+	~shared_fence() noexcept {}
 
-	fence(fence&&) = default;
-	fence &operator=(fence&&) = default;
+	shared_fence(shared_fence&&) = default;
+	shared_fence &operator=(shared_fence&&) = default;
 
 	/**
 	*	@brief	Checks if the fence future is valid
@@ -70,16 +70,17 @@ public:
 
 	/**
 	*	@brief	Resets fence to unsignaled state
+	*			Not thread-safe.
 	*/
 	void reset() override {
 		f.reset();
 		promise = std::promise<R>();
-		future = promise.get_future();
+		future = promise.get_future().share();
 	}
 
 	/**
 	*	@brief	Signals the fence
-	*	
+	*
 	*	@param	val		Value to set the fence to
 	*/
 	template <typename T, typename S = R>
@@ -108,8 +109,8 @@ public:
 	*	@brief	Wait for the fence to be signaled and retrieves the value/exception stored in the fence
 	*/
 	template <typename S = R>
-	decltype(auto) get(typename std::enable_if<!std::is_void<S>::value>::type* = nullptr) {
-		auto val = future.get();
+	decltype(auto) get(typename std::enable_if<!std::is_void<S>::value>::type* = nullptr) const {
+		auto& val = future.get();
 		f.wait_idle();
 		return val;
 	}
@@ -117,7 +118,7 @@ public:
 	*	@brief	Wait for the fence to be signaled and retrieves the value/exception stored in the fence
 	*/
 	template <typename S = R>
-	void get(typename std::enable_if<std::is_void<S>::value>::type* = nullptr) {
+	void get(typename std::enable_if<std::is_void<S>::value>::type* = nullptr) const {
 		future.get();
 		f.wait_idle();
 	}
@@ -125,8 +126,10 @@ public:
 	*	@brief	Fence status query
 	*/
 	bool is_signaled() const {
-		if (future.wait_for(std::chrono::nanoseconds(0)) == std::future_status::ready)
-			return f.is_signaled();
+		if (future.wait_for(std::chrono::nanoseconds(0)) == std::future_status::ready) {
+			bool ret = f.is_signaled();
+			return ret;
+		}
 		return false;
 	}
 	/**
@@ -138,15 +141,16 @@ public:
 	}
 	/**
 	*	@brief	Wait for the fence to be signaled
-	*	
+	*
 	*	@param	timeout_duration	Timeout
-	*	
+	*
 	*	@return	True if fence was signaled while or before waiting, false otherwise.
 	*/
 	template<class Rep, class Period>
 	bool wait_for(const std::chrono::duration<Rep, Period>& timeout_duration) const {
 		if (future.wait_for(timeout_duration * .5f) == std::future_status::ready) {
-			return f.wait_idle(timeout_duration * .5f);
+			bool ret = f.wait_idle(timeout_duration * .5f);
+			return ret;
 		}
 		return false;
 	}
