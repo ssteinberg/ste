@@ -29,7 +29,7 @@ public:
 					   bool allow_free_individual_sets = false) : device(device), allow_free_individual_sets(allow_free_individual_sets) {
 		std::vector<VkDescriptorPoolSize> set_sizes;
 		set_sizes.resize(set_layouts.size());
-		for (int i = 0; i < set_layouts.size(); ++i)
+		for (std::size_t i = 0; i < set_layouts.size(); ++i)
 			set_sizes[i] = *(set_layouts.begin() + i);
 
 		VkDescriptorPoolCreateInfo create_info = {};
@@ -67,7 +67,7 @@ public:
 	vk_descriptor_set allocate_descriptor_set(const std::vector<vk_descriptor_set_layout> &set_layouts) const {
 		std::vector<VkDescriptorSetLayout> set_layout_descriptors;
 		set_layout_descriptors.resize(set_layouts.size());
-		for (int i = 0; i < set_layouts.size(); ++i)
+		for (std::size_t i = 0; i < set_layouts.size(); ++i)
 			set_layout_descriptors[i] = *(set_layouts.begin() + i);
 
 		VkDescriptorSetAllocateInfo create_info = {};

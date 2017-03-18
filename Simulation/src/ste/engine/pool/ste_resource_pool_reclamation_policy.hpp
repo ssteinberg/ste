@@ -18,7 +18,7 @@ struct ste_resource_pool_reclamation_policy {
 		t.reset();
 	}
 	template <typename S = T>
-	static void reset(S &t,
+	static void reset(S &,
 					  typename std::enable_if<!ste_resource_pool_is_resetable<S>::value>::type* = nullptr) {}
 };
 

@@ -12,7 +12,6 @@
 
 #include <task_future.hpp>
 #include <task_scheduler.hpp>
-#include <texture_2d.hpp>
 
 #include <Log.hpp>
 #include <attributed_string.hpp>
@@ -139,18 +138,19 @@ public:
 		});
 	}
 
-	static auto load_texture_2d_async(task_scheduler &sched, const boost::filesystem::path &path, bool srgb) {
-		return load_surface_2d_async(sched, path, srgb)
-			// TODO: Fix
-				.then/*_on_main_thread*/([](std::unique_ptr<gli::texture2d> &&surface) {
-					bool mipmap = surface->levels() == 1;
-					return std::make_unique<Core::texture_2d>(*surface, mipmap);
-				});
-	}
-	static auto load_texture_2d(const boost::filesystem::path &path, bool srgb) {
-		auto surface = load_surface_2d(path, srgb);
-		return std::make_unique<Core::texture_2d>(surface, surface.levels() == 1);
-	}
+	// TODO
+//	static auto load_texture_2d_async(task_scheduler &sched, const boost::filesystem::path &path, bool srgb) {
+//		return load_surface_2d_async(sched, path, srgb)
+//			// TODO: Fix
+//				.then/*_on_main_thread*/([](std::unique_ptr<gli::texture2d> &&surface) {
+//					bool mipmap = surface->levels() == 1;
+//					return std::make_unique<Core::texture_2d>(*surface, mipmap);
+//				});
+//	}
+//	static auto load_texture_2d(const boost::filesystem::path &path, bool srgb) {
+//		auto surface = load_surface_2d(path, srgb);
+//		return std::make_unique<Core::texture_2d>(surface, surface.levels() == 1);
+//	}
 };
 
 }

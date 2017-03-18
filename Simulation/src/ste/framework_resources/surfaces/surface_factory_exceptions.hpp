@@ -3,14 +3,14 @@
 
 #pragma once
 
-#include <resource_loading_exception.hpp>
+#include <resource_exceptions.hpp>
 
 namespace StE {
 namespace Resource {
 
-class surface_error : public resource_loading_exception {
+class surface_error : public resource_exception {
 public:
-	using resource_loading_exception::resource_loading_exception;
+	using resource_exception::resource_exception;
 };
 
 class surface_unsupported_format_error : public surface_error {

@@ -91,7 +91,7 @@ kelvin XYZ::toKelvin() const {
 			dm = dm / glm::sqrt(1.0 + uvt[i - 1].t * uvt[i - 1].t);
 			p = dm / (dm - di);     /* p = interpolation parameter, 0.0 : i-1, 1.0 : i */
 			p = 1.0 / (glm::mix(rt[i - 1], rt[i], p));
-			ret.K() = p;
+			ret.K() = static_cast<kelvin::T>(p);
 		}
 	}
 

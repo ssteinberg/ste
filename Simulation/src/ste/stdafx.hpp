@@ -11,8 +11,6 @@
 #endif
 #include <vulkan/vulkan.h>
 
-#include <gl/glew.h>
-
 #define GLM_FORCE_AVX
 #define GLM_EXT_INCLUDED
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -20,7 +18,6 @@
 #include <glm/gtx/bit.hpp>
 
 #include <gli/format.hpp>
-#include <gli/gl.hpp>
 #include <gli/texture1d.hpp>
 #include <gli/texture1d_array.hpp>
 #include <gli/texture2d.hpp>

@@ -325,7 +325,7 @@ public:
 		presentation_surface(presentation_window, instance)
 	{
 		assert(presentation_device && "Can not be null");
-
+		
 		// Check surface support
 		bool has_present_support = false;
 		for (unsigned i = 0; i < parameters.physical_device.queue_family_properties.size(); ++i) {

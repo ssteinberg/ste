@@ -27,15 +27,6 @@
     <ClCompile Include="Simulation\src\ste\framework_graphics\antialiasing\fxaa\fxaa_dispatchable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\gpu_dispatch\tasks\dispatch_queue\gpu_task_dispatch_queue.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\gpu_dispatch\tasks\gpu_task.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\gpu_dispatch\tasks\transition\gpu_state_transition.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_graphics\light\linked_light_lists\linked_light_lists.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -99,19 +90,7 @@
     <ClCompile Include="Simulation\src\ste\framework_graphics\utilities\debug_gui\debug_gui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\utilities\debug_gui\imgui_glfw_integration\imgui_impl_glfw_gl3.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_graphics\utilities\profiler\profiler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\voxels\dense_voxelizer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\voxels\dense_voxel_space.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_resources\resource_instance\resource_instance.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_text\attributed_strings\attrib.cpp">
@@ -171,9 +150,6 @@
     <ClCompile Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\gi_renderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_resources\glsl_programs\factory\glsl_program_factory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_resources\models\model_factory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -181,48 +157,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Simulation\src\ste\stdafx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Simulation\src\ste\engine\core_old\gl\context\actual\gl_context.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Simulation\src\ste\engine\core_old\gl\context\gl_current_context.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Simulation\src\ste\engine\core_old\gl\gl_utils.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Simulation\src\ste\engine\core_old\gpu_resources\shaders\glsl_program_object.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Simulation\src\ste\engine\core_old\gpu_resources\surfaces\textures\impl\texture_1d.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Simulation\src\ste\engine\core_old\gpu_resources\surfaces\textures\impl\texture_1d_array.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Simulation\src\ste\engine\core_old\gpu_resources\surfaces\textures\impl\texture_2d.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Simulation\src\ste\engine\core_old\gpu_resources\surfaces\textures\impl\texture_2d_array.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Simulation\src\ste\engine\core_old\gpu_resources\surfaces\textures\impl\texture_3d.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Simulation\src\ste\engine\core_old\gpu_resources\surfaces\textures\impl\texture_cube_map.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Simulation\src\ste\engine\core_old\gpu_resources\surfaces\textures\impl\texture_cube_map_array.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Simulation\src\ste\engine\core_old\gpu_resources\surfaces\Sampler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Simulation\src\ste\engine\core_old\gpu_resources\surfaces\surface_constants.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Simulation\src\ste\engine\engine_control_old\ste_engine_control.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Simulation\src\ste\engine\window\ste_window_signals.cpp">
@@ -300,30 +234,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\entities\objects\Object.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\gpu_dispatch\tasks\common\fb_clear_dispatch.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\gpu_dispatch\tasks\common\gpu_dummy_dispatchable.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\gpu_dispatch\tasks\dispatch_queue\gpu_task_dispatch_queue.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\gpu_dispatch\tasks\dispatch_queue\gpu_task_root.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\gpu_dispatch\tasks\gpu_dispatchable.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\gpu_dispatch\tasks\gpu_task.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\gpu_dispatch\tasks\gpu_task_factory.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\gpu_dispatch\tasks\transition\gpu_state_transition.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_descriptor.hpp">
@@ -476,9 +386,6 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\utilities\debug_gui\debug_gui.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\utilities\debug_gui\imgui_glfw_integration\imgui_impl_glfw_gl3.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\utilities\debug_gui\imgui_timeline.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -486,36 +393,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\utilities\profiler\profiler.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\utilities\texture_pools\texture_pool.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\voxels\dense_voxelizer.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\voxels\dense_voxel_space.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_resources\glsl_programs\factory\glsl_program_factory_exceptions.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_resources\glsl_programs\glsl_program.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_resources\glsl_programs\program_binary.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_resources\resource_instance\resource_instance.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_resources\resource_instance\resource_instance_getter.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_resources\resource_instance\resource_loading_exception.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_resources\resource_instance\resource_loading_task.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_resources\surfaces\surface_factory_exceptions.hpp">
@@ -794,9 +671,6 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\scene\scene_properties.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_resources\glsl_programs\factory\glsl_program_factory.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_resources\models\model_factory.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -840,246 +714,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\ste_engine.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gl\context\actual\gl_context.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gl\context\states\context_basic_state.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gl\context\states\context_state.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gl\context\states\context_state_key.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gl\context\states\context_state_name.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gl\context\states\context_state_type.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gl\context\states\gl_context_state_log.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gl\context\gl_current_context.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gl\context\gl_generic_context.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gl\gl_utils.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\buffers\data_storage\atomic_counter_buffer_object.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\buffers\data_storage\indirect_dispatch_buffer_object.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\buffers\data_storage\indirect_draw_buffer_object.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\buffers\data_storage\pixel_buffer_object.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\buffers\data_storage\query_buffer_object.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\buffers\data_storage\shader_storage_buffer.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\buffers\data_storage\uniform_buffer_object.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\buffers\vertex_storage\element_buffer_object.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\buffers\vertex_storage\vertex_array_object.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\buffers\vertex_storage\vertex_buffer_descriptor.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\buffers\vertex_storage\vertex_buffer_object.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\buffers\buffer_object.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\buffers\buffer_object_allocator.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\buffers\buffer_object_cast.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\buffers\buffer_usage.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\buffers\mapped_buffer_object_unique_ptr.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\buffers\sparse_buffer_commitment_data.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\gpu_data_structures\queue\gqueue.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\gpu_data_structures\resource_storage\observable_resource.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\gpu_data_structures\resource_storage\observable_resource_impl.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\gpu_data_structures\resource_storage\resource_storage.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\gpu_data_structures\resource_storage\resource_storage_base.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\gpu_data_structures\resource_storage\resource_storage_dynamic.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\gpu_data_structures\resource_storage\resource_storage_stable.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\gpu_data_structures\gstack.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\gpu_data_structures\gstack_stable.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\gpu_data_structures\gvector_pinned.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\locks\gpu_sync.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\locks\range_lockable.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\queries\occlusion_queries\occlusion_query_any_samples.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\queries\timer_queries\timer_query.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\queries\timer_queries\timestamp_query.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\queries\query_object.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\resource_binding\bindable_resource.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\resource_binding\layout_binding.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\resource_binding\shader_layout_bindable_resource.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\shaders\glsl_program_object.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\shaders\glsl_shader_object.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\surfaces\fbo\context_framebuffer.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\surfaces\fbo\framebuffer_object.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\surfaces\render_target\render_target.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\surfaces\render_target\render_target_allocator.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\surfaces\textures\texture_1d.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\surfaces\textures\texture_1d_array.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\surfaces\textures\texture_1d_size_type.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\surfaces\textures\texture_2d.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\surfaces\textures\texture_2d_array.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\surfaces\textures\texture_2d_ms.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\surfaces\textures\texture_2d_ms_array.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\surfaces\textures\texture_3d.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\surfaces\textures\texture_allocator.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\surfaces\textures\texture_base.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\surfaces\textures\texture_cube_map.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\surfaces\textures\texture_cube_map_array.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\surfaces\textures\texture_cubemap_face.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\surfaces\textures\texture_enums.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\surfaces\textures\texture_sparse.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\surfaces\textures\texture_traits.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\surfaces\image.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\surfaces\image_handle.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\surfaces\Sampler.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\surfaces\surface_constants.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\surfaces\surface_element_cast.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\surfaces\surface_traits.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\surfaces\texture_handle.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\core_resource_type.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\resource_allocator.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\resource_traits.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gl_type_traits.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\engine_control_old\ste_engine_control.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\external_includes\boost_binary_ioarchive.hpp">
@@ -1469,9 +1103,6 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\shader\ste_shader_load_exceptions.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\resource_binding\resource_old.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\resource\ste_resource_traits.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1535,9 +1166,6 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\data_structure\ring_buffer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\core_old\gpu_resources\gpu_data_structures\ring_buffer_old.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\data_structure\stable_vector.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1589,6 +1217,12 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device\ste_device_presentation_sync_semaphores.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_resources\resource_exceptions.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\job\job.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Simulation\src\ste\framework_graphics\material\shaders\material_evaluate.glsl" />
@@ -1617,7 +1251,6 @@
     <None Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shaders\shadow_cubemap.geom" />
     <None Include="Simulation\src\ste\framework_graphics\scene\shaders\object.frag" />
     <None Include="Simulation\src\ste\framework_graphics\scene\perpopulate_depth\shaders\scene_prepopulate_depth.frag" />
-    <None Include="Simulation\src\ste\framework_graphics\voxels\shaders\voxels.glsl" />
     <None Include="Simulation\src\ste\framework_text\rendering\shaders\text_distance_map_contour.frag" />
     <None Include="Simulation\src\ste\framework_text\rendering\shaders\text_distance_map_contour.geom" />
     <None Include="Simulation\src\ste\framework_text\rendering\shaders\text_distance_map_contour.vert" />
@@ -1677,11 +1310,12 @@
     <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\shaders\hdr_compute_histogram_sums.comp" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\shaders\hdr_create_histogram.comp" />
     <None Include="Simulation\src\ste\framework_graphics\scene\geometry_cull\shaders\scene_geo_cull.comp" />
-    <None Include="Simulation\src\ste\framework_graphics\voxels\shaders\voxelizer.frag_old" />
-    <None Include="Simulation\src\ste\framework_graphics\voxels\shaders\voxelizer.geom_old" />
-    <None Include="Simulation\src\ste\framework_graphics\voxels\shaders\voxelizer.vert_old" />
-    <None Include="Simulation\src\ste\framework_graphics\voxels\shaders\voxelizer_upsampler.comp_old" />
     <None Include="Simulation\src\temp.vert" />
     <None Include="Simulation\src\temp.frag" />
+    <None Include="Simulation\src\ste\legacy\voxels\shaders\voxelizer.frag_old" />
+    <None Include="Simulation\src\ste\legacy\voxels\shaders\voxelizer.geom_old" />
+    <None Include="Simulation\src\ste\legacy\voxels\shaders\voxelizer.vert_old" />
+    <None Include="Simulation\src\ste\legacy\voxels\shaders\voxelizer_upsampler.comp_old" />
+    <None Include="Simulation\src\ste\legacy\voxels\shaders\voxels.glsl" />
   </ItemGroup>
 </Project>

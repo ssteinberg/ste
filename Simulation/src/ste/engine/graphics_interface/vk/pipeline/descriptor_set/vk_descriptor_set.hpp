@@ -44,7 +44,7 @@ public:
 		std::vector<VkDescriptorImageInfo> writes_descriptors_images(writes.size());
 		std::vector<VkDescriptorBufferInfo> writes_descriptors_buffers(writes.size());
 
-		for (int i = 0; i < writes.size(); ++i) {
+		for (std::size_t i = 0; i < writes.size(); ++i) {
 			auto& w = *(writes.begin() + i);
 
 			VkDescriptorImageInfo image_info = {};
