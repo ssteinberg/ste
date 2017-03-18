@@ -38,7 +38,7 @@ public:
 		count(immutable_samplers.size())
 	{
 		this->immutable_samplers.resize(immutable_samplers.size());
-		for (int i = 0; i < immutable_samplers.size(); ++i)
+		for (std::size_t i = 0; i < immutable_samplers.size(); ++i)
 			this->immutable_samplers[i] = (immutable_samplers.begin() + i)->get();
 	}
 

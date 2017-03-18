@@ -367,7 +367,7 @@ public:
 		const VkPhysicalDeviceMemoryProperties &properties = device.get_physical_device_descriptor().memory_properties;
 
 		std::unordered_set<std::uint32_t> conforming_heaps;
-		for (int i=0;i<properties.memoryTypeCount;++i) {
+		for (std::uint32_t i=0;i<properties.memoryTypeCount;++i) {
 			auto &type = properties.memoryTypes[i];
 			if ((type.propertyFlags & flags) == flags)
 				conforming_heaps.insert(type.heapIndex);

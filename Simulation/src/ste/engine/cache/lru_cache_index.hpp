@@ -77,8 +77,8 @@ private:
 		oa << *this;
 	}
 
-	std::size_t populate_map(const boost::filesystem::path &path) {
-		std::size_t size = 0;
+	std::uint64_t populate_map(const boost::filesystem::path &path) {
+		std::uint64_t size = 0;
 		for (lru_list_iterator_type it = lru_list.begin(); it != lru_list.end(); ++it) {
 			auto &k = it->k;
 			val_type v(k, path, it->name);
@@ -90,7 +90,7 @@ private:
 		return size;
 	}
 
-	lru_cache_index(const boost::filesystem::path &path, std::atomic<std::size_t> &total_size) : index_path(path / index_file) {
+	lru_cache_index(const boost::filesystem::path &path, std::atomic<std::uint64_t> &total_size) : index_path(path / index_file) {
 		if (boost::filesystem::exists(index_path)) {
 			try {
 				std::ifstream ifs(index_path.string(), std::ios::binary);
@@ -125,7 +125,7 @@ private:
 		map.emplace(k, std::move(v));
 	}
 
-	std::size_t erase(const key_type &k) {
+	std::uint64_t erase(const key_type &k) {
 		auto val_guard = map[k];
 		if (!val_guard.is_valid())
 			return 0;
@@ -136,7 +136,7 @@ private:
 		return val_guard->get_size();
 	}
 
-	std::size_t erase_back() {
+	std::uint64_t erase_back() {
 		if (!lru_list.size()) return 0;
 		auto k = lru_list.back().k;
 

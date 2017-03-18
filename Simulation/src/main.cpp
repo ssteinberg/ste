@@ -171,7 +171,7 @@ int main()
 		swapchain_images_count = device.get_surface().get_swap_chain_images().size();
 
 		presentation_framebuffers.reserve(swapchain_images_count);
-		for (auto i = 0; i < swapchain_images_count; ++i)
+		for (std::size_t i = 0; i < swapchain_images_count; ++i)
 			presentation_framebuffers.emplace_back(device.logical_device(),
 												   presentation_renderpass,
 												   std::vector<VkImageView>{ device.get_surface().get_swap_chain_images()[i].view },

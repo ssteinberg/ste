@@ -64,18 +64,18 @@ public:
 		std::vector<VkSemaphore> signal;
 
 		cb.resize(command_buffers.size());
-		for (int i=0;i<command_buffers.size();++i)
+		for (std::size_t i=0;i<command_buffers.size();++i)
 			cb[i] = command_buffers[i];
 
 		wait.resize(wait_semaphores.size());
 		stages.resize(wait_semaphores.size());
-		for (int i = 0; i<wait_semaphores.size(); ++i) {
+		for (std::size_t i = 0; i<wait_semaphores.size(); ++i) {
 			wait[i] = *wait_semaphores[i].first;
 			stages[i] = wait_semaphores[i].second;
 		}
 
 		signal.resize(signal_semaphores.size());
-		for (int i = 0; i<signal_semaphores.size(); ++i)
+		for (std::size_t i = 0; i<signal_semaphores.size(); ++i)
 			signal[i] = *signal_semaphores[i];
 
 		VkSubmitInfo info = {};

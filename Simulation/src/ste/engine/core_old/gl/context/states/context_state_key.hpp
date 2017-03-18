@@ -13,7 +13,7 @@ namespace GL {
 template <typename K>
 class context_state_key {
 private:
-	friend class std::hash<context_state_key>;
+	friend struct std::hash<context_state_key>;
 
 private:
 	K name;

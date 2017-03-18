@@ -67,7 +67,7 @@ private:
 																			const char*                  pLayerPrefix,
 																			const char*                  pMessage,
 																			void*                        pUserData) -> VkBool32 {
-			auto ptr = reinterpret_cast<decltype(this)>(pUserData);
+			auto ptr = reinterpret_cast<const ste_gl_context*>(pUserData);
 			DebugCallback()(flags, objectType, object, location, messageCode, pLayerPrefix, pMessage, ptr);
 			return VK_FALSE;
 		});
@@ -122,8 +122,8 @@ public:
 		for (auto &d : enumerate_physical_devices()) {
 			// Check device memory
 			std::uint64_t total_device_local_heap_size = 0;
-			for (int i = 0; i < d.memory_properties.memoryHeapCount; ++i)
-				if (d.memory_properties.memoryHeaps[i].flags & VK_MEMORY_HEAP_DEVICE_LOCAL_BIT != 0)
+			for (std::uint32_t i = 0; i < d.memory_properties.memoryHeapCount; ++i)
+				if ((d.memory_properties.memoryHeaps[i].flags & VK_MEMORY_HEAP_DEVICE_LOCAL_BIT) != 0)
 					total_device_local_heap_size += d.memory_properties.memoryHeaps[i].size;
 			if (total_device_local_heap_size < min_device_memory)
 				continue;

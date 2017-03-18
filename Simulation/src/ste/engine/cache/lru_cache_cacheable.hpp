@@ -26,7 +26,7 @@ class lru_cache_cacheable {
 private:
 	struct data {
 		K k;
-		std::size_t size{ 0 };
+		std::uint64_t size{ 0 };
 		lru_iterator_type lru_it;
 		std::atomic<bool> live{ false };
 
@@ -66,12 +66,12 @@ public:
 		pdata->live = true;
 
 		boost::system::error_code err;
-		pdata->size = boost::filesystem::file_size(pdata->f, err);
+		pdata->size = static_cast<std::uint64_t>(boost::filesystem::file_size(pdata->f, err));
 	}
 	void mark_for_deletion() { pdata->live = false; }
 	bool is_live() const { return pdata->live; }
 	const K &get_k() const { return pdata->k; }
-	std::size_t get_size() const { return pdata->size; }
+	auto get_size() const { return pdata->size; }
 	lru_iterator_type& get_lru_it() { return pdata->lru_it; }
 	boost::filesystem::path get_file_name() const { return pdata->f.filename(); }
 

@@ -60,7 +60,7 @@ public:
 						 const vk_pipeline_cache *cache = nullptr) : device(device) {
 		// Shader modules stages
 		std::vector<VkPipelineShaderStageCreateInfo> stages(shader_modules.size());
-		for (int i = 0; i < shader_modules.size(); ++i) {
+		for (std::size_t i = 0; i < shader_modules.size(); ++i) {
 			auto &sd = shader_modules[i];
 			stages[i] = sd.shader->shader_stage_create_info(sd.stage);
 		}
@@ -68,7 +68,7 @@ public:
 		// Vertex input
 		std::vector<VkVertexInputBindingDescription> vertex_input_binding_descriptors(vertex_attributes.size());
 		int vertex_attributes_count = 0;
-		for (int i = 0; i < vertex_attributes.size(); ++i) {
+		for (std::size_t i = 0; i < vertex_attributes.size(); ++i) {
 			const auto &vert = vertex_attributes[i];
 
 			VkVertexInputBindingDescription desc = {};
@@ -82,10 +82,10 @@ public:
 		}
 		std::vector<VkVertexInputAttributeDescription> vertex_input_attribute_descriptors;
 		vertex_input_attribute_descriptors.reserve(vertex_attributes_count);
-		for (int i = 0; i < vertex_attributes.size(); ++i) {
+		for (std::size_t i = 0; i < vertex_attributes.size(); ++i) {
 			const auto &vert = vertex_attributes[i];
 
-			for (int j = 0; j < vert.attributes.attrib_count(); ++j) {
+			for (std::size_t j = 0; j < vert.attributes.attrib_count(); ++j) {
 				VkVertexInputAttributeDescription desc = {};
 				desc.location = j;
 				desc.binding = vert.binding_index;
@@ -160,7 +160,7 @@ public:
 
 		// Blend
 		std::vector<VkPipelineColorBlendAttachmentState> blend_attachment_states(attachment_blend_op.size());
-		for (int i = 0; i < attachment_blend_op.size(); ++i)
+		for (std::size_t i = 0; i < attachment_blend_op.size(); ++i)
 			blend_attachment_states[i] = *(attachment_blend_op.begin() + i);
 
 		VkPipelineColorBlendStateCreateInfo blend_state_create = {};

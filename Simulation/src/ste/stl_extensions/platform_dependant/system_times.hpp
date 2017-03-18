@@ -52,7 +52,7 @@ public:
 		auto d_idle = idle - old_idle;
 		if (!d_user)
 			return false;
-		float total = d_user + d_kernel + d_idle;
+		float total = static_cast<float>(d_user + d_kernel + d_idle);
 		idle_frac = static_cast<float>(d_idle) / total;
 		kernel_frac = static_cast<float>(d_kernel) / total;
 		user_frac = static_cast<float>(d_user) / total;

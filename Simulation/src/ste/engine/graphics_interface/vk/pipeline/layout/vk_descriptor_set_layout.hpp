@@ -26,7 +26,7 @@ public:
 							 const std::vector<vk_descriptor_set_layout_binding> &bindings) : device(device) {
 		std::vector<VkDescriptorSetLayoutBinding> binding_descriptors;
 		binding_descriptors.resize(bindings.size());
-		for (int i = 0; i < bindings.size(); ++i)
+		for (std::size_t i = 0; i < bindings.size(); ++i)
 			binding_descriptors[i] = *(bindings.begin() + i);
 
 		VkDescriptorSetLayoutCreateInfo create_info = {};

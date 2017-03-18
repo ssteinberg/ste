@@ -31,7 +31,7 @@ void copy_initial_data(const ste_context &ctx,
 	{
 		// Copy to staging
 		auto ptr = staging_buffer.get_underlying_memory().template mmap<T>(0, copy_count);
-		memcpy(ptr->get_mapped_ptr(), data.data(), copy_count * sizeof(T));
+		memcpy(ptr->get_mapped_ptr(), data.data(), static_cast<std::size_t>(copy_count * sizeof(T)));
 	}
 
 	// Select queue

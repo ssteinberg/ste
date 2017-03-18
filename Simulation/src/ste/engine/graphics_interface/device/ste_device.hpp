@@ -92,7 +92,7 @@ private:
 	void create_presentation_fences_storage() {
 		std::vector<image_presentation_sync_t> v;
 		v.reserve(get_swap_chain_images_count());
-		for (int i = 0; i < get_swap_chain_images_count(); ++i)
+		for (std::uint32_t i = 0; i < get_swap_chain_images_count(); ++i)
 			v.push_back(image_presentation_sync_t{ nullptr,
 			{ sync_primitives_pools.semaphores().claim(),
 						sync_primitives_pools.semaphores().claim() } });
@@ -106,7 +106,7 @@ private:
 		
 		std::uint32_t prev_family = 0xFFFFFFFF;
 		std::uint32_t family_index = 0;
-		for (int idx = 0; idx < queue_descriptors.size(); ++idx) {
+		for (std::size_t idx = 0; idx < queue_descriptors.size(); ++idx) {
 			auto &descriptor = queue_descriptors[idx];
 
 			// Family index is used to get the queue from Vulkan

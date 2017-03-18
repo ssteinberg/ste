@@ -51,9 +51,9 @@ private:
 
 	mutable concurrent_queue<typename index_type::val_data_guard> accessed_queue;
 
-	std::atomic<std::size_t> total_size{ 0 };
+	std::atomic<std::uint64_t> total_size{ 0 };
 	boost::filesystem::path path;
-	std::size_t quota;
+	std::uint64_t quota;
 
 	interruptible_thread t;
 
@@ -83,7 +83,7 @@ public:
 	* 	@param path		Cache directory
 	*	@param quota	Max size in bytes. 0 for unlimited.
 	*/
-	lru_cache(const boost::filesystem::path &path, std::size_t quota = 0) : index(path, total_size), path(path), quota(quota), t([this] (){
+	lru_cache(const boost::filesystem::path &path, std::uint64_t quota = 0) : index(path, total_size), path(path), quota(quota), t([this] (){
 		for (;;) {
 			if (interruptible_thread::is_interruption_flag_set()) return;
 
@@ -98,7 +98,7 @@ public:
 				accessed_item = accessed_queue.pop();
 			}
 
-			std::size_t ts = this->total_size.load(std::memory_order_relaxed);
+			auto ts = this->total_size.load(std::memory_order_relaxed);
 			while (ts > this->quota && this->quota) {
 				auto size = this->index.erase_back();
 				assert(size);

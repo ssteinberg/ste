@@ -66,7 +66,7 @@ private:
 		// Add the desired amount of queue of this type
 		ste_queue_descriptors::queues_t v;
 		v.reserve(info.count);
-		for (int t_idx = 0; t_idx < info.count; ++t_idx) {
+		for (std::uint32_t t_idx = 0; t_idx < info.count; ++t_idx) {
 			desc.type_index = t_idx;
 			v.push_back(desc);
 		}

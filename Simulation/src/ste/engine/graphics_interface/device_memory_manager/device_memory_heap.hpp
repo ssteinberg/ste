@@ -92,7 +92,7 @@ public:
 
 		std::unique_lock<std::mutex> lock(m);
 
-		auto start = 0;
+		std::uint64_t start = 0;
 		auto it = blocks.begin();
 		for (;;) {
 			bool last = it == blocks.end();

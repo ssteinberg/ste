@@ -47,7 +47,7 @@ public:
 		return std::max(memory_requirements.alignment, minimal_atom_size);
 	}
 	bind_range_t atoms_range(const bind_range_t &range) const {
-		auto alignment = atom_size();
+		auto alignment = static_cast<std::size_t>(atom_size());
 
 		bind_range_t ret;
 		ret.start = range.start * sizeof(T) / alignment;
@@ -97,7 +97,7 @@ public:
 		std::vector<vk_sparse_memory_bind> memory_binds;
 		auto size = atom_size();
 
-		for (int i = 0; i < unbind_regions.size(); ++i) {
+		for (std::size_t i = 0; i < unbind_regions.size(); ++i) {
 			auto &r = unbind_regions[i];
 			auto atoms = atoms_range(r);
 
@@ -115,7 +115,7 @@ public:
 				}
 			}
 		}
-		for (int i = 0; i < bind_regions.size(); ++i) {
+		for (std::size_t i = 0; i < bind_regions.size(); ++i) {
 			auto &r = bind_regions[i];
 			auto atoms = atoms_range(r);
 

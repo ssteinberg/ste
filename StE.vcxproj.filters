@@ -1085,9 +1085,6 @@
     <ClInclude Include="Simulation\src\external_includes\boost_binary_ioarchive.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\external_includes\boost_disable_warnings.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\external_includes\boost_filesystem.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
