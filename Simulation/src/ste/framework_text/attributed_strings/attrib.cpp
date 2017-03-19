@@ -6,6 +6,18 @@
 using namespace StE::Text;
 using namespace StE::Text::Attributes;
 
+const char rgb::type_id = 0;
+const char stroke::type_id = 0;
+const char Attributes::font::type_id = 0;
+const char size::type_id = 0;
+const char line_height::type_id = 0;
+const char kern::type_id = 0;
+const char align::type_id = 0;
+const char weight::type_id = 0;
+const char underline::type_id = 0;
+const char italic::type_id = 0;
+const char link::type_id = 0;
+
 attributed_string_common<char> attrib::operator()(const std::string &str) const {
 	attributed_string_common<char> newstr(str);
 	newstr.add_attrib({ 0,newstr.length() }, *this);

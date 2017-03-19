@@ -40,10 +40,14 @@ public:
 			if (italic_attrib)	r.length = std::min(r.length, ci.start - r.start + ci.length);
 
 			std::string style;
-			if (color_attrib) style += "color:rgb(" + std::to_string(color_attrib->get().r) + "," + std::to_string(color_attrib->get().g) + "," + std::to_string(color_attrib->get().b) + ");";
-			if (weight_attrib) { style += "font-weight:" + std::to_string(weight_attrib->get()) + ";"; }
-			if (size_attrib) { style += "font-size:" + std::to_string(size_attrib->get()) + "px;"; }
-			if (italic_attrib) { style += "font-style: italic;"; }
+			if (color_attrib) 
+				style += "color:rgb(" + std::to_string(color_attrib->get().r) + "," + std::to_string(color_attrib->get().g) + "," + std::to_string(color_attrib->get().b) + ");";
+			if (weight_attrib) 
+				style += "font-weight:" + std::to_string(weight_attrib->get()) + ";";
+			if (size_attrib) 
+				style += "font-size:" + std::to_string(size_attrib->get()) + "px;";
+			if (italic_attrib) 
+				style += "font-style: italic;";
 
 			if (style.length()) {
 				std::string str_open_tag = "<span style=\"" + style + "\">";

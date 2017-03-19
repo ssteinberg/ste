@@ -19,7 +19,7 @@ namespace Attributes {
 
 class attrib {
 public:
-	using attrib_id_t = void const*;
+	using attrib_id_t = unsigned;
 
 public:
 	virtual ~attrib() noexcept {}
@@ -59,13 +59,14 @@ private:
 	const char *name{ typeid(*this).name() };
 #endif
 
+	static char const type_id;
+
 public:
 	rgb(const glm::u8vec3 &color) : color({ color.r, color.g, color.b, 255 }) {}
 	rgb(const glm::u8vec4 &color) : color(color) {}
 
 	static attrib_id_t attrib_type_s() noexcept {
-		static char const type_id{};
-		return &type_id;
+		return reinterpret_cast<unsigned>(&type_id);
 	}
 	attrib_id_t attrib_type() const noexcept override { return attrib_type_s(); }
 	virtual rgb* clone() const override { return new rgb(*this); };
@@ -224,12 +225,13 @@ private:
 	const char *name{ typeid(*this).name() };
 #endif
 
+	static const char type_id;
+
 public:
 	stroke(const rgb &color, float w) : color(color), width(w) {}
 
 	static attrib_id_t attrib_type_s() noexcept {
-		static char const type_id{};
-		return &type_id;
+		return reinterpret_cast<unsigned>(&type_id);
 	}
 	attrib_id_t attrib_type() const noexcept override { return attrib_type_s(); }
 	virtual stroke* clone() const override { return new stroke(*this); };
@@ -246,12 +248,13 @@ private:
 	const char *name{ typeid(*this).name() };
 #endif
 
+	static const char type_id;
+
 public:
 	font(const StE::Text::font &f) : f(f) {}
 
 	static attrib_id_t attrib_type_s() noexcept {
-		static char const type_id{};
-		return &type_id;
+		return reinterpret_cast<unsigned>(&type_id);
 	}
 	attrib_id_t attrib_type() const noexcept override { return attrib_type_s(); }
 	virtual font* clone() const override { return new font(*this); };
@@ -270,12 +273,13 @@ private:
 	const char *name{ typeid(*this).name() };
 #endif
 
+	static const char type_id;
+
 public:
 	size(const T &s) : s(s) {}
 
 	static attrib_id_t attrib_type_s() noexcept {
-		static char const type_id{};
-		return &type_id;
+		return reinterpret_cast<unsigned>(&type_id);
 	}
 	attrib_id_t attrib_type() const noexcept override { return attrib_type_s(); }
 	virtual size* clone() const override { return new size(*this); };
@@ -302,12 +306,13 @@ private:
 	const char *name{ typeid(*this).name() };
 #endif
 
+	static const char type_id;
+
 public:
 	line_height(const T &s) : s(s) {}
 
 	static attrib_id_t attrib_type_s() noexcept {
-		static char const type_id{};
-		return &type_id;
+		return reinterpret_cast<unsigned>(&type_id);
 	}
 	attrib_id_t attrib_type() const noexcept override { return attrib_type_s(); }
 	virtual line_height* clone() const override { return new line_height(*this); };
@@ -326,12 +331,13 @@ private:
 	const char *name{ typeid(*this).name() };
 #endif
 
+	static const char type_id;
+
 public:
 	kern(const T &k) : k(k) {}
 
 	static attrib_id_t attrib_type_s() noexcept {
-		static char const type_id{};
-		return &type_id;
+		return reinterpret_cast<unsigned>(&type_id);
 	}
 	attrib_id_t attrib_type() const noexcept override { return attrib_type_s(); }
 	virtual kern* clone() const override { return new kern(*this); };
@@ -354,12 +360,13 @@ private:
 	const char *name{ typeid(*this).name() };
 #endif
 
+	static const char type_id;
+
 public:
 	align(const alignment &a) : a(a) {}
 
 	static attrib_id_t attrib_type_s() noexcept {
-		static char const type_id{};
-		return &type_id;
+		return reinterpret_cast<unsigned>(&type_id);
 	}
 	attrib_id_t attrib_type() const noexcept override { return attrib_type_s(); }
 	virtual align* clone() const override { return new align(*this); };
@@ -381,12 +388,13 @@ private:
 	const char *name{ typeid(*this).name() };
 #endif
 
+	static const char type_id;
+
 public:
 	weight(const T &w) : w(w) {}
 
 	static attrib_id_t attrib_type_s() noexcept {
-		static char const type_id{};
-		return &type_id;
+		return reinterpret_cast<unsigned>(&type_id);
 	}
 	attrib_id_t attrib_type() const noexcept override { return attrib_type_s(); }
 	virtual weight* clone() const override { return new weight(*this); };
@@ -402,12 +410,13 @@ class underline : public attrib {
 	const char *name{ typeid(*this).name() };
 #endif
 
+	static const char type_id;
+
 public:
 	underline() {}
 
 	static attrib_id_t attrib_type_s() noexcept {
-		static char const type_id{};
-		return &type_id;
+		return reinterpret_cast<unsigned>(&type_id);
 	}
 	attrib_id_t attrib_type() const noexcept override { return attrib_type_s(); }
 	virtual underline* clone() const override { return new underline(*this); };
@@ -419,12 +428,13 @@ class italic : public attrib {
 	const char *name{ typeid(*this).name() };
 #endif
 
+	static const char type_id;
+
 public:
 	italic() {}
 
 	static attrib_id_t attrib_type_s() noexcept {
-		static char const type_id{};
-		return &type_id;
+		return reinterpret_cast<unsigned>(&type_id);
 	}
 	attrib_id_t attrib_type() const noexcept override { return attrib_type_s(); }
 	virtual italic* clone() const override { return new italic(*this); };
@@ -440,12 +450,13 @@ private:
 	const char *name{ typeid(*this).name() };
 #endif
 
+	static const char type_id;
+
 public:
 	link(const T &l) : l(l) {}
 
 	static attrib_id_t attrib_type_s() noexcept {
-		static char const type_id{};
-		return &type_id;
+		return reinterpret_cast<unsigned>(&type_id);
 	}
 	attrib_id_t attrib_type() const noexcept override { return attrib_type_s(); }
 	virtual link* clone() const override { return new link(*this); };
