@@ -30,7 +30,7 @@ public:
 			binding_descriptors[i] = *(bindings.begin() + i);
 
 		VkDescriptorSetLayoutCreateInfo create_info = {};
-		create_info.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+		create_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
 		create_info.pNext = nullptr;
 		create_info.flags = 0;
 		create_info.bindingCount = binding_descriptors.size();

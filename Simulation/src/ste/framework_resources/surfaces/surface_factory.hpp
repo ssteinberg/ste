@@ -1,156 +1,171 @@
 // StE
-// Â© Shlomi Steinberg, 2015-2016
+// © Shlomi Steinberg, 2015-2016
 
 #pragma once
 
-#include <string>
-#include <fstream>
-#include <memory>
-#include <ios>
+#include <stdafx.hpp>
+#include <ste_context.hpp>
+#include <device_image.hpp>
 
-#include <boost_filesystem.hpp>
+#include <vk_format_type_traits.hpp>
 
-#include <task_future.hpp>
-#include <task_scheduler.hpp>
+#include <surface_io.hpp>
+#include <surface_mipmap_generator.hpp>
+#include <surface_convert.hpp>
 
-#include <Log.hpp>
-#include <attributed_string.hpp>
-
-#include <surface_factory_exceptions.hpp>
-
-#include <gli/load_dds.hpp>
+#include <vk_cmd_pipeline_barrier.hpp>
+#include <vk_cmd_copy_image.hpp>
 
 namespace StE {
 namespace Resource {
 
 class surface_factory {
-private:
-	static gli::texture2d load_png(const boost::filesystem::path &file_name, bool srgb);
-	static gli::texture2d load_tga(const boost::filesystem::path &file_name, bool srgb);
-	static gli::texture2d load_jpeg(const boost::filesystem::path &file_name, bool srgb);
-	static void write_png(const boost::filesystem::path &file_name, const char *image_data, int components, int width, int height);
-
-	~surface_factory() {}
-
 public:
-	static void write_surface_2d(const gli::texture2d &surface, const boost::filesystem::path &path) {
-		int components;
-		if (surface.format() == gli::format::FORMAT_R8_UNORM_PACK8)			components = 1;
-		else if (surface.format() == gli::format::FORMAT_RGB8_UNORM_PACK8)	components = 3;
-		else if (surface.format() == gli::format::FORMAT_RGBA8_UNORM_PACK8)	components = 4;
-		else {
-			ste_log_error() << "Can't write surface file: " << path.string() << std::endl;
-			throw surface_unsupported_format_error();
+	template <VkFormat format>
+	static auto create_image_2d(const ste_context &ctx,
+								const gli::texture2d &input,
+								const VkImageUsageFlags &usage,
+								const VkImageLayout &layout) {
+		using image_element_type = typename GL::vk_format_traits<format>::element_type;
+		static constexpr int image_element_count = GL::vk_format_traits<format>::elements;
+		static constexpr int image_texel_bytes = GL::vk_format_traits<format>::texel_bytes;
+		static constexpr gli::format image_gli_format = GL::vk_format_traits<format>::gli_format;
+
+		// Convert surface to target format
+		bool need_conversion = image_gli_format != input.format();
+		gli::texture2d converted;
+		if (need_conversion)
+			converted = surface_convert()(input, image_gli_format);
+		const gli::texture2d &surface = need_conversion ? converted : input;
+
+		auto src_format = surface.format();
+		auto mip_levels = surface.levels();
+		if (gli::is_packed(src_format)) {
+			ste_log_error() << "Input surface has a packed format." << std::endl;
+			throw surface_unsupported_format_error("Input has a packed format");
 		}
 
-		write_png(path, reinterpret_cast<const char*>(surface.data()), components, surface.extent().x, surface.extent().y);
-	}
-	static auto write_surface_2d_async(task_scheduler &sched, const gli::texture2d &surface, const boost::filesystem::path &path) {
-		return sched.schedule_now([&]() {
-			write_surface_2d(surface, path);
-		});
-	}
+		// Create staging image
+		GL::device_image<2, GL::device_resource_allocation_policy_host_visible_coherent>
+			staging_image(ctx, format, surface.extent(), VK_IMAGE_USAGE_TRANSFER_SRC_BIT,
+						  1, 1, false, true, false);
+		auto staging_image_bytes = staging_image.get_underlying_memory().get_size();
+		auto mmap_u8_ptr = staging_image.get_underlying_memory().template mmap<glm::u8>(0, staging_image_bytes);
 
-	static auto load_surface_2d(const boost::filesystem::path &path, bool srgb) {
-		unsigned char magic[4] = { 0, 0, 0, 0 };
+		auto subresource_layout = staging_image->get_image_subresource_layout(0);
 
-		// Check image format
-		{
-			try {
-				std::ifstream f;
-				f.exceptions(f.exceptions() | std::ios::failbit);
+		// Create target image
+		GL::device_image<2, GL::device_resource_allocation_policy_device>
+			image(ctx, format, surface.extent(), VK_IMAGE_USAGE_TRANSFER_DST_BIT | usage,
+				  mip_levels, 1, true);
 
-				f.open(path.string(), std::ios::binary | std::ios::in);
-				if (!f) {
-					ste_log_error() << "Can't open surface file: " << path.string() << std::endl;
-					throw resource_io_error();
+		// Select queue
+		auto queue_type = GL::ste_queue_type::data_transfer_queue;
+		auto queue_selector = GL::ste_queue_selector<GL::ste_queue_selector_policy_flexible>(queue_type);
+
+		// Upload
+		for (std::uint32_t m = 0; m < mip_levels; ++m) {
+			auto level = surface[m];
+
+			auto size = level.extent();
+			auto *ptr = static_cast<glm::u8*>(*mmap_u8_ptr) + subresource_layout.offset;
+			const auto *src = reinterpret_cast<const glm::u8*>(level.data());
+
+			VkImageCopy range = {
+				{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 0, 1 },
+				{ 0, 0, 0 },
+				{ VK_IMAGE_ASPECT_COLOR_BIT, m, 0, 1 },
+				{ 0, 0, 0 },
+				{ static_cast<std::uint32_t>(size.x), static_cast<std::uint32_t>(size.y), 1 }
+			};
+
+			// Write mipmap level to staging
+			for (auto y = 0; y < size.y; ++y) {
+				memcpy(ptr, src, static_cast<std::size_t>(image_texel_bytes * size.x));
+				ptr += subresource_layout.rowPitch;
+				src += size.x * image_texel_bytes;
+			}
+
+			// Create a batch
+			auto batch = ctx.device().select_queue(queue_selector)->allocate_batch();
+			auto& command_buffer = batch->acquire_command_buffer();
+			auto& fence = batch->get_fence();
+
+			// Enqueue mipmap copy on a transfer queue
+			ctx.device().enqueue(queue_selector, [&]() {
+				// Record and submit a one-time batch
+				{
+					auto recorder = command_buffer.record();
+
+					if (m == 0) {
+						// Move to transfer layouts
+						auto barrier = GL::vk_pipeline_barrier(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+															   VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+															   std::vector<GL::vk_image_memory_barrier>{
+							GL::vk_image_memory_barrier(staging_image.get(),
+														VK_IMAGE_LAYOUT_PREINITIALIZED,
+														VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+														VK_ACCESS_HOST_WRITE_BIT,
+														VK_ACCESS_TRANSFER_READ_BIT),
+								GL::vk_image_memory_barrier(image.get(),
+															VK_IMAGE_LAYOUT_UNDEFINED,
+															VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+															0,
+															VK_ACCESS_TRANSFER_WRITE_BIT) });
+						recorder << GL::vk_cmd_pipeline_barrier(barrier);
+					}
+
+					// Copy to image
+					recorder << GL::vk_cmd_copy_image(staging_image.get(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+													  image.get(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+													  { range });
+
+					if (m == mip_levels - 1) {
+						// Move to final layout
+						auto barrier = GL::vk_pipeline_barrier(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+															   VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+															   GL::vk_image_memory_barrier(image.get(),
+																						   VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+																						   layout,
+																						   VK_ACCESS_TRANSFER_WRITE_BIT,
+																						   VK_ACCESS_INPUT_ATTACHMENT_READ_BIT | VK_ACCESS_SHADER_READ_BIT));
+						recorder << GL::vk_cmd_pipeline_barrier(barrier);
+					}
 				}
-				if (!f.read(reinterpret_cast<char*>(magic), 4)) {
-					ste_log_error() << "Can't read surface file: " << path.string() << std::endl;
-					throw resource_io_error();
-				}
-			}
-			catch (const std::ios_base::failure& e) {
-				ste_log_error() << "Unknown failure opening file: " << path.string() << " - " << e.what() << " " << std::strerror(errno) << std::endl;
-				throw resource_io_error();
-			}
+
+				GL::ste_device_queue::submit_batch(std::move(batch));
+			});
+
+			// Wait for completion
+			fence.get();
 		}
 
-		using namespace StE::Text;
-		using namespace Attributes;
-
-		// Load image
-		if (magic[0] == 'D' && magic[1] == 'D' && magic[2] == 'S' && magic[3] == ' ') {
-			// DDS
-			// Directly construct GLI surface
-			auto texture = gli::texture2d(gli::load_dds(path.string()));
-			if (texture.empty()) {
-				ste_log_error() << "Can't parse DDS surface: " << path;
-				throw surface_error();
-			}
-
-			ste_log() << attributed_string("Loaded DDS surface \"") + i(path.string()) + "\" (" + std::to_string(texture.extent().x) + " X " + std::to_string(texture.extent().y) + ") successfully." << std::endl;
-			return texture;
-		}
-
-		if (magic[0] == 0xff && magic[1] == 0xd8) {
-			// JPEG
-			auto texture = load_jpeg(path, srgb);
-			if (texture.empty()) {
-				ste_log_error() << "Can't parse JPEG surface: " << path;
-				throw surface_error();
-			}
-
-			ste_log() << attributed_string("Loaded JPEG surface \"") + i(path.string()) + "\" (" + std::to_string(texture.extent().x) + " X " + std::to_string(texture.extent().y) + ") successfully." << std::endl;
-			return texture;
-		}
-		else if (magic[0] == 0x89 && magic[1] == 0x50 && magic[2] == 0x4e && magic[3] == 0x47) {
-			// PNG
-			auto texture = load_png(path, srgb);
-			if (texture.empty()) {
-				ste_log_error() << "Can't parse PNG surface: " << path;
-				throw surface_error();
-			}
-
-			ste_log() << attributed_string("Loaded PNG surface \"") + i(path.string()) + "\" (" + std::to_string(texture.extent().x) + " X " + std::to_string(texture.extent().y) + ") successfully." << std::endl;
-			return texture;
-		}
-		else if (magic[0] == 0 && magic[1] == 0 && magic[3] == 0) {
-			// TGA?
-			auto texture = load_tga(path, srgb);
-			if (texture.empty()) {
-				ste_log_error() << "Can't parse TGA surface: " << path.string() << std::endl;
-				throw surface_error();
-			}
-
-			ste_log() << attributed_string("Loaded TGA surface \"") + i(path.string()) + "\" (" + std::to_string(texture.extent().x) + " X " + std::to_string(texture.extent().y) + ") successfully." << std::endl;
-			return texture;
-		}
-		else {
-			ste_log_error() << red(attributed_string("Incompatible surface format: \"")) + i(path.string()) + "\"." << std::endl;
-			throw surface_unsupported_format_error();
-		}
+		return image;
 	}
 
-	static auto load_surface_2d_async(task_scheduler &sched, const boost::filesystem::path &path, bool srgb) {
-		return sched.schedule_now([&]() {
-			return std::make_unique<gli::texture2d>(load_surface_2d(path, srgb));
-		});
+	template <VkFormat format>
+	static auto create_image_2d(const ste_context &ctx,
+								const boost::filesystem::path &path,
+								const VkImageUsageFlags &usage,
+								const VkImageLayout &layout,
+								bool generate_mipmaps = true) {
+		auto surface = surface_io::load_surface_2d(path, false);
+		if (generate_mipmaps)
+			surface = surface_mipmap_generator()(std::move(surface));
+		return create_image_2d<format>(ctx, surface, usage, layout);
 	}
 
-	// TODO
-//	static auto load_texture_2d_async(task_scheduler &sched, const boost::filesystem::path &path, bool srgb) {
-//		return load_surface_2d_async(sched, path, srgb)
-//			// TODO: Fix
-//				.then/*_on_main_thread*/([](std::unique_ptr<gli::texture2d> &&surface) {
-//					bool mipmap = surface->levels() == 1;
-//					return std::make_unique<Core::texture_2d>(*surface, mipmap);
-//				});
-//	}
-//	static auto load_texture_2d(const boost::filesystem::path &path, bool srgb) {
-//		auto surface = load_surface_2d(path, srgb);
-//		return std::make_unique<Core::texture_2d>(surface, surface.levels() == 1);
-//	}
+	template <VkFormat format>
+	static auto create_image_2d_srgb(const ste_context &ctx,
+									 const boost::filesystem::path &path,
+									 const VkImageUsageFlags &usage,
+									 const VkImageLayout &layout,
+									 bool generate_mipmaps = true) {
+		auto surface = surface_io::load_surface_2d(path, true);
+		if (generate_mipmaps)
+			surface = surface_mipmap_generator()(std::move(surface));
+		return create_image_2d<format>(ctx, surface, usage, layout);
+	}
 };
 
 }

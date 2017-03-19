@@ -34,7 +34,7 @@ protected:
 		dynamic_offsets(dynamic_offsets) 
 	{
 		this->sets.resize(sets.size());
-		for (int i = 0; i < sets.size(); ++i)
+		for (std::size_t i = 0; i < sets.size(); ++i)
 			this->sets[i] = (sets.begin() + i)->get();
 	}
 
@@ -59,7 +59,7 @@ public:
 	vk_cmd_bind_descriptor_sets_compute(const vk_pipeline_layout &pipeline_layout,
 										std::uint32_t first_set_bind_index,
 										const std::vector<std::reference_wrapper<vk_descriptor_set>> &sets,
-										const std::vector<std::uint32_t> &dynamic_offsets)
+										const std::vector<std::uint32_t> &dynamic_offsets = {})
 		: vk_cmd_bind_descriptor_sets(VK_PIPELINE_BIND_POINT_COMPUTE,
 									  pipeline_layout,
 									  first_set_bind_index,
@@ -73,7 +73,7 @@ public:
 	vk_cmd_bind_descriptor_sets_graphics(const vk_pipeline_layout &pipeline_layout,
 										 std::uint32_t first_set_bind_index,
 										 const std::vector<std::reference_wrapper<vk_descriptor_set>> &sets,
-										 const std::vector<std::uint32_t> &dynamic_offsets)
+										 const std::vector<std::uint32_t> &dynamic_offsets = {})
 		: vk_cmd_bind_descriptor_sets(VK_PIPELINE_BIND_POINT_GRAPHICS,
 									  pipeline_layout,
 									  first_set_bind_index,

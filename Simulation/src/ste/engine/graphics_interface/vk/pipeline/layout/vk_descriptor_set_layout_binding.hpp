@@ -58,16 +58,10 @@ public:
 		return binding;
 	}
 
-	auto get_size() const {
-		VkDescriptorPoolSize size = {};
-		size.type = type;
-		size.descriptorCount = count;
-
-		return size;
-	}
+	auto get_type() const { return type; }
+	auto get_count() const { return count; }
 
 	operator VkDescriptorSetLayoutBinding() const { return get_binding(); }
-	operator VkDescriptorPoolSize() const { return get_size(); }
 };
 
 }

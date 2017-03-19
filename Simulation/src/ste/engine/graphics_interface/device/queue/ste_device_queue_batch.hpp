@@ -11,21 +11,28 @@
 #include <shared_fence.hpp>
 
 #include <memory>
+#include <type_traits>
+#include <function_traits.hpp>
 
 namespace StE {
 namespace GL {
 
-template <typename Fence>
+namespace _detail {
+
+template <typename Fence, typename Pool>
 class ste_device_queue_batch_impl {
 	friend class ste_device_queue;
 
 public:
-	using pool_t = ste_resource_pool<ste_device_queue_command_pool>::resource_t;
+	using pool_t = Pool;
 	using fence_t = Fence;
 
 public:
 	using fence_ptr_strong_t = std::shared_ptr<fence_t>;
 	using fence_ptr_weak_t = std::weak_ptr<fence_t>;
+
+private:
+	using shared_fence_t = shared_fence<void>;
 
 private:
 	pool_t pool;
@@ -57,28 +64,23 @@ public:
 	}
 
 	const auto& get_fence_ptr() const { return fence_strong; }
-	virtual shared_fence<void>& get_fence() const = 0;
-	virtual bool is_batch_complete() const = 0;
-};
 
-class ste_device_queue_batch : public ste_device_queue_batch_impl<ste_resource_pool<shared_fence<void>>::resource_t> {
-	using Base = ste_device_queue_batch_impl<ste_resource_pool<shared_fence<void>>::resource_t>;
-
-	friend class ste_device_queue;
-
-public:
-	using Base::Base;
-	virtual ~ste_device_queue_batch() noexcept {}
-
-	shared_fence<void>& get_fence() const override final {
+	auto& get_fence() const {
 		return **fence_strong;
 	}
 
-	bool is_batch_complete() const override final {
+	bool is_batch_complete() const {
 		const auto& f = get_fence();
 		return f.is_signaled();
 	}
 };
+
+}
+
+using ste_device_queue_batch = _detail::ste_device_queue_batch_impl<
+	ste_resource_pool<shared_fence<void>>::resource_t,
+	ste_resource_pool<ste_device_queue_command_pool>::resource_t
+>;
 
 }
 }

@@ -24,12 +24,12 @@ private:
 
 public:
 	vk_pipeline_layout(const vk_logical_device &device, 
-					   const std::vector<vk_descriptor_set_layout> &set_layouts,
+					   const std::vector<const vk_descriptor_set_layout*> &set_layouts,
 					   const std::vector<vk_push_constant_layout> &push_constants_layout = {}) : device(device) {
 		std::vector<VkDescriptorSetLayout> set_layout_descriptors;
 		set_layout_descriptors.resize(set_layouts.size());
 		for (std::size_t i = 0; i < set_layouts.size(); ++i)
-			set_layout_descriptors[i] = *(set_layouts.begin() + i);
+			set_layout_descriptors[i] = **(set_layouts.begin() + i);
 
 		std::vector<VkPushConstantRange> push_constant_layout_descriptors;
 		push_constant_layout_descriptors.resize(push_constants_layout.size());

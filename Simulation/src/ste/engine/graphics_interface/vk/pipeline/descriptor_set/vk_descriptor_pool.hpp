@@ -12,6 +12,7 @@
 #include <vk_descriptor_set_layout.hpp>
 
 #include <vector>
+#include <unordered_map>
 
 namespace StE {
 namespace GL {
@@ -27,13 +28,27 @@ public:
 					   std::uint32_t max_sets,
 					   const std::vector<vk_descriptor_set_layout_binding> &set_layouts,
 					   bool allow_free_individual_sets = false) : device(device), allow_free_individual_sets(allow_free_individual_sets) {
+		std::unordered_map<VkDescriptorType, std::uint32_t> type_counts;
+		for (auto &l : set_layouts) {
+			auto it = type_counts.find(l.get_type());
+			if (it != type_counts.end())
+				it->second += l.get_count();
+			else
+				type_counts[l.get_type()] = l.get_count();
+		}
+
 		std::vector<VkDescriptorPoolSize> set_sizes;
-		set_sizes.resize(set_layouts.size());
-		for (std::size_t i = 0; i < set_layouts.size(); ++i)
-			set_sizes[i] = *(set_layouts.begin() + i);
+		set_sizes.reserve(type_counts.size());
+		for (auto &p : type_counts) {
+			VkDescriptorPoolSize size = {};
+			size.type = p.first;
+			size.descriptorCount = p.second;
+
+			set_sizes.push_back(size);
+		}
 
 		VkDescriptorPoolCreateInfo create_info = {};
-		create_info.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+		create_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
 		create_info.pNext = nullptr;
 		create_info.flags = allow_free_individual_sets ? VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT : 0;
 		create_info.maxSets = max_sets;
@@ -64,14 +79,14 @@ public:
 		}
 	}
 
-	vk_descriptor_set allocate_descriptor_set(const std::vector<vk_descriptor_set_layout> &set_layouts) const {
+	vk_descriptor_set allocate_descriptor_set(const std::vector<const vk_descriptor_set_layout*> &set_layouts) const {
 		std::vector<VkDescriptorSetLayout> set_layout_descriptors;
 		set_layout_descriptors.resize(set_layouts.size());
 		for (std::size_t i = 0; i < set_layouts.size(); ++i)
-			set_layout_descriptors[i] = *(set_layouts.begin() + i);
+			set_layout_descriptors[i] = **(set_layouts.begin() + i);
 
 		VkDescriptorSetAllocateInfo create_info = {};
-		create_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+		create_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
 		create_info.pNext = nullptr;
 		create_info.descriptorPool = *this;
 		create_info.descriptorSetCount = set_layout_descriptors.size();

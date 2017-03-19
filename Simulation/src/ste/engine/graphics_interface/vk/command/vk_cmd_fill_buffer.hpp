@@ -5,7 +5,7 @@
 
 #include <vulkan/vulkan.h>
 #include <vk_command.hpp>
-#include <vk_buffer_base.hpp>
+#include <vk_buffer.hpp>
 
 namespace StE {
 namespace GL {
@@ -18,23 +18,33 @@ private:
 	std::uint32_t data;
 
 public:
-	vk_cmd_fill_buffer(const vk_buffer_base &buffer,
+	template <typename T, bool sparse>
+	vk_cmd_fill_buffer(const vk_buffer<T, sparse> &buffer,
 					   std::uint32_t data) : buffer(buffer), data(data)
 	{}
-	vk_cmd_fill_buffer(const vk_buffer_base &buffer,
+	template <typename T, bool sparse>
+	vk_cmd_fill_buffer(const vk_buffer<T, sparse> &buffer,
 					   float data) : buffer(buffer), data(*reinterpret_cast<std::uint32_t*>(&data))
 	{}
-	vk_cmd_fill_buffer(const vk_buffer_base &buffer,
+	template <typename T, bool sparse>
+	vk_cmd_fill_buffer(const vk_buffer<T, sparse> &buffer,
 					   std::uint32_t data,
 					   std::uint64_t size,
 					   std::uint64_t offset = 0)
-		: buffer(buffer), offset(offset), size(size), data(data)
+		: buffer(buffer), 
+		offset(offset * sizeof(T)), 
+		size(size * sizeof(T)),
+		data(data)
 	{}
-	vk_cmd_fill_buffer(const vk_buffer_base &buffer,
+	template <typename T, bool sparse>
+	vk_cmd_fill_buffer(const vk_buffer<T, sparse> &buffer,
 					   float data,
 					   std::uint64_t size,
 					   std::uint64_t offset = 0)
-		: buffer(buffer), offset(offset), size(size), data(*reinterpret_cast<std::uint32_t*>(&data))
+		: buffer(buffer), 
+		offset(offset * sizeof(T)), 
+		size(size * sizeof(T)), 
+		data(*reinterpret_cast<std::uint32_t*>(&data))
 	{}
 	virtual ~vk_cmd_fill_buffer() noexcept {}
 

@@ -5,7 +5,7 @@
 
 #include <vulkan/vulkan.h>
 #include <vk_command.hpp>
-#include <vk_buffer_base.hpp>
+#include <vk_buffer.hpp>
 
 namespace StE {
 namespace GL {
@@ -18,11 +18,12 @@ private:
 	const void* data;
 
 public:
-	vk_cmd_update_buffer(const vk_buffer_base &buffer,
+	template <typename T, bool sparse>
+	vk_cmd_update_buffer(const vk_buffer<T, sparse> &buffer,
 						 std::uint64_t data_size,
 						 const void *data,
 						 std::uint64_t offset = 0) 
-		: buffer(buffer), offset(offset), size(data_size), data(data)
+		: buffer(buffer), offset(offset * sizeof(T)), size(data_size * sizeof(T)), data(data)
 	{}
 	virtual ~vk_cmd_update_buffer() noexcept {}
 

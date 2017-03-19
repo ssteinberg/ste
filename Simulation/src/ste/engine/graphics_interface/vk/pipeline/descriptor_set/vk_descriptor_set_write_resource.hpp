@@ -8,7 +8,7 @@
 #include <vulkan/vulkan.h>
 #include <vk_sampler.hpp>
 #include <vk_image_view.hpp>
-#include <vk_buffer_base.hpp>
+#include <vk_buffer.hpp>
 
 #include <vector>
 
@@ -44,21 +44,22 @@ public:
 		: type(type), binding_index(binding_index), array_element(array_element), count(count),
 		image(*image_view), sampler(sampler ? *sampler : VK_NULL_HANDLE), image_layout(image_layout)
 	{}
+	template <typename T, bool sparse>
 	vk_descriptor_set_write_resource(const VkDescriptorType &type,
 									 std::uint32_t binding_index,
 									 std::uint32_t array_element,
 									 std::uint32_t count,
-									 const vk_buffer_base *buffer,
-									 std::uint64_t buffer_range,
+									 const vk_buffer<T, sparse> &buffer,
+									 std::uint64_t buffer_length,
 									 std::uint64_t buffer_offset = 0)
 		: type(type), binding_index(binding_index), array_element(array_element), count(count),
-		buffer(*buffer), buffer_offset(buffer_offset), buffer_range(buffer_range)
+		buffer(buffer), buffer_offset(buffer_offset * sizeof(T)), buffer_range(buffer_length * sizeof(T))
 	{}
 
 	vk_descriptor_set_write_resource(vk_descriptor_set_write_resource &&) = default;
 	vk_descriptor_set_write_resource &operator=(vk_descriptor_set_write_resource &&) = default;
-	vk_descriptor_set_write_resource(const vk_descriptor_set_write_resource &) = delete;
-	vk_descriptor_set_write_resource &operator=(const vk_descriptor_set_write_resource &) = delete;
+	vk_descriptor_set_write_resource(const vk_descriptor_set_write_resource &) = default;
+	vk_descriptor_set_write_resource &operator=(const vk_descriptor_set_write_resource &) = default;
 };
 
 }

@@ -58,6 +58,20 @@ public:
 	vk_image_base(const vk_image_base &) = delete;
 	vk_image_base& operator=(const vk_image_base &) = delete;
 
+	auto get_image_subresource_layout(std::uint32_t mip,
+									  std::uint32_t layer = 0,
+									  bool color = true) {
+		VkImageSubresource subresource = {};
+		subresource.aspectMask = color ? VK_IMAGE_ASPECT_COLOR_BIT : VK_IMAGE_ASPECT_DEPTH_BIT;
+		subresource.mipLevel = mip;
+		subresource.arrayLayer = layer;
+
+		VkSubresourceLayout layout;
+		vkGetImageSubresourceLayout(device, *this, &subresource, &layout);
+
+		return layout;
+	}
+
 	auto& get_creating_device() const { return device; }
 	auto& get_image() const { return image.get(); }
 

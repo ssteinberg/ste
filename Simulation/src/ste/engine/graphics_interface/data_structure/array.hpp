@@ -65,9 +65,10 @@ public:
 	*	@param	data	Data to copy
 	*	@param	offset	Array offset to copy to
 	*/
-	auto update_cmd(const std::vector<T> &data, std::uint64_t offset) {
+	auto update_cmd(const std::vector<T> &data, 
+					std::uint64_t offset = 0) {
 		assert(data.size() + offset <= size() && "Out-of-bounds");
-		return vk_cmd_update_buffer(buffer.get(), data.size() * sizeof(T), data.data(), offset * sizeof(T));
+		return vk_cmd_update_buffer(buffer.get(), data.size(), data.data(), offset);
 	}
 
 	auto size() const { return buffer.get().get_elements_count(); }

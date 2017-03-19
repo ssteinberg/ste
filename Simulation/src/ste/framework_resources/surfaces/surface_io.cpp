@@ -1,6 +1,6 @@
 
 #include <stdafx.hpp>
-#include <surface_factory.hpp>
+#include <surface_io.hpp>
 
 #include <Log.hpp>
 #include <attributed_string.hpp>
@@ -13,7 +13,7 @@
 using namespace StE::Text;
 using namespace StE::Resource;
 
-void surface_factory::write_png(const boost::filesystem::path &file_name, const char *image_data, int components, int width, int height) {
+void surface_io::write_png(const boost::filesystem::path &file_name, const char *image_data, int components, int width, int height) {
 	if (components != 1 && components != 3 && components != 4) {
 		ste_log_error() << file_name << " can't write " << components << " channel PNG.";
 		throw surface_unsupported_format_error("Unsupported PNG component count");
@@ -85,7 +85,7 @@ void surface_factory::write_png(const boost::filesystem::path &file_name, const 
 	fclose(fp);
 }
 
-gli::texture2d surface_factory::load_tga(const boost::filesystem::path &file_name, bool srgb) {
+gli::texture2d surface_io::load_tga(const boost::filesystem::path &file_name, bool srgb) {
 	TGA *tga;
 
 	try {
@@ -161,7 +161,7 @@ gli::texture2d surface_factory::load_tga(const boost::filesystem::path &file_nam
 	return tex;
 }
 
-gli::texture2d surface_factory::load_png(const boost::filesystem::path &file_name, bool srgb) {
+gli::texture2d surface_io::load_png(const boost::filesystem::path &file_name, bool srgb) {
 	png_byte header[8];
 
 	FILE *fp = fopen(file_name.string().data(), "rb");
@@ -316,7 +316,7 @@ gli::texture2d surface_factory::load_png(const boost::filesystem::path &file_nam
 	return tex;
 }
 
-gli::texture2d surface_factory::load_jpeg(const boost::filesystem::path &path, bool srgb) {
+gli::texture2d surface_io::load_jpeg(const boost::filesystem::path &path, bool srgb) {
 	int row_stride;
 	std::string content;
 

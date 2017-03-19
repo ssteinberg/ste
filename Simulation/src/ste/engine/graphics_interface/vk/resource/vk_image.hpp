@@ -54,21 +54,24 @@ public:
 			 const VkImageUsageFlags &usage,
 			 std::uint32_t mips = 1,
 			 std::uint32_t layers = 1,
-			 const VkImageLayout &initial_layout = VK_IMAGE_LAYOUT_UNDEFINED,
+			 bool supports_cube_views = false,
+			 bool preinitialized_initial_layout = false,
 			 bool optimal_tiling = true,
 			 bool sparse = false)
 		: Base(device, format, size, mips, layers), usage(usage), sparse(sparse)
 	{
 		VkImage image;
 
-		glm::u32vec3 extent(0);
+		glm::u32vec3 extent(1);
 		for (int i = 0; i < dimensions; ++i)
 			extent[i] = size[i];
 
 		auto flags = sparse ?
 			VK_IMAGE_CREATE_SPARSE_RESIDENCY_BIT :
 			0;
-		flags |= VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT | VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
+		if (supports_cube_views)
+			flags |= VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
+		flags |= VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT;
 
 		VkImageCreateInfo create_info = {};
 		create_info.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
@@ -83,7 +86,7 @@ public:
 		create_info.tiling = optimal_tiling ? VK_IMAGE_TILING_OPTIMAL : VK_IMAGE_TILING_LINEAR;
 		create_info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 		create_info.usage = usage;
-		create_info.initialLayout = initial_layout;
+		create_info.initialLayout = preinitialized_initial_layout ? VK_IMAGE_LAYOUT_PREINITIALIZED : VK_IMAGE_LAYOUT_UNDEFINED;
 		create_info.queueFamilyIndexCount = 0;
 		create_info.pQueueFamilyIndices = nullptr;
 
@@ -111,7 +114,7 @@ public:
 	VkMemoryRequirements get_memory_requirements() const override {
 		VkMemoryRequirements req;
 		vkGetImageMemoryRequirements(this->device, 
-									 this->image, 
+									 *this,
 									 &req);
 
 		return req;

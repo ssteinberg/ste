@@ -4,10 +4,12 @@
 #include <ste.hpp>
 #include <array.hpp>
 #include <stable_vector.hpp>
-#include <device_buffer_sparse.hpp>
+#include <device_image.hpp>
 #include <device_pipeline_shader_stage.hpp>
 
 #include <vertex_attributes_from_tuple.hpp>
+
+#include <vk_descriptor_pool.hpp>
 #include <vk_pipeline_graphics.hpp>
 #include <vk_framebuffer.hpp>
 
@@ -18,8 +20,13 @@
 #include <vk_cmd_bind_vertex_buffers.hpp>
 #include <vk_cmd_bind_index_buffer.hpp>
 #include <vk_cmd_draw_indexed.hpp>
+#include <vk_cmd_bind_descriptor_sets.hpp>
+#include <vk_cmd_pipeline_barrier.hpp>
 
+#include <surface_factory.hpp>
 #include <ste_resource.hpp>
+
+#include <glm/gtc/matrix_transform.inl>
 
 using namespace StE;
 
@@ -123,21 +130,28 @@ int main()
 	struct vertex {
 		glm::vec2 pos;
 		glm::vec3 color;
+		glm::vec2 tex_coords;
 
-		using descriptor = GL::vertex_attributes_from_tuple<glm::vec2, glm::vec3>::descriptor;
+		using descriptor = GL::vertex_attributes_from_tuple<glm::vec2, glm::vec3, glm::vec2>::descriptor;
 	};
 	std::vector<vertex> vertices = {
-		{ { 0.0f, -0.5f }, { 1.0f, 0.0f, 0.0f } },
-		{ { 0.5f,  0.5f }, { 0.0f, 1.0f, 0.0f } },
-		{ { -0.5f, 0.5f }, { 0.0f, 0.0f, 1.0f } },
-		{ { 1.0f,  -0.5f }, { 1.0f, 0.0f, 1.0f } }
+		{ { 0.0f, -0.5f }, { 1.0f, 0.0f, 0.0f },{ 0,0 } },
+		{ { 0.5f,  0.5f }, { 0.0f, 1.0f, 0.0f },{ 1,0 } },
+		{ { -0.5f, 0.5f }, { 0.0f, 0.0f, 1.0f },{ 1,1 } },
+		{ { 1.0f,  -0.5f }, { 1.0f, 0.0f, 1.0f },{ 0,1 } }
 	};
 	std::vector<std::uint32_t> indices = { 0,2,1,0,1,3 };
 
 	ste_resource<GL::array<std::uint32_t>> index_buffer(ctx, indices, VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
-	index_buffer.get();
 	ste_resource<GL::stable_vector<vertex>> vertex_buffer(ctx, vertices, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
-	vertex_buffer.get();
+
+	// UBO
+	struct uniform_buffer_object {
+		glm::vec4 data;
+	};
+	ste_resource<GL::array<uniform_buffer_object>> ubo(ctx,
+													   std::vector<uniform_buffer_object>{ { glm::vec4{ 1, 0, 0, 1 } } },
+													   VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
 
 	// Viewport
 	glm::u32vec2 swapchain_size = device.get_surface().size();
@@ -181,13 +195,40 @@ int main()
 	(*recreate_queues_connection)(&device);
 	device.get_queues_and_surface_recreate_signal().connect(recreate_queues_connection);
 
+	// Texture
+	auto surface = Resource::surface_factory::create_image_2d<VK_FORMAT_R8G8B8A8_UNORM>(ctx,
+																						R"(Data\models\crytek-sponza\images\Sponza_Bricks_a_Albedo.png)",
+																						VK_IMAGE_USAGE_SAMPLED_BIT,
+																						VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+	GL::vk_image_view<GL::vk_image_type::image_2d> texture(surface.get(), surface->get_format());
+	GL::vk_sampler sampler(device.logical_device(), GL::vk_sampler_filtering(VK_FILTER_LINEAR, VK_FILTER_LINEAR,
+																			 VK_SAMPLER_MIPMAP_MODE_LINEAR));
+
+	// Descriptors
+	GL::vk_descriptor_set_layout_binding descriptor_set_ubo_layout_binding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+																		   VK_SHADER_STAGE_VERTEX_BIT,
+																		   0);
+	GL::vk_descriptor_set_layout_binding descriptor_set_sampler_layout_binding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+																			   VK_SHADER_STAGE_FRAGMENT_BIT,
+																			   1);
+	GL::vk_descriptor_set_layout descriptor_set_layout(device.logical_device(), { descriptor_set_ubo_layout_binding, descriptor_set_sampler_layout_binding });
+
+	GL::vk_descriptor_pool descriptor_pool(device.logical_device(), 10, { descriptor_set_ubo_layout_binding, descriptor_set_sampler_layout_binding });
+	auto descriptor_set = descriptor_pool.allocate_descriptor_set({ &descriptor_set_layout });
+
+	descriptor_set.write({ GL::vk_descriptor_set_write_resource(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, 0, 1, ubo->get_buffer(), 1, 0),
+						 GL::vk_descriptor_set_write_resource(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, 0, 1, 
+															  &texture, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, &sampler) });
+
 	// Pipeline layout
-	GL::vk_pipeline_layout pipeline_layout(device.logical_device(), {}, {});
+	GL::vk_pipeline_layout pipeline_layout(device.logical_device(), { &descriptor_set_layout }, {});
 
 	// Graphics pipeline
-	GL::vk_pipeline_graphics pipeline(device.logical_device(), 
-									  { vert_shader_stage->graphics_pipeline_stage_descriptor(), 
-									  	frag_shader_stage->graphics_pipeline_stage_descriptor() },
+	vertex_buffer.get();
+	index_buffer.get();
+	GL::vk_pipeline_graphics pipeline(device.logical_device(),
+	{ vert_shader_stage->graphics_pipeline_stage_descriptor(),
+									  frag_shader_stage->graphics_pipeline_stage_descriptor() },
 									  pipeline_layout,
 									  presentation_renderpass,
 									  0,
@@ -196,7 +237,7 @@ int main()
 									  { { 0, vertex::descriptor() } },
 									  VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
 									  GL::vk_rasterizer_op_descriptor(),
-	                                  GL::vk_depth_op_descriptor(VK_COMPARE_OP_GREATER, false),
+									  GL::vk_depth_op_descriptor(VK_COMPARE_OP_GREATER, false),
 									  { attachment0_blend_op },
 									  glm::vec4{ .0f });
 
@@ -223,20 +264,41 @@ int main()
 		f += 1/1000.f;
 		vertices[0].pos.x = f;
 
+		float angle = f * glm::pi<float>();
+		uniform_buffer_object data = { glm::vec4{ glm::cos(angle), glm::sin(angle), -glm::sin(angle), glm::cos(angle) } };
+
 		auto selector = GL::make_queue_selector(GL::ste_queue_type::primary_queue);
 
 		// Acquire presentation comand batch
 		auto batch = device.allocate_presentation_command_batch(selector);
 
 		// Record and submit a batch
-		device.enqueue(selector, [&, batch = std::move(batch)]() mutable {
+		device.enqueue(selector, [&, data, vertices, batch = std::move(batch)]() mutable {
 
 			auto& command_buffer = batch->acquire_command_buffer();
 			{
 				auto recorder = command_buffer.record();
 
 				recorder
+					<< GL::vk_cmd_pipeline_barrier(GL::vk_pipeline_barrier(VK_PIPELINE_STAGE_VERTEX_SHADER_BIT,
+																		   VK_PIPELINE_STAGE_TRANSFER_BIT,
+																		   { GL::vk_buffer_memory_barrier(ubo->get_buffer(),
+																										VK_ACCESS_UNIFORM_READ_BIT,
+																										VK_ACCESS_TRANSFER_WRITE_BIT),
+																			GL::vk_buffer_memory_barrier(vertex_buffer->get_buffer(),
+																										VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT,
+																										VK_ACCESS_TRANSFER_WRITE_BIT) }))
 					<< vertex_buffer->update_cmd(vertices, 0)
+					<< ubo->update_cmd({ data })
+					<< GL::vk_cmd_pipeline_barrier(GL::vk_pipeline_barrier(VK_PIPELINE_STAGE_TRANSFER_BIT,
+																		   VK_PIPELINE_STAGE_VERTEX_SHADER_BIT,
+																		   { GL::vk_buffer_memory_barrier(ubo->get_buffer(),
+																										VK_ACCESS_TRANSFER_WRITE_BIT,
+																										VK_ACCESS_UNIFORM_READ_BIT),
+																			GL::vk_buffer_memory_barrier(vertex_buffer->get_buffer(),
+																										VK_ACCESS_TRANSFER_WRITE_BIT,
+																										VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT) }))
+					<< GL::vk_cmd_bind_descriptor_sets_graphics(pipeline_layout, 0, { descriptor_set })
 					<< GL::vk_cmd_begin_render_pass(presentation_framebuffers[batch->presentation_image_index()],
 													presentation_renderpass,
 													{ 0,0 },

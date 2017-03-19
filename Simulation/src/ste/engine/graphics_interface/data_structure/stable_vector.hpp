@@ -39,10 +39,11 @@ private:
 		stable_vector *v;
 
 	public:
-		stable_vector_cmd_push_back(const vk_buffer_base &buffer,
+		template <bool sparse>
+		stable_vector_cmd_push_back(const vk_buffer<T, sparse> &buffer,
 									const std::vector<T> &data_copy,
 									stable_vector *v)
-			: data(data_copy), update_cmd(buffer, data.size() * sizeof(T), data.data(), v->elements), v(v)
+			: data(data_copy), update_cmd(buffer, data.size(), data.data(), v->elements), v(v)
 		{}
 		virtual ~stable_vector_cmd_push_back() noexcept {}
 
@@ -141,7 +142,7 @@ public:
 	*	@param	offset	Vector offset to copy to
 	*/
 	auto update_cmd(const std::vector<T> &data, std::uint64_t offset) {
-		return vk_cmd_update_buffer(buffer.get(), data.size() * sizeof(T), data.data(), offset * sizeof(T));
+		return vk_cmd_update_buffer(buffer.get(), data.size(), data.data(), offset);
 	}
 
 	auto size() const { return elements; }

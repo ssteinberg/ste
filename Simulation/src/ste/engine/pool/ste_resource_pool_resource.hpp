@@ -52,13 +52,21 @@ public:
 
 	template <typename S = resource_t>
 	typename std::enable_if<resource_reclamation_policy<S>::allow_non_const_resource, pointer>::type operator->() {
-		return &get(); }
+		return &get(); 
+	}
 	const_pointer operator->() const { return &get(); }
 
 	template <typename S = resource_t>
 	typename std::enable_if<resource_reclamation_policy<S>::allow_non_const_resource, reference>::type operator*() {
-		return get(); }
+		return get(); 
+	}
 	const reference operator*() const { return get(); }
+
+	template <
+		typename S = resource_t,
+		typename = typename std::enable_if<std::is_copy_assignable_v<S> || std::is_copy_constructible_v<S>>::type
+	>
+	operator S() const { return get(); }
 };
 
 }

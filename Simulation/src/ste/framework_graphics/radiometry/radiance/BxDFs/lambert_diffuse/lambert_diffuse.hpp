@@ -6,8 +6,6 @@
 #include <stdafx.hpp>
 #include <BxDF.hpp>
 
-#include <glm/gtc/constants.inl>
-
 namespace StE {
 namespace Graphics {
 

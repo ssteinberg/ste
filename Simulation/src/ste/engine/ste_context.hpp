@@ -39,9 +39,9 @@ public:
 	/**
 	*	@brief	Performs schedules work.
 	*
-	*	@throws ste_engine_exception	On internal error
-	*	@throws ste_device_exception	On internal device error
-	*	@throws vk_exception			On Vulkan device error
+	*	@throws ste_engine_exception		On internal error
+	*	@throws ste_device_exception		On internal device error
+	*	@throws vk_exception				On Vulkan device error
 	*	@throws ste_engine_glfw_exception	On windowing system error
 	*/
 	void tick() {

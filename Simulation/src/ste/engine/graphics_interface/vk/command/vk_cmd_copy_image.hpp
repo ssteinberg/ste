@@ -25,7 +25,7 @@ public:
 	template <int d1, int d2>
 	vk_cmd_copy_image(const vk_image<d1> &src_image,
 					  const VkImageLayout &src_image_layout,
-					  const vk_image<d1> &dst_image,
+					  const vk_image<d2> &dst_image,
 					  const VkImageLayout &dst_image_layout,
 					  const std::vector<VkImageCopy> &ranges = {})
 		: src_image(src_image), src_image_layout(src_image_layout),
@@ -33,14 +33,7 @@ public:
 		ranges(ranges)
 	{
 		if (this->ranges.size() == 0) {
-			VkImageCopy c = {
-				{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 0, VK_REMAINING_ARRAY_LAYERS },
-				{ 0, 0, 0 },
-				{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 0, VK_REMAINING_ARRAY_LAYERS },
-				{ 0, 0, 0 },
-				{ src_image.get_size().x, src_image.get_size().y, src_image.get_size().z }
-			};
-			this->ranges.push_back(c);
+			assert(false);
 		}
 	}
 	virtual ~vk_cmd_copy_image() noexcept {}
