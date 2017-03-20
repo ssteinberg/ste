@@ -7,7 +7,7 @@
 
 namespace StE {
 
-class ste_window_creation_exception : public ste_engine_exception {
+class device_image_format_exception : public ste_engine_exception {
 	using Base = ste_engine_exception;
 
 public:

@@ -15,6 +15,7 @@
 #include <forward_list>
 #include <array>
 #include <unordered_set>
+#include <aligned_ptr.hpp>
 
 namespace StE {
 namespace GL {
@@ -28,7 +29,7 @@ private:
 	struct heap_t {
 		chunks_t chunks;
 		chunks_t private_chunks;
-		std::mutex m;
+		aligned_ptr<std::mutex> m;
 	};
 
 	static constexpr memory_type_t memory_types = 32;
@@ -156,7 +157,7 @@ private:
 		auto &heap = *heaps[memory_type];
 
 		{
-			std::unique_lock<std::mutex> lock(heap.m);
+			std::unique_lock<std::mutex> lock(*heap.m);
 
 			if (!heap.chunks.empty()) {
 				// Try to allocate memory on one of the existing chunks
@@ -393,7 +394,7 @@ public:
 		auto &heap = *heaps[type];
 
 		{
-			std::unique_lock<std::mutex> lock(heap.m);
+			std::unique_lock<std::mutex> lock(*heap.m);
 
 			for (auto it = heap.chunks.begin(); it != heap.chunks.end(); ++it)
 				total_commited_memory += (*it)->get_heap_size();
@@ -436,7 +437,7 @@ public:
 		auto &heap = *heaps[type];
 
 		{
-			std::unique_lock<std::mutex> lock(heap.m);
+			std::unique_lock<std::mutex> lock(*heap.m);
 
 			for (auto it = heap.chunks.begin(); it != heap.chunks.end(); ++it)
 				total_allocated_memory += (*it)->get_allocated_bytes();

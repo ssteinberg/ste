@@ -92,6 +92,7 @@ public:
 				  const VkBufferUsageFlags &usage)
 		: ctx(ctx),
 		buffer(ctx,
+			   make_sparse_binding_queue_selector(),
 			   max_sparse_size,
 			   usage | buffer_usage_additional_flags)
 	{}
@@ -147,8 +148,9 @@ public:
 
 	auto size() const { return elements; }
 
-	auto& get_buffer() const { return buffer.get(); }
-	operator VkBuffer() const { return get_buffer(); }
+	auto& get_buffer() { return buffer; }
+	auto& get_buffer() const { return buffer; }
+	operator VkBuffer() const { return *get_buffer(); }
 };
 
 }

@@ -23,6 +23,7 @@
 #include <vector>
 #include <list>
 #include <atomic>
+#include <aligned_ptr.hpp>
 
 #include <concurrent_queue.hpp>
 #include <interruptible_thread.hpp>
@@ -39,27 +40,34 @@ public:
 	using task_t = unique_thread_pool_type_erased_task<>;
 	template <typename R>
 	using enqueue_task_t = unique_thread_pool_task<R>;
+	using queue_index_t = std::uint32_t;
 
 private:
-	std::uint32_t queue_index;
+	struct shared_data_t {
+		mutable std::mutex m;
+		mutable std::condition_variable notifier;
+
+		concurrent_queue<task_t> task_queue;
+	};
+
+private:
+	const queue_index_t queue_index;
 	const vk_queue queue;
 	const ste_queue_descriptor descriptor;
 
 	ste_device_sync_primitives_pools::shared_fence_pool_t *shared_fence_pool;
 
 	ste_resource_pool<ste_device_queue_command_pool> pool;
-	std::list<std::unique_ptr<ste_device_queue_batch>> submitted_batches;
+	std::list<std::unique_ptr<_detail::ste_device_queue_batch_base>> submitted_batches;
 
-	mutable std::mutex m;
-	mutable std::condition_variable notifier;
+	aligned_ptr<shared_data_t> shared_data;
+
 	std::unique_ptr<interruptible_thread> thread;
-
-	concurrent_queue<task_t> task_queue;
 
 private:
 	static thread_local ste_device_queue *static_device_queue_ptr;
 	static thread_local const vk_queue *static_queue_ptr;
-	static thread_local std::uint32_t static_queue_index;
+	static thread_local queue_index_t static_queue_index;
 
 private:
 	static auto& thread_device_queue() { return *static_device_queue_ptr; }
@@ -83,21 +91,30 @@ public:
 	/**
 	*	@brief	Allocates a new command batch.
 	*			Must be called from an enqueued task.
+	*			UserData can be any structure that holds some user data. The user data is accessible by the public user_data
+	*			member in the returned batch, and is constructed with the supplied user_data_args parameter pack. The user data
+	*			should be used to hold data used by the batch commands, and will be deallocated with the batch only once 
+	*			processing is complete by the device.
 	*/
-	static auto thread_allocate_batch() {
-		return std::make_unique<ste_device_queue_batch>(thread_queue_index(),
-														thread_device_queue().pool.claim(),
-														std::make_shared<ste_device_queue_batch::fence_t>(thread_device_queue().shared_fence_pool->claim()));
+	template <typename UserData = void, typename... UserDataArgs>
+	static auto thread_allocate_batch(UserDataArgs&&... user_data_args) {
+		using batch_t = ste_device_queue_batch<UserData>;
+		return std::make_unique<batch_t>(thread_queue_index(),
+										 thread_device_queue().pool.claim(),
+										 std::make_shared<batch_t::fence_t>(thread_device_queue().shared_fence_pool->claim()),
+										 std::forward<UserDataArgs>(user_data_args)...);
 	}
 	/**
 	*	@brief	Allocates a new command batch.
 	*			Must be called from an enqueued task.
 	*/
-	template <typename Batch>
-	static auto thread_allocate_batch(const std::shared_ptr<typename Batch::fence_t> &f) {
+	template <typename Batch, typename... UserDataArgs>
+	static auto thread_allocate_batch_custom(const std::shared_ptr<typename Batch::fence_t> &f,
+											 UserDataArgs&&... user_data_args) {
 		return std::make_unique<Batch>(thread_queue_index(),
 									   thread_device_queue().pool.claim(),
-									   f);
+									   f,
+									   std::forward<UserDataArgs>(user_data_args)...);
 	}
 
 	/**
@@ -119,7 +136,7 @@ public:
 			throw ste_device_not_queue_thread_exception();
 		}
 
-		auto* batch_accessible = dynamic_cast<ste_device_queue_batch*>(batch.get());
+		auto* batch_accessible = dynamic_cast<_detail::ste_device_queue_batch_base*>(batch.get());
 		assert(batch_accessible);
 
 		// Copy command buffers' handle for submission
@@ -155,50 +172,8 @@ public:
 	}
 
 private:
-	void create_worker() {
-		auto idx = queue_index;
-		thread = std::make_unique<interruptible_thread>([this, idx]() {
-			// Set the thread_local globals to this thread's parameters
-			ste_device_queue::static_device_queue_ptr = this;
-			ste_device_queue::static_queue_ptr = &this->queue;
-			ste_device_queue::static_queue_index = idx;
-
-			for (;;) {
-				if (interruptible_thread::is_interruption_flag_set()) return;
-
-				std::unique_ptr<task_t> task;
-				{
-					std::unique_lock<std::mutex> l(this->m);
-					if (interruptible_thread::is_interruption_flag_set()) return;
-
-					this->notifier.wait(l, [&]() {
-						return interruptible_thread::is_interruption_flag_set() ||
-							(task = task_queue.pop()) != nullptr;
-					});
-				}
-
-				while (task != nullptr) {
-					if (interruptible_thread::is_interruption_flag_set())
-						return;
-
-					// Call task lambda
-					(*task)();
-					task = task_queue.pop();
-				}
-			}
-		});
-	}
-
-	void prune_submitted_batches() {
-		// Remove submitted batches from front of the list if they are finished
-		decltype(submitted_batches)::iterator it;
-		while ((it = submitted_batches.begin()) != submitted_batches.end()) {
-			if (!(*it)->is_batch_complete())
-				break;
-
-			submitted_batches.pop_front();
-		}
-	}
+	void create_worker();
+	void prune_submitted_batches();
 
 	template <typename R, typename L>
 	static auto execute_in_place(L &&task,
@@ -225,7 +200,7 @@ public:
 	ste_device_queue(const vk_logical_device &device,
 					 std::uint32_t device_family_index,
 					 ste_queue_descriptor descriptor,
-					 std::uint32_t queue_index,
+					 queue_index_t queue_index,
 					 ste_device_sync_primitives_pools::shared_fence_pool_t *shared_fence_pool)
 		: queue_index(queue_index),
 		queue(device, descriptor.family, device_family_index),
@@ -239,8 +214,8 @@ public:
 	~ste_device_queue() noexcept {
 		thread->interrupt();
 
-		do { notifier.notify_all(); } while (!m.try_lock());
-		m.unlock();
+		do { shared_data->notifier.notify_all(); } while (!shared_data->m.try_lock());
+		shared_data->m.unlock();
 
 		thread->join();
 		queue.wait_idle();
@@ -262,20 +237,29 @@ public:
 
 	/**
 	*	@brief	Allocates a new command batch.
+	*			UserData can be any structure that holds some user data. The user data is accessible by the public user_data
+	*			member in the returned batch, and is constructed with the supplied user_data_args parameter pack. The user data
+	*			should be used to hold data used by the batch commands, and will be deallocated with the batch only once 
+	*			processing is complete by the device.
 	*/
-	auto allocate_batch() {
-		return std::make_unique<ste_device_queue_batch>(queue_index,
-														pool.claim(),
-														std::make_shared<ste_device_queue_batch::fence_t>(shared_fence_pool->claim()));
+	template <typename UserData = void, typename... UserDataArgs>
+	auto allocate_batch(UserDataArgs&&... user_data_args) {
+		using batch_t = ste_device_queue_batch<UserData>;
+		return std::make_unique<batch_t>(queue_index,
+										 pool.claim(),
+										 std::make_shared<batch_t::fence_t>(shared_fence_pool->claim()),
+										 std::forward<UserDataArgs>(user_data_args)...);
 	}
 	/**
 	*	@brief	Allocates a new command batch.
 	*/
-	template <typename Batch>
-	auto allocate_batch(const std::shared_ptr<typename Batch::fence_t> &f) {
+	template <typename Batch, typename... UserDataArgs>
+	auto allocate_batch_custom(const std::shared_ptr<typename Batch::fence_t> &f,
+							   UserDataArgs&&... user_data_args) {
 		return std::make_unique<Batch>(queue_index,
 									   pool.claim(),
-									   f);
+									   f,
+									   std::forward<UserDataArgs>(user_data_args)...);
 	}
 
 	/**
@@ -299,8 +283,8 @@ public:
 		enqueue_task_t<R> f(std::forward<L>(task));
 		auto future = f.get_future();
 
-		task_queue.push(std::move(f));
-		notifier.notify_one();
+		shared_data->task_queue.push(std::move(f));
+		shared_data->notifier.notify_one();
 
 		return future;
 	}
@@ -316,8 +300,8 @@ public:
 		}
 
 		std::atomic_thread_fence(std::memory_order_acquire);
-		while (!task_queue.is_empty_hint()) {
-			notifier.notify_all();
+		while (!shared_data->task_queue.is_empty_hint()) {
+			shared_data->notifier.notify_all();
 			std::this_thread::sleep_for(std::chrono::milliseconds(0));
 		}
 
@@ -327,6 +311,7 @@ public:
 
 	auto &device_queue() const { return queue; }
 	auto &queue_descriptor() const { return descriptor; }
+	auto index() const { return queue_index; }
 };
 
 }

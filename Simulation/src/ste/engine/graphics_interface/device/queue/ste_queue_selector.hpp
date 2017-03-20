@@ -98,5 +98,36 @@ auto inline make_queue_selector(const ste_queue_type &type,
 	return ste_queue_selector<>(type, type_index);
 }
 
+/**
+*	@brief	Helper method for a primary queue selector with default policy
+*/
+auto inline make_primary_queue_selector() {
+	return make_queue_selector(ste_queue_type::primary_queue);
+}
+/**
+*	@brief	Helper method for a graphics queue selector with default policy
+*/
+auto inline make_graphics_queue_selector() {
+	return make_queue_selector(ste_queue_type::graphics_queue);
+}
+/**
+*	@brief	Helper method for a compute queue selector with default policy
+*/
+auto inline make_compute_queue_selector() {
+	return make_queue_selector(ste_queue_type::compute_queue);
+}
+/**
+*	@brief	Helper method for a data transfer queue selector with default policy
+*/
+auto inline make_data_queue_selector() {
+	return make_queue_selector(ste_queue_type::data_transfer_queue);
+}
+/**
+*	@brief	Helper method for a sparse-binding queue selector with default policy
+*/
+auto inline make_sparse_binding_queue_selector() {
+	return make_queue_selector(ste_queue_type::data_transfer_sparse_queue);
+}
+
 }
 }

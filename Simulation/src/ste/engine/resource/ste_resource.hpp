@@ -94,6 +94,9 @@ public:
 	const T& get() const& { return Base::get(); }
 	T* operator->() { return Base::operator->(); }
 	const T* operator->() const { return Base::operator->(); }
+
+	operator T() { return get(); }
+	operator T() const { return get(); }
 };
 
 }

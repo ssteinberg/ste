@@ -19,7 +19,7 @@ namespace GL {
 
 namespace _detail {
 
-template <typename Fence, typename Pool>
+template <typename Fence, typename Pool, typename UserData = void>
 class ste_device_queue_batch_impl {
 	friend class ste_device_queue;
 
@@ -75,12 +75,56 @@ public:
 	}
 };
 
-}
-
-using ste_device_queue_batch = _detail::ste_device_queue_batch_impl<
+using ste_device_queue_batch_base = ste_device_queue_batch_impl<
 	ste_resource_pool<shared_fence<void>>::resource_t,
 	ste_resource_pool<ste_device_queue_command_pool>::resource_t
 >;
+
+template <typename T>
+struct ste_device_queue_batch_user_data_t {
+	std::unique_ptr<T> user_data;
+	template <typename... UserDataArgs>
+	ste_device_queue_batch_user_data_t(UserDataArgs&&... user_data_args)
+		: user_data(std::make_unique<T>(std::forward<UserDataArgs>(user_data_args)...))
+	{}
+};
+template <>
+struct ste_device_queue_batch_user_data_t<void> {};
+
+}
+
+template <typename UserData = void>
+class ste_device_queue_batch : public _detail::ste_device_queue_batch_base {
+	using Base = _detail::ste_device_queue_batch_base;
+
+private:
+	_detail::ste_device_queue_batch_user_data_t<UserData> user_data_wrap;
+
+public:
+	template <typename S = UserData, typename... UserDataArgs>
+	ste_device_queue_batch(std::enable_if_t<!std::is_void_v<S>, std::uint32_t> queue_index,
+						   pool_t &&pool,
+						   const fence_ptr_strong_t &f,
+						   UserDataArgs&&... user_data_args)
+		: Base(queue_index,
+			   std::move(pool),
+			   f),
+		user_data_wrap(std::forward<UserDataArgs>(user_data_args)...)
+	{}
+	template <typename S = UserData>
+	ste_device_queue_batch(std::enable_if_t<std::is_void_v<S>, std::uint32_t> queue_index,
+						   pool_t &&pool,
+						   const fence_ptr_strong_t &f)
+		: Base(queue_index,
+			   std::move(pool),
+			   f)
+	{}
+
+	template <typename S = UserData>
+	std::enable_if_t<!std::is_void_v<S>, S&> user_data() { return *user_data_wrap.user_data; }
+	template <typename S = UserData>
+	std::enable_if_t<!std::is_void_v<S>, const S&> user_data() const { return *user_data_wrap.user_data; }
+};
 
 }
 }

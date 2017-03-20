@@ -61,6 +61,19 @@ public:
 							const VkAccessFlags &dst_access,
 							std::uint32_t src_queue_index,
 							std::uint32_t dst_queue_index,
+							bool depth = false)
+		: src(src_access), dst(dst_access), old_layout(old_layout), new_layout(new_layout),
+		src_queue_index(src_queue_index), dst_queue_index(dst_queue_index),
+		image(image), aspect(depth ? VK_IMAGE_ASPECT_DEPTH_BIT : VK_IMAGE_ASPECT_COLOR_BIT)
+	{}
+	template <int d>
+	vk_image_memory_barrier(const vk_image<d> &image,
+							VkImageLayout old_layout,
+							VkImageLayout new_layout,
+							const VkAccessFlags &src_access,
+							const VkAccessFlags &dst_access,
+							std::uint32_t src_queue_index,
+							std::uint32_t dst_queue_index,
 							std::uint32_t base_mip_level,
 							std::uint32_t mip_levels,
 							std::uint32_t base_array_layer,

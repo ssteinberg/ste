@@ -19,6 +19,8 @@
 #include <atomic>
 #include <mutex>
 
+#include <aligned_ptr.hpp>
+
 namespace StE {
 
 /**
@@ -42,33 +44,38 @@ private:
 	static constexpr std::uint64_t write_index_every_ops = 10;
 
 private:
+	struct shared_data_t {
+		std::atomic<std::uint64_t> ops{ 0 };
+
+		mutable std::mutex m;
+		mutable std::condition_variable cv;
+
+		mutable concurrent_queue<typename index_type::val_data_guard> accessed_queue;
+
+		std::atomic<std::uint64_t> total_size{ 0 };
+	};
+
+private:
+	const boost::filesystem::path path;
+	const std::uint64_t quota;
+	aligned_ptr<shared_data_t> shared_data;
+
 	index_type index;
-
-	std::atomic<std::uint64_t> ops{ 0 };
-
-	mutable std::mutex m;
-	mutable std::condition_variable cv;
-
-	mutable concurrent_queue<typename index_type::val_data_guard> accessed_queue;
-
-	std::atomic<std::uint64_t> total_size{ 0 };
-	boost::filesystem::path path;
-	std::uint64_t quota;
 
 	interruptible_thread t;
 
 private:
 	void shutdown() {
 		t.interrupt();
-		do { cv.notify_one(); } while (!m.try_lock());
-		m.unlock();
+		do { shared_data->cv.notify_one(); } while (!shared_data->m.try_lock());
+		shared_data->m.unlock();
 		if (t.joinable())
 			t.join();
 	}
 
 	void item_accessed(typename index_type::val_data_guard &&val_guard) const {
-		accessed_queue.push(std::move(val_guard));
-		cv.notify_one();
+		shared_data->accessed_queue.push(std::move(val_guard));
+		shared_data->cv.notify_one();
 	}
 
 public:
@@ -83,38 +90,44 @@ public:
 	* 	@param path		Cache directory
 	*	@param quota	Max size in bytes. 0 for unlimited.
 	*/
-	lru_cache(const boost::filesystem::path &path, std::uint64_t quota = 0) : index(path, total_size), path(path), quota(quota), t([this] (){
+	lru_cache(const boost::filesystem::path &path, std::uint64_t quota = 0)
+		: path(path),
+		quota(quota),
+		index(path, shared_data->total_size),
+		t([this] ()
+	{
 		for (;;) {
 			if (interruptible_thread::is_interruption_flag_set()) return;
 
 			{
-				std::unique_lock<std::mutex> l(this->m);
-				this->cv.wait(l);
+				std::unique_lock<std::mutex> l(shared_data->m);
+				shared_data->cv.wait(l);
 			}
 
-			auto accessed_item = accessed_queue.pop();
+			auto accessed_item = shared_data->accessed_queue.pop();
 			while (accessed_item != nullptr) {
 				index.move_to_lru_front(**accessed_item);
-				accessed_item = accessed_queue.pop();
+				accessed_item = shared_data->accessed_queue.pop();
 			}
 
-			auto ts = this->total_size.load(std::memory_order_relaxed);
+			auto ts = shared_data->total_size.load(std::memory_order_relaxed);
 			while (ts > this->quota && this->quota) {
 				auto size = this->index.erase_back();
 				assert(size);
 				if (!size)
 					break;
 
-				ts = this->total_size.fetch_sub(size, std::memory_order_relaxed);
+				ts = shared_data->total_size.fetch_sub(size, std::memory_order_relaxed);
 			}
 
-			if (this->ops.load(std::memory_order_relaxed) > write_index_every_ops) {
-				this->ops.store(0, std::memory_order_release);
+			if (shared_data->ops.load(std::memory_order_relaxed) > write_index_every_ops) {
+				shared_data->ops.store(0, std::memory_order_release);
 
 				this->index.write_index();
 			}
 		}
-	}) {
+	}) 
+	{
 		boost::filesystem::create_directory(path);
 	}
 	~lru_cache() { shutdown(); }
@@ -146,10 +159,10 @@ public:
 
 		auto item_size = val_guard->get_size();
 		assert(item_size);
-		total_size.fetch_add(item_size, std::memory_order_relaxed);
+		shared_data->total_size.fetch_add(item_size, std::memory_order_relaxed);
 		item_accessed(std::move(val_guard));
 
-		++ops;
+		++shared_data->ops;
 	}
 
 	/**

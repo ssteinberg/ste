@@ -61,12 +61,6 @@ public:
 		return get(); 
 	}
 	const reference operator*() const { return get(); }
-
-	template <
-		typename S = resource_t,
-		typename = typename std::enable_if<std::is_copy_assignable_v<S> || std::is_copy_constructible_v<S>>::type
-	>
-	operator S() const { return get(); }
 };
 
 }

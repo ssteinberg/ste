@@ -37,7 +37,6 @@ private:
 
 private:
 	resource_t resource;
-	const ste_context &ctx;
 	VkMemoryRequirements memory_requirements{};
 
 	bind_map_t bound_atoms_map;
@@ -56,11 +55,28 @@ public:
 		return ret;
 	}
 
+public:
+	const ste_context &ctx;
+	device_resource_queue_ownership queue_ownership;
+
 private:
 	device_buffer_sparse(ctor,
 						 const ste_context &ctx,
+						 const device_resource_queue_ownership::resource_queue_selector_t &selector,
 						 resource_t &&resource)
-		: resource(std::move(resource)), ctx(ctx)
+		: resource(std::move(resource)),
+		ctx(ctx),
+		queue_ownership(ctx, selector)
+	{
+		memory_requirements = this->resource.get_memory_requirements();
+	}
+	device_buffer_sparse(ctor,
+						 const ste_context &ctx,
+						 const device_resource_queue_ownership::queue_index_t &queue_index,
+						 resource_t &&resource)
+		: resource(std::move(resource)),
+		ctx(ctx),
+		queue_ownership(queue_index)
 	{
 		memory_requirements = this->resource.get_memory_requirements();
 	}
@@ -68,8 +84,17 @@ private:
 public:
 	template <typename ... Args>
 	device_buffer_sparse(const ste_context &ctx,
+						 const device_resource_queue_ownership::resource_queue_selector_t &selector,
 						 Args&&... args)
-		: device_buffer_sparse(ctor(), ctx, resource_t(ctx.device().logical_device(), std::forward<Args>(args)...))
+		: device_buffer_sparse(ctor(), ctx, selector,
+							   resource_t(ctx.device().logical_device(), std::forward<Args>(args)...))
+	{}
+	template <typename ... Args>
+	device_buffer_sparse(const ste_context &ctx,
+						 const device_resource_queue_ownership::queue_index_t &queue_index,
+						 Args&&... args)
+		: device_buffer_sparse(ctor(), ctx, queue_index,
+							   resource_t(ctx.device().logical_device(), std::forward<Args>(args)...))
 	{}
 	~device_buffer_sparse() noexcept {}
 

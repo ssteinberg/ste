@@ -37,6 +37,7 @@ public:
 		  const VkBufferUsageFlags &usage)
 		: ctx(ctx),
 		buffer(ctx,
+			   make_data_queue_selector(),
 			   count,
 			   usage | buffer_usage_additional_flags)
 	{}
@@ -73,8 +74,9 @@ public:
 
 	auto size() const { return buffer.get().get_elements_count(); }
 
-	auto& get_buffer() const { return buffer.get(); }
-	operator VkBuffer() const { return get_buffer(); }
+	auto& get_buffer() { return buffer; }
+	auto& get_buffer() const { return buffer; }
+	operator VkBuffer() const { return *get_buffer(); }
 };
 
 }

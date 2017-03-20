@@ -42,6 +42,7 @@ public:
 				const VkBufferUsageFlags &usage)
 		: ctx(ctx),
 		buffer(ctx,
+			   make_data_queue_selector(),
 			   segments,
 			   usage | buffer_usage_additional_flags),
 		segments(segments)
@@ -73,15 +74,9 @@ public:
 
 	auto get_segment_count() const { return segments; }
 
-	auto& get() { return buffer.get(); }
-	auto& get() const { return buffer.get(); }
-
-	operator VkBuffer() const { return get(); }
-
-	auto* operator->() { return &get(); }
-	auto* operator->() const { return &get(); }
-	auto& operator*() { return get(); }
-	auto& operator*() const { return get(); }
+	auto& get_buffer() { return buffer; }
+	auto& get_buffer() const { return buffer; }
+	operator VkBuffer() const { return *get_buffer(); }
 };
 
 }

@@ -19,6 +19,7 @@
 #include <mutex>
 #include <future>
 #include <condition_variable>
+#include <aligned_ptr.hpp>
 
 #include <vector>
 #include <bitset>
@@ -32,8 +33,16 @@ public:
 	using task_t = unique_thread_pool_type_erased_task<>;
 
 private:
-	mutable std::mutex m;
-	std::condition_variable notifier;
+	struct shared_data_t {
+		mutable std::mutex m;
+		std::condition_variable notifier;
+		
+		std::atomic<int> requests_pending{ 0 };
+		std::atomic<int> active_workers{ 0 };
+	};
+
+private:
+	aligned_ptr<shared_data_t> shared_data;
 	std::vector<interruptible_thread> workers;
 	std::vector<interruptible_thread> despawned_workers;
 
@@ -41,8 +50,6 @@ private:
 
 	system_times sys_times;
 	std::chrono::high_resolution_clock::time_point last_pool_balance;
-	std::atomic<int> requests_pending{ 0 };
-	std::atomic<int> active_workers{ 0 };
 	int threads_sleeping{ 0 };
 
 	float idle_time_threshold_for_new_worker;
@@ -57,18 +64,18 @@ private:
 
 				std::unique_ptr<task_t> task;
 				{
-					std::unique_lock<std::mutex> l(this->m);
+					std::unique_lock<std::mutex> l(shared_data->m);
 					if (interruptible_thread::is_interruption_flag_set()) return;
 
 					++threads_sleeping;
-					this->notifier.wait(l, [&]() {
+					shared_data->notifier.wait(l, [&]() {
 						return interruptible_thread::is_interruption_flag_set() ||
 							   (task = task_queue.pop()) != nullptr;
 					});
 					--threads_sleeping;
 				}
 
-				active_workers.fetch_add(1, std::memory_order_relaxed);
+				shared_data->active_workers.fetch_add(1, std::memory_order_relaxed);
 
 				while (task != nullptr) {
 					run_task(std::move(*task));
@@ -77,7 +84,7 @@ private:
 					task = task_queue.pop();
 				}
 
-				active_workers.fetch_add(-1, std::memory_order_relaxed);
+				shared_data->active_workers.fetch_add(-1, std::memory_order_relaxed);
 			}
 		});
 
@@ -105,15 +112,15 @@ private:
 	}
 
 	void notify_workers_on_enqueue() {
-		int pending = requests_pending.fetch_add(1);
+		int pending = shared_data->requests_pending.fetch_add(1);
 		if (pending == 0)
-			notifier.notify_one();
+			shared_data->notifier.notify_one();
 		else
-			notifier.notify_all();
+			shared_data->notifier.notify_all();
 	}
 
 	void run_task(task_t &&task) {
-		requests_pending.fetch_add(-1, std::memory_order_release);
+		shared_data->requests_pending.fetch_add(-1, std::memory_order_release);
 		task();
 	}
 
@@ -137,8 +144,8 @@ public:
 	~balanced_thread_pool() {
 		for (auto &t : workers)
 			t.interrupt();
-		do { notifier.notify_all(); } while (!m.try_lock());
-		m.unlock();
+		do { shared_data->notifier.notify_all(); } while (!shared_data->m.try_lock());
+		shared_data->m.unlock();
 		for (auto &t : workers)
 			t.join();
 		for (auto &t : despawned_workers)
@@ -196,7 +203,7 @@ public:
 		}
 
 		unsigned min_threads = min_worker_threads();
-		int req = requests_pending.load(std::memory_order_acquire);
+		int req = shared_data->requests_pending.load(std::memory_order_acquire);
 		if (threads_sleeping == 0 &&
 			idle_frac > idle_time_threshold_for_new_worker) {
 			spawn_worker();
@@ -210,8 +217,8 @@ public:
 	}
 
 	int get_workers_count() const { return workers.size(); }
-	int get_pending_requests_count() const { return requests_pending.load(std::memory_order_relaxed); }
-	int get_active_workers_count() const { return active_workers.load(std::memory_order_relaxed); }
+	int get_pending_requests_count() const { return shared_data->requests_pending.load(std::memory_order_relaxed); }
+	int get_active_workers_count() const { return shared_data->active_workers.load(std::memory_order_relaxed); }
 	int get_sleeping_workers_count() const { return threads_sleeping; }
 };
 

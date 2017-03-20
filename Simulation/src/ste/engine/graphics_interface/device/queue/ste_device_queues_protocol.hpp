@@ -34,12 +34,10 @@ private:
 		params[ste_queue_type::compute_queue] = { 1, .0f };
 
 		// Furthermore, create a low-priority data transfer queue
+		params[ste_queue_type::data_transfer_queue] = { 1, .0f };
 		if (physical_device.features.sparseBinding) {
-			// If sparse binding is supported, make sparse bind and data trasfer queue
+			// If sparse binding is supported, make a sparse bind and data trasfer queue
 			params[ste_queue_type::data_transfer_sparse_queue] = { 1, .0f };
-		}
-		else {
-			params[ste_queue_type::data_transfer_queue] = { 1, .0f };
 		}
 
 		return params;

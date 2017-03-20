@@ -10,8 +10,9 @@
 namespace StE {
 namespace GL {
 
-class ste_device_queue_presentation_batch : public ste_device_queue_batch {
-	using Base = ste_device_queue_batch;
+template <typename UserData = void>
+class ste_device_queue_presentation_batch : public ste_device_queue_batch<UserData> {
+	using Base = ste_device_queue_batch<UserData>;
 
 	friend class ste_device;
 

@@ -28,6 +28,7 @@
 #include <condition_variable>
 #include <mutex>
 #include <atomic>
+#include <aligned_ptr.hpp>
 
 namespace StE {
 namespace GL {
@@ -38,11 +39,18 @@ public:
 
 private:
 	using queue_t = std::unique_ptr<ste_device_queue>;
-	using batch_fence_ptr_t = ste_device_queue_presentation_batch::fence_ptr_strong_t;
+	using queues_t = std::vector<queue_t>;
+	using batch_fence_ptr_t = ste_device_queue_presentation_batch<>::fence_ptr_strong_t;
 
 	struct image_presentation_sync_t {
 		batch_fence_ptr_t fence_ptr;
 		ste_device_presentation_sync_semaphores semaphores;
+	};
+
+	struct shared_data_t {
+		std::atomic<std::uint32_t> acquired_images{ 0 };
+		std::mutex acquire_mutex;
+		std::condition_variable acquire_cv;
 	};
 
 private:
@@ -51,101 +59,32 @@ private:
 	const vk_logical_device device;
 
 	// Synchronization primitive pools
-	ste_device_sync_primitives_pools sync_primitives_pools;
+	aligned_ptr<ste_device_sync_primitives_pools> sync_primitives_pools;
+	// Data shared between threads
+	aligned_ptr<shared_data_t> shared_data;
+
+	// Queues
+	const queues_t device_queues;
 
 	// Presentation surface
 	const std::unique_ptr<ste_presentation_surface> presentation_surface{ nullptr };
 	// And synchronization primitives
 	std::vector<image_presentation_sync_t> presentation_sync_primitives;
-	std::atomic<std::uint32_t> acquired_images{ 0 };
-	std::mutex acquire_mutex;
-	std::condition_variable acquire_cv;
-
-	// Queues
-	ste_device_queue_selector_cache queue_selector_cache;
-	std::vector<queue_t> device_queues;
 
 	queues_and_surface_recreate_signal_type queues_and_surface_recreate_signal;
+	ste_device_queue_selector_cache queue_selector_cache;
 
 private:
-	static auto create_vk_virtual_device(const GL::vk_physical_device_descriptor &physical_device,
-										 const VkPhysicalDeviceFeatures &requested_features,
-										 const ste_queue_descriptors &queue_descriptors,
-										 std::vector<const char*> device_extensions = {}) {
-		if (queue_descriptors.size() == 0) {
-			throw ste_device_creation_exception("queue_descriptors is empty");
-		}
-
-		// Add required extensions
-		device_extensions.push_back("VK_KHR_swapchain");
-
-		// Request queues based on supplied protocol
-		auto queues_create_info = queue_descriptors.create_device_queue_create_info();
-
-		// Create logical device
-		return GL::vk_logical_device(physical_device,
-									 requested_features,
-									 queues_create_info->create_info,
-									 device_extensions);
-	}
-
-	void create_presentation_fences_storage() {
-		std::vector<image_presentation_sync_t> v;
-		v.reserve(get_swap_chain_images_count());
-		for (std::uint32_t i = 0; i < get_swap_chain_images_count(); ++i)
-			v.push_back(image_presentation_sync_t{ nullptr,
-			{ sync_primitives_pools.semaphores().claim(),
-						sync_primitives_pools.semaphores().claim() } });
-
-		this->presentation_sync_primitives = std::move(v);
-	}
-
-	void create_queues() {
-		std::vector<queue_t> q;
-		q.reserve(queue_descriptors.size());
-		
-		std::uint32_t prev_family = 0xFFFFFFFF;
-		std::uint32_t family_index = 0;
-		for (std::size_t idx = 0; idx < queue_descriptors.size(); ++idx) {
-			auto &descriptor = queue_descriptors[idx];
-
-			// Family index is used to get the queue from Vulkan
-			descriptor.family == prev_family ? 
-				++family_index :
-				(family_index = 0);
-			prev_family = descriptor.family;
-
-			// Create the device queue
-			q.push_back(std::make_unique<queue_t::element_type>(device,
-																family_index,
-																descriptor,
-																idx,
-																&sync_primitives_pools.shared_fences()));
-		}
-
-		device_queues = std::move(q);
-
-		// And reset the queue selector cache
-		queue_selector_cache = ste_device_queue_selector_cache();
-	}
-
-	void recreate_swap_chain() {
-		// Destroy queues, this will wait for all queue threads and then wait for all queues to finish processing,
-		// allowing us to recreate the swap-chain and queue safely.
-		device_queues.clear();
-		device.wait_idle();
-		this->presentation_sync_primitives.clear();
-
-		// Recreate swap-chain
-		presentation_surface->recreate_swap_chain();
-		create_presentation_fences_storage();
-
-		// And queues
-		create_queues();
-
-		// Signal
-		queues_and_surface_recreate_signal.emit(this);
-	}
+	static vk_logical_device create_vk_virtual_device(const GL::vk_physical_device_descriptor &physical_device,
+													  const VkPhysicalDeviceFeatures &requested_features,
+													  const ste_queue_descriptors &queue_descriptors,
+													  std::vector<const char*> device_extensions = {});
+	static queues_t create_queues(const vk_logical_device &device, 
+								  const ste_queue_descriptors &queue_descriptors,
+								  ste_device_sync_primitives_pools *sync_primitives_pools);
+	
+	void create_presentation_fences_storage();
+	void recreate_swap_chain();
 
 public:
 	/**
@@ -170,15 +109,15 @@ public:
 										queue_descriptors,
 										parameters.additional_device_extensions)),
 		sync_primitives_pools(device),
+		device_queues(create_queues(device,
+									queue_descriptors,
+									&*sync_primitives_pools)),
 		presentation_surface(std::make_unique<ste_presentation_surface>(parameters,
 																		&device,
 																		presentation_window,
 																		gl_ctx.instance()))
 	{
 		create_presentation_fences_storage();
-
-		// Create queues
-		create_queues();
 	}
 	/**
 	*	@brief	Creates the device without presentation capabilities ("compute-only" device)
@@ -199,11 +138,11 @@ public:
 										parameters.requested_device_features,
 										queue_descriptors,
 										parameters.additional_device_extensions)),
-		sync_primitives_pools(device)
-	{
-		// Create queues
-		create_queues();
-	}
+		sync_primitives_pools(device),
+		device_queues(create_queues(device,
+									queue_descriptors,
+									&*sync_primitives_pools))
+	{}
 	~ste_device() noexcept {}
 
 	ste_device(ste_device &&) = default;
@@ -240,9 +179,11 @@ public:
 	*	@throws vk_exception			On Vulkan error
 	*
 	*	@param	queue_selector		The device queue selector used to select the device queue to use
+	*	@param	user_data_args		Arguments used to initialze the user data structure in the allocated batch
 	*/
-	template <typename selector_policy = ste_queue_selector_default_policy>
-	auto allocate_presentation_command_batch(const ste_queue_selector<selector_policy> &queue_selector) {
+	template <typename UserData = void, typename selector_policy = ste_queue_selector_default_policy, typename... UserDataArgs>
+	auto allocate_presentation_command_batch(const ste_queue_selector<selector_policy> &queue_selector,
+											 UserDataArgs&&... user_data_args) {
 		if (ste_device_queue::is_queue_thread()) {
 			throw ste_device_exception("Should be called from a main thread");
 		}
@@ -250,23 +191,23 @@ public:
 		auto& queue = select_queue(queue_selector);
 
 		// Acquire a couple of semaphores
-		auto semaphores = ste_device_presentation_sync_semaphores(sync_primitives_pools.semaphores().claim(),
-																  sync_primitives_pools.semaphores().claim());
-		auto fence = std::make_shared<batch_fence_ptr_t::element_type>(sync_primitives_pools.shared_fences().claim());
+		auto semaphores = ste_device_presentation_sync_semaphores(sync_primitives_pools->semaphores().claim(),
+																  sync_primitives_pools->semaphores().claim());
+		auto fence = std::make_shared<batch_fence_ptr_t::element_type>(sync_primitives_pools->shared_fences().claim());
 
 		// Wait for images to become available
-		if (acquired_images.load(std::memory_order_acquire) >= get_swap_chain_images_count() - 1) {
+		if (shared_data->acquired_images.load(std::memory_order_acquire) >= get_swap_chain_images_count() - 1) {
 			// Must present before we can acquire another image. Wait.
-			std::unique_lock<std::mutex> lk(acquire_mutex);
-			acquire_cv.wait(lk, [this]{
-				return acquired_images.load(std::memory_order_acquire) < get_swap_chain_images_count() - 1;
+			std::unique_lock<std::mutex> lk(shared_data->acquire_mutex);
+			shared_data->acquire_cv.wait(lk, [this]{
+				return shared_data->acquired_images.load(std::memory_order_acquire) < get_swap_chain_images_count() - 1;
 			});
 		}
 
 		// Acquire next presentation image
 		auto next_image_descriptor =
 			presentation_surface->acquire_next_swapchain_image(*semaphores.swapchain_image_ready_semaphore);
-		acquired_images.fetch_add(1, std::memory_order_relaxed);
+		shared_data->acquired_images.fetch_add(1, std::memory_order_relaxed);
 
 		// Wait for previous presentation to this image index to end
 		auto& sync = presentation_sync_primitives[next_image_descriptor.image_index];
@@ -278,7 +219,8 @@ public:
 		sync.fence_ptr = std::move(fence);
 
 		// Allocate batch
-		auto batch = queue->template allocate_batch<ste_device_queue_presentation_batch>(sync.fence_ptr);
+		auto batch = queue->template allocate_batch_custom<ste_device_queue_presentation_batch<UserData>>(sync.fence_ptr,
+																										  std::forward<UserDataArgs>(user_data_args)...);
 
 		// And save next presentation image information
 		batch->image_to_present = next_image_descriptor;
@@ -314,7 +256,8 @@ public:
 	*	@param wait_semaphores		See vk_queue::submit
 	*	@param signal_semaphores	See vk_queue::submit
 	*/
-	void submit_and_present(std::unique_ptr<ste_device_queue_presentation_batch> &&presentation_batch,
+	template <typename BatchUserData>
+	void submit_and_present(std::unique_ptr<ste_device_queue_presentation_batch<BatchUserData>> &&presentation_batch,
 							const std::vector<std::pair<const vk_semaphore*, VkPipelineStageFlags>> &wait_semaphores,
 							const std::vector<const vk_semaphore*> &signal_semaphores) {
 		if (!ste_device_queue::is_queue_thread()) {
@@ -343,8 +286,8 @@ public:
 												*presentation_semaphores->rendering_finished_semaphore);
 
 			// Notify any waiting for present
-			acquired_images.fetch_add(-1, std::memory_order_release);
-			acquire_cv.notify_one();
+			shared_data->acquired_images.fetch_add(-1, std::memory_order_release);
+			shared_data->acquire_cv.notify_one();
 		}
 	}
 
@@ -360,6 +303,19 @@ public:
 		auto idx = queue_selector_cache(queue_selector, queue_descriptors);
 		return device_queues[idx];
 	}
+	/**
+	*	@brief	Selects a device queue and returns a pointer to it
+	*
+	*	@throws ste_engine_exception	If no compatible queue can be found
+	*
+	*	@param index			Queue index to select
+	*/
+	const queue_t& select_queue(const ste_device_queue::queue_index_t &index) const {
+		if (index < device_queues.size())
+			return device_queues[index];
+		
+		throw ste_engine_exception("Queue with the desired index not found");
+	}
 
 	/**
 	*	@brief	Waits idly for all the queues and the device to finish processing
@@ -374,7 +330,7 @@ public:
 	/**
 	*	@brief	Thread-safe pools for device synchronization primitives
 	*/
-	auto& get_sync_primitives_pools() const { return sync_primitives_pools; }
+	auto& get_sync_primitives_pools() const { return *sync_primitives_pools; }
 
 	auto& get_queues_and_surface_recreate_signal() const { return queues_and_surface_recreate_signal; }
 

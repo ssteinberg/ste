@@ -3,13 +3,13 @@
 
 #pragma once
 
-#include <stdexcept>
+#include <ste_engine_exceptions.hpp>
 
 namespace StE {
 namespace GL {
 
-class ste_device_exception : public std::runtime_error {
-	using Base = std::runtime_error;
+class ste_device_exception : public ste_engine_exception {
+	using Base = ste_engine_exception;
 
 public:
 	using Base::Base;

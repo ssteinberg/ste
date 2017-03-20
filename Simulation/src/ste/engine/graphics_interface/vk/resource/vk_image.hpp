@@ -17,6 +17,11 @@
 namespace StE {
 namespace GL {
 
+enum class vk_image_initial_layout : std::uint8_t {
+	unused,
+	preinitialized,
+};
+
 template <int dimensions>
 class vk_image : public vk_image_base<dimensions>, public vk_resource {
 	using Base = vk_image_base<dimensions>;
@@ -49,13 +54,13 @@ protected:
 
 public:
 	vk_image(const vk_logical_device &device,
+			 const vk_image_initial_layout &layout,
 			 const VkFormat &format,
 			 const typename Base::size_type &size,
 			 const VkImageUsageFlags &usage,
 			 std::uint32_t mips = 1,
 			 std::uint32_t layers = 1,
 			 bool supports_cube_views = false,
-			 bool preinitialized_initial_layout = false,
 			 bool optimal_tiling = true,
 			 bool sparse = false)
 		: Base(device, format, size, mips, layers), usage(usage), sparse(sparse)
@@ -86,7 +91,9 @@ public:
 		create_info.tiling = optimal_tiling ? VK_IMAGE_TILING_OPTIMAL : VK_IMAGE_TILING_LINEAR;
 		create_info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 		create_info.usage = usage;
-		create_info.initialLayout = preinitialized_initial_layout ? VK_IMAGE_LAYOUT_PREINITIALIZED : VK_IMAGE_LAYOUT_UNDEFINED;
+		create_info.initialLayout = layout == vk_image_initial_layout::preinitialized ? 
+			VK_IMAGE_LAYOUT_PREINITIALIZED : 
+		VK_IMAGE_LAYOUT_UNDEFINED;
 		create_info.queueFamilyIndexCount = 0;
 		create_info.pQueueFamilyIndices = nullptr;
 

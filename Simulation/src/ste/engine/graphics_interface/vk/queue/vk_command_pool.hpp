@@ -24,8 +24,6 @@ public:
 	vk_command_pool(const vk_logical_device &device, 
 					std::uint32_t queue_family,
 					VkCommandPoolCreateFlags flags = 0) : device(device) {
-		assert(queue_family == 0);
-
 		VkCommandPoolCreateInfo create_info = {};
 		create_info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 		create_info.pNext = nullptr;

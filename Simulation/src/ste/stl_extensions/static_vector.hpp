@@ -6,6 +6,7 @@
 #include <type_traits>
 #include <memory>
 #include <cassert>
+#include <vector>
 
 namespace StE {
 

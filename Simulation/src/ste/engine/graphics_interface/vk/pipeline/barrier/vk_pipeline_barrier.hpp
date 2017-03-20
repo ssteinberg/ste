@@ -58,21 +58,42 @@ public:
 	{}
 	vk_pipeline_barrier(const VkPipelineStageFlags &src_stage,
 						const VkPipelineStageFlags &dst_stage,
-						const vk_global_memory_barrier &global_memory_barriers)
+						const vk_global_memory_barrier &global_memory_barrier)
 		: src_stage(src_stage), dst_stage(dst_stage),
-		global_memory_barriers({ global_memory_barriers })
+		global_memory_barriers({ global_memory_barrier })
 	{}
 	vk_pipeline_barrier(const VkPipelineStageFlags &src_stage,
 						const VkPipelineStageFlags &dst_stage,
-						const vk_buffer_memory_barrier &buffer_barriers)
+						const vk_buffer_memory_barrier &buffer_barrier)
 		: src_stage(src_stage), dst_stage(dst_stage),
-		buffer_barriers({ buffer_barriers })
+		buffer_barriers({ buffer_barrier })
 	{}
 	vk_pipeline_barrier(const VkPipelineStageFlags &src_stage,
 						const VkPipelineStageFlags &dst_stage,
-						const vk_image_memory_barrier &image_barriers)
+						const vk_image_memory_barrier &image_barrier)
 		: src_stage(src_stage), dst_stage(dst_stage),
-		image_barriers({ image_barriers })
+		image_barriers({ image_barrier })
+	{}
+	vk_pipeline_barrier(const std::vector<vk_buffer_memory_barrier> &buffer_barriers,
+						const std::vector<vk_image_memory_barrier> &image_barriers)
+		: src_stage(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT), dst_stage(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT),
+		buffer_barriers(buffer_barriers), image_barriers(image_barriers)
+	{}
+	vk_pipeline_barrier(const std::vector<vk_buffer_memory_barrier> &buffer_barriers)
+		: src_stage(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT), dst_stage(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT),
+		buffer_barriers(buffer_barriers)
+	{}
+	vk_pipeline_barrier(const std::vector<vk_image_memory_barrier> &image_barriers)
+		: src_stage(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT), dst_stage(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT),
+		image_barriers(image_barriers)
+	{}
+	vk_pipeline_barrier(const vk_buffer_memory_barrier &buffer_barrier)
+		: src_stage(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT), dst_stage(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT),
+		buffer_barriers({ buffer_barrier })
+	{}
+	vk_pipeline_barrier(const vk_image_memory_barrier &image_barrier)
+		: src_stage(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT), dst_stage(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT),
+		image_barriers({ image_barrier })
 	{}
 	~vk_pipeline_barrier() noexcept {}
 

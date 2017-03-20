@@ -12,6 +12,7 @@
 
 #include <list>
 #include <mutex>
+#include <aligned_ptr.hpp>
 
 namespace StE {
 namespace GL {
@@ -34,7 +35,7 @@ private:
 	blocks_list_t blocks;
 	size_type total_used_size{ 0 };
 
-	std::mutex m;
+	aligned_ptr<std::mutex> m;
 
 public:
 	static auto align_round_down(size_type offset, size_type alignment) {
@@ -48,7 +49,7 @@ public:
 
 private:
 	void deallocate(const allocation_type &ptr) {
-		std::unique_lock<std::mutex> lock(m);
+		std::unique_lock<std::mutex> lock(*m);
 
 		total_used_size -= (*ptr).get_bytes();
 		blocks.erase(ptr.get());
@@ -68,7 +69,7 @@ public:
 
 	// Move contrsuctor. Lock moved heaap's mutex before moving.
 	device_memory_heap(device_memory_heap &&o) noexcept
-		: device_memory_heap(std::unique_lock<std::mutex>(o.m), &o)
+		: device_memory_heap(std::unique_lock<std::mutex>(*o.m), &o)
 	{}
 
 	device_memory_heap &operator=(device_memory_heap &&) = delete;
@@ -90,7 +91,7 @@ public:
 			return allocation_type();
 		}
 
-		std::unique_lock<std::mutex> lock(m);
+		std::unique_lock<std::mutex> lock(*m);
 
 		std::uint64_t start = 0;
 		auto it = blocks.begin();

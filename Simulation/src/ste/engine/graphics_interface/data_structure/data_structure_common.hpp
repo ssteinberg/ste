@@ -27,19 +27,24 @@ void copy_initial_data(const ste_context &ctx,
 
 	auto copy_count = std::min<std::uint64_t>(data.size(), buffer.get().get_elements_count());
 
-	staging_buffer_t staging_buffer(ctx, copy_count, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+	// Select queue
+	auto queue_type = ste_queue_type::data_transfer_queue;
+	auto queue_selector = ste_queue_selector<ste_queue_selector_policy_flexible>(queue_type);
+	auto& q = ctx.device().select_queue(queue_selector);
+
+	// Staging buffer
+	staging_buffer_t staging_buffer(ctx,
+									q->index(), 
+									copy_count, 
+									VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
 	{
 		// Copy to staging
 		auto ptr = staging_buffer.get_underlying_memory().template mmap<T>(0, copy_count);
 		memcpy(ptr->get_mapped_ptr(), data.data(), static_cast<std::size_t>(copy_count * sizeof(T)));
 	}
 
-	// Select queue
-	auto queue_type = ste_queue_type::data_transfer_queue;
-	auto queue_selector = ste_queue_selector<ste_queue_selector_policy_flexible>(queue_type);
-
 	// Create a batch
-	auto batch = ctx.device().select_queue(queue_selector)->allocate_batch();
+	auto batch = q->allocate_batch();
 	auto& command_buffer = batch->acquire_command_buffer();
 	auto& fence = batch->get_fence();
 
@@ -67,19 +72,24 @@ void copy_initial_data(const ste_context &ctx,
 
 	auto copy_count = data.size();
 
-	staging_buffer_t staging_buffer(ctx, copy_count, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+	// Select queue
+	auto queue_type = ste_queue_type::data_transfer_sparse_queue;
+	auto queue_selector = ste_queue_selector<ste_queue_selector_policy_flexible>(queue_type);
+	auto& q = ctx.device().select_queue(queue_selector);
+
+	// Staging buffer
+	staging_buffer_t staging_buffer(ctx,
+									q->index(),
+									copy_count, 
+									VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
 	{
 		// Copy to staging
 		auto ptr = staging_buffer.get_underlying_memory().template mmap<T>(0, copy_count);
 		memcpy(ptr->get_mapped_ptr(), data.data(), copy_count * sizeof(T));
 	}
 
-	// Select queue
-	auto queue_type = ste_queue_type::data_transfer_sparse_queue;
-	auto queue_selector = ste_queue_selector<ste_queue_selector_policy_flexible>(queue_type);
-
 	// Create a batch
-	auto batch = ctx.device().select_queue(queue_selector)->allocate_batch();
+	auto batch = q->allocate_batch();
 	auto& command_buffer = batch->acquire_command_buffer();
 	auto& fence = batch->get_fence();
 

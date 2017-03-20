@@ -5,6 +5,7 @@
 #include <array.hpp>
 #include <stable_vector.hpp>
 #include <device_image.hpp>
+#include <device_image_queue_transfer.hpp>
 #include <device_pipeline_shader_stage.hpp>
 
 #include <vertex_attributes_from_tuple.hpp>
@@ -25,8 +26,6 @@
 
 #include <surface_factory.hpp>
 #include <ste_resource.hpp>
-
-#include <glm/gtc/matrix_transform.inl>
 
 using namespace StE;
 
@@ -122,6 +121,11 @@ int main()
 
 	auto swapchain_images_count = device.get_surface().get_swap_chain_images().size();
 
+	// Load image
+	auto image = Resource::surface_factory::create_image_2d<VK_FORMAT_R8G8B8A8_UNORM>(ctx,
+																					  R"(Data\models\crytek-sponza\images\Sponza_Bricks_a_Albedo.png)",
+																					  VK_IMAGE_USAGE_SAMPLED_BIT);
+
 	// Shader stages
 	ste_resource<StE::GL::device_pipeline_shader_stage> vert_shader_stage(ctx, std::string("temp.vert"));
 	ste_resource<StE::GL::device_pipeline_shader_stage> frag_shader_stage(ctx, std::string("temp.frag"));
@@ -196,17 +200,13 @@ int main()
 	device.get_queues_and_surface_recreate_signal().connect(recreate_queues_connection);
 
 	// Texture
-	auto surface = Resource::surface_factory::create_image_2d<VK_FORMAT_R8G8B8A8_UNORM>(ctx,
-																						R"(Data\models\crytek-sponza\images\Sponza_Bricks_a_Albedo.png)",
-																						VK_IMAGE_USAGE_SAMPLED_BIT,
-																						VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-	GL::vk_image_view<GL::vk_image_type::image_2d> texture(surface.get(), surface->get_format());
+	GL::vk_image_view<GL::vk_image_type::image_2d> texture(image->get(), image->get().get_format());
 	GL::vk_sampler sampler(device.logical_device(), GL::vk_sampler_filtering(VK_FILTER_LINEAR, VK_FILTER_LINEAR,
 																			 VK_SAMPLER_MIPMAP_MODE_LINEAR));
 
 	// Descriptors
 	GL::vk_descriptor_set_layout_binding descriptor_set_ubo_layout_binding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-																		   VK_SHADER_STAGE_VERTEX_BIT,
+																		   VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
 																		   0);
 	GL::vk_descriptor_set_layout_binding descriptor_set_sampler_layout_binding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
 																			   VK_SHADER_STAGE_FRAGMENT_BIT,
@@ -216,7 +216,7 @@ int main()
 	GL::vk_descriptor_pool descriptor_pool(device.logical_device(), 10, { descriptor_set_ubo_layout_binding, descriptor_set_sampler_layout_binding });
 	auto descriptor_set = descriptor_pool.allocate_descriptor_set({ &descriptor_set_layout });
 
-	descriptor_set.write({ GL::vk_descriptor_set_write_resource(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, 0, 1, ubo->get_buffer(), 1, 0),
+	descriptor_set.write({ GL::vk_descriptor_set_write_resource(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, 0, 1, *ubo->get_buffer(), 1, 0),
 						 GL::vk_descriptor_set_write_resource(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, 0, 1, 
 															  &texture, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, &sampler) });
 
@@ -241,6 +241,14 @@ int main()
 									  { attachment0_blend_op },
 									  glm::vec4{ .0f });
 
+	// Rendering queue
+	auto selector = GL::make_queue_selector(GL::ste_queue_type::primary_queue);
+
+	// Transfer image queue ownership
+	GL::queue_transfer(image.get(), selector,
+					   VK_ACCESS_TRANSFER_WRITE_BIT, VK_ACCESS_SHADER_READ_BIT, 
+					   VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
 //	ste_resource<StE::GL::device_pipeline_shader_stage> stage(ste_resource_dont_defer(), ctx, std::string("fxaa.frag"));
 //	StE::GL::device_pipeline_shader_stage(ctx, std::string("text_distance_map_contour.geom"));
 //	StE::GL::device_pipeline_shader_stage(ctx, std::string("deferred_compose.frag"));
@@ -262,12 +270,10 @@ int main()
 		}
 
 		f += 1/1000.f;
-		vertices[0].pos.x = f;
+		vertices[0].pos.x = glm::sin(f * glm::pi<float>());
 
 		float angle = f * glm::pi<float>();
 		uniform_buffer_object data = { glm::vec4{ glm::cos(angle), glm::sin(angle), -glm::sin(angle), glm::cos(angle) } };
-
-		auto selector = GL::make_queue_selector(GL::ste_queue_type::primary_queue);
 
 		// Acquire presentation comand batch
 		auto batch = device.allocate_presentation_command_batch(selector);
@@ -280,22 +286,22 @@ int main()
 				auto recorder = command_buffer.record();
 
 				recorder
-					<< GL::vk_cmd_pipeline_barrier(GL::vk_pipeline_barrier(VK_PIPELINE_STAGE_VERTEX_SHADER_BIT,
+					<< GL::vk_cmd_pipeline_barrier(GL::vk_pipeline_barrier(VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
 																		   VK_PIPELINE_STAGE_TRANSFER_BIT,
-																		   { GL::vk_buffer_memory_barrier(ubo->get_buffer(),
+																		   { GL::vk_buffer_memory_barrier(*ubo->get_buffer(),
 																										VK_ACCESS_UNIFORM_READ_BIT,
 																										VK_ACCESS_TRANSFER_WRITE_BIT),
-																			GL::vk_buffer_memory_barrier(vertex_buffer->get_buffer(),
+																			GL::vk_buffer_memory_barrier(*vertex_buffer->get_buffer(),
 																										VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT,
 																										VK_ACCESS_TRANSFER_WRITE_BIT) }))
 					<< vertex_buffer->update_cmd(vertices, 0)
 					<< ubo->update_cmd({ data })
 					<< GL::vk_cmd_pipeline_barrier(GL::vk_pipeline_barrier(VK_PIPELINE_STAGE_TRANSFER_BIT,
 																		   VK_PIPELINE_STAGE_VERTEX_SHADER_BIT,
-																		   { GL::vk_buffer_memory_barrier(ubo->get_buffer(),
+																		   { GL::vk_buffer_memory_barrier(*ubo->get_buffer(),
 																										VK_ACCESS_TRANSFER_WRITE_BIT,
 																										VK_ACCESS_UNIFORM_READ_BIT),
-																			GL::vk_buffer_memory_barrier(vertex_buffer->get_buffer(),
+																			GL::vk_buffer_memory_barrier(*vertex_buffer->get_buffer(),
 																										VK_ACCESS_TRANSFER_WRITE_BIT,
 																										VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT) }))
 					<< GL::vk_cmd_bind_descriptor_sets_graphics(pipeline_layout, 0, { descriptor_set })
@@ -305,8 +311,8 @@ int main()
 													swapchain_size,
 													{ swapchain_attachment_clear_value })
 					<< GL::vk_cmd_bind_pipeline(pipeline)
-					<< GL::vk_cmd_bind_vertex_buffers(0, vertex_buffer->get_buffer())
-					<< GL::vk_cmd_bind_index_buffer(index_buffer->get_buffer())
+					<< GL::vk_cmd_bind_vertex_buffers(0, *vertex_buffer->get_buffer())
+					<< GL::vk_cmd_bind_index_buffer(*index_buffer->get_buffer())
 					<< GL::vk_cmd_draw_indexed(indices.size(), 1)
 					<< GL::vk_cmd_end_render_pass();
 			}
