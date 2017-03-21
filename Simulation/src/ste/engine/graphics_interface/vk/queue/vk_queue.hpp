@@ -55,8 +55,8 @@ public:
 	*	@param	fence				Optional fence, to be signaled when the commands have completed execution
 	*/
 	void submit(const std::vector<vk_command_buffer> &command_buffers,
-				const std::vector<std::pair<const vk_semaphore*, VkPipelineStageFlags>> &wait_semaphores,
-				const std::vector<const vk_semaphore*> &signal_semaphores,
+				const std::vector<std::pair<VkSemaphore, VkPipelineStageFlags>> &wait_semaphores,
+				const std::vector<VkSemaphore> &signal_semaphores,
 				const vk_fence *fence = nullptr) const {
 		std::vector<VkCommandBuffer> cb;
 		std::vector<VkSemaphore> wait;
@@ -70,13 +70,13 @@ public:
 		wait.resize(wait_semaphores.size());
 		stages.resize(wait_semaphores.size());
 		for (std::size_t i = 0; i<wait_semaphores.size(); ++i) {
-			wait[i] = *wait_semaphores[i].first;
+			wait[i] = wait_semaphores[i].first;
 			stages[i] = wait_semaphores[i].second;
 		}
 
 		signal.resize(signal_semaphores.size());
 		for (std::size_t i = 0; i<signal_semaphores.size(); ++i)
-			signal[i] = *signal_semaphores[i];
+			signal[i] = signal_semaphores[i];
 
 		VkSubmitInfo info = {};
 		info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;

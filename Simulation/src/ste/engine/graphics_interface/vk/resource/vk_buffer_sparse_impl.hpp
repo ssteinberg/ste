@@ -25,7 +25,7 @@ public:
 	vk_buffer_sparse_impl(const vk_logical_device &device,
 						  std::uint64_t count,
 						  const VkBufferUsageFlags &usage)
-		: Base(device, count * sizeof(T), usage, true)
+		: Base(device, count * sizeof(T), sizeof(T), usage, true)
 	{}
 	~vk_buffer_sparse_impl() noexcept {}
 
@@ -45,8 +45,8 @@ public:
 	*/
 	void cmd_bind_sparse_memory(const vk_queue &queue,
 								const std::vector<vk_sparse_memory_bind> &memory_binds,
-								const std::vector<const vk_semaphore*> &wait_semaphores,
-								const std::vector<const vk_semaphore*> &signal_semaphores,
+								const std::vector<VkSemaphore> &wait_semaphores,
+								const std::vector<VkSemaphore> &signal_semaphores,
 								const vk_fence *fence = nullptr) {
 		std::vector<VkSemaphore> wait;
 		std::vector<VkSemaphore> signal;
@@ -55,13 +55,13 @@ public:
 		if (wait_semaphores.size()) {
 			wait.reserve(wait_semaphores.size());
 			for (auto &e : wait_semaphores)
-				wait.push_back(*e);
+				wait.push_back(e);
 		}
 
 		if (signal_semaphores.size()) {
 			signal.reserve(signal_semaphores.size());
 			for (auto &e : signal_semaphores)
-				signal.push_back(*e);
+				signal.push_back(e);
 		}
 
 		binds.reserve(memory_binds.size());

@@ -41,7 +41,7 @@ public:
 		for (std::size_t i = 0; i < count; ++i)
 			emplace(i, std::forward<Ts>(ts)...);
 	}
-	~static_vector() noexcept {
+	~static_vector() noexcept(std::is_nothrow_destructible_v<T>) {
 		for (std::size_t i = 0; i < count; ++i) {
 			if (allocated[i])
 				destroy(i);

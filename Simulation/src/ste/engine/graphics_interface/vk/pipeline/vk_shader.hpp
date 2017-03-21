@@ -11,11 +11,12 @@
 #include <optional.hpp>
 
 #include <string>
+#include <allow_class_decay.hpp>
 
 namespace StE {
 namespace GL {
 
-class vk_shader {
+class vk_shader : public allow_class_decay<vk_shader, VkShaderModule> {
 private:
 	optional<VkShaderModule> module;
 	const vk_logical_device &device;
@@ -66,9 +67,7 @@ public:
 		return stage_info;
 	}
 
-	auto& get_shader_module() const { return module.get(); }
-
-	operator VkShaderModule() const { return get_shader_module(); }
+	auto& get() const { return module.get(); }
 };
 
 }

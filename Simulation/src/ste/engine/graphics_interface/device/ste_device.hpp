@@ -86,6 +86,81 @@ private:
 	void create_presentation_fences_storage();
 	void recreate_swap_chain();
 
+private:
+	template <typename selector_policy = ste_queue_selector_default_policy>
+	auto internal_acquire_next_image(const ste_queue_selector<selector_policy> &queue_selector) {
+		if (ste_device_queue::is_queue_thread()) {
+			throw ste_device_exception("Should be called from a main thread");
+		}
+
+		auto& queue = select_queue(queue_selector);
+
+		// Acquire a couple of semaphores
+		auto semaphores = ste_device_presentation_sync_semaphores(sync_primitives_pools->semaphores().claim(),
+																  sync_primitives_pools->semaphores().claim());
+		auto fence = std::make_shared<batch_fence_ptr_t::element_type>(sync_primitives_pools->shared_fences().claim());
+
+		// Wait for images to become available
+		if (shared_data->acquired_images.load(std::memory_order_acquire) >= get_swap_chain_images_count() - 1) {
+			// Must present before we can acquire another image. Wait.
+			std::unique_lock<std::mutex> lk(shared_data->acquire_mutex);
+			shared_data->acquire_cv.wait(lk, [this] {
+				return shared_data->acquired_images.load(std::memory_order_acquire) < get_swap_chain_images_count() - 1;
+			});
+		}
+
+		// Acquire next presentation image
+		auto next_image_descriptor =
+			presentation_surface->acquire_next_swapchain_image(*semaphores.swapchain_image_ready_semaphore);
+		shared_data->acquired_images.fetch_add(1, std::memory_order_relaxed);
+
+		// Wait for previous presentation to this image index to end
+		auto& sync = presentation_sync_primitives[next_image_descriptor.image_index];
+		if (sync.fence_ptr != nullptr)
+			(*sync.fence_ptr)->get();
+
+		// Hold onto new presentation semaphores, and fence. Releasing old.
+		sync.semaphores = std::move(semaphores);
+		sync.fence_ptr = std::move(fence);
+
+		return std::make_pair(std::reference_wrapper<image_presentation_sync_t>(sync), next_image_descriptor);
+	}
+
+	template <typename BatchUserData>
+	void internal_submit_and_present(std::unique_ptr<ste_device_queue_presentation_batch<BatchUserData>> &&presentation_batch,
+									 const std::vector<std::pair<VkSemaphore, VkPipelineStageFlags>> &wait_semaphores,
+									 const std::vector<VkSemaphore> &signal_semaphores) {
+		if (!ste_device_queue::is_queue_thread()) {
+			throw ste_device_not_queue_thread_exception();
+		}
+
+		auto acquired_presentation_image = presentation_batch->image_to_present;
+		auto presentation_semaphores = presentation_batch->semaphores;
+
+		// Synchronize submission with presentation
+		auto wait = wait_semaphores;
+		auto signal = signal_semaphores;
+		wait.push_back(decltype(wait)::value_type(presentation_semaphores->swapchain_image_ready_semaphore,
+												  VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT));
+		signal.push_back(presentation_semaphores->rendering_finished_semaphore);
+
+		// Submit
+		ste_device_queue::submit_batch<BatchUserData>(std::move(presentation_batch),
+													  wait,
+													  signal);
+
+		// Present
+		if (acquired_presentation_image.image != nullptr) {
+			this->presentation_surface->present(acquired_presentation_image.image_index,
+												ste_device_queue::thread_queue(),
+												presentation_semaphores->rendering_finished_semaphore);
+
+			// Notify any waiting for present
+			shared_data->acquired_images.fetch_add(-1, std::memory_order_release);
+			shared_data->acquire_cv.notify_one();
+		}
+	}
+
 public:
 	/**
 	*	@brief	Creates the device with presentation surface and capabilities
@@ -168,7 +243,7 @@ public:
 	}
 
 	/**
-	*	@brief	Acquires the next presentation image information and allocates a coomand batch that will be used for presentation.
+	*	@brief	Acquires the next presentation image information and allocates a command batch that will be used for presentation.
 	*			Must be called from main thread.
 	*			The command batch shall be consumed with a call to submit_and_present().
 	*
@@ -184,47 +259,16 @@ public:
 	template <typename UserData = void, typename selector_policy = ste_queue_selector_default_policy, typename... UserDataArgs>
 	auto allocate_presentation_command_batch(const ste_queue_selector<selector_policy> &queue_selector,
 											 UserDataArgs&&... user_data_args) {
-		if (ste_device_queue::is_queue_thread()) {
-			throw ste_device_exception("Should be called from a main thread");
-		}
-
+		auto next_image = internal_acquire_next_image(queue_selector);
 		auto& queue = select_queue(queue_selector);
 
-		// Acquire a couple of semaphores
-		auto semaphores = ste_device_presentation_sync_semaphores(sync_primitives_pools->semaphores().claim(),
-																  sync_primitives_pools->semaphores().claim());
-		auto fence = std::make_shared<batch_fence_ptr_t::element_type>(sync_primitives_pools->shared_fences().claim());
-
-		// Wait for images to become available
-		if (shared_data->acquired_images.load(std::memory_order_acquire) >= get_swap_chain_images_count() - 1) {
-			// Must present before we can acquire another image. Wait.
-			std::unique_lock<std::mutex> lk(shared_data->acquire_mutex);
-			shared_data->acquire_cv.wait(lk, [this]{
-				return shared_data->acquired_images.load(std::memory_order_acquire) < get_swap_chain_images_count() - 1;
-			});
-		}
-
-		// Acquire next presentation image
-		auto next_image_descriptor =
-			presentation_surface->acquire_next_swapchain_image(*semaphores.swapchain_image_ready_semaphore);
-		shared_data->acquired_images.fetch_add(1, std::memory_order_relaxed);
-
-		// Wait for previous presentation to this image index to end
-		auto& sync = presentation_sync_primitives[next_image_descriptor.image_index];
-		if (sync.fence_ptr != nullptr)
-			(*sync.fence_ptr)->get();
-
-		// Hold onto new presentation semaphores, and fence. Releasing old.
-		sync.semaphores = std::move(semaphores);
-		sync.fence_ptr = std::move(fence);
-
-		// Allocate batch
-		auto batch = queue->template allocate_batch_custom<ste_device_queue_presentation_batch<UserData>>(sync.fence_ptr,
-																										  std::forward<UserDataArgs>(user_data_args)...);
-
-		// And save next presentation image information
-		batch->image_to_present = next_image_descriptor;
-		batch->semaphores = &sync.semaphores;
+		// Allocate batch and pass it next presentation image information
+		using batch_t = ste_device_queue_presentation_batch<UserData>;
+		auto batch = queue->template allocate_batch_custom<batch_t>(batch_t::batch_ctor(),
+																	next_image.second,
+																	&next_image.first.semaphores,
+																	next_image.first.fence_ptr,
+																	std::forward<UserDataArgs>(user_data_args)...);
 
 		return batch;
 	}
@@ -258,37 +302,11 @@ public:
 	*/
 	template <typename BatchUserData>
 	void submit_and_present(std::unique_ptr<ste_device_queue_presentation_batch<BatchUserData>> &&presentation_batch,
-							const std::vector<std::pair<const vk_semaphore*, VkPipelineStageFlags>> &wait_semaphores,
-							const std::vector<const vk_semaphore*> &signal_semaphores) {
-		if (!ste_device_queue::is_queue_thread()) {
-			throw ste_device_not_queue_thread_exception();
-		}
-
-		auto acquired_presentation_image = presentation_batch->image_to_present;
-		auto presentation_semaphores = presentation_batch->semaphores;
-
-		// Synchronize submission with presentation
-		auto wait = wait_semaphores;
-		auto signal = signal_semaphores;
-		wait.push_back(std::make_pair(&*presentation_semaphores->swapchain_image_ready_semaphore,
-									  VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT));
-		signal.push_back(&*presentation_semaphores->rendering_finished_semaphore);
-
-		// Submit
-		ste_device_queue::submit_batch(std::move(presentation_batch),
-									   wait,
-									   signal);
-
-		// Present
-		if (acquired_presentation_image.image != nullptr) {
-			this->presentation_surface->present(acquired_presentation_image.image_index,
-												ste_device_queue::thread_queue(),
-												*presentation_semaphores->rendering_finished_semaphore);
-
-			// Notify any waiting for present
-			shared_data->acquired_images.fetch_add(-1, std::memory_order_release);
-			shared_data->acquire_cv.notify_one();
-		}
+							const std::vector<std::pair<VkSemaphore, VkPipelineStageFlags>> &wait_semaphores = {},
+							const std::vector<VkSemaphore> &signal_semaphores = {}) {
+		internal_submit_and_present(std::move(presentation_batch),
+									wait_semaphores,
+									signal_semaphores);
 	}
 
 	/**

@@ -9,7 +9,7 @@
 
 namespace StE {
 
-template <typename T, unsigned min_alignment = 128, bool pad_to_alignment = true>
+template <typename T, unsigned min_alignment = 64, bool pad_to_alignment = true>
 class aligned_ptr {
 public:
 	using value_type = T;

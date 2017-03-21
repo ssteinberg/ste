@@ -14,12 +14,13 @@
 #include <vk_cmd_update_buffer.hpp>
 
 #include <vector>
+#include <allow_class_decay.hpp>
 
 namespace StE {
 namespace GL {
 
 template <typename T>
-class array : ste_resource_deferred_create_trait {
+class array : ste_resource_deferred_create_trait, public allow_class_decay<array<T>, device_buffer<T, device_resource_allocation_policy_device>> {
 	static_assert(sizeof(T) % 4 == 0, "T size must be a multiple of 4");
 
 private:
@@ -74,9 +75,8 @@ public:
 
 	auto size() const { return buffer.get().get_elements_count(); }
 
-	auto& get_buffer() { return buffer; }
-	auto& get_buffer() const { return buffer; }
-	operator VkBuffer() const { return *get_buffer(); }
+	auto& get() { return buffer; }
+	auto& get() const { return buffer; }
 };
 
 }

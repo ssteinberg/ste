@@ -9,12 +9,13 @@
 #include <vk_logical_device.hpp>
 
 #include <optional.hpp>
+#include <allow_class_decay.hpp>
 
 namespace StE {
 namespace GL {
 
 template <int dims>
-class vk_image_base {
+class vk_image_base : public allow_class_decay<vk_image_base<dims>, VkImage> {
 public:
 	static constexpr int dimensions = dims;
 	using size_type = typename vk_image_extent_type<dimensions>::type;
@@ -73,14 +74,12 @@ public:
 	}
 
 	auto& get_creating_device() const { return device; }
-	auto& get_image() const { return image.get(); }
+	auto& get() const { return image.get(); }
 
 	auto& get_format() const { return format; };
 	auto& get_size() const { return size; };
 	auto& get_mips() const { return mips; };
 	auto& get_layers() const { return layers; };
-
-	operator VkImage() const { return get_image(); }
 };
 
 }

@@ -8,7 +8,7 @@
 #include <vulkan/vulkan.h>
 #include <vk_sampler.hpp>
 #include <vk_image_view.hpp>
-#include <vk_buffer.hpp>
+#include <vk_buffer_base.hpp>
 
 #include <vector>
 
@@ -38,22 +38,23 @@ public:
 									 std::uint32_t binding_index,
 									 std::uint32_t array_element,
 									 std::uint32_t count,
-									 const vk_image_view<T> *image_view,
+									 const vk_image_view<T> &image_view,
 									 VkImageLayout image_layout,
 									 const vk_sampler *sampler = nullptr)
 		: type(type), binding_index(binding_index), array_element(array_element), count(count),
-		image(*image_view), sampler(sampler ? *sampler : VK_NULL_HANDLE), image_layout(image_layout)
+		image(image_view), sampler(sampler ? *sampler : VK_NULL_HANDLE), image_layout(image_layout)
 	{}
-	template <typename T, bool sparse>
 	vk_descriptor_set_write_resource(const VkDescriptorType &type,
 									 std::uint32_t binding_index,
 									 std::uint32_t array_element,
 									 std::uint32_t count,
-									 const vk_buffer<T, sparse> &buffer,
+									 const vk_buffer_base &buffer,
 									 std::uint64_t buffer_length,
 									 std::uint64_t buffer_offset = 0)
 		: type(type), binding_index(binding_index), array_element(array_element), count(count),
-		buffer(buffer), buffer_offset(buffer_offset * sizeof(T)), buffer_range(buffer_length * sizeof(T))
+		buffer(buffer), 
+		buffer_offset(buffer_offset * buffer.get_element_size_bytes()), 
+		buffer_range(buffer_length * buffer.get_element_size_bytes())
 	{}
 
 	vk_descriptor_set_write_resource(vk_descriptor_set_write_resource &&) = default;

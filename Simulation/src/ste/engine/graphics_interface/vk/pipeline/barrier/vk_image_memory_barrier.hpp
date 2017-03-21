@@ -28,8 +28,7 @@ private:
 	std::uint32_t layers{ VK_REMAINING_ARRAY_LAYERS };
 
 public:
-	template <int d>
-	vk_image_memory_barrier(const vk_image<d> &image,
+	vk_image_memory_barrier(const VkImage &image,
 							VkImageLayout old_layout,
 							VkImageLayout new_layout,
 							const VkAccessFlags &src_access,
@@ -38,8 +37,7 @@ public:
 		: src(src_access), dst(dst_access), old_layout(old_layout), new_layout(new_layout),
 		image(image), aspect(depth ? VK_IMAGE_ASPECT_DEPTH_BIT : VK_IMAGE_ASPECT_COLOR_BIT)
 	{}
-	template <int d>
-	vk_image_memory_barrier(const vk_image<d> &image,
+	vk_image_memory_barrier(const VkImage &image,
 							VkImageLayout old_layout,
 							VkImageLayout new_layout,
 							const VkAccessFlags &src_access,
@@ -53,8 +51,7 @@ public:
 		image(image), aspect(depth ? VK_IMAGE_ASPECT_DEPTH_BIT : VK_IMAGE_ASPECT_COLOR_BIT),
 		base_level(base_mip_level), levels(mip_levels), base_layer(base_array_layer), layers(array_layers)
 	{}
-	template <int d>
-	vk_image_memory_barrier(const vk_image<d> &image,
+	vk_image_memory_barrier(const VkImage &image,
 							VkImageLayout old_layout,
 							VkImageLayout new_layout,
 							const VkAccessFlags &src_access,
@@ -66,8 +63,7 @@ public:
 		src_queue_index(src_queue_index), dst_queue_index(dst_queue_index),
 		image(image), aspect(depth ? VK_IMAGE_ASPECT_DEPTH_BIT : VK_IMAGE_ASPECT_COLOR_BIT)
 	{}
-	template <int d>
-	vk_image_memory_barrier(const vk_image<d> &image,
+	vk_image_memory_barrier(const VkImage &image,
 							VkImageLayout old_layout,
 							VkImageLayout new_layout,
 							const VkAccessFlags &src_access,

@@ -13,24 +13,20 @@
 #include <optional.hpp>
 
 #include <vector>
+#include <allow_class_decay.hpp>
 
 namespace StE {
 namespace GL {
 
-class vk_pipeline_layout {
+class vk_pipeline_layout : public allow_class_decay<vk_pipeline_layout, VkPipelineLayout> {
 private:
 	optional<VkPipelineLayout> layout;
 	const vk_logical_device &device;
 
 public:
 	vk_pipeline_layout(const vk_logical_device &device, 
-					   const std::vector<const vk_descriptor_set_layout*> &set_layouts,
+					   const std::vector<VkDescriptorSetLayout> &set_layouts,
 					   const std::vector<vk_push_constant_layout> &push_constants_layout = {}) : device(device) {
-		std::vector<VkDescriptorSetLayout> set_layout_descriptors;
-		set_layout_descriptors.resize(set_layouts.size());
-		for (std::size_t i = 0; i < set_layouts.size(); ++i)
-			set_layout_descriptors[i] = **(set_layouts.begin() + i);
-
 		std::vector<VkPushConstantRange> push_constant_layout_descriptors;
 		push_constant_layout_descriptors.resize(push_constants_layout.size());
 		for (std::size_t i = 0; i < push_constants_layout.size(); ++i)
@@ -42,8 +38,8 @@ public:
 		create_info.flags = 0;
 		create_info.pushConstantRangeCount = push_constant_layout_descriptors.size();
 		create_info.pPushConstantRanges = push_constant_layout_descriptors.data();
-		create_info.setLayoutCount = set_layout_descriptors.size();
-		create_info.pSetLayouts = set_layout_descriptors.data();
+		create_info.setLayoutCount = set_layouts.size();
+		create_info.pSetLayouts = set_layouts.data();
 
 		VkPipelineLayout pipeline_layout;
 		vk_result res = vkCreatePipelineLayout(device, &create_info, nullptr, &pipeline_layout);
@@ -69,9 +65,7 @@ public:
 		}
 	}
 
-	auto& get_pipeline_layout() const { return layout.get(); }
-
-	operator VkPipelineLayout() const { return get_pipeline_layout(); }
+	auto& get() const { return layout.get(); }
 };
 
 }

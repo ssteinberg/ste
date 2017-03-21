@@ -15,11 +15,12 @@
 
 #include <string>
 #include <istream>
+#include <allow_class_decay.hpp>
 
 namespace StE {
 namespace GL {
 
-class vk_pipeline_cache {
+class vk_pipeline_cache : public allow_class_decay<vk_pipeline_cache, VkPipelineCache> {
 private:
 	static constexpr std::uint32_t header_magic_and_version = 0xCAC8E001;
 	static constexpr int header_uuid_size = VK_UUID_SIZE;
@@ -156,9 +157,7 @@ public:
 		return data;
 	}
 
-	auto& get_pipeline_cache() const { return cache.get(); }
-
-	operator VkPipelineCache() const { return get_pipeline_cache(); }
+	auto& get() const { return cache.get(); }
 
 	friend std::ostream& operator<<(std::ostream &stream, const vk_pipeline_cache& cache) {
 		const vk_physical_device_descriptor &device_descriptor = cache.device.get_physical_device_descriptor();

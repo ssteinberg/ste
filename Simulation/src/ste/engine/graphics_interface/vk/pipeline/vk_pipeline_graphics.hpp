@@ -20,6 +20,7 @@
 #include <optional.hpp>
 
 #include <vector>
+#include <allow_class_decay.hpp>
 
 namespace StE {
 namespace GL {
@@ -29,7 +30,7 @@ struct vk_graphics_shader_descriptor {
 	VkShaderStageFlagBits stage;
 };
 
-class vk_pipeline_graphics {
+class vk_pipeline_graphics : public allow_class_decay<vk_pipeline_graphics, VkPipeline> {
 private:
 	optional<VkPipeline> pipeline;
 	const vk_logical_device &device;
@@ -198,7 +199,7 @@ public:
 
 		VkPipeline pipeline;
 		vk_result res = vkCreateGraphicsPipelines(device,
-												  cache!=nullptr ? cache->get_pipeline_cache() : VK_NULL_HANDLE,
+												  cache!=nullptr ? *cache : VK_NULL_HANDLE,
 												  1,
 												  &create_info,
 												  nullptr,
@@ -225,9 +226,7 @@ public:
 		}
 	}
 
-	auto& get_pipeline() const { return pipeline.get(); }
-
-	operator VkPipeline() const { return get_pipeline(); }
+	auto& get() const { return pipeline.get(); }
 };
 
 }

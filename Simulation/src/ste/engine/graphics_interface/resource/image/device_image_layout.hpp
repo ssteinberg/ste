@@ -4,50 +4,30 @@
 #pragma once
 
 #include <stdafx.hpp>
-#include <vk_image.hpp>
+#include <vulkan/vulkan.h>
+
+#include <atomic>
 
 namespace StE {
 namespace GL {
 
-template <int dimensions, class allocation_policy>
-class device_image;
+struct device_image_layout {
+	std::atomic<VkImageLayout> layout;
 
-class device_image_layout {
-	template <int dimensions, class allocation_policy>
-	friend void queue_transfer(device_image<dimensions, allocation_policy> &,
-							   const ste_device_queue::queue_index_t &,
-							   VkAccessFlags,
-							   VkAccessFlags,
-							   VkImageLayout);
-	template <int dimensions, class allocation_policy>
-	friend void queue_transfer(device_image<dimensions, allocation_policy> &,
-							   const ste_queue_selector<ste_queue_selector_default_policy> &,
-							   VkAccessFlags,
-							   VkAccessFlags,
-							   VkImageLayout);
-	template <int dimensions, class allocation_policy>
-	friend void queue_transfer_discard(device_image<dimensions, allocation_policy> &,
-									   const ste_queue_selector<ste_queue_selector_default_policy> &);
-	template <int dimensions, class allocation_policy>
-	friend void queue_transfer_discard(device_image<dimensions, allocation_policy> &,
-									   const ste_device_queue::queue_index_t &);
-
-private:
-	VkImageLayout image_layout;
-
-public:
 	device_image_layout() = delete;
 	device_image_layout(const vk_image_initial_layout &layout)
-		: image_layout(layout == vk_image_initial_layout::preinitialized ? VK_IMAGE_LAYOUT_PREINITIALIZED : VK_IMAGE_LAYOUT_UNDEFINED)
+		: layout(layout == vk_image_initial_layout::preinitialized ? VK_IMAGE_LAYOUT_PREINITIALIZED : VK_IMAGE_LAYOUT_UNDEFINED)
 	{}
 	device_image_layout(const VkImageLayout &layout)
-	: image_layout(layout)
+		: layout(layout)
 	{}
 
-	device_image_layout(device_image_layout &&o) = default;
-	device_image_layout &operator=(device_image_layout &&o) = default;
-
-	auto layout() const { return image_layout; }
+	device_image_layout(device_image_layout &&o) noexcept
+		: layout(o.layout.load()) {}
+	device_image_layout &operator=(device_image_layout &&o) noexcept {
+		layout.store(o.layout);
+		return *this;
+	}
 };
 
 }

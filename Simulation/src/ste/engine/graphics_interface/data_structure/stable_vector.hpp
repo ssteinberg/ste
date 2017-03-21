@@ -14,6 +14,8 @@
 #include <device_buffer_sparse.hpp>
 #include <device_resource_allocation_policy.hpp>
 
+#include <allow_class_decay.hpp>
+
 namespace StE {
 namespace GL {
 
@@ -22,7 +24,10 @@ template <
 	std::uint64_t minimal_atom_size = 65536,
 	std::uint64_t max_sparse_size = 64 * 1024 * 1024
 >
-class stable_vector : ste_resource_deferred_create_trait {
+class stable_vector : 
+	ste_resource_deferred_create_trait, 
+	public allow_class_decay<stable_vector<T, minimal_atom_size, max_sparse_size>, device_buffer_sparse<T, minimal_atom_size, device_resource_allocation_policy_device>>
+{
 	static_assert(sizeof(T) <= minimal_atom_size, "minimal_atom_size should be at least the size of a single element");
 	static_assert(sizeof(T) % 4 == 0, "T size must be a multiple of 4");
 
@@ -39,11 +44,9 @@ private:
 		stable_vector *v;
 
 	public:
-		template <bool sparse>
-		stable_vector_cmd_push_back(const vk_buffer<T, sparse> &buffer,
-									const std::vector<T> &data_copy,
+		stable_vector_cmd_push_back(const std::vector<T> &data_copy,
 									stable_vector *v)
-			: data(data_copy), update_cmd(buffer, data.size(), data.data(), v->elements), v(v)
+			: data(data_copy), update_cmd(v->buffer, data.size(), data.data(), v->elements), v(v)
 		{}
 		virtual ~stable_vector_cmd_push_back() noexcept {}
 
@@ -51,11 +54,11 @@ private:
 		void operator()(const vk_command_buffer &command_buffer) const override final {
 			// Bind sparse (if needed) and update vector size
 			bind_range_t bind = { v->elements, data.size() };
-			buffer.cmd_bind_sparse_memory(ste_device_queue::thread_queue(), {}, { bind }, {}, {});
+			v->buffer.cmd_bind_sparse_memory(ste_device_queue::thread_queue(), {}, { bind }, {}, {});
 			v->elements += data.size();
 
 			// Copy data
-			update_cmd(command_buffer);
+			execute(command_buffer, update_cmd);
 		}
 	};
 	// Pop back command
@@ -76,7 +79,7 @@ private:
 
 			// Unbind sparse (if possible) and update vector size
 			bind_range_t unbind = { v->elements - count_to_pop, count_to_pop };
-			buffer.cmd_bind_sparse_memory(ste_device_queue::thread_queue(), { unbind }, {}, {}, {});
+			v->buffer.cmd_bind_sparse_memory(ste_device_queue::thread_queue(), { unbind }, {}, {}, {});
 
 			v->elements -= count_to_pop;
 		}
@@ -116,7 +119,7 @@ public:
 	*	@param	data	Data to push back
 	*/
 	auto push_back_cmd(const std::vector<T> &data) {
-		return stable_vector_cmd_push_back(buffer, data, size(), this);
+		return stable_vector_cmd_push_back(data, this);
 	}
 	/**
 	*	@brief	Returns a device command that will push back data into the vector.
@@ -125,7 +128,7 @@ public:
 	*	@param	data	Data to push back
 	*/
 	auto push_back_cmd(const T &data) {
-		return stable_vector_cmd_push_back(buffer, { data }, size(), this);
+		return stable_vector_cmd_push_back({ data }, this);
 	}
 	/**
 	*	@brief	Returns a device command that will erase some of the elements from the back the vector.
@@ -148,9 +151,8 @@ public:
 
 	auto size() const { return elements; }
 
-	auto& get_buffer() { return buffer; }
-	auto& get_buffer() const { return buffer; }
-	operator VkBuffer() const { return *get_buffer(); }
+	auto& get() { return buffer; }
+	auto& get() const { return buffer; }
 };
 
 }

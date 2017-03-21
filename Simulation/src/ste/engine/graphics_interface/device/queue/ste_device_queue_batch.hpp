@@ -19,66 +19,24 @@ namespace GL {
 
 namespace _detail {
 
-template <typename Fence, typename Pool, typename UserData = void>
-class ste_device_queue_batch_impl {
+class ste_device_queue_batch_base {
 	friend class ste_device_queue;
 
-public:
-	using pool_t = Pool;
-	using fence_t = Fence;
-
-public:
-	using fence_ptr_strong_t = std::shared_ptr<fence_t>;
-	using fence_ptr_weak_t = std::weak_ptr<fence_t>;
-
 private:
-	using shared_fence_t = shared_fence<void>;
-
-private:
-	pool_t pool;
 	std::uint32_t queue_index;
-
-protected:
-	fence_ptr_strong_t fence_strong;
-	std::vector<ste_device_queue_command_buffer> command_buffers;
-
-	auto begin() const { return std::begin(command_buffers); }
-	auto end() const { return std::end(command_buffers); }
+	mutable bool submitted{ false };
 
 public:
-	ste_device_queue_batch_impl(std::uint32_t queue_index,
-								pool_t &&pool,
-								const fence_ptr_strong_t &f)
-		: pool(std::move(pool)),
-		queue_index(queue_index),
-		fence_strong(f)
-	{}
-	virtual ~ste_device_queue_batch_impl() noexcept {}
-
-	ste_device_queue_batch_impl(ste_device_queue_batch_impl&&) = default;
-	ste_device_queue_batch_impl &operator=(ste_device_queue_batch_impl&&) = default;
-
-	auto& acquire_command_buffer() {
-		command_buffers.emplace_back(pool->get_pool(), vk_command_buffer_type::primary);
-		return command_buffers.back();
+	ste_device_queue_batch_base(std::uint32_t queue_index) : queue_index(queue_index) {}
+	virtual ~ste_device_queue_batch_base() noexcept {
+		assert(submitted && "Batch created but not submitted!");
 	}
 
-	const auto& get_fence_ptr() const { return fence_strong; }
+	ste_device_queue_batch_base(ste_device_queue_batch_base&&) = default;
+	ste_device_queue_batch_base &operator=(ste_device_queue_batch_base&&) = default;
 
-	auto& get_fence() const {
-		return **fence_strong;
-	}
-
-	bool is_batch_complete() const {
-		const auto& f = get_fence();
-		return f.is_signaled();
-	}
+	virtual bool is_batch_complete() const = 0;
 };
-
-using ste_device_queue_batch_base = ste_device_queue_batch_impl<
-	ste_resource_pool<shared_fence<void>>::resource_t,
-	ste_resource_pool<ste_device_queue_command_pool>::resource_t
->;
 
 template <typename T>
 struct ste_device_queue_batch_user_data_t {
@@ -91,40 +49,115 @@ struct ste_device_queue_batch_user_data_t {
 template <>
 struct ste_device_queue_batch_user_data_t<void> {};
 
-}
+template <typename Pool, typename UserData = void>
+class ste_device_queue_batch_impl : public ste_device_queue_batch_base {
+public:
+	using pool_t = Pool;
 
-template <typename UserData = void>
-class ste_device_queue_batch : public _detail::ste_device_queue_batch_base {
-	using Base = _detail::ste_device_queue_batch_base;
+protected:
+	pool_t pool;
 
 private:
-	_detail::ste_device_queue_batch_user_data_t<UserData> user_data_wrap;
+	ste_device_queue_batch_user_data_t<UserData> user_data_wrap;
 
 public:
 	template <typename S = UserData, typename... UserDataArgs>
-	ste_device_queue_batch(std::enable_if_t<!std::is_void_v<S>, std::uint32_t> queue_index,
-						   pool_t &&pool,
-						   const fence_ptr_strong_t &f,
-						   UserDataArgs&&... user_data_args)
-		: Base(queue_index,
-			   std::move(pool),
-			   f),
+	ste_device_queue_batch_impl(std::enable_if_t<!std::is_void_v<S>, std::uint32_t> queue_index,
+								pool_t &&pool,
+								UserDataArgs&&... user_data_args)
+		: ste_device_queue_batch_base(queue_index),
+		pool(std::move(pool)),
 		user_data_wrap(std::forward<UserDataArgs>(user_data_args)...)
 	{}
 	template <typename S = UserData>
-	ste_device_queue_batch(std::enable_if_t<std::is_void_v<S>, std::uint32_t> queue_index,
-						   pool_t &&pool,
-						   const fence_ptr_strong_t &f)
-		: Base(queue_index,
-			   std::move(pool),
-			   f)
+	ste_device_queue_batch_impl(std::enable_if_t<std::is_void_v<S>, std::uint32_t> queue_index,
+								pool_t &&pool)
+		: ste_device_queue_batch_base(queue_index),
+		pool(std::move(pool))
 	{}
+	virtual ~ste_device_queue_batch_impl() noexcept {}
+
+	ste_device_queue_batch_impl(ste_device_queue_batch_impl&&) = default;
+	ste_device_queue_batch_impl &operator=(ste_device_queue_batch_impl&&) = default;
 
 	template <typename S = UserData>
 	std::enable_if_t<!std::is_void_v<S>, S&> user_data() { return *user_data_wrap.user_data; }
 	template <typename S = UserData>
 	std::enable_if_t<!std::is_void_v<S>, const S&> user_data() const { return *user_data_wrap.user_data; }
 };
+
+template <typename UserData>
+using ste_device_queue_batch_custom = _detail::ste_device_queue_batch_impl<
+	ste_resource_pool<ste_device_queue_command_pool>::resource_t,
+	UserData
+>;
+
+}
+
+template <typename UserData = void>
+class ste_device_queue_batch_oneshot : public _detail::ste_device_queue_batch_custom<UserData> {
+	friend class ste_device_queue;
+
+	using Base = _detail::ste_device_queue_batch_custom<UserData>;
+
+public:
+	using fence_t = ste_resource_pool<shared_fence<void>>::resource_t;
+	using fence_ptr_strong_t = std::shared_ptr<fence_t>;
+	using fence_ptr_weak_t = std::weak_ptr<fence_t>;
+	using shared_fence_t = shared_fence<void>;
+
+	using command_buffer_t = ste_device_queue_command_buffer<VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT>;
+
+protected:
+	fence_ptr_strong_t fence_strong;
+
+protected:
+	std::vector<command_buffer_t> command_buffers;
+
+	auto begin() const { return command_buffers.begin(); }
+	auto end() const { return command_buffers.end(); }
+
+public:
+	template <typename S = UserData, typename... UserDataArgs>
+	ste_device_queue_batch_oneshot(std::enable_if_t<!std::is_void_v<S>, std::uint32_t> queue_index,
+						   typename Base::pool_t &&pool,
+						   const fence_ptr_strong_t &f,
+						   UserDataArgs&&... user_data_args)
+		: Base(queue_index, std::move(pool), std::forward<UserDataArgs>(user_data_args)...),
+		fence_strong(f)
+	{}
+	template <typename S = UserData>
+	ste_device_queue_batch_oneshot(std::enable_if_t<std::is_void_v<S>, std::uint32_t> queue_index,
+						   typename Base::pool_t &&pool,
+						   const fence_ptr_strong_t &f)
+		: Base(queue_index, std::move(pool)),
+		fence_strong(f)
+	{}
+	virtual ~ste_device_queue_batch_oneshot() noexcept {}
+
+	ste_device_queue_batch_oneshot(ste_device_queue_batch_oneshot&&) = default;
+	ste_device_queue_batch_oneshot &operator=(ste_device_queue_batch_oneshot&&) = default;
+
+	const auto& get_fence_ptr() const {
+		return fence_strong;
+	}
+
+	shared_fence_t& get_fence() const {
+		return *fence_strong;
+	}
+
+	auto& acquire_command_buffer() {
+		command_buffers.emplace_back(Base::pool, vk_command_buffer_type::primary);
+		return command_buffers.back();
+	}
+
+	bool is_batch_complete() const override final {
+		return (*fence_strong)->is_signaled();
+	}
+};
+
+template <typename UserData>
+using ste_device_queue_batch = ste_device_queue_batch_oneshot<UserData>;
 
 }
 }

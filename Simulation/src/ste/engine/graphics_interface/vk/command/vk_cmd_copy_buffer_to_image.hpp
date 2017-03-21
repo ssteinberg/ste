@@ -5,7 +5,7 @@
 
 #include <vulkan/vulkan.h>
 #include <vk_command.hpp>
-#include <vk_buffer.hpp>
+#include <vk_buffer_base.hpp>
 #include <vk_image.hpp>
 
 #include <vector>
@@ -22,8 +22,8 @@ private:
 	std::vector<VkBufferImageCopy> ranges;
 
 public:
-	template <typename T, bool sparse, int d>
-	vk_cmd_copy_buffer_to_image(const vk_buffer<T, sparse> &src_buffer,
+	template <int d>
+	vk_cmd_copy_buffer_to_image(const vk_buffer_base &src_buffer,
 								const vk_image<d> &dst_image,
 								const VkImageLayout &image_layout,
 								const std::vector<VkBufferImageCopy> &ranges = {})

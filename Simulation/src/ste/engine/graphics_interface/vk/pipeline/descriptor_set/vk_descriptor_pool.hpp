@@ -13,11 +13,12 @@
 
 #include <vector>
 #include <unordered_map>
+#include <allow_class_decay.hpp>
 
 namespace StE {
 namespace GL {
 
-class vk_descriptor_pool {
+class vk_descriptor_pool : public allow_class_decay<vk_descriptor_pool, VkDescriptorPool> {
 private:
 	optional<VkDescriptorPool> pool;
 	const vk_logical_device &device;
@@ -79,11 +80,11 @@ public:
 		}
 	}
 
-	vk_descriptor_set allocate_descriptor_set(const std::vector<const vk_descriptor_set_layout*> &set_layouts) const {
+	vk_descriptor_set allocate_descriptor_set(const std::vector<VkDescriptorSetLayout> &set_layouts) const {
 		std::vector<VkDescriptorSetLayout> set_layout_descriptors;
 		set_layout_descriptors.resize(set_layouts.size());
 		for (std::size_t i = 0; i < set_layouts.size(); ++i)
-			set_layout_descriptors[i] = **(set_layouts.begin() + i);
+			set_layout_descriptors[i] = *(set_layouts.begin() + i);
 
 		VkDescriptorSetAllocateInfo create_info = {};
 		create_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
@@ -108,10 +109,8 @@ public:
 		}
 	}
 
-	auto& get_pool() const { return pool.get(); }
+	auto& get() const { return pool.get(); }
 	bool allows_freeing_individual_sets() const { return allow_free_individual_sets; }
-
-	operator VkDescriptorPool() const { return get_pool(); }
 };
 
 }

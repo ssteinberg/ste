@@ -11,11 +11,15 @@
 
 #include <optional.hpp>
 #include <vector>
+#include <allow_class_decay.hpp>
 
 namespace StE {
 namespace GL {
 
-class vk_command_pool : public ste_resource_pool_resetable_trait<const vk_logical_device &, std::uint32_t, VkCommandPoolCreateFlags> {
+class vk_command_pool : 
+	public ste_resource_pool_resetable_trait<const vk_logical_device &, std::uint32_t, VkCommandPoolCreateFlags>,
+	public allow_class_decay<vk_command_pool, VkCommandPool>
+{
 private:
 	optional<VkCommandPool> pool;
 	const vk_logical_device &device;
@@ -91,9 +95,7 @@ public:
 		}
 	}
 
-	auto& get_command_pool() const { return pool.get(); }
-
-	operator VkCommandPool() const { return get_command_pool(); }
+	auto& get() const { return pool.get(); }
 };
 
 }

@@ -14,11 +14,12 @@
 #include <optional.hpp>
 
 #include <vector>
+#include <allow_class_decay.hpp>
 
 namespace StE {
 namespace GL {
 
-class vk_framebuffer {
+class vk_framebuffer : public allow_class_decay<vk_framebuffer, VkFramebuffer> {
 private:
 	optional<VkFramebuffer> framebuffer;
 	const vk_logical_device &device;
@@ -63,9 +64,7 @@ public:
 		}
 	}
 
-	auto& get_framebuffer() const { return framebuffer.get(); }
-
-	operator VkFramebuffer() const { return get_framebuffer(); }
+	auto& get() const { return framebuffer.get(); }
 };
 
 }

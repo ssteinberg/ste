@@ -6,7 +6,7 @@
 #include <stdafx.hpp>
 
 #include <vulkan/vulkan.h>
-#include <vk_buffer.hpp>
+#include <vk_buffer_base.hpp>
 
 namespace StE {
 namespace GL {
@@ -22,23 +22,20 @@ private:
 	std::uint64_t size{ VK_WHOLE_SIZE };
 
 public:
-	template <typename T, bool sparse>
-	vk_buffer_memory_barrier(const vk_buffer<T, sparse> &buffer,
+	vk_buffer_memory_barrier(const vk_buffer_base &buffer,
 							 const VkAccessFlags &src_access,
 							 const VkAccessFlags &dst_access)
 		: src(src_access), dst(dst_access), buffer(buffer)
 	{}
-	template <typename T, bool sparse>
-	vk_buffer_memory_barrier(const vk_buffer<T, sparse> &buffer,
+	vk_buffer_memory_barrier(const vk_buffer_base &buffer,
 							 const VkAccessFlags &src_access,
 							 const VkAccessFlags &dst_access,
 							 std::uint64_t size,
 							 std::uint64_t offset = 0)
 		: src(src_access), dst(dst_access), 
-		buffer(buffer), offset(offset * sizeof(T)), size(size * sizeof(T))
+		buffer(buffer), offset(offset * buffer.get_element_size_bytes()), size(size * buffer.get_element_size_bytes())
 	{}
-	template <typename T, bool sparse>
-	vk_buffer_memory_barrier(const vk_buffer<T, sparse> &buffer,
+	vk_buffer_memory_barrier(const vk_buffer_base &buffer,
 							 const VkAccessFlags &src_access,
 							 const VkAccessFlags &dst_access,
 							 std::uint32_t src_queue_index,
@@ -47,7 +44,7 @@ public:
 							 std::uint64_t offset = 0)
 		: src(src_access), dst(dst_access),
 		src_queue_index(src_queue_index), dst_queue_index(dst_queue_index), 
-		buffer(buffer), offset(offset * sizeof(T)), size(size * sizeof(T))
+		buffer(buffer), offset(offset * buffer.get_element_size_bytes()), size(size * buffer.get_element_size_bytes())
 	{}
 	~vk_buffer_memory_barrier() noexcept {}
 

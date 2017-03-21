@@ -10,11 +10,12 @@
 #include <vk_descriptor_set_write_resource.hpp>
 
 #include <optional.hpp>
+#include <allow_class_decay.hpp>
 
 namespace StE {
 namespace GL {
 
-class vk_descriptor_set {
+class vk_descriptor_set : public allow_class_decay<vk_descriptor_set, VkDescriptorSet> {
 	friend class vk_descriptor_pool;
 
 private:
@@ -80,9 +81,7 @@ public:
 							   nullptr);
 	}
 
-	auto& get_set() const { return set.get(); }
-
-	operator VkDescriptorSet() const { return get_set(); }
+	auto& get() const { return set.get(); }
 };
 
 }

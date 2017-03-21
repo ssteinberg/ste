@@ -12,6 +12,7 @@
 namespace StE {
 namespace GL {
 
+template <VkCommandBufferUsageFlags useage_flags>
 class ste_device_queue_command_buffer {
 	friend class ste_device_queue;
 
@@ -30,7 +31,7 @@ public:
 	ste_device_queue_command_buffer &operator=(ste_device_queue_command_buffer&&) = default;
 
 	auto record() {
-		return vk_command_recorder(buffers[0], VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
+		return vk_command_recorder(buffers[0], useage_flags);
 	}
 };
 

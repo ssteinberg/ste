@@ -7,6 +7,8 @@
 #include <ste_resource_type_traits.hpp>
 #include <ste_resource_creation_policy.hpp>
 
+#include <allow_class_decay.hpp>
+
 namespace StE {
 
 namespace _detail {
@@ -54,7 +56,9 @@ struct ste_resource_resource_impl_type {
 *			Getters will block, if neccessary, until resource creation is complete.
 */
 template <typename T, class resource_deferred_policy = ste_resource_deferred_creation_policy_async<ste_resource_async_policy_task_scheduler>>
-class ste_resource : public _detail::ste_resource_resource_impl_type<T, resource_deferred_policy>::value {
+class ste_resource : public _detail::ste_resource_resource_impl_type<T, resource_deferred_policy>::value,
+	public allow_class_decay<ste_resource<T, resource_deferred_policy>, T, false>
+{
 	using Base = typename _detail::ste_resource_resource_impl_type<T, resource_deferred_policy>::value;
 
 public:
@@ -92,11 +96,6 @@ public:
 	T& get() & { return Base::get(); }
 	T&& get() && { return std::move(Base::get()); }
 	const T& get() const& { return Base::get(); }
-	T* operator->() { return Base::operator->(); }
-	const T* operator->() const { return Base::operator->(); }
-
-	operator T() { return get(); }
-	operator T() const { return get(); }
 };
 
 }

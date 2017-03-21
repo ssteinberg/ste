@@ -132,8 +132,6 @@ public:
 	auto& get() & { return res; }
 	auto&& get() && { return std::move(res); }
 	auto& get() const& { return res; }
-	auto operator->() { return &get(); }
-	auto operator->() const { return &get(); }
 };
 
 // Deferred resource loader impl for move-assignable and default-constructible types
@@ -242,8 +240,6 @@ public:
 	auto& get() & { return Base::get_resource(); }
 	auto&& get() && { return std::move(Base::get_resource()); }
 	auto& get() const& { return Base::get_resource(); }
-	auto operator->() { return &get(); }
-	auto operator->() const { return &get(); }
 };
 
 // Deferred resource loader impl for unique_ptr wrapped types
@@ -351,8 +347,6 @@ public:
 	auto& get() & { return *Base::get_resource(); }
 	auto&& get() && { return std::move(*Base::get_resource()); }
 	auto& get() const& { return *Base::get_resource(); }
-	auto operator->() { return &get(); }
-	auto operator->() const { return &get(); }
 };
 
 }

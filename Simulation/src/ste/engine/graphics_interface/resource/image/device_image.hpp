@@ -7,6 +7,7 @@
 #include <device_image_exceptions.hpp>
 #include <device_image_layout.hpp>
 
+#include <device_image_layout_transformable.hpp>
 #include <vk_image.hpp>
 #include <device_resource.hpp>
 #include <device_resource_allocation_policy.hpp>
@@ -22,11 +23,10 @@ template <VkFormat format>
 struct device_image_from_surface {};
 
 template <int dimensions, class allocation_policy = device_resource_allocation_policy_device>
-class device_image : public device_resource<vk_image<dimensions>, allocation_policy> {
+class device_image : public device_image_layout_transformable,
+	public device_resource<vk_image<dimensions>, allocation_policy> 
+{
 	using Base = device_resource<vk_image<dimensions>, allocation_policy>;
-
-public:
-	device_image_layout image_layout;
 
 public:
 	template <typename QueueOwnershipArgs, typename ... Args>
@@ -34,11 +34,11 @@ public:
 				 QueueOwnershipArgs&& qoa,
 				 const vk_image_initial_layout &layout,
 				 Args&&... args)
-		: Base(ctx,
-			   std::forward<QueueOwnershipArgs>(qoa),
-			   layout,
-			   std::forward<Args>(args)...),
-		image_layout(layout)
+		: device_image_layout_transformable(layout),
+		Base(ctx,
+			 std::forward<QueueOwnershipArgs>(qoa),
+			 layout,
+			 std::forward<Args>(args)...)
 	{}
 
 	device_image(device_image&&) = default;
@@ -49,11 +49,10 @@ public:
  *	@brief	Partial specialization for 2-dimensional images.
  */
 template <class allocation_policy>
-class device_image<2, allocation_policy> : public device_resource<vk_image<2>, allocation_policy> {
+class device_image<2, allocation_policy> : public device_image_layout_transformable,
+	public device_resource<vk_image<2>, allocation_policy> 
+{
 	using Base = device_resource<vk_image<2>, allocation_policy>;
-
-public:
-	device_image_layout image_layout;
 
 private:
 	template <VkFormat format>
@@ -80,7 +79,7 @@ private:
 						  format, surface.extent(), VK_IMAGE_USAGE_TRANSFER_SRC_BIT,
 						  1, layers, false, false);
 		auto staging_image_bytes = staging_image.get_underlying_memory().get_size();
-		auto mmap_u8_ptr = staging_image.get_underlying_memory().template mmap<glm::u8>(0, staging_image_bytes);
+		auto mmap_u8_ptr = staging_image.get_underlying_memory().mmap<glm::u8>(0, staging_image_bytes);
 
 		auto subresource_layout = staging_image->get_image_subresource_layout(0);
 
@@ -168,11 +167,11 @@ public:
 				 QueueOwnershipArgs&& qoa,
 				 const vk_image_initial_layout &layout,
 				 Args&&... args)
-		: Base(ctx,
+		: device_image_layout_transformable(layout), 
+		Base(ctx,
 			   std::forward<QueueOwnershipArgs>(qoa),
 			   layout,
-			   std::forward<Args>(args)...),
-		image_layout(layout)
+			   std::forward<Args>(args)...)
 	{}
 	/**
 	*	@brief	Constructs a 2D image from a 2D surface, with or without mipmaps. To use this overload, pass device_image_from_surface
@@ -183,10 +182,10 @@ public:
 				 const VkImageUsageFlags &usage,
 				 gli::texture2d &&surface,
 				 const device_image_from_surface<format>&)
-		: Base(create_image_2d<format>(ctx,
+		: device_image_layout_transformable(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL),
+		Base(create_image_2d<format>(ctx,
 									   std::move(surface),
-									   usage)),
-		image_layout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
+									   usage))
 	{}
 	~device_image() noexcept {}
 

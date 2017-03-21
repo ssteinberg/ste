@@ -23,7 +23,7 @@ private:
 	std::vector<VkImageMemoryBarrier> image_barriers;
 
 public:
-	vk_cmd_wait_events(const std::initializer_list<const vk_event&> &events,
+	vk_cmd_wait_events(const std::initializer_list<VkEvent> &events,
 					   const vk_pipeline_barrier &barrier)
 		: barrier(barrier)
 	{
@@ -47,6 +47,10 @@ public:
 		for (auto &e : image)
 			image_barriers.push_back(e);
 	}
+	vk_cmd_wait_events(const vk_event& event,
+					   const vk_pipeline_barrier &barrier)
+		: vk_cmd_wait_events({ static_cast<VkEvent>(event) },  barrier)
+	{}
 	virtual ~vk_cmd_wait_events() noexcept {}
 
 private:

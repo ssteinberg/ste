@@ -6,6 +6,7 @@
 #include <stable_vector.hpp>
 #include <device_image.hpp>
 #include <device_image_queue_transfer.hpp>
+#include <device_image_layout_transform.hpp>
 #include <device_pipeline_shader_stage.hpp>
 
 #include <vertex_attributes_from_tuple.hpp>
@@ -110,14 +111,6 @@ int main()
 	StE::ste_engine engine;
 	StE::ste_context ctx(engine, gl_ctx, device);
 
-	{
-		auto queue_selector = GL::ste_queue_selector<GL::ste_queue_selector_policy_flexible>(GL::ste_queue_type::data_transfer_sparse_queue);
-		auto batch = ctx.device().select_queue(queue_selector)->allocate_batch();
-		batch = ctx.device().select_queue(queue_selector)->allocate_batch();
-		batch = ctx.device().select_queue(queue_selector)->allocate_batch();
-		batch = ctx.device().select_queue(queue_selector)->allocate_batch();
-	}
-
 
 	auto swapchain_images_count = device.get_surface().get_swap_chain_images().size();
 
@@ -148,6 +141,7 @@ int main()
 
 	ste_resource<GL::array<std::uint32_t>> index_buffer(ctx, indices, VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
 	ste_resource<GL::stable_vector<vertex>> vertex_buffer(ctx, vertices, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
+	vertex_buffer->push_back_cmd(vertex{});
 
 	// UBO
 	struct uniform_buffer_object {
@@ -214,14 +208,14 @@ int main()
 	GL::vk_descriptor_set_layout descriptor_set_layout(device.logical_device(), { descriptor_set_ubo_layout_binding, descriptor_set_sampler_layout_binding });
 
 	GL::vk_descriptor_pool descriptor_pool(device.logical_device(), 10, { descriptor_set_ubo_layout_binding, descriptor_set_sampler_layout_binding });
-	auto descriptor_set = descriptor_pool.allocate_descriptor_set({ &descriptor_set_layout });
+	auto descriptor_set = descriptor_pool.allocate_descriptor_set({ descriptor_set_layout });
 
-	descriptor_set.write({ GL::vk_descriptor_set_write_resource(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, 0, 1, *ubo->get_buffer(), 1, 0),
+	descriptor_set.write({ GL::vk_descriptor_set_write_resource(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, 0, 1, ubo, 1, 0),
 						 GL::vk_descriptor_set_write_resource(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, 0, 1, 
-															  &texture, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, &sampler) });
+															  texture, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, &sampler) });
 
 	// Pipeline layout
-	GL::vk_pipeline_layout pipeline_layout(device.logical_device(), { &descriptor_set_layout }, {});
+	GL::vk_pipeline_layout pipeline_layout(device.logical_device(), { descriptor_set_layout }, {});
 
 	// Graphics pipeline
 	vertex_buffer.get();
@@ -246,7 +240,8 @@ int main()
 
 	// Transfer image queue ownership
 	GL::queue_transfer(image.get(), selector,
-					   VK_ACCESS_TRANSFER_WRITE_BIT, VK_ACCESS_SHADER_READ_BIT, 
+					   VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_WRITE_BIT, 
+					   VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, VK_ACCESS_SHADER_READ_BIT, 
 					   VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
 //	ste_resource<StE::GL::device_pipeline_shader_stage> stage(ste_resource_dont_defer(), ctx, std::string("fxaa.frag"));
@@ -256,6 +251,9 @@ int main()
 //	StE::GL::device_pipeline_shader_stage(ctx, std::string("shadow_directional.geom"));
 //	StE::GL::device_pipeline_shader_stage(ctx, std::string("volumetric_scattering_scatter.comp"));
 //	stage.get();
+
+	auto auditor = device.select_queue(selector)->allocate_batch_multishot<>();
+
 
 	/*
 	 *	Main loop
@@ -280,7 +278,6 @@ int main()
 
 		// Record and submit a batch
 		device.enqueue(selector, [&, data, vertices, batch = std::move(batch)]() mutable {
-
 			auto& command_buffer = batch->acquire_command_buffer();
 			{
 				auto recorder = command_buffer.record();
@@ -288,20 +285,20 @@ int main()
 				recorder
 					<< GL::vk_cmd_pipeline_barrier(GL::vk_pipeline_barrier(VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
 																		   VK_PIPELINE_STAGE_TRANSFER_BIT,
-																		   { GL::vk_buffer_memory_barrier(*ubo->get_buffer(),
+																		   { GL::vk_buffer_memory_barrier(ubo,
 																										VK_ACCESS_UNIFORM_READ_BIT,
 																										VK_ACCESS_TRANSFER_WRITE_BIT),
-																			GL::vk_buffer_memory_barrier(*vertex_buffer->get_buffer(),
+																			GL::vk_buffer_memory_barrier(vertex_buffer,
 																										VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT,
 																										VK_ACCESS_TRANSFER_WRITE_BIT) }))
 					<< vertex_buffer->update_cmd(vertices, 0)
 					<< ubo->update_cmd({ data })
 					<< GL::vk_cmd_pipeline_barrier(GL::vk_pipeline_barrier(VK_PIPELINE_STAGE_TRANSFER_BIT,
 																		   VK_PIPELINE_STAGE_VERTEX_SHADER_BIT,
-																		   { GL::vk_buffer_memory_barrier(*ubo->get_buffer(),
+																		   { GL::vk_buffer_memory_barrier(ubo,
 																										VK_ACCESS_TRANSFER_WRITE_BIT,
 																										VK_ACCESS_UNIFORM_READ_BIT),
-																			GL::vk_buffer_memory_barrier(*vertex_buffer->get_buffer(),
+																			GL::vk_buffer_memory_barrier(vertex_buffer,
 																										VK_ACCESS_TRANSFER_WRITE_BIT,
 																										VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT) }))
 					<< GL::vk_cmd_bind_descriptor_sets_graphics(pipeline_layout, 0, { descriptor_set })
@@ -311,14 +308,14 @@ int main()
 													swapchain_size,
 													{ swapchain_attachment_clear_value })
 					<< GL::vk_cmd_bind_pipeline(pipeline)
-					<< GL::vk_cmd_bind_vertex_buffers(0, *vertex_buffer->get_buffer())
-					<< GL::vk_cmd_bind_index_buffer(*index_buffer->get_buffer())
+					<< GL::vk_cmd_bind_vertex_buffers(0, vertex_buffer)
+					<< GL::vk_cmd_bind_index_buffer(index_buffer)
 					<< GL::vk_cmd_draw_indexed(indices.size(), 1)
 					<< GL::vk_cmd_end_render_pass();
 			}
 
 			// Submit command buffer and present
-			device.submit_and_present(std::move(batch), {}, {});
+			device.submit_and_present(std::move(batch));
 		});
 	}
 

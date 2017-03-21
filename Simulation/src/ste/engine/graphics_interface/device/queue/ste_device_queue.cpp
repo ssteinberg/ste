@@ -44,11 +44,11 @@ void ste_device_queue::create_worker() {
 
 void ste_device_queue::prune_submitted_batches() {
 	// Remove submitted batches from front of the list if they are finished
-	decltype(submitted_batches)::iterator it;
-	while ((it = submitted_batches.begin()) != submitted_batches.end()) {
+	decltype(submitted_oneshot_batches)::iterator it;
+	while ((it = submitted_oneshot_batches.begin()) != submitted_oneshot_batches.end()) {
 		if (!(*it)->is_batch_complete())
 			break;
 
-		submitted_batches.pop_front();
+		submitted_oneshot_batches.pop_front();
 	}
 }

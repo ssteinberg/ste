@@ -10,11 +10,12 @@
 #include <vulkan/vulkan.h>
 
 #include <vector>
+#include <allow_class_decay.hpp>
 
 namespace StE {
 namespace GL {
 
-class vk_logical_device {
+class vk_logical_device : public allow_class_decay<vk_logical_device, VkDevice> {
 private:
 	vk_physical_device_descriptor physical_device;
 
@@ -86,10 +87,8 @@ public:
 	}
 
 	auto &get_physical_device_descriptor() const { return physical_device; }
-	auto &get_device() const { return logical_device; }
+	auto &get() const { return logical_device; }
 	auto &get_requested_features() const { return requested_features; }
-
-	operator VkDevice() const { return get_device(); }
 };
 
 }

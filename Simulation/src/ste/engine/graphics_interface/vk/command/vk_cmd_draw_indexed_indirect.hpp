@@ -5,7 +5,7 @@
 
 #include <vulkan/vulkan.h>
 #include <vk_command.hpp>
-#include <vk_buffer.hpp>
+#include <vk_buffer_base.hpp>
 
 namespace StE {
 namespace GL {
@@ -18,15 +18,14 @@ private:
 	std::uint32_t stride;
 
 public:
-	template <typename T, bool sparse>
-	vk_cmd_draw_indexed_indirect(const vk_buffer<T, sparse> &buffer,
+	vk_cmd_draw_indexed_indirect(const vk_buffer_base &buffer,
 								 std::uint32_t offset,
 								 std::uint32_t draw_count,
 								 std::uint32_t stride)
 		: buffer(buffer),
-		offset(offset * sizeof(T)),
+		offset(offset * buffer.get_element_size_bytes()),
 		draw_count(draw_count),
-		stride(stride * sizeof(T))
+		stride(stride * buffer.get_element_size_bytes())
 	{}
 	virtual ~vk_cmd_draw_indexed_indirect() noexcept {}
 

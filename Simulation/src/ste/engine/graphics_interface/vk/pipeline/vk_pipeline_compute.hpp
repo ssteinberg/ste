@@ -12,11 +12,12 @@
 #include <vk_pipeline_cache.hpp>
 
 #include <optional.hpp>
+#include <allow_class_decay.hpp>
 
 namespace StE {
 namespace GL {
 
-class vk_pipeline_compute {
+class vk_pipeline_compute : public allow_class_decay<vk_pipeline_compute, VkPipeline> {
 private:
 	optional<VkPipeline> pipeline;
 	const vk_logical_device &device;
@@ -39,7 +40,7 @@ public:
 
 		VkPipeline pipeline;
 		vk_result res = vkCreateComputePipelines(device, 
-												 cache!=nullptr ? cache->get_pipeline_cache() : VK_NULL_HANDLE, 
+												 cache!=nullptr ? *cache : VK_NULL_HANDLE, 
 												 1, 
 												 &create_info, 
 												 nullptr, 
@@ -66,9 +67,7 @@ public:
 		}
 	}
 
-	auto& get_pipeline() const { return pipeline.get(); }
-
-	operator VkPipeline() const { return get_pipeline(); }
+	auto& get() const { return pipeline.get(); }
 };
 
 }

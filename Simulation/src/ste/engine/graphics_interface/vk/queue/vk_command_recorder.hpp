@@ -22,8 +22,7 @@ public:
 		buffer.begin(flags);
 	}
 	~vk_command_recorder() noexcept {
-		if (buffer)
-			buffer->end();
+		end();
 	}
 
 	vk_command_recorder(vk_command_recorder &&o) noexcept : buffer(o.buffer) { o.buffer = nullptr; }
@@ -34,6 +33,13 @@ public:
 	}
 	vk_command_recorder(const vk_command_recorder &) = delete;
 	vk_command_recorder &operator=(const vk_command_recorder &) = delete;
+
+	void end() {
+		if (buffer) {
+			buffer->end();
+			buffer = nullptr;
+		}
+	}
 
 	auto& operator<<(const vk_command &cmd) {
 		cmd(*buffer);

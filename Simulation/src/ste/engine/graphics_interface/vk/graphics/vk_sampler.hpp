@@ -13,11 +13,12 @@
 #include <optional.hpp>
 
 #include <functional>
+#include <allow_class_decay.hpp>
 
 namespace StE {
 namespace GL {
 
-class vk_sampler {
+class vk_sampler : public allow_class_decay<vk_sampler, VkSampler> {
 private:
 	optional<VkSampler> sampler;
 	const vk_logical_device &device;
@@ -117,9 +118,7 @@ public:
 		}
 	}
 
-	auto& get_sampler() const { return sampler.get(); }
-
-	operator VkSampler() const { return get_sampler(); }
+	auto& get() const { return sampler.get(); }
 };
 
 }

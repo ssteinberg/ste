@@ -16,7 +16,7 @@ ste_presentation_surface::acquire_next_image_return_t  ste_presentation_surface:
 	vk_result res;
 	{
 		std::unique_lock<std::mutex> l(shared_data->swap_chain_guard);
-		res = vkAcquireNextImageKHR(presentation_device->get_device(),
+		res = vkAcquireNextImageKHR(*presentation_device,
 									*swap_chain,
 									timeout_ns,
 									presentation_image_ready_semaphore ? *presentation_image_ready_semaphore : VK_NULL_HANDLE,

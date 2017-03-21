@@ -4,6 +4,7 @@
 #pragma once
 
 #include <stdafx.hpp>
+#include <device_resource_queue_transferable.hpp>
 
 #include <ste_context.hpp>
 #include <vk_buffer.hpp>
@@ -13,6 +14,7 @@
 
 #include <range.hpp>
 #include <vector>
+#include <allow_class_decay.hpp>
 
 namespace StE {
 namespace GL {
@@ -22,7 +24,10 @@ template <
 	std::uint64_t minimal_atom_size = 65536,
 	class allocation_policy = device_resource_allocation_policy_device
 >
-class device_buffer_sparse {
+class device_buffer_sparse : 
+	public device_resource_queue_transferable,
+	public allow_class_decay<device_buffer_sparse<T, minimal_atom_size, allocation_policy>, vk_buffer<T, true>, false>
+{
 private:
 	struct ctor {};
 
@@ -55,18 +60,13 @@ public:
 		return ret;
 	}
 
-public:
-	const ste_context &ctx;
-	device_resource_queue_ownership queue_ownership;
-
 private:
 	device_buffer_sparse(ctor,
 						 const ste_context &ctx,
 						 const device_resource_queue_ownership::resource_queue_selector_t &selector,
 						 resource_t &&resource)
-		: resource(std::move(resource)),
-		ctx(ctx),
-		queue_ownership(ctx, selector)
+		: device_resource_queue_transferable(ctx, selector),
+		resource(std::move(resource))
 	{
 		memory_requirements = this->resource.get_memory_requirements();
 	}
@@ -74,9 +74,8 @@ private:
 						 const ste_context &ctx,
 						 const device_resource_queue_ownership::queue_index_t &queue_index,
 						 resource_t &&resource)
-		: resource(std::move(resource)),
-		ctx(ctx),
-		queue_ownership(queue_index)
+		: device_resource_queue_transferable(ctx, queue_index),
+		resource(std::move(resource))
 	{
 		memory_requirements = this->resource.get_memory_requirements();
 	}
@@ -116,8 +115,8 @@ public:
 	bool cmd_bind_sparse_memory(const vk_queue &queue,
 								const std::vector<bind_range_t> &unbind_regions,
 								const std::vector<bind_range_t> &bind_regions,
-								const std::vector<const vk_semaphore*> &wait_semaphores,
-								const std::vector<const vk_semaphore*> &signal_semaphores,
+								const std::vector<VkSemaphore> &wait_semaphores,
+								const std::vector<VkSemaphore> &signal_semaphores,
 								const vk_fence *fence = nullptr) {
 		std::vector<vk_sparse_memory_bind> memory_binds;
 		auto size = atom_size();
@@ -177,16 +176,8 @@ public:
 		return true;
 	}
 
-	operator resource_t&() { return get(); }
-	operator const resource_t&() const { return get(); }
-
 	resource_t& get() { return resource; }
 	const resource_t& get() const { return resource; }
-
-	resource_t* operator->() { return &get(); }
-	const resource_t* operator->() const { return &get(); }
-	resource_t& operator*() { return get(); }
-	const resource_t& operator*() const { return get(); }
 };
 
 }

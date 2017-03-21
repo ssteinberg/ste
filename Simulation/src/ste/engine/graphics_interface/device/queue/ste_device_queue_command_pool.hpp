@@ -6,11 +6,15 @@
 #include <stdafx.hpp>
 #include <ste_resource_pool.hpp>
 #include <vk_command_pool.hpp>
+#include <allow_class_decay.hpp>
 
 namespace StE {
 namespace GL {
 
-class ste_device_queue_command_pool : public ste_resource_pool_resetable_trait<const vk_logical_device &, std::uint32_t, VkCommandPoolCreateFlags>{
+class ste_device_queue_command_pool : 
+	public ste_resource_pool_resetable_trait<const vk_logical_device &, std::uint32_t, VkCommandPoolCreateFlags>,
+	public allow_class_decay<ste_device_queue_command_pool, vk_command_pool>
+{
 private:
 	static constexpr int releases_resource_every = 100;
 
@@ -23,8 +27,8 @@ public:
 	ste_device_queue_command_pool(ste_device_queue_command_pool&&) = default;
 	ste_device_queue_command_pool &operator=(ste_device_queue_command_pool&&) = default;
 
-	auto& get_pool() { return pool; }
-	auto& get_pool() const { return pool; }
+	auto& get() { return pool; }
+	auto& get() const { return pool; }
 
 	void reset() override {
 		(++counter % releases_resource_every == 0) ?

@@ -15,12 +15,13 @@
 
 #include <memory>
 #include <vector>
+#include <allow_class_decay.hpp>
 
 namespace StE {
 namespace GL {
 
 template <typename Segment>
-class ring_buffer : ste_resource_deferred_create_trait {
+class ring_buffer : ste_resource_deferred_create_trait, public allow_class_decay<ring_buffer<Segment>, device_buffer<Segment, device_resource_allocation_policy_device>> {
 private:
 	using buffer_t = device_buffer<Segment, device_resource_allocation_policy_device>;
 	using mmap_ptr_t = std::unique_ptr<vk_mmap<Segment>>;
@@ -74,9 +75,8 @@ public:
 
 	auto get_segment_count() const { return segments; }
 
-	auto& get_buffer() { return buffer; }
-	auto& get_buffer() const { return buffer; }
-	operator VkBuffer() const { return *get_buffer(); }
+	auto& get() { return buffer; }
+	auto& get() const { return buffer; }
 };
 
 }

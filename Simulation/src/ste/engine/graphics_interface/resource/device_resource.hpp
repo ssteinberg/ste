@@ -5,19 +5,22 @@
 
 #include <stdafx.hpp>
 #include <ste_context.hpp>
-#include <device_resource_queue_ownership.hpp>
+#include <device_resource_queue_transferable.hpp>
 #include <ste_resource_traits.hpp>
 
 #include <vk_resource.hpp>
 #include <device_resource_memory_allocator.hpp>
 
-#include <functional>
+#include <allow_class_decay.hpp>
 
 namespace StE {
 namespace GL {
 
 template <typename T, class allocation_policy>
-class device_resource : ste_resource_deferred_create_trait {
+class device_resource : public device_resource_queue_transferable,
+	ste_resource_deferred_create_trait,
+	public allow_class_decay<device_resource<T, allocation_policy>, T, false>
+{
 	static_assert(std::is_base_of<vk_resource, T>::value,
 				  "T must be a vk_resource derived type");
 
@@ -38,18 +41,13 @@ private:
 																		   resource);
 	}
 
-public:
-	const ste_context &ctx;
-	device_resource_queue_ownership queue_ownership;
-
 protected:
 	device_resource(ctor,
 					const ste_context &ctx,
 					const device_resource_queue_ownership::resource_queue_selector_t &selector,
 					T &&resource)
-		: resource(std::move(resource)),
-		ctx(ctx),
-		queue_ownership(ctx, selector)
+		: device_resource_queue_transferable(ctx, selector),
+		resource(std::move(resource))
 	{
 		allocate_memory();
 	}
@@ -57,9 +55,8 @@ protected:
 					const ste_context &ctx,
 					const device_resource_queue_ownership::queue_index_t &queue_index,
 					T &&resource)
-		: resource(std::move(resource)),
-		ctx(ctx),
-		queue_ownership(queue_index)
+		: device_resource_queue_transferable(ctx, queue_index),
+		resource(std::move(resource))
 	{
 		allocate_memory();
 	}
@@ -92,16 +89,8 @@ public:
 	auto& get_underlying_memory() const { return *this->allocation.get_memory(); }
 	bool has_private_underlying_memory() const { return allocation.is_private_allocation(); }
 
-	operator T&() { return get(); }
-	operator const T&() const { return get(); }
-
 	T& get() { return resource; }
 	const T& get() const { return resource; }
-
-	T* operator->() { return &get(); }
-	const T* operator->() const { return &get(); }
-	T& operator*() { return get(); }
-	const T& operator*() const { return get(); }
 };
 
 }

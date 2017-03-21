@@ -11,6 +11,7 @@
 #include <vk_memory_exception.hpp>
 
 #include <optional.hpp>
+#include <allow_class_decay.hpp>
 
 #include <memory>
 
@@ -37,7 +38,7 @@ public:
 	vk_mmap_type_eraser&operator=(const vk_mmap_type_eraser &) = delete;
 };
 
-class vk_device_memory {
+class vk_device_memory : public allow_class_decay<vk_device_memory, VkDeviceMemory> {
 private:
 	optional<VkDeviceMemory> memory;
 	const vk_logical_device &device;
@@ -144,7 +145,7 @@ public:
 	auto& get_device_memory() const { return memory.get(); }
 	auto get_size() const { return size; }
 
-	operator VkDeviceMemory() const { return get_device_memory(); }
+	auto& get() const { return get_device_memory(); }
 };
 
 }

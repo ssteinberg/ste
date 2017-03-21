@@ -5,7 +5,7 @@
 
 #include <vulkan/vulkan.h>
 #include <vk_command.hpp>
-#include <vk_buffer.hpp>
+#include <vk_buffer_base.hpp>
 #include <cassert>
 
 #include <vector>
@@ -20,18 +20,24 @@ private:
 	std::vector<std::uint64_t> offsets;
 
 public:
-	template <typename T, bool sparse>
 	vk_cmd_bind_vertex_buffers(std::uint32_t first_binding_index,
-							   const vk_buffer<T, sparse> &buffer,
+							   const vk_buffer_base &buffer,
 							   std::uint64_t offset = 0)
-		: first(first_binding_index), buffers({ buffer }), offsets({ offset })
+		: first(first_binding_index), buffers({ buffer }), offsets({ offset * buffer.get_element_size_bytes() })
 	{}
 	vk_cmd_bind_vertex_buffers(std::uint32_t first_binding_index,
-							   const std::vector<VkBuffer> &buffers,
+							   const std::vector<std::reference_wrapper<const vk_buffer_base>> &buffers,
 							   const std::vector<std::uint64_t> &offsets) 
-		: first(first_binding_index), buffers(buffers), offsets(offsets)
+		: first(first_binding_index)
 	{
 		assert(buffers.size() == offsets.size());
+
+		this->buffers.reserve(buffers.size());
+		this->offsets.reserve(offsets.size());
+		for (std::size_t i = 0; i < buffers.size(); ++i) {
+			this->buffers.push_back(buffers[i].get());
+			this->offsets.push_back(offsets[i] * buffers[i].get().get_element_size_bytes());
+		}
 	}
 	virtual ~vk_cmd_bind_vertex_buffers() noexcept {}
 

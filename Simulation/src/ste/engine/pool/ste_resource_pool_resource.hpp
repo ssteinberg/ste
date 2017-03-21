@@ -5,13 +5,20 @@
 
 #include <stdafx.hpp>
 #include <memory>
-#include <functional>
+
+#include <allow_class_decay.hpp>
 
 namespace StE {
 namespace GL {
 
 template <class Pool, template<class> class resource_reclamation_policy>
-class ste_resource_pool_resource {
+class ste_resource_pool_resource :
+	public allow_class_decay<
+		ste_resource_pool_resource<Pool, resource_reclamation_policy>,
+		typename Pool::value_type,
+		!resource_reclamation_policy<typename Pool::value_type>::allow_non_const_resource
+	>
+{
 	friend Pool;
 
 private:
@@ -49,18 +56,6 @@ public:
 		return *resource;
 	}
 	const reference get() const { return *resource; }
-
-	template <typename S = resource_t>
-	typename std::enable_if<resource_reclamation_policy<S>::allow_non_const_resource, pointer>::type operator->() {
-		return &get(); 
-	}
-	const_pointer operator->() const { return &get(); }
-
-	template <typename S = resource_t>
-	typename std::enable_if<resource_reclamation_policy<S>::allow_non_const_resource, reference>::type operator*() {
-		return get(); 
-	}
-	const reference operator*() const { return get(); }
 };
 
 }

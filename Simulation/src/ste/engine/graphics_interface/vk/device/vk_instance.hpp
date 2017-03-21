@@ -4,23 +4,21 @@
 #pragma once
 
 #include <stdafx.hpp>
+#include <vulkan/vulkan.h>
 #include <ste_version.hpp>
 
 #include <vk_physical_device_descriptor.hpp>
 #include <vk_result.hpp>
 #include <vk_exception.hpp>
 
-#include <vulkan/vulkan.h>
-
 #include <vector>
 #include <memory>
+#include <allow_class_decay.hpp>
 
 namespace StE {
 namespace GL {
 
-class vk_instance {
-	static constexpr auto vk_api_version = VK_MAKE_VERSION(1, 0, 39);
-
+class vk_instance : public allow_class_decay<vk_instance, VkInstance> {
 private:
 	VkInstance instance{ nullptr };
 	const std::vector<const char*> instance_extensions;
@@ -73,8 +71,7 @@ public:
 		m.instance = nullptr;
 	}
 
-	auto &get_instance() const { return instance; }
-	operator VkInstance() const { return get_instance(); }
+	auto &get() const { return instance; }
 
 	auto &enabled_layers() const { return instance_layers; }
 	auto &enabled_extensions() const { return instance_extensions; }
