@@ -1,90 +1,72 @@
 // StE
-// © Shlomi Steinberg, 2015-2016
+// © Shlomi Steinberg, 2015-2017
 
 #pragma once
 
 #include <stdafx.hpp>
-#include <ste_engine_control.hpp>
+#include <ste_context.hpp>
+#include <device_pipeline_shader_stage.hpp>
+
+#include <vk_pipeline_graphics.hpp>
+#include <vk_unique_descriptor_set.hpp>
+#include <vk_descriptor_set_layout_binding.hpp>
 
 #include <font.hpp>
-#include <glyph_point.hpp>
 #include <glyph_manager.hpp>
-
-#include <resource_instance.hpp>
-#include <resource_loading_task.hpp>
+#include <glyph_point.hpp>
 
 #include <attributed_string.hpp>
-
-#include <vertex_array_object.hpp>
-#include <vertex_buffer_object.hpp>
-#include <glsl_program.hpp>
-
-#include <text_renderable.hpp>
 
 #include <memory>
 #include <string>
 #include <vector>
+#include <vk_framebuffer.hpp>
 
 namespace StE {
 namespace Text {
 
 class text_manager {
-	friend class Resource::resource_loading_task<text_manager>;
-	friend class Resource::resource_instance<text_manager>;
+private:
+	friend class text_renderer;
+
+	struct pipeline_t {
+		GL::vk_unique_descriptor_set descriptor_set;
+		GL::vk_pipeline_layout pipeline_layout;
+		GL::vk_pipeline_graphics pipeline;
+
+		pipeline_t() = delete;
+		pipeline_t(pipeline_t&&) = default;
+	};
 
 private:
-	using ResizeSignalConnectionType = ste_engine_control::framebuffer_resize_signal_type::connection_type;
+	const ste_context &context;
 
-private:
-	friend class text_renderable;
-
-private:
-	const ste_engine_control &context;
+	std::unique_ptr<pipeline_t> pipeline;
+	std::unique_ptr<GL::vk_render_pass> renderpass;
+	std::vector<GL::vk_framebuffer> presentation_framebuffers;
 
 	glyph_manager gm;
 	font default_font;
 	int default_size;
 
-	Resource::resource_instance<Resource::glsl_program> text_distance_mapping;
-
-	std::shared_ptr<ResizeSignalConnectionType> resize_connection;
+	ste_resource<GL::device_pipeline_shader_stage> vert;
+	ste_resource<GL::device_pipeline_shader_stage> geom;
+	ste_resource<GL::device_pipeline_shader_stage> frag;
 
 private:
-	static void adjust_line(std::vector<glyph_point> &, const attributed_wstring &, unsigned, float , float , const glm::vec2 &);
+	static void adjust_line(std::vector<glyph_point> &, const attributed_wstring &, unsigned, float, float, const glm::vec2 &);
 	std::vector<glyph_point> create_points(glm::vec2, const attributed_wstring &);
 
-private:
-	text_manager(const ste_engine_control &context,
-				const font &default_font,
-				int default_size = 28);
+	void create_rendering_pipeline();
+	void update_glyphs(GL::vk_command_recorder &recorder);
 
 public:
+	text_manager(const ste_context &context,
+				 const font &default_font,
+				 int default_size = 28);
 	~text_manager() noexcept {}
 
-	std::unique_ptr<text_renderable> create_renderer() {
-		return std::make_unique<text_renderable>(this);
-	}
-};
-
-}
-
-namespace Resource {
-
-template <>
-class resource_loading_task<Text::text_manager> {
-	using R = Text::text_manager;
-
-public:
-	auto loader(const ste_engine_control &ctx, R* object) {
-		return ctx.scheduler().schedule_now([object, &ctx]() {
-			object->text_distance_mapping.wait();
-			// TODO: Fix
-		}).then/*_on_main_thread*/([object, &ctx]() {
-			auto size = ctx.get_backbuffer_size();
-			object->text_distance_mapping.get().set_uniform("proj", glm::ortho<float>(0, size.x, 0, size.y, -1, 1));
-			object->text_distance_mapping.get().set_uniform("fb_size", glm::vec2(size));
-		});
-	}
+	std::unique_ptr<text_renderer> create_renderer();
 };
 
 }

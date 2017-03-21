@@ -9,6 +9,7 @@
 
 #include <vulkan/vulkan.h>
 #include <vk_shader.hpp>
+#include <vk_pipeline_graphics.hpp>
 
 #include <ste_shader_stage.hpp>
 #include <ste_shader_blob_header.hpp>
@@ -16,12 +17,12 @@
 
 #include <string>
 #include <istream>
-#include "vk_pipeline_graphics.hpp"
+#include <allow_class_decay.hpp>
 
 namespace StE {
 namespace GL {
 
-class device_pipeline_shader_stage : ste_resource_deferred_create_trait {
+class device_pipeline_shader_stage : ste_resource_deferred_create_trait, public allow_class_decay<device_pipeline_shader_stage, vk_shader> {
 private:
 	ste_shader_stage stage{ ste_shader_stage::none };
 	vk_shader shader;
@@ -127,21 +128,12 @@ public:
 	/**
 	*	@brief	Retrieve the Vulkan pipeline stage create info for the shader module
 	*/
-	auto vk_shader_stage_create_info() const {
-		return shader.shader_stage_create_info(vk_shader_stage_flag());
-	}
-	/**
-	*	@brief	Retrieve the Vulkan pipeline stage create info for the shader module
-	*/
 	auto graphics_pipeline_stage_descriptor() const {
 		vk_graphics_shader_descriptor desc;
 		desc.stage = vk_shader_stage_flag();
 		desc.shader = &shader;
 		return desc;
 	}
-
-	operator vk_shader&() { return get(); }
-	operator const vk_shader&() const { return get(); }
 };
 
 }

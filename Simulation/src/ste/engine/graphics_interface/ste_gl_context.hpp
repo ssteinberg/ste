@@ -5,11 +5,13 @@
 
 #include <stdafx.hpp>
 
+#include <ste_glfw_handle.hpp>
 #include <vk_instance.hpp>
 #include <vk_result.hpp>
 #include <vk_exception.hpp>
 #include <vk_debug_report_callback.hpp>
 
+#include <ste_gl_context_creation_parameters.hpp>
 #include <ste_gl_debug_callback.hpp>
 
 #include <memory>

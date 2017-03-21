@@ -5,7 +5,7 @@
 
 #include <stdafx.hpp>
 
-#include <vertex_buffer_object.hpp>
+#include <vertex_attributes_from_tuple.hpp>
 
 namespace StE {
 namespace Text {
@@ -17,9 +17,9 @@ struct glyph_point {
 	float stroke_width;
 	float weight;
 
-	using descriptor = Core::vbo_descriptor_with_types<glm::vec4, glm::vec4, glm::vec4, float, float>::descriptor;
+	using descriptor = GL::vertex_attributes_from_tuple<glm::vec4, glm::vec4, glm::vec4, float, float>::descriptor;
 
-	glyph_point() {}
+	glyph_point() = default;
 };
 
 }

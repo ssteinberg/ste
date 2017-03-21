@@ -103,7 +103,6 @@ public:
 			if (!last) {
 				end = it->get_offset();
 				len = it->get_bytes();
-				++it;
 			}
 
 			start = align(start, alignment);
@@ -123,6 +122,8 @@ public:
 
 			if (last)
 				break;
+
+			++it;
 			start = end + len;
 		}
 

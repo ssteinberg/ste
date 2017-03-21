@@ -15,11 +15,11 @@ struct vk_blend_op_descriptor {
 		VK_COLOR_COMPONENT_A_BIT };
 
 	bool blend_enable{ false };
-	VkBlendFactor src_color{ VK_BLEND_FACTOR_ZERO };
-	VkBlendFactor dst_color{ VK_BLEND_FACTOR_ZERO };
+	VkBlendFactor src_color{ VK_BLEND_FACTOR_SRC_COLOR };
+	VkBlendFactor dst_color{ VK_BLEND_FACTOR_DST_COLOR };
 	VkBlendOp color_op{ VK_BLEND_OP_ADD };
-	VkBlendFactor src_alpha{ VK_BLEND_FACTOR_ZERO };
-	VkBlendFactor dst_alpha{ VK_BLEND_FACTOR_ZERO };
+	VkBlendFactor src_alpha{ VK_BLEND_FACTOR_SRC_ALPHA };
+	VkBlendFactor dst_alpha{ VK_BLEND_FACTOR_DST_ALPHA };
 	VkBlendOp alpha_op{ VK_BLEND_OP_ADD };
 
 	vk_blend_op_descriptor() = default;
@@ -35,6 +35,14 @@ struct vk_blend_op_descriptor {
 		src_color(src_color),
 		dst_color(dst_color),
 		color_op(color_op),
+		src_alpha(src_alpha),
+		dst_alpha(dst_alpha),
+		alpha_op(alpha_op)
+	{}
+	vk_blend_op_descriptor(const VkBlendFactor &src_alpha,
+						   const VkBlendFactor &dst_alpha,
+						   const VkBlendOp &alpha_op)
+		: blend_enable(true),
 		src_alpha(src_alpha),
 		dst_alpha(dst_alpha),
 		alpha_op(alpha_op)

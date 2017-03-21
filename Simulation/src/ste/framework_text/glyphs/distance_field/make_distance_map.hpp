@@ -77,7 +77,7 @@ void inline make_distance_map(unsigned char *img, unsigned int width, unsigned i
 			inside[i] = 0.0;
 
 	for (i = 0; i < width*height; i++)
-		out[i] = outside[i] - inside[i];
+		out[i] = static_cast<float>(outside[i] - inside[i]);
 
 	free(xdist);
 	free(ydist);

@@ -102,9 +102,6 @@
     <ClCompile Include="Simulation\src\ste\framework_text\glyphs\glyph_factory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_text\rendering\text_renderable.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Simulation\src\ste\math_additions\graphs\graph.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -190,6 +187,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\device\presentation_surface\ste_presentation_surface.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Simulation\src\ste\framework_text\rendering\text_renderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -435,9 +435,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_text\glyphs\glyph_point.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_text\rendering\text_renderable.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\math_additions\algorithms\sequential_ordering_problem\graph\sop_edge.hpp">
@@ -1278,6 +1275,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device\queue\ste_device_queue_command_buffer_multishot.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_text\rendering\text_renderer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

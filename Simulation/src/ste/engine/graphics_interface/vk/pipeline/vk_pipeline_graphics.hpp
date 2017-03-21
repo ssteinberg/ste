@@ -60,10 +60,12 @@ public:
 						 const glm::vec4 blend_constants,
 						 const vk_pipeline_cache *cache = nullptr) : device(device) {
 		// Shader modules stages
+		std::vector<vk_shader::shader_stage_info_t> stages_info(shader_modules.size());
 		std::vector<VkPipelineShaderStageCreateInfo> stages(shader_modules.size());
 		for (std::size_t i = 0; i < shader_modules.size(); ++i) {
 			auto &sd = shader_modules[i];
-			stages[i] = sd.shader->shader_stage_create_info(sd.stage);
+			sd.shader->shader_stage_create_info(sd.stage, stages_info[i]);
+			stages[i] = stages_info[i].stage_info;
 		}
 
 		// Vertex input

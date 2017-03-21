@@ -4,24 +4,25 @@
 #pragma once
 
 #include <glyph.hpp>
+#include <ste_context.hpp>
 #include <glyph_factory.hpp>
 #include <font.hpp>
 
-#include <ste_engine_control.hpp>
-#include <task_scheduler.hpp>
-#include <optional.hpp>
-
-#include <shader_storage_buffer.hpp>
-#include <gstack.hpp>
-
-#include <texture_2d.hpp>
+#include <device_buffer.hpp>
+#include <device_image.hpp>
+#include <vk_sampler.hpp>
+#include <stable_vector.hpp>
 
 #include <exception>
 
+#include <optional.hpp>
 #include <memory>
 #include <string>
 #include <vector>
+#include <queue>
 #include <unordered_map>
+
+#include <vk_command_recorder.hpp>
 
 namespace StE {
 namespace Text {
@@ -30,15 +31,23 @@ class glyph_manager {
 private:
 	struct buffer_glyph_descriptor {
 		glyph::glyph_metrics metrics;
-		Core::texture_handle handle;
+		std::uint32_t glyph_index;
 	};
 
 public:
 	struct glyph_descriptor {
-		std::unique_ptr<Core::texture_2d> texture;
 		glyph::glyph_metrics metrics;
 		int advance_x;
 		int buffer_index;
+	};
+
+	struct glyph_texture {
+		GL::device_image<2> texture;
+		GL::vk_image_view<GL::vk_image_type::image_2d> view;
+
+		glyph_texture() = delete;
+		glyph_texture(glyph_texture&&) = default;
+		glyph_texture &operator=(glyph_texture&&) = default;
 	};
 
 	struct font_storage {
@@ -46,77 +55,78 @@ public:
 	};
 
 private:
-	const ste_engine_control &context;
+	const ste_context &context;
 	glyph_factory factory;
 
 	std::unordered_map<font, font_storage> fonts;
-	Core::gstack<buffer_glyph_descriptor> buffer;
 
-	Core::sampler text_glyph_sampler;
+	std::queue<buffer_glyph_descriptor> pending_glyphs;
+
+	GL::stable_vector<buffer_glyph_descriptor> buffer;
+	std::vector<glyph_texture> glyph_textures;
+	GL::vk_sampler text_glyph_sampler;
 
 private:
-	task_future<const glyph_descriptor*> glyph_loader_async(task_scheduler *sched, const font &font, wchar_t codepoint) {
-		return sched->schedule_now([=]() -> glyph {
-			std::string cache_key = std::string("ttfdf") + font.get_path().string() + std::to_string(static_cast<std::uint32_t>(codepoint));
+	const glyph_descriptor* glyph_loader(const font &font, wchar_t codepoint) {
+		std::string cache_key = std::string("ttfdf") + font.get_path().string() + std::to_string(static_cast<std::uint32_t>(codepoint));
 
-			optional<glyph> og = none;
-			try {
-				og = context.cache().get<glyph>(cache_key)();
-			}
-			catch (const std::exception &ex) {
-				og = none;
-			}
-			if (og)
-				return std::move(og.get());
-
-			glyph g = factory.create_glyph_async(sched, font, codepoint).get();
-			if (g.empty())
-				return g;
-
-			glyph retg = g;
-			context.cache().insert<glyph>(cache_key, std::move(g));
-
-			return std::move(retg);
-			// TODO: Fix
-		}).then/*_on_main_thread*/([=](glyph &&g) -> const glyph_descriptor* {
+		optional<glyph> og;
+		try {
+			og = context.engine().cache().get<glyph>(cache_key)();
+		}
+		catch (const std::exception &) {
+			glyph g = factory.create_glyph(font, codepoint);
 			if (g.empty())
 				return nullptr;
 
-			glyph_descriptor gd;
-			gd.texture = std::make_unique<Core::texture_2d>(*g.glyph_distance_field);
-			gd.metrics = g.metrics;
-			gd.buffer_index = buffer.size();
+			glyph copy_g = g;
+			context.engine().cache().insert<glyph>(cache_key, std::move(copy_g));
 
-			buffer_glyph_descriptor bgd;
-			bgd.metrics = g.metrics;
-			bgd.handle = gd.texture->get_texture_handle(this->text_glyph_sampler);
-			bgd.handle.make_resident();
+			og = std::move(g);
+		}
 
-			buffer.push_back(bgd);
+		auto index = glyph_textures.size();
 
-			auto &gd_ref = this->fonts[font].glyphs[codepoint];
-			gd_ref = std::move(gd);
-			return &gd_ref;
-		});
+		auto image = GL::device_image<2>(context,
+										 VK_IMAGE_USAGE_SAMPLED_BIT,
+										 std::move(*og.get().glyph_distance_field),
+										 GL::device_image_from_surface<VK_FORMAT_R32_SFLOAT>());
+		auto view = GL::vk_image_view<GL::vk_image_type::image_2d>(*image, image->get_format());
+		glyph_textures.push_back(glyph_texture{ std::move(image), std::move(view) });
+
+		glyph_descriptor gd;
+		gd.metrics = og.get().metrics;
+		gd.buffer_index = index;
+
+		buffer_glyph_descriptor bgd;
+		bgd.metrics = og.get().metrics;
+		bgd.glyph_index = index;
+
+		pending_glyphs.push(bgd);
+
+		auto &gd_ref = this->fonts[font].glyphs[codepoint];
+		gd_ref = std::move(gd);
+		return &gd_ref;
 	}
 
 public:
-	glyph_manager(const ste_engine_control &context) : context(context) {
-		text_glyph_sampler.set_min_filter(Core::texture_filtering::Linear);
-		text_glyph_sampler.set_mag_filter(Core::texture_filtering::Linear);
-		text_glyph_sampler.set_wrap_s(Core::texture_wrap_mode::ClampToBorder);
-		text_glyph_sampler.set_wrap_t(Core::texture_wrap_mode::ClampToBorder);
-		text_glyph_sampler.set_anisotropic_filter(16);
-	}
+	glyph_manager(const ste_context &context)
+		: context(context), 
+		buffer(context, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT),
+		text_glyph_sampler(context.device().logical_device(),
+						   GL::vk_sampler_filtering(VK_FILTER_LINEAR, VK_FILTER_LINEAR), 
+						   GL::vk_sampler_address_mode(VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER),
+						   GL::vk_sampler_anisotropy(16.f))
+	{}
 
-	const glyph_descriptor* glyph_for_font(task_scheduler *sched, const font &font, wchar_t codepoint) {
+	const glyph_descriptor* glyph_for_font(const font &font, wchar_t codepoint) {
 		auto it = this->fonts.find(font);
 		if (it == this->fonts.end())
 			it = this->fonts.emplace(std::make_pair(font, font_storage())).first;
 
 		auto glyphit = it->second.glyphs.find(codepoint);
 		if (glyphit == it->second.glyphs.end()) {
-			auto *gd = glyph_loader_async(sched, font, codepoint).get();
+			auto *gd = glyph_loader(font, codepoint);
 			return gd;
 		}
 
@@ -127,23 +137,36 @@ public:
 		return factory.read_kerning(font, chars, pixel_size);
 	}
 
+	range<> update_pending_glyphs(GL::vk_command_recorder &recorder) {
+		if (!pending_glyphs.size()) {
+			// Nothing to update
+			return { 0,0 };
+		}
+
+		range<> ret;
+		ret.start = buffer.size();
+		ret.length = pending_glyphs.size();
+
+		// Update
+		while (pending_glyphs.size()) {
+			recorder << buffer.push_back_cmd(pending_glyphs.front());
+			pending_glyphs.pop();
+		}
+
+		return ret;
+	}
+
 	task_future<void> preload_glyphs_async(task_scheduler *sched, const font &font, std::vector<wchar_t> codepoints) {
 		return sched->schedule_now([=]() {
-			std::vector<task_future<const glyph_descriptor*>> futures;
 			for (wchar_t codepoint : codepoints) {
-				auto codepoint_task = this->glyph_loader_async(sched, font, codepoint);
-				if (sched)
-					futures.push_back(std::move(codepoint_task));
-				else
-					codepoint_task.wait();
+				this->glyph_loader(font, codepoint);
 			}
-
-			for (auto &f : futures)
-				f.wait();
 		});
 	}
 
-	auto &ssbo() { return buffer.get_buffer(); }
+	auto &textures() const { return glyph_textures; }
+	auto &sampler() const { return text_glyph_sampler; }
+	auto &ssbo() const { return buffer; }
 };
 
 }

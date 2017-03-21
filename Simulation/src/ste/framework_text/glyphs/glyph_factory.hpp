@@ -6,8 +6,6 @@
 #include <glyph.hpp>
 #include <font.hpp>
 
-#include <task_scheduler.hpp>
-
 #include <memory>
 #include <string>
 
@@ -24,7 +22,7 @@ public:
 	glyph_factory();
 	~glyph_factory();
 
-	task_future<glyph> create_glyph_async(task_scheduler *sched, const font &font, wchar_t codepoint);
+	glyph create_glyph(const font &font, wchar_t codepoint);
 
 	int read_kerning(const font &font, const std::pair<wchar_t, wchar_t> &p, int pixel_size);
 };

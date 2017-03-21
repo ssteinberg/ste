@@ -27,6 +27,9 @@
 
 #include <surface_factory.hpp>
 #include <ste_resource.hpp>
+#include <text_manager.hpp>
+#include <text_renderer.hpp>
+#include <attrib.hpp>
 
 using namespace StE;
 
@@ -110,6 +113,15 @@ int main()
 	*/
 	StE::ste_engine engine;
 	StE::ste_context ctx(engine, gl_ctx, device);
+
+	StE::GL::device_pipeline_shader_stage(ctx, std::string("text_distance_map_contour.frag"));
+	StE::GL::device_pipeline_shader_stage(ctx, std::string("text_distance_map_contour.geom"));
+
+	/*
+	*	Text renderer
+	*/
+	auto font = StE::Text::font("Data/ArchitectsDaughter.ttf");
+	StE::Text::text_manager text_manager(ctx, font);
 
 
 	auto swapchain_images_count = device.get_surface().get_swap_chain_images().size();
@@ -210,9 +222,12 @@ int main()
 	GL::vk_descriptor_pool descriptor_pool(device.logical_device(), 10, { descriptor_set_ubo_layout_binding, descriptor_set_sampler_layout_binding });
 	auto descriptor_set = descriptor_pool.allocate_descriptor_set({ descriptor_set_layout });
 
-	descriptor_set.write({ GL::vk_descriptor_set_write_resource(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, 0, 1, ubo, 1, 0),
-						 GL::vk_descriptor_set_write_resource(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, 0, 1, 
-															  texture, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, &sampler) });
+	descriptor_set.write({ GL::vk_descriptor_set_write_resource(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, 0, 
+																GL::vk_descriptor_set_write_buffer(ubo, 1)),
+						 GL::vk_descriptor_set_write_resource(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, 0,
+															  GL::vk_descriptor_set_write_image(texture, 
+																								VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 
+																								sampler)) });
 
 	// Pipeline layout
 	GL::vk_pipeline_layout pipeline_layout(device.logical_device(), { descriptor_set_layout }, {});
@@ -220,8 +235,7 @@ int main()
 	// Graphics pipeline
 	vertex_buffer.get();
 	index_buffer.get();
-	GL::vk_pipeline_graphics pipeline(device.logical_device(),
-	{ vert_shader_stage->graphics_pipeline_stage_descriptor(),
+	GL::vk_pipeline_graphics pipeline(device.logical_device(), { vert_shader_stage->graphics_pipeline_stage_descriptor(),
 									  frag_shader_stage->graphics_pipeline_stage_descriptor() },
 									  pipeline_layout,
 									  presentation_renderpass,
@@ -245,15 +259,20 @@ int main()
 					   VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
 //	ste_resource<StE::GL::device_pipeline_shader_stage> stage(ste_resource_dont_defer(), ctx, std::string("fxaa.frag"));
-//	StE::GL::device_pipeline_shader_stage(ctx, std::string("text_distance_map_contour.geom"));
 //	StE::GL::device_pipeline_shader_stage(ctx, std::string("deferred_compose.frag"));
 //	StE::GL::device_pipeline_shader_stage(ctx, std::string("shadow_cubemap.geom"));
 //	StE::GL::device_pipeline_shader_stage(ctx, std::string("shadow_directional.geom"));
 //	StE::GL::device_pipeline_shader_stage(ctx, std::string("volumetric_scattering_scatter.comp"));
 //	stage.get();
 
-	auto auditor = device.select_queue(selector)->allocate_batch_multishot<>();
 
+	auto text_renderer = text_manager.create_renderer();
+
+	{
+		using namespace StE::Text::Attributes;
+		text_renderer->set_text({ 10, 50 }, line_height(28)(vsmall(b(stroke(dark_magenta, 1)(red(std::to_wstring(1.234 * 1000.f))))) + L" ms\n" +
+															vsmall(b((blue_violet(L"1234") + L" / " + stroke(red, 1)(dark_red(L"2345")) + L" MB")))));
+	}
 
 	/*
 	 *	Main loop
@@ -273,50 +292,52 @@ int main()
 		float angle = f * glm::pi<float>();
 		uniform_buffer_object data = { glm::vec4{ glm::cos(angle), glm::sin(angle), -glm::sin(angle), glm::cos(angle) } };
 
+		text_renderer->render(selector);
+
 		// Acquire presentation comand batch
-		auto batch = device.allocate_presentation_command_batch(selector);
-
-		// Record and submit a batch
-		device.enqueue(selector, [&, data, vertices, batch = std::move(batch)]() mutable {
-			auto& command_buffer = batch->acquire_command_buffer();
-			{
-				auto recorder = command_buffer.record();
-
-				recorder
-					<< GL::vk_cmd_pipeline_barrier(GL::vk_pipeline_barrier(VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
-																		   VK_PIPELINE_STAGE_TRANSFER_BIT,
-																		   { GL::vk_buffer_memory_barrier(ubo,
-																										VK_ACCESS_UNIFORM_READ_BIT,
-																										VK_ACCESS_TRANSFER_WRITE_BIT),
-																			GL::vk_buffer_memory_barrier(vertex_buffer,
-																										VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT,
-																										VK_ACCESS_TRANSFER_WRITE_BIT) }))
-					<< vertex_buffer->update_cmd(vertices, 0)
-					<< ubo->update_cmd({ data })
-					<< GL::vk_cmd_pipeline_barrier(GL::vk_pipeline_barrier(VK_PIPELINE_STAGE_TRANSFER_BIT,
-																		   VK_PIPELINE_STAGE_VERTEX_SHADER_BIT,
-																		   { GL::vk_buffer_memory_barrier(ubo,
-																										VK_ACCESS_TRANSFER_WRITE_BIT,
-																										VK_ACCESS_UNIFORM_READ_BIT),
-																			GL::vk_buffer_memory_barrier(vertex_buffer,
-																										VK_ACCESS_TRANSFER_WRITE_BIT,
-																										VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT) }))
-					<< GL::vk_cmd_bind_descriptor_sets_graphics(pipeline_layout, 0, { descriptor_set })
-					<< GL::vk_cmd_begin_render_pass(presentation_framebuffers[batch->presentation_image_index()],
-													presentation_renderpass,
-													{ 0,0 },
-													swapchain_size,
-													{ swapchain_attachment_clear_value })
-					<< GL::vk_cmd_bind_pipeline(pipeline)
-					<< GL::vk_cmd_bind_vertex_buffers(0, vertex_buffer)
-					<< GL::vk_cmd_bind_index_buffer(index_buffer)
-					<< GL::vk_cmd_draw_indexed(indices.size(), 1)
-					<< GL::vk_cmd_end_render_pass();
-			}
-
-			// Submit command buffer and present
-			device.submit_and_present(std::move(batch));
-		});
+//		auto batch = device.allocate_presentation_command_batch(selector);
+//
+//		// Record and submit a batch
+//		device.enqueue(selector, [&, data, vertices, batch = std::move(batch)]() mutable {
+//			auto& command_buffer = batch->acquire_command_buffer();
+//			{
+//				auto recorder = command_buffer.record();
+//
+//				recorder
+//					<< GL::vk_cmd_pipeline_barrier(GL::vk_pipeline_barrier(VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+//																		   VK_PIPELINE_STAGE_TRANSFER_BIT,
+//																		   { GL::vk_buffer_memory_barrier(ubo,
+//																										VK_ACCESS_UNIFORM_READ_BIT,
+//																										VK_ACCESS_TRANSFER_WRITE_BIT),
+//																			GL::vk_buffer_memory_barrier(vertex_buffer,
+//																										VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT,
+//																										VK_ACCESS_TRANSFER_WRITE_BIT) }))
+//					<< vertex_buffer->update_cmd(vertices, 0)
+//					<< ubo->update_cmd({ data })
+//					<< GL::vk_cmd_pipeline_barrier(GL::vk_pipeline_barrier(VK_PIPELINE_STAGE_TRANSFER_BIT,
+//																		   VK_PIPELINE_STAGE_VERTEX_SHADER_BIT,
+//																		   { GL::vk_buffer_memory_barrier(ubo,
+//																										VK_ACCESS_TRANSFER_WRITE_BIT,
+//																										VK_ACCESS_UNIFORM_READ_BIT),
+//																			GL::vk_buffer_memory_barrier(vertex_buffer,
+//																										VK_ACCESS_TRANSFER_WRITE_BIT,
+//																										VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT) }))
+//					<< GL::vk_cmd_bind_descriptor_sets_graphics(pipeline_layout, 0, { descriptor_set })
+//					<< GL::vk_cmd_begin_render_pass(presentation_framebuffers[batch->presentation_image_index()],
+//													presentation_renderpass,
+//													{ 0,0 },
+//													swapchain_size,
+//													{ swapchain_attachment_clear_value })
+//					<< GL::vk_cmd_bind_pipeline(pipeline)
+//					<< GL::vk_cmd_bind_vertex_buffers(0, vertex_buffer)
+//					<< GL::vk_cmd_bind_index_buffer(index_buffer)
+//					<< GL::vk_cmd_draw_indexed(indices.size(), 1)
+//					<< GL::vk_cmd_end_render_pass();
+//			}
+//
+//			// Submit command buffer and present
+//			device.submit_and_present(std::move(batch));
+//		});
 	}
 
 	device.wait_idle();

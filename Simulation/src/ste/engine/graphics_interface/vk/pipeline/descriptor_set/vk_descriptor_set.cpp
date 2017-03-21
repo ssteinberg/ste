@@ -8,6 +8,6 @@ using namespace StE::GL;
 void vk_descriptor_set::free() {
 	if (set && pool.allows_freeing_individual_sets()) {
 		vkFreeDescriptorSets(device, pool, 1, &set.get());
+		set = none;
 	}
-	set = none;
 }

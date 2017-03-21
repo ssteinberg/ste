@@ -41,24 +41,37 @@ public:
 	void free();
 
 	void write(const std::vector<vk_descriptor_set_write_resource> &writes) {
-		std::vector<VkWriteDescriptorSet> writes_descriptors(writes.size());
-		std::vector<VkDescriptorImageInfo> writes_descriptors_images(writes.size());
-		std::vector<VkDescriptorBufferInfo> writes_descriptors_buffers(writes.size());
+		std::vector<VkWriteDescriptorSet> writes_descriptors;
+		std::vector<VkDescriptorImageInfo> writes_descriptors_images;
+		std::vector<VkDescriptorBufferInfo> writes_descriptors_buffers;
+		writes_descriptors.reserve(writes.size());
 
-		for (std::size_t i = 0; i < writes.size(); ++i) {
-			auto& w = *(writes.begin() + i);
+		std::size_t images_count = 0;
+		std::size_t buffer_count = 0;
+		for (auto &w : writes) {
+			images_count += w.image_writes.size();
+			buffer_count += w.buffer_writes.size();
+		}
+		writes_descriptors_images.reserve(images_count);
+		writes_descriptors_buffers.reserve(buffer_count);
 
-			VkDescriptorImageInfo image_info = {};
-			image_info.imageLayout = w.image_layout;
-			image_info.imageView = w.image;
-			image_info.sampler = w.sampler;
-			writes_descriptors_images[i] = image_info;
+		for (auto &w : writes) {
+			std::uint32_t count;
+			const VkDescriptorImageInfo *image_info_ptr = nullptr;
+			const VkDescriptorBufferInfo *buffer_info_ptr = nullptr;
 
-			VkDescriptorBufferInfo buffer_info = {};
-			buffer_info.buffer = w.buffer;
-			buffer_info.offset = w.buffer_offset;
-			buffer_info.range = w.buffer_range;
-			writes_descriptors_buffers[i] = buffer_info;
+			if (w.image_writes.size()) {
+				count = static_cast<std::uint32_t>(w.image_writes.size());
+				for (auto &e : w.image_writes)
+					writes_descriptors_images.push_back(e);
+				image_info_ptr = writes_descriptors_images.data() + writes_descriptors_images.size() - count;
+			}
+			else {
+				count = static_cast<std::uint32_t>(w.buffer_writes.size());
+				for (auto &e : w.buffer_writes) 
+					writes_descriptors_buffers.push_back(e);
+				buffer_info_ptr = writes_descriptors_buffers.data() + writes_descriptors_buffers.size() - count;
+			}
 
 			VkWriteDescriptorSet d = {};
 			d.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -66,12 +79,12 @@ public:
 			d.dstSet = *this;
 			d.dstBinding = w.binding_index;
 			d.dstArrayElement = w.array_element;
-			d.descriptorCount = w.count;
+			d.descriptorCount = count;
 			d.descriptorType = w.type;
-			d.pImageInfo = &writes_descriptors_images[i];
-			d.pBufferInfo = &writes_descriptors_buffers[i];
+			d.pImageInfo = image_info_ptr;
+			d.pBufferInfo = buffer_info_ptr;
 			d.pTexelBufferView = nullptr;
-			writes_descriptors[i] = d;
+			writes_descriptors.push_back(d);
 		}
 
 		vkUpdateDescriptorSets(device,

@@ -27,13 +27,14 @@ public:
 						const vk_shader &shader_module,
 						const vk_pipeline_layout &layout,
 						const vk_pipeline_cache *cache = nullptr) : device(device) {
-		auto stage_info = shader_module.shader_stage_create_info(VK_SHADER_STAGE_COMPUTE_BIT);
+		vk_shader::shader_stage_info_t stage_info;
+		shader_module.shader_stage_create_info(VK_SHADER_STAGE_COMPUTE_BIT, stage_info);
 
 		VkComputePipelineCreateInfo create_info = {};
 		create_info.sType = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO;
 		create_info.pNext = nullptr;
 		create_info.flags = 0;
-		create_info.stage = stage_info;
+		create_info.stage = stage_info.stage_info;
 		create_info.layout = layout;
 		create_info.basePipelineHandle = VK_NULL_HANDLE;
 		create_info.basePipelineIndex = 0;

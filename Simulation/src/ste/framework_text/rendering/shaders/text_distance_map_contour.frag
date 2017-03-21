@@ -7,7 +7,6 @@ struct buffer_glyph_descriptor {
 	int height;
 	int start_y;
 	int start_x;
-	//layout(bindless_sampler) sampler2D tex_handler;
 	int sampler_idx;
 };
 
@@ -20,11 +19,15 @@ in geo_out {
 	flat int drawId;
 } vin;
 
-out vec4 frag_color;
+layout(location = 0) out vec4 frag_color;
 
 layout(std430, binding = 0) restrict readonly buffer glyph_data {
 	buffer_glyph_descriptor glyphs[];
 };
+
+layout(constant_id = 0) const int glyph_texture_count = 1;
+layout(binding = 1) uniform texture2D glyph_textures[glyph_texture_count];
+layout(binding = 2) uniform sampler glyph_sampler;
 
 float aastep (float threshold , float value) {
 	float afwidth = 0.7 * length(vec2(dFdx(value), dFdy(value)));
@@ -36,7 +39,7 @@ void main( void ) {
 
 	vec2 uv = vin.st;
 
-	float D = 0;//textureLod(glyph.tex_handler, uv, 0).x;
+	float D = textureLod(sampler2D(glyph_textures[glyph.sampler_idx], glyph_sampler), uv, 0).x;
 
 	D -= vin.weight;
 

@@ -805,7 +805,7 @@
     <ClCompile Include="Simulation\src\ste\framework_text\rendering\text_manager.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_text\rendering\text_renderable.cpp">
+    <ClCompile Include="Simulation\src\ste\framework_text\rendering\text_renderer.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Simulation\src\ste\math_additions\graphs\graph.cpp">
@@ -952,7 +952,7 @@
     <ClInclude Include="Simulation\src\ste\framework_text\glyphs\glyph_manager.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_text\glyphs\glyph_point.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_text\rendering\text_manager.hpp" />
-    <ClInclude Include="Simulation\src\ste\framework_text\rendering\text_renderable.hpp" />
+    <ClInclude Include="Simulation\src\ste\framework_text\rendering\text_renderer.hpp" />
     <ClInclude Include="Simulation\src\ste\math_additions\algorithms\sequential_ordering_problem\graph\sop_edge.hpp" />
     <ClInclude Include="Simulation\src\ste\math_additions\algorithms\sequential_ordering_problem\graph\sop_graph.hpp" />
     <ClInclude Include="Simulation\src\ste\math_additions\algorithms\sequential_ordering_problem\graph\sop_vertex.hpp" />
