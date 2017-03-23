@@ -63,7 +63,7 @@ class vk_command_buffers {
 private:
 	std::vector<vk_command_buffer> buffers;
 	const vk_command_pool &pool;
-	const vk_logical_device &device;
+	std::reference_wrapper<const vk_logical_device> device;
 	vk_command_buffer_type type;
 
 private:

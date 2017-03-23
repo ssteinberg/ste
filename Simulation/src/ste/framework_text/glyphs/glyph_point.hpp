@@ -11,13 +11,12 @@ namespace StE {
 namespace Text {
 
 struct glyph_point {
-	glm::vec2 pos; float glyph, size;
-	glm::vec4 color;
-	glm::vec4 stroke_color;
-	float stroke_width;
-	float weight;
+	glm::u32vec4 data;
 
-	using descriptor = GL::vertex_attributes_from_tuple<glm::vec4, glm::vec4, glm::vec4, float, float>::descriptor;
+	constexpr static float size_scale = 32.f;
+	constexpr static float weight_scale = .25f;
+	constexpr static float stroke_width_scale = .25f;
+	using descriptor = GL::vertex_attributes_from_tuple<glm::u32vec4>::descriptor;
 
 	glyph_point() = default;
 };

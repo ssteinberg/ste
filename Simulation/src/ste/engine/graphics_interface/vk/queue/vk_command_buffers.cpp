@@ -7,7 +7,7 @@ using namespace StE::GL;
 
 void vk_command_buffers::free() {
 	if (buffers.size()) {
-		vkFreeCommandBuffers(device, pool, buffers.size(), reinterpret_cast<VkCommandBuffer*>(&buffers[0]));
+		vkFreeCommandBuffers(device.get(), pool, buffers.size(), reinterpret_cast<VkCommandBuffer*>(&buffers[0]));
 		buffers.clear();
 	}
 }

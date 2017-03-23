@@ -17,7 +17,12 @@ protected:
 	}
 
 private:
-	virtual void operator()(const vk_command_buffer &command_buffer) const = 0;
+	virtual void operator()(const vk_command_buffer &) const { 
+		assert(false && "One of the operator() method must be overriden");
+	}
+	virtual void operator()(const vk_command_buffer &command_buffer, vk_command_recorder &) const {
+		return (*this)(command_buffer);
+	}
 
 public:
 	virtual ~vk_command() noexcept {}

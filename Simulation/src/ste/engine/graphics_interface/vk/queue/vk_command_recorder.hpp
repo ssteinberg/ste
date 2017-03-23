@@ -42,7 +42,7 @@ public:
 	}
 
 	auto& operator<<(const vk_command &cmd) {
-		cmd(*buffer);
+		cmd(*buffer, *this);
 		return *this;
 	}
 };

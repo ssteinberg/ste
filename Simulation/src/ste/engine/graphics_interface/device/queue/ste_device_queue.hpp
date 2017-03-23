@@ -237,6 +237,8 @@ private:
 		return future;
 	}
 
+	bool is_thread_this_queue_thread() const { return thread_queue_index() == queue_index; }
+
 public:
 	ste_device_queue(const vk_logical_device &device,
 					 std::uint32_t device_family_index,
@@ -262,7 +264,7 @@ public:
 		queue.wait_idle();
 	}
 
-	ste_device_queue(ste_device_queue &&q) = delete;
+	ste_device_queue(ste_device_queue &&q) = default;
 	ste_device_queue &operator=(ste_device_queue &&) = delete;
 	ste_device_queue(const ste_device_queue &) = delete;
 	ste_device_queue &operator=(const ste_device_queue &) = delete;
@@ -328,7 +330,7 @@ public:
 		static_assert(function_traits<L>::arity == 0,
 					  "task must take no arguments");
 
-		if (is_queue_thread()) {
+		if (is_thread_this_queue_thread()) {
 			// Execute in place
 			return execute_in_place<R>(std::move(task));
 		}
@@ -349,7 +351,7 @@ public:
 	*	@throws	ste_device_exception	If thread is a queue thread
 	*/
 	void wait_idle() const {
-		if (is_queue_thread()) {
+		if (is_thread_this_queue_thread()) {
 			throw ste_device_exception("Deadlock");
 		}
 

@@ -20,7 +20,7 @@ namespace GL {
 class vk_pipeline_compute : public allow_class_decay<vk_pipeline_compute, VkPipeline> {
 private:
 	optional<VkPipeline> pipeline;
-	const vk_logical_device &device;
+	std::reference_wrapper<const vk_logical_device> device;
 
 public:
 	vk_pipeline_compute(const vk_logical_device &device,
@@ -63,7 +63,7 @@ public:
 
 	void destroy_pipeline() {
 		if (pipeline) {
-			vkDestroyPipeline(device, *this, nullptr);
+			vkDestroyPipeline(device.get(), *this, nullptr);
 			pipeline = none;
 		}
 	}

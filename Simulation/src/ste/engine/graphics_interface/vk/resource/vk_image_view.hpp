@@ -33,7 +33,7 @@ public:
 
 private:
 	optional<VkImageView> view;
-	const vk_logical_device &device;
+	std::reference_wrapper<const vk_logical_device> device;
 	VkFormat format;
 
 protected:
@@ -68,7 +68,7 @@ protected:
 		create_info.components = swizzle;
 		create_info.subresourceRange = range;
 
-		vk_result res = vkCreateImageView(device, &create_info, nullptr, &view);
+		vk_result res = vkCreateImageView(device.get(), &create_info, nullptr, &view);
 		if (!res) {
 			throw vk_exception(res);
 		}
@@ -262,7 +262,7 @@ public:
 
 	void destroy_view() {
 		if (view) {
-			vkDestroyImageView(device, *this, nullptr);
+			vkDestroyImageView(device.get(), *this, nullptr);
 			view = none;
 		}
 	}

@@ -24,10 +24,9 @@ private:
 	VkFilter filter;
 
 public:
-	template <int d1, int d2>
-	vk_cmd_blit_image(const vk_image<d1> &src_image,
+	vk_cmd_blit_image(const VkImage &src_image,
 					  const VkImageLayout &src_image_layout,
-					  const vk_image<d1> &dst_image,
+					  const VkImage &dst_image,
 					  const VkImageLayout &dst_image_layout,
 					  VkFilter filter,
 					  const std::vector<VkImageBlit> &ranges = {})

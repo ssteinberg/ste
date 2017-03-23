@@ -36,7 +36,7 @@ private:
 
 private:
 	optional<VkPipelineCache> cache;
-	const vk_logical_device &device;
+	std::reference_wrapper<const vk_logical_device> device;
 
 private:
 	static optional<std::string> read_stream(const vk_physical_device_descriptor &device_descriptor, std::istream &input_stream) {
@@ -75,7 +75,7 @@ private:
 
 	void create(const VkPipelineCacheCreateInfo &create_info) {
 		VkPipelineCache pipeline_cache;
-		vk_result res = vkCreatePipelineCache(device, &create_info, nullptr, &pipeline_cache);
+		vk_result res = vkCreatePipelineCache(device.get(), &create_info, nullptr, &pipeline_cache);
 		if (!res) {
 			throw vk_exception(res);
 		}
@@ -128,7 +128,7 @@ public:
 
 	void destroy_pipeline_cache() {
 		if (cache) {
-			vkDestroyPipelineCache(device, *this, nullptr);
+			vkDestroyPipelineCache(device.get(), *this, nullptr);
 			cache = none;
 		}
 	}
@@ -139,7 +139,7 @@ public:
 
 		{
 			// Read data size
-			vk_result res = vkGetPipelineCacheData(device, *this, &size, nullptr);
+			vk_result res = vkGetPipelineCacheData(device.get(), *this, &size, nullptr);
 			if (!res) {
 				throw vk_exception(res);
 			}
@@ -148,7 +148,7 @@ public:
 		{
 			// Read data
 			data.resize(size);
-			vk_result res = vkGetPipelineCacheData(device, *this, &size, &data[0]);
+			vk_result res = vkGetPipelineCacheData(device.get(), *this, &size, &data[0]);
 			if (!res) {
 				throw vk_exception(res);
 			}
@@ -160,7 +160,7 @@ public:
 	auto& get() const { return cache.get(); }
 
 	friend std::ostream& operator<<(std::ostream &stream, const vk_pipeline_cache& cache) {
-		const vk_physical_device_descriptor &device_descriptor = cache.device.get_physical_device_descriptor();
+		const vk_physical_device_descriptor &device_descriptor = cache.device.get().get_physical_device_descriptor();
 
 		// Write header
 		vk_pipeline_cache_header header;

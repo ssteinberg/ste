@@ -13,6 +13,7 @@
 namespace StE {
 
 struct ste_resource_dont_defer {};
+struct ste_resource_create_with_lambda {};
 
 struct ste_resource_async_policy_std_async {
 	template <typename L>
@@ -40,6 +41,7 @@ class ste_resource_deferred_creation_policy_async {
 	struct creator_t {
 		std::mutex m;
 		std::future<void> future;
+		bool received{ false };
 
 		creator_t() = default;
 		creator_t(std::future<void> &&f) : future(std::move(f)) {}
@@ -50,7 +52,10 @@ class ste_resource_deferred_creation_policy_async {
 public:
 	void consume() {
 		std::unique_lock<std::mutex> l(creator.m);
-		creator.future.get();
+		if (!creator.received) {
+			creator.future.get();
+			creator.received = true;
+		}
 	}
 
 	ste_resource_deferred_creation_policy_async() = default;

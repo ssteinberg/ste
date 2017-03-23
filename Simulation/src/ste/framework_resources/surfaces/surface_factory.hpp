@@ -16,11 +16,26 @@ namespace StE {
 namespace Resource {
 
 class surface_factory {
+private:
+	template <VkFormat format, class resource_deferred_policy = ste_resource_deferred_creation_policy_async<ste_resource_async_policy_task_scheduler>>
+	static auto create_image_2d_internal(const ste_context &ctx,
+										 const boost::filesystem::path &path,
+										 const VkImageUsageFlags &usage,
+										 bool generate_mipmaps,
+										 bool srgb) {
+		auto surface = surface_io::load_surface_2d(path, srgb);
+		return create_image_2d<format, resource_deferred_policy>(ctx,
+																 std::move(surface),
+																 usage,
+																 generate_mipmaps);
+	}
+
 public:
 	template <VkFormat format, class resource_deferred_policy = ste_resource_deferred_creation_policy_async<ste_resource_async_policy_task_scheduler>>
 	static auto create_image_2d(const ste_context &ctx,
 								gli::texture2d &&input,
-								const VkImageUsageFlags &usage) {
+								const VkImageUsageFlags &usage,
+								bool generate_mipmaps = true) {
 		static constexpr gli::format image_gli_format = GL::vk_format_traits<format>::gli_format;
 
 		// Convert surface to target format
@@ -29,10 +44,14 @@ public:
 			input = surface_convert()(input, image_gli_format);
 
 		// Create image from surface
-		return ste_resource<GL::device_image<2>, resource_deferred_policy>(ctx,
-																		   usage,
-																		   std::move(input),
-																		   GL::device_image_from_surface<format>());
+		return ste_resource<GL::device_image<2>, resource_deferred_policy>(ste_resource_create_with_lambda(),
+																		   ste_resource_dont_defer(),
+																		   [=, &ctx, input = std::move(input)]() mutable {
+			return GL::device_image<2>::create_image_2d<format>(ctx,
+																std::move(input),
+																usage,
+																generate_mipmaps);
+		});
 	}
 
 	template <VkFormat format, class resource_deferred_policy = ste_resource_deferred_creation_policy_async<ste_resource_async_policy_task_scheduler>>
@@ -40,12 +59,11 @@ public:
 								const boost::filesystem::path &path,
 								const VkImageUsageFlags &usage,
 								bool generate_mipmaps = true) {
-		auto surface = surface_io::load_surface_2d(path, false);
-		if (generate_mipmaps)
-			surface = surface_mipmap_generator()(std::move(surface));
-		return create_image_2d<format, resource_deferred_policy>(ctx,
-																 std::move(surface), 
-																 usage);
+		return create_image_2d_internal<format>(ctx,
+												path,
+												usage,
+												generate_mipmaps,
+												false);
 	}
 
 	template <VkFormat format, class resource_deferred_policy = ste_resource_deferred_creation_policy_async<ste_resource_async_policy_task_scheduler>>
@@ -53,12 +71,11 @@ public:
 									 const boost::filesystem::path &path,
 									 const VkImageUsageFlags &usage,
 									 bool generate_mipmaps = true) {
-		auto surface = surface_io::load_surface_2d(path, true);
-		if (generate_mipmaps)
-			surface = surface_mipmap_generator()(std::move(surface));
-		return create_image_2d<format, resource_deferred_policy>(ctx,
-																 std::move(surface),
-																 usage);
+		return create_image_2d_internal<format>(ctx,
+												path,
+												usage,
+												generate_mipmaps,
+												true);
 	}
 };
 

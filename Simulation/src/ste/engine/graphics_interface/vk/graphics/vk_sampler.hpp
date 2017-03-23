@@ -21,7 +21,7 @@ namespace GL {
 class vk_sampler : public allow_class_decay<vk_sampler, VkSampler> {
 private:
 	optional<VkSampler> sampler;
-	const vk_logical_device &device;
+	std::reference_wrapper<const vk_logical_device> device;
 
 private:
 	template <typename ... Params>
@@ -113,7 +113,7 @@ public:
 
 	void destroy_sampler() {
 		if (sampler) {
-			vkDestroySampler(device, *this, nullptr);
+			vkDestroySampler(device.get(), *this, nullptr);
 			sampler = none;
 		}
 	}

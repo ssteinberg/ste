@@ -36,8 +36,8 @@ class device_image_layout_transformable {
 	friend class cmd_image_layout_transform;
 	friend class cmd_image_layout_transform_discard;
 
-private:
-	device_image_layout image_layout;
+protected:
+	mutable device_image_layout image_layout;
 
 protected:
 	template <typename... Args>

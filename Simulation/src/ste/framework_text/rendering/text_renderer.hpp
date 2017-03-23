@@ -4,77 +4,120 @@
 #pragma once
 
 #include <stdafx.hpp>
-#include <ste_queue_selector.hpp>
 #include <text_manager.hpp>
 #include <attributed_string.hpp>
 #include <glyph_point.hpp>
 
 #include <vk_command_recorder.hpp>
-#include <vk_cmd_begin_render_pass.hpp>
-#include <vk_cmd_end_render_pass.hpp>
 #include <vk_cmd_bind_pipeline.hpp>
 #include <vk_cmd_bind_vertex_buffers.hpp>
-#include <vk_cmd_bind_index_buffer.hpp>
 #include <vk_cmd_draw.hpp>
 #include <vk_cmd_bind_descriptor_sets.hpp>
 #include <vk_cmd_pipeline_barrier.hpp>
 
-#include <range.hpp>
+#include <vk_render_pass.hpp>
+
+#include <stable_vector.hpp>
 #include <array.hpp>
 
 namespace StE {
 namespace Text {
 
 class text_renderer {
-	static constexpr std::size_t ringbuffer_max_size = 4096;
-
-	using ring_buffer_type = GL::array<glyph_point>;
+	using vector_type = GL::stable_vector<glyph_point>;
 
 private:
 	text_manager *tr;
-	std::vector<glyph_point> points;
 
-	ring_buffer_type vbo;
+	GL::vk_unique_descriptor_set fb_size_descriptor_set;
+	std::unique_ptr<GL::vk_pipeline_layout> pipeline_layout;
+	std::unique_ptr<GL::vk_pipeline_graphics> pipeline;
+	const GL::vk_render_pass *renderpass;
+	GL::array<glm::vec2> fb_size_uniform;
+	vector_type vertex_buffer;
 
-public:
-	text_renderer(text_manager *tr);
+	std::uint32_t count{ 0 };
 
-	void set_text(const glm::vec2 &ortho_pos, const attributed_wstring &wstr);
+private:
+	class cmd_update_text : public GL::vk_command {
+		text_renderer *tr;
+		const std::vector<glyph_point> points;
+		const glm::vec2 render_target_size;
 
-	template <typename selector_policy = GL::ste_queue_selector_default_policy>
-	void render(const GL::ste_queue_selector<selector_policy> &queue_selector) {
-//		auto& q = tr->context.device().select_queue(queue_selector);
-		auto batch = tr->context.device().allocate_presentation_command_batch(queue_selector);
-		tr->context.device().enqueue(queue_selector, [this, batch = std::move(batch)]() mutable {
-			auto& command_buffer = batch->acquire_command_buffer();
-//			auto batch = GL::ste_device_queue::thread_allocate_batch();
-//			auto& command_buffer = batch->acquire_command_buffer();
-			{
-				auto recorder = command_buffer.record();
-				tr->update_glyphs(recorder);
+	public:
+		cmd_update_text(text_renderer *tr,
+						std::vector<glyph_point> &&points,
+						const glm::vec2 &render_target_size)
+			: tr(tr), points(std::move(points)), render_target_size(render_target_size)
+		{}
+		virtual ~cmd_update_text() noexcept {}
 
-				recorder
-					<< vbo.update_cmd(points)
-					<< GL::vk_cmd_pipeline_barrier(GL::vk_pipeline_barrier(VK_PIPELINE_STAGE_TRANSFER_BIT,
-																		   VK_PIPELINE_STAGE_VERTEX_SHADER_BIT,
-																		   GL::vk_buffer_memory_barrier(vbo,
-																										VK_ACCESS_TRANSFER_WRITE_BIT,
-																										VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT)))
-					<< GL::vk_cmd_bind_descriptor_sets_graphics(tr->pipeline->pipeline_layout, 
-																0, { tr->pipeline->descriptor_set.get() })
-					<< GL::vk_cmd_begin_render_pass(tr->presentation_framebuffers[batch->presentation_image_index()],
-													*tr->renderpass,
-													{ 0,0 },
-													{ 1920, 1080 },
-													{ VkClearValue{} })
-					<< GL::vk_cmd_bind_pipeline(tr->pipeline->pipeline)
-					<< GL::vk_cmd_bind_vertex_buffers(0, vbo)
-					<< GL::vk_cmd_draw(points.size(), 1, 0)
-					<< GL::vk_cmd_end_render_pass();
+	private:
+		void operator()(const GL::vk_command_buffer &, GL::vk_command_recorder &recorder) const override final {
+			if (tr->tr->update_glyphs(recorder)) {
+				// Recreate pipeline
+				tr->recreate_pipeline();
 			}
 
-			tr->context.device().submit_and_present(std::move(batch));
-		});
+			recorder
+				<< tr->vertex_buffer.resize_cmd(points.size())
+				<< tr->vertex_buffer.update_cmd(points, 0);
+			auto buffer_barrier = GL::vk_buffer_memory_barrier(tr->vertex_buffer,
+															   VK_ACCESS_TRANSFER_WRITE_BIT,
+															   VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT);
+			recorder << GL::vk_cmd_pipeline_barrier(GL::vk_pipeline_barrier(VK_PIPELINE_STAGE_TRANSFER_BIT,
+																			VK_PIPELINE_STAGE_VERTEX_SHADER_BIT,
+																			buffer_barrier));
+
+			recorder << tr->fb_size_uniform.update_cmd({ render_target_size });
+			recorder << GL::vk_cmd_pipeline_barrier(GL::vk_pipeline_barrier(VK_PIPELINE_STAGE_TRANSFER_BIT,
+																			VK_PIPELINE_STAGE_VERTEX_SHADER_BIT,
+																			GL::vk_buffer_memory_barrier(tr->fb_size_uniform,
+																										 VK_ACCESS_TRANSFER_WRITE_BIT,
+																										 VK_ACCESS_UNIFORM_READ_BIT)));
+
+			tr->count = points.size();
+		}
+	};
+
+	class cmd_text_render : public GL::vk_command {
+		text_renderer *tr;
+
+	public:
+		cmd_text_render(text_renderer *tr)
+			: tr(tr)
+		{}
+		virtual ~cmd_text_render() noexcept {}
+
+	private:
+		void operator()(const GL::vk_command_buffer &, GL::vk_command_recorder &recorder) const override final {
+			if (!tr->count) {
+				return;
+			}
+
+			recorder << GL::vk_cmd_bind_descriptor_sets_graphics(*tr->pipeline_layout,
+																 0, { tr->tr->descriptor_set->get(), tr->fb_size_descriptor_set.get() });
+			recorder << GL::vk_cmd_bind_pipeline(*tr->pipeline);
+			recorder << GL::vk_cmd_bind_vertex_buffers(0, tr->vertex_buffer);
+			recorder << GL::vk_cmd_draw(tr->count, 1, 0);	
+		}
+	};
+
+private:
+	void recreate_pipeline();
+
+public:
+	text_renderer(text_manager *tr,
+				  const GL::vk_render_pass *renderpass);
+
+	auto update_cmd(const glm::vec2 &ortho_pos, 
+					const attributed_wstring &wstr,
+					const glm::vec2 &render_target_size) {
+		 auto points = tr->create_points(ortho_pos, wstr);
+		 return cmd_update_text(this, std::move(points), render_target_size);
+	}
+	auto render_cmd() {
+		return cmd_text_render(this);
 	}
 };
 

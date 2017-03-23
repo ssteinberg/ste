@@ -22,7 +22,7 @@ class vk_command_pool :
 {
 private:
 	optional<VkCommandPool> pool;
-	const vk_logical_device &device;
+	std::reference_wrapper<const vk_logical_device> device;
 
 public:
 	vk_command_pool(const vk_logical_device &device, 
@@ -53,7 +53,7 @@ public:
 
 	void destroy_command_pool() {
 		if (pool) {
-			vkDestroyCommandPool(device, *this, nullptr);
+			vkDestroyCommandPool(device.get(), *this, nullptr);
 			pool = none;
 		}
 	}
@@ -73,23 +73,23 @@ public:
 
 		std::vector<vk_command_buffer> buffers;
 		buffers.resize(count);
-		vk_result res = vkAllocateCommandBuffers(device, &create_info, reinterpret_cast<VkCommandBuffer*>(&buffers[0]));
+		vk_result res = vkAllocateCommandBuffers(device.get(), &create_info, reinterpret_cast<VkCommandBuffer*>(&buffers[0]));
 		if (!res) {
 			throw vk_exception(res);
 		}
 
-		return vk_command_buffers(std::move(buffers), device, *this, type);
+		return vk_command_buffers(std::move(buffers), device.get(), *this, type);
 	}
 
 	void reset() override {
-		vk_result res = vkResetCommandPool(device, *this, 0);
+		vk_result res = vkResetCommandPool(device.get(), *this, 0);
 		if (!res) {
 			throw vk_exception(res);
 		}
 	}
 
 	void reset_release() {
-		vk_result res = vkResetCommandPool(device, *this, VK_COMMAND_POOL_RESET_RELEASE_RESOURCES_BIT);
+		vk_result res = vkResetCommandPool(device.get(), *this, VK_COMMAND_POOL_RESET_RELEASE_RESOURCES_BIT);
 		if (!res) {
 			throw vk_exception(res);
 		}

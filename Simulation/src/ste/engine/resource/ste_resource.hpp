@@ -8,6 +8,7 @@
 #include <ste_resource_creation_policy.hpp>
 
 #include <allow_class_decay.hpp>
+#include <function_traits.hpp>
 
 namespace StE {
 
@@ -81,11 +82,46 @@ public:
 	*	@params	params	Parameters passed to T
 	*/
 	template <typename ... Params>
-	ste_resource(const ste_resource_dont_defer &,
+	ste_resource(ste_resource_dont_defer,
 				 Params&&... params)
 		: Base(ste_resource_dont_defer(),
 			   std::forward<Params>(params)...)
 	{}
+	/**
+	*	@brief	Creates the resource.
+	*
+	*	@param	ctx		Context
+	*	@params	l		Lambda that creates the resource
+	*/
+	template <typename L>
+	ste_resource(ste_resource_create_with_lambda,
+				 const ste_context &ctx,
+				 L&& l)
+		: Base(ste_resource_create_with_lambda(),
+			   ctx,
+			   std::forward<L>(l))
+	{
+		using R = typename function_traits<L>::result_t;
+		static_assert(std::is_constructible_v<T, R>,
+					  "T must be constructible with L's return type");
+	}
+	/**
+	*	@brief	Creates the resource without deferring the creation.
+	*
+	*	@params	l		Lambda that creates the resource
+	*/
+	template <typename L>
+	ste_resource(ste_resource_create_with_lambda,
+				 ste_resource_dont_defer,
+				 L&& l)
+		: Base(ste_resource_create_with_lambda(),
+			   ste_resource_dont_defer(),
+			   std::forward<L>(l))
+	{
+		using R = typename function_traits<L>::result_t;
+		static_assert(std::is_constructible_v<T, R>,
+					  "T must be constructible with L's return type");
+	}
 
 	~ste_resource() noexcept {}
 

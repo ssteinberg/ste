@@ -5,6 +5,7 @@
 
 #include <stdafx.hpp>
 #include <device_image.hpp>
+#include <device_image_layout_transform.hpp>
 #include <device_resource_queue_ownership.hpp>
 
 #include <boundary.hpp>
@@ -51,8 +52,29 @@ void queue_transfer(device_image<dimensions, allocation_policy> &image,
 	
 	// Tranfer only if needed
 	if (src_q_idx == dst_queue_index) {
-		// TODO: Make this a layout change
-		assert(false);
+		src_q->enqueue([=, &image]() {
+			auto src_layout = image.layout();
+
+			auto acquire_batch = ste_device_queue::thread_allocate_batch();
+			auto& command_buffer = acquire_batch->acquire_command_buffer();
+			{
+				auto recorder = command_buffer.record();
+
+				auto barrier = vk_pipeline_barrier(src_stage,
+												   dst_stage,
+												   image_layout_transform_barrier(image,
+																				 src_access,
+																				 src_layout,
+																				 dst_access,
+																				 dst_layout,
+																				 depth));
+				recorder << vk_cmd_pipeline_barrier(barrier);
+			}
+			ste_device_queue::submit_batch(std::move(acquire_batch));
+
+			// Move to new layout on each of the queues
+			image.image_layout.layout.store(dst_layout, std::memory_order_relaxed);
+		});
 		return;
 	}
 

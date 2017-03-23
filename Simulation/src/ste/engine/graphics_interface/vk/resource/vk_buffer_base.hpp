@@ -21,7 +21,7 @@ private:
 	static constexpr auto sparse_buffer_flags = VK_BUFFER_CREATE_SPARSE_RESIDENCY_BIT | VK_BUFFER_CREATE_SPARSE_BINDING_BIT;
 
 protected:
-	const vk_logical_device &device;
+	std::reference_wrapper<const vk_logical_device> device;
 
 private:
 	optional<VkBuffer> buffer;
@@ -66,12 +66,12 @@ public:
 
 	void destroy_buffer() {
 		if (buffer) {
-			vkDestroyBuffer(device, *this, nullptr);
+			vkDestroyBuffer(device.get(), *this, nullptr);
 			buffer = none;
 		}
 	}
 
-	auto& get_creating_device() const { return device; }
+	auto& get_creating_device() const { return device.get(); }
 	auto& get() const { return buffer.get(); }
 
 	auto& get_size_bytes() const { return bytes; }

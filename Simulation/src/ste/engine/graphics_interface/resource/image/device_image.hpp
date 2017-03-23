@@ -15,12 +15,10 @@
 #include <vk_format_type_traits.hpp>
 #include <vk_cmd_pipeline_barrier.hpp>
 #include <vk_cmd_copy_image.hpp>
+#include <vk_cmd_blit_image.hpp>
 
 namespace StE {
 namespace GL {
-
-template <VkFormat format>
-struct device_image_from_surface {};
 
 template <int dimensions, class allocation_policy = device_resource_allocation_policy_device>
 class device_image : public device_image_layout_transformable,
@@ -55,27 +53,19 @@ class device_image<2, allocation_policy> : public device_image_layout_transforma
 	using Base = device_resource<vk_image<2>, allocation_policy>;
 
 private:
-	template <VkFormat format>
-	static auto create_image_2d(const ste_context &ctx,
-								gli::texture2d &&surface,
-								const VkImageUsageFlags &usage) {
-		using image_element_type = typename GL::vk_format_traits<format>::element_type;
-		static constexpr int image_texel_bytes = GL::vk_format_traits<format>::texel_bytes;
-		static constexpr gli::format image_gli_format = GL::vk_format_traits<format>::gli_format;
-		static constexpr bool image_is_depth = GL::vk_format_traits<format>::is_depth;
-
-		auto src_format = surface.format();
-		auto mip_levels = surface.levels();
+	template <typename Image>
+	static void copy_surface_to_image(const ste_context &ctx,
+									  const Image &image,
+									  const gli::texture2d &surface,
+									  const VkFormat &format,
+									  const ste_queue_selector<> &selector,
+									  int image_texel_bytes,
+									  bool image_is_depth) {
 		auto layers = surface.layers();
-		if (src_format != image_gli_format) {
-			throw device_image_format_exception("Input format is different from specified image format");
-		}
-
-		auto selector = make_data_queue_selector();
 
 		// Create staging image
-		GL::device_image<2, GL::device_resource_allocation_policy_host_visible_coherent>
-			staging_image(ctx, selector, vk_image_initial_layout::preinitialized, 
+		device_image<2, device_resource_allocation_policy_host_visible_coherent>
+			staging_image(ctx, selector, vk_image_initial_layout::preinitialized,
 						  format, surface.extent(), VK_IMAGE_USAGE_TRANSFER_SRC_BIT,
 						  1, layers, false, false);
 		auto staging_image_bytes = staging_image.get_underlying_memory().get_size();
@@ -83,14 +73,8 @@ private:
 
 		auto subresource_layout = staging_image->get_image_subresource_layout(0);
 
-		// Create target image
-		GL::device_image<2, GL::device_resource_allocation_policy_device>
-			image(ctx, selector, vk_image_initial_layout::unused,
-				  format, surface.extent(), VK_IMAGE_USAGE_TRANSFER_DST_BIT | usage,
-				  mip_levels, layers);
-
 		// Upload
-		for (std::uint32_t m = 0; m < mip_levels; ++m) {
+		for (std::uint32_t m = 0; m < surface.levels(); ++m) {
 			auto level = surface[m];
 
 			auto size = level.extent();
@@ -130,32 +114,152 @@ private:
 					auto recorder = command_buffer.record();
 
 					// Move to transfer layouts
-					auto barrier = GL::vk_pipeline_barrier(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-															VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-															std::vector<GL::vk_image_memory_barrier>{
-						GL::vk_image_memory_barrier(staging_image.get(),
-													m ==0 ? VK_IMAGE_LAYOUT_PREINITIALIZED : VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-													VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-													VK_ACCESS_HOST_WRITE_BIT,
-													VK_ACCESS_TRANSFER_READ_BIT),
-							GL::vk_image_memory_barrier(image.get(),
-														m == 0 ? VK_IMAGE_LAYOUT_UNDEFINED : VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-														VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-														0,
-														VK_ACCESS_TRANSFER_WRITE_BIT) });
-					recorder << GL::vk_cmd_pipeline_barrier(barrier);
+					auto barrier = vk_pipeline_barrier(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+													   VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+													   std::vector<vk_image_memory_barrier>{
+						vk_image_memory_barrier(staging_image.get(),
+												m == 0 ? VK_IMAGE_LAYOUT_PREINITIALIZED : VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+												VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+												VK_ACCESS_HOST_WRITE_BIT,
+												VK_ACCESS_TRANSFER_READ_BIT),
+							vk_image_memory_barrier(image.get(),
+													m == 0 ? VK_IMAGE_LAYOUT_UNDEFINED : VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+													VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+													0,
+													VK_ACCESS_TRANSFER_WRITE_BIT) });
+					recorder << vk_cmd_pipeline_barrier(barrier);
 
 					// Copy to image
-					recorder << GL::vk_cmd_copy_image(staging_image.get(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-													  image.get(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-													  { range });
+					recorder << vk_cmd_copy_image(staging_image.get(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+												  image.get(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+												  { range });
 				}
 
-				GL::ste_device_queue::submit_batch(std::move(batch));
+				ste_device_queue::submit_batch(std::move(batch));
+
+				image.image_layout.layout.store(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, std::memory_order_release);
 			});
 
 			// Wait for completion
 			fence.get();
+		}
+	}
+
+	template <typename Image>
+	static void generate_image_mipmaps(const ste_context &ctx,
+									   const Image &image,
+									   const ste_queue_selector<> &selector,
+									   const glm::ivec2 &size,
+									   std::uint32_t mip_levels,
+									   std::uint32_t start_level) {
+		// Enqueue mipmap copy on a transfer queue
+		auto enqueue_future = ctx.device().enqueue(selector, [&]() {
+			auto m = start_level;
+
+			auto batch = ste_device_queue::thread_allocate_batch();
+			auto& command_buffer = batch->acquire_command_buffer();
+
+			// Record and submit a one-time batch
+			{
+				auto recorder = command_buffer.record();
+
+				for (; m < mip_levels; ++m) {
+					// Move to transfer layouts
+					auto barrier = vk_pipeline_barrier(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+													   VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+													   { vk_image_memory_barrier(image,
+																				 VK_IMAGE_LAYOUT_UNDEFINED,
+																				 VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+																				 0,
+																				 VK_ACCESS_TRANSFER_WRITE_BIT,
+																				 m, 1, 0, 1),
+													   vk_image_memory_barrier(image,
+																			   VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+																			   VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+																			   VK_ACCESS_TRANSFER_WRITE_BIT,
+																			   VK_ACCESS_TRANSFER_READ_BIT,
+																			   m - 1, 1, 0, 1) });
+					recorder << vk_cmd_pipeline_barrier(barrier);
+
+					VkImageBlit range = {};
+					range.srcSubresource = { VK_IMAGE_ASPECT_COLOR_BIT, m - 1, 0, 1 };
+					range.dstSubresource = { VK_IMAGE_ASPECT_COLOR_BIT, m, 0, 1 };
+					range.srcOffsets[1] = {
+						std::max(1, size.x >> (m - 1)),
+						std::max(1, size.y >> (m - 1)),
+						1
+					};
+					range.dstOffsets[1] = {
+						std::max(1, size.x >> m),
+						std::max(1, size.y >> m),
+						1
+					};
+
+					// Copy to image
+					recorder << vk_cmd_blit_image(image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+												  image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+												  VK_FILTER_LINEAR, { range });
+				}
+
+				// Move last mipmap to src optimal layout
+				auto barrier = vk_pipeline_barrier(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+												   VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+												   vk_image_memory_barrier(image,
+																		   VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+																		   VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+																		   VK_ACCESS_TRANSFER_WRITE_BIT,
+																		   VK_ACCESS_TRANSFER_READ_BIT,
+																		   mip_levels - 1, 1, 0, 1));
+				recorder << vk_cmd_pipeline_barrier(barrier);
+			}
+
+			ste_device_queue::submit_batch(std::move(batch));
+
+			image.image_layout.layout.store(VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, std::memory_order_release);
+		});
+
+		enqueue_future.get();
+	}
+
+public:
+	template <VkFormat format>
+	static auto create_image_2d(const ste_context &ctx,
+								gli::texture2d &&surface,
+								const VkImageUsageFlags &usage,
+								bool generate_mipmaps) {
+		using image_element_type = typename vk_format_traits<format>::element_type;
+		static constexpr int image_texel_bytes = vk_format_traits<format>::texel_bytes;
+		static constexpr gli::format image_gli_format = vk_format_traits<format>::gli_format;
+		static constexpr bool image_is_depth = vk_format_traits<format>::is_depth;
+
+		auto src_format = surface.format();
+		std::uint32_t mip_levels = generate_mipmaps ? gli::levels(surface.extent()) : surface.levels();
+		auto layers = surface.layers();
+		auto size = surface.extent();
+		if (src_format != image_gli_format) {
+			throw device_image_format_exception("Input format is different from specified image format");
+		}
+
+		auto selector = make_primary_queue_selector();
+
+		// Staging area
+		device_image<2, device_resource_allocation_policy_device>
+			image(ctx, selector, vk_image_initial_layout::unused,
+				  format, size, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT | usage,
+				  mip_levels, layers);
+
+		// Copy from surface
+		copy_surface_to_image(ctx, image, surface, format, selector, image_texel_bytes, image_is_depth);
+
+		// Generate remaining mipmaps, as needed
+		std::uint32_t m = surface.levels();
+		if (m < mip_levels) {
+			generate_image_mipmaps(ctx,
+								   image,
+								   selector,
+								   size,
+								   mip_levels,
+								   m);
 		}
 
 		return image;
@@ -167,25 +271,11 @@ public:
 				 QueueOwnershipArgs&& qoa,
 				 const vk_image_initial_layout &layout,
 				 Args&&... args)
-		: device_image_layout_transformable(layout), 
+		: device_image_layout_transformable(layout),
 		Base(ctx,
-			   std::forward<QueueOwnershipArgs>(qoa),
-			   layout,
-			   std::forward<Args>(args)...)
-	{}
-	/**
-	*	@brief	Constructs a 2D image from a 2D surface, with or without mipmaps. To use this overload, pass device_image_from_surface
-	*			as last parameter, indicating the desired type of the resulting image.
-	*/
-	template <VkFormat format>
-	device_image(const ste_context &ctx,
-				 const VkImageUsageFlags &usage,
-				 gli::texture2d &&surface,
-				 const device_image_from_surface<format>&)
-		: device_image_layout_transformable(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL),
-		Base(create_image_2d<format>(ctx,
-									   std::move(surface),
-									   usage))
+			 std::forward<QueueOwnershipArgs>(qoa),
+			 layout,
+			 std::forward<Args>(args)...)
 	{}
 	~device_image() noexcept {}
 

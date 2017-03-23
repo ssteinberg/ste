@@ -33,7 +33,7 @@ struct vk_graphics_shader_descriptor {
 class vk_pipeline_graphics : public allow_class_decay<vk_pipeline_graphics, VkPipeline> {
 private:
 	optional<VkPipeline> pipeline;
-	const vk_logical_device &device;
+	std::reference_wrapper<const vk_logical_device> device;
 
 public:
 	struct vertex_input_descriptor {
@@ -223,7 +223,7 @@ public:
 
 	void destroy_pipeline() {
 		if (pipeline) {
-			vkDestroyPipeline(device, *this, nullptr);
+			vkDestroyPipeline(device.get(), *this, nullptr);
 			pipeline = none;
 		}
 	}

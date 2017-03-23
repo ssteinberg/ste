@@ -41,7 +41,7 @@ public:
 class vk_device_memory : public allow_class_decay<vk_device_memory, VkDeviceMemory> {
 private:
 	optional<VkDeviceMemory> memory;
-	const vk_logical_device &device;
+	std::reference_wrapper<const vk_logical_device> device;
 	std::uint64_t size;
 
 	std::unique_ptr<vk_mmap_type_eraser> mapped_memory{ nullptr };
@@ -75,7 +75,7 @@ public:
 		if (memory) {
 			munmap();
 
-			vkFreeMemory(device, *this, nullptr);
+			vkFreeMemory(device.get(), *this, nullptr);
 			memory = none;
 		}
 	}
@@ -89,7 +89,7 @@ public:
 	*/
 	auto get_allocation_memory_commitment() const {
 		std::uint64_t committed_bytes;
-		vkGetDeviceMemoryCommitment(device, *this, &committed_bytes);
+		vkGetDeviceMemoryCommitment(device.get(), *this, &committed_bytes);
 		return committed_bytes;
 	}
 
@@ -113,7 +113,7 @@ public:
 		munmap();
 
 		void *pdata = nullptr;
-		vk_result res = vkMapMemory(device, *this, offset * sizeof(T), count * sizeof(T), 0, &pdata);
+		vk_result res = vkMapMemory(device.get(), *this, offset * sizeof(T), count * sizeof(T), 0, &pdata);
 		if (!res) {
 			throw vk_exception(res);
 		}
@@ -128,7 +128,7 @@ public:
 	*/
 	void munmap() {
 		if (mapped_memory != nullptr) {
-			vkUnmapMemory(device, *this);
+			vkUnmapMemory(device.get(), *this);
 			mapped_memory = nullptr;
 		}
 	}
@@ -138,10 +138,10 @@ public:
 	*			Guaranteed by the specification to be 256 bytes at most.
 	*/
 	auto get_non_coherent_atom_size() const { 
-		return device.get_physical_device_descriptor().properties.limits.nonCoherentAtomSize;
+		return device.get().get_physical_device_descriptor().properties.limits.nonCoherentAtomSize;
 	}
 
-	auto& get_creating_device() const { return device; }
+	auto& get_creating_device() const { return device.get(); }
 	auto& get_device_memory() const { return memory.get(); }
 	auto get_size() const { return size; }
 

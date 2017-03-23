@@ -39,13 +39,16 @@ struct vk_blend_op_descriptor {
 		dst_alpha(dst_alpha),
 		alpha_op(alpha_op)
 	{}
-	vk_blend_op_descriptor(const VkBlendFactor &src_alpha,
-						   const VkBlendFactor &dst_alpha,
-						   const VkBlendOp &alpha_op)
+	vk_blend_op_descriptor(const VkBlendFactor &src,
+						   const VkBlendFactor &dst,
+						   const VkBlendOp &op)
 		: blend_enable(true),
-		src_alpha(src_alpha),
-		dst_alpha(dst_alpha),
-		alpha_op(alpha_op)
+		src_color(src),
+		dst_color(dst),
+		color_op(op),
+		src_alpha(src),
+		dst_alpha(dst),
+		alpha_op(op)
 	{}
 	vk_blend_op_descriptor(const VkColorComponentFlags &write_mask,
 						   const VkBlendFactor &src_color,

@@ -221,7 +221,7 @@ public:
 	~ste_device() noexcept {}
 
 	ste_device(ste_device &&) = default;
-	ste_device &operator=(ste_device &&) = default;
+	ste_device &operator=(ste_device &&) = delete;
 
 	/**
 	*	@brief	Performs schedules work, cleans up resources, etc.

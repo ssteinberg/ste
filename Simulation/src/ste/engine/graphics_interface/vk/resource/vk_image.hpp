@@ -46,7 +46,7 @@ private:
 
 protected:
 	void bind_resource_underlying_memory(const vk_device_memory &memory, std::uint64_t offset) override {
-		vk_result res = vkBindImageMemory(this->device, *this, memory, offset);
+		vk_result res = vkBindImageMemory(this->device.get(), *this, memory, offset);
 		if (!res) {
 			throw vk_exception(res);
 		}
@@ -97,7 +97,7 @@ public:
 		create_info.queueFamilyIndexCount = 0;
 		create_info.pQueueFamilyIndices = nullptr;
 
-		vk_result res = vkCreateImage(device, &create_info, nullptr, &image);
+		vk_result res = vkCreateImage(device.get(), &create_info, nullptr, &image);
 		if (!res) {
 			throw vk_exception(res);
 		}
@@ -113,14 +113,14 @@ public:
 
 	void destroy_image() {
 		if (this->image) {
-			vkDestroyImage(this->device, *this, nullptr);
+			vkDestroyImage(this->device.get(), *this, nullptr);
 			this->image = none;
 		}
 	}
 
 	VkMemoryRequirements get_memory_requirements() const override {
 		VkMemoryRequirements req;
-		vkGetImageMemoryRequirements(this->device, 
+		vkGetImageMemoryRequirements(this->device.get(), 
 									 *this,
 									 &req);
 

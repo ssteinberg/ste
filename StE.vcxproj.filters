@@ -162,9 +162,6 @@
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\vk\queue\vk_command_buffers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Simulation\src\ste\engine\graphics_interface\vk\pipeline\descriptor_set\vk_descriptor_set.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\vk\query\vk_query.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -1232,9 +1229,6 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\image\device_image.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\texture\texture.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\utility\vertex_attributes_from_tuple.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1278,6 +1272,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_text\rendering\text_renderer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\pipeline\descriptor_set\vk_descriptor_set_copy_resources.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

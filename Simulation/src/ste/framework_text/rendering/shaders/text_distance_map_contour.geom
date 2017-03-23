@@ -15,40 +15,38 @@ struct buffer_glyph_descriptor {
 };
 
 in vs_out {
-	vec2 position;
-	vec4 color;
-	vec4 stroke_color;
-	int drawId;
+	uvec2 position;
+	vec3 color;
+	vec3 stroke_color;
+	uint drawId;
 	float weight;
 	float stroke_width;
 	float size;
 } vin[];
 
 out geo_out {
-	vec4 color;
-	vec4 stroke_color;
+	vec3 color;
+	vec3 stroke_color;
 	float weight;
 	float stroke_width;
 	vec2 st;
-	flat int drawId;
+	flat uint drawId;
 } vout;
 
-layout(std430, binding = 0) restrict readonly buffer glyph_data {
+layout(std430, set = 0, binding = 0) restrict readonly buffer glyph_data {
 	buffer_glyph_descriptor glyphs[];
 };
 
-//uniform fb_size_uniform_t {
-//	vec2 fb_size;
-//};
+layout(set = 1, binding = 0) uniform fb_size_uniform_t {
+	vec2 fb_size;
+};
 
 void main() {
-	vec2 fb_size = vec2(1920,1080);
-
-	vec4 pos = vec4(vin[0].position, 0, 1);
+	vec2 pos = mix(vec2(-1,1), vec2(1,-1), vec2(vin[0].position) / fb_size);
 
 	buffer_glyph_descriptor g = glyphs[vin[0].drawId];
 
-	float size = vin[0].size;
+	vec2 size = vin[0].size / fb_size;
 
 	vout.color = vin[0].color;
 	vout.stroke_color = vin[0].stroke_color;
@@ -57,19 +55,19 @@ void main() {
 	vout.stroke_width = vin[0].stroke_width;
 
 	vout.st = vec2(0, 0);
-	gl_Position = pos + vec4(size * vec2(g.start_x, g.start_y) / fb_size, 0, 1);
+	gl_Position = vec4(pos + size * vec2(g.start_x, g.start_y), 0, 1);
 	EmitVertex();
 
 	vout.st = vec2(1, 0);
-	gl_Position = pos + vec4(size * vec2(g.start_x + g.width, g.start_y) / fb_size, 0, 1);
+	gl_Position = vec4(pos + size * vec2(g.start_x + g.width, g.start_y), 0, 1);
 	EmitVertex();
 
 	vout.st = vec2(0, 1);
-	gl_Position = pos + vec4(size * vec2(g.start_x, g.start_y + g.height) / fb_size, 0, 1);
+	gl_Position = vec4(pos + size * vec2(g.start_x, g.start_y - g.height), 0, 1);
 	EmitVertex();
 
 	vout.st = vec2(1, 1);
-	gl_Position = pos + vec4(size * vec2(g.start_x + g.width, g.start_y + g.height) / fb_size, 0, 1);
+	gl_Position = vec4(pos + size * vec2(g.start_x + g.width, g.start_y - g.height), 0, 1);
 	EmitVertex();
 
 	EndPrimitive();

@@ -19,7 +19,7 @@ namespace GL {
 class vk_shader : public allow_class_decay<vk_shader, VkShaderModule> {
 private:
 	optional<VkShaderModule> module;
-	const vk_logical_device &device;
+	std::reference_wrapper<const vk_logical_device> device;
 
 	std::unordered_map<std::uint32_t, std::string> specializations;
 
@@ -31,6 +31,11 @@ public:
 		std::vector<VkSpecializationMapEntry> entries;
 
 		shader_stage_info_t() : stage_info{} {}
+
+		shader_stage_info_t(shader_stage_info_t&&) = delete;
+		shader_stage_info_t &operator=(shader_stage_info_t&&) = delete;
+		shader_stage_info_t(const shader_stage_info_t&) = delete;
+		shader_stage_info_t &operator=(const shader_stage_info_t&) = delete;
 	};
 
 public:
@@ -78,7 +83,7 @@ public:
 
 	void destroy_shader_module() {
 		if (module) {
-			vkDestroyShaderModule(device, *this, nullptr);
+			vkDestroyShaderModule(device.get(), *this, nullptr);
 			module = none;
 		}
 	}

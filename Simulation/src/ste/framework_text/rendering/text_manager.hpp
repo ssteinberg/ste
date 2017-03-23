@@ -29,21 +29,8 @@ class text_manager {
 private:
 	friend class text_renderer;
 
-	struct pipeline_t {
-		GL::vk_unique_descriptor_set descriptor_set;
-		GL::vk_pipeline_layout pipeline_layout;
-		GL::vk_pipeline_graphics pipeline;
-
-		pipeline_t() = delete;
-		pipeline_t(pipeline_t&&) = default;
-	};
-
 private:
 	const ste_context &context;
-
-	std::unique_ptr<pipeline_t> pipeline;
-	std::unique_ptr<GL::vk_render_pass> renderpass;
-	std::vector<GL::vk_framebuffer> presentation_framebuffers;
 
 	glyph_manager gm;
 	font default_font;
@@ -53,20 +40,24 @@ private:
 	ste_resource<GL::device_pipeline_shader_stage> geom;
 	ste_resource<GL::device_pipeline_shader_stage> frag;
 
+	std::unique_ptr<GL::vk_unique_descriptor_set> descriptor_set;
+
 private:
 	static void adjust_line(std::vector<glyph_point> &, const attributed_wstring &, unsigned, float, float, const glm::vec2 &);
 	std::vector<glyph_point> create_points(glm::vec2, const attributed_wstring &);
 
-	void create_rendering_pipeline();
-	void update_glyphs(GL::vk_command_recorder &recorder);
+private:
+	static GL::vk_unique_descriptor_set create_descriptor_set(const GL::vk_logical_device &, std::uint32_t);
+	bool update_glyphs(GL::vk_command_recorder &recorder);
 
 public:
 	text_manager(const ste_context &context,
 				 const font &default_font,
 				 int default_size = 28);
-	~text_manager() noexcept {}
 
-	std::unique_ptr<text_renderer> create_renderer();
+	text_manager(text_manager&&) = default;
+
+	std::unique_ptr<text_renderer> create_renderer(const GL::vk_render_pass *renderpass);
 };
 
 }

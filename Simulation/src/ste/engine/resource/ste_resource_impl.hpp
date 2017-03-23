@@ -75,7 +75,7 @@ public:
 		policy(ctx, std::move(l))
 	{}
 	template <typename ... Params>
-	ste_resource_base_deferred(const ste_resource_dont_defer &,
+	ste_resource_base_deferred(ste_resource_dont_defer,
 							   Params&&... params)
 		: res(std::forward<Params>(params)...),
 		wait_func_ptr(&ste_resource_base_deferred::noop)
@@ -120,10 +120,21 @@ public:
 		: res(std::forward<Params>(params)...)
 	{}
 	template <typename ... Params>
-	ste_resource_wrapper(const ste_resource_dont_defer &,
+	ste_resource_wrapper(ste_resource_dont_defer,
 						 Params&&... params)
-		: res(ste_resource_dont_defer(),
-			  std::forward<Params>(params)...)
+		: res(std::forward<Params>(params)...)
+	{}
+	template <typename L>
+	ste_resource_wrapper(ste_resource_create_with_lambda,
+						 const ste_context &ctx,
+						 L&& l)
+		: res(l())
+	{}
+	template <typename L>
+	ste_resource_wrapper(ste_resource_create_with_lambda,
+						 ste_resource_dont_defer,
+						 L&& l)
+		: res(l())
 	{}
 
 	ste_resource_wrapper(ste_resource_wrapper&&) = default;
@@ -228,10 +239,24 @@ public:
 			   deferred_create_lambda<Params...>(ctx, std::forward<Params>(params)...))
 	{}
 	template <typename ... Params>
-	ste_resource_deferred_move_assignable_default_constructible(const ste_resource_dont_defer &,
+	ste_resource_deferred_move_assignable_default_constructible(ste_resource_dont_defer,
 																Params&&... params)
 		: Base(ste_resource_dont_defer(),
 			   std::forward<Params>(params)...)
+	{}
+	template <typename L>
+	ste_resource_deferred_move_assignable_default_constructible(ste_resource_create_with_lambda,
+																const ste_context &ctx,
+																L&& l)
+		: Base(ctx,
+			   std::forward<L>(l))
+	{}
+	template <typename L>
+	ste_resource_deferred_move_assignable_default_constructible(ste_resource_create_with_lambda,
+																ste_resource_dont_defer,
+																L&& l)
+		: Base(ste_resource_dont_defer(),
+			   l())
 	{}
 
 	ste_resource_deferred_move_assignable_default_constructible(ste_resource_deferred_move_assignable_default_constructible&&) = default;
@@ -335,10 +360,24 @@ public:
 			   deferred_create_lambda<Params...>(ctx, std::forward<Params>(params)...))
 	{}
 	template <typename ... Params>
-	ste_resource_deferred_ptr_wrap(const ste_resource_dont_defer &,
+	ste_resource_deferred_ptr_wrap(ste_resource_dont_defer,
 								   Params&&... params)
 		: Base(ste_resource_dont_defer(),
 			   std::make_unique<T>(std::forward<Params>(params)...))
+	{}
+	template <typename L>
+	ste_resource_deferred_ptr_wrap(ste_resource_create_with_lambda,
+								   const ste_context &ctx,
+								   L&& l)
+		: Base(ctx,
+			   std::forward<L>(l))
+	{}
+	template <typename L>
+	ste_resource_deferred_ptr_wrap(ste_resource_create_with_lambda,
+								   ste_resource_dont_defer,
+								   L&& l)
+		: Base(ste_resource_dont_defer(),
+			   std::make_unique<T>(l()))
 	{}
 
 	ste_resource_deferred_ptr_wrap(ste_resource_deferred_ptr_wrap&&) = default;

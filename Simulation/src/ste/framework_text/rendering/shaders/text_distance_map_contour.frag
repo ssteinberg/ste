@@ -11,12 +11,12 @@ struct buffer_glyph_descriptor {
 };
 
 in geo_out {
-	vec4 color;
-	vec4 stroke_color;
+	vec3 color;
+	vec3 stroke_color;
 	float weight;
 	float stroke_width;
 	vec2 st;
-	flat int drawId;
+	flat uint drawId;
 } vin;
 
 layout(location = 0) out vec4 frag_color;
@@ -50,9 +50,9 @@ void main( void ) {
 	if (g==0)
 		discard;
 
-	vec4 c = vin.color;
+	vec3 c = vin.color;
 	if (vin.stroke_width > 0)
-		c = mix(vin.stroke_color, vin.color, clamp((- D - vin.stroke_width * .9f) / (vin.stroke_width * .2f), 0, 1));
+		c = mix(vin.stroke_color, c, clamp((- D - vin.stroke_width * .9f) / (vin.stroke_width * .2f), 0, 1));
 
-	frag_color = c * vec4(1, 1, 1, g);
+	frag_color = vec4(c, g);
 }

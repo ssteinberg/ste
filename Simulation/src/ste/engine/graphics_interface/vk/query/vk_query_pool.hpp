@@ -19,7 +19,7 @@ namespace GL {
 class vk_query_pool {
 private:
 	optional<VkQueryPool> query_pool;
-	const vk_logical_device &device;
+	std::reference_wrapper<const vk_logical_device> device;
 	std::uint32_t size;
 
 protected:
@@ -56,7 +56,7 @@ public:
 
 	void destroy_query_pool() {
 		if (query_pool) {
-			vkDestroyQueryPool(device, *this, nullptr);
+			vkDestroyQueryPool(device.get(), *this, nullptr);
 			query_pool = none;
 		}
 	}
@@ -69,7 +69,7 @@ public:
 		std::string data;
 		data.resize(data_size);
 
-		vk_result res = vkGetQueryPoolResults(device, *this,
+		vk_result res = vkGetQueryPoolResults(device.get(), *this,
 											  first_query, queries_count,
 											  data_size, &data[0], stride,
 											  flags);
@@ -80,7 +80,7 @@ public:
 		return data;
 	}
 
-	auto& get_creating_device() const { return device; }
+	auto& get_creating_device() const { return device.get(); }
 	auto& get_query_pool() const { return query_pool.get(); }
 
 	vk_query operator[](std::uint32_t idx) const {

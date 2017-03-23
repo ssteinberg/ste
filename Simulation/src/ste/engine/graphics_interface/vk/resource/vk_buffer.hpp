@@ -28,7 +28,7 @@ private:
 
 protected:
 	void bind_resource_underlying_memory(const vk_device_memory &memory, std::uint64_t offset) override {
-		vk_result res = vkBindBufferMemory(Base::device, *this, memory, offset);
+		vk_result res = vkBindBufferMemory(Base::device.get(), *this, memory, offset);
 		if (!res) {
 			throw vk_exception(res);
 		}
@@ -49,7 +49,7 @@ public:
 
 	VkMemoryRequirements get_memory_requirements() const override {
 		VkMemoryRequirements req;
-		vkGetBufferMemoryRequirements(Base::device, *this, &req);
+		vkGetBufferMemoryRequirements(Base::device.get(), *this, &req);
 
 		return req;
 	}

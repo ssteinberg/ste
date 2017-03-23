@@ -114,7 +114,7 @@ public:
 
 	VkMemoryRequirements get_memory_requirements() const {
 		VkMemoryRequirements req;
-		vkGetBufferMemoryRequirements(Base::device, *this, &req);
+		vkGetBufferMemoryRequirements(Base::device.get(), *this, &req);
 
 		return req;
 	}

@@ -24,7 +24,7 @@ namespace GL {
 class vk_render_pass : public allow_class_decay<vk_render_pass, VkRenderPass> {
 private:
 	optional<VkRenderPass> render_pass;
-	const vk_logical_device &device;
+	std::reference_wrapper<const vk_logical_device> device;
 
 public:
 	vk_render_pass(const vk_logical_device &device,
@@ -89,7 +89,7 @@ public:
 
 	void destroy_render_pass() {
 		if (render_pass) {
-			vkDestroyRenderPass(device, *this, nullptr);
+			vkDestroyRenderPass(device.get(), *this, nullptr);
 			render_pass = none;
 		}
 	}

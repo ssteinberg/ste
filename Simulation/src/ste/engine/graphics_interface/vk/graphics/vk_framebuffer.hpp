@@ -22,7 +22,7 @@ namespace GL {
 class vk_framebuffer : public allow_class_decay<vk_framebuffer, VkFramebuffer> {
 private:
 	optional<VkFramebuffer> framebuffer;
-	const vk_logical_device &device;
+	std::reference_wrapper<const vk_logical_device> device;
 	glm::u32vec2 extent;
 
 public:
@@ -59,7 +59,7 @@ public:
 
 	void destroy_framebuffer() {
 		if (framebuffer) {
-			vkDestroyFramebuffer(device, *this, nullptr);
+			vkDestroyFramebuffer(device.get(), *this, nullptr);
 			framebuffer = none;
 		}
 	}

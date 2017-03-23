@@ -27,70 +27,19 @@ text_manager::text_manager(const StE::ste_context &context,
 	vert(context, std::string("text_distance_map_contour.vert")),
 	geom(context, std::string("text_distance_map_contour.geom")),
 	frag(context, std::string("text_distance_map_contour.frag"))
-{}
+{
+	this->descriptor_set = std::make_unique<GL::vk_unique_descriptor_set>(create_descriptor_set(context.device().logical_device(), 0));
+	this->descriptor_set->get().write({
+		GL::vk_descriptor_set_write_resource(VK_DESCRIPTOR_TYPE_SAMPLER, 2, 0, GL::vk_descriptor_set_write_image(gm.sampler()))
+	});
+}
 
-void text_manager::create_rendering_pipeline() {
-	auto texture_count = gm.textures().size();
-
+StE::GL::vk_unique_descriptor_set text_manager::create_descriptor_set(const StE::GL::vk_logical_device &device, 
+																	  std::uint32_t texture_count) {
 	GL::vk_descriptor_set_layout_binding glyph_data_binding(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_GEOMETRY_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0);
 	GL::vk_descriptor_set_layout_binding glyph_textures_binding(VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, VK_SHADER_STAGE_FRAGMENT_BIT, 1, texture_count);
 	GL::vk_descriptor_set_layout_binding glyph_sampler_binding(VK_DESCRIPTOR_TYPE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 2, 1);
-	GL::vk_unique_descriptor_set descriptor_set(context.device().logical_device(), { glyph_data_binding, glyph_textures_binding, glyph_sampler_binding });
-	GL::vk_pipeline_layout pipeline_layout(context.device().logical_device(), { descriptor_set.get_layout() }, {});
-
-	// Swapchain attachment
-	GL::vk_render_pass_attachment swapchain_attachment = GL::vk_render_pass_attachment::clear_and_store(context.device().get_surface().format(),
-																										VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
-	VkClearValue swapchain_attachment_clear_value = {};
-	GL::vk_blend_op_descriptor attachment0_blend_op = GL::vk_blend_op_descriptor(VK_BLEND_FACTOR_SRC_ALPHA,
-																				 VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,
-																				 VK_BLEND_OP_ADD);
-
-	GL::vk_render_pass_subpass_descriptor presentation_subpass0({ VkAttachmentReference{ 0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } });
-	GL::vk_render_pass_subpass_dependency presentation_subpass0_dependency(VK_SUBPASS_EXTERNAL,
-																		   VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-																		   0,
-																		   0,
-																		   VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-																		   VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT);
-
-	glm::u32vec2 swapchain_size = context.device().get_surface().size();
-	renderpass = std::make_unique<GL::vk_render_pass>(GL::vk_render_pass{ context.device().logical_device(),
-	{ swapchain_attachment },
-	{ presentation_subpass0 },
-	{ presentation_subpass0_dependency } });
-	auto swapchain_images_count = context.device().get_surface().get_swap_chain_images().size();
-	presentation_framebuffers.reserve(swapchain_images_count);
-	for (std::size_t i = 0; i < swapchain_images_count; ++i)
-		presentation_framebuffers.emplace_back(context.device().logical_device(),
-											   *renderpass,
-											   std::vector<VkImageView>{ context.device().get_surface().get_swap_chain_images()[i].view },
-											   swapchain_size);
-
-	VkViewport viewport = { 0, 0,
-		static_cast<float>(swapchain_size.x), static_cast<float>(swapchain_size.y),
-		1.f, 0.f };
-	VkRect2D scissor = { { 0,0 },{ swapchain_size.x, swapchain_size.y } };
-
-	static_cast<GL::vk_shader&>(vert).specialize_constant(0, texture_count);
-
-	GL::vk_pipeline_graphics pipeline(GL::vk_pipeline_graphics{ context.device().logical_device(),{ vert->graphics_pipeline_stage_descriptor(),
-		geom->graphics_pipeline_stage_descriptor(),
-		frag->graphics_pipeline_stage_descriptor() },
-		pipeline_layout,
-		*renderpass,
-		0,
-		viewport,
-		scissor,
-		{ { 0, glyph_point::descriptor() } },
-		VK_PRIMITIVE_TOPOLOGY_POINT_LIST,
-		GL::vk_rasterizer_op_descriptor(VK_CULL_MODE_NONE, VK_FRONT_FACE_CLOCKWISE),
-		GL::vk_depth_op_descriptor(),
-		{ attachment0_blend_op },
-		glm::vec4{ .0f } });
-
-	this->pipeline = std::make_unique<pipeline_t>(pipeline_t{ std::move(descriptor_set), 
-											std::move(pipeline_layout), std::move(pipeline) });
+	return GL::vk_unique_descriptor_set(device, { glyph_data_binding, glyph_textures_binding, glyph_sampler_binding });
 }
 
 void text_manager::adjust_line(std::vector<glyph_point> &points, const attributed_wstring &wstr, unsigned line_start_index, float line_start, float line_height, const glm::vec2 &ortho_pos) {
@@ -101,15 +50,17 @@ void text_manager::adjust_line(std::vector<glyph_point> &points, const attribute
 		if (alignment_attrib && alignment_attrib->get() != Attributes::align::alignment::Left) {
 			float line_len = ortho_pos.x - line_start;
 			float offset = alignment_attrib->get() == Attributes::align::alignment::Center ? -line_len*.5f : -line_len;
-			for (unsigned i = line_start_index; i < points.size(); ++i)
-				points[i].pos.x += offset;
+			for (unsigned i = line_start_index; i < points.size(); ++i) {
+				points[i].data.x += static_cast<std::uint16_t>(offset);
+			}
 		}
 
 		if (line_height_attrib && line_height>0)
 			line_height = line_height_attrib->get();
 	}
-	for (unsigned i = line_start_index; i < points.size(); ++i)
-		points[i].pos.y -= line_height;
+	for (unsigned i = line_start_index; i < points.size(); ++i) {
+		*(reinterpret_cast<std::uint16_t*>(&points[i].data.x) + 1) -= static_cast<std::uint16_t>(line_height);
+	}
 }
 
 std::vector<glyph_point> text_manager::create_points(glm::vec2 ortho_pos, const attributed_wstring &wstr) {
@@ -153,20 +104,26 @@ std::vector<glyph_point> text_manager::create_points(glm::vec2 ortho_pos, const 
 
 		float advance = static_cast<float>(i + 1 < wstr.length() ? gm.spacing(font, { wstr[i], wstr[i + 1] }, size) : 0);
 
+		glm::u32vec2 pos = { static_cast<std::uint32_t>(ortho_pos.x + .5f), static_cast<std::uint32_t>(ortho_pos.y + .5f) };
+		std::uint32_t osize = static_cast<std::uint32_t>(f * 2.f * glyph_point::size_scale + .5f);
+		std::uint32_t glyph_index = static_cast<std::uint32_t>(g->buffer_index);
+		float weight = glm::clamp<float>(w - 400, -300, 500) * f * .003f;
+
 		glyph_point p;
-		p.pos = decltype(p.pos){ ortho_pos.x, ortho_pos.y };
-		p.glyph = static_cast<float>(g->buffer_index) + .5f;
-		p.size = f * 2;
-		p.color = glm::vec4(color) / 255.0f;
-		p.weight = glm::clamp<float>(w - 400, -300, 500) * f * .003f;
+		p.data.x = (pos.x & 0xFFFF) | (pos.y << 16);
+		p.data.y = (osize & 0xFFFF) | (glyph_index << 16);
+		p.data.z = glm::packUnorm4x8(glm::vec4(color.x / 255.0f, color.y / 255.0f, color.z / 255.0f, 
+											   .5f + weight * glyph_point::weight_scale));
+		p.data.w = 0;
 
 		if (stroke_attrib) {
-			p.stroke_color = glm::vec4(stroke_attrib->get_color().get()) / 255.0f;
-			p.stroke_width = stroke_attrib->get_width();
-			advance += glm::floor(p.stroke_width * .5f);
+			float stroke_width = stroke_attrib->get_width();
+			advance += glm::floor(stroke_width * .5f);
+
+			auto c = stroke_attrib->get_color().get();
+			p.data.w = glm::packUnorm4x8(glm::vec4(c.x / 255.0f,c.y / 255.0f,c.z / 255.0f, 
+												   stroke_width * glyph_point::stroke_width_scale));
 		}
-		else
-			p.stroke_width = .0f;
 
 		points.push_back(p);
 
@@ -179,41 +136,59 @@ std::vector<glyph_point> text_manager::create_points(glm::vec2 ortho_pos, const 
 	return points;
 }
 
-void text_manager::update_glyphs(StE::GL::vk_command_recorder &recorder) {
+bool text_manager::update_glyphs(StE::GL::vk_command_recorder &recorder) {
 	auto updated_range = gm.update_pending_glyphs(recorder);
+	if (!updated_range.length)
+		return false;
 
-	if (updated_range.length) {
-		create_rendering_pipeline();
+	std::uint32_t texture_count = static_cast<std::uint32_t>(gm.textures().size());
 
-		std::vector<GL::vk_descriptor_set_write_image> image_writes;
+	// Update fragment specialization constant
+	static_cast<GL::vk_shader&>(frag).specialize_constant(0, texture_count);
 
-		for (std::size_t i = 0; i < gm.textures().size(); ++i) {
-			auto &glyph_texture = gm.textures()[i];
+	// Create new descriptor set and layout
+	auto new_descriptor_set = std::make_unique<GL::vk_unique_descriptor_set>(create_descriptor_set(context.device().logical_device(), texture_count));
+	std::vector<GL::vk_descriptor_set_write_image> image_writes;
+	image_writes.reserve(texture_count);
+	for (std::uint32_t i = updated_range.start; i < updated_range.start + updated_range.length; ++i) {
+		auto &glyph_texture = gm.textures()[i];
 
-			auto texture_write = GL::vk_descriptor_set_write_image(glyph_texture.view, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-			image_writes.push_back(texture_write);
+		// Move image to correct layout
+		auto image_barrier = GL::image_layout_transform_barrier(glyph_texture.texture,
+																VK_ACCESS_TRANSFER_WRITE_BIT,
+																glyph_texture.texture.layout(),
+																VK_ACCESS_SHADER_READ_BIT,
+																VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+		recorder << GL::vk_cmd_pipeline_barrier(GL::vk_pipeline_barrier(VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
+																		VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+																		image_barrier));
 
-			if (i < updated_range.length) {
-				// Move image to correct layout
-				auto image_barrier = GL::image_layout_transform_barrier(glyph_texture.texture,
-																		VK_ACCESS_TRANSFER_WRITE_BIT,
-																		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-																		VK_ACCESS_SHADER_READ_BIT,
-																		VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-				recorder << GL::vk_cmd_pipeline_barrier(GL::vk_pipeline_barrier(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-																				VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
-																				image_barrier));
-			}
-		}
-
-		pipeline->descriptor_set.get().write({
-			GL::vk_descriptor_set_write_resource(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 0, 0, GL::vk_descriptor_set_write_buffer(gm.ssbo(), gm.ssbo().size())),
-			GL::vk_descriptor_set_write_resource(VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, 1, 0, image_writes),
-			GL::vk_descriptor_set_write_resource(VK_DESCRIPTOR_TYPE_SAMPLER, 2, 0, GL::vk_descriptor_set_write_image(gm.sampler()))
-		});
+		// Write new descriptor
+		auto texture_write = GL::vk_descriptor_set_write_image(glyph_texture.view, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+		image_writes.push_back(texture_write);
 	}
+
+	std::vector<GL::vk_descriptor_set_copy_resources> copies = { GL::vk_descriptor_set_copy_resources(*this->descriptor_set, 
+																									  2, 0, 2, 0, 1) };
+	if (updated_range.start > 0) {
+		// Need to copy old descriptors
+		copies.push_back(GL::vk_descriptor_set_copy_resources(*this->descriptor_set, 1, 0, 1, 0, updated_range.start));
+	}
+
+	// Copy and write out descriptors
+	new_descriptor_set->get().update(
+	{ // Writes
+		GL::vk_descriptor_set_write_resource(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 0, 0, GL::vk_descriptor_set_write_buffer(gm.ssbo(), texture_count)),
+		GL::vk_descriptor_set_write_resource(VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, 1, updated_range.start, image_writes)
+	}, 
+	copies);
+
+	this->descriptor_set = std::move(new_descriptor_set);
+
+	return true;
 }
 
-std::unique_ptr<text_renderer> text_manager::create_renderer() {
-	return std::make_unique<text_renderer>(this);
+std::unique_ptr<text_renderer> text_manager::create_renderer(const StE::GL::vk_render_pass *renderpass) {
+	return std::make_unique<text_renderer>(this,
+										   renderpass);
 }

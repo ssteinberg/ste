@@ -19,7 +19,7 @@ class vk_swapchain {
 private:
 	VkSwapchainCreateInfoKHR swapchain_create_info;
 	optional<VkSwapchainKHR> swapchain;
-	const vk_logical_device &device;
+	std::reference_wrapper<const vk_logical_device> device;
 
 public:
 	/**
@@ -90,7 +90,7 @@ public:
 
 	void destroy_swapchain() {
 		if (swapchain) {
-			vkDestroySwapchainKHR(device, swapchain.get(), nullptr);
+			vkDestroySwapchainKHR(device.get(), swapchain.get(), nullptr);
 			swapchain = none;
 		}
 	}

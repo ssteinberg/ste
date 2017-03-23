@@ -21,7 +21,7 @@ public:
 	using size_type = typename vk_image_extent_type<dimensions>::type;
 
 protected:
-	const vk_logical_device &device;
+	std::reference_wrapper<const vk_logical_device> device;
 	optional<VkImage> image;
 
 private:
@@ -68,12 +68,12 @@ public:
 		subresource.arrayLayer = layer;
 
 		VkSubresourceLayout layout;
-		vkGetImageSubresourceLayout(device, *this, &subresource, &layout);
+		vkGetImageSubresourceLayout(device.get(), *this, &subresource, &layout);
 
 		return layout;
 	}
 
-	auto& get_creating_device() const { return device; }
+	auto& get_creating_device() const { return device.get(); }
 	auto& get() const { return image.get(); }
 
 	auto& get_format() const { return format; };

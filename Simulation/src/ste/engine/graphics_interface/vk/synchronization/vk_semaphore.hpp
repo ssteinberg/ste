@@ -18,7 +18,7 @@ namespace GL {
 class vk_semaphore : public ste_resource_pool_const_trait<const vk_logical_device &>, public allow_class_decay<vk_semaphore, VkSemaphore> {
 private:
 	optional<VkSemaphore> semaphore;
-	const vk_logical_device &device;
+	std::reference_wrapper<const vk_logical_device> device;
 
 public:
 	vk_semaphore(const vk_logical_device &device) : device(device) {
@@ -46,12 +46,12 @@ public:
 
 	void destroy_semaphore() {
 		if (semaphore) {
-			vkDestroySemaphore(device, *this, nullptr);
+			vkDestroySemaphore(device.get(), *this, nullptr);
 			semaphore = none;
 		}
 	}
 
-	auto& get_creating_device() const { return device; }
+	auto& get_creating_device() const { return device.get(); }
 	auto& get() const { return semaphore.get(); }
 };
 

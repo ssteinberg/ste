@@ -44,7 +44,7 @@ public:
 	using allocation_t = chunk_t::allocation_type;
 
 private:
-	const vk_logical_device &device;
+	std::reference_wrapper<const vk_logical_device> device;
 	const heaps_t heaps;
 	std::uint64_t minimal_allocation_size_bytes;
 
@@ -365,7 +365,7 @@ public:
 	*	@param	flags	Memory type flags
 	*/
 	auto get_total_device_memory(const VkMemoryPropertyFlags &flags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT) const {
-		const VkPhysicalDeviceMemoryProperties &properties = device.get_physical_device_descriptor().memory_properties;
+		const VkPhysicalDeviceMemoryProperties &properties = device.get().get_physical_device_descriptor().memory_properties;
 
 		std::unordered_set<std::uint32_t> conforming_heaps;
 		for (std::uint32_t i=0;i<properties.memoryTypeCount;++i) {
@@ -412,7 +412,7 @@ public:
 	*	@param	flags	Memory type flags
 	*/
 	auto get_total_commited_memory(const VkMemoryPropertyFlags &flags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT) const {
-		const VkPhysicalDeviceMemoryProperties &properties = device.get_physical_device_descriptor().memory_properties;
+		const VkPhysicalDeviceMemoryProperties &properties = device.get().get_physical_device_descriptor().memory_properties;
 		std::uint64_t total_commited_memory = 0;
 
 		for (memory_type_t type = 0; type < memory_types; ++type) {
@@ -455,7 +455,7 @@ public:
 	*	@param	flags	Memory type flags
 	*/
 	auto get_total_allocated_memory(const VkMemoryPropertyFlags &flags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT) const {
-		const VkPhysicalDeviceMemoryProperties &properties = device.get_physical_device_descriptor().memory_properties;
+		const VkPhysicalDeviceMemoryProperties &properties = device.get().get_physical_device_descriptor().memory_properties;
 		std::uint64_t total_allocated_memory = 0;
 
 		for (memory_type_t type = 0; type < memory_types; ++type) {

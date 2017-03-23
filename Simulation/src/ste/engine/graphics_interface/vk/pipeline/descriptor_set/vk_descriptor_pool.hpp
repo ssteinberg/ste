@@ -21,7 +21,7 @@ namespace GL {
 class vk_descriptor_pool : public allow_class_decay<vk_descriptor_pool, VkDescriptorPool> {
 private:
 	optional<VkDescriptorPool> pool;
-	const vk_logical_device &device;
+	std::reference_wrapper<const vk_logical_device> device;
 	bool allow_free_individual_sets;
 
 public:
@@ -75,16 +75,16 @@ public:
 
 	void destroy_pool() {
 		if (pool) {
-			vkDestroyDescriptorPool(device, *this, nullptr);
+			vkDestroyDescriptorPool(device.get(), *this, nullptr);
 			pool = none;
 		}
 	}
 
 	vk_descriptor_set allocate_descriptor_set(const std::vector<VkDescriptorSetLayout> &set_layouts) const {
 		std::vector<VkDescriptorSetLayout> set_layout_descriptors;
-		set_layout_descriptors.resize(set_layouts.size());
-		for (std::size_t i = 0; i < set_layouts.size(); ++i)
-			set_layout_descriptors[i] = *(set_layouts.begin() + i);
+		set_layout_descriptors.reserve(set_layouts.size());
+		for (auto &s : set_layouts)
+			set_layout_descriptors.push_back(s);
 
 		VkDescriptorSetAllocateInfo create_info = {};
 		create_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
@@ -94,16 +94,16 @@ public:
 		create_info.pSetLayouts = set_layout_descriptors.data();
 
 		VkDescriptorSet set;
-		vk_result res = vkAllocateDescriptorSets(device, &create_info, &set);
+		vk_result res = vkAllocateDescriptorSets(device.get(), &create_info, &set);
 		if (!res) {
 			throw vk_exception(res);
 		}
 
-		return vk_descriptor_set(set, device, *this);
+		return vk_descriptor_set(device, set, *this, allows_freeing_individual_sets());
 	}
 
 	void reset_pool() const {
-		vk_result res = vkResetDescriptorPool(device, *this, 0);
+		vk_result res = vkResetDescriptorPool(device.get(), *this, 0);
 		if (!res) {
 			throw vk_exception(res);
 		}

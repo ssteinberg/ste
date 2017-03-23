@@ -21,7 +21,7 @@ namespace GL {
 class vk_pipeline_layout : public allow_class_decay<vk_pipeline_layout, VkPipelineLayout> {
 private:
 	optional<VkPipelineLayout> layout;
-	const vk_logical_device &device;
+	std::reference_wrapper<const vk_logical_device> device;
 
 public:
 	vk_pipeline_layout(const vk_logical_device &device, 
@@ -54,13 +54,13 @@ public:
 	}
 
 	vk_pipeline_layout(vk_pipeline_layout &&) = default;
-	vk_pipeline_layout &operator=(vk_pipeline_layout &&) = default;
+	vk_pipeline_layout &operator=(vk_pipeline_layout &&o) = default;
 	vk_pipeline_layout(const vk_pipeline_layout &) = delete;
 	vk_pipeline_layout &operator=(const vk_pipeline_layout &) = delete;
 
 	void destroy_pipeline_layout() {
 		if (layout) {
-			vkDestroyPipelineLayout(device, *this, nullptr);
+			vkDestroyPipelineLayout(device.get(), *this, nullptr);
 			layout = none;
 		}
 	}

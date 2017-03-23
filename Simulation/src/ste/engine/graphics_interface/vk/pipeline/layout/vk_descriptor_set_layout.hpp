@@ -20,15 +20,15 @@ namespace GL {
 class vk_descriptor_set_layout : public allow_class_decay<vk_descriptor_set_layout, VkDescriptorSetLayout> {
 private:
 	optional<VkDescriptorSetLayout> layout;
-	const vk_logical_device &device;
+	std::reference_wrapper<const vk_logical_device> device;
 
 public:
 	vk_descriptor_set_layout(const vk_logical_device &device,
 							 const std::vector<vk_descriptor_set_layout_binding> &bindings) : device(device) {
 		std::vector<VkDescriptorSetLayoutBinding> binding_descriptors;
-		binding_descriptors.resize(bindings.size());
-		for (std::size_t i = 0; i < bindings.size(); ++i)
-			binding_descriptors[i] = *(bindings.begin() + i);
+		binding_descriptors.reserve(bindings.size());
+		for (auto &b : bindings)
+			binding_descriptors.push_back(b);
 
 		VkDescriptorSetLayoutCreateInfo create_info = {};
 		create_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
@@ -56,7 +56,7 @@ public:
 
 	void destroy_descriptor_set_layout() {
 		if (layout) {
-			vkDestroyDescriptorSetLayout(device, *this, nullptr);
+			vkDestroyDescriptorSetLayout(device.get(), *this, nullptr);
 			layout = none;
 		}
 	}

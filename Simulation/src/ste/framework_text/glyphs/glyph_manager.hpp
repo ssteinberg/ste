@@ -19,7 +19,6 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include <queue>
 #include <unordered_map>
 
 #include <vk_command_recorder.hpp>
@@ -60,7 +59,7 @@ private:
 
 	std::unordered_map<font, font_storage> fonts;
 
-	std::queue<buffer_glyph_descriptor> pending_glyphs;
+	std::vector<buffer_glyph_descriptor> pending_glyphs;
 
 	GL::stable_vector<buffer_glyph_descriptor> buffer;
 	std::vector<glyph_texture> glyph_textures;
@@ -75,6 +74,10 @@ private:
 			og = context.engine().cache().get<glyph>(cache_key)();
 		}
 		catch (const std::exception &) {
+			og = none;
+		}
+
+		if (!og) {
 			glyph g = factory.create_glyph(font, codepoint);
 			if (g.empty())
 				return nullptr;
@@ -87,10 +90,13 @@ private:
 
 		auto index = glyph_textures.size();
 
-		auto image = GL::device_image<2>(context,
-										 VK_IMAGE_USAGE_SAMPLED_BIT,
-										 std::move(*og.get().glyph_distance_field),
-										 GL::device_image_from_surface<VK_FORMAT_R32_SFLOAT>());
+		if (og.get().glyph_distance_field == nullptr) {
+			return nullptr;
+		}
+		auto image = GL::device_image<2>::create_image_2d<VK_FORMAT_R32_SFLOAT>(context,
+																				std::move(*og.get().glyph_distance_field),
+																				VK_IMAGE_USAGE_SAMPLED_BIT,
+																				false);
 		auto view = GL::vk_image_view<GL::vk_image_type::image_2d>(*image, image->get_format());
 		glyph_textures.push_back(glyph_texture{ std::move(image), std::move(view) });
 
@@ -102,7 +108,7 @@ private:
 		bgd.metrics = og.get().metrics;
 		bgd.glyph_index = index;
 
-		pending_glyphs.push(bgd);
+		pending_glyphs.push_back(bgd);
 
 		auto &gd_ref = this->fonts[font].glyphs[codepoint];
 		gd_ref = std::move(gd);
@@ -148,10 +154,8 @@ public:
 		ret.length = pending_glyphs.size();
 
 		// Update
-		while (pending_glyphs.size()) {
-			recorder << buffer.push_back_cmd(pending_glyphs.front());
-			pending_glyphs.pop();
-		}
+		recorder << buffer.push_back_cmd(pending_glyphs);
+		pending_glyphs.clear();
 
 		return ret;
 	}

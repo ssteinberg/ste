@@ -18,7 +18,7 @@ namespace GL {
 class vk_buffer_view {
 private:
 	optional<VkBufferView> view;
-	const vk_logical_device &device;
+	std::reference_wrapper<const vk_logical_device> device;
 	std::uint64_t size_bytes;
 	VkFormat format;
 
@@ -40,7 +40,7 @@ public:
 		create_info.range = size_bytes;
 		create_info.format = format;
 
-		vk_result res = vkCreateBufferView(device, &create_info, nullptr, &view);
+		vk_result res = vkCreateBufferView(device.get(), &create_info, nullptr, &view);
 		if (!res) {
 			throw vk_exception(res);
 		}
@@ -61,7 +61,7 @@ public:
 
 	void destroy_view() {
 		if (view) {
-			vkDestroyBufferView(device, view.get(), nullptr);
+			vkDestroyBufferView(device.get(), view.get(), nullptr);
 			view = none;
 		}
 	}

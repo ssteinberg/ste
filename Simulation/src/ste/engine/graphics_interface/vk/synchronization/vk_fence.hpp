@@ -22,7 +22,7 @@ namespace GL {
 class vk_fence : public ste_resource_pool_resetable_trait<const vk_logical_device &, bool> {
 private:
 	optional<VkFence> fence;
-	const vk_logical_device &device;
+	std::reference_wrapper<const vk_logical_device> device;
 
 public:
 	vk_fence(const vk_logical_device &device, 
@@ -51,7 +51,7 @@ public:
 
 	void destroy_fence() {
 		if (fence) {
-			vkDestroyFence(device, *this, nullptr);
+			vkDestroyFence(device.get(), *this, nullptr);
 			fence = none;
 		}
 	}
@@ -60,7 +60,7 @@ public:
 	*	@brief	Returns true if fence is signaled
 	*/
 	bool is_signaled() const {
-		vk_result res = vkGetFenceStatus(device, *this);
+		vk_result res = vkGetFenceStatus(device.get(), *this);
 		if (res != VK_SUCCESS &&
 			res != VK_NOT_READY) {
 			// Returned error. Throw...
@@ -72,7 +72,7 @@ public:
 	*	@brief	Resets the fence, setting its status to unsignaled
 	*/
 	void reset() override {
-		vk_result res = vkResetFences(device, 1, &fence.get());
+		vk_result res = vkResetFences(device.get(), 1, &fence.get());
 		if (!res) {
 			throw vk_exception(res);
 		}
@@ -87,14 +87,14 @@ public:
 	template <class Rep = std::chrono::nanoseconds::rep, class Period = std::chrono::nanoseconds::period>
 	bool wait_idle(const std::chrono::duration<Rep, Period> &timeout = std::chrono::nanoseconds(std::numeric_limits<uint64_t>::max())) const {
 		std::uint64_t timeout_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(timeout).count();
-		return vkWaitForFences(device,
+		return vkWaitForFences(device.get(),
 							   1,
 							   &fence.get(),
 							   true,
 							   timeout_ns) == VK_SUCCESS;
 	}
 
-	auto& get_creating_device() const { return device; }
+	auto& get_creating_device() const { return device.get(); }
 	auto& get_fence() const { return fence.get(); }
 
 	operator VkFence() const { return get_fence(); }

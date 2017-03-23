@@ -165,6 +165,8 @@
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
       <ErrorReporting>None</ErrorReporting>
       <DiagnosticsFormat>Column</DiagnosticsFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
     <Link>
       <AdditionalDependencies>vulkan-1.lib;libboost_system-vc140-mt-gd-1_62.lib;libboost_filesystem-vc140-mt-gd-1_62.lib;libboost_serialization-vc140-mt-gd-1_62.lib;libboost_exception-vc140-mt-gd-1_62.lib;zlibd.lib;freetyped.lib;glfw3d.lib;turbojpeg-staticd.lib;libpng16_staticd.lib;tga_staticd.lib;tinyobjloaderd.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -215,6 +217,8 @@
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
       <ErrorReporting>None</ErrorReporting>
       <OmitFramePointers>false</OmitFramePointers>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(VULKAN_SDK)\lib;$(SolutionDir)..\..\boost_1_61_0\stage\lib;$(SolutionDir)Simulation\third_party\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -514,7 +518,6 @@
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\device\ste_device.cpp" />
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\device\ste_device_queue_selector_cache.cpp" />
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\device\presentation_surface\ste_presentation_surface.cpp" />
-    <ClCompile Include="Simulation\src\ste\engine\graphics_interface\vk\pipeline\descriptor_set\vk_descriptor_set.cpp" />
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\vk\query\vk_query.cpp" />
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\vk\queue\vk_command_buffers.cpp" />
     <ClCompile Include="Simulation\src\ste\engine\window\ste_window.cpp" />
@@ -572,8 +575,8 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\image\device_image_layout_transformable.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\image\device_image_queue_transfer.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\image\device_image_layout.hpp" />
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\texture\texture.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\synchronization\shared_fence.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\pipeline\descriptor_set\vk_descriptor_set_copy_resources.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\pool\ste_resource_pool.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\pool\ste_resource_pool_traits.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\pool\ste_resource_pool_reclamation_policy.hpp" />

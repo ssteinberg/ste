@@ -50,12 +50,24 @@ public:
 	auto atom_size() const {
 		return std::max(memory_requirements.alignment, minimal_atom_size);
 	}
-	bind_range_t atoms_range(const bind_range_t &range) const {
+	bind_range_t atoms_range_contain(const bind_range_t &range) const {
 		auto alignment = static_cast<std::size_t>(atom_size());
 
 		bind_range_t ret;
 		ret.start = range.start * sizeof(T) / alignment;
 		ret.length = (range.length * sizeof(T) + alignment - 1) / alignment;
+
+		return ret;
+	}
+	bind_range_t atoms_range_intersect(const bind_range_t &range) const {
+		auto alignment = static_cast<std::size_t>(atom_size());
+
+		auto atom_start = (range.start * sizeof(T) + alignment - 1) / alignment;
+		auto atom_end = (range.start + range.length) / alignment;
+
+		bind_range_t ret;
+		ret.start = atom_start;
+		ret.length = atom_end;
 
 		return ret;
 	}
@@ -123,7 +135,7 @@ public:
 
 		for (std::size_t i = 0; i < unbind_regions.size(); ++i) {
 			auto &r = unbind_regions[i];
-			auto atoms = atoms_range(r);
+			auto atoms = atoms_range_intersect(r);
 
 			// Unbind each bound atom individually
 			for (atom_address_t p = atoms.start; p != atoms.start + atoms.length; ++p) {
@@ -141,7 +153,7 @@ public:
 		}
 		for (std::size_t i = 0; i < bind_regions.size(); ++i) {
 			auto &r = bind_regions[i];
-			auto atoms = atoms_range(r);
+			auto atoms = atoms_range_contain(r);
 
 			if (bound_atoms_map.size() < atoms.start + atoms.length)
 				bound_atoms_map.resize(atoms.start + atoms.length);

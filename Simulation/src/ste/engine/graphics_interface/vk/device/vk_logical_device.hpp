@@ -67,18 +67,7 @@ public:
 	{
 		s.logical_device = nullptr;
 	}
-	vk_logical_device &operator=(vk_logical_device &&s) noexcept {
-		physical_device = s.physical_device;
-		logical_device = s.logical_device;
-		requested_features = s.requested_features;
-		requested_queues = s.requested_queues;
-		enabled_extensions = s.enabled_extensions;
-
-		s.logical_device = nullptr;
-
-		return *this;
-	}
-
+	vk_logical_device &operator=(vk_logical_device &&s) = delete;
 	vk_logical_device(const vk_logical_device &) = delete;
 	vk_logical_device &operator=(const vk_logical_device &) = delete;
 

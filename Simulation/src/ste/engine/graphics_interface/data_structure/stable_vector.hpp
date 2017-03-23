@@ -37,6 +37,32 @@ private:
 	static constexpr VkBufferUsageFlags buffer_usage_additional_flags = VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 
 private:
+	// Resize command
+	class stable_vector_cmd_resize : public vk_command {
+		std::uint32_t new_size;
+		stable_vector *v;
+
+	public:
+		stable_vector_cmd_resize(std::uint32_t new_size,
+									stable_vector *v)
+			: new_size(new_size), v(v)
+		{}
+		virtual ~stable_vector_cmd_resize() noexcept {}
+
+	private:
+		void operator()(const vk_command_buffer &command_buffer) const override final {
+			// (Un)bind sparse (if needed) and update vector size
+			if (new_size > v->elements) {
+				bind_range_t bind = { v->elements, new_size - v->elements };
+				v->buffer.cmd_bind_sparse_memory(ste_device_queue::thread_queue(), {}, { bind }, {}, {});
+			}
+			else if (new_size < v->elements) {
+				bind_range_t unbind = { new_size,  v->elements - new_size };
+				v->buffer.cmd_bind_sparse_memory(ste_device_queue::thread_queue(), { unbind }, {}, {}, {});
+			}
+			v->elements = new_size;
+		}
+	};
 	// Push back command
 	class stable_vector_cmd_push_back : public vk_command {
 		std::vector<T> data;
@@ -140,13 +166,22 @@ public:
 		return stable_vector_cmd_pop_back(count_to_pop, this);
 	}
 	/**
+	*	@brief	Returns a device command that will resize the vector.
+	*			Memory will be bound or unbound sprasely from the buffer, as needed.
+	*
+	*	@param	new_size		New vector size
+	*/
+	auto resize_cmd(std::uint32_t new_size) {
+		return stable_vector_cmd_resize(new_size, this);
+	}
+	/**
 	*	@brief	Returns a device command that will copy data to the vector.
 	*
 	*	@param	data	Data to copy
 	*	@param	offset	Vector offset to copy to
 	*/
 	auto update_cmd(const std::vector<T> &data, std::uint64_t offset) {
-		return vk_cmd_update_buffer(buffer.get(), data.size(), data.data(), offset);
+		return vk_cmd_update_buffer(buffer, data.size(), data.data(), offset);
 	}
 
 	auto size() const { return elements; }
