@@ -5,6 +5,7 @@
 
 #include <stdafx.hpp>
 
+#include <ste_device.hpp>
 #include <ste_gl_context.hpp>
 #include <ste_engine.hpp>
 #include <vk_exception.hpp>
@@ -16,8 +17,8 @@ class ste_context_impl {
 public:
 	using context_types = Types;
 
-	using gl_device_t = ste_engine::gl_device_t;
-	using gl_context_t = ste_engine::gl_context_t;
+	using gl_device_t = GL::ste_device;
+	using gl_context_t = GL::ste_gl_context;
 
 private:
 	ste_engine_impl<Types> &engine_reference;
@@ -32,7 +33,7 @@ public:
 		: engine_reference(engine),
 		gl_context(gl_ctx),
 		gl_device(device),
-		engine_device_memory_allocator(device.logical_device())
+		engine_device_memory_allocator(device)
 	{}
 	~ste_context_impl() noexcept {}
 

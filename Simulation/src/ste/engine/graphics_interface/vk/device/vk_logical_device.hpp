@@ -10,12 +10,12 @@
 #include <vulkan/vulkan.h>
 
 #include <vector>
-#include <allow_class_decay.hpp>
+#include <allow_type_decay.hpp>
 
 namespace StE {
 namespace GL {
 
-class vk_logical_device : public allow_class_decay<vk_logical_device, VkDevice> {
+class vk_logical_device : public allow_type_decay<vk_logical_device, VkDevice> {
 private:
 	vk_physical_device_descriptor physical_device;
 

@@ -10,7 +10,7 @@ using namespace StE::Text;
 text_renderer::text_renderer(text_manager *tr,
 							 const StE::GL::vk_render_pass *renderpass)
 	: tr(tr),
-	fb_size_descriptor_set(tr->context.device().logical_device(), { GL::vk_descriptor_set_layout_binding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_GEOMETRY_BIT, 0) }),
+	fb_size_descriptor_set(tr->context.device(), { GL::vk_descriptor_set_layout_binding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_GEOMETRY_BIT, 0) }),
 	renderpass(renderpass),
 	fb_size_uniform(tr->context, 1, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT),
 	vertex_buffer(tr->context, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT) 
@@ -28,11 +28,11 @@ void text_renderer::recreate_pipeline() {
 	VkRect2D scissor = { { 0,0 },{ swapchain_size.x, swapchain_size.y } };
 
 	this->pipeline_layout = std::make_unique<GL::vk_pipeline_layout>(GL::vk_pipeline_layout{
-		tr->context.device().logical_device(), { tr->descriptor_set->get_layout(), fb_size_descriptor_set.get_layout() }, {}
+		tr->context.device(), { tr->descriptor_set->get_layout(), fb_size_descriptor_set.get_layout() }, {}
 	});
 	this->pipeline = std::make_unique<GL::vk_pipeline_graphics>(
 		GL::vk_pipeline_graphics{
-			tr->context.device().logical_device(),
+			tr->context.device(),
 			{
 				tr->vert->graphics_pipeline_stage_descriptor(),
 				tr->geom->graphics_pipeline_stage_descriptor(),

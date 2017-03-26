@@ -6,14 +6,14 @@
 #include <stdafx.hpp>
 #include <memory>
 
-#include <allow_class_decay.hpp>
+#include <allow_type_decay.hpp>
 
 namespace StE {
 namespace GL {
 
 template <class Pool, template<class> class resource_reclamation_policy>
 class ste_resource_pool_resource :
-	public allow_class_decay<
+	public allow_type_decay<
 		ste_resource_pool_resource<Pool, resource_reclamation_policy>,
 		typename Pool::value_type,
 		!resource_reclamation_policy<typename Pool::value_type>::allow_non_const_resource

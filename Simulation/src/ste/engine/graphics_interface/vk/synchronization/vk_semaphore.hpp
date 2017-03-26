@@ -10,12 +10,12 @@
 #include <ste_resource_pool.hpp>
 
 #include <optional.hpp>
-#include <allow_class_decay.hpp>
+#include <allow_type_decay.hpp>
 
 namespace StE {
 namespace GL {
 
-class vk_semaphore : public ste_resource_pool_const_trait<const vk_logical_device &>, public allow_class_decay<vk_semaphore, VkSemaphore> {
+class vk_semaphore : public ste_resource_pool_const_trait<const vk_logical_device &>, public allow_type_decay<vk_semaphore, VkSemaphore> {
 private:
 	optional<VkSemaphore> semaphore;
 	std::reference_wrapper<const vk_logical_device> device;

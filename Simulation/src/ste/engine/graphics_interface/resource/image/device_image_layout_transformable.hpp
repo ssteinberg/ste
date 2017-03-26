@@ -15,26 +15,7 @@ template <int dimensions, class allocation_policy>
 class device_image;
 
 class device_image_layout_transformable {
-	template <int dimensions, class allocation_policy>
-	friend void queue_transfer(device_image<dimensions, allocation_policy> &image,
-							   const ste_device_queue::queue_index_t &dst_queue_index,
-							   VkPipelineStageFlags src_stage,
-							   VkAccessFlags src_access,
-							   VkPipelineStageFlags dst_stage,
-							   VkAccessFlags dst_access,
-							   VkImageLayout dst_layout,
-							   bool depth);
-	template <int dimensions, class allocation_policy>
-	friend void queue_transfer(device_image<dimensions, allocation_policy> &image,
-							   const ste_queue_selector<ste_queue_selector_default_policy> &queue_selector,
-							   VkPipelineStageFlags src_stage,
-							   VkAccessFlags src_access,
-							   VkPipelineStageFlags dst_stage,
-							   VkAccessFlags dst_access,
-							   VkImageLayout dst_layout,
-							   bool depth);
-	friend class cmd_image_layout_transform;
-	friend class cmd_image_layout_transform_discard;
+	friend class cmd_pipeline_barrier;
 
 protected:
 	mutable device_image_layout image_layout;

@@ -32,11 +32,12 @@
 
 #include <function_traits.hpp>
 #include <type_traits>
+#include <allow_type_decay.hpp>
 
 namespace StE {
 namespace GL {
 
-class ste_device_queue {
+class ste_device_queue : public allow_type_decay<ste_device_queue, vk_queue> {
 public:
 	using task_t = unique_thread_pool_type_erased_task<>;
 	template <typename R>
@@ -147,6 +148,9 @@ public:
 
 		try {
 			if (batch->queue_index == thread_queue_index()) {
+				// Submit host commands, in order
+				for (auto &cmd_buf : *batch)
+					cmd_buf.submit_host_commands(thread_queue());
 				// Submit finalized buffers
 				thread_queue().submit(command_buffers,
 									  wait_semaphores,
@@ -199,11 +203,14 @@ public:
 			command_buffers.push_back(static_cast<vk_command_buffer>(b));
 
 		if (batch.queue_index == thread_queue_index()) {
+			// Submit host commands, in order
+			for (auto &cmd_buf : *batch)
+				cmd_buf.submit_host_commands(thread_queue());
 			// Submit finalized buffers
 			thread_queue().submit(command_buffers,
-									wait_semaphores,
-									signal_semaphores,
-									fence);
+								  wait_semaphores,
+								  signal_semaphores,
+								  fence);
 			batch.submitted = true;
 		}
 		else {
@@ -249,7 +256,7 @@ public:
 		queue(device, descriptor.family, device_family_index),
 		descriptor(descriptor),
 		shared_fence_pool(shared_fence_pool),
-		pool(device, descriptor.family, 0)
+		pool(device, descriptor)
 	{
 		// Create the queue worker thread
 		create_worker();
@@ -365,9 +372,13 @@ public:
 		queue.wait_idle();
 	}
 
-	auto &device_queue() const { return queue; }
 	auto &queue_descriptor() const { return descriptor; }
 	auto index() const { return queue_index; }
+
+	/**
+	*	@brief	Get queue handle
+	*/
+	auto &get() const { return queue; }
 };
 
 }

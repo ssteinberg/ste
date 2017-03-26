@@ -6,8 +6,7 @@
 #include <stdafx.hpp>
 #include <ste_device_queue_batch.hpp>
 
-#include <ste_device_queue_command_buffer.hpp>
-#include <ste_device_queue_command_buffer_multishot.hpp>
+#include <command_buffer.hpp>
 #include <ste_device_queue_command_pool.hpp>
 
 #include <memory>
@@ -16,14 +15,14 @@ namespace StE {
 namespace GL {
 
 template <typename UserData = void>
-class ste_device_queue_batch_multishot : public _detail::ste_device_queue_batch_custom<UserData> {
-	using Base = _detail::ste_device_queue_batch_custom<UserData>;
+class ste_device_queue_batch_multishot : public _detail::ste_device_queue_batch_pool<UserData> {
+	using Base = _detail::ste_device_queue_batch_pool<UserData>;
 
 	friend class ste_device_queue;
 
 public:
-	using command_buffer_t = ste_device_queue_command_buffer<VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT>;
-	using user_command_buffer_t = ste_device_queue_command_buffer_multishot;
+	using command_buffer_t = command_buffer_primary_multishot<false>;
+	using user_command_buffer_t = command_buffer_secondary<false>;
 
 protected:
 	std::vector<command_buffer_t> command_buffers;
@@ -47,12 +46,12 @@ public:
 	ste_device_queue_batch_multishot &operator=(ste_device_queue_batch_multishot&&) = default;
 
 	auto& acquire_command_buffer() {
-		command_buffers.emplace_back(Base::pool, vk_command_buffer_type::primary);
+		command_buffers.emplace_back(static_cast<command_pool&>(pool).allocate_secondary_buffer());
 		return command_buffers.back();
 	}
 
 	auto& acquire_user_command_buffer(const vk_command_buffer_type &type) {
-		user_command_buffers.emplace_back(Base::pool, type);
+		user_command_buffers.emplace_back(static_cast<command_pool&>(pool).allocate_primary_multishot_buffer());
 		return user_command_buffers.back();
 	}
 };

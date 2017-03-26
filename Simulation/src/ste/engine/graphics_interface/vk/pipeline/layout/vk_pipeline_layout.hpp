@@ -13,12 +13,12 @@
 #include <optional.hpp>
 
 #include <vector>
-#include <allow_class_decay.hpp>
+#include <allow_type_decay.hpp>
 
 namespace StE {
 namespace GL {
 
-class vk_pipeline_layout : public allow_class_decay<vk_pipeline_layout, VkPipelineLayout> {
+class vk_pipeline_layout : public allow_type_decay<vk_pipeline_layout, VkPipelineLayout> {
 private:
 	optional<VkPipelineLayout> layout;
 	std::reference_wrapper<const vk_logical_device> device;

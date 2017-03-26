@@ -7,7 +7,7 @@
 #include <ste_resource_type_traits.hpp>
 #include <ste_resource_creation_policy.hpp>
 
-#include <allow_class_decay.hpp>
+#include <allow_type_decay.hpp>
 #include <function_traits.hpp>
 
 namespace StE {
@@ -58,7 +58,7 @@ struct ste_resource_resource_impl_type {
 */
 template <typename T, class resource_deferred_policy = ste_resource_deferred_creation_policy_async<ste_resource_async_policy_task_scheduler>>
 class ste_resource : public _detail::ste_resource_resource_impl_type<T, resource_deferred_policy>::value,
-	public allow_class_decay<ste_resource<T, resource_deferred_policy>, T, false>
+	public allow_type_decay<ste_resource<T, resource_deferred_policy>, T, false>
 {
 	using Base = typename _detail::ste_resource_resource_impl_type<T, resource_deferred_policy>::value;
 

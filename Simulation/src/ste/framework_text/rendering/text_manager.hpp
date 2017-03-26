@@ -6,10 +6,10 @@
 #include <stdafx.hpp>
 #include <ste_context.hpp>
 #include <device_pipeline_shader_stage.hpp>
+#include <command_recorder.hpp>
 
 #include <vk_pipeline_graphics.hpp>
 #include <vk_unique_descriptor_set.hpp>
-#include <vk_descriptor_set_layout_binding.hpp>
 
 #include <font.hpp>
 #include <glyph_manager.hpp>
@@ -18,9 +18,7 @@
 #include <attributed_string.hpp>
 
 #include <memory>
-#include <string>
 #include <vector>
-#include <vk_framebuffer.hpp>
 
 namespace StE {
 namespace Text {
@@ -48,7 +46,7 @@ private:
 
 private:
 	static GL::vk_unique_descriptor_set create_descriptor_set(const GL::vk_logical_device &, std::uint32_t);
-	bool update_glyphs(GL::vk_command_recorder &recorder);
+	bool update_glyphs(GL::command_recorder &recorder);
 
 public:
 	text_manager(const ste_context &context,

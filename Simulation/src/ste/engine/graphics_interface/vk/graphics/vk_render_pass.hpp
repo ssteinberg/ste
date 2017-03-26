@@ -16,12 +16,12 @@
 #include <optional.hpp>
 
 #include <vector>
-#include <allow_class_decay.hpp>
+#include <allow_type_decay.hpp>
 
 namespace StE {
 namespace GL {
 
-class vk_render_pass : public allow_class_decay<vk_render_pass, VkRenderPass> {
+class vk_render_pass : public allow_type_decay<vk_render_pass, VkRenderPass> {
 private:
 	optional<VkRenderPass> render_pass;
 	std::reference_wrapper<const vk_logical_device> device;

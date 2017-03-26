@@ -15,13 +15,13 @@
 
 #include <memory>
 #include <vector>
-#include <allow_class_decay.hpp>
+#include <allow_type_decay.hpp>
 
 namespace StE {
 namespace GL {
 
 template <typename Segment>
-class ring_buffer : ste_resource_deferred_create_trait, public allow_class_decay<ring_buffer<Segment>, device_buffer<Segment, device_resource_allocation_policy_device>> {
+class ring_buffer : ste_resource_deferred_create_trait, public allow_type_decay<ring_buffer<Segment>, device_buffer<Segment, device_resource_allocation_policy_device>> {
 private:
 	using buffer_t = device_buffer<Segment, device_resource_allocation_policy_device>;
 	using mmap_ptr_t = std::unique_ptr<vk_mmap<Segment>>;

@@ -17,12 +17,12 @@
 
 #include <string>
 #include <istream>
-#include <allow_class_decay.hpp>
+#include <allow_type_decay.hpp>
 
 namespace StE {
 namespace GL {
 
-class device_pipeline_shader_stage : ste_resource_deferred_create_trait, public allow_class_decay<device_pipeline_shader_stage, vk_shader> {
+class device_pipeline_shader_stage : ste_resource_deferred_create_trait, public allow_type_decay<device_pipeline_shader_stage, vk_shader> {
 private:
 	ste_shader_stage stage{ ste_shader_stage::none };
 	vk_shader shader;
@@ -83,7 +83,7 @@ public:
 	*/
 	device_pipeline_shader_stage(const ste_context &ctx,
 								 const std::string &name)
-		: shader(ctx.device().logical_device(),
+		: shader(ctx.device(),
 				 load_and_verify_shader_blob(ctx.engine().storage().shader_module_dir_path(), 
 											 name,
 											 this->stage)),

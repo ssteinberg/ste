@@ -12,12 +12,12 @@
 #include <optional.hpp>
 
 #include <vector>
-#include <allow_class_decay.hpp>
+#include <allow_type_decay.hpp>
 
 namespace StE {
 namespace GL {
 
-class vk_descriptor_set_layout : public allow_class_decay<vk_descriptor_set_layout, VkDescriptorSetLayout> {
+class vk_descriptor_set_layout : public allow_type_decay<vk_descriptor_set_layout, VkDescriptorSetLayout> {
 private:
 	optional<VkDescriptorSetLayout> layout;
 	std::reference_wrapper<const vk_logical_device> device;

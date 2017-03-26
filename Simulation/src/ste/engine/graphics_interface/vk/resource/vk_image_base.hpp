@@ -9,13 +9,13 @@
 #include <vk_logical_device.hpp>
 
 #include <optional.hpp>
-#include <allow_class_decay.hpp>
+#include <allow_type_decay.hpp>
 
 namespace StE {
 namespace GL {
 
 template <int dims>
-class vk_image_base : public allow_class_decay<vk_image_base<dims>, VkImage> {
+class vk_image_base : public allow_type_decay<vk_image_base<dims>, VkImage> {
 public:
 	static constexpr int dimensions = dims;
 	using size_type = typename vk_image_extent_type<dimensions>::type;

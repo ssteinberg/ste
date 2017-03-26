@@ -1,24 +1,25 @@
 //	StE
-// © Shlomi Steinberg 2015-2016
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
 #include <vulkan/vulkan.h>
 #include <vk_logical_device.hpp>
+#include <ste_queue_family.hpp>
 #include <vk_command_buffers.hpp>
 
 #include <ste_resource_pool.hpp>
 
 #include <optional.hpp>
 #include <vector>
-#include <allow_class_decay.hpp>
+#include <allow_type_decay.hpp>
 
 namespace StE {
 namespace GL {
 
 class vk_command_pool : 
 	public ste_resource_pool_resetable_trait<const vk_logical_device &, std::uint32_t, VkCommandPoolCreateFlags>,
-	public allow_class_decay<vk_command_pool, VkCommandPool>
+	public allow_type_decay<vk_command_pool, VkCommandPool>
 {
 private:
 	optional<VkCommandPool> pool;
@@ -26,13 +27,13 @@ private:
 
 public:
 	vk_command_pool(const vk_logical_device &device, 
-					std::uint32_t queue_family,
+					const ste_queue_family &queue_family,
 					VkCommandPoolCreateFlags flags = 0) : device(device) {
 		VkCommandPoolCreateInfo create_info = {};
 		create_info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 		create_info.pNext = nullptr;
 		create_info.flags = flags;
-		create_info.queueFamilyIndex = queue_family;
+		create_info.queueFamilyIndex = static_cast<std::uint32_t>(queue_family);
 
 		VkCommandPool pool;
 		vk_result res = vkCreateCommandPool(device, &create_info, nullptr, &pool);
@@ -71,14 +72,19 @@ public:
 			create_info.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY :
 			create_info.level = VK_COMMAND_BUFFER_LEVEL_SECONDARY;
 
-		std::vector<vk_command_buffer> buffers;
+		std::vector<VkCommandBuffer> buffers;
 		buffers.resize(count);
-		vk_result res = vkAllocateCommandBuffers(device.get(), &create_info, reinterpret_cast<VkCommandBuffer*>(&buffers[0]));
+		vk_result res = vkAllocateCommandBuffers(device.get(), &create_info, &buffers[0]);
 		if (!res) {
 			throw vk_exception(res);
 		}
 
-		return vk_command_buffers(std::move(buffers), device.get(), *this, type);
+		std::vector<vk_command_buffer> command_buffers;
+		command_buffers.reserve(count);
+		for (auto &b : buffers)
+			command_buffers.emplace_back(vk_command_buffer{ b });
+
+		return vk_command_buffers(std::move(command_buffers), device.get(), *this, type);
 	}
 
 	void reset() override {

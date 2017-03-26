@@ -14,12 +14,12 @@
 #include <optional.hpp>
 
 #include <vector>
-#include <allow_class_decay.hpp>
+#include <allow_type_decay.hpp>
 
 namespace StE {
 namespace GL {
 
-class vk_framebuffer : public allow_class_decay<vk_framebuffer, VkFramebuffer> {
+class vk_framebuffer : public allow_type_decay<vk_framebuffer, VkFramebuffer> {
 private:
 	optional<VkFramebuffer> framebuffer;
 	std::reference_wrapper<const vk_logical_device> device;

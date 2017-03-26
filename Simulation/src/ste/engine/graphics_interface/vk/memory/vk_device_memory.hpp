@@ -11,7 +11,7 @@
 #include <vk_memory_exception.hpp>
 
 #include <optional.hpp>
-#include <allow_class_decay.hpp>
+#include <allow_type_decay.hpp>
 
 #include <memory>
 
@@ -38,7 +38,7 @@ public:
 	vk_mmap_type_eraser&operator=(const vk_mmap_type_eraser &) = delete;
 };
 
-class vk_device_memory : public allow_class_decay<vk_device_memory, VkDeviceMemory> {
+class vk_device_memory : public allow_type_decay<vk_device_memory, VkDeviceMemory> {
 private:
 	optional<VkDeviceMemory> memory;
 	std::reference_wrapper<const vk_logical_device> device;

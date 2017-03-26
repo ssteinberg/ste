@@ -11,12 +11,12 @@
 #include <vk_descriptor_set_copy_resources.hpp>
 
 #include <optional.hpp>
-#include <allow_class_decay.hpp>
+#include <allow_type_decay.hpp>
 
 namespace StE {
 namespace GL {
 
-class vk_descriptor_set : public allow_class_decay<vk_descriptor_set, VkDescriptorSet> {
+class vk_descriptor_set : public allow_type_decay<vk_descriptor_set, VkDescriptorSet> {
 	friend class vk_descriptor_pool;
 
 private:

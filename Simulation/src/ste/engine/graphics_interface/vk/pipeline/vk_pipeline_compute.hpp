@@ -12,12 +12,12 @@
 #include <vk_pipeline_cache.hpp>
 
 #include <optional.hpp>
-#include <allow_class_decay.hpp>
+#include <allow_type_decay.hpp>
 
 namespace StE {
 namespace GL {
 
-class vk_pipeline_compute : public allow_class_decay<vk_pipeline_compute, VkPipeline> {
+class vk_pipeline_compute : public allow_type_decay<vk_pipeline_compute, VkPipeline> {
 private:
 	optional<VkPipeline> pipeline;
 	std::reference_wrapper<const vk_logical_device> device;

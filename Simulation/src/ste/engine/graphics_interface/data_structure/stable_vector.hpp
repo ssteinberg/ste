@@ -9,12 +9,13 @@
 #include <ste_device_queue.hpp>
 #include <data_structure_common.hpp>
 
-#include <vk_cmd_update_buffer.hpp>
+#include <command_recorder.hpp>
+#include <cmd_update_buffer.hpp>
 
 #include <device_buffer_sparse.hpp>
 #include <device_resource_allocation_policy.hpp>
 
-#include <allow_class_decay.hpp>
+#include <allow_type_decay.hpp>
 
 namespace StE {
 namespace GL {
@@ -26,7 +27,7 @@ template <
 >
 class stable_vector : 
 	ste_resource_deferred_create_trait, 
-	public allow_class_decay<stable_vector<T, minimal_atom_size, max_sparse_size>, device_buffer_sparse<T, minimal_atom_size, device_resource_allocation_policy_device>>
+	public allow_type_decay<stable_vector<T, minimal_atom_size, max_sparse_size>, device_buffer_sparse<T, minimal_atom_size, device_resource_allocation_policy_device>>
 {
 	static_assert(sizeof(T) <= minimal_atom_size, "minimal_atom_size should be at least the size of a single element");
 	static_assert(sizeof(T) % 4 == 0, "T size must be a multiple of 4");
@@ -38,7 +39,7 @@ private:
 
 private:
 	// Resize command
-	class stable_vector_cmd_resize : public vk_command {
+	class stable_vector_cmd_resize : public command {
 		std::uint32_t new_size;
 		stable_vector *v;
 
@@ -50,23 +51,26 @@ private:
 		virtual ~stable_vector_cmd_resize() noexcept {}
 
 	private:
-		void operator()(const vk_command_buffer &command_buffer) const override final {
+		void operator()(const command_buffer &, command_recorder &recorder) const override final {
 			// (Un)bind sparse (if needed) and update vector size
 			if (new_size > v->elements) {
 				bind_range_t bind = { v->elements, new_size - v->elements };
-				v->buffer.cmd_bind_sparse_memory(ste_device_queue::thread_queue(), {}, { bind }, {}, {});
+				recorder << v->buffer.cmd_bind_sparse_memory({}, { bind }, {}, {});
 			}
 			else if (new_size < v->elements) {
 				bind_range_t unbind = { new_size,  v->elements - new_size };
-				v->buffer.cmd_bind_sparse_memory(ste_device_queue::thread_queue(), { unbind }, {}, {}, {});
+				recorder << v->buffer.cmd_bind_sparse_memory({ unbind }, {}, {}, {});
 			}
-			v->elements = new_size;
+			
+			auto vptr = v;
+			auto new_size = this->new_size;
+			recorder << host_command([=](const vk_queue &) { vptr->elements = new_size; });
 		}
 	};
 	// Push back command
-	class stable_vector_cmd_push_back : public vk_command {
+	class stable_vector_cmd_push_back : public command {
 		std::vector<T> data;
-		vk_cmd_update_buffer update_cmd;
+		cmd_update_buffer update_cmd;
 		stable_vector *v;
 
 	public:
@@ -77,18 +81,21 @@ private:
 		virtual ~stable_vector_cmd_push_back() noexcept {}
 
 	private:
-		void operator()(const vk_command_buffer &command_buffer) const override final {
+		void operator()(const command_buffer &, command_recorder &recorder) const override final {
 			// Bind sparse (if needed) and update vector size
 			bind_range_t bind = { v->elements, data.size() };
-			v->buffer.cmd_bind_sparse_memory(ste_device_queue::thread_queue(), {}, { bind }, {}, {});
-			v->elements += data.size();
+			recorder << v->buffer.cmd_bind_sparse_memory({}, { bind }, {}, {});
+
+			auto vptr = v;
+			auto data_size = data.size();
+			recorder << host_command([=](const vk_queue &) { vptr->elements += data_size; });
 
 			// Copy data
-			execute(command_buffer, update_cmd);
+			recorder << update_cmd;
 		}
 	};
 	// Pop back command
-	class stable_vector_cmd_pop_back : public vk_command {
+	class stable_vector_cmd_pop_back : public command {
 		stable_vector *v;
 		std::uint32_t count_to_pop;
 
@@ -100,14 +107,16 @@ private:
 		virtual ~stable_vector_cmd_pop_back() noexcept {}
 
 	private:
-		void operator()(const vk_command_buffer &command_buffer) const override final {
+		void operator()(const command_buffer &, command_recorder &recorder) const override final {
 			assert(count_to_pop >= v->elements);
 
 			// Unbind sparse (if possible) and update vector size
 			bind_range_t unbind = { v->elements - count_to_pop, count_to_pop };
-			v->buffer.cmd_bind_sparse_memory(ste_device_queue::thread_queue(), { unbind }, {}, {}, {});
+			recorder << v->buffer.cmd_bind_sparse_memory({ unbind }, {}, {}, {});
 
-			v->elements -= count_to_pop;
+			auto vptr = v;
+			auto pop = count_to_pop;
+			recorder << host_command([=](const vk_queue &) { vptr->elements -= pop; });
 		}
 	};
 
@@ -181,7 +190,7 @@ public:
 	*	@param	offset	Vector offset to copy to
 	*/
 	auto update_cmd(const std::vector<T> &data, std::uint64_t offset) {
-		return vk_cmd_update_buffer(buffer, data.size(), data.data(), offset);
+		return cmd_update_buffer(buffer, data.size(), data.data(), offset);
 	}
 
 	auto size() const { return elements; }

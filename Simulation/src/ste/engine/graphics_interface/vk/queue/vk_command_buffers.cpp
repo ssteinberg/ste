@@ -6,8 +6,17 @@
 using namespace StE::GL;
 
 void vk_command_buffers::free() {
-	if (buffers.size()) {
-		vkFreeCommandBuffers(device.get(), pool, buffers.size(), reinterpret_cast<VkCommandBuffer*>(&buffers[0]));
+	if (buffers.size() == 1) {
+		vkFreeCommandBuffers(device.get(), pool, 1, &buffers[0].get());
+		buffers.clear();
+	}
+	else if (buffers.size()) {
+		std::vector<VkCommandBuffer> b;
+		b.reserve(buffers.size());
+		for (auto &e : buffers)
+			b.push_back(e.get());
+
+		vkFreeCommandBuffers(device.get(), pool, b.size(), b.data());
 		buffers.clear();
 	}
 }

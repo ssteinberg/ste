@@ -42,7 +42,7 @@ ste_device::queues_t ste_device::create_queues(const vk_logical_device &device,
 	queues_t q;
 	q.reserve(queue_descriptors.size());
 
-	std::uint32_t prev_family = 0xFFFFFFFF;
+	ste_queue_family prev_family = 0xFFFFFFFF;
 	std::uint32_t family_index = 0;
 	for (std::size_t idx = 0; idx < queue_descriptors.size(); ++idx) {
 		auto &descriptor = queue_descriptors[idx];

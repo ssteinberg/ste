@@ -20,7 +20,7 @@
 #include <optional.hpp>
 
 #include <vector>
-#include <allow_class_decay.hpp>
+#include <allow_type_decay.hpp>
 
 namespace StE {
 namespace GL {
@@ -30,7 +30,7 @@ struct vk_graphics_shader_descriptor {
 	VkShaderStageFlagBits stage;
 };
 
-class vk_pipeline_graphics : public allow_class_decay<vk_pipeline_graphics, VkPipeline> {
+class vk_pipeline_graphics : public allow_type_decay<vk_pipeline_graphics, VkPipeline> {
 private:
 	optional<VkPipeline> pipeline;
 	std::reference_wrapper<const vk_logical_device> device;

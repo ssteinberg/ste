@@ -5,6 +5,7 @@
 
 #include <vulkan/vulkan.h>
 #include <vk_logical_device.hpp>
+#include <ste_queue_family.hpp>
 #include <vk_command_buffers.hpp>
 #include <vk_semaphore.hpp>
 #include <vk_fence.hpp>
@@ -20,14 +21,17 @@ namespace GL {
 class vk_queue {
 private:
 	optional<VkQueue> queue;
-	std::uint32_t queue_family;
+	ste_queue_family queue_family;
 
 public:
-	vk_queue(const vk_logical_device &device, std::uint32_t queue_family, std::uint32_t queue_index) 
+	vk_queue(const vk_logical_device &device, const ste_queue_family &queue_family, std::uint32_t queue_index)
 		: queue_family(queue_family)
 	{
 		VkQueue q;
-		vkGetDeviceQueue(device, queue_family, queue_index, &q);
+		vkGetDeviceQueue(device, 
+						 static_cast<std::uint32_t>(queue_family), 
+						 queue_index, 
+						 &q);
 
 		this->queue = q;
 	}

@@ -15,12 +15,12 @@
 
 #include <string>
 #include <istream>
-#include <allow_class_decay.hpp>
+#include <allow_type_decay.hpp>
 
 namespace StE {
 namespace GL {
 
-class vk_pipeline_cache : public allow_class_decay<vk_pipeline_cache, VkPipelineCache> {
+class vk_pipeline_cache : public allow_type_decay<vk_pipeline_cache, VkPipelineCache> {
 private:
 	static constexpr std::uint32_t header_magic_and_version = 0xCAC8E001;
 	static constexpr int header_uuid_size = VK_UUID_SIZE;

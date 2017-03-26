@@ -1,0 +1,59 @@
+//	StE
+// © Shlomi Steinberg 2015-2016
+
+#pragma once
+
+#include <vulkan/vulkan.h>
+#include <command.hpp>
+#include <vk_buffer.hpp>
+#include <vk_image.hpp>
+
+#include <vector>
+#include <functional>
+
+namespace StE {
+namespace GL {
+
+class cmd_copy_buffer : public command {
+private:
+	VkBuffer src_buffer;
+	VkBuffer dst_buffer;
+
+	std::vector<VkBufferCopy> ranges;
+
+public:
+	template <typename T1, typename T2>
+	cmd_copy_buffer(const vk_buffer<T1> &src_buffer,
+					const vk_buffer<T2> &dst_buffer,
+					const std::vector<VkBufferCopy> &ranges = {})
+		: src_buffer(src_buffer), dst_buffer(dst_buffer), ranges(ranges)
+	{
+		if (this->ranges.size() == 0) {
+			VkBufferCopy c = {
+				0, 0,
+				std::min(src_buffer.get_elements_count() * sizeof(T1), dst_buffer.get_elements_count() * sizeof(T2))
+			};
+			this->ranges.push_back(c);
+		}
+	}
+	template <typename T1, bool sparse1, typename T2, bool sparse2>
+	cmd_copy_buffer(const vk_buffer<T1, sparse1> &src_buffer,
+					const vk_buffer<T2, sparse2> &dst_buffer,
+					const std::vector<VkBufferCopy> &ranges,
+					typename std::enable_if<sparse1 || sparse2>::type* = nullptr)
+		: src_buffer(src_buffer), dst_buffer(dst_buffer), ranges(ranges)
+	{
+		assert(this->ranges.size());
+	}
+	virtual ~cmd_copy_buffer() noexcept {}
+
+private:
+	void operator()(const command_buffer &command_buffer, command_recorder &) const override final {
+		vkCmdCopyBuffer(command_buffer, src_buffer,
+						dst_buffer,
+						ranges.size(), ranges.data());
+	}
+};
+
+}
+}

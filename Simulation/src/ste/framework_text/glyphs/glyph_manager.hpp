@@ -21,7 +21,7 @@
 #include <vector>
 #include <unordered_map>
 
-#include <vk_command_recorder.hpp>
+#include <command_recorder.hpp>
 
 namespace StE {
 namespace Text {
@@ -119,7 +119,7 @@ public:
 	glyph_manager(const ste_context &context)
 		: context(context), 
 		buffer(context, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT),
-		text_glyph_sampler(context.device().logical_device(),
+		text_glyph_sampler(context.device(),
 						   GL::vk_sampler_filtering(VK_FILTER_LINEAR, VK_FILTER_LINEAR), 
 						   GL::vk_sampler_address_mode(VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER),
 						   GL::vk_sampler_anisotropy(16.f))
@@ -143,7 +143,7 @@ public:
 		return factory.read_kerning(font, chars, pixel_size);
 	}
 
-	range<> update_pending_glyphs(GL::vk_command_recorder &recorder) {
+	range<> update_pending_glyphs(GL::command_recorder &recorder) {
 		if (!pending_glyphs.size()) {
 			// Nothing to update
 			return { 0,0 };

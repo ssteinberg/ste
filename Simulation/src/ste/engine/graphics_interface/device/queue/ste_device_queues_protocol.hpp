@@ -54,9 +54,8 @@ private:
 			return{};
 
 		// Create descriptor
-		ste_queue_descriptor desc = { std::reference_wrapper<const GL::vk_physical_device_descriptor>(physical_device) };
+		ste_queue_descriptor desc = { std::reference_wrapper<const GL::vk_physical_device_descriptor>(physical_device), family_idx };
 		desc.flags = q.queueFlags;
-		desc.family = family_idx;
 		desc.type = type;
 		desc.timestamp_valid_bits = q.timestampValidBits;
 		desc.priority = info.priority;

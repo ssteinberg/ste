@@ -11,12 +11,12 @@
 #include <vk_exception.hpp>
 
 #include <optional.hpp>
-#include <allow_class_decay.hpp>
+#include <allow_type_decay.hpp>
 
 namespace StE {
 namespace GL {
 
-class vk_buffer_base : public allow_class_decay<vk_buffer_base, VkBuffer> {
+class vk_buffer_base : public allow_type_decay<vk_buffer_base, VkBuffer> {
 private:
 	static constexpr auto sparse_buffer_flags = VK_BUFFER_CREATE_SPARSE_RESIDENCY_BIT | VK_BUFFER_CREATE_SPARSE_BINDING_BIT;
 

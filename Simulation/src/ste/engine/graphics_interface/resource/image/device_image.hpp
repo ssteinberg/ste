@@ -5,23 +5,22 @@
 
 #include <stdafx.hpp>
 #include <device_image_exceptions.hpp>
-#include <device_image_layout.hpp>
+#include <device_image_base.hpp>
 
-#include <device_image_layout_transformable.hpp>
 #include <vk_image.hpp>
 #include <device_resource.hpp>
 #include <device_resource_allocation_policy.hpp>
 
 #include <vk_format_type_traits.hpp>
-#include <vk_cmd_pipeline_barrier.hpp>
-#include <vk_cmd_copy_image.hpp>
-#include <vk_cmd_blit_image.hpp>
+#include <cmd_pipeline_barrier.hpp>
+#include <cmd_copy_image.hpp>
+#include <cmd_blit_image.hpp>
 
 namespace StE {
 namespace GL {
 
 template <int dimensions, class allocation_policy = device_resource_allocation_policy_device>
-class device_image : public device_image_layout_transformable,
+class device_image : public device_image_base<dimensions>,
 	public device_resource<vk_image<dimensions>, allocation_policy> 
 {
 	using Base = device_resource<vk_image<dimensions>, allocation_policy>;
@@ -32,22 +31,25 @@ public:
 				 QueueOwnershipArgs&& qoa,
 				 const vk_image_initial_layout &layout,
 				 Args&&... args)
-		: device_image_layout_transformable(layout),
+		: device_image_base(ctx,
+							std::forward<QueueOwnershipArgs>(qoa),
+							layout),
 		Base(ctx,
-			 std::forward<QueueOwnershipArgs>(qoa),
 			 layout,
 			 std::forward<Args>(args)...)
 	{}
 
 	device_image(device_image&&) = default;
 	device_image &operator=(device_image&&) = default;
+
+	VkImage get_image_handle() const override final { return *this; };
 };
 
 /**
  *	@brief	Partial specialization for 2-dimensional images.
  */
 template <class allocation_policy>
-class device_image<2, allocation_policy> : public device_image_layout_transformable,
+class device_image<2, allocation_policy> : public device_image_base<2>,
 	public device_resource<vk_image<2>, allocation_policy> 
 {
 	using Base = device_resource<vk_image<2>, allocation_policy>;
@@ -114,25 +116,25 @@ private:
 					auto recorder = command_buffer.record();
 
 					// Move to transfer layouts
-					auto barrier = vk_pipeline_barrier(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-													   VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-													   std::vector<vk_image_memory_barrier>{
-						vk_image_memory_barrier(staging_image.get(),
-												m == 0 ? VK_IMAGE_LAYOUT_PREINITIALIZED : VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-												VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-												VK_ACCESS_HOST_WRITE_BIT,
-												VK_ACCESS_TRANSFER_READ_BIT),
-							vk_image_memory_barrier(image.get(),
-													m == 0 ? VK_IMAGE_LAYOUT_UNDEFINED : VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-													VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-													0,
-													VK_ACCESS_TRANSFER_WRITE_BIT) });
-					recorder << vk_cmd_pipeline_barrier(barrier);
+					auto barrier = pipeline_barrier(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+													VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+													std::vector<image_memory_barrier>{
+						image_memory_barrier(staging_image,
+											 m == 0 ? VK_IMAGE_LAYOUT_PREINITIALIZED : VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+											 VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+											 VK_ACCESS_HOST_WRITE_BIT,
+											 VK_ACCESS_TRANSFER_READ_BIT),
+							image_memory_barrier(image,
+												 m == 0 ? VK_IMAGE_LAYOUT_UNDEFINED : VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+												 VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+												 0,
+												 VK_ACCESS_TRANSFER_WRITE_BIT) });
+					recorder << cmd_pipeline_barrier(barrier);
 
 					// Copy to image
-					recorder << vk_cmd_copy_image(staging_image.get(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-												  image.get(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-												  { range });
+					recorder << cmd_copy_image(staging_image.get(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+											   image.get(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+											   { range });
 				}
 
 				ste_device_queue::submit_batch(std::move(batch));
@@ -165,21 +167,21 @@ private:
 
 				for (; m < mip_levels; ++m) {
 					// Move to transfer layouts
-					auto barrier = vk_pipeline_barrier(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-													   VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-													   { vk_image_memory_barrier(image,
-																				 VK_IMAGE_LAYOUT_UNDEFINED,
-																				 VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-																				 0,
-																				 VK_ACCESS_TRANSFER_WRITE_BIT,
-																				 m, 1, 0, 1),
-													   vk_image_memory_barrier(image,
-																			   VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-																			   VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-																			   VK_ACCESS_TRANSFER_WRITE_BIT,
-																			   VK_ACCESS_TRANSFER_READ_BIT,
-																			   m - 1, 1, 0, 1) });
-					recorder << vk_cmd_pipeline_barrier(barrier);
+					auto barrier = pipeline_barrier(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+													VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+													{ image_memory_barrier(image,
+																			  VK_IMAGE_LAYOUT_UNDEFINED,
+																			  VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+																			  0,
+																			  VK_ACCESS_TRANSFER_WRITE_BIT,
+																			  m, 1, 0, 1),
+													image_memory_barrier(image,
+																			VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+																			VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+																			VK_ACCESS_TRANSFER_WRITE_BIT,
+																			VK_ACCESS_TRANSFER_READ_BIT,
+																			m - 1, 1, 0, 1) });
+					recorder << cmd_pipeline_barrier(barrier);
 
 					VkImageBlit range = {};
 					range.srcSubresource = { VK_IMAGE_ASPECT_COLOR_BIT, m - 1, 0, 1 };
@@ -196,21 +198,21 @@ private:
 					};
 
 					// Copy to image
-					recorder << vk_cmd_blit_image(image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-												  image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-												  VK_FILTER_LINEAR, { range });
+					recorder << cmd_blit_image(image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+											   image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+											   VK_FILTER_LINEAR, { range });
 				}
 
 				// Move last mipmap to src optimal layout
-				auto barrier = vk_pipeline_barrier(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-												   VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-												   vk_image_memory_barrier(image,
-																		   VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-																		   VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-																		   VK_ACCESS_TRANSFER_WRITE_BIT,
-																		   VK_ACCESS_TRANSFER_READ_BIT,
-																		   mip_levels - 1, 1, 0, 1));
-				recorder << vk_cmd_pipeline_barrier(barrier);
+				auto barrier = pipeline_barrier(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+												VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+												image_memory_barrier(image,
+																	 VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+																	 VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+																	 VK_ACCESS_TRANSFER_WRITE_BIT,
+																	 VK_ACCESS_TRANSFER_READ_BIT,
+																	 mip_levels - 1, 1, 0, 1));
+				recorder << cmd_pipeline_barrier(barrier);
 			}
 
 			ste_device_queue::submit_batch(std::move(batch));
@@ -271,9 +273,10 @@ public:
 				 QueueOwnershipArgs&& qoa,
 				 const vk_image_initial_layout &layout,
 				 Args&&... args)
-		: device_image_layout_transformable(layout),
+		: device_image_base(ctx,
+							std::forward<QueueOwnershipArgs>(qoa),
+							layout),
 		Base(ctx,
-			 std::forward<QueueOwnershipArgs>(qoa),
 			 layout,
 			 std::forward<Args>(args)...)
 	{}
@@ -281,6 +284,8 @@ public:
 
 	device_image(device_image&&) = default;
 	device_image &operator=(device_image&&) = default;
+
+	VkImage get_image_handle() const override final { return *this; };
 };
 
 }

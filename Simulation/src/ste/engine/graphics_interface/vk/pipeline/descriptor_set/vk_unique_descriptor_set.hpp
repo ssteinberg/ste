@@ -10,12 +10,12 @@
 #include <vk_descriptor_set.hpp>
 #include <vk_descriptor_pool.hpp>
 
-#include <allow_class_decay.hpp>
+#include <allow_type_decay.hpp>
 
 namespace StE {
 namespace GL {
 
-class vk_unique_descriptor_set : public allow_class_decay<vk_unique_descriptor_set, vk_descriptor_set> {
+class vk_unique_descriptor_set : public allow_type_decay<vk_unique_descriptor_set, vk_descriptor_set> {
 private:
 	using binding_t = vk_descriptor_set_layout_binding;
 	using binding_set_t = std::vector<vk_descriptor_set_layout_binding>;

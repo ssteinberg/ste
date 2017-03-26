@@ -13,12 +13,12 @@
 #include <optional.hpp>
 
 #include <functional>
-#include <allow_class_decay.hpp>
+#include <allow_type_decay.hpp>
 
 namespace StE {
 namespace GL {
 
-class vk_sampler : public allow_class_decay<vk_sampler, VkSampler> {
+class vk_sampler : public allow_type_decay<vk_sampler, VkSampler> {
 private:
 	optional<VkSampler> sampler;
 	std::reference_wrapper<const vk_logical_device> device;

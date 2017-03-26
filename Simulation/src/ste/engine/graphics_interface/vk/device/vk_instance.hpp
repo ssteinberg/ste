@@ -13,12 +13,12 @@
 
 #include <vector>
 #include <memory>
-#include <allow_class_decay.hpp>
+#include <allow_type_decay.hpp>
 
 namespace StE {
 namespace GL {
 
-class vk_instance : public allow_class_decay<vk_instance, VkInstance> {
+class vk_instance : public allow_type_decay<vk_instance, VkInstance> {
 private:
 	VkInstance instance{ nullptr };
 	const std::vector<const char*> instance_extensions;

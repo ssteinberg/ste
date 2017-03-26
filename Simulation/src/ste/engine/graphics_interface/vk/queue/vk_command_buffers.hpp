@@ -1,5 +1,5 @@
 //	StE
-// © Shlomi Steinberg 2015-2016
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
@@ -7,18 +7,26 @@
 #include <vk_logical_device.hpp>
 
 #include <vector>
+#include <allow_type_decay.hpp>
 
 namespace StE {
 namespace GL {
+
+class vk_command_pool;
 
 enum class vk_command_buffer_type : std::uint32_t {
 	primary,
 	secondary,
 };
 
-class vk_command_buffer {
+class vk_command_buffer : public allow_type_decay<vk_command_buffer, VkCommandBuffer> {
+	friend vk_command_pool;
+
 private:
-	VkCommandBuffer buffer{ VK_NULL_HANDLE };;
+	VkCommandBuffer buffer{ VK_NULL_HANDLE };
+
+	vk_command_buffer() = default;
+	vk_command_buffer(VkCommandBuffer b) : buffer(b) {}
 
 public:
 	void begin(const VkCommandBufferUsageFlags &flags = 0,
@@ -54,7 +62,7 @@ public:
 		}
 	}
 
-	operator VkCommandBuffer() const { return buffer; }
+	auto& get() const { return buffer; }
 };
 
 class vk_command_buffers {
@@ -62,14 +70,14 @@ class vk_command_buffers {
 
 private:
 	std::vector<vk_command_buffer> buffers;
-	const vk_command_pool &pool;
+	VkCommandPool pool;
 	std::reference_wrapper<const vk_logical_device> device;
 	vk_command_buffer_type type;
 
 private:
 	vk_command_buffers(std::vector<vk_command_buffer> &&buffers,
 					   const vk_logical_device &device,
-					   const vk_command_pool &pool,
+					   const VkCommandPool &pool,
 					   const vk_command_buffer_type &type)
 		: buffers(std::move(buffers)), pool(pool), device(device), type(type)
 	{}

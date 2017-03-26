@@ -5,7 +5,7 @@
 
 #include <stdafx.hpp>
 #include <shared_fence.hpp>
-#include <ste_device_queue_command_buffer.hpp>
+#include <command_buffer.hpp>
 
 #include <ste_device_queue_command_pool.hpp>
 #include <shared_fence.hpp>
@@ -17,10 +17,12 @@
 namespace StE {
 namespace GL {
 
+class ste_device_queue;
+
 namespace _detail {
 
 class ste_device_queue_batch_base {
-	friend class ste_device_queue;
+	friend ste_device_queue;
 
 private:
 	std::uint32_t queue_index;
@@ -87,18 +89,18 @@ public:
 };
 
 template <typename UserData>
-using ste_device_queue_batch_custom = _detail::ste_device_queue_batch_impl<
-	ste_resource_pool<ste_device_queue_command_pool>::resource_t,
+using ste_device_queue_batch_pool = _detail::ste_device_queue_batch_impl<
+	typename ste_resource_pool<ste_device_queue_command_pool>::resource_t,
 	UserData
 >;
 
 }
 
 template <typename UserData = void>
-class ste_device_queue_batch_oneshot : public _detail::ste_device_queue_batch_custom<UserData> {
+class ste_device_queue_batch_oneshot : public _detail::ste_device_queue_batch_pool<UserData> {
 	friend class ste_device_queue;
 
-	using Base = _detail::ste_device_queue_batch_custom<UserData>;
+	using Base = _detail::ste_device_queue_batch_pool<UserData>;
 
 public:
 	using fence_t = ste_resource_pool<shared_fence<void>>::resource_t;
@@ -106,7 +108,7 @@ public:
 	using fence_ptr_weak_t = std::weak_ptr<fence_t>;
 	using shared_fence_t = shared_fence<void>;
 
-	using command_buffer_t = ste_device_queue_command_buffer<VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT>;
+	using command_buffer_t = command_buffer_primary<false>;
 
 protected:
 	fence_ptr_strong_t fence_strong;
@@ -147,7 +149,9 @@ public:
 	}
 
 	auto& acquire_command_buffer() {
-		command_buffers.emplace_back(Base::pool, vk_command_buffer_type::primary);
+		const command_pool& p = pool;
+		command_buffer_t buffer = p.allocate_primary_buffer();
+		command_buffers.emplace_back(std::move(buffer));
 		return command_buffers.back();
 	}
 

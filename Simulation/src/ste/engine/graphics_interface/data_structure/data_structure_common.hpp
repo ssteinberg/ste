@@ -11,8 +11,8 @@
 #include <device_buffer_sparse.hpp>
 #include <device_resource_allocation_policy.hpp>
 
-#include <vk_command_recorder.hpp>
-#include <vk_cmd_copy_buffer.hpp>
+#include <command_recorder.hpp>
+#include <cmd_copy_buffer.hpp>
 
 #include <vector>
 
@@ -54,7 +54,7 @@ void copy_initial_data(const ste_context &ctx,
 		{
 			auto recorder = command_buffer.record();
 			// Copy to live buffer
-			recorder << vk_cmd_copy_buffer(staging_buffer.get(), buffer.get());
+			recorder << cmd_copy_buffer(staging_buffer.get(), buffer.get());
 		}
 
 		ste_device_queue::submit_batch(std::move(batch));
@@ -97,7 +97,6 @@ void copy_initial_data(const ste_context &ctx,
 	ctx.device().enqueue(queue_selector, [&]() {
 		// Bind sparse memory
 		typename device_buffer_sparse<T, atom_size, policy>::bind_range_t bind = { 0, copy_count };
-		buffer.cmd_bind_sparse_memory(ste_device_queue::thread_queue(), {}, { bind }, {}, {});
 
 		{
 			// Record and submit a one-time batch
@@ -105,7 +104,8 @@ void copy_initial_data(const ste_context &ctx,
 
 			// Copy to live buffer
 			VkBufferCopy copy = { 0, 0, copy_count * sizeof(T) };
-			recorder << vk_cmd_copy_buffer(staging_buffer.get(), buffer.get(), { copy });
+			recorder << buffer.cmd_bind_sparse_memory({}, { bind }, {}, {});
+			recorder << cmd_copy_buffer(staging_buffer.get(), buffer.get(), { copy });
 		}
 
 		ste_device_queue::submit_batch(std::move(batch));

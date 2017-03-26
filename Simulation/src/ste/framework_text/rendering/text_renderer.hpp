@@ -8,12 +8,12 @@
 #include <attributed_string.hpp>
 #include <glyph_point.hpp>
 
-#include <vk_command_recorder.hpp>
-#include <vk_cmd_bind_pipeline.hpp>
-#include <vk_cmd_bind_vertex_buffers.hpp>
-#include <vk_cmd_draw.hpp>
-#include <vk_cmd_bind_descriptor_sets.hpp>
-#include <vk_cmd_pipeline_barrier.hpp>
+#include <command_recorder.hpp>
+#include <cmd_bind_pipeline.hpp>
+#include <cmd_bind_vertex_buffers.hpp>
+#include <cmd_draw.hpp>
+#include <cmd_bind_descriptor_sets.hpp>
+#include <cmd_pipeline_barrier.hpp>
 
 #include <vk_render_pass.hpp>
 
@@ -39,7 +39,7 @@ private:
 	std::uint32_t count{ 0 };
 
 private:
-	class cmd_update_text : public GL::vk_command {
+	class cmd_update_text : public GL::command {
 		text_renderer *tr;
 		const std::vector<glyph_point> points;
 		const glm::vec2 render_target_size;
@@ -53,7 +53,7 @@ private:
 		virtual ~cmd_update_text() noexcept {}
 
 	private:
-		void operator()(const GL::vk_command_buffer &, GL::vk_command_recorder &recorder) const override final {
+		void operator()(const GL::command_buffer &, GL::command_recorder &recorder) const override final {
 			if (tr->tr->update_glyphs(recorder)) {
 				// Recreate pipeline
 				tr->recreate_pipeline();
@@ -62,25 +62,25 @@ private:
 			recorder
 				<< tr->vertex_buffer.resize_cmd(points.size())
 				<< tr->vertex_buffer.update_cmd(points, 0);
-			auto buffer_barrier = GL::vk_buffer_memory_barrier(tr->vertex_buffer,
-															   VK_ACCESS_TRANSFER_WRITE_BIT,
-															   VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT);
-			recorder << GL::vk_cmd_pipeline_barrier(GL::vk_pipeline_barrier(VK_PIPELINE_STAGE_TRANSFER_BIT,
-																			VK_PIPELINE_STAGE_VERTEX_SHADER_BIT,
-																			buffer_barrier));
+			auto buffer_barrier = GL::buffer_memory_barrier(*tr->vertex_buffer,
+															VK_ACCESS_TRANSFER_WRITE_BIT,
+															VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT);
+			recorder << GL::cmd_pipeline_barrier(GL::pipeline_barrier(VK_PIPELINE_STAGE_TRANSFER_BIT,
+																	  VK_PIPELINE_STAGE_VERTEX_SHADER_BIT,
+																	  buffer_barrier));
 
 			recorder << tr->fb_size_uniform.update_cmd({ render_target_size });
-			recorder << GL::vk_cmd_pipeline_barrier(GL::vk_pipeline_barrier(VK_PIPELINE_STAGE_TRANSFER_BIT,
-																			VK_PIPELINE_STAGE_VERTEX_SHADER_BIT,
-																			GL::vk_buffer_memory_barrier(tr->fb_size_uniform,
-																										 VK_ACCESS_TRANSFER_WRITE_BIT,
-																										 VK_ACCESS_UNIFORM_READ_BIT)));
+			recorder << GL::cmd_pipeline_barrier(GL::pipeline_barrier(VK_PIPELINE_STAGE_TRANSFER_BIT,
+																	  VK_PIPELINE_STAGE_VERTEX_SHADER_BIT,
+																	  GL::buffer_memory_barrier(*tr->fb_size_uniform,
+																								VK_ACCESS_TRANSFER_WRITE_BIT,
+																								VK_ACCESS_UNIFORM_READ_BIT)));
 
 			tr->count = points.size();
 		}
 	};
 
-	class cmd_text_render : public GL::vk_command {
+	class cmd_text_render : public GL::command {
 		text_renderer *tr;
 
 	public:
@@ -90,16 +90,16 @@ private:
 		virtual ~cmd_text_render() noexcept {}
 
 	private:
-		void operator()(const GL::vk_command_buffer &, GL::vk_command_recorder &recorder) const override final {
+		void operator()(const GL::command_buffer &, GL::command_recorder &recorder) const override final {
 			if (!tr->count) {
 				return;
 			}
 
-			recorder << GL::vk_cmd_bind_descriptor_sets_graphics(*tr->pipeline_layout,
-																 0, { tr->tr->descriptor_set->get(), tr->fb_size_descriptor_set.get() });
-			recorder << GL::vk_cmd_bind_pipeline(*tr->pipeline);
-			recorder << GL::vk_cmd_bind_vertex_buffers(0, tr->vertex_buffer);
-			recorder << GL::vk_cmd_draw(tr->count, 1, 0);	
+			recorder << GL::cmd_bind_descriptor_sets_graphics(*tr->pipeline_layout,
+															  0, { tr->tr->descriptor_set->get(), tr->fb_size_descriptor_set.get() });
+			recorder << GL::cmd_bind_pipeline(*tr->pipeline);
+			recorder << GL::cmd_bind_vertex_buffers(0, tr->vertex_buffer);
+			recorder << GL::cmd_draw(tr->count, 1, 0);
 		}
 	};
 

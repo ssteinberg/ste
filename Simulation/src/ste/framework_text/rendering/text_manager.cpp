@@ -3,9 +3,9 @@
 #include <ste_context.hpp>
 #include <vk_descriptor_set_write_resource.hpp>
 
-#include <vk_command_recorder.hpp>
-#include <vk_cmd_pipeline_barrier.hpp>
-#include <vk_pipeline_barrier.hpp>
+#include <command_recorder.hpp>
+#include <cmd_pipeline_barrier.hpp>
+#include <pipeline_barrier.hpp>
 #include <device_image_layout_transform.hpp>
 
 #include <font.hpp>
@@ -28,7 +28,7 @@ text_manager::text_manager(const StE::ste_context &context,
 	geom(context, std::string("text_distance_map_contour.geom")),
 	frag(context, std::string("text_distance_map_contour.frag"))
 {
-	this->descriptor_set = std::make_unique<GL::vk_unique_descriptor_set>(create_descriptor_set(context.device().logical_device(), 0));
+	this->descriptor_set = std::make_unique<GL::vk_unique_descriptor_set>(create_descriptor_set(context.device(), 0));
 	this->descriptor_set->get().write({
 		GL::vk_descriptor_set_write_resource(VK_DESCRIPTOR_TYPE_SAMPLER, 2, 0, GL::vk_descriptor_set_write_image(gm.sampler()))
 	});
@@ -136,7 +136,7 @@ std::vector<glyph_point> text_manager::create_points(glm::vec2 ortho_pos, const 
 	return points;
 }
 
-bool text_manager::update_glyphs(StE::GL::vk_command_recorder &recorder) {
+bool text_manager::update_glyphs(StE::GL::command_recorder &recorder) {
 	auto updated_range = gm.update_pending_glyphs(recorder);
 	if (!updated_range.length)
 		return false;
@@ -147,7 +147,7 @@ bool text_manager::update_glyphs(StE::GL::vk_command_recorder &recorder) {
 	static_cast<GL::vk_shader&>(frag).specialize_constant(0, texture_count);
 
 	// Create new descriptor set and layout
-	auto new_descriptor_set = std::make_unique<GL::vk_unique_descriptor_set>(create_descriptor_set(context.device().logical_device(), texture_count));
+	auto new_descriptor_set = std::make_unique<GL::vk_unique_descriptor_set>(create_descriptor_set(context.device(), texture_count));
 	std::vector<GL::vk_descriptor_set_write_image> image_writes;
 	image_writes.reserve(texture_count);
 	for (std::uint32_t i = updated_range.start; i < updated_range.start + updated_range.length; ++i) {
@@ -159,7 +159,7 @@ bool text_manager::update_glyphs(StE::GL::vk_command_recorder &recorder) {
 																glyph_texture.texture.layout(),
 																VK_ACCESS_SHADER_READ_BIT,
 																VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-		recorder << GL::vk_cmd_pipeline_barrier(GL::vk_pipeline_barrier(VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
+		recorder << GL::cmd_pipeline_barrier(GL::pipeline_barrier(VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
 																		VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
 																		image_barrier));
 

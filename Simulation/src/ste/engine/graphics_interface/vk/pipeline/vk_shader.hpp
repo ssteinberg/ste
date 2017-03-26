@@ -11,12 +11,12 @@
 #include <optional.hpp>
 
 #include <string>
-#include <allow_class_decay.hpp>
+#include <allow_type_decay.hpp>
 
 namespace StE {
 namespace GL {
 
-class vk_shader : public allow_class_decay<vk_shader, VkShaderModule> {
+class vk_shader : public allow_type_decay<vk_shader, VkShaderModule> {
 private:
 	optional<VkShaderModule> module;
 	std::reference_wrapper<const vk_logical_device> device;

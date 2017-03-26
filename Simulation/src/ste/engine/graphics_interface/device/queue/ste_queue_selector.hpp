@@ -19,15 +19,14 @@ using ste_queue_selector_default_policy = ste_queue_selector_policy_strict;
 template <typename selector_policy = ste_queue_selector_default_policy>
 class ste_queue_selector {
 private:
-	//	Queue type
-	ste_queue_type type;
-	// Queue type index
-	std::uint32_t type_index{ 0 };
+	using arg_type = typename selector_policy::queue_selector_arg_type;
+
+private:
+	arg_type arg;
 
 public:
-	ste_queue_selector(const ste_queue_type &type) : type(type) {}
-	ste_queue_selector(const ste_queue_type &type,
-					   std::uint32_t type_index) : type(type), type_index(type_index) {}
+	template <typename... Args>
+	ste_queue_selector(Args&&... args) : arg(std::forward<Args>(args)...) {}
 	virtual ~ste_queue_selector() noexcept {}
 
 	ste_queue_selector(ste_queue_selector&&) = default;
@@ -41,16 +40,11 @@ public:
 	*	@throws ste_engine_exception	If policy throws on no match
 	*/
 	std::uint32_t operator()(const ste_queue_descriptors &descriptors) const {
-		if (this->type == ste_queue_type::none ||
-			this->type == ste_queue_type::all) {
-			assert("ste_queue_type::none or ste_queue_type::all are not acceptable queue types");
-		}
-
 		// Find a match using the selecting policy.
 		using match_t = std::pair<ste_queue_selector_policy_match_quality::type, ste_queue_descriptors::queues_t::const_iterator>;
 		std::vector<match_t> matches;
 		for (auto it = descriptors.begin(); it != descriptors.end(); ++it) {
-			auto match_result = selector_policy::matches(*it, std::make_pair(this->type, this->type_index));
+			auto match_result = selector_policy::matches(*it, this->arg);
 			if (match_result) {
 				matches.push_back(std::make_pair(match_result.get(), it));
 				// Stop early
@@ -77,11 +71,10 @@ public:
 	}
 
 	bool operator==(const ste_queue_selector &o) const {
-		return type == o.type && type_index == o.type_index;
+		return arg == o.arg;
 	}
 
-	auto& get_type() const { return type; }
-	auto& get_type_index() const { return type_index; }
+	std::string serialize_selector() const { return selector_policy::serialize_selector(arg); }
 };
 
 /**
@@ -97,6 +90,14 @@ auto inline make_queue_selector(const ste_queue_type &type,
 								std::uint32_t type_index) {
 	return ste_queue_selector<>(type, type_index);
 }
+
+/**
+*	@brief	Constructs a queue selector with family policy
+*/
+auto inline make_family_queue_selector(const ste_queue_family &family) {
+	return ste_queue_selector<ste_queue_selector_policy_family>(family);
+}
+
 
 /**
 *	@brief	Helper method for a primary queue selector with default policy

@@ -29,11 +29,12 @@
 #include <mutex>
 #include <atomic>
 #include <aligned_ptr.hpp>
+#include <allow_type_decay.hpp>
 
 namespace StE {
 namespace GL {
 
-class ste_device {
+class ste_device : public allow_type_decay<ste_device, vk_logical_device> {
 public:
 	using queues_and_surface_recreate_signal_type = signal<const ste_device*>;
 
@@ -357,7 +358,10 @@ public:
 
 	std::uint32_t get_swap_chain_images_count() const { return presentation_surface->get_swap_chain_images().size(); }
 
-	auto& logical_device() const { return device; }
+	/**
+	*	@brief	Get device handle
+	*/
+	auto& get() const { return device; }
 };
 
 }

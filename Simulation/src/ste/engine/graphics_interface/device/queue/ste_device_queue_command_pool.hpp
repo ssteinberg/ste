@@ -4,21 +4,22 @@
 #pragma once
 
 #include <stdafx.hpp>
+#include <vk_logical_device.hpp>
 #include <ste_resource_pool.hpp>
-#include <vk_command_pool.hpp>
-#include <allow_class_decay.hpp>
+#include <command_pool.hpp>
+#include <allow_type_decay.hpp>
 
 namespace StE {
 namespace GL {
 
 class ste_device_queue_command_pool : 
-	public ste_resource_pool_resetable_trait<const vk_logical_device &, std::uint32_t, VkCommandPoolCreateFlags>,
-	public allow_class_decay<ste_device_queue_command_pool, vk_command_pool>
+	public ste_resource_pool_resetable_trait<const vk_logical_device &, ste_queue_descriptor>,
+	public allow_type_decay<ste_device_queue_command_pool, command_pool>
 {
 private:
 	static constexpr int releases_resource_every = 100;
 
-	vk_command_pool pool;
+	command_pool pool;
 	std::uint32_t counter{ 0 };
 
 public:

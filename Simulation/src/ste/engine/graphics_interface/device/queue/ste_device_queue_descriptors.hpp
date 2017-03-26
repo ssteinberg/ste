@@ -1,10 +1,11 @@
 //	StE
-// © Shlomi Steinberg 2015-2016
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
 #include <stdafx.hpp>
 #include <ste_queue_type.hpp>
+#include <ste_queue_family.hpp>
 #include <vk_physical_device_descriptor.hpp>
 
 #include <vector>
@@ -20,7 +21,7 @@ struct ste_queue_descriptor {
 	std::reference_wrapper<const GL::vk_physical_device_descriptor> physical_device;
 
 	//	Queue family
-	std::uint32_t family;
+	ste_queue_family family;
 	// Queue priority
 	float priority{ .0f };
 
@@ -91,7 +92,7 @@ public:
 			device_queue_info.flags = 0;
 			device_queue_info.queueCount = info->priorities.size() - idx;
 			device_queue_info.pQueuePriorities = &info->priorities[idx];
-			device_queue_info.queueFamilyIndex = it->family;
+			device_queue_info.queueFamilyIndex = static_cast<std::uint32_t>(it->family);
 
 			info->create_info.push_back(device_queue_info);
 		}
