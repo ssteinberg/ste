@@ -50,13 +50,10 @@ public:
 						  const VkAccessFlags &src_access,
 						  const VkAccessFlags &dst_access,
 						  const ste_queue_family &src_queue_family,
-						  const ste_queue_family &dst_queue_family,
-						  std::uint64_t size,
-						  std::uint64_t offset = 0)
+						  const ste_queue_family &dst_queue_family)
 		: src(src_access), dst(dst_access),
 		src_queue_family(src_queue_family), dst_queue_family(dst_queue_family),
-		buffer(buffer.get_buffer_handle()), offset(offset * sizeof(T)), size(size * sizeof(T)),
-		queue_ownership(&buffer)
+		buffer(buffer.get_buffer_handle()), queue_ownership(&buffer)
 	{}
 	~buffer_memory_barrier() noexcept {}
 

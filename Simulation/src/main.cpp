@@ -5,7 +5,7 @@
 #include <array.hpp>
 #include <stable_vector.hpp>
 #include <device_image.hpp>
-#include <device_image_queue_transfer.hpp>
+#include <device_resource_queue_transfer.hpp>
 #include <device_image_layout_transform.hpp>
 #include <device_pipeline_shader_stage.hpp>
 

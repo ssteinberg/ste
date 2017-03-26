@@ -4,13 +4,14 @@
 #pragma once
 
 #include <stdafx.hpp>
-#include <device_image.hpp>
+#include <device_image_base.hpp>
+#include <image_memory_barrier.hpp>
 
 namespace StE {
 namespace GL {
 
-template <int dimensions, class allocation_policy>
-auto image_layout_transform_barrier(const device_image<dimensions, allocation_policy> &image,
+template <int dimensions>
+auto image_layout_transform_barrier(const device_image_base<dimensions> &image,
 									VkAccessFlags src_access,
 									VkImageLayout src_layout,
 									VkAccessFlags dst_access,

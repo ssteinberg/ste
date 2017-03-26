@@ -572,7 +572,9 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\shader\ste_shader_blob_header.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\shader\ste_shader_load_exceptions.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\buffer\device_buffer_base.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\buffer\device_buffer_queue_transfer.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\device_resource_queue_ownership.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\device_resource_queue_transfer.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\device_resource_queue_transferable.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\image\device_image_base.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\image\device_image_exceptions.hpp" />

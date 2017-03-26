@@ -12,13 +12,15 @@ namespace GL {
 
 class device_resource_queue_transferable;
 
-template <int dimensions, class allocation_policy>
-class device_image;
+template <int dimensions>
+class device_image_base;
+template <typename T>
+class device_buffer_base;
 
 class device_resource_queue_transferable {
-	template <int dimensions, class allocation_policy>
+	template <int dimensions>
 	friend void queue_transfer(const ste_context &ctx,
-							   device_image<dimensions, allocation_policy> &image,
+							   device_image_base<dimensions> &image,
 							   const ste_queue_family &dst_family,
 							   VkPipelineStageFlags src_stage,
 							   VkAccessFlags src_access,
@@ -26,6 +28,14 @@ class device_resource_queue_transferable {
 							   VkAccessFlags dst_access,
 							   VkImageLayout dst_layout,
 							   bool depth);
+	template <typename T>
+	friend void queue_transfer(const ste_context &ctx,
+							   device_buffer_base<T> &buffer,
+							   const ste_queue_family &dst_family,
+							   VkPipelineStageFlags src_stage,
+							   VkAccessFlags src_access,
+							   VkPipelineStageFlags dst_stage,
+							   VkAccessFlags dst_access);
 	friend void queue_transfer_discard(device_resource_queue_transferable &resource,
 									   const ste_queue_family &dst_family);
 	friend class cmd_pipeline_barrier;
