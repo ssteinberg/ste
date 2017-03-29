@@ -6,6 +6,7 @@
 #include <stdafx.hpp>
 
 #include <vulkan/vulkan.h>
+#include <vk_pipeline.hpp>
 #include <vk_logical_device.hpp>
 #include <vk_shader.hpp>
 #include <vk_pipeline_layout.hpp>
@@ -30,11 +31,7 @@ struct vk_graphics_shader_descriptor {
 	VkShaderStageFlagBits stage;
 };
 
-class vk_pipeline_graphics : public allow_type_decay<vk_pipeline_graphics, VkPipeline> {
-private:
-	optional<VkPipeline> pipeline;
-	std::reference_wrapper<const vk_logical_device> device;
-
+class vk_pipeline_graphics : public vk_pipeline {
 public:
 	struct vertex_input_descriptor {
 		std::uint32_t binding_index;
@@ -58,7 +55,7 @@ public:
 						 const vk_depth_op_descriptor &depth_op,
 						 const std::vector<vk_blend_op_descriptor> &attachment_blend_op,
 						 const glm::vec4 blend_constants,
-						 const vk_pipeline_cache *cache = nullptr) : device(device) {
+						 const vk_pipeline_cache *cache = nullptr) : vk_pipeline(device) {
 		// Shader modules stages
 		std::vector<vk_shader::shader_stage_info_t> stages_info(shader_modules.size());
 		std::vector<VkPipelineShaderStageCreateInfo> stages(shader_modules.size());
@@ -212,23 +209,12 @@ public:
 
 		this->pipeline = pipeline;
 	}
-	~vk_pipeline_graphics() noexcept {
-		destroy_pipeline();
-	}
+	~vk_pipeline_graphics() noexcept {}
 
 	vk_pipeline_graphics(vk_pipeline_graphics &&) = default;
 	vk_pipeline_graphics &operator=(vk_pipeline_graphics &&) = default;
 	vk_pipeline_graphics(const vk_pipeline_graphics &) = delete;
 	vk_pipeline_graphics &operator=(const vk_pipeline_graphics &) = delete;
-
-	void destroy_pipeline() {
-		if (pipeline) {
-			vkDestroyPipeline(device.get(), *this, nullptr);
-			pipeline = none;
-		}
-	}
-
-	auto& get() const { return pipeline.get(); }
 };
 
 }

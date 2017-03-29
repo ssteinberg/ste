@@ -9,11 +9,11 @@
 #include <ste_gl_context_creation_parameters.hpp>
 
 #include <ste_gl_context.hpp>
-#include <vk_result.hpp>
+#include <vk_surface.hpp>
 #include <ste_device_exceptions.hpp>
 #include <vk_logical_device.hpp>
 #include <vk_swapchain.hpp>
-#include <vk_swapchain_image.hpp>
+#include <device_swapchain_image.hpp>
 #include <vk_image_view.hpp>
 #include <vk_semaphore.hpp>
 #include <vk_queue.hpp>
@@ -38,7 +38,7 @@ private:
 public:
 	using swap_chain_image_view_t = vk_image_view<vk_image_type::image_2d>;
 	struct swap_chain_image_t {
-		vk_swapchain_image image;
+		device_swapchain_image image;
 		swap_chain_image_view_t view;
 
 		swap_chain_image_t() = delete;

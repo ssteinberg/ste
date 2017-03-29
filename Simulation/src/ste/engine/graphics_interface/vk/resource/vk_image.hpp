@@ -1,5 +1,5 @@
 //	StE
-// © Shlomi Steinberg 2015-2016
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
@@ -8,6 +8,7 @@
 #include <vulkan/vulkan.h>
 #include <vk_resource.hpp>
 #include <vk_image_base.hpp>
+#include <vk_image_initial_layout.hpp>
 
 #include <vk_logical_device.hpp>
 #include <vk_result.hpp>
@@ -16,11 +17,6 @@
 
 namespace StE {
 namespace GL {
-
-enum class vk_image_initial_layout : std::uint8_t {
-	unused,
-	preinitialized,
-};
 
 template <int dimensions>
 class vk_image : public vk_image_base<dimensions>, public vk_resource {

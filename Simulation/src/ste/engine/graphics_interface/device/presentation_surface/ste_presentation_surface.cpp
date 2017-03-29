@@ -1,5 +1,7 @@
 
 #include <stdafx.hpp>
+#include <vk_result.hpp>
+#include <vk_swapchain.hpp>
 #include <ste_presentation_surface.hpp>
 
 #include <algorithm>
@@ -64,6 +66,7 @@ void ste_presentation_surface::acquire_swap_chain_images() {
 		throw vk_exception(res);
 	}
 
+	// Create views and image objects
 	std::vector<swap_chain_image_t> images;
 	images.reserve(swapchain_vk_image_objects.size());
 	for (auto& img : swapchain_vk_image_objects) {
@@ -74,7 +77,9 @@ void ste_presentation_surface::acquire_swap_chain_images() {
 										layers);
 		auto view = swap_chain_image_view_t(image);
 
-		images.push_back({ std::move(image), std::move(view) });
+		auto swapchain_image = device_swapchain_image(std::move(image));
+
+		images.push_back({ std::move(swapchain_image), std::move(view) });
 	}
 
 	this->swap_chain_images = std::move(images);

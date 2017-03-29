@@ -1,32 +1,27 @@
 //	StE
-// © Shlomi Steinberg 2015-2016
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
 #include <stdafx.hpp>
 
 #include <vulkan/vulkan.h>
+#include <vk_pipeline.hpp>
 #include <vk_logical_device.hpp>
 #include <vk_shader.hpp>
 #include <vk_pipeline_layout.hpp>
 #include <vk_pipeline_cache.hpp>
 
-#include <optional.hpp>
-#include <allow_type_decay.hpp>
-
 namespace StE {
 namespace GL {
 
-class vk_pipeline_compute : public allow_type_decay<vk_pipeline_compute, VkPipeline> {
-private:
-	optional<VkPipeline> pipeline;
-	std::reference_wrapper<const vk_logical_device> device;
+class vk_pipeline_compute : public vk_pipeline {
 
 public:
 	vk_pipeline_compute(const vk_logical_device &device,
 						const vk_shader &shader_module,
 						const vk_pipeline_layout &layout,
-						const vk_pipeline_cache *cache = nullptr) : device(device) {
+						const vk_pipeline_cache *cache = nullptr) : vk_pipeline(device) {
 		vk_shader::shader_stage_info_t stage_info;
 		shader_module.shader_stage_create_info(VK_SHADER_STAGE_COMPUTE_BIT, stage_info);
 
@@ -52,23 +47,12 @@ public:
 
 		this->pipeline = pipeline;
 	}
-	~vk_pipeline_compute() noexcept {
-		destroy_pipeline();
-	}
+	~vk_pipeline_compute() noexcept {}
 
 	vk_pipeline_compute(vk_pipeline_compute &&) = default;
 	vk_pipeline_compute &operator=(vk_pipeline_compute &&) = default;
 	vk_pipeline_compute(const vk_pipeline_compute &) = delete;
 	vk_pipeline_compute &operator=(const vk_pipeline_compute &) = delete;
-
-	void destroy_pipeline() {
-		if (pipeline) {
-			vkDestroyPipeline(device.get(), *this, nullptr);
-			pipeline = none;
-		}
-	}
-
-	auto& get() const { return pipeline.get(); }
 };
 
 }

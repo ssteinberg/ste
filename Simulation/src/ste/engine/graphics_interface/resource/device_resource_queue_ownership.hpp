@@ -4,7 +4,6 @@
 #pragma once
 
 #include <stdafx.hpp>
-#include <ste_context.hpp>
 #include <ste_queue_family.hpp>
 
 #include <atomic>
@@ -20,13 +19,6 @@ struct device_resource_queue_ownership {
 	std::atomic<family_t> family;
 
 	device_resource_queue_ownership() = delete;
-	template <typename selector_policy>
-	device_resource_queue_ownership(const ste_context &ctx,
-									const ste_queue_selector<selector_policy> &selector)
-		: family(ctx.device().select_queue(selector)->queue_descriptor().family)
-	{
-		assert(this->family.is_lock_free());
-	}
 	device_resource_queue_ownership(const family_t &family)
 		: family(family)
 	{

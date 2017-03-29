@@ -10,23 +10,14 @@
 namespace StE {
 namespace GL {
 
-template <int dimensions>
 class device_image_base
 	: public device_resource_queue_transferable,
 	public device_image_layout_transformable 
 {
 protected:
-	template <typename selector_policy>
-	device_image_base(const ste_context &ctx,
-					  const ste_queue_selector<selector_policy> &selector,
+	device_image_base(const device_resource_queue_ownership::family_t &family,
 					  const vk_image_initial_layout &layout)
-		: device_resource_queue_transferable(ctx, selector),
-		device_image_layout_transformable(layout)
-	{}
-	device_image_base(const ste_context &ctx,
-					  const device_resource_queue_ownership::family_t &family,
-					  const vk_image_initial_layout &layout)
-		: device_resource_queue_transferable(ctx, family),
+		: device_resource_queue_transferable(family),
 		device_image_layout_transformable(layout)
 	{}
 

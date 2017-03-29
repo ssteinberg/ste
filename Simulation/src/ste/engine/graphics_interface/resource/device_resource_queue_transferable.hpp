@@ -4,23 +4,20 @@
 #pragma once
 
 #include <stdafx.hpp>
-#include <ste_context.hpp>
+#include <vulkan/vulkan.h>
+#include <ste_context_predefine.hpp>
 #include <device_resource_queue_ownership.hpp>
 
 namespace StE {
+
 namespace GL {
 
-class device_resource_queue_transferable;
-
-template <int dimensions>
 class device_image_base;
-template <typename T>
 class device_buffer_base;
 
 class device_resource_queue_transferable {
-	template <int dimensions>
 	friend void queue_transfer(const ste_context &ctx,
-							   device_image_base<dimensions> &image,
+							   device_image_base &image,
 							   const ste_queue_family &dst_family,
 							   VkPipelineStageFlags src_stage,
 							   VkAccessFlags src_access,
@@ -28,9 +25,8 @@ class device_resource_queue_transferable {
 							   VkAccessFlags dst_access,
 							   VkImageLayout dst_layout,
 							   bool depth);
-	template <typename T>
 	friend void queue_transfer(const ste_context &ctx,
-							   device_buffer_base<T> &buffer,
+							   device_buffer_base &buffer,
 							   const ste_queue_family &dst_family,
 							   VkPipelineStageFlags src_stage,
 							   VkAccessFlags src_access,
@@ -44,13 +40,7 @@ private:
 	mutable device_resource_queue_ownership queue_ownership;
 	
 protected:
-	template <typename selector_policy>
-	device_resource_queue_transferable(const ste_context &ctx,
-									   const ste_queue_selector<selector_policy> &selector)
-		: queue_ownership(ctx, selector)
-	{}
-	device_resource_queue_transferable(const ste_context &ctx,
-									   const device_resource_queue_ownership::family_t &family)
+	device_resource_queue_transferable(const device_resource_queue_ownership::family_t &family)
 		: queue_ownership(family)
 	{}
 

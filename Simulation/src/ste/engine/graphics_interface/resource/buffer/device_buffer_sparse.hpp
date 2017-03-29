@@ -28,7 +28,7 @@ template <
 	class allocation_policy = device_resource_allocation_policy_device
 >
 class device_buffer_sparse : 
-	public device_buffer_base<T>,
+	public device_buffer_base,
 	public allow_type_decay<device_buffer_sparse<T, minimal_atom_size, allocation_policy>, vk_buffer<T, true>, false>
 {
 private:
@@ -80,9 +80,9 @@ private:
 	template <typename selector_policy>
 	device_buffer_sparse(ctor,
 						 const ste_context &ctx,
-						 const ste_queue_selector<selector_policy> &selector,
+						 const ste_queue_selector<selector_policy> &initial_queue_selector,
 						 resource_t &&resource)
-		: device_buffer_base(ctx, selector),
+		: device_buffer_base(ctx.device().select_queue(initial_queue_selector)->queue_descriptor().family),
 		ctx(ctx), 
 		resource(std::move(resource))
 	{
@@ -92,7 +92,7 @@ private:
 						 const ste_context &ctx,
 						 const device_resource_queue_ownership::family_t &family,
 						 resource_t &&resource)
-		: device_buffer_base(ctx, family),
+		: device_buffer_base(family),
 		ctx(ctx),
 		resource(std::move(resource))
 	{
@@ -102,9 +102,9 @@ private:
 public:
 	template <typename selector_policy, typename ... Args>
 	device_buffer_sparse(const ste_context &ctx,
-						 const ste_queue_selector<selector_policy> &selector,
+						 const ste_queue_selector<selector_policy> &initial_queue_selector,
 						 Args&&... args)
-		: device_buffer_sparse(ctor(), ctx, selector,
+		: device_buffer_sparse(ctor(), ctx, initial_queue_selector,
 							   resource_t(ctx.device(), std::forward<Args>(args)...))
 	{}
 	template <typename ... Args>
@@ -199,6 +199,10 @@ public:
 
 	resource_t& get() { return resource; }
 	const resource_t& get() const { return resource; }
+
+	std::uint64_t get_elements_count() const override final { return this->get().get_elements_count(); }
+	std::uint32_t get_element_size_bytes() const override final { return sizeof(T); };
+	bool is_sparse() const override final { return true; };
 };
 
 }

@@ -4,6 +4,7 @@
 #pragma once
 
 #include <stdafx.hpp>
+#include <ste_engine.hpp>
 
 #include <ste_window.hpp>
 #include <vk_physical_device_descriptor.hpp>
@@ -12,6 +13,7 @@
 #include <ste_device_sync_primitives_pools.hpp>
 #include <ste_device_presentation_sync_semaphores.hpp>
 #include <ste_queue_selector.hpp>
+#include <ste_device_pipeline_cache.hpp>
 
 #include <ste_device_exceptions.hpp>
 #include <ste_gl_context_creation_parameters.hpp>
@@ -58,6 +60,9 @@ private:
 	const ste_gl_device_creation_parameters parameters;
 	const ste_queue_descriptors queue_descriptors;
 	const vk_logical_device device;
+
+	// Pipeline cache
+	ste_device_pipeline_cache shared_pipeline_cache;
 
 	// Synchronization primitive pools
 	aligned_ptr<ste_device_sync_primitives_pools> sync_primitives_pools;
@@ -171,11 +176,13 @@ public:
 	*
 	*	@param parameters			Device creation parameters
 	*	@param queue_descriptors	Queues descriptors. Influences amount and families of created device queues.
+	*	@param engine				StE engine object
 	*	@param gl_ctx				Context
 	*	@param presentation_window	Presentation window used for rendering
 	*/
 	ste_device(const ste_gl_device_creation_parameters &parameters,
 			   const ste_queue_descriptors &queue_descriptors,
+			   ste_engine &engine,
 			   const ste_gl_context &gl_ctx,
 			   const ste_window &presentation_window)
 		: parameters(parameters),
@@ -184,6 +191,9 @@ public:
 										parameters.requested_device_features,
 										queue_descriptors,
 										parameters.additional_device_extensions)),
+		shared_pipeline_cache(device,
+							  &engine.cache(),
+							  this->name()),
 		sync_primitives_pools(device),
 		device_queues(create_queues(device,
 									queue_descriptors,
@@ -203,10 +213,12 @@ public:
 	*
 	*	@param parameters			Device creation parameters
 	*	@param queue_descriptors	Queues descriptors. Influences amount and families of created device queues.
+	*	@param engine				StE engine object
 	*	@param gl_ctx				Context
 	*/
 	ste_device(const ste_gl_device_creation_parameters &parameters,
 			   const ste_queue_descriptors &queue_descriptors,
+			   ste_engine &engine,
 			   const ste_gl_context &gl_ctx)
 		: parameters(parameters),
 		queue_descriptors(queue_descriptors),
@@ -214,6 +226,9 @@ public:
 										parameters.requested_device_features,
 										queue_descriptors,
 										parameters.additional_device_extensions)),
+		shared_pipeline_cache(device,
+							  &engine.cache(),
+							  this->name()),
 		sync_primitives_pools(device),
 		device_queues(create_queues(device,
 									queue_descriptors,
@@ -350,6 +365,16 @@ public:
 	*	@brief	Thread-safe pools for device synchronization primitives
 	*/
 	auto& get_sync_primitives_pools() const { return *sync_primitives_pools; }
+
+	/**
+	*	@brief	Thread-safe pipeline cache generator
+	*/
+	auto& pipeline_cache() const { return shared_pipeline_cache; }
+
+	/**
+	*	@brief	Human readable device name
+	*/
+	std::string name() const { return std::string(parameters.physical_device.properties.deviceName); }
 
 	auto& get_queues_and_surface_recreate_signal() const { return queues_and_surface_recreate_signal; }
 

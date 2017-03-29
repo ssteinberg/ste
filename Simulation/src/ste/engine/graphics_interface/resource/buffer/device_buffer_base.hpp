@@ -9,18 +9,11 @@
 namespace StE {
 namespace GL {
 
-template <typename T>
 class device_buffer_base 
 	: public device_resource_queue_transferable {
 protected:
-	template <typename selector_policy>
-	device_buffer_base(const ste_context &ctx,
-					   const ste_queue_selector<selector_policy> &selector)
-		: device_resource_queue_transferable(ctx, selector)
-	{}
-	device_buffer_base(const ste_context &ctx,
-					   const device_resource_queue_ownership::family_t &family)
-		: device_resource_queue_transferable(ctx, family)
+	device_buffer_base(const device_resource_queue_ownership::family_t &family)
+		: device_resource_queue_transferable(family)
 	{}
 
 public:
@@ -29,6 +22,10 @@ public:
 
 	device_buffer_base(device_buffer_base&&) = default;
 	device_buffer_base &operator=(device_buffer_base&&) = default;
+
+	virtual std::uint64_t get_elements_count() const = 0;
+	virtual std::uint32_t get_element_size_bytes() const = 0;
+	virtual bool is_sparse() const = 0;
 };
 
 }

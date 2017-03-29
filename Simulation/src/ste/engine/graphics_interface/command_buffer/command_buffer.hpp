@@ -172,6 +172,8 @@ class command_buffer_secondary_impl : public _internal::command_buffer_impl<flag
 private:
 	using Base::Base;
 
+	using Base::record;
+
 public:
 	/**
 	*	@brief	Creates a recorder which records the command buffer
@@ -181,7 +183,7 @@ public:
 	*/
 	auto record(const secondary_command_buffer_inheritance &inheritance) {
 		return command_recorder(*this, 
-								queue_descriptor,
+								Base::queue_descriptor,
 								inheritance);
 	}
 
@@ -224,7 +226,7 @@ using command_buffer_primary_multishot = _internal::command_buffer_impl<
 	false
 >;
 template <bool resetable>
-using command_buffer_secondary = _internal::command_buffer_secondary_impl <
+using command_buffer_secondary = _internal::command_buffer_secondary_impl<
 	VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT,
 	resetable,
 	false

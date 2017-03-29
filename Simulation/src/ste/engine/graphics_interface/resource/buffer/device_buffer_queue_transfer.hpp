@@ -18,12 +18,11 @@
 namespace StE {
 namespace GL {
 
-template <typename T>
-auto queue_release_acquire_barrier(const device_buffer_base<T> &buffer,
-								   VkAccessFlags src_access,
-								   const ste_queue_family &src_family,
-								   VkAccessFlags dst_access,
-								   const ste_queue_family &dst_family) {
+auto inline queue_release_acquire_barrier(const device_buffer_base &buffer,
+										  VkAccessFlags src_access,
+										  const ste_queue_family &src_family,
+										  VkAccessFlags dst_access,
+										  const ste_queue_family &dst_family) {
 	return buffer_memory_barrier(buffer,
 								 src_access,
 								 dst_access,
@@ -31,14 +30,13 @@ auto queue_release_acquire_barrier(const device_buffer_base<T> &buffer,
 								 dst_family);
 }
 
-template <typename T>
-void queue_transfer(const ste_context &ctx,
-					device_buffer_base<T> &buffer,
-					const ste_queue_family &dst_family,
-					VkPipelineStageFlags src_stage,
-					VkAccessFlags src_access,
-					VkPipelineStageFlags dst_stage,
-					VkAccessFlags dst_access) {
+void inline queue_transfer(const ste_context &ctx,
+						   device_buffer_base &buffer,
+						   const ste_queue_family &dst_family,
+						   VkPipelineStageFlags src_stage,
+						   VkAccessFlags src_access,
+						   VkPipelineStageFlags dst_stage,
+						   VkAccessFlags dst_access) {
 	assert(!ste_device_queue::is_queue_thread() && "Should not be called from a queue");
 
 	auto src_family = buffer.owner_queue_family();
@@ -101,9 +99,9 @@ void queue_transfer(const ste_context &ctx,
 	buffer.queue_ownership.family.store(dst_family, std::memory_order_release);
 }
 
-template <typename T, typename selector_policy>
+template <typename selector_policy>
 void queue_transfer(const ste_context &ctx,
-					device_buffer_base<T> &buffer,
+					device_buffer_base &buffer,
 					const ste_queue_selector<selector_policy> &queue_selector,
 					VkPipelineStageFlags src_stage,
 					VkAccessFlags src_access,

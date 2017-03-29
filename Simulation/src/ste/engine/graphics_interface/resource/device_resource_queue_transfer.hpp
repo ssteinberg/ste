@@ -4,6 +4,7 @@
 #pragma once
 
 #include <stdafx.hpp>
+#include <ste_context.hpp>
 #include <ste_queue_family.hpp>
 #include <device_resource_queue_transferable.hpp>
 

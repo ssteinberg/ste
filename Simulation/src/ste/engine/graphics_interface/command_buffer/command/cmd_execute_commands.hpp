@@ -4,7 +4,7 @@
 #pragma once
 
 #include <vulkan/vulkan.h>
-#include <command_buffers.hpp>
+#include <command_buffer.hpp>
 #include <command.hpp>
 
 #include <vector>
@@ -17,10 +17,10 @@ private:
 	std::vector<VkCommandBuffer> buffers;
 
 public:
-	cmd_execute_commands(const std::vector<command_buffer> &buffers) {
+	cmd_execute_commands(const std::vector<std::reference_wrapper<command_buffer>> &buffers) {
 		this->buffers.reserve(buffers.size());
 		for (auto &e : buffers)
-			this->buffers.push_back(e);
+			this->buffers.push_back(e.get());
 	}
 	virtual ~cmd_execute_commands() noexcept {}
 

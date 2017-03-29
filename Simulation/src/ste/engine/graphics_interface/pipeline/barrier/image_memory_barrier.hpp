@@ -36,8 +36,7 @@ private:
 	std::uint32_t layers{ VK_REMAINING_ARRAY_LAYERS };
 
 public:
-	template<int d>
-	image_memory_barrier(const device_image_base<d> &image,
+	image_memory_barrier(const device_image_base &image,
 						 VkImageLayout old_layout,
 						 VkImageLayout new_layout,
 						 const VkAccessFlags &src_access,
@@ -47,8 +46,7 @@ public:
 		image(image.get_image_handle()), image_layout(&image), queue_ownership(&image),
 		aspect(depth ? VK_IMAGE_ASPECT_DEPTH_BIT : VK_IMAGE_ASPECT_COLOR_BIT)
 	{}
-	template<int d>
-	image_memory_barrier(const device_image_base<d> &image,
+	image_memory_barrier(const device_image_base &image,
 						 VkImageLayout old_layout,
 						 VkImageLayout new_layout,
 						 const VkAccessFlags &src_access,
@@ -63,8 +61,7 @@ public:
 		aspect(depth ? VK_IMAGE_ASPECT_DEPTH_BIT : VK_IMAGE_ASPECT_COLOR_BIT),
 		base_level(base_mip_level), levels(mip_levels), base_layer(base_array_layer), layers(array_layers)
 	{}
-	template<int d>
-	image_memory_barrier(const device_image_base<d> &image,
+	image_memory_barrier(const device_image_base &image,
 						 VkImageLayout old_layout,
 						 VkImageLayout new_layout,
 						 const VkAccessFlags &src_access,
@@ -77,8 +74,7 @@ public:
 		image(image.get_image_handle()), image_layout(&image), queue_ownership(&image),
 		aspect(depth ? VK_IMAGE_ASPECT_DEPTH_BIT : VK_IMAGE_ASPECT_COLOR_BIT)
 	{}
-	template<int d>
-	image_memory_barrier(const device_image_base<d> &image,
+	image_memory_barrier(const device_image_base &image,
 						 VkImageLayout old_layout,
 						 VkImageLayout new_layout,
 						 const VkAccessFlags &src_access,
@@ -93,21 +89,6 @@ public:
 		: src(src_access), dst(dst_access), old_layout(old_layout), new_layout(new_layout),
 		src_queue_family(src_queue_family), dst_queue_family(dst_queue_family),
 		image(image.get_image_handle()), image_layout(nullptr), queue_ownership(&image),
-		aspect(depth ? VK_IMAGE_ASPECT_DEPTH_BIT : VK_IMAGE_ASPECT_COLOR_BIT),
-		base_level(base_mip_level), levels(mip_levels), base_layer(base_array_layer), layers(array_layers)
-	{}
-	image_memory_barrier(VkImageLayout old_layout,
-						 VkImageLayout new_layout,
-						 const VkImage &image,
-						 const VkAccessFlags &src_access,
-						 const VkAccessFlags &dst_access,
-						 std::uint32_t base_mip_level = 0,
-						 std::uint32_t mip_levels = 1,
-						 std::uint32_t base_array_layer = 0,
-						 std::uint32_t array_layers = 1,
-						 bool depth = false)
-		: src(src_access), dst(dst_access), old_layout(old_layout), new_layout(new_layout),
-		image(image), image_layout(nullptr), queue_ownership(nullptr),
 		aspect(depth ? VK_IMAGE_ASPECT_DEPTH_BIT : VK_IMAGE_ASPECT_COLOR_BIT),
 		base_level(base_mip_level), levels(mip_levels), base_layer(base_array_layer), layers(array_layers)
 	{}

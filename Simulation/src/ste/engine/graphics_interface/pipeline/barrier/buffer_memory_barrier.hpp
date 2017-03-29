@@ -28,25 +28,23 @@ private:
 	const device_resource_queue_transferable *queue_ownership;
 
 public:
-	template <typename T>
-	buffer_memory_barrier(const device_buffer_base<T> &buffer,
+	buffer_memory_barrier(const device_buffer_base &buffer,
 						  const VkAccessFlags &src_access,
 						  const VkAccessFlags &dst_access)
 		: src(src_access), dst(dst_access), buffer(buffer.get_buffer_handle()),
 		queue_ownership(&buffer)
 	{}
-	template <typename T>
-	buffer_memory_barrier(const device_buffer_base<T> &buffer,
+	buffer_memory_barrier(const device_buffer_base &buffer,
 						  const VkAccessFlags &src_access,
 						  const VkAccessFlags &dst_access,
 						  std::uint64_t size,
 						  std::uint64_t offset = 0)
 		: src(src_access), dst(dst_access),
-		buffer(buffer.get_buffer_handle()), offset(offset * sizeof(T)), size(size * sizeof(T)),
+		buffer(buffer.get_buffer_handle()), 
+		offset(offset * buffer.get_element_size_bytes()), size(size * buffer.get_element_size_bytes()),
 		queue_ownership(&buffer)
 	{}
-	template <typename T>
-	buffer_memory_barrier(const device_buffer_base<T> &buffer,
+	buffer_memory_barrier(const device_buffer_base &buffer,
 						  const VkAccessFlags &src_access,
 						  const VkAccessFlags &dst_access,
 						  const ste_queue_family &src_queue_family,

@@ -1,10 +1,10 @@
 //	StE
-// © Shlomi Steinberg 2015-2016
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
 #include <stdafx.hpp>
-
+#include <ste_context_predefine.hpp>
 #include <ste_device.hpp>
 #include <ste_gl_context.hpp>
 #include <ste_engine.hpp>
@@ -60,9 +60,5 @@ public:
 	auto &gl() const { return gl_context; }
 	auto &device_memory_allocator() const { return engine_device_memory_allocator; }
 };
-
-using ste_context = ste_context_impl<
-	ste_engine_types
->;
 
 }

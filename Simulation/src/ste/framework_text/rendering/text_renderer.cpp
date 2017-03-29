@@ -50,7 +50,8 @@ void text_renderer::recreate_pipeline() {
 			{ GL::vk_blend_op_descriptor(VK_BLEND_FACTOR_SRC_ALPHA,
 										 VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,
 										 VK_BLEND_OP_ADD) },
-			glm::vec4{ .0f }
+			glm::vec4{ .0f },
+			&tr->context.device().pipeline_cache().current_thread_cache()
 	});
 }
 

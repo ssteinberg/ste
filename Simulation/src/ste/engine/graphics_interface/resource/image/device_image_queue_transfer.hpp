@@ -4,6 +4,7 @@
 #pragma once
 
 #include <stdafx.hpp>
+#include <ste_context.hpp>
 #include <ste_queue_family.hpp>
 #include <device_image_base.hpp>
 #include <device_image_layout_transform.hpp>
@@ -19,15 +20,14 @@
 namespace StE {
 namespace GL {
 
-template <int dimensions>
-auto queue_release_acquire_barrier(const device_image_base<dimensions> &image,
-								   VkAccessFlags src_access,
-								   const ste_queue_family &src_family,
-								   VkImageLayout src_layout,
-								   VkAccessFlags dst_access,
-								   const ste_queue_family &dst_family,
-								   VkImageLayout dst_layout,
-								   bool depth = false) {
+auto inline queue_release_acquire_barrier(const device_image_base &image,
+										  VkAccessFlags src_access,
+										  const ste_queue_family &src_family,
+										  VkImageLayout src_layout,
+										  VkAccessFlags dst_access,
+										  const ste_queue_family &dst_family,
+										  VkImageLayout dst_layout,
+										  bool depth = false) {
 	return image_memory_barrier(image,
 								src_layout,
 								dst_layout,
@@ -38,23 +38,22 @@ auto queue_release_acquire_barrier(const device_image_base<dimensions> &image,
 								depth);
 }
 
-template <int dimensions>
-void queue_transfer(const ste_context &ctx,
-					device_image_base<dimensions> &image,
-					const ste_queue_family &dst_family,
-					VkPipelineStageFlags src_stage,
-					VkAccessFlags src_access,
-					VkPipelineStageFlags dst_stage,
-					VkAccessFlags dst_access,
-					VkImageLayout dst_layout,
-					bool depth = false) {
+void inline queue_transfer(const ste_context &ctx,
+						   device_image_base &image,
+						   const ste_queue_family &dst_family,
+						   VkPipelineStageFlags src_stage,
+						   VkAccessFlags src_access,
+						   VkPipelineStageFlags dst_stage,
+						   VkAccessFlags dst_access,
+						   VkImageLayout dst_layout,
+						   bool depth = false) {
 	assert(!ste_device_queue::is_queue_thread() && "Should not be called from a queue");
 
 	auto src_family = image.owner_queue_family();
 
 	auto& src_q = ctx.device().select_queue(make_family_queue_selector(src_family));
 	auto& dst_q = ctx.device().select_queue(make_family_queue_selector(dst_family));
-	
+
 	// Tranfer only if needed
 	if (src_family == dst_family) {
 		src_q->enqueue([=, &image]() {
@@ -66,13 +65,13 @@ void queue_transfer(const ste_context &ctx,
 				auto recorder = command_buffer.record();
 
 				auto barrier = pipeline_barrier(src_stage,
-												   dst_stage,
-												   image_layout_transform_barrier(image,
-																				 src_access,
-																				 src_layout,
-																				 dst_access,
-																				 dst_layout,
-																				 depth));
+												dst_stage,
+												image_layout_transform_barrier(image,
+																			   src_access,
+																			   src_layout,
+																			   dst_access,
+																			   dst_layout,
+																			   depth));
 				recorder << cmd_pipeline_barrier(barrier);
 			}
 			ste_device_queue::submit_batch(std::move(acquire_batch));
@@ -131,16 +130,16 @@ void queue_transfer(const ste_context &ctx,
 
 		// Wait for release command to be submitted
 		release_acquire_boundary->get();
-		ste_device_queue::submit_batch(std::move(acquire_batch), 
+		ste_device_queue::submit_batch(std::move(acquire_batch),
 		{ std::make_pair(static_cast<VkSemaphore>(*acquire_batch->user_data()), VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT) }, {});
 	});
 
 	image.queue_ownership.family.store(dst_family, std::memory_order_release);
 }
 
-template <int dimensions, typename selector_policy>
+template <typename selector_policy>
 void queue_transfer(const ste_context &ctx,
-					device_image_base<dimensions> &image,
+					device_image_base &image,
 					const ste_queue_selector<selector_policy> &queue_selector,
 					VkPipelineStageFlags src_stage,
 					VkAccessFlags src_access,

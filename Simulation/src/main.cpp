@@ -69,6 +69,12 @@ int main()
 
 
 	/*
+	*	Create StE engine instance
+	*/
+	StE::ste_engine engine;
+
+
+	/*
 	*	Create window
 	*/
 	StE::ste_window window("StE - Simulation", { 1920, 1080 });
@@ -94,7 +100,7 @@ int main()
 
 
 	/*
-	*	Select a physical device, and create a presentation device
+	*	Select a physical device, create a presentation device and a context
 	*/
 	GL::ste_gl_device_creation_parameters device_params;
 	device_params.physical_device = physical_device;
@@ -104,14 +110,9 @@ int main()
 
 	StE::ste_context::gl_device_t device(device_params,
 										 StE::GL::ste_device_queues_protocol::queue_descriptors_for_physical_device(physical_device),
+										 engine,
 										 gl_ctx,
 										 window);
-
-
-	/*
-	*	Create StE engine instance and a context
-	*/
-	StE::ste_engine engine;
 	StE::ste_context ctx(engine, gl_ctx, device);
 
 
@@ -205,7 +206,7 @@ int main()
 	// Texture
 	GL::vk_image_view<GL::vk_image_type::image_2d> texture(image->get(), image->get().get_format());
 	GL::vk_sampler sampler(device, GL::vk_sampler_filtering(VK_FILTER_LINEAR, VK_FILTER_LINEAR,
-																			 VK_SAMPLER_MIPMAP_MODE_LINEAR));
+															VK_SAMPLER_MIPMAP_MODE_LINEAR));
 
 	// Descriptors
 	GL::vk_descriptor_set_layout_binding descriptor_set_ubo_layout_binding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
@@ -244,7 +245,8 @@ int main()
 									  GL::vk_rasterizer_op_descriptor(),
 									  GL::vk_depth_op_descriptor(VK_COMPARE_OP_GREATER, false),
 									  { attachment0_blend_op },
-									  glm::vec4{ .0f });
+									  glm::vec4{ .0f },
+									  &device.pipeline_cache().current_thread_cache());
 
 	// Rendering queue
 	auto selector = GL::make_queue_selector(GL::ste_queue_type::primary_queue);
@@ -338,9 +340,9 @@ int main()
 					<< GL::cmd_draw_indexed(indices.size(), 1)
 					<< GL::cmd_pipeline_barrier(GL::pipeline_barrier(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
 																	 VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-																	 GL::image_memory_barrier(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+																	 GL::image_memory_barrier(device.get_surface().get_swap_chain_images()[batch->presentation_image_index()].image,
 																							  VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-																							  device.get_surface().get_swap_chain_images()[batch->presentation_image_index()].image,
+																							  VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
 																							  VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
 																							  VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT)))
 					<< text_renderer->render_cmd()

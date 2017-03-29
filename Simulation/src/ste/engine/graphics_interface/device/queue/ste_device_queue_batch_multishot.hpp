@@ -46,12 +46,12 @@ public:
 	ste_device_queue_batch_multishot &operator=(ste_device_queue_batch_multishot&&) = default;
 
 	auto& acquire_command_buffer() {
-		command_buffers.emplace_back(static_cast<command_pool&>(pool).allocate_secondary_buffer());
+		command_buffers.emplace_back(static_cast<command_pool&>(Base::pool).allocate_primary_multishot_buffer());
 		return command_buffers.back();
 	}
 
-	auto& acquire_user_command_buffer(const vk_command_buffer_type &type) {
-		user_command_buffers.emplace_back(static_cast<command_pool&>(pool).allocate_primary_multishot_buffer());
+	auto& acquire_secondary_command_buffer(const vk_command_buffer_type &type) {
+		user_command_buffers.emplace_back(static_cast<command_pool&>(Base::pool).allocate_secondary_buffer());
 		return user_command_buffers.back();
 	}
 };

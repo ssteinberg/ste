@@ -5,7 +5,7 @@
 
 #include <stdafx.hpp>
 #include <vulkan/vulkan.h>
-#include <vk_image.hpp>
+#include <vk_image_initial_layout.hpp>
 
 #include <atomic>
 

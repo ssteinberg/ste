@@ -20,19 +20,29 @@ namespace StE {
 namespace GL {
 
 template <int dimensions, class allocation_policy = device_resource_allocation_policy_device>
-class device_image : public device_image_base<dimensions>,
+class device_image : public device_image_base,
 	public device_resource<vk_image<dimensions>, allocation_policy> 
 {
 	using Base = device_resource<vk_image<dimensions>, allocation_policy>;
 
 public:
-	template <typename QueueOwnershipArgs, typename ... Args>
+	template <typename selector_policy, typename ... Args>
 	device_image(const ste_context &ctx,
-				 QueueOwnershipArgs&& qoa,
+				 const ste_queue_selector<selector_policy> &initial_queue_selector,
 				 const vk_image_initial_layout &layout,
 				 Args&&... args)
-		: device_image_base(ctx,
-							std::forward<QueueOwnershipArgs>(qoa),
+		: device_image_base(ctx.device().select_queue(initial_queue_selector)->queue_descriptor().family,
+							layout),
+		Base(ctx,
+			 layout,
+			 std::forward<Args>(args)...)
+	{}
+	template <typename ... Args>
+	device_image(const ste_context &ctx,
+				 const device_resource_queue_ownership::family_t &family,
+				 const vk_image_initial_layout &layout,
+				 Args&&... args)
+		: device_image_base(family,
 							layout),
 		Base(ctx,
 			 layout,
@@ -49,7 +59,7 @@ public:
  *	@brief	Partial specialization for 2-dimensional images.
  */
 template <class allocation_policy>
-class device_image<2, allocation_policy> : public device_image_base<2>,
+class device_image<2, allocation_policy> : public device_image_base,
 	public device_resource<vk_image<2>, allocation_policy> 
 {
 	using Base = device_resource<vk_image<2>, allocation_policy>;
@@ -268,13 +278,23 @@ public:
 	}
 
 public:
-	template <typename QueueOwnershipArgs, typename ... Args>
+	template <typename selector_policy, typename ... Args>
 	device_image(std::enable_if_t<std::is_constructible_v<vk_image<2>, const vk_logical_device&, const vk_image_initial_layout &, Args...>, const ste_context &> &ctx,
-				 QueueOwnershipArgs&& qoa,
+				 const ste_queue_selector<selector_policy> &initial_queue_selector,
 				 const vk_image_initial_layout &layout,
 				 Args&&... args)
-		: device_image_base(ctx,
-							std::forward<QueueOwnershipArgs>(qoa),
+		: device_image_base(ctx.device().select_queue(initial_queue_selector)->queue_descriptor().family,
+							layout),
+		Base(ctx,
+			 layout,
+			 std::forward<Args>(args)...)
+	{}
+	template <typename ... Args>
+	device_image(std::enable_if_t<std::is_constructible_v<vk_image<2>, const vk_logical_device&, const vk_image_initial_layout &, Args...>, const ste_context &> &ctx,
+				 const device_resource_queue_ownership::family_t &family,
+				 const vk_image_initial_layout &layout,
+				 Args&&... args)
+		: device_image_base(family,
 							layout),
 		Base(ctx,
 			 layout,

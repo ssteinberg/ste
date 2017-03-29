@@ -25,18 +25,14 @@ protected:
 
 private:
 	optional<VkBuffer> buffer;
-	std::uint64_t bytes;
-	std::uint32_t element_size_bytes;
 	VkBufferUsageFlags usage;
-	bool sparse;
 
 public:
 	vk_buffer_base(const vk_logical_device &device,
 				   std::uint64_t bytes,
-				   std::uint32_t element_size_bytes,
 				   const VkBufferUsageFlags &usage,
 				   bool sparse)
-		: device(device), bytes(bytes), element_size_bytes(element_size_bytes), usage(usage), sparse(sparse)
+		: device(device), usage(usage)
 	{
 		VkBuffer buffer;
 
@@ -74,10 +70,12 @@ public:
 	auto& get_creating_device() const { return device.get(); }
 	auto& get() const { return buffer.get(); }
 
-	auto& get_size_bytes() const { return bytes; }
-	auto& get_element_size_bytes() const { return element_size_bytes; }
 	auto& get_usage() const { return usage; }
-	bool is_sparse() const { return sparse; }
+	std::uint64_t get_size_bytes() const { return get_elements_count() * get_element_size_bytes(); };
+
+	virtual std::uint64_t get_elements_count() const = 0;
+	virtual std::uint32_t get_element_size_bytes() const = 0;
+	virtual bool is_sparse() const = 0;
 };
 
 }
