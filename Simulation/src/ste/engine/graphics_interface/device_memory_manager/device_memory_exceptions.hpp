@@ -22,7 +22,7 @@ class device_memory_allocation_failed : public device_memory_exception {
 
 public:
 	using Base::Base;
-	device_memory_allocation_failed() : Base("") {}
+	device_memory_allocation_failed() : Base("Device memory allocation failed") {}
 };
 
 class device_memory_no_supported_heap_exception : public device_memory_exception {
@@ -30,7 +30,7 @@ class device_memory_no_supported_heap_exception : public device_memory_exception
 
 public:
 	using Base::Base;
-	device_memory_no_supported_heap_exception() : Base("") {}
+	device_memory_no_supported_heap_exception() : Base("No supported device memory heap exists for the requested allocation") {}
 };
 
 }

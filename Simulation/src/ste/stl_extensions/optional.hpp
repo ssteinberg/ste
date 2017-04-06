@@ -94,7 +94,8 @@ public:
 		return *this;
 	}
 
-	template <typename S>
+	template <typename S,
+		typename = typename std::enable_if_t<!std::is_same_v<std::remove_cv_t<S>, optional<T>>>>
 	optional &operator=(S&& v) {
 		has_val = true;
 		val = T(std::forward<S>(v));

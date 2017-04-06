@@ -33,7 +33,7 @@ class ste_device_not_queue_thread_exception : public ste_device_exception {
 	using Base = ste_device_exception;
 
 public:
-	ste_device_not_queue_thread_exception() : Base("") {}
+	ste_device_not_queue_thread_exception() : Base("Method requires executing on a ste_device_queue thread") {}
 	using Base::Base;
 };
 

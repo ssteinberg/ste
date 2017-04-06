@@ -31,6 +31,8 @@
 #include <text_renderer.hpp>
 #include <attrib.hpp>
 
+#include <struct_block_layout.hpp>
+
 using namespace StE;
 
 auto requested_device_features() {
@@ -114,6 +116,21 @@ int main()
 										 gl_ctx,
 										 window);
 	StE::ste_context ctx(engine, gl_ctx, device);
+
+
+	ste_resource<StE::GL::device_pipeline_shader_stage> stage(ste_resource_dont_defer(), ctx, std::string("text_distance_map_contour.frag"));
+	{
+		auto &b = stage->get_stage_bindings()[0];
+		GL::std430_layout<int, int, int, int, GL::struct_block_layout<int>> block;
+		try {
+			b.validate_layout(block);
+		}
+		catch (GL::ste_shader_variable_layout_verification_exception e) {
+			auto cause = e.what();
+			int a = 123;
+		}
+		return 0;
+	}
 
 
 	/*

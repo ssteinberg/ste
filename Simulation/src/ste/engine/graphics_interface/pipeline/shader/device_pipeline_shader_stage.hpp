@@ -11,20 +11,26 @@
 #include <vk_shader.hpp>
 #include <vk_pipeline_graphics.hpp>
 
+#include <ste_shader_stage_binding.hpp>
 #include <ste_shader_stage.hpp>
 #include <ste_shader_blob_header.hpp>
-#include <ste_shader_load_exceptions.hpp>
+#include <ste_shader_exceptions.hpp>
 
 #include <string>
+#include <vector>
 #include <istream>
 #include <allow_type_decay.hpp>
 
 namespace StE {
 namespace GL {
 
-class device_pipeline_shader_stage : ste_resource_deferred_create_trait, public allow_type_decay<device_pipeline_shader_stage, vk_shader> {
+class device_pipeline_shader_stage 
+	: ste_resource_deferred_create_trait, 
+	public allow_type_decay<device_pipeline_shader_stage, vk_shader> 
+{
 private:
 	ste_shader_stage stage{ ste_shader_stage::none };
+	std::vector<ste_shader_stage_binding> stage_bindings;
 	vk_shader shader;
 	const std::string name;
 
@@ -45,14 +51,18 @@ private:
 		}
 	}
 
+	static std::vector<ste_shader_stage_binding> verify_spirv_and_read_bindings(const std::string &code);
+
 	static auto load_and_verify_shader_blob(const boost::filesystem::path &modules_path,
 											const std::string &name,
-											ste_shader_stage &out_stage) {
+											ste_shader_stage &out_stage,
+											std::vector<ste_shader_stage_binding> &out_stage_bindings) {
 		auto path = modules_path / name;
 
 		ste_shader_blob_header header;
 		std::string code;
 
+		// Load SPIR-v code
 		{
 			std::ifstream fs;
 			fs.exceptions(fs.exceptions() | std::ios::failbit | std::ifstream::badbit);
@@ -62,7 +72,11 @@ private:
 			code = std::string((std::istreambuf_iterator<char>(fs)), std::istreambuf_iterator<char>());
 		}
 
+		// Verify header
 		verify_blob_header_sanity(header);
+
+		// Parse SPIR-v, and read bound resources
+		out_stage_bindings = verify_spirv_and_read_bindings(code);
 
 		// If header checks out, write stage and return blob
 		out_stage = header.type;
@@ -86,7 +100,8 @@ public:
 		: shader(ctx.device(),
 				 load_and_verify_shader_blob(ctx.engine().storage().shader_module_dir_path(), 
 											 name,
-											 this->stage)),
+											 this->stage,
+											 this->stage_bindings)),
 		name(name) 
 	{
 		assert(stage != ste_shader_stage::none);
@@ -102,6 +117,7 @@ public:
 	auto &get() const { return shader; }
 	auto &get_name() const { return name; }
 	auto &get_stage() const { return stage; }
+	auto &get_stage_bindings() const { return stage_bindings; }
 
 	/**
 	*	@brief	Retrieve the Vulkan stage flag for the shader module

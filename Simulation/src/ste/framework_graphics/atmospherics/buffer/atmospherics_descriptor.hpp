@@ -11,7 +11,7 @@ namespace Graphics {
 namespace _detail {
 
 template <typename T, int padding_size>
-struct atmospherics_descriptor_padder { T pad[padding_size]; };
+struct atmospherics_descriptor_padder { alignas(1) T pad[padding_size]; };
 template <typename T>
 struct atmospherics_descriptor_padder<T, 0> {};
 

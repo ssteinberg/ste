@@ -13,7 +13,6 @@ class resource_exception : public std::runtime_error {
 
 public:
 	using Base::Base;
-	resource_exception() : Base("") {}
 };
 
 class resource_io_error : public resource_exception {

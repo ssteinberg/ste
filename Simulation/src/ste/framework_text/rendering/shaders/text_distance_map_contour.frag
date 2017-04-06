@@ -25,16 +25,16 @@ layout(std430, binding = 0) restrict readonly buffer glyph_data {
 	buffer_glyph_descriptor glyphs[];
 };
 
-layout(constant_id = 0) const int glyph_texture_count = 1;
+layout(constant_id = 0) const int glyph_texture_count = 45;
 layout(binding = 1) uniform texture2D glyph_textures[glyph_texture_count];
 layout(binding = 2) uniform sampler glyph_sampler;
 
-float aastep (float threshold , float value) {
+float aastep (float threshold, float value) {
 	float afwidth = 0.7 * length(vec2(dFdx(value), dFdy(value)));
 	return smoothstep(threshold-afwidth, threshold+afwidth, value);
 }
 
-void main( void ) {
+void main() {
 	buffer_glyph_descriptor glyph = glyphs[vin.drawId];
 
 	vec2 uv = vin.st;

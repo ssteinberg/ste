@@ -40,7 +40,7 @@ public:
 		else if (surface.format() == gli::format::FORMAT_RGBA8_UNORM_PACK8)	components = 4;
 		else {
 			ste_log_error() << "Can't write surface file: " << path.string() << std::endl;
-			throw surface_unsupported_format_error();
+			throw surface_unsupported_format_error("Unsupported surface format");
 		}
 
 		write_png(path, reinterpret_cast<const char*>(surface.data()), components, surface.extent().x, surface.extent().y);
@@ -63,16 +63,16 @@ public:
 				f.open(path.string(), std::ios::binary | std::ios::in);
 				if (!f) {
 					ste_log_error() << "Can't open surface file: " << path.string() << std::endl;
-					throw resource_io_error();
+					throw resource_io_error("Resource IO error");
 				}
 				if (!f.read(reinterpret_cast<char*>(magic), 4)) {
 					ste_log_error() << "Can't read surface file: " << path.string() << std::endl;
-					throw resource_io_error();
+					throw resource_io_error("Surface IO error");
 				}
 			}
 			catch (const std::ios_base::failure& e) {
 				ste_log_error() << "Unknown failure opening file: " << path.string() << " - " << e.what() << " " << std::strerror(errno) << std::endl;
-				throw resource_io_error();
+				throw resource_io_error("Resource IO error");
 			}
 		}
 
@@ -86,7 +86,7 @@ public:
 			auto texture = gli::texture2d(gli::load_dds(path.string()));
 			if (texture.empty()) {
 				ste_log_error() << "Can't parse DDS surface: " << path;
-				throw surface_error();
+				throw surface_error("Parsing DDS surface failed");
 			}
 
 			ste_log() << attributed_string("Loaded DDS surface \"") + i(path.string()) + "\" (" + std::to_string(texture.extent().x) + " X " + std::to_string(texture.extent().y) + ") successfully." << std::endl;
@@ -98,7 +98,7 @@ public:
 			auto texture = load_jpeg(path, srgb);
 			if (texture.empty()) {
 				ste_log_error() << "Can't parse JPEG surface: " << path;
-				throw surface_error();
+				throw surface_error("Parsing JPEG surface failed");
 			}
 
 			ste_log() << attributed_string("Loaded JPEG surface \"") + i(path.string()) + "\" (" + std::to_string(texture.extent().x) + " X " + std::to_string(texture.extent().y) + ") successfully." << std::endl;
@@ -109,7 +109,7 @@ public:
 			auto texture = load_png(path, srgb);
 			if (texture.empty()) {
 				ste_log_error() << "Can't parse PNG surface: " << path;
-				throw surface_error();
+				throw surface_error("Parsing PNG surface failed");
 			}
 
 			ste_log() << attributed_string("Loaded PNG surface \"") + i(path.string()) + "\" (" + std::to_string(texture.extent().x) + " X " + std::to_string(texture.extent().y) + ") successfully." << std::endl;
@@ -120,7 +120,7 @@ public:
 			auto texture = load_tga(path, srgb);
 			if (texture.empty()) {
 				ste_log_error() << "Can't parse TGA surface: " << path.string() << std::endl;
-				throw surface_error();
+				throw surface_error("Parsing TGA surface failed");
 			}
 
 			ste_log() << attributed_string("Loaded TGA surface \"") + i(path.string()) + "\" (" + std::to_string(texture.extent().x) + " X " + std::to_string(texture.extent().y) + ") successfully." << std::endl;
@@ -128,7 +128,7 @@ public:
 		}
 		else {
 			ste_log_error() << red(attributed_string("Incompatible surface format: \"")) + i(path.string()) + "\"." << std::endl;
-			throw surface_unsupported_format_error();
+			throw surface_unsupported_format_error("Incompatible surface format");
 		}
 	}
 

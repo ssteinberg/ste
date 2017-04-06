@@ -10,5 +10,5 @@ class atmospherics_lut_error : public std::runtime_error {
 
 public:
 	using Base::Base;
-	atmospherics_lut_error() : Base("") {}
+	atmospherics_lut_error() : Base("Atmospherics LUT loading error") {}
 };

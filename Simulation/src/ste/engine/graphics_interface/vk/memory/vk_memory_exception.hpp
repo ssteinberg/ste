@@ -13,7 +13,7 @@ class vk_memory_allocation_failed_exception : public vk_exception {
 
 public:
 	using Base::Base;
-	vk_memory_allocation_failed_exception() : Base("") {}
+	vk_memory_allocation_failed_exception() : Base("Device memory allocation failed") {}
 };
 
 }
