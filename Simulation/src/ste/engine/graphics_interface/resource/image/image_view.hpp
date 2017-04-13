@@ -11,10 +11,10 @@
 namespace StE {
 namespace GL {
 
-class image_view_generic
-	: public allow_type_decay<image_view_generic, VkImageView>
-{
+class image_view_generic {
 public:
+	virtual ~image_view_generic() noexcept {}
+
 	virtual VkImageView get_image_view_handle() const = 0;
 	virtual vk_image_type get_image_type() const = 0;
 	virtual VkFormat get_format() const = 0;

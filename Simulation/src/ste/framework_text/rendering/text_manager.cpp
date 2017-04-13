@@ -144,7 +144,8 @@ bool text_manager::update_glyphs(StE::GL::command_recorder &recorder) {
 	std::uint32_t texture_count = static_cast<std::uint32_t>(gm.textures().size());
 
 	// Update fragment specialization constant
-	static_cast<GL::vk_shader&>(frag).specialize_constant(0, texture_count);
+	// TODO
+//	static_cast<GL::vk_shader&>(frag).specialize_constant(0, texture_count);
 
 	// Create new descriptor set and layout
 	auto new_descriptor_set = std::make_unique<GL::vk_unique_descriptor_set>(create_descriptor_set(context.device(), texture_count));
@@ -160,8 +161,8 @@ bool text_manager::update_glyphs(StE::GL::command_recorder &recorder) {
 																VK_ACCESS_SHADER_READ_BIT,
 																VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 		recorder << GL::cmd_pipeline_barrier(GL::pipeline_barrier(VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
-																		VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
-																		image_barrier));
+																  VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+																  image_barrier));
 
 		// Write new descriptor
 		auto texture_write = GL::vk_descriptor_set_write_image(glyph_texture.view, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
@@ -178,7 +179,7 @@ bool text_manager::update_glyphs(StE::GL::command_recorder &recorder) {
 	// Copy and write out descriptors
 	new_descriptor_set->get().update(
 	{ // Writes
-		GL::vk_descriptor_set_write_resource(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 0, 0, GL::vk_descriptor_set_write_buffer(gm.ssbo(), texture_count)),
+//		GL::vk_descriptor_set_write_resource(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 0, 0, GL::vk_descriptor_set_write_buffer(gm.ssbo(), texture_count)),
 		GL::vk_descriptor_set_write_resource(VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, 1, updated_range.start, image_writes)
 	}, 
 	copies);

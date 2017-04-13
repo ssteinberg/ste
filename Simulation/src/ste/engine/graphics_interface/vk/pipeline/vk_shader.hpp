@@ -21,8 +21,6 @@ private:
 	optional<VkShaderModule> module;
 	std::reference_wrapper<const vk_logical_device> device;
 
-	std::unordered_map<std::uint32_t, std::string> specializations;
-
 public:
 	struct shader_stage_info_t {
 		VkPipelineShaderStageCreateInfo stage_info;
@@ -37,6 +35,8 @@ public:
 		shader_stage_info_t(const shader_stage_info_t&) = delete;
 		shader_stage_info_t &operator=(const shader_stage_info_t&) = delete;
 	};
+
+	using spec_map = std::unordered_map<std::uint32_t, std::string>;
 
 public:
 	vk_shader(const vk_logical_device &device, const std::string &code) : device(device) {
@@ -64,23 +64,6 @@ public:
 	vk_shader(const vk_shader &) = delete;
 	vk_shader &operator=(const vk_shader &) = delete;
 
-	template <typename T>
-	void specialize_constant(std::uint32_t binding, const T &value) {
-		static_assert(std::is_pod_v<T>, "T must be a POD");
-
-		std::string data;
-		data.resize(sizeof(T));
-		memcpy(data.data(), &value, sizeof(T));
-		
-		specializations[binding] = data;
-	}
-	void remove_specialization(std::uint32_t binding) {
-		specializations.erase(binding);
-	}
-	void remove_all_specialization() {
-		specializations.clear();
-	}
-
 	void destroy_shader_module() {
 		if (module) {
 			vkDestroyShaderModule(device.get(), *this, nullptr);
@@ -89,7 +72,8 @@ public:
 	}
 
 	void shader_stage_create_info(const VkShaderStageFlagBits &stage,
-								  shader_stage_info_t &stage_info) const {
+								  shader_stage_info_t &stage_info,
+								  const spec_map &specializations = {}) const {
 		stage_info.stage_info = {};
 		stage_info.stage_info.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 		stage_info.stage_info.pNext = nullptr;

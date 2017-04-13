@@ -15,9 +15,9 @@ text_renderer::text_renderer(text_manager *tr,
 	fb_size_uniform(tr->context, 1, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT),
 	vertex_buffer(tr->context, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT) 
 {
-	fb_size_descriptor_set.get().write({
-		GL::vk_descriptor_set_write_resource(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, 0, GL::vk_descriptor_set_write_buffer(fb_size_uniform, 1))
-	});
+//	fb_size_descriptor_set.get().write({
+//		GL::vk_descriptor_set_write_resource(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, 0, GL::vk_descriptor_set_write_buffer(fb_size_uniform, 1))
+//	});
 }
 
 void text_renderer::recreate_pipeline() {
@@ -34,9 +34,9 @@ void text_renderer::recreate_pipeline() {
 		GL::vk_pipeline_graphics{
 			tr->context.device(),
 			{
-				tr->vert->graphics_pipeline_stage_descriptor(),
-				tr->geom->graphics_pipeline_stage_descriptor(),
-				tr->frag->graphics_pipeline_stage_descriptor()
+				tr->vert->pipeline_stage_descriptor(),
+				tr->geom->pipeline_stage_descriptor(),
+				tr->frag->pipeline_stage_descriptor()
 			},
 			*pipeline_layout,
 			*renderpass,

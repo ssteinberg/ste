@@ -8,6 +8,7 @@
 #include <ste_resource_traits.hpp>
 
 #include <vulkan/vulkan.h>
+#include <vk_shader_stage_descriptor.hpp>
 #include <vk_shader.hpp>
 #include <vk_pipeline_graphics.hpp>
 
@@ -28,11 +29,17 @@ class device_pipeline_shader_stage
 	: ste_resource_deferred_create_trait, 
 	public allow_type_decay<device_pipeline_shader_stage, vk_shader> 
 {
+public:
+	using specializations_changed_signal_t = signal<const device_pipeline_shader_stage*>;
+
 private:
 	ste_shader_stage stage{ ste_shader_stage::none };
 	std::vector<ste_shader_stage_binding> stage_bindings;
+
 	vk_shader shader;
 	const std::string name;
+
+	vk_shader::spec_map specializations;
 
 private:
 	static void verify_blob_header_sanity(const ste_shader_blob_header &header) {
@@ -120,9 +127,17 @@ public:
 	auto &get_stage_bindings() const { return stage_bindings; }
 
 	/**
+	 *	@brief	Provides the shader specialization constant map.
+	 *			For new specializations to take affect, pipeline has to be recreated.
+	 */
+	void set_specializations(const vk_shader::spec_map &specializations) {
+		this->specializations = specializations;
+	}
+
+	/**
 	*	@brief	Retrieve the Vulkan stage flag for the shader module
 	*/
-	auto vk_shader_stage_flag() const {
+	VkShaderStageFlagBits vk_shader_stage_flag() const {
 		switch (stage) {
 		case ste_shader_stage::vertex_program:
 			return VK_SHADER_STAGE_VERTEX_BIT;
@@ -142,12 +157,13 @@ public:
 		}
 	}
 	/**
-	*	@brief	Retrieve the Vulkan pipeline stage create info for the shader module
+	*	@brief	Retrieve the Vulkan pipeline shader stage descriptor for the shader module
 	*/
-	auto graphics_pipeline_stage_descriptor() const {
-		vk_graphics_shader_descriptor desc;
+	auto pipeline_stage_descriptor() const {
+		vk_shader_stage_descriptor desc;
 		desc.stage = vk_shader_stage_flag();
 		desc.shader = &shader;
+		desc.specializations = &specializations;
 		return desc;
 	}
 };

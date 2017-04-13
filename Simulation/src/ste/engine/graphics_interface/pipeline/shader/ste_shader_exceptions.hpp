@@ -41,5 +41,19 @@ public:
 	ste_shader_opaque_or_unknown_type() : Base("Type is opaque or unknown") {}
 };
 
+class ste_shader_binding_incompatible_type : public ste_shader_exception {
+	using Base = ste_shader_exception;
+
+public:
+	using Base::Base;
+};
+
+class ste_shader_binding_specialization_or_push_constant_exception : public ste_shader_exception {
+	using Base = ste_shader_exception;
+
+public:
+	using Base::Base;
+};
+
 }
 }

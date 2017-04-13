@@ -37,7 +37,7 @@ public:
 	{}
 	~device_buffer() noexcept {}
 	
-	VkBuffer get_buffer_handle() const override final { return *this; }
+	const vk_buffer_base& get_buffer_handle() const override final { return *this; }
 
 	device_buffer(device_buffer&&) = default;
 	device_buffer &operator=(device_buffer&&) = default;

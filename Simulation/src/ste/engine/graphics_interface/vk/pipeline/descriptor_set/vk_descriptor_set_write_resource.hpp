@@ -8,7 +8,7 @@
 #include <vulkan/vulkan.h>
 #include <vk_sampler.hpp>
 #include <vk_image_view.hpp>
-#include <vk_buffer_base.hpp>
+#include <buffer_view.hpp>
 
 #include <vector>
 
@@ -21,12 +21,10 @@ struct vk_descriptor_set_write_image {
 	VkSampler sampler{ VK_NULL_HANDLE };
 
 	vk_descriptor_set_write_image() = default;
-	template <vk_image_type t>
-	vk_descriptor_set_write_image(const vk_image_view<t> &image_view, 
+	vk_descriptor_set_write_image(VkImageView image_view,
 								  VkImageLayout image_layout)
 		: image(image_view), image_layout(image_layout) {}
-	template <vk_image_type t>
-	vk_descriptor_set_write_image(const vk_image_view<t> &image_view, 
+	vk_descriptor_set_write_image(VkImageView image_view,
 								  VkImageLayout image_layout, 
 								  const vk_sampler &sampler)
 		: image(image_view), 
@@ -45,15 +43,10 @@ struct vk_descriptor_set_write_buffer {
 	std::uint64_t buffer_offset{ 0 };
 	std::uint64_t buffer_range{ 0 };
 
-	vk_descriptor_set_write_buffer(const vk_buffer_base &buffer, 
-								   std::uint64_t elements)
-		: buffer(buffer), buffer_range(elements * buffer.get_element_size_bytes()) {}
-	vk_descriptor_set_write_buffer(const vk_buffer_base &buffer, 
-								   std::uint64_t elements, 
-								   std::uint64_t offset)
-		: buffer(buffer), 
-		buffer_offset(offset * buffer.get_element_size_bytes()), 
-		buffer_range(elements * buffer.get_element_size_bytes()) {}
+	vk_descriptor_set_write_buffer(const buffer_view &buffer)
+		: buffer(buffer->get_buffer_handle()), 
+		buffer_offset(buffer.offset_bytes()), 
+		buffer_range(buffer.range_bytes()) {}
 
 	operator VkDescriptorBufferInfo() const {
 		return { buffer, buffer_offset, buffer_range };

@@ -26,11 +26,11 @@ private:
 public:
 	vk_pipeline_layout(const vk_logical_device &device, 
 					   const std::vector<VkDescriptorSetLayout> &set_layouts,
-					   const std::vector<vk_push_constant_layout> &push_constants_layout = {}) : device(device) {
+					   const std::vector<vk_push_constant_layout> &push_constant_layouts = {}) : device(device) {
 		std::vector<VkPushConstantRange> push_constant_layout_descriptors;
-		push_constant_layout_descriptors.resize(push_constants_layout.size());
-		for (std::size_t i = 0; i < push_constants_layout.size(); ++i)
-			push_constant_layout_descriptors[i] = *(push_constants_layout.begin() + i);
+		push_constant_layout_descriptors.resize(push_constant_layouts.size());
+		for (std::size_t i = 0; i < push_constant_layouts.size(); ++i)
+			push_constant_layout_descriptors[i] = *(push_constant_layouts.begin() + i);
 
 		VkPipelineLayoutCreateInfo create_info = {};
 		create_info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;

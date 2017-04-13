@@ -5,33 +5,34 @@
 
 #include <vulkan/vulkan.h>
 #include <command.hpp>
-#include <vk_buffer_base.hpp>
+#include <buffer_view.hpp>
+
+#include <string>
 
 namespace StE {
 namespace GL {
 
 class cmd_update_buffer : public command {
 private:
-	VkBuffer buffer;
-	std::uint64_t offset{ 0 };
-	std::uint64_t size;
-	const void* data;
+	buffer_view buffer;
+	std::string data;
 
 public:
-	cmd_update_buffer(const vk_buffer_base &buffer,
+	cmd_update_buffer(const buffer_view &buffer,
 					  std::uint64_t data_size,
-					  const void *data,
-					  std::uint64_t offset = 0)
+					  const void *data)
 		: buffer(buffer),
-		offset(offset * buffer.get_element_size_bytes()),
-		size(data_size * buffer.get_element_size_bytes()),
-		data(data)
+		data(reinterpret_cast<const char*>(data), static_cast<std::size_t>(data_size))
 	{}
 	virtual ~cmd_update_buffer() noexcept {}
 
 private:
 	void operator()(const command_buffer &command_buffer, command_recorder &) const override final {
-		vkCmdUpdateBuffer(command_buffer, buffer, offset, size, data);
+		vkCmdUpdateBuffer(command_buffer, 
+						  buffer->get_buffer_handle(), 
+						  buffer.offset_bytes(), 
+						  std::min<std::uint64_t>(buffer.range_bytes(), data.size()), 
+						  data.data());
 	}
 };
 

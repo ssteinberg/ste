@@ -4,6 +4,7 @@
 #pragma once
 
 #include <stdafx.hpp>
+#include <vk_buffer_base.hpp>
 #include <device_resource_queue_transferable.hpp>
 
 namespace StE {
@@ -18,7 +19,7 @@ protected:
 
 public:
 	virtual ~device_buffer_base() noexcept {}
-	virtual VkBuffer get_buffer_handle() const = 0;
+	virtual const vk_buffer_base& get_buffer_handle() const = 0;
 
 	device_buffer_base(device_buffer_base&&) = default;
 	device_buffer_base &operator=(device_buffer_base&&) = default;

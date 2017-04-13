@@ -6,7 +6,7 @@
 #include <stdafx.hpp>
 #include <ste_context.hpp>
 #include <ste_resource.hpp>
-#include <ste_device_queue.hpp>
+#include <buffer_view.hpp>
 #include <data_structure_common.hpp>
 
 #include <command_recorder.hpp>
@@ -76,7 +76,10 @@ private:
 	public:
 		stable_vector_cmd_push_back(const std::vector<T> &data_copy,
 									stable_vector *v)
-			: data(data_copy), update_cmd(v->buffer, data.size(), data.data(), v->elements), v(v)
+			: data(data_copy), update_cmd(buffer_view(v->buffer, 
+													  v->elements, 
+													  data.size()), 
+										  data.size(), data.data()), v(v)
 		{}
 		virtual ~stable_vector_cmd_push_back() noexcept {}
 
@@ -190,7 +193,10 @@ public:
 	*	@param	offset	Vector offset to copy to
 	*/
 	auto update_cmd(const std::vector<T> &data, std::uint64_t offset) {
-		return cmd_update_buffer(buffer, data.size(), data.data(), offset);
+		return cmd_update_buffer(buffer_view(buffer, 
+											 offset, 
+											 data.size()), 
+								 data.size(), data.data());
 	}
 
 	auto size() const { return elements; }

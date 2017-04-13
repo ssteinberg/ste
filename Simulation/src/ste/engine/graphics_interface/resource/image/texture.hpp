@@ -4,26 +4,39 @@
 #pragma once
 
 #include <stdafx.hpp>
-#include <device_image_base.hpp>
+#include <image_view.hpp>
 #include <sampler.hpp>
 
 namespace StE {
 namespace GL {
 
-class texture {
+class texture_generic {
+public:
+	virtual ~texture_generic() noexcept {}
+
+	virtual const sampler& get_sampler() const = 0;
+	virtual VkImageView get_image_view_handle() const = 0;
+};
+
+template <vk_image_type type>
+class texture : public texture_generic {
 private:
-	std::reference_wrapper<const device_image_base> image;
+	const image_view<type>* image;
 	std::reference_wrapper<const sampler> sam;
+	VkImageLayout layout;
 
 public:
-	texture(const device_image_base &image,
-				   const sampler &sam)
+	texture(const image_view<type>* image,
+			const sampler &sam,
+			VkImageLayout layout)
 		: image(image),
-		sam(sam)
+		sam(sam),
+		layout(layout)
 	{}
 
-	auto& get_sampler() const { return sam.get(); }
-	auto& get_image() const { return image.get(); }
+	const sampler& get_sampler() const override final { return sam.get(); }
+	VkImageView get_image_view_handle() const override final { return image; }
+	auto& get_image_view() const { return *image; }
 
 	texture(texture&&) = default;
 	texture &operator=(texture&&) = default;

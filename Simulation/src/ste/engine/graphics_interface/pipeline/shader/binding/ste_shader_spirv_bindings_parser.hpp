@@ -25,8 +25,8 @@ struct ste_shader_spirv_bindings_parsed_variable {
 	std::uint16_t matrix_stride{ 0 };				// Array stride between elements. 0 for tightly packed.
 
 	std::uint32_t array_elements{ 1 };				// Array elements. >1 for arrays or 0 for a run-time array.
-	bool array_length_spec_constant{ false };		// True if array length is a constant that can be specialized.
 	std::uint16_t array_stride{ 0 };				// Array stride between elements. 0 for tightly packed.
+	optional<std::uint32_t> array_length_specialization_constant_id;	// id of array length specialization constant
 
 	std::uint16_t offset{ 0 };						// Member offset in a struct.
 	std::uint16_t width{ 0 };						// Integer/float width, only used for int_t and uint_t.
@@ -54,7 +54,7 @@ struct ste_shader_spirv_bindings_parsed_variable {
 
 		if (src.array_elements != 1) {
 			this->array_elements = src.array_elements;
-			this->array_length_spec_constant = src.array_length_spec_constant;
+			this->array_length_specialization_constant_id = src.array_length_specialization_constant_id;
 		}
 		if (src.array_stride > 0)
 			this->array_stride = src.array_stride;
@@ -110,7 +110,8 @@ struct ste_shader_spirv_bindings_parsed_variable {
 		return columns > 1;
 	}
 
-	std::unique_ptr<ste_shader_stage_binding_variable> generate_variable() const {
+	std::unique_ptr<ste_shader_stage_binding_variable> generate_variable(bool is_spec_constant,
+																		 const std::vector<ste_shader_stage_binding> &binds) const {
 		// Unknown type is an internal error
 		if (!has_type()) {
 			throw ste_shader_opaque_or_unknown_type();
@@ -129,7 +130,8 @@ struct ste_shader_spirv_bindings_parsed_variable {
 			// Handle structs recursively
 			std::vector<std::unique_ptr<ste_shader_stage_binding_variable>> elements;
 			for (auto &e : struct_members)
-				elements.push_back(e.generate_variable());
+				elements.push_back(e.generate_variable(false,
+													   binds));
 
 			var = std::unique_ptr<ste_shader_stage_binding_variable>(std::make_unique<ste_shader_stage_binding_variable_struct>(std::move(elements),
 																																name,
@@ -160,13 +162,39 @@ struct ste_shader_spirv_bindings_parsed_variable {
 
 		// Arrays
 		if (is_array()) {
+			// For specializeable array lengths, find the specialization constant
+			optional<const ste_shader_stage_binding_variable_scalar*> length_specialization_constant;
+			if (array_length_specialization_constant_id) {
+				for (auto &b : binds) {
+					if (b.binding_type == ste_shader_stage_binding_type::spec_constant &&
+						b.bind_idx == array_length_specialization_constant_id.get()) {
+						auto ptr = dynamic_cast<const ste_shader_stage_binding_variable_scalar *>(b.variable.get());
+						assert(ptr);
+						if (ptr)
+							length_specialization_constant = ptr;
+						break;
+					}
+				}
+
+				assert(!!length_specialization_constant && "Specialization constant not found!");
+			}
+
 			auto array_var = std::make_unique<ste_shader_stage_binding_variable_array>(std::move(var),
 																					   name,
 																					   offset,
 																					   array_elements,
-																					   array_length_spec_constant,
-																					   matrix_stride);
+																					   matrix_stride,
+																					   length_specialization_constant);
 			var = std::unique_ptr<ste_shader_stage_binding_variable>(std::move(array_var));
+		}
+
+		// Specialization constants: Save default value
+		if (is_spec_constant) {
+			auto default_specialized_value = constant_value.get();
+			std::string data;
+			data.resize(sizeof(std::uint64_t));
+			memcpy(data.data(), &default_specialized_value, sizeof(std::uint64_t));
+			var->set_default_specialized_value(data);
 		}
 
 		return std::move(var);

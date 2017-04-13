@@ -1,5 +1,5 @@
 //	StE
-// © Shlomi Steinberg 2015-2016
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
@@ -12,6 +12,7 @@
 #include <vk_pipeline_layout.hpp>
 #include <vk_pipeline_cache.hpp>
 #include <vk_render_pass.hpp>
+#include <vk_shader_stage_descriptor.hpp>
 
 #include <vk_vertex_input_attributes.hpp>
 #include <vk_depth_op_descriptor.hpp>
@@ -26,11 +27,6 @@
 namespace StE {
 namespace GL {
 
-struct vk_graphics_shader_descriptor {
-	const vk_shader *shader;
-	VkShaderStageFlagBits stage;
-};
-
 class vk_pipeline_graphics : public vk_pipeline {
 public:
 	struct vertex_input_descriptor {
@@ -43,7 +39,7 @@ public:
 
 public:
 	vk_pipeline_graphics(const vk_logical_device &device,
-						 const std::vector<vk_graphics_shader_descriptor> &shader_modules,
+						 const std::vector<vk_shader_stage_descriptor> &shader_modules,
 						 const vk_pipeline_layout &layout,
 						 const vk_render_pass &render_pass,
 						 std::uint32_t subpass,
@@ -61,7 +57,11 @@ public:
 		std::vector<VkPipelineShaderStageCreateInfo> stages(shader_modules.size());
 		for (std::size_t i = 0; i < shader_modules.size(); ++i) {
 			auto &sd = shader_modules[i];
-			sd.shader->shader_stage_create_info(sd.stage, stages_info[i]);
+			assert((sd.stage & VK_SHADER_STAGE_COMPUTE_BIT) == 0 && "shader_stage_descriptor must not be a compute shader");
+
+			sd.shader->shader_stage_create_info(sd.stage, 
+												stages_info[i],
+												*sd.specializations);
 			stages[i] = stages_info[i].stage_info;
 		}
 

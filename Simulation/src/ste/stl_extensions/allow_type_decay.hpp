@@ -87,11 +87,18 @@ struct allow_type_decay_conversion_recursive :
 	operator DecayT&() { return class_recusive_decay_getter<NextDecayT, Depth>()(*dynamic_cast<CRTP*>(this)); }
 	template <
 		typename S = DecayT,
-		typename = typename std::enable_if<std::is_copy_assignable_v<S> || std::is_copy_constructible_v<S>>::type
+		typename = typename std::enable_if<!std::is_abstract_v<S> && (std::is_copy_assignable_v<S> || std::is_copy_constructible_v<S>)>::type
 	>
 	operator DecayT() const { return class_recusive_decay_getter<NextDecayT, Depth>()(*dynamic_cast<const CRTP*>(this)); }
 	operator const DecayT&() const { return class_recusive_decay_getter<NextDecayT, Depth>()(*dynamic_cast<const CRTP*>(this)); }
 };
+
+template <typename T>
+using decayed_type_t = std::conditional_t<
+	std::is_abstract_v<T>,
+	T&,
+	T
+>;
 
 }
 
@@ -101,12 +108,12 @@ template <
 	bool only_const = true
 >
 class allow_type_decay_conversion :
-	public _detail::allow_type_decay_conversion_recursive<CRTP, DecayT, DecayT, only_const, 0>
+	public _detail::allow_type_decay_conversion_recursive<CRTP, _detail::decayed_type_t<DecayT>, _detail::decayed_type_t<DecayT>, only_const, 0>
 {
 public:
 	virtual ~allow_type_decay_conversion() noexcept {}
 
-	using _type_decay_conversion_decay_t = DecayT;
+	using _type_decay_conversion_decay_t = _detail::decayed_type_t<DecayT>;
 	static constexpr bool _type_decay_conversion_only_const = only_const;
 };
 

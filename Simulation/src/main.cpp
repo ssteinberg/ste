@@ -31,7 +31,7 @@
 #include <text_renderer.hpp>
 #include <attrib.hpp>
 
-#include <struct_block_layout.hpp>
+#include <pipeline_auditor_graphics.hpp>
 
 using namespace StE;
 
@@ -63,7 +63,6 @@ int main()
 	/*
 	*	Create logger
 	*/
-
 	StE::log logger("Global Illumination");
 	logger.redirect_std_outputs();
 	ste_log_set_global_logger(&logger);
@@ -118,27 +117,12 @@ int main()
 	StE::ste_context ctx(engine, gl_ctx, device);
 
 
-	ste_resource<StE::GL::device_pipeline_shader_stage> stage(ste_resource_dont_defer(), ctx, std::string("text_distance_map_contour.frag"));
-	{
-		auto &b = stage->get_stage_bindings()[0];
-		GL::std430_layout<int, int, int, int, GL::struct_block_layout<int>> block;
-		try {
-			b.validate_layout(block);
-		}
-		catch (GL::ste_shader_variable_layout_verification_exception e) {
-			auto cause = e.what();
-			int a = 123;
-		}
-		return 0;
-	}
-
-
 	/*
 	*	Text renderer
 	*/
-
 	auto font = StE::Text::font("Data/ArchitectsDaughter.ttf");
 	auto text_manager = std::make_unique<StE::Text::text_manager>(ctx, font);
+
 
 	auto swapchain_images_count = device.get_surface().get_swap_chain_images().size();
 
@@ -150,6 +134,35 @@ int main()
 	// Shader stages
 	ste_resource<StE::GL::device_pipeline_shader_stage> vert_shader_stage(ctx, std::string("temp.vert"));
 	ste_resource<StE::GL::device_pipeline_shader_stage> frag_shader_stage(ctx, std::string("temp.frag"));
+
+	{
+		GL::device_pipeline_shader_stage contour_vert_shader_stage(ctx, std::string("text_distance_map_contour.vert"));
+		GL::device_pipeline_shader_stage contour_geom_shader_stage(ctx, std::string("text_distance_map_contour.geom"));
+		GL::device_pipeline_shader_stage contour_frag_shader_stage(ctx, std::string("text_distance_map_contour.frag"));
+
+		GL::pipeline_auditor_graphics auditor;
+		auditor.attach_shader_stage(contour_vert_shader_stage);
+		auditor.attach_shader_stage(contour_geom_shader_stage);
+		auditor.attach_shader_stage(contour_frag_shader_stage);
+
+		auto pipeline = auditor.pipeline(ctx);
+
+		auto v = &(*pipeline)["glyph_textures"].get_var();
+		auto va = dynamic_cast<const GL::ste_shader_stage_binding_variable_array*>(v);
+		auto array_length = va->size();
+		(*pipeline)["glyph_texture_count"] = 45;
+		(*pipeline)["glyph_texture_count"] = 40;
+		array_length = va->size();
+
+		GL::array<GL::std430_layout<int, int, int, int, int>> buffer(ctx, 10, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
+		GL::sampler sampler(ctx, GL::vk_sampler_filtering(VK_FILTER_LINEAR, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR));
+
+		(*pipeline)["glyph_data"] = GL::bind(buffer);
+		(*pipeline)["glyph_sampler"] = GL::bind(sampler);
+
+		return 0;
+	}
+
 
 	// Vertex and index buffer
 	struct vertex {
@@ -237,12 +250,12 @@ int main()
 	GL::vk_descriptor_pool descriptor_pool(device, 10, { descriptor_set_ubo_layout_binding, descriptor_set_sampler_layout_binding });
 	auto descriptor_set = descriptor_pool.allocate_descriptor_set({ descriptor_set_layout });
 
-	descriptor_set.write({ GL::vk_descriptor_set_write_resource(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, 0, 
-																GL::vk_descriptor_set_write_buffer(ubo, 1)),
-						 GL::vk_descriptor_set_write_resource(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, 0,
-															  GL::vk_descriptor_set_write_image(texture, 
-																								VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 
-																								sampler)) });
+//	descriptor_set.write({ GL::vk_descriptor_set_write_resource(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, 0, 
+//																GL::vk_descriptor_set_write_buffer(ubo, 1)),
+//						 GL::vk_descriptor_set_write_resource(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, 0,
+//															  GL::vk_descriptor_set_write_image(texture, 
+//																								VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 
+//																								sampler)) });
 
 	// Pipeline layout
 	GL::vk_pipeline_layout pipeline_layout(device, { descriptor_set_layout }, {});
@@ -250,8 +263,8 @@ int main()
 	// Graphics pipeline
 	vertex_buffer.get();
 	index_buffer.get();
-	GL::vk_pipeline_graphics pipeline(device, { vert_shader_stage->graphics_pipeline_stage_descriptor(),
-									  frag_shader_stage->graphics_pipeline_stage_descriptor() },
+	GL::vk_pipeline_graphics pipeline(device, { vert_shader_stage->pipeline_stage_descriptor(),
+									  frag_shader_stage->pipeline_stage_descriptor() },
 									  pipeline_layout,
 									  presentation_renderpass,
 									  0,

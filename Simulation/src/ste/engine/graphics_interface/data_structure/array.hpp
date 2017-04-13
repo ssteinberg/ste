@@ -8,6 +8,7 @@
 #include <ste_resource.hpp>
 #include <data_structure_common.hpp>
 
+#include <buffer_view.hpp>
 #include <device_buffer.hpp>
 #include <device_resource_allocation_policy.hpp>
 
@@ -70,7 +71,10 @@ public:
 	auto update_cmd(const std::vector<T> &data, 
 					std::uint64_t offset = 0) {
 		assert(data.size() + offset <= size() && "Out-of-bounds");
-		return cmd_update_buffer(buffer.get(), data.size(), data.data(), offset);
+		return cmd_update_buffer(buffer_view(buffer, 
+											 offset, 
+											 data.size()), 
+								 data.size(), data.data());
 	}
 
 	auto size() const { return buffer.get().get_elements_count(); }

@@ -9,6 +9,8 @@
 #include <vk_pipeline.hpp>
 #include <vk_logical_device.hpp>
 #include <vk_shader.hpp>
+#include <vk_shader_stage_descriptor.hpp>
+
 #include <vk_pipeline_layout.hpp>
 #include <vk_pipeline_cache.hpp>
 
@@ -19,11 +21,15 @@ class vk_pipeline_compute : public vk_pipeline {
 
 public:
 	vk_pipeline_compute(const vk_logical_device &device,
-						const vk_shader &shader_module,
+						const vk_shader_stage_descriptor &shader_stage_descriptor,
 						const vk_pipeline_layout &layout,
 						const vk_pipeline_cache *cache = nullptr) : vk_pipeline(device) {
+		assert(shader_stage_descriptor.stage == VK_SHADER_STAGE_COMPUTE_BIT && "shader_stage_descriptor must be a compute shader");
+
 		vk_shader::shader_stage_info_t stage_info;
-		shader_module.shader_stage_create_info(VK_SHADER_STAGE_COMPUTE_BIT, stage_info);
+		shader_stage_descriptor.shader->shader_stage_create_info(VK_SHADER_STAGE_COMPUTE_BIT, 
+																 stage_info,
+																 *shader_stage_descriptor.specializations);
 
 		VkComputePipelineCreateInfo create_info = {};
 		create_info.sType = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO;

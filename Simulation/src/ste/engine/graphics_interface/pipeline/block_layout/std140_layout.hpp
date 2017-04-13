@@ -9,9 +9,31 @@
 namespace StE {
 namespace GL {
 
+static constexpr int std140_block_layout_base_alignment = 16;
+
 template <typename... Ts>
-struct std140_layout : block_layout<16, Ts...> {
+struct std140_layout : block_layout<std140_block_layout_base_alignment, Ts...> {
 };
+
+namespace _detail {
+
+struct is_std140_block_layout_helper {
+	template <typename T>
+	static constexpr bool val(std::enable_if_t<!is_block_layout_v<T>>* = nullptr) { return false; }
+	template <typename T>
+	static constexpr bool val(std::enable_if_t<is_block_layout_v<T>>* = nullptr) {
+		return T::block_base_alignment == std140_block_layout_base_alignment;
+	}
+};
+
+}
+
+template <typename T>
+struct is_std140_block_layout {
+	static constexpr bool value = _detail::is_std140_block_layout_helper::val<T>();
+};
+template <typename T>
+static constexpr bool is_std140_block_layout_v = is_std140_block_layout<T>::value;
 
 }
 }

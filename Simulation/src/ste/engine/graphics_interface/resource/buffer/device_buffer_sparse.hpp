@@ -116,7 +116,7 @@ public:
 	{}
 	~device_buffer_sparse() noexcept {}
 
-	VkBuffer get_buffer_handle() const override final { return *this; }
+	const vk_buffer_base& get_buffer_handle() const override final { return *this; }
 
 	device_buffer_sparse(device_buffer_sparse &&) = default;
 	device_buffer_sparse &operator=(device_buffer_sparse &&) = default;

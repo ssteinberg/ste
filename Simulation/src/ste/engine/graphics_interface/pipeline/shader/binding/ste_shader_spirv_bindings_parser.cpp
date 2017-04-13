@@ -34,9 +34,7 @@ void ste_shader_spirv_bindings_parser::parse_constant_value(ste_shader_spirv_bin
 			val += op[3 + i] << i;
 		dst.variable.constant_value = val;
 	}
-	else {
-		assert(false);
-	}
+	else {}
 }
 
 void ste_shader_spirv_bindings_parser::parse_storage_class(ste_shader_spirv_bindings_parser::ste_shader_binding_internal &dst,
@@ -181,8 +179,27 @@ std::size_t ste_shader_spirv_bindings_parser::process_spirv_op(std::vector<ste_s
 		binds[id].variable.columns = columns;
 	}
 	else if (opcode == spv::Op::OpTypeImage) {
+		assert(word_count > 7);
+
 		std::uint32_t id = op[1];
-		binds[id].variable.type = ste_shader_stage_variable_type::image_t;
+		auto sampled = word_count > 7 ? op[7] : 0;
+
+		// 'sampled' defines if it is a storage image or regular image to use with a sampler
+		switch (sampled) {
+		case 1:
+			// Indicates will be used with sampler
+			binds[id].variable.type = ste_shader_stage_variable_type::image_t;
+			break;
+		case 2:
+			// Indicates will be used without a sampler (a storage image)
+			binds[id].variable.type = ste_shader_stage_variable_type::storage_image_t;
+			break;
+		case 0:
+			// Unknown
+		default:
+			assert(false && "Unknown sampled status");
+			binds[id].variable.type = ste_shader_stage_variable_type::unknown;
+		}
 	}
 	else if (opcode == spv::Op::OpTypeSampler) {
 		std::uint32_t id = op[1];
@@ -210,7 +227,7 @@ std::size_t ste_shader_spirv_bindings_parser::process_spirv_op(std::vector<ste_s
 		binds[id].variable.array_elements = static_cast<std::uint32_t>(elements.get());
 
 		if (binds[element_id].binding_type == ste_shader_stage_binding_type::spec_constant) {
-			binds[id].variable.array_length_spec_constant = true;
+			binds[id].variable.array_length_specialization_constant_id = binds[element_id].bind_idx;
 		}
 	}
 	else if (opcode == spv::Op::OpTypeRuntimeArray) {
@@ -313,7 +330,8 @@ std::vector<ste_shader_stage_binding> ste_shader_spirv_bindings_parser::parse_bi
 			binding.bind_idx = b.bind_idx;
 			binding.binding_type = b.binding_type;
 			binding.block_layout = b.block_layout;
-			binding.variable = b.variable.generate_variable();
+			binding.variable = b.variable.generate_variable(binding.binding_type == ste_shader_stage_binding_type::spec_constant,
+															recognized_binds);
 			recognized_binds.push_back(std::move(binding));
 		}
 	}

@@ -4,6 +4,7 @@
 #pragma once
 
 #include <stdafx.hpp>
+#include <ste_context.hpp>
 #include <vk_sampler.hpp>
 #include <allow_type_decay.hpp>
 
@@ -16,7 +17,9 @@ private:
 
 public:
 	template <typename... Ts>
-	sampler(Ts&&... ts) : s(std::forward<Ts>(ts)...) {}
+	sampler(const ste_context &ctx,
+			Ts&&... ts) : s(ctx.device(),
+							std::forward<Ts>(ts)...) {}
 
 	sampler(sampler&&) = default;
 	sampler &operator=(sampler&&) = default;
