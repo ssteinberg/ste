@@ -5,27 +5,28 @@
 
 #include <stdafx.hpp>
 #include <vk_descriptor_set_write_resource.hpp>
+#include <pipeline_layout_set_index.hpp>
 
-#include <deque>
+#include <unordered_map>
 
 namespace StE {
 namespace GL {
 
 class pipeline_resource_binding_queue {
 private:
-	using queue_t = std::deque<vk_descriptor_set_write_resource>;
+	using writes_queue_t = std::vector<vk_descriptor_set_write_resource>;
+	using write_sets_t = std::unordered_map<pipeline_layout_set_index, writes_queue_t>;
 
 private:
-	queue_t q;
+	write_sets_t q;
 
 public:
 	pipeline_resource_binding_queue() = default;
 	~pipeline_resource_binding_queue() noexcept {}
 
 	bool empty() const { return q.empty(); }
-	void insert(const vk_descriptor_set_write_resource &w) {
-		q.push_back(w);
-	}
+
+	auto& operator[](const pipeline_layout_set_index &idx) { return q[idx]; }
 
 	auto begin() const { return q.begin(); }
 	auto end() const { return q.end(); }

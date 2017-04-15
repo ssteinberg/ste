@@ -121,6 +121,11 @@ public:
 	*/
 	auto& offset() const { return offset_bytes; }
 
+	/*
+	*	@brief	Array elements. >1 for arrays or 0 for a run-time array.
+	*/
+	virtual std::uint32_t size() const { return 1; }
+
 	/**
 	*	@brief	Returns variable size in bytes
 	*/
@@ -465,16 +470,20 @@ public:
 	/*
 	 *	@brief	Array elements. >1 for arrays or 0 for a run-time array.
 	 */
-	auto size() const {
+	std::uint32_t size() const override final {
 		if (!length_spec_constant())
 			return array_elements;
 
 		return length_specialization_constant.get()->read_specialized_value<std::uint32_t>();
 	}
 	/*
-	 *	@brief	Returns true if array length is a constant that can be specialized.
-	 */
+	*	@brief	Returns true if array length is a constant that can be specialized.
+	*/
 	bool length_spec_constant() const { return !!length_specialization_constant; }
+	/*
+	*	@brief	Returns the length specialization constant variable
+	*/
+	auto get_length_spec_constant_var() const { return length_specialization_constant.get(); }
 	/*
 	 *	@brief	Array stride between elements. 0 for tightly packed.
 	 */

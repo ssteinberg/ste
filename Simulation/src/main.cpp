@@ -135,6 +135,8 @@ int main()
 	ste_resource<StE::GL::device_pipeline_shader_stage> vert_shader_stage(ctx, std::string("temp.vert"));
 	ste_resource<StE::GL::device_pipeline_shader_stage> frag_shader_stage(ctx, std::string("temp.frag"));
 
+	GL::pipeline_binding_set_pool pool(ctx);
+
 	{
 		GL::device_pipeline_shader_stage contour_vert_shader_stage(ctx, std::string("text_distance_map_contour.vert"));
 		GL::device_pipeline_shader_stage contour_geom_shader_stage(ctx, std::string("text_distance_map_contour.geom"));
@@ -145,7 +147,7 @@ int main()
 		auditor.attach_shader_stage(contour_geom_shader_stage);
 		auditor.attach_shader_stage(contour_frag_shader_stage);
 
-		auto pipeline = auditor.pipeline(ctx);
+		auto pipeline = auditor.pipeline(ctx, pool);
 
 		auto v = &(*pipeline)["glyph_textures"].get_var();
 		auto va = dynamic_cast<const GL::ste_shader_stage_binding_variable_array*>(v);
@@ -160,8 +162,9 @@ int main()
 		(*pipeline)["glyph_data"] = GL::bind(buffer);
 		(*pipeline)["glyph_sampler"] = GL::bind(sampler);
 
-		return 0;
 	}
+
+	return 0;
 
 
 	// Vertex and index buffer
@@ -248,7 +251,7 @@ int main()
 	GL::vk_descriptor_set_layout descriptor_set_layout(device, { descriptor_set_ubo_layout_binding, descriptor_set_sampler_layout_binding });
 
 	GL::vk_descriptor_pool descriptor_pool(device, 10, { descriptor_set_ubo_layout_binding, descriptor_set_sampler_layout_binding });
-	auto descriptor_set = descriptor_pool.allocate_descriptor_set({ descriptor_set_layout });
+	auto descriptor_set = descriptor_pool.allocate_descriptor_set(descriptor_set_layout);
 
 //	descriptor_set.write({ GL::vk_descriptor_set_write_resource(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, 0, 
 //																GL::vk_descriptor_set_write_buffer(ubo, 1)),

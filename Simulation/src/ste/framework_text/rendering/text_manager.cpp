@@ -44,8 +44,12 @@ StE::GL::vk_unique_descriptor_set text_manager::create_descriptor_set(const StE:
 
 void text_manager::adjust_line(std::vector<glyph_point> &points, const attributed_wstring &wstr, unsigned line_start_index, float line_start, float line_height, const glm::vec2 &ortho_pos) {
 	if (points.size() - line_start_index) {
-		optional<const Attributes::align*> alignment_attrib = wstr.attrib_of_type(Attributes::align::attrib_type_s(), { line_start_index,points.size() - line_start_index });
-		optional<const Attributes::line_height*> line_height_attrib = wstr.attrib_of_type(Attributes::line_height::attrib_type_s(), { line_start_index,points.size() - line_start_index });
+		auto alignment_attrib = optional_dynamic_cast<const Attributes::align*>(
+			wstr.attrib_of_type(Attributes::align::attrib_type_s(), 
+								range<>{ line_start_index, points.size() - line_start_index }));
+		auto line_height_attrib = optional_dynamic_cast<const Attributes::line_height*>(
+			wstr.attrib_of_type(Attributes::line_height::attrib_type_s(), 
+								range<>{ line_start_index,points.size() - line_start_index }));
 
 		if (alignment_attrib && alignment_attrib->get() != Attributes::align::alignment::Left) {
 			float line_len = ortho_pos.x - line_start;
@@ -86,11 +90,11 @@ std::vector<glyph_point> text_manager::create_points(glm::vec2 ortho_pos, const 
 			continue;
 		}
 
-		optional<const Attributes::font*> font_attrib = wstr.attrib_of_type(Attributes::font::attrib_type_s(), { i,1 });
-		optional<const Attributes::rgb*> color_attrib = wstr.attrib_of_type(Attributes::rgb::attrib_type_s(), { i,1 });
-		optional<const Attributes::size*> size_attrib = wstr.attrib_of_type(Attributes::size::attrib_type_s(), { i,1 });
-		optional<const Attributes::stroke*> stroke_attrib = wstr.attrib_of_type(Attributes::stroke::attrib_type_s(), { i,1 });
-		optional<const Attributes::weight*> weight_attrib = wstr.attrib_of_type(Attributes::weight::attrib_type_s(), { i,1 });
+		auto font_attrib = optional_dynamic_cast<const Attributes::font*>(wstr.attrib_of_type(Attributes::font::attrib_type_s(), { i,1 }));
+		auto color_attrib = optional_dynamic_cast<const Attributes::rgb*>(wstr.attrib_of_type(Attributes::rgb::attrib_type_s(), { i,1 }));
+		auto size_attrib = optional_dynamic_cast<const Attributes::size*>(wstr.attrib_of_type(Attributes::size::attrib_type_s(), { i,1 }));
+		auto stroke_attrib = optional_dynamic_cast<const Attributes::stroke*>(wstr.attrib_of_type(Attributes::stroke::attrib_type_s(), { i,1 }));
+		auto weight_attrib = optional_dynamic_cast<const Attributes::weight*>(wstr.attrib_of_type(Attributes::weight::attrib_type_s(), { i,1 }));
 
 		const font &font = font_attrib ? font_attrib->get() : default_font;
 		int size = size_attrib ? size_attrib->get() : default_size;

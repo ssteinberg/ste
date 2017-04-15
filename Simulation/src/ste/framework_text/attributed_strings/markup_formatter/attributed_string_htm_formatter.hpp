@@ -24,10 +24,10 @@ public:
 
 		while (r.start < str.length()) {
 			typename attributed_string_common<CharT>::range_type cr = r, cw = r, cs = r, ci = r;
-			optional<const Attributes::rgb*>	color_attrib = str.attrib_of_type(rgb::attrib_type_s(), &cr);
-			optional<const Attributes::weight*>	weight_attrib = str.attrib_of_type(weight::attrib_type_s(), &cw);
-			optional<const Attributes::size*>	size_attrib = str.attrib_of_type(size::attrib_type_s(), &cs);
-			optional<const Attributes::italic*>	italic_attrib = str.attrib_of_type(italic::attrib_type_s(), &ci);
+			auto color_attrib =		optional_dynamic_cast<const Attributes::rgb*>(str.attrib_of_type(rgb::attrib_type_s(), &cr));
+			auto weight_attrib =	optional_dynamic_cast<const Attributes::weight*>(str.attrib_of_type(weight::attrib_type_s(), &cw));
+			auto size_attrib =		optional_dynamic_cast<const Attributes::size*>(str.attrib_of_type(size::attrib_type_s(), &cs));
+			auto italic_attrib =	optional_dynamic_cast<const Attributes::italic*>(str.attrib_of_type(italic::attrib_type_s(), &ci));
 
 			if (color_attrib && cr.start > r.start)		{ r.length = std::min(r.length, cr.start - r.start); color_attrib = none; }
 			if (weight_attrib && cw.start > r.start)	{ r.length = std::min(r.length, cw.start - r.start); weight_attrib = none; }

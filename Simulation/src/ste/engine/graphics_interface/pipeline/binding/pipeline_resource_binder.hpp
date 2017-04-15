@@ -4,7 +4,7 @@
 #pragma once
 
 #include <stdafx.hpp>
-#include <pipeline_binding_layout_set.hpp>
+#include <pipeline_binding_layout_collection.hpp>
 #include <vk_descriptor_set_write_resource.hpp>
 
 #include <buffer_view.hpp>

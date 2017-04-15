@@ -36,5 +36,12 @@ public:
 	using Base::Base;
 };
 
+class device_pipeline_incompatible_binding_sets_exception : public device_pipeline_exception {
+	using Base = device_pipeline_exception;
+
+public:
+	using Base::Base;
+};
+
 }
 }

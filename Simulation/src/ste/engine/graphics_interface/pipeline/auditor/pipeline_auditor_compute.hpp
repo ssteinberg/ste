@@ -52,10 +52,12 @@ public:
 	/**
 	*	@brief	Creates the pipeline object
 	*/
-	std::unique_ptr<device_pipeline> pipeline(const ste_context &ctx) const override final {
+	std::unique_ptr<device_pipeline> pipeline(const ste_context &ctx,
+											  pipeline_binding_set_pool &pool) const override final {
 		pipeline_layout layout(ctx, stages());
 		return std::make_unique<device_pipeline_compute>(device_pipeline_compute::ctor(),
 														 ctx, 
+														 pool,
 														 std::move(layout));
 	}
 

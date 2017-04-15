@@ -7,12 +7,8 @@
 #include <pipeline_layout.hpp>
 #include <pipeline_resource_binding_queue.hpp>
 #include <pipeline_resource_binder.hpp>
-#include <pipeline_binding_layout_set.hpp>
+#include <pipeline_binding_layout_collection.hpp>
 #include <device_pipeline_exceptions.hpp>
-
-#include <device_buffer_sparse.hpp>
-#include <device_buffer.hpp>
-#include <device_image.hpp>
 
 #include <string>
 
@@ -46,8 +42,9 @@ private:
 		get_binding().validate_layout<resource_underlying_type>();
 
 		// Generate write descriptor, and append to queue
+		auto set_idx = binding->binding->set_idx;
 		auto write = res.writer(binding);
-		queue->insert(write);
+		(*queue)[set_idx].push_back(write);
 	}
 
 	/**

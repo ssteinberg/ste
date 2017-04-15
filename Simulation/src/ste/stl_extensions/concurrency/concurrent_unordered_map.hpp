@@ -147,12 +147,13 @@ private:
 	template <typename T>
 	hash_type hash_function(T&& t) const { auto h = Hasher()(std::forward<T>(t)); return h ? h : 1; }
 
-	void copy_to_new_table(resize_data_guard_type &resize_guard, hash_type hash, const key_type &key, const mapped_type &val) {
+	template <typename T>
+	void copy_to_new_table(resize_data_guard_type &resize_guard, hash_type hash, const key_type &key, T&& val) {
 		hash_type mask = resize_guard->size - 1;
 		hash_type i = hash & mask;
 		auto &virtual_bucket = resize_guard->buckets[i];
 
-		insert_update_into_virtual_bucket(virtual_bucket, hash, key, .0f, false, 1, val);
+		insert_update_into_virtual_bucket(virtual_bucket, hash, key, .0f, false, 1, std::forward<T>(val));
 	}
 
 	void copy_virtual_bucket(hash_table_guard_type &old_table_guard,

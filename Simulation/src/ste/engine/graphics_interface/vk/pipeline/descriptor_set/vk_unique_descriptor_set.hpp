@@ -30,7 +30,7 @@ public:
 							 const binding_set_t &bindings)
 		: pool(device, 1, bindings, false),
 		layout(device, bindings),
-		set(pool.allocate_descriptor_set({ layout }))
+		set(pool.allocate_descriptor_set(layout))
 	{}
 
 	~vk_unique_descriptor_set() noexcept {}

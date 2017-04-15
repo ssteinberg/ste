@@ -11,7 +11,11 @@
 #include <pipeline_resource_bind_point.hpp>
 #include <device_pipeline_exceptions.hpp>
 
-#include <string>
+#include <pipeline_layout_set_index.hpp>
+#include <pipeline_binding_set_collection.hpp>
+#include <pipeline_binding_set_pool.hpp>
+
+#include <boost/container/flat_map.hpp>
 
 namespace StE {
 namespace GL {
@@ -23,9 +27,21 @@ protected:
 	pipeline_layout layout;
 	pipeline_resource_binding_queue binding_queue;
 
+	pipeline_binding_set_collection binding_sets;
+
+private:
+	void on_bind() {
+		
+	}
+
+protected:
 	device_pipeline(const ste_context &ctx,
-					pipeline_layout &&layout) 
-		: ctx(ctx), layout(std::move(layout))
+					pipeline_binding_set_pool &pool,
+					pipeline_layout &&layout)
+		: ctx(ctx),
+		layout(std::move(layout)),
+		binding_sets(this->layout, 
+					 pool)
 	{}
 
 public:

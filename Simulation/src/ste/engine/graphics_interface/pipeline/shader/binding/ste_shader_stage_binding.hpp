@@ -7,12 +7,13 @@
 #include <ste_shader_stage_binding_variable.hpp>
 #include <ste_shader_variable_layout_verification_exceptions.hpp>
 #include <vk_descriptor_set_layout_binding.hpp>
+#include <ste_shader_exceptions.hpp>
+#include <pipeline_layout_set_index.hpp>
 
 #include <memory>
 
 #include <std140_layout.hpp>
 #include <std430_layout.hpp>
-#include "ste_shader_exceptions.hpp"
 
 namespace StE {
 namespace GL {
@@ -63,7 +64,7 @@ private:
 	}
 
 public:
-	std::uint32_t set_idx;
+	pipeline_layout_set_index set_idx;
 	std::uint32_t bind_idx;
 
 	ste_shader_stage_binding_type binding_type{ ste_shader_stage_binding_type::unknown };

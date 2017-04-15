@@ -20,8 +20,11 @@ private:
 public:
 	device_pipeline_graphics(ctor,
 							 const ste_context &ctx,
+							 pipeline_binding_set_pool &pool,
 							 pipeline_layout &&layout)
-		: Base(ctx, std::move(layout))
+		: Base(ctx,
+			   pool,
+			   std::move(layout))
 	{}
 	~device_pipeline_graphics() noexcept {}
 };

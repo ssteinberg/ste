@@ -27,10 +27,10 @@ private:
 public:
 	vk_descriptor_pool(const vk_logical_device &device,
 					   std::uint32_t max_sets,
-					   const std::vector<vk_descriptor_set_layout_binding> &set_layouts,
+					   const std::vector<vk_descriptor_set_layout_binding> &set_layout_bindings,
 					   bool allow_free_individual_sets = false) : device(device), allow_free_individual_sets(allow_free_individual_sets) {
 		std::unordered_map<VkDescriptorType, std::uint32_t> type_counts;
-		for (auto &l : set_layouts) {
+		for (auto &l : set_layout_bindings) {
 			auto it = type_counts.find(l.get_type());
 			if (it != type_counts.end())
 				it->second += l.get_count();
@@ -80,11 +80,11 @@ public:
 		}
 	}
 
-	vk_descriptor_set allocate_descriptor_set(const std::vector<VkDescriptorSetLayout> &set_layouts) const {
+	auto allocate_descriptor_sets(const std::vector<const vk_descriptor_set_layout*> &set_layouts) const {
 		std::vector<VkDescriptorSetLayout> set_layout_descriptors;
 		set_layout_descriptors.reserve(set_layouts.size());
 		for (auto &s : set_layouts)
-			set_layout_descriptors.push_back(s);
+			set_layout_descriptors.push_back(*s);
 
 		VkDescriptorSetAllocateInfo create_info = {};
 		create_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
@@ -93,13 +93,27 @@ public:
 		create_info.descriptorSetCount = set_layout_descriptors.size();
 		create_info.pSetLayouts = set_layout_descriptors.data();
 
-		VkDescriptorSet set;
-		vk_result res = vkAllocateDescriptorSets(device.get(), &create_info, &set);
+		std::vector<VkDescriptorSet> sets;
+		sets.resize(create_info.descriptorSetCount);
+		vk_result res = vkAllocateDescriptorSets(device.get(), &create_info, sets.data());
 		if (!res) {
 			throw vk_exception(res);
 		}
 
-		return vk_descriptor_set(device, set, *this, allows_freeing_individual_sets());
+		std::vector<vk_descriptor_set> descriptor_sets;
+		descriptor_sets.reserve(sets.size());
+		for (auto &s : sets)
+			descriptor_sets.push_back(vk_descriptor_set(device, 
+														s, 
+														*this, 
+														allows_freeing_individual_sets()));
+
+		return descriptor_sets;
+	}
+
+	vk_descriptor_set allocate_descriptor_set(const vk_descriptor_set_layout &layout) const {
+		auto sets = allocate_descriptor_sets({ &layout });
+		return std::move(sets.front());
 	}
 
 	void reset_pool() const {

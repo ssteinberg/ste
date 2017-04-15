@@ -4,10 +4,7 @@
 #pragma once
 
 #include <stdafx.hpp>
-#include <ste_shader_stage_binding.hpp>
-#include <pipeline_binding_stages_set.hpp>
-
-#include <vk_descriptor_set_layout_binding.hpp>
+#include <pipeline_binding_set_layout_binding.hpp>
 
 #include <string>
 #include <unordered_map>
@@ -15,27 +12,10 @@
 namespace StE {
 namespace GL {
 
-struct pipeline_binding_set_layout_binding {
-	const ste_shader_stage_binding* binding;
-	pipeline_binding_stages_set stages;
-
-	operator vk_descriptor_set_layout_binding() const {
-		std::uint32_t count = 1;
-		auto array_var = dynamic_cast<const ste_shader_stage_binding_variable_array*>(binding->variable.get());
-		if (array_var)
-			count = array_var->size();
-
-		return vk_descriptor_set_layout_binding(*binding,
-												stages,
-												binding->bind_idx,
-												count);
-	}
-};
-
 /**
-*	@brief	Describes a pipeline binding set layout
+*	@brief	A collection of pipeline binding layouts
 */
-class pipeline_binding_layout_set {
+class pipeline_binding_layout_collection {
 public:
 	using bind_map_t = std::unordered_map<std::string, pipeline_binding_set_layout_binding>;
 
@@ -43,7 +23,7 @@ private:
 	bind_map_t set;
 
 public:
-	pipeline_binding_layout_set() = default;
+	pipeline_binding_layout_collection() = default;
 
 	auto& operator[](const std::string &name) { return set[name]; }
 	template <typename... Ts>
@@ -59,11 +39,11 @@ public:
 	auto end() const { return set.end(); }
 
 private:
-	friend bool operator<=(const pipeline_binding_layout_set &lhs, const pipeline_binding_layout_set &rhs);
-	friend bool operator<(const pipeline_binding_layout_set &lhs, const pipeline_binding_layout_set &rhs);
-	friend bool operator>=(const pipeline_binding_layout_set &lhs, const pipeline_binding_layout_set &rhs);
-	friend bool operator>(const pipeline_binding_layout_set &lhs, const pipeline_binding_layout_set &rhs);
-	friend bool operator==(const pipeline_binding_layout_set &lhs, const pipeline_binding_layout_set &rhs);
+	friend bool operator<=(const pipeline_binding_layout_collection &lhs, const pipeline_binding_layout_collection &rhs);
+	friend bool operator<(const pipeline_binding_layout_collection &lhs, const pipeline_binding_layout_collection &rhs);
+	friend bool operator>=(const pipeline_binding_layout_collection &lhs, const pipeline_binding_layout_collection &rhs);
+	friend bool operator>(const pipeline_binding_layout_collection &lhs, const pipeline_binding_layout_collection &rhs);
+	friend bool operator==(const pipeline_binding_layout_collection &lhs, const pipeline_binding_layout_collection &rhs);
 };
 
 /**
@@ -71,7 +51,7 @@ private:
 *
 *	@return	True if every binding in lhs exists in rhs
 */
-bool inline operator<=(const pipeline_binding_layout_set &lhs, const pipeline_binding_layout_set &rhs) {
+bool inline operator<=(const pipeline_binding_layout_collection &lhs, const pipeline_binding_layout_collection &rhs) {
 	for (auto &b : lhs) {
 		auto it = rhs.get().find(b.first);
 		if (it == rhs.end())
@@ -87,7 +67,7 @@ bool inline operator<=(const pipeline_binding_layout_set &lhs, const pipeline_bi
 *
 *	@return	True if every binding in lhs exists in rhs, and there exists a binding in rhs which doesn't exist in lhs
 */
-bool inline operator<(const pipeline_binding_layout_set &lhs, const pipeline_binding_layout_set &rhs) {
+bool inline operator<(const pipeline_binding_layout_collection &lhs, const pipeline_binding_layout_collection &rhs) {
 	return lhs <= rhs && !(lhs >= rhs);
 }
 /**
@@ -95,7 +75,7 @@ bool inline operator<(const pipeline_binding_layout_set &lhs, const pipeline_bin
 *
 *	@return	True if every binding in rhs exists in lhs
 */
-bool inline operator>=(const pipeline_binding_layout_set &lhs, const pipeline_binding_layout_set &rhs) {
+bool inline operator>=(const pipeline_binding_layout_collection &lhs, const pipeline_binding_layout_collection &rhs) {
 	for (auto &b : rhs) {
 		auto it = lhs.get().find(b.first);
 		if (it == lhs.end())
@@ -111,7 +91,7 @@ bool inline operator>=(const pipeline_binding_layout_set &lhs, const pipeline_bi
 *
 *	@return	True if every binding in rhs exists in lhs, and there exists a binding in lhs which doesn't exist in rhs
 */
-bool inline operator>(const pipeline_binding_layout_set &lhs, const pipeline_binding_layout_set &rhs) {
+bool inline operator>(const pipeline_binding_layout_collection &lhs, const pipeline_binding_layout_collection &rhs) {
 	return lhs >= rhs && !(lhs <= rhs);
 }
 /**
@@ -119,10 +99,10 @@ bool inline operator>(const pipeline_binding_layout_set &lhs, const pipeline_bin
 *
 *	@return	True if every binding in rhs exists in lhs and every binding in lhs exists in rhs
 */
-bool inline operator==(const pipeline_binding_layout_set &lhs, const pipeline_binding_layout_set &rhs) {
+bool inline operator==(const pipeline_binding_layout_collection &lhs, const pipeline_binding_layout_collection &rhs) {
 	return lhs <= rhs && lhs >= rhs;
 }
-bool inline operator!=(const pipeline_binding_layout_set &lhs, const pipeline_binding_layout_set &rhs) {
+bool inline operator!=(const pipeline_binding_layout_collection &lhs, const pipeline_binding_layout_collection &rhs) {
 	return !(lhs == rhs);
 }
 

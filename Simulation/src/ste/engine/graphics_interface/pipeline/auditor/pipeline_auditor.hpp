@@ -8,6 +8,8 @@
 #include <device_pipeline.hpp>
 #include <pipeline_layout.hpp>
 
+#include <pipeline_binding_set_pool.hpp>
+
 #include <vector>
 
 namespace StE {
@@ -24,7 +26,8 @@ public:
 	pipeline_auditor() = default;
 	virtual ~pipeline_auditor() noexcept {}
 
-	virtual std::unique_ptr<device_pipeline> pipeline(const ste_context &ctx) const = 0;
+	virtual std::unique_ptr<device_pipeline> pipeline(const ste_context &ctx,
+													  pipeline_binding_set_pool &pool) const = 0;
 };
 
 }

@@ -59,6 +59,8 @@ public:
 	}
 
 	auto get_type() const { return type; }
+	auto get_stage() const { return stage; }
+	auto get_index() const { return binding_index; }
 	auto get_count() const { return count; }
 
 	operator VkDescriptorSetLayoutBinding() const { return get_binding(); }
