@@ -6,6 +6,7 @@
 #include <stdafx.hpp>
 #include <ste_context.hpp>
 #include <vk_descriptor_set_layout.hpp>
+#include <pipeline_layout_set_index.hpp>
 
 #include <allow_type_decay.hpp>
 
@@ -25,6 +26,7 @@ public:
 
 private:
 	bindings_vec_t bindings;
+	pipeline_layout_set_index set_idx{ 0 };
 	name_bindings_map_t name_map;
 
 	vk_descriptor_set_layout vk_layout;
@@ -44,9 +46,14 @@ public:
 		: bindings(std::move(bindings)),
 		vk_layout(generate_vk_layout(ctx))
 	{
+		assert(this->bindings.size());
+		set_idx = this->bindings.back()->set_idx();
+
 		// Create name map
-		for (auto &b : this->bindings)
+		for (auto &b : this->bindings) {
 			name_map[b->name()] = b;
+			assert(set_idx == b->set_idx());
+		}
 	}
 	~pipeline_binding_set_layout() noexcept {}
 
@@ -76,6 +83,13 @@ public:
 	 */
 	auto &get() const {
 		return vk_layout;
+	}
+
+	/**
+	 *	@brief	Returns the binding set index
+	 */
+	auto &get_set_index() const {
+		return set_idx;
 	}
 };
 

@@ -22,23 +22,21 @@ private:
 	std::vector<VkDescriptorSet> sets;
 	std::vector<std::uint32_t> dynamic_offsets;
 
-protected:
+public:
 	cmd_bind_descriptor_sets(VkPipelineBindPoint bind_point,
 							 const vk_pipeline_layout &pipeline_layout,
 							 std::uint32_t first_set_bind_index,
-							 const std::vector<std::reference_wrapper<vk_descriptor_set>> &sets,
-							 const std::vector<std::uint32_t> &dynamic_offsets)
+							 const std::vector<const vk_descriptor_set*> &sets,
+							 const std::vector<std::uint32_t> &dynamic_offsets = {})
 		: bind_point(bind_point),
 		pipeline_layout(pipeline_layout),
 		first_set_bind_index(first_set_bind_index),
 		dynamic_offsets(dynamic_offsets)
 	{
-		this->sets.resize(sets.size());
-		for (std::size_t i = 0; i < sets.size(); ++i)
-			this->sets[i] = (sets.begin() + i)->get();
+		this->sets.reserve(sets.size());
+		for (auto &s : sets)
+			this->sets.push_back(*s);
 	}
-
-public:
 	virtual ~cmd_bind_descriptor_sets() noexcept {}
 
 private:
@@ -57,9 +55,9 @@ private:
 class cmd_bind_descriptor_sets_compute : public cmd_bind_descriptor_sets {
 public:
 	cmd_bind_descriptor_sets_compute(const vk_pipeline_layout &pipeline_layout,
-										std::uint32_t first_set_bind_index,
-										const std::vector<std::reference_wrapper<vk_descriptor_set>> &sets,
-										const std::vector<std::uint32_t> &dynamic_offsets = {})
+									 std::uint32_t first_set_bind_index,
+									 const std::vector<const vk_descriptor_set*> &sets,
+									 const std::vector<std::uint32_t> &dynamic_offsets = {})
 		: cmd_bind_descriptor_sets(VK_PIPELINE_BIND_POINT_COMPUTE,
 								   pipeline_layout,
 								   first_set_bind_index,
@@ -72,7 +70,7 @@ class cmd_bind_descriptor_sets_graphics : public cmd_bind_descriptor_sets {
 public:
 	cmd_bind_descriptor_sets_graphics(const vk_pipeline_layout &pipeline_layout,
 									  std::uint32_t first_set_bind_index,
-									  const std::vector<std::reference_wrapper<vk_descriptor_set>> &sets,
+									  const std::vector<const vk_descriptor_set*> &sets,
 									  const std::vector<std::uint32_t> &dynamic_offsets = {})
 		: cmd_bind_descriptor_sets(VK_PIPELINE_BIND_POINT_GRAPHICS,
 								   pipeline_layout,

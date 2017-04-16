@@ -19,6 +19,7 @@
 
 #include <signal.hpp>
 
+#include <allow_type_decay.hpp>
 #include <string>
 #include <boost/container/flat_map.hpp>
 #include <boost/container/flat_set.hpp>
@@ -29,7 +30,7 @@ namespace GL {
 /**
 *	@brief	Describes the pipeline shader stages and resource binding points
 */
-class pipeline_layout {
+class pipeline_layout : public allow_type_decay<pipeline_layout, vk_pipeline_layout> {
 	friend class device_pipeline;
 
 public:
@@ -280,6 +281,8 @@ public:
 
 	/**
 	*	@brief	Recreates invalidated set layout and resets flags
+	*	
+	*	@return	True if sets were modified, false otherwise.
 	*/
 	void recreate_invalidated_set_layouts() {
 		if (set_layouts_modified_queue.empty())
@@ -320,6 +323,19 @@ public:
 		layout_invalidated_flag = false;
 		return ret;
 	}
+
+	/**
+	*	@brief	Returns the collection of shader stage descriptors, used to create pipeline objects.
+	*/
+	auto shader_stage_descriptors() const {
+		std::vector<vk_shader_stage_descriptor> descriptors;
+		for (auto &s : stages)
+			descriptors.push_back(s.second->pipeline_stage_descriptor());
+
+		return descriptors;
+	}
+
+	auto& get() const { return *layout; }
 
 	bool is_pipeline_layout_invalidated() const { return layout_invalidated_flag; }
 

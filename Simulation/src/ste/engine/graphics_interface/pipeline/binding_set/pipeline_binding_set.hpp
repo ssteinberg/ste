@@ -157,6 +157,13 @@ public:
 	pipeline_binding_set &operator=(pipeline_binding_set&&) = default;
 
 	auto& get() const { return set; }
+
+	/**
+	*	@brief	Returns the binding set index
+	*/
+	auto &get_set_index() const {
+		return layout.get().get_set_index();
+	}
 };
 
 }

@@ -15,12 +15,51 @@
 #include <pipeline_binding_set_collection.hpp>
 #include <pipeline_binding_set_pool.hpp>
 
-#include <boost/container/flat_map.hpp>
+#include <command_buffer.hpp>
+#include <command_recorder.hpp>
+#include <cmd_bind_descriptor_sets.hpp>
 
 namespace StE {
 namespace GL {
 
 class device_pipeline {
+private:
+	// Bind command
+	class device_pipeline_cmd_bind : public command {
+		const device_pipeline *pipeline;
+
+	public:
+		device_pipeline_cmd_bind(const device_pipeline *pipeline)
+			: pipeline(pipeline)
+		{}
+		virtual ~device_pipeline_cmd_bind() noexcept {}
+
+	private:
+		void operator()(const command_buffer &buffer, command_recorder &recorder) const override final {
+			// Bind binding sets
+			recorder << pipeline->binding_sets.cmd_bind(pipeline->pipeline_bind_point());
+		
+			// Bind pipeline
+			pipeline->bind_pipeline(buffer, recorder);
+		}
+	};
+
+	// Unbind command
+	class device_pipeline_cmd_unbind : public command {
+		const device_pipeline *pipeline;
+
+	public:
+		device_pipeline_cmd_unbind(const device_pipeline *pipeline)
+			: pipeline(pipeline)
+		{}
+		virtual ~device_pipeline_cmd_unbind() noexcept {}
+
+	private:
+		void operator()(const command_buffer &buffer, command_recorder &recorder) const override final {
+			pipeline->unbind_pipeline(buffer, recorder);
+		}
+	};
+
 protected:
 	const ste_context &ctx;
 
@@ -33,8 +72,13 @@ private:
 	void update() {
 		// Update sets, as needed
 		layout.recreate_invalidated_set_layouts();
+		
+		// Recreate pipeline if pipeline layout was invalidated for any reason
+		if (layout.read_and_reset_invalid_layout_flag()) {
+			recreate_pipeline();
+		}
 
-		// Write from the binding queue and clear it
+		// Write resource descriptors to binding sets from the binding queue and clear it
 		if (!binding_queue.empty()) {
 			binding_sets.write(binding_queue);
 			binding_queue.clear();
@@ -42,6 +86,11 @@ private:
 	}
 
 protected:
+	virtual VkPipelineBindPoint pipeline_bind_point() const = 0;
+	virtual void bind_pipeline(const command_buffer &, command_recorder &) const = 0;
+	virtual void unbind_pipeline(const command_buffer &, command_recorder &) const {}
+	virtual void recreate_pipeline() = 0;
+
 	device_pipeline(const ste_context &ctx,
 					pipeline_binding_set_pool &pool,
 					pipeline_layout &&layout)
@@ -55,7 +104,7 @@ public:
 	device_pipeline(device_pipeline&&) = default;
 	device_pipeline &operator=(device_pipeline&&) = default;
 
-	~device_pipeline() noexcept {}
+	virtual ~device_pipeline() noexcept {}
 
 	/**
 	 *	@brief	Creates a resource binder for a given variable name
@@ -79,8 +128,22 @@ public:
 											bind);
 	}
 
-	void cmd_bind() {
+	/**
+	*	@brief	Creates a bind command that binds the pipeline.
+	*			Should be called before issuing any commands that use the pipeline.
+	*
+	*			Each call to bind should be followed by a call to unbind.
+	*/
+	auto cmd_bind() {
 		update();
+		return device_pipeline_cmd_bind(this);
+	}
+
+	/**
+	*	@brief	Creates a bind command that unbinds the pipeline.
+	*/
+	auto cmd_unbind() {
+		return device_pipeline_cmd_unbind(this);
 	}
 };
 

@@ -14,10 +14,55 @@
 #include <boost/container/flat_map.hpp>
 #include <memory>
 
+#include <cmd_bind_descriptor_sets.hpp>
+
 namespace StE {
 namespace GL {
 
 class pipeline_binding_set_collection {
+private:
+	// Bind command
+	class pipeline_binding_set_collection_cmd_bind : public command {
+		const pipeline_binding_set_collection *collection;
+		VkPipelineBindPoint bind_point;
+
+	public:
+		pipeline_binding_set_collection_cmd_bind(const pipeline_binding_set_collection *collection,
+												 VkPipelineBindPoint bind_point)
+			: collection(collection),
+			bind_point(bind_point)
+		{}
+		virtual ~pipeline_binding_set_collection_cmd_bind() noexcept {}
+
+	private:
+		void operator()(const command_buffer &buffer, command_recorder &recorder) const override final {
+			auto &sets = collection->sets;
+			assert(sets.size());
+
+			std::uint32_t first_set_idx = sets.begin()->first;
+
+			// Bind ranges of consecutive sets
+			for (auto it = sets.begin(); it != sets.end();) {
+				std::vector<const vk_descriptor_set*> bind_sets;
+				bind_sets.reserve(sets.size());
+
+				// Create a range
+				auto set_idx = it->first;
+				bind_sets.push_back(&it->second->get());
+				++it;
+				for (; it != sets.end() && it->first == set_idx + 1; ++it, ++set_idx)
+					bind_sets.push_back(&it->second->get());
+
+				// And bind
+				recorder << cmd_bind_descriptor_sets(bind_point,
+													 collection->layout.get(),
+													 first_set_idx,
+													 bind_sets);
+			}
+		}
+	};
+
+
 private:
 	using collection_t = boost::container::flat_map<pipeline_layout_set_index, pipeline_binding_set>;
 	using pipeline_layout_set_modified_connection_t = pipeline_layout::set_layout_modified_signal_t::connection_type;
@@ -150,6 +195,14 @@ public:
 
 			set.write(writes);
 		}
+	}
+
+	/**
+	 *	@brief	Binds the binding set collection
+	 */
+	auto cmd_bind(VkPipelineBindPoint bind_point) const {
+		return pipeline_binding_set_collection_cmd_bind(this,
+														bind_point);
 	}
 
 	pipeline_binding_set_collection(pipeline_binding_set_collection&&) = default;
