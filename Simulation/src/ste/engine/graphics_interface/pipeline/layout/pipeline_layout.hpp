@@ -17,6 +17,8 @@
 #include <pipeline_binding_set_layout.hpp>
 #include <vk_pipeline_layout.hpp>
 
+#include <signal.hpp>
+
 #include <string>
 #include <boost/container/flat_map.hpp>
 #include <boost/container/flat_set.hpp>
@@ -33,6 +35,8 @@ class pipeline_layout {
 public:
 	using shader_stage_t = device_pipeline_shader_stage*;
 	using shader_stages_list_t = std::vector<shader_stage_t>;
+
+	using set_layout_modified_signal_t = signal<const std::vector<pipeline_layout_set_index> &>;
 
 private:
 	using stages_map_t = boost::container::flat_map<ste_shader_stage, shader_stage_t>;
@@ -68,6 +72,8 @@ private:
 	boost::container::flat_set<pipeline_layout_set_index> set_layouts_modified_queue;
 	// Map of specialization variables to dependant array variables
 	spec_to_dependant_array_variables_map_t spec_to_dependant_array_variables_map;
+	// Set layout modified signal
+	set_layout_modified_signal_t set_layout_modified_signal;
 
 	// If for any reason pipeline layout has changed, mark it and let device_pipeline recreate the pipeline when applicable.
 	bool layout_invalidated_flag{ false };
@@ -252,9 +258,10 @@ public:
 	*	@brief	Recreates the pipeline layout and resets flag
 	*/
 	void recreate_layout() {
-		std::vector<VkDescriptorSetLayout> set_layouts;
-		for (auto &s : bindings_set_layouts)
-			set_layouts.push_back(s.second);
+		std::vector<const vk_descriptor_set_layout*> set_layout_ptrs;
+		for (auto &s : bindings_set_layouts) {
+			set_layout_ptrs.push_back(&s.second.get());
+		}
 
 		// Create push contant layout descriptors
 		std::vector<vk_push_constant_layout> push_constant_layouts;
@@ -266,7 +273,7 @@ public:
 
 		// Create pipeline layout
 		layout = std::make_unique<vk_pipeline_layout>(ctx.device(),
-													  set_layouts,
+													  set_layout_ptrs,
 													  push_constant_layouts);
 		layout_invalidated_flag = false;
 	}
@@ -275,6 +282,10 @@ public:
 	*	@brief	Recreates invalidated set layout and resets flags
 	*/
 	void recreate_invalidated_set_layouts() {
+		if (set_layouts_modified_queue.empty())
+			return;
+
+		std::vector<pipeline_layout_set_index> modified_set_indices;
 		for (auto &set_idx : set_layouts_modified_queue) {
 			auto set_layout_it = bindings_set_layouts.find(set_idx);
 			if (set_layout_it == bindings_set_layouts.end()) {
@@ -289,12 +300,16 @@ public:
 			auto set_layout = pipeline_binding_set_layout(ctx, std::move(bindings));
 
 			// Replace set with new one
-			bindings_set_layouts.insert(set_layout_it, 
-										  std::make_pair(set_layout_it->first, std::move(set_layout)));
+			set_layout_it->second = std::move(set_layout);
+
+			modified_set_indices.push_back(set_idx);
 		}
 
 		// Erase queue
 		set_layouts_modified_queue.clear();
+
+		// Notify
+		set_layout_modified_signal.emit(modified_set_indices);
 	}
 
 	/**
@@ -314,6 +329,8 @@ public:
 	auto& variables() const { return variables_map; }
 	auto& push_variables() const { return push_variables_map; }
 	auto& spec_variables() const { return spec_variables_map; }
+
+	auto& get_set_layout_modified_signal() const { return set_layout_modified_signal; }
 };
 
 }

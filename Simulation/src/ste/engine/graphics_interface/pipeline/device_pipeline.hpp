@@ -30,8 +30,15 @@ protected:
 	pipeline_binding_set_collection binding_sets;
 
 private:
-	void on_bind() {
-		
+	void update() {
+		// Update sets, as needed
+		layout.recreate_invalidated_set_layouts();
+
+		// Write from the binding queue and clear it
+		if (!binding_queue.empty()) {
+			binding_sets.write(binding_queue);
+			binding_queue.clear();
+		}
 	}
 
 protected:
@@ -70,6 +77,10 @@ public:
 											&layout,
 											resource_name,
 											bind);
+	}
+
+	void cmd_bind() {
+		update();
 	}
 };
 

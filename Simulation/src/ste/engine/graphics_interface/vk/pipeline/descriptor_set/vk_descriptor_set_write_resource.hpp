@@ -64,48 +64,69 @@ private:
 	std::vector<vk_descriptor_set_write_image> image_writes;
 	std::vector<vk_descriptor_set_write_buffer> buffer_writes;
 
+private:
+	static bool is_image_write_descriptor(const VkDescriptorType &type) {
+		return type == VK_DESCRIPTOR_TYPE_SAMPLER ||
+			type == VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER ||
+			type == VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE ||
+			type == VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
+	}
+
 public:
 	vk_descriptor_set_write_resource(const VkDescriptorType &type,
 									 std::uint32_t binding_index,
 									 std::uint32_t array_element,
 									 const std::vector<vk_descriptor_set_write_image> &image_writes)
-		: type(type), 
-		binding_index(binding_index), 
+		: type(type),
+		binding_index(binding_index),
 		array_element(array_element),
 		image_writes(image_writes)
-	{}
+	{
+		assert(is_image_write_descriptor(type));
+	}
 	vk_descriptor_set_write_resource(const VkDescriptorType &type,
 									 std::uint32_t binding_index,
 									 std::uint32_t array_element,
 									 const vk_descriptor_set_write_image &image_write)
-		: type(type), 
-		binding_index(binding_index), 
+		: type(type),
+		binding_index(binding_index),
 		array_element(array_element),
 		image_writes({ image_write })
-	{}
+	{
+		assert(is_image_write_descriptor(type));
+	}
 	vk_descriptor_set_write_resource(const VkDescriptorType &type,
 									 std::uint32_t binding_index,
 									 std::uint32_t array_element,
 									 const std::vector<vk_descriptor_set_write_buffer> &buffer_writes)
-		: type(type), 
-		binding_index(binding_index), 
+		: type(type),
+		binding_index(binding_index),
 		array_element(array_element),
 		buffer_writes(buffer_writes)
-	{}
+	{
+		assert(!is_image_write_descriptor(type));
+	}
 	vk_descriptor_set_write_resource(const VkDescriptorType &type,
 									 std::uint32_t binding_index,
 									 std::uint32_t array_element,
 									 const vk_descriptor_set_write_buffer &buffer_write)
-		: type(type), 
-		binding_index(binding_index), 
+		: type(type),
+		binding_index(binding_index),
 		array_element(array_element),
 		buffer_writes({ buffer_write })
-	{}
+	{
+		assert(!is_image_write_descriptor(type));
+	}
 
 	vk_descriptor_set_write_resource(vk_descriptor_set_write_resource &&) = default;
 	vk_descriptor_set_write_resource &operator=(vk_descriptor_set_write_resource &&) = default;
 	vk_descriptor_set_write_resource(const vk_descriptor_set_write_resource &) = default;
 	vk_descriptor_set_write_resource &operator=(const vk_descriptor_set_write_resource &) = default;
+
+	auto get_type() const { return type; }
+	auto get_binding_index() const { return binding_index; }
+	auto get_array_element() const { return array_element; }
+	auto get_count() const { return std::max(image_writes.size(), buffer_writes.size()); }
 };
 
 }

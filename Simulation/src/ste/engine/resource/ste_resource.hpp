@@ -123,7 +123,10 @@ public:
 					  "T must be constructible with L's return type");
 	}
 
-	~ste_resource() noexcept {}
+	~ste_resource() noexcept {
+		// Finish initializing before deleting...
+		get();
+	}
 
 	ste_resource(ste_resource&&) = default;
 	ste_resource &operator=(ste_resource&&) = default;

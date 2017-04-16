@@ -41,6 +41,12 @@ public:
 	vk_descriptor_set_copy_resources &operator=(vk_descriptor_set_copy_resources &&) = default;
 	vk_descriptor_set_copy_resources(const vk_descriptor_set_copy_resources &) = default;
 	vk_descriptor_set_copy_resources &operator=(const vk_descriptor_set_copy_resources &) = default;
+
+	auto get_src_binding_index() const { return; }
+	auto get_src_array_element() const { return src_array_element; }
+	auto get_dst_binding_index()const { return dst_binding_index; }
+	auto get_dst_array_element()const { return dst_array_element; }
+	auto get_count()const { return count; }
 };
 
 }

@@ -28,7 +28,7 @@ void text_renderer::recreate_pipeline() {
 	VkRect2D scissor = { { 0,0 },{ swapchain_size.x, swapchain_size.y } };
 
 	this->pipeline_layout = std::make_unique<GL::vk_pipeline_layout>(GL::vk_pipeline_layout{
-		tr->context.device(), { tr->descriptor_set->get_layout(), fb_size_descriptor_set.get_layout() }, {}
+		tr->context.device(), { &tr->descriptor_set->get_layout(), &fb_size_descriptor_set.get_layout() }, {}
 	});
 	this->pipeline = std::make_unique<GL::vk_pipeline_graphics>(
 		GL::vk_pipeline_graphics{

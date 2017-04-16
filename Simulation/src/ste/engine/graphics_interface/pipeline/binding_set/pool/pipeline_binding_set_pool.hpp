@@ -42,7 +42,8 @@ private:
 		// Max sets
 		auto max_sets = sets_count;
 
-		return std::make_shared<binding_set_pool_instance>(ctx,
+		return std::make_shared<binding_set_pool_instance>(binding_set_pool_instance::ctor(),
+														   ctx,
 														   max_sets,
 														   pool_bindings);
 	}

@@ -20,6 +20,8 @@ namespace GL {
 class binding_set_pool_instance {
 	friend class pipeline_binding_set_pool;
 
+	struct ctor {};
+
 public:
 	using allocation_result_t = std::vector<pipeline_binding_set>;
 	using release_func_t = std::function<void(void)>;
@@ -55,7 +57,8 @@ private:
 	}
 
 public:
-	binding_set_pool_instance(const ste_context &ctx,
+	binding_set_pool_instance(ctor,
+							  const ste_context &ctx,
 							  std::uint32_t max_sets,
 							  const std::vector<const pipeline_binding_set_layout_binding*> &pool_bindings)
 		: ctx(ctx),
@@ -75,15 +78,15 @@ public:
 	 *	@throws	vk_exception	On Vulkan exception
 	 */
 	allocation_result_t allocate(const std::vector<const pipeline_binding_set_layout*> &layouts) {
-		std::vector<const vk_descriptor_set_layout*> layouts_of_acquired_bindings;
-		layouts_of_acquired_bindings.reserve(layouts.size());
+		std::vector<const vk_descriptor_set_layout*> layouts_of_acquired_bindings_ptrs;
+		layouts_of_acquired_bindings_ptrs.reserve(layouts.size());
 		for (std::size_t i = 0; i < layouts.size(); ++i) {
 			auto &l = *layouts[i];
-			layouts_of_acquired_bindings.push_back(&l.get());
+			layouts_of_acquired_bindings_ptrs.push_back(&l.get());
 		}
 
 		// Allocate
-		std::vector<vk_descriptor_set> sets = pool.allocate_descriptor_sets(layouts_of_acquired_bindings);
+		std::vector<vk_descriptor_set> sets = pool.allocate_descriptor_sets(layouts_of_acquired_bindings_ptrs);
 
 		// Sets allocated successfully
 		allocated_sets += static_cast<std::uint32_t>(layouts.size());

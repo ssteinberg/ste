@@ -12,6 +12,7 @@
 #include <pipeline_binding_set.hpp>
 
 #include <boost/container/flat_map.hpp>
+#include <memory>
 
 namespace StE {
 namespace GL {
@@ -19,15 +20,60 @@ namespace GL {
 class pipeline_binding_set_collection {
 private:
 	using collection_t = boost::container::flat_map<pipeline_layout_set_index, pipeline_binding_set>;
+	using pipeline_layout_set_modified_connection_t = pipeline_layout::set_layout_modified_signal_t::connection_type;
 
 private:
 	collection_t sets;
 	std::reference_wrapper<const pipeline_layout> layout;
+	std::reference_wrapper<pipeline_binding_set_pool> pool;
+
+	std::shared_ptr<pipeline_layout_set_modified_connection_t> set_modified_connection;
+
+private:
+	void recreate_sets(const std::vector<pipeline_layout_set_index> &set_indices) {
+		std::vector<const pipeline_binding_set_layout*> layouts;
+		auto &pipeline_layout_map = layout.get().set_layouts();
+		for (auto &set_idx : set_indices) {
+			// Define layout for new set
+			auto l_it = pipeline_layout_map.find(set_idx);
+			if (l_it == pipeline_layout_map.end()) {
+				// Layout not found.
+				assert(false);
+				return;
+			}
+			auto *layout = &l_it->second;
+
+			layouts.push_back(layout);
+		}
+
+		// Allocate the new sets
+		std::vector<pipeline_binding_set> new_sets = pool.get().allocate_binding_sets(layouts);
+		for (std::size_t i=0; i<new_sets.size(); ++i) {
+			auto &set_idx = set_indices[i];
+			auto &new_set = new_sets[i];
+
+			// Find old set
+			auto it = sets.find(set_idx);
+			if (it == sets.end()) {
+				// Set not found.
+				assert(false);
+				return;
+			}
+			auto &old_set = it->second;
+
+			// Copy bindings from old set
+			new_set.copy(old_set);
+
+			// And store in collection
+			it->second = std::move(new_set);
+		}
+	}
 
 public:
 	pipeline_binding_set_collection(const pipeline_layout& layout,
 									pipeline_binding_set_pool &pool)
-		: layout(layout)
+		: layout(layout),
+		pool(pool)
 	{
 		const auto& binding_sets_layouts_map = layout.set_layouts();
 
@@ -49,6 +95,13 @@ public:
 			auto idx = indices[i];
 			sets.emplace(idx, std::move(allocated_sets[i]));
 		}
+
+		// Connect to 'set modified' signal
+		set_modified_connection = 
+			std::make_shared<pipeline_layout_set_modified_connection_t>([this](const std::vector<pipeline_layout_set_index> &set_indices) {
+			this->recreate_sets(set_indices);
+		});
+		layout.get_set_layout_modified_signal().connect(set_modified_connection);
 	}
 	~pipeline_binding_set_collection() noexcept {}
 

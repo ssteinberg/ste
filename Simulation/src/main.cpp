@@ -31,6 +31,7 @@
 #include <text_renderer.hpp>
 #include <attrib.hpp>
 
+#include <range_list.hpp>
 #include <pipeline_auditor_graphics.hpp>
 
 using namespace StE;
@@ -142,6 +143,9 @@ int main()
 		GL::device_pipeline_shader_stage contour_geom_shader_stage(ctx, std::string("text_distance_map_contour.geom"));
 		GL::device_pipeline_shader_stage contour_frag_shader_stage(ctx, std::string("text_distance_map_contour.frag"));
 
+		GL::array<GL::std430_layout<int, int, int, int, int>> buffer(ctx, 10, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
+		GL::sampler sampler(ctx, GL::vk_sampler_filtering(VK_FILTER_LINEAR, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR));
+
 		GL::pipeline_auditor_graphics auditor;
 		auditor.attach_shader_stage(contour_vert_shader_stage);
 		auditor.attach_shader_stage(contour_geom_shader_stage);
@@ -152,16 +156,14 @@ int main()
 		auto v = &(*pipeline)["glyph_textures"].get_var();
 		auto va = dynamic_cast<const GL::ste_shader_stage_binding_variable_array*>(v);
 		auto array_length = va->size();
-		(*pipeline)["glyph_texture_count"] = 45;
-		(*pipeline)["glyph_texture_count"] = 40;
-		array_length = va->size();
-
-		GL::array<GL::std430_layout<int, int, int, int, int>> buffer(ctx, 10, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
-		GL::sampler sampler(ctx, GL::vk_sampler_filtering(VK_FILTER_LINEAR, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR));
 
 		(*pipeline)["glyph_data"] = GL::bind(buffer);
 		(*pipeline)["glyph_sampler"] = GL::bind(sampler);
-
+		(*pipeline)["glyph_texture_count"] = 45;
+		pipeline->cmd_bind();
+		(*pipeline)["glyph_texture_count"] = 40;
+		array_length = va->size();
+		pipeline->cmd_bind();
 	}
 
 	return 0;
@@ -261,7 +263,7 @@ int main()
 //																								sampler)) });
 
 	// Pipeline layout
-	GL::vk_pipeline_layout pipeline_layout(device, { descriptor_set_layout }, {});
+	GL::vk_pipeline_layout pipeline_layout(device, { &descriptor_set_layout }, {});
 
 	// Graphics pipeline
 	vertex_buffer.get();
