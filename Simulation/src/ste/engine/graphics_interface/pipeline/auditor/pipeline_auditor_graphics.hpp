@@ -7,6 +7,7 @@
 #include <ste_context.hpp>
 #include <pipeline_auditor.hpp>
 #include <pipeline_layout.hpp>
+#include <pipeline_external_binding_set_collection.hpp>
 
 #include <device_pipeline_shader_stage.hpp>
 #include <pipeline_layout_exceptions.hpp>
@@ -83,16 +84,26 @@ public:
 	void set_pipeline_settings(device_pipeline_graphics_configurations &&settings) { pipeline_settings = std::move(settings); }
 
 	/**
-	*	@brief	Creates the pipeline object
+	*	@brief	Generates a pipeline from the specifications recorded to the auditor.
+	*
+	*	@param	ctx				Context
+	*	@param	pool			Binding set pool. Used to allocate the binding sets used by the pipeline.
+	*	@param	external_binding_sets	A list of binding set layouts that are assumed to be created and bound by an external system.
+	*									The pipeline will only check compatibility with the provided shader stages.
 	*/
 	std::unique_ptr<device_pipeline> pipeline(const ste_context &ctx,
-											  pipeline_binding_set_pool &pool) const override final {
-		pipeline_layout layout(ctx, stages());
+											  pipeline_binding_set_pool &pool,
+											  optional<std::reference_wrapper<const pipeline_external_binding_set_collection>> external_binding_sets) const override final {
+		pipeline_layout layout(ctx, 
+							   stages(),
+							   external_binding_sets);
 		return std::make_unique<device_pipeline_graphics>(device_pipeline_graphics::ctor(),
 														  ctx, 
 														  pool,
-														  std::move(layout));
+														  std::move(layout),
+														  external_binding_sets);
 	}
+	using Base::pipeline;
 
 private:
 	/**

@@ -96,7 +96,7 @@ private:
 			}
 
 			recorder << GL::cmd_bind_descriptor_sets_graphics(*tr->pipeline_layout,
-															  0, { tr->tr->descriptor_set->get(), tr->fb_size_descriptor_set.get() });
+															  0, { &tr->tr->descriptor_set->get(), &tr->fb_size_descriptor_set.get() });
 			recorder << GL::cmd_bind_pipeline(*tr->pipeline);
 			recorder << GL::cmd_bind_vertex_buffers(0, tr->vertex_buffer);
 			recorder << GL::cmd_draw(tr->count, 1, 0);

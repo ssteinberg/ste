@@ -1379,22 +1379,10 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\layout\pipeline_binding_stages_collection.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\layout\pipeline_binding_set_layout.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\binding_set\pipeline_binding_set.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\binding_set\pipeline_binding_set_collection.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\binding_set\pool\pipeline_binding_set_pool.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\binding_set\pool\binding_set_pool_instance.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\layout\pipeline_binding_set_layout_binding.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\stl_extensions\ultimate.hpp">
@@ -1443,6 +1431,51 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\stl_extensions\range\range_list.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\layout\pipeline_external_binding_layout.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\binding_set\pipeline_external_binding_set.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\binding_set\pipeline_binding_set_impl.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\binding_set\pipeline_binding_set.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\shader\binding\ste_shader_stage_binding_type.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\binding_set\pipeline_binding_set_collection_cmd_bind.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\layout\pipeline_external_binding_set_layout.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\layout\pipeline_binding_set_layout_impl.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\layout\pipeline_binding_set_layout.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\layout\pipeline_binding_layout.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\layout\pipeline_binding_layout_interface.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\binding_set\pipeline_binding_set_collection.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\binding_set\pipeline_external_binding_set_collection.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\binding\pipeline_external_resource_bind_point.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\shader\binding\ste_shader_stage_variable_from_type.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

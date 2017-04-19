@@ -4,10 +4,10 @@
 #pragma once
 
 #include <stdafx.hpp>
+#include <pipeline_binding_layout.hpp>
 #include <pipeline_layout.hpp>
 #include <pipeline_resource_binding_queue.hpp>
 #include <pipeline_resource_binder.hpp>
-#include <pipeline_binding_layout_collection.hpp>
 #include <device_pipeline_exceptions.hpp>
 
 #include <string>
@@ -20,7 +20,7 @@ private:
 	pipeline_resource_binding_queue *queue;
 	pipeline_layout *layout;
 	std::string name;
-	const pipeline_binding_set_layout_binding *binding;
+	const pipeline_binding_layout *binding;
 
 public:
 	/**
@@ -81,7 +81,7 @@ public:
 	pipeline_resource_bind_point(pipeline_resource_binding_queue *q,
 								 pipeline_layout *layout,
 								 const std::string &name,
-								 const pipeline_binding_set_layout_binding *binding)
+								 const pipeline_binding_layout *binding)
 		: queue(q), layout(layout), name(name), binding(binding)
 	{}
 	~pipeline_resource_bind_point() noexcept {}

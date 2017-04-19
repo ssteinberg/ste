@@ -40,7 +40,7 @@ struct block_layout_type_base_alignment_impl {
 	}
 	template <typename S = T>
 	static constexpr auto alignment(std::enable_if_t<is_vector<S>::value>* = nullptr) {
-		static constexpr std::size_t effective_elements = type_elements_count<S>::elements == 2 ? 2 : 4;
+		static constexpr std::size_t effective_elements = type_elements_count<S>::value == 2 ? 2 : 4;
 		static constexpr std::size_t value = effective_elements * sizeof(remove_extents<S>::type);
 		return value;
 	}

@@ -52,8 +52,8 @@ struct layout_element_asserter_impl<base_alignment, T, false> {
 };
 template <std::size_t base_alignment, typename T>
 struct layout_element_asserter_impl<base_alignment, T, true> {
-	static_assert(base_alignment == T::block_base_alignment,
-				  "T is a block layout of different alignment than parent. This happens when mixing blocks of different layouts, "
+	static_assert(base_alignment >= T::block_base_alignment,
+				  "T is a block layout of greater base alignment than parent. This happens when mixing blocks of different layouts, "
 				  "e.g. std430 inside a std140 layout.");
 };
 template <std::size_t base_alignment, typename T>
@@ -160,25 +160,25 @@ struct block_layout_getter<0> {
 template <int N>
 struct block_layout_member_offset {
 	template <int b, int a, typename... Ts>
-	auto operator()(const layout_element<b, a, Ts...> &e) {
+	static constexpr auto offset(const layout_element<b, a, Ts...> &e) {
 		using element_t = std::remove_cv_t<std::remove_reference_t<decltype(e)>>;
-		return operator()<element_t>();
+		return offset<element_t>();
 	}
 	template <typename ElementT>
-	auto operator()() {
+	static constexpr auto offset() {
 		static constexpr std::size_t offset_to_next = offsetof(ElementT, next);
-		return offset_to_next + block_layout_member_offset<N - 1>().template operator()<decltype(ElementT::next)>();
+		return offset_to_next + block_layout_member_offset<N - 1>::template offset<decltype(ElementT::next)>();
 	}
 };
 template <>
 struct block_layout_member_offset<0> {
 	template <int b, int a, typename... Ts>
-	auto operator()(const layout_element<b, a, Ts...> &e) {
+	static constexpr auto offset(const layout_element<b, a, Ts...> &e) {
 		using element_t = std::remove_cv_t<std::remove_reference_t<decltype(e)>>;
-		return operator()<element_t>();
+		return offset<element_t>();
 	}
 	template <typename ElementT>
-	auto operator()() {
+	static constexpr auto offset() {
 		return offsetof(ElementT, data.member);
 	}
 };

@@ -8,9 +8,12 @@
 #include <device_pipeline.hpp>
 #include <pipeline_layout.hpp>
 
+#include <pipeline_external_binding_set_collection.hpp>
+#include <pipeline_binding_set_layout.hpp>
 #include <pipeline_binding_set_pool.hpp>
 
 #include <vector>
+#include <optional.hpp>
 
 namespace StE {
 namespace GL {
@@ -26,8 +29,26 @@ public:
 	pipeline_auditor() = default;
 	virtual ~pipeline_auditor() noexcept {}
 
+	/**
+	 *	@brief	Generates a pipeline from the specifications recorded to the auditor.
+	 *	
+	 *	@param	ctx			Context
+	 *	@param	pool			Binding set pool. Used to allocate the binding sets used by the pipeline.
+	 *	@param	external_binding_sets	A list of binding set layouts that are assumed to be created and bound by an external system.
+	 *									The pipeline will only check compatibility with the provided shader stages.
+	 */
 	virtual std::unique_ptr<device_pipeline> pipeline(const ste_context &ctx,
-													  pipeline_binding_set_pool &pool) const = 0;
+													  pipeline_binding_set_pool &pool,
+													  optional<std::reference_wrapper<const pipeline_external_binding_set_collection>> external_binding_sets) const = 0;
+	/**
+	*	@brief	See pipeline()
+	*/
+	std::unique_ptr<device_pipeline> pipeline(const ste_context &ctx,
+											  pipeline_binding_set_pool &pool) const {
+		return pipeline(ctx,
+						pool,
+						none);
+	}
 };
 
 }

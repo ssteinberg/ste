@@ -4,8 +4,8 @@
 #pragma once
 
 #include <stdafx.hpp>
-#include <pipeline_binding_layout_collection.hpp>
 #include <vk_descriptor_set_write_resource.hpp>
+#include <pipeline_binding_layout_interface.hpp>
 
 #include <buffer_view.hpp>
 #include <device_buffer.hpp>
@@ -47,9 +47,9 @@ public:
 	pipeline_resource_binder(pipeline_resource_binder&&) = default;
 	pipeline_resource_binder &operator=(pipeline_resource_binder&&) = default;
 
-	vk_descriptor_set_write_resource writer(const pipeline_binding_set_layout_binding *binding) const {
-		return vk_descriptor_set_write_resource(*binding->binding,
-												binding->binding->bind_idx,
+	vk_descriptor_set_write_resource writer(const pipeline_binding_layout_interface *binding) const {
+		return vk_descriptor_set_write_resource(binding->vk_descriptor_type(),
+												binding->bind_idx(),
 												array_element,
 												writes);
 	}

@@ -4,10 +4,11 @@
 #pragma once
 
 #include <stdafx.hpp>
-#include <pipeline_binding_set_layout_binding.hpp>
+#include <pipeline_binding_layout.hpp>
 
 #include <string>
 #include <unordered_map>
+#include <initializer_list>
 
 namespace StE {
 namespace GL {
@@ -17,13 +18,14 @@ namespace GL {
 */
 class pipeline_binding_layout_collection {
 public:
-	using bind_map_t = std::unordered_map<std::string, pipeline_binding_set_layout_binding>;
+	using bind_map_t = std::unordered_map<std::string, pipeline_binding_layout>;
 
 private:
 	bind_map_t set;
 
 public:
 	pipeline_binding_layout_collection() = default;
+	pipeline_binding_layout_collection(const std::initializer_list<bind_map_t::value_type> &il) : set(il) {}
 
 	auto& operator[](const std::string &name) { return set[name]; }
 	template <typename... Ts>
@@ -31,12 +33,15 @@ public:
 		return set.try_emplace(std::forward<Ts>(ts)...);
 	}
 	void erase(const std::string &name) { set.erase(name); }
+	void erase(bind_map_t::iterator it) { set.erase(it); }
 
 	auto find(const std::string &name) const { return set.find(name); }
 
 	auto& get() const { return set; }
 	auto begin() const { return set.begin(); }
 	auto end() const { return set.end(); }
+	auto begin() { return set.begin(); }
+	auto end() { return set.end(); }
 
 private:
 	friend bool operator<=(const pipeline_binding_layout_collection &lhs, const pipeline_binding_layout_collection &rhs);

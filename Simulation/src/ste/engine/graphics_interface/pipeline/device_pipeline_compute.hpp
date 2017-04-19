@@ -49,10 +49,11 @@ public:
 	device_pipeline_compute(ctor,
 							const ste_context &ctx,
 							pipeline_binding_set_pool &pool,
-							pipeline_layout &&layout)
+							optional<std::reference_wrapper<const pipeline_external_binding_set_collection>> external_binding_sets)
 		: Base(ctx,
 			   pool,
-			   std::move(layout)),
+			   std::move(layout),
+			   external_binding_sets),
 		compute_pipeline(create_pipeline_object())
 	{}
 	~device_pipeline_compute() noexcept {}

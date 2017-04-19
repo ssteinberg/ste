@@ -16,27 +16,27 @@ namespace GL {
 namespace _detail {
 template<typename T> 
 struct _type_elements_count_impl {
-	static constexpr std::size_t rows = 0; 
-	static constexpr std::size_t elements = std::is_arithmetic<T>::value ? 1 : 0;
+	static constexpr std::size_t rows = std::is_arithmetic_v<T> ? 1 : 0;
+	static constexpr std::size_t elements = std::is_arithmetic_v<T> ? 1 : 0;
 };
 template<>				struct _type_elements_count_impl<half_float::half> {
-	static constexpr std::size_t rows = 0; 
+	static constexpr std::size_t rows = 1; 
 	static constexpr std::size_t elements = 1;
 };
 template<typename vecT> struct _type_elements_count_impl<glm::tvec1<vecT>> {
-	static constexpr std::size_t rows = 0; 
+	static constexpr std::size_t rows = 1; 
 	static constexpr std::size_t elements = 1;
 };
 template<typename vecT> struct _type_elements_count_impl<glm::tvec2<vecT>> {
-	static constexpr std::size_t rows = 0; 
+	static constexpr std::size_t rows = 2; 
 	static constexpr std::size_t elements = 2;
 };
 template<typename vecT> struct _type_elements_count_impl<glm::tvec3<vecT>> {
-	static constexpr std::size_t rows = 0; 
+	static constexpr std::size_t rows = 3; 
 	static constexpr std::size_t elements = 3;
 };
 template<typename vecT> struct _type_elements_count_impl<glm::tvec4<vecT>> {
-	static constexpr std::size_t rows = 0; 
+	static constexpr std::size_t rows = 4; 
 	static constexpr std::size_t elements = 4;
 };
 template<typename matT> struct _type_elements_count_impl<glm::tmat2x2<matT>> {
@@ -84,8 +84,10 @@ template<typename matT> struct _type_elements_count_impl<glm::tmat4x4<matT>> {
 */
 template<typename T> struct type_elements_count {
 	using S = std::remove_cv_t<std::remove_reference_t<T>>;
-	static constexpr std::size_t elements = _detail::_type_elements_count_impl<S>::elements;
+	static constexpr std::size_t value = _detail::_type_elements_count_impl<S>::elements;
 };
+template<typename T>
+static constexpr auto type_elements_count_v = type_elements_count<T>::value;
 
 // Is scalar/vector/matrix
 namespace _detail {
@@ -101,8 +103,10 @@ template<typename vecT> struct _is_vector_impl<glm::tvec4<vecT>> : std::true_typ
 */
 template<typename T> struct is_scalar {
 	using S = std::remove_cv_t<std::remove_reference_t<T>>;
-	static constexpr bool value = type_elements_count<S>::elements == 1;
+	static constexpr bool value = type_elements_count<S>::value == 1;
 };
+template<typename T>
+static constexpr auto is_scalar_v = is_scalar<T>::value;
 /**
 *	@brief	Is an arithmetic vector type trait.
 *			References and CV qualifiers are ignored.
@@ -111,134 +115,54 @@ template<typename T> struct is_vector {
 	using S = std::remove_cv_t<std::remove_reference_t<T>>;
 	static constexpr bool value = _detail::_is_vector_impl<S>::value;
 };
+template<typename T>
+static constexpr auto is_vector_v = is_vector<T>::value;
 /**
 *	@brief	Is an arithmetic matrix type trait.
 *			References and CV qualifiers are ignored.
 */
 template<typename T> struct is_matrix {
 	using S = std::remove_cv_t<std::remove_reference_t<T>>;
-	static constexpr bool value = type_elements_count<S>::elements > 1 && !_detail::_is_vector_impl<S>::value;
+	static constexpr bool value = type_elements_count<S>::value > 1 && !_detail::_is_vector_impl<S>::value;
 };
+template<typename T>
+static constexpr auto is_matrix_v = is_matrix<T>::value;
+/**
+*	@brief	Is an arithmetic type trait.
+*			References and CV qualifiers are ignored.
+*/
+template<typename T> struct is_arithmetic {
+	using S = std::remove_cv_t<std::remove_reference_t<T>>;
+	static constexpr bool value = type_elements_count<S>::value > 0;
+};
+template<typename T>
+static constexpr auto is_arithmetic_v = is_arithmetic<T>::value;
 
 /**
-*	@brief	Number of matrix rows.
-*			0 for non matrix types.
+*	@brief	Number of vector/matrix rows.
+*			1 for non vector/matrix types.
 *			References and CV qualifiers are ignored.
 */
 template<typename T> struct matrix_rows_count {
 	using S = std::remove_cv_t<std::remove_reference_t<T>>;
-	static constexpr std::size_t value = is_matrix<S>::value ? _detail::_type_elements_count_impl<S>::rows : 0;
+	static constexpr std::size_t value = _detail::_type_elements_count_impl<S>::rows;
 };
+template<typename T>
+static constexpr auto matrix_rows_count_v = matrix_rows_count<T>::value;
 /**
 *	@brief	Number of matrix columns.
-*			0 for non matrix types.
+*			1 for non matrix types.
 *			References and CV qualifiers are ignored.
 */
 template<typename T> struct matrix_columns_count {
 	using S = std::remove_cv_t<std::remove_reference_t<T>>;
 	static constexpr std::size_t value = is_matrix<S>::value ? 
 		_detail::_type_elements_count_impl<S>::elements / _detail::_type_elements_count_impl<S>::rows :
-		0;
+		1;
 };
-
-
-// Scalar/vector signness
-namespace _detail {
 template<typename T>
-struct _type_is_signed { static constexpr bool value = std::numeric_limits<T>::is_signed; };
-template<> struct _type_is_signed<half_float::half> { static constexpr bool value = true; };
-template<> struct _type_is_signed<glm::i8vec2> { static constexpr bool value = true; };
-template<> struct _type_is_signed<glm::i16vec2> { static constexpr bool value = true; };
-template<> struct _type_is_signed<glm::i32vec2> { static constexpr bool value = true; };
-template<> struct _type_is_signed<glm::i64vec2> { static constexpr bool value = true; };
-template<> struct _type_is_signed<glm::u8vec2> { static constexpr bool value = false; };
-template<> struct _type_is_signed<glm::u16vec2> { static constexpr bool value = false; };
-template<> struct _type_is_signed<glm::u32vec2> { static constexpr bool value = false; };
-template<> struct _type_is_signed<glm::u64vec2> { static constexpr bool value = false; };
-template<> struct _type_is_signed<glm::tvec2<half_float::half>> { static constexpr bool value = true; };
-template<> struct _type_is_signed<glm::vec2> { static constexpr bool value = true; };
-template<> struct _type_is_signed<glm::f64vec2> { static constexpr bool value = true; };
-template<> struct _type_is_signed<glm::i8vec3> { static constexpr bool value = true; };
-template<> struct _type_is_signed<glm::i16vec3> { static constexpr bool value = true; };
-template<> struct _type_is_signed<glm::i32vec3> { static constexpr bool value = true; };
-template<> struct _type_is_signed<glm::i64vec3> { static constexpr bool value = true; };
-template<> struct _type_is_signed<glm::u8vec3> { static constexpr bool value = false; };
-template<> struct _type_is_signed<glm::u16vec3> { static constexpr bool value = false; };
-template<> struct _type_is_signed<glm::u32vec3> { static constexpr bool value = false; };
-template<> struct _type_is_signed<glm::u64vec3> { static constexpr bool value = false; };
-template<> struct _type_is_signed<glm::tvec3<half_float::half>> { static constexpr bool value = true; };
-template<> struct _type_is_signed<glm::vec3> { static constexpr bool value = true; };
-template<> struct _type_is_signed<glm::f64vec3> { static constexpr bool value = true; };
-template<> struct _type_is_signed<glm::i8vec4> { static constexpr bool value = true; };
-template<> struct _type_is_signed<glm::i16vec4> { static constexpr bool value = true; };
-template<> struct _type_is_signed<glm::i32vec4> { static constexpr bool value = true; };
-template<> struct _type_is_signed<glm::i64vec4> { static constexpr bool value = true; };
-template<> struct _type_is_signed<glm::u8vec4> { static constexpr bool value = false; };
-template<> struct _type_is_signed<glm::u16vec4> { static constexpr bool value = false; };
-template<> struct _type_is_signed<glm::u32vec4> { static constexpr bool value = false; };
-template<> struct _type_is_signed<glm::u64vec4> { static constexpr bool value = false; };
-template<> struct _type_is_signed<glm::tvec4<half_float::half>> { static constexpr bool value = true; };
-template<> struct _type_is_signed<glm::vec4> { static constexpr bool value = true; };
-template<> struct _type_is_signed<glm::f64vec4> { static constexpr bool value = true; };
-}
+static constexpr auto matrix_columns_count_v = matrix_columns_count<T>::value;
 
-/**
-*	@brief	Is signed type trait.
-*			References and CV qualifiers are ignored.
-*/
-template<typename T> struct is_signed {
-	using TypeT = std::remove_cv_t<std::remove_reference_t<T>>;
-	static constexpr auto value = _detail::_type_is_signed<TypeT>::value;
-};
-
-// Scalar/vector is floating point
-namespace _detail {
-template<typename T>
-struct _type_is_floating_point { static constexpr bool value = std::numeric_limits<T>::is_iec559; };
-template<> struct _type_is_floating_point<half_float::half> { static constexpr bool value = true; };
-template<> struct _type_is_floating_point<glm::i8vec2> { static constexpr bool value = false; };
-template<> struct _type_is_floating_point<glm::i16vec2> { static constexpr bool value = false; };
-template<> struct _type_is_floating_point<glm::i32vec2> { static constexpr bool value = false; };
-template<> struct _type_is_floating_point<glm::i64vec2> { static constexpr bool value = false; };
-template<> struct _type_is_floating_point<glm::u8vec2> { static constexpr bool value = false; };
-template<> struct _type_is_floating_point<glm::u16vec2> { static constexpr bool value = false; };
-template<> struct _type_is_floating_point<glm::u32vec2> { static constexpr bool value = false; };
-template<> struct _type_is_floating_point<glm::u64vec2> { static constexpr bool value = false; };
-template<> struct _type_is_floating_point<glm::tvec2<half_float::half>> { static constexpr bool value = true; };
-template<> struct _type_is_floating_point<glm::vec2> { static constexpr bool value = true; };
-template<> struct _type_is_floating_point<glm::f64vec2> { static constexpr bool value = true; };
-template<> struct _type_is_floating_point<glm::i8vec3> { static constexpr bool value = false; };
-template<> struct _type_is_floating_point<glm::i16vec3> { static constexpr bool value = false; };
-template<> struct _type_is_floating_point<glm::i32vec3> { static constexpr bool value = false; };
-template<> struct _type_is_floating_point<glm::i64vec3> { static constexpr bool value = false; };
-template<> struct _type_is_floating_point<glm::u8vec3> { static constexpr bool value = false; };
-template<> struct _type_is_floating_point<glm::u16vec3> { static constexpr bool value = false; };
-template<> struct _type_is_floating_point<glm::u32vec3> { static constexpr bool value = false; };
-template<> struct _type_is_floating_point<glm::u64vec3> { static constexpr bool value = false; };
-template<> struct _type_is_floating_point<glm::tvec3<half_float::half>> { static constexpr bool value = true; };
-template<> struct _type_is_floating_point<glm::vec3> { static constexpr bool value = true; };
-template<> struct _type_is_floating_point<glm::f64vec3> { static constexpr bool value = true; };
-template<> struct _type_is_floating_point<glm::i8vec4> { static constexpr bool value = false; };
-template<> struct _type_is_floating_point<glm::i16vec4> { static constexpr bool value = false; };
-template<> struct _type_is_floating_point<glm::i32vec4> { static constexpr bool value = false; };
-template<> struct _type_is_floating_point<glm::i64vec4> { static constexpr bool value = false; };
-template<> struct _type_is_floating_point<glm::u8vec4> { static constexpr bool value = false; };
-template<> struct _type_is_floating_point<glm::u16vec4> { static constexpr bool value = false; };
-template<> struct _type_is_floating_point<glm::u32vec4> { static constexpr bool value = false; };
-template<> struct _type_is_floating_point<glm::u64vec4> { static constexpr bool value = false; };
-template<> struct _type_is_floating_point<glm::tvec4<half_float::half>> { static constexpr bool value = true; };
-template<> struct _type_is_floating_point<glm::vec4> { static constexpr bool value = true; };
-template<> struct _type_is_floating_point<glm::f64vec4> { static constexpr bool value = true; };
-}
-
-/**
-*	@brief	Is a floating-point type trait.
-*			References and CV qualifiers are ignored.
-*/
-template<typename T> struct is_floating_point {
-	using TypeT = std::remove_cv_t<std::remove_reference_t<T>>;
-	static constexpr auto value = _detail::_type_is_floating_point<TypeT>::value;
-};
 
 // Vector/matrix underlying type
 namespace _detail {
@@ -266,6 +190,31 @@ template<typename T> struct remove_extents {
 	using _TypeT = std::remove_cv_t<std::remove_reference_t<T>>;
 	using type = typename _detail::_type_remove_extents<_TypeT>::type;
 };
+template<typename T>
+using remove_extents_t = typename remove_extents<T>::type;
+
+
+/**
+*	@brief	Is signed type trait.
+*			References and CV qualifiers are ignored.
+*/
+template<typename T> struct is_signed {
+	using UnderlyingT = remove_extents_t<T>;
+	static constexpr auto value = std::numeric_limits<UnderlyingT>::is_signed;
+};
+template<typename T>
+static constexpr auto is_signed_v = is_signed<T>::value;
+
+/**
+*	@brief	Is a floating-point type trait.
+*			References and CV qualifiers are ignored.
+*/
+template<typename T> struct is_floating_point {
+	using UnderlyingT = remove_extents_t<T>;
+	static constexpr auto value = std::numeric_limits<UnderlyingT>::is_iec559;
+};
+template<typename T>
+static constexpr auto is_floating_point_v = is_floating_point<T>::value;
 
 
 }

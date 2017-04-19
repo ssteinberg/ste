@@ -36,7 +36,11 @@ private:
 
 	private:
 		void operator()(const command_buffer &buffer, command_recorder &recorder) const override final {
-			// Bind binding sets
+			// Bind external binding sets
+			if (pipeline->external_binding_sets != nullptr)
+				recorder << pipeline->external_binding_sets->cmd_bind(pipeline->pipeline_bind_point(),
+																	  &pipeline->layout.get());
+			// Bind pipeline's binding sets
 			recorder << pipeline->binding_sets.cmd_bind(pipeline->pipeline_bind_point());
 		
 			// Bind pipeline
@@ -68,6 +72,9 @@ protected:
 
 	pipeline_binding_set_collection binding_sets;
 
+	// External binding sets
+	const pipeline_external_binding_set_collection *external_binding_sets;
+
 private:
 	void update() {
 		// Update sets, as needed
@@ -93,11 +100,13 @@ protected:
 
 	device_pipeline(const ste_context &ctx,
 					pipeline_binding_set_pool &pool,
-					pipeline_layout &&layout)
+					pipeline_layout &&layout,
+					optional<std::reference_wrapper<const pipeline_external_binding_set_collection>> external_binding_sets)
 		: ctx(ctx),
 		layout(std::move(layout)),
 		binding_sets(this->layout, 
-					 pool)
+					 pool),
+		external_binding_sets(external_binding_sets ? &external_binding_sets.get().get() : nullptr)
 	{}
 
 public:
@@ -110,7 +119,7 @@ public:
 	 *	@brief	Creates a resource binder for a given variable name
 	 */
 	auto operator[](const std::string &resource_name) {
-		const pipeline_binding_set_layout_binding *bind = nullptr;
+		const pipeline_binding_layout *bind = nullptr;
 		
 		auto var_it = layout.variables_map.find(resource_name);
 		if (var_it != layout.variables_map.end()) {

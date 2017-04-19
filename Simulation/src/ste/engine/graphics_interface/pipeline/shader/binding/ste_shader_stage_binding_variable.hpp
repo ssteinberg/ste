@@ -8,6 +8,9 @@
 #include <ste_shader_variable_layout_verification_exceptions.hpp>
 
 #include <block_layout.hpp>
+#include <sampler.hpp>
+#include <image_view.hpp>
+#include <texture.hpp>
 
 #include <optional.hpp>
 #include <string>
@@ -253,17 +256,17 @@ public:
 		using Type = _internal::ste_shader_stage_binding_variable_remove_blocks_t<T>;
 
 		if (var_type == ste_shader_stage_variable_type::sampler_t &&
-			std::is_convertible_v<Type, sampler>)
-			return;
+			!std::is_convertible_v<Type, sampler>)
+			throw ste_shader_variable_layout_verification_opaque_or_unknown_type("Expected a sampler type");
+
 		if ((var_type == ste_shader_stage_variable_type::image_t ||
 			 var_type == ste_shader_stage_variable_type::storage_image_t) &&
-			std::is_convertible_v<Type, image_view_generic>)
-			return;
+			!std::is_convertible_v<Type, image_view_generic>)
+			throw ste_shader_variable_layout_verification_opaque_or_unknown_type("Expected an image_view_generic type");
+
 		if (var_type == ste_shader_stage_variable_type::texture_t &&
-			std::is_convertible_v<Type, texture_generic>)
-			return;
-		
-		throw ste_shader_variable_layout_verification_opaque_or_unknown_type("Opaque variable type");
+			!std::is_convertible_v<Type, texture_generic>)
+			throw ste_shader_variable_layout_verification_opaque_or_unknown_type("Expected a texture_generic type");
 	}
 };
 
@@ -322,13 +325,14 @@ public:
 		static constexpr bool type_is_float =  ::StE::GL::is_floating_point<Type>::value;
 		static constexpr bool type_is_scalar = ::StE::GL::is_scalar<Type>::value;
 		
-		if (sizeof(T) == this->size_bytes() &&
-			type_is_scalar &&
-			type_is_float == this->is_floating_point() &&
-			type_is_signed == this->is_signed())
-			return;
-
-		throw ste_shader_variable_layout_verification_type_mismatch("Scalar type mismatch");
+		if (sizeof(Type) != this->size_bytes())
+			throw ste_shader_variable_layout_verification_type_mismatch("Size mismatch");
+		if (!type_is_scalar)
+			throw ste_shader_variable_layout_verification_type_mismatch("Expected a scalar type");
+		if (type_is_float != this->is_floating_point())
+			throw ste_shader_variable_layout_verification_type_mismatch("Scalar type mismatch");
+		if (type_is_signed != this->is_signed())
+			throw ste_shader_variable_layout_verification_type_mismatch("Scalar signess mismatch");
 	}
 };
 
@@ -403,12 +407,11 @@ public:
 
 		scalar_var->validate<typename remove_extents<Type>::type>();
 
-		if (is_matrix<Type>::value &&
-			matrix_columns_count<Type>::value == columns() &&
-			sizeof(T) == size_bytes())
-			return;
-
-		throw ste_shader_variable_layout_verification_type_mismatch("Matrix type mismatch");
+		if (!is_matrix_v<Type> && !is_vector_v<Type>)
+			throw ste_shader_variable_layout_verification_type_mismatch("Expected a vector or matrix type");
+		if (matrix_columns_count_v<Type> != columns() ||
+			matrix_rows_count_v<Type> != rows())
+			throw ste_shader_variable_layout_verification_type_mismatch("Type rows or columns count mismatch");
 	}
 
 	/**

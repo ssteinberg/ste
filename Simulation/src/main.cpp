@@ -143,6 +143,7 @@ int main()
 		GL::device_pipeline_shader_stage contour_geom_shader_stage(ctx, std::string("text_distance_map_contour.geom"));
 		GL::device_pipeline_shader_stage contour_frag_shader_stage(ctx, std::string("text_distance_map_contour.frag"));
 
+		GL::array<GL::std140_layout<glm::vec2>> fb_size_uniform(ctx, 1, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
 		GL::array<GL::std430_layout<int, int, int, int, int>> buffer(ctx, 10, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
 		GL::sampler sampler(ctx, GL::vk_sampler_filtering(VK_FILTER_LINEAR, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR));
 
@@ -151,12 +152,33 @@ int main()
 		auditor.attach_shader_stage(contour_geom_shader_stage);
 		auditor.attach_shader_stage(contour_frag_shader_stage);
 
-		auto pipeline = auditor.pipeline(ctx, pool);
+		std::vector<GL::pipeline_external_binding_set_layout> external_layouts;
+		{
+			GL::pipeline_external_binding_descriptor<
+				GL::std140_layout<glm::vec2>,
+				1,
+				0
+			> external_binding_descriptor;
+			std::vector<GL::pipeline_external_binding_layout> external_bindings;
+			external_bindings.emplace_back("fb_size_uniform",
+										   GL::pipeline_binding_stages_collection{ GL::ste_shader_stage::geometry_program },
+										   external_binding_descriptor);
+			external_layouts.emplace_back(ctx, std::move(external_bindings));
+		}
+
+		GL::pipeline_external_binding_set_collection external_sets(std::move(external_layouts),
+																   pool);
+		external_sets["fb_size_uniform"] = GL::bind(fb_size_uniform);
+
+		auto pipeline = auditor.pipeline(ctx, 
+										 pool,
+										 std::ref(external_sets));
 
 		auto v = &(*pipeline)["glyph_textures"].get_var();
 		auto va = dynamic_cast<const GL::ste_shader_stage_binding_variable_array*>(v);
 		auto array_length = va->size();
 
+		external_sets.update();
 		(*pipeline)["glyph_data"] = GL::bind(buffer);
 		(*pipeline)["glyph_sampler"] = GL::bind(sampler);
 		(*pipeline)["glyph_texture_count"] = 45;
@@ -363,7 +385,7 @@ int main()
 																	  GL::buffer_memory_barrier(vertex_buffer->get(),
 																								  VK_ACCESS_TRANSFER_WRITE_BIT,
 																								  VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT) }))
-					<< GL::cmd_bind_descriptor_sets_graphics(pipeline_layout, 0, { descriptor_set })
+					<< GL::cmd_bind_descriptor_sets_graphics(pipeline_layout, 0, { &descriptor_set })
 					<< GL::cmd_begin_render_pass(presentation_framebuffers[batch->presentation_image_index()],
 												 presentation_renderpass,
 												 { 0,0 },

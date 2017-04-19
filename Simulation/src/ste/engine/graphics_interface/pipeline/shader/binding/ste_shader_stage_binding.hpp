@@ -5,9 +5,9 @@
 
 #include <stdafx.hpp>
 #include <ste_shader_stage_binding_variable.hpp>
+#include <ste_shader_stage_binding_type.hpp>
 #include <ste_shader_variable_layout_verification_exceptions.hpp>
 #include <vk_descriptor_set_layout_binding.hpp>
-#include <ste_shader_exceptions.hpp>
 #include <pipeline_layout_set_index.hpp>
 
 #include <memory>
@@ -17,20 +17,6 @@
 
 namespace StE {
 namespace GL {
-
-enum class ste_shader_stage_binding_type : std::uint16_t {
-	unknown,
-	uniform,
-	storage,
-	push_constant,
-	spec_constant,
-};
-
-enum class ste_shader_stage_block_layout : std::uint16_t {
-	none,
-	std140,
-	std430,
-};
 
 struct ste_shader_stage_binding {
 private:
@@ -57,7 +43,10 @@ private:
 		auto struct_ptr = dynamic_cast<const ste_shader_stage_binding_variable_struct*>(var);
 		if (struct_ptr &&
 			struct_ptr->count() == 1) {
-			var = (*struct_ptr)[0].get();
+			auto struct_var = (*struct_ptr)[0].get();
+			auto array_ptr = dynamic_cast<const ste_shader_stage_binding_variable_array*>(struct_var);
+			if (array_ptr)
+				var = array_ptr;
 		}
 
 		validate_layout_impl<BlockType>(var);
@@ -122,33 +111,10 @@ public:
 	*	@throws	ste_shader_binding_specialization_or_push_constant_exception	If variable isn't binding_type isn't storage or uniform
 	*/
 	operator VkDescriptorType() const {
-		if (binding_type == ste_shader_stage_binding_type::uniform) {
-			switch (variable->type()) {
-			case ste_shader_stage_variable_type::struct_t:
-				return VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-			case ste_shader_stage_variable_type::image_t:
-				return VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
-			case ste_shader_stage_variable_type::storage_image_t:
-				return VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
-			case ste_shader_stage_variable_type::texture_t:
-				return VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-			case ste_shader_stage_variable_type::sampler_t:
-				return VK_DESCRIPTOR_TYPE_SAMPLER;
-			default:
-				throw ste_shader_binding_incompatible_type("Expected an opaque type");
-			}
-		}
-		
-		if (binding_type == ste_shader_stage_binding_type::storage &&
-			variable->type() == ste_shader_stage_variable_type::struct_t) {
-			return VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-		}
-
-		assert(binding_type != ste_shader_stage_binding_type::storage && "Storage but not struct?!");
-		throw ste_shader_binding_specialization_or_push_constant_exception("Variable is a specialization constant or push constant");
+		return vk_descriptor_for_binding(binding_type,
+										 variable->type());
 	}
 };
-
 
 }
 }

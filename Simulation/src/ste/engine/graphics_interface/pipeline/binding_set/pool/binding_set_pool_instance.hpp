@@ -7,9 +7,9 @@
 #include <ste_context.hpp>
 #include <vk_descriptor_pool.hpp>
 
-#include <pipeline_binding_set.hpp>
-#include <pipeline_binding_set_layout.hpp>
-#include <pipeline_binding_set_layout_binding.hpp>
+#include <pipeline_binding_layout_interface.hpp>
+#include <pipeline_binding_set_impl.hpp>
+#include <pipeline_binding_layout.hpp>
 
 #include <vector>
 #include <ultimate.hpp>
@@ -23,7 +23,8 @@ class binding_set_pool_instance {
 	struct ctor {};
 
 public:
-	using allocation_result_t = std::vector<pipeline_binding_set>;
+	template <typename Layout>
+	using allocation_result_t = std::vector<_internal::pipeline_binding_set_impl<Layout>>;
 	using release_func_t = std::function<void(void)>;
 
 private:
@@ -38,7 +39,7 @@ private:
 	/**
 	 *	@brief	Creates the Vulkan binding descriptors
 	 */
-	auto create_vk_bindings(const std::vector<const pipeline_binding_set_layout_binding*> &pool_bindings) {
+	auto create_vk_bindings(const std::vector<const pipeline_binding_layout_interface*> &pool_bindings) {
 		std::vector<vk_descriptor_set_layout_binding> vk_bindings;
 		vk_bindings.reserve(pool_bindings.size());
 		for (auto &b : pool_bindings) {
@@ -60,7 +61,7 @@ public:
 	binding_set_pool_instance(ctor,
 							  const ste_context &ctx,
 							  std::uint32_t max_sets,
-							  const std::vector<const pipeline_binding_set_layout_binding*> &pool_bindings)
+							  const std::vector<const pipeline_binding_layout_interface*> &pool_bindings)
 		: ctx(ctx),
 		pool(ctx.device(),
 			 max_sets,
@@ -77,7 +78,8 @@ public:
 	 *	
 	 *	@throws	vk_exception	On Vulkan exception
 	 */
-	allocation_result_t allocate(const std::vector<const pipeline_binding_set_layout*> &layouts) {
+	template <typename Layout>
+	auto allocate(const std::vector<const Layout*> &layouts) {
 		std::vector<const vk_descriptor_set_layout*> layouts_of_acquired_bindings_ptrs;
 		layouts_of_acquired_bindings_ptrs.reserve(layouts.size());
 		for (std::size_t i = 0; i < layouts.size(); ++i) {
@@ -91,7 +93,7 @@ public:
 		// Sets allocated successfully
 		allocated_sets += static_cast<std::uint32_t>(layouts.size());
 
-		allocation_result_t ret;
+		allocation_result_t<Layout> ret;
 		ret.reserve(sets.size());
 		for (std::size_t i = 0; i < sets.size(); ++i) {
 			auto layout = layouts[i];
@@ -99,9 +101,9 @@ public:
 				this->release_one();
 			});
 
-			ret.push_back(pipeline_binding_set(std::move(sets[i]),
-											   *layout,
-											   std::move(last_act)));
+			ret.push_back(_internal::pipeline_binding_set_impl<Layout>(std::move(sets[i]),
+																	   *layout,
+																	   std::move(last_act)));
 		}
 
 		return ret;

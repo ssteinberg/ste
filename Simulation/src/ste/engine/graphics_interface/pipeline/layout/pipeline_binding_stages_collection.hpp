@@ -6,6 +6,8 @@
 #include <stdafx.hpp>
 #include <ste_shader_stage.hpp>
 
+#include <initializer_list>
+
 #include <boost/container/flat_set.hpp>
 
 namespace StE {
@@ -20,6 +22,7 @@ private:
 
 public:
 	pipeline_binding_stages_collection() = default;
+	pipeline_binding_stages_collection(const std::initializer_list<ste_shader_stage> &il) : set(il) {}
 
 	void insert(const ste_shader_stage &s) {
 		set.insert(s);

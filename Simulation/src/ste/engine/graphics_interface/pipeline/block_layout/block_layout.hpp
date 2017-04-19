@@ -66,7 +66,7 @@ auto block_offset_of() {
 	// Use this opportunity to assert the generated block layout size
 	static_assert(sizeof(Block) == Block::sizeof_block_element);
 
-	return offsetof(Block, front.block) + _detail::block_layout_member_offset<N>().template operator()<decltype(Block::front.block)>();
+	return offsetof(Block, front.block) + _detail::block_layout_member_offset<N>::template offset<decltype(Block::front.block)>();
 }
 
 }

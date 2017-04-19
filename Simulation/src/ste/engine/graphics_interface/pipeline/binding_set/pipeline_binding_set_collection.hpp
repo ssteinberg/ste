@@ -10,62 +10,20 @@
 #include <pipeline_layout_set_index.hpp>
 
 #include <pipeline_binding_set.hpp>
+#include <pipeline_binding_set_collection_cmd_bind.hpp>
 
 #include <boost/container/flat_map.hpp>
 #include <memory>
-
-#include <cmd_bind_descriptor_sets.hpp>
 
 namespace StE {
 namespace GL {
 
 class pipeline_binding_set_collection {
 private:
-	// Bind command
-	class pipeline_binding_set_collection_cmd_bind : public command {
-		const pipeline_binding_set_collection *collection;
-		VkPipelineBindPoint bind_point;
-
-	public:
-		pipeline_binding_set_collection_cmd_bind(const pipeline_binding_set_collection *collection,
-												 VkPipelineBindPoint bind_point)
-			: collection(collection),
-			bind_point(bind_point)
-		{}
-		virtual ~pipeline_binding_set_collection_cmd_bind() noexcept {}
-
-	private:
-		void operator()(const command_buffer &buffer, command_recorder &recorder) const override final {
-			auto &sets = collection->sets;
-			assert(sets.size());
-
-			std::uint32_t first_set_idx = sets.begin()->first;
-
-			// Bind ranges of consecutive sets
-			for (auto it = sets.begin(); it != sets.end();) {
-				std::vector<const vk_descriptor_set*> bind_sets;
-				bind_sets.reserve(sets.size());
-
-				// Create a range
-				auto set_idx = it->first;
-				bind_sets.push_back(&it->second->get());
-				++it;
-				for (; it != sets.end() && it->first == set_idx + 1; ++it, ++set_idx)
-					bind_sets.push_back(&it->second->get());
-
-				// And bind
-				recorder << cmd_bind_descriptor_sets(bind_point,
-													 collection->layout.get(),
-													 first_set_idx,
-													 bind_sets);
-			}
-		}
-	};
-
-
-private:
+	using layout_t = pipeline_binding_set_layout;
 	using collection_t = boost::container::flat_map<pipeline_layout_set_index, pipeline_binding_set>;
 	using pipeline_layout_set_modified_connection_t = pipeline_layout::set_layout_modified_signal_t::connection_type;
+	using cmd_bind_t = pipeline_binding_set_collection_cmd_bind<pipeline_binding_set_collection>;
 
 private:
 	collection_t sets;
@@ -76,7 +34,7 @@ private:
 
 private:
 	void recreate_sets(const std::vector<pipeline_layout_set_index> &set_indices) {
-		std::vector<const pipeline_binding_set_layout*> layouts;
+		std::vector<const layout_t*> layouts;
 		auto &pipeline_layout_map = layout.get().set_layouts();
 		for (auto &set_idx : set_indices) {
 			// Define layout for new set
@@ -92,8 +50,8 @@ private:
 		}
 
 		// Allocate the new sets
-		std::vector<pipeline_binding_set> new_sets = pool.get().allocate_binding_sets(layouts);
-		for (std::size_t i=0; i<new_sets.size(); ++i) {
+		std::vector<pipeline_binding_set> new_sets = pool.get().allocate_binding_sets<layout_t>(layouts);
+		for (std::size_t i = 0; i<new_sets.size(); ++i) {
 			auto &set_idx = set_indices[i];
 			auto &new_set = new_sets[i];
 
@@ -123,9 +81,9 @@ public:
 		const auto& binding_sets_layouts_map = layout.set_layouts();
 
 		std::vector<pipeline_layout_set_index> indices;
-		std::vector<const pipeline_binding_set_layout*> layouts;
+		std::vector<const layout_t*> layouts;
 		indices.reserve(binding_sets_layouts_map.size());
-		indices.reserve(layouts.size());
+		layouts.reserve(binding_sets_layouts_map.size());
 
 		for (auto &s : binding_sets_layouts_map) {
 			indices.push_back(s.first);
@@ -133,7 +91,7 @@ public:
 		}
 
 		// Allocate
-		auto allocated_sets = pool.allocate_binding_sets(layouts);
+		auto allocated_sets = pool.allocate_binding_sets<layout_t>(layouts);
 
 		// Sort
 		for (std::size_t i = 0; i<allocated_sets.size(); ++i) {
@@ -142,7 +100,7 @@ public:
 		}
 
 		// Connect to 'set modified' signal
-		set_modified_connection = 
+		set_modified_connection =
 			std::make_shared<pipeline_layout_set_modified_connection_t>([this](const std::vector<pipeline_layout_set_index> &set_indices) {
 			this->recreate_sets(set_indices);
 		});
@@ -176,6 +134,11 @@ public:
 		}
 	}
 
+	pipeline_binding_set_collection(pipeline_binding_set_collection&&) = default;
+	pipeline_binding_set_collection &operator=(pipeline_binding_set_collection&&) = default;
+
+	auto &get_sets() const { return sets; }
+
 	/**
 	*	@brief	Updates the binding set with resource bindings
 	*/
@@ -198,15 +161,13 @@ public:
 	}
 
 	/**
-	 *	@brief	Binds the binding set collection
-	 */
+	*	@brief	Binds the binding set collection
+	*/
 	auto cmd_bind(VkPipelineBindPoint bind_point) const {
-		return pipeline_binding_set_collection_cmd_bind(this,
-														bind_point);
+		return cmd_bind_t(this,
+						  bind_point,
+						  &layout.get().get());
 	}
-
-	pipeline_binding_set_collection(pipeline_binding_set_collection&&) = default;
-	pipeline_binding_set_collection &operator=(pipeline_binding_set_collection&&) = default;
 };
 
 }

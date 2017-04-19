@@ -11,6 +11,7 @@
 #include <device_pipeline_shader_stage.hpp>
 
 #include <ste_shader_stage_binding_variable.hpp>
+#include <pipeline_external_binding_set_collection.hpp>
 #include <pipeline_binding_layout_collection.hpp>
 
 #include <pipeline_layout_set_index.hpp>
@@ -43,14 +44,14 @@ private:
 	using stages_map_t = boost::container::flat_map<ste_shader_stage, shader_stage_t>;
 
 	using variable_map_t = pipeline_binding_layout_collection;
-	using variable_ref_map_t = boost::container::flat_map<std::string, pipeline_binding_set_layout_binding*>;
+	using variable_ref_map_t = boost::container::flat_map<std::string, pipeline_binding_layout*>;
 
 	using spec_map_t = std::unordered_map<ste_shader_stage, vk_shader::spec_map>;
 
 	using binding_sets_layout_map_t = boost::container::flat_map<pipeline_layout_set_index, pipeline_binding_set_layout>;
 
 	using spec_to_dependant_array_variables_map_t = 
-		boost::container::flat_map<const ste_shader_stage_binding_variable*, std::vector<const pipeline_binding_set_layout_binding*>>;
+		boost::container::flat_map<const ste_shader_stage_binding_variable*, std::vector<const pipeline_binding_layout*>>;
 
 private:
 	const ste_context &ctx;
@@ -68,6 +69,9 @@ private:
 	binding_sets_layout_map_t bindings_set_layouts;
 	std::unique_ptr<vk_pipeline_layout> layout;
 
+	// External binding sets
+	const pipeline_external_binding_set_collection *external_binding_sets{ nullptr };
+
 	// Layout can be modified (by respecializing constants, which define array length of binding variables).
 	// In which case the affected sets need to be recreated.
 	boost::container::flat_set<pipeline_layout_set_index> set_layouts_modified_queue;
@@ -80,11 +84,12 @@ private:
 	bool layout_invalidated_flag{ false };
 
 private:
-	auto& update_variable(const std::string &name,
-						  const pipeline_binding_set_layout_binding &binding,
-						  ste_shader_stage stage) {
+	static void update_variable(variable_map_t &map,
+								const std::string &name,
+								const pipeline_binding_layout &binding,
+								ste_shader_stage stage) {
 		// Try add new name
-		auto ret = variables_map.try_emplace(name, binding);
+		auto ret = map.try_emplace(name, binding);
 		auto &b = ret.first->second;
 		if (!ret.second) {
 			// If name exists, verify it is the same variable
@@ -95,8 +100,63 @@ private:
 
 		// Append stage to variable stage list
 		b.stages.insert(stage);
+	}
 
-		return b;
+	void erase_variables_provided_by_external_binding_sets(variable_map_t &map) {
+		auto &external_sets = external_binding_sets->get_sets();
+
+		for (auto it = map.begin(); it != map.end();) {
+			auto& b = it->second;
+			auto set_idx = b.set_idx();
+			auto bind_idx = b.bind_idx();
+
+			// If variable exists in external_binding_sets, validate compatibility and ignore the binding,
+			// it is handled externally
+			auto external_it = external_sets.find(set_idx);
+			if (external_it != external_sets.end()) {
+				const pipeline_external_binding_set_layout &external_set_layout = external_it->second.get_layout();
+
+				// Find the binding and verify compatibility
+				for (auto &external_binding : external_set_layout) {
+					if (external_binding.bind_idx() == bind_idx) {
+						external_binding.validate_layout(b.binding);
+						break;
+					}
+				}
+
+				// Set is handled externally
+				auto next_it = it;
+				++next_it;
+				map.erase(it);
+				it = next_it;
+			}
+			else {
+				++it;
+			}
+		}
+	}
+
+	void populate_variables(variable_map_t &&map) {
+		variables_map = std::move(map);
+
+		for (auto &b : variables_map) {
+			auto &name = b.second.name();
+			auto &val = b.second;
+
+			// Also individually map push and specialization constants
+			if (b.second.binding->binding_type == ste_shader_stage_binding_type::spec_constant) {
+				spec_variables_map[name] = &val;
+			}
+			else if (b.second.binding->binding_type == ste_shader_stage_binding_type::push_constant) {
+				push_variables_map[name] = &val;
+			}
+
+			// Map array variables whose length depends on specialization constants
+			auto var_arr = dynamic_cast<const ste_shader_stage_binding_variable_array*>(b.second.binding->variable.get());
+			if (var_arr && var_arr->length_spec_constant()) {
+				spec_to_dependant_array_variables_map[var_arr->get_length_spec_constant_var()].push_back(&val);
+			}
+		}
 	}
 
 	void create_set_layouts() {
@@ -185,36 +245,50 @@ private:
 	}
 
 public:
+	/**
+	 *	@brief	Pipeline layout descriptor
+	 *	
+	 *	@param	ctx						Context
+	 *	@param	pipeline_shader_stages	Shader stages that define the layout
+	 *	@param	external_binding_sets	External binding sets used in this layout
+	 *	
+	 *	@throws	ste_shader_variable_layout_verification_exception		On different validation failures of a shader stage binding with 
+	 *																external_binding_sets
+	 */
 	pipeline_layout(const ste_context &ctx,
-					const shader_stages_list_t &pipeline_shader_stages): ctx(ctx) {
-		for (auto &s : pipeline_shader_stages) {
-			auto stage = s->get_stage();
-			auto& bindings = s->get_stage_bindings();
-			for (auto &b : bindings) {
-				auto new_bind = pipeline_binding_set_layout_binding{ &b };
-				auto& name = b.variable->name();
+					const shader_stages_list_t &pipeline_shader_stages,
+					optional<std::reference_wrapper<const pipeline_external_binding_set_collection>> external_binding_sets)
+		: ctx(ctx) 
+	{
+		{
+			// Sort the variables from all the shader stages
+			variable_map_t all_variables;
+			for (auto &s : pipeline_shader_stages) {
+				auto stage = s->get_stage();
+				auto& bindings = s->get_stage_bindings();
+				for (auto &b : bindings) {
+					auto& name = b.variable->name();
+					pipeline_binding_layout new_bind;
+					new_bind.binding = &b;
 
-				// Add new variable, or update exciting ones with new stage
-				pipeline_binding_set_layout_binding &inserted = update_variable(name,
-																				new_bind,
-																				stage);
-
-				// Also individually map push and specialization constants
-				if (b.binding_type == ste_shader_stage_binding_type::spec_constant) {
-					spec_variables_map[name] = &inserted;
-				}
-				else if (b.binding_type == ste_shader_stage_binding_type::push_constant) {
-					push_variables_map[name] = &inserted;
+					// Add new variable, or update exciting ones with new stage
+					update_variable(all_variables,
+									name,
+									new_bind,
+									stage);
 				}
 
-				// Map array variables whose length depends on specialization constants
-				auto var_arr = dynamic_cast<const ste_shader_stage_binding_variable_array*>(b.variable.get());
-				if (var_arr && var_arr->length_spec_constant()) {
-					spec_to_dependant_array_variables_map[var_arr->get_length_spec_constant_var()].push_back(&inserted);
-				}
+				// Store all stages
+				stages[stage] = s;
 			}
 
-			stages[stage] = s;
+			// Verify and erase variables that are handled externally and won't participate in this layout
+			if (external_binding_sets) {
+				this->external_binding_sets = &external_binding_sets.get().get();
+				erase_variables_provided_by_external_binding_sets(all_variables);
+			}
+			// Then populate the variables
+			populate_variables(std::move(all_variables));
 		}
 
 		// Generate the descriptor set layout for each set and the pipeline layout
@@ -262,6 +336,13 @@ public:
 		std::vector<const vk_descriptor_set_layout*> set_layout_ptrs;
 		for (auto &s : bindings_set_layouts) {
 			set_layout_ptrs.push_back(&s.second.get());
+		}
+
+		if (external_binding_sets != nullptr) {
+			// Add external set layouts to pipeline layout
+			for (auto &es : external_binding_sets->get_layouts()) {
+				set_layout_ptrs.push_back(&es.get());
+			}
 		}
 
 		// Create push contant layout descriptors
