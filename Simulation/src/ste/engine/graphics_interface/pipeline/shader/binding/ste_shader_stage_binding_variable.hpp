@@ -207,11 +207,19 @@ public:
 	}
 
 	/**
-	 *	@brief	Checks if the variables reference the same binding
+	*	@brief	Checks if the variables are compatible. (i.e. std::is_same_v<>)
+	*/
+	virtual bool compatible(const ste_shader_stage_binding_variable &var) const {
+		return type() == var.type() &&
+			size_bytes() == var.size_bytes();
+	}
+
+	/**
+	 *	@brief	Checks if the variables are identical.
+	 *			Identical variables are compatible, have same name and offset.
 	 */
 	virtual bool operator==(const ste_shader_stage_binding_variable &var) const {
-		return type() == var.type() &&
-			size_bytes() == var.size_bytes() &&
+		return this->compatible(var) &&
 			offset() == var.offset() &&
 			name() == var.name();
 	}
@@ -417,11 +425,11 @@ public:
 	/**
 	*	@brief	Checks if the variables reference the same binding
 	*/
-	bool operator==(const ste_shader_stage_binding_variable &var) const override {
+	bool compatible(const ste_shader_stage_binding_variable &var) const override {
 		auto *ptr = dynamic_cast<decltype(this)>(&var);
 		if (!ptr)
 			return false;
-		return Base::operator==(var) &&
+		return Base::compatible(var) &&
 			columns() == ptr->columns() &&
 			rows() == ptr->rows() &&
 			matrix_stride() == ptr->matrix_stride();
@@ -540,11 +548,11 @@ public:
 	/**
 	*	@brief	Checks if the variables reference the same binding
 	*/
-	bool operator==(const ste_shader_stage_binding_variable &var) const override {
+	bool compatible(const ste_shader_stage_binding_variable &var) const override {
 		auto *ptr = dynamic_cast<decltype(this)>(&var);
 		if (!ptr)
 			return false;
-		return Base::operator==(var) &&
+		return Base::compatible(var) &&
 			*underlying_variable() == *ptr->underlying_variable() &&
 			size() == ptr->size() &&
 			length_spec_constant() == ptr->length_spec_constant() &&
@@ -660,11 +668,11 @@ public:
 	/**
 	*	@brief	Checks if the variables reference the same binding
 	*/
-	bool operator==(const ste_shader_stage_binding_variable &var) const override {
+	bool compatible(const ste_shader_stage_binding_variable &var) const override {
 		auto *ptr = dynamic_cast<decltype(this)>(&var);
 		if (!ptr)
 			return false;
-		if (!(Base::operator==(var) &&
+		if (!(Base::compatible(var) &&
 			  count() == ptr->count()))
 			return false;
 

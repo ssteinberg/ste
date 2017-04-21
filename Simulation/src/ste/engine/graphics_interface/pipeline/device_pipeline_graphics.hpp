@@ -18,7 +18,7 @@ private:
 	struct ctor {};
 
 protected:
-	VkPipelineBindPoint pipeline_bind_point() const override final {
+	VkPipelineBindPoint get_pipeline_vk_bind_point() const override final {
 		return VK_PIPELINE_BIND_POINT_GRAPHICS;
 	}
 

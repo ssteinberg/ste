@@ -25,6 +25,10 @@ layout(std430, binding = 0) restrict readonly buffer glyph_data {
 	buffer_glyph_descriptor glyphs[];
 };
 
+layout(push_constant) uniform push_block {
+	float f;
+};
+
 layout(constant_id = 0) const int glyph_texture_count = 45;
 layout(binding = 1) uniform texture2D glyph_textures[glyph_texture_count];
 layout(binding = 2) uniform sampler glyph_sampler;

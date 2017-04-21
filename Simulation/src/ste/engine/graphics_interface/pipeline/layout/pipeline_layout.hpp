@@ -14,6 +14,7 @@
 #include <pipeline_external_binding_set_collection.hpp>
 #include <pipeline_binding_layout_collection.hpp>
 
+#include <pipeline_push_constants_layout.hpp>
 #include <pipeline_layout_set_index.hpp>
 #include <pipeline_binding_set_layout.hpp>
 #include <vk_pipeline_layout.hpp>
@@ -61,7 +62,7 @@ private:
 	variable_map_t variables_map;
 
 	// Push and specialization constants maps, as well as specializations.
-	variable_ref_map_t push_variables_map;
+	std::unique_ptr<pipeline_push_constants_layout> push_constants_layout;
 	variable_ref_map_t spec_variables_map;
 	spec_map_t specializations;
 
@@ -85,10 +86,19 @@ private:
 
 private:
 	static void update_variable(variable_map_t &map,
+								std::vector<pipeline_binding_layout> &push_constant_bindings,
 								const std::string &name,
 								const pipeline_binding_layout &binding,
 								ste_shader_stage stage) {
-		// Try add new name
+		// Push constants are handled differently, don't add to variables map
+		if (binding.binding_type() == ste_shader_stage_binding_type::push_constant) {
+			pipeline_binding_layout push_binding = binding;
+			push_binding.stages.insert(stage);
+			push_constant_bindings.push_back(std::move(push_binding));
+			return;
+		}
+
+		// for uniforms/storage blocks and specialization constants, try add to variable map with new name
 		auto ret = map.try_emplace(name, binding);
 		auto &b = ret.first->second;
 		if (!ret.second) {
@@ -136,27 +146,37 @@ private:
 		}
 	}
 
-	void populate_variables(variable_map_t &&map) {
-		variables_map = std::move(map);
-
-		for (auto &b : variables_map) {
+	// Populates variable map, specialization constants map and push constants layout
+	void create_variable_layouts(variable_map_t &&map,
+								 const std::vector<pipeline_binding_layout> &push_constant_bindings) {
+		for (auto &b : map) {
 			auto &name = b.second.name();
 			auto &val = b.second;
 
-			// Also individually map push and specialization constants
+			// Push constants should have already been extracted, sanity check
+			if (b.second.binding->binding_type == ste_shader_stage_binding_type::push_constant) {
+				assert(false);
+				continue;
+			}
+
+			// Also individually populate and map push and specialization constants
 			if (b.second.binding->binding_type == ste_shader_stage_binding_type::spec_constant) {
 				spec_variables_map[name] = &val;
 			}
-			else if (b.second.binding->binding_type == ste_shader_stage_binding_type::push_constant) {
-				push_variables_map[name] = &val;
-			}
 
 			// Map array variables whose length depends on specialization constants
+			// This allows the pipeline layout to react to respecializations
 			auto var_arr = dynamic_cast<const ste_shader_stage_binding_variable_array*>(b.second.binding->variable.get());
 			if (var_arr && var_arr->length_spec_constant()) {
 				spec_to_dependant_array_variables_map[var_arr->get_length_spec_constant_var()].push_back(&val);
 			}
 		}
+
+		// Store name->variable layout map
+		variables_map = std::move(map);
+
+		// Create push constants layout
+		push_constants_layout = std::make_unique<pipeline_push_constants_layout>(push_constant_bindings);
 	}
 
 	void create_set_layouts() {
@@ -262,7 +282,10 @@ public:
 	{
 		{
 			// Sort the variables from all the shader stages
+			// Those data structures will be used later to generate the variables layouts
 			variable_map_t all_variables;
+			std::vector<pipeline_binding_layout> push_constant_bindings;
+
 			for (auto &s : pipeline_shader_stages) {
 				auto stage = s->get_stage();
 				auto& bindings = s->get_stage_bindings();
@@ -273,6 +296,7 @@ public:
 
 					// Add new variable, or update exciting ones with new stage
 					update_variable(all_variables,
+									push_constant_bindings,
 									name,
 									new_bind,
 									stage);
@@ -282,13 +306,16 @@ public:
 				stages[stage] = s;
 			}
 
-			// Verify and erase variables that are handled externally and won't participate in this layout
+			// Verify and erase variables that are handled externally
 			if (external_binding_sets) {
 				this->external_binding_sets = &external_binding_sets.get().get();
 				erase_variables_provided_by_external_binding_sets(all_variables);
 			}
-			// Then populate the variables
-			populate_variables(std::move(all_variables));
+
+			// Then create variables' layouts
+			// This creates the name->binding maps and specialization/push constants layout
+			create_variable_layouts(std::move(all_variables),
+									push_constant_bindings);
 		}
 
 		// Generate the descriptor set layout for each set and the pipeline layout
@@ -346,14 +373,9 @@ public:
 		}
 
 		// Create push contant layout descriptors
-		std::vector<vk_push_constant_layout> push_constant_layouts;
-		for (auto &p : push_variables_map) {
-			auto &b = *p.second;
-			push_constant_layouts.push_back(vk_push_constant_layout(b.stages,
-																	b.binding->variable->size_bytes()));
-		}
+		auto& push_constant_layouts = push_constants_layout->vk_push_constant_layout_descriptors();
 
-		// Create pipeline layout
+		// Create pipeline layout and raise layout invalidated flag
 		layout = std::make_unique<vk_pipeline_layout>(ctx.device(),
 													  set_layout_ptrs,
 													  push_constant_layouts);
@@ -416,6 +438,14 @@ public:
 		return descriptors;
 	}
 
+	/**
+	 *	@brief	Creates a push constants command to push constants onto the command buffer
+	 */
+	auto cmd_push_constants() const {
+		assert(layout.get() && "Called before creating layout");
+		return push_constants_layout->cmd_push(layout.get());
+	}
+
 	auto& get() const { return *layout; }
 
 	bool is_pipeline_layout_invalidated() const { return layout_invalidated_flag; }
@@ -424,7 +454,7 @@ public:
 	auto& modified_set_layouts() const { return set_layouts_modified_queue; }
 	
 	auto& variables() const { return variables_map; }
-	auto& push_variables() const { return push_variables_map; }
+	auto& push_variables() const { return *push_constants_layout; }
 	auto& spec_variables() const { return spec_variables_map; }
 
 	auto& get_set_layout_modified_signal() const { return set_layout_modified_signal; }

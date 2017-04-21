@@ -78,7 +78,7 @@ public:
 	 *	
 	 *	@return	range_list_overlap::none		On no overlap
 	 *			range_list_overlap::full		On full overlap
-	 *			range_list_overlap::partial		On partial overlap
+	 *			range_list_overlap::partial	On partial overlap
 	 */
 	auto check(T r) const {
 		auto rend = r.start + r.length;

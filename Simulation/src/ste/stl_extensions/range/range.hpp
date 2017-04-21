@@ -20,20 +20,16 @@ struct range {
 			(r.start < start + length);
 	}
 
-	template<typename S>
-	bool operator==(const range<S> &r) const {
+	bool operator==(const range &r) const {
 		return start == r.start && length == r.length;
 	}
-	template<typename S>
-	bool operator!=(const range<S> &r) const {
+	bool operator!=(const range &r) const {
 		return !(*this == r);
 	}
-	template<typename S>
-	bool operator<(const range<S> &r) const {
+	bool operator<(const range &r) const {
 		return start < r.start;
 	}
-	template<typename S>
-	bool operator>(const range<S> &r) const {
+	bool operator>(const range &r) const {
 		return r < *this;
 	}
 };

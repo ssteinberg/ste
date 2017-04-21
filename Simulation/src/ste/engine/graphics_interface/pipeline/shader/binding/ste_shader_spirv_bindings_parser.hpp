@@ -129,9 +129,15 @@ struct ste_shader_spirv_bindings_parsed_variable {
 		else if (is_struct()) {
 			// Handle structs recursively
 			std::vector<std::unique_ptr<ste_shader_stage_binding_variable>> elements;
-			for (auto &e : struct_members)
-				elements.push_back(e.generate_variable(false,
-													   binds));
+			for (auto &e : struct_members) {
+				// Sort by offset
+				auto it = elements.begin();
+				for (; it != elements.end() && (*it)->offset() < e.offset; ++it) {}
+
+				assert(it == elements.end() || (*it)->offset() > e.offset);
+				elements.insert(it, e.generate_variable(false,
+														binds));
+			}
 
 			var = std::unique_ptr<ste_shader_stage_binding_variable>(std::make_unique<ste_shader_stage_binding_variable_struct>(std::move(elements),
 																																name,
@@ -213,10 +219,21 @@ private:
 		ste_shader_stage_binding_type binding_type{ ste_shader_stage_binding_type::unknown };
 		ste_shader_stage_block_layout block_layout;
 
-		bool is_complete{ false };
+		bool is_variable{ false };
 		bool is_binding{ false };
 
 		std::vector<const std::uint32_t*> struct_member_ops;
+
+		bool is_complete() const {
+			// Filter out those pesky non-block "push constants"
+			if (binding_type == ste_shader_stage_binding_type::push_constant &&
+				block_layout == ste_shader_stage_block_layout::none)
+				return false;
+			
+			assert(!is_binding || binding_type != ste_shader_stage_binding_type::unknown);
+
+			return is_variable && is_binding;
+		}
 	};
 
 private:

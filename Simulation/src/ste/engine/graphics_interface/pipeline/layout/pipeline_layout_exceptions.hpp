@@ -36,6 +36,13 @@ public:
 	using Base::Base;
 };
 
+class pipeline_layout_duplicate_incompatible_overlapping_push_constants_exception : public pipeline_layout_exception {
+	using Base = pipeline_layout_exception;
+
+public:
+	using Base::Base;
+};
+
 class pipeline_layout_variable_not_found_exception : public pipeline_layout_exception {
 	using Base = pipeline_layout_exception;
 

@@ -36,30 +36,24 @@ template <
 	class T,
 	pipeline_layout_set_index set, 
 	std::uint32_t bind,
-	bool storage_image = false,
-	bool push_constant = false
+	bool storage_image = false
 >
 class pipeline_external_binding_descriptor {
 public:
 	using type = T;
 	static constexpr bool is_storage_image = storage_image;
-	static constexpr bool is_push_constant = push_constant;
 
 	static constexpr auto set_idx = set;
 	static constexpr auto bind_idx = bind;
 
 	static constexpr ste_shader_stage_variable_type var_type = ste_shader_stage_variable_type_from_type_v<T, storage_image>;
 
-	static_assert(!ste_shader_stage_variable_type_is_opaque(var_type) || !push_constant, "Push constants can not be of an opaque type");
 	static_assert(var_type != ste_shader_stage_variable_type::unknown, "Type can not be unknown");
 
 	static ste_shader_stage_variable_type variable_type() {
 		return var_type;
 	}
 	static ste_shader_stage_binding_type binding_type() {
-		if (push_constant)
-			return ste_shader_stage_binding_type::push_constant;
-
 		return is_std430_block_layout_v<T> ?
 			ste_shader_stage_binding_type::storage :
 			ste_shader_stage_binding_type::uniform;

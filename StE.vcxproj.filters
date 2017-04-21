@@ -1364,9 +1364,6 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\buffer\buffer_view.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\binding\pipeline_resource_bind_point.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\binding\pipeline_resource_binder.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1478,6 +1475,33 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\shader\binding\ste_shader_stage_variable_from_type.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\layout\push_constants\push_constant_descriptor.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\layout\push_constants\push_constant_path.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\stl_extensions\string\split.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\command_buffer\command\cmd_push_constants.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\binding\pipeline_specialization_constant_bind_point.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\binding\pipeline_resource_bind_point.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\binding\pipeline_push_constant_bind_point.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\binding\pipeline_bind_point.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\binding\pipeline_bind_point_base.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Simulation\src\ste\framework_graphics\material\shaders\material_evaluate.glsl" />
@@ -1572,5 +1596,6 @@
     <None Include="Simulation\src\ste\legacy\voxels\shaders\voxelizer.vert_old" />
     <None Include="Simulation\src\ste\legacy\voxels\shaders\voxelizer_upsampler.comp_old" />
     <None Include="Simulation\src\ste\legacy\voxels\shaders\voxels.glsl" />
+    <None Include="Simulation\src\ste\engine\graphics_interface\pipeline\layout\push_constants\pipeline_push_constants_layout.hpp" />
   </ItemGroup>
 </Project>

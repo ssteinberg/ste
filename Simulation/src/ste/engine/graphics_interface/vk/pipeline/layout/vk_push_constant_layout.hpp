@@ -38,6 +38,10 @@ public:
 	}
 
 	operator VkPushConstantRange() const { return get_layout(); }
+
+	auto get_stage() const { return stage; }
+	auto get_size() const { return size; }
+	auto get_offset() const { return offset; }
 };
 
 }

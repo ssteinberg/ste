@@ -24,8 +24,17 @@ public:
 	pipeline_binding_stages_collection() = default;
 	pipeline_binding_stages_collection(const std::initializer_list<ste_shader_stage> &il) : set(il) {}
 
+	auto& get() const { return set; }
+	auto begin() const { return set.begin(); }
+	auto end() const { return set.end(); }
+	auto size() const { return set.size(); }
+
 	void insert(const ste_shader_stage &s) {
 		set.insert(s);
+	}
+	void insert(const pipeline_binding_stages_collection &stages) {
+		for (auto &s : stages)
+			set.insert(s);
 	}
 	void erase(const ste_shader_stage &s) {
 		set.erase(s);
@@ -33,10 +42,6 @@ public:
 	bool exists(const ste_shader_stage &s) const {
 		return set.find(s) != set.end();
 	}
-
-	auto& get() const { return set; }
-	auto begin() const { return set.begin(); }
-	auto end() const { return set.end(); }
 
 	operator VkShaderStageFlags() const {
 		VkShaderStageFlags stage = 0;

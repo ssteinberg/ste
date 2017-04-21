@@ -179,6 +179,7 @@ int main()
 		auto array_length = va->size();
 
 		external_sets.update();
+		(*pipeline)["push_block.push_data.offset12"] = 12;
 		(*pipeline)["glyph_data"] = GL::bind(buffer);
 		(*pipeline)["glyph_sampler"] = GL::bind(sampler);
 		(*pipeline)["glyph_texture_count"] = 45;

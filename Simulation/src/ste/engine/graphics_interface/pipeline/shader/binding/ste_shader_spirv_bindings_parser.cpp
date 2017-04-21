@@ -47,6 +47,7 @@ void ste_shader_spirv_bindings_parser::parse_storage_class(ste_shader_spirv_bind
 	}
 	else if (storage == spv::StorageClass::PushConstant) {
 		dst.binding_type = ste_shader_stage_binding_type::push_constant;
+		dst.is_binding = true;
 	}
 }
 
@@ -101,6 +102,8 @@ void ste_shader_spirv_bindings_parser::consume_type(ste_shader_spirv_bindings_pa
 		dst.binding_type = consume.binding_type;
 	if (consume.block_layout != ste_shader_stage_block_layout::none)
 		dst.block_layout = consume.block_layout;
+	if (consume.is_binding)
+		dst.is_binding = true;
 }
 
 std::size_t ste_shader_spirv_bindings_parser::process_spirv_op(std::vector<ste_shader_spirv_bindings_parser::ste_shader_binding_internal> &binds,
@@ -256,7 +259,7 @@ std::size_t ste_shader_spirv_bindings_parser::process_spirv_op(std::vector<ste_s
 		consume_type(binds[id], binds[consume_id]);
 		parse_storage_class(binds[id], op[2]);
 
-		binds[id].is_complete = true;
+		binds[id].is_variable = true;
 	}
 	else if (opcode == spv::Op::OpSpecConstantTrue ||
 			 opcode == spv::Op::OpSpecConstantFalse ||
@@ -278,7 +281,7 @@ std::size_t ste_shader_spirv_bindings_parser::process_spirv_op(std::vector<ste_s
 			opcode == spv::Op::OpSpecConstantComposite)
 			binds[id].binding_type = ste_shader_stage_binding_type::spec_constant;
 
-		binds[id].is_complete = true;
+		binds[id].is_variable = true;
 	}
 	else if (opcode == spv::Op::OpSpecConstantOp) {
 		// Op constants unsupported.
@@ -321,7 +324,7 @@ std::vector<ste_shader_stage_binding> ste_shader_spirv_bindings_parser::parse_bi
 	// Write out only relevant binds
 	std::vector<ste_shader_stage_binding> recognized_binds;
 	for (auto &b : binds) {
-		if (b.is_binding && b.is_complete) {
+		if (b.is_complete()) {
 			assert(b.binding_type != ste_shader_stage_binding_type::unknown);
 			assert(b.variable.type != ste_shader_stage_variable_type::unknown);
 
