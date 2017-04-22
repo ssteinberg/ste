@@ -8,6 +8,8 @@
 #include <vk_image_type_traits.hpp>
 #include <vk_logical_device.hpp>
 
+#include <vk_format_rtti.hpp>
+
 #include <optional.hpp>
 #include <allow_type_decay.hpp>
 
@@ -60,10 +62,9 @@ public:
 	vk_image_base& operator=(const vk_image_base &) = delete;
 
 	auto get_image_subresource_layout(std::uint32_t mip,
-									  std::uint32_t layer = 0,
-									  bool color = true) {
+									  std::uint32_t layer = 0) {
 		VkImageSubresource subresource = {};
-		subresource.aspectMask = color ? VK_IMAGE_ASPECT_COLOR_BIT : VK_IMAGE_ASPECT_DEPTH_BIT;
+		subresource.aspectMask = vk_format_aspect(get_format());
 		subresource.mipLevel = mip;
 		subresource.arrayLayer = layer;
 

@@ -8,6 +8,8 @@
 #include <vk_buffer_base.hpp>
 #include <vk_image.hpp>
 
+#include <vk_format_rtti.hpp>
+
 #include <vector>
 
 namespace StE {
@@ -38,7 +40,7 @@ public:
 		if (this->ranges.size() == 0) {
 			VkBufferImageCopy c = {
 				0, 0, 0,
-				{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 0, VK_REMAINING_ARRAY_LAYERS },
+				{ vk_format_aspect(src_image.get_format()), 0, 0, VK_REMAINING_ARRAY_LAYERS },
 				{ 0, 0, 0 },
 				{ src_image.get_size().x, src_image.get_size().y, src_image.get_size().z }
 			};

@@ -23,8 +23,7 @@ class device_resource_queue_transferable {
 							   VkAccessFlags src_access,
 							   VkPipelineStageFlags dst_stage,
 							   VkAccessFlags dst_access,
-							   VkImageLayout dst_layout,
-							   bool depth);
+							   VkImageLayout dst_layout);
 	friend void queue_transfer(const ste_context &ctx,
 							   device_buffer_base &buffer,
 							   const ste_queue_family &dst_family,

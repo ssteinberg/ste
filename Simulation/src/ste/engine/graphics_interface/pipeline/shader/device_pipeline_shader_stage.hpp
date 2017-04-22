@@ -7,9 +7,7 @@
 #include <ste_context.hpp>
 #include <ste_resource_traits.hpp>
 
-#include <vulkan/vulkan.h>
-#include <vk_shader_stage_descriptor.hpp>
-#include <vk_shader.hpp>
+#include <ste_shader_object.hpp>
 #include <vk_pipeline_graphics.hpp>
 
 #include <ste_shader_stage_binding.hpp>
@@ -20,6 +18,7 @@
 #include <string>
 #include <vector>
 #include <istream>
+#include <memory>
 #include <allow_type_decay.hpp>
 
 namespace StE {
@@ -33,11 +32,8 @@ public:
 	using specializations_changed_signal_t = signal<const device_pipeline_shader_stage*>;
 
 private:
-	ste_shader_stage stage{ ste_shader_stage::none };
-	std::vector<ste_shader_stage_binding> stage_bindings;
-
-	vk_shader shader;
-	const std::string name;
+	std::string name;
+	std::unique_ptr<const ste_shader_object> shader;
 
 	vk_shader::spec_map specializations;
 
@@ -60,10 +56,9 @@ private:
 
 	static std::vector<ste_shader_stage_binding> verify_spirv_and_read_bindings(const std::string &code);
 
-	static auto load_and_verify_shader_blob(const boost::filesystem::path &modules_path,
-											const std::string &name,
-											ste_shader_stage &out_stage,
-											std::vector<ste_shader_stage_binding> &out_stage_bindings) {
+	static auto load_and_verify_shader_blob(const ste_context &ctx,
+											const std::string &name) {
+		const auto &modules_path = ctx.engine().storage().shader_module_dir_path();
 		auto path = modules_path / name;
 
 		ste_shader_blob_header header;
@@ -83,11 +78,15 @@ private:
 		verify_blob_header_sanity(header);
 
 		// Parse SPIR-v, and read bound resources
-		out_stage_bindings = verify_spirv_and_read_bindings(code);
+		std::vector<ste_shader_stage_binding> stage_bindings = verify_spirv_and_read_bindings(code);
 
-		// If header checks out, write stage and return blob
-		out_stage = header.type;
-		return code;
+		// If header checks out, create the shader object
+		ste_shader_stage stage = header.type;
+
+		return std::make_unique<const ste_shader_object>(ctx.device(),
+														 code,
+														 stage,
+														 std::move(stage_bindings));
 	}
 
 public:
@@ -104,15 +103,10 @@ public:
 	*/
 	device_pipeline_shader_stage(const ste_context &ctx,
 								 const std::string &name)
-		: shader(ctx.device(),
-				 load_and_verify_shader_blob(ctx.engine().storage().shader_module_dir_path(), 
-											 name,
-											 this->stage,
-											 this->stage_bindings)),
-		name(name) 
-	{
-		assert(stage != ste_shader_stage::none);
-	}
+		: name(name),
+		shader(load_and_verify_shader_blob(ctx,
+										   name))
+	{}
 	~device_pipeline_shader_stage() noexcept {}
 
 	device_pipeline_shader_stage(device_pipeline_shader_stage &&) = default;
@@ -120,11 +114,11 @@ public:
 	device_pipeline_shader_stage(const device_pipeline_shader_stage &) = delete;
 	device_pipeline_shader_stage &operator=(const device_pipeline_shader_stage &) = delete;
 
-	auto &get() { return shader; }
-	auto &get() const { return shader; }
+	auto &get() { return shader->shader; }
+	auto &get() const { return shader->shader; }
 	auto &get_name() const { return name; }
-	auto &get_stage() const { return stage; }
-	auto &get_stage_bindings() const { return stage_bindings; }
+	auto &get_stage() const { return shader->stage; }
+	auto &get_stage_bindings() const { return shader->stage_bindings; }
 
 	/**
 	 *	@brief	Provides the shader specialization constant map.
@@ -138,31 +132,16 @@ public:
 	*	@brief	Retrieve the Vulkan stage flag for the shader module
 	*/
 	VkShaderStageFlagBits vk_shader_stage_flag() const {
-		switch (stage) {
-		case ste_shader_stage::vertex_program:
-			return VK_SHADER_STAGE_VERTEX_BIT;
-		case ste_shader_stage::tesselation_control_program:
-			return VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
-		case ste_shader_stage::tesselation_evaluation_program:
-			return VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
-		case ste_shader_stage::geometry_program:
-			return VK_SHADER_STAGE_GEOMETRY_BIT;
-		case ste_shader_stage::fragment_program:
-			return VK_SHADER_STAGE_FRAGMENT_BIT;
-		case ste_shader_stage::compute_program:
-			return VK_SHADER_STAGE_COMPUTE_BIT;
-		default:
-			assert(false);
-			return VK_SHADER_STAGE_ALL;
-		}
+		return shader->vk_shader_stage_flag();
 	}
+
 	/**
 	*	@brief	Retrieve the Vulkan pipeline shader stage descriptor for the shader module
 	*/
 	auto pipeline_stage_descriptor() const {
 		vk_shader_stage_descriptor desc;
 		desc.stage = vk_shader_stage_flag();
-		desc.shader = &shader;
+		desc.shader = &get();
 		desc.specializations = &specializations;
 		return desc;
 	}

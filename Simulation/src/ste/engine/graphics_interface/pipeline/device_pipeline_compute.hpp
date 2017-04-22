@@ -29,7 +29,8 @@ private:
 		auto shader_stage_descriptors = layout.shader_stage_descriptors();
 		return vk_pipeline_compute(ctx.device(),
 								   shader_stage_descriptors,
-								   layout);
+								   layout,
+								   ctx.device().pipeline_cache().current_thread_cache());
 	}
 
 protected:

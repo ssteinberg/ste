@@ -36,7 +36,7 @@ private:
 	template<int index> struct elements_format_populator {
 		using T = VkFormat;
 		using ValT = typename typelist_type_at<index, Ts...>::type;
-		static constexpr T value = vk_format_for_type<ValT>::format;
+		static constexpr T value = vk_format_for_type_v<ValT>;
 		static_assert(value != 0, "ValT is NOT a valid type");
 	};
 

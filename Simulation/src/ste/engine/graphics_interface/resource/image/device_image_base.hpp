@@ -23,6 +23,8 @@ protected:
 
 public:
 	virtual ~device_image_base() noexcept {}
+
+	virtual VkFormat get_format() const = 0;
 	virtual VkImage get_image_handle() const = 0;
 
 	device_image_base(device_image_base&&) = default;

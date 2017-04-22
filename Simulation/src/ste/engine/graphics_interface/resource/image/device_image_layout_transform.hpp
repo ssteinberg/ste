@@ -14,14 +14,12 @@ auto inline image_layout_transform_barrier(const device_image_base &image,
 										   VkAccessFlags src_access,
 										   VkImageLayout src_layout,
 										   VkAccessFlags dst_access,
-										   VkImageLayout dst_layout,
-										   bool depth = false) {
+										   VkImageLayout dst_layout) {
 	return image_memory_barrier(image,
 								src_layout,
 								dst_layout,
 								src_access,
-								dst_access,
-								depth);
+								dst_access);
 }
 
 }

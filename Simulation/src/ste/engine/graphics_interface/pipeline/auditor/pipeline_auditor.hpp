@@ -34,7 +34,7 @@ public:
 	 *	
 	 *	@param	ctx			Context
 	 *	@param	pool			Binding set pool. Used to allocate the binding sets used by the pipeline.
-	 *	@param	external_binding_sets	A list of binding set layouts that are assumed to be created and bound by an external system.
+	 *	@param	external_binding_sets	A list of binding set layouts that are assumed to be created and populated by an external system.
 	 *									The pipeline will only check compatibility with the provided shader stages.
 	 */
 	virtual std::unique_ptr<device_pipeline> pipeline(const ste_context &ctx,

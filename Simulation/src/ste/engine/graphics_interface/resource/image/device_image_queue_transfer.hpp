@@ -26,16 +26,14 @@ auto inline queue_release_acquire_barrier(const device_image_base &image,
 										  VkImageLayout src_layout,
 										  VkAccessFlags dst_access,
 										  const ste_queue_family &dst_family,
-										  VkImageLayout dst_layout,
-										  bool depth = false) {
+										  VkImageLayout dst_layout) {
 	return image_memory_barrier(image,
 								src_layout,
 								dst_layout,
 								src_access,
 								dst_access,
 								src_family,
-								dst_family,
-								depth);
+								dst_family);
 }
 
 void inline queue_transfer(const ste_context &ctx,
@@ -45,8 +43,7 @@ void inline queue_transfer(const ste_context &ctx,
 						   VkAccessFlags src_access,
 						   VkPipelineStageFlags dst_stage,
 						   VkAccessFlags dst_access,
-						   VkImageLayout dst_layout,
-						   bool depth = false) {
+						   VkImageLayout dst_layout) {
 	assert(!ste_device_queue::is_queue_thread() && "Should not be called from a queue");
 
 	auto src_family = image.owner_queue_family();
@@ -70,8 +67,7 @@ void inline queue_transfer(const ste_context &ctx,
 																			   src_access,
 																			   src_layout,
 																			   dst_access,
-																			   dst_layout,
-																			   depth));
+																			   dst_layout));
 				recorder << cmd_pipeline_barrier(barrier);
 			}
 			ste_device_queue::submit_batch(std::move(acquire_batch));
@@ -101,8 +97,7 @@ void inline queue_transfer(const ste_context &ctx,
 																		  src_layout,
 																		  dst_access,
 																		  dst_family,
-																		  dst_layout,
-																		  depth));
+																		  dst_layout));
 			recorder << cmd_pipeline_barrier(barrier);
 		}
 
@@ -123,8 +118,7 @@ void inline queue_transfer(const ste_context &ctx,
 																		  dst_layout,
 																		  dst_access,
 																		  dst_family,
-																		  dst_layout,
-																		  depth));
+																		  dst_layout));
 			recorder << cmd_pipeline_barrier(barrier);
 		}
 
@@ -145,8 +139,7 @@ void queue_transfer(const ste_context &ctx,
 					VkAccessFlags src_access,
 					VkPipelineStageFlags dst_stage,
 					VkAccessFlags dst_access,
-					VkImageLayout dst_layout,
-					bool depth = false) {
+					VkImageLayout dst_layout) {
 	auto& dst_q = ctx.device().select_queue(queue_selector);
 	auto dst_family = dst_q->queue_descriptor().family;
 
@@ -157,8 +150,7 @@ void queue_transfer(const ste_context &ctx,
 				   src_access,
 				   dst_stage,
 				   dst_access,
-				   dst_layout,
-				   depth);
+				   dst_layout);
 }
 
 }

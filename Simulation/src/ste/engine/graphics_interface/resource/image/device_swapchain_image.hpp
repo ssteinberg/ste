@@ -24,6 +24,7 @@ public:
 	device_swapchain_image(device_swapchain_image&&) = default;
 	device_swapchain_image &operator=(device_swapchain_image&&) = default;
 
+	VkFormat get_format() const override final { return image.get_format(); }
 	VkImage get_image_handle() const override final { return image; };
 };
 

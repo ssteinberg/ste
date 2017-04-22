@@ -107,8 +107,7 @@ void queue_transfer(const ste_context &ctx,
 					VkAccessFlags src_access,
 					VkPipelineStageFlags dst_stage,
 					VkAccessFlags dst_access,
-					VkImageLayout dst_layout,
-					bool depth = false) {
+					VkImageLayout dst_layout) {
 	auto& dst_q = ctx.device().select_queue(queue_selector);
 	auto dst_family = dst_q->queue_descriptor().family;
 

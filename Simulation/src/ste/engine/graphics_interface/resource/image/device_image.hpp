@@ -16,6 +16,8 @@
 #include <cmd_copy_image.hpp>
 #include <cmd_blit_image.hpp>
 
+#include <vk_format_rtti.hpp>
+
 namespace StE {
 namespace GL {
 
@@ -52,7 +54,9 @@ public:
 	device_image(device_image&&) = default;
 	device_image &operator=(device_image&&) = default;
 
-	VkImage get_image_handle() const override final { return *this; };
+
+	VkFormat get_format() const override final { return static_cast<const vk_image_base<dimensions>&>(*this).get_format(); }
+	VkImage get_image_handle() const override final { return *this; }
 };
 
 /**
@@ -71,8 +75,7 @@ private:
 									  const gli::texture2d &surface,
 									  const VkFormat &format,
 									  const ste_queue_selector<> &selector,
-									  int image_texel_bytes,
-									  bool image_is_depth) {
+									  int image_texel_bytes) {
 		auto layers = surface.layers();
 
 		// Create staging image
@@ -93,7 +96,7 @@ private:
 			auto *ptr = static_cast<glm::u8*>(*mmap_u8_ptr) + subresource_layout.offset;
 			const auto *src = reinterpret_cast<const glm::u8*>(level.data());
 
-			VkImageAspectFlags aspect = image_is_depth ? VK_IMAGE_ASPECT_DEPTH_BIT : VK_IMAGE_ASPECT_COLOR_BIT;
+			VkImageAspectFlags aspect = vk_format_aspect(image.get_format());
 			VkImageCopy range = {
 				{ aspect, 0, 0, layers },
 				{ 0, 0, 0 },
@@ -171,6 +174,8 @@ private:
 			auto batch = ste_device_queue::thread_allocate_batch();
 			auto& command_buffer = batch->acquire_command_buffer();
 
+			VkImageAspectFlags aspect = vk_format_aspect(image.get_format());
+
 			// Record and submit a one-time batch
 			{
 				auto recorder = command_buffer.record();
@@ -194,8 +199,8 @@ private:
 					recorder << cmd_pipeline_barrier(barrier);
 
 					VkImageBlit range = {};
-					range.srcSubresource = { VK_IMAGE_ASPECT_COLOR_BIT, m - 1, 0, 1 };
-					range.dstSubresource = { VK_IMAGE_ASPECT_COLOR_BIT, m, 0, 1 };
+					range.srcSubresource = { aspect, m - 1, 0, 1 };
+					range.dstSubresource = { aspect, m, 0, 1 };
 					range.srcOffsets[1] = {
 						std::max(1, size.x >> (m - 1)),
 						std::max(1, size.y >> (m - 1)),
@@ -242,7 +247,6 @@ public:
 		using image_element_type = typename vk_format_traits<format>::element_type;
 		static constexpr int image_texel_bytes = vk_format_traits<format>::texel_bytes;
 		static constexpr gli::format image_gli_format = vk_format_traits<format>::gli_format;
-		static constexpr bool image_is_depth = vk_format_traits<format>::is_depth;
 
 		auto src_format = surface.format();
 		std::uint32_t mip_levels = generate_mipmaps ? gli::levels(surface.extent()) : surface.levels();
@@ -261,7 +265,7 @@ public:
 				  mip_levels, layers);
 
 		// Copy from surface
-		copy_surface_to_image(ctx, image, surface, format, selector, image_texel_bytes, image_is_depth);
+		copy_surface_to_image(ctx, image, surface, format, selector, image_texel_bytes);
 
 		// Generate remaining mipmaps, as needed
 		std::uint32_t m = surface.levels();
@@ -305,6 +309,7 @@ public:
 	device_image(device_image&&) = default;
 	device_image &operator=(device_image&&) = default;
 
+	VkFormat get_format() const override final { return static_cast<const vk_image_base<2>&>(*this).get_format(); }
 	VkImage get_image_handle() const override final { return *this; };
 };
 
