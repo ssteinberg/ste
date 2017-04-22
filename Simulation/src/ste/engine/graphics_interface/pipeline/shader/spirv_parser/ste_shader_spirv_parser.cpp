@@ -1,13 +1,16 @@
 
 #include <stdafx.hpp>
-#include <ste_shader_spirv_bindings_parser.hpp>
-#include <ste_shader_stage_binding_variable.hpp>
+#include <ste_shader_spirv_parser.hpp>
+#include <spirv_tokens.hpp>
+
+#include <ste_shader_stage_variable.hpp>
+#include <ste_shader_stage_block_layout.hpp>
 #include <ste_shader_exceptions.hpp>
 
 using namespace StE::GL;
 
-void ste_shader_spirv_bindings_parser::parse_constant_value(ste_shader_spirv_bindings_parser::ste_shader_binding_internal &dst,
-															const std::uint32_t *op) {
+void ste_shader_spirv_parser::parse_constant_value(ste_shader_spirv_parser::parser_internal_element &dst,
+												   const std::uint32_t *op) {
 	std::uint32_t op_length = op[0];
 	spv::Op opcode = static_cast<spv::Op>(op_length & spv::OpCodeMask);
 	std::uint16_t word_count = op_length >> spv::WordCountShift;
@@ -37,29 +40,36 @@ void ste_shader_spirv_bindings_parser::parse_constant_value(ste_shader_spirv_bin
 	else {}
 }
 
-void ste_shader_spirv_bindings_parser::parse_storage_class(ste_shader_spirv_bindings_parser::ste_shader_binding_internal &dst,
-														   std::uint32_t storage_id) {
+void ste_shader_spirv_parser::parse_storage_class(ste_shader_spirv_parser::parser_internal_element &dst,
+												  std::uint32_t storage_id) {
 	spv::StorageClass storage = static_cast<spv::StorageClass>(storage_id);
 	if (storage == spv::StorageClass::Uniform ||
 		storage == spv::StorageClass::UniformConstant) {
-		if (dst.binding_type == ste_shader_stage_binding_type::unknown)
-			dst.binding_type = ste_shader_stage_binding_type::uniform;
+		if (dst.type == element_type::unknown)
+			dst.type = element_type::uniform;
 	}
 	else if (storage == spv::StorageClass::PushConstant) {
-		dst.binding_type = ste_shader_stage_binding_type::push_constant;
-		dst.is_binding = true;
+		dst.type = element_type::push_constant;
+		dst.bind_assigned = true;
+	}
+	else if (storage == spv::StorageClass::Output) {
+		dst.type = element_type::output;
 	}
 }
 
-void ste_shader_spirv_bindings_parser::parse_decoration(ste_shader_spirv_bindings_parser::ste_shader_binding_internal &dst,
-														const std::uint32_t *op) {
+void ste_shader_spirv_parser::parse_decoration(ste_shader_spirv_parser::parser_internal_element &dst,
+											   const std::uint32_t *op) {
 	spv::Decoration decoration = static_cast<spv::Decoration>(op[0]);
 
 	switch (decoration) {
 	case spv::Decoration::Binding:
 	case spv::Decoration::SpecId:
 		dst.bind_idx = op[1];
-		dst.is_binding = true;
+		dst.bind_assigned = true;
+		break;
+	case spv::Decoration::Location:
+		dst.location_idx = op[1];
+		dst.location_assigned = true;
 		break;
 	case spv::Decoration::DescriptorSet:
 		dst.set_idx = op[1];
@@ -68,7 +78,7 @@ void ste_shader_spirv_bindings_parser::parse_decoration(ste_shader_spirv_binding
 		dst.block_layout = ste_shader_stage_block_layout::std140;
 		break;
 	case spv::Decoration::BufferBlock:
-		dst.binding_type = ste_shader_stage_binding_type::storage;
+		dst.type = element_type::storage;
 		dst.block_layout = ste_shader_stage_block_layout::std430;
 		break;
 	default:
@@ -77,8 +87,8 @@ void ste_shader_spirv_bindings_parser::parse_decoration(ste_shader_spirv_binding
 	}
 }
 
-void ste_shader_spirv_bindings_parser::parse_decoration(_internal::ste_shader_spirv_bindings_parsed_variable &variable,
-														const std::uint32_t *op) {
+void ste_shader_spirv_parser::parse_decoration(_internal::ste_shader_spirv_parsed_variable &variable,
+											   const std::uint32_t *op) {
 	spv::Decoration decoration = static_cast<spv::Decoration>(op[0]);
 
 	switch (decoration) {
@@ -95,19 +105,19 @@ void ste_shader_spirv_bindings_parser::parse_decoration(_internal::ste_shader_sp
 	}
 }
 
-void ste_shader_spirv_bindings_parser::consume_type(ste_shader_spirv_bindings_parser::ste_shader_binding_internal &dst,
-													const ste_shader_spirv_bindings_parser::ste_shader_binding_internal &consume) {
+void ste_shader_spirv_parser::consume_type(ste_shader_spirv_parser::parser_internal_element &dst,
+										   const ste_shader_spirv_parser::parser_internal_element &consume) {
 	dst.variable.consume(consume.variable);
-	if (consume.binding_type != ste_shader_stage_binding_type::unknown)
-		dst.binding_type = consume.binding_type;
+	if (consume.type != element_type::unknown)
+		dst.type = consume.type;
 	if (consume.block_layout != ste_shader_stage_block_layout::none)
 		dst.block_layout = consume.block_layout;
-	if (consume.is_binding)
-		dst.is_binding = true;
+	if (consume.bind_assigned)
+		dst.bind_assigned = true;
 }
 
-std::size_t ste_shader_spirv_bindings_parser::process_spirv_op(std::vector<ste_shader_spirv_bindings_parser::ste_shader_binding_internal> &binds,
-															   const std::uint32_t *op) {
+std::size_t ste_shader_spirv_parser::process_spirv_op(std::vector<ste_shader_spirv_parser::parser_internal_element> &binds,
+													  const std::uint32_t *op) {
 	std::uint32_t op_length = op[0];
 	spv::Op opcode = static_cast<spv::Op>(op_length & spv::OpCodeMask);
 	std::uint16_t word_count = op_length >> spv::WordCountShift;
@@ -158,7 +168,7 @@ std::size_t ste_shader_spirv_bindings_parser::process_spirv_op(std::vector<ste_s
 		std::uint32_t id = op[1];
 		bool is_signed = op[3] == 1;
 		binds[id].variable.width = static_cast<std::uint16_t>(op[2]);
-		binds[id].variable.type = is_signed ? 
+		binds[id].variable.type = is_signed ?
 			ste_shader_stage_variable_type::int_t :
 			ste_shader_stage_variable_type::uint_t;
 	}
@@ -229,7 +239,7 @@ std::size_t ste_shader_spirv_bindings_parser::process_spirv_op(std::vector<ste_s
 		}
 		binds[id].variable.array_elements = static_cast<std::uint32_t>(elements.get());
 
-		if (binds[element_id].binding_type == ste_shader_stage_binding_type::spec_constant) {
+		if (binds[element_id].type == element_type::spec_constant) {
 			binds[id].variable.array_length_specialization_constant_id = binds[element_id].bind_idx;
 		}
 	}
@@ -279,7 +289,7 @@ std::size_t ste_shader_spirv_bindings_parser::process_spirv_op(std::vector<ste_s
 			opcode == spv::Op::OpSpecConstantFalse ||
 			opcode == spv::Op::OpSpecConstant ||
 			opcode == spv::Op::OpSpecConstantComposite)
-			binds[id].binding_type = ste_shader_stage_binding_type::spec_constant;
+			binds[id].type = element_type::spec_constant;
 
 		binds[id].is_variable = true;
 	}
@@ -291,7 +301,23 @@ std::size_t ste_shader_spirv_bindings_parser::process_spirv_op(std::vector<ste_s
 	return word_count;
 }
 
-std::vector<ste_shader_stage_binding> ste_shader_spirv_bindings_parser::parse_bindings(const std::string &code) {
+ste_shader_stage_binding_type ste_shader_spirv_parser::element_type_to_binding_type(const element_type &t) {
+	switch (t) {
+	case element_type::push_constant:
+		return ste_shader_stage_binding_type::push_constant;
+	case element_type::storage:
+		return ste_shader_stage_binding_type::storage;
+	case element_type::uniform:
+		return ste_shader_stage_binding_type::uniform;
+	case element_type::spec_constant:
+		return ste_shader_stage_binding_type::spec_constant;
+	default:
+		assert(false);
+		return ste_shader_stage_binding_type::unknown;
+	}
+}
+
+ste_shader_spirv_parser_output ste_shader_spirv_parser::parse(const std::string &code) {
 	if (code.size() % 4 > 0) {
 		throw ste_shader_load_spirv_corrupt_or_incompatible();
 	}
@@ -307,7 +333,7 @@ std::vector<ste_shader_stage_binding> ste_shader_spirv_bindings_parser::parse_bi
 	}
 
 	std::uint32_t bound_count = spirv[3];
-	std::vector<ste_shader_binding_internal> binds;
+	std::vector<parser_internal_element> binds;
 	binds.resize(bound_count);
 
 	std::vector<const std::uint32_t *> postponed_ops;
@@ -315,30 +341,53 @@ std::vector<ste_shader_stage_binding> ste_shader_spirv_bindings_parser::parse_bi
 	// Read and parse bindings
 	for (std::size_t offset = 5; offset < spirv.size();) {
 		const std::uint32_t *op = &spirv[offset];
-		auto word_count = process_spirv_op(binds, 
+		auto word_count = process_spirv_op(binds,
 										   op);
 
 		offset += word_count;
 	}
 
-	// Write out only relevant binds
-	std::vector<ste_shader_stage_binding> recognized_binds;
+	// Create output
+	ste_shader_spirv_parser_output output;
+
+	// Write out only relevant bindings and attachments
 	for (auto &b : binds) {
-		if (b.is_complete()) {
-			assert(b.binding_type != ste_shader_stage_binding_type::unknown);
-			assert(b.variable.type != ste_shader_stage_variable_type::unknown);
+		bool is_attachment = b.is_attachment();
+		bool is_binding = b.is_binding();
+		if (!is_attachment && !is_binding)
+			continue;
+
+		assert(b.type != element_type::unknown);
+		assert(b.variable.type != ste_shader_stage_variable_type::unknown);
+
+		// Generate the underlying variable
+		auto variable = b.variable.generate_variable(b.type == element_type::spec_constant,
+													 output.bindings);
+
+		if (is_attachment) {
+			// Output attachment
+			ste_shader_stage_attachment attachment;
+			attachment.location = b.location_idx;
+			attachment.block_layout = b.block_layout;
+			attachment.variable = std::move(variable);
+
+			output.attachments.push_back(std::move(attachment));
+		}
+		else if (is_binding) {
+			// Resource binding
+			auto binding_type = element_type_to_binding_type(b.type);
 
 			ste_shader_stage_binding binding;
 			binding.set_idx = b.set_idx;
 			binding.bind_idx = b.bind_idx;
-			binding.binding_type = b.binding_type;
+			binding.binding_type = binding_type;
 			binding.block_layout = b.block_layout;
-			binding.variable = b.variable.generate_variable(binding.binding_type == ste_shader_stage_binding_type::spec_constant,
-															recognized_binds);
-			recognized_binds.push_back(std::move(binding));
+			binding.variable = std::move(variable);
+
+			output.bindings.push_back(std::move(binding));
 		}
 	}
 
-	return recognized_binds;
+	return output;
 }
 

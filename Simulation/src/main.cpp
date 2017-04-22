@@ -175,7 +175,7 @@ int main()
 										 std::ref(external_sets));
 
 		auto v = &(*pipeline)["glyph_textures"].get_var();
-		auto va = dynamic_cast<const GL::ste_shader_stage_binding_variable_array*>(v);
+		auto va = dynamic_cast<const GL::ste_shader_stage_variable_array*>(v);
 		auto array_length = va->size();
 
 		external_sets.update();

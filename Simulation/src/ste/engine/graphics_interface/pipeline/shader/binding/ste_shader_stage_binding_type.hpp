@@ -18,12 +18,6 @@ enum class ste_shader_stage_binding_type : std::uint16_t {
 	spec_constant,
 };
 
-enum class ste_shader_stage_block_layout : std::uint16_t {
-	none,
-	std140,
-	std430,
-};
-
 /**
 *	@brief	Returns the appropriate VkDescriptorType type.
 *

@@ -2,9 +2,8 @@
 
 #include <stdafx.hpp>
 
-#include <spirv_tokens.hpp>
 #include <ste_shader_stage_binding.hpp>
-#include <ste_shader_stage_binding_variable.hpp>
+#include <ste_shader_stage_variable.hpp>
 #include <ste_shader_exceptions.hpp>
 
 #include <vector>
@@ -16,7 +15,7 @@ namespace GL {
 
 namespace _internal {
 
-struct ste_shader_spirv_bindings_parsed_variable {
+struct ste_shader_spirv_parsed_variable {
 	ste_shader_stage_variable_type type{ ste_shader_stage_variable_type::unknown };
 	std::string name;
 
@@ -32,9 +31,9 @@ struct ste_shader_spirv_bindings_parsed_variable {
 	std::uint16_t width{ 0 };						// Integer/float width, only used for int_t and uint_t.
 	optional<std::uint64_t> constant_value;			// Constant integer value, if available.
 
-	std::vector<ste_shader_spirv_bindings_parsed_variable> struct_members;
+	std::vector<ste_shader_spirv_parsed_variable> struct_members;
 
-	void consume(const ste_shader_spirv_bindings_parsed_variable &src) {
+	void consume(const ste_shader_spirv_parsed_variable &src) {
 		// Consume only non-default attributes
 
 		std::string name = std::move(src.name.size() ?
@@ -110,8 +109,8 @@ struct ste_shader_spirv_bindings_parsed_variable {
 		return columns > 1;
 	}
 
-	std::unique_ptr<ste_shader_stage_binding_variable> generate_variable(bool is_spec_constant,
-																		 const std::vector<ste_shader_stage_binding> &binds) const {
+	std::unique_ptr<ste_shader_stage_variable> generate_variable(bool is_spec_constant,
+																 const std::vector<ste_shader_stage_binding> &binds) const {
 		// Unknown type is an internal error
 		if (!has_type()) {
 			throw ste_shader_opaque_or_unknown_type();
@@ -119,16 +118,16 @@ struct ste_shader_spirv_bindings_parsed_variable {
 
 		// Arrays, matrices and vectors are composite types.
 		// Create underlying types first.
-		std::unique_ptr<ste_shader_stage_binding_variable> var;
+		std::unique_ptr<ste_shader_stage_variable> var;
 
 		if (is_opaque()) {
-			var = std::unique_ptr<ste_shader_stage_binding_variable>(std::make_unique<ste_shader_stage_binding_variable_opaque>(type,
-																																name, 
-																																offset));
+			var = std::unique_ptr<ste_shader_stage_variable>(std::make_unique<ste_shader_stage_variable_opaque>(type,
+																												name,
+																												offset));
 		}
 		else if (is_struct()) {
 			// Handle structs recursively
-			std::vector<std::unique_ptr<ste_shader_stage_binding_variable>> elements;
+			std::vector<std::unique_ptr<ste_shader_stage_variable>> elements;
 			for (auto &e : struct_members) {
 				// Sort by offset
 				auto it = elements.begin();
@@ -139,42 +138,42 @@ struct ste_shader_spirv_bindings_parsed_variable {
 														binds));
 			}
 
-			var = std::unique_ptr<ste_shader_stage_binding_variable>(std::make_unique<ste_shader_stage_binding_variable_struct>(std::move(elements),
-																																name,
-																																offset));
+			var = std::unique_ptr<ste_shader_stage_variable>(std::make_unique<ste_shader_stage_variable_struct>(std::move(elements),
+																												name,
+																												offset));
 		}
 		else {
 			// Handle scalars, vectors and matrices
-			auto scalar_var = std::make_unique<ste_shader_stage_binding_variable_scalar>(type,
-																						 name,
-																						 offset,
-																						 width);
+			auto scalar_var = std::make_unique<ste_shader_stage_variable_scalar>(type,
+																				 name,
+																				 offset,
+																				 width);
 
 			if (rows > 1 || columns > 1) {
 				// Vector/matrix
-				auto matrix_var = std::make_unique<ste_shader_stage_binding_variable_matrix>(std::move(scalar_var),
-																							 name,
-																							 offset,
-																							 rows,
-																							 columns,
-																							 matrix_stride);
-				var = std::unique_ptr<ste_shader_stage_binding_variable>(std::move(matrix_var));
+				auto matrix_var = std::make_unique<ste_shader_stage_variable_matrix>(std::move(scalar_var),
+																					 name,
+																					 offset,
+																					 rows,
+																					 columns,
+																					 matrix_stride);
+				var = std::unique_ptr<ste_shader_stage_variable>(std::move(matrix_var));
 			}
 			else {
 				// Scalar
-				var = std::unique_ptr<ste_shader_stage_binding_variable>(std::move(scalar_var));
+				var = std::unique_ptr<ste_shader_stage_variable>(std::move(scalar_var));
 			}
 		}
 
 		// Arrays
 		if (is_array()) {
 			// For specializeable array lengths, find the specialization constant
-			optional<const ste_shader_stage_binding_variable_scalar*> length_specialization_constant;
+			optional<const ste_shader_stage_variable_scalar*> length_specialization_constant;
 			if (array_length_specialization_constant_id) {
 				for (auto &b : binds) {
 					if (b.binding_type == ste_shader_stage_binding_type::spec_constant &&
 						b.bind_idx == array_length_specialization_constant_id.get()) {
-						auto ptr = dynamic_cast<const ste_shader_stage_binding_variable_scalar *>(b.variable.get());
+						auto ptr = dynamic_cast<const ste_shader_stage_variable_scalar *>(b.variable.get());
 						assert(ptr);
 						if (ptr)
 							length_specialization_constant = ptr;
@@ -185,13 +184,13 @@ struct ste_shader_spirv_bindings_parsed_variable {
 				assert(!!length_specialization_constant && "Specialization constant not found!");
 			}
 
-			auto array_var = std::make_unique<ste_shader_stage_binding_variable_array>(std::move(var),
-																					   name,
-																					   offset,
-																					   array_elements,
-																					   matrix_stride,
-																					   length_specialization_constant);
-			var = std::unique_ptr<ste_shader_stage_binding_variable>(std::move(array_var));
+			auto array_var = std::make_unique<ste_shader_stage_variable_array>(std::move(var),
+																			   name,
+																			   offset,
+																			   array_elements,
+																			   matrix_stride,
+																			   length_specialization_constant);
+			var = std::unique_ptr<ste_shader_stage_variable>(std::move(array_var));
 		}
 
 		// Specialization constants: Save default value
@@ -208,46 +207,6 @@ struct ste_shader_spirv_bindings_parsed_variable {
 };
 
 }
-
-class ste_shader_spirv_bindings_parser {
-private:
-	struct ste_shader_binding_internal {
-		std::uint32_t set_idx;
-		std::uint32_t bind_idx;
-
-		_internal::ste_shader_spirv_bindings_parsed_variable variable;
-		ste_shader_stage_binding_type binding_type{ ste_shader_stage_binding_type::unknown };
-		ste_shader_stage_block_layout block_layout;
-
-		bool is_variable{ false };
-		bool is_binding{ false };
-
-		std::vector<const std::uint32_t*> struct_member_ops;
-
-		bool is_complete() const {
-			// Filter out those pesky non-block "push constants"
-			if (binding_type == ste_shader_stage_binding_type::push_constant &&
-				block_layout == ste_shader_stage_block_layout::none)
-				return false;
-			
-			assert(!is_binding || binding_type != ste_shader_stage_binding_type::unknown);
-
-			return is_variable && is_binding;
-		}
-	};
-
-private:
-	static void parse_constant_value(ste_shader_binding_internal &, const std::uint32_t *);
-	static void parse_decoration(ste_shader_binding_internal &, const std::uint32_t *);
-	static void parse_decoration(_internal::ste_shader_spirv_bindings_parsed_variable &, const std::uint32_t *);
-	static void parse_storage_class(ste_shader_binding_internal &, std::uint32_t);
-	static void consume_type(ste_shader_binding_internal &, const ste_shader_binding_internal &);
-	static std::size_t process_spirv_op(std::vector<ste_shader_binding_internal> &, 
-										const std::uint32_t *);
-
-public:
-	static std::vector<ste_shader_stage_binding> parse_bindings(const std::string &spirv_code);
-};
 
 }
 }

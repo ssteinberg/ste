@@ -21,14 +21,14 @@ private:
 	friend class pipeline_push_constants_layout;
 
 private:
-	const ste_shader_stage_binding_variable *variable{ nullptr };
+	const ste_shader_stage_variable *variable{ nullptr };
 
 	// Total offset of variable in parent push constant layout
 	std::uint32_t total_offset{ 0 };
 	children_descriptors_map_t children;
 
 private:
-	auto& emplace_child(const ste_shader_stage_binding_variable *element,
+	auto& emplace_child(const ste_shader_stage_variable *element,
 						std::uint32_t parent_offset) {
 		auto offset = parent_offset + element->offset();
 		auto pair = children.emplace(element->name(), push_constant_descriptor(element,
@@ -38,7 +38,7 @@ private:
 	}
 
 	push_constant_descriptor() = default;
-	push_constant_descriptor(const ste_shader_stage_binding_variable *variable,
+	push_constant_descriptor(const ste_shader_stage_variable *variable,
 							 std::uint32_t parent_offset)
 		: variable(variable),
 		total_offset(parent_offset + variable->offset())

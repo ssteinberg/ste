@@ -40,7 +40,7 @@ private:
 	}
 
 public:
-	pipeline_specialization_constant_bind_point(const ste_shader_stage_binding_variable *variable,
+	pipeline_specialization_constant_bind_point(const ste_shader_stage_variable *variable,
 												pipeline_layout *layout,
 												const std::string &name)
 		: Base(variable),

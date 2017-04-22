@@ -25,7 +25,7 @@ class pipeline_push_constants_layout {
 
 private:
 	struct push_variable {
-		const ste_shader_stage_binding_variable *variable;
+		const ste_shader_stage_variable *variable;
 		std::string push_path;
 
 		std::uint32_t offset;
@@ -72,7 +72,7 @@ private:
 	std::string data;
 
 private:
-	static void populate_push_variables(const ste_shader_stage_binding_variable *variable,
+	static void populate_push_variables(const ste_shader_stage_variable *variable,
 										std::uint32_t parent_offset,
 										const pipeline_binding_stages_collection &stages,
 										const std::string &path,
@@ -86,7 +86,7 @@ private:
 		// 'variables' array.
 		auto& child_node_it = node.emplace_child(variable, parent_offset);
 
-		const auto* struct_variable = dynamic_cast<const ste_shader_stage_binding_variable_struct*>(variable);
+		const auto* struct_variable = dynamic_cast<const ste_shader_stage_variable_struct*>(variable);
 		if (struct_variable != nullptr) {
 			// A struct variable, populate members
 			for (auto &element : *struct_variable) {

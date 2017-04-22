@@ -4,7 +4,7 @@
 #pragma once
 
 #include <stdafx.hpp>
-#include <ste_shader_stage_binding_variable.hpp>
+#include <ste_shader_stage_variable.hpp>
 
 #include <type_traits>
 
@@ -74,10 +74,10 @@ private:
 	>;
 
 private:
-	const ste_shader_stage_binding_variable *variable;
+	const ste_shader_stage_variable *variable;
 
 public:
-	pipeline_bind_point_base(const ste_shader_stage_binding_variable *variable) : variable(variable) {}
+	pipeline_bind_point_base(const ste_shader_stage_variable *variable) : variable(variable) {}
 	virtual ~pipeline_bind_point_base() noexcept {}
 
 	pipeline_bind_point_base(pipeline_bind_point_base&&) = default;

@@ -15,6 +15,8 @@
 #include <ste_shader_blob_header.hpp>
 #include <ste_shader_exceptions.hpp>
 
+#include <ste_shader_spirv_parser_output.hpp>
+
 #include <string>
 #include <vector>
 #include <istream>
@@ -54,7 +56,7 @@ private:
 		}
 	}
 
-	static std::vector<ste_shader_stage_binding> verify_spirv_and_read_bindings(const std::string &code);
+	static ste_shader_spirv_parser_output verify_spirv_and_read_bindings(const std::string &code);
 
 	static auto load_and_verify_shader_blob(const ste_context &ctx,
 											const std::string &name) {
@@ -77,8 +79,10 @@ private:
 		// Verify header
 		verify_blob_header_sanity(header);
 
-		// Parse SPIR-v, and read bound resources
-		std::vector<ste_shader_stage_binding> stage_bindings = verify_spirv_and_read_bindings(code);
+		// Parse SPIR-v, and read resources' bindings and output attachments.
+		auto parse_output = verify_spirv_and_read_bindings(code);
+		auto &stage_bindings = parse_output.bindings;
+		auto &stage_attachments = parse_output.attachments;
 
 		// If header checks out, create the shader object
 		ste_shader_stage stage = header.type;
@@ -86,7 +90,8 @@ private:
 		return std::make_unique<const ste_shader_object>(ctx.device(),
 														 code,
 														 stage,
-														 std::move(stage_bindings));
+														 std::move(stage_bindings),
+														 std::move(stage_attachments));
 	}
 
 public:

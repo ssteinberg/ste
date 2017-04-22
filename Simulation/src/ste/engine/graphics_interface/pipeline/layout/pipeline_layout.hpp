@@ -10,7 +10,7 @@
 #include <ste_shader_stage.hpp>
 #include <device_pipeline_shader_stage.hpp>
 
-#include <ste_shader_stage_binding_variable.hpp>
+#include <ste_shader_stage_variable.hpp>
 #include <pipeline_external_binding_set_collection.hpp>
 #include <pipeline_binding_layout_collection.hpp>
 
@@ -52,7 +52,7 @@ private:
 	using binding_sets_layout_map_t = boost::container::flat_map<pipeline_layout_set_index, pipeline_binding_set_layout>;
 
 	using spec_to_dependant_array_variables_map_t = 
-		boost::container::flat_map<const ste_shader_stage_binding_variable*, std::vector<const pipeline_binding_layout*>>;
+		boost::container::flat_map<const ste_shader_stage_variable*, std::vector<const pipeline_binding_layout*>>;
 
 private:
 	const ste_context &ctx;
@@ -166,7 +166,7 @@ private:
 
 			// Map array variables whose length depends on specialization constants
 			// This allows the pipeline layout to react to respecializations
-			auto var_arr = dynamic_cast<const ste_shader_stage_binding_variable_array*>(b.second.binding->variable.get());
+			auto var_arr = dynamic_cast<const ste_shader_stage_variable_array*>(b.second.binding->variable.get());
 			if (var_arr && var_arr->length_spec_constant()) {
 				spec_to_dependant_array_variables_map[var_arr->get_length_spec_constant_var()].push_back(&val);
 			}
@@ -225,7 +225,7 @@ private:
 
 		auto &b = *it->second->binding;
 		auto *var = b.variable.get();
-		auto *ptr = dynamic_cast<ste_shader_stage_binding_variable_scalar*>(var);
+		auto *ptr = dynamic_cast<ste_shader_stage_variable_scalar*>(var);
 		assert(ptr);
 		if (ptr) {
 			// Do nothing if value unchanged

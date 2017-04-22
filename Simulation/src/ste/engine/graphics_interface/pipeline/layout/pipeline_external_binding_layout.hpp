@@ -6,13 +6,14 @@
 #include <stdafx.hpp>
 #include <pipeline_binding_layout_interface.hpp>
 #include <pipeline_layout_set_index.hpp>
+#include <pipeline_binding_stages_collection.hpp>
 
 #include <ste_shader_stage_binding.hpp>
 #include <ste_shader_stage_binding_type.hpp>
 #include <ste_shader_stage_variable_type.hpp>
-#include <pipeline_binding_stages_collection.hpp>
-
+#include <ste_shader_stage_block_layout.hpp>
 #include <ste_shader_stage_variable_from_type.hpp>
+
 #include <std430_layout.hpp>
 
 #include <functional>
@@ -98,7 +99,7 @@ private:
 		binding.binding_type = descriptor.binding_type();
 		binding.block_layout = descriptor.block_layout();
 
-		std::unique_ptr<ste_shader_stage_binding_variable> variable = 
+		std::unique_ptr<ste_shader_stage_variable> variable = 
 			ste_shader_stage_variable_from_type<T, descriptor.is_storage_image>(name);
 		binding.variable = std::move(variable);
 

@@ -24,19 +24,19 @@ namespace GL {
 namespace _internal {
 
 template <typename Src, typename Target0, typename... Targets>
-struct ste_shader_stage_binding_variable_dispatcher {
+struct ste_shader_stage_variable_dispatcher {
 	template <typename T, typename... Ts>
 	static void validate(const Src *src, Ts&&... ts) {
 		if (auto *ptr = dynamic_cast<const Target0*>(src)) {
 			ptr->template validate<T>(std::forward<Ts>(ts)...);
 			return;
 		}
-		ste_shader_stage_binding_variable_dispatcher<Src, Targets...>::template validate<T>(src,
+		ste_shader_stage_variable_dispatcher<Src, Targets...>::template validate<T>(src,
 																							std::forward<Ts>(ts)...);
 	}
 };
 template <typename Src, typename Target0>
-struct ste_shader_stage_binding_variable_dispatcher<Src, Target0> {
+struct ste_shader_stage_variable_dispatcher<Src, Target0> {
 	template <typename T, typename... Ts>
 	static void validate(const Src *src, Ts&&... ts) {
 		if (auto *ptr = dynamic_cast<const Target0*>(src)) {
@@ -49,37 +49,37 @@ struct ste_shader_stage_binding_variable_dispatcher<Src, Target0> {
 };
 
 template <typename T, bool is_block>
-struct ste_shader_stage_binding_variable_remove_blocks {};
+struct ste_shader_stage_variable_remove_blocks {};
 template <typename T>
-struct ste_shader_stage_binding_variable_remove_blocks<T, false> {
+struct ste_shader_stage_variable_remove_blocks<T, false> {
 	using type = T;
 };
 template <typename B>
-struct ste_shader_stage_binding_variable_remove_blocks<B, true> {
+struct ste_shader_stage_variable_remove_blocks<B, true> {
 	static constexpr bool single_element_block = B::count == 1;
 	using T = typename B::template type_at<0>;
 	using type = std::conditional_t<
 		single_element_block,
-		typename ste_shader_stage_binding_variable_remove_blocks<T, is_block_layout_v<T>>::type,
+		typename ste_shader_stage_variable_remove_blocks<T, is_block_layout_v<T>>::type,
 		error_type
 	>;
 };
 template <typename T>
-using ste_shader_stage_binding_variable_remove_blocks_t = 
-	typename ste_shader_stage_binding_variable_remove_blocks<T, is_block_layout_v<T>>::type;
+using ste_shader_stage_variable_remove_blocks_t = 
+	typename ste_shader_stage_variable_remove_blocks<T, is_block_layout_v<T>>::type;
 
 }
 
-class ste_shader_stage_binding_variable_opaque;
-class ste_shader_stage_binding_variable_scalar;
-class ste_shader_stage_binding_variable_matrix;
-class ste_shader_stage_binding_variable_array;
-class ste_shader_stage_binding_variable_struct;
+class ste_shader_stage_variable_opaque;
+class ste_shader_stage_variable_scalar;
+class ste_shader_stage_variable_matrix;
+class ste_shader_stage_variable_array;
+class ste_shader_stage_variable_struct;
 
 /**
  *	@brief	Shader binding variable
  */
-class ste_shader_stage_binding_variable {
+class ste_shader_stage_variable {
 private:
 	std::string var_name;
 	std::uint16_t offset_bytes{ 0 };
@@ -87,28 +87,28 @@ private:
 	optional<std::string> specialized_value;
 
 private:
-	using dispatcher = _internal::ste_shader_stage_binding_variable_dispatcher<
-		ste_shader_stage_binding_variable,
-		ste_shader_stage_binding_variable_opaque,
-		ste_shader_stage_binding_variable_scalar,
-		ste_shader_stage_binding_variable_matrix,
-		ste_shader_stage_binding_variable_array,
-		ste_shader_stage_binding_variable_struct
+	using dispatcher = _internal::ste_shader_stage_variable_dispatcher<
+		ste_shader_stage_variable,
+		ste_shader_stage_variable_opaque,
+		ste_shader_stage_variable_scalar,
+		ste_shader_stage_variable_matrix,
+		ste_shader_stage_variable_array,
+		ste_shader_stage_variable_struct
 	>;
 
 protected:
-	ste_shader_stage_binding_variable(std::string name,
+	ste_shader_stage_variable(std::string name,
 									  std::uint16_t offset_bytes = 0)
 		: var_name(name), offset_bytes(offset_bytes)
 	{}
 
 public:
-	ste_shader_stage_binding_variable(ste_shader_stage_binding_variable&&) = default;
-	ste_shader_stage_binding_variable &operator=(ste_shader_stage_binding_variable&&) = default;
-	ste_shader_stage_binding_variable(const ste_shader_stage_binding_variable&) = default;
-	ste_shader_stage_binding_variable &operator=(const ste_shader_stage_binding_variable&) = default;
+	ste_shader_stage_variable(ste_shader_stage_variable&&) = default;
+	ste_shader_stage_variable &operator=(ste_shader_stage_variable&&) = default;
+	ste_shader_stage_variable(const ste_shader_stage_variable&) = default;
+	ste_shader_stage_variable &operator=(const ste_shader_stage_variable&) = default;
 
-	virtual ~ste_shader_stage_binding_variable() noexcept {}
+	virtual ~ste_shader_stage_variable() noexcept {}
 
 	/**
 	*	@brief	Variable type
@@ -209,7 +209,7 @@ public:
 	/**
 	*	@brief	Checks if the variables are compatible. (i.e. std::is_same_v<>)
 	*/
-	virtual bool compatible(const ste_shader_stage_binding_variable &var) const {
+	virtual bool compatible(const ste_shader_stage_variable &var) const {
 		return type() == var.type() &&
 			size_bytes() == var.size_bytes();
 	}
@@ -218,12 +218,12 @@ public:
 	 *	@brief	Checks if the variables are identical.
 	 *			Identical variables are compatible, have same name and offset.
 	 */
-	virtual bool operator==(const ste_shader_stage_binding_variable &var) const {
+	virtual bool operator==(const ste_shader_stage_variable &var) const {
 		return this->compatible(var) &&
 			offset() == var.offset() &&
 			name() == var.name();
 	}
-	bool operator!=(const ste_shader_stage_binding_variable &var) const {
+	bool operator!=(const ste_shader_stage_variable &var) const {
 		return !(*this == var);
 	}
 };
@@ -232,26 +232,26 @@ public:
 *	@brief	Shader binding variable
 *			Opaque type
 */
-class ste_shader_stage_binding_variable_opaque : public ste_shader_stage_binding_variable {
-	using Base = ste_shader_stage_binding_variable;
+class ste_shader_stage_variable_opaque : public ste_shader_stage_variable {
+	using Base = ste_shader_stage_variable;
 
 private:
 	ste_shader_stage_variable_type var_type;
 
 public:
-	ste_shader_stage_binding_variable_opaque(const ste_shader_stage_variable_type &type,
+	ste_shader_stage_variable_opaque(const ste_shader_stage_variable_type &type,
 											 std::string name,
 											 std::uint16_t offset_bytes)
 		: Base(name, offset_bytes),
 		var_type(type)
 	{}
 
-	ste_shader_stage_binding_variable_opaque(ste_shader_stage_binding_variable_opaque&&) = default;
-	ste_shader_stage_binding_variable_opaque &operator=(ste_shader_stage_binding_variable_opaque&&) = default;
-	ste_shader_stage_binding_variable_opaque(const ste_shader_stage_binding_variable_opaque&) = default;
-	ste_shader_stage_binding_variable_opaque &operator=(const ste_shader_stage_binding_variable_opaque&) = default;
+	ste_shader_stage_variable_opaque(ste_shader_stage_variable_opaque&&) = default;
+	ste_shader_stage_variable_opaque &operator=(ste_shader_stage_variable_opaque&&) = default;
+	ste_shader_stage_variable_opaque(const ste_shader_stage_variable_opaque&) = default;
+	ste_shader_stage_variable_opaque &operator=(const ste_shader_stage_variable_opaque&) = default;
 
-	virtual ~ste_shader_stage_binding_variable_opaque() noexcept {}
+	virtual ~ste_shader_stage_variable_opaque() noexcept {}
 
 	ste_shader_stage_variable_type type() const override final { return var_type; }
 	std::uint32_t size_bytes() const override final { return 0; }
@@ -261,7 +261,7 @@ public:
 	*/
 	template <typename T>
 	void validate() const {
-		using Type = _internal::ste_shader_stage_binding_variable_remove_blocks_t<T>;
+		using Type = _internal::ste_shader_stage_variable_remove_blocks_t<T>;
 
 		if (var_type == ste_shader_stage_variable_type::sampler_t &&
 			!std::is_convertible_v<Type, sampler>)
@@ -282,15 +282,15 @@ public:
 *	@brief	Shader binding variable
 *			Scalar types, signed/unsigned integers and floating-points.
 */
-class ste_shader_stage_binding_variable_scalar : public ste_shader_stage_binding_variable {
-	using Base = ste_shader_stage_binding_variable;
+class ste_shader_stage_variable_scalar : public ste_shader_stage_variable {
+	using Base = ste_shader_stage_variable;
 
 private:
 	ste_shader_stage_variable_type var_type;
 	std::uint16_t var_width;
 
 public:
-	ste_shader_stage_binding_variable_scalar(const ste_shader_stage_variable_type &type,
+	ste_shader_stage_variable_scalar(const ste_shader_stage_variable_type &type,
 											 std::string name,
 											 std::uint16_t offset_bytes,
 											 std::uint16_t width)
@@ -299,12 +299,12 @@ public:
 		var_width(width)
 	{}
 
-	ste_shader_stage_binding_variable_scalar(ste_shader_stage_binding_variable_scalar&&) = default;
-	ste_shader_stage_binding_variable_scalar &operator=(ste_shader_stage_binding_variable_scalar&&) = default;
-	ste_shader_stage_binding_variable_scalar(const ste_shader_stage_binding_variable_scalar&) = default;
-	ste_shader_stage_binding_variable_scalar &operator=(const ste_shader_stage_binding_variable_scalar&) = default;
+	ste_shader_stage_variable_scalar(ste_shader_stage_variable_scalar&&) = default;
+	ste_shader_stage_variable_scalar &operator=(ste_shader_stage_variable_scalar&&) = default;
+	ste_shader_stage_variable_scalar(const ste_shader_stage_variable_scalar&) = default;
+	ste_shader_stage_variable_scalar &operator=(const ste_shader_stage_variable_scalar&) = default;
 
-	virtual ~ste_shader_stage_binding_variable_scalar() noexcept {}
+	virtual ~ste_shader_stage_variable_scalar() noexcept {}
 
 	ste_shader_stage_variable_type type() const override final { return var_type; }
 	std::uint32_t size_bytes() const override final { return var_width >> 3; }
@@ -328,7 +328,7 @@ public:
 	*/
 	template <typename T>
 	void validate() const {
-		using Type = _internal::ste_shader_stage_binding_variable_remove_blocks_t<T>;
+		using Type = _internal::ste_shader_stage_variable_remove_blocks_t<T>;
 		static constexpr bool type_is_signed = ::StE::GL::is_signed<Type>::value;
 		static constexpr bool type_is_float =  ::StE::GL::is_floating_point<Type>::value;
 		static constexpr bool type_is_scalar = ::StE::GL::is_scalar<Type>::value;
@@ -348,17 +348,17 @@ public:
 *	@brief	Shader binding variable
 *			Matrix type
 */
-class ste_shader_stage_binding_variable_matrix : public ste_shader_stage_binding_variable {
-	using Base = ste_shader_stage_binding_variable;
+class ste_shader_stage_variable_matrix : public ste_shader_stage_variable {
+	using Base = ste_shader_stage_variable;
 
 private:
 	std::uint16_t var_matrix_stride;
 	std::uint32_t var_rows;
 	std::uint32_t var_columns;
-	std::unique_ptr<ste_shader_stage_binding_variable_scalar> scalar_var;
+	std::unique_ptr<ste_shader_stage_variable_scalar> scalar_var;
 
 public:
-	ste_shader_stage_binding_variable_matrix(std::unique_ptr<ste_shader_stage_binding_variable_scalar> &&scalar,
+	ste_shader_stage_variable_matrix(std::unique_ptr<ste_shader_stage_variable_scalar> &&scalar,
 											 std::string name,
 											 std::uint16_t offset_bytes,
 											 std::uint32_t rows,
@@ -374,12 +374,12 @@ public:
 		assert(rows >= 1 && rows <= 4);
 	}
 
-	ste_shader_stage_binding_variable_matrix(ste_shader_stage_binding_variable_matrix&&) = default;
-	ste_shader_stage_binding_variable_matrix &operator=(ste_shader_stage_binding_variable_matrix&&) = default;
-	ste_shader_stage_binding_variable_matrix(const ste_shader_stage_binding_variable_matrix&) = default;
-	ste_shader_stage_binding_variable_matrix &operator=(const ste_shader_stage_binding_variable_matrix&) = default;
+	ste_shader_stage_variable_matrix(ste_shader_stage_variable_matrix&&) = default;
+	ste_shader_stage_variable_matrix &operator=(ste_shader_stage_variable_matrix&&) = default;
+	ste_shader_stage_variable_matrix(const ste_shader_stage_variable_matrix&) = default;
+	ste_shader_stage_variable_matrix &operator=(const ste_shader_stage_variable_matrix&) = default;
 
-	virtual ~ste_shader_stage_binding_variable_matrix() noexcept {}
+	virtual ~ste_shader_stage_variable_matrix() noexcept {}
 
 	ste_shader_stage_variable_type type() const override final { return scalar_var->type(); }
 	std::uint32_t size_bytes() const override final {
@@ -411,7 +411,7 @@ public:
 	*/
 	template <typename T>
 	void validate() const {
-		using Type = _internal::ste_shader_stage_binding_variable_remove_blocks_t<T>;
+		using Type = _internal::ste_shader_stage_variable_remove_blocks_t<T>;
 
 		scalar_var->validate<typename remove_extents<Type>::type>();
 
@@ -425,7 +425,7 @@ public:
 	/**
 	*	@brief	Checks if the variables reference the same binding
 	*/
-	bool compatible(const ste_shader_stage_binding_variable &var) const override {
+	bool compatible(const ste_shader_stage_variable &var) const override {
 		auto *ptr = dynamic_cast<decltype(this)>(&var);
 		if (!ptr)
 			return false;
@@ -440,23 +440,23 @@ public:
 *	@brief	Shader binding variable
 *			Array of variables
 */
-class ste_shader_stage_binding_variable_array : public ste_shader_stage_binding_variable {
-	using Base = ste_shader_stage_binding_variable;
+class ste_shader_stage_variable_array : public ste_shader_stage_variable {
+	using Base = ste_shader_stage_variable;
 
 private:
 	std::uint32_t array_elements{ 1 };
 	std::uint16_t array_stride{ 0 };
-	std::unique_ptr<ste_shader_stage_binding_variable> var;
+	std::unique_ptr<ste_shader_stage_variable> var;
 
-	optional<const ste_shader_stage_binding_variable_scalar*> length_specialization_constant;
+	optional<const ste_shader_stage_variable_scalar*> length_specialization_constant;
 
 public:
-	ste_shader_stage_binding_variable_array(std::unique_ptr<ste_shader_stage_binding_variable> &&var,
+	ste_shader_stage_variable_array(std::unique_ptr<ste_shader_stage_variable> &&var,
 											std::string name,
 											std::uint16_t offset_bytes,
 											std::uint32_t array_elements,
 											std::uint16_t array_stride,
-											optional<const ste_shader_stage_binding_variable_scalar*> length_specialization_constant = none)
+											optional<const ste_shader_stage_variable_scalar*> length_specialization_constant = none)
 		: Base(name, offset_bytes),
 		array_elements(array_elements),
 		array_stride(array_stride),
@@ -464,12 +464,12 @@ public:
 		length_specialization_constant(length_specialization_constant)
 	{}
 
-	ste_shader_stage_binding_variable_array(ste_shader_stage_binding_variable_array&&) = default;
-	ste_shader_stage_binding_variable_array &operator=(ste_shader_stage_binding_variable_array&&) = default;
-	ste_shader_stage_binding_variable_array(const ste_shader_stage_binding_variable_array&) = default;
-	ste_shader_stage_binding_variable_array &operator=(const ste_shader_stage_binding_variable_array&) = default;
+	ste_shader_stage_variable_array(ste_shader_stage_variable_array&&) = default;
+	ste_shader_stage_variable_array &operator=(ste_shader_stage_variable_array&&) = default;
+	ste_shader_stage_variable_array(const ste_shader_stage_variable_array&) = default;
+	ste_shader_stage_variable_array &operator=(const ste_shader_stage_variable_array&) = default;
 
-	virtual ~ste_shader_stage_binding_variable_array() noexcept {}
+	virtual ~ste_shader_stage_variable_array() noexcept {}
 
 	ste_shader_stage_variable_type type() const override final { return var->type(); }
 	std::uint32_t size_bytes() const override final {
@@ -510,7 +510,7 @@ public:
 	*/
 	template <typename T>
 	void validate() const {
-		using T2 = _internal::ste_shader_stage_binding_variable_remove_blocks_t<T>;
+		using T2 = _internal::ste_shader_stage_variable_remove_blocks_t<T>;
 
 		if (std::is_array_v<T>) {
 			// T is an array
@@ -521,7 +521,7 @@ public:
 			if (sizeof(ElementT) != stride())
 				throw ste_shader_variable_layout_verification_array_stride_mismatch("Array stride mismatch");
 
-			using Type = _internal::ste_shader_stage_binding_variable_remove_blocks_t<ElementT>;
+			using Type = _internal::ste_shader_stage_variable_remove_blocks_t<ElementT>;
 			var->validate<std::remove_extent_t<Type>>();
 		}
 		else if (std::is_array_v<T2>) {
@@ -533,7 +533,7 @@ public:
 			if (sizeof(ElementT) != stride())
 				throw ste_shader_variable_layout_verification_array_stride_mismatch("Array stride mismatch");
 
-			using Type = _internal::ste_shader_stage_binding_variable_remove_blocks_t<ElementT>;
+			using Type = _internal::ste_shader_stage_variable_remove_blocks_t<ElementT>;
 			var->validate<std::remove_extent_t<Type>>();
 		}
 		else {
@@ -548,7 +548,7 @@ public:
 	/**
 	*	@brief	Checks if the variables reference the same binding
 	*/
-	bool compatible(const ste_shader_stage_binding_variable &var) const override {
+	bool compatible(const ste_shader_stage_variable &var) const override {
 		auto *ptr = dynamic_cast<decltype(this)>(&var);
 		if (!ptr)
 			return false;
@@ -563,36 +563,36 @@ public:
 namespace _internal {
 
 template <typename T>
-void ste_shader_stage_binding_variable_type_validator(std::uint32_t offset,
-													  const ste_shader_stage_binding_variable *var) {
+void ste_shader_stage_variable_type_validator(std::uint32_t offset,
+													  const ste_shader_stage_variable *var) {
 	if (var->offset() != offset)
 		throw ste_shader_variable_layout_verification_offset_mismatch("Struct member offset mismatch");
 	var->validate<T>();
 }
 
 template <typename Var, int N, int Len, typename B>
-struct ste_shader_stage_binding_variable_struct_validator {
+struct ste_shader_stage_variable_struct_validator {
 	void operator()(const Var *var) {
 		using T = typename B::template type_at<N>;
 		auto offset = block_offset_of<N, B>();
 
 		try {
-			ste_shader_stage_binding_variable_type_validator<T>(offset, (*var)[N].get());
+			ste_shader_stage_variable_type_validator<T>(offset, (*var)[N].get());
 		}
 		catch (GL::ste_shader_variable_layout_verification_exception &e) {
 			// Prepend a error location message and rethrow
 			e.prepend("At struct member [" + std::to_string(N) + "]:");
 			throw;
 		}
-		ste_shader_stage_binding_variable_struct_validator<Var, N + 1, Len, B>()(var);
+		ste_shader_stage_variable_struct_validator<Var, N + 1, Len, B>()(var);
 	}
 };
 template <typename Var, int Len, typename B>
-struct ste_shader_stage_binding_variable_struct_validator<Var, Len, Len, B> {
+struct ste_shader_stage_variable_struct_validator<Var, Len, Len, B> {
 	void operator()(const Var *) {}
 };
 
-struct ste_shader_stage_binding_variable_struct_validate {
+struct ste_shader_stage_variable_struct_validate {
 	template <typename Var, typename T>
 	static void validate(const Var *var,
 						 std::enable_if_t<!is_block_layout_v<T>>* = nullptr) {
@@ -609,7 +609,7 @@ struct ste_shader_stage_binding_variable_struct_validate {
 			(*var)[0]->template validate<B>();
 			return;
 		}
-		ste_shader_stage_binding_variable_struct_validator<Var, 0, B::count, B>()(var);
+		ste_shader_stage_variable_struct_validator<Var, 0, B::count, B>()(var);
 	}
 };
 
@@ -619,26 +619,26 @@ struct ste_shader_stage_binding_variable_struct_validate {
 *	@brief	Shader binding variable
 *			Composite struct of variables
 */
-class ste_shader_stage_binding_variable_struct : public ste_shader_stage_binding_variable {
-	using Base = ste_shader_stage_binding_variable;
+class ste_shader_stage_variable_struct : public ste_shader_stage_variable {
+	using Base = ste_shader_stage_variable;
 
 private:
-	std::vector<std::unique_ptr<ste_shader_stage_binding_variable>> elements;
+	std::vector<std::unique_ptr<ste_shader_stage_variable>> elements;
 
 public:
-	ste_shader_stage_binding_variable_struct(std::vector<std::unique_ptr<ste_shader_stage_binding_variable>> &&elements,
+	ste_shader_stage_variable_struct(std::vector<std::unique_ptr<ste_shader_stage_variable>> &&elements,
 											 std::string name,
 											 std::uint16_t offset_bytes)
 		: Base(name, offset_bytes),
 		elements(std::move(elements))
 	{}
 
-	ste_shader_stage_binding_variable_struct(ste_shader_stage_binding_variable_struct&&) = default;
-	ste_shader_stage_binding_variable_struct &operator=(ste_shader_stage_binding_variable_struct&&) = default;
-	ste_shader_stage_binding_variable_struct(const ste_shader_stage_binding_variable_struct&) = default;
-	ste_shader_stage_binding_variable_struct &operator=(const ste_shader_stage_binding_variable_struct&) = default;
+	ste_shader_stage_variable_struct(ste_shader_stage_variable_struct&&) = default;
+	ste_shader_stage_variable_struct &operator=(ste_shader_stage_variable_struct&&) = default;
+	ste_shader_stage_variable_struct(const ste_shader_stage_variable_struct&) = default;
+	ste_shader_stage_variable_struct &operator=(const ste_shader_stage_variable_struct&) = default;
 
-	virtual ~ste_shader_stage_binding_variable_struct() noexcept {}
+	virtual ~ste_shader_stage_variable_struct() noexcept {}
 
 	ste_shader_stage_variable_type type() const override final { return ste_shader_stage_variable_type::struct_t; }
 	std::uint32_t size_bytes() const override final {
@@ -661,14 +661,14 @@ public:
 	*/
 	template <typename T>
 	void validate() const {
-		using Validator = _internal::ste_shader_stage_binding_variable_struct_validate;
-		Validator::validate<ste_shader_stage_binding_variable_struct, T>(this);
+		using Validator = _internal::ste_shader_stage_variable_struct_validate;
+		Validator::validate<ste_shader_stage_variable_struct, T>(this);
 	}
 
 	/**
 	*	@brief	Checks if the variables reference the same binding
 	*/
-	bool compatible(const ste_shader_stage_binding_variable &var) const override {
+	bool compatible(const ste_shader_stage_variable &var) const override {
 		auto *ptr = dynamic_cast<decltype(this)>(&var);
 		if (!ptr)
 			return false;
