@@ -33,6 +33,14 @@ public:
 	ste_shader_load_spirv_corrupt_or_incompatible() : Base("Loaded shader binary contains corrupted or incompatible SPIR-v module") {}
 };
 
+class ste_shader_output_attachment_at_non_fragment_shader_stage_exception : public ste_shader_exception {
+	using Base = ste_shader_exception;
+
+public:
+	using Base::Base;
+	ste_shader_output_attachment_at_non_fragment_shader_stage_exception() : Base("Only fragment shaders can have output attachments") {}
+};
+
 class ste_shader_opaque_or_unknown_type : public ste_shader_exception {
 	using Base = ste_shader_exception;
 

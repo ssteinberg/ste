@@ -20,7 +20,6 @@ in geo_out {
 } vin;
 
 layout(location = 0) out vec4 frag_color;
-layout(location = 1) out vec2 bloomout;
 
 layout(std430, binding = 0) restrict readonly buffer glyph_data {
 	buffer_glyph_descriptor glyphs[];

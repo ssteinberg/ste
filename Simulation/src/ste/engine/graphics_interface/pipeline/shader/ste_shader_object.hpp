@@ -29,7 +29,7 @@ struct ste_shader_object {
 					  const std::string &shader_code,
 					  const ste_shader_stage &stage,
 					  std::vector<ste_shader_stage_binding> &&stage_bindings,
-					  std::vector<ste_shader_stage_attachment> &&stage_attachments)
+					  std::vector<ste_shader_stage_attachment> &&stage_attachments = {})
 		: shader(device,
 				 shader_code),
 		stage(stage),

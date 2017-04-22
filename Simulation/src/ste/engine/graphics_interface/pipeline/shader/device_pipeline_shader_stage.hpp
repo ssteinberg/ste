@@ -87,6 +87,11 @@ private:
 		// If header checks out, create the shader object
 		ste_shader_stage stage = header.type;
 
+		// (output attachments don't make sense for a non-fragment shader)
+		if (stage != ste_shader_stage::fragment_program && stage_attachments.size() > 0) {
+			throw ste_shader_output_attachment_at_non_fragment_shader_stage_exception();
+		}
+
 		return std::make_unique<const ste_shader_object>(ctx.device(),
 														 code,
 														 stage,
