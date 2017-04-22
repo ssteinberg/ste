@@ -18,7 +18,6 @@ struct device_pipeline_graphics_configurations {
 	VkPrimitiveTopology topology;
 	vk_rasterizer_op_descriptor rasterizer_op;
 	vk_depth_op_descriptor depth_op;
-	std::vector<vk_blend_op_descriptor> attachment_blend_op;
 	glm::vec4 blend_constants;
 };
 

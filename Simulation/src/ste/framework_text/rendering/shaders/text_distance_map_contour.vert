@@ -18,14 +18,6 @@ const float size_scale = 32.f;
 const float weight_scale = .25f;
 const float stroke_width_scale = .25f;
 
-struct some_data {
-	float offset12;
-};
-
-layout(push_constant) uniform push_block {
-	layout(offset=12) some_data push_data;
-};
-
 void main() {
 	uint position_pack = data.x;
 	uint glyph_index = data.y >> 16;

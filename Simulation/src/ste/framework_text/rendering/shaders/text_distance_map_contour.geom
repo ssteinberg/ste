@@ -41,16 +41,6 @@ layout(set = 1, binding = 0) uniform fb_size_uniform_t {
 	vec2 fb_size;
 };
 
-struct some_struct {
-	int offset8;
-	float offset12;
-};
-
-layout(push_constant) uniform push_block {
-	float f;
-	layout(offset = 8) some_struct push_data;
-};
-
 void main() {
 	vec2 pos = mix(vec2(-1,1), vec2(1,-1), vec2(vin[0].position) / fb_size);
 

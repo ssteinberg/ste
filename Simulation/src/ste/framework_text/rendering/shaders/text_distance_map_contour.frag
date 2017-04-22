@@ -20,13 +20,10 @@ in geo_out {
 } vin;
 
 layout(location = 0) out vec4 frag_color;
+layout(location = 1) out vec2 bloomout;
 
 layout(std430, binding = 0) restrict readonly buffer glyph_data {
 	buffer_glyph_descriptor glyphs[];
-};
-
-layout(push_constant) uniform push_block {
-	float f;
 };
 
 layout(constant_id = 0) const int glyph_texture_count = 45;
