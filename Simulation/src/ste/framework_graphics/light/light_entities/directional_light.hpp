@@ -6,7 +6,7 @@
 #include <stdafx.hpp>
 #include <light.hpp>
 
-namespace StE {
+namespace ste {
 namespace Graphics {
 
 class directional_light : public light {

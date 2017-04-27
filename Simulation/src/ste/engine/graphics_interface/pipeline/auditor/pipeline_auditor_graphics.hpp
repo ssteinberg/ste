@@ -20,8 +20,8 @@
 #include <memory>
 #include <vector>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 /**
  *	@brief	Describes the graphical pipeline configuration. Specifies the shader stages, attachments and graphical configurations.

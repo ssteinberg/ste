@@ -13,7 +13,7 @@
 #include <scene.hpp>
 #include <shadowmap_storage.hpp>
 
-namespace StE {
+namespace ste {
 namespace Graphics {
 
 class directional_shadowmap_projector : public gpu_dispatchable {
@@ -24,7 +24,7 @@ private:
 	light_storage *lights;
 	const shadowmap_storage *shadow_map;
 
-	Resource::resource_instance<Resource::glsl_program> shadow_gen_program;
+	resource::resource_instance<resource::glsl_program> shadow_gen_program;
 
 public:
 	directional_shadowmap_projector(const ste_engine_control &ctx,

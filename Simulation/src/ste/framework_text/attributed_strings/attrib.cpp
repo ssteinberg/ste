@@ -3,8 +3,8 @@
 
 #include <attributed_string_common.hpp>
 
-using namespace StE::Text;
-using namespace StE::Text::Attributes;
+using namespace ste::text;
+using namespace ste::text::Attributes;
 
 const char rgb::type_id = 0;
 const char stroke::type_id = 0;

@@ -8,6 +8,7 @@
 #include <ste_resource.hpp>
 #include <data_structure_common.hpp>
 
+#include <buffer_usage.hpp>
 #include <buffer_view.hpp>
 #include <device_buffer.hpp>
 #include <device_resource_allocation_policy.hpp>
@@ -17,8 +18,8 @@
 #include <vector>
 #include <allow_type_decay.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 template <typename T>
 class array : ste_resource_deferred_create_trait, public allow_type_decay<array<T>, device_buffer<T, device_resource_allocation_policy_device>> {
@@ -27,7 +28,7 @@ class array : ste_resource_deferred_create_trait, public allow_type_decay<array<
 private:
 	using buffer_t = device_buffer<T, device_resource_allocation_policy_device>;
 
-	static constexpr VkBufferUsageFlags buffer_usage_additional_flags = VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+	static constexpr auto buffer_usage_additional_flags = buffer_usage::transfer_dst;
 
 private:
 	const ste_context &ctx;
@@ -36,17 +37,16 @@ private:
 public:
 	array(const ste_context &ctx,
 		  std::uint64_t count,
-		  const VkBufferUsageFlags &usage)
+		  const buffer_usage &usage)
 		: ctx(ctx),
 		buffer(ctx,
-			   make_data_queue_selector(),
 			   count,
 			   usage | buffer_usage_additional_flags)
 	{}
 	array(const ste_context &ctx,
 		  std::uint64_t count,
 		  const std::vector<T> &initial_data,
-		  const VkBufferUsageFlags &usage)
+		  const buffer_usage &usage)
 		: array(ctx, count, usage)
 	{
 		// Copy initial static data
@@ -54,7 +54,7 @@ public:
 	}
 	array(const ste_context &ctx,
 		  const std::vector<T> &initial_data,
-		  const VkBufferUsageFlags &usage)
+		  const buffer_usage &usage)
 		: array(ctx, initial_data.size(), initial_data, usage)
 	{}
 	~array() noexcept {}

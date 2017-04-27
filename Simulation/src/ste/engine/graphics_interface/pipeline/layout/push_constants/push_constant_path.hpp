@@ -9,8 +9,8 @@
 #include <deque>
 #include <split.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 class push_constant_path {
 private:

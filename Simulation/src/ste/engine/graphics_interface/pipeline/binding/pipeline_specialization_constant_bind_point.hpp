@@ -12,8 +12,8 @@
 #include <string>
 #include <types.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 class pipeline_specialization_constant_bind_point : public pipeline_bind_point_base {
 	using Base = pipeline_bind_point_base;

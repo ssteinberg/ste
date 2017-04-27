@@ -13,8 +13,8 @@
 #include <string>
 #include <boost/container/flat_map.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 namespace _internal {
 
@@ -22,7 +22,7 @@ namespace _internal {
 *	@brief	Describes the descriptor set layout
 */
 template <typename BindingLayout>
-class pipeline_binding_set_layout_impl : public allow_type_decay<pipeline_binding_set_layout_impl<BindingLayout>, vk_descriptor_set_layout> {
+class pipeline_binding_set_layout_impl : public allow_type_decay<pipeline_binding_set_layout_impl<BindingLayout>, vk::vk_descriptor_set_layout> {
 public:
 	using bindings_vec_t = std::vector<BindingLayout>;
 	using name_bindings_map_t = boost::container::flat_map<std::string, typename bindings_vec_t::const_iterator>;
@@ -32,7 +32,7 @@ private:
 	pipeline_layout_set_index set_idx{ 0 };
 	name_bindings_map_t name_map;
 
-	vk_descriptor_set_layout vk_layout;
+	vk::vk_descriptor_set_layout vk_layout;
 
 private:
 	template <typename T = BindingLayout>
@@ -47,11 +47,11 @@ private:
 	}
 
 	auto generate_vk_layout(const ste_context &ctx) {
-		std::vector<vk_descriptor_set_layout_binding> vk_bindings;
+		std::vector<vk::vk_descriptor_set_layout_binding> vk_bindings;
 		for (auto it = begin(); it != end(); ++it)
 			vk_bindings.push_back(access_it<>(it));
 
-		return vk_descriptor_set_layout(ctx.device(), vk_bindings);
+		return vk::vk_descriptor_set_layout(ctx.device(), vk_bindings);
 	}
 
 public:

@@ -14,18 +14,18 @@
 #include <vector>
 #include <string>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 struct ste_shader_object {
-	const vk_shader shader;
+	const vk::vk_shader shader;
 
 	const ste_shader_stage stage;
 	const std::vector<ste_shader_stage_binding> stage_bindings;
 	const std::vector<ste_shader_stage_attachment> stage_attachments;
 
 	ste_shader_object() = delete;
-	ste_shader_object(const vk_logical_device &device, 
+	ste_shader_object(const vk::vk_logical_device &device,
 					  const std::string &shader_code,
 					  const ste_shader_stage &stage,
 					  std::vector<ste_shader_stage_binding> &&stage_bindings,

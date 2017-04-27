@@ -5,8 +5,8 @@
 
 #include <stdafx.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 enum class ste_shader_stage_block_layout : std::uint16_t {
 	none,

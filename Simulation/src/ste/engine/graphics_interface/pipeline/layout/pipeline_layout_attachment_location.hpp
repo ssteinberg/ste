@@ -5,8 +5,8 @@
 
 #include <stdafx.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 using pipeline_layout_attachment_location = std::uint32_t;
 

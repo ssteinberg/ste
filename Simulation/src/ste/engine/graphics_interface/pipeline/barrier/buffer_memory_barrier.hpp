@@ -8,10 +8,9 @@
 #include <vulkan/vulkan.h>
 #include <ste_queue_family.hpp>
 #include <device_buffer_base.hpp>
-#include <device_resource_queue_transferable.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 class buffer_memory_barrier {
 	friend class cmd_pipeline_barrier;
@@ -21,18 +20,15 @@ private:
 	VkAccessFlags dst;
 	ste_queue_family src_queue_family{ VK_QUEUE_FAMILY_IGNORED };
 	ste_queue_family dst_queue_family{ VK_QUEUE_FAMILY_IGNORED };
-	VkBuffer buffer;
+	std::reference_wrapper<const device_buffer_base> buffer;
 	std::uint64_t offset{ 0 };
 	std::uint64_t size{ VK_WHOLE_SIZE };
-
-	const device_resource_queue_transferable *queue_ownership;
 
 public:
 	buffer_memory_barrier(const device_buffer_base &buffer,
 						  const VkAccessFlags &src_access,
 						  const VkAccessFlags &dst_access)
-		: src(src_access), dst(dst_access), buffer(buffer.get_buffer_handle()),
-		queue_ownership(&buffer)
+		: src(src_access), dst(dst_access), buffer(buffer)
 	{}
 	buffer_memory_barrier(const device_buffer_base &buffer,
 						  const VkAccessFlags &src_access,
@@ -40,9 +36,8 @@ public:
 						  std::uint64_t size,
 						  std::uint64_t offset = 0)
 		: src(src_access), dst(dst_access),
-		buffer(buffer.get_buffer_handle()), 
-		offset(offset * buffer.get_element_size_bytes()), size(size * buffer.get_element_size_bytes()),
-		queue_ownership(&buffer)
+		buffer(buffer), 
+		offset(offset * buffer.get_element_size_bytes()), size(size * buffer.get_element_size_bytes())
 	{}
 	buffer_memory_barrier(const device_buffer_base &buffer,
 						  const VkAccessFlags &src_access,
@@ -51,7 +46,7 @@ public:
 						  const ste_queue_family &dst_queue_family)
 		: src(src_access), dst(dst_access),
 		src_queue_family(src_queue_family), dst_queue_family(dst_queue_family),
-		buffer(buffer.get_buffer_handle()), queue_ownership(&buffer)
+		buffer(buffer)
 	{}
 	~buffer_memory_barrier() noexcept {}
 
@@ -68,7 +63,7 @@ public:
 		barrier.dstAccessMask = dst;
 		barrier.srcQueueFamilyIndex = static_cast<std::uint32_t>(src_queue_family);
 		barrier.dstQueueFamilyIndex = static_cast<std::uint32_t>(dst_queue_family);
-		barrier.buffer = buffer;
+		barrier.buffer = buffer.get().get_buffer_handle();
 		barrier.offset = offset;
 		barrier.size = size;
 

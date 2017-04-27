@@ -14,7 +14,7 @@
 #include <fstream>
 #include <boost/crc.hpp>
 
-namespace StE {
+namespace ste {
 namespace Graphics {
 
 namespace _detail {

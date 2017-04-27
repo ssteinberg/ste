@@ -28,7 +28,7 @@
 #include <memory>
 #include <array>
 
-namespace StE {
+namespace ste {
 namespace Graphics {
 
 class hdr_compute_minmax_task;
@@ -40,8 +40,8 @@ class hdr_bloom_blury_task;
 class hdr_bokeh_blur_task;
 
 class hdr_dof_postprocess {
-	friend class Resource::resource_loading_task<hdr_dof_postprocess>;
-	friend class Resource::resource_instance<hdr_dof_postprocess>;
+	friend class resource::resource_loading_task<hdr_dof_postprocess>;
+	friend class resource::resource_instance<hdr_dof_postprocess>;
 
 	friend class hdr_compute_minmax_task;
 	friend class hdr_create_histogram_task;
@@ -76,13 +76,13 @@ private:
 	std::unique_ptr<hdr_bloom_blury_task> bloom_blury_task;
 	std::unique_ptr<hdr_bokeh_blur_task> bokeh_blur_task;
 
-	Resource::resource_instance<Resource::glsl_program> hdr_compute_minmax;
-	Resource::resource_instance<Resource::glsl_program> hdr_create_histogram;
-	Resource::resource_instance<Resource::glsl_program> hdr_compute_histogram_sums;
-	Resource::resource_instance<Resource::glsl_program> hdr_tonemap_coc;
-	Resource::resource_instance<Resource::glsl_program> hdr_bloom_blurx;
-	Resource::resource_instance<Resource::glsl_program> hdr_bloom_blury;
-	Resource::resource_instance<Resource::glsl_program> bokeh_blur;
+	resource::resource_instance<resource::glsl_program> hdr_compute_minmax;
+	resource::resource_instance<resource::glsl_program> hdr_create_histogram;
+	resource::resource_instance<resource::glsl_program> hdr_compute_histogram_sums;
+	resource::resource_instance<resource::glsl_program> hdr_tonemap_coc;
+	resource::resource_instance<resource::glsl_program> hdr_bloom_blurx;
+	resource::resource_instance<resource::glsl_program> hdr_bloom_blury;
+	resource::resource_instance<resource::glsl_program> bokeh_blur;
 
 	Core::sampler hdr_vision_properties_sampler;
 
@@ -153,7 +153,7 @@ public:
 
 }
 
-namespace Resource {
+namespace resource {
 
 template <>
 class resource_loading_task<Graphics::hdr_dof_postprocess> {

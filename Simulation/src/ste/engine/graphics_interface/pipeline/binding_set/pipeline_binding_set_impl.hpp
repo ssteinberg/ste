@@ -13,8 +13,8 @@
 #include <ultimate.hpp>
 #include <range_list.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 namespace _internal {
 
@@ -23,12 +23,12 @@ namespace _internal {
  *			Layout must be a name->const pipeline_binding_base* map
  */
 template <typename Layout>
-class pipeline_binding_set_impl : public allow_type_decay<pipeline_binding_set_impl<Layout>, vk_descriptor_set> {
+class pipeline_binding_set_impl : public allow_type_decay<pipeline_binding_set_impl<Layout>, vk::vk_descriptor_set> {
 private:
 	using binding_to_written_descriptors_range_map = boost::container::flat_map<std::uint32_t, range_list<std::uint32_t>>;
 
 private:
-	vk_descriptor_set set;
+	vk::vk_descriptor_set set;
 	std::reference_wrapper<const Layout> layout;
 
 	ultimate_type_erasure last_act;
@@ -40,14 +40,14 @@ private:
 	/**
 	 *	@brief	Creates the resource copy information to copy bindings from another binding sets.
 	 */
-	std::vector<vk_descriptor_set_copy_resources> create_descriptor_set_copy_information(const pipeline_binding_set_impl &o) {
+	std::vector<vk::vk_descriptor_set_copy_resources> create_descriptor_set_copy_information(const pipeline_binding_set_impl &o) {
 		const auto& dst_bindings = layout.get();
 		const auto& src_bindings = o.layout.get();
 
 		auto binds_to_copy = std::min(src_bindings.size(), dst_bindings.size());
 
 		// Allocate memory for copy descriptors
-		std::vector<vk_descriptor_set_copy_resources> copies;
+		std::vector<vk::vk_descriptor_set_copy_resources> copies;
 		copies.reserve(binds_to_copy * 5);
 
 		// Create copy descriptors
@@ -86,12 +86,12 @@ private:
 
 				auto count = std::min<std::uint32_t>(max_count - start, r.length);
 
-				copies.push_back(vk_descriptor_set_copy_resources(o.set,
-																  src->bind_idx(),
-																  start,
-																  bind_idx,
-																  start,
-																  count));
+				copies.push_back(vk::vk_descriptor_set_copy_resources(o.set,
+																	  src->bind_idx(),
+																	  start,
+																	  bind_idx,
+																	  start,
+																	  count));
 			}
 		}
 
@@ -100,7 +100,7 @@ private:
 
 public:
 	template <typename F>
-	pipeline_binding_set_impl(vk_descriptor_set &&set,
+	pipeline_binding_set_impl(vk::vk_descriptor_set &&set,
 							  const Layout &layout,
 							  ultimate<F>&& last_act) :
 		set(std::move(set)),
@@ -113,7 +113,7 @@ public:
 	*	@brief	See copy() for more information
 	*/
 	template <typename F>
-	pipeline_binding_set_impl(vk_descriptor_set &&set,
+	pipeline_binding_set_impl(vk::vk_descriptor_set &&set,
 							  const Layout &layout,
 							  ultimate<F>&& last_act,
 							  const pipeline_binding_set_impl &o)
@@ -146,7 +146,7 @@ public:
 	/**
 	 *	@brief	Updates binding set resource bindings
 	 */
-	void write(const std::vector<vk_descriptor_set_write_resource> &writes) {
+	void write(const std::vector<vk::vk_descriptor_set_write_resource> &writes) {
 		set.write(writes);
 
 		for (auto &w : writes) {

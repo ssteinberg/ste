@@ -11,8 +11,8 @@
 #include <tuple_call.hpp>
 #include <type_traits>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 template <
 	typename T, 

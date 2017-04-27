@@ -14,7 +14,7 @@
 
 #include <thread>
 
-namespace StE {
+namespace ste {
 	
 namespace detail {
 	

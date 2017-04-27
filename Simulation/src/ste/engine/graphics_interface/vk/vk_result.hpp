@@ -6,8 +6,10 @@
 #include <vulkan/vulkan.h>
 #include <string>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
+
+namespace vk {
 
 class vk_result {
 private:
@@ -60,6 +62,8 @@ public:
 	operator VkResult() const { return get(); }
 	explicit operator std::string() const { return string(); }
 };
+
+}
 
 }
 }

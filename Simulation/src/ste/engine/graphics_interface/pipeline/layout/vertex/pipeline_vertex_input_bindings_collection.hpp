@@ -10,8 +10,8 @@
 #include <boost/container/flat_map.hpp>
 #include <algorithm>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 class pipeline_vertex_input_bindings_collection {
 public:

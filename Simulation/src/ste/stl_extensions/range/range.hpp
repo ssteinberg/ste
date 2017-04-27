@@ -5,7 +5,7 @@
 
 #include <cstddef>
 
-namespace StE {
+namespace ste {
 
 template<typename T = std::size_t>
 struct range {

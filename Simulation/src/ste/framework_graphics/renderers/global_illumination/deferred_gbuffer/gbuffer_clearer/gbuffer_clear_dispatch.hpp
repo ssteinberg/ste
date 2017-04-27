@@ -16,14 +16,14 @@
 
 #include <memory>
 
-namespace StE {
+namespace ste {
 namespace Graphics {
 
 class gbuffer_clear_dispatch : public gpu_dispatchable {
 	using Base = gpu_dispatchable;
 
-	friend class Resource::resource_loading_task<gbuffer_clear_dispatch>;
-	friend class Resource::resource_instance<gbuffer_clear_dispatch>;
+	friend class resource::resource_loading_task<gbuffer_clear_dispatch>;
+	friend class resource::resource_instance<gbuffer_clear_dispatch>;
 
 private:
 	mutable deferred_gbuffer *gbuffer;

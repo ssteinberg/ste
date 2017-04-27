@@ -6,7 +6,7 @@
 #include <stdafx.hpp>
 #include <BxDF.hpp>
 
-namespace StE {
+namespace ste {
 namespace Graphics {
 
 template <typename T,

@@ -9,8 +9,8 @@
 
 #include <vector>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 struct ste_shader_spirv_parser_output {
 	std::vector<ste_shader_stage_binding> bindings;

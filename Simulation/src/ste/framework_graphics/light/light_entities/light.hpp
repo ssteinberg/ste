@@ -13,7 +13,7 @@
 
 #include <rgb.hpp>
 
-namespace StE {
+namespace ste {
 namespace Graphics {
 
 class light : public Core::observable_resource<light_descriptor>,

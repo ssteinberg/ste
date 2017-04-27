@@ -12,8 +12,8 @@
 
 #include <optional.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 class device_pipeline_compute : public device_pipeline {
 	using Base = device_pipeline;

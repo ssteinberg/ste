@@ -16,7 +16,7 @@
 #include <thread>
 #include <bitset>
 
-namespace StE {
+namespace ste {
 
 template <int N>
 bool inline thread_set_affinity(std::thread *thread, const std::bitset<N> &mask) {

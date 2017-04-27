@@ -7,37 +7,33 @@
 #include <command.hpp>
 #include <vk_buffer.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 class cmd_bind_index_buffer : public command {
 private:
-	VkBuffer buffer;
+	std::reference_wrapper<const vk::vk_buffer> buffer;
 	std::uint64_t offset;
 	VkIndexType index_type;
 
 public:
-	cmd_bind_index_buffer(const vk_buffer<std::uint32_t, false> &buffer,
+	cmd_bind_index_buffer(const vk::vk_buffer &buffer,
 						  std::uint64_t offset = 0)
-		: buffer(buffer), offset(offset), index_type(VK_INDEX_TYPE_UINT32)
-	{}
-	cmd_bind_index_buffer(const vk_buffer<std::uint32_t, true> &buffer,
-						  std::uint64_t offset = 0)
-		: buffer(buffer), offset(offset), index_type(VK_INDEX_TYPE_UINT32)
-	{}
-	cmd_bind_index_buffer(const vk_buffer<std::uint16_t, false> &buffer,
-						  std::uint64_t offset = 0)
-		: buffer(buffer), offset(offset), index_type(VK_INDEX_TYPE_UINT16)
-	{}
-	cmd_bind_index_buffer(const vk_buffer<std::uint16_t, true> &buffer,
-						  std::uint64_t offset = 0)
-		: buffer(buffer), offset(offset), index_type(VK_INDEX_TYPE_UINT16)
-	{}
+		: buffer(buffer), 
+		offset(offset), index_type(VK_INDEX_TYPE_UINT32)
+	{
+		if (buffer.get_element_size_bytes() == 16)
+			index_type = VK_INDEX_TYPE_UINT16;
+		else if (buffer.get_element_size_bytes() == 32)
+			index_type = VK_INDEX_TYPE_UINT32;
+		else
+			assert(false && "Expected a uint16 or uint32 buffer");
+	}
 	virtual ~cmd_bind_index_buffer() noexcept {}
 
 private:
 	void operator()(const command_buffer &command_buffer, command_recorder &) const override final {
-		vkCmdBindIndexBuffer(command_buffer, buffer, offset, index_type);
+		vkCmdBindIndexBuffer(command_buffer, buffer.get(), offset, index_type);
 	}
 };
 

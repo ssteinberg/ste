@@ -6,8 +6,10 @@
 #include <stdafx.hpp>
 #include <vulkan/vulkan.h>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
+
+namespace vk {
 
 class vk_render_pass_subpass_dependency {
 private:
@@ -49,6 +51,8 @@ public:
 		return dep;
 	}
 };
+
+}
 
 }
 }

@@ -15,8 +15,10 @@
 #include <vector>
 #include <allow_type_decay.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
+
+namespace vk {
 
 class vk_pipeline_layout : public allow_type_decay<vk_pipeline_layout, VkPipelineLayout> {
 private:
@@ -24,7 +26,7 @@ private:
 	std::reference_wrapper<const vk_logical_device> device;
 
 public:
-	vk_pipeline_layout(const vk_logical_device &device, 
+	vk_pipeline_layout(const vk_logical_device &device,
 					   const std::vector<const vk_descriptor_set_layout*> &set_layouts,
 					   const std::vector<vk_push_constant_layout> &push_constant_layouts = {}) : device(device) {
 		std::vector<VkPushConstantRange> push_constant_layout_descriptors;
@@ -72,6 +74,8 @@ public:
 
 	auto& get() const { return layout.get(); }
 };
+
+}
 
 }
 }

@@ -8,7 +8,7 @@
 #include <legendre_polynomial.hpp>
 #include <function_traits.hpp>
 
-namespace StE {
+namespace ste {
 
 /**
 *	@brief	Implementation of numerical spherical integration using Gaussian Quadrature.
@@ -68,12 +68,12 @@ public:
 
 		int i;
 		for (i = 0; i < N / 2; ++i) {
-			q.xi[i] = StE::legendre_polynomial_node<N>(i);
-			q.wi[i] = StE::legendre_polynomial_weight<N>(q.xi[i]);
+			q.xi[i] = ste::legendre_polynomial_node<N>(i);
+			q.wi[i] = ste::legendre_polynomial_weight<N>(q.xi[i]);
 		}
 		if (N % 2 == 1) {
 			q.xi[i] = .0;
-			q.wi[i] = StE::legendre_polynomial_weight<N>(q.xi[i]);
+			q.wi[i] = ste::legendre_polynomial_weight<N>(q.xi[i]);
 
 			++i;
 		}

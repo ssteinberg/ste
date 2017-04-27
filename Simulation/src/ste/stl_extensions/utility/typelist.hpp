@@ -3,7 +3,7 @@
 
 #pragma once
 
-namespace StE {
+namespace ste {
 
 template<int N, typename H, typename... Tail>
 struct typelist_type_at : typelist_type_at<N - 1, Tail...> {};

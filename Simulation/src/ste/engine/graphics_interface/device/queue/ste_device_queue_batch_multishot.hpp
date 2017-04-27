@@ -11,8 +11,8 @@
 
 #include <memory>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 template <typename UserData = void>
 class ste_device_queue_batch_multishot : public _detail::ste_device_queue_batch_pool<UserData> {
@@ -50,7 +50,7 @@ public:
 		return command_buffers.back();
 	}
 
-	auto& acquire_secondary_command_buffer(const vk_command_buffer_type &type) {
+	auto& acquire_secondary_command_buffer(const vk::vk_command_buffer_type &type) {
 		user_command_buffers.emplace_back(static_cast<command_pool&>(Base::pool).allocate_secondary_buffer());
 		return user_command_buffers.back();
 	}
@@ -77,7 +77,7 @@ public:
 		return batch.acquire_command_buffer();
 	}
 
-	auto& acquire_user_command_buffer(const vk_command_buffer_type &type) {
+	auto& acquire_user_command_buffer(const vk::vk_command_buffer_type &type) {
 		return batch.acquire_user_command_buffer(type);
 	}
 

@@ -16,8 +16,10 @@
 #include <vector>
 #include <allow_type_decay.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
+
+namespace vk {
 
 class vk_framebuffer : public allow_type_decay<vk_framebuffer, VkFramebuffer> {
 private:
@@ -66,6 +68,8 @@ public:
 
 	auto& get() const { return framebuffer.get(); }
 };
+
+}
 
 }
 }

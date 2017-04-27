@@ -9,6 +9,7 @@
 #include <ste_device_queue.hpp>
 #include <range.hpp>
 
+#include <buffer_usage.hpp>
 #include <unique_fence.hpp>
 #include <device_buffer.hpp>
 #include <device_resource_allocation_policy.hpp>
@@ -17,8 +18,8 @@
 #include <vector>
 #include <allow_type_decay.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 template <typename Segment>
 class ring_buffer : ste_resource_deferred_create_trait, public allow_type_decay<ring_buffer<Segment>, device_buffer<Segment, device_resource_allocation_policy_device>> {
@@ -26,7 +27,7 @@ private:
 	using buffer_t = device_buffer<Segment, device_resource_allocation_policy_device>;
 	using mmap_ptr_t = std::unique_ptr<vk_mmap<Segment>>;
 	using lock_t = const unique_fence<void>*;
-	static constexpr VkBufferUsageFlags buffer_usage_additional_flags = VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+	static constexpr auto buffer_usage_additional_flags = buffer_usage::transfer_dst;
 
 private:
 	const ste_context &ctx;
@@ -40,10 +41,9 @@ private:
 public:
 	ring_buffer(const ste_context &ctx,
 				std::uint32_t segments,
-				const VkBufferUsageFlags &usage)
+				const buffer_usage &usage)
 		: ctx(ctx),
 		buffer(ctx,
-			   make_data_queue_selector(),
 			   segments,
 			   usage | buffer_usage_additional_flags),
 		segments(segments)

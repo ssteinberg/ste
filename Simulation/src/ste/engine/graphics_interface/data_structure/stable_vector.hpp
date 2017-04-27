@@ -6,6 +6,7 @@
 #include <stdafx.hpp>
 #include <ste_context.hpp>
 #include <ste_resource.hpp>
+#include <buffer_usage.hpp>
 #include <buffer_view.hpp>
 #include <data_structure_common.hpp>
 
@@ -17,8 +18,8 @@
 
 #include <allow_type_decay.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 template <
 	typename T,
@@ -35,7 +36,7 @@ class stable_vector :
 private:
 	using buffer_t = device_buffer_sparse<T, minimal_atom_size, device_resource_allocation_policy_device>;
 	using bind_range_t = typename buffer_t::bind_range_t;
-	static constexpr VkBufferUsageFlags buffer_usage_additional_flags = VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+	static constexpr auto buffer_usage_additional_flags = buffer_usage::transfer_dst;
 
 private:
 	// Resize command
@@ -64,7 +65,7 @@ private:
 			
 			auto vptr = v;
 			auto new_size = this->new_size;
-			recorder << host_command([=](const vk_queue &) { vptr->elements = new_size; });
+			recorder << host_command([=](const vk::vk_queue &) { vptr->elements = new_size; });
 		}
 	};
 	// Push back command
@@ -91,7 +92,7 @@ private:
 
 			auto vptr = v;
 			auto data_size = data.size();
-			recorder << host_command([=](const vk_queue &) { vptr->elements += data_size; });
+			recorder << host_command([=](const vk::vk_queue &) { vptr->elements += data_size; });
 
 			// Copy data
 			recorder << update_cmd;
@@ -119,7 +120,7 @@ private:
 
 			auto vptr = v;
 			auto pop = count_to_pop;
-			recorder << host_command([=](const vk_queue &) { vptr->elements -= pop; });
+			recorder << host_command([=](const vk::vk_queue &) { vptr->elements -= pop; });
 		}
 	};
 
@@ -130,16 +131,15 @@ private:
 
 public:
 	stable_vector(const ste_context &ctx,
-				  const VkBufferUsageFlags &usage)
+				  const buffer_usage &usage)
 		: ctx(ctx),
 		buffer(ctx,
-			   make_sparse_binding_queue_selector(),
 			   max_sparse_size,
 			   usage | buffer_usage_additional_flags)
 	{}
 	stable_vector(const ste_context &ctx,
 				  const std::vector<T> &initial_data,
-				  const VkBufferUsageFlags &usage)
+				  const buffer_usage &usage)
 		: stable_vector(ctx, usage)
 	{
 		// Copy initial static data

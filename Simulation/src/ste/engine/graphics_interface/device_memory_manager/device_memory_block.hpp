@@ -7,8 +7,8 @@
 
 #include <list>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 class device_memory_block {
 private:

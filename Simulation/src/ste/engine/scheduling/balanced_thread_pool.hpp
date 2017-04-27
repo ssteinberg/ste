@@ -26,7 +26,7 @@
 
 #include <chrono>
 
-namespace StE {
+namespace ste {
 
 class balanced_thread_pool {
 public:

@@ -12,8 +12,8 @@
 #include <string>
 #include <boost/container/flat_map.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 class ste_device_queue_selector_cache {
 private:

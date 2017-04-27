@@ -22,12 +22,12 @@
 
 #include <type_traits>
 
-namespace StE {
+namespace ste {
 
 class task_scheduler;
 
 /**
- *	@brief	Thread-safe wrapper around std::future. Used by StE::task_scheduler.
+ *	@brief	Thread-safe wrapper around std::future. Used by ste::task_scheduler.
  *			For thread safety task_future employs finely-grained read-write locks
  *
  *	@param R			Future return type

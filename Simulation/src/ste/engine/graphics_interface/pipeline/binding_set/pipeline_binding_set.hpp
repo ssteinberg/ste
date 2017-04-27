@@ -6,8 +6,8 @@
 #include <pipeline_binding_set_layout.hpp>
 #include <pipeline_binding_set_impl.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 using pipeline_binding_set = _internal::pipeline_binding_set_impl<pipeline_binding_set_layout>;
 

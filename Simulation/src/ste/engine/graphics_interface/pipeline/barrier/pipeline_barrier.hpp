@@ -10,26 +10,28 @@
 #include <buffer_memory_barrier.hpp>
 #include <image_memory_barrier.hpp>
 
+#include <pipeline_stage.hpp>
+
 #include <vector>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 class pipeline_barrier {
 private:
-	VkPipelineStageFlags src_stage;
-	VkPipelineStageFlags dst_stage;
+	pipeline_stage src_stage;
+	pipeline_stage dst_stage;
 	std::vector<global_memory_barrier> global_memory_barriers;
 	std::vector<buffer_memory_barrier> buffer_barriers;
 	std::vector<image_memory_barrier>  image_barriers;
 
 public:
-	pipeline_barrier(const VkPipelineStageFlags &src_stage,
-					 const VkPipelineStageFlags &dst_stage)
+	pipeline_barrier(const pipeline_stage &src_stage,
+					 const pipeline_stage &dst_stage)
 		: src_stage(src_stage), dst_stage(dst_stage)
 	{}
-	pipeline_barrier(const VkPipelineStageFlags &src_stage,
-					 const VkPipelineStageFlags &dst_stage,
+	pipeline_barrier(const pipeline_stage &src_stage,
+					 const pipeline_stage &dst_stage,
 					 const std::vector<global_memory_barrier> &global_memory_barriers,
 					 const std::vector<buffer_memory_barrier> &buffer_barriers,
 					 const std::vector<image_memory_barrier>  &image_barriers)
@@ -38,38 +40,38 @@ public:
 		buffer_barriers(buffer_barriers),
 		image_barriers(image_barriers)
 	{}
-	pipeline_barrier(const VkPipelineStageFlags &src_stage,
-					 const VkPipelineStageFlags &dst_stage,
+	pipeline_barrier(const pipeline_stage &src_stage,
+					 const pipeline_stage &dst_stage,
 					 const std::vector<global_memory_barrier> &global_memory_barriers)
 		: src_stage(src_stage), dst_stage(dst_stage),
 		global_memory_barriers(global_memory_barriers)
 	{}
-	pipeline_barrier(const VkPipelineStageFlags &src_stage,
-					 const VkPipelineStageFlags &dst_stage,
+	pipeline_barrier(const pipeline_stage &src_stage,
+					 const pipeline_stage &dst_stage,
 					 const std::vector<buffer_memory_barrier> &buffer_barriers)
 		: src_stage(src_stage), dst_stage(dst_stage),
 		buffer_barriers(buffer_barriers)
 	{}
-	pipeline_barrier(const VkPipelineStageFlags &src_stage,
-					 const VkPipelineStageFlags &dst_stage,
+	pipeline_barrier(const pipeline_stage &src_stage,
+					 const pipeline_stage &dst_stage,
 					 const std::vector<image_memory_barrier> &image_barriers)
 		: src_stage(src_stage), dst_stage(dst_stage),
 		image_barriers(image_barriers)
 	{}
-	pipeline_barrier(const VkPipelineStageFlags &src_stage,
-					 const VkPipelineStageFlags &dst_stage,
+	pipeline_barrier(const pipeline_stage &src_stage,
+					 const pipeline_stage &dst_stage,
 					 const global_memory_barrier &global_memory_barrier)
 		: src_stage(src_stage), dst_stage(dst_stage),
 		global_memory_barriers({ global_memory_barrier })
 	{}
-	pipeline_barrier(const VkPipelineStageFlags &src_stage,
-					 const VkPipelineStageFlags &dst_stage,
+	pipeline_barrier(const pipeline_stage &src_stage,
+					 const pipeline_stage &dst_stage,
 					 const buffer_memory_barrier &buffer_barrier)
 		: src_stage(src_stage), dst_stage(dst_stage),
 		buffer_barriers({ buffer_barrier })
 	{}
-	pipeline_barrier(const VkPipelineStageFlags &src_stage,
-					 const VkPipelineStageFlags &dst_stage,
+	pipeline_barrier(const pipeline_stage &src_stage,
+					 const pipeline_stage &dst_stage,
 					 const image_memory_barrier &image_barrier)
 		: src_stage(src_stage), dst_stage(dst_stage),
 		image_barriers({ image_barrier })

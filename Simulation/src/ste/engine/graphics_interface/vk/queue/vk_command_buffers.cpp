@@ -3,9 +3,9 @@
 #include <vk_command_buffers.hpp>
 #include <vk_command_pool.hpp>
 
-using namespace StE::GL;
+using namespace ste::gl;
 
-void vk_command_buffers::free() {
+void vk::vk_command_buffers::free() {
 	if (buffers.size() == 1) {
 		vkFreeCommandBuffers(device.get(), pool, 1, &buffers[0].get());
 		buffers.clear();

@@ -6,7 +6,7 @@
 #include <stdafx.hpp>
 #include <shaped_light.hpp>
 
-namespace StE {
+namespace ste {
 namespace Graphics {
 
 class quad_light : public shaped_light {

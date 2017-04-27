@@ -18,8 +18,10 @@
 #include <vector>
 #include <allow_type_decay.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
+
+namespace vk {
 
 class vk_render_pass : public allow_type_decay<vk_render_pass, VkRenderPass> {
 private:
@@ -96,6 +98,8 @@ public:
 
 	auto& get() const { return render_pass.get(); }
 };
+
+}
 
 }
 }

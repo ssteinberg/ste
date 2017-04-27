@@ -5,8 +5,8 @@
 
 #include <ste_engine_exceptions.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 class device_pipeline_exception : public ste_engine_exception {
 	using Base = ste_engine_exception;

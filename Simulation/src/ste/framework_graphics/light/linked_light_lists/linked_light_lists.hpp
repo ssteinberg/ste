@@ -18,7 +18,7 @@
 #include <memory>
 #include <limits>
 
-namespace StE {
+namespace ste {
 namespace Graphics {
 
 class linked_light_lists {

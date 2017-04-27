@@ -7,15 +7,15 @@
 #include <algorithm>
 #include <functional>
 
-using namespace StE::GL;
+using namespace ste::gl;
 
 ste_presentation_surface::acquire_next_image_return_t  ste_presentation_surface::acquire_swapchain_image_impl(
 	std::uint64_t timeout_ns,
-	const vk_semaphore *presentation_image_ready_semaphore,
-	const vk_fence *presentation_image_ready_fence) const 
+	const vk::vk_semaphore *presentation_image_ready_semaphore,
+	const vk::vk_fence *presentation_image_ready_fence) const
 {
 	acquire_next_image_return_t ret;
-	vk_result res;
+	vk::vk_result res;
 	{
 		std::unique_lock<std::mutex> l(shared_data->swap_chain_guard);
 		res = vkAcquireNextImageKHR(*presentation_device,
@@ -36,7 +36,7 @@ ste_presentation_surface::acquire_next_image_return_t  ste_presentation_surface:
 		ret.sub_optimal = true;
 		break;
 	default:
-		throw vk_exception(res);
+		throw vk::vk_exception(res);
 	}
 
 	// Furthermore raise flag to recreate swap-chain
@@ -54,27 +54,27 @@ void ste_presentation_surface::acquire_swap_chain_images() {
 	// Aquire swap-chain images
 	std::vector<VkImage> swapchain_vk_image_objects;
 	std::uint32_t chain_image_count;
-	vk_result res = vkGetSwapchainImagesKHR(*presentation_device, *swap_chain, &chain_image_count, nullptr);
+	vk::vk_result res = vkGetSwapchainImagesKHR(*presentation_device, *swap_chain, &chain_image_count, nullptr);
 	if (!res) {
 		this->swap_chain = nullptr;
-		throw vk_exception(res);
+		throw vk::vk_exception(res);
 	}
 	swapchain_vk_image_objects.resize(chain_image_count);
 	res = vkGetSwapchainImagesKHR(*presentation_device, *swap_chain, &chain_image_count, &swapchain_vk_image_objects[0]);
 	if (!res) {
 		this->swap_chain = nullptr;
-		throw vk_exception(res);
+		throw vk::vk_exception(res);
 	}
 
 	// Create views and image objects
 	std::vector<swap_chain_image_t> images;
 	images.reserve(swapchain_vk_image_objects.size());
 	for (auto& img : swapchain_vk_image_objects) {
-		auto image = vk_swapchain_image(*presentation_device,
-										img,
-										format,
-										vk_swapchain_image::size_type(size),
-										layers);
+		auto image = vk::vk_swapchain_image(*presentation_device,
+											img,
+											format,
+											vk::vk_swapchain_image::size_type(size),
+											layers);
 		auto view = swap_chain_image_view_t(image);
 
 		auto swapchain_image = device_swapchain_image(std::move(image));
@@ -157,18 +157,20 @@ VkSurfaceFormatKHR ste_presentation_surface::get_surface_format() const {
 	// Choose format
 	auto rgb8_it = std::find_if(supported_formats.begin(),
 								supported_formats.end(),
-								[](const auto &format) {
-		return format.format == VK_FORMAT_R8G8B8A8_UNORM && format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
+								[](const auto &surface_format) {
+		return static_cast<format>(surface_format.format) == format::r8g8b8a8_unorm &&
+			surface_format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
 	});
 	auto bgr8_it = std::find_if(supported_formats.begin(),
 								supported_formats.end(),
-								[](const auto &format) {
-		return format.format == VK_FORMAT_B8G8R8A8_UNORM && format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
+								[](const auto &surface_format) {
+		return static_cast<format>(surface_format.format) == format::b8g8r8a8_unorm &&
+			surface_format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
 	});
 	auto any_srgb_it = std::find_if(supported_formats.begin(),
 									supported_formats.end(),
-									[](const auto &format) {
-		return format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
+									[](const auto &surface_format) {
+		return surface_format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
 	});
 
 	if (rgb8_it != supported_formats.end())
@@ -193,11 +195,11 @@ VkSurfaceTransformFlagBitsKHR ste_presentation_surface::get_transform() const {
 
 void ste_presentation_surface::read_device_caps() {
 	// Read device capabilities
-	vk_result res = vkGetPhysicalDeviceSurfaceCapabilitiesKHR(presentation_device->get_physical_device_descriptor().device,
-															  presentation_surface,
-															  &surface_presentation_caps);
+	vk::vk_result res = vkGetPhysicalDeviceSurfaceCapabilitiesKHR(presentation_device->get_physical_device_descriptor().device,
+																  presentation_surface,
+																  &surface_presentation_caps);
 	if (!res) {
-		throw vk_exception(res);
+		throw vk::vk_exception(res);
 	}
 }
 
@@ -222,17 +224,17 @@ void ste_presentation_surface::create_swap_chain() {
 	auto present_mode = get_surface_presentation_mode();
 
 	// Create the swap-chain
-	this->swap_chain = std::make_unique<vk_swapchain>(*presentation_device,
-													  presentation_surface,
-													  min_image_count,
-													  format.format,
-													  format.colorSpace,
-													  size,
-													  layers,
-													  transform,
-													  composite,
-													  present_mode,
-													  this->swap_chain.get());
+	this->swap_chain = std::make_unique<vk::vk_swapchain>(*presentation_device,
+														  presentation_surface,
+														  min_image_count,
+														  format.format,
+														  format.colorSpace,
+														  size,
+														  layers,
+														  transform,
+														  composite,
+														  present_mode,
+														  this->swap_chain.get());
 
 	// And acquire the chain's presentation images
 	acquire_swap_chain_images();
@@ -250,8 +252,8 @@ void ste_presentation_surface::connect_signals() {
 }
 
 void ste_presentation_surface::present(std::uint32_t image_index,
-									   const vk_queue &presentation_queue,
-									   const vk_semaphore &wait_semaphore) {
+									   const vk::vk_queue &presentation_queue,
+									   const semaphore &wait_semaphore) {
 	VkSemaphore semaphore = wait_semaphore;
 	VkSwapchainKHR swapchain = *swap_chain;
 
@@ -265,7 +267,7 @@ void ste_presentation_surface::present(std::uint32_t image_index,
 	info.pImageIndices = &image_index;
 	info.pResults = nullptr;
 
-	vk_result res;
+	vk::vk_result res;
 	{
 		std::unique_lock<std::mutex> l(shared_data->swap_chain_guard);
 		res = vkQueuePresentKHR(presentation_queue, &info);
@@ -275,6 +277,6 @@ void ste_presentation_surface::present(std::uint32_t image_index,
 	if (res != VK_SUCCESS)
 		shared_data->swap_chain_optimal_flag.clear(std::memory_order_release);
 	if (res != VK_SUCCESS && res != VK_SUBOPTIMAL_KHR && res != VK_ERROR_OUT_OF_DATE_KHR) {
-		throw vk_exception(res);
+		throw vk::vk_exception(res);
 	}
 }

@@ -16,7 +16,7 @@
 #include <texture_2d.hpp>
 #include <Sampler.hpp>
 
-namespace StE {
+namespace ste {
 namespace Graphics {
 
 class linked_light_lists_gen_dispatch : public gpu_dispatchable {
@@ -25,7 +25,7 @@ class linked_light_lists_gen_dispatch : public gpu_dispatchable {
 private:
 	light_storage *ls;
 	linked_light_lists *lll;
-	Resource::resource_instance<Resource::glsl_program> program;
+	resource::resource_instance<resource::glsl_program> program;
 
 public:
 	linked_light_lists_gen_dispatch(const ste_engine_control &ctx,

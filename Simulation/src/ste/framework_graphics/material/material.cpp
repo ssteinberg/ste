@@ -3,7 +3,7 @@
 // TODO
 //#include <material.hpp>
 //
-//using namespace StE::Graphics;
+//using namespace ste::Graphics;
 //
 //material::material(material_layer *head_layer) {
 //	material_sampler.set_wrap_s(Core::texture_wrap_mode::Wrap);
@@ -17,7 +17,7 @@
 //	set_head_layer(head_layer);
 //}
 //
-//StE::Core::texture_handle material::handle_for_texture(const Core::texture_2d *t) const {
+//ste::Core::texture_handle material::handle_for_texture(const Core::texture_2d *t) const {
 //	Core::texture_handle h;
 //	if (t != nullptr) {
 //		h = t->get_texture_handle(material_sampler);

@@ -29,14 +29,14 @@
 #include <boost/container/flat_map.hpp>
 #include <boost/container/flat_set.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 /**
 *	@brief	The pipeline layout descriptor.
 *			Fully defines the pipeline shader stages, resource binding layouts and output attachment layouts.
 */
-class pipeline_layout : public allow_type_decay<pipeline_layout, vk_pipeline_layout> {
+class pipeline_layout : public allow_type_decay<pipeline_layout, vk::vk_pipeline_layout> {
 	friend class device_pipeline;
 
 public:
@@ -53,11 +53,11 @@ private:
 
 	using attachment_map_t = pipeline_attachment_layout_collection;
 
-	using spec_map_t = std::unordered_map<ste_shader_stage, vk_shader::spec_map>;
+	using spec_map_t = std::unordered_map<ste_shader_stage, vk::vk_shader::spec_map>;
 
 	using binding_sets_layout_map_t = boost::container::flat_map<pipeline_layout_set_index, pipeline_binding_set_layout>;
 
-	using spec_to_dependant_array_variables_map_t = 
+	using spec_to_dependant_array_variables_map_t =
 		boost::container::flat_map<const ste_shader_stage_variable*, std::vector<const pipeline_binding_layout*>>;
 
 private:
@@ -75,7 +75,7 @@ private:
 
 	// Layouts of the descriptor sets
 	binding_sets_layout_map_t bindings_set_layouts;
-	std::unique_ptr<vk_pipeline_layout> layout;
+	std::unique_ptr<vk::vk_pipeline_layout> layout;
 
 	// External binding sets
 	const pipeline_external_binding_set_collection *external_binding_sets{ nullptr };
@@ -233,7 +233,7 @@ private:
 	}
 
 	template <typename T>
-	void specialize_constant_impl(const std::string &name, 
+	void specialize_constant_impl(const std::string &name,
 								  const optional<std::string> &data = none,
 								  const T *value = nullptr) {
 		// Specialize the binding scalar variable
@@ -287,18 +287,18 @@ private:
 public:
 	/**
 	 *	@brief	Pipeline layout descriptor
-	 *	
+	 *
 	 *	@param	ctx						Context
 	 *	@param	pipeline_shader_stages	Shader stages that define the layout
 	 *	@param	external_binding_sets	External binding sets used in this layout
-	 *	
-	 *	@throws	ste_shader_variable_layout_verification_exception		On different validation failures of a shader stage binding with 
+	 *
+	 *	@throws	ste_shader_variable_layout_verification_exception		On different validation failures of a shader stage binding with
 	 *																external_binding_sets
 	 */
 	pipeline_layout(const ste_context &ctx,
 					const shader_stages_list_t &pipeline_shader_stages,
 					optional<std::reference_wrapper<const pipeline_external_binding_set_collection>> external_binding_sets)
-		: ctx(ctx) 
+		: ctx(ctx)
 	{
 		{
 			// Sort the variables from all the shader stages
@@ -363,8 +363,8 @@ public:
 	*	@brief	Specializes a constant
 	*
 	*	@param	name		Name of specialization constant
-	*	@param	value		Value to specialize to. Must be a POD.
-	*	
+	*	@param	value	Value to specialize to. Must be a POD.
+	*
 	*	@throws	pipeline_layout_variable_not_found_exception	If specialization constant not found
 	*/
 	template <typename T>
@@ -381,7 +381,7 @@ public:
 	}
 	/**
 	*	@brief	Remove a specialization of constant
-	*	
+	*
 	*	@throws	pipeline_layout_variable_not_found_exception	If specialization constant not found
 	*/
 	void remove_specialization(const std::string &name) {
@@ -392,7 +392,7 @@ public:
 	*	@brief	Recreates the pipeline layout and resets flag
 	*/
 	void recreate_layout() {
-		std::vector<const vk_descriptor_set_layout*> set_layout_ptrs;
+		std::vector<const vk::vk_descriptor_set_layout*> set_layout_ptrs;
 		for (auto &s : bindings_set_layouts) {
 			set_layout_ptrs.push_back(&s.second.get());
 		}
@@ -408,15 +408,15 @@ public:
 		auto& push_constant_layouts = push_constants_layout->vk_push_constant_layout_descriptors();
 
 		// Create pipeline layout and raise layout invalidated flag
-		layout = std::make_unique<vk_pipeline_layout>(ctx.device(),
-													  set_layout_ptrs,
-													  push_constant_layouts);
+		layout = std::make_unique<vk::vk_pipeline_layout>(ctx.device(),
+														  set_layout_ptrs,
+														  push_constant_layouts);
 		layout_invalidated_flag = false;
 	}
 
 	/**
 	*	@brief	Recreates invalidated set layout and resets flags
-	*	
+	*
 	*	@return	True if sets were modified, false otherwise.
 	*/
 	void recreate_invalidated_set_layouts() {
@@ -463,7 +463,7 @@ public:
 	*	@brief	Returns the collection of shader stage descriptors, used to create pipeline objects.
 	*/
 	auto shader_stage_descriptors() const {
-		std::vector<vk_shader_stage_descriptor> descriptors;
+		std::vector<vk::vk_shader_stage_descriptor> descriptors;
 		for (auto &s : stages)
 			descriptors.push_back(s.second->pipeline_stage_descriptor());
 
@@ -484,7 +484,7 @@ public:
 
 	auto& set_layouts() const { return bindings_set_layouts; }
 	auto& modified_set_layouts() const { return set_layouts_modified_queue; }
-	
+
 	auto& variables() const { return variables_map; }
 	auto& push_variables() const { return *push_constants_layout; }
 	auto& spec_variables() const { return spec_variables_map; }

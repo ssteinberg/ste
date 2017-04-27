@@ -13,8 +13,10 @@
 
 #include <ste_window.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
+
+namespace vk {
 
 class vk_surface {
 private:
@@ -50,6 +52,8 @@ public:
 
 	operator VkSurfaceKHR() const { return get_surface(); }
 };
+
+}
 
 }
 }

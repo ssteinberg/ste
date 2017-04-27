@@ -8,8 +8,8 @@
 #include <ste_queue_selector_policy.hpp>
 #include <ste_device_queue_descriptors.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 using ste_queue_selector_default_policy = ste_queue_selector_policy_strict;
 

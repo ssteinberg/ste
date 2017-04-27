@@ -6,7 +6,7 @@
 #include <utility>
 #include <type_traits>
 
-namespace StE {
+namespace ste {
 
 namespace _detail {
 

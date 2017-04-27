@@ -2,8 +2,8 @@
 #include <stdafx.hpp>
 //#include <linked_light_lists_gen_dispatch.hpp>
 //
-//using namespace StE::Graphics;
-//using namespace StE::Core;
+//using namespace ste::Graphics;
+//using namespace ste::Core;
 //
 //void linked_light_lists_gen_dispatch::set_context_state() const {
 //	ls->bind_lights_buffer(2);
@@ -22,6 +22,6 @@
 //
 //	lll->clear();
 //
-//	GL::gl_current_context::get()->memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT);
-//	GL::gl_current_context::get()->dispatch_compute(size.x, size.y, 1);
+//	gl::gl_current_context::get()->memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT);
+//	gl::gl_current_context::get()->dispatch_compute(size.x, size.y, 1);
 //}

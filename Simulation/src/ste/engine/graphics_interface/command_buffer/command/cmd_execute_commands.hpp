@@ -9,8 +9,8 @@
 
 #include <vector>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 class cmd_execute_commands : public command {
 private:

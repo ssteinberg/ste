@@ -12,8 +12,10 @@
 #include <vector>
 #include <allow_type_decay.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
+
+namespace vk {
 
 class vk_logical_device : public allow_type_decay<vk_logical_device, VkDevice> {
 private:
@@ -79,6 +81,8 @@ public:
 	auto &get() const { return logical_device; }
 	auto &get_requested_features() const { return requested_features; }
 };
+
+}
 
 }
 }

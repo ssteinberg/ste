@@ -8,7 +8,7 @@
 #include <cassert>
 #include <vector>
 
-namespace StE {
+namespace ste {
 
 template <typename T>
 class static_vector {

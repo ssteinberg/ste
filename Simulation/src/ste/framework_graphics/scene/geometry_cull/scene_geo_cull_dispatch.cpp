@@ -5,8 +5,8 @@
 //#include <Scene.hpp>
 //#include <extract_projection_planes.hpp>
 //
-//using namespace StE::Graphics;
-//using namespace StE::Core;
+//using namespace ste::Graphics;
+//using namespace ste::Core;
 //
 //void scene_geo_cull_dispatch::commit_idbs() const {
 //	auto size = s->get_object_group().get_draw_buffers().size();
@@ -51,6 +51,6 @@
 //	auto size = (draw_buffers.size() + jobs - 1) / jobs;
 //
 //	s->clear_indirect_command_buffers();
-//	GL::gl_current_context::get()->memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT);
-//	Core::GL::gl_current_context::get()->dispatch_compute(size, 1, 1);
+//	gl::gl_current_context::get()->memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT);
+//	Core::gl::gl_current_context::get()->dispatch_compute(size, 1, 1);
 //}

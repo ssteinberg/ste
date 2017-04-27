@@ -11,8 +11,10 @@
 
 #include <optional.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
+
+namespace vk {
 
 class vk_debug_report_callback {
 private:
@@ -26,15 +28,15 @@ public:
 		VkDebugReportCallbackCreateInfoEXT debug_info = {};
 		debug_info.sType = VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT;
 		debug_info.flags = VK_DEBUG_REPORT_WARNING_BIT_EXT |
-						   VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT |
-						   VK_DEBUG_REPORT_ERROR_BIT_EXT |
-						   VK_DEBUG_REPORT_DEBUG_BIT_EXT;
+			VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT |
+			VK_DEBUG_REPORT_ERROR_BIT_EXT |
+			VK_DEBUG_REPORT_DEBUG_BIT_EXT;
 		debug_info.pNext = nullptr;
 		debug_info.pUserData = user_data;
 		debug_info.pfnCallback = callback;
 
 		auto f = reinterpret_cast<PFN_vkCreateDebugReportCallbackEXT>(vkGetInstanceProcAddr(instance, "vkCreateDebugReportCallbackEXT"));
-		
+
 		if (f) {
 			VkDebugReportCallbackEXT debug_report_handle;
 			vk_result res = f(instance, &debug_info, nullptr, &debug_report_handle);
@@ -63,6 +65,8 @@ public:
 	vk_debug_report_callback(const vk_debug_report_callback &) = delete;
 	vk_debug_report_callback &operator=(const vk_debug_report_callback &) = delete;
 };
+
+}
 
 }
 }

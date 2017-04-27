@@ -18,8 +18,8 @@
 #include <vector>
 #include <error_type.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 namespace _internal {
 
@@ -329,9 +329,9 @@ public:
 	template <typename T>
 	void validate() const {
 		using Type = _internal::ste_shader_stage_variable_remove_blocks_t<T>;
-		static constexpr bool type_is_signed = ::StE::GL::is_signed<Type>::value;
-		static constexpr bool type_is_float =  ::StE::GL::is_floating_point<Type>::value;
-		static constexpr bool type_is_scalar = ::StE::GL::is_scalar<Type>::value;
+		static constexpr bool type_is_signed = ::ste::gl::is_signed<Type>::value;
+		static constexpr bool type_is_float =  ::ste::gl::is_floating_point<Type>::value;
+		static constexpr bool type_is_scalar = ::ste::gl::is_scalar<Type>::value;
 		
 		if (sizeof(Type) != this->size_bytes())
 			throw ste_shader_variable_layout_verification_type_mismatch("Size mismatch");
@@ -579,7 +579,7 @@ struct ste_shader_stage_variable_struct_validator {
 		try {
 			ste_shader_stage_variable_type_validator<T>(offset, (*var)[N].get());
 		}
-		catch (GL::ste_shader_variable_layout_verification_exception &e) {
+		catch (gl::ste_shader_variable_layout_verification_exception &e) {
 			// Prepend a error location message and rethrow
 			e.prepend("At struct member [" + std::to_string(N) + "]:");
 			throw;

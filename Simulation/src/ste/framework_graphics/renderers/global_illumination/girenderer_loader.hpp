@@ -11,8 +11,8 @@
 
 #include <gi_renderer.hpp>
 
-namespace StE {
-namespace Resource {
+namespace ste {
+namespace resource {
 
 template <>
 class resource_loading_task<Graphics::gi_renderer> {

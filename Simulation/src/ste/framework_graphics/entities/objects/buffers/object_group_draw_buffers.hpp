@@ -18,7 +18,7 @@
 
 #include <memory>
 
-namespace StE {
+namespace ste {
 namespace Graphics {
 
 class object_group_draw_buffers {

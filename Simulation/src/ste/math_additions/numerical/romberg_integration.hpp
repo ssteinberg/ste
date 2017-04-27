@@ -8,7 +8,7 @@
 
 #include <array>
 
-namespace StE {
+namespace ste {
 
 /**
 *	@brief	Implementation of Romberg's method for numerical integration

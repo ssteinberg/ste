@@ -7,8 +7,8 @@
 #include <image_view.hpp>
 #include <sampler.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 class texture_generic {
 public:
@@ -18,7 +18,7 @@ public:
 	virtual VkImageView get_image_view_handle() const = 0;
 };
 
-template <vk_image_type type>
+template <image_type type>
 class texture : public texture_generic {
 private:
 	const image_view<type>* image;

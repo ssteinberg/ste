@@ -5,7 +5,7 @@
 
 #include <functional>
 
-namespace StE {
+namespace ste {
 
 namespace _detail {
 template <typename T>

@@ -11,8 +11,8 @@
 #include <texture.hpp>
 #include <block_layout_common.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 enum class ste_shader_stage_variable_type : std::uint16_t {
 	unknown,

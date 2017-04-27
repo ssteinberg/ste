@@ -10,7 +10,7 @@
 
 #include <memory>
 
-namespace StE {
+namespace ste {
 namespace Graphics {
 
 class hdr_compute_histogram_sums_task : public gpu_dispatchable {

@@ -7,7 +7,7 @@
 #include <type_traits>
 #include <algorithm>
 
-namespace StE {
+namespace ste {
 
 template <typename T, unsigned min_alignment = 64, bool pad_to_alignment = true>
 class aligned_ptr {

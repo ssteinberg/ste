@@ -10,8 +10,8 @@
 #include <string>
 #include <log.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 class ste_gl_debug_callback {
 public:

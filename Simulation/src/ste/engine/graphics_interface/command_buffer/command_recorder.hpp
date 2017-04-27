@@ -10,8 +10,8 @@
 #include <host_command.hpp>
 #include <ste_device_queue_descriptors.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 /**
 *	@brief	A command recorder records commands into a command buffer. Recording a buffer implicitly resets the buffer,

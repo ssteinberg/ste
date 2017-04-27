@@ -6,8 +6,8 @@
 #include <tuple>
 #include <is_base_of.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 namespace _detail {
 

@@ -19,7 +19,7 @@
 
 #include <shared_double_reference_guard.hpp>
 
-namespace StE {
+namespace ste {
 
 template <typename K, typename V, int cache_line = 64>
 class concurrent_unordered_map {

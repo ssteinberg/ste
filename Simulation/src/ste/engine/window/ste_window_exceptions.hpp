@@ -5,7 +5,7 @@
 
 #include <ste_engine_exceptions.hpp>
 
-namespace StE {
+namespace ste {
 
 class ste_window_creation_exception : public ste_engine_exception {
 	using Base = ste_engine_exception;

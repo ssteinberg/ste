@@ -20,20 +20,20 @@
 
 #include <memory>
 
-namespace StE {
+namespace ste {
 namespace Graphics {
 
 class fxaa_dispatchable : public gpu_dispatchable {
 	using Base = gpu_dispatchable;
 
-	friend class Resource::resource_loading_task<fxaa_dispatchable>;
-	friend class Resource::resource_instance<fxaa_dispatchable>;
+	friend class resource::resource_loading_task<fxaa_dispatchable>;
+	friend class resource::resource_instance<fxaa_dispatchable>;
 
 private:
 	using ResizeSignalConnectionType = ste_engine_control::framebuffer_resize_signal_type::connection_type;
 
 private:
-	Resource::resource_instance<Resource::glsl_program> program;
+	resource::resource_instance<resource::glsl_program> program;
 	Core::framebuffer_object fbo;
 	std::unique_ptr<Core::texture_2d> input;
 
@@ -41,7 +41,7 @@ private:
 
 private:
 	void resize(const glm::ivec2 &size) {
-		input = std::make_unique<Core::texture_2d>(gli::format::FORMAT_RGB16_SFLOAT_PACK16, StE::Core::texture_2d::size_type(size), 1);
+		input = std::make_unique<Core::texture_2d>(gli::format::FORMAT_RGB16_SFLOAT_PACK16, ste::Core::texture_2d::size_type(size), 1);
 		fbo[0] = *input;
 
 		auto handle = input->get_texture_handle(*Core::sampler::sampler_linear_clamp());
@@ -67,7 +67,7 @@ protected:
 
 }
 
-namespace Resource {
+namespace resource {
 
 template <>
 class resource_loading_task<Graphics::fxaa_dispatchable> {

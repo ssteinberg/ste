@@ -10,7 +10,7 @@
 
 #include <memory>
 
-namespace StE {
+namespace ste {
 namespace Graphics {
 
 class hdr_bloom_blurx_task : public gpu_dispatchable {
@@ -31,7 +31,7 @@ protected:
 	}
 
 	void dispatch() const override final {
-		Core::GL::gl_current_context::get()->draw_arrays(GL_TRIANGLE_STRIP, 0, 4);
+		Core::gl::gl_current_context::get()->draw_arrays(GL_TRIANGLE_STRIP, 0, 4);
 	}
 };
 

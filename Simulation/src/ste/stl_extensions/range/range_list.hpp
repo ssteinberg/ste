@@ -8,7 +8,7 @@
 
 #include <initializer_list>
 
-namespace StE {
+namespace ste {
 
 enum class range_list_overlap {
 	none,

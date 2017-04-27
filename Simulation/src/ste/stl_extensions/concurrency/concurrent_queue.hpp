@@ -6,7 +6,7 @@
 #include <atomic>
 #include <memory>
 
-namespace StE {
+namespace ste {
 
 /*
 *	Based on Anthony William's "C++ Concurrency in Action"

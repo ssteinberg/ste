@@ -13,8 +13,8 @@
 #include <vector>
 #include <string>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 class ste_shader_spirv_parser {
 private:

@@ -12,8 +12,10 @@
 
 #include <optional.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
+
+namespace vk {
 
 class vk_buffer_view {
 private:
@@ -23,7 +25,7 @@ private:
 	VkFormat format;
 
 public:
-	vk_buffer_view(const vk_buffer_base &parent,
+	vk_buffer_view(const vk_buffer &parent,
 				   const VkFormat &format,
 				   std::uint64_t offset_bytes,
 				   std::uint64_t size_bytes)
@@ -47,9 +49,9 @@ public:
 
 		this->view = view;
 	}
-	vk_buffer_view(const vk_buffer_base &parent,
+	vk_buffer_view(const vk_buffer &parent,
 				   const VkFormat &format,
-				   std::uint64_t offset_bytes = 0) 
+				   std::uint64_t offset_bytes = 0)
 		: vk_buffer_view(parent, format, offset_bytes, parent.get_size_bytes() - offset_bytes)
 	{}
 	~vk_buffer_view() noexcept { destroy_view(); }
@@ -72,6 +74,8 @@ public:
 
 	operator VkBufferView() const { return get_view(); }
 };
+
+}
 
 }
 }

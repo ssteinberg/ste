@@ -9,8 +9,8 @@
 #include <functional>
 #include <typeinfo>
 
-namespace StE {
-namespace Text {
+namespace ste {
+namespace text {
 
 template <typename CharT>
 class attributed_string_common;
@@ -242,7 +242,7 @@ public:
 
 class font : public attrib {
 private:
-	StE::Text::font f;
+	ste::text::font f;
 
 #ifdef _DEBUG
 	const char *name{ typeid(*this).name() };
@@ -251,7 +251,7 @@ private:
 	static const char type_id;
 
 public:
-	font(const StE::Text::font &f) : f(f) {}
+	font(const ste::text::font &f) : f(f) {}
 
 	static attrib_id_t attrib_type_s() noexcept {
 		return reinterpret_cast<unsigned>(&type_id);
@@ -261,7 +261,7 @@ public:
 
 	auto &get() { return f; }
 	auto get() const { return f; }
-	operator StE::Text::font() const { return f; }
+	operator ste::text::font() const { return f; }
 };
 
 class size : public attrib {

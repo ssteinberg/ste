@@ -7,7 +7,7 @@
 
 #include <glm/gtx/dual_quaternion.hpp>
 
-namespace StE {
+namespace ste {
 
 /**
 *	@brief	dual quaternion from rotation, translation

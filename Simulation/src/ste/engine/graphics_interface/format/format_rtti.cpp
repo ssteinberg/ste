@@ -1,14 +1,14 @@
 
 #include <stdafx.hpp>
-#include <vk_format_rtti.hpp>
+#include <format_rtti.hpp>
 
-using namespace StE::GL;
+using namespace ste::gl;
 
-std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database::database =
+std::unordered_map<format, format_rtti> _internal::format_rtti_database::database =
 {
 	{
-		VK_FORMAT_R4G4_UNORM_PACK8,
-		vk_format_rtti {
+		format::r4g4_unorm_pack8,
+		format_rtti {
 			2,
 			1,
 			false,
@@ -17,8 +17,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R4G4B4A4_UNORM_PACK16,
-		vk_format_rtti {
+		format::r4g4b4a4_unorm_pack16,
+		format_rtti {
 			4,
 			2,
 			false,
@@ -27,8 +27,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_B4G4R4A4_UNORM_PACK16,
-		vk_format_rtti {
+		format::b4g4r4a4_unorm_pack16,
+		format_rtti {
 			4,
 			2,
 			false,
@@ -37,8 +37,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R5G6B5_UNORM_PACK16,
-		vk_format_rtti {
+		format::r5g6b5_unorm_pack16,
+		format_rtti {
 			3,
 			2,
 			false,
@@ -47,8 +47,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_B5G6R5_UNORM_PACK16,
-		vk_format_rtti {
+		format::b5g6r5_unorm_pack16,
+		format_rtti {
 			3,
 			2,
 			false,
@@ -57,8 +57,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R5G5B5A1_UNORM_PACK16,
-		vk_format_rtti {
+		format::r5g5b5a1_unorm_pack16,
+		format_rtti {
 			4,
 			2,
 			false,
@@ -67,8 +67,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_B5G5R5A1_UNORM_PACK16,
-		vk_format_rtti {
+		format::b5g5r5a1_unorm_pack16,
+		format_rtti {
 			4,
 			2,
 			false,
@@ -77,8 +77,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_A1R5G5B5_UNORM_PACK16,
-		vk_format_rtti {
+		format::a1r5g5b5_unorm_pack16,
+		format_rtti {
 			4,
 			2,
 			false,
@@ -87,8 +87,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R8_UNORM,
-		vk_format_rtti {
+		format::r8_unorm,
+		format_rtti {
 			1,
 			1,
 			false,
@@ -97,8 +97,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R8_SNORM,
-		vk_format_rtti {
+		format::r8_snorm,
+		format_rtti {
 			1,
 			1,
 			false,
@@ -107,8 +107,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R8_USCALED,
-		vk_format_rtti {
+		format::r8_uscaled,
+		format_rtti {
 			1,
 			1,
 			false,
@@ -117,8 +117,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R8_SSCALED,
-		vk_format_rtti {
+		format::r8_sscaled,
+		format_rtti {
 			1,
 			1,
 			false,
@@ -127,8 +127,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{ 
-		VK_FORMAT_R8_UINT,
-		vk_format_rtti {
+		format::r8_uint,
+		format_rtti {
 			1,
 			1,
 			false,
@@ -137,8 +137,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{ 
-		VK_FORMAT_R8_SINT,
-		vk_format_rtti {
+		format::r8_sint,
+		format_rtti {
 			1,
 			1,
 			false,
@@ -147,8 +147,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R8_SRGB,
-		vk_format_rtti {
+		format::r8_srgb,
+		format_rtti {
 			1,
 			1,
 			false,
@@ -157,8 +157,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R8G8_UNORM,
-		vk_format_rtti {
+		format::r8g8_unorm,
+		format_rtti {
 			2,
 			2,
 			false,
@@ -167,8 +167,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R8G8_SNORM,
-		vk_format_rtti {
+		format::r8g8_snorm,
+		format_rtti {
 			2,
 			2,
 			false,
@@ -177,8 +177,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R8G8_USCALED,
-		vk_format_rtti {
+		format::r8g8_uscaled,
+		format_rtti {
 			2,
 			2,
 			false,
@@ -187,8 +187,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R8G8_SSCALED,
-		vk_format_rtti {
+		format::r8g8_sscaled,
+		format_rtti {
 			2,
 			2,
 			false,
@@ -197,8 +197,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R8G8_UINT,
-		vk_format_rtti {
+		format::r8g8_uint,
+		format_rtti {
 			2,
 			2,
 			false,
@@ -207,8 +207,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R8G8_SINT,
-		vk_format_rtti {
+		format::r8g8_sint,
+		format_rtti {
 			2,
 			2,
 			false,
@@ -217,8 +217,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R8G8_SRGB,
-		vk_format_rtti {
+		format::r8g8_srgb,
+		format_rtti {
 			2,
 			2,
 			false,
@@ -227,8 +227,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R8G8B8_UNORM,
-		vk_format_rtti {
+		format::r8g8b8_unorm,
+		format_rtti {
 			3,
 			3,
 			false,
@@ -237,8 +237,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R8G8B8_SNORM,
-		vk_format_rtti {
+		format::r8g8b8_snorm,
+		format_rtti {
 			3,
 			3,
 			false,
@@ -247,8 +247,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R8G8B8_USCALED,
-		vk_format_rtti {
+		format::r8g8b8_uscaled,
+		format_rtti {
 			3,
 			3,
 			false,
@@ -257,28 +257,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R8G8B8_SSCALED,
-		vk_format_rtti {
-			3,
-			3,
-			false,
-			false,
-			true
-		}
-	},
-	{
-		VK_FORMAT_R8G8B8_UINT,
-		vk_format_rtti {
-			3,
-			3,
-			false,
-			false,
-			false
-		}
-	},
-	{
-		VK_FORMAT_R8G8B8_SINT,
-		vk_format_rtti {
+		format::r8g8b8_sscaled,
+		format_rtti {
 			3,
 			3,
 			false,
@@ -287,8 +267,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R8G8B8_SRGB,
-		vk_format_rtti {
+		format::r8g8b8_uint,
+		format_rtti {
 			3,
 			3,
 			false,
@@ -297,18 +277,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_B8G8R8_UNORM,
-		vk_format_rtti {
-			3,
-			3,
-			false,
-			false,
-			false
-		}
-	},
-	{
-		VK_FORMAT_B8G8R8_SNORM,
-		vk_format_rtti {
+		format::r8g8b8_sint,
+		format_rtti {
 			3,
 			3,
 			false,
@@ -317,8 +287,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_B8G8R8_USCALED,
-		vk_format_rtti {
+		format::r8g8b8_srgb,
+		format_rtti {
 			3,
 			3,
 			false,
@@ -327,18 +297,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_B8G8R8_SSCALED,
-		vk_format_rtti {
-			3,
-			3,
-			false,
-			false,
-			true
-		}
-	},
-	{
-		VK_FORMAT_B8G8R8_UINT,
-		vk_format_rtti {
+		format::b8g8r8_unorm,
+		format_rtti {
 			3,
 			3,
 			false,
@@ -347,8 +307,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_B8G8R8_SINT,
-		vk_format_rtti {
+		format::b8g8r8_snorm,
+		format_rtti {
 			3,
 			3,
 			false,
@@ -357,8 +317,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_B8G8R8_SRGB,
-		vk_format_rtti {
+		format::b8g8r8_uscaled,
+		format_rtti {
 			3,
 			3,
 			false,
@@ -367,8 +327,48 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R8G8B8A8_UNORM,
-		vk_format_rtti {
+		format::b8g8r8_sscaled,
+		format_rtti {
+			3,
+			3,
+			false,
+			false,
+			true
+		}
+	},
+	{
+		format::b8g8r8_uint,
+		format_rtti {
+			3,
+			3,
+			false,
+			false,
+			false
+		}
+	},
+	{
+		format::b8g8r8_sint,
+		format_rtti {
+			3,
+			3,
+			false,
+			false,
+			true
+		}
+	},
+	{
+		format::b8g8r8_srgb,
+		format_rtti {
+			3,
+			3,
+			false,
+			false,
+			false
+		}
+	},
+	{
+		format::r8g8b8a8_unorm,
+		format_rtti {
 			4,
 			4,
 			false,
@@ -377,8 +377,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R8G8B8A8_SNORM,
-		vk_format_rtti {
+		format::r8g8b8a8_snorm,
+		format_rtti {
 			4,
 			4,
 			false,
@@ -387,8 +387,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R8G8B8A8_USCALED,
-		vk_format_rtti {
+		format::r8g8b8a8_uscaled,
+		format_rtti {
 			4,
 			4,
 			false,
@@ -397,8 +397,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R8G8B8A8_SSCALED,
-		vk_format_rtti {
+		format::r8g8b8a8_sscaled,
+		format_rtti {
 			4,
 			4,
 			false,
@@ -407,8 +407,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R8G8B8A8_UINT,
-		vk_format_rtti {
+		format::r8g8b8a8_uint,
+		format_rtti {
 			4,
 			4,
 			false,
@@ -417,8 +417,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R8G8B8A8_SINT,
-		vk_format_rtti {
+		format::r8g8b8a8_sint,
+		format_rtti {
 			4,
 			4,
 			false,
@@ -427,8 +427,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R8G8B8A8_SRGB,
-		vk_format_rtti {
+		format::r8g8b8a8_srgb,
+		format_rtti {
 			4,
 			4,
 			false,
@@ -437,8 +437,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_B8G8R8A8_UNORM,
-		vk_format_rtti {
+		format::b8g8r8a8_unorm,
+		format_rtti {
 			4,
 			4,
 			false,
@@ -447,8 +447,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_B8G8R8A8_SNORM,
-		vk_format_rtti {
+		format::b8g8r8a8_snorm,
+		format_rtti {
 			4,
 			4,
 			false,
@@ -457,8 +457,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_B8G8R8A8_USCALED,
-		vk_format_rtti {
+		format::b8g8r8a8_uscaled,
+		format_rtti {
 			4,
 			4,
 			false,
@@ -467,8 +467,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_B8G8R8A8_SSCALED,
-		vk_format_rtti {
+		format::b8g8r8a8_sscaled,
+		format_rtti {
 			4,
 			4,
 			false,
@@ -477,8 +477,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_B8G8R8A8_UINT,
-		vk_format_rtti {
+		format::b8g8r8a8_uint,
+		format_rtti {
 			4,
 			4,
 			false,
@@ -487,8 +487,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_B8G8R8A8_SINT,
-		vk_format_rtti {
+		format::b8g8r8a8_sint,
+		format_rtti {
 			4,
 			4,
 			false,
@@ -497,8 +497,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_B8G8R8A8_SRGB,
-		vk_format_rtti {
+		format::b8g8r8a8_srgb,
+		format_rtti {
 			4,
 			4,
 			false,
@@ -507,8 +507,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_A8B8G8R8_UNORM_PACK32,
-		vk_format_rtti {
+		format::a8b8g8r8_unorm_pack32,
+		format_rtti {
 			4,
 			4,
 			false,
@@ -517,8 +517,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_A8B8G8R8_SNORM_PACK32,
-		vk_format_rtti {
+		format::a8b8g8r8_snorm_pack32,
+		format_rtti {
 			4,
 			4,
 			false,
@@ -527,8 +527,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_A8B8G8R8_USCALED_PACK32,
-		vk_format_rtti {
+		format::a8b8g8r8_uscaled_pack32,
+		format_rtti {
 			4,
 			4,
 			false,
@@ -537,8 +537,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_A8B8G8R8_SSCALED_PACK32,
-		vk_format_rtti {
+		format::a8b8g8r8_sscaled_pack32,
+		format_rtti {
 			4,
 			4,
 			false,
@@ -547,8 +547,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_A8B8G8R8_UINT_PACK32,
-		vk_format_rtti {
+		format::a8b8g8r8_uint_pack32,
+		format_rtti {
 			4,
 			4,
 			false,
@@ -557,8 +557,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_A8B8G8R8_SINT_PACK32,
-		vk_format_rtti {
+		format::a8b8g8r8_sint_pack32,
+		format_rtti {
 			4,
 			4,
 			false,
@@ -567,8 +567,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_A8B8G8R8_SRGB_PACK32,
-		vk_format_rtti {
+		format::a8b8g8r8_srgb_pack32,
+		format_rtti {
 			4,
 			4,
 			false,
@@ -577,8 +577,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_A2R10G10B10_UNORM_PACK32,
-		vk_format_rtti {
+		format::a2r10g10b10_unorm_pack32,
+		format_rtti {
 			4,
 			4,
 			false,
@@ -587,8 +587,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_A2R10G10B10_SNORM_PACK32,
-		vk_format_rtti {
+		format::a2r10g10b10_snorm_pack32,
+		format_rtti {
 			4,
 			4,
 			false,
@@ -597,8 +597,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_A2R10G10B10_USCALED_PACK32,
-		vk_format_rtti {
+		format::a2r10g10b10_uscaled_pack32,
+		format_rtti {
 			4,
 			4,
 			false,
@@ -607,8 +607,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_A2R10G10B10_SSCALED_PACK32,
-		vk_format_rtti {
+		format::a2r10g10b10_sscaled_pack32,
+		format_rtti {
 			4,
 			4,
 			false,
@@ -617,8 +617,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_A2R10G10B10_UINT_PACK32,
-		vk_format_rtti {
+		format::a2r10g10b10_uint_pack32,
+		format_rtti {
 			4,
 			4,
 			false,
@@ -627,8 +627,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_A2R10G10B10_SINT_PACK32,
-		vk_format_rtti {
+		format::a2r10g10b10_sint_pack32,
+		format_rtti {
 			4,
 			4,
 			false,
@@ -637,8 +637,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_A2B10G10R10_UNORM_PACK32,
-		vk_format_rtti {
+		format::a2b10g10r10_unorm_pack32,
+		format_rtti {
 			4,
 			4,
 			false,
@@ -647,8 +647,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_A2B10G10R10_SNORM_PACK32,
-		vk_format_rtti {
+		format::a2b10g10r10_snorm_pack32,
+		format_rtti {
 			4,
 			4,
 			false,
@@ -657,8 +657,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_A2B10G10R10_USCALED_PACK32,
-		vk_format_rtti {
+		format::a2b10g10r10_uscaled_pack32,
+		format_rtti {
 			4,
 			4,
 			false,
@@ -667,8 +667,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_A2B10G10R10_SSCALED_PACK32,
-		vk_format_rtti {
+		format::a2b10g10r10_sscaled_pack32,
+		format_rtti {
 			4,
 			4,
 			false,
@@ -677,8 +677,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_A2B10G10R10_UINT_PACK32,
-		vk_format_rtti {
+		format::a2b10g10r10_uint_pack32,
+		format_rtti {
 			4,
 			4,
 			false,
@@ -687,8 +687,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_A2B10G10R10_SINT_PACK32,
-		vk_format_rtti {
+		format::a2b10g10r10_sint_pack32,
+		format_rtti {
 			4,
 			4,
 			false,
@@ -697,8 +697,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R16_UNORM,
-		vk_format_rtti {
+		format::r16_unorm,
+		format_rtti {
 			1,
 			2,
 			false,
@@ -707,8 +707,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R16_SNORM,
-		vk_format_rtti {
+		format::r16_snorm,
+		format_rtti {
 			1,
 			2,
 			false,
@@ -717,8 +717,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R16_USCALED,
-		vk_format_rtti {
+		format::r16_uscaled,
+		format_rtti {
 			1,
 			2,
 			false,
@@ -727,8 +727,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R16_SSCALED,
-		vk_format_rtti {
+		format::r16_sscaled,
+		format_rtti {
 			1,
 			2,
 			false,
@@ -737,8 +737,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R16_UINT,
-		vk_format_rtti {
+		format::r16_uint,
+		format_rtti {
 			1,
 			2,
 			false,
@@ -747,8 +747,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R16_SINT,
-		vk_format_rtti {
+		format::r16_sint,
+		format_rtti {
 			1,
 			2,
 			false,
@@ -757,8 +757,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R16_SFLOAT,
-		vk_format_rtti {
+		format::r16_sfloat,
+		format_rtti {
 			1,
 			2,
 			false,
@@ -767,8 +767,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R16G16_UNORM,
-		vk_format_rtti {
+		format::r16g16_unorm,
+		format_rtti {
 			2,
 			4,
 			false,
@@ -777,8 +777,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R16G16_SNORM,
-		vk_format_rtti {
+		format::r16g16_snorm,
+		format_rtti {
 			2,
 			4,
 			false,
@@ -787,8 +787,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R16G16_USCALED,
-		vk_format_rtti {
+		format::r16g16_uscaled,
+		format_rtti {
 			2,
 			4,
 			false,
@@ -797,8 +797,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R16G16_SSCALED,
-		vk_format_rtti {
+		format::r16g16_sscaled,
+		format_rtti {
 			2,
 			4,
 			false,
@@ -807,8 +807,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R16G16_UINT,
-		vk_format_rtti {
+		format::r16g16_uint,
+		format_rtti {
 			2,
 			4,
 			false,
@@ -817,8 +817,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R16G16_SINT,
-		vk_format_rtti {
+		format::r16g16_sint,
+		format_rtti {
 			2,
 			4,
 			false,
@@ -827,8 +827,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R16G16_SFLOAT,
-		vk_format_rtti {
+		format::r16g16_sfloat,
+		format_rtti {
 			2,
 			4,
 			false,
@@ -837,8 +837,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R16G16B16_UNORM,
-		vk_format_rtti {
+		format::r16g16b16_unorm,
+		format_rtti {
 			3,
 			6,
 			false,
@@ -847,8 +847,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R16G16B16_SNORM,
-		vk_format_rtti {
+		format::r16g16b16_snorm,
+		format_rtti {
 			3,
 			6,
 			false,
@@ -857,8 +857,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R16G16B16_USCALED,
-		vk_format_rtti {
+		format::r16g16b16_uscaled,
+		format_rtti {
 			3,
 			6,
 			false,
@@ -867,8 +867,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R16G16B16_SSCALED,
-		vk_format_rtti {
+		format::r16g16b16_sscaled,
+		format_rtti {
 			3,
 			6,
 			false,
@@ -877,8 +877,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R16G16B16_UINT,
-		vk_format_rtti {
+		format::r16g16b16_uint,
+		format_rtti {
 			3,
 			6,
 			false,
@@ -887,8 +887,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R16G16B16_SINT,
-		vk_format_rtti {
+		format::r16g16b16_sint,
+		format_rtti {
 			3,
 			6,
 			false,
@@ -897,8 +897,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R16G16B16_SFLOAT,
-		vk_format_rtti {
+		format::r16g16b16_sfloat,
+		format_rtti {
 			3,
 			6,
 			false,
@@ -907,8 +907,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R16G16B16A16_UNORM,
-		vk_format_rtti {
+		format::r16g16b16a16_unorm,
+		format_rtti {
 			4,
 			8,
 			false,
@@ -917,8 +917,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R16G16B16A16_SNORM,
-		vk_format_rtti {
+		format::r16g16b16a16_snorm,
+		format_rtti {
 			4,
 			8,
 			false,
@@ -927,8 +927,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R16G16B16A16_USCALED,
-		vk_format_rtti {
+		format::r16g16b16a16_uscaled,
+		format_rtti {
 			4,
 			8,
 			false,
@@ -937,8 +937,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R16G16B16A16_SSCALED,
-		vk_format_rtti {
+		format::r16g16b16a16_sscaled,
+		format_rtti {
 			4,
 			8,
 			false,
@@ -947,8 +947,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R16G16B16A16_UINT,
-		vk_format_rtti {
+		format::r16g16b16a16_uint,
+		format_rtti {
 			4,
 			8,
 			false,
@@ -957,8 +957,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R16G16B16A16_SINT,
-		vk_format_rtti {
+		format::r16g16b16a16_sint,
+		format_rtti {
 			4,
 			8,
 			false,
@@ -967,8 +967,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R16G16B16A16_SFLOAT,
-		vk_format_rtti {
+		format::r16g16b16a16_sfloat,
+		format_rtti {
 			4,
 			8,
 			false,
@@ -977,8 +977,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R32_UINT,
-		vk_format_rtti {
+		format::r32_uint,
+		format_rtti {
 			1,
 			4,
 			false,
@@ -987,8 +987,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R32_SINT,
-		vk_format_rtti {
+		format::r32_sint,
+		format_rtti {
 			1,
 			4,
 			false,
@@ -997,8 +997,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R32_SFLOAT,
-		vk_format_rtti {
+		format::r32_sfloat,
+		format_rtti {
 			1,
 			4,
 			false,
@@ -1007,8 +1007,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R32G32_UINT,
-		vk_format_rtti {
+		format::r32g32_uint,
+		format_rtti {
 			2,
 			8,
 			false,
@@ -1017,8 +1017,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R32G32_SINT,
-		vk_format_rtti {
+		format::r32g32_sint,
+		format_rtti {
 			2,
 			8,
 			false,
@@ -1027,8 +1027,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R32G32_SFLOAT,
-		vk_format_rtti {
+		format::r32g32_sfloat,
+		format_rtti {
 			2,
 			8,
 			false,
@@ -1037,8 +1037,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R32G32B32_UINT,
-		vk_format_rtti {
+		format::r32g32b32_uint,
+		format_rtti {
 			3,
 			12,
 			false,
@@ -1047,8 +1047,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R32G32B32_SINT,
-		vk_format_rtti {
+		format::r32g32b32_sint,
+		format_rtti {
 			3,
 			12,
 			false,
@@ -1057,8 +1057,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R32G32B32_SFLOAT,
-		vk_format_rtti {
+		format::r32g32b32_sfloat,
+		format_rtti {
 			3,
 			12,
 			false,
@@ -1067,8 +1067,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R32G32B32A32_UINT,
-		vk_format_rtti {
+		format::r32g32b32a32_uint,
+		format_rtti {
 			4,
 			16,
 			false,
@@ -1077,8 +1077,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R32G32B32A32_SINT,
-		vk_format_rtti {
+		format::r32g32b32a32_sint,
+		format_rtti {
 			4,
 			16,
 			false,
@@ -1087,8 +1087,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R32G32B32A32_SFLOAT,
-		vk_format_rtti {
+		format::r32g32b32a32_sfloat,
+		format_rtti {
 			4,
 			16,
 			false,
@@ -1097,8 +1097,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R64_UINT,
-		vk_format_rtti {
+		format::r64_uint,
+		format_rtti {
 			1,
 			8,
 			false,
@@ -1107,8 +1107,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R64_SINT,
-		vk_format_rtti {
+		format::r64_sint,
+		format_rtti {
 			1,
 			8,
 			false,
@@ -1117,8 +1117,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R64_SFLOAT,
-		vk_format_rtti {
+		format::r64_sfloat,
+		format_rtti {
 			1,
 			8,
 			false,
@@ -1127,8 +1127,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R64G64_UINT,
-		vk_format_rtti {
+		format::r64g64_uint,
+		format_rtti {
 			2,
 			16,
 			false,
@@ -1137,8 +1137,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R64G64_SINT,
-		vk_format_rtti {
+		format::r64g64_sint,
+		format_rtti {
 			2,
 			16,
 			false,
@@ -1147,8 +1147,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R64G64_SFLOAT,
-		vk_format_rtti {
+		format::r64g64_sfloat,
+		format_rtti {
 			2,
 			16,
 			false,
@@ -1157,8 +1157,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R64G64B64_UINT,
-		vk_format_rtti {
+		format::r64g64b64_uint,
+		format_rtti {
 			3,
 			24,
 			false,
@@ -1167,8 +1167,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R64G64B64_SINT,
-		vk_format_rtti {
+		format::r64g64b64_sint,
+		format_rtti {
 			3,
 			24,
 			false,
@@ -1177,8 +1177,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R64G64B64_SFLOAT,
-		vk_format_rtti {
+		format::r64g64b64_sfloat,
+		format_rtti {
 			3,
 			24,
 			false,
@@ -1187,8 +1187,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R64G64B64A64_UINT,
-		vk_format_rtti {
+		format::r64g64b64a64_uint,
+		format_rtti {
 			4,
 			32,
 			false,
@@ -1197,8 +1197,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R64G64B64A64_SINT,
-		vk_format_rtti {
+		format::r64g64b64a64_sint,
+		format_rtti {
 			4,
 			32,
 			false,
@@ -1207,8 +1207,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_R64G64B64A64_SFLOAT,
-		vk_format_rtti {
+		format::r64g64b64a64_sfloat,
+		format_rtti {
 			4,
 			32,
 			false,
@@ -1217,8 +1217,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_B10G11R11_UFLOAT_PACK32,
-		vk_format_rtti {
+		format::b10g11r11_ufloat_pack32,
+		format_rtti {
 			3,
 			4,
 			false,
@@ -1227,8 +1227,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_E5B9G9R9_UFLOAT_PACK32,
-		vk_format_rtti {
+		format::e5b9g9r9_ufloat_pack32,
+		format_rtti {
 			3,
 			4,
 			false,
@@ -1237,8 +1237,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_D16_UNORM,
-		vk_format_rtti {
+		format::d16_unorm,
+		format_rtti {
 			1,
 			2,
 			true,
@@ -1247,8 +1247,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_X8_D24_UNORM_PACK32,
-		vk_format_rtti {
+		format::x8_d24_unorm_pack32,
+		format_rtti {
 			1,
 			4,
 			true,
@@ -1257,8 +1257,8 @@ std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database:
 		}
 	},
 	{
-		VK_FORMAT_D32_SFLOAT,
-		vk_format_rtti {
+		format::d32_sfloat,
+		format_rtti {
 			1,
 			4,
 			true,

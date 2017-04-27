@@ -11,14 +11,14 @@
 #include <vector>
 #include <algorithm>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 /**
  *	@brief	Device queue descriptor
  */
 struct ste_queue_descriptor {
-	std::reference_wrapper<const GL::vk_physical_device_descriptor> physical_device;
+	std::reference_wrapper<const vk::vk_physical_device_descriptor> physical_device;
 
 	//	Queue family
 	ste_queue_family family;

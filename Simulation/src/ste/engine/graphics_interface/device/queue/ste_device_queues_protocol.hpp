@@ -14,8 +14,8 @@
 #include <unordered_map>
 #include <optional.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 struct queue_create_descriptor {
 	std::uint32_t count;
@@ -27,7 +27,7 @@ private:
 	using queue_create_info_t = std::unordered_map<ste_queue_type, queue_create_descriptor>;
 
 private:
-	static auto default_queue_create_parameters(const GL::vk_physical_device_descriptor &physical_device) {
+	static auto default_queue_create_parameters(const vk::vk_physical_device_descriptor &physical_device) {
 		queue_create_info_t params;
 		// By default attempt to create a single high-priority primary queue and a low-priority compute queue
 		params[ste_queue_type::primary_queue] = { 1, 1.f };
@@ -44,7 +44,7 @@ private:
 	}
 
 	static ste_queue_descriptors::queues_t
-		create_queue_descriptor(const GL::vk_physical_device_descriptor &physical_device,
+		create_queue_descriptor(const vk::vk_physical_device_descriptor &physical_device,
 								const VkQueueFamilyProperties &q,
 								std::uint32_t family_idx,
 								const ste_queue_type &type,
@@ -54,7 +54,7 @@ private:
 			return{};
 
 		// Create descriptor
-		ste_queue_descriptor desc = { std::reference_wrapper<const GL::vk_physical_device_descriptor>(physical_device), family_idx };
+		ste_queue_descriptor desc = { std::reference_wrapper<const vk::vk_physical_device_descriptor>(physical_device), family_idx };
 		desc.flags = q.queueFlags;
 		desc.type = type;
 		desc.timestamp_valid_bits = q.timestampValidBits;
@@ -71,7 +71,7 @@ private:
 		return v;
 	}
 
-	static auto find_device_queue(const GL::vk_physical_device_descriptor &physical_device,
+	static auto find_device_queue(const vk::vk_physical_device_descriptor &physical_device,
 								  const ste_queue_type &type,
 								  const ste_queue_descriptors::queues_t &v,
 								  ste_queue_descriptors::queues_t::const_iterator &queues_insertion_hint) {
@@ -114,7 +114,7 @@ public:
 	*	@param queues_create_info	Queue descriptors creation parameters
 	*/
 	static ste_queue_descriptors
-		queue_descriptors_for_physical_device(const GL::vk_physical_device_descriptor &physical_device,
+		queue_descriptors_for_physical_device(const vk::vk_physical_device_descriptor &physical_device,
 											  const optional<queue_create_info_t> &queues_create_info = none) {
 		// If no create parameters passed, use default
 		auto default_create_info = default_queue_create_parameters(physical_device);

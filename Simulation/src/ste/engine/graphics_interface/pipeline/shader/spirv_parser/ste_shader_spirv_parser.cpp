@@ -7,7 +7,7 @@
 #include <ste_shader_stage_block_layout.hpp>
 #include <ste_shader_exceptions.hpp>
 
-using namespace StE::GL;
+using namespace ste::gl;
 
 void ste_shader_spirv_parser::parse_constant_value(ste_shader_spirv_parser::parser_internal_element &dst,
 												   const std::uint32_t *op) {

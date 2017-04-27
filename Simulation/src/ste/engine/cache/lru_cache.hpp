@@ -21,7 +21,7 @@
 
 #include <aligned_ptr.hpp>
 
-namespace StE {
+namespace ste {
 
 /**
  *	@brief	LRU general purpose disk caching class

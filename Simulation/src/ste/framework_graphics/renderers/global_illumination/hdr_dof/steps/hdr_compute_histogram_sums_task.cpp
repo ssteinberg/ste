@@ -3,8 +3,8 @@
 //#include <hdr_compute_histogram_sums_task.hpp>
 //#include <shader_storage_buffer.hpp>
 //
-//using namespace StE::Graphics;
-//using namespace StE::Core;
+//using namespace ste::Graphics;
+//using namespace ste::Core;
 //
 //void hdr_compute_histogram_sums_task::set_context_state() const {
 //	0_storage_idx = p->histogram_sums;
@@ -17,6 +17,6 @@
 //void hdr_compute_histogram_sums_task::dispatch() const {
 //	// p->hdr_compute_histogram_sums->set_uniform("time", p->ctx.time_per_frame().count());
 //
-//	GL::gl_current_context::get()->memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_ATOMIC_COUNTER_BARRIER_BIT | GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
-//	GL::gl_current_context::get()->dispatch_compute(1, 1, 1);
+//	gl::gl_current_context::get()->memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_ATOMIC_COUNTER_BARRIER_BIT | GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+//	gl::gl_current_context::get()->dispatch_compute(1, 1, 1);
 //}

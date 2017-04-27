@@ -9,8 +9,8 @@
 #include <ste_shader_stage_binding_type.hpp>
 #include <pipeline_layout_set_index.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 struct ste_shader_stage_binding : ste_shader_stage_variable_layout_validator {
 	pipeline_layout_set_index set_idx;

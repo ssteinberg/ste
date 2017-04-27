@@ -6,8 +6,8 @@
 #include <vulkan/vulkan.h>
 #include <command.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 class cmd_end_render_pass : public command {
 public:

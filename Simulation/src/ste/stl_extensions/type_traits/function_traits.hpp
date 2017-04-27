@@ -5,7 +5,7 @@
 
 #include <stdafx.hpp>
 
-namespace StE {
+namespace ste {
 
 template <typename T>
 struct function_traits {

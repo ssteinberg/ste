@@ -20,8 +20,8 @@
 
 #include <vector>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 template <
 	typename WriteType,
@@ -47,11 +47,11 @@ public:
 	pipeline_resource_binder(pipeline_resource_binder&&) = default;
 	pipeline_resource_binder &operator=(pipeline_resource_binder&&) = default;
 
-	vk_descriptor_set_write_resource writer(const pipeline_binding_layout_interface *binding) const {
-		return vk_descriptor_set_write_resource(binding->vk_descriptor_type(),
-												binding->bind_idx(),
-												array_element,
-												writes);
+	vk::vk_descriptor_set_write_resource writer(const pipeline_binding_layout_interface *binding) const {
+		return vk::vk_descriptor_set_write_resource(binding->vk_descriptor_type(),
+													binding->bind_idx(),
+													array_element,
+													writes);
 	}
 };
 
@@ -62,7 +62,7 @@ public:
 */
 template <typename T, class a>
 auto bind(const device_buffer<T, a> &buffer) {
-	return pipeline_resource_binder<vk_descriptor_set_write_buffer, T>(0, { buffer_view(buffer) });
+	return pipeline_resource_binder<vk::vk_descriptor_set_write_buffer, T>(0, { buffer_view(buffer) });
 }
 /**
 *	@brief	Creates a buffer binder
@@ -75,7 +75,7 @@ template <typename T, class a>
 auto bind(const device_buffer<T, a> &buffer,
 		  std::uint64_t offset,
 		  std::uint64_t range) {
-	return pipeline_resource_binder<vk_descriptor_set_write_buffer, T>(0, { buffer_view(buffer, offset, range) });
+	return pipeline_resource_binder<vk::vk_descriptor_set_write_buffer, T>(0, { buffer_view(buffer, offset, range) });
 }
 /**
 *	@brief	Creates a buffer binder
@@ -88,7 +88,7 @@ template <typename T, std::uint64_t s, class a>
 auto bind(const device_buffer_sparse<T, s, a> &buffer,
 		  std::uint64_t offset,
 		  std::uint64_t range) {
-	return pipeline_resource_binder<vk_descriptor_set_write_buffer, T>(0, { buffer_view(buffer, offset, range) });
+	return pipeline_resource_binder<vk::vk_descriptor_set_write_buffer, T>(0, { buffer_view(buffer, offset, range) });
 }
 
 /**
@@ -127,8 +127,8 @@ auto bind(const stable_vector<T, a, b> &vec) {
 */
 auto inline bind(const image_view_generic &image,
 				 VkImageLayout layout) {
-	return pipeline_resource_binder<vk_descriptor_set_write_image, image_view_generic>(0, {
-		vk_descriptor_set_write_image{ image.get_image_view_handle(), layout }
+	return pipeline_resource_binder<vk::vk_descriptor_set_write_image, image_view_generic>(0, {
+		vk::vk_descriptor_set_write_image{ image.get_image_view_handle(), layout }
 	});
 }
 /**
@@ -147,11 +147,11 @@ auto inline bind(const std::vector<std::pair<const image_view_generic*, VkImageL
 */
 auto inline bind(std::uint32_t array_element,
 				 const std::vector<std::pair<const image_view_generic*, VkImageLayout>> &images) {
-	std::vector<vk_descriptor_set_write_image> writes;
+	std::vector<vk::vk_descriptor_set_write_image> writes;
 	writes.reserve(images.size());
 	for (auto &p : images)
 		writes.push_back({ p.first->get_image_view_handle(), p.second });
-	return pipeline_resource_binder<vk_descriptor_set_write_image, image_view_generic>(array_element, std::move(writes));
+	return pipeline_resource_binder<vk::vk_descriptor_set_write_image, image_view_generic>(array_element, std::move(writes));
 }
 
 /**
@@ -162,8 +162,8 @@ auto inline bind(std::uint32_t array_element,
 */
 auto inline bind(const texture_generic &tex,
 				 VkImageLayout layout) {
-	return pipeline_resource_binder<vk_descriptor_set_write_image, texture_generic>(0, {
-		vk_descriptor_set_write_image{ tex.get_image_view_handle(), layout, tex.get_sampler() }
+	return pipeline_resource_binder<vk::vk_descriptor_set_write_image, texture_generic>(0, {
+		vk::vk_descriptor_set_write_image{ tex.get_image_view_handle(), layout, tex.get_sampler() }
 	});
 }
 /**
@@ -182,11 +182,11 @@ auto inline bind(const std::vector<std::pair<const texture_generic*, VkImageLayo
 */
 auto inline bind(std::uint32_t array_element,
 				 const std::vector<std::pair<const texture_generic*, VkImageLayout>> &textures) {
-	std::vector<vk_descriptor_set_write_image> writes;
+	std::vector<vk::vk_descriptor_set_write_image> writes;
 	writes.reserve(textures.size());
 	for (auto &p : textures)
 		writes.push_back({ p.first->get_image_view_handle(), p.second, p.first->get_sampler() });
-	return pipeline_resource_binder<vk_descriptor_set_write_image, texture_generic>(array_element, std::move(writes));
+	return pipeline_resource_binder<vk::vk_descriptor_set_write_image, texture_generic>(array_element, std::move(writes));
 }
 
 /**
@@ -195,8 +195,8 @@ auto inline bind(std::uint32_t array_element,
 *	@param	sam		Sampler to bind
 */
 auto inline bind(const sampler &sam) {
-	return pipeline_resource_binder<vk_descriptor_set_write_image, sampler>(0, {
-		vk_descriptor_set_write_image(sam.get())
+	return pipeline_resource_binder<vk::vk_descriptor_set_write_image, sampler>(0, {
+		vk::vk_descriptor_set_write_image(sam.get())
 	});
 }
 /**
@@ -215,11 +215,11 @@ auto inline bind(const std::vector<const sampler*> &samplers) {
 */
 auto inline bind(std::uint32_t array_element,
 				 const std::vector<const sampler*> &samplers) {
-	std::vector<vk_descriptor_set_write_image> writes;
+	std::vector<vk::vk_descriptor_set_write_image> writes;
 	writes.reserve(samplers.size());
 	for (auto &p : samplers)
 		writes.push_back({ p->get() });
-	return pipeline_resource_binder<vk_descriptor_set_write_image, sampler>(array_element, std::move(writes));
+	return pipeline_resource_binder<vk::vk_descriptor_set_write_image, sampler>(array_element, std::move(writes));
 }
 
 }

@@ -25,8 +25,8 @@
 
 #include <optional.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 class device_pipeline {
 private:

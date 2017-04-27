@@ -15,22 +15,30 @@
 
 #include <memory>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 template <typename T>
 class vk_mmap;
 
+namespace vk {
+
 class vk_mmap_type_eraser {
 private:
+	struct ctor {};
 	std::function<void()> unmapper;
 
 public:
-	template <typename T>
-	vk_mmap_type_eraser(const vk_mmap<T> *m) : unmapper([m]() {
-		m->munmap();
-	}) {}
+	vk_mmap_type_eraser(ctor,
+						std::function<void()> &&f) : unmapper(std::move(f)) {}
 	~vk_mmap_type_eraser() noexcept { unmapper(); }
+
+	template <typename T>
+	static auto create(const vk_mmap<T> *m) {
+		return std::make_unique<vk_mmap_type_eraser>(ctor(), [m]() {
+			m->munmap();
+		});
+	}
 
 	vk_mmap_type_eraser(vk_mmap_type_eraser &&) = default;
 	vk_mmap_type_eraser&operator=(vk_mmap_type_eraser &&) = default;
@@ -81,9 +89,9 @@ public:
 	}
 
 	/**
-	*	@brief	Returns the amount, in bytes, of the device commited memory of lazily-allocated 
-	*			(VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT) memory. 
-	*			
+	*	@brief	Returns the amount, in bytes, of the device commited memory of lazily-allocated
+	*			(VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT) memory.
+	*
 	*			It is the callers responsibility to ensure that this memory object was allocated with a lazily-allocated
 	*			memory type, otherwise the return value is undefined.
 	*/
@@ -97,12 +105,12 @@ public:
 	*	@brief	Maps the memory object and returns the host addressable virtual address pointer to the mapped region.
 	*			Only one region can be mapped at a time.
 	*			Unmaps a previously mapped region, if any.
-	*			
+	*
 	*			It is the caller responsibility to ensure correct memory type and alignment:
-	*			Device memory must be allocated on a host visible heap (VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT), otherwise 
+	*			Device memory must be allocated on a host visible heap (VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT), otherwise
 	*			call will fail and throw.
-	*			If the device memory is non-coherent (VK_MEMORY_PROPERTY_HOST_COHERENT_BIT), the mapped region start 
-	*			offset and size in bytes should be aligned to non-coherent atom size bounderies (retrieveable 
+	*			If the device memory is non-coherent (VK_MEMORY_PROPERTY_HOST_COHERENT_BIT), the mapped region start
+	*			offset and size in bytes should be aligned to non-coherent atom size bounderies (retrieveable
 	*			via get_non_coherent_atom_size()), otherwise call will fail and throw.
 	*
 	*	@param	offset	Mapped region start offset
@@ -119,7 +127,7 @@ public:
 		}
 
 		auto mmap = std::make_unique<vk_mmap<T>>(*this, offset, count, reinterpret_cast<T*>(pdata));
-		mapped_memory = std::make_unique<vk_mmap_type_eraser>(mmap.get());
+		mapped_memory = vk_mmap_type_eraser::create<T>(mmap.get());
 
 		return std::move(mmap);
 	}
@@ -137,7 +145,7 @@ public:
 	*	@brief	Returns the non-coherent atom size. See mmap().
 	*			Guaranteed by the specification to be 256 bytes at most.
 	*/
-	auto get_non_coherent_atom_size() const { 
+	auto get_non_coherent_atom_size() const {
 		return device.get().get_physical_device_descriptor().properties.limits.nonCoherentAtomSize;
 	}
 
@@ -147,6 +155,8 @@ public:
 
 	auto& get() const { return get_device_memory(); }
 };
+
+}
 
 }
 }

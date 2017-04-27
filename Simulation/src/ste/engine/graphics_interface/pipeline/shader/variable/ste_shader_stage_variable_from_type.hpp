@@ -13,8 +13,8 @@
 #include <memory>
 #include <vector>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 namespace _detail {
 

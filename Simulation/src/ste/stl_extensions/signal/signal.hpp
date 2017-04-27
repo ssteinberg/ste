@@ -8,7 +8,7 @@
 
 #include <connection.hpp>
 
-namespace StE {
+namespace ste {
 
 template <typename ... Ts>
 class connection;

@@ -8,8 +8,8 @@
 
 #include <memory>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 class pipeline_bind_point {
 private:

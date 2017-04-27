@@ -7,7 +7,7 @@
 // TODO
 //#include <timestamp_query.hpp>
 //
-//namespace StE {
+//namespace ste {
 //namespace Graphics {
 //
 //class profileable {

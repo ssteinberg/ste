@@ -21,11 +21,11 @@
 
 #include <optional.hpp>
 #include <string>
-#include <vk_format_rtti.hpp>
+#include <format_rtti.hpp>
 #include <vector>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 class device_pipeline_graphics : public device_pipeline {
 	using Base = device_pipeline;
@@ -77,9 +77,9 @@ private:
 	pipeline_framebuffer fb;
 
 	glm::u32vec2 extent;
-	optional<vk_framebuffer> device_framebuffer;
-	optional<vk_render_pass> device_renderpass;
-	optional<vk_pipeline_graphics> graphics_pipeline;
+	optional<vk::vk_framebuffer> device_framebuffer;
+	optional<vk::vk_render_pass> device_renderpass;
+	optional<vk::vk_pipeline_graphics> graphics_pipeline;
 
 	optional<std::vector<VkClearValue>> clear_values;
 
@@ -143,7 +143,7 @@ private:
 	// Creates the Vulkan renderpass object
 	void create_renderpass() {
 		// Sort attachments
-		std::vector<vk_render_pass_attachment> vk_attachments;
+		std::vector<vk::vk_render_pass_attachment> vk_attachments;
 		std::vector<VkAttachmentReference> color;
 		optional<VkAttachmentReference> depth;
 
@@ -169,7 +169,7 @@ private:
 		}
 
 		// Create subpass descriptor
-		std::vector<vk_render_pass_subpass_descriptor> subpasses;
+		std::vector<vk::vk_render_pass_subpass_descriptor> subpasses;
 		depth ?
 			subpasses.emplace_back(color, depth.get()) :
 			subpasses.emplace_back(color);
@@ -189,7 +189,7 @@ private:
 		auto shader_stage_descriptors = layout.shader_stage_descriptors();
 
 		// Blend operation descriptor for each attachment
-		std::vector<vk_blend_op_descriptor> attachment_blend_ops;
+		std::vector<vk::vk_blend_op_descriptor> attachment_blend_ops;
 		for (auto &a : fb) {
 			// a is an optional attachment
 			if (!a.second)

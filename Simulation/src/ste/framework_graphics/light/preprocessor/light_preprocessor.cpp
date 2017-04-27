@@ -4,8 +4,8 @@
 //
 //#include <extract_projection_planes.hpp>
 //
-//using namespace StE::Graphics;
-//using namespace StE::Core;
+//using namespace ste::Graphics;
+//using namespace ste::Core;
 //
 //void light_preprocessor::set_projection_planes() const {
 //	glm::vec4 np;
@@ -42,6 +42,6 @@
 //	auto size = (ls->size() + jobs - 1) / jobs;
 //
 //	ls->clear_active_ll();
-//	GL::gl_current_context::get()->memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT);
-//	Core::GL::gl_current_context::get()->dispatch_compute(size, 1, 1);
+//	gl::gl_current_context::get()->memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT);
+//	Core::gl::gl_current_context::get()->dispatch_compute(size, 1, 1);
 //}

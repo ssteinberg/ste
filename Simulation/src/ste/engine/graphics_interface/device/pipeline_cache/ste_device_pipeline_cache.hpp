@@ -15,8 +15,8 @@
 #include <thread>
 #include <string>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 class ste_device_pipeline_cache {
 private:
@@ -25,17 +25,17 @@ private:
 	using cache_t = ste_engine::engine_types::cache_t;
 
 	using thread_id_t = std::thread::id;
-	using pipeline_cache_t = vk_pipeline_cache;
-	using pipeline_cache_ptr_t = std::unique_ptr<vk_pipeline_cache>;
+	using pipeline_cache_t = vk::vk_pipeline_cache;
+	using pipeline_cache_ptr_t = std::unique_ptr<vk::vk_pipeline_cache>;
 
 private:
-	const vk_logical_device &device;
+	std::reference_wrapper<const vk::vk_logical_device> device;
 	std::string device_name;
 
 	cache_t *non_volatile_cache;
 	pipeline_cache_ptr_t origin;
 
-	mutable concurrent_unordered_map<thread_id_t, const vk_pipeline_cache*> thread_cache_map;
+	mutable concurrent_unordered_map<thread_id_t, const vk::vk_pipeline_cache*> thread_cache_map;
 	mutable concurrent_queue<pipeline_cache_t> created_caches;
 
 private:
@@ -43,7 +43,7 @@ private:
 	void store_all_caches();
 
 public:
-	ste_device_pipeline_cache(const vk_logical_device &device,
+	ste_device_pipeline_cache(const vk::vk_logical_device &device,
 							  cache_t *non_volatile_cache,
 							  const std::string &device_name)
 		: device(device),

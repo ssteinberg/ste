@@ -14,8 +14,8 @@
 #include <type_traits>
 #include <function_traits.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 class ste_device_queue;
 

@@ -8,7 +8,7 @@
 #include <surface_traits.hpp>
 #include <surface_element_cast.hpp>
 
-namespace StE {
+namespace ste {
 namespace Graphics {
 
 template <gli::format Fin, bool height_in_alpha = true>

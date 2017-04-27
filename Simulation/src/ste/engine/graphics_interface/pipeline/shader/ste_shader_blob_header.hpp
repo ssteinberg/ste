@@ -6,8 +6,8 @@
 #include <stdafx.hpp>
 #include <ste_shader_stage.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 struct ste_shader_properties {
 	std::uint32_t version_major, version_minor;

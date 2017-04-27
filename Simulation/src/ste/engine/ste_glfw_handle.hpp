@@ -7,7 +7,7 @@
 #include <log.hpp>
 #include <ste_engine_exceptions.hpp>
 
-namespace StE {
+namespace ste {
 
 class ste_glfw_handle {
 public:

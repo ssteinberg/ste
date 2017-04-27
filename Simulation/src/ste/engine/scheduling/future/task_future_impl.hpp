@@ -9,7 +9,7 @@
 
 #include <thread>
 
-namespace StE {
+namespace ste {
 
 namespace _detail {
 

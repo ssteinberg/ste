@@ -3,7 +3,7 @@
 
 #pragma once
 
-namespace StE {
+namespace ste {
 
 template <int N>
 struct create_type {};

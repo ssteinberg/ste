@@ -9,11 +9,11 @@
 #include <command_pool.hpp>
 #include <allow_type_decay.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 class ste_device_queue_command_pool : 
-	public ste_resource_pool_resetable_trait<const vk_logical_device &, ste_queue_descriptor>,
+	public ste_resource_pool_resetable_trait<const vk::vk_logical_device &, ste_queue_descriptor>,
 	public allow_type_decay<ste_device_queue_command_pool, command_pool>
 {
 private:

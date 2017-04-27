@@ -16,18 +16,18 @@
 
 #include <memory>
 
-namespace StE {
+namespace ste {
 namespace Graphics {
 
 class gbuffer_downsample_depth_dispatch : public gpu_dispatchable {
 	using Base = gpu_dispatchable;
 
-	friend class Resource::resource_loading_task<gbuffer_downsample_depth_dispatch>;
-	friend class Resource::resource_instance<gbuffer_downsample_depth_dispatch>;
+	friend class resource::resource_loading_task<gbuffer_downsample_depth_dispatch>;
+	friend class resource::resource_instance<gbuffer_downsample_depth_dispatch>;
 
 private:
 	const deferred_gbuffer *gbuffer;
-	Resource::resource_instance<Resource::glsl_program> program;
+	resource::resource_instance<resource::glsl_program> program;
 
 	std::shared_ptr<connection<>> gbuffer_depth_target_connection;
 
@@ -64,7 +64,7 @@ public:
 
 }
 
-namespace Resource {
+namespace resource {
 
 template <>
 class resource_loading_task<Graphics::gbuffer_downsample_depth_dispatch> {

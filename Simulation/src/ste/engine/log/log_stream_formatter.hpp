@@ -17,7 +17,7 @@
 #include <log_class.hpp>
 #include <log_entry.hpp>
 
-namespace StE {
+namespace ste {
 
 class log_stream_formatter {
 private:
@@ -31,13 +31,13 @@ private:
 private:
 	static const char *severity(log_class c) {
 		switch (c) {
-		case StE::log_class::info_class_log:
+		case ste::log_class::info_class_log:
 			return "info";
-		case StE::log_class::warn_class_log:
+		case ste::log_class::warn_class_log:
 			return "warn";
-		case StE::log_class::err_class_log:
+		case ste::log_class::err_class_log:
 			return "err";
-		case StE::log_class::fatal_class_log:
+		case ste::log_class::fatal_class_log:
 			return "fatal";
 		}
 		return "";

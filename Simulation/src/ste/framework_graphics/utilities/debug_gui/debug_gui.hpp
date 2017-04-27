@@ -20,7 +20,7 @@
 #include <string>
 #include <functional>
 
-namespace StE {
+namespace ste {
 namespace Graphics {
 
 class debug_gui : public gpu_dispatchable {
@@ -46,7 +46,7 @@ private:
 	std::vector<std::function<void(const glm::ivec2 &)>> user_guis;
 
 public:
-	debug_gui(const ste_engine_control &ctx, profiler *prof, const StE::Text::font &default_font, const camera *cam = nullptr);
+	debug_gui(const ste_engine_control &ctx, profiler *prof, const ste::text::font &default_font, const camera *cam = nullptr);
 	~debug_gui() noexcept;
 
 	void add_custom_gui(std::function<void(const glm::ivec2 &)> &&f) { user_guis.emplace_back(std::move(f)); }

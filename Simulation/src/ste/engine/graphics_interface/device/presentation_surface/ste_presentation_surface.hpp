@@ -15,8 +15,8 @@
 #include <vk_swapchain.hpp>
 #include <device_swapchain_image.hpp>
 #include <vk_image_view.hpp>
-#include <vk_semaphore.hpp>
 #include <vk_queue.hpp>
+#include <semaphore.hpp>
 
 #include <connection.hpp>
 
@@ -28,15 +28,15 @@
 #include <mutex>
 #include <aligned_ptr.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 class ste_presentation_surface {
 private:
 	using resize_signal_connection_t = ste_window_signals::window_resize_signal_type::connection_type;
 
 public:
-	using swap_chain_image_view_t = vk_image_view<vk_image_type::image_2d>;
+	using swap_chain_image_view_t = vk::vk_image_view<image_type::image_2d>;
 	struct swap_chain_image_t {
 		device_swapchain_image image;
 		swap_chain_image_view_t view;
@@ -56,12 +56,12 @@ public:
 
 private:
 	const ste_gl_device_creation_parameters parameters;
-	const vk_logical_device *presentation_device;
+	const vk::vk_logical_device *presentation_device;
 	const ste_window &presentation_window;
 
-	vk_surface presentation_surface;
+	vk::vk_surface presentation_surface;
 	VkSurfaceCapabilitiesKHR surface_presentation_caps;
-	std::unique_ptr<vk_swapchain> swap_chain{ nullptr };
+	std::unique_ptr<vk::vk_swapchain> swap_chain{ nullptr };
 	std::vector<swap_chain_image_t> swap_chain_images;
 
 	aligned_ptr<shared_data_t> shared_data;
@@ -80,8 +80,8 @@ private:
 
 private:
 	acquire_next_image_return_t acquire_swapchain_image_impl(std::uint64_t timeout_ns,
-															 const vk_semaphore *presentation_image_ready_semaphore,
-															 const vk_fence *presentation_image_ready_fence) const;
+															 const vk::vk_semaphore *presentation_image_ready_semaphore,
+															 const vk::vk_fence *presentation_image_ready_fence) const;
 
 public:
 	/**
@@ -97,9 +97,9 @@ public:
 	*	@param instance				Vulkan instance that owns the presentation device
 	*/
 	ste_presentation_surface(const ste_gl_device_creation_parameters parameters,
-							 const vk_logical_device *presentation_device,
+							 const vk::vk_logical_device *presentation_device,
 							 const ste_window &presentation_window,
-							 const vk_instance &instance)
+							 const vk::vk_instance &instance)
 		: parameters(parameters),
 		presentation_device(presentation_device),
 		presentation_window(presentation_window),
@@ -155,7 +155,7 @@ public:
 	*/
 	template <class Rep = std::chrono::nanoseconds::rep, class Period = std::chrono::nanoseconds::period>
 	acquire_next_image_return_t acquire_next_swapchain_image(
-		const vk_semaphore &presentation_image_ready_semaphore,
+		const vk::vk_semaphore &presentation_image_ready_semaphore,
 		const std::chrono::duration<Rep, Period> &timeout = std::chrono::nanoseconds(std::numeric_limits<uint64_t>::max())
 	) const {
 		std::uint64_t timeout_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(timeout).count();
@@ -183,7 +183,7 @@ public:
 	*/
 	template <class Rep = std::chrono::nanoseconds::rep, class Period = std::chrono::nanoseconds::period>
 	acquire_next_image_return_t acquire_next_swapchain_image(
-		const vk_fence &presentation_image_ready_fence,
+		const vk::vk_fence &presentation_image_ready_fence,
 		const std::chrono::duration<Rep, Period> &timeout = std::chrono::nanoseconds(std::numeric_limits<uint64_t>::max())
 	) const {
 		std::uint64_t timeout_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(timeout).count();
@@ -219,8 +219,8 @@ public:
 	*	@param	wait_semaphore		Semaphore that signals that rendering to the presentation image is complete
 	*/
 	void present(std::uint32_t image_index,
-				 const vk_queue &presentation_queue,
-				 const vk_semaphore &wait_semaphore);
+				 const vk::vk_queue &presentation_queue,
+				 const semaphore &wait_semaphore);
 
 	bool test_and_clear_recreate_flag() const {
 		return !shared_data->swap_chain_optimal_flag.test_and_set(std::memory_order_acquire);
@@ -230,8 +230,8 @@ public:
 	auto& get_presentation_window() const { return presentation_window; }
 
 	auto size() const { return swap_chain->get_size(); }
-	auto format() const { return swap_chain->get_format(); }
-	auto colorspace() const { return swap_chain->get_colorspace(); }
+	auto surface_format() const { return swap_chain->get_format(); }
+	auto surface_colorspace() const { return swap_chain->get_colorspace(); }
 };
 
 }

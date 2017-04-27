@@ -21,7 +21,7 @@
 #include <log_sink.hpp>
 #include <log_class.hpp>
 
-namespace StE {
+namespace ste {
 
 class _logger {
 private:
@@ -172,8 +172,8 @@ extern log *ste_global_logger;
 
 }
 
-void inline ste_log_set_global_logger(StE::log *ptr) {
-	StE::ste_global_logger = ptr;
+void inline ste_log_set_global_logger(ste::log *ptr) {
+	ste::ste_global_logger = ptr;
 }
 
 #define ___STE_LOG_EVERY_VAR(x,l) ___STE_LOG_VAR ## x ## l
@@ -181,14 +181,14 @@ void inline ste_log_set_global_logger(StE::log *ptr) {
 
 #define __ste_log_null	(std::cout)
 
-#define ste_log()		(StE::ste_global_logger!=nullptr ? StE::ste_global_logger->log_info(__FILE__,__func__,__LINE__).logger() : __ste_log_null)
-#define ste_log_warn()	(StE::ste_global_logger!=nullptr ? StE::ste_global_logger->log_warn(__FILE__,__func__,__LINE__).logger() : __ste_log_null)
-#define ste_log_error()	(StE::ste_global_logger!=nullptr ? StE::ste_global_logger->log_err(__FILE__,__func__,__LINE__).logger() : __ste_log_null)
-#define ste_log_fatal() (StE::ste_global_logger!=nullptr ? StE::ste_global_logger->log_fatal(__FILE__,__func__,__LINE__).logger() : __ste_log_null)
+#define ste_log()		(ste::ste_global_logger!=nullptr ? ste::ste_global_logger->log_info(__FILE__,__func__,__LINE__).logger() : __ste_log_null)
+#define ste_log_warn()	(ste::ste_global_logger!=nullptr ? ste::ste_global_logger->log_warn(__FILE__,__func__,__LINE__).logger() : __ste_log_null)
+#define ste_log_error()	(ste::ste_global_logger!=nullptr ? ste::ste_global_logger->log_err(__FILE__,__func__,__LINE__).logger() : __ste_log_null)
+#define ste_log_fatal() (ste::ste_global_logger!=nullptr ? ste::ste_global_logger->log_fatal(__FILE__,__func__,__LINE__).logger() : __ste_log_null)
 
 // Write to info log, limit log to one per n milliseconds
-#define ste_log_every(n)		___STE_LOG_EVERY((StE::ste_global_logger!=nullptr ? StE::ste_global_logger->log_info(__FILE__,__func__,__LINE__).logger() : __ste_log_null),n)
+#define ste_log_every(n)		___STE_LOG_EVERY((ste::ste_global_logger!=nullptr ? ste::ste_global_logger->log_info(__FILE__,__func__,__LINE__).logger() : __ste_log_null),n)
 // Write to warning log, limit log to one per n milliseconds
-#define ste_log_every_warn(n)	___STE_LOG_EVERY((StE::ste_global_logger!=nullptr ? StE::ste_global_logger->log_warn(__FILE__,__func__,__LINE__).logger() : __ste_log_null),n)
+#define ste_log_every_warn(n)	___STE_LOG_EVERY((ste::ste_global_logger!=nullptr ? ste::ste_global_logger->log_warn(__FILE__,__func__,__LINE__).logger() : __ste_log_null),n)
 // Write to error log, limit log to one per n milliseconds
-#define ste_log_every_error(n)	___STE_LOG_EVERY((StE::ste_global_logger!=nullptr ? StE::ste_global_logger->log_err(__FILE__,__func__,__LINE__).logger() : __ste_log_null),n)
+#define ste_log_every_error(n)	___STE_LOG_EVERY((ste::ste_global_logger!=nullptr ? ste::ste_global_logger->log_err(__FILE__,__func__,__LINE__).logger() : __ste_log_null),n)

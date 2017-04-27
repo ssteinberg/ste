@@ -4,25 +4,19 @@
 #pragma once
 
 #include <stdafx.hpp>
-#include <vk_buffer_base.hpp>
-#include <device_resource_queue_transferable.hpp>
+#include <vk_buffer.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
-class device_buffer_base 
-	: public device_resource_queue_transferable {
+class device_buffer_base {
 protected:
-	device_buffer_base(const device_resource_queue_ownership::family_t &family)
-		: device_resource_queue_transferable(family)
-	{}
+	device_buffer_base() = default;
 
 public:
 	virtual ~device_buffer_base() noexcept {}
-	virtual const vk_buffer_base& get_buffer_handle() const = 0;
 
-	device_buffer_base(device_buffer_base&&) = default;
-	device_buffer_base &operator=(device_buffer_base&&) = default;
+	virtual const vk::vk_buffer& get_buffer_handle() const = 0;
 
 	virtual std::uint64_t get_elements_count() const = 0;
 	virtual std::uint32_t get_element_size_bytes() const = 0;

@@ -11,8 +11,8 @@
 #include <optional.hpp>
 #include <deque>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 class push_constant_descriptor {
 private:

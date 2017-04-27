@@ -8,7 +8,7 @@
 
 #include <material_layer_descriptor.hpp>
 
-namespace StE {
+namespace ste {
 namespace Graphics {
 
 struct material_descriptor {

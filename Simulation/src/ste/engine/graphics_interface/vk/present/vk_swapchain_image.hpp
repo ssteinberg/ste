@@ -6,25 +6,38 @@
 #include <stdafx.hpp>
 
 #include <vulkan/vulkan.h>
-#include <vk_image_base.hpp>
-#include <vk_image_type.hpp>
+#include <vk_image.hpp>
+#include <image_type.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
-class vk_swapchain_image : public vk_image_base<2> {
+namespace vk {
+
+class vk_swapchain_image : public vk_image {
+	using Base = vk_image;
 	static constexpr int swapchain_image_mips = 1;
 
 public:
-	using size_type = vk_image_base<dimensions>::size_type;
+	using size_type = glm::uvec2;
+
+private:
+	using Base::Base;
+	using Base::get_memory_requirements;
+	using Base::bind_resource_underlying_memory;
 
 public:
 	vk_swapchain_image(const vk_logical_device &device,
 					   const VkImage &image,
-					   const VkFormat &format,
+					   const VkFormat &image_format,
 					   const size_type &size,
 					   std::uint32_t layers)
-		: vk_image_base(device, image, format, size, swapchain_image_mips, layers)
+		: Base(device, 
+			   image_format,
+			   Base::size_type{ size.x, size.y, 1 },
+			   0,
+			   swapchain_image_mips, 
+			   layers)
 	{}
 	~vk_swapchain_image() noexcept {}
 
@@ -33,6 +46,8 @@ public:
 	vk_swapchain_image(const vk_swapchain_image &) = delete;
 	vk_swapchain_image& operator=(const vk_swapchain_image &) = delete;
 };
+
+}
 
 }
 }

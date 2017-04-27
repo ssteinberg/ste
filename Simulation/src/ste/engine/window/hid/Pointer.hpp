@@ -7,7 +7,7 @@
 
 #include <hid.hpp>
 
-namespace StE {
+namespace ste {
 namespace HID {
 
 class pointer {

@@ -5,7 +5,7 @@
 #include <gli/generate_mipmaps.hpp>
 #include <gli/copy.hpp>
 
-using namespace StE::Resource;
+using namespace ste::resource;
 
 gli::texture2d surface_mipmap_generator::operator()(const gli::texture2d &input) const {
 	auto levels = gli::levels(input.extent());

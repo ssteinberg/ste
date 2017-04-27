@@ -6,7 +6,7 @@
 #include <stdafx.hpp>
 #include <mesh.hpp>
 
-namespace StE {
+namespace ste {
 namespace Graphics {
 
 class sphere : public mesh<mesh_subdivion_mode::Triangles> {

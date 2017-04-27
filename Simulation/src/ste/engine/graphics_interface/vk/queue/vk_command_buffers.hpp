@@ -9,8 +9,10 @@
 #include <vector>
 #include <allow_type_decay.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
+
+namespace vk {
 
 class vk_command_pool;
 
@@ -105,6 +107,8 @@ public:
 	auto end() const { return buffers.end(); }
 	auto end() { return buffers.end(); }
 };
+
+}
 
 }
 }

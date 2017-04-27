@@ -5,13 +5,17 @@
 
 #include <stdafx.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
+
+namespace vk {
 
 struct vk_mapped_memory_range {
 	std::uint64_t offset_elements;
 	std::uint64_t size_elements;
 };
+
+}
 
 }
 }

@@ -8,7 +8,7 @@
 
 #include <signal.hpp>
 
-namespace StE {
+namespace ste {
 
 template <typename ... Ts>
 class signal;

@@ -4,13 +4,13 @@
 
 #include <vector>
 
-using namespace StE::GL;
+using namespace ste::gl;
 
 void ste_device_pipeline_cache::read_origin() {
 	// Create origin from stored data in the non-volatile cache
 	auto optional = non_volatile_cache->get<std::string>(std::string(non_volatile_cache_key_prefix) + device_name)();
 	std::string origin_data = optional ? optional.get() : std::string();
-	origin = std::make_unique<vk_pipeline_cache>(device, origin_data);
+	origin = std::make_unique<vk::vk_pipeline_cache>(device.get(), origin_data);
 }
 
 void ste_device_pipeline_cache::store_all_caches() {
@@ -29,7 +29,7 @@ void ste_device_pipeline_cache::store_all_caches() {
 		for (auto &c : caches)
 			refs.emplace_back(std::ref(*c));
 
-		pipeline_cache_t new_origin(device, refs);
+		pipeline_cache_t new_origin(device.get(), refs);
 		std::string new_origin_data = new_origin.read_raw_cache_data();
 
 		non_volatile_cache->insert(std::string(non_volatile_cache_key_prefix) + device_name,
@@ -48,7 +48,7 @@ const ste_device_pipeline_cache::pipeline_cache_t& ste_device_pipeline_cache::cu
 
 	// Create new cache object
 	std::vector<std::reference_wrapper<const pipeline_cache_t>> origin_ref = { *origin };
-	pipeline_cache_ptr_t new_cache = std::make_unique<pipeline_cache_t>(device, 
+	pipeline_cache_ptr_t new_cache = std::make_unique<pipeline_cache_t>(device.get(), 
 																		origin_ref);
 	auto *ptr = new_cache.get();
 	created_caches.push(std::move(new_cache));

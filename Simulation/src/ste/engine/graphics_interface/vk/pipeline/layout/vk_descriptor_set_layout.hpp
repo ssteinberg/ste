@@ -14,8 +14,10 @@
 #include <vector>
 #include <allow_type_decay.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
+
+namespace vk {
 
 class vk_descriptor_set_layout : public allow_type_decay<vk_descriptor_set_layout, VkDescriptorSetLayout> {
 private:
@@ -63,6 +65,8 @@ public:
 
 	auto& get() const { return layout.get(); }
 };
+
+}
 
 }
 }

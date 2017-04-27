@@ -6,8 +6,10 @@
 #include <vulkan/vulkan.h>
 #include <cstring>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
+
+namespace vk {
 
 struct vk_blend_op_descriptor {
 	VkColorComponentFlags write_mask{ VK_COLOR_COMPONENT_R_BIT |
@@ -90,6 +92,8 @@ struct vk_blend_op_descriptor {
 		return state;
 	}
 };
+
+}
 
 }
 }

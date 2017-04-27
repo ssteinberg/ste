@@ -20,8 +20,8 @@
 #include <memory>
 #include <vector>
 
-namespace StE {
-namespace Text {
+namespace ste {
+namespace text {
 
 class text_manager {
 private:
@@ -34,19 +34,19 @@ private:
 	font default_font;
 	int default_size;
 
-	ste_resource<GL::device_pipeline_shader_stage> vert;
-	ste_resource<GL::device_pipeline_shader_stage> geom;
-	ste_resource<GL::device_pipeline_shader_stage> frag;
+	ste_resource<gl::device_pipeline_shader_stage> vert;
+	ste_resource<gl::device_pipeline_shader_stage> geom;
+	ste_resource<gl::device_pipeline_shader_stage> frag;
 
-	std::unique_ptr<GL::vk_unique_descriptor_set> descriptor_set;
+	std::unique_ptr<gl::vk::vk_unique_descriptor_set> descriptor_set;
 
 private:
 	static void adjust_line(std::vector<glyph_point> &, const attributed_wstring &, unsigned, float, float, const glm::vec2 &);
 	std::vector<glyph_point> create_points(glm::vec2, const attributed_wstring &);
 
 private:
-	static GL::vk_unique_descriptor_set create_descriptor_set(const GL::vk_logical_device &, std::uint32_t);
-	bool update_glyphs(GL::command_recorder &recorder);
+	static gl::vk::vk_unique_descriptor_set create_descriptor_set(const gl::vk::vk_logical_device &, std::uint32_t);
+	bool update_glyphs(gl::command_recorder &recorder);
 
 public:
 	text_manager(const ste_context &context,
@@ -55,7 +55,7 @@ public:
 
 	text_manager(text_manager&&) = default;
 
-	std::unique_ptr<text_renderer> create_renderer(const GL::vk_render_pass *renderpass);
+	std::unique_ptr<text_renderer> create_renderer(const gl::vk::vk_render_pass *renderpass);
 };
 
 }

@@ -3,8 +3,8 @@
 #include <vk_query.hpp>
 #include <vk_query_pool.hpp>
 
-using namespace StE::GL;
+using namespace ste::gl;
 
-std::string vk_query::read_results(std::size_t data_size, VkQueryResultFlags flags) const {
+std::string vk::vk_query::read_results(std::size_t data_size, VkQueryResultFlags flags) const {
 	return pool.read_results(data_size, index, 1, data_size, flags);
 }

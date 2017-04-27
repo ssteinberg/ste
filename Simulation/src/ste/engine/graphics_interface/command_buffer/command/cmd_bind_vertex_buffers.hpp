@@ -5,13 +5,13 @@
 
 #include <vulkan/vulkan.h>
 #include <command.hpp>
-#include <vk_buffer_base.hpp>
+#include <vk_buffer.hpp>
 #include <cassert>
 
 #include <vector>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 class cmd_bind_vertex_buffers : public command {
 private:
@@ -21,12 +21,12 @@ private:
 
 public:
 	cmd_bind_vertex_buffers(std::uint32_t first_binding_index,
-							const vk_buffer_base &buffer,
+							const vk::vk_buffer &buffer,
 							std::uint64_t offset = 0)
 		: first(first_binding_index), buffers({ buffer }), offsets({ offset * buffer.get_element_size_bytes() })
 	{}
 	cmd_bind_vertex_buffers(std::uint32_t first_binding_index,
-							const std::vector<std::reference_wrapper<const vk_buffer_base>> &buffers,
+							const std::vector<std::reference_wrapper<const vk::vk_buffer>> &buffers,
 							const std::vector<std::uint64_t> &offsets)
 		: first(first_binding_index)
 	{

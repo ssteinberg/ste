@@ -16,8 +16,10 @@
 #include <vector>
 #include <limits>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
+
+namespace vk {
 
 class vk_fence : public ste_resource_pool_resetable_trait<const vk_logical_device &, bool> {
 private:
@@ -25,7 +27,7 @@ private:
 	std::reference_wrapper<const vk_logical_device> device;
 
 public:
-	vk_fence(const vk_logical_device &device, 
+	vk_fence(const vk_logical_device &device,
 			 bool signaled = false) : device(device) {
 		VkFenceCreateInfo create_info = {};
 		create_info.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
@@ -81,7 +83,7 @@ public:
 	*	@brief	Waits for fence to become signaled or until timeout has passed.
 	*
 	*	@param timeout	Maximal time to wait
-	*	
+	*
 	*	@return	Returns true if signaled, false on timeout.
 	*/
 	template <class Rep = std::chrono::nanoseconds::rep, class Period = std::chrono::nanoseconds::period>
@@ -105,7 +107,7 @@ public:
 *
 *	@param fences	Fences to wait for
 *	@param timeout	Maximal time to wait
-*	
+*
 *	@return	Returns true if signaled, false on timeout.
 */
 template <class Rep = std::chrono::nanoseconds::rep, class Period = std::chrono::nanoseconds::period>
@@ -148,6 +150,8 @@ bool inline vk_fence_wait_any(const std::vector<std::reference_wrapper<const vk_
 						   v.data(),
 						   false,
 						   timeout_ns) == VK_SUCCESS;
+}
+
 }
 
 }

@@ -9,7 +9,7 @@
 #include <vector>
 #include <array>
 
-namespace StE {
+namespace ste {
 namespace Graphics {
 
 class convex_polyhedron_light : public shaped_light {

@@ -25,7 +25,7 @@
 #include <volumetric_scattering_scatter_dispatch.hpp>
 
 
-namespace StE {
+namespace ste {
 namespace Graphics {
 
 class gi_renderer;
@@ -33,11 +33,11 @@ class gi_renderer;
 class deferred_composer : public gpu_dispatchable {
 	using Base = gpu_dispatchable;
 
-	friend class Resource::resource_loading_task<deferred_composer>;
-	friend class Resource::resource_instance<deferred_composer>;
+	friend class resource::resource_loading_task<deferred_composer>;
+	friend class resource::resource_instance<deferred_composer>;
 
 private:
-	Resource::resource_instance<Resource::glsl_program> program;
+	resource::resource_instance<resource::glsl_program> program;
 	gi_renderer *dr;
 
 	std::shared_ptr<connection<>> vss_storage_connection;
@@ -53,7 +53,7 @@ private:
 
 	std::unique_ptr<Core::texture_2d> ltc_ggx_fit, ltc_ggx_amplitude;
 
-	Resource::resource_instance<volumetric_scattering_scatter_dispatch> *additional_scatter_program_hack;
+	resource::resource_instance<volumetric_scattering_scatter_dispatch> *additional_scatter_program_hack;
 
 private:
 	void load_microfacet_fit_luts();
@@ -61,7 +61,7 @@ private:
 	void attach_handles() const;
 
 private:
-	deferred_composer(const ste_engine_control &ctx, gi_renderer *dr, Resource::resource_instance<volumetric_scattering_scatter_dispatch> *additional_scatter_program_hack);
+	deferred_composer(const ste_engine_control &ctx, gi_renderer *dr, resource::resource_instance<volumetric_scattering_scatter_dispatch> *additional_scatter_program_hack);
 
 public:
 	~deferred_composer() noexcept {}
@@ -75,7 +75,7 @@ protected:
 
 }
 
-namespace Resource {
+namespace resource {
 
 template <>
 class resource_loading_task<Graphics::deferred_composer> {

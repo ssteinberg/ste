@@ -15,7 +15,7 @@
 
 #include <memory>
 
-namespace StE {
+namespace ste {
 namespace Graphics {
 
 class scene_geo_cull_dispatch : public gpu_dispatchable {
@@ -25,7 +25,7 @@ private:
 	const scene *s;
 	const light_storage *ls;
 
-	Resource::resource_instance<Resource::glsl_program> program;
+	resource::resource_instance<resource::glsl_program> program;
 
 	mutable std::size_t old_object_group_size{ 0 };
 

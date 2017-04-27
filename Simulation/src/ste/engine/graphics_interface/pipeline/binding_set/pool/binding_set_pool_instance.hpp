@@ -14,8 +14,8 @@
 #include <vector>
 #include <ultimate.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 class binding_set_pool_instance {
 	friend class pipeline_binding_set_pool;
@@ -29,7 +29,7 @@ public:
 
 private:
 	const ste_context &ctx;
-	vk_descriptor_pool pool;
+	vk::vk_descriptor_pool pool;
 
 	std::uint32_t allocated_sets{ 0 };
 
@@ -40,7 +40,7 @@ private:
 	 *	@brief	Creates the Vulkan binding descriptors
 	 */
 	auto create_vk_bindings(const std::vector<const pipeline_binding_layout_interface*> &pool_bindings) {
-		std::vector<vk_descriptor_set_layout_binding> vk_bindings;
+		std::vector<vk::vk_descriptor_set_layout_binding> vk_bindings;
 		vk_bindings.reserve(pool_bindings.size());
 		for (auto &b : pool_bindings) {
 			vk_bindings.push_back(*b);
@@ -80,7 +80,7 @@ public:
 	 */
 	template <typename Layout>
 	auto allocate(const std::vector<const Layout*> &layouts) {
-		std::vector<const vk_descriptor_set_layout*> layouts_of_acquired_bindings_ptrs;
+		std::vector<const vk::vk_descriptor_set_layout*> layouts_of_acquired_bindings_ptrs;
 		layouts_of_acquired_bindings_ptrs.reserve(layouts.size());
 		for (std::size_t i = 0; i < layouts.size(); ++i) {
 			auto &l = *layouts[i];
@@ -88,7 +88,7 @@ public:
 		}
 
 		// Allocate
-		std::vector<vk_descriptor_set> sets = pool.allocate_descriptor_sets(layouts_of_acquired_bindings_ptrs);
+		std::vector<vk::vk_descriptor_set> sets = pool.allocate_descriptor_sets(layouts_of_acquired_bindings_ptrs);
 
 		// Sets allocated successfully
 		allocated_sets += static_cast<std::uint32_t>(layouts.size());

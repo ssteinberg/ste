@@ -8,7 +8,7 @@
 
 #include <gstack_stable.hpp>
 
-namespace StE {
+namespace ste {
 namespace Graphics {
 
 class shaped_light : public light {

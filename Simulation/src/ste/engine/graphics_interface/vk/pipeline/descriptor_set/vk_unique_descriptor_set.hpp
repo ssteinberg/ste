@@ -12,8 +12,10 @@
 
 #include <allow_type_decay.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
+
+namespace vk {
 
 class vk_unique_descriptor_set : public allow_type_decay<vk_unique_descriptor_set, vk_descriptor_set> {
 private:
@@ -45,6 +47,8 @@ public:
 
 	auto& get_layout() const { return layout; }
 };
+
+}
 
 }
 }

@@ -23,8 +23,10 @@
 #include <vector>
 #include <allow_type_decay.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
+
+namespace vk {
 
 class vk_pipeline_graphics : public vk_pipeline {
 public:
@@ -50,7 +52,7 @@ public:
 			auto &sd = shader_modules[i];
 			assert((sd.stage & VK_SHADER_STAGE_COMPUTE_BIT) == 0 && "shader_stage_descriptor must not be a compute shader");
 
-			sd.shader->shader_stage_create_info(sd.stage, 
+			sd.shader->shader_stage_create_info(sd.stage,
 												stages_info[i],
 												*sd.specializations);
 			stages[i] = stages_info[i].stage_info;
@@ -160,7 +162,7 @@ public:
 
 		VkPipeline pipeline;
 		vk_result res = vkCreateGraphicsPipelines(device,
-												  cache!=nullptr ? *cache : VK_NULL_HANDLE,
+												  cache != nullptr ? *cache : VK_NULL_HANDLE,
 												  1,
 												  &create_info,
 												  nullptr,
@@ -178,6 +180,9 @@ public:
 	vk_pipeline_graphics(const vk_pipeline_graphics &) = delete;
 	vk_pipeline_graphics &operator=(const vk_pipeline_graphics &) = delete;
 };
+
+
+}
 
 }
 }

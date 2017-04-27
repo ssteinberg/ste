@@ -17,7 +17,7 @@
 #include <light_storage.hpp>
 #include <light_cascade_descriptor.hpp>
 
-namespace StE {
+namespace ste {
 namespace Graphics {
 
 class shadowmap_storage {

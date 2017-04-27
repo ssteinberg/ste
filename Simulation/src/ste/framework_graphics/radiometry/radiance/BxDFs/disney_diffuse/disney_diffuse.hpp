@@ -8,7 +8,7 @@
 
 #include <schlick_fresnel.hpp>
 
-namespace StE {
+namespace ste {
 namespace Graphics {
 
 template <typename T>

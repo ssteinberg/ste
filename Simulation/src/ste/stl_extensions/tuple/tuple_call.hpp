@@ -10,7 +10,7 @@
 
 #include <forward_capture.hpp>
 
-namespace StE {
+namespace ste {
 
 namespace _tuple_call_detail {
 	template <typename T>

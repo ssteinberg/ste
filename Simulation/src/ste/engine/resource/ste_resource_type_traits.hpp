@@ -7,7 +7,7 @@
 
 #include <type_traits>
 
-namespace StE {
+namespace ste {
 
 template <typename T>
 struct ste_resource_conforms_to_deferred_loading {

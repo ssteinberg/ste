@@ -3,7 +3,7 @@
 #include <XYZ.hpp>
 #include <kelvin.hpp>
 
-using namespace StE::Graphics;
+using namespace ste::Graphics;
 
 kelvin XYZ::toKelvin() const {
 	/*

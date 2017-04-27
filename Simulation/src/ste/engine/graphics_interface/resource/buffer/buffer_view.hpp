@@ -7,8 +7,8 @@
 #include <device_buffer_base.hpp>
 #include <allow_type_decay.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 class buffer_view
 	: public allow_type_decay<buffer_view, device_buffer_base>

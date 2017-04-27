@@ -2,8 +2,8 @@
 #include <stdafx.hpp>
 //#include <hdr_bokeh_blur_task.hpp>
 //
-//using namespace StE::Graphics;
-//using namespace StE::Core;
+//using namespace ste::Graphics;
+//using namespace ste::Core;
 //
 //void hdr_bokeh_blur_task::set_context_state() const {
 //	2_storage_idx = p->hdr_bokeh_param_buffer;
@@ -14,5 +14,5 @@
 //}
 //
 //void hdr_bokeh_blur_task::dispatch() const {
-//	Core::GL::gl_current_context::get()->draw_arrays(GL_TRIANGLE_STRIP, 0, 4);
+//	Core::gl::gl_current_context::get()->draw_arrays(GL_TRIANGLE_STRIP, 0, 4);
 //}

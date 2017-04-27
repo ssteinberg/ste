@@ -5,39 +5,33 @@
 
 #include <stdafx.hpp>
 
-#include <vk_buffer.hpp>
+#include <vk_buffer_dense.hpp>
 #include <device_buffer_base.hpp>
 #include <device_resource.hpp>
 #include <device_resource_allocation_policy.hpp>
 
-namespace StE {
-namespace GL {
+#include <buffer_usage.hpp>
+
+namespace ste {
+namespace gl {
 
 template <typename T, class allocation_policy = device_resource_allocation_policy_device>
 class device_buffer
 	: public device_buffer_base,
-	public device_resource<vk_buffer<T>, allocation_policy>
+	public device_resource<vk::vk_buffer_dense, allocation_policy>
 {
 public:
-	template <typename selector_policy, typename ... Args>
 	device_buffer(const ste_context &ctx,
-				  const ste_queue_selector<selector_policy> &initial_queue_selector,
-				  Args&&... args)
-		: device_buffer_base(ctx.device().select_queue(initial_queue_selector)->queue_descriptor().family),
-		device_resource(ctx,
-						std::forward<Args>(args)...)
-	{}
-	template <typename ... Args>
-	device_buffer(const ste_context &ctx,
-				  const device_resource_queue_ownership::family_t &family,
-				  Args&&... args)
-		: device_buffer_base(family),
-		device_resource(ctx,
-						std::forward<Args>(args)...)
+				  std::uint64_t count,
+				  const buffer_usage &usage)
+		: device_resource(ctx,
+						  sizeof(T),
+						  count,
+						  static_cast<VkBufferUsageFlags>(usage))
 	{}
 	~device_buffer() noexcept {}
 	
-	const vk_buffer_base& get_buffer_handle() const override final { return *this; }
+	const vk::vk_buffer& get_buffer_handle() const override final { return *this; }
 
 	device_buffer(device_buffer&&) = default;
 	device_buffer &operator=(device_buffer&&) = default;

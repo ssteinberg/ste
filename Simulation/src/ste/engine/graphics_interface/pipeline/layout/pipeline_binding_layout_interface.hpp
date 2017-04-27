@@ -11,8 +11,8 @@
 
 #include <string>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 struct pipeline_binding_layout_interface {
 	virtual ~pipeline_binding_layout_interface() noexcept {}
@@ -55,11 +55,11 @@ struct pipeline_binding_layout_interface {
 	/**
 	*	@brief	Creates the Vulkan binding descriptor
 	*/
-	operator vk_descriptor_set_layout_binding() const {
-		return vk_descriptor_set_layout_binding(vk_descriptor_type(),
-												stage_collection(),
-												bind_idx(),
-												count());
+	operator vk::vk_descriptor_set_layout_binding() const {
+		return vk::vk_descriptor_set_layout_binding(vk_descriptor_type(),
+													stage_collection(),
+													bind_idx(),
+													count());
 	}
 };
 

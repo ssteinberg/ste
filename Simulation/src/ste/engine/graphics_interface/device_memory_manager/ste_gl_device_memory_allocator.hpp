@@ -17,8 +17,8 @@
 #include <unordered_set>
 #include <aligned_ptr.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 class ste_gl_device_memory_allocator {
 private:
@@ -44,7 +44,7 @@ public:
 	using allocation_t = chunk_t::allocation_type;
 
 private:
-	std::reference_wrapper<const vk_logical_device> device;
+	std::reference_wrapper<const vk::vk_logical_device> device;
 	const heaps_t heaps;
 	std::uint64_t minimal_allocation_size_bytes;
 
@@ -61,11 +61,11 @@ private:
 		return !!(memory_requirements.memoryTypeBits & (1 << type));
 	}
 
-	static memory_type_t find_memory_type_for(const vk_logical_device &device,
+	static memory_type_t find_memory_type_for(const vk::vk_logical_device &device,
 											  const VkMemoryRequirements &memory_requirements,
 											  const VkMemoryPropertyFlags &required_flags,
 											  const VkMemoryPropertyFlags &preferred_flags) {
-		const vk_physical_device_descriptor &physical_device = device.get_physical_device_descriptor();
+		const vk::vk_physical_device_descriptor &physical_device = device.get_physical_device_descriptor();
 		int fallback_memory_type = -1;
 
 		// Try to find a heap matching the memory requirments and preferred flags.
@@ -141,7 +141,7 @@ private:
 		chunk_size = device_memory_heap::align(chunk_size, alignment);
 
 		// Create the device memory object
-		return vk_device_memory(device, chunk_size, memory_type);
+		return vk::vk_device_memory(device, chunk_size, memory_type);
 	}
 
 	auto allocate(std::uint64_t size,
@@ -197,7 +197,7 @@ private:
 	}
 
 public:
-	ste_gl_device_memory_allocator(const vk_logical_device &device,
+	ste_gl_device_memory_allocator(const vk::vk_logical_device &device,
 								   std::uint64_t minimal_allocation_size_bytes = default_minimal_allocation_size_bytes)
 		: device(device), 
 		heaps(create_empty_heaps_map()), 

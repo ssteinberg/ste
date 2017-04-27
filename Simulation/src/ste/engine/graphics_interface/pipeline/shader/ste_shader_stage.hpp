@@ -7,8 +7,8 @@
 
 #include <string>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 enum class ste_shader_stage : std::uint32_t {
 	vertex_program = 0,

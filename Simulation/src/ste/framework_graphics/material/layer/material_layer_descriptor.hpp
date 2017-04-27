@@ -6,7 +6,7 @@
 #include <stdafx.hpp>
 #include <texture_handle.hpp>
 
-namespace StE {
+namespace ste {
 namespace Graphics {
 
 static constexpr std::uint32_t material_layer_none = 0xFFFFFFFF;

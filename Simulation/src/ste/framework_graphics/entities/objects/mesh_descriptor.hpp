@@ -7,7 +7,7 @@
 
 #include <glm/gtc/quaternion.hpp>
 
-namespace StE {
+namespace ste {
 namespace Graphics {
 
 struct mesh_descriptor {

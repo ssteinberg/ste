@@ -4,14 +4,15 @@
 #pragma once
 
 #include <stdafx.hpp>
+#include <format.hpp>
 #include <framebuffer_attachment_clear_value.hpp>
 
 #include <image_view.hpp>
 #include <vk_blend_op_descriptor.hpp>
 #include <vk_render_pass_attachment.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 struct framebuffer_attachment {
 	const image_view_generic *output{ nullptr };
@@ -24,14 +25,14 @@ struct framebuffer_attachment {
 	VkAttachmentStoreOp store_op;
 
 	framebuffer_attachment_clear_value clear_value;
-	vk_blend_op_descriptor blend_op;
+	vk::vk_blend_op_descriptor blend_op;
 
-	operator vk_render_pass_attachment() const {
-		return vk_render_pass_attachment(output->get_format(),
-										 initial_layout,
-										 final_layout,
-										 load_op,
-										 store_op);
+	operator vk::vk_render_pass_attachment() const {
+		return vk::vk_render_pass_attachment(static_cast<VkFormat>(output->get_format()),
+											 initial_layout,
+											 final_layout,
+											 load_op,
+											 store_op);
 	}
 
 	bool operator==(const framebuffer_attachment &rhs) const {
@@ -182,7 +183,7 @@ framebuffer_attachment inline clear_store(const image_view_generic *output,
 										  framebuffer_attachment_clear_value clear_value,
 										  VkImageLayout layout,
 										  VkImageLayout final_layout,
-										  const vk_blend_op_descriptor &blend_op) {
+										  const vk::vk_blend_op_descriptor &blend_op) {
 	return {
 		output,
 		VK_IMAGE_LAYOUT_UNDEFINED,
@@ -202,7 +203,7 @@ framebuffer_attachment inline clear_discard(const image_view_generic *output,
 											framebuffer_attachment_clear_value clear_value,
 											VkImageLayout layout,
 											VkImageLayout final_layout,
-											const vk_blend_op_descriptor &blend_op) {
+											const vk::vk_blend_op_descriptor &blend_op) {
 	return {
 		output,
 		VK_IMAGE_LAYOUT_UNDEFINED,
@@ -222,7 +223,7 @@ framebuffer_attachment inline load_store(const image_view_generic *output,
 										 VkImageLayout initial_layout,
 										 VkImageLayout layout,
 										 VkImageLayout final_layout,
-										 const vk_blend_op_descriptor &blend_op) {
+										 const vk::vk_blend_op_descriptor &blend_op) {
 	return {
 		output,
 		initial_layout,
@@ -242,7 +243,7 @@ framebuffer_attachment inline load_discard(const image_view_generic *output,
 										   VkImageLayout initial_layout,
 										   VkImageLayout layout,
 										   VkImageLayout final_layout,
-										   const vk_blend_op_descriptor &blend_op) {
+										   const vk::vk_blend_op_descriptor &blend_op) {
 	return {
 		output,
 		initial_layout,
@@ -261,7 +262,7 @@ framebuffer_attachment inline load_discard(const image_view_generic *output,
 framebuffer_attachment inline ignore_store(const image_view_generic *output,
 										   VkImageLayout layout,
 										   VkImageLayout final_layout,
-										   const vk_blend_op_descriptor &blend_op) {
+										   const vk::vk_blend_op_descriptor &blend_op) {
 	return {
 		output,
 		VK_IMAGE_LAYOUT_UNDEFINED,
@@ -280,7 +281,7 @@ framebuffer_attachment inline ignore_store(const image_view_generic *output,
 framebuffer_attachment inline ignore_discard(const image_view_generic *output,
 											 VkImageLayout layout,
 											 VkImageLayout final_layout,
-											 const vk_blend_op_descriptor &blend_op) {
+											 const vk::vk_blend_op_descriptor &blend_op) {
 	return {
 		output,
 		VK_IMAGE_LAYOUT_UNDEFINED,

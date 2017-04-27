@@ -6,8 +6,10 @@
 #include <vulkan/vulkan.h>
 #include <vector>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
+
+namespace vk {
 
 struct vk_physical_device_descriptor {
 	VkPhysicalDevice device{ nullptr };
@@ -18,6 +20,8 @@ struct vk_physical_device_descriptor {
 
 	std::vector<VkQueueFamilyProperties> queue_family_properties;
 };
+
+}
 
 }
 }

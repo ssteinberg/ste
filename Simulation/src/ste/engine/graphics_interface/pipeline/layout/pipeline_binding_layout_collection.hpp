@@ -10,8 +10,8 @@
 #include <unordered_map>
 #include <initializer_list>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 /**
 *	@brief	A collection of pipeline binding layouts

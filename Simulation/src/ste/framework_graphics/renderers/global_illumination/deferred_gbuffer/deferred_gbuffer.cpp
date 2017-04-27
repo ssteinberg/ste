@@ -2,8 +2,8 @@
 #include <stdafx.hpp>
 //#include <deferred_gbuffer.hpp>
 //
-//using namespace StE::Graphics;
-//using namespace StE::Core;
+//using namespace ste::Graphics;
+//using namespace ste::Core;
 //
 //void deferred_gbuffer::resize(glm::ivec2 size) {
 //	if (size.x <= 0 || size.y <= 0)

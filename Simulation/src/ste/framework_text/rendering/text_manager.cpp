@@ -15,9 +15,9 @@
 
 #include <optional.hpp>
 
-using namespace StE::Text;
+using namespace ste::text;
 
-text_manager::text_manager(const StE::ste_context &context,
+text_manager::text_manager(const ste::ste_context &context,
 						   const font &default_font,
 						   int default_size)
 	: context(context),
@@ -28,18 +28,18 @@ text_manager::text_manager(const StE::ste_context &context,
 	geom(context, std::string("text_distance_map_contour.geom")),
 	frag(context, std::string("text_distance_map_contour.frag"))
 {
-	this->descriptor_set = std::make_unique<GL::vk_unique_descriptor_set>(create_descriptor_set(context.device(), 0));
+	this->descriptor_set = std::make_unique<gl::vk::vk_unique_descriptor_set>(create_descriptor_set(context.device(), 0));
 	this->descriptor_set->get().write({
-		GL::vk_descriptor_set_write_resource(VK_DESCRIPTOR_TYPE_SAMPLER, 2, 0, GL::vk_descriptor_set_write_image(gm.sampler()))
+		gl::vk::vk_descriptor_set_write_resource(VK_DESCRIPTOR_TYPE_SAMPLER, 2, 0, gl::vk::vk_descriptor_set_write_image(gm.sampler()))
 	});
 }
 
-StE::GL::vk_unique_descriptor_set text_manager::create_descriptor_set(const StE::GL::vk_logical_device &device, 
+ste::gl::vk::vk_unique_descriptor_set text_manager::create_descriptor_set(const ste::gl::vk::vk_logical_device &device,
 																	  std::uint32_t texture_count) {
-	GL::vk_descriptor_set_layout_binding glyph_data_binding(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_GEOMETRY_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0);
-	GL::vk_descriptor_set_layout_binding glyph_textures_binding(VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, VK_SHADER_STAGE_FRAGMENT_BIT, 1, texture_count);
-	GL::vk_descriptor_set_layout_binding glyph_sampler_binding(VK_DESCRIPTOR_TYPE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 2, 1);
-	return GL::vk_unique_descriptor_set(device, { glyph_data_binding, glyph_textures_binding, glyph_sampler_binding });
+	gl::vk::vk_descriptor_set_layout_binding glyph_data_binding(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_GEOMETRY_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0);
+	gl::vk::vk_descriptor_set_layout_binding glyph_textures_binding(VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, VK_SHADER_STAGE_FRAGMENT_BIT, 1, texture_count);
+	gl::vk::vk_descriptor_set_layout_binding glyph_sampler_binding(VK_DESCRIPTOR_TYPE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 2, 1);
+	return gl::vk::vk_unique_descriptor_set(device, { glyph_data_binding, glyph_textures_binding, glyph_sampler_binding });
 }
 
 void text_manager::adjust_line(std::vector<glyph_point> &points, const attributed_wstring &wstr, unsigned line_start_index, float line_start, float line_height, const glm::vec2 &ortho_pos) {
@@ -140,7 +140,7 @@ std::vector<glyph_point> text_manager::create_points(glm::vec2 ortho_pos, const 
 	return points;
 }
 
-bool text_manager::update_glyphs(StE::GL::command_recorder &recorder) {
+bool text_manager::update_glyphs(ste::gl::command_recorder &recorder) {
 	auto updated_range = gm.update_pending_glyphs(recorder);
 	if (!updated_range.length)
 		return false;
@@ -149,51 +149,51 @@ bool text_manager::update_glyphs(StE::GL::command_recorder &recorder) {
 
 	// Update fragment specialization constant
 	// TODO
-//	static_cast<GL::vk_shader&>(frag).specialize_constant(0, texture_count);
+//	static_cast<gl::vk_shader&>(frag).specialize_constant(0, texture_count);
 
 	// Create new descriptor set and layout
-	auto new_descriptor_set = std::make_unique<GL::vk_unique_descriptor_set>(create_descriptor_set(context.device(), texture_count));
-	std::vector<GL::vk_descriptor_set_write_image> image_writes;
-	image_writes.reserve(texture_count);
-	for (std::uint32_t i = updated_range.start; i < updated_range.start + updated_range.length; ++i) {
-		auto &glyph_texture = gm.textures()[i];
-
-		// Move image to correct layout
-		auto image_barrier = GL::image_layout_transform_barrier(glyph_texture.texture,
-																VK_ACCESS_TRANSFER_WRITE_BIT,
-																glyph_texture.texture.layout(),
-																VK_ACCESS_SHADER_READ_BIT,
-																VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-		recorder << GL::cmd_pipeline_barrier(GL::pipeline_barrier(VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
-																  VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
-																  image_barrier));
-
-		// Write new descriptor
-		auto texture_write = GL::vk_descriptor_set_write_image(glyph_texture.view, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-		image_writes.push_back(texture_write);
-	}
-
-	std::vector<GL::vk_descriptor_set_copy_resources> copies = { GL::vk_descriptor_set_copy_resources(*this->descriptor_set, 
-																									  2, 0, 2, 0, 1) };
-	if (updated_range.start > 0) {
-		// Need to copy old descriptors
-		copies.push_back(GL::vk_descriptor_set_copy_resources(*this->descriptor_set, 1, 0, 1, 0, updated_range.start));
-	}
-
-	// Copy and write out descriptors
-	new_descriptor_set->get().update(
-	{ // Writes
-//		GL::vk_descriptor_set_write_resource(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 0, 0, GL::vk_descriptor_set_write_buffer(gm.ssbo(), texture_count)),
-		GL::vk_descriptor_set_write_resource(VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, 1, updated_range.start, image_writes)
-	}, 
-	copies);
-
-	this->descriptor_set = std::move(new_descriptor_set);
+//	auto new_descriptor_set = std::make_unique<gl::vk_unique_descriptor_set>(create_descriptor_set(context.device(), texture_count));
+//	std::vector<gl::vk_descriptor_set_write_image> image_writes;
+//	image_writes.reserve(texture_count);
+//	for (std::uint32_t i = updated_range.start; i < updated_range.start + updated_range.length; ++i) {
+//		auto &glyph_texture = gm.textures()[i];
+//
+//		// Move image to correct layout
+//		auto image_barrier = gl::image_layout_transform_barrier(glyph_texture.texture,
+//																VK_ACCESS_TRANSFER_WRITE_BIT,
+//																glyph_texture.texture.layout(),
+//																VK_ACCESS_SHADER_READ_BIT,
+//																VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+//		recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
+//																  VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+//																  image_barrier));
+//
+//		// Write new descriptor
+//		auto texture_write = gl::vk_descriptor_set_write_image(glyph_texture.view, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+//		image_writes.push_back(texture_write);
+//	}
+//
+//	std::vector<gl::vk_descriptor_set_copy_resources> copies = { gl::vk_descriptor_set_copy_resources(*this->descriptor_set, 
+//																									  2, 0, 2, 0, 1) };
+//	if (updated_range.start > 0) {
+//		// Need to copy old descriptors
+//		copies.push_back(gl::vk_descriptor_set_copy_resources(*this->descriptor_set, 1, 0, 1, 0, updated_range.start));
+//	}
+//
+//	// Copy and write out descriptors
+//	new_descriptor_set->get().update(
+//	{ // Writes
+////		gl::vk_descriptor_set_write_resource(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 0, 0, gl::vk_descriptor_set_write_buffer(gm.ssbo(), texture_count)),
+//		gl::vk_descriptor_set_write_resource(VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, 1, updated_range.start, image_writes)
+//	}, 
+//	copies);
+//
+//	this->descriptor_set = std::move(new_descriptor_set);
 
 	return true;
 }
 
-std::unique_ptr<text_renderer> text_manager::create_renderer(const StE::GL::vk_render_pass *renderpass) {
+std::unique_ptr<text_renderer> text_manager::create_renderer(const ste::gl::vk::vk_render_pass *renderpass) {
 	return std::make_unique<text_renderer>(this,
 										   renderpass);
 }

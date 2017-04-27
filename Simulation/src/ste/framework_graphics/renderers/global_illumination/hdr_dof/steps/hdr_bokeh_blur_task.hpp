@@ -10,7 +10,7 @@
 
 #include <memory>
 
-namespace StE {
+namespace ste {
 namespace Graphics {
 
 class hdr_bokeh_blur_task : public gpu_dispatchable {

@@ -15,8 +15,10 @@
 #include <unordered_map>
 #include <allow_type_decay.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
+
+namespace vk {
 
 class vk_descriptor_pool : public allow_type_decay<vk_descriptor_pool, VkDescriptorPool> {
 private:
@@ -103,9 +105,9 @@ public:
 		std::vector<vk_descriptor_set> descriptor_sets;
 		descriptor_sets.reserve(sets.size());
 		for (auto &s : sets)
-			descriptor_sets.push_back(vk_descriptor_set(device, 
-														s, 
-														*this, 
+			descriptor_sets.push_back(vk_descriptor_set(device,
+														s,
+														*this,
 														allows_freeing_individual_sets()));
 
 		return descriptor_sets;
@@ -126,6 +128,8 @@ public:
 	auto& get() const { return pool.get(); }
 	bool allows_freeing_individual_sets() const { return allow_free_individual_sets; }
 };
+
+}
 
 }
 }

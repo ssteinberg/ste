@@ -11,8 +11,10 @@
 #include <vector>
 #include <functional>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
+
+namespace vk {
 
 class vk_descriptor_set_layout_binding {
 private:
@@ -33,8 +35,8 @@ public:
 									 std::uint32_t binding_index,
 									 const std::vector<std::reference_wrapper<const vk_sampler>> &immutable_samplers,
 									 bool combined = false)
-		: type(combined ? VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER : VK_DESCRIPTOR_TYPE_SAMPLER), 
-		stage(stage), binding_index(binding_index), 
+		: type(combined ? VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER : VK_DESCRIPTOR_TYPE_SAMPLER),
+		stage(stage), binding_index(binding_index),
 		count(immutable_samplers.size())
 	{
 		this->immutable_samplers.resize(immutable_samplers.size());
@@ -65,6 +67,8 @@ public:
 
 	operator VkDescriptorSetLayoutBinding() const { return get_binding(); }
 };
+
+}
 
 }
 }

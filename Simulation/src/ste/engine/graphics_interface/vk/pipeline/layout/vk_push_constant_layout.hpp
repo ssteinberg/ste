@@ -7,8 +7,10 @@
 
 #include <vulkan/vulkan.h>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
+
+namespace vk {
 
 class vk_push_constant_layout {
 private:
@@ -43,6 +45,8 @@ public:
 	auto get_size() const { return size; }
 	auto get_offset() const { return offset; }
 };
+
+}
 
 }
 }

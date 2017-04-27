@@ -198,10 +198,10 @@
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\pipeline\shader\device_pipeline_shader_stage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Simulation\src\ste\engine\graphics_interface\vk\vk_format_rtti.cpp">
+    <ClCompile Include="Simulation\src\ste\engine\graphics_interface\pipeline\shader\spirv_parser\ste_shader_spirv_parser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Simulation\src\ste\engine\graphics_interface\pipeline\shader\spirv_parser\ste_shader_spirv_parser.cpp">
+    <ClCompile Include="Simulation\src\ste\engine\graphics_interface\format\format_rtti.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -788,22 +788,13 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\ste_gl_debug_callback.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\resource\vk_buffer.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\resource\vk_image.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\resource\vk_image_type.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\resource\vk_buffer_view.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\resource\vk_image_view.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\resource\vk_image_view_swizzle.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\memory\vk_device_memory.hpp">
@@ -840,9 +831,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\queue\vk_queue.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\resource\vk_image_base.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\present\vk_swapchain_image.hpp">
@@ -902,12 +890,6 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\pipeline\vk_pipeline_graphics.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\resource\vk_image_type_traits.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\vk_format_type_traits.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\ste_type_traits.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -936,12 +918,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\ste_context.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\resource\vk_buffer_sparse_impl.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\resource\vk_buffer_base.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\memory\vk_sparse_memory_bind.hpp">
@@ -1082,25 +1058,13 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\image\device_image_exceptions.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\device_resource_queue_ownership.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\image\device_image_queue_transfer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device\presentation_surface\ste_presentation_surface.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\image\device_image_layout.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\stl_extensions\boundary.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\device_resource_queue_transferable.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\image\device_image_layout_transformable.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\image\device_image_layout_transform.hpp">
@@ -1259,16 +1223,10 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\buffer\device_buffer_queue_transfer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\device_resource_queue_transfer.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\pipeline\vk_pipeline.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\image\device_swapchain_image.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\resource\vk_image_initial_layout.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\ste_context_predefine.hpp">
@@ -1469,9 +1427,6 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\shader\ste_shader_object.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\vk_format_rtti.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\shader\binding\ste_shader_stage_block_layout.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1548,6 +1503,51 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\buffer\layout\vertex\vertex_input_layout.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\format\format.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\format\format_rtti.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\resource\vk_buffer_sparse.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\resource\vk_buffer_dense.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\resource\vk_buffer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\synchronization\event.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\synchronization\semaphore.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\format\format_type_traits.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\image\image_initial_layout.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\image\image_type.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\image\image_type_traits.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\image\image_view_swizzle.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\buffer\buffer_usage.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\image\image_usage.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\pipeline_stage.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

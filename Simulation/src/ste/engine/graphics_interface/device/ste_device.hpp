@@ -15,6 +15,8 @@
 #include <ste_queue_selector.hpp>
 #include <ste_device_pipeline_cache.hpp>
 
+#include <pipeline_stage.hpp>
+
 #include <ste_device_exceptions.hpp>
 #include <ste_gl_context_creation_parameters.hpp>
 #include <ste_device_queue_presentation_batch.hpp>
@@ -33,10 +35,10 @@
 #include <aligned_ptr.hpp>
 #include <allow_type_decay.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
-class ste_device : public allow_type_decay<ste_device, vk_logical_device> {
+class ste_device : public allow_type_decay<ste_device, vk::vk_logical_device> {
 public:
 	using queues_and_surface_recreate_signal_type = signal<const ste_device*>;
 
@@ -59,7 +61,7 @@ private:
 private:
 	const ste_gl_device_creation_parameters parameters;
 	const ste_queue_descriptors queue_descriptors;
-	const vk_logical_device device;
+	const vk::vk_logical_device device;
 
 	// Pipeline cache
 	ste_device_pipeline_cache shared_pipeline_cache;
@@ -81,14 +83,14 @@ private:
 	ste_device_queue_selector_cache queue_selector_cache;
 
 private:
-	static vk_logical_device create_vk_virtual_device(const GL::vk_physical_device_descriptor &physical_device,
-													  const VkPhysicalDeviceFeatures &requested_features,
-													  const ste_queue_descriptors &queue_descriptors,
-													  std::vector<const char*> device_extensions = {});
-	static queues_t create_queues(const vk_logical_device &device, 
+	static vk::vk_logical_device create_vk_virtual_device(const vk::vk_physical_device_descriptor &physical_device,
+														  const VkPhysicalDeviceFeatures &requested_features,
+														  const ste_queue_descriptors &queue_descriptors,
+														  std::vector<const char*> device_extensions = {});
+	static queues_t create_queues(const vk::vk_logical_device &device,
 								  const ste_queue_descriptors &queue_descriptors,
 								  ste_device_sync_primitives_pools *sync_primitives_pools);
-	
+
 	void create_presentation_fences_storage();
 	void recreate_swap_chain();
 
@@ -134,7 +136,7 @@ private:
 
 	template <typename BatchUserData>
 	void internal_submit_and_present(std::unique_ptr<ste_device_queue_presentation_batch<BatchUserData>> &&presentation_batch,
-									 const std::vector<std::pair<VkSemaphore, VkPipelineStageFlags>> &wait_semaphores,
+									 const std::vector<std::pair<VkSemaphore, pipeline_stage>> &wait_semaphores,
 									 const std::vector<VkSemaphore> &signal_semaphores) {
 		if (!ste_device_queue::is_queue_thread()) {
 			throw ste_device_not_queue_thread_exception();
@@ -147,7 +149,7 @@ private:
 		auto wait = wait_semaphores;
 		auto signal = signal_semaphores;
 		wait.push_back(decltype(wait)::value_type(presentation_semaphores->swapchain_image_ready_semaphore,
-												  VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT));
+												  pipeline_stage::color_attachment_output));
 		signal.push_back(presentation_semaphores->rendering_finished_semaphore);
 
 		// Submit
@@ -242,7 +244,7 @@ public:
 	/**
 	*	@brief	Performs schedules work, cleans up resources, etc.
 	*			Might stall if swap-chain recreation is required.
-	*			
+	*
 	*	@throws ste_device_exception	On internal error during swap-chain recreation
 	*	@throws vk_exception			On Vulkan error during swap-chain recreation
 	*	@throws ste_engine_glfw_exception	On windowing system error
@@ -291,7 +293,7 @@ public:
 
 	/**
 	*	@brief	Enqueues a task on the queue's thread
-	*	
+	*
 	*	@throws ste_engine_exception	If no compatible queue can be found
 	*
 	*	@param	queue_selector		The device queue selector used to select the device queue to use
@@ -318,7 +320,7 @@ public:
 	*/
 	template <typename BatchUserData>
 	void submit_and_present(std::unique_ptr<ste_device_queue_presentation_batch<BatchUserData>> &&presentation_batch,
-							const std::vector<std::pair<VkSemaphore, VkPipelineStageFlags>> &wait_semaphores = {},
+							const std::vector<std::pair<VkSemaphore, pipeline_stage>> &wait_semaphores = {},
 							const std::vector<VkSemaphore> &signal_semaphores = {}) {
 		internal_submit_and_present(std::move(presentation_batch),
 									wait_semaphores,
@@ -347,7 +349,7 @@ public:
 	const queue_t& select_queue(const ste_device_queue::queue_index_t &index) const {
 		if (index < device_queues.size())
 			return device_queues[index];
-		
+
 		throw ste_engine_exception("Queue with the desired index not found");
 	}
 

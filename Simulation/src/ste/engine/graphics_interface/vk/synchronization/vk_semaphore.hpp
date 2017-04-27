@@ -12,8 +12,10 @@
 #include <optional.hpp>
 #include <allow_type_decay.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
+
+namespace vk {
 
 class vk_semaphore : public ste_resource_pool_const_trait<const vk_logical_device &>, public allow_type_decay<vk_semaphore, VkSemaphore> {
 private:
@@ -54,6 +56,8 @@ public:
 	auto& get_creating_device() const { return device.get(); }
 	auto& get() const { return semaphore.get(); }
 };
+
+}
 
 }
 }

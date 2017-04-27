@@ -7,8 +7,8 @@
 #include <device_image_base.hpp>
 #include <image_memory_barrier.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 auto inline image_layout_transform_barrier(const device_image_base &image,
 										   VkAccessFlags src_access,

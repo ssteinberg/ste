@@ -9,8 +9,8 @@
 
 #include <optional.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 template <
 	typename Pipeline, 

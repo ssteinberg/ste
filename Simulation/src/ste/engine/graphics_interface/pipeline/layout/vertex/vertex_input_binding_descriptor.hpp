@@ -8,8 +8,8 @@
 
 #include <vector>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 class vertex_input_binding_descriptor {
 private:

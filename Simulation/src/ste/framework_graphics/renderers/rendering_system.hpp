@@ -9,7 +9,7 @@
 
 #include <string>
 
-namespace StE {
+namespace ste {
 
 class ste_engine_control;
 

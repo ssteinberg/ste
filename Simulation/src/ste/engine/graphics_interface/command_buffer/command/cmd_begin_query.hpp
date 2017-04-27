@@ -8,16 +8,16 @@
 #include <vk_query.hpp>
 #include <vk_query_pool.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 class cmd_begin_query : public command {
 private:
-	const vk_query &query;
+	const vk::vk_query &query;
 	bool precise;
 
 public:
-	cmd_begin_query(const vk_query &query,
+	cmd_begin_query(const vk::vk_query &query,
 					bool precise = false) : query(query), precise(precise) {}
 	virtual ~cmd_begin_query() noexcept {}
 

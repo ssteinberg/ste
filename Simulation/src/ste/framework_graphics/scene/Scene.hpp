@@ -20,7 +20,7 @@
 
 #include <memory>
 
-namespace StE {
+namespace ste {
 namespace Graphics {
 
 class scene : public gpu_dispatchable {
@@ -66,7 +66,7 @@ private:
 	mutable shadow_projection_data<shadow_pltt_size> shadow_projection;
 	mutable shadow_projection_data<directional_shadow_pltt_size> directional_shadow_projection;
 
-	Resource::resource_instance<Resource::glsl_program> object_program;
+	resource::resource_instance<resource::glsl_program> object_program;
 
 public:
 	scene(const ste_engine_control &ctx);

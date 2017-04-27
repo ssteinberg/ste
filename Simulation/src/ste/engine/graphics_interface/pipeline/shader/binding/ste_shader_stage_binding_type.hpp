@@ -7,8 +7,8 @@
 #include <ste_shader_stage_variable_type.hpp>
 #include <ste_shader_exceptions.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 enum class ste_shader_stage_binding_type : std::uint16_t {
 	unknown,

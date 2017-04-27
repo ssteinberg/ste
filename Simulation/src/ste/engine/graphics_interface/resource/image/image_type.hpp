@@ -6,10 +6,10 @@
 #include <stdafx.hpp>
 #include <vulkan/vulkan.h>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
-enum class vk_image_type {
+enum class image_type {
 	image_1d,
 	image_1d_array,
 	image_2d,

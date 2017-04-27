@@ -13,8 +13,10 @@
 #include <string>
 #include <allow_type_decay.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
+
+namespace vk {
 
 class vk_shader : public allow_type_decay<vk_shader, VkShaderModule> {
 private:
@@ -104,6 +106,8 @@ public:
 
 	auto& get() const { return module.get(); }
 };
+
+}
 
 }
 }

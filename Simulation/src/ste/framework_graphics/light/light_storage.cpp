@@ -4,7 +4,7 @@
 //
 //#include <limits>
 //
-//using namespace StE::Graphics;
+//using namespace ste::Graphics;
 //
 //void light_storage::build_cascade_depth_array() {
 //	// The near plane is just a suggestion, the first cascade will cover the area from the real near clip 

@@ -5,8 +5,8 @@
 
 #include <attributed_string_common.hpp>
 
-namespace StE {
-namespace Text {
+namespace ste {
+namespace text {
 
 using attributed_string = attributed_string_common<char>;
 using attributed_wstring = attributed_string_common<wchar_t>;

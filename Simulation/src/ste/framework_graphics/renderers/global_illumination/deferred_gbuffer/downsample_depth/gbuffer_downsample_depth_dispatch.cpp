@@ -2,7 +2,7 @@
 #include <stdafx.hpp>
 //#include <gbuffer_downsample_depth_dispatch.hpp>
 //
-//using namespace StE::Graphics;
+//using namespace ste::Graphics;
 //
 //void gbuffer_downsample_depth_dispatch::set_context_state() const {
 //	using namespace Core;
@@ -23,7 +23,7 @@
 //
 //		auto s = (size + glm::ivec2(jobs - 1)) / jobs;
 //
-//		if (i != 1) Core::GL::gl_current_context::get()->memory_barrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
-//		Core::GL::gl_current_context::get()->dispatch_compute(s.x, s.y, 1);
+//		if (i != 1) Core::gl::gl_current_context::get()->memory_barrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+//		Core::gl::gl_current_context::get()->dispatch_compute(s.x, s.y, 1);
 //	}
 //}

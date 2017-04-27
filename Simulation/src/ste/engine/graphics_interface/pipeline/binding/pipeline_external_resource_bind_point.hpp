@@ -10,8 +10,8 @@
 
 #include <string>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 class pipeline_external_resource_bind_point {
 private:

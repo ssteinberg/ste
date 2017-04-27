@@ -30,8 +30,8 @@
 #include <tiny_obj_loader.h>
 #pragma warning pop
 
-namespace StE {
-namespace Resource {
+namespace ste {
+namespace resource {
 
 class model_factory {
 private:
@@ -50,20 +50,20 @@ private:
 private:
 	~model_factory() {}
 
-	static StE::task_future<void> load_texture(task_scheduler *sched,
+	static ste::task_future<void> load_texture(task_scheduler *sched,
 											   const std::string &name,
 											   bool srgb,
 											   bool displacement,
 											   texture_map_type *texmap,
 											   const boost::filesystem::path &dir,
 											   float normal_map_bias);
-	static std::vector<StE::task_future<void>> load_textures(task_scheduler* sched,
+	static std::vector<ste::task_future<void>> load_textures(task_scheduler* sched,
 															 shapes_type &shapes,
 															 materials_type &materials,
 															 texture_map_type &tex_map,
 															 const boost::filesystem::path &dir,
 															 float normal_map_bias);
-	static StE::task_future<void> process_model_mesh(task_scheduler* sched,
+	static ste::task_future<void> process_model_mesh(task_scheduler* sched,
 													 Graphics::scene_properties *,
 													 const tinyobj::shape_t &,
 													 Graphics::object_group *,
@@ -74,7 +74,7 @@ private:
 									 				 std::vector<std::shared_ptr<Graphics::object>> *loaded_objects);
 
 public:
-	static StE::task_future<void> load_model_async(const ste_engine_control &context,
+	static ste::task_future<void> load_model_async(const ste_engine_control &context,
 												   const boost::filesystem::path &file_path,
 												   Graphics::object_group *object_group,
 												   Graphics::scene_properties *scene_properties,

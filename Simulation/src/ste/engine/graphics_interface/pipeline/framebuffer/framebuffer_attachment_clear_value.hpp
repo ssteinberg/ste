@@ -9,10 +9,10 @@
 
 #include <type_traits>
 #include <ste_type_traits.hpp>
-#include <vk_format_rtti.hpp>
+#include <format_rtti.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 namespace _internal {
 
@@ -91,10 +91,10 @@ public:
 	/**
 	*	@brief	Returns the Vulkan clear value structure based on the image format
 	*/
-	VkClearValue vk_clear_value(VkFormat format) const {
+	VkClearValue vk_clear_value(format f) const {
 		VkClearValue ret;
 
-		auto d = vk_format_id(format);
+		auto d = format_id(f);
 		if (d.is_depth) {
 			ret.depthStencil.depth = val.float32[0];
 		}

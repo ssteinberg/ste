@@ -9,19 +9,19 @@
 
 #include <unique_fence.hpp>
 #include <shared_fence.hpp>
-#include <vk_event.hpp>
-#include <vk_semaphore.hpp>
+#include <event.hpp>
+#include <semaphore.hpp>
 #include <ste_resource_pool.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 class ste_device_sync_primitives_pools {
 public:
 	using unique_fence_pool_t = ste_resource_pool<unique_fence<void>>;
 	using shared_fence_pool_t = ste_resource_pool<shared_fence<void>>;
-	using event_pool_t = ste_resource_pool<vk_event>;
-	using semaphore_pool_t = ste_resource_pool<vk_semaphore>;
+	using event_pool_t = ste_resource_pool<event>;
+	using semaphore_pool_t = ste_resource_pool<semaphore>;
 
 private:
 	unique_fence_pool_t fence_pool;
@@ -30,7 +30,7 @@ private:
 	semaphore_pool_t semaphore_pool;
 
 public:
-	ste_device_sync_primitives_pools(const vk_logical_device &device)
+	ste_device_sync_primitives_pools(const vk::vk_logical_device &device)
 		: fence_pool(device),
 		shared_fence_pool(device),
 		event_pool(device),

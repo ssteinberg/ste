@@ -5,7 +5,7 @@
 
 #include <spectrum.hpp>
 
-namespace StE {
+namespace ste {
 namespace Graphics {
 
 class XYZ;
@@ -48,7 +48,7 @@ public:
 
 #include <XYZ.hpp>
 
-namespace StE {
+namespace ste {
 namespace Graphics {
 
 inline XYZ rgb::toXYZ() const {

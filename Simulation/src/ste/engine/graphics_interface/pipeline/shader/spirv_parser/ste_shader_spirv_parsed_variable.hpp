@@ -10,8 +10,8 @@
 #include <string>
 #include <optional.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 namespace _internal {
 

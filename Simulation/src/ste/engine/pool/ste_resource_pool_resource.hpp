@@ -8,8 +8,8 @@
 
 #include <allow_type_decay.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 template <class Pool, template<class> class resource_reclamation_policy>
 class ste_resource_pool_resource :

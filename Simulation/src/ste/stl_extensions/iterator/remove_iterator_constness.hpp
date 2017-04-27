@@ -3,7 +3,7 @@
 
 #pragma once
 
-namespace StE {
+namespace ste {
 
 template <typename Container, typename ConstIterator>
 typename Container::iterator remove_iterator_constness(Container& c, ConstIterator it) {

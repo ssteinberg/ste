@@ -8,7 +8,7 @@
 
 #include <functional>
 
-namespace StE {
+namespace ste {
 
 namespace _rsh_utils {
 

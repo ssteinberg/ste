@@ -17,8 +17,8 @@
 #include <algorithm>
 #include <boost/container/flat_map.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 class pipeline_push_constants_layout {
 	friend class pipeline_push_constant_bind_point;
@@ -40,11 +40,11 @@ private:
 	// Update push constants command
 	class pipeline_push_constants_layout_cmd_push_constants : public command {
 		const pipeline_push_constants_layout *p;
-		const vk_pipeline_layout *pipeline_layout;
+		const vk::vk_pipeline_layout *pipeline_layout;
 
 	public:
 		pipeline_push_constants_layout_cmd_push_constants(const pipeline_push_constants_layout *p,
-														  const vk_pipeline_layout *pipeline_layout)
+														  const vk::vk_pipeline_layout *pipeline_layout)
 			: p(p), pipeline_layout(pipeline_layout)
 		{}
 		virtual ~pipeline_push_constants_layout_cmd_push_constants() noexcept {}
@@ -68,7 +68,7 @@ private:
 
 private:
 	push_constant_descriptor root;
-	std::vector<vk_push_constant_layout> push_ranges;
+	std::vector<vk::vk_push_constant_layout> push_ranges;
 	std::string data;
 
 private:
@@ -154,7 +154,7 @@ private:
 		}
 
 		// Group identical ranges together
-		std::vector<vk_push_constant_layout> layouts;
+		std::vector<vk::vk_push_constant_layout> layouts;
 		layouts.reserve(ranges.size());
 		for (std::size_t i=0; i<ranges.size();) {
 			VkShaderStageFlags stages = static_cast<VkShaderStageFlags>(ranges[i].stage);
@@ -163,9 +163,9 @@ private:
 			while (j<ranges.size() && ranges[i].r == ranges[j].r)
 				stages |= ranges[j].stage;
 
-			layouts.push_back(vk_push_constant_layout(stages,
-													  ranges[i].r.length,
-													  ranges[i].r.start));
+			layouts.push_back(vk::vk_push_constant_layout(stages,
+														  ranges[i].r.length,
+														  ranges[i].r.start));
 
 			i = j;
 		}
@@ -239,7 +239,7 @@ public:
 	/**
 	 *	@brief	Command to push constants
 	 */
-	auto cmd_push(const vk_pipeline_layout *pipeline_layout) const {
+	auto cmd_push(const vk::vk_pipeline_layout *pipeline_layout) const {
 		return pipeline_push_constants_layout_cmd_push_constants(this, pipeline_layout);
 	}
 

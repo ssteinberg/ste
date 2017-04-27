@@ -10,8 +10,8 @@
 
 #include <utility>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 class ste_device_queue_presentation_batch_base {
 	friend class ste_device;

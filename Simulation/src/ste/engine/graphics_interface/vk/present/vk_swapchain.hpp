@@ -12,8 +12,10 @@
 #include <vk_exception.hpp>
 #include <vk_surface.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
+
+namespace vk {
 
 class vk_swapchain {
 private:
@@ -107,6 +109,8 @@ public:
 
 	operator VkSurfaceKHR() const { return get_swapchain(); }
 };
+
+}
 
 }
 }

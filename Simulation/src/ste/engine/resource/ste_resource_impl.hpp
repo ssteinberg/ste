@@ -14,7 +14,7 @@
 #include <forward_capture.hpp>
 #include <tuple_call.hpp>
 
-namespace StE {
+namespace ste {
 
 namespace _detail {
 

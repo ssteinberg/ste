@@ -8,7 +8,7 @@
 #include <glm/gtx/matrix_decompose.hpp>
 #include <glm/gtc/quaternion.hpp>
 
-namespace StE {
+namespace ste {
 namespace Graphics {
 
 class entity {

@@ -6,8 +6,8 @@
 #include <stdafx.hpp>
 #include <block_layout.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 static constexpr int std140_block_layout_base_alignment = 16;
 

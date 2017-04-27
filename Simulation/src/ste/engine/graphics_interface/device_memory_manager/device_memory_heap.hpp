@@ -14,8 +14,8 @@
 #include <mutex>
 #include <aligned_ptr.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 class device_memory_heap {
 public:
@@ -31,7 +31,7 @@ private:
 	friend class allocation_type;
 
 private:
-	vk_device_memory memory;
+	vk::vk_device_memory memory;
 	blocks_list_t blocks;
 	size_type total_used_size{ 0 };
 
@@ -65,7 +65,7 @@ private:
 	}
 
 public:
-	device_memory_heap(vk_device_memory &&m) : memory(std::move(m)) {}
+	device_memory_heap(vk::vk_device_memory &&m) : memory(std::move(m)) {}
 
 	// Move contrsuctor. Lock moved heaap's mutex before moving.
 	device_memory_heap(device_memory_heap &&o) noexcept

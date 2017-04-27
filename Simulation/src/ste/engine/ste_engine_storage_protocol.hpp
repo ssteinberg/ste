@@ -5,7 +5,7 @@
 
 #include <boost_filesystem.hpp>
 
-namespace StE {
+namespace ste {
 
 class ste_engine_storage_protocol {
 public:

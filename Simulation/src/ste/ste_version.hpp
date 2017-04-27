@@ -3,7 +3,7 @@
 
 #pragma once
 
-namespace StE {
+namespace ste {
 
 static constexpr char *ste_name = "StE";
 static constexpr unsigned ste_version_major = 2;

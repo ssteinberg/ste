@@ -5,10 +5,10 @@
 
 #include <stdafx.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
-enum class vk_image_initial_layout : std::uint8_t {
+enum class image_initial_layout : std::uint8_t {
 	unused,
 	preinitialized,
 };

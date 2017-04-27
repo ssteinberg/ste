@@ -9,8 +9,8 @@
 
 #include <vector>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 class cmd_pipeline_barrier : public command {
 private:
@@ -44,28 +44,12 @@ private:
 			image_barriers.push_back(e);
 
 		vkCmdPipelineBarrier(command_buffer,
-							 barrier.get_src_stage(),
-							 barrier.get_dst_stage(),
+							 static_cast<VkPipelineStageFlags>(barrier.get_src_stage()),
+							 static_cast<VkPipelineStageFlags>(barrier.get_dst_stage()),
 							 0,
 							 memory_barriers.size(), memory_barriers.data(),
 							 buffer_barriers.size(), buffer_barriers.data(),
 							 image_barriers.size(), image_barriers.data());
-
-		// Add queue transition and image layout transform host effects
-		recorder << host_command([image, buffer](const vk_queue &) {
-			for (auto &image_barrier : image) {
-				if (image_barrier.image_layout)
-					image_barrier.image_layout->image_layout.layout.store(image_barrier.new_layout, std::memory_order_release);
-				if (image_barrier.dst_queue_family != VK_QUEUE_FAMILY_IGNORED)
-					image_barrier.queue_ownership->queue_ownership.family.store(ste_queue_family(image_barrier.dst_queue_family),
-																				std::memory_order_release);
-			}
-			for (auto &buffer_barrier : buffer) {
-				if (buffer_barrier.dst_queue_family != VK_QUEUE_FAMILY_IGNORED)
-					buffer_barrier.queue_ownership->queue_ownership.family.store(ste_queue_family(buffer_barrier.dst_queue_family), 
-																				 std::memory_order_release);
-			}
-		});
 	}
 };
 

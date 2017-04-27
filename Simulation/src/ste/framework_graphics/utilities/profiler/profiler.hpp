@@ -9,7 +9,7 @@
 #include <string>
 #include <algorithm>
 
-namespace StE {
+namespace ste {
 namespace Graphics {
 
 struct profiler_entry {

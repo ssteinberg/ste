@@ -6,26 +6,28 @@
 #include <stdafx.hpp>
 
 #include <vulkan/vulkan.h>
-#include <vk_image_base.hpp>
+#include <vk_image.hpp>
 #include <vk_result.hpp>
 #include <vk_exception.hpp>
 
-#include <vk_format_rtti.hpp>
+#include <format_rtti.hpp>
 
-#include <vk_image_type.hpp>
-#include <vk_image_type_traits.hpp>
-#include <vk_image_view_swizzle.hpp>
+#include <image_type.hpp>
+#include <image_type_traits.hpp>
+#include <image_view_swizzle.hpp>
 
 #include <optional.hpp>
 #include <limits>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
-template <vk_image_type type>
+namespace vk {
+
+template <image_type type>
 class vk_image_view {
 private:
-	static constexpr int ctor_array_layers_multiplier = vk_image_is_cubemap<type>::value ? 6 : 1;
+	static constexpr int ctor_array_layers_multiplier = image_is_cubemap<type>::value ? 6 : 1;
 
 	struct ctor {};
 
@@ -35,19 +37,18 @@ public:
 private:
 	optional<VkImageView> view;
 	std::reference_wrapper<const vk_logical_device> device;
-	VkFormat format;
+	VkFormat image_format;
 
 protected:
-	template <int dimensions>
-	vk_image_view(const vk_image_base<dimensions> &parent,
-				  VkFormat format,
+	vk_image_view(const vk::vk_image &parent,
+				  VkFormat image_format,
 				  std::uint32_t base_mip,
 				  std::uint32_t mips,
 				  std::uint32_t base_layer,
 				  std::uint32_t layers,
-				  const vk_image_view_swizzle &swizzle,
+				  const image_view_swizzle &swizzle,
 				  const ctor&)
-		: device(parent.get_creating_device()), format(format)
+		: device(parent.get_creating_device()), image_format(image_format)
 	{
 		VkImageView view;
 
@@ -56,15 +57,15 @@ protected:
 		range.layerCount = layers;
 		range.baseMipLevel = base_mip;
 		range.levelCount = mips;
-		range.aspectMask = vk_format_aspect(format);
+		range.aspectMask = vk_format_aspect(static_cast<format>(image_format));
 
 		VkImageViewCreateInfo create_info = {};
 		create_info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
 		create_info.pNext = nullptr;
 		create_info.flags = 0;
 		create_info.image = parent;
-		create_info.viewType = vk_image_vk_type<type>::value;
-		create_info.format = format;
+		create_info.viewType = image_vk_type<type>::value;
+		create_info.format = image_format;
 		create_info.components = swizzle;
 		create_info.subresourceRange = range;
 
@@ -81,22 +82,22 @@ public:
 	*	@brief	Ctor for non-array image view.
 	*
 	*	@param parent		Parent image object
-	*	@param format		View format
+	*	@param image_format		View image_format
 	*	@param base_layer	View base array layer. (Internally multiplied by six for cubemaps)
 	*	@param base_mip		View base mipmap level
 	*	@param mips			View mipmap levels. Use all_mip_levels for remaining levels.
 	*	@param swizzle		View component swizzling
 	*/
-	template <int dimensions, bool sfinae = vk_image_has_arrays<type>::value>
-	vk_image_view(const vk_image_base<dimensions> &parent,
-				  VkFormat format,
+	template <bool sfinae = image_has_arrays<type>::value>
+	vk_image_view(const vk::vk_image &parent,
+				  VkFormat image_format,
 				  std::uint32_t base_layer,
 				  std::uint32_t base_mip,
 				  std::uint32_t mips = all_mip_levels,
-				  const vk_image_view_swizzle &swizzle = vk_image_view_swizzle(),
+				  const image_view_swizzle &swizzle = image_view_swizzle(),
 				  std::enable_if_t<!sfinae>* = nullptr)
 		: vk_image_view(parent,
-						format,
+						image_format,
 						base_mip,
 						glm::min(parent.get_mips() - base_mip, mips),
 						base_layer * ctor_array_layers_multiplier,
@@ -107,20 +108,20 @@ public:
 	*	@brief	Ctor for non-array image view.
 	*
 	*	@param parent		Parent image object
-	*	@param format		View format
+	*	@param image_format		View image_format
 	*	@param base_layer	View base array layer. (Internally multiplied by six for cubemaps)
 	*	@param mips			View mipmap levels. Use all_mip_levels for remaining levels.
 	*	@param swizzle		View component swizzling
 	*/
-	template <int dimensions, bool sfinae = vk_image_has_arrays<type>::value>
-	vk_image_view(const vk_image_base<dimensions> &parent,
-				  VkFormat format,
+	template <bool sfinae = image_has_arrays<type>::value>
+	vk_image_view(const vk::vk_image &parent,
+				  VkFormat image_format,
 				  std::uint32_t base_layer,
 				  std::uint32_t mips = all_mip_levels,
-				  const vk_image_view_swizzle &swizzle = vk_image_view_swizzle(),
+				  const image_view_swizzle &swizzle = image_view_swizzle(),
 				  std::enable_if_t<!sfinae>* = nullptr)
 		: vk_image_view(parent,
-						format,
+						image_format,
 						base_layer,
 						0,
 						glm::min(parent.get_mips(), mips),
@@ -129,16 +130,16 @@ public:
 	*	@brief	Ctor for non-array image view.
 	*
 	*	@param parent		Parent image object
-	*	@param format		View format
+	*	@param image_format		View image_format
 	*	@param swizzle		View component swizzling
 	*/
-	template <int dimensions, bool sfinae = vk_image_has_arrays<type>::value>
-	vk_image_view(const vk_image_base<dimensions> &parent,
-				  VkFormat format,
-				  const vk_image_view_swizzle &swizzle = vk_image_view_swizzle(),
+	template <bool sfinae = image_has_arrays<type>::value>
+	vk_image_view(const vk::vk_image &parent,
+				  VkFormat image_format,
+				  const image_view_swizzle &swizzle = image_view_swizzle(),
 				  std::enable_if_t<!sfinae>* = nullptr)
 		: vk_image_view(parent,
-						format,
+						image_format,
 						0,
 						all_mip_levels,
 						swizzle) {}
@@ -147,24 +148,24 @@ public:
 	*	@brief	Ctor for array image view.
 	*
 	*	@param parent		Parent image object
-	*	@param format		View format
+	*	@param image_format		View image_format
 	*	@param base_layer	View base array layer. (Internally multiplied by six for cubemaps)
 	*	@param base_mip		View base mipmap level
 	*	@param layers		View array layers. (Internally multiplied by six for cubemaps)
 	*	@param mips			View mipmap levels. Use all_mip_levels for remaining levels.
 	*	@param swizzle		View component swizzling
 	*/
-	template <int dimensions, bool sfinae = vk_image_has_arrays<type>::value>
-	vk_image_view(const vk_image_base<dimensions> &parent,
-				  VkFormat format,
+	template <bool sfinae = image_has_arrays<type>::value>
+	vk_image_view(const vk::vk_image &parent,
+				  VkFormat image_format,
 				  std::uint32_t base_layer,
 				  std::uint32_t base_mip,
 				  std::uint32_t layers,
 				  std::uint32_t mips = all_mip_levels,
-				  const vk_image_view_swizzle &swizzle = vk_image_view_swizzle(),
+				  const image_view_swizzle &swizzle = image_view_swizzle(),
 				  std::enable_if_t<sfinae>* = nullptr)
 		: vk_image_view(parent,
-						format,
+						image_format,
 						base_mip,
 						glm::min(parent.get_mips() - base_mip, mips),
 						base_layer * ctor_array_layers_multiplier,
@@ -174,21 +175,22 @@ public:
 	/**
 	*	@brief	Ctor for array image view.
 	*
+
 	*	@param parent		Parent image object
-	*	@param format		View format
+	*	@param image_format		View image_format
 	*	@param base_layer	View base array layer. (Internally multiplied by six for cubemaps)
 	*	@param layers		View array layers. (Internally multiplied by six for cubemaps)
 	*	@param swizzle		View component swizzling
 	*/
-	template <int dimensions, bool sfinae = vk_image_has_arrays<type>::value>
-	vk_image_view(const vk_image_base<dimensions> &parent,
-				  VkFormat format,
+	template <bool sfinae = image_has_arrays<type>::value>
+	vk_image_view(const vk::vk_image &parent,
+				  VkFormat image_format,
 				  std::uint32_t base_layer,
 				  std::uint32_t layers,
-				  const vk_image_view_swizzle &swizzle = vk_image_view_swizzle(),
+				  const image_view_swizzle &swizzle = image_view_swizzle(),
 				  std::enable_if_t<sfinae>* = nullptr)
 		: vk_image_view(parent,
-						format,
+						image_format,
 						base_layer,
 						0,
 						layers,
@@ -198,31 +200,30 @@ public:
 	*	@brief	Ctor for array image view.
 	*
 	*	@param parent		Parent image object
-	*	@param format		View format
+	*	@param image_format		View image_format
 	*	@param layers		View array layers. (Internally multiplied by six for cubemaps)
 	*	@param swizzle		View component swizzling
 	*/
-	template <int dimensions, bool sfinae = vk_image_has_arrays<type>::value>
-	vk_image_view(const vk_image_base<dimensions> &parent,
-				  VkFormat format,
+	template <bool sfinae = image_has_arrays<type>::value>
+	vk_image_view(const vk::vk_image &parent,
+				  VkFormat image_format,
 				  std::uint32_t layers,
-				  const vk_image_view_swizzle &swizzle = vk_image_view_swizzle(),
+				  const image_view_swizzle &swizzle = image_view_swizzle(),
 				  std::enable_if_t<sfinae>* = nullptr)
 		: vk_image_view(parent,
-						format,
+						image_format,
 						0,
 						layers,
 						swizzle) {}
 
 	/**
-	*	@brief	Ctor for image view. Creates a view of the entire mipmap chain and array layers, with identical format to parent.
+	*	@brief	Ctor for image view. Creates a view of the entire mipmap chain and array layers, with identical image_format to parent.
 	*
 	*	@param parent		Parent image object
 	*	@param swizzle		View component swizzling
 	*/
-	template <int dimensions>
-	vk_image_view(const vk_image_base<dimensions> &parent,
-				  const vk_image_view_swizzle &swizzle = vk_image_view_swizzle())
+	vk_image_view(const vk::vk_image &parent,
+				  const image_view_swizzle &swizzle = image_view_swizzle())
 		: vk_image_view(parent,
 						parent.get_format(),
 						0,
@@ -247,10 +248,12 @@ public:
 	}
 
 	auto& get_view() const { return view.get(); }
-	auto& get_format() const { return format; }
+	auto& get_format() const { return image_format; }
 
 	operator VkImageView() const { return get_view(); }
 };
+
+}
 
 }
 }

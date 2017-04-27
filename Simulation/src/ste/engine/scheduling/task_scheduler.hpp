@@ -16,7 +16,7 @@
 #include <concurrent_queue.hpp>
 #include <function_traits.hpp>
 
-namespace StE {
+namespace ste {
 
 /**
  *	@brief	Thread-safe concurrent, wait-free task scheduler. 

@@ -8,12 +8,12 @@
 #include <vk_sampler.hpp>
 #include <allow_type_decay.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
-class sampler : public allow_type_decay<sampler, vk_sampler> {
+class sampler : public allow_type_decay<sampler, vk::vk_sampler> {
 private:
-	vk_sampler s;
+	vk::vk_sampler s;
 
 public:
 	template <typename... Ts>

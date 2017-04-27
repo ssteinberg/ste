@@ -13,22 +13,22 @@
 
 #include <allow_type_decay.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 namespace _internal {
 
 template <VkCommandPoolCreateFlags flags, bool resetable_buffer>
 class command_pool :
-	public allow_type_decay<command_pool<flags, resetable_buffer>, vk_command_pool>,
-	public ste_resource_pool_resetable_trait<const vk_logical_device &, ste_queue_descriptor>
+	public allow_type_decay<command_pool<flags, resetable_buffer>, vk::vk_command_pool>,
+	public ste_resource_pool_resetable_trait<const vk::vk_logical_device &, ste_queue_descriptor>
 {
 private:
-	vk_command_pool pool;
+	vk::vk_command_pool pool;
 	const ste_queue_descriptor queue_descriptor;
 
 public:
-	command_pool(const vk_logical_device &device,
+	command_pool(const vk::vk_logical_device &device,
 				 const ste_queue_descriptor &queue_descriptor)
 		: pool(device,
 			   queue_descriptor.family,

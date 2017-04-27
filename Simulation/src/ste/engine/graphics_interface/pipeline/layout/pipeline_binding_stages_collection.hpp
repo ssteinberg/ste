@@ -10,8 +10,8 @@
 
 #include <boost/container/flat_set.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 /**
 *	@brief	Defines a collection of shader stages

@@ -16,13 +16,13 @@
 //#include <string>
 //#include <algorithm>
 //
-//using namespace StE::Resource;
-//using namespace StE::Graphics;
-//using StE::Core::texture_2d;
+//using namespace ste::resource;
+//using namespace ste::Graphics;
+//using ste::Core::texture_2d;
 //
 //tinyobj::material_t model_factory::empty_mat;
 //
-//StE::task_future<void> model_factory::process_model_mesh(task_scheduler* sched,
+//ste::task_future<void> model_factory::process_model_mesh(task_scheduler* sched,
 //														Graphics::scene_properties *scene_properties,
 //														const tinyobj::shape_t &shape,
 //														Graphics::object_group *object_group,
@@ -152,7 +152,7 @@
 //	});
 //}
 //
-//StE::task_future<void> model_factory::load_texture(task_scheduler* sched,
+//ste::task_future<void> model_factory::load_texture(task_scheduler* sched,
 //												  const std::string &name,
 //												  bool srgb,
 //												  bool displacement,
@@ -198,7 +198,7 @@
 //	});
 //}
 //
-//std::vector<StE::task_future<void>> model_factory::load_textures(task_scheduler* sched,
+//std::vector<ste::task_future<void>> model_factory::load_textures(task_scheduler* sched,
 //														 		shapes_type &shapes,
 //														 		materials_type &materials,
 //														 		texture_map_type &tex_map,
@@ -206,7 +206,7 @@
 //														 		float normal_map_bias) {
 //	tex_map.emplace(std::make_pair(std::string(""), std::shared_ptr<Core::texture_2d>(nullptr)));
 //
-//	std::vector<StE::task_future<void>> futures;
+//	std::vector<ste::task_future<void>> futures;
 //	for (auto &shape : shapes) {
 //		int mat_idx = shape.mesh.material_ids.size() > 0 ? shape.mesh.material_ids[0] : -1;
 //		if (mat_idx < 0)
@@ -245,7 +245,7 @@
 //	return futures;
 //}
 //
-//StE::task_future<void> model_factory::load_model_async(const ste_engine_control &ctx,
+//ste::task_future<void> model_factory::load_model_async(const ste_engine_control &ctx,
 //													  const boost::filesystem::path &file_path,
 //													  object_group *object_group,
 //													  Graphics::scene_properties *scene_properties,
@@ -276,7 +276,7 @@
 //		}
 //
 //		{
-//			std::vector<StE::task_future<void>> futures;
+//			std::vector<ste::task_future<void>> futures;
 //			for (auto &shape : shapes)
 //				futures.push_back(process_model_mesh(&ctx.scheduler(),
 //													 scene_properties,

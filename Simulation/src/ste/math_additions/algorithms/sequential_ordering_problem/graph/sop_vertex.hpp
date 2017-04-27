@@ -10,8 +10,8 @@
 
 #include <boost_flatset.hpp>
 
-namespace StE {
-namespace Algorithm {
+namespace ste {
+namespace algorithm {
 namespace SOP {
 
 template <typename V, typename E>
@@ -22,8 +22,8 @@ template <typename G>
 class sop_optimizer;
 
 template <typename DepsContainer, typename RequisiteContainer = DepsContainer>
-class sop_vertex : public Graph::vertex {
-	using Base = Graph::vertex;
+class sop_vertex : public graph::vertex {
+	using Base = graph::vertex;
 	
 	template <typename V, typename E>
 	friend class sop_graph;

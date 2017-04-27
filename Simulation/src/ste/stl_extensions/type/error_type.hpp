@@ -3,7 +3,7 @@
 
 #pragma once
 
-namespace StE {
+namespace ste {
 
 struct error_type {};
 

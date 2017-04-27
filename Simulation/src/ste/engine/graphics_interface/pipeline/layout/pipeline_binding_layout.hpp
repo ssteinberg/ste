@@ -7,8 +7,8 @@
 #include <pipeline_binding_layout_interface.hpp>
 #include <ste_shader_stage_binding.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 /**
  *	@brief	Fully describes a single resource binding end-point for multiple stages in a pipeline

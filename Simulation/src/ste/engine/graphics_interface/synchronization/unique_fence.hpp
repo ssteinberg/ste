@@ -14,13 +14,13 @@
 #include <functional>
 #include <type_traits>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 template <typename R>
-class unique_fence : public ste_resource_pool_resetable_trait<const vk_logical_device &> {
+class unique_fence : public ste_resource_pool_resetable_trait<const vk::vk_logical_device &> {
 private:
-	vk_fence f;
+	vk::vk_fence f;
 	std::promise<R> promise;
 	std::future<R> future;
 
@@ -28,7 +28,7 @@ public:
 	/**
 	*	@brief	Construct a fence object in unsignaled state
 	*/
-	unique_fence(const vk_logical_device &device)
+	unique_fence(const vk::vk_logical_device &device)
 		: f(device, false), future(promise.get_future())
 	{}
 	/**
@@ -37,7 +37,7 @@ public:
 	*	@param	val		Initial value of fence
 	*/
 	template <typename T, typename S = R>
-	unique_fence(const vk_logical_device &device, T &&val,
+	unique_fence(const vk::vk_logical_device &device, T &&val,
 		  typename std::enable_if<!std::is_void<S>::value>::type* = nullptr)
 		: f(device, true), future(promise.get_future())
 	{
@@ -49,7 +49,7 @@ public:
 	*	@param	signaled	Initial state of the fence
 	*/
 	template <typename S = R>
-	unique_fence(const vk_logical_device &device, bool signaled,
+	unique_fence(const vk::vk_logical_device &device, bool signaled,
 		  typename std::enable_if<std::is_void<S>::value>::type* = nullptr)
 		: f(device, signaled), future(promise.get_future())
 	{

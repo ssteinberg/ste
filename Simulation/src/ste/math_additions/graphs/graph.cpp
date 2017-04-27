@@ -11,10 +11,10 @@
 
 #include <iostream>
 
-using namespace StE::Graph;
-using namespace StE::Graph::detail;
+using namespace ste::graph;
+using namespace ste::graph::detail;
 
-// Agraph_t* StE::Graph::detail::create_graphviz_graph(const GraphSet<graph_impl::VertexPtr> *vertices,
+// Agraph_t* ste::graph::detail::create_graphviz_graph(const GraphSet<graph_impl::VertexPtr> *vertices,
 // 													const GraphSet<graph_impl::EdgePtr> *edges) {
 // 	Agraph_t* g;
 // 	g = agopen(const_cast<char*>("G"), Agdirected, NULL);

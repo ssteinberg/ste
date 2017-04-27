@@ -14,8 +14,8 @@
 #include <concurrent_unordered_map.hpp>
 #include <memory>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 class pipeline_binding_set_pool {
 private:

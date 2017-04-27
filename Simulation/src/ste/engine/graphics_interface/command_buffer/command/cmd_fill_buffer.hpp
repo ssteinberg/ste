@@ -7,8 +7,8 @@
 #include <command.hpp>
 #include <buffer_view.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 class cmd_fill_buffer : public command {
 private:

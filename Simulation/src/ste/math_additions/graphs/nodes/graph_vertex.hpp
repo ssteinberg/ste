@@ -10,8 +10,8 @@
 #include <vector>
 #include <memory>
 
-namespace StE {
-namespace Graph {
+namespace ste {
+namespace graph {
 	
 template <typename V, typename E>
 class graph;

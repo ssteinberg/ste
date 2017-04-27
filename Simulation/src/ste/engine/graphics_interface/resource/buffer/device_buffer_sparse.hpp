@@ -4,12 +4,13 @@
 #pragma once
 
 #include <stdafx.hpp>
-#include <device_resource_queue_transferable.hpp>
 #include <device_resource_memory_allocator.hpp>
 
 #include <ste_context.hpp>
-#include <vk_buffer.hpp>
+#include <vk_buffer_sparse.hpp>
 #include <device_buffer_base.hpp>
+
+#include <buffer_usage.hpp>
 
 #include <vk_queue.hpp>
 #include <host_command.hpp>
@@ -19,8 +20,8 @@
 #include <vector>
 #include <allow_type_decay.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 template <
 	typename T,
@@ -29,7 +30,7 @@ template <
 >
 class device_buffer_sparse : 
 	public device_buffer_base,
-	public allow_type_decay<device_buffer_sparse<T, minimal_atom_size, allocation_policy>, vk_buffer<T, true>, false>
+	public allow_type_decay<device_buffer_sparse<T, minimal_atom_size, allocation_policy>, vk::vk_buffer_sparse, false>
 {
 private:
 	struct ctor {};
@@ -39,7 +40,7 @@ public:
 	using bind_range_t = range<atom_address_t>;
 
 private:
-	using resource_t = vk_buffer<T, true>;
+	using resource_t = vk::vk_buffer_sparse;
 	using atom_t = device_memory_heap::allocation_type;
 	using bind_map_t = std::vector<atom_t>;
 
@@ -77,46 +78,28 @@ public:
 	}
 
 private:
-	template <typename selector_policy>
 	device_buffer_sparse(ctor,
 						 const ste_context &ctx,
-						 const ste_queue_selector<selector_policy> &initial_queue_selector,
 						 resource_t &&resource)
-		: device_buffer_base(ctx.device().select_queue(initial_queue_selector)->queue_descriptor().family),
-		ctx(ctx), 
-		resource(std::move(resource))
-	{
-		memory_requirements = this->resource.get_memory_requirements();
-	}
-	device_buffer_sparse(ctor,
-						 const ste_context &ctx,
-						 const device_resource_queue_ownership::family_t &family,
-						 resource_t &&resource)
-		: device_buffer_base(family),
-		ctx(ctx),
+		: ctx(ctx),
 		resource(std::move(resource))
 	{
 		memory_requirements = this->resource.get_memory_requirements();
 	}
 
 public:
-	template <typename selector_policy, typename ... Args>
 	device_buffer_sparse(const ste_context &ctx,
-						 const ste_queue_selector<selector_policy> &initial_queue_selector,
-						 Args&&... args)
-		: device_buffer_sparse(ctor(), ctx, initial_queue_selector,
-							   resource_t(ctx.device(), std::forward<Args>(args)...))
-	{}
-	template <typename ... Args>
-	device_buffer_sparse(const ste_context &ctx,
-						 const device_resource_queue_ownership::family_t &family,
-						 Args&&... args)
-		: device_buffer_sparse(ctor(), ctx, family,
-							   resource_t(ctx.device(), std::forward<Args>(args)...))
+						 std::uint64_t count,
+						 const buffer_usage &usage)
+		: device_buffer_sparse(ctor(), ctx,
+							   resource_t(ctx.device(), 
+										  sizeof(T),
+										  count,
+										  static_cast<VkBufferUsageFlags>(usage)))
 	{}
 	~device_buffer_sparse() noexcept {}
 
-	const vk_buffer_base& get_buffer_handle() const override final { return *this; }
+	const vk::vk_buffer& get_buffer_handle() const override final { return *this; }
 
 	device_buffer_sparse(device_buffer_sparse &&) = default;
 	device_buffer_sparse &operator=(device_buffer_sparse &&) = default;
@@ -137,9 +120,9 @@ public:
 										const std::vector<bind_range_t> &bind_regions,
 										const std::vector<VkSemaphore> &wait_semaphores,
 										const std::vector<VkSemaphore> &signal_semaphores,
-										const vk_fence *fence = nullptr) {
-		return host_command([=](const vk_queue &queue) {
-			std::vector<vk_sparse_memory_bind> memory_binds;
+										const vk::vk_fence *fence = nullptr) {
+		return host_command([=](const vk::vk_queue &queue) {
+			std::vector<vk::vk_sparse_memory_bind> memory_binds;
 			auto size = atom_size();
 
 			for (std::size_t i = 0; i < unbind_regions.size(); ++i) {
@@ -151,7 +134,7 @@ public:
 					if (bound_atoms_map.size() > p && bound_atoms_map[p]) {
 						bound_atoms_map[p] = atom_t();
 
-						vk_sparse_memory_bind b;
+						vk::vk_sparse_memory_bind b;
 						b.allocation = nullptr;
 						b.resource_offset_bytes = p * size;
 						b.size_bytes = size;
@@ -174,7 +157,7 @@ public:
 																								   size,
 																								   memory_requirements);
 
-						vk_sparse_memory_bind b;
+						vk::vk_sparse_memory_bind b;
 						b.allocation = &bound_atoms_map[p];
 						b.resource_offset_bytes = p * size;
 						b.size_bytes = size;

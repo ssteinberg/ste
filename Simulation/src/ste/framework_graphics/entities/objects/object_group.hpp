@@ -14,7 +14,7 @@
 #include <unordered_map>
 #include <memory>
 
-namespace StE {
+namespace ste {
 namespace Graphics {
 
 class object_group : public entity_affine {

@@ -22,14 +22,14 @@
 
 #include <memory>
 
-namespace StE {
+namespace ste {
 namespace Graphics {
 
 class volumetric_scattering_scatter_dispatch : public gpu_dispatchable {
 	using Base = gpu_dispatchable;
 
-	friend class Resource::resource_loading_task<volumetric_scattering_scatter_dispatch>;
-	friend class Resource::resource_instance<volumetric_scattering_scatter_dispatch>;
+	friend class resource::resource_loading_task<volumetric_scattering_scatter_dispatch>;
+	friend class resource::resource_instance<volumetric_scattering_scatter_dispatch>;
 
 private:
 	const volumetric_scattering_storage *vss;
@@ -37,7 +37,7 @@ private:
 	const light_storage *ls;
 	const shadowmap_storage *shadows_storage;
 
-	Resource::resource_instance<Resource::glsl_program> program;
+	resource::resource_instance<resource::glsl_program> program;
 
 	std::shared_ptr<connection<>> vss_storage_connection;
 	std::shared_ptr<connection<>> shadows_storage_connection;
@@ -104,7 +104,7 @@ public:
 
 }
 
-namespace Resource {
+namespace resource {
 
 template <>
 class resource_loading_task<Graphics::volumetric_scattering_scatter_dispatch> {

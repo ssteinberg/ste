@@ -8,7 +8,7 @@
 #include <chrono>
 #include <type_traits>
 
-namespace StE {
+namespace ste {
 
 template <typename T>
 class boundary {

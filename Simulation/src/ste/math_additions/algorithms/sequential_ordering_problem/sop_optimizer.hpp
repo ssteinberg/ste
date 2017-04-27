@@ -15,8 +15,8 @@
 
 #include <atomic>
 
-namespace StE {
-namespace Algorithm {
+namespace ste {
+namespace algorithm {
 namespace SOP {
 
 template <typename G>

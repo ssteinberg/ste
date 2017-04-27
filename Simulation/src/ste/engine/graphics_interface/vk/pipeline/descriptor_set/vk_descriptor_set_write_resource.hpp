@@ -12,8 +12,10 @@
 
 #include <vector>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
+
+namespace vk {
 
 struct vk_descriptor_set_write_image {
 	VkImageView image{ VK_NULL_HANDLE };
@@ -25,10 +27,10 @@ struct vk_descriptor_set_write_image {
 								  VkImageLayout image_layout)
 		: image(image_view), image_layout(image_layout) {}
 	vk_descriptor_set_write_image(VkImageView image_view,
-								  VkImageLayout image_layout, 
+								  VkImageLayout image_layout,
 								  const vk_sampler &sampler)
-		: image(image_view), 
-		image_layout(image_layout), 
+		: image(image_view),
+		image_layout(image_layout),
 		sampler(sampler) {}
 	vk_descriptor_set_write_image(const vk_sampler &sampler)
 		: sampler(sampler) {}
@@ -44,8 +46,8 @@ struct vk_descriptor_set_write_buffer {
 	std::uint64_t buffer_range{ 0 };
 
 	vk_descriptor_set_write_buffer(const buffer_view &buffer)
-		: buffer(buffer->get_buffer_handle()), 
-		buffer_offset(buffer.offset_bytes()), 
+		: buffer(buffer->get_buffer_handle()),
+		buffer_offset(buffer.offset_bytes()),
 		buffer_range(buffer.range_bytes()) {}
 
 	operator VkDescriptorBufferInfo() const {
@@ -128,6 +130,8 @@ public:
 	auto get_array_element() const { return array_element; }
 	auto get_count() const { return std::max(image_writes.size(), buffer_writes.size()); }
 };
+
+}
 
 }
 }

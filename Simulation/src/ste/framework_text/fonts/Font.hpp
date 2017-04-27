@@ -7,8 +7,8 @@
 
 #include <boost_filesystem.hpp>
 
-namespace StE {
-namespace Text {
+namespace ste {
+namespace text {
 
 class font {
 private:
@@ -30,8 +30,8 @@ public:
 namespace std {
 
 template<>
-struct hash<StE::Text::font> {
-	using K = StE::Text::font;
+struct hash<ste::text::font> {
+	using K = ste::text::font;
 	std::size_t operator()(const K& k) const {
 		return hash<std::string>()(k.get_name());
 	}

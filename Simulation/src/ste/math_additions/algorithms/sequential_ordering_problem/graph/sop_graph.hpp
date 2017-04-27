@@ -14,16 +14,16 @@
 // #include <graphviz/cgraph.h>
 // #include <graphviz/gvc.h>
 
-namespace StE {
-namespace Algorithm {
+namespace ste {
+namespace algorithm {
 namespace SOP {
 
 template <typename V, typename E>
-class sop_graph : public Graph::graph<V, E> {
-	using Base = Graph::graph<V, E>;
+class sop_graph : public graph::graph<V, E> {
+	using Base = graph::graph<V, E>;
 
-	static_assert(StE::is_base_of<V, sop_vertex>::value, "V must derive from Algorithm::SOP::sop_vertex!");
-	static_assert(std::is_base_of<sop_edge, E>::value, "E must derive from Algorithm::SOP::sop_edge!");
+	static_assert(ste::is_base_of<V, sop_vertex>::value, "V must derive from algorithm::SOP::sop_vertex!");
+	static_assert(std::is_base_of<sop_edge, E>::value, "E must derive from algorithm::SOP::sop_edge!");
 
 public:
 	virtual ~sop_graph() noexcept {}
@@ -34,7 +34,7 @@ public:
 
 	// 	agattr(g, AGEDGE, "label", "");
 
-	// 	std::unordered_map<const Graph::vertex*, Agnode_t*> vm;
+	// 	std::unordered_map<const graph::vertex*, Agnode_t*> vm;
 	// 	for (auto vert : Base::get_vertices()) {
 	// 		auto node = agnode(g, const_cast<char*>(vert->get_name().data()), true);
 	// 		vm.insert(std::make_pair(vert, node));

@@ -3,7 +3,7 @@
 #include <task_scheduler.hpp>
 #include <task_future.hpp>
 
-using namespace StE;
+using namespace ste;
 
 void task_scheduler::enqueue_delayed() {
 	auto now = std::chrono::high_resolution_clock::now();

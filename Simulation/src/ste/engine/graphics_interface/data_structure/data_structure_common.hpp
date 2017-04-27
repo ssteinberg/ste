@@ -6,6 +6,7 @@
 #include <stdafx.hpp>
 #include <ste_context.hpp>
 
+#include <buffer_usage.hpp>
 #include <unique_fence.hpp>
 #include <device_buffer.hpp>
 #include <device_buffer_sparse.hpp>
@@ -15,9 +16,10 @@
 #include <cmd_copy_buffer.hpp>
 
 #include <vector>
+#include <cstring>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 template <typename T, class policy>
 void copy_initial_data(const ste_context &ctx,
@@ -34,13 +36,12 @@ void copy_initial_data(const ste_context &ctx,
 
 	// Staging buffer
 	staging_buffer_t staging_buffer(ctx,
-									q->index(), 
 									copy_count, 
-									VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+									buffer_usage::transfer_src);
 	{
 		// Copy to staging
 		auto ptr = staging_buffer.get_underlying_memory().template mmap<T>(0, copy_count);
-		memcpy(ptr->get_mapped_ptr(), data.data(), static_cast<std::size_t>(copy_count * sizeof(T)));
+		std::memcpy(ptr->get_mapped_ptr(), data.data(), static_cast<std::size_t>(copy_count * sizeof(T)));
 	}
 
 	// Create a batch
@@ -79,13 +80,12 @@ void copy_initial_data(const ste_context &ctx,
 
 	// Staging buffer
 	staging_buffer_t staging_buffer(ctx,
-									q->index(),
 									copy_count, 
-									VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+									buffer_usage::transfer_src);
 	{
 		// Copy to staging
 		auto ptr = staging_buffer.get_underlying_memory().template mmap<T>(0, copy_count);
-		memcpy(ptr->get_mapped_ptr(), data.data(), copy_count * sizeof(T));
+		std::memcpy(ptr->get_mapped_ptr(), data.data(), copy_count * sizeof(T));
 	}
 
 	// Create a batch

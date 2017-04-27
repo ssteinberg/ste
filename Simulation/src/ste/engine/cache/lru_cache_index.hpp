@@ -25,7 +25,7 @@
 
 #include <exception>
 
-namespace StE {
+namespace ste {
 
 template <typename K>
 class lru_cache;
@@ -98,7 +98,7 @@ private:
 				ia >> *this;
 				total_size = populate_map(path);
 			} catch (const std::exception &e) {
-				using namespace Text::Attributes;
+				using namespace text::Attributes;
 				ste_log_warn() << b("LRU Cache: ") + "Failed reading index (Reason: " + e.what() + "). Clearing " + i(path.string()) + "." << std::endl;
 
 				for (boost::filesystem::directory_iterator end_dir_it, it(path); it!=end_dir_it; ++it)

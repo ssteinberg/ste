@@ -7,8 +7,10 @@
 #include <vector>
 #include <optional.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
+
+namespace vk {
 
 class vk_render_pass_subpass_descriptor {
 	friend class vk_render_pass;
@@ -20,7 +22,7 @@ private:
 	std::vector<std::uint32_t> preserve;
 
 public:
-	vk_render_pass_subpass_descriptor(const std::vector<VkAttachmentReference> &color) 
+	vk_render_pass_subpass_descriptor(const std::vector<VkAttachmentReference> &color)
 		: color(color) {}
 
 	vk_render_pass_subpass_descriptor(const std::vector<VkAttachmentReference> &color,
@@ -37,6 +39,8 @@ public:
 									  VkAttachmentReference depth)
 		: color(color), depth(depth) {}
 };
+
+}
 
 }
 }

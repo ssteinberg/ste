@@ -21,8 +21,8 @@
 #include <string>
 #include <memory>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 /**
 *	@brief	External binding descriptor

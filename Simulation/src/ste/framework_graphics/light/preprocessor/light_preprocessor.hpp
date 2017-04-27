@@ -16,15 +16,15 @@
 
 #include <gpu_dispatchable.hpp>
 
-namespace StE {
+namespace ste {
 namespace Graphics {
 
 class light_preprocessor : public gpu_dispatchable {
 	friend class light_preprocess_cull_lights;
 	friend class light_preprocess_cull_shadows;
 
-	friend class Resource::resource_loading_task<light_preprocessor>;
-	friend class Resource::resource_instance<light_preprocessor>;
+	friend class resource::resource_loading_task<light_preprocessor>;
+	friend class resource::resource_instance<light_preprocessor>;
 
 private:
 	using ResizeSignalConnectionType = ste_engine_control::framebuffer_resize_signal_type::connection_type;
@@ -34,7 +34,7 @@ private:
 	const ste_engine_control &ctx;
 	light_storage *ls;
 
-	Resource::resource_instance<Resource::glsl_program> light_preprocess_cull_lights_program;
+	resource::resource_instance<resource::glsl_program> light_preprocess_cull_lights_program;
 
 	std::shared_ptr<ResizeSignalConnectionType> resize_connection;
 	std::shared_ptr<ProjectionSignalConnectionType> projection_change_connection;
@@ -63,7 +63,7 @@ protected:
 
 }
 
-namespace Resource {
+namespace resource {
 
 template <>
 class resource_loading_task<Graphics::light_preprocessor> {

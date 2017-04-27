@@ -3,8 +3,8 @@
 
 #pragma once
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 class command_buffer;
 

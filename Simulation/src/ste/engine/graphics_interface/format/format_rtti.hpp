@@ -3,18 +3,18 @@
 
 #pragma once
 
-#include <vulkan/vulkan.h>
-#include <vk_format_type_traits.hpp>
+#include <format.hpp>
+#include <format_type_traits.hpp>
 
 #include <unordered_map>
 #include <optional.hpp>
 
 #include <stdexcept>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
-struct vk_format_rtti {
+struct format_rtti {
 	int elements;
 	int texel_bytes;
 	bool is_depth;
@@ -24,12 +24,12 @@ struct vk_format_rtti {
 
 namespace _internal {
 
-class vk_format_rtti_database {
+class format_rtti_database {
 private:
-	static std::unordered_map<VkFormat, vk_format_rtti> database;
+	static std::unordered_map<format, format_rtti> database;
 
 public:
-	static optional<vk_format_rtti> get(const VkFormat &format) {
+	static optional<format_rtti> get(const format &format) {
 		auto it = database.find(format);
 		if (it == database.end())
 			return none;
@@ -45,8 +45,8 @@ public:
  *	
  *	@throws	std::runtime_error	If format not found
  */
-vk_format_rtti inline vk_format_id(const VkFormat &format) {
-	auto ret = _internal::vk_format_rtti_database::get(format);
+format_rtti inline format_id(const format &format) {
+	auto ret = _internal::format_rtti_database::get(format);
 	if (ret)
 		return ret.get();
 
@@ -58,8 +58,8 @@ vk_format_rtti inline vk_format_id(const VkFormat &format) {
 *
 *	@throws	std::runtime_error	If format not found
 */
-auto inline vk_format_elements(const VkFormat &format) {
-	return vk_format_id(format).elements;
+auto inline vk_format_elements(const format &format) {
+	return format_id(format).elements;
 }
 
 /**
@@ -67,8 +67,8 @@ auto inline vk_format_elements(const VkFormat &format) {
 *
 *	@throws	std::runtime_error	If format not found
 */
-auto inline vk_format_texel_size(const VkFormat &format) {
-	return vk_format_id(format).texel_bytes;
+auto inline vk_format_texel_size(const format &format) {
+	return format_id(format).texel_bytes;
 }
 
 /**
@@ -76,8 +76,8 @@ auto inline vk_format_texel_size(const VkFormat &format) {
 *
 *	@throws	std::runtime_error	If format not found
 */
-auto inline vk_format_is_depth(const VkFormat &format) {
-	return vk_format_id(format).is_depth;
+auto inline vk_format_is_depth(const format &format) {
+	return format_id(format).is_depth;
 }
 
 /**
@@ -87,7 +87,7 @@ auto inline vk_format_is_depth(const VkFormat &format) {
 *
 *	@throws	std::runtime_error	If format not found
 */
-auto inline vk_format_aspect(const VkFormat &format) {
+auto inline vk_format_aspect(const format &format) {
 	return vk_format_is_depth(format) ? 
 		VK_IMAGE_ASPECT_DEPTH_BIT : 
 		VK_IMAGE_ASPECT_COLOR_BIT;
@@ -98,8 +98,8 @@ auto inline vk_format_aspect(const VkFormat &format) {
 *
 *	@throws	std::runtime_error	If format not found
 */
-auto inline vk_format_is_float(const VkFormat &format) {
-	return vk_format_id(format).is_float;
+auto inline vk_format_is_float(const format &format) {
+	return format_id(format).is_float;
 }
 
 /**
@@ -107,8 +107,8 @@ auto inline vk_format_is_float(const VkFormat &format) {
 *
 *	@throws	std::runtime_error	If format not found
 */
-auto inline vk_format_is_signed(const VkFormat &format) {
-	return vk_format_id(format).is_signed;
+auto inline vk_format_is_signed(const format &format) {
+	return format_id(format).is_signed;
 }
 
 }

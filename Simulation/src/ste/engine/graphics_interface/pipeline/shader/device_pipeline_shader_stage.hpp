@@ -23,12 +23,12 @@
 #include <memory>
 #include <allow_type_decay.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 class device_pipeline_shader_stage 
 	: ste_resource_deferred_create_trait, 
-	public allow_type_decay<device_pipeline_shader_stage, vk_shader> 
+	public allow_type_decay<device_pipeline_shader_stage, vk::vk_shader>
 {
 public:
 	using specializations_changed_signal_t = signal<const device_pipeline_shader_stage*>;
@@ -37,7 +37,7 @@ private:
 	std::string name;
 	std::unique_ptr<const ste_shader_object> shader;
 
-	vk_shader::spec_map specializations;
+	vk::vk_shader::spec_map specializations;
 
 private:
 	static void verify_blob_header_sanity(const ste_shader_blob_header &header) {
@@ -135,7 +135,7 @@ public:
 	 *	@brief	Provides the shader specialization constant map.
 	 *			For new specializations to take affect, pipeline has to be recreated.
 	 */
-	void set_specializations(const vk_shader::spec_map &specializations) {
+	void set_specializations(const vk::vk_shader::spec_map &specializations) {
 		this->specializations = specializations;
 	}
 
@@ -150,7 +150,7 @@ public:
 	*	@brief	Retrieve the Vulkan pipeline shader stage descriptor for the shader module
 	*/
 	auto pipeline_stage_descriptor() const {
-		vk_shader_stage_descriptor desc;
+		vk::vk_shader_stage_descriptor desc;
 		desc.stage = vk_shader_stage_flag();
 		desc.shader = &get();
 		desc.specializations = &specializations;

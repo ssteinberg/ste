@@ -8,8 +8,10 @@
 
 #include <vector>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
+
+namespace vk {
 
 class vk_descriptor_set_copy_resources {
 	friend class vk_descriptor_set;
@@ -48,6 +50,8 @@ public:
 	auto get_dst_array_element()const { return dst_array_element; }
 	auto get_count()const { return count; }
 };
+
+}
 
 }
 }

@@ -7,7 +7,7 @@
 
 #include <array>
 
-namespace StE {
+namespace ste {
 namespace Graphics {
 
 template <typename T, int samples>

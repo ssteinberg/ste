@@ -9,8 +9,8 @@
 
 #include <string>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 class cmd_update_buffer : public command {
 private:

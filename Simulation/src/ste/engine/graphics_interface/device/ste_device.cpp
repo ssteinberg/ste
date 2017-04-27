@@ -2,12 +2,12 @@
 #include <stdafx.hpp>
 #include <ste_device.hpp>
 
-using namespace StE::GL;
+using namespace ste::gl;
 
-vk_logical_device ste_device::create_vk_virtual_device(const vk_physical_device_descriptor &physical_device,
-													   const VkPhysicalDeviceFeatures &requested_features,
-													   const ste_queue_descriptors &queue_descriptors,
-													   std::vector<const char*> device_extensions) {
+vk::vk_logical_device ste_device::create_vk_virtual_device(const vk::vk_physical_device_descriptor &physical_device,
+														   const VkPhysicalDeviceFeatures &requested_features,
+														   const ste_queue_descriptors &queue_descriptors,
+														   std::vector<const char*> device_extensions) {
 	if (queue_descriptors.size() == 0) {
 		throw ste_device_creation_exception("queue_descriptors is empty");
 	}
@@ -19,10 +19,10 @@ vk_logical_device ste_device::create_vk_virtual_device(const vk_physical_device_
 	auto queues_create_info = queue_descriptors.create_device_queue_create_info();
 
 	// Create logical device
-	return vk_logical_device(physical_device,
-							 requested_features,
-							 queues_create_info->create_info,
-							 device_extensions);
+	return vk::vk_logical_device(physical_device,
+								 requested_features,
+								 queues_create_info->create_info,
+								 device_extensions);
 }
 
 void ste_device::create_presentation_fences_storage() {
@@ -36,7 +36,7 @@ void ste_device::create_presentation_fences_storage() {
 	this->presentation_sync_primitives = std::move(v);
 }
 
-ste_device::queues_t ste_device::create_queues(const vk_logical_device &device,
+ste_device::queues_t ste_device::create_queues(const vk::vk_logical_device &device,
 											   const ste_queue_descriptors &queue_descriptors,
 											   ste_device_sync_primitives_pools *sync_primitives_pools) {
 	queues_t q;
@@ -68,7 +68,7 @@ void ste_device::recreate_swap_chain() {
 	// Wait for all queue threads and then wait for all queues to finish processing, allowing us to recreate the swap-chain 
 	// and queue safely.
 	wait_idle();
-	
+
 	this->presentation_sync_primitives.clear();
 	// Recreate swap-chain
 	presentation_surface->recreate_swap_chain();

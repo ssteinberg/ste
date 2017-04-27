@@ -10,7 +10,7 @@
 #include <function_wrapper.hpp>
 #include <function_traits.hpp>
 
-namespace StE {
+namespace ste {
 
 namespace _detail {
 

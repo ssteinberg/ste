@@ -14,7 +14,7 @@
 #include <limits>
 #include <functional>
 
-namespace StE {
+namespace ste {
 namespace Graphics {
 
 /*

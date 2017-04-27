@@ -5,7 +5,7 @@
 
 #include <stdafx.hpp>
 
-namespace StE {
+namespace ste {
 
 struct ste_engine_types;
 template <typename Types>

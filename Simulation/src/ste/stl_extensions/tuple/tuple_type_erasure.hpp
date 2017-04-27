@@ -12,7 +12,7 @@
 #include <functional>
 #include <type_traits>
 
-namespace StE {
+namespace ste {
 
 namespace _tuple_type_erasure {
 

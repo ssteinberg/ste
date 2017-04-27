@@ -5,7 +5,7 @@
 
 #include <type_traits>
 
-namespace StE {
+namespace ste {
 
 namespace detail {
 		

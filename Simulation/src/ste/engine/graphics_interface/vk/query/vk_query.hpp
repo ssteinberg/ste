@@ -7,8 +7,10 @@
 
 #include <vulkan/vulkan.h>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
+
+namespace vk {
 
 class vk_query_pool;
 
@@ -33,6 +35,8 @@ public:
 	auto& get_pool() const { return pool; }
 	auto ge_query_index() const { return index; }
 };
+
+}
 
 }
 }

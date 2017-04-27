@@ -4,7 +4,7 @@
 //
 //#include <light_storage.hpp>
 //
-//using namespace StE::Graphics;
+//using namespace ste::Graphics;
 //
 //constexpr int linked_light_lists::lll_image_res_multiplier;
 //
@@ -24,7 +24,7 @@
 //}
 //
 //void linked_light_lists::bind_lll_buffer(bool low_detail) const {
-//	using namespace StE::Core;
+//	using namespace ste::Core;
 //
 //	11_storage_idx = lll;
 //
@@ -39,7 +39,7 @@
 //}
 //
 //void linked_light_lists::bind_readwrite_lll_buffers() const {
-//	using namespace StE::Core;
+//	using namespace ste::Core;
 //
 //	11_storage_idx = lll;
 //	4_image_idx = (*lll_size)[0].with_access(Core::image_access_mode::Write);

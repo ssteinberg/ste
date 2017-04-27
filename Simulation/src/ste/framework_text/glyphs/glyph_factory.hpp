@@ -9,8 +9,8 @@
 #include <memory>
 #include <string>
 
-namespace StE {
-namespace Text {
+namespace ste {
+namespace text {
 
 struct glyph_factory_impl;
 

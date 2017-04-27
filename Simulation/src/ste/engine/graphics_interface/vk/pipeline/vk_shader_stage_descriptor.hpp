@@ -7,14 +7,18 @@
 #include <vulkan/vulkan.h>
 #include <vk_shader.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
+
+namespace vk {
 
 struct vk_shader_stage_descriptor {
 	const vk_shader *shader;
 	const vk_shader::spec_map *specializations{ nullptr };
 	VkShaderStageFlagBits stage;
 };
+
+}
 
 }
 }

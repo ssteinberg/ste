@@ -3,7 +3,7 @@
 
 #pragma once
 
-namespace StE {
+namespace ste {
 
 struct none_t {};
 constexpr none_t none = none_t();

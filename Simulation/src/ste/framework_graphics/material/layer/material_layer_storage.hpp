@@ -10,7 +10,7 @@
 
 #include <memory>
 
-namespace StE {
+namespace ste {
 namespace Graphics {
 
 class material_layer_storage : public Core::resource_storage_stable<material_layer_descriptor> {

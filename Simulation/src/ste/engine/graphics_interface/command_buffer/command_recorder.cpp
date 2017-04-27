@@ -4,7 +4,7 @@
 #include <command_buffer.hpp>
 #include <command.hpp>
 
-using namespace StE::GL;
+using namespace ste::gl;
 
 void command_recorder::end() {
 	if (buffer) {

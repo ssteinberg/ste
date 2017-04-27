@@ -19,7 +19,7 @@
 #include <memory>
 #include <atomic>
 
-namespace StE {
+namespace ste {
 
 template <typename K, typename lru_iterator_type>
 class lru_cache_cacheable {

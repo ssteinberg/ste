@@ -6,7 +6,7 @@
 #include <fstream>
 #include <cstring>
 
-using namespace StE::Graphics;
+using namespace ste::Graphics;
 
 profiler::profiler() {
 	last_times_per_frame.resize(500);

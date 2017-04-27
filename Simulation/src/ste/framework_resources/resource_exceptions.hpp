@@ -5,8 +5,8 @@
 
 #include <stdexcept> 
 
-namespace StE {
-namespace Resource {
+namespace ste {
+namespace resource {
 
 class resource_exception : public std::runtime_error {
 	using Base = std::runtime_error;

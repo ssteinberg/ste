@@ -14,8 +14,8 @@
 #include <std140.hpp>
 #include <std430.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 struct ste_shader_stage_variable_layout_validator {
 private:

@@ -20,8 +20,8 @@
 
 #include <gli/load_dds.hpp>
 
-namespace StE {
-namespace Resource {
+namespace ste {
+namespace resource {
 
 class surface_io {
 private:
@@ -76,7 +76,7 @@ public:
 			}
 		}
 
-		using namespace StE::Text;
+		using namespace ste::text;
 		using namespace Attributes;
 
 		// Load image

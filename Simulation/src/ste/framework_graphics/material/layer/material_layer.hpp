@@ -16,7 +16,7 @@
 #include <memory>
 #include <limits>
 
-namespace StE {
+namespace ste {
 namespace Graphics {
 
 /**
@@ -58,7 +58,7 @@ private:
 		if (this->*map == nullptr || (this->*map)->get_size() != glm::ivec2{ 1, 1 }) {
 			auto surface = gli::texture2d(gli::format::FORMAT_R32_SFLOAT_PACK32, { 1, 1 }, 1);
 			*reinterpret_cast<float*>(surface.data()) = scalar;
-			this->*map = std::make_shared<StE::Core::texture_2d>(surface, false);
+			this->*map = std::make_shared<ste::Core::texture_2d>(surface, false);
 		}
 		else
 			(this->*map)->clear(&scalar);

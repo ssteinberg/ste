@@ -7,25 +7,23 @@
 #include <vk_swapchain_image.hpp>
 #include <device_image_base.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 class device_swapchain_image : public device_image_base {
 private:
-	vk_swapchain_image image;
+	vk::vk_swapchain_image image;
 
 public:
-	device_swapchain_image(vk_swapchain_image &&image)
-		: device_image_base(0,
-							vk_image_initial_layout::unused),
-		image(std::move(image))
+	device_swapchain_image(vk::vk_swapchain_image &&image)
+		: image(std::move(image))
 	{}
 
 	device_swapchain_image(device_swapchain_image&&) = default;
 	device_swapchain_image &operator=(device_swapchain_image&&) = default;
 
-	VkFormat get_format() const override final { return image.get_format(); }
-	VkImage get_image_handle() const override final { return image; };
+	format get_format() const override final { return static_cast<format>(image.get_format()); }
+	const vk::vk_image& get_image_handle() const override final { return image; };
 };
 
 }

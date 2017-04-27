@@ -12,8 +12,8 @@
 #include <pipeline_resource_binding_queue.hpp>
 #include <pipeline_resource_binder.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 class pipeline_resource_bind_point : public pipeline_bind_point_base {
 	using Base = pipeline_bind_point_base;

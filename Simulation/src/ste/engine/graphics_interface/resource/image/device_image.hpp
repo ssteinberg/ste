@@ -7,56 +7,72 @@
 #include <device_image_exceptions.hpp>
 #include <device_image_base.hpp>
 
+#include <format.hpp>
+#include <image_usage.hpp>
+
 #include <vk_image.hpp>
 #include <device_resource.hpp>
 #include <device_resource_allocation_policy.hpp>
 
-#include <vk_format_type_traits.hpp>
+#include <format_type_traits.hpp>
+#include <image_type_traits.hpp>
+
+#include <pipeline_barrier.hpp>
 #include <cmd_pipeline_barrier.hpp>
 #include <cmd_copy_image.hpp>
 #include <cmd_blit_image.hpp>
 
-#include <vk_format_rtti.hpp>
+#include <format_rtti.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 template <int dimensions, class allocation_policy = device_resource_allocation_policy_device>
 class device_image : public device_image_base,
-	public device_resource<vk_image<dimensions>, allocation_policy> 
+	public device_resource<vk::vk_image, allocation_policy> 
 {
-	using Base = device_resource<vk_image<dimensions>, allocation_policy>;
+	using Base = device_resource<vk::vk_image, allocation_policy>;
+	using size_type = typename image_extent_type<dimensions>::type;
 
 public:
-	template <typename selector_policy, typename ... Args>
+	static glm::uvec3 size_to_extent(const size_type &size) {
+		glm::uvec3 extent = { 1,1,1 };
+		for (int i = 0; i < dimensions; ++i)
+			extent[i] = size[i];
+		return extent;
+	}
+
+public:
 	device_image(const ste_context &ctx,
-				 const ste_queue_selector<selector_policy> &initial_queue_selector,
-				 const vk_image_initial_layout &layout,
-				 Args&&... args)
-		: device_image_base(ctx.device().select_queue(initial_queue_selector)->queue_descriptor().family,
-							layout),
-		Base(ctx,
-			 layout,
-			 std::forward<Args>(args)...)
-	{}
-	template <typename ... Args>
-	device_image(const ste_context &ctx,
-				 const device_resource_queue_ownership::family_t &family,
-				 const vk_image_initial_layout &layout,
-				 Args&&... args)
-		: device_image_base(family,
-							layout),
-		Base(ctx,
-			 layout,
-			 std::forward<Args>(args)...)
+				 const image_initial_layout &layout,
+				 const format &image_format,
+				 const size_type &size,
+				 const image_usage &usage,
+				 std::uint32_t mips = 1,
+				 std::uint32_t layers = 1,
+				 bool supports_cube_views = false,
+				 bool optimal_tiling = true,
+				 bool sparse = false)
+		: Base(ctx,
+			   layout,
+			   static_cast<VkFormat>(image_format),
+			   dimensions,
+			   size_to_extent(size),
+			   static_cast<VkImageUsageFlags>(usage),
+			   mips,
+			   layers,
+			   supports_cube_views,
+			   optimal_tiling,
+			   sparse)
 	{}
 
 	device_image(device_image&&) = default;
 	device_image &operator=(device_image&&) = default;
 
-
-	VkFormat get_format() const override final { return static_cast<const vk_image_base<dimensions>&>(*this).get_format(); }
-	VkImage get_image_handle() const override final { return *this; }
+	format get_format() const override final {
+		return static_cast<format>(get_image_handle().get_format());
+	}
+	const vk::vk_image& get_image_handle() const override final { return *this; }
 };
 
 /**
@@ -64,24 +80,25 @@ public:
  */
 template <class allocation_policy>
 class device_image<2, allocation_policy> : public device_image_base,
-	public device_resource<vk_image<2>, allocation_policy> 
+	public device_resource<vk::vk_image, allocation_policy>
 {
-	using Base = device_resource<vk_image<2>, allocation_policy>;
+	using Base = device_resource<vk::vk_image, allocation_policy>;
+	using size_type = glm::uvec2;
 
 private:
 	template <typename Image>
 	static void copy_surface_to_image(const ste_context &ctx,
 									  const Image &image,
 									  const gli::texture2d &surface,
-									  const VkFormat &format,
+									  const format &image_format,
 									  const ste_queue_selector<> &selector,
 									  int image_texel_bytes) {
 		auto layers = surface.layers();
 
 		// Create staging image
 		device_image<2, device_resource_allocation_policy_host_visible_coherent>
-			staging_image(ctx, selector, vk_image_initial_layout::preinitialized,
-						  format, surface.extent(), VK_IMAGE_USAGE_TRANSFER_SRC_BIT,
+			staging_image(ctx, image_initial_layout::preinitialized,
+						  image_format, surface.extent(), image_usage::transfer_src,
 						  1, layers, false, false);
 		auto staging_image_bytes = staging_image.get_underlying_memory().get_size();
 		auto mmap_u8_ptr = staging_image.get_underlying_memory().mmap<glm::u8>(0, staging_image_bytes);
@@ -129,8 +146,8 @@ private:
 					auto recorder = command_buffer.record();
 
 					// Move to transfer layouts
-					auto barrier = pipeline_barrier(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-													VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+					auto barrier = pipeline_barrier(pipeline_stage::top_of_pipe,
+													pipeline_stage::top_of_pipe,
 													std::vector<image_memory_barrier>{
 						image_memory_barrier(staging_image,
 											 m == 0 ? VK_IMAGE_LAYOUT_PREINITIALIZED : VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
@@ -151,8 +168,6 @@ private:
 				}
 
 				ste_device_queue::submit_batch(std::move(batch));
-
-				image.image_layout.layout.store(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, std::memory_order_release);
 			});
 
 			// Wait for completion
@@ -182,8 +197,8 @@ private:
 
 				for (; m < mip_levels; ++m) {
 					// Move to transfer layouts
-					auto barrier = pipeline_barrier(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-													VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+					auto barrier = pipeline_barrier(pipeline_stage::top_of_pipe,
+													pipeline_stage::top_of_pipe,
 													{ image_memory_barrier(image,
 																			  VK_IMAGE_LAYOUT_UNDEFINED,
 																			  VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
@@ -202,13 +217,13 @@ private:
 					range.srcSubresource = { aspect, m - 1, 0, 1 };
 					range.dstSubresource = { aspect, m, 0, 1 };
 					range.srcOffsets[1] = {
-						std::max(1, size.x >> (m - 1)),
-						std::max(1, size.y >> (m - 1)),
+						std::max<std::int32_t>(1, size.x >> (m - 1)),
+						std::max<std::int32_t>(1, size.y >> (m - 1)),
 						1
 					};
 					range.dstOffsets[1] = {
-						std::max(1, size.x >> m),
-						std::max(1, size.y >> m),
+						std::max<std::int32_t>(1, size.x >> m),
+						std::max<std::int32_t>(1, size.y >> m),
 						1
 					};
 
@@ -219,8 +234,8 @@ private:
 				}
 
 				// Move last mipmap to src optimal layout
-				auto barrier = pipeline_barrier(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-												VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+				auto barrier = pipeline_barrier(pipeline_stage::top_of_pipe,
+												pipeline_stage::top_of_pipe,
 												image_memory_barrier(image,
 																	 VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 																	 VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
@@ -231,41 +246,39 @@ private:
 			}
 
 			ste_device_queue::submit_batch(std::move(batch));
-
-			image.image_layout.layout.store(VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, std::memory_order_release);
 		});
 
 		enqueue_future.get();
 	}
 
 public:
-	template <VkFormat format>
+	template <format image_format>
 	static auto create_image_2d(const ste_context &ctx,
 								gli::texture2d &&surface,
-								const VkImageUsageFlags &usage,
+								const image_usage &usage,
 								bool generate_mipmaps) {
-		using image_element_type = typename vk_format_traits<format>::element_type;
-		static constexpr int image_texel_bytes = vk_format_traits<format>::texel_bytes;
-		static constexpr gli::format image_gli_format = vk_format_traits<format>::gli_format;
+		using image_element_type = typename format_traits<image_format>::element_type;
+		static constexpr int image_texel_bytes = format_traits<image_format>::texel_bytes;
+		static constexpr gli::format image_gli_format = format_traits<image_format>::gli_format;
 
 		auto src_format = surface.format();
 		std::uint32_t mip_levels = generate_mipmaps ? gli::levels(surface.extent()) : surface.levels();
 		auto layers = surface.layers();
 		auto size = surface.extent();
 		if (src_format != image_gli_format) {
-			throw device_image_format_exception("Input format is different from specified image format");
+			throw device_image_format_exception("Input image_format is different from specified image format");
 		}
 
 		auto selector = make_primary_queue_selector();
 
 		// Staging area
 		device_image<2, device_resource_allocation_policy_device>
-			image(ctx, selector, vk_image_initial_layout::unused,
-				  format, size, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT | usage,
+			image(ctx, image_initial_layout::unused,
+				  image_format, size, image_usage::transfer_dst | image_usage::transfer_src | usage,
 				  mip_levels, layers);
 
 		// Copy from surface
-		copy_surface_to_image(ctx, image, surface, format, selector, image_texel_bytes);
+		copy_surface_to_image(ctx, image, surface, image_format, selector, image_texel_bytes);
 
 		// Generate remaining mipmaps, as needed
 		std::uint32_t m = surface.levels();
@@ -282,35 +295,37 @@ public:
 	}
 
 public:
-	template <typename selector_policy, typename ... Args>
-	device_image(std::enable_if_t<std::is_constructible_v<vk_image<2>, const vk_logical_device&, const vk_image_initial_layout &, Args...>, const ste_context &> &ctx,
-				 const ste_queue_selector<selector_policy> &initial_queue_selector,
-				 const vk_image_initial_layout &layout,
-				 Args&&... args)
-		: device_image_base(ctx.device().select_queue(initial_queue_selector)->queue_descriptor().family,
-							layout),
-		Base(ctx,
-			 layout,
-			 std::forward<Args>(args)...)
-	{}
-	template <typename ... Args>
-	device_image(std::enable_if_t<std::is_constructible_v<vk_image<2>, const vk_logical_device&, const vk_image_initial_layout &, Args...>, const ste_context &> &ctx,
-				 const device_resource_queue_ownership::family_t &family,
-				 const vk_image_initial_layout &layout,
-				 Args&&... args)
-		: device_image_base(family,
-							layout),
-		Base(ctx,
-			 layout,
-			 std::forward<Args>(args)...)
+	device_image(const ste_context &ctx,
+				 const image_initial_layout &layout,
+				 const format &image_format,
+				 const size_type &size,
+				 const image_usage &usage,
+				 std::uint32_t mips = 1,
+				 std::uint32_t layers = 1,
+				 bool supports_cube_views = false,
+				 bool optimal_tiling = true,
+				 bool sparse = false)
+		: Base(ctx,
+			   layout,
+			   static_cast<VkFormat>(image_format),
+			   2,
+			   glm::uvec3(size.x, size.y, 1),
+			   static_cast<VkImageUsageFlags>(usage),
+			   mips,
+			   layers,
+			   supports_cube_views,
+			   optimal_tiling,
+			   sparse)
 	{}
 	~device_image() noexcept {}
 
 	device_image(device_image&&) = default;
 	device_image &operator=(device_image&&) = default;
 
-	VkFormat get_format() const override final { return static_cast<const vk_image_base<2>&>(*this).get_format(); }
-	VkImage get_image_handle() const override final { return *this; };
+	format get_format() const override final {
+		return static_cast<format>(get_image_handle().get_format());
+	}
+	const vk::vk_image& get_image_handle() const override final { return *this; };
 };
 
 }

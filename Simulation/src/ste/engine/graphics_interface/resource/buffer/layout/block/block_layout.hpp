@@ -6,8 +6,8 @@
 #include <stdafx.hpp>
 #include <block_layout_element.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 template <std::size_t base_alignment, typename... Ts>
 struct block_layout {

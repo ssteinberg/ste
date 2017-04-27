@@ -10,15 +10,15 @@
 #include <ste_engine.hpp>
 #include <vk_exception.hpp>
 
-namespace StE {
+namespace ste {
 
 template <typename Types>
 class ste_context_impl {
 public:
 	using context_types = Types;
 
-	using gl_device_t = GL::ste_device;
-	using gl_context_t = GL::ste_gl_context;
+	using gl_device_t = gl::ste_device;
+	using gl_context_t = gl::ste_gl_context;
 
 private:
 	ste_engine_impl<Types> &engine_reference;

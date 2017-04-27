@@ -7,8 +7,8 @@
 #include <typelist.hpp>
 #include <generate_array.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 template <typename... Ts>
 struct vertex_input_layout {

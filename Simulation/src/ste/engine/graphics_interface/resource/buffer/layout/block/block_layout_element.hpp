@@ -7,8 +7,8 @@
 #include <ste_type_traits.hpp>
 #include <block_layout_common.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 namespace _detail {
 

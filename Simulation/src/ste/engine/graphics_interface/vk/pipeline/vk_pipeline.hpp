@@ -10,8 +10,10 @@
 #include <optional.hpp>
 #include <allow_type_decay.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
+
+namespace vk {
 
 class vk_pipeline : public allow_type_decay<vk_pipeline, VkPipeline> {
 private:
@@ -24,7 +26,7 @@ protected:
 	vk_pipeline(const vk_logical_device &device)
 		: device(device)
 	{}
-	
+
 public:
 	virtual ~vk_pipeline() noexcept {
 		destroy_pipeline();
@@ -42,6 +44,8 @@ public:
 
 	auto& get() const { return pipeline.get(); }
 };
+
+}
 
 }
 }

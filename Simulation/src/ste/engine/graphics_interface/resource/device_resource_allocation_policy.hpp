@@ -5,8 +5,8 @@
 
 #include <vulkan/vulkan.h>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 struct device_resource_allocation_policy {
 	virtual ~device_resource_allocation_policy() noexcept {}

@@ -15,8 +15,10 @@
 #include <vector>
 #include <functional>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
+
+namespace vk {
 
 class vk_queue {
 private:
@@ -28,9 +30,9 @@ public:
 		: queue_family(queue_family)
 	{
 		VkQueue q;
-		vkGetDeviceQueue(device, 
-						 static_cast<std::uint32_t>(queue_family), 
-						 queue_index, 
+		vkGetDeviceQueue(device,
+						 static_cast<std::uint32_t>(queue_family),
+						 queue_index,
 						 &q);
 
 		this->queue = q;
@@ -51,7 +53,7 @@ public:
 
 	/**
 	*	@brief	Submits one or more command buffers for execution on the queue
-	*	
+	*
 	*	@param	command_buffers		Command buffers to submit
 	*	@param	wait_semaphores		Array of pairs of semaphores upon which to wait before execution, and corresponsing pipeline
 	*								stages at which the wait occurs
@@ -68,18 +70,18 @@ public:
 		std::vector<VkSemaphore> signal;
 
 		cb.resize(command_buffers.size());
-		for (std::size_t i=0;i<command_buffers.size();++i)
+		for (std::size_t i = 0; i < command_buffers.size(); ++i)
 			cb[i] = command_buffers[i];
 
 		wait.resize(wait_semaphores.size());
 		stages.resize(wait_semaphores.size());
-		for (std::size_t i = 0; i<wait_semaphores.size(); ++i) {
+		for (std::size_t i = 0; i < wait_semaphores.size(); ++i) {
 			wait[i] = wait_semaphores[i].first;
 			stages[i] = wait_semaphores[i].second;
 		}
 
 		signal.resize(signal_semaphores.size());
-		for (std::size_t i = 0; i<signal_semaphores.size(); ++i)
+		for (std::size_t i = 0; i < signal_semaphores.size(); ++i)
 			signal[i] = signal_semaphores[i];
 
 		VkSubmitInfo info = {};
@@ -117,6 +119,8 @@ public:
 
 	operator VkQueue() const { return get_queue(); }
 };
+
+}
 
 }
 }

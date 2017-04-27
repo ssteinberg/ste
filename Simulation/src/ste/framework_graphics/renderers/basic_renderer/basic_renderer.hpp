@@ -13,14 +13,14 @@
 
 #include <memory>
 
-namespace StE {
+namespace ste {
 namespace Graphics {
 
 class basic_renderer : public rendering_system {
 	using Base = rendering_system;
 
 private:
-	using FbClearTask = StE::Graphics::fb_clear_dispatch<>;
+	using FbClearTask = ste::Graphics::fb_clear_dispatch<>;
 
 private:
 	const ste_engine_control &ctx;

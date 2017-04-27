@@ -6,15 +6,15 @@
 #include <vulkan/vulkan.h>
 #include <command.hpp>
 #include <vk_query_pool.hpp>
-#include <vk_buffer_base.hpp>
+#include <vk_buffer.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 class cmd_copy_query_pool_results : public command {
 private:
-	const vk_query_pool &pool;
-	VkBuffer buffer;
+	std::reference_wrapper<const vk::vk_query_pool> pool;
+	std::reference_wrapper<const vk::vk_buffer> buffer;
 	std::uint32_t first;
 	std::uint32_t count;
 	std::uint64_t offset;
@@ -22,8 +22,8 @@ private:
 	VkQueryResultFlags flags;
 
 public:
-	cmd_copy_query_pool_results(const vk_query_pool &pool,
-								const vk_buffer_base &buffer,
+	cmd_copy_query_pool_results(const vk::vk_query_pool &pool,
+								const vk::vk_buffer &buffer,
 								std::uint32_t first_query,
 								std::uint32_t queries_count,
 								std::uint64_t buffer_offset,
@@ -42,10 +42,10 @@ public:
 private:
 	void operator()(const command_buffer &command_buffer, command_recorder &) const override final {
 		vkCmdCopyQueryPoolResults(command_buffer,
-								  pool,
+								  pool.get(),
 								  first,
 								  count,
-								  buffer,
+								  buffer.get(),
 								  offset,
 								  stride,
 								  flags);

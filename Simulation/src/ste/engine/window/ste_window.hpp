@@ -13,7 +13,7 @@
 #include <ste_window_exceptions.hpp>
 #include <ste_window_signals.hpp>
 
-namespace StE {
+namespace ste {
 
 class ste_window {
 private:

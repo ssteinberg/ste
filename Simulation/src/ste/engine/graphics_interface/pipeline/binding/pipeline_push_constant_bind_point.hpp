@@ -10,8 +10,8 @@
 #include <pipeline_push_constants_layout.hpp>
 #include <push_constant_descriptor.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 class pipeline_push_constant_bind_point : public pipeline_bind_point_base {
 	using Base = pipeline_bind_point_base;

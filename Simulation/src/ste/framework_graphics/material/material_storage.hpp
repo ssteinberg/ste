@@ -11,7 +11,7 @@
 #include <memory>
 #include <type_traits>
 
-namespace StE {
+namespace ste {
 namespace Graphics {
 
 class material_storage : public Core::resource_storage_stable<material_descriptor> {

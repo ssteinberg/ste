@@ -18,9 +18,9 @@
 //#include <cstring>
 //#include <sstream>
 //
-//using namespace StE::Graphics;
+//using namespace ste::Graphics;
 //
-//debug_gui::debug_gui(const ste_engine_control &ctx, profiler *prof, const StE::Text::font &default_font, const camera *cam) : ctx(ctx), prof(prof), cam(cam) {
+//debug_gui::debug_gui(const ste_engine_control &ctx, profiler *prof, const ste::text::font &default_font, const camera *cam) : ctx(ctx), prof(prof), cam(cam) {
 //	assert(prof);
 //
 //	ImGuiIO& io = ImGui::GetIO();
@@ -91,10 +91,10 @@
 //		if (cam) {
 //			std::stringstream camera_pos_str;
 //			print_vec(camera_pos_str, cam->get_position());
-//			ImGui::Text(camera_pos_str.str().data());
+//			ImGui::text(camera_pos_str.str().data());
 //		}
 //		ImGui::SameLine(0, 75);
-//		ImGui::Text(Core::GL::gl_utils::get_renderer().data());
+//		ImGui::text(Core::gl::gl_utils::get_renderer().data());
 //		
 //		ImGui::PlotTimeline(times);
 //	}

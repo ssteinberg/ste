@@ -8,8 +8,8 @@
 
 #include <pipeline_layout_attachment_location.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 struct ste_shader_stage_attachment : ste_shader_stage_variable_layout_validator {
 	pipeline_layout_attachment_location location;

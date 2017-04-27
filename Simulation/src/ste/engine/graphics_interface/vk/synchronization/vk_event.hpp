@@ -12,8 +12,10 @@
 
 #include <optional.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
+
+namespace vk {
 
 class vk_event : public ste_resource_pool_resetable_trait<const vk_logical_device &> {
 private:
@@ -87,6 +89,8 @@ public:
 
 	operator VkEvent() const { return get_event(); }
 };
+
+}
 
 }
 }

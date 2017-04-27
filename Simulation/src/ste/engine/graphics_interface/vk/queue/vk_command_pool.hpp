@@ -14,10 +14,12 @@
 #include <vector>
 #include <allow_type_decay.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
-class vk_command_pool : 
+namespace vk {
+
+class vk_command_pool :
 	public ste_resource_pool_resetable_trait<const vk_logical_device &, std::uint32_t, VkCommandPoolCreateFlags>,
 	public allow_type_decay<vk_command_pool, VkCommandPool>
 {
@@ -26,7 +28,7 @@ private:
 	std::reference_wrapper<const vk_logical_device> device;
 
 public:
-	vk_command_pool(const vk_logical_device &device, 
+	vk_command_pool(const vk_logical_device &device,
 					const ste_queue_family &queue_family,
 					VkCommandPoolCreateFlags flags = 0) : device(device) {
 		VkCommandPoolCreateInfo create_info = {};
@@ -103,6 +105,8 @@ public:
 
 	auto& get() const { return pool.get(); }
 };
+
+}
 
 }
 }

@@ -5,7 +5,7 @@
 
 #include <stdafx.hpp>
 
-namespace StE {
+namespace ste {
 namespace Graphics {
 
 class human_vision_properties {

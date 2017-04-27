@@ -6,7 +6,7 @@
 
 #include <ste_window.hpp>
 
-using namespace StE;
+using namespace ste;
 
 ste_window_signals::ste_window_signals(const ste_window *win) {
 	GLFWwindow* winptr = win->get_window_handle();

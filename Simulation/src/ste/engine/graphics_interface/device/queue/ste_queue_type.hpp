@@ -6,8 +6,8 @@
 #include <stdafx.hpp>
 #include <vulkan/vulkan.h>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 enum class ste_queue_type {
 	all,

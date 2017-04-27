@@ -10,8 +10,8 @@
 #include <turbojpeg.h>
 #include <tga.h>
 
-using namespace StE::Text;
-using namespace StE::Resource;
+using namespace ste::text;
+using namespace ste::resource;
 
 void surface_io::write_png(const boost::filesystem::path &file_name, const char *image_data, int components, int width, int height) {
 	if (components != 1 && components != 3 && components != 4) {
@@ -323,7 +323,7 @@ gli::texture2d surface_io::load_jpeg(const boost::filesystem::path &path, bool s
 	std::ifstream fs(path.string(), std::ios::in);
 	if (!fs) {
 		using namespace Attributes;
-		ste_log_error() << Text::attributed_string("Can't open JPEG ") + i(path.string()) + ": " + std::strerror(errno) << std::endl;
+		ste_log_error() << text::attributed_string("Can't open JPEG ") + i(path.string()) + ": " + std::strerror(errno) << std::endl;
 		throw resource_io_error("Could not open file");
 	}
 

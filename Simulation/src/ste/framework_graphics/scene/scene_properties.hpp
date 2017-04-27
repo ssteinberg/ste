@@ -7,7 +7,7 @@
 #include <material_layer_storage.hpp>
 #include <light_storage.hpp>
 
-namespace StE {
+namespace ste {
 namespace Graphics {
 
 class scene_properties {

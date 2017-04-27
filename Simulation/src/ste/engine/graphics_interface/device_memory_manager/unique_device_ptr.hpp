@@ -8,13 +8,13 @@
 
 #include <optional.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 template <typename Heap, typename Ptr>
 class unique_device_ptr {
 private:
-	using device_memory_ptr_t = vk_device_memory*;
+	using device_memory_ptr_t = vk::vk_device_memory*;
 
 public:
 	using heap_type = Heap;

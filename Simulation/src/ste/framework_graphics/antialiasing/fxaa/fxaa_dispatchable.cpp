@@ -6,7 +6,7 @@
 //
 //#include <gl_current_context.hpp>
 //
-//using namespace StE::Graphics;
+//using namespace ste::Graphics;
 //
 //void fxaa_dispatchable::set_context_state() const {
 //	using namespace Core;
@@ -18,5 +18,5 @@
 //}
 //
 //void fxaa_dispatchable::dispatch() const {
-//	Core::GL::gl_current_context::get()->draw_arrays(GL_TRIANGLE_STRIP, 0, 4);
+//	Core::gl::gl_current_context::get()->draw_arrays(GL_TRIANGLE_STRIP, 0, 4);
 //}

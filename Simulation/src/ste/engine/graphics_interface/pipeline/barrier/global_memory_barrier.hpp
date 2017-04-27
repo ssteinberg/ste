@@ -7,8 +7,8 @@
 
 #include <vulkan/vulkan.h>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 class global_memory_barrier {
 private:

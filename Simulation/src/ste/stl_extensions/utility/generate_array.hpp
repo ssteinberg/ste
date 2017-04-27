@@ -5,7 +5,7 @@
 
 #include <array>
 
-namespace StE {
+namespace ste {
 
 template<typename T, T... args> struct _generate_array_holder { static constexpr std::array<T, sizeof...(args)> data = { args... }; };
 template<typename T, T... args>

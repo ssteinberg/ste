@@ -15,8 +15,10 @@
 #include <memory>
 #include <allow_type_decay.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
+
+namespace vk {
 
 class vk_instance : public allow_type_decay<vk_instance, VkInstance> {
 private:
@@ -28,7 +30,7 @@ public:
 	vk_instance(const char *app_name,
 				unsigned app_version,
 				const std::vector<const char*> &instance_extensions,
-				const std::vector<const char*> &instance_layers) 
+				const std::vector<const char*> &instance_layers)
 		: instance_extensions(instance_extensions), instance_layers(instance_layers)
 	{
 		VkApplicationInfo vk_app_info = {};
@@ -76,6 +78,8 @@ public:
 	auto &enabled_layers() const { return instance_layers; }
 	auto &enabled_extensions() const { return instance_extensions; }
 };
+
+}
 
 }
 }

@@ -13,8 +13,8 @@
 #include <utility>
 #include <string>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 // Match quality
 // 0 - perfect match

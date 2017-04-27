@@ -14,10 +14,10 @@
 
 #include <stdexcept>
 
-using namespace StE::Text;
+using namespace ste::text;
 
-namespace StE {
-namespace Text {
+namespace ste {
+namespace text {
 
 struct text_glyph_pair_key {
 	wchar_t left;
@@ -35,20 +35,20 @@ struct text_glyph_pair_key {
 
 namespace std {
 
-template <> struct hash<StE::Text::text_glyph_pair_key> {
-	size_t inline operator()(const StE::Text::text_glyph_pair_key &x) const {
+template <> struct hash<ste::text::text_glyph_pair_key> {
+	size_t inline operator()(const ste::text::text_glyph_pair_key &x) const {
 		auto h1 = std::hash<decltype(x.right)>()(x.right);
 		auto h2 = std::hash<decltype(x.left)>()(x.left);
 		auto h3 = std::hash<decltype(x.pixel_size)>()(x.pixel_size);
-		return StE::hash_combine(h1, StE::hash_combine(h2, h3));
+		return ste::hash_combine(h1, ste::hash_combine(h2, h3));
 	}
 };
 
 }
 
 
-namespace StE {
-namespace Text {
+namespace ste {
+namespace text {
 
 class glyph_factory_ft_lib {
 private:

@@ -14,7 +14,7 @@
 
 #include <log_entry.hpp>
 
-namespace StE {
+namespace ste {
 
 class log_sink {
 private:

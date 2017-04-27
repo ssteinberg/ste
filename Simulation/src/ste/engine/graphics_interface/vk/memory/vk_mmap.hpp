@@ -12,8 +12,10 @@
 #include <functional>
 #include <vector>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
+
+namespace vk {
 
 template <typename T>
 class vk_mmap {
@@ -66,7 +68,7 @@ public:
 	void flush_ranges(const std::vector<vk_mapped_memory_range> &ranges) const {
 		std::vector<VkMappedMemoryRange> mapped_ranges = vk_mapped_memory_ranges(ranges);
 
-		vk_result res = vkFlushMappedMemoryRanges(memory.get_creating_device(), 
+		vk_result res = vkFlushMappedMemoryRanges(memory.get_creating_device(),
 												  mapped_ranges.size(),
 												  mapped_ranges.data());
 		if (!res) {
@@ -102,6 +104,8 @@ public:
 	operator map_pointer() { return get_mapped_ptr(); }
 	operator map_pointer() const { return get_mapped_ptr(); }
 };
+
+}
 
 }
 }

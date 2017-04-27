@@ -11,7 +11,7 @@
 
 #include <glm/gtx/dual_quaternion.hpp>
 
-namespace StE {
+namespace ste {
 namespace Graphics {
 
 class transforms_ring_buffers {

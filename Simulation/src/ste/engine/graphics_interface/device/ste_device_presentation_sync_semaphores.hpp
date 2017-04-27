@@ -5,8 +5,8 @@
 
 #include <ste_device_sync_primitives_pools.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 struct ste_device_presentation_sync_semaphores {
 	using semaphore_t = ste_device_sync_primitives_pools::semaphore_pool_t::resource_t;

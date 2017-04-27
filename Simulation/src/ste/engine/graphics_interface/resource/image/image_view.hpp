@@ -8,25 +8,25 @@
 #include <device_image_base.hpp>
 #include <allow_type_decay.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 class image_view_generic {
 public:
 	virtual ~image_view_generic() noexcept {}
 
 	virtual VkImageView get_image_view_handle() const = 0;
-	virtual vk_image_type get_image_type() const = 0;
-	virtual VkFormat get_format() const = 0;
+	virtual image_type get_image_type() const = 0;
+	virtual format get_format() const = 0;
 };
 
-template <vk_image_type type>
+template <image_type type>
 class image_view
 	: public image_view_generic,
-	public allow_type_decay<image_view<type>, vk_image_view<type>>
+	public allow_type_decay<image_view<type>, vk::vk_image_view<type>>
 {
 private:
-	vk_image_view<type> view;
+	vk::vk_image_view<type> view;
 
 public:
 	template <typename... Ts>
@@ -38,11 +38,11 @@ public:
 	VkImageView get_image_view_handle() const override final {
 		return view;
 	}
-	vk_image_type get_image_type() const override final {
+	image_type get_image_type() const override final {
 		return type;
 	}
-	VkFormat get_format() const override final {
-		return view.get_format();
+	format get_format() const override final {
+		return static_cast<format>(view.get_format());
 	}
 
 	auto& get() const { return view; }

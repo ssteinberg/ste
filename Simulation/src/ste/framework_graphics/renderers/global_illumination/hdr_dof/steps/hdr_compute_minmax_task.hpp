@@ -8,7 +8,7 @@
 
 #include <gl_current_context.hpp>
 
-namespace StE {
+namespace ste {
 namespace Graphics {
 
 class hdr_compute_minmax_task : public gpu_dispatchable {

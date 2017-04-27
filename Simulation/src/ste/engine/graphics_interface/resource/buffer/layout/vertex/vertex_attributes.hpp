@@ -4,15 +4,16 @@
 #pragma once
 
 #include <stdafx.hpp>
+#include <format.hpp>
 #include <vertex_input_layout.hpp>
 
-#include <vk_format_type_traits.hpp>
+#include <format_type_traits.hpp>
 #include <generate_array.hpp>
 
 #include <vector>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 namespace _internal {
 
@@ -33,8 +34,8 @@ private:
 	template<int index>
 	struct elements_format_populator {
 		using ValT = typename V::template type_at<index>;
-		static constexpr VkFormat value = vk_format_for_type_v<ValT>;
-		static_assert(value != 0, "ValT is NOT a valid type");
+		static constexpr format value = format_for_type_v<ValT>;
+		static_assert(value != format::undefined, "ValT is NOT a valid type");
 	};
 
 	using sizes_arr = typename generate_array<count, sizes_populator>::result;
@@ -46,7 +47,7 @@ public:
 
 	size_type attrib_size(int attrib) const noexcept { return sizes_arr::data[attrib]; }
 	size_t offset_to_attrib(int attrib) const noexcept { return vertex_input_offset_of<V>(attrib); }
-	VkFormat attrib_format(int attrib) const noexcept { return element_type_names_arr::data[attrib]; }
+	format attrib_format(int attrib) const noexcept { return element_type_names_arr::data[attrib]; }
 
 	auto vk_vertex_binding(std::uint32_t binding_index = 0) const noexcept {
 		VkVertexInputBindingDescription desc = {};
@@ -64,7 +65,7 @@ public:
 			VkVertexInputAttributeDescription desc = {};
 			desc.location = j;
 			desc.binding = binding_index;
-			desc.format = attrib_format(j);
+			desc.format = static_cast<VkFormat>(attrib_format(j));
 			desc.offset = offset_to_attrib(j);
 
 			vertex_input_attribute_descriptors.push_back(desc);

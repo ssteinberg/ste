@@ -5,8 +5,10 @@
 
 #include <vulkan/vulkan.h>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
+
+namespace vk {
 
 struct vk_depth_op_descriptor {
 	bool depth_test_enable{ false };
@@ -18,6 +20,8 @@ struct vk_depth_op_descriptor {
 						   bool write = true)
 		: depth_test_enable(true), depth_write_enable(write), depth_compare_op(depth_compare_op) {}
 };
+
+}
 
 }
 }

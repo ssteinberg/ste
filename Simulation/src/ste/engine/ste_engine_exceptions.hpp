@@ -5,7 +5,7 @@
 
 #include <stdexcept>
 
-namespace StE {
+namespace ste {
 
 class ste_engine_exception : public std::runtime_error {
 	using Base = std::runtime_error;

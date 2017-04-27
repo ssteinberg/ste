@@ -9,7 +9,7 @@
 #include <tuple>
 #include <iostream>
 
-namespace StE {
+namespace ste {
 
 template<class Ch, class Tr, class Tuple, std::size_t... Is>
 void print_tuple_impl(std::basic_ostream<Ch,Tr>& os,

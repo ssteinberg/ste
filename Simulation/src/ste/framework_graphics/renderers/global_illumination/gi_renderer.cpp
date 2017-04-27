@@ -10,7 +10,7 @@
 //
 //#include <gl_current_context.hpp>
 //
-//using namespace StE::Graphics;
+//using namespace ste::Graphics;
 //
 //gi_renderer::gi_renderer(const ste_engine_control &ctx,
 //					   const camera *cam,

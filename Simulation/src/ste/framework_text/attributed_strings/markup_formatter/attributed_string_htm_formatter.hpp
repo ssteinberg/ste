@@ -8,8 +8,8 @@
 #include <attrib.hpp>
 #include <attributed_string_common.hpp>
 
-namespace StE {
-namespace Text {
+namespace ste {
+namespace text {
 
 template <typename CharT>
 class attributed_string_htm_formatter {

@@ -5,7 +5,7 @@
 
 #include <functional>
 
-namespace StE {
+namespace ste {
 
 template <typename T, typename ... Params>
 struct ste_resource_is_constructible {

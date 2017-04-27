@@ -6,7 +6,7 @@
 #include <functional>
 #include <tuple>
 
-namespace StE {
+namespace ste {
 
 namespace _detail {
 

@@ -17,8 +17,10 @@
 #include <istream>
 #include <allow_type_decay.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
+
+namespace vk {
 
 class vk_pipeline_cache : public allow_type_decay<vk_pipeline_cache, VkPipelineCache> {
 private:
@@ -107,7 +109,7 @@ public:
 
 		create(create_info);
 	}
-	vk_pipeline_cache(const vk_logical_device &device, 
+	vk_pipeline_cache(const vk_logical_device &device,
 					  const std::vector<std::reference_wrapper<const vk_pipeline_cache>> &src) : vk_pipeline_cache(device) {
 		assert(src.size() && "Must provide at least a single source cache");
 
@@ -176,6 +178,8 @@ public:
 		return stream;
 	}
 };
+
+}
 
 }
 }

@@ -7,6 +7,7 @@
 #include <ste_context.hpp>
 #include <glyph_factory.hpp>
 #include <font.hpp>
+#include <format.hpp>
 
 #include <device_buffer.hpp>
 #include <device_image.hpp>
@@ -23,8 +24,8 @@
 
 #include <command_recorder.hpp>
 
-namespace StE {
-namespace Text {
+namespace ste {
+namespace text {
 
 class glyph_manager {
 private:
@@ -41,8 +42,8 @@ public:
 	};
 
 	struct glyph_texture {
-		GL::device_image<2> texture;
-		GL::vk_image_view<GL::vk_image_type::image_2d> view;
+		gl::device_image<2> texture;
+		gl::vk::vk_image_view<gl::image_type::image_2d> view;
 
 		glyph_texture() = delete;
 		glyph_texture(glyph_texture&&) = default;
@@ -61,9 +62,9 @@ private:
 
 	std::vector<buffer_glyph_descriptor> pending_glyphs;
 
-	GL::stable_vector<buffer_glyph_descriptor> buffer;
+	gl::stable_vector<buffer_glyph_descriptor> buffer;
 	std::vector<glyph_texture> glyph_textures;
-	GL::vk_sampler text_glyph_sampler;
+	gl::vk::vk_sampler text_glyph_sampler;
 
 private:
 	const glyph_descriptor* glyph_loader(const font &font, wchar_t codepoint) {
@@ -93,11 +94,11 @@ private:
 		if (og.get().glyph_distance_field == nullptr) {
 			return nullptr;
 		}
-		auto image = GL::device_image<2>::create_image_2d<VK_FORMAT_R32_SFLOAT>(context,
+		auto image = gl::device_image<2>::create_image_2d<gl::format::r32_sfloat>(context,
 																				std::move(*og.get().glyph_distance_field),
-																				VK_IMAGE_USAGE_SAMPLED_BIT,
+																				  gl::image_usage::sampled,
 																				false);
-		auto view = GL::vk_image_view<GL::vk_image_type::image_2d>(*image, image->get_format());
+		auto view = gl::vk::vk_image_view<gl::image_type::image_2d>(*image, image->get_format());
 		glyph_textures.push_back(glyph_texture{ std::move(image), std::move(view) });
 
 		glyph_descriptor gd;
@@ -118,11 +119,11 @@ private:
 public:
 	glyph_manager(const ste_context &context)
 		: context(context), 
-		buffer(context, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT),
+		buffer(context, gl::buffer_usage::storage_buffer),
 		text_glyph_sampler(context.device(),
-						   GL::vk_sampler_filtering(VK_FILTER_LINEAR, VK_FILTER_LINEAR), 
-						   GL::vk_sampler_address_mode(VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER),
-						   GL::vk_sampler_anisotropy(16.f))
+						   gl::vk::vk_sampler_filtering(VK_FILTER_LINEAR, VK_FILTER_LINEAR), 
+						   gl::vk::vk_sampler_address_mode(VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER),
+						   gl::vk::vk_sampler_anisotropy(16.f))
 	{}
 
 	const glyph_descriptor* glyph_for_font(const font &font, wchar_t codepoint) {
@@ -143,7 +144,7 @@ public:
 		return factory.read_kerning(font, chars, pixel_size);
 	}
 
-	range<> update_pending_glyphs(GL::command_recorder &recorder) {
+	range<> update_pending_glyphs(gl::command_recorder &recorder) {
 		if (!pending_glyphs.size()) {
 			// Nothing to update
 			return { 0,0 };

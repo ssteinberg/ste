@@ -11,7 +11,7 @@
 #error Unsupported OS
 #endif
 
-namespace StE {
+namespace ste {
 
 class system_times {
 private:

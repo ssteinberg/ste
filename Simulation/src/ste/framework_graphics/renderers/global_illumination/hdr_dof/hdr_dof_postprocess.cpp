@@ -17,7 +17,7 @@
 //
 //#include <sampler.hpp>
 //
-//using namespace StE::Graphics;
+//using namespace ste::Graphics;
 //
 //hdr_dof_postprocess::hdr_dof_postprocess(const ste_engine_control &context,
 //										 const deferred_gbuffer *gbuffer) : gbuffer(gbuffer), ctx(context),
@@ -32,23 +32,23 @@
 //	hdr_vision_properties_sampler.set_wrap_s(Core::texture_wrap_mode::ClampToEdge);
 //
 //	std::int32_t big_float_i = 0x7FFFFFFF;
-//	hdr_bokeh_param_buffer_eraser = std::make_unique<StE::Core::pixel_buffer_object<std::int32_t>>(std::vector<std::int32_t>{ big_float_i, 0 });
+//	hdr_bokeh_param_buffer_eraser = std::make_unique<ste::Core::pixel_buffer_object<std::int32_t>>(std::vector<std::int32_t>{ big_float_i, 0 });
 //
 //	gli::texture1d hdr_human_vision_properties_data(gli::format::FORMAT_RGBA32_SFLOAT_PACK32, glm::tvec1<std::size_t>{ 4096 }, 1);
 //	{
 //		glm::vec4 *d = reinterpret_cast<glm::vec4*>(hdr_human_vision_properties_data.data());
 //		for (int i = 0; i < hdr_human_vision_properties_data.extent().x; ++i, ++d) {
 //			float x = static_cast<float>(i) / static_cast<float>(hdr_human_vision_properties_data.extent().x);
-//			float l = glm::mix(StE::Graphics::human_vision_properties::min_luminance,
+//			float l = glm::mix(ste::Graphics::human_vision_properties::min_luminance,
 //							   vision_properties_max_lum,
 //							   x);
-//			*d = {	StE::Graphics::human_vision_properties::scotopic_vision(l),
-//					StE::Graphics::human_vision_properties::mesopic_vision(l),
-//					StE::Graphics::human_vision_properties::monochromaticity(l),
-//					StE::Graphics::human_vision_properties::visual_acuity(l) };
+//			*d = {	ste::Graphics::human_vision_properties::scotopic_vision(l),
+//					ste::Graphics::human_vision_properties::mesopic_vision(l),
+//					ste::Graphics::human_vision_properties::monochromaticity(l),
+//					ste::Graphics::human_vision_properties::visual_acuity(l) };
 //		}
 //	}
-//	hdr_vision_properties_texture = std::make_unique<StE::Core::texture_1d>(hdr_human_vision_properties_data, false);
+//	hdr_vision_properties_texture = std::make_unique<ste::Core::texture_1d>(hdr_human_vision_properties_data, false);
 //
 //	task = make_gpu_task("dof_bokeh", create_dispatchable(), nullptr, create_sub_tasks());
 //
@@ -118,21 +118,21 @@
 //	if (size.x <= 0 || size.y <= 0)
 //		return;
 //
-//	hdr_image = std::make_unique<Core::texture_2d>(gli::format::FORMAT_RGBA16_SFLOAT_PACK16, StE::Core::texture_2d::size_type(size), 1);
-//	hdr_final_image = std::make_unique<Core::texture_2d>(gli::format::FORMAT_RGB16_SFLOAT_PACK16, StE::Core::texture_2d::size_type(size), 1);
-//	hdr_bloom_image = std::make_unique<Core::texture_2d>(gli::format::FORMAT_RGBA16_SFLOAT_PACK16, StE::Core::texture_2d::size_type(size), 1);
+//	hdr_image = std::make_unique<Core::texture_2d>(gli::format::FORMAT_RGBA16_SFLOAT_PACK16, ste::Core::texture_2d::size_type(size), 1);
+//	hdr_final_image = std::make_unique<Core::texture_2d>(gli::format::FORMAT_RGB16_SFLOAT_PACK16, ste::Core::texture_2d::size_type(size), 1);
+//	hdr_bloom_image = std::make_unique<Core::texture_2d>(gli::format::FORMAT_RGBA16_SFLOAT_PACK16, ste::Core::texture_2d::size_type(size), 1);
 //
 //	fbo_hdr_final[0] = (*hdr_final_image)[0];
 //	fbo_hdr[0] = (*hdr_image)[0];
 //	fbo_hdr[1] = (*hdr_bloom_image)[0];
 //
-//	hdr_bloom_blurx_image = std::make_unique<Core::texture_2d>(gli::format::FORMAT_RGBA16_SFLOAT_PACK16, StE::Core::texture_2d::size_type(size), 1);
+//	hdr_bloom_blurx_image = std::make_unique<Core::texture_2d>(gli::format::FORMAT_RGBA16_SFLOAT_PACK16, ste::Core::texture_2d::size_type(size), 1);
 //
 //	fbo_hdr_bloom_blurx_image[0] = (*hdr_bloom_blurx_image)[0];
 //
 //	luminance_size = size / 4;
 //
-//	hdr_lums = std::make_unique<Core::texture_2d>(gli::format::FORMAT_R32_SFLOAT_PACK32, StE::Core::texture_2d::size_type(luminance_size), 1);
+//	hdr_lums = std::make_unique<Core::texture_2d>(gli::format::FORMAT_R32_SFLOAT_PACK32, ste::Core::texture_2d::size_type(luminance_size), 1);
 //
 //	auto hdr_handle = hdr_image->get_texture_handle();
 //	auto hdr_final_handle = hdr_final_image->get_texture_handle(*Core::sampler::sampler_linear_clamp());

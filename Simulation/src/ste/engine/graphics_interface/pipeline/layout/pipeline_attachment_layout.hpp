@@ -6,8 +6,8 @@
 #include <stdafx.hpp>
 #include <ste_shader_stage_attachment.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 /**
 *	@brief	Describes layout of a single output attachment in a pipeline

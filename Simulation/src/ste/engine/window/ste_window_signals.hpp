@@ -8,7 +8,7 @@
 
 #include <pointer.hpp>
 
-namespace StE {
+namespace ste {
 
 class ste_window;
 

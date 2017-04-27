@@ -8,7 +8,7 @@
 
 #include <function_traits.hpp>
 
-namespace StE {
+namespace ste {
 
 /**
  *	@brief	Ultimate stores an expression and invokes it upon destruction.

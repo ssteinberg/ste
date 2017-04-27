@@ -17,12 +17,12 @@
 #include <allow_type_decay.hpp>
 #include <vector>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 class ste_device_queue;
 
-class command_buffer : public allow_type_decay<command_buffer, vk_command_buffer> {
+class command_buffer : public allow_type_decay<command_buffer, vk::vk_command_buffer> {
 	friend command_recorder;
 	friend ste_device_queue;
 
@@ -30,15 +30,15 @@ public:
 	using commands_t = std::vector<host_command>;
 
 protected:
-	vk_command_buffers buffers;
-	vk_command_buffer_type type;
+	vk::vk_command_buffers buffers;
+	vk::vk_command_buffer_type type;
 	const ste_queue_descriptor queue_descriptor;
 
 	mutable commands_t commands;
 
 protected:
-	command_buffer(const vk_command_pool &pool,
-				   const vk_command_buffer_type &type,
+	command_buffer(const vk::vk_command_pool &pool,
+				   const vk::vk_command_buffer_type &type,
 				   const ste_queue_descriptor &queue_descriptor)
 		: buffers(pool.allocate_buffers(1, type)),
 		type(type),
@@ -58,7 +58,7 @@ protected:
 	void host_commands_reset() const {
 		commands.clear();
 	}
-	void submit_host_commands(const vk_queue &queue) const {
+	void submit_host_commands(const vk::vk_queue &queue) const {
 		for (auto &cmd : commands)
 			cmd(queue);
 		host_commands_reset_on_submit_if_needed();
@@ -105,7 +105,7 @@ namespace _internal {
 
 template <
 	VkCommandBufferUsageFlags flags, 
-	vk_command_buffer_type buffer_type, 
+	vk::vk_command_buffer_type buffer_type,
 	bool resetable,
 	bool oneshot
 >
@@ -116,10 +116,10 @@ class command_buffer_impl : public command_buffer {
 
 	using Base = command_buffer;
 
-	static constexpr vk_command_buffer_type type = buffer_type;
+	static constexpr vk::vk_command_buffer_type type = buffer_type;
 
 protected:
-	command_buffer_impl(const vk_command_pool &pool,
+	command_buffer_impl(const vk::vk_command_pool &pool,
 						const ste_queue_descriptor &queue_descriptor)
 		: Base(pool,
 			   type,
@@ -163,11 +163,11 @@ public:
 };
 
 template <VkCommandBufferUsageFlags flags, bool resetable, bool oneshot>
-class command_buffer_secondary_impl : public _internal::command_buffer_impl<flags, vk_command_buffer_type::secondary, resetable, oneshot> {
+class command_buffer_secondary_impl : public _internal::command_buffer_impl<flags, vk::vk_command_buffer_type::secondary, resetable, oneshot> {
 	template <VkCommandPoolCreateFlags, bool>
 	friend class command_pool;
 	friend command_recorder;
-	using Base = _internal::command_buffer_impl<flags, vk_command_buffer_type::secondary, resetable, oneshot>;
+	using Base = _internal::command_buffer_impl<flags, vk::vk_command_buffer_type::secondary, resetable, oneshot>;
 
 private:
 	using Base::Base;
@@ -214,14 +214,14 @@ private:
 template <bool resetable>
 using command_buffer_primary = _internal::command_buffer_impl<
 	VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT, 
-	vk_command_buffer_type::primary,
+	vk::vk_command_buffer_type::primary,
 	resetable,
 	true
 >;
 template <bool resetable>
 using command_buffer_primary_multishot = _internal::command_buffer_impl<
 	VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT, 
-	vk_command_buffer_type::primary,
+	vk::vk_command_buffer_type::primary,
 	resetable,
 	false
 >;

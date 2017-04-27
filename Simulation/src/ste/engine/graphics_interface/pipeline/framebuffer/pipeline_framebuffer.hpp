@@ -10,8 +10,8 @@
 #include <boost/container/flat_map.hpp>
 #include <optional.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 class pipeline_framebuffer {
 private:

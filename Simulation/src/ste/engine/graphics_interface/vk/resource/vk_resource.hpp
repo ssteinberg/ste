@@ -8,8 +8,10 @@
 #include <vulkan/vulkan.h>
 #include <device_memory_heap.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
+
+namespace vk {
 
 class vk_resource {
 public:
@@ -35,6 +37,8 @@ public:
 											  allocation.get()->get_offset());
 	}
 };
+
+}
 
 }
 }

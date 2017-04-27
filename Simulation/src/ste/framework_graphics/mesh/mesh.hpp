@@ -11,7 +11,7 @@
 #include <vector>
 #include <type_traits>
 
-namespace StE {
+namespace ste {
 namespace Graphics {
 
 class mesh_generic {

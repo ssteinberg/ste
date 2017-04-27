@@ -5,8 +5,8 @@
 
 #include <stdafx.hpp>
 
-namespace StE {
-namespace Resource {
+namespace ste {
+namespace resource {
 
 class surface_convert {
 public:

@@ -10,7 +10,7 @@
 #include <memory>
 #include <functional>
 
-namespace StE {
+namespace ste {
 
 struct ste_resource_dont_defer {};
 struct ste_resource_create_with_lambda {};

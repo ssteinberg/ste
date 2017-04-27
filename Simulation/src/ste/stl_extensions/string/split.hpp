@@ -6,7 +6,7 @@
 #include <string>
 #include <sstream>
 
-namespace StE {
+namespace ste {
 
 /**
  *	@brief	Splits a string into substrings based on a delimiter

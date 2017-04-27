@@ -13,8 +13,10 @@
 #include <optional.hpp>
 #include <allow_type_decay.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
+
+namespace vk {
 
 class vk_descriptor_set : public allow_type_decay<vk_descriptor_set, VkDescriptorSet> {
 	friend class vk_descriptor_pool;
@@ -78,7 +80,7 @@ public:
 			}
 			else {
 				count = static_cast<std::uint32_t>(w.buffer_writes.size());
-				for (auto &e : w.buffer_writes) 
+				for (auto &e : w.buffer_writes)
 					writes_descriptors_buffers.push_back(e);
 				buffer_info_ptr = writes_descriptors_buffers.data() + writes_descriptors_buffers.size() - count;
 			}
@@ -135,6 +137,8 @@ public:
 
 	auto& get() const { return set.get(); }
 };
+
+}
 
 }
 }

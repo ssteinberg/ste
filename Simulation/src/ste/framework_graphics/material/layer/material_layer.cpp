@@ -2,7 +2,7 @@
 #include <stdafx.hpp>
 //#include <material_layer.hpp>
 //
-//using namespace StE::Graphics;
+//using namespace ste::Graphics;
 //
 //material_layer::material_layer() {
 //	material_sampler.set_wrap_s(Core::texture_wrap_mode::Wrap);
@@ -30,7 +30,7 @@
 //	descriptor.set_thickness_map_handle(handle_for_texture(thickness_map.get()));
 //}
 //
-//StE::Core::texture_handle material_layer::handle_for_texture(const Core::texture_2d *t) const {
+//ste::Core::texture_handle material_layer::handle_for_texture(const Core::texture_2d *t) const {
 //	Core::texture_handle h;
 //	if (t != nullptr) {
 //		h = t->get_texture_handle(material_sampler);

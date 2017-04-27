@@ -13,14 +13,14 @@
 
 #include <ste_engine_exceptions.hpp>
 
-namespace StE {
+namespace ste {
 
 struct ste_engine_types {
 	using task_scheduler_t = task_scheduler;
 	using cache_t = lru_cache<std::string>;
 
 	using storage_protocol = ste_engine_storage_protocol;
-	using gl_device_memory_allocator = GL::ste_gl_device_memory_allocator;
+	using gl_device_memory_allocator = gl::ste_gl_device_memory_allocator;
 };
 
 template <typename Types>

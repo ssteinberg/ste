@@ -8,7 +8,7 @@
 
 #include <texture_handle.hpp>
 
-namespace StE {
+namespace ste {
 namespace Graphics {
 
 struct light_descriptor {

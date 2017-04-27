@@ -8,34 +8,39 @@
 #include <vulkan/vulkan.h>
 #include <vk_result.hpp>
 #include <vk_exception.hpp>
-#include <vk_buffer_base.hpp>
+#include <vk_buffer.hpp>
 #include <vk_queue.hpp>
 #include <vk_fence.hpp>
 
 #include <vk_sparse_memory_bind.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
-template <typename T>
-class vk_buffer_sparse_impl : public vk_buffer_base {
-	using Base = vk_buffer_base;
+namespace vk {
+
+class vk_buffer_sparse : public vk_buffer {
+	using Base = vk_buffer;
 
 private:
+	std::uint32_t element_size;
 	std::uint64_t count;
 
 public:
-	vk_buffer_sparse_impl(const vk_logical_device &device,
-						  std::uint64_t count,
-						  const VkBufferUsageFlags &usage)
-		: Base(device, count * sizeof(T), usage, true), count(count)
+	vk_buffer_sparse(const vk_logical_device &device,
+					 std::uint32_t element_size,
+					 std::uint64_t count,
+					 const VkBufferUsageFlags &usage)
+		: Base(device, count * element_size, usage, true),
+		element_size(element_size),
+		count(count)
 	{}
-	~vk_buffer_sparse_impl() noexcept {}
+	~vk_buffer_sparse() noexcept {}
 
-	vk_buffer_sparse_impl(vk_buffer_sparse_impl &&) = default;
-	vk_buffer_sparse_impl& operator=(vk_buffer_sparse_impl &&) = default;
-	vk_buffer_sparse_impl(const vk_buffer_sparse_impl &) = delete;
-	vk_buffer_sparse_impl& operator=(const vk_buffer_sparse_impl &) = delete;
+	vk_buffer_sparse(vk_buffer_sparse &&) = default;
+	vk_buffer_sparse& operator=(vk_buffer_sparse &&) = default;
+	vk_buffer_sparse(const vk_buffer_sparse &) = delete;
+	vk_buffer_sparse& operator=(const vk_buffer_sparse &) = delete;
 
 	/**
 	*	@brief	Queues a bind sparse memory command on the queue
@@ -123,9 +128,11 @@ public:
 	}
 
 	std::uint64_t get_elements_count() const override final { return count; }
-	std::uint32_t get_element_size_bytes() const override final { return sizeof(T); };
+	std::uint32_t get_element_size_bytes() const override final { return element_size; };
 	bool is_sparse() const override final { return true; };
 };
+
+}
 
 }
 }

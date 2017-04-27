@@ -15,8 +15,10 @@
 #include <functional>
 #include <allow_type_decay.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
+
+namespace vk {
 
 class vk_sampler : public allow_type_decay<vk_sampler, VkSampler> {
 private:
@@ -61,7 +63,7 @@ private:
 
 public:
 	/**
-	*	@brief	Sampler ctor. 
+	*	@brief	Sampler ctor.
 	*			Takes as input variadic number of vk_sampler_parameters structure specifing sampler parameters.
 	*
 	*	@param device		Creating device
@@ -120,6 +122,8 @@ public:
 
 	auto& get() const { return sampler.get(); }
 };
+
+}
 
 }
 }

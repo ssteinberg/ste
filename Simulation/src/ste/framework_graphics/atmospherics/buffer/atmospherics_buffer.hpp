@@ -9,7 +9,7 @@
 #include <ring_buffer_old.hpp>
 #include <range.hpp>
 
-namespace StE {
+namespace ste {
 namespace Graphics {
 
 class atmospherics_buffer {

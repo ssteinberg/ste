@@ -9,8 +9,8 @@
 
 #include <half.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 // Vector elements count
 namespace _detail {

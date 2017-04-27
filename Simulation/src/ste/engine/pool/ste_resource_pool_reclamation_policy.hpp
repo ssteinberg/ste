@@ -5,8 +5,8 @@
 
 #include <ste_resource_pool_traits.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 template <typename T>
 struct ste_resource_pool_reclamation_policy {

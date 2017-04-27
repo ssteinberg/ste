@@ -13,7 +13,7 @@
 
 #include <stdexcept>
 
-namespace StE {
+namespace ste {
 
 class optional_bad_access_exception : public std::runtime_error {
 	using Base = std::runtime_error;

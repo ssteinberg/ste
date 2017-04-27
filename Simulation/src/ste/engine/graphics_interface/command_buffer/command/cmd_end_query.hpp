@@ -8,15 +8,15 @@
 #include <vk_query.hpp>
 #include <vk_query_pool.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 class cmd_end_query : public command {
 private:
-	const vk_query &query;
+	const vk::vk_query &query;
 
 public:
-	cmd_end_query(const vk_query &query) : query(query) {}
+	cmd_end_query(const vk::vk_query &query) : query(query) {}
 	virtual ~cmd_end_query() noexcept {}
 
 private:

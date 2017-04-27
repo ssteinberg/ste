@@ -9,6 +9,8 @@
 #include <ste_device_queue_batch_multishot.hpp>
 #include <ste_device_exceptions.hpp>
 
+#include <pipeline_stage.hpp>
+
 #include <vk_queue.hpp>
 #include <vk_logical_device.hpp>
 #include <ste_device_queue_command_pool.hpp>
@@ -34,10 +36,10 @@
 #include <type_traits>
 #include <allow_type_decay.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
-class ste_device_queue : public allow_type_decay<ste_device_queue, vk_queue> {
+class ste_device_queue : public allow_type_decay<ste_device_queue, vk::vk_queue> {
 public:
 	using task_t = unique_thread_pool_type_erased_task<>;
 	template <typename R>
@@ -56,7 +58,7 @@ private:
 
 private:
 	const queue_index_t queue_index;
-	const vk_queue queue;
+	const vk::vk_queue queue;
 	const ste_queue_descriptor descriptor;
 
 	ste_device_sync_primitives_pools::shared_fence_pool_t *shared_fence_pool;
@@ -69,7 +71,7 @@ private:
 
 private:
 	static thread_local ste_device_queue *static_device_queue_ptr;
-	static thread_local const vk_queue *static_queue_ptr;
+	static thread_local const vk::vk_queue *static_queue_ptr;
 	static thread_local queue_index_t static_queue_index;
 
 private:
@@ -132,17 +134,17 @@ public:
 	*/
 	template <typename UserData>
 	static void submit_batch(std::unique_ptr<ste_device_queue_batch_oneshot<UserData>> &&batch,
-							 const std::vector<std::pair<VkSemaphore, VkPipelineStageFlags>> &wait_semaphores = {},
+							 const std::vector<std::pair<VkSemaphore, pipeline_stage>> &wait_semaphores = {},
 							 const std::vector<VkSemaphore> &signal_semaphores = {}) {
 		if (!is_queue_thread()) {
 			throw ste_device_not_queue_thread_exception();
 		}
 
 		// Copy command buffers' handles for submission
-		std::vector<vk_command_buffer> command_buffers;
+		std::vector<vk::vk_command_buffer> command_buffers;
 		command_buffers.reserve(batch->command_buffers.size());
 		for (auto &b : *batch)
-			command_buffers.push_back(static_cast<vk_command_buffer>(b));
+			command_buffers.push_back(static_cast<vk::vk_command_buffer>(b));
 
 		auto& fence = batch->get_fence();
 
@@ -189,18 +191,18 @@ public:
 	*/
 	template <typename UserData>
 	static void submit_batch(const ste_device_queue_batch_multishot<UserData> &batch,
-							 const std::vector<std::pair<VkSemaphore, VkPipelineStageFlags>> &wait_semaphores = {},
+							 const std::vector<std::pair<VkSemaphore, pipeline_stage>> &wait_semaphores = {},
 							 const std::vector<VkSemaphore> &signal_semaphores = {},
-							 vk_fence *fence = nullptr) {
+							 vk::vk_fence *fence = nullptr) {
 		if (!is_queue_thread()) {
 			throw ste_device_not_queue_thread_exception();
 		}
 
 		// Copy command buffers' handles for submission
-		std::vector<vk_command_buffer> command_buffers;
+		std::vector<vk::vk_command_buffer> command_buffers;
 		command_buffers.reserve(batch.command_buffers.size());
 		for (auto &b : batch)
-			command_buffers.push_back(static_cast<vk_command_buffer>(b));
+			command_buffers.push_back(static_cast<vk::vk_command_buffer>(b));
 
 		if (batch.queue_index == thread_queue_index()) {
 			// Submit host commands, in order
@@ -247,7 +249,7 @@ private:
 	bool is_thread_this_queue_thread() const { return thread_queue_index() == queue_index; }
 
 public:
-	ste_device_queue(const vk_logical_device &device,
+	ste_device_queue(const vk::vk_logical_device &device,
 					 std::uint32_t device_family_index,
 					 ste_queue_descriptor descriptor,
 					 queue_index_t queue_index,

@@ -6,7 +6,7 @@
 #include <thread>
 #include <stdexcept>
 
-namespace StE {
+namespace ste {
 
 class scoped_thread {
 private:

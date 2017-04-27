@@ -6,8 +6,10 @@
 #include <vulkan/vulkan.h>
 #include <limits>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
+
+namespace vk {
 
 struct vk_sampler_parameters {
 	virtual ~vk_sampler_parameters() noexcept {}
@@ -108,6 +110,8 @@ struct vk_sampler_unnormalized_parameters {
 		mipmap_lod(create_info);
 	}
 };
+
+}
 
 }
 }

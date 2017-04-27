@@ -5,18 +5,18 @@
 
 #include <attributed_string.hpp>
 
-using namespace StE::Text;
+using namespace ste::text;
 
 text_renderer::text_renderer(text_manager *tr,
-							 const StE::GL::vk_render_pass *renderpass)
+							 const ste::gl::vk::vk_render_pass *renderpass)
 	: tr(tr),
-	fb_size_descriptor_set(tr->context.device(), { GL::vk_descriptor_set_layout_binding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_GEOMETRY_BIT, 0) }),
+	fb_size_descriptor_set(tr->context.device(), { gl::vk::vk_descriptor_set_layout_binding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_GEOMETRY_BIT, 0) }),
 	renderpass(renderpass),
-	fb_size_uniform(tr->context, 1, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT),
-	vertex_buffer(tr->context, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT) 
+	fb_size_uniform(tr->context, 1, gl::buffer_usage::uniform_buffer),
+	vertex_buffer(tr->context, gl::buffer_usage::vertex_buffer) 
 {
 //	fb_size_descriptor_set.get().write({
-//		GL::vk_descriptor_set_write_resource(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, 0, GL::vk_descriptor_set_write_buffer(fb_size_uniform, 1))
+//		gl::vk_descriptor_set_write_resource(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, 0, gl::vk_descriptor_set_write_buffer(fb_size_uniform, 1))
 //	});
 }
 
@@ -27,11 +27,11 @@ void text_renderer::recreate_pipeline() {
 		1.f, 0.f };
 	VkRect2D scissor = { { 0,0 },{ swapchain_size.x, swapchain_size.y } };
 
-	this->pipeline_layout = std::make_unique<GL::vk_pipeline_layout>(GL::vk_pipeline_layout{
+	this->pipeline_layout = std::make_unique<gl::vk::vk_pipeline_layout>(gl::vk::vk_pipeline_layout{
 		tr->context.device(), { &tr->descriptor_set->get_layout(), &fb_size_descriptor_set.get_layout() }, {}
 	});
-//	this->pipeline = std::make_unique<GL::vk_pipeline_graphics>(
-//		GL::vk_pipeline_graphics{
+//	this->pipeline = std::make_unique<gl::vk_pipeline_graphics>(
+//		gl::vk_pipeline_graphics{
 //			tr->context.device(),
 //			{
 //				tr->vert->pipeline_stage_descriptor(),
@@ -45,9 +45,9 @@ void text_renderer::recreate_pipeline() {
 //			scissor,
 //			{ { 0, glyph_point::descriptor() } },
 //			VK_PRIMITIVE_TOPOLOGY_POINT_LIST,
-//			GL::vk_rasterizer_op_descriptor(VK_CULL_MODE_NONE, VK_FRONT_FACE_CLOCKWISE),
-//			GL::vk_depth_op_descriptor(),
-//			{ GL::vk_blend_op_descriptor(VK_BLEND_FACTOR_SRC_ALPHA,
+//			gl::vk_rasterizer_op_descriptor(VK_CULL_MODE_NONE, VK_FRONT_FACE_CLOCKWISE),
+//			gl::vk_depth_op_descriptor(),
+//			{ gl::vk_blend_op_descriptor(VK_BLEND_FACTOR_SRC_ALPHA,
 //										 VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,
 //										 VK_BLEND_OP_ADD) },
 //			glm::vec4{ .0f },

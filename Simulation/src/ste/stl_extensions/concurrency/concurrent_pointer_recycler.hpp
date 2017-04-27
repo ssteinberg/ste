@@ -7,7 +7,7 @@
 #include <vector>
 #include <type_traits>
 
-namespace StE {
+namespace ste {
 
 template <typename T, int N = 3>
 class concurrent_pointer_recycler {

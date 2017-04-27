@@ -5,28 +5,27 @@
 
 #include <vulkan/vulkan.h>
 #include <command.hpp>
-#include <vk_buffer_base.hpp>
+#include <vk_buffer.hpp>
 #include <vk_image.hpp>
 
-#include <vk_format_rtti.hpp>
+#include <format_rtti.hpp>
 
 #include <vector>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 class cmd_copy_buffer_to_image : public command {
 private:
-	VkBuffer src_buffer;
-	VkImage dst_image;
+	std::reference_wrapper<const vk::vk_buffer> src_buffer;
+	std::reference_wrapper<const vk::vk_image> dst_image;
 	VkImageLayout image_layout;
 
 	std::vector<VkBufferImageCopy> ranges;
 
 public:
-	template <int d>
-	cmd_copy_buffer_to_image(const vk_buffer_base &src_buffer,
-							 const vk_image<d> &dst_image,
+	cmd_copy_buffer_to_image(const vk::vk_buffer &src_buffer,
+							 const vk::vk_image &dst_image,
 							 const VkImageLayout &image_layout,
 							 const std::vector<VkBufferImageCopy> &ranges = {})
 		: src_buffer(src_buffer), dst_image(dst_image), image_layout(image_layout), ranges(ranges)
@@ -45,8 +44,8 @@ public:
 
 private:
 	void operator()(const command_buffer &command_buffer, command_recorder &) const override final {
-		vkCmdCopyBufferToImage(command_buffer, src_buffer,
-							   dst_image, image_layout,
+		vkCmdCopyBufferToImage(command_buffer, src_buffer.get(),
+							   dst_image.get(), image_layout,
 							   ranges.size(), ranges.data());
 	}
 };

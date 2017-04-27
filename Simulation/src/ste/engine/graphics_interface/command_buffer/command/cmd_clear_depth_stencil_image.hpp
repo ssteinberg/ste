@@ -9,23 +9,22 @@
 
 #include <vector>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 class cmd_clear_depth_stencil_image : public command {
 private:
-	VkImage image;
+	std::reference_wrapper<const vk::vk_image> image;
 	VkImageLayout layout;
 	VkClearDepthStencilValue clear_value{};
 
 	std::vector<VkImageSubresourceRange> ranges;
 
 public:
-	template <int d>
-	cmd_clear_depth_stencil_image(const vk_image<d> &image,
-									 const VkImageLayout &layout,
-									 float clear_depth = .0f,
-									 const std::vector<VkImageSubresourceRange> &ranges = {})
+	cmd_clear_depth_stencil_image(const vk::vk_image &image,
+								  const VkImageLayout &layout,
+								  float clear_depth = .0f,
+								  const std::vector<VkImageSubresourceRange> &ranges = {})
 		: image(image), layout(layout), ranges(ranges)
 	{
 		if (this->ranges.size() == 0)
@@ -36,7 +35,7 @@ public:
 
 private:
 	void operator()(const command_buffer &command_buffer, command_recorder &) const override final {
-		vkCmdClearDepthStencilImage(command_buffer, image, layout,
+		vkCmdClearDepthStencilImage(command_buffer, image.get(), layout,
 									&clear_value,
 									ranges.size(), ranges.data());
 	}

@@ -6,7 +6,7 @@
 #include <vertex_buffer_descriptor.hpp>
 #include <quaternion_tangent_frame.hpp>
 
-namespace StE {
+namespace ste {
 namespace Graphics {
 
 class object_vertex_data {
@@ -24,7 +24,7 @@ public:
 	}
 
 	glm::mat3 extract_tangent_frame() const {
-		return StE::extract_tangent_frame(glm::quat(), tangent_frame_quat);
+		return ste::extract_tangent_frame(glm::quat(), tangent_frame_quat);
 	}
 };
 

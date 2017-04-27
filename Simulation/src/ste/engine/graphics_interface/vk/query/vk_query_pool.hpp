@@ -13,8 +13,10 @@
 #include <vk_query.hpp>
 #include <string>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
+
+namespace vk {
 
 class vk_query_pool {
 private:
@@ -117,6 +119,8 @@ public:
 																VK_QUERY_TYPE_TIMESTAMP,
 																size) {}
 };
+
+}
 
 }
 }

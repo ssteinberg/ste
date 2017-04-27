@@ -16,13 +16,13 @@
 
 #include <memory>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 class ste_gl_context {
 private:
-	vk_instance vk;
-	std::unique_ptr<vk_debug_report_callback> debug_report_handle;
+	vk::vk_instance vk;
+	std::unique_ptr<vk::vk_debug_report_callback> debug_report_handle;
 
 private:
 	static auto vk_instance_validation_layers() {
@@ -47,7 +47,7 @@ private:
 			instance_extensions.push_back("VK_EXT_debug_report");
 		}
 
-		auto instance = GL::vk_instance(app_name, app_version,
+		auto instance = vk::vk_instance(app_name, app_version,
 										instance_extensions, instance_layers);
 		return instance;
 	}
@@ -59,16 +59,16 @@ private:
 
 	template <typename DebugCallback>
 	void setup_vk_debug_callback() {
-		debug_report_handle = std::make_unique<vk_debug_report_callback>(vk,
-																		 this,
-																		 [](VkDebugReportFlagsEXT        flags,
-																			VkDebugReportObjectTypeEXT   objectType,
-																			uint64_t                     object,
-																			size_t                       location,
-																			int32_t                      messageCode,
-																			const char*                  pLayerPrefix,
-																			const char*                  pMessage,
-																			void*                        pUserData) -> VkBool32 {
+		debug_report_handle = std::make_unique<vk::vk_debug_report_callback>(vk,
+																			 this,
+																			 [](VkDebugReportFlagsEXT        flags,
+																				VkDebugReportObjectTypeEXT   objectType,
+																				uint64_t                     object,
+																				size_t                       location,
+																				int32_t                      messageCode,
+																				const char*                  pLayerPrefix,
+																				const char*                  pMessage,
+																				void*                        pUserData) -> VkBool32 {
 			auto ptr = reinterpret_cast<const ste_gl_context*>(pUserData);
 			DebugCallback()(flags, objectType, object, location, messageCode, pLayerPrefix, pMessage, ptr);
 			return VK_FALSE;
@@ -77,16 +77,16 @@ private:
 
 public:
 	auto enumerate_physical_devices() {
-		std::vector<vk_physical_device_descriptor> devices;
+		std::vector<vk::vk_physical_device_descriptor> devices;
 
 		// Read device count
 		std::uint32_t count;
-		vk_result res = vkEnumeratePhysicalDevices(vk, &count, nullptr);
+		vk::vk_result res = vkEnumeratePhysicalDevices(vk, &count, nullptr);
 		if (!res) {
-			throw vk_exception(res);
+			throw vk::vk_exception(res);
 		}
 		if (!count) {
-			throw vk_exception("vkEnumeratePhysicalDevices: No physical devices");
+			throw vk::vk_exception("vkEnumeratePhysicalDevices: No physical devices");
 		}
 
 		// Enumerate devices
@@ -95,7 +95,7 @@ public:
 			std::unique_ptr<VkPhysicalDevice[]> t_devices_arr(new VkPhysicalDevice[count]);
 			res = vkEnumeratePhysicalDevices(vk, &count, t_devices_arr.get());
 			if (!res) {
-				throw vk_exception(res);
+				throw vk::vk_exception(res);
 			}
 
 			for (unsigned i = 0; i < count; ++i)
@@ -119,7 +119,7 @@ public:
 
 	auto enumerate_physical_devices(const VkPhysicalDeviceFeatures &requested_features,
 									std::uint64_t min_device_memory) {
-		std::vector<vk_physical_device_descriptor> conforming_devices;
+		std::vector<vk::vk_physical_device_descriptor> conforming_devices;
 
 		for (auto &d : enumerate_physical_devices()) {
 			// Check device memory

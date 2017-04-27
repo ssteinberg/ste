@@ -2,11 +2,11 @@
 #include <stdafx.hpp>
 //#include <volumetric_scattering_scatter_dispatch.hpp>
 //
-//using namespace StE::Graphics;
-//using namespace StE::Core;
+//using namespace ste::Graphics;
+//using namespace ste::Core;
 //
 //void volumetric_scattering_scatter_dispatch::set_context_state() const {
-//	GL::gl_current_context::get()->enable_state(StE::Core::GL::BasicStateName::TEXTURE_CUBE_MAP_SEAMLESS);
+//	gl::gl_current_context::get()->enable_state(ste::Core::gl::BasicStateName::TEXTURE_CUBE_MAP_SEAMLESS);
 //
 //	ls->bind_lights_buffer(2);
 //
@@ -27,6 +27,6 @@
 //
 //	vss->get_volume_texture()->clear(&clear_data);
 //
-//	Core::GL::gl_current_context::get()->memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
-//	Core::GL::gl_current_context::get()->dispatch_compute(size.x, size.y, 1);
+//	Core::gl::gl_current_context::get()->memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+//	Core::gl::gl_current_context::get()->dispatch_compute(size.x, size.y, 1);
 //}

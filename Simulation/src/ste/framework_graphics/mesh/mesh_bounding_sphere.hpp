@@ -5,7 +5,7 @@
 
 #include <stdafx.hpp>
 
-namespace StE {
+namespace ste {
 namespace Graphics {
 
 class mesh_bounding_sphere {

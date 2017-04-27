@@ -6,15 +6,13 @@
 #include <stdafx.hpp>
 
 #include <vulkan/vulkan.h>
-#include <device_image.hpp>
+#include <device_image_base.hpp>
 #include <ste_queue_family.hpp>
-#include <device_image_layout_transformable.hpp>
-#include <device_resource_queue_transferable.hpp>
 
-#include <vk_format_rtti.hpp>
+#include <format_rtti.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 class image_memory_barrier {
 	friend class cmd_pipeline_barrier;
@@ -26,10 +24,7 @@ private:
 	VkImageLayout new_layout;
 	ste_queue_family src_queue_family{ VK_QUEUE_FAMILY_IGNORED };
 	ste_queue_family dst_queue_family{ VK_QUEUE_FAMILY_IGNORED };
-	VkImage image;
-
-	const device_image_layout_transformable *image_layout;
-	const device_resource_queue_transferable *queue_ownership;
+	std::reference_wrapper<const device_image_base> image;
 
 	VkImageAspectFlags aspect;
 	std::uint32_t base_level{ 0 };
@@ -44,7 +39,7 @@ public:
 						 const VkAccessFlags &src_access,
 						 const VkAccessFlags &dst_access)
 		: src(src_access), dst(dst_access), old_layout(old_layout), new_layout(new_layout),
-		image(image.get_image_handle()), image_layout(&image), queue_ownership(&image),
+		image(image),
 		aspect(vk_format_aspect(image.get_format()))
 	{}
 	image_memory_barrier(const device_image_base &image,
@@ -57,7 +52,7 @@ public:
 						 std::uint32_t base_array_layer,
 						 std::uint32_t array_layers)
 		: src(src_access), dst(dst_access), old_layout(old_layout), new_layout(new_layout),
-		image(image.get_image_handle()), image_layout(nullptr), queue_ownership(&image),
+		image(image),
 		aspect(vk_format_aspect(image.get_format())),
 		base_level(base_mip_level), levels(mip_levels), base_layer(base_array_layer), layers(array_layers)
 	{}
@@ -70,7 +65,7 @@ public:
 						 const ste_queue_family &dst_queue_family)
 		: src(src_access), dst(dst_access), old_layout(old_layout), new_layout(new_layout),
 		src_queue_family(src_queue_family), dst_queue_family(dst_queue_family),
-		image(image.get_image_handle()), image_layout(&image), queue_ownership(&image),
+		image(image),
 		aspect(vk_format_aspect(image.get_format()))
 	{}
 	image_memory_barrier(const device_image_base &image,
@@ -86,7 +81,7 @@ public:
 						 std::uint32_t array_layers)
 		: src(src_access), dst(dst_access), old_layout(old_layout), new_layout(new_layout),
 		src_queue_family(src_queue_family), dst_queue_family(dst_queue_family),
-		image(image.get_image_handle()), image_layout(nullptr), queue_ownership(&image),
+		image(image),
 		aspect(vk_format_aspect(image.get_format())),
 		base_level(base_mip_level), levels(mip_levels), base_layer(base_array_layer), layers(array_layers)
 	{}
@@ -107,7 +102,7 @@ public:
 		barrier.newLayout = new_layout;
 		barrier.srcQueueFamilyIndex = static_cast<std::uint32_t>(src_queue_family);
 		barrier.dstQueueFamilyIndex = static_cast<std::uint32_t>(dst_queue_family);
-		barrier.image = image;
+		barrier.image = image.get().get_image_handle();
 		barrier.subresourceRange.aspectMask = aspect;
 		barrier.subresourceRange.baseMipLevel = base_level;
 		barrier.subresourceRange.levelCount = levels;

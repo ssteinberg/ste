@@ -14,8 +14,10 @@
 #include <vk_pipeline_layout.hpp>
 #include <vk_pipeline_cache.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
+
+namespace vk {
 
 class vk_pipeline_compute : public vk_pipeline {
 
@@ -27,7 +29,7 @@ public:
 		assert(shader_stage_descriptor.stage == VK_SHADER_STAGE_COMPUTE_BIT && "shader_stage_descriptor must be a compute shader");
 
 		vk_shader::shader_stage_info_t stage_info;
-		shader_stage_descriptor.shader->shader_stage_create_info(VK_SHADER_STAGE_COMPUTE_BIT, 
+		shader_stage_descriptor.shader->shader_stage_create_info(VK_SHADER_STAGE_COMPUTE_BIT,
 																 stage_info,
 																 *shader_stage_descriptor.specializations);
 
@@ -41,11 +43,11 @@ public:
 		create_info.basePipelineIndex = 0;
 
 		VkPipeline pipeline;
-		vk_result res = vkCreateComputePipelines(device, 
-												 cache!=nullptr ? *cache : VK_NULL_HANDLE, 
-												 1, 
-												 &create_info, 
-												 nullptr, 
+		vk_result res = vkCreateComputePipelines(device,
+												 cache != nullptr ? *cache : VK_NULL_HANDLE,
+												 1,
+												 &create_info,
+												 nullptr,
 												 &pipeline);
 		if (!res) {
 			throw vk_exception(res);
@@ -60,6 +62,8 @@ public:
 	vk_pipeline_compute(const vk_pipeline_compute &) = delete;
 	vk_pipeline_compute &operator=(const vk_pipeline_compute &) = delete;
 };
+
+}
 
 }
 }

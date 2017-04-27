@@ -5,21 +5,20 @@
 
 #include <vulkan/vulkan.h>
 #include <command.hpp>
-#include <vk_buffer_base.hpp>
+#include <vk_buffer.hpp>
 
-namespace StE {
-namespace GL {
+namespace ste {
+namespace gl {
 
 class cmd_draw_indirect : public command {
 private:
-	VkBuffer buffer;
+	std::reference_wrapper<const vk::vk_buffer> buffer;
 	std::uint32_t offset;
 	std::uint32_t draw_count;
 	std::uint32_t stride;
 
 public:
-	template <typename T, bool sparse>
-	cmd_draw_indirect(const vk_buffer_base &buffer,
+	cmd_draw_indirect(const vk::vk_buffer &buffer,
 					  std::uint32_t offset,
 					  std::uint32_t draw_count,
 					  std::uint32_t stride)
@@ -32,7 +31,7 @@ public:
 
 private:
 	void operator()(const command_buffer &command_buffer, command_recorder &) const override final {
-		vkCmdDrawIndirect(command_buffer, buffer, offset, draw_count, stride);
+		vkCmdDrawIndirect(command_buffer, buffer.get(), offset, draw_count, stride);
 	}
 };
 

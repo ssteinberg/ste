@@ -10,8 +10,8 @@
 
 #include <memory>
 
-namespace StE {
-namespace Text {
+namespace ste {
+namespace text {
 
 class glyph {
 private:
