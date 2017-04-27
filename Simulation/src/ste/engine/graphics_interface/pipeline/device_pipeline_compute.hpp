@@ -10,6 +10,8 @@
 
 #include <cmd_bind_pipeline.hpp>
 
+#include <optional.hpp>
+
 namespace StE {
 namespace GL {
 
@@ -18,7 +20,6 @@ class device_pipeline_compute : public device_pipeline {
 
 	friend class pipeline_auditor_compute;
 
-private:
 	struct ctor {};
 
 private:
@@ -30,7 +31,7 @@ private:
 		return vk_pipeline_compute(ctx.device(),
 								   shader_stage_descriptors,
 								   layout,
-								   ctx.device().pipeline_cache().current_thread_cache());
+								   &ctx.device().pipeline_cache().current_thread_cache());
 	}
 
 protected:

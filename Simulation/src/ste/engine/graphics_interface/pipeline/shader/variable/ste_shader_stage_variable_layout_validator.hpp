@@ -11,8 +11,8 @@
 
 #include <memory>
 
-#include <std140_layout.hpp>
-#include <std430_layout.hpp>
+#include <std140.hpp>
+#include <std430.hpp>
 
 namespace StE {
 namespace GL {
@@ -70,7 +70,7 @@ public:
 	*	@throws	ste_shader_variable_layout_verification_exception	On different validation failures
 	*/
 	template <typename T>
-	void validate_layout(std::enable_if_t<is_std140_block_layout_v<T>>* = nullptr) const {
+	void validate_layout(std::enable_if_t<is_std140_layout_v<T>>* = nullptr) const {
 		if (block_layout != ste_shader_stage_block_layout::std140)
 			throw ste_shader_variable_layout_verification_block_layout_mismatch("Block layout mismatch");
 		validate_layout_block<T>();
@@ -81,7 +81,7 @@ public:
 	*	@throws	ste_shader_variable_layout_verification_exception	On different validation failures
 	*/
 	template <typename T>
-	void validate_layout(std::enable_if_t<is_std430_block_layout_v<T>>* = nullptr) const {
+	void validate_layout(std::enable_if_t<is_std430_layout_v<T>>* = nullptr) const {
 		if (block_layout != ste_shader_stage_block_layout::std430)
 			throw ste_shader_variable_layout_verification_block_layout_mismatch("Block layout mismatch");
 		validate_layout_block<T>();

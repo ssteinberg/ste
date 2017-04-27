@@ -30,28 +30,28 @@ void text_renderer::recreate_pipeline() {
 	this->pipeline_layout = std::make_unique<GL::vk_pipeline_layout>(GL::vk_pipeline_layout{
 		tr->context.device(), { &tr->descriptor_set->get_layout(), &fb_size_descriptor_set.get_layout() }, {}
 	});
-	this->pipeline = std::make_unique<GL::vk_pipeline_graphics>(
-		GL::vk_pipeline_graphics{
-			tr->context.device(),
-			{
-				tr->vert->pipeline_stage_descriptor(),
-				tr->geom->pipeline_stage_descriptor(),
-				tr->frag->pipeline_stage_descriptor()
-			},
-			*pipeline_layout,
-			*renderpass,
-			0,
-			viewport,
-			scissor,
-			{ { 0, glyph_point::descriptor() } },
-			VK_PRIMITIVE_TOPOLOGY_POINT_LIST,
-			GL::vk_rasterizer_op_descriptor(VK_CULL_MODE_NONE, VK_FRONT_FACE_CLOCKWISE),
-			GL::vk_depth_op_descriptor(),
-			{ GL::vk_blend_op_descriptor(VK_BLEND_FACTOR_SRC_ALPHA,
-										 VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,
-										 VK_BLEND_OP_ADD) },
-			glm::vec4{ .0f },
-			&tr->context.device().pipeline_cache().current_thread_cache()
-	});
+//	this->pipeline = std::make_unique<GL::vk_pipeline_graphics>(
+//		GL::vk_pipeline_graphics{
+//			tr->context.device(),
+//			{
+//				tr->vert->pipeline_stage_descriptor(),
+//				tr->geom->pipeline_stage_descriptor(),
+//				tr->frag->pipeline_stage_descriptor()
+//			},
+//			*pipeline_layout,
+//			*renderpass,
+//			0,
+//			viewport,
+//			scissor,
+//			{ { 0, glyph_point::descriptor() } },
+//			VK_PRIMITIVE_TOPOLOGY_POINT_LIST,
+//			GL::vk_rasterizer_op_descriptor(VK_CULL_MODE_NONE, VK_FRONT_FACE_CLOCKWISE),
+//			GL::vk_depth_op_descriptor(),
+//			{ GL::vk_blend_op_descriptor(VK_BLEND_FACTOR_SRC_ALPHA,
+//										 VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,
+//										 VK_BLEND_OP_ADD) },
+//			glm::vec4{ .0f },
+//			&tr->context.device().pipeline_cache().current_thread_cache()
+//	});
 }
 

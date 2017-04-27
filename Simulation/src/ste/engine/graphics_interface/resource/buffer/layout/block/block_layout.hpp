@@ -48,7 +48,7 @@ struct block_layout {
 
 	static constexpr std::size_t count = sizeof...(Ts);
 	template <int N>
-	using type_at = std::remove_cv_t<std::remove_reference_t<decltype(_detail::block_layout_getter<N>()(front.block))>>;
+	using type_at = decltype(_detail::block_layout_getter<N>()(front.block));
 
 protected:
 	block_layout() = default;

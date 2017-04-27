@@ -58,19 +58,27 @@ public:
 	*	@param	external_binding_sets	A list of binding set layouts that are assumed to be created and bound by an external system.
 	*									The pipeline will only check compatibility with the provided shader stages.
 	*/
-	std::unique_ptr<device_pipeline> pipeline(const ste_context &ctx,
-											  pipeline_binding_set_pool &pool,
-											  optional<std::reference_wrapper<const pipeline_external_binding_set_collection>> external_binding_sets) const override final {
-		pipeline_layout layout(ctx, 
+	std::unique_ptr<device_pipeline_compute> pipeline(const ste_context &ctx,
+													  pipeline_binding_set_pool &pool,
+													  optional<std::reference_wrapper<const pipeline_external_binding_set_collection>> external_binding_sets) const {
+		pipeline_layout layout(ctx,
 							   stages(),
 							   external_binding_sets);
 		return std::make_unique<device_pipeline_compute>(device_pipeline_compute::ctor(),
-														 ctx, 
+														 ctx,
 														 pool,
 														 std::move(layout),
 														 external_binding_sets);
 	}
-	using Base::pipeline;
+	/**
+	 *	@brief	See pipeline().
+	 */
+	std::unique_ptr<device_pipeline_compute> pipeline(const ste_context &ctx,
+													  pipeline_binding_set_pool &pool) const {
+		return pipeline(ctx,
+						pool,
+						none);
+	}
 
 private:
 	/**

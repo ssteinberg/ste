@@ -14,7 +14,6 @@
 #include <vk_render_pass.hpp>
 #include <vk_shader_stage_descriptor.hpp>
 
-#include <vk_vertex_input_attributes.hpp>
 #include <vk_depth_op_descriptor.hpp>
 #include <vk_blend_op_descriptor.hpp>
 #include <vk_rasterizer_op_descriptor.hpp>
@@ -29,15 +28,6 @@ namespace GL {
 
 class vk_pipeline_graphics : public vk_pipeline {
 public:
-	struct vertex_input_descriptor {
-		std::uint32_t binding_index;
-		const vk_vertex_input_attributes& attributes;
-//		VkVertexInputRate input_rate;
-
-		vertex_input_descriptor() = delete;
-	};
-
-public:
 	vk_pipeline_graphics(const vk_logical_device &device,
 						 const std::vector<vk_shader_stage_descriptor> &shader_modules,
 						 const vk_pipeline_layout &layout,
@@ -45,7 +35,8 @@ public:
 						 std::uint32_t subpass,
 						 const VkViewport &viewport,
 						 const VkRect2D &scissor,
-						 const std::vector<vertex_input_descriptor> &vertex_attributes,
+						 std::vector<VkVertexInputBindingDescription> vertex_input_binding_descriptors,
+						 std::vector<VkVertexInputAttributeDescription> vertex_input_attribute_descriptors,
 						 VkPrimitiveTopology topology,
 						 const vk_rasterizer_op_descriptor &rasterizer_op,
 						 const vk_depth_op_descriptor &depth_op,
@@ -66,35 +57,6 @@ public:
 		}
 
 		// Vertex input
-		std::vector<VkVertexInputBindingDescription> vertex_input_binding_descriptors(vertex_attributes.size());
-		int vertex_attributes_count = 0;
-		for (std::size_t i = 0; i < vertex_attributes.size(); ++i) {
-			const auto &vert = vertex_attributes[i];
-
-			VkVertexInputBindingDescription desc = {};
-			desc.binding = vert.binding_index;
-			desc.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;// vert.input_rate;
-			desc.stride = vert.attributes.stride();
-
-			vertex_input_binding_descriptors[i] = desc;
-
-			vertex_attributes_count += vert.attributes.attrib_count();
-		}
-		std::vector<VkVertexInputAttributeDescription> vertex_input_attribute_descriptors;
-		vertex_input_attribute_descriptors.reserve(vertex_attributes_count);
-		for (std::size_t i = 0; i < vertex_attributes.size(); ++i) {
-			const auto &vert = vertex_attributes[i];
-
-			for (std::size_t j = 0; j < vert.attributes.attrib_count(); ++j) {
-				VkVertexInputAttributeDescription desc = {};
-				desc.location = j;
-				desc.binding = vert.binding_index;
-				desc.format = vert.attributes.attrib_format(j);
-				desc.offset = vert.attributes.offset_to_attrib(j);
-
-				vertex_input_attribute_descriptors.push_back(desc);
-			}
-		}
 		VkPipelineVertexInputStateCreateInfo vertex_input_state_create = {};
 		vertex_input_state_create.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 		vertex_input_state_create.pNext = nullptr;

@@ -11,6 +11,9 @@
 
 #include <device_pipeline_shader_stage.hpp>
 #include <pipeline_layout_exceptions.hpp>
+
+#include <pipeline_vertex_input_bindings_collection.hpp>
+
 #include <device_pipeline_graphics_configurations.hpp>
 #include <device_pipeline_graphics.hpp>
 
@@ -33,6 +36,8 @@ private:
 	shader_stage_t geometry_shader_stage{ nullptr };
 	shader_stage_t fragment_shader_stage{ nullptr };
 
+	pipeline_vertex_input_bindings_collection vertex_input_descriptors;
+
 	device_pipeline_graphics_configurations pipeline_settings;
 
 private:
@@ -43,10 +48,13 @@ private:
 	void set_fragment_stage(const shader_stage_t &stage) { fragment_shader_stage = stage; }
 
 public:
-	pipeline_auditor_graphics() = default;
-	pipeline_auditor_graphics(device_pipeline_graphics_configurations &&settings,
-							  const std::vector<shader_stage_t> &stages) {
+	pipeline_auditor_graphics(device_pipeline_graphics_configurations &&settings) {
 		set_pipeline_settings(std::move(settings));
+	}
+	pipeline_auditor_graphics(device_pipeline_graphics_configurations &&settings,
+							  const std::vector<shader_stage_t> &stages)
+		: pipeline_auditor_graphics(std::move(settings))
+	{
 		for (auto &s : stages)
 			attach_shader_stage(*s);
 	}
@@ -57,7 +65,7 @@ public:
 
 	/**
 	*	@brief	Attaches a shader stage.
-	*	
+	*
 	*	@throws	pipeline_layout_incompatible_stage_exception	If provided stage is not a graphical shader stage
 	*/
 	void attach_shader_stage(device_pipeline_shader_stage &stage) {
@@ -81,6 +89,16 @@ public:
 			throw pipeline_layout_incompatible_stage_exception("Excepted a graphics shader stage.");
 		}
 	}
+
+	/**
+	 *	@brief	Defines vertex attributes for a binding
+	 */
+	template <typename B, VkVertexInputRate i>
+	void set_vertex_attributes(std::uint32_t binding_index,
+							   const vertex_attributes<B, i> &attrib) {
+		vertex_input_descriptors.insert(binding_index, attrib);
+	}
+
 	void set_pipeline_settings(device_pipeline_graphics_configurations &&settings) { pipeline_settings = std::move(settings); }
 
 	/**
@@ -91,19 +109,29 @@ public:
 	*	@param	external_binding_sets	A list of binding set layouts that are assumed to be created and bound by an external system.
 	*									The pipeline will only check compatibility with the provided shader stages.
 	*/
-	std::unique_ptr<device_pipeline> pipeline(const ste_context &ctx,
-											  pipeline_binding_set_pool &pool,
-											  optional<std::reference_wrapper<const pipeline_external_binding_set_collection>> external_binding_sets) const override final {
-		pipeline_layout layout(ctx, 
+	std::unique_ptr<device_pipeline_graphics> pipeline(const ste_context &ctx,
+													   pipeline_binding_set_pool &pool,
+													   optional<std::reference_wrapper<const pipeline_external_binding_set_collection>> external_binding_sets) const {
+		pipeline_layout layout(ctx,
 							   stages(),
 							   external_binding_sets);
 		return std::make_unique<device_pipeline_graphics>(device_pipeline_graphics::ctor(),
-														  ctx, 
+														  ctx,
+														  pipeline_settings,
+														  vertex_input_descriptors.get_vk_descriptors(),
 														  pool,
 														  std::move(layout),
 														  external_binding_sets);
 	}
-	using Base::pipeline;
+	/**
+	*	@brief	See pipeline().
+	*/
+	std::unique_ptr<device_pipeline_graphics> pipeline(const ste_context &ctx,
+													   pipeline_binding_set_pool &pool) const {
+		return pipeline(ctx,
+						pool,
+						none);
+	}
 
 private:
 	/**

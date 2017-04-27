@@ -137,6 +137,7 @@ template <bool b>
 struct move_ctor_deleter {};
 template <>
 struct move_ctor_deleter<false> {
+	move_ctor_deleter() = default;
 	move_ctor_deleter(move_ctor_deleter&&) = delete;
 };
 
@@ -144,6 +145,7 @@ template <bool b>
 struct move_assign_deleter {};
 template <>
 struct move_assign_deleter<false> {
+	move_assign_deleter() = default;
 	move_assign_deleter &operator=(move_assign_deleter&&) = delete;
 };
 
@@ -151,6 +153,7 @@ template <bool b>
 struct copy_ctor_deleter {};
 template <>
 struct copy_ctor_deleter<false> {
+	copy_ctor_deleter() = default;
 	copy_ctor_deleter(const copy_ctor_deleter&) = delete;
 };
 
@@ -158,6 +161,7 @@ template <bool b>
 struct copy_assign_deleter {};
 template <>
 struct copy_assign_deleter<false> {
+	copy_assign_deleter() = default;
 	copy_assign_deleter &operator=(const copy_assign_deleter&) = delete;
 };
 

@@ -22,6 +22,8 @@ struct vk_format_rtti {
 	bool is_signed;
 };
 
+namespace _internal {
+
 class vk_format_rtti_database {
 private:
 	static std::unordered_map<VkFormat, vk_format_rtti> database;
@@ -36,13 +38,15 @@ public:
 	}
 };
 
+}
+
 /**
  *	@brief	Returns a vk_format_rtti structure (if available) describing the Vulkan image format
  *	
  *	@throws	std::runtime_error	If format not found
  */
 vk_format_rtti inline vk_format_id(const VkFormat &format) {
-	auto ret = vk_format_rtti_database::get(format);
+	auto ret = _internal::vk_format_rtti_database::get(format);
 	if (ret)
 		return ret.get();
 

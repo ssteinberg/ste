@@ -129,6 +129,7 @@ public:
 	auto &get_name() const { return name; }
 	auto &get_stage() const { return shader->stage; }
 	auto &get_stage_bindings() const { return shader->stage_bindings; }
+	auto &get_stage_attachments() const { return shader->stage_attachments; }
 
 	/**
 	 *	@brief	Provides the shader specialization constant map.

@@ -14,6 +14,9 @@
 #include <pipeline_external_binding_set_collection.hpp>
 #include <pipeline_binding_layout_collection.hpp>
 
+#include <pipeline_attachment_layout.hpp>
+#include <pipeline_attachment_layout_collection.hpp>
+
 #include <pipeline_push_constants_layout.hpp>
 #include <pipeline_layout_set_index.hpp>
 #include <pipeline_binding_set_layout.hpp>
@@ -30,7 +33,8 @@ namespace StE {
 namespace GL {
 
 /**
-*	@brief	Describes the pipeline shader stages and resource binding points
+*	@brief	The pipeline layout descriptor.
+*			Fully defines the pipeline shader stages, resource binding layouts and output attachment layouts.
 */
 class pipeline_layout : public allow_type_decay<pipeline_layout, vk_pipeline_layout> {
 	friend class device_pipeline;
@@ -47,6 +51,8 @@ private:
 	using variable_map_t = pipeline_binding_layout_collection;
 	using variable_ref_map_t = boost::container::flat_map<std::string, pipeline_binding_layout*>;
 
+	using attachment_map_t = pipeline_attachment_layout_collection;
+
 	using spec_map_t = std::unordered_map<ste_shader_stage, vk_shader::spec_map>;
 
 	using binding_sets_layout_map_t = boost::container::flat_map<pipeline_layout_set_index, pipeline_binding_set_layout>;
@@ -57,9 +63,10 @@ private:
 private:
 	const ste_context &ctx;
 
-	// Attached pipeline stages and their variables map
+	// Attached pipeline stages and their variables and attachment maps
 	stages_map_t stages;
 	variable_map_t variables_map;
+	attachment_map_t attachments_map;
 
 	// Push and specialization constants maps, as well as specializations.
 	std::unique_ptr<pipeline_push_constants_layout> push_constants_layout;
@@ -110,6 +117,19 @@ private:
 
 		// Append stage to variable stage list
 		b.stages.insert(stage);
+	}
+
+	static void add_attachment(attachment_map_t &map,
+							   const std::string &name,
+							   const pipeline_attachment_layout &attachment) {
+		auto ret = map.try_emplace(name, attachment);
+		const auto &a = ret.first->second;
+		if (!ret.second) {
+			// Name exists, verify it is the same attachment
+			if (*a.attachment->variable != *attachment.attachment->variable) {
+				throw pipeline_layout_duplicate_variable_name_exception("Attachment name was already used in layout");
+			}
+		}
 	}
 
 	void erase_variables_provided_by_external_binding_sets(variable_map_t &map) {
@@ -288,9 +308,11 @@ public:
 
 			for (auto &s : pipeline_shader_stages) {
 				auto stage = s->get_stage();
-				auto& bindings = s->get_stage_bindings();
+				const auto& bindings = s->get_stage_bindings();
+				const auto& attachments = s->get_stage_attachments();
+
 				for (auto &b : bindings) {
-					auto& name = b.variable->name();
+					const auto& name = b.variable->name();
 					pipeline_binding_layout new_bind;
 					new_bind.binding = &b;
 
@@ -300,6 +322,16 @@ public:
 									name,
 									new_bind,
 									stage);
+				}
+
+				for (auto &a : attachments) {
+					// Create new attachment layout descriptor and add to map
+					const auto& name = a.variable->name();
+					pipeline_attachment_layout attachment = { &a };
+
+					add_attachment(attachments_map,
+								   name,
+								   attachment);
 				}
 
 				// Store all stages
@@ -456,6 +488,7 @@ public:
 	auto& variables() const { return variables_map; }
 	auto& push_variables() const { return *push_constants_layout; }
 	auto& spec_variables() const { return spec_variables_map; }
+	auto& attachments() const { return attachments_map; }
 
 	auto& get_set_layout_modified_signal() const { return set_layout_modified_signal; }
 };

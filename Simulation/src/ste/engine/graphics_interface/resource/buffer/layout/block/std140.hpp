@@ -12,7 +12,7 @@ namespace GL {
 static constexpr int std140_block_layout_base_alignment = 16;
 
 template <typename... Ts>
-struct std140_layout : block_layout<std140_block_layout_base_alignment, Ts...> {
+struct std140 : block_layout<std140_block_layout_base_alignment, Ts...> {
 };
 
 namespace _detail {
@@ -29,11 +29,11 @@ struct is_std140_block_layout_helper {
 }
 
 template <typename T>
-struct is_std140_block_layout {
+struct is_std140_layout {
 	static constexpr bool value = _detail::is_std140_block_layout_helper::val<T>();
 };
 template <typename T>
-static constexpr bool is_std140_block_layout_v = is_std140_block_layout<T>::value;
+static constexpr bool is_std140_layout_v = is_std140_layout<T>::value;
 
 }
 }

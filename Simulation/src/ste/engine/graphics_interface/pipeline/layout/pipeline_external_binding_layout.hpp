@@ -14,7 +14,7 @@
 #include <ste_shader_stage_block_layout.hpp>
 #include <ste_shader_stage_variable_from_type.hpp>
 
-#include <std430_layout.hpp>
+#include <std430.hpp>
 
 #include <functional>
 #include <type_traits>
@@ -55,14 +55,14 @@ public:
 		return var_type;
 	}
 	static ste_shader_stage_binding_type binding_type() {
-		return is_std430_block_layout_v<T> ?
+		return is_std430_layout_v<T> ?
 			ste_shader_stage_binding_type::storage :
 			ste_shader_stage_binding_type::uniform;
 	}
 	static ste_shader_stage_block_layout block_layout() {
-		if (is_std430_block_layout_v<T>)
+		if (is_std430_layout_v<T>)
 			return ste_shader_stage_block_layout::std430;
-		if (is_std140_block_layout_v<T>)
+		if (is_std140_layout_v<T>)
 			return ste_shader_stage_block_layout::std140;
 		return ste_shader_stage_block_layout::none;
 	}

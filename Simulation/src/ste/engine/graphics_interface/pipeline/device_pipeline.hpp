@@ -23,6 +23,8 @@
 #include <command_recorder.hpp>
 #include <cmd_bind_descriptor_sets.hpp>
 
+#include <optional.hpp>
+
 namespace StE {
 namespace GL {
 
@@ -83,7 +85,7 @@ protected:
 	const pipeline_external_binding_set_collection *external_binding_sets;
 
 private:
-	void update() {
+	void prebind_update() {
 		// Update sets, as needed
 		layout.recreate_invalidated_set_layouts();
 		
@@ -97,12 +99,32 @@ private:
 			binding_sets.write(binding_queue);
 			binding_queue.clear();
 		}
+
+		// Call overloadable update
+		update();
 	}
 
 protected:
+	/**
+	 *	@brief	Update is called just before binding the pipeline.
+	 *			Any kind of lazy (re)instantiation should be done here.
+	 */
+	virtual void update() {}
+	/**
+	*	@brief	Overrides should specify the pipeline Vulkna bind point name here.
+	*/
 	virtual VkPipelineBindPoint get_pipeline_vk_bind_point() const = 0;
+	/**
+	*	@brief	Overrides should bind the pipeline and other resources here.
+	*/
 	virtual void bind_pipeline(const command_buffer &, command_recorder &) const = 0;
+	/**
+	*	@brief	Overrides should clean up and unbind the pipeline and other resources here.
+	*/
 	virtual void unbind_pipeline(const command_buffer &, command_recorder &) const {}
+	/**
+	*	@brief	Recreates the pipeline.
+	*/
 	virtual void recreate_pipeline() = 0;
 
 	device_pipeline(const ste_context &ctx,
@@ -148,7 +170,7 @@ public:
 		}
 
 		// Create the binder
-		if (bind->binding->binding_type == ste_shader_stage_binding_type::push_constant) {
+		if (bind->binding->binding_type == ste_shader_stage_binding_type::spec_constant) {
 			return std::make_unique<pipeline_specialization_constant_bind_point>(bind->binding->variable.get(),
 																				 &layout,
 																				 resource_name);
@@ -172,7 +194,7 @@ public:
 	*			Each call to bind should be followed by a call to unbind.
 	*/
 	auto cmd_bind() {
-		update();
+		prebind_update();
 		return device_pipeline_cmd_bind(this);
 	}
 

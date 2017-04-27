@@ -4,6 +4,7 @@
 #pragma once
 
 #include <vulkan/vulkan.h>
+#include <cstring>
 
 namespace StE {
 namespace GL {
@@ -66,6 +67,13 @@ struct vk_blend_op_descriptor {
 		dst_alpha(dst_alpha),
 		alpha_op(alpha_op)
 	{}
+
+	bool operator==(const vk_blend_op_descriptor &rhs) const {
+		return std::memcmp(this, &rhs, sizeof(rhs)) == 0;
+	}
+	bool operator!=(const vk_blend_op_descriptor &rhs) const {
+		return !(*this == rhs);
+	}
 
 	operator VkPipelineColorBlendAttachmentState() const {
 		VkPipelineColorBlendAttachmentState state = {};

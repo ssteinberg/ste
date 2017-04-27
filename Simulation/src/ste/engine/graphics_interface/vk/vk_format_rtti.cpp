@@ -4,7 +4,7 @@
 
 using namespace StE::GL;
 
-std::unordered_map<VkFormat, vk_format_rtti> vk_format_rtti_database::database = 
+std::unordered_map<VkFormat, vk_format_rtti> _internal::vk_format_rtti_database::database =
 {
 	{
 		VK_FORMAT_R4G4_UNORM_PACK8,
