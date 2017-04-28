@@ -588,6 +588,8 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\binding_set\pipeline_binding_set_collection_cmd_bind.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\binding_set\pipeline_external_binding_set.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\binding_set\pipeline_binding_set_collection.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\framebuffer\attachment_load_op.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\framebuffer\attachment_store_op.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\framebuffer\framebuffer_attachment_clear_value.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\framebuffer\pipeline_framebuffer_bind_point.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\layout\pipeline_attachment_layout.hpp" />
@@ -616,6 +618,7 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\layout\vertex\pipeline_vertex_input_bindings_collection.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\layout\vertex\vertex_input_binding_descriptor.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\pipeline_stage.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\shader\stage_flag.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\access_flags.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\buffer\buffer_usage.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\buffer\layout\block\block_layout.hpp" />
@@ -943,7 +946,7 @@
     <ClInclude Include="Simulation\src\ste\engine\scheduling\future\task_future_impl.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\scheduling\task_scheduler.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\scheduling\thread_pool_task.hpp" />
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\shader\ste_shader_stage.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\shader\ste_shader_program_stage.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_resources\resource_exceptions.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_resources\surfaces\surface_convert.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_resources\surfaces\surface_factory.hpp" />

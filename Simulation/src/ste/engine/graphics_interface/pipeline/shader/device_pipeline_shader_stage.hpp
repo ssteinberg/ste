@@ -11,7 +11,7 @@
 #include <vk_pipeline_graphics.hpp>
 
 #include <ste_shader_stage_binding.hpp>
-#include <ste_shader_stage.hpp>
+#include <ste_shader_program_stage.hpp>
 #include <ste_shader_blob_header.hpp>
 #include <ste_shader_exceptions.hpp>
 
@@ -42,12 +42,12 @@ private:
 private:
 	static void verify_blob_header_sanity(const ste_shader_blob_header &header) {
 		bool valid_stage =
-			header.type == ste_shader_stage::vertex_program ||
-			header.type == ste_shader_stage::tesselation_control_program ||
-			header.type == ste_shader_stage::tesselation_evaluation_program ||
-			header.type == ste_shader_stage::geometry_program ||
-			header.type == ste_shader_stage::fragment_program ||
-			header.type == ste_shader_stage::compute_program;
+			header.type == ste_shader_program_stage::vertex_program ||
+			header.type == ste_shader_program_stage::tessellation_control_program ||
+			header.type == ste_shader_program_stage::tessellation_evaluation_program ||
+			header.type == ste_shader_program_stage::geometry_program ||
+			header.type == ste_shader_program_stage::fragment_program ||
+			header.type == ste_shader_program_stage::compute_program;
 
 		if (header.magic != ste_shader_blob_header::header_magic_value ||
 			header.properties.version_major == 0 ||
@@ -85,10 +85,10 @@ private:
 		auto &stage_attachments = parse_output.attachments;
 
 		// If header checks out, create the shader object
-		ste_shader_stage stage = header.type;
+		ste_shader_program_stage stage = header.type;
 
 		// (output attachments don't make sense for a non-fragment shader)
-		if (stage != ste_shader_stage::fragment_program && stage_attachments.size() > 0) {
+		if (stage != ste_shader_program_stage::fragment_program && stage_attachments.size() > 0) {
 			throw ste_shader_output_attachment_at_non_fragment_shader_stage_exception();
 		}
 
@@ -142,8 +142,8 @@ public:
 	/**
 	*	@brief	Retrieve the Vulkan stage flag for the shader module
 	*/
-	VkShaderStageFlagBits vk_shader_stage_flag() const {
-		return shader->vk_shader_stage_flag();
+	stage_flag vk_shader_stage_flag() const {
+		return shader->shader_stage_flag();
 	}
 
 	/**
@@ -151,7 +151,7 @@ public:
 	*/
 	auto pipeline_stage_descriptor() const {
 		vk::vk_shader_stage_descriptor desc;
-		desc.stage = vk_shader_stage_flag();
+		desc.stage = static_cast<VkShaderStageFlagBits>(vk_shader_stage_flag());
 		desc.shader = &get();
 		desc.specializations = &specializations;
 		return desc;

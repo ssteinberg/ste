@@ -1082,9 +1082,6 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\shader\ste_shader_blob_header.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\shader\ste_shader_stage.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\command_buffer\command_buffer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1575,6 +1572,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\access_flags.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\framebuffer\attachment_load_op.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\framebuffer\attachment_store_op.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\shader\ste_shader_program_stage.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\shader\stage_flag.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

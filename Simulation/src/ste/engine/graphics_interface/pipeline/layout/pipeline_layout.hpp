@@ -7,7 +7,7 @@
 #include <ste_context.hpp>
 #include <pipeline_layout_exceptions.hpp>
 
-#include <ste_shader_stage.hpp>
+#include <ste_shader_program_stage.hpp>
 #include <device_pipeline_shader_stage.hpp>
 
 #include <ste_shader_stage_variable.hpp>
@@ -46,14 +46,14 @@ public:
 	using set_layout_modified_signal_t = signal<const std::vector<pipeline_layout_set_index> &>;
 
 private:
-	using stages_map_t = boost::container::flat_map<ste_shader_stage, shader_stage_t>;
+	using stages_map_t = boost::container::flat_map<ste_shader_program_stage, shader_stage_t>;
 
 	using variable_map_t = pipeline_binding_layout_collection;
 	using variable_ref_map_t = boost::container::flat_map<std::string, pipeline_binding_layout*>;
 
 	using attachment_map_t = pipeline_attachment_layout_collection;
 
-	using spec_map_t = std::unordered_map<ste_shader_stage, vk::vk_shader::spec_map>;
+	using spec_map_t = std::unordered_map<ste_shader_program_stage, vk::vk_shader::spec_map>;
 
 	using binding_sets_layout_map_t = boost::container::flat_map<pipeline_layout_set_index, pipeline_binding_set_layout>;
 
@@ -96,7 +96,7 @@ private:
 								std::vector<pipeline_binding_layout> &push_constant_bindings,
 								const std::string &name,
 								const pipeline_binding_layout &binding,
-								ste_shader_stage stage) {
+								ste_shader_program_stage stage) {
 		// Push constants are handled differently, don't add to variables map
 		if (binding.binding_type() == ste_shader_stage_binding_type::push_constant) {
 			pipeline_binding_layout push_binding = binding;

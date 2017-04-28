@@ -168,7 +168,7 @@ int main()
 			> external_binding_descriptor;
 			std::vector<gl::pipeline_external_binding_layout> external_bindings;
 			external_bindings.emplace_back("fb_size_uniform",
-										   gl::pipeline_binding_stages_collection{ gl::ste_shader_stage::geometry_program },
+										   gl::pipeline_binding_stages_collection{ gl::ste_shader_program_stage::geometry_program },
 										   external_binding_descriptor);
 			external_layouts.emplace_back(ctx, std::move(external_bindings));
 		}

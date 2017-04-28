@@ -63,13 +63,15 @@ protected:
 	}
 
 	vk_image(const vk_logical_device &device,
+			 VkImage image,
 			 const VkFormat &image_format,
 			 const size_type &extent,
 			 const VkImageUsageFlags &usage,
 			 std::uint32_t mips = 1,
 			 std::uint32_t layers = 1,
 			 bool sparse = false)
-		: device(device), image_format(image_format), size(extent), mips(mips), layers(layers),
+		: device(device), image(image),
+		image_format(image_format), size(extent), mips(mips), layers(layers),
 		usage(usage), sparse(sparse)
 	{}
 

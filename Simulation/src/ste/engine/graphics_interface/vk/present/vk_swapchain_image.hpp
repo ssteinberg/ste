@@ -33,6 +33,7 @@ public:
 					   const size_type &size,
 					   std::uint32_t layers)
 		: Base(device, 
+			   image,
 			   image_format,
 			   Base::size_type{ size.x, size.y, 1 },
 			   0,

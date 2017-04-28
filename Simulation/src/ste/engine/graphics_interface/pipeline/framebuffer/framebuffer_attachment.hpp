@@ -5,8 +5,11 @@
 
 #include <stdafx.hpp>
 #include <image_layout.hpp>
+
 #include <format.hpp>
 #include <framebuffer_attachment_clear_value.hpp>
+#include <attachment_load_op.hpp>
+#include <attachment_store_op.hpp>
 
 #include <image_view.hpp>
 #include <vk_blend_op_descriptor.hpp>
@@ -22,8 +25,8 @@ struct framebuffer_attachment {
 	image_layout layout;
 	image_layout final_layout;
 
-	VkAttachmentLoadOp load_op;
-	VkAttachmentStoreOp store_op;
+	attachment_load_op load_op;
+	attachment_store_op store_op;
 
 	framebuffer_attachment_clear_value clear_value;
 	vk::vk_blend_op_descriptor blend_op;
@@ -32,8 +35,8 @@ struct framebuffer_attachment {
 		return vk::vk_render_pass_attachment(static_cast<VkFormat>(output->get_format()),
 											 static_cast<VkImageLayout>(initial_layout),
 											 static_cast<VkImageLayout>(final_layout),
-											 load_op,
-											 store_op);
+											 static_cast<VkAttachmentLoadOp>(load_op),
+											 static_cast<VkAttachmentStoreOp>(store_op));
 	}
 
 	bool operator==(const framebuffer_attachment &rhs) const {
@@ -87,8 +90,8 @@ framebuffer_attachment inline clear_store(const image_view_generic *output,
 		image_layout::undefined,
 		layout,
 		final_layout,
-		VK_ATTACHMENT_LOAD_OP_CLEAR,
-		VK_ATTACHMENT_STORE_OP_STORE,
+		attachment_load_op::clear,
+		attachment_store_op::store,
 		clear_value
 	};
 }
@@ -105,8 +108,8 @@ framebuffer_attachment inline clear_discard(const image_view_generic *output,
 		image_layout::undefined,
 		layout,
 		final_layout,
-		VK_ATTACHMENT_LOAD_OP_CLEAR,
-		VK_ATTACHMENT_STORE_OP_DONT_CARE,
+		attachment_load_op::clear,
+		attachment_store_op::discard,
 		clear_value
 	};
 }
@@ -123,8 +126,8 @@ framebuffer_attachment inline load_store(const image_view_generic *output,
 		initial_layout,
 		layout,
 		final_layout,
-		VK_ATTACHMENT_LOAD_OP_LOAD,
-		VK_ATTACHMENT_STORE_OP_STORE
+		attachment_load_op::load,
+		attachment_store_op::store
 	};
 }
 /**
@@ -140,8 +143,8 @@ framebuffer_attachment inline load_discard(const image_view_generic *output,
 		initial_layout,
 		layout,
 		final_layout,
-		VK_ATTACHMENT_LOAD_OP_LOAD,
-		VK_ATTACHMENT_STORE_OP_DONT_CARE
+		attachment_load_op::load,
+		attachment_store_op::discard
 	};
 }
 /**
@@ -156,8 +159,8 @@ framebuffer_attachment inline ignore_store(const image_view_generic *output,
 		image_layout::undefined,
 		layout,
 		final_layout,
-		VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-		VK_ATTACHMENT_STORE_OP_STORE
+		attachment_load_op::undefined,
+		attachment_store_op::store
 	};
 }
 /**
@@ -172,8 +175,8 @@ framebuffer_attachment inline ignore_discard(const image_view_generic *output,
 		image_layout::undefined,
 		layout,
 		final_layout,
-		VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-		VK_ATTACHMENT_STORE_OP_DONT_CARE
+		attachment_load_op::undefined,
+		attachment_store_op::discard
 	};
 }
 /**
@@ -190,8 +193,8 @@ framebuffer_attachment inline clear_store(const image_view_generic *output,
 		image_layout::undefined,
 		layout,
 		final_layout,
-		VK_ATTACHMENT_LOAD_OP_CLEAR,
-		VK_ATTACHMENT_STORE_OP_STORE,
+		attachment_load_op::clear,
+		attachment_store_op::store,
 		clear_value,
 		blend_op
 	};
@@ -210,8 +213,8 @@ framebuffer_attachment inline clear_discard(const image_view_generic *output,
 		image_layout::undefined,
 		layout,
 		final_layout,
-		VK_ATTACHMENT_LOAD_OP_CLEAR,
-		VK_ATTACHMENT_STORE_OP_DONT_CARE,
+		attachment_load_op::clear,
+		attachment_store_op::discard,
 		clear_value,
 		blend_op
 	};
@@ -230,8 +233,8 @@ framebuffer_attachment inline load_store(const image_view_generic *output,
 		initial_layout,
 		layout,
 		final_layout,
-		VK_ATTACHMENT_LOAD_OP_LOAD,
-		VK_ATTACHMENT_STORE_OP_STORE,
+		attachment_load_op::load,
+		attachment_store_op::store,
 		framebuffer_attachment_clear_value(),
 		blend_op
 	};
@@ -250,8 +253,8 @@ framebuffer_attachment inline load_discard(const image_view_generic *output,
 		initial_layout,
 		layout,
 		final_layout,
-		VK_ATTACHMENT_LOAD_OP_LOAD,
-		VK_ATTACHMENT_STORE_OP_DONT_CARE,
+		attachment_load_op::load,
+		attachment_store_op::discard,
 		framebuffer_attachment_clear_value(),
 		blend_op
 	};
@@ -269,8 +272,8 @@ framebuffer_attachment inline ignore_store(const image_view_generic *output,
 		image_layout::undefined,
 		layout,
 		final_layout,
-		VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-		VK_ATTACHMENT_STORE_OP_STORE,
+		attachment_load_op::undefined,
+		attachment_store_op::store,
 		framebuffer_attachment_clear_value(),
 		blend_op
 	};
@@ -288,8 +291,8 @@ framebuffer_attachment inline ignore_discard(const image_view_generic *output,
 		image_layout::undefined,
 		layout,
 		final_layout,
-		VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-		VK_ATTACHMENT_STORE_OP_DONT_CARE,
+		attachment_load_op::undefined,
+		attachment_store_op::discard,
 		framebuffer_attachment_clear_value(),
 		blend_op
 	};

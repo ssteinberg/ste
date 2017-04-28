@@ -8,19 +8,21 @@
 #include <vk_push_constant_layout.hpp>
 #include <vk_pipeline_layout.hpp>
 
+#include <stage_flag.hpp>
+
 namespace ste {
 namespace gl {
 
 class cmd_push_constants : public command {
 private:
 	const vk::vk_pipeline_layout *layout;
-	VkShaderStageFlags stage;
+	stage_flag stage;
 	std::uint32_t offset;
 	std::string data;
 
 public:
 	cmd_push_constants(const vk::vk_pipeline_layout *layout,
-					   VkShaderStageFlags stage,
+					   stage_flag stage,
 					   std::uint32_t offset,
 					   std::string data)
 		: layout(layout), stage(stage), offset(offset), data(data)
@@ -31,7 +33,7 @@ private:
 	void operator()(const command_buffer &command_buffer, command_recorder &) const override final {
 		vkCmdPushConstants(command_buffer,
 						   *layout,
-						   stage,
+						   static_cast<VkShaderStageFlags>(stage),
 						   offset,
 						   data.size(),
 						   data.data());

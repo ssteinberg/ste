@@ -33,7 +33,7 @@ private:
 	};
 
 	struct stage_range {
-		VkShaderStageFlagBits stage;
+		stage_flag stage;
 		range<> r;
 	};
 
@@ -59,7 +59,7 @@ private:
 											  p->data.end() + offset + size);
 
 				recorder << cmd_push_constants(pipeline_layout,
-											   push_layout.stageFlags,
+											   static_cast<stage_flag>(push_layout.stageFlags),
 											   offset,
 											   range_data);
 			}
@@ -144,7 +144,7 @@ private:
 			}
 
 			// Create range
-			auto r = stage_range{ ste_shader_stage_to_vk_stage(stage), range<>(stage_range_start, stage_range_end - stage_range_start) };
+			auto r = stage_range{ ste_shader_program_stage_to_stage_flag(stage), range<>(stage_range_start, stage_range_end - stage_range_start) };
 
 			// Insert range for stage, sorted.
 			auto it = std::upper_bound(ranges.begin(), ranges.end(), r, [](const auto &lhs, const auto &rhs) {
@@ -157,13 +157,13 @@ private:
 		std::vector<vk::vk_push_constant_layout> layouts;
 		layouts.reserve(ranges.size());
 		for (std::size_t i=0; i<ranges.size();) {
-			VkShaderStageFlags stages = static_cast<VkShaderStageFlags>(ranges[i].stage);
+			stage_flag stages = ranges[i].stage;
 
 			auto j = i + 1;
 			while (j<ranges.size() && ranges[i].r == ranges[j].r)
-				stages |= ranges[j].stage;
+				stages = stages | ranges[j].stage;
 
-			layouts.push_back(vk::vk_push_constant_layout(stages,
+			layouts.push_back(vk::vk_push_constant_layout(static_cast<VkShaderStageFlags>(stages),
 														  ranges[i].r.length,
 														  ranges[i].r.start));
 

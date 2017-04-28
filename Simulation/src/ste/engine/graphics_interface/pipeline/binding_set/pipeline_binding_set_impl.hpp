@@ -70,7 +70,7 @@ private:
 
 			// Verify
 			if (dst->vk_descriptor_type() != src->vk_descriptor_type() ||
-				static_cast<VkShaderStageFlags>(dst->stage_collection()) != static_cast<VkShaderStageFlags>(src->stage_collection())) {
+				dst->stage_collection() != src->stage_collection()) {
 				assert(false && "Verification failed");
 				return {};
 			}

@@ -1,5 +1,5 @@
 ﻿// StE
-// � Shlomi Steinberg, 2015-2017
+// © Shlomi Steinberg, 2015-2017
 
 #pragma once
 
@@ -7,7 +7,7 @@
 #include <vulkan/vulkan.h>
 #include <vk_shader.hpp>
 
-#include <ste_shader_stage.hpp>
+#include <ste_shader_program_stage.hpp>
 #include <ste_shader_stage_binding.hpp>
 #include <ste_shader_stage_attachment.hpp>
 
@@ -20,14 +20,14 @@ namespace gl {
 struct ste_shader_object {
 	const vk::vk_shader shader;
 
-	const ste_shader_stage stage;
+	const ste_shader_program_stage stage;
 	const std::vector<ste_shader_stage_binding> stage_bindings;
 	const std::vector<ste_shader_stage_attachment> stage_attachments;
 
 	ste_shader_object() = delete;
 	ste_shader_object(const vk::vk_logical_device &device,
 					  const std::string &shader_code,
-					  const ste_shader_stage &stage,
+					  const ste_shader_program_stage &stage,
 					  std::vector<ste_shader_stage_binding> &&stage_bindings,
 					  std::vector<ste_shader_stage_attachment> &&stage_attachments = {})
 		: shader(device,
@@ -36,30 +36,14 @@ struct ste_shader_object {
 		stage_bindings(std::move(stage_bindings)),
 		stage_attachments(std::move(stage_attachments))
 	{
-		assert(stage != ste_shader_stage::none);
+		assert(stage != ste_shader_program_stage::none);
 	}
 
 	/**
-	*	@brief	Retrieve the Vulkan stage flag for the shader module
+	*	@brief	Retrieve the stage flag for the shader module
 	*/
-	VkShaderStageFlagBits vk_shader_stage_flag() const {
-		switch (stage) {
-		case ste_shader_stage::vertex_program:
-			return VK_SHADER_STAGE_VERTEX_BIT;
-		case ste_shader_stage::tesselation_control_program:
-			return VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
-		case ste_shader_stage::tesselation_evaluation_program:
-			return VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
-		case ste_shader_stage::geometry_program:
-			return VK_SHADER_STAGE_GEOMETRY_BIT;
-		case ste_shader_stage::fragment_program:
-			return VK_SHADER_STAGE_FRAGMENT_BIT;
-		case ste_shader_stage::compute_program:
-			return VK_SHADER_STAGE_COMPUTE_BIT;
-		default:
-			assert(false);
-			return VK_SHADER_STAGE_ALL;
-		}
+	stage_flag shader_stage_flag() const {
+		return ste_shader_program_stage_to_stage_flag(stage);
 	}
 };
 

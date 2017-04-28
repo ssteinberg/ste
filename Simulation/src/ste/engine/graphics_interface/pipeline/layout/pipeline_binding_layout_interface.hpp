@@ -56,8 +56,9 @@ struct pipeline_binding_layout_interface {
 	*	@brief	Creates the Vulkan binding descriptor
 	*/
 	operator vk::vk_descriptor_set_layout_binding() const {
+		stage_flag stage = stage_collection();
 		return vk::vk_descriptor_set_layout_binding(vk_descriptor_type(),
-													stage_collection(),
+													static_cast<VkShaderStageFlags>(stage),
 													bind_idx(),
 													count());
 	}

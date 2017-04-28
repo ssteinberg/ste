@@ -70,19 +70,19 @@ public:
 	*/
 	void attach_shader_stage(device_pipeline_shader_stage &stage) {
 		switch (stage.get_stage()) {
-		case ste_shader_stage::vertex_program:
+		case ste_shader_program_stage::vertex_program:
 			set_vertex_stage(&stage);
 			break;
-		case ste_shader_stage::tesselation_control_program:
+		case ste_shader_program_stage::tessellation_control_program:
 			set_tess_control_stage(&stage);
 			break;
-		case ste_shader_stage::tesselation_evaluation_program:
+		case ste_shader_program_stage::tessellation_evaluation_program:
 			set_tess_eval_stage(&stage);
 			break;
-		case ste_shader_stage::geometry_program:
+		case ste_shader_program_stage::geometry_program:
 			set_geometry_stage(&stage);
 			break;
-		case ste_shader_stage::fragment_program:
+		case ste_shader_program_stage::fragment_program:
 			set_fragment_stage(&stage);
 			break;
 		default:
