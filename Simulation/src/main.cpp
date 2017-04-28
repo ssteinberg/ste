@@ -145,7 +145,9 @@ int main()
 
 		gl::array<gl::std140<glm::vec2>> fb_size_uniform(ctx, 1, gl::buffer_usage::uniform_buffer);
 		gl::array<gl::std430<int, int, int, int, int>> buffer(ctx, 10, gl::buffer_usage::storage_buffer);
-		gl::sampler sampler(ctx, gl::vk::vk_sampler_filtering(VK_FILTER_LINEAR, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR));
+		gl::sampler sampler(ctx, gl::sampler_parameter::filtering(gl::sampler_filter::linear, 
+																  gl::sampler_filter::linear,
+																  gl::sampler_mipmap_mode::linear));
 
 		gl::device_pipeline_graphics_configurations graphics_settings = {};
 
@@ -193,8 +195,8 @@ int main()
 		gl::image_view<gl::image_type::image_2d> texture(image->get(), image->get().get_format(), 0, 1, gl::image_view_swizzle());
 		pipeline->framebuffer()["frag_color"] = clear_store(&texture,
 															glm::vec2(1),
-															VK_IMAGE_LAYOUT_GENERAL,
-															VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+															gl::image_layout::general,
+															gl::image_layout::shader_read_only_optimal);
 		pipeline->framebuffer()["frag_color"]->clear_value = .0f;
 		pipeline->cmd_bind();
 	}
@@ -273,8 +275,8 @@ int main()
 
 	// Texture
 	gl::vk::vk_image_view<gl::image_type::image_2d> texture(image->get(), image->get().get_format());
-	gl::vk::vk_sampler sampler(device, gl::vk::vk_sampler_filtering(VK_FILTER_LINEAR, VK_FILTER_LINEAR,
-															VK_SAMPLER_MIPMAP_MODE_LINEAR));
+	gl::sampler sampler(ctx, gl::sampler_parameter::filtering(gl::sampler_filter::linear, gl::sampler_filter::linear,
+															  gl::sampler_mipmap_mode::linear));
 
 	// Descriptors
 	gl::vk::vk_descriptor_set_layout_binding descriptor_set_ubo_layout_binding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
@@ -323,8 +325,8 @@ int main()
 	gl::queue_transfer_discard(ctx,
 							   image.get(), selector,
 							   gl::pipeline_stage::transfer,
-							   VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_ACCESS_TRANSFER_READ_BIT,
-							   VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_ACCESS_SHADER_READ_BIT);
+							   gl::image_layout::transfer_dst_optimal, gl::access_flags::transfer_read,
+							   gl::image_layout::shader_read_only_optimal, gl::access_flags::shader_read);
 
 //	ste_resource<device_pipeline_shader_stage> stage(ste_resource_dont_defer(), ctx, std::string("fxaa.frag"));
 //	device_pipeline_shader_stage(ctx, std::string("deferred_compose.frag"));
@@ -381,21 +383,21 @@ int main()
 					<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::fragment_shader,
 																	 gl::pipeline_stage::transfer,
 																	 { gl::buffer_memory_barrier(ubo->get(),
-																								  VK_ACCESS_UNIFORM_READ_BIT,
-																								  VK_ACCESS_TRANSFER_WRITE_BIT),
+																								 gl::access_flags::uniform_read,
+																								 gl::access_flags::transfer_write),
 																	 gl::buffer_memory_barrier(vertex_buffer->get(),
-																								  VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT,
-																								  VK_ACCESS_TRANSFER_WRITE_BIT) }))
+																							   gl::access_flags::vertex_attribute_read,
+																							   gl::access_flags::transfer_write) }))
 					<< vertex_buffer->update_cmd(vertices, 0)
 					<< ubo->update_cmd({ data })
 					<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::transfer,
 																	 gl::pipeline_stage::vertex_shader,
 																	 { gl::buffer_memory_barrier(ubo->get(),
-																								  VK_ACCESS_TRANSFER_WRITE_BIT,
-																								  VK_ACCESS_UNIFORM_READ_BIT),
+																								 gl::access_flags::transfer_write,
+																								 gl::access_flags::uniform_read),
 																 gl::buffer_memory_barrier(vertex_buffer->get(),
-																								  VK_ACCESS_TRANSFER_WRITE_BIT,
-																								  VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT) }))
+																						   gl::access_flags::transfer_write,
+																						   gl::access_flags::vertex_attribute_read) }))
 					<< gl::cmd_bind_descriptor_sets_graphics(pipeline_layout, 0, { &descriptor_set })
 //					<< cmd_begin_render_pass(presentation_framebuffers[batch->presentation_image_index()],
 //												 presentation_renderpass,
@@ -409,10 +411,10 @@ int main()
 					<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::color_attachment_output,
 																	 gl::pipeline_stage::color_attachment_output,
 																 gl::image_memory_barrier(device.get_surface().get_swap_chain_images()[batch->presentation_image_index()].image,
-																							  VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-																							  VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-																							  VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-																							  VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT)))
+																						  gl::image_layout::color_attachment_optimal,
+																						  gl::image_layout::color_attachment_optimal,
+																						  gl::access_flags::color_attachment_write,
+																						  gl::access_flags::color_attachment_write)))
 //					<< text_renderer->render_cmd()
 					<< gl::cmd_end_render_pass();
 			}

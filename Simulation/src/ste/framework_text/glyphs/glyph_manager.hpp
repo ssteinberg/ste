@@ -64,7 +64,7 @@ private:
 
 	gl::stable_vector<buffer_glyph_descriptor> buffer;
 	std::vector<glyph_texture> glyph_textures;
-	gl::vk::vk_sampler text_glyph_sampler;
+	gl::sampler text_glyph_sampler;
 
 private:
 	const glyph_descriptor* glyph_loader(const font &font, wchar_t codepoint) {
@@ -120,10 +120,12 @@ public:
 	glyph_manager(const ste_context &context)
 		: context(context), 
 		buffer(context, gl::buffer_usage::storage_buffer),
-		text_glyph_sampler(context.device(),
-						   gl::vk::vk_sampler_filtering(VK_FILTER_LINEAR, VK_FILTER_LINEAR), 
-						   gl::vk::vk_sampler_address_mode(VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER),
-						   gl::vk::vk_sampler_anisotropy(16.f))
+		text_glyph_sampler(context,
+						   gl::sampler_parameter::filtering(gl::sampler_filter::linear, 
+															gl::sampler_filter::linear),
+						   gl::sampler_parameter::address_mode(gl::sampler_address_mode::clamp_to_border, 
+															   gl::sampler_address_mode::clamp_to_border),
+						   gl::sampler_parameter::anisotropy(16.f))
 	{}
 
 	const glyph_descriptor* glyph_for_font(const font &font, wchar_t codepoint) {

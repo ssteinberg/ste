@@ -17,6 +17,7 @@
 #include <vk_command_buffers.hpp>
 #include <ste_resource_pool.hpp>
 #include <ste_device_sync_primitives_pools.hpp>
+#include <wait_semaphore.hpp>
 
 #include <condition_variable>
 #include <mutex>
@@ -77,6 +78,15 @@ private:
 private:
 	static auto& thread_device_queue() { return *static_device_queue_ptr; }
 
+	static auto vk_semaphores(const std::vector<const semaphore*> &s) {
+		std::vector<VkSemaphore> vk_sems;
+		vk_sems.reserve(s.size());
+		for (auto &sem : s)
+			vk_sems.push_back(*sem);
+
+		return vk_sems;
+	}
+
 public:
 	/**
 	*	@brief	Returns the Vulkan queue handle for the current thread
@@ -134,8 +144,8 @@ public:
 	*/
 	template <typename UserData>
 	static void submit_batch(std::unique_ptr<ste_device_queue_batch_oneshot<UserData>> &&batch,
-							 const std::vector<std::pair<VkSemaphore, pipeline_stage>> &wait_semaphores = {},
-							 const std::vector<VkSemaphore> &signal_semaphores = {}) {
+							 const std::vector<wait_semaphore> &wait_semaphores = {},
+							 const std::vector<const semaphore*> &signal_semaphores = {}) {
 		if (!is_queue_thread()) {
 			throw ste_device_not_queue_thread_exception();
 		}
@@ -155,8 +165,8 @@ public:
 					cmd_buf.submit_host_commands(thread_queue());
 				// Submit finalized buffers
 				thread_queue().submit(command_buffers,
-									  wait_semaphores,
-									  signal_semaphores,
+									  std::vector<vk::vk_queue::wait_semaphore_t>(wait_semaphores.begin(), wait_semaphores.end()),
+									  vk_semaphores(signal_semaphores),
 									  &fence.get_fence());
 
 				// And signal fence future
@@ -191,8 +201,8 @@ public:
 	*/
 	template <typename UserData>
 	static void submit_batch(const ste_device_queue_batch_multishot<UserData> &batch,
-							 const std::vector<std::pair<VkSemaphore, pipeline_stage>> &wait_semaphores = {},
-							 const std::vector<VkSemaphore> &signal_semaphores = {},
+							 const std::vector<wait_semaphore> &wait_semaphores = {},
+							 const std::vector<const semaphore*> &signal_semaphores = {},
 							 vk::vk_fence *fence = nullptr) {
 		if (!is_queue_thread()) {
 			throw ste_device_not_queue_thread_exception();
@@ -208,11 +218,13 @@ public:
 			// Submit host commands, in order
 			for (auto &cmd_buf : *batch)
 				cmd_buf.submit_host_commands(thread_queue());
+
 			// Submit finalized buffers
 			thread_queue().submit(command_buffers,
-								  wait_semaphores,
-								  signal_semaphores,
+								  std::vector<vk::vk_queue::wait_semaphore_t>(wait_semaphores.begin(), wait_semaphores.end()),
+								  vk_semaphores(signal_semaphores),
 								  fence);
+
 			batch.submitted = true;
 		}
 		else {

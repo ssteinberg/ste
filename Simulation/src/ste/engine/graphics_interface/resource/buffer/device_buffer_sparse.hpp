@@ -78,6 +78,15 @@ public:
 	}
 
 private:
+	static auto vk_semaphores(const std::vector<const semaphore*> &s) {
+		std::vector<VkSemaphore> vk_sems;
+		vk_sems.reserve(s.size());
+		for (auto &sem : s)
+			vk_sems.push_back(*sem);
+
+		return vk_sems;
+	}
+
 	device_buffer_sparse(ctor,
 						 const ste_context &ctx,
 						 resource_t &&resource)
@@ -109,7 +118,7 @@ public:
 	*			Unbind and bind regions should not overlap.
 	*
 	*	@param	unbind_regions		Buffer regions to unbind
-	*	@param	bind_regions		Buffer regions to bind
+	*	@param	bind_regions			Buffer regions to bind
 	*	@param	wait_semaphores		Array of pairs of semaphores upon which to wait before execution
 	*	@param	signal_semaphores	Sempahores to signal once the command has completed execution
 	*	@param	fence				Optional fence, to be signaled when the command has completed execution
@@ -118,8 +127,8 @@ public:
 	*/
 	host_command cmd_bind_sparse_memory(const std::vector<bind_range_t> &unbind_regions,
 										const std::vector<bind_range_t> &bind_regions,
-										const std::vector<VkSemaphore> &wait_semaphores,
-										const std::vector<VkSemaphore> &signal_semaphores,
+										const std::vector<const semaphore*> &wait_semaphores,
+										const std::vector<const semaphore*> &signal_semaphores,
 										const vk::vk_fence *fence = nullptr) {
 		return host_command([=](const vk::vk_queue &queue) {
 			std::vector<vk::vk_sparse_memory_bind> memory_binds;
@@ -174,8 +183,8 @@ public:
 			// Queue sparse binding command
 			resource.cmd_bind_sparse_memory(queue,
 											memory_binds,
-											wait_semaphores,
-											signal_semaphores,
+											vk_semaphores(wait_semaphores),
+											vk_semaphores(signal_semaphores),
 											fence);
 		});
 	}

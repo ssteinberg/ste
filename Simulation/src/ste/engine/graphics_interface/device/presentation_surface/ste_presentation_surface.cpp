@@ -254,14 +254,13 @@ void ste_presentation_surface::connect_signals() {
 void ste_presentation_surface::present(std::uint32_t image_index,
 									   const vk::vk_queue &presentation_queue,
 									   const semaphore &wait_semaphore) {
-	VkSemaphore semaphore = wait_semaphore;
 	VkSwapchainKHR swapchain = *swap_chain;
 
 	VkPresentInfoKHR info = {};
 	info.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 	info.pNext = nullptr;
 	info.waitSemaphoreCount = 1;
-	info.pWaitSemaphores = &semaphore;
+	info.pWaitSemaphores = &wait_semaphore.get();
 	info.swapchainCount = 1;
 	info.pSwapchains = &swapchain;
 	info.pImageIndices = &image_index;

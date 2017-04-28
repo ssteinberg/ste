@@ -14,6 +14,7 @@
 #include <ste_device_presentation_sync_semaphores.hpp>
 #include <ste_queue_selector.hpp>
 #include <ste_device_pipeline_cache.hpp>
+#include <wait_semaphore.hpp>
 
 #include <pipeline_stage.hpp>
 
@@ -136,8 +137,8 @@ private:
 
 	template <typename BatchUserData>
 	void internal_submit_and_present(std::unique_ptr<ste_device_queue_presentation_batch<BatchUserData>> &&presentation_batch,
-									 const std::vector<std::pair<VkSemaphore, pipeline_stage>> &wait_semaphores,
-									 const std::vector<VkSemaphore> &signal_semaphores) {
+									 const std::vector<wait_semaphore> &wait_semaphores,
+									 const std::vector<const semaphore*> &signal_semaphores) {
 		if (!ste_device_queue::is_queue_thread()) {
 			throw ste_device_not_queue_thread_exception();
 		}
@@ -148,9 +149,13 @@ private:
 		// Synchronize submission with presentation
 		auto wait = wait_semaphores;
 		auto signal = signal_semaphores;
-		wait.push_back(decltype(wait)::value_type(presentation_semaphores->swapchain_image_ready_semaphore,
-												  pipeline_stage::color_attachment_output));
-		signal.push_back(presentation_semaphores->rendering_finished_semaphore);
+
+		const semaphore &swapchain_image_ready_semaphore = presentation_semaphores->swapchain_image_ready_semaphore;
+		const semaphore &rendering_finished_semaphore = presentation_semaphores->rendering_finished_semaphore;
+
+		wait.push_back(wait_semaphore(&swapchain_image_ready_semaphore,
+									  pipeline_stage::color_attachment_output));
+		signal.push_back(&rendering_finished_semaphore);
 
 		// Submit
 		ste_device_queue::submit_batch<BatchUserData>(std::move(presentation_batch),
@@ -320,8 +325,8 @@ public:
 	*/
 	template <typename BatchUserData>
 	void submit_and_present(std::unique_ptr<ste_device_queue_presentation_batch<BatchUserData>> &&presentation_batch,
-							const std::vector<std::pair<VkSemaphore, pipeline_stage>> &wait_semaphores = {},
-							const std::vector<VkSemaphore> &signal_semaphores = {}) {
+							const std::vector<wait_semaphore> &wait_semaphores = {},
+							const std::vector<const semaphore*> &signal_semaphores = {}) {
 		internal_submit_and_present(std::move(presentation_batch),
 									wait_semaphores,
 									signal_semaphores);

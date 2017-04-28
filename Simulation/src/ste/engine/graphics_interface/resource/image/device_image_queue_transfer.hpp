@@ -10,6 +10,8 @@
 #include <device_image_layout_transform.hpp>
 
 #include <pipeline_stage.hpp>
+#include <image_layout.hpp>
+#include <access_flags.hpp>
 
 #include <pipeline_barrier.hpp>
 #include <cmd_pipeline_barrier.hpp>
@@ -22,12 +24,12 @@ namespace ste {
 namespace gl {
 
 auto inline queue_release_acquire_barrier(const device_image_base &image,
-										  VkAccessFlags src_access,
+										  access_flags src_access,
 										  const ste_queue_family &src_family,
-										  VkImageLayout src_layout,
-										  VkAccessFlags dst_access,
+										  image_layout src_layout,
+										  access_flags dst_access,
 										  const ste_queue_family &dst_family,
-										  VkImageLayout dst_layout) {
+										  image_layout dst_layout) {
 	return image_memory_barrier(image,
 								src_layout,
 								dst_layout,
@@ -41,12 +43,12 @@ void inline queue_transfer(const ste_context &ctx,
 						   device_image_base &image,
 						   ste_device_queue &src_queue,
 						   ste_device_queue &dst_queue,
-						   VkImageLayout src_layout,
+						   image_layout src_layout,
 						   pipeline_stage src_stage,
-						   VkAccessFlags src_access,
+						   access_flags src_access,
 						   pipeline_stage dst_stage,
-						   VkAccessFlags dst_access,
-						   VkImageLayout dst_layout) {
+						   access_flags dst_access,
+						   image_layout dst_layout) {
 	assert(!ste_device_queue::is_queue_thread() && "Should not be called from a queue");
 
 	auto src_family = src_queue.queue_descriptor().family;
@@ -98,7 +100,8 @@ void inline queue_transfer(const ste_context &ctx,
 			recorder << cmd_pipeline_barrier(barrier);
 		}
 
-		ste_device_queue::submit_batch(std::move(release_batch), {}, { *release_batch->user_data() });
+		const semaphore &sem = *release_batch->user_data();
+		ste_device_queue::submit_batch(std::move(release_batch), {}, { &sem });
 		release_acquire_boundary->signal();
 	});
 	dst_queue.enqueue([=, &image]() {
@@ -121,8 +124,8 @@ void inline queue_transfer(const ste_context &ctx,
 
 		// Wait for release command to be submitted
 		release_acquire_boundary->get();
-		ste_device_queue::submit_batch(std::move(acquire_batch),
-					{ std::make_pair(static_cast<VkSemaphore>(*acquire_batch->user_data()), pipeline_stage::bottom_of_pipe) }, {});
+		const semaphore &sem = *acquire_batch->user_data();
+		ste_device_queue::submit_batch(std::move(acquire_batch), { wait_semaphore(&sem, pipeline_stage::bottom_of_pipe) }, {});
 	});
 }
 
@@ -130,10 +133,10 @@ void inline queue_transfer_discard(const ste_context &ctx,
 								   device_image_base &image,
 								   const ste_queue_selector<ste_queue_selector_policy_strict> &dst_queue_selector,
 								   pipeline_stage stage,
-								   VkImageLayout src_layout,
-								   VkAccessFlags src_access,
-								   VkImageLayout dst_layout,
-								   VkAccessFlags dst_access) {
+								   image_layout src_layout,
+								   access_flags src_access,
+								   image_layout dst_layout,
+								   access_flags dst_access) {
 	auto &dst_queue = *ctx.device().select_queue(dst_queue_selector);
 	ste_queue_family dst_family = dst_queue.queue_descriptor().family;
 

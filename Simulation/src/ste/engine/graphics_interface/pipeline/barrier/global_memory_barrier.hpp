@@ -4,20 +4,21 @@
 #pragma once
 
 #include <stdafx.hpp>
-
 #include <vulkan/vulkan.h>
+
+#include <access_flags.hpp>
 
 namespace ste {
 namespace gl {
 
 class global_memory_barrier {
 private:
-	VkAccessFlags src;
-	VkAccessFlags dst;
+	access_flags src;
+	access_flags dst;
 
 public:
-	global_memory_barrier(const VkAccessFlags &src_access,
-							 const VkAccessFlags &dst_access)
+	global_memory_barrier(const access_flags &src_access,
+						  const access_flags &dst_access)
 		: src(src_access), dst(dst_access) {}
 	~global_memory_barrier() noexcept {}
 
@@ -33,8 +34,8 @@ public:
 		VkMemoryBarrier barrier = {};
 		barrier.sType = VK_STRUCTURE_TYPE_MEMORY_BARRIER;
 		barrier.pNext = nullptr;
-		barrier.srcAccessMask = src;
-		barrier.dstAccessMask = dst;
+		barrier.srcAccessMask = static_cast<VkAccessFlags>(src);
+		barrier.dstAccessMask = static_cast<VkAccessFlags>(dst);
 
 		return barrier;
 	}

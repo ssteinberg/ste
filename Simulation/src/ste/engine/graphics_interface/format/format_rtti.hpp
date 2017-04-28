@@ -3,8 +3,11 @@
 
 #pragma once
 
+#include <stdafx.hpp>
+
 #include <format.hpp>
 #include <format_type_traits.hpp>
+#include <image_aspect.hpp>
 
 #include <unordered_map>
 #include <optional.hpp>
@@ -83,14 +86,14 @@ auto inline vk_format_is_depth(const format &format) {
 /**
 *	@brief	Helper method, classifies the Vulkan image format's main aspect.
 *	
-*	@return	VK_IMAGE_ASPECT_DEPTH_BIT for depth formats, VK_IMAGE_ASPECT_COLOR_BIT for color formats.
+*	@return	image_aspect::depth for depth formats, image_aspect::color for color formats.
 *
 *	@throws	std::runtime_error	If format not found
 */
 auto inline vk_format_aspect(const format &format) {
 	return vk_format_is_depth(format) ? 
-		VK_IMAGE_ASPECT_DEPTH_BIT : 
-		VK_IMAGE_ASPECT_COLOR_BIT;
+		image_aspect::depth :
+		image_aspect::color;
 }
 
 /**

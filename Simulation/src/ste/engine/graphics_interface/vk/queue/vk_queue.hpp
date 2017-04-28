@@ -21,6 +21,9 @@ namespace gl {
 namespace vk {
 
 class vk_queue {
+public:
+	using wait_semaphore_t = std::pair<VkSemaphore, VkPipelineStageFlags>;
+
 private:
 	optional<VkQueue> queue;
 	ste_queue_family queue_family;
@@ -61,7 +64,7 @@ public:
 	*	@param	fence				Optional fence, to be signaled when the commands have completed execution
 	*/
 	void submit(const std::vector<vk_command_buffer> &command_buffers,
-				const std::vector<std::pair<VkSemaphore, VkPipelineStageFlags>> &wait_semaphores,
+				const std::vector<wait_semaphore_t> &wait_semaphores,
 				const std::vector<VkSemaphore> &signal_semaphores,
 				const vk_fence *fence = nullptr) const {
 		std::vector<VkCommandBuffer> cb;

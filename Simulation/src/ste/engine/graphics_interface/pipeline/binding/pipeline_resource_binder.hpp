@@ -14,6 +14,8 @@
 #include <image_view.hpp>
 #include <sampler.hpp>
 
+#include <image_layout.hpp>
+
 #include <array.hpp>
 #include <ring_buffer.hpp>
 #include <stable_vector.hpp>
@@ -126,9 +128,9 @@ auto bind(const stable_vector<T, a, b> &vec) {
 *	@param	layout	Image layout
 */
 auto inline bind(const image_view_generic &image,
-				 VkImageLayout layout) {
+				 image_layout layout) {
 	return pipeline_resource_binder<vk::vk_descriptor_set_write_image, image_view_generic>(0, {
-		vk::vk_descriptor_set_write_image{ image.get_image_view_handle(), layout }
+		vk::vk_descriptor_set_write_image{ image.get_image_view_handle(), static_cast<VkImageLayout>(layout) }
 	});
 }
 /**
@@ -136,7 +138,7 @@ auto inline bind(const image_view_generic &image,
 *
 *	@param	images	Pairs of image views and layouts to bind
 */
-auto inline bind(const std::vector<std::pair<const image_view_generic*, VkImageLayout>> &images) {
+auto inline bind(const std::vector<std::pair<const image_view_generic*, image_layout>> &images) {
 	return bind(0, images);
 }
 /**
@@ -146,11 +148,11 @@ auto inline bind(const std::vector<std::pair<const image_view_generic*, VkImageL
 *	@param	images	Pairs of image views and layouts to bind
 */
 auto inline bind(std::uint32_t array_element,
-				 const std::vector<std::pair<const image_view_generic*, VkImageLayout>> &images) {
+				 const std::vector<std::pair<const image_view_generic*, image_layout>> &images) {
 	std::vector<vk::vk_descriptor_set_write_image> writes;
 	writes.reserve(images.size());
 	for (auto &p : images)
-		writes.push_back({ p.first->get_image_view_handle(), p.second });
+		writes.push_back({ p.first->get_image_view_handle(), static_cast<VkImageLayout>(p.second) });
 	return pipeline_resource_binder<vk::vk_descriptor_set_write_image, image_view_generic>(array_element, std::move(writes));
 }
 
@@ -158,12 +160,10 @@ auto inline bind(std::uint32_t array_element,
 *	@brief	Creates an texture binder
 *
 *	@param	tex		Texture to bind
-*	@param	layout	Image layout
 */
-auto inline bind(const texture_generic &tex,
-				 VkImageLayout layout) {
+auto inline bind(const texture_generic &tex) {
 	return pipeline_resource_binder<vk::vk_descriptor_set_write_image, texture_generic>(0, {
-		vk::vk_descriptor_set_write_image{ tex.get_image_view_handle(), layout, tex.get_sampler() }
+		vk::vk_descriptor_set_write_image{ tex.get_image_view_handle(), static_cast<VkImageLayout>(tex.get_layout()), tex.get_sampler() }
 	});
 }
 /**
@@ -171,7 +171,7 @@ auto inline bind(const texture_generic &tex,
 *
 *	@param	textures	Pairs of textures and layouts to bind
 */
-auto inline bind(const std::vector<std::pair<const texture_generic*, VkImageLayout>> &textures) {
+auto inline bind(const std::vector<const texture_generic*> &textures) {
 	return bind(0, textures);
 }
 /**
@@ -181,11 +181,11 @@ auto inline bind(const std::vector<std::pair<const texture_generic*, VkImageLayo
 *	@param	textures	Pairs of textures and layouts to bind
 */
 auto inline bind(std::uint32_t array_element,
-				 const std::vector<std::pair<const texture_generic*, VkImageLayout>> &textures) {
+				 const std::vector<const texture_generic*> &textures) {
 	std::vector<vk::vk_descriptor_set_write_image> writes;
 	writes.reserve(textures.size());
 	for (auto &p : textures)
-		writes.push_back({ p.first->get_image_view_handle(), p.second, p.first->get_sampler() });
+		writes.push_back({ p->get_image_view_handle(), static_cast<VkImageLayout>(p->get_layout()), p->get_sampler() });
 	return pipeline_resource_binder<vk::vk_descriptor_set_write_image, texture_generic>(array_element, std::move(writes));
 }
 

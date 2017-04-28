@@ -8,6 +8,7 @@
 #include <device_image_base.hpp>
 
 #include <format.hpp>
+#include <image_layout.hpp>
 #include <image_usage.hpp>
 
 #include <vk_image.hpp>
@@ -29,7 +30,7 @@ namespace gl {
 
 template <int dimensions, class allocation_policy = device_resource_allocation_policy_device>
 class device_image : public device_image_base,
-	public device_resource<vk::vk_image, allocation_policy> 
+	public device_resource<vk::vk_image, allocation_policy>
 {
 	using Base = device_resource<vk::vk_image, allocation_policy>;
 	using size_type = typename image_extent_type<dimensions>::type;
@@ -113,7 +114,7 @@ private:
 			auto *ptr = static_cast<glm::u8*>(*mmap_u8_ptr) + subresource_layout.offset;
 			const auto *src = reinterpret_cast<const glm::u8*>(level.data());
 
-			VkImageAspectFlags aspect = vk_format_aspect(image.get_format());
+			VkImageAspectFlags aspect = static_cast<VkImageAspectFlags>(vk_format_aspect(image.get_format()));
 			VkImageCopy range = {
 				{ aspect, 0, 0, layers },
 				{ 0, 0, 0 },
@@ -150,20 +151,20 @@ private:
 													pipeline_stage::top_of_pipe,
 													std::vector<image_memory_barrier>{
 						image_memory_barrier(staging_image,
-											 m == 0 ? VK_IMAGE_LAYOUT_PREINITIALIZED : VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-											 VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-											 VK_ACCESS_HOST_WRITE_BIT,
-											 VK_ACCESS_TRANSFER_READ_BIT),
+											 m == 0 ? image_layout::preinitialized : image_layout::transfer_src_optimal,
+											 image_layout::transfer_src_optimal,
+											 access_flags::host_write,
+											 access_flags::transfer_read),
 							image_memory_barrier(image,
-												 m == 0 ? VK_IMAGE_LAYOUT_UNDEFINED : VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-												 VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-												 0,
-												 VK_ACCESS_TRANSFER_WRITE_BIT) });
+												 m == 0 ? image_layout::undefined : image_layout::transfer_dst_optimal,
+												 image_layout::transfer_dst_optimal,
+												 access_flags::none,
+												 access_flags::transfer_write) });
 					recorder << cmd_pipeline_barrier(barrier);
 
 					// Copy to image
-					recorder << cmd_copy_image(staging_image.get(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-											   image.get(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+					recorder << cmd_copy_image(staging_image.get(), image_layout::transfer_src_optimal,
+											   image.get(), image_layout::transfer_dst_optimal,
 											   { range });
 				}
 
@@ -189,7 +190,7 @@ private:
 			auto batch = ste_device_queue::thread_allocate_batch();
 			auto& command_buffer = batch->acquire_command_buffer();
 
-			VkImageAspectFlags aspect = vk_format_aspect(image.get_format());
+			VkImageAspectFlags aspect = static_cast<VkImageAspectFlags>(vk_format_aspect(image.get_format()));
 
 			// Record and submit a one-time batch
 			{
@@ -200,17 +201,17 @@ private:
 					auto barrier = pipeline_barrier(pipeline_stage::top_of_pipe,
 													pipeline_stage::top_of_pipe,
 													{ image_memory_barrier(image,
-																			  VK_IMAGE_LAYOUT_UNDEFINED,
-																			  VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-																			  0,
-																			  VK_ACCESS_TRANSFER_WRITE_BIT,
-																			  m, 1, 0, 1),
+																		   image_layout::undefined,
+																		   image_layout::transfer_dst_optimal,
+																		   access_flags::none,
+																		   access_flags::transfer_write,
+																		   m, 1, 0, 1),
 													image_memory_barrier(image,
-																			VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-																			VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-																			VK_ACCESS_TRANSFER_WRITE_BIT,
-																			VK_ACCESS_TRANSFER_READ_BIT,
-																			m - 1, 1, 0, 1) });
+																		 image_layout::transfer_dst_optimal,
+																		 image_layout::transfer_src_optimal,
+																		 access_flags::transfer_write,
+																		 access_flags::transfer_read,
+																		 m - 1, 1, 0, 1) });
 					recorder << cmd_pipeline_barrier(barrier);
 
 					VkImageBlit range = {};
@@ -228,8 +229,8 @@ private:
 					};
 
 					// Copy to image
-					recorder << cmd_blit_image(image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-											   image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+					recorder << cmd_blit_image(image, image_layout::transfer_src_optimal,
+											   image, image_layout::transfer_dst_optimal,
 											   VK_FILTER_LINEAR, { range });
 				}
 
@@ -237,10 +238,10 @@ private:
 				auto barrier = pipeline_barrier(pipeline_stage::top_of_pipe,
 												pipeline_stage::top_of_pipe,
 												image_memory_barrier(image,
-																	 VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-																	 VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-																	 VK_ACCESS_TRANSFER_WRITE_BIT,
-																	 VK_ACCESS_TRANSFER_READ_BIT,
+																	 image_layout::transfer_dst_optimal,
+																	 image_layout::transfer_src_optimal,
+																	 access_flags::transfer_write,
+																	 access_flags::transfer_read,
 																	 mip_levels - 1, 1, 0, 1));
 				recorder << cmd_pipeline_barrier(barrier);
 			}

@@ -143,7 +143,7 @@ public:
 	auto get_image_subresource_layout(std::uint32_t mip,
 									  std::uint32_t layer = 0) {
 		VkImageSubresource subresource = {};
-		subresource.aspectMask = vk_format_aspect(static_cast<format>(get_format()));
+		subresource.aspectMask = static_cast<VkImageAspectFlags>(vk_format_aspect(static_cast<format>(get_format())));
 		subresource.mipLevel = mip;
 		subresource.arrayLayer = layer;
 
