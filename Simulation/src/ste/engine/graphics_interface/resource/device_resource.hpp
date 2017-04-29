@@ -68,6 +68,8 @@ public:
 	auto& get_underlying_memory() const { return *this->allocation.get_memory(); }
 	bool has_private_underlying_memory() const { return allocation.is_private_allocation(); }
 
+	auto& parent_context() const { return ctx; }
+
 	T& get() { return resource; }
 	const T& get() const { return resource; }
 };

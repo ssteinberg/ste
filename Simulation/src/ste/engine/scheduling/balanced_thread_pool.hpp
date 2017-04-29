@@ -42,6 +42,12 @@ private:
 	};
 
 private:
+	static thread_local bool balanced_thread_pool_worker_thread_flag;
+
+public:
+	static bool is_thread_pool_worker_thread() { return balanced_thread_pool_worker_thread_flag; }
+
+private:
 	aligned_ptr<shared_data_t> shared_data;
 	std::vector<interruptible_thread> workers;
 	std::vector<interruptible_thread> despawned_workers;
@@ -59,11 +65,15 @@ private:
 private:
 	void spawn_worker(int schedule_on_cpu = -1) {
 		workers.emplace_back([this]() {
+			// Set balanced thread pool worker flag for this thread
+			balanced_thread_pool::balanced_thread_pool_worker_thread_flag = true;
+
 			for (;;) {
 				if (interruptible_thread::is_interruption_flag_set()) return;
 
 				std::unique_ptr<task_t> task;
 				{
+					// Wait for tasks
 					std::unique_lock<std::mutex> l(shared_data->m);
 					if (interruptible_thread::is_interruption_flag_set()) return;
 
@@ -77,6 +87,7 @@ private:
 
 				shared_data->active_workers.fetch_add(1, std::memory_order_relaxed);
 
+				// Process tasks
 				while (task != nullptr) {
 					run_task(std::move(*task));
 					if (interruptible_thread::is_interruption_flag_set())

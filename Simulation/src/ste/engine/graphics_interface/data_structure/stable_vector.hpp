@@ -8,7 +8,7 @@
 #include <ste_resource.hpp>
 #include <buffer_usage.hpp>
 #include <buffer_view.hpp>
-#include <data_structure_common.hpp>
+#include <copy_data_buffer.hpp>
 
 #include <command_recorder.hpp>
 #include <cmd_update_buffer.hpp>
@@ -143,7 +143,7 @@ public:
 		: stable_vector(ctx, usage)
 	{
 		// Copy initial static data
-		copy_initial_data(ctx, buffer, initial_data);
+		_internal::copy_data_buffer(ctx, buffer, initial_data);
 	}
 	~stable_vector() noexcept {}
 

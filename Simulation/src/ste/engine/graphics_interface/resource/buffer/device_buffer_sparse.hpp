@@ -192,6 +192,8 @@ public:
 	resource_t& get() { return resource; }
 	const resource_t& get() const { return resource; }
 
+	auto& parent_context() const { return ctx; }
+
 	std::uint64_t get_elements_count() const override final { return this->get().get_elements_count(); }
 	std::uint32_t get_element_size_bytes() const override final { return sizeof(T); };
 	bool is_sparse() const override final { return true; };

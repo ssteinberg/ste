@@ -4,6 +4,7 @@
 #include <ste.hpp>
 #include <array.hpp>
 #include <stable_vector.hpp>
+#include <fill.hpp>
 #include <device_image.hpp>
 #include <device_image_layout_transform.hpp>
 #include <device_pipeline_shader_stage.hpp>
@@ -11,18 +12,9 @@
 
 #include <vertex_attributes.hpp>
 
-#include <vk_descriptor_pool.hpp>
-#include <vk_pipeline_graphics.hpp>
-#include <vk_framebuffer.hpp>
-
-#include <command_recorder.hpp>
-#include <cmd_begin_render_pass.hpp>
-#include <cmd_end_render_pass.hpp>
-#include <cmd_bind_pipeline.hpp>
 #include <cmd_bind_vertex_buffers.hpp>
 #include <cmd_bind_index_buffer.hpp>
 #include <cmd_draw_indexed.hpp>
-#include <cmd_bind_descriptor_sets.hpp>
 #include <cmd_pipeline_barrier.hpp>
 
 #include <surface_factory.hpp>
@@ -142,16 +134,20 @@ int main()
 
 	// Vertex and index buffer
 	using vertex = gl::vertex_input_layout<glm::vec2, glm::vec3, glm::vec2>;
-	std::vector<vertex> vertices = {
-		{ { 0.0f, -0.5f }, { 1.0f, 0.0f, 0.0f }, { 0,0 } },
-		{ { 0.5f,  0.5f }, { 0.0f, 1.0f, 0.0f }, { 1,0 } },
-		{ { -0.5f, 0.5f }, { 0.0f, 0.0f, 1.0f }, { 1,1 } },
-		{ { 1.0f, -0.5f }, { 1.0f, 0.0f, 1.0f }, { 0,1 } },
-	};
 	std::vector<std::uint32_t> indices = { 0,2,1,0,1,3 };
 
 	ste_resource<gl::array<std::uint32_t>> index_buffer(ctx, indices, gl::buffer_usage::index_buffer);
-	ste_resource<gl::stable_vector<vertex>> vertex_buffer(ctx, vertices, gl::buffer_usage::vertex_buffer);
+	ste_resource<gl::stable_vector<vertex>> vertex_buffer(ctx, gl::buffer_usage::vertex_buffer);
+
+	{
+		std::vector<vertex> vertices = {
+			{ { 0.0f, -0.5f },{ 1.0f, 0.0f, 0.0f },{ 0,0 } },
+			{ { 0.5f,  0.5f },{ 0.0f, 1.0f, 0.0f },{ 1,0 } },
+			{ { -0.5f, 0.5f },{ 0.0f, 0.0f, 1.0f },{ 1,1 } },
+			{ { 1.0f, -0.5f },{ 1.0f, 0.0f, 1.0f },{ 0,1 } },
+		};
+		gl::fill(vertex_buffer.get(), std::move(vertices));
+	}
 
 	// UBO
 	using uniform_buffer_object = gl::std140<glm::vec4>;
@@ -222,7 +218,8 @@ int main()
 		last_tick_time = current_tick_time;
 
 		f += 1/1000.f;
-		vertices[0].get<0>().x = glm::sin(f * glm::pi<float>());
+		vertex v = { { 0.0f, -0.5f }, { 1.0f, 0.0f, 0.0f }, { 0,0 } };
+		v.get<0>().x = glm::sin(f * glm::pi<float>());
 
 		float angle = f * glm::pi<float>();
 		uniform_buffer_object data = { glm::vec4{ glm::cos(angle), glm::sin(angle), -glm::sin(angle), glm::cos(angle) } };
@@ -231,7 +228,7 @@ int main()
 		auto batch = device.allocate_presentation_command_batch(selector);
 
 		// Record and submit a batch
-		device.enqueue(selector, [&, data, vertices, batch = std::move(batch)]() mutable {
+		device.enqueue(selector, [&, data, v, batch = std::move(batch)]() mutable {
 			auto& command_buffer = batch->acquire_command_buffer();
 			{
 				auto recorder = command_buffer.record();
@@ -265,8 +262,8 @@ int main()
 																	 gl::buffer_memory_barrier(vertex_buffer->get(),
 																							   gl::access_flags::vertex_attribute_read,
 																							   gl::access_flags::transfer_write) }))
-					<< vertex_buffer->update_cmd(vertices, 0)
-					<< ubo->update_cmd({ data })
+					<< vertex_buffer->update_cmd({ v }, 0)
+					<< ubo->update_cmd({ data }, 0)
 					<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::transfer,
 																	 gl::pipeline_stage::vertex_shader,
 																	 { gl::buffer_memory_barrier(ubo->get(),

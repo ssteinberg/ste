@@ -6,7 +6,7 @@
 #include <stdafx.hpp>
 #include <ste_context.hpp>
 #include <ste_resource.hpp>
-#include <data_structure_common.hpp>
+#include <copy_data_buffer.hpp>
 
 #include <buffer_usage.hpp>
 #include <buffer_view.hpp>
@@ -50,7 +50,7 @@ public:
 		: array(ctx, count, usage)
 	{
 		// Copy initial static data
-		copy_initial_data(ctx, buffer, initial_data);
+		_internal::copy_data_buffer(ctx, buffer, initial_data);
 	}
 	array(const ste_context &ctx,
 		  const std::vector<T> &initial_data,
@@ -69,7 +69,7 @@ public:
 	*	@param	offset	Array offset to copy to
 	*/
 	auto update_cmd(const std::vector<T> &data, 
-					std::uint64_t offset = 0) {
+					std::uint64_t offset) {
 		assert(data.size() + offset <= size() && "Out-of-bounds");
 		return cmd_update_buffer(buffer_view(buffer, 
 											 offset, 

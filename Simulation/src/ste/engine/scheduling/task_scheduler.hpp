@@ -57,6 +57,7 @@ public:
 
 	/**
 	*	@brief	Schedule task in background for execution as soon as a worker is free.
+	*			Or, in case called from a worker thread (e.g. by another task), executes the task immediately.
 	*
 	*	@param f		Lambda to schedule
 	*	@param shared	If true returns a task_shared_future, otherwise a task_future.
@@ -64,8 +65,18 @@ public:
 	template <bool shared, typename F>
 	task_future_impl<typename function_traits<F>::result_t, shared> schedule_now(F &&f) {
 		unique_thread_pool_task<typename function_traits<F>::result_t> task(std::forward<F>(f));
-		auto future = pool.enqueue(std::move(task));
 
+		if (balanced_thread_pool::is_thread_pool_worker_thread()) {
+			// Execute in place
+			auto future = task.get_future();
+			task();
+			
+			return { std::move(future), this };
+		}
+
+		// Otherwise enqueue the task
+		auto future = pool.enqueue(std::move(task));
+		
 		return { std::move(future), this };
 	}
 

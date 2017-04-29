@@ -69,7 +69,7 @@ private:
 																	  gl::pipeline_stage::vertex_shader,
 																	  buffer_barrier));
 
-			recorder << tr->fb_size_uniform.update_cmd({ render_target_size });
+			recorder << tr->fb_size_uniform.update_cmd({ render_target_size }, 0);
 			recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::transfer,
 																	  gl::pipeline_stage::vertex_shader,
 																	  gl::buffer_memory_barrier(*tr->fb_size_uniform,

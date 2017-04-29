@@ -204,6 +204,9 @@
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\format\format_rtti.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Simulation\src\ste\engine\scheduling\balanced_thread_pool.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Simulation\src\ste\engine\cache\lru_cache.hpp">
@@ -980,9 +983,6 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\data_structure\stable_vector.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\data_structure\data_structure_common.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\pool\ste_resource_pool.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1596,6 +1596,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\stl_extensions\type_traits\safe_numerical_limits.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\data_structure\fill.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\data_structure\copy_data_buffer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\job\job.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
