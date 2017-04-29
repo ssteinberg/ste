@@ -7,8 +7,28 @@
 #include <typelist.hpp>
 #include <generate_array.hpp>
 
+#include <tuple>
+
 namespace ste {
 namespace gl {
+
+namespace _detail {
+
+template <int N, typename Dst, typename T, typename... Ts>
+struct vertex_input_layout_initialize_with_args {
+	void operator()(Dst &dst, T&& t, Ts&&... ts) {
+		dst.template get<N>() = std::move(t);
+		block_layout_initialize_block_layout_with_tuple<N + 1, Dst, Ts...>()(dst, std::forward<Ts>(ts)...);
+	}
+};
+template <int N, typename Dst, typename T>
+struct vertex_input_layout_initialize_with_args<N, Dst, T> {
+	void operator()(Dst &dst, T&& t) {
+		dst.template get<N>() = std::forward<T>(t);
+	}
+};
+
+}
 
 template <typename... Ts>
 struct vertex_input_layout {
@@ -33,6 +53,10 @@ struct vertex_input_layout {
 	}
 
 	vertex_input_layout() = default;
+	vertex_input_layout(tuple_t &&tuple) {
+		data = std::move(tuple);
+	}
+	vertex_input_layout(Ts&&... args) : vertex_input_layout(tuple_t(std::forward<Ts>(args)...)) {}
 };
 
 namespace _detail {

@@ -22,9 +22,9 @@ public:
 		: buffer(buffer), 
 		offset(offset), index_type(VK_INDEX_TYPE_UINT32)
 	{
-		if (buffer.get_element_size_bytes() == 16)
+		if (buffer.get_element_size_bytes() == 2)
 			index_type = VK_INDEX_TYPE_UINT16;
-		else if (buffer.get_element_size_bytes() == 32)
+		else if (buffer.get_element_size_bytes() == 4)
 			index_type = VK_INDEX_TYPE_UINT32;
 		else
 			assert(false && "Expected a uint16 or uint32 buffer");

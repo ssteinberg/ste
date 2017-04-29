@@ -37,6 +37,7 @@ public:
 		attachments.insert(it, std::move(val));
 	}
 
+	auto find(const location_t &location) { return attachments.find(location); }
 	auto find(const location_t &location) const { return attachments.find(location); }
 
 	auto& get() const { return attachments; }

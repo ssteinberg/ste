@@ -40,7 +40,9 @@ public:
 			   swapchain_image_mips, 
 			   layers)
 	{}
-	~vk_swapchain_image() noexcept {}
+	~vk_swapchain_image() noexcept {
+		this->image = none;
+	}
 
 	vk_swapchain_image(vk_swapchain_image &&) = default;
 	vk_swapchain_image& operator=(vk_swapchain_image &&) = default;

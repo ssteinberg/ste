@@ -74,7 +74,7 @@ public:
 		return cmd_update_buffer(buffer_view(buffer, 
 											 offset, 
 											 data.size()), 
-								 data.size(), data.data());
+								 data.size() * sizeof(T), data.data());
 	}
 
 	auto size() const { return buffer.get().get_elements_count(); }

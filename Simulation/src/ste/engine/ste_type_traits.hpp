@@ -5,7 +5,7 @@
 
 #include <stdafx.hpp>
 #include <type_traits>
-#include <limits>
+#include <safe_numerical_limits.hpp>
 
 #include <half.hpp>
 
@@ -200,7 +200,7 @@ using remove_extents_t = typename remove_extents<T>::type;
 */
 template<typename T> struct is_signed {
 	using UnderlyingT = remove_extents_t<T>;
-	static constexpr auto value = std::numeric_limits<UnderlyingT>::is_signed;
+	static constexpr auto value = safe_numerical_limits_t<UnderlyingT>::is_signed;
 };
 template<typename T>
 static constexpr auto is_signed_v = is_signed<T>::value;
@@ -211,7 +211,7 @@ static constexpr auto is_signed_v = is_signed<T>::value;
 */
 template<typename T> struct is_floating_point {
 	using UnderlyingT = remove_extents_t<T>;
-	static constexpr auto value = std::numeric_limits<UnderlyingT>::is_iec559;
+	static constexpr auto value = safe_numerical_limits_t<UnderlyingT>::is_iec559;
 };
 template<typename T>
 static constexpr auto is_floating_point_v = is_floating_point<T>::value;

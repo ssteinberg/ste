@@ -50,8 +50,8 @@ struct framebuffer_attachment {
 	 *	@brief	Checks if the attachments are renderpass compatible
 	 */
 	bool renderpass_compatible(const framebuffer_attachment &rhs) const {
-		bool format_compatible = 
-			(!output && !rhs.output) || 
+		bool format_compatible =
+			(!output && !rhs.output) ||
 			(output && rhs.output && output->get_format() == rhs.output->get_format());
 		bool layout_compatible =
 			initial_layout == rhs.initial_layout &&
@@ -81,12 +81,12 @@ struct framebuffer_attachment {
 *	@brief	Creates a framebuffer attachment with the following load-store operations:
 *			Intially clear attachment content and store after render.
 */
-framebuffer_attachment inline clear_store(const image_view_generic *output,
+framebuffer_attachment inline clear_store(const image_view_generic &output,
 										  framebuffer_attachment_clear_value clear_value,
 										  image_layout layout,
 										  image_layout final_layout) {
 	return {
-		output,
+		&output,
 		image_layout::undefined,
 		layout,
 		final_layout,
@@ -99,12 +99,12 @@ framebuffer_attachment inline clear_store(const image_view_generic *output,
 *	@brief	Creates a framebuffer attachment with the following load-store operations:
 *			Intially clear attachment content and discard contents after render.
 */
-framebuffer_attachment inline clear_discard(const image_view_generic *output,
+framebuffer_attachment inline clear_discard(const image_view_generic &output,
 											framebuffer_attachment_clear_value clear_value,
 											image_layout layout,
 											image_layout final_layout) {
 	return {
-		output,
+		&output,
 		image_layout::undefined,
 		layout,
 		final_layout,
@@ -117,12 +117,12 @@ framebuffer_attachment inline clear_discard(const image_view_generic *output,
 *	@brief	Creates a framebuffer attachment with the following load-store operations:
 *			Intially load attachment content and store after render.
 */
-framebuffer_attachment inline load_store(const image_view_generic *output,
+framebuffer_attachment inline load_store(const image_view_generic &output,
 										 image_layout initial_layout,
 										 image_layout layout,
 										 image_layout final_layout) {
 	return {
-		output,
+		&output,
 		initial_layout,
 		layout,
 		final_layout,
@@ -134,12 +134,12 @@ framebuffer_attachment inline load_store(const image_view_generic *output,
 *	@brief	Creates a framebuffer attachment with the following load-store operations:
 *			Intially load attachment content and discard contents after render.
 */
-framebuffer_attachment inline load_discard(const image_view_generic *output,
+framebuffer_attachment inline load_discard(const image_view_generic &output,
 										   image_layout initial_layout,
 										   image_layout layout,
 										   image_layout final_layout) {
 	return {
-		output,
+		&output,
 		initial_layout,
 		layout,
 		final_layout,
@@ -151,11 +151,11 @@ framebuffer_attachment inline load_discard(const image_view_generic *output,
 *	@brief	Creates a framebuffer attachment with the following load-store operations:
 *			Ignore initial attachment content and store contents after render.
 */
-framebuffer_attachment inline ignore_store(const image_view_generic *output,
+framebuffer_attachment inline ignore_store(const image_view_generic &output,
 										   image_layout layout,
 										   image_layout final_layout) {
 	return {
-		output,
+		&output,
 		image_layout::undefined,
 		layout,
 		final_layout,
@@ -167,11 +167,11 @@ framebuffer_attachment inline ignore_store(const image_view_generic *output,
 *	@brief	Creates a framebuffer attachment with the following load-store operations:
 *			Ignore initial attachment content and discard contents after render.
 */
-framebuffer_attachment inline ignore_discard(const image_view_generic *output,
+framebuffer_attachment inline ignore_discard(const image_view_generic &output,
 											 image_layout layout,
 											 image_layout final_layout) {
 	return {
-		output,
+		&output,
 		image_layout::undefined,
 		layout,
 		final_layout,
@@ -183,13 +183,13 @@ framebuffer_attachment inline ignore_discard(const image_view_generic *output,
 *	@brief	Creates a framebuffer attachment with the following load-store operations:
 *			Intially clear attachment content and store after render.
 */
-framebuffer_attachment inline clear_store(const image_view_generic *output,
+framebuffer_attachment inline clear_store(const image_view_generic &output,
 										  framebuffer_attachment_clear_value clear_value,
 										  image_layout layout,
 										  image_layout final_layout,
 										  const vk::vk_blend_op_descriptor &blend_op) {
 	return {
-		output,
+		&output,
 		image_layout::undefined,
 		layout,
 		final_layout,
@@ -203,13 +203,13 @@ framebuffer_attachment inline clear_store(const image_view_generic *output,
 *	@brief	Creates a framebuffer attachment with the following load-store operations:
 *			Intially clear attachment content and discard contents after render.
 */
-framebuffer_attachment inline clear_discard(const image_view_generic *output,
+framebuffer_attachment inline clear_discard(const image_view_generic &output,
 											framebuffer_attachment_clear_value clear_value,
 											image_layout layout,
 											image_layout final_layout,
 											const vk::vk_blend_op_descriptor &blend_op) {
 	return {
-		output,
+		&output,
 		image_layout::undefined,
 		layout,
 		final_layout,
@@ -223,13 +223,13 @@ framebuffer_attachment inline clear_discard(const image_view_generic *output,
 *	@brief	Creates a framebuffer attachment with the following load-store operations:
 *			Intially load attachment content and store after render.
 */
-framebuffer_attachment inline load_store(const image_view_generic *output,
+framebuffer_attachment inline load_store(const image_view_generic &output,
 										 image_layout initial_layout,
 										 image_layout layout,
 										 image_layout final_layout,
 										 const vk::vk_blend_op_descriptor &blend_op) {
 	return {
-		output,
+		&output,
 		initial_layout,
 		layout,
 		final_layout,
@@ -243,13 +243,13 @@ framebuffer_attachment inline load_store(const image_view_generic *output,
 *	@brief	Creates a framebuffer attachment with the following load-store operations:
 *			Intially load attachment content and discard contents after render.
 */
-framebuffer_attachment inline load_discard(const image_view_generic *output,
+framebuffer_attachment inline load_discard(const image_view_generic &output,
 										   image_layout initial_layout,
 										   image_layout layout,
 										   image_layout final_layout,
 										   const vk::vk_blend_op_descriptor &blend_op) {
 	return {
-		output,
+		&output,
 		initial_layout,
 		layout,
 		final_layout,
@@ -263,12 +263,12 @@ framebuffer_attachment inline load_discard(const image_view_generic *output,
 *	@brief	Creates a framebuffer attachment with the following load-store operations:
 *			Ignore initial attachment content and store contents after render.
 */
-framebuffer_attachment inline ignore_store(const image_view_generic *output,
+framebuffer_attachment inline ignore_store(const image_view_generic &output,
 										   image_layout layout,
 										   image_layout final_layout,
 										   const vk::vk_blend_op_descriptor &blend_op) {
 	return {
-		output,
+		&output,
 		image_layout::undefined,
 		layout,
 		final_layout,
@@ -282,12 +282,12 @@ framebuffer_attachment inline ignore_store(const image_view_generic *output,
 *	@brief	Creates a framebuffer attachment with the following load-store operations:
 *			Ignore initial attachment content and discard contents after render.
 */
-framebuffer_attachment inline ignore_discard(const image_view_generic *output,
+framebuffer_attachment inline ignore_discard(const image_view_generic &output,
 											 image_layout layout,
 											 image_layout final_layout,
 											 const vk::vk_blend_op_descriptor &blend_op) {
 	return {
-		output,
+		&output,
 		image_layout::undefined,
 		layout,
 		final_layout,

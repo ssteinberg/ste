@@ -11,6 +11,7 @@ namespace gl {
 
 template <std::size_t base_alignment, typename... Ts>
 struct block_layout {
+	using tuple_t = std::tuple<Ts...>;
 	using _element_t = _detail::layout_element<base_alignment, 0, Ts...>;
 
 	/*
@@ -50,8 +51,12 @@ struct block_layout {
 	template <int N>
 	using type_at = decltype(_detail::block_layout_getter<N>()(front.block));
 
-protected:
 	block_layout() = default;
+	block_layout(tuple_t &&tuple) {
+		using initializer = _detail::block_layout_initialize_block_layout_with_tuple<0, count, tuple_t, block_layout<base_alignment, Ts...>>;
+		initializer()(*this, std::move(tuple));
+	}
+	block_layout(Ts&&... args) : block_layout(tuple_t(std::forward<Ts>(args)...)) {}
 };
 
 template <int N, std::size_t base_alignment, typename... Ts>

@@ -9,7 +9,7 @@
 
 using namespace ste::gl;
 
-void ste_shader_spirv_parser::parse_constant_value(ste_shader_spirv_parser::parser_internal_element &dst,
+void ste_shader_spirv_parser::parse_constant_value(parser_internal_element &dst,
 												   const std::uint32_t *op) {
 	std::uint32_t op_length = op[0];
 	spv::Op opcode = static_cast<spv::Op>(op_length & spv::OpCodeMask);
@@ -40,24 +40,27 @@ void ste_shader_spirv_parser::parse_constant_value(ste_shader_spirv_parser::pars
 	else {}
 }
 
-void ste_shader_spirv_parser::parse_storage_class(ste_shader_spirv_parser::parser_internal_element &dst,
+void ste_shader_spirv_parser::parse_storage_class(parser_internal_element &dst,
 												  std::uint32_t storage_id) {
 	spv::StorageClass storage = static_cast<spv::StorageClass>(storage_id);
 	if (storage == spv::StorageClass::Uniform ||
 		storage == spv::StorageClass::UniformConstant) {
-		if (dst.type == element_type::unknown)
-			dst.type = element_type::uniform;
+		if (dst.storage == storage_type::unknown)
+			dst.storage = storage_type::uniform;
 	}
 	else if (storage == spv::StorageClass::PushConstant) {
-		dst.type = element_type::push_constant;
+		dst.storage = storage_type::push_constant;
 		dst.bind_assigned = true;
 	}
 	else if (storage == spv::StorageClass::Output) {
-		dst.type = element_type::output;
+		dst.policy = storage_policy::output;
+	}
+	else if (storage == spv::StorageClass::Input) {
+		dst.policy = storage_policy::input;
 	}
 }
 
-void ste_shader_spirv_parser::parse_decoration(ste_shader_spirv_parser::parser_internal_element &dst,
+void ste_shader_spirv_parser::parse_decoration(parser_internal_element &dst,
 											   const std::uint32_t *op) {
 	spv::Decoration decoration = static_cast<spv::Decoration>(op[0]);
 
@@ -78,7 +81,7 @@ void ste_shader_spirv_parser::parse_decoration(ste_shader_spirv_parser::parser_i
 		dst.block_layout = ste_shader_stage_block_layout::std140;
 		break;
 	case spv::Decoration::BufferBlock:
-		dst.type = element_type::storage;
+		dst.storage = storage_type::storage;
 		dst.block_layout = ste_shader_stage_block_layout::std430;
 		break;
 	default:
@@ -105,11 +108,13 @@ void ste_shader_spirv_parser::parse_decoration(_internal::ste_shader_spirv_parse
 	}
 }
 
-void ste_shader_spirv_parser::consume_type(ste_shader_spirv_parser::parser_internal_element &dst,
+void ste_shader_spirv_parser::consume_type(parser_internal_element &dst,
 										   const ste_shader_spirv_parser::parser_internal_element &consume) {
 	dst.variable.consume(consume.variable);
-	if (consume.type != element_type::unknown)
-		dst.type = consume.type;
+	if (consume.storage != storage_type::unknown)
+		dst.storage = consume.storage;
+	if (consume.policy != storage_policy::none)
+		dst.policy = consume.policy;
 	if (consume.block_layout != ste_shader_stage_block_layout::none)
 		dst.block_layout = consume.block_layout;
 	if (consume.bind_assigned)
@@ -239,7 +244,7 @@ std::size_t ste_shader_spirv_parser::process_spirv_op(std::vector<ste_shader_spi
 		}
 		binds[id].variable.array_elements = static_cast<std::uint32_t>(elements.get());
 
-		if (binds[element_id].type == element_type::spec_constant) {
+		if (binds[element_id].storage == storage_type::spec_constant) {
 			binds[id].variable.array_length_specialization_constant_id = binds[element_id].bind_idx;
 		}
 	}
@@ -289,7 +294,7 @@ std::size_t ste_shader_spirv_parser::process_spirv_op(std::vector<ste_shader_spi
 			opcode == spv::Op::OpSpecConstantFalse ||
 			opcode == spv::Op::OpSpecConstant ||
 			opcode == spv::Op::OpSpecConstantComposite)
-			binds[id].type = element_type::spec_constant;
+			binds[id].storage = storage_type::spec_constant;
 
 		binds[id].is_variable = true;
 	}
@@ -301,15 +306,15 @@ std::size_t ste_shader_spirv_parser::process_spirv_op(std::vector<ste_shader_spi
 	return word_count;
 }
 
-ste_shader_stage_binding_type ste_shader_spirv_parser::element_type_to_binding_type(const element_type &t) {
+ste_shader_stage_binding_type ste_shader_spirv_parser::element_type_to_binding_type(const storage_type &t) {
 	switch (t) {
-	case element_type::push_constant:
+	case storage_type::push_constant:
 		return ste_shader_stage_binding_type::push_constant;
-	case element_type::storage:
+	case storage_type::storage:
 		return ste_shader_stage_binding_type::storage;
-	case element_type::uniform:
+	case storage_type::uniform:
 		return ste_shader_stage_binding_type::uniform;
-	case element_type::spec_constant:
+	case storage_type::spec_constant:
 		return ste_shader_stage_binding_type::spec_constant;
 	default:
 		assert(false);
@@ -357,11 +362,11 @@ ste_shader_spirv_parser_output ste_shader_spirv_parser::parse(const std::string 
 		if (!is_attachment && !is_binding)
 			continue;
 
-		assert(b.type != element_type::unknown);
+		assert(b.storage != storage_type::unknown || b.policy == storage_policy::output);
 		assert(b.variable.type != ste_shader_stage_variable_type::unknown);
 
 		// Generate the underlying variable
-		auto variable = b.variable.generate_variable(b.type == element_type::spec_constant,
+		auto variable = b.variable.generate_variable(b.storage == storage_type::spec_constant,
 													 output.bindings);
 
 		if (is_attachment) {
@@ -375,7 +380,7 @@ ste_shader_spirv_parser_output ste_shader_spirv_parser::parse(const std::string 
 		}
 		else if (is_binding) {
 			// Resource binding
-			auto binding_type = element_type_to_binding_type(b.type);
+			auto binding_type = element_type_to_binding_type(b.storage);
 
 			ste_shader_stage_binding binding;
 			binding.set_idx = b.set_idx;

@@ -62,6 +62,18 @@ struct block_layout_type_base_alignment_impl {
 	}
 };
 
+template <int N, int Size, typename Src, typename Dst>
+struct block_layout_initialize_block_layout_with_tuple {
+	void operator()(Dst &dst, Src &&src) {
+		dst.template get<N>() = std::move(std::get<N>(src));
+		block_layout_initialize_block_layout_with_tuple<N + 1, Size, Src, Dst>()(dst, std::move(src));
+	}
+};
+template <int Size, typename Src, typename Dst>
+struct block_layout_initialize_block_layout_with_tuple<Size, Size, Src, Dst> {
+	void operator()(Dst &dst, Src &&src) {}
+};
+
 }
 
 template <typename T>

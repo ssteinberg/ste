@@ -132,7 +132,7 @@ private:
 					invalidate_pipeline();
 			}
 
-			fb.insert(it, std::make_pair(location, std::move(attachment)));
+			it->second = std::move(attachment);
 		}
 	}
 
@@ -205,16 +205,28 @@ private:
 		}
 
 		// Create the graphics pipeline object
+		VkViewport viewport = { 
+			pipeline_settings.viewport.origin.x,
+			pipeline_settings.viewport.origin.y,
+			pipeline_settings.viewport.size.x,
+			pipeline_settings.viewport.size.y,
+			pipeline_settings.depth.min_depth,
+			pipeline_settings.depth.max_depth,
+		};
+		VkRect2D scissor = {
+			{ pipeline_settings.scissor.origin.x,pipeline_settings.scissor.origin.y },
+			{ pipeline_settings.scissor.size.x,pipeline_settings.scissor.size.y },
+		};
 		graphics_pipeline.emplace(ctx.device(),
 								  shader_stage_descriptors,
 								  layout,
 								  device_renderpass.get(),
 								  0,
-								  pipeline_settings.viewport,
-								  pipeline_settings.scissor,
+								  viewport,
+								  scissor,
 								  vertex_input_descriptor.vertex_input_binding_descriptors,
 								  vertex_input_descriptor.vertex_input_attribute_descriptors,
-								  pipeline_settings.topology,
+								  static_cast<VkPrimitiveTopology>(pipeline_settings.topology),
 								  pipeline_settings.rasterizer_op,
 								  pipeline_settings.depth_op,
 								  attachment_blend_ops,
@@ -316,8 +328,8 @@ public:
 		vertex_input_descriptor(vertex_input_descriptor)
 	{
 		extent = {
-			static_cast<std::uint32_t>(pipeline_settings.viewport.width),
-			static_cast<std::uint32_t>(pipeline_settings.viewport.height)
+			static_cast<std::uint32_t>(pipeline_settings.viewport.size.x),
+			static_cast<std::uint32_t>(pipeline_settings.viewport.size.y)
 		};
 	}
 	~device_pipeline_graphics() noexcept {}

@@ -117,106 +117,36 @@ int main()
 									window);
 	ste_context ctx(engine, gl_ctx, device);
 
+	gl::pipeline_binding_set_pool pool(ctx);
+
 
 	/*
 	*	Text renderer
 	*/
 	auto font = text::font("Data/ArchitectsDaughter.ttf");
-	auto text_manager = std::make_unique<text::text_manager>(ctx, font);
+//	auto text_manager = std::make_unique<text::text_manager>(ctx, font);
 
 
 	auto swapchain_images_count = device.get_surface().get_swap_chain_images().size();
 
 	// Load image
-	auto image = resource::surface_factory::create_image_2d<gl::format::r8g8b8a8_unorm>(ctx,
-																					R"(Data\models\crytek-sponza\images\Sponza_Bricks_a_Albedo.png)",
-	                                                                                    gl::image_usage::color_attachment);
+	auto image =
+		resource::surface_factory::create_image_2d<gl::format::r8g8b8a8_unorm>(ctx,
+																			   R"(Data\models\crytek-sponza\images\Sponza_Bricks_a_Albedo.png)",
+																			   gl::image_usage::sampled);
 
 	// Shader stages
-	ste_resource<gl::device_pipeline_shader_stage> vert_shader_stage(ctx, std::string("temp.vert"));
-	ste_resource<gl::device_pipeline_shader_stage> frag_shader_stage(ctx, std::string("temp.frag"));
-
-	gl::pipeline_binding_set_pool pool(ctx);
-
-	{
-		gl::device_pipeline_shader_stage contour_vert_shader_stage(ctx, std::string("text_distance_map_contour.vert"));
-		gl::device_pipeline_shader_stage contour_geom_shader_stage(ctx, std::string("text_distance_map_contour.geom"));
-		gl::device_pipeline_shader_stage contour_frag_shader_stage(ctx, std::string("text_distance_map_contour.frag"));
-
-		gl::array<gl::std140<glm::vec2>> fb_size_uniform(ctx, 1, gl::buffer_usage::uniform_buffer);
-		gl::array<gl::std430<int, int, int, int, int>> buffer(ctx, 10, gl::buffer_usage::storage_buffer);
-		gl::sampler sampler(ctx, gl::sampler_parameter::filtering(gl::sampler_filter::linear, 
-																  gl::sampler_filter::linear,
-																  gl::sampler_mipmap_mode::linear));
-
-		gl::device_pipeline_graphics_configurations graphics_settings = {};
-
-		gl::pipeline_auditor_graphics auditor(std::move(graphics_settings));
-		auditor.attach_shader_stage(contour_vert_shader_stage);
-		auditor.attach_shader_stage(contour_geom_shader_stage);
-		auditor.attach_shader_stage(contour_frag_shader_stage);
-		auditor.set_vertex_attributes(0, gl::vertex_attributes<gl::vertex_input_layout<glm::uvec4>>());
-
-		gl::array<gl::vertex_input_layout<glm::uvec4>> vertex_buffer(ctx, 1, gl::buffer_usage::vertex_buffer);
-
-		std::vector<gl::pipeline_external_binding_set_layout> external_layouts;
-		{
-			gl::pipeline_external_binding_descriptor<
-				gl::std140<glm::vec2>,
-				1,
-				0
-			> external_binding_descriptor;
-			std::vector<gl::pipeline_external_binding_layout> external_bindings;
-			external_bindings.emplace_back("fb_size_uniform",
-										   gl::pipeline_binding_stages_collection{ gl::ste_shader_program_stage::geometry_program },
-										   external_binding_descriptor);
-			external_layouts.emplace_back(ctx, std::move(external_bindings));
-		}
-
-		gl::pipeline_external_binding_set_collection external_sets(std::move(external_layouts),
-															   pool);
-		external_sets["fb_size_uniform"] = bind(fb_size_uniform);
-
-		auto pipeline = auditor.pipeline(ctx,
-										 pool,
-										 std::ref(external_sets));
-
-		auto v = &(*pipeline)["glyph_textures"].get_var();
-		auto va = dynamic_cast<const gl::ste_shader_stage_variable_array*>(v);
-		auto array_length = va->size();
-
-		external_sets.update();
-		(*pipeline)["glyph_data"] = bind(buffer);
-		(*pipeline)["glyph_sampler"] = bind(sampler);
-		(*pipeline)["glyph_texture_count"] = 45;
-		(*pipeline)["glyph_texture_count"] = 40;
-		array_length = va->size();
-
-		gl::image_view<gl::image_type::image_2d> texture(image->get(), image->get().get_format(), 0, 1, gl::image_view_swizzle());
-		pipeline->framebuffer()["frag_color"] = clear_store(&texture,
-															glm::vec2(1),
-															gl::image_layout::general,
-															gl::image_layout::shader_read_only_optimal);
-		pipeline->framebuffer()["frag_color"]->clear_value = .0f;
-		pipeline->cmd_bind();
-	}
-
-	return 0;
+	ste_resource<gl::device_pipeline_shader_stage> vert_shader_stage(ctx, "temp.vert");
+	ste_resource<gl::device_pipeline_shader_stage> frag_shader_stage(ctx, "temp.frag");
 
 
 	// Vertex and index buffer
-	struct vertex {
-		glm::vec2 pos;
-		glm::vec3 color;
-		glm::vec2 tex_coords;
-
-//		using descriptor = vertex_attributes<std430<glm::vec2, glm::vec3, glm::vec2>>;
-	};
+	using vertex = gl::vertex_input_layout<glm::vec2, glm::vec3, glm::vec2>;
 	std::vector<vertex> vertices = {
-		{ { 0.0f, -0.5f }, { 1.0f, 0.0f, 0.0f },{ 0,0 } },
-		{ { 0.5f,  0.5f }, { 0.0f, 1.0f, 0.0f },{ 1,0 } },
-		{ { -0.5f, 0.5f }, { 0.0f, 0.0f, 1.0f },{ 1,1 } },
-		{ { 1.0f,  -0.5f }, { 1.0f, 0.0f, 1.0f },{ 0,1 } }
+		{ { 0.0f, -0.5f }, { 1.0f, 0.0f, 0.0f }, { 0,0 } },
+		{ { 0.5f,  0.5f }, { 0.0f, 1.0f, 0.0f }, { 1,0 } },
+		{ { -0.5f, 0.5f }, { 0.0f, 0.0f, 1.0f }, { 1,1 } },
+		{ { 1.0f, -0.5f }, { 1.0f, 0.0f, 1.0f }, { 0,1 } },
 	};
 	std::vector<std::uint32_t> indices = { 0,2,1,0,1,3 };
 
@@ -224,99 +154,35 @@ int main()
 	ste_resource<gl::stable_vector<vertex>> vertex_buffer(ctx, vertices, gl::buffer_usage::vertex_buffer);
 
 	// UBO
-	struct uniform_buffer_object {
-		glm::vec4 data;
-	};
+	using uniform_buffer_object = gl::std140<glm::vec4>;
 	ste_resource<gl::array<uniform_buffer_object>> ubo(ctx,
-												   std::vector<uniform_buffer_object>{ { glm::vec4{ 1, 0, 0, 1 } } },
-												   gl::buffer_usage::uniform_buffer);
+													   std::vector<uniform_buffer_object>{ { glm::vec4{ 1, 0, 0, 1 } } },
+													   gl::buffer_usage::uniform_buffer);
 
-	// Viewport
-	glm::u32vec2 swapchain_size = device.get_surface().size();
-	VkViewport viewport = { 0, 0,
-		static_cast<float>(swapchain_size.x), static_cast<float>(swapchain_size.y),
-		1.f, 0.f };
-	VkRect2D scissor = { { 0,0 },{ swapchain_size.x, swapchain_size.y } };
+	// Pipeline settings
+	gl::device_pipeline_graphics_configurations graphics_settings;
+	auto surface_size = device.get_surface().size();
+	graphics_settings.viewport = glm::vec2(surface_size);
+	graphics_settings.scissor = surface_size;
 
-	// Swapchain attachment
-//	vk_render_pass_attachment swapchain_attachment = vk_render_pass_attachment::clear_and_store(device.get_surface().surface_format(),
-//																										VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
-//	VkClearValue swapchain_attachment_clear_value = {};
-//	vk_blend_op_descriptor attachment0_blend_op = vk_blend_op_descriptor();
-//
-//	// Renderpass
-//	vk_render_pass_subpass_descriptor presentation_subpass0({ VkAttachmentReference{ 0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } });
-//	vk_render_pass_subpass_dependency presentation_subpass0_dependency(VK_SUBPASS_EXTERNAL,
-//																		   VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-//																		   0,
-//																		   0,
-//																		   VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-//																		   VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT);
-//	vk_render_pass presentation_renderpass(device,
-//	{ swapchain_attachment },
-//	{ presentation_subpass0 },
-//	{ presentation_subpass0_dependency });
+	// Create pipeline
+	gl::pipeline_auditor_graphics auditor(std::move(graphics_settings));
+	auditor.attach_shader_stage(vert_shader_stage.get());
+	auditor.attach_shader_stage(frag_shader_stage.get());
+	auditor.set_vertex_attributes(0, gl::vertex_attributes<vertex>());
 
-	// Swapchain presentation framebuffers
-	std::vector<gl::vk::vk_framebuffer> presentation_framebuffers;
-	auto recreate_queues_connection = std::make_shared<gl::ste_device::queues_and_surface_recreate_signal_type::connection_type>([&](const gl::ste_device*) {
-		swapchain_images_count = device.get_surface().get_swap_chain_images().size();
-
-		presentation_framebuffers.reserve(swapchain_images_count);
-//		for (std::size_t i = 0; i < swapchain_images_count; ++i)
-//			presentation_framebuffers.emplace_back(device,
-//												   presentation_renderpass,
-//												   std::vector<VkImageView>{ device.get_surface().get_swap_chain_images()[i].view },
-//												   swapchain_size);
-	});
-
-	(*recreate_queues_connection)(&device);
-	device.get_queues_and_surface_recreate_signal().connect(recreate_queues_connection);
+	auto pipeline = auditor.pipeline(ctx,
+									 pool);
 
 	// Texture
-	gl::vk::vk_image_view<gl::image_type::image_2d> texture(image->get(), image->get().get_format());
+	gl::image_view<gl::image_type::image_2d> image_view(image, image->get().get_format());
 	gl::sampler sampler(ctx, gl::sampler_parameter::filtering(gl::sampler_filter::linear, gl::sampler_filter::linear,
 															  gl::sampler_mipmap_mode::linear));
+	auto texture = gl::make_texture(image_view, sampler, gl::image_layout::shader_read_only_optimal);
 
-	// Descriptors
-	gl::vk::vk_descriptor_set_layout_binding descriptor_set_ubo_layout_binding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-																		   VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
-																		   0);
-	gl::vk::vk_descriptor_set_layout_binding descriptor_set_sampler_layout_binding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-																			   VK_SHADER_STAGE_FRAGMENT_BIT,
-																			   1);
-	gl::vk::vk_descriptor_set_layout descriptor_set_layout(device, { descriptor_set_ubo_layout_binding, descriptor_set_sampler_layout_binding });
-
-	gl::vk::vk_descriptor_pool descriptor_pool(device, 10, { descriptor_set_ubo_layout_binding, descriptor_set_sampler_layout_binding });
-	auto descriptor_set = descriptor_pool.allocate_descriptor_set(descriptor_set_layout);
-
-//	descriptor_set.write({ vk_descriptor_set_write_resource(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, 0, 
-//																vk_descriptor_set_write_buffer(ubo, 1)),
-//						 vk_descriptor_set_write_resource(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, 0,
-//															  vk_descriptor_set_write_image(texture, 
-//																								VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 
-//																								sampler)) });
-
-	// Pipeline layout
-	gl::vk::vk_pipeline_layout pipeline_layout(device, { &descriptor_set_layout }, {});
-
-	// Graphics pipeline
-	vertex_buffer.get();
-	index_buffer.get();
-//	vk_pipeline_graphics pipeline(device, { vert_shader_stage->pipeline_stage_descriptor(),
-//									  frag_shader_stage->pipeline_stage_descriptor() },
-//									  pipeline_layout,
-//									  presentation_renderpass,
-//									  0,
-//									  viewport,
-//									  scissor,
-//									  { { 0, vertex::descriptor() } },
-//									  VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
-//									  vk_rasterizer_op_descriptor(),
-//									  vk_depth_op_descriptor(VK_COMPARE_OP_GREATER, false),
-//									  { attachment0_blend_op },
-//									  glm::vec4{ .0f },
-//									  &device.pipeline_cache().current_thread_cache());
+	// Bind resources
+	(*pipeline)["texSampler"] = gl::bind(texture);
+	(*pipeline)["uniform_buffer_object"] = gl::bind(ubo.get());
 
 	// Rendering queue
 	auto selector = gl::make_queue_selector(gl::ste_queue_type::primary_queue);
@@ -324,8 +190,8 @@ int main()
 	// Transfer image queue ownership
 	gl::queue_transfer_discard(ctx,
 							   image.get(), selector,
-							   gl::pipeline_stage::transfer,
-							   gl::image_layout::transfer_dst_optimal, gl::access_flags::transfer_read,
+							   gl::pipeline_stage::fragment_shader,
+							   gl::image_layout::transfer_src_optimal, gl::access_flags::transfer_read,
 							   gl::image_layout::shader_read_only_optimal, gl::access_flags::shader_read);
 
 //	ste_resource<device_pipeline_shader_stage> stage(ste_resource_dont_defer(), ctx, std::string("fxaa.frag"));
@@ -356,7 +222,7 @@ int main()
 		last_tick_time = current_tick_time;
 
 		f += 1/1000.f;
-		vertices[0].pos.x = glm::sin(f * glm::pi<float>());
+		vertices[0].get<0>().x = glm::sin(f * glm::pi<float>());
 
 		float angle = f * glm::pi<float>();
 		uniform_buffer_object data = { glm::vec4{ glm::cos(angle), glm::sin(angle), -glm::sin(angle), glm::cos(angle) } };
@@ -379,6 +245,17 @@ int main()
 //					recorder << text_renderer->update_cmd({ 5,50 }, text, swapchain_size);
 				}
 
+				// Set new framebuffer
+				auto presentation_image_idx = batch->presentation_image_index();
+				const auto &presentation_image = device.get_surface().get_swap_chain_images()[presentation_image_idx];
+				VkImage pimg = presentation_image.image.get_image_handle();
+				VkImageView pview = presentation_image.view.get_image_view_handle();
+				pipeline->framebuffer()["outColor"] = gl::clear_store(presentation_image.view,
+																	  glm::vec4(.0f),
+																	  gl::image_layout::color_attachment_optimal,
+																	  gl::image_layout::present_src_khr);
+				VkImageView view = pipeline->framebuffer()["outColor"]->output->get_image_view_handle();
+
 				recorder
 					<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::fragment_shader,
 																	 gl::pipeline_stage::transfer,
@@ -398,30 +275,16 @@ int main()
 																 gl::buffer_memory_barrier(vertex_buffer->get(),
 																						   gl::access_flags::transfer_write,
 																						   gl::access_flags::vertex_attribute_read) }))
-					<< gl::cmd_bind_descriptor_sets_graphics(pipeline_layout, 0, { &descriptor_set })
-//					<< cmd_begin_render_pass(presentation_framebuffers[batch->presentation_image_index()],
-//												 presentation_renderpass,
-//												 { 0,0 },
-//												 swapchain_size,
-//												 { swapchain_attachment_clear_value })
-//					<< cmd_bind_pipeline(pipeline)
+					<< pipeline->cmd_bind()
 					<< gl::cmd_bind_vertex_buffers(0, vertex_buffer->get())
 					<< gl::cmd_bind_index_buffer(index_buffer)
 					<< gl::cmd_draw_indexed(indices.size(), 1)
-					<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::color_attachment_output,
-																	 gl::pipeline_stage::color_attachment_output,
-																 gl::image_memory_barrier(device.get_surface().get_swap_chain_images()[batch->presentation_image_index()].image,
-																						  gl::image_layout::color_attachment_optimal,
-																						  gl::image_layout::color_attachment_optimal,
-																						  gl::access_flags::color_attachment_write,
-																						  gl::access_flags::color_attachment_write)))
 //					<< text_renderer->render_cmd()
-					<< gl::cmd_end_render_pass();
+					<< pipeline->cmd_unbind();
 			}
 
 			// Submit command buffer and present
 			device.submit_and_present(std::move(batch));
-
 		});
 	}
 

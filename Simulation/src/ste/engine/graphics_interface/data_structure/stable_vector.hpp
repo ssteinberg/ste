@@ -80,7 +80,7 @@ private:
 			: data(data_copy), update_cmd(buffer_view(v->buffer, 
 													  v->elements, 
 													  data.size()), 
-										  data.size(), data.data()), v(v)
+										  data.size() * sizeof(T), data.data()), v(v)
 		{}
 		virtual ~stable_vector_cmd_push_back() noexcept {}
 
@@ -196,7 +196,7 @@ public:
 		return cmd_update_buffer(buffer_view(buffer, 
 											 offset, 
 											 data.size()), 
-								 data.size(), data.data());
+								 data.size() * sizeof(T), data.data());
 	}
 
 	auto size() const { return elements; }

@@ -82,14 +82,15 @@ private:
 		// Parse SPIR-v, and read resources' bindings and output attachments.
 		auto parse_output = verify_spirv_and_read_bindings(code);
 		auto &stage_bindings = parse_output.bindings;
-		auto &stage_attachments = parse_output.attachments;
+		auto &parser_attachments = parse_output.attachments;
 
 		// If header checks out, create the shader object
 		ste_shader_program_stage stage = header.type;
 
-		// (output attachments don't make sense for a non-fragment shader)
-		if (stage != ste_shader_program_stage::fragment_program && stage_attachments.size() > 0) {
-			throw ste_shader_output_attachment_at_non_fragment_shader_stage_exception();
+		// Output attachments are relevant only for a fragment shader
+		std::vector<ste_shader_stage_attachment> stage_attachments = {};
+		if (stage == ste_shader_program_stage::fragment_program) {
+			stage_attachments = std::move(parser_attachments);
 		}
 
 		return std::make_unique<const ste_shader_object>(ctx.device(),

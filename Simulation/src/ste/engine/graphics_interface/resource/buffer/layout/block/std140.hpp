@@ -12,8 +12,7 @@ namespace gl {
 static constexpr int std140_block_layout_base_alignment = 16;
 
 template <typename... Ts>
-struct std140 : block_layout<std140_block_layout_base_alignment, Ts...> {
-};
+using std140 = block_layout<std140_block_layout_base_alignment, Ts...>;
 
 namespace _detail {
 

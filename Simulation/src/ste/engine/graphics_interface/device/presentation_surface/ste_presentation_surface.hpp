@@ -14,7 +14,7 @@
 #include <vk_logical_device.hpp>
 #include <vk_swapchain.hpp>
 #include <device_swapchain_image.hpp>
-#include <vk_image_view.hpp>
+#include <image_view.hpp>
 #include <vk_queue.hpp>
 #include <semaphore.hpp>
 
@@ -36,7 +36,7 @@ private:
 	using resize_signal_connection_t = ste_window_signals::window_resize_signal_type::connection_type;
 
 public:
-	using swap_chain_image_view_t = vk::vk_image_view<image_type::image_2d>;
+	using swap_chain_image_view_t = image_view<image_type::image_2d>;
 	struct swap_chain_image_t {
 		device_swapchain_image image;
 		swap_chain_image_view_t view;

@@ -18,14 +18,18 @@ namespace gl {
 
 class ste_shader_spirv_parser {
 private:
-	enum class element_type : std::uint16_t {
+	enum class storage_type : std::uint16_t {
 		unknown,
 		uniform,
 		storage,
 		push_constant,
 		spec_constant,
-		output,
-		
+	};
+
+	enum class storage_policy : std::uint8_t {
+		none,
+		input,
+		output
 	};
 
 	struct parser_internal_element {
@@ -34,7 +38,8 @@ private:
 		std::uint32_t location_idx;
 
 		_internal::ste_shader_spirv_parsed_variable variable;
-		element_type type{ element_type::unknown };
+		storage_type storage{ storage_type::unknown };
+		storage_policy policy{ storage_policy::none };
 		ste_shader_stage_block_layout block_layout;
 
 		bool is_variable{ false };
@@ -45,18 +50,18 @@ private:
 
 		bool is_binding() const {
 			// Filter out those pesky non-block "push constants"
-			if (type == element_type::push_constant &&
+			if (storage == storage_type::push_constant &&
 				block_layout == ste_shader_stage_block_layout::none)
 				return false;
 
 			return is_variable && 
 				bind_assigned && 
-				type != element_type::output;
+				policy != storage_policy::output;
 		}
 		bool is_attachment() const {
 			return is_variable && 
 				location_assigned &&
-				type == element_type::output;
+				policy == storage_policy::output;
 		}
 	};
 
@@ -68,7 +73,7 @@ private:
 	static void consume_type(parser_internal_element &, const parser_internal_element &);
 	static std::size_t process_spirv_op(std::vector<parser_internal_element> &, 
 										const std::uint32_t *);
-	static ste_shader_stage_binding_type element_type_to_binding_type(const element_type &);
+	static ste_shader_stage_binding_type element_type_to_binding_type(const storage_type &);
 
 public:
 	static ste_shader_spirv_parser_output parse(const std::string &spirv_code);

@@ -128,7 +128,7 @@ public:
 
 		this->image = image;
 	}
-	~vk_image() noexcept { destroy_image(); }
+	virtual ~vk_image() noexcept { destroy_image(); }
 
 	vk_image(vk_image &&) = default;
 	vk_image& operator=(vk_image &&) = default;

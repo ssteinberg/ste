@@ -38,7 +38,7 @@ public:
 	{}
 
 	const sampler& get_sampler() const override final { return sam.get(); }
-	VkImageView get_image_view_handle() const override final { return image; }
+	VkImageView get_image_view_handle() const override final { return image->get_image_view_handle(); }
 	image_layout get_layout() const override final { return layout; }
 
 	auto& get_image_view() const { return *image; }
@@ -46,6 +46,13 @@ public:
 	texture(texture&&) = default;
 	texture &operator=(texture&&) = default;
 };
+
+template <image_type type>
+auto make_texture(const image_view<type> &image,
+				  const sampler &sampler,
+				  image_layout layout) {
+	return texture<type>(&image, sampler, layout);
+}
 
 }
 }
