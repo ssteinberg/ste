@@ -9,10 +9,12 @@
 #include <font.hpp>
 #include <format.hpp>
 
+#include <surface_factory.hpp>
+
 #include <device_buffer.hpp>
 #include <device_image.hpp>
-#include <vk_sampler.hpp>
 #include <stable_vector.hpp>
+#include <sampler.hpp>
 
 #include <exception>
 
@@ -43,7 +45,7 @@ public:
 
 	struct glyph_texture {
 		gl::device_image<2> texture;
-		gl::vk::vk_image_view<gl::image_type::image_2d> view;
+		gl::image_view<gl::image_type::image_2d> view;
 
 		glyph_texture() = delete;
 		glyph_texture(glyph_texture&&) = default;
@@ -94,12 +96,13 @@ private:
 		if (og.get().glyph_distance_field == nullptr) {
 			return nullptr;
 		}
-		auto image = gl::device_image<2>::create_image_2d<gl::format::r32_sfloat>(context,
-																				std::move(*og.get().glyph_distance_field),
-																				  gl::image_usage::sampled,
-																				false);
-		auto view = gl::vk::vk_image_view<gl::image_type::image_2d>(*image, image->get_format());
-		glyph_textures.push_back(glyph_texture{ std::move(image), std::move(view) });
+		auto image = resource::surface_factory::create_image_2d<gl::format::r32_sfloat>(context,
+																						std::move(*og.get().glyph_distance_field),
+																						gl::image_usage::sampled,
+																						gl::image_layout::shader_read_only_optimal,
+																						false);
+		auto view = gl::image_view<gl::image_type::image_2d>(*image);
+		glyph_textures.push_back(glyph_texture{ std::move(image.get()), std::move(view) });
 
 		glyph_descriptor gd;
 		gd.metrics = og.get().metrics;

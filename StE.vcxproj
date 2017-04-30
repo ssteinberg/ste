@@ -555,6 +555,8 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\command_buffer\host_command.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\data_structure\fill.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\job\job.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\image\fill_image.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\image\generate_mipmaps.hpp" />
     <ClInclude Include="Simulation\src\ste\math_additions\rect.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\data_structure\array.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\data_structure\copy_data_buffer.hpp" />

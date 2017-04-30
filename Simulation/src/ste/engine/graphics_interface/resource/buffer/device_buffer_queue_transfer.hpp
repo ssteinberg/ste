@@ -33,7 +33,7 @@ auto inline queue_release_acquire_barrier(const device_buffer_base &buffer,
 }
 
 void inline queue_transfer(const ste_context &ctx,
-						   device_buffer_base &buffer,
+						   const device_buffer_base &buffer,
 						   ste_device_queue& src_queue,
 						   ste_device_queue& dst_queue,
 						   pipeline_stage src_stage,
@@ -62,6 +62,7 @@ void inline queue_transfer(const ste_context &ctx,
 		{
 			auto recorder = command_buffer.record();
 
+			// Release queue ownership
 			auto barrier = pipeline_barrier(src_stage,
 											pipeline_stage::top_of_pipe,
 											queue_release_acquire_barrier(buffer,
@@ -81,6 +82,7 @@ void inline queue_transfer(const ste_context &ctx,
 		{
 			auto recorder = command_buffer.record();
 
+			// Acquire queue ownership
 			auto barrier = pipeline_barrier(pipeline_stage::top_of_pipe,
 											dst_stage,
 											queue_release_acquire_barrier(buffer,
@@ -99,7 +101,7 @@ void inline queue_transfer(const ste_context &ctx,
 }
 
 void inline queue_transfer_discard(const ste_context &ctx,
-								   device_buffer_base &buffer,
+								   const device_buffer_base &buffer,
 								   const ste_queue_selector<ste_queue_selector_policy_strict> &dst_queue_selector,
 								   pipeline_stage stage,
 								   access_flags src_access,

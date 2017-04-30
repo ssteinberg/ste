@@ -4,6 +4,7 @@
 #pragma once
 
 #include <stdafx.hpp>
+//#include <device_image.hpp>
 #include <vk_image_view.hpp>
 #include <device_image_base.hpp>
 #include <allow_type_decay.hpp>
@@ -29,9 +30,21 @@ private:
 	vk::vk_image_view<type> view;
 
 public:
+	image_view(const vk::vk_image &image)
+		: view(image)
+	{}
+	image_view(const vk::vk_image &image,
+			   format &image_format)
+		: view(image,
+			   static_cast<VkFormat>(image_format))
+	{}
 	template <typename... Ts>
-	image_view(Ts&&... ts)
-		: view(std::forward<Ts>(ts)...)
+	image_view(const vk::vk_image &image,
+			   format &image_format,
+			   Ts&&... ts)
+		: view(image,
+			   static_cast<VkFormat>(image_format),
+			   std::forward<Ts>(ts)...)
 	{}
 
 	virtual ~image_view() noexcept {}

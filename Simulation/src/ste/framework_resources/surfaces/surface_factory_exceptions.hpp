@@ -18,5 +18,10 @@ public:
 	using surface_error::surface_error;
 };
 
+class surface_format_exception : public surface_error {
+public:
+	using surface_error::surface_error;
+};
+
 }
 }

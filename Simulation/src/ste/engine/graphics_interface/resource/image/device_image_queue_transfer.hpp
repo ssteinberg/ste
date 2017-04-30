@@ -39,16 +39,19 @@ auto inline queue_release_acquire_barrier(const device_image_base &image,
 								dst_family);
 }
 
+/**
+*	@brief	Transfers image queue ownership and transforms image layout, perserving old content.
+*/
 void inline queue_transfer(const ste_context &ctx,
-						   device_image_base &image,
+						   const device_image_base &image,
 						   ste_device_queue &src_queue,
 						   ste_device_queue &dst_queue,
 						   image_layout src_layout,
 						   pipeline_stage src_stage,
 						   access_flags src_access,
+						   image_layout dst_layout,
 						   pipeline_stage dst_stage,
-						   access_flags dst_access,
-						   image_layout dst_layout) {
+						   access_flags dst_access) {
 	assert(!ste_device_queue::is_queue_thread() && "Should not be called from a queue");
 
 	auto src_family = src_queue.queue_descriptor().family;
@@ -56,6 +59,12 @@ void inline queue_transfer(const ste_context &ctx,
 
 	// Tranfer only if needed
 	if (src_family == dst_family) {
+		if (src_layout == dst_layout) {
+			// Nothing to do
+			return;
+		}
+
+		// Only transform layout
 		src_queue.enqueue([=, &image]() {
 			auto acquire_batch = ste_device_queue::thread_allocate_batch();
 			auto& command_buffer = acquire_batch->acquire_command_buffer();
@@ -88,6 +97,7 @@ void inline queue_transfer(const ste_context &ctx,
 		{
 			auto recorder = command_buffer.record();
 
+			// Transform layout and release queue ownership
 			auto barrier = pipeline_barrier(src_stage,
 											pipeline_stage::top_of_pipe,
 											queue_release_acquire_barrier(image,
@@ -110,6 +120,7 @@ void inline queue_transfer(const ste_context &ctx,
 		{
 			auto recorder = command_buffer.record();
 
+			// Acquire queue ownership
 			auto barrier = pipeline_barrier(pipeline_stage::top_of_pipe,
 											dst_stage,
 											queue_release_acquire_barrier(image,
@@ -129,8 +140,33 @@ void inline queue_transfer(const ste_context &ctx,
 	});
 }
 
+/**
+*	@brief	Transfers image queue ownership and transforms image layout, perserving old content.
+*			Deduces the access flags based on source and destination layouts. Layouts must no be undefined, preinitialized or general.
+*
+*	@throws	ste_engine_exception		If image layout is undefined, preinitialized or general.
+*/
+void inline queue_transfer(const ste_context &ctx,
+						   const device_image_base &image,
+						   ste_device_queue &src_queue,
+						   ste_device_queue &dst_queue,
+						   image_layout src_layout,
+						   pipeline_stage src_stage,
+						   image_layout dst_layout,
+						   pipeline_stage dst_stage) {
+	return queue_transfer(ctx,
+						  image,
+						  src_queue,
+						  dst_queue,
+						  src_layout, src_stage, access_flags_for_image_layout(src_layout),
+						  dst_layout, dst_stage, access_flags_for_image_layout(dst_layout));
+}
+
+/**
+ *	@brief	Transfers image queue ownership and transforms image layout, discarding old content.
+ */
 void inline queue_transfer_discard(const ste_context &ctx,
-								   device_image_base &image,
+								   const device_image_base &image,
 								   const ste_queue_selector<ste_queue_selector_policy_strict> &dst_queue_selector,
 								   pipeline_stage stage,
 								   image_layout src_layout,
@@ -161,6 +197,26 @@ void inline queue_transfer_discard(const ste_context &ctx,
 		// Wait for release command to be submitted
 		ste_device_queue::submit_batch(std::move(acquire_batch));
 	});
+}
+
+/**
+*	@brief	Transfers image queue ownership and transforms image layout, discarding old content.
+*			Deduces the access flags based on source and destination layouts. Layouts must no be undefined, preinitialized or general.
+*			
+ *	@throws	ste_engine_exception		If image layout is undefined, preinitialized or general.
+*/
+void inline queue_transfer_discard(const ste_context &ctx,
+								   const device_image_base &image,
+								   const ste_queue_selector<ste_queue_selector_policy_strict> &dst_queue_selector,
+								   pipeline_stage stage,
+								   image_layout src_layout,
+								   image_layout dst_layout) {
+	return queue_transfer_discard(ctx,
+								  image,
+								  dst_queue_selector,
+								  stage,
+								  src_layout, access_flags_for_image_layout(src_layout),
+								  dst_layout, access_flags_for_image_layout(dst_layout));
 }
 
 }

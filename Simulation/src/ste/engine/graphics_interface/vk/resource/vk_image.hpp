@@ -143,7 +143,7 @@ public:
 	}
 
 	auto get_image_subresource_layout(std::uint32_t mip,
-									  std::uint32_t layer = 0) {
+									  std::uint32_t layer = 0) const {
 		VkImageSubresource subresource = {};
 		subresource.aspectMask = static_cast<VkImageAspectFlags>(vk_format_aspect(static_cast<format>(get_format())));
 		subresource.mipLevel = mip;
@@ -164,16 +164,16 @@ public:
 		return req;
 	}
 
-	auto& get_usage() const { return usage; };
-	auto is_sparse() const { return sparse; };
+	auto& get_usage() const { return usage; }
+	auto is_sparse() const { return sparse; }
 
 	auto& get_creating_device() const { return device.get(); }
 	auto& get() const { return image.get(); }
 
-	VkFormat get_format() const { return image_format; };
-	auto& get_size() const { return size; };
-	auto& get_mips() const { return mips; };
-	auto& get_layers() const { return layers; };
+	VkFormat get_format() const { return image_format; }
+	auto& get_size() const { return size; }
+	auto& get_mips() const { return mips; }
+	auto& get_layers() const { return layers; }
 };
 
 }

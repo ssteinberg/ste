@@ -125,7 +125,8 @@ int main()
 	auto image =
 		resource::surface_factory::create_image_2d<gl::format::r8g8b8a8_unorm>(ctx,
 																			   R"(Data\models\crytek-sponza\images\Sponza_Bricks_a_Albedo.png)",
-																			   gl::image_usage::sampled);
+																			   gl::image_usage::sampled,
+																			   gl::image_layout::shader_read_only_optimal);
 
 	// Shader stages
 	ste_resource<gl::device_pipeline_shader_stage> vert_shader_stage(ctx, "temp.vert");
@@ -139,15 +140,13 @@ int main()
 	ste_resource<gl::array<std::uint32_t>> index_buffer(ctx, indices, gl::buffer_usage::index_buffer);
 	ste_resource<gl::stable_vector<vertex>> vertex_buffer(ctx, gl::buffer_usage::vertex_buffer);
 
-	{
-		std::vector<vertex> vertices = {
-			{ { 0.0f, -0.5f },{ 1.0f, 0.0f, 0.0f },{ 0,0 } },
-			{ { 0.5f,  0.5f },{ 0.0f, 1.0f, 0.0f },{ 1,0 } },
-			{ { -0.5f, 0.5f },{ 0.0f, 0.0f, 1.0f },{ 1,1 } },
-			{ { 1.0f, -0.5f },{ 1.0f, 0.0f, 1.0f },{ 0,1 } },
-		};
-		gl::fill(vertex_buffer.get(), std::move(vertices));
-	}
+	std::vector<vertex> vertices = {
+		{ { 0.0f, -0.5f },{ 1.0f, 0.0f, 0.0f },{ 0,0 } },
+		{ { 0.5f,  0.5f },{ 0.0f, 1.0f, 0.0f },{ 1,0 } },
+		{ { -0.5f, 0.5f },{ 0.0f, 0.0f, 1.0f },{ 1,1 } },
+		{ { 1.0f, -0.5f },{ 1.0f, 0.0f, 1.0f },{ 0,1 } },
+	};
+	auto vertices_fill_job = gl::fill(vertex_buffer.get(), std::move(vertices));
 
 	// UBO
 	using uniform_buffer_object = gl::std140<glm::vec4>;
@@ -171,7 +170,7 @@ int main()
 									 pool);
 
 	// Texture
-	gl::image_view<gl::image_type::image_2d> image_view(image, image->get().get_format());
+	gl::image_view<gl::image_type::image_2d> image_view(*image);
 	gl::sampler sampler(ctx, gl::sampler_parameter::filtering(gl::sampler_filter::linear, gl::sampler_filter::linear,
 															  gl::sampler_mipmap_mode::linear));
 	auto texture = gl::make_texture(image_view, sampler, gl::image_layout::shader_read_only_optimal);
@@ -183,12 +182,7 @@ int main()
 	// Rendering queue
 	auto selector = gl::make_queue_selector(gl::ste_queue_type::primary_queue);
 
-	// Transfer image queue ownership
-	gl::queue_transfer_discard(ctx,
-							   image.get(), selector,
-							   gl::pipeline_stage::fragment_shader,
-							   gl::image_layout::transfer_src_optimal, gl::access_flags::transfer_read,
-							   gl::image_layout::shader_read_only_optimal, gl::access_flags::shader_read);
+	vertices_fill_job.finish();
 
 //	ste_resource<device_pipeline_shader_stage> stage(ste_resource_dont_defer(), ctx, std::string("fxaa.frag"));
 //	device_pipeline_shader_stage(ctx, std::string("deferred_compose.frag"));
