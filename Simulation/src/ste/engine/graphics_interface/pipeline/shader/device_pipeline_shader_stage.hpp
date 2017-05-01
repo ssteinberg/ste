@@ -15,7 +15,7 @@
 #include <ste_shader_blob_header.hpp>
 #include <ste_shader_exceptions.hpp>
 
-#include <ste_shader_spirv_parser_output.hpp>
+#include <ste_shader_spirv_reflection_output.hpp>
 
 #include <string>
 #include <vector>
@@ -56,7 +56,7 @@ private:
 		}
 	}
 
-	static ste_shader_spirv_parser_output verify_spirv_and_read_bindings(const std::string &code);
+	static ste_shader_spirv_reflection_output verify_spirv_and_read_bindings(const std::string &code);
 
 	static auto load_and_verify_shader_blob(const ste_context &ctx,
 											const std::string &name) {

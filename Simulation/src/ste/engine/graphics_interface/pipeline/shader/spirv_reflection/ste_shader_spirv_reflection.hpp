@@ -4,9 +4,9 @@
 #pragma once
 
 #include <stdafx.hpp>
-#include <ste_shader_spirv_parsed_variable.hpp>
+#include <ste_shader_spirv_reflected_variable.hpp>
 #include <ste_shader_stage_block_layout.hpp>
-#include <ste_shader_spirv_parser_output.hpp>
+#include <ste_shader_spirv_reflection_output.hpp>
 
 #include <ste_shader_stage_binding_type.hpp>
 
@@ -16,7 +16,7 @@
 namespace ste {
 namespace gl {
 
-class ste_shader_spirv_parser {
+class ste_shader_spirv_reflection {
 private:
 	enum class storage_type : std::uint16_t {
 		unknown,
@@ -37,7 +37,7 @@ private:
 		std::uint32_t bind_idx;
 		std::uint32_t location_idx;
 
-		_internal::ste_shader_spirv_parsed_variable variable;
+		_internal::ste_shader_spirv_reflected_variable variable;
 		storage_type storage{ storage_type::unknown };
 		storage_policy policy{ storage_policy::none };
 		ste_shader_stage_block_layout block_layout;
@@ -68,7 +68,7 @@ private:
 private:
 	static void parse_constant_value(parser_internal_element &, const std::uint32_t *);
 	static void parse_decoration(parser_internal_element &, const std::uint32_t *);
-	static void parse_decoration(_internal::ste_shader_spirv_parsed_variable &, const std::uint32_t *);
+	static void parse_decoration(_internal::ste_shader_spirv_reflected_variable &, const std::uint32_t *);
 	static void parse_storage_class(parser_internal_element &, std::uint32_t);
 	static void consume_type(parser_internal_element &, const parser_internal_element &);
 	static std::size_t process_spirv_op(std::vector<parser_internal_element> &, 
@@ -76,7 +76,7 @@ private:
 	static ste_shader_stage_binding_type element_type_to_binding_type(const storage_type &);
 
 public:
-	static ste_shader_spirv_parser_output parse(const std::string &spirv_code);
+	static ste_shader_spirv_reflection_output parse(const std::string &spirv_code);
 };
 
 }

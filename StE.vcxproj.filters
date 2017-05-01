@@ -195,9 +195,6 @@
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\pipeline\shader\device_pipeline_shader_stage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Simulation\src\ste\engine\graphics_interface\pipeline\shader\spirv_parser\ste_shader_spirv_parser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\format\format_rtti.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -205,6 +202,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Simulation\src\ste\engine\log\log.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Simulation\src\ste\engine\graphics_interface\pipeline\shader\spirv_reflection\ste_shader_spirv_reflection.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1418,9 +1418,6 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\shader\binding\ste_shader_stage_block_layout.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\shader\spirv_parser\ste_shader_spirv_parser.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\shader\variable\ste_shader_variable_layout_verification_exceptions.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1439,13 +1436,7 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\shader\attachment\ste_shader_stage_attachment.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\shader\spirv_parser\ste_shader_spirv_parsed_variable.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\layout\pipeline_layout_attachment_location.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\shader\spirv_parser\ste_shader_spirv_parser_output.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\framebuffer\framebuffer_attachment_clear_value.hpp">
@@ -1623,6 +1614,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\log\log.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\task\task_compute.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\shader\spirv_reflection\ste_shader_spirv_reflected_variable.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\shader\spirv_reflection\ste_shader_spirv_reflection.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\shader\spirv_reflection\ste_shader_spirv_reflection_output.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

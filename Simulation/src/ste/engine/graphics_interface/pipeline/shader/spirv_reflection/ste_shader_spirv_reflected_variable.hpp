@@ -15,7 +15,7 @@ namespace gl {
 
 namespace _internal {
 
-struct ste_shader_spirv_parsed_variable {
+struct ste_shader_spirv_reflected_variable {
 	ste_shader_stage_variable_type type{ ste_shader_stage_variable_type::unknown };
 	std::string name;
 
@@ -31,9 +31,9 @@ struct ste_shader_spirv_parsed_variable {
 	std::uint16_t width{ 0 };						// Integer/float width, only used for int_t and uint_t.
 	optional<std::uint64_t> constant_value;			// Constant integer value, if available.
 
-	std::vector<ste_shader_spirv_parsed_variable> struct_members;
+	std::vector<ste_shader_spirv_reflected_variable> struct_members;
 
-	void consume(const ste_shader_spirv_parsed_variable &src) {
+	void consume(const ste_shader_spirv_reflected_variable &src) {
 		// Consume only non-default attributes
 
 		std::string name = std::move(src.name.size() ?

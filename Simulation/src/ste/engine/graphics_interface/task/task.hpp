@@ -4,35 +4,15 @@
 #pragma once
 
 #include <stdafx.hpp>
+#include <command.hpp>
 
 namespace ste {
 namespace gl {
 
-template <typename Future>
-class task {
-private:
-	Future future;
-
+class task : public command {
 public:
-	template <typename F>
-	job(F&& future) : future(std::forward<F>(future)) {}
-	~job() noexcept {
-		finish();
-	}
-
-	job(job&&) = default;
-	job &operator=(job&&) = default;
-
-	/**
-	*	@brief	Waits for the job to complete.
-	*/
-	void finish() const { future.wait(); }
+	virtual ~task() noexcept {}
 };
-
-template <typename Future>
-auto make_job(Future&& future) {
-	return job<Future>(std::forward<Future>(future));
-}
 
 }
 }

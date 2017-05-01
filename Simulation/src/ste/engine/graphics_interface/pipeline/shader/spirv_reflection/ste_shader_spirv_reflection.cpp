@@ -1,6 +1,6 @@
 
 #include <stdafx.hpp>
-#include <ste_shader_spirv_parser.hpp>
+#include <ste_shader_spirv_reflection.hpp>
 #include <spirv_tokens.hpp>
 
 #include <ste_shader_stage_variable.hpp>
@@ -9,7 +9,7 @@
 
 using namespace ste::gl;
 
-void ste_shader_spirv_parser::parse_constant_value(parser_internal_element &dst,
+void ste_shader_spirv_reflection::parse_constant_value(parser_internal_element &dst,
 												   const std::uint32_t *op) {
 	std::uint32_t op_length = op[0];
 	spv::Op opcode = static_cast<spv::Op>(op_length & spv::OpCodeMask);
@@ -40,7 +40,7 @@ void ste_shader_spirv_parser::parse_constant_value(parser_internal_element &dst,
 	else {}
 }
 
-void ste_shader_spirv_parser::parse_storage_class(parser_internal_element &dst,
+void ste_shader_spirv_reflection::parse_storage_class(parser_internal_element &dst,
 												  std::uint32_t storage_id) {
 	spv::StorageClass storage = static_cast<spv::StorageClass>(storage_id);
 	if (storage == spv::StorageClass::Uniform ||
@@ -60,7 +60,7 @@ void ste_shader_spirv_parser::parse_storage_class(parser_internal_element &dst,
 	}
 }
 
-void ste_shader_spirv_parser::parse_decoration(parser_internal_element &dst,
+void ste_shader_spirv_reflection::parse_decoration(parser_internal_element &dst,
 											   const std::uint32_t *op) {
 	spv::Decoration decoration = static_cast<spv::Decoration>(op[0]);
 
@@ -90,7 +90,7 @@ void ste_shader_spirv_parser::parse_decoration(parser_internal_element &dst,
 	}
 }
 
-void ste_shader_spirv_parser::parse_decoration(_internal::ste_shader_spirv_parsed_variable &variable,
+void ste_shader_spirv_reflection::parse_decoration(_internal::ste_shader_spirv_reflected_variable &variable,
 											   const std::uint32_t *op) {
 	spv::Decoration decoration = static_cast<spv::Decoration>(op[0]);
 
@@ -108,8 +108,8 @@ void ste_shader_spirv_parser::parse_decoration(_internal::ste_shader_spirv_parse
 	}
 }
 
-void ste_shader_spirv_parser::consume_type(parser_internal_element &dst,
-										   const ste_shader_spirv_parser::parser_internal_element &consume) {
+void ste_shader_spirv_reflection::consume_type(parser_internal_element &dst,
+										   const ste_shader_spirv_reflection::parser_internal_element &consume) {
 	dst.variable.consume(consume.variable);
 	if (consume.storage != storage_type::unknown)
 		dst.storage = consume.storage;
@@ -121,7 +121,7 @@ void ste_shader_spirv_parser::consume_type(parser_internal_element &dst,
 		dst.bind_assigned = true;
 }
 
-std::size_t ste_shader_spirv_parser::process_spirv_op(std::vector<ste_shader_spirv_parser::parser_internal_element> &binds,
+std::size_t ste_shader_spirv_reflection::process_spirv_op(std::vector<ste_shader_spirv_reflection::parser_internal_element> &binds,
 													  const std::uint32_t *op) {
 	std::uint32_t op_length = op[0];
 	spv::Op opcode = static_cast<spv::Op>(op_length & spv::OpCodeMask);
@@ -306,7 +306,7 @@ std::size_t ste_shader_spirv_parser::process_spirv_op(std::vector<ste_shader_spi
 	return word_count;
 }
 
-ste_shader_stage_binding_type ste_shader_spirv_parser::element_type_to_binding_type(const storage_type &t) {
+ste_shader_stage_binding_type ste_shader_spirv_reflection::element_type_to_binding_type(const storage_type &t) {
 	switch (t) {
 	case storage_type::push_constant:
 		return ste_shader_stage_binding_type::push_constant;
@@ -322,7 +322,7 @@ ste_shader_stage_binding_type ste_shader_spirv_parser::element_type_to_binding_t
 	}
 }
 
-ste_shader_spirv_parser_output ste_shader_spirv_parser::parse(const std::string &code) {
+ste_shader_spirv_reflection_output ste_shader_spirv_reflection::parse(const std::string &code) {
 	if (code.size() % 4 > 0) {
 		throw ste_shader_load_spirv_corrupt_or_incompatible();
 	}
@@ -353,7 +353,7 @@ ste_shader_spirv_parser_output ste_shader_spirv_parser::parse(const std::string 
 	}
 
 	// Create output
-	ste_shader_spirv_parser_output output;
+	ste_shader_spirv_reflection_output output;
 
 	// Write out only relevant bindings and attachments
 	for (auto &b : binds) {

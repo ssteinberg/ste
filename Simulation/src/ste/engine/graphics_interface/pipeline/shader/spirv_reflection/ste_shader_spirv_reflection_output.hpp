@@ -12,7 +12,7 @@
 namespace ste {
 namespace gl {
 
-struct ste_shader_spirv_parser_output {
+struct ste_shader_spirv_reflection_output {
 	std::vector<ste_shader_stage_binding> bindings;
 	std::vector<ste_shader_stage_attachment> attachments;
 };
