@@ -59,7 +59,7 @@ auto generate_mipmaps(const device_image<dimensions, allocation_policy> &image,
 			auto batch = ste_device_queue::thread_allocate_batch();
 			auto& command_buffer = batch->acquire_command_buffer();
 
-			VkImageAspectFlags aspect = static_cast<VkImageAspectFlags>(vk_format_aspect(image_format));
+			VkImageAspectFlags aspect = static_cast<VkImageAspectFlags>(format_aspect(image_format));
 
 			// Record and submit a one-time batch
 			{

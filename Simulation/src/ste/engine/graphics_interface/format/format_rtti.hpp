@@ -48,7 +48,7 @@ public:
 }
 
 /**
- *	@brief	Returns a vk_format_rtti structure (if available) describing the Vulkan image format
+ *	@brief	Returns a format_rtti structure (if available) describing the Vulkan image format
  *	
  *	@throws	std::runtime_error	If format not found
  */
@@ -65,7 +65,7 @@ format_rtti inline format_id(const format &format) {
 *
 *	@throws	std::runtime_error	If format not found
 */
-auto inline vk_format_elements(const format &format) {
+auto inline format_elements(const format &format) {
 	return format_id(format).elements;
 }
 
@@ -74,7 +74,7 @@ auto inline vk_format_elements(const format &format) {
 *
 *	@throws	std::runtime_error	If format not found
 */
-auto inline vk_format_texel_size(const format &format) {
+auto inline format_texel_size(const format &format) {
 	return format_id(format).texel_bytes;
 }
 
@@ -83,7 +83,7 @@ auto inline vk_format_texel_size(const format &format) {
 *
 *	@throws	std::runtime_error	If format not found
 */
-auto inline vk_format_is_depth(const format &format) {
+auto inline format_is_depth(const format &format) {
 	return format_id(format).is_depth;
 }
 
@@ -94,8 +94,8 @@ auto inline vk_format_is_depth(const format &format) {
 *
 *	@throws	std::runtime_error	If format not found
 */
-auto inline vk_format_aspect(const format &format) {
-	return vk_format_is_depth(format) ? 
+auto inline format_aspect(const format &format) {
+	return format_is_depth(format) ? 
 		image_aspect::depth :
 		image_aspect::color;
 }
@@ -105,7 +105,7 @@ auto inline vk_format_aspect(const format &format) {
 *
 *	@throws	std::runtime_error	If format not found
 */
-auto inline vk_format_is_float(const format &format) {
+auto inline format_is_float(const format &format) {
 	return format_id(format).is_float;
 }
 
@@ -114,7 +114,7 @@ auto inline vk_format_is_float(const format &format) {
 *
 *	@throws	std::runtime_error	If format not found
 */
-auto inline vk_format_is_signed(const format &format) {
+auto inline format_is_signed(const format &format) {
 	return format_id(format).is_signed;
 }
 

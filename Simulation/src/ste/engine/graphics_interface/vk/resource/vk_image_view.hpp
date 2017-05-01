@@ -57,7 +57,7 @@ protected:
 		range.layerCount = layers;
 		range.baseMipLevel = base_mip;
 		range.levelCount = mips;
-		range.aspectMask = static_cast<VkImageAspectFlags>(vk_format_aspect(static_cast<format>(image_format)));
+		range.aspectMask = static_cast<VkImageAspectFlags>(format_aspect(static_cast<format>(image_format)));
 
 		VkImageViewCreateInfo create_info = {};
 		create_info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;

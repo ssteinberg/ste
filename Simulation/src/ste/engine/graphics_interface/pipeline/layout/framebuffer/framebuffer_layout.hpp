@@ -91,7 +91,7 @@ public:
 			const framebuffer_attachment_layout &attachment = a.second;
 			vk_attachments.push_back(attachment);
 
-			bool is_depth_attachment = vk_format_is_depth(attachment.image_format);
+			bool is_depth_attachment = format_is_depth(attachment.image_format);
 			if (is_depth_attachment && depth) {
 				// Only one depth attachment per pipeline
 				throw framebuffer_layout_multiple_depth_attachments_exception("Up to one depth attachment allowed per framebuffer");

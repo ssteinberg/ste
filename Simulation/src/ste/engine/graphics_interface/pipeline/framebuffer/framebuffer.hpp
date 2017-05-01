@@ -61,23 +61,36 @@ private:
 			}
 		}
 
+		bool invalidate_framebuffer = true;
+
 		// Insert or overwrite attachment
 		auto it = attachments.find(location);
-		if (it != attachments.end())
+		if (it != attachments.end()) {
+			// Anything modified?
+			if (it->second == attachment)
+				return;
+
+			// Was attachment modified?
+			if (it->second.get_attachment().get_image_view_handle() == attachment.get_attachment().get_image_view_handle())
+				invalidate_framebuffer = false;
+
 			it->second = std::move(attachment);
-		else
+		}
+		else {
 			attachments.insert(it, std::make_pair(location, std::move(attachment)));
+		}
 
 		if (!fb) {
 			if (attachments.size() == layout->size()) {
-				// Create framebuffer as early as possible once we have enough attachments
+				// Create framebuffer as early as possible the very first time we have enough attachments
 				update();
 			}
 		}
 		else {
 			// Framebuffer was modified.
-			// Queue recreation
-			fb = none;
+			// Recreate resources on next update
+			if (invalidate_framebuffer)
+				fb = none;
 			clear_values = none;
 		}
 	}

@@ -42,7 +42,7 @@ public:
 		: src(access_flags_for_image_layout(old_layout)), dst(access_flags_for_image_layout(new_layout)),
 		old_layout(old_layout), new_layout(new_layout),
 		image(image),
-		aspect(vk_format_aspect(image.get_format()))
+		aspect(format_aspect(image.get_format()))
 	{}
 	image_memory_barrier(const device_image_base &image,
 						 image_layout old_layout,
@@ -51,7 +51,7 @@ public:
 						 const access_flags &dst_access)
 		: src(src_access), dst(dst_access), old_layout(old_layout), new_layout(new_layout),
 		image(image),
-		aspect(vk_format_aspect(image.get_format()))
+		aspect(format_aspect(image.get_format()))
 	{}
 	image_memory_barrier(const device_image_base &image,
 						 image_layout old_layout,
@@ -63,7 +63,7 @@ public:
 		: src(access_flags_for_image_layout(old_layout)), dst(access_flags_for_image_layout(new_layout)), 
 		old_layout(old_layout), new_layout(new_layout),
 		image(image),
-		aspect(vk_format_aspect(image.get_format())),
+		aspect(format_aspect(image.get_format())),
 		base_level(base_mip_level), levels(mip_levels), base_layer(base_array_layer), layers(array_layers)
 	{}
 	image_memory_barrier(const device_image_base &image,
@@ -77,7 +77,7 @@ public:
 						 std::uint32_t array_layers)
 		: src(src_access), dst(dst_access), old_layout(old_layout), new_layout(new_layout),
 		image(image),
-		aspect(vk_format_aspect(image.get_format())),
+		aspect(format_aspect(image.get_format())),
 		base_level(base_mip_level), levels(mip_levels), base_layer(base_array_layer), layers(array_layers)
 	{}
 	image_memory_barrier(const device_image_base &image,
@@ -89,7 +89,7 @@ public:
 		old_layout(old_layout), new_layout(new_layout),
 		src_queue_family(src_queue_family), dst_queue_family(dst_queue_family),
 		image(image),
-		aspect(vk_format_aspect(image.get_format()))
+		aspect(format_aspect(image.get_format()))
 	{}
 	image_memory_barrier(const device_image_base &image,
 						 image_layout old_layout,
@@ -101,7 +101,7 @@ public:
 		: src(src_access), dst(dst_access), old_layout(old_layout), new_layout(new_layout),
 		src_queue_family(src_queue_family), dst_queue_family(dst_queue_family),
 		image(image),
-		aspect(vk_format_aspect(image.get_format()))
+		aspect(format_aspect(image.get_format()))
 	{}
 	image_memory_barrier(const device_image_base &image,
 						 image_layout old_layout,
@@ -117,7 +117,7 @@ public:
 		: src(src_access), dst(dst_access), old_layout(old_layout), new_layout(new_layout),
 		src_queue_family(src_queue_family), dst_queue_family(dst_queue_family),
 		image(image),
-		aspect(vk_format_aspect(image.get_format())),
+		aspect(format_aspect(image.get_format())),
 		base_level(base_mip_level), levels(mip_levels), base_layer(base_array_layer), layers(array_layers)
 	{}
 	image_memory_barrier(const device_image_base &image,
@@ -133,7 +133,7 @@ public:
 		old_layout(old_layout), new_layout(new_layout),
 		src_queue_family(src_queue_family), dst_queue_family(dst_queue_family),
 		image(image),
-		aspect(vk_format_aspect(image.get_format())),
+		aspect(format_aspect(image.get_format())),
 		base_level(base_mip_level), levels(mip_levels), base_layer(base_array_layer), layers(array_layers)
 	{}
 	~image_memory_barrier() noexcept {}

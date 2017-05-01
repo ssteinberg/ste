@@ -7,6 +7,7 @@
 #include <image_layout.hpp>
 
 #include <format.hpp>
+#include <format_rtti.hpp>
 #include <attachment_load_op.hpp>
 #include <attachment_store_op.hpp>
 
@@ -15,6 +16,16 @@
 
 namespace ste {
 namespace gl {
+
+namespace _detail {
+
+auto inline attachment_layout_for_format(format f) {
+	return format_is_depth(f) ?
+		image_layout::depth_stencil_attachment_optimal : 
+		image_layout::color_attachment_optimal;
+}
+
+}
 
 struct framebuffer_attachment_layout {
 	format image_format;
@@ -77,12 +88,11 @@ struct framebuffer_attachment_layout {
 *			Intially clear attachment content and store after render.
 */
 framebuffer_attachment_layout inline clear_store(format image_format,
-												 image_layout layout,
 												 image_layout final_layout) {
 	return {
 		image_format,
 		image_layout::undefined,
-		layout,
+		_detail::attachment_layout_for_format(image_format),
 		final_layout,
 		attachment_load_op::clear,
 		attachment_store_op::store,
@@ -93,12 +103,11 @@ framebuffer_attachment_layout inline clear_store(format image_format,
 *			Intially clear attachment content and discard contents after render.
 */
 framebuffer_attachment_layout inline clear_discard(format image_format,
-												   image_layout layout,
 												   image_layout final_layout) {
 	return {
 		image_format,
 		image_layout::undefined,
-		layout,
+		_detail::attachment_layout_for_format(image_format),
 		final_layout,
 		attachment_load_op::clear,
 		attachment_store_op::discard,
@@ -110,12 +119,11 @@ framebuffer_attachment_layout inline clear_discard(format image_format,
 */
 framebuffer_attachment_layout inline load_store(format image_format,
 												image_layout initial_layout,
-												image_layout layout,
 												image_layout final_layout) {
 	return {
 		image_format,
 		initial_layout,
-		layout,
+		_detail::attachment_layout_for_format(image_format),
 		final_layout,
 		attachment_load_op::load,
 		attachment_store_op::store
@@ -127,12 +135,11 @@ framebuffer_attachment_layout inline load_store(format image_format,
 */
 framebuffer_attachment_layout inline load_discard(format image_format,
 												  image_layout initial_layout,
-												  image_layout layout,
 												  image_layout final_layout) {
 	return {
 		image_format,
 		initial_layout,
-		layout,
+		_detail::attachment_layout_for_format(image_format),
 		final_layout,
 		attachment_load_op::load,
 		attachment_store_op::discard
@@ -143,12 +150,11 @@ framebuffer_attachment_layout inline load_discard(format image_format,
 *			Ignore initial attachment content and store contents after render.
 */
 framebuffer_attachment_layout inline ignore_store(format image_format,
-												  image_layout layout,
 												  image_layout final_layout) {
 	return {
 		image_format,
 		image_layout::undefined,
-		layout,
+		_detail::attachment_layout_for_format(image_format),
 		final_layout,
 		attachment_load_op::undefined,
 		attachment_store_op::store
@@ -159,12 +165,11 @@ framebuffer_attachment_layout inline ignore_store(format image_format,
 *			Ignore initial attachment content and discard contents after render.
 */
 framebuffer_attachment_layout inline ignore_discard(format image_format,
-													image_layout layout,
 													image_layout final_layout) {
 	return {
 		image_format,
 		image_layout::undefined,
-		layout,
+		_detail::attachment_layout_for_format(image_format),
 		final_layout,
 		attachment_load_op::undefined,
 		attachment_store_op::discard
@@ -175,13 +180,12 @@ framebuffer_attachment_layout inline ignore_discard(format image_format,
 *			Intially clear attachment content and store after render.
 */
 framebuffer_attachment_layout inline clear_store(format image_format,
-												 image_layout layout,
 												 image_layout final_layout,
 												 const vk::vk_blend_op_descriptor &blend_op) {
 	return {
 		image_format,
 		image_layout::undefined,
-		layout,
+		_detail::attachment_layout_for_format(image_format),
 		final_layout,
 		attachment_load_op::clear,
 		attachment_store_op::store,
@@ -193,13 +197,12 @@ framebuffer_attachment_layout inline clear_store(format image_format,
 *			Intially clear attachment content and discard contents after render.
 */
 framebuffer_attachment_layout inline clear_discard(format image_format,
-												   image_layout layout,
 												   image_layout final_layout,
 												   const vk::vk_blend_op_descriptor &blend_op) {
 	return {
 		image_format,
 		image_layout::undefined,
-		layout,
+		_detail::attachment_layout_for_format(image_format),
 		final_layout,
 		attachment_load_op::clear,
 		attachment_store_op::discard,
@@ -212,13 +215,12 @@ framebuffer_attachment_layout inline clear_discard(format image_format,
 */
 framebuffer_attachment_layout inline load_store(format image_format,
 												image_layout initial_layout,
-												image_layout layout,
 												image_layout final_layout,
 												const vk::vk_blend_op_descriptor &blend_op) {
 	return {
 		image_format,
 		initial_layout,
-		layout,
+		_detail::attachment_layout_for_format(image_format),
 		final_layout,
 		attachment_load_op::load,
 		attachment_store_op::store,
@@ -231,13 +233,12 @@ framebuffer_attachment_layout inline load_store(format image_format,
 */
 framebuffer_attachment_layout inline load_discard(format image_format,
 												  image_layout initial_layout,
-												  image_layout layout,
 												  image_layout final_layout,
 												  const vk::vk_blend_op_descriptor &blend_op) {
 	return {
 		image_format,
 		initial_layout,
-		layout,
+		_detail::attachment_layout_for_format(image_format),
 		final_layout,
 		attachment_load_op::load,
 		attachment_store_op::discard,
@@ -249,13 +250,12 @@ framebuffer_attachment_layout inline load_discard(format image_format,
 *			Ignore initial attachment content and store contents after render.
 */
 framebuffer_attachment_layout inline ignore_store(format image_format,
-												  image_layout layout,
 												  image_layout final_layout,
 												  const vk::vk_blend_op_descriptor &blend_op) {
 	return {
 		image_format,
 		image_layout::undefined,
-		layout,
+		_detail::attachment_layout_for_format(image_format),
 		final_layout,
 		attachment_load_op::undefined,
 		attachment_store_op::store,
@@ -267,13 +267,12 @@ framebuffer_attachment_layout inline ignore_store(format image_format,
 *			Ignore initial attachment content and discard contents after render.
 */
 framebuffer_attachment_layout inline ignore_discard(format image_format,
-													image_layout layout,
 													image_layout final_layout,
 													const vk::vk_blend_op_descriptor &blend_op) {
 	return {
 		image_format,
 		image_layout::undefined,
-		layout,
+		_detail::attachment_layout_for_format(image_format),
 		final_layout,
 		attachment_load_op::undefined,
 		attachment_store_op::discard,

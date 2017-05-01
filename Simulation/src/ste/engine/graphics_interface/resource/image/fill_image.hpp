@@ -136,7 +136,7 @@ auto fill_image_array(const device_image<dimensions, allocation_policy> &image,
 		for (std::uint32_t m = base_mip; m < mips; ++m) {
 			auto size = surface_generic.extent(m);
 
-			VkImageAspectFlags aspect = static_cast<VkImageAspectFlags>(vk_format_aspect(image_format));
+			VkImageAspectFlags aspect = static_cast<VkImageAspectFlags>(format_aspect(image_format));
 			VkImageCopy range = {
 				{ aspect, 0, base_layer, layers },
 				{ 0, 0, 0 },

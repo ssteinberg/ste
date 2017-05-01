@@ -166,7 +166,6 @@ int main()
 	// Pipeline framebuffer layout
 	gl::framebuffer_layout fb_layout(surface_size);
 	fb_layout[0] = gl::clear_store(device.get_surface().get_swap_chain_images()[0].image.get_format(),
-								   gl::image_layout::color_attachment_optimal,
 								   gl::image_layout::present_src_khr);
 
 	// Create framebuffers
@@ -174,7 +173,7 @@ int main()
 	for (auto &swap_image : device.get_surface().get_swap_chain_images()) {
 		gl::framebuffer fb(ctx, fb_layout);
 		fb[0] = gl::framebuffer_attachment(swap_image.view,
-										   glm::vec4(.2f, .0f, .8f, 1.f));
+										   glm::vec4(.02f, .0f, .08f, 1.f));
 		swap_chain_framebuffers.push_back(std::move(fb));
 	}
 

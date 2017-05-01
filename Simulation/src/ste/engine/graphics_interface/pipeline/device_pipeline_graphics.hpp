@@ -68,7 +68,7 @@ private:
 			const framebuffer_attachment_layout &attachment = a.second;
 
 			// Blend operation is only applicable for color attachments
-			bool is_depth_attachment = vk_format_is_depth(attachment.image_format);
+			bool is_depth_attachment = format_is_depth(attachment.image_format);
 			if (is_depth_attachment)
 				continue;
 

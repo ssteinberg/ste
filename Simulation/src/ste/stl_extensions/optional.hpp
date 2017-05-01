@@ -381,6 +381,10 @@ bool operator!=(const T &t, const optional<T> &opt) {
 }
 template <typename T>
 bool operator==(const optional<T> &opt0, const optional<T> &opt1) {
+	if (!opt0 != !opt1)
+		return false;
+	if (!opt0 && !opt1)
+		return true;
 	return opt0.get() == opt1.get();
 }
 template <typename T>

@@ -37,6 +37,14 @@ public:
 	framebuffer_attachment(framebuffer_attachment&&) = default;
 	framebuffer_attachment &operator=(framebuffer_attachment&&) = default;
 
+	bool operator==(const framebuffer_attachment &rhs) const {
+		return attachment->get_image_view_handle() == rhs.attachment->get_image_view_handle() &&
+			clear_value == rhs.clear_value;
+	}
+	bool operator!=(const framebuffer_attachment &rhs) const {
+		return !(*this == rhs);
+	}
+
 	const auto& get_attachment() const { return *attachment; }
 
 	/**
