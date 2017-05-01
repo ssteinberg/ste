@@ -2,4 +2,4 @@
 #include <stdafx.hpp>
 #include <log.hpp>
 
-ste::log* ste::ste_global_logger = nullptr;
+ste::log::log* ste::log::ste_global_logger = nullptr;

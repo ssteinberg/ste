@@ -9,7 +9,7 @@
 #include <log_streambuf.hpp>
 #include <log_sink.hpp>
 
-namespace ste {
+namespace ste::log {
 
 class log_ostream : public std::ostream {
 private:

@@ -59,9 +59,9 @@ int main()
 	/*
 	*	Create logger
 	*/
-	ste::log logger("Global Illumination");
+	log::log logger("Global Illumination");
 	logger.redirect_std_outputs();
-	ste_log_set_global_logger(&logger);
+	log::ste_log_set_global_logger(&logger);
 	ste_log() << "Simulation is running";
 
 
@@ -167,7 +167,7 @@ int main()
 	gl::framebuffer_layout fb_layout(surface_size);
 	fb_layout[0] = gl::clear_store(device.get_surface().get_swap_chain_images()[0].image.get_format(),
 								   gl::image_layout::present_src_khr);
-
+	
 	// Create framebuffers
 	std::vector<gl::framebuffer> swap_chain_framebuffers;
 	for (auto &swap_image : device.get_surface().get_swap_chain_images()) {

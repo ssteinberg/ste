@@ -17,7 +17,7 @@
 #include <log_class.hpp>
 #include <log_entry.hpp>
 
-namespace ste {
+namespace ste::log {
 
 class log_stream_formatter {
 private:
@@ -31,13 +31,13 @@ private:
 private:
 	static const char *severity(log_class c) {
 		switch (c) {
-		case ste::log_class::info_class_log:
+		case log_class::info_class_log:
 			return "info";
-		case ste::log_class::warn_class_log:
+		case log_class::warn_class_log:
 			return "warn";
-		case ste::log_class::err_class_log:
+		case log_class::err_class_log:
 			return "err";
-		case ste::log_class::fatal_class_log:
+		case log_class::fatal_class_log:
 			return "fatal";
 		}
 		return "";
@@ -112,8 +112,6 @@ private:
 
 public:
 	log_stream_formatter(const std::string &name) : t_warn(0), t_err(0), t_fatal(0), name(name) {
-		std::string template_data;
-
 		std::ifstream fs(log_template_path, std::ios::in);
 		if (!fs.good()) {
 			std::cerr << "Error while reading log template file \"" << log_template_path << "\": " << std::strerror(errno) << std::endl;
@@ -121,7 +119,7 @@ public:
 			return;
 		}
 
-		template_data = std::string((std::istreambuf_iterator<char>(fs)), (std::istreambuf_iterator<char>()));
+		std::string template_data = std::string((std::istreambuf_iterator<char>(fs)), (std::istreambuf_iterator<char>()));
 		fs.close();
 
 		auto entry_begin_len = std::string(entry_boundary_start).length();

@@ -8,7 +8,7 @@
 
 #include <log_class.hpp>
 
-namespace ste {
+namespace ste::log {
 
 struct log_entry_data {
 	const char *file;

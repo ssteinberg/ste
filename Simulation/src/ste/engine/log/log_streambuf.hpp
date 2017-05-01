@@ -12,7 +12,7 @@
 
 #include <log_sink.hpp>
 
-namespace ste {
+namespace ste::log {
 
 template <std::size_t buff_sz>
 class log_streambuf : public std::streambuf {

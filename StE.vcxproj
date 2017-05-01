@@ -527,12 +527,10 @@
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\vk\query\vk_query.cpp" />
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\vk\queue\vk_command_buffers.cpp" />
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\format\format_rtti.cpp" />
+    <ClCompile Include="Simulation\src\ste\engine\log\log.cpp" />
     <ClCompile Include="Simulation\src\ste\engine\scheduling\balanced_thread_pool.cpp" />
     <ClCompile Include="Simulation\src\ste\engine\window\ste_window.cpp" />
     <ClCompile Include="Simulation\src\ste\engine\window\ste_window_signals.cpp" />
-    <ClCompile Include="Simulation\src\ste\engine\log\Log.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="Simulation\src\ste\engine\scheduling\task_scheduler.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
@@ -561,6 +559,8 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\layout\framebuffer\framebuffer_layout.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\image\fill_image.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\image\generate_mipmaps.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\task\task.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\log\log.hpp" />
     <ClInclude Include="Simulation\src\ste\math_additions\rect.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\data_structure\array.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\data_structure\copy_data_buffer.hpp" />
@@ -945,7 +945,6 @@
     <ClInclude Include="Simulation\src\external_includes\boost_flatmap.hpp" />
     <ClInclude Include="Simulation\src\external_includes\boost_flatset.hpp" />
     <ClInclude Include="Simulation\src\external_includes\boost_serialization.hpp" />
-    <ClInclude Include="Simulation\src\ste\engine\log\Log.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\log\log_class.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\log\log_entry.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\log\log_ostream.hpp" />
