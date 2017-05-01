@@ -23,6 +23,10 @@ struct format_rtti {
 	bool is_depth;
 	bool is_float;
 	bool is_signed;
+	bool is_srgb;
+	bool is_normalized_integer;
+	bool is_scaled_integer;
+	gli::format gli_format;
 };
 
 namespace _internal {

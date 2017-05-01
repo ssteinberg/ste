@@ -36,7 +36,14 @@ public:
 	using Base::Base;
 };
 
-class device_pipeline_multiple_depth_attachments_exception : public device_pipeline_exception {
+class device_pipeline_no_attached_framebuffer_exception : public device_pipeline_exception {
+	using Base = device_pipeline_exception;
+
+public:
+	using Base::Base;
+};
+
+class device_pipeline_incompatible_framebuffer_exception : public device_pipeline_exception {
 	using Base = device_pipeline_exception;
 
 public:

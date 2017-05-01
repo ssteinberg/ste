@@ -44,6 +44,9 @@ auto requested_device_features() {
 	return requested_features;
 }
 
+template <typename T>
+using type_erased_deleter_ptr = std::shared_ptr<T>;
+
 #ifdef _MSC_VER
 int CALLBACK WinMain(HINSTANCE hInstance,
 					 HINSTANCE hPrevInstance,
@@ -160,11 +163,27 @@ int main()
 	graphics_settings.viewport = glm::vec2(surface_size);
 	graphics_settings.scissor = surface_size;
 
+	// Pipeline framebuffer layout
+	gl::framebuffer_layout fb_layout(surface_size);
+	fb_layout[0] = gl::clear_store(device.get_surface().get_swap_chain_images()[0].image.get_format(),
+								   gl::image_layout::color_attachment_optimal,
+								   gl::image_layout::present_src_khr);
+
+	// Create framebuffers
+	std::vector<gl::framebuffer> swap_chain_framebuffers;
+	for (auto &swap_image : device.get_surface().get_swap_chain_images()) {
+		gl::framebuffer fb(ctx, fb_layout);
+		fb[0] = gl::framebuffer_attachment(swap_image.view,
+										   glm::vec4(.2f, .0f, .8f, 1.f));
+		swap_chain_framebuffers.push_back(std::move(fb));
+	}
+
 	// Create pipeline
 	gl::pipeline_auditor_graphics auditor(std::move(graphics_settings));
 	auditor.attach_shader_stage(vert_shader_stage.get());
 	auditor.attach_shader_stage(frag_shader_stage.get());
 	auditor.set_vertex_attributes(0, gl::vertex_attributes<vertex>());
+	auditor.set_framebuffer_layout(fb_layout);
 
 	auto pipeline = auditor.pipeline(ctx,
 									 pool);
@@ -237,15 +256,7 @@ int main()
 				}
 
 				// Set new framebuffer
-				auto presentation_image_idx = batch->presentation_image_index();
-				const auto &presentation_image = device.get_surface().get_swap_chain_images()[presentation_image_idx];
-				VkImage pimg = presentation_image.image.get_image_handle();
-				VkImageView pview = presentation_image.view.get_image_view_handle();
-				pipeline->framebuffer()["outColor"] = gl::clear_store(presentation_image.view,
-																	  glm::vec4(.0f),
-																	  gl::image_layout::color_attachment_optimal,
-																	  gl::image_layout::present_src_khr);
-				VkImageView view = pipeline->framebuffer()["outColor"]->output->get_image_view_handle();
+				pipeline->attach_framebuffer(swap_chain_framebuffers[batch->presentation_image_index()]);
 
 				recorder
 					<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::fragment_shader,

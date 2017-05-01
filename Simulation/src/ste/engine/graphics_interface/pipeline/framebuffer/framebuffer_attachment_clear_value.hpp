@@ -62,7 +62,9 @@ public:
 	framebuffer_attachment_clear_value() {
 		val = {};
 	}
-	template <typename T>
+	template <
+		typename T,
+		typename = typename std::enable_if<is_vector_v<T> || is_scalar_v<T>>::type>
 	framebuffer_attachment_clear_value(T&& t) {
 		*this = std::forward<T>(t);
 	}
@@ -72,7 +74,10 @@ public:
 	framebuffer_attachment_clear_value(const framebuffer_attachment_clear_value&) = default;
 	framebuffer_attachment_clear_value &operator=(const framebuffer_attachment_clear_value&) = default;
 
-	template <typename T>
+	template <
+		typename T,
+		typename = typename std::enable_if<is_vector_v<T> || is_scalar_v<T>>::type
+	>
 	auto& operator=(const T &t) {
 		_internal::framebuffer_attachment_clear_value_assign_impl::assigner(val, t);
 		return *this;
@@ -95,20 +100,28 @@ public:
 		VkClearValue ret;
 
 		auto d = format_id(f);
+
 		if (d.is_depth) {
+			// Depth format
 			ret.depthStencil.depth = val.float32[0];
 		}
-		else if (d.is_float) {
-			static_assert(sizeof(val.float32) == sizeof(ret.color.float32));
-			std::memcpy(ret.color.float32, val.float32, sizeof(val.float32));
-		}
-		else if (d.is_signed) {
-			static_assert(sizeof(val.int32) == sizeof(ret.color.int32));
-			std::memcpy(ret.color.int32, val.int32, sizeof(val.int32));
-		}
 		else {
-			static_assert(sizeof(val.uint32) == sizeof(ret.color.uint32));
-			std::memcpy(ret.color.uint32, val.uint32, sizeof(val.uint32));
+			// Normalized-integer, scaled-integer and srgb color formats all use float clear value
+			bool is_float_like_format = d.is_normalized_integer || d.is_scaled_integer || d.is_srgb;
+
+			// Populate clear value based on format traits
+			if (d.is_float || is_float_like_format) {
+				static_assert(sizeof(val.float32) == sizeof(ret.color.float32));
+				std::memcpy(ret.color.float32, val.float32, sizeof(val.float32));
+			}
+			else if (d.is_signed) {
+				static_assert(sizeof(val.int32) == sizeof(ret.color.int32));
+				std::memcpy(ret.color.int32, val.int32, sizeof(val.int32));
+			}
+			else {
+				static_assert(sizeof(val.uint32) == sizeof(ret.color.uint32));
+				std::memcpy(ret.color.uint32, val.uint32, sizeof(val.uint32));
+			}
 		}
 
 		return ret;

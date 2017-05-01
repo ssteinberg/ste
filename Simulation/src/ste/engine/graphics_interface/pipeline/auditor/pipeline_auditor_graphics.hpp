@@ -13,6 +13,7 @@
 #include <pipeline_layout_exceptions.hpp>
 
 #include <pipeline_vertex_input_bindings_collection.hpp>
+#include <framebuffer_layout.hpp>
 
 #include <device_pipeline_graphics_configurations.hpp>
 #include <device_pipeline_graphics.hpp>
@@ -37,6 +38,7 @@ private:
 	shader_stage_t fragment_shader_stage{ nullptr };
 
 	pipeline_vertex_input_bindings_collection vertex_input_descriptors;
+	framebuffer_layout fb_layout;
 
 	device_pipeline_graphics_configurations pipeline_settings;
 
@@ -48,7 +50,9 @@ private:
 	void set_fragment_stage(const shader_stage_t &stage) { fragment_shader_stage = stage; }
 
 public:
-	pipeline_auditor_graphics(device_pipeline_graphics_configurations &&settings) {
+	pipeline_auditor_graphics(device_pipeline_graphics_configurations &&settings)
+		: fb_layout({0,0})
+	{
 		set_pipeline_settings(std::move(settings));
 	}
 	pipeline_auditor_graphics(device_pipeline_graphics_configurations &&settings,
@@ -99,6 +103,13 @@ public:
 		vertex_input_descriptors.insert(binding_index, attrib);
 	}
 
+	/**
+	*	@brief	Defines the framebuffer layout for the pipeline
+	*/
+	void set_framebuffer_layout(const framebuffer_layout &layout) {
+		fb_layout = layout;
+	}
+
 	void set_pipeline_settings(device_pipeline_graphics_configurations &&settings) { pipeline_settings = std::move(settings); }
 
 	/**
@@ -119,6 +130,7 @@ public:
 														  ctx,
 														  pipeline_settings,
 														  vertex_input_descriptors.get_vk_descriptors(),
+														  fb_layout,
 														  pool,
 														  std::move(layout),
 														  external_binding_sets);

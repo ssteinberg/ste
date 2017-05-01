@@ -96,7 +96,10 @@ template<> struct format_traits<format::r4g4_unorm_pack8> {
 	static constexpr int texel_bytes = 1;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = true,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g
 	};
@@ -106,7 +109,10 @@ template<> struct format_traits<format::r4g4b4a4_unorm_pack16> {
 	static constexpr int texel_bytes = 2;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = true,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g, component_swizzle::b, component_swizzle::a
 	};
@@ -116,7 +122,10 @@ template<> struct format_traits<format::b4g4r4a4_unorm_pack16> {
 	static constexpr int texel_bytes = 2;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = true,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::b, component_swizzle::g, component_swizzle::r, component_swizzle::a
 	};
@@ -126,7 +135,10 @@ template<> struct format_traits<format::r5g6b5_unorm_pack16> {
 	static constexpr int texel_bytes = 2;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = true,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g, component_swizzle::b
 	};
@@ -136,7 +148,10 @@ template<> struct format_traits<format::b5g6r5_unorm_pack16> {
 	static constexpr int texel_bytes = 2;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = true,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::b, component_swizzle::g, component_swizzle::r
 	};
@@ -146,7 +161,10 @@ template<> struct format_traits<format::r5g5b5a1_unorm_pack16> {
 	static constexpr int texel_bytes = 2;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = true,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g, component_swizzle::b, component_swizzle::a
 	};
@@ -156,7 +174,10 @@ template<> struct format_traits<format::b5g5r5a1_unorm_pack16> {
 	static constexpr int texel_bytes = 2;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = true,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::b, component_swizzle::g, component_swizzle::r, component_swizzle::a
 	};
@@ -166,7 +187,10 @@ template<> struct format_traits<format::a1r5g5b5_unorm_pack16> {
 	static constexpr int texel_bytes = 2;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = true,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::a, component_swizzle::r, component_swizzle::g, component_swizzle::b
 	};
@@ -176,7 +200,10 @@ template<> struct format_traits<format::r8_unorm> {
 	static constexpr int texel_bytes = 1;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = true,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r
 	};
@@ -188,7 +215,10 @@ template<> struct format_traits<format::r8_snorm> {
 	static constexpr int texel_bytes = 1;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = true,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r
 	};
@@ -200,7 +230,10 @@ template<> struct format_traits<format::r8_uscaled> {
 	static constexpr int texel_bytes = 1;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = true;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r
 	};
@@ -212,7 +245,10 @@ template<> struct format_traits<format::r8_sscaled> {
 	static constexpr int texel_bytes = 1;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = true;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r
 	};
@@ -224,7 +260,10 @@ template<> struct format_traits<format::r8_uint> {
 	static constexpr int texel_bytes = 1;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r
 	};
@@ -236,7 +275,10 @@ template<> struct format_traits<format::r8_sint> {
 	static constexpr int texel_bytes = 1;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r
 	};
@@ -248,7 +290,10 @@ template<> struct format_traits<format::r8_srgb> {
 	static constexpr int texel_bytes = 1;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = true,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r
 	};
@@ -260,7 +305,10 @@ template<> struct format_traits<format::r8g8_unorm> {
 	static constexpr int texel_bytes = 2;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = true,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g
 	};
@@ -272,7 +320,10 @@ template<> struct format_traits<format::r8g8_snorm> {
 	static constexpr int texel_bytes = 2;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = true,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g
 	};
@@ -284,7 +335,10 @@ template<> struct format_traits<format::r8g8_uscaled> {
 	static constexpr int texel_bytes = 2;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = true;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g
 	};
@@ -296,7 +350,10 @@ template<> struct format_traits<format::r8g8_sscaled> {
 	static constexpr int texel_bytes = 2;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = true;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g
 	};
@@ -308,7 +365,10 @@ template<> struct format_traits<format::r8g8_uint> {
 	static constexpr int texel_bytes = 2;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g
 	};
@@ -320,7 +380,10 @@ template<> struct format_traits<format::r8g8_sint> {
 	static constexpr int texel_bytes = 2;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g
 	};
@@ -332,7 +395,10 @@ template<> struct format_traits<format::r8g8_srgb> {
 	static constexpr int texel_bytes = 2;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = true,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g
 	};
@@ -344,7 +410,10 @@ template<> struct format_traits<format::r8g8b8_unorm> {
 	static constexpr int texel_bytes = 3;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = true,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g, component_swizzle::b
 	};
@@ -356,7 +425,10 @@ template<> struct format_traits<format::r8g8b8_snorm> {
 	static constexpr int texel_bytes = 3;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = true,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g, component_swizzle::b
 	};
@@ -368,7 +440,10 @@ template<> struct format_traits<format::r8g8b8_uscaled> {
 	static constexpr int texel_bytes = 3;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = true;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g, component_swizzle::b
 	};
@@ -380,7 +455,10 @@ template<> struct format_traits<format::r8g8b8_sscaled> {
 	static constexpr int texel_bytes = 3;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = true;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g, component_swizzle::b
 	};
@@ -392,7 +470,10 @@ template<> struct format_traits<format::r8g8b8_uint> {
 	static constexpr int texel_bytes = 3;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g, component_swizzle::b
 	};
@@ -404,7 +485,10 @@ template<> struct format_traits<format::r8g8b8_sint> {
 	static constexpr int texel_bytes = 3;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g, component_swizzle::b
 	};
@@ -416,7 +500,10 @@ template<> struct format_traits<format::r8g8b8_srgb> {
 	static constexpr int texel_bytes = 3;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = true,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g, component_swizzle::b
 	};
@@ -428,7 +515,10 @@ template<> struct format_traits<format::b8g8r8_unorm> {
 	static constexpr int texel_bytes = 3;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = true,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::b, component_swizzle::g, component_swizzle::r
 	};
@@ -440,7 +530,10 @@ template<> struct format_traits<format::b8g8r8_snorm> {
 	static constexpr int texel_bytes = 3;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = true,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::b, component_swizzle::g, component_swizzle::r
 	};
@@ -452,7 +545,10 @@ template<> struct format_traits<format::b8g8r8_uscaled> {
 	static constexpr int texel_bytes = 3;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = true;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::b, component_swizzle::g, component_swizzle::r
 	};
@@ -464,7 +560,10 @@ template<> struct format_traits<format::b8g8r8_sscaled> {
 	static constexpr int texel_bytes = 3;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = true;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::b, component_swizzle::g, component_swizzle::r
 	};
@@ -476,7 +575,10 @@ template<> struct format_traits<format::b8g8r8_uint> {
 	static constexpr int texel_bytes = 3;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::b, component_swizzle::g, component_swizzle::r
 	};
@@ -488,7 +590,10 @@ template<> struct format_traits<format::b8g8r8_sint> {
 	static constexpr int texel_bytes = 3;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::b, component_swizzle::g, component_swizzle::r
 	};
@@ -500,7 +605,10 @@ template<> struct format_traits<format::b8g8r8_srgb> {
 	static constexpr int texel_bytes = 3;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = true,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::b, component_swizzle::g, component_swizzle::r
 	};
@@ -512,7 +620,10 @@ template<> struct format_traits<format::r8g8b8a8_unorm> {
 	static constexpr int texel_bytes = 4;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = true,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g, component_swizzle::b, component_swizzle::a
 	};
@@ -524,7 +635,10 @@ template<> struct format_traits<format::r8g8b8a8_snorm> {
 	static constexpr int texel_bytes = 4;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = true,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g, component_swizzle::b, component_swizzle::a
 	};
@@ -536,7 +650,10 @@ template<> struct format_traits<format::r8g8b8a8_uscaled> {
 	static constexpr int texel_bytes = 4;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = true;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g, component_swizzle::b, component_swizzle::a
 	};
@@ -548,7 +665,10 @@ template<> struct format_traits<format::r8g8b8a8_sscaled> {
 	static constexpr int texel_bytes = 4;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = true;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g, component_swizzle::b, component_swizzle::a
 	};
@@ -560,7 +680,10 @@ template<> struct format_traits<format::r8g8b8a8_uint> {
 	static constexpr int texel_bytes = 4;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g, component_swizzle::b, component_swizzle::a
 	};
@@ -572,7 +695,10 @@ template<> struct format_traits<format::r8g8b8a8_sint> {
 	static constexpr int texel_bytes = 4;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g, component_swizzle::b, component_swizzle::a
 	};
@@ -584,7 +710,10 @@ template<> struct format_traits<format::r8g8b8a8_srgb> {
 	static constexpr int texel_bytes = 4;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = true,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g, component_swizzle::b, component_swizzle::a
 	};
@@ -596,7 +725,10 @@ template<> struct format_traits<format::b8g8r8a8_unorm> {
 	static constexpr int texel_bytes = 4;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = true,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::b, component_swizzle::g, component_swizzle::r, component_swizzle::a
 	};
@@ -608,7 +740,10 @@ template<> struct format_traits<format::b8g8r8a8_snorm> {
 	static constexpr int texel_bytes = 4;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = true,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::b, component_swizzle::g, component_swizzle::r, component_swizzle::a
 	};
@@ -620,7 +755,10 @@ template<> struct format_traits<format::b8g8r8a8_uscaled> {
 	static constexpr int texel_bytes = 4;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = true;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::b, component_swizzle::g, component_swizzle::r, component_swizzle::a
 	};
@@ -632,7 +770,10 @@ template<> struct format_traits<format::b8g8r8a8_sscaled> {
 	static constexpr int texel_bytes = 4;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = true;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::b, component_swizzle::g, component_swizzle::r, component_swizzle::a
 	};
@@ -644,7 +785,10 @@ template<> struct format_traits<format::b8g8r8a8_uint> {
 	static constexpr int texel_bytes = 4;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::b, component_swizzle::g, component_swizzle::r, component_swizzle::a
 	};
@@ -656,7 +800,10 @@ template<> struct format_traits<format::b8g8r8a8_sint> {
 	static constexpr int texel_bytes = 4;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::b, component_swizzle::g, component_swizzle::r, component_swizzle::a
 	};
@@ -668,7 +815,10 @@ template<> struct format_traits<format::b8g8r8a8_srgb> {
 	static constexpr int texel_bytes = 4;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = true,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::b, component_swizzle::g, component_swizzle::r, component_swizzle::a
 	};
@@ -680,7 +830,10 @@ template<> struct format_traits<format::a8b8g8r8_unorm_pack32> {
 	static constexpr int texel_bytes = 4;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = true,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::a, component_swizzle::b, component_swizzle::g, component_swizzle::r
 	};
@@ -691,7 +844,10 @@ template<> struct format_traits<format::a8b8g8r8_snorm_pack32> {
 	static constexpr int texel_bytes = 4;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = true,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::a, component_swizzle::b, component_swizzle::g, component_swizzle::r
 	};
@@ -702,7 +858,10 @@ template<> struct format_traits<format::a8b8g8r8_uscaled_pack32> {
 	static constexpr int texel_bytes = 4;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = true;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::a, component_swizzle::b, component_swizzle::g, component_swizzle::r
 	};
@@ -713,7 +872,10 @@ template<> struct format_traits<format::a8b8g8r8_sscaled_pack32> {
 	static constexpr int texel_bytes = 4;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = true;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::a, component_swizzle::b, component_swizzle::g, component_swizzle::r
 	};
@@ -724,7 +886,10 @@ template<> struct format_traits<format::a8b8g8r8_uint_pack32> {
 	static constexpr int texel_bytes = 4;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::a, component_swizzle::b, component_swizzle::g, component_swizzle::r
 	};
@@ -735,7 +900,10 @@ template<> struct format_traits<format::a8b8g8r8_sint_pack32> {
 	static constexpr int texel_bytes = 4;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::a, component_swizzle::b, component_swizzle::g, component_swizzle::r
 	};
@@ -746,7 +914,10 @@ template<> struct format_traits<format::a8b8g8r8_srgb_pack32> {
 	static constexpr int texel_bytes = 4;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::a, component_swizzle::b, component_swizzle::g, component_swizzle::r
 	};
@@ -757,7 +928,10 @@ template<> struct format_traits<format::a2r10g10b10_unorm_pack32> {
 	static constexpr int texel_bytes = 4;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = true,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::a, component_swizzle::r, component_swizzle::g, component_swizzle::b
 	};
@@ -767,7 +941,10 @@ template<> struct format_traits<format::a2r10g10b10_snorm_pack32> {
 	static constexpr int texel_bytes = 4;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = true,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::a, component_swizzle::r, component_swizzle::g, component_swizzle::b
 	};
@@ -777,7 +954,10 @@ template<> struct format_traits<format::a2r10g10b10_uscaled_pack32> {
 	static constexpr int texel_bytes = 4;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = true;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::a, component_swizzle::r, component_swizzle::g, component_swizzle::b
 	};
@@ -787,7 +967,10 @@ template<> struct format_traits<format::a2r10g10b10_sscaled_pack32> {
 	static constexpr int texel_bytes = 4;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = true;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::a, component_swizzle::r, component_swizzle::g, component_swizzle::b
 	};
@@ -797,7 +980,10 @@ template<> struct format_traits<format::a2r10g10b10_uint_pack32> {
 	static constexpr int texel_bytes = 4;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::a, component_swizzle::r, component_swizzle::g, component_swizzle::b
 	};
@@ -807,7 +993,10 @@ template<> struct format_traits<format::a2r10g10b10_sint_pack32> {
 	static constexpr int texel_bytes = 4;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::a, component_swizzle::r, component_swizzle::g, component_swizzle::b
 	};
@@ -817,7 +1006,10 @@ template<> struct format_traits<format::a2b10g10r10_unorm_pack32> {
 	static constexpr int texel_bytes = 4;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = true,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::a, component_swizzle::b, component_swizzle::g, component_swizzle::r
 	};
@@ -827,7 +1019,10 @@ template<> struct format_traits<format::a2b10g10r10_snorm_pack32> {
 	static constexpr int texel_bytes = 4;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = true,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::a, component_swizzle::b, component_swizzle::g, component_swizzle::r
 	};
@@ -837,7 +1032,10 @@ template<> struct format_traits<format::a2b10g10r10_uscaled_pack32> {
 	static constexpr int texel_bytes = 4;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = true;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::a, component_swizzle::b, component_swizzle::g, component_swizzle::r
 	};
@@ -847,7 +1045,10 @@ template<> struct format_traits<format::a2b10g10r10_sscaled_pack32> {
 	static constexpr int texel_bytes = 4;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = true;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::a, component_swizzle::b, component_swizzle::g, component_swizzle::r
 	};
@@ -857,7 +1058,10 @@ template<> struct format_traits<format::a2b10g10r10_uint_pack32> {
 	static constexpr int texel_bytes = 4;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::a, component_swizzle::b, component_swizzle::g, component_swizzle::r
 	};
@@ -867,7 +1071,10 @@ template<> struct format_traits<format::a2b10g10r10_sint_pack32> {
 	static constexpr int texel_bytes = 4;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::a, component_swizzle::b, component_swizzle::g, component_swizzle::r
 	};
@@ -877,7 +1084,10 @@ template<> struct format_traits<format::r16_unorm> {
 	static constexpr int texel_bytes = 2;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = true,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r
 	};
@@ -889,7 +1099,10 @@ template<> struct format_traits<format::r16_snorm> {
 	static constexpr int texel_bytes = 2;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = true,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r
 	};
@@ -901,7 +1114,10 @@ template<> struct format_traits<format::r16_uscaled> {
 	static constexpr int texel_bytes = 2;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = true;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r
 	};
@@ -913,7 +1129,10 @@ template<> struct format_traits<format::r16_sscaled> {
 	static constexpr int texel_bytes = 2;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = true;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r
 	};
@@ -925,7 +1144,10 @@ template<> struct format_traits<format::r16_uint> {
 	static constexpr int texel_bytes = 2;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r
 	};
@@ -937,7 +1159,10 @@ template<> struct format_traits<format::r16_sint> {
 	static constexpr int texel_bytes = 2;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r
 	};
@@ -949,7 +1174,10 @@ template<> struct format_traits<format::r16_sfloat> {
 	static constexpr int texel_bytes = 2;
 	static constexpr bool is_depth = false,
 		is_float = true,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r
 	};
@@ -961,7 +1189,10 @@ template<> struct format_traits<format::r16g16_unorm> {
 	static constexpr int texel_bytes = 4;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = true,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g
 	};
@@ -973,7 +1204,10 @@ template<> struct format_traits<format::r16g16_snorm> {
 	static constexpr int texel_bytes = 4;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = true,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g
 	};
@@ -985,7 +1219,10 @@ template<> struct format_traits<format::r16g16_uscaled> {
 	static constexpr int texel_bytes = 4;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = true;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g
 	};
@@ -997,7 +1234,10 @@ template<> struct format_traits<format::r16g16_sscaled> {
 	static constexpr int texel_bytes = 4;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = true;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g
 	};
@@ -1009,7 +1249,10 @@ template<> struct format_traits<format::r16g16_uint> {
 	static constexpr int texel_bytes = 4;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g
 	};
@@ -1021,7 +1264,10 @@ template<> struct format_traits<format::r16g16_sint> {
 	static constexpr int texel_bytes = 4;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g
 	};
@@ -1033,7 +1279,10 @@ template<> struct format_traits<format::r16g16_sfloat> {
 	static constexpr int texel_bytes = 4;
 	static constexpr bool is_depth = false,
 		is_float = true,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g
 	};
@@ -1045,7 +1294,10 @@ template<> struct format_traits<format::r16g16b16_unorm> {
 	static constexpr int texel_bytes = 6;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = true,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g, component_swizzle::b
 	};
@@ -1057,7 +1309,10 @@ template<> struct format_traits<format::r16g16b16_snorm> {
 	static constexpr int texel_bytes = 6;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = true,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g, component_swizzle::b
 	};
@@ -1069,7 +1324,10 @@ template<> struct format_traits<format::r16g16b16_uscaled> {
 	static constexpr int texel_bytes = 6;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = true;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g, component_swizzle::b
 	};
@@ -1081,7 +1339,10 @@ template<> struct format_traits<format::r16g16b16_sscaled> {
 	static constexpr int texel_bytes = 6;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = true;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g, component_swizzle::b
 	};
@@ -1093,7 +1354,10 @@ template<> struct format_traits<format::r16g16b16_uint> {
 	static constexpr int texel_bytes = 6;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g, component_swizzle::b
 	};
@@ -1105,7 +1369,10 @@ template<> struct format_traits<format::r16g16b16_sint> {
 	static constexpr int texel_bytes = 6;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g, component_swizzle::b
 	};
@@ -1117,7 +1384,10 @@ template<> struct format_traits<format::r16g16b16_sfloat> {
 	static constexpr int texel_bytes = 6;
 	static constexpr bool is_depth = false,
 		is_float = true,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g, component_swizzle::b
 	};
@@ -1129,7 +1399,10 @@ template<> struct format_traits<format::r16g16b16a16_unorm> {
 	static constexpr int texel_bytes = 8;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = true,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g, component_swizzle::b, component_swizzle::a
 	};
@@ -1141,7 +1414,10 @@ template<> struct format_traits<format::r16g16b16a16_snorm> {
 	static constexpr int texel_bytes = 8;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = true,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g, component_swizzle::b, component_swizzle::a
 	};
@@ -1153,7 +1429,10 @@ template<> struct format_traits<format::r16g16b16a16_uscaled> {
 	static constexpr int texel_bytes = 8;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = true;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g, component_swizzle::b, component_swizzle::a
 	};
@@ -1165,7 +1444,10 @@ template<> struct format_traits<format::r16g16b16a16_sscaled> {
 	static constexpr int texel_bytes = 8;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = true;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g, component_swizzle::b, component_swizzle::a
 	};
@@ -1177,7 +1459,10 @@ template<> struct format_traits<format::r16g16b16a16_uint> {
 	static constexpr int texel_bytes = 8;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g, component_swizzle::b, component_swizzle::a
 	};
@@ -1189,7 +1474,10 @@ template<> struct format_traits<format::r16g16b16a16_sint> {
 	static constexpr int texel_bytes = 8;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g, component_swizzle::b, component_swizzle::a
 	};
@@ -1201,7 +1489,10 @@ template<> struct format_traits<format::r16g16b16a16_sfloat> {
 	static constexpr int texel_bytes = 8;
 	static constexpr bool is_depth = false,
 		is_float = true,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g, component_swizzle::b, component_swizzle::a
 	};
@@ -1213,7 +1504,10 @@ template<> struct format_traits<format::r32_uint> {
 	static constexpr int texel_bytes = 4;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r
 	};
@@ -1225,7 +1519,10 @@ template<> struct format_traits<format::r32_sint> {
 	static constexpr int texel_bytes = 4;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r
 	};
@@ -1237,7 +1534,10 @@ template<> struct format_traits<format::r32_sfloat> {
 	static constexpr int texel_bytes = 4;
 	static constexpr bool is_depth = false,
 		is_float = true,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r
 	};
@@ -1249,7 +1549,10 @@ template<> struct format_traits<format::r32g32_uint> {
 	static constexpr int texel_bytes = 8;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	using element_type = std::uint32_t;
 	static constexpr gli::format gli_format = gli::format::FORMAT_RG32_UINT_PACK32;
 };
@@ -1258,7 +1561,10 @@ template<> struct format_traits<format::r32g32_sint> {
 	static constexpr int texel_bytes = 8;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g
 	};
@@ -1270,7 +1576,10 @@ template<> struct format_traits<format::r32g32_sfloat> {
 	static constexpr int texel_bytes = 8;
 	static constexpr bool is_depth = false,
 		is_float = true,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g
 	};
@@ -1282,7 +1591,10 @@ template<> struct format_traits<format::r32g32b32_uint> {
 	static constexpr int texel_bytes = 12;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g, component_swizzle::b
 	};
@@ -1294,7 +1606,10 @@ template<> struct format_traits<format::r32g32b32_sint> {
 	static constexpr int texel_bytes = 12;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	using element_type = std::int32_t;
 	static constexpr gli::format gli_format = gli::format::FORMAT_RGB32_SINT_PACK32;
 };
@@ -1303,7 +1618,10 @@ template<> struct format_traits<format::r32g32b32_sfloat> {
 	static constexpr int texel_bytes = 12;
 	static constexpr bool is_depth = false,
 		is_float = true,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g, component_swizzle::b
 	};
@@ -1315,7 +1633,10 @@ template<> struct format_traits<format::r32g32b32a32_uint> {
 	static constexpr int texel_bytes = 16;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g, component_swizzle::b, component_swizzle::a
 	};
@@ -1327,7 +1648,10 @@ template<> struct format_traits<format::r32g32b32a32_sint> {
 	static constexpr int texel_bytes = 16;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g, component_swizzle::b, component_swizzle::a
 	};
@@ -1339,7 +1663,10 @@ template<> struct format_traits<format::r32g32b32a32_sfloat> {
 	static constexpr int texel_bytes = 16;
 	static constexpr bool is_depth = false,
 		is_float = true,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g, component_swizzle::b, component_swizzle::a
 	};
@@ -1351,7 +1678,10 @@ template<> struct format_traits<format::r64_uint> {
 	static constexpr int texel_bytes = 8;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r
 	};
@@ -1363,7 +1693,10 @@ template<> struct format_traits<format::r64_sint> {
 	static constexpr int texel_bytes = 8;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r
 	};
@@ -1375,7 +1708,10 @@ template<> struct format_traits<format::r64_sfloat> {
 	static constexpr int texel_bytes = 8;
 	static constexpr bool is_depth = false,
 		is_float = true,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r
 	};
@@ -1387,7 +1723,10 @@ template<> struct format_traits<format::r64g64_uint> {
 	static constexpr int texel_bytes = 16;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g
 	};
@@ -1399,7 +1738,10 @@ template<> struct format_traits<format::r64g64_sint> {
 	static constexpr int texel_bytes = 16;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g
 	};
@@ -1411,7 +1753,10 @@ template<> struct format_traits<format::r64g64_sfloat> {
 	static constexpr int texel_bytes = 16;
 	static constexpr bool is_depth = false,
 		is_float = true,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g
 	};
@@ -1423,7 +1768,10 @@ template<> struct format_traits<format::r64g64b64_uint> {
 	static constexpr int texel_bytes = 24;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g, component_swizzle::b
 	};
@@ -1435,7 +1783,10 @@ template<> struct format_traits<format::r64g64b64_sint> {
 	static constexpr int texel_bytes = 24;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	using element_type = std::int64_t;
 	static constexpr gli::format gli_format = gli::format::FORMAT_RGB64_SINT_PACK64;
 };
@@ -1444,7 +1795,10 @@ template<> struct format_traits<format::r64g64b64_sfloat> {
 	static constexpr int texel_bytes = 24;
 	static constexpr bool is_depth = false,
 		is_float = true,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g, component_swizzle::b
 	};
@@ -1456,7 +1810,10 @@ template<> struct format_traits<format::r64g64b64a64_uint> {
 	static constexpr int texel_bytes = 32;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g, component_swizzle::b, component_swizzle::a
 	};
@@ -1468,7 +1825,10 @@ template<> struct format_traits<format::r64g64b64a64_sint> {
 	static constexpr int texel_bytes = 32;
 	static constexpr bool is_depth = false,
 		is_float = false,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g, component_swizzle::b, component_swizzle::a
 	};
@@ -1480,7 +1840,10 @@ template<> struct format_traits<format::r64g64b64a64_sfloat> {
 	static constexpr int texel_bytes = 32;
 	static constexpr bool is_depth = false,
 		is_float = true,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::r, component_swizzle::g, component_swizzle::b, component_swizzle::a
 	};
@@ -1492,7 +1855,10 @@ template<> struct format_traits<format::b10g11r11_ufloat_pack32> {
 	static constexpr int texel_bytes = 4;
 	static constexpr bool is_depth = false,
 		is_float = true,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::b, component_swizzle::g, component_swizzle::r
 	};
@@ -1502,7 +1868,10 @@ template<> struct format_traits<format::e5b9g9r9_ufloat_pack32> {
 	static constexpr int texel_bytes = 4;
 	static constexpr bool is_depth = false,
 		is_float = true,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	static constexpr component_swizzle components[elements] = {
 		component_swizzle::b, component_swizzle::g, component_swizzle::r
 	};
@@ -1512,7 +1881,10 @@ template<> struct format_traits<format::d16_unorm> {
 	static constexpr int texel_bytes = 2;
 	static constexpr bool is_depth = true,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = true,
+		is_scaled_integer = false;
 	using element_type = std::uint16_t;
 	static constexpr gli::format gli_format = gli::format::FORMAT_D16_UNORM_PACK16;
 };
@@ -1521,14 +1893,20 @@ template<> struct format_traits<format::x8_d24_unorm_pack32> {
 	static constexpr int texel_bytes = 4;
 	static constexpr bool is_depth = true,
 		is_float = false,
-		is_signed = false;
+		is_signed = false,
+		is_srgb = false,
+		is_normalized_integer = true,
+		is_scaled_integer = false;
 };
 template<> struct format_traits<format::d32_sfloat> {
 	static constexpr int elements = 1;
 	static constexpr int texel_bytes = 4;
 	static constexpr bool is_depth = true,
 		is_float = true,
-		is_signed = true;
+		is_signed = true,
+		is_srgb = false,
+		is_normalized_integer = false,
+		is_scaled_integer = false;
 	using element_type = float;
 	static constexpr gli::format gli_format = gli::format::FORMAT_D32_SFLOAT_PACK32;
 };
