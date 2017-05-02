@@ -1,6 +1,8 @@
 
 #include <stdafx.hpp>
 
+#include <pipeline_auditor_graphics.hpp>
+
 #include <ste.hpp>
 #include <array.hpp>
 #include <stable_vector.hpp>
@@ -23,8 +25,7 @@
 #include <text_renderer.hpp>
 #include <attrib.hpp>
 
-#include <range_list.hpp>
-#include <pipeline_auditor_graphics.hpp>
+#include <task.hpp>
 
 using namespace ste;
 
@@ -187,6 +188,26 @@ int main()
 	auto pipeline = auditor.pipeline(ctx,
 									 pool);
 
+	gl::task<gl::cmd_draw_indexed> draw_task;
+	draw_task.attach_pipeline(pipeline);
+	draw_task.attach_vertex_buffer(vertex_buffer);
+	draw_task.attach_index_buffer(index_buffer);
+
+	ste_resource<gl::array<gl::draw_indirect_command_block>> indirect_buffer(ctx, 10, gl::buffer_usage::indirect_buffer);
+	gl::task<gl::cmd_draw_indirect> draw_task_indirect;
+	draw_task_indirect.attach_pipeline(pipeline);
+	draw_task_indirect.attach_vertex_buffer(vertex_buffer);
+	draw_task_indirect.attach_indirect_buffer(indirect_buffer);
+	gl::execute(ctx, std::move(draw_task_indirect), 2);
+
+	gl::task<gl::cmd_dispatch_indirect> task_compute;
+	gl::execute(ctx, std::move(task_compute));
+
+	gl::task<gl::cmd_blit_image> task_blit;
+	task_blit.attach_src_image(image, gl::image_layout::depth_stencil_read_only_optimal);
+	task_blit.attach_dst_image(image, gl::image_layout::color_attachment_optimal);
+	gl::execute(ctx, std::move(task_blit), gl::sampler_filter::nearest);
+
 	// Texture
 	gl::image_view<gl::image_type::image_2d> image_view(*image);
 	gl::sampler sampler(ctx, gl::sampler_parameter::filtering(gl::sampler_filter::linear, gl::sampler_filter::linear,
@@ -194,8 +215,8 @@ int main()
 	auto texture = gl::make_texture(image_view, sampler, gl::image_layout::shader_read_only_optimal);
 
 	// Bind resources
-	(*pipeline)["texSampler"] = gl::bind(texture);
-	(*pipeline)["uniform_buffer_object"] = gl::bind(ubo.get());
+	pipeline["texSampler"] = gl::bind(texture);
+	pipeline["uniform_buffer_object"] = gl::bind(ubo.get());
 
 	// Rendering queue
 	auto selector = gl::make_queue_selector(gl::ste_queue_type::primary_queue);
@@ -255,7 +276,7 @@ int main()
 				}
 
 				// Set new framebuffer
-				pipeline->attach_framebuffer(swap_chain_framebuffers[batch->presentation_image_index()]);
+				pipeline.attach_framebuffer(swap_chain_framebuffers[batch->presentation_image_index()]);
 
 				recorder
 					<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::fragment_shader,
@@ -276,12 +297,13 @@ int main()
 																 gl::buffer_memory_barrier(vertex_buffer->get(),
 																						   gl::access_flags::transfer_write,
 																						   gl::access_flags::vertex_attribute_read) }))
-					<< pipeline->cmd_bind()
-					<< gl::cmd_bind_vertex_buffers(0, vertex_buffer->get())
-					<< gl::cmd_bind_index_buffer(index_buffer)
-					<< gl::cmd_draw_indexed(indices.size(), 1)
-//					<< text_renderer->render_cmd()
-					<< pipeline->cmd_unbind();
+					<< draw_task(indices.size(), 1);
+//					<< pipeline.cmd_bind()
+//					<< gl::cmd_bind_vertex_buffers(0, vertex_buffer->get())
+//					<< gl::cmd_bind_index_buffer(index_buffer)
+//					<< gl::cmd_draw_indexed(indices.size(), 1)
+////					<< text_renderer->render_cmd()
+//					<< pipeline.cmd_unbind();
 			}
 
 			// Submit command buffer and present

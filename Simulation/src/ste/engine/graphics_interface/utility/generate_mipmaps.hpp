@@ -95,7 +95,7 @@ auto generate_mipmaps(const device_image<dimensions, allocation_policy> &image,
 					};
 					recorder << cmd_blit_image(image, image_layout::transfer_src_optimal,
 											   image, image_layout::transfer_dst_optimal,
-											   VK_FILTER_LINEAR, { range });
+											   sampler_filter::linear, { range });
 				}
 
 				// Move image to final layout

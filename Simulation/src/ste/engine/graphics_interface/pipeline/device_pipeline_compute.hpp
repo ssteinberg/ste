@@ -23,15 +23,15 @@ class device_pipeline_compute : public device_pipeline {
 	struct ctor {};
 
 private:
-	vk_pipeline_compute compute_pipeline;
+	vk::vk_pipeline_compute compute_pipeline;
 
 private:
 	auto create_pipeline_object() const {
 		auto shader_stage_descriptors = layout.shader_stage_descriptors();
-		return vk_pipeline_compute(ctx.device(),
-								   shader_stage_descriptors,
-								   layout,
-								   &ctx.device().pipeline_cache().current_thread_cache());
+		return vk::vk_pipeline_compute(ctx.device(),
+									   shader_stage_descriptors.front(),
+									   layout,
+									   &ctx.device().pipeline_cache().current_thread_cache());
 	}
 
 protected:
@@ -60,6 +60,9 @@ public:
 		compute_pipeline(create_pipeline_object())
 	{}
 	~device_pipeline_compute() noexcept {}
+
+	device_pipeline_compute(device_pipeline_compute&&) = default;
+	device_pipeline_compute &operator=(device_pipeline_compute&&) = default;
 };
 
 }

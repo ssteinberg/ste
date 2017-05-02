@@ -66,7 +66,7 @@ void copy_data_buffer(const ste_context &ctx,
 			auto recorder = command_buffer.record();
 			// Copy to live buffer
 			VkBufferCopy range = { 0, offset * sizeof(T), copy_count * sizeof(T) };
-			recorder << cmd_copy_buffer(staging_buffer.get(), buffer.get(), { range });
+			recorder << cmd_copy_buffer(staging_buffer, buffer, { range });
 		}
 
 		ste_device_queue::submit_batch(std::move(batch));
@@ -117,7 +117,7 @@ void copy_data_buffer(const ste_context &ctx,
 			// Copy to live buffer
 			VkBufferCopy copy = { 0, offset * sizeof(T), copy_count * sizeof(T) };
 			recorder << buffer.cmd_bind_sparse_memory({}, { bind }, {}, {});
-			recorder << cmd_copy_buffer(staging_buffer.get(), buffer.get(), { copy });
+			recorder << cmd_copy_buffer(staging_buffer, buffer, { copy });
 		}
 
 		ste_device_queue::submit_batch(std::move(batch));

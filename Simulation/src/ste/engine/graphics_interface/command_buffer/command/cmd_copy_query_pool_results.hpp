@@ -6,7 +6,7 @@
 #include <vulkan/vulkan.h>
 #include <command.hpp>
 #include <vk_query_pool.hpp>
-#include <vk_buffer.hpp>
+#include <device_buffer_base.hpp>
 
 namespace ste {
 namespace gl {
@@ -14,7 +14,7 @@ namespace gl {
 class cmd_copy_query_pool_results : public command {
 private:
 	std::reference_wrapper<const vk::vk_query_pool> pool;
-	std::reference_wrapper<const vk::vk_buffer> buffer;
+	std::reference_wrapper<const device_buffer_base> buffer;
 	std::uint32_t first;
 	std::uint32_t count;
 	std::uint64_t offset;
@@ -23,7 +23,7 @@ private:
 
 public:
 	cmd_copy_query_pool_results(const vk::vk_query_pool &pool,
-								const vk::vk_buffer &buffer,
+								const device_buffer_base &buffer,
 								std::uint32_t first_query,
 								std::uint32_t queries_count,
 								std::uint64_t buffer_offset,
@@ -45,7 +45,7 @@ private:
 								  pool.get(),
 								  first,
 								  count,
-								  buffer.get(),
+								  buffer.get().get_buffer_handle(),
 								  offset,
 								  stride,
 								  flags);

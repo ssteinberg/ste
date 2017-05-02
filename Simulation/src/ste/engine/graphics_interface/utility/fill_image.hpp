@@ -187,8 +187,8 @@ auto fill_image_array(const device_image<dimensions, allocation_policy> &image,
 					recorder << cmd_pipeline_barrier(barrier);
 
 					// Copy to image
-					recorder << cmd_copy_image(staging_image.get(), image_layout::transfer_src_optimal,
-											   image.get(), image_layout::transfer_dst_optimal,
+					recorder << cmd_copy_image(staging_image, image_layout::transfer_src_optimal,
+											   image, image_layout::transfer_dst_optimal,
 											   { range });
 				}
 

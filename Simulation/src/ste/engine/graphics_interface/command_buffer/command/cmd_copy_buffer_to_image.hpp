@@ -5,8 +5,8 @@
 
 #include <vulkan/vulkan.h>
 #include <command.hpp>
-#include <vk_buffer.hpp>
-#include <vk_image.hpp>
+#include <device_buffer_base.hpp>
+#include <device_image_base.hpp>
 
 #include <image_layout.hpp>
 #include <format_rtti.hpp>
@@ -18,15 +18,15 @@ namespace gl {
 
 class cmd_copy_buffer_to_image : public command {
 private:
-	std::reference_wrapper<const vk::vk_buffer> src_buffer;
-	std::reference_wrapper<const vk::vk_image> dst_image;
+	std::reference_wrapper<const device_buffer_base> src_buffer;
+	std::reference_wrapper<const device_image_base> dst_image;
 	image_layout layout;
 
 	std::vector<VkBufferImageCopy> ranges;
 
 public:
-	cmd_copy_buffer_to_image(const vk::vk_buffer &src_buffer,
-							 const vk::vk_image &dst_image,
+	cmd_copy_buffer_to_image(const device_buffer_base &src_buffer,
+							 const device_image_base &dst_image,
 							 const image_layout &layout,
 							 const std::vector<VkBufferImageCopy> &ranges = {})
 		: src_buffer(src_buffer), dst_image(dst_image), layout(layout), ranges(ranges)
@@ -45,8 +45,8 @@ public:
 
 private:
 	void operator()(const command_buffer &command_buffer, command_recorder &) const override final {
-		vkCmdCopyBufferToImage(command_buffer, src_buffer.get(),
-							   dst_image.get(), static_cast<VkImageLayout>(layout),
+		vkCmdCopyBufferToImage(command_buffer, src_buffer.get().get_buffer_handle(),
+							   dst_image.get().get_image_handle(), static_cast<VkImageLayout>(layout),
 							   ranges.size(), ranges.data());
 	}
 };

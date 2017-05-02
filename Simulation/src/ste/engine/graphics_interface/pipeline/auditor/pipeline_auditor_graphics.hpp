@@ -51,7 +51,7 @@ private:
 
 public:
 	pipeline_auditor_graphics(device_pipeline_graphics_configurations &&settings)
-		: fb_layout({0,0})
+		: fb_layout({ 0,0 })
 	{
 		set_pipeline_settings(std::move(settings));
 	}
@@ -120,26 +120,26 @@ public:
 	*	@param	external_binding_sets	A list of binding set layouts that are assumed to be created and bound by an external system.
 	*									The pipeline will only check compatibility with the provided shader stages.
 	*/
-	std::unique_ptr<device_pipeline_graphics> pipeline(const ste_context &ctx,
-													   pipeline_binding_set_pool &pool,
-													   optional<std::reference_wrapper<const pipeline_external_binding_set_collection>> external_binding_sets) const {
+	auto pipeline(const ste_context &ctx,
+				  pipeline_binding_set_pool &pool,
+				  optional<std::reference_wrapper<const pipeline_external_binding_set_collection>> external_binding_sets) const {
 		pipeline_layout layout(ctx,
 							   stages(),
 							   external_binding_sets);
-		return std::make_unique<device_pipeline_graphics>(device_pipeline_graphics::ctor(),
-														  ctx,
-														  pipeline_settings,
-														  vertex_input_descriptors.get_vk_descriptors(),
-														  fb_layout,
-														  pool,
-														  std::move(layout),
-														  external_binding_sets);
+		return device_pipeline_graphics(device_pipeline_graphics::ctor(),
+										ctx,
+										pipeline_settings,
+										vertex_input_descriptors.get_vk_descriptors(),
+										fb_layout,
+										pool,
+										std::move(layout),
+										external_binding_sets);
 	}
 	/**
 	*	@brief	See pipeline().
 	*/
-	std::unique_ptr<device_pipeline_graphics> pipeline(const ste_context &ctx,
-													   pipeline_binding_set_pool &pool) const {
+	auto pipeline(const ste_context &ctx,
+				  pipeline_binding_set_pool &pool) const {
 		return pipeline(ctx,
 						pool,
 						none);

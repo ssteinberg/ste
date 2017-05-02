@@ -161,6 +161,9 @@ public:
 	}
 	~device_pipeline_graphics() noexcept {}
 
+	device_pipeline_graphics(device_pipeline_graphics&&) = default;
+	device_pipeline_graphics &operator=(device_pipeline_graphics&&) = default;
+
 	/**
 	*	@brief	Attaches a framebuffer object.
 	*			The new framebuffer object replaces any previously attached framebuffer objects, if any.

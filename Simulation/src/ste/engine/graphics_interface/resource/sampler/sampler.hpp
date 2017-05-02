@@ -28,7 +28,7 @@ struct params_chain_extracter<Param, Tail...> {
 template <typename Param>
 struct params_chain_extracter<Param> {
 	static_assert(std::is_base_of<sampler_parameter::parameter, Param>::value,
-					"Param is not a sampler parameter (must inherit from sampler_parameter::parameter)");
+				  "Param is not a sampler parameter (must inherit from sampler_parameter::parameter)");
 	void operator()(vk::vk_sampler_info &sampler_info, Param &&param) const {
 		param(sampler_info);
 	}
@@ -77,7 +77,7 @@ public:
 	*/
 	template <typename ... Params>
 	sampler(const ste_context &ctx,
-			   Params&& ... params) 
+			Params&& ... params)
 		: s(ctx.device(),
 			sampler_info(std::forward<Params>(params)...))
 	{}

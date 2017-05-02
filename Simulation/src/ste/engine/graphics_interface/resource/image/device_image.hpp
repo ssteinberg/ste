@@ -62,7 +62,7 @@ public:
 	format get_format() const override final {
 		return static_cast<format>(get_image_handle().get_format());
 	}
-	auto& get_size() const {
+	const glm::u32vec3& get_size() const override final {
 		return get_image_handle().get_size();
 	}
 	auto& get_mips() const {

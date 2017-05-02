@@ -18,6 +18,7 @@ public:
 	virtual ~device_image_base() noexcept {}
 
 	virtual format get_format() const = 0;
+	virtual const glm::u32vec3& get_size() const = 0;
 	virtual const vk::vk_image& get_image_handle() const = 0;
 
 	device_image_base(device_image_base&&) = default;

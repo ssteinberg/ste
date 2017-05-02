@@ -5,18 +5,18 @@
 
 #include <vulkan/vulkan.h>
 #include <command.hpp>
-#include <vk_buffer.hpp>
+#include <device_buffer_base.hpp>
 
 namespace ste {
 namespace gl {
 
 class cmd_dispatch_indirect : public command {
 private:
-	std::reference_wrapper<const vk::vk_buffer> buffer;
+	std::reference_wrapper<const device_buffer_base> buffer;
 	std::uint32_t offset;
 
 public:
-	cmd_dispatch_indirect(const vk::vk_buffer &buffer,
+	cmd_dispatch_indirect(const device_buffer_base &buffer,
 							 std::uint32_t offset = 0) 
 		: buffer(buffer), offset(offset * buffer.get_element_size_bytes())
 	{}
@@ -24,7 +24,7 @@ public:
 
 private:
 	void operator()(const command_buffer &command_buffer, command_recorder &) const override final {
-		vkCmdDispatchIndirect(command_buffer, buffer.get(), offset);
+		vkCmdDispatchIndirect(command_buffer, buffer.get().get_buffer_handle(), offset);
 	}
 };
 

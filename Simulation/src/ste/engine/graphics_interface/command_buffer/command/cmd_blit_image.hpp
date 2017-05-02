@@ -5,8 +5,9 @@
 
 #include <vulkan/vulkan.h>
 #include <command.hpp>
-#include <vk_image.hpp>
+#include <device_image_base.hpp>
 #include <image_layout.hpp>
+#include <sampler_filter.hpp>
 
 #include <vector>
 
@@ -15,21 +16,21 @@ namespace gl {
 
 class cmd_blit_image : public command {
 private:
-	std::reference_wrapper<const vk::vk_image> src_image;
+	std::reference_wrapper<const device_image_base> src_image;
 	image_layout src_image_layout;
-	std::reference_wrapper<const vk::vk_image> dst_image;
+	std::reference_wrapper<const device_image_base> dst_image;
 	image_layout dst_image_layout;
 
 	std::vector<VkImageBlit> ranges;
 
-	VkFilter filter;
+	sampler_filter filter;
 
 public:
-	cmd_blit_image(const vk::vk_image &src_image,
+	cmd_blit_image(const device_image_base &src_image,
 				   const image_layout &src_image_layout,
-				   const vk::vk_image &dst_image,
+				   const device_image_base &dst_image,
 				   const image_layout &dst_image_layout,
-				   VkFilter filter,
+				   sampler_filter filter = sampler_filter::linear,
 				   const std::vector<VkImageBlit> &ranges = {})
 		: src_image(src_image), src_image_layout(src_image_layout),
 		dst_image(dst_image), dst_image_layout(dst_image_layout),
@@ -49,10 +50,10 @@ public:
 
 private:
 	void operator()(const command_buffer &command_buffer, command_recorder &) const override final {
-		vkCmdBlitImage(command_buffer, src_image.get(), static_cast<VkImageLayout>(src_image_layout),
-					   dst_image.get(), static_cast<VkImageLayout>(dst_image_layout),
+		vkCmdBlitImage(command_buffer, src_image.get().get_image_handle(), static_cast<VkImageLayout>(src_image_layout),
+					   dst_image.get().get_image_handle(), static_cast<VkImageLayout>(dst_image_layout),
 					   ranges.size(), ranges.data(),
-					   filter);
+					   static_cast<VkFilter>(filter));
 	}
 };
 

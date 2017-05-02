@@ -15,6 +15,7 @@ private:
 	virtual void operator()(const command_buffer &command_buffer, command_recorder &) const = 0;
 
 public:
+	command() = default;
 	virtual ~command() noexcept {}
 };
 

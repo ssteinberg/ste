@@ -22,6 +22,7 @@ public:
 	device_swapchain_image(device_swapchain_image&&) = default;
 	device_swapchain_image &operator=(device_swapchain_image&&) = default;
 
+	const glm::u32vec3& get_size() const override final { return get_image_handle().get_size(); }
 	format get_format() const override final { return static_cast<format>(image.get_format()); }
 	const vk::vk_image& get_image_handle() const override final { return image; };
 };

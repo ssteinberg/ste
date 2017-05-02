@@ -5,8 +5,7 @@
 
 #include <vulkan/vulkan.h>
 #include <command.hpp>
-#include <vk_buffer.hpp>
-#include <vk_image.hpp>
+#include <device_buffer_base.hpp>
 
 #include <vector>
 #include <functional>
@@ -16,14 +15,14 @@ namespace gl {
 
 class cmd_copy_buffer : public command {
 private:
-	std::reference_wrapper<const vk::vk_buffer> src_buffer;
-	std::reference_wrapper<const vk::vk_buffer> dst_buffer;
+	std::reference_wrapper<const device_buffer_base> src_buffer;
+	std::reference_wrapper<const device_buffer_base> dst_buffer;
 
 	std::vector<VkBufferCopy> ranges;
 
 public:
-	cmd_copy_buffer(const vk::vk_buffer &src_buffer,
-					const vk::vk_buffer &dst_buffer,
+	cmd_copy_buffer(const device_buffer_base &src_buffer,
+					const device_buffer_base &dst_buffer,
 					const std::vector<VkBufferCopy> &ranges = {})
 		: src_buffer(src_buffer), dst_buffer(dst_buffer), ranges(ranges)
 	{
@@ -40,8 +39,8 @@ public:
 
 private:
 	void operator()(const command_buffer &command_buffer, command_recorder &) const override final {
-		vkCmdCopyBuffer(command_buffer, src_buffer.get(),
-						dst_buffer.get(),
+		vkCmdCopyBuffer(command_buffer, src_buffer.get().get_buffer_handle(),
+						dst_buffer.get().get_buffer_handle(),
 						ranges.size(), ranges.data());
 	}
 };
