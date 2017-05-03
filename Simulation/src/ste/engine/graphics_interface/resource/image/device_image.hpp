@@ -22,10 +22,10 @@ class device_image : public device_image_base,
 	public device_resource<vk::vk_image, allocation_policy>
 {
 	using Base = device_resource<vk::vk_image, allocation_policy>;
-	using size_type = typename image_extent_type<dimensions>::type;
+	using extent_type = typename image_extent_type<dimensions>::type;
 
 public:
-	static glm::uvec3 size_to_extent(const size_type &size) {
+	static glm::uvec3 size_to_extent(const extent_type &size) {
 		glm::uvec3 extent = { 1,1,1 };
 		for (int i = 0; i < dimensions; ++i)
 			extent[i] = size[i];
@@ -36,7 +36,7 @@ public:
 	device_image(const ste_context &ctx,
 				 const image_initial_layout &layout,
 				 const format &image_format,
-				 const size_type &size,
+				 const extent_type &size,
 				 const image_usage &usage,
 				 std::uint32_t mips = 1,
 				 std::uint32_t layers = 1,
@@ -62,8 +62,8 @@ public:
 	format get_format() const override final {
 		return static_cast<format>(get_image_handle().get_format());
 	}
-	const glm::u32vec3& get_size() const override final {
-		return get_image_handle().get_size();
+	const glm::u32vec3& get_extent() const override final {
+		return get_image_handle().get_extent();
 	}
 	auto& get_mips() const {
 		return get_image_handle().get_mips();

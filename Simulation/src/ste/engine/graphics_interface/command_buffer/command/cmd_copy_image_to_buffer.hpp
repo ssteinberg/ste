@@ -26,8 +26,8 @@ private:
 
 public:
 	cmd_copy_image_to_buffer(const device_image_base &src_image,
-							 const device_buffer_base &dst_buffer,
 							 const image_layout &layout,
+							 const device_buffer_base &dst_buffer,
 							 const std::vector<VkBufferImageCopy> &ranges = {})
 		: src_image(src_image), dst_buffer(dst_buffer), layout(layout), ranges(ranges)
 	{
@@ -40,9 +40,9 @@ public:
 		if (this->ranges.size() == 0) {
 			VkBufferImageCopy c = {
 				0, 0, 0,
-				{ format_aspect(src_image.get_format()), 0, 0, VK_REMAINING_ARRAY_LAYERS },
+				{ static_cast<VkImageAspectFlags>(format_aspect(src_image.get_format())), 0, 0, VK_REMAINING_ARRAY_LAYERS },
 				{ 0, 0, 0 },
-				{ src_image.get_size().x, src_image.get_size().y, src_image.get_size().z }
+				{ src_image.get_extent().x, src_image.get_extent().y, src_image.get_extent().z }
 			};
 			this->ranges.push_back(c);
 		}

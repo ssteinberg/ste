@@ -2,6 +2,7 @@
 #include <stdafx.hpp>
 
 #include <pipeline_auditor_graphics.hpp>
+#include <pipeline_auditor_compute.hpp>
 
 #include <ste.hpp>
 #include <array.hpp>
@@ -14,8 +15,6 @@
 
 #include <vertex_attributes.hpp>
 
-#include <cmd_bind_vertex_buffers.hpp>
-#include <cmd_bind_index_buffer.hpp>
 #include <cmd_draw_indexed.hpp>
 #include <cmd_pipeline_barrier.hpp>
 
@@ -193,21 +192,6 @@ int main()
 	draw_task.attach_vertex_buffer(vertex_buffer);
 	draw_task.attach_index_buffer(index_buffer);
 
-	ste_resource<gl::array<gl::draw_indirect_command_block>> indirect_buffer(ctx, 10, gl::buffer_usage::indirect_buffer);
-	gl::task<gl::cmd_draw_indirect> draw_task_indirect;
-	draw_task_indirect.attach_pipeline(pipeline);
-	draw_task_indirect.attach_vertex_buffer(vertex_buffer);
-	draw_task_indirect.attach_indirect_buffer(indirect_buffer);
-	gl::execute(ctx, std::move(draw_task_indirect), 2);
-
-	gl::task<gl::cmd_dispatch_indirect> task_compute;
-	gl::execute(ctx, std::move(task_compute));
-
-	gl::task<gl::cmd_blit_image> task_blit;
-	task_blit.attach_src_image(image, gl::image_layout::depth_stencil_read_only_optimal);
-	task_blit.attach_dst_image(image, gl::image_layout::color_attachment_optimal);
-	gl::execute(ctx, std::move(task_blit), gl::sampler_filter::nearest);
-
 	// Texture
 	gl::image_view<gl::image_type::image_2d> image_view(*image);
 	gl::sampler sampler(ctx, gl::sampler_parameter::filtering(gl::sampler_filter::linear, gl::sampler_filter::linear,
@@ -287,8 +271,8 @@ int main()
 																	 gl::buffer_memory_barrier(vertex_buffer->get(),
 																							   gl::access_flags::vertex_attribute_read,
 																							   gl::access_flags::transfer_write) }))
-					<< vertex_buffer->update_cmd({ v }, 0)
-					<< ubo->update_cmd({ data }, 0)
+					<< vertex_buffer->update_task({ v }, 0)()
+					<< ubo->update_task({ data }, 0)()
 					<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::transfer,
 																	 gl::pipeline_stage::vertex_shader,
 																	 { gl::buffer_memory_barrier(ubo->get(),

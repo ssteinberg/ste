@@ -551,7 +551,7 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\command_buffer\command_buffer.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\command_buffer\command_pool.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\command_buffer\host_command.hpp" />
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\task\task_cmd_execute.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\task\task_command.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\task\task_interface.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\task\task_policy_compute.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\task\task_policy_draw.hpp" />
@@ -1105,6 +1105,7 @@
     <ClInclude Include="Simulation\src\ste\ste.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device\ste_device.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_version.hpp" />
+    <ClInclude Include="Simulation\src\ste\stl_extensions\blob.hpp" />
     <ClInclude Include="Simulation\src\ste\stl_extensions\boundary.hpp" />
     <ClInclude Include="Simulation\src\ste\stl_extensions\concurrency\concurrent_pointer_recycler.hpp" />
     <ClInclude Include="Simulation\src\ste\stl_extensions\concurrency\concurrent_queue.hpp" />

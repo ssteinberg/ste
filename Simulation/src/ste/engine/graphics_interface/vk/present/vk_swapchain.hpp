@@ -102,7 +102,7 @@ public:
 	auto get_colorspace() const { return swapchain_create_info.imageColorSpace; }
 	auto get_present_mode() const { return swapchain_create_info.presentMode; }
 	auto get_layers() const { return swapchain_create_info.imageArrayLayers; }
-	auto get_size() const {
+	auto get_extent() const {
 		return glm::u32vec2{ swapchain_create_info.imageExtent.width, swapchain_create_info.imageExtent.height };
 	}
 	auto get_creation_parameters() const { return swapchain_create_info; }

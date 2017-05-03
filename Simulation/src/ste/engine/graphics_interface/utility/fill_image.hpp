@@ -96,7 +96,7 @@ auto fill_image_array(const device_image<dimensions, allocation_policy> &image,
 		auto image_texel_bytes = format_id(image_format).texel_bytes;
 		auto surface_texel_bytes = gli::block_size(surface.format());
 		glm::u32vec3 surface_extent = surface_generic.extent();
-		glm::u32vec3 image_extent = image.get_size();
+		glm::u32vec3 image_extent = image.get_extent();
 
 		// Calculate layers and levels to copy
 		auto faces = surface_generic.max_face();

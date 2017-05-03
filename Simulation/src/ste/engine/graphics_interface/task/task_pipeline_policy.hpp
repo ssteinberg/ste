@@ -5,11 +5,12 @@
 
 #include <stdafx.hpp>
 #include <ste_queue_type.hpp>
-#include <device_pipeline_graphics.hpp>
-#include <device_pipeline_compute.hpp>
 
 namespace ste {
 namespace gl {
+
+class device_pipeline_graphics;
+class device_pipeline_compute;
 
 template <ste_queue_type QueueType>
 struct task_pipeline_policy {

@@ -19,7 +19,7 @@ class vk_swapchain_image : public vk_image {
 	static constexpr int swapchain_image_mips = 1;
 
 public:
-	using size_type = glm::uvec2;
+	using extent_type = glm::uvec2;
 
 private:
 	using Base::Base;
@@ -30,12 +30,12 @@ public:
 	vk_swapchain_image(const vk_logical_device &device,
 					   const VkImage &image,
 					   const VkFormat &image_format,
-					   const size_type &size,
+					   const extent_type &size,
 					   std::uint32_t layers)
 		: Base(device, 
 			   image,
 			   image_format,
-			   Base::size_type{ size.x, size.y, 1 },
+			   Base::extent_type{ size.x, size.y, 1 },
 			   0,
 			   swapchain_image_mips, 
 			   layers)

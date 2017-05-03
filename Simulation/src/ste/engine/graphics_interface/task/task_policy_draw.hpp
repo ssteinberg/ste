@@ -24,6 +24,7 @@ struct task_policy_draw : task_policy_common {
 	using pipeline_policy = task_pipeline_policy<ste_queue_type::graphics_queue>;
 };
 
+// Policy for draw
 template <>
 struct task_policy<cmd_draw> : task_policy_draw {
 	class interface : public _internal::task_vertex_buffers_interface {
@@ -40,6 +41,7 @@ struct task_policy<cmd_draw> : task_policy_draw {
 	}
 };
 
+// Policy for indexed draw
 template <>
 struct task_policy<cmd_draw_indexed> : task_policy_draw {
 	class interface : public _internal::task_vertex_buffers_interface, public _internal::task_index_buffer_interface {
@@ -57,6 +59,7 @@ struct task_policy<cmd_draw_indexed> : task_policy_draw {
 	}
 };
 
+// Policy for indirect draw
 template <>
 struct task_policy<cmd_draw_indirect> : task_policy_draw {
 	class interface 
@@ -85,6 +88,7 @@ struct task_policy<cmd_draw_indirect> : task_policy_draw {
 	}
 };
 
+// Policy for indexed indirect draw
 template <>
 struct task_policy<cmd_draw_indexed_indirect> : task_policy_draw {
 	class interface 

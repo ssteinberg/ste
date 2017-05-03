@@ -61,7 +61,7 @@ private:
 
 			recorder
 				<< tr->vertex_buffer.resize_cmd(points.size())
-				<< tr->vertex_buffer.update_cmd(points, 0);
+				<< tr->vertex_buffer.update_task(points, 0)();
 			auto buffer_barrier = gl::buffer_memory_barrier(*tr->vertex_buffer,
 															gl::access_flags::transfer_write,
 															gl::access_flags::vertex_attribute_read);
@@ -69,7 +69,7 @@ private:
 																	  gl::pipeline_stage::vertex_shader,
 																	  buffer_barrier));
 
-			recorder << tr->fb_size_uniform.update_cmd({ render_target_size }, 0);
+			recorder << tr->fb_size_uniform.update_task({ render_target_size }, 0)();
 			recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::transfer,
 																	  gl::pipeline_stage::vertex_shader,
 																	  gl::buffer_memory_barrier(*tr->fb_size_uniform,

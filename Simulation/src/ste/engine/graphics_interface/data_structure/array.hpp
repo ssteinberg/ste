@@ -13,10 +13,13 @@
 #include <device_buffer.hpp>
 #include <device_resource_allocation_policy.hpp>
 
+#include <task.hpp>
 #include <cmd_update_buffer.hpp>
 
 #include <vector>
 #include <allow_type_decay.hpp>
+#include <functional>
+#include <string>
 
 namespace ste {
 namespace gl {
@@ -68,13 +71,20 @@ public:
 	*	@param	data	Data to copy
 	*	@param	offset	Array offset to copy to
 	*/
-	auto update_cmd(const std::vector<T> &data, 
+	auto update_task(const std::vector<T> &data, 
 					std::uint64_t offset) {
 		assert(data.size() + offset <= size() && "Out-of-bounds");
-		return cmd_update_buffer(buffer_view(buffer, 
-											 offset, 
-											 data.size()), 
-								 data.size() * sizeof(T), data.data());
+
+		// Store copy of data
+		blob bin(data);
+
+		// Create the task
+		auto t = task<cmd_update_buffer>();
+		t.attach_dst_buffer_view(buffer_view(buffer,
+											 offset,
+											 data.size()));
+
+		return std::bind(t, std::move(bin));
 	}
 
 	auto size() const { return buffer.get().get_elements_count(); }

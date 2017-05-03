@@ -49,7 +49,7 @@ ste_presentation_surface::acquire_next_image_return_t  ste_presentation_surface:
 void ste_presentation_surface::acquire_swap_chain_images() {
 	auto format = this->swap_chain->get_format();
 	auto layers = this->swap_chain->get_layers();
-	auto size = this->swap_chain->get_size();
+	auto size = this->swap_chain->get_extent();
 
 	// Aquire swap-chain images
 	std::vector<VkImage> swapchain_vk_image_objects;
@@ -73,7 +73,7 @@ void ste_presentation_surface::acquire_swap_chain_images() {
 		auto image = vk::vk_swapchain_image(*presentation_device,
 											img,
 											format,
-											vk::vk_swapchain_image::size_type(size),
+											vk::vk_swapchain_image::extent_type(size),
 											layers);
 		auto view = swap_chain_image_view_t(image);
 

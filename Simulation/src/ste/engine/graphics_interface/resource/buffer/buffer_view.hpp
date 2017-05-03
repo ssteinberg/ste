@@ -42,6 +42,11 @@ public:
 
 	~buffer_view() noexcept {}
 
+	buffer_view(buffer_view&&) = default;
+	buffer_view(const buffer_view&) = default;
+	buffer_view &operator=(buffer_view&&) = default;
+	buffer_view &operator=(const buffer_view&) = default;
+
 	/**
 	 *	@brief	Offset (element count) of buffer view
 	 */
@@ -60,11 +65,6 @@ public:
 	auto range_bytes() const { return range() * buffer->get_element_size_bytes(); }
 
 	auto& get() const { return *buffer; }
-
-	buffer_view(buffer_view&&) = default;
-	buffer_view(const buffer_view&) = default;
-	buffer_view &operator=(buffer_view&&) = default;
-	buffer_view &operator=(const buffer_view&) = default;
 };
 
 }

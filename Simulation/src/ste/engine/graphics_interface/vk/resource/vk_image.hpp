@@ -27,13 +27,13 @@ namespace vk {
 
 class vk_image : public vk_resource, public allow_type_decay<vk_image, VkImage> {
 protected:
-	using size_type = glm::u32vec3;
+	using extent_type = glm::u32vec3;
 
 	std::reference_wrapper<const vk_logical_device> device;
 	optional<VkImage> image;
 
 	VkFormat image_format;
-	size_type size;
+	extent_type extent;
 	std::uint32_t mips;
 	std::uint32_t layers;
 
@@ -65,13 +65,13 @@ protected:
 	vk_image(const vk_logical_device &device,
 			 VkImage image,
 			 const VkFormat &image_format,
-			 const size_type &extent,
+			 const extent_type &extent,
 			 const VkImageUsageFlags &usage,
 			 std::uint32_t mips = 1,
 			 std::uint32_t layers = 1,
 			 bool sparse = false)
 		: device(device), image(image),
-		image_format(image_format), size(extent), mips(mips), layers(layers),
+		image_format(image_format), extent(extent), mips(mips), layers(layers),
 		usage(usage), sparse(sparse)
 	{}
 
@@ -80,14 +80,14 @@ public:
 			 const image_initial_layout &layout,
 			 const VkFormat &image_format,
 			 int dimensions,
-			 const size_type &extent,
+			 const extent_type &extent,
 			 const VkImageUsageFlags &usage,
 			 std::uint32_t mips = 1,
 			 std::uint32_t layers = 1,
 			 bool supports_cube_views = false,
 			 bool optimal_tiling = true,
 			 bool sparse = false)
-		: device(device), image_format(image_format), size(extent), mips(mips), layers(layers), 
+		: device(device), image_format(image_format), extent(extent), mips(mips), layers(layers), 
 		usage(usage), sparse(sparse)
 	{
 		assert(mips > 0 && "Non-positive mipmap level count");
@@ -171,7 +171,7 @@ public:
 	auto& get() const { return image.get(); }
 
 	VkFormat get_format() const { return image_format; }
-	auto& get_size() const { return size; }
+	auto& get_extent() const { return extent; }
 	auto& get_mips() const { return mips; }
 	auto& get_layers() const { return layers; }
 };

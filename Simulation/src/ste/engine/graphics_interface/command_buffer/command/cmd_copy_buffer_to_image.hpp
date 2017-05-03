@@ -34,9 +34,9 @@ public:
 		if (this->ranges.size() == 0) {
 			VkBufferImageCopy c = {
 				0, 0, 0,
-				{ format_aspect(dst_image.get_format()), 0, 0, VK_REMAINING_ARRAY_LAYERS },
+				{ static_cast<VkImageAspectFlags>(format_aspect(dst_image.get_format())), 0, 0, VK_REMAINING_ARRAY_LAYERS },
 				{ 0, 0, 0 },
-				{ dst_image.get_size().x, dst_image.get_size().y, dst_image.get_size().z }
+				{ dst_image.get_extent().x, dst_image.get_extent().y, dst_image.get_extent().z }
 			};
 			this->ranges.push_back(c);
 		}

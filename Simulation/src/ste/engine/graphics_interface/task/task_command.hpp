@@ -13,14 +13,14 @@ namespace _internal {
 
 // Binds a pipeline, or does nothing if policy has no pipeline
 template <typename Task, typename pipeline_policy, typename = std::void_t<>>
-struct task_cmd_execute_bind_pipeline {
+struct tast_command_bind_pipeline {
 	template <typename Token>
 	void operator()(const Task *task,
 					Token,
 					command_recorder &recorder) const {}
 };
 template <typename Task, typename pipeline_policy>
-struct task_cmd_execute_bind_pipeline<Task, pipeline_policy, std::void_t<typename pipeline_policy::pipeline_object_type>> {
+struct tast_command_bind_pipeline<Task, pipeline_policy, std::void_t<typename pipeline_policy::pipeline_object_type>> {
 	template <typename Token>
 	void operator()(const Task *task,
 					Token,
@@ -33,14 +33,14 @@ struct task_cmd_execute_bind_pipeline<Task, pipeline_policy, std::void_t<typenam
 
 // Unbinds a pipeline, or does nothing if policy has no pipeline
 template <typename Task, typename pipeline_policy, typename = std::void_t<>>
-struct task_cmd_execute_unbind_pipeline {
+struct tast_command_unbind_pipeline {
 	template <typename Token>
 	void operator()(const Task *task,
 					Token,
 					command_recorder &recorder) const {}
 };
 template <typename Task, typename pipeline_policy>
-struct task_cmd_execute_unbind_pipeline<Task, pipeline_policy, std::void_t<typename pipeline_policy::pipeline_object_type>> {
+struct tast_command_unbind_pipeline<Task, pipeline_policy, std::void_t<typename pipeline_policy::pipeline_object_type>> {
 	template <typename Token>
 	void operator()(const Task *task,
 					Token,
@@ -52,29 +52,29 @@ struct task_cmd_execute_unbind_pipeline<Task, pipeline_policy, std::void_t<typen
 };
 
 template <typename Task, typename Command, typename pipeline_policy>
-class task_cmd_execute : public command {
+class task_command : public command {
 	const Task *task;
 	Command cmd;
 
 public:
 	template <typename... CmdArgs>
-	task_cmd_execute(const Task *task,
-					 CmdArgs&&... cmd_args)
+	task_command(const Task *task,
+				 CmdArgs&&... cmd_args)
 		: task(task),
 		// Constructs the task command, directly, or using a custom creator if the policy provides one
 		cmd(Task::policy::template create_cmd<Command>(task,
 													   std::forward<CmdArgs>(cmd_args)...))
 	{}
-	virtual ~task_cmd_execute() noexcept {}
+	virtual ~task_command() noexcept {}
 
-	task_cmd_execute(task_cmd_execute&&) = default;
-	task_cmd_execute &operator=(task_cmd_execute&&) = default;
+	task_command(task_command&&) = default;
+	task_command &operator=(task_command&&) = default;
 
 private:
 	void operator()(const command_buffer &,
 					command_recorder &recorder) const override final {
 		// Bind the pipeline, if any
-		task_cmd_execute_bind_pipeline<Task, pipeline_policy>()(task, Task::accessor_token(), recorder);
+		tast_command_bind_pipeline<Task, pipeline_policy>()(task, Task::accessor_token(), recorder);
 
 		// Prepare the task (bind buffers, etc.)
 		Task::policy::prepare(task, recorder);
@@ -82,7 +82,7 @@ private:
 		recorder << cmd;
 
 		// Unbind the pipeline
-		task_cmd_execute_unbind_pipeline<Task, pipeline_policy>()(task, Task::accessor_token(), recorder);
+		tast_command_unbind_pipeline<Task, pipeline_policy>()(task, Task::accessor_token(), recorder);
 	}
 };
 

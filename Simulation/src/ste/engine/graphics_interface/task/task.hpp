@@ -6,7 +6,7 @@
 #include <stdafx.hpp>
 #include <ste_context.hpp>
 #include <task_policy.hpp>
-#include <task_cmd_execute.hpp>
+#include <task_command.hpp>
 
 #include <job.hpp>
 #include <forward_capture.hpp>
@@ -33,9 +33,9 @@ public:
 
 private:
 	using pipeline_storage_t = task_impl_pipeline_storage<pipeline_policy>;
-	using cmd_t = task_cmd_execute<task_impl<Command, task_policy, pipeline_policy>, Command, pipeline_policy>;
+	using command_t = task_command<task_impl<Command, task_policy, pipeline_policy>, Command, pipeline_policy>;
 
-	friend cmd_t;
+	friend command_t;
 
 	struct accessor_token {};
 
@@ -65,9 +65,9 @@ public:
 	*	@brief	Creates a command that executes the task.
 	*/
 	template <typename... CmdArgs>
-	cmd_t operator()(CmdArgs&&... cmd_args) const {
-		return cmd_t(this,
-					 std::forward<CmdArgs>(cmd_args)...);
+	command_t operator()(CmdArgs&&... cmd_args) const {
+		return command_t(this,
+						 std::forward<CmdArgs>(cmd_args)...);
 	}
 
 	/**

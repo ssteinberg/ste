@@ -11,9 +11,11 @@
 #include <device_buffer_base.hpp>
 #include <device_buffer.hpp>
 #include <device_buffer_sparse.hpp>
+#include <buffer_view.hpp>
 #include <device_image_base.hpp>
 
 #include <vector>
+#include <optional.hpp>
 
 namespace ste {
 namespace gl {
@@ -188,6 +190,21 @@ public:
 
 protected:
 	auto &get_dst_buffer() const { return *dst_buffer; }
+};
+
+// Interface for a destination buffer view in transfer tasks
+class task_transfer_destination_buffer_view_interface {
+	optional<buffer_view> dst_buffer;
+
+public:
+	virtual ~task_transfer_destination_buffer_view_interface() noexcept {}
+
+	void attach_dst_buffer_view(const buffer_view &buffer_view) {
+		dst_buffer = buffer_view;
+	}
+
+protected:
+	auto &get_dst_buffer_view() const { return dst_buffer.get(); }
 };
 
 }

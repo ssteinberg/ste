@@ -1643,9 +1643,6 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\task\task_policy.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\task\task_cmd_execute.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\task\task_interface.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1653,6 +1650,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\task\task_policy_transfer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\task\task_command.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\stl_extensions\blob.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

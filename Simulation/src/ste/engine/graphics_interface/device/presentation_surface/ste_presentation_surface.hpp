@@ -229,7 +229,7 @@ public:
 	auto& get_swap_chain_images() const { return swap_chain_images; }
 	auto& get_presentation_window() const { return presentation_window; }
 
-	auto size() const { return swap_chain->get_size(); }
+	auto size() const { return swap_chain->get_extent(); }
 	auto surface_format() const { return swap_chain->get_format(); }
 	auto surface_colorspace() const { return swap_chain->get_colorspace(); }
 };

@@ -21,6 +21,7 @@ struct task_policy_compute : task_policy_common {
 	using pipeline_policy = task_pipeline_policy<ste_queue_type::compute_queue>;
 };
 
+// Policy for dispatch compute
 template <>
 struct task_policy<cmd_dispatch> : task_policy_compute {
 	class interface {
@@ -30,6 +31,7 @@ struct task_policy<cmd_dispatch> : task_policy_compute {
 	static void prepare(const interface *task, command_recorder &recorder) {}
 };
 
+// Policy for dispatch compute indirect
 template <>
 struct task_policy<cmd_dispatch_indirect> : task_policy_compute {
 	class interface : public _internal::task_indirect_buffer_interface<dispatch_indirect_command_block> {

@@ -39,7 +39,7 @@ auto generate_mipmaps(const device_image<dimensions, allocation_policy> &image,
 
 		auto image_format = image.get_format();
 		auto mip_levels = image.get_mips();
-		auto size = image.get_size();
+		auto size = image.get_extent();
 
 		assert(start_level > 0);
 		if (mip_levels <= start_level) {

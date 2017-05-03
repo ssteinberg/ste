@@ -12,11 +12,14 @@
 
 #include <command_recorder.hpp>
 #include <cmd_update_buffer.hpp>
+#include <task.hpp>
 
 #include <device_buffer_sparse.hpp>
 #include <device_resource_allocation_policy.hpp>
 
 #include <allow_type_decay.hpp>
+#include <functional>
+#include <string>
 
 namespace ste {
 namespace gl {
@@ -26,8 +29,8 @@ template <
 	std::uint64_t minimal_atom_size = 65536,
 	std::uint64_t max_sparse_size = 64 * 1024 * 1024
 >
-class stable_vector : 
-	ste_resource_deferred_create_trait, 
+class stable_vector :
+	ste_resource_deferred_create_trait,
 	public allow_type_decay<stable_vector<T, minimal_atom_size, max_sparse_size>, device_buffer_sparse<T, minimal_atom_size, device_resource_allocation_policy_device>>
 {
 	static_assert(sizeof(T) <= minimal_atom_size, "minimal_atom_size should be at least the size of a single element");
@@ -46,7 +49,7 @@ private:
 
 	public:
 		stable_vector_cmd_resize(std::uint32_t new_size,
-									stable_vector *v)
+								 stable_vector *v)
 			: new_size(new_size), v(v)
 		{}
 		virtual ~stable_vector_cmd_resize() noexcept {}
@@ -62,7 +65,7 @@ private:
 				bind_range_t unbind = { new_size,  v->elements - new_size };
 				recorder << v->buffer.cmd_bind_sparse_memory({ unbind }, {}, {}, {});
 			}
-			
+
 			auto vptr = v;
 			auto new_size = this->new_size;
 			recorder << host_command([=](const vk::vk_queue &) { vptr->elements = new_size; });
@@ -70,28 +73,29 @@ private:
 	};
 	// Push back command
 	class stable_vector_cmd_push_back : public command {
-		std::vector<T> data;
+		std::size_t data_size;
 		cmd_update_buffer update_cmd;
 		stable_vector *v;
 
 	public:
 		stable_vector_cmd_push_back(const std::vector<T> &data_copy,
 									stable_vector *v)
-			: data(data_copy), update_cmd(buffer_view(v->buffer, 
-													  v->elements, 
-													  data.size()), 
-										  data.size() * sizeof(T), data.data()), v(v)
+			: data_size(data_copy.size()),
+			update_cmd(buffer_view(v->buffer,
+								   v->elements,
+								   data_size),
+					   blob(data_copy)),
+			v(v)
 		{}
 		virtual ~stable_vector_cmd_push_back() noexcept {}
 
 	private:
 		void operator()(const command_buffer &, command_recorder &recorder) const override final {
 			// Bind sparse (if needed) and update vector size
-			bind_range_t bind = { v->elements, data.size() };
+			bind_range_t bind = { v->elements, data_size };
 			recorder << v->buffer.cmd_bind_sparse_memory({}, { bind }, {}, {});
 
 			auto vptr = v;
-			auto data_size = data.size();
 			recorder << host_command([=](const vk::vk_queue &) { vptr->elements += data_size; });
 
 			// Copy data
@@ -192,11 +196,17 @@ public:
 	*	@param	data	Data to copy
 	*	@param	offset	Vector offset to copy to
 	*/
-	auto update_cmd(const std::vector<T> &data, std::uint64_t offset) {
-		return cmd_update_buffer(buffer_view(buffer, 
-											 offset, 
-											 data.size()), 
-								 data.size() * sizeof(T), data.data());
+	auto update_task(const std::vector<T> &data, std::uint64_t offset) {
+		// Store copy of data
+		blob bin(data);
+
+		// Create the task
+		auto t = task<cmd_update_buffer>();
+		t.attach_dst_buffer_view(buffer_view(buffer,
+											 offset,
+											 data.size()));
+
+		return std::bind(t, std::move(bin));
 	}
 
 	auto size() const { return elements; }
