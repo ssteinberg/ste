@@ -36,8 +36,8 @@ template <>
 struct task_policy<cmd_dispatch_indirect> : task_policy_compute {
 	class interface : public _internal::task_indirect_buffer_interface<dispatch_indirect_command_block> {
 		friend struct task_policy<cmd_dispatch_indirect>;
-		using _internal::task_indirect_buffer_interface<dispatch_indirect_command_block>::get_buffer;
-		using _internal::task_indirect_buffer_interface<dispatch_indirect_command_block>::get_offset;
+		using _internal::task_indirect_buffer_interface<dispatch_indirect_command_block>::get_indirect_buffer;
+		using _internal::task_indirect_buffer_interface<dispatch_indirect_command_block>::get_indirect_offset;
 	public:
 		virtual ~interface() {}
 	};
@@ -46,8 +46,8 @@ struct task_policy<cmd_dispatch_indirect> : task_policy_compute {
 	template <typename Command, typename... CmdArgs>
 	static auto create_cmd(const interface *task,
 						   CmdArgs&&... args) {
-		return Command(task->get_buffer(),
-					   task->get_offset(),
+		return Command(task->get_indirect_buffer(),
+					   task->get_indirect_offset(),
 					   std::forward<CmdArgs>(args)...);
 	}
 };

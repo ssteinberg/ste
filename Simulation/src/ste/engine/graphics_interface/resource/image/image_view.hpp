@@ -4,10 +4,12 @@
 #pragma once
 
 #include <stdafx.hpp>
-//#include <device_image.hpp>
+
 #include <vk_image_view.hpp>
 #include <device_image_base.hpp>
 #include <allow_type_decay.hpp>
+
+#include <vk_set_object_name.hpp>
 
 namespace ste {
 namespace gl {
@@ -33,21 +35,28 @@ public:
 	image_view(const vk::vk_image &image)
 		: view(image)
 	{}
-	image_view(const vk::vk_image &image,
-			   format &image_format)
-		: view(image,
+	image_view(const device_image_base &image)
+		: view(image.get_image_handle())
+	{}
+	image_view(const device_image_base &image,
+			   const format &image_format)
+		: view(image.get_image_handle(),
 			   static_cast<VkFormat>(image_format))
 	{}
 	template <typename... Ts>
-	image_view(const vk::vk_image &image,
-			   format &image_format,
+	image_view(const device_image_base &image,
+			   const format &image_format,
 			   Ts&&... ts)
-		: view(image,
+		: view(image.get_image_handle(),
 			   static_cast<VkFormat>(image_format),
 			   std::forward<Ts>(ts)...)
 	{}
 
 	virtual ~image_view() noexcept {}
+
+	image_view(image_view&&) = default;
+	image_view &operator=(image_view&&) = default;
+
 	VkImageView get_image_view_handle() const override final {
 		return view;
 	}
@@ -59,9 +68,6 @@ public:
 	}
 
 	auto& get() const { return view; }
-
-	image_view(image_view&&) = default;
-	image_view &operator=(image_view&&) = default;
 };
 
 }

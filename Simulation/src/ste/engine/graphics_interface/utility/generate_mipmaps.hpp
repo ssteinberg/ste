@@ -52,7 +52,7 @@ auto generate_mipmaps(const device_image<dimensions, allocation_policy> &image,
 		auto queue_selector = ste_queue_selector<ste_queue_selector_policy_flexible>(queue_type);
 		auto &q = *ctx.device().select_queue(queue_selector);
 
-		// Enqueue mipmap copy on a transfer queue
+		// Enqueue mipmap copy on a queue
 		auto enqueue_future = q.enqueue([&]() {
 			auto m = std::max<std::uint32_t>(start_level, 1);
 
@@ -67,8 +67,8 @@ auto generate_mipmaps(const device_image<dimensions, allocation_policy> &image,
 
 				for (; m < mip_levels; ++m) {
 					// Move to transfer layouts
-					auto barrier = pipeline_barrier(pipeline_stage::top_of_pipe,
-													pipeline_stage::top_of_pipe,
+					auto barrier = pipeline_barrier(m == start_level ? pipeline_stage::bottom_of_pipe : pipeline_stage::transfer,
+													pipeline_stage::transfer,
 													{ image_memory_barrier(image,
 																		   initial_layout,
 																		   image_layout::transfer_dst_optimal,
@@ -117,7 +117,7 @@ auto generate_mipmaps(const device_image<dimensions, allocation_policy> &image,
 																  final_layout,
 																  0, start_level - 1, 0, 1));
 				}
-				auto barrier = pipeline_barrier(pipeline_stage::top_of_pipe,
+				auto barrier = pipeline_barrier(pipeline_stage::transfer,
 												pipeline_stage::top_of_pipe,
 												image_barriers);
 				recorder << cmd_pipeline_barrier(barrier);

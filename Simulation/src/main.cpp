@@ -282,12 +282,7 @@ int main()
 																						   gl::access_flags::transfer_write,
 																						   gl::access_flags::vertex_attribute_read) }))
 					<< draw_task(indices.size(), 1);
-//					<< pipeline.cmd_bind()
-//					<< gl::cmd_bind_vertex_buffers(0, vertex_buffer->get())
-//					<< gl::cmd_bind_index_buffer(index_buffer)
-//					<< gl::cmd_draw_indexed(indices.size(), 1)
 ////					<< text_renderer->render_cmd()
-//					<< pipeline.cmd_unbind();
 			}
 
 			// Submit command buffer and present

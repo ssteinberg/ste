@@ -70,6 +70,8 @@ public:
 		offsets = { offset };
 	}
 
+	auto &get_vertex_buffers() const { return vertex_buffers; }
+
 protected:
 	void bind(command_recorder &recorder) const {
 		recorder << cmd_bind_vertex_buffers(first_binding_index,
@@ -91,6 +93,8 @@ public:
 		this->index_buffer = &index_buffer;
 		this->offset = offset;
 	}
+
+	auto &get_index_buffer() const { return *index_buffer; }
 
 protected:
 	void bind(command_recorder &recorder) const {
@@ -119,9 +123,8 @@ public:
 		this->offset = offset;
 	}
 
-protected:
-	auto &get_buffer() const { return *indirect_buffer; }
-	auto &get_offset() const { return offset; }
+	auto &get_indirect_buffer() const { return *indirect_buffer; }
+	auto &get_indirect_offset() const { return offset; }
 };
 
 // Interface for a source image in transfer tasks
@@ -138,7 +141,6 @@ public:
 		this->src_image_layout = layout;
 	}
 
-protected:
 	auto &get_src_image() const { return *src_image; }
 	auto &get_src_layout() const { return src_image_layout; }
 };
@@ -157,7 +159,6 @@ public:
 		this->dst_image_layout = layout;
 	}
 
-protected:
 	auto &get_dst_image() const { return *dst_image; }
 	auto &get_dst_layout() const { return dst_image_layout; }
 };
@@ -173,7 +174,6 @@ public:
 		this->src_buffer = &buffer;
 	}
 
-protected:
 	auto &get_src_buffer() const { return *src_buffer; }
 };
 
@@ -188,7 +188,6 @@ public:
 		this->dst_buffer = &buffer;
 	}
 
-protected:
 	auto &get_dst_buffer() const { return *dst_buffer; }
 };
 
@@ -203,7 +202,6 @@ public:
 		dst_buffer = buffer_view;
 	}
 
-protected:
 	auto &get_dst_buffer_view() const { return dst_buffer.get(); }
 };
 

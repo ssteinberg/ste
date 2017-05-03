@@ -70,8 +70,8 @@ struct task_policy<cmd_draw_indirect> : task_policy_draw {
 		void prepare(command_recorder &recorder) const {
 			_internal::task_vertex_buffers_interface::bind(recorder);
 		}
-		using _internal::task_indirect_buffer_interface<draw_indirect_command_block>::get_buffer;
-		using _internal::task_indirect_buffer_interface<draw_indirect_command_block>::get_offset;
+		using _internal::task_indirect_buffer_interface<draw_indirect_command_block>::get_indirect_buffer;
+		using _internal::task_indirect_buffer_interface<draw_indirect_command_block>::get_indirect_offset;
 	public:
 		virtual ~interface() {}
 	};
@@ -82,8 +82,8 @@ struct task_policy<cmd_draw_indirect> : task_policy_draw {
 	template <typename Command, typename... CmdArgs>
 	static auto create_cmd(const interface *task,
 						   CmdArgs&&... args) {
-		return Command(task->get_buffer(),
-					   task->get_offset(),
+		return Command(task->get_indirect_buffer(),
+					   task->get_indirect_offset(),
 					   std::forward<CmdArgs>(args)...);
 	}
 };
@@ -101,8 +101,8 @@ struct task_policy<cmd_draw_indexed_indirect> : task_policy_draw {
 			_internal::task_vertex_buffers_interface::bind(recorder);
 			_internal::task_index_buffer_interface::bind(recorder);
 		}
-		using _internal::task_indirect_buffer_interface<draw_indexed_indirect_command_block>::get_buffer;
-		using _internal::task_indirect_buffer_interface<draw_indexed_indirect_command_block>::get_offset;
+		using _internal::task_indirect_buffer_interface<draw_indexed_indirect_command_block>::get_indirect_buffer;
+		using _internal::task_indirect_buffer_interface<draw_indexed_indirect_command_block>::get_indirect_offset;
 	public:
 		virtual ~interface() {}
 	};
@@ -113,8 +113,8 @@ struct task_policy<cmd_draw_indexed_indirect> : task_policy_draw {
 	template <typename Command, typename... CmdArgs>
 	static auto create_cmd(const interface *task, 
 						   CmdArgs&&... args) {
-		return Command(task->get_buffer(),
-					   task->get_offset(),
+		return Command(task->get_indirect_buffer(),
+					   task->get_indirect_offset(),
 					   std::forward<CmdArgs>(args)...);
 	}
 };

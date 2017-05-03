@@ -12,6 +12,7 @@
 #include <forward_capture.hpp>
 #include <tuple_call.hpp>
 #include <type_traits>
+#include <string>
 
 namespace ste {
 namespace gl {
@@ -41,12 +42,17 @@ private:
 
 private:
 	pipeline_storage_t pipeline_storage;
+	std::string task_name;
 
 public:
 	auto& get_pipeline_storage(accessor_token) const { return pipeline_storage; }
 
 public:
+	task_impl() = default;
+	task_impl(std::string &&name) : task_name(std::move(name)) {}
 	~task_impl() noexcept {}
+
+	const auto &name() const { return task_name; }
 
 	/**
 	*	@brief	The task's requested queue type. The task should be executed on a compatible queue.
@@ -55,10 +61,20 @@ public:
 
 	/**
 	*	@brief	Binds a pipeline object to the task.
+	*			Only available for tasks that require a pipeline
 	*/
 	template <typename pp = pipeline_policy>
 	void attach_pipeline(typename pp::pipeline_object_type &pipeline_object) {
 		pipeline_storage.obj = &pipeline_object;
+	}
+
+	/**
+	*	@brief	Gets the currently attached pipeline object.
+	*			Only available for tasks that require a pipeline
+	*/
+	template <typename pp = pipeline_policy>
+	const typename pp::pipeline_object_type &get_attached_pipeline() const {
+		return *pipeline_storage.obj;
 	}
 
 	/**
