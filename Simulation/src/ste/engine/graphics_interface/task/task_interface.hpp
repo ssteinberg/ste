@@ -14,6 +14,10 @@
 #include <buffer_view.hpp>
 #include <device_image_base.hpp>
 
+#include <draw_indirect_command_block.hpp>
+#include <draw_indexed_indirect_command_block.hpp>
+#include <dispatch_indirect_command_block.hpp>
+
 #include <vector>
 #include <optional.hpp>
 
@@ -38,10 +42,18 @@ struct task_expand_vertex_buffers {
 };
 template <typename Next>
 struct task_expand_vertex_buffers<Next> {
-	void operator()(std::vector<std::reference_wrapper<const device_buffer_base>> &vertex_buffers,
-					std::vector<std::uint64_t> &offsets,
-					Next&& next) {
+	void operator()(std::vector<std::reference_wrapper<const device_buffer_base>> &,
+					std::vector<std::uint64_t> &,
+					Next&&) {
 	}
+};
+
+}
+
+template <typename Interface>
+struct task_interface_binder {
+	void operator()(const Interface *interface,
+					command_recorder &recorder) {}
 };
 
 // Interface for tasks that use vertex buffers
@@ -53,7 +65,7 @@ class task_vertex_buffers_interface {
 public:
 	virtual ~task_vertex_buffers_interface() noexcept {}
 
-	void set_first_binding_index(std::uint32_t first_binding_index) {
+	void set_vertex_first_binding_index(std::uint32_t first_binding_index) {
 		this->first_binding_index = first_binding_index;
 	}
 	template <typename... VertexBuffers>
@@ -70,13 +82,17 @@ public:
 		offsets = { offset };
 	}
 
+	auto &get_vertex_first_binding_index() const { return first_binding_index; }
 	auto &get_vertex_buffers() const { return vertex_buffers; }
-
-protected:
-	void bind(command_recorder &recorder) const {
-		recorder << cmd_bind_vertex_buffers(first_binding_index,
-											vertex_buffers,
-											offsets);
+	auto &get_vertex_offsets() const { return offsets; }
+};
+template <>
+struct task_interface_binder<task_vertex_buffers_interface> {
+	void operator()(const task_vertex_buffers_interface *interface,
+					command_recorder &recorder) {
+		recorder << cmd_bind_vertex_buffers(interface->get_vertex_first_binding_index(),
+											interface->get_vertex_buffers(),
+											interface->get_vertex_offsets());
 	}
 };
 
@@ -95,11 +111,14 @@ public:
 	}
 
 	auto &get_index_buffer() const { return *index_buffer; }
-
-protected:
-	void bind(command_recorder &recorder) const {
-		recorder << cmd_bind_index_buffer(*index_buffer,
-										  offset);
+	auto get_index_offset() const { return offset; }
+};
+template <>
+struct task_interface_binder<task_index_buffer_interface> {
+	void operator()(const task_index_buffer_interface *interface,
+					command_recorder &recorder) {
+		recorder << cmd_bind_index_buffer(interface->get_index_buffer(),
+										  interface->get_index_offset());
 	}
 };
 
@@ -126,6 +145,9 @@ public:
 	auto &get_indirect_buffer() const { return *indirect_buffer; }
 	auto &get_indirect_offset() const { return offset; }
 };
+using task_indirect_draw_buffer_interface = task_indirect_buffer_interface<draw_indirect_command_block>;
+using task_indirect_indexed_draw_buffer_interface = task_indirect_buffer_interface<draw_indexed_indirect_command_block>;
+using task_indirect_dispatch_buffer_interface = task_indirect_buffer_interface<dispatch_indirect_command_block>;
 
 // Interface for a source image in transfer tasks
 class task_transfer_source_image_interface {
@@ -204,8 +226,6 @@ public:
 
 	auto &get_dst_buffer_view() const { return dst_buffer.get(); }
 };
-
-}
 
 }
 }

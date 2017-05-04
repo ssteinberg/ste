@@ -30,6 +30,17 @@ protected:
 	auto& get_binding() const { return *binding->binding; }
 
 private:
+	void populate_bound_resources(const std::vector<vk::vk_descriptor_set_write_buffer> &writes,
+								  std::uint32_t array_element,
+								  stage_flag stages) {
+		//! WIP
+	}
+	void populate_bound_resources(const std::vector<vk::vk_descriptor_set_write_image> &writes,
+								  std::uint32_t array_element,
+								  stage_flag stages) {
+		//! WIP
+	}
+
 	template <typename WriteType, typename T>
 	void bind(const pipeline_resource_binder<WriteType, T> &res) {
 		using resource_type = pipeline_resource_binder<WriteType, T>;
@@ -38,19 +49,27 @@ private:
 		// Validate
 		get_binding().validate_layout<resource_underlying_type>();
 
-		// Generate write descriptor, and append to queue
-		auto set_idx = binding->binding->set_idx;
+		// Generate write descriptor
 		auto write = res.writer(binding);
+		// Append write descriptor to queue
+		auto set_idx = binding->set_idx();
 		(*queue)[set_idx].push_back(write);
+
+		// Insert resources into bound resources map
+		auto array_element = write.get_array_element();
+		stage_flag stages = binding->stages;
+		populate_bound_resources(res.get_writes(),
+								 array_element,
+								 stages);
 	}
 
 public:
 	pipeline_resource_bind_point(pipeline_resource_binding_queue *q,
-						pipeline_layout *layout,
-						const pipeline_binding_layout *binding)
+								 pipeline_layout *layout,
+								 const pipeline_binding_layout *binding)
 		: Base(binding->binding->variable.get()),
-		queue(q), 
-		layout(layout), 
+		queue(q),
+		layout(layout),
 		binding(binding)
 	{}
 	~pipeline_resource_bind_point() noexcept {}

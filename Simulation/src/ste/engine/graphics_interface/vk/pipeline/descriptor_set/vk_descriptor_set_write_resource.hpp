@@ -129,6 +129,9 @@ public:
 	auto get_binding_index() const { return binding_index; }
 	auto get_array_element() const { return array_element; }
 	auto get_count() const { return std::max(image_writes.size(), buffer_writes.size()); }
+
+	auto& get_image_writes() const { return image_writes; };
+	auto& get_buffer_writes() const { return buffer_writes; };
 };
 
 }

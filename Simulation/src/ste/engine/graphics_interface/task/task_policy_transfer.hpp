@@ -8,8 +8,6 @@
 #include <task_pipeline_policy.hpp>
 #include <task_interface.hpp>
 
-#include <command_recorder.hpp>
-
 #include <cmd_blit_image.hpp>
 #include <cmd_clear_color_image.hpp>
 #include <cmd_clear_depth_stencil_image.hpp>
@@ -30,18 +28,9 @@ struct task_policy_transfer : task_policy_common {
 // Policy for blitting from image to image
 template <>
 struct task_policy<cmd_blit_image> : task_policy_transfer {
-	class interface
-		: public _internal::task_transfer_source_image_interface,
-		public _internal::task_transfer_destination_image_interface {
-		friend struct task_policy<cmd_blit_image>;
-		using _internal::task_transfer_source_image_interface::get_src_image;
-		using _internal::task_transfer_source_image_interface::get_src_layout;
-		using _internal::task_transfer_destination_image_interface::get_dst_image;
-		using _internal::task_transfer_destination_image_interface::get_dst_layout;
-	public:
-		virtual ~interface() {}
-	};
-	static void prepare(const interface *task, command_recorder &recorder) {}
+	using interface_types = std::tuple<task_transfer_source_image_interface, task_transfer_destination_image_interface>;
+	using interface = inherit_from_tuple_types<interface_types>;
+
 	template <typename Command, typename... CmdArgs>
 	static auto create_cmd(const interface *task,
 						   CmdArgs&&... args) {
@@ -56,15 +45,9 @@ struct task_policy<cmd_blit_image> : task_policy_transfer {
 // Policy for clearing color image
 template <>
 struct task_policy<cmd_clear_color_image> : task_policy_transfer {
-	class interface
-		: public _internal::task_transfer_destination_image_interface {
-		friend struct task_policy<cmd_clear_color_image>;
-		using _internal::task_transfer_destination_image_interface::get_dst_image;
-		using _internal::task_transfer_destination_image_interface::get_dst_layout;
-	public:
-		virtual ~interface() {}
-	};
-	static void prepare(const interface *task, command_recorder &recorder) {}
+	using interface_types = std::tuple<task_transfer_destination_image_interface>;
+	using interface = inherit_from_tuple_types<interface_types>;
+
 	template <typename Command, typename... CmdArgs>
 	static auto create_cmd(const interface *task,
 						   CmdArgs&&... args) {
@@ -77,15 +60,9 @@ struct task_policy<cmd_clear_color_image> : task_policy_transfer {
 // Policy for clearing depth/stencil image
 template <>
 struct task_policy<cmd_clear_depth_stencil_image> : task_policy_transfer {
-	class interface
-		: public _internal::task_transfer_destination_image_interface {
-		friend struct task_policy<cmd_clear_depth_stencil_image>;
-		using _internal::task_transfer_destination_image_interface::get_dst_image;
-		using _internal::task_transfer_destination_image_interface::get_dst_layout;
-	public:
-		virtual ~interface() {}
-	};
-	static void prepare(const interface *task, command_recorder &recorder) {}
+	using interface_types = std::tuple<task_transfer_destination_image_interface>;
+	using interface = inherit_from_tuple_types<interface_types>;
+
 	template <typename Command, typename... CmdArgs>
 	static auto create_cmd(const interface *task,
 						   CmdArgs&&... args) {
@@ -98,16 +75,9 @@ struct task_policy<cmd_clear_depth_stencil_image> : task_policy_transfer {
 // Policy for copying from buffer to buffer
 template <>
 struct task_policy<cmd_copy_buffer> : task_policy_transfer {
-	class interface
-		: public _internal::task_transfer_source_buffer_interface,
-		public _internal::task_transfer_destination_buffer_interface {
-		friend struct task_policy<cmd_copy_buffer>;
-		using _internal::task_transfer_source_buffer_interface::get_src_buffer;
-		using _internal::task_transfer_destination_buffer_interface::get_dst_buffer;
-	public:
-		virtual ~interface() {}
-	};
-	static void prepare(const interface *task, command_recorder &recorder) {}
+	using interface_types = std::tuple<task_transfer_source_buffer_interface, task_transfer_destination_buffer_interface>;
+	using interface = inherit_from_tuple_types<interface_types>;
+
 	template <typename Command, typename... CmdArgs>
 	static auto create_cmd(const interface *task,
 						   CmdArgs&&... args) {
@@ -120,17 +90,9 @@ struct task_policy<cmd_copy_buffer> : task_policy_transfer {
 // Policy for copying from buffer to image
 template <>
 struct task_policy<cmd_copy_buffer_to_image> : task_policy_transfer {
-	class interface
-		: public _internal::task_transfer_source_buffer_interface,
-		public _internal::task_transfer_destination_image_interface {
-		friend struct task_policy<cmd_copy_buffer_to_image>;
-		using _internal::task_transfer_source_buffer_interface::get_src_buffer;
-		using _internal::task_transfer_destination_image_interface::get_dst_image;
-		using _internal::task_transfer_destination_image_interface::get_dst_layout;
-	public:
-		virtual ~interface() {}
-	};
-	static void prepare(const interface *task, command_recorder &recorder) {}
+	using interface_types = std::tuple<task_transfer_source_buffer_interface, task_transfer_destination_image_interface>;
+	using interface = inherit_from_tuple_types<interface_types>;
+
 	template <typename Command, typename... CmdArgs>
 	static auto create_cmd(const interface *task,
 						   CmdArgs&&... args) {
@@ -144,18 +106,9 @@ struct task_policy<cmd_copy_buffer_to_image> : task_policy_transfer {
 // Policy for copying from image to image
 template <>
 struct task_policy<cmd_copy_image> : task_policy_transfer {
-	class interface
-		: public _internal::task_transfer_source_image_interface,
-		public _internal::task_transfer_destination_image_interface {
-		friend struct task_policy<cmd_copy_image>;
-		using _internal::task_transfer_source_image_interface::get_src_image;
-		using _internal::task_transfer_source_image_interface::get_src_layout;
-		using _internal::task_transfer_destination_image_interface::get_dst_image;
-		using _internal::task_transfer_destination_image_interface::get_dst_layout;
-	public:
-		virtual ~interface() {}
-	};
-	static void prepare(const interface *task, command_recorder &recorder) {}
+	using interface_types = std::tuple<task_transfer_source_image_interface, task_transfer_destination_image_interface>;
+	using interface = inherit_from_tuple_types<interface_types>;
+
 	template <typename Command, typename... CmdArgs>
 	static auto create_cmd(const interface *task,
 						   CmdArgs&&... args) {
@@ -170,17 +123,9 @@ struct task_policy<cmd_copy_image> : task_policy_transfer {
 // Policy for copying from image to buffer
 template <>
 struct task_policy<cmd_copy_image_to_buffer> : task_policy_transfer {
-	class interface
-		: public _internal::task_transfer_source_image_interface,
-		public _internal::task_transfer_destination_buffer_interface {
-		friend struct task_policy<cmd_copy_image_to_buffer>;
-		using _internal::task_transfer_source_image_interface::get_src_image;
-		using _internal::task_transfer_source_image_interface::get_src_layout;
-		using _internal::task_transfer_destination_buffer_interface::get_dst_buffer;
-	public:
-		virtual ~interface() {}
-	};
-	static void prepare(const interface *task, command_recorder &recorder) {}
+	using interface_types = std::tuple<task_transfer_source_image_interface, task_transfer_destination_buffer_interface>;
+	using interface = inherit_from_tuple_types<interface_types>;
+
 	template <typename Command, typename... CmdArgs>
 	static auto create_cmd(const interface *task,
 						   CmdArgs&&... args) {
@@ -194,14 +139,9 @@ struct task_policy<cmd_copy_image_to_buffer> : task_policy_transfer {
 // Policy for clearing buffer with constant
 template <>
 struct task_policy<cmd_fill_buffer> : task_policy_transfer {
-	class interface
-		: public _internal::task_transfer_destination_buffer_view_interface {
-		friend struct task_policy<cmd_fill_buffer>;
-		using _internal::task_transfer_destination_buffer_view_interface::get_dst_buffer_view;
-	public:
-		virtual ~interface() {}
-	};
-	static void prepare(const interface *task, command_recorder &recorder) {}
+	using interface_types = std::tuple<task_transfer_destination_buffer_view_interface>;
+	using interface = inherit_from_tuple_types<interface_types>;
+
 	template <typename Command, typename... CmdArgs>
 	static auto create_cmd(const interface *task,
 						   CmdArgs&&... args) {
@@ -213,14 +153,9 @@ struct task_policy<cmd_fill_buffer> : task_policy_transfer {
 // Policy for updating buffer with data
 template <>
 struct task_policy<cmd_update_buffer> : task_policy_transfer {
-	class interface
-		: public _internal::task_transfer_destination_buffer_view_interface {
-		friend struct task_policy<cmd_update_buffer>;
-		using _internal::task_transfer_destination_buffer_view_interface::get_dst_buffer_view;
-	public:
-		virtual ~interface() {}
-	};
-	static void prepare(const interface *task, command_recorder &recorder) {}
+	using interface_types = std::tuple<task_transfer_destination_buffer_view_interface>;
+	using interface = inherit_from_tuple_types<interface_types>;
+
 	template <typename Command, typename... CmdArgs>
 	static auto create_cmd(const interface *task,
 						   CmdArgs&&... args) {

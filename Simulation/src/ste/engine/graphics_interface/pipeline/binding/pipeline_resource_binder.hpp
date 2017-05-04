@@ -55,6 +55,9 @@ public:
 													array_element,
 													writes);
 	}
+
+	const auto &get_writes() const { return writes; }
+	auto get_array_element() const { return array_element; }
 };
 
 /**

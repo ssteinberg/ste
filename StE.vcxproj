@@ -551,9 +551,13 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\command_buffer\command_buffer.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\command_buffer\command_pool.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\command_buffer\host_command.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\device_resource_handle.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\task\task_command.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\task\task_enumerate_consumed_resources.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\task\task_interface.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\task\task_foreach_interface.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\task\task_interface_resource_extractor.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\task\task_pipeline_resource_extractor.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\task\task_policy_compute.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\task\task_policy_draw.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\task\task_policy_transfer.hpp" />
@@ -1146,6 +1150,7 @@
     <ClInclude Include="Simulation\src\ste\stl_extensions\threading\thread_constants.hpp" />
     <ClInclude Include="Simulation\src\ste\stl_extensions\tuple\tuple_call.hpp" />
     <ClInclude Include="Simulation\src\ste\stl_extensions\tuple\tuple_type_erasure.hpp" />
+    <ClInclude Include="Simulation\src\ste\stl_extensions\utility\inherit_from_types.hpp" />
     <ClInclude Include="Simulation\src\ste\stl_extensions\utility\typelist.hpp" />
     <ClInclude Include="Simulation\src\ste\stl_extensions\type\types.hpp" />
     <ClInclude Include="Simulation\src\ste\stl_extensions\type\error_type.hpp" />

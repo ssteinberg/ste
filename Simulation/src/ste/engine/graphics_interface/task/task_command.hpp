@@ -5,6 +5,7 @@
 
 #include <stdafx.hpp>
 #include <command.hpp>
+#include <task_foreach_interface.hpp>
 
 namespace ste {
 namespace gl {
@@ -76,8 +77,12 @@ private:
 		// Bind the pipeline, if any
 		tast_command_bind_pipeline<Task, pipeline_policy>()(task, Task::accessor_token(), recorder);
 
-		// Prepare the task (bind buffers, etc.)
-		Task::policy::prepare(task, recorder);
+		// Bind the task resources (buffers, etc.)
+		task_foreach_interface<Task>()(task, [&recorder](auto* interface) {
+			using Interface = std::remove_cv_t<std::remove_reference_t<decltype(*interface)>>;
+			task_interface_binder<Interface>()(interface, recorder);
+		});
+
 		// Record the command itself
 		recorder << cmd;
 

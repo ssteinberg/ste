@@ -8,11 +8,9 @@
 #include <task_pipeline_policy.hpp>
 #include <task_interface.hpp>
 
-#include <command_recorder.hpp>
 #include <cmd_dispatch.hpp>
 #include <cmd_dispatch_indirect.hpp>
 
-#include <dispatch_indirect_command_block.hpp>
 
 namespace ste {
 namespace gl {
@@ -24,25 +22,15 @@ struct task_policy_compute : task_policy_common {
 // Policy for dispatch compute
 template <>
 struct task_policy<cmd_dispatch> : task_policy_compute {
-	class interface {
-	public:
-		virtual ~interface() {}
-	};
-	static void prepare(const interface *task, command_recorder &recorder) {}
+	using interface = struct{};
 };
 
 // Policy for dispatch compute indirect
 template <>
 struct task_policy<cmd_dispatch_indirect> : task_policy_compute {
-	class interface : public _internal::task_indirect_buffer_interface<dispatch_indirect_command_block> {
-		friend struct task_policy<cmd_dispatch_indirect>;
-		using _internal::task_indirect_buffer_interface<dispatch_indirect_command_block>::get_indirect_buffer;
-		using _internal::task_indirect_buffer_interface<dispatch_indirect_command_block>::get_indirect_offset;
-	public:
-		virtual ~interface() {}
-	};
+	using interface_types = std::tuple<task_indirect_dispatch_buffer_interface>;
+	using interface = inherit_from_tuple_types<interface_types>;
 
-	static void prepare(const interface *task, command_recorder &recorder) {}
 	template <typename Command, typename... CmdArgs>
 	static auto create_cmd(const interface *task,
 						   CmdArgs&&... args) {

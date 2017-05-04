@@ -9,6 +9,7 @@
 #include <task_command.hpp>
 
 #include <job.hpp>
+
 #include <forward_capture.hpp>
 #include <tuple_call.hpp>
 #include <type_traits>
@@ -37,6 +38,8 @@ private:
 	using command_t = task_command<task_impl<Command, task_policy, pipeline_policy>, Command, pipeline_policy>;
 
 	friend command_t;
+	template <class pipeline_object_type>
+	struct task_pipeline_policy_extract_pipeline_resources;
 
 	struct accessor_token {};
 
