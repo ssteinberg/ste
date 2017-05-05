@@ -21,7 +21,7 @@ text_renderer::text_renderer(text_manager *tr,
 }
 
 void text_renderer::recreate_pipeline() {
-	glm::u32vec2 swapchain_size = tr->context.device().get_surface().size();
+	glm::u32vec2 swapchain_size = tr->context.device().get_surface().extent();
 	VkViewport viewport = { 0, 0,
 		static_cast<float>(swapchain_size.x), static_cast<float>(swapchain_size.y),
 		1.f, 0.f };

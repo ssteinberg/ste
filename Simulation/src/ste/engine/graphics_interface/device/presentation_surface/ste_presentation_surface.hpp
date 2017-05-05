@@ -1,5 +1,5 @@
 //	StE
-// © Shlomi Steinberg 2015-2016
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
@@ -36,6 +36,8 @@ private:
 	using resize_signal_connection_t = ste_window_signals::window_resize_signal_type::connection_type;
 
 public:
+	static constexpr std::uint32_t default_min_swap_chain_images = 3;
+
 	using swap_chain_image_view_t = image_view<image_type::image_2d>;
 	struct swap_chain_image_t {
 		device_swapchain_image image;
@@ -226,10 +228,24 @@ public:
 		return !shared_data->swap_chain_optimal_flag.test_and_set(std::memory_order_acquire);
 	}
 
+	/**
+	 *	@brief	Returns swap chain images count
+	 */
 	auto& get_swap_chain_images() const { return swap_chain_images; }
+	/**
+	*	@brief	Returns the maximal count of acquired swap chain images at any given time.
+	*			See Vulkan specifications: https://www.khronos.org/registry/vulkan/specs/1.0-extensions/html/vkspec.html#vkAcquireNextImageKHR
+	*/
+	auto get_max_allowed_acquired_swap_chain_images() const {
+		auto images = get_swap_chain_images().size();
+		auto min_surface_images = surface_presentation_caps.minImageCount;
+
+		return images - min_surface_images + 1;
+	}
+
 	auto& get_presentation_window() const { return presentation_window; }
 
-	auto size() const { return swap_chain->get_extent(); }
+	auto extent() const { return swap_chain->get_extent(); }
 	auto surface_format() const { return swap_chain->get_format(); }
 	auto surface_colorspace() const { return swap_chain->get_colorspace(); }
 };

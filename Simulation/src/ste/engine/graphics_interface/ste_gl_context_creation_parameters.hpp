@@ -34,6 +34,7 @@ struct ste_gl_device_creation_parameters {
 	VkPhysicalDeviceFeatures requested_device_features{ 0 };
 	std::vector<const char*> additional_device_extensions;
 
+	optional<std::uint32_t> simultaneous_presentation_frames;
 	optional<ste_presentation_device_vsync> vsync;
 };
 

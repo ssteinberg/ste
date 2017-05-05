@@ -1,6 +1,7 @@
 
 #include <stdafx.hpp>
 #include <ste_device.hpp>
+#include <ste_device_exceptions.hpp>
 
 using namespace ste::gl;
 
@@ -23,17 +24,6 @@ vk::vk_logical_device ste_device::create_vk_virtual_device(const vk::vk_physical
 								 requested_features,
 								 queues_create_info->create_info,
 								 device_extensions);
-}
-
-void ste_device::create_presentation_fences_storage() {
-	std::vector<image_presentation_sync_t> v;
-	v.reserve(get_swap_chain_images_count());
-	for (std::uint32_t i = 0; i < get_swap_chain_images_count(); ++i)
-		v.push_back(image_presentation_sync_t{ nullptr,
-		{ sync_primitives_pools->semaphores().claim(),
-					sync_primitives_pools->semaphores().claim() } });
-
-	this->presentation_sync_primitives = std::move(v);
 }
 
 ste_device::queues_t ste_device::create_queues(const vk::vk_logical_device &device,
@@ -69,10 +59,8 @@ void ste_device::recreate_swap_chain() {
 	// and queue safely.
 	wait_idle();
 
-	this->presentation_sync_primitives.clear();
 	// Recreate swap-chain
 	presentation_surface->recreate_swap_chain();
-	create_presentation_fences_storage();
 
 	// Signal
 	queues_and_surface_recreate_signal.emit(this);

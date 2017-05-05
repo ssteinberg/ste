@@ -1,0 +1,2516 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|Win32">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|Win32">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGUID>{369781CF-D19D-3E2B-B2D5-4EC35F83839C}</ProjectGUID>
+    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>Win32</Platform>
+    <ProjectName>buildtests</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+    <PropertyGroup>
+      <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Midl>
+      <AdditionalIncludeDirectories>D:\src\git\StE\Simulation\third_party\build\eigen;D:\src\git\StE\Simulation\third_party\packages\eigen;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Midl>
+      <AdditionalIncludeDirectories>D:\src\git\StE\Simulation\third_party\build\eigen;D:\src\git\StE\Simulation\third_party\packages\eigen;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">
+    <Midl>
+      <AdditionalIncludeDirectories>D:\src\git\StE\Simulation\third_party\build\eigen;D:\src\git\StE\Simulation\third_party\packages\eigen;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">
+    <Midl>
+      <AdditionalIncludeDirectories>D:\src\git\StE\Simulation\third_party\build\eigen;D:\src\git\StE\Simulation\third_party\packages\eigen;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\packages\eigen\CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Building Custom Rule D:/src/git/StE/Simulation/third_party/packages/eigen/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HD:/src/git/StE/Simulation/third_party/packages/eigen -BD:/src/git/StE/Simulation/third_party/build/eigen --check-stamp-file D:\src\git\StE\Simulation\third_party\build\eigen\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:/src/git/StE/Simulation/third_party/packages/eigen/CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\eigen\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\build\eigen\CMakeFiles\3.7.1\CMakeSystem.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeSystemSpecificInitialize.cmake;D:\src\git\StE\Simulation\third_party\build\eigen\CMakeFiles\3.7.1\CMakeCCompiler.cmake;D:\src\git\StE\Simulation\third_party\build\eigen\CMakeFiles\3.7.1\CMakeCXXCompiler.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC.cmake;D:\src\git\StE\Simulation\third_party\build\eigen\CMakeFiles\3.7.1\CMakeRCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CheckCXXCompilerFlag.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CheckCXXSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCheckCompilerFlagCommonPatterns.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\GNUInstallDirs.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindStandardMathLibrary.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CheckCXXSourceCompiles.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\EigenConfigureTesting.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\EigenTesting.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CheckCXXSourceCompiles.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\EigenDetermineVSServicePack.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeDetermineVSServicePack.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\EigenDetermineOSVersion.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CTest.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CTestUseLaunchers.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\CTestConfig.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CTestTargets.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\DartConfiguration.tcl.in;D:\src\git\StE\Simulation\third_party\packages\eigen\CTestCustom.cmake.in;D:\src\git\StE\Simulation\third_party\packages\eigen\scripts\cdashtesting.cmake.in;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakePackageConfigHelpers.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\WriteBasicConfigVersionFile.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\Eigen3Config.cmake.in;C:\Program Files\CMake\share\cmake-3.7\Modules\BasicConfigVersion-SameMajorVersion.cmake.in;D:\src\git\StE\Simulation\third_party\packages\eigen\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\src\git\StE\Simulation\third_party\build\eigen\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Building Custom Rule D:/src/git/StE/Simulation/third_party/packages/eigen/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HD:/src/git/StE/Simulation/third_party/packages/eigen -BD:/src/git/StE/Simulation/third_party/build/eigen --check-stamp-file D:\src\git\StE\Simulation\third_party\build\eigen\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D:/src/git/StE/Simulation/third_party/packages/eigen/CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\eigen\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\build\eigen\CMakeFiles\3.7.1\CMakeSystem.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeSystemSpecificInitialize.cmake;D:\src\git\StE\Simulation\third_party\build\eigen\CMakeFiles\3.7.1\CMakeCCompiler.cmake;D:\src\git\StE\Simulation\third_party\build\eigen\CMakeFiles\3.7.1\CMakeCXXCompiler.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC.cmake;D:\src\git\StE\Simulation\third_party\build\eigen\CMakeFiles\3.7.1\CMakeRCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CheckCXXCompilerFlag.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CheckCXXSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCheckCompilerFlagCommonPatterns.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\GNUInstallDirs.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindStandardMathLibrary.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CheckCXXSourceCompiles.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\EigenConfigureTesting.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\EigenTesting.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CheckCXXSourceCompiles.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\EigenDetermineVSServicePack.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeDetermineVSServicePack.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\EigenDetermineOSVersion.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CTest.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CTestUseLaunchers.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\CTestConfig.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CTestTargets.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\DartConfiguration.tcl.in;D:\src\git\StE\Simulation\third_party\packages\eigen\CTestCustom.cmake.in;D:\src\git\StE\Simulation\third_party\packages\eigen\scripts\cdashtesting.cmake.in;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakePackageConfigHelpers.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\WriteBasicConfigVersionFile.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\Eigen3Config.cmake.in;C:\Program Files\CMake\share\cmake-3.7\Modules\BasicConfigVersion-SameMajorVersion.cmake.in;D:\src\git\StE\Simulation\third_party\packages\eigen\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D:\src\git\StE\Simulation\third_party\build\eigen\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">Building Custom Rule D:/src/git/StE/Simulation/third_party/packages/eigen/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HD:/src/git/StE/Simulation/third_party/packages/eigen -BD:/src/git/StE/Simulation/third_party/build/eigen --check-stamp-file D:\src\git\StE\Simulation\third_party\build\eigen\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">D:/src/git/StE/Simulation/third_party/packages/eigen/CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\eigen\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\build\eigen\CMakeFiles\3.7.1\CMakeSystem.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeSystemSpecificInitialize.cmake;D:\src\git\StE\Simulation\third_party\build\eigen\CMakeFiles\3.7.1\CMakeCCompiler.cmake;D:\src\git\StE\Simulation\third_party\build\eigen\CMakeFiles\3.7.1\CMakeCXXCompiler.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC.cmake;D:\src\git\StE\Simulation\third_party\build\eigen\CMakeFiles\3.7.1\CMakeRCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CheckCXXCompilerFlag.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CheckCXXSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCheckCompilerFlagCommonPatterns.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\GNUInstallDirs.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindStandardMathLibrary.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CheckCXXSourceCompiles.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\EigenConfigureTesting.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\EigenTesting.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CheckCXXSourceCompiles.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\EigenDetermineVSServicePack.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeDetermineVSServicePack.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\EigenDetermineOSVersion.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CTest.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CTestUseLaunchers.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\CTestConfig.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CTestTargets.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\DartConfiguration.tcl.in;D:\src\git\StE\Simulation\third_party\packages\eigen\CTestCustom.cmake.in;D:\src\git\StE\Simulation\third_party\packages\eigen\scripts\cdashtesting.cmake.in;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakePackageConfigHelpers.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\WriteBasicConfigVersionFile.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\Eigen3Config.cmake.in;C:\Program Files\CMake\share\cmake-3.7\Modules\BasicConfigVersion-SameMajorVersion.cmake.in;D:\src\git\StE\Simulation\third_party\packages\eigen\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">D:\src\git\StE\Simulation\third_party\build\eigen\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">Building Custom Rule D:/src/git/StE/Simulation/third_party/packages/eigen/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HD:/src/git/StE/Simulation/third_party/packages/eigen -BD:/src/git/StE/Simulation/third_party/build/eigen --check-stamp-file D:\src\git\StE\Simulation\third_party\build\eigen\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">D:/src/git/StE/Simulation/third_party/packages/eigen/CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\eigen\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\build\eigen\CMakeFiles\3.7.1\CMakeSystem.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeSystemSpecificInitialize.cmake;D:\src\git\StE\Simulation\third_party\build\eigen\CMakeFiles\3.7.1\CMakeCCompiler.cmake;D:\src\git\StE\Simulation\third_party\build\eigen\CMakeFiles\3.7.1\CMakeCXXCompiler.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC.cmake;D:\src\git\StE\Simulation\third_party\build\eigen\CMakeFiles\3.7.1\CMakeRCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CheckCXXCompilerFlag.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CheckCXXSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCheckCompilerFlagCommonPatterns.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\GNUInstallDirs.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindStandardMathLibrary.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CheckCXXSourceCompiles.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\EigenConfigureTesting.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\EigenTesting.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CheckCXXSourceCompiles.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\EigenDetermineVSServicePack.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeDetermineVSServicePack.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\EigenDetermineOSVersion.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CTest.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CTestUseLaunchers.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\CTestConfig.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CTestTargets.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\DartConfiguration.tcl.in;D:\src\git\StE\Simulation\third_party\packages\eigen\CTestCustom.cmake.in;D:\src\git\StE\Simulation\third_party\packages\eigen\scripts\cdashtesting.cmake.in;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakePackageConfigHelpers.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\WriteBasicConfigVersionFile.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\Eigen3Config.cmake.in;C:\Program Files\CMake\share\cmake-3.7\Modules\BasicConfigVersion-SameMajorVersion.cmake.in;D:\src\git\StE\Simulation\third_party\packages\eigen\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">D:\src\git\StE\Simulation\third_party\build\eigen\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/ZERO_CHECK.vcxproj">
+      <Project>4452BF3C-B9DF-34D4-9C33-3A58B5AF8518</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/BVH_1.vcxproj">
+      <Project>47105D95-F06A-31F0-9F96-BE120C154364</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/BVH_2.vcxproj">
+      <Project>97E2E7E2-AAAC-3A97-AE2B-410A85D244D0</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/BVH_3.vcxproj">
+      <Project>336B7477-449B-3BE4-B489-6697D07531C8</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/EulerAngles_1.vcxproj">
+      <Project>08485193-35DA-3FBE-AEDC-50EDC83C27B1</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/EulerAngles_2.vcxproj">
+      <Project>481AD437-6C90-3F22-9B3B-4467A300521E</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/EulerAngles_3.vcxproj">
+      <Project>B775E3A6-8F10-3F53-BA5F-4DE7186614AF</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/EulerAngles_4.vcxproj">
+      <Project>160BE96F-B101-3ECA-AD80-84E05A373EF5</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/FFT.vcxproj">
+      <Project>3EA60134-CC9A-3739-97C9-948773C1C6DF</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/NonLinearOptimization.vcxproj">
+      <Project>AB6FC990-CDA8-3535-B079-3F1DD54ABAAC</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/NumericalDiff.vcxproj">
+      <Project>0C0F7E82-BDB8-39CE-92DB-0FD9DFC2991D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/adjoint_1.vcxproj">
+      <Project>913C57CA-AEE6-3FCA-ADCA-163C24F7FB77</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/adjoint_10.vcxproj">
+      <Project>35FB1445-F280-340B-883A-A501812A43D3</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/adjoint_11.vcxproj">
+      <Project>FEE0F2E9-D7D5-317D-A9FD-3147DBB9D4DA</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/adjoint_12.vcxproj">
+      <Project>0D01E91D-CDE5-3982-91A3-1A26784D338D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/adjoint_13.vcxproj">
+      <Project>14A01696-ECBF-3203-AB25-A189A7395264</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/adjoint_2.vcxproj">
+      <Project>23D031E2-8171-3AC5-ACE1-72167283E8A7</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/adjoint_3.vcxproj">
+      <Project>435C8239-C809-3673-9EFE-CE039FB4B34D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/adjoint_4.vcxproj">
+      <Project>F015362A-1FF7-3C09-AB00-1492C663F456</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/adjoint_5.vcxproj">
+      <Project>8EC1BD4B-0613-36E3-A00C-A20FC6908DE9</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/adjoint_6.vcxproj">
+      <Project>4A169D51-A4FB-3325-BA48-C7512BFC8BE9</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/adjoint_7.vcxproj">
+      <Project>032AE412-1D8E-34CA-8310-C504C94FECAB</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/adjoint_8.vcxproj">
+      <Project>97FAE28E-B3D9-333D-A64D-4E2855915DE4</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/adjoint_9.vcxproj">
+      <Project>04FA83C0-EEFA-3A7D-84DD-AB44C3EEC666</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/alignedvector3.vcxproj">
+      <Project>A2560DBF-79EC-39DE-90E5-265EC36CDD2F</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/array_1.vcxproj">
+      <Project>2D7D7C2A-2FE5-3BDF-BE7C-E0980FD71F3E</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/array_2.vcxproj">
+      <Project>AF0FB7AA-3E58-3552-99D6-DA72EDD413D1</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/array_3.vcxproj">
+      <Project>16D4B820-0592-3208-B875-BA164DB0B386</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/array_4.vcxproj">
+      <Project>57BCC90E-4CC2-3ADE-9F72-594ED99CC4B4</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/array_5.vcxproj">
+      <Project>4CF9CD52-EEFD-3322-AE07-3482E8BE9727</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/array_6.vcxproj">
+      <Project>11C0AA1F-B5CE-3E53-BD3A-8C469B98C6E8</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/array_for_matrix_1.vcxproj">
+      <Project>50AF2538-E39C-3DED-84D5-8E2CA4C7D96E</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/array_for_matrix_2.vcxproj">
+      <Project>C8177EBE-4720-3DC8-A1A0-61C4DF6BF8F1</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/array_for_matrix_3.vcxproj">
+      <Project>454AC107-0AF2-37D3-8E45-12961769B930</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/array_for_matrix_4.vcxproj">
+      <Project>5A303ACD-3753-3033-9247-101367CE7611</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/array_for_matrix_5.vcxproj">
+      <Project>290EBD34-11E5-3D11-A8A1-5CE2FC3BB34A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/array_for_matrix_6.vcxproj">
+      <Project>830105AE-C815-3832-93FB-237C35156C29</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/array_for_matrix_7.vcxproj">
+      <Project>CC958BA3-D1F5-39C1-91E9-80576164DB64</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/array_for_matrix_8.vcxproj">
+      <Project>10152A58-A853-38AB-97E8-371E2630C877</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/array_of_string.vcxproj">
+      <Project>964F8F5C-8703-3D9B-A1F9-D6BC63E6E30B</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/array_replicate_1.vcxproj">
+      <Project>3D48D5AF-17A8-3E58-A091-060C53DBBB54</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/array_replicate_2.vcxproj">
+      <Project>04761C44-0CA1-36C4-B632-4A186AD0CBAF</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/array_replicate_3.vcxproj">
+      <Project>5CB75077-EA5D-3825-8529-7D265EA79367</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/array_replicate_4.vcxproj">
+      <Project>2417A9DD-9CC4-3F2F-949E-1DA3E29EC6CC</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/array_replicate_5.vcxproj">
+      <Project>A32E1386-903A-3812-B901-54D9BB8DAA4F</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/array_replicate_6.vcxproj">
+      <Project>AED7B864-0379-385E-A85A-16E6373BF296</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/array_reverse_1.vcxproj">
+      <Project>7EEEC294-B219-3384-BDD8-B1C796DD36C1</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/array_reverse_2.vcxproj">
+      <Project>65C3AB00-8F43-3432-B175-5F2778BAA5C0</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/array_reverse_3.vcxproj">
+      <Project>3EE936F2-CA6A-3BF4-B84B-C5821283E5DC</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/array_reverse_4.vcxproj">
+      <Project>D5B6A9CA-EC85-3A6F-A938-0B3F8F264814</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/array_reverse_5.vcxproj">
+      <Project>D930FF3C-1267-33D3-9266-6E1DC884444A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/array_reverse_6.vcxproj">
+      <Project>42248A6B-35C6-3495-AA49-96A9AABC4D0C</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/array_reverse_7.vcxproj">
+      <Project>956DF154-F9D4-3D46-A524-E631C82AF3AE</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/array_reverse_8.vcxproj">
+      <Project>04783A4E-2171-311F-B1D0-BAEA2262F583</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/array_reverse_9.vcxproj">
+      <Project>92062682-1ACE-373F-82AA-E6E55667B8D8</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/autodiff_1.vcxproj">
+      <Project>B4BAD4C1-5CAA-3F6B-8AE6-F5A816B69D8B</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/autodiff_2.vcxproj">
+      <Project>963B593B-2491-341A-A32E-B09C5FB02381</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/autodiff_3.vcxproj">
+      <Project>C6812649-4AC7-3E29-A553-019197EDE4DF</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/autodiff_4.vcxproj">
+      <Project>5CBCEC3A-713A-3A79-A9C8-C0BA27349B0E</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/autodiff_scalar_1.vcxproj">
+      <Project>67423122-B1A0-385A-9BAB-75ED4DDA6DB4</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/autodiff_scalar_2.vcxproj">
+      <Project>499324A9-4C4B-3B82-87B9-1C6DFFC46B1C</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/autodiff_scalar_3.vcxproj">
+      <Project>0DA89702-49DB-3FBA-803A-5BAAF48F5FB6</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/autodiff_scalar_4.vcxproj">
+      <Project>F85A9E4B-098F-3B43-B2ED-FB69DED04729</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/bandmatrix.vcxproj">
+      <Project>05EE0DE0-B7DB-3A64-ACFF-081F5C3C1B0A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/basicstuff_1.vcxproj">
+      <Project>1109AA84-766E-3CBA-B190-60E045C3AFA2</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/basicstuff_2.vcxproj">
+      <Project>F22BF147-749D-32C8-8FEF-F61F2EA1A8E2</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/basicstuff_3.vcxproj">
+      <Project>5602D660-6BD0-3EA3-AD26-427812E36E6A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/basicstuff_4.vcxproj">
+      <Project>44BDEB71-9563-3A05-A28E-EC76741EBA62</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/basicstuff_5.vcxproj">
+      <Project>42A165B4-25F5-32DE-A6DE-163F99E19866</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/basicstuff_6.vcxproj">
+      <Project>C892E6B9-E48F-3E63-93C6-7CD3EC65683A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/basicstuff_7.vcxproj">
+      <Project>5D6D2EC4-DCB8-3992-AE39-881617F12ED2</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/bdcsvd_1.vcxproj">
+      <Project>19AEBAB3-4437-32EA-8FC1-1757EAAB758D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/bdcsvd_10.vcxproj">
+      <Project>D080431A-533B-36BD-BD46-BB7377BB1FA8</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/bdcsvd_101.vcxproj">
+      <Project>5387C910-9D42-307F-8F2A-0FD2641E0B80</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/bdcsvd_102.vcxproj">
+      <Project>F71E6F76-6892-3E7A-B2E4-74282B2F727C</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/bdcsvd_2.vcxproj">
+      <Project>3C524A0B-2C26-32ED-8908-52B84F021DE7</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/bdcsvd_3.vcxproj">
+      <Project>EE11291B-CCF1-38BF-AD84-BC8C6E3D65DC</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/bdcsvd_4.vcxproj">
+      <Project>C5ED50CE-85DC-3E8A-B926-A540E1FA05CA</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/bdcsvd_5.vcxproj">
+      <Project>486E8085-BB4D-3632-A824-D8F72CF0E83A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/bdcsvd_6.vcxproj">
+      <Project>D9950739-7D5A-3960-B90A-66CB230CEA43</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/bdcsvd_7.vcxproj">
+      <Project>B1014F49-64C3-303B-9173-4A941B9A9654</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/bdcsvd_8.vcxproj">
+      <Project>1A86E4FA-A364-3943-977A-02D5BC4EB09B</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/bdcsvd_9.vcxproj">
+      <Project>2C5FFA34-E3BF-3D94-A514-D713778E33B1</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/bicgstab_1.vcxproj">
+      <Project>F1576F37-37ED-3ECB-8404-8F853B5B2A1D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/bicgstab_2.vcxproj">
+      <Project>AEFFDFB6-8E8A-3E89-8755-0EE719D02871</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/bicgstab_3.vcxproj">
+      <Project>71D6F4B8-BF0E-3FBE-98D0-3BBA0A8A4B9A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/block_1.vcxproj">
+      <Project>EFE38DD9-5A35-3BC4-BE4F-9D585A9A58B2</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/block_2.vcxproj">
+      <Project>3FE0A6A3-3DDE-3D89-A97B-FA9BC517C0AE</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/block_3.vcxproj">
+      <Project>A9757BB1-F393-35BC-BF3A-FAE7923D68B5</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/block_4.vcxproj">
+      <Project>995EF7A3-E8B7-30E4-B94F-045109C9E1CF</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/block_5.vcxproj">
+      <Project>D77C5A36-14FD-33AC-9D99-64BCFB6D18E5</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/block_6.vcxproj">
+      <Project>0DA3C2A0-D12F-30B8-A15D-6EBB3A7F2203</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/block_7.vcxproj">
+      <Project>84E7F30E-257A-3BBC-AA13-C4F6CF020060</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/block_8.vcxproj">
+      <Project>23851DA7-96DA-3F03-A6BE-EB21CE0FE88F</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/boostmultiprec_1.vcxproj">
+      <Project>EF17DFCD-255E-3AE0-A24C-C77822D1CC3C</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/boostmultiprec_10.vcxproj">
+      <Project>471A6421-E58A-399C-93F8-62E3D5AAEE7E</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/boostmultiprec_2.vcxproj">
+      <Project>4D45CFB5-231D-3CAE-B8C5-72DBE3A7686F</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/boostmultiprec_3.vcxproj">
+      <Project>9E9F4517-0A0B-31E2-A873-FBD9CAE51F82</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/boostmultiprec_4.vcxproj">
+      <Project>0A15D426-07A5-33E6-9063-99018942CD84</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/boostmultiprec_5.vcxproj">
+      <Project>441DDB67-14BB-3275-97EB-04D53287C041</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/boostmultiprec_6.vcxproj">
+      <Project>F096388E-9EBB-3406-B61A-222090669B27</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/boostmultiprec_7.vcxproj">
+      <Project>9201AE78-E5B7-36D9-97B6-F24D6DF161F8</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/boostmultiprec_8.vcxproj">
+      <Project>4170C989-92DE-3809-99AA-996F9C75A9B8</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/boostmultiprec_9.vcxproj">
+      <Project>A986EA78-3D81-396D-8318-33C18301C8C2</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/cholesky_1.vcxproj">
+      <Project>E29C1525-4517-324B-9172-72D1FFDD402B</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/cholesky_2.vcxproj">
+      <Project>BDE4B558-BBE1-38F7-8DEA-2FCD70D974FA</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/cholesky_3.vcxproj">
+      <Project>636C3295-9323-3582-B492-15250BAA7329</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/cholesky_4.vcxproj">
+      <Project>7C000EB0-3F76-309B-898D-4C5F76B069F2</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/cholesky_5.vcxproj">
+      <Project>CFE286A1-6A2F-362A-A8A9-DD6B56E34798</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/cholesky_6.vcxproj">
+      <Project>35ADEAAB-BE1D-37C8-A2E3-0C50E12F90B3</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/cholesky_7.vcxproj">
+      <Project>E4A0503F-53D5-3FCC-839B-3FD2814E0FCB</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/cholesky_8.vcxproj">
+      <Project>4D313BFA-D57B-32E4-9EE6-0285DE5431D1</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/cholesky_9.vcxproj">
+      <Project>45412115-F84C-32F2-861E-24DE61C2C61A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/commainitializer.vcxproj">
+      <Project>756F2A22-DF30-3238-BB3F-83ACAA713EB7</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/conjugate_gradient_1.vcxproj">
+      <Project>2D4578A4-ABD4-3863-9661-09B4FB5FC7DD</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/conjugate_gradient_2.vcxproj">
+      <Project>098B4AA9-2D23-329A-A78D-B9302512AEF6</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/conjugate_gradient_3.vcxproj">
+      <Project>D84F3FB4-2925-3196-82A9-3D7B76E2458B</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/conservative_resize_1.vcxproj">
+      <Project>DB5D0FDC-326F-3A66-9A5A-1D0DBC373839</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/conservative_resize_2.vcxproj">
+      <Project>A5B6B787-E53B-3CF8-B24A-DDA47581CF6D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/conservative_resize_3.vcxproj">
+      <Project>A635A66F-2577-32BC-B7F6-F8C7C7972BCE</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/conservative_resize_4.vcxproj">
+      <Project>7CF7E3D6-3B73-33A9-B99C-E83C87DC10F4</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/conservative_resize_5.vcxproj">
+      <Project>5605221A-BFA2-3031-A20E-862434F48257</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/conservative_resize_6.vcxproj">
+      <Project>87877D1D-532F-3906-9274-6C1DDF329065</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/constructor_1.vcxproj">
+      <Project>21342506-05A1-34A8-9514-81E6FB7376AA</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/corners_1.vcxproj">
+      <Project>D590910B-5E43-3C4B-97A3-35BF2CC7B42B</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/corners_2.vcxproj">
+      <Project>10551193-3195-34F6-A571-FD3D0D9DFFC2</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/corners_3.vcxproj">
+      <Project>1E633D6A-301F-3C40-A6D8-7441477D4B81</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/corners_4.vcxproj">
+      <Project>EEABDD04-6D42-3595-8F19-95A27581109B</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/corners_5.vcxproj">
+      <Project>D1F7AB0E-8679-3F05-AB4C-3FDB54340008</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/ctorleak.vcxproj">
+      <Project>F6162916-8C65-3A41-A450-204C3DCF3D82</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/cxx11_tensor_assign.vcxproj">
+      <Project>D0842FE4-2D4F-39AF-84B2-DAB22337DA32</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/cxx11_tensor_casts.vcxproj">
+      <Project>0F0CB542-CDE1-3896-9641-3B17807FFF16</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/cxx11_tensor_comparisons.vcxproj">
+      <Project>C1AC5712-AD05-3131-B1FB-93F883AE50B6</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/cxx11_tensor_const.vcxproj">
+      <Project>B90A644A-94A5-36C6-9A3C-33D1E96D3C00</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/cxx11_tensor_dimension.vcxproj">
+      <Project>91C9644D-6179-3AA7-AB9B-029C67D62558</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/cxx11_tensor_empty.vcxproj">
+      <Project>B52612DF-0006-3D31-8702-919452EA2926</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/cxx11_tensor_forced_eval.vcxproj">
+      <Project>A209F0A0-4006-33AF-9C40-26D3E1F86B05</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/cxx11_tensor_intdiv_1.vcxproj">
+      <Project>8DBCD298-FC65-31AC-AF17-97384E34E50A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/cxx11_tensor_intdiv_2.vcxproj">
+      <Project>CA11BBB3-8029-3536-BDC3-B7DADAD27F71</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/cxx11_tensor_intdiv_3.vcxproj">
+      <Project>3BCB5023-7E12-3FFA-8050-3C6558535646</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/cxx11_tensor_intdiv_4.vcxproj">
+      <Project>292E3C3D-6A43-3FC2-9063-962C36024BD2</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/cxx11_tensor_intdiv_5.vcxproj">
+      <Project>F537907C-F44F-3552-807C-1B6319A5AAAD</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/cxx11_tensor_intdiv_6.vcxproj">
+      <Project>40BD6FF8-16B7-39A8-A3FA-B0923C46551D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/cxx11_tensor_intdiv_7.vcxproj">
+      <Project>86E7E9D9-3CA9-39D5-AB8B-A8644DF7F51C</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/cxx11_tensor_io.vcxproj">
+      <Project>8AE7C9DD-AC4D-3FD3-8215-B2B7E72D2882</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/cxx11_tensor_layout_swap.vcxproj">
+      <Project>7EE4F892-CA21-3A66-82B0-0E9460200651</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/cxx11_tensor_map.vcxproj">
+      <Project>CFF8ABAB-7F49-3F67-976A-0AB410B3F705</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/cxx11_tensor_math.vcxproj">
+      <Project>3DE39D5B-F8C2-3B37-9387-4BE49F987A24</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/cxx11_tensor_roundings.vcxproj">
+      <Project>8AF58146-1997-3DA9-B52F-5466F982223E</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/cxx11_tensor_sugar.vcxproj">
+      <Project>04676D40-C835-3ACF-BF09-A4CF312769B8</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/dense_storage.vcxproj">
+      <Project>9E6D3AAB-98A6-3DAF-9D4E-345058C63F1B</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/determinant_1.vcxproj">
+      <Project>94FD2BD9-AF52-36F9-9BE9-10172FDBB9D9</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/determinant_2.vcxproj">
+      <Project>1BB7167B-62EB-3753-B19E-EEA77529C0A9</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/determinant_3.vcxproj">
+      <Project>54443AE6-3D98-392B-8801-DCAA1E0D8E50</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/determinant_4.vcxproj">
+      <Project>3E1FD033-B825-346D-AD0F-43BB015AC2D8</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/determinant_5.vcxproj">
+      <Project>1F684672-260A-36AC-B944-918E202D6B15</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/determinant_6.vcxproj">
+      <Project>949DA0E2-DF2C-34CF-98DF-42D5B3C6DFFA</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/diagonal_1.vcxproj">
+      <Project>75257EEF-160D-357F-A335-ADFEFB04779D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/diagonal_2.vcxproj">
+      <Project>CF18DA3C-BFA2-39F3-9721-95AF23901D44</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/diagonalmatrices_1.vcxproj">
+      <Project>1EDA1E49-73E0-3BBF-AEE7-D2DB670E7993</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/diagonalmatrices_10.vcxproj">
+      <Project>1B500F3B-C659-3A24-81CE-D1C7261B8005</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/diagonalmatrices_2.vcxproj">
+      <Project>C2843A1B-B68B-3002-B971-F40BB3305836</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/diagonalmatrices_3.vcxproj">
+      <Project>66AF31C4-B6E6-36DD-9355-D951C3563894</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/diagonalmatrices_4.vcxproj">
+      <Project>4C3181F7-82DD-3064-A840-4C81866D755C</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/diagonalmatrices_5.vcxproj">
+      <Project>C7DC8B90-45BC-3502-B796-CC037131D304</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/diagonalmatrices_6.vcxproj">
+      <Project>1BB1F308-EF68-3831-9CB9-8D2A69AA4EF5</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/diagonalmatrices_7.vcxproj">
+      <Project>338D299D-F291-37C2-BD6F-3E4FAC857864</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/diagonalmatrices_8.vcxproj">
+      <Project>39FEF5E9-593B-3C69-AFBA-2E8A65C11EC5</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/diagonalmatrices_9.vcxproj">
+      <Project>453B8E78-042A-3214-92B0-825CC1BAA4B3</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/dontalign_1.vcxproj">
+      <Project>954432CA-6D9F-30B8-BB73-C44C95ADC0F2</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/dontalign_2.vcxproj">
+      <Project>855EE8C2-5DE7-31BF-8E0D-54843116B1C4</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/dontalign_3.vcxproj">
+      <Project>8EEFD893-4A95-37F5-BBBD-C1481A1B5CEF</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/dontalign_4.vcxproj">
+      <Project>D55E158C-7D1E-3B58-962C-34434E4A6A40</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/dontalign_5.vcxproj">
+      <Project>6AD90FA8-9CCC-35CB-81F5-FB3BB5DB7544</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/dontalign_6.vcxproj">
+      <Project>E41442E2-FFEC-3F23-A1AF-116375739588</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/dontalign_7.vcxproj">
+      <Project>1755CF5C-343C-3885-A8E7-41032DDF855E</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/dontalign_8.vcxproj">
+      <Project>7281A6F9-9E37-3B7A-B9A6-8CFF6CA383A3</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/dynalloc.vcxproj">
+      <Project>02631351-511F-380F-9C07-35CC5D706D81</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/eigensolver_complex_1.vcxproj">
+      <Project>EC3BDD7E-45CB-38FF-B6B8-454A20551210</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/eigensolver_complex_2.vcxproj">
+      <Project>A0BE2EDD-8D4F-38B1-9394-322F37A84AAF</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/eigensolver_complex_3.vcxproj">
+      <Project>C15A815C-AE5A-390F-A736-5DF7C0BB8927</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/eigensolver_complex_4.vcxproj">
+      <Project>3913FC3E-EBCD-3A03-AA97-2AE78A9CABA0</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/eigensolver_complex_5.vcxproj">
+      <Project>48D81DB7-7789-34D9-B4EC-638380D8CA40</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/eigensolver_generalized_real_1.vcxproj">
+      <Project>27A95AF4-D380-339D-A058-C06382907B26</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/eigensolver_generalized_real_2.vcxproj">
+      <Project>19846378-2748-3F63-B569-2F88A1FC86FD</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/eigensolver_generalized_real_3.vcxproj">
+      <Project>054DB29D-42AB-32CB-A91D-236069A68F2E</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/eigensolver_generalized_real_4.vcxproj">
+      <Project>314F4422-592C-37A6-BC8D-C0EEABC30C59</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/eigensolver_generic_1.vcxproj">
+      <Project>4D8AF725-B509-3B74-84C8-67BB5D4B523B</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/eigensolver_generic_2.vcxproj">
+      <Project>7B31BAD3-8C3A-3D4F-8EF9-BC55C8767A3D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/eigensolver_generic_3.vcxproj">
+      <Project>1BA7B373-A9F1-3233-A3D7-08F80A711C25</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/eigensolver_generic_4.vcxproj">
+      <Project>8B7B8956-E832-37B6-BAFF-CDBF2BEF01A5</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/eigensolver_generic_5.vcxproj">
+      <Project>8A938CE1-07C4-3E7A-8BB8-54A29476B0DF</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/eigensolver_selfadjoint_1.vcxproj">
+      <Project>28E8DE6C-1DB2-3806-9E51-BFEFE7D5E712</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/eigensolver_selfadjoint_12.vcxproj">
+      <Project>A9808021-5F5B-3B63-B6B6-F3CD8A87E125</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/eigensolver_selfadjoint_13.vcxproj">
+      <Project>878D6D8C-4347-3E37-B2A8-F7D49FC5B2D2</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/eigensolver_selfadjoint_2.vcxproj">
+      <Project>8C799C5A-321A-3797-B8C4-5B3B82A3B75B</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/eigensolver_selfadjoint_3.vcxproj">
+      <Project>697BBA71-2D1C-3483-A75B-89603B07C223</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/eigensolver_selfadjoint_4.vcxproj">
+      <Project>06B1D6AE-5806-3FA4-AC48-815ABBFAD42B</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/eigensolver_selfadjoint_5.vcxproj">
+      <Project>74A31CD7-32F4-31CB-892C-F2C2737B3B17</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/eigensolver_selfadjoint_6.vcxproj">
+      <Project>58D6727F-EE17-3C09-B576-CACAC72EBEF5</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/eigensolver_selfadjoint_7.vcxproj">
+      <Project>9EF9C62F-12D7-3A18-85DC-2EC16641F7CD</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/eigensolver_selfadjoint_8.vcxproj">
+      <Project>13062E48-D182-33B2-B047-3AF804AAB5E6</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/eigensolver_selfadjoint_9.vcxproj">
+      <Project>5364959A-EFED-3CD7-B26D-AFBFB47041EB</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/evaluators.vcxproj">
+      <Project>DF8FC71A-6569-37A7-92FE-02FE30002B04</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/exceptions.vcxproj">
+      <Project>E0397DFE-0B68-33B3-B301-DCAC9CD12FD3</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/fastmath.vcxproj">
+      <Project>B446CB30-87D6-37BF-84F8-1FDAB81CD7E8</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/first_aligned.vcxproj">
+      <Project>396DA751-3AEF-38D3-A3D0-ABEE19A1F2AB</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/geo_alignedbox_1.vcxproj">
+      <Project>230CE300-8890-309F-8DF1-54C41DF3FF2C</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/geo_alignedbox_10.vcxproj">
+      <Project>426AFC0C-F6BD-3C82-9EDF-9D48BC6047D0</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/geo_alignedbox_11.vcxproj">
+      <Project>DECF112D-E439-3A53-AD60-B0976AE6B98A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/geo_alignedbox_12.vcxproj">
+      <Project>EAE95AB3-A926-3E23-8DE3-926378FD8264</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/geo_alignedbox_13.vcxproj">
+      <Project>DC961CE2-82E0-3B66-A186-878AE3A9A777</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/geo_alignedbox_14.vcxproj">
+      <Project>F97F8741-8077-3B81-96D3-3AAC6DB99C4D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/geo_alignedbox_2.vcxproj">
+      <Project>8E0EBDF6-BF76-3A71-B2A9-96AB0328351B</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/geo_alignedbox_3.vcxproj">
+      <Project>7085B0E7-595D-348C-BCF5-0F00DEDAC7B0</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/geo_alignedbox_4.vcxproj">
+      <Project>D1F300DE-D016-3A95-9EFD-0A851FCA34DA</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/geo_alignedbox_5.vcxproj">
+      <Project>C9E6CF59-DDED-3809-B3BE-24A67667C6A4</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/geo_alignedbox_6.vcxproj">
+      <Project>7624EE70-76E8-33D9-9032-30E19E3ED6B5</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/geo_alignedbox_7.vcxproj">
+      <Project>2ED0C947-EBC9-3237-9D28-E73FEDA6B181</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/geo_alignedbox_8.vcxproj">
+      <Project>D78DD0FE-55B8-3ED2-ADE9-6281CF79D51A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/geo_alignedbox_9.vcxproj">
+      <Project>5E9498F3-8FEA-3DFD-B6CF-573F74AE70D8</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/geo_eulerangles_1.vcxproj">
+      <Project>B12A01F0-EE3E-3437-904D-76882A79E736</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/geo_eulerangles_2.vcxproj">
+      <Project>B0C8BD1F-D789-3701-93C6-D8275D770491</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/geo_homogeneous_1.vcxproj">
+      <Project>3CD5E251-C9E7-3F12-B868-360E6C536BEC</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/geo_homogeneous_2.vcxproj">
+      <Project>5ADFD06A-EDEE-3D10-A6A3-AE43A7D35CA2</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/geo_homogeneous_3.vcxproj">
+      <Project>D6D97FD4-2B65-3EA1-98C6-5E03683FB481</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/geo_hyperplane_1.vcxproj">
+      <Project>E9B0B18D-9559-3D47-83B0-B55191631294</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/geo_hyperplane_2.vcxproj">
+      <Project>B0735237-2008-3755-8E5F-F8B460B01F58</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/geo_hyperplane_3.vcxproj">
+      <Project>852C3B4F-85CB-31B4-9B39-F43B625B93D2</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/geo_hyperplane_4.vcxproj">
+      <Project>A7765D49-1CD7-3DC6-8A55-4B54455D12AE</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/geo_hyperplane_5.vcxproj">
+      <Project>363A9EA7-0F55-3DD4-A3D0-7EEA49D7BB0F</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/geo_orthomethods_1.vcxproj">
+      <Project>49570E2C-9D99-3B0B-9FCC-B14EEC1B59DB</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/geo_orthomethods_2.vcxproj">
+      <Project>0F1CAC0A-21D7-33C7-A90F-219D1E5C3778</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/geo_orthomethods_3.vcxproj">
+      <Project>C504D941-5FB4-3515-8D81-83CD3F36DCAD</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/geo_orthomethods_4.vcxproj">
+      <Project>CCB89C4E-15E5-360D-B098-70A2985154F2</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/geo_orthomethods_5.vcxproj">
+      <Project>F317C12D-29EF-3C9A-BCC6-BCC6B9FFDCF5</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/geo_orthomethods_6.vcxproj">
+      <Project>62718307-F7A3-3F2A-BF59-F037354ED7F5</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/geo_parametrizedline_1.vcxproj">
+      <Project>2B68A23C-E356-3C18-B1FC-1D7CB318659C</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/geo_parametrizedline_2.vcxproj">
+      <Project>FD48FC1E-253F-394C-9BFB-A3B256448632</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/geo_parametrizedline_3.vcxproj">
+      <Project>9927B02A-E7F8-35F6-A7DF-27DA2735AFA5</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/geo_parametrizedline_4.vcxproj">
+      <Project>9C558545-5E9A-3999-BFE9-7603D9D3BAEF</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/geo_quaternion_1.vcxproj">
+      <Project>D3BC11AA-62F9-3F7F-887E-FE1617602000</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/geo_quaternion_2.vcxproj">
+      <Project>D60F422D-1BEF-36C0-B648-AA0B882C101D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/geo_quaternion_3.vcxproj">
+      <Project>ACDC5C76-DBEB-3731-A5E1-43A64B80AC19</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/geo_quaternion_4.vcxproj">
+      <Project>52439EC7-3CEA-3A69-8B26-8C9660540D12</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/geo_quaternion_5.vcxproj">
+      <Project>11A7C933-3062-3882-81EE-D61234E80195</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/geo_quaternion_6.vcxproj">
+      <Project>B506E4A3-C7BF-3F77-BE17-182BF61CDA0A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/geo_transformations_1.vcxproj">
+      <Project>A338B963-12EB-3042-AD85-70314B59BAEE</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/geo_transformations_2.vcxproj">
+      <Project>74CFDEBE-1194-36F0-BF11-DC1E84E1705E</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/geo_transformations_3.vcxproj">
+      <Project>D75282A5-2F1C-3F55-876A-2A98641907B2</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/geo_transformations_4.vcxproj">
+      <Project>0F476454-339E-36C9-8121-8D5E6A337DE3</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/geo_transformations_5.vcxproj">
+      <Project>B03C195A-8EBE-332C-B10A-3F0EB8594D2F</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/geo_transformations_6.vcxproj">
+      <Project>B6B321D5-6795-30AD-A8C5-D6E894425E53</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/geo_transformations_7.vcxproj">
+      <Project>0ECC0068-9B9F-363F-89C5-049B81D07F15</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/geo_transformations_8.vcxproj">
+      <Project>7FE4ECA5-D09E-3C27-8C2D-134BFC6B15A2</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/gmres_1.vcxproj">
+      <Project>20DED603-82ED-3CB2-802A-6D2F98EF9594</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/gmres_2.vcxproj">
+      <Project>2F7A299C-AB24-35E3-ABF7-C4A194A62304</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/half_float.vcxproj">
+      <Project>8E8FB93C-1F33-3EDB-92E6-66BC73951C94</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/hessenberg_1.vcxproj">
+      <Project>291C6C8E-5EC2-324D-917E-0EB7283D3AF7</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/hessenberg_2.vcxproj">
+      <Project>DEBB82BB-C772-3105-ADB7-7AAF5CD7EE08</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/hessenberg_3.vcxproj">
+      <Project>824D3F66-0FD5-38A4-8714-04DCC5A2A0EE</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/hessenberg_4.vcxproj">
+      <Project>BF625BF9-60FD-3FE8-9CD5-F02385820D9B</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/hessenberg_5.vcxproj">
+      <Project>9F177DB5-B965-311B-95EB-5F9CF96CE33F</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/hessenberg_6.vcxproj">
+      <Project>575F0F24-B49B-31C8-9753-A0865AC96AE8</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/householder_1.vcxproj">
+      <Project>2F2BD86D-22C8-3727-B839-1C7447D3A629</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/householder_2.vcxproj">
+      <Project>36047CD3-712E-3550-9E02-3F67D0BCCF0F</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/householder_3.vcxproj">
+      <Project>85DC2214-BA42-354C-9147-D04BF962FEA4</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/householder_4.vcxproj">
+      <Project>DE92A0FD-AA95-3055-8E5B-6A9488195638</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/householder_5.vcxproj">
+      <Project>CFDBA94B-D676-395F-9EEC-6A0EB8A19224</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/householder_6.vcxproj">
+      <Project>9D8D11C2-67E1-3484-BA0F-D67FC62B5861</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/householder_7.vcxproj">
+      <Project>A115B09C-D7B2-3ACA-9C78-110F31A2B891</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/householder_8.vcxproj">
+      <Project>DD793B7F-3655-3D39-B529-D8FCD61A5FEC</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/incomplete_cholesky_1.vcxproj">
+      <Project>DEB3B714-88D3-32E8-A6EE-3473721D108C</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/incomplete_cholesky_2.vcxproj">
+      <Project>208C47E0-7BBA-3AF3-9717-E1AA2AA14E5E</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/incomplete_cholesky_3.vcxproj">
+      <Project>7E3B482E-E4F0-3E64-B09A-F600E941B43D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/indexed_view_1.vcxproj">
+      <Project>E6C0D48C-CCEE-3353-9E28-78304C826791</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/indexed_view_2.vcxproj">
+      <Project>58B5187B-BF49-3615-8DE9-A6DCDD6BA890</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/indexed_view_3.vcxproj">
+      <Project>7402586C-5D45-38BA-8379-C23A06E45C62</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/inplace_decomposition_1.vcxproj">
+      <Project>43CC6F4C-768B-3989-9E3C-ECCAD41D0BD9</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/inplace_decomposition_2.vcxproj">
+      <Project>587B7AA8-F14E-3DEF-A1D7-E4FD5665E369</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/inplace_decomposition_3.vcxproj">
+      <Project>FD276B1E-D28B-3B98-A234-D90DCC2A0F03</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/inplace_decomposition_4.vcxproj">
+      <Project>077EF78C-2153-3BE6-9B55-3AC2CC19BD6E</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/inplace_decomposition_5.vcxproj">
+      <Project>5E66CEB1-42C6-362B-AEAD-AE7E95A38E80</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/inplace_decomposition_6.vcxproj">
+      <Project>40B0C1E7-25D5-3581-9F13-60DB6C9B8DCE</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/inplace_decomposition_7.vcxproj">
+      <Project>DB8CF8BC-812C-3310-AFA7-C84BE7569DE4</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/inplace_decomposition_8.vcxproj">
+      <Project>24951BF4-FA41-3D55-9AD8-BC9458CCA5DB</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/integer_types_1.vcxproj">
+      <Project>E7F90119-A22F-36F8-AB25-5112F6222E10</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/integer_types_2.vcxproj">
+      <Project>BCBBEAB7-1FB2-36B0-8EEF-A9D12A743069</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/integer_types_3.vcxproj">
+      <Project>9583DECE-7C7F-3500-A108-17F9502BC66B</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/integer_types_4.vcxproj">
+      <Project>AC05B745-36B1-3BBA-9D49-CF201866F1B5</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/integer_types_5.vcxproj">
+      <Project>9FC0A3E4-BBA8-3785-B052-64F6B14D4BBB</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/integer_types_6.vcxproj">
+      <Project>83B62F82-3569-3719-81A6-0181BA10EB0F</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/integer_types_7.vcxproj">
+      <Project>A0ECCCA8-34CC-3D0A-8570-E86E3444E248</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/integer_types_8.vcxproj">
+      <Project>40F1EF0F-442F-3976-B083-5D7EFC97E9F6</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/integer_types_9.vcxproj">
+      <Project>C94F2417-96DE-3623-BFC1-17CA03A7C52A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/inverse_1.vcxproj">
+      <Project>8AC0EF66-4456-3481-B212-7620526D7156</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/inverse_2.vcxproj">
+      <Project>3D8F2A6F-4030-3F37-8359-F2D100C0011A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/inverse_3.vcxproj">
+      <Project>F8F89350-4346-3133-8F71-93BEE45B47AB</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/inverse_4.vcxproj">
+      <Project>5339F749-A958-39F2-A217-EE250C5735DD</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/inverse_5.vcxproj">
+      <Project>A9B20F01-9EF1-35D5-94FA-37312777FDC9</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/inverse_6.vcxproj">
+      <Project>63DEF71C-0C11-3C0C-B75E-281A90E05C0E</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/inverse_7.vcxproj">
+      <Project>930DC3E3-9B09-3A0C-83D5-3EA51C086BCA</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/is_same_dense.vcxproj">
+      <Project>CCBD499D-749E-3111-BFBA-F4486B891703</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/jacobi_1.vcxproj">
+      <Project>11CB4836-1276-3F85-913B-7F5CC54EC908</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/jacobi_2.vcxproj">
+      <Project>74F6D503-FF09-363F-8775-A168AAFE9BF1</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/jacobi_3.vcxproj">
+      <Project>D4B31513-0DE6-3AC1-B0C9-E1168DF5034F</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/jacobi_4.vcxproj">
+      <Project>67A77E2B-7A7B-3252-9869-006E9FF8B092</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/jacobi_5.vcxproj">
+      <Project>4ACC4A27-F57D-3812-8585-5E2EBD46E669</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/jacobi_6.vcxproj">
+      <Project>8677BAC6-6E81-3BB9-8049-0BBA4E1D43EB</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/jacobisvd_1.vcxproj">
+      <Project>AC31031C-9D78-3D78-9B1B-792ABAA4755B</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/jacobisvd_10.vcxproj">
+      <Project>196F6D52-9C26-329B-9534-E4B59FE70C3D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/jacobisvd_11.vcxproj">
+      <Project>68D05B88-FE3A-31A0-895A-398547D0F317</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/jacobisvd_12.vcxproj">
+      <Project>189F2D19-0D53-3D20-AD98-23A91438FB6A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/jacobisvd_13.vcxproj">
+      <Project>96BE774C-CA8B-391F-BF65-C2907F1F226F</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/jacobisvd_2.vcxproj">
+      <Project>5F056D58-DAE9-3728-9BF1-18E024196C2B</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/jacobisvd_3.vcxproj">
+      <Project>A1CF08AA-3A09-35D8-AD84-B3EB9AFAA8FA</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/jacobisvd_4.vcxproj">
+      <Project>DFB96092-090D-32F9-B926-DD3BAFFF9043</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/jacobisvd_5.vcxproj">
+      <Project>41A35A19-A0ED-3017-ABFA-2033FD0CA49F</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/jacobisvd_6.vcxproj">
+      <Project>EFDC19F1-0958-3607-A59B-00B5A7839B97</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/jacobisvd_7.vcxproj">
+      <Project>DF1BFCE3-BEC2-33B0-9D74-720CCBB24287</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/jacobisvd_8.vcxproj">
+      <Project>66FC2F06-99FD-3A64-A11D-984217F00817</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/jacobisvd_9.vcxproj">
+      <Project>EDA154F5-0378-3890-BD59-FCD41CD4EF8A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/kronecker_product_1.vcxproj">
+      <Project>3B175C90-06F7-3B2F-AB7E-714505A0DDD4</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/kronecker_product_2.vcxproj">
+      <Project>E6BD067C-D76E-35CA-A727-7042DAE43A20</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/levenberg_marquardt.vcxproj">
+      <Project>1516450F-F70E-35A6-97F3-731F89EE2353</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/linearstructure_1.vcxproj">
+      <Project>82934970-32D0-3ABB-AC5A-039CF096EE5C</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/linearstructure_10.vcxproj">
+      <Project>60569E1F-25A8-3343-9ECA-24CDAF6D2875</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/linearstructure_11.vcxproj">
+      <Project>8CA14BAD-6C09-3D62-9295-45A6D13E96B9</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/linearstructure_2.vcxproj">
+      <Project>39617D10-1F4D-3778-A572-137F4C684EB2</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/linearstructure_3.vcxproj">
+      <Project>A8FF82E8-A07E-368E-B9A1-383BC55EB572</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/linearstructure_4.vcxproj">
+      <Project>792AECC1-B4AA-3781-9E9D-97B733238F41</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/linearstructure_5.vcxproj">
+      <Project>1CE4D9D7-5690-3140-87FB-4E68C80A3191</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/linearstructure_6.vcxproj">
+      <Project>C2920AE5-1EE1-39D6-B961-5357B974F596</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/linearstructure_7.vcxproj">
+      <Project>E6161BB0-1DD5-37A3-9F99-D491BE8A4345</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/linearstructure_8.vcxproj">
+      <Project>01D4F255-BC26-3DD6-BB29-921CFBE3C0C7</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/linearstructure_9.vcxproj">
+      <Project>9FFAB0AE-171E-35D3-8D58-C9AA9880E052</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/lscg_1.vcxproj">
+      <Project>3A0B73BA-44A2-3D91-A7D9-0A3DED96DF2B</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/lscg_2.vcxproj">
+      <Project>8795E964-3541-3AF9-90FB-7AB27B7471E2</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/lu_1.vcxproj">
+      <Project>43BD2E4A-313E-3827-BF16-B0A4925B78E6</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/lu_2.vcxproj">
+      <Project>559F1725-4F55-3245-8637-BD3719E4DAEA</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/lu_3.vcxproj">
+      <Project>737AF83D-67DC-3785-8681-8872F069F35A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/lu_4.vcxproj">
+      <Project>C0C0D92A-21E9-3668-90DF-97A3F51F7115</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/lu_5.vcxproj">
+      <Project>CE1232F2-8C2A-3A58-A0CD-D0FF12CF17D9</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/lu_6.vcxproj">
+      <Project>2F7DA58B-886F-31EB-8E00-44CB62D74D6B</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/lu_7.vcxproj">
+      <Project>651A4FB2-E118-3467-B304-0FBE2265546D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/lu_9.vcxproj">
+      <Project>FD40FC18-B98C-3943-823B-0B1DE0FB19C2</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/mapped_matrix_1.vcxproj">
+      <Project>4FC031F1-B532-3F12-9D80-2ACA688397D4</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/mapped_matrix_10.vcxproj">
+      <Project>56C020CC-97F0-3B3E-9D30-395489D78062</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/mapped_matrix_11.vcxproj">
+      <Project>4D4A5FD3-CB5C-3DC4-8AEE-3763DE9476E7</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/mapped_matrix_2.vcxproj">
+      <Project>1C4DA0CF-C121-3D01-9104-B84D16231848</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/mapped_matrix_3.vcxproj">
+      <Project>2657A1F7-1338-35A1-85B3-F2FB389DAE3D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/mapped_matrix_4.vcxproj">
+      <Project>27C78E4F-7D29-34D7-96E0-01CD5F2CF17A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/mapped_matrix_5.vcxproj">
+      <Project>D43647BD-FD16-3DB0-BCFF-4B736C0AB2EC</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/mapped_matrix_6.vcxproj">
+      <Project>CBC88AB2-7E97-3FD2-849F-E93410D1EE30</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/mapped_matrix_7.vcxproj">
+      <Project>AF8D5810-51BE-377B-8E47-E7918B0C1E03</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/mapped_matrix_8.vcxproj">
+      <Project>154B09A3-AB48-30C3-9331-BC5EB7E2C6B9</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/mapped_matrix_9.vcxproj">
+      <Project>15D01DE8-F1EB-3F7A-9B05-2651AAA9F3AC</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/mapstaticmethods_1.vcxproj">
+      <Project>67A40CF8-28C4-3627-88E0-5A34AB4B386E</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/mapstaticmethods_2.vcxproj">
+      <Project>8401570F-7123-3680-84AA-1479277F97A6</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/mapstaticmethods_3.vcxproj">
+      <Project>DE0D9BBB-8388-3415-BA55-F1BF50BF7BC8</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/mapstaticmethods_4.vcxproj">
+      <Project>0FC634E1-8E03-3CD3-88F5-EDB0038BF495</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/mapstaticmethods_5.vcxproj">
+      <Project>5B2D21B3-A7E1-33B1-BC9C-EA22FDE1A1A7</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/mapstaticmethods_6.vcxproj">
+      <Project>31DED36E-4B04-3A32-A827-53CFBBC5F141</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/mapstaticmethods_7.vcxproj">
+      <Project>71F6A318-8F20-3037-A54A-67E4A2D04C0E</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/mapstaticmethods_8.vcxproj">
+      <Project>DCDCCCE1-58ED-3A4E-8F55-5CDD02E11B3E</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/mapstride_1.vcxproj">
+      <Project>FB705F29-C3D6-392F-AEE1-9F10FCF00B7F</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/mapstride_2.vcxproj">
+      <Project>39551275-F151-3154-B791-1597305AF968</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/mapstride_3.vcxproj">
+      <Project>D9677977-F348-3366-BC79-10E3DC461AF5</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/mapstride_4.vcxproj">
+      <Project>FBB1C68A-E43A-38CD-AE15-0EB800B8D06B</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/mapstride_5.vcxproj">
+      <Project>FB2E4828-2362-3258-9BB8-BDA263ED476A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/mapstride_6.vcxproj">
+      <Project>F4008219-98F6-323F-8948-D3C81BC19EA3</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_exponential_1.vcxproj">
+      <Project>6A859415-76B4-396F-A220-EADB8D7EBFBF</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_exponential_2.vcxproj">
+      <Project>0F6A6A64-741A-33BA-B47B-1EE19D684D9D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_exponential_3.vcxproj">
+      <Project>8A33C9A5-DB3B-3D6B-A3B2-DFDC60DB96FA</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_exponential_4.vcxproj">
+      <Project>0CCD58BD-7AC9-3D7E-9BDE-EB9DE49234D3</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_exponential_5.vcxproj">
+      <Project>596FA69B-7973-3F77-B76C-D9B8221B120E</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_exponential_6.vcxproj">
+      <Project>D9D6C926-09F1-3BE5-B2C9-329E0097CBAE</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_exponential_7.vcxproj">
+      <Project>528FCC0A-E88E-317F-AFA6-435ABA56BD8C</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_exponential_8.vcxproj">
+      <Project>A55596F4-A08F-3B17-AD6D-2853DA73825A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_exponential_9.vcxproj">
+      <Project>02DDF02B-5E66-3B15-A63F-504370098C64</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_function_1.vcxproj">
+      <Project>5453A15D-FB92-3C02-AF2E-FBA8ECDE935C</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_function_2.vcxproj">
+      <Project>3D488CF7-BFC0-3BB5-A18B-EC7DF68DA3E8</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_function_3.vcxproj">
+      <Project>27E3D103-BF45-3BBD-ADDB-F983A0044CC4</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_function_4.vcxproj">
+      <Project>CFAF4C87-5B3A-3B66-B85A-2D51E24766A9</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_function_5.vcxproj">
+      <Project>1E6E9EFE-977E-3D89-87BE-90838E83F163</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_function_6.vcxproj">
+      <Project>0D8EB165-9985-30F8-986B-EE33127CE07A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_function_7.vcxproj">
+      <Project>21E42E10-0A85-3F49-A87B-BA01A7B5DD71</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_power_1.vcxproj">
+      <Project>4D34AB98-FAB0-3905-9F14-2279FB3673F3</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_power_10.vcxproj">
+      <Project>8B034CB3-3D9C-3E3D-9307-7515743AB4C7</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_power_11.vcxproj">
+      <Project>50746DFC-B321-3D36-A171-7193FE5E4FEA</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_power_12.vcxproj">
+      <Project>954F26BF-90AC-370D-B480-19C369423150</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_power_2.vcxproj">
+      <Project>AD7630E8-E97B-3FE1-A6E9-23F63ADCA2D9</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_power_3.vcxproj">
+      <Project>0F8809E8-7F70-3A14-89FF-B562B63F5F8D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_power_4.vcxproj">
+      <Project>40DAA159-05D4-3413-BF1D-D7FE34742C76</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_power_5.vcxproj">
+      <Project>52D4A066-8C9E-3E1A-A1B7-2A655C9F65F6</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_power_6.vcxproj">
+      <Project>CBC37E5B-DE89-39E2-A3F8-D726404E244F</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_power_7.vcxproj">
+      <Project>07CE06BF-A4F0-32CE-B1A5-0C508E398985</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_power_8.vcxproj">
+      <Project>0836CC34-AC22-3BEB-B228-F0D3C93F6BD5</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_power_9.vcxproj">
+      <Project>4294A789-FC77-3DAF-9381-E31382FFFBB5</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_square_root_1.vcxproj">
+      <Project>BFA90686-BF54-31C7-A35C-22FA6D5016EB</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_square_root_2.vcxproj">
+      <Project>EA7972CF-B422-3F35-81D8-E09A771D566D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_square_root_3.vcxproj">
+      <Project>4649BB7D-F481-3073-A1AE-F0C27918C574</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_square_root_4.vcxproj">
+      <Project>F200408E-5029-3EBA-B837-7264AA85DF38</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_square_root_5.vcxproj">
+      <Project>63C121BD-CAC3-3888-A667-A15615E1EECC</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/meta.vcxproj">
+      <Project>17B47454-1495-3A15-A76B-06A559F0ABAE</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/minres_1.vcxproj">
+      <Project>4BBE9DA9-2B54-3795-9BE1-634F29AC22A0</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/minres_2.vcxproj">
+      <Project>67FDE8F0-9AAE-39BE-8192-1E1BC9084300</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/miscmatrices_1.vcxproj">
+      <Project>E079C7A9-F5DC-30D2-A039-30683D5F7D7E</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/miscmatrices_2.vcxproj">
+      <Project>6680C5C1-7612-3DE0-8C2F-659082D5F03B</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/miscmatrices_3.vcxproj">
+      <Project>3BD1CD5E-196F-3A17-9EE0-04770A8AFD14</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/miscmatrices_4.vcxproj">
+      <Project>83115C10-7954-3385-AA9D-41201A757AF0</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/miscmatrices_5.vcxproj">
+      <Project>88B9ACA1-426A-3F0B-B099-AF641875C112</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/mixingtypes_1.vcxproj">
+      <Project>436A4ACD-4722-39C6-BDDB-1E333D223DE3</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/mixingtypes_2.vcxproj">
+      <Project>45641DAB-7082-343B-A0F5-AC8ED5788830</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/mixingtypes_3.vcxproj">
+      <Project>47D2645D-5242-3F67-8346-98A566B7177C</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/mixingtypes_4.vcxproj">
+      <Project>F3400A17-AC2D-31FD-B6C2-C634623A53AB</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/mixingtypes_5.vcxproj">
+      <Project>CE140DCC-3C20-3468-8775-7BC4DEEB8B65</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/mixingtypes_6.vcxproj">
+      <Project>612E9FB3-F808-3C70-B0C1-EA8CA6348053</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/mpl2only.vcxproj">
+      <Project>7E3C0E7D-04E3-3E7D-AC93-7501CB4ACC40</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/nesting_ops_1.vcxproj">
+      <Project>30509B6C-0176-30E2-AC08-01DC51BD2C60</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/nesting_ops_2.vcxproj">
+      <Project>2794C4A8-3D15-35DE-B320-51552759C064</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/nesting_ops_3.vcxproj">
+      <Project>162612FB-2569-361F-B329-60ED5FEABBFC</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/nesting_ops_4.vcxproj">
+      <Project>1B554CFD-BB5B-3CA2-9F68-0325A7FF38C1</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/nomalloc_1.vcxproj">
+      <Project>00A66486-C935-31F5-B57A-B43DE3656754</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/nomalloc_2.vcxproj">
+      <Project>68B9CA24-B76E-306B-8DEF-E0BA0A3A4AF6</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/nomalloc_3.vcxproj">
+      <Project>B10A2E58-0A9B-35DA-9C05-0493725E7639</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/nomalloc_4.vcxproj">
+      <Project>DD94290A-58C7-3A30-A72D-C46CC1B67947</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/nomalloc_5.vcxproj">
+      <Project>F8071A02-6D00-35AE-A683-30BA705AF78B</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/nomalloc_6.vcxproj">
+      <Project>48BA4952-38DF-3478-A707-430507C89F65</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/nomalloc_7.vcxproj">
+      <Project>1ED987A4-9BF7-38BC-A155-4B50ABB6B77E</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/nomalloc_8.vcxproj">
+      <Project>84A207D6-BF60-3AC5-A250-E1350E054E88</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/nullary_1.vcxproj">
+      <Project>2AC3BE3E-4F27-3041-B408-2C85B44081A3</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/nullary_10.vcxproj">
+      <Project>5EF25141-6BA4-39BA-93E9-7F29349EC368</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/nullary_2.vcxproj">
+      <Project>5DB0F0F1-F5B5-3228-AF3F-8AE9900CD763</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/nullary_3.vcxproj">
+      <Project>B5AAD65F-7DDA-3A6F-9042-6745B49D3777</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/nullary_4.vcxproj">
+      <Project>57F22C31-4FA7-39DC-9EF6-9D49568BFEAA</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/nullary_5.vcxproj">
+      <Project>B26620D7-7CE9-391A-B191-806C8E45B616</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/nullary_6.vcxproj">
+      <Project>91A6C27D-4E49-399D-BF46-371219E1F092</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/nullary_7.vcxproj">
+      <Project>33AADD55-5BB5-31A8-BEB8-057824BE1E9A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/nullary_8.vcxproj">
+      <Project>571AD55D-6D71-3108-B1DA-3A47EFDB91C7</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/nullary_9.vcxproj">
+      <Project>196562DD-B693-3EA5-9736-187AB665CCB4</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/packetmath_1.vcxproj">
+      <Project>89E0490B-FC0C-3DB1-B189-F47DDE74EAE6</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/packetmath_2.vcxproj">
+      <Project>30A350EA-6A04-3407-A32C-BB80ABCF4739</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/packetmath_3.vcxproj">
+      <Project>9ABA9E2E-6AC8-3A23-9825-C77F709F0D4F</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/packetmath_4.vcxproj">
+      <Project>D47FFEC3-6F35-353B-B82C-7357790BA0F9</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/packetmath_5.vcxproj">
+      <Project>FDFF733F-B8B1-307C-B416-4725F5BD2ACD</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/permutationmatrices_1.vcxproj">
+      <Project>6BCC9C81-0D7C-3F74-891E-08A7E1870A4C</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/permutationmatrices_2.vcxproj">
+      <Project>0F79B6B5-AFB6-3B07-8C3B-DAA94720F0E7</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/permutationmatrices_3.vcxproj">
+      <Project>530AB5D7-4804-380C-A8F4-3AB6B85D5DCE</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/permutationmatrices_4.vcxproj">
+      <Project>1E8685B1-AA37-3C53-86C2-DAFAACAE1E0D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/permutationmatrices_5.vcxproj">
+      <Project>DF8C527C-D954-356C-BEF5-F3FAE1459069</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/permutationmatrices_6.vcxproj">
+      <Project>49F22747-59DE-38A3-8DCA-902146FCF24C</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/permutationmatrices_7.vcxproj">
+      <Project>42903C3E-1782-325F-8F9C-B01A95FA496E</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/polynomialsolver_1.vcxproj">
+      <Project>47F9D686-8970-326A-9BCF-8B267235D9D2</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/polynomialsolver_10.vcxproj">
+      <Project>E87C828F-9A74-31C4-A97F-6BB50FC722C9</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/polynomialsolver_11.vcxproj">
+      <Project>F624E924-9350-3C7B-ABD7-D841EBF53248</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/polynomialsolver_12.vcxproj">
+      <Project>426B493D-4E45-317A-A363-6D03952E655D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/polynomialsolver_2.vcxproj">
+      <Project>443F811A-A92E-3E85-B948-D5106437F4E8</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/polynomialsolver_3.vcxproj">
+      <Project>9426E638-01A7-3964-A5F5-49040911BF61</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/polynomialsolver_4.vcxproj">
+      <Project>1E413826-6508-3E1F-917C-D7C17186CCBE</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/polynomialsolver_5.vcxproj">
+      <Project>D649A45B-7A90-3B4A-A6CC-24B4780FA59A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/polynomialsolver_6.vcxproj">
+      <Project>ED2B03CE-7BEE-324B-B63B-7D93B9DB19E8</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/polynomialsolver_7.vcxproj">
+      <Project>5481CB2A-6FD2-38CB-80AD-67B9B1F37715</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/polynomialsolver_8.vcxproj">
+      <Project>E906A9B3-0685-3258-A21B-8D5AB9BD2E58</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/polynomialsolver_9.vcxproj">
+      <Project>F03233B4-34E2-31AC-BA22-AED24E782DCE</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/polynomialutils_2.vcxproj">
+      <Project>49E34E33-D3A3-3290-BE78-3EB161B34CF5</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/polynomialutils_3.vcxproj">
+      <Project>9EE81997-DAD5-3A98-BB4A-1ADFE8EE5B89</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/polynomialutils_4.vcxproj">
+      <Project>E1328400-3042-36DE-8431-D3E31A632CAC</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/polynomialutils_5.vcxproj">
+      <Project>CA93008E-DECF-3F7E-A9A9-13528C7A59C3</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/polynomialutils_6.vcxproj">
+      <Project>E7816842-AFF9-3381-B3E3-69E479D1E442</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/polynomialutils_7.vcxproj">
+      <Project>7B98CD61-0F74-3DE5-836C-45107DC54FD8</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/polynomialutils_8.vcxproj">
+      <Project>CA6B03BB-1A1D-3B39-B729-480991FF5C21</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/polynomialutils_9.vcxproj">
+      <Project>38ECA278-A5FB-36C2-BEAD-AB945EDC9EC9</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/prec_inverse_4x4_1.vcxproj">
+      <Project>0D8B82D9-6CDD-3E24-AB87-9353D303B79D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/prec_inverse_4x4_2.vcxproj">
+      <Project>84C19BBC-D68E-3565-B82A-CB94B69A7E58</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/prec_inverse_4x4_3.vcxproj">
+      <Project>481CB30B-68E0-3DC4-9AC3-CEDFA820A8FF</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_extra_1.vcxproj">
+      <Project>25F45426-F979-38AB-9864-65A947B598D9</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_extra_2.vcxproj">
+      <Project>D4FD0344-B890-32A9-B2FE-35120607A258</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_extra_3.vcxproj">
+      <Project>E7A04105-0658-3741-AFEC-C1C18646740B</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_extra_4.vcxproj">
+      <Project>1E28360E-018D-3A6A-9973-B376C3D4BE12</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_extra_5.vcxproj">
+      <Project>1ACFAC89-4707-384D-8F88-8B0DA72EF484</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_extra_6.vcxproj">
+      <Project>D78F316E-FD2C-3F34-8C02-8673D9050B67</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_extra_7.vcxproj">
+      <Project>F01EE48C-4724-3C22-9894-51E10AA76D6E</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_extra_8.vcxproj">
+      <Project>5AD86B96-EFC6-3A6E-8985-5B786185B485</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_large_1.vcxproj">
+      <Project>BE6F7850-5D5E-36C8-B3A4-9C0AB765FE8B</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_large_2.vcxproj">
+      <Project>E390F0B2-9F17-3BE9-90F7-645E2D2300E2</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_large_3.vcxproj">
+      <Project>BF15B5DC-6DE1-370F-8071-CB1773DDC270</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_large_4.vcxproj">
+      <Project>9E182C79-E209-36D4-A154-0989C33B3F39</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_large_5.vcxproj">
+      <Project>7C244BD2-8F63-3FF5-9547-A71C4B6F56F0</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_large_6.vcxproj">
+      <Project>108192FF-EB25-3B41-9D92-D73BAFE92ABE</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_mmtr_1.vcxproj">
+      <Project>35E5BB7F-0131-3C34-B598-EABD8FDFE15D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_mmtr_2.vcxproj">
+      <Project>B430BB4D-B1E2-341F-B226-F754BC07EF8F</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_mmtr_3.vcxproj">
+      <Project>382E6045-3772-3E28-A0D3-4AF44F4A0C77</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_mmtr_4.vcxproj">
+      <Project>978D66EA-5631-3E33-9FA8-704EAFABD79F</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_notemporary_1.vcxproj">
+      <Project>E6185BEE-097A-333F-8600-FB1A2966F8CB</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_notemporary_2.vcxproj">
+      <Project>F848C25E-6580-3DD5-ABDD-BF24CE6FEEAC</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_notemporary_3.vcxproj">
+      <Project>07C1B9F7-525C-3176-B6F8-99B7F200EC3F</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_notemporary_4.vcxproj">
+      <Project>1E662E47-33B6-32D2-B852-95A7BDC53F50</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_selfadjoint_1.vcxproj">
+      <Project>F517797F-5719-3F72-AF66-D0AEEE7CD75B</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_selfadjoint_2.vcxproj">
+      <Project>7EB4648C-976F-3A47-AB8B-39356B875229</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_selfadjoint_3.vcxproj">
+      <Project>26B3500A-673D-3673-971D-F2A8CE7AE81A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_selfadjoint_4.vcxproj">
+      <Project>2BADE23A-E64F-37BB-9BA2-6312AC65F234</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_selfadjoint_5.vcxproj">
+      <Project>1FA6F68E-F946-3721-81EA-B362EB24FDEE</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_selfadjoint_6.vcxproj">
+      <Project>725E0EEA-0F07-3693-A2AB-7C7158478FD7</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_selfadjoint_7.vcxproj">
+      <Project>8196FEB8-D48E-33E8-A7BC-5C50B8D6490A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_small_1.vcxproj">
+      <Project>88D175FB-39E7-3BC6-9307-1AC718BAD787</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_small_11.vcxproj">
+      <Project>879DE396-D99E-3DD9-9927-0347D75B5161</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_small_12.vcxproj">
+      <Project>2688CD71-B738-3FC8-974A-9E8925D1520D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_small_13.vcxproj">
+      <Project>D205C85F-2FAE-3592-AC5F-B484C8950835</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_small_2.vcxproj">
+      <Project>2949EC99-02FB-3F05-A314-0956A8D53612</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_small_21.vcxproj">
+      <Project>46F6DD5D-3AA1-3862-8C0F-694A1F8A0D9D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_small_22.vcxproj">
+      <Project>5430D86C-588E-3F06-AADE-AA28F49E5C41</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_small_23.vcxproj">
+      <Project>8E49E7E9-69F5-35A7-844E-2CA58B9C48D6</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_small_3.vcxproj">
+      <Project>7B41EA84-7C12-3010-85BB-0CFF95F87881</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_small_31.vcxproj">
+      <Project>5A8786D5-0252-3053-9866-802BCA2C19F8</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_small_32.vcxproj">
+      <Project>A2DD92AD-BB34-3C8E-B375-DB9DC581C0B3</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_small_33.vcxproj">
+      <Project>0E81F89E-DAF5-3806-90B0-5CB2B742D550</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_small_4.vcxproj">
+      <Project>339A497A-F93E-3BA4-BE4A-4A19465580F5</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_small_41.vcxproj">
+      <Project>D9DBEA02-28D2-3307-95FA-761ACE12B0DD</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_small_42.vcxproj">
+      <Project>AF9DFE1D-4949-3F42-8208-A9849B1F7F0C</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_small_43.vcxproj">
+      <Project>E5F1018C-4DB5-3FC0-843A-0FB7FC1FDB00</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_small_5.vcxproj">
+      <Project>C0217A66-3CCB-3AA2-B374-766B548082D4</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_small_6.vcxproj">
+      <Project>5951E2D1-F6D4-388A-94A8-F3DF1A890B93</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_small_7.vcxproj">
+      <Project>9AFF383D-80D3-3422-A3F7-1D4602448FA3</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_small_8.vcxproj">
+      <Project>763253B9-DF29-3537-9492-0CD8AA113D7D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_symm_1.vcxproj">
+      <Project>87070988-0B0F-3221-A2B8-AC024080E2D5</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_symm_2.vcxproj">
+      <Project>B3A47D1A-8276-32B5-9D3F-9FEE2F57EEED</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_symm_3.vcxproj">
+      <Project>32791FE4-80EF-3DD8-BF8B-B622DA869CDA</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_symm_4.vcxproj">
+      <Project>9FC0C3F8-7DAF-32EC-B9DE-440E929E0B76</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_symm_5.vcxproj">
+      <Project>93CB0306-3366-338C-B7DA-BC05E53F400F</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_symm_6.vcxproj">
+      <Project>A1C0436C-3A0D-3437-A07E-68EBDA0F2BBA</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_symm_7.vcxproj">
+      <Project>44B948BC-21E0-3F6C-BF5C-3FBC1627EA62</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_symm_8.vcxproj">
+      <Project>3940910D-4149-392C-BB3A-E3A2DCBF0D20</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_syrk_1.vcxproj">
+      <Project>E1931AE8-FFDF-38DD-8CE5-62677DBD0AC4</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_syrk_2.vcxproj">
+      <Project>9B398A7A-D034-3C0B-8A3F-AD9B5C048B97</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_syrk_3.vcxproj">
+      <Project>5DAB067F-4AF7-3DD9-8986-7E46AC4638B6</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_syrk_4.vcxproj">
+      <Project>44CB2DCF-E1EB-3EA5-85E4-73FFEF715810</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_trmm_1.vcxproj">
+      <Project>C0D918B5-E639-3287-9DE1-70EE7683D8CB</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_trmm_11.vcxproj">
+      <Project>BBB0993C-F89A-30D9-8F4C-2AD2E53B58D6</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_trmm_111.vcxproj">
+      <Project>73012CEC-A1CD-36AC-B98B-83FEA1D37490</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_trmm_112.vcxproj">
+      <Project>E4C28EA3-A4A3-364B-84C4-F43A8B568E90</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_trmm_113.vcxproj">
+      <Project>706AE594-6706-3B0C-9625-14BDBD0B514E</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_trmm_114.vcxproj">
+      <Project>E29D0EB2-29A8-31C7-BC98-AB08A4B550A8</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_trmm_12.vcxproj">
+      <Project>C0CC26CF-1CA9-3E02-A0DB-36B87BA703BB</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_trmm_121.vcxproj">
+      <Project>84012F45-C8E6-3B84-BF08-9DC277756D3C</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_trmm_122.vcxproj">
+      <Project>98AA4706-0A40-30C3-9334-A68C426185A5</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_trmm_123.vcxproj">
+      <Project>5F8A7171-BF81-3E25-B52B-AC1B5FC08C1F</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_trmm_124.vcxproj">
+      <Project>287E0535-EED3-39DB-ADBB-9A773D2B7644</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_trmm_13.vcxproj">
+      <Project>CB378068-9CDD-3AD6-9B22-55846146B0B8</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_trmm_131.vcxproj">
+      <Project>9FB33137-BBBC-3295-B166-79FDEB45C5AC</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_trmm_132.vcxproj">
+      <Project>280AEAF1-85D4-3900-B44B-A7C8F762F4A3</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_trmm_133.vcxproj">
+      <Project>C2869B54-F900-363A-B668-6D843D712FF6</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_trmm_134.vcxproj">
+      <Project>0B3D4830-7613-3EAA-A25D-D60438259525</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_trmm_14.vcxproj">
+      <Project>3CA8C9A4-A5D2-3857-BE81-4822941A833F</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_trmm_21.vcxproj">
+      <Project>688878A8-51B3-32B6-805A-C2E4D0C8705E</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_trmm_22.vcxproj">
+      <Project>5C635E33-9E80-3379-A1E9-3A01BE9CFE48</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_trmm_23.vcxproj">
+      <Project>6047990D-24D5-3C1B-A048-E43DE2592869</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_trmm_24.vcxproj">
+      <Project>8EA47914-1B74-3B48-BD3D-F9525F47E2DC</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_trmm_31.vcxproj">
+      <Project>5F2213F1-76C2-370D-8772-E1F27E817F24</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_trmm_32.vcxproj">
+      <Project>2D72521F-3603-39AD-B60D-75DD77C3679A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_trmm_33.vcxproj">
+      <Project>08405C41-1913-3BC3-9357-46546458856C</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_trmm_34.vcxproj">
+      <Project>E6B95AEA-2553-394E-9B3C-07AA728B2BD4</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_trmv_1.vcxproj">
+      <Project>848E2640-D7B1-3548-83A6-26AE89AA11CF</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_trmv_2.vcxproj">
+      <Project>37320AB9-5231-36B2-B005-A407054631B9</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_trmv_3.vcxproj">
+      <Project>ABB4144F-2A10-33D4-9023-5FAAEB9BB177</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_trmv_4.vcxproj">
+      <Project>2CF24546-A57B-3B4D-929B-9E3AC534E02C</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_trmv_5.vcxproj">
+      <Project>B2EAB3DF-DDD6-3D52-BCA9-1CAB3EB65425</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_trmv_6.vcxproj">
+      <Project>89CE3EFA-751B-35AA-BA20-26B1CCCFA9F4</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_trsolve_1.vcxproj">
+      <Project>F8F2E6F2-CC5D-3D9E-9B6C-48E8E4524720</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_trsolve_10.vcxproj">
+      <Project>9C3B08B6-DEFF-3AEF-80FB-6E3D87D15E1C</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_trsolve_11.vcxproj">
+      <Project>AE694B2C-7A9C-38B7-9B67-48EA53106563</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_trsolve_12.vcxproj">
+      <Project>D76F746A-8B5C-3721-9EEB-A2BD7710A38A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_trsolve_13.vcxproj">
+      <Project>05795D90-7C14-3B3D-9F6A-2C9E7F4C2010</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_trsolve_14.vcxproj">
+      <Project>B5C246CB-EC80-30B5-A060-74E713007B8D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_trsolve_2.vcxproj">
+      <Project>35D4328F-F2EC-3DE2-98BB-AE6D2C8A1F6C</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_trsolve_3.vcxproj">
+      <Project>4A299C9E-5EE4-3484-BBCF-9E305065CB59</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_trsolve_4.vcxproj">
+      <Project>765B1E7C-D509-3ED5-936E-7A88BE33EE57</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_trsolve_5.vcxproj">
+      <Project>F4ADB68F-90D7-3E5A-B0A8-7479EE4381FC</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_trsolve_6.vcxproj">
+      <Project>175A5D94-331B-3E63-BF92-ADD3400DC0D7</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_trsolve_7.vcxproj">
+      <Project>561AD177-190A-3253-A9F2-4027A1398F36</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_trsolve_8.vcxproj">
+      <Project>C82B9963-9591-32D2-8075-D2590D1DA09C</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/product_trsolve_9.vcxproj">
+      <Project>14E30FFC-6FC8-3968-B19A-7318BC8648A1</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/qr_1.vcxproj">
+      <Project>71AFC8A4-0FCC-343B-A1B8-FD60F75EEFD9</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/qr_10.vcxproj">
+      <Project>79C24001-873A-32BF-903B-AA8E98EE028D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/qr_11.vcxproj">
+      <Project>1B55D52F-DE73-321C-8741-EEA1AF30054E</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/qr_12.vcxproj">
+      <Project>37626D5C-A91F-3305-8DFC-C4E410CDEBB5</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/qr_2.vcxproj">
+      <Project>1990FAF0-340F-3A8E-9580-2F51C3FBC680</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/qr_3.vcxproj">
+      <Project>A5057329-9AD1-3BD4-B05F-03748A197613</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/qr_4.vcxproj">
+      <Project>5605D6F4-BEC0-3E25-B409-9FE33AE08E6D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/qr_5.vcxproj">
+      <Project>224E5F82-03B3-322B-9634-CB139C56397D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/qr_6.vcxproj">
+      <Project>A45E43F7-F68B-3741-AB21-D3A5602FF20E</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/qr_7.vcxproj">
+      <Project>085377A7-F914-31CB-8615-FF042563506E</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/qr_8.vcxproj">
+      <Project>9A5D7986-E3C7-3464-8C79-C976D3556A10</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/qr_9.vcxproj">
+      <Project>5B468A1C-34F1-3562-B7C0-0350DB343371</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/qr_colpivoting_1.vcxproj">
+      <Project>BA98DC7C-A236-3279-88C3-89FDF5B0C070</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/qr_colpivoting_2.vcxproj">
+      <Project>672D4527-CB7E-3015-9FFF-D2A9EAA8B688</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/qr_colpivoting_3.vcxproj">
+      <Project>74379AE6-E1F5-3C01-B363-9D1131B8DD43</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/qr_colpivoting_4.vcxproj">
+      <Project>DB3FF307-14F5-3D8F-9304-CFCFE9D98288</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/qr_colpivoting_5.vcxproj">
+      <Project>E5FC0A63-E28E-3C7A-8B9F-309118B0762E</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/qr_colpivoting_6.vcxproj">
+      <Project>7247BBB9-F669-32F8-B50F-B42E068DEC8D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/qr_colpivoting_7.vcxproj">
+      <Project>B6C9C5BB-E630-382A-A5DC-D73B4B5133C7</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/qr_colpivoting_8.vcxproj">
+      <Project>A9F4AD86-D28A-3EAF-9DBD-80BB50CF6C12</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/qr_colpivoting_9.vcxproj">
+      <Project>4A1E2EB5-E99C-3CE7-99BD-9F26651AB130</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/qr_fullpivoting_1.vcxproj">
+      <Project>2CDFA1C7-BB73-355C-887B-53F708FA57D6</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/qr_fullpivoting_2.vcxproj">
+      <Project>DEAAFB9F-A3E1-318A-8ADC-802FCA9E2EE5</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/qr_fullpivoting_3.vcxproj">
+      <Project>6FABADE4-18E6-3363-94E4-C48F3F509E62</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/qr_fullpivoting_4.vcxproj">
+      <Project>ED7A99F5-D12C-3E9E-9994-AB8F2B358C17</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/qr_fullpivoting_5.vcxproj">
+      <Project>FBE2BC0F-B34F-319E-9355-A3FD818BBF45</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/qr_fullpivoting_6.vcxproj">
+      <Project>91DB6273-9257-325A-8A39-6291A00040DE</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/qr_fullpivoting_7.vcxproj">
+      <Project>2ECD56AB-28AB-369D-A6F0-2F8D05855001</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/rand.vcxproj">
+      <Project>F25243E2-09E0-3F3D-BC61-E756E2AF19E4</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/real_qz_1.vcxproj">
+      <Project>255F7D29-C3A8-361C-9C32-82D272C93ED8</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/real_qz_2.vcxproj">
+      <Project>DAD21D51-44D4-3999-842E-09E8641FA185</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/real_qz_3.vcxproj">
+      <Project>25DA97E1-0E2D-376E-BBDC-003F8EABC346</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/real_qz_4.vcxproj">
+      <Project>BCDA2F02-54F4-37B9-B7BD-E33C9C4FCE0F</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/redux_1.vcxproj">
+      <Project>8F67702D-583C-3EB7-A5B9-591B40BA311B</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/redux_2.vcxproj">
+      <Project>580953F1-240A-3CCD-BABE-20CA3ADBB7FA</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/redux_3.vcxproj">
+      <Project>F3DD97A4-8B9F-3A95-B8DF-4210B7C1C83A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/redux_4.vcxproj">
+      <Project>D9CFFE98-242B-3E85-8944-300D7CBE9A52</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/redux_5.vcxproj">
+      <Project>4347739C-BA9D-396C-9B89-5146EB5FAFD2</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/redux_6.vcxproj">
+      <Project>EACD97A8-99AF-3D81-BCB0-9D990DCE6CE6</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/redux_7.vcxproj">
+      <Project>5939017F-AA79-39A6-8D61-31351020ACC3</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/redux_8.vcxproj">
+      <Project>435F83BA-4B57-3452-8D8F-595F44E771EB</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/ref_1.vcxproj">
+      <Project>A5FC3CEC-F15A-3546-A4FF-474EFC3DD20C</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/ref_2.vcxproj">
+      <Project>F496ACDC-3F2E-35C3-BDFD-922BBC8667AE</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/ref_3.vcxproj">
+      <Project>A89E7F7D-0E5F-343F-9526-937395E6D255</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/ref_4.vcxproj">
+      <Project>84DFB318-CB3C-31D4-B6AE-19324EAE10D5</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/ref_5.vcxproj">
+      <Project>8D9CC74B-F6AD-3ED1-90E7-432AE79D72B8</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/ref_6.vcxproj">
+      <Project>B802F99F-EFCE-36DB-A92F-7BE204A62D82</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/ref_7.vcxproj">
+      <Project>2A4208FB-211F-338A-B99D-7C4DE27CCE44</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/resize.vcxproj">
+      <Project>24D7D004-D660-3638-B482-E4A2CDA5D79A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/rvalue_types_1.vcxproj">
+      <Project>BC257242-119D-3308-8C90-213D4A6FD994</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/rvalue_types_2.vcxproj">
+      <Project>A1ED33C2-125D-327F-99B5-B8DB9F4226B7</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/schur_complex_1.vcxproj">
+      <Project>C91B3672-F540-3832-B10B-3C23F9CD27E6</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/schur_complex_2.vcxproj">
+      <Project>B5AF7B81-EEF5-3315-8730-EA050217D94C</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/schur_complex_3.vcxproj">
+      <Project>35E1866E-9755-3091-AFF7-FAE72737D7D8</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/schur_complex_4.vcxproj">
+      <Project>CE152054-FA6B-3506-81A2-42C4081821A6</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/schur_complex_5.vcxproj">
+      <Project>3E380A69-CE21-3506-A558-AF2A6FD85811</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/schur_real_1.vcxproj">
+      <Project>AB9BA95F-778E-3266-9E6C-BD9D97287348</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/schur_real_2.vcxproj">
+      <Project>3993D7F3-376D-3E01-BF51-ED91D64DAEF5</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/schur_real_3.vcxproj">
+      <Project>A45B0089-22D3-3FEB-A0F3-C5A58E1615F5</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/schur_real_4.vcxproj">
+      <Project>061C5281-0EEE-3A69-9FDE-04A3CA9D500E</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/schur_real_5.vcxproj">
+      <Project>09D53670-6004-3194-9284-5B80025ED73F</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/selfadjoint_1.vcxproj">
+      <Project>E5C4E633-4D9B-38C0-95D7-BD92B597AF29</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/selfadjoint_2.vcxproj">
+      <Project>F2A31A7A-9DF4-3BBE-A693-996E62672010</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/selfadjoint_3.vcxproj">
+      <Project>C0553533-571A-32B8-9EBD-9710365164A4</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/selfadjoint_4.vcxproj">
+      <Project>0F5E85DE-F6A1-3CE0-BB34-5830E84C9FC3</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/selfadjoint_5.vcxproj">
+      <Project>5384F012-0E23-3F0E-BBA4-4FF99822BC1D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/simplicial_cholesky_1.vcxproj">
+      <Project>10A08C82-DE75-381C-B1F1-6CD405D3B5C0</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/simplicial_cholesky_2.vcxproj">
+      <Project>8766BA73-76ED-3E0E-9C1B-48E4B9215974</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/simplicial_cholesky_3.vcxproj">
+      <Project>7528A36A-5350-3407-8C14-08128F54BAD5</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/sizeof.vcxproj">
+      <Project>D393FD84-118C-3B16-8FAF-3AD21709D5E4</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/sizeoverflow.vcxproj">
+      <Project>EEC99682-39D6-3044-BAF0-5D0A2B9FE64E</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/smallvectors.vcxproj">
+      <Project>74B0F936-E158-3966-8E46-65E067308B70</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/sparse_basic_1.vcxproj">
+      <Project>36680BF9-8876-3F12-A621-88C8D2DBBDA5</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/sparse_basic_2.vcxproj">
+      <Project>78202E69-3D03-3150-9F76-05AC0E13A5F9</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/sparse_basic_3.vcxproj">
+      <Project>26C9DFDC-5DBA-3FF3-84AA-D7F976D26062</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/sparse_basic_4.vcxproj">
+      <Project>7843B5AC-FDF1-30A6-9B67-D592D961C88B</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/sparse_basic_5.vcxproj">
+      <Project>DF29852B-4CCE-3D4B-A146-9F4D036289E3</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/sparse_basic_6.vcxproj">
+      <Project>CC63F260-78D5-3B92-A878-51C147093429</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/sparse_basic_7.vcxproj">
+      <Project>5E0703B0-4C56-3F45-8306-044880064C65</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/sparse_block_1.vcxproj">
+      <Project>22BA73D4-D702-3AAC-B0DC-FF7FDE7EF3FC</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/sparse_block_2.vcxproj">
+      <Project>E2153B93-C0DD-3DAD-8A45-D245BC35DA6D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/sparse_block_3.vcxproj">
+      <Project>F2926866-F9B2-32FE-B221-92FD2AE1FC94</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/sparse_block_4.vcxproj">
+      <Project>1F122391-B5A8-35E4-8D07-F4C0B4A30588</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/sparse_extra_1.vcxproj">
+      <Project>028E2AD2-081B-35C1-8E03-2CDB9441B86F</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/sparse_extra_2.vcxproj">
+      <Project>B76F766D-3830-3E05-BFF9-B9B2066C8711</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/sparse_extra_3.vcxproj">
+      <Project>9BE6F26C-2E24-3E43-9D13-673E877D2139</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/sparse_extra_4.vcxproj">
+      <Project>8FCD815A-7AA8-3900-9DB6-D94FC8620576</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/sparse_permutations_1.vcxproj">
+      <Project>E2A2BEA6-2549-3897-A203-028D2EE0AFA4</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/sparse_permutations_2.vcxproj">
+      <Project>0463C472-F999-313F-AD5D-F5546F796122</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/sparse_product_1.vcxproj">
+      <Project>A254A6C4-8552-3C2A-B315-F828EAB19787</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/sparse_product_2.vcxproj">
+      <Project>81D3E222-3260-3C05-88D2-355803CA75D0</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/sparse_product_3.vcxproj">
+      <Project>8B0DD72E-6CE4-345C-83C7-8A7E60591621</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/sparse_product_4.vcxproj">
+      <Project>FA11DEFF-1C53-3D51-9642-83171970D1E8</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/sparse_ref_1.vcxproj">
+      <Project>56687FAB-7FD2-320A-9772-3CDE2B90DD68</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/sparse_ref_2.vcxproj">
+      <Project>BB672E4D-EACA-3328-B910-B3B275098C7D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/sparse_ref_3.vcxproj">
+      <Project>B5661BA1-CB0A-3B15-8061-54EE0F66E32B</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/sparse_solvers_1.vcxproj">
+      <Project>49022376-117D-339D-9936-BAD0C654F31A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/sparse_solvers_2.vcxproj">
+      <Project>DC114FED-02E7-3109-8D65-F727584FDC30</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/sparse_vector_1.vcxproj">
+      <Project>5D824872-B8CD-3B75-8838-1D91F32796F2</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/sparse_vector_2.vcxproj">
+      <Project>282D7EC7-B473-38BA-8943-3554B83B2700</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/sparselu_1.vcxproj">
+      <Project>A99C29C7-71D4-3000-A916-8D52B20EF03D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/sparselu_2.vcxproj">
+      <Project>F7DF85AD-FF8C-30D0-B97E-F266E11DFAC2</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/sparselu_3.vcxproj">
+      <Project>DD98197A-F743-3709-B0A7-98A5B9F81EB1</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/sparselu_4.vcxproj">
+      <Project>D0D543C6-086D-37F2-AD09-FF0DDEBE04CA</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/sparseqr_1.vcxproj">
+      <Project>39B4EFDC-133A-3606-9943-281073ADF9C6</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/sparseqr_2.vcxproj">
+      <Project>1B6853BE-E632-315F-A417-AF30C40725A5</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/special_functions_1.vcxproj">
+      <Project>00596D52-D18E-3985-87B2-8814CD7BBEE4</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/special_functions_2.vcxproj">
+      <Project>B11270E9-EA93-3C84-BDA9-8D46042BB04A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/special_numbers_1.vcxproj">
+      <Project>299C11AF-61C1-3FAA-95C7-7F399CA472EE</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/splines.vcxproj">
+      <Project>DF6FD97B-DA97-31EA-A002-A417B412C0C8</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/stable_norm_1.vcxproj">
+      <Project>028C0884-27FA-3661-8513-7F4E055227D0</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/stable_norm_2.vcxproj">
+      <Project>996212FB-6E43-31A5-B590-EAFF273467F3</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/stable_norm_3.vcxproj">
+      <Project>D0C5C7FB-48AB-30B4-9118-D4E7552A4425</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/stable_norm_4.vcxproj">
+      <Project>36F896AC-8D5B-379E-9A57-849B1C105310</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/stable_norm_5.vcxproj">
+      <Project>E7071DFE-66E6-3695-AAD0-9EF99E3C4C0B</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/stddeque_1.vcxproj">
+      <Project>6D6BC012-49AD-3ACD-AFA1-9D69D7D0B3A3</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/stddeque_2.vcxproj">
+      <Project>A73C4C95-9B27-36D8-86D9-37A816F97ACE</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/stddeque_3.vcxproj">
+      <Project>72FE8C6B-B351-3009-9BAB-C75D45352911</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/stddeque_4.vcxproj">
+      <Project>1ED0BC5D-E9DD-3040-B978-5636ABC7BFED</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/stddeque_5.vcxproj">
+      <Project>A8695A98-2F88-3ABF-8D25-F1A14FC75BB5</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/stddeque_overload_1.vcxproj">
+      <Project>CC73E218-4EDD-3E40-89E5-13A7453C5759</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/stddeque_overload_2.vcxproj">
+      <Project>129E901F-3FEF-3AF1-BFF4-1773D6337D78</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/stddeque_overload_3.vcxproj">
+      <Project>38ECEAF0-3F91-358B-BA16-8D83DA6D522C</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/stddeque_overload_4.vcxproj">
+      <Project>E2C4357F-EE33-3F9F-BA65-91E90E0C828B</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/stddeque_overload_5.vcxproj">
+      <Project>6176F91C-4658-31BE-84F8-CEA3627B762B</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/stdlist_1.vcxproj">
+      <Project>50727F80-0DDC-3DB7-9FE2-A6766FFD8D08</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/stdlist_2.vcxproj">
+      <Project>2804A992-7E8A-307A-A43F-B0D019D0E701</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/stdlist_3.vcxproj">
+      <Project>A9E430D0-993C-364B-A43E-9FC50AFE5E3E</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/stdlist_4.vcxproj">
+      <Project>71957FDB-E45D-3194-95D6-3B44C310CE60</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/stdlist_5.vcxproj">
+      <Project>DD166548-9EA2-3E1C-ABEE-18F36752378F</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/stdlist_overload_1.vcxproj">
+      <Project>40BAF3F4-0276-310A-9391-A356D94F7291</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/stdlist_overload_2.vcxproj">
+      <Project>0C01AC01-F581-323D-BD6F-D12072009E8D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/stdlist_overload_3.vcxproj">
+      <Project>DA09F980-63D8-3A4D-92D0-D0BE1E3F646C</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/stdlist_overload_4.vcxproj">
+      <Project>5DA85FAE-3807-3026-9AD1-A097991A75FB</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/stdlist_overload_5.vcxproj">
+      <Project>90E06940-8FBD-367A-B143-35C9CB5042A8</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/stdvector_1.vcxproj">
+      <Project>47E8C3C2-4863-3AD6-B117-F6C26CB2D473</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/stdvector_2.vcxproj">
+      <Project>D7DDD47C-B5B7-3151-87DD-716699ED3024</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/stdvector_3.vcxproj">
+      <Project>124DE526-B9D4-3EAF-B2F0-B69566BB2BDD</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/stdvector_4.vcxproj">
+      <Project>B5EED4BA-741B-3115-A1B6-F40F976EDFF4</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/stdvector_5.vcxproj">
+      <Project>E5AEFB57-EF9F-3D6F-B979-9D58CADE1CEF</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/stdvector_overload_1.vcxproj">
+      <Project>D158F24D-E823-37BF-A3E9-B81D9B963064</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/stdvector_overload_2.vcxproj">
+      <Project>71CFBA95-BA05-3C0A-90F3-FF1ED2F93420</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/stdvector_overload_3.vcxproj">
+      <Project>AA4DC6C8-D007-395C-B1A2-73F681ABC3B5</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/stdvector_overload_4.vcxproj">
+      <Project>4E419F5F-0AF8-31C2-80B4-EDC8E7371DD4</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/stdvector_overload_5.vcxproj">
+      <Project>337D6FF4-3011-3D0A-B69B-C141CDF8C7E4</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/swap_1.vcxproj">
+      <Project>32069408-9411-38A8-9621-BB5BB5EE4296</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/swap_2.vcxproj">
+      <Project>FFD0C113-453E-3D82-9FDD-3B96C7561CBB</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/swap_3.vcxproj">
+      <Project>F568AC8F-D924-34EA-8A86-BA9DA3E54A31</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/swap_4.vcxproj">
+      <Project>43E19EAA-7AFA-3D7B-A617-620721F69BA3</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/symbolic_index_1.vcxproj">
+      <Project>8200BF3F-6124-37BE-8BEF-BC987C7740BD</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/symbolic_index_2.vcxproj">
+      <Project>286CA71D-7A81-386A-94A9-D2D5787EE327</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/triangular_1.vcxproj">
+      <Project>65A6B11E-16A2-3AB0-971E-A4811BAB5048</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/triangular_2.vcxproj">
+      <Project>A21DA558-BE85-3F36-8128-840832F7500D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/triangular_3.vcxproj">
+      <Project>145F356D-412D-3E13-9C2A-7E2D4628592D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/triangular_4.vcxproj">
+      <Project>82F5FF0E-47C3-35C8-A6F2-E4976D3B5ECB</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/triangular_5.vcxproj">
+      <Project>BA4CE6E3-8810-39BF-B572-FE32F9AC2951</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/triangular_6.vcxproj">
+      <Project>234ABFE3-D90E-310E-8FFD-1E1436293559</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/triangular_7.vcxproj">
+      <Project>C83670EC-CCCC-3EE0-84D8-A728707810D3</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/triangular_8.vcxproj">
+      <Project>17E449CF-972B-380F-9EAA-663C653F3115</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/triangular_9.vcxproj">
+      <Project>0AE78B5F-815A-35C6-A1D6-30344D48F74D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/umeyama_1.vcxproj">
+      <Project>7371990B-EB1E-3ED8-950A-90CB6D17F2E9</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/umeyama_2.vcxproj">
+      <Project>6F409D39-6D7E-36A5-82A0-7C9807BD2666</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/umeyama_3.vcxproj">
+      <Project>A69AED1D-198E-3CE8-BD5A-C3302823D780</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/umeyama_4.vcxproj">
+      <Project>3F7B850B-21AA-368F-A61C-66657830FF10</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/umeyama_5.vcxproj">
+      <Project>08EFE6B9-1E71-3F79-A1B0-ED479EBCA872</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/umeyama_6.vcxproj">
+      <Project>415E8983-5FA0-359A-A8AE-2E089962BD54</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/umeyama_7.vcxproj">
+      <Project>0DDE945F-7F5D-3C60-9853-0C8D9D10A887</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/umeyama_8.vcxproj">
+      <Project>93CF5828-1572-30E7-99C9-3DA98BB9A0F0</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/unalignedassert_1.vcxproj">
+      <Project>F377C937-ADC3-356C-80DC-72F2C659FAC7</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/unalignedassert_2.vcxproj">
+      <Project>4DACC34F-529E-3721-8759-786C3A9396C7</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/unalignedassert_3.vcxproj">
+      <Project>DB3C4393-AAD7-3C8E-A99A-BED723C69798</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/unalignedassert_4.vcxproj">
+      <Project>9DD2D337-9359-3DBF-BFEE-F36F380A72B5</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/unalignedcount.vcxproj">
+      <Project>4497880B-F8B4-329E-961D-5AF1AA26D3A9</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/upperbidiagonalization_1.vcxproj">
+      <Project>5DA9492A-DFC6-36CD-AAE9-AD19B22413CA</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/upperbidiagonalization_2.vcxproj">
+      <Project>4FEF52F2-2453-3F58-9ACA-62B97747D862</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/upperbidiagonalization_3.vcxproj">
+      <Project>1F84C68D-895A-326C-B766-FE9544A3C0B0</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/upperbidiagonalization_4.vcxproj">
+      <Project>87761DC4-AFB8-324A-B129-51D114D69309</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/upperbidiagonalization_5.vcxproj">
+      <Project>D16B4A51-FF0D-3F24-BFD5-2D021D6F87C2</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/upperbidiagonalization_6.vcxproj">
+      <Project>ACBD76EC-CE02-337E-9630-6544D7BB9433</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/upperbidiagonalization_7.vcxproj">
+      <Project>8A219438-682C-3F80-AAD4-3EC459055FC0</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/vectorization_logic_1.vcxproj">
+      <Project>E81C70EA-AE7B-3801-B6A8-7752EEE2246E</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/vectorization_logic_2.vcxproj">
+      <Project>2EBB54B8-A805-31A4-AA12-A4BFF1EAFB79</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/vectorwiseop_1.vcxproj">
+      <Project>C56F1DE3-EED9-326C-8F1B-F2913EE5B902</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/vectorwiseop_2.vcxproj">
+      <Project>1AB57D5B-359B-3A00-BF0F-897EC2031C2E</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/vectorwiseop_3.vcxproj">
+      <Project>E93A2E7B-AA3C-3E2B-8BE4-0EF34EFA390F</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/vectorwiseop_4.vcxproj">
+      <Project>CD5E32F3-82F8-3780-9A72-C32466D9B5A2</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/vectorwiseop_5.vcxproj">
+      <Project>7C41422C-F9EE-3CE5-BEB2-C32C0A9832B3</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/vectorwiseop_6.vcxproj">
+      <Project>121768A0-9650-3303-8781-9DA6A903BB33</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/vectorwiseop_7.vcxproj">
+      <Project>8C906A38-1C63-3329-A893-67682E19C537</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/visitor_1.vcxproj">
+      <Project>C87200B9-DD60-3F8A-ABA7-E11B3F5BAAD5</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/visitor_10.vcxproj">
+      <Project>7862A92C-8ED6-333E-873E-6D28A9B1A5BF</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/visitor_2.vcxproj">
+      <Project>FB504947-7F6E-3AD1-B9DB-A4C3A948D444</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/visitor_3.vcxproj">
+      <Project>812DDCC1-F728-3045-BB70-8B012C14E08F</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/visitor_4.vcxproj">
+      <Project>65250558-685A-391F-8994-4D9A5E6A9B42</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/visitor_5.vcxproj">
+      <Project>8EA9D817-A9BA-3115-8479-D5810CF15F83</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/visitor_6.vcxproj">
+      <Project>88D0CE70-C81F-35AA-9132-264BB18D574A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/visitor_7.vcxproj">
+      <Project>A1209A88-1977-34F7-A0CE-D1C993895D1A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/visitor_8.vcxproj">
+      <Project>3CE96A05-70EA-3E92-BDC7-DB7BA8A93B1C</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/visitor_9.vcxproj">
+      <Project>8AE3C698-CBEC-35F7-BC2C-644EDBD315A2</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/test/zerosized.vcxproj">
+      <Project>9B9CB4B1-6C25-3327-B730-43C12FAF007C</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

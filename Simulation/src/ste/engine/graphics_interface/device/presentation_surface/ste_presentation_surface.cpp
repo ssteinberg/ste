@@ -17,7 +17,7 @@ ste_presentation_surface::acquire_next_image_return_t  ste_presentation_surface:
 	acquire_next_image_return_t ret;
 	vk::vk_result res;
 	{
-		std::unique_lock<std::mutex> l(shared_data->swap_chain_guard);
+//		std::unique_lock<std::mutex> l(shared_data->swap_chain_guard);
 		res = vkAcquireNextImageKHR(*presentation_device,
 									*swap_chain,
 									timeout_ns,
@@ -212,12 +212,24 @@ void ste_presentation_surface::create_swap_chain() {
 	// Swap chain properties
 	auto size = get_surface_extent();
 	std::uint32_t layers = 1;
+	std::uint32_t min_image_count = surface_presentation_caps.minImageCount;
 	std::uint32_t max_image_count = surface_presentation_caps.maxImageCount > 0 ?
 		surface_presentation_caps.maxImageCount :
 		std::numeric_limits<std::uint32_t>::max();
-	auto min_image_count = glm::clamp<unsigned>(4,
-												surface_presentation_caps.minImageCount,
-												max_image_count);
+
+	// If parameters define a count of simultaneously acquired swap-chain images, override the default minimum
+	// https://www.khronos.org/registry/vulkan/specs/1.0-extensions/html/vkspec.html#vkAcquireNextImageKHR
+	// "vkAcquireNextImageKHR should not be called if a > n - m", where
+	// n is the total number of images in the swapchain, 
+	// m is the value of VkSurfaceCapabilitiesKHR::minImageCount, and 
+	// a is the number of presentable images that the application has currently acquired.
+	std::uint32_t desired_swap_chain_image_count = default_min_swap_chain_images;
+	if (parameters.simultaneous_presentation_frames)
+		desired_swap_chain_image_count = min_image_count + parameters.simultaneous_presentation_frames.get();
+
+	auto swap_chain_image_count = glm::clamp<unsigned>(desired_swap_chain_image_count,
+													   min_image_count,
+													   max_image_count);
 	auto format = get_surface_format();
 	auto transform = get_transform();
 	auto composite = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
@@ -226,7 +238,7 @@ void ste_presentation_surface::create_swap_chain() {
 	// Create the swap-chain
 	this->swap_chain = std::make_unique<vk::vk_swapchain>(*presentation_device,
 														  presentation_surface,
-														  min_image_count,
+														  swap_chain_image_count,
 														  format.format,
 														  format.colorSpace,
 														  size,
@@ -268,7 +280,7 @@ void ste_presentation_surface::present(std::uint32_t image_index,
 
 	vk::vk_result res;
 	{
-		std::unique_lock<std::mutex> l(shared_data->swap_chain_guard);
+//		std::unique_lock<std::mutex> l(shared_data->swap_chain_guard);
 		res = vkQueuePresentKHR(presentation_queue, &info);
 	}
 

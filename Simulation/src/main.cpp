@@ -1,5 +1,8 @@
 
 #include <stdafx.hpp>
+#include <ste_engine.hpp>
+#include <presentation_engine.hpp>
+#include <presentation_frame_time_predictor.hpp>
 
 #include <pipeline_auditor_graphics.hpp>
 #include <pipeline_auditor_compute.hpp>
@@ -43,9 +46,6 @@ auto requested_device_features() {
 
 	return requested_features;
 }
-
-template <typename T>
-using type_erased_deleter_ptr = std::shared_ptr<T>;
 
 #ifdef _MSC_VER
 int CALLBACK WinMain(HINSTANCE hInstance,
@@ -103,6 +103,7 @@ int main()
 	device_params.physical_device = physical_device;
 	device_params.requested_device_features = features;
 	device_params.vsync = gl::ste_presentation_device_vsync::mailbox;
+	device_params.simultaneous_presentation_frames = 3;
 	device_params.additional_device_extensions = { "VK_KHR_shader_draw_parameters" };
 
 	ste_context::gl_device_t device(device_params,
@@ -112,7 +113,13 @@ int main()
 									window);
 	ste_context ctx(engine, gl_ctx, device);
 
-	gl::pipeline_binding_set_pool pool(ctx);
+	gl::pipeline_binding_set_pool binding_set_pool(ctx);
+
+	/*
+	 *	Create the presentation engine
+	 */
+	gl::presentation_engine presentation(device);
+	gl::presentation_frame_time_predictor frame_time_predictor;
 
 
 	/*
@@ -159,12 +166,12 @@ int main()
 
 	// Pipeline settings
 	gl::device_pipeline_graphics_configurations graphics_settings;
-	auto surface_size = device.get_surface().size();
-	graphics_settings.viewport = glm::vec2(surface_size);
-	graphics_settings.scissor = surface_size;
+	auto surface_extent = device.get_surface().extent();
+	graphics_settings.viewport = glm::vec2(surface_extent);
+	graphics_settings.scissor = surface_extent;
 
 	// Pipeline framebuffer layout
-	gl::framebuffer_layout fb_layout(surface_size);
+	gl::framebuffer_layout fb_layout(surface_extent);
 	fb_layout[0] = gl::clear_store(device.get_surface().get_swap_chain_images()[0].image.get_format(),
 								   gl::image_layout::present_src_khr);
 	
@@ -185,7 +192,7 @@ int main()
 	auditor.set_framebuffer_layout(fb_layout);
 
 	auto pipeline = auditor.pipeline(ctx,
-									 pool);
+									 binding_set_pool);
 
 	gl::task<gl::cmd_draw_indexed> draw_task;
 	draw_task.attach_pipeline(pipeline);
@@ -230,9 +237,8 @@ int main()
 			break;
 		}
 
-		auto current_tick_time = std::chrono::high_resolution_clock::now();
-		float frame_time_ms = .001f * std::chrono::duration_cast<std::chrono::microseconds>(current_tick_time - last_tick_time).count();
-		last_tick_time = current_tick_time;
+		frame_time_predictor.update(presentation.get_frame_time());
+		float frame_time_ms = frame_time_predictor.predicted_value();
 
 		f += 1/1000.f;
 		vertex v = { { 0.0f, -0.5f }, { 1.0f, 0.0f, 0.0f }, { 0,0 } };
@@ -242,7 +248,7 @@ int main()
 		uniform_buffer_object data = { glm::vec4{ glm::cos(angle), glm::sin(angle), -glm::sin(angle), glm::cos(angle) } };
 
 		// Acquire presentation comand batch
-		auto batch = device.allocate_presentation_command_batch(selector);
+		auto batch = presentation.allocate_presentation_command_batch(selector);
 
 		// Record and submit a batch
 		device.enqueue(selector, [&, data, v, batch = std::move(batch)]() mutable {
@@ -286,7 +292,7 @@ int main()
 			}
 
 			// Submit command buffer and present
-			device.submit_and_present(std::move(batch));
+			presentation.submit_and_present(std::move(batch));
 		});
 	}
 
