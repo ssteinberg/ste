@@ -86,7 +86,7 @@ private:
 	// Map of specialization variables to dependant array variables
 	spec_to_dependant_array_variables_map_t spec_to_dependant_array_variables_map;
 	// Set layout modified signal
-	set_layout_modified_signal_t set_layout_modified_signal;
+	mutable set_layout_modified_signal_t set_layout_modified_signal;
 
 	// If for any reason pipeline layout has changed, mark it and let device_pipeline recreate the pipeline when applicable.
 	bool layout_invalidated_flag{ false };

@@ -13,7 +13,6 @@
 #include <pipeline_binding_set_collection_cmd_bind.hpp>
 
 #include <boost/container/flat_map.hpp>
-#include <memory>
 
 namespace ste {
 namespace gl {
@@ -22,7 +21,6 @@ class pipeline_binding_set_collection {
 private:
 	using layout_t = pipeline_binding_set_layout;
 	using collection_t = boost::container::flat_map<pipeline_layout_set_index, pipeline_binding_set>;
-	using pipeline_layout_set_modified_connection_t = pipeline_layout::set_layout_modified_signal_t::connection_type;
 	using cmd_bind_t = pipeline_binding_set_collection_cmd_bind<pipeline_binding_set_collection>;
 
 private:
@@ -30,7 +28,7 @@ private:
 	std::reference_wrapper<const pipeline_layout> layout;
 	std::reference_wrapper<pipeline_binding_set_pool> pool;
 
-	std::shared_ptr<pipeline_layout_set_modified_connection_t> set_modified_connection;
+	pipeline_layout::set_layout_modified_signal_t::connection_type set_modified_connection;
 
 private:
 	void recreate_sets(const std::vector<pipeline_layout_set_index> &set_indices) {
@@ -100,11 +98,9 @@ public:
 		}
 
 		// Connect to 'set modified' signal
-		set_modified_connection =
-			std::make_shared<pipeline_layout_set_modified_connection_t>([this](const std::vector<pipeline_layout_set_index> &set_indices) {
+		set_modified_connection = make_connection(layout.get_set_layout_modified_signal(), [this](const std::vector<pipeline_layout_set_index> &set_indices) {
 			this->recreate_sets(set_indices);
 		});
-		layout.get_set_layout_modified_signal().connect(set_modified_connection);
 	}
 	~pipeline_binding_set_collection() noexcept {}
 

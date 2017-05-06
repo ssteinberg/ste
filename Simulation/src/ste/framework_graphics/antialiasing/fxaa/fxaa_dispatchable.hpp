@@ -30,14 +30,11 @@ class fxaa_dispatchable : public gpu_dispatchable {
 	friend class resource::resource_instance<fxaa_dispatchable>;
 
 private:
-	using ResizeSignalConnectionType = ste_engine_control::framebuffer_resize_signal_type::connection_type;
-
-private:
 	resource::resource_instance<resource::glsl_program> program;
 	Core::framebuffer_object fbo;
 	std::unique_ptr<Core::texture_2d> input;
 
-	std::shared_ptr<ResizeSignalConnectionType> resize_connection;
+	ste_engine_control::framebuffer_resize_signal_type::connection_type resize_connection;
 
 private:
 	void resize(const glm::ivec2 &size) {
@@ -51,10 +48,9 @@ private:
 
 public:
 	fxaa_dispatchable(const ste_engine_control &ctx) : program(ctx, std::vector<std::string>{ "fxaa.vert", "fxaa.frag" }) {
-		resize_connection = std::make_shared<ResizeSignalConnectionType>([=](const glm::i32vec2 &size) {
+		resize_connection = make_connection([=](ctx.signal_framebuffer_resize(), const glm::i32vec2 &size) {
 			resize(size);
 		});
-		ctx.signal_framebuffer_resize().connect(resize_connection);
 	}
 	~fxaa_dispatchable() noexcept {}
 

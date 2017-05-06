@@ -25,7 +25,7 @@ public:
 	*	
 	*	@param	covariance	Frame time noise covariance
 	*/
-	presentation_frame_time_predictor(float covariance = .25f);
+	presentation_frame_time_predictor(float covariance = .025f);
 	~presentation_frame_time_predictor() noexcept;
 
 	/**

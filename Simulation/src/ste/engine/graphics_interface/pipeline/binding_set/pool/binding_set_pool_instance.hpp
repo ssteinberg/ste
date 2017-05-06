@@ -12,6 +12,7 @@
 #include <pipeline_binding_layout.hpp>
 
 #include <vector>
+#include <atomic>
 #include <ultimate.hpp>
 
 namespace ste {
@@ -19,6 +20,8 @@ namespace gl {
 
 class binding_set_pool_instance {
 	friend class pipeline_binding_set_pool;
+	friend void intrusive_ptr_add_ref(binding_set_pool_instance *);
+	friend void intrusive_ptr_release(binding_set_pool_instance *);
 
 	struct ctor {};
 
@@ -28,6 +31,8 @@ public:
 	using release_func_t = std::function<void(void)>;
 
 private:
+	std::atomic<long> ref_counter{ 0 };
+
 	const ste_context &ctx;
 	vk::vk_descriptor_pool pool;
 
@@ -70,9 +75,6 @@ public:
 	{}
 	~binding_set_pool_instance() noexcept {}
 
-	binding_set_pool_instance(binding_set_pool_instance&&) = default;
-	binding_set_pool_instance &operator=(binding_set_pool_instance&&) = default;
-
 	/**
 	 *	@brief	Attempts to allocate the required layouts
 	 *	
@@ -109,6 +111,15 @@ public:
 		return ret;
 	}
 };
+
+void inline intrusive_ptr_add_ref(binding_set_pool_instance *ptr) {
+	ptr->ref_counter.fetch_add(1, std::memory_order_release);
+}
+void inline intrusive_ptr_release(binding_set_pool_instance *ptr) {
+	if (ptr->ref_counter.fetch_add(-1) == 1)
+		delete ptr;
+
+}
 
 }
 }

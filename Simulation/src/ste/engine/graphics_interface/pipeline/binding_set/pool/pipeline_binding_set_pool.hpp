@@ -9,10 +9,9 @@
 #include <pipeline_binding_layout_interface.hpp>
 #include <binding_set_pool_instance.hpp>
 
-
 #include <atomic>
 #include <concurrent_unordered_map.hpp>
-#include <memory>
+#include <boost/intrusive_ptr.hpp>
 
 namespace ste {
 namespace gl {
@@ -20,7 +19,8 @@ namespace gl {
 class pipeline_binding_set_pool {
 private:
 	using pool_key = std::uint32_t;
-	using pools_t = concurrent_unordered_map<pool_key, std::shared_ptr<binding_set_pool_instance>>;
+	using pool_ptr_t = boost::intrusive_ptr<binding_set_pool_instance>;
+	using pools_t = concurrent_unordered_map<pool_key, pool_ptr_t>;
 
 private:
 	const ste_context &ctx;
@@ -44,10 +44,10 @@ private:
 		// Max sets
 		auto max_sets = sets_count;
 
-		return std::make_shared<binding_set_pool_instance>(binding_set_pool_instance::ctor(),
-														   ctx,
-														   max_sets,
-														   pool_bindings);
+		return pool_ptr_t(new binding_set_pool_instance(binding_set_pool_instance::ctor(),
+														ctx,
+														max_sets,
+														pool_bindings));
 	}
 
 	void release_one(const pool_key &k) {

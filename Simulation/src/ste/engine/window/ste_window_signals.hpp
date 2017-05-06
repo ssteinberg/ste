@@ -32,12 +32,12 @@ private:
 public:
 	ste_window_signals(const ste_window *win);
 
-	const auto &signal_window_resize() const { return framebuffer_resize_signal; }
+	auto &signal_window_resize() { return framebuffer_resize_signal; }
 
-	const auto &signal_pointer_movement() const { return hid_pointer_movement_signal; }
-	const auto &signal_pointer_button() const { return hid_pointer_button_signal; }
-	const auto &signal_scroll() const { return hid_scroll_signal; }
-	const auto &signal_keyboard() const { return hid_keyboard_signal; }
+	auto &signal_pointer_movement() { return hid_pointer_movement_signal; }
+	auto &signal_pointer_button() { return hid_pointer_button_signal; }
+	auto &signal_scroll() { return hid_scroll_signal; }
+	auto &signal_keyboard() { return hid_keyboard_signal; }
 };
 
 }

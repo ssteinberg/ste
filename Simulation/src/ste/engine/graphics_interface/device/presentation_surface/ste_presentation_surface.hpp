@@ -18,8 +18,6 @@
 #include <vk_queue.hpp>
 #include <semaphore.hpp>
 
-#include <connection.hpp>
-
 #include <atomic>
 #include <memory>
 #include <vector>
@@ -32,9 +30,6 @@ namespace ste {
 namespace gl {
 
 class ste_presentation_surface {
-private:
-	using resize_signal_connection_t = ste_window_signals::window_resize_signal_type::connection_type;
-
 public:
 	static constexpr std::uint32_t default_min_swap_chain_images = 3;
 
@@ -68,7 +63,7 @@ private:
 
 	aligned_ptr<shared_data_t> shared_data;
 
-	std::shared_ptr<resize_signal_connection_t> resize_signal_connection;
+	ste_window_signals::window_resize_signal_type::connection_type resize_signal_connection;
 
 private:
 	glm::u32vec2 get_surface_extent() const;

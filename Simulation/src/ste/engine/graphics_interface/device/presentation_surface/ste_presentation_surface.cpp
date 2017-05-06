@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <functional>
+#include <connection.hpp>
 
 using namespace ste::gl;
 
@@ -256,11 +257,10 @@ void ste_presentation_surface::connect_signals() {
 	// Connect resize signal to window signals
 	auto &resize_signal = presentation_window.get_signals().signal_window_resize();
 
-	resize_signal_connection = std::make_shared<resize_signal_connection_t>([this](const glm::i32vec2 &size) {
+	resize_signal_connection = make_connection(resize_signal, [this](const glm::i32vec2 &size) {
 		// Raise flag to recreate swap-chain
 		shared_data->swap_chain_optimal_flag.clear(std::memory_order_release);
 	});
-	resize_signal.connect(resize_signal_connection);
 }
 
 void ste_presentation_surface::present(std::uint32_t image_index,

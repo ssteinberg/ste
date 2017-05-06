@@ -45,8 +45,8 @@ private:
 private:
 	log_stream_formatter formatter;
 
-	std::shared_ptr<std::condition_variable> notifier;
-	std::shared_ptr<queue_type> queue;
+	std::condition_variable notifier;
+	queue_type queue;
 	std::mutex m;
 	std::thread t;
 	std::atomic<bool> finish;
@@ -66,7 +66,7 @@ private:
 
 	void dump() {
 		std::unique_ptr<log_entry> entry;
-		while ((entry = queue->pop()) != nullptr)
+		while ((entry = queue.pop()) != nullptr)
 			write_entry(std::move(entry));
 	}
 
@@ -97,8 +97,6 @@ private:
 public:
 	log(const std::string &title, const std::string path_prefix = R"(Log/)", const std::string path_extension = ".html") :
 			formatter(title),
-			notifier(std::make_shared<std::condition_variable>()),
-			queue(std::make_shared<queue_type>()),
 			finish(false),
 			cout_strm_buffer(nullptr),
 			cerr_strm_buffer(nullptr) {
@@ -111,7 +109,7 @@ public:
 				std::unique_lock<std::mutex> ul(m);
 				dump();
 
-				notifier->wait(ul);
+				notifier.wait(ul);
 				if (finish.load()) {
 					finish.store(false);
 					return;
@@ -132,7 +130,7 @@ public:
 		ul.unlock();
 		// Wait for worker to roger that
 		while (finish.load())
-			notifier->notify_one();
+			notifier.notify_one();
 
 		write_tail();
 
@@ -147,24 +145,24 @@ public:
 	void redirect_std_outputs() {
 		cout_strm_buffer = std::cout.rdbuf();
 		cerr_strm_buffer = std::cerr.rdbuf();
-		cout_logger = std::unique_ptr<_logger>(new _logger(std::make_unique<log_sink>(log_entry_data("std", "std::cout", 0, log_class::info_class_log), notifier, queue)));
-		cerr_logger = std::unique_ptr<_logger>(new _logger(std::make_unique<log_sink>(log_entry_data("std", "std::cerr", 0, log_class::err_class_log), notifier, queue), true));
+		cout_logger = std::unique_ptr<_logger>(new _logger(std::make_unique<log_sink>(log_entry_data("std", "std::cout", 0, log_class::info_class_log), &notifier, &queue)));
+		cerr_logger = std::unique_ptr<_logger>(new _logger(std::make_unique<log_sink>(log_entry_data("std", "std::cerr", 0, log_class::err_class_log), &notifier, &queue), true));
 
 		std::cout.rdbuf(cout_logger->logger().rdbuf());
 		std::cerr.rdbuf(cerr_logger->logger().rdbuf());
 	}
 
 	_logger log_info(const char *file, const char *func, int line) {
-		return _logger(std::make_unique<log_sink>(log_entry_data(file, func, line, log_class::info_class_log), notifier, queue));
+		return _logger(std::make_unique<log_sink>(log_entry_data(file, func, line, log_class::info_class_log), &notifier, &queue));
 	}
 	_logger log_warn(const char *file, const char *func, int line) {
-		return _logger(std::make_unique<log_sink>(log_entry_data(file, func, line, log_class::warn_class_log), notifier, queue));
+		return _logger(std::make_unique<log_sink>(log_entry_data(file, func, line, log_class::warn_class_log), &notifier, &queue));
 	}
 	_logger log_err(const char *file, const char *func, int line) {
-		return _logger(std::make_unique<log_sink>(log_entry_data(file, func, line, log_class::err_class_log), notifier, queue), true);
+		return _logger(std::make_unique<log_sink>(log_entry_data(file, func, line, log_class::err_class_log), &notifier, &queue), true);
 	}
 	_logger log_fatal(const char *file, const char *func, int line) {
-		return _logger(std::make_unique<log_sink>(log_entry_data(file, func, line, log_class::fatal_class_log), notifier, queue), true);
+		return _logger(std::make_unique<log_sink>(log_entry_data(file, func, line, log_class::fatal_class_log), &notifier, &queue), true);
 	}
 };
 

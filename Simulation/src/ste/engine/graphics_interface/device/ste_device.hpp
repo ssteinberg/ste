@@ -54,7 +54,7 @@ private:
 	// Presentation surface
 	const std::unique_ptr<ste_presentation_surface> presentation_surface{ nullptr };
 
-	queues_and_surface_recreate_signal_type queues_and_surface_recreate_signal;
+	mutable queues_and_surface_recreate_signal_type queues_and_surface_recreate_signal;
 	ste_device_queue_selector_cache queue_selector_cache;
 
 private:

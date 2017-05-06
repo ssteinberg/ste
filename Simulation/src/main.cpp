@@ -239,6 +239,7 @@ int main()
 
 		frame_time_predictor.update(presentation.get_frame_time());
 		float frame_time_ms = frame_time_predictor.predicted_value();
+		window.set_title(std::to_string(frame_time_ms).c_str());
 
 		f += 1/1000.f;
 		vertex v = { { 0.0f, -0.5f }, { 1.0f, 0.0f, 0.0f }, { 0,0 } };

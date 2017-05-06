@@ -31,7 +31,6 @@ namespace gl {
 class presentation_engine {
 private:
 	using batch_fence_ptr_t = device_queue_presentation_batch<>::fence_ptr_strong_t;
-	using surface_recreate_signal_connection_t = ste_device::queues_and_surface_recreate_signal_type::connection_type;
 
 	struct image_presentation_sync_t {
 		batch_fence_ptr_t fence_ptr;
@@ -56,7 +55,7 @@ private:
 	// Presentation synchronization primitives
 	std::vector<image_presentation_sync_t> presentation_sync_primitives;
 
-	std::shared_ptr<surface_recreate_signal_connection_t> surface_recreate_signal_connection;
+	ste_device::queues_and_surface_recreate_signal_type::connection_type surface_recreate_signal_connection;
 
 private:
 	void create_presentation_fences_storage() {
@@ -196,12 +195,11 @@ public:
 		this->create_presentation_fences_storage();
 
 		// Connect signal to get notifications of presentation surface rebuild
-		surface_recreate_signal_connection = std::make_shared<surface_recreate_signal_connection_t>([this](const ste_device*) {
+		surface_recreate_signal_connection = make_connection(device.get_queues_and_surface_recreate_signal(), [this](const ste_device*) {
 			// Recreate fences
 			this->presentation_sync_primitives.clear();
 			this->create_presentation_fences_storage();
 		});
-		device.get_queues_and_surface_recreate_signal().connect(surface_recreate_signal_connection);
 	}
 	~presentation_engine() noexcept {}
 
