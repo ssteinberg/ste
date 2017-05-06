@@ -561,7 +561,6 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\task\task_interface.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\task\task_foreach_interface.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\task\task_interface_resource_extractor.hpp" />
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\task\task_pipeline_resource_extractor.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\task\task_policy_compute.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\task\task_policy_draw.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\task\task_policy_transfer.hpp" />

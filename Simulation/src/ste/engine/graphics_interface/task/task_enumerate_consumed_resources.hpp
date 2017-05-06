@@ -7,10 +7,9 @@
 #include <task.hpp>
 #include <task_resource.hpp>
 #include <task_interface_resource_extractor.hpp>
-#include <task_pipeline_resource_extractor.hpp>
 #include <task_foreach_interface.hpp>
 
-#include <unordered_map>
+#include <boost/container/flat_map.hpp>
 #include <vector>
 
 namespace ste {
@@ -26,30 +25,18 @@ void task_enumerate_consumed_resources_insert(Map &map,
 		ret.first->second.push_back(resource);
 }
 
-template <typename pipeline_policy, typename = std::void_t<>>
-struct task_enumerate_consumed_resources_extract_pipeline_resources {
-	template <typename Task, typename Map>
-	void operator()(const Task *task,
-					Map &map) {}
-};
-template <typename pipeline_policy>
-struct task_enumerate_consumed_resources_extract_pipeline_resources<pipeline_policy, std::void_t<typename pipeline_policy::pipeline_object_type>>  {
-	template <typename Task, typename Map>
-	void operator()(const Task *task,
-					Map &map) {
-		for (auto &r : task_pipeline_policy_extract_pipeline_resources<typename pipeline_policy::pipeline_object_type>()(task))
-			_internal::task_enumerate_consumed_resources_insert(map,
-																std::move(r));
-	}
-};
-
 }
 
+/**
+ *	@brief	Creates a map of resources consumned by the task interfaces.
+ *	
+ *	@return	A map of resource handle to a vector of descriptors of access to that resource.
+ */
 template <class Command, typename task_policy, typename pipeline_policy>
 auto task_enumerate_consumed_resources(const _internal::task_impl<Command, task_policy, pipeline_policy> &task) {
 	using Task = _internal::task_impl<Command, task_policy, pipeline_policy>;
 
-	std::unordered_map<device_resource_handle, std::vector<task_resource>> resources_map;
+	boost::container::flat_map<device_resource_handle, std::vector<task_resource>> resources_map;
 
 	// Enumerate resources of task interfaces
 	_internal::task_foreach_interface<Task>()(&task, [&](auto* interface) {
@@ -60,10 +47,6 @@ auto task_enumerate_consumed_resources(const _internal::task_impl<Command, task_
 			_internal::task_enumerate_consumed_resources_insert(resources_map,
 																std::move(r));
 	});
-
-	// Enumerate pipeline resources
-	_internal::task_enumerate_consumed_resources_extract_pipeline_resources<pipeline_policy>()(&task, 
-																							   resources_map);
 
 	return resources_map;
 }
