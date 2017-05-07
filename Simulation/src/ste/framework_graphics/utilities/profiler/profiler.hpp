@@ -10,7 +10,7 @@
 #include <algorithm>
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 struct profiler_entry {
 	std::string name;

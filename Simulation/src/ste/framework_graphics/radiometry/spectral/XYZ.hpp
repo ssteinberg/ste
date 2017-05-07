@@ -8,7 +8,7 @@
 #include <limits>
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 class rgb;
 class xyY;
@@ -54,7 +54,7 @@ public:
 #include <kelvin.hpp>
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 inline rgb XYZ::toRGB() const {
 	rgb ret;

@@ -17,7 +17,7 @@
 #include <memory>
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 class gbuffer_downsample_depth_dispatch : public gpu_dispatchable {
 	using Base = gpu_dispatchable;
@@ -67,8 +67,8 @@ public:
 namespace resource {
 
 template <>
-class resource_loading_task<Graphics::gbuffer_downsample_depth_dispatch> {
-	using R = Graphics::gbuffer_downsample_depth_dispatch;
+class resource_loading_task<graphics::gbuffer_downsample_depth_dispatch> {
+	using R = graphics::gbuffer_downsample_depth_dispatch;
 
 public:
 	auto loader(const ste_engine_control &ctx, R* object) {

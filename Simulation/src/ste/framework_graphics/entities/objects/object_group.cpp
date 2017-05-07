@@ -9,7 +9,7 @@
 //
 //#include <algorithm>
 //
-//using namespace ste::Graphics;
+//using namespace ste::graphics;
 //
 //object_group::~object_group() {
 //	remove_all();

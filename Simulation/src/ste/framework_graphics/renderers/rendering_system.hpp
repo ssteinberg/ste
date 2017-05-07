@@ -13,7 +13,7 @@ namespace ste {
 
 class ste_engine_control;
 
-namespace Graphics {
+namespace graphics {
 
 class rendering_system {
 protected:

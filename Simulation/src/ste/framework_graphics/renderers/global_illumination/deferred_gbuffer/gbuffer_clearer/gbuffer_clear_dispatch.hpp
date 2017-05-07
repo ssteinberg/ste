@@ -17,7 +17,7 @@
 #include <memory>
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 class gbuffer_clear_dispatch : public gpu_dispatchable {
 	using Base = gpu_dispatchable;

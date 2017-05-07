@@ -587,6 +587,7 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\task\task_pipeline_policy.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\vk_set_object_name.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\log\log.hpp" />
+    <ClInclude Include="Simulation\src\ste\framework_graphics\utilities\camera\camera.hpp" />
     <ClInclude Include="Simulation\src\ste\math_additions\rect.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\data_structure\array.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\utility\copy_data_buffer.hpp" />
@@ -913,9 +914,6 @@
     <ClCompile Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shadowmap_storage.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\utilities\camera\Camera.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_graphics\utilities\debug_gui\debug_gui.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
@@ -1070,7 +1068,6 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\directional_shadowmap_projector.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shadowmap_projector.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shadowmap_storage.hpp" />
-    <ClInclude Include="Simulation\src\ste\framework_graphics\utilities\camera\Camera.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\utilities\debug_gui\debug_gui.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\utilities\debug_gui\imgui_timeline.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\utilities\profiler\profileable.hpp" />

@@ -43,10 +43,10 @@ protected:
 	fragment_compute(const ste_context &ctx,
 					 pipeline_binding_set_pool &binding_set_pool,
 					 const std::string &shader_stages_name)
-		: shader_stage(device_pipeline_shader_stage(ctx,
-													shader_stages_name)),
+		: shader_stage(ctx, shader_stages_name),
 		pipeline(create_compute_pipeline(ctx,
-										 binding_set_pool))
+										 binding_set_pool,
+										 this->shader_stage))
 	{}
 
 public:

@@ -26,7 +26,7 @@
 #include <type_traits>
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 constexpr std::size_t max_active_lights_per_frame = 24;
 constexpr std::size_t max_active_directional_lights_per_frame = 4;

@@ -3,7 +3,7 @@
 // TODO
 //#include <material.hpp>
 //
-//using namespace ste::Graphics;
+//using namespace ste::graphics;
 //
 //material::material(material_layer *head_layer) {
 //	material_sampler.set_wrap_s(Core::texture_wrap_mode::Wrap);

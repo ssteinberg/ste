@@ -8,7 +8,7 @@
 #include <observable_resource.hpp>
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 constexpr std::size_t directional_light_cascades = 6;
 

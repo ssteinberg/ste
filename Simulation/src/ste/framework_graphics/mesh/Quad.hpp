@@ -7,7 +7,7 @@
 #include <mesh.hpp>
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 class quad : public mesh<mesh_subdivion_mode::TrianglesStrip> {
 public:

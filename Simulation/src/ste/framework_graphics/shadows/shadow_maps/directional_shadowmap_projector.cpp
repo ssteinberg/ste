@@ -3,7 +3,7 @@
 // TODO
 //#include <directional_shadowmap_projector.hpp>
 //
-//using namespace ste::Graphics;
+//using namespace ste::graphics;
 //
 //void directional_shadowmap_projector::set_context_state() const {
 //	using namespace Core;

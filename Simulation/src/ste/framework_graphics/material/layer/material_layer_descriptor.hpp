@@ -7,7 +7,7 @@
 #include <texture_handle.hpp>
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 static constexpr std::uint32_t material_layer_none = 0xFFFFFFFF;
 static constexpr float material_layer_max_thickness = .1f;

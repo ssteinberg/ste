@@ -19,7 +19,7 @@
 #include <memory>
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 class object_group_draw_buffers {
 private:

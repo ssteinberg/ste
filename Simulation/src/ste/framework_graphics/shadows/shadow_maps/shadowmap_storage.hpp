@@ -18,7 +18,7 @@
 #include <light_cascade_descriptor.hpp>
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 class shadowmap_storage {
 	static constexpr unsigned default_map_size = 1024;

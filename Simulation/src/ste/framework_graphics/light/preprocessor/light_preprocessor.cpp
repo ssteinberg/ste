@@ -4,7 +4,7 @@
 //
 //#include <extract_projection_planes.hpp>
 //
-//using namespace ste::Graphics;
+//using namespace ste::graphics;
 //using namespace ste::Core;
 //
 //void light_preprocessor::set_projection_planes() const {

@@ -18,7 +18,7 @@
 #include <memory>
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 /**
  *	@brief	Defines rendering material basic properties

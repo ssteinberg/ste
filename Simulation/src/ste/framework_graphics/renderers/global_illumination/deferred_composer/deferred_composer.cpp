@@ -23,10 +23,10 @@
 //
 //#include <surface_factory.hpp>
 //
-//using namespace ste::Graphics;
+//using namespace ste::graphics;
 //
 //namespace ste {
-//namespace Graphics {
+//namespace graphics {
 //namespace deferred_composer_detail {
 //
 //template <typename T>

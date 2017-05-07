@@ -21,7 +21,7 @@
 #include <memory>
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 class scene : public gpu_dispatchable {
 	using Base = gpu_dispatchable;

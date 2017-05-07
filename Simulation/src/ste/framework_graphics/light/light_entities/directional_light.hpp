@@ -7,7 +7,7 @@
 #include <light.hpp>
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 class directional_light : public light {
 	using Base = light;

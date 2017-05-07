@@ -17,7 +17,7 @@
 //
 //#include <sampler.hpp>
 //
-//using namespace ste::Graphics;
+//using namespace ste::graphics;
 //
 //hdr_dof_postprocess::hdr_dof_postprocess(const ste_engine_control &context,
 //										 const deferred_gbuffer *gbuffer) : gbuffer(gbuffer), ctx(context),
@@ -39,13 +39,13 @@
 //		glm::vec4 *d = reinterpret_cast<glm::vec4*>(hdr_human_vision_properties_data.data());
 //		for (int i = 0; i < hdr_human_vision_properties_data.extent().x; ++i, ++d) {
 //			float x = static_cast<float>(i) / static_cast<float>(hdr_human_vision_properties_data.extent().x);
-//			float l = glm::mix(ste::Graphics::human_vision_properties::min_luminance,
+//			float l = glm::mix(ste::graphics::human_vision_properties::min_luminance,
 //							   vision_properties_max_lum,
 //							   x);
-//			*d = {	ste::Graphics::human_vision_properties::scotopic_vision(l),
-//					ste::Graphics::human_vision_properties::mesopic_vision(l),
-//					ste::Graphics::human_vision_properties::monochromaticity(l),
-//					ste::Graphics::human_vision_properties::visual_acuity(l) };
+//			*d = {	ste::graphics::human_vision_properties::scotopic_vision(l),
+//					ste::graphics::human_vision_properties::mesopic_vision(l),
+//					ste::graphics::human_vision_properties::monochromaticity(l),
+//					ste::graphics::human_vision_properties::visual_acuity(l) };
 //		}
 //	}
 //	hdr_vision_properties_texture = std::make_unique<ste::Core::texture_1d>(hdr_human_vision_properties_data, false);

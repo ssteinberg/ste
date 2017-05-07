@@ -2,7 +2,7 @@
 #include <stdafx.hpp>
 //#include <gbuffer_downsample_depth_dispatch.hpp>
 //
-//using namespace ste::Graphics;
+//using namespace ste::graphics;
 //
 //void gbuffer_downsample_depth_dispatch::set_context_state() const {
 //	using namespace Core;

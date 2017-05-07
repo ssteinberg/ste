@@ -338,7 +338,7 @@ int main()
 //using namespace text;
 
 //void display_loading_screen_until(ste_engine_control &ctx, text::text_manager *text_manager, int *w, int *h, std::function<bool()> &&lambda) {
-//	Graphics::basic_renderer basic_renderer(ctx);
+//	graphics::basic_renderer basic_renderer(ctx);
 //
 //	auto footer_text = text_manager->create_renderer();
 //	auto footer_text_task = make_gpu_task("footer_text", footer_text.get(), nullptr);
@@ -376,18 +376,18 @@ int main()
 //	}
 //}
 //
-//auto create_sphere_light_object(Graphics::scene *scene,
-//								const Graphics::rgb &color,
+//auto create_sphere_light_object(graphics::scene *scene,
+//								const graphics::rgb &color,
 //								float intensity,
 //								float radius,
 //								const glm::vec3 &light_pos,
-//								std::vector<std::unique_ptr<Graphics::material>> &materials,
-//								std::vector<std::unique_ptr<Graphics::material_layer>> &layers) {
+//								std::vector<std::unique_ptr<graphics::material>> &materials,
+//								std::vector<std::unique_ptr<graphics::material_layer>> &layers) {
 //	auto light = scene->properties().lights_storage().allocate_sphere_light(color, intensity, light_pos, radius);
 //
-//	std::unique_ptr<Graphics::sphere> sphere = std::make_unique<Graphics::sphere>(10, 10);
+//	std::unique_ptr<graphics::sphere> sphere = std::make_unique<graphics::sphere>(10, 10);
 //	(*sphere) *= light->get_radius();
-//	auto light_obj = std::make_shared<Graphics::object>(std::move(sphere));
+//	auto light_obj = std::make_shared<graphics::object>(std::move(sphere));
 //
 //	light_obj->set_model_transform(glm::mat4x3(glm::translate(glm::mat4(), light_pos)));
 //
@@ -410,27 +410,27 @@ int main()
 //	return std::make_pair(std::move(light), light_obj);
 //}
 //
-//auto create_quad_light_object(Graphics::scene *scene,
-//							  const Graphics::rgb &color,
+//auto create_quad_light_object(graphics::scene *scene,
+//							  const graphics::rgb &color,
 //							  float intensity,
 //							  const glm::vec3 &light_pos,
 //							  const glm::vec3 &n, const glm::vec3 &t,
 //							  const glm::vec3 points[4],
-//							  std::vector<std::unique_ptr<Graphics::material>> &materials,
-//							  std::vector<std::unique_ptr<Graphics::material_layer>> &layers) {
-//	auto light = scene->properties().lights_storage().allocate_shaped_light<Graphics::quad_light_onesided>(color, intensity, light_pos);
+//							  std::vector<std::unique_ptr<graphics::material>> &materials,
+//							  std::vector<std::unique_ptr<graphics::material_layer>> &layers) {
+//	auto light = scene->properties().lights_storage().allocate_shaped_light<graphics::quad_light_onesided>(color, intensity, light_pos);
 //	light->set_points(points);
 //
-//	auto quad = std::make_unique<Graphics::mesh<Graphics::mesh_subdivion_mode::Triangles>>();
+//	auto quad = std::make_unique<graphics::mesh<graphics::mesh_subdivion_mode::Triangles>>();
 //	std::uint32_t ind[6] = { 0,1,2,0,2,3 };
-//	Graphics::object_vertex_data vertices[4];
+//	graphics::object_vertex_data vertices[4];
 //	vertices[0].p = points[0]; vertices[1].p = points[1]; vertices[2].p = points[2]; vertices[3].p = points[3];
 //	glm::vec3 b = glm::cross(t, n);
 //	for (auto &v : vertices)
 //		v.tangent_frame_from_tbn(t, b, n);
 //	quad->set_vertices(vertices, 4);
 //	quad->set_indices(ind, 6);
-//	auto light_obj = std::make_shared<Graphics::object>(std::move(quad));
+//	auto light_obj = std::make_shared<graphics::object>(std::move(quad));
 //
 //	light_obj->set_model_transform(glm::mat4x3(glm::translate(glm::mat4(), light_pos)));
 //
@@ -453,7 +453,7 @@ int main()
 //	return std::make_pair(std::move(light), light_obj);
 //}
 //
-//void add_scene_lights(Graphics::scene &scene, std::vector<std::unique_ptr<Graphics::light>> &lights, std::vector<std::unique_ptr<Graphics::material>> &materials, std::vector<std::unique_ptr<Graphics::material_layer>> &layers) {
+//void add_scene_lights(graphics::scene &scene, std::vector<std::unique_ptr<graphics::light>> &lights, std::vector<std::unique_ptr<graphics::material>> &materials, std::vector<std::unique_ptr<graphics::material_layer>> &layers) {
 //	std::random_device rd;
 //	std::mt19937 gen(rd());
 //
@@ -462,13 +462,13 @@ int main()
 //					 glm::vec3{ 483.376,143,144.1 },
 //					 glm::vec3{ -242, 153,  552},
 //					 glm::vec3{  885, 153,  552} }) {
-//		Graphics::rgb color;
+//		graphics::rgb color;
 //		float lums;
 //#ifdef STATIC_SCENE
-//		color = Graphics::kelvin(1800);
+//		color = graphics::kelvin(1800);
 //		lums = 6500.f;
 //#else
-//		color = Graphics::kelvin(std::uniform_real_distribution<>(1300,4500)(gen));
+//		color = graphics::kelvin(std::uniform_real_distribution<>(1300,4500)(gen));
 //		lums = std::uniform_real_distribution<>(1200, 3000)(gen) / color.luminance();
 //#endif
 //		auto wall_lamp = create_sphere_light_object(&scene, color, lums, 1.f, v, materials, layers);
@@ -477,7 +477,7 @@ int main()
 //	}
 //
 //	glm::vec3 points[4] = { { -18,18,0 },{ 18,18,0 },{ 18,-18,0 },{ -18,-18,0 } };
-//	auto lamp = create_quad_light_object(&scene, Graphics::kelvin(12000), 3000, glm::vec3{ 120, 153, 565 }, 
+//	auto lamp = create_quad_light_object(&scene, graphics::kelvin(12000), 3000, glm::vec3{ 120, 153, 565 }, 
 //										 glm::vec3{ 0,0,-1 }, glm::vec3{ 1,0,0 }, points, materials, layers);
 //
 //	lights.push_back(std::move(lamp.first));
@@ -569,7 +569,7 @@ int main()
 //	 *	Create camera
 //	 */
 //
-//	Graphics::camera camera;
+//	graphics::camera camera;
 //	camera.set_position({ 901.4, 566.93, 112.43 });
 //	camera.lookat({ 771.5, 530.9, 65.6 });
 //
@@ -577,39 +577,39 @@ int main()
 //	/*
 //	*	Create atmospheric properties
 //	*/
-//	auto atmosphere = Graphics::atmospherics_earth_properties({ 0,-6.371e+6,0 });
+//	auto atmosphere = graphics::atmospherics_earth_properties({ 0,-6.371e+6,0 });
 //
 //
 //	/*
 //	 *	Create and load scene object and GI renderer
 //	 */
 //
-//	resource::resource_instance<Graphics::scene> scene(ctx);
-//	resource::resource_instance<Graphics::gi_renderer> renderer(ctx, &camera, &scene.get(), atmosphere);
+//	resource::resource_instance<graphics::scene> scene(ctx);
+//	resource::resource_instance<graphics::gi_renderer> renderer(ctx, &camera, &scene.get(), atmosphere);
 //
 //
 //	/*
 //	 *	Start loading resources and display loading screen
 //	 */
 //
-//	std::vector<std::unique_ptr<Graphics::light>> lights;
-//	std::vector<std::unique_ptr<Graphics::material>> materials;
-//	std::vector<std::unique_ptr<Graphics::material_layer>> material_layers;
+//	std::vector<std::unique_ptr<graphics::light>> lights;
+//	std::vector<std::unique_ptr<graphics::material>> materials;
+//	std::vector<std::unique_ptr<graphics::material_layer>> material_layers;
 //
 //	task_future_collection<void> loading_futures;
 //
 //	const glm::vec3 light0_pos{ -700.6, 138, -70 };
 //	const glm::vec3 light1_pos{ 200, 550, 170 };
-//	auto light0 = create_sphere_light_object(&scene.get(), Graphics::kelvin(2000), 2000.f, 2.f, light0_pos, materials, material_layers);
-//	auto light1 = create_sphere_light_object(&scene.get(), Graphics::kelvin(7000), 17500.f, 4.f, light1_pos, materials, material_layers);
+//	auto light0 = create_sphere_light_object(&scene.get(), graphics::kelvin(2000), 2000.f, 2.f, light0_pos, materials, material_layers);
+//	auto light1 = create_sphere_light_object(&scene.get(), graphics::kelvin(7000), 17500.f, 4.f, light1_pos, materials, material_layers);
 //
 //	const glm::vec3 sun_direction = glm::normalize(glm::vec3{ 0.f, -1.f, 0.f });
-//	auto sun_light = scene.get().properties().lights_storage().allocate_directional_light(Graphics::kelvin(5770),
+//	auto sun_light = scene.get().properties().lights_storage().allocate_directional_light(graphics::kelvin(5770),
 //																						  1.88e+9f, 1496e+8f, 695e+6f, sun_direction);
 //
 //	add_scene_lights(scene.get(), lights, materials, material_layers);
 //
-//	std::vector<std::shared_ptr<Graphics::object>> sponza_objects;
+//	std::vector<std::shared_ptr<graphics::object>> sponza_objects;
 //	loading_futures.insert(resource::model_factory::load_model_async(ctx,
 //																		 R"(Data/models/crytek-sponza/sponza.obj)",
 //																		 &scene.get().get_object_group(),
@@ -619,9 +619,9 @@ int main()
 //																		 material_layers,
 //																		 &sponza_objects));
 //	
-//	std::vector<std::unique_ptr<Graphics::material>> mat_editor_materials;
-//	std::vector<std::unique_ptr<Graphics::material_layer>> mat_editor_layers;
-//	std::vector<std::shared_ptr<Graphics::object>> mat_editor_objects;
+//	std::vector<std::unique_ptr<graphics::material>> mat_editor_materials;
+//	std::vector<std::unique_ptr<graphics::material_layer>> mat_editor_layers;
+//	std::vector<std::shared_ptr<graphics::object>> mat_editor_objects;
 //	loading_futures.insert(resource::model_factory::load_model_async(ctx,
 //																		 R"(Data/models/dragon/china_dragon.obj)",
 //																		 //R"(Data/models/mitsuba/mitsuba-sphere.obj)",
@@ -646,9 +646,9 @@ int main()
 //
 //	constexpr int layers_count = 3;
 //
-//	std::unique_ptr<Graphics::profiler> gpu_tasks_profiler = std::make_unique<Graphics::profiler>();
+//	std::unique_ptr<graphics::profiler> gpu_tasks_profiler = std::make_unique<graphics::profiler>();
 //	renderer.get().attach_profiler(gpu_tasks_profiler.get());
-//	std::unique_ptr<Graphics::debug_gui> debug_gui_dispatchable = std::make_unique<Graphics::debug_gui>(ctx, gpu_tasks_profiler.get(), font, &camera);
+//	std::unique_ptr<graphics::debug_gui> debug_gui_dispatchable = std::make_unique<graphics::debug_gui>(ctx, gpu_tasks_profiler.get(), font, &camera);
 //
 //	auto mat_editor_model_transform = glm::scale(glm::mat4(), glm::vec3{ 3.5f });
 //	mat_editor_model_transform = glm::translate(mat_editor_model_transform, glm::vec3{ .0f, -15.f, .0f });
@@ -658,7 +658,7 @@ int main()
 //	for (auto &o : mat_editor_objects)
 //		o->set_model_transform(glm::mat4x3(mat_editor_model_transform));
 //	
-//	std::unique_ptr<Graphics::material_layer> layers[layers_count];
+//	std::unique_ptr<graphics::material_layer> layers[layers_count];
 //	layers[0] = std::move(mat_editor_layers.back());
 //	mat_editor_materials.back()->enable_subsurface_scattering(true);
 //
@@ -669,7 +669,7 @@ int main()
 //	float mie_scattering_coefficient = 1.5e+1f;
 //
 //	bool layer_enabled[3] = { true, false, false };
-//	Graphics::rgb base_color[3];
+//	graphics::rgb base_color[3];
 //	float roughness[3];
 ////	float anisotropy[3];
 //	float metallic[3];
@@ -710,7 +710,7 @@ int main()
 //					ImGui::SliderFloat((std::string("Metal ##value") +	" ##" + layer_label).data(), &metallic[i],			 .0f, 1.f);
 //					ImGui::SliderFloat((std::string("IOR ##value") +	" ##" + layer_label).data(), &index_of_refraction[i],1.f, 4.f, "%.5f", 3.f);
 //					if (i < layers_count - 1 && layer_enabled[i + 1])
-//						ImGui::SliderFloat((std::string("Thick ##value") + " ##" + layer_label).data(), &thickness[i], .0f, Graphics::material_layer_max_thickness, "%.5f", 3.f);
+//						ImGui::SliderFloat((std::string("Thick ##value") + " ##" + layer_label).data(), &thickness[i], .0f, graphics::material_layer_max_thickness, "%.5f", 3.f);
 //					ImGui::SliderFloat((std::string("Attn ##value") +	" ##" + layer_label).data(), &absorption[i], .000001f, 50.f, "%.8f", 5.f);
 //					ImGui::SliderFloat((std::string("Phase ##value") +	" ##" + layer_label).data(), &phase[i], -1.f, +1.f);
 //				}
@@ -771,12 +771,12 @@ int main()
 //	ctx.set_renderer(&renderer.get());
 //
 //	auto footer_text = text_manager.get().create_renderer();
-//	auto footer_text_task = Graphics::make_gpu_task("footer_text", footer_text.get(), nullptr);
+//	auto footer_text_task = graphics::make_gpu_task("footer_text", footer_text.get(), nullptr);
 //
 //#ifndef STATIC_SCENE
 //	renderer.get().add_gui_task(footer_text_task);
 //#endif
-//	renderer.get().add_gui_task(Graphics::make_gpu_task("debug_gui", debug_gui_dispatchable.get(), nullptr));
+//	renderer.get().add_gui_task(graphics::make_gpu_task("debug_gui", debug_gui_dispatchable.get(), nullptr));
 //
 //	glm::ivec2 last_pointer_pos;
 //	float time = 0;

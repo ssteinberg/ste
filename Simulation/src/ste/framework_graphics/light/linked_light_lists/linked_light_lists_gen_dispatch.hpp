@@ -17,7 +17,7 @@
 #include <Sampler.hpp>
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 class linked_light_lists_gen_dispatch : public gpu_dispatchable {
 	using Base = gpu_dispatchable;

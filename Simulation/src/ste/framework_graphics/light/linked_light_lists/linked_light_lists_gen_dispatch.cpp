@@ -2,7 +2,7 @@
 #include <stdafx.hpp>
 //#include <linked_light_lists_gen_dispatch.hpp>
 //
-//using namespace ste::Graphics;
+//using namespace ste::graphics;
 //using namespace ste::Core;
 //
 //void linked_light_lists_gen_dispatch::set_context_state() const {

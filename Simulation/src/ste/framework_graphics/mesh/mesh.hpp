@@ -12,7 +12,7 @@
 #include <type_traits>
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 class mesh_generic {
 public:

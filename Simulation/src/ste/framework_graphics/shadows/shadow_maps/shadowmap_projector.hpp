@@ -14,7 +14,7 @@
 #include <shadowmap_storage.hpp>
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 class shadowmap_projector : public gpu_dispatchable {
 	using Base = gpu_dispatchable;

@@ -19,7 +19,7 @@
 #include <limits>
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 class linked_light_lists {
 private:

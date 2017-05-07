@@ -9,7 +9,7 @@
 #include <material_layer_descriptor.hpp>
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 struct material_descriptor {
 public:

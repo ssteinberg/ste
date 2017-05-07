@@ -16,7 +16,7 @@
 #include <memory>
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 class volumetric_scattering_storage {
 private:

@@ -17,20 +17,20 @@
 //#include <algorithm>
 //
 //using namespace ste::resource;
-//using namespace ste::Graphics;
+//using namespace ste::graphics;
 //using ste::Core::texture_2d;
 //
 //tinyobj::material_t model_factory::empty_mat;
 //
 //ste::task_future<void> model_factory::process_model_mesh(task_scheduler* sched,
-//														Graphics::scene_properties *scene_properties,
+//														graphics::scene_properties *scene_properties,
 //														const tinyobj::shape_t &shape,
-//														Graphics::object_group *object_group,
+//														graphics::object_group *object_group,
 //														materials_type &materials,
 //														texture_map_type &textures,
-//									 					std::vector<std::unique_ptr<Graphics::material>> &loaded_materials,
-//														std::vector<std::unique_ptr<Graphics::material_layer>> &loaded_material_layers,
-//									 					std::vector<std::shared_ptr<Graphics::object>> *loaded_objects) {
+//									 					std::vector<std::unique_ptr<graphics::material>> &loaded_materials,
+//														std::vector<std::unique_ptr<graphics::material_layer>> &loaded_material_layers,
+//									 					std::vector<std::shared_ptr<graphics::object>> *loaded_objects) {
 //	std::vector<object_vertex_data> vbo_data;
 //	std::vector<std::uint32_t> vbo_indices;
 //	std::vector<std::pair<glm::vec3, glm::vec3>> nt;
@@ -137,11 +137,11 @@
 ////		if (anisotropy_map != nullptr)	layer->set_anisotropy(anisotropy_map);
 //		if (thickness_map != nullptr)	layer->set_layer_thickness(thickness_map);
 //
-//		std::unique_ptr<Graphics::mesh<Graphics::mesh_subdivion_mode::Triangles>> m = std::make_unique<Graphics::mesh<Graphics::mesh_subdivion_mode::Triangles>>();
+//		std::unique_ptr<graphics::mesh<graphics::mesh_subdivion_mode::Triangles>> m = std::make_unique<graphics::mesh<graphics::mesh_subdivion_mode::Triangles>>();
 //		m->set_indices(std::move(vbo_indices));
 //		m->set_vertices(std::move(vbo_data));
 //
-//		std::shared_ptr<Graphics::object> obj = std::make_shared<Graphics::object>(std::move(m));
+//		std::shared_ptr<graphics::object> obj = std::make_shared<graphics::object>(std::move(m));
 //		obj->set_material(mat.get());
 //
 //		object_group->add_object(obj);
@@ -248,11 +248,11 @@
 //ste::task_future<void> model_factory::load_model_async(const ste_engine_control &ctx,
 //													  const boost::filesystem::path &file_path,
 //													  object_group *object_group,
-//													  Graphics::scene_properties *scene_properties,
+//													  graphics::scene_properties *scene_properties,
 //													  float normal_map_bias,
-//													  std::vector<std::unique_ptr<Graphics::material>> &loaded_materials,
-//													  std::vector<std::unique_ptr<Graphics::material_layer>> &loaded_material_layers,
-//													  std::vector<std::shared_ptr<Graphics::object>> *loaded_objects) {
+//													  std::vector<std::unique_ptr<graphics::material>> &loaded_materials,
+//													  std::vector<std::unique_ptr<graphics::material_layer>> &loaded_material_layers,
+//													  std::vector<std::shared_ptr<graphics::object>> *loaded_objects) {
 //	return ctx.scheduler().schedule_now([=, &loaded_materials, &loaded_material_layers, &ctx]() {
 //		std::unique_ptr<texture_map_type> textures = std::make_unique<texture_map_type>();
 //

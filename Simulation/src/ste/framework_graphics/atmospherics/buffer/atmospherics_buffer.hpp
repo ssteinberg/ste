@@ -10,7 +10,7 @@
 #include <range.hpp>
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 class atmospherics_buffer {
 private:

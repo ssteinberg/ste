@@ -6,7 +6,7 @@
 #include <atmospherics_properties.hpp>
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 namespace _detail {
 

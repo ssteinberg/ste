@@ -10,7 +10,7 @@
 #include <array>
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 class convex_polyhedron_light : public shaped_light {
 	using Base = shaped_light;

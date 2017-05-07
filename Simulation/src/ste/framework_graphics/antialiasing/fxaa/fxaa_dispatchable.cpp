@@ -6,7 +6,7 @@
 //
 //#include <gl_current_context.hpp>
 //
-//using namespace ste::Graphics;
+//using namespace ste::graphics;
 //
 //void fxaa_dispatchable::set_context_state() const {
 //	using namespace Core;

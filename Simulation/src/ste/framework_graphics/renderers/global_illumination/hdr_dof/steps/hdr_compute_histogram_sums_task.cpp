@@ -3,7 +3,7 @@
 //#include <hdr_compute_histogram_sums_task.hpp>
 //#include <shader_storage_buffer.hpp>
 //
-//using namespace ste::Graphics;
+//using namespace ste::graphics;
 //using namespace ste::Core;
 //
 //void hdr_compute_histogram_sums_task::set_context_state() const {

@@ -13,7 +13,7 @@
 #include <boost/crc.hpp>
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 template <int Version, typename DataType>
 class microfacet_transmission_fit {

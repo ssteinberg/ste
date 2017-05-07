@@ -6,7 +6,7 @@
 #include <stdafx.hpp>
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 class human_vision_properties {
 public:

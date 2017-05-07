@@ -11,7 +11,7 @@
 #include <memory>
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 class hdr_bloom_blurx_task : public gpu_dispatchable {
 	using Base = gpu_dispatchable;

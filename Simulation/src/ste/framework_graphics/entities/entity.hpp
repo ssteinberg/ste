@@ -9,7 +9,7 @@
 #include <glm/gtc/quaternion.hpp>
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 class entity {
 public:

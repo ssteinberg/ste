@@ -81,9 +81,6 @@
     <ClCompile Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shadowmap_storage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\utilities\camera\Camera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_graphics\utilities\debug_gui\debug_gui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -405,9 +402,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shadowmap_storage.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\utilities\camera\Camera.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\utilities\debug_gui\debug_gui.hpp">
@@ -1707,6 +1701,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\rendering_system\fragment_compute.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\utilities\camera\camera.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

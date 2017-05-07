@@ -11,7 +11,7 @@
 //
 //#include <object_group_draw_buffers.hpp>
 //
-//using namespace ste::Graphics;
+//using namespace ste::graphics;
 //
 //constexpr int scene::shadow_pltt_size;
 //constexpr int scene::directional_shadow_pltt_size;

@@ -13,7 +13,7 @@
 #include <boost/crc.hpp>
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 class microfacet_refraction_fit {
 	struct refraction_fit_data {

@@ -2,7 +2,7 @@
 #include <stdafx.hpp>
 //#include <deferred_gbuffer.hpp>
 //
-//using namespace ste::Graphics;
+//using namespace ste::graphics;
 //using namespace ste::Core;
 //
 //void deferred_gbuffer::resize(glm::ivec2 size) {

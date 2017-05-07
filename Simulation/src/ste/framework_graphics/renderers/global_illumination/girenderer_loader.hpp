@@ -15,8 +15,8 @@ namespace ste {
 namespace resource {
 
 template <>
-class resource_loading_task<Graphics::gi_renderer> {
-	using R = Graphics::gi_renderer;
+class resource_loading_task<graphics::gi_renderer> {
+	using R = graphics::gi_renderer;
 
 public:
 	auto loader(const ste_engine_control &ctx, R* object) {

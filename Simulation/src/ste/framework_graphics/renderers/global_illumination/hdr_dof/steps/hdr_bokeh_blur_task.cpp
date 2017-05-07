@@ -2,7 +2,7 @@
 #include <stdafx.hpp>
 //#include <hdr_bokeh_blur_task.hpp>
 //
-//using namespace ste::Graphics;
+//using namespace ste::graphics;
 //using namespace ste::Core;
 //
 //void hdr_bokeh_blur_task::set_context_state() const {

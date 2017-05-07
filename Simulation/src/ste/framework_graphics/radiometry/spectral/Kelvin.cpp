@@ -3,7 +3,7 @@
 #include <kelvin.hpp>
 #include <rgb.hpp>
 
-using namespace ste::Graphics;
+using namespace ste::graphics;
 
 rgb kelvin::toRGB() const {
 	rgb ret;

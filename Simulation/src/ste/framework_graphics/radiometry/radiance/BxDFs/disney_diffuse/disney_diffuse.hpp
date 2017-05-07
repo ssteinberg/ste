@@ -9,7 +9,7 @@
 #include <schlick_fresnel.hpp>
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 template <typename T>
 class disney_diffuse_brdf : public BxDF<T> {

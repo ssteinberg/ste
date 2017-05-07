@@ -9,7 +9,7 @@
 #include <surface_element_cast.hpp>
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 template <gli::format Fin, bool height_in_alpha = true>
 class normal_map_from_height_map {

@@ -7,7 +7,7 @@
 //
 //#include <Scene.hpp>
 //
-//using namespace ste::Graphics;
+//using namespace ste::graphics;
 //
 //void scene_prepopulate_depth_dispatch::set_context_state() const {
 //	Core::gl::gl_current_context::get()->enable_depth_test();

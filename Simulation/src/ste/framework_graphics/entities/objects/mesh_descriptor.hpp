@@ -8,7 +8,7 @@
 #include <glm/gtc/quaternion.hpp>
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 struct mesh_descriptor {
 	glm::mat3x4 model_transform_matrix;

@@ -64,24 +64,24 @@ private:
 															 const boost::filesystem::path &dir,
 															 float normal_map_bias);
 	static ste::task_future<void> process_model_mesh(task_scheduler* sched,
-													 Graphics::scene_properties *,
+													 graphics::scene_properties *,
 													 const tinyobj::shape_t &,
-													 Graphics::object_group *,
+													 graphics::object_group *,
 													 materials_type &,
 													 texture_map_type &,
-									 				 std::vector<std::unique_ptr<Graphics::material>> &loaded_materials,
-													 std::vector<std::unique_ptr<Graphics::material_layer>> &loaded_material_layers,
-									 				 std::vector<std::shared_ptr<Graphics::object>> *loaded_objects);
+									 				 std::vector<std::unique_ptr<graphics::material>> &loaded_materials,
+													 std::vector<std::unique_ptr<graphics::material_layer>> &loaded_material_layers,
+									 				 std::vector<std::shared_ptr<graphics::object>> *loaded_objects);
 
 public:
 	static ste::task_future<void> load_model_async(const ste_engine_control &context,
 												   const boost::filesystem::path &file_path,
-												   Graphics::object_group *object_group,
-												   Graphics::scene_properties *scene_properties,
+												   graphics::object_group *object_group,
+												   graphics::scene_properties *scene_properties,
 												   float normal_map_bias,
-												   std::vector<std::unique_ptr<Graphics::material>> &loaded_materials,
-												   std::vector<std::unique_ptr<Graphics::material_layer>> &loaded_material_layers,
-												   std::vector<std::shared_ptr<Graphics::object>> *loaded_objects = nullptr);
+												   std::vector<std::unique_ptr<graphics::material>> &loaded_materials,
+												   std::vector<std::unique_ptr<graphics::material_layer>> &loaded_material_layers,
+												   std::vector<std::shared_ptr<graphics::object>> *loaded_objects = nullptr);
 };
 
 }

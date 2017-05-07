@@ -4,7 +4,7 @@
 //
 //#include <light_storage.hpp>
 //
-//using namespace ste::Graphics;
+//using namespace ste::graphics;
 //
 //constexpr int linked_light_lists::lll_image_res_multiplier;
 //

@@ -9,7 +9,7 @@
 #include <gl_current_context.hpp>
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 class hdr_compute_minmax_task : public gpu_dispatchable {
 	using Base = gpu_dispatchable;

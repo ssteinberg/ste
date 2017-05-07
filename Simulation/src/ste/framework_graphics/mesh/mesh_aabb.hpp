@@ -6,7 +6,7 @@
 #include <stdafx.hpp>
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 class mesh_aabb {
 private:

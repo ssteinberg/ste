@@ -2,7 +2,7 @@
 #include <stdafx.hpp>
 //#include <material_layer.hpp>
 //
-//using namespace ste::Graphics;
+//using namespace ste::graphics;
 //
 //material_layer::material_layer() {
 //	material_sampler.set_wrap_s(Core::texture_wrap_mode::Wrap);

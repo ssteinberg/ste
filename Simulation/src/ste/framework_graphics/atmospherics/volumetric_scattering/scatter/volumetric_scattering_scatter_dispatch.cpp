@@ -2,7 +2,7 @@
 #include <stdafx.hpp>
 //#include <volumetric_scattering_scatter_dispatch.hpp>
 //
-//using namespace ste::Graphics;
+//using namespace ste::graphics;
 //using namespace ste::Core;
 //
 //void volumetric_scattering_scatter_dispatch::set_context_state() const {

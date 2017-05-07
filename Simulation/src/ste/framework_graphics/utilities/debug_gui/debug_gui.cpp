@@ -18,7 +18,7 @@
 //#include <cstring>
 //#include <sstream>
 //
-//using namespace ste::Graphics;
+//using namespace ste::graphics;
 //
 //debug_gui::debug_gui(const ste_engine_control &ctx, profiler *prof, const ste::text::font &default_font, const camera *cam) : ctx(ctx), prof(prof), cam(cam) {
 //	assert(prof);

@@ -7,7 +7,7 @@
 #include <BxDF.hpp>
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 template <typename T>
 class lambert_diffuse_brdf : public BxDF<T> {

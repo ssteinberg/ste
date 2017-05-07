@@ -21,7 +21,7 @@
 #include <functional>
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 class debug_gui : public gpu_dispatchable {
 	using Base = gpu_dispatchable;

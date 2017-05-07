@@ -23,7 +23,7 @@
 #include <memory>
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 class volumetric_scattering_scatter_dispatch : public gpu_dispatchable {
 	using Base = gpu_dispatchable;
@@ -107,8 +107,8 @@ public:
 namespace resource {
 
 template <>
-class resource_loading_task<Graphics::volumetric_scattering_scatter_dispatch> {
-	using R = Graphics::volumetric_scattering_scatter_dispatch;
+class resource_loading_task<graphics::volumetric_scattering_scatter_dispatch> {
+	using R = graphics::volumetric_scattering_scatter_dispatch;
 
 public:
 	auto loader(const ste_engine_control &ctx, R* object) {

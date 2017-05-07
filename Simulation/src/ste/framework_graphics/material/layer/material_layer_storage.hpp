@@ -11,7 +11,7 @@
 #include <memory>
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 class material_layer_storage : public Core::resource_storage_stable<material_layer_descriptor> {
 	using Base = resource_storage_stable<material_layer_descriptor>;

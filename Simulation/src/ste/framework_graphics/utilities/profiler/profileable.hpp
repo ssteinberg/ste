@@ -8,7 +8,7 @@
 //#include <timestamp_query.hpp>
 //
 //namespace ste {
-//namespace Graphics {
+//namespace graphics {
 //
 //class profileable {
 //private:

@@ -2,7 +2,7 @@
 #include <stdafx.hpp>
 //#include <hdr_create_histogram_task.hpp>
 //
-//using namespace ste::Graphics;
+//using namespace ste::graphics;
 //using namespace ste::Core;
 //
 //void hdr_create_histogram_task::set_context_state() const {

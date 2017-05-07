@@ -12,7 +12,7 @@
 #include <type_traits>
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 class material_storage : public Core::resource_storage_stable<material_descriptor> {
 	using Base = resource_storage_stable<material_descriptor>;

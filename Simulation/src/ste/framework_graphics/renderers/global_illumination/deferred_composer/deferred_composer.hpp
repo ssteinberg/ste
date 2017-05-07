@@ -26,7 +26,7 @@
 
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 class gi_renderer;
 
@@ -78,8 +78,8 @@ protected:
 namespace resource {
 
 template <>
-class resource_loading_task<Graphics::deferred_composer> {
-	using R = Graphics::deferred_composer;
+class resource_loading_task<graphics::deferred_composer> {
+	using R = graphics::deferred_composer;
 
 public:
 	auto loader(const ste_engine_control &ctx, R* object) {

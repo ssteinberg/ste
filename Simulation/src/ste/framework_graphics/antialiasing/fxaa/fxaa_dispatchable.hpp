@@ -21,7 +21,7 @@
 #include <memory>
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 class fxaa_dispatchable : public gpu_dispatchable {
 	using Base = gpu_dispatchable;
@@ -66,8 +66,8 @@ protected:
 namespace resource {
 
 template <>
-class resource_loading_task<Graphics::fxaa_dispatchable> {
-	using R = Graphics::fxaa_dispatchable;
+class resource_loading_task<graphics::fxaa_dispatchable> {
+	using R = graphics::fxaa_dispatchable;
 
 public:
 	auto loader(const ste_engine_control &ctx, R* object) {

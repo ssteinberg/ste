@@ -8,7 +8,7 @@
 #include <array>
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 template <typename T, int samples>
 class spectrum {

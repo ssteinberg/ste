@@ -17,7 +17,7 @@
 #include <limits>
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 /**
  *	@brief	Defines rendering material layer

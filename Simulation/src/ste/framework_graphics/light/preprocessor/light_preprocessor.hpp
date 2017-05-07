@@ -17,7 +17,7 @@
 #include <gpu_dispatchable.hpp>
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 class light_preprocessor : public gpu_dispatchable {
 	friend class light_preprocess_cull_lights;
@@ -66,8 +66,8 @@ protected:
 namespace resource {
 
 template <>
-class resource_loading_task<Graphics::light_preprocessor> {
-	using R = Graphics::light_preprocessor;
+class resource_loading_task<graphics::light_preprocessor> {
+	using R = graphics::light_preprocessor;
 
 public:
 	auto loader(const ste_engine_control &ctx, R* object) {

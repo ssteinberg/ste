@@ -53,7 +53,7 @@
 #include <memory>
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 class gi_renderer : public rendering_system {
 	using Base = rendering_system;
@@ -65,7 +65,7 @@ class gi_renderer : public rendering_system {
 private:
 	using ResizeSignalConnectionType = ste_engine_control::framebuffer_resize_signal_type::connection_type;
 	using ProjectionSignalConnectionType = ste_engine_control::projection_change_signal_type::connection_type;
-	using FbClearTask = ste::Graphics::fb_clear_dispatch<false>;
+	using FbClearTask = ste::graphics::fb_clear_dispatch<false>;
 
 	static constexpr int view_transform_buffer_bind_location = 20;
 	static constexpr int proj_transform_buffer_bind_location = 21;

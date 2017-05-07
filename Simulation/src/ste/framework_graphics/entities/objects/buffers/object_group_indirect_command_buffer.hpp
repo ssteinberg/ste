@@ -9,7 +9,7 @@
 #include <indirect_draw_buffer_object.hpp>
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 class object_group_indirect_command_buffer {
 private:

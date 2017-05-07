@@ -6,7 +6,7 @@
 #include <stdafx.hpp>
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 template <typename T>
 class schlick_smith_gaf {

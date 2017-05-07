@@ -7,7 +7,7 @@
 #include <shaped_light.hpp>
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 class quad_light : public shaped_light {
 	using Base = shaped_light;

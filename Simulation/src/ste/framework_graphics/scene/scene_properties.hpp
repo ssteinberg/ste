@@ -8,7 +8,7 @@
 #include <light_storage.hpp>
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 class scene_properties {
 private:

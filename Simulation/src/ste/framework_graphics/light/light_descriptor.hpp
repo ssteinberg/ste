@@ -9,7 +9,7 @@
 #include <texture_handle.hpp>
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 struct light_descriptor {
 	glm::vec3		position;		float radius{ .0f };

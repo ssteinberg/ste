@@ -9,7 +9,7 @@
 #include <gstack_stable.hpp>
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 class shaped_light : public light {
 	using Base = light;

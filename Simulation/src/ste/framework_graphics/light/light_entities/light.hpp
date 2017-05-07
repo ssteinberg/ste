@@ -14,7 +14,7 @@
 #include <rgb.hpp>
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 class light : public Core::observable_resource<light_descriptor>,
 			  public entity {

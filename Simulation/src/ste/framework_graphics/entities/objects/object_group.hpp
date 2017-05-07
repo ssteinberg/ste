@@ -15,7 +15,7 @@
 #include <memory>
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 class object_group : public entity_affine {
 	using Base = gpu_dispatchable;

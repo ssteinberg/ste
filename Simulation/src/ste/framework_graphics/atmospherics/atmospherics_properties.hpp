@@ -15,7 +15,7 @@
 #include <functional>
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 /*
  *	Defines the properties of an atmosphere

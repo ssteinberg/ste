@@ -29,7 +29,7 @@
 #include <array>
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 class hdr_compute_minmax_task;
 class hdr_create_histogram_task;
@@ -156,8 +156,8 @@ public:
 namespace resource {
 
 template <>
-class resource_loading_task<Graphics::hdr_dof_postprocess> {
-	using R = Graphics::hdr_dof_postprocess;
+class resource_loading_task<graphics::hdr_dof_postprocess> {
+	using R = graphics::hdr_dof_postprocess;
 
 public:
 	auto loader(const ste_engine_control &ctx, R* object) {

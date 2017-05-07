@@ -6,7 +6,7 @@
 #include <spectrum.hpp>
 
 namespace ste {
-namespace Graphics {
+namespace graphics {
 
 class rgb;
 
