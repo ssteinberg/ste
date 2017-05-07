@@ -6,7 +6,6 @@
 #include <stdafx.hpp>
 #include <ste_context.hpp>
 #include <storage.hpp>
-#include <fragment.hpp>
 
 #include <boost/container/flat_map.hpp>
 #include <memory>
@@ -68,8 +67,10 @@ private:
 	using storage_tag = const void*;
 	using storage_map_t = boost::container::flat_map<storage_tag, std::unique_ptr<storage_base>>;
 
-protected:
+private:
 	std::reference_wrapper<const ste_context> ctx;
+
+protected:
 	storage_map_t storages;
 
 	/**
@@ -113,7 +114,17 @@ public:
 		storages.erase(tag);
 	}
 
-	virtual void render() = 0;
+	/**
+	*	@brief	Implementations can use this hook to provide all fragments that use this rendering system with a collection of external binding sets.
+	*/
+	virtual const pipeline_external_binding_set_collection* external_binding_sets() const { return nullptr; }
+
+	/**
+	*	@brief	Implementations should use this to build a primary command queue and dispatch.
+	*/
+	virtual void render() const = 0;
+
+	auto& get_creating_context() const { return ctx.get(); }
 };
 
 }

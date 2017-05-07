@@ -386,9 +386,6 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\transforms_ring_buffers.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\rendering_system.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\scene\geometry_cull\scene_geo_cull_dispatch.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1704,6 +1701,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\utilities\camera\camera.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\rendering_system\rendering_presentation_system.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

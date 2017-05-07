@@ -4,7 +4,7 @@
 #pragma once
 
 #include <stdafx.hpp>
-#include <ste_context.hpp>
+#include <rendering_system.hpp>
 #include <fragment.hpp>
 #include <fragment_utility.hpp>
 
@@ -34,6 +34,7 @@ private:
 	static auto create_graphics_pipeline(const ste_context &ctx,
 										 pipeline_binding_set_pool &binding_set_pool,
 										 device_pipeline_graphics_configurations &&pipeline_graphics_configurations,
+										 const pipeline_external_binding_set_collection* external_binding_sets_collection,
 										 std::vector<device_pipeline_shader_stage> &shader_stages,
 										 Names&&... shader_stages_names) {
 		pipeline_auditor_graphics auditor(std::move(pipeline_graphics_configurations));
@@ -49,8 +50,12 @@ private:
 		CRTP::setup_graphics_pipeline(ctx, auditor);
 
 		// Create pipeline
-		return auditor.pipeline(ctx,
-								binding_set_pool);
+		return external_binding_sets_collection ?
+			auditor.pipeline(ctx,
+							 binding_set_pool,
+							 *external_binding_sets_collection) :
+			auditor.pipeline(ctx,
+							 binding_set_pool);
 	}
 
 protected:
@@ -60,13 +65,14 @@ protected:
 	static void setup_graphics_pipeline(const ste_context &ctx, pipeline_auditor_graphics &auditor) {}
 
 	template <typename... Names>
-	fragment_graphics(const ste_context &ctx,
+	fragment_graphics(const rendering_system &rs,
 					  pipeline_binding_set_pool &binding_set_pool,
 					  device_pipeline_graphics_configurations &&pipeline_graphics_configurations,
 					  Names&&... shader_stages_names)
-		: pipeline(create_graphics_pipeline(ctx, 
+		: pipeline(create_graphics_pipeline(rs.get_creating_context(),
 											binding_set_pool,
 											std::move(pipeline_graphics_configurations),
+											rs.external_binding_sets(),
 											this->shader_stages,
 											std::forward<Names>(shader_stages_names)...))
 	{

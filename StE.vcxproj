@@ -559,6 +559,7 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\rendering_system\presentation_engine\frame_time_predictor\presentation_frame_time_predictor.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\rendering_system\presentation_engine\frame_time_predictor\presentation_frame_time_predictor_model.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\rendering_system\presentation_engine\presentation_engine.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\rendering_system\rendering_presentation_system.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\rendering_system\rendering_system.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\rendering_system\storage.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\device_resource_handle.hpp" />
@@ -1060,7 +1061,6 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\steps\hdr_create_histogram_task.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\steps\hdr_tonemap_coc_task.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\transforms_ring_buffers.hpp" />
-    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\rendering_system.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\scene\geometry_cull\scene_geo_cull_dispatch.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\scene\perpopulate_depth\scene_prepopulate_depth_dispatch.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\scene\Scene.hpp" />
