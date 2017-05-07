@@ -1,0 +1,84 @@
+//	StE
+// © Shlomi Steinberg 2015-2017
+
+#pragma once
+
+#include <stdafx.hpp>
+#include <ste_context.hpp>
+#include <fragment.hpp>
+#include <fragment_utility.hpp>
+
+#include <device_pipeline_shader_stage.hpp>
+#include <pipeline_auditor_graphics.hpp>
+#include <device_pipeline_graphics.hpp>
+
+#include <string>
+#include <vector>
+
+namespace ste {
+namespace gl {
+
+/**
+*	@brief	A rendering system fragment with a graphics pipeline
+*/
+template <typename CRTP, typename... ConsumedStorages>
+class fragment_graphics : public fragment<ConsumedStorages...> {
+private:
+	std::vector<device_pipeline_shader_stage> shader_stages;
+
+protected:
+	device_pipeline_graphics pipeline;
+
+private:
+	template <typename... Names>
+	static auto create_graphics_pipeline(const ste_context &ctx,
+										 pipeline_binding_set_pool &binding_set_pool,
+										 device_pipeline_graphics_configurations &&pipeline_graphics_configurations,
+										 std::vector<device_pipeline_shader_stage> &shader_stages,
+										 Names&&... shader_stages_names) {
+		pipeline_auditor_graphics auditor(std::move(pipeline_graphics_configurations));
+
+		// Expand names and create shader stages, feeding them into the auditor
+		shader_stages.reserve(sizeof...(Names));
+		_internal::fragment_expand_shader_stages<Names...>()(ctx,
+															 shader_stages,
+															 auditor,
+															 std::forward<Names>(shader_stages_names)...);
+
+		// Configure the auditor
+		CRTP::setup_graphics_pipeline(ctx, auditor);
+
+		// Create pipeline
+		return auditor.pipeline(ctx,
+								binding_set_pool);
+	}
+
+protected:
+	/**
+	 *	@brief	Subclasses can override this declaration to fine tune pipeline_auditor_graphics parameters
+	 */
+	static void setup_graphics_pipeline(const ste_context &ctx, pipeline_auditor_graphics &auditor) {}
+
+	template <typename... Names>
+	fragment_graphics(const ste_context &ctx,
+					  pipeline_binding_set_pool &binding_set_pool,
+					  device_pipeline_graphics_configurations &&pipeline_graphics_configurations,
+					  Names&&... shader_stages_names)
+		: pipeline(create_graphics_pipeline(ctx, 
+											binding_set_pool,
+											std::move(pipeline_graphics_configurations),
+											this->shader_stages,
+											std::forward<Names>(shader_stages_names)...))
+	{
+		static_assert(sizeof...(Names) > 0, "Expected shader stages");
+	}
+
+public:
+	virtual ~fragment_graphics() noexcept {}
+
+	// Subclasses are expected to declare:
+	//static const std::string& name();
+};
+
+}
+}

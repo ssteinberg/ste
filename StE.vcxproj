@@ -552,9 +552,15 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\command_buffer\command_buffer.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\command_buffer\command_pool.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\command_buffer\host_command.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\rendering_system\fragment.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\rendering_system\fragment_compute.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\rendering_system\fragment_graphics.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\rendering_system\fragment_utility.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\rendering_system\presentation_engine\frame_time_predictor\presentation_frame_time_predictor.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\rendering_system\presentation_engine\frame_time_predictor\presentation_frame_time_predictor_model.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\rendering_system\presentation_engine\presentation_engine.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\rendering_system\rendering_system.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\rendering_system\storage.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\device_resource_handle.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\task\task_command.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\task\task_enumerate_consumed_resources.hpp" />

@@ -28,6 +28,8 @@
 #include <attrib.hpp>
 
 #include <task.hpp>
+#include <rendering_system.hpp>
+#include <fragment_graphics.hpp>
 
 using namespace ste;
 
