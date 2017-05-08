@@ -19,8 +19,7 @@ namespace gl {
 /**
 *	@brief	A rendering system fragment with a compute pipeline
 */
-template <typename CRTP, typename... ConsumedStorages>
-class fragment_compute : public fragment<ConsumedStorages...> {
+class fragment_compute : public fragment {
 private:
 	device_pipeline_shader_stage shader_stage;
 

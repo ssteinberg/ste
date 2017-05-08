@@ -4,25 +4,17 @@
 #pragma once
 
 #include <stdafx.hpp>
-#include <command_buffer.hpp>
-
-#include <typelist.hpp>
+#include <rendering_system.hpp>
+#include <command_recorder.hpp>
+#include <ste_resource_traits.hpp>
 
 namespace ste {
 namespace gl {
 
 /**
-*	@brief	A rendering system fragment defines a part of the rendering process. Fragments work by generating a secondary command buffer for the rendering system to consume.
+*	@brief	A rendering system fragment defines a part of the rendering process.
 */
-template <typename... ConsumedStorages>
-class fragment {
-private:
-	friend class rendering_system;
-
-	static constexpr auto consumed_storages_count = sizeof...(ConsumedStorages);
-	template <int N>
-	using consumed_storage = typelist_type_at_t<N, ConsumedStorages...>;
-
+class fragment : ste_resource_deferred_create_trait {
 public:
 	using fragment_command_buffer_t = command_buffer_secondary<false>;
 
@@ -38,44 +30,16 @@ public:
 	// Subclasses are expected to declare:
 	//static const std::string& name();
 
-private:
 	/**
-	*	@brief	Generates the secondary command buffer used to render the fragment
+	*	@brief	Records the fragment's commands
 	*/
-	virtual fragment_command_buffer_t command_buffer(const ConsumedStorages&... storages) = 0;
+	virtual void record(command_recorder &) = 0;
 };
 
-/**
-*	@brief	A rendering system fragment defines a part of the rendering process. Fragments work by generating a secondary command buffer for the rendering system to consume.
-*/
-template <>
-class fragment<> {
-private:
-	friend class rendering_system;
-
-	static constexpr auto consumed_storages_count = 0;
-
-public:
-	using fragment_command_buffer_t = command_buffer_secondary<false>;
-
-protected:
-	fragment() {}
-
-public:
-	virtual ~fragment() noexcept {}
-
-	fragment(const fragment &) = delete;
-	fragment &operator=(const fragment &) = delete;
-
-	// Subclasses are expected to declare:
-	//static const std::string& name();
-
-private:
-	/**
-	*	@brief	Generates the secondary command buffer used to render the fragment
-	*/
-	virtual fragment_command_buffer_t command_buffer() = 0;
-};
+inline auto &operator<<(command_recorder &recorder, fragment &frag) {
+	frag.record(recorder);
+	return recorder;
+}
 
 }
 }

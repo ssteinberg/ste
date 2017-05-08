@@ -60,7 +60,7 @@ private:
 			create_renderpass();
 
 		// Vulkan shader stage descriptors
-		auto shader_stage_descriptors = layout.shader_stage_descriptors();
+		auto shader_stage_descriptors = get_layout().shader_stage_descriptors();
 
 		// Blend operation descriptor for each attachment
 		std::vector<vk::vk_blend_op_descriptor> attachment_blend_ops;
@@ -90,7 +90,7 @@ private:
 		};
 		graphics_pipeline.emplace(ctx.device(),
 								  shader_stage_descriptors,
-								  layout,
+								  get_layout(),
 								  device_renderpass.get(),
 								  0,
 								  viewport,

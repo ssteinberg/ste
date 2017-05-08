@@ -28,10 +28,190 @@
 #include <attrib.hpp>
 
 #include <task.hpp>
-#include <rendering_system.hpp>
+#include <rendering_presentation_system.hpp>
 #include <fragment_graphics.hpp>
 
 using namespace ste;
+
+class simple_storage : public gl::storage<simple_storage> {
+	friend class simple_fragment;
+
+private:
+	// Texture
+	ste_resource<gl::device_image<2>> image;
+	gl::image_view<gl::image_type::image_2d> image_view;
+	gl::sampler sampler;
+	gl::texture<gl::image_type::image_2d> texture;
+
+	// Vertex and index buffer
+	using vertex = gl::vertex_input_layout<glm::vec2, glm::vec3, glm::vec2>;
+	gl::array<std::uint32_t> index_buffer;
+	gl::stable_vector<vertex> vertex_buffer;
+
+	// UBO
+	using uniform_buffer_object = gl::std140<glm::vec4>;
+	gl::array<uniform_buffer_object> ubo;
+
+public:
+	simple_storage(const ste_context &ctx)
+		: image(resource::surface_factory::create_image_2d<gl::format::r8g8b8a8_unorm>(ctx,
+																					   R"(Data\models\crytek-sponza\images\Sponza_Bricks_a_Albedo.png)",
+																					   gl::image_usage::sampled,
+																					   gl::image_layout::shader_read_only_optimal)),
+		image_view(*image),
+		sampler(ctx, gl::sampler_parameter::filtering(gl::sampler_filter::linear, gl::sampler_filter::linear,
+													  gl::sampler_mipmap_mode::linear)),
+		texture(gl::make_texture(image_view, sampler, gl::image_layout::shader_read_only_optimal)),
+		index_buffer(ctx, std::vector<std::uint32_t>{ 0, 2, 1, 0, 1, 3 }, gl::buffer_usage::index_buffer),
+		vertex_buffer(ctx, gl::buffer_usage::vertex_buffer),
+		ubo(ctx,
+			std::vector<uniform_buffer_object>{ { glm::vec4{ 1, 0, 0, 1 } } },
+			gl::buffer_usage::uniform_buffer)
+	{
+		std::vector<vertex> vertices = {
+			{ { 0.0f, -0.5f },{ 1.0f, 0.0f, 0.0f },{ 0,0 } },
+			{ { 0.5f,  0.5f },{ 0.0f, 1.0f, 0.0f },{ 1,0 } },
+			{ { -0.5f, 0.5f },{ 0.0f, 0.0f, 1.0f },{ 1,1 } },
+			{ { 1.0f, -0.5f },{ 1.0f, 0.0f, 1.0f },{ 0,1 } },
+		};
+		auto vertices_fill_job = gl::fill(vertex_buffer, std::move(vertices));
+	}
+};
+
+class simple_fragment : public gl::fragment_graphics<simple_fragment> {
+	using Base = gl::fragment_graphics<simple_fragment>;
+
+	std::reference_wrapper<const ste_context> ctx;
+	gl::storage_shared_ptr<simple_storage> s;
+	gl::task<gl::cmd_draw_indexed> draw_task;
+
+	float f{ 0.f };
+
+public:
+	static auto create_settings(const ste_context &ctx) {
+		// Pipeline settings
+		gl::device_pipeline_graphics_configurations graphics_settings;
+		auto surface_extent = ctx.device().get_surface().extent();
+		graphics_settings.viewport = glm::vec2(surface_extent);
+		graphics_settings.scissor = surface_extent;
+		return graphics_settings;
+	}
+
+	static void setup_graphics_pipeline(const gl::rendering_presentation_system &rs,
+										gl::pipeline_auditor_graphics &auditor) {
+		auditor.set_vertex_attributes(0, gl::vertex_attributes<simple_storage::vertex>());
+		auditor.set_framebuffer_layout(rs.presentation_framebuffer_layout());
+	}
+
+public:
+	simple_fragment(gl::rendering_presentation_system &rs,
+					gl::pipeline_binding_set_pool &binding_set_pool)
+		: Base(rs, binding_set_pool,
+			   create_settings(rs.get_creating_context()),
+			   "temp.vert", "temp.frag"),
+		ctx(rs.get_creating_context()),
+		s(rs.acquire_storage<simple_storage>())
+	{
+		pipeline["texSampler"] = gl::bind(s->texture);
+		pipeline["uniform_buffer_object"] = gl::bind(s->ubo);
+
+		draw_task.attach_pipeline(pipeline);
+		draw_task.attach_vertex_buffer(s->vertex_buffer);
+		draw_task.attach_index_buffer(s->index_buffer);
+	}
+
+	static const std::string& name() { return "simple_fragment"; }
+
+	void set_framebuffer(gl::framebuffer &fb) {
+		pipeline.attach_framebuffer(fb);
+	}
+
+	void record(gl::command_recorder &recorder) override final {
+		f += 1 / 1000.f;
+		simple_storage::vertex v = { { 0.0f, -0.5f },{ 1.0f, 0.0f, 0.0f },{ 0,0 } };
+		v.get<0>().x = glm::sin(f * glm::pi<float>());
+
+		float angle = f * glm::pi<float>();
+		simple_storage::uniform_buffer_object data = { glm::vec4{ glm::cos(angle), glm::sin(angle), -glm::sin(angle), glm::cos(angle) } };
+
+		recorder
+			<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::fragment_shader,
+															 gl::pipeline_stage::transfer,
+															 { gl::buffer_memory_barrier(s->ubo,
+																						 gl::access_flags::uniform_read,
+																						 gl::access_flags::transfer_write),
+															 gl::buffer_memory_barrier(s->vertex_buffer,
+																					   gl::access_flags::vertex_attribute_read,
+																					   gl::access_flags::transfer_write) }))
+			<< s->vertex_buffer.update_task({ v }, 0)()
+			<< s->ubo.update_task({ data }, 0)()
+			<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::transfer,
+															 gl::pipeline_stage::vertex_shader,
+															 { gl::buffer_memory_barrier(s->ubo,
+																						 gl::access_flags::transfer_write,
+																						 gl::access_flags::uniform_read),
+															 gl::buffer_memory_barrier(s->vertex_buffer,
+																					   gl::access_flags::transfer_write,
+																					   gl::access_flags::vertex_attribute_read) }))
+			<< draw_task(6, 1);
+	}
+};
+
+class simple_renderer : public gl::rendering_presentation_system {
+	using Base = gl::rendering_presentation_system;
+
+private:
+	std::reference_wrapper<gl::presentation_engine> presentation;
+
+	simple_fragment frag1;
+
+public:
+	simple_renderer(const ste_context &ctx,
+				   gl::presentation_engine &presentation,
+				   gl::pipeline_binding_set_pool &binding_set_pool)
+		: Base(ctx),
+		presentation(presentation),
+		frag1(*this, binding_set_pool)
+	{}
+	~simple_renderer() noexcept {}
+
+	void render() override final {
+	}
+
+	void present() override final {
+		auto selector = gl::make_queue_selector(gl::ste_queue_type::primary_queue);
+
+		// Acquire presentation comand batch
+		auto batch = presentation.get().allocate_presentation_command_batch(selector);
+
+		// Record and submit a batch
+		device().enqueue(selector, [this, batch = std::move(batch)]() mutable {
+			auto& command_buffer = batch->acquire_command_buffer();
+			{
+				auto recorder = command_buffer.record();
+
+				{
+//					using namespace text::Attributes;
+//					auto text = line_height(35)(small(b(purple(L"Frame time: \n")))) +
+//						b(stroke(dark_golden_rod, .5f)(orange(std::to_wstring(frame_time_ms))) +
+//						  small(L" ms"));
+
+//					recorder << text_renderer->update_cmd({ 5,50 }, text, swapchain_size);
+				}
+
+				auto &fb = swap_chain_framebuffer(batch->presentation_image_index());
+				frag1.set_framebuffer(fb);
+
+				recorder << frag1;
+
+////					<< text_renderer->render_cmd()
+			}
+
+			// Submit command buffer and present
+			presentation.get().submit_and_present(std::move(batch));
+		});
+	}
+};
 
 auto requested_device_features() {
 	VkPhysicalDeviceFeatures requested_features;
@@ -128,113 +308,31 @@ int main()
 	*	Text renderer
 	*/
 	auto font = text::font("Data/ArchitectsDaughter.ttf");
-//	auto text_manager = std::make_unique<text::text_manager>(ctx, font);
+	//	auto text_manager = std::make_unique<text::text_manager>(ctx, font);
 
 
-	auto swapchain_images_count = device.get_surface().get_swap_chain_images().size();
-
-	// Load image
-	auto image =
-		resource::surface_factory::create_image_2d<gl::format::r8g8b8a8_unorm>(ctx,
-																			   R"(Data\models\crytek-sponza\images\Sponza_Bricks_a_Albedo.png)",
-																			   gl::image_usage::sampled,
-																			   gl::image_layout::shader_read_only_optimal);
-
-	// Shader stages
-	ste_resource<gl::device_pipeline_shader_stage> vert_shader_stage(ctx, "temp.vert");
-	ste_resource<gl::device_pipeline_shader_stage> frag_shader_stage(ctx, "temp.frag");
+	simple_renderer r(ctx, presentation, binding_set_pool);
 
 
-	// Vertex and index buffer
-	using vertex = gl::vertex_input_layout<glm::vec2, glm::vec3, glm::vec2>;
-	std::vector<std::uint32_t> indices = { 0,2,1,0,1,3 };
+	//	ste_resource<device_pipeline_shader_stage> stage(ste_resource_dont_defer(), ctx, std::string("fxaa.frag"));
+	//	device_pipeline_shader_stage(ctx, std::string("deferred_compose.frag"));
+	//	device_pipeline_shader_stage(ctx, std::string("shadow_cubemap.geom"));
+	//	device_pipeline_shader_stage(ctx, std::string("shadow_directional.geom"));
+	//	device_pipeline_shader_stage(ctx, std::string("volumetric_scattering_scatter.comp"));
+	//	stage.get();
 
-	ste_resource<gl::array<std::uint32_t>> index_buffer(ctx, indices, gl::buffer_usage::index_buffer);
-	ste_resource<gl::stable_vector<vertex>> vertex_buffer(ctx, gl::buffer_usage::vertex_buffer);
 
-	std::vector<vertex> vertices = {
-		{ { 0.0f, -0.5f },{ 1.0f, 0.0f, 0.0f },{ 0,0 } },
-		{ { 0.5f,  0.5f },{ 0.0f, 1.0f, 0.0f },{ 1,0 } },
-		{ { -0.5f, 0.5f },{ 0.0f, 0.0f, 1.0f },{ 1,1 } },
-		{ { 1.0f, -0.5f },{ 1.0f, 0.0f, 1.0f },{ 0,1 } },
-	};
-	auto vertices_fill_job = gl::fill(vertex_buffer.get(), std::move(vertices));
+	//	auto text_renderer = text_manager->create_renderer(&presentation_renderpass);
 
-	// UBO
-	using uniform_buffer_object = gl::std140<glm::vec4>;
-	ste_resource<gl::array<uniform_buffer_object>> ubo(ctx,
-													   std::vector<uniform_buffer_object>{ { glm::vec4{ 1, 0, 0, 1 } } },
-													   gl::buffer_usage::uniform_buffer);
-
-	// Pipeline settings
-	gl::device_pipeline_graphics_configurations graphics_settings;
-	auto surface_extent = device.get_surface().extent();
-	graphics_settings.viewport = glm::vec2(surface_extent);
-	graphics_settings.scissor = surface_extent;
-
-	// Pipeline framebuffer layout
-	gl::framebuffer_layout fb_layout(surface_extent);
-	fb_layout[0] = gl::clear_store(device.get_surface().get_swap_chain_images()[0].image.get_format(),
-								   gl::image_layout::present_src_khr);
-	
-	// Create framebuffers
-	std::vector<gl::framebuffer> swap_chain_framebuffers;
-	for (auto &swap_image : device.get_surface().get_swap_chain_images()) {
-		gl::framebuffer fb(ctx, fb_layout);
-		fb[0] = gl::framebuffer_attachment(swap_image.view,
-										   glm::vec4(.02f, .0f, .08f, 1.f));
-		swap_chain_framebuffers.push_back(std::move(fb));
-	}
-
-	// Create pipeline
-	gl::pipeline_auditor_graphics auditor(std::move(graphics_settings));
-	auditor.attach_shader_stage(vert_shader_stage.get());
-	auditor.attach_shader_stage(frag_shader_stage.get());
-	auditor.set_vertex_attributes(0, gl::vertex_attributes<vertex>());
-	auditor.set_framebuffer_layout(fb_layout);
-
-	auto pipeline = auditor.pipeline(ctx,
-									 binding_set_pool);
-
-	gl::task<gl::cmd_draw_indexed> draw_task;
-	draw_task.attach_pipeline(pipeline);
-	draw_task.attach_vertex_buffer(vertex_buffer);
-	draw_task.attach_index_buffer(index_buffer);
-
-	// Texture
-	gl::image_view<gl::image_type::image_2d> image_view(*image);
-	gl::sampler sampler(ctx, gl::sampler_parameter::filtering(gl::sampler_filter::linear, gl::sampler_filter::linear,
-															  gl::sampler_mipmap_mode::linear));
-	auto texture = gl::make_texture(image_view, sampler, gl::image_layout::shader_read_only_optimal);
-
-	// Bind resources
-	pipeline["texSampler"] = gl::bind(texture);
-	pipeline["uniform_buffer_object"] = gl::bind(ubo.get());
-
-	// Rendering queue
-	auto selector = gl::make_queue_selector(gl::ste_queue_type::primary_queue);
-
-	vertices_fill_job.finish();
-
-//	ste_resource<device_pipeline_shader_stage> stage(ste_resource_dont_defer(), ctx, std::string("fxaa.frag"));
-//	device_pipeline_shader_stage(ctx, std::string("deferred_compose.frag"));
-//	device_pipeline_shader_stage(ctx, std::string("shadow_cubemap.geom"));
-//	device_pipeline_shader_stage(ctx, std::string("shadow_directional.geom"));
-//	device_pipeline_shader_stage(ctx, std::string("volumetric_scattering_scatter.comp"));
-//	stage.get();
-	
-
-//	auto text_renderer = text_manager->create_renderer(&presentation_renderpass);
-
-	/*
-	 *	Main loop
-	 */
+		/*
+		 *	Main loop
+		 */
 	float f = .0f;
 	auto last_tick_time = std::chrono::high_resolution_clock::now();
 	for (;;) {
 		ctx.tick();
 		ste_window::poll_events();
-		
+
 		if (window.should_close()) {
 			break;
 		}
@@ -243,60 +341,7 @@ int main()
 		float frame_time_ms = frame_time_predictor.predicted_value();
 		window.set_title(std::to_string(frame_time_ms).c_str());
 
-		f += 1/1000.f;
-		vertex v = { { 0.0f, -0.5f }, { 1.0f, 0.0f, 0.0f }, { 0,0 } };
-		v.get<0>().x = glm::sin(f * glm::pi<float>());
-
-		float angle = f * glm::pi<float>();
-		uniform_buffer_object data = { glm::vec4{ glm::cos(angle), glm::sin(angle), -glm::sin(angle), glm::cos(angle) } };
-
-		// Acquire presentation comand batch
-		auto batch = presentation.allocate_presentation_command_batch(selector);
-
-		// Record and submit a batch
-		device.enqueue(selector, [&, data, v, batch = std::move(batch)]() mutable {
-			auto& command_buffer = batch->acquire_command_buffer();
-			{
-				auto recorder = command_buffer.record();
-
-				{
-					using namespace text::Attributes;
-					auto text = line_height(35)(small(b(purple(L"Frame time: \n")))) +
-						b(stroke(dark_golden_rod, .5f)(orange(std::to_wstring(frame_time_ms))) +
-						  small(L" ms"));
-
-//					recorder << text_renderer->update_cmd({ 5,50 }, text, swapchain_size);
-				}
-
-				// Set new framebuffer
-				pipeline.attach_framebuffer(swap_chain_framebuffers[batch->presentation_image_index()]);
-
-				recorder
-					<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::fragment_shader,
-																	 gl::pipeline_stage::transfer,
-																	 { gl::buffer_memory_barrier(ubo->get(),
-																								 gl::access_flags::uniform_read,
-																								 gl::access_flags::transfer_write),
-																	 gl::buffer_memory_barrier(vertex_buffer->get(),
-																							   gl::access_flags::vertex_attribute_read,
-																							   gl::access_flags::transfer_write) }))
-					<< vertex_buffer->update_task({ v }, 0)()
-					<< ubo->update_task({ data }, 0)()
-					<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::transfer,
-																	 gl::pipeline_stage::vertex_shader,
-																	 { gl::buffer_memory_barrier(ubo->get(),
-																								 gl::access_flags::transfer_write,
-																								 gl::access_flags::uniform_read),
-																 gl::buffer_memory_barrier(vertex_buffer->get(),
-																						   gl::access_flags::transfer_write,
-																						   gl::access_flags::vertex_attribute_read) }))
-					<< draw_task(indices.size(), 1);
-////					<< text_renderer->render_cmd()
-			}
-
-			// Submit command buffer and present
-			presentation.submit_and_present(std::move(batch));
-		});
+		r.render_and_present();
 	}
 
 	device.wait_idle();
@@ -506,345 +551,345 @@ int main()
 	/*
 	 *	Create GL context and window
 	 */
-//
-//	int w = 1920;
-//	int h = w * 9 / 16;
-//	constexpr float clip_near = 1.f;
-//	float fovy = glm::pi<float>() * .2f;
-//
-//	gl_context::context_settings settings;
-//	settings.vsync = false;
-//	settings.fs = false;
-//	ste_engine_control ctx(std::make_unique<gl_context>(settings, "Shlomi Steinberg - Global Illumination", glm::i32vec2{ w, h }));// , gli::FORMAT_RGBA8_UNORM));
-//	ctx.set_clipping_planes(clip_near);
-//	ctx.set_fov(fovy);
-//
-//	using ResizeSignalConnectionType = ste_engine_control::window_resize_signal_type::connection_type;
-//	std::shared_ptr<ResizeSignalConnectionType> resize_connection;
-//	resize_connection = std::make_shared<ResizeSignalConnectionType>([&](const glm::i32vec2 &size) {
-//		w = size.x;
-//		h = size.y;
-//	});
-//	ctx.signal_framebuffer_resize().connect(resize_connection);
-//
-//
-//	/*
-//	 *	Connect input handlers
-//	 */
-//
-//	bool running = true;
-//	bool mouse_down = false;
-//	auto keyboard_listner = std::make_shared<decltype(ctx)::hid_keyboard_signal_type::connection_type>(
-//		[&](HID::keyboard::K key, int scanline, HID::Status status, HID::ModifierBits mods) {
-//		using namespace HID;
-//		auto time_delta = ctx.time_per_frame().count();
-//
-//		if (status != Status::KeyDown)
-//			return;
-//
-//		if (key == keyboard::K::KeyESCAPE)
-//			running = false;
-//		if (key == keyboard::K::KeyPRINT_SCREEN || key == keyboard::K::KeyF12)
-//			ctx.capture_screenshot();
-//	});
-//	auto pointer_button_listner = std::make_shared<decltype(ctx)::hid_pointer_button_signal_type::connection_type>(
-//		[&](HID::pointer::B b, HID::Status status, HID::ModifierBits mods) {
-//		using namespace HID;
-//
-//		mouse_down = b == pointer::B::Left && status == Status::KeyDown;
-//	});
-//	ctx.hid_signal_keyboard().connect(keyboard_listner);
-//	ctx.hid_signal_pointer_button().connect(pointer_button_listner);
-//
-//
-//	/*
-//	 *	Create text manager and choose default font
-//	 */
-//
-//	auto font = text::font("Data/ArchitectsDaughter.ttf");
-//	resource::resource_instance<text::text_manager> text_manager(ctx, font);
-//
-//
-//	/*
-//	 *	Create camera
-//	 */
-//
-//	graphics::camera camera;
-//	camera.set_position({ 901.4, 566.93, 112.43 });
-//	camera.lookat({ 771.5, 530.9, 65.6 });
-//
-//
-//	/*
-//	*	Create atmospheric properties
-//	*/
-//	auto atmosphere = graphics::atmospherics_earth_properties({ 0,-6.371e+6,0 });
-//
-//
-//	/*
-//	 *	Create and load scene object and GI renderer
-//	 */
-//
-//	resource::resource_instance<graphics::scene> scene(ctx);
-//	resource::resource_instance<graphics::gi_renderer> renderer(ctx, &camera, &scene.get(), atmosphere);
-//
-//
-//	/*
-//	 *	Start loading resources and display loading screen
-//	 */
-//
-//	std::vector<std::unique_ptr<graphics::light>> lights;
-//	std::vector<std::unique_ptr<graphics::material>> materials;
-//	std::vector<std::unique_ptr<graphics::material_layer>> material_layers;
-//
-//	task_future_collection<void> loading_futures;
-//
-//	const glm::vec3 light0_pos{ -700.6, 138, -70 };
-//	const glm::vec3 light1_pos{ 200, 550, 170 };
-//	auto light0 = create_sphere_light_object(&scene.get(), graphics::kelvin(2000), 2000.f, 2.f, light0_pos, materials, material_layers);
-//	auto light1 = create_sphere_light_object(&scene.get(), graphics::kelvin(7000), 17500.f, 4.f, light1_pos, materials, material_layers);
-//
-//	const glm::vec3 sun_direction = glm::normalize(glm::vec3{ 0.f, -1.f, 0.f });
-//	auto sun_light = scene.get().properties().lights_storage().allocate_directional_light(graphics::kelvin(5770),
-//																						  1.88e+9f, 1496e+8f, 695e+6f, sun_direction);
-//
-//	add_scene_lights(scene.get(), lights, materials, material_layers);
-//
-//	std::vector<std::shared_ptr<graphics::object>> sponza_objects;
-//	loading_futures.insert(resource::model_factory::load_model_async(ctx,
-//																		 R"(Data/models/crytek-sponza/sponza.obj)",
-//																		 &scene.get().get_object_group(),
-//																		 &scene.get().properties(),
-//																		 2.5f,
-//																		 materials,
-//																		 material_layers,
-//																		 &sponza_objects));
-//	
-//	std::vector<std::unique_ptr<graphics::material>> mat_editor_materials;
-//	std::vector<std::unique_ptr<graphics::material_layer>> mat_editor_layers;
-//	std::vector<std::shared_ptr<graphics::object>> mat_editor_objects;
-//	loading_futures.insert(resource::model_factory::load_model_async(ctx,
-//																		 R"(Data/models/dragon/china_dragon.obj)",
-//																		 //R"(Data/models/mitsuba/mitsuba-sphere.obj)",
-//																		 &scene.get().get_object_group(),
-//																		 &scene.get().properties(),
-//																		 2.5f,
-//																		 mat_editor_materials,
-//																		 mat_editor_layers,
-//																		 &mat_editor_objects));
-//	loading_futures.insert(ctx.scheduler().schedule_now([&]() {
-//		renderer.wait();
-//	}));
-//
-//	display_loading_screen_until(ctx, &text_manager.get(), &w, &h, [&]() -> bool {
-//		return running && !loading_futures.ready_all();
-//	});
-//
-//
-//	/*
-//	 *	Create debug view window and material editor
-//	 */
-//
-//	constexpr int layers_count = 3;
-//
-//	std::unique_ptr<graphics::profiler> gpu_tasks_profiler = std::make_unique<graphics::profiler>();
-//	renderer.get().attach_profiler(gpu_tasks_profiler.get());
-//	std::unique_ptr<graphics::debug_gui> debug_gui_dispatchable = std::make_unique<graphics::debug_gui>(ctx, gpu_tasks_profiler.get(), font, &camera);
-//
-//	auto mat_editor_model_transform = glm::scale(glm::mat4(), glm::vec3{ 3.5f });
-//	mat_editor_model_transform = glm::translate(mat_editor_model_transform, glm::vec3{ .0f, -15.f, .0f });
-//	//auto mat_editor_model_transform = glm::translate(glm::mat4(), glm::vec3{ .0f, .0f, -50.f });
-//	//mat_editor_model_transform = glm::scale(mat_editor_model_transform, glm::vec3{ 65.f });
-//	//mat_editor_model_transform = glm::rotate(mat_editor_model_transform, glm::half_pi<float>(), glm::vec3{ .0f, 1.0f, 0.f });
-//	for (auto &o : mat_editor_objects)
-//		o->set_model_transform(glm::mat4x3(mat_editor_model_transform));
-//	
-//	std::unique_ptr<graphics::material_layer> layers[layers_count];
-//	layers[0] = std::move(mat_editor_layers.back());
-//	mat_editor_materials.back()->enable_subsurface_scattering(true);
-//
-//	float dummy = .0f;
-//
-//	float sun_zenith = .0f;
-//	float mie_absorption_coefficient = 2.5f;
-//	float mie_scattering_coefficient = 1.5e+1f;
-//
-//	bool layer_enabled[3] = { true, false, false };
-//	graphics::rgb base_color[3];
-//	float roughness[3];
-////	float anisotropy[3];
-//	float metallic[3];
-//	float index_of_refraction[3];
-//	float thickness[3];
-//	float absorption[3];
-//	float phase[3];
-//
-//	for (int i = 0; i < layers_count; ++i) {
-//		if (i > 0)
-//			layers[i] = scene.get().properties().material_layers_storage().allocate_layer();
-//
-//		base_color[i] = { 1,1,1 };
-//		roughness[i] = .5f;
-////		anisotropy[i] = 0;
-//		metallic[i] = 0;
-//		index_of_refraction[i] = 1.5f;
-//		thickness[i] = 0.001f;
-//		absorption[i] = 1.f;
-//		phase[i] = .0f;
-//	}
-//
-//	debug_gui_dispatchable->add_custom_gui([&](const glm::ivec2 &bbsize) {
-//		if (ImGui::Begin("Material Editor", nullptr)) {
-//			for (int i = 0; i < layers_count; ++i) {
-//				std::string layer_label = std::string("Layer ") + std::to_string(i);
-//				if (i != 0)
-//					ImGui::Checkbox(layer_label.data(), &layer_enabled[i]);
-//				else
-//					ImGui::text(layer_label.data());
-//
-//				if (layer_enabled[i]) {
-//					ImGui::SliderFloat((std::string("R ##value") +		" ##" + layer_label).data(), &base_color[i].R(),	 .0f, 1.f);
-//					ImGui::SliderFloat((std::string("G ##value") +		" ##" + layer_label).data(), &base_color[i].G(),	 .0f, 1.f);
-//					ImGui::SliderFloat((std::string("B ##value") +		" ##" + layer_label).data(), &base_color[i].B(),	 .0f, 1.f);
-//					ImGui::SliderFloat((std::string("Rghn ##value") +	" ##" + layer_label).data(), &roughness[i],			 .0f, 1.f);
-////					ImGui::SliderFloat((std::string("Aniso ##value") +	" ##" + layer_label).data(), &anisotropy[i],		-1.f, 1.f, "%.3f", 2.f);
-//					ImGui::SliderFloat((std::string("Metal ##value") +	" ##" + layer_label).data(), &metallic[i],			 .0f, 1.f);
-//					ImGui::SliderFloat((std::string("IOR ##value") +	" ##" + layer_label).data(), &index_of_refraction[i],1.f, 4.f, "%.5f", 3.f);
-//					if (i < layers_count - 1 && layer_enabled[i + 1])
-//						ImGui::SliderFloat((std::string("Thick ##value") + " ##" + layer_label).data(), &thickness[i], .0f, graphics::material_layer_max_thickness, "%.5f", 3.f);
-//					ImGui::SliderFloat((std::string("Attn ##value") +	" ##" + layer_label).data(), &absorption[i], .000001f, 50.f, "%.8f", 5.f);
-//					ImGui::SliderFloat((std::string("Phase ##value") +	" ##" + layer_label).data(), &phase[i], -1.f, +1.f);
-//				}
-//			}
-//		}
-//
-//		ImGui::End();
-//		
-//		for (int i = 0; i < layers_count; ++i) {
-//			auto t = glm::u8vec3(base_color[i].R() * 255.5f, base_color[i].G() * 255.5f, base_color[i].B() * 255.5f);
-//			if (layers[i]->get_albedo() != base_color[i])
-//				layers[i]->set_albedo(base_color[i]);
-//			layers[i]->set_roughness(roughness[i]);
-////			layers[i]->set_anisotropy(anisotropy[i]);
-//			layers[i]->set_metallic(metallic[i]);
-//			layers[i]->set_layer_thickness(thickness[i]);
-//			if (layers[i]->get_index_of_refraction() != index_of_refraction[i])
-//				layers[i]->set_index_of_refraction(index_of_refraction[i]);
-//			if (layers[i]->get_attenuation_coefficient().x != absorption[i])
-//				layers[i]->set_attenuation_coefficient(glm::vec3{ absorption[i] });
-//			if (layers[i]->get_scattering_phase_parameter() != phase[i])
-//				layers[i]->set_scattering_phase_parameter(phase[i]);
-//
-//			if (i != 0) {
-//				bool enabled = layers[i - 1]->get_next_layer() != nullptr;
-//				if (layer_enabled[i] != enabled)
-//					layers[i - 1]->set_next_layer(layer_enabled[i] ? layers[i].get() : nullptr);
-//			}
-//		}
-//
-//		if (ImGui::Begin("Atmosphere", nullptr)) {
-//			ImGui::SliderFloat((std::string("Sun zenith angle ##value")).data(), &sun_zenith, .0f, 2 * glm::pi<float>());
-//			ImGui::SliderFloat((std::string("Mie scattering coefficient (10^-8) ##value##mie1")).data(), &mie_scattering_coefficient, .0f, 100.f, "%.5f", 3.f);
-//			ImGui::SliderFloat((std::string("Mie absorption coefficient (10^-8) ##value##mie2")).data(), &mie_absorption_coefficient, .0f, 100.f, "%.5f", 3.f);
-//			ImGui::SliderFloat((std::string("Debug dummy variable")).data(), &dummy, .0f, 1.f);
-//		}
-//
-//		ImGui::End();
-//
-//		atmosphere.mie_absorption_coefficient = static_cast<double>(mie_absorption_coefficient) * 1e-8;
-//		atmosphere.mie_scattering_coefficient = static_cast<double>(mie_scattering_coefficient) * 1e-8;
-//		renderer.get().update_atmospherics_properties(atmosphere);
-//
-//		renderer.get().get_composer_program().set_uniform("dummy", dummy);
-//	});
-//
-//
-//	/*
-//	 *	Configure GI renderer
-//	 */
-//	renderer.get().set_aperture_parameters(35e-3, 25e-3);
-//
-//
-//	/*
-//	 *	Switch to GI renderer and start render loop
-//	 */
-//
-//	ctx.set_renderer(&renderer.get());
-//
-//	auto footer_text = text_manager.get().create_renderer();
-//	auto footer_text_task = graphics::make_gpu_task("footer_text", footer_text.get(), nullptr);
-//
-//#ifndef STATIC_SCENE
-//	renderer.get().add_gui_task(footer_text_task);
-//#endif
-//	renderer.get().add_gui_task(graphics::make_gpu_task("debug_gui", debug_gui_dispatchable.get(), nullptr));
-//
-//	glm::ivec2 last_pointer_pos;
-//	float time = 0;
-//	while (running) {
-//		if (ctx.window_active()) {
-//			auto time_delta = ctx.time_per_frame().count();
-//
-//			using namespace HID;
-//			constexpr float movement_factor = 155.f;
-//			if (ctx.get_key_status(keyboard::K::KeyW) == Status::KeyDown)
-//				camera.step_forward(time_delta*movement_factor);
-//			if (ctx.get_key_status(keyboard::K::KeyS) == Status::KeyDown)
-//				camera.step_backward(time_delta*movement_factor);
-//			if (ctx.get_key_status(keyboard::K::KeyA) == Status::KeyDown)
-//				camera.step_left(time_delta*movement_factor);
-//			if (ctx.get_key_status(keyboard::K::KeyD) == Status::KeyDown)
-//				camera.step_right(time_delta*movement_factor);
-//
-//			constexpr float rotation_factor = .09f;
-//			bool rotate_camera = mouse_down;
-//
-//			auto pp = ctx.get_pointer_position();
-//			if (mouse_down && !debug_gui_dispatchable->is_gui_active()) {
-//				auto diff_v = static_cast<glm::vec2>(last_pointer_pos - pp) * time_delta * rotation_factor;
-//				camera.pitch_and_yaw(-diff_v.y, diff_v.x);
-//			}
-//			last_pointer_pos = pp;
-//		}
-//
-//#ifdef STATIC_SCENE
-//		glm::vec3 lp = light0_pos;
-//		glm::vec3 sun_dir = sun_direction;
-//#else
-//		float angle = time * glm::pi<float>() / 2.5f;
-//		glm::vec3 lp = light0_pos + glm::vec3(glm::sin(angle) * 3, 0, glm::cos(angle)) * 115.f;
-//
-//		glm::vec3 sun_dir = glm::normalize(glm::vec3{ glm::sin(sun_zenith + glm::pi<float>()), 
-//													  -glm::cos(sun_zenith + glm::pi<float>()), 
-//													  .15f});
-//
-//		light0.first->set_position(lp);
-//		light0.second->set_model_transform(glm::mat4x3(glm::translate(glm::mat4(), lp)));
-//		sun_light->set_direction(sun_dir);
-//#endif
-//
-//		{
-//			using namespace text::Attributes;
-//
-//			static unsigned tpf_count = 0;
-//			static float total_tpf = .0f;
-//			total_tpf += ctx.time_per_frame().count();
-//			++tpf_count;
-//			static float tpf = .0f;
-//			if (tpf_count % 5 == 0) {
-//				tpf = total_tpf / 5.f;
-//				total_tpf = .0f;
-//			}
-//
-//			auto total_vram = std::to_wstring(ctx.gl()->meminfo_total_available_vram() / 1024);
-//			auto free_vram = std::to_wstring(ctx.gl()->meminfo_free_vram() / 1024);
-//
-//			footer_text->set_text({ 10, 50 }, line_height(28)(vsmall(b(stroke(dark_magenta, 1)(red(std::to_wstring(tpf * 1000.f))))) + L" ms\n" +
-//															  vsmall(b((blue_violet(free_vram) + L" / " + stroke(red, 1)(dark_red(total_vram)) + L" MB")))));
-//		}
-//
-//		time += ctx.time_per_frame().count();
-//		if (!ctx.tick()) break;
-//	}
-//
-//	return 0;
-//}
+	 //
+	 //	int w = 1920;
+	 //	int h = w * 9 / 16;
+	 //	constexpr float clip_near = 1.f;
+	 //	float fovy = glm::pi<float>() * .2f;
+	 //
+	 //	gl_context::context_settings settings;
+	 //	settings.vsync = false;
+	 //	settings.fs = false;
+	 //	ste_engine_control ctx(std::make_unique<gl_context>(settings, "Shlomi Steinberg - Global Illumination", glm::i32vec2{ w, h }));// , gli::FORMAT_RGBA8_UNORM));
+	 //	ctx.set_clipping_planes(clip_near);
+	 //	ctx.set_fov(fovy);
+	 //
+	 //	using ResizeSignalConnectionType = ste_engine_control::window_resize_signal_type::connection_type;
+	 //	std::shared_ptr<ResizeSignalConnectionType> resize_connection;
+	 //	resize_connection = std::make_shared<ResizeSignalConnectionType>([&](const glm::i32vec2 &size) {
+	 //		w = size.x;
+	 //		h = size.y;
+	 //	});
+	 //	ctx.signal_framebuffer_resize().connect(resize_connection);
+	 //
+	 //
+	 //	/*
+	 //	 *	Connect input handlers
+	 //	 */
+	 //
+	 //	bool running = true;
+	 //	bool mouse_down = false;
+	 //	auto keyboard_listner = std::make_shared<decltype(ctx)::hid_keyboard_signal_type::connection_type>(
+	 //		[&](HID::keyboard::K key, int scanline, HID::Status status, HID::ModifierBits mods) {
+	 //		using namespace HID;
+	 //		auto time_delta = ctx.time_per_frame().count();
+	 //
+	 //		if (status != Status::KeyDown)
+	 //			return;
+	 //
+	 //		if (key == keyboard::K::KeyESCAPE)
+	 //			running = false;
+	 //		if (key == keyboard::K::KeyPRINT_SCREEN || key == keyboard::K::KeyF12)
+	 //			ctx.capture_screenshot();
+	 //	});
+	 //	auto pointer_button_listner = std::make_shared<decltype(ctx)::hid_pointer_button_signal_type::connection_type>(
+	 //		[&](HID::pointer::B b, HID::Status status, HID::ModifierBits mods) {
+	 //		using namespace HID;
+	 //
+	 //		mouse_down = b == pointer::B::Left && status == Status::KeyDown;
+	 //	});
+	 //	ctx.hid_signal_keyboard().connect(keyboard_listner);
+	 //	ctx.hid_signal_pointer_button().connect(pointer_button_listner);
+	 //
+	 //
+	 //	/*
+	 //	 *	Create text manager and choose default font
+	 //	 */
+	 //
+	 //	auto font = text::font("Data/ArchitectsDaughter.ttf");
+	 //	resource::resource_instance<text::text_manager> text_manager(ctx, font);
+	 //
+	 //
+	 //	/*
+	 //	 *	Create camera
+	 //	 */
+	 //
+	 //	graphics::camera camera;
+	 //	camera.set_position({ 901.4, 566.93, 112.43 });
+	 //	camera.lookat({ 771.5, 530.9, 65.6 });
+	 //
+	 //
+	 //	/*
+	 //	*	Create atmospheric properties
+	 //	*/
+	 //	auto atmosphere = graphics::atmospherics_earth_properties({ 0,-6.371e+6,0 });
+	 //
+	 //
+	 //	/*
+	 //	 *	Create and load scene object and GI renderer
+	 //	 */
+	 //
+	 //	resource::resource_instance<graphics::scene> scene(ctx);
+	 //	resource::resource_instance<graphics::gi_renderer> renderer(ctx, &camera, &scene.get(), atmosphere);
+	 //
+	 //
+	 //	/*
+	 //	 *	Start loading resources and display loading screen
+	 //	 */
+	 //
+	 //	std::vector<std::unique_ptr<graphics::light>> lights;
+	 //	std::vector<std::unique_ptr<graphics::material>> materials;
+	 //	std::vector<std::unique_ptr<graphics::material_layer>> material_layers;
+	 //
+	 //	task_future_collection<void> loading_futures;
+	 //
+	 //	const glm::vec3 light0_pos{ -700.6, 138, -70 };
+	 //	const glm::vec3 light1_pos{ 200, 550, 170 };
+	 //	auto light0 = create_sphere_light_object(&scene.get(), graphics::kelvin(2000), 2000.f, 2.f, light0_pos, materials, material_layers);
+	 //	auto light1 = create_sphere_light_object(&scene.get(), graphics::kelvin(7000), 17500.f, 4.f, light1_pos, materials, material_layers);
+	 //
+	 //	const glm::vec3 sun_direction = glm::normalize(glm::vec3{ 0.f, -1.f, 0.f });
+	 //	auto sun_light = scene.get().properties().lights_storage().allocate_directional_light(graphics::kelvin(5770),
+	 //																						  1.88e+9f, 1496e+8f, 695e+6f, sun_direction);
+	 //
+	 //	add_scene_lights(scene.get(), lights, materials, material_layers);
+	 //
+	 //	std::vector<std::shared_ptr<graphics::object>> sponza_objects;
+	 //	loading_futures.insert(resource::model_factory::load_model_async(ctx,
+	 //																		 R"(Data/models/crytek-sponza/sponza.obj)",
+	 //																		 &scene.get().get_object_group(),
+	 //																		 &scene.get().properties(),
+	 //																		 2.5f,
+	 //																		 materials,
+	 //																		 material_layers,
+	 //																		 &sponza_objects));
+	 //	
+	 //	std::vector<std::unique_ptr<graphics::material>> mat_editor_materials;
+	 //	std::vector<std::unique_ptr<graphics::material_layer>> mat_editor_layers;
+	 //	std::vector<std::shared_ptr<graphics::object>> mat_editor_objects;
+	 //	loading_futures.insert(resource::model_factory::load_model_async(ctx,
+	 //																		 R"(Data/models/dragon/china_dragon.obj)",
+	 //																		 //R"(Data/models/mitsuba/mitsuba-sphere.obj)",
+	 //																		 &scene.get().get_object_group(),
+	 //																		 &scene.get().properties(),
+	 //																		 2.5f,
+	 //																		 mat_editor_materials,
+	 //																		 mat_editor_layers,
+	 //																		 &mat_editor_objects));
+	 //	loading_futures.insert(ctx.scheduler().schedule_now([&]() {
+	 //		renderer.wait();
+	 //	}));
+	 //
+	 //	display_loading_screen_until(ctx, &text_manager.get(), &w, &h, [&]() -> bool {
+	 //		return running && !loading_futures.ready_all();
+	 //	});
+	 //
+	 //
+	 //	/*
+	 //	 *	Create debug view window and material editor
+	 //	 */
+	 //
+	 //	constexpr int layers_count = 3;
+	 //
+	 //	std::unique_ptr<graphics::profiler> gpu_tasks_profiler = std::make_unique<graphics::profiler>();
+	 //	renderer.get().attach_profiler(gpu_tasks_profiler.get());
+	 //	std::unique_ptr<graphics::debug_gui> debug_gui_dispatchable = std::make_unique<graphics::debug_gui>(ctx, gpu_tasks_profiler.get(), font, &camera);
+	 //
+	 //	auto mat_editor_model_transform = glm::scale(glm::mat4(), glm::vec3{ 3.5f });
+	 //	mat_editor_model_transform = glm::translate(mat_editor_model_transform, glm::vec3{ .0f, -15.f, .0f });
+	 //	//auto mat_editor_model_transform = glm::translate(glm::mat4(), glm::vec3{ .0f, .0f, -50.f });
+	 //	//mat_editor_model_transform = glm::scale(mat_editor_model_transform, glm::vec3{ 65.f });
+	 //	//mat_editor_model_transform = glm::rotate(mat_editor_model_transform, glm::half_pi<float>(), glm::vec3{ .0f, 1.0f, 0.f });
+	 //	for (auto &o : mat_editor_objects)
+	 //		o->set_model_transform(glm::mat4x3(mat_editor_model_transform));
+	 //	
+	 //	std::unique_ptr<graphics::material_layer> layers[layers_count];
+	 //	layers[0] = std::move(mat_editor_layers.back());
+	 //	mat_editor_materials.back()->enable_subsurface_scattering(true);
+	 //
+	 //	float dummy = .0f;
+	 //
+	 //	float sun_zenith = .0f;
+	 //	float mie_absorption_coefficient = 2.5f;
+	 //	float mie_scattering_coefficient = 1.5e+1f;
+	 //
+	 //	bool layer_enabled[3] = { true, false, false };
+	 //	graphics::rgb base_color[3];
+	 //	float roughness[3];
+	 ////	float anisotropy[3];
+	 //	float metallic[3];
+	 //	float index_of_refraction[3];
+	 //	float thickness[3];
+	 //	float absorption[3];
+	 //	float phase[3];
+	 //
+	 //	for (int i = 0; i < layers_count; ++i) {
+	 //		if (i > 0)
+	 //			layers[i] = scene.get().properties().material_layers_storage().allocate_layer();
+	 //
+	 //		base_color[i] = { 1,1,1 };
+	 //		roughness[i] = .5f;
+	 ////		anisotropy[i] = 0;
+	 //		metallic[i] = 0;
+	 //		index_of_refraction[i] = 1.5f;
+	 //		thickness[i] = 0.001f;
+	 //		absorption[i] = 1.f;
+	 //		phase[i] = .0f;
+	 //	}
+	 //
+	 //	debug_gui_dispatchable->add_custom_gui([&](const glm::ivec2 &bbsize) {
+	 //		if (ImGui::Begin("Material Editor", nullptr)) {
+	 //			for (int i = 0; i < layers_count; ++i) {
+	 //				std::string layer_label = std::string("Layer ") + std::to_string(i);
+	 //				if (i != 0)
+	 //					ImGui::Checkbox(layer_label.data(), &layer_enabled[i]);
+	 //				else
+	 //					ImGui::text(layer_label.data());
+	 //
+	 //				if (layer_enabled[i]) {
+	 //					ImGui::SliderFloat((std::string("R ##value") +		" ##" + layer_label).data(), &base_color[i].R(),	 .0f, 1.f);
+	 //					ImGui::SliderFloat((std::string("G ##value") +		" ##" + layer_label).data(), &base_color[i].G(),	 .0f, 1.f);
+	 //					ImGui::SliderFloat((std::string("B ##value") +		" ##" + layer_label).data(), &base_color[i].B(),	 .0f, 1.f);
+	 //					ImGui::SliderFloat((std::string("Rghn ##value") +	" ##" + layer_label).data(), &roughness[i],			 .0f, 1.f);
+	 ////					ImGui::SliderFloat((std::string("Aniso ##value") +	" ##" + layer_label).data(), &anisotropy[i],		-1.f, 1.f, "%.3f", 2.f);
+	 //					ImGui::SliderFloat((std::string("Metal ##value") +	" ##" + layer_label).data(), &metallic[i],			 .0f, 1.f);
+	 //					ImGui::SliderFloat((std::string("IOR ##value") +	" ##" + layer_label).data(), &index_of_refraction[i],1.f, 4.f, "%.5f", 3.f);
+	 //					if (i < layers_count - 1 && layer_enabled[i + 1])
+	 //						ImGui::SliderFloat((std::string("Thick ##value") + " ##" + layer_label).data(), &thickness[i], .0f, graphics::material_layer_max_thickness, "%.5f", 3.f);
+	 //					ImGui::SliderFloat((std::string("Attn ##value") +	" ##" + layer_label).data(), &absorption[i], .000001f, 50.f, "%.8f", 5.f);
+	 //					ImGui::SliderFloat((std::string("Phase ##value") +	" ##" + layer_label).data(), &phase[i], -1.f, +1.f);
+	 //				}
+	 //			}
+	 //		}
+	 //
+	 //		ImGui::End();
+	 //		
+	 //		for (int i = 0; i < layers_count; ++i) {
+	 //			auto t = glm::u8vec3(base_color[i].R() * 255.5f, base_color[i].G() * 255.5f, base_color[i].B() * 255.5f);
+	 //			if (layers[i]->get_albedo() != base_color[i])
+	 //				layers[i]->set_albedo(base_color[i]);
+	 //			layers[i]->set_roughness(roughness[i]);
+	 ////			layers[i]->set_anisotropy(anisotropy[i]);
+	 //			layers[i]->set_metallic(metallic[i]);
+	 //			layers[i]->set_layer_thickness(thickness[i]);
+	 //			if (layers[i]->get_index_of_refraction() != index_of_refraction[i])
+	 //				layers[i]->set_index_of_refraction(index_of_refraction[i]);
+	 //			if (layers[i]->get_attenuation_coefficient().x != absorption[i])
+	 //				layers[i]->set_attenuation_coefficient(glm::vec3{ absorption[i] });
+	 //			if (layers[i]->get_scattering_phase_parameter() != phase[i])
+	 //				layers[i]->set_scattering_phase_parameter(phase[i]);
+	 //
+	 //			if (i != 0) {
+	 //				bool enabled = layers[i - 1]->get_next_layer() != nullptr;
+	 //				if (layer_enabled[i] != enabled)
+	 //					layers[i - 1]->set_next_layer(layer_enabled[i] ? layers[i].get() : nullptr);
+	 //			}
+	 //		}
+	 //
+	 //		if (ImGui::Begin("Atmosphere", nullptr)) {
+	 //			ImGui::SliderFloat((std::string("Sun zenith angle ##value")).data(), &sun_zenith, .0f, 2 * glm::pi<float>());
+	 //			ImGui::SliderFloat((std::string("Mie scattering coefficient (10^-8) ##value##mie1")).data(), &mie_scattering_coefficient, .0f, 100.f, "%.5f", 3.f);
+	 //			ImGui::SliderFloat((std::string("Mie absorption coefficient (10^-8) ##value##mie2")).data(), &mie_absorption_coefficient, .0f, 100.f, "%.5f", 3.f);
+	 //			ImGui::SliderFloat((std::string("Debug dummy variable")).data(), &dummy, .0f, 1.f);
+	 //		}
+	 //
+	 //		ImGui::End();
+	 //
+	 //		atmosphere.mie_absorption_coefficient = static_cast<double>(mie_absorption_coefficient) * 1e-8;
+	 //		atmosphere.mie_scattering_coefficient = static_cast<double>(mie_scattering_coefficient) * 1e-8;
+	 //		renderer.get().update_atmospherics_properties(atmosphere);
+	 //
+	 //		renderer.get().get_composer_program().set_uniform("dummy", dummy);
+	 //	});
+	 //
+	 //
+	 //	/*
+	 //	 *	Configure GI renderer
+	 //	 */
+	 //	renderer.get().set_aperture_parameters(35e-3, 25e-3);
+	 //
+	 //
+	 //	/*
+	 //	 *	Switch to GI renderer and start render loop
+	 //	 */
+	 //
+	 //	ctx.set_renderer(&renderer.get());
+	 //
+	 //	auto footer_text = text_manager.get().create_renderer();
+	 //	auto footer_text_task = graphics::make_gpu_task("footer_text", footer_text.get(), nullptr);
+	 //
+	 //#ifndef STATIC_SCENE
+	 //	renderer.get().add_gui_task(footer_text_task);
+	 //#endif
+	 //	renderer.get().add_gui_task(graphics::make_gpu_task("debug_gui", debug_gui_dispatchable.get(), nullptr));
+	 //
+	 //	glm::ivec2 last_pointer_pos;
+	 //	float time = 0;
+	 //	while (running) {
+	 //		if (ctx.window_active()) {
+	 //			auto time_delta = ctx.time_per_frame().count();
+	 //
+	 //			using namespace HID;
+	 //			constexpr float movement_factor = 155.f;
+	 //			if (ctx.get_key_status(keyboard::K::KeyW) == Status::KeyDown)
+	 //				camera.step_forward(time_delta*movement_factor);
+	 //			if (ctx.get_key_status(keyboard::K::KeyS) == Status::KeyDown)
+	 //				camera.step_backward(time_delta*movement_factor);
+	 //			if (ctx.get_key_status(keyboard::K::KeyA) == Status::KeyDown)
+	 //				camera.step_left(time_delta*movement_factor);
+	 //			if (ctx.get_key_status(keyboard::K::KeyD) == Status::KeyDown)
+	 //				camera.step_right(time_delta*movement_factor);
+	 //
+	 //			constexpr float rotation_factor = .09f;
+	 //			bool rotate_camera = mouse_down;
+	 //
+	 //			auto pp = ctx.get_pointer_position();
+	 //			if (mouse_down && !debug_gui_dispatchable->is_gui_active()) {
+	 //				auto diff_v = static_cast<glm::vec2>(last_pointer_pos - pp) * time_delta * rotation_factor;
+	 //				camera.pitch_and_yaw(-diff_v.y, diff_v.x);
+	 //			}
+	 //			last_pointer_pos = pp;
+	 //		}
+	 //
+	 //#ifdef STATIC_SCENE
+	 //		glm::vec3 lp = light0_pos;
+	 //		glm::vec3 sun_dir = sun_direction;
+	 //#else
+	 //		float angle = time * glm::pi<float>() / 2.5f;
+	 //		glm::vec3 lp = light0_pos + glm::vec3(glm::sin(angle) * 3, 0, glm::cos(angle)) * 115.f;
+	 //
+	 //		glm::vec3 sun_dir = glm::normalize(glm::vec3{ glm::sin(sun_zenith + glm::pi<float>()), 
+	 //													  -glm::cos(sun_zenith + glm::pi<float>()), 
+	 //													  .15f});
+	 //
+	 //		light0.first->set_position(lp);
+	 //		light0.second->set_model_transform(glm::mat4x3(glm::translate(glm::mat4(), lp)));
+	 //		sun_light->set_direction(sun_dir);
+	 //#endif
+	 //
+	 //		{
+	 //			using namespace text::Attributes;
+	 //
+	 //			static unsigned tpf_count = 0;
+	 //			static float total_tpf = .0f;
+	 //			total_tpf += ctx.time_per_frame().count();
+	 //			++tpf_count;
+	 //			static float tpf = .0f;
+	 //			if (tpf_count % 5 == 0) {
+	 //				tpf = total_tpf / 5.f;
+	 //				total_tpf = .0f;
+	 //			}
+	 //
+	 //			auto total_vram = std::to_wstring(ctx.gl()->meminfo_total_available_vram() / 1024);
+	 //			auto free_vram = std::to_wstring(ctx.gl()->meminfo_free_vram() / 1024);
+	 //
+	 //			footer_text->set_text({ 10, 50 }, line_height(28)(vsmall(b(stroke(dark_magenta, 1)(red(std::to_wstring(tpf * 1000.f))))) + L" ms\n" +
+	 //															  vsmall(b((blue_violet(free_vram) + L" / " + stroke(red, 1)(dark_red(total_vram)) + L" MB")))));
+	 //		}
+	 //
+	 //		time += ctx.time_per_frame().count();
+	 //		if (!ctx.tick()) break;
+	 //	}
+	 //
+	 //	return 0;
+	 //}

@@ -21,8 +21,8 @@ namespace gl {
 /**
 *	@brief	A rendering system fragment with a graphics pipeline
 */
-template <typename CRTP, typename... ConsumedStorages>
-class fragment_graphics : public fragment<ConsumedStorages...> {
+template <typename CRTP>
+class fragment_graphics : public fragment {
 private:
 	std::vector<device_pipeline_shader_stage> shader_stages;
 
@@ -30,13 +30,15 @@ protected:
 	device_pipeline_graphics pipeline;
 
 private:
-	template <typename... Names>
-	static auto create_graphics_pipeline(const ste_context &ctx,
+	template <typename RenderingSystem, typename... Names>
+	static auto create_graphics_pipeline(const RenderingSystem &rs,
 										 pipeline_binding_set_pool &binding_set_pool,
 										 device_pipeline_graphics_configurations &&pipeline_graphics_configurations,
 										 const pipeline_external_binding_set_collection* external_binding_sets_collection,
 										 std::vector<device_pipeline_shader_stage> &shader_stages,
 										 Names&&... shader_stages_names) {
+		const ste_context &ctx = rs.get_creating_context();
+
 		pipeline_auditor_graphics auditor(std::move(pipeline_graphics_configurations));
 
 		// Expand names and create shader stages, feeding them into the auditor
@@ -47,7 +49,7 @@ private:
 															 std::forward<Names>(shader_stages_names)...);
 
 		// Configure the auditor
-		CRTP::setup_graphics_pipeline(ctx, auditor);
+		CRTP::setup_graphics_pipeline(rs, auditor);
 
 		// Create pipeline
 		return external_binding_sets_collection ?
@@ -62,14 +64,14 @@ protected:
 	/**
 	 *	@brief	Subclasses can override this declaration to fine tune pipeline_auditor_graphics parameters
 	 */
-	static void setup_graphics_pipeline(const ste_context &ctx, pipeline_auditor_graphics &auditor) {}
+	static void setup_graphics_pipeline(const rendering_system &rs, pipeline_auditor_graphics &auditor) {}
 
-	template <typename... Names>
-	fragment_graphics(const rendering_system &rs,
+	template <typename RenderingSystem, typename... Names>
+	fragment_graphics(const RenderingSystem &rs,
 					  pipeline_binding_set_pool &binding_set_pool,
 					  device_pipeline_graphics_configurations &&pipeline_graphics_configurations,
 					  Names&&... shader_stages_names)
-		: pipeline(create_graphics_pipeline(rs.get_creating_context(),
+		: pipeline(create_graphics_pipeline(rs,
 											binding_set_pool,
 											std::move(pipeline_graphics_configurations),
 											rs.external_binding_sets(),

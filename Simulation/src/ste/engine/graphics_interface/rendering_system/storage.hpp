@@ -11,6 +11,7 @@ namespace gl {
 class storage_base {
 protected:
 	storage_base() {}
+
 public:
 	virtual ~storage_base() noexcept {}
 
@@ -28,6 +29,7 @@ public:
 
 protected:
 	storage() = default;
+
 public:
 	virtual ~storage() noexcept {}
 };

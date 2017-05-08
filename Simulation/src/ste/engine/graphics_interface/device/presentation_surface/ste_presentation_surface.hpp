@@ -18,6 +18,9 @@
 #include <vk_queue.hpp>
 #include <semaphore.hpp>
 
+#include <format.hpp>
+#include <colorspace.hpp>
+
 #include <atomic>
 #include <memory>
 #include <vector>
@@ -241,8 +244,8 @@ public:
 	auto& get_presentation_window() const { return presentation_window; }
 
 	auto extent() const { return swap_chain->get_extent(); }
-	auto surface_format() const { return swap_chain->get_format(); }
-	auto surface_colorspace() const { return swap_chain->get_colorspace(); }
+	auto surface_format() const { return static_cast<format>(swap_chain->get_format()); }
+	auto surface_colorspace() const { return static_cast<colorspace>(swap_chain->get_colorspace()); }
 };
 
 }

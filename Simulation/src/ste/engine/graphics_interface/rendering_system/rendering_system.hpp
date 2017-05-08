@@ -5,67 +5,25 @@
 
 #include <stdafx.hpp>
 #include <ste_context.hpp>
-#include <storage.hpp>
+#include <ste_resource_traits.hpp>
 
-#include <boost/container/flat_map.hpp>
-#include <memory>
+#include <storage.hpp>
+#include <storage_shared_ptr.hpp>
+
+#include <boost/container/flat_set.hpp>
 #include <type_traits>
-#include <utility>
-#include <tuple_call.hpp>
+#include <algorithm>
 
 namespace ste {
 namespace gl {
 
-namespace _internal {
-
-template <typename Fragment, int N, typename Map>
-decltype(auto) rendering_system_find_storage(const Map &storages) {
-	using Storage = typename Fragment::template consumed_storage<N>;
-
-	auto tag = &Storage::tag;
-	auto it = storages.find(tag);
-	if (it == storages.end()) {
-		// Not found
-		throw std::runtime_error("Storage not found");
-	}
-
-	return reinterpret_cast<const Storage&>(*it->second);
-
-}
-
-template <typename Fragment>
-struct rendering_system_create_storages_tuple {
-	template <typename Map, std::size_t... Indices>
-	decltype(auto) operator()(const Map &storages, std::index_sequence<Indices...>) {
-		return std::make_tuple(rendering_system_find_storage<Fragment, Indices>(storages)...);
-	}
-};
-
-template <typename Fragment, int N>
-struct rendering_system_call_fragment_command_buffer {
-	template <typename Map>
-	auto operator()(Fragment &fragment, const Map &storages) {
-		using indices = std::make_index_sequence<N>;
-		auto tuple = rendering_system_create_storages_tuple<Fragment>()(storages, indices{});
-		return tuple_call(&fragment, 
-						  &Fragment::command_buffer,
-						  tuple);
-	}
-};
-template <typename Fragment>
-struct rendering_system_call_fragment_command_buffer<Fragment, 0> {
-	template <typename Map>
-	auto operator()(Fragment &fragment, const Map &) {
-		return fragment.command_buffer();
-	}
-};
-
-}
-
-class rendering_system {
+class rendering_system : ste_resource_deferred_create_trait {
 private:
 	using storage_tag = const void*;
-	using storage_map_t = boost::container::flat_map<storage_tag, std::unique_ptr<storage_base>>;
+	using storage_ptr_base = _internal::storage_shared_ptr_base<rendering_system>;
+	using storage_map_t = boost::container::flat_set<storage_ptr_base>;
+
+	friend void storage_ptr_base::release();
 
 private:
 	std::reference_wrapper<const ste_context> ctx;
@@ -74,12 +32,10 @@ protected:
 	storage_map_t storages;
 
 	/**
-	 *	@brief	Helper method to call a fragment 'command_buffer()' method, passing the list of storages consumed by the fragment.
-	 */
-	template <typename Fragment>
-	auto fragment_command_buffer(Fragment &fragment) {
-		using caller = _internal::rendering_system_call_fragment_command_buffer<Fragment, Fragment::consumed_storages_count>;
-		return caller()(fragment, storages);
+	*	@brief	Removes a storage class from the rendering system.
+	*/
+	void remove_storage(const storage_ptr_base &base) {
+		storages.erase(base);
 	}
 
 public:
@@ -87,44 +43,41 @@ public:
 	virtual ~rendering_system() noexcept {}
 
 	/**
-	 *	@brief	Creates a storage class of type Storage and adds it to the rendering system.
-	 */
-	template <typename Storage, typename... Args>
-	void create_storage(Args&&... args) {
+	*	@brief	Acquires a storage class of type Storage. If such a storage does not exist, it will be created.
+	*			Returns a reference counting pointer to the new resource.
+	*/
+	template <typename Storage>
+	auto acquire_storage() {
 		static_assert(std::is_base_of_v<storage_base, Storage>, "Storage type should inherit from class storage<Storage>");
 
 		storage_tag tag = &Storage::tag;
-		std::unique_ptr<storage_base> storage = std::make_unique<Storage>(std::forward<Args>(args)...);
-
-		auto ret = storages.emplace(tag, std::move(storage));
-		if (!ret.second) {
-			// Storage type already exists
-			throw std::runtime_error("Storage already exists");
+		// Find a storage with tag
+		auto it = std::lower_bound(storages.begin(), storages.end(), tag, [](const storage_ptr_base &base, storage_tag tag) {
+			return base.tag < tag;
+		});
+		if (it != storages.end() && it->tag == tag) {
+			// We have a storage, return a shared pointer to it.
+			return storage_shared_ptr<Storage>(*it);
 		}
+
+		// Need to create a storage
+		storage_base* storage = new Storage(ctx.get());
+
+		auto ret_it = storages.emplace_hint(it, storage, this, tag);
+		return storage_shared_ptr<Storage>(*ret_it);
 	}
 
 	/**
-	*	@brief	Removes a storage class of type Storage from the rendering system.
+	*	@brief	Implementations should use this to build a primary command queue and dispatch.
 	*/
-	template <typename Storage>
-	void remove_storage() {
-		static_assert(std::is_base_of_v<storage_base, Storage>, "Storage type should inherit from class storage<Storage>");
+	virtual void render() = 0;
 
-		storage_tag tag = &Storage::tag;
-		storages.erase(tag);
-	}
+	auto& get_creating_context() const { return ctx.get(); }
 
 	/**
 	*	@brief	Implementations can use this hook to provide all fragments that use this rendering system with a collection of external binding sets.
 	*/
 	virtual const pipeline_external_binding_set_collection* external_binding_sets() const { return nullptr; }
-
-	/**
-	*	@brief	Implementations should use this to build a primary command queue and dispatch.
-	*/
-	virtual void render() const = 0;
-
-	auto& get_creating_context() const { return ctx.get(); }
 };
 
 }
