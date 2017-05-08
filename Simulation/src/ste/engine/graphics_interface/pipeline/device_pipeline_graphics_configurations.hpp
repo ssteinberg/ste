@@ -23,6 +23,11 @@ struct device_pipeline_graphics_configurations {
 	vk::vk_rasterizer_op_descriptor rasterizer_op;
 	vk::vk_depth_op_descriptor depth_op;
 	glm::vec4 blend_constants{};
+
+	device_pipeline_graphics_configurations() = default;
+	device_pipeline_graphics_configurations(const glm::i32vec2 &extent) 
+		: viewport(glm::vec2(extent)), scissor(extent)
+	{}
 };
 
 }

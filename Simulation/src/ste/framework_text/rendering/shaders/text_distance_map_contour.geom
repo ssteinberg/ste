@@ -37,11 +37,9 @@ layout(std430, set = 0, binding = 0) restrict readonly buffer glyph_data {
 	buffer_glyph_descriptor glyphs[];
 };
 
-layout(set = 1, binding = 0) uniform fb_size_uniform_t {
-	vec2 fb_size;
-};
-
 void main() {
+	vec2 fb_size = vec2(1920,1080);
+
 	vec2 pos = mix(vec2(-1,1), vec2(1,-1), vec2(vin[0].position) / fb_size);
 
 	buffer_glyph_descriptor g = glyphs[vin[0].drawId];

@@ -32,7 +32,6 @@ protected:
 private:
 	template <typename RenderingSystem, typename... Names>
 	static auto create_graphics_pipeline(const RenderingSystem &rs,
-										 pipeline_binding_set_pool &binding_set_pool,
 										 device_pipeline_graphics_configurations &&pipeline_graphics_configurations,
 										 const pipeline_external_binding_set_collection* external_binding_sets_collection,
 										 std::vector<device_pipeline_shader_stage> &shader_stages,
@@ -54,10 +53,8 @@ private:
 		// Create pipeline
 		return external_binding_sets_collection ?
 			auditor.pipeline(ctx,
-							 binding_set_pool,
 							 *external_binding_sets_collection) :
-			auditor.pipeline(ctx,
-							 binding_set_pool);
+			auditor.pipeline(ctx);
 	}
 
 protected:
@@ -68,11 +65,9 @@ protected:
 
 	template <typename RenderingSystem, typename... Names>
 	fragment_graphics(const RenderingSystem &rs,
-					  pipeline_binding_set_pool &binding_set_pool,
 					  device_pipeline_graphics_configurations &&pipeline_graphics_configurations,
 					  Names&&... shader_stages_names)
 		: pipeline(create_graphics_pipeline(rs,
-											binding_set_pool,
 											std::move(pipeline_graphics_configurations),
 											rs.external_binding_sets(),
 											this->shader_stages,

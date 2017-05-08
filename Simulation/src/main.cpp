@@ -90,11 +90,8 @@ class simple_fragment : public gl::fragment_graphics<simple_fragment> {
 public:
 	static auto create_settings(const ste_context &ctx) {
 		// Pipeline settings
-		gl::device_pipeline_graphics_configurations graphics_settings;
 		auto surface_extent = ctx.device().get_surface().extent();
-		graphics_settings.viewport = glm::vec2(surface_extent);
-		graphics_settings.scissor = surface_extent;
-		return graphics_settings;
+		return gl::device_pipeline_graphics_configurations(surface_extent);
 	}
 
 	static void setup_graphics_pipeline(const gl::rendering_presentation_system &rs,
@@ -104,9 +101,8 @@ public:
 	}
 
 public:
-	simple_fragment(gl::rendering_presentation_system &rs,
-					gl::pipeline_binding_set_pool &binding_set_pool)
-		: Base(rs, binding_set_pool,
+	simple_fragment(gl::rendering_presentation_system &rs)
+		: Base(rs,
 			   create_settings(rs.get_creating_context()),
 			   "temp.vert", "temp.frag"),
 		ctx(rs.get_creating_context()),
@@ -167,11 +163,10 @@ private:
 
 public:
 	simple_renderer(const ste_context &ctx,
-				   gl::presentation_engine &presentation,
-				   gl::pipeline_binding_set_pool &binding_set_pool)
+				   gl::presentation_engine &presentation)
 		: Base(ctx),
 		presentation(presentation),
-		frag1(*this, binding_set_pool)
+		frag1(*this)
 	{}
 	~simple_renderer() noexcept {}
 
@@ -295,8 +290,6 @@ int main()
 									window);
 	ste_context ctx(engine, gl_ctx, device);
 
-	gl::pipeline_binding_set_pool binding_set_pool(ctx);
-
 	/*
 	 *	Create the presentation engine
 	 */
@@ -311,7 +304,7 @@ int main()
 	//	auto text_manager = std::make_unique<text::text_manager>(ctx, font);
 
 
-	simple_renderer r(ctx, presentation, binding_set_pool);
+	simple_renderer r(ctx, presentation);
 
 
 	//	ste_resource<device_pipeline_shader_stage> stage(ste_resource_dont_defer(), ctx, std::string("fxaa.frag"));

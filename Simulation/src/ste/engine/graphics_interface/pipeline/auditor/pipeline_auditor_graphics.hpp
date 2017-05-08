@@ -109,6 +109,12 @@ public:
 	void set_framebuffer_layout(const framebuffer_layout &layout) {
 		fb_layout = layout;
 	}
+	/**
+	*	@brief	Defines the framebuffer layout for the pipeline
+	*/
+	void set_framebuffer_layout(framebuffer_layout &&layout) {
+		fb_layout = std::move(layout);
+	}
 
 	void set_pipeline_settings(device_pipeline_graphics_configurations &&settings) { pipeline_settings = std::move(settings); }
 
@@ -116,12 +122,10 @@ public:
 	*	@brief	Generates a pipeline from the specifications recorded to the auditor.
 	*
 	*	@param	ctx				Context
-	*	@param	pool			Binding set pool. Used to allocate the binding sets used by the pipeline.
 	*	@param	external_binding_sets	A list of binding set layouts that are assumed to be created and bound by an external system.
 	*									The pipeline will only check compatibility with the provided shader stages.
 	*/
 	auto pipeline(const ste_context &ctx,
-				  pipeline_binding_set_pool &pool,
 				  optional<std::reference_wrapper<const pipeline_external_binding_set_collection>> external_binding_sets) const {
 		pipeline_layout layout(ctx,
 							   stages(),
@@ -131,17 +135,14 @@ public:
 										pipeline_settings,
 										vertex_input_descriptors.get_vk_descriptors(),
 										fb_layout,
-										pool,
 										std::move(layout),
 										external_binding_sets);
 	}
 	/**
 	*	@brief	See pipeline().
 	*/
-	auto pipeline(const ste_context &ctx,
-				  pipeline_binding_set_pool &pool) const {
+	auto pipeline(const ste_context &ctx) const {
 		return pipeline(ctx,
-						pool,
 						none);
 	}
 

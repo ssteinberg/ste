@@ -129,13 +129,12 @@ protected:
 	virtual void recreate_pipeline() = 0;
 
 	device_pipeline(const ste_context &ctx,
-					pipeline_binding_set_pool &pool,
 					pipeline_layout &&layout,
 					optional<std::reference_wrapper<const pipeline_external_binding_set_collection>> external_binding_sets)
 		: ctx(ctx),
 		layout(std::make_unique<pipeline_layout>(std::move(layout))),
 		binding_sets(*this->layout,
-					 pool),
+					 ctx.device().binding_set_pool()),
 		external_binding_sets(external_binding_sets ? &external_binding_sets.get().get() : nullptr)
 	{}
 

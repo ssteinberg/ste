@@ -33,7 +33,6 @@ public:
 private:
 	std::atomic<long> ref_counter{ 0 };
 
-	const ste_context &ctx;
 	vk::vk_descriptor_pool pool;
 
 	std::uint32_t allocated_sets{ 0 };
@@ -64,20 +63,19 @@ private:
 
 public:
 	binding_set_pool_instance(ctor,
-							  const ste_context &ctx,
+							  const vk::vk_logical_device &device,
 							  std::uint32_t max_sets,
 							  const std::vector<const pipeline_binding_layout_interface*> &pool_bindings)
-		: ctx(ctx),
-		pool(ctx.device(),
-			 max_sets,
-			 create_vk_bindings(pool_bindings),
-			 false)
+		: pool(device,
+			   max_sets,
+			   create_vk_bindings(pool_bindings),
+			   false)
 	{}
 	~binding_set_pool_instance() noexcept {}
 
 	/**
 	 *	@brief	Attempts to allocate the required layouts
-	 *	
+	 *
 	 *	@throws	vk_exception	On Vulkan exception
 	 */
 	template <typename Layout>

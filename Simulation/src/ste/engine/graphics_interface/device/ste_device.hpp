@@ -13,6 +13,7 @@
 #include <ste_device_sync_primitives_pools.hpp>
 #include <ste_queue_selector.hpp>
 #include <ste_device_pipeline_cache.hpp>
+#include <pipeline_binding_set_pool.hpp>
 
 #include <ste_gl_context_creation_parameters.hpp>
 #include <ste_presentation_surface.hpp>
@@ -44,6 +45,8 @@ private:
 
 	// Pipeline cache
 	ste_device_pipeline_cache shared_pipeline_cache;
+	// And binding sets pool
+	mutable pipeline_binding_set_pool device_binding_set_pool;
 
 	// Synchronization primitive pools
 	aligned_ptr<ste_device_sync_primitives_pools> sync_primitives_pools;
@@ -95,6 +98,7 @@ public:
 		shared_pipeline_cache(device,
 							  &engine.cache(),
 							  this->name()),
+		device_binding_set_pool(device),
 		sync_primitives_pools(device),
 		device_queues(create_queues(device,
 									queue_descriptors,
@@ -128,6 +132,7 @@ public:
 		shared_pipeline_cache(device,
 							  &engine.cache(),
 							  this->name()),
+		device_binding_set_pool(device),
 		sync_primitives_pools(device),
 		device_queues(create_queues(device,
 									queue_descriptors,
@@ -216,6 +221,11 @@ public:
 	*	@brief	Thread-safe pipeline cache generator
 	*/
 	auto& pipeline_cache() const { return shared_pipeline_cache; }
+
+	/**
+	 *	@brief	Thread-safe pool of pipeline binding sets
+	 */
+	auto& binding_set_pool() const { return device_binding_set_pool; }
 
 	/**
 	*	@brief	Human readable device name
