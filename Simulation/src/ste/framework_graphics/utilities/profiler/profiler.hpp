@@ -3,14 +3,14 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
 #include <vector>
 #include <string>
 #include <algorithm>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 struct profiler_entry {
 	std::string name;

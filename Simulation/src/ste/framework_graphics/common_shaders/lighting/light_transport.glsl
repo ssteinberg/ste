@@ -1,5 +1,5 @@
 
-#include "common.glsl"
+#include <common.glsl>
 
 /*
  *	The Henyey-Greenstein phase function. 

@@ -10,9 +10,9 @@
 #include <memory>
 #include <array>
 
-#include "log_sink.hpp"
+#include <log_sink.hpp>
 
-namespace StE {
+namespace ste::log {
 
 template <std::size_t buff_sz>
 class log_streambuf : public std::streambuf {

@@ -1,5 +1,5 @@
 
-#include "common.glsl"
+#include <common.glsl>
 
 mat3 conversion_matrix_rgb_to_xyz = mat3(
 	vec3(0.412453f, 0.357580f, 0.180423f),

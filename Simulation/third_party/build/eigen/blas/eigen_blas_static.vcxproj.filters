@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\eigen\blas\single.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\eigen\blas\double.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\eigen\blas\complex_single.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\eigen\blas\complex_double.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\eigen\blas\xerbla.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\eigen\blas\f2c\srotm.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\eigen\blas\f2c\srotmg.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\eigen\blas\f2c\drotm.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\eigen\blas\f2c\drotmg.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\eigen\blas\f2c\lsame.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\eigen\blas\f2c\dspmv.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\eigen\blas\f2c\ssbmv.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\eigen\blas\f2c\chbmv.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\eigen\blas\f2c\sspmv.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\eigen\blas\f2c\zhbmv.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\eigen\blas\f2c\chpmv.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\eigen\blas\f2c\dsbmv.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\eigen\blas\f2c\zhpmv.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\eigen\blas\f2c\dtbmv.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\eigen\blas\f2c\stbmv.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\eigen\blas\f2c\ctbmv.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\eigen\blas\f2c\ztbmv.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\eigen\blas\f2c\d_cnjg.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\eigen\blas\f2c\r_cnjg.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\eigen\blas\f2c\complexdots.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\packages\eigen\blas\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{E2F4C4EE-46BB-30D4-8FDA-5C807A61D8E3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

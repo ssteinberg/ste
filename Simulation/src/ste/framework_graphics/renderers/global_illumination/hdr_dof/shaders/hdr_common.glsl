@@ -1,5 +1,5 @@
 
-#include "common.glsl"
+#include <common.glsl>
 
 const int bins = 128;
 const float fbins = float(bins);

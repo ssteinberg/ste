@@ -3,14 +3,14 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "shaped_light.hpp"
+#include <stdafx.hpp>
+#include <shaped_light.hpp>
 
 #include <vector>
 #include <array>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 class polygonal_light : public shaped_light {
 	using Base = shaped_light;

@@ -12,9 +12,9 @@
 #define __get_cwd getcwd
 #endif
 
-#include "boost_filesystem.hpp"
+#include <boost_filesystem.hpp>
 
-namespace StE {
+namespace ste {
 
 boost::filesystem::path inline getcwd() {
 	char cwd[FILENAME_MAX];

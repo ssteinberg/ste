@@ -1,6 +1,6 @@
 
-#include "common.glsl"
-#include "linearly_transformed_cosines.glsl"
+#include <common.glsl>
+#include <linearly_transformed_cosines.glsl>
 
 /*
  *	Integrates spherical clamped cosine distribution of a projected quad.

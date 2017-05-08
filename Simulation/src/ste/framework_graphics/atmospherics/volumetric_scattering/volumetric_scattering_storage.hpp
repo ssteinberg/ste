@@ -3,20 +3,20 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
-#include "signal.hpp"
+#include <signal.hpp>
 
-#include "texture_2d.hpp"
-#include "texture_3d.hpp"
-#include "sampler.hpp"
+#include <texture_2d.hpp>
+#include <texture_3d.hpp>
+#include <sampler.hpp>
 
-#include "linked_light_lists.hpp"
+#include <linked_light_lists.hpp>
 
 #include <memory>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 class volumetric_scattering_storage {
 private:

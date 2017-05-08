@@ -10,5 +10,5 @@ class microfacet_fit_error : public std::runtime_error {
 
 public:
 	using Base::Base;
-	microfacet_fit_error() : Base("") {}
+	microfacet_fit_error() : Base("Microfacet fit LUT loading error") {}
 };

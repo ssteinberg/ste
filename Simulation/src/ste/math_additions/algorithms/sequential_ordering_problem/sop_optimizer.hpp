@@ -3,10 +3,10 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "sequential_ordering_problem.hpp"
+#include <stdafx.hpp>
+#include <sequential_ordering_problem.hpp>
 
-#include "Log.hpp"
+#include <Log.hpp>
 
 #include <vector>
 #include <algorithm>
@@ -15,8 +15,8 @@
 
 #include <atomic>
 
-namespace StE {
-namespace Algorithm {
+namespace ste {
+namespace algorithm {
 namespace SOP {
 
 template <typename G>

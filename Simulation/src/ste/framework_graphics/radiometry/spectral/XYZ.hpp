@@ -3,12 +3,12 @@
 
 #pragma once
 
-#include "spectrum.hpp"
+#include <spectrum.hpp>
 
 #include <limits>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 class rgb;
 class xyY;
@@ -49,12 +49,12 @@ public:
 }
 }
 
-#include "rgb.hpp"
-#include "xyY.hpp"
-#include "kelvin.hpp"
+#include <rgb.hpp>
+#include <xyY.hpp>
+#include <kelvin.hpp>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 inline rgb XYZ::toRGB() const {
 	rgb ret;

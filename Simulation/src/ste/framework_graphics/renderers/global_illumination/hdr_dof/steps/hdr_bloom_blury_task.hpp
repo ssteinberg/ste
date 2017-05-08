@@ -3,15 +3,15 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "hdr_dof_postprocess.hpp"
+#include <stdafx.hpp>
+#include <hdr_dof_postprocess.hpp>
 
-#include "gl_current_context.hpp"
+#include <gl_current_context.hpp>
 
 #include <memory>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 class hdr_bloom_blury_task : public gpu_dispatchable {
 	using Base = gpu_dispatchable;
@@ -25,12 +25,13 @@ public:
 
 protected:
 	void set_context_state() const override final {
-		screen_filling_quad.vao()->bind();
+		// TODO: Fix
+//		screen_filling_quad.vao()->bind();
 		p->hdr_bloom_blury.get().bind();
 	}
 
 	void dispatch() const override final {
-		Core::GL::gl_current_context::get()->draw_arrays(GL_TRIANGLE_STRIP, 0, 4);
+		Core::gl::gl_current_context::get()->draw_arrays(GL_TRIANGLE_STRIP, 0, 4);
 	}
 };
 

@@ -3,10 +3,10 @@
 
 #pragma once
 
-#include "spectrum.hpp"
+#include <spectrum.hpp>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 class rgb;
 
@@ -34,4 +34,4 @@ public:
 }
 }
 
-#include "rgb.hpp"
+#include <rgb.hpp>

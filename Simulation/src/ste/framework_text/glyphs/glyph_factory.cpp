@@ -1,12 +1,9 @@
 
-#include "stdafx.hpp"
-#include "glyph_factory.hpp"
+#include <stdafx.hpp>
+#include <glyph_factory.hpp>
+#include <make_distance_map.hpp>
 
-#include "make_distance_map.hpp"
-
-#include "thread_constants.hpp"
-#include "hash_combine.hpp"
-
+#include <hash_combine.hpp>
 #include <unordered_map>
 #include <functional>
 
@@ -17,10 +14,10 @@
 
 #include <stdexcept>
 
-using namespace StE::Text;
+using namespace ste::text;
 
-namespace StE {
-namespace Text {
+namespace ste {
+namespace text {
 
 struct text_glyph_pair_key {
 	wchar_t left;
@@ -38,20 +35,20 @@ struct text_glyph_pair_key {
 
 namespace std {
 
-template <> struct hash<StE::Text::text_glyph_pair_key> {
-	size_t inline operator()(const StE::Text::text_glyph_pair_key &x) const {
+template <> struct hash<ste::text::text_glyph_pair_key> {
+	size_t inline operator()(const ste::text::text_glyph_pair_key &x) const {
 		auto h1 = std::hash<decltype(x.right)>()(x.right);
 		auto h2 = std::hash<decltype(x.left)>()(x.left);
 		auto h3 = std::hash<decltype(x.pixel_size)>()(x.pixel_size);
-		return StE::hash_combine(h1, StE::hash_combine(h2, h3));
+		return ste::hash_combine(h1, ste::hash_combine(h2, h3));
 	}
 };
 
 }
 
 
-namespace StE {
-namespace Text {
+namespace ste {
+namespace text {
 
 class glyph_factory_ft_lib {
 private:
@@ -175,24 +172,22 @@ glyph_factory::glyph_factory() : pimpl(std::make_unique<glyph_factory_impl>()) {
 
 glyph_factory::~glyph_factory() {}
 
-StE::task_future<glyph> glyph_factory::create_glyph_async(task_scheduler *sched, const font &font, wchar_t codepoint) {
-	return sched->schedule_now([=]() -> glyph {
-		glyph g;
-		int start_x, start_y, w, h;
-		int px_size = glyph::ttf_pixel_size;
+glyph glyph_factory::create_glyph(const font &font, wchar_t codepoint) {
+	glyph g;
+	int start_x = 0, start_y = 0, w = 0, h = 0;
+	int px_size = glyph::ttf_pixel_size;
 
-		unsigned char *glyph_buf = pimpl->render_glyph_with(font, codepoint, px_size, w, h, start_y, start_x);
-		g.metrics.start_x = start_x;
-		g.metrics.start_y = start_y;
-		g.metrics.width = w;
-		g.metrics.height = h;
+	unsigned char *glyph_buf = pimpl->render_glyph_with(font, codepoint, px_size, w, h, start_y, start_x);
+	g.metrics.start_x = start_x;
+	g.metrics.start_y = start_y;
+	g.metrics.width = w;
+	g.metrics.height = h;
 
-		g.glyph_distance_field = std::make_unique<gli::texture2d>(gli::format::FORMAT_R32_SFLOAT_PACK32, glm::ivec2{ w, h }, 1);
-		make_distance_map(glyph_buf, w, h, reinterpret_cast<float*>(g.glyph_distance_field->data()));
-		delete[] glyph_buf;
+	g.glyph_distance_field = std::make_unique<gli::texture2d>(gli::format::FORMAT_R32_SFLOAT_PACK32, glm::ivec2{ w, h }, 1);
+	make_distance_map(glyph_buf, w, h, reinterpret_cast<float*>(g.glyph_distance_field->data()));
+	delete[] glyph_buf;
 
-		return std::move(g);
-	});
+	return std::move(g);
 }
 
 int glyph_factory::read_kerning(const font &font, const std::pair<wchar_t, wchar_t> &p, int pixel_size) {

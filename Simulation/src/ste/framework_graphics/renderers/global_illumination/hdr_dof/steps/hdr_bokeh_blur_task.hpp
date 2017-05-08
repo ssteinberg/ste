@@ -3,15 +3,15 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "hdr_dof_postprocess.hpp"
+#include <stdafx.hpp>
+#include <hdr_dof_postprocess.hpp>
 
-#include "gl_current_context.hpp"
+#include <gl_current_context.hpp>
 
 #include <memory>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 class hdr_bokeh_blur_task : public gpu_dispatchable {
 	using Base = gpu_dispatchable;

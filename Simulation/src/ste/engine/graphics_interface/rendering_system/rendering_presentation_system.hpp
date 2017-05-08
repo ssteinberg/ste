@@ -1,0 +1,82 @@
+//	StE
+// © Shlomi Steinberg 2015-2017
+
+#pragma once
+
+#include <stdafx.hpp>
+#include <ste_device.hpp>
+#include <rendering_system.hpp>
+
+#include <framebuffer.hpp>
+#include <framebuffer_layout.hpp>
+
+#include <vector>
+#include <signal.hpp>
+
+namespace ste {
+namespace gl {
+
+class rendering_presentation_system : public rendering_system {
+private:
+	optional<framebuffer_layout> fb_layout;
+	std::vector<framebuffer> swap_chain_framebuffers;
+
+	ste_device::queues_and_surface_recreate_signal_type::connection_type surface_recreate_signal_connection;
+
+protected:
+	auto& device() { return get_creating_context().device(); }
+	const auto& device() const { return get_creating_context().device(); }
+	/**
+	*	@brief	Returns a framebuffer with a swap-chain image (of the selected index) bound to color attachment at location 0.
+	*/
+	auto& swap_chain_framebuffer(std::uint32_t swap_chain_index) { return swap_chain_framebuffers[swap_chain_index]; }
+
+private:
+	void create_swap_chain_framebuffers() {
+		auto surface_extent = device().get_surface().extent();
+
+		fb_layout = framebuffer_layout(surface_extent);
+		fb_layout.get()[0] = clear_store(device().get_surface().surface_format(),
+										 image_layout::present_src_khr);
+
+		std::vector<framebuffer> v;
+		for (auto &swap_image : device().get_surface().get_swap_chain_images()) {
+			framebuffer fb(get_creating_context(), fb_layout.get());
+			fb[0] = framebuffer_attachment(swap_image.view, glm::vec4(.0f));
+			v.push_back(std::move(fb));
+		}
+
+		swap_chain_framebuffers = std::move(v);
+	}
+
+public:
+	rendering_presentation_system(const ste_context &ctx)
+		: rendering_system(ctx)
+	{
+		create_swap_chain_framebuffers();
+
+		// Connect signal to get notifications of presentation surface rebuild
+		surface_recreate_signal_connection = make_connection(device().get_queues_and_surface_recreate_signal(), [this](const ste_device*) {
+			create_swap_chain_framebuffers();
+		});
+	}
+	virtual ~rendering_presentation_system() noexcept {}
+
+	const auto& presentation_framebuffer_layout() const { return fb_layout.get(); }
+
+	/**
+	*	@brief	Shortcut method for rendering and presenting.
+	*/
+	void render_and_present() {
+		render();
+		present();
+	}
+
+	/**
+	 *	@brief	Implementations should perform presentation here.
+	 */
+	virtual void present() = 0;
+};
+
+}
+}

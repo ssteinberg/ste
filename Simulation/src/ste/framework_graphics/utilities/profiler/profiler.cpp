@@ -1,12 +1,12 @@
 
-#include "stdafx.hpp"
-#include "profiler.hpp"
+#include <stdafx.hpp>
+#include <profiler.hpp>
 
 #include <functional>
 #include <fstream>
 #include <cstring>
 
-using namespace StE::Graphics;
+using namespace ste::graphics;
 
 profiler::profiler() {
 	last_times_per_frame.resize(500);

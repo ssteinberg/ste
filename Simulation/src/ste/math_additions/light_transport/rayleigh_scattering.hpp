@@ -3,9 +3,9 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
-namespace StE {
+namespace ste {
 
 /*
 *	The Rayleigh (normalized) phase function.

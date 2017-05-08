@@ -3,27 +3,27 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "gpu_dispatchable.hpp"
+#include <stdafx.hpp>
+#include <gpu_dispatchable.hpp>
 
-#include "ste_engine_control.hpp"
-#include "gl_current_context.hpp"
+#include <ste_engine_control.hpp>
+#include <gl_current_context.hpp>
 
-#include "Sampler.hpp"
+#include <Sampler.hpp>
 
-#include "glsl_program.hpp"
-#include "deferred_gbuffer.hpp"
+#include <glsl_program.hpp>
+#include <deferred_gbuffer.hpp>
 
 #include <memory>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 class gbuffer_clear_dispatch : public gpu_dispatchable {
 	using Base = gpu_dispatchable;
 
-	friend class Resource::resource_loading_task<gbuffer_clear_dispatch>;
-	friend class Resource::resource_instance<gbuffer_clear_dispatch>;
+	friend class resource::resource_loading_task<gbuffer_clear_dispatch>;
+	friend class resource::resource_instance<gbuffer_clear_dispatch>;
 
 private:
 	mutable deferred_gbuffer *gbuffer;

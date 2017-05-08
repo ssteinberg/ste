@@ -3,19 +3,19 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
-#include "entity.hpp"
-#include "object.hpp"
-#include "gpu_dispatchable.hpp"
+#include <entity.hpp>
+#include <object.hpp>
+#include <gpu_dispatchable.hpp>
 
-#include "object_group_draw_buffers.hpp"
+#include <object_group_draw_buffers.hpp>
 
 #include <unordered_map>
 #include <memory>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 class object_group : public entity_affine {
 	using Base = gpu_dispatchable;

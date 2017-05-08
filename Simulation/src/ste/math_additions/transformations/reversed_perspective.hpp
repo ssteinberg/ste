@@ -3,9 +3,9 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
-namespace StE {
+namespace ste {
 
 template <typename T>
 glm::mat4 reversed_perspective(T fovy, T aspect, T n, T f) {

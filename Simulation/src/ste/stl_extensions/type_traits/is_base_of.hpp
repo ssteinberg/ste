@@ -1,9 +1,11 @@
 // StE
-// © Shlomi Steinberg, 2015-2016
+// © Shlomi Steinberg, 2015-2017
 
 #pragma once
 
-namespace StE {
+#include <type_traits>
+
+namespace ste {
 
 namespace detail {
 		

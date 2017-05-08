@@ -1,5 +1,5 @@
 
-#include "common.glsl"
+#include <common.glsl>
 
 struct ltc_element {
 	uvec2 data;

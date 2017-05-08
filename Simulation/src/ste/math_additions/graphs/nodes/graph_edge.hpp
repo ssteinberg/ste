@@ -3,13 +3,13 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "graph_vertex.hpp"
+#include <stdafx.hpp>
+#include <graph_vertex.hpp>
 
 #include <functional>
 
-namespace StE {
-namespace Graph {
+namespace ste {
+namespace graph {
 
 template <typename V, typename E>
 class graph;

@@ -3,10 +3,10 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 #include <iostream>
 
-namespace StE {
+namespace ste {
 
 namespace detail {
 

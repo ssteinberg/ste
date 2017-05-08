@@ -3,13 +3,13 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "light.hpp"
+#include <stdafx.hpp>
+#include <light.hpp>
 
-#include "gstack_stable.hpp"
+#include <gstack_stable.hpp>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 class shaped_light : public light {
 	using Base = light;

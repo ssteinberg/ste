@@ -3,16 +3,16 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "gpu_dispatchable.hpp"
+#include <stdafx.hpp>
+#include <gpu_dispatchable.hpp>
 
-#include "ste_engine_control.hpp"
-#include "profiler.hpp"
+#include <ste_engine_control.hpp>
+#include <profiler.hpp>
 
-#include "signal.hpp"
-#include "font.hpp"
+#include <signal.hpp>
+#include <font.hpp>
 
-#include "camera.hpp"
+#include <camera.hpp>
 
 #include <map>
 #include <vector>
@@ -20,8 +20,8 @@
 #include <string>
 #include <functional>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 class debug_gui : public gpu_dispatchable {
 	using Base = gpu_dispatchable;
@@ -46,7 +46,7 @@ private:
 	std::vector<std::function<void(const glm::ivec2 &)>> user_guis;
 
 public:
-	debug_gui(const ste_engine_control &ctx, profiler *prof, const StE::Text::font &default_font, const camera *cam = nullptr);
+	debug_gui(const ste_engine_control &ctx, profiler *prof, const ste::text::font &default_font, const camera *cam = nullptr);
 	~debug_gui() noexcept;
 
 	void add_custom_gui(std::function<void(const glm::ivec2 &)> &&f) { user_guis.emplace_back(std::move(f)); }

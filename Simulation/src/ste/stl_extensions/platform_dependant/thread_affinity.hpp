@@ -4,7 +4,7 @@
 #pragma once
 
 #ifdef _MSC_VER
-#include "windows.hpp"
+#include <windows.hpp>
 #elif defined _linux
 #include <sched.h>
 #include <pthread.h>
@@ -16,7 +16,7 @@
 #include <thread>
 #include <bitset>
 
-namespace StE {
+namespace ste {
 
 template <int N>
 bool inline thread_set_affinity(std::thread *thread, const std::bitset<N> &mask) {
@@ -28,9 +28,9 @@ bool inline thread_set_affinity(std::thread *thread, const std::bitset<N> &mask)
 
 	DWORD m = 0;
 	if (sizeof(DWORD) == sizeof(decltype(mask.to_ulong())))
-		m = mask.to_ulong();
+		m = static_cast<DWORD>(mask.to_ulong());
 	else if (sizeof(DWORD) == sizeof(decltype(mask.to_ullong())))
-		m = mask.to_ullong();
+		m = static_cast<DWORD>(mask.to_ullong());
 	else
 		assert(false);
 

@@ -3,18 +3,18 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "gpu_dispatchable.hpp"
+#include <stdafx.hpp>
+#include <gpu_dispatchable.hpp>
 
-#include "ste_engine_control.hpp"
+#include <ste_engine_control.hpp>
 
-#include "glsl_program.hpp"
-#include "scene.hpp"
+#include <glsl_program.hpp>
+#include <scene.hpp>
 
 #include <memory>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 class scene_prepopulate_depth_dispatch : public gpu_dispatchable {
 	using Base = gpu_dispatchable;
@@ -23,7 +23,7 @@ private:
 	const scene *s;
 	bool front_face;
 
-	Resource::resource_instance<Resource::glsl_program> program;
+	resource::resource_instance<resource::glsl_program> program;
 
 public:
 	scene_prepopulate_depth_dispatch(const ste_engine_control &ctx, 

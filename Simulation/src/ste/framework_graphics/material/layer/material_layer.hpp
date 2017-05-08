@@ -3,21 +3,21 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
-#include "material_layer_descriptor.hpp"
-#include "observable_resource.hpp"
+#include <material_layer_descriptor.hpp>
+#include <observable_resource.hpp>
 
-#include "texture_2d.hpp"
-#include "Sampler.hpp"
+#include <texture_2d.hpp>
+#include <Sampler.hpp>
 
-#include "rgb.hpp"
+#include <rgb.hpp>
 
 #include <memory>
 #include <limits>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 /**
  *	@brief	Defines rendering material layer
@@ -58,7 +58,7 @@ private:
 		if (this->*map == nullptr || (this->*map)->get_size() != glm::ivec2{ 1, 1 }) {
 			auto surface = gli::texture2d(gli::format::FORMAT_R32_SFLOAT_PACK32, { 1, 1 }, 1);
 			*reinterpret_cast<float*>(surface.data()) = scalar;
-			this->*map = std::make_shared<StE::Core::texture_2d>(surface, false);
+			this->*map = std::make_shared<ste::Core::texture_2d>(surface, false);
 		}
 		else
 			(this->*map)->clear(&scalar);

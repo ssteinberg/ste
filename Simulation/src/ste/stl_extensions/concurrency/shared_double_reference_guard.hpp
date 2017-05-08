@@ -6,9 +6,9 @@
 #include <atomic>
 #include <iostream>
 
-#include "concurrent_pointer_recycler.hpp"
+#include <concurrent_pointer_recycler.hpp>
 
-namespace StE {
+namespace ste {
 
 namespace _shared_double_reference_guard_detail {
 

@@ -3,18 +3,18 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
-#include "signal.hpp"
+#include <signal.hpp>
 
-#include "texture_2d.hpp"
-#include "texture_2d_array.hpp"
-#include "framebuffer_object.hpp"
+#include <texture_2d.hpp>
+#include <texture_2d_array.hpp>
+#include <framebuffer_object.hpp>
 
 #include <memory>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 class deferred_gbuffer {
 private:

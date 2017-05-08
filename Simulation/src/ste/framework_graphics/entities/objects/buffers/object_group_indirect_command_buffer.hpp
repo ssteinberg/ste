@@ -3,13 +3,13 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
-#include "buffer_usage.hpp"
-#include "indirect_draw_buffer_object.hpp"
+#include <buffer_usage.hpp>
+#include <indirect_draw_buffer_object.hpp>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 class object_group_indirect_command_buffer {
 private:

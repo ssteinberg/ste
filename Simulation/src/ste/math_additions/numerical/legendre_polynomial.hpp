@@ -3,10 +3,10 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "newton_raphson_iterative_root_finding.hpp"
+#include <stdafx.hpp>
+#include <newton_raphson_iterative_root_finding.hpp>
 
-namespace StE {
+namespace ste {
 
 template <typename T, int n>
 struct legendre_polynomial {

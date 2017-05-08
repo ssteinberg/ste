@@ -3,12 +3,12 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
-#include "observable_resource.hpp"
+#include <observable_resource.hpp>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 constexpr std::size_t directional_light_cascades = 6;
 

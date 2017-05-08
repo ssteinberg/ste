@@ -3,9 +3,9 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
-namespace StE {
+namespace ste {
 
 /*
 *	The Cornette-Shanks Mie scattering phase function, an updated Henyey-Greenstein phase function.

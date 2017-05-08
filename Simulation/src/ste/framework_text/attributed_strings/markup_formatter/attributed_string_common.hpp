@@ -3,15 +3,15 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
-#include "attrib.hpp"
+#include <attrib.hpp>
 
-#include "range.hpp"
-#include "optional.hpp"
-#include "remove_iterator_constness.hpp"
+#include <range.hpp>
+#include <optional.hpp>
+#include <remove_iterator_constness.hpp>
 
-#include "attributed_string_htm_formatter.hpp"
+#include <attributed_string_htm_formatter.hpp>
 
 #include <functional>
 
@@ -24,8 +24,8 @@
 #include <vector>
 #include <algorithm>
 
-namespace StE {
-namespace Text {
+namespace ste {
+namespace text {
 
 template <typename CharT>
 class attributed_string_common {
@@ -217,15 +217,15 @@ attributed_string_common<CharT> operator+(const attributed_string_common<CharT> 
 namespace std {
 
 template <typename CharT>
-ostream& operator<<(ostream& os, const StE::Text::attributed_string_common<CharT>& str) {
+ostream& operator<<(ostream& os, const ste::text::attributed_string_common<CharT>& str) {
 	os << str.template markup<>();
 	return os;
 }
 
 template <typename CharT>
-struct hash<StE::Text::attributed_string_common<CharT>> {
-	size_t inline operator()(const StE::Text::attributed_string_common<CharT> &x) const {
-		return hash<typename StE::Text::attributed_string_common<CharT>::string_type>()(x.plain_string());
+struct hash<ste::text::attributed_string_common<CharT>> {
+	size_t inline operator()(const ste::text::attributed_string_common<CharT> &x) const {
+		return hash<typename ste::text::attributed_string_common<CharT>::string_type>()(x.plain_string());
 	}
 };
 

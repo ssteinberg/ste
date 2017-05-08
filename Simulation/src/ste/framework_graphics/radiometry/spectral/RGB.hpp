@@ -3,10 +3,10 @@
 
 #pragma once
 
-#include "spectrum.hpp"
+#include <spectrum.hpp>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 class XYZ;
 
@@ -46,10 +46,10 @@ public:
 }
 }
 
-#include "XYZ.hpp"
+#include <XYZ.hpp>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 inline XYZ rgb::toXYZ() const {
 	XYZ ret;

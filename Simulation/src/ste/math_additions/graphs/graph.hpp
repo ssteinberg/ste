@@ -3,18 +3,18 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "graph_vertex.hpp"
-#include "graph_edge.hpp"
+#include <stdafx.hpp>
+#include <graph_vertex.hpp>
+#include <graph_edge.hpp>
 
 #include <algorithm>
 #include <functional>
 
-#include "boost_filesystem.hpp"
-#include "boost_flatset.hpp"
+#include <boost_filesystem.hpp>
+#include <boost_flatset.hpp>
 
-namespace StE {
-namespace Graph {
+namespace ste {
+namespace graph {
 
 template <typename V, typename E>
 class graph;
@@ -26,7 +26,7 @@ using GraphSet = boost::container::flat_set<T>;
 
 class graph_impl {
 	template <typename V, typename E>
-	friend class StE::Graph::graph;
+	friend class ste::graph::graph;
 
 public:
 	using VertexPtr = std::shared_ptr<const vertex>;
@@ -45,8 +45,8 @@ private:
 
 template <typename V, typename E>
 class graph {
-	static_assert(std::is_base_of<vertex, V>::value, "V must derive from Graph::vertex!");
-	static_assert(std::is_base_of<edge, E>::value, "E must derive from Graph::edge!");
+	static_assert(std::is_base_of<vertex, V>::value, "V must derive from graph::vertex!");
+	static_assert(std::is_base_of<edge, E>::value, "E must derive from graph::edge!");
 
 public:
 	using vertex_type = V;

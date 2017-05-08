@@ -3,12 +3,12 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "sop_graph.hpp"
+#include <stdafx.hpp>
+#include <sop_graph.hpp>
 
-#include "optional.hpp"
+#include <optional.hpp>
 
-#include "is_base_of.hpp"
+#include <is_base_of.hpp>
 
 #include <vector>
 
@@ -17,8 +17,8 @@
 
 #include <memory>
 
-namespace StE {
-namespace Algorithm {
+namespace ste {
+namespace algorithm {
 namespace SOP {
 
 template <typename G>
@@ -26,7 +26,7 @@ class sop_optimizer;
 
 template <typename GraphType>
 class sequential_ordering_problem {
-	static_assert(StE::is_base_of<GraphType, sop_graph>::value, "GraphType must derive from Algorithm::SOP::sop_graph!");
+	static_assert(ste::is_base_of<GraphType, sop_graph>::value, "GraphType must derive from algorithm::SOP::sop_graph!");
 
 	friend class sop_optimizer<GraphType>;
 
@@ -116,10 +116,10 @@ public:
 }
 }
 
-#include "sop_optimizer.hpp"
+#include <sop_optimizer.hpp>
 
-namespace StE {
-namespace Algorithm {
+namespace ste {
+namespace algorithm {
 namespace SOP {
 
 template <typename GraphType>

@@ -1,43 +1,45 @@
 
 #type frag
 #version 450
-#extension GL_ARB_shader_storage_buffer_object : require
-#extension GL_ARB_bindless_texture : require
 
 struct buffer_glyph_descriptor {
 	int width;
 	int height;
 	int start_y;
 	int start_x;
-	layout(bindless_sampler) sampler2D tex_handler;
+	int sampler_idx;
 };
 
-out vec4 gl_FragColor;
-
 in geo_out {
-	vec4 color;
-	vec4 stroke_color;
+	vec3 color;
+	vec3 stroke_color;
 	float weight;
 	float stroke_width;
 	vec2 st;
-	flat int drawId;
+	flat uint drawId;
 } vin;
+
+layout(location = 0) out vec4 frag_color;
 
 layout(std430, binding = 0) restrict readonly buffer glyph_data {
 	buffer_glyph_descriptor glyphs[];
 };
 
-float aastep (float threshold , float value) {
+layout(constant_id = 0) const int glyph_texture_count = 45;
+layout(binding = 1) uniform texture2D glyph_textures[glyph_texture_count];
+layout(binding = 2) uniform sampler glyph_sampler;
+
+float aastep (float threshold, float value) {
 	float afwidth = 0.7 * length(vec2(dFdx(value), dFdy(value)));
 	return smoothstep(threshold-afwidth, threshold+afwidth, value);
 }
 
-void main( void ) {
+void main() {
 	buffer_glyph_descriptor glyph = glyphs[vin.drawId];
 
 	vec2 uv = vin.st;
 
-	float D = textureLod(glyph.tex_handler, uv, 0).x;
+	float D = textureLod(sampler2D(glyph_textures[glyph.sampler_idx], glyph_sampler), uv, 0).x;
 
 	D -= vin.weight;
 
@@ -48,9 +50,9 @@ void main( void ) {
 	if (g==0)
 		discard;
 
-	vec4 c = vin.color;
+	vec3 c = vin.color;
 	if (vin.stroke_width > 0)
-		c = mix(vin.stroke_color, vin.color, clamp((- D - vin.stroke_width * .9f) / (vin.stroke_width * .2f), 0, 1));
+		c = mix(vin.stroke_color, c, clamp((- D - vin.stroke_width * .9f) / (vin.stroke_width * .2f), 0, 1));
 
-	gl_FragColor = c * vec4(1, 1, 1, g);
+	frag_color = vec4(c, g);
 }

@@ -3,9 +3,9 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
-namespace StE {
+namespace ste {
 
 template <typename T>
 T hash_combine(const T &h1, const T &h2) { static_assert(false, "Unimplemented"); }

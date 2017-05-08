@@ -6,10 +6,10 @@
 #include <ostream>
 #include <memory>
 
-#include "log_streambuf.hpp"
-#include "log_sink.hpp"
+#include <log_streambuf.hpp>
+#include <log_sink.hpp>
 
-namespace StE {
+namespace ste::log {
 
 class log_ostream : public std::ostream {
 private:

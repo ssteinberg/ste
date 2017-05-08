@@ -6,9 +6,9 @@
 #include <string>
 #include <memory>
 
-#include "log_class.hpp"
+#include <log_class.hpp>
 
-namespace StE {
+namespace ste::log {
 
 struct log_entry_data {
 	const char *file;

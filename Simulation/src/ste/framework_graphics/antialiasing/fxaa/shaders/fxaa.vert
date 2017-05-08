@@ -5,14 +5,12 @@
 layout(location = 1) in vec3 vert;
 layout(location = 2) in vec2 tex_coords;
 
-#include "girenderer_transform_buffer.glsl"
+#include <girenderer_transform_buffer.glsl>
 
 out v_out {
 	vec2 uv;
 	vec2 rcp_frame;
 } vout;
-
-out vec4 gl_Position;
 
 const float FXAA_SUBPIX_SHIFT = 1.0f / 4.0f;
 

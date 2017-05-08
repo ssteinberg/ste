@@ -3,9 +3,9 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
-#include "profiler.hpp"
+#include <profiler.hpp>
 
 #include <sstream>
 #include <iomanip>

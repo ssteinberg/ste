@@ -5,7 +5,7 @@
 
 #include <thread>
 
-namespace StE {
+namespace ste {
 
 extern std::thread::id main_thread_id;
 

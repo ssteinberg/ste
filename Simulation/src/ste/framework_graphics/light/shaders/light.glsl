@@ -1,17 +1,17 @@
 
-#include "light_type.glsl"
+#include <light_type.glsl>
 
-#include "common.glsl"
-#include "pack.glsl"
-#include "chromaticity.glsl"
+#include <common.glsl>
+#include <pack.glsl>
+#include <chromaticity.glsl>
 
-#include "quaternion.glsl"
-#include "dual_quaternion.glsl"
+#include <quaternion.glsl>
+#include <dual_quaternion.glsl>
 
-#include "girenderer_transform_buffer.glsl"
+#include <girenderer_transform_buffer.glsl>
 
-#include "light_transport.glsl"
-#include "atmospherics.glsl"
+#include <light_transport.glsl>
+#include <atmospherics.glsl>
 
 const int max_active_lights_per_frame = 24;
 const int max_active_directional_lights_per_frame = 4;
@@ -24,7 +24,8 @@ struct light_descriptor {
 	vec3 position;	float radius;
 	vec3 emittance;	uint type;
 	// Texture
-	layout(bindless_sampler) sampler2D texture;
+	//layout(bindless_sampler) sampler2D texture;
+	uint sampler_idx;
 	// Light effective range.
 	// For directional lights: distance from origin opposite to lights direction (i.e. -directional_distance*position)
 	float effective_range_or_directional_distance;

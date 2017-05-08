@@ -3,12 +3,12 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
 #include <array>
 #include <random>
 
-namespace StE {
+namespace ste {
 
 /*
 *	Sample uniform points on the surface of a k-dimensional sphere.

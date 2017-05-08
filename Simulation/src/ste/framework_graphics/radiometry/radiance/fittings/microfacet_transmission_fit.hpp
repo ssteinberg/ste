@@ -3,17 +3,17 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
-#include "microfacet_fit_error.hpp"
+#include <microfacet_fit_error.hpp>
 
 #include <memory>
 #include <istream>
 
 #include <boost/crc.hpp>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 template <int Version, typename DataType>
 class microfacet_transmission_fit {

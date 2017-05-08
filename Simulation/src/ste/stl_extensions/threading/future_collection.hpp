@@ -8,7 +8,7 @@
 #include <functional>
 #include <type_traits>
 
-namespace StE {
+namespace ste {
 
 template <typename R, template<class> typename F = std::future>
 class future_collection {

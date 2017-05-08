@@ -32,3 +32,9 @@
 [submodule "Simulation/third_party/packages/libtga"]
 	path = Simulation/third_party/packages/libtga
 	url = https://github.com/tommylutz/libtga
+[submodule "Simulation/third_party/packages/eigen"]
+	path = Simulation/third_party/packages/eigen
+	url = https://github.com/RLovelett/eigen.git
+[submodule "Simulation/third_party/manual_packages/kalman"]
+	path = Simulation/third_party/manual_packages/kalman
+	url = https://github.com/mherb/kalman

@@ -3,13 +3,13 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "BxDF.hpp"
+#include <stdafx.hpp>
+#include <BxDF.hpp>
 
-#include "schlick_fresnel.hpp"
+#include <schlick_fresnel.hpp>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 template <typename T>
 class disney_diffuse_brdf : public BxDF<T> {

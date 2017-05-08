@@ -3,33 +3,33 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "ste_engine_control.hpp"
+#include <stdafx.hpp>
+#include <ste_engine_control.hpp>
 
-#include "resource_instance.hpp"
-#include "resource_loading_task.hpp"
+#include <resource_instance.hpp>
+#include <resource_loading_task.hpp>
 
-#include "signal.hpp"
+#include <signal.hpp>
 
-#include "gpu_task.hpp"
-#include "Quad.hpp"
+#include <gpu_task.hpp>
+#include <Quad.hpp>
 
-#include "image.hpp"
-#include "texture_1d.hpp"
-#include "texture_2d.hpp"
-#include "shader_storage_buffer.hpp"
-#include "pixel_buffer_object.hpp"
-#include "atomic_counter_buffer_object.hpp"
-#include "framebuffer_object.hpp"
-#include "glsl_program.hpp"
+#include <image.hpp>
+#include <texture_1d.hpp>
+#include <texture_2d.hpp>
+#include <shader_storage_buffer.hpp>
+#include <pixel_buffer_object.hpp>
+#include <atomic_counter_buffer_object.hpp>
+#include <framebuffer_object.hpp>
+#include <glsl_program.hpp>
 
-#include "deferred_gbuffer.hpp"
+#include <deferred_gbuffer.hpp>
 
 #include <memory>
 #include <array>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 class hdr_compute_minmax_task;
 class hdr_create_histogram_task;
@@ -40,8 +40,8 @@ class hdr_bloom_blury_task;
 class hdr_bokeh_blur_task;
 
 class hdr_dof_postprocess {
-	friend class Resource::resource_loading_task<hdr_dof_postprocess>;
-	friend class Resource::resource_instance<hdr_dof_postprocess>;
+	friend class resource::resource_loading_task<hdr_dof_postprocess>;
+	friend class resource::resource_instance<hdr_dof_postprocess>;
 
 	friend class hdr_compute_minmax_task;
 	friend class hdr_create_histogram_task;
@@ -76,13 +76,13 @@ private:
 	std::unique_ptr<hdr_bloom_blury_task> bloom_blury_task;
 	std::unique_ptr<hdr_bokeh_blur_task> bokeh_blur_task;
 
-	Resource::resource_instance<Resource::glsl_program> hdr_compute_minmax;
-	Resource::resource_instance<Resource::glsl_program> hdr_create_histogram;
-	Resource::resource_instance<Resource::glsl_program> hdr_compute_histogram_sums;
-	Resource::resource_instance<Resource::glsl_program> hdr_tonemap_coc;
-	Resource::resource_instance<Resource::glsl_program> hdr_bloom_blurx;
-	Resource::resource_instance<Resource::glsl_program> hdr_bloom_blury;
-	Resource::resource_instance<Resource::glsl_program> bokeh_blur;
+	resource::resource_instance<resource::glsl_program> hdr_compute_minmax;
+	resource::resource_instance<resource::glsl_program> hdr_create_histogram;
+	resource::resource_instance<resource::glsl_program> hdr_compute_histogram_sums;
+	resource::resource_instance<resource::glsl_program> hdr_tonemap_coc;
+	resource::resource_instance<resource::glsl_program> hdr_bloom_blurx;
+	resource::resource_instance<resource::glsl_program> hdr_bloom_blury;
+	resource::resource_instance<resource::glsl_program> bokeh_blur;
 
 	Core::sampler hdr_vision_properties_sampler;
 
@@ -153,11 +153,11 @@ public:
 
 }
 
-namespace Resource {
+namespace resource {
 
 template <>
-class resource_loading_task<Graphics::hdr_dof_postprocess> {
-	using R = Graphics::hdr_dof_postprocess;
+class resource_loading_task<graphics::hdr_dof_postprocess> {
+	using R = graphics::hdr_dof_postprocess;
 
 public:
 	auto loader(const ste_engine_control &ctx, R* object) {
@@ -169,7 +169,8 @@ public:
 			object->hdr_bloom_blurx.wait();
 			object->hdr_bloom_blury.wait();
 			object->bokeh_blur.wait();
-		}).then_on_main_thread([object, &ctx]() {
+			// TODO: Fix
+		}).then/*_on_main_thread*/([object, &ctx]() {
 			auto vision_handle = object->hdr_vision_properties_texture->get_texture_handle(object->hdr_vision_properties_sampler);
 			vision_handle.make_resident();
 

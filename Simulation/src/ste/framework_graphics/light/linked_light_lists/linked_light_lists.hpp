@@ -3,23 +3,23 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
-#include "resource.hpp"
+#include <resource_old.hpp>
 
-#include "texture_2d.hpp"
+#include <texture_2d.hpp>
 
-#include "buffer_usage.hpp"
-#include "shader_storage_buffer.hpp"
-#include "atomic_counter_buffer_object.hpp"
+#include <buffer_usage.hpp>
+#include <shader_storage_buffer.hpp>
+#include <atomic_counter_buffer_object.hpp>
 
-#include "gl_current_context.hpp"
+#include <gl_current_context.hpp>
 
 #include <memory>
 #include <limits>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 class linked_light_lists {
 private:

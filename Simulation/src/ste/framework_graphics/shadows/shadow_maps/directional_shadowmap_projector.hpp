@@ -3,18 +3,18 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "ste_engine_control.hpp"
+#include <stdafx.hpp>
+#include <ste_engine_control.hpp>
 
-#include "glsl_program.hpp"
-#include "gpu_dispatchable.hpp"
+#include <glsl_program.hpp>
+#include <gpu_dispatchable.hpp>
 
-#include "light_storage.hpp"
-#include "scene.hpp"
-#include "shadowmap_storage.hpp"
+#include <light_storage.hpp>
+#include <scene.hpp>
+#include <shadowmap_storage.hpp>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 class directional_shadowmap_projector : public gpu_dispatchable {
 	using Base = gpu_dispatchable;
@@ -24,7 +24,7 @@ private:
 	light_storage *lights;
 	const shadowmap_storage *shadow_map;
 
-	Resource::resource_instance<Resource::glsl_program> shadow_gen_program;
+	resource::resource_instance<resource::glsl_program> shadow_gen_program;
 
 public:
 	directional_shadowmap_projector(const ste_engine_control &ctx,

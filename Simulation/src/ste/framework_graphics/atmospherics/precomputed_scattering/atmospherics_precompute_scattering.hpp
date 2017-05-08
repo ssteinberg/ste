@@ -3,19 +3,19 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "atmospherics_lut_error.hpp"
+#include <stdafx.hpp>
+#include <atmospherics_lut_error.hpp>
 
-#include "atmospherics_properties.hpp"
+#include <atmospherics_properties.hpp>
 
-#include "boost_filesystem.hpp"
+#include <boost_filesystem.hpp>
 
 #include <memory>
 #include <fstream>
 #include <boost/crc.hpp>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 namespace _detail {
 

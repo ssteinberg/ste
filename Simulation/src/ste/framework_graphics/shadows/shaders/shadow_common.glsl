@@ -1,9 +1,9 @@
 
-#include "common.glsl"
-#include "interleaved_gradient_noise.glsl"
+#include <common.glsl>
+#include <interleaved_gradient_noise.glsl>
 
-#include "girenderer_transform_buffer.glsl"
-#include "project.glsl"
+#include <girenderer_transform_buffer.glsl>
+#include <project.glsl>
 
 const float shadow_cubemap_size = 1024.f;
 const float shadow_dirmap_size = 2048.f;

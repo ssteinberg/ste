@@ -3,13 +3,13 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
-#include "attrib.hpp"
-#include "attributed_string_common.hpp"
+#include <attrib.hpp>
+#include <attributed_string_common.hpp>
 
-namespace StE {
-namespace Text {
+namespace ste {
+namespace text {
 
 template <typename CharT>
 class attributed_string_htm_formatter {
@@ -24,10 +24,10 @@ public:
 
 		while (r.start < str.length()) {
 			typename attributed_string_common<CharT>::range_type cr = r, cw = r, cs = r, ci = r;
-			optional<const Attributes::rgb*>	color_attrib = str.attrib_of_type(rgb::attrib_type_s(), &cr);
-			optional<const Attributes::weight*>	weight_attrib = str.attrib_of_type(weight::attrib_type_s(), &cw);
-			optional<const Attributes::size*>	size_attrib = str.attrib_of_type(size::attrib_type_s(), &cs);
-			optional<const Attributes::italic*>	italic_attrib = str.attrib_of_type(italic::attrib_type_s(), &ci);
+			auto color_attrib =		optional_dynamic_cast<const Attributes::rgb*>(str.attrib_of_type(rgb::attrib_type_s(), &cr));
+			auto weight_attrib =	optional_dynamic_cast<const Attributes::weight*>(str.attrib_of_type(weight::attrib_type_s(), &cw));
+			auto size_attrib =		optional_dynamic_cast<const Attributes::size*>(str.attrib_of_type(size::attrib_type_s(), &cs));
+			auto italic_attrib =	optional_dynamic_cast<const Attributes::italic*>(str.attrib_of_type(italic::attrib_type_s(), &ci));
 
 			if (color_attrib && cr.start > r.start)		{ r.length = std::min(r.length, cr.start - r.start); color_attrib = none; }
 			if (weight_attrib && cw.start > r.start)	{ r.length = std::min(r.length, cw.start - r.start); weight_attrib = none; }
@@ -40,10 +40,14 @@ public:
 			if (italic_attrib)	r.length = std::min(r.length, ci.start - r.start + ci.length);
 
 			std::string style;
-			if (color_attrib) style += "color:rgb(" + std::to_string(color_attrib->get().r) + "," + std::to_string(color_attrib->get().g) + "," + std::to_string(color_attrib->get().b) + ");";
-			if (weight_attrib) { style += "font-weight:" + std::to_string(weight_attrib->get()) + ";"; }
-			if (size_attrib) { style += "font-size:" + std::to_string(size_attrib->get()) + "px;"; }
-			if (italic_attrib) { style += "font-style: italic;"; }
+			if (color_attrib) 
+				style += "color:rgb(" + std::to_string(color_attrib->get().r) + "," + std::to_string(color_attrib->get().g) + "," + std::to_string(color_attrib->get().b) + ");";
+			if (weight_attrib) 
+				style += "font-weight:" + std::to_string(weight_attrib->get()) + ";";
+			if (size_attrib) 
+				style += "font-size:" + std::to_string(size_attrib->get()) + "px;";
+			if (italic_attrib) 
+				style += "font-style: italic;";
 
 			if (style.length()) {
 				std::string str_open_tag = "<span style=\"" + style + "\">";

@@ -3,9 +3,9 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
-namespace StE {
+namespace ste {
 
 struct newton_raphson_iterative_root_finding {
 

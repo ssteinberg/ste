@@ -3,22 +3,22 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "ste_engine_control.hpp"
+#include <stdafx.hpp>
+#include <ste_engine_control.hpp>
 
-#include "signal.hpp"
+#include <signal.hpp>
 
-#include "framebuffer_object.hpp"
+#include <framebuffer_object.hpp>
 
-#include "texture_cube_map_array.hpp"
-#include "texture_2d_array.hpp"
-#include "sampler.hpp"
+#include <texture_cube_map_array.hpp>
+#include <texture_2d_array.hpp>
+#include <sampler.hpp>
 
-#include "light_storage.hpp"
-#include "light_cascade_descriptor.hpp"
+#include <light_storage.hpp>
+#include <light_cascade_descriptor.hpp>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 class shadowmap_storage {
 	static constexpr unsigned default_map_size = 1024;

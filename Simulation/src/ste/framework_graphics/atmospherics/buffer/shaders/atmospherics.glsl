@@ -1,7 +1,7 @@
 
-#include "atmospherics_descriptor.glsl"
-#include "light_transport.glsl"
-#include "common.glsl"
+#include <atmospherics_descriptor.glsl>
+#include <light_transport.glsl>
+#include <common.glsl>
 
 layout(std430, binding = 22) restrict readonly buffer atmospherics_descriptor_buffer {
 	atmospherics_descriptor atmospherics_descriptor_data;
@@ -304,7 +304,7 @@ float cie_scattering_indicatrix_normalizer() {
 }
 
 /*
-*	Calculates the multiple-scattered irradiance reaching an obsever in the atmosphere, given viewing 
+*	Calculates the multiple-scattered irradiance reaching an observer in the atmosphere, given viewing 
 *	direction and light source direction. 
 *	Uses a precomputed LUT for calculation.
 *

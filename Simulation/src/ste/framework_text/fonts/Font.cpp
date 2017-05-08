@@ -1,6 +1,6 @@
 
-#include "stdafx.hpp"
-#include "font.hpp"
+#include <stdafx.hpp>
+#include <font.hpp>
 
 #include <iostream>
 #include <stdexcept>
@@ -8,7 +8,7 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-using namespace StE::Text;
+using namespace ste::text;
 
 font::font(const boost::filesystem::path &path) : path(path) {
 	FT_Library library;

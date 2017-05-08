@@ -3,11 +3,11 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "mesh.hpp"
+#include <stdafx.hpp>
+#include <mesh.hpp>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 class quad : public mesh<mesh_subdivion_mode::TrianglesStrip> {
 public:

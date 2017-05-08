@@ -8,7 +8,7 @@
 #include <future>
 #include <exception>
 
-namespace StE {
+namespace ste {
 
 class interruptible_thread {
 private:

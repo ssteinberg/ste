@@ -1,17 +1,17 @@
 // StE
-// © Shlomi Steinberg, 2015-2016
+// © Shlomi Steinberg, 2015-2017
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
-#include "boost_binary_ioarchive.hpp"
-#include "boost_serialization.hpp"
+#include <boost_binary_ioarchive.hpp>
+#include <boost_serialization.hpp>
 
 #include <memory>
 
-namespace StE {
-namespace Text {
+namespace ste {
+namespace text {
 
 class glyph {
 private:

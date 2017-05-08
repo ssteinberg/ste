@@ -3,12 +3,12 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "function_traits.hpp"
+#include <stdafx.hpp>
+#include <function_traits.hpp>
 
 #include <array>
 
-namespace StE {
+namespace ste {
 
 /**
 *	@brief	Implementation of Romberg's method for numerical integration

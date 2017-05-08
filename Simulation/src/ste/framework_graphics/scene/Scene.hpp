@@ -3,25 +3,25 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "ste_engine_control.hpp"
-#include "gpu_dispatchable.hpp"
+#include <stdafx.hpp>
+#include <ste_engine_control.hpp>
+#include <gpu_dispatchable.hpp>
 
-#include "scene_properties.hpp"
-#include "deferred_gbuffer.hpp"
-#include "object_group_indirect_command_buffer.hpp"
+#include <scene_properties.hpp>
+#include <deferred_gbuffer.hpp>
+#include <object_group_indirect_command_buffer.hpp>
 
-#include "glsl_program.hpp"
-#include "atomic_counter_buffer_object.hpp"
-#include "shader_storage_buffer.hpp"
+#include <glsl_program.hpp>
+#include <atomic_counter_buffer_object.hpp>
+#include <shader_storage_buffer.hpp>
 
-#include "object_group.hpp"
-#include "light_storage.hpp"
+#include <object_group.hpp>
+#include <light_storage.hpp>
 
 #include <memory>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 class scene : public gpu_dispatchable {
 	using Base = gpu_dispatchable;
@@ -66,7 +66,7 @@ private:
 	mutable shadow_projection_data<shadow_pltt_size> shadow_projection;
 	mutable shadow_projection_data<directional_shadow_pltt_size> directional_shadow_projection;
 
-	Resource::resource_instance<Resource::glsl_program> object_program;
+	resource::resource_instance<resource::glsl_program> object_program;
 
 public:
 	scene(const ste_engine_control &ctx);

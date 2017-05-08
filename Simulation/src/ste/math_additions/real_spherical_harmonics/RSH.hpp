@@ -3,12 +3,12 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "legendre_polynomial.hpp"
+#include <stdafx.hpp>
+#include <legendre_polynomial.hpp>
 
 #include <functional>
 
-namespace StE {
+namespace ste {
 
 namespace _rsh_utils {
 
