@@ -6,6 +6,7 @@
 #include <stdafx.hpp>
 #include <device_pipeline.hpp>
 #include <device_pipeline_exceptions.hpp>
+#include <device_pipeline_graphics_configurations.hpp>
 
 #include <framebuffer_layout.hpp>
 #include <framebuffer.hpp>
@@ -50,7 +51,7 @@ private:
 private:
 	// Creates the Vulkan renderpass object
 	void create_renderpass() {
-		auto renderpass = fb_layout.create_compatible_renderpass(ctx);
+		auto renderpass = fb_layout.create_compatible_renderpass(ctx.get());
 		device_renderpass.emplace(std::move(renderpass));
 	}
 
@@ -88,7 +89,7 @@ private:
 			{ pipeline_settings.scissor.origin.x,pipeline_settings.scissor.origin.y },
 			{ pipeline_settings.scissor.size.x,pipeline_settings.scissor.size.y },
 		};
-		graphics_pipeline.emplace(ctx.device(),
+		graphics_pipeline.emplace(ctx.get().device(),
 								  shader_stage_descriptors,
 								  get_layout(),
 								  device_renderpass.get(),
@@ -102,7 +103,7 @@ private:
 								  pipeline_settings.depth_op,
 								  attachment_blend_ops,
 								  pipeline_settings.blend_constants,
-								  &ctx.device().pipeline_cache().current_thread_cache());
+								  &ctx.get().device().pipeline_cache().current_thread_cache());
 	}
 
 protected:

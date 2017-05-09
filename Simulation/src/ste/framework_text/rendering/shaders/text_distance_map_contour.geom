@@ -6,12 +6,12 @@ layout (points) in;
 layout (triangle_strip, max_vertices = 4) out;
 
 struct buffer_glyph_descriptor {
-	int width;
-	int height;
+	uint width;
+	uint height;
 	int start_y;
 	int start_x;
 
-	int sampler_idx;
+	uint sampler_idx;
 };
 
 in vs_out {

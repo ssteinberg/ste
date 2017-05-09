@@ -96,7 +96,7 @@ private:
 			recorder << v->buffer.cmd_bind_sparse_memory({}, { bind }, {}, {});
 
 			auto vptr = v;
-			recorder << host_command([=](const vk::vk_queue &) { vptr->elements += data_size; });
+			recorder << host_command([size = data_size, vptr](const vk::vk_queue &) { vptr->elements += size; });
 
 			// Copy data
 			recorder << update_cmd;
@@ -129,17 +129,15 @@ private:
 	};
 
 private:
-	const ste_context &ctx;
 	buffer_t buffer;
 	std::size_t elements{ 0 };
 
 public:
 	stable_vector(const ste_context &ctx,
 				  const buffer_usage &usage)
-		: ctx(ctx),
-		buffer(ctx,
-			   max_sparse_size,
-			   usage | buffer_usage_additional_flags)
+		: buffer(ctx,
+				 max_sparse_size,
+				 usage | buffer_usage_additional_flags)
 	{}
 	stable_vector(const ste_context &ctx,
 				  const std::vector<T> &initial_data,

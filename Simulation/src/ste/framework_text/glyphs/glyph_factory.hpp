@@ -16,11 +16,14 @@ struct glyph_factory_impl;
 
 class glyph_factory {
 private:
-	std::unique_ptr<glyph_factory_impl> pimpl;
+	glyph_factory_impl *pimpl;
 
 public:
 	glyph_factory();
-	~glyph_factory();
+	~glyph_factory() noexcept;
+
+	glyph_factory(glyph_factory&&) = default;
+	glyph_factory &operator=(glyph_factory&&) = default;
 
 	glyph create_glyph(const font &font, wchar_t codepoint);
 

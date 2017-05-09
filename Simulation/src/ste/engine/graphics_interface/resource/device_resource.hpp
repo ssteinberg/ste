@@ -31,13 +31,13 @@ public:
 	using allocation_t = device_memory_heap::allocation_type;
 
 private:
-	const ste_context &ctx;
+	std::reference_wrapper<const ste_context> ctx;
 	T resource;
 	allocation_t allocation;
 
 private:
 	void allocate_memory() {
-		allocation = device_resource_memory_allocator<allocation_policy>()(ctx.device_memory_allocator(),
+		allocation = device_resource_memory_allocator<allocation_policy>()(ctx.get().device_memory_allocator(),
 																		   resource);
 	}
 
@@ -68,7 +68,7 @@ public:
 	auto& get_underlying_memory() const { return *this->allocation.get_memory(); }
 	bool has_private_underlying_memory() const { return allocation.is_private_allocation(); }
 
-	auto& parent_context() const { return ctx; }
+	auto& parent_context() const { return ctx.get(); }
 
 	T& get() { return resource; }
 	const T& get() const { return resource; }

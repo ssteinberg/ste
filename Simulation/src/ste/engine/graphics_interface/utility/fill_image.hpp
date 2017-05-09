@@ -196,14 +196,15 @@ auto fill_image_array(const device_image<dimensions, allocation_policy> &image,
 			});
 
 			// Transfer ownership
-			queue_transfer(ctx,
-						   image,
-						   q,
-						   *ctx.device().select_queue(final_queue_selector),
-						   image_layout::transfer_dst_optimal, pipeline_stage::transfer,
-						   final_layout, pipeline_stage::all_commands);
+			auto queue_transfer_future = queue_transfer(ctx,
+														image,
+														q,
+														*ctx.device().select_queue(final_queue_selector),
+														image_layout::transfer_dst_optimal, pipeline_stage::transfer,
+														final_layout, pipeline_stage::all_commands);
 
 			// Wait for completion
+			queue_transfer_future.get();
 			fence.get();
 		}
 	});

@@ -77,7 +77,7 @@ struct vertex_input_offset_of_helper {
 	auto operator()(int i) {
 		auto b = Block();
 		auto addr = reinterpret_cast<std::size_t>(&b.template get<N>());
-		auto base = reinterpret_cast<std::size_t>(&b.data);
+		auto base = reinterpret_cast<std::size_t>(&b.template get<0>());
 		if (N == i)
 			return addr - base;
 

@@ -75,7 +75,7 @@ private:
 	};
 
 protected:
-	const ste_context &ctx;
+	std::reference_wrapper<const ste_context> ctx;
 
 	std::unique_ptr<pipeline_layout> layout;
 	pipeline_resource_binding_queue binding_queue;

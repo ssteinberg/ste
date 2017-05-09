@@ -4,7 +4,6 @@
 #pragma once
 
 #include <stdafx.hpp>
-#include <ste_context.hpp>
 
 #include <vk_sampler.hpp>
 #include <sampler_parameter.hpp>
@@ -72,24 +71,25 @@ public:
 	*	@brief	Sampler ctor.
 	*			Takes as input variadic number of vk_sampler_parameters structure specifing sampler parameters.
 	*
-	*	@param ctx			Creating context
+	*	@param device		Creating device
 	*	@param params		Sampler parameters
 	*/
-	template <typename ... Params>
-	sampler(const ste_context &ctx,
+	template <typename Device, typename... Params>
+	sampler(const Device &device,
 			Params&& ... params)
-		: s(ctx.device(),
+		: s(device,
 			sampler_info(std::forward<Params>(params)...))
 	{}
 	/**
 	*	@brief	Unnormalized sampler ctor.
 	*
-	*	@param ctx			Creating context
+	*	@param device		Creating device
 	*	@param unnormalized	Unnomralized sampler parameters
 	*/
-	sampler(const ste_context &ctx,
+	template <typename Device>
+	sampler(const Device &device,
 			const sampler_parameter::unnormalized &unnormalized)
-		: s(ctx.device(),
+		: s(device,
 			sampler_info_unnormalized(unnormalized))
 	{}
 

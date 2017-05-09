@@ -181,8 +181,12 @@ public:
 
 			try {
 				auto v = val_guard->template unarchive<V>();
-				this->item_accessed(std::move(val_guard));
-				return optional<V>(std::move(v));
+				if (v) {
+					this->item_accessed(std::move(val_guard));
+					return std::move(v);
+				}
+
+				return none;
 			}
 #ifdef _DEBUG
 			catch (const std::exception &e) {

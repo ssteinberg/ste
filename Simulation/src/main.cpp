@@ -24,7 +24,7 @@
 #include <surface_factory.hpp>
 #include <ste_resource.hpp>
 #include <text_manager.hpp>
-#include <text_renderer.hpp>
+#include <text_fragment.hpp>
 #include <attrib.hpp>
 
 #include <task.hpp>
@@ -59,8 +59,8 @@ public:
 																					   gl::image_usage::sampled,
 																					   gl::image_layout::shader_read_only_optimal)),
 		image_view(*image),
-		sampler(ctx, gl::sampler_parameter::filtering(gl::sampler_filter::linear, gl::sampler_filter::linear,
-													  gl::sampler_mipmap_mode::linear)),
+		sampler(ctx.device(), gl::sampler_parameter::filtering(gl::sampler_filter::linear, gl::sampler_filter::linear,
+															   gl::sampler_mipmap_mode::linear)),
 		texture(gl::make_texture(image_view, sampler, gl::image_layout::shader_read_only_optimal)),
 		index_buffer(ctx, std::vector<std::uint32_t>{ 0, 2, 1, 0, 1, 3 }, gl::buffer_usage::index_buffer),
 		vertex_buffer(ctx, gl::buffer_usage::vertex_buffer),
@@ -160,13 +160,16 @@ private:
 	std::reference_wrapper<gl::presentation_engine> presentation;
 
 	simple_fragment frag1;
+	text::text_fragment text_frag;
 
 public:
 	simple_renderer(const ste_context &ctx,
-				   gl::presentation_engine &presentation)
+					gl::presentation_engine &presentation,
+					text::text_manager &tm)
 		: Base(ctx),
 		presentation(presentation),
-		frag1(*this)
+		frag1(*this),
+		text_frag(tm.create_fragment())
 	{}
 	~simple_renderer() noexcept {}
 
@@ -186,20 +189,22 @@ public:
 				auto recorder = command_buffer.record();
 
 				{
-//					using namespace text::Attributes;
-//					auto text = line_height(35)(small(b(purple(L"Frame time: \n")))) +
-//						b(stroke(dark_golden_rod, .5f)(orange(std::to_wstring(frame_time_ms))) +
-//						  small(L" ms"));
+					using namespace text::Attributes;
 
-//					recorder << text_renderer->update_cmd({ 5,50 }, text, swapchain_size);
+					float frame_time_ms = static_cast<float>(presentation.get().get_frame_time()) * 1e-6f;
+					auto text = line_height(35)(small(b(purple(L"Frame time: \n")))) +
+						b(stroke(dark_golden_rod, .5f)(orange(std::to_wstring(frame_time_ms))) +
+						  small(L" ms"));
+
+//					text_frag.update_text(recorder, { 5,50 }, text);
 				}
 
 				auto &fb = swap_chain_framebuffer(batch->presentation_image_index());
 				frag1.set_framebuffer(fb);
+				text_frag.manager().set_framebuffer(fb);
 
 				recorder << frag1;
-
-////					<< text_renderer->render_cmd()
+//					<< text_frag;
 			}
 
 			// Submit command buffer and present
@@ -301,10 +306,10 @@ int main()
 	*	Text renderer
 	*/
 	auto font = text::font("Data/ArchitectsDaughter.ttf");
-	//	auto text_manager = std::make_unique<text::text_manager>(ctx, font);
+	text::text_manager text_manager(ctx, font);
 
 
-	simple_renderer r(ctx, presentation);
+	simple_renderer r(ctx, presentation, text_manager);
 
 
 	//	ste_resource<device_pipeline_shader_stage> stage(ste_resource_dont_defer(), ctx, std::string("fxaa.frag"));
@@ -315,7 +320,6 @@ int main()
 	//	stage.get();
 
 
-	//	auto text_renderer = text_manager->create_renderer(&presentation_renderpass);
 
 		/*
 		 *	Main loop

@@ -168,9 +168,11 @@ unsigned char* glyph_factory_impl::render_glyph_with(const font &font, wchar_t c
 	return glyph_buf;
 }
 
-glyph_factory::glyph_factory() : pimpl(std::make_unique<glyph_factory_impl>()) {}
+glyph_factory::glyph_factory() : pimpl(new glyph_factory_impl) {}
 
-glyph_factory::~glyph_factory() {}
+glyph_factory::~glyph_factory() {
+	delete pimpl;
+}
 
 glyph glyph_factory::create_glyph(const font &font, wchar_t codepoint) {
 	glyph g;

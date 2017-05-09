@@ -30,8 +30,9 @@ public:
 
 private:
 	void operator()(const command_buffer &command_buffer, command_recorder &) const override final {
+		VkBuffer handle = buffer.get().get_buffer_handle();
 		vkCmdUpdateBuffer(command_buffer, 
-						  buffer.get().get_buffer_handle(), 
+						  handle,
 						  buffer.offset_bytes(), 
 						  data.size(), 
 						  data.data());

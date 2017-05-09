@@ -23,10 +23,10 @@ namespace text {
 
 class text_manager {
 private:
-	friend class text_renderer;
+	friend class text_fragment;
 
 private:
-	const ste_context &context;
+	std::reference_wrapper<const ste_context> context;
 
 	glyph_manager gm;
 	font default_font;
@@ -48,15 +48,21 @@ private:
 														gl::device_pipeline_shader_stage &);
 	void bind_pipeline_resources();
 	void recreate_pipeline();
-	bool update_pipeline_bindings(gl::command_recorder &recorder);
+	bool update_glyphs(gl::command_recorder &recorder);
 
 public:
-	text_manager(text_manager&&) = default;
 	text_manager(const ste_context &context,
 				 const font &default_font,
 				 int default_size = 28);
 
-	std::unique_ptr<text_renderer> create_renderer(const gl::vk::vk_render_pass *renderpass);
+	/**
+	 *	@brief	Attaches a framebuffer. Affects all fragments created with this manager.
+	 */
+	void set_framebuffer(gl::framebuffer &fb) {
+		pipeline.attach_framebuffer(fb);
+	}
+
+	text_fragment create_fragment();
 };
 
 }

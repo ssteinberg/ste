@@ -24,6 +24,8 @@ protected:
 public:
 	virtual ~fragment() noexcept {}
 
+	fragment(fragment&&) = default;
+	fragment &operator=(fragment&&) = default;
 	fragment(const fragment &) = delete;
 	fragment &operator=(const fragment &) = delete;
 

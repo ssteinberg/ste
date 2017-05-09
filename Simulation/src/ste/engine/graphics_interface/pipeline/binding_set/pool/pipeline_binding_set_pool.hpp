@@ -4,7 +4,7 @@
 #pragma once
 
 #include <stdafx.hpp>
-#include <ste_context.hpp>
+#include <vk_logical_device.hpp>
 
 #include <pipeline_binding_layout_interface.hpp>
 #include <binding_set_pool_instance.hpp>

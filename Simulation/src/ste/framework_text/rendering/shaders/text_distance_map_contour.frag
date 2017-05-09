@@ -3,11 +3,12 @@
 #version 450
 
 struct buffer_glyph_descriptor {
-	int width;
-	int height;
+	uint width;
+	uint height;
 	int start_y;
 	int start_x;
-	int sampler_idx;
+
+	uint sampler_idx;
 };
 
 in geo_out {

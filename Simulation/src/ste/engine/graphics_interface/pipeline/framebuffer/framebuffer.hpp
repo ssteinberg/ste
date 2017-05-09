@@ -30,7 +30,7 @@ public:
 	using attachment_map_t = boost::container::flat_map<pipeline_layout_attachment_location, framebuffer_attachment>;
 
 private:
-	const ste_context &ctx;
+	std::reference_wrapper<const ste_context> ctx;
 
 	const framebuffer_layout *layout;
 	attachment_map_t attachments;
@@ -112,7 +112,7 @@ private:
 		}
 
 		// Create Vulkan framebuffer
-		return vk::vk_framebuffer(ctx.device(),
+		return vk::vk_framebuffer(ctx.get().device(),
 								  compatible_renderpass,
 								  image_view_handles,
 								  layout->extent());

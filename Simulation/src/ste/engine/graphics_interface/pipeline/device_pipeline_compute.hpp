@@ -28,10 +28,10 @@ private:
 private:
 	auto create_pipeline_object() const {
 		auto shader_stage_descriptors = get_layout().shader_stage_descriptors();
-		return vk::vk_pipeline_compute(ctx.device(),
+		return vk::vk_pipeline_compute(ctx.get().device(),
 									   shader_stage_descriptors.front(),
 									   get_layout(),
-									   &ctx.device().pipeline_cache().current_thread_cache());
+									   &ctx.get().device().pipeline_cache().current_thread_cache());
 	}
 
 protected:
