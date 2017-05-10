@@ -19,6 +19,9 @@
 namespace ste {
 namespace text {
 
+/**
+*	@brief	Text glyph renderer fragment
+*/
 class text_fragment : public gl::fragment {
 	using vector_type = gl::stable_vector<glyph_point>;
 
@@ -67,6 +70,9 @@ public:
 	text_fragment(text_fragment&&) = default;
 	text_fragment &operator=(text_fragment&&) = default;
 
+	/**
+	*	@brief	Sets attributed text for the fragment to render. Will spawn tasks to load glyphs, if necessary.
+	*/
 	void update_text(gl::command_recorder &recorder,
 					 const glm::vec2 &ortho_pos,
 					 const attributed_wstring &wstr) {
@@ -74,6 +80,9 @@ public:
 		recorder << cmd_update_text(this, std::move(points));
 	}
 
+	/**
+	*	@brief	Renders currently stored attributed text.
+	*/
 	void record(gl::command_recorder &recorder) override final {
 		if (updated) {
 			// Add pipeline barrier in case text was updated

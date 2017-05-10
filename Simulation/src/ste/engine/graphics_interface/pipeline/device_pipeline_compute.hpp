@@ -43,8 +43,16 @@ protected:
 		recorder << cmd_bind_pipeline(compute_pipeline);
 	}
 
-	void recreate_pipeline() override final {
+	optional<vk::vk_pipeline> recreate_pipeline() override final {
+		// Slice old pipeline, storing the old vk::vk_pipeline object.
+		vk::vk_pipeline &old_pipeline_object = compute_pipeline;
+		vk::vk_pipeline old_pipeline = std::move(old_pipeline_object);
+
+		// Create new
 		compute_pipeline = create_pipeline_object();
+
+		// And return old
+		return old_pipeline;
 	}
 
 public:

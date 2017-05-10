@@ -174,7 +174,7 @@ glyph_factory::~glyph_factory() {
 	delete pimpl;
 }
 
-glyph glyph_factory::create_glyph(const font &font, wchar_t codepoint) {
+glyph glyph_factory::create_glyph(const font &font, wchar_t codepoint) const {
 	glyph g;
 	int start_x = 0, start_y = 0, w = 0, h = 0;
 	int px_size = glyph::ttf_pixel_size;

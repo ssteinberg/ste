@@ -21,6 +21,10 @@
 namespace ste {
 namespace text {
 
+/**
+ *	@brief	Controls glyph loading, storage and rendering. Generates text rendering fragments.
+ *			Provides a single device pipeline and framebuffer layout for all fragments created using this manager. 
+ */
 class text_manager {
 private:
 	friend class text_fragment;
@@ -48,7 +52,7 @@ private:
 														gl::device_pipeline_shader_stage &,
 														gl::device_pipeline_shader_stage &,
 														gl::device_pipeline_shader_stage &);
-	void bind_pipeline_resources();
+	void bind_pipeline_resources(std::uint32_t);
 	void recreate_pipeline();
 	bool update_glyphs(gl::command_recorder &recorder);
 
@@ -59,6 +63,8 @@ public:
 
 	/**
 	 *	@brief	Attaches a framebuffer. Affects all fragments created with this manager.
+	 *			Expects a framebuffer with initialized color attachment at location 0 with initial layout gl::image_layout::color_attachment_optimal. Final layout remains
+	 *			gl::image_layout::color_attachment_optimal.
 	 */
 	void set_framebuffer(gl::framebuffer &fb) {
 		pipeline.attach_framebuffer(fb);

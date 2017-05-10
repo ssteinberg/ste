@@ -18,10 +18,9 @@
 namespace ste {
 namespace gl {
 
+template <typename Pool, typename Key>
 class binding_set_pool_instance {
-	friend class pipeline_binding_set_pool;
-	friend void intrusive_ptr_add_ref(binding_set_pool_instance *);
-	friend void intrusive_ptr_release(binding_set_pool_instance *);
+	friend Pool;
 
 	struct ctor {};
 
@@ -33,11 +32,11 @@ public:
 private:
 	std::atomic<long> ref_counter{ 0 };
 
-	vk::vk_descriptor_pool pool;
-
+	vk::vk_descriptor_pool vk_pool;
 	std::uint32_t allocated_sets{ 0 };
 
-	release_func_t release_func;
+	Pool *parent;
+	Key key;
 
 private:
 	/**
@@ -57,7 +56,7 @@ private:
 		--allocated_sets;
 		if (allocated_sets == 0) {
 			// Release pool
-			release_func();
+			parent->release_one(key);
 		}
 	}
 
@@ -65,11 +64,15 @@ public:
 	binding_set_pool_instance(ctor,
 							  const vk::vk_logical_device &device,
 							  std::uint32_t max_sets,
-							  const std::vector<const pipeline_binding_layout_interface*> &pool_bindings)
-		: pool(device,
-			   max_sets,
-			   create_vk_bindings(pool_bindings),
-			   false)
+							  const std::vector<const pipeline_binding_layout_interface*> &pool_bindings,
+							  Pool *parent,
+							  const Key &key)
+		: vk_pool(device,
+				  max_sets,
+				  create_vk_bindings(pool_bindings),
+				  false),
+		parent(parent),
+		key(key)
 	{}
 	~binding_set_pool_instance() noexcept {}
 
@@ -88,7 +91,7 @@ public:
 		}
 
 		// Allocate
-		std::vector<vk::vk_descriptor_set> sets = pool.allocate_descriptor_sets(layouts_of_acquired_bindings_ptrs);
+		std::vector<vk::vk_descriptor_set> sets = vk_pool.allocate_descriptor_sets(layouts_of_acquired_bindings_ptrs);
 
 		// Sets allocated successfully
 		allocated_sets += static_cast<std::uint32_t>(layouts.size());
@@ -108,16 +111,17 @@ public:
 
 		return ret;
 	}
+
+private:
+	friend void intrusive_ptr_add_ref(binding_set_pool_instance *ptr) {
+		ptr->ref_counter.fetch_add(1, std::memory_order_release);
+	}
+	friend void intrusive_ptr_release(binding_set_pool_instance *ptr) {
+		if (ptr->ref_counter.fetch_add(-1, std::memory_order_acq_rel) == 1)
+			delete ptr;
+
+	}
 };
-
-void inline intrusive_ptr_add_ref(binding_set_pool_instance *ptr) {
-	ptr->ref_counter.fetch_add(1, std::memory_order_release);
-}
-void inline intrusive_ptr_release(binding_set_pool_instance *ptr) {
-	if (ptr->ref_counter.fetch_add(-1) == 1)
-		delete ptr;
-
-}
 
 }
 }

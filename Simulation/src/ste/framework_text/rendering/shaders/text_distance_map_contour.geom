@@ -30,10 +30,10 @@ out geo_out {
 	flat float weight;
 	flat float stroke_width;
 	flat uint drawId;
+	noperspective vec2 tex_coords;
 } vout;
-layout(location = 0) out vec2 tex_coords;
 
-layout(std430, set = 0, binding = 0) restrict readonly buffer glyph_data {
+layout(std430, binding = 0) restrict readonly buffer glyph_data {
 	buffer_glyph_descriptor glyphs[];
 };
 
@@ -48,13 +48,18 @@ void main() {
 
 	vec2 size = vin[0].size / fb_size;
 
+	float start_x = g.start_x;
+	float start_y = g.start_y;
+	float width = g.width;
+	float height = g.height;
+	
 	vout.color = vin[0].color;
 	vout.stroke_color = vin[0].stroke_color;
 	vout.drawId = vin[0].drawId;
 	vout.weight = vin[0].weight;
 	vout.stroke_width = vin[0].stroke_width;
-	tex_coords = vec2(0, 0);
-	gl_Position = vec4(pos + size * vec2(g.start_x, g.start_y), 0, 1);
+	vout.tex_coords = vec2(0, 0);
+	gl_Position = vec4(pos + size * vec2(start_x, start_y), 0, 1);
 	EmitVertex();
 	
 	vout.color = vin[0].color;
@@ -62,8 +67,8 @@ void main() {
 	vout.drawId = vin[0].drawId;
 	vout.weight = vin[0].weight;
 	vout.stroke_width = vin[0].stroke_width;
-	tex_coords = vec2(1, 0);
-	gl_Position = vec4(pos + size * vec2(g.start_x + g.width, g.start_y), 0, 1);
+	vout.tex_coords = vec2(1, 0);
+	gl_Position = vec4(pos + size * vec2(start_x + width, start_y), 0, 1);
 	EmitVertex();
 	
 	vout.color = vin[0].color;
@@ -71,8 +76,8 @@ void main() {
 	vout.drawId = vin[0].drawId;
 	vout.weight = vin[0].weight;
 	vout.stroke_width = vin[0].stroke_width;
-	tex_coords = vec2(0, 1);
-	gl_Position = vec4(pos + size * vec2(g.start_x, g.start_y - g.height), 0, 1);
+	vout.tex_coords = vec2(0, 1);
+	gl_Position = vec4(pos + size * vec2(start_x, start_y - height), 0, 1);
 	EmitVertex();
 	
 	vout.color = vin[0].color;
@@ -80,10 +85,10 @@ void main() {
 	vout.drawId = vin[0].drawId;
 	vout.weight = vin[0].weight;
 	vout.stroke_width = vin[0].stroke_width;
-	tex_coords = vec2(1, 1);
-	gl_Position = vec4(pos + size * vec2(g.start_x + g.width, g.start_y - g.height), 0, 1);
+	vout.tex_coords = vec2(1, 1);
+	gl_Position = vec4(pos + size * vec2(start_x + width, start_y - height), 0, 1);
 	EmitVertex();
-
+	
 	EndPrimitive();
 }
 

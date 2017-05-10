@@ -59,9 +59,6 @@ private:
 
 	// Creates the graphics pipeline object
 	void create_pipeline() {
-		if (!device_renderpass)
-			create_renderpass();
-
 		// Vulkan shader stage descriptors
 		auto shader_stage_descriptors = get_layout().shader_stage_descriptors();
 
@@ -131,8 +128,17 @@ protected:
 		recorder << cmd_end_render_pass();
 	}
 
-	void recreate_pipeline() override final {
+	optional<vk::vk_pipeline> recreate_pipeline() override final {
+		// Slice old pipeline, if any, storing the old vk::vk_pipeline object.
+		optional<vk::vk_pipeline> old_pipeline;
+		if (graphics_pipeline) {
+			vk::vk_pipeline &old_pipeline_object = graphics_pipeline.get();
+			old_pipeline = std::move(old_pipeline_object);
+		}
+
 		create_pipeline();
+
+		return old_pipeline;
 	}
 
 	void update() override final {
@@ -164,6 +170,9 @@ public:
 		vertex_input_descriptor(vertex_input_descriptor),
 		fb_layout(fb_layout)
 	{
+		// Create the renderpass based on the framebuffer layout.
+		// The renderpass object does not get invalidated.
+		create_renderpass();
 	}
 	~device_pipeline_graphics() noexcept {}
 

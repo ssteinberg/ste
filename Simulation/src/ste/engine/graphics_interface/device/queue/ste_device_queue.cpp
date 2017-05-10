@@ -21,7 +21,7 @@ void ste_device_queue::create_worker() {
 
 			std::unique_ptr<task_t> task;
 			{
-				std::unique_lock<std::mutex> l(shared_data->m);
+				std::unique_lock<std::mutex> l(m);
 				if (interruptible_thread::is_interruption_flag_set()) return;
 
 				shared_data->notifier.wait(l, [&]() {

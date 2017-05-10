@@ -24,6 +24,11 @@ private:
 	std::promise<R> promise;
 	std::future<R> future;
 
+private:
+	bool is_future_signalled() const {
+		return future.wait_for(std::chrono::nanoseconds(0)) == std::future_status::ready;
+	}
+
 public:
 	/**
 	*	@brief	Construct a fence object in unsignaled state
@@ -56,7 +61,13 @@ public:
 		if (signaled)
 			promise.set_value();
 	}
-	~unique_fence() noexcept {}
+	~unique_fence() noexcept {
+		if (is_valid()) {
+			// Destroying while the vk_fence might still be in use will cause race conditions
+			assert(is_future_signalled());
+			future.wait();
+		}
+	}
 
 	unique_fence(unique_fence&&) = default;
 	unique_fence &operator=(unique_fence&&) = default;
@@ -108,7 +119,7 @@ public:
 	*	@brief	Wait for the fence to be signaled and retrieves the value/exception stored in the fence
 	*/
 	template <typename S = R>
-	decltype(auto) get(typename std::enable_if<!std::is_void<S>::value>::type* = nullptr) {
+	decltype(auto) get_wait(typename std::enable_if<!std::is_void<S>::value>::type* = nullptr) {
 		auto val = future.get();
 		f.wait_idle();
 		return val;
@@ -117,7 +128,7 @@ public:
 	*	@brief	Wait for the fence to be signaled and retrieves the value/exception stored in the fence
 	*/
 	template <typename S = R>
-	void get(typename std::enable_if<std::is_void<S>::value>::type* = nullptr) {
+	void get_wait(typename std::enable_if<std::is_void<S>::value>::type* = nullptr) {
 		future.get();
 		f.wait_idle();
 	}
@@ -125,9 +136,7 @@ public:
 	*	@brief	Fence status query
 	*/
 	bool is_signaled() const {
-		if (future.wait_for(std::chrono::nanoseconds(0)) == std::future_status::ready)
-			return f.is_signaled();
-		return false;
+		return is_future_signalled() && f.is_signaled();
 	}
 	/**
 	*	@brief	Wait for the fence to be signaled

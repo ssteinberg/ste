@@ -32,7 +32,8 @@ public:
 private:
 	void operator()(const command_buffer &buffer, command_recorder &recorder) const override final {
 		auto &sets = collection->get_sets();
-		assert(sets.size());
+		if (!sets.size())
+			return;
 
 		std::uint32_t first_set_idx = sets.begin()->first;
 

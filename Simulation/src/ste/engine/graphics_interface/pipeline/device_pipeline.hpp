@@ -14,14 +14,13 @@
 #include <pipeline_resource_bind_point.hpp>
 #include <device_pipeline_exceptions.hpp>
 
+#include <device_pipeline_resources_marked_for_deletion.hpp>
+
 #include <push_constant_path.hpp>
-#include <pipeline_layout_set_index.hpp>
 #include <pipeline_binding_set_collection.hpp>
-#include <pipeline_binding_set_pool.hpp>
 
 #include <command_buffer.hpp>
 #include <command_recorder.hpp>
-#include <cmd_bind_descriptor_sets.hpp>
 
 #include <optional.hpp>
 #include <memory>
@@ -85,15 +84,23 @@ protected:
 	// External binding sets
 	const pipeline_external_binding_set_collection *external_binding_sets;
 
+	pipeline_layout::set_layout_modified_signal_t::connection_type set_modified_connection;
+
 private:
 	void prebind_update() {
+		// Store old resources, and delete them in a controlled manner without disrupting current submitted commands.
+		device_pipeline_resources_marked_for_deletion old_resources;
+
 		// Update sets, as needed
-		layout->recreate_invalidated_set_layouts();
+		auto recreated_indices = layout->recreate_invalidated_set_layouts(&old_resources.binding_set_layouts);
+		if (recreated_indices.size()) {
+			old_resources.binding_sets = binding_sets.recreate_sets(recreated_indices);
+		}
 
 		// Recreate pipeline if pipeline layout was invalidated for any reason
 		if (layout->is_layout_invalidated()) {
-			layout->recreate_layout();
-			recreate_pipeline();
+			old_resources.pipeline_layout = layout->recreate_layout();
+			old_resources.pipeline = recreate_pipeline();
 		}
 
 		// Write resource descriptors to binding sets from the binding queue and clear it
@@ -104,6 +111,11 @@ private:
 
 		// Call overloadable update
 		update();
+
+		if (old_resources) {
+			// If we have any old resources, dispose of them
+			ctx.get().device().pipeline_disposer().queue_deletion(std::move(old_resources));
+		}
 	}
 
 protected:
@@ -125,9 +137,9 @@ protected:
 	*/
 	virtual void unbind_pipeline(const command_buffer &, command_recorder &) const {}
 	/**
-	*	@brief	Recreates the pipeline.
+	*	@brief	Recreates the pipeline, should return the old pipeline (sliced to a vk::vk_pipeline object), if any.
 	*/
-	virtual void recreate_pipeline() = 0;
+	virtual optional<vk::vk_pipeline> recreate_pipeline() = 0;
 
 	device_pipeline(const ste_context &ctx,
 					pipeline_layout &&layout,

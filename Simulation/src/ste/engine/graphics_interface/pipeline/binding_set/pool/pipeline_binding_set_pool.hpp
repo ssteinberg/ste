@@ -19,17 +19,22 @@ namespace gl {
 class pipeline_binding_set_pool {
 private:
 	using pool_key = std::uint32_t;
-	using pool_ptr_t = boost::intrusive_ptr<binding_set_pool_instance>;
+	using instance_t = binding_set_pool_instance<pipeline_binding_set_pool, pool_key>;
+	using pool_ptr_t = boost::intrusive_ptr<instance_t>;
 	using pools_t = concurrent_unordered_map<pool_key, pool_ptr_t>;
+
+	friend instance_t;
 
 private:
 	std::reference_wrapper<const vk::vk_logical_device> device;
+
 	pools_t pools;
 	std::atomic<pool_key> key_counter{ 0 };
 
 private:
 	template <typename Layout>
-	auto allocate_pool_instance(const std::vector<const Layout*> &layouts) const {
+	auto allocate_pool_instance(const std::vector<const Layout*> &layouts,
+								const pool_key &key) {
 		auto sets_count = layouts.size();
 		std::vector<const pipeline_binding_layout_interface*> pool_bindings;
 		pool_bindings.reserve(sets_count * 10);
@@ -44,10 +49,13 @@ private:
 		// Max sets
 		auto max_sets = sets_count;
 
-		return pool_ptr_t(new binding_set_pool_instance(binding_set_pool_instance::ctor(),
-														device.get(),
-														max_sets,
-														pool_bindings));
+		// Allocate
+		return pool_ptr_t(new instance_t(instance_t::ctor(),
+										 device.get(),
+										 max_sets,
+										 pool_bindings,
+										 this,
+										 key));
 	}
 
 	void release_one(const pool_key &k) {
@@ -74,10 +82,8 @@ public:
 		auto key = key_counter.fetch_add(1);
 
 		// Create new slot
-		auto instance = allocate_pool_instance<Layout>(layouts);
-		instance->release_func = binding_set_pool_instance::release_func_t([this, key]() {
-			this->release_one(key);
-		});
+		auto instance = allocate_pool_instance<Layout>(layouts,
+													   key);
 
 		// Allocate
 		auto sets = instance->allocate<Layout>(layouts);
