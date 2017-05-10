@@ -121,7 +121,7 @@ private:
 		// Wait for previous presentation to this image index to end
 		auto& sync = presentation_sync_primitives[next_image_descriptor.image_index];
 		if (sync.fence_ptr != nullptr)
-			(*sync.fence_ptr)->get();
+			(*sync.fence_ptr)->get_wait();
 
 		// Hold onto new presentation semaphores, and fence. Releasing old.
 		sync.semaphores = std::move(semaphores);

@@ -28,48 +28,6 @@ private:
 	std::reference_wrapper<const pipeline_layout> layout;
 	std::reference_wrapper<pipeline_binding_set_pool> pool;
 
-	pipeline_layout::set_layout_modified_signal_t::connection_type set_modified_connection;
-
-private:
-	void recreate_sets(const std::vector<pipeline_layout_set_index> &set_indices) {
-		std::vector<const layout_t*> layouts;
-		auto &pipeline_layout_map = layout.get().set_layouts();
-		for (auto &set_idx : set_indices) {
-			// Define layout for new set
-			auto l_it = pipeline_layout_map.find(set_idx);
-			if (l_it == pipeline_layout_map.end()) {
-				// Layout not found.
-				assert(false);
-				return;
-			}
-			auto *layout = &l_it->second;
-
-			layouts.push_back(layout);
-		}
-
-		// Allocate the new sets
-		std::vector<pipeline_binding_set> new_sets = pool.get().allocate_binding_sets<layout_t>(layouts);
-		for (std::size_t i = 0; i<new_sets.size(); ++i) {
-			auto &set_idx = set_indices[i];
-			auto &new_set = new_sets[i];
-
-			// Find old set
-			auto it = sets.find(set_idx);
-			if (it == sets.end()) {
-				// Set not found.
-				assert(false);
-				return;
-			}
-			auto &old_set = it->second;
-
-			// Copy bindings from old set
-			new_set.copy(old_set);
-
-			// And store in collection
-			it->second = std::move(new_set);
-		}
-	}
-
 public:
 	pipeline_binding_set_collection(const pipeline_layout& layout,
 									pipeline_binding_set_pool &pool)
@@ -77,6 +35,8 @@ public:
 		pool(pool)
 	{
 		const auto& binding_sets_layouts_map = layout.set_layouts();
+		if (!binding_sets_layouts_map.size())
+			return;
 
 		std::vector<pipeline_layout_set_index> indices;
 		std::vector<const layout_t*> layouts;
@@ -96,11 +56,6 @@ public:
 			auto idx = indices[i];
 			sets.emplace(idx, std::move(allocated_sets[i]));
 		}
-
-		// Connect to 'set modified' signal
-		set_modified_connection = make_connection(layout.get_set_layout_modified_signal(), [this](const std::vector<pipeline_layout_set_index> &set_indices) {
-			this->recreate_sets(set_indices);
-		});
 	}
 	~pipeline_binding_set_collection() noexcept {}
 
@@ -132,6 +87,56 @@ public:
 
 	pipeline_binding_set_collection(pipeline_binding_set_collection&&) = default;
 	pipeline_binding_set_collection &operator=(pipeline_binding_set_collection&&) = default;
+
+	/**
+	 *	@brief	Rebuilds the required sets
+	 *	
+	 *	#return	Returns the old sets
+	 */
+	auto recreate_sets(const std::vector<pipeline_layout_set_index> &set_indices) {
+		std::vector<pipeline_binding_set> ret_old_sets;
+
+		std::vector<const layout_t*> layouts;
+		auto &pipeline_layout_map = layout.get().set_layouts();
+		for (auto &set_idx : set_indices) {
+			// Define layout for new set
+			auto l_it = pipeline_layout_map.find(set_idx);
+			if (l_it == pipeline_layout_map.end()) {
+				// Layout not found.
+				assert(false);
+				return ret_old_sets;
+			}
+			auto *layout = &l_it->second;
+
+			layouts.push_back(layout);
+		}
+
+		// Allocate the new sets
+		std::vector<pipeline_binding_set> new_sets = pool.get().allocate_binding_sets<layout_t>(layouts);
+		ret_old_sets.reserve(new_sets.size());
+		for (std::size_t i = 0; i<new_sets.size(); ++i) {
+			auto &set_idx = set_indices[i];
+			auto &new_set = new_sets[i];
+
+			// Find old set
+			auto it = sets.find(set_idx);
+			if (it == sets.end()) {
+				// Set not found.
+				assert(false);
+				continue;
+			}
+			auto &old_set = it->second;
+
+			// Copy bindings from old set
+			new_set.copy(old_set);
+
+			// Save old and store new inplace, in sets collection
+			ret_old_sets.push_back(std::move(old_set));
+			it->second = std::move(new_set);
+		}
+
+		return ret_old_sets;
+	}
 
 	auto &get_sets() const { return sets; }
 

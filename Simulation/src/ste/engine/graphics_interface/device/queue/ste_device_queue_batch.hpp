@@ -144,10 +144,6 @@ public:
 		return fence_strong;
 	}
 
-	shared_fence_t& get_fence() const {
-		return *fence_strong;
-	}
-
 	auto& acquire_command_buffer() {
 		const command_pool& p = pool;
 		command_buffer_t buffer = p.allocate_primary_buffer();

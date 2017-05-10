@@ -14,6 +14,7 @@
 #include <ste_queue_selector.hpp>
 #include <ste_device_pipeline_cache.hpp>
 #include <pipeline_binding_set_pool.hpp>
+#include <device_pipeline_resource_disposer.hpp>
 
 #include <ste_gl_context_creation_parameters.hpp>
 #include <ste_presentation_surface.hpp>
@@ -34,6 +35,8 @@ class ste_device : public allow_type_decay<ste_device, vk::vk_logical_device> {
 public:
 	using queues_and_surface_recreate_signal_type = signal<const ste_device*>;
 
+	static constexpr std::size_t pipeline_resources_disposer_maximal_delay_ms = 2000;
+
 private:
 	using queue_t = std::unique_ptr<ste_device_queue>;
 	using queues_t = std::vector<queue_t>;
@@ -47,6 +50,8 @@ private:
 	ste_device_pipeline_cache shared_pipeline_cache;
 	// And binding sets pool
 	mutable pipeline_binding_set_pool device_binding_set_pool;
+	// Pipeline resource disposer
+	mutable device_pipeline_resource_disposer<pipeline_resources_disposer_maximal_delay_ms> pipeline_resources_disposer;
 
 	// Synchronization primitive pools
 	aligned_ptr<ste_device_sync_primitives_pools> sync_primitives_pools;
@@ -226,6 +231,11 @@ public:
 	 *	@brief	Thread-safe pool of pipeline binding sets
 	 */
 	auto& binding_set_pool() const { return device_binding_set_pool; }
+
+	/**
+	 *	@brief	Thread-safe disposer of pipeline resources
+	 */
+	auto& pipeline_disposer() const { return pipeline_resources_disposer; }
 
 	/**
 	*	@brief	Human readable device name

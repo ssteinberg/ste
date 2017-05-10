@@ -51,7 +51,6 @@ private:
 	using shared_fence_t = ste_device_queue_batch<void>::fence_t;
 
 	struct shared_data_t {
-		mutable std::mutex m;
 		mutable std::condition_variable notifier;
 
 		concurrent_queue<task_t> task_queue;
@@ -66,6 +65,7 @@ private:
 
 	std::list<std::unique_ptr<_detail::ste_device_queue_batch_base>> submitted_oneshot_batches;
 
+	mutable std::mutex m;
 	aligned_ptr<shared_data_t> shared_data;
 	ste_resource_pool<ste_device_queue_command_pool> pool;
 	std::unique_ptr<interruptible_thread> thread;
@@ -156,7 +156,7 @@ public:
 		for (auto &b : *batch)
 			command_buffers.push_back(static_cast<vk::vk_command_buffer>(b));
 
-		auto& fence = batch->get_fence();
+		auto& fence = batch->get_fence_ptr();
 
 		try {
 			if (batch->queue_index == thread_queue_index()) {
@@ -167,11 +167,11 @@ public:
 				thread_queue().submit(command_buffers,
 									  std::vector<vk::vk_queue::wait_semaphore_t>(wait_semaphores.begin(), wait_semaphores.end()),
 									  vk_semaphores(signal_semaphores),
-									  &fence.get_fence());
+									  &(*fence)->get_fence());
 
-				// And signal fence future
-				fence.signal();
-
+				// Signal fence future
+				(*fence)->signal();
+				// And set submitted flag
 				batch->submitted = true;
 
 				// Hold onto the batch, release resources only once the device is done with it
@@ -183,7 +183,7 @@ public:
 			}
 		}
 		catch (...) {
-			fence.set_exception(std::current_exception());
+			(*fence)->set_exception(std::current_exception());
 		}
 	}
 
@@ -203,7 +203,7 @@ public:
 	static void submit_batch(const ste_device_queue_batch_multishot<UserData> &batch,
 							 const std::vector<wait_semaphore> &wait_semaphores = {},
 							 const std::vector<const semaphore*> &signal_semaphores = {},
-							 vk::vk_fence *fence = nullptr) {
+							 shared_fence_t *fence = nullptr) {
 		if (!is_queue_thread()) {
 			throw ste_device_not_queue_thread_exception();
 		}
@@ -223,7 +223,7 @@ public:
 			thread_queue().submit(command_buffers,
 								  std::vector<vk::vk_queue::wait_semaphore_t>(wait_semaphores.begin(), wait_semaphores.end()),
 								  vk_semaphores(signal_semaphores),
-								  fence);
+								  fence ? &fence->get().get_fence() : nullptr);
 
 			batch.submitted = true;
 		}
@@ -278,8 +278,8 @@ public:
 	~ste_device_queue() noexcept {
 		thread->interrupt();
 
-		do { shared_data->notifier.notify_all(); } while (!shared_data->m.try_lock());
-		shared_data->m.unlock();
+		do { shared_data->notifier.notify_all(); } while (!m.try_lock());
+		m.unlock();
 
 		thread->join();
 		queue.wait_idle();

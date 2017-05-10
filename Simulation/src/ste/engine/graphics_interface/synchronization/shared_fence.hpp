@@ -24,6 +24,11 @@ private:
 	std::promise<R> promise;
 	std::shared_future<R> future;
 
+private:
+	bool is_future_signalled() const {
+		return future.wait_for(std::chrono::nanoseconds(0)) == std::future_status::ready;
+	}
+
 public:
 	/**
 	*	@brief	Construct a fence object in unsignaled state
@@ -56,7 +61,13 @@ public:
 		if (signaled)
 			promise.set_value();
 	}
-	~shared_fence() noexcept {}
+	~shared_fence() noexcept {
+		if (is_valid()) {
+			// Destroying while the vk_fence might still be in use will cause race conditions
+			assert(is_future_signalled());
+			future.wait();
+		}
+	}
 
 	shared_fence(shared_fence&&) = default;
 	shared_fence &operator=(shared_fence&&) = default;
@@ -109,7 +120,7 @@ public:
 	*	@brief	Wait for the fence to be signaled and retrieves the value/exception stored in the fence
 	*/
 	template <typename S = R>
-	decltype(auto) get(typename std::enable_if<!std::is_void<S>::value>::type* = nullptr) const {
+	decltype(auto) get_wait(typename std::enable_if<!std::is_void<S>::value>::type* = nullptr) const {
 		auto& val = future.get();
 		f.wait_idle();
 		return val;
@@ -118,7 +129,7 @@ public:
 	*	@brief	Wait for the fence to be signaled and retrieves the value/exception stored in the fence
 	*/
 	template <typename S = R>
-	void get(typename std::enable_if<std::is_void<S>::value>::type* = nullptr) const {
+	void get_wait(typename std::enable_if<std::is_void<S>::value>::type* = nullptr) const {
 		future.get();
 		f.wait_idle();
 	}
@@ -126,11 +137,7 @@ public:
 	*	@brief	Fence status query
 	*/
 	bool is_signaled() const {
-		if (future.wait_for(std::chrono::nanoseconds(0)) == std::future_status::ready) {
-			bool ret = f.is_signaled();
-			return ret;
-		}
-		return false;
+		return is_future_signalled() && f.is_signaled();
 	}
 	/**
 	*	@brief	Wait for the fence to be signaled

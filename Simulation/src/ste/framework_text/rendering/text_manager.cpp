@@ -32,8 +32,9 @@ text_manager::text_manager(const ste_context &context,
 	frag(context, std::string("text_distance_map_contour.frag")),
 	pipeline(create_pipeline(context, vert, geom, frag))
 {
-	bind_pipeline_resources();
+	bind_pipeline_resources(0);
 
+	// Set framebuffer extent push constant, and keep it up to date.
 	pipeline["push_constants_t.fb_size"] = glm::vec2(context.device().get_surface().extent());
 	surface_recreate_signal_connection = make_connection(context.device().get_queues_and_surface_recreate_signal(), [this](const gl::ste_device*) {
 		pipeline["push_constants_t.fb_size"] = glm::vec2(this->context.get().device().get_surface().extent());
@@ -44,6 +45,7 @@ gl::device_pipeline_graphics text_manager::create_pipeline(const ste_context &ct
 														   gl::device_pipeline_shader_stage &vert,
 														   gl::device_pipeline_shader_stage &geom,
 														   gl::device_pipeline_shader_stage &frag) {
+	// Framebuffer layout
 	auto fb_layout = gl::framebuffer_layout();
 	fb_layout[0] = gl::load_store(ctx.device().get_surface().surface_format(),
 								  gl::image_layout::color_attachment_optimal,
@@ -52,6 +54,7 @@ gl::device_pipeline_graphics text_manager::create_pipeline(const ste_context &ct
 													  gl::blend_factor::one_minus_src_alpha,
 													  gl::blend_op::add));
 
+	// Create pipeline object
 	gl::device_pipeline_graphics_configurations config{};
 	config.topology = gl::primitive_topology::point_list;
 	config.rasterizer_op = gl::rasterizer_operation(gl::cull_mode::none, gl::front_face::cw);
@@ -67,15 +70,21 @@ gl::device_pipeline_graphics text_manager::create_pipeline(const ste_context &ct
 	return auditor.pipeline(ctx);
 }
 
-void text_manager::bind_pipeline_resources() {
+/**
+ *	@brief	Binds current available resources. For glyph_textures, starts binding from first_offset.
+ */
+void text_manager::bind_pipeline_resources(std::uint32_t first_offset) {
 	pipeline["glyph_sampler"] = gl::bind(gm.sampler());
 
 	std::uint32_t texture_count = static_cast<std::uint32_t>(gm.textures().size());
 
 	if (texture_count) {
+		pipeline["glyph_texture_count"] = texture_count;
+		pipeline["glyph_data"] = gl::bind(gm.ssbo().get(), 0, texture_count);
+
 		std::vector<std::pair<const gl::image_view_generic*, gl::image_layout>> images;
 		images.reserve(texture_count);
-		for (std::uint32_t i = 0; i < texture_count; ++i) {
+		for (std::uint32_t i = first_offset; i < texture_count; ++i) {
 			auto &glyph_texture = gm.textures()[i];
 			images.push_back(std::make_pair(&glyph_texture.view, gl::image_layout::shader_read_only_optimal));
 		}
@@ -85,10 +94,11 @@ void text_manager::bind_pipeline_resources() {
 
 void text_manager::recreate_pipeline() {
 	pipeline = create_pipeline(context.get(), vert, geom, frag);
-	bind_pipeline_resources();
+	bind_pipeline_resources(0);
 }
 
 void text_manager::adjust_line(std::vector<glyph_point> &points, const attributed_wstring &wstr, unsigned line_start_index, float line_start, float line_height, const glm::vec2 &ortho_pos) {
+	// Adjusts line height
 	if (points.size() - line_start_index) {
 		auto alignment_attrib = optional_dynamic_cast<const Attributes::align*>(
 			wstr.attrib_of_type(Attributes::align::attrib_type_s(),
@@ -113,6 +123,9 @@ void text_manager::adjust_line(std::vector<glyph_point> &points, const attribute
 	}
 }
 
+/**
+ *	@brief	Creates points vector from attributed string.
+ */
 std::vector<glyph_point> text_manager::create_points(glm::vec2 ortho_pos, const attributed_wstring &wstr) {
 	float line_start = ortho_pos.x;
 	int line_start_index = 0;
@@ -192,6 +205,9 @@ std::vector<glyph_point> text_manager::create_points(glm::vec2 ortho_pos, const 
 	return points;
 }
 
+/**
+ *	@brief	Updates resources bound to pipeline and records glyph buffer update commands.
+ */
 bool text_manager::update_glyphs(gl::command_recorder &recorder) {
 	auto updated_range = gm.update_pending_glyphs(recorder);
 	if (!updated_range.length)

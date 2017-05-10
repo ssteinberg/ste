@@ -4,7 +4,7 @@
 #pragma once
 
 #include <stdafx.hpp>
-#include <ste_context.hpp>
+#include <vk_logical_device.hpp>
 #include <vk_descriptor_set_layout.hpp>
 #include <pipeline_layout_set_index.hpp>
 
@@ -46,19 +46,20 @@ private:
 		return *it;
 	}
 
-	auto generate_vk_layout(const ste_context &ctx) {
+	auto generate_vk_layout(const vk::vk_logical_device &device) {
 		std::vector<vk::vk_descriptor_set_layout_binding> vk_bindings;
 		for (auto it = begin(); it != end(); ++it)
 			vk_bindings.push_back(access_it<>(it));
 
-		return vk::vk_descriptor_set_layout(ctx.device(), vk_bindings);
+		return vk::vk_descriptor_set_layout(device, 
+											vk_bindings);
 	}
 
 public:
-	pipeline_binding_set_layout_impl(const ste_context &ctx,
+	pipeline_binding_set_layout_impl(const vk::vk_logical_device &device,
 									 bindings_vec_t &&bindings)
 		: bindings(std::move(bindings)),
-		vk_layout(generate_vk_layout(ctx))
+		vk_layout(generate_vk_layout(device))
 	{
 		assert(this->bindings.size());
 		set_idx = access_it<>(this->bindings.begin()).set_idx();

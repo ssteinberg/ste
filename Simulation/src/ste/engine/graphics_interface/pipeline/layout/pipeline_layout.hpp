@@ -22,8 +22,6 @@
 #include <pipeline_binding_set_layout.hpp>
 #include <vk_pipeline_layout.hpp>
 
-#include <signal.hpp>
-
 #include <allow_type_decay.hpp>
 #include <string>
 #include <boost/container/flat_map.hpp>
@@ -85,8 +83,6 @@ private:
 	boost::container::flat_set<pipeline_layout_set_index> set_layouts_modified_queue;
 	// Map of specialization variables to dependant array variables
 	spec_to_dependant_array_variables_map_t spec_to_dependant_array_variables_map;
-	// Set layout modified signal
-	mutable set_layout_modified_signal_t set_layout_modified_signal;
 
 	// If for any reason pipeline layout has changed, mark it and let device_pipeline recreate the pipeline when applicable.
 	bool layout_invalidated_flag{ false };
@@ -212,7 +208,7 @@ private:
 		// Create descriptor set layouts
 		for (auto &s : sets) {
 			auto &v = s.second;
-			auto set_layout = pipeline_binding_set_layout(ctx.get(), std::move(v));
+			auto set_layout = pipeline_binding_set_layout(ctx.get().device(), std::move(v));
 
 			bindings_set_layouts.emplace(std::make_pair(s.first, std::move(set_layout)));
 		}
@@ -391,8 +387,10 @@ public:
 
 	/**
 	*	@brief	Recreates the pipeline layout and resets flag
+	*	
+	*	@return	Returns the old layout object
 	*/
-	void recreate_layout() {
+	std::unique_ptr<vk::vk_pipeline_layout> recreate_layout() {
 		std::vector<const vk::vk_descriptor_set_layout*> set_layout_ptrs;
 		for (auto &s : bindings_set_layouts) {
 			set_layout_ptrs.push_back(&s.second.get());
@@ -408,23 +406,34 @@ public:
 		// Create push contant layout descriptors
 		auto& push_constant_layouts = push_constants_layout->vk_push_constant_layout_descriptors();
 
+		// Save old layout
+		auto old_layout = std::move(layout);
+
 		// Create pipeline layout and raise layout invalidated flag
 		layout = std::make_unique<vk::vk_pipeline_layout>(ctx.get().device(),
 														  set_layout_ptrs,
 														  push_constant_layouts);
 		layout_invalidated_flag = false;
+
+		return old_layout;
 	}
 
 	/**
 	*	@brief	Recreates invalidated set layout and resets flags
+	*	
+	*	@param	old_layouts	If non-null, old set layouts will be moved to this vector.
 	*
-	*	@return	True if sets were modified, false otherwise.
+	*	@return	Vector of modified set indices
 	*/
-	void recreate_invalidated_set_layouts() {
-		if (set_layouts_modified_queue.empty())
-			return;
-
+	auto recreate_invalidated_set_layouts(std::vector<pipeline_binding_set_layout> *old_layouts = nullptr) {
 		std::vector<pipeline_layout_set_index> modified_set_indices;
+
+		if (set_layouts_modified_queue.empty())
+			return modified_set_indices;
+
+		if (old_layouts)
+			old_layouts->reserve(set_layouts_modified_queue.size());
+
 		for (auto &set_idx : set_layouts_modified_queue) {
 			auto set_layout_it = bindings_set_layouts.find(set_idx);
 			if (set_layout_it == bindings_set_layouts.end()) {
@@ -436,8 +445,11 @@ public:
 			// Recreate set based on same bindings
 			// (only possible change is modified array length of a binding)
 			auto bindings = set_layout_it->second.get_bindings();
-			auto set_layout = pipeline_binding_set_layout(ctx.get(), 
+			auto set_layout = pipeline_binding_set_layout(ctx.get().device(), 
 														  std::move(bindings));
+
+			if (old_layouts)
+				old_layouts->push_back(std::move(set_layout_it->second));
 
 			// Replace set with new one
 			set_layout_it->second = std::move(set_layout);
@@ -448,8 +460,7 @@ public:
 		// Erase queue
 		set_layouts_modified_queue.clear();
 
-		// Notify
-		set_layout_modified_signal.emit(modified_set_indices);
+		return modified_set_indices;
 	}
 
 	/**
@@ -489,8 +500,6 @@ public:
 	auto& push_variables() const { return *push_constants_layout; }
 	auto& spec_variables() const { return spec_variables_map; }
 	auto& attachments() const { return attachments_map; }
-
-	auto& get_set_layout_modified_signal() const { return set_layout_modified_signal; }
 };
 
 }

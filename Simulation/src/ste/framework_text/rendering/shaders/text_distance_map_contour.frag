@@ -17,8 +17,8 @@ in geo_out {
 	flat float weight;
 	flat float stroke_width;
 	flat uint drawId;
+	noperspective vec2 tex_coords;
 } vin;
-layout(location = 0) in vec2 tex_coords;
 
 layout(location = 0) out vec4 frag_color;
 
@@ -35,10 +35,10 @@ float aastep(float threshold, float value) {
 	return smoothstep(threshold-afwidth, threshold+afwidth, value);
 }
 
-void main() {/*
+void main() {
 	buffer_glyph_descriptor glyph = glyphs[vin.drawId];
 
-	vec2 uv = vin.st;
+	vec2 uv = vin.tex_coords;
 
 	float D = textureLod(sampler2D(glyph_textures[glyph.sampler_idx], glyph_sampler), uv, 0).x;
 
@@ -55,8 +55,5 @@ void main() {/*
 	if (vin.stroke_width > 0)
 		c = mix(vin.stroke_color, c, clamp((- D - vin.stroke_width * .9f) / (vin.stroke_width * .2f), 0, 1));
 		
-	frag_color = vec4(c,g);
-	*/
-
-	frag_color = vec4(tex_coords, 0, 1);
+	frag_color = vec4(c, g);
 }

@@ -159,7 +159,7 @@ auto fill_image_array(const device_image<dimensions, allocation_policy> &image,
 			// Create a batch
 			auto batch = q.allocate_batch();
 			auto& command_buffer = batch->acquire_command_buffer();
-			auto& fence = batch->get_fence();
+			auto fence = batch->get_fence_ptr();
 
 			// Enqueue mipmap copy on a transfer queue
 			q.enqueue([&]() {
@@ -205,7 +205,7 @@ auto fill_image_array(const device_image<dimensions, allocation_policy> &image,
 
 			// Wait for completion
 			queue_transfer_future.get();
-			fence.get();
+			(*fence)->get_wait();
 		}
 	});
 

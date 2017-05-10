@@ -57,7 +57,7 @@ void copy_data_buffer(const ste_context &ctx,
 	// Create a batch
 	auto batch = q->allocate_batch();
 	auto& command_buffer = batch->acquire_command_buffer();
-	auto& fence = batch->get_fence();
+	auto fence = batch->get_fence_ptr();
 
 	// Enqueue on a transfer queue
 	ctx.device().enqueue(queue_selector, [&]() {
@@ -73,7 +73,7 @@ void copy_data_buffer(const ste_context &ctx,
 	});
 
 	// Wait for completion
-	fence.get();
+	(*fence)->get_wait();
 }
 
 template <typename T, int atom_size, class policy>
@@ -103,7 +103,7 @@ void copy_data_buffer(const ste_context &ctx,
 	// Create a batch
 	auto batch = q->allocate_batch();
 	auto& command_buffer = batch->acquire_command_buffer();
-	auto& fence = batch->get_fence();
+	auto fence = batch->get_fence_ptr();
 
 	// Enqueue on a transfer queue
 	ctx.device().enqueue(queue_selector, [&]() {
@@ -124,7 +124,7 @@ void copy_data_buffer(const ste_context &ctx,
 	});
 
 	// Wait for completion
-	fence.get();
+	(*fence)->get_wait();
 }
 
 }
