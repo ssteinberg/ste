@@ -18,6 +18,9 @@ public:
 	job(F&& future) : future(std::forward<F>(future)) {}
 	~job() noexcept {
 		finish();
+
+		// Rethrow any exception
+		future.get();
 	}
 
 	job(job&&) = default;

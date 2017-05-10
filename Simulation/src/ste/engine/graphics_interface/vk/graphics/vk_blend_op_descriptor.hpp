@@ -4,6 +4,7 @@
 #pragma once
 
 #include <vulkan/vulkan.h>
+
 #include <cstring>
 
 namespace ste {
@@ -26,33 +27,6 @@ struct vk_blend_op_descriptor {
 	VkBlendOp alpha_op{ VK_BLEND_OP_ADD };
 
 	vk_blend_op_descriptor() = default;
-	vk_blend_op_descriptor(const VkColorComponentFlags &write_mask)
-		: write_mask(write_mask) {}
-	vk_blend_op_descriptor(const VkBlendFactor &src_color,
-						   const VkBlendFactor &dst_color,
-						   const VkBlendOp &color_op,
-						   const VkBlendFactor &src_alpha,
-						   const VkBlendFactor &dst_alpha,
-						   const VkBlendOp &alpha_op)
-		: blend_enable(true),
-		src_color(src_color),
-		dst_color(dst_color),
-		color_op(color_op),
-		src_alpha(src_alpha),
-		dst_alpha(dst_alpha),
-		alpha_op(alpha_op)
-	{}
-	vk_blend_op_descriptor(const VkBlendFactor &src,
-						   const VkBlendFactor &dst,
-						   const VkBlendOp &op)
-		: blend_enable(true),
-		src_color(src),
-		dst_color(dst),
-		color_op(op),
-		src_alpha(src),
-		dst_alpha(dst),
-		alpha_op(op)
-	{}
 	vk_blend_op_descriptor(const VkColorComponentFlags &write_mask,
 						   const VkBlendFactor &src_color,
 						   const VkBlendFactor &dst_color,

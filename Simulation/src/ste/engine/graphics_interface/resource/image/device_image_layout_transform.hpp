@@ -30,8 +30,8 @@ auto inline image_layout_transform_barrier(const device_image_base &image,
 /**
 *	@brief	Creates an image memory barrier to transform the image layout.
 *			Deduces the access flags based on source and destination layouts. Layouts must no be undefined, preinitialized or general.
-*			
- *	@throws	ste_engine_exception		If image layout is undefined, preinitialized or general.
+*
+*	@throws	ste_engine_exception		If image layout is undefined, preinitialized or general.
 */
 auto inline image_layout_transform_barrier(const device_image_base &image,
 										   image_layout src_layout,

@@ -24,7 +24,7 @@
 #include <surface_factory.hpp>
 #include <ste_resource.hpp>
 #include <text_manager.hpp>
-#include <text_renderer.hpp>
+#include <text_fragment.hpp>
 #include <attrib.hpp>
 
 #include <task.hpp>
@@ -59,8 +59,8 @@ public:
 																					   gl::image_usage::sampled,
 																					   gl::image_layout::shader_read_only_optimal)),
 		image_view(*image),
-		sampler(ctx, gl::sampler_parameter::filtering(gl::sampler_filter::linear, gl::sampler_filter::linear,
-													  gl::sampler_mipmap_mode::linear)),
+		sampler(ctx.device(), gl::sampler_parameter::filtering(gl::sampler_filter::linear, gl::sampler_filter::linear,
+															   gl::sampler_mipmap_mode::linear)),
 		texture(gl::make_texture(image_view, sampler, gl::image_layout::shader_read_only_optimal)),
 		index_buffer(ctx, std::vector<std::uint32_t>{ 0, 2, 1, 0, 1, 3 }, gl::buffer_usage::index_buffer),
 		vertex_buffer(ctx, gl::buffer_usage::vertex_buffer),
@@ -89,12 +89,7 @@ class simple_fragment : public gl::fragment_graphics<simple_fragment> {
 
 public:
 	static auto create_settings(const ste_context &ctx) {
-		// Pipeline settings
-		gl::device_pipeline_graphics_configurations graphics_settings;
-		auto surface_extent = ctx.device().get_surface().extent();
-		graphics_settings.viewport = glm::vec2(surface_extent);
-		graphics_settings.scissor = surface_extent;
-		return graphics_settings;
+		return gl::device_pipeline_graphics_configurations{};
 	}
 
 	static void setup_graphics_pipeline(const gl::rendering_presentation_system &rs,
@@ -104,9 +99,8 @@ public:
 	}
 
 public:
-	simple_fragment(gl::rendering_presentation_system &rs,
-					gl::pipeline_binding_set_pool &binding_set_pool)
-		: Base(rs, binding_set_pool,
+	simple_fragment(gl::rendering_presentation_system &rs)
+		: Base(rs,
 			   create_settings(rs.get_creating_context()),
 			   "temp.vert", "temp.frag"),
 		ctx(rs.get_creating_context()),
@@ -164,19 +158,29 @@ private:
 	std::reference_wrapper<gl::presentation_engine> presentation;
 
 	simple_fragment frag1;
+	text::text_fragment text_frag;
+
+private:
+	static auto create_fb_layout(const ste_context &ctx) {
+		gl::framebuffer_layout fb_layout;
+		fb_layout[0] = gl::clear_store(ctx.device().get_surface().surface_format(),
+									   gl::image_layout::color_attachment_optimal);
+		return fb_layout;
+	}
 
 public:
 	simple_renderer(const ste_context &ctx,
-				   gl::presentation_engine &presentation,
-				   gl::pipeline_binding_set_pool &binding_set_pool)
-		: Base(ctx),
+					gl::presentation_engine &presentation,
+					text::text_manager &tm)
+		: Base(ctx,
+			   create_fb_layout(ctx)),
 		presentation(presentation),
-		frag1(*this, binding_set_pool)
+		frag1(*this),
+		text_frag(tm.create_fragment())
 	{}
 	~simple_renderer() noexcept {}
 
-	void render() override final {
-	}
+	void render() override final {}
 
 	void present() override final {
 		auto selector = gl::make_queue_selector(gl::ste_queue_type::primary_queue);
@@ -191,20 +195,27 @@ public:
 				auto recorder = command_buffer.record();
 
 				{
-//					using namespace text::Attributes;
-//					auto text = line_height(35)(small(b(purple(L"Frame time: \n")))) +
-//						b(stroke(dark_golden_rod, .5f)(orange(std::to_wstring(frame_time_ms))) +
-//						  small(L" ms"));
+					using namespace text::Attributes;
 
-//					recorder << text_renderer->update_cmd({ 5,50 }, text, swapchain_size);
+					float frame_time_ms = static_cast<float>(presentation.get().get_frame_time()) * 1e-6f;
+					auto text = line_height(35)(small(b(purple(L"Frame time: \n")))) +
+						b(stroke(dark_golden_rod, .5f)(orange(std::to_wstring(frame_time_ms))) +
+						  small(L" ms"));
+
+					text_frag.update_text(recorder, { 5,50 }, text);
 				}
 
 				auto &fb = swap_chain_framebuffer(batch->presentation_image_index());
 				frag1.set_framebuffer(fb);
+				text_frag.manager().set_framebuffer(fb);
 
-				recorder << frag1;
-
-////					<< text_renderer->render_cmd()
+				recorder << frag1
+					<< text_frag;
+				recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::color_attachment_output,
+																		  gl::pipeline_stage::top_of_pipe,
+																		  gl::image_layout_transform_barrier(swap_chain_image(batch->presentation_image_index()).image,
+																											 gl::image_layout::color_attachment_optimal,
+																											 gl::image_layout::present_src_khr)));
 			}
 
 			// Submit command buffer and present
@@ -295,7 +306,6 @@ int main()
 									window);
 	ste_context ctx(engine, gl_ctx, device);
 
-	gl::pipeline_binding_set_pool binding_set_pool(ctx);
 
 	/*
 	 *	Create the presentation engine
@@ -308,10 +318,10 @@ int main()
 	*	Text renderer
 	*/
 	auto font = text::font("Data/ArchitectsDaughter.ttf");
-	//	auto text_manager = std::make_unique<text::text_manager>(ctx, font);
+	text::text_manager text_manager(ctx, font);
 
 
-	simple_renderer r(ctx, presentation, binding_set_pool);
+	simple_renderer r(ctx, presentation, text_manager);
 
 
 	//	ste_resource<device_pipeline_shader_stage> stage(ste_resource_dont_defer(), ctx, std::string("fxaa.frag"));
@@ -322,7 +332,6 @@ int main()
 	//	stage.get();
 
 
-	//	auto text_renderer = text_manager->create_renderer(&presentation_renderpass);
 
 		/*
 		 *	Main loop

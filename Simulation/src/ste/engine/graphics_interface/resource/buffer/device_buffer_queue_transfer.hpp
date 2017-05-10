@@ -32,7 +32,12 @@ auto inline queue_release_acquire_barrier(const device_buffer_base &buffer,
 								 dst_family);
 }
 
-void inline queue_transfer(const ste_context &ctx,
+/**
+ *	@brief	Enqueues queue ownership transfer for a buffer.
+ *	
+ *	@return	Enqueue future.
+ */
+auto inline queue_transfer(const ste_context &ctx,
 						   const device_buffer_base &buffer,
 						   ste_device_queue& src_queue,
 						   ste_device_queue& dst_queue,
@@ -47,7 +52,7 @@ void inline queue_transfer(const ste_context &ctx,
 
 	// Tranfer only if needed
 	if (src_family == dst_family) {
-		return;
+		return std::async(std::launch::deferred, []() {});
 	}
 
 	// Get a semaphore and boundary
@@ -56,7 +61,7 @@ void inline queue_transfer(const ste_context &ctx,
 	auto user_data = std::make_shared<semaphore_t>(ctx.device().get_sync_primitives_pools().semaphores().claim());
 	auto release_acquire_boundary = std::make_shared<boundary<void>>();
 
-	src_queue.enqueue([=, &buffer]() {
+	auto src_future = src_queue.enqueue([=, &buffer]() {
 		auto release_batch = ste_device_queue::thread_allocate_batch<user_data_t>(user_data);
 		auto& command_buffer = release_batch->acquire_command_buffer();
 		{
@@ -76,7 +81,9 @@ void inline queue_transfer(const ste_context &ctx,
 		ste_device_queue::submit_batch(std::move(release_batch), {}, { *release_batch->user_data() });
 		release_acquire_boundary->signal();
 	});
-	dst_queue.enqueue([=, &buffer]() {
+	auto dst_future = dst_queue.enqueue([=, &buffer, f = std::move(src_future)]() {
+		f.wait();
+
 		auto acquire_batch = ste_device_queue::thread_allocate_batch<user_data_t>(user_data);
 		auto& command_buffer = acquire_batch->acquire_command_buffer();
 		{
@@ -98,9 +105,16 @@ void inline queue_transfer(const ste_context &ctx,
 		const semaphore &sem = *acquire_batch->user_data();
 		ste_device_queue::submit_batch(std::move(acquire_batch), { wait_semaphore(&sem, pipeline_stage::bottom_of_pipe) }, {});
 	});
+
+	return dst_future;
 }
 
-void inline queue_transfer_discard(const ste_context &ctx,
+/**
+*	@brief	Enqueues queue ownership transfer for a buffer, discarding old content.
+*
+*	@return	Enqueue future.
+*/
+auto inline queue_transfer_discard(const ste_context &ctx,
 								   const device_buffer_base &buffer,
 								   const ste_queue_selector<ste_queue_selector_policy_strict> &dst_queue_selector,
 								   pipeline_stage stage,
@@ -109,7 +123,7 @@ void inline queue_transfer_discard(const ste_context &ctx,
 	auto &dst_queue = *ctx.device().select_queue(dst_queue_selector);
 	ste_queue_family dst_family = dst_queue.queue_descriptor().family;
 
-	dst_queue.enqueue([=, &buffer]() {
+	auto future = dst_queue.enqueue([=, &buffer]() {
 		auto acquire_batch = ste_device_queue::thread_allocate_batch<>();
 		auto& command_buffer = acquire_batch->acquire_command_buffer();
 		{
@@ -128,6 +142,8 @@ void inline queue_transfer_discard(const ste_context &ctx,
 		// Wait for release command to be submitted
 		ste_device_queue::submit_batch(std::move(acquire_batch));
 	});
+
+	return future;
 }
 
 }

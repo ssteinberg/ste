@@ -9,6 +9,7 @@
 
 #include <framebuffer.hpp>
 #include <framebuffer_layout.hpp>
+#include <depth_range.hpp>
 
 #include <vector>
 #include <signal.hpp>
@@ -18,7 +19,9 @@ namespace gl {
 
 class rendering_presentation_system : public rendering_system {
 private:
-	optional<framebuffer_layout> fb_layout;
+	gl::framebuffer_layout fb_layout;
+	depth_range depth;
+
 	std::vector<framebuffer> swap_chain_framebuffers;
 
 	ste_device::queues_and_surface_recreate_signal_type::connection_type surface_recreate_signal_connection;
@@ -29,20 +32,24 @@ protected:
 	/**
 	*	@brief	Returns a framebuffer with a swap-chain image (of the selected index) bound to color attachment at location 0.
 	*/
+	auto& swap_chain_image(std::uint32_t swap_chain_index) { return device().get_surface().get_swap_chain_images()[swap_chain_index]; }
+	/**
+	*	@brief	Returns a framebuffer with a swap-chain image (of the selected index) bound to color attachment at location 0.
+	*/
 	auto& swap_chain_framebuffer(std::uint32_t swap_chain_index) { return swap_chain_framebuffers[swap_chain_index]; }
 
 private:
 	void create_swap_chain_framebuffers() {
 		auto surface_extent = device().get_surface().extent();
 
-		fb_layout = framebuffer_layout(surface_extent);
-		fb_layout.get()[0] = clear_store(device().get_surface().surface_format(),
-										 image_layout::present_src_khr);
-
 		std::vector<framebuffer> v;
 		for (auto &swap_image : device().get_surface().get_swap_chain_images()) {
-			framebuffer fb(get_creating_context(), fb_layout.get());
+			framebuffer fb(get_creating_context(), 
+						   fb_layout,
+						   surface_extent,
+						   depth);
 			fb[0] = framebuffer_attachment(swap_image.view, glm::vec4(.0f));
+
 			v.push_back(std::move(fb));
 		}
 
@@ -50,8 +57,12 @@ private:
 	}
 
 public:
-	rendering_presentation_system(const ste_context &ctx)
-		: rendering_system(ctx)
+	rendering_presentation_system(const ste_context &ctx,
+								  const gl::framebuffer_layout &fb_layout,
+								  const depth_range &depth = depth_range::one_to_zero())
+		: rendering_system(ctx),
+		fb_layout(fb_layout),
+		depth(depth)
 	{
 		create_swap_chain_framebuffers();
 
@@ -62,7 +73,7 @@ public:
 	}
 	virtual ~rendering_presentation_system() noexcept {}
 
-	const auto& presentation_framebuffer_layout() const { return fb_layout.get(); }
+	const auto& presentation_framebuffer_layout() const { return fb_layout; }
 
 	/**
 	*	@brief	Shortcut method for rendering and presenting.

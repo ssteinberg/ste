@@ -6,10 +6,10 @@
 #include <stdafx.hpp>
 #include <ste_type_traits.hpp>
 
+#include <block_layout_common.hpp>
 #include <sampler.hpp>
 #include <image_view.hpp>
 #include <texture.hpp>
-#include <block_layout_common.hpp>
 
 namespace ste {
 namespace gl {

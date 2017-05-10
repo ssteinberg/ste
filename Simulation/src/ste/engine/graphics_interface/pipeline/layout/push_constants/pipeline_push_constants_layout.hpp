@@ -56,7 +56,7 @@ private:
 				auto offset = push_layout.offset;
 				auto size = push_layout.size;
 				auto range_data = std::string(p->data.begin() + offset,
-											  p->data.end() + offset + size);
+											  p->data.begin() + offset + size);
 
 				recorder << cmd_push_constants(pipeline_layout,
 											   static_cast<stage_flag>(push_layout.stageFlags),
@@ -176,14 +176,15 @@ private:
 	template <typename T>
 	void write_constant(const T &t,
 						const push_constant_descriptor *constant) {
-		static_assert(std::is_pod_v<T>, "T must be a POD type");
+		using S = std::remove_cv_t<std::remove_reference_t<T>>;
+		static_assert(std::is_pod_v<S> || is_arithmetic_v<S>, "T must be a POD or arithmetic type");
 
 		// Validate type
-		constant->validate<T>();
+		constant->validate<S>();
 
 		// And copy to push constants data
 		auto offset = constant->offset();
-		*reinterpret_cast<T*>(data.data() + offset) = t;
+		*reinterpret_cast<S*>(data.data() + offset) = t;
 	}
 
 public:

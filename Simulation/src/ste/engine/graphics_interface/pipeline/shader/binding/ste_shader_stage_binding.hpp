@@ -5,6 +5,7 @@
 
 #include <stdafx.hpp>
 #include <ste_shader_stage_variable_layout_validator.hpp>
+#include <ste_shader_stage_binding_utility.hpp>
 
 #include <ste_shader_stage_binding_type.hpp>
 #include <pipeline_layout_set_index.hpp>

@@ -142,6 +142,7 @@ auto inline bind(const image_view_generic &image,
 *	@param	images	Pairs of image views and layouts to bind
 */
 auto inline bind(const std::vector<std::pair<const image_view_generic*, image_layout>> &images) {
+	assert(images.size());
 	return bind(0, images);
 }
 /**
@@ -152,6 +153,8 @@ auto inline bind(const std::vector<std::pair<const image_view_generic*, image_la
 */
 auto inline bind(std::uint32_t array_element,
 				 const std::vector<std::pair<const image_view_generic*, image_layout>> &images) {
+	assert(images.size());
+
 	std::vector<vk::vk_descriptor_set_write_image> writes;
 	writes.reserve(images.size());
 	for (auto &p : images)
@@ -175,6 +178,7 @@ auto inline bind(const texture_generic &tex) {
 *	@param	textures	Pairs of textures and layouts to bind
 */
 auto inline bind(const std::vector<const texture_generic*> &textures) {
+	assert(textures.size());
 	return bind(0, textures);
 }
 /**
@@ -185,6 +189,8 @@ auto inline bind(const std::vector<const texture_generic*> &textures) {
 */
 auto inline bind(std::uint32_t array_element,
 				 const std::vector<const texture_generic*> &textures) {
+	assert(textures.size());
+
 	std::vector<vk::vk_descriptor_set_write_image> writes;
 	writes.reserve(textures.size());
 	for (auto &p : textures)
@@ -208,6 +214,7 @@ auto inline bind(const sampler &sam) {
 *	@param	samplers	Sampelrs to bind
 */
 auto inline bind(const std::vector<const sampler*> &samplers) {
+	assert(samplers.size());
 	return bind(0, samplers);
 }
 /**
@@ -218,6 +225,8 @@ auto inline bind(const std::vector<const sampler*> &samplers) {
 */
 auto inline bind(std::uint32_t array_element,
 				 const std::vector<const sampler*> &samplers) {
+	assert(samplers.size());
+
 	std::vector<vk::vk_descriptor_set_write_image> writes;
 	writes.reserve(samplers.size());
 	for (auto &p : samplers)

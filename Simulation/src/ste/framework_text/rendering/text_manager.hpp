@@ -6,10 +6,8 @@
 #include <stdafx.hpp>
 #include <ste_context.hpp>
 #include <device_pipeline_shader_stage.hpp>
+#include <device_pipeline_graphics.hpp>
 #include <command_recorder.hpp>
-
-#include <vk_pipeline_graphics.hpp>
-#include <vk_unique_descriptor_set.hpp>
 
 #include <font.hpp>
 #include <glyph_manager.hpp>
@@ -25,10 +23,10 @@ namespace text {
 
 class text_manager {
 private:
-	friend class text_renderer;
+	friend class text_fragment;
 
 private:
-	const ste_context &context;
+	std::reference_wrapper<const ste_context> context;
 
 	glyph_manager gm;
 	font default_font;
@@ -37,15 +35,21 @@ private:
 	ste_resource<gl::device_pipeline_shader_stage> vert;
 	ste_resource<gl::device_pipeline_shader_stage> geom;
 	ste_resource<gl::device_pipeline_shader_stage> frag;
+	gl::device_pipeline_graphics pipeline;
 
-	std::unique_ptr<gl::vk::vk_unique_descriptor_set> descriptor_set;
+	gl::ste_device::queues_and_surface_recreate_signal_type::connection_type surface_recreate_signal_connection;
 
 private:
 	static void adjust_line(std::vector<glyph_point> &, const attributed_wstring &, unsigned, float, float, const glm::vec2 &);
 	std::vector<glyph_point> create_points(glm::vec2, const attributed_wstring &);
 
 private:
-	static gl::vk::vk_unique_descriptor_set create_descriptor_set(const gl::vk::vk_logical_device &, std::uint32_t);
+	static gl::device_pipeline_graphics create_pipeline(const ste_context &,
+														gl::device_pipeline_shader_stage &,
+														gl::device_pipeline_shader_stage &,
+														gl::device_pipeline_shader_stage &);
+	void bind_pipeline_resources();
+	void recreate_pipeline();
 	bool update_glyphs(gl::command_recorder &recorder);
 
 public:
@@ -53,9 +57,14 @@ public:
 				 const font &default_font,
 				 int default_size = 28);
 
-	text_manager(text_manager&&) = default;
+	/**
+	 *	@brief	Attaches a framebuffer. Affects all fragments created with this manager.
+	 */
+	void set_framebuffer(gl::framebuffer &fb) {
+		pipeline.attach_framebuffer(fb);
+	}
 
-	std::unique_ptr<text_renderer> create_renderer(const gl::vk::vk_render_pass *renderpass);
+	text_fragment create_fragment();
 };
 
 }

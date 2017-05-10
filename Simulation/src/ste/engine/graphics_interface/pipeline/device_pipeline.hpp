@@ -75,7 +75,7 @@ private:
 	};
 
 protected:
-	const ste_context &ctx;
+	std::reference_wrapper<const ste_context> ctx;
 
 	std::unique_ptr<pipeline_layout> layout;
 	pipeline_resource_binding_queue binding_queue;
@@ -91,7 +91,8 @@ private:
 		layout->recreate_invalidated_set_layouts();
 
 		// Recreate pipeline if pipeline layout was invalidated for any reason
-		if (layout->read_and_reset_invalid_layout_flag()) {
+		if (layout->is_layout_invalidated()) {
+			layout->recreate_layout();
 			recreate_pipeline();
 		}
 
@@ -129,13 +130,12 @@ protected:
 	virtual void recreate_pipeline() = 0;
 
 	device_pipeline(const ste_context &ctx,
-					pipeline_binding_set_pool &pool,
 					pipeline_layout &&layout,
 					optional<std::reference_wrapper<const pipeline_external_binding_set_collection>> external_binding_sets)
 		: ctx(ctx),
 		layout(std::make_unique<pipeline_layout>(std::move(layout))),
 		binding_sets(*this->layout,
-					 pool),
+					 ctx.device().binding_set_pool()),
 		external_binding_sets(external_binding_sets ? &external_binding_sets.get().get() : nullptr)
 	{}
 

@@ -61,7 +61,7 @@ private:
 		boost::container::flat_map<const ste_shader_stage_variable*, std::vector<const pipeline_binding_layout*>>;
 
 private:
-	const ste_context &ctx;
+	std::reference_wrapper<const ste_context> ctx;
 
 	// Attached pipeline stages and their variables and attachment maps
 	stages_map_t stages;
@@ -212,7 +212,7 @@ private:
 		// Create descriptor set layouts
 		for (auto &s : sets) {
 			auto &v = s.second;
-			auto set_layout = pipeline_binding_set_layout(ctx, std::move(v));
+			auto set_layout = pipeline_binding_set_layout(ctx.get(), std::move(v));
 
 			bindings_set_layouts.emplace(std::make_pair(s.first, std::move(set_layout)));
 		}
@@ -363,19 +363,20 @@ public:
 	*	@brief	Specializes a constant
 	*
 	*	@param	name		Name of specialization constant
-	*	@param	value	Value to specialize to. Must be a POD.
+	*	@param	value	Value to specialize to. Must be a POD or arithmetic type.
 	*
 	*	@throws	pipeline_layout_variable_not_found_exception	If specialization constant not found
 	*/
 	template <typename T>
 	void specialize_constant(const std::string &name, const T &value) {
-		static_assert(std::is_pod_v<T>, "T must be a POD");
+		using S = std::remove_cv_t<std::remove_reference_t<T>>;
+		static_assert(std::is_pod_v<S> || is_arithmetic_v<S>, "T must be a POD or arithmetic type");
 
 		std::string data;
-		data.resize(sizeof(T));
-		memcpy(data.data(), &value, sizeof(T));
+		data.resize(sizeof(S));
+		memcpy(data.data(), &value, sizeof(S));
 
-		specialize_constant_impl<T>(name,
+		specialize_constant_impl<S>(name,
 									std::move(data),
 									&value);
 	}
@@ -408,7 +409,7 @@ public:
 		auto& push_constant_layouts = push_constants_layout->vk_push_constant_layout_descriptors();
 
 		// Create pipeline layout and raise layout invalidated flag
-		layout = std::make_unique<vk::vk_pipeline_layout>(ctx.device(),
+		layout = std::make_unique<vk::vk_pipeline_layout>(ctx.get().device(),
 														  set_layout_ptrs,
 														  push_constant_layouts);
 		layout_invalidated_flag = false;
@@ -435,7 +436,8 @@ public:
 			// Recreate set based on same bindings
 			// (only possible change is modified array length of a binding)
 			auto bindings = set_layout_it->second.get_bindings();
-			auto set_layout = pipeline_binding_set_layout(ctx, std::move(bindings));
+			auto set_layout = pipeline_binding_set_layout(ctx.get(), 
+														  std::move(bindings));
 
 			// Replace set with new one
 			set_layout_it->second = std::move(set_layout);
@@ -451,12 +453,10 @@ public:
 	}
 
 	/**
-	*	@brief	Returns the status of the layout invalid flag, and resets it
+	*	@brief	Returns the status of the layout invalid flag.
 	*/
-	auto read_and_reset_invalid_layout_flag() {
-		auto ret = layout_invalidated_flag;
-		layout_invalidated_flag = false;
-		return ret;
+	auto is_layout_invalidated() {
+		return layout_invalidated_flag;
 	}
 
 	/**

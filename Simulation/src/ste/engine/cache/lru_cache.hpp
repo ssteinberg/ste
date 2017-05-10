@@ -26,9 +26,8 @@ namespace ste {
 /**
  *	@brief	LRU general purpose disk caching class
  *
- *	lru_cache is a thread safe, lock-free general purpose
- *	disk caching facilities. Fetching operations can be
- *	run asynchronously.
+ *	lru_cache provides thread safe, lock-free general purpose disk caching facilities. Fetching and sotiring operations can be ran asynchronously, however it is the consumer's responsibility to synchronize insertion of 
+ *	items with identical keys.
  *	lru_cache (de)serializes using boost::serialization.
  *	lru_cache keeps an offline database (index) on disk.
  *
@@ -130,7 +129,7 @@ public:
 	{
 		boost::filesystem::create_directory(path);
 	}
-	~lru_cache() { shutdown(); }
+	~lru_cache() noexcept { shutdown(); }
 
 	/**
 	*	@brief	Store an object in the cache
@@ -173,26 +172,28 @@ public:
 	* 	@param k	key
 	*/
 	template <typename V>
-	auto get(const key_type &k) const {
-		return [=]() -> optional<V> {
-			auto val_guard = this->index.map[k];
-			if (!val_guard.is_valid())
-				return none;
+	optional<V> get(const key_type &k) const {
+		auto val_guard = this->index.map[k];
+		if (!val_guard.is_valid())
+			return none;
 
-			try {
-				auto v = val_guard->template unarchive<V>();
+		try {
+			auto v = val_guard->template unarchive<V>();
+			if (v) {
 				this->item_accessed(std::move(val_guard));
-				return optional<V>(std::move(v));
+				return std::move(v);
 			}
+
+			return none;
+		}
 #ifdef _DEBUG
-			catch (const std::exception &e) {
-				std::cerr << "lru_cache: Failed unarchiving: " << e.what() << std::endl;
+		catch (const std::exception &e) {
+			std::cerr << "lru_cache: Failed unarchiving: " << e.what() << std::endl;
 #else
-			catch (const std::exception &) {
+		catch (const std::exception &) {
 #endif
-				return none;
-			}
-		};
+			return none;
+		}
 	}
 };
 

@@ -4,7 +4,7 @@
 #pragma once
 
 #include <stdafx.hpp>
-#include <ste_context.hpp>
+#include <vk_logical_device.hpp>
 
 #include <pipeline_binding_layout_interface.hpp>
 #include <binding_set_pool_instance.hpp>
@@ -23,7 +23,7 @@ private:
 	using pools_t = concurrent_unordered_map<pool_key, pool_ptr_t>;
 
 private:
-	const ste_context &ctx;
+	std::reference_wrapper<const vk::vk_logical_device> device;
 	pools_t pools;
 	std::atomic<pool_key> key_counter{ 0 };
 
@@ -45,7 +45,7 @@ private:
 		auto max_sets = sets_count;
 
 		return pool_ptr_t(new binding_set_pool_instance(binding_set_pool_instance::ctor(),
-														ctx,
+														device.get(),
 														max_sets,
 														pool_bindings));
 	}
@@ -55,8 +55,8 @@ private:
 	}
 
 public:
-	pipeline_binding_set_pool(const ste_context &ctx)
-		: ctx(ctx)
+	pipeline_binding_set_pool(const vk::vk_logical_device &device)
+		: device(device)
 	{}
 	~pipeline_binding_set_pool() noexcept {}
 

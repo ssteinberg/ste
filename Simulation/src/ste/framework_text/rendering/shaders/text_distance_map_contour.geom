@@ -6,12 +6,12 @@ layout (points) in;
 layout (triangle_strip, max_vertices = 4) out;
 
 struct buffer_glyph_descriptor {
-	int width;
-	int height;
+	uint width;
+	uint height;
 	int start_y;
 	int start_x;
 
-	int sampler_idx;
+	uint sampler_idx;
 };
 
 in vs_out {
@@ -25,19 +25,19 @@ in vs_out {
 } vin[];
 
 out geo_out {
-	vec3 color;
-	vec3 stroke_color;
-	float weight;
-	float stroke_width;
-	vec2 st;
+	flat vec3 color;
+	flat vec3 stroke_color;
+	flat float weight;
+	flat float stroke_width;
 	flat uint drawId;
 } vout;
+layout(location = 0) out vec2 tex_coords;
 
 layout(std430, set = 0, binding = 0) restrict readonly buffer glyph_data {
 	buffer_glyph_descriptor glyphs[];
 };
 
-layout(set = 1, binding = 0) uniform fb_size_uniform_t {
+layout(push_constant) uniform push_constants_t {
 	vec2 fb_size;
 };
 
@@ -53,20 +53,34 @@ void main() {
 	vout.drawId = vin[0].drawId;
 	vout.weight = vin[0].weight;
 	vout.stroke_width = vin[0].stroke_width;
-
-	vout.st = vec2(0, 0);
+	tex_coords = vec2(0, 0);
 	gl_Position = vec4(pos + size * vec2(g.start_x, g.start_y), 0, 1);
 	EmitVertex();
-
-	vout.st = vec2(1, 0);
+	
+	vout.color = vin[0].color;
+	vout.stroke_color = vin[0].stroke_color;
+	vout.drawId = vin[0].drawId;
+	vout.weight = vin[0].weight;
+	vout.stroke_width = vin[0].stroke_width;
+	tex_coords = vec2(1, 0);
 	gl_Position = vec4(pos + size * vec2(g.start_x + g.width, g.start_y), 0, 1);
 	EmitVertex();
-
-	vout.st = vec2(0, 1);
+	
+	vout.color = vin[0].color;
+	vout.stroke_color = vin[0].stroke_color;
+	vout.drawId = vin[0].drawId;
+	vout.weight = vin[0].weight;
+	vout.stroke_width = vin[0].stroke_width;
+	tex_coords = vec2(0, 1);
 	gl_Position = vec4(pos + size * vec2(g.start_x, g.start_y - g.height), 0, 1);
 	EmitVertex();
-
-	vout.st = vec2(1, 1);
+	
+	vout.color = vin[0].color;
+	vout.stroke_color = vin[0].stroke_color;
+	vout.drawId = vin[0].drawId;
+	vout.weight = vin[0].weight;
+	vout.stroke_width = vin[0].stroke_width;
+	tex_coords = vec2(1, 1);
 	gl_Position = vec4(pos + size * vec2(g.start_x + g.width, g.start_y - g.height), 0, 1);
 	EmitVertex();
 

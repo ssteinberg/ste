@@ -34,22 +34,22 @@ struct block_layout {
 	static constexpr std::size_t sizeof_block_element = _round_up(sizeof(_element_t), struct_base_alignment);
 	static constexpr std::size_t block_element_padding_bytes = sizeof_block_element - sizeof(_element_t);
 
-	_detail::block_layout_front<_element_t, block_element_padding_bytes> front;
+	_detail::block_layout_front<_element_t, block_element_padding_bytes> _front;
 
 	template <int N>
 	auto& get() {
 		static_assert(N < sizeof...(Ts), "N out of range");
-		return _detail::block_layout_getter<N>()(front.block);
+		return _detail::block_layout_getter<N>()(_front.block);
 	}
 	template <int N>
 	const auto& get() const {
 		static_assert(N < sizeof...(Ts), "N out of range");
-		return _detail::block_layout_getter<N>()(front.block);
+		return _detail::block_layout_getter<N>()(_front.block);
 	}
 
 	static constexpr std::size_t count = sizeof...(Ts);
 	template <int N>
-	using type_at = decltype(_detail::block_layout_getter<N>()(front.block));
+	using type_at = decltype(_detail::block_layout_getter<N>()(_front.block));
 
 	block_layout() = default;
 	block_layout(tuple_t &&tuple) {
@@ -71,7 +71,7 @@ auto block_offset_of() {
 	// Use this opportunity to assert the generated block layout size
 	static_assert(sizeof(Block) == Block::sizeof_block_element);
 
-	return offsetof(Block, front.block) + _detail::block_layout_member_offset<N>::template offset<decltype(Block::front.block)>();
+	return offsetof(Block, _front.block) + _detail::block_layout_member_offset<N>::template offset<decltype(Block::_front.block)>();
 }
 
 }

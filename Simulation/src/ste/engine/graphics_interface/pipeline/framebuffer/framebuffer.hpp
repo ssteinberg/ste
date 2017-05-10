@@ -15,6 +15,9 @@
 
 #include <pipeline_layout_attachment_location.hpp>
 
+#include <rect.hpp>
+#include <depth_range.hpp>
+
 #include <boost/container/flat_map.hpp>
 #include <optional.hpp>
 #include <allow_type_decay.hpp>
@@ -30,10 +33,13 @@ public:
 	using attachment_map_t = boost::container::flat_map<pipeline_layout_attachment_location, framebuffer_attachment>;
 
 private:
-	const ste_context &ctx;
+	std::reference_wrapper<const ste_context> ctx;
 
 	const framebuffer_layout *layout;
 	attachment_map_t attachments;
+
+	glm::u32vec2 fb_extent;
+	depth_range depth;
 
 	vk::vk_render_pass compatible_renderpass;
 	optional<vk::vk_framebuffer> fb;
@@ -97,25 +103,36 @@ private:
 
 	auto create_clear_values() {
 		std::vector<VkClearValue> ret;
-		for (auto &a : attachments) {
-			ret.push_back(a.second.get_vk_clear_value());
-		}
+		ret.reserve(attachments.size());
 
+		auto it = attachments.begin();
+		auto layout_it = layout->begin();
+		for (auto it_next = it; it_next != attachments.end(); ++it_next, ++layout_it) {
+			assert(layout_it != layout->end());
+			assert(layout_it->first == it_next->first);
+
+			if (layout_it->second.load_op == attachment_load_op::clear) {
+				for (; it != it_next; ++it)
+					ret.push_back(VkClearValue{});
+				ret.push_back(it_next->second.get_vk_clear_value());
+			}
+		}
 
 		return ret;
 	}
 
 	auto create_framebuffer() {
 		std::vector<VkImageView> image_view_handles;
+		image_view_handles.reserve(attachments.size());
 		for (auto &a : attachments) {
 			image_view_handles.push_back(a.second.get_attachment().get_image_view_handle());
 		}
 
 		// Create Vulkan framebuffer
-		return vk::vk_framebuffer(ctx.device(),
+		return vk::vk_framebuffer(ctx.get().device(),
 								  compatible_renderpass,
 								  image_view_handles,
-								  layout->extent());
+								  fb_extent);
 	}
 
 private:
@@ -125,9 +142,13 @@ private:
 
 public:
 	framebuffer(const ste_context &ctx,
-				const framebuffer_layout &layout)
+				const framebuffer_layout &layout,
+				const glm::u32vec2 &extent,
+				const depth_range &depth = depth_range::one_to_zero())
 		: ctx(ctx),
 		layout(&layout), 
+		fb_extent(extent),
+		depth(depth),
 		compatible_renderpass(this->layout->create_compatible_renderpass(ctx))
 	{}
 
@@ -172,6 +193,16 @@ public:
 		assert(fb && "clear_values() not called?");
 		return clear_values.get();
 	}
+
+	/**
+	*	@brief	Returns the framebuffer's extent
+	*/
+	auto& extent() const { return fb_extent; }
+
+	/**
+	*	@brief	Returns the framebuffer's depth range
+	*/
+	auto& get_depth_range() const { return depth; }
 
 	auto &get_layout() const { return *layout; }
 

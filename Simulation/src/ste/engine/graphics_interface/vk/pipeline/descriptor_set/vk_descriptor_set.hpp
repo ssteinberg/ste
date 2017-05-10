@@ -72,6 +72,8 @@ public:
 			const VkDescriptorImageInfo *image_info_ptr = nullptr;
 			const VkDescriptorBufferInfo *buffer_info_ptr = nullptr;
 
+			assert((w.image_writes.size() > 0) ^ (w.buffer_writes.size() > 0));
+
 			if (w.image_writes.size()) {
 				count = static_cast<std::uint32_t>(w.image_writes.size());
 				for (auto &e : w.image_writes)

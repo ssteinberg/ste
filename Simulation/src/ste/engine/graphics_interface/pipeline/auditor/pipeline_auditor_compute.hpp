@@ -54,29 +54,24 @@ public:
 	*	@brief	Generates a pipeline from the specifications recorded to the auditor.
 	*
 	*	@param	ctx				Context
-	*	@param	pool			Binding set pool. Used to allocate the binding sets used by the pipeline.
 	*	@param	external_binding_sets	A list of binding set layouts that are assumed to be created and bound by an external system.
 	*									The pipeline will only check compatibility with the provided shader stages.
 	*/
 	auto pipeline(const ste_context &ctx,
-				  pipeline_binding_set_pool &pool,
 				  optional<std::reference_wrapper<const pipeline_external_binding_set_collection>> external_binding_sets) const {
 		pipeline_layout layout(ctx,
 							   stages(),
 							   external_binding_sets);
 		return device_pipeline_compute(device_pipeline_compute::ctor(),
 									   ctx,
-									   pool,
 									   std::move(layout),
 									   external_binding_sets);
 	}
 	/**
 	 *	@brief	See pipeline().
 	 */
-	auto pipeline(const ste_context &ctx,
-				  pipeline_binding_set_pool &pool) const {
+	auto pipeline(const ste_context &ctx) const {
 		return pipeline(ctx,
-						pool,
 						none);
 	}
 

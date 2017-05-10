@@ -20,8 +20,8 @@ private:
 
 public:
 	struct glyph_metrics {
-		std::int32_t width;
-		std::int32_t height;
+		std::uint32_t width;
+		std::uint32_t height;
 		std::int32_t start_y;
 		std::int32_t start_x;
 

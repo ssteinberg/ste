@@ -5,6 +5,7 @@
 
 #include <stdafx.hpp>
 #include <pipeline_binding_stages_collection.hpp>
+#include <ste_shader_stage_binding_type.hpp>
 
 #include <pipeline_layout_set_index.hpp>
 #include <vk_descriptor_set_layout_binding.hpp>

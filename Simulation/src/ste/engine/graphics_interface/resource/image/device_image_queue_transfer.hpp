@@ -19,6 +19,7 @@
 
 #include <boundary.hpp>
 #include <memory>
+#include <future>
 
 namespace ste {
 namespace gl {
@@ -40,9 +41,11 @@ auto inline queue_release_acquire_barrier(const device_image_base &image,
 }
 
 /**
-*	@brief	Transfers image queue ownership and transforms image layout, perserving old content.
+*	@brief	Enqueues image queue ownership transfer and image layout transform, perserving old content.
+*	
+ *	@return	Enqueue future.
 */
-void inline queue_transfer(const ste_context &ctx,
+auto inline queue_transfer(const ste_context &ctx,
 						   const device_image_base &image,
 						   ste_device_queue &src_queue,
 						   ste_device_queue &dst_queue,
@@ -61,11 +64,11 @@ void inline queue_transfer(const ste_context &ctx,
 	if (src_family == dst_family) {
 		if (src_layout == dst_layout) {
 			// Nothing to do
-			return;
+			return std::async(std::launch::deferred, []() {});
 		}
 
 		// Only transform layout
-		src_queue.enqueue([=, &image]() {
+		auto future = src_queue.enqueue([=, &image]() {
 			auto acquire_batch = ste_device_queue::thread_allocate_batch();
 			auto& command_buffer = acquire_batch->acquire_command_buffer();
 			{
@@ -82,7 +85,8 @@ void inline queue_transfer(const ste_context &ctx,
 			}
 			ste_device_queue::submit_batch(std::move(acquire_batch));
 		});
-		return;
+
+		return future;
 	}
 
 	// Get a semaphore and boundary
@@ -91,7 +95,7 @@ void inline queue_transfer(const ste_context &ctx,
 	auto user_data = std::make_shared<semaphore_t>(ctx.device().get_sync_primitives_pools().semaphores().claim());
 	auto release_acquire_boundary = std::make_shared<boundary<void>>();
 
-	src_queue.enqueue([=, &image]() {
+	auto src_future = src_queue.enqueue([=, &image]() {
 		auto release_batch = ste_device_queue::thread_allocate_batch<user_data_t>(user_data);
 		auto& command_buffer = release_batch->acquire_command_buffer();
 		{
@@ -114,7 +118,9 @@ void inline queue_transfer(const ste_context &ctx,
 		ste_device_queue::submit_batch(std::move(release_batch), {}, { &sem });
 		release_acquire_boundary->signal();
 	});
-	dst_queue.enqueue([=, &image]() {
+	auto dst_future = dst_queue.enqueue([=, &image, f = std::move(src_future)]() {
+		f.wait();
+
 		auto acquire_batch = ste_device_queue::thread_allocate_batch<user_data_t>(user_data);
 		auto& command_buffer = acquire_batch->acquire_command_buffer();
 		{
@@ -138,15 +144,19 @@ void inline queue_transfer(const ste_context &ctx,
 		const semaphore &sem = *acquire_batch->user_data();
 		ste_device_queue::submit_batch(std::move(acquire_batch), { wait_semaphore(&sem, pipeline_stage::bottom_of_pipe) }, {});
 	});
+
+	return dst_future;
 }
 
 /**
-*	@brief	Transfers image queue ownership and transforms image layout, perserving old content.
+*	@brief	Enqueues image queue ownership transfer and image layout transform, perserving old content.
 *			Deduces the access flags based on source and destination layouts. Layouts must no be undefined, preinitialized or general.
 *
 *	@throws	ste_engine_exception		If image layout is undefined, preinitialized or general.
+ *	
+ *	@return	Enqueue future.
 */
-void inline queue_transfer(const ste_context &ctx,
+auto inline queue_transfer(const ste_context &ctx,
 						   const device_image_base &image,
 						   ste_device_queue &src_queue,
 						   ste_device_queue &dst_queue,
@@ -163,9 +173,11 @@ void inline queue_transfer(const ste_context &ctx,
 }
 
 /**
- *	@brief	Transfers image queue ownership and transforms image layout, discarding old content.
+ *	@brief	Enqueues image queue ownership transfer and image layout transform, discarding old content.
+ *	
+ *	@return	Enqueue future.
  */
-void inline queue_transfer_discard(const ste_context &ctx,
+auto inline queue_transfer_discard(const ste_context &ctx,
 								   const device_image_base &image,
 								   const ste_queue_selector<ste_queue_selector_policy_strict> &dst_queue_selector,
 								   pipeline_stage stage,
@@ -176,7 +188,7 @@ void inline queue_transfer_discard(const ste_context &ctx,
 	auto &dst_queue = *ctx.device().select_queue(dst_queue_selector);
 	ste_queue_family dst_family = dst_queue.queue_descriptor().family;
 
-	dst_queue.enqueue([=, &image]() {
+	auto future = dst_queue.enqueue([=, &image]() {
 		auto acquire_batch = ste_device_queue::thread_allocate_batch<>();
 		auto& command_buffer = acquire_batch->acquire_command_buffer();
 		{
@@ -197,15 +209,19 @@ void inline queue_transfer_discard(const ste_context &ctx,
 		// Wait for release command to be submitted
 		ste_device_queue::submit_batch(std::move(acquire_batch));
 	});
+
+	return future;
 }
 
 /**
-*	@brief	Transfers image queue ownership and transforms image layout, discarding old content.
+ *	@brief	Enqueues image queue ownership transfer and image layout transform, discarding old content.
 *			Deduces the access flags based on source and destination layouts. Layouts must no be undefined, preinitialized or general.
 *			
  *	@throws	ste_engine_exception		If image layout is undefined, preinitialized or general.
+ *	
+ *	@return	Enqueue future.
 */
-void inline queue_transfer_discard(const ste_context &ctx,
+auto inline queue_transfer_discard(const ste_context &ctx,
 								   const device_image_base &image,
 								   const ste_queue_selector<ste_queue_selector_policy_strict> &dst_queue_selector,
 								   pipeline_stage stage,

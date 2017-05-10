@@ -30,7 +30,6 @@ private:
 	static constexpr auto buffer_usage_additional_flags = buffer_usage::transfer_dst;
 
 private:
-	const ste_context &ctx;
 	buffer_t buffer;
 	const std::uint32_t segments;
 	mmap_ptr_t ptr{ nullptr };
@@ -42,10 +41,9 @@ public:
 	ring_buffer(const ste_context &ctx,
 				std::uint32_t segments,
 				const buffer_usage &usage)
-		: ctx(ctx),
-		buffer(ctx,
-			   segments,
-			   usage | buffer_usage_additional_flags),
+		: buffer(ctx,
+				 segments,
+				 usage | buffer_usage_additional_flags),
 		segments(segments)
 	{
 		ptr = buffer.get_underlying_memory().template mmap<Segment>(0, segments);

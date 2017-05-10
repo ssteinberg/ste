@@ -45,7 +45,7 @@ private:
 	using bind_map_t = std::vector<atom_t>;
 
 private:
-	const ste_context &ctx;
+	std::reference_wrapper<const ste_context> ctx;
 	resource_t resource;
 	VkMemoryRequirements memory_requirements{};
 
@@ -162,7 +162,7 @@ public:
 				// Bind each bound atom individually
 				for (atom_address_t p = atoms.start; p != atoms.start + atoms.length; ++p) {
 					if (!bound_atoms_map[p]) {
-						bound_atoms_map[p] = device_resource_memory_allocator<allocation_policy>()(ctx.device_memory_allocator(),
+						bound_atoms_map[p] = device_resource_memory_allocator<allocation_policy>()(ctx.get().device_memory_allocator(),
 																								   size,
 																								   memory_requirements);
 
@@ -192,7 +192,7 @@ public:
 	resource_t& get() { return resource; }
 	const resource_t& get() const { return resource; }
 
-	auto& parent_context() const { return ctx; }
+	auto& parent_context() const { return ctx.get(); }
 
 	std::uint64_t get_elements_count() const override final { return this->get().get_elements_count(); }
 	std::uint32_t get_element_size_bytes() const override final { return sizeof(T); };

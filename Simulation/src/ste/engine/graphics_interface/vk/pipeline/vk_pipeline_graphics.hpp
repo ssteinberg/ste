@@ -44,6 +44,7 @@ public:
 						 const vk_depth_op_descriptor &depth_op,
 						 const std::vector<vk_blend_op_descriptor> &attachment_blend_op,
 						 const glm::vec4 blend_constants,
+						 std::vector<VkDynamicState> dynamic_states,
 						 const vk_pipeline_cache *cache = nullptr) : vk_pipeline(device) {
 		// Shader modules stages
 		std::vector<vk_shader::shader_stage_info_t> stages_info(shader_modules.size());
@@ -139,6 +140,14 @@ public:
 		blend_state_create.blendConstants[2] = blend_constants.b;
 		blend_state_create.blendConstants[3] = blend_constants.a;
 
+		// Dynamic states
+		VkPipelineDynamicStateCreateInfo dynamic_state_create = {};
+		dynamic_state_create.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+		dynamic_state_create.pNext = nullptr;
+		dynamic_state_create.flags = 0;
+		dynamic_state_create.dynamicStateCount = dynamic_states.size();
+		dynamic_state_create.pDynamicStates = dynamic_states.data();
+
 		VkGraphicsPipelineCreateInfo create_info = {};
 		create_info.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
 		create_info.pNext = nullptr;
@@ -158,7 +167,7 @@ public:
 		create_info.pViewportState = &viewport_state_create;
 		create_info.pColorBlendState = &blend_state_create;
 		create_info.pDepthStencilState = &depth_stencil_state_create;
-		create_info.pDynamicState = nullptr;
+		create_info.pDynamicState = &dynamic_state_create;
 
 		VkPipeline pipeline;
 		vk_result res = vkCreateGraphicsPipelines(device,

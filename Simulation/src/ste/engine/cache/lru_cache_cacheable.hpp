@@ -17,6 +17,8 @@
 #include <iostream>
 #include <chrono>
 #include <atomic>
+#include <memory>
+#include <optional.hpp>
 
 namespace ste {
 
@@ -25,7 +27,6 @@ class lru_cache_cacheable {
 private:
 	static constexpr auto archive_extension = ".stearchive";
 
-private:
 	K key;
 	std::uint64_t size{ 0 };
 	lru_iterator_type lru_it;
@@ -35,7 +36,7 @@ private:
 
 public:
 	lru_cache_cacheable() = default;
-	lru_cache_cacheable(const K &k, 
+	lru_cache_cacheable(const K &k,
 						const boost::filesystem::path &path) : lru_cache_cacheable() {
 		using namespace std::chrono;
 		auto tp = duration_cast<nanoseconds>(high_resolution_clock::now().time_since_epoch());
@@ -50,8 +51,8 @@ public:
 		f = path / file_name;
 		key = k;
 	}
-	~lru_cache_cacheable() {
-		if (!live.load(std::memory_order_acquire) && !f.empty()) {
+	~lru_cache_cacheable() noexcept {
+		if (!f.empty() && !live.load(std::memory_order_acquire)) {
 			boost::system::error_code err;
 			boost::filesystem::remove(f, err);
 		}
@@ -72,15 +73,21 @@ public:
 		f(c.f)
 	{}
 
+	void replace(lru_cache_cacheable &&item) {
+		size = item.size;
+	}
+
 	void mark_live(const lru_iterator_type &it) {
 		lru_it = it;
-		live = true;
+		live.store(true, std::memory_order_release);
 
 		boost::system::error_code err;
 		size = static_cast<std::uint64_t>(boost::filesystem::file_size(f, err));
 	}
-	void mark_for_deletion() { live = false; }
-	bool is_live() const { return live; }
+	void mark_for_deletion() {
+		live.store(false, std::memory_order_release);
+	}
+	bool is_live() const { return live.load(std::memory_order_acquire); }
 	const K &get_k() const { return key; }
 	auto get_size() const { return size; }
 	lru_iterator_type& get_lru_it() { return lru_it; }
@@ -98,13 +105,17 @@ public:
 		size = boost::filesystem::file_size(f, err);
 	}
 	template <typename V>
-	V unarchive() const {
+	optional<V> unarchive() const {
 		std::ifstream ifs(f.string(), std::ios::binary);
-		boost::archive::binary_iarchive ia(ifs);
-		V v;
-		ia >> v;
+		if (ifs) {
+			boost::archive::binary_iarchive ia(ifs);
+			V v;
+			ia >> v;
 
-		return v;
+			return v;
+		}
+
+		return none;
 	}
 };
 

@@ -64,6 +64,7 @@ public:
 			std::uint32_t mip_levels = generate_mipmaps ? gli::levels(input.extent()) : input.levels();
 			auto layers = input.layers();
 			auto size = input.extent();
+			auto m = input.levels();
 			if (src_format != image_gli_format) {
 				throw surface_format_exception("Input image_format is different from specified image format");
 			}
@@ -80,7 +81,6 @@ public:
 						   layout,
 						   gl::ste_queue_selector<gl::ste_queue_selector_policy_flexible>(gl::ste_queue_type::primary_queue));
 
-			auto m = input.levels();
 			if (m < mip_levels) {
 				// Generate mipmaps
 				gl::generate_mipmaps(image,

@@ -10,6 +10,7 @@
 
 #include <boost/container/flat_map.hpp>
 #include <initializer_list>
+#include <optional.hpp>
 
 namespace ste {
 namespace gl {
@@ -22,24 +23,33 @@ public:
 	using attachment_map_t = boost::container::flat_map<pipeline_layout_attachment_location, framebuffer_attachment_layout>;
 
 private:
-	glm::u32vec2 fb_extent;
 	attachment_map_t attachments;
 
+	mutable optional<std::uint32_t> highest_index_of_attachment_with_load_op;
+
 public:
-	framebuffer_layout(glm::u32vec2 extent) : fb_extent(extent) {}
-	framebuffer_layout(glm::u32vec2 extent,
-					   const std::initializer_list<attachment_map_t::value_type> &il)
-		: fb_extent(extent), attachments(il) {}
+	framebuffer_layout() = default;
+	framebuffer_layout(const std::initializer_list<attachment_map_t::value_type> &il)
+		: attachments(il) {}
 
 	framebuffer_layout(framebuffer_layout&&) = default;
 	framebuffer_layout &operator=(framebuffer_layout&&) = default;
 	framebuffer_layout(const framebuffer_layout&) = default;
 	framebuffer_layout &operator=(const framebuffer_layout&) = default;
 
-	auto& operator[](const pipeline_layout_attachment_location &location) { return attachments[location]; }
+	auto& operator[](const pipeline_layout_attachment_location &location) {
+		highest_index_of_attachment_with_load_op = none;
+		return attachments[location];
+	}
 
-	void erase(const pipeline_layout_attachment_location &location) { attachments.erase(location); }
-	void erase(attachment_map_t::iterator it) { attachments.erase(it); }
+	void erase(const pipeline_layout_attachment_location &location) {
+		highest_index_of_attachment_with_load_op = none;
+		attachments.erase(location);
+	}
+	void erase(attachment_map_t::iterator it) {
+		highest_index_of_attachment_with_load_op = none;
+		attachments.erase(it);
+	}
 
 	auto find(const pipeline_layout_attachment_location &location) const { return attachments.find(location); }
 
@@ -51,9 +61,20 @@ public:
 		return attachments.size();
 	}
 
+	auto get_highest_index_of_attachment_with_load_op() const {
+		if (!highest_index_of_attachment_with_load_op) {
+			highest_index_of_attachment_with_load_op = 0;
+			for (std::uint32_t i = 0; i < size(); ++i)
+				if ((begin() + i)->second.load_op == attachment_load_op::clear)
+					highest_index_of_attachment_with_load_op = i + 1;
+		}
+
+		return highest_index_of_attachment_with_load_op.get();
+	}
+
 	/**
 	 *	@brief	Checks if the framebuffer layouts are compatible.
-	 *			Two layouts are compatible if for each location both layouts are either unbound or bind attachments with 
+	 *			Two layouts are compatible if for each location both layouts are either unbound or bind attachments with
 	 *			identical format.
 	 *			https://www.khronos.org/registry/vulkan/specs/1.0-extensions/html/vkspec.html#renderpass-compatibility
 	 */
@@ -75,10 +96,6 @@ public:
 		}
 
 		return true;
-	}
-
-	auto extent() const {
-		return fb_extent;
 	}
 
 	auto create_compatible_renderpass(const ste_context &ctx) const {

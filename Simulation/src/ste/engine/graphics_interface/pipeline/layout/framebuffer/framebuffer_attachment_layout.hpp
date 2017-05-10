@@ -4,15 +4,15 @@
 #pragma once
 
 #include <stdafx.hpp>
-#include <image_layout.hpp>
+#include <vk_render_pass_attachment.hpp>
 
 #include <format.hpp>
 #include <format_rtti.hpp>
+#include <image_layout.hpp>
 #include <attachment_load_op.hpp>
 #include <attachment_store_op.hpp>
 
-#include <vk_blend_op_descriptor.hpp>
-#include <vk_render_pass_attachment.hpp>
+#include <blend_operation.hpp>
 
 namespace ste {
 namespace gl {
@@ -37,7 +37,7 @@ struct framebuffer_attachment_layout {
 	attachment_load_op load_op;
 	attachment_store_op store_op;
 
-	vk::vk_blend_op_descriptor blend_op;
+	blend_operation blend;
 
 	framebuffer_attachment_layout() = default;
 
@@ -79,7 +79,7 @@ struct framebuffer_attachment_layout {
 	*	@brief	Checks if the attachments are graphical pipeline settings compatible
 	*/
 	bool pipeline_settings_compatible(const framebuffer_attachment_layout &rhs) const {
-		return blend_op == rhs.blend_op;
+		return blend == rhs.blend;
 	}
 };
 
@@ -181,7 +181,7 @@ framebuffer_attachment_layout inline ignore_discard(format image_format,
 */
 framebuffer_attachment_layout inline clear_store(format image_format,
 												 image_layout final_layout,
-												 const vk::vk_blend_op_descriptor &blend_op) {
+												 const blend_operation &blend) {
 	return {
 		image_format,
 		image_layout::undefined,
@@ -189,7 +189,7 @@ framebuffer_attachment_layout inline clear_store(format image_format,
 		final_layout,
 		attachment_load_op::clear,
 		attachment_store_op::store,
-		blend_op
+		blend
 	};
 }
 /**
@@ -198,7 +198,7 @@ framebuffer_attachment_layout inline clear_store(format image_format,
 */
 framebuffer_attachment_layout inline clear_discard(format image_format,
 												   image_layout final_layout,
-												   const vk::vk_blend_op_descriptor &blend_op) {
+												   const blend_operation &blend) {
 	return {
 		image_format,
 		image_layout::undefined,
@@ -206,7 +206,7 @@ framebuffer_attachment_layout inline clear_discard(format image_format,
 		final_layout,
 		attachment_load_op::clear,
 		attachment_store_op::discard,
-		blend_op
+		blend
 	};
 }
 /**
@@ -216,7 +216,7 @@ framebuffer_attachment_layout inline clear_discard(format image_format,
 framebuffer_attachment_layout inline load_store(format image_format,
 												image_layout initial_layout,
 												image_layout final_layout,
-												const vk::vk_blend_op_descriptor &blend_op) {
+												const blend_operation &blend) {
 	return {
 		image_format,
 		initial_layout,
@@ -224,7 +224,7 @@ framebuffer_attachment_layout inline load_store(format image_format,
 		final_layout,
 		attachment_load_op::load,
 		attachment_store_op::store,
-		blend_op
+		blend
 	};
 }
 /**
@@ -234,7 +234,7 @@ framebuffer_attachment_layout inline load_store(format image_format,
 framebuffer_attachment_layout inline load_discard(format image_format,
 												  image_layout initial_layout,
 												  image_layout final_layout,
-												  const vk::vk_blend_op_descriptor &blend_op) {
+												  const blend_operation &blend) {
 	return {
 		image_format,
 		initial_layout,
@@ -242,7 +242,7 @@ framebuffer_attachment_layout inline load_discard(format image_format,
 		final_layout,
 		attachment_load_op::load,
 		attachment_store_op::discard,
-		blend_op
+		blend
 	};
 }
 /**
@@ -251,7 +251,7 @@ framebuffer_attachment_layout inline load_discard(format image_format,
 */
 framebuffer_attachment_layout inline ignore_store(format image_format,
 												  image_layout final_layout,
-												  const vk::vk_blend_op_descriptor &blend_op) {
+												  const blend_operation &blend) {
 	return {
 		image_format,
 		image_layout::undefined,
@@ -259,7 +259,7 @@ framebuffer_attachment_layout inline ignore_store(format image_format,
 		final_layout,
 		attachment_load_op::undefined,
 		attachment_store_op::store,
-		blend_op
+		blend
 	};
 }
 /**
@@ -268,7 +268,7 @@ framebuffer_attachment_layout inline ignore_store(format image_format,
 */
 framebuffer_attachment_layout inline ignore_discard(format image_format,
 													image_layout final_layout,
-													const vk::vk_blend_op_descriptor &blend_op) {
+													const blend_operation &blend) {
 	return {
 		image_format,
 		image_layout::undefined,
@@ -276,7 +276,7 @@ framebuffer_attachment_layout inline ignore_discard(format image_format,
 		final_layout,
 		attachment_load_op::undefined,
 		attachment_store_op::discard,
-		blend_op
+		blend
 	};
 }
 

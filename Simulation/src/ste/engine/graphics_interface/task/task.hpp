@@ -55,6 +55,9 @@ public:
 	task_impl(std::string &&name) : task_name(std::move(name)) {}
 	~task_impl() noexcept {}
 
+	task_impl(task_impl&&) = default;
+	task_impl &operator=(task_impl&&) = default;
+
 	const auto &name() const { return task_name; }
 
 	/**

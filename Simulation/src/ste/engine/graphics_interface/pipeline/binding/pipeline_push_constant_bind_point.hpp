@@ -50,7 +50,8 @@ public:
 	*/
 	template <
 		typename T,
-		typename = typename std::enable_if<std::is_pod_v<T>>::type
+		typename S = std::remove_cv_t<std::remove_reference_t<T>>,
+		typename = typename std::enable_if<std::is_pod_v<S> || is_arithmetic_v<S>>::type
 	>
 	void operator=(T&& t) {
 		this->set_push_value(std::forward<T>(t));

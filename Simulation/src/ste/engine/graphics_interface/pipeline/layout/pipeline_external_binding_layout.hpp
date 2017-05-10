@@ -7,6 +7,7 @@
 #include <pipeline_binding_layout_interface.hpp>
 #include <pipeline_layout_set_index.hpp>
 #include <pipeline_binding_stages_collection.hpp>
+#include <ste_shader_stage_binding_utility.hpp>
 
 #include <ste_shader_stage_binding.hpp>
 #include <ste_shader_stage_binding_type.hpp>

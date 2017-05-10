@@ -107,22 +107,31 @@ private:
 		}
 	}
 
-	~lru_cache_index() {
-		write_index();
+	~lru_cache_index() noexcept {
+		try {
+			write_index();
+		} catch (std::runtime_error) {}
 	}
 
 	void move_to_lru_front(val_type &v) {
 		if (v.is_live())
 			lru_list.splice(lru_list.cbegin(), lru_list, v.get_lru_it());
 		else {
-			lru_list.push_back(lru_node({ v.get_k(), v.get_file_name().string() }));
+			lru_list.push_back(lru_node{ v.get_k(), v.get_file_name().string() });
 			v.mark_live(lru_list.cbegin());
 		}
 	}
 
 	void insert(const key_type &k, val_type &&v) {
-		erase(k);
-		map.emplace(k, std::move(v));
+		auto val_guard = map[k];
+		if (!val_guard.is_valid()) {
+			// Key doesn't exist, insert new
+			map.emplace(k, std::move(v));
+			return;
+		}
+
+		// Key exists, replace with new data
+		val_guard->replace(std::move(v));
 	}
 
 	std::uint64_t erase(const key_type &k) {

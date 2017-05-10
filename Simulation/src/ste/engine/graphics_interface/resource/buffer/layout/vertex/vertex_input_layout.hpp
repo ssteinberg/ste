@@ -39,22 +39,22 @@ struct vertex_input_layout {
 	template <int N>
 	using type_at = typename typelist_type_at<N, Ts...>::type;
 
-	alignas(1) tuple_t data;
+	alignas(1) tuple_t _data;
 
 	template <int N>
 	auto& get() {
 		static_assert(N < sizeof...(Ts), "N out of range");
-		return std::get<N>(data);
+		return std::get<N>(_data);
 	}
 	template <int N>
 	const auto& get() const {
 		static_assert(N < sizeof...(Ts), "N out of range");
-		return std::get<N>(data);
+		return std::get<N>(_data);
 	}
 
 	vertex_input_layout() = default;
 	vertex_input_layout(tuple_t &&tuple) {
-		data = std::move(tuple);
+		_data = std::move(tuple);
 	}
 	vertex_input_layout(Ts&&... args) : vertex_input_layout(tuple_t(std::forward<Ts>(args)...)) {}
 };
@@ -77,7 +77,7 @@ struct vertex_input_offset_of_helper {
 	auto operator()(int i) {
 		auto b = Block();
 		auto addr = reinterpret_cast<std::size_t>(&b.template get<N>());
-		auto base = reinterpret_cast<std::size_t>(&b.data);
+		auto base = reinterpret_cast<std::size_t>(&b._data);
 		if (N == i)
 			return addr - base;
 

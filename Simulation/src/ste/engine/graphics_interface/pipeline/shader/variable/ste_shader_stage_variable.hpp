@@ -174,11 +174,12 @@ public:
 	*/
 	template <typename T>
 	void specialize(const T &t) {
-		static_assert(std::is_pod_v<T>, "T must be a POD");
+		using S = std::remove_cv_t<std::remove_reference_t<T>>;
+		static_assert(std::is_pod_v<S>, "T must be a POD");
 
 		std::string data;
-		data.resize(sizeof(T));
-		memcpy(data.data(), &t, sizeof(T));
+		data.resize(sizeof(S));
+		memcpy(data.data(), &t, sizeof(S));
 
 		specialized_value = data;
 	}
@@ -193,7 +194,7 @@ public:
 	*/
 	template <typename T>
 	T read_specialized_value() const {
-		static_assert(std::is_pod_v<T>, "T must be a POD");
+		static_assert(std::is_pod_v<T> || is_arithmetic_v<T>, "T must be a POD or arithmetic type");
 
 		const std::string& data = specialized_value ?
 			specialized_value.get() :

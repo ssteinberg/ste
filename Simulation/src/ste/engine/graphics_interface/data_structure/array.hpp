@@ -34,17 +34,15 @@ private:
 	static constexpr auto buffer_usage_additional_flags = buffer_usage::transfer_dst;
 
 private:
-	const ste_context &ctx;
 	buffer_t buffer;
 
 public:
 	array(const ste_context &ctx,
 		  std::uint64_t count,
 		  const buffer_usage &usage)
-		: ctx(ctx),
-		buffer(ctx,
-			   count,
-			   usage | buffer_usage_additional_flags)
+		: buffer(ctx,
+				 count,
+				 usage | buffer_usage_additional_flags)
 	{}
 	array(const ste_context &ctx,
 		  std::uint64_t count,
@@ -71,8 +69,8 @@ public:
 	*	@param	data	Data to copy
 	*	@param	offset	Array offset to copy to
 	*/
-	auto update_task(const std::vector<T> &data, 
-					std::uint64_t offset) {
+	auto update_task(const std::vector<T> &data,
+					 std::uint64_t offset) {
 		assert(data.size() + offset <= size() && "Out-of-bounds");
 
 		// Store copy of data
@@ -84,7 +82,7 @@ public:
 											 offset,
 											 data.size()));
 
-		return std::bind(t, std::move(bin));
+		return std::bind(std::move(t), std::move(bin));
 	}
 
 	auto size() const { return buffer.get().get_elements_count(); }
