@@ -37,6 +37,8 @@ private:
 	ste_resource<gl::device_pipeline_shader_stage> frag;
 	gl::device_pipeline_graphics pipeline;
 
+	gl::ste_device::queues_and_surface_recreate_signal_type::connection_type surface_recreate_signal_connection;
+
 private:
 	static void adjust_line(std::vector<glyph_point> &, const attributed_wstring &, unsigned, float, float, const glm::vec2 &);
 	std::vector<glyph_point> create_points(glm::vec2, const attributed_wstring &);

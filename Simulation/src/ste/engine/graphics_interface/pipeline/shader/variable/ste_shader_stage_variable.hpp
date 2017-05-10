@@ -194,7 +194,7 @@ public:
 	*/
 	template <typename T>
 	T read_specialized_value() const {
-		static_assert(std::is_pod_v<T>, "T must be a POD");
+		static_assert(std::is_pod_v<T> || is_arithmetic_v<T>, "T must be a POD or arithmetic type");
 
 		const std::string& data = specialized_value ?
 			specialized_value.get() :

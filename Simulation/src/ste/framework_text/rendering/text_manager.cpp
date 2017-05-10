@@ -33,18 +33,30 @@ text_manager::text_manager(const ste_context &context,
 	pipeline(create_pipeline(context, vert, geom, frag))
 {
 	bind_pipeline_resources();
+
+	pipeline["push_constants_t.fb_size"] = glm::vec2(context.device().get_surface().extent());
+	surface_recreate_signal_connection = make_connection(context.device().get_queues_and_surface_recreate_signal(), [this](const gl::ste_device*) {
+		pipeline["push_constants_t.fb_size"] = glm::vec2(this->context.get().device().get_surface().extent());
+	});
 }
 
 gl::device_pipeline_graphics text_manager::create_pipeline(const ste_context &ctx,
 														   gl::device_pipeline_shader_stage &vert,
 														   gl::device_pipeline_shader_stage &geom,
 														   gl::device_pipeline_shader_stage &frag) {
-	auto surface_extent = ctx.device().get_surface().extent();
-	auto fb_layout = gl::framebuffer_layout(surface_extent);
-	fb_layout[0] = gl::clear_store(ctx.device().get_surface().surface_format(),
-								   gl::image_layout::present_src_khr);
+	auto fb_layout = gl::framebuffer_layout();
+	fb_layout[0] = gl::load_store(ctx.device().get_surface().surface_format(),
+								  gl::image_layout::color_attachment_optimal,
+								  gl::image_layout::color_attachment_optimal,
+								  gl::blend_operation(gl::blend_factor::src_alpha,
+													  gl::blend_factor::one_minus_src_alpha,
+													  gl::blend_op::add));
 
-	auto auditor = gl::pipeline_auditor_graphics(gl::device_pipeline_graphics_configurations(surface_extent));
+	gl::device_pipeline_graphics_configurations config{};
+	config.topology = gl::primitive_topology::point_list;
+	config.rasterizer_op = gl::rasterizer_operation(gl::cull_mode::none, gl::front_face::cw);
+
+	auto auditor = gl::pipeline_auditor_graphics(std::move(config));
 	auditor.attach_shader_stage(vert);
 	auditor.attach_shader_stage(geom);
 	auditor.attach_shader_stage(frag);

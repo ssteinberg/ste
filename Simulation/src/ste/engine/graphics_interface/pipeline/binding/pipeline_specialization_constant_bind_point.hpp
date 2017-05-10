@@ -10,6 +10,7 @@
 #include <pipeline_layout.hpp>
 
 #include <string>
+#include <ste_type_traits.hpp>
 #include <types.hpp>
 
 namespace ste {
@@ -71,7 +72,7 @@ public:
 	template <
 		typename T,
 		typename S = std::remove_cv_t<std::remove_reference_t<T>>,
-		typename = typename std::enable_if<!is_none_v<S> && std::is_pod_v<S>>::type
+		typename = typename std::enable_if<!is_none_v<S> && (std::is_pod_v<S> || is_arithmetic_v<S>)>::type
 	>
 	void operator=(T&& t) {
 		this->specialize_constant(std::forward<T>(t));

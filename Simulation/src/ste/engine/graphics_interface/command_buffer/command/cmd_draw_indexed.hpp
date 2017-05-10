@@ -14,14 +14,14 @@ private:
 	std::uint32_t index_count;
 	std::uint32_t instance_count;
 	std::uint32_t first_index;
-	std::uint32_t vertex_offset;
+	std::int32_t vertex_offset;
 	std::uint32_t first_instance;
 
 public:
 	cmd_draw_indexed(std::uint32_t index_count,
 					 std::uint32_t instance_count,
 					 std::uint32_t first_index = 0,
-					 std::uint32_t vertex_offset = 0,
+					 std::int32_t vertex_offset = 0,
 					 std::uint32_t first_instance = 0)
 		: index_count(index_count),
 		instance_count(instance_count),
@@ -33,7 +33,12 @@ public:
 
 private:
 	void operator()(const command_buffer &command_buffer, command_recorder &) const override final {
-		vkCmdDrawIndexed(command_buffer, index_count, instance_count, first_index, vertex_offset, first_instance);
+		vkCmdDrawIndexed(command_buffer, 
+						 index_count, 
+						 instance_count, 
+						 first_index, 
+						 vertex_offset, 
+						 first_instance);
 	}
 };
 

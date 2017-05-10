@@ -204,7 +204,7 @@ public:
 											 offset,
 											 data.size()));
 
-		return std::bind(t, std::move(bin));
+		return std::bind(std::move(t), std::move(bin));
 	}
 
 	auto size() const { return elements; }

@@ -12,13 +12,15 @@
 #include <framebuffer.hpp>
 
 #include <pipeline_vertex_input_bindings_collection.hpp>
-
+#include <pipeline_dynamic_state.hpp>
 #include <vk_render_pass.hpp>
 #include <vk_pipeline_graphics.hpp>
 
 #include <cmd_begin_render_pass.hpp>
 #include <cmd_end_render_pass.hpp>
 #include <cmd_bind_pipeline.hpp>
+#include <cmd_set_viewport.hpp>
+#include <cmd_set_scissor.hpp>
 
 #include <optional.hpp>
 #include <format_rtti.hpp>
@@ -73,29 +75,24 @@ private:
 			if (is_depth_attachment)
 				continue;
 
-			attachment_blend_ops.push_back(attachment.blend_op);
+			vk::vk_blend_op_descriptor desc = attachment.blend;
+			attachment_blend_ops.push_back(std::move(desc));
 		}
 
+		// Set viewport and scissor as dynamic states
+		std::vector<VkDynamicState> dynamic_states = {
+			static_cast<VkDynamicState>(pipeline_dynamic_state::viewport),
+			static_cast<VkDynamicState>(pipeline_dynamic_state::scissor),
+		};
+
 		// Create the graphics pipeline object
-		VkViewport viewport = { 
-			pipeline_settings.viewport.origin.x,
-			pipeline_settings.viewport.origin.y,
-			pipeline_settings.viewport.size.x,
-			pipeline_settings.viewport.size.y,
-			pipeline_settings.depth.min_depth,
-			pipeline_settings.depth.max_depth,
-		};
-		VkRect2D scissor = {
-			{ pipeline_settings.scissor.origin.x,pipeline_settings.scissor.origin.y },
-			{ pipeline_settings.scissor.size.x,pipeline_settings.scissor.size.y },
-		};
 		graphics_pipeline.emplace(ctx.get().device(),
 								  shader_stage_descriptors,
 								  get_layout(),
 								  device_renderpass.get(),
 								  0,
-								  viewport,
-								  scissor,
+								  VkViewport{},
+								  VkRect2D{},
 								  vertex_input_descriptor.vertex_input_binding_descriptors,
 								  vertex_input_descriptor.vertex_input_attribute_descriptors,
 								  static_cast<VkPrimitiveTopology>(pipeline_settings.topology),
@@ -103,6 +100,7 @@ private:
 								  pipeline_settings.depth_op,
 								  attachment_blend_ops,
 								  pipeline_settings.blend_constants,
+								  dynamic_states,
 								  &ctx.get().device().pipeline_cache().current_thread_cache());
 	}
 
@@ -112,12 +110,21 @@ protected:
 	}
 
 	void bind_pipeline(const command_buffer &, command_recorder &recorder) const override final {
+		std::vector<VkClearValue> clear_values(attached_framebuffer->get_fb_clearvalues().begin(),
+											   attached_framebuffer->get_fb_clearvalues().begin() + fb_layout.get_highest_index_of_attachment_with_load_op());
+		auto fb_extent = attached_framebuffer->extent();
+
 		recorder << cmd_begin_render_pass(*attached_framebuffer,
 										  device_renderpass.get(),
 										  { 0,0 },
-										  fb_layout.extent(),
-										  attached_framebuffer->get_fb_clearvalues());
+										  fb_extent,
+										  clear_values);
 		recorder << cmd_bind_pipeline(graphics_pipeline.get());
+
+		// Set dynamic viewport and scissor states
+		recorder
+			<< cmd_set_viewport(rect(glm::vec2(fb_extent)), attached_framebuffer->get_depth_range())
+			<< cmd_set_scissor(i32rect(glm::i32vec2(fb_extent)));
 	}
 	
 	void unbind_pipeline(const command_buffer &, command_recorder &recorder) const override final {

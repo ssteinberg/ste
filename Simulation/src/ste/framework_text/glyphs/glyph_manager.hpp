@@ -9,8 +9,9 @@
 #include <font.hpp>
 #include <format.hpp>
 
-#include <surface_factory.hpp>
+#include <command_recorder.hpp>
 
+#include <surface_factory.hpp>
 #include <device_buffer.hpp>
 #include <device_image.hpp>
 #include <stable_vector.hpp>
@@ -24,9 +25,8 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
-#include <mutex>
-
-#include <command_recorder.hpp>
+#include <utility>
+#include <concurrent_queue.hpp>
 
 namespace ste {
 namespace text {
@@ -74,7 +74,16 @@ public:
 	};
 
 	struct font_storage {
-		std::unordered_map<wchar_t, glyph_descriptor> glyphs;
+		using glyphs_t = std::unordered_map<wchar_t, optional<glyph_descriptor>>;
+		glyphs_t glyphs;
+	};
+
+	struct loaded_glyphs_queue_item {
+		font_storage::glyphs_t::iterator glyphit;
+		glyph_texture texture;
+		glyph_descriptor descriptor;
+
+		loaded_glyphs_queue_item() = default;
 	};
 
 private:
@@ -89,15 +98,15 @@ private:
 	std::vector<glyph_texture> glyph_textures;
 	gl::sampler text_glyph_sampler;
 
-	std::mutex m;
+	concurrent_queue<loaded_glyphs_queue_item> loaded_glyphs_queue;
 
 private:
-	const glyph_descriptor* glyph_loader(const font &font, wchar_t codepoint) {
+	void glyph_loader(const font &font, wchar_t codepoint, font_storage::glyphs_t::iterator &&glyphit) {
 		std::string cache_key = std::string("ttfdf") + font.get_path().string() + std::to_string(static_cast<std::uint32_t>(codepoint));
 
 		optional<glyph> og;
 		try {
-			og = context.get().engine().cache().get<glyph>(cache_key)();
+			og = context.get().engine().cache().get<glyph>(cache_key);
 		}
 		catch (const std::exception &) {
 			og = none;
@@ -106,7 +115,7 @@ private:
 		if (!og) {
 			glyph g = factory.create_glyph(font, codepoint);
 			if (g.empty())
-				return nullptr;
+				return;
 
 			glyph copy_g = g;
 			context.get().engine().cache().insert<glyph>(cache_key, std::move(copy_g));
@@ -115,7 +124,7 @@ private:
 		}
 
 		if (og.get().glyph_distance_field == nullptr) {
-			return nullptr;
+			return;
 		}
 		auto image = resource::surface_factory::create_image_2d<gl::format::r32_sfloat>(context.get(),
 																						std::move(*og.get().glyph_distance_field),
@@ -124,23 +133,27 @@ private:
 																						false);
 		auto view = gl::image_view<gl::image_type::image_2d>(*image);
 
-		{
-			std::unique_lock<std::mutex> l(this->m);
+		auto index = glyph_textures.size();
+		glyph_texture texture{ std::move(image.get()), std::move(view) };
+		glyph_descriptor gd;
+		gd.metrics = og.get().metrics;
+		gd.buffer_index = index;
 
-			auto index = glyph_textures.size();
-			glyph_textures.push_back(glyph_texture{ std::move(image.get()), std::move(view) });
+		loaded_glyphs_queue_item item = { std::move(glyphit), std::move(texture), std::move(gd) };
 
-			glyph_descriptor gd;
-			gd.metrics = og.get().metrics;
-			gd.buffer_index = index;
+		loaded_glyphs_queue.push(std::move(item));
+	}
 
-			buffer_glyph_descriptor bgd(og.get().metrics, index);
+	void empty_loaded_descriptors_queue() {
+		std::unique_ptr<loaded_glyphs_queue_item> ptr(nullptr);
+		while((ptr = loaded_glyphs_queue.pop()) != nullptr) {
+			glyph_textures.push_back(std::move(ptr->texture));
+
+			glyph_descriptor& gd = ptr->descriptor;
+			buffer_glyph_descriptor bgd(gd.metrics, gd.buffer_index);
 
 			pending_glyphs.push_back(bgd);
-
-			auto &gd_ref = this->fonts[font].glyphs[codepoint];
-			gd_ref = std::move(gd);
-			return &gd_ref;
+			ptr->glyphit->second = std::move(gd);
 		}
 	}
 
@@ -157,6 +170,9 @@ public:
 	{}
 
 	optional<const glyph_descriptor*> glyph_for_font(const font &font, wchar_t codepoint) {
+		if (!loaded_glyphs_queue.is_empty_hint())
+			empty_loaded_descriptors_queue();
+
 		// Find , or create if none, glyph storage for requested font
 		auto it = this->fonts.find(font);
 		if (it == this->fonts.end())
@@ -164,16 +180,24 @@ public:
 
 		// Find glyph in storage
 		// If not found, enqueue glyph creation and return none.
-		auto glyphit = it->second.glyphs.find(codepoint);
-		if (glyphit == it->second.glyphs.end()) {
-			context.get().engine().task_scheduler().schedule_now([=]() {
-				glyph_loader(font, codepoint);
+		auto glyphit = it->second.glyphs.lower_bound(codepoint);
+		if (glyphit == it->second.glyphs.end() || glyphit->first != codepoint) {
+			// Mark glyph as loading
+			glyphit = it->second.glyphs.emplace_hint(glyphit, std::make_pair(codepoint, none));
+
+			context.get().engine().task_scheduler().schedule_now([=, glyphit = std::move(glyphit)]() mutable {
+				glyph_loader(font, codepoint, std::move(glyphit));
 			});
 
 			return none;
 		}
 
-		return &glyphit->second;
+		// Glyph found but not loaded yet?
+		if (!glyphit->second)
+			return none;
+
+		const auto* ptr = &glyphit->second.get();
+		return ptr;
 	}
 
 	int spacing(const font &font, const std::pair<wchar_t, wchar_t> &chars, int pixel_size) {
@@ -198,9 +222,25 @@ public:
 	}
 	
 	auto enqueue_glyphs_load(const font &font, std::vector<wchar_t> codepoints) {
-		return context.get().engine().task_scheduler().schedule_now([=]() {
-			for (wchar_t codepoint : codepoints) {
-				this->glyph_loader(font, codepoint);
+		auto it = this->fonts.find(font);
+		if (it == this->fonts.end())
+			it = this->fonts.emplace_hint(it, std::make_pair(font, font_storage()));
+
+		std::vector<std::pair<wchar_t, font_storage::glyphs_t::iterator>> glyphs_to_load;
+		glyphs_to_load.reserve(codepoints.size());
+		for (wchar_t codepoint : codepoints) {
+			auto glyphit = it->second.glyphs.find(codepoint);
+			if (glyphit == it->second.glyphs.end())
+				glyphit = it->second.glyphs.emplace_hint(glyphit);
+			else if (glyphit->second)
+				continue;
+
+			glyphs_to_load.emplace_back(codepoint, std::move(glyphit));
+		}
+
+		return context.get().engine().task_scheduler().schedule_now([=, glyphs_to_load = std::move(glyphs_to_load)]() mutable {
+			for (auto &p : glyphs_to_load) {
+				this->glyph_loader(font, p.first, std::move(p.second));
 			}
 		});
 	}

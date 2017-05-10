@@ -55,7 +55,7 @@ private:
 			// Update vertex buffer
 			if (tr->count > tr->vertex_buffer.size())
 				recorder << tr->vertex_buffer.resize_cmd(tr->count);
-//			recorder << tr->vertex_buffer.update_task(points, 0)();
+			recorder << tr->vertex_buffer.update_task(points, 0)();
 
 			tr->updated = true;
 		}
@@ -82,6 +82,11 @@ public:
 																	  gl::buffer_memory_barrier(*vertex_buffer,
 																								gl::access_flags::transfer_write,
 																								gl::access_flags::vertex_attribute_read)));
+			recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::transfer,
+																	  gl::pipeline_stage::geometry_shader,
+																	  gl::buffer_memory_barrier(tm->gm.ssbo(),
+																								gl::access_flags::transfer_write,
+																								gl::access_flags::shader_read)));
 			updated = false;
 		}
 

@@ -41,9 +41,10 @@ public:
 
 private:
 	void operator()(const command_buffer &command_buffer, command_recorder &) const override final {
+		VkPipelineLayout handle = pipeline_layout.get();
 		vkCmdBindDescriptorSets(command_buffer,
 								bind_point,
-								pipeline_layout.get(),
+								handle,
 								first_set_bind_index,
 								sets.size(),
 								sets.data(),

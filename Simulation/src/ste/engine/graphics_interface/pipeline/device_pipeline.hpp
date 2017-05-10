@@ -91,7 +91,8 @@ private:
 		layout->recreate_invalidated_set_layouts();
 
 		// Recreate pipeline if pipeline layout was invalidated for any reason
-		if (layout->read_and_reset_invalid_layout_flag()) {
+		if (layout->is_layout_invalidated()) {
+			layout->recreate_layout();
 			recreate_pipeline();
 		}
 

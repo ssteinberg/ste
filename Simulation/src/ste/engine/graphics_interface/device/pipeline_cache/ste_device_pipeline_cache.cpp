@@ -8,7 +8,7 @@ using namespace ste::gl;
 
 void ste_device_pipeline_cache::read_origin() {
 	// Create origin from stored data in the non-volatile cache
-	auto optional = non_volatile_cache->get<std::string>(std::string(non_volatile_cache_key_prefix) + device_name)();
+	auto optional = non_volatile_cache->get<std::string>(std::string(non_volatile_cache_key_prefix) + device_name);
 	std::string origin_data = optional ? optional.get() : std::string();
 	origin = std::make_unique<vk::vk_pipeline_cache>(device.get(), origin_data);
 }

@@ -81,7 +81,9 @@ auto inline queue_transfer(const ste_context &ctx,
 		ste_device_queue::submit_batch(std::move(release_batch), {}, { *release_batch->user_data() });
 		release_acquire_boundary->signal();
 	});
-	auto dst_future = dst_queue.enqueue([=, &buffer]() {
+	auto dst_future = dst_queue.enqueue([=, &buffer, f = std::move(src_future)]() {
+		f.wait();
+
 		auto acquire_batch = ste_device_queue::thread_allocate_batch<user_data_t>(user_data);
 		auto& command_buffer = acquire_batch->acquire_command_buffer();
 		{
@@ -104,10 +106,7 @@ auto inline queue_transfer(const ste_context &ctx,
 		ste_device_queue::submit_batch(std::move(acquire_batch), { wait_semaphore(&sem, pipeline_stage::bottom_of_pipe) }, {});
 	});
 
-	return std::async(std::launch::deferred, [f1 = std::move(src_future), f2 = std::move(dst_future)]() {
-		f1.wait();
-		f2.wait();
-	});
+	return dst_future;
 }
 
 /**

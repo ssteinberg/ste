@@ -363,14 +363,14 @@ public:
 	*	@brief	Specializes a constant
 	*
 	*	@param	name		Name of specialization constant
-	*	@param	value	Value to specialize to. Must be a POD.
+	*	@param	value	Value to specialize to. Must be a POD or arithmetic type.
 	*
 	*	@throws	pipeline_layout_variable_not_found_exception	If specialization constant not found
 	*/
 	template <typename T>
 	void specialize_constant(const std::string &name, const T &value) {
 		using S = std::remove_cv_t<std::remove_reference_t<T>>;
-		static_assert(std::is_pod_v<S>, "T must be a POD");
+		static_assert(std::is_pod_v<S> || is_arithmetic_v<S>, "T must be a POD or arithmetic type");
 
 		std::string data;
 		data.resize(sizeof(S));
@@ -453,12 +453,10 @@ public:
 	}
 
 	/**
-	*	@brief	Returns the status of the layout invalid flag, and resets it
+	*	@brief	Returns the status of the layout invalid flag.
 	*/
-	auto read_and_reset_invalid_layout_flag() {
-		auto ret = layout_invalidated_flag;
-		layout_invalidated_flag = false;
-		return ret;
+	auto is_layout_invalidated() {
+		return layout_invalidated_flag;
 	}
 
 	/**

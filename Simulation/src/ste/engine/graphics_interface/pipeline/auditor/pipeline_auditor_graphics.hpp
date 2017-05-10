@@ -51,7 +51,7 @@ private:
 
 public:
 	pipeline_auditor_graphics(device_pipeline_graphics_configurations &&settings)
-		: fb_layout({ 0,0 })
+		: fb_layout()
 	{
 		set_pipeline_settings(std::move(settings));
 	}
