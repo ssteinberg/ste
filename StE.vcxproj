@@ -579,6 +579,7 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\rendering_system\storage_shared_ptr.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\device_resource_handle.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\image\colorspace.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\sampler\common_samplers.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\task\task_command.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\task\task_enumerate_consumed_resources.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\task\task_interface.hpp" />

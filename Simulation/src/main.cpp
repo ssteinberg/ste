@@ -62,7 +62,7 @@ public:
 		image_view(*image),
 		sampler(ctx.device(), gl::sampler_parameter::filtering(gl::sampler_filter::linear, gl::sampler_filter::linear,
 															   gl::sampler_mipmap_mode::linear)),
-		texture(gl::make_texture(image_view, sampler, gl::image_layout::shader_read_only_optimal)),
+		texture(gl::make_texture(&image_view, &sampler, gl::image_layout::shader_read_only_optimal)),
 		index_buffer(ctx, std::vector<std::uint32_t>{ 0, 2, 1, 0, 1, 3 }, gl::buffer_usage::index_buffer),
 		vertex_buffer(ctx, gl::buffer_usage::vertex_buffer),
 		ubo(ctx,

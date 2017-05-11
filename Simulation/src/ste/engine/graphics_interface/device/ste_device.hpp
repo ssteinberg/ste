@@ -15,6 +15,7 @@
 #include <ste_device_pipeline_cache.hpp>
 #include <pipeline_binding_set_pool.hpp>
 #include <device_pipeline_resource_disposer.hpp>
+#include <common_samplers.hpp>
 
 #include <ste_gl_context_creation_parameters.hpp>
 #include <ste_presentation_surface.hpp>
@@ -43,9 +44,34 @@ private:
 	using queues_t = static_vector<queue_t>;
 
 private:
+	/*
+	 *	Device
+	 */
 	const ste_gl_device_creation_parameters parameters;
 	const ste_queue_descriptors queue_descriptors;
 	const vk::vk_logical_device device;
+
+	/*
+	 *	Presentation surface
+	 */
+
+	// Synchronization primitive pools
+	aligned_ptr<ste_device_sync_primitives_pools> sync_primitives_pools;
+	// Presentation surface
+	const std::unique_ptr<ste_presentation_surface> presentation_surface{ nullptr };
+
+	/*
+	 *	Queues
+	 */
+
+	mutable queues_t device_queues;
+
+	mutable queues_and_surface_recreate_signal_type queues_and_surface_recreate_signal;
+	ste_device_queue_selector_cache queue_selector_cache;
+
+	/*
+	 *	Utilities
+	 */
 
 	// Pipeline cache
 	ste_device_pipeline_cache shared_pipeline_cache;
@@ -53,18 +79,8 @@ private:
 	mutable pipeline_binding_set_pool device_binding_set_pool;
 	// Pipeline resource disposer
 	mutable device_pipeline_resource_disposer<pipeline_resources_disposer_maximal_delay_ms> pipeline_resources_disposer;
-
-	// Synchronization primitive pools
-	aligned_ptr<ste_device_sync_primitives_pools> sync_primitives_pools;
-
-	// Queues
-	mutable queues_t device_queues;
-
-	// Presentation surface
-	const std::unique_ptr<ste_presentation_surface> presentation_surface{ nullptr };
-
-	mutable queues_and_surface_recreate_signal_type queues_and_surface_recreate_signal;
-	ste_device_queue_selector_cache queue_selector_cache;
+	// Common sampler objects
+	mutable common_samplers samplers_collection;
 
 private:
 	static vk::vk_logical_device create_vk_virtual_device(const vk::vk_physical_device_descriptor &physical_device,
@@ -101,18 +117,19 @@ public:
 										parameters.requested_device_features,
 										queue_descriptors,
 										parameters.additional_device_extensions)),
+		sync_primitives_pools(device),
+		presentation_surface(std::make_unique<ste_presentation_surface>(parameters,
+																		&device,
+																		presentation_window,
+																		gl_ctx.instance())),
+		device_queues(create_queues(device,
+									queue_descriptors,
+									&*sync_primitives_pools)),
 		shared_pipeline_cache(device,
 							  &engine.cache(),
 							  this->name()),
 		device_binding_set_pool(device),
-		sync_primitives_pools(device),
-		device_queues(create_queues(device,
-									queue_descriptors,
-									&*sync_primitives_pools)),
-		presentation_surface(std::make_unique<ste_presentation_surface>(parameters,
-																		&device,
-																		presentation_window,
-																		gl_ctx.instance()))
+		samplers_collection(device)
 	{}
 	/**
 	*	@brief	Creates the device without presentation capabilities ("compute-only" device)
@@ -135,14 +152,15 @@ public:
 										parameters.requested_device_features,
 										queue_descriptors,
 										parameters.additional_device_extensions)),
+		sync_primitives_pools(device),
+		device_queues(create_queues(device,
+									queue_descriptors,
+									&*sync_primitives_pools)),
 		shared_pipeline_cache(device,
 							  &engine.cache(),
 							  this->name()),
 		device_binding_set_pool(device),
-		sync_primitives_pools(device),
-		device_queues(create_queues(device,
-									queue_descriptors,
-									&*sync_primitives_pools))
+		samplers_collection(device)
 	{}
 	~ste_device() noexcept {}
 
@@ -234,6 +252,11 @@ public:
 	 *	@brief	Thread-safe disposer of pipeline resources
 	 */
 	auto& pipeline_disposer() const { return pipeline_resources_disposer; }
+
+	/**
+	 *	@brief	Thread-safe collection of commonly used sampler objects
+	 */
+	auto& common_samplers_collection() const { return samplers_collection; }
 
 	/**
 	*	@brief	Human readable device name

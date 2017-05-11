@@ -4,24 +4,17 @@
 #pragma once
 
 #include <stdafx.hpp>
-#include <ste_engine_control.hpp>
+#include <ste_context.hpp>
 
-#include <resource_instance.hpp>
-#include <resource_loading_task.hpp>
+#include <ste_resource_traits.hpp>
+
+#include <device_buffer.hpp>
+#include <device_image.hpp>
+#include <stable_vector.hpp>
+#include <sampler.hpp>
+#include <std430.hpp>
 
 #include <signal.hpp>
-
-#include <gpu_task.hpp>
-#include <Quad.hpp>
-
-#include <image.hpp>
-#include <texture_1d.hpp>
-#include <texture_2d.hpp>
-#include <shader_storage_buffer.hpp>
-#include <pixel_buffer_object.hpp>
-#include <atomic_counter_buffer_object.hpp>
-#include <framebuffer_object.hpp>
-#include <glsl_program.hpp>
 
 #include <deferred_gbuffer.hpp>
 
@@ -31,32 +24,11 @@
 namespace ste {
 namespace graphics {
 
-class hdr_compute_minmax_task;
-class hdr_create_histogram_task;
-class hdr_compute_histogram_sums_task;
-class hdr_tonemap_coc_task;
-class hdr_bloom_blurx_task;
-class hdr_bloom_blury_task;
-class hdr_bokeh_blur_task;
-
-class hdr_dof_postprocess {
-	friend class resource::resource_loading_task<hdr_dof_postprocess>;
-	friend class resource::resource_instance<hdr_dof_postprocess>;
-
-	friend class hdr_compute_minmax_task;
-	friend class hdr_create_histogram_task;
-	friend class hdr_compute_histogram_sums_task;
-	friend class hdr_tonemap_coc_task;
-	friend class hdr_bloom_blurx_task;
-	friend class hdr_bloom_blury_task;
-	friend class hdr_bokeh_blur_task;
-
+class hdr_dof_postprocess : ste_resource_deferred_create_trait {
 private:
 	static constexpr float vision_properties_max_lum = 10.f;
 
 private:
-	using ResizeSignalConnectionType = ste_engine_control::framebuffer_resize_signal_type::connection_type;
-
 	struct hdr_bokeh_parameters {
 		std::int32_t lum_min, lum_max;
 		float focus, _unused;
@@ -75,14 +47,6 @@ private:
 	std::unique_ptr<hdr_bloom_blurx_task> bloom_blurx_task;
 	std::unique_ptr<hdr_bloom_blury_task> bloom_blury_task;
 	std::unique_ptr<hdr_bokeh_blur_task> bokeh_blur_task;
-
-	resource::resource_instance<resource::glsl_program> hdr_compute_minmax;
-	resource::resource_instance<resource::glsl_program> hdr_create_histogram;
-	resource::resource_instance<resource::glsl_program> hdr_compute_histogram_sums;
-	resource::resource_instance<resource::glsl_program> hdr_tonemap_coc;
-	resource::resource_instance<resource::glsl_program> hdr_bloom_blurx;
-	resource::resource_instance<resource::glsl_program> hdr_bloom_blury;
-	resource::resource_instance<resource::glsl_program> bokeh_blur;
 
 	Core::sampler hdr_vision_properties_sampler;
 
@@ -106,8 +70,6 @@ private:
 	mutable std::unique_ptr<Core::pixel_buffer_object<std::int32_t>> hdr_bokeh_param_buffer_eraser;
 
 	glm::i32vec2 luminance_size;
-
-	std::array<std::uint32_t, 4> storage_buffers;
 
 private:
 	std::shared_ptr<ResizeSignalConnectionType> resize_connection;
