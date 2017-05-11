@@ -29,8 +29,7 @@ vk::vk_logical_device ste_device::create_vk_virtual_device(const vk::vk_physical
 ste_device::queues_t ste_device::create_queues(const vk::vk_logical_device &device,
 											   const ste_queue_descriptors &queue_descriptors,
 											   ste_device_sync_primitives_pools *sync_primitives_pools) {
-	queues_t q;
-	q.reserve(queue_descriptors.size());
+	queues_t q(queue_descriptors.size());
 
 	ste_queue_family prev_family = 0xFFFFFFFF;
 	std::uint32_t family_index = 0;
@@ -44,11 +43,12 @@ ste_device::queues_t ste_device::create_queues(const vk::vk_logical_device &devi
 		prev_family = descriptor.family;
 
 		// Create the device queue
-		q.push_back(std::make_unique<queue_t::element_type>(device,
-															family_index,
-															descriptor,
-															idx,
-															&sync_primitives_pools->shared_fences()));
+		q.emplace(q.begin() + idx,
+				  device,
+				  family_index,
+				  descriptor,
+				  idx,
+				  &sync_primitives_pools->shared_fences());
 	}
 
 	return q;

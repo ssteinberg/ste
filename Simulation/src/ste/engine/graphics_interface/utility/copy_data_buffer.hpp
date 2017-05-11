@@ -55,7 +55,7 @@ void copy_data_buffer(const ste_context &ctx,
 	}
 
 	// Create a batch
-	auto batch = q->allocate_batch();
+	auto batch = q.allocate_batch();
 	auto& command_buffer = batch->acquire_command_buffer();
 	auto fence = batch->get_fence_ptr();
 
@@ -101,7 +101,7 @@ void copy_data_buffer(const ste_context &ctx,
 	}
 
 	// Create a batch
-	auto batch = q->allocate_batch();
+	auto batch = q.allocate_batch();
 	auto& command_buffer = batch->acquire_command_buffer();
 	auto fence = batch->get_fence_ptr();
 

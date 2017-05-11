@@ -185,7 +185,7 @@ auto inline queue_transfer_discard(const ste_context &ctx,
 								   access_flags src_access,
 								   image_layout dst_layout,
 								   access_flags dst_access) {
-	auto &dst_queue = *ctx.device().select_queue(dst_queue_selector);
+	auto &dst_queue = ctx.device().select_queue(dst_queue_selector);
 	ste_queue_family dst_family = dst_queue.queue_descriptor().family;
 
 	auto future = dst_queue.enqueue([=, &image]() {

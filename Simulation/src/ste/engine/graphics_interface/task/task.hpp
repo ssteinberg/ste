@@ -109,7 +109,7 @@ public:
 			// Select queue
 			auto queue_type = task.requested_queue_type();
 			auto queue_selector = ste_queue_selector<ste_queue_selector_policy_flexible>(queue_type);
-			auto &q = *ctx.device().select_queue(queue_selector);
+			auto &q = ctx.device().select_queue(queue_selector);
 
 			// Enqueue execute command
 			auto enqueue_future = q.enqueue([&]() {

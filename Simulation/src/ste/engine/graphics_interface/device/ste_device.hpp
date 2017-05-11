@@ -25,6 +25,7 @@
 
 #include <memory>
 #include <vector>
+#include <static_vector.hpp>
 #include <aligned_ptr.hpp>
 #include <allow_type_decay.hpp>
 
@@ -38,8 +39,8 @@ public:
 	static constexpr std::size_t pipeline_resources_disposer_maximal_delay_ms = 2000;
 
 private:
-	using queue_t = std::unique_ptr<ste_device_queue>;
-	using queues_t = std::vector<queue_t>;
+	using queue_t = ste_device_queue;
+	using queues_t = static_vector<queue_t>;
 
 private:
 	const ste_gl_device_creation_parameters parameters;
@@ -57,7 +58,7 @@ private:
 	aligned_ptr<ste_device_sync_primitives_pools> sync_primitives_pools;
 
 	// Queues
-	const queues_t device_queues;
+	mutable queues_t device_queues;
 
 	// Presentation surface
 	const std::unique_ptr<ste_presentation_surface> presentation_surface{ nullptr };
@@ -145,9 +146,6 @@ public:
 	{}
 	~ste_device() noexcept {}
 
-	ste_device(ste_device &&) = default;
-	ste_device &operator=(ste_device &&) = delete;
-
 	/**
 	*	@brief	Performs schedules work, cleans up resources, etc.
 	*			Might stall if swap-chain recreation is required.
@@ -164,7 +162,7 @@ public:
 
 		// Tick queues
 		for (auto &q : device_queues)
-			q->tick();
+			q.tick();
 	}
 
 	/**
@@ -176,9 +174,9 @@ public:
 	*	@param	task	Task to enqueue
 	*/
 	template <typename L, typename selector_policy = ste_queue_selector_default_policy>
-	auto enqueue(const ste_queue_selector<selector_policy> &queue_selector, L &&task) {
+	auto enqueue(const ste_queue_selector<selector_policy> &queue_selector, L &&task) const {
 		auto& queue = select_queue(queue_selector);
-		return queue->enqueue(std::forward<L>(task));
+		return queue.enqueue(std::forward<L>(task));
 	}
 
 	/**
@@ -189,7 +187,7 @@ public:
 	*	@param queue_selector		The device queue selector used to select the device queue
 	*/
 	template <typename selector_policy = ste_queue_selector_default_policy>
-	const queue_t& select_queue(const ste_queue_selector<selector_policy> &queue_selector) const {
+	queue_t& select_queue(const ste_queue_selector<selector_policy> &queue_selector) const {
 		auto idx = queue_selector_cache(queue_selector, queue_descriptors);
 		return device_queues[idx];
 	}
@@ -200,7 +198,7 @@ public:
 	*
 	*	@param index			Queue index to select
 	*/
-	const queue_t& select_queue(const ste_device_queue::queue_index_t &index) const {
+	queue_t& select_queue(const ste_device_queue::queue_index_t &index) const {
 		if (index < device_queues.size())
 			return device_queues[index];
 
@@ -212,7 +210,7 @@ public:
 	*/
 	void wait_idle() const {
 		for (auto &q : device_queues) {
-			q->wait_idle();
+			q.wait_idle();
 		}
 		device.wait_idle();
 	}

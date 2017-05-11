@@ -50,7 +50,7 @@ auto generate_mipmaps(const device_image<dimensions, allocation_policy> &image,
 		// Select queue
 		auto queue_type = ste_queue_type::primary_queue;
 		auto queue_selector = ste_queue_selector<ste_queue_selector_policy_flexible>(queue_type);
-		auto &q = *ctx.device().select_queue(queue_selector);
+		auto &q = ctx.device().select_queue(queue_selector);
 
 		// Enqueue mipmap copy on a queue
 		auto enqueue_future = q.enqueue([&]() {

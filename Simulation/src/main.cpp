@@ -7,7 +7,6 @@
 #include <pipeline_auditor_graphics.hpp>
 #include <pipeline_auditor_compute.hpp>
 
-#include <ste.hpp>
 #include <array.hpp>
 #include <stable_vector.hpp>
 #include <fill.hpp>
@@ -30,6 +29,8 @@
 #include <task.hpp>
 #include <rendering_presentation_system.hpp>
 #include <fragment_graphics.hpp>
+
+#include <static_vector.hpp>
 
 using namespace ste;
 

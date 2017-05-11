@@ -92,8 +92,6 @@ private:
 			throw ste_device_exception("Should be called from a main thread");
 		}
 
-		auto& queue = device->select_queue(queue_selector);
-
 		// Acquire a couple of semaphores and a fence
 		auto semaphores = presentation_engine_sync_semaphores(device->get_sync_primitives_pools().semaphores().claim(),
 															  device->get_sync_primitives_pools().semaphores().claim());
@@ -228,7 +226,7 @@ public:
 
 		// Allocate batch and pass it next presentation image information
 		using batch_t = device_queue_presentation_batch<UserData>;
-		auto batch = queue->template allocate_batch_custom<batch_t>(batch_t::batch_ctor(),
+		auto batch = queue.template allocate_batch_custom<batch_t>(batch_t::batch_ctor(),
 																	next_image.second,
 																	&next_image.first.semaphores,
 																	next_image.first.fence_ptr,

@@ -122,7 +122,7 @@ auto fill_image_array(const device_image<dimensions, allocation_policy> &image,
 		// Select queue
 		auto queue_type = ste_queue_type::data_transfer_queue;
 		auto queue_selector = ste_queue_selector<ste_queue_selector_policy_flexible>(queue_type);
-		auto &q = *ctx.device().select_queue(queue_selector);
+		auto &q = ctx.device().select_queue(queue_selector);
 
 		// Create staging image
 		device_image<2, device_resource_allocation_policy_host_visible_coherent>
@@ -199,7 +199,7 @@ auto fill_image_array(const device_image<dimensions, allocation_policy> &image,
 			auto queue_transfer_future = queue_transfer(ctx,
 														image,
 														q,
-														*ctx.device().select_queue(final_queue_selector),
+														ctx.device().select_queue(final_queue_selector),
 														image_layout::transfer_dst_optimal, pipeline_stage::transfer,
 														final_layout, pipeline_stage::all_commands);
 
