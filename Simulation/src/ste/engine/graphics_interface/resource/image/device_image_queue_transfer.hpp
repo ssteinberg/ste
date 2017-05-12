@@ -95,7 +95,7 @@ auto inline queue_transfer(const ste_context &ctx,
 	auto user_data = std::make_shared<semaphore_t>(ctx.device().get_sync_primitives_pools().semaphores().claim());
 	auto release_acquire_boundary = std::make_shared<boundary<void>>();
 
-	auto src_future = src_queue.enqueue([=, &image]() {
+	src_queue.enqueue([=, &image]() {
 		auto release_batch = ste_device_queue::thread_allocate_batch<user_data_t>(user_data);
 		auto& command_buffer = release_batch->acquire_command_buffer();
 		{
@@ -118,16 +118,14 @@ auto inline queue_transfer(const ste_context &ctx,
 		ste_device_queue::submit_batch(std::move(release_batch), {}, { &sem });
 		release_acquire_boundary->signal();
 	});
-	auto dst_future = dst_queue.enqueue([=, &image, f = std::move(src_future)]() {
-		f.wait();
-
+	auto dst_future = dst_queue.enqueue([=, &image]() {
 		auto acquire_batch = ste_device_queue::thread_allocate_batch<user_data_t>(user_data);
 		auto& command_buffer = acquire_batch->acquire_command_buffer();
 		{
 			auto recorder = command_buffer.record();
 
 			// Acquire queue ownership
-			auto barrier = pipeline_barrier(pipeline_stage::top_of_pipe,
+			auto barrier = pipeline_barrier(pipeline_stage::bottom_of_pipe,
 											dst_stage,
 											queue_release_acquire_barrier(image,
 																		  src_access,

@@ -55,10 +55,10 @@ private:
 
 public:
 	simple_storage(const ste_context &ctx)
-		: image(resource::surface_factory::create_image_2d<gl::format::r8g8b8a8_unorm>(ctx,
-																					   R"(Data\models\crytek-sponza\images\Sponza_Bricks_a_Albedo.png)",
-																					   gl::image_usage::sampled,
-																					   gl::image_layout::shader_read_only_optimal)),
+		: image(resource::surface_factory::image_from_surface_2d<gl::format::r8g8b8a8_unorm>(ctx,
+																							 R"(Data\models\crytek-sponza\images\Sponza_Bricks_a_Albedo.png)",
+																							 gl::image_usage::sampled,
+																							 gl::image_layout::shader_read_only_optimal)),
 		image_view(*image),
 		sampler(ctx.device(), gl::sampler_parameter::filtering(gl::sampler_filter::linear, gl::sampler_filter::linear,
 															   gl::sampler_mipmap_mode::linear)),

@@ -23,16 +23,16 @@ private:
 private:
 	const vk::vk_logical_device *device;
 
-	atomic_ptr nearest{ nullptr };
-	atomic_ptr linear{ nullptr };
-	atomic_ptr linear_mipmap{ nullptr };
+	mutable atomic_ptr nearest{ nullptr };
+	mutable atomic_ptr linear{ nullptr };
+	mutable atomic_ptr linear_mipmap{ nullptr };
 
-	atomic_ptr linear_anisotropic16{ nullptr };
-	atomic_ptr linear_mipmap_anisotropic16{ nullptr };
+	mutable atomic_ptr linear_anisotropic16{ nullptr };
+	mutable atomic_ptr linear_mipmap_anisotropic16{ nullptr };
 
-	atomic_ptr nearest_clamp{ nullptr };
-	atomic_ptr linear_clamp{ nullptr };
-	atomic_ptr linear_clamp_mipmap{ nullptr };
+	mutable atomic_ptr nearest_clamp{ nullptr };
+	mutable atomic_ptr linear_clamp{ nullptr };
+	mutable atomic_ptr linear_clamp_mipmap{ nullptr };
 
 private:
 	template <typename... Args>
@@ -77,19 +77,19 @@ public:
 		dealloc(linear_clamp_mipmap);
 	}
 
-	auto& nearest_sampler() {
+	const auto& nearest_sampler() const {
 		return 	get(nearest,
 					*device,
 					sampler_parameter::filtering(sampler_filter::nearest,
 												 sampler_filter::nearest));
 	}
-	auto& linear_sampler() {
+	const auto& linear_sampler() const {
 		return 	get(linear,
 					*device,
 					sampler_parameter::filtering(sampler_filter::linear,
 												 sampler_filter::linear));
 	}
-	auto& linear_mipmap_sampler() {
+	const auto& linear_mipmap_sampler() const {
 		return 	get(linear_mipmap,
 					*device,
 					sampler_parameter::filtering(sampler_filter::linear,
@@ -97,14 +97,14 @@ public:
 												 sampler_mipmap_mode::linear));
 	}
 
-	auto& linear_anisotropic16_sampler() {
+	const auto& linear_anisotropic16_sampler() const {
 		return 	get(linear_anisotropic16,
 					*device,
 					sampler_parameter::filtering(sampler_filter::nearest,
 												 sampler_filter::nearest),
 					sampler_parameter::anisotropy(16));
 	}
-	auto& linear_mipmap_anisotropic16_sampler() {
+	const auto& linear_mipmap_anisotropic16_sampler() const {
 		return get(linear_mipmap_anisotropic16,
 				   *device,
 				   sampler_parameter::filtering(sampler_filter::linear,
@@ -113,7 +113,7 @@ public:
 				   sampler_parameter::anisotropy(16));
 	}
 
-	auto& nearest_clamp_sampler() {
+	const auto& nearest_clamp_sampler() const {
 		return get(nearest_clamp,
 				   *device,
 				   sampler_parameter::filtering(sampler_filter::nearest,
@@ -122,7 +122,7 @@ public:
 												   sampler_address_mode::clamp_to_edge,
 												   sampler_address_mode::clamp_to_edge));
 	}
-	auto& linear_clamp_sampler() {
+	const auto& linear_clamp_sampler() const {
 		return get(linear_clamp,
 				   *device,
 				   sampler_parameter::filtering(sampler_filter::linear,
@@ -131,7 +131,7 @@ public:
 												   sampler_address_mode::clamp_to_edge,
 												   sampler_address_mode::clamp_to_edge));
 	}
-	auto& linear_clamp_mipmap_sampler() {
+	const auto& linear_clamp_mipmap_sampler() const {
 		return get(linear_clamp_mipmap,
 				   *device,
 				   sampler_parameter::filtering(sampler_filter::linear,

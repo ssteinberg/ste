@@ -10,86 +10,83 @@
 
 #include <device_buffer.hpp>
 #include <device_image.hpp>
+#include <array.hpp>
 #include <stable_vector.hpp>
 #include <sampler.hpp>
+#include <packaged_texture.hpp>
+#include <framebuffer.hpp>
 #include <std430.hpp>
+
+//#include <hdr_bokeh_blur_task.hpp>
+//#include <hdr_bloom_blury_task.hpp>
+//#include <hdr_bloom_blurx_task.hpp>
+//#include <hdr_tonemap_coc_task.hpp>
+//#include <hdr_create_histogram_task.hpp>
+//#include <hdr_compute_histogram_sums_task.hpp>
+//#include <hdr_compute_minmax_task.hpp>
 
 #include <signal.hpp>
 
-#include <deferred_gbuffer.hpp>
-
 #include <memory>
-#include <array>
 
 namespace ste {
 namespace graphics {
 
 class hdr_dof_postprocess : ste_resource_deferred_create_trait {
 private:
-	static constexpr float vision_properties_max_lum = 10.f;
+	struct hdr_bokeh_parameters : gl::std430<std::int32_t, std::int32_t, float> {
+		using Base = gl::std430<std::int32_t, std::int32_t, float>;
+		using Base::Base;
 
-private:
-	struct hdr_bokeh_parameters {
-		std::int32_t lum_min, lum_max;
-		float focus, _unused;
+		auto& lum_min() { return get<0>(); }
+		auto& lum_max() { return get<1>(); }
+		auto& focus() { return get<2>(); }
 	};
 
-private:
-	const deferred_gbuffer *gbuffer;
-	const ste_engine_control &ctx;
+	struct hdr_textures {
+		gl::device_image<2> hdr_final_image;
+		gl::texture<gl::image_type::image_2d> hdr_final_linear;
+		gl::texture<gl::image_type::image_2d> hdr_final_linear_clamp;
 
-	std::shared_ptr<const gpu_task> task;
+		gl::packaged_texture<gl::image_type::image_1d> hdr_vision_properties_texture;
+		gl::packaged_texture<gl::image_type::image_2d> hdr_image;
+		gl::packaged_texture<gl::image_type::image_2d> hdr_bloom_image;
+		gl::packaged_texture<gl::image_type::image_2d> hdr_bloom_blurx_image;
+		gl::packaged_texture<gl::image_type::image_2d> hdr_lums;
 
-	std::unique_ptr<hdr_compute_minmax_task> compute_minmax_task;
-	std::unique_ptr<hdr_create_histogram_task> create_histogram_task;
-	std::unique_ptr<hdr_compute_histogram_sums_task> compute_histogram_sums_task;
-	std::unique_ptr<hdr_tonemap_coc_task> tonemap_coc_task;
-	std::unique_ptr<hdr_bloom_blurx_task> bloom_blurx_task;
-	std::unique_ptr<hdr_bloom_blury_task> bloom_blury_task;
-	std::unique_ptr<hdr_bokeh_blur_task> bokeh_blur_task;
+		hdr_textures() = default;
+	};
 
-	Core::sampler hdr_vision_properties_sampler;
-
-	std::unique_ptr<Core::texture_1d> hdr_vision_properties_texture;
-	Core::texture_handle hdr_vision_properties_texture_handle;
-
-	std::unique_ptr<Core::texture_2d> hdr_image;
-	std::unique_ptr<Core::texture_2d> hdr_final_image;
-	std::unique_ptr<Core::texture_2d> hdr_bloom_image;
-	std::unique_ptr<Core::texture_2d> hdr_bloom_blurx_image;
-	std::unique_ptr<Core::texture_2d> hdr_lums;
-
-	Core::framebuffer_object fbo_hdr_final;
-	Core::framebuffer_object fbo_hdr;
-	Core::framebuffer_object fbo_hdr_bloom_blurx_image;
-
-	mutable Core::shader_storage_buffer<hdr_bokeh_parameters> hdr_bokeh_param_buffer{ 1 };
-	mutable Core::shader_storage_buffer<hdr_bokeh_parameters> hdr_bokeh_param_buffer_prev{ 1 };
-	mutable Core::atomic_counter_buffer_object<> histogram{ 128 };
-	mutable Core::shader_storage_buffer<std::uint32_t> histogram_sums{ 128 };
-	mutable std::unique_ptr<Core::pixel_buffer_object<std::int32_t>> hdr_bokeh_param_buffer_eraser;
-
-	glm::i32vec2 luminance_size;
+	static constexpr float vision_properties_max_lum = 10.f;
+	static constexpr hdr_bokeh_parameters parameters_initial{ std::tuple<std::int32_t, std::int32_t, float>(0x7FFFFFFF, 0, 0) };
 
 private:
-	std::shared_ptr<ResizeSignalConnectionType> resize_connection;
-	std::shared_ptr<connection<>> gbuffer_depth_target_connection;
+	std::reference_wrapper<const ste_context> ctx;
+
+	std::unique_ptr<hdr_textures> textures;
+
+	gl::array<hdr_bokeh_parameters> hdr_bokeh_param_buffer;
+	gl::array<hdr_bokeh_parameters> hdr_bokeh_param_buffer_prev;
+	gl::array<std::uint32_t> histogram;
+	gl::array<std::uint32_t> histogram_sums;
+
+//	hdr_compute_minmax_task compute_minmax_task;
+//	hdr_create_histogram_task create_histogram_task;
+//	hdr_compute_histogram_sums_task compute_histogram_sums_task;
+//	hdr_tonemap_coc_task tonemap_coc_task;
+//	hdr_bloom_blurx_task bloom_blurx_task;
+//	hdr_bloom_blury_task bloom_blury_task;
+//	hdr_bokeh_blur_task bokeh_blur_task;
 
 private:
-	std::vector<std::shared_ptr<const gpu_task>> create_sub_tasks();
-	hdr_bokeh_blur_task* create_dispatchable();
-
-	void setup_connections();
-	void attach_handles() const;
-
-private:
-	hdr_dof_postprocess(const ste_engine_control &ctx, const deferred_gbuffer *gbuffer);
+	static gl::packaged_texture<gl::image_type::image_1d> create_hdr_vision_properties_texture(const ste_context &ctx);
+	static std::unique_ptr<hdr_textures> create_hdr_textures(const ste_context &ctx);
 
 public:
+	hdr_dof_postprocess(const ste_context &ctx);
 	~hdr_dof_postprocess() noexcept;
 
-	auto &get_input_image() const { return *hdr_final_image; }
-	auto get_input_fbo() const { return &fbo_hdr_final; }
+	auto &get_input_image() const { return hdr_final_image; }
 
 	/**
 	*	@brief	Set the camera aperture parameter. Those parameters affect the depth of field of the resulting image.
@@ -101,13 +98,12 @@ public:
 		assert(diameter > .0f && "Lens diameter must be positive");
 		assert(focal_length > .0f && "Focal length must be positive");
 
-		bokeh_blur.get().set_uniform("aperture_diameter", diameter);
-		bokeh_blur.get().set_uniform("aperture_focal_length", focal_length);
+//		bokeh_blur.get().set_uniform("aperture_diameter", diameter);
+//		bokeh_blur.get().set_uniform("aperture_focal_length", focal_length);
 	}
 
 	void resize(glm::ivec2 size);
 
-	std::shared_ptr<const gpu_task> get_task() const;
 	auto& get_exposure_params_buffer() const { return hdr_bokeh_param_buffer; }
 	auto& get_histogram_buffer() const { return histogram; }
 	auto& get_histogram_sums_buffer() const { return histogram_sums; }
@@ -115,36 +111,21 @@ public:
 
 }
 
-namespace resource {
+//namespace resource {
+//
+//template <>
+//class resource_loading_task<graphics::hdr_dof_postprocess> {
+//	using R = graphics::hdr_dof_postprocess;
+//
+//public:
+//	auto loader(const ste_engine_control &ctx, R* object) {
+//			object->attach_handles();
+//
+//			object->hdr_tonemap_coc.get().set_uniform("hdr_vision_properties_texture", vision_handle);
+//			object->hdr_bloom_blurx.get().set_uniform("dir", glm::vec2{ 1.f, .0f });
+//			object->hdr_bloom_blury.get().set_uniform("dir", glm::vec2{ .0f, 1.f });
+//			object->resize(ctx.get_backbuffer_size());
+//	}
+//};
 
-template <>
-class resource_loading_task<graphics::hdr_dof_postprocess> {
-	using R = graphics::hdr_dof_postprocess;
-
-public:
-	auto loader(const ste_engine_control &ctx, R* object) {
-		return ctx.scheduler().schedule_now([object, &ctx]() {
-			object->hdr_compute_minmax.wait();
-			object->hdr_create_histogram.wait();
-			object->hdr_compute_histogram_sums.wait();
-			object->hdr_tonemap_coc.wait();
-			object->hdr_bloom_blurx.wait();
-			object->hdr_bloom_blury.wait();
-			object->bokeh_blur.wait();
-			// TODO: Fix
-		}).then/*_on_main_thread*/([object, &ctx]() {
-			auto vision_handle = object->hdr_vision_properties_texture->get_texture_handle(object->hdr_vision_properties_sampler);
-			vision_handle.make_resident();
-
-			object->attach_handles();
-
-			object->hdr_tonemap_coc.get().set_uniform("hdr_vision_properties_texture", vision_handle);
-			object->hdr_bloom_blurx.get().set_uniform("dir", glm::vec2{ 1.f, .0f });
-			object->hdr_bloom_blury.get().set_uniform("dir", glm::vec2{ .0f, 1.f });
-			object->resize(ctx.get_backbuffer_size());
-		});;
-	}
-};
-
-}
 }

@@ -80,7 +80,7 @@ private:
 	// Pipeline resource disposer
 	mutable device_pipeline_resource_disposer<pipeline_resources_disposer_maximal_delay_ms> pipeline_resources_disposer;
 	// Common sampler objects
-	mutable common_samplers samplers_collection;
+	common_samplers samplers_collection;
 
 private:
 	static vk::vk_logical_device create_vk_virtual_device(const vk::vk_physical_device_descriptor &physical_device,

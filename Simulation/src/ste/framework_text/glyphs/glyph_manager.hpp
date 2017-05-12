@@ -140,11 +140,11 @@ private:
 		}
 
 		// Create image and view
-		auto image = resource::surface_factory::create_image_2d<gl::format::r32_sfloat>(context.get(),
-																						std::move(*og.get().glyph_distance_field),
-																						gl::image_usage::sampled,
-																						gl::image_layout::shader_read_only_optimal,
-																						false);
+		auto image = resource::surface_factory::image_from_surface_2d<gl::format::r32_sfloat>(context.get(),
+																							  std::move(*og.get().glyph_distance_field),
+																							  gl::image_usage::sampled,
+																							  gl::image_layout::shader_read_only_optimal,
+																							  false);
 		auto view = gl::image_view<gl::image_type::image_2d>(*image);
 
 		// Store all data in pending queue
