@@ -7,6 +7,8 @@
 #include <ste_context.hpp>
 #include <ste_resource_traits.hpp>
 
+#include <pipeline_external_binding_set_collection.hpp>
+
 #include <storage.hpp>
 #include <storage_shared_ptr.hpp>
 
@@ -73,6 +75,7 @@ public:
 	virtual void render() = 0;
 
 	auto& get_creating_context() const { return ctx.get(); }
+	auto& device() const { return ctx.get().device(); }
 
 	/**
 	*	@brief	Implementations can use this hook to provide all fragments that use this rendering system with a collection of external binding sets.

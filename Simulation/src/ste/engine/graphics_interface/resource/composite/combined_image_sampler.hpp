@@ -73,6 +73,11 @@ public:
 
 	const sampler& get_sampler() const override final { return samp.get(); }
 	auto& get_image_view() const { return view.get(); }
+
+	operator texture<type>() const {
+		return texture<type>(&view.get(),
+							 layout);
+	}
 };
 
 /**

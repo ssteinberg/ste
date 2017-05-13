@@ -6,17 +6,9 @@ const int blur_samples_count = 8;
 
 #include <hdr_blur.glsl>
 
-in vs_out {
-	vec2 uv;
-	vec2 blur_uvs[blur_samples_count];
-} vin;
-
 layout(location = 0) uniform sampler2D hdr;
 
-uniform size_t {
-	vec2 size;
-};
-uniform dir_t {
+layout(push_constant) uniform config_t {
 	vec2 dir;
 };
 

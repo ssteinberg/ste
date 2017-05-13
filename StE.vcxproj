@@ -609,6 +609,7 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\task\task_pipeline_policy.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\vk_set_object_name.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\log\log.hpp" />
+    <ClInclude Include="Simulation\src\ste\framework_graphics\common_shaders\fullscreen_triangle.vert" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\utilities\camera\camera.hpp" />
     <ClInclude Include="Simulation\src\ste\math_additions\rect.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\data_structure\array.hpp" />
@@ -917,9 +918,6 @@
     <ClCompile Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\steps\hdr_create_histogram_task.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\steps\hdr_tonemap_coc_task.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_graphics\scene\geometry_cull\scene_geo_cull_dispatch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
@@ -1073,13 +1071,13 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\gi_renderer.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\girenderer_loader.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\hdr_dof_postprocess.hpp" />
-    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\steps\hdr_bloom_blurx_task.hpp" />
-    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\steps\hdr_bloom_blury_task.hpp" />
-    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\steps\hdr_bokeh_blur_task.hpp" />
-    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\steps\hdr_compute_histogram_sums_task.hpp" />
-    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\steps\hdr_compute_minmax_task.hpp" />
-    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\steps\hdr_create_histogram_task.hpp" />
-    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\steps\hdr_tonemap_coc_task.hpp" />
+    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\steps\hdr_bloom_blur_x_fragment.hpp" />
+    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\steps\hdr_bloom_blur_y_fragment.hpp" />
+    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\steps\hdr_bokeh_blur_fragment.hpp" />
+    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\steps\hdr_compute_histogram_sums_fragment.hpp" />
+    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\steps\hdr_compute_minmax_fragment.hpp" />
+    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\steps\hdr_compute_histogram_fragment.hpp" />
+    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\steps\hdr_tonemap_coc_fragment.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\transforms_ring_buffers.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\scene\geometry_cull\scene_geo_cull_dispatch.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\scene\perpopulate_depth\scene_prepopulate_depth_dispatch.hpp" />
