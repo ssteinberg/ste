@@ -25,6 +25,9 @@ namespace resource {
 
 class surface_factory {
 private:
+	using image_allocation_policy = gl::device_resource_allocation_policy_device;
+
+private:
 	// Create an image object, fills it with data from input surface and generates mipmap.
 	template <int dimensions, gl::format image_format, typename Surface>
 	static auto _image_from_surface_fill_internal(const ste_context &ctx,
@@ -52,7 +55,7 @@ private:
 			m;
 
 		// Create image
-		gl::device_image<dimensions, gl::device_resource_allocation_policy_device>
+		gl::device_image<dimensions, image_allocation_policy>
 			image(ctx, gl::image_initial_layout::unused,
 				  image_format, size, gl::image_usage::transfer_dst | gl::image_usage::transfer_src | usage,
 				  mip_levels, layers);
@@ -83,8 +86,9 @@ private:
 																bool generate_mipmaps,
 																bool srgb) {
 		// Create image from file
-		return ste_resource<gl::device_image<2>, resource_deferred_policy>(ste_resource_create_with_lambda(),
-																		   [=, &ctx]() mutable {
+		return ste_resource<gl::device_image<2, image_allocation_policy>, resource_deferred_policy>(ste_resource_create_with_lambda(),
+																									ctx,
+																									[=, &ctx]() mutable {
 			auto surface = surface_io::load_surface_2d(path, srgb);
 			return _image_from_surface_fill_internal<2, image_format>(ctx,
 																	  std::move(surface),
@@ -107,8 +111,9 @@ private:
 													const gl::image_layout &layout,
 													bool generate_mipmaps = true) {
 		// Create image from surface
-		return ste_resource<gl::device_image<dimensions>, resource_deferred_policy>(ste_resource_create_with_lambda(),
-																					[=, &ctx, surface = std::move(surface)]() mutable {
+		return ste_resource<gl::device_image<dimensions, image_allocation_policy>, resource_deferred_policy>(ste_resource_create_with_lambda(),
+																											 ctx,
+																											 [=, &ctx, surface = std::move(surface)]() mutable {
 			return _image_from_surface_fill_internal<dimensions, image_format>(ctx,
 																			   std::move(surface),
 																			   usage,
@@ -131,8 +136,9 @@ private:
 											std::uint32_t levels,
 											bool supports_cube_views) {
 		// Create image from surface
-		return ste_resource<gl::device_image<dimensions>, resource_deferred_policy>(ste_resource_create_with_lambda(),
-																					[=, &ctx]() mutable {
+		return ste_resource<gl::device_image<dimensions, image_allocation_policy>, resource_deferred_policy>(ste_resource_create_with_lambda(),
+																											 ctx,
+																											 [=, &ctx]() mutable {
 			// Create image
 			gl::device_image<dimensions, gl::device_resource_allocation_policy_device> image(ctx, gl::image_initial_layout::unused,
 																							 image_format, extent, usage,
@@ -143,7 +149,7 @@ private:
 									   image,
 									   gl::ste_queue_selector<gl::ste_queue_selector_policy_strict>(gl::ste_queue_type::primary_queue),
 									   gl::pipeline_stage::all_commands,
-									   gl::image_layout::undefined, 0,
+									   gl::image_layout::undefined, gl::access_flags::none,
 									   layout, gl::access_flags_for_image_layout(layout));
 
 			return image;
@@ -398,7 +404,7 @@ public:
 	static auto image_empty_2d(const ste_context &ctx,
 							   const gl::image_usage &usage,
 							   const gl::image_layout &layout,
-							   const gl::image_extent_type_t<1> &extent,
+							   const gl::image_extent_type_t<2> &extent,
 							   std::uint32_t layers = 1,
 							   std::uint32_t levels = 1) {
 		return _image_empty_async_internal<2, image_format, resource_deferred_policy>(ctx,
@@ -425,7 +431,7 @@ public:
 	static auto image_empty_3d(const ste_context &ctx,
 							   const gl::image_usage &usage,
 							   const gl::image_layout &layout,
-							   const gl::image_extent_type_t<1> &extent,
+							   const gl::image_extent_type_t<3> &extent,
 							   std::uint32_t layers = 1,
 							   std::uint32_t levels = 1) {
 		return _image_empty_async_internal<3, image_format, resource_deferred_policy>(ctx,

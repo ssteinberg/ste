@@ -125,12 +125,12 @@ auto fill_image_array(const device_image<dimensions, allocation_policy> &image,
 		auto &q = ctx.device().select_queue(queue_selector);
 
 		// Create staging image
-		device_image<2, device_resource_allocation_policy_host_visible_coherent>
+		device_image<dimensions, device_resource_allocation_policy_host_visible_coherent>
 			staging_image(ctx, image_initial_layout::preinitialized,
 						  image_format, surface.extent(), image_usage::transfer_src,
 						  1, base_layer + layers, false, false);
 		auto staging_image_bytes = staging_image.get_underlying_memory().get_size();
-		auto mmap_u8_ptr = staging_image.get_underlying_memory().mmap<glm::u8>(0, staging_image_bytes);
+		auto mmap_u8_ptr = staging_image.get_underlying_memory().template mmap<glm::u8>(0, staging_image_bytes);
 
 		// Upload
 		for (std::uint32_t m = base_mip; m < mips; ++m) {

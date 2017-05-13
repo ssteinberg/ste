@@ -1217,9 +1217,6 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\shader\binding\ste_shader_stage_binding.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\image\texture.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\image\image_view.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1754,7 +1751,19 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\sampler\common_samplers.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\image\packaged_texture.hpp">
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\composite\packaged_image_sampler.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\composite\combined_image_sampler.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\composite\texture.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\composite\composite_resource_component_storage.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\composite\packaged_texture.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

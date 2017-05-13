@@ -14,6 +14,7 @@
 #include <surface_factory.hpp>
 #include <device_buffer.hpp>
 #include <device_image.hpp>
+#include <packaged_texture.hpp>
 #include <stable_vector.hpp>
 #include <sampler.hpp>
 #include <std430.hpp>
@@ -67,14 +68,7 @@ public:
 		int buffer_index;
 	};
 
-	struct glyph_texture {
-		gl::device_image<2> texture;
-		gl::image_view<gl::image_type::image_2d> view;
-
-		glyph_texture() = delete;
-		glyph_texture(glyph_texture&&) = default;
-		glyph_texture &operator=(glyph_texture&&) = default;
-	};
+	using glyph_texture = gl::packaged_texture<gl::image_type::image_2d>;
 
 	struct font_storage {
 		using glyphs_t = std::unordered_map<wchar_t, optional<glyph_descriptor>>;
@@ -145,10 +139,10 @@ private:
 																							  gl::image_usage::sampled,
 																							  gl::image_layout::shader_read_only_optimal,
 																							  false);
-		auto view = gl::image_view<gl::image_type::image_2d>(*image);
 
 		// Store all data in pending queue
-		glyph_texture texture{ std::move(image.get()), std::move(view) };
+		glyph_texture texture(std::move(image),
+							  gl::image_layout::shader_read_only_optimal);
 		glyph_descriptor gd;
 		gd.metrics = og.get().metrics;
 

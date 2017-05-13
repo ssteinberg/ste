@@ -151,7 +151,7 @@ template<int dimensions>
 struct image_extent_type {};
 template <>
 struct image_extent_type<1> {
-	using type = glm::u32;
+	using type = glm::u32vec1;
 };
 template <>
 struct image_extent_type<2> {

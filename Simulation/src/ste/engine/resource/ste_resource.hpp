@@ -123,10 +123,7 @@ public:
 					  "T must be constructible with L's return type");
 	}
 
-	~ste_resource() noexcept {
-		// Finish initializing before deleting...
-		get();
-	}
+	~ste_resource() noexcept {}
 
 	ste_resource(ste_resource&&) = default;
 	ste_resource &operator=(ste_resource&&) = default;
@@ -135,6 +132,8 @@ public:
 	T& get() & { return Base::get(); }
 	T&& get() && { return std::move(Base::get()); }
 	const T& get() const& { return Base::get(); }
+
+	operator T&&() && { return std::move(*this).get(); }
 };
 
 }

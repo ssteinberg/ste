@@ -55,6 +55,7 @@ public:
 			   optimal_tiling,
 			   sparse)
 	{}
+	~device_image() noexcept {}
 
 	device_image(device_image&&) = default;
 	device_image &operator=(device_image&&) = default;

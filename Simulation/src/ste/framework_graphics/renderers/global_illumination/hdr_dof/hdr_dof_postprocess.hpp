@@ -13,7 +13,7 @@
 #include <array.hpp>
 #include <stable_vector.hpp>
 #include <sampler.hpp>
-#include <packaged_texture.hpp>
+#include <packaged_image_sampler.hpp>
 #include <framebuffer.hpp>
 #include <std430.hpp>
 
@@ -43,27 +43,21 @@ private:
 		auto& focus() { return get<2>(); }
 	};
 
-	struct hdr_textures {
-		gl::device_image<2> hdr_final_image;
-		gl::texture<gl::image_type::image_2d> hdr_final_linear;
-		gl::texture<gl::image_type::image_2d> hdr_final_linear_clamp;
-
-		gl::packaged_texture<gl::image_type::image_1d> hdr_vision_properties_texture;
-		gl::packaged_texture<gl::image_type::image_2d> hdr_image;
-		gl::packaged_texture<gl::image_type::image_2d> hdr_bloom_image;
-		gl::packaged_texture<gl::image_type::image_2d> hdr_bloom_blurx_image;
-		gl::packaged_texture<gl::image_type::image_2d> hdr_lums;
-
-		hdr_textures() = default;
-	};
-
 	static constexpr float vision_properties_max_lum = 10.f;
-	static constexpr hdr_bokeh_parameters parameters_initial{ std::tuple<std::int32_t, std::int32_t, float>(0x7FFFFFFF, 0, 0) };
+	static hdr_bokeh_parameters parameters_initial;
 
 private:
 	std::reference_wrapper<const ste_context> ctx;
 
-	std::unique_ptr<hdr_textures> textures;
+	gl::device_image<2> hdr_final_image;
+	gl::combined_image_sampler<gl::image_type::image_2d> hdr_final_linear;
+	gl::combined_image_sampler<gl::image_type::image_2d> hdr_final_linear_clamp;
+
+	gl::packaged_image_sampler<gl::image_type::image_1d> hdr_vision_properties_texture;
+	gl::packaged_image_sampler<gl::image_type::image_2d> hdr_image;
+	gl::packaged_image_sampler<gl::image_type::image_2d> hdr_bloom_image;
+	gl::packaged_image_sampler<gl::image_type::image_2d> hdr_bloom_blurx_image;
+	gl::packaged_image_sampler<gl::image_type::image_2d> hdr_lums;
 
 	gl::array<hdr_bokeh_parameters> hdr_bokeh_param_buffer;
 	gl::array<hdr_bokeh_parameters> hdr_bokeh_param_buffer_prev;
@@ -79,12 +73,10 @@ private:
 //	hdr_bokeh_blur_task bokeh_blur_task;
 
 private:
-	static gl::packaged_texture<gl::image_type::image_1d> create_hdr_vision_properties_texture(const ste_context &ctx);
-	static std::unique_ptr<hdr_textures> create_hdr_textures(const ste_context &ctx);
+	static gl::packaged_image_sampler<gl::image_type::image_1d> create_hdr_vision_properties_texture(const ste_context &ctx);
 
 public:
 	hdr_dof_postprocess(const ste_context &ctx);
-	~hdr_dof_postprocess() noexcept;
 
 	auto &get_input_image() const { return hdr_final_image; }
 
@@ -102,7 +94,7 @@ public:
 //		bokeh_blur.get().set_uniform("aperture_focal_length", focal_length);
 	}
 
-	void resize(glm::ivec2 size);
+	void resize();
 
 	auto& get_exposure_params_buffer() const { return hdr_bokeh_param_buffer; }
 	auto& get_histogram_buffer() const { return histogram; }

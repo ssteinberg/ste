@@ -10,7 +10,7 @@
 #include <block_layout.hpp>
 #include <sampler.hpp>
 #include <image_view.hpp>
-#include <texture.hpp>
+#include <combined_image_sampler.hpp>
 
 #include <optional.hpp>
 #include <string>
@@ -274,8 +274,8 @@ public:
 			throw ste_shader_variable_layout_verification_opaque_or_unknown_type("Expected an image_view_generic type");
 
 		if (var_type == ste_shader_stage_variable_type::texture_t &&
-			!std::is_convertible_v<Type, texture_generic>)
-			throw ste_shader_variable_layout_verification_opaque_or_unknown_type("Expected a texture_generic type");
+			!std::is_convertible_v<Type, combined_image_sampler_generic>)
+			throw ste_shader_variable_layout_verification_opaque_or_unknown_type("Expected a combined_image_sampler_generic type");
 	}
 };
 
