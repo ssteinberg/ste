@@ -90,14 +90,14 @@ public:
 
 template <typename UserData>
 using ste_device_queue_batch_pool = _detail::ste_device_queue_batch_impl<
-	typename ste_resource_pool<ste_device_queue_command_pool>::resource_t,
+	ste_resource_pool<ste_device_queue_command_pool>::resource_t,
 	UserData
 >;
 
 }
 
 template <typename UserData = void>
-class ste_device_queue_batch_oneshot : public _detail::ste_device_queue_batch_pool<UserData> {
+class ste_device_queue_batch : public _detail::ste_device_queue_batch_pool<UserData> {
 	friend class ste_device_queue;
 
 	using Base = _detail::ste_device_queue_batch_pool<UserData>;
@@ -105,8 +105,6 @@ class ste_device_queue_batch_oneshot : public _detail::ste_device_queue_batch_po
 public:
 	using fence_t = ste_resource_pool<shared_fence<void>>::resource_t;
 	using fence_ptr_strong_t = std::shared_ptr<fence_t>;
-	using fence_ptr_weak_t = std::weak_ptr<fence_t>;
-	using shared_fence_t = shared_fence<void>;
 
 	using command_buffer_t = command_buffer_primary<false>;
 
@@ -121,7 +119,7 @@ protected:
 
 public:
 	template <typename S = UserData, typename... UserDataArgs>
-	ste_device_queue_batch_oneshot(std::enable_if_t<!std::is_void_v<S>, std::uint32_t> queue_index,
+	ste_device_queue_batch(std::enable_if_t<!std::is_void_v<S>, std::uint32_t> queue_index,
 						   typename Base::pool_t &&pool,
 						   const fence_ptr_strong_t &f,
 						   UserDataArgs&&... user_data_args)
@@ -129,23 +127,23 @@ public:
 		fence_strong(f)
 	{}
 	template <typename S = UserData>
-	ste_device_queue_batch_oneshot(std::enable_if_t<std::is_void_v<S>, std::uint32_t> queue_index,
+	ste_device_queue_batch(std::enable_if_t<std::is_void_v<S>, std::uint32_t> queue_index,
 						   typename Base::pool_t &&pool,
 						   const fence_ptr_strong_t &f)
 		: Base(queue_index, std::move(pool)),
 		fence_strong(f)
 	{}
-	virtual ~ste_device_queue_batch_oneshot() noexcept {}
+	virtual ~ste_device_queue_batch() noexcept {}
 
-	ste_device_queue_batch_oneshot(ste_device_queue_batch_oneshot&&) = default;
-	ste_device_queue_batch_oneshot &operator=(ste_device_queue_batch_oneshot&&) = default;
+	ste_device_queue_batch(ste_device_queue_batch&&) = default;
+	ste_device_queue_batch &operator=(ste_device_queue_batch&&) = default;
 
 	const auto& get_fence_ptr() const {
 		return fence_strong;
 	}
 
 	auto& acquire_command_buffer() {
-		const command_pool& p = pool;
+		const command_pool& p = Base::pool;
 		command_buffer_t buffer = p.allocate_primary_buffer();
 		command_buffers.emplace_back(std::move(buffer));
 		return command_buffers.back();
@@ -154,10 +152,9 @@ public:
 	bool is_batch_complete() const override final {
 		return (*fence_strong)->is_signaled();
 	}
-};
 
-template <typename UserData>
-using ste_device_queue_batch = ste_device_queue_batch_oneshot<UserData>;
+	auto& get_queue_descriptor() const { return Base::pool.get().get().get_queue_descriptor(); }
+};
 
 }
 }

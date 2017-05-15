@@ -4,8 +4,6 @@
 #pragma once
 
 #include <stdafx.hpp>
-
-#include <vulkan/vulkan.h>
 #include <command.hpp>
 #include <host_command.hpp>
 #include <ste_device_queue_descriptors.hpp>
@@ -19,8 +17,6 @@ namespace gl {
 */
 class command_recorder {
 	friend class command_buffer;
-	template <VkCommandBufferUsageFlags flags, bool resetable>
-	friend class command_buffer_secondary_impl;
 
 private:
 	command_buffer *buffer;
@@ -41,12 +37,8 @@ public:
 		end();
 	}
 
-	command_recorder(command_recorder &&o) noexcept
-		: buffer(o.buffer), 
-		queue_descriptor(queue_descriptor)
-	{
-		o.buffer = nullptr;
-	}
+	command_recorder(command_recorder&&) = default;
+	command_recorder &operator=(command_recorder&&) = default;
 	command_recorder(const command_recorder &) = delete;
 	command_recorder &operator=(const command_recorder &) = delete;
 

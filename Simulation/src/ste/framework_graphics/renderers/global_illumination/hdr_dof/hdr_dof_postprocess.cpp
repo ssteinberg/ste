@@ -117,7 +117,7 @@ hdr_dof_postprocess::hdr_dof_postprocess(const gl::rendering_system &rs,
 								  gl::image_layout::shader_read_only_optimal),
 	// Buffers
 	hdr_bokeh_param_buffer(ctx.get(), 1, { parameters_initial }, gl::buffer_usage::storage_buffer),
-	//	hdr_bokeh_param_buffer_prev(ctx.get(), 1, { parameters_initial }, gl::buffer_usage::storage_buffer),
+//	hdr_bokeh_param_buffer_prev(ctx.get(), 1, { parameters_initial }, gl::buffer_usage::storage_buffer),
 	histogram(ctx.get(), 128, gl::buffer_usage::storage_buffer),
 	histogram_sums(ctx.get(), 128, gl::buffer_usage::storage_buffer),
 	// Fragments
@@ -169,7 +169,7 @@ void hdr_dof_postprocess::record(gl::command_recorder &recorder) {
 														 gl::buffer_memory_barrier(hdr_bokeh_param_buffer,
 																				   gl::access_flags::shader_read,
 																				   gl::access_flags::transfer_write)))
-		//		<< gl::cmd_copy_buffer(hdr_bokeh_param_buffer.get(), hdr_bokeh_param_buffer_prev.get())
+//		<< gl::cmd_copy_buffer(hdr_bokeh_param_buffer.get(), hdr_bokeh_param_buffer_prev.get())
 		<< hdr_bokeh_param_buffer.update_task({ parameters_initial }, 0)();
 
 	recorder

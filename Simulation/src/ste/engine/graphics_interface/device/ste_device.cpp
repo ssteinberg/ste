@@ -55,12 +55,20 @@ ste_device::queues_t ste_device::create_queues(const vk::vk_logical_device &devi
 }
 
 void ste_device::recreate_swap_chain() {
-	// Wait for all queue threads and then wait for all queues to finish processing, allowing us to recreate the swap-chain 
+	// Wait for all queue threads and locks them and then wait for all queues to finish processing, allowing us to recreate the swap-chain 
 	// and queue safely.
-	wait_idle();
+	for (auto &q : device_queues) {
+		q.wait_lock();
+	}
+	device.wait_idle();
 
 	// Recreate swap-chain
 	presentation_surface->recreate_swap_chain();
+
+	// Unlock the queues
+	for (auto &q : device_queues) {
+		q.unlock();
+	}
 
 	// Signal
 	queues_and_surface_recreate_signal.emit(this);

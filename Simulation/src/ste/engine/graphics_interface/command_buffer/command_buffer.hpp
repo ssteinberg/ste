@@ -32,7 +32,7 @@ public:
 protected:
 	vk::vk_command_buffers buffers;
 	vk::vk_command_buffer_type type;
-	const ste_queue_descriptor queue_descriptor;
+	ste_queue_descriptor queue_descriptor;
 
 	mutable commands_t commands;
 
@@ -43,9 +43,7 @@ protected:
 		: buffers(pool.allocate_buffers(1, type)),
 		type(type),
 		queue_descriptor(queue_descriptor)
-	{
-		commands.reserve(10);
-	}
+	{}
 
 	virtual VkCommandBufferUsageFlags record_flags() const = 0;
 
@@ -64,11 +62,16 @@ protected:
 		host_commands_reset_on_submit_if_needed();
 	}
 
+	template <typename... Args>
+	static auto create_recorder(Args&&... args) {
+		return command_recorder(std::forward<Args>(args)...);
+	}
+
 public:
 	virtual ~command_buffer() noexcept {}
 
 	command_buffer(command_buffer&&) = default;
-	command_buffer &operator=(command_buffer&&) = default;
+	command_buffer &operator=(command_buffer&& o) = default;
 
 	/**
 	*	@brief	Creates a recorder which records the command buffer
@@ -77,7 +80,7 @@ public:
 	*			the recorder's finish() method.
 	*/
 	auto record() {
-		return command_recorder(*this, queue_descriptor);
+		return create_recorder(*this, queue_descriptor);
 	}
 
 	auto &get_queue_descriptor() const { return queue_descriptor; }
@@ -138,6 +141,9 @@ private:
 	}
 
 public:
+	command_buffer_impl(command_buffer_impl&&) = default;
+	command_buffer_impl &operator=(command_buffer_impl&& o) = default;
+
 	/**
 	*	@brief	Resets the command buffer
 	*/
@@ -166,7 +172,7 @@ template <VkCommandBufferUsageFlags flags, bool resetable, bool oneshot>
 class command_buffer_secondary_impl : public _internal::command_buffer_impl<flags, vk::vk_command_buffer_type::secondary, resetable, oneshot> {
 	template <VkCommandPoolCreateFlags, bool>
 	friend class command_pool;
-	friend command_recorder;
+	friend class command_recorder;
 	using Base = _internal::command_buffer_impl<flags, vk::vk_command_buffer_type::secondary, resetable, oneshot>;
 
 private:
@@ -175,6 +181,9 @@ private:
 	using Base::record;
 
 public:
+	command_buffer_secondary_impl(command_buffer_secondary_impl&&) = default;
+	command_buffer_secondary_impl &operator=(command_buffer_secondary_impl&& o) = default;
+
 	/**
 	*	@brief	Creates a recorder which records the command buffer
 	*
@@ -182,9 +191,9 @@ public:
 	*			the recorder's finish() method.
 	*/
 	auto record(const secondary_command_buffer_inheritance &inheritance) {
-		return command_recorder(*this, 
-								Base::queue_descriptor,
-								inheritance);
+		return Base::create_recorder(*this,
+									 Base::queue_descriptor,
+									 inheritance);
 	}
 
 private:

@@ -36,6 +36,11 @@ struct ste_queue_descriptor {
 	std::uint32_t timestamp_valid_bits{ 0 };
 
 	ste_queue_descriptor() = delete;
+
+	ste_queue_descriptor(ste_queue_descriptor&&) = default;
+	ste_queue_descriptor(const ste_queue_descriptor&) = default;
+	ste_queue_descriptor &operator=(ste_queue_descriptor&&) = default;
+	ste_queue_descriptor &operator=(const ste_queue_descriptor&) = default;
 };
 
 class ste_queue_descriptors {

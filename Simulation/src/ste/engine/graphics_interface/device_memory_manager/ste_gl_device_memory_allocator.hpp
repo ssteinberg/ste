@@ -34,8 +34,7 @@ private:
 
 	static constexpr memory_type_t memory_types = 32;
 
-	using heap_ptr_t = std::unique_ptr<heap_t>;
-	using heaps_t = std::array<heap_ptr_t, memory_types>;
+	using heaps_t = std::array<heap_t, memory_types>;
 
 public:
 	// Allocate 256MB chunks by default
@@ -45,17 +44,10 @@ public:
 
 private:
 	std::reference_wrapper<const vk::vk_logical_device> device;
-	const heaps_t heaps;
+	mutable heaps_t heaps;
 	std::uint64_t minimal_allocation_size_bytes;
 
 private:
-	static auto create_empty_heaps_map() {
-		heaps_t h;
-		for (memory_type_t type = 0; type < memory_types; ++type)
-			h[type] = std::make_unique<heap_t>();
-		return h;
-	}
-
 	static bool memory_type_matches_requirements(const memory_type_t &type,
 												 const VkMemoryRequirements &memory_requirements) {
 		return !!(memory_requirements.memoryTypeBits & (1 << type));
@@ -154,7 +146,7 @@ private:
 		allocation_t allocation;
 
 		assert(memory_type < heaps.size());
-		auto &heap = *heaps[memory_type];
+		auto &heap = heaps[memory_type];
 
 		{
 			std::unique_lock<std::mutex> lock(*heap.m);
@@ -200,7 +192,6 @@ public:
 	ste_gl_device_memory_allocator(const vk::vk_logical_device &device,
 								   std::uint64_t minimal_allocation_size_bytes = default_minimal_allocation_size_bytes)
 		: device(device), 
-		heaps(create_empty_heaps_map()), 
 		minimal_allocation_size_bytes(minimal_allocation_size_bytes)
 	{}
 
@@ -391,7 +382,7 @@ public:
 		std::uint64_t total_commited_memory = 0;
 
 		assert(type < heaps.size());
-		auto &heap = *heaps[type];
+		auto &heap = heaps[type];
 
 		{
 			std::unique_lock<std::mutex> lock(*heap.m);
@@ -434,7 +425,7 @@ public:
 		std::uint64_t total_allocated_memory = 0;
 
 		assert(type < heaps.size());
-		auto &heap = *heaps[type];
+		auto &heap = heaps[type];
 
 		{
 			std::unique_lock<std::mutex> lock(*heap.m);

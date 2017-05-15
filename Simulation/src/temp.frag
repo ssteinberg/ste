@@ -15,6 +15,6 @@ layout(binding = 0) uniform uniform_buffer_object {
 } ubo;
 
 void main() {
-    vec3 c = fragColor * textureLod(texSampler, Tex, abs(ubo.data.x) * 5).rgb *1000.f;// abs(.0001f + pow(ubo.data.x,8)*1000.f);
+    vec3 c = fragColor * textureLod(texSampler, Tex, abs(ubo.data.x) * 5).rgb * (.001f + pow(ubo.data.x,2)*10.f);
 	outColor = vec4(XYZtoxyY(RGBtoXYZ(c)), 0);
 }

@@ -77,6 +77,17 @@ public:
 		pool.reset_release();
 	}
 
+	/**
+	*	@brief	From the spec:
+	*			Trimming a command pool may be useful to return unused memory back to the system, returning the total outstanding memory allocated by the pool back to a more "average" value.
+	*			In most cases trimming will result in a reduction in allocated but unused memory, but it does not guarantee the "ideal" behaviour.
+	*			Trimming may be an expensive operation, and should not be called frequently. Trimming should be treated as a way to relieve memory pressure after application-known points when
+	*			there exists enough unused memory that the cost of trimming is "worth" it.
+	*/
+	void trim() {
+		pool.trim();
+	}
+
 	auto &get_queue_descriptor() const { return queue_descriptor; }
 	auto &get() const { return pool; }
 };
