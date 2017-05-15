@@ -125,12 +125,12 @@ auto fill_image_array(const device_image<dimensions, allocation_policy> &image,
 		auto &q = ctx.device().select_queue(queue_selector);
 
 		// Create staging image
-		device_image<2, device_resource_allocation_policy_host_visible_coherent>
+		device_image<dimensions, device_resource_allocation_policy_host_visible_coherent>
 			staging_image(ctx, image_initial_layout::preinitialized,
 						  image_format, surface.extent(), image_usage::transfer_src,
 						  1, base_layer + layers, false, false);
 		auto staging_image_bytes = staging_image.get_underlying_memory().get_size();
-		auto mmap_u8_ptr = staging_image.get_underlying_memory().mmap<glm::u8>(0, staging_image_bytes);
+		auto mmap_u8_ptr = staging_image.get_underlying_memory().template mmap<glm::u8>(0, staging_image_bytes);
 
 		// Upload
 		for (std::uint32_t m = base_mip; m < mips; ++m) {
@@ -168,22 +168,18 @@ auto fill_image_array(const device_image<dimensions, allocation_policy> &image,
 					auto recorder = command_buffer.record();
 
 					// Move to transfer layouts
-					auto image_barriers = std::vector<image_memory_barrier>
-					{
-						image_memory_barrier(staging_image,
-											 m == 0 ? image_layout::preinitialized : image_layout::transfer_src_optimal,
-											 image_layout::transfer_src_optimal,
-											 access_flags::host_write,
-											 access_flags::transfer_read),
-						image_memory_barrier(image,
-											 m == 0 ? image_layout::undefined : image_layout::transfer_dst_optimal,
-											 image_layout::transfer_dst_optimal,
-											 access_flags::none,
-											 access_flags::transfer_write)
-					};
 					auto barrier = pipeline_barrier(pipeline_stage::top_of_pipe,
 													pipeline_stage::top_of_pipe,
-													image_barriers);
+													image_memory_barrier(staging_image,
+																		 m == 0 ? image_layout::preinitialized : image_layout::transfer_src_optimal,
+																		 image_layout::transfer_src_optimal,
+																		 access_flags::host_write,
+																		 access_flags::transfer_read),
+													image_memory_barrier(image,
+																		 m == 0 ? image_layout::undefined : image_layout::transfer_dst_optimal,
+																		 image_layout::transfer_dst_optimal,
+																		 access_flags::none,
+																		 access_flags::transfer_write));
 					recorder << cmd_pipeline_barrier(barrier);
 
 					// Copy to image

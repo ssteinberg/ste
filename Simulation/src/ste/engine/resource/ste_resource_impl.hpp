@@ -21,12 +21,12 @@ namespace _detail {
 // Deferred resource base
 template <typename T, class resource_deferred_policy>
 class ste_resource_base_deferred {
-	using lambda_t = std::function<void(void)>;
+	using policy_t = typename resource_deferred_policy::template policy<T>;
 
 private:
 	void block() const {
 		// consume() is a thread-safe blocker
-		policy.consume();
+		policy.consume(res);
 		wait_func_ptr.store(&ste_resource_base_deferred::noop, std::memory_order_release);
 	}
 	void noop() const {}
@@ -34,9 +34,9 @@ private:
 private:
 	using wait_func_ptr_t = decltype(&ste_resource_base_deferred::block);
 
-	T res;
+	mutable T res;
 	mutable std::atomic<wait_func_ptr_t> wait_func_ptr{ &ste_resource_base_deferred::block };
-	mutable resource_deferred_policy policy;
+	mutable policy_t policy;
 
 private:
 	void wait() const {
@@ -50,9 +50,7 @@ private:
 
 protected:
 	virtual ~ste_resource_base_deferred() noexcept {}
-	void set_resource(T&& res) {
-		this->res = std::move(res);
-	}
+
 	auto& get_resource() & {
 		wait();
 		return res;
@@ -67,12 +65,12 @@ protected:
 	}
 
 public:
-	template <typename ... Params>
+	template <typename L, typename ... Params>
 	ste_resource_base_deferred(const ste_context &ctx,
-							   lambda_t&& l,
+							   L&& l,
 							   Params&&... params)
 		: res(std::forward<Params>(params)...),
-		policy(ctx, std::move(l))
+		policy(ctx, std::forward<L>(l))
 	{}
 	template <typename ... Params>
 	ste_resource_base_deferred(ste_resource_dont_defer,
@@ -166,7 +164,7 @@ private:
 			auto res = tuple_call(&creator,
 								  &ste_resource_creator<T>::template operator() < const ste_context & > ,
 								  std::move(pack));
-			this->set_resource(std::move(res));
+			return std::move(res);
 		});
 	}
 	template <typename CtorParam = const ste_context &>
@@ -176,7 +174,7 @@ private:
 		{
 			ste_resource_creator<T> creator;
 			auto res = creator();
-			this->set_resource(std::move(res));
+			return std::move(res);
 		});
 	}
 	template <typename CtorParam = const ste_context &>
@@ -196,7 +194,7 @@ private:
 			auto res = tuple_call(&creator,
 								  &ste_resource_creator<T>::template operator() < const ste_context &, Params... > ,
 								  std::move(pack));
-			this->set_resource(std::move(res));
+			return std::move(res);
 		});
 	}
 	template <typename ... Params>
@@ -211,7 +209,7 @@ private:
 			auto res = tuple_call(&creator,
 								  &ste_resource_creator<T>::template operator() < Params... > ,
 								  std::move(pack));
-			this->set_resource(std::move(res));
+			return std::move(res);
 		});
 	}
 	template <typename ... Params>
@@ -288,7 +286,7 @@ private:
 			auto res_ptr = std::make_unique<T>(tuple_call(&creator,
 														  &ste_resource_creator<T>::template operator() < const ste_context & > ,
 														  std::move(pack)));
-			this->set_resource(std::move(res_ptr));
+			return std::move(res_ptr);
 		});
 	}
 	template <typename CtorParam = const ste_context &>
@@ -298,7 +296,7 @@ private:
 		{
 			ste_resource_creator<T> creator;
 			auto res_ptr = std::make_unique<T>(creator());
-			this->set_resource(std::move(res_ptr));
+			return std::move(res_ptr);
 		});
 	}
 	template <typename CtorParam = const ste_context &>
@@ -318,7 +316,7 @@ private:
 			auto res_ptr = std::make_unique<T>(tuple_call(&creator,
 														  &ste_resource_creator<T>::template operator() < const ste_context &, Params... > ,
 														  std::move(pack)));
-			this->set_resource(std::move(res_ptr));
+			return std::move(res_ptr);
 		});
 	}
 	template <typename ... Params>
@@ -333,7 +331,7 @@ private:
 			auto res_ptr = std::make_unique<T>(tuple_call(&creator,
 														  &ste_resource_creator<T>::template operator() < Params... > ,
 														  std::move(pack)));
-			this->set_resource(std::move(res_ptr));
+			return std::move(res_ptr);
 		});
 	}
 	template <typename ... Params>
@@ -370,7 +368,7 @@ public:
 								   const ste_context &ctx,
 								   L&& l)
 		: Base(ctx,
-			   std::forward<L>(l))
+			   [l = std::forward<L>(l)]() mutable { return std::make_unique<T>(l()); })
 	{}
 	template <typename L>
 	ste_resource_deferred_ptr_wrap(ste_resource_create_with_lambda,
@@ -383,9 +381,8 @@ public:
 	ste_resource_deferred_ptr_wrap(ste_resource_deferred_ptr_wrap&&) = default;
 	ste_resource_deferred_ptr_wrap&operator=(ste_resource_deferred_ptr_wrap&&) = default;
 
-	auto& get() & { return *Base::get_resource(); }
-	auto&& get() && { return std::move(*Base::get_resource()); }
-	auto& get() const& { return *Base::get_resource(); }
+	auto& get() { return *Base::get_resource(); }
+	auto& get() const { return *Base::get_resource(); }
 };
 
 }

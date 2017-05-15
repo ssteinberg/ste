@@ -25,18 +25,18 @@ class device_image : public device_image_base,
 	using extent_type = typename image_extent_type<dimensions>::type;
 
 public:
-	static glm::uvec3 size_to_extent(const extent_type &size) {
-		glm::uvec3 extent = { 1,1,1 };
+	static glm::uvec3 make_uvec3_extent(const extent_type &extent) {
+		glm::uvec3 ret = { 1,1,1 };
 		for (int i = 0; i < dimensions; ++i)
-			extent[i] = size[i];
-		return extent;
+			ret[i] = extent[i];
+		return ret;
 	}
 
 public:
 	device_image(const ste_context &ctx,
 				 const image_initial_layout &layout,
 				 const format &image_format,
-				 const extent_type &size,
+				 const extent_type &extent,
 				 const image_usage &usage,
 				 std::uint32_t mips = 1,
 				 std::uint32_t layers = 1,
@@ -47,7 +47,7 @@ public:
 			   layout,
 			   static_cast<VkFormat>(image_format),
 			   dimensions,
-			   size_to_extent(size),
+			   make_uvec3_extent(extent),
 			   static_cast<VkImageUsageFlags>(usage),
 			   mips,
 			   layers,
@@ -55,6 +55,7 @@ public:
 			   optimal_tiling,
 			   sparse)
 	{}
+	~device_image() noexcept {}
 
 	device_image(device_image&&) = default;
 	device_image &operator=(device_image&&) = default;

@@ -77,10 +77,10 @@ auto inline queue_transfer(const ste_context &ctx,
 				auto barrier = pipeline_barrier(src_stage,
 												dst_stage,
 												image_layout_transform_barrier(image,
-																			   src_access,
 																			   src_layout,
-																			   dst_access,
-																			   dst_layout));
+																			   dst_layout,
+																			   src_access,
+																			   dst_access));
 				recorder << cmd_pipeline_barrier(barrier);
 			}
 			ste_device_queue::submit_batch(std::move(acquire_batch));
@@ -95,7 +95,7 @@ auto inline queue_transfer(const ste_context &ctx,
 	auto user_data = std::make_shared<semaphore_t>(ctx.device().get_sync_primitives_pools().semaphores().claim());
 	auto release_acquire_boundary = std::make_shared<boundary<void>>();
 
-	auto src_future = src_queue.enqueue([=, &image]() {
+	src_queue.enqueue([=, &image]() {
 		auto release_batch = ste_device_queue::thread_allocate_batch<user_data_t>(user_data);
 		auto& command_buffer = release_batch->acquire_command_buffer();
 		{
@@ -118,16 +118,14 @@ auto inline queue_transfer(const ste_context &ctx,
 		ste_device_queue::submit_batch(std::move(release_batch), {}, { &sem });
 		release_acquire_boundary->signal();
 	});
-	auto dst_future = dst_queue.enqueue([=, &image, f = std::move(src_future)]() {
-		f.wait();
-
+	auto dst_future = dst_queue.enqueue([=, &image]() {
 		auto acquire_batch = ste_device_queue::thread_allocate_batch<user_data_t>(user_data);
 		auto& command_buffer = acquire_batch->acquire_command_buffer();
 		{
 			auto recorder = command_buffer.record();
 
 			// Acquire queue ownership
-			auto barrier = pipeline_barrier(pipeline_stage::top_of_pipe,
+			auto barrier = pipeline_barrier(pipeline_stage::bottom_of_pipe,
 											dst_stage,
 											queue_release_acquire_barrier(image,
 																		  src_access,
@@ -150,9 +148,9 @@ auto inline queue_transfer(const ste_context &ctx,
 
 /**
 *	@brief	Enqueues image queue ownership transfer and image layout transform, perserving old content.
-*			Deduces the access flags based on source and destination layouts. Layouts must no be undefined, preinitialized or general.
+*			Deduces the access flags based on source and destination layouts. Layouts must no be undefined or preinitialized.
 *
-*	@throws	ste_engine_exception		If image layout is undefined, preinitialized or general.
+ *	@throws	ste_engine_exception		If image layout is undefined or preinitialized.
  *	
  *	@return	Enqueue future.
 */
@@ -215,9 +213,9 @@ auto inline queue_transfer_discard(const ste_context &ctx,
 
 /**
  *	@brief	Enqueues image queue ownership transfer and image layout transform, discarding old content.
-*			Deduces the access flags based on source and destination layouts. Layouts must no be undefined, preinitialized or general.
+*			Deduces the access flags based on source and destination layouts. Layouts must no be undefined or preinitialized.
 *			
- *	@throws	ste_engine_exception		If image layout is undefined, preinitialized or general.
+ *	@throws	ste_engine_exception		If image layout is undefined or preinitialized.
  *	
  *	@return	Enqueue future.
 */

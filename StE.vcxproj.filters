@@ -51,21 +51,6 @@
     <ClCompile Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\hdr_dof_postprocess.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\steps\hdr_bokeh_blur_task.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\steps\hdr_compute_histogram_sums_task.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\steps\hdr_compute_minmax_task.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\steps\hdr_create_histogram_task.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\steps\hdr_tonemap_coc_task.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_graphics\scene\geometry_cull\scene_geo_cull_dispatch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -357,27 +342,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\hdr_dof_postprocess.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\steps\hdr_bloom_blurx_task.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\steps\hdr_bloom_blury_task.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\steps\hdr_bokeh_blur_task.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\steps\hdr_compute_histogram_sums_task.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\steps\hdr_compute_minmax_task.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\steps\hdr_create_histogram_task.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\steps\hdr_tonemap_coc_task.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\transforms_ring_buffers.hpp">
@@ -1217,9 +1181,6 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\shader\binding\ste_shader_stage_binding.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\image\texture.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\image\image_view.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1749,6 +1710,51 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device\device_pipeline_resource_disposer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\sampler\common_samplers.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\composite\packaged_image_sampler.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\composite\combined_image_sampler.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\composite\texture.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\composite\composite_resource_component_storage.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\composite\packaged_texture.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\steps\hdr_tonemap_coc_fragment.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\steps\hdr_compute_histogram_fragment.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\steps\hdr_bloom_blur_y_fragment.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\steps\hdr_bloom_blur_x_fragment.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\steps\hdr_bokeh_blur_fragment.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\steps\hdr_compute_histogram_sums_fragment.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\steps\hdr_compute_minmax_fragment.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\common_shaders\fullscreen_triangle.vert">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\hdr_dof_bokeh_parameters.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

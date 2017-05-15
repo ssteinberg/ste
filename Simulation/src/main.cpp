@@ -30,7 +30,7 @@
 #include <rendering_presentation_system.hpp>
 #include <fragment_graphics.hpp>
 
-#include <static_vector.hpp>
+#include <hdr_dof_postprocess.hpp>
 
 using namespace ste;
 
@@ -42,7 +42,7 @@ private:
 	ste_resource<gl::device_image<2>> image;
 	gl::image_view<gl::image_type::image_2d> image_view;
 	gl::sampler sampler;
-	gl::texture<gl::image_type::image_2d> texture;
+	gl::combined_image_sampler<gl::image_type::image_2d> texture;
 
 	// Vertex and index buffer
 	using vertex = gl::vertex_input_layout<glm::vec2, glm::vec3, glm::vec2>;
@@ -55,14 +55,14 @@ private:
 
 public:
 	simple_storage(const ste_context &ctx)
-		: image(resource::surface_factory::create_image_2d<gl::format::r8g8b8a8_unorm>(ctx,
-																					   R"(Data\models\crytek-sponza\images\Sponza_Bricks_a_Albedo.png)",
-																					   gl::image_usage::sampled,
-																					   gl::image_layout::shader_read_only_optimal)),
+		: image(resource::surface_factory::image_from_surface_2d<gl::format::r8g8b8a8_unorm>(ctx,
+																							 R"(Data\models\crytek-sponza\images\Sponza_Bricks_a_Albedo.png)",
+																							 gl::image_usage::sampled,
+																							 gl::image_layout::shader_read_only_optimal)),
 		image_view(*image),
 		sampler(ctx.device(), gl::sampler_parameter::filtering(gl::sampler_filter::linear, gl::sampler_filter::linear,
 															   gl::sampler_mipmap_mode::linear)),
-		texture(gl::make_texture(image_view, sampler, gl::image_layout::shader_read_only_optimal)),
+		texture(gl::make_combined_image_sampler(&image_view, &sampler, gl::image_layout::shader_read_only_optimal)),
 		index_buffer(ctx, std::vector<std::uint32_t>{ 0, 2, 1, 0, 1, 3 }, gl::buffer_usage::index_buffer),
 		vertex_buffer(ctx, gl::buffer_usage::vertex_buffer),
 		ubo(ctx,
@@ -96,13 +96,14 @@ public:
 	static void setup_graphics_pipeline(const gl::rendering_presentation_system &rs,
 										gl::pipeline_auditor_graphics &auditor) {
 		auditor.set_vertex_attributes(0, gl::vertex_attributes<simple_storage::vertex>());
-		auditor.set_framebuffer_layout(rs.presentation_framebuffer_layout());
 	}
 
 public:
-	simple_fragment(gl::rendering_presentation_system &rs)
+	simple_fragment(gl::rendering_presentation_system &rs,
+					gl::framebuffer_layout &&fb_layout)
 		: Base(rs,
 			   create_settings(rs.get_creating_context()),
+			   std::move(fb_layout),
 			   "temp.vert", "temp.frag"),
 		ctx(rs.get_creating_context()),
 		s(rs.acquire_storage<simple_storage>())
@@ -132,22 +133,22 @@ public:
 		recorder
 			<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::fragment_shader,
 															 gl::pipeline_stage::transfer,
-															 { gl::buffer_memory_barrier(s->ubo,
-																						 gl::access_flags::uniform_read,
-																						 gl::access_flags::transfer_write),
+															 gl::buffer_memory_barrier(s->ubo,
+																					   gl::access_flags::uniform_read,
+																					   gl::access_flags::transfer_write),
 															 gl::buffer_memory_barrier(s->vertex_buffer,
 																					   gl::access_flags::vertex_attribute_read,
-																					   gl::access_flags::transfer_write) }))
+																					   gl::access_flags::transfer_write)))
 			<< s->vertex_buffer.update_task({ v }, 0)()
 			<< s->ubo.update_task({ data }, 0)()
 			<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::transfer,
 															 gl::pipeline_stage::vertex_shader,
-															 { gl::buffer_memory_barrier(s->ubo,
-																						 gl::access_flags::transfer_write,
-																						 gl::access_flags::uniform_read),
+															 gl::buffer_memory_barrier(s->ubo,
+																					   gl::access_flags::transfer_write,
+																					   gl::access_flags::uniform_read),
 															 gl::buffer_memory_barrier(s->vertex_buffer,
 																					   gl::access_flags::transfer_write,
-																					   gl::access_flags::vertex_attribute_read) }))
+																					   gl::access_flags::vertex_attribute_read)))
 			<< draw_task(6, 1);
 	}
 };
@@ -158,13 +159,26 @@ class simple_renderer : public gl::rendering_presentation_system {
 private:
 	std::reference_wrapper<gl::presentation_engine> presentation;
 
+	gl::framebuffer hdr_fb;
+	graphics::hdr_dof_postprocess hdr;
+
 	simple_fragment frag1;
 	text::text_fragment text_frag;
+
+	const gl::device_image<2> *hdr_input_image;
+	gl::image_view<gl::image_type::image_2d> hdr_input_view;
 
 private:
 	static auto create_fb_layout(const ste_context &ctx) {
 		gl::framebuffer_layout fb_layout;
-		fb_layout[0] = gl::clear_store(ctx.device().get_surface().surface_format(),
+		fb_layout[0] = gl::ignore_store(ctx.device().get_surface().surface_format(),
+										gl::image_layout::color_attachment_optimal);
+		return fb_layout;
+	}
+
+	static auto create_hdr_fb_layout(const ste_context &ctx) {
+		gl::framebuffer_layout fb_layout;
+		fb_layout[0] = gl::clear_store(graphics::hdr_dof_postprocess::input_image_format(),
 									   gl::image_layout::color_attachment_optimal);
 		return fb_layout;
 	}
@@ -176,9 +190,16 @@ public:
 		: Base(ctx,
 			   create_fb_layout(ctx)),
 		presentation(presentation),
-		frag1(*this),
-		text_frag(tm.create_fragment())
-	{}
+		hdr_fb(ctx, create_hdr_fb_layout(ctx), device().get_surface().extent()),
+		hdr(*this, gl::framebuffer_layout(presentation_framebuffer_layout())),
+		frag1(*this, gl::framebuffer_layout(hdr_fb.get_layout())),
+		text_frag(tm.create_fragment()),
+		hdr_input_image(&hdr.acquire_input_image(gl::pipeline_stage::fragment_shader, gl::image_layout::color_attachment_optimal)),
+		hdr_input_view(*hdr_input_image)
+	{
+		hdr_fb[0] = gl::framebuffer_attachment(hdr_input_view, glm::vec4(.0f));
+		frag1.set_framebuffer(hdr_fb);
+	}
 	~simple_renderer() noexcept {}
 
 	void render() override final {}
@@ -207,16 +228,25 @@ public:
 				}
 
 				auto &fb = swap_chain_framebuffer(batch->presentation_image_index());
-				frag1.set_framebuffer(fb);
-				text_frag.manager().set_framebuffer(fb);
+				hdr.attach_framebuffer(fb);
+				text_frag.manager().attach_framebuffer(fb);
 
-				recorder << frag1
-					<< text_frag;
-				recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::color_attachment_output,
-																		  gl::pipeline_stage::top_of_pipe,
-																		  gl::image_layout_transform_barrier(swap_chain_image(batch->presentation_image_index()).image,
-																											 gl::image_layout::color_attachment_optimal,
-																											 gl::image_layout::present_src_khr)));
+				recorder
+					<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::fragment_shader,
+																	 gl::pipeline_stage::fragment_shader,
+																	 gl::image_layout_transform_barrier(*hdr_input_image,
+																										gl::image_layout::shader_read_only_optimal,
+																										gl::image_layout::color_attachment_optimal)))
+					<< frag1
+					<< hdr
+
+					<< text_frag
+
+					<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::color_attachment_output,
+																	 gl::pipeline_stage::top_of_pipe,
+																	 gl::image_layout_transform_barrier(swap_chain_image(batch->presentation_image_index()).image,
+																										gl::image_layout::color_attachment_optimal,
+																										gl::image_layout::present_src_khr)));
 			}
 
 			// Submit command buffer and present

@@ -191,6 +191,13 @@ public:
 
 		return this->attached_framebuffer = &fb;
 	}
+
+	/**
+	*	@brief	Returns the pipeline's expected framebuffer layout
+	*/
+	const auto& get_framebuffer_layout() const {
+		return fb_layout;
+	}
 };
 
 }

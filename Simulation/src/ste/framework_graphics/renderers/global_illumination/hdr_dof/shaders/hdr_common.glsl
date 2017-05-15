@@ -7,7 +7,7 @@ const float min_luminance = .000001f;
 
 struct hdr_bokeh_parameters {
 	int lum_min, lum_max;
-	float focus, _unused;
+	float focus;
 };
 
 struct bokeh_point_descriptor {

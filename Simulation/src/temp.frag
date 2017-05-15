@@ -1,6 +1,8 @@
 #version 450
 #type frag
 
+#include <chromaticity.glsl>
+
 layout(location = 0) in vec3 fragColor;
 layout(location = 1) in vec2 Tex;
 
@@ -13,5 +15,6 @@ layout(binding = 0) uniform uniform_buffer_object {
 } ubo;
 
 void main() {
-    outColor = vec4(fragColor * textureLod(texSampler, Tex, abs(ubo.data.x) * 5).rgb, 1.0);
+    vec3 c = fragColor * textureLod(texSampler, Tex, abs(ubo.data.x) * 5).rgb *1000.f;// abs(.0001f + pow(ubo.data.x,8)*1000.f);
+	outColor = vec4(XYZtoxyY(RGBtoXYZ(c)), 0);
 }

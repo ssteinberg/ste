@@ -332,8 +332,9 @@ public:
 		ctor_val(std::forward<Ts>(args)...);
 	}
 
-	const std::remove_reference_t<T>& get() const { return val(); }
-	std::remove_reference_t<T>& get() { return val(); }
+	const std::remove_reference_t<T>& get() const& { return val(); }
+	std::remove_reference_t<T>& get() & { return val(); }
+	std::remove_reference_t<T>&& get() && { return std::move(*this).val(); }
 
 	const reference operator*() const { return get_val(); }
 	reference operator*() { return get_val(); }

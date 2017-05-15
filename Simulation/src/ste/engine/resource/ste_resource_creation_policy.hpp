@@ -10,6 +10,8 @@
 #include <memory>
 #include <functional>
 
+#include <optional.hpp>
+
 namespace ste {
 
 struct ste_resource_dont_defer {};
@@ -33,68 +35,62 @@ struct ste_resource_async_policy_task_scheduler {
 *	@brief	Async resource creation policy. 
 *	The resource will be constructed on a background worker thread.
 *
-*	@param	async_policy	Policy that dictates the creation of the background thread
+*	@param	async_policy		Policy that dictates the creation of the background thread
 */
 template <class async_policy>
-class ste_resource_deferred_creation_policy_async {
-	using lambda_t = std::function<void(void)>;
-	struct creator_t {
+struct ste_resource_deferred_creation_policy_async {
+	template <typename T>
+	class policy {
+	private:
 		std::mutex m;
-		std::future<void> future;
-		bool received{ false };
+		optional<std::future<T>> future;
 
-		creator_t() = default;
-		creator_t(std::future<void> &&f) : future(std::move(f)) {}
-	};
+	public:
+		policy() = default;
+		template <typename L>
+		policy(const ste_context &ctx, L&& lambda) : future(async_policy::async(ctx, std::forward<L>(lambda))) {}
 
-	creator_t creator;
+		policy(policy&&) = default;
+		policy &operator=(policy&&) = default;
 
-public:
-	void consume() {
-		std::unique_lock<std::mutex> l(creator.m);
-		if (!creator.received) {
-			creator.future.get();
-			creator.received = true;
+		void consume(T &t) {
+			std::unique_lock<std::mutex> l(m);
+			if (future) {
+				t = future.get().get();
+				future = none;
+			}
 		}
-	}
-
-	ste_resource_deferred_creation_policy_async() = default;
-	template <typename... Ts>
-	ste_resource_deferred_creation_policy_async(Ts&&... ts) : creator{
-		async_policy::async(std::forward<Ts>(ts)...)
-	} {}
+	};
 };
 
 /**
 *	@brief	Lazy resource creation policy. 
 *			Resource will be instantiated only once a getter is called.
 */
-class ste_resource_deferred_creation_policy_lazy {
-	using lambda_t = std::function<void(void)>;
-	struct creator_t {
+struct ste_resource_deferred_creation_policy_lazy {
+	template <typename T>
+	class policy {
+	using lambda_t = std::function<T(void)>;
+	private:
 		std::mutex m;
-		std::unique_ptr<lambda_t> lambda{ nullptr };
+		optional<lambda_t> lambda;
 
-		creator_t() = default;
-		creator_t(std::unique_ptr<lambda_t> &&lambda) : lambda(std::move(lambda)) {}
-	};
+	public:
+		policy() = default;
+		template <typename L>
+		policy(const ste_context &, L&& lambda) : lambda(std::forward<L>(lambda)) {}
 
-	creator_t creator;
+		policy(policy&&) = default;
+		policy &operator=(policy&&) = default;
 
-public:
-	void consume() {
-		std::unique_lock<std::mutex> l(creator.m);
-		if (creator.lambda != nullptr) {
-			(*creator.lambda)();
-			creator.lambda = nullptr;
+		void consume(T &t) {
+			std::unique_lock<std::mutex> l(m);
+			if (lambda) {
+				t = lambda.get()();
+				lambda = none;
+			}
 		}
-	}
-
-	ste_resource_deferred_creation_policy_lazy() = default;
-	template <typename L>
-	ste_resource_deferred_creation_policy_lazy(const ste_context &, L&& lambda) : creator{
-		std::make_unique<lambda_t>(std::forward<L>(lambda))
-	} {}
+	};
 };
 
 }

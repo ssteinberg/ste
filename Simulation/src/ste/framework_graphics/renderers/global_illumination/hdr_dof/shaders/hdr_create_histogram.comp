@@ -8,8 +8,7 @@ layout(local_size_x = 32, local_size_y = 32) in;
 
 layout(r32f, binding = 0) restrict readonly uniform image2D hdr_lums;
 
-// TODO: Changed from atomic variable
-layout(std430, binding = 10) restrict buffer histogram_data {
+layout(std430, binding = 1) restrict buffer histogram_data {
 	uint histogram[bins];
 };
 

@@ -18,7 +18,7 @@ out gl_PerVertex {
 
 void main() {
 	mat2 m = mat2(ubo.data.xy, ubo.data.zw);
-    gl_Position = vec4(m * inPosition, 0.0, 1.0);
+    gl_Position = vec4(inPosition, 0.0, 1.0);
     fragColor = inColor;
 	Tex = inTex;
 }

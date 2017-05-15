@@ -27,8 +27,6 @@ private:
 	ste_device::queues_and_surface_recreate_signal_type::connection_type surface_recreate_signal_connection;
 
 protected:
-	auto& device() { return get_creating_context().device(); }
-	const auto& device() const { return get_creating_context().device(); }
 	/**
 	*	@brief	Returns a framebuffer with a swap-chain image (of the selected index) bound to color attachment at location 0.
 	*/
@@ -44,8 +42,9 @@ private:
 
 		std::vector<framebuffer> v;
 		for (auto &swap_image : device().get_surface().get_swap_chain_images()) {
+			auto l = fb_layout;
 			framebuffer fb(get_creating_context(), 
-						   fb_layout,
+						   std::move(l),
 						   surface_extent,
 						   depth);
 			fb[0] = framebuffer_attachment(swap_image.view, glm::vec4(.0f));
@@ -58,10 +57,10 @@ private:
 
 public:
 	rendering_presentation_system(const ste_context &ctx,
-								  const gl::framebuffer_layout &fb_layout,
+								  gl::framebuffer_layout &&fb_layout,
 								  const depth_range &depth = depth_range::one_to_zero())
 		: rendering_system(ctx),
-		fb_layout(fb_layout),
+		fb_layout(std::move(fb_layout)),
 		depth(depth)
 	{
 		create_swap_chain_framebuffers();

@@ -17,6 +17,51 @@
 namespace ste {
 namespace gl {
 
+namespace _internal {
+
+struct pipeline_barrier_barriers_expander {
+	template <typename Barrier, typename... Barriers>
+	void operator()(std::vector<global_memory_barrier> &global_memory_barriers,
+					std::vector<buffer_memory_barrier> &buffer_barriers,
+					std::vector<image_memory_barrier>  &image_barriers,
+					Barrier&& barrier, Barriers&&... barriers) {
+		(*this)(global_memory_barriers,
+				buffer_barriers,
+				image_barriers,
+				std::forward<Barrier>(barrier));
+		(*this)(global_memory_barriers,
+				buffer_barriers,
+				image_barriers,
+				std::forward<Barriers>(barriers)...);
+	}
+	template <typename Barrier>
+	void operator()(std::vector<global_memory_barrier> &global_memory_barriers,
+					std::vector<buffer_memory_barrier> &buffer_barriers,
+					std::vector<image_memory_barrier>  &image_barriers,
+					Barrier&& barrier,
+					std::enable_if_t<std::is_constructible_v<global_memory_barrier, Barrier>>* = nullptr) {
+		global_memory_barriers.emplace_back(std::forward<Barrier>(barrier));
+	}
+	template <typename Barrier>
+	void operator()(std::vector<global_memory_barrier> &global_memory_barriers,
+					std::vector<buffer_memory_barrier> &buffer_barriers,
+					std::vector<image_memory_barrier>  &image_barriers,
+					Barrier&& barrier,
+					std::enable_if_t<std::is_constructible_v<buffer_memory_barrier, Barrier>>* = nullptr) {
+		buffer_barriers.emplace_back(std::forward<Barrier>(barrier));
+	}
+	template <typename Barrier>
+	void operator()(std::vector<global_memory_barrier> &global_memory_barriers,
+					std::vector<buffer_memory_barrier> &buffer_barriers,
+					std::vector<image_memory_barrier>  &image_barriers,
+					Barrier&& barrier,
+					std::enable_if_t<std::is_constructible_v<image_memory_barrier, Barrier>>* = nullptr) {
+		image_barriers.emplace_back(std::forward<Barrier>(barrier));
+	}
+};
+
+}
+
 class pipeline_barrier {
 private:
 	pipeline_stage src_stage;
@@ -40,42 +85,17 @@ public:
 		buffer_barriers(buffer_barriers),
 		image_barriers(image_barriers)
 	{}
+	template <typename... Barriers>
 	pipeline_barrier(const pipeline_stage &src_stage,
 					 const pipeline_stage &dst_stage,
-					 const std::vector<global_memory_barrier> &global_memory_barriers)
-		: src_stage(src_stage), dst_stage(dst_stage),
-		global_memory_barriers(global_memory_barriers)
-	{}
-	pipeline_barrier(const pipeline_stage &src_stage,
-					 const pipeline_stage &dst_stage,
-					 const std::vector<buffer_memory_barrier> &buffer_barriers)
-		: src_stage(src_stage), dst_stage(dst_stage),
-		buffer_barriers(buffer_barriers)
-	{}
-	pipeline_barrier(const pipeline_stage &src_stage,
-					 const pipeline_stage &dst_stage,
-					 const std::vector<image_memory_barrier> &image_barriers)
-		: src_stage(src_stage), dst_stage(dst_stage),
-		image_barriers(image_barriers)
-	{}
-	pipeline_barrier(const pipeline_stage &src_stage,
-					 const pipeline_stage &dst_stage,
-					 const global_memory_barrier &global_memory_barrier)
-		: src_stage(src_stage), dst_stage(dst_stage),
-		global_memory_barriers({ global_memory_barrier })
-	{}
-	pipeline_barrier(const pipeline_stage &src_stage,
-					 const pipeline_stage &dst_stage,
-					 const buffer_memory_barrier &buffer_barrier)
-		: src_stage(src_stage), dst_stage(dst_stage),
-		buffer_barriers({ buffer_barrier })
-	{}
-	pipeline_barrier(const pipeline_stage &src_stage,
-					 const pipeline_stage &dst_stage,
-					 const image_memory_barrier &image_barrier)
-		: src_stage(src_stage), dst_stage(dst_stage),
-		image_barriers({ image_barrier })
-	{}
+					 Barriers&&... barriers)
+		: src_stage(src_stage), dst_stage(dst_stage) 
+	{
+		_internal::pipeline_barrier_barriers_expander()(global_memory_barriers,
+														buffer_barriers,
+														image_barriers,
+														std::forward<Barriers>(barriers)...);
+	}
 	~pipeline_barrier() noexcept {}
 
 	pipeline_barrier(pipeline_barrier &&) = default;

@@ -5,6 +5,8 @@
 
 #include <stdafx.hpp>
 #include <ste_context.hpp>
+#include <ste_resource_traits.hpp>
+
 #include <device_pipeline_shader_stage.hpp>
 #include <device_pipeline_graphics.hpp>
 #include <command_recorder.hpp>
@@ -25,7 +27,7 @@ namespace text {
  *	@brief	Controls glyph loading, storage and rendering. Generates text rendering fragments.
  *			Provides a single device pipeline and framebuffer layout for all fragments created using this manager. 
  */
-class text_manager {
+class text_manager : ste_resource_deferred_create_trait {
 private:
 	friend class text_fragment;
 
@@ -66,7 +68,7 @@ public:
 	 *			Expects a framebuffer with initialized color attachment at location 0 with initial layout gl::image_layout::color_attachment_optimal. Final layout remains
 	 *			gl::image_layout::color_attachment_optimal.
 	 */
-	void set_framebuffer(gl::framebuffer &fb) {
+	void attach_framebuffer(gl::framebuffer &fb) {
 		pipeline.attach_framebuffer(fb);
 	}
 

@@ -35,7 +35,7 @@ public:
 private:
 	std::reference_wrapper<const ste_context> ctx;
 
-	const framebuffer_layout *layout;
+	framebuffer_layout layout;
 	attachment_map_t attachments;
 
 	glm::u32vec2 fb_extent;
@@ -49,8 +49,8 @@ private:
 	void attach(pipeline_layout_attachment_location location, framebuffer_attachment &&attachment) {
 		// Validate
 		{
-			auto layout_it = layout->find(location);
-			if (layout_it == layout->end()) {
+			auto layout_it = layout.find(location);
+			if (layout_it == layout.end()) {
 				// Location doesn't exist in layout
 				throw framebuffer_invalid_attachment_location_exception("Attachment location doesn't exist in framebuffer layout");
 			}
@@ -60,10 +60,9 @@ private:
 				throw framebuffer_attachment_format_mismatch_exception("Attachment format doesn't match layout's format");
 			}
 
-			if (attachment.has_explicit_clear_value() != layout_it->second.clears_on_load()) {
-				// Attachment specifies a clear value, but attachment layout doesn't define a clear on load operation,
-				// or the other way around.
-				throw framebuffer_attachment_mismatch_exception("Mismatch between attachment clear value and layout load operation");
+			if (layout_it->second.clears_on_load() && !attachment.has_explicit_clear_value()) {
+				// Expected a clear value as attachment layout defines a clear on load operation.
+				throw framebuffer_attachment_mismatch_exception("Layout has clear load operation but no clear value specified");
 			}
 		}
 
@@ -87,7 +86,7 @@ private:
 		}
 
 		if (!fb) {
-			if (attachments.size() == layout->size()) {
+			if (attachments.size() == layout.size()) {
 				// Create framebuffer as early as possible the very first time we have enough attachments
 				update();
 			}
@@ -106,9 +105,9 @@ private:
 		ret.reserve(attachments.size());
 
 		auto it = attachments.begin();
-		auto layout_it = layout->begin();
+		auto layout_it = layout.begin();
 		for (auto it_next = it; it_next != attachments.end(); ++it_next, ++layout_it) {
-			assert(layout_it != layout->end());
+			assert(layout_it != layout.end());
 			assert(layout_it->first == it_next->first);
 
 			if (layout_it->second.load_op == attachment_load_op::clear) {
@@ -142,14 +141,23 @@ private:
 
 public:
 	framebuffer(const ste_context &ctx,
-				const framebuffer_layout &layout,
+				framebuffer_layout &&layout,
 				const glm::u32vec2 &extent,
 				const depth_range &depth = depth_range::one_to_zero())
 		: ctx(ctx),
-		layout(&layout), 
+		layout(std::move(layout)), 
 		fb_extent(extent),
 		depth(depth),
-		compatible_renderpass(this->layout->create_compatible_renderpass(ctx))
+		compatible_renderpass(this->layout.create_compatible_renderpass(ctx))
+	{}
+	framebuffer(const ste_context &ctx,
+				const framebuffer_layout &layout,
+				const glm::u32vec2 &extent,
+				const depth_range &depth = depth_range::one_to_zero())
+		: framebuffer(ctx,
+					  framebuffer_layout(layout),
+					  extent,
+					  depth)
 	{}
 
 	framebuffer(framebuffer&&) = default;
@@ -187,6 +195,13 @@ public:
 	}
 
 	/**
+	*	@brief	Returns the framebuffer layout
+	*/
+	const auto& get_layout() const {
+		return layout;
+	}
+
+	/**
 	*	@brief	Returns the framebuffer attachment clear values array
 	*/
 	const auto& get_fb_clearvalues() const {
@@ -203,8 +218,6 @@ public:
 	*	@brief	Returns the framebuffer's depth range
 	*/
 	auto& get_depth_range() const { return depth; }
-
-	auto &get_layout() const { return *layout; }
 
 	auto begin() const { return attachments.begin(); }
 	auto end() const { return attachments.end(); }

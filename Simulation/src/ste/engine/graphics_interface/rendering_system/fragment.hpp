@@ -4,7 +4,6 @@
 #pragma once
 
 #include <stdafx.hpp>
-#include <rendering_system.hpp>
 #include <command_recorder.hpp>
 #include <ste_resource_traits.hpp>
 

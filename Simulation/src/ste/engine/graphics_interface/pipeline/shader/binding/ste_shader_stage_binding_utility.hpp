@@ -14,7 +14,7 @@ namespace gl {
 /**
 *	@brief	Returns the appropriate VkDescriptorType type.
 *
-*	@throws	ste_shader_binding_incompatible_type	If variable type isn't a block or image/texture/sampler
+*	@throws	ste_shader_binding_incompatible_type	If variable type isn't a block or image/combined_image_sampler/sampler
 *	@throws	ste_shader_binding_specialization_or_push_constant_exception	If variable isn't binding_type isn't storage or uniform
 */
 VkDescriptorType inline vk_descriptor_for_binding(const ste_shader_stage_binding_type &binding_type,

@@ -90,9 +90,10 @@ template <>
 struct task_interface_binder<task_vertex_buffers_interface> {
 	void operator()(const task_vertex_buffers_interface *interface,
 					command_recorder &recorder) {
-		recorder << cmd_bind_vertex_buffers(interface->get_vertex_first_binding_index(),
-											interface->get_vertex_buffers(),
-											interface->get_vertex_offsets());
+		if (interface->get_vertex_buffers().size())
+			recorder << cmd_bind_vertex_buffers(interface->get_vertex_first_binding_index(),
+												interface->get_vertex_buffers(),
+												interface->get_vertex_offsets());
 	}
 };
 
