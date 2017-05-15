@@ -1013,9 +1013,6 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\image\device_image_layout_transform.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device\queue\ste_device_queue_batch_multishot.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\pipeline\descriptor_set\vk_descriptor_set_copy_resources.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>

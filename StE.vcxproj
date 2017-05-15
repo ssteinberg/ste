@@ -618,7 +618,6 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\data_structure\ring_buffer.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\data_structure\stable_vector.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device\pipeline_cache\ste_device_pipeline_cache.hpp" />
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device\queue\ste_device_queue_batch_multishot.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device\queue\ste_queue_family.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device\ste_device_exceptions.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device\queue\ste_device_queue_batch.hpp" />

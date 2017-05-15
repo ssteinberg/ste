@@ -43,9 +43,7 @@ protected:
 		: buffers(pool.allocate_buffers(1, type)),
 		type(type),
 		queue_descriptor(queue_descriptor)
-	{
-		commands.reserve(10);
-	}
+	{}
 
 	virtual VkCommandBufferUsageFlags record_flags() const = 0;
 

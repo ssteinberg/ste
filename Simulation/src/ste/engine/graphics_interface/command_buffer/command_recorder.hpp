@@ -41,12 +41,8 @@ public:
 		end();
 	}
 
-	command_recorder(command_recorder &&o) noexcept
-		: buffer(o.buffer), 
-		queue_descriptor(queue_descriptor)
-	{
-		o.buffer = nullptr;
-	}
+	command_recorder(command_recorder&&) = default;
+	command_recorder &operator=(command_recorder&&) = default;
 	command_recorder(const command_recorder &) = delete;
 	command_recorder &operator=(const command_recorder &) = delete;
 

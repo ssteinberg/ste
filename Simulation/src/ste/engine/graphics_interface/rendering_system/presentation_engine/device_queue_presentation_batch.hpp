@@ -4,7 +4,6 @@
 #pragma once
 
 #include <ste_device_queue_batch.hpp>
-#include <ste_device_queue_batch_multishot.hpp>
 #include <ste_presentation_surface.hpp>
 #include <presentation_engine_sync_semaphores.hpp>
 
@@ -39,8 +38,8 @@ public:
 };
 
 template <typename UserData = void>
-class device_queue_presentation_batch : public ste_device_queue_batch_oneshot<UserData>, public ste_device_queue_presentation_batch_base {
-	using Base = ste_device_queue_batch_oneshot<UserData>;
+class device_queue_presentation_batch : public ste_device_queue_batch<UserData>, public ste_device_queue_presentation_batch_base {
+	using Base = ste_device_queue_batch<UserData>;
 
 	friend class presentation_engine;
 

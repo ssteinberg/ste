@@ -6,7 +6,6 @@
 #include <stdafx.hpp>
 #include <ste_device_queues_protocol.hpp>
 #include <ste_device_queue_batch.hpp>
-#include <ste_device_queue_batch_multishot.hpp>
 #include <ste_device_exceptions.hpp>
 
 #include <pipeline_stage.hpp>
@@ -63,7 +62,7 @@ private:
 
 	ste_device_sync_primitives_pools::shared_fence_pool_t *shared_fence_pool;
 
-	std::list<std::unique_ptr<_detail::ste_device_queue_batch_base>> submitted_oneshot_batches;
+	std::list<std::unique_ptr<_detail::ste_device_queue_batch_base>> submitted_batches;
 
 	mutable std::mutex m;
 	aligned_ptr<shared_data_t> shared_data;
@@ -132,7 +131,7 @@ public:
 	}
 
 	/**
-	*	@brief	Submits a one-shot command batch to the queue.
+	*	@brief	Consumes a command batch to the queue, submitting its command buffers.
 	*			Must be called from an enqueued task.
 	*			
 	*	@throws	ste_device_not_queue_thread_exception	If thread not a queue thread
@@ -143,7 +142,7 @@ public:
 	*	@param	signal_semaphores	See vk_queue::submit
 	*/
 	template <typename UserData>
-	static void submit_batch(std::unique_ptr<ste_device_queue_batch_oneshot<UserData>> &&batch,
+	static void submit_batch(std::unique_ptr<ste_device_queue_batch<UserData>> &&batch,
 							 const std::vector<wait_semaphore> &wait_semaphores = {},
 							 const std::vector<const semaphore*> &signal_semaphores = {}) {
 		if (!is_queue_thread()) {
@@ -175,61 +174,14 @@ public:
 				batch->submitted = true;
 
 				// Hold onto the batch, release resources only once the device is done with it
-				thread_device_queue().submitted_oneshot_batches.emplace_back(std::move(batch));
+				thread_device_queue().submitted_batches.emplace_back(std::move(batch));
 			}
 			else {
-				assert(false && "Batch created on a different queue");
 				throw ste_device_exception("Batch created on a different queue");
 			}
 		}
 		catch (...) {
 			(*fence)->set_exception(std::current_exception());
-		}
-	}
-
-	/**
-	*	@brief	Submits a multi-shot command batch to the queue.
-	*			Must be called from an enqueued task.
-	*
-	*	@throws	ste_device_not_queue_thread_exception	If thread not a queue thread
-	*	@throws	ste_device_exception	If batch was not created on this queue, batch's fence will be set to a ste_device_exception.
-	*
-	*	@param	batch				Command batch to submit
-	*	@param	wait_semaphores		See vk_queue::submit
-	*	@param	signal_semaphores	See vk_queue::submit
-	*	@param	fence				See vk_queue::submit
-	*/
-	template <typename UserData>
-	static void submit_batch(const ste_device_queue_batch_multishot<UserData> &batch,
-							 const std::vector<wait_semaphore> &wait_semaphores = {},
-							 const std::vector<const semaphore*> &signal_semaphores = {},
-							 shared_fence_t *fence = nullptr) {
-		if (!is_queue_thread()) {
-			throw ste_device_not_queue_thread_exception();
-		}
-
-		// Copy command buffers' handles for submission
-		std::vector<vk::vk_command_buffer> command_buffers;
-		command_buffers.reserve(batch.command_buffers.size());
-		for (auto &b : batch)
-			command_buffers.push_back(static_cast<vk::vk_command_buffer>(b));
-
-		if (batch.queue_index == thread_queue_index()) {
-			// Submit host commands, in order
-			for (auto &cmd_buf : *batch)
-				cmd_buf.submit_host_commands(thread_queue());
-
-			// Submit finalized buffers
-			thread_queue().submit(command_buffers,
-								  std::vector<vk::vk_queue::wait_semaphore_t>(wait_semaphores.begin(), wait_semaphores.end()),
-								  vk_semaphores(signal_semaphores),
-								  fence ? &fence->get().get_fence() : nullptr);
-
-			batch.submitted = true;
-		}
-		else {
-			assert(false && "Batch created on a different queue");
-			throw ste_device_exception("Batch created on a different queue");
 		}
 	}
 
@@ -313,20 +265,6 @@ public:
 										 pool.claim(),
 										 std::make_shared<shared_fence_t>(shared_fence_pool->claim()),
 										 std::forward<UserDataArgs>(user_data_args)...);
-	}
-	/**
-	*	@brief	Allocates a new multishot (reusable) command batch.
-	*			See allocate_batch() for more information.
-	*			
-	*	@return	An auditor used to record the multi-shot command batch. Once recorded a call to finalize generates the final
-	*			multi-shot batch that can be submitted to a queue. A batch can not be re-recorded.
-	*/
-	template <typename UserData = void, typename... UserDataArgs>
-	auto allocate_batch_multishot(UserDataArgs&&... user_data_args) {
-		using auditor_t = ste_device_queue_batch_multishot_auditor<ste_device_queue_batch_multishot<UserData>>;
-		return auditor_t(queue_index,
-						 pool.claim(),
-						 std::forward<UserDataArgs>(user_data_args)...);
 	}
 	/**
 	*	@brief	Allocates a new command batch.
