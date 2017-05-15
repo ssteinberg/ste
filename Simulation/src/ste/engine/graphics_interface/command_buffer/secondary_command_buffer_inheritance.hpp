@@ -11,10 +11,10 @@ namespace ste {
 namespace gl {
 
 struct secondary_command_buffer_inheritance {
-	const vk::vk_render_pass	*render_pass;
+	const vk::vk_render_pass	*render_pass{ nullptr };
 	std::uint32_t				subpass;
-	const vk::vk_framebuffer	*framebuffer;
-	bool						occlusion_query_enable;
+	const vk::vk_framebuffer	*framebuffer{ nullptr };
+	bool						occlusion_query_enable{ false };
 	VkQueryControlFlags			query_flags;
 	VkQueryPipelineStatisticFlags pipeline_statistics;
 };

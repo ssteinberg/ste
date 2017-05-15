@@ -103,6 +103,10 @@ public:
 		}
 	}
 
+	void trim() {
+		vkTrimCommandPoolKHR(device.get(), *this, 0);
+	}
+
 	auto& get() const { return pool.get(); }
 };
 

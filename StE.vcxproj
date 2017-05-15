@@ -555,6 +555,8 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\command_buffer\command_pool.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\command_buffer\host_command.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device\device_pipeline_resource_disposer.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device\queue\ste_device_queue_secondary_command_buffer.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device\queue\ste_device_queue_secondary_buffer_allocator.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\device_pipeline_resources_marked_for_deletion.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\graphics_pipeline_configuration\cull_mode.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\graphics_pipeline_configuration\depth_operation.hpp" />

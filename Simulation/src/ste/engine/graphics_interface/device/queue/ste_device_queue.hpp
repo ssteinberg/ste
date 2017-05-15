@@ -13,6 +13,7 @@
 #include <vk_queue.hpp>
 #include <vk_logical_device.hpp>
 #include <ste_device_queue_command_pool.hpp>
+#include <ste_device_queue_secondary_buffer_allocator.hpp>
 #include <vk_command_buffers.hpp>
 #include <ste_resource_pool.hpp>
 #include <ste_device_sync_primitives_pools.hpp>
@@ -46,10 +47,14 @@ public:
 	using enqueue_task_t = unique_thread_pool_task<R>;
 	using queue_index_t = std::uint32_t;
 
+	using secondary_buffer_allocator_t = ste_device_queue_secondary_buffer_allocator<ste_resource_pool<ste_device_queue_command_pool>::resource_t>;
+	using secondary_buffer_t = secondary_buffer_allocator_t::buffer_t;
+
 private:
 	using shared_fence_t = ste_device_queue_batch<void>::fence_t;
 
 	struct shared_data_t {
+		mutable std::mutex m;
 		mutable std::condition_variable notifier;
 
 		concurrent_queue<task_t> task_queue;
@@ -64,10 +69,11 @@ private:
 
 	std::list<std::unique_ptr<_detail::ste_device_queue_batch_base>> submitted_batches;
 
-	mutable std::mutex m;
 	aligned_ptr<shared_data_t> shared_data;
 	ste_resource_pool<ste_device_queue_command_pool> pool;
 	std::unique_ptr<interruptible_thread> thread;
+
+	secondary_buffer_allocator_t secondary_buffer_allocator;
 
 private:
 	static thread_local ste_device_queue *static_device_queue_ptr;
@@ -128,6 +134,14 @@ public:
 		return std::make_unique<Batch>(thread_queue_index(),
 									   thread_device_queue().pool.claim(),
 									   std::forward<Args>(custom_args)...);
+	}
+
+	/**
+	*	@brief	Allocates a secondary command buffer owned by this queue.
+	*			A secondary command buffer can executed by a primary buffer beloning to a batch allocated from this queue or a queue with identical family index.
+	*/
+	static auto thread_allocate_secondary_command_buffer() {
+		return thread_device_queue().secondary_buffer_allocator.allocate_secondary_buffer();
 	}
 
 	/**
@@ -222,7 +236,8 @@ public:
 		queue(device, descriptor.family, device_family_index),
 		descriptor(descriptor),
 		shared_fence_pool(shared_fence_pool),
-		pool(device, descriptor)
+		pool(device, descriptor),
+		secondary_buffer_allocator(pool.claim())
 	{
 		// Create the queue worker thread
 		create_worker();
@@ -230,10 +245,11 @@ public:
 	~ste_device_queue() noexcept {
 		thread->interrupt();
 
-		do { shared_data->notifier.notify_all(); } while (!m.try_lock());
-		m.unlock();
+		do { shared_data->notifier.notify_all(); } while (!shared_data->m.try_lock());
+		shared_data->m.unlock();
 
 		thread->join();
+		prune_submitted_batches();
 		queue.wait_idle();
 	}
 
@@ -275,6 +291,14 @@ public:
 		return std::make_unique<Batch>(queue_index,
 									   pool.claim(),
 									   std::forward<Args>(custom_args)...);
+	}
+
+	/**
+	 *	@brief	Allocates a secondary command buffer owned by this queue. 
+	 *			A secondary command buffer can executed by a primary buffer beloning to a batch allocated from this queue or a queue with identical family index.
+	 */
+	auto allocate_secondary_command_buffer() {
+		return secondary_buffer_allocator.allocate_secondary_buffer();
 	}
 
 	/**
@@ -322,6 +346,27 @@ public:
 
 		// And wait idle (for weired implementations that would signal the fence before the queue is complete)
 		queue.wait_idle();
+	}
+
+	/**
+	*	@brief	Waits idly for the queue to finish processing and locks the queue. Until the queue is unlocked, no new enqueued tasks will be processed.
+	*			
+	*	@throws	ste_device_exception	If thread is a queue thread
+	 */
+	void wait_lock() const {
+		if (is_thread_this_queue_thread()) {
+			throw ste_device_exception("Deadlock");
+		}
+
+		do { shared_data->notifier.notify_all(); } while (!shared_data->m.try_lock());
+		queue.wait_idle();
+	}
+
+	/**
+	 *	@brief	Unlocks the queue after locking it, resuming queue processing.
+	 */
+	void unlock() const {
+		shared_data->m.unlock();
 	}
 
 	auto &queue_descriptor() const { return descriptor; }

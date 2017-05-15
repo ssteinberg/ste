@@ -17,6 +17,9 @@ private:
 	std::vector<VkCommandBuffer> buffers;
 
 public:
+	cmd_execute_commands(const command_buffer &buffer) {
+		buffers.push_back(buffer);
+	}
 	cmd_execute_commands(const std::vector<std::reference_wrapper<command_buffer>> &buffers) {
 		this->buffers.reserve(buffers.size());
 		for (auto &e : buffers)

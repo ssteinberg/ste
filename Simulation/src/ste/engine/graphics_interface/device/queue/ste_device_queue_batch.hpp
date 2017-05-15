@@ -152,6 +152,8 @@ public:
 	bool is_batch_complete() const override final {
 		return (*fence_strong)->is_signaled();
 	}
+
+	auto& get_queue_descriptor() const { return Base::pool.get().get().get_queue_descriptor(); }
 };
 
 }
