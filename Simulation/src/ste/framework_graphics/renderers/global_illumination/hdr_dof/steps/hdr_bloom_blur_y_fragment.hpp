@@ -25,7 +25,6 @@ public:
 			   "fullscreen_triangle.vert", "hdr_bloom_blur_y.frag")
 	{
 		draw_task.attach_pipeline(pipeline);
-		pipeline["config_t.dir"] = glm::vec2(0, 1);
 	}
 	~hdr_bloom_blur_y_fragment() noexcept {}
 
