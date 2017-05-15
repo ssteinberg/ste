@@ -60,10 +60,9 @@ private:
 				throw framebuffer_attachment_format_mismatch_exception("Attachment format doesn't match layout's format");
 			}
 
-			if (attachment.has_explicit_clear_value() != layout_it->second.clears_on_load()) {
-				// Attachment specifies a clear value, but attachment layout doesn't define a clear on load operation,
-				// or the other way around.
-				throw framebuffer_attachment_mismatch_exception("Mismatch between attachment clear value and layout load operation");
+			if (layout_it->second.clears_on_load() && !attachment.has_explicit_clear_value()) {
+				// Expected a clear value as attachment layout defines a clear on load operation.
+				throw framebuffer_attachment_mismatch_exception("Layout has clear load operation but no clear value specified");
 			}
 		}
 
@@ -150,6 +149,15 @@ public:
 		fb_extent(extent),
 		depth(depth),
 		compatible_renderpass(this->layout.create_compatible_renderpass(ctx))
+	{}
+	framebuffer(const ste_context &ctx,
+				const framebuffer_layout &layout,
+				const glm::u32vec2 &extent,
+				const depth_range &depth = depth_range::one_to_zero())
+		: framebuffer(ctx,
+					  framebuffer_layout(layout),
+					  extent,
+					  depth)
 	{}
 
 	framebuffer(framebuffer&&) = default;

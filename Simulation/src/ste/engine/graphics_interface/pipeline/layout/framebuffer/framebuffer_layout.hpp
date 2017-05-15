@@ -85,7 +85,7 @@ public:
 		// Containers are ordered, so just iterate
 		for (auto it_lhs = begin(), it_rhs = rhs.begin(); it_lhs != end(); ++it_lhs, ++it_rhs) {
 			// Check that locations match
-			if (it_rhs->first || it_lhs->first)
+			if (it_rhs->first != it_lhs->first)
 				return false;
 
 			const auto &a1 = it_lhs->second;

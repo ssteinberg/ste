@@ -7,21 +7,21 @@
 
 #include <girenderer_transform_buffer.glsl>
 
-layout(location = 0) out vec4 rgbout;
-layout(location = 1) out vec4 bloomout;
+layout(binding = 0) uniform sampler2D hdr;
+layout(binding = 1) uniform sampler1D hdr_vision_properties_texture;
 
-layout(std430, binding = 0) restrict readonly buffer histogram_sums {
+layout(std430, binding = 2) restrict readonly buffer histogram_sums {
 	uint histogram[bins];
 };
-layout(std430, binding = 2) restrict readonly buffer hdr_bokeh_parameters_buffer {
+layout(std430, binding = 3) restrict readonly buffer hdr_bokeh_parameters_buffer {
 	hdr_bokeh_parameters params;
 };
 
+layout(location = 0) out vec4 rgbout;
+layout(location = 1) out vec4 bloomout;
+
 const float bloom_cutoff = .9f;
 const float vision_properties_max_lum = 10.f;
-
-layout(location = 0) uniform sampler2D hdr;
-layout(location = 1) uniform sampler1D hdr_vision_properties_texture;
 
 vec4 hdr_bloom(vec4 RGBL, vec3 XYZ, float mesopic) {
 	if (XYZ.y > bloom_cutoff) {

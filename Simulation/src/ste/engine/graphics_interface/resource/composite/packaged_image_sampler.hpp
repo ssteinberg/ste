@@ -69,6 +69,10 @@ public:
 	auto& get_image_view() const { return cis.get_image_view(); }
 	auto& get_image() const { return image; }
 	auto& get() const { return cis; }
+
+	auto get_texture() const {
+		return get().get_texture();
+	}
 };
 
 }

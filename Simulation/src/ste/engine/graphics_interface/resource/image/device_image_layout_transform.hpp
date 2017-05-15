@@ -16,10 +16,10 @@ namespace gl {
  *	@brief	Creates an image memory barrier to transform the image layout.
  */
 auto inline image_layout_transform_barrier(const device_image_base &image,
-										   access_flags src_access,
 										   image_layout src_layout,
-										   access_flags dst_access,
-										   image_layout dst_layout) {
+										   image_layout dst_layout,
+										   access_flags src_access,
+										   access_flags dst_access) {
 	return image_memory_barrier(image,
 								src_layout,
 								dst_layout,
@@ -29,9 +29,9 @@ auto inline image_layout_transform_barrier(const device_image_base &image,
 
 /**
 *	@brief	Creates an image memory barrier to transform the image layout.
-*			Deduces the access flags based on source and destination layouts. Layouts must no be undefined, preinitialized or general.
+*			Deduces the access flags based on source and destination layouts. Layouts must no be undefined or preinitialized.
 *
-*	@throws	ste_engine_exception		If image layout is undefined, preinitialized or general.
+ *	@throws	ste_engine_exception		If image layout is undefined or preinitialized.
 */
 auto inline image_layout_transform_barrier(const device_image_base &image,
 										   image_layout src_layout,

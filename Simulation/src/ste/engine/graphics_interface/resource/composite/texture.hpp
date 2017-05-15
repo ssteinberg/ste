@@ -48,6 +48,7 @@ public:
 		: view(std::move(view)),
 		layout(layout)
 	{}
+	~texture() noexcept {}
 
 	texture(texture&&) = default;
 	texture &operator=(texture&& o) = default;

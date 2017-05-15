@@ -51,18 +51,6 @@
     <ClCompile Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\hdr_dof_postprocess.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\steps\hdr_bokeh_blur_task.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\steps\hdr_compute_histogram_sums_task.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\steps\hdr_compute_minmax_task.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\steps\hdr_create_histogram_task.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_graphics\scene\geometry_cull\scene_geo_cull_dispatch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -1764,6 +1752,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\common_shaders\fullscreen_triangle.vert">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\hdr_dof_bokeh_parameters.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

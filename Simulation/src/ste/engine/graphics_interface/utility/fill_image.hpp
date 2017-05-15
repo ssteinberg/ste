@@ -168,22 +168,18 @@ auto fill_image_array(const device_image<dimensions, allocation_policy> &image,
 					auto recorder = command_buffer.record();
 
 					// Move to transfer layouts
-					auto image_barriers = std::vector<image_memory_barrier>
-					{
-						image_memory_barrier(staging_image,
-											 m == 0 ? image_layout::preinitialized : image_layout::transfer_src_optimal,
-											 image_layout::transfer_src_optimal,
-											 access_flags::host_write,
-											 access_flags::transfer_read),
-						image_memory_barrier(image,
-											 m == 0 ? image_layout::undefined : image_layout::transfer_dst_optimal,
-											 image_layout::transfer_dst_optimal,
-											 access_flags::none,
-											 access_flags::transfer_write)
-					};
 					auto barrier = pipeline_barrier(pipeline_stage::top_of_pipe,
 													pipeline_stage::top_of_pipe,
-													image_barriers);
+													image_memory_barrier(staging_image,
+																		 m == 0 ? image_layout::preinitialized : image_layout::transfer_src_optimal,
+																		 image_layout::transfer_src_optimal,
+																		 access_flags::host_write,
+																		 access_flags::transfer_read),
+													image_memory_barrier(image,
+																		 m == 0 ? image_layout::undefined : image_layout::transfer_dst_optimal,
+																		 image_layout::transfer_dst_optimal,
+																		 access_flags::none,
+																		 access_flags::transfer_write));
 					recorder << cmd_pipeline_barrier(barrier);
 
 					// Copy to image

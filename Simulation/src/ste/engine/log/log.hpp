@@ -73,6 +73,11 @@ private:
 	void write_entry(std::unique_ptr<log_entry> entry) {
 		auto fs = std::ofstream();
 		fs.open(file_path, std::ofstream::app);
+		if (!fs) {
+			assert(false);
+			return;
+		}
+
 		auto line = formatter.format_line(*entry);
 		fs << line << std::endl;
 	}
@@ -80,12 +85,22 @@ private:
 	void write_head() {
 		std::ofstream fs;
 		fs.open(file_path, std::ofstream::trunc);
+		if (!fs) {
+			assert(false);
+			return;
+		}
+
 		fs << formatter.format_head();
 	}
 
 	void write_tail() {
 		std::ofstream fs;
 		fs.open(file_path, std::ofstream::app);
+		if (!fs) {
+			assert(false);
+			return;
+		}
+
 		fs << formatter.format_tail();
 	}
 

@@ -69,14 +69,14 @@ auto generate_mipmaps(const device_image<dimensions, allocation_policy> &image,
 					// Move to transfer layouts
 					auto barrier = pipeline_barrier(m == start_level ? pipeline_stage::bottom_of_pipe : pipeline_stage::transfer,
 													pipeline_stage::transfer,
-													{ image_memory_barrier(image,
-																		   initial_layout,
-																		   image_layout::transfer_dst_optimal,
-																		   m, 1, 0, 1),
+													image_memory_barrier(image,
+																		 initial_layout,
+																		 image_layout::transfer_dst_optimal,
+																		 m, 1, 0, 1),
 													image_memory_barrier(image,
 																		 m == start_level ? initial_layout : image_layout::transfer_dst_optimal,
 																		 image_layout::transfer_src_optimal,
-																		 m - 1, 1, 0, 1) });
+																		 m - 1, 1, 0, 1));
 					recorder << cmd_pipeline_barrier(barrier);
 
 					// Blit
@@ -119,7 +119,7 @@ auto generate_mipmaps(const device_image<dimensions, allocation_policy> &image,
 				}
 				auto barrier = pipeline_barrier(pipeline_stage::transfer,
 												pipeline_stage::top_of_pipe,
-												image_barriers);
+												{}, {}, image_barriers);
 				recorder << cmd_pipeline_barrier(barrier);
 			}
 

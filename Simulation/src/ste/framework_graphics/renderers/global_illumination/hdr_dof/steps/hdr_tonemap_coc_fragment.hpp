@@ -5,7 +5,11 @@
 
 #include <stdafx.hpp>
 #include <fragment_graphics.hpp>
-#include <device_buffer_base.hpp>
+#include <combined_image_sampler.hpp>
+#include <array.hpp>
+
+#include <hdr_dof_bokeh_parameters.hpp>
+
 #include <task.hpp>
 #include <cmd_draw.hpp>
 
@@ -39,10 +43,17 @@ public:
 		auditor.set_framebuffer_layout(fb_layout);
 	}
 
-	void bind_buffers(const gl::device_buffer_base &histogram_sums, const gl::device_buffer_base &hdr_bokeh_parameters_buffer) {
+	void bind_buffers(const gl::array<gl::std430<std::uint32_t>> &histogram_sums, 
+					  const gl::array<hdr_bokeh_parameters> &hdr_bokeh_parameters_buffer) {
 		pipeline["histogram_sums"] = gl::bind(histogram_sums);
 		pipeline["hdr_bokeh_parameters_buffer"] = gl::bind(hdr_bokeh_parameters_buffer);
 	}
+	void set_source(const gl::combined_image_sampler_generic &hdr_vision_properties_texture,
+					const gl::combined_image_sampler_generic &src) {
+		pipeline["hdr_vision_properties_texture"] = gl::bind(hdr_vision_properties_texture);
+		pipeline["hdr"] = gl::bind(src);
+	}
+
 	void attach_framebuffer(gl::framebuffer &fb) {
 		pipeline.attach_framebuffer(fb);
 	}

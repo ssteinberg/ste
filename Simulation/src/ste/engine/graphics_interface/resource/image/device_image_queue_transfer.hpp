@@ -77,10 +77,10 @@ auto inline queue_transfer(const ste_context &ctx,
 				auto barrier = pipeline_barrier(src_stage,
 												dst_stage,
 												image_layout_transform_barrier(image,
-																			   src_access,
 																			   src_layout,
-																			   dst_access,
-																			   dst_layout));
+																			   dst_layout,
+																			   src_access,
+																			   dst_access));
 				recorder << cmd_pipeline_barrier(barrier);
 			}
 			ste_device_queue::submit_batch(std::move(acquire_batch));
@@ -148,9 +148,9 @@ auto inline queue_transfer(const ste_context &ctx,
 
 /**
 *	@brief	Enqueues image queue ownership transfer and image layout transform, perserving old content.
-*			Deduces the access flags based on source and destination layouts. Layouts must no be undefined, preinitialized or general.
+*			Deduces the access flags based on source and destination layouts. Layouts must no be undefined or preinitialized.
 *
-*	@throws	ste_engine_exception		If image layout is undefined, preinitialized or general.
+ *	@throws	ste_engine_exception		If image layout is undefined or preinitialized.
  *	
  *	@return	Enqueue future.
 */
@@ -213,9 +213,9 @@ auto inline queue_transfer_discard(const ste_context &ctx,
 
 /**
  *	@brief	Enqueues image queue ownership transfer and image layout transform, discarding old content.
-*			Deduces the access flags based on source and destination layouts. Layouts must no be undefined, preinitialized or general.
+*			Deduces the access flags based on source and destination layouts. Layouts must no be undefined or preinitialized.
 *			
- *	@throws	ste_engine_exception		If image layout is undefined, preinitialized or general.
+ *	@throws	ste_engine_exception		If image layout is undefined or preinitialized.
  *	
  *	@return	Enqueue future.
 */

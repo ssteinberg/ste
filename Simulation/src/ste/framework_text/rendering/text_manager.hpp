@@ -68,7 +68,7 @@ public:
 	 *			Expects a framebuffer with initialized color attachment at location 0 with initial layout gl::image_layout::color_attachment_optimal. Final layout remains
 	 *			gl::image_layout::color_attachment_optimal.
 	 */
-	void set_framebuffer(gl::framebuffer &fb) {
+	void attach_framebuffer(gl::framebuffer &fb) {
 		pipeline.attach_framebuffer(fb);
 	}
 

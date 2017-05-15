@@ -6,6 +6,7 @@
 #include <stdafx.hpp>
 #include <fragment_graphics.hpp>
 #include <combined_image_sampler.hpp>
+
 #include <task.hpp>
 #include <cmd_draw.hpp>
 

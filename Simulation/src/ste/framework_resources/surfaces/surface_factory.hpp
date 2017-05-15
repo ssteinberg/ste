@@ -145,12 +145,14 @@ private:
 																							 levels, layers, supports_cube_views);
 
 			// Transfer to primary queue and desired layout
-			gl::queue_transfer_discard(ctx,
-									   image,
-									   gl::ste_queue_selector<gl::ste_queue_selector_policy_strict>(gl::ste_queue_type::primary_queue),
-									   gl::pipeline_stage::all_commands,
-									   gl::image_layout::undefined, gl::access_flags::none,
-									   layout, gl::access_flags_for_image_layout(layout));
+			gl::access_flags access = gl::access_flags_for_image_layout(layout);
+			auto future = gl::queue_transfer_discard(ctx,
+													 image,
+													 gl::ste_queue_selector<gl::ste_queue_selector_policy_strict>(gl::ste_queue_type::primary_queue),
+													 gl::pipeline_stage::all_commands,
+													 gl::image_layout::undefined, gl::access_flags::none,
+													 layout, access);
+			future.get();
 
 			return image;
 		});
@@ -399,6 +401,7 @@ public:
 	*	@param	extent		Image extent
 	*	@param	layers		Image layers
 	*	@param	levels		Image mipmap levels
+	*	@param	supports_cube_views	If set to true the created image will support cube-map views. Extent.x must equal to extent.y in that case.
 	*/
 	template <gl::format image_format, class resource_deferred_policy = ste_resource_deferred_creation_policy_async<ste_resource_async_policy_task_scheduler>>
 	static auto image_empty_2d(const ste_context &ctx,
@@ -406,14 +409,15 @@ public:
 							   const gl::image_layout &layout,
 							   const gl::image_extent_type_t<2> &extent,
 							   std::uint32_t layers = 1,
-							   std::uint32_t levels = 1) {
+							   std::uint32_t levels = 1,
+							   bool supports_cube_views = false) {
 		return _image_empty_async_internal<2, image_format, resource_deferred_policy>(ctx,
 																					  usage,
 																					  layout,
 																					  extent,
 																					  layers,
 																					  levels,
-																					  true);
+																					  supports_cube_views);
 	}
 	/**
 	*	@brief	Constructs and returns a ste_resource<device_image> object which asynchronously creates an empty image object and transforms it to the
@@ -440,7 +444,7 @@ public:
 																					  extent,
 																					  layers,
 																					  levels,
-																					  true);
+																					  false);
 	}
 };
 

@@ -39,7 +39,7 @@ constexpr auto operator^(const image_layout &lhs, const image_layout &rhs) {
 /**
  *	@brief	Returns the access flags representing the expected nature for access to an image in a specific image layout.
  *	
- *	@throws	ste_engine_exception		If image layout is undefined, preinitialized or general.
+ *	@throws	ste_engine_exception		If image layout is undefined or preinitialized.
  */
 auto inline access_flags_for_image_layout(image_layout layout) {
 	switch (layout) {
@@ -57,8 +57,10 @@ auto inline access_flags_for_image_layout(image_layout layout) {
 		return access_flags::transfer_write;
 	case image_layout::transfer_src_optimal:
 		return access_flags::transfer_read;
-	case image_layout::undefined:
 	case image_layout::general:
+		// General is used for storage images
+		return gl::access_flags::shader_read | gl::access_flags::shader_write;
+	case image_layout::undefined:
 	case image_layout::preinitialized:
 	default:
 		throw ste_engine_exception("Can not deduce access flags for image layout. Image layout must not be image_layout::undefined, image_layout::preinitialized or image_layout::general.");
