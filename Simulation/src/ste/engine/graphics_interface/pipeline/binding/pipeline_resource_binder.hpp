@@ -10,10 +10,11 @@
 #include <buffer_view.hpp>
 #include <device_buffer.hpp>
 #include <device_buffer_sparse.hpp>
-#include <combined_image_sampler.hpp>
 #include <image_view.hpp>
 #include <sampler.hpp>
-#include <texture.hpp>
+
+#include <combined_image_sampler.hpp>
+#include <image.hpp>
 
 #include <image_layout.hpp>
 
@@ -126,39 +127,42 @@ auto bind(const stable_vector<T, a, b> &vec) {
 }
 
 /**
-*	@brief	Creates a texture binder
+*	@brief	Creates an image binder
 *
-*	@param	tex		Texture to bind
+*	@param	img		Image to bind
 */
-auto inline bind(const texture_generic &tex) {
+auto inline bind(const pipeline::image &img) {
+	VkImageView v = img.get_image_view().get_image_view_handle();
 	return pipeline_resource_binder<vk::vk_descriptor_set_write_image, image_view_generic>(0, {
-		vk::vk_descriptor_set_write_image{ tex.get_image_view_handle(), static_cast<VkImageLayout>(tex.get_layout()) }
+		vk::vk_descriptor_set_write_image{ v, static_cast<VkImageLayout>(img.get_layout()) }
 	});
 }
 /**
 *	@brief	Creates an image view binder
 *
 *	@param	array_element	First array element to bind
-*	@param	textures			Textures to bind
+*	@param	images			Images to bind
 */
 auto inline bind(std::uint32_t array_element,
-				 const std::vector<const texture_generic*> &textures) {
-	assert(textures.size());
+				 const std::vector<pipeline::image> &images) {
+	assert(images.size());
 
 	std::vector<vk::vk_descriptor_set_write_image> writes;
-	writes.reserve(textures.size());
-	for (auto &p : textures)
-		writes.push_back({ p->get_image_view_handle(), static_cast<VkImageLayout>(p->get_layout()) });
+	writes.reserve(images.size());
+	for (auto &img : images) {
+		VkImageView v = img.get_image_view().get_image_view_handle();
+		writes.push_back({ v, static_cast<VkImageLayout>(img.get_layout()) });
+	}
 	return pipeline_resource_binder<vk::vk_descriptor_set_write_image, image_view_generic>(array_element, std::move(writes));
 }
 /**
 *	@brief	Creates an image view binder
 *
-*	@param	textures		Textures to bind
+*	@param	images			Images to bind
 */
-auto inline bind(const std::vector<const texture_generic*> &textures) {
-	assert(textures.size());
-	return gl::bind(0, textures);
+auto inline bind(const std::vector<pipeline::image> &images) {
+	assert(images.size());
+	return gl::bind(0, images);
 }
 
 /**
@@ -166,9 +170,10 @@ auto inline bind(const std::vector<const texture_generic*> &textures) {
 *
 *	@param	cis		Combined-image-sampler to bind
 */
-auto inline bind(const combined_image_sampler_generic &cis) {
-	return pipeline_resource_binder<vk::vk_descriptor_set_write_image, combined_image_sampler_generic>(0, {
-		vk::vk_descriptor_set_write_image{ cis.get_image_view_handle(), static_cast<VkImageLayout>(cis.get_layout()), cis.get_sampler() }
+auto inline bind(const pipeline::combined_image_sampler& cis) {
+	VkImageView v = cis.get_image_view().get_image_view_handle();
+	return pipeline_resource_binder<vk::vk_descriptor_set_write_image, pipeline::combined_image_sampler>(0, {
+		vk::vk_descriptor_set_write_image{ v, static_cast<VkImageLayout>(cis.get_layout()), cis.get_sampler() }
 	});
 }
 /**
@@ -178,21 +183,23 @@ auto inline bind(const combined_image_sampler_generic &cis) {
 *	@param	ciss				Combined-image-samplers to bind
 */
 auto inline bind(std::uint32_t array_element,
-				 const std::vector<const combined_image_sampler_generic*> &ciss) {
+				 const std::vector<pipeline::combined_image_sampler> &ciss) {
 	assert(ciss.size());
 
 	std::vector<vk::vk_descriptor_set_write_image> writes;
 	writes.reserve(ciss.size());
-	for (auto &p : ciss)
-		writes.push_back({ p->get_image_view_handle(), static_cast<VkImageLayout>(p->get_layout()), p->get_sampler() });
-	return pipeline_resource_binder<vk::vk_descriptor_set_write_image, combined_image_sampler_generic>(array_element, std::move(writes));
+	for (auto &p : ciss) {
+		VkImageView v = p.get_image_view().get_image_view_handle();
+		writes.push_back({ v, static_cast<VkImageLayout>(p.get_layout()), p.get_sampler() });
+	}
+	return pipeline_resource_binder<vk::vk_descriptor_set_write_image, pipeline::combined_image_sampler>(array_element, std::move(writes));
 }
 /**
 *	@brief	Creates an combined_image_sampler binder
 *
 *	@param	ciss		Combined-image-samplers to bind
 */
-auto inline bind(const std::vector<const combined_image_sampler_generic*> &ciss) {
+auto inline bind(const std::vector<pipeline::combined_image_sampler> &ciss) {
 	assert(ciss.size());
 	return gl::bind(0, ciss);
 }

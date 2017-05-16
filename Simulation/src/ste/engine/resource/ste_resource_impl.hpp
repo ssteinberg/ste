@@ -381,8 +381,9 @@ public:
 	ste_resource_deferred_ptr_wrap(ste_resource_deferred_ptr_wrap&&) = default;
 	ste_resource_deferred_ptr_wrap&operator=(ste_resource_deferred_ptr_wrap&&) = default;
 
-	auto& get() { return *Base::get_resource(); }
-	auto& get() const { return *Base::get_resource(); }
+	auto& get() & { return *Base::get_resource(); }
+	auto&& get() && { return std::move(*Base::get_resource()); }
+	auto& get() const& { return *Base::get_resource(); }
 };
 
 }

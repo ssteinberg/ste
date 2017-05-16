@@ -10,14 +10,16 @@
 namespace ste {
 namespace gl {
 
+template <typename T>
 class device_memory_block {
 private:
-	std::uint64_t offset;
-	std::uint64_t bytes;
+	T offset;
+	T bytes;
 
 public:
-	device_memory_block(std::uint64_t offset, 
-						std::uint64_t bytes)
+	device_memory_block() = default;
+	device_memory_block(T offset, 
+						T bytes)
 		: offset(offset), bytes(bytes) {}
 	~device_memory_block() noexcept {}
 

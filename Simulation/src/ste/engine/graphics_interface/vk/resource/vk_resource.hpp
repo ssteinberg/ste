@@ -34,7 +34,7 @@ public:
 
 	void bind_memory(const allocation_t &allocation) {
 		this->bind_resource_underlying_memory(*allocation.get_memory(),
-											  allocation.get()->get_offset());
+											  allocation->get_offset());
 	}
 };
 

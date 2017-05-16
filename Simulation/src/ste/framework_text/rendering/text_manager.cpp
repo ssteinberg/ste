@@ -82,11 +82,11 @@ void text_manager::bind_pipeline_resources(std::uint32_t first_offset) {
 		pipeline["glyph_texture_count"] = texture_count;
 		pipeline["glyph_data"] = gl::bind(gm.ssbo().get(), 0, texture_count);
 
-		std::vector<const gl::texture_generic*> textures;
+		std::vector<gl::pipeline::image> textures;
 		textures.reserve(texture_count);
 		for (std::uint32_t i = first_offset; i < texture_count; ++i) {
 			auto &glyph_texture = gm.textures()[i];
-			textures.push_back(&glyph_texture);
+			textures.emplace_back(glyph_texture);
 		}
 		pipeline["glyph_textures"] = gl::bind(textures);
 	}
@@ -218,11 +218,11 @@ bool text_manager::update_glyphs(gl::command_recorder &recorder) {
 	pipeline["glyph_texture_count"] = texture_count;
 	pipeline["glyph_data"] = gl::bind(gm.ssbo().get(), 0, texture_count);
 
-	std::vector<const gl::texture_generic*> textures;
+	std::vector<gl::pipeline::image> textures;
 	textures.reserve(updated_range.length);
 	for (std::uint32_t i = updated_range.start; i < updated_range.start + updated_range.length; ++i) {
 		auto &glyph_texture = gm.textures()[i];
-		textures.push_back(&glyph_texture);
+		textures.emplace_back(glyph_texture);
 	}
 	pipeline["glyph_textures"] = gl::bind(updated_range.start, 
 										  textures);

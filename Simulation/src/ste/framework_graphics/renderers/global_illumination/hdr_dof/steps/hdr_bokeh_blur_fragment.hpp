@@ -38,7 +38,7 @@ public:
 	void bind_buffers(const gl::array<hdr_bokeh_parameters> &hdr_bokeh_parameters_buffer) {
 		pipeline["hdr_bokeh_parameters_buffer"] = gl::bind(hdr_bokeh_parameters_buffer);
 	}
-	void set_source(const gl::combined_image_sampler_generic &src) {
+	void set_source(const gl::pipeline::combined_image_sampler &src) {
 		pipeline["hdr"] = gl::bind(src);
 	}
 	void set_aperture_parameters(float diameter, float focal_length) {

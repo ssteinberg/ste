@@ -38,8 +38,8 @@ public:
 		auditor.set_framebuffer_layout(fb_layout);
 	}
 
-	void set_source(const gl::combined_image_sampler_generic &unblured_src,
-					const gl::combined_image_sampler_generic &src) {
+	void set_source(const gl::pipeline::combined_image_sampler &unblured_src,
+					const gl::pipeline::combined_image_sampler &src) {
 		pipeline["unblured_hdr"] = gl::bind(unblured_src);
 		pipeline["hdr"] = gl::bind(src);
 	}

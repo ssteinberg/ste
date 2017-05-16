@@ -39,10 +39,8 @@ class simple_storage : public gl::storage<simple_storage> {
 
 private:
 	// Texture
-	ste_resource<gl::device_image<2>> image;
-	gl::image_view<gl::image_type::image_2d> image_view;
+	gl::texture<gl::image_type::image_2d> texture;
 	gl::sampler sampler;
-	gl::combined_image_sampler<gl::image_type::image_2d> texture;
 
 	// Vertex and index buffer
 	using vertex = gl::vertex_input_layout<glm::vec2, glm::vec3, glm::vec2>;
@@ -55,14 +53,12 @@ private:
 
 public:
 	simple_storage(const ste_context &ctx)
-		: image(resource::surface_factory::image_from_surface_2d<gl::format::r8g8b8a8_unorm>(ctx,
-																							 R"(Data\models\crytek-sponza\images\Sponza_Bricks_a_Albedo.png)",
-																							 gl::image_usage::sampled,
-																							 gl::image_layout::shader_read_only_optimal)),
-		image_view(*image),
+		: texture(resource::surface_factory::image_from_surface_2d<gl::format::r8g8b8a8_unorm>(ctx,
+																							   R"(Data\models\crytek-sponza\images\Sponza_Bricks_a_Albedo.png)",
+																							   gl::image_usage::sampled,
+																							   gl::image_layout::shader_read_only_optimal)),
 		sampler(ctx.device(), gl::sampler_parameter::filtering(gl::sampler_filter::linear, gl::sampler_filter::linear,
 															   gl::sampler_mipmap_mode::linear)),
-		texture(gl::make_combined_image_sampler(&image_view, &sampler, gl::image_layout::shader_read_only_optimal)),
 		index_buffer(ctx, std::vector<std::uint32_t>{ 0, 2, 1, 0, 1, 3 }, gl::buffer_usage::index_buffer),
 		vertex_buffer(ctx, gl::buffer_usage::vertex_buffer),
 		ubo(ctx,
@@ -108,7 +104,7 @@ public:
 		ctx(rs.get_creating_context()),
 		s(rs.acquire_storage<simple_storage>())
 	{
-		pipeline["texSampler"] = gl::bind(s->texture);
+		pipeline["texSampler"] = gl::bind(gl::pipeline::combined_image_sampler(s->texture, s->sampler));
 		pipeline["uniform_buffer_object"] = gl::bind(s->ubo);
 
 		draw_task.attach_pipeline(pipeline);
@@ -165,8 +161,7 @@ private:
 	simple_fragment frag1;
 	text::text_fragment text_frag;
 
-	const gl::device_image<2> *hdr_input_image;
-	gl::image_view<gl::image_type::image_2d> hdr_input_view;
+	const gl::texture<gl::image_type::image_2d> *hdr_input_image;
 
 private:
 	static auto create_fb_layout(const ste_context &ctx) {
@@ -194,10 +189,9 @@ public:
 		hdr(*this, gl::framebuffer_layout(presentation_framebuffer_layout())),
 		frag1(*this, gl::framebuffer_layout(hdr_fb.get_layout())),
 		text_frag(tm.create_fragment()),
-		hdr_input_image(&hdr.acquire_input_image(gl::pipeline_stage::fragment_shader, gl::image_layout::color_attachment_optimal)),
-		hdr_input_view(*hdr_input_image)
+		hdr_input_image(&hdr.acquire_input_image(gl::pipeline_stage::fragment_shader, gl::image_layout::color_attachment_optimal))
 	{
-		hdr_fb[0] = gl::framebuffer_attachment(hdr_input_view, glm::vec4(.0f));
+		hdr_fb[0] = gl::framebuffer_attachment(*hdr_input_image, glm::vec4(.0f));
 		frag1.set_framebuffer(hdr_fb);
 	}
 	~simple_renderer() noexcept {}
@@ -243,9 +237,9 @@ public:
 					<< text_frag
 
 					<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::color_attachment_output,
-																	 gl::pipeline_stage::top_of_pipe,
+																	 gl::pipeline_stage::bottom_of_pipe,
 																	 gl::image_layout_transform_barrier(swap_chain_image(batch->presentation_image_index()).image,
-																										gl::image_layout::color_attachment_optimal,
+																										gl::image_layout::color_attachment_optimal, 
 																										gl::image_layout::present_src_khr)));
 			}
 

@@ -14,7 +14,7 @@
 #include <array.hpp>
 #include <framebuffer.hpp>
 #include <combined_image_sampler.hpp>
-#include <packaged_image_sampler.hpp>
+#include <texture.hpp>
 #include <std430.hpp>
 
 #include <hdr_bokeh_blur_fragment.hpp>
@@ -46,17 +46,13 @@ private:
 	gl::pipeline_stage input_stage_flags;
 	gl::image_layout input_image_layout;
 
-	gl::device_image<2> hdr_final_image;
-	gl::combined_image_sampler<gl::image_type::image_2d> hdr_final_linear;
-	gl::combined_image_sampler<gl::image_type::image_2d> hdr_final_linear_clamp;
+	gl::texture<gl::image_type::image_2d> hdr_final_image;
+	gl::texture<gl::image_type::image_2d> hdr_image;
+	gl::texture<gl::image_type::image_2d> hdr_bloom_image;
+	gl::texture<gl::image_type::image_2d> hdr_bloom_blurx_image;
+	gl::texture<gl::image_type::image_2d> hdr_lums;
 
-	gl::packaged_image_sampler<gl::image_type::image_2d> hdr_image;
-	gl::packaged_image_sampler<gl::image_type::image_2d> hdr_bloom_image;
-	gl::packaged_image_sampler<gl::image_type::image_2d> hdr_bloom_blurx_image;
-	gl::packaged_image_sampler<gl::image_type::image_2d> hdr_lums;
-
-	gl::device_image<2> hdr_vision_properties_image;
-	gl::combined_image_sampler<gl::image_type::image_1d> hdr_vision_properties_texture;
+	gl::texture<gl::image_type::image_1d, 2> hdr_vision_properties_texture;
 
 	gl::array<hdr_bokeh_parameters> hdr_bokeh_param_buffer;
 //	gl::array<hdr_bokeh_parameters> hdr_bokeh_param_buffer_prev;
@@ -76,7 +72,7 @@ private:
 	gl::framebuffer fbo_hdr_bloom_blurx_image;
 
 private:
-	static gl::device_image<2> create_hdr_vision_properties_texture(const ste_context &ctx);
+	static gl::texture<gl::image_type::image_1d, 2> create_hdr_vision_properties_texture(const ste_context &ctx);
 
 	void bind_fragment_resources();
 

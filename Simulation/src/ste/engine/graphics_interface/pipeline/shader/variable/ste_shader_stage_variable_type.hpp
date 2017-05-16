@@ -57,7 +57,7 @@ struct ste_shader_stage_variable_type_from_type_impl {
 		return ste_shader_stage_variable_type::sampler_t;
 	}
 	template <typename V>
-	static constexpr ste_shader_stage_variable_type variable_type_impl(std::enable_if_t<std::is_convertible_v<V, combined_image_sampler_generic>>* = nullptr) {
+	static constexpr ste_shader_stage_variable_type variable_type_impl(std::enable_if_t<std::is_convertible_v<V, pipeline::combined_image_sampler>>* = nullptr) {
 		return ste_shader_stage_variable_type::texture_t;
 	}
 	template <typename V>
@@ -96,7 +96,7 @@ struct ste_shader_stage_variable_type_from_type_impl {
 				std::is_array<V>,
 				is_block_layout<V>,
 				std::is_convertible<V, sampler>,
-				std::is_convertible<V, combined_image_sampler_generic>,
+				std::is_convertible<V, pipeline::combined_image_sampler>,
 				std::is_convertible<V, image_view_generic>,
 				is_arithmetic<V>,
 				std::is_void<V>

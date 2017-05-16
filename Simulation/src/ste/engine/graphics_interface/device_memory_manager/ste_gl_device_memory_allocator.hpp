@@ -12,7 +12,7 @@
 
 #include <mutex>
 #include <memory>
-#include <forward_list>
+#include <vector>
 #include <array>
 #include <unordered_set>
 #include <aligned_ptr.hpp>
@@ -20,10 +20,10 @@
 namespace ste {
 namespace gl {
 
-class ste_gl_device_memory_allocator {
+class ste_gl_device_memory_allocator : public unique_device_ptr_allocator {
 private:
 	using chunk_t = device_memory_heap;
-	using chunks_t = std::forward_list<std::unique_ptr<chunk_t>>;
+	using chunks_t = std::unordered_map<std::uint64_t, chunk_t>;
 	using memory_type_t = std::uint32_t;
 
 	struct heap_t {
@@ -35,6 +35,8 @@ private:
 	static constexpr memory_type_t memory_types = 32;
 
 	using heaps_t = std::array<heap_t, memory_types>;
+
+	friend class chunk_t::allocation_type;
 
 public:
 	// Allocate 256MB chunks by default
@@ -81,41 +83,40 @@ private:
 		throw device_memory_no_supported_heap_exception();
 	}
 
-	static void prune_chunks(chunks_t &chunks) {
-		auto before_it = chunks.before_begin();
-		auto it = chunks.begin();
-		while (it != chunks.end()) {
-			auto &h = *it;
+	void deallocate(const allocation_t &ptr) const override final {
+		auto memory_type = ptr.get_memory_type();
 
-			// Destroy unallocated chunks
-			if (h->get_allocated_bytes() == 0) {
-				chunks.erase_after(before_it);
-				it = before_it;
-				++it;
-			}
-			else {
-				before_it = it;
-				++it;
+		assert(memory_type < heaps.size());
+		auto &heap = heaps[memory_type];
+
+		{
+			std::unique_lock<std::mutex> lock(*heap.m);
+
+			chunks_t &chunks = ptr.is_private_allocation() ?
+				heap.private_chunks :
+				heap.chunks;
+			auto it = chunks.find(ptr.get_heap_tag());
+			
+			assert(it != chunks.end());
+
+			it->second.deallocate(ptr);
+			if (it->second.get_allocated_bytes() == 0) {
+				chunks.erase(it);
 			}
 		}
-	}
-	static void prune_heap(heap_t &heap) {
-		prune_chunks(heap.chunks);
-		prune_chunks(heap.private_chunks);
 	}
 
 	static auto allocate_from_heap(heap_t &heap, 
 								   std::uint64_t size, 
-								   std::uint64_t alignment,
-								   bool private_memory) {
+								   std::uint64_t alignment) {
 		allocation_t allocation;
 		for (auto it = heap.chunks.begin(); it != heap.chunks.end(); ++it) {
-			allocation = (*it)->allocate(size, alignment, private_memory);
-			if (allocation) {
-				// On successful allocation, prune the heap
-				prune_heap(heap);
-				break;
-			}
+			if (!allocation)
+				allocation = it->second.allocate(size, alignment, false);
+
+			// Remove empty heaps
+			if (it->second.get_allocated_bytes() == 0)
+				it = heap.chunks.erase(it);
 		}
 
 		return allocation;
@@ -130,7 +131,7 @@ private:
 			minimal_size :
 			std::max(minimal_size, minimal_allocation_size_bytes);
 		// Align it
-		chunk_size = device_memory_heap::align(chunk_size, alignment);
+		chunk_size = chunk_t::align(chunk_size, alignment);
 
 		// Create the device memory object
 		return vk::vk_device_memory(device, chunk_size, memory_type);
@@ -151,12 +152,17 @@ private:
 		{
 			std::unique_lock<std::mutex> lock(*heap.m);
 
-			if (!heap.chunks.empty()) {
+			// Prune private chunks
+			for (auto it = heap.private_chunks.begin(); it != heap.private_chunks.end(); ++it) {
+				if (it->second.get_allocated_bytes() == 0)
+					it = heap.private_chunks.erase(it);
+			}
+
+			if (!private_memory && !heap.chunks.empty()) {
 				// Try to allocate memory on one of the existing chunks
 				allocation = allocate_from_heap(heap, 
 												size, 
-												alignment, 
-												private_memory);
+												alignment);
 			}
 
 			// If failed allocating on existing chunks, or no existing chunks available,
@@ -172,15 +178,14 @@ private:
 																			   alignment, 
 																			   private_memory);
 				// And use it to create a new chunk
-				auto chunk = std::make_unique<chunk_t>(std::move(memory_object));
-
+				auto ret = chunks.emplace(std::piecewise_construct,
+										  std::forward_as_tuple(static_cast<std::uint64_t>(memory_object)),
+										  std::forward_as_tuple(this,
+																memory_type,
+																std::move(memory_object)));
+				assert(ret.second);
 				// Allocate from that chunk
-				allocation = chunk->allocate(size, alignment, private_memory);
-
-				chunks.push_front(std::move(chunk));
-
-				// On commiting new chunks, prune the heap
-				prune_heap(heap);
+				allocation = ret.first->second.allocate(size, alignment, private_memory);
 			}
 		}
 
@@ -388,9 +393,9 @@ public:
 			std::unique_lock<std::mutex> lock(*heap.m);
 
 			for (auto it = heap.chunks.begin(); it != heap.chunks.end(); ++it)
-				total_commited_memory += (*it)->get_heap_size();
+				total_commited_memory += it->second.get_heap_size();
 			for (auto it = heap.private_chunks.begin(); it != heap.private_chunks.end(); ++it)
-				total_commited_memory += (*it)->get_heap_size();
+				total_commited_memory += it->second.get_heap_size();
 		}
 
 		return total_commited_memory;
@@ -431,9 +436,9 @@ public:
 			std::unique_lock<std::mutex> lock(*heap.m);
 
 			for (auto it = heap.chunks.begin(); it != heap.chunks.end(); ++it)
-				total_allocated_memory += (*it)->get_allocated_bytes();
+				total_allocated_memory += it->second.get_allocated_bytes();
 			for (auto it = heap.private_chunks.begin(); it != heap.private_chunks.end(); ++it)
-				total_allocated_memory += (*it)->get_allocated_bytes();
+				total_allocated_memory += it->second.get_allocated_bytes();
 		}
 
 		return total_allocated_memory;

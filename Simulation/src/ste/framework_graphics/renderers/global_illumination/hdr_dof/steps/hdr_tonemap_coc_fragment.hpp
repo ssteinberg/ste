@@ -48,8 +48,8 @@ public:
 		pipeline["histogram_sums"] = gl::bind(histogram_sums);
 		pipeline["hdr_bokeh_parameters_buffer"] = gl::bind(hdr_bokeh_parameters_buffer);
 	}
-	void set_source(const gl::combined_image_sampler_generic &hdr_vision_properties_texture,
-					const gl::combined_image_sampler_generic &src) {
+	void set_source(const gl::pipeline::combined_image_sampler &hdr_vision_properties_texture,
+					const gl::pipeline::combined_image_sampler &src) {
 		pipeline["hdr_vision_properties_texture"] = gl::bind(hdr_vision_properties_texture);
 		pipeline["hdr"] = gl::bind(src);
 	}

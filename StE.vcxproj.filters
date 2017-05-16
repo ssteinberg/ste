@@ -1712,21 +1712,6 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\sampler\common_samplers.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\composite\packaged_image_sampler.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\composite\combined_image_sampler.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\composite\texture.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\composite\composite_resource_component_storage.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\composite\packaged_texture.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\steps\hdr_tonemap_coc_fragment.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1758,6 +1743,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device\queue\ste_device_queue_secondary_command_buffer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\image\texture.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\binding\resources\combined_image_sampler.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\binding\resources\image.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

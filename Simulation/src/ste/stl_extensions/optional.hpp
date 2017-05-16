@@ -15,6 +15,8 @@
 
 namespace ste {
 
+struct optional_ctor_inplace {};
+
 class optional_bad_access_exception : public std::runtime_error {
 	using Base = std::runtime_error;
 
@@ -77,6 +79,18 @@ protected:
 	}
 
 public:
+	optional_base() = default;
+	template <typename... Args>
+	optional_base(optional_ctor_inplace,
+			 Args&&... args) {
+		ctor_val(std::forward<Args>(args)...);
+	}
+
+	optional_base(optional_base&&) = default;
+	optional_base(const optional_base&) = default;
+	optional_base &operator=(optional_base&&) = default;
+	optional_base &operator=(const optional_base&) = default;
+
 	// msvc 14.10.25017 (VC++ 2017 March release) fails with an internal error with conditional noexcept
 //	virtual ~optional_base() noexcept(std::is_nothrow_destructible_v<T>) {
 	virtual ~optional_base() noexcept {
@@ -90,6 +104,8 @@ class optional_base_moveable_copyable : public optional_base<T> {
 	using Base = optional_base<T>;
 
 public:
+	using Base::Base;
+
 	optional_base_moveable_copyable() = default;
 	optional_base_moveable_copyable(optional_base_moveable_copyable &&other)
 		noexcept(std::is_nothrow_move_constructible_v<T>)
@@ -243,6 +259,12 @@ public:
 	optional(const optional<T> &) = default;
 	optional &operator=(optional<T> &&) = default;
 	optional &operator=(const optional<T> &) = default;
+
+	template <typename Placeholder, typename... Args>
+	optional(std::enable_if_t<std::is_same_v<Placeholder, optional_ctor_inplace>, optional_ctor_inplace>,
+			 Args&&... args)
+		: Base(std::forward<Args>(args)...)
+	{}
 
 	template <typename S, typename =
 		typename std::enable_if_t<std::is_constructible_v<T, S> || std::is_convertible_v<S, T>>

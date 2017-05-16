@@ -37,10 +37,10 @@ public:
 	void bind_buffers(const gl::array<hdr_bokeh_parameters> &hdr_bokeh_parameters_buffer) {
 		pipeline["hdr_bokeh_parameters_buffer"] = gl::bind(hdr_bokeh_parameters_buffer);
 	}
-	void set_source(const gl::combined_image_sampler_generic &src) {
+	void set_source(const gl::pipeline::combined_image_sampler &src) {
 		pipeline["hdr"] = gl::bind(src);
 	}
-	void set_destination(const gl::texture_generic &hdr_lums,
+	void set_destination(const gl::pipeline::image &hdr_lums,
 						 const glm::u32vec2 &extent) {
 		pipeline["hdr_lums"] = gl::bind(hdr_lums);
 		this->extent = extent;
