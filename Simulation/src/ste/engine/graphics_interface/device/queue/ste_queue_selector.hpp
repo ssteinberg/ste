@@ -66,7 +66,7 @@ public:
 		auto it = match_it->second;
 		assert(it != descriptors.end());
 
-		std::uint32_t idx = it - descriptors.begin();
+		std::uint32_t idx = static_cast<std::uint32_t>(it - descriptors.begin());
 		return idx;
 	}
 

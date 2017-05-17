@@ -80,7 +80,7 @@ template <typename T, int atom_size, class policy>
 void copy_data_buffer(const ste_context &ctx,
 					  device_buffer_sparse<T, atom_size, policy> &buffer,
 					  const std::vector<T> &data,
-					  std::size_t offset = 0) {
+					  std::uint64_t offset = 0) {
 	using staging_buffer_t = device_buffer<T, device_resource_allocation_policy_host_visible_coherent>;
 
 	auto copy_count = data.size();

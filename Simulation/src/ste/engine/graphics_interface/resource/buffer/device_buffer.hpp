@@ -25,7 +25,7 @@ public:
 				  std::uint64_t count,
 				  const buffer_usage &usage)
 		: device_resource(ctx,
-						  sizeof(T),
+						  static_cast<std::uint32_t>(sizeof(T)),
 						  count,
 						  static_cast<VkBufferUsageFlags>(usage))
 	{}

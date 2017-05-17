@@ -1,0 +1,20 @@
+# CMake generation dependency list for this directory.
+D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/CMakeLists.txt
+D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo32/CMakeFiles/3.7.1/CMakeSystem.cmake
+C:/Program Files/CMake/share/cmake-3.7/Modules/CMakeSystemSpecificInitialize.cmake
+D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo32/CMakeFiles/3.7.1/CMakeCCompiler.cmake
+C:/Program Files/CMake/share/cmake-3.7/Modules/CMakeSystemSpecificInformation.cmake
+C:/Program Files/CMake/share/cmake-3.7/Modules/CMakeGenericSystem.cmake
+C:/Program Files/CMake/share/cmake-3.7/Modules/Platform/Windows.cmake
+C:/Program Files/CMake/share/cmake-3.7/Modules/Platform/WindowsPaths.cmake
+C:/Program Files/CMake/share/cmake-3.7/Modules/CMakeCInformation.cmake
+C:/Program Files/CMake/share/cmake-3.7/Modules/CMakeLanguageInformation.cmake
+C:/Program Files/CMake/share/cmake-3.7/Modules/Platform/Windows-MSVC-C.cmake
+C:/Program Files/CMake/share/cmake-3.7/Modules/Platform/Windows-MSVC.cmake
+D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo32/CMakeFiles/3.7.1/CMakeRCCompiler.cmake
+C:/Program Files/CMake/share/cmake-3.7/Modules/CMakeRCInformation.cmake
+C:/Program Files/CMake/share/cmake-3.7/Modules/CMakeCommonLanguageInclude.cmake
+D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/win/jconfig.h.in
+D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/win/jconfigint.h.in
+D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/release/libjpeg-turbo.nsi.in
+D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/cmakescripts/cmake_uninstall.cmake.in

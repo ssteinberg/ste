@@ -53,7 +53,8 @@ private:
 	void operator()(const command_buffer &command_buffer, command_recorder &) const override final {
 		vkCmdCopyImageToBuffer(command_buffer, src_image.get().get_image_handle(), static_cast<VkImageLayout>(layout),
 							   dst_buffer.get().get_buffer_handle(),
-							   ranges.size(), ranges.data());
+							   static_cast<std::uint32_t>(ranges.size()),
+							   ranges.data());
 	}
 };
 

@@ -1,0 +1,2 @@
+D:/src/git/StE/Simulation/third_party/build/tinyobjloader64/../../lib/tinyobjloader.lib
+D:/src/git/StE/Simulation/third_party/build/tinyobjloader64/../../include/tiny_obj_loader.h

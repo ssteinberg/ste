@@ -19,7 +19,7 @@ namespace Attributes {
 
 class attrib {
 public:
-	using attrib_id_t = unsigned;
+	using attrib_id_t = std::size_t;
 
 public:
 	virtual ~attrib() noexcept {}
@@ -66,7 +66,7 @@ public:
 	rgb(const glm::u8vec4 &color) : color(color) {}
 
 	static attrib_id_t attrib_type_s() noexcept {
-		return reinterpret_cast<unsigned>(&type_id);
+		return reinterpret_cast<std::size_t>(&type_id);
 	}
 	attrib_id_t attrib_type() const noexcept override { return attrib_type_s(); }
 	virtual rgb* clone() const override { return new rgb(*this); };
@@ -231,7 +231,7 @@ public:
 	stroke(const rgb &color, float w) : color(color), width(w) {}
 
 	static attrib_id_t attrib_type_s() noexcept {
-		return reinterpret_cast<unsigned>(&type_id);
+		return reinterpret_cast<std::size_t>(&type_id);
 	}
 	attrib_id_t attrib_type() const noexcept override { return attrib_type_s(); }
 	virtual stroke* clone() const override { return new stroke(*this); };
@@ -254,7 +254,7 @@ public:
 	font(const ste::text::font &f) : f(f) {}
 
 	static attrib_id_t attrib_type_s() noexcept {
-		return reinterpret_cast<unsigned>(&type_id);
+		return reinterpret_cast<std::size_t>(&type_id);
 	}
 	attrib_id_t attrib_type() const noexcept override { return attrib_type_s(); }
 	virtual font* clone() const override { return new font(*this); };
@@ -279,7 +279,7 @@ public:
 	size(const T &s) : s(s) {}
 
 	static attrib_id_t attrib_type_s() noexcept {
-		return reinterpret_cast<unsigned>(&type_id);
+		return reinterpret_cast<std::size_t>(&type_id);
 	}
 	attrib_id_t attrib_type() const noexcept override { return attrib_type_s(); }
 	virtual size* clone() const override { return new size(*this); };
@@ -312,7 +312,7 @@ public:
 	line_height(const T &s) : s(s) {}
 
 	static attrib_id_t attrib_type_s() noexcept {
-		return reinterpret_cast<unsigned>(&type_id);
+		return reinterpret_cast<std::size_t>(&type_id);
 	}
 	attrib_id_t attrib_type() const noexcept override { return attrib_type_s(); }
 	virtual line_height* clone() const override { return new line_height(*this); };
@@ -337,7 +337,7 @@ public:
 	kern(const T &k) : k(k) {}
 
 	static attrib_id_t attrib_type_s() noexcept {
-		return reinterpret_cast<unsigned>(&type_id);
+		return reinterpret_cast<std::size_t>(&type_id);
 	}
 	attrib_id_t attrib_type() const noexcept override { return attrib_type_s(); }
 	virtual kern* clone() const override { return new kern(*this); };
@@ -366,7 +366,7 @@ public:
 	align(const alignment &a) : a(a) {}
 
 	static attrib_id_t attrib_type_s() noexcept {
-		return reinterpret_cast<unsigned>(&type_id);
+		return reinterpret_cast<std::size_t>(&type_id);
 	}
 	attrib_id_t attrib_type() const noexcept override { return attrib_type_s(); }
 	virtual align* clone() const override { return new align(*this); };
@@ -394,7 +394,7 @@ public:
 	weight(const T &w) : w(w) {}
 
 	static attrib_id_t attrib_type_s() noexcept {
-		return reinterpret_cast<unsigned>(&type_id);
+		return reinterpret_cast<std::size_t>(&type_id);
 	}
 	attrib_id_t attrib_type() const noexcept override { return attrib_type_s(); }
 	virtual weight* clone() const override { return new weight(*this); };
@@ -416,7 +416,7 @@ public:
 	underline() {}
 
 	static attrib_id_t attrib_type_s() noexcept {
-		return reinterpret_cast<unsigned>(&type_id);
+		return reinterpret_cast<std::size_t>(&type_id);
 	}
 	attrib_id_t attrib_type() const noexcept override { return attrib_type_s(); }
 	virtual underline* clone() const override { return new underline(*this); };
@@ -434,7 +434,7 @@ public:
 	italic() {}
 
 	static attrib_id_t attrib_type_s() noexcept {
-		return reinterpret_cast<unsigned>(&type_id);
+		return reinterpret_cast<std::size_t>(&type_id);
 	}
 	attrib_id_t attrib_type() const noexcept override { return attrib_type_s(); }
 	virtual italic* clone() const override { return new italic(*this); };
@@ -456,7 +456,7 @@ public:
 	link(const T &l) : l(l) {}
 
 	static attrib_id_t attrib_type_s() noexcept {
-		return reinterpret_cast<unsigned>(&type_id);
+		return reinterpret_cast<std::size_t>(&type_id);
 	}
 	attrib_id_t attrib_type() const noexcept override { return attrib_type_s(); }
 	virtual link* clone() const override { return new link(*this); };

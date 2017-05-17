@@ -16,7 +16,10 @@ void vk::vk_command_buffers::free() {
 		for (auto &e : buffers)
 			b.push_back(e.get());
 
-		vkFreeCommandBuffers(device.get(), pool, b.size(), b.data());
+		vkFreeCommandBuffers(device.get(), 
+							 pool, 
+							 static_cast<std::uint32_t>(b.size()),
+							 b.data());
 		buffers.clear();
 	}
 }

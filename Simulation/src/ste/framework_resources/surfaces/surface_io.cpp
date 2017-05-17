@@ -258,7 +258,7 @@ gli::texture2d surface_io::load_png(const boost::filesystem::path &file_name, bo
 	png_read_update_info(png_ptr, info_ptr);
 
 	// Row size in bytes.
-	int rowbytes = png_get_rowbytes(png_ptr, info_ptr);
+	auto rowbytes = png_get_rowbytes(png_ptr, info_ptr);
 	if (bit_depth == 1) rowbytes *= 8;
 
 	// glTexImage2d requires rows to be 4-byte aligned
@@ -268,7 +268,7 @@ gli::texture2d surface_io::load_png(const boost::filesystem::path &file_name, bo
 
 	// Allocate the image_data as a big block, to be given to opengl
 	/*char * image_data = new char[rowbytes * temp_height * sizeof(png_byte) + 15];*/
-	unsigned w = rowbytes / components + !!(rowbytes%components);
+	std::size_t w = rowbytes / components + !!(rowbytes%components);
 	gli::texture2d tex(format, { w, temp_height }, 1);
 	char *image_data = reinterpret_cast<char*>(tex.data());
 	auto level0_size = tex[0].size();
@@ -317,9 +317,6 @@ gli::texture2d surface_io::load_png(const boost::filesystem::path &file_name, bo
 }
 
 gli::texture2d surface_io::load_jpeg(const boost::filesystem::path &path, bool srgb) {
-	int row_stride;
-	std::string content;
-
 	std::ifstream fs(path.string(), std::ios::in);
 	if (!fs) {
 		using namespace Attributes;
@@ -327,7 +324,7 @@ gli::texture2d surface_io::load_jpeg(const boost::filesystem::path &path, bool s
 		throw resource_io_error("Could not open file");
 	}
 
-	content = std::string((std::istreambuf_iterator<char>(fs)), std::istreambuf_iterator<char>());
+	auto content = std::string((std::istreambuf_iterator<char>(fs)), std::istreambuf_iterator<char>());
 	fs.close();
 
 	unsigned char *data = reinterpret_cast<unsigned char*>(&content[0]);
@@ -344,7 +341,7 @@ gli::texture2d surface_io::load_jpeg(const boost::filesystem::path &path, bool s
 	}
 
 	int w, h, chro_sub_smpl, color_space;
-	tjDecompressHeader3(tj, data, content.size(), &w, &h, &chro_sub_smpl, &color_space);
+	tjDecompressHeader3(tj, data, static_cast<unsigned long>(content.size()), &w, &h, &chro_sub_smpl, &color_space);
 
 	// Read colorspace and components
 	gli::format gli_format;
@@ -355,7 +352,7 @@ gli::texture2d surface_io::load_jpeg(const boost::filesystem::path &path, bool s
 	}
 
 	// Create surface
-	row_stride = w * comp;
+	auto row_stride = w * comp;
 
 	if (3 - ((row_stride - 1) % 4))
 		ste_log_warn() << path << " image not 4byte aligned!";
@@ -363,8 +360,8 @@ gli::texture2d surface_io::load_jpeg(const boost::filesystem::path &path, bool s
 	auto w0 = corrected_stride / comp + !!(corrected_stride%comp);
 	gli::texture2d tex(gli_format, { w0, h }, 1);
 	unsigned char *image_data = reinterpret_cast<unsigned char*>(tex.data());
-	int level0_size = tex[0].size();
-	if (image_data == nullptr || level0_size < h * row_stride) {
+	auto level0_size = tex[0].size();
+	if (image_data == nullptr || static_cast<int>(level0_size) < h * row_stride) {
 		ste_log_error() << path << " could not allocate memory for JPEG image data or format mismatch" << std::endl;
 		tjDestroy(tj);
 		throw surface_error("JPEG format mismatch");
@@ -372,7 +369,7 @@ gli::texture2d surface_io::load_jpeg(const boost::filesystem::path &path, bool s
 
 	if (tjDecompress2(tj,
 					  data,
-					  content.size(),
+					  static_cast<unsigned long>(content.size()),
 					  image_data,
 					  w,
 					  w0 * comp,

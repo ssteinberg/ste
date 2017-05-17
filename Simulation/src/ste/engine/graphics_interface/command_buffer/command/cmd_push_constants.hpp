@@ -35,7 +35,7 @@ private:
 						   *layout,
 						   static_cast<VkShaderStageFlags>(stage),
 						   offset,
-						   data.size(),
+						   static_cast<std::uint32_t>(data.size()),
 						   data.data());
 	}
 };

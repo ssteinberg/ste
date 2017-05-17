@@ -3,7 +3,10 @@
 
 #pragma once
 
+#include <stdafx.hpp>
 #include <vulkan/vulkan.h>
+#include <vk_handle.hpp>
+
 #include <vk_logical_device.hpp>
 
 #include <vector>
@@ -25,7 +28,7 @@ class vk_command_buffer : public allow_type_decay<vk_command_buffer, VkCommandBu
 	friend vk_command_pool;
 
 private:
-	VkCommandBuffer buffer{ VK_NULL_HANDLE };
+	VkCommandBuffer buffer{ vk::vk_null_handle };
 
 	vk_command_buffer() = default;
 	vk_command_buffer(VkCommandBuffer b) : buffer(b) {}

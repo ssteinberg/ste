@@ -1,11 +1,12 @@
 // StE
-// © Shlomi Steinberg, 2015-2016
+// © Shlomi Steinberg, 2015-2017
 
 #pragma once
 
 #include <atomic>
 #include <iostream>
 
+#include <ref_count_ptr.hpp>
 #include <concurrent_pointer_recycler.hpp>
 
 namespace ste {
@@ -66,10 +67,7 @@ class shared_double_reference_guard {
 private:
 	using data_t = _shared_double_reference_guard_detail::data<DataType, recycle_pointers>;
 
-	struct data_ptr {
-		int external_counter;
-		data_t *ptr;
-	};
+	using data_ptr = ref_count_ptr<data_t>;
 
 public:
 	class data_guard {
@@ -107,18 +105,18 @@ private:
 	std::atomic<data_ptr> guard;
 
 	void release(data_ptr &old_data_ptr) {
-		if (!old_data_ptr.ptr)
+		if (!old_data_ptr.get())
 			return;
-		auto external = old_data_ptr.external_counter;
-		if (old_data_ptr.ptr->internal_counter.fetch_sub(external, std::memory_order_release) == external - 1)
-			old_data_ptr.ptr->destroy();
+		auto external = old_data_ptr.get_counter();
+		if (old_data_ptr.get()->internal_counter.fetch_sub(external, std::memory_order_release) == external - 1)
+			old_data_ptr.get()->destroy();
 		else
-			old_data_ptr.ptr->release_ref();
+			old_data_ptr.get()->release_ref();
 	}
 
 public:
 	shared_double_reference_guard() {
-		data_ptr new_data_ptr{ 0 };
+		data_ptr new_data_ptr{ 0, nullptr };
 		guard.store(new_data_ptr);
 	}
 
@@ -141,10 +139,10 @@ public:
 		data_ptr old_data_ptr = guard.load(std::memory_order_relaxed);
 		do {
 			new_data_ptr = old_data_ptr;
-			++new_data_ptr.external_counter;
+			new_data_ptr.inc();
 		} while (!guard.compare_exchange_weak(old_data_ptr, new_data_ptr, order, std::memory_order_relaxed));
 
-		return data_guard(new_data_ptr.ptr);
+		return data_guard(new_data_ptr.get());
 	}
 
 	template <typename ... Ts>
@@ -156,7 +154,7 @@ public:
 
 		release(old_data_ptr);
 
-		return data_guard(new_data_ptr.ptr);
+		return data_guard(new_data_ptr.get());
 	}
 
 	template <typename ... Ts>
@@ -189,7 +187,7 @@ public:
 		data_ptr old_data_ptr = guard.load(std::memory_order_relaxed);
 
 		bool success = false;
-		while (old_data_ptr.ptr == old_data.ptr && 
+		while (old_data_ptr.get() == old_data.ptr &&
 			   !(success = guard.compare_exchange_weak(old_data_ptr, new_data_ptr, order, std::memory_order_relaxed))) {}
 		if (success)
 			release(old_data_ptr);
@@ -200,11 +198,11 @@ public:
 	}
 
 	bool is_valid_hint(std::memory_order order = std::memory_order_relaxed) const {
-		return !!guard.load(order).ptr;
+		return !!guard.load(order).get();
 	}
 
 	void drop() {
-		data_ptr new_data_ptr{ 0 };
+		data_ptr new_data_ptr{ 0, nullptr };
 		data_ptr old_data_ptr = guard.load(std::memory_order_relaxed);
 		while (!guard.compare_exchange_weak(old_data_ptr, new_data_ptr, std::memory_order_acq_rel, std::memory_order_relaxed)) {}
 

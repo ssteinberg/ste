@@ -52,7 +52,7 @@ private:
 	void operator()(const command_buffer &command_buffer, command_recorder &) const override final {
 		vkCmdBlitImage(command_buffer, src_image.get().get_image_handle(), static_cast<VkImageLayout>(src_image_layout),
 					   dst_image.get().get_image_handle(), static_cast<VkImageLayout>(dst_image_layout),
-					   ranges.size(), ranges.data(),
+					   static_cast<std::uint32_t>(ranges.size()), ranges.data(),
 					   static_cast<VkFilter>(filter));
 	}
 };

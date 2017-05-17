@@ -55,7 +55,7 @@ public:
 		create_info.pNext = nullptr;
 		create_info.flags = allow_free_individual_sets ? VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT : 0;
 		create_info.maxSets = max_sets;
-		create_info.poolSizeCount = set_sizes.size();
+		create_info.poolSizeCount = static_cast<std::uint32_t>(set_sizes.size());
 		create_info.pPoolSizes = set_sizes.data();
 
 		VkDescriptorPool pool;
@@ -92,7 +92,7 @@ public:
 		create_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
 		create_info.pNext = nullptr;
 		create_info.descriptorPool = *this;
-		create_info.descriptorSetCount = set_layout_descriptors.size();
+		create_info.descriptorSetCount = static_cast<std::uint32_t>(set_layout_descriptors.size());
 		create_info.pSetLayouts = set_layout_descriptors.data();
 
 		std::vector<VkDescriptorSet> sets;

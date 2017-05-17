@@ -90,12 +90,13 @@ private:
 
 	template <class table_ptr>
 	struct resize_data_struct {
-		static constexpr unsigned chunk_size = 8;
+		using marker_t = std::uint8_t;
+		static constexpr std::size_t chunk_size = 8;
 
 		unsigned size;
 		hash_table_type buckets;
 		typename shared_double_reference_guard<table_ptr, false>::data_guard new_table_guard{ 0 };
-		std::vector<std::atomic<int>> markers;
+		std::vector<std::atomic<marker_t>> markers;
 
 		resize_data_struct(unsigned size, unsigned old_size) : size(size), buckets(table_ptr::alloc(size)), markers((old_size + chunk_size - 1) / chunk_size) {
 			assert(markers[0].is_lock_free() && "markers not lock free");
@@ -158,10 +159,10 @@ private:
 
 	void copy_virtual_bucket(hash_table_guard_type &old_table_guard,
 							 resize_data_guard_type &resize_guard,
-							 int i, int chunks) {
-		unsigned chunk_size = resize_data::chunk_size;
-		unsigned j = static_cast<unsigned>(i) * chunk_size;
-		for (unsigned k = 0; k < chunk_size && j < old_table_guard->size; ++k, ++j) {
+							 std::size_t i, std::size_t chunks) {
+		std::size_t chunk_size = resize_data::chunk_size;
+		auto j = i * chunk_size;
+		for (std::size_t k = 0; k < chunk_size && j < old_table_guard->size; ++k, ++j) {
 			auto *virtual_bucket = &old_table_guard->buckets[j];
 			for (;;) {
 				for (int b = 0; b < N; ++b) {
@@ -184,12 +185,12 @@ private:
 
 	template <typename ... Ts>
 	void resize_with_pending_insert(hash_table_guard_type &old_table_guard,
-											   resize_data_guard_type &resize_guard,
-											   hash_type hash,
-											   const key_type &key,
-											   bool helper_only,
-											   bool delete_item,
-											   Ts&&... val_args) {
+									resize_data_guard_type &resize_guard,
+									hash_type hash,
+									const key_type &key,
+									bool helper_only,
+									bool delete_item,
+									Ts&&... val_args) {
 		if (!resize_guard.is_valid())
 			resize_guard = old_table_guard->resize_ptr.acquire();
 		if (!resize_guard.is_valid()) {
@@ -210,9 +211,9 @@ private:
 			insert_update_into_virtual_bucket(virtual_bucket, hash, key, .0f, true, 1, std::forward<Ts>(val_args)...) :
 			remove_from_virtual_bucket(virtual_bucket, hash, key);
 
-		int chunks = resize_guard->markers.size();
-		for (int i = 0; i < chunks; ++i) {
-			int old_val = 0;
+		auto chunks = resize_guard->markers.size();
+		for (std::size_t i = 0; i < chunks; ++i) {
+			typename resize_data::marker_t old_val = 0;
 			if (!resize_guard->markers[i].compare_exchange_strong(old_val, 1, std::memory_order_acq_rel, std::memory_order_relaxed))
 				continue;
 			copy_virtual_bucket(old_table_guard, resize_guard, i, chunks);
@@ -220,7 +221,7 @@ private:
 		}
 
 		bool old_table_moved = true;
-		for (int i = 0; i < chunks; ++i)
+		for (std::size_t i = 0; i < chunks; ++i)
 			if (!(old_table_moved &= resize_guard->markers[i].load(std::memory_order_acquire) == 2)) break;
 		if (old_table_moved) {
 			if (hash_table.try_compare_emplace(std::memory_order_acq_rel, old_table_guard, resize_guard->size, resize_guard->buckets)) {

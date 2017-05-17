@@ -1,0 +1,119 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\CMakeLists.txt" />
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\CMakeFiles\e290c00822299b37d73cf852cc45302e\jsimdcpu.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\CMakeFiles\e290c00822299b37d73cf852cc45302e\jfdctflt-3dn.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\CMakeFiles\e290c00822299b37d73cf852cc45302e\jidctflt-3dn.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\CMakeFiles\e290c00822299b37d73cf852cc45302e\jquant-3dn.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\CMakeFiles\e290c00822299b37d73cf852cc45302e\jccolor-mmx.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\CMakeFiles\e290c00822299b37d73cf852cc45302e\jcgray-mmx.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\CMakeFiles\e290c00822299b37d73cf852cc45302e\jcsample-mmx.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\CMakeFiles\e290c00822299b37d73cf852cc45302e\jdcolor-mmx.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\CMakeFiles\e290c00822299b37d73cf852cc45302e\jdmerge-mmx.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\CMakeFiles\e290c00822299b37d73cf852cc45302e\jdsample-mmx.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\CMakeFiles\e290c00822299b37d73cf852cc45302e\jfdctfst-mmx.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\CMakeFiles\e290c00822299b37d73cf852cc45302e\jfdctint-mmx.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\CMakeFiles\e290c00822299b37d73cf852cc45302e\jidctfst-mmx.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\CMakeFiles\e290c00822299b37d73cf852cc45302e\jidctint-mmx.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\CMakeFiles\e290c00822299b37d73cf852cc45302e\jidctred-mmx.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\CMakeFiles\e290c00822299b37d73cf852cc45302e\jquant-mmx.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\CMakeFiles\e290c00822299b37d73cf852cc45302e\jfdctflt-sse.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\CMakeFiles\e290c00822299b37d73cf852cc45302e\jidctflt-sse.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\CMakeFiles\e290c00822299b37d73cf852cc45302e\jquant-sse.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\CMakeFiles\e290c00822299b37d73cf852cc45302e\jccolor-sse2.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\CMakeFiles\e290c00822299b37d73cf852cc45302e\jcgray-sse2.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\CMakeFiles\e290c00822299b37d73cf852cc45302e\jchuff-sse2.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\CMakeFiles\e290c00822299b37d73cf852cc45302e\jcsample-sse2.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\CMakeFiles\e290c00822299b37d73cf852cc45302e\jdcolor-sse2.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\CMakeFiles\e290c00822299b37d73cf852cc45302e\jdmerge-sse2.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\CMakeFiles\e290c00822299b37d73cf852cc45302e\jdsample-sse2.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\CMakeFiles\e290c00822299b37d73cf852cc45302e\jfdctfst-sse2.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\CMakeFiles\e290c00822299b37d73cf852cc45302e\jfdctint-sse2.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\CMakeFiles\e290c00822299b37d73cf852cc45302e\jidctflt-sse2.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\CMakeFiles\e290c00822299b37d73cf852cc45302e\jidctfst-sse2.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\CMakeFiles\e290c00822299b37d73cf852cc45302e\jidctint-sse2.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\CMakeFiles\e290c00822299b37d73cf852cc45302e\jidctred-sse2.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\CMakeFiles\e290c00822299b37d73cf852cc45302e\jquantf-sse2.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\CMakeFiles\e290c00822299b37d73cf852cc45302e\jquanti-sse2.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\CMakeFiles\4c4fb97df7597368f6326896639f3b28\simd.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\simd\CMakeFiles\simd" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{25A216E8-EDC0-3BA9-8099-F34696E64792}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

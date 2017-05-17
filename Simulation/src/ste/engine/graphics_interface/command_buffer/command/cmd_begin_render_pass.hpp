@@ -45,7 +45,7 @@ private:
 		info.renderPass = render_pass.get();
 		info.renderArea = render_area;
 		info.framebuffer = framebuffer.get();
-		info.clearValueCount = clear_values.size();
+		info.clearValueCount = static_cast<std::uint32_t>(clear_values.size());
 		info.pClearValues = clear_values.data();
 
 		vkCmdBeginRenderPass(command_buffer, &info, VK_SUBPASS_CONTENTS_INLINE);

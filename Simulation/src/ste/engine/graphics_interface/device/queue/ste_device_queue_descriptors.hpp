@@ -69,7 +69,7 @@ private:
 public:
 	ste_queue_descriptors(queues_t &&queues) : descriptors(set_descriptors(std::move(queues))) {}
 
-	auto& operator[](int i) const { return descriptors[i]; }
+	auto& operator[](std::size_t i) const { return descriptors[i]; }
 	auto& get_descriptors() const { return descriptors; }
 
 	auto size() const { return descriptors.size(); }
@@ -95,7 +95,7 @@ public:
 			device_queue_info.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
 			device_queue_info.pNext = nullptr;
 			device_queue_info.flags = 0;
-			device_queue_info.queueCount = info->priorities.size() - idx;
+			device_queue_info.queueCount = static_cast<std::uint32_t>(info->priorities.size() - idx);
 			device_queue_info.pQueuePriorities = &info->priorities[idx];
 			device_queue_info.queueFamilyIndex = static_cast<std::uint32_t>(it->family);
 

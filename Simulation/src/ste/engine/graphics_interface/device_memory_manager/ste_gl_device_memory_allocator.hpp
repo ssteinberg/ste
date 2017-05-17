@@ -6,6 +6,7 @@
 #include <stdafx.hpp>
 
 #include <vk_memory_exception.hpp>
+#include <vk_handle.hpp>
 #include <vk_logical_device.hpp>
 #include <vk_device_memory.hpp>
 #include <device_memory_heap.hpp>
@@ -179,7 +180,7 @@ private:
 																			   private_memory);
 				// And use it to create a new chunk
 				auto ret = chunks.emplace(std::piecewise_construct,
-										  std::forward_as_tuple(static_cast<std::uint64_t>(memory_object)),
+										  std::forward_as_tuple(static_cast<std::uint64_t>(vk::vk_handle(memory_object))),
 										  std::forward_as_tuple(this,
 																memory_type,
 																std::move(memory_object)));

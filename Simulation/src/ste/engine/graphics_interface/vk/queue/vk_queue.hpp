@@ -3,7 +3,10 @@
 
 #pragma once
 
+#include <stdafx.hpp>
 #include <vulkan/vulkan.h>
+#include <vk_handle.hpp>
+
 #include <vk_logical_device.hpp>
 #include <ste_queue_family.hpp>
 #include <vk_command_buffers.hpp>
@@ -90,17 +93,17 @@ public:
 		VkSubmitInfo info = {};
 		info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 		info.pNext = nullptr;
-		info.waitSemaphoreCount = wait.size();
+		info.waitSemaphoreCount = static_cast<std::uint32_t>(wait.size());
 		info.pWaitSemaphores = wait.data();
 		info.pWaitDstStageMask = stages.data();
-		info.commandBufferCount = cb.size();
+		info.commandBufferCount = static_cast<std::uint32_t>(cb.size());
 		info.pCommandBuffers = cb.data();
-		info.signalSemaphoreCount = signal.size();
+		info.signalSemaphoreCount = static_cast<std::uint32_t>(signal.size());
 		info.pSignalSemaphores = signal.data();
 
 		vk_result res = vkQueueSubmit(*this,
 									  1, &info,
-									  fence != nullptr ? *fence : VK_NULL_HANDLE);
+									  fence != nullptr ? static_cast<VkFence>(*fence) : vk::vk_null_handle);
 		if (!res) {
 			throw vk_exception(res);
 		}

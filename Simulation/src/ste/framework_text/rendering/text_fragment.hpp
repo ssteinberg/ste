@@ -50,13 +50,13 @@ private:
 		void operator()(const gl::command_buffer &, gl::command_recorder &recorder) const override final {
 			// Update glyphs
 			tr->tm->update_glyphs(recorder);
-			tr->count = points.size();
+			tr->count = static_cast<std::uint32_t>(points.size());
 
 			if (!tr->count)
 				return;
 
 			// Update vertex buffer
-			if (tr->count > tr->vertex_buffer.size())
+			if (tr->count > static_cast<std::uint32_t>(tr->vertex_buffer.size()))
 				recorder << tr->vertex_buffer.resize_cmd(tr->count);
 			recorder << tr->vertex_buffer.update_task(points, 0)();
 

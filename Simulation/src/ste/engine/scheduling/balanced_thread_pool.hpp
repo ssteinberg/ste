@@ -234,10 +234,10 @@ public:
 		}
 	}
 
-	int get_workers_count() const { return workers.size(); }
-	int get_pending_requests_count() const { return shared_data->requests_pending.load(std::memory_order_relaxed); }
-	int get_active_workers_count() const { return shared_data->active_workers.load(std::memory_order_relaxed); }
-	int get_sleeping_workers_count() const { return threads_sleeping; }
+	auto get_workers_count() const { return workers.size(); }
+	auto get_pending_requests_count() const { return shared_data->requests_pending.load(std::memory_order_relaxed); }
+	auto get_active_workers_count() const { return shared_data->active_workers.load(std::memory_order_relaxed); }
+	auto get_sleeping_workers_count() const { return threads_sleeping; }
 };
 
 }

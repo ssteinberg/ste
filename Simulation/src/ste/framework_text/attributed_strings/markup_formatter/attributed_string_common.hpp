@@ -72,8 +72,8 @@ private:
 		auto it_attrib = std::move(it->second);
 		attrib_remove(it);
 
-		auto length_before = static_cast<std::size_t>(std::max<int>(r.start - it_range.start, 0));
-		auto length_after = static_cast<std::size_t>(std::max<int>(it_range.start + it_range.length - r.length - r.start, 0));
+		auto length_before = static_cast<std::size_t>(std::max<std::int64_t>(r.start - it_range.start, 0));
+		auto length_after = static_cast<std::size_t>(std::max<std::int64_t>(it_range.start + it_range.length - r.length - r.start, 0));
 
 		if (length_before)
 			attrib_insert(std::make_pair(range_type{ it_range.start, length_before }, std::unique_ptr<attrib_type>(it_attrib->clone())));

@@ -1,40 +1,43 @@
-[submodule "Simulation/third_party/packages/zlib"]
+[submodule "packages/zlib"]
 	path = Simulation/third_party/packages/zlib
 	url = https://github.com/madler/zlib.git
-[submodule "Simulation/third_party/packages/glfw"]
+[submodule "packages/glfw"]
 	path = Simulation/third_party/packages/glfw
 	url = https://github.com/glfw/glfw.git
 	branch = latest
-[submodule "Simulation/third_party/packages/libjpeg-turbo"]
+[submodule "packages/libjpeg-turbo"]
 	path = Simulation/third_party/packages/libjpeg-turbo
 	url = https://github.com/libjpeg-turbo/libjpeg-turbo.git
 	branch = 1.4.x
-[submodule "Simulation/third_party/packages/libpng"]
+[submodule "packages/libpng"]
 	path = Simulation/third_party/packages/libpng
 	url = https://github.com/glennrp/libpng.git
 	branch = libpng16
-[submodule "Simulation/third_party/packages/tinyobjloader"]
+[submodule "packages/tinyobjloader"]
 	path = Simulation/third_party/packages/tinyobjloader
 	url = https://github.com/syoyo/tinyobjloader.git
-[submodule "Simulation/third_party/packages/imgui"]
+[submodule "packages/imgui"]
 	path = Simulation/third_party/packages/imgui
 	url = https://github.com/ocornut/imgui.git
-[submodule "Simulation/third_party/packages/glm"]
+[submodule "packages/glm"]
 	path = Simulation/third_party/packages/glm
 	url = https://github.com/g-truc/glm.git
 	branch = 0.9.7
-[submodule "Simulation/third_party/packages/gli"]
+[submodule "packages/gli"]
 	path = Simulation/third_party/packages/gli
 	url = https://github.com/g-truc/gli.git
-[submodule "Simulation/third_party/packages/freetype2"]
+[submodule "packages/freetype2"]
 	path = Simulation/third_party/packages/freetype2
 	url = http://git.savannah.gnu.org/r/freetype/freetype2.git
-[submodule "Simulation/third_party/packages/libtga"]
+[submodule "packages/libtga"]
 	path = Simulation/third_party/packages/libtga
 	url = https://github.com/tommylutz/libtga
-[submodule "Simulation/third_party/packages/eigen"]
+[submodule "packages/eigen"]
 	path = Simulation/third_party/packages/eigen
 	url = https://github.com/RLovelett/eigen.git
-[submodule "Simulation/third_party/manual_packages/kalman"]
+[submodule "manual_packages/kalman"]
 	path = Simulation/third_party/manual_packages/kalman
 	url = https://github.com/mherb/kalman
+[submodule "manual_packages/rpmalloc"]
+	path = Simulation/third_party/manual_packages/rpmalloc
+	url = https://github.com/rampantpixels/rpmalloc

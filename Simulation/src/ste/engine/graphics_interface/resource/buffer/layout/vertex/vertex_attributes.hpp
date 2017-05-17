@@ -24,7 +24,7 @@ class vertex_attributes_descriptor_impl {
 template<typename V, VkVertexInputRate input_rate>
 class vertex_attributes_descriptor_impl<V, input_rate, true> {
 private:
-	using size_type = std::size_t;
+	using size_type = std::uint32_t;
 	static constexpr auto count = V::count;
 
 	template<int index>
@@ -42,18 +42,18 @@ private:
 	using element_type_names_arr = typename generate_array<count, elements_format_populator>::result;
 
 public:
-	size_type attrib_count() const noexcept { return count; }
-	size_type stride() const noexcept { return sizeof(V); }
+	size_type attrib_count() const noexcept { return static_cast<size_type>(count); }
+	size_type stride() const noexcept { return static_cast<size_type>(sizeof(V)); }
 
 	size_type attrib_size(int attrib) const noexcept { return sizes_arr::data[attrib]; }
-	size_t offset_to_attrib(int attrib) const noexcept { return vertex_input_offset_of<V>(attrib); }
+	size_type offset_to_attrib(int attrib) const noexcept { return static_cast<size_type>(vertex_input_offset_of<V>(attrib)); }
 	format attrib_format(int attrib) const noexcept { return element_type_names_arr::data[attrib]; }
 
 	auto vk_vertex_binding(std::uint32_t binding_index = 0) const noexcept {
 		VkVertexInputBindingDescription desc = {};
 		desc.binding = binding_index;
 		desc.inputRate = input_rate;
-		desc.stride = stride();
+		desc.stride = static_cast<std::uint32_t>(stride());
 
 		return desc;
 	}
@@ -61,7 +61,7 @@ public:
 	auto vk_vertex_attributes(std::uint32_t binding_index = 0) const {
 		std::vector<VkVertexInputAttributeDescription> vertex_input_attribute_descriptors;
 		vertex_input_attribute_descriptors.reserve(attrib_count());
-		for (std::size_t j = 0; j < attrib_count(); ++j) {
+		for (size_type j = 0; j < attrib_count(); ++j) {
 			VkVertexInputAttributeDescription desc = {};
 			desc.location = j;
 			desc.binding = binding_index;

@@ -4,8 +4,9 @@
 #pragma once
 
 #include <stdafx.hpp>
-
 #include <vulkan/vulkan.h>
+#include <vk_handle.hpp>
+
 #include <vk_pipeline.hpp>
 #include <vk_logical_device.hpp>
 #include <vk_shader.hpp>
@@ -39,12 +40,12 @@ public:
 		create_info.flags = 0;
 		create_info.stage = stage_info.stage_info;
 		create_info.layout = layout;
-		create_info.basePipelineHandle = VK_NULL_HANDLE;
+		create_info.basePipelineHandle = vk::vk_null_handle;
 		create_info.basePipelineIndex = 0;
 
 		VkPipeline pipeline;
 		vk_result res = vkCreateComputePipelines(device,
-												 cache != nullptr ? *cache : VK_NULL_HANDLE,
+												 cache != nullptr ? static_cast<VkPipelineCache>(*cache) : vk::vk_null_handle,
 												 1,
 												 &create_info,
 												 nullptr,

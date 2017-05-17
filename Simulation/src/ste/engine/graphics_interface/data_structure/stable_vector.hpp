@@ -44,11 +44,11 @@ private:
 private:
 	// Resize command
 	class stable_vector_cmd_resize : public command {
-		std::uint32_t new_size;
+		std::uint64_t new_size;
 		stable_vector *v;
 
 	public:
-		stable_vector_cmd_resize(std::uint32_t new_size,
+		stable_vector_cmd_resize(std::uint64_t new_size,
 								 stable_vector *v)
 			: new_size(new_size), v(v)
 		{}
@@ -57,12 +57,13 @@ private:
 	private:
 		void operator()(const command_buffer &, command_recorder &recorder) const override final {
 			// (Un)bind sparse (if needed) and update vector size
-			if (new_size > v->elements) {
-				bind_range_t bind = { v->elements, new_size - v->elements };
+			auto elements = v->elements;
+			if (new_size > elements) {
+				bind_range_t bind = { elements, new_size - elements };
 				recorder << v->buffer.cmd_bind_sparse_memory({}, { bind }, {}, {});
 			}
-			else if (new_size < v->elements) {
-				bind_range_t unbind = { new_size,  v->elements - new_size };
+			else if (new_size < elements) {
+				bind_range_t unbind = { new_size,  elements - new_size };
 				recorder << v->buffer.cmd_bind_sparse_memory({ unbind }, {}, {}, {});
 			}
 
@@ -73,14 +74,14 @@ private:
 	};
 	// Push back command
 	class stable_vector_cmd_push_back : public command {
-		std::size_t data_size;
+		std::uint64_t data_size;
 		cmd_update_buffer update_cmd;
 		stable_vector *v;
 
 	public:
 		stable_vector_cmd_push_back(const std::vector<T> &data_copy,
 									stable_vector *v)
-			: data_size(data_copy.size()),
+			: data_size(static_cast<std::uint64_t>(data_copy.size())),
 			update_cmd(buffer_view(v->buffer,
 								   v->elements,
 								   data_size),
@@ -105,10 +106,10 @@ private:
 	// Pop back command
 	class stable_vector_cmd_pop_back : public command {
 		stable_vector *v;
-		std::uint32_t count_to_pop;
+		std::uint64_t count_to_pop;
 
 	public:
-		stable_vector_cmd_pop_back(std::uint32_t count_to_pop,
+		stable_vector_cmd_pop_back(std::uint64_t count_to_pop,
 								   stable_vector *v)
 			: v(v), count_to_pop(count_to_pop)
 		{}
@@ -130,7 +131,7 @@ private:
 
 private:
 	buffer_t buffer;
-	std::size_t elements{ 0 };
+	std::uint64_t elements{ 0 };
 
 public:
 	stable_vector(const ste_context &ctx,
@@ -176,7 +177,7 @@ public:
 	*
 	*	@param	count_to_pop	Elements count to pop
 	*/
-	auto pop_back_cmd(std::uint32_t count_to_pop = 1) {
+	auto pop_back_cmd(std::uint64_t count_to_pop = 1) {
 		return stable_vector_cmd_pop_back(count_to_pop, this);
 	}
 	/**
@@ -185,7 +186,7 @@ public:
 	*
 	*	@param	new_size		New vector size
 	*/
-	auto resize_cmd(std::uint32_t new_size) {
+	auto resize_cmd(std::uint64_t new_size) {
 		return stable_vector_cmd_resize(new_size, this);
 	}
 	/**

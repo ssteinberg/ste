@@ -9,14 +9,14 @@
 
 namespace ste {
 
-template <typename T, unsigned min_alignment = 64, bool pad_to_alignment = true>
+template <typename T, std::size_t min_alignment = 64, bool pad_to_alignment = true>
 class aligned_ptr {
 public:
 	using value_type = T;
-	static constexpr unsigned alignment = std::max(min_alignment, alignof(T));
+	static constexpr std::size_t alignment = std::max<std::size_t>(min_alignment, alignof(T));
 
 private:
-	static constexpr unsigned block_size = pad_to_alignment ? alignment - 1u + sizeof(value_type) : sizeof(value_type);
+	static constexpr std::size_t block_size = pad_to_alignment ? alignment - 1u + sizeof(value_type) : sizeof(value_type);
 
 	template <typename... Ts>
 	static auto make_ptr(void *p,

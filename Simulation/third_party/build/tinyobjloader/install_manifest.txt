@@ -1,3 +1,0 @@
-D:/src/git/StE/Simulation/third_party/build/tinyobjloader/../../lib/tinyobjloaderd.lib
-D:/src/git/StE/Simulation/third_party/build/tinyobjloader/../../lib/tinyobjloaderd.pdb
-D:/src/git/StE/Simulation/third_party/build/tinyobjloader/../../include/tiny_obj_loader.h

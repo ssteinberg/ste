@@ -91,11 +91,16 @@ public:
 			stage_info.entries.reserve(specializations.size());
 
 			for (auto &s : specializations) {
-				stage_info.entries.push_back(VkSpecializationMapEntry{ s.first, stage_info.all_data.size(), s.second.size() });
+				auto entry = VkSpecializationMapEntry{ 
+					s.first, 
+					static_cast<std::uint32_t>(stage_info.all_data.size()),
+					s.second.size()
+				};
+				stage_info.entries.push_back(entry);
 				stage_info.all_data += s.second;
 			}
 
-			stage_info.specialization_info.mapEntryCount = stage_info.entries.size();
+			stage_info.specialization_info.mapEntryCount = static_cast<std::uint32_t>(stage_info.entries.size());
 			stage_info.specialization_info.pMapEntries = stage_info.entries.data();
 			stage_info.specialization_info.dataSize = stage_info.all_data.size();
 			stage_info.specialization_info.pData = stage_info.all_data.data();

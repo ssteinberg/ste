@@ -29,7 +29,7 @@ struct framebuffer_attachment_clear_value_assign_impl {
 		lhs = {};
 
 		auto elements = type_elements_count_v<T>;
-		for (std::size_t i = 0; i < elements; ++i) {
+		for (int i = 0; i < static_cast<int>(elements); ++i) {
 			const auto &v = rhs[i];
 			lhs.int32[i] = static_cast<std::int32_t>(v);
 			lhs.uint32[i] = static_cast<std::uint32_t>(v);

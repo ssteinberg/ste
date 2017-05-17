@@ -164,8 +164,8 @@ private:
 				stages = stages | ranges[j].stage;
 
 			layouts.push_back(vk::vk_push_constant_layout(static_cast<VkShaderStageFlags>(stages),
-														  ranges[i].r.length,
-														  ranges[i].r.start));
+														  static_cast<std::uint32_t>(ranges[i].r.length),
+														  static_cast<std::uint32_t>(ranges[i].r.start)));
 
 			i = j;
 		}

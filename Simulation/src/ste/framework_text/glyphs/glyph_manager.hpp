@@ -155,7 +155,7 @@ private:
 	void empty_loaded_descriptors_queue() {
 		std::unique_ptr<loaded_glyphs_queue_item> ptr(nullptr);
 		while((ptr = loaded_glyphs_queue.pop()) != nullptr) {
-			auto index = glyph_textures.size();
+			auto index = static_cast<std::uint32_t>(glyph_textures.size());
 			glyph_textures.push_back(std::move(ptr->texture));
 
 			glyph_descriptor& gd = ptr->descriptor;
@@ -224,13 +224,13 @@ public:
 	/**
 	*	@brief	Should be called from a glyph renderer. Records update commands to upload newly loaded glyphs into device glyph buffer.
 	*/
-	range<> update_pending_glyphs(gl::command_recorder &recorder) {
+	range<std::uint64_t> update_pending_glyphs(gl::command_recorder &recorder) {
 		if (!pending_glyphs.size()) {
 			// Nothing to update
 			return { 0,0 };
 		}
 
-		range<> ret;
+		range<std::uint64_t> ret;
 		ret.start = buffer.size();
 		ret.length = pending_glyphs.size();
 

@@ -119,9 +119,9 @@ public:
 		}
 
 		vkUpdateDescriptorSets(device.get(),
-							   writes_descriptors.size(),
+							   static_cast<std::uint32_t>(writes_descriptors.size()),
 							   writes_descriptors.data(),
-							   copy_descriptors.size(),
+							   static_cast<std::uint32_t>(copy_descriptors.size()),
 							   copy_descriptors.data());
 	}
 	void write(const std::vector<vk_descriptor_set_write_resource> &writes) {

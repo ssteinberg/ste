@@ -1,5 +1,6 @@
 
 #include <stdafx.hpp>
+#include <vk_handle.hpp>
 #include <vk_result.hpp>
 #include <vk_swapchain.hpp>
 #include <ste_presentation_surface.hpp>
@@ -22,8 +23,8 @@ ste_presentation_surface::acquire_next_image_return_t  ste_presentation_surface:
 		res = vkAcquireNextImageKHR(*presentation_device,
 									*swap_chain,
 									timeout_ns,
-									presentation_image_ready_semaphore ? *presentation_image_ready_semaphore : VK_NULL_HANDLE,
-									presentation_image_ready_fence ? *presentation_image_ready_fence : VK_NULL_HANDLE,
+									presentation_image_ready_semaphore ? static_cast<VkSemaphore>(*presentation_image_ready_semaphore) : vk::vk_null_handle,
+									presentation_image_ready_fence ? static_cast<VkFence>(*presentation_image_ready_fence) : vk::vk_null_handle,
 									&ret.image_index);
 	}
 

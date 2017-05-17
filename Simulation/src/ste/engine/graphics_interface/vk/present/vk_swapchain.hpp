@@ -1,23 +1,26 @@
 //	StE
-// © Shlomi Steinberg 2015-2016
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
 #include <stdafx.hpp>
-#include <optional.hpp>
-
 #include <vulkan/vulkan.h>
+#include <vk_handle.hpp>
+
 #include <vk_logical_device.hpp>
 #include <vk_result.hpp>
 #include <vk_exception.hpp>
 #include <vk_surface.hpp>
+
+#include <optional.hpp>
+#include <allow_type_decay.hpp>
 
 namespace ste {
 namespace gl {
 
 namespace vk {
 
-class vk_swapchain {
+class vk_swapchain : public allow_type_decay<vk_swapchain, VkSwapchainKHR> {
 private:
 	VkSwapchainCreateInfoKHR swapchain_create_info;
 	optional<VkSwapchainKHR> swapchain;
@@ -73,7 +76,9 @@ public:
 		swapchain_create_info.compositeAlpha = composite_flags;
 		swapchain_create_info.presentMode = present_mode;
 		swapchain_create_info.clipped = VK_TRUE;
-		swapchain_create_info.oldSwapchain = old_chain ? *old_chain : VK_NULL_HANDLE;
+		swapchain_create_info.oldSwapchain = old_chain ? 
+			static_cast<VkSwapchainKHR>(*old_chain) : 
+			vk::vk_null_handle;
 
 		vk_result res = vkCreateSwapchainKHR(device, &swapchain_create_info, nullptr, &swapchain);
 		if (!res) {
@@ -81,7 +86,7 @@ public:
 		}
 
 		this->swapchain = swapchain;
-		swapchain_create_info.oldSwapchain = VK_NULL_HANDLE;
+		swapchain_create_info.oldSwapchain = vk::vk_null_handle;
 	}
 	~vk_swapchain() noexcept { destroy_swapchain(); }
 
@@ -97,7 +102,7 @@ public:
 		}
 	}
 
-	auto& get_swapchain() const { return swapchain.get(); }
+	auto& get() const { return swapchain.get(); }
 	auto get_format() const { return swapchain_create_info.imageFormat; }
 	auto get_colorspace() const { return swapchain_create_info.imageColorSpace; }
 	auto get_present_mode() const { return swapchain_create_info.presentMode; }
@@ -106,8 +111,6 @@ public:
 		return glm::u32vec2{ swapchain_create_info.imageExtent.width, swapchain_create_info.imageExtent.height };
 	}
 	auto get_creation_parameters() const { return swapchain_create_info; }
-
-	operator VkSurfaceKHR() const { return get_swapchain(); }
 };
 
 }

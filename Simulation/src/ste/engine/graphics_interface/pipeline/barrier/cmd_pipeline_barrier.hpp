@@ -47,9 +47,12 @@ private:
 							 static_cast<VkPipelineStageFlags>(barrier.get_src_stage()),
 							 static_cast<VkPipelineStageFlags>(barrier.get_dst_stage()),
 							 0,
-							 memory_barriers.size(), memory_barriers.data(),
-							 buffer_barriers.size(), buffer_barriers.data(),
-							 image_barriers.size(), image_barriers.data());
+							 static_cast<std::uint32_t>(memory_barriers.size()), 
+							 memory_barriers.data(),
+							 static_cast<std::uint32_t>(buffer_barriers.size()), 
+							 buffer_barriers.data(),
+							 static_cast<std::uint32_t>(image_barriers.size()), 
+							 image_barriers.data());
 	}
 };
 

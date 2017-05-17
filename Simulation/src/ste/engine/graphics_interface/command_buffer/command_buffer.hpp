@@ -4,6 +4,7 @@
 #pragma once
 
 #include <vulkan/vulkan.h>
+#include <vk_handle.hpp>
 #include <ste_device_queue_descriptors.hpp>
 #include <secondary_command_buffer_inheritance.hpp>
 
@@ -16,6 +17,7 @@
 
 #include <allow_type_decay.hpp>
 #include <vector>
+#include "ste_device_queue_secondary_command_buffer.hpp"
 
 namespace ste {
 namespace gl {
@@ -206,8 +208,12 @@ private:
 		VkCommandBufferInheritanceInfo inheritance_info = {};
 		inheritance_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO;
 		inheritance_info.pNext = nullptr;
-		inheritance_info.framebuffer = inheritance.framebuffer ? *inheritance.framebuffer : VK_NULL_HANDLE;
-		inheritance_info.renderPass = inheritance.render_pass ? *inheritance.render_pass : VK_NULL_HANDLE;
+		inheritance_info.framebuffer = inheritance.framebuffer ? 
+			static_cast<VkFramebuffer>(*inheritance.framebuffer) : 
+			vk::vk_null_handle;
+		inheritance_info.renderPass = inheritance.render_pass ? 
+			static_cast<VkRenderPass>(*inheritance.render_pass) : 
+			vk::vk_null_handle;
 		inheritance_info.subpass = inheritance.subpass;
 		inheritance_info.occlusionQueryEnable = inheritance.occlusion_query_enable;
 		inheritance_info.queryFlags = inheritance.query_flags;

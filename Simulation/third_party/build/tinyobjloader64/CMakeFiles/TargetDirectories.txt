@@ -1,0 +1,4 @@
+D:/src/git/StE/Simulation/third_party/build/tinyobjloader64/CMakeFiles/tinyobjloader.dir
+D:/src/git/StE/Simulation/third_party/build/tinyobjloader64/CMakeFiles/INSTALL.dir
+D:/src/git/StE/Simulation/third_party/build/tinyobjloader64/CMakeFiles/ALL_BUILD.dir
+D:/src/git/StE/Simulation/third_party/build/tinyobjloader64/CMakeFiles/ZERO_CHECK.dir

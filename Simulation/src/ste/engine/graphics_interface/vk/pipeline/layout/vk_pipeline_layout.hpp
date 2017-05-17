@@ -43,9 +43,9 @@ public:
 		create_info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 		create_info.pNext = nullptr;
 		create_info.flags = 0;
-		create_info.pushConstantRangeCount = push_constant_layout_descriptors.size();
+		create_info.pushConstantRangeCount = static_cast<std::uint32_t>(push_constant_layout_descriptors.size());
 		create_info.pPushConstantRanges = push_constant_layout_descriptors.data();
-		create_info.setLayoutCount = layouts.size();
+		create_info.setLayoutCount = static_cast<std::uint32_t>(layouts.size());
 		create_info.pSetLayouts = layouts.data();
 
 		VkPipelineLayout pipeline_layout;

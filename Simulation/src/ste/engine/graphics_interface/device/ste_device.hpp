@@ -269,7 +269,9 @@ public:
 	auto& get_surface() const { return *presentation_surface; }
 	auto& get_queue_descriptors() const { return queue_descriptors; }
 
-	std::uint32_t get_swap_chain_images_count() const { return presentation_surface->get_swap_chain_images().size(); }
+	std::uint32_t get_swap_chain_images_count() const {
+		return static_cast<std::uint32_t>(presentation_surface->get_swap_chain_images().size());
+	}
 
 	/**
 	*	@brief	Get device handle

@@ -51,11 +51,11 @@ public:
 			VkSubpassDescription subpass = {};
 			subpass.flags = 0;
 			subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-			subpass.colorAttachmentCount = s.color.size();
+			subpass.colorAttachmentCount = static_cast<std::uint32_t>(s.color.size());
 			subpass.pColorAttachments = s.color.data();
-			subpass.inputAttachmentCount = s.input.size();
+			subpass.inputAttachmentCount = static_cast<std::uint32_t>(s.input.size());
 			subpass.pInputAttachments = s.input.data();
-			subpass.preserveAttachmentCount = s.preserve.size();
+			subpass.preserveAttachmentCount = static_cast<std::uint32_t>(s.preserve.size());
 			subpass.pPreserveAttachments = s.preserve.data();
 			subpass.pDepthStencilAttachment = s.depth ? &s.depth.get() : nullptr;
 			subpass.pResolveAttachments = nullptr;
@@ -67,11 +67,11 @@ public:
 		create_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
 		create_info.pNext = nullptr;
 		create_info.flags = 0;
-		create_info.attachmentCount = attachment_descriptors.size();
+		create_info.attachmentCount = static_cast<std::uint32_t>(attachment_descriptors.size());
 		create_info.pAttachments = attachment_descriptors.data();
-		create_info.subpassCount = subpass_descriptors.size();
+		create_info.subpassCount = static_cast<std::uint32_t>(subpass_descriptors.size());
 		create_info.pSubpasses = subpass_descriptors.data();
-		create_info.dependencyCount = dependency_descriptors.size();
+		create_info.dependencyCount = static_cast<std::uint32_t>(dependency_descriptors.size());
 		create_info.pDependencies = dependency_descriptors.data();
 
 		VkRenderPass renderpass;

@@ -578,7 +578,7 @@ struct ste_shader_stage_variable_struct_validator {
 		auto offset = block_offset_of<N, B>();
 
 		try {
-			ste_shader_stage_variable_type_validator<T>(offset, (*var)[N].get());
+			ste_shader_stage_variable_type_validator<T>(static_cast<std::uint32_t>(offset), (*var)[N].get());
 		}
 		catch (gl::ste_shader_variable_layout_verification_exception &e) {
 			// Prepend a error location message and rethrow

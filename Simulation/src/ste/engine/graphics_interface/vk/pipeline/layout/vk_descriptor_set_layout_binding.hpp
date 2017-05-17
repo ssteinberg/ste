@@ -37,7 +37,7 @@ public:
 									 bool combined = false)
 		: type(combined ? VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER : VK_DESCRIPTOR_TYPE_SAMPLER),
 		stage(stage), binding_index(binding_index),
-		count(immutable_samplers.size())
+		count(static_cast<std::uint32_t>(immutable_samplers.size()))
 	{
 		this->immutable_samplers.resize(immutable_samplers.size());
 		for (std::size_t i = 0; i < immutable_samplers.size(); ++i)

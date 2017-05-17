@@ -1,11 +1,12 @@
 //	StE
-// © Shlomi Steinberg 2015-2016
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
 #include <stdafx.hpp>
-
 #include <vulkan/vulkan.h>
+#include <vk_handle.hpp>
+
 #include <vk_sampler.hpp>
 #include <vk_image_view.hpp>
 #include <buffer_view.hpp>
@@ -18,9 +19,9 @@ namespace gl {
 namespace vk {
 
 struct vk_descriptor_set_write_image {
-	VkImageView image{ VK_NULL_HANDLE };
+	VkImageView image{ vk::vk_null_handle };
 	VkImageLayout image_layout{ VK_IMAGE_LAYOUT_UNDEFINED };
-	VkSampler sampler{ VK_NULL_HANDLE };
+	VkSampler sampler{ vk::vk_null_handle };
 
 	vk_descriptor_set_write_image() = default;
 	vk_descriptor_set_write_image(VkImageView image_view,
@@ -41,7 +42,7 @@ struct vk_descriptor_set_write_image {
 };
 
 struct vk_descriptor_set_write_buffer {
-	VkBuffer buffer{ VK_NULL_HANDLE };
+	VkBuffer buffer{ vk::vk_null_handle };
 	std::uint64_t buffer_offset{ 0 };
 	std::uint64_t buffer_range{ 0 };
 
@@ -128,7 +129,7 @@ public:
 	auto get_type() const { return type; }
 	auto get_binding_index() const { return binding_index; }
 	auto get_array_element() const { return array_element; }
-	auto get_count() const { return std::max(image_writes.size(), buffer_writes.size()); }
+	auto get_count() const { return static_cast<std::uint32_t>(std::max(image_writes.size(), buffer_writes.size())); }
 
 	auto& get_image_writes() const { return image_writes; };
 	auto& get_buffer_writes() const { return buffer_writes; };

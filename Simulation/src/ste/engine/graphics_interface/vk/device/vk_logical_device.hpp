@@ -38,11 +38,11 @@ public:
 		device_info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 		device_info.pNext = nullptr;
 		device_info.flags = 0;
-		device_info.enabledExtensionCount = device_extensions.size();
+		device_info.enabledExtensionCount = static_cast<std::uint32_t>(device_extensions.size());
 		device_info.ppEnabledExtensionNames = &device_extensions[0];
 		device_info.enabledLayerCount = 0;
 		device_info.ppEnabledLayerNames = nullptr;
-		device_info.queueCreateInfoCount = requested_queues.size();
+		device_info.queueCreateInfoCount = static_cast<std::uint32_t>(requested_queues.size());
 		device_info.pQueueCreateInfos = &requested_queues[0];
 		device_info.pEnabledFeatures = &requested_features;
 

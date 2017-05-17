@@ -52,7 +52,7 @@ private:
 		// Allocate
 		return pool_ptr_t(new instance_t(instance_t::ctor(),
 										 device.get(),
-										 max_sets,
+										 static_cast<std::uint32_t>(max_sets),
 										 pool_bindings,
 										 this,
 										 key));

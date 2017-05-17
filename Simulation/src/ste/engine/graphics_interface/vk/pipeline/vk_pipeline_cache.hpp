@@ -116,7 +116,10 @@ public:
 		std::vector<VkPipelineCache> ids;
 		for (auto &c : src)
 			ids.push_back(c.get());
-		vkMergePipelineCaches(device, *this, ids.size(), &ids[0]);
+		vkMergePipelineCaches(device, 
+							  *this, 
+							  static_cast<std::uint32_t>(ids.size()),
+							  &ids[0]);
 	}
 	vk_pipeline_cache(const vk_logical_device &device) : vk_pipeline_cache(device, std::string()) {}
 	~vk_pipeline_cache() noexcept {

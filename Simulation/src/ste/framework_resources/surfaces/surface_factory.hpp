@@ -43,13 +43,13 @@ private:
 			surface = surface_convert()(surface, image_gli_format);
 
 		auto src_format = surface.format();
-		auto layers = surface.layers();
+		auto layers = static_cast<std::uint32_t>(surface.layers());
 		auto size = surface.extent();
 		if (src_format != image_gli_format) {
 			throw surface_format_exception("Input image_format is different from specified image format");
 		}
 
-		auto m = surface.levels();
+		auto m = static_cast<std::uint32_t>(surface.levels());
 		auto mip_levels = generate_mipmaps ?
 			static_cast<std::uint32_t>(gli::levels(surface.extent())) :
 			m;

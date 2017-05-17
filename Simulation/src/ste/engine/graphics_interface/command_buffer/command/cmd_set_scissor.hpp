@@ -41,7 +41,7 @@ private:
 	void operator()(const command_buffer &command_buffer, command_recorder &) const override final {
 		vkCmdSetScissor(command_buffer, 
 						first_scissor_index, 
-						scissors.size(),
+						static_cast<std::uint32_t>(scissors.size()),
 						scissors.data());
 	}
 };

@@ -4,8 +4,9 @@
 #pragma once
 
 #include <stdafx.hpp>
-
 #include <vulkan/vulkan.h>
+#include <vk_handle.hpp>
+
 #include <vk_pipeline.hpp>
 #include <vk_logical_device.hpp>
 #include <vk_shader.hpp>
@@ -64,9 +65,9 @@ public:
 		vertex_input_state_create.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 		vertex_input_state_create.pNext = nullptr;
 		vertex_input_state_create.flags = 0;
-		vertex_input_state_create.vertexAttributeDescriptionCount = vertex_input_attribute_descriptors.size();
+		vertex_input_state_create.vertexAttributeDescriptionCount = static_cast<std::uint32_t>(vertex_input_attribute_descriptors.size());
 		vertex_input_state_create.pVertexAttributeDescriptions = vertex_input_attribute_descriptors.data();
-		vertex_input_state_create.vertexBindingDescriptionCount = vertex_input_binding_descriptors.size();
+		vertex_input_state_create.vertexBindingDescriptionCount = static_cast<std::uint32_t>(vertex_input_binding_descriptors.size());
 		vertex_input_state_create.pVertexBindingDescriptions = vertex_input_binding_descriptors.data();
 
 		// Assembly
@@ -133,7 +134,7 @@ public:
 		blend_state_create.pNext = nullptr;
 		blend_state_create.flags = 0;
 		blend_state_create.logicOpEnable = false;
-		blend_state_create.attachmentCount = blend_attachment_states.size();
+		blend_state_create.attachmentCount = static_cast<std::uint32_t>(blend_attachment_states.size());
 		blend_state_create.pAttachments = blend_attachment_states.data();
 		blend_state_create.blendConstants[0] = blend_constants.r;
 		blend_state_create.blendConstants[1] = blend_constants.g;
@@ -145,7 +146,7 @@ public:
 		dynamic_state_create.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
 		dynamic_state_create.pNext = nullptr;
 		dynamic_state_create.flags = 0;
-		dynamic_state_create.dynamicStateCount = dynamic_states.size();
+		dynamic_state_create.dynamicStateCount = static_cast<std::uint32_t>(dynamic_states.size());
 		dynamic_state_create.pDynamicStates = dynamic_states.data();
 
 		VkGraphicsPipelineCreateInfo create_info = {};
@@ -153,11 +154,11 @@ public:
 		create_info.pNext = nullptr;
 		create_info.flags = 0;
 		create_info.layout = layout;
-		create_info.basePipelineHandle = VK_NULL_HANDLE;
+		create_info.basePipelineHandle = vk::vk_null_handle;
 		create_info.basePipelineIndex = 0;
 		create_info.renderPass = render_pass;
 		create_info.subpass = subpass;
-		create_info.stageCount = stages.size();
+		create_info.stageCount = static_cast<std::uint32_t>(stages.size());
 		create_info.pStages = stages.data();
 		create_info.pVertexInputState = &vertex_input_state_create;
 		create_info.pInputAssemblyState = &input_assembly_state_create;
@@ -171,7 +172,7 @@ public:
 
 		VkPipeline pipeline;
 		vk_result res = vkCreateGraphicsPipelines(device,
-												  cache != nullptr ? *cache : VK_NULL_HANDLE,
+												  cache != nullptr ? static_cast<VkPipelineCache>(*cache) : vk::vk_null_handle,
 												  1,
 												  &create_info,
 												  nullptr,

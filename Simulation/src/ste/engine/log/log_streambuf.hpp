@@ -50,7 +50,7 @@ private:
 		}
 
 		std::ptrdiff_t n = e - pbase();
-		pbump(-n);
+		pbump(static_cast<int>(-n));
 
 		return 0;
 	}

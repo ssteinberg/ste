@@ -47,7 +47,7 @@ ste_device::queues_t ste_device::create_queues(const vk::vk_logical_device &devi
 				  device,
 				  family_index,
 				  descriptor,
-				  idx,
+				  static_cast<std::uint32_t>(idx),
 				  &sync_primitives_pools->shared_fences());
 	}
 

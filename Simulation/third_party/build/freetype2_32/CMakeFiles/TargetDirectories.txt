@@ -1,0 +1,6 @@
+D:/src/git/StE/Simulation/third_party/build/freetype2_32/CMakeFiles/dist.dir
+D:/src/git/StE/Simulation/third_party/build/freetype2_32/CMakeFiles/freetype.dir
+D:/src/git/StE/Simulation/third_party/build/freetype2_32/CMakeFiles/PACKAGE.dir
+D:/src/git/StE/Simulation/third_party/build/freetype2_32/CMakeFiles/INSTALL.dir
+D:/src/git/StE/Simulation/third_party/build/freetype2_32/CMakeFiles/ALL_BUILD.dir
+D:/src/git/StE/Simulation/third_party/build/freetype2_32/CMakeFiles/ZERO_CHECK.dir

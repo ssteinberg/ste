@@ -43,7 +43,11 @@ public:
 
 private:
 	void operator()(const command_buffer &command_buffer, command_recorder &) const override final {
-		vkCmdBindVertexBuffers(command_buffer, first, buffers.size(), buffers.data(), offsets.data());
+		vkCmdBindVertexBuffers(command_buffer, 
+							   first, 
+							   static_cast<std::uint32_t>(buffers.size()), 
+							   buffers.data(),
+							   offsets.data());
 	}
 };
 

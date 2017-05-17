@@ -58,7 +58,7 @@ private:
 	void operator()(const command_buffer &command_buffer, command_recorder &) const override final {
 		vkCmdClearColorImage(command_buffer, image.get().get_image_handle(), static_cast<VkImageLayout>(layout),
 							 &clear_value,
-							 ranges.size(), ranges.data());
+							 static_cast<std::uint32_t>(ranges.size()), ranges.data());
 	}
 };
 

@@ -99,15 +99,17 @@ auto fill_image_array(const device_image<dimensions, allocation_policy> &image,
 		glm::u32vec3 image_extent = image.get_extent();
 
 		// Calculate layers and levels to copy
-		auto faces = surface_generic.max_face();
+		auto faces = static_cast<std::uint32_t>(surface_generic.max_face());
 		if (faces == 0) faces = 1;
 		if ((faces != 1 && faces != 6) || surface_generic.base_face() != 0) {
 			throw device_image_format_exception("Unsupported surface faces layout");
 		}
-		auto base_layer = faces * surface_generic.base_layer();
-		auto base_mip = surface_generic.base_level();
-		auto layers = std::min(faces * surface_generic.layers(), image.get_layers() - base_layer);
-		auto mips = std::min(surface_generic.levels(), image.get_mips() - base_mip);
+		auto base_layer = static_cast<std::uint32_t>(faces * surface_generic.base_layer());
+		auto base_mip = static_cast<std::uint32_t>(surface_generic.base_level());
+		auto layers = std::min(faces * static_cast<std::uint32_t>(surface_generic.layers()), 
+							   image.get_layers() - base_layer);
+		auto mips = std::min(static_cast<std::uint32_t>(surface_generic.levels()), 
+							 image.get_mips() - base_mip);
 
 		// Validate formats
 		if (surface_texel_bytes != image_texel_bytes ||

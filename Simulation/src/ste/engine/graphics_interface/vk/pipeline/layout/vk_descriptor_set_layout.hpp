@@ -36,7 +36,7 @@ public:
 		create_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
 		create_info.pNext = nullptr;
 		create_info.flags = 0;
-		create_info.bindingCount = binding_descriptors.size();
+		create_info.bindingCount = static_cast<std::uint32_t>(binding_descriptors.size());
 		create_info.pBindings = binding_descriptors.data();
 
 		VkDescriptorSetLayout layout;

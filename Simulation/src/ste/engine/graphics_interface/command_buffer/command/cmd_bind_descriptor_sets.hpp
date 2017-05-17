@@ -46,9 +46,9 @@ private:
 								bind_point,
 								handle,
 								first_set_bind_index,
-								sets.size(),
+								static_cast<std::uint32_t>(sets.size()),
 								sets.data(),
-								dynamic_offsets.size(),
+								static_cast<std::uint32_t>(dynamic_offsets.size()),
 								dynamic_offsets.data());
 	}
 };

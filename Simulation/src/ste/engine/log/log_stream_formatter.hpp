@@ -86,7 +86,7 @@ private:
 
 	std::string inject(std::string str, const log_entry *entry = nullptr) {
 		std::string::size_type p;
-		int i = 0;
+		std::string::size_type i = 0;
 		while (static_cast<std::size_t>(p = str.find("%%"), i) != std::string::npos) {
 			auto e = str.find("%%", p + 2);
 			if (e == std::string::npos)

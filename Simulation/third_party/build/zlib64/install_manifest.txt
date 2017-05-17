@@ -1,0 +1,7 @@
+D:/src/git/StE/Simulation/third_party/build/zlib64/../../lib/zlib.lib
+D:/src/git/StE/Simulation/third_party/build/zlib64/../../bin/zlib.dll
+D:/src/git/StE/Simulation/third_party/build/zlib64/../../lib/zlibstatic.lib
+D:/src/git/StE/Simulation/third_party/build/zlib64/../../include/zconf.h
+D:/src/git/StE/Simulation/third_party/build/zlib64/../../include/zlib.h
+D:/src/git/StE/Simulation/third_party/build/zlib64/../../share/man/man3/zlib.3
+D:/src/git/StE/Simulation/third_party/build/zlib64/../../share/pkgconfig/zlib.pc

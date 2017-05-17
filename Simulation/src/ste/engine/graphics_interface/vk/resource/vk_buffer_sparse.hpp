@@ -1,11 +1,12 @@
 //	StE
-// © Shlomi Steinberg 2015-2016
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
 #include <stdafx.hpp>
-
 #include <vulkan/vulkan.h>
+#include <vk_handle.hpp>
+
 #include <vk_result.hpp>
 #include <vk_exception.hpp>
 #include <vk_buffer.hpp>
@@ -87,7 +88,7 @@ public:
 			}
 			else {
 				// Unbind
-				b.memory = VK_NULL_HANDLE;
+				b.memory = vk::vk_null_handle;
 			}
 
 			binds.push_back(b);
@@ -95,13 +96,13 @@ public:
 
 		VkSparseBufferMemoryBindInfo buffer_memory_bind_info = {};
 		buffer_memory_bind_info.buffer = *this;
-		buffer_memory_bind_info.bindCount = binds.size();
+		buffer_memory_bind_info.bindCount = static_cast<std::uint32_t>(binds.size());
 		buffer_memory_bind_info.pBinds = binds.data();
 
 		VkBindSparseInfo info = {};
 		info.sType = VK_STRUCTURE_TYPE_BIND_SPARSE_INFO;
 		info.pNext = nullptr;
-		info.waitSemaphoreCount = wait.size();
+		info.waitSemaphoreCount = static_cast<std::uint32_t>(wait.size());
 		info.pWaitSemaphores = wait.data();
 		info.bufferBindCount = 1;
 		info.pBufferBinds = &buffer_memory_bind_info;
@@ -109,12 +110,12 @@ public:
 		info.pImageOpaqueBinds = nullptr;
 		info.imageBindCount = 0;
 		info.pImageBinds = nullptr;
-		info.signalSemaphoreCount = signal.size();
+		info.signalSemaphoreCount = static_cast<std::uint32_t>(signal.size());
 		info.pSignalSemaphores = signal.data();
 
 		vk_result res = vkQueueBindSparse(queue,
 										  1, &info,
-										  fence != nullptr ? *fence : VK_NULL_HANDLE);
+										  fence != nullptr ? static_cast<VkFence>(*fence) : vk::vk_null_handle);
 		if (!res) {
 			throw vk_exception(res);
 		}

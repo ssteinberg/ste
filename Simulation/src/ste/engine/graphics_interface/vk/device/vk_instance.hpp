@@ -46,9 +46,9 @@ public:
 		inst_info.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 		inst_info.pNext = nullptr;
 		inst_info.flags = 0;
-		inst_info.enabledExtensionCount = instance_extensions.size();
+		inst_info.enabledExtensionCount = static_cast<std::uint32_t>(instance_extensions.size());
 		inst_info.ppEnabledExtensionNames = &instance_extensions[0];
-		inst_info.enabledLayerCount = instance_layers.size();
+		inst_info.enabledLayerCount = static_cast<std::uint32_t>(instance_layers.size());
 		inst_info.ppEnabledLayerNames = &instance_layers[0];
 		inst_info.pApplicationInfo = &vk_app_info;
 

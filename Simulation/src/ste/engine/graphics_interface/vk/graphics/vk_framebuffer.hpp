@@ -39,7 +39,7 @@ public:
 		create_info.pNext = nullptr;
 		create_info.flags = 0;
 		create_info.renderPass = render_pass;
-		create_info.attachmentCount = attachments.size();
+		create_info.attachmentCount = static_cast<std::uint32_t>(attachments.size());
 		create_info.pAttachments = attachments.data();
 		create_info.width = extent.x;
 		create_info.height = extent.y;

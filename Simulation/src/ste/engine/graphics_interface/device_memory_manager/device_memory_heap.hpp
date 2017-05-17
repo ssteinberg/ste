@@ -5,6 +5,7 @@
 
 #include <stdafx.hpp>
 
+#include <vk_handle.hpp>
 #include <vk_device_memory.hpp>
 #include <device_memory_block.hpp>
 #include <device_memory_exceptions.hpp>
@@ -136,9 +137,8 @@ public:
 	*/
 	size_type get_heap_size() const { return memory.get_size(); }
 
-	std::uint64_t tag() const { return static_cast<std::uint64_t>(get_device_memory()); }
+	std::uint64_t tag() const { return vk::vk_handle(get_device_memory()); }
 };
 
 }
 }
-

@@ -1,6 +1,0 @@
-D:/src/git/StE/Simulation/third_party/build/libpng/CMakeFiles/genfiles.dir
-D:/src/git/StE/Simulation/third_party/build/libpng/CMakeFiles/INSTALL.dir
-D:/src/git/StE/Simulation/third_party/build/libpng/CMakeFiles/png_static.dir
-D:/src/git/StE/Simulation/third_party/build/libpng/CMakeFiles/RUN_TESTS.dir
-D:/src/git/StE/Simulation/third_party/build/libpng/CMakeFiles/ALL_BUILD.dir
-D:/src/git/StE/Simulation/third_party/build/libpng/CMakeFiles/ZERO_CHECK.dir

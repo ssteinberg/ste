@@ -37,7 +37,8 @@ private:
 
 public:
 	using atom_address_t = std::uint32_t;
-	using bind_range_t = range<atom_address_t>;
+	using atom_bind_range_t = range<atom_address_t>;
+	using bind_range_t = range<std::uint64_t>;
 
 private:
 	using resource_t = vk::vk_buffer_sparse;
@@ -55,24 +56,24 @@ public:
 	auto atom_size() const {
 		return std::max(memory_requirements.alignment, minimal_atom_size);
 	}
-	bind_range_t atoms_range_contain(const bind_range_t &range) const {
+	atom_bind_range_t atoms_range_contain(const bind_range_t &range) const {
 		auto alignment = static_cast<std::size_t>(atom_size());
 
-		bind_range_t ret;
-		ret.start = range.start * sizeof(T) / alignment;
-		ret.length = (range.length * sizeof(T) + alignment - 1) / alignment;
+		atom_bind_range_t ret;
+		ret.start = static_cast<std::uint32_t>(range.start * sizeof(T) / alignment);
+		ret.length = static_cast<std::uint32_t>((range.length * sizeof(T) + alignment - 1) / alignment);
 
 		return ret;
 	}
-	bind_range_t atoms_range_intersect(const bind_range_t &range) const {
+	atom_bind_range_t atoms_range_intersect(const bind_range_t &range) const {
 		auto alignment = static_cast<std::size_t>(atom_size());
 
 		auto atom_start = (range.start * sizeof(T) + alignment - 1) / alignment;
 		auto atom_end = (range.start + range.length) / alignment;
 
-		bind_range_t ret;
-		ret.start = atom_start;
-		ret.length = atom_end;
+		atom_bind_range_t ret;
+		ret.start = static_cast<std::uint32_t>(atom_start);
+		ret.length = static_cast<std::uint32_t>(atom_end);
 
 		return ret;
 	}

@@ -142,7 +142,7 @@ std::vector<glyph_point> text_manager::create_points(glm::vec2 ortho_pos, const 
 			ortho_pos.y -= prev_line_height;
 			prev_line_height = line_height;
 			line_height = 0;
-			line_start_index = points.size();
+			line_start_index = static_cast<std::uint32_t>(points.size());
 
 			++num_lines;
 
@@ -219,12 +219,13 @@ bool text_manager::update_glyphs(gl::command_recorder &recorder) {
 	pipeline["glyph_data"] = gl::bind(gm.ssbo().get(), 0, texture_count);
 
 	std::vector<gl::pipeline::image> textures;
-	textures.reserve(updated_range.length);
-	for (std::uint32_t i = updated_range.start; i < updated_range.start + updated_range.length; ++i) {
-		auto &glyph_texture = gm.textures()[i];
+	textures.reserve(static_cast<std::size_t>(updated_range.length));
+	for (auto i = updated_range.start; i < updated_range.start + updated_range.length; ++i) {
+		auto tex_idx = static_cast<std::size_t>(i);
+		auto &glyph_texture = gm.textures()[tex_idx];
 		textures.emplace_back(glyph_texture);
 	}
-	pipeline["glyph_textures"] = gl::bind(updated_range.start, 
+	pipeline["glyph_textures"] = gl::bind(static_cast<std::uint32_t>(updated_range.start),
 										  textures);
 
 	return true;

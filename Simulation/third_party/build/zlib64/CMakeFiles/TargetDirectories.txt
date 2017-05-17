@@ -1,0 +1,8 @@
+D:/src/git/StE/Simulation/third_party/build/zlib64/CMakeFiles/RUN_TESTS.dir
+D:/src/git/StE/Simulation/third_party/build/zlib64/CMakeFiles/zlib.dir
+D:/src/git/StE/Simulation/third_party/build/zlib64/CMakeFiles/example.dir
+D:/src/git/StE/Simulation/third_party/build/zlib64/CMakeFiles/zlibstatic.dir
+D:/src/git/StE/Simulation/third_party/build/zlib64/CMakeFiles/minigzip.dir
+D:/src/git/StE/Simulation/third_party/build/zlib64/CMakeFiles/INSTALL.dir
+D:/src/git/StE/Simulation/third_party/build/zlib64/CMakeFiles/ALL_BUILD.dir
+D:/src/git/StE/Simulation/third_party/build/zlib64/CMakeFiles/ZERO_CHECK.dir

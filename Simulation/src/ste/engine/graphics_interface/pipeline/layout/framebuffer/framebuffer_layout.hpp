@@ -114,7 +114,10 @@ public:
 				throw framebuffer_layout_multiple_depth_attachments_exception("Up to one depth attachment allowed per framebuffer");
 			}
 
-			auto vk_attachment_ref = VkAttachmentReference{ vk_attachments.size() - 1, static_cast<VkImageLayout>(attachment.layout) };
+			auto vk_attachment_ref = VkAttachmentReference{ 
+				static_cast<std::uint32_t>(vk_attachments.size() - 1),
+				static_cast<VkImageLayout>(attachment.layout)
+			};
 			if (is_depth_attachment)
 				depth = vk_attachment_ref;
 			else

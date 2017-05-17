@@ -1,0 +1,64 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ALL_BUILD", "ALL_BUILD.vcxproj", "{34CE0C56-7429-31A5-BFFB-A13B23482350}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C54DD090-35C6-39AF-B5E1-7BFABC0D5FF6} = {C54DD090-35C6-39AF-B5E1-7BFABC0D5FF6}
+		{74643030-B5A1-36DD-BB68-A0DBE4FA4D75} = {74643030-B5A1-36DD-BB68-A0DBE4FA4D75}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "INSTALL", "INSTALL.vcxproj", "{0C030B49-6ECE-393E-B985-07CDD176D8B5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{34CE0C56-7429-31A5-BFFB-A13B23482350} = {34CE0C56-7429-31A5-BFFB-A13B23482350}
+		{C54DD090-35C6-39AF-B5E1-7BFABC0D5FF6} = {C54DD090-35C6-39AF-B5E1-7BFABC0D5FF6}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PACKAGE", "PACKAGE.vcxproj", "{57E58084-677D-3CDE-93A3-8BF50AA8D5B7}"
+	ProjectSection(ProjectDependencies) = postProject
+		{34CE0C56-7429-31A5-BFFB-A13B23482350} = {34CE0C56-7429-31A5-BFFB-A13B23482350}
+		{C54DD090-35C6-39AF-B5E1-7BFABC0D5FF6} = {C54DD090-35C6-39AF-B5E1-7BFABC0D5FF6}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ZERO_CHECK", "ZERO_CHECK.vcxproj", "{C54DD090-35C6-39AF-B5E1-7BFABC0D5FF6}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dist", "dist.vcxproj", "{28FC2B74-A28C-3E67-9655-1B98B267D4F8}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C54DD090-35C6-39AF-B5E1-7BFABC0D5FF6} = {C54DD090-35C6-39AF-B5E1-7BFABC0D5FF6}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "freetype", "freetype.vcxproj", "{74643030-B5A1-36DD-BB68-A0DBE4FA4D75}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C54DD090-35C6-39AF-B5E1-7BFABC0D5FF6} = {C54DD090-35C6-39AF-B5E1-7BFABC0D5FF6}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{34CE0C56-7429-31A5-BFFB-A13B23482350}.Debug|Win32.ActiveCfg = Debug|Win32
+		{34CE0C56-7429-31A5-BFFB-A13B23482350}.Debug|Win32.Build.0 = Debug|Win32
+		{34CE0C56-7429-31A5-BFFB-A13B23482350}.Release|Win32.ActiveCfg = Release|Win32
+		{34CE0C56-7429-31A5-BFFB-A13B23482350}.Release|Win32.Build.0 = Release|Win32
+		{0C030B49-6ECE-393E-B985-07CDD176D8B5}.Debug|Win32.ActiveCfg = Debug|Win32
+		{0C030B49-6ECE-393E-B985-07CDD176D8B5}.Release|Win32.ActiveCfg = Release|Win32
+		{57E58084-677D-3CDE-93A3-8BF50AA8D5B7}.Debug|Win32.ActiveCfg = Debug|Win32
+		{57E58084-677D-3CDE-93A3-8BF50AA8D5B7}.Release|Win32.ActiveCfg = Release|Win32
+		{C54DD090-35C6-39AF-B5E1-7BFABC0D5FF6}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C54DD090-35C6-39AF-B5E1-7BFABC0D5FF6}.Debug|Win32.Build.0 = Debug|Win32
+		{C54DD090-35C6-39AF-B5E1-7BFABC0D5FF6}.Release|Win32.ActiveCfg = Release|Win32
+		{C54DD090-35C6-39AF-B5E1-7BFABC0D5FF6}.Release|Win32.Build.0 = Release|Win32
+		{28FC2B74-A28C-3E67-9655-1B98B267D4F8}.Debug|Win32.ActiveCfg = Debug|Win32
+		{28FC2B74-A28C-3E67-9655-1B98B267D4F8}.Release|Win32.ActiveCfg = Release|Win32
+		{74643030-B5A1-36DD-BB68-A0DBE4FA4D75}.Debug|Win32.ActiveCfg = Debug|Win32
+		{74643030-B5A1-36DD-BB68-A0DBE4FA4D75}.Debug|Win32.Build.0 = Debug|Win32
+		{74643030-B5A1-36DD-BB68-A0DBE4FA4D75}.Release|Win32.ActiveCfg = Release|Win32
+		{74643030-B5A1-36DD-BB68-A0DBE4FA4D75}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal
