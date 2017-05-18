@@ -32,11 +32,13 @@ template <
 class device_pipeline_resource_disposer {
 private:
 	using Instance = device_pipeline_resources_marked_for_deletion;
+	using queue_t = concurrent_queue<Instance>;
+	using instance_ptr = queue_t::stored_ptr;
 
 	struct shared_data_t {
 		mutable std::condition_variable notifier;
 
-		concurrent_queue<Instance> queue;
+		queue_t queue;
 	};
 
 private:
@@ -46,14 +48,11 @@ private:
 
 	std::list<std::pair<Instance, std::chrono::high_resolution_clock::time_point>> deletion_list;
 
-private:
-	static void delete_instance(Instance &&) {}
-
 public:
 	device_pipeline_resource_disposer() {
 		thread = std::make_unique<interruptible_thread>([this]() {
 			for (;;) {
-				std::unique_ptr<Instance> queued_instance;
+				instance_ptr queued_instance;
 				{
 					std::unique_lock<std::mutex> l(m);
 					shared_data->notifier.wait(l, [&]() {
@@ -70,7 +69,9 @@ public:
 					if (ms < dealloc_max_delay_ms)
 						break;
 
-					delete_instance(std::move(deletion_list.begin()->first));
+					{
+						auto temp = std::move(deletion_list.begin()->first);
+					}
 					deletion_list.pop_front();
 				}
 
@@ -100,10 +101,12 @@ public:
 		// Wrap up
 		std::atomic_thread_fence(std::memory_order_acquire);
 		for (auto &p : deletion_list)
-			delete_instance(std::move(p.first));
-		std::unique_ptr<Instance> queued_instance = shared_data->queue.pop();
+			auto temp = std::move(p.first);
+		auto queued_instance = shared_data->queue.pop();
 		while (queued_instance != nullptr) {
-			delete_instance(std::move(*queued_instance));
+			{
+				auto temp = std::move(*queued_instance);
+			}
 			queued_instance = shared_data->queue.pop();
 		}
 	}

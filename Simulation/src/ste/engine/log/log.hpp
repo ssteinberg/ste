@@ -65,12 +65,12 @@ private:
 	}
 
 	void dump() {
-		std::unique_ptr<log_entry> entry;
+		queue_type::stored_ptr entry;
 		while ((entry = queue.pop()) != nullptr)
 			write_entry(std::move(entry));
 	}
 
-	void write_entry(std::unique_ptr<log_entry> entry) {
+	void write_entry(queue_type::stored_ptr &&entry) {
 		auto fs = std::ofstream();
 		fs.open(file_path, std::ofstream::app);
 		if (!fs) {

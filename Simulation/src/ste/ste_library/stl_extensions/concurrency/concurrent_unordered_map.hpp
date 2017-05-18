@@ -14,17 +14,24 @@
 #include <bitset>
 
 #include <stdlib.h>
-
-#include <immintrin.h>
+#include <aligned_allocator.hpp>
 
 #include <shared_double_reference_guard.hpp>
 
 namespace ste {
 
-template <typename K, typename V, int cache_line = 64>
+template <
+	typename K, 
+	typename V, 
+	typename AlignedAllocator = aligned_allocator<V>,
+	typename Allocator = std::allocator<V>, 
+	int cache_line = 64
+>
 class concurrent_unordered_map {
 private:
 	using Hasher = std::hash<K>;
+	template <typename T>
+	using double_ref_guard = shared_double_reference_guard<T, typename Allocator::template rebind<T>::other>;
 
 public:
 	using mapped_type = V;
@@ -32,20 +39,28 @@ public:
 
 private:
 	struct concurrent_map_bucket_data {
-		using value_type = shared_double_reference_guard<mapped_type, true>;
+		using value_type = double_ref_guard<mapped_type>;
 		using value_data_guard_type = typename value_type::data_guard;
 
 		key_type k;
 		value_type *v;
 
 		template <typename S, typename ... Ts>
-		concurrent_map_bucket_data(S&& k, Ts&&... args) : k(std::forward<S>(k)), v(new value_type(std::forward<Ts>(args)...)) {}
-		~concurrent_map_bucket_data() { delete v; }
+		concurrent_map_bucket_data(S&& k, Ts&&... args) 
+			: k(std::forward<S>(k))
+		{
+			v = Allocator::template rebind<value_type>::other().allocate(1);
+			::new (v) value_type(std::forward<Ts>(args)...);
+		}
+		~concurrent_map_bucket_data() {
+			v->~value_type();
+			Allocator::template rebind<value_type>::other().deallocate(v, 1);
+		}
 	};
 
 	static_assert(std::is_default_constructible<mapped_type>::value, "V must be default constructible.");
 
-	using hash_type = typename std::conditional<sizeof(void*) == 4, std::uint32_t, std::uint64_t>::type;
+	using hash_type = std::conditional_t<sizeof(void*) == 4, std::uint32_t, std::uint64_t>;
 
 	static constexpr int bucket_size = sizeof(hash_type) + sizeof(concurrent_map_bucket_data*);
 
@@ -73,12 +88,17 @@ private:
 		~concurrent_map_virtual_bucket() {
 			{
 				auto ptr = next.load();
-				if (ptr)
-					delete ptr;
+				if (ptr) {
+					ptr->~concurrent_map_virtual_bucket();
+					Allocator::template rebind<concurrent_map_virtual_bucket>::other().deallocate(ptr, 1);
+				}
 			}
 			for (auto &b : buckets) {
 				auto ptr = b.load();
-				if (ptr) delete ptr;
+				if (ptr) {
+					ptr->~concurrent_map_bucket_data();
+					Allocator::template rebind<concurrent_map_bucket_data>::other().deallocate(ptr, 1);
+				}
 			}
 		}
 	};
@@ -95,7 +115,7 @@ private:
 
 		unsigned size;
 		hash_table_type buckets;
-		typename shared_double_reference_guard<table_ptr, false>::data_guard new_table_guard{ 0 };
+		typename double_ref_guard<table_ptr>::data_guard new_table_guard{ 0 };
 		std::vector<std::atomic<marker_t>> markers;
 
 		resize_data_struct(unsigned size, unsigned old_size) : size(size), buckets(table_ptr::alloc(size)), markers((old_size + chunk_size - 1) / chunk_size) {
@@ -106,22 +126,24 @@ private:
 	struct buckets_ptr {
 		unsigned size;
 		hash_table_type buckets{ nullptr };
-		shared_double_reference_guard<resize_data_struct<buckets_ptr>, false> resize_ptr;
+		double_ref_guard<resize_data_struct<buckets_ptr>> resize_ptr;
 
 		static hash_table_type alloc(unsigned size) {
-#ifdef _MSC_VER
-			auto b = reinterpret_cast<virtual_bucket_type*>(_aligned_malloc(sizeof(virtual_bucket_type) * size, cache_line));
-#elif defined _linux
-			void *ptr;
-			posix_memalign(&ptr, cache_line, sizeof(virtual_bucket_type) * size);
-			auto b = reinterpret_cast<virtual_bucket_type*>(ptr);
-#else
-#error Unsupported OS
-#endif
-
+			auto b = AlignedAllocator::template rebind<virtual_bucket_type>::other().aligned_allocate(size, cache_line);
 			new (b) virtual_bucket_type[size];
+
 			assert(b[0].buckets[0].is_lock_free() && "bucket_type not lock free");
+
 			return b;
+		}
+
+		void dealloc_buckets() {
+			if (!buckets)
+				return;
+
+			for (unsigned i = 0; i < size; ++i)
+				(&buckets[i])->~virtual_bucket_type();
+			AlignedAllocator::template rebind<virtual_bucket_type>::other().aligned_deallocate(buckets, size);
 		}
 
 		buckets_ptr(unsigned size, hash_table_type table) : size(size), buckets(table) {}
@@ -135,14 +157,14 @@ private:
 	};
 
 	using resize_data = resize_data_struct<buckets_ptr>;
-	using resize_data_guard_type = typename shared_double_reference_guard<resize_data, false>::data_guard;
-	using hash_table_guard_type = typename shared_double_reference_guard<buckets_ptr, false>::data_guard;
+	using resize_data_guard_type = typename double_ref_guard<resize_data>::data_guard;
+	using hash_table_guard_type = typename double_ref_guard<buckets_ptr>::data_guard;
 
 public:
 	using value_data_guard_type = typename concurrent_map_bucket_data::value_data_guard_type;
 
 private:
-	mutable shared_double_reference_guard<buckets_ptr, false> hash_table;
+	mutable double_ref_guard<buckets_ptr> hash_table;
 	std::atomic<int> items{ 0 };
 
 	template <typename T>
@@ -225,15 +247,7 @@ private:
 			if (!(old_table_moved &= resize_guard->markers[i].load(std::memory_order_acquire) == 2)) break;
 		if (old_table_moved) {
 			if (hash_table.try_compare_emplace(std::memory_order_acq_rel, old_table_guard, resize_guard->size, resize_guard->buckets)) {
-				auto ptr = old_table_guard->buckets;
-				for (unsigned i = 0; i < old_table_guard->size; ++i)
-					(&ptr[i])->~virtual_bucket_type();
-
-#ifdef _MSC_VER
-				_aligned_free(ptr);
-#elif defined _linux
-				free(ptr);
-#endif
+				old_table_guard->dealloc_buckets();
 			}
 		}
 	}
@@ -277,9 +291,13 @@ private:
 			if (!bucket_data) {
 				hash_type old_hash = virtual_bucket.hash[j].load(std::memory_order_relaxed);
 				if (virtual_bucket.hash[j].compare_exchange_strong(old_hash, hash, std::memory_order_acq_rel, std::memory_order_relaxed)) {
-					virtual_bucket.buckets[j].store(new concurrent_map_bucket_data(key, std::forward<Ts>(val_args)...), std::memory_order_release);
+					auto bucket = Allocator::template rebind<concurrent_map_bucket_data>::other().allocate(1);
+					::new (bucket) concurrent_map_bucket_data(key, std::forward<Ts>(val_args)...);
+					virtual_bucket.buckets[j].store(bucket, std::memory_order_release);
+
 					if (is_new_item_insert)
 						items.fetch_add(1, std::memory_order_relaxed);
+
 					return !request_resize;
 				}
 
@@ -301,9 +319,12 @@ private:
 
 		auto next_ptr = virtual_bucket.next.load();
 		while (!next_ptr) {
-			auto new_next = new virtual_bucket_type;
+			auto new_next = Allocator::template rebind<virtual_bucket_type>::other().allocate(1);
+			::new (new_next) virtual_bucket_type();
+
 			if (virtual_bucket.next.compare_exchange_strong(next_ptr, new_next, std::memory_order_acq_rel, std::memory_order_acquire))
 				next_ptr = new_next;
+
 			assert(next_ptr);
 		}
 
@@ -314,17 +335,7 @@ public:
 	concurrent_unordered_map() : hash_table(1024) {}
 	~concurrent_unordered_map() {
 		auto data_guard = hash_table.acquire();
-		auto ptr = data_guard->buckets;
-		if (ptr) {
-			for (unsigned i = 0; i < data_guard->size; ++i)
-				(&ptr[i])->~virtual_bucket_type();
-
-#ifdef _MSC_VER
-			_aligned_free(ptr);
-#elif defined _linux
-			free(ptr);
-#endif
-		}
+		data_guard->dealloc_buckets();
 	}
 
 	template <typename ... Ts>

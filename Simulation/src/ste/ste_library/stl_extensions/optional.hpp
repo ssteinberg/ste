@@ -222,7 +222,7 @@ private:
 
 	using reference = type&;
 	using pointer = type*;
-	using const_pointer = type const*;
+	using const_pointer = const type *;
 
 private:
 	template <typename S = T>

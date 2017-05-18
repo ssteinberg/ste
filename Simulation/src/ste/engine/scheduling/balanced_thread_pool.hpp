@@ -31,6 +31,7 @@ namespace ste {
 class balanced_thread_pool {
 public:
 	using task_t = unique_thread_pool_type_erased_task<>;
+	using task_queue_t = concurrent_queue<task_t>;
 
 private:
 	struct shared_data_t {
@@ -52,7 +53,7 @@ private:
 	std::vector<interruptible_thread> workers;
 	std::vector<interruptible_thread> despawned_workers;
 
-	concurrent_queue<task_t> task_queue;
+	task_queue_t task_queue;
 
 	system_times sys_times;
 	std::chrono::high_resolution_clock::time_point last_pool_balance;
@@ -71,7 +72,7 @@ private:
 			for (;;) {
 				if (interruptible_thread::is_interruption_flag_set()) return;
 
-				std::unique_ptr<task_t> task;
+				task_queue_t::stored_ptr task;
 				{
 					// Wait for tasks
 					std::unique_lock<std::mutex> l(shared_data->m);

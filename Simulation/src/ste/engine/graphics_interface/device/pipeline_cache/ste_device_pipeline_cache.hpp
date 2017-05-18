@@ -26,7 +26,10 @@ private:
 
 	using thread_id_t = std::thread::id;
 	using pipeline_cache_t = vk::vk_pipeline_cache;
-	using pipeline_cache_ptr_t = std::unique_ptr<vk::vk_pipeline_cache>;
+
+	using created_caches_queue_t = concurrent_queue<pipeline_cache_t>;
+
+	using pipeline_cache_ptr_t = created_caches_queue_t::stored_ptr;
 
 private:
 	std::reference_wrapper<const vk::vk_logical_device> device;
@@ -36,7 +39,7 @@ private:
 	pipeline_cache_ptr_t origin;
 
 	mutable concurrent_unordered_map<thread_id_t, const vk::vk_pipeline_cache*> thread_cache_map;
-	mutable concurrent_queue<pipeline_cache_t> created_caches;
+	mutable created_caches_queue_t created_caches;
 
 private:
 	void read_origin();

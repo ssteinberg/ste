@@ -162,6 +162,7 @@ public:
 		}
 
 		auto n = storage_elements(size());
+
 		Allocator<storage_t>().deallocate(storage, n);
 	}
 

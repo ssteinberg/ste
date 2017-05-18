@@ -6,15 +6,20 @@
 #include <atomic>
 #include <memory>
 #include <ref_count_ptr.hpp>
+#include <allocator_delete.hpp>
 
 namespace ste {
 
 /*
 *	@brief	Concurrent lock-free queue.
-*			Based on Anthony William's "C++ Concurrency in Action". Adapted for AMD64 as well as 32-bit compilation.
+*	
+*			Based on Anthony William's "C++ Concurrency in Action".
 */
-template <typename T>
+template <typename T, typename Allocator = std::allocator<T>>
 class concurrent_queue {
+public:
+	using stored_ptr = std::unique_ptr<T, allocator_delete<Allocator>>;
+
 private:
 	struct node;
 	struct node_counter;
@@ -50,10 +55,24 @@ private:
 				--new_counter.internal_count;
 			} while (!count.compare_exchange_strong(old_counter, new_counter, std::memory_order_acquire, std::memory_order_relaxed));
 
-			if (!new_counter.internal_count && !new_counter.external_counters)
-				delete this;
+			if (!new_counter.internal_count && !new_counter.external_counters) {
+				this->~node();
+				Allocator::template rebind<node>::other().deallocate(this, 1);
+			}
 		}
 	};
+
+	static node* allocate_node() {
+		auto ptr = Allocator::template rebind<node>::other().allocate(1);
+		::new (ptr) node();
+
+		return ptr;
+	}
+
+	static void deallocate_node(node * const ptr) {
+		ptr->~node();
+		Allocator::template rebind<node>::other().deallocate(ptr, 1);
+	}
 
 protected:
 	std::atomic<counted_node_ptr> head, tail;
@@ -81,7 +100,7 @@ protected:
 		} while (!ptr->count.compare_exchange_strong(old_counter, new_counter, std::memory_order_acquire, std::memory_order_relaxed));
 
 		if (!new_counter.internal_count && !new_counter.external_counters)
-			delete ptr;
+			deallocate_node(ptr);
 	}
 
 	void set_new_tail(counted_node_ptr &old_tail, counted_node_ptr const &new_tail) {
@@ -95,7 +114,7 @@ protected:
 
 public:
 	concurrent_queue() {
-		counted_node_ptr new_counted_node{ 1, new node };
+		counted_node_ptr new_counted_node{ 1, allocate_node() };
 
 		head.store(new_counted_node);
 		tail.store(new_counted_node);
@@ -106,13 +125,13 @@ public:
 	}
 	~concurrent_queue() {
 		while (pop() != nullptr) {}
-		delete head.load().get();
+		deallocate_node(head.load().get());
 	}
 
 	concurrent_queue(const concurrent_queue &q) = delete;
 	concurrent_queue& operator=(const concurrent_queue &q) = delete;
 
-	std::unique_ptr<T> pop() {
+	stored_ptr pop() {
 		counted_node_ptr old_head = head.load(std::memory_order_relaxed);
 		for (;;) {
 			increase_external_count(head, old_head);
@@ -124,7 +143,7 @@ public:
 			if (head.compare_exchange_strong(old_head, next)) {
 				T * const res = ptr->data.exchange(nullptr);
 				free_external_counter(old_head);
-				return std::unique_ptr<T>(res);
+				return stored_ptr(res);
 			}
 
 			ptr->release_ref();
@@ -132,12 +151,16 @@ public:
 	}
 
 	void push(T &&new_value) {
-		std::unique_ptr<T> new_data(new T(std::move(new_value)));
+		auto ptr = Allocator::template rebind<T>::other().allocate(1);
+		::new (ptr) T(std::move(new_value));
+
+		stored_ptr new_data(ptr);
+
 		push(std::move(new_data));
 	}
 
-	void push(std::unique_ptr<T> &&new_data) {
-		counted_node_ptr new_next{ 1, new node };
+	void push(stored_ptr &&new_data) {
+		counted_node_ptr new_next{ 1, allocate_node() };
 		counted_node_ptr old_tail = tail.load();
 		for (;;) {
 			increase_external_count(tail, old_tail);
@@ -145,7 +168,7 @@ public:
 			if (old_tail.get()->data.compare_exchange_strong(old_data, new_data.get())) {
 				counted_node_ptr old_next = { 0, nullptr };
 				if (!old_tail.get()->next.compare_exchange_strong(old_next, new_next)) {
-					delete new_next.get();
+					deallocate_node(new_next.get());
 					new_next = old_next;
 				}
 				set_new_tail(old_tail, new_next);
@@ -156,7 +179,7 @@ public:
 				counted_node_ptr old_next = { 0, nullptr };
 				if (old_tail.get()->next.compare_exchange_strong(old_next, new_next)) {
 					old_next = new_next;
-					new_next.set(new node);
+					new_next.set(allocate_node());
 				}
 				set_new_tail(old_tail, old_next);
 			}

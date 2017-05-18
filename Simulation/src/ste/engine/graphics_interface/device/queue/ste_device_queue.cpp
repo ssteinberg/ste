@@ -19,7 +19,7 @@ void ste_device_queue::create_worker() {
 		for (;;) {
 			if (interruptible_thread::is_interruption_flag_set()) return;
 
-			std::unique_ptr<task_t> task;
+			task_queue_t::stored_ptr task;
 			{
 				std::unique_lock<std::mutex> l(shared_data->m);
 				if (interruptible_thread::is_interruption_flag_set()) return;

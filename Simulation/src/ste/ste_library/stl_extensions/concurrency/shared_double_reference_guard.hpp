@@ -4,28 +4,29 @@
 #pragma once
 
 #include <atomic>
-#include <iostream>
-
 #include <ref_count_ptr.hpp>
-#include <concurrent_pointer_recycler.hpp>
 
 namespace ste {
 
 namespace _shared_double_reference_guard_detail {
 
-template <typename data_t, bool b>
-class data_factory;
-template <typename data_t>
-class data_factory<data_t, false> {
+template <typename data_t, class Allocator = std::allocator<data_t>>
+class data_factory {
 public:
-	static void release(data_t *ptr) { delete ptr; }
+	static void release(data_t *ptr) {
+		ptr->~data_t();
+		Allocator().deallocate(ptr, 1);
+	}
 	template <typename ... Ts>
-	data_t* claim(Ts&&... args) { return new data_t(std::forward<Ts>(args)...); }
+	data_t* claim(Ts&&... args) {
+		auto ptr = Allocator().allocate(1);
+		::new (ptr) data_t(std::forward<Ts>(args)...);
+		
+		return ptr;
+	}
 };
-template <typename data_t>
-class data_factory<data_t, true> : public concurrent_pointer_recycler<data_t> {};
 
-template <typename DataType, bool recycle_pointers>
+template <typename DataType, typename Allocator>
 class data {
 public:
 	std::atomic<int> internal_counter;
@@ -46,32 +47,36 @@ public:
 	}
 
 private:
-	static data_factory<data<DataType, recycle_pointers>, std::is_trivially_copyable<DataType>::value && recycle_pointers> recycler;
+	static data_factory<
+		data<DataType, Allocator>, typename Allocator::template rebind<data<DataType, Allocator>>::other
+	> factory;
 
 public:
-	static void release(data *ptr) { recycler.release(ptr); }
+	static void release(data *ptr) { factory.release(ptr); }
 	template <typename ... Ts>
-	static data* claim(Ts&&... args) { return recycler.claim(std::forward<Ts>(args)...); }
+	static data* claim(Ts&&... args) { return factory.claim(std::forward<Ts>(args)...); }
 	void destroy() {
-		recycler.release(this);
+		factory.release(this);
 	}
 };
 
-template <typename DataType, bool recycle_pointers>
-data_factory<data<DataType, recycle_pointers>, std::is_trivially_copyable<DataType>::value && recycle_pointers> data<DataType, recycle_pointers>::recycler;
+template <typename DataType, typename Allocator>
+data_factory<
+	data<DataType, Allocator>, typename Allocator::template rebind<data<DataType, Allocator>>::other
+> data<DataType, Allocator>::factory;
 
 }
 
-template <typename DataType, bool recycle_pointers>
+template <typename DataType, typename Allocator>
 class shared_double_reference_guard {
 private:
-	using data_t = _shared_double_reference_guard_detail::data<DataType, recycle_pointers>;
+	using data_t = _shared_double_reference_guard_detail::data<DataType, Allocator>;
 
 	using data_ptr = ref_count_ptr<data_t>;
 
 public:
 	class data_guard {
-		friend class shared_double_reference_guard<DataType, recycle_pointers>;
+		friend class shared_double_reference_guard<DataType, Allocator>;
 
 	private:
 		data_t *ptr;

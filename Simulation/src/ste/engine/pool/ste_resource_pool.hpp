@@ -16,7 +16,8 @@ namespace gl {
 
 template <
 	typename T, 
-	template<class> class resource_reclamation_policy = ste_resource_pool_reclamation_policy
+	template<class> class resource_reclamation_policy = ste_resource_pool_reclamation_policy,
+	typename Allocator = std::allocator<T>
 >
 class ste_resource_pool {
 	static_assert(ste_resource_pool_is_poolable<T>::value,
@@ -24,11 +25,12 @@ class ste_resource_pool {
 
 private:
 	using value_type = T;
-	using pool_t = concurrent_queue<value_type>;
+	using pool_t = concurrent_queue<value_type, Allocator>;
 	using tuple_t = typename ste_resource_pool_ctor_args_capture<T>::type;
 
 public:
-	using resource_t = ste_resource_pool_resource<ste_resource_pool<value_type>, resource_reclamation_policy>;
+	using resource_ptr_t = std::unique_ptr<T, allocator_delete<Allocator>>;
+	using resource_t = ste_resource_pool_resource<ste_resource_pool<value_type>, resource_ptr_t, resource_reclamation_policy>;
 	using pool_ptr_t = pool_t*;
 
 	friend resource_t;
@@ -65,9 +67,11 @@ public:
 		}
 
 		// Create new
+		auto ptr = Allocator().allocate(1);
+		tuple_call(&T::template _ste_resource_pool_resource_creator<T>,
+				   std::tuple_cat(std::make_tuple(ptr), res_params));
 		return resource_t(&pool,
-						  tuple_call(&T::template _ste_resource_pool_resource_creator<T>,
-									 res_params));
+						  resource_ptr_t(ptr));
 	}
 };
 

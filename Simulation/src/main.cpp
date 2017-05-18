@@ -282,7 +282,6 @@ int main()
 	log::ste_log_set_global_logger(&logger);
 	ste_log() << "Simulation is running";
 
-
 	/*
 	*	Create StE engine instance
 	*/

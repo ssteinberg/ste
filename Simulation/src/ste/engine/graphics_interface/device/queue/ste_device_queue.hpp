@@ -52,12 +52,13 @@ public:
 
 private:
 	using shared_fence_t = ste_device_queue_batch<void>::fence_t;
+	using task_queue_t = concurrent_queue<task_t>;
 
 	struct shared_data_t {
 		mutable std::mutex m;
 		mutable std::condition_variable notifier;
 
-		concurrent_queue<task_t> task_queue;
+		task_queue_t task_queue;
 	};
 
 private:
