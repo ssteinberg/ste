@@ -8,9 +8,9 @@
 
 #include <atmospherics_properties.hpp>
 
-#include <boost_filesystem.hpp>
+#include <filesystem>
 
-#include <memory>
+#include <lib/unique_ptr.hpp>
 #include <fstream>
 #include <boost/crc.hpp>
 
@@ -104,7 +104,7 @@ public:
 	const auto *scatter_lut() const { return &data.scatter; }
 	const auto *ambient_lut() const { return &data.ambient; }
 
-	void load(const boost::filesystem::path &path) {
+	void load(const std::experimental::filesystem::path &path) {
 		std::ifstream ifs;
 		ifs.exceptions(ifs.exceptions() | std::ios::failbit);
 		ifs.open(path.string(), std::ios::binary | std::ios::in);
@@ -145,7 +145,7 @@ class atmospherics_precompute_scattering {
 	static constexpr int optical_length_aerosols_lut_idx = 1;
 
 private:
-	std::unique_ptr<lut_data_t> data;
+	lib::unique_ptr<lut_data_t> data;
 
 private:
 	gli::texture2d create_optical_length_lut(int lut_idx) const {
@@ -165,7 +165,7 @@ private:
 	}
 
 public:
-	atmospherics_precompute_scattering(const boost::filesystem::path &path) : data(std::make_unique<lut_data_t>()) {
+	atmospherics_precompute_scattering(const std::experimental::filesystem::path &path) : data(lib::allocate_unique<lut_data_t>()) {
 		data->load(path);
 	}
 	~atmospherics_precompute_scattering() noexcept {}

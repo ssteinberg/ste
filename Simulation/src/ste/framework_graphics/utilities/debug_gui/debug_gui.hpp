@@ -14,10 +14,10 @@
 
 #include <camera.hpp>
 
-#include <map>
-#include <vector>
-#include <memory>
-#include <string>
+#include <lib/map.hpp>
+#include <lib/vector.hpp>
+#include <lib/unique_ptr.hpp>
+#include <lib/string.hpp>
 #include <functional>
 
 namespace ste {
@@ -36,14 +36,14 @@ private:
 	profiler *prof;
 	const camera *cam;
 
-	mutable std::map<std::string, std::vector<float>> prof_tasks_last_samples;
+	mutable lib::map<lib::string, lib::vector<float>> prof_tasks_last_samples;
 
 private:
-	std::shared_ptr<hid_pointer_button_signal_connection_type> hid_pointer_button_signal;
-	std::shared_ptr<hid_scroll_signal_connection_type> hid_scroll_signal;
-	std::shared_ptr<hid_keyboard_signal_connection_type> hid_keyboard_signal;
+	lib::shared_ptr<hid_pointer_button_signal_connection_type> hid_pointer_button_signal;
+	lib::shared_ptr<hid_scroll_signal_connection_type> hid_scroll_signal;
+	lib::shared_ptr<hid_keyboard_signal_connection_type> hid_keyboard_signal;
 
-	std::vector<std::function<void(const glm::ivec2 &)>> user_guis;
+	lib::vector<std::function<void(const glm::ivec2 &)>> user_guis;
 
 public:
 	debug_gui(const ste_engine_control &ctx, profiler *prof, const ste::text::font &default_font, const camera *cam = nullptr);

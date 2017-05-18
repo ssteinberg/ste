@@ -11,7 +11,7 @@
 #include <glsl_program.hpp>
 #include <scene.hpp>
 
-#include <memory>
+#include <lib/unique_ptr.hpp>
 
 namespace ste {
 namespace graphics {
@@ -30,7 +30,7 @@ public:
 									 const scene *s,
 									 bool front_face = true) : s(s),
 															   front_face(front_face),
-															   program(ctx, std::vector<std::string>{ "scene_transform.vert", "scene_prepopulate_depth.frag" }) {}
+															   program(ctx, lib::vector<lib::string>{ "scene_transform.vert", "scene_prepopulate_depth.frag" }) {}
 
 protected:
 	void set_context_state() const override final;

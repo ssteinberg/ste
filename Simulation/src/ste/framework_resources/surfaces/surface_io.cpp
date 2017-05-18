@@ -13,7 +13,7 @@
 using namespace ste::text;
 using namespace ste::resource;
 
-void surface_io::write_png(const boost::filesystem::path &file_name, const char *image_data, int components, int width, int height) {
+void surface_io::write_png(const std::experimental::filesystem::path &file_name, const char *image_data, int components, int width, int height) {
 	if (components != 1 && components != 3 && components != 4) {
 		ste_log_error() << file_name << " can't write " << components << " channel PNG.";
 		throw surface_unsupported_format_error("Unsupported PNG component count");
@@ -85,7 +85,7 @@ void surface_io::write_png(const boost::filesystem::path &file_name, const char 
 	fclose(fp);
 }
 
-gli::texture2d surface_io::load_tga(const boost::filesystem::path &file_name, bool srgb) {
+gli::texture2d surface_io::load_tga(const std::experimental::filesystem::path &file_name, bool srgb) {
 	TGA *tga;
 
 	try {
@@ -161,7 +161,7 @@ gli::texture2d surface_io::load_tga(const boost::filesystem::path &file_name, bo
 	return tex;
 }
 
-gli::texture2d surface_io::load_png(const boost::filesystem::path &file_name, bool srgb) {
+gli::texture2d surface_io::load_png(const std::experimental::filesystem::path &file_name, bool srgb) {
 	png_byte header[8];
 
 	FILE *fp = fopen(file_name.string().data(), "rb");
@@ -316,15 +316,15 @@ gli::texture2d surface_io::load_png(const boost::filesystem::path &file_name, bo
 	return tex;
 }
 
-gli::texture2d surface_io::load_jpeg(const boost::filesystem::path &path, bool srgb) {
+gli::texture2d surface_io::load_jpeg(const std::experimental::filesystem::path &path, bool srgb) {
 	std::ifstream fs(path.string(), std::ios::in);
 	if (!fs) {
 		using namespace Attributes;
-		ste_log_error() << text::attributed_string("Can't open JPEG ") + i(path.string()) + ": " + std::strerror(errno) << std::endl;
+		ste_log_error() << text::attributed_string("Can't open JPEG ") + i(lib::to_string(path.string())) + ": " + std::strerror(errno) << std::endl;
 		throw resource_io_error("Could not open file");
 	}
 
-	auto content = std::string((std::istreambuf_iterator<char>(fs)), std::istreambuf_iterator<char>());
+	auto content = lib::string((std::istreambuf_iterator<char>(fs)), std::istreambuf_iterator<char>());
 	fs.close();
 
 	unsigned char *data = reinterpret_cast<unsigned char*>(&content[0]);

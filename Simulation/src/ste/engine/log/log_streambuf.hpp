@@ -6,8 +6,8 @@
 #include <streambuf>
 #include <iosfwd>
 #include <cstdlib>
-#include <string>
-#include <memory>
+#include <lib/string.hpp>
+#include <lib/unique_ptr.hpp>
 #include <array>
 
 #include <log_sink.hpp>
@@ -37,7 +37,7 @@ private:
 		char *s = pbase();
 		for (p = pbase(), e = pptr(); p != e; ++p) {
 			if (*p == '\n') {
-				std::string line = p > s ? std::string(s, static_cast<std::size_t>(p - s)) : std::string();
+				lib::string line = p > s ? lib::string(s, static_cast<std::size_t>(p - s)) : lib::string();
 				(*sink) << std::move(line);
 
 				s = p + 1;
@@ -45,7 +45,7 @@ private:
 		}
 
 		if (s < e) {
-			std::string line(s, static_cast<std::size_t>(e - s));
+			lib::string line(s, static_cast<std::size_t>(e - s));
 			(*sink) << std::move(line);
 		}
 
@@ -62,11 +62,11 @@ private:
 // 	}
 
 private:
-	std::unique_ptr<sink_type> sink;
+	lib::unique_ptr<sink_type> sink;
 	std::array<char, buff_sz + 1> buffer;
 
 public:
-	log_streambuf(std::unique_ptr<sink_type> &&sink, bool force_flush) : force_flush(force_flush), sink(std::move(sink)) {
+	log_streambuf(lib::unique_ptr<sink_type> &&sink, bool force_flush) : force_flush(force_flush), sink(std::move(sink)) {
 		char *base = &buffer.front();
 		setp(base, base + buffer.size());
 	}

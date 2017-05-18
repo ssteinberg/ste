@@ -12,7 +12,7 @@
 
 #include <optional.hpp>
 
-#include <vector>
+#include <lib/vector.hpp>
 #include <allow_type_decay.hpp>
 
 namespace ste {
@@ -27,14 +27,14 @@ private:
 
 public:
 	vk_pipeline_layout(const vk_logical_device &device,
-					   const std::vector<const vk_descriptor_set_layout*> &set_layouts,
-					   const std::vector<vk_push_constant_layout> &push_constant_layouts = {}) : device(device) {
-		std::vector<VkPushConstantRange> push_constant_layout_descriptors;
+					   const lib::vector<const vk_descriptor_set_layout*> &set_layouts,
+					   const lib::vector<vk_push_constant_layout> &push_constant_layouts = {}) : device(device) {
+		lib::vector<VkPushConstantRange> push_constant_layout_descriptors;
 		push_constant_layout_descriptors.reserve(push_constant_layouts.size());
 		for (auto &p : push_constant_layouts)
 			push_constant_layout_descriptors.push_back(p);
 
-		std::vector<VkDescriptorSetLayout> layouts;
+		lib::vector<VkDescriptorSetLayout> layouts;
 		layouts.reserve(set_layouts.size());
 		for (auto &s : set_layouts)
 			layouts.push_back(*s);

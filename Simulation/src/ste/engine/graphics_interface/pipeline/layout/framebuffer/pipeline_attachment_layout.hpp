@@ -18,7 +18,7 @@ struct pipeline_attachment_layout {
 	/**
 	*	@brief	Helper method to get underlying variable name
 	*/
-	const std::string& name() const { return attachment->variable->name(); }
+	const lib::string& name() const { return attachment->variable->name(); }
 
 	/**
 	*	@brief	Helper method to get the attachment's location

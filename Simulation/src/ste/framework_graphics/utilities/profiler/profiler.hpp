@@ -5,15 +5,15 @@
 
 #include <stdafx.hpp>
 
-#include <vector>
-#include <string>
+#include <lib/vector.hpp>
+#include <lib/string.hpp>
 #include <algorithm>
 
 namespace ste {
 namespace graphics {
 
 struct profiler_entry {
-	std::string name;
+	lib::string name;
 	std::uint64_t start, end;
 };
 
@@ -22,8 +22,8 @@ private:
 	static constexpr const char * log_path = R"(Log/profiler_output.json)";
 
 private:
-	std::vector<profiler_entry> entries;
-	std::vector<float> last_times_per_frame;
+	lib::vector<profiler_entry> entries;
+	lib::vector<float> last_times_per_frame;
 
 public:
 	profiler();

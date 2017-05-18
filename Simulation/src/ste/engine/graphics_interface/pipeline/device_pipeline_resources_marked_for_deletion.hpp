@@ -10,17 +10,17 @@
 #include <pipeline_binding_set_layout.hpp>
 #include <pipeline_binding_set.hpp>
 
-#include <vector>
+#include <lib/vector.hpp>
 #include <optional.hpp>
 
 namespace ste {
 namespace gl {
 
 struct device_pipeline_resources_marked_for_deletion {
-	std::vector<pipeline_binding_set_layout> binding_set_layouts;
-	std::vector<pipeline_binding_set> binding_sets;
+	lib::vector<pipeline_binding_set_layout> binding_set_layouts;
+	lib::vector<pipeline_binding_set> binding_sets;
 
-	std::unique_ptr<vk::vk_pipeline_layout> pipeline_layout;
+	lib::unique_ptr<vk::vk_pipeline_layout> pipeline_layout;
 	optional<vk::vk_pipeline> pipeline;
 
 	operator bool() const {

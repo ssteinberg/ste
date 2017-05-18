@@ -10,8 +10,8 @@
 
 #include <ste_shader_stage_binding_type.hpp>
 
-#include <vector>
-#include <string>
+#include <lib/vector.hpp>
+#include <lib/string.hpp>
 
 namespace ste {
 namespace gl {
@@ -46,7 +46,7 @@ private:
 		bool bind_assigned{ false };
 		bool location_assigned{ false };
 
-		std::vector<const std::uint32_t*> struct_member_ops;
+		lib::vector<const std::uint32_t*> struct_member_ops;
 
 		bool is_binding() const {
 			// Filter out those pesky non-block "push constants"
@@ -71,12 +71,12 @@ private:
 	static void parse_decoration(_internal::ste_shader_spirv_reflected_variable &, const std::uint32_t *);
 	static void parse_storage_class(parser_internal_element &, std::uint32_t);
 	static void consume_type(parser_internal_element &, const parser_internal_element &);
-	static std::size_t process_spirv_op(std::vector<parser_internal_element> &, 
+	static std::size_t process_spirv_op(lib::vector<parser_internal_element> &, 
 										const std::uint32_t *);
 	static ste_shader_stage_binding_type element_type_to_binding_type(const storage_type &);
 
 public:
-	static ste_shader_spirv_reflection_output parse(const std::string &spirv_code);
+	static ste_shader_spirv_reflection_output parse(const lib::string &spirv_code);
 };
 
 }

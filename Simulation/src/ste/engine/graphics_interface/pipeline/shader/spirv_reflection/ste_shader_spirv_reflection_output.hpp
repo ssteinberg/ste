@@ -7,14 +7,14 @@
 #include <ste_shader_stage_binding.hpp>
 #include <ste_shader_stage_attachment.hpp>
 
-#include <vector>
+#include <lib/vector.hpp>
 
 namespace ste {
 namespace gl {
 
 struct ste_shader_spirv_reflection_output {
-	std::vector<ste_shader_stage_binding> bindings;
-	std::vector<ste_shader_stage_attachment> attachments;
+	lib::vector<ste_shader_stage_binding> bindings;
+	lib::vector<ste_shader_stage_attachment> attachments;
 };
 
 }

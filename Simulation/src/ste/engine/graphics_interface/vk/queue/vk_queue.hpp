@@ -15,7 +15,7 @@
 
 #include <optional.hpp>
 
-#include <vector>
+#include <lib/vector.hpp>
 #include <functional>
 
 namespace ste {
@@ -66,14 +66,14 @@ public:
 	*	@param	signal_semaphores	Sempahores to signal once the commands have completed execution
 	*	@param	fence				Optional fence, to be signaled when the commands have completed execution
 	*/
-	void submit(const std::vector<vk_command_buffer> &command_buffers,
-				const std::vector<wait_semaphore_t> &wait_semaphores,
-				const std::vector<VkSemaphore> &signal_semaphores,
+	void submit(const lib::vector<vk_command_buffer> &command_buffers,
+				const lib::vector<wait_semaphore_t> &wait_semaphores,
+				const lib::vector<VkSemaphore> &signal_semaphores,
 				const vk_fence *fence = nullptr) const {
-		std::vector<VkCommandBuffer> cb;
-		std::vector<VkSemaphore> wait;
-		std::vector<VkPipelineStageFlags> stages;
-		std::vector<VkSemaphore> signal;
+		lib::vector<VkCommandBuffer> cb;
+		lib::vector<VkSemaphore> wait;
+		lib::vector<VkPipelineStageFlags> stages;
+		lib::vector<VkSemaphore> signal;
 
 		cb.resize(command_buffers.size());
 		for (std::size_t i = 0; i < command_buffers.size(); ++i)

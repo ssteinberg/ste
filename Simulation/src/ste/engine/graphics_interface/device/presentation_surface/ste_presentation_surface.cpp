@@ -54,7 +54,7 @@ void ste_presentation_surface::acquire_swap_chain_images() {
 	auto size = this->swap_chain->get_extent();
 
 	// Aquire swap-chain images
-	std::vector<VkImage> swapchain_vk_image_objects;
+	lib::vector<VkImage> swapchain_vk_image_objects;
 	std::uint32_t chain_image_count;
 	vk::vk_result res = vkGetSwapchainImagesKHR(*presentation_device, *swap_chain, &chain_image_count, nullptr);
 	if (!res) {
@@ -69,7 +69,7 @@ void ste_presentation_surface::acquire_swap_chain_images() {
 	}
 
 	// Create views and image objects
-	std::vector<swap_chain_image_t> images;
+	lib::vector<swap_chain_image_t> images;
 	images.reserve(swapchain_vk_image_objects.size());
 	for (auto& img : swapchain_vk_image_objects) {
 		auto image = vk::vk_swapchain_image(*presentation_device,
@@ -99,7 +99,7 @@ VkPresentModeKHR ste_presentation_surface::get_surface_presentation_mode() const
 
 	// Query available presentation modes
 	std::uint32_t present_mode_count;
-	std::vector<VkPresentModeKHR> supported_present_modes;
+	lib::vector<VkPresentModeKHR> supported_present_modes;
 	vkGetPhysicalDeviceSurfacePresentModesKHR(presentation_device->get_physical_device_descriptor().device,
 											  presentation_surface, &present_mode_count, nullptr);
 	supported_present_modes.resize(present_mode_count);
@@ -145,7 +145,7 @@ VkPresentModeKHR ste_presentation_surface::get_surface_presentation_mode() const
 VkSurfaceFormatKHR ste_presentation_surface::get_surface_format() const {
 	// Query available format
 	std::uint32_t format_count;
-	std::vector<VkSurfaceFormatKHR> supported_formats;
+	lib::vector<VkSurfaceFormatKHR> supported_formats;
 	vkGetPhysicalDeviceSurfaceFormatsKHR(presentation_device->get_physical_device_descriptor().device,
 										 presentation_surface, &format_count, nullptr);
 	supported_formats.resize(format_count);
@@ -238,7 +238,7 @@ void ste_presentation_surface::create_swap_chain() {
 	auto present_mode = get_surface_presentation_mode();
 
 	// Create the swap-chain
-	this->swap_chain = std::make_unique<vk::vk_swapchain>(*presentation_device,
+	this->swap_chain = lib::allocate_unique<vk::vk_swapchain>(*presentation_device,
 														  presentation_surface,
 														  swap_chain_image_count,
 														  format.format,

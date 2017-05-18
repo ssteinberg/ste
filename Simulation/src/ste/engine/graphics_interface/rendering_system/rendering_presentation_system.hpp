@@ -11,7 +11,7 @@
 #include <framebuffer_layout.hpp>
 #include <depth_range.hpp>
 
-#include <vector>
+#include <lib/vector.hpp>
 #include <signal.hpp>
 
 namespace ste {
@@ -22,7 +22,7 @@ private:
 	gl::framebuffer_layout fb_layout;
 	depth_range depth;
 
-	std::vector<framebuffer> swap_chain_framebuffers;
+	lib::vector<framebuffer> swap_chain_framebuffers;
 
 	ste_device::queues_and_surface_recreate_signal_type::connection_type surface_recreate_signal_connection;
 
@@ -40,7 +40,7 @@ private:
 	void create_swap_chain_framebuffers() {
 		auto surface_extent = device().get_surface().extent();
 
-		std::vector<framebuffer> v;
+		lib::vector<framebuffer> v;
 		for (auto &swap_image : device().get_surface().get_swap_chain_images()) {
 			auto l = fb_layout;
 			framebuffer fb(get_creating_context(), 

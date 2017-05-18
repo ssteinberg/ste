@@ -7,7 +7,7 @@
 
 #include <microfacet_fit_error.hpp>
 
-#include <memory>
+#include <lib/unique_ptr.hpp>
 #include <istream>
 
 #include <boost/crc.hpp>
@@ -21,7 +21,7 @@ class microfacet_refraction_fit {
 			double a, b, c, d;
 		};
 
-		using data_ptr = std::unique_ptr<refraction_fit_exp2[]>;
+		using data_ptr = lib::unique_ptr<refraction_fit_exp2[]>;
 
 		struct {
 			std::uint8_t ndf_type[8];
@@ -37,11 +37,11 @@ class microfacet_refraction_fit {
 	};
 
 private:
-	std::unique_ptr<refraction_fit_data> fit_data;
+	lib::unique_ptr<refraction_fit_data> fit_data;
 
 public:
 	microfacet_refraction_fit(std::istream &is) {
-		fit_data = std::make_unique<refraction_fit_data>();
+		fit_data = lib::allocate_unique<refraction_fit_data>();
 
 		is.read(reinterpret_cast<char*>(&fit_data->header), sizeof(fit_data->header) / sizeof(char));
 

@@ -6,17 +6,17 @@
 #include <stdafx.hpp>
 #include <push_constant_path.hpp>
 
-#include <string>
-#include <boost/container/flat_map.hpp>
+#include <lib/string.hpp>
+#include <lib/flat_map.hpp>
 #include <optional.hpp>
-#include <deque>
+#include <lib::deque>
 
 namespace ste {
 namespace gl {
 
 class push_constant_descriptor {
 private:
-	using children_descriptors_map_t = boost::container::flat_map<std::string, push_constant_descriptor>;
+	using children_descriptors_map_t = lib::flat_map<lib::string, push_constant_descriptor>;
 
 	friend class pipeline_push_constants_layout;
 

@@ -17,7 +17,7 @@
 
 #include <optional.hpp>
 #include <range.hpp>
-#include <vector>
+#include <lib/vector.hpp>
 #include <allow_type_decay.hpp>
 
 namespace ste {
@@ -43,7 +43,7 @@ public:
 private:
 	using resource_t = vk::vk_buffer_sparse;
 	using atom_t = device_memory_heap::allocation_type;
-	using bind_map_t = std::vector<atom_t>;
+	using bind_map_t = lib::vector<atom_t>;
 
 private:
 	std::reference_wrapper<const ste_context> ctx;
@@ -79,8 +79,8 @@ public:
 	}
 
 private:
-	static auto vk_semaphores(const std::vector<const semaphore*> &s) {
-		std::vector<VkSemaphore> vk_sems;
+	static auto vk_semaphores(const lib::vector<const semaphore*> &s) {
+		lib::vector<VkSemaphore> vk_sems;
 		vk_sems.reserve(s.size());
 		for (auto &sem : s)
 			vk_sems.push_back(*sem);
@@ -126,13 +126,13 @@ public:
 	*	
 	*	@return	A host command to bound/unbound atoms.
 	*/
-	host_command cmd_bind_sparse_memory(const std::vector<bind_range_t> &unbind_regions,
-										const std::vector<bind_range_t> &bind_regions,
-										const std::vector<const semaphore*> &wait_semaphores,
-										const std::vector<const semaphore*> &signal_semaphores,
+	host_command cmd_bind_sparse_memory(const lib::vector<bind_range_t> &unbind_regions,
+										const lib::vector<bind_range_t> &bind_regions,
+										const lib::vector<const semaphore*> &wait_semaphores,
+										const lib::vector<const semaphore*> &signal_semaphores,
 										const vk::vk_fence *fence = nullptr) {
 		return host_command([=](const vk::vk_queue &queue) {
-			std::vector<vk::vk_sparse_memory_bind> memory_binds;
+			lib::vector<vk::vk_sparse_memory_bind> memory_binds;
 			auto size = atom_size();
 
 			for (std::size_t i = 0; i < unbind_regions.size(); ++i) {

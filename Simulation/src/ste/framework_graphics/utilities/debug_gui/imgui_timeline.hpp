@@ -9,14 +9,14 @@
 
 #include <sstream>
 #include <iomanip>
-#include <map>
-#include <string>
+#include <lib/map.hpp>
+#include <lib/string.hpp>
 
 #include <imgui/imgui.h>
 
 namespace ImGui {
 
-inline void PlotTimeline(const std::vector<std::pair<std::string, float>> &times) {
+inline void PlotTimeline(const lib::vector<std::pair<lib::string, float>> &times) {
 	float total_time = 0.f;
 	for (auto &pair : times)
 		total_time += pair.second;

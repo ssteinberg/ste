@@ -9,7 +9,7 @@
 
 #include <vk_logical_device.hpp>
 
-#include <vector>
+#include <lib/vector.hpp>
 #include <allow_type_decay.hpp>
 
 namespace ste {
@@ -74,13 +74,13 @@ class vk_command_buffers {
 	friend class vk_command_pool;
 
 private:
-	std::vector<vk_command_buffer> buffers;
+	lib::vector<vk_command_buffer> buffers;
 	VkCommandPool pool;
 	std::reference_wrapper<const vk_logical_device> device;
 	vk_command_buffer_type type;
 
 private:
-	vk_command_buffers(std::vector<vk_command_buffer> &&buffers,
+	vk_command_buffers(lib::vector<vk_command_buffer> &&buffers,
 					   const vk_logical_device &device,
 					   const VkCommandPool &pool,
 					   const vk_command_buffer_type &type)

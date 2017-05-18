@@ -8,7 +8,7 @@
 #include <vk_pipeline_layout.hpp>
 #include <vk_descriptor_set.hpp>
 
-#include <vector>
+#include <lib/vector.hpp>
 #include <functional>
 
 namespace ste {
@@ -19,15 +19,15 @@ private:
 	VkPipelineBindPoint bind_point;
 	std::reference_wrapper<const vk::vk_pipeline_layout> pipeline_layout;
 	std::uint32_t first_set_bind_index;
-	std::vector<VkDescriptorSet> sets;
-	std::vector<std::uint32_t> dynamic_offsets;
+	lib::vector<VkDescriptorSet> sets;
+	lib::vector<std::uint32_t> dynamic_offsets;
 
 public:
 	cmd_bind_descriptor_sets(VkPipelineBindPoint bind_point,
 							 const vk::vk_pipeline_layout &pipeline_layout,
 							 std::uint32_t first_set_bind_index,
-							 const std::vector<const vk::vk_descriptor_set*> &sets,
-							 const std::vector<std::uint32_t> &dynamic_offsets = {})
+							 const lib::vector<const vk::vk_descriptor_set*> &sets,
+							 const lib::vector<std::uint32_t> &dynamic_offsets = {})
 		: bind_point(bind_point),
 		pipeline_layout(pipeline_layout),
 		first_set_bind_index(first_set_bind_index),
@@ -57,8 +57,8 @@ class cmd_bind_descriptor_sets_compute : public cmd_bind_descriptor_sets {
 public:
 	cmd_bind_descriptor_sets_compute(const vk::vk_pipeline_layout &pipeline_layout,
 									 std::uint32_t first_set_bind_index,
-									 const std::vector<const vk::vk_descriptor_set*> &sets,
-									 const std::vector<std::uint32_t> &dynamic_offsets = {})
+									 const lib::vector<const vk::vk_descriptor_set*> &sets,
+									 const lib::vector<std::uint32_t> &dynamic_offsets = {})
 		: cmd_bind_descriptor_sets(VK_PIPELINE_BIND_POINT_COMPUTE,
 								   pipeline_layout,
 								   first_set_bind_index,
@@ -71,8 +71,8 @@ class cmd_bind_descriptor_sets_graphics : public cmd_bind_descriptor_sets {
 public:
 	cmd_bind_descriptor_sets_graphics(const vk::vk_pipeline_layout &pipeline_layout,
 									  std::uint32_t first_set_bind_index,
-									  const std::vector<const vk::vk_descriptor_set*> &sets,
-									  const std::vector<std::uint32_t> &dynamic_offsets = {})
+									  const lib::vector<const vk::vk_descriptor_set*> &sets,
+									  const lib::vector<std::uint32_t> &dynamic_offsets = {})
 		: cmd_bind_descriptor_sets(VK_PIPELINE_BIND_POINT_GRAPHICS,
 								   pipeline_layout,
 								   first_set_bind_index,

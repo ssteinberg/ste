@@ -16,7 +16,7 @@
 #include <command_recorder.hpp>
 
 #include <allow_type_decay.hpp>
-#include <vector>
+#include <lib/vector.hpp>
 #include "ste_device_queue_secondary_command_buffer.hpp"
 
 namespace ste {
@@ -29,7 +29,7 @@ class command_buffer : public allow_type_decay<command_buffer, vk::vk_command_bu
 	friend ste_device_queue;
 
 public:
-	using commands_t = std::vector<host_command>;
+	using commands_t = lib::vector<host_command>;
 
 protected:
 	vk::vk_command_buffers buffers;

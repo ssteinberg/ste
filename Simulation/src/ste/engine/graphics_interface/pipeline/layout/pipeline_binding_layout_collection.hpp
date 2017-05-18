@@ -6,8 +6,8 @@
 #include <stdafx.hpp>
 #include <pipeline_binding_layout.hpp>
 
-#include <string>
-#include <unordered_map>
+#include <lib/string.hpp>
+#include <lib/unordered_map.hpp>
 #include <initializer_list>
 
 namespace ste {
@@ -18,7 +18,7 @@ namespace gl {
 */
 class pipeline_binding_layout_collection {
 public:
-	using bind_map_t = std::unordered_map<std::string, pipeline_binding_layout>;
+	using bind_map_t = lib::unordered_map<lib::string, pipeline_binding_layout>;
 
 private:
 	bind_map_t set;
@@ -27,15 +27,15 @@ public:
 	pipeline_binding_layout_collection() = default;
 	pipeline_binding_layout_collection(const std::initializer_list<bind_map_t::value_type> &il) : set(il) {}
 
-	auto& operator[](const std::string &name) { return set[name]; }
+	auto& operator[](const lib::string &name) { return set[name]; }
 	template <typename... Ts>
 	auto try_emplace(Ts&&... ts) {
 		return set.try_emplace(std::forward<Ts>(ts)...);
 	}
-	void erase(const std::string &name) { set.erase(name); }
+	void erase(const lib::string &name) { set.erase(name); }
 	void erase(bind_map_t::iterator it) { set.erase(it); }
 
-	auto find(const std::string &name) const { return set.find(name); }
+	auto find(const lib::string &name) const { return set.find(name); }
 
 	auto& get() const { return set; }
 	auto begin() const { return set.begin(); }

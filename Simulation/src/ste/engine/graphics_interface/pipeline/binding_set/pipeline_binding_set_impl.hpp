@@ -26,7 +26,7 @@ namespace _internal {
 template <typename Layout>
 class pipeline_binding_set_impl : public allow_type_decay<pipeline_binding_set_impl<Layout>, vk::vk_descriptor_set> {
 private:
-	using binding_to_written_descriptors_range_map = boost::container::flat_map<std::uint32_t, range_list<std::uint32_t>>;
+	using binding_to_written_descriptors_range_map = lib::flat_map<std::uint32_t, range_list<std::uint32_t>>;
 
 private:
 	vk::vk_descriptor_set set;
@@ -41,14 +41,14 @@ private:
 	/**
 	 *	@brief	Creates the resource copy information to copy bindings from another binding sets.
 	 */
-	std::vector<vk::vk_descriptor_set_copy_resources> create_descriptor_set_copy_information(const pipeline_binding_set_impl &o) {
+	lib::vector<vk::vk_descriptor_set_copy_resources> create_descriptor_set_copy_information(const pipeline_binding_set_impl &o) {
 		const auto& dst_bindings = layout.get();
 		const auto& src_bindings = o.layout.get();
 
 		auto binds_to_copy = std::min(src_bindings.size(), dst_bindings.size());
 
 		// Allocate memory for copy descriptors
-		std::vector<vk::vk_descriptor_set_copy_resources> copies;
+		lib::vector<vk::vk_descriptor_set_copy_resources> copies;
 		copies.reserve(binds_to_copy * 5);
 
 		// Create copy descriptors
@@ -147,7 +147,7 @@ public:
 	/**
 	 *	@brief	Updates binding set resource bindings
 	 */
-	void write(const std::vector<vk::vk_descriptor_set_write_resource> &writes) {
+	void write(const lib::vector<vk::vk_descriptor_set_write_resource> &writes) {
 		set.write(writes);
 
 		for (auto &w : writes) {

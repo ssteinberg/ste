@@ -18,7 +18,7 @@
 #include <sampler.hpp>
 #include <framebuffer_object.hpp>
 
-#include <memory>
+#include <lib/unique_ptr.hpp>
 
 namespace ste {
 namespace graphics {
@@ -32,13 +32,13 @@ class fxaa_dispatchable : public gpu_dispatchable {
 private:
 	resource::resource_instance<resource::glsl_program> program;
 	Core::framebuffer_object fbo;
-	std::unique_ptr<Core::texture_2d> input;
+	lib::unique_ptr<Core::texture_2d> input;
 
 	ste_engine_control::framebuffer_resize_signal_type::connection_type resize_connection;
 
 private:
 	void resize(const glm::ivec2 &size) {
-		input = std::make_unique<Core::texture_2d>(gli::format::FORMAT_RGB16_SFLOAT_PACK16, ste::Core::texture_2d::size_type(size), 1);
+		input = lib::allocate_unique<Core::texture_2d>(gli::format::FORMAT_RGB16_SFLOAT_PACK16, ste::Core::texture_2d::size_type(size), 1);
 		fbo[0] = *input;
 
 		auto handle = input->get_texture_handle(*Core::sampler::sampler_linear_clamp());
@@ -47,7 +47,7 @@ private:
 	}
 
 public:
-	fxaa_dispatchable(const ste_engine_control &ctx) : program(ctx, std::vector<std::string>{ "fxaa.vert", "fxaa.frag" }) {
+	fxaa_dispatchable(const ste_engine_control &ctx) : program(ctx, lib::vector<lib::string>{ "fxaa.vert", "fxaa.frag" }) {
 		resize_connection = make_connection([=](ctx.signal_framebuffer_resize(), const glm::i32vec2 &size) {
 			resize(size);
 		});

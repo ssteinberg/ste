@@ -39,20 +39,20 @@ public:
 			if (size_attrib)	r.length = std::min(r.length, cs.start - r.start + cs.length);
 			if (italic_attrib)	r.length = std::min(r.length, ci.start - r.start + ci.length);
 
-			std::string style;
+			lib::string style;
 			if (color_attrib) 
-				style += "color:rgb(" + std::to_string(color_attrib->get().r) + "," + std::to_string(color_attrib->get().g) + "," + std::to_string(color_attrib->get().b) + ");";
+				style += "color:rgb(" + lib::to_string(color_attrib->get().r) + "," + lib::to_string(color_attrib->get().g) + "," + lib::to_string(color_attrib->get().b) + ");";
 			if (weight_attrib) 
-				style += "font-weight:" + std::to_string(weight_attrib->get()) + ";";
+				style += "font-weight:" + lib::to_string(weight_attrib->get()) + ";";
 			if (size_attrib) 
-				style += "font-size:" + std::to_string(size_attrib->get()) + "px;";
+				style += "font-size:" + lib::to_string(size_attrib->get()) + "px;";
 			if (italic_attrib) 
 				style += "font-style: italic;";
 
 			if (style.length()) {
-				std::string str_open_tag = "<span style=\"" + style + "\">";
+				lib::string str_open_tag = "<span style=\"" + style + "\">";
 				typename attributed_string_common<CharT>::string_type open_tag(str_open_tag.begin(), str_open_tag.end());
-				std::string str_end_tag = "</span>";
+				lib::string str_end_tag = "</span>";
 				typename attributed_string_common<CharT>::string_type end_tag(str_end_tag.begin(), str_end_tag.end());
 				pstr += open_tag + str.plain_string().substr(r.start, r.length) + end_tag;
 			}

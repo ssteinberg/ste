@@ -5,8 +5,8 @@
 
 #include <stdafx.hpp>
 
-#include <string>
-#include <deque>
+#include <lib/string.hpp>
+#include <lib::deque>
 #include <split.hpp>
 
 namespace ste {
@@ -14,11 +14,11 @@ namespace gl {
 
 class push_constant_path {
 private:
-	std::deque<std::string> path;
+	lib::deque<lib::string> path;
 
 public:
-	push_constant_path(const std::string &s)
-		: path(split<std::deque, std::front_insert_iterator>(s,
+	push_constant_path(const lib::string &s)
+		: path(split<lib::deque, std::front_insert_iterator>(s,
 															 '.',
 															 false))
 	{}
@@ -30,7 +30,7 @@ public:
 	 *	@brief	Attempts to step a level into the path. Consumes the level and returns it.
 	 *			Throws if path is empty
 	 */
-	std::string step_in() {
+	lib::string step_in() {
 		auto ret = path.back();
 		path.pop_back();
 		return ret;

@@ -11,7 +11,7 @@
 #include <pipeline_binding_set_impl.hpp>
 #include <pipeline_binding_layout.hpp>
 
-#include <vector>
+#include <lib/vector.hpp>
 #include <atomic>
 #include <ultimate.hpp>
 
@@ -26,7 +26,7 @@ class binding_set_pool_instance {
 
 public:
 	template <typename Layout>
-	using allocation_result_t = std::vector<_internal::pipeline_binding_set_impl<Layout>>;
+	using allocation_result_t = lib::vector<_internal::pipeline_binding_set_impl<Layout>>;
 	using release_func_t = std::function<void(void)>;
 
 private:
@@ -42,8 +42,8 @@ private:
 	/**
 	 *	@brief	Creates the Vulkan binding descriptors
 	 */
-	auto create_vk_bindings(const std::vector<const pipeline_binding_layout_interface*> &pool_bindings) {
-		std::vector<vk::vk_descriptor_set_layout_binding> vk_bindings;
+	auto create_vk_bindings(const lib::vector<const pipeline_binding_layout_interface*> &pool_bindings) {
+		lib::vector<vk::vk_descriptor_set_layout_binding> vk_bindings;
 		vk_bindings.reserve(pool_bindings.size());
 		for (auto &b : pool_bindings) {
 			vk_bindings.push_back(*b);
@@ -64,7 +64,7 @@ public:
 	binding_set_pool_instance(ctor,
 							  const vk::vk_logical_device &device,
 							  std::uint32_t max_sets,
-							  const std::vector<const pipeline_binding_layout_interface*> &pool_bindings,
+							  const lib::vector<const pipeline_binding_layout_interface*> &pool_bindings,
 							  Pool *parent,
 							  const Key &key)
 		: vk_pool(device,
@@ -82,8 +82,8 @@ public:
 	 *	@throws	vk_exception	On Vulkan exception
 	 */
 	template <typename Layout>
-	auto allocate(const std::vector<const Layout*> &layouts) {
-		std::vector<const vk::vk_descriptor_set_layout*> layouts_of_acquired_bindings_ptrs;
+	auto allocate(const lib::vector<const Layout*> &layouts) {
+		lib::vector<const vk::vk_descriptor_set_layout*> layouts_of_acquired_bindings_ptrs;
 		layouts_of_acquired_bindings_ptrs.reserve(layouts.size());
 		for (std::size_t i = 0; i < layouts.size(); ++i) {
 			auto &l = *layouts[i];
@@ -91,7 +91,7 @@ public:
 		}
 
 		// Allocate
-		std::vector<vk::vk_descriptor_set> sets = vk_pool.allocate_descriptor_sets(layouts_of_acquired_bindings_ptrs);
+		lib::vector<vk::vk_descriptor_set> sets = vk_pool.allocate_descriptor_sets(layouts_of_acquired_bindings_ptrs);
 
 		// Sets allocated successfully
 		allocated_sets += static_cast<std::uint32_t>(layouts.size());

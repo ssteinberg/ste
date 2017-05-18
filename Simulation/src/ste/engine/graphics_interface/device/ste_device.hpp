@@ -24,8 +24,8 @@
 
 #include <signal.hpp>
 
-#include <memory>
-#include <vector>
+#include <lib/unique_ptr.hpp>
+#include <lib/vector.hpp>
 #include <static_vector.hpp>
 #include <aligned_ptr.hpp>
 #include <allow_type_decay.hpp>
@@ -58,7 +58,7 @@ private:
 	// Synchronization primitive pools
 	aligned_ptr<ste_device_sync_primitives_pools> sync_primitives_pools;
 	// Presentation surface
-	const std::unique_ptr<ste_presentation_surface> presentation_surface{ nullptr };
+	const lib::unique_ptr<ste_presentation_surface> presentation_surface{ nullptr };
 
 	/*
 	 *	Queues
@@ -86,7 +86,7 @@ private:
 	static vk::vk_logical_device create_vk_virtual_device(const vk::vk_physical_device_descriptor &physical_device,
 														  const VkPhysicalDeviceFeatures &requested_features,
 														  const ste_queue_descriptors &queue_descriptors,
-														  std::vector<const char*> device_extensions = {});
+														  lib::vector<const char*> device_extensions = {});
 	static queues_t create_queues(const vk::vk_logical_device &device,
 								  const ste_queue_descriptors &queue_descriptors,
 								  ste_device_sync_primitives_pools *sync_primitives_pools);
@@ -118,7 +118,7 @@ public:
 										queue_descriptors,
 										parameters.additional_device_extensions)),
 		sync_primitives_pools(device),
-		presentation_surface(std::make_unique<ste_presentation_surface>(parameters,
+		presentation_surface(lib::allocate_unique<ste_presentation_surface>(parameters,
 																		&device,
 																		presentation_window,
 																		gl_ctx.instance())),
@@ -261,7 +261,7 @@ public:
 	/**
 	*	@brief	Human readable device name
 	*/
-	std::string name() const { return std::string(parameters.physical_device.properties.deviceName); }
+	lib::string name() const { return lib::string(parameters.physical_device.properties.deviceName); }
 
 	auto& get_queues_and_surface_recreate_signal() const { return queues_and_surface_recreate_signal; }
 

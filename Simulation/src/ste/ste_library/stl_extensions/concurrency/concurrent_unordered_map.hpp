@@ -13,7 +13,6 @@
 #include <vector>
 #include <bitset>
 
-#include <stdlib.h>
 #include <aligned_allocator.hpp>
 
 #include <shared_double_reference_guard.hpp>
@@ -22,10 +21,10 @@ namespace ste {
 
 template <
 	typename K, 
-	typename V, 
-	typename AlignedAllocator = aligned_allocator<V>,
-	typename Allocator = std::allocator<V>, 
-	int cache_line = 64
+	typename V,
+	int cache_line = 64,
+	typename AlignedAllocator = aligned_allocator<V, cache_line>,
+	typename Allocator = std::allocator<V>
 >
 class concurrent_unordered_map {
 private:
@@ -129,9 +128,10 @@ private:
 		double_ref_guard<resize_data_struct<buckets_ptr>> resize_ptr;
 
 		static hash_table_type alloc(unsigned size) {
-			auto b = AlignedAllocator::template rebind<virtual_bucket_type>::other().aligned_allocate(size, cache_line);
+			auto b = AlignedAllocator::template rebind<virtual_bucket_type>::other().allocate(size);
 			new (b) virtual_bucket_type[size];
 
+			assert(reinterpret_cast<std::size_t>(b) % static_cast<std::size_t>(cache_line) == 0 && "AlignedAllocator does not aligne properly!");
 			assert(b[0].buckets[0].is_lock_free() && "bucket_type not lock free");
 
 			return b;
@@ -143,7 +143,7 @@ private:
 
 			for (unsigned i = 0; i < size; ++i)
 				(&buckets[i])->~virtual_bucket_type();
-			AlignedAllocator::template rebind<virtual_bucket_type>::other().aligned_deallocate(buckets, size);
+			AlignedAllocator::template rebind<virtual_bucket_type>::other().deallocate(buckets, size);
 		}
 
 		buckets_ptr(unsigned size, hash_table_type table) : size(size), buckets(table) {}

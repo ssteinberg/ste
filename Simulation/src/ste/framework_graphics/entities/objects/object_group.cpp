@@ -15,8 +15,8 @@
 //	remove_all();
 //}
 //
-//void object_group::add_object(const std::shared_ptr<object> &obj) {
-//	auto connection = std::make_shared<signal_connection_type>(
+//void object_group::add_object(const lib::shared_ptr<object> &obj) {
+//	auto connection = lib::allocate_shared<signal_connection_type>(
 //		[this](object* obj) {
 //			this->signalled_objects.push_back(obj);
 //		}

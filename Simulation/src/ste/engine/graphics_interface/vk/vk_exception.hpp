@@ -17,7 +17,7 @@ class vk_exception : public std::runtime_error {
 
 public:
 	using Base::Base;
-	vk_exception(const vk_result &result) : Base(result.string()) {}
+	vk_exception(const vk_result &result) : Base(result.string().data()) {}
 };
 
 }

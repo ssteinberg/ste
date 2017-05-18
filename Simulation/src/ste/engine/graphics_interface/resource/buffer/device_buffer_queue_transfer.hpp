@@ -15,7 +15,7 @@
 #include <buffer_memory_barrier.hpp>
 
 #include <boundary.hpp>
-#include <memory>
+#include <lib/unique_ptr.hpp>
 
 namespace ste {
 namespace gl {
@@ -57,9 +57,9 @@ auto inline queue_transfer(const ste_context &ctx,
 
 	// Get a semaphore and boundary
 	using semaphore_t = ste_device_sync_primitives_pools::semaphore_pool_t::resource_t;
-	using user_data_t = std::shared_ptr<semaphore_t>;
-	auto user_data = std::make_shared<semaphore_t>(ctx.device().get_sync_primitives_pools().semaphores().claim());
-	auto release_acquire_boundary = std::make_shared<boundary<void>>();
+	using user_data_t = lib::shared_ptr<semaphore_t>;
+	auto user_data = lib::allocate_shared<semaphore_t>(ctx.device().get_sync_primitives_pools().semaphores().claim());
+	auto release_acquire_boundary = lib::allocate_shared<boundary<void>>();
 
 	src_queue.enqueue([=, &buffer]() {
 		auto release_batch = ste_device_queue::thread_allocate_batch<user_data_t>(user_data);

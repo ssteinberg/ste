@@ -6,17 +6,17 @@
 #include <stdafx.hpp>
 #include <pipeline_bind_point_base.hpp>
 
-#include <memory>
+#include <lib/unique_ptr.hpp>
 
 namespace ste {
 namespace gl {
 
 class pipeline_bind_point {
 private:
-	std::unique_ptr<pipeline_bind_point_base> point;
+	lib::unique_ptr<pipeline_bind_point_base> point;
 
 public:
-	pipeline_bind_point(std::unique_ptr<pipeline_bind_point_base> &&point) : point(std::move(point)) {}
+	pipeline_bind_point(lib::unique_ptr<pipeline_bind_point_base> &&point) : point(std::move(point)) {}
 	virtual ~pipeline_bind_point() noexcept {}
 
 	pipeline_bind_point(pipeline_bind_point&&) = default;

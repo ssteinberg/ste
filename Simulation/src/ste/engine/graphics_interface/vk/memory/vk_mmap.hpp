@@ -10,7 +10,7 @@
 #include <vk_mapped_memory_range.hpp>
 
 #include <functional>
-#include <vector>
+#include <lib/vector.hpp>
 
 namespace ste {
 namespace gl {
@@ -29,8 +29,8 @@ private:
 	std::uint64_t count;
 
 private:
-	auto vk_mapped_memory_ranges(const std::vector<vk_mapped_memory_range> &ranges) const {
-		std::vector<VkMappedMemoryRange> mapped_ranges;
+	auto vk_mapped_memory_ranges(const lib::vector<vk_mapped_memory_range> &ranges) const {
+		lib::vector<VkMappedMemoryRange> mapped_ranges;
 		mapped_ranges.resize(ranges.size());
 		for (int i = 0; i < ranges.size(); ++i) {
 			auto &r = ranges[i];
@@ -65,8 +65,8 @@ public:
 	/**
 	 *	@brief	Flushes mapped memory regions to make writes performed by the host visible to the device
 	 */
-	void flush_ranges(const std::vector<vk_mapped_memory_range> &ranges) const {
-		std::vector<VkMappedMemoryRange> mapped_ranges = vk_mapped_memory_ranges(ranges);
+	void flush_ranges(const lib::vector<vk_mapped_memory_range> &ranges) const {
+		lib::vector<VkMappedMemoryRange> mapped_ranges = vk_mapped_memory_ranges(ranges);
 
 		vk_result res = vkFlushMappedMemoryRanges(memory.get_creating_device(),
 												  mapped_ranges.size(),
@@ -79,8 +79,8 @@ public:
 	/**
 	*	@brief	Invalidates mapped memory ranges to make changes done by the device visible to the host
 	*/
-	void invalidate_ranges(const std::vector<vk_mapped_memory_range> &ranges) const {
-		std::vector<VkMappedMemoryRange> mapped_ranges = vk_mapped_memory_ranges(ranges);
+	void invalidate_ranges(const lib::vector<vk_mapped_memory_range> &ranges) const {
+		lib::vector<VkMappedMemoryRange> mapped_ranges = vk_mapped_memory_ranges(ranges);
 
 		vk_result res = vkInvalidateMappedMemoryRanges(memory.get_creating_device(),
 													   mapped_ranges.size(),

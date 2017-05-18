@@ -10,7 +10,7 @@ thread_local ste_device_queue::queue_index_t ste_device_queue::static_queue_inde
 
 void ste_device_queue::create_worker() {
 	auto idx = queue_index;
-	thread = std::make_unique<interruptible_thread>([this, idx]() {
+	thread = lib::allocate_unique<interruptible_thread>([this, idx]() {
 		// Set the thread_local globals to this thread's parameters
 		ste_device_queue::static_device_queue_ptr = this;
 		ste_device_queue::static_queue_ptr = &this->queue;

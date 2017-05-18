@@ -7,7 +7,7 @@
 #include <vertex_input_binding_descriptor.hpp>
 #include <vertex_attributes.hpp>
 
-#include <boost/container/flat_map.hpp>
+#include <lib/flat_map.hpp>
 #include <algorithm>
 
 namespace ste {
@@ -16,13 +16,13 @@ namespace gl {
 class pipeline_vertex_input_bindings_collection {
 public:
 	struct pipeline_vertex_input_bindings_descriptor {
-		std::vector<VkVertexInputBindingDescription> vertex_input_binding_descriptors;
-		std::vector<VkVertexInputAttributeDescription> vertex_input_attribute_descriptors;
+		lib::vector<VkVertexInputBindingDescription> vertex_input_binding_descriptors;
+		lib::vector<VkVertexInputAttributeDescription> vertex_input_attribute_descriptors;
 	};
 
 private:
 	using idx_t = std::uint32_t;
-	using map_t = boost::container::flat_map<idx_t, vertex_input_binding_descriptor>;
+	using map_t = lib::flat_map<idx_t, vertex_input_binding_descriptor>;
 
 private:
 	map_t collection;

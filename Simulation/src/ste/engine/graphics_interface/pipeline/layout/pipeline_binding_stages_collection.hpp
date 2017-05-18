@@ -8,7 +8,7 @@
 
 #include <initializer_list>
 
-#include <boost/container/flat_set.hpp>
+#include <lib/flat_set.hpp>
 
 namespace ste {
 namespace gl {
@@ -18,7 +18,7 @@ namespace gl {
 */
 class pipeline_binding_stages_collection {
 private:
-	boost::container::flat_set<ste_shader_program_stage> set;
+	lib::flat_set<ste_shader_program_stage> set;
 
 public:
 	pipeline_binding_stages_collection() = default;

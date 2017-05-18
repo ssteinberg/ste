@@ -25,7 +25,7 @@ private:
 		std::align(alignment, sizeof(value_type), p, space);
 
 		auto ptr = static_cast<value_type*>(p);
-		new (ptr) value_type(std::forward<Ts>(ts)...);
+		::new (ptr) value_type(std::forward<Ts>(ts)...);
 
 		return ptr;
 	}

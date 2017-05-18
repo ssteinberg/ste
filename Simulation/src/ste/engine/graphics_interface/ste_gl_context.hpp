@@ -14,7 +14,7 @@
 #include <ste_gl_context_creation_parameters.hpp>
 #include <ste_gl_debug_callback.hpp>
 
-#include <memory>
+#include <lib/unique_ptr.hpp>
 
 namespace ste {
 namespace gl {
@@ -22,18 +22,18 @@ namespace gl {
 class ste_gl_context {
 private:
 	vk::vk_instance vk;
-	std::unique_ptr<vk::vk_debug_report_callback> debug_report_handle;
+	lib::unique_ptr<vk::vk_debug_report_callback> debug_report_handle;
 
 private:
 	static auto vk_instance_validation_layers() {
-		return std::vector<const char*>{ "VK_LAYER_LUNARG_standard_validation" };
+		return lib::vector<const char*>{ "VK_LAYER_LUNARG_standard_validation" };
 	}
 
 	static auto create_vk_instance(const char* app_name,
 								   unsigned app_version,
 								   bool debug_context,
-								   std::vector<const char*> instance_extensions,
-								   std::vector<const char*> instance_layers) {
+								   lib::vector<const char*> instance_extensions,
+								   lib::vector<const char*> instance_layers) {
 		std::uint32_t count;
 		const char** extensions = glfwGetRequiredInstanceExtensions(&count);
 		for (unsigned i = 0; i < count; ++i)
@@ -59,7 +59,7 @@ private:
 
 	template <typename DebugCallback>
 	void setup_vk_debug_callback() {
-		debug_report_handle = std::make_unique<vk::vk_debug_report_callback>(vk,
+		debug_report_handle = lib::allocate_unique<vk::vk_debug_report_callback>(vk,
 																			 this,
 																			 [](VkDebugReportFlagsEXT        flags,
 																				VkDebugReportObjectTypeEXT   objectType,
@@ -77,7 +77,7 @@ private:
 
 public:
 	auto enumerate_physical_devices() {
-		std::vector<vk::vk_physical_device_descriptor> devices;
+		lib::vector<vk::vk_physical_device_descriptor> devices;
 
 		// Read device count
 		std::uint32_t count;
@@ -92,7 +92,7 @@ public:
 		// Enumerate devices
 		devices.resize(count);
 		{
-			std::unique_ptr<VkPhysicalDevice[]> t_devices_arr(new VkPhysicalDevice[count]);
+			lib::unique_ptr<VkPhysicalDevice[]> t_devices_arr(lib::allocator<VkPhysicalDevice>().allocate(count));
 			res = vkEnumeratePhysicalDevices(vk, &count, t_devices_arr.get());
 			if (!res) {
 				throw vk::vk_exception(res);
@@ -119,7 +119,7 @@ public:
 
 	auto enumerate_physical_devices(const VkPhysicalDeviceFeatures &requested_features,
 									std::uint64_t min_device_memory) {
-		std::vector<vk::vk_physical_device_descriptor> conforming_devices;
+		lib::vector<vk::vk_physical_device_descriptor> conforming_devices;
 
 		for (auto &d : enumerate_physical_devices()) {
 			// Check device memory

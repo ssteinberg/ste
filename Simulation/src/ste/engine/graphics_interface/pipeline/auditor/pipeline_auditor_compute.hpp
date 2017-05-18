@@ -14,7 +14,7 @@
 
 #include <device_pipeline_compute.hpp>
 
-#include <vector>
+#include <lib/vector.hpp>
 
 namespace ste {
 namespace gl {
@@ -79,8 +79,8 @@ private:
 	/**
 	*	@brief	Generates the list of pipeline stages
 	*/
-	std::vector<shader_stage_t> stages() const override final {
-		std::vector<shader_stage_t> stages;
+	lib::vector<shader_stage_t> stages() const override final {
+		lib::vector<shader_stage_t> stages;
 		if (compute_shader_stage != nullptr)
 			stages.push_back(compute_shader_stage);
 

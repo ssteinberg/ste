@@ -5,7 +5,7 @@
 
 #include <chrono>
 #include <future>
-#include <list>
+#include <lib/list.hpp>
 
 #include <type_traits>
 
@@ -13,7 +13,7 @@
 #include <thread_pool_task.hpp>
 
 #include <balanced_thread_pool.hpp>
-#include <concurrent_queue.hpp>
+#include <lib/concurrent_queue.hpp>
 #include <function_traits.hpp>
 
 namespace ste {
@@ -35,8 +35,8 @@ private:
 private:
 	pool_t pool;
 
-	concurrent_queue<delayed_task> delayed_tasks_queue;
-	std::list<delayed_task> delayed_tasks_list;
+	lib::concurrent_queue<delayed_task> delayed_tasks_queue;
+	lib::list<delayed_task> delayed_tasks_list;
 
 	void enqueue_delayed();
 

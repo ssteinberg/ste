@@ -18,7 +18,7 @@
 #include <texture_2d_array.hpp>
 #include <texture_3d.hpp>
 
-#include <memory>
+#include <lib/unique_ptr.hpp>
 
 
 //! TODO: Remove hack
@@ -40,18 +40,18 @@ private:
 	resource::resource_instance<resource::glsl_program> program;
 	gi_renderer *dr;
 
-	std::shared_ptr<connection<>> vss_storage_connection;
-	std::shared_ptr<connection<>> shadows_storage_connection;
+	lib::shared_ptr<connection<>> vss_storage_connection;
+	lib::shared_ptr<connection<>> shadows_storage_connection;
 
-	std::unique_ptr<Core::texture_2d> microfacet_refraction_fit_lut;
-	std::unique_ptr<Core::texture_2d_array> microfacet_transmission_fit_lut;
+	lib::unique_ptr<Core::texture_2d> microfacet_refraction_fit_lut;
+	lib::unique_ptr<Core::texture_2d_array> microfacet_transmission_fit_lut;
 
-	std::unique_ptr<Core::texture_2d_array> atmospherics_optical_length_lut;
-	std::unique_ptr<Core::texture_3d> atmospherics_scatter_lut;
-	std::unique_ptr<Core::texture_3d> atmospherics_mie0_scatter_lut;
-	std::unique_ptr<Core::texture_3d> atmospherics_ambient_lut;
+	lib::unique_ptr<Core::texture_2d_array> atmospherics_optical_length_lut;
+	lib::unique_ptr<Core::texture_3d> atmospherics_scatter_lut;
+	lib::unique_ptr<Core::texture_3d> atmospherics_mie0_scatter_lut;
+	lib::unique_ptr<Core::texture_3d> atmospherics_ambient_lut;
 
-	std::unique_ptr<Core::texture_2d> ltc_ggx_fit, ltc_ggx_amplitude;
+	lib::unique_ptr<Core::texture_2d> ltc_ggx_fit, ltc_ggx_amplitude;
 
 	resource::resource_instance<volumetric_scattering_scatter_dispatch> *additional_scatter_program_hack;
 

@@ -41,10 +41,10 @@ public:
 		newstr.add_attrib({ 0,newstr.length() }, *this);
 		return newstr;
 	}
-	attributed_string_common<char> operator()(const std::string &str) const;
-	attributed_string_common<char16_t> operator()(const std::u16string &str) const;
-	attributed_string_common<char32_t> operator()(const std::u32string &str) const;
-	attributed_string_common<wchar_t> operator()(const std::wstring &str) const;
+	attributed_string_common<char> operator()(const lib::string &str) const;
+	attributed_string_common<char16_t> operator()(const lib::u16string &str) const;
+	attributed_string_common<char32_t> operator()(const lib::u32string &str) const;
+	attributed_string_common<wchar_t> operator()(const lib::wstring &str) const;
 	attributed_string_common<char> operator()(const char* str) const;
 	attributed_string_common<char16_t> operator()(const char16_t* str) const;
 	attributed_string_common<char32_t> operator()(const char32_t* str) const;
@@ -443,7 +443,7 @@ static const italic i = italic();
 
 class link : public attrib {
 private:
-	using T = std::string;
+	using T = lib::string;
 	T l;
 
 #ifdef _DEBUG

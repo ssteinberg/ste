@@ -19,7 +19,7 @@
 
 #include <allow_type_decay.hpp>
 #include <functional>
-#include <string>
+#include <lib/string.hpp>
 
 namespace ste {
 namespace gl {
@@ -79,7 +79,7 @@ private:
 		stable_vector *v;
 
 	public:
-		stable_vector_cmd_push_back(const std::vector<T> &data_copy,
+		stable_vector_cmd_push_back(const lib::vector<T> &data_copy,
 									stable_vector *v)
 			: data_size(static_cast<std::uint64_t>(data_copy.size())),
 			update_cmd(buffer_view(v->buffer,
@@ -141,7 +141,7 @@ public:
 				 usage | buffer_usage_additional_flags)
 	{}
 	stable_vector(const ste_context &ctx,
-				  const std::vector<T> &initial_data,
+				  const lib::vector<T> &initial_data,
 				  const buffer_usage &usage)
 		: stable_vector(ctx, usage)
 	{
@@ -159,7 +159,7 @@ public:
 	*
 	*	@param	data	Data to push back
 	*/
-	auto push_back_cmd(const std::vector<T> &data) {
+	auto push_back_cmd(const lib::vector<T> &data) {
 		return stable_vector_cmd_push_back(data, this);
 	}
 	/**
@@ -195,7 +195,7 @@ public:
 	*	@param	data	Data to copy
 	*	@param	offset	Vector offset to copy to
 	*/
-	auto update_task(const std::vector<T> &data, std::uint64_t offset) {
+	auto update_task(const lib::vector<T> &data, std::uint64_t offset) {
 		// Store copy of data
 		blob bin(data);
 

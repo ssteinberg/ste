@@ -4,7 +4,7 @@
 #include <make_distance_map.hpp>
 
 #include <hash_combine.hpp>
-#include <unordered_map>
+#include <lib/unordered_map.hpp>
 #include <functional>
 
 #include <mutex>
@@ -13,6 +13,8 @@
 #include FT_FREETYPE_H
 
 #include <stdexcept>
+
+#include <lib/construct.hpp>
 
 using namespace ste::text;
 
@@ -74,7 +76,7 @@ public:
 class glyph_factory_font {
 private:
 	FT_Face face{ nullptr };
-	std::unordered_map<text_glyph_pair_key, int> spacing_cache;
+	lib::unordered_map<text_glyph_pair_key, int> spacing_cache;
 
 public:
 	glyph_factory_font(const font &font, FT_Library ft_lib) {
@@ -123,7 +125,7 @@ public:
 struct glyph_factory_impl {
 	std::mutex m;
 	glyph_factory_ft_lib lib;
-	std::unordered_map<font, glyph_factory_font> fonts;
+	lib::unordered_map<font, glyph_factory_font> fonts;
 
 	auto& get_factory_font(const font &font) {
 		auto it = fonts.find(font);
@@ -185,7 +187,7 @@ glyph glyph_factory::create_glyph(const font &font, wchar_t codepoint) const {
 	g.metrics.width = w;
 	g.metrics.height = h;
 
-	g.glyph_distance_field = std::make_unique<gli::texture2d>(gli::format::FORMAT_R32_SFLOAT_PACK32, glm::ivec2{ w, h }, 1);
+	g.glyph_distance_field = lib::allocate_unique<gli::texture2d>(gli::format::FORMAT_R32_SFLOAT_PACK32, glm::ivec2{ w, h }, 1);
 	make_distance_map(glyph_buf, w, h, reinterpret_cast<float*>(g.glyph_distance_field->data()));
 	delete[] glyph_buf;
 

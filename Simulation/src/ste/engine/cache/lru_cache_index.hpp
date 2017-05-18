@@ -14,13 +14,14 @@
 #include <Log.hpp>
 #include <attributed_string.hpp>
 
-#include <concurrent_unordered_map.hpp>
+#include <lib/concurrent_unordered_map.hpp>
 
-#include <boost_binary_ioarchive.hpp>
-#include <boost_serialization.hpp>
+#include <boost/archive/binary_iarchive.hpp> 
+#include <boost/archive/binary_oarchive.hpp> 
+#include <boost/serialization/list.hpp>
 
-#include <list>
-#include <string>
+#include <lib/list.hpp>
+#include <lib/string.hpp>
 #include <iostream>
 
 #include <exception>
@@ -48,21 +49,21 @@ private:
 		}
 
 		key_type k;
-		std::string name;
+		lib::string name;
 	};
 
 private:
-	using lru_list_type = std::list<lru_node>;
+	using lru_list_type = lib::list<lru_node>;
 	using lru_list_iterator_type = typename lru_list_type::const_iterator;
 	using val_type = lru_cache_cacheable<key_type, lru_list_iterator_type>;
 
-	using res_kv_map = concurrent_unordered_map<key_type, val_type>;
+	using res_kv_map = lib::concurrent_unordered_map<key_type, val_type>;
 	using val_data_guard = typename res_kv_map::value_data_guard_type;
 
 	lru_list_type lru_list;
 	res_kv_map map;
 
-	boost::filesystem::path index_path;
+	std::experimental::filesystem::path index_path;
 
 private:
 	friend class boost::serialization::access;
@@ -77,7 +78,7 @@ private:
 		oa << *this;
 	}
 
-	std::uint64_t populate_map(const boost::filesystem::path &path) {
+	std::uint64_t populate_map(const std::experimental::filesystem::path &path) {
 		std::uint64_t size = 0;
 		for (lru_list_iterator_type it = lru_list.begin(); it != lru_list.end(); ++it) {
 			auto &k = it->k;
@@ -90,8 +91,8 @@ private:
 		return size;
 	}
 
-	lru_cache_index(const boost::filesystem::path &path, std::atomic<std::uint64_t> &total_size) : index_path(path / index_file) {
-		if (boost::filesystem::exists(index_path)) {
+	lru_cache_index(const std::experimental::filesystem::path &path, std::atomic<std::uint64_t> &total_size) : index_path(path / index_file) {
+		if (std::experimental::filesystem::exists(index_path)) {
 			try {
 				std::ifstream ifs(index_path.string(), std::ios::binary);
 				boost::archive::binary_iarchive ia(ifs);
@@ -101,8 +102,8 @@ private:
 				using namespace text::Attributes;
 				ste_log_warn() << b("LRU Cache: ") + "Failed reading index (Reason: " + e.what() + "). Clearing " + i(path.string()) + "." << std::endl;
 
-				for (boost::filesystem::directory_iterator end_dir_it, it(path); it!=end_dir_it; ++it)
-					boost::filesystem::remove(it->path());
+				for (std::experimental::filesystem::directory_iterator end_dir_it, it(path); it!=end_dir_it; ++it)
+					std::experimental::filesystem::remove(it->path());
 			}
 		}
 	}

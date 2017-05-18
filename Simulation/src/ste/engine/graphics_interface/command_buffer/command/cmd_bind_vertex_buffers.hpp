@@ -8,7 +8,7 @@
 #include <device_buffer_base.hpp>
 #include <cassert>
 
-#include <vector>
+#include <lib/vector.hpp>
 
 namespace ste {
 namespace gl {
@@ -16,8 +16,8 @@ namespace gl {
 class cmd_bind_vertex_buffers : public command {
 private:
 	std::uint32_t first;
-	std::vector<VkBuffer> buffers;
-	std::vector<std::uint64_t> offsets;
+	lib::vector<VkBuffer> buffers;
+	lib::vector<std::uint64_t> offsets;
 
 public:
 	cmd_bind_vertex_buffers(std::uint32_t first_binding_index,
@@ -26,8 +26,8 @@ public:
 		: first(first_binding_index), buffers({ buffer.get_buffer_handle() }), offsets({ offset * buffer.get_element_size_bytes() })
 	{}
 	cmd_bind_vertex_buffers(std::uint32_t first_binding_index,
-							const std::vector<std::reference_wrapper<const device_buffer_base>> &buffers,
-							const std::vector<std::uint64_t> &offsets)
+							const lib::vector<std::reference_wrapper<const device_buffer_base>> &buffers,
+							const lib::vector<std::uint64_t> &offsets)
 		: first(first_binding_index)
 	{
 		assert(buffers.size() == offsets.size());

@@ -16,7 +16,7 @@
 
 #include <gstack.hpp>
 
-#include <memory>
+#include <lib/unique_ptr.hpp>
 
 namespace ste {
 namespace graphics {

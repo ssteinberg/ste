@@ -33,7 +33,7 @@ public:
 						const shadowmap_storage *shadow_map) : s(s),
 															   lights(lights),
 															   shadow_map(shadow_map),
-															   shadow_gen_program(ctx, std::vector<std::string>{ "shadow_cubemap.vert", "shadow_cubemap.geom" }) {}
+															   shadow_gen_program(ctx, lib::vector<lib::string>{ "shadow_cubemap.vert", "shadow_cubemap.geom" }) {}
 
 protected:
 	void set_context_state() const override final;

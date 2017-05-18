@@ -36,8 +36,8 @@ private:
 
 	resource::resource_instance<resource::glsl_program> light_preprocess_cull_lights_program;
 
-	std::shared_ptr<ResizeSignalConnectionType> resize_connection;
-	std::shared_ptr<ProjectionSignalConnectionType> projection_change_connection;
+	lib::shared_ptr<ResizeSignalConnectionType> resize_connection;
+	lib::shared_ptr<ProjectionSignalConnectionType> projection_change_connection;
 
 private:
 	void set_projection_planes() const;
@@ -46,10 +46,10 @@ private:
 	light_preprocessor(const ste_engine_control &ctx,
 					   light_storage *ls) : ctx(ctx), ls(ls),
 											light_preprocess_cull_lights_program(ctx, "light_preprocess_cull_lights.comp") {
-		resize_connection = std::make_shared<ResizeSignalConnectionType>([=](const glm::i32vec2 &size) {
+		resize_connection = lib::allocate_shared<ResizeSignalConnectionType>([=](const glm::i32vec2 &size) {
 			set_projection_planes();
 		});
-		projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([this](float, float, float n) {
+		projection_change_connection = lib::allocate_shared<ProjectionSignalConnectionType>([this](float, float, float n) {
 			set_projection_planes();
 		});
 		ctx.signal_framebuffer_resize().connect(resize_connection);

@@ -6,8 +6,8 @@
 #include <glyph.hpp>
 #include <font.hpp>
 
-#include <memory>
-#include <string>
+#include <lib/unique_ptr.hpp>
+#include <lib/string.hpp>
 
 namespace ste {
 namespace text {

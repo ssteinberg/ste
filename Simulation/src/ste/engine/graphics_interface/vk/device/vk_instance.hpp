@@ -11,8 +11,8 @@
 #include <vk_result.hpp>
 #include <vk_exception.hpp>
 
-#include <vector>
-#include <memory>
+#include <lib/vector.hpp>
+#include <lib/unique_ptr.hpp>
 #include <allow_type_decay.hpp>
 
 namespace ste {
@@ -23,14 +23,14 @@ namespace vk {
 class vk_instance : public allow_type_decay<vk_instance, VkInstance> {
 private:
 	VkInstance instance{ nullptr };
-	const std::vector<const char*> instance_extensions;
-	const std::vector<const char*> instance_layers;
+	const lib::vector<const char*> instance_extensions;
+	const lib::vector<const char*> instance_layers;
 
 public:
 	vk_instance(const char *app_name,
 				unsigned app_version,
-				const std::vector<const char*> &instance_extensions,
-				const std::vector<const char*> &instance_layers)
+				const lib::vector<const char*> &instance_extensions,
+				const lib::vector<const char*> &instance_layers)
 		: instance_extensions(instance_extensions), instance_layers(instance_layers)
 	{
 		VkApplicationInfo vk_app_info = {};

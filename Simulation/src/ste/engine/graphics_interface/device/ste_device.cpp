@@ -3,12 +3,13 @@
 #include <ste_device.hpp>
 #include <ste_device_exceptions.hpp>
 
+using namespace ste;
 using namespace ste::gl;
 
 vk::vk_logical_device ste_device::create_vk_virtual_device(const vk::vk_physical_device_descriptor &physical_device,
 														   const VkPhysicalDeviceFeatures &requested_features,
 														   const ste_queue_descriptors &queue_descriptors,
-														   std::vector<const char*> device_extensions) {
+														   lib::vector<const char*> device_extensions) {
 	if (queue_descriptors.size() == 0) {
 		throw ste_device_creation_exception("queue_descriptors is empty");
 	}

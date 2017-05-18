@@ -581,21 +581,6 @@
     <ClInclude Include="Simulation\src\ste\engine\ste_engine.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\external_includes\boost_binary_ioarchive.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\external_includes\boost_filesystem.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\external_includes\boost_flatmap.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\external_includes\boost_flatset.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\external_includes\boost_serialization.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\ste_engine_storage_protocol.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1815,6 +1800,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\ste_library\lib\shared_ptr.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\ste_library\lib\static_vector.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\ste_library\lib\construct.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -9,7 +9,7 @@
 
 #include <pipeline_layout.hpp>
 
-#include <string>
+#include <lib/string.hpp>
 #include <ste_type_traits.hpp>
 #include <types.hpp>
 
@@ -21,7 +21,7 @@ class pipeline_specialization_constant_bind_point : public pipeline_bind_point_b
 
 private:
 	pipeline_layout *layout;
-	std::string name;
+	lib::string name;
 
 private:
 	/**
@@ -43,7 +43,7 @@ private:
 public:
 	pipeline_specialization_constant_bind_point(const ste_shader_stage_variable *variable,
 												pipeline_layout *layout,
-												const std::string &name)
+												const lib::string &name)
 		: Base(variable),
 		layout(layout), 
 		name(name)

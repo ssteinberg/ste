@@ -10,8 +10,8 @@
 #include <algorithm>
 #include <functional>
 
-#include <boost_filesystem.hpp>
-#include <boost_flatset.hpp>
+#include <filesystem>
+#include <lib/flat_set.hpp>
 
 namespace ste {
 namespace graph {
@@ -22,7 +22,7 @@ class graph;
 namespace detail {
 
 template <typename T>
-using GraphSet = boost::container::flat_set<T>;
+using GraphSet = ste::lib::flat_set<T>;
 
 class graph_impl {
 	template <typename V, typename E>
@@ -35,10 +35,10 @@ public:
 private:
 	static bool write_dot(const GraphSet<VertexPtr> *vertices,
 						  const GraphSet<EdgePtr> *edges,
-						  const boost::filesystem::path &p);
+						  const std::experimental::filesystem::path &p);
 	static bool write_png(const GraphSet<VertexPtr> *vertices,
 						  const GraphSet<EdgePtr> *edges,
-						  const boost::filesystem::path &p);
+						  const std::experimental::filesystem::path &p);
 };
 
 }
@@ -173,12 +173,12 @@ public:
 	const auto &get_vertices() const { return vertices; }
 	const auto &get_edges() const { return edges; }
 
-	bool write_dot(const boost::filesystem::path &p) const {
+	bool write_dot(const std::experimental::filesystem::path &p) const {
 		return detail::graph_impl::write_dot(reinterpret_cast<const detail::GraphSet<detail::graph_impl::VertexPtr> *>(&vertices),
 											 reinterpret_cast<const detail::GraphSet<detail::graph_impl::EdgePtr> *>(&edges),
 											 p);
 	}
-	bool write_png(const boost::filesystem::path &p) const {
+	bool write_png(const std::experimental::filesystem::path &p) const {
 		return detail::graph_impl::write_png(reinterpret_cast<const detail::GraphSet<detail::graph_impl::VertexPtr> *>(&vertices),
 											 reinterpret_cast<const detail::GraphSet<detail::graph_impl::EdgePtr> *>(&edges),
 											 p);

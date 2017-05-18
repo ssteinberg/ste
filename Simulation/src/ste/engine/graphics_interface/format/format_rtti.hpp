@@ -9,7 +9,7 @@
 #include <format_type_traits.hpp>
 #include <image_aspect.hpp>
 
-#include <unordered_map>
+#include <lib/unordered_map.hpp>
 #include <optional.hpp>
 
 #include <stdexcept>
@@ -33,7 +33,7 @@ namespace _internal {
 
 class format_rtti_database {
 private:
-	static std::unordered_map<format, format_rtti> database;
+	static lib::unordered_map<format, format_rtti> database;
 
 public:
 	static optional<format_rtti> get(const format &format) {

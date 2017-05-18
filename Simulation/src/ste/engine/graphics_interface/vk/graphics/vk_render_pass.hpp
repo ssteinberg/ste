@@ -15,7 +15,7 @@
 
 #include <optional.hpp>
 
-#include <vector>
+#include <lib/vector.hpp>
 #include <allow_type_decay.hpp>
 
 namespace ste {
@@ -30,20 +30,20 @@ private:
 
 public:
 	vk_render_pass(const vk_logical_device &device,
-				   const std::vector<vk_render_pass_attachment> &attachments,
-				   const std::vector<vk_render_pass_subpass_descriptor> &subpasses,
-				   const std::vector<vk_render_pass_subpass_dependency> &subpass_dependencies = {}) : device(device) {
-		std::vector<VkAttachmentDescription> attachment_descriptors;
+				   const lib::vector<vk_render_pass_attachment> &attachments,
+				   const lib::vector<vk_render_pass_subpass_descriptor> &subpasses,
+				   const lib::vector<vk_render_pass_subpass_dependency> &subpass_dependencies = {}) : device(device) {
+		lib::vector<VkAttachmentDescription> attachment_descriptors;
 		attachment_descriptors.resize(attachments.size());
 		for (std::size_t i = 0; i < attachments.size(); ++i)
 			attachment_descriptors[i] = *(attachments.begin() + i);
 
-		std::vector<VkSubpassDependency> dependency_descriptors;
+		lib::vector<VkSubpassDependency> dependency_descriptors;
 		dependency_descriptors.resize(subpass_dependencies.size());
 		for (std::size_t i = 0; i < subpass_dependencies.size(); ++i)
 			dependency_descriptors[i] = *(subpass_dependencies.begin() + i);
 
-		std::vector<VkSubpassDescription> subpass_descriptors;
+		lib::vector<VkSubpassDescription> subpass_descriptors;
 		subpass_descriptors.resize(subpasses.size());
 		for (std::size_t i = 0; i < subpasses.size(); ++i) {
 			const auto &s = *(subpasses.begin() + i);

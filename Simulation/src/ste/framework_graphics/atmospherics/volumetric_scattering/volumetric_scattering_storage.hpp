@@ -13,7 +13,7 @@
 
 #include <linked_light_lists.hpp>
 
-#include <memory>
+#include <lib/unique_ptr.hpp>
 
 namespace ste {
 namespace graphics {
@@ -26,7 +26,7 @@ private:
 private:
 	Core::texture_2d *depth_map{ nullptr };
 	Core::texture_2d *downsampled_depth_map{ nullptr };
-	std::unique_ptr<Core::texture_3d> volume{ nullptr };
+	lib::unique_ptr<Core::texture_3d> volume{ nullptr };
 
 	Core::sampler volume_sampler;
 	Core::sampler_mipmapped depth_sampler;
@@ -53,7 +53,7 @@ public:
 						   s.y / tile_size,
 						   depth_tiles };
 
-		volume = std::make_unique<Core::texture_3d>(gli::format::FORMAT_RGBA16_SFLOAT_PACK16, size);
+		volume = lib::allocate_unique<Core::texture_3d>(gli::format::FORMAT_RGBA16_SFLOAT_PACK16, size);
 
 		storage_modified_signal.emit();
 	}

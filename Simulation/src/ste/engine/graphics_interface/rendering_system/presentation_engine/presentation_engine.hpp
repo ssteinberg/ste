@@ -20,7 +20,7 @@
 #include <condition_variable>
 #include <mutex>
 #include <atomic>
-#include <memory>
+#include <lib/unique_ptr.hpp>
 #include <aligned_ptr.hpp>
 #include <optional.hpp>
 #include <chrono>
@@ -53,7 +53,7 @@ private:
 	// Data shared between presentation threads
 	aligned_ptr<shared_data_t> shared_data;
 	// Presentation synchronization primitives
-	std::vector<image_presentation_sync_t> presentation_sync_primitives;
+	lib::vector<image_presentation_sync_t> presentation_sync_primitives;
 
 	ste_device::queues_and_surface_recreate_signal_type::connection_type surface_recreate_signal_connection;
 
@@ -61,7 +61,7 @@ private:
 	void create_presentation_fences_storage() {
 		auto count = device->get_swap_chain_images_count();
 
-		std::vector<image_presentation_sync_t> v;
+		lib::vector<image_presentation_sync_t> v;
 		v.reserve(count);
 		for (std::uint32_t i = 0; i < count; ++i) {
 			image_presentation_sync_t sync_object = {
@@ -95,7 +95,7 @@ private:
 		// Acquire a couple of semaphores and a fence
 		auto semaphores = presentation_engine_sync_semaphores(device->get_sync_primitives_pools().semaphores().claim(),
 															  device->get_sync_primitives_pools().semaphores().claim());
-		auto fence = std::make_shared<batch_fence_ptr_t::element_type>(device->get_sync_primitives_pools().shared_fences().claim());
+		auto fence = lib::allocate_shared<batch_fence_ptr_t::element_type>(device->get_sync_primitives_pools().shared_fences().claim());
 
 		// Wait for outstanding presentations
 		auto max_outstanding = std::min<std::uint32_t>(max_frame_lag,
@@ -129,9 +129,9 @@ private:
 	}
 
 	template <typename BatchUserData>
-	void internal_submit_and_present(std::unique_ptr<device_queue_presentation_batch<BatchUserData>> &&presentation_batch,
-									 const std::vector<wait_semaphore> &wait_semaphores,
-									 const std::vector<const semaphore*> &signal_semaphores) {
+	void internal_submit_and_present(lib::unique_ptr<device_queue_presentation_batch<BatchUserData>> &&presentation_batch,
+									 const lib::vector<wait_semaphore> &wait_semaphores,
+									 const lib::vector<const semaphore*> &signal_semaphores) {
 		if (!ste_device_queue::is_queue_thread()) {
 			throw ste_device_not_queue_thread_exception();
 		}
@@ -249,9 +249,9 @@ public:
 	*	@param signal_semaphores	See vk_queue::submit
 	*/
 	template <typename BatchUserData>
-	void submit_and_present(std::unique_ptr<device_queue_presentation_batch<BatchUserData>> &&presentation_batch,
-							const std::vector<wait_semaphore> &wait_semaphores = {},
-							const std::vector<const semaphore*> &signal_semaphores = {}) {
+	void submit_and_present(lib::unique_ptr<device_queue_presentation_batch<BatchUserData>> &&presentation_batch,
+							const lib::vector<wait_semaphore> &wait_semaphores = {},
+							const lib::vector<const semaphore*> &signal_semaphores = {}) {
 		internal_submit_and_present(std::move(presentation_batch),
 									wait_semaphores,
 									signal_semaphores);

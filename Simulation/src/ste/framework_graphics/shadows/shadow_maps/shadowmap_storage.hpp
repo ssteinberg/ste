@@ -26,11 +26,11 @@ class shadowmap_storage {
 
 private:
 	glm::uvec2 cube_size;
-	std::unique_ptr<Core::texture_cube_map_array> shadow_depth_cube_maps;
+	lib::unique_ptr<Core::texture_cube_map_array> shadow_depth_cube_maps;
 	Core::framebuffer_object shadow_depth_cube_map_fbo;
 
 	glm::uvec2 directional_map_size;
-	std::unique_ptr<Core::texture_2d_array> directional_shadow_maps;
+	lib::unique_ptr<Core::texture_2d_array> directional_shadow_maps;
 	Core::framebuffer_object directional_shadow_maps_fbo;
 
 	Core::sampler shadow_depth_sampler;
@@ -52,7 +52,7 @@ public:
 	}
 
 	void set_cube_count(std::size_t size) {
-		shadow_depth_cube_maps = std::make_unique<Core::texture_cube_map_array>(gli::format::FORMAT_D32_SFLOAT_PACK32, glm::ivec3{ cube_size.x, cube_size.y, size * 6 });
+		shadow_depth_cube_maps = lib::allocate_unique<Core::texture_cube_map_array>(gli::format::FORMAT_D32_SFLOAT_PACK32, glm::ivec3{ cube_size.x, cube_size.y, size * 6 });
 		shadow_depth_cube_map_fbo.depth_binding_point() = *shadow_depth_cube_maps;
 
 		storage_modified_signal.emit();
@@ -60,7 +60,7 @@ public:
 	auto get_cube_count() const { return shadow_depth_cube_maps->get_layers(); }
 
 	void set_directional_maps_count(std::size_t size) {
-		directional_shadow_maps = std::make_unique<Core::texture_2d_array>(gli::format::FORMAT_D32_SFLOAT_PACK32, glm::ivec3{ directional_map_size.x, directional_map_size.y, size * directional_light_cascades });
+		directional_shadow_maps = lib::allocate_unique<Core::texture_2d_array>(gli::format::FORMAT_D32_SFLOAT_PACK32, glm::ivec3{ directional_map_size.x, directional_map_size.y, size * directional_light_cascades });
 		directional_shadow_maps_fbo.depth_binding_point() = *directional_shadow_maps;
 
 		storage_modified_signal.emit();

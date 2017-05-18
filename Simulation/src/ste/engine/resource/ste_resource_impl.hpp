@@ -9,7 +9,7 @@
 #include <ste_resource_creation_policy.hpp>
 
 #include <type_traits>
-#include <memory>
+#include <lib/unique_ptr.hpp>
 #include <atomic>
 #include <forward_capture.hpp>
 #include <tuple_call.hpp>
@@ -267,8 +267,8 @@ public:
 
 // Deferred resource loader impl for unique_ptr wrapped types
 template <typename T, class resource_deferred_policy>
-struct ste_resource_deferred_ptr_wrap : public ste_resource_base_deferred<std::unique_ptr<T>, resource_deferred_policy> {
-	using Base = ste_resource_base_deferred<std::unique_ptr<T>, resource_deferred_policy>;
+struct ste_resource_deferred_ptr_wrap : public ste_resource_base_deferred<lib::unique_ptr<T>, resource_deferred_policy> {
+	using Base = ste_resource_base_deferred<lib::unique_ptr<T>, resource_deferred_policy>;
 
 	template <typename ... Params>
 	using ctor = ste_resource_is_constructible<T, Params...>;
@@ -283,7 +283,7 @@ private:
 				pack = forward_capture_pack(ctx)]() mutable
 		{
 			ste_resource_creator<T> creator;
-			auto res_ptr = std::make_unique<T>(tuple_call(&creator,
+			auto res_ptr = lib::allocate_unique<T>(tuple_call(&creator,
 														  &ste_resource_creator<T>::template operator() < const ste_context & > ,
 														  std::move(pack)));
 			return std::move(res_ptr);
@@ -295,7 +295,7 @@ private:
 		return ([this]() mutable
 		{
 			ste_resource_creator<T> creator;
-			auto res_ptr = std::make_unique<T>(creator());
+			auto res_ptr = lib::allocate_unique<T>(creator());
 			return std::move(res_ptr);
 		});
 	}
@@ -313,7 +313,7 @@ private:
 				pack = forward_capture_pack(ctx, std::forward<Params>(params)...)]() mutable
 		{
 			ste_resource_creator<T> creator;
-			auto res_ptr = std::make_unique<T>(tuple_call(&creator,
+			auto res_ptr = lib::allocate_unique<T>(tuple_call(&creator,
 														  &ste_resource_creator<T>::template operator() < const ste_context &, Params... > ,
 														  std::move(pack)));
 			return std::move(res_ptr);
@@ -328,7 +328,7 @@ private:
 				pack = forward_capture_pack(std::forward<Params>(params)...)]() mutable
 		{
 			ste_resource_creator<T> creator;
-			auto res_ptr = std::make_unique<T>(tuple_call(&creator,
+			auto res_ptr = lib::allocate_unique<T>(tuple_call(&creator,
 														  &ste_resource_creator<T>::template operator() < Params... > ,
 														  std::move(pack)));
 			return std::move(res_ptr);
@@ -361,21 +361,21 @@ public:
 	ste_resource_deferred_ptr_wrap(ste_resource_dont_defer,
 								   Params&&... params)
 		: Base(ste_resource_dont_defer(),
-			   std::make_unique<T>(std::forward<Params>(params)...))
+			   lib::allocate_unique<T>(std::forward<Params>(params)...))
 	{}
 	template <typename L>
 	ste_resource_deferred_ptr_wrap(ste_resource_create_with_lambda,
 								   const ste_context &ctx,
 								   L&& l)
 		: Base(ctx,
-			   [l = std::forward<L>(l)]() mutable { return std::make_unique<T>(l()); })
+			   [l = std::forward<L>(l)]() mutable { return lib::allocate_unique<T>(l()); })
 	{}
 	template <typename L>
 	ste_resource_deferred_ptr_wrap(ste_resource_create_with_lambda,
 								   ste_resource_dont_defer,
 								   L&& l)
 		: Base(ste_resource_dont_defer(),
-			   std::make_unique<T>(l()))
+			   lib::allocate_unique<T>(l()))
 	{}
 
 	ste_resource_deferred_ptr_wrap(ste_resource_deferred_ptr_wrap&&) = default;

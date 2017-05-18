@@ -12,10 +12,10 @@
 
 namespace ste {
 
-template <typename T, template <class> typename Allocator = std::allocator>
+template <typename T, typename Allocator = std::allocator<T>>
 class static_vector {
 public:
-	using allocator_type = Allocator<T>;
+	using allocator_type = Allocator;
 	using value_type = typename allocator_type::value_type;
 	using reference = typename allocator_type::reference;
 	using const_reference = typename allocator_type::const_reference;
@@ -137,11 +137,11 @@ private:
 private:
 	storage_t* storage{ nullptr };
 	// Use std::vector<bool> efficient specialization
-	std::vector<bool, Allocator<bool>> allocated;
+	std::vector<bool, typename Allocator::template rebind<bool>::other> allocated;
 
 public:
 	static_vector(size_type size)
-		: storage(Allocator<storage_t>().allocate(storage_elements(size)))
+		: storage(Allocator::template rebind<storage_t>::other().allocate(storage_elements(size)))
 	{
 		allocated.resize(size, false);
 	}
@@ -162,8 +162,7 @@ public:
 		}
 
 		auto n = storage_elements(size());
-
-		Allocator<storage_t>().deallocate(storage, n);
+		Allocator::template rebind<storage_t>::other().deallocate(storage, n);
 	}
 
 	static_vector(static_vector &&o) noexcept : storage(o.storage), allocated(std::move(o.allocated)) {

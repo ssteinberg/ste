@@ -9,15 +9,16 @@
 
 #pragma once
 
-#include <boost_binary_ioarchive.hpp>
+#include <boost/archive/basic_binary_iarchive.hpp>
+#include <boost/archive/basic_binary_oarchive.hpp>
 
-#include <boost_filesystem.hpp>
+#include <filesystem>
 
-#include <string>
-#include <iostream>
+#include <lib/string.hpp>
+#include <fstream>
 #include <chrono>
 #include <atomic>
-#include <memory>
+#include <lib/unique_ptr.hpp>
 #include <optional.hpp>
 
 namespace ste {
@@ -32,29 +33,29 @@ private:
 	lru_iterator_type lru_it;
 	std::atomic<bool> live{ false };
 
-	boost::filesystem::path f;
+	std::experimental::filesystem::path f;
 
 public:
 	lru_cache_cacheable() = default;
 	lru_cache_cacheable(const K &k,
-						const boost::filesystem::path &path) : lru_cache_cacheable() {
+						const std::experimental::filesystem::path &path) : lru_cache_cacheable() {
 		using namespace std::chrono;
 		auto tp = duration_cast<nanoseconds>(high_resolution_clock::now().time_since_epoch());
-		auto name = std::to_string(tp.count()) + archive_extension;
+		auto name = lib::to_string(tp.count()) + archive_extension;
 
 		f = path / name;
 		key = k;
 	}
 	lru_cache_cacheable(const K &k,
-						const boost::filesystem::path &path,
-						const boost::filesystem::path &file_name) : lru_cache_cacheable() {
+						const std::experimental::filesystem::path &path,
+						const std::experimental::filesystem::path &file_name) : lru_cache_cacheable() {
 		f = path / file_name;
 		key = k;
 	}
 	~lru_cache_cacheable() noexcept {
 		if (!f.empty() && !live.load(std::memory_order_acquire)) {
-			boost::system::error_code err;
-			boost::filesystem::remove(f, err);
+			std::error_code err;
+			std::experimental::filesystem::remove(f, err);
 		}
 	}
 
@@ -81,8 +82,8 @@ public:
 		lru_it = it;
 		live.store(true, std::memory_order_release);
 
-		boost::system::error_code err;
-		size = static_cast<std::uint64_t>(boost::filesystem::file_size(f, err));
+		std::error_code err;
+		size = static_cast<std::uint64_t>(std::experimental::filesystem::file_size(f, err));
 	}
 	void mark_for_deletion() {
 		live.store(false, std::memory_order_release);
@@ -91,22 +92,22 @@ public:
 	const K &get_k() const { return key; }
 	auto get_size() const { return size; }
 	lru_iterator_type& get_lru_it() { return lru_it; }
-	boost::filesystem::path get_file_name() const { return f.filename(); }
+	std::experimental::filesystem::path get_file_name() const { return f.filename(); }
 
 	template <typename V>
 	void archive(V &&v) {
 		{
-			std::ofstream ofs(f.string(), std::ios::binary);
+			std::ofstream ofs(f, std::ios::binary);
 			boost::archive::binary_oarchive oa(ofs);
 			oa << std::forward<V>(v);
 		}
 
-		boost::system::error_code err;
-		size = boost::filesystem::file_size(f, err);
+		std::error_code err;
+		size = std::experimental::filesystem::file_size(f, err);
 	}
 	template <typename V>
 	optional<V> unarchive() const {
-		std::ifstream ifs(f.string(), std::ios::binary);
+		std::ifstream ifs(f, std::ios::binary);
 		if (ifs) {
 			boost::archive::binary_iarchive ia(ifs);
 			V v;

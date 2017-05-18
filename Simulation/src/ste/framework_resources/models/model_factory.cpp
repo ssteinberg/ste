@@ -13,7 +13,7 @@
 //
 //#include <normal_map_from_height_map.hpp>
 //
-//#include <string>
+//#include <lib/string.hpp>
 //#include <algorithm>
 //
 //using namespace ste::resource;
@@ -28,12 +28,12 @@
 //														graphics::object_group *object_group,
 //														materials_type &materials,
 //														texture_map_type &textures,
-//									 					std::vector<std::unique_ptr<graphics::material>> &loaded_materials,
-//														std::vector<std::unique_ptr<graphics::material_layer>> &loaded_material_layers,
-//									 					std::vector<std::shared_ptr<graphics::object>> *loaded_objects) {
-//	std::vector<object_vertex_data> vbo_data;
-//	std::vector<std::uint32_t> vbo_indices;
-//	std::vector<std::pair<glm::vec3, glm::vec3>> nt;
+//									 					lib::vector<lib::unique_ptr<graphics::material>> &loaded_materials,
+//														lib::vector<lib::unique_ptr<graphics::material_layer>> &loaded_material_layers,
+//									 					lib::vector<lib::shared_ptr<graphics::object>> *loaded_objects) {
+//	lib::vector<object_vertex_data> vbo_data;
+//	lib::vector<std::uint32_t> vbo_indices;
+//	lib::vector<std::pair<glm::vec3, glm::vec3>> nt;
 //
 //	unsigned vertices = shape.mesh.positions.size() / 3;
 //	unsigned tc_stride = shape.mesh.texcoords.size() / vertices;
@@ -115,14 +115,14 @@
 //
 //	// TODO: Fix
 //	return sched->schedule_now/*_on_main_thread*/([=, vbo_data = std::move(vbo_data), vbo_indices = std::move(vbo_indices), &loaded_materials, &loaded_material_layers, &textures, &material]() {
-//		std::shared_ptr<Core::texture_2d> diff_map = mat_idx >= 0 ? textures[material.diffuse_texname] : nullptr;
-//		std::shared_ptr<Core::texture_2d> opacity_map = mat_idx >= 0 ? textures[material.alpha_texname] : nullptr;
-//		std::shared_ptr<Core::texture_2d> specular_map = mat_idx >= 0 ? textures[material.specular_texname] : nullptr;
-//		std::shared_ptr<Core::texture_2d> normalmap = mat_idx >= 0 ? textures[material.bump_texname] : nullptr;
-//		std::shared_ptr<Core::texture_2d> roughness_map = mat_idx >= 0 ? textures[material.unknown_parameter[roughness_map_key]] : nullptr;
-//		std::shared_ptr<Core::texture_2d> metallic_map = mat_idx >= 0 ? textures[material.unknown_parameter[metallic_map_key]] : nullptr;
-//		std::shared_ptr<Core::texture_2d> anisotropy_map = mat_idx >= 0 ? textures[material.unknown_parameter[anisotropy_map_key]] : nullptr;
-//		std::shared_ptr<Core::texture_2d> thickness_map = mat_idx >= 0 ? textures[material.unknown_parameter[thickness_map_key]] : nullptr;
+//		lib::shared_ptr<Core::texture_2d> diff_map = mat_idx >= 0 ? textures[material.diffuse_texname] : nullptr;
+//		lib::shared_ptr<Core::texture_2d> opacity_map = mat_idx >= 0 ? textures[material.alpha_texname] : nullptr;
+//		lib::shared_ptr<Core::texture_2d> specular_map = mat_idx >= 0 ? textures[material.specular_texname] : nullptr;
+//		lib::shared_ptr<Core::texture_2d> normalmap = mat_idx >= 0 ? textures[material.bump_texname] : nullptr;
+//		lib::shared_ptr<Core::texture_2d> roughness_map = mat_idx >= 0 ? textures[material.unknown_parameter[roughness_map_key]] : nullptr;
+//		lib::shared_ptr<Core::texture_2d> metallic_map = mat_idx >= 0 ? textures[material.unknown_parameter[metallic_map_key]] : nullptr;
+//		lib::shared_ptr<Core::texture_2d> anisotropy_map = mat_idx >= 0 ? textures[material.unknown_parameter[anisotropy_map_key]] : nullptr;
+//		lib::shared_ptr<Core::texture_2d> thickness_map = mat_idx >= 0 ? textures[material.unknown_parameter[thickness_map_key]] : nullptr;
 //		
 //		auto layer = scene_properties->material_layers_storage().allocate_layer();
 //		auto mat = scene_properties->materials_storage().allocate_material(layer.get());
@@ -137,11 +137,11 @@
 ////		if (anisotropy_map != nullptr)	layer->set_anisotropy(anisotropy_map);
 //		if (thickness_map != nullptr)	layer->set_layer_thickness(thickness_map);
 //
-//		std::unique_ptr<graphics::mesh<graphics::mesh_subdivion_mode::Triangles>> m = std::make_unique<graphics::mesh<graphics::mesh_subdivion_mode::Triangles>>();
+//		lib::unique_ptr<graphics::mesh<graphics::mesh_subdivion_mode::Triangles>> m = lib::allocate_unique<graphics::mesh<graphics::mesh_subdivion_mode::Triangles>>();
 //		m->set_indices(std::move(vbo_indices));
 //		m->set_vertices(std::move(vbo_data));
 //
-//		std::shared_ptr<graphics::object> obj = std::make_shared<graphics::object>(std::move(m));
+//		lib::shared_ptr<graphics::object> obj = lib::allocate_shared<graphics::object>(std::move(m));
 //		obj->set_material(mat.get());
 //
 //		object_group->add_object(obj);
@@ -153,24 +153,24 @@
 //}
 //
 //ste::task_future<void> model_factory::load_texture(task_scheduler* sched,
-//												  const std::string &name,
+//												  const lib::string &name,
 //												  bool srgb,
 //												  bool displacement,
 //												  texture_map_type *texmap,
-//												  const boost::filesystem::path &dir,
+//												  const std::experimental::filesystem::path &dir,
 //												  float normal_map_bias) {
 //	return sched->schedule_now([=]() {
-//		std::string normalized_name = name;
+//		lib::string normalized_name = name;
 //		std::replace(normalized_name.begin(), normalized_name.end(), '\\', '/');
-//		boost::filesystem::path full_path = dir / boost::filesystem::path(normalized_name).make_preferred();
+//		std::experimental::filesystem::path full_path = dir / std::experimental::filesystem::path(normalized_name).make_preferred();
 //
 //		gli::texture2d tex = surface_factory::load_surface_2d(full_path, srgb);
 //		if (tex.empty())
 //			ste_log_warn() << "Couldn't load texture " << full_path.string() << std::endl;
 //
-//		return std::make_unique<gli::texture2d>(std::move(tex));
+//		return lib::allocate_unique<gli::texture2d>(std::move(tex));
 //		// TODO: Fix
-//	}).then/*_on_main_thread*/([=](std::unique_ptr<gli::texture2d> &&tex) {
+//	}).then/*_on_main_thread*/([=](lib::unique_ptr<gli::texture2d> &&tex) {
 //		bool is_displacement_map = displacement;
 //
 //		if (tex->empty()) {
@@ -191,22 +191,22 @@
 //
 //		if (is_displacement_map) {
 //			auto nm = normal_map_from_height_map<gli::FORMAT_R8_UNORM_PACK8, false>()(*tex, normal_map_bias);
-//			(*texmap)[name] = std::make_shared<Core::texture_2d>(std::move(nm), true);
+//			(*texmap)[name] = lib::allocate_shared<Core::texture_2d>(std::move(nm), true);
 //		}
 //		else
-//			(*texmap)[name] = std::make_shared<Core::texture_2d>(*tex, true);
+//			(*texmap)[name] = lib::allocate_shared<Core::texture_2d>(*tex, true);
 //	});
 //}
 //
-//std::vector<ste::task_future<void>> model_factory::load_textures(task_scheduler* sched,
+//lib::vector<ste::task_future<void>> model_factory::load_textures(task_scheduler* sched,
 //														 		shapes_type &shapes,
 //														 		materials_type &materials,
 //														 		texture_map_type &tex_map,
-//														 		const boost::filesystem::path &dir,
+//														 		const std::experimental::filesystem::path &dir,
 //														 		float normal_map_bias) {
-//	tex_map.emplace(std::make_pair(std::string(""), std::shared_ptr<Core::texture_2d>(nullptr)));
+//	tex_map.emplace(std::make_pair(lib::string(""), lib::shared_ptr<Core::texture_2d>(nullptr)));
 //
-//	std::vector<ste::task_future<void>> futures;
+//	lib::vector<ste::task_future<void>> futures;
 //	for (auto &shape : shapes) {
 //		int mat_idx = shape.mesh.material_ids.size() > 0 ? shape.mesh.material_ids[0] : -1;
 //		if (mat_idx < 0)
@@ -225,7 +225,7 @@
 //				bool srgb = str == materials[mat_idx].diffuse_texname;
 //				bool displacement = str == materials[mat_idx].displacement_texname;
 //
-//				tex_map.emplace(std::make_pair(str, std::shared_ptr<Core::texture_2d>(nullptr)));
+//				tex_map.emplace(std::make_pair(str, lib::shared_ptr<Core::texture_2d>(nullptr)));
 //				futures.push_back(load_texture(sched,
 //											   str,
 //											   srgb,
@@ -246,25 +246,25 @@
 //}
 //
 //ste::task_future<void> model_factory::load_model_async(const ste_engine_control &ctx,
-//													  const boost::filesystem::path &file_path,
+//													  const std::experimental::filesystem::path &file_path,
 //													  object_group *object_group,
 //													  graphics::scene_properties *scene_properties,
 //													  float normal_map_bias,
-//													  std::vector<std::unique_ptr<graphics::material>> &loaded_materials,
-//													  std::vector<std::unique_ptr<graphics::material_layer>> &loaded_material_layers,
-//													  std::vector<std::shared_ptr<graphics::object>> *loaded_objects) {
+//													  lib::vector<lib::unique_ptr<graphics::material>> &loaded_materials,
+//													  lib::vector<lib::unique_ptr<graphics::material_layer>> &loaded_material_layers,
+//													  lib::vector<lib::shared_ptr<graphics::object>> *loaded_objects) {
 //	return ctx.scheduler().schedule_now([=, &loaded_materials, &loaded_material_layers, &ctx]() {
-//		std::unique_ptr<texture_map_type> textures = std::make_unique<texture_map_type>();
+//		lib::unique_ptr<texture_map_type> textures = lib::allocate_unique<texture_map_type>();
 //
 //		auto path_string = file_path.string();
 //		ste_log() << "Loading OBJ model " << path_string << std::endl;
 //
-//		std::string dir = { path_string.begin(), std::find_if(path_string.rbegin(), path_string.rend(), [](char c) { return c == '/' || c == '\\'; }).base() };
+//		lib::string dir = { path_string.begin(), std::find_if(path_string.rbegin(), path_string.rend(), [](char c) { return c == '/' || c == '\\'; }).base() };
 //
 //		shapes_type shapes;
 //		materials_type materials;
 //
-//		std::string err;
+//		lib::string err;
 //		if (!tinyobj::LoadObj(shapes, materials, err, path_string.c_str(), dir.c_str(), true)) {
 //			ste_log_error() << "Couldn't load model " << path_string << ": " << err;
 //			throw resource_io_error("Could not load/parse model");
@@ -276,7 +276,7 @@
 //		}
 //
 //		{
-//			std::vector<ste::task_future<void>> futures;
+//			lib::vector<ste::task_future<void>> futures;
 //			for (auto &shape : shapes)
 //				futures.push_back(process_model_mesh(&ctx.scheduler(),
 //													 scene_properties,
@@ -293,7 +293,7 @@
 //		}
 //
 //		return textures;
-//	}).then/*_on_main_thread*/([](std::unique_ptr<texture_map_type> &&textures) {
+//	}).then/*_on_main_thread*/([](lib::unique_ptr<texture_map_type> &&textures) {
 //		textures = nullptr;
 //	});
 //}

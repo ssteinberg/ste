@@ -11,7 +11,7 @@
 #include <image_layout.hpp>
 #include <format_rtti.hpp>
 
-#include <vector>
+#include <lib/vector.hpp>
 
 namespace ste {
 namespace gl {
@@ -22,13 +22,13 @@ private:
 	std::reference_wrapper<const device_image_base> dst_image;
 	image_layout layout;
 
-	std::vector<VkBufferImageCopy> ranges;
+	lib::vector<VkBufferImageCopy> ranges;
 
 public:
 	cmd_copy_buffer_to_image(const device_buffer_base &src_buffer,
 							 const device_image_base &dst_image,
 							 const image_layout &layout,
-							 const std::vector<VkBufferImageCopy> &ranges = {})
+							 const lib::vector<VkBufferImageCopy> &ranges = {})
 		: src_buffer(src_buffer), dst_image(dst_image), layout(layout), ranges(ranges)
 	{
 		if (this->ranges.size() == 0) {

@@ -13,7 +13,7 @@
 
 #include <optional.hpp>
 
-#include <string>
+#include <lib/string.hpp>
 #include <istream>
 #include <allow_type_decay.hpp>
 
@@ -41,7 +41,7 @@ private:
 	std::reference_wrapper<const vk_logical_device> device;
 
 private:
-	static optional<std::string> read_stream(const vk_physical_device_descriptor &device_descriptor, std::istream &input_stream) {
+	static optional<lib::string> read_stream(const vk_physical_device_descriptor &device_descriptor, std::istream &input_stream) {
 		vk_pipeline_cache_header header = { 0, 0, 0, 0 };
 		if (!input_stream.read(reinterpret_cast<char*>(&header), sizeof(header))) {
 			// Stream invalid
@@ -61,7 +61,7 @@ private:
 		}
 
 		// Read cache data
-		std::string data;
+		lib::string data;
 		static constexpr int buffer_size = 4096;
 		char buffer[buffer_size];
 		while (input_stream.read(buffer, buffer_size)) {
@@ -87,7 +87,7 @@ private:
 
 public:
 	vk_pipeline_cache(const vk_logical_device &device,
-					  const std::string &initial_data) : device(device) {
+					  const lib::string &initial_data) : device(device) {
 		VkPipelineCacheCreateInfo create_info = {};
 		create_info.sType = VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO;
 		create_info.pNext = nullptr;
@@ -110,10 +110,10 @@ public:
 		create(create_info);
 	}
 	vk_pipeline_cache(const vk_logical_device &device,
-					  const std::vector<std::reference_wrapper<const vk_pipeline_cache>> &src) : vk_pipeline_cache(device) {
+					  const lib::vector<std::reference_wrapper<const vk_pipeline_cache>> &src) : vk_pipeline_cache(device) {
 		assert(src.size() && "Must provide at least a single source cache");
 
-		std::vector<VkPipelineCache> ids;
+		lib::vector<VkPipelineCache> ids;
 		for (auto &c : src)
 			ids.push_back(c.get());
 		vkMergePipelineCaches(device, 
@@ -121,7 +121,7 @@ public:
 							  static_cast<std::uint32_t>(ids.size()),
 							  &ids[0]);
 	}
-	vk_pipeline_cache(const vk_logical_device &device) : vk_pipeline_cache(device, std::string()) {}
+	vk_pipeline_cache(const vk_logical_device &device) : vk_pipeline_cache(device, lib::string()) {}
 	~vk_pipeline_cache() noexcept {
 		destroy_pipeline_cache();
 	}
@@ -139,7 +139,7 @@ public:
 	}
 
 	auto read_raw_cache_data() const {
-		std::string data;
+		lib::string data;
 		std::size_t size;
 
 		{
@@ -175,7 +175,7 @@ public:
 		stream.write(reinterpret_cast<const char*>(&header), sizeof(header));
 
 		// Write cache data
-		std::string data = cache.read_raw_cache_data();
+		lib::string data = cache.read_raw_cache_data();
 		stream.write(data.data(), data.length());
 
 		return stream;

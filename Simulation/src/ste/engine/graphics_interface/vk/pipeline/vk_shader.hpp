@@ -10,7 +10,7 @@
 
 #include <optional.hpp>
 
-#include <string>
+#include <lib/string.hpp>
 #include <allow_type_decay.hpp>
 
 namespace ste {
@@ -27,8 +27,8 @@ public:
 	struct shader_stage_info_t {
 		VkPipelineShaderStageCreateInfo stage_info;
 		VkSpecializationInfo specialization_info;
-		std::string all_data;
-		std::vector<VkSpecializationMapEntry> entries;
+		lib::string all_data;
+		lib::vector<VkSpecializationMapEntry> entries;
 
 		shader_stage_info_t() : stage_info{} {}
 
@@ -38,10 +38,10 @@ public:
 		shader_stage_info_t &operator=(const shader_stage_info_t&) = delete;
 	};
 
-	using spec_map = std::unordered_map<std::uint32_t, std::string>;
+	using spec_map = lib::unordered_map<std::uint32_t, lib::string>;
 
 public:
-	vk_shader(const vk_logical_device &device, const std::string &code) : device(device) {
+	vk_shader(const vk_logical_device &device, const lib::string &code) : device(device) {
 		VkShaderModuleCreateInfo create_info = {};
 		create_info.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
 		create_info.pNext = nullptr;

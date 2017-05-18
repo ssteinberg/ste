@@ -53,13 +53,13 @@ public:
 	*	@param	fence				Optional fence, to be signaled when the command has completed execution
 	*/
 	void cmd_bind_sparse_memory(const vk_queue &queue,
-								const std::vector<vk_sparse_memory_bind> &memory_binds,
-								const std::vector<VkSemaphore> &wait_semaphores,
-								const std::vector<VkSemaphore> &signal_semaphores,
+								const lib::vector<vk_sparse_memory_bind> &memory_binds,
+								const lib::vector<VkSemaphore> &wait_semaphores,
+								const lib::vector<VkSemaphore> &signal_semaphores,
 								const vk_fence *fence = nullptr) {
-		std::vector<VkSemaphore> wait;
-		std::vector<VkSemaphore> signal;
-		std::vector<VkSparseMemoryBind> binds;
+		lib::vector<VkSemaphore> wait;
+		lib::vector<VkSemaphore> signal;
+		lib::vector<VkSparseMemoryBind> binds;
 
 		if (wait_semaphores.size()) {
 			wait.reserve(wait_semaphores.size());

@@ -4,7 +4,7 @@
 #pragma once
 
 #include <stdafx.hpp>
-#include <memory>
+#include <lib/unique_ptr.hpp>
 #include <allocator_delete.hpp>
 
 #include <allow_type_decay.hpp>

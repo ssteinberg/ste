@@ -18,8 +18,8 @@
 #include <device_pipeline_graphics_configurations.hpp>
 #include <device_pipeline_graphics.hpp>
 
-#include <memory>
-#include <vector>
+#include <lib/unique_ptr.hpp>
+#include <lib/vector.hpp>
 
 namespace ste {
 namespace gl {
@@ -56,7 +56,7 @@ public:
 		set_pipeline_settings(std::move(settings));
 	}
 	pipeline_auditor_graphics(device_pipeline_graphics_configurations &&settings,
-							  const std::vector<shader_stage_t> &stages)
+							  const lib::vector<shader_stage_t> &stages)
 		: pipeline_auditor_graphics(std::move(settings))
 	{
 		for (auto &s : stages)
@@ -150,8 +150,8 @@ private:
 	/**
 	*	@brief	Generates the list of pipeline stages
 	*/
-	std::vector<shader_stage_t> stages() const override final {
-		std::vector<shader_stage_t> stages;
+	lib::vector<shader_stage_t> stages() const override final {
+		lib::vector<shader_stage_t> stages;
 
 		if (vertex_shader_stage != nullptr)
 			stages.push_back(vertex_shader_stage);

@@ -9,16 +9,16 @@
 
 #include <algorithm>
 #include <utility>
-#include <string>
-#include <boost/container/flat_map.hpp>
+#include <lib/string.hpp>
+#include <lib/flat_map.hpp>
 
 namespace ste {
 namespace gl {
 
 class ste_device_queue_selector_cache {
 private:
-	using cache_key_t = std::string;
-	using cache_t = boost::container::flat_map<cache_key_t, std::uint32_t>;
+	using cache_key_t = lib::string;
+	using cache_t = lib::flat_map<cache_key_t, std::uint32_t>;
 	static thread_local cache_t cached_usage_index_map;
 
 public:

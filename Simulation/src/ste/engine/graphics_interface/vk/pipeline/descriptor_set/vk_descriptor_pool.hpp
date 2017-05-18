@@ -11,8 +11,8 @@
 #include <vk_descriptor_set.hpp>
 #include <vk_descriptor_set_layout.hpp>
 
-#include <vector>
-#include <unordered_map>
+#include <lib/vector.hpp>
+#include <lib/unordered_map.hpp>
 #include <allow_type_decay.hpp>
 
 namespace ste {
@@ -29,9 +29,9 @@ private:
 public:
 	vk_descriptor_pool(const vk_logical_device &device,
 					   std::uint32_t max_sets,
-					   const std::vector<vk_descriptor_set_layout_binding> &set_layout_bindings,
+					   const lib::vector<vk_descriptor_set_layout_binding> &set_layout_bindings,
 					   bool allow_free_individual_sets = false) : device(device), allow_free_individual_sets(allow_free_individual_sets) {
-		std::unordered_map<VkDescriptorType, std::uint32_t> type_counts;
+		lib::unordered_map<VkDescriptorType, std::uint32_t> type_counts;
 		for (auto &l : set_layout_bindings) {
 			auto it = type_counts.find(l.get_type());
 			if (it != type_counts.end())
@@ -40,7 +40,7 @@ public:
 				type_counts[l.get_type()] = l.get_count();
 		}
 
-		std::vector<VkDescriptorPoolSize> set_sizes;
+		lib::vector<VkDescriptorPoolSize> set_sizes;
 		set_sizes.reserve(type_counts.size());
 		for (auto &p : type_counts) {
 			VkDescriptorPoolSize size = {};
@@ -82,8 +82,8 @@ public:
 		}
 	}
 
-	auto allocate_descriptor_sets(const std::vector<const vk_descriptor_set_layout*> &set_layouts) const {
-		std::vector<VkDescriptorSetLayout> set_layout_descriptors;
+	auto allocate_descriptor_sets(const lib::vector<const vk_descriptor_set_layout*> &set_layouts) const {
+		lib::vector<VkDescriptorSetLayout> set_layout_descriptors;
 		set_layout_descriptors.reserve(set_layouts.size());
 		for (auto &s : set_layouts)
 			set_layout_descriptors.push_back(*s);
@@ -95,14 +95,14 @@ public:
 		create_info.descriptorSetCount = static_cast<std::uint32_t>(set_layout_descriptors.size());
 		create_info.pSetLayouts = set_layout_descriptors.data();
 
-		std::vector<VkDescriptorSet> sets;
+		lib::vector<VkDescriptorSet> sets;
 		sets.resize(create_info.descriptorSetCount);
 		vk_result res = vkAllocateDescriptorSets(device.get(), &create_info, sets.data());
 		if (!res) {
 			throw vk_exception(res);
 		}
 
-		std::vector<vk_descriptor_set> descriptor_sets;
+		lib::vector<vk_descriptor_set> descriptor_sets;
 		descriptor_sets.reserve(sets.size());
 		for (auto &s : sets)
 			descriptor_sets.push_back(vk_descriptor_set(device,

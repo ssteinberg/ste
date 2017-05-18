@@ -25,10 +25,10 @@ private:
 
 private:
 	window_type window;
-	std::unique_ptr<ste_window_signals> signals;
+	lib::unique_ptr<ste_window_signals> signals;
 
 public:
-	ste_window(std::string window_title, glm::i32vec2 window_size, bool fullscreen = false) {
+	ste_window(lib::string window_title, glm::i32vec2 window_size, bool fullscreen = false) {
 		auto fs_monitor_handle = fullscreen ? glfwGetPrimaryMonitor() : nullptr;
 
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
@@ -41,7 +41,7 @@ public:
 			throw ste_window_creation_exception("Window creation failed");
 		}
 
-		signals = std::make_unique<ste_window_signals>(this);
+		signals = lib::allocate_unique<ste_window_signals>(this);
 
 	}
 	~ste_window() noexcept {

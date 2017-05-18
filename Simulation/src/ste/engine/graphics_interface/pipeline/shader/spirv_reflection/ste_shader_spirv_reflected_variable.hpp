@@ -6,8 +6,8 @@
 #include <ste_shader_stage_variable.hpp>
 #include <ste_shader_exceptions.hpp>
 
-#include <vector>
-#include <string>
+#include <lib/vector.hpp>
+#include <lib/string.hpp>
 #include <optional.hpp>
 
 namespace ste {
@@ -17,7 +17,7 @@ namespace _internal {
 
 struct ste_shader_spirv_reflected_variable {
 	ste_shader_stage_variable_type type{ ste_shader_stage_variable_type::unknown };
-	std::string name;
+	lib::string name;
 
 	std::uint32_t rows{ 1 };						// Matrix/vector rows. 1 for scalars.
 	std::uint32_t columns{ 1 };						// Columns. >1 for matrix types.
@@ -31,12 +31,12 @@ struct ste_shader_spirv_reflected_variable {
 	std::uint16_t width{ 0 };						// Integer/float width, only used for int_t and uint_t.
 	optional<std::uint64_t> constant_value;			// Constant integer value, if available.
 
-	std::vector<ste_shader_spirv_reflected_variable> struct_members;
+	lib::vector<ste_shader_spirv_reflected_variable> struct_members;
 
 	void consume(const ste_shader_spirv_reflected_variable &src) {
 		// Consume only non-default attributes
 
-		std::string name = std::move(src.name.size() ?
+		lib::string name = std::move(src.name.size() ?
 									 src.name :
 									 this->name);
 
@@ -109,8 +109,8 @@ struct ste_shader_spirv_reflected_variable {
 		return columns > 1;
 	}
 
-	std::unique_ptr<ste_shader_stage_variable> generate_variable(bool is_spec_constant,
-																 const std::vector<ste_shader_stage_binding> &binds) const {
+	lib::unique_ptr<ste_shader_stage_variable> generate_variable(bool is_spec_constant,
+																 const lib::vector<ste_shader_stage_binding> &binds) const {
 		// Unknown type is an internal error
 		if (!has_type()) {
 			throw ste_shader_opaque_or_unknown_type();
@@ -118,16 +118,16 @@ struct ste_shader_spirv_reflected_variable {
 
 		// Arrays, matrices and vectors are composite types.
 		// Create underlying types first.
-		std::unique_ptr<ste_shader_stage_variable> var;
+		lib::unique_ptr<ste_shader_stage_variable> var;
 
 		if (is_opaque()) {
-			var = std::unique_ptr<ste_shader_stage_variable>(std::make_unique<ste_shader_stage_variable_opaque>(type,
+			var = lib::unique_ptr<ste_shader_stage_variable>(lib::allocate_unique<ste_shader_stage_variable_opaque>(type,
 																												name,
 																												offset));
 		}
 		else if (is_struct()) {
 			// Handle structs recursively
-			std::vector<std::unique_ptr<ste_shader_stage_variable>> elements;
+			lib::vector<lib::unique_ptr<ste_shader_stage_variable>> elements;
 			for (auto &e : struct_members) {
 				// Sort by offset
 				auto it = elements.begin();
@@ -138,30 +138,30 @@ struct ste_shader_spirv_reflected_variable {
 														binds));
 			}
 
-			var = std::unique_ptr<ste_shader_stage_variable>(std::make_unique<ste_shader_stage_variable_struct>(std::move(elements),
+			var = lib::unique_ptr<ste_shader_stage_variable>(lib::allocate_unique<ste_shader_stage_variable_struct>(std::move(elements),
 																												name,
 																												offset));
 		}
 		else {
 			// Handle scalars, vectors and matrices
-			auto scalar_var = std::make_unique<ste_shader_stage_variable_scalar>(type,
+			auto scalar_var = lib::allocate_unique<ste_shader_stage_variable_scalar>(type,
 																				 name,
 																				 offset,
 																				 width);
 
 			if (rows > 1 || columns > 1) {
 				// Vector/matrix
-				auto matrix_var = std::make_unique<ste_shader_stage_variable_matrix>(std::move(scalar_var),
+				auto matrix_var = lib::allocate_unique<ste_shader_stage_variable_matrix>(std::move(scalar_var),
 																					 name,
 																					 offset,
 																					 rows,
 																					 columns,
 																					 matrix_stride);
-				var = std::unique_ptr<ste_shader_stage_variable>(std::move(matrix_var));
+				var = lib::unique_ptr<ste_shader_stage_variable>(std::move(matrix_var));
 			}
 			else {
 				// Scalar
-				var = std::unique_ptr<ste_shader_stage_variable>(std::move(scalar_var));
+				var = lib::unique_ptr<ste_shader_stage_variable>(std::move(scalar_var));
 			}
 		}
 
@@ -184,19 +184,19 @@ struct ste_shader_spirv_reflected_variable {
 				assert(!!length_specialization_constant && "Specialization constant not found!");
 			}
 
-			auto array_var = std::make_unique<ste_shader_stage_variable_array>(std::move(var),
+			auto array_var = lib::allocate_unique<ste_shader_stage_variable_array>(std::move(var),
 																			   name,
 																			   offset,
 																			   array_elements,
 																			   matrix_stride,
 																			   length_specialization_constant);
-			var = std::unique_ptr<ste_shader_stage_variable>(std::move(array_var));
+			var = lib::unique_ptr<ste_shader_stage_variable>(std::move(array_var));
 		}
 
 		// Specialization constants: Save default value
 		if (is_spec_constant) {
 			auto default_specialized_value = constant_value.get();
-			std::string data;
+			lib::string data;
 			data.resize(sizeof(std::uint64_t));
 			memcpy(data.data(), &default_specialized_value, sizeof(std::uint64_t));
 			var->set_default_specialized_value(data);

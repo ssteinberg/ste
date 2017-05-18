@@ -5,10 +5,12 @@
 
 #include <stdafx.hpp>
 
-#include <boost_binary_ioarchive.hpp>
-#include <boost_serialization.hpp>
+#include <boost/archive/binary_iarchive.hpp> 
+#include <boost/archive/binary_oarchive.hpp> 
+#include <boost/serialization/list.hpp> 
+#include <boost/serialization/split_member.hpp>
 
-#include <memory>
+#include <lib/unique_ptr.hpp>
 
 namespace ste {
 namespace text {
@@ -41,7 +43,7 @@ public:
 
 private:
 	glyph_metrics metrics;
-	std::unique_ptr<gli::texture2d> glyph_distance_field;
+	lib::unique_ptr<gli::texture2d> glyph_distance_field;
 
 private:
 	friend class boost::serialization::access;
@@ -55,7 +57,7 @@ private:
 		ar << static_cast<std::int64_t>(glyph_distance_field->format());
 
 		std::size_t size = (*glyph_distance_field)[0].extent().x * (*glyph_distance_field)[0].extent().y * 4;
-		std::string data;
+		lib::string data;
 		data.resize(size);
 		memcpy(&data[0], (*glyph_distance_field)[0].data(), size);
 		ar << data;
@@ -71,9 +73,9 @@ private:
 		ar >> h;
 		ar >> l;
 		ar >> format;
-		glyph_distance_field = std::make_unique<gli::texture2d>(static_cast<gli::format>(format), glm::ivec2{ w, h }, static_cast<int>(l));
+		glyph_distance_field = lib::allocate_unique<gli::texture2d>(static_cast<gli::format>(format), glm::ivec2{ w, h }, static_cast<int>(l));
 
-		std::string data;
+		lib::string data;
 		ar >> data;
 		memcpy((*glyph_distance_field)[0].data(), &data[0], data.size());
 	}
@@ -85,10 +87,10 @@ public:
 	glyph(glyph &&) = default;
 	glyph &operator=(glyph &&) = default;
 
-	glyph(const glyph &g) : metrics(g.metrics), glyph_distance_field(std::make_unique<gli::texture2d>(*g.glyph_distance_field)) {}
+	glyph(const glyph &g) : metrics(g.metrics), glyph_distance_field(lib::allocate_unique<gli::texture2d>(*g.glyph_distance_field)) {}
 	glyph &operator=(const glyph &g) {
 		metrics = g.metrics;
-		glyph_distance_field = std::make_unique<gli::texture2d>(*g.glyph_distance_field);
+		glyph_distance_field = lib::allocate_unique<gli::texture2d>(*g.glyph_distance_field);
 		return *this;
 	}
 

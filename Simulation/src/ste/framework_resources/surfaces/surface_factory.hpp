@@ -80,7 +80,7 @@ private:
 	// Create a ste_resource<device_image> object with deferred creation, which loads surface from path and creates the image.
 	template <gl::format image_format, class resource_deferred_policy>
 	static auto _image_from_surface_2d_from_file_async_internal(const ste_context &ctx,
-																const boost::filesystem::path &path,
+																const std::experimental::filesystem::path &path,
 																const gl::image_usage &usage,
 																const gl::image_layout &layout,
 																bool generate_mipmaps,
@@ -326,7 +326,7 @@ public:
 	*/
 	template <gl::format image_format, class resource_deferred_policy = ste_resource_deferred_creation_policy_async<ste_resource_async_policy_task_scheduler>>
 	static auto image_from_surface_2d(const ste_context &ctx,
-									  const boost::filesystem::path &path,
+									  const std::experimental::filesystem::path &path,
 									  const gl::image_usage &usage,
 									  const gl::image_layout &layout,
 									  bool generate_mipmaps = true) {
@@ -351,7 +351,7 @@ public:
 	 */
 	template <gl::format image_format, class resource_deferred_policy = ste_resource_deferred_creation_policy_async<ste_resource_async_policy_task_scheduler>>
 	static auto image_from_surface_2d_srgb(const ste_context &ctx,
-										   const boost::filesystem::path &path,
+										   const std::experimental::filesystem::path &path,
 										   const gl::image_usage &usage,
 										   const gl::image_layout &layout,
 										   bool generate_mipmaps = true) {

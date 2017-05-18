@@ -9,7 +9,7 @@
 
 #include <ste_shader_variable_layout_verification_exceptions.hpp>
 
-#include <memory>
+#include <lib/unique_ptr.hpp>
 
 #include <std140.hpp>
 #include <std430.hpp>
@@ -53,7 +53,7 @@ private:
 
 public:
 	ste_shader_stage_block_layout block_layout{ ste_shader_stage_block_layout::none };
-	std::unique_ptr<ste_shader_stage_variable> variable;
+	lib::unique_ptr<ste_shader_stage_variable> variable;
 
 	/**
 	*	@brief	Returns true if the binding references am array and the array length is a specializeable constant.

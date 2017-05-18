@@ -6,8 +6,8 @@
 #include <stdafx.hpp>
 #include <pipeline_attachment_layout.hpp>
 
-#include <string>
-#include <boost/container/flat_map.hpp>
+#include <lib/string.hpp>
+#include <lib/flat_map.hpp>
 #include <initializer_list>
 
 namespace ste {
@@ -18,7 +18,7 @@ namespace gl {
 */
 class pipeline_attachment_layout_collection {
 public:
-	using bind_map_t = boost::container::flat_map<std::string, pipeline_attachment_layout>;
+	using bind_map_t = lib::flat_map<lib::string, pipeline_attachment_layout>;
 
 private:
 	bind_map_t set;
@@ -31,10 +31,10 @@ public:
 	auto try_emplace(Ts&&... ts) {
 		return set.try_emplace(std::forward<Ts>(ts)...);
 	}
-	void erase(const std::string &name) { set.erase(name); }
+	void erase(const lib::string &name) { set.erase(name); }
 	void erase(bind_map_t::iterator it) { set.erase(it); }
 
-	auto find(const std::string &name) const { return set.find(name); }
+	auto find(const lib::string &name) const { return set.find(name); }
 
 	auto& get() const { return set; }
 	auto begin() const { return set.begin(); }

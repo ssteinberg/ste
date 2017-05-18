@@ -18,13 +18,13 @@ private:
 	const vk::vk_pipeline_layout *layout;
 	stage_flag stage;
 	std::uint32_t offset;
-	std::string data;
+	lib::string data;
 
 public:
 	cmd_push_constants(const vk::vk_pipeline_layout *layout,
 					   stage_flag stage,
 					   std::uint32_t offset,
-					   std::string data)
+					   lib::string data)
 		: layout(layout), stage(stage), offset(offset), data(data)
 	{}
 	virtual ~cmd_push_constants() noexcept {}

@@ -24,7 +24,7 @@
 
 #include <optional.hpp>
 #include <format_rtti.hpp>
-#include <vector>
+#include <lib/vector.hpp>
 
 namespace ste {
 namespace gl {
@@ -63,7 +63,7 @@ private:
 		auto shader_stage_descriptors = get_layout().shader_stage_descriptors();
 
 		// Blend operation descriptor for each attachment
-		std::vector<vk::vk_blend_op_descriptor> attachment_blend_ops;
+		lib::vector<vk::vk_blend_op_descriptor> attachment_blend_ops;
 		for (auto &a : fb_layout) {
 			const framebuffer_attachment_layout &attachment = a.second;
 
@@ -77,7 +77,7 @@ private:
 		}
 
 		// Set viewport and scissor as dynamic states
-		std::vector<VkDynamicState> dynamic_states = {
+		lib::vector<VkDynamicState> dynamic_states = {
 			static_cast<VkDynamicState>(pipeline_dynamic_state::viewport),
 			static_cast<VkDynamicState>(pipeline_dynamic_state::scissor),
 		};
@@ -107,7 +107,7 @@ protected:
 	}
 
 	void bind_pipeline(const command_buffer &, command_recorder &recorder) const override final {
-		std::vector<VkClearValue> clear_values(attached_framebuffer->get_fb_clearvalues().begin(),
+		lib::vector<VkClearValue> clear_values(attached_framebuffer->get_fb_clearvalues().begin(),
 											   attached_framebuffer->get_fb_clearvalues().begin() + fb_layout.get_highest_index_of_attachment_with_load_op());
 		auto fb_extent = attached_framebuffer->extent();
 

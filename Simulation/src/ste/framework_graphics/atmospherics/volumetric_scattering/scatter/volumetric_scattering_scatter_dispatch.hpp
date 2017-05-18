@@ -20,7 +20,7 @@
 
 #include <sampler.hpp>
 
-#include <memory>
+#include <lib/unique_ptr.hpp>
 
 namespace ste {
 namespace graphics {
@@ -39,8 +39,8 @@ private:
 
 	resource::resource_instance<resource::glsl_program> program;
 
-	std::shared_ptr<connection<>> vss_storage_connection;
-	std::shared_ptr<connection<>> shadows_storage_connection;
+	lib::shared_ptr<connection<>> vss_storage_connection;
+	lib::shared_ptr<connection<>> shadows_storage_connection;
 
 private:
 	void attach_handles() const {
@@ -85,10 +85,10 @@ private:
 																					   ls(ls),
 																					   shadows_storage(shadows_storage),
 																					   program(ctx, "volumetric_scattering_scatter.comp") {
-		vss_storage_connection = std::make_shared<connection<>>([&]() {
+		vss_storage_connection = lib::allocate_shared<connection<>>([&]() {
 			attach_handles();
 		});
-		shadows_storage_connection = std::make_shared<connection<>>([&]() {
+		shadows_storage_connection = lib::allocate_shared<connection<>>([&]() {
 			attach_handles();
 		});
 		vss->get_storage_modified_signal().connect(vss_storage_connection);

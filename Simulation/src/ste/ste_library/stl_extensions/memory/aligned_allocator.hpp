@@ -5,14 +5,20 @@
 
 #include <stdafx.hpp>
 
+#ifdef _linux
+#include <stdlib.h>
+#endif
+
 namespace ste {
 
-template <typename T>
+template <typename T, std::size_t Align = alignof(T)>
 class aligned_allocator {
 public:
 	using value_type = T;
 	using size_type = std::size_t;
 	using difference_type = std::ptrdiff_t;
+
+	static constexpr auto alignment = Align;
 
 	using pointer = T*;
 	using const_pointer = const T*;
@@ -25,8 +31,10 @@ public:
 	};
 
 	aligned_allocator() = default;
+	template <typename U>
+	aligned_allocator(const aligned_allocator<U, Align>&) noexcept {}
 
-	auto aligned_allocate(size_type n, size_type alignment) {
+	auto allocate(size_type n) {
 #ifdef _MSC_VER
 		return reinterpret_cast<T*>(_aligned_malloc(sizeof(T) * n, alignment));
 #elif defined _linux
@@ -37,7 +45,7 @@ public:
 #error Unsupported OS
 #endif
 	}
-	void aligned_deallocate(T *ptr, size_type) {
+	void deallocate(T *ptr, size_type) {
 #ifdef _MSC_VER
 		_aligned_free(ptr);
 #elif defined _linux
@@ -45,8 +53,19 @@ public:
 #endif
 	}
 
-	bool operator==(const aligned_allocator<T> &) const { return true; }
-	bool operator!=(const aligned_allocator<T> &) const { return false; }
+	template <
+		typename U1, std::size_t A1,
+		typename U2, std::size_t A2
+	>
+	friend bool operator==(const aligned_allocator<U1, A1>&, const aligned_allocator<U2, A2>&) noexcept;
 };
+
+template <
+	typename U1, std::size_t A1,
+	typename U2, std::size_t A2
+>
+bool inline operator==(const aligned_allocator<U1, A1>&, const aligned_allocator<U2, A2>&) noexcept {
+	return A1 == A2;
+}
 
 }

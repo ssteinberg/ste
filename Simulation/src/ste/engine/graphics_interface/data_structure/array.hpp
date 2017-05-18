@@ -16,10 +16,10 @@
 #include <task.hpp>
 #include <cmd_update_buffer.hpp>
 
-#include <vector>
+#include <lib/vector.hpp>
 #include <allow_type_decay.hpp>
 #include <functional>
-#include <string>
+#include <lib/string.hpp>
 
 namespace ste {
 namespace gl {
@@ -46,7 +46,7 @@ public:
 	{}
 	array(const ste_context &ctx,
 		  std::uint64_t count,
-		  const std::vector<T> &initial_data,
+		  const lib::vector<T> &initial_data,
 		  const buffer_usage &usage)
 		: array(ctx, count, usage)
 	{
@@ -54,7 +54,7 @@ public:
 		_internal::copy_data_buffer(ctx, buffer, initial_data);
 	}
 	array(const ste_context &ctx,
-		  const std::vector<T> &initial_data,
+		  const lib::vector<T> &initial_data,
 		  const buffer_usage &usage)
 		: array(ctx, initial_data.size(), initial_data, usage)
 	{}
@@ -69,7 +69,7 @@ public:
 	*	@param	data	Data to copy
 	*	@param	offset	Array offset to copy to
 	*/
-	auto update_task(const std::vector<T> &data,
+	auto update_task(const lib::vector<T> &data,
 					 std::uint64_t offset) {
 		assert(data.size() + offset <= size() && "Out-of-bounds");
 

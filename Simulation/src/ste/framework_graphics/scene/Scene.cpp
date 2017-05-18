@@ -17,7 +17,7 @@
 //constexpr int scene::directional_shadow_pltt_size;
 //
 //scene::scene(const ste_engine_control &ctx) : culled_objects_counter(1),
-//										   object_program(ctx, std::vector<std::string>{ "scene_transform.vert", "object.frag" }) {}
+//										   object_program(ctx, lib::vector<lib::string>{ "scene_transform.vert", "object.frag" }) {}
 //
 //void scene::bind_buffers() const {
 //	using namespace Core;

@@ -39,7 +39,7 @@ using namespace ste::graph::detail;
 
 // bool graph_impl::write_dot(const GraphSet<VertexPtr> *vertices,
 // 						   const GraphSet<EdgePtr> *edges,
-// 						   const boost::filesystem::path &p) {
+// 						   const std::experimental::filesystem::path &p) {
 // 	bool ret = false;
 
 // 	Agraph_t* g = create_graphviz_graph(vertices, edges);
@@ -61,7 +61,7 @@ using namespace ste::graph::detail;
 
 // bool graph_impl::write_png(const GraphSet<VertexPtr> *vertices,
 // 						   const GraphSet<EdgePtr> *edges,
-// 						   const boost::filesystem::path &p) {
+// 						   const std::experimental::filesystem::path &p) {
 // 	Agraph_t* g = create_graphviz_graph(vertices, edges);
 
 // 	GVC_t* gvc;

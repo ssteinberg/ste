@@ -11,7 +11,7 @@
 #include <pipeline_auditor_compute.hpp>
 #include <device_pipeline_compute.hpp>
 
-#include <string>
+#include <lib/string.hpp>
 
 namespace ste {
 namespace gl {
@@ -42,7 +42,7 @@ private:
 
 protected:
 	fragment_compute(const rendering_system &rs,
-					 const std::string &shader_stage_name)
+					 const lib::string &shader_stage_name)
 		: shader_stage(rs.get_creating_context(), shader_stage_name),
 		pipeline(create_compute_pipeline(rs.get_creating_context(),
 										 rs.external_binding_sets(),
@@ -53,7 +53,7 @@ public:
 	virtual ~fragment_compute() noexcept {}
 
 	// Subclasses are expected to declare:
-	//static const std::string& name();
+	//static const lib::string& name();
 };
 
 }

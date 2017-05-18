@@ -2,20 +2,20 @@
 #include <stdafx.hpp>
 #include <ste_device_pipeline_cache.hpp>
 
-#include <vector>
+#include <lib/vector.hpp>
 #include <lib/unique_ptr.hpp>
 
 using namespace ste::gl;
 
 void ste_device_pipeline_cache::read_origin() {
 	// Create origin from stored data in the non-volatile cache
-	auto optional = non_volatile_cache->get<std::string>(std::string(non_volatile_cache_key_prefix) + device_name);
-	std::string origin_data = optional ? optional.get() : std::string();
+	auto optional = non_volatile_cache->get<lib::string>(lib::string(non_volatile_cache_key_prefix) + device_name);
+	lib::string origin_data = optional ? optional.get() : lib::string();
 	origin = lib::allocate_unique<vk::vk_pipeline_cache>(device.get(), origin_data);
 }
 
 void ste_device_pipeline_cache::store_all_caches() {
-	std::vector<pipeline_cache_ptr_t> caches;
+	lib::vector<pipeline_cache_ptr_t> caches;
 
 	// Get all created caches
 	auto cache = created_caches.pop();
@@ -26,14 +26,14 @@ void ste_device_pipeline_cache::store_all_caches() {
 
 	// Merge and write out
 	if (caches.size()) {
-		std::vector<std::reference_wrapper<const pipeline_cache_t>> refs;
+		lib::vector<std::reference_wrapper<const pipeline_cache_t>> refs;
 		for (auto &c : caches)
 			refs.emplace_back(std::ref(*c));
 
 		pipeline_cache_t new_origin(device.get(), refs);
-		std::string new_origin_data = new_origin.read_raw_cache_data();
+		lib::string new_origin_data = new_origin.read_raw_cache_data();
 
-		non_volatile_cache->insert(std::string(non_volatile_cache_key_prefix) + device_name,
+		non_volatile_cache->insert(lib::string(non_volatile_cache_key_prefix) + device_name,
 								   new_origin_data);
 	}
 }
@@ -48,7 +48,7 @@ const ste_device_pipeline_cache::pipeline_cache_t& ste_device_pipeline_cache::cu
 	}
 
 	// Create new cache object
-	std::vector<std::reference_wrapper<const pipeline_cache_t>> origin_ref = { *origin };
+	lib::vector<std::reference_wrapper<const pipeline_cache_t>> origin_ref = { *origin };
 	pipeline_cache_ptr_t new_cache = lib::allocate_unique<pipeline_cache_t>(device.get(),
 																			origin_ref);
 	auto *ptr = new_cache.get();

@@ -8,7 +8,7 @@
 #include <device_image_base.hpp>
 #include <image_layout.hpp>
 
-#include <vector>
+#include <lib/vector.hpp>
 
 namespace ste {
 namespace gl {
@@ -20,14 +20,14 @@ private:
 	std::reference_wrapper<const device_image_base> dst_image;
 	image_layout dst_image_layout;
 
-	std::vector<VkImageCopy> ranges;
+	lib::vector<VkImageCopy> ranges;
 
 public:
 	cmd_copy_image(const device_image_base &src_image,
 				   const image_layout &src_image_layout,
 				   const device_image_base &dst_image,
 				   const image_layout &dst_image_layout,
-				   const std::vector<VkImageCopy> &ranges = {})
+				   const lib::vector<VkImageCopy> &ranges = {})
 		: src_image(src_image), src_image_layout(src_image_layout),
 		dst_image(dst_image), dst_image_layout(dst_image_layout),
 		ranges(ranges)

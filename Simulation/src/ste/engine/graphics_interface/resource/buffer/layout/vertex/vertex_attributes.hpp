@@ -10,7 +10,7 @@
 #include <format_type_traits.hpp>
 #include <generate_array.hpp>
 
-#include <vector>
+#include <lib/vector.hpp>
 
 namespace ste {
 namespace gl {
@@ -59,7 +59,7 @@ public:
 	}
 
 	auto vk_vertex_attributes(std::uint32_t binding_index = 0) const {
-		std::vector<VkVertexInputAttributeDescription> vertex_input_attribute_descriptors;
+		lib::vector<VkVertexInputAttributeDescription> vertex_input_attribute_descriptors;
 		vertex_input_attribute_descriptors.reserve(attrib_count());
 		for (size_type j = 0; j < attrib_count(); ++j) {
 			VkVertexInputAttributeDescription desc = {};

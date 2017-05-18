@@ -6,6 +6,7 @@
 #include <stdafx.hpp>
 
 #include <vulkan/vulkan.h>
+#include <lib/string.hpp>
 
 namespace ste {
 namespace gl {
@@ -29,7 +30,7 @@ public:
 	vk_query(const vk_query &) = delete;
 	vk_query &operator=(const vk_query &) = delete;
 
-	std::string read_results(std::size_t data_size,
+	lib::string read_results(std::size_t data_size,
 							 VkQueryResultFlags flags = 0) const;
 
 	auto& get_pool() const { return pool; }

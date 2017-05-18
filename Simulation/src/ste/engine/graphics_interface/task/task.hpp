@@ -13,7 +13,7 @@
 #include <forward_capture.hpp>
 #include <tuple_call.hpp>
 #include <type_traits>
-#include <string>
+#include <lib/string.hpp>
 
 namespace ste {
 namespace gl {
@@ -45,14 +45,14 @@ private:
 
 private:
 	pipeline_storage_t pipeline_storage;
-	std::string task_name;
+	lib::string task_name;
 
 public:
 	auto& get_pipeline_storage(accessor_token) const { return pipeline_storage; }
 
 public:
 	task_impl() = default;
-	task_impl(std::string &&name) : task_name(std::move(name)) {}
+	task_impl(lib::string &&name) : task_name(std::move(name)) {}
 	~task_impl() noexcept {}
 
 	task_impl(task_impl&&) = default;

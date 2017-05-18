@@ -11,7 +11,7 @@
 
 #include <optional.hpp>
 
-#include <vector>
+#include <lib/vector.hpp>
 #include <allow_type_decay.hpp>
 
 namespace ste {
@@ -26,8 +26,8 @@ private:
 
 public:
 	vk_descriptor_set_layout(const vk_logical_device &device,
-							 const std::vector<vk_descriptor_set_layout_binding> &bindings) : device(device) {
-		std::vector<VkDescriptorSetLayoutBinding> binding_descriptors;
+							 const lib::vector<vk_descriptor_set_layout_binding> &bindings) : device(device) {
+		lib::vector<VkDescriptorSetLayoutBinding> binding_descriptors;
 		binding_descriptors.reserve(bindings.size());
 		for (auto &b : bindings)
 			binding_descriptors.push_back(b);

@@ -12,7 +12,7 @@
 #include <lru_cache_cacheable.hpp>
 #include <lru_cache_index.hpp>
 
-#include <concurrent_queue.hpp>
+#include <lib/concurrent_queue.hpp>
 #include <interruptible_thread.hpp>
 
 #include <condition_variable>
@@ -49,13 +49,13 @@ private:
 		mutable std::mutex m;
 		mutable std::condition_variable cv;
 
-		mutable concurrent_queue<typename index_type::val_data_guard> accessed_queue;
+		mutable lib::concurrent_queue<typename index_type::val_data_guard> accessed_queue;
 
 		std::atomic<std::uint64_t> total_size{ 0 };
 	};
 
 private:
-	const boost::filesystem::path path;
+	const std::experimental::filesystem::path path;
 	const std::uint64_t quota;
 	aligned_ptr<shared_data_t> shared_data;
 
@@ -89,7 +89,7 @@ public:
 	* 	@param path		Cache directory
 	*	@param quota	Max size in bytes. 0 for unlimited.
 	*/
-	lru_cache(const boost::filesystem::path &path, std::uint64_t quota = 0)
+	lru_cache(const std::experimental::filesystem::path &path, std::uint64_t quota = 0)
 		: path(path),
 		quota(quota),
 		index(path, shared_data->total_size),
@@ -127,7 +127,7 @@ public:
 		}
 	}) 
 	{
-		boost::filesystem::create_directory(path);
+		std::experimental::filesystem::create_directory(path);
 	}
 	~lru_cache() noexcept { shutdown(); }
 

@@ -11,7 +11,7 @@
 #include <future_collection.hpp>
 
 #include <functional>
-#include <memory>
+#include <lib/unique_ptr.hpp>
 #include <atomic>
 
 #include <future>

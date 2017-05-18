@@ -12,7 +12,7 @@
 #include <storage.hpp>
 #include <storage_shared_ptr.hpp>
 
-#include <boost/container/flat_set.hpp>
+#include <lib/flat_set.hpp>
 #include <type_traits>
 #include <algorithm>
 
@@ -23,7 +23,7 @@ class rendering_system : ste_resource_deferred_create_trait {
 private:
 	using storage_tag = const void*;
 	using storage_ptr_base = _internal::storage_shared_ptr_base<rendering_system>;
-	using storage_map_t = boost::container::flat_set<storage_ptr_base>;
+	using storage_map_t = lib::flat_set<storage_ptr_base>;
 
 	friend void storage_ptr_base::release();
 

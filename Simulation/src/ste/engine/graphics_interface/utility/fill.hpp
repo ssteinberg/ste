@@ -17,7 +17,7 @@ namespace gl {
 
 template <typename T>
 auto fill(array<T> &dst,
-		  std::vector<T> &&data,
+		  lib::vector<T> &&data,
 		  std::size_t offset = 0) {
 	const auto &ctx = dst->parent_context();
 	auto future = ctx.engine().task_scheduler().schedule_now([&dst, data = std::move(data), offset]() {
@@ -32,7 +32,7 @@ auto fill(array<T> &dst,
 
 template <typename T, std::uint64_t minimal_atom_size, std::uint64_t max_sparse_size>
 auto fill(stable_vector<T, minimal_atom_size, max_sparse_size> &dst,
-		  std::vector<T> &&data,
+		  lib::vector<T> &&data,
 		  std::size_t offset = 0) {
 	const auto &ctx = dst->parent_context();
 	auto future = ctx.engine().task_scheduler().schedule_now([&dst, data = std::move(data), offset]() {

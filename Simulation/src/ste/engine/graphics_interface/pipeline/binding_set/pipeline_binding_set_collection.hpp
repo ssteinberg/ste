@@ -12,7 +12,7 @@
 #include <pipeline_binding_set.hpp>
 #include <pipeline_binding_set_collection_cmd_bind.hpp>
 
-#include <boost/container/flat_map.hpp>
+#include <lib/flat_map.hpp>
 
 namespace ste {
 namespace gl {
@@ -20,7 +20,7 @@ namespace gl {
 class pipeline_binding_set_collection {
 private:
 	using layout_t = pipeline_binding_set_layout;
-	using collection_t = boost::container::flat_map<pipeline_layout_set_index, pipeline_binding_set>;
+	using collection_t = lib::flat_map<pipeline_layout_set_index, pipeline_binding_set>;
 	using cmd_bind_t = pipeline_binding_set_collection_cmd_bind<pipeline_binding_set_collection>;
 
 private:
@@ -38,8 +38,8 @@ public:
 		if (!binding_sets_layouts_map.size())
 			return;
 
-		std::vector<pipeline_layout_set_index> indices;
-		std::vector<const layout_t*> layouts;
+		lib::vector<pipeline_layout_set_index> indices;
+		lib::vector<const layout_t*> layouts;
 		indices.reserve(binding_sets_layouts_map.size());
 		layouts.reserve(binding_sets_layouts_map.size());
 
@@ -93,10 +93,10 @@ public:
 	 *	
 	 *	#return	Returns the old sets
 	 */
-	auto recreate_sets(const std::vector<pipeline_layout_set_index> &set_indices) {
-		std::vector<pipeline_binding_set> ret_old_sets;
+	auto recreate_sets(const lib::vector<pipeline_layout_set_index> &set_indices) {
+		lib::vector<pipeline_binding_set> ret_old_sets;
 
-		std::vector<const layout_t*> layouts;
+		lib::vector<const layout_t*> layouts;
 		auto &pipeline_layout_map = layout.get().set_layouts();
 		for (auto &set_idx : set_indices) {
 			// Define layout for new set
@@ -112,7 +112,7 @@ public:
 		}
 
 		// Allocate the new sets
-		std::vector<pipeline_binding_set> new_sets = pool.get().allocate_binding_sets<layout_t>(layouts);
+		lib::vector<pipeline_binding_set> new_sets = pool.get().allocate_binding_sets<layout_t>(layouts);
 		ret_old_sets.reserve(new_sets.size());
 		for (std::size_t i = 0; i<new_sets.size(); ++i) {
 			auto &set_idx = set_indices[i];

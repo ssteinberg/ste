@@ -42,7 +42,7 @@ public:
 	std::uint32_t operator()(const ste_queue_descriptors &descriptors) const {
 		// Find a match using the selecting policy.
 		using match_t = std::pair<ste_queue_selector_policy_match_quality::type, ste_queue_descriptors::queues_t::const_iterator>;
-		std::vector<match_t> matches;
+		lib::vector<match_t> matches;
 		for (auto it = descriptors.begin(); it != descriptors.end(); ++it) {
 			auto match_result = selector_policy::matches(*it, this->arg);
 			if (match_result) {
@@ -74,7 +74,7 @@ public:
 		return arg == o.arg;
 	}
 
-	std::string serialize_selector() const { return selector_policy::serialize_selector(arg); }
+	lib::string serialize_selector() const { return selector_policy::serialize_selector(arg); }
 };
 
 /**

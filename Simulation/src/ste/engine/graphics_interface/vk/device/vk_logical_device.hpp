@@ -9,7 +9,7 @@
 
 #include <vulkan/vulkan.h>
 
-#include <vector>
+#include <lib/vector.hpp>
 #include <allow_type_decay.hpp>
 
 namespace ste {
@@ -23,14 +23,14 @@ private:
 
 	VkDevice logical_device{ nullptr };
 	VkPhysicalDeviceFeatures requested_features;
-	std::vector<VkDeviceQueueCreateInfo> requested_queues;
-	std::vector<const char*> enabled_extensions;
+	lib::vector<VkDeviceQueueCreateInfo> requested_queues;
+	lib::vector<const char*> enabled_extensions;
 
 public:
 	vk_logical_device(const vk_physical_device_descriptor &physical_device,
 					  const VkPhysicalDeviceFeatures &requested_features,
-					  const std::vector<VkDeviceQueueCreateInfo> &requested_queues,
-					  const std::vector<const char*> &device_extensions)
+					  const lib::vector<VkDeviceQueueCreateInfo> &requested_queues,
+					  const lib::vector<const char*> &device_extensions)
 		: physical_device(physical_device), requested_features(requested_features),
 		requested_queues(requested_queues), enabled_extensions(device_extensions)
 	{

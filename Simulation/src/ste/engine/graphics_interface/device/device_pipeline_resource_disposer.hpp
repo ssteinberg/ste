@@ -9,12 +9,12 @@
 #include <interruptible_thread.hpp>
 #include <mutex>
 #include <condition_variable>
-#include <memory>
+#include <lib/unique_ptr.hpp>
 #include <chrono>
 #include <aligned_ptr.hpp>
 
-#include <list>
-#include <concurrent_queue.hpp>
+#include <lib/list.hpp>
+#include <lib/concurrent_queue.hpp>
 
 namespace ste {
 namespace gl {
@@ -32,7 +32,7 @@ template <
 class device_pipeline_resource_disposer {
 private:
 	using Instance = device_pipeline_resources_marked_for_deletion;
-	using queue_t = concurrent_queue<Instance>;
+	using queue_t = lib::concurrent_queue<Instance>;
 	using instance_ptr = queue_t::stored_ptr;
 
 	struct shared_data_t {
@@ -44,13 +44,13 @@ private:
 private:
 	mutable std::mutex m;
 	aligned_ptr<shared_data_t> shared_data;
-	std::unique_ptr<interruptible_thread> thread;
+	lib::unique_ptr<interruptible_thread> thread;
 
-	std::list<std::pair<Instance, std::chrono::high_resolution_clock::time_point>> deletion_list;
+	lib::list<std::pair<Instance, std::chrono::high_resolution_clock::time_point>> deletion_list;
 
 public:
 	device_pipeline_resource_disposer() {
-		thread = std::make_unique<interruptible_thread>([this]() {
+		thread = lib::allocate_unique<interruptible_thread>([this]() {
 			for (;;) {
 				instance_ptr queued_instance;
 				{

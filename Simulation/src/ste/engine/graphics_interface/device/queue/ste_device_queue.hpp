@@ -23,13 +23,13 @@
 #include <mutex>
 #include <future>
 #include <utility>
-#include <memory>
-#include <vector>
-#include <list>
+#include <lib/unique_ptr.hpp>
+#include <lib/vector.hpp>
+#include <lib/list.hpp>
 #include <atomic>
 #include <aligned_ptr.hpp>
 
-#include <concurrent_queue.hpp>
+#include <lib/concurrent_queue.hpp>
 #include <interruptible_thread.hpp>
 #include <thread_pool_task.hpp>
 
@@ -52,7 +52,7 @@ public:
 
 private:
 	using shared_fence_t = ste_device_queue_batch<void>::fence_t;
-	using task_queue_t = concurrent_queue<task_t>;
+	using task_queue_t = lib::concurrent_queue<task_t>;
 
 	struct shared_data_t {
 		mutable std::mutex m;
@@ -68,11 +68,11 @@ private:
 
 	ste_device_sync_primitives_pools::shared_fence_pool_t *shared_fence_pool;
 
-	std::list<std::unique_ptr<_detail::ste_device_queue_batch_base>> submitted_batches;
+	lib::list<lib::unique_ptr<_detail::ste_device_queue_batch_base>> submitted_batches;
 
 	aligned_ptr<shared_data_t> shared_data;
 	ste_resource_pool<ste_device_queue_command_pool> pool;
-	std::unique_ptr<interruptible_thread> thread;
+	lib::unique_ptr<interruptible_thread> thread;
 
 	secondary_buffer_allocator_t secondary_buffer_allocator;
 
@@ -84,8 +84,8 @@ private:
 private:
 	static auto& thread_device_queue() { return *static_device_queue_ptr; }
 
-	static auto vk_semaphores(const std::vector<const semaphore*> &s) {
-		std::vector<VkSemaphore> vk_sems;
+	static auto vk_semaphores(const lib::vector<const semaphore*> &s) {
+		lib::vector<VkSemaphore> vk_sems;
 		vk_sems.reserve(s.size());
 		for (auto &sem : s)
 			vk_sems.push_back(*sem);
@@ -120,9 +120,9 @@ public:
 	template <typename UserData = void, typename... UserDataArgs>
 	static auto thread_allocate_batch(UserDataArgs&&... user_data_args) {
 		using batch_t = ste_device_queue_batch<UserData>;
-		return std::make_unique<batch_t>(thread_queue_index(),
+		return lib::allocate_unique<batch_t>(thread_queue_index(),
 										 thread_device_queue().pool.claim(),
-										 std::make_shared<shared_fence_t>(thread_device_queue().shared_fence_pool->claim()),
+										 lib::allocate_shared<shared_fence_t>(thread_device_queue().shared_fence_pool->claim()),
 										 std::forward<UserDataArgs>(user_data_args)...);
 	}
 	/**
@@ -132,7 +132,7 @@ public:
 	*/
 	template <typename Batch, typename... Args>
 	static auto thread_allocate_batch_custom(Args&&... custom_args) {
-		return std::make_unique<Batch>(thread_queue_index(),
+		return lib::allocate_unique<Batch>(thread_queue_index(),
 									   thread_device_queue().pool.claim(),
 									   std::forward<Args>(custom_args)...);
 	}
@@ -157,15 +157,15 @@ public:
 	*	@param	signal_semaphores	See vk_queue::submit
 	*/
 	template <typename UserData>
-	static void submit_batch(std::unique_ptr<ste_device_queue_batch<UserData>> &&batch,
-							 const std::vector<wait_semaphore> &wait_semaphores = {},
-							 const std::vector<const semaphore*> &signal_semaphores = {}) {
+	static void submit_batch(lib::unique_ptr<ste_device_queue_batch<UserData>> &&batch,
+							 const lib::vector<wait_semaphore> &wait_semaphores = {},
+							 const lib::vector<const semaphore*> &signal_semaphores = {}) {
 		if (!is_queue_thread()) {
 			throw ste_device_not_queue_thread_exception();
 		}
 
 		// Copy command buffers' handles for submission
-		std::vector<vk::vk_command_buffer> command_buffers;
+		lib::vector<vk::vk_command_buffer> command_buffers;
 		command_buffers.reserve(batch->command_buffers.size());
 		for (auto &b : *batch)
 			command_buffers.push_back(static_cast<vk::vk_command_buffer>(b));
@@ -179,7 +179,7 @@ public:
 					cmd_buf.submit_host_commands(thread_queue());
 				// Submit finalized buffers
 				thread_queue().submit(command_buffers,
-									  std::vector<vk::vk_queue::wait_semaphore_t>(wait_semaphores.begin(), wait_semaphores.end()),
+									  lib::vector<vk::vk_queue::wait_semaphore_t>(wait_semaphores.begin(), wait_semaphores.end()),
 									  vk_semaphores(signal_semaphores),
 									  &(*fence)->get_fence());
 
@@ -278,9 +278,9 @@ public:
 	template <typename UserData = void, typename... UserDataArgs>
 	auto allocate_batch(UserDataArgs&&... user_data_args) {
 		using batch_t = ste_device_queue_batch<UserData>;
-		return std::make_unique<batch_t>(queue_index,
+		return lib::allocate_unique<batch_t>(queue_index,
 										 pool.claim(),
-										 std::make_shared<shared_fence_t>(shared_fence_pool->claim()),
+										 lib::allocate_shared<shared_fence_t>(shared_fence_pool->claim()),
 										 std::forward<UserDataArgs>(user_data_args)...);
 	}
 	/**
@@ -289,7 +289,7 @@ public:
 	*/
 	template <typename Batch, typename... Args>
 	auto allocate_batch_custom(Args&&... custom_args) {
-		return std::make_unique<Batch>(queue_index,
+		return lib::allocate_unique<Batch>(queue_index,
 									   pool.claim(),
 									   std::forward<Args>(custom_args)...);
 	}

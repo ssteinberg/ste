@@ -6,7 +6,7 @@
 #include <stdafx.hpp>
 #include <vertex_attributes.hpp>
 
-#include <vector>
+#include <lib/vector.hpp>
 
 namespace ste {
 namespace gl {
@@ -14,7 +14,7 @@ namespace gl {
 class vertex_input_binding_descriptor {
 private:
 	VkVertexInputBindingDescription binding_descriptor;
-	std::vector<VkVertexInputAttributeDescription> attribute_descriptors;
+	lib::vector<VkVertexInputAttributeDescription> attribute_descriptors;
 
 public:
 	template <typename B, VkVertexInputRate i>

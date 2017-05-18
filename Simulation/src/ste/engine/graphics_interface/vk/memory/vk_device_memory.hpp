@@ -13,7 +13,7 @@
 #include <optional.hpp>
 #include <allow_type_decay.hpp>
 
-#include <memory>
+#include <lib/unique_ptr.hpp>
 
 namespace ste {
 namespace gl {
@@ -35,7 +35,7 @@ public:
 
 	template <typename T>
 	static auto create(const vk_mmap<T> *m) {
-		return std::make_unique<vk_mmap_type_eraser>(ctor(), [m]() {
+		return lib::allocate_unique<vk_mmap_type_eraser>(ctor(), [m]() {
 			m->munmap();
 		});
 	}
@@ -52,7 +52,7 @@ private:
 	std::reference_wrapper<const vk_logical_device> device;
 	std::uint64_t size;
 
-	std::unique_ptr<vk_mmap_type_eraser> mapped_memory{ nullptr };
+	lib::unique_ptr<vk_mmap_type_eraser> mapped_memory{ nullptr };
 
 public:
 	vk_device_memory(const vk_logical_device &device, std::uint64_t size, int memory_type_index)
@@ -117,7 +117,7 @@ public:
 	*	@param	count	Mapped region size expressed in count of elements of type T
 	*/
 	template <typename T>
-	std::unique_ptr<vk_mmap<T>> mmap(std::uint64_t offset, std::uint64_t count) {
+	lib::unique_ptr<vk_mmap<T>> mmap(std::uint64_t offset, std::uint64_t count) {
 		munmap();
 
 		void *pdata = nullptr;
@@ -126,7 +126,7 @@ public:
 			throw vk_exception(res);
 		}
 
-		auto mmap = std::make_unique<vk_mmap<T>>(*this, offset, count, reinterpret_cast<T*>(pdata));
+		auto mmap = lib::allocate_unique<vk_mmap<T>>(*this, offset, count, reinterpret_cast<T*>(pdata));
 		mapped_memory = vk_mmap_type_eraser::create<T>(mmap.get());
 
 		return std::move(mmap);

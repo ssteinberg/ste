@@ -10,7 +10,8 @@
 #include <ste_device_queue_command_pool.hpp>
 #include <shared_fence.hpp>
 
-#include <memory>
+#include <lib/unique_ptr.hpp>
+#include <lib/shared_ptr.hpp>
 #include <type_traits>
 #include <function_traits.hpp>
 
@@ -42,10 +43,10 @@ public:
 
 template <typename T>
 struct ste_device_queue_batch_user_data_t {
-	std::unique_ptr<T> user_data;
+	lib::unique_ptr<T> user_data;
 	template <typename... UserDataArgs>
 	ste_device_queue_batch_user_data_t(UserDataArgs&&... user_data_args)
-		: user_data(std::make_unique<T>(std::forward<UserDataArgs>(user_data_args)...))
+		: user_data(lib::allocate_unique<T>(std::forward<UserDataArgs>(user_data_args)...))
 	{}
 };
 template <>
@@ -104,7 +105,7 @@ class ste_device_queue_batch : public _detail::ste_device_queue_batch_pool<UserD
 
 public:
 	using fence_t = ste_resource_pool<shared_fence<void>>::resource_t;
-	using fence_ptr_strong_t = std::shared_ptr<fence_t>;
+	using fence_ptr_strong_t = lib::shared_ptr<fence_t>;
 
 	using command_buffer_t = command_buffer_primary<false>;
 
@@ -112,7 +113,7 @@ protected:
 	fence_ptr_strong_t fence_strong;
 
 protected:
-	std::vector<command_buffer_t> command_buffers;
+	lib::vector<command_buffer_t> command_buffers;
 
 	auto begin() const { return command_buffers.begin(); }
 	auto end() const { return command_buffers.end(); }
