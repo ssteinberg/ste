@@ -520,7 +520,6 @@
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\device\pipeline_cache\ste_device_pipeline_cache.cpp" />
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\device\queue\ste_device_queue.cpp" />
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\device\ste_device.cpp" />
-    <ClCompile Include="Simulation\src\ste\engine\graphics_interface\device\ste_device_queue_selector_cache.cpp" />
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\device\presentation_surface\ste_presentation_surface.cpp" />
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\pipeline\shader\device_pipeline_shader_stage.cpp" />
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\pipeline\shader\spirv_reflection\ste_shader_spirv_reflection.cpp" />
@@ -960,7 +959,6 @@
     <ClCompile Include="Simulation\src\ste\math_additions\graphs\graph.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Simulation\src\ste\ste_library\lib\allocator.cpp" />
     <ClCompile Include="Simulation\src\ste\ste_library\stl_extensions\threading\interruptible_thread.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
@@ -1116,13 +1114,15 @@
     <ClInclude Include="Simulation\src\ste\math_additions\transformations\reversed_perspective.hpp" />
     <ClInclude Include="Simulation\src\ste\ste.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device\ste_device.hpp" />
+    <ClInclude Include="Simulation\src\ste\ste_library\lib\blob.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_library\lib\concurrent_queue.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_library\lib\concurrent_unordered_map.hpp" />
-    <ClInclude Include="Simulation\src\ste\ste_library\lib\construct.hpp" />
+    <ClInclude Include="Simulation\src\ste\ste_library\lib\alloc.hpp" />
+    <ClInclude Include="Simulation\src\ste\ste_library\lib\intrusive_ptr.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_library\lib\shared_ptr.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_library\lib\static_vector.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_library\lib\unique_ptr.hpp" />
-    <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\allocator_delete.hpp" />
+    <ClInclude Include="Simulation\src\ste\ste_library\lib\allocator_delete.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_library\lib\deque.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_library\lib\flat_map.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_library\lib\flat_multimap.hpp" />
@@ -1141,8 +1141,9 @@
     <ClInclude Include="Simulation\src\ste\ste_library\lib\unordered_set.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_library\lib\vector.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\memory\aligned_allocator.hpp" />
+    <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\type_traits\copyable_moveale_base.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_version.hpp" />
-    <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\blob.hpp" />
+    <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\container\blob.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\boundary.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\concurrency\concurrent_queue.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\concurrency\concurrent_unordered_map.hpp" />

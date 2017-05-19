@@ -87,10 +87,13 @@ public:
 	attributed_string_common(const char_type &c) : string(c) {}
 	attributed_string_common(const char_type *cstr) : string(cstr) {}
 	attributed_string_common(const string_type &str) : string(str) {}
-	attributed_string_common(const string_type &str, std::initializer_list<attrib_type*> attribs) : string(str) {
+	attributed_string_common(string_type &&str) : string(std::move(str)) {}
+	attributed_string_common(string_type &&str, std::initializer_list<attrib_type*> attribs) : string(std::move(str)) {
 		for (auto it = attribs.begin(); it != attribs.end(); ++it)
 			add_attrib({ 0, str.length() }, lib::unique_ptr<attrib_type>((*it)->clone()));
 	}
+	attributed_string_common(const string_type &str, std::initializer_list<attrib_type*> attribs)
+		: string(string_type(str), attribs) {}
 
 	attributed_string_common(attributed_string_common &&) = default;
 	attributed_string_common &operator=(attributed_string_common &&) = default;
@@ -154,7 +157,7 @@ public:
 	template <class Formatter = attributed_string_htm_formatter<CharT>>
 	lib::string markup() const {
 		auto str = Formatter()(*this);
-		return lib::to_string(std::wstring_convert<std::codecvt_utf8<CharT>, CharT>().to_bytes(str));
+		return std::wstring_convert<std::codecvt_utf8<CharT>, CharT, lib::allocator<CharT>, lib::allocator<char>>().to_bytes(str);
 	}
 
 	char_type &operator[](std::size_t index) { return string[index]; }

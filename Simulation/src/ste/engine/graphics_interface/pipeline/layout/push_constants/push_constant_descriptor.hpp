@@ -9,7 +9,6 @@
 #include <lib/string.hpp>
 #include <lib/flat_map.hpp>
 #include <optional.hpp>
-#include <lib::deque>
 
 namespace ste {
 namespace gl {

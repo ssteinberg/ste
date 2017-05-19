@@ -104,7 +104,7 @@ private:
 	 */
 	void glyph_loader(const font &font, wchar_t codepoint, font_storage::glyphs_t::iterator &&glyphit) {
 		// Cache key
-		lib::string cache_key = lib::string("ttfdf") + font.get_path().string() + lib::to_string(static_cast<std::uint32_t>(codepoint));
+		lib::string cache_key = lib::string("ttfdf") + lib::to_string(font.get_path().string()) + lib::to_string(static_cast<std::uint32_t>(codepoint));
 
 		// Check cache
 		optional<glyph> og;

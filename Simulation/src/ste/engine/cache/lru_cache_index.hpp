@@ -100,7 +100,7 @@ private:
 				total_size = populate_map(path);
 			} catch (const std::exception &e) {
 				using namespace text::Attributes;
-				ste_log_warn() << b("LRU Cache: ") + "Failed reading index (Reason: " + e.what() + "). Clearing " + i(path.string()) + "." << std::endl;
+				ste_log_warn() << b("LRU Cache: ") + "Failed reading index (Reason: " + e.what() + "). Clearing " + i(lib::to_string(path.string())) + "." << std::endl;
 
 				for (std::experimental::filesystem::directory_iterator end_dir_it, it(path); it!=end_dir_it; ++it)
 					std::experimental::filesystem::remove(it->path());
@@ -118,7 +118,11 @@ private:
 		if (v.is_live())
 			lru_list.splice(lru_list.cbegin(), lru_list, v.get_lru_it());
 		else {
-			lru_list.push_back(lru_node{ v.get_k(), v.get_file_name().string() });
+			auto node = lru_node{
+				v.get_k(),
+				lib::to_string(v.get_file_name().string())
+			};
+			lru_list.push_back(std::move(node));
 			v.mark_live(lru_list.cbegin());
 		}
 	}

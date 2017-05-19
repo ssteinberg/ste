@@ -9,6 +9,8 @@
 #include <functional>
 #include <typeinfo>
 
+#include <lib/alloc.hpp>
+
 namespace ste {
 namespace text {
 
@@ -36,15 +38,23 @@ public:
 	bool is_same_attrib(const attrib &rhs) const { return attrib_type() == rhs.attrib_type(); }
 
 	template<typename T>
-	attributed_string_common<T> operator()(const attributed_string_common<T> &str) const {
-		attributed_string_common<T> newstr = str;
+	attributed_string_common<T> operator()(attributed_string_common<T> &&str) const {
+		attributed_string_common<T> newstr = std::move(str);
 		newstr.add_attrib({ 0,newstr.length() }, *this);
 		return newstr;
+	}
+	template<typename T>
+	attributed_string_common<T> operator()(const attributed_string_common<T> &str) const {
+		return (*this)(attributed_string_common<T>(str));
 	}
 	attributed_string_common<char> operator()(const lib::string &str) const;
 	attributed_string_common<char16_t> operator()(const lib::u16string &str) const;
 	attributed_string_common<char32_t> operator()(const lib::u32string &str) const;
 	attributed_string_common<wchar_t> operator()(const lib::wstring &str) const;
+	attributed_string_common<char> operator()(lib::string &&str) const;
+	attributed_string_common<char16_t> operator()(lib::u16string &&str) const;
+	attributed_string_common<char32_t> operator()(lib::u32string &&str) const;
+	attributed_string_common<wchar_t> operator()(lib::wstring &&str) const;
 	attributed_string_common<char> operator()(const char* str) const;
 	attributed_string_common<char16_t> operator()(const char16_t* str) const;
 	attributed_string_common<char32_t> operator()(const char32_t* str) const;
@@ -69,7 +79,7 @@ public:
 		return reinterpret_cast<std::size_t>(&type_id);
 	}
 	attrib_id_t attrib_type() const noexcept override { return attrib_type_s(); }
-	virtual rgb* clone() const override { return new rgb(*this); };
+	rgb* clone() const override final { return lib::default_alloc<rgb>::make(*this); };
 
 	glm::u8vec4 &get() { return color; }
 	glm::u8vec4 get() const { return color; }
@@ -234,7 +244,7 @@ public:
 		return reinterpret_cast<std::size_t>(&type_id);
 	}
 	attrib_id_t attrib_type() const noexcept override { return attrib_type_s(); }
-	virtual stroke* clone() const override { return new stroke(*this); };
+	stroke* clone() const override final { return lib::default_alloc<stroke>::make(*this); };
 
 	float get_width() const { return width; }
 	rgb get_color() const { return color; }
@@ -257,7 +267,7 @@ public:
 		return reinterpret_cast<std::size_t>(&type_id);
 	}
 	attrib_id_t attrib_type() const noexcept override { return attrib_type_s(); }
-	virtual font* clone() const override { return new font(*this); };
+	font* clone() const override final { return lib::default_alloc<font>::make(*this); };
 
 	auto &get() { return f; }
 	auto get() const { return f; }
@@ -282,7 +292,7 @@ public:
 		return reinterpret_cast<std::size_t>(&type_id);
 	}
 	attrib_id_t attrib_type() const noexcept override { return attrib_type_s(); }
-	virtual size* clone() const override { return new size(*this); };
+	size* clone() const override final { return lib::default_alloc<size>::make(*this); };
 
 	T &get() { return s; }
 	T get() const { return s; }
@@ -315,7 +325,7 @@ public:
 		return reinterpret_cast<std::size_t>(&type_id);
 	}
 	attrib_id_t attrib_type() const noexcept override { return attrib_type_s(); }
-	virtual line_height* clone() const override { return new line_height(*this); };
+	line_height* clone() const override final { return lib::default_alloc<line_height>::make(*this); };
 
 	T &get() { return s; }
 	T get() const { return s; }
@@ -340,7 +350,7 @@ public:
 		return reinterpret_cast<std::size_t>(&type_id);
 	}
 	attrib_id_t attrib_type() const noexcept override { return attrib_type_s(); }
-	virtual kern* clone() const override { return new kern(*this); };
+	kern* clone() const override final { return lib::default_alloc<kern>::make(*this); };
 
 	T &get() { return k; }
 	T get() const { return k; }
@@ -369,7 +379,7 @@ public:
 		return reinterpret_cast<std::size_t>(&type_id);
 	}
 	attrib_id_t attrib_type() const noexcept override { return attrib_type_s(); }
-	virtual align* clone() const override { return new align(*this); };
+	align* clone() const override final { return lib::default_alloc<align>::make(*this); };
 
 	alignment &get() { return a; }
 	alignment get() const { return a; }
@@ -397,7 +407,7 @@ public:
 		return reinterpret_cast<std::size_t>(&type_id);
 	}
 	attrib_id_t attrib_type() const noexcept override { return attrib_type_s(); }
-	virtual weight* clone() const override { return new weight(*this); };
+	weight* clone() const override final { return lib::default_alloc<weight>::make(*this); };
 
 	T &get() { return w; }
 	T get() const { return w; }
@@ -419,7 +429,7 @@ public:
 		return reinterpret_cast<std::size_t>(&type_id);
 	}
 	attrib_id_t attrib_type() const noexcept override { return attrib_type_s(); }
-	virtual underline* clone() const override { return new underline(*this); };
+	underline* clone() const override final { return lib::default_alloc<underline>::make(*this); };
 };
 static const underline u = underline();
 
@@ -437,7 +447,7 @@ public:
 		return reinterpret_cast<std::size_t>(&type_id);
 	}
 	attrib_id_t attrib_type() const noexcept override { return attrib_type_s(); }
-	virtual italic* clone() const override { return new italic(*this); };
+	italic* clone() const override final { return lib::default_alloc<italic>::make(*this); };
 };
 static const italic i = italic();
 
@@ -459,7 +469,7 @@ public:
 		return reinterpret_cast<std::size_t>(&type_id);
 	}
 	attrib_id_t attrib_type() const noexcept override { return attrib_type_s(); }
-	virtual link* clone() const override { return new link(*this); };
+	link* clone() const override final { return lib::default_alloc<link>::make(*this); };
 
 	T &get() { return l; }
 	T get() const { return l; }

@@ -267,7 +267,6 @@ gli::texture2d surface_io::load_png(const std::experimental::filesystem::path &f
 	rowbytes += 3 - ((rowbytes - 1) % 4);
 
 	// Allocate the image_data as a big block, to be given to opengl
-	/*char * image_data = new char[rowbytes * temp_height * sizeof(png_byte) + 15];*/
 	std::size_t w = rowbytes / components + !!(rowbytes%components);
 	gli::texture2d tex(format, { w, temp_height }, 1);
 	char *image_data = reinterpret_cast<char*>(tex.data());

@@ -118,8 +118,7 @@ private:
 	}
 	friend void intrusive_ptr_release(binding_set_pool_instance *ptr) {
 		if (ptr->ref_counter.fetch_add(-1, std::memory_order_acq_rel) == 1)
-			delete ptr;
-
+			lib::default_alloc<binding_set_pool_instance>::destroy(ptr);
 	}
 };
 

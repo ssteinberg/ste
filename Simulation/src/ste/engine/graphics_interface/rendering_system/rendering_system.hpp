@@ -11,6 +11,7 @@
 
 #include <storage.hpp>
 #include <storage_shared_ptr.hpp>
+#include <lib/alloc.hpp>
 
 #include <lib/flat_set.hpp>
 #include <type_traits>
@@ -63,7 +64,7 @@ public:
 		}
 
 		// Need to create a storage
-		storage_base* storage = new Storage(ctx.get());
+		storage_base* storage = lib::default_alloc<Storage>::make(ctx.get());
 
 		auto ret_it = storages.emplace_hint(it, storage, this, tag);
 		return storage_shared_ptr<Storage>(*ret_it);

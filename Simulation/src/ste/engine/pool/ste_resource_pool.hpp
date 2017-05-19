@@ -66,11 +66,10 @@ public:
 		}
 
 		// Create new
-		auto ptr = lib::allocator<T>().allocate(1);
-		tuple_call(&T::template _ste_resource_pool_resource_creator<T>,
-				   std::tuple_cat(std::make_tuple(ptr), res_params));
+		auto ptr = tuple_call(&T::template _ste_resource_pool_resource_creator<T>,
+							  res_params);
 		return resource_t(&pool,
-						  resource_ptr_t(ptr));
+						  std::move(ptr));
 	}
 };
 

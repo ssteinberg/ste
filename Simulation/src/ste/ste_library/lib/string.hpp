@@ -211,3 +211,18 @@ auto to_string(const std::basic_string<Elem, Traits, Allocator> &src) {
 
 }
 }
+
+
+// Boost serialization
+namespace boost::serialization {
+
+template<class Archive, typename Elem, typename Traits>
+void serialize(Archive &ar, ste::lib::basic_string<Elem, Traits> &str, const unsigned int version) {
+	std::string stdstr;
+	stdstr.resize(str.size());
+	std::copy(str.begin(), str.end(), stdstr.begin());
+
+	ar & stdstr;
+}
+
+}

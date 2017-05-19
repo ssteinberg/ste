@@ -19,6 +19,13 @@
 
 namespace ste {
 
+/**
+ *	@brief	Concurrent, lock-free, unordered key-value hashmap.
+ *			Provides insert/replace, erase and automatic expand facilities.
+ *			
+ *			Key and value types must be copyable. 
+ *			Expects an aligned allocator that aligns on cache_line boundaries. AlignedAllocator and Allocator are expected to be stateless.
+ */
 template <
 	typename K, 
 	typename V,
@@ -35,6 +42,7 @@ private:
 public:
 	using mapped_type = V;
 	using key_type = K;
+	using allocator_type = Allocator;
 
 private:
 	struct concurrent_map_bucket_data {
@@ -129,7 +137,8 @@ private:
 
 		static hash_table_type alloc(unsigned size) {
 			auto b = AlignedAllocator::template rebind<virtual_bucket_type>::other().allocate(size);
-			new (b) virtual_bucket_type[size];
+			for (unsigned i=0;i<size;++i)
+				new (b + i) virtual_bucket_type();
 
 			assert(reinterpret_cast<std::size_t>(b) % static_cast<std::size_t>(cache_line) == 0 && "AlignedAllocator does not aligne properly!");
 			assert(b[0].buckets[0].is_lock_free() && "bucket_type not lock free");
@@ -141,7 +150,7 @@ private:
 			if (!buckets)
 				return;
 
-			for (unsigned i = 0; i < size; ++i)
+			for (auto i = size; i-->0;)
 				(&buckets[i])->~virtual_bucket_type();
 			AlignedAllocator::template rebind<virtual_bucket_type>::other().deallocate(buckets, size);
 		}

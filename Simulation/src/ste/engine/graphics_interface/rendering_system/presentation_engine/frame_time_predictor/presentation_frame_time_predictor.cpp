@@ -4,7 +4,7 @@
 
 #include <presentation_frame_time_predictor_model.hpp>
 
-#include <lib/construct.hpp>
+#include <lib/alloc.hpp>
 
 using namespace ste::gl;
 
@@ -15,7 +15,7 @@ struct presentation_frame_time_predictor_impl {
 };
 
 presentation_frame_time_predictor::presentation_frame_time_predictor(float covariance) {
-	presentation_frame_time_predictor_impl *pimpl = lib::allocate_construct<presentation_frame_time_predictor_impl>();
+	presentation_frame_time_predictor_impl *pimpl = lib::default_alloc<presentation_frame_time_predictor_impl>::make();
 
 	gl::presentation_frame_time_predictor_model::state<float> x;
 	x.setZero();
@@ -31,7 +31,7 @@ presentation_frame_time_predictor::presentation_frame_time_predictor(float covar
 
 presentation_frame_time_predictor::~presentation_frame_time_predictor() noexcept {
 	auto *pimpl = reinterpret_cast<presentation_frame_time_predictor_impl*>(this->pimpl);
-	lib::desctruct_deallocate(pimpl);
+	lib::default_alloc<presentation_frame_time_predictor_impl>::destroy(pimpl);
 }
 
 void presentation_frame_time_predictor::update(std::uint64_t ns) {

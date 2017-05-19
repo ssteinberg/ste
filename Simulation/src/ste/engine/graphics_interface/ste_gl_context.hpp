@@ -92,7 +92,7 @@ public:
 		// Enumerate devices
 		devices.resize(count);
 		{
-			lib::unique_ptr<VkPhysicalDevice[]> t_devices_arr(lib::allocator<VkPhysicalDevice>().allocate(count));
+			auto t_devices_arr = lib::allocate_unique<VkPhysicalDevice[]>(count);
 			res = vkEnumeratePhysicalDevices(vk, &count, t_devices_arr.get());
 			if (!res) {
 				throw vk::vk_exception(res);

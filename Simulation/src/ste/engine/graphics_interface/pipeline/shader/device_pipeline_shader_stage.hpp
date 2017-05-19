@@ -94,10 +94,10 @@ private:
 		}
 
 		return lib::allocate_unique<const ste_shader_object>(ctx.device(),
-														 code,
-														 stage,
-														 std::move(stage_bindings),
-														 std::move(stage_attachments));
+															 code,
+															 stage,
+															 std::move(stage_bindings),
+															 std::move(stage_attachments));
 	}
 
 public:

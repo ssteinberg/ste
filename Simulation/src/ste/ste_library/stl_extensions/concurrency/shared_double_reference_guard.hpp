@@ -13,13 +13,19 @@ namespace _shared_double_reference_guard_detail {
 template <typename data_t, class Allocator = std::allocator<data_t>>
 class data_factory {
 public:
-	static void release(data_t *ptr) {
+	using allocator_type = Allocator;
+
+private:
+	allocator_type allocator;
+
+public:
+	void release(data_t *ptr) {
 		ptr->~data_t();
-		Allocator().deallocate(ptr, 1);
+		allocator.deallocate(ptr, 1);
 	}
 	template <typename ... Ts>
 	data_t* claim(Ts&&... args) {
-		auto ptr = Allocator().allocate(1);
+		auto ptr = allocator.allocate(1);
 		::new (ptr) data_t(std::forward<Ts>(args)...);
 		
 		return ptr;

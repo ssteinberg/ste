@@ -11,7 +11,7 @@
 
 #include <atomic>
 #include <lib/concurrent_unordered_map.hpp>
-#include <boost/intrusive_ptr.hpp>
+#include <lib/intrusive_ptr.hpp>
 
 namespace ste {
 namespace gl {
@@ -20,7 +20,7 @@ class pipeline_binding_set_pool {
 private:
 	using pool_key = std::uint32_t;
 	using instance_t = binding_set_pool_instance<pipeline_binding_set_pool, pool_key>;
-	using pool_ptr_t = boost::intrusive_ptr<instance_t>;
+	using pool_ptr_t = lib::intrusive_ptr<instance_t>;
 	using pools_t = lib::concurrent_unordered_map<pool_key, pool_ptr_t>;
 
 	friend instance_t;
@@ -50,12 +50,12 @@ private:
 		auto max_sets = sets_count;
 
 		// Allocate
-		return pool_ptr_t(new instance_t(instance_t::ctor(),
-										 device.get(),
-										 static_cast<std::uint32_t>(max_sets),
-										 pool_bindings,
-										 this,
-										 key));
+		return pool_ptr_t(lib::allocate_intrusive<instance_t>(instance_t::ctor(),
+															  device.get(),
+															  static_cast<std::uint32_t>(max_sets),
+															  pool_bindings,
+															  this,
+															  key));
 	}
 
 	void release_one(const pool_key &k) {

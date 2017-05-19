@@ -3,12 +3,9 @@
 
 #pragma once
 
-#include <functional>
-#include <memory>
-
+#include <copyable_moveale_base.hpp>
 #include <types.hpp>
 
-#include <functional>
 #include <type_traits>
 
 #include <stdexcept>
@@ -149,63 +146,16 @@ public:
 	}
 };
 
-template <bool b>
-struct move_ctor_deleter {};
-template <>
-struct move_ctor_deleter<false> {
-	move_ctor_deleter() = default;
-	move_ctor_deleter(move_ctor_deleter&&) = delete;
-};
-
-template <bool b>
-struct move_assign_deleter {};
-template <>
-struct move_assign_deleter<false> {
-	move_assign_deleter() = default;
-	move_assign_deleter &operator=(move_assign_deleter&&) = delete;
-};
-
-template <bool b>
-struct copy_ctor_deleter {};
-template <>
-struct copy_ctor_deleter<false> {
-	copy_ctor_deleter() = default;
-	copy_ctor_deleter(const copy_ctor_deleter&) = delete;
-};
-
-template <bool b>
-struct copy_assign_deleter {};
-template <>
-struct copy_assign_deleter<false> {
-	copy_assign_deleter() = default;
-	copy_assign_deleter &operator=(const copy_assign_deleter&) = delete;
-};
-
-template <
-	typename T,
-	bool move_constructible,
-	bool copy_constructible,
-	bool move_assingable,
-	bool copy_assignable
->
+template <typename T>
 struct optional_copymove_base
 	: optional_base_moveable_copyable<T>,
-	move_ctor_deleter<move_constructible>,
-	copy_ctor_deleter<copy_constructible>,
-	move_assign_deleter<move_assingable>,
-	copy_assign_deleter<copy_assignable>
+	copyable_moveale_base<T>
 {
 	using optional_base_moveable_copyable<T>::optional_base_moveable_copyable;
 };
 
 template <typename T>
-using optional_ctor_base = optional_copymove_base<
-	T,
-	std::is_move_constructible_v<T>,
-	std::is_copy_constructible_v<T>,
-	std::is_move_assignable_v<T>,
-	std::is_copy_assignable_v<T>
->;
+using optional_ctor_base = optional_copymove_base<T>;
 
 }
 

@@ -37,7 +37,7 @@ constexpr format_rtti format_rtti_for_format() {
 
 }
 
-ste::lib::unordered_map<format, format_rtti> _internal::format_rtti_database::database =
+std::unordered_map<format, format_rtti> _internal::format_rtti_database::database =
 {
 	{
 		format::r4g4_unorm_pack8,

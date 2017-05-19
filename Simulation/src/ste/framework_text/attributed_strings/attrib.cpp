@@ -43,6 +43,30 @@ attributed_string_common<wchar_t> attrib::operator()(const lib::wstring &str) co
 	return newstr;
 }
 
+attributed_string_common<char> attrib::operator()(lib::string &&str) const {
+	attributed_string_common<char> newstr(std::move(str));
+	newstr.add_attrib({ 0,newstr.length() }, *this);
+	return newstr;
+}
+
+attributed_string_common<char16_t> attrib::operator()(lib::u16string &&str) const {
+	attributed_string_common<char16_t> newstr(std::move(str));
+	newstr.add_attrib({ 0,newstr.length() }, *this);
+	return newstr;
+}
+
+attributed_string_common<char32_t> attrib::operator()(lib::u32string &&str) const {
+	attributed_string_common<char32_t> newstr(std::move(str));
+	newstr.add_attrib({ 0,newstr.length() }, *this);
+	return newstr;
+}
+
+attributed_string_common<wchar_t> attrib::operator()(lib::wstring &&str) const {
+	attributed_string_common<wchar_t> newstr(std::move(str));
+	newstr.add_attrib({ 0,newstr.length() }, *this);
+	return newstr;
+}
+
 attributed_string_common<char> attrib::operator()(const char* str) const {
 	return (*this)(lib::string(str));
 }

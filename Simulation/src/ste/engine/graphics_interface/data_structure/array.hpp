@@ -19,7 +19,7 @@
 #include <lib/vector.hpp>
 #include <allow_type_decay.hpp>
 #include <functional>
-#include <lib/string.hpp>
+#include <lib/blob.hpp>
 
 namespace ste {
 namespace gl {
@@ -74,7 +74,7 @@ public:
 		assert(data.size() + offset <= size() && "Out-of-bounds");
 
 		// Store copy of data
-		blob bin(data);
+		lib::blob bin(data);
 
 		// Create the task
 		auto t = task<cmd_update_buffer>();

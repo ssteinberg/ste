@@ -19,7 +19,7 @@
 
 #include <allow_type_decay.hpp>
 #include <functional>
-#include <lib/string.hpp>
+#include <lib/blob.hpp>
 
 namespace ste {
 namespace gl {
@@ -85,7 +85,7 @@ private:
 			update_cmd(buffer_view(v->buffer,
 								   v->elements,
 								   data_size),
-					   blob(data_copy)),
+					   lib::blob(data_copy)),
 			v(v)
 		{}
 		virtual ~stable_vector_cmd_push_back() noexcept {}
@@ -197,7 +197,7 @@ public:
 	*/
 	auto update_task(const lib::vector<T> &data, std::uint64_t offset) {
 		// Store copy of data
-		blob bin(data);
+		lib::blob bin(data);
 
 		// Create the task
 		auto t = task<cmd_update_buffer>();

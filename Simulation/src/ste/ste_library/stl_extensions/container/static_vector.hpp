@@ -6,14 +6,16 @@
 #include <type_traits>
 #include <memory>
 #include <cassert>
-#include <vector>
 #include <algorithm>
 #include <utility>
+#include <cstring>
 
 namespace ste {
 
-template <typename T, typename Allocator = std::allocator<T>>
-class static_vector {
+namespace _detail {
+
+template <typename T, typename Allocator>
+class static_vector_impl {
 public:
 	using allocator_type = Allocator;
 	using value_type = typename allocator_type::value_type;
@@ -27,7 +29,7 @@ public:
 private:
 	template <typename value_type, typename reference, typename pointer>
 	class iterator_impl {
-		friend static_vector;
+		friend static_vector_impl;
 
 	private:
 		size_type idx{ 0 };
@@ -105,7 +107,7 @@ private:
 			return *this;
 		}
 		iterator_impl operator-(size_type n) const { return { idx + n,v }; }
-		difference_type operator-(const iterator_impl &it) const { return static_cast<difference_type>(idx) - static_cast<difference_type>(it.idx); }
+		difference_type operator-(const iterator_impl &it) const { return static_cast<difference_type>(idx - it.idx); }
 
 		reference operator*() const { return *(v + idx); }
 		pointer operator->() const { return v + idx; }
@@ -119,40 +121,38 @@ public:
 	using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
 private:
-	struct default_alignment { constexpr static int align = 8; };
-	struct T_alignment { constexpr static int align = alignof(T); };
-	using align = std::conditional_t <
-		default_alignment::align < T_alignment::align,
-		T_alignment,
-		default_alignment
-		>;
+	using storage_allocator_type = typename Allocator::template rebind<std::uint8_t>::other;
 
-	using storage_t = typename std::aligned_storage<sizeof(T), align::align>::type;
+protected:
+	static constexpr std::size_t pad_data_to_alignment = 64;
+	static constexpr std::size_t pad_bitvector_to_alignment = sizeof(std::size_t);
 
-	constexpr auto storage_elements(size_type n) {
-		static constexpr auto S = sizeof(storage_t);
-		return static_cast<size_type>((n * sizeof(T) + S - 1) / S);
+	constexpr auto storage_bitvector_offset(size_type size) {
+		return (size * sizeof(T) + pad_data_to_alignment - 1) / pad_data_to_alignment * pad_data_to_alignment;
+	}
+	constexpr auto storage_bitvector_size(size_type size) {
+		return ((size + 7) / 8 + pad_bitvector_to_alignment - 1) / pad_bitvector_to_alignment * pad_bitvector_to_alignment;
+	}
+	constexpr auto storage_size(size_type size) {
+		auto data_size = storage_bitvector_offset(size);
+		auto bitvector_size = storage_bitvector_size(size);
+		return data_size + bitvector_size;
 	}
 
-private:
-	storage_t* storage{ nullptr };
-	// Use std::vector<bool> efficient specialization
-	std::vector<bool, typename Allocator::template rebind<bool>::other> allocated;
+	void _create(size_type size) {
+		auto bytes = storage_size(size);
+		auto bitvector_offset = storage_bitvector_offset(size);
 
-public:
-	static_vector(size_type size)
-		: storage(Allocator::template rebind<storage_t>::other().allocate(storage_elements(size)))
-	{
-		allocated.resize(size, false);
+		auto ptr = storage_allocator.allocate(bytes);
+
+		storage = reinterpret_cast<T*>(ptr);
+		bitvector = reinterpret_cast<std::size_t*>(ptr + bitvector_offset);
+
+		auto bitvector_size = storage_bitvector_size(size);
+		std::memset(reinterpret_cast<std::size_t*>(bitvector), 0, bitvector_size);
 	}
-	template <typename... Ts>
-	static_vector(size_type size, Ts&&... ts)
-		: static_vector(size)
-	{
-		for (auto it = begin(); it != end(); ++it)
-			emplace(it, std::forward<Ts>(ts)...);
-	}
-	~static_vector() noexcept(std::is_nothrow_destructible_v<T>) {
+
+	void _destroy() {
 		if (!storage)
 			return;
 
@@ -161,22 +161,91 @@ public:
 				destroy(it);
 		}
 
-		auto n = storage_elements(size());
-		Allocator::template rebind<storage_t>::other().deallocate(storage, n);
+		storage_allocator.deallocate(reinterpret_cast<std::uint8_t*>(storage), 1);		// Elements count is not important, we don't need to destruct.
 	}
 
-	static_vector(static_vector &&o) noexcept : storage(o.storage), allocated(std::move(o.allocated)) {
+	void _move(static_vector_impl &&o) {
+		this->storage = o.storage;
+		this->bitvector = o.bitvector;
+		this->count = o.count;
+
 		o.storage = nullptr;
 	}
-	static_vector &operator=(static_vector &&o) noexcept {
-		storage = o.storage;
-		allocated = std::move(o.allocated);
-		o.storage = nullptr;
+	template <typename U = T>
+	void _copy(static_vector_impl &&o, std::enable_if_t<!std::is_copy_constructible_v<U>>* = nullptr) {
+		this->count = o.count;
+		_create(count);
+
+		for (int idx = 0; idx < count; ++idx) {
+			auto oit = o.begin() + idx;
+			if (o.is_valid(oit))
+				emplace(begin() + idx, *oit);
+		}
+
+		auto bitvector_size = storage_bitvector_size(count);
+		std::memcpy(this->bitvector, o.bitvector, bitvector_size);
+	}
+
+	void set_bit(size_type i) {
+		auto idx = i / (8 * sizeof(std::size_t));
+		auto offset = i % (8 * sizeof(std::size_t));
+		bitvector[idx] |= static_cast<std::size_t>(1) << offset;
+	}
+	void reset_bit(size_type i) {
+		auto idx = i / (8 * sizeof(std::size_t));
+		auto offset = i % (8 * sizeof(std::size_t));
+		bitvector[idx] &= ~(static_cast<std::size_t>(1) << offset);
+	}
+
+	bool _is_bitset(size_type i) const {
+		auto idx = i / (8 * sizeof(std::size_t));
+		auto offset = i % (8 * sizeof(std::size_t));
+		return (bitvector[idx] >> offset) & static_cast<std::size_t>(1);
+	}
+
+protected:
+	T* storage{ nullptr };
+	std::size_t* bitvector;
+	std::size_t count;
+
+	storage_allocator_type storage_allocator;
+
+public:
+	static_vector_impl(size_type size) : count(size) {
+		_create(size);
+	}
+	template <typename... Ts>
+	static_vector_impl(size_type size, Ts&&... ts)
+		: static_vector_impl(size)
+	{
+		for (auto it = begin(); it != end(); ++it)
+			emplace(it, std::forward<Ts>(ts)...);
+	}
+//	virtual ~static_vector_impl() noexcept(std::is_nothrow_destructible_v<T>) {
+	virtual ~static_vector_impl() noexcept {
+		_destroy();
+	}
+
+	static_vector_impl(static_vector_impl &&o) noexcept {
+		_move(std::move(o));
+	}
+	static_vector_impl(const static_vector_impl &o) {
+		_copy(o);
+	}
+	static_vector_impl &operator=(static_vector_impl &&o) noexcept {
+		_destroy();
+		_move(std::move(o));
+
+		return *this;
+	}
+	static_vector_impl &operator=(const static_vector_impl &o) {
+		_destroy();
+		_copy(o);
 
 		return *this;
 	}
 
-	size_type size() const { return allocated.size(); }
+	size_type size() const { return count; }
 
 	pointer data() { return reinterpret_cast<pointer>(storage); }
 	const_pointer data() const { return reinterpret_cast<const_pointer>(storage); }
@@ -203,30 +272,47 @@ public:
 	reference back() { return data()[size() - 1]; }
 	const_reference back() const { return data()[size() - 1]; }
 
+	void swap(static_vector_impl& o) noexcept {
+		std::swap(storage, o.storage);
+		std::swap(bitvector, o.bitvector);
+		std::swap(count, o.count);
+	}
+
 	template <typename... Ts>
 	void emplace(const_iterator it, Ts&&... ts) {
-		assert(it.idx < size());
+		assert(it.idx < count);
 
-		if (allocated[it.idx])
+		if (is_valid(it))
 			destroy(it);
 
 		::new (&at(it.idx)) T(std::forward<Ts>(ts)...);
-		allocated[it.idx] = true;
+		set_bit(it.idx);
 	}
 	void destroy(const_iterator it) {
-		assert(it.idx < size() && allocated[it.idx]);
+		assert(it.idx < count && is_valid(it));
 
-		data()[it.idx].~T();
-		allocated[it.idx] = false;
+		at(it.idx).~T();
+		reset_bit(it.idx);
 	}
+
 	bool is_valid(const_iterator it) const {
-		return allocated[it.idx];
+		return _is_bitset(it.idx);
 	}
+};
 
-	void swap(static_vector& o) noexcept {
-		std::swap(storage, o.storage);
-		std::swap(allocated, o.allocated);
-	}
+}
+
+template <typename T, typename Allocator = std::allocator<T>>
+class static_vector : public _detail::static_vector_impl<T, Allocator> {
+	using Base = _detail::static_vector_impl<T, Allocator>;
+
+public:
+	using Base::Base;
+
+	static_vector(static_vector&&o) = default;
+	static_vector &operator=(static_vector&&) = default;
+	static_vector(const static_vector&) = default;
+	static_vector &operator=(const static_vector&) = default;
 };
 
 }

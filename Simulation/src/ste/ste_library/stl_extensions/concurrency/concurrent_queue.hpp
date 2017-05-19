@@ -6,7 +6,6 @@
 #include <atomic>
 #include <memory>
 #include <ref_count_ptr.hpp>
-#include <allocator_delete.hpp>
 
 namespace ste {
 
@@ -15,10 +14,15 @@ namespace ste {
 *	
 *			Based on Anthony William's "C++ Concurrency in Action".
 */
-template <typename T, typename Allocator = std::allocator<T>>
+template <
+	typename T, 
+	typename Allocator = std::allocator<T>, 
+	typename PointerType = std::unique_ptr<T>
+>
 class concurrent_queue {
 public:
-	using stored_ptr = std::unique_ptr<T, allocator_delete<Allocator>>;
+	using allocator_type = Allocator;
+	using stored_ptr = PointerType;
 
 private:
 	struct node;
@@ -47,7 +51,8 @@ private:
 			next.store(new_counted_node_ptr);
 		}
 
-		void release_ref() {
+		// Returns false if node needs to be deallocated.
+		bool release_ref() {
 			node_counter old_counter = count.load(std::memory_order_relaxed);
 			node_counter new_counter;
 			do {
@@ -55,27 +60,28 @@ private:
 				--new_counter.internal_count;
 			} while (!count.compare_exchange_strong(old_counter, new_counter, std::memory_order_acquire, std::memory_order_relaxed));
 
-			if (!new_counter.internal_count && !new_counter.external_counters) {
-				this->~node();
-				Allocator::template rebind<node>::other().deallocate(this, 1);
-			}
+			return new_counter.internal_count || new_counter.external_counters;
 		}
 	};
 
-	static node* allocate_node() {
-		auto ptr = Allocator::template rebind<node>::other().allocate(1);
+	using node_allocator_type = typename Allocator::template rebind<node>::other;
+
+	node* allocate_node() {
+		auto ptr = node_allocator.allocate(1);
 		::new (ptr) node();
 
 		return ptr;
 	}
 
-	static void deallocate_node(node * const ptr) {
+	void deallocate_node(node *ptr) {
 		ptr->~node();
-		Allocator::template rebind<node>::other().deallocate(ptr, 1);
+		node_allocator.deallocate(ptr, 1);
 	}
 
 protected:
 	std::atomic<counted_node_ptr> head, tail;
+	allocator_type allocator;
+	node_allocator_type node_allocator;
 
 	static void increase_external_count(std::atomic<counted_node_ptr> &counter, counted_node_ptr &old_counter) {
 		counted_node_ptr new_counter;
@@ -87,7 +93,7 @@ protected:
 		old_counter.set_counter(new_counter.get_counter());
 	}
 
-	static void free_external_counter(counted_node_ptr &old_node_ptr) {
+	void free_external_counter(counted_node_ptr &old_node_ptr) {
 		node * const ptr = old_node_ptr.get();
 		int count_increase = old_node_ptr.get_counter() - 2;
 
@@ -107,9 +113,13 @@ protected:
 		node * const current_tail_ptr = old_tail.get();
 		while (!tail.compare_exchange_weak(old_tail, new_tail) && old_tail.get() == current_tail_ptr) {}
 
-		old_tail.get() == current_tail_ptr ?
-			free_external_counter(old_tail) :
-			current_tail_ptr->release_ref();
+		if (old_tail.get() == current_tail_ptr) {
+			free_external_counter(old_tail);
+			return;
+		}
+		
+		if (!current_tail_ptr->release_ref())
+			deallocate_node(current_tail_ptr);
 	}
 
 public:
@@ -146,12 +156,13 @@ public:
 				return stored_ptr(res);
 			}
 
-			ptr->release_ref();
+			if (!ptr->release_ref())
+				deallocate_node(ptr);
 		}
 	}
 
 	void push(T &&new_value) {
-		auto ptr = Allocator::template rebind<T>::other().allocate(1);
+		auto ptr = allocator.allocate(1);
 		::new (ptr) T(std::move(new_value));
 
 		stored_ptr new_data(ptr);

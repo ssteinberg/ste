@@ -6,7 +6,7 @@
 #include <stdafx.hpp>
 
 #include <lib/string.hpp>
-#include <lib::deque>
+#include <lib/deque.hpp>
 #include <split.hpp>
 
 namespace ste {

@@ -59,13 +59,13 @@ public:
 																							   gl::image_layout::shader_read_only_optimal)),
 		sampler(ctx.device(), gl::sampler_parameter::filtering(gl::sampler_filter::linear, gl::sampler_filter::linear,
 															   gl::sampler_mipmap_mode::linear)),
-		index_buffer(ctx, std::vector<std::uint32_t>{ 0, 2, 1, 0, 1, 3 }, gl::buffer_usage::index_buffer),
+		index_buffer(ctx, lib::vector<std::uint32_t>{ 0, 2, 1, 0, 1, 3 }, gl::buffer_usage::index_buffer),
 		vertex_buffer(ctx, gl::buffer_usage::vertex_buffer),
 		ubo(ctx,
-			std::vector<uniform_buffer_object>{ { glm::vec4{ 1, 0, 0, 1 } } },
+			lib::vector<uniform_buffer_object>{ { glm::vec4{ 1, 0, 0, 1 } } },
 			gl::buffer_usage::uniform_buffer)
 	{
-		std::vector<vertex> vertices = {
+		lib::vector<vertex> vertices = {
 			{ { 0.0f, -0.5f },{ 1.0f, 0.0f, 0.0f },{ 0,0 } },
 			{ { 0.5f,  0.5f },{ 0.0f, 1.0f, 0.0f },{ 1,0 } },
 			{ { -0.5f, 0.5f },{ 0.0f, 0.0f, 1.0f },{ 1,1 } },
@@ -112,7 +112,7 @@ public:
 		draw_task.attach_index_buffer(s->index_buffer);
 	}
 
-	static const std::string& name() { return "simple_fragment"; }
+	static const lib::string& name() { return "simple_fragment"; }
 
 	void set_framebuffer(gl::framebuffer &fb) {
 		pipeline.attach_framebuffer(fb);
@@ -215,7 +215,7 @@ public:
 
 					float frame_time_ms = static_cast<float>(presentation.get().get_frame_time()) * 1e-6f;
 					auto text = line_height(35)(small(b(purple(L"Frame time: \n")))) +
-						b(stroke(dark_golden_rod, .5f)(orange(std::to_wstring(frame_time_ms))) +
+						b(stroke(dark_golden_rod, .5f)(orange(lib::to_wstring(frame_time_ms))) +
 						  small(L" ms"));
 
 					text_frag.update_text(recorder, { 5,50 }, text);
@@ -348,11 +348,11 @@ int main()
 	simple_renderer r(ctx, presentation, text_manager);
 
 
-	//	ste_resource<device_pipeline_shader_stage> stage(ste_resource_dont_defer(), ctx, std::string("fxaa.frag"));
-	//	device_pipeline_shader_stage(ctx, std::string("deferred_compose.frag"));
-	//	device_pipeline_shader_stage(ctx, std::string("shadow_cubemap.geom"));
-	//	device_pipeline_shader_stage(ctx, std::string("shadow_directional.geom"));
-	//	device_pipeline_shader_stage(ctx, std::string("volumetric_scattering_scatter.comp"));
+	//	ste_resource<device_pipeline_shader_stage> stage(ste_resource_dont_defer(), ctx, lib::string("fxaa.frag"));
+	//	device_pipeline_shader_stage(ctx, lib::string("deferred_compose.frag"));
+	//	device_pipeline_shader_stage(ctx, lib::string("shadow_cubemap.geom"));
+	//	device_pipeline_shader_stage(ctx, lib::string("shadow_directional.geom"));
+	//	device_pipeline_shader_stage(ctx, lib::string("volumetric_scattering_scatter.comp"));
 	//	stage.get();
 
 
@@ -372,7 +372,7 @@ int main()
 
 		frame_time_predictor.update(presentation.get_frame_time());
 		float frame_time_ms = frame_time_predictor.predicted_value();
-		window.set_title(std::to_string(frame_time_ms).c_str());
+		window.set_title(lib::to_string(frame_time_ms).c_str());
 
 		r.render_and_present();
 	}

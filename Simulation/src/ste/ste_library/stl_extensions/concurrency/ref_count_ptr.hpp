@@ -11,6 +11,8 @@ namespace _detail {
 
 template <typename T, int ptr_size>
 class ref_count_ptr {};
+
+// 32-bit
 template <typename T>
 class ref_count_ptr<T, 4> {
 	std::uint32_t counter;
@@ -30,6 +32,8 @@ public:
 	void inc() { ++counter; }
 	void dec() { --counter; }
 };
+
+// 64-bit
 template <typename T>
 class ref_count_ptr<T, 8> {
 	// For AMD64 we use the upper 16-bit for the counter, and the lower 48-bit for the pointer.

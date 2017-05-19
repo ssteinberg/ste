@@ -14,7 +14,7 @@
 
 #include <stdexcept>
 
-#include <lib/construct.hpp>
+#include <lib/alloc.hpp>
 
 using namespace ste::text;
 
@@ -162,7 +162,7 @@ unsigned char* glyph_factory_impl::render_glyph_with(const font &font, wchar_t c
 	int padding_w = std::max<int>(0, (w - bm.width) >> 1);
 	int padding_h = std::max<int>(0, (h - bm.rows) >> 1);
 
-	unsigned char *glyph_buf = new unsigned char[w*h];
+	unsigned char *glyph_buf = lib::default_alloc<unsigned char[]>::make(w*h);
 	memset(glyph_buf, 0, w * h);
 	for (unsigned y = 0; y < bm.rows; ++y)
 		memcpy(&glyph_buf[padding_w + (y + padding_h) * w], &reinterpret_cast<char*>(bm.buffer)[(bm.rows - y - 1) * bm.pitch], std::min<int>(w, bm.pitch));
@@ -170,10 +170,10 @@ unsigned char* glyph_factory_impl::render_glyph_with(const font &font, wchar_t c
 	return glyph_buf;
 }
 
-glyph_factory::glyph_factory() : pimpl(new glyph_factory_impl) {}
+glyph_factory::glyph_factory() : pimpl(lib::default_alloc<glyph_factory_impl>::make()) {}
 
 glyph_factory::~glyph_factory() {
-	delete pimpl;
+	lib::default_alloc<glyph_factory_impl>::destroy(pimpl);
 }
 
 glyph glyph_factory::create_glyph(const font &font, wchar_t codepoint) const {
@@ -189,7 +189,7 @@ glyph glyph_factory::create_glyph(const font &font, wchar_t codepoint) const {
 
 	g.glyph_distance_field = lib::allocate_unique<gli::texture2d>(gli::format::FORMAT_R32_SFLOAT_PACK32, glm::ivec2{ w, h }, 1);
 	make_distance_map(glyph_buf, w, h, reinterpret_cast<float*>(g.glyph_distance_field->data()));
-	delete[] glyph_buf;
+	lib::default_alloc<unsigned char[]>::destroy(glyph_buf);
 
 	return std::move(g);
 }

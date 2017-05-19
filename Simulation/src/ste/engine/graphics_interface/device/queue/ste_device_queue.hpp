@@ -114,16 +114,16 @@ public:
 	*			Must be called from an enqueued task.
 	*			UserData can be any structure that holds some user data. The user data is accessible by the public user_data
 	*			member in the returned batch, and is constructed with the supplied user_data_args parameter pack. The user data
-	*			should be used to hold data used by the batch commands, and will be deallocated with the batch only once 
+	*			should be used to hold data used by the batch commands, and will be deallocated with the batch only once
 	*			processing is complete by the device.
 	*/
 	template <typename UserData = void, typename... UserDataArgs>
 	static auto thread_allocate_batch(UserDataArgs&&... user_data_args) {
 		using batch_t = ste_device_queue_batch<UserData>;
 		return lib::allocate_unique<batch_t>(thread_queue_index(),
-										 thread_device_queue().pool.claim(),
-										 lib::allocate_shared<shared_fence_t>(thread_device_queue().shared_fence_pool->claim()),
-										 std::forward<UserDataArgs>(user_data_args)...);
+											 thread_device_queue().pool.claim(),
+											 lib::allocate_shared<shared_fence_t>(thread_device_queue().shared_fence_pool->claim()),
+											 std::forward<UserDataArgs>(user_data_args)...);
 	}
 	/**
 	*	@brief	Allocates a new command batch.
@@ -133,8 +133,8 @@ public:
 	template <typename Batch, typename... Args>
 	static auto thread_allocate_batch_custom(Args&&... custom_args) {
 		return lib::allocate_unique<Batch>(thread_queue_index(),
-									   thread_device_queue().pool.claim(),
-									   std::forward<Args>(custom_args)...);
+										   thread_device_queue().pool.claim(),
+										   std::forward<Args>(custom_args)...);
 	}
 
 	/**
@@ -148,7 +148,7 @@ public:
 	/**
 	*	@brief	Consumes a command batch to the queue, submitting its command buffers.
 	*			Must be called from an enqueued task.
-	*			
+	*
 	*	@throws	ste_device_not_queue_thread_exception	If thread not a queue thread
 	*	@throws	ste_device_exception	If batch was not created on this queue, batch's fence will be set to a ste_device_exception.
 	*
@@ -272,16 +272,16 @@ public:
 	*	@brief	Allocates a new command batch.
 	*			UserData can be any structure that holds some user data. The user data is accessible by the public user_data
 	*			member in the returned batch, and is constructed with the supplied user_data_args parameter pack. The user data
-	*			should be used to hold data used by the batch commands, and will be deallocated with the batch only once 
+	*			should be used to hold data used by the batch commands, and will be deallocated with the batch only once
 	*			processing is complete by the device.
 	*/
 	template <typename UserData = void, typename... UserDataArgs>
 	auto allocate_batch(UserDataArgs&&... user_data_args) {
 		using batch_t = ste_device_queue_batch<UserData>;
 		return lib::allocate_unique<batch_t>(queue_index,
-										 pool.claim(),
-										 lib::allocate_shared<shared_fence_t>(shared_fence_pool->claim()),
-										 std::forward<UserDataArgs>(user_data_args)...);
+											 pool.claim(),
+											 lib::allocate_shared<shared_fence_t>(shared_fence_pool->claim()),
+											 std::forward<UserDataArgs>(user_data_args)...);
 	}
 	/**
 	*	@brief	Allocates a new command batch.
@@ -290,12 +290,12 @@ public:
 	template <typename Batch, typename... Args>
 	auto allocate_batch_custom(Args&&... custom_args) {
 		return lib::allocate_unique<Batch>(queue_index,
-									   pool.claim(),
-									   std::forward<Args>(custom_args)...);
+										   pool.claim(),
+										   std::forward<Args>(custom_args)...);
 	}
 
 	/**
-	 *	@brief	Allocates a secondary command buffer owned by this queue. 
+	 *	@brief	Allocates a secondary command buffer owned by this queue.
 	 *			A secondary command buffer can executed by a primary buffer beloning to a batch allocated from this queue or a queue with identical family index.
 	 */
 	auto allocate_secondary_command_buffer() {
@@ -331,7 +331,7 @@ public:
 
 	/**
 	*	@brief	Waits idly for the queue to finish processing
-	*			
+	*
 	*	@throws	ste_device_exception	If thread is a queue thread
 	*/
 	void wait_idle() const {
@@ -351,7 +351,7 @@ public:
 
 	/**
 	*	@brief	Waits idly for the queue to finish processing and locks the queue. Until the queue is unlocked, no new enqueued tasks will be processed.
-	*			
+	*
 	*	@throws	ste_device_exception	If thread is a queue thread
 	 */
 	void wait_lock() const {

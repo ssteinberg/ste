@@ -58,6 +58,11 @@ public:
 		typename U2, std::size_t A2
 	>
 	friend bool operator==(const aligned_allocator<U1, A1>&, const aligned_allocator<U2, A2>&) noexcept;
+	template <
+		typename U1, std::size_t A1,
+		typename U2, std::size_t A2
+	>
+	friend bool operator!=(const aligned_allocator<U1, A1>&, const aligned_allocator<U2, A2>&) noexcept;
 };
 
 template <
@@ -66,6 +71,13 @@ template <
 >
 bool inline operator==(const aligned_allocator<U1, A1>&, const aligned_allocator<U2, A2>&) noexcept {
 	return A1 == A2;
+}
+template <
+	typename U1, std::size_t A1,
+	typename U2, std::size_t A2
+>
+bool inline operator!=(const aligned_allocator<U1, A1> &lhs, const aligned_allocator<U2, A2> &rhs) noexcept {
+	return !(rhs == lhs);
 }
 
 }

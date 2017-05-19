@@ -21,21 +21,20 @@
 #include <log_sink.hpp>
 #include <log_class.hpp>
 
+#include <optional.hpp>
+
 namespace ste::log {
 
 class _logger {
 private:
-	friend class log;
-
-private:
-	_logger(lib::unique_ptr<log_sink> &&sink, bool force_flush = false) : stream(std::move(sink), force_flush) {}
-	_logger(_logger &&) = default;
-
 	log_ostream stream;
 
 public:
+	_logger(lib::unique_ptr<log_sink> &&sink, bool force_flush = false) : stream(std::move(sink), force_flush) {}
+	_logger(_logger &&) = default;
+	~_logger() noexcept {}
+
 	log_ostream &logger() { return stream; }
-	~_logger() {}
 };
 
 class log {
@@ -106,8 +105,8 @@ private:
 
 	std::streambuf *cout_strm_buffer;
 	std::streambuf *cerr_strm_buffer;
-	lib::unique_ptr<_logger> cout_logger;
-	lib::unique_ptr<_logger> cerr_logger;
+	optional<_logger> cout_logger;
+	optional<_logger> cerr_logger;
 
 public:
 	log(const lib::string &title, const lib::string path_prefix = R"(Log/)", const lib::string path_extension = ".html") :
@@ -136,8 +135,8 @@ public:
 	~log() {
 		std::unique_lock<std::mutex> ul(m);
 
-		if (cout_logger != nullptr) cout_logger->stream.flush();
-		if (cerr_logger != nullptr) cerr_logger->stream.flush();
+		if (cout_logger) cout_logger.get().logger().flush();
+		if (cerr_logger) cerr_logger.get().logger().flush();
 		dump();
 
 		// Notify worker that we are done
@@ -160,11 +159,11 @@ public:
 	void redirect_std_outputs() {
 		cout_strm_buffer = std::cout.rdbuf();
 		cerr_strm_buffer = std::cerr.rdbuf();
-		cout_logger = lib::unique_ptr<_logger>(new _logger(lib::allocate_unique<log_sink>(log_entry_data("std", "std::cout", 0, log_class::info_class_log), &notifier, &queue)));
-		cerr_logger = lib::unique_ptr<_logger>(new _logger(lib::allocate_unique<log_sink>(log_entry_data("std", "std::cerr", 0, log_class::err_class_log), &notifier, &queue), true));
+		cout_logger.emplace(lib::allocate_unique<log_sink>(log_entry_data("std", "std::cout", 0, log_class::info_class_log), &notifier, &queue));
+		cerr_logger.emplace(lib::allocate_unique<log_sink>(log_entry_data("std", "std::cerr", 0, log_class::err_class_log), &notifier, &queue), true);
 
-		std::cout.rdbuf(cout_logger->logger().rdbuf());
-		std::cerr.rdbuf(cerr_logger->logger().rdbuf());
+		std::cout.rdbuf(cout_logger.get().logger().rdbuf());
+		std::cerr.rdbuf(cerr_logger.get().logger().rdbuf());
 	}
 
 	_logger log_info(const char *file, const char *func, int line) {

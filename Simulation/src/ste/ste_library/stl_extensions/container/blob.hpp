@@ -10,9 +10,16 @@
 
 namespace ste {
 
+template <typename CharAllocator = std::allocator<char>>
 class blob {
+public:
+	using allocator_type = CharAllocator;
+
 private:
-	std::string storage;
+	using storage_type = std::basic_string<char, std::char_traits<char>, allocator_type>;
+
+private:
+	storage_type storage;
 
 public:
 	blob() = default;
@@ -20,9 +27,9 @@ public:
 	blob(const std::string &str) : storage(str) {}
 	blob(std::string &&str) : storage(std::move(str)) {}
 
-	template <typename T>
-	blob(const std::vector<T> &v) : storage(reinterpret_cast<const char*>(v.data()),
-											static_cast<std::size_t>(v.size() * sizeof(T))) {}
+	template <typename T, typename A>
+	blob(const std::vector<T, A> &v) : storage(reinterpret_cast<const char*>(v.data()),
+											   static_cast<std::size_t>(v.size() * sizeof(T))) {}
 
 	template <typename T, int N>
 	blob(const std::array<T, N> &v) : storage(reinterpret_cast<const char*>(v.data()),

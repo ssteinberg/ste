@@ -5,23 +5,25 @@
 
 #include <stdafx.hpp>
 #include <lib/allocator.hpp>
+#include <lib/alloc.hpp>
+
 #include <memory>
-#include <allocator_delete.hpp>
+#include <lib/allocator_delete.hpp>
 
 namespace ste {
 namespace lib {
 
 template <typename T>
-using unique_ptr = std::unique_ptr<T, allocator_delete<allocator<T>>>;
+using unique_ptr = std::unique_ptr<T, allocator_delete<std::remove_const_t<T>>>;
 
 template <typename T, typename... Args>
 auto allocate_unique(Args&&... args) {
-	auto ptr = allocator<T>().allocate(1);
-	::new (ptr) T(std::forward<Args>(args)...);
+	using non_const_t = std::remove_const_t<T>;
+	using A = allocator<non_const_t>;
 
-	return unique_ptr<T>(ptr);
+	auto ptr = alloc<A>::make(std::forward<Args>(args)...);
+	return ::ste::lib::unique_ptr<T>(ptr);
 }
-
 
 }
 }

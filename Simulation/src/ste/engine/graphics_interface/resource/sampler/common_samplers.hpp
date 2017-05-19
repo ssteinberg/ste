@@ -7,6 +7,7 @@
 #include <vk_logical_device.hpp>
 #include <sampler.hpp>
 
+#include <lib/alloc.hpp>
 #include <atomic>
 
 namespace ste {
@@ -44,7 +45,7 @@ private:
 			return *ptr;
 
 		// Create new sampler
-		auto new_sampler = new sampler(std::forward<Args>(args)...);
+		auto new_sampler = lib::default_alloc<sampler>::make(std::forward<Args>(args)...);
 		
 		// Try to store new sampler. 
 		// If someone beat us to that, we dismiss the sampler object we created and return the one stored in the atomic variable.
@@ -59,7 +60,7 @@ private:
 	static void dealloc(atomic_ptr &p) {
 		auto ptr = p.load(std::memory_order_acquire);
 		if (ptr)
-			delete ptr;
+			lib::default_alloc<sampler>::destroy(ptr);
 	}
 
 public:
