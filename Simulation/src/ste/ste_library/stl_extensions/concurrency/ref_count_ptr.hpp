@@ -3,70 +3,33 @@
 
 #pragma once
 
-#include <atomic>
+#include <packed_ptr.hpp>
 
 namespace ste {
 
-namespace _detail {
-
-template <typename T, int ptr_size>
-class ref_count_ptr {};
-
-// 32-bit
-template <typename T>
-class ref_count_ptr<T, 4> {
-	std::uint32_t counter;
-	T *ptr;
+template <typename Ptr>
+class ref_count_ptr {
+private:
+	packed_ptr<Ptr> d;
 
 public:
 	ref_count_ptr() = default;
-	ref_count_ptr(std::uint32_t counter, T *ptr)
-		: counter(counter), ptr(ptr)
+	ref_count_ptr(std::uint16_t counter, Ptr ptr)
+		: d(counter, ptr)
 	{}
 
-	auto* get() const { return ptr; }
-	void set(T* ptr) { this->ptr = ptr; }
+	auto* get() const { return d.get(); }
+	void set(Ptr ptr) { d.set(ptr); }
 
-	auto get_counter() const { return counter; }
-	void set_counter(std::uint32_t c) { counter = c; }
-	void inc() { ++counter; }
-	void dec() { --counter; }
-};
-
-// 64-bit
-template <typename T>
-class ref_count_ptr<T, 8> {
-	// For AMD64 we use the upper 16-bit for the counter, and the lower 48-bit for the pointer.
-	std::uint64_t data;
-
-	static std::uint64_t create(std::uint32_t counter, T *ptr) {
-		std::uint64_t data = static_cast<std::uint64_t>(counter) << 48;
-		std::uint64_t ptr64 = reinterpret_cast<std::uint64_t>(ptr);
-		return data + ptr64;
-	}
-
-public:
-	ref_count_ptr() = default;
-	ref_count_ptr(std::uint32_t counter, T *ptr)
-		: data(create(counter, ptr))
-	{}
-
-	auto* get() const { return reinterpret_cast<T*>(data & 0xFFFF'FFFF'FFFF); }
-	void set(T* ptr) {
-		data = create(get_counter(), ptr);
-	}
-
-	auto get_counter() const { return static_cast<std::uint32_t>(data >> 48); }
-	void set_counter(std::uint32_t c) {
-		data = create(c, get());
-	}
+	auto get_counter() const { return d.get_integer(); }
+	void set_counter(std::uint16_t c) { d.set_integer(c); }
 	void inc() { set_counter(get_counter() + 1); }
 	void dec() { set_counter(get_counter() - 1); }
+
+	auto* operator->() { return get(); }
+	const auto* operator->() const { return get(); }
+	auto& operator*() { return *get(); }
+	const auto& operator*() const { return *get(); }
 };
-
-}
-
-template <typename T>
-using ref_count_ptr = _detail::ref_count_ptr<T, sizeof(void*)>;
 
 }

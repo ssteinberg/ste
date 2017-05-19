@@ -49,12 +49,10 @@ public:
 
 	static constexpr auto alignment = Align;
 
-	using pointer = T*;
-	using const_pointer = const T*;
+	using pointer = value_type*;
+	using const_pointer = const value_type*;
 	using void_pointer = void*;
 	using const_void_pointer = const void*;
-
-	static_assert(!std::is_const_v<T>, "const allocators are ill-formed.");
 
 private:
 	// rpmalloc allocates with 16byte base alignment
@@ -80,6 +78,8 @@ public:
 		);
 	}
 	void deallocate(pointer p, size_type) {
+		static_assert(!std::is_const_v<T>, "const allocators are ill-formed.");
+
 		_internal::allocator_static_storage::init();
 		return rpfree(static_cast<void*>(p));
 	}

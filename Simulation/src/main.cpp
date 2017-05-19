@@ -211,7 +211,7 @@ public:
 				auto recorder = command_buffer.record();
 
 				{
-					using namespace text::Attributes;
+					using namespace text::attributes;
 
 					float frame_time_ms = static_cast<float>(presentation.get().get_frame_time()) * 1e-6f;
 					auto text = line_height(35)(small(b(purple(L"Frame time: \n")))) +
@@ -429,7 +429,7 @@ int main()
 //	basic_renderer.add_task(footer_text_task);
 //
 //	while (true) {
-//		using namespace text::Attributes;
+//		using namespace text::attributes;
 //
 //		attributed_wstring str = center(stroke(blue_violet, 2)(purple(vvlarge(b(L"Global Illumination\n")))) +
 //									azure(large(L"Loading...\n")) +
@@ -901,7 +901,7 @@ int main()
 	 //#endif
 	 //
 	 //		{
-	 //			using namespace text::Attributes;
+	 //			using namespace text::attributes;
 	 //
 	 //			static unsigned tpf_count = 0;
 	 //			static float total_tpf = .0f;

@@ -32,7 +32,7 @@
 //template <typename T>
 //struct load_lut {
 //	auto operator()(const char *name) const {
-//		using namespace text::Attributes;
+//		using namespace text::attributes;
 //
 //		std::ifstream ifs(name, std::ios::binary);
 //		if (!ifs.good()) {
@@ -72,7 +72,7 @@
 //		microfacet_refraction_fit_lut = lib::allocate_unique<Core::texture_2d>(deferred_composer_detail::load_lut<microfacet_refraction_fit>()(refraction_fit_name));
 //		microfacet_transmission_fit_lut = lib::allocate_unique<Core::texture_2d_array>(deferred_composer_detail::load_lut<microfacet_transmission_fit_v4>()(transmission_fit_name));
 //	} catch (const std::exception &err) {
-//		using namespace text::Attributes;
+//		using namespace text::attributes;
 //		ste_log_error() << text::attributed_string("Can't open Microfacet LUT. Error: \"") + b(err.what()) + "\"." << std::endl;
 //
 //		throw;
@@ -111,13 +111,13 @@
 //		atmospherics_ambient_lut = lib::allocate_unique<Core::texture_3d>(lut_loader.create_ambient_lut());
 //	}
 //	catch (const std::exception &err) {
-//		using namespace text::Attributes;
+//		using namespace text::attributes;
 //		ste_log_error() << text::attributed_string("Can't open Atmospherics Scatter LUT. Error: \"") + b(err.what()) + "\"." << std::endl;
 //
 //		throw;
 //	}
 //
-//	ste_log() << text::attributed_string("Loaded \"") + text::Attributes::i(lut_name) + "\" successfully." << std::endl;
+//	ste_log() << text::attributed_string("Loaded \"") + text::attributes::i(lut_name) + "\" successfully." << std::endl;
 //
 //	auto optical_length_handle = atmospherics_optical_length_lut->get_texture_handle(*Core::sampler::sampler_linear_clamp());
 //	auto scatter_handle = atmospherics_scatter_lut->get_texture_handle(*Core::sampler::sampler_linear_clamp());

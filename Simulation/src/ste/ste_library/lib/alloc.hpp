@@ -16,28 +16,29 @@ struct alloc_impl {};
 
 template <typename Allocator>
 struct alloc_impl<Allocator, false> {
-	using allocator = Allocator;
+	using T = typename Allocator::value_type;
+	using U = std::remove_const_t<T>;
+	using allocator = typename Allocator::template rebind<U>::other;
 
-	using T = typename allocator::value_type;
 	using pointer = typename allocator::pointer;
 	using const_pointer = typename allocator::const_pointer;
 
 	template <typename... Args>
-	static auto ctor(pointer ptr, Args&&... args) {
-		::new (ptr) T(std::forward<Args>(args)...);
+	static pointer ctor(pointer ptr, Args&&... args) {
+		::new (ptr) U(std::forward<Args>(args)...);
 		return ptr;
 	}
 
 	static void dtor(const_pointer ptr) {
-		static_assert(sizeof(T) > 0, "Can not delete an incomplete type");
+		static_assert(sizeof(U) > 0, "Can not delete an incomplete type");
 
 		auto p = const_cast<pointer>(ptr);
-		p->~T();
+		p->~U();
 	}
 
 	template <typename... Args>
-	static auto make(Args&&... args) {
-		auto ptr = allocator().allocate(1);
+	static pointer make(Args&&... args) {
+		pointer ptr = allocator().allocate(1);
 		return ctor(ptr, std::forward<Args>(args)...);
 	}
 
@@ -50,33 +51,36 @@ struct alloc_impl<Allocator, false> {
 
 template <typename Allocator>
 struct alloc_impl<Allocator, true> {
+	using T = typename Allocator::value_type;
+
 	using byte = std::uint8_t;
 	using allocator = typename Allocator::template rebind<byte>::other;
 
-	using T = typename Allocator::value_type;
-	using D = std::remove_extent_t<T>;
+	using D = std::decay_t<T>;
+	using U = std::remove_const_t<D>;
+	using value_type = std::remove_pointer_t<D>;
 
-	using pointer = D*;
-	using const_pointer = const D*;
+	using pointer = D;
+	using const_pointer = const value_type*;
 	using size_type = typename allocator::size_type;
 	using length_type = size_type;
 
 	static constexpr auto alignment = allocator::alignment;
 
 	/**
-	 *	@brief	Returns the expected allocation size in bytes to be used for an 'n' array.
+	 *	@brief	Returns the expected allocation size in bytes to be used for an n-element array.
 	 */
 	static constexpr auto allocation_size_bytes(size_type n) {
 		return array_length_size() + sizeof(D) * n;
 	}
 
 	template <typename... Args>
-	static auto ctor(pointer ptr, size_type n, Args&&... args) {
+	static pointer ctor(pointer ptr, size_type n, Args&&... args) {
 		*reinterpret_cast<length_type*>(ptr) = static_cast<length_type>(n);
 
 		reinterpret_cast<byte*&>(ptr) += array_length_size();
 		for (size_type idx = 0; idx < n; ++idx)
-			::new (&ptr[idx]) D(std::forward<Args>(args)...);
+			::new (&ptr[idx]) value_type(std::forward<Args>(args)...);
 
 		return ptr;
 	}
@@ -88,11 +92,11 @@ struct alloc_impl<Allocator, true> {
 
 		auto p = const_cast<pointer>(ptr);
 		for (auto i = n; i-->0;)
-			ptr[i].~D();
+			ptr[i].~value_type();
 	}
 
 	template <typename... Args>
-	static auto make(size_type n, Args&&... args) {
+	static pointer make(size_type n, Args&&... args) {
 		auto ptr = reinterpret_cast<pointer>(allocator().allocate(allocation_size_bytes(n)));
 		return ctor(ptr, n, std::forward<Args>(args)...);
 	}

@@ -97,19 +97,15 @@ void text_manager::recreate_pipeline() {
 	bind_pipeline_resources(0);
 }
 
-void text_manager::adjust_line(lib::vector<glyph_point> &points, const attributed_wstring &wstr, unsigned line_start_index, float line_start, float line_height, const glm::vec2 &ortho_pos) {
+void text_manager::adjust_line(lib::vector<glyph_point> &points, const attributed_wstring &wstr, std::uint32_t line_start_index, float line_start, float line_height, const glm::vec2 &ortho_pos) {
 	// Adjusts line height
 	if (points.size() - line_start_index) {
-		auto alignment_attrib = optional_dynamic_cast<const Attributes::align*>(
-			wstr.attrib_of_type(Attributes::align::attrib_type_s(),
-								range<>{ line_start_index, points.size() - line_start_index }));
-		auto line_height_attrib = optional_dynamic_cast<const Attributes::line_height*>(
-			wstr.attrib_of_type(Attributes::line_height::attrib_type_s(),
-								range<>{ line_start_index, points.size() - line_start_index }));
+		auto alignment_attrib = attributes::align::bind(wstr.attrib_of_type(attributes::attrib_type::align, { line_start_index, static_cast<std::uint32_t>(points.size()) - line_start_index }));
+		auto line_height_attrib = attributes::line_height::bind(wstr.attrib_of_type(attributes::attrib_type::line_height, { line_start_index, static_cast<std::uint32_t>(points.size()) - line_start_index }));
 
-		if (alignment_attrib && alignment_attrib->get() != Attributes::align::alignment::Left) {
+		if (alignment_attrib && alignment_attrib->get() != attributes::align::alignment::Left) {
 			float line_len = ortho_pos.x - line_start;
-			float offset = alignment_attrib->get() == Attributes::align::alignment::Center ? -line_len*.5f : -line_len;
+			float offset = alignment_attrib->get() == attributes::align::alignment::Center ? -line_len*.5f : -line_len;
 			for (unsigned i = line_start_index; i < points.size(); ++i) {
 				points[i].data().x += static_cast<std::uint16_t>(offset);
 			}
@@ -128,7 +124,7 @@ void text_manager::adjust_line(lib::vector<glyph_point> &points, const attribute
  */
 lib::vector<glyph_point> text_manager::create_points(glm::vec2 ortho_pos, const attributed_wstring &wstr) {
 	float line_start = ortho_pos.x;
-	int line_start_index = 0;
+	std::uint32_t line_start_index = 0;
 	float prev_line_height = 0;
 	float line_height = 0;
 	int num_lines = 1;
@@ -149,11 +145,11 @@ lib::vector<glyph_point> text_manager::create_points(glm::vec2 ortho_pos, const 
 			continue;
 		}
 
-		auto font_attrib = optional_dynamic_cast<const Attributes::font*>(wstr.attrib_of_type(Attributes::font::attrib_type_s(), { i,1 }));
-		auto color_attrib = optional_dynamic_cast<const Attributes::rgb*>(wstr.attrib_of_type(Attributes::rgb::attrib_type_s(), { i,1 }));
-		auto size_attrib = optional_dynamic_cast<const Attributes::size*>(wstr.attrib_of_type(Attributes::size::attrib_type_s(), { i,1 }));
-		auto stroke_attrib = optional_dynamic_cast<const Attributes::stroke*>(wstr.attrib_of_type(Attributes::stroke::attrib_type_s(), { i,1 }));
-		auto weight_attrib = optional_dynamic_cast<const Attributes::weight*>(wstr.attrib_of_type(Attributes::weight::attrib_type_s(), { i,1 }));
+		auto font_attrib = attributes::font::bind(wstr.attrib_of_type(attributes::attrib_type::font, { i,1 }));
+		auto color_attrib = attributes::rgb::bind(wstr.attrib_of_type(attributes::attrib_type::color, { i,1 }));
+		auto size_attrib = attributes::size::bind(wstr.attrib_of_type(attributes::attrib_type::size, { i,1 }));
+		auto stroke_attrib = attributes::stroke::bind(wstr.attrib_of_type(attributes::attrib_type::stroke, { i,1 }));
+		auto weight_attrib = attributes::weight::bind(wstr.attrib_of_type(attributes::attrib_type::weight, { i,1 }));
 
 		const font &font = font_attrib ? font_attrib->get() : default_font;
 		int size = size_attrib ? size_attrib->get() : default_size;
@@ -189,7 +185,7 @@ lib::vector<glyph_point> text_manager::create_points(glm::vec2 ortho_pos, const 
 			float stroke_width = stroke_attrib->get_width();
 			advance += glm::floor(stroke_width * .5f);
 
-			auto c = stroke_attrib->get_color().get();
+			auto c = stroke_attrib->get_color();
 			p.data().w = glm::packUnorm4x8(glm::vec4(c.x / 255.0f, c.y / 255.0f, c.z / 255.0f,
 												   stroke_width * glyph_point::stroke_width_scale));
 		}

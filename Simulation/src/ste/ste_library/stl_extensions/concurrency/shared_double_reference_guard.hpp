@@ -78,7 +78,7 @@ class shared_double_reference_guard {
 private:
 	using data_t = _shared_double_reference_guard_detail::data<DataType, Allocator>;
 
-	using data_ptr = ref_count_ptr<data_t>;
+	using data_ptr = ref_count_ptr<data_t*>;
 
 public:
 	class data_guard {

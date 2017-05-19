@@ -28,7 +28,7 @@ private:
 	struct node;
 	struct node_counter;
 
-	using counted_node_ptr = ref_count_ptr<node>;
+	using counted_node_ptr = ref_count_ptr<node*>;
 
 	struct node_counter {
 		unsigned internal_count : 30;

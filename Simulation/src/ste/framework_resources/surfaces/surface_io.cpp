@@ -318,7 +318,7 @@ gli::texture2d surface_io::load_png(const std::experimental::filesystem::path &f
 gli::texture2d surface_io::load_jpeg(const std::experimental::filesystem::path &path, bool srgb) {
 	std::ifstream fs(path.string(), std::ios::in);
 	if (!fs) {
-		using namespace Attributes;
+		using namespace attributes;
 		ste_log_error() << text::attributed_string("Can't open JPEG ") + i(lib::to_string(path.string())) + ": " + std::strerror(errno) << std::endl;
 		throw resource_io_error("Could not open file");
 	}

@@ -99,7 +99,7 @@ private:
 				ia >> *this;
 				total_size = populate_map(path);
 			} catch (const std::exception &e) {
-				using namespace text::Attributes;
+				using namespace text::attributes;
 				ste_log_warn() << b("LRU Cache: ") + "Failed reading index (Reason: " + e.what() + "). Clearing " + i(lib::to_string(path.string())) + "." << std::endl;
 
 				for (std::experimental::filesystem::directory_iterator end_dir_it, it(path); it!=end_dir_it; ++it)

@@ -77,7 +77,7 @@ public:
 		}
 
 		using namespace ste::text;
-		using namespace Attributes;
+		using namespace attributes;
 
 		// Load image
 		if (magic[0] == 'D' && magic[1] == 'D' && magic[2] == 'S' && magic[3] == ' ') {
