@@ -21,7 +21,7 @@
 
 #include <optional.hpp>
 
-#include <vector>
+#include <lib/vector.hpp>
 #include <allow_type_decay.hpp>
 
 namespace ste {
@@ -32,24 +32,24 @@ namespace vk {
 class vk_pipeline_graphics : public vk_pipeline {
 public:
 	vk_pipeline_graphics(const vk_logical_device &device,
-						 const std::vector<vk_shader_stage_descriptor> &shader_modules,
+						 const lib::vector<vk_shader_stage_descriptor> &shader_modules,
 						 const vk_pipeline_layout &layout,
 						 const vk_render_pass &render_pass,
 						 std::uint32_t subpass,
 						 const VkViewport &viewport,
 						 const VkRect2D &scissor,
-						 std::vector<VkVertexInputBindingDescription> vertex_input_binding_descriptors,
-						 std::vector<VkVertexInputAttributeDescription> vertex_input_attribute_descriptors,
+						 lib::vector<VkVertexInputBindingDescription> vertex_input_binding_descriptors,
+						 lib::vector<VkVertexInputAttributeDescription> vertex_input_attribute_descriptors,
 						 VkPrimitiveTopology topology,
 						 const vk_rasterizer_op_descriptor &rasterizer_op,
 						 const vk_depth_op_descriptor &depth_op,
-						 const std::vector<vk_blend_op_descriptor> &attachment_blend_op,
+						 const lib::vector<vk_blend_op_descriptor> &attachment_blend_op,
 						 const glm::vec4 blend_constants,
-						 std::vector<VkDynamicState> dynamic_states,
+						 lib::vector<VkDynamicState> dynamic_states,
 						 const vk_pipeline_cache *cache = nullptr) : vk_pipeline(device) {
 		// Shader modules stages
-		std::vector<vk_shader::shader_stage_info_t> stages_info(shader_modules.size());
-		std::vector<VkPipelineShaderStageCreateInfo> stages(shader_modules.size());
+		lib::vector<vk_shader::shader_stage_info_t> stages_info(shader_modules.size());
+		lib::vector<VkPipelineShaderStageCreateInfo> stages(shader_modules.size());
 		for (std::size_t i = 0; i < shader_modules.size(); ++i) {
 			auto &sd = shader_modules[i];
 			assert((sd.stage & VK_SHADER_STAGE_COMPUTE_BIT) == 0 && "shader_stage_descriptor must not be a compute shader");
@@ -125,7 +125,7 @@ public:
 		depth_stencil_state_create.depthWriteEnable = depth_op.depth_write_enable;
 
 		// Blend
-		std::vector<VkPipelineColorBlendAttachmentState> blend_attachment_states(attachment_blend_op.size());
+		lib::vector<VkPipelineColorBlendAttachmentState> blend_attachment_states(attachment_blend_op.size());
 		for (std::size_t i = 0; i < attachment_blend_op.size(); ++i)
 			blend_attachment_states[i] = *(attachment_blend_op.begin() + i);
 

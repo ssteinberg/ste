@@ -37,11 +37,11 @@ private:
 private:
 	class cmd_update_text : public gl::command {
 		text_fragment *tr;
-		const std::vector<glyph_point> points;
+		const lib::vector<glyph_point> points;
 
 	public:
 		cmd_update_text(text_fragment *tr,
-						std::vector<glyph_point> &&points)
+						lib::vector<glyph_point> &&points)
 			: tr(tr), points(std::move(points))
 		{}
 		virtual ~cmd_update_text() noexcept {}
@@ -106,7 +106,7 @@ public:
 	auto& manager() { return *tm; }
 	const auto& manager() const { return *tm; }
 
-	static const std::string& name() { return "text_renderer"; }
+	static const lib::string& name() { return "text_renderer"; }
 };
 
 }

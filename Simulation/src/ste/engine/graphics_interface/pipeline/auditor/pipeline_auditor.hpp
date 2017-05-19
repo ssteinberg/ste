@@ -6,7 +6,7 @@
 #include <stdafx.hpp>
 #include <pipeline_layout.hpp>
 
-#include <vector>
+#include <lib/vector.hpp>
 
 namespace ste {
 namespace gl {
@@ -16,7 +16,7 @@ public:
 	using shader_stage_t = pipeline_layout::shader_stage_t;
 
 private:
-	virtual std::vector<shader_stage_t> stages() const = 0;
+	virtual lib::vector<shader_stage_t> stages() const = 0;
 
 public:
 	pipeline_auditor() = default;

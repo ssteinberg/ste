@@ -3,12 +3,12 @@
 
 #pragma once
 
-#include <string>
+#include <lib/string.hpp>
 #include <fstream>
-#include <memory>
+#include <lib/unique_ptr.hpp>
 #include <ios>
 
-#include <boost_filesystem.hpp>
+#include <filesystem>
 
 #include <task_future.hpp>
 #include <task_scheduler.hpp>
@@ -25,15 +25,15 @@ namespace resource {
 
 class surface_io {
 private:
-	static gli::texture2d load_png(const boost::filesystem::path &file_name, bool srgb);
-	static gli::texture2d load_tga(const boost::filesystem::path &file_name, bool srgb);
-	static gli::texture2d load_jpeg(const boost::filesystem::path &file_name, bool srgb);
-	static void write_png(const boost::filesystem::path &file_name, const char *image_data, int components, int width, int height);
+	static gli::texture2d load_png(const std::experimental::filesystem::path &file_name, bool srgb);
+	static gli::texture2d load_tga(const std::experimental::filesystem::path &file_name, bool srgb);
+	static gli::texture2d load_jpeg(const std::experimental::filesystem::path &file_name, bool srgb);
+	static void write_png(const std::experimental::filesystem::path &file_name, const char *image_data, int components, int width, int height);
 
 	~surface_io() {}
 
 public:
-	static void write_surface_2d(const gli::texture2d &surface, const boost::filesystem::path &path) {
+	static void write_surface_2d(const gli::texture2d &surface, const std::experimental::filesystem::path &path) {
 		int components;
 		if (surface.format() == gli::format::FORMAT_R8_UNORM_PACK8)			components = 1;
 		else if (surface.format() == gli::format::FORMAT_RGB8_UNORM_PACK8)	components = 3;
@@ -45,13 +45,13 @@ public:
 
 		write_png(path, reinterpret_cast<const char*>(surface.data()), components, surface.extent().x, surface.extent().y);
 	}
-	static auto write_surface_2d_async(task_scheduler &sched, const gli::texture2d &surface, const boost::filesystem::path &path) {
+	static auto write_surface_2d_async(task_scheduler &sched, const gli::texture2d &surface, const std::experimental::filesystem::path &path) {
 		return sched.schedule_now([&]() {
 			write_surface_2d(surface, path);
 		});
 	}
 
-	static auto load_surface_2d(const boost::filesystem::path &path, bool srgb) {
+	static auto load_surface_2d(const std::experimental::filesystem::path &path, bool srgb) {
 		unsigned char magic[4] = { 0, 0, 0, 0 };
 
 		// Check image format
@@ -77,7 +77,7 @@ public:
 		}
 
 		using namespace ste::text;
-		using namespace Attributes;
+		using namespace attributes;
 
 		// Load image
 		if (magic[0] == 'D' && magic[1] == 'D' && magic[2] == 'S' && magic[3] == ' ') {
@@ -89,7 +89,7 @@ public:
 				throw surface_error("Parsing DDS surface failed");
 			}
 
-			ste_log() << attributed_string("Loaded DDS surface \"") + i(path.string()) + "\" (" + std::to_string(texture.extent().x) + " X " + std::to_string(texture.extent().y) + ") successfully." << std::endl;
+			ste_log() << attributed_string("Loaded DDS surface \"") + i(lib::to_string(path.string())) + "\" (" + lib::to_string(texture.extent().x) + " X " + lib::to_string(texture.extent().y) + ") successfully." << std::endl;
 			return texture;
 		}
 
@@ -101,7 +101,7 @@ public:
 				throw surface_error("Parsing JPEG surface failed");
 			}
 
-			ste_log() << attributed_string("Loaded JPEG surface \"") + i(path.string()) + "\" (" + std::to_string(texture.extent().x) + " X " + std::to_string(texture.extent().y) + ") successfully." << std::endl;
+			ste_log() << attributed_string("Loaded JPEG surface \"") + i(lib::to_string(path.string())) + "\" (" + lib::to_string(texture.extent().x) + " X " + lib::to_string(texture.extent().y) + ") successfully." << std::endl;
 			return texture;
 		}
 		else if (magic[0] == 0x89 && magic[1] == 0x50 && magic[2] == 0x4e && magic[3] == 0x47) {
@@ -112,7 +112,7 @@ public:
 				throw surface_error("Parsing PNG surface failed");
 			}
 
-			ste_log() << attributed_string("Loaded PNG surface \"") + i(path.string()) + "\" (" + std::to_string(texture.extent().x) + " X " + std::to_string(texture.extent().y) + ") successfully." << std::endl;
+			ste_log() << attributed_string("Loaded PNG surface \"") + i(lib::to_string(path.string())) + "\" (" + lib::to_string(texture.extent().x) + " X " + lib::to_string(texture.extent().y) + ") successfully." << std::endl;
 			return texture;
 		}
 		else if (magic[0] == 0 && magic[1] == 0 && magic[3] == 0) {
@@ -123,18 +123,18 @@ public:
 				throw surface_error("Parsing TGA surface failed");
 			}
 
-			ste_log() << attributed_string("Loaded TGA surface \"") + i(path.string()) + "\" (" + std::to_string(texture.extent().x) + " X " + std::to_string(texture.extent().y) + ") successfully." << std::endl;
+			ste_log() << attributed_string("Loaded TGA surface \"") + i(lib::to_string(path.string())) + "\" (" + lib::to_string(texture.extent().x) + " X " + lib::to_string(texture.extent().y) + ") successfully." << std::endl;
 			return texture;
 		}
 		else {
-			ste_log_error() << red(attributed_string("Incompatible surface format: \"")) + i(path.string()) + "\"." << std::endl;
+			ste_log_error() << red(attributed_string("Incompatible surface format: \"")) + i(lib::to_string(path.string())) + "\"." << std::endl;
 			throw surface_unsupported_format_error("Incompatible surface format");
 		}
 	}
 
-	static auto load_surface_2d_async(task_scheduler &sched, const boost::filesystem::path &path, bool srgb) {
+	static auto load_surface_2d_async(task_scheduler &sched, const std::experimental::filesystem::path &path, bool srgb) {
 		return sched.schedule_now([&]() {
-			return std::make_unique<gli::texture2d>(load_surface_2d(path, srgb));
+			return lib::allocate_unique<gli::texture2d>(load_surface_2d(path, srgb));
 		});
 	}
 };

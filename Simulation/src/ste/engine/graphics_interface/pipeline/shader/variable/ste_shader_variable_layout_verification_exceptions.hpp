@@ -14,16 +14,16 @@ class ste_shader_variable_layout_verification_exception : public ste_engine_exce
 	using Base = ste_engine_exception;
 
 private:
-	std::string m;
+	lib::string m;
 
 public:
-	ste_shader_variable_layout_verification_exception(const std::string &m) : Base(m), m(m) {}
+	ste_shader_variable_layout_verification_exception(const lib::string &m) : Base(m), m(m) {}
 	const char* what() const override final { return m.c_str(); }
 
-	void append(const std::string &msg) {
-		m += std::string(" ") + msg;
+	void append(const lib::string &msg) {
+		m += lib::string(" ") + msg;
 	}
-	void prepend(const std::string &msg) {
+	void prepend(const lib::string &msg) {
 		m = msg + " " + m;
 	}
 };

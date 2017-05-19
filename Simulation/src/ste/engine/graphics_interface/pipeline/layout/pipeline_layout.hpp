@@ -23,9 +23,9 @@
 #include <vk_pipeline_layout.hpp>
 
 #include <allow_type_decay.hpp>
-#include <string>
-#include <boost/container/flat_map.hpp>
-#include <boost/container/flat_set.hpp>
+#include <lib/string.hpp>
+#include <lib/flat_map.hpp>
+#include <lib/flat_set.hpp>
 
 namespace ste {
 namespace gl {
@@ -39,24 +39,24 @@ class pipeline_layout : public allow_type_decay<pipeline_layout, vk::vk_pipeline
 
 public:
 	using shader_stage_t = device_pipeline_shader_stage*;
-	using shader_stages_list_t = std::vector<shader_stage_t>;
+	using shader_stages_list_t = lib::vector<shader_stage_t>;
 
-	using set_layout_modified_signal_t = signal<const std::vector<pipeline_layout_set_index> &>;
+	using set_layout_modified_signal_t = signal<const lib::vector<pipeline_layout_set_index> &>;
 
 private:
-	using stages_map_t = boost::container::flat_map<ste_shader_program_stage, shader_stage_t>;
+	using stages_map_t = lib::flat_map<ste_shader_program_stage, shader_stage_t>;
 
 	using variable_map_t = pipeline_binding_layout_collection;
-	using variable_ref_map_t = boost::container::flat_map<std::string, pipeline_binding_layout*>;
+	using variable_ref_map_t = lib::flat_map<lib::string, pipeline_binding_layout*>;
 
 	using attachment_map_t = pipeline_attachment_layout_collection;
 
-	using spec_map_t = std::unordered_map<ste_shader_program_stage, vk::vk_shader::spec_map>;
+	using spec_map_t = lib::unordered_map<ste_shader_program_stage, vk::vk_shader::spec_map>;
 
-	using binding_sets_layout_map_t = boost::container::flat_map<pipeline_layout_set_index, pipeline_binding_set_layout>;
+	using binding_sets_layout_map_t = lib::flat_map<pipeline_layout_set_index, pipeline_binding_set_layout>;
 
 	using spec_to_dependant_array_variables_map_t =
-		boost::container::flat_map<const ste_shader_stage_variable*, std::vector<const pipeline_binding_layout*>>;
+		lib::flat_map<const ste_shader_stage_variable*, lib::vector<const pipeline_binding_layout*>>;
 
 private:
 	std::reference_wrapper<const ste_context> ctx;
@@ -67,20 +67,20 @@ private:
 	attachment_map_t attachments_map;
 
 	// Push and specialization constants maps, as well as specializations.
-	std::unique_ptr<pipeline_push_constants_layout> push_constants_layout;
+	lib::unique_ptr<pipeline_push_constants_layout> push_constants_layout;
 	variable_ref_map_t spec_variables_map;
 	spec_map_t specializations;
 
 	// Layouts of the descriptor sets
 	binding_sets_layout_map_t bindings_set_layouts;
-	std::unique_ptr<vk::vk_pipeline_layout> layout;
+	lib::unique_ptr<vk::vk_pipeline_layout> layout;
 
 	// External binding sets
 	const pipeline_external_binding_set_collection *external_binding_sets{ nullptr };
 
 	// Layout can be modified (by respecializing constants, which define array length of binding variables).
 	// In which case the affected sets need to be recreated.
-	boost::container::flat_set<pipeline_layout_set_index> set_layouts_modified_queue;
+	lib::flat_set<pipeline_layout_set_index> set_layouts_modified_queue;
 	// Map of specialization variables to dependant array variables
 	spec_to_dependant_array_variables_map_t spec_to_dependant_array_variables_map;
 
@@ -89,8 +89,8 @@ private:
 
 private:
 	static void update_variable(variable_map_t &map,
-								std::vector<pipeline_binding_layout> &push_constant_bindings,
-								const std::string &name,
+								lib::vector<pipeline_binding_layout> &push_constant_bindings,
+								const lib::string &name,
 								const pipeline_binding_layout &binding,
 								ste_shader_program_stage stage) {
 		// Push constants are handled differently, don't add to variables map
@@ -116,7 +116,7 @@ private:
 	}
 
 	static void add_attachment(attachment_map_t &map,
-							   const std::string &name,
+							   const lib::string &name,
 							   const pipeline_attachment_layout &attachment) {
 		auto ret = map.try_emplace(name, attachment);
 		const auto &a = ret.first->second;
@@ -164,7 +164,7 @@ private:
 
 	// Populates variable map, specialization constants map and push constants layout
 	void create_variable_layouts(variable_map_t &&map,
-								 const std::vector<pipeline_binding_layout> &push_constant_bindings) {
+								 const lib::vector<pipeline_binding_layout> &push_constant_bindings) {
 		for (auto &b : map) {
 			auto &name = b.second.name();
 			auto &val = b.second;
@@ -192,12 +192,12 @@ private:
 		variables_map = std::move(map);
 
 		// Create push constants layout
-		push_constants_layout = std::make_unique<pipeline_push_constants_layout>(push_constant_bindings);
+		push_constants_layout = lib::allocate_unique<pipeline_push_constants_layout>(push_constant_bindings);
 	}
 
 	void create_set_layouts() {
 		// Sort variables into sets
-		boost::container::flat_map<pipeline_layout_set_index, pipeline_binding_set_layout::bindings_vec_t> sets;
+		lib::flat_map<pipeline_layout_set_index, pipeline_binding_set_layout::bindings_vec_t> sets;
 		for (auto &v : variables_map) {
 			auto& b = v.second;
 			if (b.binding->binding_type == ste_shader_stage_binding_type::uniform ||
@@ -229,8 +229,8 @@ private:
 	}
 
 	template <typename T>
-	void specialize_constant_impl(const std::string &name,
-								  const optional<std::string> &data = none,
+	void specialize_constant_impl(const lib::string &name,
+								  const optional<lib::string> &data = none,
 								  const T *value = nullptr) {
 		// Specialize the binding scalar variable
 		// Used for dynamic array lengths
@@ -300,7 +300,7 @@ public:
 			// Sort the variables from all the shader stages
 			// Those data structures will be used later to generate the variables layouts
 			variable_map_t all_variables;
-			std::vector<pipeline_binding_layout> push_constant_bindings;
+			lib::vector<pipeline_binding_layout> push_constant_bindings;
 
 			for (auto &s : pipeline_shader_stages) {
 				auto stage = s->get_stage();
@@ -364,11 +364,11 @@ public:
 	*	@throws	pipeline_layout_variable_not_found_exception	If specialization constant not found
 	*/
 	template <typename T>
-	void specialize_constant(const std::string &name, const T &value) {
+	void specialize_constant(const lib::string &name, const T &value) {
 		using S = std::remove_cv_t<std::remove_reference_t<T>>;
 		static_assert(std::is_pod_v<S> || is_arithmetic_v<S>, "T must be a POD or arithmetic type");
 
-		std::string data;
+		lib::string data;
 		data.resize(sizeof(S));
 		memcpy(data.data(), &value, sizeof(S));
 
@@ -381,7 +381,7 @@ public:
 	*
 	*	@throws	pipeline_layout_variable_not_found_exception	If specialization constant not found
 	*/
-	void remove_specialization(const std::string &name) {
+	void remove_specialization(const lib::string &name) {
 		specialize_constant_impl<unsigned>(name);
 	}
 
@@ -390,8 +390,8 @@ public:
 	*	
 	*	@return	Returns the old layout object
 	*/
-	std::unique_ptr<vk::vk_pipeline_layout> recreate_layout() {
-		std::vector<const vk::vk_descriptor_set_layout*> set_layout_ptrs;
+	lib::unique_ptr<vk::vk_pipeline_layout> recreate_layout() {
+		lib::vector<const vk::vk_descriptor_set_layout*> set_layout_ptrs;
 		for (auto &s : bindings_set_layouts) {
 			set_layout_ptrs.push_back(&s.second.get());
 		}
@@ -410,7 +410,7 @@ public:
 		auto old_layout = std::move(layout);
 
 		// Create pipeline layout and raise layout invalidated flag
-		layout = std::make_unique<vk::vk_pipeline_layout>(ctx.get().device(),
+		layout = lib::allocate_unique<vk::vk_pipeline_layout>(ctx.get().device(),
 														  set_layout_ptrs,
 														  push_constant_layouts);
 		layout_invalidated_flag = false;
@@ -425,8 +425,8 @@ public:
 	*
 	*	@return	Vector of modified set indices
 	*/
-	auto recreate_invalidated_set_layouts(std::vector<pipeline_binding_set_layout> *old_layouts = nullptr) {
-		std::vector<pipeline_layout_set_index> modified_set_indices;
+	auto recreate_invalidated_set_layouts(lib::vector<pipeline_binding_set_layout> *old_layouts = nullptr) {
+		lib::vector<pipeline_layout_set_index> modified_set_indices;
 
 		if (set_layouts_modified_queue.empty())
 			return modified_set_indices;
@@ -474,7 +474,7 @@ public:
 	*	@brief	Returns the collection of shader stage descriptors, used to create pipeline objects.
 	*/
 	auto shader_stage_descriptors() const {
-		std::vector<vk::vk_shader_stage_descriptor> descriptors;
+		lib::vector<vk::vk_shader_stage_descriptor> descriptors;
 		for (auto &s : stages)
 			descriptors.push_back(s.second->pipeline_stage_descriptor());
 

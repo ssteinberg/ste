@@ -13,7 +13,7 @@
 #include <optional.hpp>
 
 #include <chrono>
-#include <vector>
+#include <lib/vector.hpp>
 #include <limits>
 
 namespace ste {
@@ -111,12 +111,12 @@ public:
 *	@return	Returns true if signaled, false on timeout.
 */
 template <class Rep = std::chrono::nanoseconds::rep, class Period = std::chrono::nanoseconds::period>
-bool inline vk_fence_wait_all(const std::vector<std::reference_wrapper<const vk_fence>> &fences,
+bool inline vk_fence_wait_all(const lib::vector<std::reference_wrapper<const vk_fence>> &fences,
 							  const std::chrono::duration<Rep, Period> &timeout = std::chrono::nanoseconds(std::numeric_limits<uint64_t>::max())) {
 	assert(fences.size());
 
 	std::uint64_t timeout_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(timeout).count();
-	std::vector<VkFence> v(fences.size());
+	lib::vector<VkFence> v(fences.size());
 	for (int i = 0; i < fences.size(); ++i)
 		v[i] = fences[i].get();
 
@@ -136,12 +136,12 @@ bool inline vk_fence_wait_all(const std::vector<std::reference_wrapper<const vk_
 *	@return	Returns true if signaled, false on timeout.
 */
 template <class Rep = std::chrono::nanoseconds::rep, class Period = std::chrono::nanoseconds::period>
-bool inline vk_fence_wait_any(const std::vector<std::reference_wrapper<const vk_fence>> &fences,
+bool inline vk_fence_wait_any(const lib::vector<std::reference_wrapper<const vk_fence>> &fences,
 							  const std::chrono::duration<Rep, Period> &timeout = std::chrono::nanoseconds(std::numeric_limits<uint64_t>::max())) {
 	assert(fences.size());
 
 	std::uint64_t timeout_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(timeout).count();
-	std::vector<VkFence> v(fences.size());
+	lib::vector<VkFence> v(fences.size());
 	for (int i = 0; i < fences.size(); ++i)
 		v[i] = fences[i].get();
 

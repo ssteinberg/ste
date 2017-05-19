@@ -1,5 +1,5 @@
 //	StE
-// © Shlomi Steinberg 2015-2016
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
@@ -9,17 +9,16 @@
 
 #include <algorithm>
 #include <utility>
-#include <string>
-#include <boost/container/flat_map.hpp>
+#include <lib/string.hpp>
+#include <lib/flat_map.hpp>
 
 namespace ste {
 namespace gl {
 
 class ste_device_queue_selector_cache {
 private:
-	using cache_key_t = std::string;
-	using cache_t = boost::container::flat_map<cache_key_t, std::uint32_t>;
-	static thread_local cache_t cached_usage_index_map;
+	using cache_key_t = lib::string;
+	using cache_t = lib::flat_map<cache_key_t, std::uint32_t>;
 
 public:
 	ste_device_queue_selector_cache() = default;
@@ -28,6 +27,8 @@ public:
 	template <typename selector_policy>
 	auto operator()(const ste_queue_selector<selector_policy> &select,
 					const ste_queue_descriptors &descriptors) const {
+		static thread_local cache_t cached_usage_index_map;
+
 		auto cache_key = cache_key_t(select.serialize_selector());
 		{
 			// Cached result. Return it.

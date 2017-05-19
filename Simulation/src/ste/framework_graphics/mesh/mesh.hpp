@@ -8,7 +8,7 @@
 #include <object_vertex_data.hpp>
 #include <mesh_bounding_sphere.hpp>
 
-#include <vector>
+#include <lib/vector.hpp>
 #include <type_traits>
 
 namespace ste {
@@ -18,8 +18,8 @@ class mesh_generic {
 public:
 	virtual ~mesh_generic() noexcept {};
 
-	virtual const std::vector<object_vertex_data> &get_vertices() const = 0;
-	virtual const std::vector<std::uint32_t> &get_indices() const = 0;
+	virtual const lib::vector<object_vertex_data> &get_vertices() const = 0;
+	virtual const lib::vector<std::uint32_t> &get_indices() const = 0;
 	virtual const mesh_bounding_sphere &bounding_sphere() const = 0;
 };
 
@@ -32,8 +32,8 @@ enum class mesh_subdivion_mode {
 template<mesh_subdivion_mode Mode>
 class mesh : public mesh_generic {
 private:
-	std::vector<object_vertex_data> vertices;
-	std::vector<std::uint32_t> indices;
+	lib::vector<object_vertex_data> vertices;
+	lib::vector<std::uint32_t> indices;
 
 protected:
 	mesh_bounding_sphere sphere;
@@ -65,8 +65,8 @@ public:
 public:
 	virtual ~mesh() noexcept {};
 
-	const std::vector<object_vertex_data> &get_vertices() const override final { return vertices; }
-	const std::vector<std::uint32_t> &get_indices() const override final { return indices; }
+	const lib::vector<object_vertex_data> &get_vertices() const override final { return vertices; }
+	const lib::vector<std::uint32_t> &get_indices() const override final { return indices; }
 	const mesh_bounding_sphere &bounding_sphere() const override final { return sphere; };
 
 	void set_vertices(const object_vertex_data *vert, int size) {

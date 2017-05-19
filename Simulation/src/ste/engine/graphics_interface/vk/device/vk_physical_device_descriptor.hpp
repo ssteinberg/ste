@@ -4,7 +4,7 @@
 #pragma once
 
 #include <vulkan/vulkan.h>
-#include <vector>
+#include <lib/vector.hpp>
 
 namespace ste {
 namespace gl {
@@ -18,7 +18,7 @@ struct vk_physical_device_descriptor {
 	VkPhysicalDeviceFeatures features;
 	VkPhysicalDeviceMemoryProperties memory_properties;
 
-	std::vector<VkQueueFamilyProperties> queue_family_properties;
+	lib::vector<VkQueueFamilyProperties> queue_family_properties;
 };
 
 }

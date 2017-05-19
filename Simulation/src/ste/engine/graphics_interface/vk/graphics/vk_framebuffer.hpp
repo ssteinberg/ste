@@ -13,7 +13,7 @@
 
 #include <optional.hpp>
 
-#include <vector>
+#include <lib/vector.hpp>
 #include <allow_type_decay.hpp>
 
 namespace ste {
@@ -30,7 +30,7 @@ private:
 public:
 	vk_framebuffer(const vk_logical_device &device,
 				   const vk_render_pass &render_pass,
-				   const std::vector<VkImageView> &attachments,
+				   const lib::vector<VkImageView> &attachments,
 				   const glm::u32vec2 &extent) : device(device), extent(extent) {
 		VkFramebuffer fb;
 

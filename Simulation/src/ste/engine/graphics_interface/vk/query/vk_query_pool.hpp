@@ -11,7 +11,7 @@
 #include <optional.hpp>
 
 #include <vk_query.hpp>
-#include <string>
+#include <lib/string.hpp>
 
 namespace ste {
 namespace gl {
@@ -63,12 +63,12 @@ public:
 		}
 	}
 
-	std::string read_results(std::size_t data_size,
+	lib::string read_results(std::size_t data_size,
 							 std::uint32_t first_query,
 							 std::uint32_t queries_count,
 							 std::uint64_t stride,
 							 VkQueryResultFlags flags = 0) const {
-		std::string data;
+		lib::string data;
 		data.resize(data_size);
 
 		vk_result res = vkGetQueryPoolResults(device.get(), *this,

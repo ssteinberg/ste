@@ -22,8 +22,8 @@
 #include <colorspace.hpp>
 
 #include <atomic>
-#include <memory>
-#include <vector>
+#include <lib/unique_ptr.hpp>
+#include <lib/vector.hpp>
 #include <chrono>
 #include <limits>
 #include <mutex>
@@ -61,8 +61,8 @@ private:
 
 	vk::vk_surface presentation_surface;
 	VkSurfaceCapabilitiesKHR surface_presentation_caps;
-	std::unique_ptr<vk::vk_swapchain> swap_chain{ nullptr };
-	std::vector<swap_chain_image_t> swap_chain_images;
+	lib::unique_ptr<vk::vk_swapchain> swap_chain{ nullptr };
+	lib::vector<swap_chain_image_t> swap_chain_images;
 
 	aligned_ptr<shared_data_t> shared_data;
 

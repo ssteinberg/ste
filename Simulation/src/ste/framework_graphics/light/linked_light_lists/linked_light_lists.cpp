@@ -17,10 +17,10 @@
 //	this->size = size;
 //
 //	lll.commit_range(0, size.x * size.y * total_max_active_lights_per_frame);
-//	lll_heads = std::make_unique<Core::texture_2d>(gli::format::FORMAT_R32_UINT_PACK32, glm::ivec2{ size });
-//	lll_low_detail_heads = std::make_unique<Core::texture_2d>(gli::format::FORMAT_R32_UINT_PACK32, glm::ivec2{ size });
-//	lll_size = std::make_unique<Core::texture_2d>(gli::format::FORMAT_R8_UINT_PACK8, glm::ivec2{ size });
-//	lll_low_detail_size = std::make_unique<Core::texture_2d>(gli::format::FORMAT_R8_UINT_PACK8, glm::ivec2{ size });
+//	lll_heads = lib::allocate_unique<Core::texture_2d>(gli::format::FORMAT_R32_UINT_PACK32, glm::ivec2{ size });
+//	lll_low_detail_heads = lib::allocate_unique<Core::texture_2d>(gli::format::FORMAT_R32_UINT_PACK32, glm::ivec2{ size });
+//	lll_size = lib::allocate_unique<Core::texture_2d>(gli::format::FORMAT_R8_UINT_PACK8, glm::ivec2{ size });
+//	lll_low_detail_size = lib::allocate_unique<Core::texture_2d>(gli::format::FORMAT_R8_UINT_PACK8, glm::ivec2{ size });
 //}
 //
 //void linked_light_lists::bind_lll_buffer(bool low_detail) const {

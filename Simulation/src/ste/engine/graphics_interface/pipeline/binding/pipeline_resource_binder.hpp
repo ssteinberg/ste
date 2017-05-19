@@ -22,7 +22,7 @@
 #include <ring_buffer.hpp>
 #include <stable_vector.hpp>
 
-#include <vector>
+#include <lib/vector.hpp>
 
 namespace ste {
 namespace gl {
@@ -37,11 +37,11 @@ public:
 
 private:
 	std::uint32_t array_element;
-	std::vector<WriteType> writes;
+	lib::vector<WriteType> writes;
 
 public:
 	pipeline_resource_binder(std::uint32_t array_element,
-							 std::vector<WriteType> &&writes)
+							 lib::vector<WriteType> &&writes)
 		: array_element(array_element),
 		writes(std::move(writes))
 	{
@@ -144,10 +144,10 @@ auto inline bind(const pipeline::image &img) {
 *	@param	images			Images to bind
 */
 auto inline bind(std::uint32_t array_element,
-				 const std::vector<pipeline::image> &images) {
+				 const lib::vector<pipeline::image> &images) {
 	assert(images.size());
 
-	std::vector<vk::vk_descriptor_set_write_image> writes;
+	lib::vector<vk::vk_descriptor_set_write_image> writes;
 	writes.reserve(images.size());
 	for (auto &img : images) {
 		VkImageView v = img.get_image_view().get_image_view_handle();
@@ -160,7 +160,7 @@ auto inline bind(std::uint32_t array_element,
 *
 *	@param	images			Images to bind
 */
-auto inline bind(const std::vector<pipeline::image> &images) {
+auto inline bind(const lib::vector<pipeline::image> &images) {
 	assert(images.size());
 	return gl::bind(0, images);
 }
@@ -183,10 +183,10 @@ auto inline bind(const pipeline::combined_image_sampler& cis) {
 *	@param	ciss				Combined-image-samplers to bind
 */
 auto inline bind(std::uint32_t array_element,
-				 const std::vector<pipeline::combined_image_sampler> &ciss) {
+				 const lib::vector<pipeline::combined_image_sampler> &ciss) {
 	assert(ciss.size());
 
-	std::vector<vk::vk_descriptor_set_write_image> writes;
+	lib::vector<vk::vk_descriptor_set_write_image> writes;
 	writes.reserve(ciss.size());
 	for (auto &p : ciss) {
 		VkImageView v = p.get_image_view().get_image_view_handle();
@@ -199,7 +199,7 @@ auto inline bind(std::uint32_t array_element,
 *
 *	@param	ciss		Combined-image-samplers to bind
 */
-auto inline bind(const std::vector<pipeline::combined_image_sampler> &ciss) {
+auto inline bind(const lib::vector<pipeline::combined_image_sampler> &ciss) {
 	assert(ciss.size());
 	return gl::bind(0, ciss);
 }
@@ -221,10 +221,10 @@ auto inline bind(const sampler &sam) {
 *	@param	samplers		Samplers to bind
 */
 auto inline bind(std::uint32_t array_element,
-				 const std::vector<const sampler*> &samplers) {
+				 const lib::vector<const sampler*> &samplers) {
 	assert(samplers.size());
 
-	std::vector<vk::vk_descriptor_set_write_image> writes;
+	lib::vector<vk::vk_descriptor_set_write_image> writes;
 	writes.reserve(samplers.size());
 	for (auto &p : samplers)
 		writes.push_back({ p->get() });
@@ -235,7 +235,7 @@ auto inline bind(std::uint32_t array_element,
 *
 *	@param	samplers	Sampelrs to bind
 */
-auto inline bind(const std::vector<const sampler*> &samplers) {
+auto inline bind(const lib::vector<const sampler*> &samplers) {
 	assert(samplers.size());
 	return gl::bind(0, samplers);
 }

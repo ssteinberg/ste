@@ -31,7 +31,7 @@ struct storage_shared_ptr_base {
 	void release() {
 		assert(references > 0);
 		if (--references == 0) {
-			delete storage;
+			lib::default_alloc<storage_base>::destroy(storage);
 			rs->remove_storage(*this);
 		}
 	}

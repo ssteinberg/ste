@@ -28,7 +28,7 @@ public:
 	}
 	~hdr_bloom_blur_x_fragment() noexcept {}
 
-	static const std::string& name() { return "hdr_bloom_blur_x"; }
+	static const lib::string& name() { return "hdr_bloom_blur_x"; }
 
 	static void setup_graphics_pipeline(const gl::rendering_system &rs,
 										gl::pipeline_auditor_graphics &auditor) {

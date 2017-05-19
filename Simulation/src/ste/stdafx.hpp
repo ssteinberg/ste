@@ -1,10 +1,11 @@
 // StE
-// © Shlomi Steinberg, 2015-2016
+// © Shlomi Steinberg, 2015-2017
 
 #ifndef _PCH_
 #define _PCH_
 
 #include <cstdint>
+#include <cstddef>
 
 #ifdef _MSC_VER
 #include <windows.hpp>

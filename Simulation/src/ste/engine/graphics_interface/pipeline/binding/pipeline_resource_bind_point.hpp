@@ -30,12 +30,12 @@ protected:
 	auto& get_binding() const { return *binding->binding; }
 
 private:
-	void populate_bound_resources(const std::vector<vk::vk_descriptor_set_write_buffer> &writes,
+	void populate_bound_resources(const lib::vector<vk::vk_descriptor_set_write_buffer> &writes,
 								  std::uint32_t array_element,
 								  stage_flag stages) {
 		//! WIP
 	}
-	void populate_bound_resources(const std::vector<vk::vk_descriptor_set_write_image> &writes,
+	void populate_bound_resources(const lib::vector<vk::vk_descriptor_set_write_image> &writes,
 								  std::uint32_t array_element,
 								  stage_flag stages) {
 		//! WIP

@@ -7,7 +7,7 @@
 #include <command.hpp>
 #include <pipeline_barrier.hpp>
 
-#include <vector>
+#include <lib/vector.hpp>
 
 namespace ste {
 namespace gl {
@@ -27,9 +27,9 @@ private:
 		const auto &buffer = barrier.get_buffer_barriers();
 		const auto &image = barrier.get_image_barriers();
 
-		std::vector<VkMemoryBarrier> memory_barriers;
-		std::vector<VkBufferMemoryBarrier> buffer_barriers;
-		std::vector<VkImageMemoryBarrier> image_barriers;
+		lib::vector<VkMemoryBarrier> memory_barriers;
+		lib::vector<VkBufferMemoryBarrier> buffer_barriers;
+		lib::vector<VkImageMemoryBarrier> image_barriers;
 
 		memory_barriers.reserve(global.size());
 		for (auto &e : global)

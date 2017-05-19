@@ -16,7 +16,7 @@ struct task_interface_extract_consumed_resources {};
 template <>
 struct task_interface_extract_consumed_resources<task_vertex_buffers_interface> {
 	auto operator()(const task_vertex_buffers_interface *interface) {
-		std::vector<task_resource> ret;
+		lib::vector<task_resource> ret;
 		for (auto &v : interface->get_vertex_buffers()) {
 			task_resource res;
 			res.type = task_resource_type::buffer;
@@ -39,7 +39,7 @@ struct task_interface_extract_consumed_resources<task_index_buffer_interface> {
 		res.access = access_flags::vertex_attribute_read;
 		res.stage = pipeline_stage::vertex_shader;
 
-		return std::vector<task_resource>{ res };
+		return lib::vector<task_resource>{ res };
 	}
 };
 template <>
@@ -51,7 +51,7 @@ struct task_interface_extract_consumed_resources<task_indirect_draw_buffer_inter
 		res.access = access_flags::indirect_command_read;
 		res.stage = pipeline_stage::vertex_shader;
 
-		return std::vector<task_resource>{ res };
+		return lib::vector<task_resource>{ res };
 	}
 };
 template <>
@@ -63,7 +63,7 @@ struct task_interface_extract_consumed_resources<task_indirect_indexed_draw_buff
 		res.access = access_flags::indirect_command_read;
 		res.stage = pipeline_stage::vertex_shader;
 
-		return std::vector<task_resource>{ res };
+		return lib::vector<task_resource>{ res };
 	}
 };
 template <>
@@ -75,7 +75,7 @@ struct task_interface_extract_consumed_resources<task_indirect_dispatch_buffer_i
 		res.access = access_flags::indirect_command_read;
 		res.stage = pipeline_stage::vertex_shader;
 
-		return std::vector<task_resource>{ res };
+		return lib::vector<task_resource>{ res };
 	}
 };
 template <>
@@ -88,7 +88,7 @@ struct task_interface_extract_consumed_resources<task_transfer_source_image_inte
 		res.access = access_flags::transfer_read;
 		res.stage = pipeline_stage::transfer;
 
-		return std::vector<task_resource>{ res };
+		return lib::vector<task_resource>{ res };
 	}
 };
 template <>
@@ -101,7 +101,7 @@ struct task_interface_extract_consumed_resources<task_transfer_destination_image
 		res.access = access_flags::transfer_write;
 		res.stage = pipeline_stage::transfer;
 
-		return std::vector<task_resource>{ res };
+		return lib::vector<task_resource>{ res };
 	}
 };
 template <>
@@ -113,7 +113,7 @@ struct task_interface_extract_consumed_resources<task_transfer_source_buffer_int
 		res.access = access_flags::transfer_read;
 		res.stage = pipeline_stage::transfer;
 
-		return std::vector<task_resource>{ res };
+		return lib::vector<task_resource>{ res };
 	}
 };
 template <>
@@ -125,7 +125,7 @@ struct task_interface_extract_consumed_resources<task_transfer_destination_buffe
 		res.access = access_flags::transfer_write;
 		res.stage = pipeline_stage::transfer;
 
-		return std::vector<task_resource>{ res };
+		return lib::vector<task_resource>{ res };
 	}
 };
 template <>
@@ -137,7 +137,7 @@ struct task_interface_extract_consumed_resources<task_transfer_destination_buffe
 		res.access = access_flags::transfer_write;
 		res.stage = pipeline_stage::transfer;
 
-		return std::vector<task_resource>{ res };
+		return lib::vector<task_resource>{ res };
 	}
 };
 

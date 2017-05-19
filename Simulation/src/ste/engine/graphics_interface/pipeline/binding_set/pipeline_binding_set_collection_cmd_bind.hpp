@@ -39,7 +39,7 @@ private:
 
 		// Bind ranges of consecutive sets
 		for (auto it = sets.begin(); it != sets.end();) {
-			std::vector<const vk::vk_descriptor_set*> bind_sets;
+			lib::vector<const vk::vk_descriptor_set*> bind_sets;
 			bind_sets.reserve(sets.size());
 
 			// Create a range

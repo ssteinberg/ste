@@ -1,13 +1,17 @@
 // StE
-// © Shlomi Steinberg, 2015-2016
+// © Shlomi Steinberg, 2015-2017
 
 #pragma once
 
 #include <stdafx.hpp>
+#include <attrib_type.hpp>
 #include <font.hpp>
 
 #include <functional>
 #include <typeinfo>
+
+#include <lib/unique_ptr.hpp>
+#include <packed_ptr.hpp>
 
 namespace ste {
 namespace text {
@@ -15,36 +19,70 @@ namespace text {
 template <typename CharT>
 class attributed_string_common;
 
-namespace Attributes {
+namespace attributes {
 
 class attrib {
 public:
-	using attrib_id_t = std::size_t;
+	static constexpr auto max_storage_bytes = 8;
+
+private:
+	using storage_dtor_ptr = void(*)(const void*);
+
+private:
+	std::uint8_t storage[max_storage_bytes];
+	// Packed attribute type and pointer to storage desctruction function
+	packed_ptr<storage_dtor_ptr> type_and_dtor;
+
+protected:
+	template <typename Storage>
+	attrib(attrib_type type,
+		   Storage &&s)
+		: type_and_dtor(static_cast<std::uint16_t>(type), nullptr)
+	{
+		using S = std::remove_const_t<std::remove_reference_t<Storage>>;
+
+		static_assert(sizeof(S) <= max_storage_bytes, "Storage size greater than max_storage_bytes");
+		static_assert(std::is_move_constructible_v<S>, "Storage must be move constructible");
+
+		// Create the storage in the preallocated space and store a pointer to the desctructor in form of a non-capturing lambda.
+		lib::default_alloc<S>::ctor(reinterpret_cast<S*>(storage), std::move(s));
+		type_and_dtor.set([](const void* p) { reinterpret_cast<const S*>(p)->~S(); });
+	}
+
+	template <typename Storage>
+	const auto &get_storage() const { return *reinterpret_cast<const Storage*>(storage); }
 
 public:
-	virtual ~attrib() noexcept {}
+	~attrib() noexcept {
+		type_and_dtor.get()(storage);
+	}
 
-	attrib() = default;
-	attrib(attrib &&) noexcept {};
-	attrib(const attrib &) {}
-	virtual attrib &operator=(attrib &&) noexcept { return *this; };
-	virtual attrib &operator=(const attrib &) { return *this; };
+	attrib(const attrib &) = default;
+	attrib &operator=(const attrib &) = default;
+	attrib(attrib &&) = default;
+	attrib &operator=(attrib &&) = default;
 
-	virtual attrib* clone() const = 0;
-
-	virtual attrib_id_t attrib_type() const noexcept = 0;
-	bool is_same_attrib(const attrib &rhs) const { return attrib_type() == rhs.attrib_type(); }
+	auto type() const noexcept { return static_cast<attrib_type>(type_and_dtor.get_integer()); }
+	bool is_same_attrib(const attrib &rhs) const { return type() == rhs.type(); }
 
 	template<typename T>
-	attributed_string_common<T> operator()(const attributed_string_common<T> &str) const {
-		attributed_string_common<T> newstr = str;
-		newstr.add_attrib({ 0,newstr.length() }, *this);
+	attributed_string_common<T> operator()(attributed_string_common<T> &&str) const {
+		attributed_string_common<T> newstr = std::move(str);
+		newstr.add_attrib({ 0,static_cast<std::uint32_t>(newstr.length()) }, *this);
 		return newstr;
 	}
-	attributed_string_common<char> operator()(const std::string &str) const;
-	attributed_string_common<char16_t> operator()(const std::u16string &str) const;
-	attributed_string_common<char32_t> operator()(const std::u32string &str) const;
-	attributed_string_common<wchar_t> operator()(const std::wstring &str) const;
+	template<typename T>
+	attributed_string_common<T> operator()(const attributed_string_common<T> &str) const {
+		return (*this)(attributed_string_common<T>(str));
+	}
+	attributed_string_common<char> operator()(const lib::string &str) const;
+	attributed_string_common<char16_t> operator()(const lib::u16string &str) const;
+	attributed_string_common<char32_t> operator()(const lib::u32string &str) const;
+	attributed_string_common<wchar_t> operator()(const lib::wstring &str) const;
+	attributed_string_common<char> operator()(lib::string &&str) const;
+	attributed_string_common<char16_t> operator()(lib::u16string &&str) const;
+	attributed_string_common<char32_t> operator()(lib::u32string &&str) const;
+	attributed_string_common<wchar_t> operator()(lib::wstring &&str) const;
 	attributed_string_common<char> operator()(const char* str) const;
 	attributed_string_common<char16_t> operator()(const char16_t* str) const;
 	attributed_string_common<char32_t> operator()(const char32_t* str) const;
@@ -53,27 +91,22 @@ public:
 
 class rgb : public attrib {
 private:
-	glm::u8vec4 color;
+	using storage = glm::u8vec4;
 
-#ifdef _DEBUG
-	const char *name{ typeid(*this).name() };
-#endif
-
-	static char const type_id;
+	static constexpr auto tag = attrib_type::color;
 
 public:
-	rgb(const glm::u8vec3 &color) : color({ color.r, color.g, color.b, 255 }) {}
-	rgb(const glm::u8vec4 &color) : color(color) {}
-
-	static attrib_id_t attrib_type_s() noexcept {
-		return reinterpret_cast<std::size_t>(&type_id);
+	static const rgb* bind(const attrib *att) {
+		return att && att->type() == tag ?
+			reinterpret_cast<const rgb*>(att) :
+			nullptr;
 	}
-	attrib_id_t attrib_type() const noexcept override { return attrib_type_s(); }
-	virtual rgb* clone() const override { return new rgb(*this); };
 
-	glm::u8vec4 &get() { return color; }
-	glm::u8vec4 get() const { return color; }
-	operator glm::u8vec4() const { return color; }
+	rgb(glm::u8vec4 &&color) : attrib(tag, std::move(color)) {}
+	rgb(glm::u8vec3 &&color) : rgb({ color.r, color.g, color.b, 255 }) {}
+
+	glm::u8vec4 get() const { return get_storage<storage>(); }
+	operator glm::u8vec4() const { return get_storage<storage>(); }
 };
 static const rgb clear_color = rgb({ 0, 0, 0, 0 });
 static const rgb maroon = rgb({ 128, 0, 0 });
@@ -218,75 +251,65 @@ static const rgb white = rgb({ 255, 255, 255 });
 
 class stroke : public attrib {
 private:
-	rgb color;
-	float width;
+	struct storage {
+		glm::u8vec4 color;
+		float width;
+	};
 
-#ifdef _DEBUG
-	const char *name{ typeid(*this).name() };
-#endif
-
-	static const char type_id;
+	static constexpr auto tag = attrib_type::stroke;
 
 public:
-	stroke(const rgb &color, float w) : color(color), width(w) {}
-
-	static attrib_id_t attrib_type_s() noexcept {
-		return reinterpret_cast<std::size_t>(&type_id);
+	static const stroke* bind(const attrib *att) {
+		return att && att->type() == tag ?
+			reinterpret_cast<const stroke*>(att) :
+			nullptr;
 	}
-	attrib_id_t attrib_type() const noexcept override { return attrib_type_s(); }
-	virtual stroke* clone() const override { return new stroke(*this); };
+	
+	stroke(const glm::u8vec4 &color, float w) : attrib(tag, storage{ color, w }) {}
 
-	float get_width() const { return width; }
-	rgb get_color() const { return color; }
+	const glm::u8vec4 &get_color() const { return get_storage<storage>().color; }
+	float get_width() const { return get_storage<storage>().width; }
 };
 
 class font : public attrib {
 private:
-	ste::text::font f;
+	using T = ::ste::text::font;
+	using storage = lib::unique_ptr<T>;
 
-#ifdef _DEBUG
-	const char *name{ typeid(*this).name() };
-#endif
-
-	static const char type_id;
+	static constexpr auto tag = attrib_type::font;
 
 public:
-	font(const ste::text::font &f) : f(f) {}
-
-	static attrib_id_t attrib_type_s() noexcept {
-		return reinterpret_cast<std::size_t>(&type_id);
+	static const font* bind(const attrib *att) {
+		return att && att->type() == tag ?
+			reinterpret_cast<const font*>(att) :
+			nullptr;
 	}
-	attrib_id_t attrib_type() const noexcept override { return attrib_type_s(); }
-	virtual font* clone() const override { return new font(*this); };
 
-	auto &get() { return f; }
-	auto get() const { return f; }
-	operator ste::text::font() const { return f; }
+	font(T &&f) : attrib(tag,
+						 lib::allocate_unique<T>(std::move(f)))
+	{}
+
+	const auto& get() const { return *get_storage<storage>(); }
+	operator const T&() const { return *get_storage<storage>(); }
 };
 
 class size : public attrib {
 private:
 	using T = int;
-	T s;
 
-#ifdef _DEBUG
-	const char *name{ typeid(*this).name() };
-#endif
-
-	static const char type_id;
+	static constexpr auto tag = attrib_type::size;
 
 public:
-	size(const T &s) : s(s) {}
-
-	static attrib_id_t attrib_type_s() noexcept {
-		return reinterpret_cast<std::size_t>(&type_id);
+	static const size* bind(const attrib *att) {
+		return att && att->type() == tag ?
+			reinterpret_cast<const size*>(att) :
+			nullptr;
 	}
-	attrib_id_t attrib_type() const noexcept override { return attrib_type_s(); }
-	virtual size* clone() const override { return new size(*this); };
 
-	T &get() { return s; }
-	T get() const { return s; }
-	operator T() const { return s; }
+	size(const T &s) : attrib(tag, s) {}
+
+	T get() const { return get_storage<T>(); }
+	operator T() const { return get_storage<T>(); }
 };
 static const size huge = size(96);
 static const size vvlarge = size(78);
@@ -300,51 +323,39 @@ static const size tiny = size(12);
 class line_height : public attrib {
 private:
 	using T = float;
-	T s;
 
-#ifdef _DEBUG
-	const char *name{ typeid(*this).name() };
-#endif
-
-	static const char type_id;
+	static constexpr auto tag = attrib_type::line_height;
 
 public:
-	line_height(const T &s) : s(s) {}
-
-	static attrib_id_t attrib_type_s() noexcept {
-		return reinterpret_cast<std::size_t>(&type_id);
+	static const line_height* bind(const attrib *att) {
+		return att && att->type() == tag ?
+			reinterpret_cast<const line_height*>(att) :
+			nullptr;
 	}
-	attrib_id_t attrib_type() const noexcept override { return attrib_type_s(); }
-	virtual line_height* clone() const override { return new line_height(*this); };
 
-	T &get() { return s; }
-	T get() const { return s; }
-	operator T() const { return s; }
+	line_height(const T &s) : attrib(tag, s) {}
+
+	T get() const { return get_storage<T>(); }
+	operator T() const { return get_storage<T>(); }
 };
 
 class kern : public attrib {
 private:
 	using T = float;
-	T k;
 
-#ifdef _DEBUG
-	const char *name{ typeid(*this).name() };
-#endif
-
-	static const char type_id;
+	static constexpr auto tag = attrib_type::kern;
 
 public:
-	kern(const T &k) : k(k) {}
-
-	static attrib_id_t attrib_type_s() noexcept {
-		return reinterpret_cast<std::size_t>(&type_id);
+	static const kern* bind(const attrib *att) {
+		return att && att->type() == tag ?
+			reinterpret_cast<const kern*>(att) :
+			nullptr;
 	}
-	attrib_id_t attrib_type() const noexcept override { return attrib_type_s(); }
-	virtual kern* clone() const override { return new kern(*this); };
 
-	T &get() { return k; }
-	T get() const { return k; }
-	operator T() const { return k; }
+	kern(const T &k) : attrib(tag, k) {}
+
+	T get() const { return get_storage<T>(); }
+	operator T() const { return get_storage<T>(); }
 };
 
 class align : public attrib {
@@ -353,27 +364,19 @@ public:
 		None, Left, Center, Right,
 	};
 
-private:
-	alignment a;
-
-#ifdef _DEBUG
-	const char *name{ typeid(*this).name() };
-#endif
-
-	static const char type_id;
+	static constexpr auto tag = attrib_type::align;
 
 public:
-	align(const alignment &a) : a(a) {}
-
-	static attrib_id_t attrib_type_s() noexcept {
-		return reinterpret_cast<std::size_t>(&type_id);
+	static const align* bind(const attrib *att) {
+		return att && att->type() == tag ?
+			reinterpret_cast<const align*>(att) :
+			nullptr;
 	}
-	attrib_id_t attrib_type() const noexcept override { return attrib_type_s(); }
-	virtual align* clone() const override { return new align(*this); };
 
-	alignment &get() { return a; }
-	alignment get() const { return a; }
-	operator alignment() const { return a; }
+	align(const alignment &a) : attrib(tag, a) {}
+
+	alignment get() const { return get_storage<alignment>(); }
+	operator alignment() const { return get_storage<alignment>(); }
 };
 static const align left = align(align::alignment::Left);
 static const align center = align(align::alignment::Center);
@@ -382,88 +385,71 @@ static const align right = align(align::alignment::Right);
 class weight : public attrib {
 private:
 	using T = int;
-	T w;
 
-#ifdef _DEBUG
-	const char *name{ typeid(*this).name() };
-#endif
-
-	static const char type_id;
+	static constexpr auto tag = attrib_type::weight;
 
 public:
-	weight(const T &w) : w(w) {}
-
-	static attrib_id_t attrib_type_s() noexcept {
-		return reinterpret_cast<std::size_t>(&type_id);
+	static const weight* bind(const attrib *att) {
+		return att && att->type() == tag ?
+			reinterpret_cast<const weight*>(att) :
+			nullptr;
 	}
-	attrib_id_t attrib_type() const noexcept override { return attrib_type_s(); }
-	virtual weight* clone() const override { return new weight(*this); };
 
-	T &get() { return w; }
-	T get() const { return w; }
-	operator T() const { return w; }
+	weight(const T &w) : attrib(tag, w) {}
+
+	T get() const { return get_storage<T>(); }
+	operator T() const { return get_storage<T>(); }
 };
 static const weight b = weight(700);
 
 class underline : public attrib {
-#ifdef _DEBUG
-	const char *name{ typeid(*this).name() };
-#endif
-
-	static const char type_id;
+	static constexpr auto tag = attrib_type::underline;
 
 public:
-	underline() {}
-
-	static attrib_id_t attrib_type_s() noexcept {
-		return reinterpret_cast<std::size_t>(&type_id);
+	static const underline* bind(const attrib *att) {
+		return att && att->type() == tag ?
+			reinterpret_cast<const underline*>(att) :
+			nullptr;
 	}
-	attrib_id_t attrib_type() const noexcept override { return attrib_type_s(); }
-	virtual underline* clone() const override { return new underline(*this); };
+
+	underline() : attrib(tag, .0f) {}
 };
 static const underline u = underline();
 
 class italic : public attrib {
-#ifdef _DEBUG
-	const char *name{ typeid(*this).name() };
-#endif
-
-	static const char type_id;
+	static constexpr auto tag = attrib_type::italic;
 
 public:
-	italic() {}
-
-	static attrib_id_t attrib_type_s() noexcept {
-		return reinterpret_cast<std::size_t>(&type_id);
+	static const italic* bind(const attrib *att) {
+		return att && att->type() == tag ?
+			reinterpret_cast<const italic*>(att) :
+			nullptr;
 	}
-	attrib_id_t attrib_type() const noexcept override { return attrib_type_s(); }
-	virtual italic* clone() const override { return new italic(*this); };
+
+	italic() : attrib(tag, .0f) {}
 };
 static const italic i = italic();
 
 class link : public attrib {
 private:
-	using T = std::string;
-	T l;
+	using T = lib::string;
+	using storage = lib::unique_ptr<T>;
 
-#ifdef _DEBUG
-	const char *name{ typeid(*this).name() };
-#endif
-
-	static const char type_id;
+	static constexpr auto tag = attrib_type::link;
 
 public:
-	link(const T &l) : l(l) {}
-
-	static attrib_id_t attrib_type_s() noexcept {
-		return reinterpret_cast<std::size_t>(&type_id);
+	static const link* bind(const attrib *att) {
+		return att && att->type() == tag ?
+			reinterpret_cast<const link*>(att) :
+			nullptr;
 	}
-	attrib_id_t attrib_type() const noexcept override { return attrib_type_s(); }
-	virtual link* clone() const override { return new link(*this); };
 
-	T &get() { return l; }
-	T get() const { return l; }
-	operator T() const { return l; }
+	link(T &&l) : attrib(tag, 
+						 lib::allocate_unique<T>(std::move(l)))
+	{}
+
+	const T& get() const { return *get_storage<storage>(); }
+	operator const T&() const { return *get_storage<storage>(); }
 };
 
 }

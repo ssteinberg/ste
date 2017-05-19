@@ -10,7 +10,7 @@
 #include <pipeline_layout_set_index.hpp>
 #include <vk_descriptor_set_layout_binding.hpp>
 
-#include <string>
+#include <lib/string.hpp>
 
 namespace ste {
 namespace gl {
@@ -21,7 +21,7 @@ struct pipeline_binding_layout_interface {
 	/**
 	*	@brief	Helper method to get underlying variable name
 	*/
-	virtual const std::string& name() const = 0;
+	virtual const lib::string& name() const = 0;
 
 	/**
 	*	@brief	Helper method to get the binding's binding index

@@ -11,7 +11,7 @@
 #include <ste_resource_pool.hpp>
 
 #include <optional.hpp>
-#include <vector>
+#include <lib/vector.hpp>
 #include <allow_type_decay.hpp>
 
 namespace ste {
@@ -74,14 +74,14 @@ public:
 			create_info.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY :
 			create_info.level = VK_COMMAND_BUFFER_LEVEL_SECONDARY;
 
-		std::vector<VkCommandBuffer> buffers;
+		lib::vector<VkCommandBuffer> buffers;
 		buffers.resize(count);
 		vk_result res = vkAllocateCommandBuffers(device.get(), &create_info, &buffers[0]);
 		if (!res) {
 			throw vk_exception(res);
 		}
 
-		std::vector<vk_command_buffer> command_buffers;
+		lib::vector<vk_command_buffer> command_buffers;
 		command_buffers.reserve(count);
 		for (auto &b : buffers)
 			command_buffers.emplace_back(vk_command_buffer{ b });

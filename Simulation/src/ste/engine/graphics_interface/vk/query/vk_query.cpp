@@ -5,6 +5,6 @@
 
 using namespace ste::gl;
 
-std::string vk::vk_query::read_results(std::size_t data_size, VkQueryResultFlags flags) const {
+ste::lib::string vk::vk_query::read_results(std::size_t data_size, VkQueryResultFlags flags) const {
 	return pool.read_results(data_size, index, 1, data_size, flags);
 }

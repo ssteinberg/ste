@@ -13,9 +13,9 @@
 #include <cmd_push_constants.hpp>
 
 #include <range.hpp>
-#include <vector>
+#include <lib/vector.hpp>
 #include <algorithm>
-#include <boost/container/flat_map.hpp>
+#include <lib/flat_map.hpp>
 
 namespace ste {
 namespace gl {
@@ -26,7 +26,7 @@ class pipeline_push_constants_layout {
 private:
 	struct push_variable {
 		const ste_shader_stage_variable *variable;
-		std::string push_path;
+		lib::string push_path;
 
 		std::uint32_t offset;
 		pipeline_binding_stages_collection stages;
@@ -55,7 +55,7 @@ private:
 				auto push_layout = r.get_layout();
 				auto offset = push_layout.offset;
 				auto size = push_layout.size;
-				auto range_data = std::string(p->data.begin() + offset,
+				auto range_data = lib::string(p->data.begin() + offset,
 											  p->data.begin() + offset + size);
 
 				recorder << cmd_push_constants(pipeline_layout,
@@ -68,15 +68,15 @@ private:
 
 private:
 	push_constant_descriptor root;
-	std::vector<vk::vk_push_constant_layout> push_ranges;
-	std::string data;
+	lib::vector<vk::vk_push_constant_layout> push_ranges;
+	lib::string data;
 
 private:
 	static void populate_push_variables(const ste_shader_stage_variable *variable,
 										std::uint32_t parent_offset,
 										const pipeline_binding_stages_collection &stages,
-										const std::string &path,
-										std::vector<push_variable> &variables,
+										const lib::string &path,
+										lib::vector<push_variable> &variables,
 										push_constant_descriptor &node) {
 		auto offset = parent_offset + variable->offset();
 		auto push_path = path + "." + variable->name();
@@ -122,10 +122,10 @@ private:
 		}
 	}
 
-	static auto generate_ranges(const std::vector<push_variable> &variables,
+	static auto generate_ranges(const lib::vector<push_variable> &variables,
 								const pipeline_binding_stages_collection &all_stages,
 								std::size_t data_size) {
-		std::vector<stage_range> ranges;
+		lib::vector<stage_range> ranges;
 		ranges.reserve(all_stages.size());
 
 		// Create a push range per stage
@@ -154,7 +154,7 @@ private:
 		}
 
 		// Group identical ranges together
-		std::vector<vk::vk_push_constant_layout> layouts;
+		lib::vector<vk::vk_push_constant_layout> layouts;
 		layouts.reserve(ranges.size());
 		for (std::size_t i=0; i<ranges.size();) {
 			stage_flag stages = ranges[i].stage;
@@ -188,9 +188,9 @@ private:
 	}
 
 public:
-	pipeline_push_constants_layout(std::vector<pipeline_binding_layout> push_bindings) {
+	pipeline_push_constants_layout(lib::vector<pipeline_binding_layout> push_bindings) {
 		pipeline_binding_stages_collection all_stages;
-		std::vector<push_variable> variables;
+		lib::vector<push_variable> variables;
 		for (auto &b : push_bindings) {
 			// Save a set of all stages that use this push constants layout
 			all_stages.insert(b.stages);

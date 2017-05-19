@@ -10,8 +10,8 @@
 
 #include <allow_type_decay.hpp>
 
-#include <string>
-#include <boost/container/flat_map.hpp>
+#include <lib/string.hpp>
+#include <lib/flat_map.hpp>
 
 namespace ste {
 namespace gl {
@@ -24,8 +24,8 @@ namespace _internal {
 template <typename BindingLayout>
 class pipeline_binding_set_layout_impl : public allow_type_decay<pipeline_binding_set_layout_impl<BindingLayout>, vk::vk_descriptor_set_layout> {
 public:
-	using bindings_vec_t = std::vector<BindingLayout>;
-	using name_bindings_map_t = boost::container::flat_map<std::string, typename bindings_vec_t::const_iterator>;
+	using bindings_vec_t = lib::vector<BindingLayout>;
+	using name_bindings_map_t = lib::flat_map<lib::string, typename bindings_vec_t::const_iterator>;
 
 private:
 	bindings_vec_t bindings;
@@ -47,7 +47,7 @@ private:
 	}
 
 	auto generate_vk_layout(const vk::vk_logical_device &device) {
-		std::vector<vk::vk_descriptor_set_layout_binding> vk_bindings;
+		lib::vector<vk::vk_descriptor_set_layout_binding> vk_bindings;
 		for (auto it = begin(); it != end(); ++it)
 			vk_bindings.push_back(access_it<>(it));
 
@@ -78,7 +78,7 @@ public:
 	/**
 	*	@brief	Checks existance of a variable name
 	*/
-	bool exists(const std::string &name) const {
+	bool exists(const lib::string &name) const {
 		auto it = name_map.find(name);
 		return it != name_map.end();
 	}
@@ -86,7 +86,7 @@ public:
 	/**
 	*	@brief	Lookups a binding using variable name
 	*/
-	auto& operator[](const std::string &name) const {
+	auto& operator[](const lib::string &name) const {
 		auto it = name_map.find(name);
 		return access_it<>(it->second);
 	}

@@ -32,7 +32,7 @@ public:
 	}
 	~hdr_compute_histogram_fragment() noexcept {}
 
-	static const std::string& name() { return "hdr_compute_histogram"; }
+	static const lib::string& name() { return "hdr_compute_histogram"; }
 
 	void bind_buffers(const gl::array<gl::std430<std::uint32_t>> &histogram_data, 
 					  const gl::array<hdr_bokeh_parameters> &hdr_bokeh_parameters_buffer) {

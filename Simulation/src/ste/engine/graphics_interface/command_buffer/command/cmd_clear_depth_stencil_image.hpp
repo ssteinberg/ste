@@ -8,7 +8,7 @@
 #include <device_image_base.hpp>
 #include <image_layout.hpp>
 
-#include <vector>
+#include <lib/vector.hpp>
 
 namespace ste {
 namespace gl {
@@ -19,13 +19,13 @@ private:
 	image_layout layout;
 	VkClearDepthStencilValue clear_value{};
 
-	std::vector<VkImageSubresourceRange> ranges;
+	lib::vector<VkImageSubresourceRange> ranges;
 
 public:
 	cmd_clear_depth_stencil_image(const device_image_base &image,
 								  const image_layout &layout,
 								  float clear_depth = .0f,
-								  const std::vector<VkImageSubresourceRange> &ranges = {})
+								  const lib::vector<VkImageSubresourceRange> &ranges = {})
 		: image(image), layout(layout), ranges(ranges)
 	{
 		if (this->ranges.size() == 0)

@@ -7,15 +7,15 @@
 #include <vk_descriptor_set_write_resource.hpp>
 #include <pipeline_layout_set_index.hpp>
 
-#include <unordered_map>
+#include <lib/unordered_map.hpp>
 
 namespace ste {
 namespace gl {
 
 class pipeline_resource_binding_queue {
 private:
-	using writes_queue_t = std::vector<vk::vk_descriptor_set_write_resource>;
-	using write_sets_t = std::unordered_map<pipeline_layout_set_index, writes_queue_t>;
+	using writes_queue_t = lib::vector<vk::vk_descriptor_set_write_resource>;
+	using write_sets_t = lib::unordered_map<pipeline_layout_set_index, writes_queue_t>;
 
 private:
 	write_sets_t q;

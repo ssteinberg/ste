@@ -16,13 +16,13 @@
 
 #include <ste_engine_control.hpp>
 
-#include <boost_filesystem.hpp>
+#include <filesystem>
 
-#include <memory>
-#include <unordered_map>
-#include <string>
+#include <lib/unique_ptr.hpp>
+#include <lib/unordered_map.hpp>
+#include <lib/string.hpp>
 
-#include <vector>
+#include <lib/vector.hpp>
 #include <future>
 
 #pragma warning push
@@ -35,9 +35,9 @@ namespace resource {
 
 class model_factory {
 private:
-	using texture_map_type = std::unordered_map<std::string, std::shared_ptr<Core::texture_2d>>;
-	using shapes_type = std::vector<tinyobj::shape_t>;
-	using materials_type = std::vector<tinyobj::material_t>;
+	using texture_map_type = lib::unordered_map<lib::string, lib::shared_ptr<Core::texture_2d>>;
+	using shapes_type = lib::vector<tinyobj::shape_t>;
+	using materials_type = lib::vector<tinyobj::material_t>;
 
 	constexpr static char roughness_map_key[] = "map_roughness";
 	constexpr static char metallic_map_key[] = "map_metallic";
@@ -51,17 +51,17 @@ private:
 	~model_factory() {}
 
 	static ste::task_future<void> load_texture(task_scheduler *sched,
-											   const std::string &name,
+											   const lib::string &name,
 											   bool srgb,
 											   bool displacement,
 											   texture_map_type *texmap,
-											   const boost::filesystem::path &dir,
+											   const std::experimental::filesystem::path &dir,
 											   float normal_map_bias);
-	static std::vector<ste::task_future<void>> load_textures(task_scheduler* sched,
+	static lib::vector<ste::task_future<void>> load_textures(task_scheduler* sched,
 															 shapes_type &shapes,
 															 materials_type &materials,
 															 texture_map_type &tex_map,
-															 const boost::filesystem::path &dir,
+															 const std::experimental::filesystem::path &dir,
 															 float normal_map_bias);
 	static ste::task_future<void> process_model_mesh(task_scheduler* sched,
 													 graphics::scene_properties *,
@@ -69,19 +69,19 @@ private:
 													 graphics::object_group *,
 													 materials_type &,
 													 texture_map_type &,
-									 				 std::vector<std::unique_ptr<graphics::material>> &loaded_materials,
-													 std::vector<std::unique_ptr<graphics::material_layer>> &loaded_material_layers,
-									 				 std::vector<std::shared_ptr<graphics::object>> *loaded_objects);
+									 				 lib::vector<lib::unique_ptr<graphics::material>> &loaded_materials,
+													 lib::vector<lib::unique_ptr<graphics::material_layer>> &loaded_material_layers,
+									 				 lib::vector<lib::shared_ptr<graphics::object>> *loaded_objects);
 
 public:
 	static ste::task_future<void> load_model_async(const ste_engine_control &context,
-												   const boost::filesystem::path &file_path,
+												   const std::experimental::filesystem::path &file_path,
 												   graphics::object_group *object_group,
 												   graphics::scene_properties *scene_properties,
 												   float normal_map_bias,
-												   std::vector<std::unique_ptr<graphics::material>> &loaded_materials,
-												   std::vector<std::unique_ptr<graphics::material_layer>> &loaded_material_layers,
-												   std::vector<std::shared_ptr<graphics::object>> *loaded_objects = nullptr);
+												   lib::vector<lib::unique_ptr<graphics::material>> &loaded_materials,
+												   lib::vector<lib::unique_ptr<graphics::material_layer>> &loaded_material_layers,
+												   lib::vector<lib::shared_ptr<graphics::object>> *loaded_objects = nullptr);
 };
 
 }

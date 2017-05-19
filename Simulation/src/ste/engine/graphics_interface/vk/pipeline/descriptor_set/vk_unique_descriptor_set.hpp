@@ -20,7 +20,7 @@ namespace vk {
 class vk_unique_descriptor_set : public allow_type_decay<vk_unique_descriptor_set, vk_descriptor_set> {
 private:
 	using binding_t = vk_descriptor_set_layout_binding;
-	using binding_set_t = std::vector<vk_descriptor_set_layout_binding>;
+	using binding_set_t = lib::vector<vk_descriptor_set_layout_binding>;
 
 private:
 	vk_descriptor_pool pool;

@@ -6,6 +6,8 @@
 #include <tuple>
 #include <is_base_of.hpp>
 
+#include <lib/unique_ptr.hpp>
+
 namespace ste {
 namespace gl {
 
@@ -15,8 +17,8 @@ template <typename... CtorArgs>
 struct ste_resource_pool_poolable_trait {
 	using _ste_pool_resource_ctor_args_t = std::tuple<CtorArgs...>;
 	template <typename T>
-	static decltype(auto) _ste_resource_pool_resource_creator(const CtorArgs&... ts) {
-		return std::make_unique<T>(static_cast<CtorArgs>(ts)...);
+	static auto _ste_resource_pool_resource_creator(const CtorArgs&... ts) {
+		return lib::allocate_unique<T>(static_cast<CtorArgs>(ts)...);
 	}
 };
 

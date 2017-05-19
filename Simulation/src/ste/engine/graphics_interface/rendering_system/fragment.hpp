@@ -29,7 +29,7 @@ public:
 	fragment &operator=(const fragment &) = delete;
 
 	// Subclasses are expected to declare:
-	//static const std::string& name();
+	//static const lib::string& name();
 
 	/**
 	*	@brief	Records the fragment's commands

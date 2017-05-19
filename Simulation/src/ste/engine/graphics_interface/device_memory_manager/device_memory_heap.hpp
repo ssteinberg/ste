@@ -11,7 +11,7 @@
 #include <device_memory_exceptions.hpp>
 #include <unique_device_ptr.hpp>
 
-#include <vector>
+#include <lib/vector.hpp>
 #include <mutex>
 #include <aligned_ptr.hpp>
 
@@ -24,7 +24,7 @@ public:
 
 	using size_type = std::uint64_t;
 	using block_type = device_memory_block<size_type>;
-	using blocks_list_t = std::vector<block_type>;
+	using blocks_list_t = lib::vector<block_type>;
 	using allocation_type = unique_device_ptr;
 
 	// Natively align allocations on vec4 boundaries

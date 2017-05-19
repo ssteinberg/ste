@@ -4,17 +4,16 @@
 #pragma once
 
 #include <stdafx.hpp>
-#include <memory>
 
 #include <allow_type_decay.hpp>
 
 namespace ste {
 namespace gl {
 
-template <class Pool, template<class> class resource_reclamation_policy>
+template <class Pool, class ResourceT, template<class> class resource_reclamation_policy>
 class ste_resource_pool_resource :
 	public allow_type_decay<
-		ste_resource_pool_resource<Pool, resource_reclamation_policy>,
+		ste_resource_pool_resource<Pool, ResourceT, resource_reclamation_policy>,
 		typename Pool::value_type,
 		!resource_reclamation_policy<typename Pool::value_type>::allow_non_const_resource
 	>
@@ -29,10 +28,10 @@ private:
 	using reference = resource_t&;
 
 private:
-	std::unique_ptr<resource_t> resource;
+	ResourceT resource;
 	pool_ptr_t pool_ptr;
 
-	ste_resource_pool_resource(const pool_ptr_t &pool_ptr, std::unique_ptr<resource_t> &&resource)
+	ste_resource_pool_resource(const pool_ptr_t &pool_ptr, ResourceT &&resource)
 		: resource(std::move(resource)), pool_ptr(pool_ptr)
 	{}
 

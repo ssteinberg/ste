@@ -11,7 +11,7 @@
 #include <vk_image_view.hpp>
 #include <buffer_view.hpp>
 
-#include <vector>
+#include <lib/vector.hpp>
 
 namespace ste {
 namespace gl {
@@ -64,8 +64,8 @@ private:
 	std::uint32_t binding_index;
 	std::uint32_t array_element;
 
-	std::vector<vk_descriptor_set_write_image> image_writes;
-	std::vector<vk_descriptor_set_write_buffer> buffer_writes;
+	lib::vector<vk_descriptor_set_write_image> image_writes;
+	lib::vector<vk_descriptor_set_write_buffer> buffer_writes;
 
 private:
 	static bool is_image_write_descriptor(const VkDescriptorType &type) {
@@ -79,7 +79,7 @@ public:
 	vk_descriptor_set_write_resource(const VkDescriptorType &type,
 									 std::uint32_t binding_index,
 									 std::uint32_t array_element,
-									 const std::vector<vk_descriptor_set_write_image> &image_writes)
+									 const lib::vector<vk_descriptor_set_write_image> &image_writes)
 		: type(type),
 		binding_index(binding_index),
 		array_element(array_element),
@@ -101,7 +101,7 @@ public:
 	vk_descriptor_set_write_resource(const VkDescriptorType &type,
 									 std::uint32_t binding_index,
 									 std::uint32_t array_element,
-									 const std::vector<vk_descriptor_set_write_buffer> &buffer_writes)
+									 const lib::vector<vk_descriptor_set_write_buffer> &buffer_writes)
 		: type(type),
 		binding_index(binding_index),
 		array_element(array_element),

@@ -18,7 +18,7 @@
 #include <object_group.hpp>
 #include <light_storage.hpp>
 
-#include <memory>
+#include <lib/unique_ptr.hpp>
 
 namespace ste {
 namespace graphics {

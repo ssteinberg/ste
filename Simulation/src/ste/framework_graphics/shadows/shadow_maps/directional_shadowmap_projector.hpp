@@ -33,7 +33,7 @@ public:
 									const shadowmap_storage *shadow_map) : s(s),
 																		   lights(lights),
 																		   shadow_map(shadow_map),
-																		   shadow_gen_program(ctx, std::vector<std::string>{ "shadow_directional.vert", "shadow_directional.geom" }) {
+																		   shadow_gen_program(ctx, lib::vector<lib::string>{ "shadow_directional.vert", "shadow_directional.geom" }) {
 		shadow_gen_program.get().set_uniform("cascades_depths", s->properties().lights_storage().get_cascade_depths_array());
 	}
 

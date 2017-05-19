@@ -13,7 +13,7 @@
 
 #include <mesh_descriptor.hpp>
 
-#include <memory>
+#include <lib/unique_ptr.hpp>
 
 namespace ste {
 namespace graphics {
@@ -34,10 +34,10 @@ private:
 
 protected:
 	const material *mat;
-	std::unique_ptr<mesh_generic> object_mesh;
+	lib::unique_ptr<mesh_generic> object_mesh;
 
 public:
-	object(std::unique_ptr<mesh_generic> &&m) : object_mesh(std::move(m)) {}
+	object(lib::unique_ptr<mesh_generic> &&m) : object_mesh(std::move(m)) {}
 	~object() noexcept {}
 
 	mesh_generic &get_mesh() { return *object_mesh; }

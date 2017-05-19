@@ -6,7 +6,7 @@
 #include <stdafx.hpp>
 #include <vulkan/vulkan.h>
 
-#include <vector>
+#include <lib/vector.hpp>
 
 namespace ste {
 namespace gl {

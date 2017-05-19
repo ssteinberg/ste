@@ -17,8 +17,8 @@
 
 #include <attributed_string.hpp>
 
-#include <memory>
-#include <vector>
+#include <lib/unique_ptr.hpp>
+#include <lib/vector.hpp>
 
 namespace ste {
 namespace text {
@@ -46,8 +46,8 @@ private:
 	gl::ste_device::queues_and_surface_recreate_signal_type::connection_type surface_recreate_signal_connection;
 
 private:
-	static void adjust_line(std::vector<glyph_point> &, const attributed_wstring &, unsigned, float, float, const glm::vec2 &);
-	std::vector<glyph_point> create_points(glm::vec2, const attributed_wstring &);
+	static void adjust_line(lib::vector<glyph_point> &, const attributed_wstring &, std::uint32_t, float, float, const glm::vec2 &);
+	lib::vector<glyph_point> create_points(glm::vec2, const attributed_wstring &);
 
 private:
 	static gl::device_pipeline_graphics create_pipeline(const ste_context &,

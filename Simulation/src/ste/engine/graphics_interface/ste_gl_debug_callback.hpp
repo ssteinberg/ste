@@ -7,7 +7,7 @@
 
 #include <vk_instance.hpp>
 
-#include <string>
+#include <lib/string.hpp>
 #include <log.hpp>
 
 namespace ste {
@@ -23,7 +23,7 @@ public:
 					const char* pLayerPrefix,
 					const char* pMessage,
 					const void *ctx) const {
-		std::string message = std::string("Vulkan debug report - ") + pLayerPrefix + ": " + pMessage + "\n";
+		lib::string message = lib::string("Vulkan debug report - ") + pLayerPrefix + ": " + pMessage + "\n";
 		switch (flags) {
 		case VK_DEBUG_REPORT_WARNING_BIT_EXT:
 		case VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT:

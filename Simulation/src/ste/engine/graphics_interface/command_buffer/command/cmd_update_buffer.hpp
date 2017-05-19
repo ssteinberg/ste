@@ -7,7 +7,7 @@
 #include <command.hpp>
 #include <buffer_view.hpp>
 
-#include <blob.hpp>
+#include <lib/blob.hpp>
 
 namespace ste {
 namespace gl {
@@ -15,7 +15,7 @@ namespace gl {
 class cmd_update_buffer : public command {
 private:
 	buffer_view buffer;
-	blob data;
+	lib::blob data;
 
 public:
 	template <typename Blob>

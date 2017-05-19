@@ -10,7 +10,7 @@
 
 using namespace ste::text;
 
-font::font(const boost::filesystem::path &path) : path(path) {
+font::font(const std::experimental::filesystem::path &path) : path(path) {
 	FT_Library library;
 	auto error = FT_Init_FreeType(&library);
 	if (error) {
@@ -27,7 +27,7 @@ font::font(const boost::filesystem::path &path) : path(path) {
 	}
 
 	if (face->family_name && face->style_name)
-		name = std::string(face->family_name) + " " + face->style_name;
+		name = lib::string(face->family_name) + " " + face->style_name;
 	else
 		name = path.filename().string();
 

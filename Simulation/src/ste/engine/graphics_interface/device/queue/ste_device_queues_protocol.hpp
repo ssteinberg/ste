@@ -10,8 +10,8 @@
 #include <ste_device_queue_descriptors.hpp>
 #include <vk_physical_device_descriptor.hpp>
 
-#include <vector>
-#include <unordered_map>
+#include <lib/vector.hpp>
+#include <lib/unordered_map.hpp>
 #include <optional.hpp>
 
 namespace ste {
@@ -24,7 +24,7 @@ struct queue_create_descriptor {
 
 class ste_device_queues_protocol {
 private:
-	using queue_create_info_t = std::unordered_map<ste_queue_type, queue_create_descriptor>;
+	using queue_create_info_t = lib::unordered_map<ste_queue_type, queue_create_descriptor>;
 
 private:
 	static auto default_queue_create_parameters(const vk::vk_physical_device_descriptor &physical_device) {

@@ -8,7 +8,7 @@
 #include <vulkan/vulkan.h>
 #include <vk_sampler.hpp>
 
-#include <vector>
+#include <lib/vector.hpp>
 #include <functional>
 
 namespace ste {
@@ -22,7 +22,7 @@ private:
 	VkShaderStageFlags stage;
 	std::uint32_t binding_index;
 	std::uint32_t count;
-	std::vector<VkSampler> immutable_samplers;
+	lib::vector<VkSampler> immutable_samplers;
 
 public:
 	vk_descriptor_set_layout_binding(const VkDescriptorType &type,
@@ -33,7 +33,7 @@ public:
 	{}
 	vk_descriptor_set_layout_binding(const VkShaderStageFlags &stage,
 									 std::uint32_t binding_index,
-									 const std::vector<std::reference_wrapper<const vk_sampler>> &immutable_samplers,
+									 const lib::vector<std::reference_wrapper<const vk_sampler>> &immutable_samplers,
 									 bool combined = false)
 		: type(combined ? VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER : VK_DESCRIPTOR_TYPE_SAMPLER),
 		stage(stage), binding_index(binding_index),

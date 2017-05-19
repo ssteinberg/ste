@@ -8,7 +8,7 @@
 #include <pipeline_resource_binding_queue.hpp>
 #include <pipeline_resource_binder.hpp>
 
-#include <string>
+#include <lib/string.hpp>
 
 namespace ste {
 namespace gl {
@@ -16,7 +16,7 @@ namespace gl {
 class pipeline_external_resource_bind_point {
 private:
 	pipeline_resource_binding_queue *queue;
-	std::string name;
+	lib::string name;
 	const pipeline_external_binding_layout *binding;
 
 private:
@@ -36,7 +36,7 @@ private:
 
 public:
 	pipeline_external_resource_bind_point(pipeline_resource_binding_queue *q,
-										  const std::string &name,
+										  const lib::string &name,
 										  const pipeline_external_binding_layout *binding)
 		: queue(q), name(name), binding(binding)
 	{}

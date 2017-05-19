@@ -7,7 +7,7 @@
 #include <command.hpp>
 #include <device_buffer_base.hpp>
 
-#include <vector>
+#include <lib/vector.hpp>
 #include <functional>
 
 namespace ste {
@@ -18,12 +18,12 @@ private:
 	std::reference_wrapper<const device_buffer_base> src_buffer;
 	std::reference_wrapper<const device_buffer_base> dst_buffer;
 
-	std::vector<VkBufferCopy> ranges;
+	lib::vector<VkBufferCopy> ranges;
 
 public:
 	cmd_copy_buffer(const device_buffer_base &src_buffer,
 					const device_buffer_base &dst_buffer,
-					const std::vector<VkBufferCopy> &ranges = {})
+					const lib::vector<VkBufferCopy> &ranges = {})
 		: src_buffer(src_buffer), dst_buffer(dst_buffer), ranges(ranges)
 	{
 		if (this->ranges.size() == 0) {

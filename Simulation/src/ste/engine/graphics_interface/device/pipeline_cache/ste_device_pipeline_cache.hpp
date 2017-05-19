@@ -8,12 +8,12 @@
 #include <vk_pipeline_cache.hpp>
 #include <vk_logical_device.hpp>
 
-#include <concurrent_queue.hpp>
-#include <concurrent_unordered_map.hpp>
+#include <lib/concurrent_queue.hpp>
+#include <lib/concurrent_unordered_map.hpp>
 
-#include <memory>
+#include <lib/unique_ptr.hpp>
 #include <thread>
-#include <string>
+#include <lib/string.hpp>
 
 namespace ste {
 namespace gl {
@@ -26,17 +26,20 @@ private:
 
 	using thread_id_t = std::thread::id;
 	using pipeline_cache_t = vk::vk_pipeline_cache;
-	using pipeline_cache_ptr_t = std::unique_ptr<vk::vk_pipeline_cache>;
+
+	using created_caches_queue_t = lib::concurrent_queue<pipeline_cache_t>;
+
+	using pipeline_cache_ptr_t = created_caches_queue_t::stored_ptr;
 
 private:
 	std::reference_wrapper<const vk::vk_logical_device> device;
-	std::string device_name;
+	lib::string device_name;
 
 	cache_t *non_volatile_cache;
 	pipeline_cache_ptr_t origin;
 
-	mutable concurrent_unordered_map<thread_id_t, const vk::vk_pipeline_cache*> thread_cache_map;
-	mutable concurrent_queue<pipeline_cache_t> created_caches;
+	mutable lib::concurrent_unordered_map<thread_id_t, const vk::vk_pipeline_cache*> thread_cache_map;
+	mutable created_caches_queue_t created_caches;
 
 private:
 	void read_origin();
@@ -45,7 +48,7 @@ private:
 public:
 	ste_device_pipeline_cache(const vk::vk_logical_device &device,
 							  cache_t *non_volatile_cache,
-							  const std::string &device_name)
+							  const lib::string &device_name)
 		: device(device),
 		device_name(device_name),
 		non_volatile_cache(non_volatile_cache)

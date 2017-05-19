@@ -22,7 +22,7 @@
 #include <Camera.hpp>
 
 #include <array>
-#include <memory>
+#include <lib/unique_ptr.hpp>
 #include <type_traits>
 
 namespace ste {
@@ -91,7 +91,7 @@ public:
 		for (cascade_idx = 0; cascade_idx < active_directional_lights.size() && active_directional_lights[cascade_idx] != nullptr; ++cascade_idx) {}
 		if (cascade_idx == max_active_directional_lights_per_frame) {
 			assert(false && "Can not create any more directional lights");
-			return std::unique_ptr<directional_light>(nullptr);
+			return lib::unique_ptr<directional_light>(nullptr);
 		}
 
 		auto res = Base::allocate_resource<directional_light>(std::forward<Ts>(args)...);

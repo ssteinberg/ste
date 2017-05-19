@@ -9,7 +9,7 @@
 #include <image_layout.hpp>
 #include <sampler_filter.hpp>
 
-#include <vector>
+#include <lib/vector.hpp>
 
 namespace ste {
 namespace gl {
@@ -21,7 +21,7 @@ private:
 	std::reference_wrapper<const device_image_base> dst_image;
 	image_layout dst_image_layout;
 
-	std::vector<VkImageBlit> ranges;
+	lib::vector<VkImageBlit> ranges;
 
 	sampler_filter filter;
 
@@ -31,7 +31,7 @@ public:
 				   const device_image_base &dst_image,
 				   const image_layout &dst_image_layout,
 				   sampler_filter filter = sampler_filter::linear,
-				   const std::vector<VkImageBlit> &ranges = {})
+				   const lib::vector<VkImageBlit> &ranges = {})
 		: src_image(src_image), src_image_layout(src_image_layout),
 		dst_image(dst_image), dst_image_layout(dst_image_layout),
 		ranges(ranges), filter(filter)

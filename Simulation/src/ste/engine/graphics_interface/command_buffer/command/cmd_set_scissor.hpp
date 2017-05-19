@@ -7,18 +7,18 @@
 #include <command.hpp>
 
 #include <rect.hpp>
-#include <vector>
+#include <lib/vector.hpp>
 
 namespace ste {
 namespace gl {
 
 class cmd_set_scissor : public command {
 private:
-	std::vector<VkRect2D> scissors;
+	lib::vector<VkRect2D> scissors;
 	std::uint32_t first_scissor_index;
 
 public:
-	cmd_set_scissor(const std::vector<i32rect> &scissors,
+	cmd_set_scissor(const lib::vector<i32rect> &scissors,
 					std::uint32_t first_scissor_index = 0) : first_scissor_index(first_scissor_index) {
 		this->scissors.reserve(scissors.size());
 		for (auto &r : scissors) {
@@ -33,7 +33,7 @@ public:
 	}
 	cmd_set_scissor(const i32rect &scissor,
 					std::uint32_t first_scissor_index = 0)
-		: cmd_set_scissor(std::vector<i32rect>{ scissor }, first_scissor_index)
+		: cmd_set_scissor(lib::vector<i32rect>{ scissor }, first_scissor_index)
 	{}
 	virtual ~cmd_set_scissor() noexcept {}
 

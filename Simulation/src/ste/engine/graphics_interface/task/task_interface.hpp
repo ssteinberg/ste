@@ -18,7 +18,7 @@
 #include <draw_indexed_indirect_command_block.hpp>
 #include <dispatch_indirect_command_block.hpp>
 
-#include <vector>
+#include <lib/vector.hpp>
 #include <optional.hpp>
 
 namespace ste {
@@ -28,8 +28,8 @@ namespace _internal {
 
 template <typename Next, typename... Tail>
 struct task_expand_vertex_buffers {
-	void operator()(std::vector<std::reference_wrapper<const device_buffer_base>> &vertex_buffers,
-					std::vector<std::uint64_t> &offsets,
+	void operator()(lib::vector<std::reference_wrapper<const device_buffer_base>> &vertex_buffers,
+					lib::vector<std::uint64_t> &offsets,
 					Next&& next,
 					Tail&&... tail) {
 		vertex_buffers.push_back(std::ref(std::forward<Next>(next)));
@@ -42,8 +42,8 @@ struct task_expand_vertex_buffers {
 };
 template <typename Next>
 struct task_expand_vertex_buffers<Next> {
-	void operator()(std::vector<std::reference_wrapper<const device_buffer_base>> &,
-					std::vector<std::uint64_t> &,
+	void operator()(lib::vector<std::reference_wrapper<const device_buffer_base>> &,
+					lib::vector<std::uint64_t> &,
 					Next&&) {
 	}
 };
@@ -59,8 +59,8 @@ struct task_interface_binder {
 // Interface for tasks that use vertex buffers
 class task_vertex_buffers_interface {
 	std::uint32_t first_binding_index{ 0 };
-	std::vector<std::reference_wrapper<const device_buffer_base>> vertex_buffers;
-	std::vector<std::uint64_t> offsets;
+	lib::vector<std::reference_wrapper<const device_buffer_base>> vertex_buffers;
+	lib::vector<std::uint64_t> offsets;
 
 public:
 	virtual ~task_vertex_buffers_interface() noexcept {}

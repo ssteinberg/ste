@@ -11,7 +11,7 @@ void vk::vk_command_buffers::free() {
 		buffers.clear();
 	}
 	else if (buffers.size()) {
-		std::vector<VkCommandBuffer> b;
+		lib::vector<VkCommandBuffer> b;
 		b.reserve(buffers.size());
 		for (auto &e : buffers)
 			b.push_back(e.get());

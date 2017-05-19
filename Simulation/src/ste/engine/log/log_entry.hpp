@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include <string>
-#include <memory>
+#include <lib/string.hpp>
+#include <lib/unique_ptr.hpp>
 
 #include <log_class.hpp>
 
@@ -22,14 +22,14 @@ struct log_entry_data {
 class log_entry {
 private:
 	log_entry_data entry_data;
-	std::string str;
+	lib::string str;
 
 public:
-	log_entry(const log_entry_data &entry_data, const std::string &line) : entry_data(entry_data), str(line) {}
+	log_entry(const log_entry_data &entry_data, const lib::string &line) : entry_data(entry_data), str(line) {}
 	virtual ~log_entry() {}
 
 	log_entry_data data() const { return entry_data; }
-	std::string entry() const { return str; }
+	lib::string entry() const { return str; }
 };
 
 }

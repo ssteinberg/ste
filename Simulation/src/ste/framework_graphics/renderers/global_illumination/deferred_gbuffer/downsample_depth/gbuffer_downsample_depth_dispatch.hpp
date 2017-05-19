@@ -14,7 +14,7 @@
 #include <glsl_program.hpp>
 #include <deferred_gbuffer.hpp>
 
-#include <memory>
+#include <lib/unique_ptr.hpp>
 
 namespace ste {
 namespace graphics {
@@ -29,7 +29,7 @@ private:
 	const deferred_gbuffer *gbuffer;
 	resource::resource_instance<resource::glsl_program> program;
 
-	std::shared_ptr<connection<>> gbuffer_depth_target_connection;
+	lib::shared_ptr<connection<>> gbuffer_depth_target_connection;
 
 private:
 	void attach_handles() const {
@@ -52,7 +52,7 @@ public:
 	gbuffer_downsample_depth_dispatch(const ste_engine_control &ctx,
 									  const deferred_gbuffer *gbuffer) : gbuffer(gbuffer),
 									  									 program(ctx, "gbuffer_downsample_depth.comp") {
-		gbuffer_depth_target_connection = std::make_shared<connection<>>([&]() {
+		gbuffer_depth_target_connection = lib::allocate_shared<connection<>>([&]() {
 			attach_handles();
 		});
 		gbuffer->get_depth_target_modified_signal().connect(gbuffer_depth_target_connection);

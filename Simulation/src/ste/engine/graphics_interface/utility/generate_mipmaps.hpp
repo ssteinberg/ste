@@ -99,7 +99,7 @@ auto generate_mipmaps(const device_image<dimensions, allocation_policy> &image,
 				}
 
 				// Move image to final layout
-				auto image_barriers = std::vector<image_memory_barrier>
+				auto image_barriers = lib::vector<image_memory_barrier>
 				{
 					image_memory_barrier(image,
 										 image_layout::transfer_src_optimal,

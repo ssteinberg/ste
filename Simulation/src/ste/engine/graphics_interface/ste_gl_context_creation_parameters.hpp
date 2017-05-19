@@ -8,7 +8,7 @@
 #include <vk_physical_device_descriptor.hpp>
 
 #include <optional.hpp>
-#include <vector>
+#include <lib/vector.hpp>
 
 namespace ste {
 namespace gl {
@@ -25,14 +25,14 @@ struct ste_gl_context_creation_parameters {
 
 	optional<bool> debug_context;
 
-	std::vector<const char*> additional_instance_extensions;
-	std::vector<const char*> additional_instance_layers;
+	lib::vector<const char*> additional_instance_extensions;
+	lib::vector<const char*> additional_instance_layers;
 };
 
 struct ste_gl_device_creation_parameters {
 	vk::vk_physical_device_descriptor physical_device;
 	VkPhysicalDeviceFeatures requested_device_features{ 0 };
-	std::vector<const char*> additional_device_extensions;
+	lib::vector<const char*> additional_device_extensions;
 
 	optional<std::uint32_t> simultaneous_presentation_frames;
 	optional<ste_presentation_device_vsync> vsync;

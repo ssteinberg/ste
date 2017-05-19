@@ -14,8 +14,8 @@
 #include <device_buffer.hpp>
 #include <device_resource_allocation_policy.hpp>
 
-#include <memory>
-#include <vector>
+#include <lib/unique_ptr.hpp>
+#include <lib/vector.hpp>
 #include <allow_type_decay.hpp>
 
 namespace ste {
@@ -25,7 +25,7 @@ template <typename Segment>
 class ring_buffer : ste_resource_deferred_create_trait, public allow_type_decay<ring_buffer<Segment>, device_buffer<Segment, device_resource_allocation_policy_device>> {
 private:
 	using buffer_t = device_buffer<Segment, device_resource_allocation_policy_device>;
-	using mmap_ptr_t = std::unique_ptr<vk_mmap<Segment>>;
+	using mmap_ptr_t = lib::unique_ptr<vk_mmap<Segment>>;
 	using lock_t = const unique_fence<void>*;
 	static constexpr auto buffer_usage_additional_flags = buffer_usage::transfer_dst;
 
@@ -35,7 +35,7 @@ private:
 	mmap_ptr_t ptr{ nullptr };
 
 	std::uint32_t current{ 0 };
-	std::vector<lock_t> locks;
+	lib::vector<lock_t> locks;
 
 public:
 	ring_buffer(const ste_context &ctx,

@@ -32,12 +32,12 @@
 //template <typename T>
 //struct load_lut {
 //	auto operator()(const char *name) const {
-//		using namespace text::Attributes;
+//		using namespace text::attributes;
 //
 //		std::ifstream ifs(name, std::ios::binary);
 //		if (!ifs.good()) {
 //			ste_log_error() << text::attributed_string("Can't open \"") + i(name) + "\": " + std::strerror(errno) << std::endl;
-//			throw std::runtime_error(std::string(name) + "not found");
+//			throw std::runtime_error(lib::string(name) + "not found");
 //		}
 //
 //		auto fit_data = T(ifs).create_lut();
@@ -53,11 +53,11 @@
 //}
 //}
 //
-//deferred_composer::deferred_composer(const ste_engine_control &ctx, gi_renderer *dr, resource::resource_instance<volumetric_scattering_scatter_dispatch> *additional_scatter_program_hack) : program(ctx, std::vector<std::string>{ "passthrough.vert", "deferred_compose.frag" }), dr(dr), additional_scatter_program_hack(additional_scatter_program_hack) {
-//	vss_storage_connection = std::make_shared<connection<>>([&]() {
+//deferred_composer::deferred_composer(const ste_engine_control &ctx, gi_renderer *dr, resource::resource_instance<volumetric_scattering_scatter_dispatch> *additional_scatter_program_hack) : program(ctx, lib::vector<lib::string>{ "passthrough.vert", "deferred_compose.frag" }), dr(dr), additional_scatter_program_hack(additional_scatter_program_hack) {
+//	vss_storage_connection = lib::allocate_shared<connection<>>([&]() {
 //		attach_handles();
 //	});
-//	shadows_storage_connection = std::make_shared<connection<>>([&]() {
+//	shadows_storage_connection = lib::allocate_shared<connection<>>([&]() {
 //		attach_handles();
 //	});
 //	dr->vol_scat_storage.get_storage_modified_signal().connect(vss_storage_connection);
@@ -69,10 +69,10 @@
 //	static const char *transmission_fit_name = R"(Data/microfacet_ggx_transmission_fit.bin)";
 //
 //	try {
-//		microfacet_refraction_fit_lut = std::make_unique<Core::texture_2d>(deferred_composer_detail::load_lut<microfacet_refraction_fit>()(refraction_fit_name));
-//		microfacet_transmission_fit_lut = std::make_unique<Core::texture_2d_array>(deferred_composer_detail::load_lut<microfacet_transmission_fit_v4>()(transmission_fit_name));
+//		microfacet_refraction_fit_lut = lib::allocate_unique<Core::texture_2d>(deferred_composer_detail::load_lut<microfacet_refraction_fit>()(refraction_fit_name));
+//		microfacet_transmission_fit_lut = lib::allocate_unique<Core::texture_2d_array>(deferred_composer_detail::load_lut<microfacet_transmission_fit_v4>()(transmission_fit_name));
 //	} catch (const std::exception &err) {
-//		using namespace text::Attributes;
+//		using namespace text::attributes;
 //		ste_log_error() << text::attributed_string("Can't open Microfacet LUT. Error: \"") + b(err.what()) + "\"." << std::endl;
 //
 //		throw;
@@ -89,8 +89,8 @@
 //	//? TODO: RELOCATE
 //	auto ltc_ggx_tab = resource::surface_factory::load_surface_2d(R"(Data/ltc_ggx_fit.dds)", false);
 //	auto ltc_ggx_amp = resource::surface_factory::load_surface_2d(R"(Data/ltc_ggx_amplitude.dds)", false);
-//	ltc_ggx_fit = std::make_unique<Core::texture_2d>(ltc_ggx_tab);
-//	ltc_ggx_amplitude = std::make_unique<Core::texture_2d>(ltc_ggx_amp);
+//	ltc_ggx_fit = lib::allocate_unique<Core::texture_2d>(ltc_ggx_tab);
+//	ltc_ggx_amplitude = lib::allocate_unique<Core::texture_2d>(ltc_ggx_amp);
 //
 //	auto ltc_ggx_fit_handle = ltc_ggx_fit->get_texture_handle(*Core::sampler::sampler_linear_clamp());
 //	auto ltc_ggx_amplitude_handle = ltc_ggx_amplitude->get_texture_handle(*Core::sampler::sampler_linear_clamp());
@@ -105,19 +105,19 @@
 //
 //	try {
 //		atmospherics_precompute_scattering lut_loader(lut_name);
-//		atmospherics_optical_length_lut = std::make_unique<Core::texture_2d_array>(lut_loader.create_optical_length_lut());
-//		atmospherics_scatter_lut = std::make_unique<Core::texture_3d>(lut_loader.create_scatter_lut());
-//		atmospherics_mie0_scatter_lut = std::make_unique<Core::texture_3d>(lut_loader.create_mie0_scatter_lut());
-//		atmospherics_ambient_lut = std::make_unique<Core::texture_3d>(lut_loader.create_ambient_lut());
+//		atmospherics_optical_length_lut = lib::allocate_unique<Core::texture_2d_array>(lut_loader.create_optical_length_lut());
+//		atmospherics_scatter_lut = lib::allocate_unique<Core::texture_3d>(lut_loader.create_scatter_lut());
+//		atmospherics_mie0_scatter_lut = lib::allocate_unique<Core::texture_3d>(lut_loader.create_mie0_scatter_lut());
+//		atmospherics_ambient_lut = lib::allocate_unique<Core::texture_3d>(lut_loader.create_ambient_lut());
 //	}
 //	catch (const std::exception &err) {
-//		using namespace text::Attributes;
+//		using namespace text::attributes;
 //		ste_log_error() << text::attributed_string("Can't open Atmospherics Scatter LUT. Error: \"") + b(err.what()) + "\"." << std::endl;
 //
 //		throw;
 //	}
 //
-//	ste_log() << text::attributed_string("Loaded \"") + text::Attributes::i(lut_name) + "\" successfully." << std::endl;
+//	ste_log() << text::attributed_string("Loaded \"") + text::attributes::i(lut_name) + "\" successfully." << std::endl;
 //
 //	auto optical_length_handle = atmospherics_optical_length_lut->get_texture_handle(*Core::sampler::sampler_linear_clamp());
 //	auto scatter_handle = atmospherics_scatter_lut->get_texture_handle(*Core::sampler::sampler_linear_clamp());

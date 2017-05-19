@@ -13,9 +13,9 @@
 #include <combined_image_sampler.hpp>
 
 #include <optional.hpp>
-#include <string>
-#include <memory>
-#include <vector>
+#include <lib/string.hpp>
+#include <lib/unique_ptr.hpp>
+#include <lib/vector.hpp>
 #include <error_type.hpp>
 
 namespace ste {
@@ -81,10 +81,10 @@ class ste_shader_stage_variable_struct;
  */
 class ste_shader_stage_variable {
 private:
-	std::string var_name;
+	lib::string var_name;
 	std::uint16_t offset_bytes{ 0 };
-	std::string default_specialized_value;
-	optional<std::string> specialized_value;
+	lib::string default_specialized_value;
+	optional<lib::string> specialized_value;
 
 private:
 	using dispatcher = _internal::ste_shader_stage_variable_dispatcher<
@@ -97,7 +97,7 @@ private:
 	>;
 
 protected:
-	ste_shader_stage_variable(std::string name,
+	ste_shader_stage_variable(lib::string name,
 									  std::uint16_t offset_bytes = 0)
 		: var_name(name), offset_bytes(offset_bytes)
 	{}
@@ -154,7 +154,7 @@ public:
 		dispatcher::validate<Type>(this);
 	}
 
-	void set_default_specialized_value(std::string default_specialized_value) {
+	void set_default_specialized_value(lib::string default_specialized_value) {
 		this->default_specialized_value = default_specialized_value;
 	}
 	/**
@@ -177,7 +177,7 @@ public:
 		using S = std::remove_cv_t<std::remove_reference_t<T>>;
 		static_assert(std::is_pod_v<S>, "T must be a POD");
 
-		std::string data;
+		lib::string data;
 		data.resize(sizeof(S));
 		memcpy(data.data(), &t, sizeof(S));
 
@@ -186,7 +186,7 @@ public:
 	/**
 	*	@brief	For specialization constants, specializes the constant
 	*/
-	void specialize_bin(const std::string &data) {
+	void specialize_bin(const lib::string &data) {
 		specialized_value = data;
 	}
 	/**
@@ -196,7 +196,7 @@ public:
 	T read_specialized_value() const {
 		static_assert(std::is_pod_v<T> || is_arithmetic_v<T>, "T must be a POD or arithmetic type");
 
-		const std::string& data = specialized_value ?
+		const lib::string& data = specialized_value ?
 			specialized_value.get() :
 			default_specialized_value;
 
@@ -241,7 +241,7 @@ private:
 
 public:
 	ste_shader_stage_variable_opaque(const ste_shader_stage_variable_type &type,
-											 std::string name,
+											 lib::string name,
 											 std::uint16_t offset_bytes)
 		: Base(name, offset_bytes),
 		var_type(type)
@@ -292,7 +292,7 @@ private:
 
 public:
 	ste_shader_stage_variable_scalar(const ste_shader_stage_variable_type &type,
-											 std::string name,
+											 lib::string name,
 											 std::uint16_t offset_bytes,
 											 std::uint16_t width)
 		: Base(name, offset_bytes),
@@ -356,11 +356,11 @@ private:
 	std::uint16_t var_matrix_stride;
 	std::uint32_t var_rows;
 	std::uint32_t var_columns;
-	std::unique_ptr<ste_shader_stage_variable_scalar> scalar_var;
+	lib::unique_ptr<ste_shader_stage_variable_scalar> scalar_var;
 
 public:
-	ste_shader_stage_variable_matrix(std::unique_ptr<ste_shader_stage_variable_scalar> &&scalar,
-											 std::string name,
+	ste_shader_stage_variable_matrix(lib::unique_ptr<ste_shader_stage_variable_scalar> &&scalar,
+											 lib::string name,
 											 std::uint16_t offset_bytes,
 											 std::uint32_t rows,
 											 std::uint32_t columns = 1,
@@ -447,13 +447,13 @@ class ste_shader_stage_variable_array : public ste_shader_stage_variable {
 private:
 	std::uint32_t array_elements{ 1 };
 	std::uint16_t array_stride{ 0 };
-	std::unique_ptr<ste_shader_stage_variable> var;
+	lib::unique_ptr<ste_shader_stage_variable> var;
 
 	optional<const ste_shader_stage_variable_scalar*> length_specialization_constant;
 
 public:
-	ste_shader_stage_variable_array(std::unique_ptr<ste_shader_stage_variable> &&var,
-											std::string name,
+	ste_shader_stage_variable_array(lib::unique_ptr<ste_shader_stage_variable> &&var,
+											lib::string name,
 											std::uint16_t offset_bytes,
 											std::uint32_t array_elements,
 											std::uint16_t array_stride,
@@ -582,7 +582,7 @@ struct ste_shader_stage_variable_struct_validator {
 		}
 		catch (gl::ste_shader_variable_layout_verification_exception &e) {
 			// Prepend a error location message and rethrow
-			e.prepend("At struct member [" + std::to_string(N) + "]:");
+			e.prepend("At struct member [" + lib::to_string(N) + "]:");
 			throw;
 		}
 		ste_shader_stage_variable_struct_validator<Var, N + 1, Len, B>()(var);
@@ -624,11 +624,11 @@ class ste_shader_stage_variable_struct : public ste_shader_stage_variable {
 	using Base = ste_shader_stage_variable;
 
 private:
-	std::vector<std::unique_ptr<ste_shader_stage_variable>> elements;
+	lib::vector<lib::unique_ptr<ste_shader_stage_variable>> elements;
 
 public:
-	ste_shader_stage_variable_struct(std::vector<std::unique_ptr<ste_shader_stage_variable>> &&elements,
-											 std::string name,
+	ste_shader_stage_variable_struct(lib::vector<lib::unique_ptr<ste_shader_stage_variable>> &&elements,
+											 lib::string name,
 											 std::uint16_t offset_bytes)
 		: Base(name, offset_bytes),
 		elements(std::move(elements))

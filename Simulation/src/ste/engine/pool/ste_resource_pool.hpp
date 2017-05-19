@@ -7,7 +7,7 @@
 #include <ste_resource_pool_resource.hpp>
 #include <ste_resource_pool_reclamation_policy.hpp>
 
-#include <concurrent_queue.hpp>
+#include <lib/concurrent_queue.hpp>
 #include <tuple_call.hpp>
 #include <type_traits>
 
@@ -24,11 +24,12 @@ class ste_resource_pool {
 
 private:
 	using value_type = T;
-	using pool_t = concurrent_queue<value_type>;
+	using pool_t = lib::concurrent_queue<value_type>;
 	using tuple_t = typename ste_resource_pool_ctor_args_capture<T>::type;
 
 public:
-	using resource_t = ste_resource_pool_resource<ste_resource_pool<value_type>, resource_reclamation_policy>;
+	using resource_ptr_t = lib::unique_ptr<T>;
+	using resource_t = ste_resource_pool_resource<ste_resource_pool<value_type>, resource_ptr_t, resource_reclamation_policy>;
 	using pool_ptr_t = pool_t*;
 
 	friend resource_t;
@@ -65,9 +66,10 @@ public:
 		}
 
 		// Create new
+		auto ptr = tuple_call(&T::template _ste_resource_pool_resource_creator<T>,
+							  res_params);
 		return resource_t(&pool,
-						  tuple_call(&T::template _ste_resource_pool_resource_creator<T>,
-									 res_params));
+						  std::move(ptr));
 	}
 };
 

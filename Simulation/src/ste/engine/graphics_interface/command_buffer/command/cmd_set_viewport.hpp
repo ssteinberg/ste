@@ -8,18 +8,18 @@
 
 #include <rect.hpp>
 #include <depth_range.hpp>
-#include <vector>
+#include <lib/vector.hpp>
 
 namespace ste {
 namespace gl {
 
 class cmd_set_viewport : public command {
 private:
-	std::vector<VkViewport> viewports;
+	lib::vector<VkViewport> viewports;
 	std::uint32_t first_viewport_index;
 
 public:
-	cmd_set_viewport(const std::vector<std::pair<rect, depth_range>> &viewports,
+	cmd_set_viewport(const lib::vector<std::pair<rect, depth_range>> &viewports,
 					 std::uint32_t first_viewport_index = 0) : first_viewport_index(first_viewport_index) {
 		this->viewports.reserve(viewports.size());
 		for (auto &r : viewports) {
@@ -37,7 +37,7 @@ public:
 	cmd_set_viewport(const rect &viewport,
 					 const depth_range &depth,
 					 std::uint32_t first_viewport_index = 0)
-		: cmd_set_viewport(std::vector<std::pair<rect, depth_range>>{ std::make_pair(viewport, depth) }, first_viewport_index)
+		: cmd_set_viewport(lib::vector<std::pair<rect, depth_range>>{ std::make_pair(viewport, depth) }, first_viewport_index)
 	{}
 	virtual ~cmd_set_viewport() noexcept {}
 

@@ -50,7 +50,7 @@
 
 #include <glsl_program.hpp>
 
-#include <memory>
+#include <lib/unique_ptr.hpp>
 
 namespace ste {
 namespace graphics {
@@ -75,8 +75,8 @@ private:
 	const ste_engine_control &ctx;
 
 	deferred_gbuffer gbuffer;
-	std::shared_ptr<ResizeSignalConnectionType> resize_connection;
-	std::shared_ptr<ProjectionSignalConnectionType> projection_change_connection;
+	lib::shared_ptr<ResizeSignalConnectionType> resize_connection;
+	lib::shared_ptr<ProjectionSignalConnectionType> projection_change_connection;
 
 	const camera *cam;
 	transforms_ring_buffers transform_buffers;
@@ -111,7 +111,7 @@ private:
 
 	resource::resource_instance<volumetric_scattering_scatter_dispatch> vol_scat_scatter;
 
-	std::shared_ptr<const gpu_task> scene_task,
+	lib::shared_ptr<const gpu_task> scene_task,
 									composer_task,
 									fxaa_task,
 									fb_clearer_task,
@@ -157,7 +157,7 @@ public:
 
 	void attach_profiler(profiler *p) { q.attach_profiler(p); }
 
-	virtual std::string rendering_system_name() const override { return "gi_renderer"; };
+	virtual lib::string rendering_system_name() const override { return "gi_renderer"; };
 
 	auto& get_composer_program() { return composer.get().get_program(); }
 };

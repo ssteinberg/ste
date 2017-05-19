@@ -18,7 +18,7 @@
 #include <rect.hpp>
 #include <depth_range.hpp>
 
-#include <boost/container/flat_map.hpp>
+#include <lib/flat_map.hpp>
 #include <optional.hpp>
 #include <allow_type_decay.hpp>
 
@@ -30,7 +30,7 @@ namespace gl {
 */
 class framebuffer : public allow_type_decay<framebuffer, vk::vk_framebuffer> {
 public:
-	using attachment_map_t = boost::container::flat_map<pipeline_layout_attachment_location, framebuffer_attachment>;
+	using attachment_map_t = lib::flat_map<pipeline_layout_attachment_location, framebuffer_attachment>;
 
 private:
 	std::reference_wrapper<const ste_context> ctx;
@@ -43,7 +43,7 @@ private:
 
 	vk::vk_render_pass compatible_renderpass;
 	optional<vk::vk_framebuffer> fb;
-	optional<std::vector<VkClearValue>> clear_values;
+	optional<lib::vector<VkClearValue>> clear_values;
 
 private:
 	void attach(pipeline_layout_attachment_location location, framebuffer_attachment &&attachment) {
@@ -101,7 +101,7 @@ private:
 	}
 
 	auto create_clear_values() {
-		std::vector<VkClearValue> ret;
+		lib::vector<VkClearValue> ret;
 		ret.reserve(attachments.size());
 
 		auto it = attachments.begin();
@@ -121,7 +121,7 @@ private:
 	}
 
 	auto create_framebuffer() {
-		std::vector<VkImageView> image_view_handles;
+		lib::vector<VkImageView> image_view_handles;
 		image_view_handles.reserve(attachments.size());
 		for (auto &a : attachments) {
 			image_view_handles.push_back(a.second.get_attachment().get_image_view_handle());

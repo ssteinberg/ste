@@ -12,10 +12,9 @@
 #include <device_memory_heap.hpp>
 
 #include <mutex>
-#include <memory>
-#include <vector>
 #include <array>
-#include <unordered_set>
+#include <lib/unordered_map.hpp>
+#include <lib/unordered_set.hpp>
 #include <aligned_ptr.hpp>
 
 namespace ste {
@@ -24,7 +23,7 @@ namespace gl {
 class ste_gl_device_memory_allocator : public unique_device_ptr_allocator {
 private:
 	using chunk_t = device_memory_heap;
-	using chunks_t = std::unordered_map<std::uint64_t, chunk_t>;
+	using chunks_t = lib::unordered_map<std::uint64_t, chunk_t>;
 	using memory_type_t = std::uint32_t;
 
 	struct heap_t {
@@ -364,7 +363,7 @@ public:
 	auto get_total_device_memory(const VkMemoryPropertyFlags &flags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT) const {
 		const VkPhysicalDeviceMemoryProperties &properties = device.get().get_physical_device_descriptor().memory_properties;
 
-		std::unordered_set<std::uint32_t> conforming_heaps;
+		lib::unordered_set<std::uint32_t> conforming_heaps;
 		for (std::uint32_t i=0;i<properties.memoryTypeCount;++i) {
 			auto &type = properties.memoryTypes[i];
 			if ((type.propertyFlags & flags) == flags)

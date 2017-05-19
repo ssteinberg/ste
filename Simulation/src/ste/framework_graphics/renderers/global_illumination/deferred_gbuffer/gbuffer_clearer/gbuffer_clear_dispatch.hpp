@@ -14,7 +14,7 @@
 #include <glsl_program.hpp>
 #include <deferred_gbuffer.hpp>
 
-#include <memory>
+#include <lib/unique_ptr.hpp>
 
 namespace ste {
 namespace graphics {

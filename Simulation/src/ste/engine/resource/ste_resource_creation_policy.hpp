@@ -7,7 +7,7 @@
 #include <ste_context.hpp>
 
 #include <future>
-#include <memory>
+#include <lib/unique_ptr.hpp>
 #include <functional>
 
 #include <optional.hpp>

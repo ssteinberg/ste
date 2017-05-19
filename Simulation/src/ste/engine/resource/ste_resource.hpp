@@ -50,7 +50,7 @@ struct ste_resource_resource_impl_type {
 *			Parameters' lifetime is the caller's responsibility.
 *			
 *			Storage of the resource is inline if T is default-constructible and move-assignable, otherwise T will be wrapped 
-*			in a std::unique_ptr.
+*			in a lib::unique_ptr.
 *
 *			ste_resource exposes a simple access interface: get() and overloaded member access opeartor->.
 *			Calling getters from multiple threads is safe.

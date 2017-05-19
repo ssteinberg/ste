@@ -4,7 +4,7 @@
 #include <make_distance_map.hpp>
 
 #include <hash_combine.hpp>
-#include <unordered_map>
+#include <lib/unordered_map.hpp>
 #include <functional>
 
 #include <mutex>
@@ -13,6 +13,8 @@
 #include FT_FREETYPE_H
 
 #include <stdexcept>
+
+#include <lib/alloc.hpp>
 
 using namespace ste::text;
 
@@ -74,7 +76,7 @@ public:
 class glyph_factory_font {
 private:
 	FT_Face face{ nullptr };
-	std::unordered_map<text_glyph_pair_key, int> spacing_cache;
+	lib::unordered_map<text_glyph_pair_key, int> spacing_cache;
 
 public:
 	glyph_factory_font(const font &font, FT_Library ft_lib) {
@@ -123,7 +125,7 @@ public:
 struct glyph_factory_impl {
 	std::mutex m;
 	glyph_factory_ft_lib lib;
-	std::unordered_map<font, glyph_factory_font> fonts;
+	lib::unordered_map<font, glyph_factory_font> fonts;
 
 	auto& get_factory_font(const font &font) {
 		auto it = fonts.find(font);
@@ -160,7 +162,7 @@ unsigned char* glyph_factory_impl::render_glyph_with(const font &font, wchar_t c
 	int padding_w = std::max<int>(0, (w - bm.width) >> 1);
 	int padding_h = std::max<int>(0, (h - bm.rows) >> 1);
 
-	unsigned char *glyph_buf = new unsigned char[w*h];
+	unsigned char *glyph_buf = lib::default_alloc<unsigned char[]>::make(w*h);
 	memset(glyph_buf, 0, w * h);
 	for (unsigned y = 0; y < bm.rows; ++y)
 		memcpy(&glyph_buf[padding_w + (y + padding_h) * w], &reinterpret_cast<char*>(bm.buffer)[(bm.rows - y - 1) * bm.pitch], std::min<int>(w, bm.pitch));
@@ -168,10 +170,10 @@ unsigned char* glyph_factory_impl::render_glyph_with(const font &font, wchar_t c
 	return glyph_buf;
 }
 
-glyph_factory::glyph_factory() : pimpl(new glyph_factory_impl) {}
+glyph_factory::glyph_factory() : pimpl(lib::default_alloc<glyph_factory_impl>::make()) {}
 
 glyph_factory::~glyph_factory() {
-	delete pimpl;
+	lib::default_alloc<glyph_factory_impl>::destroy(pimpl);
 }
 
 glyph glyph_factory::create_glyph(const font &font, wchar_t codepoint) const {
@@ -185,9 +187,9 @@ glyph glyph_factory::create_glyph(const font &font, wchar_t codepoint) const {
 	g.metrics.width = w;
 	g.metrics.height = h;
 
-	g.glyph_distance_field = std::make_unique<gli::texture2d>(gli::format::FORMAT_R32_SFLOAT_PACK32, glm::ivec2{ w, h }, 1);
+	g.glyph_distance_field = lib::allocate_unique<gli::texture2d>(gli::format::FORMAT_R32_SFLOAT_PACK32, glm::ivec2{ w, h }, 1);
 	make_distance_map(glyph_buf, w, h, reinterpret_cast<float*>(g.glyph_distance_field->data()));
-	delete[] glyph_buf;
+	lib::default_alloc<unsigned char[]>::destroy(glyph_buf);
 
 	return std::move(g);
 }

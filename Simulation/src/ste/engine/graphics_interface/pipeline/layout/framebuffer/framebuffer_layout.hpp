@@ -8,7 +8,7 @@
 #include <framebuffer_exceptions.hpp>
 #include <pipeline_layout_attachment_location.hpp>
 
-#include <boost/container/flat_map.hpp>
+#include <lib/flat_map.hpp>
 #include <initializer_list>
 #include <optional.hpp>
 
@@ -20,7 +20,7 @@ namespace gl {
 */
 class framebuffer_layout {
 public:
-	using attachment_map_t = boost::container::flat_map<pipeline_layout_attachment_location, framebuffer_attachment_layout>;
+	using attachment_map_t = lib::flat_map<pipeline_layout_attachment_location, framebuffer_attachment_layout>;
 
 private:
 	attachment_map_t attachments;
@@ -100,8 +100,8 @@ public:
 
 	auto create_compatible_renderpass(const ste_context &ctx) const {
 		// Sort attachments
-		std::vector<vk::vk_render_pass_attachment> vk_attachments;
-		std::vector<VkAttachmentReference> color;
+		lib::vector<vk::vk_render_pass_attachment> vk_attachments;
+		lib::vector<VkAttachmentReference> color;
 		optional<VkAttachmentReference> depth;
 
 		for (auto &a : *this) {
@@ -125,7 +125,7 @@ public:
 		}
 
 		// Create subpass descriptor
-		std::vector<vk::vk_render_pass_subpass_descriptor> subpasses;
+		lib::vector<vk::vk_render_pass_subpass_descriptor> subpasses;
 		depth ?
 			subpasses.emplace_back(color, depth.get()) :
 			subpasses.emplace_back(color);

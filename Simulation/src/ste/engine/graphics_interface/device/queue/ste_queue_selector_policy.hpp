@@ -11,7 +11,7 @@
 
 #include <optional.hpp>
 #include <utility>
-#include <string>
+#include <lib/string.hpp>
 
 namespace ste {
 namespace gl {
@@ -54,8 +54,8 @@ struct ste_queue_selector_policy_strict {
 		throw ste_engine_exception("Can not find compatible queue");
 	}
 
-	static std::string serialize_selector(const queue_selector_arg_type &arg) {
-		std::string data;
+	static lib::string serialize_selector(const queue_selector_arg_type &arg) {
+		lib::string data;
 		data.resize(sizeof(arg));
 		memcpy(data.data(), &arg, sizeof(arg));
 
@@ -98,7 +98,7 @@ struct ste_queue_selector_policy_flexible {
 		throw ste_engine_exception("Can not find compatible queue");
 	}
 
-	static std::string serialize_selector(const queue_selector_arg_type &arg) {
+	static lib::string serialize_selector(const queue_selector_arg_type &arg) {
 		return ste_queue_selector_policy_strict::serialize_selector(arg);
 	}
 };
@@ -117,8 +117,8 @@ struct ste_queue_selector_policy_family {
 		throw ste_engine_exception("Can not find compatible queue");
 	}
 
-	static std::string serialize_selector(const queue_selector_arg_type &arg) {
-		std::string data;
+	static lib::string serialize_selector(const queue_selector_arg_type &arg) {
+		lib::string data;
 		data.resize(sizeof(arg));
 		memcpy(data.data(), &arg, sizeof(arg));
 

@@ -8,7 +8,7 @@
 #include <vk_framebuffer.hpp>
 #include <vk_render_pass.hpp>
 
-#include <vector>
+#include <lib/vector.hpp>
 
 namespace ste {
 namespace gl {
@@ -18,14 +18,14 @@ private:
 	std::reference_wrapper<const vk::vk_framebuffer> framebuffer;
 	std::reference_wrapper<const vk::vk_render_pass> render_pass;
 	VkRect2D render_area;
-	std::vector<VkClearValue> clear_values;
+	lib::vector<VkClearValue> clear_values;
 
 public:
 	cmd_begin_render_pass(const vk::vk_framebuffer &framebuffer,
 						  const vk::vk_render_pass &render_pass,
 						  glm::i32vec2 render_area_offset,
 						  glm::u32vec2 render_area_size,
-						  const std::vector<VkClearValue> &clear_values)
+						  const lib::vector<VkClearValue> &clear_values)
 		: framebuffer(framebuffer),
 		render_pass(render_pass),
 		clear_values(clear_values)

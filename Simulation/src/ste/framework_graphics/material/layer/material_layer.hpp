@@ -13,7 +13,7 @@
 
 #include <rgb.hpp>
 
-#include <memory>
+#include <lib/unique_ptr.hpp>
 #include <limits>
 
 namespace ste {
@@ -30,10 +30,10 @@ private:
 
 	rgb albedo;
 	
-	std::shared_ptr<Core::texture_2d> roughness_map{ nullptr };
-	std::shared_ptr<Core::texture_2d> metallicity_map{ nullptr };
-	std::shared_ptr<Core::texture_2d> thickness_map{ nullptr };
-	//std::shared_ptr<Core::texture_2d> anisotropy_map{ nullptr };
+	lib::shared_ptr<Core::texture_2d> roughness_map{ nullptr };
+	lib::shared_ptr<Core::texture_2d> metallicity_map{ nullptr };
+	lib::shared_ptr<Core::texture_2d> thickness_map{ nullptr };
+	//lib::shared_ptr<Core::texture_2d> anisotropy_map{ nullptr };
 
 	float index_of_refraction{ 1.5f };
 	glm::vec3 attenuation_coefficient{ std::numeric_limits<float>::infinity() };
@@ -53,12 +53,12 @@ private:
 private:
 	Core::texture_handle handle_for_texture(const Core::texture_2d *t) const;
 
-	template <std::shared_ptr<Core::texture_2d> material_layer::*map>
+	template <lib::shared_ptr<Core::texture_2d> material_layer::*map>
 	void write_scalar_map(float scalar) {
 		if (this->*map == nullptr || (this->*map)->get_size() != glm::ivec2{ 1, 1 }) {
 			auto surface = gli::texture2d(gli::format::FORMAT_R32_SFLOAT_PACK32, { 1, 1 }, 1);
 			*reinterpret_cast<float*>(surface.data()) = scalar;
-			this->*map = std::make_shared<ste::Core::texture_2d>(surface, false);
+			this->*map = lib::allocate_shared<ste::Core::texture_2d>(surface, false);
 		}
 		else
 			(this->*map)->clear(&scalar);
@@ -113,7 +113,7 @@ public:
 	*
 	* 	@param map	Roughness map
 	*/
-	void set_roughness(const std::shared_ptr<Core::texture_2d> &map) {
+	void set_roughness(const lib::shared_ptr<Core::texture_2d> &map) {
 		this->roughness_map = map;
 		descriptor.set_roughness_map_handle(handle_for_texture(roughness_map.get()));
 
@@ -140,7 +140,7 @@ public:
 	*
 	* 	@param map	Anisotropy map
 	*/
-//	void set_anisotropy(const std::shared_ptr<Core::texture_2d> &map) {
+//	void set_anisotropy(const lib::shared_ptr<Core::texture_2d> &map) {
 //		this->anisotropy_map = map;
 //		descriptor.set_anisotropy_map_handle(handle_for_texture(anisotropy_map.get()));
 //
@@ -167,7 +167,7 @@ public:
 	*
 	* 	@param map	Metallicity map
 	*/
-	void set_metallic(const std::shared_ptr<Core::texture_2d> &map) {
+	void set_metallic(const lib::shared_ptr<Core::texture_2d> &map) {
 		metallicity_map = map;
 		descriptor.set_metallicity_map_handle(handle_for_texture(metallicity_map.get()));
 		Base::notify();
@@ -241,7 +241,7 @@ public:
 	*
 	* 	@param map	Thickness map in standard units	- range: (0,material_layer_max_thickness)
 	*/
-	void set_layer_thickness(const std::shared_ptr<Core::texture_2d> &map) {
+	void set_layer_thickness(const lib::shared_ptr<Core::texture_2d> &map) {
 		thickness_map = map;
 		descriptor.set_thickness_map_handle(handle_for_texture(thickness_map.get()));
 		Base::notify();

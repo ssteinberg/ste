@@ -13,8 +13,8 @@
 #include <device_pipeline_graphics.hpp>
 #include <framebuffer_layout.hpp>
 
-#include <string>
-#include <vector>
+#include <lib/string.hpp>
+#include <lib/vector.hpp>
 #include <optional.hpp>
 
 namespace ste {
@@ -26,7 +26,7 @@ namespace gl {
 template <typename CRTP>
 class fragment_graphics : public fragment {
 private:
-	std::vector<device_pipeline_shader_stage> shader_stages;
+	lib::vector<device_pipeline_shader_stage> shader_stages;
 
 	struct ctor {};
 
@@ -39,7 +39,7 @@ private:
 										 device_pipeline_graphics_configurations &&pipeline_graphics_configurations,
 										 const pipeline_external_binding_set_collection* external_binding_sets_collection,
 										 optional<framebuffer_layout> &&fb_layout,
-										 std::vector<device_pipeline_shader_stage> &out_shader_stages,
+										 lib::vector<device_pipeline_shader_stage> &out_shader_stages,
 										 Names&&... shader_stages_names) {
 		const ste_context &ctx = rs.get_creating_context();
 
@@ -113,7 +113,7 @@ public:
 	virtual ~fragment_graphics() noexcept {}
 
 	// Subclasses are expected to declare:
-	//static const std::string& name();
+	//static const lib::string& name();
 };
 
 }

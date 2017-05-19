@@ -4,7 +4,7 @@
 #pragma once
 
 #include <vulkan/vulkan.h>
-#include <string>
+#include <lib/string.hpp>
 
 namespace ste {
 namespace gl {
@@ -30,7 +30,7 @@ public:
 	}
 
 	auto get() const { return code; }
-	std::string string() const {
+	lib::string string() const {
 		switch (code) {
 		case VK_SUCCESS: return "Command successfully completed";
 		case VK_NOT_READY: return "A fence or query has not yet completed";
@@ -60,7 +60,7 @@ public:
 	auto operator!() const { return code != VK_SUCCESS; }
 	operator bool() const { return code == VK_SUCCESS; }
 	operator VkResult() const { return get(); }
-	explicit operator std::string() const { return string(); }
+	explicit operator lib::string() const { return string(); }
 };
 
 }

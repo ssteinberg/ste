@@ -43,7 +43,7 @@
 //
 //						 vol_scat_scatter(ctx, &vol_scat_storage, &lll_storage, &s->properties().lights_storage(), &shadows_storage)
 //{
-//	resize_connection = std::make_shared<ResizeSignalConnectionType>([=](const glm::i32vec2 &size) {
+//	resize_connection = lib::allocate_shared<ResizeSignalConnectionType>([=](const glm::i32vec2 &size) {
 //		this->transform_buffers.update_proj_data(this->ctx.get_fov(), this->ctx.get_projection_aspect(), this->ctx.get_near_clip(), size);
 //
 //		this->gbuffer.resize(size);
@@ -55,7 +55,7 @@
 //
 //		this->rebuild_task_queue();
 //	});
-//	projection_change_connection = std::make_shared<ProjectionSignalConnectionType>([this](float aspect, float fovy, float fnear) {
+//	projection_change_connection = lib::allocate_shared<ProjectionSignalConnectionType>([this](float aspect, float fovy, float fnear) {
 //		this->transform_buffers.update_proj_data(fovy, aspect, fnear, this->ctx.get_backbuffer_size());
 //	});
 //	ctx.signal_framebuffer_resize().connect(resize_connection);

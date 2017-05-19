@@ -8,7 +8,7 @@
 #include <device_image_base.hpp>
 #include <image_layout.hpp>
 
-#include <vector>
+#include <lib/vector.hpp>
 
 namespace ste {
 namespace gl {
@@ -19,13 +19,13 @@ private:
 	image_layout layout;
 	VkClearColorValue clear_value{};
 
-	std::vector<VkImageSubresourceRange> ranges;
+	lib::vector<VkImageSubresourceRange> ranges;
 
 public:
 	cmd_clear_color_image(const device_image_base &image,
 						  const image_layout &layout,
 						  const glm::i32vec4 &clear_color,
-						  const std::vector<VkImageSubresourceRange> &ranges = {})
+						  const lib::vector<VkImageSubresourceRange> &ranges = {})
 		: image(image), layout(layout), ranges(ranges)
 	{
 		if (this->ranges.size() == 0)
@@ -35,7 +35,7 @@ public:
 	cmd_clear_color_image(const device_image_base &image,
 						  const image_layout &layout,
 						  const glm::u32vec4 &clear_color,
-						  const std::vector<VkImageSubresourceRange> &ranges = {})
+						  const lib::vector<VkImageSubresourceRange> &ranges = {})
 		: image(image), layout(layout), ranges(ranges)
 	{
 		if (this->ranges.size() == 0)
@@ -45,7 +45,7 @@ public:
 	cmd_clear_color_image(const device_image_base &image,
 						  const image_layout &layout,
 						  const glm::f32vec4 &clear_color,
-						  const std::vector<VkImageSubresourceRange> &ranges = {})
+						  const lib::vector<VkImageSubresourceRange> &ranges = {})
 		: image(image), layout(layout), ranges(ranges)
 	{
 		if (this->ranges.size() == 0)

@@ -8,7 +8,7 @@
 #include <vk_event.hpp>
 #include <pipeline_barrier.hpp>
 
-#include <vector>
+#include <lib/vector.hpp>
 #include <initializer_list>
 
 namespace ste {
@@ -16,11 +16,11 @@ namespace gl {
 
 class cmd_wait_events : public command {
 private:
-	std::vector<VkEvent> events;
+	lib::vector<VkEvent> events;
 	const pipeline_barrier &barrier;
-	std::vector<VkMemoryBarrier> memory_barriers;
-	std::vector<VkBufferMemoryBarrier> buffer_barriers;
-	std::vector<VkImageMemoryBarrier> image_barriers;
+	lib::vector<VkMemoryBarrier> memory_barriers;
+	lib::vector<VkBufferMemoryBarrier> buffer_barriers;
+	lib::vector<VkImageMemoryBarrier> image_barriers;
 
 public:
 	cmd_wait_events(const std::initializer_list<VkEvent> &events,

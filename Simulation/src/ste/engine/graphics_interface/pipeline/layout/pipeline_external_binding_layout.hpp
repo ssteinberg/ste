@@ -19,8 +19,8 @@
 
 #include <functional>
 #include <type_traits>
-#include <string>
-#include <memory>
+#include <lib/string.hpp>
+#include <lib/unique_ptr.hpp>
 
 namespace ste {
 namespace gl {
@@ -92,7 +92,7 @@ private:
 	}
 
 	template <pipeline_layout_set_index s, std::uint32_t b, class T, bool si>
-	static auto create_binding(const std::string &name,
+	static auto create_binding(const lib::string &name,
 							   const pipeline_external_binding_descriptor<T, s, b, si> &descriptor) {
 		ste_shader_stage_binding binding;
 		binding.bind_idx = descriptor.bind_idx;
@@ -100,7 +100,7 @@ private:
 		binding.binding_type = descriptor.binding_type();
 		binding.block_layout = descriptor.block_layout();
 
-		std::unique_ptr<ste_shader_stage_variable> variable = 
+		lib::unique_ptr<ste_shader_stage_variable> variable = 
 			ste_shader_stage_variable_from_type<T, descriptor.is_storage_image>(name);
 		binding.variable = std::move(variable);
 
@@ -109,7 +109,7 @@ private:
 
 public:
 	template <pipeline_layout_set_index s, std::uint32_t b, class T, bool si>
-	pipeline_external_binding_layout(const std::string &name,
+	pipeline_external_binding_layout(const lib::string &name,
 									 const pipeline_binding_stages_collection &stages,
 									 const pipeline_external_binding_descriptor<T, s, b, si> &descriptor)
 		: binding_stages(stages),
@@ -143,7 +143,7 @@ public:
 		binding.validate_layout<T>();
 	}
 
-	const std::string &name() const override { return binding.variable->name(); }
+	const lib::string &name() const override { return binding.variable->name(); }
 	pipeline_layout_set_index set_idx() const override { return binding.set_idx; }
 	std::uint32_t bind_idx() const override { return binding.bind_idx; }
 	ste_shader_stage_binding_type binding_type() const override { return binding.binding_type; }

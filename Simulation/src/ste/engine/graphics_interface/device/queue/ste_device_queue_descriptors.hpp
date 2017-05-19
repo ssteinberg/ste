@@ -8,8 +8,10 @@
 #include <ste_queue_family.hpp>
 #include <vk_physical_device_descriptor.hpp>
 
-#include <vector>
+#include <lib/vector.hpp>
 #include <algorithm>
+
+#include <lib/unique_ptr.hpp>
 
 namespace ste {
 namespace gl {
@@ -45,12 +47,12 @@ struct ste_queue_descriptor {
 
 class ste_queue_descriptors {
 public:
-	using queues_t = std::vector<ste_queue_descriptor>;
+	using queues_t = lib::vector<ste_queue_descriptor>;
 	using queue_family_index_t = std::uint32_t;
 
 	struct vk_create_info_t {
-		std::vector<float> priorities;
-		std::vector<VkDeviceQueueCreateInfo> create_info;
+		lib::vector<float> priorities;
+		lib::vector<VkDeviceQueueCreateInfo> create_info;
 	};
 
 private:
@@ -81,7 +83,7 @@ public:
 	*	@brief	Creates Vulkan queue create info array
 	*/
 	auto create_device_queue_create_info() const {
-		std::unique_ptr<vk_create_info_t> info = std::make_unique<vk_create_info_t>();
+		lib::unique_ptr<vk_create_info_t> info = lib::allocate_unique<vk_create_info_t>();
 		info->priorities.reserve(size());
 		info->create_info.reserve(size());
 

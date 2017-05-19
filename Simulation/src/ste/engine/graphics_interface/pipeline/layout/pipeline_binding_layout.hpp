@@ -20,7 +20,7 @@ struct pipeline_binding_layout : pipeline_binding_layout_interface {
 	/**
 	*	@brief	Helper method to get underlying variable name
 	*/
-	const std::string& name() const override { return binding->variable->name(); }
+	const lib::string& name() const override { return binding->variable->name(); }
 
 	/**
 	*	@brief	Helper method to get the binding's binding index

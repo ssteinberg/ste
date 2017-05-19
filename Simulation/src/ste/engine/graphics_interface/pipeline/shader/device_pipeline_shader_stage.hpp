@@ -17,10 +17,10 @@
 
 #include <ste_shader_spirv_reflection_output.hpp>
 
-#include <string>
-#include <vector>
+#include <lib/string.hpp>
+#include <lib/vector.hpp>
 #include <istream>
-#include <memory>
+#include <lib/unique_ptr.hpp>
 #include <allow_type_decay.hpp>
 
 namespace ste {
@@ -34,8 +34,8 @@ public:
 	using specializations_changed_signal_t = signal<const device_pipeline_shader_stage*>;
 
 private:
-	std::string name;
-	std::unique_ptr<const ste_shader_object> shader;
+	lib::string name;
+	lib::unique_ptr<const ste_shader_object> shader;
 
 	vk::vk_shader::spec_map specializations;
 
@@ -56,15 +56,15 @@ private:
 		}
 	}
 
-	static ste_shader_spirv_reflection_output verify_spirv_and_read_bindings(const std::string &code);
+	static ste_shader_spirv_reflection_output verify_spirv_and_read_bindings(const lib::string &code);
 
 	static auto load_and_verify_shader_blob(const ste_context &ctx,
-											const std::string &name) {
+											const lib::string &name) {
 		const auto &modules_path = ctx.engine().storage().shader_module_dir_path();
 		auto path = modules_path / name;
 
 		ste_shader_blob_header header;
-		std::string code;
+		lib::string code;
 
 		// Load SPIR-v code
 		{
@@ -73,7 +73,7 @@ private:
 			fs.open(path.string(), std::ios::in | std::ios::binary);
 
 			fs.read(reinterpret_cast<char*>(&header), sizeof(header));
-			code = std::string((std::istreambuf_iterator<char>(fs)), std::istreambuf_iterator<char>());
+			code = lib::string((std::istreambuf_iterator<char>(fs)), std::istreambuf_iterator<char>());
 		}
 
 		// Verify header
@@ -88,16 +88,16 @@ private:
 		ste_shader_program_stage stage = header.type;
 
 		// Output attachments are relevant only for a fragment shader
-		std::vector<ste_shader_stage_attachment> stage_attachments = {};
+		lib::vector<ste_shader_stage_attachment> stage_attachments = {};
 		if (stage == ste_shader_program_stage::fragment_program) {
 			stage_attachments = std::move(parser_attachments);
 		}
 
-		return std::make_unique<const ste_shader_object>(ctx.device(),
-														 code,
-														 stage,
-														 std::move(stage_bindings),
-														 std::move(stage_attachments));
+		return lib::allocate_unique<const ste_shader_object>(ctx.device(),
+															 code,
+															 stage,
+															 std::move(stage_bindings),
+															 std::move(stage_attachments));
 	}
 
 public:
@@ -113,7 +113,7 @@ public:
 	*	@param name		Module name
 	*/
 	device_pipeline_shader_stage(const ste_context &ctx,
-								 const std::string &name)
+								 const lib::string &name)
 		: name(name),
 		shader(load_and_verify_shader_blob(ctx,
 										   name))

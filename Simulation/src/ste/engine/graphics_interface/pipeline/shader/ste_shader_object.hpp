@@ -11,8 +11,8 @@
 #include <ste_shader_stage_binding.hpp>
 #include <ste_shader_stage_attachment.hpp>
 
-#include <vector>
-#include <string>
+#include <lib/vector.hpp>
+#include <lib/string.hpp>
 
 namespace ste {
 namespace gl {
@@ -21,15 +21,15 @@ struct ste_shader_object {
 	const vk::vk_shader shader;
 
 	const ste_shader_program_stage stage;
-	const std::vector<ste_shader_stage_binding> stage_bindings;
-	const std::vector<ste_shader_stage_attachment> stage_attachments;
+	const lib::vector<ste_shader_stage_binding> stage_bindings;
+	const lib::vector<ste_shader_stage_attachment> stage_attachments;
 
 	ste_shader_object() = delete;
 	ste_shader_object(const vk::vk_logical_device &device,
-					  const std::string &shader_code,
+					  const lib::string &shader_code,
 					  const ste_shader_program_stage &stage,
-					  std::vector<ste_shader_stage_binding> &&stage_bindings,
-					  std::vector<ste_shader_stage_attachment> &&stage_attachments = {})
+					  lib::vector<ste_shader_stage_binding> &&stage_bindings,
+					  lib::vector<ste_shader_stage_attachment> &&stage_attachments = {})
 		: shader(device,
 				 shader_code),
 		stage(stage),

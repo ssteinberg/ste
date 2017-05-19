@@ -51,11 +51,11 @@ public:
 		}
 	}
 
-	void update(const std::vector<vk_descriptor_set_write_resource> &writes,
-				const std::vector<vk_descriptor_set_copy_resources> &copies) {
-		std::vector<VkWriteDescriptorSet> writes_descriptors;
-		std::vector<VkDescriptorImageInfo> writes_descriptors_images;
-		std::vector<VkDescriptorBufferInfo> writes_descriptors_buffers;
+	void update(const lib::vector<vk_descriptor_set_write_resource> &writes,
+				const lib::vector<vk_descriptor_set_copy_resources> &copies) {
+		lib::vector<VkWriteDescriptorSet> writes_descriptors;
+		lib::vector<VkDescriptorImageInfo> writes_descriptors_images;
+		lib::vector<VkDescriptorBufferInfo> writes_descriptors_buffers;
 		writes_descriptors.reserve(writes.size());
 
 		std::size_t images_count = 0;
@@ -101,7 +101,7 @@ public:
 			writes_descriptors.push_back(d);
 		}
 
-		std::vector<VkCopyDescriptorSet> copy_descriptors;
+		lib::vector<VkCopyDescriptorSet> copy_descriptors;
 		copy_descriptors.reserve(copies.size());
 		for (auto &c : copies) {
 			VkCopyDescriptorSet d = {};
@@ -124,13 +124,13 @@ public:
 							   static_cast<std::uint32_t>(copy_descriptors.size()),
 							   copy_descriptors.data());
 	}
-	void write(const std::vector<vk_descriptor_set_write_resource> &writes) {
+	void write(const lib::vector<vk_descriptor_set_write_resource> &writes) {
 		update(writes, {});
 	}
 	void write(const vk_descriptor_set_write_resource &write) {
 		update({ write }, {});
 	}
-	void copy(const std::vector<vk_descriptor_set_copy_resources> &copies) {
+	void copy(const lib::vector<vk_descriptor_set_copy_resources> &copies) {
 		update({}, copies);
 	}
 	void copy(const vk_descriptor_set_copy_resources &copy) {

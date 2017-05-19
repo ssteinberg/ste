@@ -23,7 +23,7 @@
 #include <command_recorder.hpp>
 
 #include <optional.hpp>
-#include <memory>
+#include <lib/unique_ptr.hpp>
 
 namespace ste {
 namespace gl {
@@ -76,7 +76,7 @@ private:
 protected:
 	std::reference_wrapper<const ste_context> ctx;
 
-	std::unique_ptr<pipeline_layout> layout;
+	lib::unique_ptr<pipeline_layout> layout;
 	pipeline_resource_binding_queue binding_queue;
 
 	pipeline_binding_set_collection binding_sets;
@@ -145,7 +145,7 @@ protected:
 					pipeline_layout &&layout,
 					optional<std::reference_wrapper<const pipeline_external_binding_set_collection>> external_binding_sets)
 		: ctx(ctx),
-		layout(std::make_unique<pipeline_layout>(std::move(layout))),
+		layout(lib::allocate_unique<pipeline_layout>(std::move(layout))),
 		binding_sets(*this->layout,
 					 ctx.device().binding_set_pool()),
 		external_binding_sets(external_binding_sets ? &external_binding_sets.get().get() : nullptr)
@@ -160,7 +160,7 @@ public:
 	/**
 	 *	@brief	Creates a resource binder for a given variable name
 	 */
-	pipeline_bind_point operator[](const std::string &resource_name) {
+	pipeline_bind_point operator[](const lib::string &resource_name) {
 		const pipeline_binding_layout *bind;
 
 		// Check first if resource_name refers to a push constant path
@@ -168,7 +168,7 @@ public:
 		auto optional_push_constant = (*layout->push_constants_layout)[push_path];
 		if (optional_push_constant) {
 			// Found push constant
-			auto bp = std::make_unique<pipeline_push_constant_bind_point>(layout->push_constants_layout.get(),
+			auto bp = lib::allocate_unique<pipeline_push_constant_bind_point>(layout->push_constants_layout.get(),
 																		  optional_push_constant.get());
 			return pipeline_bind_point(std::move(bp));
 		}
@@ -185,14 +185,14 @@ public:
 
 		// Create the binder
 		if (bind->binding->binding_type == ste_shader_stage_binding_type::spec_constant) {
-			auto bp = std::make_unique<pipeline_specialization_constant_bind_point>(bind->binding->variable.get(),
+			auto bp = lib::allocate_unique<pipeline_specialization_constant_bind_point>(bind->binding->variable.get(),
 																					layout.get(),
 																					resource_name);
 			return pipeline_bind_point(std::move(bp));
 		}
 		if (bind->binding->binding_type == ste_shader_stage_binding_type::storage ||
 			bind->binding->binding_type == ste_shader_stage_binding_type::uniform) {
-			auto bp = std::make_unique<pipeline_resource_bind_point>(&binding_queue,
+			auto bp = lib::allocate_unique<pipeline_resource_bind_point>(&binding_queue,
 																	 layout.get(),
 																	 bind);
 			return pipeline_bind_point(std::move(bp));
