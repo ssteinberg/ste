@@ -40,4 +40,4 @@
 	url = https://github.com/mherb/kalman
 [submodule "manual_packages/rpmalloc"]
 	path = Simulation/third_party/manual_packages/rpmalloc
-	url = https://github.com/rampantpixels/rpmalloc
+	url = https://github.com/ssteinberg/rpmalloc
