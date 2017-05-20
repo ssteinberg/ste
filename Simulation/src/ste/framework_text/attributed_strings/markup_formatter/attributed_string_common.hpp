@@ -15,11 +15,8 @@
 #include <functional>
 
 #include <ostream>
-#include <codecvt>
-#include <locale>
-#include <lib/string.hpp>
-
 #include <initializer_list>
+#include <lib/string.hpp>
 #include <lib/vector.hpp>
 #include <algorithm>
 
@@ -43,14 +40,15 @@ private:
 	attrib_storage text_attribs;
 
 	auto attrib_iterator_for_type(attrib_tag id, const range_type &r) const {
-		for (auto it = text_attribs.begin(); it != text_attribs.end(); ++it) {
+		const auto &end = text_attribs.end();
+		for (auto it = text_attribs.begin(); it != end; ++it) {
 			if (r.start + r.length < it->first.start)
 				break;
 			if (it->second.type() == id && it->first.overlaps(r))
 				return it;
 		}
 
-		return text_attribs.end();
+		return end;
 	}
 
 	void attrib_insert(attrib_storage::value_type &&v) {
@@ -145,9 +143,8 @@ public:
 	explicit operator string_type() const { return plain_string(); }
 
 	template <class Formatter = attributed_string_htm_formatter<CharT>>
-	lib::string markup() const {
-		auto str = Formatter()(*this);
-		return std::wstring_convert<std::codecvt_utf8<CharT>, CharT, lib::allocator<CharT>, lib::allocator<char>>().to_bytes(str);
+	auto markup() const {
+		return Formatter()(*this);
 	}
 
 	char_type &operator[](std::size_t index) { return string[index]; }

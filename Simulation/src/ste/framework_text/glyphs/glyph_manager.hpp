@@ -7,7 +7,7 @@
 #include <ste_context.hpp>
 #include <glyph_factory.hpp>
 #include <font.hpp>
-#include <format.hpp>
+#include <text_glyph_key.hpp>
 
 #include <command_recorder.hpp>
 
@@ -17,14 +17,14 @@
 #include <stable_vector.hpp>
 #include <sampler.hpp>
 #include <std430.hpp>
+#include <format.hpp>
 
 #include <exception>
 
 #include <optional.hpp>
-#include <lib/unique_ptr.hpp>
 #include <lib/string.hpp>
 #include <lib/vector.hpp>
-#include <lib/unordered_map.hpp>
+#include <lib/flat_map.hpp>
 #include <utility>
 #include <lib/concurrent_queue.hpp>
 
@@ -68,14 +68,10 @@ public:
 	};
 
 	using glyph_texture = gl::texture<gl::image_type::image_2d>;
-
-	struct font_storage {
-		using glyphs_t = lib::unordered_map<wchar_t, optional<glyph_descriptor>>;
-		glyphs_t glyphs;
-	};
+	using glyphs_t = lib::flat_map<_internal::glyph_key, optional<glyph_descriptor>>;
 
 	struct loaded_glyphs_queue_item {
-		font_storage::glyphs_t::iterator glyphit;
+		_internal::glyph_key k;
 		glyph_texture texture;
 		glyph_descriptor descriptor;
 
@@ -88,7 +84,7 @@ private:
 	std::reference_wrapper<const ste_context> context;
 	glyph_factory factory;
 
-	lib::unordered_map<font, font_storage> fonts;
+	glyphs_t glyphs;
 
 	lib::vector<buffer_glyph_descriptor> pending_glyphs;
 
@@ -102,7 +98,7 @@ private:
 	/**
 	 *	@brief	Thread-safe glyph loader. Loaded glyph will be inserted into pending queue 'loaded_glyphs_queue'.
 	 */
-	void glyph_loader(const font &font, wchar_t codepoint, font_storage::glyphs_t::iterator &&glyphit) {
+	void glyph_loader(const font &font, wchar_t codepoint) {
 		// Cache key
 		lib::string cache_key = lib::string("ttfdf") + lib::to_string(font.get_path().string()) + lib::to_string(static_cast<std::uint32_t>(codepoint));
 
@@ -146,7 +142,7 @@ private:
 		glyph_descriptor gd;
 		gd.metrics = og.get().metrics;
 
-		loaded_glyphs_queue_item item = { std::move(glyphit), std::move(texture), std::move(gd) };
+		loaded_glyphs_queue_item item = { _internal::glyph_key(font, codepoint), std::move(texture), std::move(gd) };
 
 		loaded_glyphs_queue.push(std::move(item));
 	}
@@ -166,7 +162,8 @@ private:
 			buffer_glyph_descriptor bgd(gd.metrics, index);
 
 			pending_glyphs.push_back(bgd);
-			ptr->glyphit->second = std::move(gd);
+
+			glyphs.find(ptr->k)->second = std::move(gd);
 		}
 	}
 
@@ -189,20 +186,17 @@ public:
 		if (!loaded_glyphs_queue.is_empty_hint())
 			empty_loaded_descriptors_queue();
 
-		// Find , or create if none, glyph storage for requested font
-		auto it = this->fonts.find(font);
-		if (it == this->fonts.end())
-			it = this->fonts.emplace_hint(it, std::make_pair(font, font_storage()));
+		auto k = _internal::glyph_key(font, codepoint);
 
 		// Find glyph in storage
 		// If not found, enqueue glyph creation and return none.
-		auto glyphit = it->second.glyphs.lower_bound(codepoint);
-		if (glyphit == it->second.glyphs.end() || glyphit->first != codepoint) {
+		auto glyphit = glyphs.lower_bound(k);
+		if (glyphit == glyphs.end() || glyphit->first != k) {
 			// Mark glyph as loading
-			glyphit = it->second.glyphs.emplace_hint(glyphit, std::make_pair(codepoint, none));
+			glyphit = glyphs.emplace_hint(glyphit, std::make_pair(k, none));
 
-			context.get().engine().task_scheduler().schedule_now([=, glyphit = std::move(glyphit)]() mutable {
-				glyph_loader(font, codepoint, std::move(glyphit));
+			context.get().engine().task_scheduler().schedule_now([=]() mutable {
+				glyph_loader(font, codepoint);
 			});
 
 			return none;
@@ -247,25 +241,23 @@ public:
 	*	@brief	Used to preload glyphs. Enqueues load tasks for all provided codepoints and returns a future to the task.
 	*/
 	auto enqueue_glyphs_load(const font &font, lib::vector<wchar_t> codepoints) {
-		auto it = this->fonts.find(font);
-		if (it == this->fonts.end())
-			it = this->fonts.emplace_hint(it, std::make_pair(font, font_storage()));
-
-		lib::vector<std::pair<wchar_t, font_storage::glyphs_t::iterator>> glyphs_to_load;
+		lib::vector<wchar_t> glyphs_to_load;
 		glyphs_to_load.reserve(codepoints.size());
 		for (wchar_t codepoint : codepoints) {
-			auto glyphit = it->second.glyphs.find(codepoint);
-			if (glyphit == it->second.glyphs.end())
-				glyphit = it->second.glyphs.emplace_hint(glyphit);
+			auto k = _internal::glyph_key(font, codepoint);
+
+			auto glyphit = glyphs.lower_bound(k);
+			if (glyphit == glyphs.end() || glyphit->first != k)
+				glyphs.emplace_hint(glyphit, std::make_pair(k, none));
 			else if (glyphit->second)
 				continue;
 
-			glyphs_to_load.emplace_back(codepoint, std::move(glyphit));
+			glyphs_to_load.emplace_back(codepoint);
 		}
 
 		return context.get().engine().task_scheduler().schedule_now([=, glyphs_to_load = std::move(glyphs_to_load)]() mutable {
 			for (auto &p : glyphs_to_load) {
-				this->glyph_loader(font, p.first, std::move(p.second));
+				this->glyph_loader(font, p);
 			}
 		});
 	}

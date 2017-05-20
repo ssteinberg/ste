@@ -23,7 +23,7 @@ public:
 
 private:
 	static constexpr bool pads_to_alignment = true;
-	static constexpr std::size_t block_size = sizeof(value_type) + (pads_to_alignment ? alignment - (sizeof(value_type) % alignment) : 0u);
+	static constexpr std::size_t block_size = sizeof(value_type) + (pads_to_alignment ? alignment - (sizeof(value_type) % alignment) % alignment : 0u);
 
 	template <typename... Ts>
 	static void make(void *p,

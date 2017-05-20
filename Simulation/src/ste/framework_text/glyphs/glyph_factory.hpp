@@ -27,7 +27,7 @@ public:
 
 	glyph create_glyph(const font &font, wchar_t codepoint) const;
 
-	int read_kerning(const font &font, const std::pair<wchar_t, wchar_t> &p, int pixel_size);
+	std::uint32_t read_kerning(const font &font, const std::pair<wchar_t, wchar_t> &p, std::uint32_t pixel_size);
 };
 
 }
