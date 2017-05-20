@@ -54,6 +54,7 @@ public:
 		allocator.deallocate(reinterpret_cast<std::uint8_t*>(ptr), block_size);
 	}
 
+	// TODO: Respect allocator's propagate_on_container_move_assignment
 	aligned_padded_ptr(aligned_padded_ptr&&) = default;
 	aligned_padded_ptr &operator=(aligned_padded_ptr&&) = default;
 

@@ -26,6 +26,8 @@ public:
 	using difference_type = typename allocator_type::difference_type;
 	using size_type = typename allocator_type::size_type;
 
+	static_assert(allocator_type::propagate_on_container_move_assignment::value, "Allocator must specify propagate_on_container_move_assignment as std::true_type to qualify for static_vector.");
+
 private:
 	template <typename value_type, typename reference, typename pointer>
 	class iterator_impl {

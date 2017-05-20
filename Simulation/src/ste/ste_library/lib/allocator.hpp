@@ -40,7 +40,10 @@ struct allocator_static_storage {
 
 }
 
-template <typename T, std::size_t Align = alignof(std::max_align_t)>
+template <
+	typename T, 
+	std::size_t Align = alignof(std::max_align_t)
+>
 class allocator {
 public:
 	using value_type = T;

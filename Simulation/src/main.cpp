@@ -356,10 +356,9 @@ int main()
 	//	stage.get();
 
 
-
-		/*
-		 *	Main loop
-		 */
+	/*
+		*	Main loop
+		*/
 	float f = .0f;
 	auto last_tick_time = std::chrono::high_resolution_clock::now();
 	for (;;) {
