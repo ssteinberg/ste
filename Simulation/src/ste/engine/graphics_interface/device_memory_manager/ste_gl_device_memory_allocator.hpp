@@ -15,7 +15,7 @@
 #include <array>
 #include <lib/unordered_map.hpp>
 #include <lib/unordered_set.hpp>
-#include <aligned_ptr.hpp>
+#include <lib/aligned_padded_ptr.hpp>
 
 namespace ste {
 namespace gl {
@@ -29,7 +29,7 @@ private:
 	struct heap_t {
 		chunks_t chunks;
 		chunks_t private_chunks;
-		aligned_ptr<std::mutex> m;
+		lib::aligned_padded_ptr<std::mutex> m;
 	};
 
 	static constexpr memory_type_t memory_types = 32;

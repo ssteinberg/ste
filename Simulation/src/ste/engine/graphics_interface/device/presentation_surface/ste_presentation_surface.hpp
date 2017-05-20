@@ -27,7 +27,7 @@
 #include <chrono>
 #include <limits>
 #include <mutex>
-#include <aligned_ptr.hpp>
+#include <lib/aligned_padded_ptr.hpp>
 
 namespace ste {
 namespace gl {
@@ -64,7 +64,7 @@ private:
 	lib::unique_ptr<vk::vk_swapchain> swap_chain{ nullptr };
 	lib::vector<swap_chain_image_t> swap_chain_images;
 
-	aligned_ptr<shared_data_t> shared_data;
+	lib::aligned_padded_ptr<shared_data_t> shared_data;
 
 	ste_window_signals::window_resize_signal_type::connection_type resize_signal_connection;
 

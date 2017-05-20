@@ -11,7 +11,7 @@
 #include <condition_variable>
 #include <lib/unique_ptr.hpp>
 #include <chrono>
-#include <aligned_ptr.hpp>
+#include <lib/aligned_padded_ptr.hpp>
 
 #include <lib/list.hpp>
 #include <lib/concurrent_queue.hpp>
@@ -43,7 +43,7 @@ private:
 
 private:
 	mutable std::mutex m;
-	aligned_ptr<shared_data_t> shared_data;
+	lib::aligned_padded_ptr<shared_data_t> shared_data;
 	lib::unique_ptr<interruptible_thread> thread;
 
 	lib::list<std::pair<Instance, std::chrono::high_resolution_clock::time_point>> deletion_list;

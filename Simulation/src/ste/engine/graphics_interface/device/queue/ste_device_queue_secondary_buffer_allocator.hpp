@@ -1,5 +1,5 @@
 //	StE
-// © Shlomi Steinberg 2015-2017
+// ï¿½ Shlomi Steinberg 2015-2017
 
 #pragma once
 
@@ -7,7 +7,7 @@
 #include <ste_device_queue_secondary_command_buffer.hpp>
 
 #include <mutex>
-#include <aligned_ptr.hpp>
+#include <lib/aligned_padded_ptr.hpp>
 
 namespace ste {
 namespace gl {
@@ -22,7 +22,7 @@ public:
 private:
 	Pool pool;
 
-	mutable aligned_ptr<std::mutex> m;
+	mutable lib::aligned_padded_ptr<std::mutex> m;
 
 private:
 	void dealloc(buffer_t &&buffer) const {

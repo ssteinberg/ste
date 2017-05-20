@@ -548,6 +548,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
     <ClInclude Include="Simulation\src\ste\framework_text\attributed_strings\attrib_type.hpp" />
+    <ClInclude Include="Simulation\src\ste\ste_library\lib\aligned_padded_ptr.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_library\lib\allocator.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\command_buffer\command\cmd_push_constants.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\command_buffer\command\cmd_set_scissor.hpp" />
@@ -1154,7 +1155,7 @@
     <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\range\range_list.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\string\split.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\type\create_type.hpp" />
-    <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\container\aligned_ptr.hpp" />
+    <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\container\aligned_padded_ptr.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\type\allow_type_decay.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\type_traits\safe_numerical_limits.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\ultimate.hpp" />

@@ -19,7 +19,7 @@
 #include <mutex>
 #include <future>
 #include <condition_variable>
-#include <aligned_ptr.hpp>
+#include <lib/aligned_padded_ptr.hpp>
 
 #include <lib/vector.hpp>
 #include <bitset>
@@ -49,7 +49,7 @@ public:
 	static bool is_thread_pool_worker_thread() { return balanced_thread_pool_worker_thread_flag; }
 
 private:
-	aligned_ptr<shared_data_t> shared_data;
+	lib::aligned_padded_ptr<shared_data_t> shared_data;
 	lib::vector<interruptible_thread> workers;
 	lib::vector<interruptible_thread> despawned_workers;
 

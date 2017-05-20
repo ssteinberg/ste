@@ -27,7 +27,7 @@ public:
 
 	template<class U>
 	struct rebind {
-		using other = aligned_allocator<U>;
+		using other = aligned_allocator<U, Align>;
 	};
 
 	aligned_allocator() = default;

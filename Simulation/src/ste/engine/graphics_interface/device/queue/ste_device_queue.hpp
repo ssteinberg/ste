@@ -27,7 +27,7 @@
 #include <lib/vector.hpp>
 #include <lib/list.hpp>
 #include <atomic>
-#include <aligned_ptr.hpp>
+#include <lib/aligned_padded_ptr.hpp>
 
 #include <lib/concurrent_queue.hpp>
 #include <interruptible_thread.hpp>
@@ -70,7 +70,7 @@ private:
 
 	lib::list<lib::unique_ptr<_detail::ste_device_queue_batch_base>> submitted_batches;
 
-	aligned_ptr<shared_data_t> shared_data;
+	lib::aligned_padded_ptr<shared_data_t> shared_data;
 	ste_resource_pool<ste_device_queue_command_pool> pool;
 	lib::unique_ptr<interruptible_thread> thread;
 

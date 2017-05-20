@@ -26,8 +26,8 @@
 
 #include <lib/unique_ptr.hpp>
 #include <lib/vector.hpp>
-#include <static_vector.hpp>
-#include <aligned_ptr.hpp>
+#include <lib/static_vector.hpp>
+#include <lib/aligned_padded_ptr.hpp>
 #include <allow_type_decay.hpp>
 
 namespace ste {
@@ -41,7 +41,7 @@ public:
 
 private:
 	using queue_t = ste_device_queue;
-	using queues_t = static_vector<queue_t>;
+	using queues_t = lib::static_vector<queue_t>;
 
 private:
 	/*
@@ -56,7 +56,7 @@ private:
 	 */
 
 	// Synchronization primitive pools
-	aligned_ptr<ste_device_sync_primitives_pools> sync_primitives_pools;
+	lib::aligned_padded_ptr<ste_device_sync_primitives_pools> sync_primitives_pools;
 	// Presentation surface
 	const lib::unique_ptr<ste_presentation_surface> presentation_surface{ nullptr };
 

@@ -1601,9 +1601,6 @@
     <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\concurrency\shared_double_reference_guard.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\container\aligned_ptr.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\container\static_vector.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1815,6 +1812,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\container\packed_ptr.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\container\aligned_padded_ptr.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\ste_library\lib\aligned_padded_ptr.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

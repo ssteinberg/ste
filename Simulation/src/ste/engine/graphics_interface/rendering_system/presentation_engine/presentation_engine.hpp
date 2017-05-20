@@ -21,7 +21,7 @@
 #include <mutex>
 #include <atomic>
 #include <lib/unique_ptr.hpp>
-#include <aligned_ptr.hpp>
+#include <lib/aligned_padded_ptr.hpp>
 #include <optional.hpp>
 #include <chrono>
 
@@ -51,7 +51,7 @@ private:
 	std::uint32_t max_frame_lag;
 
 	// Data shared between presentation threads
-	aligned_ptr<shared_data_t> shared_data;
+	lib::aligned_padded_ptr<shared_data_t> shared_data;
 	// Presentation synchronization primitives
 	lib::vector<image_presentation_sync_t> presentation_sync_primitives;
 

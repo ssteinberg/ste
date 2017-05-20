@@ -12,8 +12,6 @@
 #include <unique_device_ptr.hpp>
 
 #include <lib/vector.hpp>
-#include <mutex>
-#include <aligned_ptr.hpp>
 
 namespace ste {
 namespace gl {

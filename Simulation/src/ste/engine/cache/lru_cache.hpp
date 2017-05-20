@@ -19,7 +19,7 @@
 #include <atomic>
 #include <mutex>
 
-#include <aligned_ptr.hpp>
+#include <lib/aligned_padded_ptr.hpp>
 
 namespace ste {
 
@@ -57,7 +57,7 @@ private:
 private:
 	const std::experimental::filesystem::path path;
 	const std::uint64_t quota;
-	aligned_ptr<shared_data_t> shared_data;
+	lib::aligned_padded_ptr<shared_data_t> shared_data;
 
 	index_type index;
 

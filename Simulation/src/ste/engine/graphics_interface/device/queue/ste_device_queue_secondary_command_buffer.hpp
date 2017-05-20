@@ -5,9 +5,6 @@
 
 #include <stdafx.hpp>
 
-#include <mutex>
-#include <aligned_ptr.hpp>
-
 #include <allow_type_decay.hpp>
 
 namespace ste {
