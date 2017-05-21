@@ -204,27 +204,6 @@ private:
 	void create_worker();
 	void prune_submitted_batches();
 
-	template <typename R, typename L>
-	static auto execute_in_place(L &&task,
-								 typename std::enable_if<std::is_void<R>::value>::type* = nullptr) {
-		std::promise<R> promise;
-		auto future = promise.get_future();
-
-		task();
-		promise.set_value();
-
-		return future;
-	}
-	template <typename R, typename L>
-	static auto execute_in_place(L &&task,
-								 typename std::enable_if<!std::is_void<R>::value>::type* = nullptr) {
-		std::promise<R> promise;
-		auto future = promise.get_future();
-		promise.set_value(task());
-
-		return future;
-	}
-
 	bool is_thread_this_queue_thread() const { return thread_queue_index() == queue_index; }
 
 public:
@@ -313,11 +292,6 @@ public:
 
 		static_assert(function_traits<L>::arity == 0,
 					  "task must take no arguments");
-
-		if (is_thread_this_queue_thread()) {
-			// Execute in place
-			return execute_in_place<R>(std::move(task));
-		}
 
 		// Enqueue
 		enqueue_task_t<R> f(std::forward<L>(task));

@@ -172,13 +172,6 @@ public:
 	template <typename R>
 	std::future<R> enqueue(unique_thread_pool_task<R> &&f) {
 		auto future = f.get_future();
-
-		if (balanced_thread_pool::is_thread_pool_worker_thread()) {
-			// Execute in place
-			f();
-			return future;
-		}
-
 		task_queue.push(std::move(f));
 
 		notify_workers_on_enqueue();

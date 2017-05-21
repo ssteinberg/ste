@@ -74,19 +74,22 @@ private:
 	static_assert(sizeof(hash_type) == sizeof(concurrent_map_bucket_data*), "Sanity check error");
 	static_assert((cache_line % bucket_size) == 0, "cache_line is indivisible by bucket size.");
 
-	static constexpr int N = cache_line / bucket_size - 1;
+	static constexpr int N = 2 * cache_line / bucket_size - 1;
 
 	static_assert(N > 2, "cache_line can't hold enough buckets");
 
 	static constexpr int depth_threshold = 1;
 	static constexpr float min_load_factor_for_resize = .5f;
 
+	// Arrange all the hashes together with the next pointer in a single cache line, and place the buckets in the next line. This allows us to search a whole 
+	// virtual bucket (7 elements on x86-64, 15 on x86) as well as access the next pointer without cache misses.
 	struct concurrent_map_virtual_bucket {
 		std::array<std::atomic<hash_type>, N> hash;
+		std::atomic<concurrent_map_virtual_bucket*> next{ nullptr };
+
 		std::array<std::atomic<concurrent_map_bucket_data*>, N> buckets;
 
-		std::atomic<concurrent_map_virtual_bucket*> next{ 0 };
-		void *_unused;
+		void *__unused;
 
 		concurrent_map_virtual_bucket() {
 			std::fill(std::begin(hash), std::end(hash), 0);
