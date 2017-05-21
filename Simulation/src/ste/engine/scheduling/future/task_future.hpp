@@ -4,15 +4,13 @@
 #pragma once
 
 #include <stdafx.hpp>
+#include <functor.hpp>
 
 #include <function_traits.hpp>
 #include <thread_constants.hpp>
-
 #include <future_collection.hpp>
 
-#include <functional>
-#include <lib/unique_ptr.hpp>
-#include <atomic>
+#include <lib/shared_ptr.hpp>
 
 #include <future>
 #include <mutex>
@@ -40,7 +38,7 @@ class task_future_impl {
 	friend class task_future_impl;
 
 public:
-	using future_type 			= typename std::conditional<is_shared, std::shared_future<R>, std::future<R>>::type;
+	using future_type 		= typename std::conditional<is_shared, std::shared_future<R>, std::future<R>>::type;
 
 	using mutex_type		= std::shared_timed_mutex;
 	using read_lock_type 	= std::shared_lock<mutex_type>;
@@ -61,17 +59,24 @@ private:
 	mutable mutex_type mutex;
 
 	task_scheduler *sched;
+	lib::shared_ptr<functor<>> task;
 	future_type future;
 
 private:
 	// Helper get/wait methods. Try to lock read mutex and get or wait for future using specified timeouts.
 	template <typename Future>
 	auto future_get(Future &f) {
+		if (task != nullptr)
+			(*task)();
+
 		write_lock_type rl(mutex);
 		return f.get();
 	}
 	template <typename Future>
 	auto future_wait(const Future &f) const {
+		if (task != nullptr)
+			(*task)();
+
 		read_lock_type rl(mutex);
 		return f.wait();
 	}
@@ -99,22 +104,26 @@ private:
 	}
 
 private:
-	task_future_impl(typename task_future_impl<R, false>::future_type &&f, task_scheduler *sched) : sched(sched), future(std::move(f)) {}
-	task_future_impl(typename task_future_impl<R, true >::future_type &&f, task_scheduler *sched) : sched(sched), future(std::move(f)) {}
+	task_future_impl(typename task_future_impl<R, false>::future_type &&f, task_scheduler *sched, lib::shared_ptr<functor<>> &&task) : sched(sched), task(std::move(task)), future(std::move(f)) {}
+	task_future_impl(typename task_future_impl<R, true >::future_type &&f, task_scheduler *sched, lib::shared_ptr<functor<>> &&task) : sched(sched), task(std::move(task)), future(std::move(f)) {}
 
 	task_future_impl(future_lock_guard<write_lock_type> &&l,
-					 task_future_impl &&other) : sched(other.sched), future(std::move(other.future)) {}
+					 task_future_impl &&other) : sched(other.sched), task(std::move(other.task)), future(std::move(other.future)) {}
 
 	template <bool b = is_shared>
 	task_future_impl(const typename task_future_impl<R, true>::future_type &f,
-					 task_scheduler *sched,
-					 std::enable_if_t<b>* = nullptr) : sched(sched), future(f) {}
+					 task_scheduler *sched, 
+					 const lib::shared_ptr<functor<>> &task,
+					 std::enable_if_t<b>* = nullptr) : sched(sched), task(task), future(f) {}
 
 	template <bool b = is_shared>
 	task_future_impl(future_lock_guard<read_lock_type> &&l,
 					 const task_future_impl &other,
-					 std::enable_if_t<b>* = nullptr) : sched(other.sched),
-													   future(other.future) {}
+					 std::enable_if_t<b>* = nullptr)
+		: sched(other.sched),
+		task(other.task),
+		future(other.future) 
+	{}
 
 public:
 	task_future_impl() = default;
@@ -152,6 +161,7 @@ public:
 		std::lock(l0, l1);
 
 		sched = other.sched;
+		task = std::move(other.task);
 		future = std::move(other.future);
 
 		return *this;

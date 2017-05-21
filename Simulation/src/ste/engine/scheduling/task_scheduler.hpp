@@ -5,7 +5,6 @@
 
 #include <chrono>
 #include <future>
-#include <lib/list.hpp>
 
 #include <type_traits>
 
@@ -16,6 +15,10 @@
 #include <lib/concurrent_queue.hpp>
 #include <function_traits.hpp>
 
+#include <lib/list.hpp>
+#include <lib/unique_ptr.hpp>
+#include <lib/shared_ptr.hpp>
+
 namespace ste {
 
 /**
@@ -25,11 +28,10 @@ namespace ste {
 class task_scheduler {
 private:
 	using pool_t = balanced_thread_pool;
-	using task_t = pool_t::task_t;
 
 	struct delayed_task {
 		std::chrono::high_resolution_clock::time_point run_at;
-		task_t f;
+		lib::unique_ptr<functor<>> f;
 	};
 
 private:
@@ -64,11 +66,12 @@ public:
 	*/
 	template <bool shared, typename F>
 	task_future_impl<typename function_traits<F>::result_t, shared> schedule_now(F &&f) {
-		unique_thread_pool_task<typename function_traits<F>::result_t> task(std::forward<F>(f));
-
-		auto future = pool.enqueue(std::move(task));
+		using R = typename function_traits<F>::result_t;
+		auto task = lib::allocate_shared<thread_pool_task<R>>(std::forward<F>(f));
 		
-		return { std::move(future), this };
+		auto future = pool.enqueue(task);
+		
+		return { std::move(future), this, lib::shared_ptr<functor<>>(std::move(task)) };
 	}
 
 	/**
@@ -81,11 +84,12 @@ public:
 	template <bool shared, typename F>
 	task_future_impl<typename function_traits<F>::result_t, shared> schedule_at(const std::chrono::high_resolution_clock::time_point &at,
 												   				   				F &&f) {
-		unique_thread_pool_task<typename function_traits<F>::result_t> task(std::forward<F>(f));
-		auto future = task.get_future();
+		using R = typename function_traits<F>::result_t;
+		auto task = lib::allocate_shared<thread_pool_task<R>>(std::forward<F>(f));
+		auto future = task->get_future();
 
 		delayed_tasks_queue.push({ at, std::move(task) });
-		return { std::move(future), this };
+		return { std::move(future), this, nullptr };
 	}
 
 	/**
@@ -98,11 +102,12 @@ public:
 	template <bool shared, typename F, class Rep, class Period>
 	task_future_impl<typename function_traits<F>::result_t, shared> schedule_after(const std::chrono::duration<Rep, Period> &after,
 																	  			   F &&f) {
-		unique_thread_pool_task<typename function_traits<F>::result_t> task(std::forward<F>(f));
-		auto future = task.get_future();
+		using R = typename function_traits<F>::result_t;
+		auto task = lib::allocate_shared<thread_pool_task<R>>(std::forward<F>(f));
+		auto future = task->get_future();
 
 		delayed_tasks_queue.push({ std::chrono::high_resolution_clock::now() + after, std::move(task) });
-		return { std::move(future), this };
+		return { std::move(future), this, nullptr };
 	}
 
 	/**

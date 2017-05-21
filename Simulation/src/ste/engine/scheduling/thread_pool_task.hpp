@@ -10,6 +10,7 @@
 #include <function_wrapper.hpp>
 #include <function_traits.hpp>
 #include <type_traits>
+#include <functor.hpp>
 
 namespace ste {
 
@@ -91,9 +92,50 @@ public:
 	unique_thread_pool_task(unique_thread_pool_task &&) = default;
 	unique_thread_pool_task &operator=(unique_thread_pool_task &&) = default;
 
-	virtual ~unique_thread_pool_task() {}
+	virtual ~unique_thread_pool_task() noexcept {}
 
 	auto get_future() { return std::move(future); }
+};
+
+template <typename R>
+class thread_pool_task : public functor<> {
+private:
+	unique_function_wrapper<> task;
+	std::future<R> future;
+
+	std::atomic<std::uint8_t> executed{ 0 };
+
+public:
+	template <typename F>
+	thread_pool_task(F &&f) {
+		static_assert(std::is_callable_v<F()>, "F not a valid functor of arity 0");
+		static_assert(std::is_void_v<R> || std::is_constructible_v<R, std::result_of_t<F()>>, "Result of F is not convetible to R");
+
+		std::promise<R> promise;
+		future = promise.get_future();
+
+		task = unique_function_wrapper<>([f = std::forward<F>(f), promise = std::move(promise)]() mutable {
+			try {
+				_detail::thread_pool_task_exec_impl<R>()(f, promise);
+			}
+			catch (...) {
+				promise.set_exception(std::current_exception());
+			}
+		});
+	}
+
+	~thread_pool_task() noexcept {}
+
+	auto get_future() { return std::move(future); }
+
+	void operator()() override final {
+		// Only the first one here executes the task
+		std::uint8_t expected = 0;
+		if (!executed.compare_exchange_strong(expected, 0xFF, std::memory_order_acq_rel, std::memory_order_relaxed))
+			return;
+
+		task();
+	}
 };
 
 }

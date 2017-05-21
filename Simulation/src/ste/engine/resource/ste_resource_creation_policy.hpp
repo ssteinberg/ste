@@ -18,6 +18,9 @@ struct ste_resource_dont_defer {};
 struct ste_resource_create_with_lambda {};
 
 struct ste_resource_async_policy_std_async {
+	template <typename T>
+	using future = std::future<T>;
+
 	template <typename L>
 	static auto async(const ste_context &ctx, L&& lambda) {
 		return std::async(std::forward<L>(lambda));
@@ -25,9 +28,12 @@ struct ste_resource_async_policy_std_async {
 };
 
 struct ste_resource_async_policy_task_scheduler {
+	template <typename T>
+	using future = task_future<T>;
+
 	template <typename L>
 	static auto async(const ste_context &ctx, L&& lambda) {
-		return ctx.engine().task_scheduler().schedule_now(std::forward<L>(lambda)).get_future();
+		return ctx.engine().task_scheduler().schedule_now(std::forward<L>(lambda));
 	}
 };
 
@@ -43,15 +49,21 @@ struct ste_resource_deferred_creation_policy_async {
 	class policy {
 	private:
 		std::mutex m;
-		optional<std::future<T>> future;
+		optional<typename async_policy::template future<T>> future;
 
 	public:
 		policy() = default;
 		template <typename L>
 		policy(const ste_context &ctx, L&& lambda) : future(async_policy::async(ctx, std::forward<L>(lambda))) {}
 
-		policy(policy&&) = default;
-		policy &operator=(policy&&) = default;
+		policy(policy &&o) noexcept {
+			std::unique_lock<std::mutex> l(o.m);
+			future = std::move(o.future);
+		}
+		policy &operator=(policy &&o) noexcept {
+			future = std::move(o.future);
+			return *this;
+		}
 
 		void consume(T &t) {
 			std::unique_lock<std::mutex> l(m);
@@ -80,8 +92,14 @@ struct ste_resource_deferred_creation_policy_lazy {
 		template <typename L>
 		policy(const ste_context &, L&& lambda) : lambda(std::forward<L>(lambda)) {}
 
-		policy(policy&&) = default;
-		policy &operator=(policy&&) = default;
+		policy(policy &&o) noexcept {
+			std::unique_lock<std::mutex> l(o.m);
+			lambda = std::move(o.lambda);
+		}
+		policy &operator=(policy &&o) noexcept {
+			lambda = std::move(o.lambda);
+			return *this;
+		}
 
 		void consume(T &t) {
 			std::unique_lock<std::mutex> l(m);

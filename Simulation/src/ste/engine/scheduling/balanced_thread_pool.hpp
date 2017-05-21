@@ -1,13 +1,14 @@
 // StE
-// © Shlomi Steinberg, 2015-2016
+// © Shlomi Steinberg, 2015-2017
 
 #pragma once
 
 #include <stdafx.hpp>
+#include <functor.hpp>
+#include <thread_pool_task.hpp>
 
 #include <lib/concurrent_queue.hpp>
 #include <interruptible_thread.hpp>
-#include <thread_pool_task.hpp>
 
 #include <thread_constants.hpp>
 #include <thread_priority.hpp>
@@ -22,6 +23,7 @@
 #include <lib/aligned_padded_ptr.hpp>
 
 #include <lib/vector.hpp>
+#include <lib/shared_ptr.hpp>
 #include <bitset>
 
 #include <chrono>
@@ -30,7 +32,7 @@ namespace ste {
 
 class balanced_thread_pool {
 public:
-	using task_t = unique_thread_pool_type_erased_task<>;
+	using task_t = lib::shared_ptr<functor<>>;
 	using task_queue_t = lib::concurrent_queue<task_t>;
 
 private:
@@ -133,7 +135,7 @@ private:
 
 	void run_task(task_t &&task) {
 		shared_data->requests_pending.fetch_add(-1, std::memory_order_release);
-		task();
+		(*task)();
 	}
 
 	unsigned min_worker_threads() const {
@@ -170,15 +172,19 @@ public:
 	balanced_thread_pool &operator=(const balanced_thread_pool &) = delete;
 
 	template <typename R>
-	std::future<R> enqueue(unique_thread_pool_task<R> &&f) {
-		auto future = f.get_future();
+	std::future<R> enqueue(const lib::shared_ptr<thread_pool_task<R>> &f) {
+		auto future = f->get_future();
 
-		if (balanced_thread_pool::is_thread_pool_worker_thread()) {
-			// Execute in place
-			f();
-			return future;
-		}
+		auto copy = f;
+		task_queue.push(copy);
 
+		notify_workers_on_enqueue();
+
+		return future;
+	}
+	template <typename R>
+	std::future<R> enqueue(lib::shared_ptr<thread_pool_task<R>> &&f) {
+		auto future = f->get_future();
 		task_queue.push(std::move(f));
 
 		notify_workers_on_enqueue();

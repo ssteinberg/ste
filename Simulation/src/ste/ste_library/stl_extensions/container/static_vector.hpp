@@ -68,16 +68,16 @@ private:
 			return !(*this == o);
 		}
 		bool operator<(const iterator_impl&o) const {
-			return v == o.v && idx < o.idx;
+			return idx < o.idx;
 		}
 		bool operator>(const iterator_impl&o) const {
-			return v == o.v && idx > o.idx;
+			return idx > o.idx;
 		}
 		bool operator<=(const iterator_impl&o) const {
-			return v == o.v && idx <= o.idx;
+			return idx <= o.idx;
 		}
 		bool operator>=(const iterator_impl&o) const {
-			return v == o.v && idx >= o.idx;
+			return idx >= o.idx;
 		}
 
 		iterator_impl& operator++() {

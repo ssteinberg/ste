@@ -87,7 +87,7 @@ public:
 	template<class U = T, typename = std::enable_if_t<std::is_move_assignable<U>::value>>
 	ste_resource_base_deferred &operator=(ste_resource_base_deferred &&o) noexcept {
 		res = std::move(o.res);
-		wait_func_ptr = o.wait_func_ptr;
+		wait_func_ptr = o.wait_func_ptr.load();
 		policy = std::move(o.policy);
 		return *this;
 	}
