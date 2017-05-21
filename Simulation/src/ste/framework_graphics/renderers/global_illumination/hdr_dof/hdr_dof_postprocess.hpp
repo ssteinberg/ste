@@ -46,13 +46,13 @@ private:
 	gl::pipeline_stage input_stage_flags;
 	gl::image_layout input_image_layout;
 
-	gl::texture<gl::image_type::image_2d> hdr_final_image;
-	gl::texture<gl::image_type::image_2d> hdr_image;
-	gl::texture<gl::image_type::image_2d> hdr_bloom_image;
-	gl::texture<gl::image_type::image_2d> hdr_bloom_blurx_image;
-	gl::texture<gl::image_type::image_2d> hdr_lums;
+	ste_resource<gl::texture<gl::image_type::image_2d>> hdr_final_image;
+	ste_resource<gl::texture<gl::image_type::image_2d>> hdr_image;
+	ste_resource<gl::texture<gl::image_type::image_2d>> hdr_bloom_image;
+	ste_resource<gl::texture<gl::image_type::image_2d>> hdr_bloom_blurx_image;
+	ste_resource<gl::texture<gl::image_type::image_2d>> hdr_lums;
 
-	gl::texture<gl::image_type::image_1d, 2> hdr_vision_properties_texture;
+	ste_resource<gl::texture<gl::image_type::image_1d, 2>> hdr_vision_properties_texture;
 
 	gl::array<hdr_bokeh_parameters> hdr_bokeh_param_buffer;
 //	gl::array<hdr_bokeh_parameters> hdr_bokeh_param_buffer_prev;
@@ -72,7 +72,7 @@ private:
 	gl::framebuffer fbo_hdr_bloom_blurx_image;
 
 private:
-	static gl::texture<gl::image_type::image_1d, 2> create_hdr_vision_properties_texture(const ste_context &ctx);
+	static ste_resource<gl::texture<gl::image_type::image_1d, 2>> create_hdr_vision_properties_texture(const ste_context &ctx);
 
 	void bind_fragment_resources();
 
@@ -92,7 +92,7 @@ public:
 		this->input_stage_flags = input_stage_flags;
 		this->input_image_layout = input_image_layout;
 
-		return hdr_final_image;
+		return hdr_final_image.get();
 	}
 	static auto input_image_format() { return gl::format::r16g16b16a16_sfloat; }
 

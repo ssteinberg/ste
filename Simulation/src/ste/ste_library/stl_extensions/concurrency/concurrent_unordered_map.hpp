@@ -91,6 +91,11 @@ private:
 
 		void *__unused;
 
+		static_assert(N * sizeof(hash_type) == sizeof(decltype(hash)));
+		static_assert(N * sizeof(concurrent_map_bucket_data*) == sizeof(decltype(buckets)));
+		static_assert(sizeof(decltype(buckets)) == sizeof(decltype(hash)));
+		static_assert(sizeof(decltype(next)) == sizeof(decltype(__unused)));
+
 		concurrent_map_virtual_bucket() {
 			std::fill(std::begin(hash), std::end(hash), 0);
 			std::fill(std::begin(buckets), std::end(buckets), nullptr);
@@ -113,7 +118,7 @@ private:
 		}
 	};
 
-	static_assert(cache_line == sizeof(concurrent_map_virtual_bucket), "Nonsensical padding on concurrent_map_virtual_bucket");
+	static_assert(2 * cache_line == sizeof(concurrent_map_virtual_bucket), "Nonsensical padding on concurrent_map_virtual_bucket");
 
 	using virtual_bucket_type = concurrent_map_virtual_bucket;
 	using hash_table_type = virtual_bucket_type*;

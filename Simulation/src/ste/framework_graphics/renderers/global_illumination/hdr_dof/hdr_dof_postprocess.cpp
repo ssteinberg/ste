@@ -25,12 +25,12 @@ auto hdr_create_texture(const ste_context &ctx,
 																		 usage,
 																		 layout,
 																		 ctx.device().get_surface().extent() / res_divider);
-	return gl::texture<gl::image_type::image_2d>(std::move(image).get());
+	return ste_resource<gl::texture<gl::image_type::image_2d>>(ctx, std::move(image));
 }
 
 }
 
-gl::texture<gl::image_type::image_1d, 2> hdr_dof_postprocess::create_hdr_vision_properties_texture(const ste_context &ctx) {
+ste_resource<gl::texture<gl::image_type::image_1d, 2>> hdr_dof_postprocess::create_hdr_vision_properties_texture(const ste_context &ctx) {
 	static constexpr auto format = gl::format::r32g32b32a32_sfloat;
 	static constexpr auto gli_format = gl::format_traits<format>::gli_format;
 
@@ -56,16 +56,16 @@ gl::texture<gl::image_type::image_1d, 2> hdr_dof_postprocess::create_hdr_vision_
 																		  gl::image_usage::sampled,
 																		  gl::image_layout::shader_read_only_optimal,
 																		  false);
-	return gl::texture<gl::image_type::image_1d, 2>(std::move(image).get());
+	return ste_resource<gl::texture<gl::image_type::image_1d, 2>>(ctx, std::move(image));
 }
 
 void hdr_dof_postprocess::bind_fragment_resources() {
-	fbo_hdr_final[0] = gl::framebuffer_attachment(hdr_final_image);
-	fbo_hdr[0] = gl::framebuffer_attachment(hdr_image);
-	fbo_hdr[1] = gl::framebuffer_attachment(hdr_bloom_image);
-	fbo_hdr_bloom_blurx_image[0] = gl::framebuffer_attachment(hdr_bloom_blurx_image);
+	fbo_hdr_final[0] = gl::framebuffer_attachment(hdr_final_image.get());
+	fbo_hdr[0] = gl::framebuffer_attachment(hdr_image.get());
+	fbo_hdr[1] = gl::framebuffer_attachment(hdr_bloom_image.get());
+	fbo_hdr_bloom_blurx_image[0] = gl::framebuffer_attachment(hdr_bloom_blurx_image.get());
 
-	auto lums_extent = hdr_lums.get_image().get_extent();
+	auto lums_extent = hdr_lums.get().get_image().get_extent();
 	auto& samp = ctx.get().device().common_samplers_collection().linear_clamp_sampler();
 	auto& samp_no_clamp = ctx.get().device().common_samplers_collection().linear_sampler();
 
@@ -73,33 +73,34 @@ void hdr_dof_postprocess::bind_fragment_resources() {
 	bloom_blurx_task.attach_framebuffer(fbo_hdr_bloom_blurx_image);
 	bloom_blury_task.attach_framebuffer(fbo_hdr_final);
 
-	bloom_blurx_task.set_source(gl::pipeline::combined_image_sampler(hdr_bloom_image, samp));
-	bloom_blury_task.set_source(gl::pipeline::combined_image_sampler(hdr_image, samp), 
-								gl::pipeline::combined_image_sampler(hdr_bloom_blurx_image, samp));
+	bloom_blurx_task.set_source(gl::pipeline::combined_image_sampler(hdr_bloom_image.get(), samp));
+	bloom_blury_task.set_source(gl::pipeline::combined_image_sampler(hdr_image.get(), samp),
+								gl::pipeline::combined_image_sampler(hdr_bloom_blurx_image.get(), samp));
 
 	tonemap_coc_task.bind_buffers(histogram_sums, hdr_bokeh_param_buffer);
-	tonemap_coc_task.set_source(gl::pipeline::combined_image_sampler(hdr_vision_properties_texture, samp), 
-								gl::pipeline::combined_image_sampler(hdr_final_image, samp));
+	tonemap_coc_task.set_source(gl::pipeline::combined_image_sampler(hdr_vision_properties_texture.get(), samp),
+								gl::pipeline::combined_image_sampler(hdr_final_image.get(), samp));
 
 	create_histogram_task.bind_buffers(histogram, hdr_bokeh_param_buffer);
-	create_histogram_task.set_source(gl::pipeline::storage_image(hdr_lums), lums_extent);
+	create_histogram_task.set_source(gl::pipeline::storage_image(hdr_lums.get()), lums_extent);
 
 	bokeh_blur_task.bind_buffers(hdr_bokeh_param_buffer);
-	bokeh_blur_task.set_source(gl::pipeline::combined_image_sampler(hdr_final_image, samp));
+	bokeh_blur_task.set_source(gl::pipeline::combined_image_sampler(hdr_final_image.get(), samp));
 
 	compute_histogram_sums_task.bind_buffers(histogram_sums, histogram, hdr_bokeh_param_buffer);
 	compute_histogram_sums_task.set_source(lums_extent);
 
 	compute_minmax_task.bind_buffers(hdr_bokeh_param_buffer);
-	compute_minmax_task.set_source(gl::pipeline::combined_image_sampler(hdr_final_image, samp_no_clamp));
-	compute_minmax_task.set_destination(gl::pipeline::storage_image(hdr_lums), lums_extent);
+	compute_minmax_task.set_source(gl::pipeline::combined_image_sampler(hdr_final_image.get(), samp_no_clamp));
+	compute_minmax_task.set_destination(gl::pipeline::storage_image(hdr_lums.get()), lums_extent);
 }
 
 hdr_dof_postprocess::hdr_dof_postprocess(const gl::rendering_system &rs,
 										 gl::framebuffer_layout &&fb_layout)
 	: ctx(rs.get_creating_context()),
 	// Textures
-	hdr_final_image(resource::surface_factory::image_empty_2d<gl::format::r16g16b16a16_sfloat>(ctx.get(),
+	hdr_final_image(ctx,
+					resource::surface_factory::image_empty_2d<gl::format::r16g16b16a16_sfloat>(ctx.get(),
 																							   gl::image_usage::sampled | gl::image_usage::color_attachment,
 																							   gl::image_layout::shader_read_only_optimal,
 																							   rs.device().get_surface().extent())),
@@ -132,10 +133,11 @@ hdr_dof_postprocess::hdr_dof_postprocess(const gl::rendering_system &rs,
 }
 
 void hdr_dof_postprocess::resize() {
-	hdr_final_image = resource::surface_factory::image_empty_2d<gl::format::r16g16b16a16_sfloat>(ctx.get(),
-																								 gl::image_usage::sampled | gl::image_usage::color_attachment,
-																								 gl::image_layout::shader_read_only_optimal,
-																								 ctx.get().device().get_surface().extent());
+	hdr_final_image = ste_resource<gl::texture<gl::image_type::image_2d>>(ctx.get(),
+																		  resource::surface_factory::image_empty_2d<gl::format::r16g16b16a16_sfloat>(ctx.get(),
+																																					 gl::image_usage::sampled | gl::image_usage::color_attachment,
+																																					 gl::image_layout::shader_read_only_optimal,
+																																					 ctx.get().device().get_surface().extent()));
 
 	hdr_image = _internal::hdr_create_texture<gl::format::r16g16b16a16_sfloat>(ctx.get(), gl::image_usage::sampled | gl::image_usage::color_attachment);
 	hdr_bloom_image = _internal::hdr_create_texture<gl::format::r16g16b16a16_sfloat>(ctx.get(), gl::image_usage::sampled | gl::image_usage::color_attachment);
@@ -172,7 +174,7 @@ void hdr_dof_postprocess::record(gl::command_recorder &recorder) {
 																							gl::image_layout::shader_read_only_optimal)))
 		<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader,
 														 gl::pipeline_stage::compute_shader,
-														 gl::image_layout_transform_barrier(hdr_lums.get_image(),
+														 gl::image_layout_transform_barrier(hdr_lums->get_image(),
 																							gl::image_layout::general, gl::image_layout::general,
 																							gl::access_flags::shader_read, gl::access_flags::shader_write)))
 		<< compute_minmax_task;
@@ -195,7 +197,7 @@ void hdr_dof_postprocess::record(gl::command_recorder &recorder) {
 														 gl::buffer_memory_barrier(hdr_bokeh_param_buffer,
 																				   gl::access_flags::shader_write,
 																				   gl::access_flags::shader_read),
-														 gl::image_layout_transform_barrier(hdr_lums.get_image(),
+														 gl::image_layout_transform_barrier(hdr_lums->get_image(),
 																							gl::image_layout::general, gl::image_layout::general,
 																							gl::access_flags::shader_write, gl::access_flags::shader_read)))
 		<< create_histogram_task;

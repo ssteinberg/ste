@@ -46,8 +46,8 @@ public:
 		view(this->image,
 			 std::forward<Ts>(args)...)
 	{}
-	template <typename... Ts>
-	texture(ste_resource<device_image<dimensions>> &&image,
+	template <class policy, typename... Ts>
+	texture(ste_resource<device_image<dimensions>, policy> &&image,
 			Ts&&... args)
 		: image(std::move(image.get())),
 		view(this->image,
