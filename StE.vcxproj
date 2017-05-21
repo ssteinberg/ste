@@ -536,6 +536,7 @@
     </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_resources\surfaces\surface_convert.cpp" />
     <ClCompile Include="Simulation\src\ste\framework_resources\surfaces\surface_mipmap_generator.cpp" />
+    <ClCompile Include="Simulation\src\ste\framework_text\fonts\font.cpp" />
     <ClCompile Include="Simulation\src\ste\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -548,6 +549,10 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
     <ClInclude Include="Simulation\src\ste\framework_text\attributed_strings\attrib_type.hpp" />
+    <ClInclude Include="Simulation\src\ste\framework_text\fonts\font.hpp" />
+    <ClInclude Include="Simulation\src\ste\framework_text\glyphs\text_font_key.hpp" />
+    <ClInclude Include="Simulation\src\ste\framework_text\glyphs\text_glyph_key.hpp" />
+    <ClInclude Include="Simulation\src\ste\framework_text\glyphs\text_glyph_pair_key.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_library\lib\aligned_padded_ptr.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_library\lib\allocator.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\command_buffer\command\cmd_push_constants.hpp" />
@@ -946,9 +951,6 @@
     <ClCompile Include="Simulation\src\ste\framework_text\attributed_strings\attrib.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_text\fonts\Font.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_text\glyphs\glyph_factory.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
@@ -1085,7 +1087,6 @@
     <ClInclude Include="Simulation\src\ste\framework_text\attributed_strings\attributed_string.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_text\attributed_strings\markup_formatter\attributed_string_common.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_text\attributed_strings\markup_formatter\attributed_string_htm_formatter.hpp" />
-    <ClInclude Include="Simulation\src\ste\framework_text\fonts\Font.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_text\glyphs\distance_field\edtaa3func.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_text\glyphs\distance_field\make_distance_map.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_text\glyphs\glyph.hpp" />
@@ -1122,6 +1123,9 @@
     <ClInclude Include="Simulation\src\ste\ste_library\lib\alloc.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_library\lib\intrusive_ptr.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_library\lib\shared_ptr.hpp" />
+    <ClInclude Include="Simulation\src\ste\ste_library\lib\small_allocator.hpp" />
+    <ClInclude Include="Simulation\src\ste\ste_library\lib\small_string.hpp" />
+    <ClInclude Include="Simulation\src\ste\ste_library\lib\small_vector.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_library\lib\static_vector.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_library\lib\unique_ptr.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_library\lib\allocator_delete.hpp" />
@@ -1144,6 +1148,7 @@
     <ClInclude Include="Simulation\src\ste\ste_library\lib\vector.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\container\packed_ptr.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\memory\aligned_allocator.hpp" />
+    <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\memory\small_allocator.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\type_traits\copyable_moveale_base.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_version.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\container\blob.hpp" />

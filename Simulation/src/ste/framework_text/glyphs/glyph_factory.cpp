@@ -2,9 +2,10 @@
 #include <stdafx.hpp>
 #include <glyph_factory.hpp>
 #include <make_distance_map.hpp>
+#include <text_font_key.hpp>
+#include <text_glyph_pair_key.hpp>
 
-#include <hash_combine.hpp>
-#include <lib/unordered_map.hpp>
+#include <lib/flat_map.hpp>
 #include <functional>
 
 #include <mutex>
@@ -21,40 +22,10 @@ using namespace ste::text;
 namespace ste {
 namespace text {
 
-struct text_glyph_pair_key {
-	wchar_t left;
-	wchar_t right;
-	int pixel_size;
-
-	bool operator==(const text_glyph_pair_key &rhs) const {
-		return left == rhs.left && right == rhs.right && pixel_size == rhs.pixel_size;
-	}
-};
-
-}
-}
-
-
-namespace std {
-
-template <> struct hash<ste::text::text_glyph_pair_key> {
-	size_t inline operator()(const ste::text::text_glyph_pair_key &x) const {
-		auto h1 = std::hash<decltype(x.right)>()(x.right);
-		auto h2 = std::hash<decltype(x.left)>()(x.left);
-		auto h3 = std::hash<decltype(x.pixel_size)>()(x.pixel_size);
-		return ste::hash_combine(h1, ste::hash_combine(h2, h3));
-	}
-};
-
-}
-
-
-namespace ste {
-namespace text {
-
 class glyph_factory_ft_lib {
 private:
 	FT_Library library;
+	lib::flat_map<_internal::sized_glyph_pair_key, std::uint32_t> spacing_cache;
 
 public:
 	glyph_factory_ft_lib() {
@@ -71,12 +42,23 @@ public:
 
 	FT_Library get_lib() { return library; }
 	FT_Library get_lib() const { return library; }
+
+	bool get_spacing(const font &font, wchar_t left, wchar_t right, std::uint32_t pixel_size, std::uint32_t *spacing) const {
+		auto it = spacing_cache.find(_internal::sized_glyph_pair_key{ font, left, right, pixel_size });
+		if (it != spacing_cache.end()) {
+			*spacing = it->second;
+			return true;
+		}
+		return false;
+	}
+	void insert_into_spacing_cache(const font &font, wchar_t left, wchar_t right, std::uint32_t pixel_size, std::uint32_t spacing) {
+		spacing_cache[_internal::sized_glyph_pair_key{ font, left, right, pixel_size }] = spacing;
+	}
 };
 
 class glyph_factory_font {
 private:
 	FT_Face face{ nullptr };
-	lib::unordered_map<text_glyph_pair_key, int> spacing_cache;
 
 public:
 	glyph_factory_font(const font &font, FT_Library ft_lib) {
@@ -95,12 +77,11 @@ public:
 		if (face)
 			FT_Done_Face(face);
 	}
-	glyph_factory_font(glyph_factory_font &&f) noexcept : face(f.face), spacing_cache(std::move(f.spacing_cache)) {
+	glyph_factory_font(glyph_factory_font &&f) noexcept : face(f.face) {
 		f.face = nullptr;
 	}
 	glyph_factory_font &operator=(glyph_factory_font &&f) noexcept {
 		face = f.face;
-		spacing_cache = std::move(f.spacing_cache);
 		f.face = nullptr;
 
 		return *this;
@@ -108,29 +89,17 @@ public:
 
 	FT_Face get_face() { return face; }
 	FT_Face get_face() const { return face; }
-
-	bool get_spacing(wchar_t left, wchar_t right, int pixel_size, int *spacing) const {
-		auto it = spacing_cache.find(text_glyph_pair_key{ left, right, pixel_size });
-		if (it != spacing_cache.end()) {
-			*spacing = it->second;
-			return true;
-		}
-		return false;
-	}
-	void insert_into_spacing_cache(wchar_t left, wchar_t right, int pixel_size, int spacing) {
-		spacing_cache[text_glyph_pair_key{ left, right, pixel_size }] = spacing;
-	}
 };
 
 struct glyph_factory_impl {
 	std::mutex m;
 	glyph_factory_ft_lib lib;
-	lib::unordered_map<font, glyph_factory_font> fonts;
+	lib::flat_map<_internal::font_key, glyph_factory_font> fonts;
 
 	auto& get_factory_font(const font &font) {
-		auto it = fonts.find(font);
-		if (it == fonts.end())
-			it = fonts.emplace(std::make_pair(font, glyph_factory_font(font, lib.get_lib()))).first;
+		auto it = fonts.lower_bound(font);
+		if (it == fonts.end() || it->first != font)
+			it = fonts.emplace_hint(it, std::make_pair(font, glyph_factory_font(font, lib.get_lib())));
 		return it->second;
 	}
 
@@ -139,7 +108,6 @@ struct glyph_factory_impl {
 
 }
 }
-
 
 unsigned char* glyph_factory_impl::render_glyph_with(const font &font, wchar_t codepoint, int px_size, int &w, int &h, int &start_y, int &start_x) {
 	std::unique_lock<std::mutex> l(m);
@@ -170,6 +138,7 @@ unsigned char* glyph_factory_impl::render_glyph_with(const font &font, wchar_t c
 	return glyph_buf;
 }
 
+
 glyph_factory::glyph_factory() : pimpl(lib::default_alloc<glyph_factory_impl>::make()) {}
 
 glyph_factory::~glyph_factory() {
@@ -194,14 +163,14 @@ glyph glyph_factory::create_glyph(const font &font, wchar_t codepoint) const {
 	return std::move(g);
 }
 
-int glyph_factory::read_kerning(const font &font, const std::pair<wchar_t, wchar_t> &p, int pixel_size) {
-	glyph_factory_font &fac_font = pimpl->get_factory_font(font);
-	int spacing;
-	if (fac_font.get_spacing(p.first, p.second, pixel_size, &spacing))
-		return spacing;
-
+std::uint32_t glyph_factory::read_kerning(const font &font, const std::pair<wchar_t, wchar_t> &p, std::uint32_t pixel_size) {
 	std::unique_lock<std::mutex> l(pimpl->m);
 
+	std::uint32_t spacing;
+	if (pimpl->lib.get_spacing(font, p.first, p.second, pixel_size, &spacing))
+		return spacing;
+
+	glyph_factory_font &fac_font = pimpl->get_factory_font(font);
 	auto face = fac_font.get_face();
 
 	FT_UInt left_index = FT_Get_Char_Index(face, p.first);
@@ -221,7 +190,7 @@ int glyph_factory::read_kerning(const font &font, const std::pair<wchar_t, wchar
 		spacing = face->glyph->advance.x >> 6;
 	}
 
-	fac_font.insert_into_spacing_cache(p.first, p.second, pixel_size, spacing);
+	pimpl->lib.insert_into_spacing_cache(font, p.first, p.second, pixel_size, spacing);
 
 	return spacing;
 }

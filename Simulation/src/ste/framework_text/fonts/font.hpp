@@ -19,6 +19,7 @@ public:
 	font(const std::experimental::filesystem::path &path);
 
 	bool operator==(const font& lhs) const { return name == lhs.name; }
+	bool operator!=(const font& lhs) const { return name != lhs.name; }
 
 	const std::experimental::filesystem::path &get_path() const { return path; }
 	const lib::string &get_name() const { return name; }

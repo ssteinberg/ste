@@ -40,7 +40,10 @@ struct allocator_static_storage {
 
 }
 
-template <typename T, std::size_t Align = alignof(std::max_align_t)>
+template <
+	typename T, 
+	std::size_t Align = alignof(std::max_align_t)
+>
 class allocator {
 public:
 	using value_type = T;
@@ -53,6 +56,12 @@ public:
 	using const_pointer = const value_type*;
 	using void_pointer = void*;
 	using const_void_pointer = const void*;
+
+	using reference = value_type&;
+	using const_reference = const value_type&;
+
+	using propagate_on_container_move_assignment = std::true_type;
+	using is_always_equal = std::false_type;
 
 private:
 	// rpmalloc allocates with 16byte base alignment

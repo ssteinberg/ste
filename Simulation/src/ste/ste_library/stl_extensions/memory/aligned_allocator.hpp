@@ -25,6 +25,12 @@ public:
 	using void_pointer = void*;
 	using const_void_pointer = const void*;
 
+	using reference = value_type&;
+	using const_reference = const value_type&;
+
+	using propagate_on_container_move_assignment = std::true_type;
+	using is_always_equal = std::false_type;
+
 	template<class U>
 	struct rebind {
 		using other = aligned_allocator<U, Align>;

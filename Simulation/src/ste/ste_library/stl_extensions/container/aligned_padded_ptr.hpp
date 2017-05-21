@@ -23,7 +23,7 @@ public:
 
 private:
 	static constexpr bool pads_to_alignment = true;
-	static constexpr std::size_t block_size = sizeof(value_type) + (pads_to_alignment ? alignment - (sizeof(value_type) % alignment) : 0u);
+	static constexpr std::size_t block_size = sizeof(value_type) + (pads_to_alignment ? alignment - (sizeof(value_type) % alignment) % alignment : 0u);
 
 	template <typename... Ts>
 	static void make(void *p,
@@ -54,6 +54,7 @@ public:
 		allocator.deallocate(reinterpret_cast<std::uint8_t*>(ptr), block_size);
 	}
 
+	// TODO: Respect allocator's propagate_on_container_move_assignment
 	aligned_padded_ptr(aligned_padded_ptr&&) = default;
 	aligned_padded_ptr &operator=(aligned_padded_ptr&&) = default;
 
