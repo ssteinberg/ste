@@ -32,8 +32,6 @@
 
 #include <hdr_dof_postprocess.hpp>
 
-//#include <concurrent_vector.hpp>
-
 using namespace ste;
 
 class simple_storage : public gl::storage<simple_storage> {
@@ -276,17 +274,6 @@ int CALLBACK WinMain(HINSTANCE hInstance,
 int main()
 #endif
 {
-//	{
-//		concurrent_vector<float> v(2);
-//		v.emplace_back(.0f);
-//		v.emplace_back(1.0f);
-//		v.emplace_back(2.0f);
-//		v.emplace_back(3.0f);
-//		v.emplace_back(4.0f);
-//	}
-
-
-
 	/*
 	*	Create logger
 	*/
