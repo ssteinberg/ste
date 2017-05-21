@@ -1,22 +1,17 @@
 // StE
-// © Shlomi Steinberg, 2015-2016
+// © Shlomi Steinberg, 2015-2017
 
 #pragma once
 
 #include <memory>
-#include <functional>
+#include <functor.hpp>
 
 namespace ste {
 
 namespace _detail {
 
-template <typename ... Params>
-struct function_wrapper_type_erasure_base {
-	virtual void operator()(Params&&... params) = 0;
-	virtual ~function_wrapper_type_erasure_base() {}
-};
 template <typename F, typename ... Params>
-struct function_wrapper_type_erasure_impl : function_wrapper_type_erasure_base<Params...> {
+struct function_wrapper_type_erasure_impl : functor<Params...> {
 	static_assert(std::is_callable_v<F(Params...)>, "F not a valid functor accepting Params...");
 
 	F f;
@@ -32,7 +27,7 @@ struct function_wrapper_type_erasure_impl : function_wrapper_type_erasure_base<P
 template <typename ... Params>
 class shared_function_wrapper {
 private:
-	std::shared_ptr<_detail::function_wrapper_type_erasure_base<Params...>> functor;
+	std::shared_ptr<functor<Params...>> functor;
 
 public:
 	shared_function_wrapper() = default;
@@ -50,7 +45,7 @@ public:
 template <typename ... Params>
 class unique_function_wrapper {
 private:
-	std::unique_ptr<_detail::function_wrapper_type_erasure_base<Params...>> functor;
+	std::unique_ptr<functor<Params...>> functor;
 
 public:
 	unique_function_wrapper() = default;

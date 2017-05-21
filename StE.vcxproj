@@ -1147,6 +1147,7 @@
     <ClInclude Include="Simulation\src\ste\ste_library\lib\unordered_set.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_library\lib\vector.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\container\packed_ptr.hpp" />
+    <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\functional\functor.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\memory\aligned_allocator.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\memory\small_allocator.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\type_traits\copyable_moveale_base.hpp" />
