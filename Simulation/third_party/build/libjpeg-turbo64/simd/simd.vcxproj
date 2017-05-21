@@ -1,0 +1,612 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGUID>{25BF5A3F-6CB2-30DC-A803-6A916D4EAA32}</ProjectGUID>
+    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>x64</Platform>
+    <ProjectName>simd</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+    <PropertyGroup>
+      <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HD:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo -BD:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64 --check-stamp-file D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HD:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo -BD:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64 --check-stamp-file D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\CMakeFiles\37b74f44ba8e2261b662e119473ba546\jfdctflt-sse-64.obj.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generating $(Configuration)/jfdctflt-sse-64.obj</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files\nasm\nasm.exe" -fwin64 -DWIN64 -D__x86_64__ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/win/ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/ D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/jfdctflt-sse-64.asm -oD:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/simd/$(Configuration)/jfdctflt-sse-64.obj
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/CMakeFiles/37b74f44ba8e2261b662e119473ba546/jfdctflt-sse-64.obj.rule;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jfdctflt-sse-64.asm;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jcolsamp.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jdct.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jpeg_nbits_table.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jsimdext.inc;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jfdctflt-sse-64.obj</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generating $(Configuration)/jfdctflt-sse-64.obj</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files\nasm\nasm.exe" -fwin64 -DWIN64 -D__x86_64__ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/win/ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/ D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/jfdctflt-sse-64.asm -oD:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/simd/$(Configuration)/jfdctflt-sse-64.obj
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/CMakeFiles/37b74f44ba8e2261b662e119473ba546/jfdctflt-sse-64.obj.rule;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jfdctflt-sse-64.asm;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jcolsamp.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jdct.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jpeg_nbits_table.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jsimdext.inc;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jfdctflt-sse-64.obj</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\CMakeFiles\37b74f44ba8e2261b662e119473ba546\jccolor-sse2-64.obj.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generating $(Configuration)/jccolor-sse2-64.obj</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files\nasm\nasm.exe" -fwin64 -DWIN64 -D__x86_64__ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/win/ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/ D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/jccolor-sse2-64.asm -oD:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/simd/$(Configuration)/jccolor-sse2-64.obj
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/CMakeFiles/37b74f44ba8e2261b662e119473ba546/jccolor-sse2-64.obj.rule;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jccolor-sse2-64.asm;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jccolext-sse2-64.asm;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jcolsamp.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jdct.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jpeg_nbits_table.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jsimdext.inc;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jccolor-sse2-64.obj</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generating $(Configuration)/jccolor-sse2-64.obj</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files\nasm\nasm.exe" -fwin64 -DWIN64 -D__x86_64__ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/win/ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/ D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/jccolor-sse2-64.asm -oD:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/simd/$(Configuration)/jccolor-sse2-64.obj
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/CMakeFiles/37b74f44ba8e2261b662e119473ba546/jccolor-sse2-64.obj.rule;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jccolor-sse2-64.asm;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jccolext-sse2-64.asm;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jcolsamp.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jdct.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jpeg_nbits_table.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jsimdext.inc;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jccolor-sse2-64.obj</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\CMakeFiles\37b74f44ba8e2261b662e119473ba546\jcgray-sse2-64.obj.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generating $(Configuration)/jcgray-sse2-64.obj</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files\nasm\nasm.exe" -fwin64 -DWIN64 -D__x86_64__ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/win/ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/ D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/jcgray-sse2-64.asm -oD:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/simd/$(Configuration)/jcgray-sse2-64.obj
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/CMakeFiles/37b74f44ba8e2261b662e119473ba546/jcgray-sse2-64.obj.rule;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jcgray-sse2-64.asm;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jcgryext-sse2-64.asm;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jcolsamp.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jdct.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jpeg_nbits_table.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jsimdext.inc;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jcgray-sse2-64.obj</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generating $(Configuration)/jcgray-sse2-64.obj</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files\nasm\nasm.exe" -fwin64 -DWIN64 -D__x86_64__ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/win/ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/ D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/jcgray-sse2-64.asm -oD:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/simd/$(Configuration)/jcgray-sse2-64.obj
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/CMakeFiles/37b74f44ba8e2261b662e119473ba546/jcgray-sse2-64.obj.rule;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jcgray-sse2-64.asm;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jcgryext-sse2-64.asm;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jcolsamp.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jdct.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jpeg_nbits_table.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jsimdext.inc;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jcgray-sse2-64.obj</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\CMakeFiles\37b74f44ba8e2261b662e119473ba546\jchuff-sse2-64.obj.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generating $(Configuration)/jchuff-sse2-64.obj</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files\nasm\nasm.exe" -fwin64 -DWIN64 -D__x86_64__ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/win/ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/ D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/jchuff-sse2-64.asm -oD:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/simd/$(Configuration)/jchuff-sse2-64.obj
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/CMakeFiles/37b74f44ba8e2261b662e119473ba546/jchuff-sse2-64.obj.rule;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jchuff-sse2-64.asm;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jcolsamp.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jdct.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jpeg_nbits_table.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jsimdext.inc;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jchuff-sse2-64.obj</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generating $(Configuration)/jchuff-sse2-64.obj</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files\nasm\nasm.exe" -fwin64 -DWIN64 -D__x86_64__ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/win/ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/ D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/jchuff-sse2-64.asm -oD:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/simd/$(Configuration)/jchuff-sse2-64.obj
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/CMakeFiles/37b74f44ba8e2261b662e119473ba546/jchuff-sse2-64.obj.rule;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jchuff-sse2-64.asm;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jcolsamp.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jdct.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jpeg_nbits_table.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jsimdext.inc;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jchuff-sse2-64.obj</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\CMakeFiles\37b74f44ba8e2261b662e119473ba546\jcsample-sse2-64.obj.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generating $(Configuration)/jcsample-sse2-64.obj</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files\nasm\nasm.exe" -fwin64 -DWIN64 -D__x86_64__ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/win/ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/ D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/jcsample-sse2-64.asm -oD:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/simd/$(Configuration)/jcsample-sse2-64.obj
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/CMakeFiles/37b74f44ba8e2261b662e119473ba546/jcsample-sse2-64.obj.rule;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jcsample-sse2-64.asm;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jcolsamp.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jdct.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jpeg_nbits_table.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jsimdext.inc;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jcsample-sse2-64.obj</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generating $(Configuration)/jcsample-sse2-64.obj</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files\nasm\nasm.exe" -fwin64 -DWIN64 -D__x86_64__ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/win/ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/ D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/jcsample-sse2-64.asm -oD:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/simd/$(Configuration)/jcsample-sse2-64.obj
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/CMakeFiles/37b74f44ba8e2261b662e119473ba546/jcsample-sse2-64.obj.rule;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jcsample-sse2-64.asm;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jcolsamp.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jdct.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jpeg_nbits_table.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jsimdext.inc;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jcsample-sse2-64.obj</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\CMakeFiles\37b74f44ba8e2261b662e119473ba546\jdcolor-sse2-64.obj.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generating $(Configuration)/jdcolor-sse2-64.obj</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files\nasm\nasm.exe" -fwin64 -DWIN64 -D__x86_64__ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/win/ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/ D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/jdcolor-sse2-64.asm -oD:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/simd/$(Configuration)/jdcolor-sse2-64.obj
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/CMakeFiles/37b74f44ba8e2261b662e119473ba546/jdcolor-sse2-64.obj.rule;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jdcolor-sse2-64.asm;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jdcolext-sse2-64.asm;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jcolsamp.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jdct.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jpeg_nbits_table.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jsimdext.inc;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jdcolor-sse2-64.obj</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generating $(Configuration)/jdcolor-sse2-64.obj</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files\nasm\nasm.exe" -fwin64 -DWIN64 -D__x86_64__ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/win/ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/ D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/jdcolor-sse2-64.asm -oD:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/simd/$(Configuration)/jdcolor-sse2-64.obj
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/CMakeFiles/37b74f44ba8e2261b662e119473ba546/jdcolor-sse2-64.obj.rule;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jdcolor-sse2-64.asm;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jdcolext-sse2-64.asm;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jcolsamp.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jdct.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jpeg_nbits_table.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jsimdext.inc;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jdcolor-sse2-64.obj</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\CMakeFiles\37b74f44ba8e2261b662e119473ba546\jdmerge-sse2-64.obj.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generating $(Configuration)/jdmerge-sse2-64.obj</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files\nasm\nasm.exe" -fwin64 -DWIN64 -D__x86_64__ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/win/ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/ D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/jdmerge-sse2-64.asm -oD:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/simd/$(Configuration)/jdmerge-sse2-64.obj
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/CMakeFiles/37b74f44ba8e2261b662e119473ba546/jdmerge-sse2-64.obj.rule;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jdmerge-sse2-64.asm;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jdmrgext-sse2-64.asm;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jcolsamp.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jdct.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jpeg_nbits_table.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jsimdext.inc;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jdmerge-sse2-64.obj</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generating $(Configuration)/jdmerge-sse2-64.obj</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files\nasm\nasm.exe" -fwin64 -DWIN64 -D__x86_64__ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/win/ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/ D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/jdmerge-sse2-64.asm -oD:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/simd/$(Configuration)/jdmerge-sse2-64.obj
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/CMakeFiles/37b74f44ba8e2261b662e119473ba546/jdmerge-sse2-64.obj.rule;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jdmerge-sse2-64.asm;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jdmrgext-sse2-64.asm;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jcolsamp.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jdct.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jpeg_nbits_table.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jsimdext.inc;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jdmerge-sse2-64.obj</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\CMakeFiles\37b74f44ba8e2261b662e119473ba546\jdsample-sse2-64.obj.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generating $(Configuration)/jdsample-sse2-64.obj</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files\nasm\nasm.exe" -fwin64 -DWIN64 -D__x86_64__ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/win/ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/ D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/jdsample-sse2-64.asm -oD:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/simd/$(Configuration)/jdsample-sse2-64.obj
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/CMakeFiles/37b74f44ba8e2261b662e119473ba546/jdsample-sse2-64.obj.rule;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jdsample-sse2-64.asm;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jcolsamp.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jdct.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jpeg_nbits_table.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jsimdext.inc;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jdsample-sse2-64.obj</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generating $(Configuration)/jdsample-sse2-64.obj</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files\nasm\nasm.exe" -fwin64 -DWIN64 -D__x86_64__ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/win/ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/ D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/jdsample-sse2-64.asm -oD:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/simd/$(Configuration)/jdsample-sse2-64.obj
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/CMakeFiles/37b74f44ba8e2261b662e119473ba546/jdsample-sse2-64.obj.rule;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jdsample-sse2-64.asm;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jcolsamp.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jdct.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jpeg_nbits_table.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jsimdext.inc;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jdsample-sse2-64.obj</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\CMakeFiles\37b74f44ba8e2261b662e119473ba546\jfdctfst-sse2-64.obj.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generating $(Configuration)/jfdctfst-sse2-64.obj</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files\nasm\nasm.exe" -fwin64 -DWIN64 -D__x86_64__ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/win/ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/ D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/jfdctfst-sse2-64.asm -oD:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/simd/$(Configuration)/jfdctfst-sse2-64.obj
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/CMakeFiles/37b74f44ba8e2261b662e119473ba546/jfdctfst-sse2-64.obj.rule;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jfdctfst-sse2-64.asm;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jcolsamp.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jdct.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jpeg_nbits_table.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jsimdext.inc;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jfdctfst-sse2-64.obj</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generating $(Configuration)/jfdctfst-sse2-64.obj</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files\nasm\nasm.exe" -fwin64 -DWIN64 -D__x86_64__ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/win/ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/ D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/jfdctfst-sse2-64.asm -oD:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/simd/$(Configuration)/jfdctfst-sse2-64.obj
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/CMakeFiles/37b74f44ba8e2261b662e119473ba546/jfdctfst-sse2-64.obj.rule;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jfdctfst-sse2-64.asm;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jcolsamp.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jdct.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jpeg_nbits_table.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jsimdext.inc;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jfdctfst-sse2-64.obj</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\CMakeFiles\37b74f44ba8e2261b662e119473ba546\jfdctint-sse2-64.obj.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generating $(Configuration)/jfdctint-sse2-64.obj</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files\nasm\nasm.exe" -fwin64 -DWIN64 -D__x86_64__ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/win/ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/ D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/jfdctint-sse2-64.asm -oD:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/simd/$(Configuration)/jfdctint-sse2-64.obj
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/CMakeFiles/37b74f44ba8e2261b662e119473ba546/jfdctint-sse2-64.obj.rule;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jfdctint-sse2-64.asm;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jcolsamp.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jdct.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jpeg_nbits_table.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jsimdext.inc;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jfdctint-sse2-64.obj</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generating $(Configuration)/jfdctint-sse2-64.obj</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files\nasm\nasm.exe" -fwin64 -DWIN64 -D__x86_64__ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/win/ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/ D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/jfdctint-sse2-64.asm -oD:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/simd/$(Configuration)/jfdctint-sse2-64.obj
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/CMakeFiles/37b74f44ba8e2261b662e119473ba546/jfdctint-sse2-64.obj.rule;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jfdctint-sse2-64.asm;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jcolsamp.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jdct.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jpeg_nbits_table.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jsimdext.inc;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jfdctint-sse2-64.obj</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\CMakeFiles\37b74f44ba8e2261b662e119473ba546\jidctflt-sse2-64.obj.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generating $(Configuration)/jidctflt-sse2-64.obj</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files\nasm\nasm.exe" -fwin64 -DWIN64 -D__x86_64__ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/win/ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/ D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/jidctflt-sse2-64.asm -oD:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/simd/$(Configuration)/jidctflt-sse2-64.obj
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/CMakeFiles/37b74f44ba8e2261b662e119473ba546/jidctflt-sse2-64.obj.rule;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jidctflt-sse2-64.asm;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jcolsamp.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jdct.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jpeg_nbits_table.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jsimdext.inc;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jidctflt-sse2-64.obj</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generating $(Configuration)/jidctflt-sse2-64.obj</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files\nasm\nasm.exe" -fwin64 -DWIN64 -D__x86_64__ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/win/ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/ D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/jidctflt-sse2-64.asm -oD:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/simd/$(Configuration)/jidctflt-sse2-64.obj
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/CMakeFiles/37b74f44ba8e2261b662e119473ba546/jidctflt-sse2-64.obj.rule;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jidctflt-sse2-64.asm;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jcolsamp.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jdct.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jpeg_nbits_table.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jsimdext.inc;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jidctflt-sse2-64.obj</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\CMakeFiles\37b74f44ba8e2261b662e119473ba546\jidctfst-sse2-64.obj.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generating $(Configuration)/jidctfst-sse2-64.obj</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files\nasm\nasm.exe" -fwin64 -DWIN64 -D__x86_64__ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/win/ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/ D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/jidctfst-sse2-64.asm -oD:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/simd/$(Configuration)/jidctfst-sse2-64.obj
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/CMakeFiles/37b74f44ba8e2261b662e119473ba546/jidctfst-sse2-64.obj.rule;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jidctfst-sse2-64.asm;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jcolsamp.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jdct.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jpeg_nbits_table.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jsimdext.inc;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jidctfst-sse2-64.obj</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generating $(Configuration)/jidctfst-sse2-64.obj</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files\nasm\nasm.exe" -fwin64 -DWIN64 -D__x86_64__ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/win/ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/ D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/jidctfst-sse2-64.asm -oD:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/simd/$(Configuration)/jidctfst-sse2-64.obj
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/CMakeFiles/37b74f44ba8e2261b662e119473ba546/jidctfst-sse2-64.obj.rule;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jidctfst-sse2-64.asm;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jcolsamp.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jdct.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jpeg_nbits_table.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jsimdext.inc;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jidctfst-sse2-64.obj</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\CMakeFiles\37b74f44ba8e2261b662e119473ba546\jidctint-sse2-64.obj.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generating $(Configuration)/jidctint-sse2-64.obj</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files\nasm\nasm.exe" -fwin64 -DWIN64 -D__x86_64__ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/win/ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/ D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/jidctint-sse2-64.asm -oD:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/simd/$(Configuration)/jidctint-sse2-64.obj
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/CMakeFiles/37b74f44ba8e2261b662e119473ba546/jidctint-sse2-64.obj.rule;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jidctint-sse2-64.asm;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jcolsamp.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jdct.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jpeg_nbits_table.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jsimdext.inc;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jidctint-sse2-64.obj</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generating $(Configuration)/jidctint-sse2-64.obj</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files\nasm\nasm.exe" -fwin64 -DWIN64 -D__x86_64__ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/win/ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/ D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/jidctint-sse2-64.asm -oD:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/simd/$(Configuration)/jidctint-sse2-64.obj
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/CMakeFiles/37b74f44ba8e2261b662e119473ba546/jidctint-sse2-64.obj.rule;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jidctint-sse2-64.asm;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jcolsamp.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jdct.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jpeg_nbits_table.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jsimdext.inc;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jidctint-sse2-64.obj</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\CMakeFiles\37b74f44ba8e2261b662e119473ba546\jidctred-sse2-64.obj.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generating $(Configuration)/jidctred-sse2-64.obj</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files\nasm\nasm.exe" -fwin64 -DWIN64 -D__x86_64__ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/win/ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/ D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/jidctred-sse2-64.asm -oD:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/simd/$(Configuration)/jidctred-sse2-64.obj
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/CMakeFiles/37b74f44ba8e2261b662e119473ba546/jidctred-sse2-64.obj.rule;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jidctred-sse2-64.asm;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jcolsamp.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jdct.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jpeg_nbits_table.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jsimdext.inc;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jidctred-sse2-64.obj</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generating $(Configuration)/jidctred-sse2-64.obj</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files\nasm\nasm.exe" -fwin64 -DWIN64 -D__x86_64__ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/win/ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/ D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/jidctred-sse2-64.asm -oD:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/simd/$(Configuration)/jidctred-sse2-64.obj
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/CMakeFiles/37b74f44ba8e2261b662e119473ba546/jidctred-sse2-64.obj.rule;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jidctred-sse2-64.asm;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jcolsamp.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jdct.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jpeg_nbits_table.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jsimdext.inc;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jidctred-sse2-64.obj</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\CMakeFiles\37b74f44ba8e2261b662e119473ba546\jquantf-sse2-64.obj.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generating $(Configuration)/jquantf-sse2-64.obj</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files\nasm\nasm.exe" -fwin64 -DWIN64 -D__x86_64__ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/win/ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/ D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/jquantf-sse2-64.asm -oD:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/simd/$(Configuration)/jquantf-sse2-64.obj
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/CMakeFiles/37b74f44ba8e2261b662e119473ba546/jquantf-sse2-64.obj.rule;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jquantf-sse2-64.asm;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jcolsamp.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jdct.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jpeg_nbits_table.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jsimdext.inc;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jquantf-sse2-64.obj</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generating $(Configuration)/jquantf-sse2-64.obj</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files\nasm\nasm.exe" -fwin64 -DWIN64 -D__x86_64__ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/win/ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/ D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/jquantf-sse2-64.asm -oD:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/simd/$(Configuration)/jquantf-sse2-64.obj
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/CMakeFiles/37b74f44ba8e2261b662e119473ba546/jquantf-sse2-64.obj.rule;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jquantf-sse2-64.asm;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jcolsamp.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jdct.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jpeg_nbits_table.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jsimdext.inc;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jquantf-sse2-64.obj</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\CMakeFiles\37b74f44ba8e2261b662e119473ba546\jquanti-sse2-64.obj.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generating $(Configuration)/jquanti-sse2-64.obj</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files\nasm\nasm.exe" -fwin64 -DWIN64 -D__x86_64__ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/win/ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/ D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/jquanti-sse2-64.asm -oD:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/simd/$(Configuration)/jquanti-sse2-64.obj
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/CMakeFiles/37b74f44ba8e2261b662e119473ba546/jquanti-sse2-64.obj.rule;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jquanti-sse2-64.asm;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jcolsamp.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jdct.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jpeg_nbits_table.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jsimdext.inc;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jquanti-sse2-64.obj</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generating $(Configuration)/jquanti-sse2-64.obj</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files\nasm\nasm.exe" -fwin64 -DWIN64 -D__x86_64__ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/win/ -ID:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/ D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/simd/jquanti-sse2-64.asm -oD:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/simd/$(Configuration)/jquanti-sse2-64.obj
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/CMakeFiles/37b74f44ba8e2261b662e119473ba546/jquanti-sse2-64.obj.rule;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jquanti-sse2-64.asm;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jcolsamp.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jdct.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jpeg_nbits_table.inc;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jsimdext.inc;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jquanti-sse2-64.obj</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\CMakeFiles\74f9e3ba05ffa69203f7cc12370fd4da\simd.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'"></Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/CMakeFiles/74f9e3ba05ffa69203f7cc12370fd4da/simd.rule;D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jfdctflt-sse-64.obj;D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jccolor-sse2-64.obj;D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jcgray-sse2-64.obj;D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jchuff-sse2-64.obj;D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jcsample-sse2-64.obj;D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jdcolor-sse2-64.obj;D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jdmerge-sse2-64.obj;D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jdsample-sse2-64.obj;D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jfdctfst-sse2-64.obj;D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jfdctint-sse2-64.obj;D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jidctflt-sse2-64.obj;D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jidctfst-sse2-64.obj;D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jidctint-sse2-64.obj;D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jidctred-sse2-64.obj;D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jquantf-sse2-64.obj;D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jquanti-sse2-64.obj;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\CMakeFiles\simd</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'"></Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/CMakeFiles/74f9e3ba05ffa69203f7cc12370fd4da/simd.rule;D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jfdctflt-sse-64.obj;D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jccolor-sse2-64.obj;D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jcgray-sse2-64.obj;D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jchuff-sse2-64.obj;D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jcsample-sse2-64.obj;D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jdcolor-sse2-64.obj;D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jdmerge-sse2-64.obj;D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jdsample-sse2-64.obj;D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jfdctfst-sse2-64.obj;D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jfdctint-sse2-64.obj;D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jidctflt-sse2-64.obj;D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jidctfst-sse2-64.obj;D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jidctint-sse2-64.obj;D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jidctred-sse2-64.obj;D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jquantf-sse2-64.obj;D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jquanti-sse2-64.obj;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\CMakeFiles\simd</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\CMakeFiles\simd" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/ZERO_CHECK.vcxproj">
+      <Project>2CD42F60-1EF2-3D47-87B2-C7C9B0611525</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

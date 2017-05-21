@@ -1,0 +1,19 @@
+
+{
+	"sources" : 
+	[
+		
+		{
+			"file" : "D:/src/git/StE/Simulation/third_party/packages/eigen/test/product_extra.cpp"
+		},
+		
+		{
+			"file" : "D:/src/git/StE/Simulation/third_party/packages/eigen/test/CMakeLists.txt"
+		}
+	],
+	"target" : 
+	{
+		"labels" : [ "BuildOfficial" ],
+		"name" : "product_extra_8"
+	}
+}

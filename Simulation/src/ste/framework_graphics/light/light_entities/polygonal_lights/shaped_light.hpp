@@ -3,13 +3,13 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "light.hpp"
+#include <stdafx.hpp>
+#include <light.hpp>
 
-#include "gstack_stable.hpp"
+#include <gstack_stable.hpp>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 class shaped_light : public light {
 	using Base = light;
@@ -38,7 +38,7 @@ protected:
 	}
 
 	void set_points(const glm::vec3 *points, std::size_t size, float surface_area, const glm::vec3 &n) {
-		std::vector<shaped_light_point_type> points_copy;
+		lib::vector<shaped_light_point_type> points_copy;
 		float r = .0f;
 
 		if (size > 0) {

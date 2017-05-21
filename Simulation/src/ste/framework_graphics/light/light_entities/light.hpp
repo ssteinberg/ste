@@ -3,18 +3,18 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "entity.hpp"
+#include <stdafx.hpp>
+#include <entity.hpp>
 
-#include "light_type.hpp"
-#include "light_descriptor.hpp"
+#include <light_type.hpp>
+#include <light_descriptor.hpp>
 
-#include "observable_resource.hpp"
+#include <observable_resource.hpp>
 
-#include "rgb.hpp"
+#include <rgb.hpp>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 class light : public Core::observable_resource<light_descriptor>,
 			  public entity {

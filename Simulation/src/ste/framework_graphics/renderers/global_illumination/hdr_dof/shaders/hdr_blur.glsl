@@ -1,7 +1,9 @@
 
 const int samples = 6;
 
-vec4 hdr_blur(sampler2D hdr, vec2 size, vec2 dir) {
+vec4 hdr_blur(sampler2D hdr, vec2 dir) {
+	vec2 size = textureSize(hdr,0).xy;
+
 	vec4 one = vec4(1.f);
 
 	vec2 coord = vec2(gl_FragCoord.xy) / size;

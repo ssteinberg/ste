@@ -3,30 +3,30 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
-#include "trace.hpp"
+#include <trace.hpp>
 
-#include <string>
+#include <lib/string.hpp>
 #include <condition_variable>
 
 #include <iostream>
 
-#include "log_entry.hpp"
+#include <log_entry.hpp>
 
-namespace StE {
+namespace ste::log {
 
 class log_sink {
 private:
-	std::shared_ptr<std::condition_variable> notifier;
-	std::shared_ptr<concurrent_queue<log_entry>> queue;
+	std::condition_variable *notifier;
+	lib::concurrent_queue<log_entry> *queue;
 	log_entry_data data;
 
 public:
-	log_sink(const log_entry_data &data, std::shared_ptr<std::condition_variable> notifier, std::shared_ptr<concurrent_queue<log_entry>> q) : notifier(notifier), queue(q), data(data) {}
+	log_sink(const log_entry_data &data, std::condition_variable *notifier, lib::concurrent_queue<log_entry> *q) : notifier(notifier), queue(q), data(data) {}
 	virtual ~log_sink() {}
 
-	log_sink &operator<<(const std::string &str) {
+	log_sink &operator<<(const lib::string &str) {
 		if (data.c != log_class::info_class_log) {
 			TRACE((str + "\n").data());
 		}

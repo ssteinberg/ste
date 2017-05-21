@@ -4,7 +4,9 @@
 
 layout(location = 1) in vec3 vert;
 
-uniform mat4 model_mat;
+uniform model_mat_t {
+	mat4 model_mat;
+};
 
 void main() {
 	gl_Position = model_mat * vec4(vert, 1.0);

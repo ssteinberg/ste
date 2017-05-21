@@ -1,5 +1,5 @@
 
-#include "quaternion.glsl"
+#include <quaternion.glsl>
 
 struct dual_quaternion {
 	vec4 real, dual;

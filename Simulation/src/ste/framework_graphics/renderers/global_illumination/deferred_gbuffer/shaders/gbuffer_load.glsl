@@ -1,7 +1,7 @@
 
-#include "gbuffer.glsl"
-#include "pack.glsl"
-#include "girenderer_transform_buffer.glsl"
+#include <gbuffer.glsl>
+#include <pack.glsl>
+#include <girenderer_transform_buffer.glsl>
 
 struct gbuffer_fragment_information {
 	float depth;

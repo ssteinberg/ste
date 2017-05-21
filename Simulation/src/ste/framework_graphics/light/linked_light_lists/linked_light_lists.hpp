@@ -3,23 +3,23 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
-#include "resource.hpp"
+#include <resource_old.hpp>
 
-#include "texture_2d.hpp"
+#include <texture_2d.hpp>
 
-#include "buffer_usage.hpp"
-#include "shader_storage_buffer.hpp"
-#include "atomic_counter_buffer_object.hpp"
+#include <buffer_usage.hpp>
+#include <shader_storage_buffer.hpp>
+#include <atomic_counter_buffer_object.hpp>
 
-#include "gl_current_context.hpp"
+#include <gl_current_context.hpp>
 
-#include <memory>
+#include <lib/unique_ptr.hpp>
 #include <limits>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 class linked_light_lists {
 private:
@@ -38,10 +38,10 @@ public:
 private:
 	lll_type lll;
 	Core::shader_storage_buffer<std::uint32_t> lll_counter;
-	std::unique_ptr<Core::texture_2d> lll_heads;
-	std::unique_ptr<Core::texture_2d> lll_low_detail_heads;
-	std::unique_ptr<Core::texture_2d> lll_size;
-	std::unique_ptr<Core::texture_2d> lll_low_detail_size;
+	lib::unique_ptr<Core::texture_2d> lll_heads;
+	lib::unique_ptr<Core::texture_2d> lll_low_detail_heads;
+	lib::unique_ptr<Core::texture_2d> lll_size;
+	lib::unique_ptr<Core::texture_2d> lll_low_detail_size;
 
 	glm::ivec2 size;
 

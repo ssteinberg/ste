@@ -9,23 +9,24 @@
 
 #pragma once
 
-#include "lru_cache_cacheable.hpp"
+#include <lru_cache_cacheable.hpp>
 
-#include "Log.hpp"
-#include "attributed_string.hpp"
+#include <Log.hpp>
+#include <attributed_string.hpp>
 
-#include "concurrent_unordered_map.hpp"
+#include <lib/concurrent_unordered_map.hpp>
 
-#include "boost_binary_ioarchive.hpp"
-#include "boost_serialization.hpp"
+#include <boost/archive/binary_iarchive.hpp> 
+#include <boost/archive/binary_oarchive.hpp> 
+#include <boost/serialization/list.hpp>
 
-#include <list>
-#include <string>
+#include <lib/list.hpp>
+#include <lib/string.hpp>
 #include <iostream>
 
 #include <exception>
 
-namespace StE {
+namespace ste {
 
 template <typename K>
 class lru_cache;
@@ -48,21 +49,21 @@ private:
 		}
 
 		key_type k;
-		std::string name;
+		lib::string name;
 	};
 
 private:
-	using lru_list_type = std::list<lru_node>;
+	using lru_list_type = lib::list<lru_node>;
 	using lru_list_iterator_type = typename lru_list_type::const_iterator;
 	using val_type = lru_cache_cacheable<key_type, lru_list_iterator_type>;
 
-	using res_kv_map = concurrent_unordered_map<key_type, val_type>;
+	using res_kv_map = lib::concurrent_unordered_map<key_type, val_type>;
 	using val_data_guard = typename res_kv_map::value_data_guard_type;
 
 	lru_list_type lru_list;
 	res_kv_map map;
 
-	boost::filesystem::path index_path;
+	std::experimental::filesystem::path index_path;
 
 private:
 	friend class boost::serialization::access;
@@ -77,8 +78,8 @@ private:
 		oa << *this;
 	}
 
-	std::size_t populate_map(const boost::filesystem::path &path) {
-		std::size_t size = 0;
+	std::uint64_t populate_map(const std::experimental::filesystem::path &path) {
+		std::uint64_t size = 0;
 		for (lru_list_iterator_type it = lru_list.begin(); it != lru_list.end(); ++it) {
 			auto &k = it->k;
 			val_type v(k, path, it->name);
@@ -90,42 +91,55 @@ private:
 		return size;
 	}
 
-	lru_cache_index(const boost::filesystem::path &path, std::atomic<std::size_t> &total_size) : index_path(path / index_file) {
-		if (boost::filesystem::exists(index_path)) {
+	lru_cache_index(const std::experimental::filesystem::path &path, std::atomic<std::uint64_t> &total_size) : index_path(path / index_file) {
+		if (std::experimental::filesystem::exists(index_path)) {
 			try {
 				std::ifstream ifs(index_path.string(), std::ios::binary);
 				boost::archive::binary_iarchive ia(ifs);
 				ia >> *this;
 				total_size = populate_map(path);
 			} catch (const std::exception &e) {
-				using namespace Text::Attributes;
-				ste_log_warn() << b("LRU Cache: ") + "Failed reading index (Reason: " + e.what() + "). Clearing " + i(path.string()) + "." << std::endl;
+				using namespace text::attributes;
+				ste_log_warn() << b("LRU Cache: ") + "Failed reading index (Reason: " + e.what() + "). Clearing " + i(lib::to_string(path.string())) + "." << std::endl;
 
-				for (boost::filesystem::directory_iterator end_dir_it, it(path); it!=end_dir_it; ++it)
-					boost::filesystem::remove(it->path());
+				for (std::experimental::filesystem::directory_iterator end_dir_it, it(path); it!=end_dir_it; ++it)
+					std::experimental::filesystem::remove(it->path());
 			}
 		}
 	}
 
-	~lru_cache_index() {
-		write_index();
+	~lru_cache_index() noexcept {
+		try {
+			write_index();
+		} catch (std::runtime_error) {}
 	}
 
 	void move_to_lru_front(val_type &v) {
 		if (v.is_live())
 			lru_list.splice(lru_list.cbegin(), lru_list, v.get_lru_it());
 		else {
-			lru_list.push_back(lru_node({ v.get_k(), v.get_file_name().string() }));
+			auto node = lru_node{
+				v.get_k(),
+				lib::to_string(v.get_file_name().string())
+			};
+			lru_list.push_back(std::move(node));
 			v.mark_live(lru_list.cbegin());
 		}
 	}
 
 	void insert(const key_type &k, val_type &&v) {
-		erase(k);
-		map.emplace(k, std::move(v));
+		auto val_guard = map[k];
+		if (!val_guard.is_valid()) {
+			// Key doesn't exist, insert new
+			map.emplace(k, std::move(v));
+			return;
+		}
+
+		// Key exists, replace with new data
+		val_guard->replace(std::move(v));
 	}
 
-	std::size_t erase(const key_type &k) {
+	std::uint64_t erase(const key_type &k) {
 		auto val_guard = map[k];
 		if (!val_guard.is_valid())
 			return 0;
@@ -136,7 +150,7 @@ private:
 		return val_guard->get_size();
 	}
 
-	std::size_t erase_back() {
+	std::uint64_t erase_back() {
 		if (!lru_list.size()) return 0;
 		auto k = lru_list.back().k;
 

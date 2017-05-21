@@ -3,17 +3,17 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "mesh.hpp"
+#include <stdafx.hpp>
+#include <mesh.hpp>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 class quad : public mesh<mesh_subdivion_mode::TrianglesStrip> {
 public:
 	~quad() noexcept override {}
 	quad() {
-		std::vector<object_vertex_data> vert;
+		lib::vector<object_vertex_data> vert;
 		object_vertex_data vd;
 		glm::vec3 n = { 0,0,1 };
 		glm::vec3 t = { 1,0,0 };
@@ -38,7 +38,7 @@ public:
 		vert.push_back(vd);
 
 		set_vertices(vert);
-		set_indices(std::vector<std::uint32_t>{ 0,1,2,3 });
+		set_indices(lib::vector<std::uint32_t>{ 0,1,2,3 });
 	}
 };
 

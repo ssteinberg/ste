@@ -1,0 +1,491 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|Win32">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|Win32">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGUID>{F4521070-6CCA-38AF-9149-33ECBC5B8276}</ProjectGUID>
+    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>Win32</Platform>
+    <ProjectName>BuildUnsupported</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+    <PropertyGroup>
+      <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Midl>
+      <AdditionalIncludeDirectories>D:\src\git\StE\Simulation\third_party\build\eigen\unsupported\test;D:\src\git\StE\Simulation\third_party\packages\eigen\unsupported\test;D:\src\git\StE\Simulation\third_party\packages\eigen;D:\src\git\StE\Simulation\third_party\build\eigen;D:\src\git\StE\Simulation\third_party\packages\eigen\unsupported\test\..\..\test;D:\src\git\StE\Simulation\third_party\packages\eigen\unsupported\test\..\..\unsupported;D:\src\git\StE\Simulation\third_party\packages\eigen\unsupported\test\..\..\Eigen;D:\src\git\StE\Simulation\third_party\build\eigen\unsupported\test\..\..\test;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Midl>
+      <AdditionalIncludeDirectories>D:\src\git\StE\Simulation\third_party\build\eigen\unsupported\test;D:\src\git\StE\Simulation\third_party\packages\eigen\unsupported\test;D:\src\git\StE\Simulation\third_party\packages\eigen;D:\src\git\StE\Simulation\third_party\build\eigen;D:\src\git\StE\Simulation\third_party\packages\eigen\unsupported\test\..\..\test;D:\src\git\StE\Simulation\third_party\packages\eigen\unsupported\test\..\..\unsupported;D:\src\git\StE\Simulation\third_party\packages\eigen\unsupported\test\..\..\Eigen;D:\src\git\StE\Simulation\third_party\build\eigen\unsupported\test\..\..\test;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">
+    <Midl>
+      <AdditionalIncludeDirectories>D:\src\git\StE\Simulation\third_party\build\eigen\unsupported\test;D:\src\git\StE\Simulation\third_party\packages\eigen\unsupported\test;D:\src\git\StE\Simulation\third_party\packages\eigen;D:\src\git\StE\Simulation\third_party\build\eigen;D:\src\git\StE\Simulation\third_party\packages\eigen\unsupported\test\..\..\test;D:\src\git\StE\Simulation\third_party\packages\eigen\unsupported\test\..\..\unsupported;D:\src\git\StE\Simulation\third_party\packages\eigen\unsupported\test\..\..\Eigen;D:\src\git\StE\Simulation\third_party\build\eigen\unsupported\test\..\..\test;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">
+    <Midl>
+      <AdditionalIncludeDirectories>D:\src\git\StE\Simulation\third_party\build\eigen\unsupported\test;D:\src\git\StE\Simulation\third_party\packages\eigen\unsupported\test;D:\src\git\StE\Simulation\third_party\packages\eigen;D:\src\git\StE\Simulation\third_party\build\eigen;D:\src\git\StE\Simulation\third_party\packages\eigen\unsupported\test\..\..\test;D:\src\git\StE\Simulation\third_party\packages\eigen\unsupported\test\..\..\unsupported;D:\src\git\StE\Simulation\third_party\packages\eigen\unsupported\test\..\..\Eigen;D:\src\git\StE\Simulation\third_party\build\eigen\unsupported\test\..\..\test;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\packages\eigen\unsupported\test\CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Building Custom Rule D:/src/git/StE/Simulation/third_party/packages/eigen/unsupported/test/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HD:/src/git/StE/Simulation/third_party/packages/eigen -BD:/src/git/StE/Simulation/third_party/build/eigen --check-stamp-file D:\src\git\StE\Simulation\third_party\build\eigen\unsupported\test\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:/src/git/StE/Simulation/third_party/packages/eigen/unsupported/test/CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\eigen\unsupported\test\CMakeLists.txt;C:\Program Files\CMake\share\cmake-3.7\Modules\FindThreads.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CheckLibraryExists.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CheckSymbolExists.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CheckIncludeFile.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindXsmm.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindGoogleHash.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindAdolc.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindMPFR.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindGMP.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindFFTW.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPkgConfig.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindOpenGL.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindGLUT.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindGLEW.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindCUDA.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindCUDA\select_compute_arch.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\unsupported\test\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\src\git\StE\Simulation\third_party\build\eigen\unsupported\test\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Building Custom Rule D:/src/git/StE/Simulation/third_party/packages/eigen/unsupported/test/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HD:/src/git/StE/Simulation/third_party/packages/eigen -BD:/src/git/StE/Simulation/third_party/build/eigen --check-stamp-file D:\src\git\StE\Simulation\third_party\build\eigen\unsupported\test\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D:/src/git/StE/Simulation/third_party/packages/eigen/unsupported/test/CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\eigen\unsupported\test\CMakeLists.txt;C:\Program Files\CMake\share\cmake-3.7\Modules\FindThreads.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CheckLibraryExists.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CheckSymbolExists.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CheckIncludeFile.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindXsmm.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindGoogleHash.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindAdolc.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindMPFR.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindGMP.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindFFTW.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPkgConfig.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindOpenGL.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindGLUT.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindGLEW.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindCUDA.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindCUDA\select_compute_arch.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\unsupported\test\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D:\src\git\StE\Simulation\third_party\build\eigen\unsupported\test\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">Building Custom Rule D:/src/git/StE/Simulation/third_party/packages/eigen/unsupported/test/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HD:/src/git/StE/Simulation/third_party/packages/eigen -BD:/src/git/StE/Simulation/third_party/build/eigen --check-stamp-file D:\src\git\StE\Simulation\third_party\build\eigen\unsupported\test\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">D:/src/git/StE/Simulation/third_party/packages/eigen/unsupported/test/CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\eigen\unsupported\test\CMakeLists.txt;C:\Program Files\CMake\share\cmake-3.7\Modules\FindThreads.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CheckLibraryExists.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CheckSymbolExists.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CheckIncludeFile.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindXsmm.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindGoogleHash.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindAdolc.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindMPFR.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindGMP.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindFFTW.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPkgConfig.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindOpenGL.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindGLUT.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindGLEW.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindCUDA.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindCUDA\select_compute_arch.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\unsupported\test\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">D:\src\git\StE\Simulation\third_party\build\eigen\unsupported\test\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">Building Custom Rule D:/src/git/StE/Simulation/third_party/packages/eigen/unsupported/test/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HD:/src/git/StE/Simulation/third_party/packages/eigen -BD:/src/git/StE/Simulation/third_party/build/eigen --check-stamp-file D:\src\git\StE\Simulation\third_party\build\eigen\unsupported\test\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">D:/src/git/StE/Simulation/third_party/packages/eigen/unsupported/test/CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\eigen\unsupported\test\CMakeLists.txt;C:\Program Files\CMake\share\cmake-3.7\Modules\FindThreads.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CheckLibraryExists.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CheckSymbolExists.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CheckIncludeFile.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindXsmm.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindGoogleHash.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindAdolc.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindMPFR.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindGMP.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindFFTW.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPkgConfig.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindOpenGL.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindGLUT.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindGLEW.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindCUDA.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindCUDA\select_compute_arch.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\unsupported\test\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">D:\src\git\StE\Simulation\third_party\build\eigen\unsupported\test\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/ZERO_CHECK.vcxproj">
+      <Project>4452BF3C-B9DF-34D4-9C33-3A58B5AF8518</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/BVH_1.vcxproj">
+      <Project>47105D95-F06A-31F0-9F96-BE120C154364</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/BVH_2.vcxproj">
+      <Project>97E2E7E2-AAAC-3A97-AE2B-410A85D244D0</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/BVH_3.vcxproj">
+      <Project>336B7477-449B-3BE4-B489-6697D07531C8</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/EulerAngles_1.vcxproj">
+      <Project>08485193-35DA-3FBE-AEDC-50EDC83C27B1</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/EulerAngles_2.vcxproj">
+      <Project>481AD437-6C90-3F22-9B3B-4467A300521E</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/EulerAngles_3.vcxproj">
+      <Project>B775E3A6-8F10-3F53-BA5F-4DE7186614AF</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/EulerAngles_4.vcxproj">
+      <Project>160BE96F-B101-3ECA-AD80-84E05A373EF5</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/FFT.vcxproj">
+      <Project>3EA60134-CC9A-3739-97C9-948773C1C6DF</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/NonLinearOptimization.vcxproj">
+      <Project>AB6FC990-CDA8-3535-B079-3F1DD54ABAAC</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/NumericalDiff.vcxproj">
+      <Project>0C0F7E82-BDB8-39CE-92DB-0FD9DFC2991D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/alignedvector3.vcxproj">
+      <Project>A2560DBF-79EC-39DE-90E5-265EC36CDD2F</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/autodiff_1.vcxproj">
+      <Project>B4BAD4C1-5CAA-3F6B-8AE6-F5A816B69D8B</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/autodiff_2.vcxproj">
+      <Project>963B593B-2491-341A-A32E-B09C5FB02381</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/autodiff_3.vcxproj">
+      <Project>C6812649-4AC7-3E29-A553-019197EDE4DF</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/autodiff_4.vcxproj">
+      <Project>5CBCEC3A-713A-3A79-A9C8-C0BA27349B0E</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/autodiff_scalar_1.vcxproj">
+      <Project>67423122-B1A0-385A-9BAB-75ED4DDA6DB4</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/autodiff_scalar_2.vcxproj">
+      <Project>499324A9-4C4B-3B82-87B9-1C6DFFC46B1C</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/autodiff_scalar_3.vcxproj">
+      <Project>0DA89702-49DB-3FBA-803A-5BAAF48F5FB6</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/autodiff_scalar_4.vcxproj">
+      <Project>F85A9E4B-098F-3B43-B2ED-FB69DED04729</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/cxx11_tensor_assign.vcxproj">
+      <Project>D0842FE4-2D4F-39AF-84B2-DAB22337DA32</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/cxx11_tensor_casts.vcxproj">
+      <Project>0F0CB542-CDE1-3896-9641-3B17807FFF16</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/cxx11_tensor_comparisons.vcxproj">
+      <Project>C1AC5712-AD05-3131-B1FB-93F883AE50B6</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/cxx11_tensor_const.vcxproj">
+      <Project>B90A644A-94A5-36C6-9A3C-33D1E96D3C00</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/cxx11_tensor_dimension.vcxproj">
+      <Project>91C9644D-6179-3AA7-AB9B-029C67D62558</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/cxx11_tensor_empty.vcxproj">
+      <Project>B52612DF-0006-3D31-8702-919452EA2926</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/cxx11_tensor_forced_eval.vcxproj">
+      <Project>A209F0A0-4006-33AF-9C40-26D3E1F86B05</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/cxx11_tensor_intdiv_1.vcxproj">
+      <Project>8DBCD298-FC65-31AC-AF17-97384E34E50A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/cxx11_tensor_intdiv_2.vcxproj">
+      <Project>CA11BBB3-8029-3536-BDC3-B7DADAD27F71</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/cxx11_tensor_intdiv_3.vcxproj">
+      <Project>3BCB5023-7E12-3FFA-8050-3C6558535646</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/cxx11_tensor_intdiv_4.vcxproj">
+      <Project>292E3C3D-6A43-3FC2-9063-962C36024BD2</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/cxx11_tensor_intdiv_5.vcxproj">
+      <Project>F537907C-F44F-3552-807C-1B6319A5AAAD</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/cxx11_tensor_intdiv_6.vcxproj">
+      <Project>40BD6FF8-16B7-39A8-A3FA-B0923C46551D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/cxx11_tensor_intdiv_7.vcxproj">
+      <Project>86E7E9D9-3CA9-39D5-AB8B-A8644DF7F51C</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/cxx11_tensor_io.vcxproj">
+      <Project>8AE7C9DD-AC4D-3FD3-8215-B2B7E72D2882</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/cxx11_tensor_layout_swap.vcxproj">
+      <Project>7EE4F892-CA21-3A66-82B0-0E9460200651</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/cxx11_tensor_map.vcxproj">
+      <Project>CFF8ABAB-7F49-3F67-976A-0AB410B3F705</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/cxx11_tensor_math.vcxproj">
+      <Project>3DE39D5B-F8C2-3B37-9387-4BE49F987A24</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/cxx11_tensor_roundings.vcxproj">
+      <Project>8AF58146-1997-3DA9-B52F-5466F982223E</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/cxx11_tensor_sugar.vcxproj">
+      <Project>04676D40-C835-3ACF-BF09-A4CF312769B8</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/gmres_1.vcxproj">
+      <Project>20DED603-82ED-3CB2-802A-6D2F98EF9594</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/gmres_2.vcxproj">
+      <Project>2F7A299C-AB24-35E3-ABF7-C4A194A62304</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/kronecker_product_1.vcxproj">
+      <Project>3B175C90-06F7-3B2F-AB7E-714505A0DDD4</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/kronecker_product_2.vcxproj">
+      <Project>E6BD067C-D76E-35CA-A727-7042DAE43A20</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/levenberg_marquardt.vcxproj">
+      <Project>1516450F-F70E-35A6-97F3-731F89EE2353</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_exponential_1.vcxproj">
+      <Project>6A859415-76B4-396F-A220-EADB8D7EBFBF</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_exponential_2.vcxproj">
+      <Project>0F6A6A64-741A-33BA-B47B-1EE19D684D9D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_exponential_3.vcxproj">
+      <Project>8A33C9A5-DB3B-3D6B-A3B2-DFDC60DB96FA</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_exponential_4.vcxproj">
+      <Project>0CCD58BD-7AC9-3D7E-9BDE-EB9DE49234D3</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_exponential_5.vcxproj">
+      <Project>596FA69B-7973-3F77-B76C-D9B8221B120E</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_exponential_6.vcxproj">
+      <Project>D9D6C926-09F1-3BE5-B2C9-329E0097CBAE</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_exponential_7.vcxproj">
+      <Project>528FCC0A-E88E-317F-AFA6-435ABA56BD8C</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_exponential_8.vcxproj">
+      <Project>A55596F4-A08F-3B17-AD6D-2853DA73825A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_exponential_9.vcxproj">
+      <Project>02DDF02B-5E66-3B15-A63F-504370098C64</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_function_1.vcxproj">
+      <Project>5453A15D-FB92-3C02-AF2E-FBA8ECDE935C</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_function_2.vcxproj">
+      <Project>3D488CF7-BFC0-3BB5-A18B-EC7DF68DA3E8</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_function_3.vcxproj">
+      <Project>27E3D103-BF45-3BBD-ADDB-F983A0044CC4</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_function_4.vcxproj">
+      <Project>CFAF4C87-5B3A-3B66-B85A-2D51E24766A9</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_function_5.vcxproj">
+      <Project>1E6E9EFE-977E-3D89-87BE-90838E83F163</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_function_6.vcxproj">
+      <Project>0D8EB165-9985-30F8-986B-EE33127CE07A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_function_7.vcxproj">
+      <Project>21E42E10-0A85-3F49-A87B-BA01A7B5DD71</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_power_1.vcxproj">
+      <Project>4D34AB98-FAB0-3905-9F14-2279FB3673F3</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_power_10.vcxproj">
+      <Project>8B034CB3-3D9C-3E3D-9307-7515743AB4C7</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_power_11.vcxproj">
+      <Project>50746DFC-B321-3D36-A171-7193FE5E4FEA</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_power_12.vcxproj">
+      <Project>954F26BF-90AC-370D-B480-19C369423150</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_power_2.vcxproj">
+      <Project>AD7630E8-E97B-3FE1-A6E9-23F63ADCA2D9</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_power_3.vcxproj">
+      <Project>0F8809E8-7F70-3A14-89FF-B562B63F5F8D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_power_4.vcxproj">
+      <Project>40DAA159-05D4-3413-BF1D-D7FE34742C76</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_power_5.vcxproj">
+      <Project>52D4A066-8C9E-3E1A-A1B7-2A655C9F65F6</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_power_6.vcxproj">
+      <Project>CBC37E5B-DE89-39E2-A3F8-D726404E244F</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_power_7.vcxproj">
+      <Project>07CE06BF-A4F0-32CE-B1A5-0C508E398985</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_power_8.vcxproj">
+      <Project>0836CC34-AC22-3BEB-B228-F0D3C93F6BD5</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_power_9.vcxproj">
+      <Project>4294A789-FC77-3DAF-9381-E31382FFFBB5</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_square_root_1.vcxproj">
+      <Project>BFA90686-BF54-31C7-A35C-22FA6D5016EB</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_square_root_2.vcxproj">
+      <Project>EA7972CF-B422-3F35-81D8-E09A771D566D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_square_root_3.vcxproj">
+      <Project>4649BB7D-F481-3073-A1AE-F0C27918C574</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_square_root_4.vcxproj">
+      <Project>F200408E-5029-3EBA-B837-7264AA85DF38</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_square_root_5.vcxproj">
+      <Project>63C121BD-CAC3-3888-A667-A15615E1EECC</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/minres_1.vcxproj">
+      <Project>4BBE9DA9-2B54-3795-9BE1-634F29AC22A0</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/minres_2.vcxproj">
+      <Project>67FDE8F0-9AAE-39BE-8192-1E1BC9084300</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/polynomialsolver_1.vcxproj">
+      <Project>47F9D686-8970-326A-9BCF-8B267235D9D2</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/polynomialsolver_10.vcxproj">
+      <Project>E87C828F-9A74-31C4-A97F-6BB50FC722C9</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/polynomialsolver_11.vcxproj">
+      <Project>F624E924-9350-3C7B-ABD7-D841EBF53248</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/polynomialsolver_12.vcxproj">
+      <Project>426B493D-4E45-317A-A363-6D03952E655D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/polynomialsolver_2.vcxproj">
+      <Project>443F811A-A92E-3E85-B948-D5106437F4E8</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/polynomialsolver_3.vcxproj">
+      <Project>9426E638-01A7-3964-A5F5-49040911BF61</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/polynomialsolver_4.vcxproj">
+      <Project>1E413826-6508-3E1F-917C-D7C17186CCBE</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/polynomialsolver_5.vcxproj">
+      <Project>D649A45B-7A90-3B4A-A6CC-24B4780FA59A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/polynomialsolver_6.vcxproj">
+      <Project>ED2B03CE-7BEE-324B-B63B-7D93B9DB19E8</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/polynomialsolver_7.vcxproj">
+      <Project>5481CB2A-6FD2-38CB-80AD-67B9B1F37715</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/polynomialsolver_8.vcxproj">
+      <Project>E906A9B3-0685-3258-A21B-8D5AB9BD2E58</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/polynomialsolver_9.vcxproj">
+      <Project>F03233B4-34E2-31AC-BA22-AED24E782DCE</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/polynomialutils_2.vcxproj">
+      <Project>49E34E33-D3A3-3290-BE78-3EB161B34CF5</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/polynomialutils_3.vcxproj">
+      <Project>9EE81997-DAD5-3A98-BB4A-1ADFE8EE5B89</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/polynomialutils_4.vcxproj">
+      <Project>E1328400-3042-36DE-8431-D3E31A632CAC</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/polynomialutils_5.vcxproj">
+      <Project>CA93008E-DECF-3F7E-A9A9-13528C7A59C3</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/polynomialutils_6.vcxproj">
+      <Project>E7816842-AFF9-3381-B3E3-69E479D1E442</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/polynomialutils_7.vcxproj">
+      <Project>7B98CD61-0F74-3DE5-836C-45107DC54FD8</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/polynomialutils_8.vcxproj">
+      <Project>CA6B03BB-1A1D-3B39-B729-480991FF5C21</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/polynomialutils_9.vcxproj">
+      <Project>38ECA278-A5FB-36C2-BEAD-AB945EDC9EC9</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/sparse_extra_1.vcxproj">
+      <Project>028E2AD2-081B-35C1-8E03-2CDB9441B86F</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/sparse_extra_2.vcxproj">
+      <Project>B76F766D-3830-3E05-BFF9-B9B2066C8711</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/sparse_extra_3.vcxproj">
+      <Project>9BE6F26C-2E24-3E43-9D13-673E877D2139</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/sparse_extra_4.vcxproj">
+      <Project>8FCD815A-7AA8-3900-9DB6-D94FC8620576</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/special_functions_1.vcxproj">
+      <Project>00596D52-D18E-3985-87B2-8814CD7BBEE4</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/special_functions_2.vcxproj">
+      <Project>B11270E9-EA93-3C84-BDA9-8D46042BB04A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/splines.vcxproj">
+      <Project>DF6FD97B-DA97-31EA-A002-A417B412C0C8</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

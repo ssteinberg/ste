@@ -1,0 +1,19 @@
+
+{
+	"sources" : 
+	[
+		
+		{
+			"file" : "D:/src/git/StE/Simulation/third_party/packages/eigen/test/sparse_block.cpp"
+		},
+		
+		{
+			"file" : "D:/src/git/StE/Simulation/third_party/packages/eigen/test/CMakeLists.txt"
+		}
+	],
+	"target" : 
+	{
+		"labels" : [ "BuildOfficial" ],
+		"name" : "sparse_block_3"
+	}
+}

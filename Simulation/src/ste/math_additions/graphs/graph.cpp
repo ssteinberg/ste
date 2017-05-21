@@ -1,8 +1,8 @@
 
-#include "stdafx.hpp"
-#include "graph.hpp"
+#include <stdafx.hpp>
+#include <graph.hpp>
 
-#include "graph_detail.hpp"
+#include <graph_detail.hpp>
 
 // #include <graphviz/cgraph.h>
 // #include <graphviz/gvc.h>
@@ -11,10 +11,10 @@
 
 #include <iostream>
 
-using namespace StE::Graph;
-using namespace StE::Graph::detail;
+using namespace ste::graph;
+using namespace ste::graph::detail;
 
-// Agraph_t* StE::Graph::detail::create_graphviz_graph(const GraphSet<graph_impl::VertexPtr> *vertices,
+// Agraph_t* ste::graph::detail::create_graphviz_graph(const GraphSet<graph_impl::VertexPtr> *vertices,
 // 													const GraphSet<graph_impl::EdgePtr> *edges) {
 // 	Agraph_t* g;
 // 	g = agopen(const_cast<char*>("G"), Agdirected, NULL);
@@ -39,7 +39,7 @@ using namespace StE::Graph::detail;
 
 // bool graph_impl::write_dot(const GraphSet<VertexPtr> *vertices,
 // 						   const GraphSet<EdgePtr> *edges,
-// 						   const boost::filesystem::path &p) {
+// 						   const std::experimental::filesystem::path &p) {
 // 	bool ret = false;
 
 // 	Agraph_t* g = create_graphviz_graph(vertices, edges);
@@ -61,7 +61,7 @@ using namespace StE::Graph::detail;
 
 // bool graph_impl::write_png(const GraphSet<VertexPtr> *vertices,
 // 						   const GraphSet<EdgePtr> *edges,
-// 						   const boost::filesystem::path &p) {
+// 						   const std::experimental::filesystem::path &p) {
 // 	Agraph_t* g = create_graphviz_graph(vertices, edges);
 
 // 	GVC_t* gvc;

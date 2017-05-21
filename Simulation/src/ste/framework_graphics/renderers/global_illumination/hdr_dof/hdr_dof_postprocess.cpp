@@ -1,163 +1,234 @@
 
-#include "stdafx.hpp"
-#include "hdr_dof_postprocess.hpp"
+#include <stdafx.hpp>
+#include <hdr_dof_postprocess.hpp>
 
-#include "glsl_program_factory.hpp"
+#include <human_vision_properties.hpp>
+#include <surface_factory.hpp>
 
-#include "human_vision_properties.hpp"
+#include <cmd_copy_buffer.hpp>
+#include <cmd_pipeline_barrier.hpp>
+#include <pipeline_barrier.hpp>
 
-#include "hdr_compute_minmax_task.hpp"
-#include "hdr_create_histogram_task.hpp"
-#include "hdr_compute_histogram_sums_task.hpp"
-#include "hdr_tonemap_coc_task.hpp"
-#include "hdr_bloom_blurx_task.hpp"
-#include "hdr_bloom_blury_task.hpp"
-#include "hdr_bokeh_blur_task.hpp"
+using namespace ste;
+using namespace ste::graphics;
 
-#include "sampler.hpp"
+hdr_bokeh_parameters hdr_dof_postprocess::parameters_initial = { std::tuple<std::int32_t, std::int32_t, float>(0x7FFFFFFF, 0, .0f) };
 
-using namespace StE::Graphics;
+namespace ste::graphics::_internal {
 
-hdr_dof_postprocess::hdr_dof_postprocess(const ste_engine_control &context,
-										 const deferred_gbuffer *gbuffer) : gbuffer(gbuffer), ctx(context),
-																			hdr_compute_minmax(ctx, "hdr_compute_minmax.glsl"),
-																			hdr_create_histogram(ctx, "hdr_create_histogram.glsl"),
-																			hdr_compute_histogram_sums(ctx, "hdr_compute_histogram_sums.glsl"),
-																			hdr_tonemap_coc(ctx, std::vector<std::string>{ "passthrough.vert", "hdr_tonemap_coc.frag" }),
-																			hdr_bloom_blurx(ctx, std::vector<std::string>{ "passthrough.vert", "hdr_bloom_blur_x.frag" }),
-																			hdr_bloom_blury(ctx, std::vector<std::string>{ "passthrough.vert", "hdr_bloom_blur_y.frag" }),
-																			bokeh_blur(ctx, std::vector<std::string>{ "passthrough.vert", "bokeh_bilateral_blur.frag" }),
-																			hdr_vision_properties_sampler(Core::texture_filtering::Linear, Core::texture_filtering::Linear, 16) {
-	hdr_vision_properties_sampler.set_wrap_s(Core::texture_wrap_mode::ClampToEdge);
+template <gl::format image_format>
+auto hdr_create_texture(const ste_context &ctx,
+						gl::image_usage usage = gl::image_usage::sampled,
+						gl::image_layout layout = gl::image_layout::shader_read_only_optimal,
+						std::uint32_t res_divider = 1) {
+	auto image = resource::surface_factory::image_empty_2d<image_format>(ctx,
+																		 usage,
+																		 layout,
+																		 ctx.device().get_surface().extent() / res_divider);
+	return ste_resource<gl::texture<gl::image_type::image_2d>>(ctx, std::move(image));
+}
 
-	std::int32_t big_float_i = 0x7FFFFFFF;
-	hdr_bokeh_param_buffer_eraser = std::make_unique<StE::Core::pixel_buffer_object<std::int32_t>>(std::vector<std::int32_t>{ big_float_i, 0 });
+}
 
-	gli::texture1d hdr_human_vision_properties_data(gli::format::FORMAT_RGBA32_SFLOAT_PACK32, glm::tvec1<std::size_t>{ 4096 }, 1);
+ste_resource<gl::texture<gl::image_type::image_1d, 2>> hdr_dof_postprocess::create_hdr_vision_properties_texture(const ste_context &ctx) {
+	static constexpr auto format = gl::format::r32g32b32a32_sfloat;
+	static constexpr auto gli_format = gl::format_traits<format>::gli_format;
+
+	gli::texture2d hdr_human_vision_properties_data(gli_format, glm::tvec2<std::size_t>{ 4096, 1 }, 1);
 	{
 		glm::vec4 *d = reinterpret_cast<glm::vec4*>(hdr_human_vision_properties_data.data());
 		for (int i = 0; i < hdr_human_vision_properties_data.extent().x; ++i, ++d) {
-			float x = static_cast<float>(i) / static_cast<float>(hdr_human_vision_properties_data.extent().x);
-			float l = glm::mix(StE::Graphics::human_vision_properties::min_luminance,
+			float x = (static_cast<float>(i) + .5f) / static_cast<float>(hdr_human_vision_properties_data.extent().x);
+			float l = glm::mix(ste::graphics::human_vision_properties::min_luminance,
 							   vision_properties_max_lum,
 							   x);
-			*d = {	StE::Graphics::human_vision_properties::scotopic_vision(l),
-					StE::Graphics::human_vision_properties::mesopic_vision(l),
-					StE::Graphics::human_vision_properties::monochromaticity(l),
-					StE::Graphics::human_vision_properties::visual_acuity(l) };
+			*d = {
+				ste::graphics::human_vision_properties::scotopic_vision(l),
+				ste::graphics::human_vision_properties::mesopic_vision(l),
+				ste::graphics::human_vision_properties::monochromaticity(l),
+				ste::graphics::human_vision_properties::visual_acuity(l)
+			};
 		}
 	}
-	hdr_vision_properties_texture = std::make_unique<StE::Core::texture_1d>(hdr_human_vision_properties_data, false);
 
-	task = make_gpu_task("dof_bokeh", create_dispatchable(), nullptr, create_sub_tasks());
-
-	setup_connections();
+	auto image = resource::surface_factory::image_from_surface_2d<format>(ctx,
+																		  std::move(hdr_human_vision_properties_data),
+																		  gl::image_usage::sampled,
+																		  gl::image_layout::shader_read_only_optimal,
+																		  false);
+	return ste_resource<gl::texture<gl::image_type::image_1d, 2>>(ctx, std::move(image));
 }
 
-void hdr_dof_postprocess::setup_connections() {
-	resize_connection = std::make_shared<ResizeSignalConnectionType>([=](const glm::i32vec2 &size) {
-		this->resize(size);
-	});
-	ctx.signal_framebuffer_resize().connect(resize_connection);
+void hdr_dof_postprocess::bind_fragment_resources() {
+	fbo_hdr_final[0] = gl::framebuffer_attachment(hdr_final_image.get());
+	fbo_hdr[0] = gl::framebuffer_attachment(hdr_image.get());
+	fbo_hdr[1] = gl::framebuffer_attachment(hdr_bloom_image.get());
+	fbo_hdr_bloom_blurx_image[0] = gl::framebuffer_attachment(hdr_bloom_blurx_image.get());
 
-	gbuffer_depth_target_connection = std::make_shared<connection<>>([&]() {
-		attach_handles();
-	});
-	gbuffer->get_depth_target_modified_signal().connect(gbuffer_depth_target_connection);
+	auto lums_extent = hdr_lums.get().get_image().get_extent();
+	auto& samp = ctx.get().device().common_samplers_collection().linear_clamp_sampler();
+	auto& samp_no_clamp = ctx.get().device().common_samplers_collection().linear_sampler();
+
+	tonemap_coc_task.attach_framebuffer(fbo_hdr);
+	bloom_blurx_task.attach_framebuffer(fbo_hdr_bloom_blurx_image);
+	bloom_blury_task.attach_framebuffer(fbo_hdr_final);
+
+	bloom_blurx_task.set_source(gl::pipeline::combined_image_sampler(hdr_bloom_image.get(), samp));
+	bloom_blury_task.set_source(gl::pipeline::combined_image_sampler(hdr_image.get(), samp),
+								gl::pipeline::combined_image_sampler(hdr_bloom_blurx_image.get(), samp));
+
+	tonemap_coc_task.bind_buffers(histogram_sums, hdr_bokeh_param_buffer);
+	tonemap_coc_task.set_source(gl::pipeline::combined_image_sampler(hdr_vision_properties_texture.get(), samp),
+								gl::pipeline::combined_image_sampler(hdr_final_image.get(), samp));
+
+	create_histogram_task.bind_buffers(histogram, hdr_bokeh_param_buffer);
+	create_histogram_task.set_source(gl::pipeline::storage_image(hdr_lums.get()), lums_extent);
+
+	bokeh_blur_task.bind_buffers(hdr_bokeh_param_buffer);
+	bokeh_blur_task.set_source(gl::pipeline::combined_image_sampler(hdr_final_image.get(), samp));
+
+	compute_histogram_sums_task.bind_buffers(histogram_sums, histogram, hdr_bokeh_param_buffer);
+	compute_histogram_sums_task.set_source(lums_extent);
+
+	compute_minmax_task.bind_buffers(hdr_bokeh_param_buffer);
+	compute_minmax_task.set_source(gl::pipeline::combined_image_sampler(hdr_final_image.get(), samp_no_clamp));
+	compute_minmax_task.set_destination(gl::pipeline::storage_image(hdr_lums.get()), lums_extent);
 }
 
-std::shared_ptr<const gpu_task> hdr_dof_postprocess::get_task() const {
-	return task;
+hdr_dof_postprocess::hdr_dof_postprocess(const gl::rendering_system &rs,
+										 gl::framebuffer_layout &&fb_layout)
+	: ctx(rs.get_creating_context()),
+	// Textures
+	hdr_final_image(ctx,
+					resource::surface_factory::image_empty_2d<gl::format::r16g16b16a16_sfloat>(ctx.get(),
+																							   gl::image_usage::sampled | gl::image_usage::color_attachment,
+																							   gl::image_layout::shader_read_only_optimal,
+																							   rs.device().get_surface().extent())),
+	hdr_image(_internal::hdr_create_texture<gl::format::r16g16b16a16_sfloat>(ctx.get(), gl::image_usage::sampled | gl::image_usage::color_attachment)),
+	hdr_bloom_image(_internal::hdr_create_texture<gl::format::r16g16b16a16_sfloat>(ctx.get(), gl::image_usage::sampled | gl::image_usage::color_attachment)),
+	hdr_bloom_blurx_image(_internal::hdr_create_texture<gl::format::r16g16b16a16_sfloat>(ctx.get(), gl::image_usage::sampled | gl::image_usage::color_attachment)),
+	hdr_lums(_internal::hdr_create_texture<gl::format::r32_sfloat>(ctx.get(), gl::image_usage::storage, gl::image_layout::general, 4)),
+	hdr_vision_properties_texture(create_hdr_vision_properties_texture(ctx.get())),
+	// Buffers
+	hdr_bokeh_param_buffer(ctx.get(), 1, { parameters_initial }, gl::buffer_usage::storage_buffer),
+//	hdr_bokeh_param_buffer_prev(ctx.get(), 1, { parameters_initial }, gl::buffer_usage::storage_buffer),
+	histogram(ctx.get(), 128, gl::buffer_usage::storage_buffer),
+	histogram_sums(ctx.get(), 128, gl::buffer_usage::storage_buffer),
+	// Fragments
+	compute_minmax_task(rs),
+	create_histogram_task(rs),
+	compute_histogram_sums_task(rs),
+	tonemap_coc_task(rs),
+	bloom_blurx_task(rs),
+	bloom_blury_task(rs),
+	bokeh_blur_task(rs, std::move(fb_layout)),
+	// Framebuffers
+	fbo_hdr_final(ctx.get(), bloom_blury_task.get_framebuffer_layout(), rs.device().get_surface().extent()),
+	fbo_hdr(ctx.get(), tonemap_coc_task.get_framebuffer_layout(), rs.device().get_surface().extent()),
+	fbo_hdr_bloom_blurx_image(ctx.get(), bloom_blurx_task.get_framebuffer_layout(), rs.device().get_surface().extent())
+{
+	bind_fragment_resources();
+
+	bokeh_blur_task.set_aperture_parameters(default_aperature_diameter, default_aperature_focal_ln);
 }
 
-hdr_bokeh_blur_task* hdr_dof_postprocess::create_dispatchable() {
-	bokeh_blur_task = std::make_unique<hdr_bokeh_blur_task>(this);
-	return bokeh_blur_task.get();
+void hdr_dof_postprocess::resize() {
+	hdr_final_image = ste_resource<gl::texture<gl::image_type::image_2d>>(ctx.get(),
+																		  resource::surface_factory::image_empty_2d<gl::format::r16g16b16a16_sfloat>(ctx.get(),
+																																					 gl::image_usage::sampled | gl::image_usage::color_attachment,
+																																					 gl::image_layout::shader_read_only_optimal,
+																																					 ctx.get().device().get_surface().extent()));
+
+	hdr_image = _internal::hdr_create_texture<gl::format::r16g16b16a16_sfloat>(ctx.get(), gl::image_usage::sampled | gl::image_usage::color_attachment);
+	hdr_bloom_image = _internal::hdr_create_texture<gl::format::r16g16b16a16_sfloat>(ctx.get(), gl::image_usage::sampled | gl::image_usage::color_attachment);
+	hdr_bloom_blurx_image = _internal::hdr_create_texture<gl::format::r16g16b16a16_sfloat>(ctx.get(), gl::image_usage::sampled | gl::image_usage::color_attachment);
+	hdr_lums = _internal::hdr_create_texture<gl::format::r32_sfloat>(ctx.get(), gl::image_usage::storage, gl::image_layout::general, 4);
+
+	fbo_hdr_final = gl::framebuffer(ctx.get(), bloom_blury_task.get_framebuffer_layout(), ctx.get().device().get_surface().extent());
+	fbo_hdr = gl::framebuffer(ctx.get(), tonemap_coc_task.get_framebuffer_layout(), ctx.get().device().get_surface().extent());
+	fbo_hdr_bloom_blurx_image = gl::framebuffer(ctx.get(), bloom_blurx_task.get_framebuffer_layout(), ctx.get().device().get_surface().extent());
+
+	bind_fragment_resources();
 }
 
-std::vector<std::shared_ptr<const gpu_task>> hdr_dof_postprocess::create_sub_tasks() {
-	compute_minmax_task = std::make_unique<hdr_compute_minmax_task>(this);
-	create_histogram_task = std::make_unique<hdr_create_histogram_task>(this);
-	compute_histogram_sums_task = std::make_unique<hdr_compute_histogram_sums_task>(this);
-	tonemap_coc_task = std::make_unique<hdr_tonemap_coc_task>(this);
-	bloom_blurx_task = std::make_unique<hdr_bloom_blurx_task>(this);
-	bloom_blury_task = std::make_unique<hdr_bloom_blury_task>(this);
+void hdr_dof_postprocess::record(gl::command_recorder &recorder) {
+	recorder
+		<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::fragment_shader,
+														 gl::pipeline_stage::transfer,
+														 gl::buffer_memory_barrier(hdr_bokeh_param_buffer,
+																				   gl::access_flags::shader_read,
+																				   gl::access_flags::transfer_write)))
+//		<< gl::cmd_copy_buffer(hdr_bokeh_param_buffer.get(), hdr_bokeh_param_buffer_prev.get())
+		<< hdr_bokeh_param_buffer.update_task({ parameters_initial }, 0)();
 
-	auto compute_minmax = make_gpu_task("hdr_compute_minmax", compute_minmax_task.get(), nullptr);
-	auto create_histogram = make_gpu_task("hdr_create_histogram", create_histogram_task.get(), nullptr);
-	auto compute_histogram_sums = make_gpu_task("hdr_compute_histogram_sums", compute_histogram_sums_task.get(), nullptr);
-	auto tonemap_coc = make_gpu_task("hdr_tonemap_coc", tonemap_coc_task.get(), &fbo_hdr);
-	auto bloom_blurx = make_gpu_task("hdr_bloom_blurx", bloom_blurx_task.get(), &fbo_hdr_bloom_blurx_image);
-	auto bloom_blury = make_gpu_task("hdr_bloom_blury", bloom_blury_task.get(), &fbo_hdr_final);
+	recorder
+		<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::transfer,
+														 gl::pipeline_stage::compute_shader,
+														 gl::buffer_memory_barrier(hdr_bokeh_param_buffer,
+																				   gl::access_flags::transfer_write,
+																				   gl::access_flags::shader_write)))
+		<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(input_stage_flags,
+														 gl::pipeline_stage::compute_shader,
+														 gl::image_layout_transform_barrier(hdr_final_image,
+																							input_image_layout,
+																							gl::image_layout::shader_read_only_optimal)))
+		<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader,
+														 gl::pipeline_stage::compute_shader,
+														 gl::image_layout_transform_barrier(hdr_lums->get_image(),
+																							gl::image_layout::general, gl::image_layout::general,
+																							gl::access_flags::shader_read, gl::access_flags::shader_write)))
+		<< compute_minmax_task;
 
-	bloom_blury->add_dependency(bloom_blurx);
-	bloom_blurx->add_dependency(tonemap_coc);
-	tonemap_coc->add_dependency(compute_histogram_sums);
-	compute_histogram_sums->add_dependency(create_histogram);
-	create_histogram->add_dependency(compute_minmax);
+	recorder
+		<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader,
+														 gl::pipeline_stage::transfer,
+														 gl::buffer_memory_barrier(histogram,
+																				   gl::access_flags::shader_read,
+																				   gl::access_flags::transfer_write)))
+		<< gl::cmd_fill_buffer(histogram.get(), 0u)
 
-	return { bloom_blury, bloom_blurx, tonemap_coc, compute_histogram_sums, create_histogram, compute_minmax };
-}
+		<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::transfer,
+														 gl::pipeline_stage::compute_shader,
+														 gl::buffer_memory_barrier(histogram,
+																				   gl::access_flags::transfer_write,
+																				   gl::access_flags::shader_write)))
+		<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader,
+														 gl::pipeline_stage::compute_shader,
+														 gl::buffer_memory_barrier(hdr_bokeh_param_buffer,
+																				   gl::access_flags::shader_write,
+																				   gl::access_flags::shader_read),
+														 gl::image_layout_transform_barrier(hdr_lums->get_image(),
+																							gl::image_layout::general, gl::image_layout::general,
+																							gl::access_flags::shader_write, gl::access_flags::shader_read)))
+		<< create_histogram_task;
 
-hdr_dof_postprocess::~hdr_dof_postprocess() noexcept {
-}
+	recorder
+		<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader,
+														 gl::pipeline_stage::compute_shader,
+														 gl::buffer_memory_barrier(histogram,
+																				   gl::access_flags::shader_write,
+																				   gl::access_flags::shader_read),
+														 gl::buffer_memory_barrier(hdr_bokeh_param_buffer,
+																				   gl::access_flags::shader_read,
+																				   gl::access_flags::shader_write)))
+		<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::fragment_shader,
+														 gl::pipeline_stage::compute_shader,
+														 gl::buffer_memory_barrier(histogram_sums,
+																				   gl::access_flags::shader_read,
+																				   gl::access_flags::shader_write)))
+		<< compute_histogram_sums_task;
 
-void hdr_dof_postprocess::attach_handles() const {
-	auto depth_texture = gbuffer->get_depth_target();
-	if (depth_texture) {
-		auto depth_target_handle = depth_texture->get_texture_handle(*Core::sampler::sampler_nearest_clamp());
-		depth_target_handle.make_resident();
-
-		hdr_compute_histogram_sums.get().set_uniform("depth_texture", depth_target_handle);
-		bokeh_blur.get().set_uniform("depth_texture", depth_target_handle);
-	}
-}
-
-void hdr_dof_postprocess::resize(glm::ivec2 size) {
-	if (size.x <= 0 || size.y <= 0)
-		return;
-
-	hdr_image = std::make_unique<Core::texture_2d>(gli::format::FORMAT_RGBA16_SFLOAT_PACK16, StE::Core::texture_2d::size_type(size), 1);
-	hdr_final_image = std::make_unique<Core::texture_2d>(gli::format::FORMAT_RGB16_SFLOAT_PACK16, StE::Core::texture_2d::size_type(size), 1);
-	hdr_bloom_image = std::make_unique<Core::texture_2d>(gli::format::FORMAT_RGBA16_SFLOAT_PACK16, StE::Core::texture_2d::size_type(size), 1);
-
-	fbo_hdr_final[0] = (*hdr_final_image)[0];
-	fbo_hdr[0] = (*hdr_image)[0];
-	fbo_hdr[1] = (*hdr_bloom_image)[0];
-
-	hdr_bloom_blurx_image = std::make_unique<Core::texture_2d>(gli::format::FORMAT_RGBA16_SFLOAT_PACK16, StE::Core::texture_2d::size_type(size), 1);
-
-	fbo_hdr_bloom_blurx_image[0] = (*hdr_bloom_blurx_image)[0];
-
-	luminance_size = size / 4;
-
-	hdr_lums = std::make_unique<Core::texture_2d>(gli::format::FORMAT_R32_SFLOAT_PACK32, StE::Core::texture_2d::size_type(luminance_size), 1);
-
-	auto hdr_handle = hdr_image->get_texture_handle();
-	auto hdr_final_handle = hdr_final_image->get_texture_handle(*Core::sampler::sampler_linear_clamp());
-	auto hdr_final_handle_linear = hdr_final_image->get_texture_handle(*Core::sampler::sampler_linear());
-	auto hdr_bloom_handle = hdr_bloom_image->get_texture_handle(*Core::sampler::sampler_linear_clamp());
-	auto hdr_bloom_blurx_handle = hdr_bloom_blurx_image->get_texture_handle(*Core::sampler::sampler_linear_clamp());
-
-	hdr_handle.make_resident();
-	hdr_final_handle.make_resident();
-	hdr_final_handle_linear.make_resident();
-	hdr_bloom_handle.make_resident();
-	hdr_bloom_blurx_handle.make_resident();
-
-	hdr_tonemap_coc.get().set_uniform("hdr", hdr_final_handle);
-	hdr_bloom_blurx.get().set_uniform("hdr", hdr_bloom_handle);
-	hdr_bloom_blury.get().set_uniform("hdr", hdr_bloom_blurx_handle);
-	hdr_bloom_blury.get().set_uniform("unblured_hdr", hdr_handle);
-	hdr_compute_minmax.get().set_uniform("hdr", hdr_final_handle_linear);
-	bokeh_blur.get().set_uniform("hdr", hdr_final_handle);
-
-	hdr_compute_histogram_sums.get().set_uniform("hdr_lum_resolution", static_cast<std::uint32_t>(luminance_size.x * luminance_size.y));
-
-	hdr_bloom_blurx.get().set_uniform("size", glm::vec2{ size });
-	hdr_bloom_blury.get().set_uniform("size", glm::vec2{ size });
-	bokeh_blur.get().set_uniform("size", glm::vec2{ size });
-
-	hdr_bokeh_param_buffer << *hdr_bokeh_param_buffer_eraser;
-	hdr_bokeh_param_buffer_prev << *hdr_bokeh_param_buffer_eraser;
+	recorder
+		<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader,
+														 gl::pipeline_stage::fragment_shader,
+														 gl::buffer_memory_barrier(histogram_sums,
+																				   gl::access_flags::shader_write,
+																				   gl::access_flags::shader_read),
+														 gl::buffer_memory_barrier(hdr_bokeh_param_buffer,
+																				   gl::access_flags::shader_write,
+																				   gl::access_flags::shader_read)))
+		<< tonemap_coc_task
+		<< bloom_blurx_task
+		<< bloom_blury_task
+		<< bokeh_blur_task;
 }

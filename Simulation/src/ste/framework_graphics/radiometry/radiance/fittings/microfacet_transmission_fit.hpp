@@ -3,22 +3,22 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
-#include "microfacet_fit_error.hpp"
+#include <microfacet_fit_error.hpp>
 
-#include <memory>
+#include <lib/unique_ptr.hpp>
 #include <istream>
 
 #include <boost/crc.hpp>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 template <int Version, typename DataType>
 class microfacet_transmission_fit {
 	struct transmission_fit_data {
-		using data_ptr = std::unique_ptr<DataType[]>;
+		using data_ptr = lib::unique_ptr<DataType[]>;
 
 		struct {
 			std::uint8_t ndf_type[8];
@@ -34,11 +34,11 @@ class microfacet_transmission_fit {
 	};
 
 protected:
-	std::unique_ptr<transmission_fit_data> fit_data;
+	lib::unique_ptr<transmission_fit_data> fit_data;
 
 public:
 	microfacet_transmission_fit(std::istream &is) {
-		fit_data = std::make_unique<transmission_fit_data>();
+		fit_data = lib::allocate_unique<transmission_fit_data>();
 
 		is.read(reinterpret_cast<char*>(&fit_data->header), sizeof(fit_data->header) / sizeof(char));
 

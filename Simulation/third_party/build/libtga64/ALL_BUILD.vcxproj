@@ -1,0 +1,111 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGUID>{64E9A95A-32B2-390C-A36A-F3E8A758B47A}</ProjectGUID>
+    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>x64</Platform>
+    <ProjectName>ALL_BUILD</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+    <PropertyGroup>
+      <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\packages\libtga\CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule D:/src/git/StE/Simulation/third_party/packages/libtga/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HD:/src/git/StE/Simulation/third_party/packages/libtga -BD:/src/git/StE/Simulation/third_party/build/libtga64 --check-stamp-file D:\src\git\StE\Simulation\third_party\build\libtga64\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:/src/git/StE/Simulation/third_party/packages/libtga/CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\libtga\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\build\libtga64\CMakeFiles\3.7.1\CMakeSystem.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeSystemSpecificInitialize.cmake;D:\src\git\StE\Simulation\third_party\build\libtga64\CMakeFiles\3.7.1\CMakeCCompiler.cmake;D:\src\git\StE\Simulation\third_party\build\libtga64\CMakeFiles\3.7.1\CMakeCXXCompiler.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC.cmake;D:\src\git\StE\Simulation\third_party\build\libtga64\CMakeFiles\3.7.1\CMakeRCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCommonLanguageInclude.cmake;D:\src\git\StE\Simulation\third_party\packages\libtga\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\src\git\StE\Simulation\third_party\build\libtga64\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule D:/src/git/StE/Simulation/third_party/packages/libtga/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HD:/src/git/StE/Simulation/third_party/packages/libtga -BD:/src/git/StE/Simulation/third_party/build/libtga64 --check-stamp-file D:\src\git\StE\Simulation\third_party\build\libtga64\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:/src/git/StE/Simulation/third_party/packages/libtga/CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\libtga\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\build\libtga64\CMakeFiles\3.7.1\CMakeSystem.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeSystemSpecificInitialize.cmake;D:\src\git\StE\Simulation\third_party\build\libtga64\CMakeFiles\3.7.1\CMakeCCompiler.cmake;D:\src\git\StE\Simulation\third_party\build\libtga64\CMakeFiles\3.7.1\CMakeCXXCompiler.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC.cmake;D:\src\git\StE\Simulation\third_party\build\libtga64\CMakeFiles\3.7.1\CMakeRCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCommonLanguageInclude.cmake;D:\src\git\StE\Simulation\third_party\packages\libtga\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\src\git\StE\Simulation\third_party\build\libtga64\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/libtga64/ZERO_CHECK.vcxproj">
+      <Project>9B193F05-4FF4-3EA0-8382-E385F58AB664</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/libtga64/src/tga.vcxproj">
+      <Project>09B3D122-60E2-3F0E-9A92-644C316218D9</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/libtga64/src/tga_static.vcxproj">
+      <Project>1FC8ED07-BBE8-35B8-85CA-A17C057F56BF</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

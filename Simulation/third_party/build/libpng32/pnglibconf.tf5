@@ -1,0 +1,4 @@
+/*- pnglibconf.dfn intermediate file
+ * generated from scripts/pnglibconf.dfa
+ */
+ PNG_DFN "/* pnglibconf.h - library build configuration */" 

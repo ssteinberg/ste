@@ -1,24 +1,15 @@
 
 #type frag
 #version 450
-#extension GL_ARB_bindless_texture : require
 
 const int blur_samples_count = 8;
 
-#include "hdr_blur.glsl"
+#include <hdr_blur.glsl>
 
-out vec4 gl_FragColor;
+layout(binding = 0) uniform sampler2D hdr;
 
-in vs_out {
-	vec2 uv;
-	vec2 blur_uvs[blur_samples_count];
-} vin;
-
-layout(bindless_sampler) uniform sampler2D hdr;
-
-uniform vec2 size;
-uniform vec2 dir;
+layout(location = 0) out vec4 frag_color;
 
 void main() {
-	gl_FragColor = hdr_blur(hdr, size, dir);
+	frag_color = hdr_blur(hdr, vec2(1.f, .0f));
 }

@@ -1,6 +1,6 @@
 
-#include "shadow_common.glsl"
-#include "deferred_shading_common.glsl"
+#include <shadow_common.glsl>
+#include <deferred_shading_common.glsl>
 
 const float shadow_cube_max_penumbra = 80.f / shadow_cubemap_size;
 const float shadow_cube_min_penumbra = 3.f / shadow_cubemap_size;
@@ -42,8 +42,7 @@ float shadow_calculate_distance_to_receiver(vec3 shadow_v, out mat2x3 m) {
 /*
  *	Shadow lookup and filtering implementation for spherical lights.
  */
-float shadow_impl(deferred_shading_shadow_maps shadow_maps, 
-				  uint idx,
+float shadow_impl(uint idx,
 				  vec3 position, 
 				  vec3 l,
 				  vec3 normal,
@@ -60,7 +59,7 @@ float shadow_impl(deferred_shading_shadow_maps shadow_maps,
 	float dist_receiver = shadow_calculate_distance_to_receiver(shadow_v, m);
 	vec3 norm_v = shadow_v / dist_receiver;
 
-	float depth_blocker = shadow_blocker_search(shadow_maps.shadow_maps, idx, norm_v, m);
+	float depth_blocker = shadow_blocker_search(shadow_maps, idx, norm_v, m);
 	float dt = shadow_calculate_test_depth(-dist_receiver, shadow_near, light_effective_range, normal, l);
 
 	// No shadowing if distance to blocker is further away from receiver
@@ -85,7 +84,7 @@ float shadow_impl(deferred_shading_shadow_maps shadow_maps,
 	float noise = interleaved_gradient_noise(vec2(frag_coords));
 	float rcp = 1.f / float(clusters_to_sample);
 	
-	float accum = texture(shadow_maps.shadow_depth_maps, vec4(norm_v, idx), dt).x;
+	float accum = texture(shadow_depth_maps, vec4(norm_v, idx), dt).x;
 	float w = float(clusters_to_sample) * 8.f + 1.f;
 
 	// Accumulate samples
@@ -103,7 +102,7 @@ float shadow_impl(deferred_shading_shadow_maps shadow_maps,
 		for (int s=0; s<8; ++s) {
 			vec2 u;
 			u = penumbra * (sample_rotation_matrix * shadow_cluster_samples[s]);
-			accum += texture(shadow_maps.shadow_depth_maps, vec4(shadow_cubemap_jitter_uv(norm_v, m, u), idx), dt).x;
+			accum += texture(shadow_depth_maps, vec4(shadow_cubemap_jitter_uv(norm_v, m, u), idx), dt).x;
 		}
 	}
 
@@ -114,8 +113,7 @@ float shadow_impl(deferred_shading_shadow_maps shadow_maps,
  *	Calculate percentage of unshadowed light irradiating in direction and distance given by 'shadow_v' from light.
  *	Filters shadow maps using samples from an interleaved gradient noise pattern, based on penumbra size.
  */
-float shadow(deferred_shading_shadow_maps shadow_maps, 
-			 uint idx,
+float shadow(uint idx,
 			 vec3 position, 
 			 vec3 l,
 			 vec3 normal,
@@ -123,8 +121,7 @@ float shadow(deferred_shading_shadow_maps shadow_maps,
 			 float light_near_clip,
 			 float light_effective_range,
 			 ivec2 frag_coords) {
-	return shadow_impl(shadow_maps, 
-					   idx,
+	return shadow_impl(idx,
 					   position, 
 					   l,
 					   normal,
@@ -142,8 +139,7 @@ float shadow(deferred_shading_shadow_maps shadow_maps,
  *	Filters shadow maps using samples from an interleaved gradient noise pattern, based on penumbra size.
  *	Fast version, filtering is limited to a single cluster with reduced penumbras.
  */
-float shadow_fast(deferred_shading_shadow_maps shadow_maps, 
-				  uint idx,
+float shadow_fast(uint idx,
 				  vec3 position, 
 				  vec3 l,
 				  vec3 normal,
@@ -151,8 +147,7 @@ float shadow_fast(deferred_shading_shadow_maps shadow_maps,
 				  float light_near_clip,
 				  float light_effective_range,
 				  ivec2 frag_coords) {
-	return shadow_impl(shadow_maps, 
-					   idx,
+	return shadow_impl(idx,
 					   position,
 					   l,
 					   normal,

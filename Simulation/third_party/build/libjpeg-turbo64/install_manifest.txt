@@ -1,0 +1,7 @@
+D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/../../lib/turbojpeg-staticd.lib
+D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/../../include/turbojpeg.h
+D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/../../lib/jpeg-staticd.lib
+D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/../../include/jconfig.h
+D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/../../include/jerror.h
+D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/../../include/jmorecfg.h
+D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/../../include/jpeglib.h

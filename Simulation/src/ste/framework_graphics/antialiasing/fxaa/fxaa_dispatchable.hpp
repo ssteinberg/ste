@@ -3,45 +3,42 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "ste_engine_control.hpp"
+#include <stdafx.hpp>
+#include <ste_engine_control.hpp>
 
-#include "resource_instance.hpp"
-#include "resource_loading_task.hpp"
+#include <resource_instance.hpp>
+#include <resource_loading_task.hpp>
 
-#include "signal.hpp"
+#include <signal.hpp>
 
-#include "gpu_dispatchable.hpp"
+#include <gpu_dispatchable.hpp>
 
-#include "glsl_program.hpp"
-#include "texture_2d.hpp"
-#include "sampler.hpp"
-#include "framebuffer_object.hpp"
+#include <glsl_program.hpp>
+#include <texture_2d.hpp>
+#include <sampler.hpp>
+#include <framebuffer_object.hpp>
 
-#include <memory>
+#include <lib/unique_ptr.hpp>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 class fxaa_dispatchable : public gpu_dispatchable {
 	using Base = gpu_dispatchable;
 
-	friend class Resource::resource_loading_task<fxaa_dispatchable>;
-	friend class Resource::resource_instance<fxaa_dispatchable>;
+	friend class resource::resource_loading_task<fxaa_dispatchable>;
+	friend class resource::resource_instance<fxaa_dispatchable>;
 
 private:
-	using ResizeSignalConnectionType = ste_engine_control::framebuffer_resize_signal_type::connection_type;
-
-private:
-	Resource::resource_instance<Resource::glsl_program> program;
+	resource::resource_instance<resource::glsl_program> program;
 	Core::framebuffer_object fbo;
-	std::unique_ptr<Core::texture_2d> input;
+	lib::unique_ptr<Core::texture_2d> input;
 
-	std::shared_ptr<ResizeSignalConnectionType> resize_connection;
+	ste_engine_control::framebuffer_resize_signal_type::connection_type resize_connection;
 
 private:
 	void resize(const glm::ivec2 &size) {
-		input = std::make_unique<Core::texture_2d>(gli::format::FORMAT_RGB16_SFLOAT_PACK16, StE::Core::texture_2d::size_type(size), 1);
+		input = lib::allocate_unique<Core::texture_2d>(gli::format::FORMAT_RGB16_SFLOAT_PACK16, ste::Core::texture_2d::size_type(size), 1);
 		fbo[0] = *input;
 
 		auto handle = input->get_texture_handle(*Core::sampler::sampler_linear_clamp());
@@ -50,11 +47,10 @@ private:
 	}
 
 public:
-	fxaa_dispatchable(const ste_engine_control &ctx) : program(ctx, std::vector<std::string>{ "fxaa.vert", "fxaa.frag" }) {
-		resize_connection = std::make_shared<ResizeSignalConnectionType>([=](const glm::i32vec2 &size) {
+	fxaa_dispatchable(const ste_engine_control &ctx) : program(ctx, lib::vector<lib::string>{ "fxaa.vert", "fxaa.frag" }) {
+		resize_connection = make_connection([=](ctx.signal_framebuffer_resize(), const glm::i32vec2 &size) {
 			resize(size);
 		});
-		ctx.signal_framebuffer_resize().connect(resize_connection);
 	}
 	~fxaa_dispatchable() noexcept {}
 
@@ -67,17 +63,18 @@ protected:
 
 }
 
-namespace Resource {
+namespace resource {
 
 template <>
-class resource_loading_task<Graphics::fxaa_dispatchable> {
-	using R = Graphics::fxaa_dispatchable;
+class resource_loading_task<graphics::fxaa_dispatchable> {
+	using R = graphics::fxaa_dispatchable;
 
 public:
 	auto loader(const ste_engine_control &ctx, R* object) {
 		return ctx.scheduler().schedule_now([object, &ctx]() {
 			object->program.wait();
-		}).then_on_main_thread([object, &ctx]() {
+			// TODO: Fix
+		}).then/*_on_main_thread*/([object, &ctx]() {
 			object->resize(ctx.get_backbuffer_size());
 		});;
 	}

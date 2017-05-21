@@ -3,14 +3,14 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "shaped_light.hpp"
+#include <stdafx.hpp>
+#include <shaped_light.hpp>
 
-#include <vector>
+#include <lib/vector.hpp>
 #include <array>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 class polygonal_light : public shaped_light {
 	using Base = shaped_light;
@@ -52,7 +52,7 @@ public:
 		}
 		Base::set_points(points, size, area, n);
 	}
-	void set_points(const std::vector<glm::vec3> &points) { set_points(&points[0], points.size()); }
+	void set_points(const lib::vector<glm::vec3> &points) { set_points(&points[0], points.size()); }
 	template <int N>
 	void set_points(const std::array<glm::vec3, N> &points) { set_points(&points[0], points.size()); }
 };

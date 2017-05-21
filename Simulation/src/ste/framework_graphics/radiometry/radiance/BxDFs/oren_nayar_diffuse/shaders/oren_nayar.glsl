@@ -1,5 +1,5 @@
 
-#include "common.glsl"
+#include <common.glsl>
 
 float oren_nayar_brdf(vec3 n,
 					  vec3 v,

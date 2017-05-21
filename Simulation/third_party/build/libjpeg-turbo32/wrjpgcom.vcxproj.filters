@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\wrjpgcom.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{2A97B041-A96C-3B81-B6FE-85186F4E3129}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

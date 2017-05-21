@@ -3,19 +3,19 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
-#include "beer_lambert.hpp"
-#include "rayleigh_scattering.hpp"
-#include "mie_scattering.hpp"
+#include <beer_lambert.hpp>
+#include <rayleigh_scattering.hpp>
+#include <mie_scattering.hpp>
 
-#include "RGB.hpp"
+#include <RGB.hpp>
 
 #include <limits>
 #include <functional>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 /*
  *	Defines the properties of an atmosphere

@@ -3,16 +3,16 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "camera.hpp"
+#include <stdafx.hpp>
+#include <camera.hpp>
 
-#include "ring_buffer.hpp"
-#include "range.hpp"
+#include <ring_buffer_old.hpp>
+#include <range.hpp>
 
 #include <glm/gtx/dual_quaternion.hpp>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 class transforms_ring_buffers {
 private:
@@ -28,8 +28,8 @@ private:
 		float aspect;
 	};
 
-	using view_ring_buffer_type = Core::ring_buffer<view_data, 3>;
-	using proj_ring_buffer_type = Core::ring_buffer<proj_data, 1>;
+	using view_ring_buffer_type = Core::ring_buffer_old<view_data, 3>;
+	using proj_ring_buffer_type = Core::ring_buffer_old<proj_data, 1>;
 
 private:
 	view_ring_buffer_type view_buffer;

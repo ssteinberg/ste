@@ -3,33 +3,33 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "gpu_dispatchable.hpp"
+#include <stdafx.hpp>
+#include <gpu_dispatchable.hpp>
 
-#include "ste_engine_control.hpp"
-#include "gl_current_context.hpp"
+#include <ste_engine_control.hpp>
+#include <gl_current_context.hpp>
 
-#include "sampler.hpp"
+#include <sampler.hpp>
 
-#include "glsl_program.hpp"
-#include "deferred_gbuffer.hpp"
+#include <glsl_program.hpp>
+#include <deferred_gbuffer.hpp>
 
-#include <memory>
+#include <lib/unique_ptr.hpp>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 class gbuffer_downsample_depth_dispatch : public gpu_dispatchable {
 	using Base = gpu_dispatchable;
 
-	friend class Resource::resource_loading_task<gbuffer_downsample_depth_dispatch>;
-	friend class Resource::resource_instance<gbuffer_downsample_depth_dispatch>;
+	friend class resource::resource_loading_task<gbuffer_downsample_depth_dispatch>;
+	friend class resource::resource_instance<gbuffer_downsample_depth_dispatch>;
 
 private:
 	const deferred_gbuffer *gbuffer;
-	Resource::resource_instance<Resource::glsl_program> program;
+	resource::resource_instance<resource::glsl_program> program;
 
-	std::shared_ptr<connection<>> gbuffer_depth_target_connection;
+	lib::shared_ptr<connection<>> gbuffer_depth_target_connection;
 
 private:
 	void attach_handles() const {
@@ -51,8 +51,8 @@ private:
 public:
 	gbuffer_downsample_depth_dispatch(const ste_engine_control &ctx,
 									  const deferred_gbuffer *gbuffer) : gbuffer(gbuffer),
-									  									 program(ctx, "gbuffer_downsample_depth.glsl") {
-		gbuffer_depth_target_connection = std::make_shared<connection<>>([&]() {
+									  									 program(ctx, "gbuffer_downsample_depth.comp") {
+		gbuffer_depth_target_connection = lib::allocate_shared<connection<>>([&]() {
 			attach_handles();
 		});
 		gbuffer->get_depth_target_modified_signal().connect(gbuffer_depth_target_connection);
@@ -64,17 +64,18 @@ public:
 
 }
 
-namespace Resource {
+namespace resource {
 
 template <>
-class resource_loading_task<Graphics::gbuffer_downsample_depth_dispatch> {
-	using R = Graphics::gbuffer_downsample_depth_dispatch;
+class resource_loading_task<graphics::gbuffer_downsample_depth_dispatch> {
+	using R = graphics::gbuffer_downsample_depth_dispatch;
 
 public:
 	auto loader(const ste_engine_control &ctx, R* object) {
 		return ctx.scheduler().schedule_now([object, &ctx]() {
 			object->program.wait();
-		}).then_on_main_thread([object]() {
+			// TODO: Fix
+		}).then/*_on_main_thread*/([object]() {
 			object->attach_handles();
 		});
 	}

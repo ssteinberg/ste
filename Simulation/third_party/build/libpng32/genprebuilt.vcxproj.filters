@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\packages\libpng\CMakeLists.txt" />
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libpng32\CMakeFiles\8502a496d4a92ac093f780ac5e86da6a\genprebuilt.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="D:\src\git\StE\Simulation\third_party\build\libpng32\CMakeFiles\genprebuilt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{B66514F0-526C-330A-81CE-1E4655805B92}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

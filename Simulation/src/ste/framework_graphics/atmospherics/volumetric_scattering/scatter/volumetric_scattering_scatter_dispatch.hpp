@@ -3,33 +3,33 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "ste_engine_control.hpp"
-#include "gl_current_context.hpp"
+#include <stdafx.hpp>
+#include <ste_engine_control.hpp>
+#include <gl_current_context.hpp>
 
-#include "resource_instance.hpp"
-#include "resource_loading_task.hpp"
+#include <resource_instance.hpp>
+#include <resource_loading_task.hpp>
 
-#include "glsl_program.hpp"
-#include "gpu_dispatchable.hpp"
+#include <glsl_program.hpp>
+#include <gpu_dispatchable.hpp>
 
-#include "volumetric_scattering_storage.hpp"
-#include "linked_light_lists.hpp"
-#include "light_storage.hpp"
-#include "shadowmap_storage.hpp"
+#include <volumetric_scattering_storage.hpp>
+#include <linked_light_lists.hpp>
+#include <light_storage.hpp>
+#include <shadowmap_storage.hpp>
 
-#include "sampler.hpp"
+#include <sampler.hpp>
 
-#include <memory>
+#include <lib/unique_ptr.hpp>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 class volumetric_scattering_scatter_dispatch : public gpu_dispatchable {
 	using Base = gpu_dispatchable;
 
-	friend class Resource::resource_loading_task<volumetric_scattering_scatter_dispatch>;
-	friend class Resource::resource_instance<volumetric_scattering_scatter_dispatch>;
+	friend class resource::resource_loading_task<volumetric_scattering_scatter_dispatch>;
+	friend class resource::resource_instance<volumetric_scattering_scatter_dispatch>;
 
 private:
 	const volumetric_scattering_storage *vss;
@@ -37,10 +37,10 @@ private:
 	const light_storage *ls;
 	const shadowmap_storage *shadows_storage;
 
-	Resource::resource_instance<Resource::glsl_program> program;
+	resource::resource_instance<resource::glsl_program> program;
 
-	std::shared_ptr<connection<>> vss_storage_connection;
-	std::shared_ptr<connection<>> shadows_storage_connection;
+	lib::shared_ptr<connection<>> vss_storage_connection;
+	lib::shared_ptr<connection<>> shadows_storage_connection;
 
 private:
 	void attach_handles() const {
@@ -84,11 +84,11 @@ private:
 										   											   llls(llls),
 																					   ls(ls),
 																					   shadows_storage(shadows_storage),
-																					   program(ctx, "volumetric_scattering_scatter.glsl") {
-		vss_storage_connection = std::make_shared<connection<>>([&]() {
+																					   program(ctx, "volumetric_scattering_scatter.comp") {
+		vss_storage_connection = lib::allocate_shared<connection<>>([&]() {
 			attach_handles();
 		});
-		shadows_storage_connection = std::make_shared<connection<>>([&]() {
+		shadows_storage_connection = lib::allocate_shared<connection<>>([&]() {
 			attach_handles();
 		});
 		vss->get_storage_modified_signal().connect(vss_storage_connection);
@@ -104,17 +104,18 @@ public:
 
 }
 
-namespace Resource {
+namespace resource {
 
 template <>
-class resource_loading_task<Graphics::volumetric_scattering_scatter_dispatch> {
-	using R = Graphics::volumetric_scattering_scatter_dispatch;
+class resource_loading_task<graphics::volumetric_scattering_scatter_dispatch> {
+	using R = graphics::volumetric_scattering_scatter_dispatch;
 
 public:
 	auto loader(const ste_engine_control &ctx, R* object) {
 		return ctx.scheduler().schedule_now([object, &ctx]() {
 			object->program.wait();
-		}).then_on_main_thread([object]() {
+			// TODO: Fix
+		}).then/*_on_main_thread*/([object]() {
 			object->attach_handles();
 		});
 	}

@@ -1,0 +1,159 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGUID>{EC83B427-4DB3-3219-B3DC-735267D73E31}</ProjectGUID>
+    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>x64</Platform>
+    <ProjectName>tinyobjloader</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\src\git\StE\Simulation\third_party\build\tinyobjloader64\Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">tinyobjloader.dir\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">tinyobjloaderd</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\src\git\StE\Simulation\third_party\build\tinyobjloader64\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">tinyobjloader.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">tinyobjloader</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.lib</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>Debug/</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;CMAKE_INTDIR="Debug";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;CMAKE_INTDIR=\"Debug\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions> /machine:x64 %(AdditionalOptions)</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>Release/</AssemblerListingLocation>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR="Release";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR=\"Release\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions> /machine:x64 %(AdditionalOptions)</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\packages\tinyobjloader\CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule D:/src/git/StE/Simulation/third_party/packages/tinyobjloader/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HD:/src/git/StE/Simulation/third_party/packages/tinyobjloader -BD:/src/git/StE/Simulation/third_party/build/tinyobjloader64 --check-stamp-file D:\src\git\StE\Simulation\third_party\build\tinyobjloader64\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:/src/git/StE/Simulation/third_party/packages/tinyobjloader/CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\tinyobjloader\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\build\tinyobjloader64\CMakeFiles\3.7.1\CMakeSystem.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeSystemSpecificInitialize.cmake;D:\src\git\StE\Simulation\third_party\build\tinyobjloader64\CMakeFiles\3.7.1\CMakeCCompiler.cmake;D:\src\git\StE\Simulation\third_party\build\tinyobjloader64\CMakeFiles\3.7.1\CMakeCXXCompiler.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC.cmake;D:\src\git\StE\Simulation\third_party\build\tinyobjloader64\CMakeFiles\3.7.1\CMakeRCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCommonLanguageInclude.cmake;D:\src\git\StE\Simulation\third_party\packages\tinyobjloader\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\src\git\StE\Simulation\third_party\build\tinyobjloader64\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule D:/src/git/StE/Simulation/third_party/packages/tinyobjloader/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HD:/src/git/StE/Simulation/third_party/packages/tinyobjloader -BD:/src/git/StE/Simulation/third_party/build/tinyobjloader64 --check-stamp-file D:\src\git\StE\Simulation\third_party\build\tinyobjloader64\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:/src/git/StE/Simulation/third_party/packages/tinyobjloader/CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\tinyobjloader\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\build\tinyobjloader64\CMakeFiles\3.7.1\CMakeSystem.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeSystemSpecificInitialize.cmake;D:\src\git\StE\Simulation\third_party\build\tinyobjloader64\CMakeFiles\3.7.1\CMakeCCompiler.cmake;D:\src\git\StE\Simulation\third_party\build\tinyobjloader64\CMakeFiles\3.7.1\CMakeCXXCompiler.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC.cmake;D:\src\git\StE\Simulation\third_party\build\tinyobjloader64\CMakeFiles\3.7.1\CMakeRCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCommonLanguageInclude.cmake;D:\src\git\StE\Simulation\third_party\packages\tinyobjloader\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\src\git\StE\Simulation\third_party\build\tinyobjloader64\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\tinyobjloader\tiny_obj_loader.h" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\tinyobjloader\tiny_obj_loader.cc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/tinyobjloader64/ZERO_CHECK.vcxproj">
+      <Project>2A77D9D5-BA91-351F-975B-07E2211391EC</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

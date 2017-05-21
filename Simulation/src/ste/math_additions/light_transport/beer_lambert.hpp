@@ -3,11 +3,11 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
 #include <limits>
 
-namespace StE {
+namespace ste {
 
 /*
 *	The Beer-Lambert law relates the attenuation of light to the properties of the material through which the light is traveling.

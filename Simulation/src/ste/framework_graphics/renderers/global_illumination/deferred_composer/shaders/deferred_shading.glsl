@@ -1,24 +1,24 @@
 
-#include "common.glsl"
-#include "deferred_shading_common.glsl"
+#include <common.glsl>
+#include <deferred_shading_common.glsl>
 
-#include "chromaticity.glsl"
-#include "material.glsl"
+#include <chromaticity.glsl>
+#include <material.glsl>
 
-#include "shadow.glsl"
-#include "light.glsl"
-#include "light_cascades.glsl"
-#include "linked_light_lists.glsl"
+#include <shadow.glsl>
+#include <light.glsl>
+#include <light_cascades.glsl>
+#include <linked_light_lists.glsl>
 
-#include "intersection.glsl"
+#include <intersection.glsl>
 
-#include "atmospherics.glsl"
-#include "volumetric_scattering.glsl"
+#include <atmospherics.glsl>
+#include <volumetric_scattering.glsl>
 
-#include "project.glsl"
-#include "girenderer_transform_buffer.glsl"
+#include <project.glsl>
+#include <girenderer_transform_buffer.glsl>
 
-#include "cosine_distribution_integration.glsl"
+#include <cosine_distribution_integration.glsl>
 
 float get_thickness(ivec2 coord,
 					sampler2D back_face_depth, 
@@ -33,8 +33,7 @@ float get_thickness(ivec2 coord,
 	return fz - bz;
 }
 
-float deferred_evaluate_shadowing(deferred_shading_shadow_maps shadow_maps, 
-								  fragment_shading_parameters frag,
+float deferred_evaluate_shadowing(fragment_shading_parameters frag,
 								  light_shading_parameters light,
 								  int cascade) {
 	float l_radius = light.ld.radius;
@@ -44,8 +43,7 @@ float deferred_evaluate_shadowing(deferred_shading_shadow_maps shadow_maps,
 		uint cascade_idx = light_get_cascade_descriptor_idx(light.ld);
 		int shadowmap_idx = light_get_cascade_shadowmap_idx(light.ld, cascade);
 
-		return shadow(shadow_maps,
-					  shadowmap_idx,
+		return shadow(shadowmap_idx,
 					  frag.p,
 					  light.l,
 					  frag.n,
@@ -56,8 +54,7 @@ float deferred_evaluate_shadowing(deferred_shading_shadow_maps shadow_maps,
 	}
 	else {
 		vec3 shadow_v = frag.world_position - light.ld.position;
-		return shadow(shadow_maps,
-					  light.ll_id,
+		return shadow(light.ll_id,
 					  frag.p,
 					  light.l,
 					  frag.n,
@@ -68,7 +65,7 @@ float deferred_evaluate_shadowing(deferred_shading_shadow_maps shadow_maps,
 	}
 }
 
-vec3 deferred_shade_atmospheric_scattering(ivec2 coord, deferred_atmospherics_luts atmospherics_luts) {
+vec3 deferred_shade_atmospheric_scattering(ivec2 coord) {
 	vec3 position = unproject_screen_position(.5f, vec2(coord) / vec2(backbuffer_size()));
 	vec3 w_pos = transform_view_to_world_space(position);
 
@@ -89,8 +86,8 @@ vec3 deferred_shade_atmospheric_scattering(ivec2 coord, deferred_atmospherics_lu
 			vec3 I0 = irradiance(ld) * integrate_cosine_distribution_sphere_cross_section(light_directional_distance(ld), ld.radius);
 
 			rgb += I0 * atmospheric_scatter(P, L, V, 
-											atmospherics_luts.atmospheric_scattering_lut,
-											atmospherics_luts.atmospheric_mie0_scattering_lut);
+											atmospheric_scattering_lut,
+											atmospheric_mie0_scattering_lut);
 
 			//? Draw the light source.
 			//!? TODO: Remove in future.
@@ -98,7 +95,7 @@ vec3 deferred_shade_atmospheric_scattering(ivec2 coord, deferred_atmospherics_lu
 			if (!isinf(intersection_ray_sphere(light_position, ld.radius,
 											   P, V))) {
 				rgb += I0 * extinct_ray(P, V,
-										atmospherics_luts.atmospheric_optical_length_lut);
+										atmospheric_optical_length_lut);
 			}
 		}
 	}
@@ -106,16 +103,14 @@ vec3 deferred_shade_atmospheric_scattering(ivec2 coord, deferred_atmospherics_lu
 	return rgb;
 }
 
-vec3 deferred_compute_attenuation_from_fragment_to_eye(fragment_shading_parameters frag,
-													   deferred_atmospherics_luts atmospherics_luts) {
+vec3 deferred_compute_attenuation_from_fragment_to_eye(fragment_shading_parameters frag) {
 	return extinct(eye_position(), frag.world_position,
-				   atmospherics_luts.atmospheric_optical_length_lut);
+				   atmospheric_optical_length_lut);
 }
 
 bool deferred_generate_light_shading_parameters(fragment_shading_parameters frag,
 												light_descriptor ld,
 												uint light_id, uint ll_id,
-												deferred_atmospherics_luts atmospherics_luts,
 												out light_shading_parameters light) {
 	light.ld = ld;
 	light.light_id = light_id;
@@ -128,13 +123,13 @@ bool deferred_generate_light_shading_parameters(fragment_shading_parameters frag
 		
 		// Atmopsheric attenuation
 		vec3 atat = extinct_ray(frag.world_position, -ld.position,
-								atmospherics_luts.atmospheric_optical_length_lut);
+								atmospheric_optical_length_lut);
 
 		cd_m2 = irradiance(ld) * atat;
 		
 		//! Atmospheric ambient light (TODO: Ambient occlusion)
 		cd_m2 += atmospheric_ambient(frag.world_position, dot(frag.n, -ld.transformed_position), ld.position,
-								   atmospherics_luts.atmospheric_ambient_lut);
+									 atmospheric_ambient_lut);
 	}
 	else {
 		float dist2 = dot(l, l);
@@ -146,7 +141,7 @@ bool deferred_generate_light_shading_parameters(fragment_shading_parameters frag
 		
 		// Atmopsheric attenuation
 		vec3 atat = extinct(ld.position, frag.world_position,
-							atmospherics_luts.atmospheric_optical_length_lut);
+							atmospheric_optical_length_lut);
 
 		light.l_dist = sqrt(dist2);
 		l /= light.l_dist;
@@ -182,14 +177,7 @@ bool fragment_facing_light_source(fragment_shading_parameters frag,
 	return true;
 }
 
-vec3 deferred_shade_fragment(g_buffer_element gbuffer_frag, ivec2 coord,
-							 deferred_shading_shadow_maps shadow_maps,
-							 deferred_material_microfacet_luts material_microfacet_luts, 
-							 deferred_material_ltc_luts ltc_luts,
-							 sampler3D scattering_volume, 
-							 deferred_atmospherics_luts atmospherics_luts,
-							 sampler2D back_face_depth, 
-							 sampler2D front_face_depth) {
+vec3 deferred_shade_fragment(g_buffer_element gbuffer_frag, ivec2 coord) {
 	vec3 accum_luminance = vec3(.0f);
 	fragment_shading_parameters frag;
 
@@ -199,7 +187,7 @@ vec3 deferred_shade_fragment(g_buffer_element gbuffer_frag, ivec2 coord,
 	
 	// If no geometry is present, calculate atmopsheric scattering and that's it
 	if (!has_geometry) {
-		return deferred_shade_atmospheric_scattering(coord, atmospherics_luts);
+		return deferred_shade_atmospheric_scattering(coord);
 	}
 
 	// Read gbuffer fragment information
@@ -230,7 +218,7 @@ vec3 deferred_shade_fragment(g_buffer_element gbuffer_frag, ivec2 coord,
 	frag.world_normal = transform_direction_view_to_world_space(frag.n);
 
 	// Atmospheric attenuation from eye to fragment
-	vec3 atmospheric_attenuation = deferred_compute_attenuation_from_fragment_to_eye(frag, atmospherics_luts);
+	vec3 atmospheric_attenuation = deferred_compute_attenuation_from_fragment_to_eye(frag);
 
 	// Directional light cascade
 	int cascade = light_which_cascade_for_position(frag.p);
@@ -259,7 +247,6 @@ vec3 deferred_shade_fragment(g_buffer_element gbuffer_frag, ivec2 coord,
 		light_shading_parameters light;
 		if (!deferred_generate_light_shading_parameters(frag,
 														ld, light_idx, ll_idx,
-														atmospherics_luts,
 														light))
 			continue;
 
@@ -268,8 +255,7 @@ vec3 deferred_shade_fragment(g_buffer_element gbuffer_frag, ivec2 coord,
 			continue;
 
 		// Shadow query
-		float shdw = deferred_evaluate_shadowing(shadow_maps,
-												 frag,
+		float shdw = deferred_evaluate_shadowing(frag,
 												 light,
 												 cascade);
 		float occlusion = max(.0f, cavity * shdw);
@@ -285,10 +271,8 @@ vec3 deferred_shade_fragment(g_buffer_element gbuffer_frag, ivec2 coord,
 													light,
 													frag_info.uv, frag_info.duvdx, frag_info.duvdy,
 													thickness,
-													material_microfacet_luts,
-													ltc_luts,
-													shadow_maps, 
-													occlusion);
+													occlusion,
+													air_ior);
 		accum_luminance += material_texture.rgb * luminance;
 	}
 

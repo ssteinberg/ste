@@ -3,23 +3,23 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
-#include "material.hpp"
-#include "resource_storage_stable.hpp"
+#include <material.hpp>
+#include <resource_storage_stable.hpp>
 
-#include <memory>
+#include <lib/unique_ptr.hpp>
 #include <type_traits>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 class material_storage : public Core::resource_storage_stable<material_descriptor> {
 	using Base = resource_storage_stable<material_descriptor>;
 
 public:
 	template <typename ... Ts>
-	std::unique_ptr<material> allocate_material(Ts&&... args) {
+	lib::unique_ptr<material> allocate_material(Ts&&... args) {
 		return Base::allocate_resource<material>(std::forward<Ts>(args)...);
 	}
 	void erase_material(const material *mat) {

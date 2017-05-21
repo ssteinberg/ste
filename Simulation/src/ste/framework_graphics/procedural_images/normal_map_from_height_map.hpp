@@ -3,13 +3,13 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
-#include "surface_traits.hpp"
-#include "surface_element_cast.hpp"
+#include <surface_traits.hpp>
+#include <surface_element_cast.hpp>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 template <gli::format Fin, bool height_in_alpha = true>
 class normal_map_from_height_map {

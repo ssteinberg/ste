@@ -1,0 +1,78 @@
+
+#type compute
+#version 450
+
+layout(local_size_x = 128) in;
+
+#include <girenderer_transform_buffer.glsl>
+
+#include <common.glsl>
+#include <hdr_common.glsl>
+#include <intersection.glsl>
+
+#include <atmospherics.glsl>
+#include <light.glsl>
+
+layout(std430, binding = 2) restrict buffer light_data {
+	light_descriptor light_buffer[];
+};
+
+// TODO: Binding changed
+layout(binding = 0) restrict buffer ll_counter_data {
+	uint ll_counter;
+};
+
+layout(std430, binding = 5) restrict writeonly buffer ll_data {
+	uint ll[];
+};
+
+uniform clip_planes {
+	vec4 np, rp, lp, tp, bp;
+};
+
+void add_to_lll(int light_idx) {
+	uint ll_idx = atomicAdd(ll_counter, 1);
+	ll[ll_idx] = uint(light_idx);
+}
+
+void main() {
+	int light_idx = int(gl_GlobalInvocationID.x);
+	if (light_idx >= light_buffer.length())
+		return;
+
+	light_descriptor ld = light_buffer[light_idx];
+
+	// Transform light position/direction
+	vec3 transformed_light_pos = light_transform(view_transform_buffer.view_transform, ld);
+
+	bool add_light = false;
+
+	if (light_type_is_directional(ld.type)) {
+		// For directional lights:
+		// Cull based on intersection with planet
+		vec3 c = atmospherics_center();
+		float r = atmospherics_sea_level_radius();
+		vec3 P = eye_position();
+
+		float x = intersection_ray_sphere(c, r, P, -ld.position);
+		if (isinf(x))
+			add_light = true;
+	}
+	else {
+		// For spherical lights:
+		// Frustum cull based on light effective range
+		float r = light_effective_range(ld);
+		vec3 c = transformed_light_pos.xyz;
+
+		if (collision_sphere_infinite_frustum(c, r,
+											  np, rp, lp, tp, bp))
+			add_light = true;
+	}
+
+	if (add_light) {
+		// Add light to active light linked list
+		add_to_lll(light_idx);
+
+		light_buffer[light_idx].transformed_position = transformed_light_pos;
+	}
+}

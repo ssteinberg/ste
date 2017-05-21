@@ -1,0 +1,136 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGUID>{F8A19853-4B8E-38CE-BB63-CD84E08C3D92}</ProjectGUID>
+    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>x64</Platform>
+    <ProjectName>dist</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+    <PropertyGroup>
+      <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>D:\src\git\StE\Simulation\third_party\build\freetype2_64\include;D:\src\git\StE\Simulation\third_party\packages\freetype2\include;D:\src\git\StE\Simulation\third_party\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>D:\src\git\StE\Simulation\third_party\build\freetype2_64\include;D:\src\git\StE\Simulation\third_party\packages\freetype2\include;D:\src\git\StE\Simulation\third_party\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule D:/src/git/StE/Simulation/third_party/packages/freetype2/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HD:/src/git/StE/Simulation/third_party/packages/freetype2 -BD:/src/git/StE/Simulation/third_party/build/freetype2_64 --check-stamp-file D:\src\git\StE\Simulation\third_party\build\freetype2_64\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:/src/git/StE/Simulation/third_party/packages/freetype2/CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\freetype2\CMakeLists.txt;C:\Program Files\CMake\share\cmake-3.7\Modules\CheckIncludeFile.cmake;D:\src\git\StE\Simulation\third_party\build\freetype2_64\CMakeFiles\3.7.1\CMakeSystem.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeSystemSpecificInitialize.cmake;D:\src\git\StE\Simulation\third_party\build\freetype2_64\CMakeFiles\3.7.1\CMakeCCompiler.cmake;D:\src\git\StE\Simulation\third_party\build\freetype2_64\CMakeFiles\3.7.1\CMakeCXXCompiler.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC.cmake;D:\src\git\StE\Simulation\third_party\build\freetype2_64\CMakeFiles\3.7.1\CMakeRCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindZLIB.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\SelectLibraryConfigurations.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindBZip2.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\SelectLibraryConfigurations.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPNG.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindZLIB.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\SelectLibraryConfigurations.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\freetype2\builds\cmake\FindHarfBuzz.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPkgConfig.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CPack.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CPackComponent.cmake;C:\Program Files\CMake\share\cmake-3.7\Templates\CPackConfig.cmake.in;C:\Program Files\CMake\share\cmake-3.7\Templates\CPackConfig.cmake.in;D:\src\git\StE\Simulation\third_party\packages\freetype2\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\src\git\StE\Simulation\third_party\build\freetype2_64\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule D:/src/git/StE/Simulation/third_party/packages/freetype2/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HD:/src/git/StE/Simulation/third_party/packages/freetype2 -BD:/src/git/StE/Simulation/third_party/build/freetype2_64 --check-stamp-file D:\src\git\StE\Simulation\third_party\build\freetype2_64\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:/src/git/StE/Simulation/third_party/packages/freetype2/CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\freetype2\CMakeLists.txt;C:\Program Files\CMake\share\cmake-3.7\Modules\CheckIncludeFile.cmake;D:\src\git\StE\Simulation\third_party\build\freetype2_64\CMakeFiles\3.7.1\CMakeSystem.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeSystemSpecificInitialize.cmake;D:\src\git\StE\Simulation\third_party\build\freetype2_64\CMakeFiles\3.7.1\CMakeCCompiler.cmake;D:\src\git\StE\Simulation\third_party\build\freetype2_64\CMakeFiles\3.7.1\CMakeCXXCompiler.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC.cmake;D:\src\git\StE\Simulation\third_party\build\freetype2_64\CMakeFiles\3.7.1\CMakeRCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindZLIB.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\SelectLibraryConfigurations.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindBZip2.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\SelectLibraryConfigurations.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPNG.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindZLIB.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\SelectLibraryConfigurations.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\freetype2\builds\cmake\FindHarfBuzz.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPkgConfig.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CPack.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CPackComponent.cmake;C:\Program Files\CMake\share\cmake-3.7\Templates\CPackConfig.cmake.in;C:\Program Files\CMake\share\cmake-3.7\Templates\CPackConfig.cmake.in;D:\src\git\StE\Simulation\third_party\packages\freetype2\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\src\git\StE\Simulation\third_party\build\freetype2_64\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\freetype2_64\CMakeFiles\3cb5e7f6304ac79b2d4a953bc74e6fd0\dist.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'"></Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\MSBuild\15.0\Bin\MSBuild.exe" package_source
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:/src/git/StE/Simulation/third_party/build/freetype2_64/CMakeFiles/3cb5e7f6304ac79b2d4a953bc74e6fd0/dist.rule;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\src\git\StE\Simulation\third_party\build\freetype2_64\CMakeFiles\dist</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'"></Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\MSBuild\15.0\Bin\MSBuild.exe" package_source
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:/src/git/StE/Simulation/third_party/build/freetype2_64/CMakeFiles/3cb5e7f6304ac79b2d4a953bc74e6fd0/dist.rule;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\src\git\StE\Simulation\third_party\build\freetype2_64\CMakeFiles\dist</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="D:\src\git\StE\Simulation\third_party\build\freetype2_64\CMakeFiles\dist" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/freetype2_64/ZERO_CHECK.vcxproj">
+      <Project>6C2A6220-743C-3B6A-B647-66AB7B3347D0</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

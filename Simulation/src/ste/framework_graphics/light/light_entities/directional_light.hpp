@@ -3,11 +3,11 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "light.hpp"
+#include <stdafx.hpp>
+#include <light.hpp>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 class directional_light : public light {
 	using Base = light;

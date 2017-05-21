@@ -3,23 +3,23 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
-#include "buffer_usage.hpp"
+#include <buffer_usage.hpp>
 
-#include "mesh_descriptor.hpp"
+#include <mesh_descriptor.hpp>
 
-#include "element_buffer_object.hpp"
-#include "vertex_buffer_object.hpp"
-#include "vertex_array_object.hpp"
-#include "shader_storage_buffer.hpp"
+#include <element_buffer_object.hpp>
+#include <vertex_buffer_object.hpp>
+#include <vertex_array_object.hpp>
+#include <shader_storage_buffer.hpp>
 
-#include "gstack.hpp"
+#include <gstack.hpp>
 
-#include <memory>
+#include <lib/unique_ptr.hpp>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 class object_group_draw_buffers {
 private:

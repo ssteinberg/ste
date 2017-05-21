@@ -3,12 +3,12 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
 #include <glm/gtc/quaternion.hpp>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 struct mesh_descriptor {
 	glm::mat3x4 model_transform_matrix;

@@ -3,7 +3,7 @@
 
 #pragma once
 
-namespace StE {
+namespace ste::log {
 
 enum class log_class {
 	info_class_log,

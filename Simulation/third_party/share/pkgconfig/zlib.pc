@@ -1,8 +1,8 @@
-prefix=C:/src/git/StE/Simulation/third_party/
-exec_prefix=C:/src/git/StE/Simulation/third_party/
-libdir=C:/src/git/StE/Simulation/third_party/lib
-sharedlibdir=C:/src/git/StE/Simulation/third_party/lib
-includedir=C:/src/git/StE/Simulation/third_party/include
+prefix=../../
+exec_prefix=../../
+libdir=lib
+sharedlibdir=lib
+includedir=include
 
 Name: zlib
 Description: zlib compression library

@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\CMakeFiles\74f9e3ba05ffa69203f7cc12370fd4da\INSTALL_force.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{C6439758-DE84-3F7F-8F4A-782A7D25BC26}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

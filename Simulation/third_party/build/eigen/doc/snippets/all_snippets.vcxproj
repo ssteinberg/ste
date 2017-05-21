@@ -1,0 +1,986 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|Win32">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|Win32">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGUID>{27343C90-00AF-3CB8-AECB-4E0970B2051A}</ProjectGUID>
+    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>Win32</Platform>
+    <ProjectName>all_snippets</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+    <PropertyGroup>
+      <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Midl>
+      <AdditionalIncludeDirectories>D:\src\git\StE\Simulation\third_party\build\eigen\doc\snippets;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets;D:\src\git\StE\Simulation\third_party\packages\eigen;D:\src\git\StE\Simulation\third_party\build\eigen;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Midl>
+      <AdditionalIncludeDirectories>D:\src\git\StE\Simulation\third_party\build\eigen\doc\snippets;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets;D:\src\git\StE\Simulation\third_party\packages\eigen;D:\src\git\StE\Simulation\third_party\build\eigen;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">
+    <Midl>
+      <AdditionalIncludeDirectories>D:\src\git\StE\Simulation\third_party\build\eigen\doc\snippets;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets;D:\src\git\StE\Simulation\third_party\packages\eigen;D:\src\git\StE\Simulation\third_party\build\eigen;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">
+    <Midl>
+      <AdditionalIncludeDirectories>D:\src\git\StE\Simulation\third_party\build\eigen\doc\snippets;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets;D:\src\git\StE\Simulation\third_party\packages\eigen;D:\src\git\StE\Simulation\third_party\build\eigen;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Building Custom Rule D:/src/git/StE/Simulation/third_party/packages/eigen/doc/snippets/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HD:/src/git/StE/Simulation/third_party/packages/eigen -BD:/src/git/StE/Simulation/third_party/build/eigen --check-stamp-file D:\src\git\StE\Simulation\third_party\build\eigen\doc\snippets\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:/src/git/StE/Simulation/third_party/packages/eigen/doc/snippets/CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\src\git\StE\Simulation\third_party\build\eigen\doc\snippets\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Building Custom Rule D:/src/git/StE/Simulation/third_party/packages/eigen/doc/snippets/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HD:/src/git/StE/Simulation/third_party/packages/eigen -BD:/src/git/StE/Simulation/third_party/build/eigen --check-stamp-file D:\src\git\StE\Simulation\third_party\build\eigen\doc\snippets\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D:/src/git/StE/Simulation/third_party/packages/eigen/doc/snippets/CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D:\src\git\StE\Simulation\third_party\build\eigen\doc\snippets\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">Building Custom Rule D:/src/git/StE/Simulation/third_party/packages/eigen/doc/snippets/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HD:/src/git/StE/Simulation/third_party/packages/eigen -BD:/src/git/StE/Simulation/third_party/build/eigen --check-stamp-file D:\src\git\StE\Simulation\third_party\build\eigen\doc\snippets\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">D:/src/git/StE/Simulation/third_party/packages/eigen/doc/snippets/CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">D:\src\git\StE\Simulation\third_party\build\eigen\doc\snippets\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">Building Custom Rule D:/src/git/StE/Simulation/third_party/packages/eigen/doc/snippets/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HD:/src/git/StE/Simulation/third_party/packages/eigen -BD:/src/git/StE/Simulation/third_party/build/eigen --check-stamp-file D:\src\git\StE\Simulation\third_party\build\eigen\doc\snippets\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">D:/src/git/StE/Simulation/third_party/packages/eigen/doc/snippets/CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\compile_snippet.cpp.in;D:\src\git\StE\Simulation\third_party\packages\eigen\doc\snippets\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">D:\src\git\StE\Simulation\third_party\build\eigen\doc\snippets\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/ZERO_CHECK.vcxproj">
+      <Project>4452BF3C-B9DF-34D4-9C33-3A58B5AF8518</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_AngleAxis_mimic_euler.vcxproj">
+      <Project>4BF61D43-EC80-3485-AE45-B1996B313297</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_BiCGSTAB_simple.vcxproj">
+      <Project>909BA9A0-67BA-3FDB-A633-825E4A18DED3</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_BiCGSTAB_step_by_step.vcxproj">
+      <Project>ABF85971-F8DE-3737-887A-55F17D95AC86</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_ColPivHouseholderQR_solve.vcxproj">
+      <Project>1DB2FB8E-2F10-3DDC-AA0D-92B12B0E99E3</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_ComplexEigenSolver_compute.vcxproj">
+      <Project>2E0E59A5-4268-3FD9-B0A5-967F622941D9</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_ComplexEigenSolver_eigenvalues.vcxproj">
+      <Project>D22C1E0B-C133-3D52-9A4C-A60611256783</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_ComplexEigenSolver_eigenvectors.vcxproj">
+      <Project>4714D942-B07E-3B09-8FCC-A4A80AF7A697</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_ComplexSchur_compute.vcxproj">
+      <Project>3CDCC3D5-839E-3428-8E2D-F08025ADEBF3</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_ComplexSchur_matrixT.vcxproj">
+      <Project>850A77EA-3FD7-3CE8-810F-01168CFB1C1A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_ComplexSchur_matrixU.vcxproj">
+      <Project>16E0883F-61D1-3ACE-A2D4-0AE3A270C2BC</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Cwise_abs.vcxproj">
+      <Project>E23C7797-4656-368A-8E30-313E9CD33EF0</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Cwise_abs2.vcxproj">
+      <Project>89954508-1745-3C42-9824-7A84EA8DD169</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Cwise_acos.vcxproj">
+      <Project>95524B6B-086E-3CE7-8071-7CA7596018E0</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Cwise_arg.vcxproj">
+      <Project>40602C5D-5F01-36E6-969C-341D30014619</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Cwise_array_power_array.vcxproj">
+      <Project>575ACBB5-FC0B-379E-B87D-66B8B9372393</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Cwise_asin.vcxproj">
+      <Project>93D2F658-D496-3225-875F-C204414C6C01</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Cwise_atan.vcxproj">
+      <Project>6C2AF019-215F-36A7-8889-4DCE7B92B090</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Cwise_boolean_and.vcxproj">
+      <Project>169AFC50-B0EB-301C-8590-194EB3423A3E</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Cwise_boolean_not.vcxproj">
+      <Project>FBBB2E30-DF1E-3BF5-8EF4-DCBBC9AFCBAA</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Cwise_boolean_or.vcxproj">
+      <Project>C5B3EDFE-98E8-3BB4-86E4-F239712CEC5F</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Cwise_boolean_xor.vcxproj">
+      <Project>F6F1ADAA-4F9C-3730-BCE0-39EC291C14B3</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Cwise_ceil.vcxproj">
+      <Project>96119B68-B322-3380-89CF-B8ADF6AF45F5</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Cwise_cos.vcxproj">
+      <Project>7808004D-276A-3BC4-83BC-24C655AEAACC</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Cwise_cosh.vcxproj">
+      <Project>E777485C-20B9-3FC4-8FEC-F5A272379AB8</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Cwise_cube.vcxproj">
+      <Project>7AF41ADB-DDCD-32D7-8ED7-7BB800805A43</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Cwise_equal_equal.vcxproj">
+      <Project>7433D5D0-C796-3F4C-B186-79167C8C499D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Cwise_exp.vcxproj">
+      <Project>F2FF0FE6-DB7A-37C9-8BD5-C752D8613A3C</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Cwise_floor.vcxproj">
+      <Project>1FF26433-8B2D-3ECE-8198-85C2662DE833</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Cwise_greater.vcxproj">
+      <Project>271E876E-81A1-3ED5-823A-7923920D8534</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Cwise_greater_equal.vcxproj">
+      <Project>9114D66E-9115-31D1-BFD0-1363BFC4597C</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Cwise_inverse.vcxproj">
+      <Project>DEE9486E-94F7-3E63-9BFB-C5B0CFF9A4DB</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Cwise_isFinite.vcxproj">
+      <Project>A3381CC5-6FD3-39A9-9D3A-83B7E967B644</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Cwise_isInf.vcxproj">
+      <Project>38FE5088-B5FA-38A3-B412-8B033D16BB76</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Cwise_isNaN.vcxproj">
+      <Project>5AA244C1-BB95-319A-8F61-08E2A1BEE54D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Cwise_less.vcxproj">
+      <Project>B7DE5852-E835-32E5-BFF8-905A51ECD8BF</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Cwise_less_equal.vcxproj">
+      <Project>BC90498D-00B4-37C0-A17D-E180A543107D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Cwise_log.vcxproj">
+      <Project>E4197FB8-0641-31A9-8CD6-4B70AA9779A2</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Cwise_log10.vcxproj">
+      <Project>DA2C0A5F-4024-385A-88E4-B7053463B95A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Cwise_max.vcxproj">
+      <Project>3F924B80-EDEA-315E-8804-721FD78B8DA5</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Cwise_min.vcxproj">
+      <Project>BF7C95C7-364F-33FC-8624-32E2C15E23FC</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Cwise_minus.vcxproj">
+      <Project>1271C124-BAF4-3BE7-B582-E6AB532F8E02</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Cwise_minus_equal.vcxproj">
+      <Project>6923DEAC-BEDA-338C-BA84-225E9E1352E4</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Cwise_not_equal.vcxproj">
+      <Project>5B157946-5041-3B81-9EE9-D43467B83F27</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Cwise_plus.vcxproj">
+      <Project>8DDB14A4-3C51-394E-93BC-0D16395061C5</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Cwise_plus_equal.vcxproj">
+      <Project>DB04E371-9175-3BF3-9E68-F3DF0E05928E</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Cwise_pow.vcxproj">
+      <Project>8F63FF9B-4EDE-3C45-AE79-CA261293F03B</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Cwise_product.vcxproj">
+      <Project>66A1F305-29CB-373D-BD9C-6A59CE903A65</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Cwise_quotient.vcxproj">
+      <Project>D788E4C2-8C1A-3E81-AAF2-FDF73E6D4739</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Cwise_round.vcxproj">
+      <Project>1F1C9CDE-6674-3A6F-846C-B9CF45CD7E2E</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Cwise_scalar_power_array.vcxproj">
+      <Project>194B9CC0-9B73-3D45-BF4D-9DBB08089AC1</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Cwise_sign.vcxproj">
+      <Project>946A8F9E-CA44-3F31-98E6-4B6242CB03A9</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Cwise_sin.vcxproj">
+      <Project>52FDEBB6-F7C2-3BE8-A544-203D8EA1D3BC</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Cwise_sinh.vcxproj">
+      <Project>06EA5DA2-B1C5-3A07-A869-41CBA05D51DB</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Cwise_slash_equal.vcxproj">
+      <Project>91A48AF9-469F-38B1-B49D-9E109962EBB4</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Cwise_sqrt.vcxproj">
+      <Project>E4B69878-B8C7-39F6-9B47-417EB7BA0C23</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Cwise_square.vcxproj">
+      <Project>6A8749A9-F6EA-3B44-8C3F-DAC3BCB4A52B</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Cwise_tan.vcxproj">
+      <Project>F78C9EB8-E3EF-39BE-9A05-83051A92DC3A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Cwise_tanh.vcxproj">
+      <Project>E130E11D-E9A3-3100-83DD-9D069DED5A34</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Cwise_times_equal.vcxproj">
+      <Project>710F1BB2-F4B9-35C9-84D2-65FA5FA4896D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_DenseBase_LinSpaced.vcxproj">
+      <Project>6F04AB3D-BE35-3C9E-B5BC-91093DA334FC</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_DenseBase_LinSpacedInt.vcxproj">
+      <Project>EFBB9E15-0D07-33A6-96A2-A3C7211B9CFD</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_DenseBase_LinSpaced_seq.vcxproj">
+      <Project>88B7C118-A42F-3B53-9F91-7819FD6ED5D2</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_DenseBase_setLinSpaced.vcxproj">
+      <Project>8EF6EE51-DEE8-3266-9CBB-9992D427BC01</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_DirectionWise_hnormalized.vcxproj">
+      <Project>7CEFEF4C-9AF1-32C5-839E-47DFE93CF339</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_DirectionWise_replicate.vcxproj">
+      <Project>6942B96F-D0A3-34A1-99A3-E5C8B06A3F7E</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_DirectionWise_replicate_int.vcxproj">
+      <Project>266EEEE2-9842-3DBD-9E2C-6BC765DD5DE5</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_EigenSolver_EigenSolver_MatrixType.vcxproj">
+      <Project>03C706DA-2B07-3412-AF27-4B3C33A77335</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_EigenSolver_compute.vcxproj">
+      <Project>72E8C715-0EC5-3FFC-A43D-79B2DB691546</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_EigenSolver_eigenvalues.vcxproj">
+      <Project>4312C379-4C7E-3DAB-AFBC-3EEE16CD3D03</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_EigenSolver_eigenvectors.vcxproj">
+      <Project>487B8635-7876-3970-A1D4-65D220DA25D9</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_EigenSolver_pseudoEigenvectors.vcxproj">
+      <Project>AAC37E6F-E7D0-388F-BB1C-E143522AC026</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_FullPivHouseholderQR_solve.vcxproj">
+      <Project>95D645F7-EB79-3596-BF13-E7473B4BA80C</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_FullPivLU_image.vcxproj">
+      <Project>2E28214C-5456-31C4-8BF5-A0E85CA41601</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_FullPivLU_kernel.vcxproj">
+      <Project>420156E3-8C75-3D84-8245-921BA65981BE</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_FullPivLU_solve.vcxproj">
+      <Project>83CAA7DE-2BD3-3E52-B909-DFEAC7351380</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_GeneralizedEigenSolver.vcxproj">
+      <Project>70021FDB-B5CF-3E77-A7FE-537978E2551E</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_HessenbergDecomposition_compute.vcxproj">
+      <Project>CF4D9097-BEB3-3E73-A7D3-AD4344FAC44C</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_HessenbergDecomposition_matrixH.vcxproj">
+      <Project>B54FF71E-BD92-3F75-82C7-DF16AFFBE80A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_HessenbergDecomposition_packedMatrix.vcxproj">
+      <Project>665BF5CF-D238-3A97-8EBB-2EC5A28E19DF</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_HouseholderQR_householderQ.vcxproj">
+      <Project>EF284FE1-4F87-3BB7-9DB9-3CAE639491B0</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_HouseholderQR_solve.vcxproj">
+      <Project>1099647B-2519-3261-BE4A-2E2B51D751FA</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_HouseholderSequence_HouseholderSequence.vcxproj">
+      <Project>55F1CC1B-2259-3995-A937-444FB25167CA</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_IOFormat.vcxproj">
+      <Project>AED15406-A2DF-38D7-B8FB-7A45D7310028</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_JacobiSVD_basic.vcxproj">
+      <Project>5B35014E-EAD2-385C-A68C-6E9EACE9C4A5</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Jacobi_makeGivens.vcxproj">
+      <Project>F9D18664-6B52-3BC9-A793-C0F3AA3674A0</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Jacobi_makeJacobi.vcxproj">
+      <Project>A203B051-99F8-3E10-B030-E3BDA984CCAB</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_LLT_example.vcxproj">
+      <Project>05AB2C8B-84EA-3D1B-BE43-ADCC172A74D2</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_LLT_solve.vcxproj">
+      <Project>CD2BCFD6-D37D-3A41-95FB-4D6540E44C2B</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_LeastSquaresNormalEquations.vcxproj">
+      <Project>C5621CE1-5C6A-3078-B933-B91E400B15B0</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_LeastSquaresQR.vcxproj">
+      <Project>D9671112-7A7F-3502-9BF8-473429E6675F</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Map_general_stride.vcxproj">
+      <Project>4F2CAFCD-26A8-37EE-8E1C-BA949E24F6D7</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Map_inner_stride.vcxproj">
+      <Project>7CD2A0DB-658C-3C5D-A0F7-0BD2E3FCD492</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Map_outer_stride.vcxproj">
+      <Project>3C7A7874-1905-3D15-8B1F-86FFDA600F61</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Map_placement_new.vcxproj">
+      <Project>2A10FD6C-6FCE-3D6A-AF72-74B6CA1E590A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Map_simple.vcxproj">
+      <Project>5A0834BB-D90F-33FA-BCBC-34ADD4432C13</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_adjoint.vcxproj">
+      <Project>1C1273E9-B9F7-3112-8B1E-1971C8A2C293</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_all.vcxproj">
+      <Project>C99E0727-2989-32B2-96D1-E49E75B60BBC</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_applyOnTheLeft.vcxproj">
+      <Project>E23004BF-CDA0-3928-A079-DEBCA6166A91</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_applyOnTheRight.vcxproj">
+      <Project>105580F8-44C2-36B8-8835-FCBAE9B05BFE</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_array.vcxproj">
+      <Project>386D5B1D-DBCC-3438-8B82-890FB000E761</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_array_const.vcxproj">
+      <Project>060B9485-5939-3B58-A2B8-0EB06AF26AF3</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_asDiagonal.vcxproj">
+      <Project>CF4BF36C-8BAF-3164-BDF7-9C1FAC03E055</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_block_int_int.vcxproj">
+      <Project>C3019A95-8EB5-3516-B3DF-3EFE8D64518D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_block_int_int_int_int.vcxproj">
+      <Project>236B444B-0323-3216-BD2A-921480C6764A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_bottomLeftCorner_int_int.vcxproj">
+      <Project>AC5E70DC-FF1E-3624-9E13-A18B9C658BF3</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_bottomRightCorner_int_int.vcxproj">
+      <Project>8F5D480B-3849-3360-AE10-ACC4A27BFAB3</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_bottomRows_int.vcxproj">
+      <Project>FFB5C9A9-7E2E-35DF-A0F1-4D9901D05952</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_cast.vcxproj">
+      <Project>C61D4FE3-8F6A-31E0-919F-EFEE4D2CBE61</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_col.vcxproj">
+      <Project>1E410804-4C52-3E05-B9F4-C28CCFC67F68</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_colwise.vcxproj">
+      <Project>BD3C0B08-B15E-3115-B799-A14B4E7BDB98</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_computeInverseAndDetWithCheck.vcxproj">
+      <Project>384DCB0B-6E28-33F5-A539-97A7C0EDD118</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_computeInverseWithCheck.vcxproj">
+      <Project>0C680CA4-FC10-3ABD-80B2-6F862F732DE7</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_cwiseAbs.vcxproj">
+      <Project>95EB84F6-4790-33DE-B9EE-5DF10588BE5C</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_cwiseAbs2.vcxproj">
+      <Project>185A570E-266E-3419-ABD0-A23EB1A87357</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_cwiseEqual.vcxproj">
+      <Project>B94A059D-FAFD-32C7-8CDD-8CB5E28C9AFA</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_cwiseInverse.vcxproj">
+      <Project>3D82321B-5513-39EA-9E06-459464B2425D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_cwiseMax.vcxproj">
+      <Project>963BDF7A-76D6-3A94-A5E0-DF3AC29C1E82</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_cwiseMin.vcxproj">
+      <Project>E6C92A36-0B7B-33BC-B6B7-C856CAA5F26F</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_cwiseNotEqual.vcxproj">
+      <Project>9AB10364-0404-38D3-8B1A-B431BC900909</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_cwiseProduct.vcxproj">
+      <Project>A908FC5A-0CB8-3D82-AC24-A6BF32386A77</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_cwiseQuotient.vcxproj">
+      <Project>5AE56779-4360-3972-BCDD-A06201E4809A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_cwiseSign.vcxproj">
+      <Project>871897BC-8732-3EC2-A8A1-4E1A13638C8A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_cwiseSqrt.vcxproj">
+      <Project>506F0DBF-C983-3785-90AC-F05CD4F67B09</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_diagonal.vcxproj">
+      <Project>EEA63D01-FF3D-3577-B8E9-F4324D6F5700</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_diagonal_int.vcxproj">
+      <Project>D757FB05-CDE1-3982-AD87-4E170D7BAEE6</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_diagonal_template_int.vcxproj">
+      <Project>09516DA6-7673-37B0-BCF6-10CCC8158793</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_eigenvalues.vcxproj">
+      <Project>4060A992-B3E8-3654-A9F3-62C6FC0EA9B7</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_end_int.vcxproj">
+      <Project>486E0F62-4FD2-338E-BBBC-BE853605ACB9</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_eval.vcxproj">
+      <Project>85D33E20-437A-3725-96DA-13285B01C36A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_fixedBlock_int_int.vcxproj">
+      <Project>F954067B-F2FF-306E-A363-87C74FEA7D22</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_hnormalized.vcxproj">
+      <Project>DC0E8971-CE6C-3D3B-A844-E12C6BFEEFB3</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_homogeneous.vcxproj">
+      <Project>48A9A868-13D9-3288-A85F-647A7FA9E379</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_identity.vcxproj">
+      <Project>62F4BD58-7167-39E9-AC8C-5C97A38571F3</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_identity_int_int.vcxproj">
+      <Project>B5D2C0C8-979D-3CD4-A503-53B2BCE0EB57</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_inverse.vcxproj">
+      <Project>FE879760-07AB-30F8-A9CE-B5498568D3DF</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_isDiagonal.vcxproj">
+      <Project>E6FE4922-375B-326D-8ABD-CAD32113F092</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_isIdentity.vcxproj">
+      <Project>D1EC92DC-461F-393F-9F2F-47B1098B515A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_isOnes.vcxproj">
+      <Project>80DA65E0-4D5E-3C99-9B48-FCAE424579A8</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_isOrthogonal.vcxproj">
+      <Project>BBB70A40-05E6-395E-A2F0-97F30EE29BAC</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_isUnitary.vcxproj">
+      <Project>C208F4B7-4B8D-388A-97D5-D0786B525462</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_isZero.vcxproj">
+      <Project>ABCEB10E-E9F3-3949-AE79-15F505A43CBE</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_leftCols_int.vcxproj">
+      <Project>70A7203D-D137-3129-A06F-24C2E16BA647</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_noalias.vcxproj">
+      <Project>EC61A9AB-26A9-3685-8A1C-D05435509A6C</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_ones.vcxproj">
+      <Project>5B92CC48-7413-36AC-8199-15B6D375125F</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_ones_int.vcxproj">
+      <Project>C5281F84-441C-3AF4-BD5D-BF0A4FD79517</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_ones_int_int.vcxproj">
+      <Project>BEDDB8CA-2730-3943-84E9-D54B764E020F</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_operatorNorm.vcxproj">
+      <Project>9A6200B3-8F82-3CE5-851C-2A902BCC5E96</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_prod.vcxproj">
+      <Project>22982C4A-932E-32EC-996C-323775E6A86F</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_random.vcxproj">
+      <Project>131E0C4F-5B8E-3095-B81F-C4C89945F4D1</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_random_int.vcxproj">
+      <Project>718374FD-36E7-38CA-9CD0-77E06EC71E33</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_random_int_int.vcxproj">
+      <Project>C773D4F3-172D-3C09-8A13-B72B9BC78C1D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_replicate.vcxproj">
+      <Project>EB1E6939-F60E-3FB1-AF55-FC04E827CC85</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_replicate_int_int.vcxproj">
+      <Project>6FE556A0-7435-317D-BEB5-E203D13E66B2</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_reverse.vcxproj">
+      <Project>4986FE45-4BA2-3C88-BB4E-80142D2DB6E2</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_rightCols_int.vcxproj">
+      <Project>95D0CEE7-58DF-340C-936A-DB777C3F8C72</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_row.vcxproj">
+      <Project>F62E4D15-6BC1-3C88-93C0-9314F483996D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_rowwise.vcxproj">
+      <Project>106D0F3E-7434-3206-AEF1-099228D02EA0</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_segment_int_int.vcxproj">
+      <Project>5B1145E4-79B2-373A-9751-5278E498568A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_select.vcxproj">
+      <Project>8B79774D-C3FE-3627-8AE6-ABBB825CEA53</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_selfadjointView.vcxproj">
+      <Project>8B21BDE1-1400-3148-9BBE-FD585AD0C291</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_set.vcxproj">
+      <Project>2C5A3A4F-5D06-3F5B-8C7D-F2EA915B7258</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_setIdentity.vcxproj">
+      <Project>6C55579B-A989-3A68-9DB3-CC63A770AF75</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_setOnes.vcxproj">
+      <Project>E4E803F2-C6F3-39CE-A280-6EADA91B3548</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_setRandom.vcxproj">
+      <Project>7E991275-0679-3D02-91F5-D237D107F391</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_setZero.vcxproj">
+      <Project>9A8379F7-0794-372F-93E8-FA9395B83F86</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_start_int.vcxproj">
+      <Project>516FA491-C769-3F1C-B2A8-8D41A5B33C7F</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_template_int_bottomRows.vcxproj">
+      <Project>9228EE67-920C-3388-BB35-B7BCEE1DEA25</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_template_int_end.vcxproj">
+      <Project>86399D97-FDB8-3D1B-877A-C10B4C88424E</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_template_int_int_block_int_int_int_int.vcxproj">
+      <Project>0AF91B4C-C9AA-3501-A685-DB2ABD5CE677</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_template_int_int_bottomLeftCorner.vcxproj">
+      <Project>A17B1DE0-B955-3DA5-ACAF-D64F8718A0DB</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_template_int_int_bottomLeftCorner_int_int.vcxproj">
+      <Project>25A35B6A-6EBF-3DC9-9F0D-A1A627F587B7</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_template_int_int_bottomRightCorner.vcxproj">
+      <Project>E0F92D4B-F8F6-3FBB-B509-2D64BC1BDBF8</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_template_int_int_bottomRightCorner_int_int.vcxproj">
+      <Project>10A9D915-336A-39A4-BEF2-62D0DA581EFA</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_template_int_int_topLeftCorner.vcxproj">
+      <Project>83FEC926-9625-365C-AACC-EAC5B978C9A0</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_template_int_int_topLeftCorner_int_int.vcxproj">
+      <Project>9CFF5355-FA78-3125-97B5-7482B62E6D49</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_template_int_int_topRightCorner.vcxproj">
+      <Project>F9272901-48B5-3EB3-99F5-45C64D1535E6</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_template_int_int_topRightCorner_int_int.vcxproj">
+      <Project>ECA99247-1819-3791-A824-A404B0679606</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_template_int_leftCols.vcxproj">
+      <Project>5443EAA9-AFDF-3051-864C-4CFED63CC6F0</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_template_int_rightCols.vcxproj">
+      <Project>E07CD5CE-E973-3031-8EA4-9ADDAEF5897C</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_template_int_segment.vcxproj">
+      <Project>B589304F-30CE-3C57-B61D-8B8670D7262E</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_template_int_start.vcxproj">
+      <Project>6AB9741D-ADE7-3CDF-9825-573700BF52D7</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_template_int_topRows.vcxproj">
+      <Project>FB16EE1D-87A5-399F-B416-C7C6549A00B0</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_topLeftCorner_int_int.vcxproj">
+      <Project>35781C5C-9247-3E1B-95F1-8693B6465FE1</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_topRightCorner_int_int.vcxproj">
+      <Project>F2626207-E648-3366-8989-894806FD590A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_topRows_int.vcxproj">
+      <Project>54934C9F-7ADB-3CB1-8DC2-72C94B052CF0</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_transpose.vcxproj">
+      <Project>CC699211-1226-3AB7-908C-8C9572208E25</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_triangularView.vcxproj">
+      <Project>6B189290-2E39-32C4-8EB5-3D0B03FFEBF6</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_zero.vcxproj">
+      <Project>401883E0-8CA0-36D6-8B5C-6B3297411B75</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_zero_int.vcxproj">
+      <Project>1BE7A316-1B09-3561-8A81-9DC261E6F997</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_MatrixBase_zero_int_int.vcxproj">
+      <Project>E8DECA50-5077-3E90-8AF5-6929A7C61201</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Matrix_resize_NoChange_int.vcxproj">
+      <Project>0521BB72-2D8F-3539-9B08-4A70F209446B</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Matrix_resize_int.vcxproj">
+      <Project>B5081A9F-A9A4-39AA-8EF8-D83E24917089</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Matrix_resize_int_NoChange.vcxproj">
+      <Project>D90A2BF1-7DD1-3E3D-A624-DD7CE4FFCE5A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Matrix_resize_int_int.vcxproj">
+      <Project>AAFCEF10-7FE9-39C9-91AD-B975D0CA2E71</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Matrix_setConstant_int.vcxproj">
+      <Project>5657FA59-6F1C-3BA4-829F-E35ABAEA49CC</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Matrix_setConstant_int_int.vcxproj">
+      <Project>6EB254E1-9D36-3B94-8FB9-D71A2F4F74E6</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Matrix_setIdentity_int_int.vcxproj">
+      <Project>125E610A-E86A-349A-82FB-51280802137F</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Matrix_setOnes_int.vcxproj">
+      <Project>038F33E2-DC66-3353-A84E-E8DD51C26855</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Matrix_setOnes_int_int.vcxproj">
+      <Project>DF121A90-32D7-37D4-B5AA-6FB3D0AFFC1B</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Matrix_setRandom_int.vcxproj">
+      <Project>E4DF0298-B3E2-36D3-82B2-4365350D8B41</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Matrix_setRandom_int_int.vcxproj">
+      <Project>2D5833EC-C5AC-3F37-BF4F-3E4FBEE20221</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Matrix_setZero_int.vcxproj">
+      <Project>726D435A-817E-33E2-9410-6BDDB75208E5</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Matrix_setZero_int_int.vcxproj">
+      <Project>C1C6F293-B841-3FBE-9F8C-53FA0341692B</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_PartialPivLU_solve.vcxproj">
+      <Project>3F91859C-6B18-3E3D-BD7A-8FA1E73F6402</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_PartialRedux_count.vcxproj">
+      <Project>62ED6C7F-C1A1-36CB-A8B8-7152F0D92918</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_PartialRedux_maxCoeff.vcxproj">
+      <Project>7C7FF3CC-4054-34FC-AE3D-33A851E43C77</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_PartialRedux_minCoeff.vcxproj">
+      <Project>0C2822AC-B435-3EC6-B6AB-7ABBAC1138DE</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_PartialRedux_norm.vcxproj">
+      <Project>BC310B10-5F96-3FAC-BF18-ABE385409335</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_PartialRedux_prod.vcxproj">
+      <Project>2BE4EEAC-2A09-3BF2-8544-61EB988B8EA1</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_PartialRedux_squaredNorm.vcxproj">
+      <Project>34290F8C-685C-3178-ABF7-06FECD67CB08</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_PartialRedux_sum.vcxproj">
+      <Project>A0B7E244-FDE4-3602-89DF-3231A877C8E7</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_RealQZ_compute.vcxproj">
+      <Project>58086B37-B7FE-3CEC-BF62-82437304811A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_RealSchur_RealSchur_MatrixType.vcxproj">
+      <Project>4CF46FBF-0AE9-3C30-923E-6F870B5B14AC</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_RealSchur_compute.vcxproj">
+      <Project>8F258D38-40FF-3F8C-A425-FC0F3D224349</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_SelfAdjointEigenSolver_SelfAdjointEigenSolver.vcxproj">
+      <Project>E99DBC26-65E3-3460-AE7A-172E0AEADDB0</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_SelfAdjointEigenSolver_SelfAdjointEigenSolver_MatrixType.vcxproj">
+      <Project>B91CCD04-AE07-34D8-9976-A98D7B33362B</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_SelfAdjointEigenSolver_SelfAdjointEigenSolver_MatrixType2.vcxproj">
+      <Project>9E813753-2E6B-3354-9FBA-1380D1CDA175</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_SelfAdjointEigenSolver_compute_MatrixType.vcxproj">
+      <Project>63630099-B849-3B70-A9B1-19184BF61B7B</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_SelfAdjointEigenSolver_compute_MatrixType2.vcxproj">
+      <Project>CF355691-D386-3489-9862-49755275510E</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_SelfAdjointEigenSolver_eigenvalues.vcxproj">
+      <Project>D4FFDEDE-22A5-3C8A-8F2D-A10A531C831C</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_SelfAdjointEigenSolver_eigenvectors.vcxproj">
+      <Project>3B87D8A5-B4DE-3FA9-A3C7-7779EB300C50</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_SelfAdjointEigenSolver_operatorInverseSqrt.vcxproj">
+      <Project>A02A6CF6-07D1-314C-B9B5-961B4C821411</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_SelfAdjointEigenSolver_operatorSqrt.vcxproj">
+      <Project>133F1257-2521-3CA9-BA29-88CA8965A812</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_SelfAdjointView_eigenvalues.vcxproj">
+      <Project>9F80281D-A5B6-39E2-B7E2-8C9466B25BBE</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_SelfAdjointView_operatorNorm.vcxproj">
+      <Project>39863C59-F5F4-3E4D-ABF3-D29099AD6228</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_SparseMatrix_coeffs.vcxproj">
+      <Project>4641CD89-201B-3D45-B62B-01F3315122F6</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_TopicAliasing_block.vcxproj">
+      <Project>EE7D5F07-E03E-381B-B12A-A690D9271F21</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_TopicAliasing_block_correct.vcxproj">
+      <Project>C640E1B0-4E56-3490-AA1F-27D69AEDDDA3</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_TopicAliasing_cwise.vcxproj">
+      <Project>9CB217B2-A656-3DAA-BF0A-6F2CAC5C97C3</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_TopicAliasing_mult1.vcxproj">
+      <Project>18988915-E74E-37E2-8485-34758F3D0A28</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_TopicAliasing_mult2.vcxproj">
+      <Project>5AC62218-FECC-3CC1-A6EB-20DDD5E81AD9</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_TopicAliasing_mult3.vcxproj">
+      <Project>393A0F22-2235-37ED-938B-8DB4208FED08</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_TopicAliasing_mult4.vcxproj">
+      <Project>4167F486-7621-30EF-AA5F-7C76C9E837BA</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_TopicAliasing_mult5.vcxproj">
+      <Project>A40397DA-1B26-305F-9B29-9263BB6F9918</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_TopicStorageOrders_example.vcxproj">
+      <Project>3E58F6AE-F4D7-36AC-89BA-4E961FBC3539</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Triangular_solve.vcxproj">
+      <Project>D7E0B88E-5D84-3AD1-A067-78C44ACC91E6</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Tridiagonalization_Tridiagonalization_MatrixType.vcxproj">
+      <Project>4ADC1874-F438-3253-B026-9C6C69E09839</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Tridiagonalization_compute.vcxproj">
+      <Project>E46C665B-352C-3182-8F7F-471D50B8C507</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Tridiagonalization_decomposeInPlace.vcxproj">
+      <Project>8784B271-BAD5-3B41-BA64-97B26849B37A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Tridiagonalization_diagonal.vcxproj">
+      <Project>F0D956A8-F1C2-30C9-A594-0ED3655A77CB</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Tridiagonalization_householderCoefficients.vcxproj">
+      <Project>5711DB4D-E0FC-3919-B093-149379180572</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Tridiagonalization_packedMatrix.vcxproj">
+      <Project>7B4BA249-97E6-32ED-96EE-410BC3EEF799</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Tutorial_AdvancedInitialization_Block.vcxproj">
+      <Project>3A7C8748-B65B-3627-8281-EB1D37981BD3</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Tutorial_AdvancedInitialization_CommaTemporary.vcxproj">
+      <Project>E6D92997-4F96-3484-B41C-E9CA9247B881</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Tutorial_AdvancedInitialization_Join.vcxproj">
+      <Project>95C6FE0F-CA9B-3698-AFC0-6E1028F818C4</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Tutorial_AdvancedInitialization_LinSpaced.vcxproj">
+      <Project>46B9DA89-2F4D-3FAE-9C8E-9F5A81369766</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Tutorial_AdvancedInitialization_ThreeWays.vcxproj">
+      <Project>2F935D81-8ED2-3C5E-AB42-EF48BABD9F15</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Tutorial_AdvancedInitialization_Zero.vcxproj">
+      <Project>682D6087-9387-3565-BF4F-3C636D4D62B7</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Tutorial_Map_rowmajor.vcxproj">
+      <Project>61C1C2B2-1AA4-3739-91A5-D4D1E92054DC</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Tutorial_Map_using.vcxproj">
+      <Project>D06BAF93-6134-34B2-9BB8-76EE841A9462</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Tutorial_ReshapeMat2Mat.vcxproj">
+      <Project>BB16B160-A520-3E68-8EED-C39F21A0C0A3</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Tutorial_ReshapeMat2Vec.vcxproj">
+      <Project>F4192316-11FB-330E-AB38-8BFFE59EB2F8</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Tutorial_SlicingCol.vcxproj">
+      <Project>BE80EF5C-8BAC-3B0D-B8A2-69FA47FC1248</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Tutorial_SlicingVec.vcxproj">
+      <Project>B5EE633C-CFB3-3373-B84C-746DEC773440</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Tutorial_commainit_01.vcxproj">
+      <Project>1BA53305-7D0D-32A5-B192-D0B44BD65FB4</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Tutorial_commainit_01b.vcxproj">
+      <Project>EF9850DA-695D-3512-9BC8-78A7EB4E91A7</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Tutorial_commainit_02.vcxproj">
+      <Project>C4E3B1AC-FF9B-326B-A9CC-FC5BEC9CE27A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Tutorial_solve_matrix_inverse.vcxproj">
+      <Project>396EA03F-98C1-3858-B77D-B903EA154355</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Tutorial_solve_multiple_rhs.vcxproj">
+      <Project>38EB6875-6307-33B1-B3DE-4CD61B64A2A1</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Tutorial_solve_reuse_decomposition.vcxproj">
+      <Project>C741AAC1-DBF8-3420-8D98-46ED1746395A</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Tutorial_solve_singular.vcxproj">
+      <Project>CE2170FA-542F-3750-A1C9-8EF6E202DD5B</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Tutorial_solve_triangular.vcxproj">
+      <Project>1B9FDC00-032F-3DDF-9E7A-C47409E04A99</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Tutorial_solve_triangular_inplace.vcxproj">
+      <Project>9D13957A-C46C-36A5-9EDE-A958E41FDB24</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_VectorwiseOp_homogeneous.vcxproj">
+      <Project>A5628597-1C01-37EC-B6C7-20F4E167E349</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_Vectorwise_reverse.vcxproj">
+      <Project>3432C050-4D2F-38C0-91B7-1A161BA5094B</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_class_FullPivLU.vcxproj">
+      <Project>6CAF8D23-F419-3925-972E-05B37BC42048</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_tut_arithmetic_redux_minmax.vcxproj">
+      <Project>BBD2DFEB-5C54-3045-A829-1A361C1C93ED</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_tut_arithmetic_transpose_aliasing.vcxproj">
+      <Project>34F3D5AE-E154-39C7-8211-7EC6CBAB804D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_tut_arithmetic_transpose_conjugate.vcxproj">
+      <Project>4D8B84E7-E3CB-37E5-ABCA-87A48F4F0673</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_tut_arithmetic_transpose_inplace.vcxproj">
+      <Project>089E766B-F55C-32C4-A2FE-DB7B661A1461</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/doc/snippets/compile_tut_matrix_assignment_resizing.vcxproj">
+      <Project>28DF1B9C-1C90-357C-8D5F-F51400E18419</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

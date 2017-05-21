@@ -3,13 +3,13 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "light_type.hpp"
+#include <stdafx.hpp>
+#include <light_type.hpp>
 
-#include "texture_handle.hpp"
+#include <texture_handle.hpp>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 struct light_descriptor {
 	glm::vec3		position;		float radius{ .0f };

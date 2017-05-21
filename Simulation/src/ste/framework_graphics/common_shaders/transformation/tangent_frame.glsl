@@ -1,5 +1,5 @@
 
-#include "quaternion.glsl"
+#include <quaternion.glsl>
 
 mat2x3 extract_tangent_bitangent_from_tangent_frame(vec4 q) {
 	return mat2x3(

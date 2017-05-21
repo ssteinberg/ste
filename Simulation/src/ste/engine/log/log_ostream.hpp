@@ -4,12 +4,12 @@
 #pragma once
 
 #include <ostream>
-#include <memory>
+#include <lib/unique_ptr.hpp>
 
-#include "log_streambuf.hpp"
-#include "log_sink.hpp"
+#include <log_streambuf.hpp>
+#include <log_sink.hpp>
 
-namespace StE {
+namespace ste::log {
 
 class log_ostream : public std::ostream {
 private:
@@ -20,7 +20,7 @@ private:
 	streambuf_type lsb;
 
 public:
-	log_ostream(std::unique_ptr<sink_type> &&sink, bool force_flush) : std::ostream(&lsb), lsb(std::move(sink), force_flush) {}
+	log_ostream(lib::unique_ptr<sink_type> &&sink, bool force_flush) : std::ostream(&lsb), lsb(std::move(sink), force_flush) {}
 	~log_ostream() noexcept { flush(); }
 
 	log_ostream(log_ostream &&other) noexcept : std::basic_ios<char, std::char_traits<char>>(),

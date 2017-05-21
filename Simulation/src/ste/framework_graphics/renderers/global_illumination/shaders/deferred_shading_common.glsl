@@ -1,29 +1,5 @@
 
-#include "light.glsl"
-
-struct deferred_shading_shadow_maps {
-	samplerCubeArrayShadow shadow_depth_maps;
-	samplerCubeArray shadow_maps;
-	sampler2DArrayShadow directional_shadow_depth_maps;
-	sampler2DArray directional_shadow_maps;
-};
-
-struct deferred_material_microfacet_luts { 
-	sampler2D microfacet_refraction_fit_lut;
-	sampler2DArray microfacet_transmission_fit_lut;
-};
-
-struct deferred_material_ltc_luts { 
-	sampler2D ltc_ggx_fit;
-	sampler2D ltc_ggx_amplitude;
-};
-
-struct deferred_atmospherics_luts { 
-	sampler2DArray atmospheric_optical_length_lut;
-	sampler3D atmospheric_scattering_lut;
-	sampler3D atmospheric_mie0_scattering_lut;
-	sampler3D atmospheric_ambient_lut;
-};
+#include <light.glsl>
 
 struct light_shading_parameters {
 	light_descriptor ld;

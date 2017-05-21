@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libpng\png.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libpng\pngerror.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libpng\pngget.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libpng\pngmem.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libpng\pngpread.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libpng\pngread.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libpng\pngrio.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libpng\pngrtran.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libpng\pngrutil.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libpng\pngset.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libpng\pngtrans.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libpng\pngwio.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libpng\pngwrite.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libpng\pngwtran.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libpng\pngwutil.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\libpng\png.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\libpng\pngconf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\build\libpng64\pnglibconf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\libpng\pngpriv.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\libpng\pngdebug.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\libpng\pnginfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\libpng\pngstruct.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\packages\libpng\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{820A585B-BB62-3464-89B7-3FB4987733F6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{140AE2B0-AA50-3A90-9E26-D28CDC56E12B}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

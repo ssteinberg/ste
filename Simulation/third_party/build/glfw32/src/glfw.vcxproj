@@ -1,0 +1,187 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGUID>{36D48B57-37C3-3E22-898F-6ABFB638D50C}</ProjectGUID>
+    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>Win32</Platform>
+    <ProjectName>glfw</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\src\git\StE\Simulation\third_party\build\glfw32\src\Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">glfw.dir\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">glfw3d</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D:\src\git\StE\Simulation\third_party\build\glfw32\src\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">glfw.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">glfw3</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.lib</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>D:\src\git\StE\Simulation\third_party\packages\glfw\include;D:\src\git\StE\Simulation\third_party\packages\glfw\src;D:\src\git\StE\Simulation\third_party\build\glfw32\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>Debug/</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs>CompileAsC</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;_GLFW_USE_CONFIG_H;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR="Debug";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;_GLFW_USE_CONFIG_H;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR=\"Debug\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>D:\src\git\StE\Simulation\third_party\packages\glfw\include;D:\src\git\StE\Simulation\third_party\packages\glfw\src;D:\src\git\StE\Simulation\third_party\build\glfw32\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>D:\src\git\StE\Simulation\third_party\packages\glfw\include;D:\src\git\StE\Simulation\third_party\packages\glfw\src;D:\src\git\StE\Simulation\third_party\build\glfw32\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions> /machine:X86 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>user32.lib;Gdi32.lib;Shell32.lib</AdditionalDependencies>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>D:\src\git\StE\Simulation\third_party\packages\glfw\include;D:\src\git\StE\Simulation\third_party\packages\glfw\src;D:\src\git\StE\Simulation\third_party\build\glfw32\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>Release/</AssemblerListingLocation>
+      <CompileAs>CompileAsC</CompileAs>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <Optimization>Full</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_GLFW_USE_CONFIG_H;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR="Release";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <OmitFramePointers>true</OmitFramePointers>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_GLFW_USE_CONFIG_H;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR=\"Release\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>D:\src\git\StE\Simulation\third_party\packages\glfw\include;D:\src\git\StE\Simulation\third_party\packages\glfw\src;D:\src\git\StE\Simulation\third_party\build\glfw32\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>D:\src\git\StE\Simulation\third_party\packages\glfw\include;D:\src\git\StE\Simulation\third_party\packages\glfw\src;D:\src\git\StE\Simulation\third_party\build\glfw32\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions> /machine:X86 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>user32.lib;Gdi32.lib;Shell32.lib</AdditionalDependencies>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\packages\glfw\src\CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Building Custom Rule D:/src/git/StE/Simulation/third_party/packages/glfw/src/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HD:/src/git/StE/Simulation/third_party/packages/glfw -BD:/src/git/StE/Simulation/third_party/build/glfw32 --check-stamp-file D:\src\git\StE\Simulation\third_party\build\glfw32\src\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:/src/git/StE/Simulation/third_party/packages/glfw/src/CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\glfw\src\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\glfw\src\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\src\git\StE\Simulation\third_party\build\glfw32\src\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Building Custom Rule D:/src/git/StE/Simulation/third_party/packages/glfw/src/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HD:/src/git/StE/Simulation/third_party/packages/glfw -BD:/src/git/StE/Simulation/third_party/build/glfw32 --check-stamp-file D:\src\git\StE\Simulation\third_party\build\glfw32\src\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D:/src/git/StE/Simulation/third_party/packages/glfw/src/CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\glfw\src\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\glfw\src\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D:\src\git\StE\Simulation\third_party\build\glfw32\src\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glfw\src\internal.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\build\glfw32\src\glfw_config.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glfw\include\GLFW\glfw3.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glfw\include\GLFW\glfw3native.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glfw\src\win32_platform.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glfw\src\win32_joystick.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glfw\src\wgl_context.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glfw\src\egl_context.h" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\glfw\src\context.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\glfw\src\init.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\glfw\src\input.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\glfw\src\monitor.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\glfw\src\vulkan.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\glfw\src\window.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\glfw\src\win32_init.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\glfw\src\win32_joystick.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\glfw\src\win32_monitor.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\glfw\src\win32_time.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\glfw\src\win32_tls.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\glfw\src\win32_window.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\glfw\src\wgl_context.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\glfw\src\egl_context.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/glfw32/ZERO_CHECK.vcxproj">
+      <Project>B6E3EC08-3B62-39E8-AE38-B6FD900C2B8E</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

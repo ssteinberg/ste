@@ -1,0 +1,6 @@
+D:/src/git/StE/Simulation/third_party/build/libtga64/CMakeFiles/RUN_TESTS.dir
+D:/src/git/StE/Simulation/third_party/build/libtga64/CMakeFiles/ALL_BUILD.dir
+D:/src/git/StE/Simulation/third_party/build/libtga64/CMakeFiles/ZERO_CHECK.dir
+D:/src/git/StE/Simulation/third_party/build/libtga64/src/CMakeFiles/tga_static.dir
+D:/src/git/StE/Simulation/third_party/build/libtga64/src/CMakeFiles/tga.dir
+D:/src/git/StE/Simulation/third_party/build/libtga64/src/CMakeFiles/RUN_TESTS.dir

@@ -1,0 +1,19 @@
+
+{
+	"sources" : 
+	[
+		
+		{
+			"file" : "D:/src/git/StE/Simulation/third_party/packages/eigen/test/mapped_matrix.cpp"
+		},
+		
+		{
+			"file" : "D:/src/git/StE/Simulation/third_party/packages/eigen/test/CMakeLists.txt"
+		}
+	],
+	"target" : 
+	{
+		"labels" : [ "BuildOfficial" ],
+		"name" : "mapped_matrix_9"
+	}
+}

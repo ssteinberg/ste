@@ -3,53 +3,37 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
-#include "object_vertex_data.hpp"
-#include "vertex_buffer_object.hpp"
-#include "vertex_array_object.hpp"
-#include "element_buffer_object.hpp"
+#include <object_vertex_data.hpp>
+#include <mesh_bounding_sphere.hpp>
 
-#include "mesh_aabb.hpp"
-#include "mesh_bounding_sphere.hpp"
-
-#include <vector>
-
+#include <lib/vector.hpp>
 #include <type_traits>
-#include <functional>
-#include <memory>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 class mesh_generic {
 public:
 	virtual ~mesh_generic() noexcept {};
 
-	virtual const std::vector<object_vertex_data> &get_vertices() const = 0;
-	virtual const std::vector<std::uint32_t> &get_indices() const = 0;
+	virtual const lib::vector<object_vertex_data> &get_vertices() const = 0;
+	virtual const lib::vector<std::uint32_t> &get_indices() const = 0;
 	virtual const mesh_bounding_sphere &bounding_sphere() const = 0;
 };
 
 enum class mesh_subdivion_mode {
-	Triangles = GL_TRIANGLES,
-	TrianglesStrip = GL_TRIANGLE_STRIP,
-	TrianglesFan = GL_TRIANGLE_FAN,
+	Triangles,
+	TrianglesStrip,
+	TrianglesFan,
 };
 
 template<mesh_subdivion_mode Mode>
 class mesh : public mesh_generic {
-public:
-	using vbo_type = StE::Core::vertex_buffer_object<StE::Graphics::object_vertex_data, StE::Graphics::object_vertex_data::descriptor>;
-	using ebo_type = StE::Core::element_buffer_object<std::uint32_t>;
-
 private:
-	std::vector<object_vertex_data> vertices;
-	std::vector<ebo_type::T> indices;
-
-	std::unique_ptr<vbo_type> mesh_vbo;
-	std::unique_ptr<ebo_type> mesh_ebo;
-	std::unique_ptr<StE::Core::vertex_array_object> mesh_vao;
+	lib::vector<object_vertex_data> vertices;
+	lib::vector<std::uint32_t> indices;
 
 protected:
 	mesh_bounding_sphere sphere;
@@ -81,30 +65,26 @@ public:
 public:
 	virtual ~mesh() noexcept {};
 
-	const std::vector<object_vertex_data> &get_vertices() const override final { return vertices; }
-	const std::vector<ebo_type::T> &get_indices() const override final { return indices; }
+	const lib::vector<object_vertex_data> &get_vertices() const override final { return vertices; }
+	const lib::vector<std::uint32_t> &get_indices() const override final { return indices; }
 	const mesh_bounding_sphere &bounding_sphere() const override final { return sphere; };
 
 	void set_vertices(const object_vertex_data *vert, int size) {
 		vertices = decltype(vertices)(vert, vert + size);
-		mesh_vbo = nullptr;
 		calc_sphere();
 	}
-	void set_indices(const ebo_type::T *ind, int size) {
+	void set_indices(const std::uint32_t *ind, int size) {
 		indices = decltype(indices)(ind, ind + size);
-		mesh_vbo = nullptr;
 		calc_sphere();
 	}
 	template <typename T>
 	void set_vertices(T &&vert) {
 		vertices = decltype(vertices)(std::forward<T>(vert));
-		mesh_vbo = nullptr;
 		calc_sphere();
 	}
 	template <typename T>
 	void set_indices(T &&ind) {
 		indices = decltype(indices)(std::forward<T>(ind));
-		mesh_ebo = nullptr;
 	}
 
 	template <bool b = Mode == mesh_subdivion_mode::Triangles>
@@ -128,40 +108,16 @@ public:
 		for (auto &v : vertices) {
 			auto tangent_frame = v.extract_tangent_frame();
 
-			for (int i=0; i<3; ++i)
-				tangent_frame[i] = glm::normalize((tim * glm::vec4(tangent_frame[i], 1)).xyz());
+			for (int i = 0; i < 3; ++i) {
+				auto t = tim * glm::vec4(tangent_frame[i], 1);
+				tangent_frame[i] = glm::normalize(glm::vec3{ t.x, t.y, t.z });
+			}
 
-			v.p = (m * glm::vec4(v.p, 1)).xyz();
+			auto p = m * glm::vec4(v.p, 1);
+			v.p = { p.x,p.y,p.z };
 			v.tangent_frame_from_tbn(tangent_frame[0], tangent_frame[1], tangent_frame[2]);
 		}
 		calc_sphere();
-	}
-
-	const vbo_type *vbo() {
-		if (mesh_vbo != nullptr)
-			return mesh_vbo.get();
-
-		return (mesh_vbo = std::make_unique<vbo_type>(get_vertices())).get();
-	}
-
-	const StE::Core::element_buffer_object<> *ebo() {
-		if (mesh_ebo != nullptr)
-			return mesh_ebo.get();
-
-		return (mesh_ebo = std::make_unique<StE::Core::element_buffer_object<>>(get_indices())).get();
-	}
-
-	const StE::Core::vertex_array_object *vao() {
-		if (mesh_vao != nullptr)
-			return mesh_vao.get();
-
-		vbo();
-
-		mesh_vao = std::make_unique<StE::Core::vertex_array_object>();
-		(*mesh_vao)[0] = (*mesh_vbo)[0];
-		(*mesh_vao)[1] = (*mesh_vbo)[1];
-		(*mesh_vao)[2] = (*mesh_vbo)[2];
-		return mesh_vao.get();
 	}
 };
 

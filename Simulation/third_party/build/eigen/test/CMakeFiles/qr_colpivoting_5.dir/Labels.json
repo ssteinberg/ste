@@ -1,0 +1,19 @@
+
+{
+	"sources" : 
+	[
+		
+		{
+			"file" : "D:/src/git/StE/Simulation/third_party/packages/eigen/test/qr_colpivoting.cpp"
+		},
+		
+		{
+			"file" : "D:/src/git/StE/Simulation/third_party/packages/eigen/test/CMakeLists.txt"
+		}
+	],
+	"target" : 
+	{
+		"labels" : [ "BuildOfficial" ],
+		"name" : "qr_colpivoting_5"
+	}
+}

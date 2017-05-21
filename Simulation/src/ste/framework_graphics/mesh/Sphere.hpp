@@ -3,19 +3,19 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "mesh.hpp"
+#include <stdafx.hpp>
+#include <mesh.hpp>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 class sphere : public mesh<mesh_subdivion_mode::Triangles> {
 public:
 	~sphere() noexcept override {}
 
 	sphere(unsigned vert_slices, unsigned horz_slices, float theta_min = -glm::half_pi<float>(), float theta_max = glm::half_pi<float>()) {
-		std::vector<object_vertex_data> vert;
-		std::vector<std::uint32_t> ind;
+		lib::vector<object_vertex_data> vert;
+		lib::vector<std::uint32_t> ind;
 
 		for (unsigned x = 0; x <= horz_slices; ++x) {
 			float phi = x == horz_slices ? -glm::pi<float>() : glm::mix(-glm::pi<float>(), glm::pi<float>(), static_cast<float>(x) / static_cast<float>(horz_slices - 1));

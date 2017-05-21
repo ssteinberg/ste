@@ -3,20 +3,20 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "ste_engine_control.hpp"
+#include <stdafx.hpp>
+#include <ste_engine_control.hpp>
 
-#include "resource_instance.hpp"
-#include "resource_loading_task.hpp"
+#include <resource_instance.hpp>
+#include <resource_loading_task.hpp>
 
-#include "gi_renderer.hpp"
+#include <gi_renderer.hpp>
 
-namespace StE {
-namespace Resource {
+namespace ste {
+namespace resource {
 
 template <>
-class resource_loading_task<Graphics::gi_renderer> {
-	using R = Graphics::gi_renderer;
+class resource_loading_task<graphics::gi_renderer> {
+	using R = graphics::gi_renderer;
 
 public:
 	auto loader(const ste_engine_control &ctx, R* object) {
@@ -33,7 +33,8 @@ public:
 			object->lll_gen_dispatch.wait();
 			object->light_preprocess.wait();
 			object->vol_scat_scatter.wait();
-		}).then_on_main_thread([object]() {
+			// TODO: Fix
+		}).then/*_on_main_thread*/([object]() {
 			object->init();
 		});
 	}

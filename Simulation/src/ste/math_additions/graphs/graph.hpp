@@ -3,18 +3,18 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "graph_vertex.hpp"
-#include "graph_edge.hpp"
+#include <stdafx.hpp>
+#include <graph_vertex.hpp>
+#include <graph_edge.hpp>
 
 #include <algorithm>
 #include <functional>
 
-#include "boost_filesystem.hpp"
-#include "boost_flatset.hpp"
+#include <filesystem>
+#include <lib/flat_set.hpp>
 
-namespace StE {
-namespace Graph {
+namespace ste {
+namespace graph {
 
 template <typename V, typename E>
 class graph;
@@ -22,11 +22,11 @@ class graph;
 namespace detail {
 
 template <typename T>
-using GraphSet = boost::container::flat_set<T>;
+using GraphSet = ste::lib::flat_set<T>;
 
 class graph_impl {
 	template <typename V, typename E>
-	friend class StE::Graph::graph;
+	friend class ste::graph::graph;
 
 public:
 	using VertexPtr = std::shared_ptr<const vertex>;
@@ -35,18 +35,18 @@ public:
 private:
 	static bool write_dot(const GraphSet<VertexPtr> *vertices,
 						  const GraphSet<EdgePtr> *edges,
-						  const boost::filesystem::path &p);
+						  const std::experimental::filesystem::path &p);
 	static bool write_png(const GraphSet<VertexPtr> *vertices,
 						  const GraphSet<EdgePtr> *edges,
-						  const boost::filesystem::path &p);
+						  const std::experimental::filesystem::path &p);
 };
 
 }
 
 template <typename V, typename E>
 class graph {
-	static_assert(std::is_base_of<vertex, V>::value, "V must derive from Graph::vertex!");
-	static_assert(std::is_base_of<edge, E>::value, "E must derive from Graph::edge!");
+	static_assert(std::is_base_of<vertex, V>::value, "V must derive from graph::vertex!");
+	static_assert(std::is_base_of<edge, E>::value, "E must derive from graph::edge!");
 
 public:
 	using vertex_type = V;
@@ -173,12 +173,12 @@ public:
 	const auto &get_vertices() const { return vertices; }
 	const auto &get_edges() const { return edges; }
 
-	bool write_dot(const boost::filesystem::path &p) const {
+	bool write_dot(const std::experimental::filesystem::path &p) const {
 		return detail::graph_impl::write_dot(reinterpret_cast<const detail::GraphSet<detail::graph_impl::VertexPtr> *>(&vertices),
 											 reinterpret_cast<const detail::GraphSet<detail::graph_impl::EdgePtr> *>(&edges),
 											 p);
 	}
-	bool write_png(const boost::filesystem::path &p) const {
+	bool write_png(const std::experimental::filesystem::path &p) const {
 		return detail::graph_impl::write_png(reinterpret_cast<const detail::GraphSet<detail::graph_impl::VertexPtr> *>(&vertices),
 											 reinterpret_cast<const detail::GraphSet<detail::graph_impl::EdgePtr> *>(&edges),
 											 p);

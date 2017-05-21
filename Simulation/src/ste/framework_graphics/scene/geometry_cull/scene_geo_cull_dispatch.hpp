@@ -3,20 +3,20 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "ste_engine_control.hpp"
-#include "gl_current_context.hpp"
+#include <stdafx.hpp>
+#include <ste_engine_control.hpp>
+#include <gl_current_context.hpp>
 
-#include "glsl_program.hpp"
-#include "gpu_dispatchable.hpp"
+#include <glsl_program.hpp>
+#include <gpu_dispatchable.hpp>
 
-#include "scene.hpp"
-#include "light_storage.hpp"
+#include <scene.hpp>
+#include <light_storage.hpp>
 
-#include <memory>
+#include <lib/unique_ptr.hpp>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 class scene_geo_cull_dispatch : public gpu_dispatchable {
 	using Base = gpu_dispatchable;
@@ -25,7 +25,7 @@ private:
 	const scene *s;
 	const light_storage *ls;
 
-	Resource::resource_instance<Resource::glsl_program> program;
+	resource::resource_instance<resource::glsl_program> program;
 
 	mutable std::size_t old_object_group_size{ 0 };
 
@@ -37,7 +37,7 @@ public:
 							const scene *s,
 							const light_storage *ls) : s(s),
 													   ls(ls),
-													   program(ctx, "scene_geo_cull.glsl") {
+													   program(ctx, "scene_geo_cull.comp") {
 		program.get().set_uniform("cascades_depths", s->properties().lights_storage().get_cascade_depths_array());
 	}
 

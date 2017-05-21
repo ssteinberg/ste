@@ -3,15 +3,15 @@
 
 #pragma once
 
-#include "atmospherics_properties.hpp"
+#include <atmospherics_properties.hpp>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 namespace _detail {
 
 template <typename T, int padding_size>
-struct atmospherics_descriptor_padder { T pad[padding_size]; };
+struct atmospherics_descriptor_padder { alignas(1) T pad[padding_size]; };
 template <typename T>
 struct atmospherics_descriptor_padder<T, 0> {};
 

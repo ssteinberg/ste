@@ -3,10 +3,10 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 #include <glm/gtc/quaternion.hpp>
 
-namespace StE {
+namespace ste {
 
 namespace _detail {
 

@@ -3,22 +3,22 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
-#include "material_descriptor.hpp"
-#include "observable_resource.hpp"
+#include <material_descriptor.hpp>
+#include <observable_resource.hpp>
 
-#include "material_layer.hpp"
+#include <material_layer.hpp>
 
-#include "Sampler.hpp"
-#include "texture_2d.hpp"
+#include <Sampler.hpp>
+#include <texture_2d.hpp>
 
-#include "rgb.hpp"
+#include <rgb.hpp>
 
-#include <memory>
+#include <lib/unique_ptr.hpp>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 /**
  *	@brief	Defines rendering material basic properties
@@ -29,10 +29,10 @@ class material : public Core::observable_resource<material_descriptor> {
 private:
 	Core::sampler_mipmapped material_sampler;
 
-	std::shared_ptr<Core::texture_2d> cavity_map{ nullptr };
-	std::shared_ptr<Core::texture_2d> normal_map{ nullptr };
-	std::shared_ptr<Core::texture_2d> mask_map{ nullptr };
-	std::shared_ptr<Core::texture_2d> texture{ nullptr };
+	lib::shared_ptr<Core::texture_2d> cavity_map{ nullptr };
+	lib::shared_ptr<Core::texture_2d> normal_map{ nullptr };
+	lib::shared_ptr<Core::texture_2d> mask_map{ nullptr };
+	lib::shared_ptr<Core::texture_2d> texture{ nullptr };
 
 	rgb emission{ 0, 0, 0 };
 
@@ -78,7 +78,7 @@ public:
 	*
 	* 	@param tex	2D texture object
 	*/
-	void set_texture(const std::shared_ptr<Core::texture_2d> &tex) {
+	void set_texture(const lib::shared_ptr<Core::texture_2d> &tex) {
 		texture = tex;
 		descriptor.texture_handle = handle_for_texture(texture.get());
 
@@ -95,7 +95,7 @@ public:
 	*
 	* 	@param tex	2D texture object
 	*/
-	void set_cavity_map(const std::shared_ptr<Core::texture_2d> &tex) {
+	void set_cavity_map(const lib::shared_ptr<Core::texture_2d> &tex) {
 		cavity_map = tex;
 		descriptor.cavity_handle = handle_for_texture(cavity_map.get());
 
@@ -110,7 +110,7 @@ public:
 	*
 	* 	@param tex	2D texture object
 	*/
-	void set_normal_map(const std::shared_ptr<Core::texture_2d> &tex) {
+	void set_normal_map(const lib::shared_ptr<Core::texture_2d> &tex) {
 		normal_map = tex;
 		descriptor.normal_handle = handle_for_texture(normal_map.get());
 
@@ -127,7 +127,7 @@ public:
 	*
 	* 	@param tex	2D texture object
 	*/
-	void set_mask_map(const std::shared_ptr<Core::texture_2d> &tex) {
+	void set_mask_map(const lib::shared_ptr<Core::texture_2d> &tex) {
 		mask_map = tex;
 		descriptor.mask_handle = handle_for_texture(mask_map.get());
 

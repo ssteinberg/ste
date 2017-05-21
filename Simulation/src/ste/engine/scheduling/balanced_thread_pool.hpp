@@ -1,45 +1,64 @@
 // StE
-// © Shlomi Steinberg, 2015-2016
+// © Shlomi Steinberg, 2015-2017
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
+#include <functor.hpp>
+#include <thread_pool_task.hpp>
 
-#include "concurrent_queue.hpp"
-#include "interruptible_thread.hpp"
-#include "thread_pool_task.hpp"
+#include <lib/concurrent_queue.hpp>
+#include <interruptible_thread.hpp>
 
-#include "thread_constants.hpp"
-#include "thread_priority.hpp"
-#include "thread_affinity.hpp"
+#include <thread_constants.hpp>
+#include <thread_priority.hpp>
+#include <thread_affinity.hpp>
 
-#include "system_times.hpp"
+#include <system_times.hpp>
 
 #include <atomic>
 #include <mutex>
 #include <future>
 #include <condition_variable>
+#include <lib/aligned_padded_ptr.hpp>
 
-#include <vector>
+#include <lib/vector.hpp>
+#include <lib/shared_ptr.hpp>
 #include <bitset>
 
 #include <chrono>
 
-namespace StE {
+namespace ste {
 
 class balanced_thread_pool {
-private:
-	mutable std::mutex m;
-	std::condition_variable notifier;
-	std::vector<interruptible_thread> workers;
-	std::vector<interruptible_thread> despawned_workers;
+public:
+	using task_t = lib::shared_ptr<functor<>>;
+	using task_queue_t = lib::concurrent_queue<task_t>;
 
-	concurrent_queue<unique_thread_pool_type_erased_task> task_queue;
+private:
+	struct shared_data_t {
+		mutable std::mutex m;
+		std::condition_variable notifier;
+		
+		std::atomic<int> requests_pending{ 0 };
+		std::atomic<int> active_workers{ 0 };
+	};
+
+private:
+	static thread_local bool balanced_thread_pool_worker_thread_flag;
+
+public:
+	static bool is_thread_pool_worker_thread() { return balanced_thread_pool_worker_thread_flag; }
+
+private:
+	lib::aligned_padded_ptr<shared_data_t> shared_data;
+	lib::vector<interruptible_thread> workers;
+	lib::vector<interruptible_thread> despawned_workers;
+
+	task_queue_t task_queue;
 
 	system_times sys_times;
 	std::chrono::high_resolution_clock::time_point last_pool_balance;
-	std::atomic<int> requests_pending{ 0 };
-	std::atomic<int> active_workers{ 0 };
 	int threads_sleeping{ 0 };
 
 	float idle_time_threshold_for_new_worker;
@@ -49,24 +68,29 @@ private:
 private:
 	void spawn_worker(int schedule_on_cpu = -1) {
 		workers.emplace_back([this]() {
-			std::unique_ptr<unique_thread_pool_type_erased_task> task;
+			// Set balanced thread pool worker flag for this thread
+			balanced_thread_pool::balanced_thread_pool_worker_thread_flag = true;
 
 			for (;;) {
 				if (interruptible_thread::is_interruption_flag_set()) return;
 
+				task_queue_t::stored_ptr task;
 				{
-					std::unique_lock<std::mutex> l(this->m);
+					// Wait for tasks
+					std::unique_lock<std::mutex> l(shared_data->m);
+					if (interruptible_thread::is_interruption_flag_set()) return;
 
 					++threads_sleeping;
-					this->notifier.wait(l, [&]() {
+					shared_data->notifier.wait(l, [&]() {
 						return interruptible_thread::is_interruption_flag_set() ||
 							   (task = task_queue.pop()) != nullptr;
 					});
 					--threads_sleeping;
 				}
 
-				active_workers.fetch_add(1, std::memory_order_relaxed);
+				shared_data->active_workers.fetch_add(1, std::memory_order_relaxed);
 
+				// Process tasks
 				while (task != nullptr) {
 					run_task(std::move(*task));
 					if (interruptible_thread::is_interruption_flag_set())
@@ -74,7 +98,7 @@ private:
 					task = task_queue.pop();
 				}
 
-				active_workers.fetch_add(-1, std::memory_order_relaxed);
+				shared_data->active_workers.fetch_add(-1, std::memory_order_relaxed);
 			}
 		});
 
@@ -102,16 +126,16 @@ private:
 	}
 
 	void notify_workers_on_enqueue() {
-		int pending = requests_pending.fetch_add(1);
+		int pending = shared_data->requests_pending.fetch_add(1);
 		if (pending == 0)
-			notifier.notify_one();
+			shared_data->notifier.notify_one();
 		else
-			notifier.notify_all();
+			shared_data->notifier.notify_all();
 	}
 
-	void run_task(unique_thread_pool_type_erased_task &&task) {
-		requests_pending.fetch_add(-1, std::memory_order_release);
-		task();
+	void run_task(task_t &&task) {
+		shared_data->requests_pending.fetch_add(-1, std::memory_order_release);
+		(*task)();
 	}
 
 	unsigned min_worker_threads() const {
@@ -134,8 +158,8 @@ public:
 	~balanced_thread_pool() {
 		for (auto &t : workers)
 			t.interrupt();
-		do { notifier.notify_all(); } while (!m.try_lock());
-		m.unlock();
+		do { shared_data->notifier.notify_all(); } while (!shared_data->m.try_lock());
+		shared_data->m.unlock();
 		for (auto &t : workers)
 			t.join();
 		for (auto &t : despawned_workers)
@@ -148,8 +172,19 @@ public:
 	balanced_thread_pool &operator=(const balanced_thread_pool &) = delete;
 
 	template <typename R>
-	std::future<R> enqueue(unique_thread_pool_task<R> &&f) {
-		auto future = f.get_future();
+	std::future<R> enqueue(const lib::shared_ptr<thread_pool_task<R>> &f) {
+		auto future = f->get_future();
+
+		auto copy = f;
+		task_queue.push(copy);
+
+		notify_workers_on_enqueue();
+
+		return future;
+	}
+	template <typename R>
+	std::future<R> enqueue(lib::shared_ptr<thread_pool_task<R>> &&f) {
+		auto future = f->get_future();
 		task_queue.push(std::move(f));
 
 		notify_workers_on_enqueue();
@@ -193,7 +228,7 @@ public:
 		}
 
 		unsigned min_threads = min_worker_threads();
-		int req = requests_pending.load(std::memory_order_acquire);
+		int req = shared_data->requests_pending.load(std::memory_order_acquire);
 		if (threads_sleeping == 0 &&
 			idle_frac > idle_time_threshold_for_new_worker) {
 			spawn_worker();
@@ -206,10 +241,10 @@ public:
 		}
 	}
 
-	int get_workers_count() const { return workers.size(); }
-	int get_pending_requests_count() const { return requests_pending.load(std::memory_order_relaxed); }
-	int get_active_workers_count() const { return active_workers.load(std::memory_order_relaxed); }
-	int get_sleeping_workers_count() const { return threads_sleeping; }
+	auto get_workers_count() const { return workers.size(); }
+	auto get_pending_requests_count() const { return shared_data->requests_pending.load(std::memory_order_relaxed); }
+	auto get_active_workers_count() const { return shared_data->active_workers.load(std::memory_order_relaxed); }
+	auto get_sleeping_workers_count() const { return threads_sleeping; }
 };
 
 }

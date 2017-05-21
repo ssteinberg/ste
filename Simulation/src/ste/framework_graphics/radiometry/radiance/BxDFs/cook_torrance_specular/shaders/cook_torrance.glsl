@@ -1,7 +1,7 @@
 
-#include "common.glsl"
-#include "microfacet.glsl"
-#include "fresnel.glsl"
+#include <common.glsl>
+#include <microfacet.glsl>
+#include <fresnel.glsl>
 
 /*
  *	Cook-Torrance isotropic BRDF

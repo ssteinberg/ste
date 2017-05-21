@@ -3,11 +3,11 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "texture_handle.hpp"
+#include <stdafx.hpp>
+#include <texture_handle.hpp>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 static constexpr std::uint32_t material_layer_none = 0xFFFFFFFF;
 static constexpr float material_layer_max_thickness = .1f;

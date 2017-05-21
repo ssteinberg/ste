@@ -1,8 +1,8 @@
 
-#include "common.glsl"
-#include "light.glsl"
+#include <common.glsl>
+#include <light.glsl>
 
-#include "girenderer_transform_buffer.glsl"
+#include <girenderer_transform_buffer.glsl>
 
 const int directional_light_cascades = 6;
 const float cascade_projection_eye_distance = 5000.f;
@@ -19,7 +19,10 @@ struct light_cascades_descriptor {
 	light_cascade_data cascades[directional_light_cascades];
 };
 
-uniform float cascades_depths[directional_light_cascades];
+uniform cascades_depths_uniform_t {
+	float cascades_depths[directional_light_cascades];
+};
+
 layout(std140, binding = 0) uniform light_cascades_block {
 	light_cascades_descriptor light_cascades[max_active_directional_lights_per_frame];
 };

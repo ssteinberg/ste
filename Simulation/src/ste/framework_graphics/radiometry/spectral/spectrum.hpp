@@ -3,12 +3,12 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
 #include <array>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 template <typename T, int samples>
 class spectrum {

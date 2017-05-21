@@ -1,0 +1,149 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGUID>{66DE33F7-A4D5-3EA4-8EB1-E6780E86ED29}</ProjectGUID>
+    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>Win32</Platform>
+    <ProjectName>installer</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+    <PropertyGroup>
+      <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Midl>
+      <AdditionalIncludeDirectories>D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Midl>
+      <AdditionalIncludeDirectories>D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Building Custom Rule D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HD:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo -BD:/src/git/StE/Simulation/third_party/build/libjpeg-turbo32 --check-stamp-file D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\CMakeFiles\3.7.1\CMakeSystem.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeSystemSpecificInitialize.cmake;D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\CMakeFiles\3.7.1\CMakeCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC.cmake;D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\CMakeFiles\3.7.1\CMakeRCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCommonLanguageInclude.cmake;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\win\jconfig.h.in;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\win\jconfigint.h.in;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\release\libjpeg-turbo.nsi.in;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\cmakescripts\cmake_uninstall.cmake.in;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Building Custom Rule D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HD:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo -BD:/src/git/StE/Simulation/third_party/build/libjpeg-turbo32 --check-stamp-file D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\CMakeFiles\3.7.1\CMakeSystem.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeSystemSpecificInitialize.cmake;D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\CMakeFiles\3.7.1\CMakeCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC.cmake;D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\CMakeFiles\3.7.1\CMakeRCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCommonLanguageInclude.cmake;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\win\jconfig.h.in;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\win\jconfigint.h.in;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\release\libjpeg-turbo.nsi.in;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\cmakescripts\cmake_uninstall.cmake.in;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\CMakeFiles\cf6fe83acdc9b504473f347af1d1c98b\installer.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'"></Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+makensis -nocd -DBUILDDIR=$(Configuration)\ libjpeg-turbo.nsi
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo32/CMakeFiles/cf6fe83acdc9b504473f347af1d1c98b/installer.rule;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jpeg;D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\Debug\jpeg-static.lib;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\turbojpeg.c;D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\Debug\turbojpeg-static.lib;D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\Debug\rdjpgcom.exe;D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\Debug\wrjpgcom.exe;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\cjpeg.c;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\djpeg.c;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jpegtran.c;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\tjbench.c;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\CMakeFiles\installer</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'"></Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+makensis -nocd -DBUILDDIR=$(Configuration)\ libjpeg-turbo.nsi
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo32/CMakeFiles/cf6fe83acdc9b504473f347af1d1c98b/installer.rule;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jpeg;D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\Release\jpeg-static.lib;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\turbojpeg.c;D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\Release\turbojpeg-static.lib;D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\Release\rdjpgcom.exe;D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\Release\wrjpgcom.exe;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\cjpeg.c;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\djpeg.c;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jpegtran.c;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\tjbench.c;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\CMakeFiles\installer</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\CMakeFiles\installer" />
+    <None Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo32\libjpeg-turbo.nsi" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo32/ZERO_CHECK.vcxproj">
+      <Project>6E501BF7-86FA-3979-9AD6-05457AE9F10E</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo32/jpeg-static.vcxproj">
+      <Project>7E8C5CC7-3267-3BDE-86E2-58E6C4467736</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo32/rdjpgcom.vcxproj">
+      <Project>242691A5-90B5-31DE-AA67-A61504F35B7C</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo32/turbojpeg-static.vcxproj">
+      <Project>CF62CAB7-3C67-3331-9AE2-E3F42895A3F2</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo32/wrjpgcom.vcxproj">
+      <Project>4D609EDC-829C-3F6E-8E14-029E80C9D00D</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

@@ -3,23 +3,19 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
+#include <vertex_input_layout.hpp>
 
-#include "vertex_buffer_object.hpp"
+namespace ste {
+namespace text {
 
-namespace StE {
-namespace Text {
+struct glyph_point : gl::vertex_input_layout<glm::u32vec4> {
+	auto& data() { return get<0>(); }
+	auto& data() const { return get<0>(); }
 
-struct glyph_point {
-	glm::vec2 pos; float glyph, size;
-	glm::vec4 color;
-	glm::vec4 stroke_color;
-	float stroke_width;
-	float weight;
-
-	using descriptor = Core::vbo_descriptor_with_types<glm::vec4, glm::vec4, glm::vec4, float, float>::descriptor;
-
-	glyph_point() {}
+	constexpr static float size_scale = 32.f;
+	constexpr static float weight_scale = .25f;
+	constexpr static float stroke_width_scale = .25f;
 };
 
 }

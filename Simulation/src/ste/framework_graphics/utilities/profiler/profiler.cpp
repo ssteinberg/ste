@@ -1,12 +1,12 @@
 
-#include "stdafx.hpp"
-#include "profiler.hpp"
+#include <stdafx.hpp>
+#include <profiler.hpp>
 
 #include <functional>
 #include <fstream>
 #include <cstring>
 
-using namespace StE::Graphics;
+using namespace ste::graphics;
 
 profiler::profiler() {
 	last_times_per_frame.resize(500);
@@ -23,12 +23,12 @@ profiler::~profiler() {
 			f << "," << std::endl;
 		first = false;
 
-		auto tid = std::hash<std::string>()(e.name);
+		auto tid = std::hash<lib::string>()(e.name);
 		f << "{" <<
 			"\"cat\": \"GPU task\"," <<
 			"\"pid\": 0," <<
-			"\"tid\": " << std::to_string(tid) << "," <<
-			"\"ts\": " << std::to_string(e.start) << "," <<
+			"\"tid\": " << lib::to_string(tid) << "," <<
+			"\"ts\": " << lib::to_string(e.start) << "," <<
 			"\"ph\": \"B\"," <<
 			"\"name\": \"" << e.name << "\"," <<
 			"\"args\": {}" <<
@@ -36,8 +36,8 @@ profiler::~profiler() {
 		f << "{" <<
 			"\"cat\": \"GPU task\"," <<
 			"\"pid\": 0," <<
-			"\"tid\": " << std::to_string(tid) << "," <<
-			"\"ts\": " << std::to_string(e.end) << "," <<
+			"\"tid\": " << lib::to_string(tid) << "," <<
+			"\"ts\": " << lib::to_string(e.end) << "," <<
 			"\"ph\": \"E\"," <<
 			"\"name\": \"" << e.name << "\"," <<
 			"\"args\": {}" <<

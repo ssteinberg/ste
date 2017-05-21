@@ -3,30 +3,30 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "light.hpp"
-#include "light_cascade_descriptor.hpp"
+#include <stdafx.hpp>
+#include <light.hpp>
+#include <light_cascade_descriptor.hpp>
 
-#include "directional_light.hpp"
-#include "virtual_light.hpp"
-#include "sphere_light.hpp"
-#include "shaped_light.hpp"
+#include <directional_light.hpp>
+#include <virtual_light.hpp>
+#include <sphere_light.hpp>
+#include <shaped_light.hpp>
 
-#include "resource_storage_dynamic.hpp"
-#include "gstack_stable.hpp"
+#include <resource_storage_dynamic.hpp>
+#include <gstack_stable.hpp>
 
-#include "shader_storage_buffer.hpp"
-#include "atomic_counter_buffer_object.hpp"
-#include "uniform_buffer_object.hpp"
+#include <shader_storage_buffer.hpp>
+#include <atomic_counter_buffer_object.hpp>
+#include <uniform_buffer_object.hpp>
 
-#include "Camera.hpp"
+#include <Camera.hpp>
 
 #include <array>
-#include <memory>
+#include <lib/unique_ptr.hpp>
 #include <type_traits>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 constexpr std::size_t max_active_lights_per_frame = 24;
 constexpr std::size_t max_active_directional_lights_per_frame = 4;
@@ -91,7 +91,7 @@ public:
 		for (cascade_idx = 0; cascade_idx < active_directional_lights.size() && active_directional_lights[cascade_idx] != nullptr; ++cascade_idx) {}
 		if (cascade_idx == max_active_directional_lights_per_frame) {
 			assert(false && "Can not create any more directional lights");
-			return std::unique_ptr<directional_light>(nullptr);
+			return lib::unique_ptr<directional_light>(nullptr);
 		}
 
 		auto res = Base::allocate_resource<directional_light>(std::forward<Ts>(args)...);

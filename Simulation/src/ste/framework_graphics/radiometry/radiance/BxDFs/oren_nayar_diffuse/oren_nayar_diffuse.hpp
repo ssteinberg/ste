@@ -3,11 +3,11 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "BxDF.hpp"
+#include <stdafx.hpp>
+#include <BxDF.hpp>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 template <typename T>
 class oren_nayar_brdf : public BxDF<T> {

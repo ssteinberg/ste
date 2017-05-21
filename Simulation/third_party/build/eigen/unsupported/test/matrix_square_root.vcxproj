@@ -1,0 +1,188 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|Win32">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|Win32">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGUID>{2A63E64D-E033-3803-B3F1-56CAE26FC998}</ProjectGUID>
+    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>Win32</Platform>
+    <ProjectName>matrix_square_root</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+    <PropertyGroup>
+      <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Midl>
+      <AdditionalIncludeDirectories>D:\src\git\StE\Simulation\third_party\build\eigen\unsupported\test;D:\src\git\StE\Simulation\third_party\packages\eigen\unsupported\test;D:\src\git\StE\Simulation\third_party\packages\eigen;D:\src\git\StE\Simulation\third_party\build\eigen;D:\src\git\StE\Simulation\third_party\packages\eigen\unsupported\test\..\..\test;D:\src\git\StE\Simulation\third_party\packages\eigen\unsupported\test\..\..\unsupported;D:\src\git\StE\Simulation\third_party\packages\eigen\unsupported\test\..\..\Eigen;D:\src\git\StE\Simulation\third_party\build\eigen\unsupported\test\..\..\test;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Midl>
+      <AdditionalIncludeDirectories>D:\src\git\StE\Simulation\third_party\build\eigen\unsupported\test;D:\src\git\StE\Simulation\third_party\packages\eigen\unsupported\test;D:\src\git\StE\Simulation\third_party\packages\eigen;D:\src\git\StE\Simulation\third_party\build\eigen;D:\src\git\StE\Simulation\third_party\packages\eigen\unsupported\test\..\..\test;D:\src\git\StE\Simulation\third_party\packages\eigen\unsupported\test\..\..\unsupported;D:\src\git\StE\Simulation\third_party\packages\eigen\unsupported\test\..\..\Eigen;D:\src\git\StE\Simulation\third_party\build\eigen\unsupported\test\..\..\test;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">
+    <Midl>
+      <AdditionalIncludeDirectories>D:\src\git\StE\Simulation\third_party\build\eigen\unsupported\test;D:\src\git\StE\Simulation\third_party\packages\eigen\unsupported\test;D:\src\git\StE\Simulation\third_party\packages\eigen;D:\src\git\StE\Simulation\third_party\build\eigen;D:\src\git\StE\Simulation\third_party\packages\eigen\unsupported\test\..\..\test;D:\src\git\StE\Simulation\third_party\packages\eigen\unsupported\test\..\..\unsupported;D:\src\git\StE\Simulation\third_party\packages\eigen\unsupported\test\..\..\Eigen;D:\src\git\StE\Simulation\third_party\build\eigen\unsupported\test\..\..\test;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">
+    <Midl>
+      <AdditionalIncludeDirectories>D:\src\git\StE\Simulation\third_party\build\eigen\unsupported\test;D:\src\git\StE\Simulation\third_party\packages\eigen\unsupported\test;D:\src\git\StE\Simulation\third_party\packages\eigen;D:\src\git\StE\Simulation\third_party\build\eigen;D:\src\git\StE\Simulation\third_party\packages\eigen\unsupported\test\..\..\test;D:\src\git\StE\Simulation\third_party\packages\eigen\unsupported\test\..\..\unsupported;D:\src\git\StE\Simulation\third_party\packages\eigen\unsupported\test\..\..\Eigen;D:\src\git\StE\Simulation\third_party\build\eigen\unsupported\test\..\..\test;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\packages\eigen\unsupported\test\CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Building Custom Rule D:/src/git/StE/Simulation/third_party/packages/eigen/unsupported/test/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HD:/src/git/StE/Simulation/third_party/packages/eigen -BD:/src/git/StE/Simulation/third_party/build/eigen --check-stamp-file D:\src\git\StE\Simulation\third_party\build\eigen\unsupported\test\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:/src/git/StE/Simulation/third_party/packages/eigen/unsupported/test/CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\eigen\unsupported\test\CMakeLists.txt;C:\Program Files\CMake\share\cmake-3.7\Modules\FindThreads.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CheckLibraryExists.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CheckSymbolExists.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CheckIncludeFile.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindXsmm.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindGoogleHash.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindAdolc.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindMPFR.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindGMP.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindFFTW.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPkgConfig.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindOpenGL.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindGLUT.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindGLEW.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindCUDA.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindCUDA\select_compute_arch.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\unsupported\test\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\src\git\StE\Simulation\third_party\build\eigen\unsupported\test\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Building Custom Rule D:/src/git/StE/Simulation/third_party/packages/eigen/unsupported/test/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HD:/src/git/StE/Simulation/third_party/packages/eigen -BD:/src/git/StE/Simulation/third_party/build/eigen --check-stamp-file D:\src\git\StE\Simulation\third_party\build\eigen\unsupported\test\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D:/src/git/StE/Simulation/third_party/packages/eigen/unsupported/test/CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\eigen\unsupported\test\CMakeLists.txt;C:\Program Files\CMake\share\cmake-3.7\Modules\FindThreads.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CheckLibraryExists.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CheckSymbolExists.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CheckIncludeFile.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindXsmm.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindGoogleHash.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindAdolc.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindMPFR.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindGMP.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindFFTW.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPkgConfig.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindOpenGL.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindGLUT.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindGLEW.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindCUDA.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindCUDA\select_compute_arch.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\unsupported\test\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D:\src\git\StE\Simulation\third_party\build\eigen\unsupported\test\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">Building Custom Rule D:/src/git/StE/Simulation/third_party/packages/eigen/unsupported/test/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HD:/src/git/StE/Simulation/third_party/packages/eigen -BD:/src/git/StE/Simulation/third_party/build/eigen --check-stamp-file D:\src\git\StE\Simulation\third_party\build\eigen\unsupported\test\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">D:/src/git/StE/Simulation/third_party/packages/eigen/unsupported/test/CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\eigen\unsupported\test\CMakeLists.txt;C:\Program Files\CMake\share\cmake-3.7\Modules\FindThreads.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CheckLibraryExists.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CheckSymbolExists.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CheckIncludeFile.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindXsmm.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindGoogleHash.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindAdolc.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindMPFR.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindGMP.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindFFTW.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPkgConfig.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindOpenGL.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindGLUT.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindGLEW.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindCUDA.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindCUDA\select_compute_arch.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\unsupported\test\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">D:\src\git\StE\Simulation\third_party\build\eigen\unsupported\test\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">Building Custom Rule D:/src/git/StE/Simulation/third_party/packages/eigen/unsupported/test/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HD:/src/git/StE/Simulation/third_party/packages/eigen -BD:/src/git/StE/Simulation/third_party/build/eigen --check-stamp-file D:\src\git\StE\Simulation\third_party\build\eigen\unsupported\test\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">D:/src/git/StE/Simulation/third_party/packages/eigen/unsupported/test/CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\eigen\unsupported\test\CMakeLists.txt;C:\Program Files\CMake\share\cmake-3.7\Modules\FindThreads.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CheckLibraryExists.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CheckSymbolExists.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CheckIncludeFile.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindXsmm.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindGoogleHash.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindAdolc.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindMPFR.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindGMP.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindFFTW.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPkgConfig.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindOpenGL.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindGLUT.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\cmake\FindGLEW.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindCUDA.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindCUDA\select_compute_arch.cmake;D:\src\git\StE\Simulation\third_party\packages\eigen\unsupported\test\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">D:\src\git\StE\Simulation\third_party\build\eigen\unsupported\test\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/ZERO_CHECK.vcxproj">
+      <Project>4452BF3C-B9DF-34D4-9C33-3A58B5AF8518</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_square_root_1.vcxproj">
+      <Project>BFA90686-BF54-31C7-A35C-22FA6D5016EB</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_square_root_2.vcxproj">
+      <Project>EA7972CF-B422-3F35-81D8-E09A771D566D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_square_root_3.vcxproj">
+      <Project>4649BB7D-F481-3073-A1AE-F0C27918C574</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_square_root_4.vcxproj">
+      <Project>F200408E-5029-3EBA-B837-7264AA85DF38</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/eigen/unsupported/test/matrix_square_root_5.vcxproj">
+      <Project>63C121BD-CAC3-3888-A667-A15615E1EECC</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

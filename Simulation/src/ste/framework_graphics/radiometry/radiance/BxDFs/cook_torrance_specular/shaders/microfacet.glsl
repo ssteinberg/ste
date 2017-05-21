@@ -1,5 +1,5 @@
 
-#include "common.glsl"
+#include <common.glsl>
 
 float material_anisotropic_roughness(float rx, float ry,
 									 vec3 n, vec3 t,

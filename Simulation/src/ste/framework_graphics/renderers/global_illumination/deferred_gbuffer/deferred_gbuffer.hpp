@@ -3,25 +3,25 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include <stdafx.hpp>
 
-#include "signal.hpp"
+#include <signal.hpp>
 
-#include "texture_2d.hpp"
-#include "texture_2d_array.hpp"
-#include "framebuffer_object.hpp"
+#include <texture_2d.hpp>
+#include <texture_2d_array.hpp>
+#include <framebuffer_object.hpp>
 
-#include <memory>
+#include <lib/unique_ptr.hpp>
 
-namespace StE {
-namespace Graphics {
+namespace ste {
+namespace graphics {
 
 class deferred_gbuffer {
 private:
-	std::unique_ptr<Core::texture_2d_array> gbuffer{ nullptr };
-	std::unique_ptr<Core::texture_2d> depth_target{ nullptr };
-	std::unique_ptr<Core::texture_2d> backface_depth_target{ nullptr };
-	std::unique_ptr<Core::texture_2d> downsampled_depth_target{ nullptr };
+	lib::unique_ptr<Core::texture_2d_array> gbuffer{ nullptr };
+	lib::unique_ptr<Core::texture_2d> depth_target{ nullptr };
+	lib::unique_ptr<Core::texture_2d> backface_depth_target{ nullptr };
+	lib::unique_ptr<Core::texture_2d> downsampled_depth_target{ nullptr };
 	Core::framebuffer_object fbo;
 	Core::framebuffer_object backface_fbo;
 

@@ -1,0 +1,238 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGUID>{D2D2CEE3-8BFB-3AF5-A612-A67673F313DF}</ProjectGUID>
+    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>x64</Platform>
+    <ProjectName>turbojpeg-static</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">turbojpeg-static.dir\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">turbojpeg-staticd</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">turbojpeg-static.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">turbojpeg-static</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.lib</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>Debug/</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs>CompileAsC</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;WITH_SIMD;CMAKE_INTDIR="Debug";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;WITH_SIMD;CMAKE_INTDIR=\"Debug\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions> /machine:x64 %(AdditionalOptions)</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>Release/</AssemblerListingLocation>
+      <CompileAs>CompileAsC</CompileAs>
+      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;WITH_SIMD;CMAKE_INTDIR="Release";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <OmitFramePointers>true</OmitFramePointers>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;WITH_SIMD;CMAKE_INTDIR=\"Release\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions> /machine:x64 %(AdditionalOptions)</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HD:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo -BD:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64 --check-stamp-file D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\CMakeFiles\3.7.1\CMakeSystem.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeSystemSpecificInitialize.cmake;D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\CMakeFiles\3.7.1\CMakeCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC.cmake;D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\CMakeFiles\3.7.1\CMakeRCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCommonLanguageInclude.cmake;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\win\jconfig.h.in;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\win\jconfigint.h.in;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\release\libjpeg-turbo.nsi.in;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\cmakescripts\cmake_uninstall.cmake.in;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HD:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo -BD:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64 --check-stamp-file D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:/src/git/StE/Simulation/third_party/packages/libjpeg-turbo/CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\CMakeFiles\3.7.1\CMakeSystem.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeSystemSpecificInitialize.cmake;D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\CMakeFiles\3.7.1\CMakeCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC.cmake;D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\CMakeFiles\3.7.1\CMakeRCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCommonLanguageInclude.cmake;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\win\jconfig.h.in;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\win\jconfigint.h.in;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\release\libjpeg-turbo.nsi.in;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\cmakescripts\cmake_uninstall.cmake.in;D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jcapimin.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jcapistd.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jccoefct.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jccolor.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jcdctmgr.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jchuff.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jcinit.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jcmainct.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jcmarker.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jcmaster.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jcomapi.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jcparam.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jcphuff.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jcprepct.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jcsample.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jctrans.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jdapimin.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jdapistd.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jdatadst.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jdatasrc.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jdcoefct.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jdcolor.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jddctmgr.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jdhuff.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jdinput.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jdmainct.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jdmarker.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jdmaster.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jdmerge.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jdphuff.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jdpostct.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jdsample.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jdtrans.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jerror.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jfdctflt.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jfdctfst.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jfdctint.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jidctflt.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jidctfst.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jidctint.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jidctred.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jquant1.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jquant2.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jutils.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jmemmgr.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jmemnobs.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jaricom.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jcarith.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jdarith.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\simd\jsimd_x86_64.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\turbojpeg.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\transupp.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jdatadst-tj.c" />
+    <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\libjpeg-turbo\jdatasrc-tj.c" />
+    <Object Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jfdctflt-sse-64.obj" />
+    <Object Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jccolor-sse2-64.obj" />
+    <Object Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jcgray-sse2-64.obj" />
+    <Object Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jchuff-sse2-64.obj" />
+    <Object Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jcsample-sse2-64.obj" />
+    <Object Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jdcolor-sse2-64.obj" />
+    <Object Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jdmerge-sse2-64.obj" />
+    <Object Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jdsample-sse2-64.obj" />
+    <Object Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jfdctfst-sse2-64.obj" />
+    <Object Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jfdctint-sse2-64.obj" />
+    <Object Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jidctflt-sse2-64.obj" />
+    <Object Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jidctfst-sse2-64.obj" />
+    <Object Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jidctint-sse2-64.obj" />
+    <Object Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jidctred-sse2-64.obj" />
+    <Object Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jquantf-sse2-64.obj" />
+    <Object Include="D:\src\git\StE\Simulation\third_party\build\libjpeg-turbo64\simd\$(Configuration)\jquanti-sse2-64.obj" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/ZERO_CHECK.vcxproj">
+      <Project>2CD42F60-1EF2-3D47-87B2-C7C9B0611525</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/third_party/build/libjpeg-turbo64/simd/simd.vcxproj">
+      <Project>25BF5A3F-6CB2-30DC-A803-6A916D4EAA32</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

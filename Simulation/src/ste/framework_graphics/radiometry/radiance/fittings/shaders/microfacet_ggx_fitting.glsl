@@ -1,6 +1,6 @@
 
-#include "common.glsl"
-#include "erf.glsl"
+#include <common.glsl>
+#include <erf.glsl>
 
 /*
  *	Evaluate Fresnel transmission using precomputed fitting for GGX NDF (v3)
