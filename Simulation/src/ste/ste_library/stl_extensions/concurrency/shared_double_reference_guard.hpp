@@ -78,31 +78,35 @@ class shared_double_reference_guard {
 private:
 	using data_t = _shared_double_reference_guard_detail::data<DataType, Allocator>;
 
-	using data_ptr = ref_count_ptr<data_t*>;
-
 public:
-	class data_guard {
+	template <typename T>
+	class data_guard_t {
 		friend class shared_double_reference_guard<DataType, Allocator>;
 
 	private:
-		data_t *ptr;
+		T *ptr;
 
 	public:
-		data_guard(data_t *ptr) : ptr(ptr) { }
-		data_guard(const data_guard &d) = delete;
-		data_guard &operator=(const data_guard &d) = delete;
-		data_guard(data_guard &&d) noexcept {
+		data_guard_t() = delete;
+
+		data_guard_t(T *ptr) noexcept : ptr(ptr) { }
+		data_guard_t(const data_guard_t &d) = delete;
+		data_guard_t &operator=(const data_guard_t &d) = delete;
+		data_guard_t(data_guard_t &&d) noexcept {
 			ptr = d.ptr;
 			d.ptr = 0;
 		}
-		data_guard &operator=(data_guard &&d) noexcept {
+		data_guard_t &operator=(data_guard_t &&d) noexcept {
 			if (ptr) ptr->release_ref();
 			ptr = d.ptr;
 			d.ptr = 0;
 			return *this;
 		}
 
-		~data_guard() { if (ptr) ptr->release_ref(); }
+		~data_guard_t() noexcept { if (ptr) ptr->release_ref(); }
+
+		bool operator==(const data_guard_t &rhs) const { return ptr == rhs.ptr; }
+		bool operator!=(const data_guard_t &rhs) const { return ptr != rhs.ptr; }
 
 		bool is_valid() const { return !!ptr; }
 
@@ -110,10 +114,26 @@ public:
 		DataType& operator*() { return ptr->object; }
 		const DataType* operator->() const { return &ptr->object; }
 		const DataType& operator*() const { return ptr->object; }
+
+		operator bool() const { return is_valid(); }
 	};
 
+	using data_ptr = ref_count_ptr<data_t*>;
+	using data_guard = data_guard_t<data_t>;
+	using const_data_guard = data_guard_t<const data_t>;
+
+	/**
+	 *	@brief	Creates an instance of the internal reference counted pointer, with initial reference count of 1.
+	 *			Used exclusively for compare_exchange.
+	 */
+	template <typename... Args>
+	static data_ptr create_data_ptr(Args&&... args) {
+		data_t *new_data = data_t::claim(std::forward<Args>(args)...);
+		return data_ptr{ 1, new_data };
+	}
+
 private:
-	std::atomic<data_ptr> guard;
+	mutable std::atomic<data_ptr> guard;
 
 	void release(data_ptr &old_data_ptr) {
 		if (!old_data_ptr.get())
@@ -145,77 +165,113 @@ public:
 		release(old_data_ptr);
 	}
 
+	/**
+	*	@brief	Acquires a lock to the guarded object.
+	*/
 	data_guard acquire(std::memory_order order = std::memory_order_acquire) {
 		data_ptr new_data_ptr;
 		data_ptr old_data_ptr = guard.load(std::memory_order_relaxed);
 		do {
 			new_data_ptr = old_data_ptr;
 			new_data_ptr.inc();
-		} while (!guard.compare_exchange_weak(old_data_ptr, new_data_ptr, order, std::memory_order_relaxed));
+		} while (!guard.compare_exchange_weak(old_data_ptr, new_data_ptr, order));
+
+		return data_guard(new_data_ptr.get());
+	}
+	/**
+	*	@brief	Acquires a lock to the guarded object.
+	*/
+	const_data_guard acquire(std::memory_order order = std::memory_order_acquire) const {
+		data_ptr new_data_ptr;
+		data_ptr old_data_ptr = guard.load(std::memory_order_relaxed);
+		do {
+			new_data_ptr = old_data_ptr;
+			new_data_ptr.inc();
+		} while (!guard.compare_exchange_weak(old_data_ptr, new_data_ptr, order));
 
 		return data_guard(new_data_ptr.get());
 	}
 
+	/**
+	*	@brief	Emplaces a new value and acquires a lock to the guarded object.
+	*/
 	template <typename ... Ts>
 	data_guard emplace_and_acquire(std::memory_order order, Ts&&... args) {
 		data_t *new_data = data_t::claim(std::forward<Ts>(args)...);
 		data_ptr new_data_ptr{ 2, new_data };
 		data_ptr old_data_ptr = guard.load(std::memory_order_relaxed);
-		while (!guard.compare_exchange_weak(old_data_ptr, new_data_ptr, order, std::memory_order_relaxed)) {}
+		while (!guard.compare_exchange_weak(old_data_ptr, new_data_ptr, order)) {}
 
 		release(old_data_ptr);
 
 		return data_guard(new_data_ptr.get());
 	}
 
+	/**
+	*	@brief	Emplaces a new value.
+	*/
 	template <typename ... Ts>
 	void emplace(std::memory_order order, Ts&&... args) {
 		data_t *new_data = data_t::claim(std::forward<Ts>(args)...);
 		data_ptr new_data_ptr{ 1, new_data };
 		data_ptr old_data_ptr = guard.load(std::memory_order_relaxed);
-		while (!guard.compare_exchange_weak(old_data_ptr, new_data_ptr, order, std::memory_order_relaxed)) {}
+		while (!guard.compare_exchange_weak(old_data_ptr, new_data_ptr, order)) {}
 
 		release(old_data_ptr);
 	}
 
+	/**
+	*	@brief	Atomically compares the current value to a previously acquired lock, and if matches emplaces new data. 
+	*			Irregardless of success or failure, old_data remains a valid lock to the previous value.
+	*/
 	template <typename ... Ts>
-	bool try_emplace(std::memory_order order1, std::memory_order order2, Ts&&... args) {
+	bool try_compare_emplace(std::memory_order order, const data_guard &old_data, Ts&&... args) {
 		data_t *new_data = data_t::claim(std::forward<Ts>(args)...);
 		data_ptr new_data_ptr{ 1, new_data };
-		data_ptr old_data_ptr = guard.load(order2);
-		if (guard.compare_exchange_strong(old_data_ptr, new_data_ptr, order1, std::memory_order_relaxed)) {
-			release(old_data_ptr);
-			return true;
-		}
-		data_t::release(new_data);
-		return false;
-	}
 
-	template <typename ... Ts>
-	bool try_compare_emplace(std::memory_order order, data_guard &old_data, Ts&&... args) {
-		data_t *new_data = data_t::claim(std::forward<Ts>(args)...);
-		data_ptr new_data_ptr{ 1, new_data };
-		data_ptr old_data_ptr = guard.load(std::memory_order_relaxed);
-
-		bool success = false;
-		while (old_data_ptr.get() == old_data.ptr &&
-			   !(success = guard.compare_exchange_weak(old_data_ptr, new_data_ptr, order, std::memory_order_relaxed))) {}
-		if (success)
-			release(old_data_ptr);
-		else
-			delete new_data;
+		auto success = compare_exchange(order, old_data, new_data_ptr);
+		if (!success)
+			data_t::release(new_data);
 
 		return success;
 	}
 
+	/**
+	*	@brief	Atomically compares the current value to a previously acquired lock, and if matches emplaces new data.
+	*	
+	*			Dangerous version of try_compare_emplace() which doesn't create a new object but uses a presupplied new_data_ptr created via create_data_ptr().
+	*			It is the callers responsibility to ensure the correct reference count of new_data_ptr and manual release of its copies.
+	*/
+	bool compare_exchange(std::memory_order order, const data_guard &old_data, const data_ptr &new_data_ptr) {
+		assert(new_data_ptr.get_counter() > 0);
+
+		data_ptr old_data_ptr = guard.load(std::memory_order_relaxed);
+
+		bool success = false;
+		while (old_data_ptr.get() == old_data.ptr &&
+			   !(success = guard.compare_exchange_weak(old_data_ptr, new_data_ptr, order))) {
+		}
+		if (success)
+			release(old_data_ptr);
+
+		return success;
+	}
+
+	/**
+	*	@brief	Checks if there is a valid value.
+	*/
 	bool is_valid_hint(std::memory_order order = std::memory_order_relaxed) const {
 		return !!guard.load(order).get();
 	}
 
+	/**
+	*	@brief	Invalidates the guard. 
+	*			Does not invalidate any locks that are currently held to previous data.
+	*/
 	void drop() {
 		data_ptr new_data_ptr{ 0, nullptr };
 		data_ptr old_data_ptr = guard.load(std::memory_order_relaxed);
-		while (!guard.compare_exchange_weak(old_data_ptr, new_data_ptr, std::memory_order_acq_rel, std::memory_order_relaxed)) {}
+		while (!guard.compare_exchange_weak(old_data_ptr, new_data_ptr, std::memory_order_acq_rel)) {}
 
 		release(old_data_ptr);
 	}
