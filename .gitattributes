@@ -73,3 +73,4 @@
 *.pack filter=lfs diff=lfs merge=lfs -text
 *.tmp filter=lfs diff=lfs merge=lfs -text
 *.dds filter=lfs diff=lfs merge=lfs -text
+Simulation/Screenshots/history/* filter=auto diff=auto merge=auto binary
