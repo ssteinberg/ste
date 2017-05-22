@@ -58,7 +58,7 @@ protected:
 public:
 	device_pipeline_compute(ctor,
 							const ste_context &ctx,
-							pipeline_layout &&layout,
+							lib::unique_ptr<pipeline_layout> &&layout,
 							optional<std::reference_wrapper<const pipeline_external_binding_set_collection>> external_binding_sets)
 		: Base(ctx,
 			   std::move(layout),

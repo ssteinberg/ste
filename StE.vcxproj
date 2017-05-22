@@ -1152,6 +1152,9 @@
     <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\memory\aligned_allocator.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\memory\small_allocator.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\type_traits\copyable_moveale_base.hpp" />
+    <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\type_traits\is_anchored.hpp" />
+    <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\utility\alias.hpp" />
+    <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\utility\anchored.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_version.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\container\blob.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\boundary.hpp" />

@@ -12,6 +12,7 @@
 
 #include <optional.hpp>
 #include <allow_type_decay.hpp>
+#include <alias.hpp>
 
 namespace ste {
 namespace gl {
@@ -23,7 +24,7 @@ private:
 	static constexpr auto sparse_buffer_flags = VK_BUFFER_CREATE_SPARSE_RESIDENCY_BIT | VK_BUFFER_CREATE_SPARSE_BINDING_BIT;
 
 protected:
-	std::reference_wrapper<const vk_logical_device> device;
+	alias<const vk_logical_device> device;
 
 private:
 	optional<VkBuffer> buffer;

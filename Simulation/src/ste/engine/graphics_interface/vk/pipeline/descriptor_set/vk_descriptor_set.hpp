@@ -12,6 +12,7 @@
 
 #include <optional.hpp>
 #include <allow_type_decay.hpp>
+#include <alias.hpp>
 
 namespace ste {
 namespace gl {
@@ -22,7 +23,7 @@ class vk_descriptor_set : public allow_type_decay<vk_descriptor_set, VkDescripto
 	friend class vk_descriptor_pool;
 
 private:
-	std::reference_wrapper<const vk_logical_device> device;
+	alias<const vk_logical_device> device;
 
 	optional<VkDescriptorSet> set;
 	VkDescriptorPool pool;

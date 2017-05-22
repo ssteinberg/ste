@@ -11,13 +11,14 @@
 
 #include <lib/vector.hpp>
 #include <allow_type_decay.hpp>
+#include <anchored.hpp>
 
 namespace ste {
 namespace gl {
 
 namespace vk {
 
-class vk_logical_device : public allow_type_decay<vk_logical_device, VkDevice> {
+class vk_logical_device : public allow_type_decay<vk_logical_device, VkDevice>, anchored {
 private:
 	vk_physical_device_descriptor physical_device;
 
@@ -69,7 +70,7 @@ public:
 	{
 		s.logical_device = nullptr;
 	}
-	vk_logical_device &operator=(vk_logical_device &&s) = delete;
+
 	vk_logical_device(const vk_logical_device &) = delete;
 	vk_logical_device &operator=(const vk_logical_device &) = delete;
 

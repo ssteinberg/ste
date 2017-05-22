@@ -13,6 +13,9 @@
 
 namespace ste {
 
+/**
+*	@brief	Concurrent, lock-free, dynamic vector.
+*/
 template <typename T, typename Allocator = std::allocator<T>>
 class concurrent_vector {
 public:

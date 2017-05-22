@@ -21,6 +21,7 @@
 #include <lib/flat_map.hpp>
 #include <optional.hpp>
 #include <allow_type_decay.hpp>
+#include <alias.hpp>
 
 namespace ste {
 namespace gl {
@@ -33,7 +34,7 @@ public:
 	using attachment_map_t = lib::flat_map<pipeline_layout_attachment_location, framebuffer_attachment>;
 
 private:
-	std::reference_wrapper<const ste_context> ctx;
+	alias<const ste_context> ctx;
 
 	framebuffer_layout layout;
 	attachment_map_t attachments;

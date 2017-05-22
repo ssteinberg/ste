@@ -12,11 +12,12 @@
 #include <atomic>
 #include <lib/concurrent_unordered_map.hpp>
 #include <lib/intrusive_ptr.hpp>
+#include <alias.hpp>
 
 namespace ste {
 namespace gl {
 
-class pipeline_binding_set_pool {
+class pipeline_binding_set_pool : anchored {
 private:
 	using pool_key = std::uint32_t;
 	using instance_t = binding_set_pool_instance<pipeline_binding_set_pool, pool_key>;
@@ -26,7 +27,7 @@ private:
 	friend instance_t;
 
 private:
-	std::reference_wrapper<const vk::vk_logical_device> device;
+	alias<const vk::vk_logical_device> device;
 
 	pools_t pools;
 	std::atomic<pool_key> key_counter{ 0 };
@@ -67,9 +68,6 @@ public:
 		: device(device)
 	{}
 	~pipeline_binding_set_pool() noexcept {}
-
-	pipeline_binding_set_pool(pipeline_binding_set_pool&&) = default;
-	pipeline_binding_set_pool &operator=(pipeline_binding_set_pool&&) = default;
 
 	/**
 	*	@brief	Allocates the required layouts.

@@ -11,6 +11,7 @@
 
 #include <optional.hpp>
 #include <allow_type_decay.hpp>
+#include <alias.hpp>
 
 namespace ste {
 namespace gl {
@@ -20,7 +21,7 @@ namespace vk {
 class vk_semaphore : public ste_resource_pool_const_trait<const vk_logical_device &>, public allow_type_decay<vk_semaphore, VkSemaphore> {
 private:
 	optional<VkSemaphore> semaphore;
-	std::reference_wrapper<const vk_logical_device> device;
+	alias<const vk_logical_device> device;
 
 public:
 	vk_semaphore(const vk_logical_device &device) : device(device) {

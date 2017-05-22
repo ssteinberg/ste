@@ -12,6 +12,7 @@
 
 #include <vk_query.hpp>
 #include <lib/string.hpp>
+#include <alias.hpp>
 
 namespace ste {
 namespace gl {
@@ -21,7 +22,7 @@ namespace vk {
 class vk_query_pool {
 private:
 	optional<VkQueryPool> query_pool;
-	std::reference_wrapper<const vk_logical_device> device;
+	alias<const vk_logical_device> device;
 	std::uint32_t size;
 
 protected:

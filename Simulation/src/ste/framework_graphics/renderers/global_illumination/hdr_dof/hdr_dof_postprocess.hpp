@@ -28,6 +28,7 @@
 #include <command_recorder.hpp>
 
 #include <signal.hpp>
+#include <alias.hpp>
 
 namespace ste {
 namespace graphics {
@@ -41,7 +42,7 @@ private:
 	static constexpr float default_aperature_focal_ln = 23e-3f;
 
 private:
-	std::reference_wrapper<const ste_context> ctx;
+	alias<const ste_context> ctx;
 
 	gl::pipeline_stage input_stage_flags;
 	gl::image_layout input_image_layout;

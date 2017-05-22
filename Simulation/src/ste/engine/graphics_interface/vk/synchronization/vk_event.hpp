@@ -11,6 +11,7 @@
 #include <ste_resource_pool_traits.hpp>
 
 #include <optional.hpp>
+#include <alias.hpp>
 
 namespace ste {
 namespace gl {
@@ -20,7 +21,7 @@ namespace vk {
 class vk_event : public ste_resource_pool_resetable_trait<const vk_logical_device &> {
 private:
 	optional<VkEvent> event;
-	std::reference_wrapper<const vk_logical_device> device;
+	alias<const vk_logical_device> device;
 
 public:
 	vk_event(const vk_logical_device &device) : device(device) {

@@ -14,6 +14,7 @@
 #include <lib/unique_ptr.hpp>
 #include <thread>
 #include <lib/string.hpp>
+#include <alias.hpp>
 
 namespace ste {
 namespace gl {
@@ -32,10 +33,10 @@ private:
 	using pipeline_cache_ptr_t = created_caches_queue_t::stored_ptr;
 
 private:
-	std::reference_wrapper<const vk::vk_logical_device> device;
+	alias<const vk::vk_logical_device> device;
 	lib::string device_name;
 
-	cache_t *non_volatile_cache;
+	alias<cache_t> non_volatile_cache;
 	pipeline_cache_ptr_t origin;
 
 	mutable lib::concurrent_unordered_map<thread_id_t, const vk::vk_pipeline_cache*> thread_cache_map;
@@ -47,7 +48,7 @@ private:
 
 public:
 	ste_device_pipeline_cache(const vk::vk_logical_device &device,
-							  cache_t *non_volatile_cache,
+							  alias<cache_t> non_volatile_cache,
 							  const lib::string &device_name)
 		: device(device),
 		device_name(device_name),

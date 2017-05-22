@@ -14,6 +14,7 @@
 #include <pipeline_binding_set_collection_cmd_bind.hpp>
 
 #include <lib/flat_map.hpp>
+#include <alias.hpp>
 
 namespace ste {
 namespace gl {
@@ -31,7 +32,7 @@ private:
 private:
 	collection_t sets;
 	set_layouts_t layouts;
-	std::reference_wrapper<pipeline_binding_set_pool> pool;
+	alias<pipeline_binding_set_pool> pool;
 
 	name_binding_map_t name_map;
 

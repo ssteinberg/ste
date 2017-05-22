@@ -13,6 +13,7 @@
 #include <optional.hpp>
 #include <lib/vector.hpp>
 #include <allow_type_decay.hpp>
+#include <alias.hpp>
 
 namespace ste {
 namespace gl {
@@ -25,7 +26,7 @@ class vk_command_pool :
 {
 private:
 	optional<VkCommandPool> pool;
-	std::reference_wrapper<const vk_logical_device> device;
+	alias<const vk_logical_device> device;
 
 public:
 	vk_command_pool(const vk_logical_device &device,

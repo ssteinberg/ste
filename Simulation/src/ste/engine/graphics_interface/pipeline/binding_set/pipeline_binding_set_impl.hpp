@@ -13,6 +13,7 @@
 #include <allow_type_decay.hpp>
 #include <ultimate.hpp>
 #include <range_list.hpp>
+#include <alias.hpp>
 
 namespace ste {
 namespace gl {
@@ -30,7 +31,7 @@ private:
 
 private:
 	vk::vk_descriptor_set set;
-	std::reference_wrapper<const Layout> layout;
+	alias<const Layout> layout;
 
 	ultimate_type_erasure last_act;
 

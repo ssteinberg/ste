@@ -11,6 +11,7 @@
 #include <device_resource_memory_allocator.hpp>
 
 #include <allow_type_decay.hpp>
+#include <alias.hpp>
 
 namespace ste {
 namespace gl {
@@ -31,7 +32,7 @@ public:
 	using allocation_t = device_memory_heap::allocation_type;
 
 private:
-	std::reference_wrapper<const ste_context> ctx;
+	alias<const ste_context> ctx;
 	T resource;
 	allocation_t allocation;
 

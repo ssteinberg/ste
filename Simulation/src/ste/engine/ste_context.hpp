@@ -10,10 +10,12 @@
 #include <ste_engine.hpp>
 #include <vk_exception.hpp>
 
+#include <anchored.hpp>
+
 namespace ste {
 
 template <typename Types>
-class ste_context_impl {
+class ste_context_impl : anchored {
 public:
 	using context_types = Types;
 
@@ -50,9 +52,7 @@ public:
 		gl_device.tick();
 	}
 
-	ste_context_impl(ste_context_impl &&) = default;
 	ste_context_impl(const ste_context_impl &) = delete;
-	ste_context_impl &operator=(ste_context_impl &&) = default;
 	ste_context_impl &operator=(const ste_context_impl &) = delete;
 
 	ste_engine_impl<Types> &engine() const { return engine_reference; }

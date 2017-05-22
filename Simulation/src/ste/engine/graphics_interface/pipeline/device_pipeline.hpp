@@ -24,6 +24,7 @@
 
 #include <optional.hpp>
 #include <lib/unique_ptr.hpp>
+#include <alias.hpp>
 
 namespace ste {
 namespace gl {
@@ -74,7 +75,7 @@ private:
 	};
 
 protected:
-	std::reference_wrapper<const ste_context> ctx;
+	alias<const ste_context> ctx;
 
 	lib::unique_ptr<pipeline_layout> layout;
 	pipeline_resource_binding_queue binding_queue;
@@ -142,10 +143,10 @@ protected:
 	virtual optional<vk::vk_pipeline> recreate_pipeline() = 0;
 
 	device_pipeline(const ste_context &ctx,
-					pipeline_layout &&layout,
+					lib::unique_ptr<pipeline_layout> &&layout,
 					optional<std::reference_wrapper<const pipeline_external_binding_set_collection>> external_binding_sets)
 		: ctx(ctx),
-		layout(lib::allocate_unique<pipeline_layout>(std::move(layout))),
+		layout(std::move(layout)),
 		binding_sets(*this->layout,
 					 ctx.device().binding_set_pool()),
 		external_binding_sets(external_binding_sets ? &external_binding_sets.get().get() : nullptr)

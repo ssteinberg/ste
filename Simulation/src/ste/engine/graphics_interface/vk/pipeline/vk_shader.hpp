@@ -12,6 +12,7 @@
 
 #include <lib/string.hpp>
 #include <allow_type_decay.hpp>
+#include <alias.hpp>
 
 namespace ste {
 namespace gl {
@@ -21,7 +22,7 @@ namespace vk {
 class vk_shader : public allow_type_decay<vk_shader, VkShaderModule> {
 private:
 	optional<VkShaderModule> module;
-	std::reference_wrapper<const vk_logical_device> device;
+	alias<const vk_logical_device> device;
 
 public:
 	struct shader_stage_info_t {

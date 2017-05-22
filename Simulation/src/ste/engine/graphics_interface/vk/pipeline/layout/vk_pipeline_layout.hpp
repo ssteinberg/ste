@@ -14,6 +14,7 @@
 
 #include <lib/vector.hpp>
 #include <allow_type_decay.hpp>
+#include <alias.hpp>
 
 namespace ste {
 namespace gl {
@@ -23,7 +24,7 @@ namespace vk {
 class vk_pipeline_layout : public allow_type_decay<vk_pipeline_layout, VkPipelineLayout> {
 private:
 	optional<VkPipelineLayout> layout;
-	std::reference_wrapper<const vk_logical_device> device;
+	alias<const vk_logical_device> device;
 
 public:
 	vk_pipeline_layout(const vk_logical_device &device,

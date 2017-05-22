@@ -14,6 +14,7 @@
 
 #include <optional.hpp>
 #include <allow_type_decay.hpp>
+#include <alias.hpp>
 
 namespace ste {
 namespace gl {
@@ -24,7 +25,7 @@ class vk_swapchain : public allow_type_decay<vk_swapchain, VkSwapchainKHR> {
 private:
 	VkSwapchainCreateInfoKHR swapchain_create_info;
 	optional<VkSwapchainKHR> swapchain;
-	std::reference_wrapper<const vk_logical_device> device;
+	alias<const vk_logical_device> device;
 
 public:
 	/**

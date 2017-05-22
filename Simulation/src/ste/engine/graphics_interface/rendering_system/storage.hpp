@@ -4,11 +4,12 @@
 #pragma once
 
 #include <stdafx.hpp>
+#include <anchored.hpp>
 
 namespace ste {
 namespace gl {
 
-class storage_base {
+class storage_base : anchored {
 protected:
 	storage_base() {}
 
