@@ -9,6 +9,7 @@
 #include <vulkan/vulkan.h>
 #include <optional.hpp>
 #include <allow_type_decay.hpp>
+#include <alias.hpp>
 
 namespace ste {
 namespace gl {
@@ -17,7 +18,7 @@ namespace vk {
 
 class vk_pipeline : public allow_type_decay<vk_pipeline, VkPipeline> {
 private:
-	std::reference_wrapper<const vk_logical_device> device;
+	alias<const vk_logical_device> device;
 
 protected:
 	optional<VkPipeline> pipeline;

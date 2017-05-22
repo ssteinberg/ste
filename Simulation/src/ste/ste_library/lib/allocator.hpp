@@ -80,11 +80,11 @@ public:
 
 	auto allocate(size_type n) {
 		_internal::allocator_static_storage::init();
-		return reinterpret_cast<T*>(
-			_use_aligned_alloc ?
-				rpaligned_alloc(alignment, sizeof(T) * n) :
-				rpmalloc(sizeof(T) * n)
-		);
+
+		auto p = _use_aligned_alloc ?
+			rpaligned_alloc(alignment, sizeof(T) * n) :
+			rpmalloc(sizeof(T) * n);
+		return reinterpret_cast<T*>(p);
 	}
 	void deallocate(pointer p, size_type) {
 		static_assert(!std::is_const_v<T>, "const allocators are ill-formed.");

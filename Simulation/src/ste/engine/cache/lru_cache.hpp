@@ -1,5 +1,5 @@
 //	StE
-// © Shlomi Steinberg 2015-2016
+// © Shlomi Steinberg 2015-2017
 
 /**	@file	lru_cache.hpp
  *	@brief	LRU general purpose disk caching class
@@ -18,6 +18,7 @@
 #include <condition_variable>
 #include <atomic>
 #include <mutex>
+#include <anchored.hpp>
 
 #include <lib/aligned_padded_ptr.hpp>
 
@@ -34,7 +35,7 @@ namespace ste {
  *	@param K	key type
  */
 template <typename K>
-class lru_cache {
+class lru_cache : anchored {
 private:
 	using key_type = K;
 	using index_type = lru_cache_index<key_type>;

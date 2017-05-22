@@ -19,6 +19,7 @@
 #include <range.hpp>
 #include <lib/vector.hpp>
 #include <allow_type_decay.hpp>
+#include <alias.hpp>
 
 namespace ste {
 namespace gl {
@@ -46,7 +47,7 @@ private:
 	using bind_map_t = lib::vector<atom_t>;
 
 private:
-	std::reference_wrapper<const ste_context> ctx;
+	alias<const ste_context> ctx;
 	resource_t resource;
 	VkMemoryRequirements memory_requirements{};
 

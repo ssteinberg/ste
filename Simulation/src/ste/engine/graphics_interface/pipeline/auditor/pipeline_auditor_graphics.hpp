@@ -127,9 +127,9 @@ public:
 	*/
 	auto pipeline(const ste_context &ctx,
 				  optional<std::reference_wrapper<const pipeline_external_binding_set_collection>> external_binding_sets) const {
-		pipeline_layout layout(ctx,
-							   stages(),
-							   external_binding_sets);
+		auto layout = lib::allocate_unique<pipeline_layout>(ctx,
+															stages(),
+															external_binding_sets);
 		return device_pipeline_graphics(device_pipeline_graphics::ctor(),
 										ctx,
 										pipeline_settings,

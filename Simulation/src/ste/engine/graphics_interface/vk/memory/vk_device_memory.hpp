@@ -14,6 +14,7 @@
 #include <allow_type_decay.hpp>
 
 #include <lib/unique_ptr.hpp>
+#include <alias.hpp>
 
 namespace ste {
 namespace gl {
@@ -49,7 +50,7 @@ public:
 class vk_device_memory : public allow_type_decay<vk_device_memory, VkDeviceMemory> {
 private:
 	optional<VkDeviceMemory> memory;
-	std::reference_wrapper<const vk_logical_device> device;
+	alias<const vk_logical_device> device;
 	std::uint64_t size;
 
 	lib::unique_ptr<vk_mmap_type_eraser> mapped_memory{ nullptr };

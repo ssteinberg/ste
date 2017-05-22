@@ -19,6 +19,7 @@
 
 #include <optional.hpp>
 #include <allow_type_decay.hpp>
+#include <alias.hpp>
 
 namespace ste {
 namespace gl {
@@ -29,7 +30,7 @@ class vk_image : public vk_resource, public allow_type_decay<vk_image, VkImage> 
 protected:
 	using extent_type = glm::u32vec3;
 
-	std::reference_wrapper<const vk_logical_device> device;
+	alias<const vk_logical_device> device;
 	optional<VkImage> image;
 
 	VkFormat image_format;

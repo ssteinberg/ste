@@ -10,14 +10,12 @@
 #include <thread_constants.hpp>
 #include <future_collection.hpp>
 
+#include <alias.hpp>
 #include <lib/shared_ptr.hpp>
-
 #include <future>
 #include <mutex>
 #include <shared_mutex>
-
 #include <chrono>
-
 #include <type_traits>
 
 namespace ste {
@@ -58,7 +56,7 @@ private:
 private:
 	mutable mutex_type mutex;
 
-	task_scheduler *sched;
+	alias<task_scheduler> sched;
 	lib::shared_ptr<functor<>> task;
 	future_type future;
 
@@ -104,15 +102,15 @@ private:
 	}
 
 private:
-	task_future_impl(typename task_future_impl<R, false>::future_type &&f, task_scheduler *sched, lib::shared_ptr<functor<>> &&task) : sched(sched), task(std::move(task)), future(std::move(f)) {}
-	task_future_impl(typename task_future_impl<R, true >::future_type &&f, task_scheduler *sched, lib::shared_ptr<functor<>> &&task) : sched(sched), task(std::move(task)), future(std::move(f)) {}
+	task_future_impl(typename task_future_impl<R, false>::future_type &&f, alias<task_scheduler> sched, lib::shared_ptr<functor<>> &&task) : sched(sched), task(std::move(task)), future(std::move(f)) {}
+	task_future_impl(typename task_future_impl<R, true >::future_type &&f, alias<task_scheduler> sched, lib::shared_ptr<functor<>> &&task) : sched(sched), task(std::move(task)), future(std::move(f)) {}
 
 	task_future_impl(future_lock_guard<write_lock_type> &&l,
 					 task_future_impl &&other) : sched(other.sched), task(std::move(other.task)), future(std::move(other.future)) {}
 
 	template <bool b = is_shared>
 	task_future_impl(const typename task_future_impl<R, true>::future_type &f,
-					 task_scheduler *sched, 
+					 alias<task_scheduler> sched,
 					 const lib::shared_ptr<functor<>> &task,
 					 std::enable_if_t<b>* = nullptr) : sched(sched), task(task), future(f) {}
 

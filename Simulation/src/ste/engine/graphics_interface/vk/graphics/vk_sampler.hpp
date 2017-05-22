@@ -9,6 +9,7 @@
 
 #include <optional.hpp>
 #include <allow_type_decay.hpp>
+#include <alias.hpp>
 
 namespace ste {
 namespace gl {
@@ -60,7 +61,7 @@ struct vk_sampler_info {
 class vk_sampler : public allow_type_decay<vk_sampler, VkSampler> {
 private:
 	optional<VkSampler> sampler;
-	std::reference_wrapper<const vk_logical_device> device;
+	alias<const vk_logical_device> device;
 
 public:
 	vk_sampler(const vk_logical_device &device,

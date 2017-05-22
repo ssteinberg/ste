@@ -27,6 +27,9 @@
 #include <lib/flat_map.hpp>
 #include <lib/flat_set.hpp>
 
+#include <alias.hpp>
+#include <anchored.hpp>
+
 namespace ste {
 namespace gl {
 
@@ -34,7 +37,7 @@ namespace gl {
 *	@brief	The pipeline layout descriptor.
 *			Fully defines the pipeline shader stages, resource binding layouts and output attachment layouts.
 */
-class pipeline_layout : public allow_type_decay<pipeline_layout, vk::vk_pipeline_layout> {
+class pipeline_layout : public allow_type_decay<pipeline_layout, vk::vk_pipeline_layout>, anchored {
 	friend class device_pipeline;
 
 public:
@@ -59,7 +62,7 @@ private:
 		lib::flat_map<const ste_shader_stage_variable*, lib::vector<const pipeline_binding_layout*>>;
 
 private:
-	std::reference_wrapper<const ste_context> ctx;
+	alias<const ste_context> ctx;
 
 	// Attached pipeline stages and their variables and attachment maps
 	stages_map_t stages;
@@ -351,9 +354,6 @@ public:
 		recreate_layout();
 	}
 	~pipeline_layout() noexcept {}
-
-	pipeline_layout(pipeline_layout&&) = default;
-	pipeline_layout &operator=(pipeline_layout&&) = default;
 
 	/**
 	*	@brief	Specializes a constant

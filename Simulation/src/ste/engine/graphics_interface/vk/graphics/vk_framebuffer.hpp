@@ -15,6 +15,7 @@
 
 #include <lib/vector.hpp>
 #include <allow_type_decay.hpp>
+#include <alias.hpp>
 
 namespace ste {
 namespace gl {
@@ -24,7 +25,7 @@ namespace vk {
 class vk_framebuffer : public allow_type_decay<vk_framebuffer, VkFramebuffer> {
 private:
 	optional<VkFramebuffer> framebuffer;
-	std::reference_wrapper<const vk_logical_device> device;
+	alias<const vk_logical_device> device;
 	glm::u32vec2 extent;
 
 public:

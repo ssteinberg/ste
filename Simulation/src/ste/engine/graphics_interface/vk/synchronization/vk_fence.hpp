@@ -15,6 +15,7 @@
 #include <chrono>
 #include <lib/vector.hpp>
 #include <limits>
+#include <alias.hpp>
 
 namespace ste {
 namespace gl {
@@ -24,7 +25,7 @@ namespace vk {
 class vk_fence : public ste_resource_pool_resetable_trait<const vk_logical_device &, bool> {
 private:
 	optional<VkFence> fence;
-	std::reference_wrapper<const vk_logical_device> device;
+	alias<const vk_logical_device> device;
 
 public:
 	vk_fence(const vk_logical_device &device,

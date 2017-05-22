@@ -20,6 +20,9 @@
 #include <lib/unique_ptr.hpp>
 #include <lib/vector.hpp>
 
+#include <anchored.hpp>
+#include <alias.hpp>
+
 namespace ste {
 namespace text {
 
@@ -27,12 +30,12 @@ namespace text {
  *	@brief	Controls glyph loading, storage and rendering. Generates text rendering fragments.
  *			Provides a single device pipeline and framebuffer layout for all fragments created using this manager. 
  */
-class text_manager : ste_resource_deferred_create_trait {
+class text_manager : ste_resource_deferred_create_trait, anchored {
 private:
 	friend class text_fragment;
 
 private:
-	std::reference_wrapper<const ste_context> context;
+	alias<const ste_context> context;
 
 	glyph_manager gm;
 	font default_font;

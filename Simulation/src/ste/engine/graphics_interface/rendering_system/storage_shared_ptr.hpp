@@ -5,6 +5,7 @@
 
 #include <stdafx.hpp>
 #include <storage.hpp>
+#include <alias.hpp>
 
 namespace ste {
 namespace gl {
@@ -16,12 +17,12 @@ namespace _internal {
 template <typename RS>
 struct storage_shared_ptr_base {
 	storage_base *storage;
-	RS *rs;
+	alias<RS> rs;
 	const void* tag;
 	std::uint32_t references{ 0 };
 
 	storage_shared_ptr_base() = default;
-	storage_shared_ptr_base(storage_base *storage, RS *rs, const void *tag)
+	storage_shared_ptr_base(storage_base *storage, alias<RS> rs, const void *tag)
 		: storage(storage), rs(rs), tag(tag)
 	{}
 

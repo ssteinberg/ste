@@ -13,6 +13,7 @@
 
 #include <lib/vector.hpp>
 #include <allow_type_decay.hpp>
+#include <alias.hpp>
 
 namespace ste {
 namespace gl {
@@ -22,7 +23,7 @@ namespace vk {
 class vk_descriptor_set_layout : public allow_type_decay<vk_descriptor_set_layout, VkDescriptorSetLayout> {
 private:
 	optional<VkDescriptorSetLayout> layout;
-	std::reference_wrapper<const vk_logical_device> device;
+	alias<const vk_logical_device> device;
 
 public:
 	vk_descriptor_set_layout(const vk_logical_device &device,

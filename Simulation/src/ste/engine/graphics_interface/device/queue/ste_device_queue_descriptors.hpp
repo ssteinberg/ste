@@ -20,7 +20,7 @@ namespace gl {
  *	@brief	Device queue descriptor
  */
 struct ste_queue_descriptor {
-	std::reference_wrapper<const vk::vk_physical_device_descriptor> physical_device;
+	vk::vk_physical_device_descriptor physical_device;
 
 	//	Queue family
 	ste_queue_family family;

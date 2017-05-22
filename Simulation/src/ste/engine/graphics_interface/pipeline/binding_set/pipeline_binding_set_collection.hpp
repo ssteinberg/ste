@@ -13,6 +13,7 @@
 #include <pipeline_binding_set_collection_cmd_bind.hpp>
 
 #include <lib/flat_map.hpp>
+#include <alias.hpp>
 
 namespace ste {
 namespace gl {
@@ -25,8 +26,8 @@ private:
 
 private:
 	collection_t sets;
-	std::reference_wrapper<const pipeline_layout> layout;
-	std::reference_wrapper<pipeline_binding_set_pool> pool;
+	alias<const pipeline_layout> layout;
+	alias<pipeline_binding_set_pool> pool;
 
 public:
 	pipeline_binding_set_collection(const pipeline_layout& layout,

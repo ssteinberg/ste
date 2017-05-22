@@ -17,6 +17,7 @@
 
 #include <lib/vector.hpp>
 #include <allow_type_decay.hpp>
+#include <alias.hpp>
 
 namespace ste {
 namespace gl {
@@ -26,7 +27,7 @@ namespace vk {
 class vk_render_pass : public allow_type_decay<vk_render_pass, VkRenderPass> {
 private:
 	optional<VkRenderPass> render_pass;
-	std::reference_wrapper<const vk_logical_device> device;
+	alias<const vk_logical_device> device;
 
 public:
 	vk_render_pass(const vk_logical_device &device,

@@ -17,10 +17,13 @@
 #include <type_traits>
 #include <algorithm>
 
+#include <alias.hpp>
+#include <anchored.hpp>
+
 namespace ste {
 namespace gl {
 
-class rendering_system : ste_resource_deferred_create_trait {
+class rendering_system : ste_resource_deferred_create_trait, anchored {
 private:
 	using storage_tag = const void*;
 	using storage_ptr_base = _internal::storage_shared_ptr_base<rendering_system>;
@@ -29,7 +32,7 @@ private:
 	friend void storage_ptr_base::release();
 
 private:
-	std::reference_wrapper<const ste_context> ctx;
+	alias<const ste_context> ctx;
 
 protected:
 	storage_map_t storages;

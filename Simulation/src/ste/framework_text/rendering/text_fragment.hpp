@@ -15,6 +15,7 @@
 #include <cmd_pipeline_barrier.hpp>
 
 #include <stable_vector.hpp>
+#include <alias.hpp>
 
 namespace ste {
 namespace text {
@@ -26,7 +27,7 @@ class text_fragment : public gl::fragment {
 	using vector_type = gl::stable_vector<glyph_point>;
 
 private:
-	text_manager *tm;
+	alias<text_manager> tm;
 
 	vector_type vertex_buffer;
 	std::uint32_t count{ 0 };

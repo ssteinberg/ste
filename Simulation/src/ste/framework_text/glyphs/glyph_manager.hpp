@@ -25,8 +25,9 @@
 #include <lib/string.hpp>
 #include <lib/vector.hpp>
 #include <lib/flat_map.hpp>
-#include <utility>
 #include <lib/concurrent_queue.hpp>
+#include <alias.hpp>
+#include <utility>
 
 namespace ste {
 namespace text {
@@ -81,7 +82,7 @@ public:
 	using loaded_glyphs_queue_t = lib::concurrent_queue<loaded_glyphs_queue_item>;
 
 private:
-	std::reference_wrapper<const ste_context> context;
+	alias<const ste_context> context;
 	glyph_factory factory;
 
 	glyphs_t glyphs;
@@ -193,7 +194,7 @@ public:
 		auto glyphit = glyphs.lower_bound(k);
 		if (glyphit == glyphs.end() || glyphit->first != k) {
 			// Mark glyph as loading
-			glyphit = glyphs.emplace_hint(glyphit, std::make_pair(k, none));
+			glyphs.emplace_hint(glyphit, std::make_pair(k, none));
 
 			context.get().engine().task_scheduler().schedule_now([=]() mutable {
 				glyph_loader(font, codepoint);

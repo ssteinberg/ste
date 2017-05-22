@@ -18,6 +18,7 @@
 #include <lib/list.hpp>
 #include <lib/unique_ptr.hpp>
 #include <lib/shared_ptr.hpp>
+#include <anchored.hpp>
 
 namespace ste {
 
@@ -25,7 +26,7 @@ namespace ste {
  *	@brief	Thread-safe concurrent, wait-free task scheduler. 
  * 			Uses a load balancing thread pool. Returns task_futures that natively interruct with task_scheduler.
  */
-class task_scheduler {
+class task_scheduler : anchored {
 private:
 	using pool_t = balanced_thread_pool;
 

@@ -11,6 +11,7 @@
 #include <vk_exception.hpp>
 
 #include <optional.hpp>
+#include <alias.hpp>
 
 namespace ste {
 namespace gl {
@@ -20,7 +21,7 @@ namespace vk {
 class vk_buffer_view {
 private:
 	optional<VkBufferView> view;
-	std::reference_wrapper<const vk_logical_device> device;
+	alias<const vk_logical_device> device;
 	std::uint64_t size_bytes;
 	VkFormat format;
 

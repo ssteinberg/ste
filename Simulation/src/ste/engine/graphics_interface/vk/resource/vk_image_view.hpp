@@ -18,6 +18,7 @@
 
 #include <optional.hpp>
 #include <limits>
+#include <alias.hpp>
 
 namespace ste {
 namespace gl {
@@ -36,7 +37,7 @@ public:
 
 private:
 	optional<VkImageView> view;
-	std::reference_wrapper<const vk_logical_device> device;
+	alias<const vk_logical_device> device;
 	VkFormat image_format;
 
 protected:

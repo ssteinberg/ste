@@ -16,6 +16,7 @@
 #include <lib/string.hpp>
 #include <istream>
 #include <allow_type_decay.hpp>
+#include <alias.hpp>
 
 namespace ste {
 namespace gl {
@@ -38,7 +39,7 @@ private:
 
 private:
 	optional<VkPipelineCache> cache;
-	std::reference_wrapper<const vk_logical_device> device;
+	alias<const vk_logical_device> device;
 
 private:
 	static optional<lib::string> read_stream(const vk_physical_device_descriptor &device_descriptor, std::istream &input_stream) {

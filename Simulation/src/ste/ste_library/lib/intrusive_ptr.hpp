@@ -17,8 +17,6 @@ using intrusive_ptr = boost::intrusive_ptr<T>;
 
 template <typename T, typename... Args>
 auto allocate_intrusive(Args&&... args) {
-	static_assert(!std::is_array_v<T>, "Arrays not supported");
-	
 	auto ptr = default_alloc<T>::make(std::forward<Args>(args)...);
 	return intrusive_ptr<T>(ptr);
 }

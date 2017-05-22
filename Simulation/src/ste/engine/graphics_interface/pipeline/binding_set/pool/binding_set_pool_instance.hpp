@@ -14,6 +14,7 @@
 #include <lib/vector.hpp>
 #include <atomic>
 #include <ultimate.hpp>
+#include <alias.hpp>
 
 namespace ste {
 namespace gl {
@@ -35,7 +36,7 @@ private:
 	vk::vk_descriptor_pool vk_pool;
 	std::uint32_t allocated_sets{ 0 };
 
-	Pool *parent;
+	alias<Pool> parent;
 	Key key;
 
 private:
@@ -65,7 +66,7 @@ public:
 							  const vk::vk_logical_device &device,
 							  std::uint32_t max_sets,
 							  const lib::vector<const pipeline_binding_layout_interface*> &pool_bindings,
-							  Pool *parent,
+							  alias<Pool> parent,
 							  const Key &key)
 		: vk_pool(device,
 				  max_sets,

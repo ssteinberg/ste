@@ -161,7 +161,7 @@ public:
 							 const device_pipeline_graphics_configurations &graphics_pipeline_settings,
 							 const pipeline_vertex_input_bindings_collection::pipeline_vertex_input_bindings_descriptor &vertex_input_descriptor,
 							 const framebuffer_layout &fb_layout,
-							 pipeline_layout &&layout,
+							 lib::unique_ptr<pipeline_layout> &&layout,
 							 optional<std::reference_wrapper<const pipeline_external_binding_set_collection>> external_binding_sets)
 		: Base(ctx,
 			   std::move(layout),

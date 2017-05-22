@@ -16,6 +16,7 @@
 #include <lib/unordered_map.hpp>
 #include <lib/unordered_set.hpp>
 #include <lib/aligned_padded_ptr.hpp>
+#include <alias.hpp>
 
 namespace ste {
 namespace gl {
@@ -45,7 +46,7 @@ public:
 	using allocation_t = chunk_t::allocation_type;
 
 private:
-	std::reference_wrapper<const vk::vk_logical_device> device;
+	alias<const vk::vk_logical_device> device;
 	mutable heaps_t heaps;
 	std::uint64_t minimal_allocation_size_bytes;
 

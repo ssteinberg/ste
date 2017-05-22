@@ -11,6 +11,7 @@
 
 #include <lib/vector.hpp>
 #include <allow_type_decay.hpp>
+#include <alias.hpp>
 
 namespace ste {
 namespace gl {
@@ -76,7 +77,7 @@ class vk_command_buffers {
 private:
 	lib::vector<vk_command_buffer> buffers;
 	VkCommandPool pool;
-	std::reference_wrapper<const vk_logical_device> device;
+	alias<const vk_logical_device> device;
 	vk_command_buffer_type type;
 
 private:
