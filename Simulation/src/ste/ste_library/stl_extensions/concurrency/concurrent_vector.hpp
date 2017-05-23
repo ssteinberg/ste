@@ -10,6 +10,7 @@
 
 #include <initializer_list>
 #include <random>
+#include <algorithm>
 
 namespace ste {
 
@@ -32,24 +33,29 @@ public:
 	using size_type = typename allocator_type::size_type;
 
 private:
-	template <typename data_ptr, typename data_guard>
+	template <typename shared_double_ref_guard_data, typename data_guard>
 	struct resize_data {
 		concurrent_vector *vec;
 
 		data_guard old_data;
 		std::size_t old_size;
 
-		data_ptr new_data;
+		typename shared_double_ref_guard_data::data_ptr new_data_ptr;
+		typename shared_double_ref_guard_data::data_guard new_data;
 		std::size_t new_size;
 
 		std::atomic<std::uint8_t> resize_complete{ 0 };
 
-		resize_data(std::size_t new_size, data_ptr &&new_data, data_guard &&old_guard, concurrent_vector *vec)
-			: vec(vec), old_data(std::move(old_guard)), old_size(old_data->capacity), new_data(std::move(new_data)), new_size(new_size)
+		resize_data(std::size_t new_size, data_guard &&old_guard, concurrent_vector *vec)
+			: vec(vec), 
+			old_data(std::move(old_guard)), 
+			old_size(old_data->capacity), 
+			new_data(shared_double_ref_guard_data::create_data_ptr(new_data_ptr, new_size)),
+			new_size(new_size)
 		{}
 
 		void join() {
-			if (resize_complete.load(std::memory_order_relaxed) == 1)
+			if (resize_complete.load(std::memory_order_acquire) == 1)
 				return;
 
 			// Choose starting point at random
@@ -58,7 +64,7 @@ private:
 			std::size_t start = std::uniform_int_distribution<std::size_t>(0, old_size)(mt);
 
 			// Transfer elements to new vector
-			auto new_storage = new_data.get()->object.storage;
+			auto new_storage = new_data->storage;
 			for (std::size_t i = start; i<start + old_size; ++i) {
 				auto idx = i % old_size;
 
@@ -76,7 +82,7 @@ private:
 			}
 
 			// Try to replace old vector with new
-			vec->root.compare_exchange(std::memory_order_acq_rel, old_data, new_data);
+			vec->root.compare_exchange(std::memory_order_acq_rel, old_data, new_data_ptr);
 			resize_complete.store(1);
 
 			old_data->resize = nullptr;
@@ -86,12 +92,8 @@ private:
 	struct data {
 		using shared_double_ref_guard_data = shared_double_reference_guard<data, storage_allocator_type>;
 		using double_ref_guard_data_ptr = typename shared_double_reference_guard<data, storage_allocator_type>::data_ptr;
-		using resize_data_t = resize_data<double_ref_guard_data_ptr, typename shared_double_ref_guard_data::data_guard>;
+		using resize_data_t = resize_data<shared_double_ref_guard_data, typename shared_double_ref_guard_data::data_guard>;
 		using resize_data_ptr_t = std::shared_ptr<resize_data_t>;
-
-		static auto create_new_data_ptr_for_resize(std::size_t new_size) {
-			return shared_double_ref_guard_data::create_data_ptr(new_size);
-		}
 
 		element_type* storage;
 		std::size_t capacity;
@@ -127,7 +129,7 @@ private:
 	using resize_data_allocator_type = typename Allocator::template rebind<resize_data_t>::other;
 
 private:
-	template <typename ref, typename ptr>
+	template <typename val, typename ref, typename ptr>
 	class iterator_impl {
 		friend concurrent_vector;
 		using reference = ref;
@@ -135,11 +137,11 @@ private:
 
 	protected:
 		size_type idx{ 0 };
-		typename root_t::data_guard vector_root;
+		val vector;
 
 		iterator_impl(size_type idx, 
-					  typename root_t::data_guard &&vector_root) 
-			: idx(idx), vector_root(std::move(vector_root)) 
+					  val vector)
+			: idx(idx), vector(vector) 
 		{}
 
 	public:
@@ -194,33 +196,42 @@ private:
 			idx += n;
 			return *this;
 		}
-		iterator_impl operator+(size_type n) const { return { idx + n, std::move(vector_root) }; }
-		friend iterator_impl operator+(size_type n, const iterator_impl &it) { return { it.idx + n, std::move(it.vector_root) }; }
+		iterator_impl operator+(size_type n) const { return { idx + n, vector }; }
+		friend iterator_impl operator+(size_type n, const iterator_impl &it) { return { it.idx + n, it.vector }; }
 		iterator_impl& operator-=(size_type n) {
 			idx -= n;
 			return *this;
 		}
-		iterator_impl operator-(size_type n) const { return { idx + n, std::move(vector_root) }; }
+		iterator_impl operator-(size_type n) const { return { idx + n, vector }; }
 		difference_type operator-(const iterator_impl &it) const { return static_cast<difference_type>(idx - it.idx); }
 
-		reference operator*() const { return *(vector_root->storage + idx); }
-		pointer operator->() const { return vector_root->storage + idx; }
-		reference operator[](size_type n) const { return *(vector_root->storage + idx + n); }
+		reference operator*() const {
+			auto root_guard = vector->root.acquire();
+			return *(root_guard->storage + idx);
+		}
+		pointer operator->() const {
+			auto root_guard = vector->root.acquire(); 
+			return root_guard->storage + idx;
+		}
+		reference operator[](size_type n) const {
+			auto root_guard = vector->root.acquire(); 
+			return *(root_guard->storage + idx + n);
+		}
 	};
 
 public:
-	class const_iterator : public iterator_impl<const element_type&, const element_type*> {
-		using Base = iterator_impl<const element_type&, const element_type*>;
+	class const_iterator : public iterator_impl<const concurrent_vector*, const element_type&, const element_type*> {
+		using Base = iterator_impl<const concurrent_vector*, const element_type&, const element_type*>;
 		friend concurrent_vector;
 	public:
 		using Base::Base;
 	};
-	class iterator : public iterator_impl<element_type&, element_type*> {
-		using Base = iterator_impl<element_type&, element_type*>;
+	class iterator : public iterator_impl<concurrent_vector*, element_type&, element_type*> {
+		using Base = iterator_impl<concurrent_vector*, element_type&, element_type*>;
 		friend concurrent_vector;
 	public:
 		using Base::Base;
-		iterator(const_iterator &&i) noexcept : Base(i.idx, std::move(i.vector_root)) {}
+		iterator(const_iterator &&i) noexcept : Base(i.idx, i.vector) {}
 	};
 	using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 	using reverse_iterator = std::reverse_iterator<iterator>;
@@ -246,12 +257,11 @@ private:
 		// Create resize data
 		auto rd = std::allocate_shared<resize_data_t, resize_data_allocator_type>(resize_data_allocator,
 																				  requested_new_size, 
-																				  data::create_new_data_ptr_for_resize(requested_new_size), 
 																				  root_guard(), 
 																				  this);
 
 		auto old = resize_data_ptr_t(nullptr);
-		while (!std::atomic_compare_exchange_strong_explicit(&r->resize, &old, rd, std::memory_order_release, std::memory_order_relaxed)) {
+		while (!std::atomic_compare_exchange_strong(&r->resize, &old, rd)) {
 			// A resize is already in progress. Join in
 			join_resize_and_acquire(r);
 			// If the new size is at least the minimal acceptable size, we are done. Otherwise resize again.
@@ -259,11 +269,12 @@ private:
 				return r;
 
 			// Try to resize again
-			old = nullptr;
+			old = resize_data_ptr_t(nullptr);
 		}
 
 		// Resize initiated
 		rd->join();
+		rd = nullptr;
 
 		// Return new root
 		return root_guard();
@@ -273,6 +284,7 @@ private:
 		if (resize_data_ptr_t resize = std::atomic_load(&r->resize)) {
 			// Joined a resize
 			resize->join();
+			resize = nullptr;
 
 			// Done, get new root.
 			r = root_guard();
@@ -281,17 +293,25 @@ private:
 
 	// A mutation is considered successful iff during the mutation the root wasn't changed by a resize.
 	// Otherwise the resize operation can undo the mutation.
-	bool mutate(iterator &iter) {
+	bool mutate(typename root_t::data_guard &mutated_vector) {
 		auto r = root_guard();
 
 		// Finish any ongoing resize operations
 		join_resize_and_acquire(r);
-		if (iter.vector_root == r)
+		if (mutated_vector == r)
 			return true;
 
 		// Update iterator to new root
-		iter = it(iter.idx);
+		mutated_vector = std::move(r);
 		return false;
+	}
+
+	template <typename... Ts>
+	void _emplace_internal(iterator &iter, typename root_t::data_guard &r, Ts&&... ts) {
+		do {
+			assert(size() > iter.idx);
+			iter->emplace(std::memory_order_acq_rel, std::forward<Ts>(ts)...);
+		} while (!mutate(r));
 	}
 
 public:
@@ -324,12 +344,25 @@ public:
 		return *it(i);
 	}
 
-	iterator it(size_type i) { return iterator(i, root_guard()); }
-	const_iterator it(size_type i) const { return const_iterator(i, root_guard()); }
-	const_iterator cit(size_type i) const { return const_iterator(i, root_guard()); }
-	reverse_iterator rit(size_type i) { return reverse_iterator(i, root_guard()); }
-	const_reverse_iterator rit(size_type i) const { return const_reverse_iterator(i, root_guard()); }
-	const_reverse_iterator crit(size_type i) const { return const_reverse_iterator(i, root_guard()); }
+	iterator it(size_type i) { return iterator(i, this); }
+	const_iterator it(size_type i) const { return const_iterator(i, this); }
+	const_iterator cit(size_type i) const { return const_iterator(i, this); }
+	reverse_iterator rit(size_type i) { return reverse_iterator(i, this); }
+	const_reverse_iterator rit(size_type i) const { return const_reverse_iterator(i, this); }
+	const_reverse_iterator crit(size_type i) const { return const_reverse_iterator(i, this); }
+
+	iterator begin() { return iterator(0, this); }
+	const_iterator begin() const { return const_iterator(0, this); }
+	const_iterator cbegin() const { return const_iterator(0, this); }
+	iterator end() { return iterator(size(), this); }
+	const_iterator end() const { return const_iterator(size(), this); }
+	const_iterator cend() const { return const_iterator(size(), this); }
+	reverse_iterator rbegin() { return reverse_iterator(0, this); }
+	const_reverse_iterator rbegin() const { return const_reverse_iterator(0, this); }
+	const_reverse_iterator crbegin() const { return const_reverse_iterator(0, this); }
+	reverse_iterator rend() { return reverse_iterator(size(), this); }
+	const_reverse_iterator rend() const { return const_reverse_iterator(size(), this); }
+	const_reverse_iterator crend() const { return const_reverse_iterator(size(), this); }
 
 	/**
 	*	@brief	Returns a hint suggesting whether or not the vector was empty at the time of the call.
@@ -359,17 +392,14 @@ public:
 	void emplace_back(Ts&&... ts) {
 		std::size_t location;
 		{
-			// Finish any pending resizes
 			auto r = root_guard();
-			join_resize_and_acquire(r);
 
 			// Atomically increase vector size
 			location = elements.fetch_add(1);
 
 			// If we have space, emplace
 			if (r->capacity > location) {
-				iterator iter(location, std::move(r));
-				emplace(iter, std::forward<Ts>(ts)...);
+				_emplace_internal(it(location), r, std::forward<Ts>(ts)...);
 				return;
 			}
 		}
@@ -377,8 +407,7 @@ public:
 		// Otherwse, resize and emplace at choosen location.
 		auto required_size = location + 1;
 		auto r = resize(required_size * 2, required_size);
-		emplace(iterator(location, std::move(r)), 
-				std::forward<Ts>(ts)...);
+		_emplace_internal(it(location), r, std::forward<Ts>(ts)...);
 	}
 
 	/**
@@ -387,20 +416,27 @@ public:
 	*/
 	template <typename... Ts>
 	void insert(Ts&&... ts) {
-		for (auto iter = it(0); iter.location() < iter.size(); ++iter) {
-			auto guard = *iter;
+		auto r = root_guard();
+		auto iter = it(0);
+		auto l = size();
 
-			// Find an empty slot and try to insert
-			if (!guard.is_valid()) {
-				bool success;
-				do {
-					success = iter->try_compare_emplace(std::memory_order_acq_rel, guard, std::forward<Ts>(ts)...);
-					// Make sure we managed to take ownership of i AND that the mutation is valid.
-				} while (success && !mutate(iter));
+		// Find an empty slot and try to insert
+		while (iter.location() < l) {
+			for (;iter.location() < l; ++iter) {
+				auto guard = iter->acquire();
 
-				if (success)
-					return;
+				bool success = false;
+				if (!guard.is_valid()) {
+					do {
+						success = iter->try_compare_emplace(std::memory_order_acq_rel, guard, std::forward<Ts>(ts)...);
+						// Make sure we managed to take ownership of i AND that the mutation is valid.
+					} while (success && !mutate(r));
+
+					if (success)
+						return;
+				}
 			}
+			l = size();
 		}
 
 		// No empty slots found
@@ -412,17 +448,37 @@ public:
 	*/
 	template <typename... Ts>
 	void emplace(iterator &iter, Ts&&... ts) {
-		do {
-			iter->emplace(std::memory_order_acq_rel, std::forward<Ts>(ts)...);
-		} while (!mutate(iter));
+		auto r = root_guard();
+		_emplace_internal(iter, r, std::forward<Ts>(ts)...);
+	}
+	/**
+	*	@brief	Emplaces new value at the provided iterator, only if the iterator is invalid. 
+	*			Returns true if successful, false otherwise.
+	*/
+	template <typename... Ts>
+	bool try_emplace_if_empty(iterator &iter, Ts&&... ts) {
+		auto r = root_guard();
+		auto guard = iter->acquire();
+
+		bool success = false;
+		if (!guard.is_valid()) {
+			do {
+				success = iter->try_compare_emplace(std::memory_order_acq_rel, guard, std::forward<Ts>(ts)...);
+				// Make sure we managed to take ownership of i AND that the mutation is valid.
+			} while (success && !mutate(r));
+		}
+
+		return success;
 	}
 	/**
 	*	@brief	Erases the value at the provided iterator.
 	*/
 	void erase(iterator &iter) {
+		auto r = root_guard();
 		do {
+			assert(size() > iter.idx);
 			iter->drop();
-		} while (!mutate(iter));
+		} while (!mutate(r));
 	}
 
 	/**

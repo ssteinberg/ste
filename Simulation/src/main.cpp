@@ -348,7 +348,7 @@ int main()
 	simple_renderer r(ctx, presentation, text_manager);
 
 
-	//	ste_resource<device_pipeline_shader_stage> stage(ste_resource_dont_defer(), ctx, lib::string("fxaa.frag"));
+//	ste_resource<gl::device_pipeline_shader_stage> stage(ste_resource_dont_defer(), ctx, lib::string("fxaa.frag"));
 	//	device_pipeline_shader_stage(ctx, lib::string("deferred_compose.frag"));
 	//	device_pipeline_shader_stage(ctx, lib::string("shadow_cubemap.geom"));
 	//	device_pipeline_shader_stage(ctx, lib::string("shadow_directional.geom"));

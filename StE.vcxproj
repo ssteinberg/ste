@@ -1205,7 +1205,6 @@
   <ItemGroup>
     <None Include="Simulation\src\ste\engine\graphics_interface\pipeline\layout\push_constants\pipeline_push_constants_layout.hpp" />
     <None Include="Simulation\src\ste\framework_graphics\antialiasing\fxaa\shaders\fxaa.frag" />
-    <None Include="Simulation\src\ste\framework_graphics\antialiasing\fxaa\shaders\fxaa.vert" />
     <None Include="Simulation\src\ste\framework_graphics\antialiasing\fxaa\shaders\nvidia_fxaa.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\atmospherics\buffer\shaders\atmospherics.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\atmospherics\buffer\shaders\atmospherics_descriptor.glsl" />
