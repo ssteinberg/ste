@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015-2016
+// © Shlomi Steinberg, 2015-2017
 
 #pragma once
 
@@ -47,7 +47,7 @@ private:
 	}
 
 public:
-	fxaa_dispatchable(const ste_engine_control &ctx) : program(ctx, lib::vector<lib::string>{ "fxaa.vert", "fxaa.frag" }) {
+	fxaa_dispatchable(const ste_engine_control &ctx) : program(ctx, lib::vector<lib::string>{ "fullscreen_triangle.vert", "fxaa.frag" }) {
 		resize_connection = make_connection([=](ctx.signal_framebuffer_resize(), const glm::i32vec2 &size) {
 			resize(size);
 		});

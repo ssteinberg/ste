@@ -123,13 +123,15 @@ public:
 	using const_data_guard = data_guard_t<const data_t>;
 
 	/**
-	 *	@brief	Creates an instance of the internal reference counted pointer, with initial reference count of 1.
+	 *	@brief	Creates an instance of the internal reference counted pointer, with initial reference count of 2. Returns a guard to it.
 	 *			Used exclusively for compare_exchange.
 	 */
 	template <typename... Args>
-	static data_ptr create_data_ptr(Args&&... args) {
+	static data_guard create_data_ptr(data_ptr &ptr, Args&&... args) {
 		data_t *new_data = data_t::claim(std::forward<Args>(args)...);
-		return data_ptr{ 1, new_data };
+		ptr = data_ptr{ 2, new_data };
+
+		return data_guard(ptr.get());
 	}
 
 private:
@@ -149,6 +151,8 @@ public:
 	shared_double_reference_guard() {
 		data_ptr new_data_ptr{ 0, nullptr };
 		guard.store(new_data_ptr);
+
+		assert(guard.is_lock_free() && "guard not lock free");
 	}
 
 	template <typename ... Ts>
