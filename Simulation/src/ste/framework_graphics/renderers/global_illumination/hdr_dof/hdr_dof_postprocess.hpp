@@ -27,7 +27,6 @@
 
 #include <command_recorder.hpp>
 
-#include <signal.hpp>
 #include <alias.hpp>
 
 namespace ste {
@@ -43,6 +42,7 @@ private:
 
 private:
 	alias<const ste_context> ctx;
+	glm::u32vec2 extent;
 
 	gl::pipeline_stage input_stage_flags;
 	gl::image_layout input_image_layout;
@@ -72,6 +72,9 @@ private:
 	gl::framebuffer fbo_hdr;
 	gl::framebuffer fbo_hdr_bloom_blurx_image;
 
+public:
+	static constexpr auto input_image_format = gl::format::r16g16b16a16_sfloat;
+
 private:
 	static ste_resource<gl::texture<gl::image_type::image_1d, 2>> create_hdr_vision_properties_texture(const ste_context &ctx);
 
@@ -79,14 +82,18 @@ private:
 
 public:
 	hdr_dof_postprocess(const gl::rendering_system &rs,
+						const glm::u32vec2 &extent,
 						gl::framebuffer_layout &&fb_layout);
 
 	/**
-	 *	@brief	Returns the source image. Before writing to the image, the caller should transform the image from layout gl::image_layout::shader_read_only_optimal at stage 
-	 *			gl::pipeline_stage::fragment_shader.
-	 *			The caller specifies its access type and layout of the image.
+	 *	@brief	Returns the input image. 
+	 *			Before writing to the image, it is the caller's reponsibility to set a pipeline barrier. The input image is left at image layout image_layout::shader_read_only_optimal,
+	 *			accessed at pipeline stage pipeline_stage::fragment_shader.
+	 *			
+	 *			Likewise, the caller must specify its access type and layout of the image.
 	 *	
-	 *	@param	input_stage_flags	Pipeline access stage
+	 *	@param	input_stage_flags	Consumer's last pipeline access stage
+	 *	@param	input_image_layout	Consumer's last image layout
 	 */
 	auto &acquire_input_image(gl::pipeline_stage input_stage_flags,
 							  gl::image_layout input_image_layout) {
@@ -95,7 +102,6 @@ public:
 
 		return hdr_final_image.get();
 	}
-	static auto input_image_format() { return gl::format::r16g16b16a16_sfloat; }
 
 	/**
 	*	@brief	Set the camera aperture parameter. Those parameters affect the depth of field of the resulting image.
@@ -115,7 +121,7 @@ public:
 	}
 	void record(gl::command_recorder &recorder) override final;
 
-	void resize();
+	void resize(const glm::u32vec2 &extent);
 };
 
 }

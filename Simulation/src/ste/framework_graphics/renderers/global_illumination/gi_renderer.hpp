@@ -31,7 +31,7 @@
 
 #include <hdr_dof_postprocess.hpp>
 
-#include <fxaa_dispatchable.hpp>
+#include <fxaa_postprocess.hpp>
 
 #include <shadowmap_storage.hpp>
 #include <shadowmap_projector.hpp>
@@ -95,7 +95,7 @@ private:
 	volumetric_scattering_storage vol_scat_storage;
 
 	resource::resource_instance<deferred_composer> composer;
-	resource::resource_instance<fxaa_dispatchable> fxaa;
+	resource::resource_instance<fxaa_postprocess> fxaa;
 	resource::resource_instance<hdr_dof_postprocess> hdr;
 
 	resource::resource_instance<gbuffer_downsample_depth_dispatch> downsample_depth;

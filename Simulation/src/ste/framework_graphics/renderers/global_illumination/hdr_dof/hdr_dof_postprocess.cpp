@@ -18,13 +18,13 @@ namespace ste::graphics::_internal {
 
 template <gl::format image_format>
 auto hdr_create_texture(const ste_context &ctx,
+						const glm::u32vec2 &extent,
 						gl::image_usage usage = gl::image_usage::sampled,
-						gl::image_layout layout = gl::image_layout::shader_read_only_optimal,
-						std::uint32_t res_divider = 1) {
+						gl::image_layout layout = gl::image_layout::shader_read_only_optimal) {
 	auto image = resource::surface_factory::image_empty_2d<image_format>(ctx,
 																		 usage,
 																		 layout,
-																		 ctx.device().get_surface().extent() / res_divider);
+																		 extent);
 	return ste_resource<gl::texture<gl::image_type::image_2d>>(ctx, std::move(image));
 }
 
@@ -96,18 +96,19 @@ void hdr_dof_postprocess::bind_fragment_resources() {
 }
 
 hdr_dof_postprocess::hdr_dof_postprocess(const gl::rendering_system &rs,
+										 const glm::u32vec2 &extent,
 										 gl::framebuffer_layout &&fb_layout)
 	: ctx(rs.get_creating_context()),
 	// Textures
 	hdr_final_image(ctx,
-					resource::surface_factory::image_empty_2d<gl::format::r16g16b16a16_sfloat>(ctx.get(),
-																							   gl::image_usage::sampled | gl::image_usage::color_attachment,
-																							   gl::image_layout::shader_read_only_optimal,
-																							   rs.device().get_surface().extent())),
-	hdr_image(_internal::hdr_create_texture<gl::format::r16g16b16a16_sfloat>(ctx.get(), gl::image_usage::sampled | gl::image_usage::color_attachment)),
-	hdr_bloom_image(_internal::hdr_create_texture<gl::format::r16g16b16a16_sfloat>(ctx.get(), gl::image_usage::sampled | gl::image_usage::color_attachment)),
-	hdr_bloom_blurx_image(_internal::hdr_create_texture<gl::format::r16g16b16a16_sfloat>(ctx.get(), gl::image_usage::sampled | gl::image_usage::color_attachment)),
-	hdr_lums(_internal::hdr_create_texture<gl::format::r32_sfloat>(ctx.get(), gl::image_usage::storage, gl::image_layout::general, 4)),
+					resource::surface_factory::image_empty_2d<input_image_format>(ctx.get(),
+																				  gl::image_usage::sampled | gl::image_usage::color_attachment,
+																				  gl::image_layout::shader_read_only_optimal,
+																				  extent)),
+	hdr_image(_internal::hdr_create_texture<gl::format::r16g16b16a16_sfloat>(ctx.get(), extent, gl::image_usage::sampled | gl::image_usage::color_attachment)),
+	hdr_bloom_image(_internal::hdr_create_texture<gl::format::r16g16b16a16_sfloat>(ctx.get(), extent, gl::image_usage::sampled | gl::image_usage::color_attachment)),
+	hdr_bloom_blurx_image(_internal::hdr_create_texture<gl::format::r16g16b16a16_sfloat>(ctx.get(), extent, gl::image_usage::sampled | gl::image_usage::color_attachment)),
+	hdr_lums(_internal::hdr_create_texture<gl::format::r32_sfloat>(ctx.get(), extent / 4u, gl::image_usage::storage, gl::image_layout::general)),
 	hdr_vision_properties_texture(create_hdr_vision_properties_texture(ctx.get())),
 	// Buffers
 	hdr_bokeh_param_buffer(ctx.get(), 1, { parameters_initial }, gl::buffer_usage::storage_buffer),
@@ -123,30 +124,30 @@ hdr_dof_postprocess::hdr_dof_postprocess(const gl::rendering_system &rs,
 	bloom_blury_task(rs),
 	bokeh_blur_task(rs, std::move(fb_layout)),
 	// Framebuffers
-	fbo_hdr_final(ctx.get(), bloom_blury_task.get_framebuffer_layout(), rs.device().get_surface().extent()),
-	fbo_hdr(ctx.get(), tonemap_coc_task.get_framebuffer_layout(), rs.device().get_surface().extent()),
-	fbo_hdr_bloom_blurx_image(ctx.get(), bloom_blurx_task.get_framebuffer_layout(), rs.device().get_surface().extent())
+	fbo_hdr_final(ctx.get(), bloom_blury_task.get_framebuffer_layout(), extent),
+	fbo_hdr(ctx.get(), tonemap_coc_task.get_framebuffer_layout(), extent),
+	fbo_hdr_bloom_blurx_image(ctx.get(), bloom_blurx_task.get_framebuffer_layout(), extent)
 {
 	bind_fragment_resources();
 
 	bokeh_blur_task.set_aperture_parameters(default_aperature_diameter, default_aperature_focal_ln);
 }
 
-void hdr_dof_postprocess::resize() {
+void hdr_dof_postprocess::resize(const glm::u32vec2 &extent) {
 	hdr_final_image = ste_resource<gl::texture<gl::image_type::image_2d>>(ctx.get(),
-																		  resource::surface_factory::image_empty_2d<gl::format::r16g16b16a16_sfloat>(ctx.get(),
-																																					 gl::image_usage::sampled | gl::image_usage::color_attachment,
-																																					 gl::image_layout::shader_read_only_optimal,
-																																					 ctx.get().device().get_surface().extent()));
+																		  resource::surface_factory::image_empty_2d<input_image_format>(ctx.get(),
+																																		gl::image_usage::sampled | gl::image_usage::color_attachment,
+																																		gl::image_layout::shader_read_only_optimal,
+																																		extent));
 
-	hdr_image = _internal::hdr_create_texture<gl::format::r16g16b16a16_sfloat>(ctx.get(), gl::image_usage::sampled | gl::image_usage::color_attachment);
-	hdr_bloom_image = _internal::hdr_create_texture<gl::format::r16g16b16a16_sfloat>(ctx.get(), gl::image_usage::sampled | gl::image_usage::color_attachment);
-	hdr_bloom_blurx_image = _internal::hdr_create_texture<gl::format::r16g16b16a16_sfloat>(ctx.get(), gl::image_usage::sampled | gl::image_usage::color_attachment);
-	hdr_lums = _internal::hdr_create_texture<gl::format::r32_sfloat>(ctx.get(), gl::image_usage::storage, gl::image_layout::general, 4);
+	hdr_image = _internal::hdr_create_texture<gl::format::r16g16b16a16_sfloat>(ctx.get(), extent, gl::image_usage::sampled | gl::image_usage::color_attachment);
+	hdr_bloom_image = _internal::hdr_create_texture<gl::format::r16g16b16a16_sfloat>(ctx.get(), extent, gl::image_usage::sampled | gl::image_usage::color_attachment);
+	hdr_bloom_blurx_image = _internal::hdr_create_texture<gl::format::r16g16b16a16_sfloat>(ctx.get(), extent, gl::image_usage::sampled | gl::image_usage::color_attachment);
+	hdr_lums = _internal::hdr_create_texture<gl::format::r32_sfloat>(ctx.get(), extent / 4u, gl::image_usage::storage, gl::image_layout::general);
 
-	fbo_hdr_final = gl::framebuffer(ctx.get(), bloom_blury_task.get_framebuffer_layout(), ctx.get().device().get_surface().extent());
-	fbo_hdr = gl::framebuffer(ctx.get(), tonemap_coc_task.get_framebuffer_layout(), ctx.get().device().get_surface().extent());
-	fbo_hdr_bloom_blurx_image = gl::framebuffer(ctx.get(), bloom_blurx_task.get_framebuffer_layout(), ctx.get().device().get_surface().extent());
+	fbo_hdr_final = gl::framebuffer(ctx.get(), bloom_blury_task.get_framebuffer_layout(), extent);
+	fbo_hdr = gl::framebuffer(ctx.get(), tonemap_coc_task.get_framebuffer_layout(), extent);
+	fbo_hdr_bloom_blurx_image = gl::framebuffer(ctx.get(), bloom_blurx_task.get_framebuffer_layout(), extent);
 
 	bind_fragment_resources();
 }
