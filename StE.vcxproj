@@ -524,6 +524,7 @@
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\pipeline\shader\device_pipeline_shader_stage.cpp" />
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\pipeline\shader\spirv_reflection\ste_shader_spirv_reflection.cpp" />
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\rendering_system\presentation_engine\frame_time_predictor\presentation_frame_time_predictor.cpp" />
+    <ClCompile Include="Simulation\src\ste\engine\graphics_interface\rendering_system\storage.cpp" />
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\vk\query\vk_query.cpp" />
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\vk\queue\vk_command_buffers.cpp" />
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\format\format_rtti.cpp" />
@@ -534,6 +535,7 @@
     <ClCompile Include="Simulation\src\ste\engine\scheduling\task_scheduler.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\hdr_dof_postprocess_storage.cpp" />
     <ClCompile Include="Simulation\src\ste\framework_resources\surfaces\surface_convert.cpp" />
     <ClCompile Include="Simulation\src\ste\framework_resources\surfaces\surface_mipmap_generator.cpp" />
     <ClCompile Include="Simulation\src\ste\framework_text\fonts\font.cpp" />
@@ -548,6 +550,7 @@
     <ClCompile Include="Simulation\src\ste\framework_graphics\antialiasing\fxaa\fxaa_postprocess.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\hdr_dof_postprocess_storage.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_text\attributed_strings\attrib_type.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_text\fonts\font.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_text\glyphs\text_font_key.hpp" />
@@ -587,7 +590,6 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\rendering_system\rendering_presentation_system.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\rendering_system\rendering_system.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\rendering_system\storage.hpp" />
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\rendering_system\storage_shared_ptr.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\device_resource_handle.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\image\colorspace.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\sampler\common_samplers.hpp" />

@@ -8,15 +8,10 @@
 #include <rendering_system.hpp>
 #include <fragment.hpp>
 
-#include <hdr_dof_bokeh_parameters.hpp>
-
-#include <device_image.hpp>
-#include <array.hpp>
 #include <framebuffer.hpp>
-#include <combined_image_sampler.hpp>
 #include <texture.hpp>
-#include <std430.hpp>
 
+#include <hdr_dof_postprocess_storage.hpp>
 #include <hdr_bokeh_blur_fragment.hpp>
 #include <hdr_bloom_blur_y_fragment.hpp>
 #include <hdr_bloom_blur_x_fragment.hpp>
@@ -34,31 +29,19 @@ namespace graphics {
 
 class hdr_dof_postprocess : public gl::fragment {
 private:
-	static constexpr float vision_properties_max_lum = 10.f;
-	static hdr_bokeh_parameters parameters_initial;
-
 	static constexpr float default_aperature_diameter = 8e-3f;
 	static constexpr float default_aperature_focal_ln = 23e-3f;
 
 private:
 	alias<const ste_context> ctx;
 	glm::u32vec2 extent;
+	gl::rendering_system::storage_ptr<hdr_dof_postprocess_storage> s;
 
-	gl::pipeline_stage input_stage_flags;
-	gl::image_layout input_image_layout;
-
-	ste_resource<gl::texture<gl::image_type::image_2d>> hdr_final_image;
+	gl::texture<gl::image_type::image_2d> *input{ nullptr };
 	ste_resource<gl::texture<gl::image_type::image_2d>> hdr_image;
 	ste_resource<gl::texture<gl::image_type::image_2d>> hdr_bloom_image;
 	ste_resource<gl::texture<gl::image_type::image_2d>> hdr_bloom_blurx_image;
 	ste_resource<gl::texture<gl::image_type::image_2d>> hdr_lums;
-
-	ste_resource<gl::texture<gl::image_type::image_1d, 2>> hdr_vision_properties_texture;
-
-	gl::array<hdr_bokeh_parameters> hdr_bokeh_param_buffer;
-//	gl::array<hdr_bokeh_parameters> hdr_bokeh_param_buffer_prev;
-	gl::array<gl::std430<std::uint32_t>> histogram;
-	gl::array<gl::std430<std::uint32_t>> histogram_sums;
 
 	hdr_compute_minmax_fragment compute_minmax_task;
 	hdr_compute_histogram_fragment create_histogram_task;
@@ -72,35 +55,30 @@ private:
 	gl::framebuffer fbo_hdr;
 	gl::framebuffer fbo_hdr_bloom_blurx_image;
 
-public:
-	static constexpr auto input_image_format = gl::format::r16g16b16a16_sfloat;
+	bool invalidated{ true };
 
 private:
-	static ste_resource<gl::texture<gl::image_type::image_1d, 2>> create_hdr_vision_properties_texture(const ste_context &ctx);
-
 	void bind_fragment_resources();
 
 public:
-	hdr_dof_postprocess(const gl::rendering_system &rs,
+	hdr_dof_postprocess(gl::rendering_system &rs,
 						const glm::u32vec2 &extent,
 						gl::framebuffer_layout &&fb_layout);
 
-	/**
-	 *	@brief	Returns the input image. 
-	 *			Before writing to the image, it is the caller's reponsibility to set a pipeline barrier. The input image is left at image layout image_layout::shader_read_only_optimal,
-	 *			accessed at pipeline stage pipeline_stage::fragment_shader.
-	 *			
-	 *			Likewise, the caller must specify its access type and layout of the image.
-	 *	
-	 *	@param	input_stage_flags	Consumer's last pipeline access stage
-	 *	@param	input_image_layout	Consumer's last image layout
-	 */
-	auto &acquire_input_image(gl::pipeline_stage input_stage_flags,
-							  gl::image_layout input_image_layout) {
-		this->input_stage_flags = input_stage_flags;
-		this->input_image_layout = input_image_layout;
+	static const lib::string& name() { return "hdr"; }
 
-		return hdr_final_image.get();
+	/**
+	 *	@brief	Sets the input image. 
+	 *			The input image is expectd to be in layout image_layout::shader_read_only_optimal before rendering.
+	 *			It is the caller's reponsibility to set a pipeline barrier if needed. Last access by the fragment is at pipeline stage pipeline_stage::fragment_shader.
+	 *			
+	 *			Expectes a RGBA floating point format.
+	 *	
+	 *	@param	input				Input image
+	 */
+	void set_input_image(gl::texture<gl::image_type::image_2d> *input) {
+		this->input = input;
+		this->invalidated = true;
 	}
 
 	/**

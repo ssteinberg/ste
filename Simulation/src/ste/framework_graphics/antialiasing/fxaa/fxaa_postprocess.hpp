@@ -26,36 +26,22 @@ private:
 	gl::pipeline_stage input_stage_flags;
 	gl::image_layout input_image_layout;
 
-	ste_resource<gl::texture<gl::image_type::image_2d>> input_image;
-
-public:
-	static constexpr auto input_image_format = gl::format::r8g8b8a8_unorm;
-
 public:
 	fxaa_postprocess(const gl::rendering_system &rs,
-					  const glm::u32vec2 &extent,
 					  gl::framebuffer_layout &&fb_layout);
 
 	static const lib::string& name() { return "fxaa"; }
 
-	void resize(const glm::u32vec2 &extent);
-
 	/**
-	*	@brief	Returns the input image.
-	*			Before writing to the image, it is the caller's reponsibility to set a pipeline barrier. The input image is left at image layout image_layout::shader_read_only_optimal,
-	*			accessed at pipeline stage pipeline_stage::fragment_shader.
+	*	@brief	Sets the input image.
+	 *			The input image is expectd to be in layout image_layout::shader_read_only_optimal before rendering.
+	 *			It is the caller's reponsibility to set a pipeline barrier if needed. Last access by the fragment is at pipeline stage pipeline_stage::fragment_shader.
 	*
-	*			Likewise, the caller must specify its access type and layout of the image.
-	*
-	*	@param	input_stage_flags	Consumer's last pipeline access stage
-	*	@param	input_image_layout	Consumer's last image layout
+	*	@param	input				Input image
 	*/
-	auto &acquire_input_image(gl::pipeline_stage input_stage_flags,
-							  gl::image_layout input_image_layout) {
-		this->input_stage_flags = input_stage_flags;
-		this->input_image_layout = input_image_layout;
-
-		return input_image.get();
+	void set_input_image(gl::texture<gl::image_type::image_2d> *input) {
+		pipeline["input_tex"] = gl::bind(gl::pipeline::combined_image_sampler(*input,
+																			  ctx.get().device().common_samplers_collection().linear_clamp_sampler()));
 	}
 
 	void attach_framebuffer(gl::framebuffer &fb) {

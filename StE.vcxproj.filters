@@ -189,6 +189,12 @@
     <ClCompile Include="Simulation\src\ste\framework_graphics\antialiasing\fxaa\fxaa_postprocess.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\hdr_dof_postprocess_storage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Simulation\src\ste\engine\graphics_interface\rendering_system\storage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Simulation\src\ste\engine\cache\lru_cache.hpp">
@@ -1478,9 +1484,6 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\rendering_system\rendering_presentation_system.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\rendering_system\storage_shared_ptr.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\image\colorspace.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1854,6 +1857,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\antialiasing\fxaa\fxaa_postprocess.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\hdr_dof_postprocess_storage.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
