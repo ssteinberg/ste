@@ -53,7 +53,14 @@ public:
 	}
 
 	vk_descriptor_set_layout(vk_descriptor_set_layout &&) = default;
-	vk_descriptor_set_layout &operator=(vk_descriptor_set_layout &&) = default;
+	vk_descriptor_set_layout &operator=(vk_descriptor_set_layout &&o) noexcept {
+		destroy_descriptor_set_layout();
+
+		layout = std::move(o.layout);
+		device = std::move(o.device);
+
+		return *this;
+	}
 	vk_descriptor_set_layout(const vk_descriptor_set_layout &) = delete;
 	vk_descriptor_set_layout &operator=(const vk_descriptor_set_layout &) = delete;
 

@@ -21,10 +21,10 @@ namespace vk {
 class vk_surface {
 private:
 	optional<VkSurfaceKHR> surface;
-	const vk_instance &instance;
+	const vk_instance<> *instance;
 
 public:
-	vk_surface(const ste_window &win, const vk_instance &instance) : instance(instance) {
+	vk_surface(const ste_window &win, const vk_instance<> &instance) : instance(&instance) {
 		VkSurfaceKHR surface;
 		auto handle = win.get_window_handle();
 		vk_result res = glfwCreateWindowSurface(instance, handle, nullptr, &surface);
@@ -37,13 +37,20 @@ public:
 	~vk_surface() noexcept { destroy_surface(); }
 
 	vk_surface(vk_surface &&) = default;
-	vk_surface &operator=(vk_surface &&) = default;
+	vk_surface &operator=(vk_surface &&o) noexcept {
+		destroy_surface();
+
+		surface = std::move(o.surface);
+		instance = o.instance;
+
+		return *this;
+	}
 	vk_surface(const vk_surface &) = delete;
 	vk_surface &operator=(const vk_surface &) = delete;
 
 	void destroy_surface() {
 		if (surface) {
-			vkDestroySurfaceKHR(instance, surface.get(), nullptr);
+			vkDestroySurfaceKHR(*instance, surface.get(), nullptr);
 			surface = none;
 		}
 	}

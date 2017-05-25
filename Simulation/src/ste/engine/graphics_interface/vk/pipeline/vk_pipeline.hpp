@@ -34,7 +34,16 @@ public:
 	}
 
 	vk_pipeline(vk_pipeline&&) = default;
-	vk_pipeline &operator=(vk_pipeline&&) = default;
+	vk_pipeline &operator=(vk_pipeline&&o) noexcept {
+		destroy_pipeline();
+
+		pipeline = std::move(o.pipeline);
+		device = std::move(o.device);
+
+		return *this;
+	}
+	vk_pipeline(const vk_pipeline &) = delete;
+	vk_pipeline &operator=(const vk_pipeline &) = delete;
 
 	void destroy_pipeline() {
 		if (pipeline) {

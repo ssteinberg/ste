@@ -63,7 +63,14 @@ public:
 	}
 
 	vk_shader(vk_shader &&) = default;
-	vk_shader &operator=(vk_shader &&) = default;
+	vk_shader &operator=(vk_shader &&o) noexcept {
+		destroy_shader_module();
+
+		module = std::move(o.module);
+		device = std::move(o.device);
+
+		return *this;
+	}
 	vk_shader(const vk_shader &) = delete;
 	vk_shader &operator=(const vk_shader &) = delete;
 

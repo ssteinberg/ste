@@ -62,7 +62,14 @@ public:
 	}
 
 	vk_pipeline_layout(vk_pipeline_layout &&) = default;
-	vk_pipeline_layout &operator=(vk_pipeline_layout &&o) = default;
+	vk_pipeline_layout &operator=(vk_pipeline_layout &&o) noexcept {
+		destroy_pipeline_layout();
+
+		layout = std::move(o.layout);
+		device = std::move(o.device);
+
+		return *this;
+	}
 	vk_pipeline_layout(const vk_pipeline_layout &) = delete;
 	vk_pipeline_layout &operator=(const vk_pipeline_layout &) = delete;
 

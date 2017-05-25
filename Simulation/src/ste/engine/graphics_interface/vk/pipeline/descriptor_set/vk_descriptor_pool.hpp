@@ -72,7 +72,15 @@ public:
 	}
 
 	vk_descriptor_pool(vk_descriptor_pool &&) = default;
-	vk_descriptor_pool &operator=(vk_descriptor_pool &&) = default;
+	vk_descriptor_pool &operator=(vk_descriptor_pool &&o) noexcept {
+		destroy_pool();
+
+		pool = std::move(o.pool);
+		device = std::move(o.device);
+		allow_free_individual_sets = o.allow_free_individual_sets;
+
+		return *this;
+	}
 	vk_descriptor_pool(const vk_descriptor_pool &) = delete;
 	vk_descriptor_pool &operator=(const vk_descriptor_pool &) = delete;
 

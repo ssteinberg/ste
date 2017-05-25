@@ -99,7 +99,7 @@ public:
 	ste_presentation_surface(const ste_gl_device_creation_parameters parameters,
 							 const vk::vk_logical_device *presentation_device,
 							 const ste_window &presentation_window,
-							 const vk::vk_instance &instance)
+							 const vk::vk_instance<> &instance)
 		: parameters(parameters),
 		presentation_device(presentation_device),
 		presentation_window(presentation_window),

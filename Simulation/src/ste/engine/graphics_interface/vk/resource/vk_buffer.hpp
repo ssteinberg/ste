@@ -59,7 +59,15 @@ public:
 	virtual ~vk_buffer() noexcept { destroy_buffer(); }
 
 	vk_buffer(vk_buffer &&) = default;
-	vk_buffer& operator=(vk_buffer &&) = default;
+	vk_buffer& operator=(vk_buffer &&o) noexcept {
+		destroy_buffer();
+
+		buffer = std::move(o.buffer);
+		device = std::move(o.device);
+		usage = o.usage;
+
+		return *this;
+	}
 	vk_buffer(const vk_buffer &) = delete;
 	vk_buffer& operator=(const vk_buffer &) = delete;
 

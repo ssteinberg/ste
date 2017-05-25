@@ -43,7 +43,14 @@ public:
 	}
 
 	vk_event(vk_event &&) = default;
-	vk_event &operator=(vk_event &&) = default;
+	vk_event &operator=(vk_event &&o) noexcept {
+		destroy_event();
+
+		event = std::move(o.event);
+		device = std::move(o.device);
+
+		return *this;
+	}
 	vk_event(const vk_event &) = delete;
 	vk_event &operator=(const vk_event &) = delete;
 

@@ -51,7 +51,14 @@ public:
 	}
 
 	vk_command_pool(vk_command_pool &&) = default;
-	vk_command_pool &operator=(vk_command_pool &&) = default;
+	vk_command_pool &operator=(vk_command_pool &&o) noexcept {
+		destroy_command_pool();
+
+		pool = std::move(o.pool);
+		device = std::move(o.device);
+
+		return *this;
+	}
 	vk_command_pool(const vk_command_pool &) = default;
 	vk_command_pool &operator=(const vk_command_pool &) = default;
 

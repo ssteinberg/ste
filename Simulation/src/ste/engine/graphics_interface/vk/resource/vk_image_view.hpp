@@ -237,7 +237,15 @@ public:
 	~vk_image_view() noexcept { destroy_view(); }
 
 	vk_image_view(vk_image_view &&) = default;
-	vk_image_view& operator=(vk_image_view &&) = default;
+	vk_image_view& operator=(vk_image_view &&o) noexcept {
+		destroy_view();
+
+		view = std::move(o.view);
+		device = std::move(o.device);
+		image_format = o.image_format;
+
+		return *this;
+	}
 	vk_image_view(const vk_image_view &) = delete;
 	vk_image_view& operator=(const vk_image_view &) = delete;
 

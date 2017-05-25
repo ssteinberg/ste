@@ -56,7 +56,15 @@ public:
 	~vk_framebuffer() noexcept { destroy_framebuffer(); }
 
 	vk_framebuffer(vk_framebuffer &&) = default;
-	vk_framebuffer &operator=(vk_framebuffer &&) = default;
+	vk_framebuffer &operator=(vk_framebuffer &&o) noexcept {
+		destroy_framebuffer();
+
+		framebuffer = std::move(o.framebuffer);
+		device = std::move(o.device);
+		extent = o.extent;
+
+		return *this;
+	}
 	vk_framebuffer(const vk_framebuffer &) = delete;
 	vk_framebuffer &operator=(const vk_framebuffer &) = delete;
 

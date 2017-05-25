@@ -86,7 +86,14 @@ public:
 	~vk_render_pass() noexcept { destroy_render_pass(); }
 
 	vk_render_pass(vk_render_pass &&) = default;
-	vk_render_pass &operator=(vk_render_pass &&) = default;
+	vk_render_pass &operator=(vk_render_pass &&o) noexcept {
+		destroy_render_pass();
+
+		render_pass = std::move(o.render_pass);
+		device = std::move(o.device);
+
+		return *this;
+	}
 	vk_render_pass(const vk_render_pass &) = delete;
 	vk_render_pass &operator=(const vk_render_pass &) = delete;
 

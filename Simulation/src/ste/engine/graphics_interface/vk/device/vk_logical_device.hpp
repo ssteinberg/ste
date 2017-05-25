@@ -11,6 +11,7 @@
 
 #include <lib/vector.hpp>
 #include <allow_type_decay.hpp>
+#include <optional.hpp>
 #include <anchored.hpp>
 
 namespace ste {
@@ -22,7 +23,7 @@ class vk_logical_device : public allow_type_decay<vk_logical_device, VkDevice>, 
 private:
 	vk_physical_device_descriptor physical_device;
 
-	VkDevice logical_device{ nullptr };
+	optional<VkDevice> logical_device;
 	VkPhysicalDeviceFeatures requested_features;
 	lib::vector<VkDeviceQueueCreateInfo> requested_queues;
 	lib::vector<const char*> enabled_extensions;
@@ -57,18 +58,11 @@ public:
 	}
 
 	~vk_logical_device() noexcept {
-		if (logical_device != nullptr) {
+		if (logical_device) {
 			wait_idle();
-			vkDestroyDevice(logical_device, nullptr);
+			vkDestroyDevice(logical_device.get(), nullptr);
 		}
-		logical_device = nullptr;
-	}
-
-	vk_logical_device(vk_logical_device &&s) noexcept
-		: physical_device(s.physical_device), logical_device(s.logical_device), requested_features(s.requested_features),
-		requested_queues(s.requested_queues), enabled_extensions(s.enabled_extensions)
-	{
-		s.logical_device = nullptr;
+		logical_device = none;
 	}
 
 	vk_logical_device(const vk_logical_device &) = delete;
@@ -79,7 +73,7 @@ public:
 	}
 
 	auto &get_physical_device_descriptor() const { return physical_device; }
-	auto &get() const { return logical_device; }
+	auto &get() const { return logical_device.get(); }
 	auto &get_requested_features() const { return requested_features; }
 };
 

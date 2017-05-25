@@ -81,7 +81,14 @@ public:
 	}
 
 	vk_sampler(vk_sampler &&) = default;
-	vk_sampler &operator=(vk_sampler &&) = default;
+	vk_sampler &operator=(vk_sampler &&o) noexcept {
+		destroy_sampler();
+
+		sampler = std::move(o.sampler);
+		device = std::move(o.device);
+
+		return *this;
+	}
 	vk_sampler(const vk_sampler &) = delete;
 	vk_sampler &operator=(const vk_sampler &) = delete;
 

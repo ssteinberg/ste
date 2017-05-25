@@ -132,7 +132,22 @@ public:
 	virtual ~vk_image() noexcept { destroy_image(); }
 
 	vk_image(vk_image &&) = default;
-	vk_image& operator=(vk_image &&) = default;
+	vk_image& operator=(vk_image &&o) noexcept {
+		destroy_image();
+
+		image = std::move(o.image);
+		device = std::move(o.device);
+
+		image_format = o.image_format;
+		extent = o.extent;
+		mips = o.mips;
+		layers = o.layers;
+
+		usage = o.usage;
+		sparse = o.sparse;
+
+		return *this;
+	}
 	vk_image(const vk_image &) = delete;
 	vk_image& operator=(const vk_image &) = delete;
 

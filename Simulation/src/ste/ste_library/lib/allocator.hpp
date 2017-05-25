@@ -100,6 +100,27 @@ public:
 		return rpmalloc_usable_size(static_cast<void*>(p));
 	}
 
+	auto allocate_aligned(size_type n, std::size_t alignment) {
+		_internal::allocator_static_storage::init();
+
+		auto p = rpaligned_alloc(alignment, sizeof(T) * n);
+		return reinterpret_cast<T*>(p);
+	}
+	auto reallocate(pointer p, size_type n) {
+		_internal::allocator_static_storage::init();
+
+		auto t = _use_aligned_alloc ?
+			rpaligned_realloc(p, alignment, sizeof(T) * n, 0, 0) :
+			rprealloc(p, sizeof(T) * n);
+		return reinterpret_cast<T*>(t);
+	}
+	auto reallocate_aligned(pointer p, size_type n, std::size_t alignment) {
+		_internal::allocator_static_storage::init();
+
+		auto t = rpaligned_realloc(p, alignment, sizeof(T) * n, 0, 0);
+		return reinterpret_cast<T*>(t);
+	}
+
 	template <
 		typename U1, std::size_t A1,
 		typename U2, std::size_t A2

@@ -92,7 +92,15 @@ public:
 	~vk_swapchain() noexcept { destroy_swapchain(); }
 
 	vk_swapchain(vk_swapchain &&) = default;
-	vk_swapchain& operator=(vk_swapchain &&) = default;
+	vk_swapchain& operator=(vk_swapchain &&o) noexcept {
+		destroy_swapchain();
+
+		swapchain = std::move(o.swapchain);
+		device = std::move(o.device);
+		swapchain_create_info = std::move(o.swapchain_create_info);
+
+		return *this;
+	}
 	vk_swapchain(const vk_swapchain &) = delete;
 	vk_swapchain& operator=(const vk_swapchain &) = delete;
 

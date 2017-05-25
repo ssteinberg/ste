@@ -58,7 +58,16 @@ public:
 	~vk_buffer_view() noexcept { destroy_view(); }
 
 	vk_buffer_view(vk_buffer_view &&) = default;
-	vk_buffer_view& operator=(vk_buffer_view &&) = default;
+	vk_buffer_view& operator=(vk_buffer_view &&o) noexcept {
+		destroy_view();
+
+		view = std::move(o.view);
+		device = std::move(o.device);
+		size_bytes = o.size_bytes;
+		format = o.format;
+
+		return *this;
+	}
 	vk_buffer_view(const vk_buffer_view &) = delete;
 	vk_buffer_view& operator=(const vk_buffer_view &) = delete;
 

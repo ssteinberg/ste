@@ -48,7 +48,14 @@ public:
 	}
 
 	vk_fence(vk_fence &&) = default;
-	vk_fence &operator=(vk_fence &&) = default;
+	vk_fence &operator=(vk_fence &&o) noexcept {
+		destroy_fence();
+
+		fence = std::move(o.fence);
+		device = std::move(o.device);
+
+		return *this;
+	}
 	vk_fence(const vk_fence &) = delete;
 	vk_fence &operator=(const vk_fence &) = delete;
 

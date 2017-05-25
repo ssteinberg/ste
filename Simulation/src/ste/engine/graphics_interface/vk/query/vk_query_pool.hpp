@@ -53,7 +53,15 @@ public:
 	}
 
 	vk_query_pool(vk_query_pool &&) = default;
-	vk_query_pool &operator=(vk_query_pool &&) = default;
+	vk_query_pool &operator=(vk_query_pool &&o) noexcept {
+		destroy_query_pool();
+
+		query_pool = std::move(o.query_pool);
+		device = std::move(o.device);
+		size = o.size;
+
+		return *this;
+	}
 	vk_query_pool(const vk_query_pool &) = delete;
 	vk_query_pool &operator=(const vk_query_pool &) = delete;
 

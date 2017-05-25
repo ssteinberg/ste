@@ -128,7 +128,14 @@ public:
 	}
 
 	vk_pipeline_cache(vk_pipeline_cache &&) = default;
-	vk_pipeline_cache &operator=(vk_pipeline_cache &&) = default;
+	vk_pipeline_cache &operator=(vk_pipeline_cache &&o) noexcept {
+		destroy_pipeline_cache();
+
+		cache = std::move(o.cache);
+		device = std::move(o.device);
+
+		return *this;
+	}
 	vk_pipeline_cache(const vk_pipeline_cache &) = delete;
 	vk_pipeline_cache &operator=(const vk_pipeline_cache &) = delete;
 

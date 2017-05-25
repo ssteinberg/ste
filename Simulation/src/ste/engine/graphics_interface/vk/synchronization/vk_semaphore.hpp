@@ -43,7 +43,14 @@ public:
 	}
 
 	vk_semaphore(vk_semaphore &&) = default;
-	vk_semaphore &operator=(vk_semaphore &&) = default;
+	vk_semaphore &operator=(vk_semaphore &&o) noexcept {
+		destroy_semaphore();
+
+		semaphore = std::move(o.semaphore);
+		device = std::move(o.device);
+
+		return *this;
+	}
 	vk_semaphore(const vk_semaphore &) = delete;
 	vk_semaphore &operator=(const vk_semaphore &) = delete;
 

@@ -29,11 +29,12 @@
 #include <lib/static_vector.hpp>
 #include <lib/aligned_padded_ptr.hpp>
 #include <allow_type_decay.hpp>
+#include <anchored.hpp>
 
 namespace ste {
 namespace gl {
 
-class ste_device : public allow_type_decay<ste_device, vk::vk_logical_device> {
+class ste_device : public allow_type_decay<ste_device, vk::vk_logical_device>, anchored {
 public:
 	using queues_and_surface_recreate_signal_type = signal<const ste_device*>;
 
@@ -58,7 +59,7 @@ private:
 	// Synchronization primitive pools
 	lib::aligned_padded_ptr<ste_device_sync_primitives_pools> sync_primitives_pools;
 	// Presentation surface
-	const lib::unique_ptr<ste_presentation_surface> presentation_surface{ nullptr };
+	lib::unique_ptr<ste_presentation_surface> presentation_surface{ nullptr };
 
 	/*
 	 *	Queues
@@ -83,10 +84,13 @@ private:
 	common_samplers samplers_collection;
 
 private:
-	static vk::vk_logical_device create_vk_virtual_device(const vk::vk_physical_device_descriptor &physical_device,
-														  const VkPhysicalDeviceFeatures &requested_features,
-														  const ste_queue_descriptors &queue_descriptors,
-														  lib::vector<const char*> device_extensions = {});
+	static lib::vector<const char*> device_extensions(lib::vector<const char*> extensions) {
+		// Add required extensions
+		extensions.push_back("VK_KHR_swapchain");
+
+		return extensions;
+	}
+
 	static queues_t create_queues(const vk::vk_logical_device &device,
 								  const ste_queue_descriptors &queue_descriptors,
 								  ste_device_sync_primitives_pools *sync_primitives_pools);
@@ -111,26 +115,16 @@ public:
 			   ste_engine &engine,
 			   const ste_gl_context &gl_ctx,
 			   const ste_window &presentation_window)
-		: parameters(parameters),
-		queue_descriptors(queue_descriptors),
-		device(create_vk_virtual_device(parameters.physical_device,
-										parameters.requested_device_features,
-										queue_descriptors,
-										parameters.additional_device_extensions)),
-		sync_primitives_pools(device),
-		presentation_surface(lib::allocate_unique<ste_presentation_surface>(parameters,
-																		&device,
-																		presentation_window,
-																		gl_ctx.instance())),
-		device_queues(create_queues(device,
-									queue_descriptors,
-									&*sync_primitives_pools)),
-		shared_pipeline_cache(device,
-							  &engine.cache(),
-							  this->name()),
-		device_binding_set_pool(device),
-		samplers_collection(device)
-	{}
+		: ste_device(parameters,
+					 queue_descriptors,
+					 engine,
+					 gl_ctx)
+	{
+		presentation_surface = lib::allocate_unique<ste_presentation_surface>(parameters,
+																			  &device,
+																			  presentation_window,
+																			  gl_ctx.instance());
+	}
 	/**
 	*	@brief	Creates the device without presentation capabilities ("compute-only" device)
 	*
@@ -148,10 +142,10 @@ public:
 			   const ste_gl_context &gl_ctx)
 		: parameters(parameters),
 		queue_descriptors(queue_descriptors),
-		device(create_vk_virtual_device(parameters.physical_device,
-										parameters.requested_device_features,
-										queue_descriptors,
-										parameters.additional_device_extensions)),
+		device(parameters.physical_device,
+			   parameters.requested_device_features,
+			   queue_descriptors.create_device_queue_create_info()->create_info,
+			   device_extensions(parameters.additional_device_extensions)),
 		sync_primitives_pools(device),
 		device_queues(create_queues(device,
 									queue_descriptors,
@@ -161,7 +155,11 @@ public:
 							  this->name()),
 		device_binding_set_pool(device),
 		samplers_collection(device)
-	{}
+	{
+		if (queue_descriptors.size() == 0) {
+			throw ste_device_creation_exception("queue_descriptors is empty");
+		}
+	}
 	~ste_device() noexcept {}
 
 	/**

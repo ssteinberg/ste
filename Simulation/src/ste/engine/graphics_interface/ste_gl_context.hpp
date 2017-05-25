@@ -21,7 +21,7 @@ namespace gl {
 
 class ste_gl_context {
 private:
-	vk::vk_instance vk;
+	vk::vk_instance<> vk;
 	lib::unique_ptr<vk::vk_debug_report_callback> debug_report_handle;
 
 private:
@@ -47,8 +47,8 @@ private:
 			instance_extensions.push_back("VK_EXT_debug_report");
 		}
 
-		auto instance = vk::vk_instance(app_name, app_version,
-										instance_extensions, instance_layers);
+		auto instance = vk::vk_instance<>(app_name, app_version,
+										  instance_extensions, instance_layers);
 		return instance;
 	}
 
